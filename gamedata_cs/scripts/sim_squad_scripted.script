@@ -1,9 +1,9 @@
 --'******************************************************
---'*	Боевой отряд группировки. (Скриптовая версия)
---'*	Наследован от обычного боевого отряда.
---'*	Отличия:
---'*		- Детерминированные состав отряда
---'*		- Возможность жестко указать активное действие
+--'*	Р‘РѕРµРІРѕР№ РѕС‚СЂСЏРґ РіСЂСѓРїРїРёСЂРѕРІРєРё. (РЎРєСЂРёРїС‚РѕРІР°СЏ РІРµСЂСЃРёСЏ)
+--'*	РќР°СЃР»РµРґРѕРІР°РЅ РѕС‚ РѕР±С‹С‡РЅРѕРіРѕ Р±РѕРµРІРѕРіРѕ РѕС‚СЂСЏРґР°.
+--'*	РћС‚Р»РёС‡РёСЏ:
+--'*		- Р”РµС‚РµСЂРјРёРЅРёСЂРѕРІР°РЅРЅС‹Рµ СЃРѕСЃС‚Р°РІ РѕС‚СЂСЏРґР°
+--'*		- Р’РѕР·РјРѕР¶РЅРѕСЃС‚СЊ Р¶РµСЃС‚РєРѕ СѓРєР°Р·Р°С‚СЊ Р°РєС‚РёРІРЅРѕРµ РґРµР№СЃС‚РІРёРµ
 --'******************************************************
 
 function printf()
@@ -14,7 +14,7 @@ function sim_squad_scripted:__init(sim_board, player_id, squad_id, settings_id) 
 	self.name = "sim_squad_scripted"
 	self.settings_id = settings_id or squad_id
 end
---' Инициализация
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 function sim_squad_scripted:init_squad(smart)
 	sim_squad_generic.sim_squad_generic.init_squad(self, smart)
 	self.action_condlist = xr_logic.parse_condlist(self, "assign_action", "target_smart", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "target_smart", self, false, "", ""))
@@ -27,7 +27,7 @@ function sim_squad_scripted:init_squad(smart)
 
 	self.always_walk = utils.cfg_get_bool(sim_board.squad_ltx, self.settings_id, "always_walk", self, false)
 end
---' Создание чуваков в отряд
+--' РЎРѕР·РґР°РЅРёРµ С‡СѓРІР°РєРѕРІ РІ РѕС‚СЂСЏРґ
 function sim_squad_scripted:create_npc(spawn_smart)
 	local spawn_sections = utils.parse_names(utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "npc", self, true, ""))
 
@@ -37,7 +37,7 @@ function sim_squad_scripted:create_npc(spawn_smart)
 
 	--print_table(debug.getinfo(1))
 	printf("SPAWN SMART %s", spawn_smart:name())
-	--' Высчитываем базовую позицию спауна
+	--' Р’С‹СЃС‡РёС‚С‹РІР°РµРј Р±Р°Р·РѕРІСѓСЋ РїРѕР·РёС†РёСЋ СЃРїР°СѓРЅР°
 	local base_spawn_position = spawn_smart.position
 	local base_lvi = spawn_smart.m_level_vertex_id
 	local base_gvi = spawn_smart.m_game_vertex_id
@@ -82,7 +82,7 @@ function sim_squad_scripted:create_npc(spawn_smart)
 	self:refresh()
 end
 
---' Возвращает скриптовую цель.
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРєСЂРёРїС‚РѕРІСѓСЋ С†РµР»СЊ.
 function sim_squad_scripted:get_script_target()
 	local new_target = xr_logic.pick_section_from_condlist(db.actor, self, self.action_condlist)
 
@@ -93,7 +93,7 @@ function sim_squad_scripted:get_script_target()
 
 	if new_target ~= self.last_target then
 		self.last_target = new_target
-		--' Парсим новые задачи для отряда
+		--' РџР°СЂСЃРёРј РЅРѕРІС‹Рµ Р·Р°РґР°С‡Рё РґР»СЏ РѕС‚СЂСЏРґР°
 		self.parsed_targets = utils.parse_names(new_target)
 
 		if self.need_free_update ~= true then
@@ -122,13 +122,13 @@ function sim_squad_scripted:get_script_target()
 end
 
 
---' Выбор следующей цели
+--' Р’С‹Р±РѕСЂ СЃР»РµРґСѓСЋС‰РµР№ С†РµР»Рё
 function sim_squad_scripted:pick_next_target()
 	--printf("Picking next target for [%s] = %s by %s", self.squad_id, tostring(self.parsed_targets[self.next_target]), self.next_target)
 	return self.parsed_targets[self.next_target]
 end
 
---' Рассчет дополнительной силы отряда в атаке
+--' Р Р°СЃСЃС‡РµС‚ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ СЃРёР»С‹ РѕС‚СЂСЏРґР° РІ Р°С‚Р°РєРµ
 function sim_squad_scripted:calculate_attack_power()
 	local attack_power = xr_logic.pick_section_from_condlist(db.actor, self, self.attack_power)
 
@@ -139,13 +139,13 @@ function sim_squad_scripted:calculate_attack_power()
 	self.squad_attack_power = tonumber(attack_power)
 end
 
---' Проверка пришел ли отряд в очередной поинт
+--' РџСЂРѕРІРµСЂРєР° РїСЂРёС€РµР» Р»Рё РѕС‚СЂСЏРґ РІ РѕС‡РµСЂРµРґРЅРѕР№ РїРѕРёРЅС‚
 function sim_squad_scripted:check_squad_come_to_point()
 	--printf("[%s] check squad point", self.squad_id)
 	if self.parsed_targets == nil then
 		return true
 	end
-	--' Если мы уже дошли до точки.
+	--' Р•СЃР»Рё РјС‹ СѓР¶Рµ РґРѕС€Р»Рё РґРѕ С‚РѕС‡РєРё.
 	local next_target = self.next_target or 0
 	if self.assigned_target_smart_id ~= nil and self.smart_id == self.assigned_target_smart_id then
 		if self.parsed_targets[next_target+1] ~= nil then
@@ -155,7 +155,7 @@ function sim_squad_scripted:check_squad_come_to_point()
 	end
 	return false
 end
---' Проверка пришел ли отряд в очередной поинт
+--' РџСЂРѕРІРµСЂРєР° РїСЂРёС€РµР» Р»Рё РѕС‚СЂСЏРґ РІ РѕС‡РµСЂРµРґРЅРѕР№ РїРѕРёРЅС‚
 function sim_squad_scripted:update_current_action()
 	local is_finished =	self.current_action:update()
 	if not is_finished then
@@ -199,18 +199,18 @@ function sim_squad_scripted:update()
 	if self.assigned_target_smart_id ~= nil and self.assigned_target_smart_id == script_target then
 		if self.current_action ~= nil then
 			if self.current_action.name == "stay_point" then
-				--' Если экшн stay_point. Проверяем пришли ли до экшна.
+				--' Р•СЃР»Рё СЌРєС€РЅ stay_point. РџСЂРѕРІРµСЂСЏРµРј РїСЂРёС€Р»Рё Р»Рё РґРѕ СЌРєС€РЅР°.
 				if self:check_squad_come_to_point() then
-					--' Пришли в точку, перевыбрали цель
+					--' РџСЂРёС€Р»Рё РІ С‚РѕС‡РєСѓ, РїРµСЂРµРІС‹Р±СЂР°Р»Рё С†РµР»СЊ
 					need_to_find_new_action = true
 					--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
 				else
-					--' Не пришли в точку, апдейтимся дальше
+					--' РќРµ РїСЂРёС€Р»Рё РІ С‚РѕС‡РєСѓ, Р°РїРґРµР№С‚РёРјСЃСЏ РґР°Р»СЊС€Рµ
 					need_to_find_new_action = self:update_current_action()
 					--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
 				end
 			else
-				--' Если экшн attack_point. Проверяем пришли ли после экшна.
+				--' Р•СЃР»Рё СЌРєС€РЅ attack_point. РџСЂРѕРІРµСЂСЏРµРј РїСЂРёС€Р»Рё Р»Рё РїРѕСЃР»Рµ СЌРєС€РЅР°.
 				if self:update_current_action() then
 					self:check_squad_come_to_point()
 					need_to_find_new_action = true
@@ -218,7 +218,7 @@ function sim_squad_scripted:update()
 				end
 			end
 		else
-			--' Проверяем пришли ли
+			--' РџСЂРѕРІРµСЂСЏРµРј РїСЂРёС€Р»Рё Р»Рё
 			self:check_squad_come_to_point()
 			need_to_find_new_action = true
 			--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
@@ -241,7 +241,7 @@ function sim_squad_scripted:update()
 				player.squad_target_cache[self.squad_id] = script_target --!!!
 				need_to_find_new_action = true
 				--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
-				-- Так как мы "жестко" обрываем выполнения текущего действия, нужно выйти из сим_комбата
+				-- РўР°Рє РєР°Рє РјС‹ "Р¶РµСЃС‚РєРѕ" РѕР±СЂС‹РІР°РµРј РІС‹РїРѕР»РЅРµРЅРёСЏ С‚РµРєСѓС‰РµРіРѕ РґРµР№СЃС‚РІРёСЏ, РЅСѓР¶РЅРѕ РІС‹Р№С‚Рё РёР· СЃРёРј_РєРѕРјР±Р°С‚Р°
 				if self.sim_combat_id ~= nil then
 					self.board.smarts[self.sim_combat_id].smrt.combat_manager:unregister_squad(self)
 				end
@@ -255,7 +255,7 @@ function sim_squad_scripted:update()
 			self.current_action:finalize()
 			self.current_action = nil
 		end
-		--' Если у нас нет текущей цели - просим выдать нам задание.
+		--' Р•СЃР»Рё Сѓ РЅР°СЃ РЅРµС‚ С‚РµРєСѓС‰РµР№ С†РµР»Рё - РїСЂРѕСЃРёРј РІС‹РґР°С‚СЊ РЅР°Рј Р·Р°РґР°РЅРёРµ.
 		self:get_next_action()
 	end
 	if not self.items_spawned and self.smart_id ~= nil then
@@ -304,7 +304,7 @@ function sim_squad_scripted:load(packet)
 		self.next_target = nil
 	end
 
-	-- Нужно ли нам пропустить один репик таргета
+	-- РќСѓР¶РЅРѕ Р»Рё РЅР°Рј РїСЂРѕРїСѓСЃС‚РёС‚СЊ РѕРґРёРЅ СЂРµРїРёРє С‚Р°СЂРіРµС‚Р°
 	self.need_free_update = packet:r_bool()
 
 	local s = packet:r_u8()

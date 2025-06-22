@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- Mob Camp
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Jim
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Jim
 ----------------------------------------------------------------------------------------------------
 
 local STATE_CAMP					= 1
@@ -199,7 +199,7 @@ function mob_camp:select_state()
 		end
 	end
 	
-	-- Отпускать в alife монстров, которых обстреляли
+	-- РћС‚РїСѓСЃРєР°С‚СЊ РІ alife РјРѕРЅСЃС‚СЂРѕРІ, РєРѕС‚РѕСЂС‹С… РѕР±СЃС‚СЂРµР»СЏР»Рё
 	local h = self.object:get_monster_hit_info()
 	if (enemy == nil) and (h.who) and (h.time ~= 0) and (IsMonster(h.who) or IsStalker(h.who))then
 		local dist = self.object:position():distance_to(home_position)
@@ -306,7 +306,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = mob_camp(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 

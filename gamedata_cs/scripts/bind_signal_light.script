@@ -51,7 +51,7 @@ function signal_light_binder:update(delta)
 		end
 		return
 	end
-	-- Ãëàâíûé öèêë ïîëåòà ñèãíàëêè
+	-- Ğ“Ğ»Ğ°Ğ²Ğ½Ñ‹Ğ¹ Ñ†Ğ¸ĞºĞ» Ğ¿Ğ¾Ğ»ĞµÑ‚Ğ° ÑĞ¸Ğ³Ğ½Ğ°Ğ»ĞºĞ¸
 	if fly_time > 21500 then
 		self:stop_fly()
 		return

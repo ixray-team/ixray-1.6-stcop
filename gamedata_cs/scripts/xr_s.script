@@ -4,8 +4,8 @@ pseudo-framework by Red75, sokol_jack & xStream
 ]]
 -- Framework initialization ----------
 
--- Вспомогательная функция инициализации модуля.
--- Проверяет наличие скрипта с имененм module и вызывает module.init()
+-- Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РјРѕРґСѓР»СЏ.
+-- РџСЂРѕРІРµСЂСЏРµС‚ РЅР°Р»РёС‡РёРµ СЃРєСЂРёРїС‚Р° СЃ РёРјРµРЅРµРЅРј module Рё РІС‹Р·С‹РІР°РµС‚ module.init()
 local function init_module_if_exists(module)
   if _G[module] and _G[module].init then
     _G[module].init()
@@ -14,7 +14,7 @@ local function init_module_if_exists(module)
   end
 end
 
--- Эта функция вызывается при старте игры. Необходимо дать возможность модулям зарегистрировать коллбэки.
+-- Р­С‚Р° С„СѓРЅРєС†РёСЏ РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё СЃС‚Р°СЂС‚Рµ РёРіСЂС‹. РќРµРѕР±С…РѕРґРёРјРѕ РґР°С‚СЊ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РјРѕРґСѓР»СЏРј Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РєРѕР»Р»Р±СЌРєРё.
 function init()
   -- init_module_if_exists("xrs_dyn_weather")
   init_module_if_exists("xrs_dyn_music")
@@ -54,7 +54,7 @@ function register_callback(name,func,userobj)
   if callbacks[name]==nil then
     abort("register_callback: callback name '%s' is unknown.",name)
   end
-  callbacks[name][func]={userobj=userobj} -- Чтобы можно было регистрировать каллбэки с userobj==nil
+  callbacks[name][func]={userobj=userobj} -- Р§С‚РѕР±С‹ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РєР°Р»Р»Р±СЌРєРё СЃ userobj==nil
 end
 
 function unregister_callback(name,func)
@@ -86,7 +86,7 @@ function on_actor_destroy()
   end  
 end
 
--- Ударили монстра или сталкера
+-- РЈРґР°СЂРёР»Рё РјРѕРЅСЃС‚СЂР° РёР»Рё СЃС‚Р°Р»РєРµСЂР°
 local function on_hit(obj, amount, local_direction, who, bone_index)
   for func,o in pairs(callbacks.hit) do
     func(o.userobj,obj,amount,local_direction,who,bone_index)
@@ -107,7 +107,7 @@ function on_monster_hit(obj, amount, local_direction, who, bone_index)
   on_hit(obj,amount,local_direction,who,bone_index)
 end
 
--- проверка на видимость производится раз в секунду
+-- РїСЂРѕРІРµСЂРєР° РЅР° РІРёРґРёРјРѕСЃС‚СЊ РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ СЂР°Р· РІ СЃРµРєСѓРЅРґСѓ
 function on_enemy_see_actor(obj,typ) 
   for func,o in pairs(callbacks.enemy_see_actor) do
     func(o.userobj,obj,typ)
@@ -119,7 +119,7 @@ function on_actor_see_enemy(obj,typ)
   end
 end
 
--- непись стрелял в гг
+-- РЅРµРїРёСЃСЊ СЃС‚СЂРµР»СЏР» РІ РіРі
 function on_npc_shot_actor(obj) 
   for func,o in pairs(callbacks.npc_shot_actor) do
     func(o.userobj,obj)
@@ -146,7 +146,7 @@ end
 
 -----------methods-----------
 
---записываем переменную
+--Р·Р°РїРёСЃС‹РІР°РµРј РїРµСЂРµРјРµРЅРЅСѓСЋ
 function save_variable(vn, value)
   if value==nil then
     del_variable(vn)
@@ -155,12 +155,12 @@ function save_variable(vn, value)
   end
 end
 
---загружаем переменную
+--Р·Р°РіСЂСѓР¶Р°РµРј РїРµСЂРµРјРµРЅРЅСѓСЋ
 function load_variable(vn, value_if_not_found)
   return xr_logic.pstor_retrieve(db.actor, vn, value_if_not_found)
 end
 
---удаляем переменную
+--СѓРґР°Р»СЏРµРј РїРµСЂРµРјРµРЅРЅСѓСЋ
 function del_variable(vn)
   if db.storage[db.actor:id()].pstor[vn] then
     db.storage[db.actor:id()].pstor[vn] = nil
@@ -178,7 +178,7 @@ function notice(msg,...)
   end
 end
 
---выпарсиваем секцию инифайла в табличку
+--РІС‹РїР°СЂСЃРёРІР°РµРј СЃРµРєС†РёСЋ РёРЅРёС„Р°Р№Р»Р° РІ С‚Р°Р±Р»РёС‡РєСѓ
 function parse_ini_section_to_array(ini,section)
 	local tmp=nil
 	if ini and ini:section_exist(section) then
@@ -194,12 +194,12 @@ function parse_ini_section_to_array(ini,section)
 	return tmp
 end
 
---обрезаем пробельные символы в начале и в конце строки
+--РѕР±СЂРµР·Р°РµРј РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹ РІ РЅР°С‡Р°Р»Рµ Рё РІ РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё
 function trim (s)
 	return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
 
---разбиваем строку по разделителям
+--СЂР°Р·Р±РёРІР°РµРј СЃС‚СЂРѕРєСѓ РїРѕ СЂР°Р·РґРµР»РёС‚РµР»СЏРј
 function str_explode(div,str,clear)
 	local t={}
 	local cpt = string.find (str, div, 1, true)

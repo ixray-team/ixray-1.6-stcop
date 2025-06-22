@@ -3,7 +3,7 @@ class "evaluator_combat_enemy" (property_evaluator)
 function evaluator_combat_enemy:__init(storage, name) super(nil, name)
 	self.st = storage
 	
-	--' Таймер ожидания выхода из боя
+	--' РўР°Р№РјРµСЂ РѕР¶РёРґР°РЅРёСЏ РІС‹С…РѕРґР° РёР· Р±РѕСЏ
 	self.st.timer = time_global()
 end
 function evaluator_combat_enemy:evaluate()

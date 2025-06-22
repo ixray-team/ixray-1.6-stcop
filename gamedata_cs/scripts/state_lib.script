@@ -1,11 +1,11 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Библиотека состояний тела
---	автор: Диденко Руслан (Stohe)
+--	Р‘РёР±Р»РёРѕС‚РµРєР° СЃРѕСЃС‚РѕСЏРЅРёР№ С‚РµР»Р°
+--	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
 states = {
-	-- Дефолтовый
+	-- Р”РµС„РѕР»С‚РѕРІС‹Р№
 	idle = {	weapon = nil,
 				movement = nil,
 				mental = nil,
@@ -14,7 +14,7 @@ states = {
 				animation = nil
 			},
 
-	-- Ходячие состояния
+	-- РҐРѕРґСЏС‡РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	walk = {	weapon = "strapped",
 				movement = move.walk,
 				mental = anim.free,
@@ -122,7 +122,7 @@ states = {
 				animation = nil
 			},
 
-	-- Стоячие состояния
+	-- РЎС‚РѕСЏС‡РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	wait = {	weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -307,7 +307,7 @@ states = {
 				animstate = "stand",
 				animation = "hide"
 			},
-	-- Сидячие состояния
+	-- РЎРёРґСЏС‡РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	sit = {		weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -552,7 +552,7 @@ rac_sakharov = {weapon = "none",
 
 
 
-	-- Раненый
+	-- Р Р°РЅРµРЅС‹Р№
 	wounded = {	weapon = "strapped",
 				movement = move.stand,
 				mental = anim.danger,
@@ -622,7 +622,7 @@ rac_sakharov = {weapon = "none",
 				animation = "trans_zombied"
 			},
 
-	-- Бармен
+	-- Р‘Р°СЂРјРµРЅ
 	bar_fas = {	weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -893,7 +893,7 @@ rac_sakharov = {weapon = "none",
 				animation = "bloodsucker_panic",
 				reset = true},
 
-	 -- Интро на Болотах
+	 -- РРЅС‚СЂРѕ РЅР° Р‘РѕР»РѕС‚Р°С…
 		 mar_intro_2_window_idle = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
@@ -958,7 +958,7 @@ rac_sakharov = {weapon = "none",
 				animstate = "stand",
 				animation = "mar_intro_1_kalancha"},
 
-	--  Диггер на Свалке
+	--  Р”РёРіРіРµСЂ РЅР° РЎРІР°Р»РєРµ
 	gar_digger_messenger_jump = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
@@ -967,7 +967,7 @@ rac_sakharov = {weapon = "none",
 				animation = "gar_digger_messenger_jump",
 				direction = CSightParams.eSightTypeAnimationDirection},
 
-	--  Ученный на янтаре
+	--  РЈС‡РµРЅРЅС‹Р№ РЅР° СЏРЅС‚Р°СЂРµ
 	yan_professor_walk = {	weapon = "none",
 				movement = move.walk,
 				mental = anim.free,
@@ -1028,7 +1028,7 @@ rac_sakharov = {weapon = "none",
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "electra_damage"},
-				-- Пси раненый
+				-- РџСЃРё СЂР°РЅРµРЅС‹Р№
 	psy_pain = {weapon = "drop",
 				movement = move.stand,
 				mental = anim.free,

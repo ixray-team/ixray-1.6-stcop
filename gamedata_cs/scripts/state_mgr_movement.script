@@ -1,8 +1,8 @@
 function printf()
 end
 
---' ПЕРЕМЕЩЕНИЕ
---' мы уже находимся в необходимом состоянии?
+--' РџР•Р Р•РњР•Р©Р•РќРР•
+--' РјС‹ СѓР¶Рµ РЅР°С…РѕРґРёРјСЃСЏ РІ РЅРµРѕР±С…РѕРґРёРјРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё?
 class "eva_state_mgr_movement" (property_evaluator)
 function eva_state_mgr_movement:__init(name, st) super (nil, name)
 	self.st = st
@@ -16,7 +16,7 @@ function eva_state_mgr_movement:evaluate()
 		   (state_lib.states[self.st.target_state].movement == self.object:target_movement_type())
 --		   (state_lib.states[self.st.target_state].movement == self.object:movement_type())		   
 end
---' нужно ли нам идти
+--' РЅСѓР¶РЅРѕ Р»Рё РЅР°Рј РёРґС‚Рё
 class "eva_state_mgr_movement_walk" (property_evaluator)
 function eva_state_mgr_movement_walk:__init(name, st) super (nil, name)
 	self.st = st
@@ -24,7 +24,7 @@ end
 function eva_state_mgr_movement_walk:evaluate()
 	return state_lib.states[self.st.target_state].movement == move.walk
 end
---' нужно ли нам бежать
+--' РЅСѓР¶РЅРѕ Р»Рё РЅР°Рј Р±РµР¶Р°С‚СЊ
 class "eva_state_mgr_movement_run" (property_evaluator)
 function eva_state_mgr_movement_run:__init(name, st) super (nil, name)
 	self.st = st
@@ -32,7 +32,7 @@ end
 function eva_state_mgr_movement_run:evaluate()
 	return state_lib.states[self.st.target_state].movement == move.run
 end
---' нужно ли нам стоять
+--' РЅСѓР¶РЅРѕ Р»Рё РЅР°Рј СЃС‚РѕСЏС‚СЊ
 class "eva_state_mgr_movement_stand" (property_evaluator)
 function eva_state_mgr_movement_stand:__init(name, st) super (nil, name)
 	self.st = st
@@ -40,7 +40,7 @@ end
 function eva_state_mgr_movement_stand:evaluate()
 	return state_lib.states[self.st.target_state].movement == move.stand
 end
---' стоим ли мы
+--' СЃС‚РѕРёРј Р»Рё РјС‹
 class "eva_state_mgr_movement_stand_now" (property_evaluator)
 function eva_state_mgr_movement_stand_now:__init(name, st) super (nil, name)
 	self.st = st
@@ -51,7 +51,7 @@ function eva_state_mgr_movement_stand_now:evaluate()
 end
 
 
---' Включаем ходьбу
+--' Р’РєР»СЋС‡Р°РµРј С…РѕРґСЊР±Сѓ
 class "act_state_mgr_movement_walk" (action_base)
 function act_state_mgr_movement_walk:__init(name, st) super (nil, name)
 	self.st = st
@@ -71,7 +71,7 @@ end
 function act_state_mgr_movement_walk:finalize()
 	action_base.finalize(self)
 end
---' Включаем бег
+--' Р’РєР»СЋС‡Р°РµРј Р±РµРі
 class "act_state_mgr_movement_run" (action_base)
 function act_state_mgr_movement_run:__init(name, st) super (nil, name)
 	self.st = st
@@ -90,7 +90,7 @@ end
 function act_state_mgr_movement_run:finalize()
 	action_base.finalize(self)
 end
---' Включаем стояние на месте
+--' Р’РєР»СЋС‡Р°РµРј СЃС‚РѕСЏРЅРёРµ РЅР° РјРµСЃС‚Рµ
 class "act_state_mgr_movement_stand" (action_base)
 function act_state_mgr_movement_stand:__init(name, st) super (nil, name)
 	self.st = st

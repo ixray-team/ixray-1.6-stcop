@@ -36,9 +36,9 @@ function actor_binder:net_spawn(data)
 				level.show_indicators()
 
 				self.bCheckStart = true
-				self.weapon_hide = false -- спрятано или нет оружие при разговоре.
+				self.weapon_hide = false -- СЃРїСЂСЏС‚Р°РЅРѕ РёР»Рё РЅРµС‚ РѕСЂСѓР¶РёРµ РїСЂРё СЂР°Р·РіРѕРІРѕСЂРµ.
 		self.weapon_hide_in_dialog = false
-				weapon_hide = {} -- устанавливаем глобальный дефолтовый флаг.
+				weapon_hide = {} -- СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РіР»РѕР±Р°Р»СЊРЅС‹Р№ РґРµС„РѕР»С‚РѕРІС‹Р№ С„Р»Р°Рі.
 
 				if object_binder.net_spawn(self,data) == false then
 								return false
@@ -57,13 +57,13 @@ function actor_binder:net_spawn(data)
 --                actor_stats.add_to_ranking(self.object:id())
 --        end
 
-				--' Загружаем настройки дропа
+				--' Р—Р°РіСЂСѓР¶Р°РµРј РЅР°СЃС‚СЂРѕР№РєРё РґСЂРѕРїР°
 				death_manager.init_drop_settings()
 
-				--'Устанавливаем ссылку на таскменеджер
+				--'РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃСЃС‹Р»РєСѓ РЅР° С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂ
 				self.task_manager = task_manager.get_task_manager()
 
-				-- Анремте это, чтобы пропустить интро на марше.
+				-- РђРЅСЂРµРјС‚Рµ СЌС‚Рѕ, С‡С‚РѕР±С‹ РїСЂРѕРїСѓСЃС‚РёС‚СЊ РёРЅС‚СЂРѕ РЅР° РјР°СЂС€Рµ.
 				--self.object:give_info_portion("mar_lvl_sim")
 				if level.name() ~= "marsh" then
 					sim_board.get_sim_board():start_sim()
@@ -160,9 +160,9 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:info_callback(npc, info_id)
 				printf("*INFO*: npc='%s' id='%s'", npc:name(), info_id)
-				--' Сюжет
+				--' РЎСЋР¶РµС‚
 				level_tasks.proceed(self.object)
-				-- Отметки на карте
+				-- РћС‚РјРµС‚РєРё РЅР° РєР°СЂС‚Рµ
 				level_tasks.process_info_portion(info_id)
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -251,16 +251,16 @@ function actor_binder:update(delta)
 
 				game_stats.update (delta, self.object)
 
-				-- апдейт погоды
+				-- Р°РїРґРµР№С‚ РїРѕРіРѕРґС‹
 				self.weather_manager:update()
 
-				-- апдейт схемы детектора
+				-- Р°РїРґРµР№С‚ СЃС…РµРјС‹ РґРµС‚РµРєС‚РѕСЂР°
 				--self.actor_detector:update()
 
-				--' Апдейт саундменеджера
+				--' РђРїРґРµР№С‚ СЃР°СѓРЅРґРјРµРЅРµРґР¶РµСЂР°
 				xr_sound.update(self.object:id())
 
-				--' Проверка потери жизни
+				--' РџСЂРѕРІРµСЂРєР° РїРѕС‚РµСЂРё Р¶РёР·РЅРё
 --[[
 				if self.object.health - lasthealth > 0.001 or
 					 self.object.health - lasthealth < -0.001 then
@@ -269,14 +269,14 @@ function actor_binder:update(delta)
 								lasttime = game.time()
 				end
 ]]
-				-- Обновление отключения ввода с клавиатуры.
+				-- РћР±РЅРѕРІР»РµРЅРёРµ РѕС‚РєР»СЋС‡РµРЅРёСЏ РІРІРѕРґР° СЃ РєР»Р°РІРёР°С‚СѓСЂС‹.
 				if self.st.disable_input_time ~= nil and
 					 game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle
 				then
 								 level.enable_input()
 								self.st.disable_input_time = nil
 				end
-				-- Обновление сна с переносом чувака в указанную позицию
+				-- РћР±РЅРѕРІР»РµРЅРёРµ СЃРЅР° СЃ РїРµСЂРµРЅРѕСЃРѕРј С‡СѓРІР°РєР° РІ СѓРєР°Р·Р°РЅРЅСѓСЋ РїРѕР·РёС†РёСЋ
 				if self.st.sleep_relocate_time ~= nil and
 					 game.get_game_time():diffSec(self.st.sleep_relocate_time) >= self.st.sleep_relocate_idle
 				then
@@ -285,7 +285,7 @@ function actor_binder:update(delta)
 								self.object:set_actor_direction(dir:getH())
 								self.st.sleep_relocate_time = nil
 				end
-		-- Апдейт прятание оружия игрока во время диалога
+		-- РђРїРґРµР№С‚ РїСЂСЏС‚Р°РЅРёРµ РѕСЂСѓР¶РёСЏ РёРіСЂРѕРєР° РІРѕ РІСЂРµРјСЏ РґРёР°Р»РѕРіР°
 		if self.object:is_talking() then
 			if self.weapon_hide_in_dialog == false then
 				--printf("PL:HIDE_D1 ---> self.weapon_hide = [%s] weapon_hide = [%s]", tostring(self.weapon_hide), tostring(weapon_hide))
@@ -303,7 +303,7 @@ function actor_binder:update(delta)
 				end
 
 
-				-- Апдейт прятание оружия игрока в зоне sr_no_weapon
+				-- РђРїРґРµР№С‚ РїСЂСЏС‚Р°РЅРёРµ РѕСЂСѓР¶РёСЏ РёРіСЂРѕРєР° РІ Р·РѕРЅРµ sr_no_weapon
 				if check_for_weapon_hide_by_zones() == true then
 					--printf("weapon_hide1 = [%s]", tostring(weapon_hide))
 								if self.weapon_hide == false then
@@ -322,7 +322,7 @@ function actor_binder:update(delta)
 								end
 				end
 
-				-- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
+				-- РѕР±РЅРѕРІР»РµРЅРёРµ СЂРµСЃС‚СЂРёРєС‚РѕСЂРѕРІ, РєРѕС‚РѕСЂС‹Рµ РїРѕРґ Р»РѕРіРёРєРѕР№, СЃСЂР°Р±Р°С‚С‹РІР°РµС‚ С‡РµСЂРµР· РёРЅС‚РµСЂРІР°Р»С‹ РІСЂРµРјРµРЅРё
 				if self.next_restrictors_update_time < time then
 
 								self.next_restrictors_update_time = time + 200
@@ -330,14 +330,14 @@ function actor_binder:update(delta)
 								self.task_manager:update()
 				end
 
-				-- обновление постпроцессов
+				-- РѕР±РЅРѕРІР»РµРЅРёРµ РїРѕСЃС‚РїСЂРѕС†РµСЃСЃРѕРІ
 				if post_process ~= 0 then
 								if post_process:update () == true then
 									 post_process = 0
 								end
 				end
 
-				-- обновление пси-антенны
+				-- РѕР±РЅРѕРІР»РµРЅРёРµ РїСЃРё-Р°РЅС‚РµРЅРЅС‹
 				if sr_psy_antenna.psy_antenna then
 								sr_psy_antenna.psy_antenna:update(delta)
 				end
@@ -364,7 +364,7 @@ function actor_binder:update(delta)
 									"]")
 	end]]--
 
-	--' Вывод сообщения о большой радиации
+	--' Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ Рѕ Р±РѕР»СЊС€РѕР№ СЂР°РґРёР°С†РёРё
 	if self.object.radiation >= 0.7 then
 			local hud = get_hud()
 			local custom_static = hud:GetCustomStatic("cs_radiation_danger")
@@ -456,11 +456,11 @@ function actor_binder:save(packet)
 
 				object_binder.save(self, packet)
 
-				--' Сохраняем уровень сложности
+				--' РЎРѕС…СЂР°РЅСЏРµРј СѓСЂРѕРІРµРЅСЊ СЃР»РѕР¶РЅРѕСЃС‚Рё
 				packet:w_u8(level.get_game_difficulty())
 
 
-				--' Сохраняем данные об отключенном вводе
+				--' РЎРѕС…СЂР°РЅСЏРµРј РґР°РЅРЅС‹Рµ РѕР± РѕС‚РєР»СЋС‡РµРЅРЅРѕРј РІРІРѕРґРµ
 				if self.st.disable_input_time == nil then
 								packet:w_bool(false)
 				else
@@ -477,7 +477,7 @@ function actor_binder:save(packet)
 
 		packet:w_bool(sim_board.get_sim_board().simulation_started)
 
-				-- Сохранение списка ожидания на команду атаки от игрока
+				-- РЎРѕС…СЂР°РЅРµРЅРёРµ СЃРїРёСЃРєР° РѕР¶РёРґР°РЅРёСЏ РЅР° РєРѕРјР°РЅРґСѓ Р°С‚Р°РєРё РѕС‚ РёРіСЂРѕРєР°
 				local n = 0
 				for k,v in pairs(sim_combat.wait_for_combat) do
 								n = n + 1
@@ -519,7 +519,7 @@ function actor_binder:load(reader)
 
 				object_binder.load(self, reader)
 
-				--' Загружаем уровень сложности
+				--' Р—Р°РіСЂСѓР¶Р°РµРј СѓСЂРѕРІРµРЅСЊ СЃР»РѕР¶РЅРѕСЃС‚Рё
 				local game_difficulty = reader:r_u8()
 				printf("load game_difficulty %s", tostring(game_difficulty))
 				get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
@@ -538,7 +538,7 @@ function actor_binder:load(reader)
 
 		sim_board.get_sim_board().simulation_started = reader:r_bool()
 
-				-- Загрузка списка ожидания на команду атаки от игрока
+				-- Р—Р°РіСЂСѓР·РєР° СЃРїРёСЃРєР° РѕР¶РёРґР°РЅРёСЏ РЅР° РєРѕРјР°РЅРґСѓ Р°С‚Р°РєРё РѕС‚ РёРіСЂРѕРєР°
 				local n = reader:r_u8()
 				sim_combat.wait_for_combat = {}
 				for i = 1,n do
@@ -568,7 +568,7 @@ function actor_binder:load(reader)
 end
 ----------------------------------------------------------------------------------------------------------------------
 
---старт префетча звуков
+--СЃС‚Р°СЂС‚ РїСЂРµС„РµС‚С‡Р° Р·РІСѓРєРѕРІ
 --if string.find(command_line(), "-noprefetch") == nil then
 --        sound_prefetch.prefetch_sounds()
 --end

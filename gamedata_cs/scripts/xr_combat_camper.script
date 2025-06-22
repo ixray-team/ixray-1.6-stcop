@@ -1,7 +1,7 @@
 --[[----------------------------------------------------------------------------------------------------------
-Боевая схема кемпера, оторванная от поведенческой схемы кемпера.
-Просто сидеть и стрелять, если враг дальше какого-то расстояния
-Чугай Александр
+Р‘РѕРµРІР°СЏ СЃС…РµРјР° РєРµРјРїРµСЂР°, РѕС‚РѕСЂРІР°РЅРЅР°СЏ РѕС‚ РїРѕРІРµРґРµРЅС‡РµСЃРєРѕР№ СЃС…РµРјС‹ РєРµРјРїРµСЂР°.
+РџСЂРѕСЃС‚Рѕ СЃРёРґРµС‚СЊ Рё СЃС‚СЂРµР»СЏС‚СЊ, РµСЃР»Рё РІСЂР°Рі РґР°Р»СЊС€Рµ РєР°РєРѕРіРѕ-С‚Рѕ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 ------------------------------------------------------------------------------------------------------------]]
 
 local base = xr_evaluators_id.combat_camper_base
@@ -85,7 +85,7 @@ function action_look_around:reset()
 	self.forget_time     = device():time_global() + 30000
 	self.change_dir_time = device():time_global() + 15000
 
-	-- если врага мы ещё не видели вообще, то всё равно повернуться к нему
+	-- РµСЃР»Рё РІСЂР°РіР° РјС‹ РµС‰С‘ РЅРµ РІРёРґРµР»Рё РІРѕРѕР±С‰Рµ, С‚Рѕ РІСЃС‘ СЂР°РІРЅРѕ РїРѕРІРµСЂРЅСѓС‚СЊСЃСЏ Рє РЅРµРјСѓ
 	if not self.st.last_seen_pos then
 		self.st.last_seen_pos = self.object:best_enemy():position()
 	end
@@ -124,7 +124,7 @@ function action_look_around:finalize()
 	self.st.camper_combat_action = false
 end
 
--- Внимание: вызывается во всех actions
+-- Р’РЅРёРјР°РЅРёРµ: РІС‹Р·С‹РІР°РµС‚СЃСЏ РІРѕ РІСЃРµС… actions
 function action_look_around:hit_callback( obj, amount, local_direction, who, bone_index )
 	if who == nil or not self.st.camper_combat_action then
 		return
@@ -132,7 +132,7 @@ function action_look_around:hit_callback( obj, amount, local_direction, who, bon
 
 	local be = self.object and self.object:best_enemy()
 
-	-- если получили хит от текущего врага, то мы знаем, где он; поворачивамся к нему
+	-- РµСЃР»Рё РїРѕР»СѓС‡РёР»Рё С…РёС‚ РѕС‚ С‚РµРєСѓС‰РµРіРѕ РІСЂР°РіР°, С‚Рѕ РјС‹ Р·РЅР°РµРј, РіРґРµ РѕРЅ; РїРѕРІРѕСЂР°С‡РёРІР°РјСЃСЏ Рє РЅРµРјСѓ
 	if be and who:id() == be:id() then
 --		printf( "HIT CALLBACK!!!!!!!!!" )
 
@@ -162,7 +162,7 @@ function add_to_binder( npc, ini, st, planner )
 	action:add_effect      ( world_property( prop_see,                       true  ) )
 	planner:add_action( act_look_around, action )
 
-	-- подписываем один, работает во всех!
+	-- РїРѕРґРїРёСЃС‹РІР°РµРј РѕРґРёРЅ, СЂР°Р±РѕС‚Р°РµС‚ РІРѕ РІСЃРµС…!
 	xr_logic.subscribe_action_for_events( npc, st, action )
 
 	st.camper_combat_action = false

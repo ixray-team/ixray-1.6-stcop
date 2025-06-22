@@ -1,6 +1,6 @@
 
 class "survival_zone"
---' инициализация объекта класса
+--' РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р° РєР»Р°СЃСЃР°
 function survival_zone:__init( obj, storage )
 
 	self.object = obj
@@ -8,7 +8,7 @@ function survival_zone:__init( obj, storage )
 	
 	
 end
---' инициализация схемы поведения
+--' РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС…РµРјС‹ РїРѕРІРµРґРµРЅРёСЏ
 function survival_zone:reset_scheme()
 	self.is_actor_inside = nil
 	self.spawned_obj_table = {}
@@ -65,7 +65,7 @@ function survival_zone:update(delta)
 		self:check_for_spawn_new_stalker()
 		self:check_for_release_corpses()
 	end	
-	--' выполняем архитектурное требование
+	--' РІС‹РїРѕР»РЅСЏРµРј Р°СЂС…РёС‚РµРєС‚СѓСЂРЅРѕРµ С‚СЂРµР±РѕРІР°РЅРёРµ
 	if xr_logic.try_switch_to_another_section( self.object, self.st, db.actor ) 
     then
 		return
@@ -115,7 +115,7 @@ function survival_zone:check_for_release_corpses()
 end
 
 
---' функция, осуществляющая вызов начала сцены когда персонаж входит в пространственный ограничитель
+--' С„СѓРЅРєС†РёСЏ, РѕСЃСѓС‰РµСЃС‚РІР»СЏСЋС‰Р°СЏ РІС‹Р·РѕРІ РЅР°С‡Р°Р»Р° СЃС†РµРЅС‹ РєРѕРіРґР° РїРµСЂСЃРѕРЅР°Р¶ РІС…РѕРґРёС‚ РІ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµРЅРЅС‹Р№ РѕРіСЂР°РЅРёС‡РёС‚РµР»СЊ
 
 function add_to_binder(npc, ini, scheme, section, storage)
 
@@ -123,7 +123,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = survival_zone(npc, storage)
 
-	--' Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	--' Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
 end

@@ -1,13 +1,13 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Схема встречи двух сталкеров
---	автор: Диденко Руслан (Stohe)
+--	РЎС…РµРјР° РІСЃС‚СЂРµС‡Рё РґРІСѓС… СЃС‚Р°Р»РєРµСЂРѕРІ
+--	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------------------------------------
 --Evaluators
 ----------------------------------------------------------------------------------------------------------------------
---' Возвращает есть ли у нас контакт с другим сталкером
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РµСЃС‚СЊ Р»Рё Сѓ РЅР°СЃ РєРѕРЅС‚Р°РєС‚ СЃ РґСЂСѓРіРёРј СЃС‚Р°Р»РєРµСЂРѕРј
 class "evaluator_contact" (property_evaluator)
 function evaluator_contact:__init(name, storage) super (nil, name)
 	self.a = storage
@@ -46,7 +46,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 --Actions
 ----------------------------------------------------------------------------------------------------------------------
---' Приглашение к тороговле
+--' РџСЂРёРіР»Р°С€РµРЅРёРµ Рє С‚РѕСЂРѕРіРѕРІР»Рµ
 class "action_meet_wait" (action_base)
 function action_meet_wait:__init (npc_name,action_name, storage, char_ini) super (nil, action_name)
 	self.char_ini = char_ini
@@ -56,7 +56,7 @@ function action_meet_wait:initialize()
 	action_base.initialize(self)
 	self.object:set_desired_position()
 	self.object:set_desired_direction()
-	-- кешируемые данные
+	-- РєРµС€РёСЂСѓРµРјС‹Рµ РґР°РЅРЅС‹Рµ
 	self.sound = "nil"
 
 	self.start_wait_time = nil
@@ -87,7 +87,7 @@ function action_meet_wait:execute ()
 	    end
 	end
 
-	--' Если мы уже были в диалоге с персонажем - фразы отыгрывать не надо
+	--' Р•СЃР»Рё РјС‹ СѓР¶Рµ Р±С‹Р»Рё РІ РґРёР°Р»РѕРіРµ СЃ РїРµСЂСЃРѕРЅР°Р¶РµРј - С„СЂР°Р·С‹ РѕС‚С‹РіСЂС‹РІР°С‚СЊ РЅРµ РЅР°РґРѕ
     if self.was_dialog == true then
         return
     else
@@ -100,7 +100,7 @@ function action_meet_wait:execute ()
         if self.start_wait_time == nil then
             self.start_wait_time = time_global()
 
-            --' Здороваемся.
+            --' Р—РґРѕСЂРѕРІР°РµРјСЃСЏ.
             if isWeapon(db.actor:active_item()) and
                self.object:relation(db.actor) ~= game_object.friend
             then
@@ -126,7 +126,7 @@ function action_meet_wait:execute ()
             end
             self.last_sound_played = true
         else
-            --' Отыгрываем звук
+            --' РћС‚С‹РіСЂС‹РІР°РµРј Р·РІСѓРє
             if meet_manager.sound ~= "nil" then
                 xr_sound.set_sound_play(self.object:id(), meet_manager.sound)
             end
@@ -148,19 +148,19 @@ function Cmeet_manager:__init(npc, storage)
 	self.startdialog = nil
 end
 function Cmeet_manager:update()
-	-- стартовый диалог
+	-- СЃС‚Р°СЂС‚РѕРІС‹Р№ РґРёР°Р»РѕРі
 	if self.a.meet_dialog ~= nil then
 		local tmp = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.meet_dialog)
 		if self.startdialog ~= tmp then
 			self.startdialog = tmp
 			--printf("*DIALOGS %s* SET [%s]", self.npc:name(), tostring(tmp))
 			if tmp == nil or tmp == "nil" then
-				-- восстановление начального
+				-- РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕРіРѕ
 				--printf("RESTORE")
 				self.npc:restore_default_start_dialog()
 			else
 				--printf("SET %s", tmp)
-				-- установка нового
+				-- СѓСЃС‚Р°РЅРѕРІРєР° РЅРѕРІРѕРіРѕ
 				self.npc:set_start_dialog(tmp)
 				if self.npc:is_talking() then
 					db.actor:run_talk_dialog(self.npc, self.a.allow_break)
@@ -241,7 +241,7 @@ function Cmeet_manager:update()
             end
         end
     end
-	-- Если актер говорит, и говорит не с нами, то мы не должны говорить звуков.
+	-- Р•СЃР»Рё Р°РєС‚РµСЂ РіРѕРІРѕСЂРёС‚, Рё РіРѕРІРѕСЂРёС‚ РЅРµ СЃ РЅР°РјРё, С‚Рѕ РјС‹ РЅРµ РґРѕР»Р¶РЅС‹ РіРѕРІРѕСЂРёС‚СЊ Р·РІСѓРєРѕРІ.
 	--if db.actor:is_talking() then
 	--	self.sound = "nil"
 	--end
@@ -343,7 +343,7 @@ end
 function Cmeet_manager:process_use()
 	local is_talking = self.npc:is_talking()
 --	printf("MM1 %s %s", self.npc:name(), tostring(is_talking))
-	-- запрещаем юзать спящих
+	-- Р·Р°РїСЂРµС‰Р°РµРј СЋР·Р°С‚СЊ СЃРїСЏС‰РёС…
 	if xr_sleeper.is_npc_asleep(self.npc) then
 		self.npc:disable_talk()
 		self.disable_talk_weapon = false
@@ -364,7 +364,7 @@ function Cmeet_manager:process_use()
 		t = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.use)
 		self.disable_talk_weapon = false
 	end
-	-- проверка по дистанции
+	-- РїСЂРѕРІРµСЂРєР° РїРѕ РґРёСЃС‚Р°РЅС†РёРё
 --	printf("MM2 %s %s", self.npc:name(), tostring(t))
 	if db.storage[self.npc:id()].robbery_zone_id ~= nil then return end
 --[[
@@ -439,12 +439,12 @@ end
 
 
 ------------
--- Вызывается только в начале на чтении логики, создает экшены, эвалуаторы и производит
--- первичную настройку.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ РЅР°С‡Р°Р»Рµ РЅР° С‡С‚РµРЅРёРё Р»РѕРіРёРєРё, СЃРѕР·РґР°РµС‚ СЌРєС€РµРЅС‹, СЌРІР°Р»СѓР°С‚РѕСЂС‹ Рё РїСЂРѕРёР·РІРѕРґРёС‚
+-- РїРµСЂРІРёС‡РЅСѓСЋ РЅР°СЃС‚СЂРѕР№РєСѓ.
 function set_meet(npc, ini, scheme, section)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 end
--- Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ РЅР° РїРµСЂРµРєР»СЋС‡РµРЅРёРё РЅР° РЅРѕРІСѓСЋ СЃРµРєС†РёСЋ. РџСЂРѕРёР·РІРѕРґРёС‚ РІС‹С‡РёС‚С‹РІР°РЅРёРµ РЅР°СЃС‚СЂРѕРµРє РёР· С‚РµРєСѓС‰РµР№ СЃРµРєС†РёРё.
 function reset_meet(npc, scheme, st, section)
 	local meet_section
 --	printf("[%s]", utils.to_str(st.section_logic))
@@ -463,7 +463,7 @@ function reset_meet(npc, scheme, st, section)
 		init_meet(npc, st.ini, meet_section, st.meet, scheme)
 	end
 end
--- Функция чтения настроек. В нее передается секция, откуда их нужно читать.
+-- Р¤СѓРЅРєС†РёСЏ С‡С‚РµРЅРёСЏ РЅР°СЃС‚СЂРѕРµРє. Р’ РЅРµРµ РїРµСЂРµРґР°РµС‚СЃСЏ СЃРµРєС†РёСЏ, РѕС‚РєСѓРґР° РёС… РЅСѓР¶РЅРѕ С‡РёС‚Р°С‚СЊ.
 function init_meet(npc, ini, section, st, scheme)
 	--printf("MEET SECTION [%s][%s]", tostring(section), tostring(scheme))
 
@@ -475,7 +475,7 @@ function init_meet(npc, ini, section, st, scheme)
 
 	st.meet_section = utils.tostring(section)
 
-	-- Устанавливаем дефолты
+	-- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РґРµС„РѕР»С‚С‹
 	local def = {}
 	local npc_community = npc:character_community()
 	if tostring(scheme) == "nil" then
@@ -538,7 +538,7 @@ function init_meet(npc, ini, section, st, scheme)
 
 
 	if tostring(section) == "nil" then
-		-- Загружаем дефолты!
+		-- Р—Р°РіСЂСѓР¶Р°РµРј РґРµС„РѕР»С‚С‹!
 		st.meet_state		= parse_data(npc, def.meet_state)
 		st.meet_state_wpn	= parse_data(npc, def.meet_state_wpn)
 		st.victim			= parse_data(npc, def.victim)
@@ -594,7 +594,7 @@ function init_meet(npc, ini, section, st, scheme)
 
 	--print_table(st)
 
-	-- Проверяем включать ли обижание на заюзывание
+	-- РџСЂРѕРІРµСЂСЏРµРј РІРєР»СЋС‡Р°С‚СЊ Р»Рё РѕР±РёР¶Р°РЅРёРµ РЅР° Р·Р°СЋР·С‹РІР°РЅРёРµ
 	if st.abuse == "true" then
 		xr_abuse.enable_abuse(npc)
 	else
@@ -606,7 +606,7 @@ function init_meet(npc, ini, section, st, scheme)
 	else
 		npc:disable_trade()
 	end
-	-- флажок, что функция хотя бы раз вызывалась
+	-- С„Р»Р°Р¶РѕРє, С‡С‚Рѕ С„СѓРЅРєС†РёСЏ С…РѕС‚СЏ Р±С‹ СЂР°Р· РІС‹Р·С‹РІР°Р»Р°СЃСЊ
 	st.meet_set = true
 end
 
@@ -720,8 +720,8 @@ function parse_syn_data(npc,s)
     return t
 end
 
--- ДИАЛОГИ ПОКА НЕ ТРОГАЕМ!!!
---' Считывание доступных диалогов игрока.
+-- Р”РРђР›РћР“Р РџРћРљРђ РќР• РўР РћР“РђР•Рњ!!!
+--' РЎС‡РёС‚С‹РІР°РЅРёРµ РґРѕСЃС‚СѓРїРЅС‹С… РґРёР°Р»РѕРіРѕРІ РёРіСЂРѕРєР°.
 function set_actor_dialogs(npc, ini, name, dialog_section)
 	printf("*ACTOR_DIALOGS*")
 	if dialog_section == nil then return end
@@ -730,7 +730,7 @@ function set_actor_dialogs(npc, ini, name, dialog_section)
 	local actor_dialogs_string = utils.cfg_get_string(ini, dialog_section, "id", npc, false, "")
 	if actor_dialogs_string ~= nil then
 		printf("*ACTOR_DIALOGS*: actor_dialogs=%s", actor_dialogs_string)
-		--' Создаем в массиве запись где будут храниться считанные диалоги.
+		--' РЎРѕР·РґР°РµРј РІ РјР°СЃСЃРёРІРµ Р·Р°РїРёСЃСЊ РіРґРµ Р±СѓРґСѓС‚ С…СЂР°РЅРёС‚СЊСЃСЏ СЃС‡РёС‚Р°РЅРЅС‹Рµ РґРёР°Р»РѕРіРё.
 		db.storage[npc:id()].actor_dialogs = parse_names(actor_dialogs_string)
 	else
 		printf("*ACTOR_DIALOGS*: actor_dialogs=nil")
@@ -739,17 +739,17 @@ function set_actor_dialogs(npc, ini, name, dialog_section)
 	local actor_disable = utils.cfg_get_string(ini, dialog_section, "disable", npc, false, "")
 	if actor_disable ~= nil then
 		printf("*ACTOR_DIALOGS*: actor_disable=%s", actor_disable)
-		--' Создаем в массиве запись где будут храниться считанные диалоги.
+		--' РЎРѕР·РґР°РµРј РІ РјР°СЃСЃРёРІРµ Р·Р°РїРёСЃСЊ РіРґРµ Р±СѓРґСѓС‚ С…СЂР°РЅРёС‚СЊСЃСЏ СЃС‡РёС‚Р°РЅРЅС‹Рµ РґРёР°Р»РѕРіРё.
 		db.storage[npc:id()].actor_disable = parse_names(actor_disable)
 	else
 		printf("*ACTOR_DIALOGS*: actor_disable=nil")
 	end
 end
---' ВНИМАНИЕ: Эта функция вызывается и для сталкеров, и для монстров!
+--' Р’РќРРњРђРќРР•: Р­С‚Р° С„СѓРЅРєС†РёСЏ РІС‹Р·С‹РІР°РµС‚СЃСЏ Рё РґР»СЏ СЃС‚Р°Р»РєРµСЂРѕРІ, Рё РґР»СЏ РјРѕРЅСЃС‚СЂРѕРІ!
 function dialog_manager_reset(npc, stype)
 	if stype == modules.stype_mobile then
 		printf("*DIALOGS*: dialog_manager_reset: npc:name='%s'", npc:name())
-		--' Смена стартового диалога
+		--' РЎРјРµРЅР° СЃС‚Р°СЂС‚РѕРІРѕРіРѕ РґРёР°Р»РѕРіР°
 		local overrides = xr_logic.generic_scheme_overrides(npc)
 		if overrides ~= nil then
 			if overrides.meet_dialog then
@@ -770,7 +770,7 @@ function disable_scheme(npc, scheme)
 	db.storage[npc:id()].actor_disable = nil
 end
 
---- Находится ли чувак в данный момент в состоянии мита
+--- РќР°С…РѕРґРёС‚СЃСЏ Р»Рё С‡СѓРІР°Рє РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РІ СЃРѕСЃС‚РѕСЏРЅРёРё РјРёС‚Р°
 function is_meet(npc)
 	local manager = npc:motivation_action_manager()
 	if manager and manager:initialized() then
@@ -781,7 +781,7 @@ function is_meet(npc)
 	end
 	return false
 end
--- Функция проверяет не мешает ли персонажу говорить с нами оружие
+-- Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂСЏРµС‚ РЅРµ РјРµС€Р°РµС‚ Р»Рё РїРµСЂСЃРѕРЅР°Р¶Сѓ РіРѕРІРѕСЂРёС‚СЊ СЃ РЅР°РјРё РѕСЂСѓР¶РёРµ
 function cannot_talk_by_weapon(npc)
 	local st = db.storage[npc:id()].meet
 	if st then

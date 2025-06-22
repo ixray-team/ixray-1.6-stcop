@@ -1,4 +1,4 @@
---' Проверяем является ли указанный чувак командиром отряда.
+--' РџСЂРѕРІРµСЂСЏРµРј СЏРІР»СЏРµС‚СЃСЏ Р»Рё СѓРєР°Р·Р°РЅРЅС‹Р№ С‡СѓРІР°Рє РєРѕРјР°РЅРґРёСЂРѕРј РѕС‚СЂСЏРґР°.
 function is_squad_leader(actor, npc)
 	--printf("%s squad_leader", npc:name())
 	local squad = db.storage[npc:id()].squad_obj
@@ -10,7 +10,7 @@ function is_squad_leader(actor, npc)
 	return npc:id() == squad.commander_id
 end
 
---' Пытаемся инициализировать квесты отряда
+--' РџС‹С‚Р°РµРјСЃСЏ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ РєРІРµСЃС‚С‹ РѕС‚СЂСЏРґР°
 function init_squad_task(actor, npc, p1, p2)
 	local squad = db.storage[npc:id()].squad_obj
 
@@ -21,7 +21,7 @@ function init_squad_task(actor, npc, p1, p2)
 	squad:init_squad_task()
 end
 
---' Есть ли у отряда случайные задания
+--' Р•СЃС‚СЊ Р»Рё Сѓ РѕС‚СЂСЏРґР° СЃР»СѓС‡Р°Р№РЅС‹Рµ Р·Р°РґР°РЅРёСЏ
 function squad_has_tasks(npc, actor, p1, p2)
 	local squad = db.storage[npc:id()].squad_obj
 
@@ -32,11 +32,11 @@ function squad_has_tasks(npc, actor, p1, p2)
 		return false
 	end
 
-	-- Нужно взять sim_combat сквада
+	-- РќСѓР¶РЅРѕ РІР·СЏС‚СЊ sim_combat СЃРєРІР°РґР°
 	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager
-	-- У него взять текущее состояние
+	-- РЈ РЅРµРіРѕ РІР·СЏС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	local combat_stage = combat.squads[squad.squad_id]._stage
-	-- Таск выдавать только если оно равно idle
+	-- РўР°СЃРє РІС‹РґР°РІР°С‚СЊ С‚РѕР»СЊРєРѕ РµСЃР»Рё РѕРЅРѕ СЂР°РІРЅРѕ idle
 	if combat_stage ~= "idle" then
 		return false
 	end
@@ -50,7 +50,7 @@ function squad_has_tasks(npc, actor, p1, p2)
 	return false
 	--return #squad.random_tasks > 0
 end
---' Нет ли у отряда случайных заданий
+--' РќРµС‚ Р»Рё Сѓ РѕС‚СЂСЏРґР° СЃР»СѓС‡Р°Р№РЅС‹С… Р·Р°РґР°РЅРёР№
 function squad_hasnt_tasks(npc, actor, p1, p2)
 	local squad = db.storage[npc:id()].squad_obj
 
@@ -61,11 +61,11 @@ function squad_hasnt_tasks(npc, actor, p1, p2)
 		return true
 	end
 
-	-- Нужно взять sim_combat сквада
+	-- РќСѓР¶РЅРѕ РІР·СЏС‚СЊ sim_combat СЃРєРІР°РґР°
 	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager
-	-- У него взять текущее состояние
+	-- РЈ РЅРµРіРѕ РІР·СЏС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	local combat_stage = combat.squads[squad.squad_id]._stage
-	-- Таск выдавать только если оно равно idle
+	-- РўР°СЃРє РІС‹РґР°РІР°С‚СЊ С‚РѕР»СЊРєРѕ РµСЃР»Рё РѕРЅРѕ СЂР°РІРЅРѕ idle
 	if combat_stage ~= "idle" then
 		return true
 	end
@@ -185,7 +185,7 @@ function show_description(npc, dialog_name, phrase_id)
 	end
 	return ""
 end
---' Есть ли у отряда случайные задания на захват смарта
+--' Р•СЃС‚СЊ Р»Рё Сѓ РѕС‚СЂСЏРґР° СЃР»СѓС‡Р°Р№РЅС‹Рµ Р·Р°РґР°РЅРёСЏ РЅР° Р·Р°С…РІР°С‚ СЃРјР°СЂС‚Р°
 function squad_has_capture_tasks(actor, npc, p1, p2, p3)
 	local squad = db.storage[npc:id()].squad_obj
 
@@ -201,7 +201,7 @@ function squad_has_capture_tasks(actor, npc, p1, p2, p3)
 	end
 --	return squad.random_tasks[tonumber(p3)-10] ~= nil
 end
---' Выдать таск на захват смарта
+--' Р’С‹РґР°С‚СЊ С‚Р°СЃРє РЅР° Р·Р°С…РІР°С‚ СЃРјР°СЂС‚Р°
 function give_squad_capture_task(npc, actor, p1, p2)
 	local squad = db.storage[npc:id()].squad_obj
 
@@ -319,11 +319,11 @@ function transfer_recovered_item(actor, npc)
 	end
 end
 
---' Есть ли награда
+--' Р•СЃС‚СЊ Р»Рё РЅР°РіСЂР°РґР°
 function rewarder_has_reward(npc, actor)
 	local tm = task_manager.get_task_manager()
 
-	--' Определяем за какую группировку отвечает нпс
+	--' РћРїСЂРµРґРµР»СЏРµРј Р·Р° РєР°РєСѓСЋ РіСЂСѓРїРїРёСЂРѕРІРєСѓ РѕС‚РІРµС‡Р°РµС‚ РЅРїСЃ
 	local community = nil
 	local npc_id = npc:id()
 	for k,v in pairs(tm.rewarders) do
@@ -346,11 +346,11 @@ function rewarder_has_reward(npc, actor)
 	return #tm.rewards[community] > 0
 end
 
---' Нет ли награды
+--' РќРµС‚ Р»Рё РЅР°РіСЂР°РґС‹
 function rewarder_hasnt_reward(npc, actor)
 	local tm = task_manager.get_task_manager()
 
-	--' Определяем за какую группировку отвечает нпс
+	--' РћРїСЂРµРґРµР»СЏРµРј Р·Р° РєР°РєСѓСЋ РіСЂСѓРїРїРёСЂРѕРІРєСѓ РѕС‚РІРµС‡Р°РµС‚ РЅРїСЃ
 	local community = nil
 	local npc_id = npc:id()
 	for k,v in pairs(tm.rewarders) do
@@ -371,11 +371,11 @@ function rewarder_hasnt_reward(npc, actor)
 	return #tm.rewards[community] == 0
 end
 
---' Выдать награду
+--' Р’С‹РґР°С‚СЊ РЅР°РіСЂР°РґСѓ
 function rewarder_give_reward(npc, actor, p1, p2)
 	local tm = task_manager.get_task_manager()
 
-	--' Определяем за какую группировку отвечает нпс
+	--' РћРїСЂРµРґРµР»СЏРµРј Р·Р° РєР°РєСѓСЋ РіСЂСѓРїРїРёСЂРѕРІРєСѓ РѕС‚РІРµС‡Р°РµС‚ РЅРїСЃ
 	local community = nil
 	local npc_id = npc:id()
 	for k,v in pairs(tm.rewarders) do
@@ -386,7 +386,7 @@ function rewarder_give_reward(npc, actor, p1, p2)
 	end
 	local amount_money = 0
 	local ancillary_item_table = {}
-	--' Выдаем награды
+	--' Р’С‹РґР°РµРј РЅР°РіСЂР°РґС‹
 	for k,v in pairs(tm.rewards[community]) do
 		if v.money ~= nil then
 			if type(v.money) == "number" then
@@ -410,7 +410,7 @@ function rewarder_give_reward(npc, actor, p1, p2)
 	for k,v in pairs(ancillary_item_table) do
 		dialogs.relocate_item_section(npc, k, "in", v)
 	end
-	--' Обнуляем список вещей
+	--' РћР±РЅСѓР»СЏРµРј СЃРїРёСЃРѕРє РІРµС‰РµР№
 	tm.rewards[community] = {}
 end
 
@@ -425,10 +425,10 @@ end
 
 
 
---' Пытаемся инициализировать квесты группировки
+--' РџС‹С‚Р°РµРјСЃСЏ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ РєРІРµСЃС‚С‹ РіСЂСѓРїРїРёСЂРѕРІРєРё
 function init_faction_task(actor, npc, p1, p2)
     local tm = task_manager.get_task_manager()
-    --' Определяем за какую группировку отвечает нпс
+    --' РћРїСЂРµРґРµР»СЏРµРј Р·Р° РєР°РєСѓСЋ РіСЂСѓРїРїРёСЂРѕРІРєСѓ РѕС‚РІРµС‡Р°РµС‚ РЅРїСЃ
     local community = nil
     local npc_id = npc:id()
     for k,v in pairs(tm.taskers) do
@@ -447,7 +447,7 @@ function init_faction_task(actor, npc, p1, p2)
 	faction:init_faction_task()
 end
 
---' Выдача квестов мозговым центром группировки!
+--' Р’С‹РґР°С‡Р° РєРІРµСЃС‚РѕРІ РјРѕР·РіРѕРІС‹Рј С†РµРЅС‚СЂРѕРј РіСЂСѓРїРїРёСЂРѕРІРєРё!
 function faction_hasnt_task(npc, actor)
 	return false
 end
@@ -456,10 +456,10 @@ function faction_has_task(npc, actor)
 	return true
 end
 
---' Показываем игроку какие задания он может взять
+--' РџРѕРєР°Р·С‹РІР°РµРј РёРіСЂРѕРєСѓ РєР°РєРёРµ Р·Р°РґР°РЅРёСЏ РѕРЅ РјРѕР¶РµС‚ РІР·СЏС‚СЊ
 function faction_show_task(npc, actor)
     local tm = task_manager.get_task_manager()
-    --' Определяем за какую группировку отвечает нпс
+    --' РћРїСЂРµРґРµР»СЏРµРј Р·Р° РєР°РєСѓСЋ РіСЂСѓРїРїРёСЂРѕРІРєСѓ РѕС‚РІРµС‡Р°РµС‚ РЅРїСЃ
     local community = nil
     local npc_id = npc:id()
     for k,v in pairs(tm.taskers) do
@@ -486,7 +486,7 @@ end
 
 function faction_has_prior(actor, npc, p1, p2, p3)
     local tm = task_manager.get_task_manager()
-    --' Определяем за какую группировку отвечает нпс
+    --' РћРїСЂРµРґРµР»СЏРµРј Р·Р° РєР°РєСѓСЋ РіСЂСѓРїРїРёСЂРѕРІРєСѓ РѕС‚РІРµС‡Р°РµС‚ РЅРїСЃ
     local community = nil
     local npc_id = npc:id()
     for k,v in pairs(tm.taskers) do
@@ -507,7 +507,7 @@ end
 
 function faction_give_prior(npc, actor, p1, p2)
     local tm = task_manager.get_task_manager()
-    --' Определяем за какую группировку отвечает нпс
+    --' РћРїСЂРµРґРµР»СЏРµРј Р·Р° РєР°РєСѓСЋ РіСЂСѓРїРїРёСЂРѕРІРєСѓ РѕС‚РІРµС‡Р°РµС‚ РЅРїСЃ
     local community = nil
     local npc_id = npc:id()
     for k,v in pairs(tm.taskers) do

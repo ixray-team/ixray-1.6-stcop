@@ -88,7 +88,7 @@ function check_light(stalker)
 	end
 
 --'	printf("[check_light %s] alive_passed: light=%s, forced=%s", stalker:name(), tostring(light), tostring(forced))
-    --' Проверка по лайтзонам
+    --' РџСЂРѕРІРµСЂРєР° РїРѕ Р»Р°Р№С‚Р·РѕРЅР°Рј
     if not forced then
 	    for k,v in pairs(light_zones) do
 			light, forced = v:check_stalker(stalker)
@@ -100,13 +100,13 @@ function check_light(stalker)
 
 --'	printf("[check_light %s] lightzone_passed: light=%s, forced=%s", stalker:name(), tostring(light), tostring(forced))
 	if not forced then
-		--' Проверка по времени суток (ночью всегда включено)
+		--' РџСЂРѕРІРµСЂРєР° РїРѕ РІСЂРµРјРµРЅРё СЃСѓС‚РѕРє (РЅРѕС‡СЊСЋ РІСЃРµРіРґР° РІРєР»СЋС‡РµРЅРѕ)
 		local htime = level.get_time_hours()
 		if htime <= 4 or htime >= 22 then
 			light = true
 		end
 	
-		--' Проверка на индор-аутдор (внутри всегда включено)
+		--' РџСЂРѕРІРµСЂРєР° РЅР° РёРЅРґРѕСЂ-Р°СѓС‚РґРѕСЂ (РІРЅСѓС‚СЂРё РІСЃРµРіРґР° РІРєР»СЋС‡РµРЅРѕ)
 		if light == false then
 			if indoor_levels[level.name()] == true then
 				light = true
@@ -115,9 +115,9 @@ function check_light(stalker)
 	end			
 
 --'	printf("[check_light %s] timezone_passed: light=%s, forced=%s", stalker:name(), tostring(light), tostring(forced))
-	--' Проверка по активному действию
+	--' РџСЂРѕРІРµСЂРєР° РїРѕ Р°РєС‚РёРІРЅРѕРјСѓ РґРµР№СЃС‚РІРёСЋ
 	if not forced and light == true then
-		--' Фонарики должны быть выключены у костра
+		--' Р¤РѕРЅР°СЂРёРєРё РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІС‹РєР»СЋС‡РµРЅС‹ Сѓ РєРѕСЃС‚СЂР°
 		local scheme = db.storage[stalker:id()].active_scheme
 		if scheme == "kamp" or
 		   scheme == "camper" 
@@ -129,7 +129,7 @@ function check_light(stalker)
 
 --'	printf("[check_light %s] scheme_passed: light=%s, forced=%s", stalker:name(), tostring(light), tostring(forced))	
 --	if not forced and light == true then
---		--' Фонарики должны быть выключены в бою. Но если в бою идет поиск врага - то включены.
+--		--' Р¤РѕРЅР°СЂРёРєРё РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІС‹РєР»СЋС‡РµРЅС‹ РІ Р±РѕСЋ. РќРѕ РµСЃР»Рё РІ Р±РѕСЋ РёРґРµС‚ РїРѕРёСЃРє РІСЂР°РіР° - С‚Рѕ РІРєР»СЋС‡РµРЅС‹.
 --		if stalker:best_enemy() ~= nil then
 --			light = false
 --		end				

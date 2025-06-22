@@ -1,5 +1,5 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Проигровка звуков в голове актера
+РџСЂРѕРёРіСЂРѕРІРєР° Р·РІСѓРєРѕРІ РІ РіРѕР»РѕРІРµ Р°РєС‚РµСЂР°
 Tunduk Vladimir aka Sidorovich
 
 --------------------------------------------------------------------------------------------------------------------]]
@@ -116,7 +116,7 @@ end
 ----------------------
 function action_sound2d:play_sounds ()
 
-    --рассчет задержки
+    --СЂР°СЃСЃС‡РµС‚ Р·Р°РґРµСЂР¶РєРё
     local d
     if self.st.delay == self.st.delay_max then
        d = self.st.delay
@@ -125,17 +125,17 @@ function action_sound2d:play_sounds ()
     end       
 
     local actor = db.actor
-    -- если звук моно, то играем только с левого канала и только в жбане актера
+    -- РµСЃР»Рё Р·РІСѓРє РјРѕРЅРѕ, С‚Рѕ РёРіСЂР°РµРј С‚РѕР»СЊРєРѕ СЃ Р»РµРІРѕРіРѕ РєР°РЅР°Р»Р° Рё С‚РѕР»СЊРєРѕ РІ Р¶Р±Р°РЅРµ Р°РєС‚РµСЂР°
     if self.st.stereo == false then
        if self.snd_obj_l ~= nil then
           self.snd_obj_l:play_at_pos (actor, vector ():set (0, 0, 0), d / 1000.0, sound_object.s2d)
        end
     else
-       --если один из каналов отсутсвует, то пинать жестоко звуковика 
+       --РµСЃР»Рё РѕРґРёРЅ РёР· РєР°РЅР°Р»РѕРІ РѕС‚СЃСѓС‚СЃРІСѓРµС‚, С‚Рѕ РїРёРЅР°С‚СЊ Р¶РµСЃС‚РѕРєРѕ Р·РІСѓРєРѕРІРёРєР° 
        if self.snd_obj_l == nil or self.snd_obj_r == nil then
           abort ("Can't play stereo sound because sound file for left or right channel not loaded")  
        end
-       --рассчитаем направления на источники звука для левого и правого лопуха
+       --СЂР°СЃСЃС‡РёС‚Р°РµРј РЅР°РїСЂР°РІР»РµРЅРёСЏ РЅР° РёСЃС‚РѕС‡РЅРёРєРё Р·РІСѓРєР° РґР»СЏ Р»РµРІРѕРіРѕ Рё РїСЂР°РІРѕРіРѕ Р»РѕРїСѓС…Р°
        local pos_l, pos_r = self:get_source_positions ()
        self.snd_obj_l:play_at_pos (actor, pos_l, d / 1000.0, sound_object.s3d)
        self.snd_obj_r:play_at_pos (actor, pos_r, d / 1000.0, sound_object.s3d)
@@ -150,9 +150,9 @@ function action_sound2d:get_source_positions ()
     local dir_right = vector_rotate_y (dir, -45)
     dir_left:normalize ()
     dir_right:normalize ()
-       --рассчитаем высоту 
+       --СЂР°СЃСЃС‡РёС‚Р°РµРј РІС‹СЃРѕС‚Сѓ 
     local pos = actor:position ()
-    pos.y = pos.y + 1.5   --ну низкорослый у нас актер...
+    pos.y = pos.y + 1.5   --РЅСѓ РЅРёР·РєРѕСЂРѕСЃР»С‹Р№ Сѓ РЅР°СЃ Р°РєС‚РµСЂ...
     local pos_l = pos;
     return pos_l:add (dir_left:mul (1.5)), pos:add (dir_right:mul (1.5))
 end
@@ -180,7 +180,7 @@ function add_to_binder( npc, ini, scheme, section, storage )
 
 --	local new_action = 
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events (npc, storage, action_sound2d (npc, storage))
 end
 ----------------------

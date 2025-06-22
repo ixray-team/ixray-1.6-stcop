@@ -327,7 +327,7 @@ end
 function action_robbery:find_commanders_objects()
 	local commanders_table = {}
 
-	-- Переделать выбор командира
+	-- РџРµСЂРµРґРµР»Р°С‚СЊ РІС‹Р±РѕСЂ РєРѕРјР°РЅРґРёСЂР°
 	for kk,vv in pairs(self.st.commanders_table) do
 		local npc_on_job = self.gulag:idNPCOnJob("logic@"..self.st.gulag.."_"..vv)
 		if npc_on_job and db.storage[npc_on_job] then
@@ -342,7 +342,7 @@ function add_to_binder( npc, ini, scheme, section, storage )
 
 	local new_action = action_robbery(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events( npc, storage, new_action )
 end
 
@@ -368,7 +368,7 @@ end
 
 
 
--- А тут я опишу менеджер реакции сквада попавшего в засаду болотной твари.
+-- Рђ С‚СѓС‚ СЏ РѕРїРёС€Сѓ РјРµРЅРµРґР¶РµСЂ СЂРµР°РєС†РёРё СЃРєРІР°РґР° РїРѕРїР°РІС€РµРіРѕ РІ Р·Р°СЃР°РґСѓ Р±РѕР»РѕС‚РЅРѕР№ С‚РІР°СЂРё.
 
 
 class "robbery_manager"
@@ -385,13 +385,16 @@ function robbery_manager:__init ( obj, sr_robbery)
 	self.npc_position = {}
 	self.actor_direction = vector():sub(self.commander_npc:position(),db.actor:position())
 
-	--db.actor:set_actor_direction(-self.actor_direction:getH())	 --level.disable_input())	 --db.actor:hide_weapon())
-	-- считаем отклонение направления командира от оси Х
+	--db.actor:set_actor_direction(-self.actor_direction:getH())
+	 --level.disable_input())
+	 --db.actor:hide_weapon())
+	-- СЃС‡РёС‚Р°РµРј РѕС‚РєР»РѕРЅРµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ РєРѕРјР°РЅРґРёСЂР° РѕС‚ РѕСЃРё РҐ
 	self.yaw = yaw_degree( self.actor_direction,vector():set(0, 0, 1))
 	local vvv = vector_cross(self.actor_direction, vector():set(0, 0, 1))
-		if vvv.y < 0 then			 self.yaw = -self.yaw
+		if vvv.y < 0 then
+			 self.yaw = -self.yaw
 		end
-	-- поворачиваем направления для поиска доступных точек на угол yaw
+	-- РїРѕРІРѕСЂР°С‡РёРІР°РµРј РЅР°РїСЂР°РІР»РµРЅРёСЏ РґР»СЏ РїРѕРёСЃРєР° РґРѕСЃС‚СѓРїРЅС‹С… С‚РѕС‡РµРє РЅР° СѓРіРѕР» yaw
 	self.position = {
 	{dir = vector_rotate_y(vector():set(1, 0, 1),self.yaw),used = nil, vertex = nil, position = nil},
 	{dir = vector_rotate_y(vector():set(1, 0, 4),self.yaw),used = nil, vertex = nil, position = nil},
@@ -537,7 +540,8 @@ function actor_give_money(first_speaker, second_speaker)
 		end
 	end
 	db.actor:give_money(-money)
-	news_manager.relocate_money(db.actor, "out", money)	 --[[  db.actor:inventory_for_each(get_actor_inv))
+	news_manager.relocate_money(db.actor, "out", money)
+	 --[[  db.actor:inventory_for_each(get_actor_inv))
 	local cost = 0
 	local most_expensive_pistol_id = nil
 	local most_expensive_pistol_section = nil

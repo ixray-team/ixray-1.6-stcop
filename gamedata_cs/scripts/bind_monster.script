@@ -5,7 +5,7 @@
 function bind(obj)
 	printf("_bp: monster.bind: name='%s', id='%d'", obj:name(), obj:id())
 
-	-- Для спауна
+	-- Р”Р»СЏ СЃРїР°СѓРЅР°
 	--xr_spawner.spawn_client(obj)
 
 	local new_binder = generic_object_binder(obj)
@@ -27,7 +27,7 @@ end
 function generic_object_binder:reinit()
 	object_binder.reinit(self)
 
-	-- У торговца нет поддержки перемещения
+	-- РЈ С‚РѕСЂРіРѕРІС†Р° РЅРµС‚ РїРѕРґРґРµСЂР¶РєРё РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	if self.object:clsid() ~= clsid.script_trader then
 		self.object:set_patrol_extrapolate_callback(generic_object_binder.extrapolate_callback, self)
 	end
@@ -52,7 +52,7 @@ function generic_object_binder:update(delta)
 	--' printf("_bp: generic_object_binder: UPDATE [name='%s' time=%d]",
 	--'	self.object:name(), time_global())
 
-	-- Апдейт торговли
+	-- РђРїРґРµР№С‚ С‚РѕСЂРіРѕРІР»Рё
 	if self.object:clsid() == clsid.script_trader then
 		trade_manager.update(self.object)
 	end
@@ -68,7 +68,7 @@ function generic_object_binder:update(delta)
 			xr_logic.try_switch_to_another_section(self.object, st[st.active_scheme], db.actor)
 		end
 
-		-- Апдейт отряда
+		-- РђРїРґРµР№С‚ РѕС‚СЂСЏРґР°
 		local squad = db.storage[self.object:id()] and db.storage[self.object:id()].squad_obj
 		if squad ~= nil then
 			if squad.commander_id == self.object:id() then
@@ -114,7 +114,7 @@ function generic_object_binder:update(delta)
 end
 
 function generic_object_binder:extrapolate_callback()
-	-- Проверяем, что объект еще в онлайне
+	-- РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РѕР±СЉРµРєС‚ РµС‰Рµ РІ РѕРЅР»Р°Р№РЅРµ
 	if db.storage[self.object:id()] == nil or
 		 db.storage[self.object:id()].object == nil
 	then
@@ -161,7 +161,7 @@ function generic_object_binder:death_callback(victim, who)
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
 	end
-	--' Наносим небольшой импульс вперед.
+	--' РќР°РЅРѕСЃРёРј РЅРµР±РѕР»СЊС€РѕР№ РёРјРїСѓР»СЊСЃ РІРїРµСЂРµРґ.
 	local h = hit()
 	h.draftsman = self.object
 	h.type = hit.fire_wound
@@ -216,7 +216,7 @@ function generic_object_binder:net_spawn(sobject)
 --	local pos = self.object:position()
 --	printf("net_spawn mpos[%s][%s][%s]", tostring(pos.x), tostring(pos.y), tostring(pos.z))
 
-	--' Кешируем squad
+	--' РљРµС€РёСЂСѓРµРј squad
 	db.storage[self.object:id()].squad_obj = sim_board.get_sim_board().squads[alife():object(self.object:id()).squad_id]
 
 	db.add_obj(self.object)

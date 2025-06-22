@@ -1,6 +1,6 @@
 --[[------------------------------------------------------------------------------------------------
 Helicopter movement
-Андрущенко Иван
+РђРЅРґСЂСѓС‰РµРЅРєРѕ РРІР°РЅ
 
 --------------------------------------------------------------------------------------------------]]
 local state_move = 0
@@ -24,7 +24,7 @@ function heli_move:reset_scheme( loading )
 	printf("heli_move: reset_scheme: %s", self.object:name())
     self.a.signals = {}
     self.heliObject:TurnEngineSound( self.a.engine_sound )
-----------------------------------Вейпоинты - Начало------------------------------------------------
+----------------------------------Р’РµР№РїРѕРёРЅС‚С‹ - РќР°С‡Р°Р»Рѕ------------------------------------------------
 	if not level.patrol_path_exists(self.a.path_move) then
 		abort("Patrol path %s doesnt exist", self.a.path_move)
 	end
@@ -123,10 +123,10 @@ end
 
 function heli_move:save()
 	xr_logic.pstor_store( self.object, "st",  self.state )
-----------------------------------Вейпоинты - Начало------------------------------------------------
+----------------------------------Р’РµР№РїРѕРёРЅС‚С‹ - РќР°С‡Р°Р»Рѕ------------------------------------------------
 	xr_logic.pstor_store( self.object, "li",  self.last_index       or false )
 	xr_logic.pstor_store( self.object, "ni",  self.next_index       or false )
-----------------------------------Вейпоинты - Конец-------------------------------------------------
+----------------------------------Р’РµР№РїРѕРёРЅС‚С‹ - РљРѕРЅРµС†-------------------------------------------------
 	xr_logic.pstor_store( self.object, "wc",  self.was_callback )
 end
 
@@ -218,7 +218,7 @@ end
 
 function heli_move:waypoint_callback( obj, action_type, index )
 
-----------------------------------Вейпоинты - Начало------------------------------------------------
+----------------------------------Р’РµР№РїРѕРёРЅС‚С‹ - РќР°С‡Р°Р»Рѕ------------------------------------------------
 	if not self._flag_to_wp_callback then
         --'printf("heli_pos=[%d;%d;%d]",self.object:position().x,self.object:position().y,self.object:position().z)
         --'printf("dist_to_dest_point=%d",self.heliObject:GetDistanceToDestPosition())
@@ -231,7 +231,7 @@ function heli_move:waypoint_callback( obj, action_type, index )
 			if index ~= -1 then
 				self.last_index = index
 			else
-		--' Выдать коллбек
+		--' Р’С‹РґР°С‚СЊ РєРѕР»Р»Р±РµРє
 		        if self.patrol_move_info[self.last_index] ~= nil then
 			        local signal = self.patrol_move_info[self.last_index]["sig"]
                     if signal ~= nil then
@@ -245,7 +245,7 @@ function heli_move:waypoint_callback( obj, action_type, index )
 		end
 	end
     
-----------------------------------Вейпоинты - Конец-------------------------------------------------
+----------------------------------Р’РµР№РїРѕРёРЅС‚С‹ - РљРѕРЅРµС†-------------------------------------------------
 
 
 --'	printf("Dist To Dest Point: %s", self.heliObject:GetDistanceToDestPosition())
@@ -262,7 +262,7 @@ function add_to_binder( npc, ini, scheme, section, storage )
 
 	local new_action = heli_move( npc, storage )
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events( npc, storage, new_action )
 end
 

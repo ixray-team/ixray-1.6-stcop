@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---  Проверка условий разрешения или запрещения спавна
---  автор: Диденко Руслан (Stohe)
+--  РџСЂРѕРІРµСЂРєР° СѓСЃР»РѕРІРёР№ СЂР°Р·СЂРµС€РµРЅРёСЏ РёР»Рё Р·Р°РїСЂРµС‰РµРЅРёСЏ СЃРїР°РІРЅР°
+--  Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --  TODO:
 ----------------------------------------------------------------------------------------------------------------------
 --[[
@@ -13,7 +13,7 @@ function spawn(npc)
 	xr_spawner.spawner:addList(npc)
 	xr_spawner.spawner:check_spawn(npc.id)
 	
-	--'!! Подумать и убрать нахрен, there could be only one!!!
+	--'!! РџРѕРґСѓРјР°С‚СЊ Рё СѓР±СЂР°С‚СЊ РЅР°С…СЂРµРЅ, there could be only one!!!
 	if char_ini:section_exist ("zone_spawner") then
 	   zone_spawner.add_member (npc)
 	end    
@@ -42,7 +42,7 @@ function object_spawner:__init()
 	self.idle = 60
 end
 function object_spawner:check_spawn(npc_id)
-	---' !!! Тут вставить проверку по кондлисту
+	---' !!! РўСѓС‚ РІСЃС‚Р°РІРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ РїРѕ РєРѕРЅРґР»РёСЃС‚Сѓ
 	local actor = db.actor
 	--print_table(self.list)
 	if actor ~= nil and
@@ -58,7 +58,7 @@ end
 function object_spawner:addList(sobject)
 	local char_ini = sobject:spawn_ini()
 	
-	---' !!! Тут добавить чтение кондлиста
+	---' !!! РўСѓС‚ РґРѕР±Р°РІРёС‚СЊ С‡С‚РµРЅРёРµ РєРѕРЅРґР»РёСЃС‚Р°
 	self.list[sobject.id] = {	id = sobject.id, 
 								on = sobject:can_switch_online(), 
 								off = sobject:can_switch_offline(), 

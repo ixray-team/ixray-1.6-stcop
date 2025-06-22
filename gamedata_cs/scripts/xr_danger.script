@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---'	Ñõåìà èãíîðèðîâàíèÿ äåíæåðîâ.
---'	àâòîð: Äèäåíêî Ðóñëàí (Stohe)
+--'	Ð¡Ñ…ÐµÐ¼Ð° Ð¸Ð³Ð½Ð¾Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ Ð´ÐµÐ½Ð¶ÐµÑ€Ð¾Ð².
+--'	Ð°Ð²Ñ‚Ð¾Ñ€: Ð”Ð¸Ð´ÐµÐ½ÐºÐ¾ Ð ÑƒÑÐ»Ð°Ð½ (Stohe)
 --'	TODO: 
 ----------------------------------------------------------------------------------------------------------------------
 function printf()
@@ -24,7 +24,7 @@ local always_ignore_danger_from = { m_car = "true" }
 ----------------------------------------------------------------------------------------------------------------------
 -- EVALUATORS
 ----------------------------------------------------------------------------------------------------------------------
--- true - åñòü danger, false - íåò danger
+-- true - ÐµÑÑ‚ÑŒ danger, false - Ð½ÐµÑ‚ danger
 class "evaluator_danger" (property_evaluator)
 function evaluator_danger:__init(name, storage, npc) super (nil, name)
 	self.a = storage
@@ -36,7 +36,7 @@ function evaluator_danger:evaluate()
 
 	local best_danger = self.object:best_danger()
 
-	--' ïðîâåðêà íà äåíæåð.
+	--' Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð´ÐµÐ½Ð¶ÐµÑ€.
 	if best_danger == nil then
 		printf("DANGER [%s] [FALSE] no danger", self.object:name())
 		self.danger_time = nil
@@ -52,7 +52,7 @@ function evaluator_danger:evaluate()
 		best_danger_object = best_danger:dependent_object()
 	end
 
-	--' Ïðîâåðÿåì íàëè÷èå îáúåêòà äåíæåðà.
+	--' ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ð½Ð°Ð»Ð¸Ñ‡Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ð´ÐµÐ½Ð¶ÐµÑ€Ð°.
 	if best_danger_object == nil then
 		printf("DANGER [%s] [FALSE] no object", self.object:name())
 		return false
@@ -62,7 +62,7 @@ function evaluator_danger:evaluate()
 	printf("best_danger_name = ["..best_danger_name.."]")
 	local best_danger_section_name = best_danger_object:section()
 
-	--' ïðîâåðêà íå íàõîäèòñÿ ëè äåíæåð â ñïèñêå âå÷íîçàïðåùåííûõ.(ÁÒÐ, Âåðòîëåòû è òä)
+	--' Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ðµ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð»Ð¸ Ð´ÐµÐ½Ð¶ÐµÑ€ Ð² ÑÐ¿Ð¸ÑÐºÐµ Ð²ÐµÑ‡Ð½Ð¾Ð·Ð°Ð¿Ñ€ÐµÑ‰ÐµÐ½Ð½Ñ‹Ñ….(Ð‘Ð¢Ð , Ð’ÐµÑ€Ñ‚Ð¾Ð»ÐµÑ‚Ñ‹ Ð¸ Ñ‚Ð´)
 	if always_ignore_danger_from[best_danger_section_name] == "true" then
 		printf("DANGER [%s] [FALSE] forbidded", self.object:name())
 		return false
@@ -70,7 +70,7 @@ function evaluator_danger:evaluate()
 
 
 
-	--' Ïðîâåðêà íà çàïðåùåííûé äåíæåð îò àêòåðà
+	--' ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð·Ð°Ð¿Ñ€ÐµÑ‰ÐµÐ½Ð½Ñ‹Ð¹ Ð´ÐµÐ½Ð¶ÐµÑ€ Ð¾Ñ‚ Ð°ÐºÑ‚ÐµÑ€Ð°
 	if best_danger_object:id() == db.actor:id() and
 	   (bd_type == danger_object.attack_sound or
 	   bd_type == danger_object.bullet_ricochet)
@@ -83,7 +83,7 @@ function evaluator_danger:evaluate()
 		end	
 	end
 
-	--' Èãíîðèì äåíæåðû îò ñâîèõ.
+	--' Ð˜Ð³Ð½Ð¾Ñ€Ð¸Ð¼ Ð´ÐµÐ½Ð¶ÐµÑ€Ñ‹ Ð¾Ñ‚ ÑÐ²Ð¾Ð¸Ñ….
 	if best_danger_object:character_community() == self.object:character_community()  then
 		if not (best_danger_object:id() == db.actor:id() and self.object:relation(db.actor) == game_object.enemy) then 
 			printf("DANGER [%s] [FALSE] my_community", self.object:name())
@@ -91,7 +91,7 @@ function evaluator_danger:evaluate()
 		end
 	end
 
-	--' Ïðîâåðêà, íå íàõîäèòñÿ ëè äàíæåð â ñïèñêå çàïðåùåííûõ.
+	--' ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ°, Ð½Ðµ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð»Ð¸ Ð´Ð°Ð½Ð¶ÐµÑ€ Ð² ÑÐ¿Ð¸ÑÐºÐµ Ð·Ð°Ð¿Ñ€ÐµÑ‰ÐµÐ½Ð½Ñ‹Ñ….
 	if bd_type == danger_object.grenade then
 		if self.object:character_community() == "zombied" then
 			printf("DANGER [%s] [FALSE] ignore grenade for community [zombied]", self.object:name())
@@ -121,13 +121,13 @@ function evaluator_danger:evaluate()
 		end	
 	end
 
-	--' îòñåèâàåì ïî íàñòðîéêå combat_ignore/danger
+	--' Ð¾Ñ‚ÑÐµÐ¸Ð²Ð°ÐµÐ¼ Ð¿Ð¾ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐµ combat_ignore/danger
 	if not xr_combat_ignore.is_enemy(self.object, best_danger_object, db.storage[self.object:id()].combat_ignore, true) then
 	    printf("DANGER [%s]->[%s] [FALSE] ignore_danger", self.object:name(), best_danger_name)
 	    return false
     end
 
-	-- èíåðöèÿ âîçâðàòà. Òîëüêî íå äëÿ êåìïåðà.
+	-- Ð¸Ð½ÐµÑ€Ñ†Ð¸Ñ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‚Ð°. Ð¢Ð¾Ð»ÑŒÐºÐ¾ Ð½Ðµ Ð´Ð»Ñ ÐºÐµÐ¼Ð¿ÐµÑ€Ð°.
 	if self.danger_time then
 		self.danger_time = best_danger:time()
 		local passed_time = time_global() - self.danger_time
@@ -141,13 +141,13 @@ function evaluator_danger:evaluate()
 	end
 
 			
-	-- Îòñåèâàåì ïî äèñòàíöèè
+	-- ÐžÑ‚ÑÐµÐ¸Ð²Ð°ÐµÐ¼ Ð¿Ð¾ Ð´Ð¸ÑÑ‚Ð°Ð½Ñ†Ð¸Ð¸
 	if check_danger_distance(self.object, best_danger) == false then
 		printf("DANGER [%s]->[%s] [FALSE] danger_distance", self.object:name(), best_danger_name)
 		return false
 	end
 
-	--' Îòñåèâàåì ïî çîíå
+	--' ÐžÑ‚ÑÐµÐ¸Ð²Ð°ÐµÐ¼ Ð¿Ð¾ Ð·Ð¾Ð½Ðµ
 	local active_sector = db.storage[self.object:id()].active_sector
 	if active_sector ~= nil then
 		if sr_danger.check_danger_position(best_danger:position(), active_sector) == false then
@@ -156,19 +156,19 @@ function evaluator_danger:evaluate()
 		end
 	end
 
-	-- Îòñåèâàåì ïî èíôîðìàöèîííûì ðåñòðèêòîðàì
+	-- ÐžÑ‚ÑÐµÐ¸Ð²Ð°ÐµÐ¼ Ð¿Ð¾ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¾Ð½Ð½Ñ‹Ð¼ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ð°Ð¼
 	if xr_gulag.is_info_restricted(self.object:id(), best_danger:position()) then
 		printf("DANGER [%s]->[%s] [FALSE] info restrictor", self.object:name(), best_danger_name)
 		return false
 	end
 
-	-- Îòñåèâàåì òÿæåëîðàíåíûõ
+	-- ÐžÑ‚ÑÐµÐ¸Ð²Ð°ÐµÐ¼ Ñ‚ÑÐ¶ÐµÐ»Ð¾Ñ€Ð°Ð½ÐµÐ½Ñ‹Ñ…
 	if xr_wounded.is_heavy_wounded_by_id(self.object:id()) then
 		printf("DANGER [%s]->[%s] [FALSE] heavy_wounded", self.object:name(), best_danger_name)
 		return false
 	end
 
-	-- Äåíæåð äëÿ ñíàéïåðà
+	-- Ð”ÐµÐ½Ð¶ÐµÑ€ Ð´Ð»Ñ ÑÐ½Ð°Ð¹Ð¿ÐµÑ€Ð°
 	if active_scheme == "camper" then
 		if best_danger:type() == danger_object.grenade then
 			printf("DANGER [%s]->[%s] [TRUE] camper, type [%s]", self.object:name(), best_danger_name, tostring(bd_type))

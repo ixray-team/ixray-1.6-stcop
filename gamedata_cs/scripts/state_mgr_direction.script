@@ -1,6 +1,6 @@
 function printf()
 end
---' Смотрим ли мы сейчас туда, куда нужно или нет?
+--' РЎРјРѕС‚СЂРёРј Р»Рё РјС‹ СЃРµР№С‡Р°СЃ С‚СѓРґР°, РєСѓРґР° РЅСѓР¶РЅРѕ РёР»Рё РЅРµС‚?
 class "eva_state_mgr_direction" (property_evaluator)
 function eva_state_mgr_direction:__init(name, st) super (nil, name)
 	self.st = st
@@ -8,7 +8,7 @@ end
 function eva_state_mgr_direction:evaluate()
     local sight_type = self.object:sight_params()
     
-	-- Если задан объект на который смотреть
+	-- Р•СЃР»Рё Р·Р°РґР°РЅ РѕР±СЉРµРєС‚ РЅР° РєРѕС‚РѕСЂС‹Р№ СЃРјРѕС‚СЂРµС‚СЊ
 	if self.st.look_object ~= nil then
 		if sight_type.m_object == nil or
            sight_type.m_object:id() ~= self.st.look_object or
@@ -23,7 +23,7 @@ function eva_state_mgr_direction:evaluate()
 		return true
 	end
 
-	-- Если задана позиция в которую смотреть
+	-- Р•СЃР»Рё Р·Р°РґР°РЅР° РїРѕР·РёС†РёСЏ РІ РєРѕС‚РѕСЂСѓСЋ СЃРјРѕС‚СЂРµС‚СЊ
 	if self.st.look_position ~= nil then
         if sight_type.m_sight_type ~= look_position_type(self.object, self.st) then
         	printf("pl:dir3!!!")
@@ -48,14 +48,14 @@ function eva_state_mgr_direction:evaluate()
 		return true
 	end
 
-	-- Если не задано куда смотреть.
-	-- И если мы до этого куда то смотрели
+	-- Р•СЃР»Рё РЅРµ Р·Р°РґР°РЅРѕ РєСѓРґР° СЃРјРѕС‚СЂРµС‚СЊ.
+	-- Р РµСЃР»Рё РјС‹ РґРѕ СЌС‚РѕРіРѕ РєСѓРґР° С‚Рѕ СЃРјРѕС‚СЂРµР»Рё
 	if sight_type.m_object ~= nil then
 		printf("pl:dir6!!!")        
 		return false	
 	end
 		
-	--' Или если мы смотрели не так как надо
+	--' РР»Рё РµСЃР»Рё РјС‹ СЃРјРѕС‚СЂРµР»Рё РЅРµ С‚Р°Рє РєР°Рє РЅР°РґРѕ
     if sight_type.m_sight_type ~= look_position_type(self.object, self.st) then
     	printf("pl:dir7!!![%s]", look_position_type(self.object, self.st))
         return false
@@ -87,7 +87,7 @@ function eva_state_mgr_direction_search:evaluate()
 	return true
 end
 
---' Поворачиваемся ли мы сейчас
+--' РџРѕРІРѕСЂР°С‡РёРІР°РµРјСЃСЏ Р»Рё РјС‹ СЃРµР№С‡Р°СЃ
 class "eva_state_mgr_direction_turning" (property_evaluator)
 function eva_state_mgr_direction_turning:__init(name, st) super (nil, name)
 	self.st = st
@@ -101,7 +101,7 @@ end
 
 
 
---' Включаем поворот
+--' Р’РєР»СЋС‡Р°РµРј РїРѕРІРѕСЂРѕС‚
 class "act_state_mgr_direction_turn" (action_base)
 function act_state_mgr_direction_turn:__init(name, st) super (nil, name)
 	self.st = st
@@ -113,7 +113,7 @@ function act_state_mgr_direction_turn:initialize()
 end
 function act_state_mgr_direction_turn:execute()
 	action_base.execute(self)
-	--' Нельзя дергать дирекшн сталкера когда он в смарткавере...
+	--' РќРµР»СЊР·СЏ РґРµСЂРіР°С‚СЊ РґРёСЂРµРєС€РЅ СЃС‚Р°Р»РєРµСЂР° РєРѕРіРґР° РѕРЅ РІ СЃРјР°СЂС‚РєР°РІРµСЂРµ...
 	if db.storage[self.object:id()].active_scheme ~= "smartcover" then
 		self:turn()
 	end
@@ -139,7 +139,7 @@ function act_state_mgr_direction_turn:turn()
 end
 
 
---' Включаем поворот в никуда
+--' Р’РєР»СЋС‡Р°РµРј РїРѕРІРѕСЂРѕС‚ РІ РЅРёРєСѓРґР°
 class "act_state_mgr_direction_search" (action_base)
 function act_state_mgr_direction_search:__init(name, st) super (nil, name)
 	self.st = st
@@ -176,8 +176,8 @@ local look_direction_states = {
 	}
 
 function look_object_type(npc, st)	
-	--' Возвращает true  если нужно смотреть по направлению
-	--' false - нужно смотреть на объект
+	--' Р’РѕР·РІСЂР°С‰Р°РµС‚ true  РµСЃР»Рё РЅСѓР¶РЅРѕ СЃРјРѕС‚СЂРµС‚СЊ РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ
+	--' false - РЅСѓР¶РЅРѕ СЃРјРѕС‚СЂРµС‚СЊ РЅР° РѕР±СЉРµРєС‚
 	if look_direction_states[st.target_state] == true then
 		return true
 	end
@@ -194,7 +194,7 @@ function look_position_type(npc, st)
 --		return CSightParams.eSightTypeAnimationDirection
 --	end
 	
-    --' Для движения
+    --' Р”Р»СЏ РґРІРёР¶РµРЅРёСЏ
 	if not st.planner:evaluator(st.properties["movement_stand"]):evaluate() then
         if st.look_position ~= nil then
         	printf("2")
@@ -204,13 +204,13 @@ function look_position_type(npc, st)
         return look.path_dir       
     end
 
-    --' Смотрим в позицию
+    --' РЎРјРѕС‚СЂРёРј РІ РїРѕР·РёС†РёСЋ
     if st.look_position ~= nil then
     	printf("4")
          return look.direction
     end
 
-    --' Никуда не смотрим
+    --' РќРёРєСѓРґР° РЅРµ СЃРјРѕС‚СЂРёРј
     if state_lib.states[st.target_state].direction then
     	printf("5")
 		return state_lib.states[st.target_state].direction
@@ -219,7 +219,7 @@ function look_position_type(npc, st)
     return look.danger
 end
 
---' поворот
+--' РїРѕРІРѕСЂРѕС‚
  
 function turn(npc, st)
 	st.point_obj_dir = look_object_type(npc, st)

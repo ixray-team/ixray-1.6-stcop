@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------------------------------
 -- Sleeper
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Руслан Диденко (Stohe)
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Р СѓСЃР»Р°РЅ Р”РёРґРµРЅРєРѕ (Stohe)
 ----------------------------------------------------------------------------------------------------
--- 27.12.2004 - [Zmey] Перевел схему на использование move manager.
+-- 27.12.2004 - [Zmey] РџРµСЂРµРІРµР» СЃС…РµРјСѓ РЅР° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ move manager.
 
 local sounds = {}
 
@@ -13,7 +13,7 @@ local state_sleeping = 1
 ---------------------------------------------------------------------------------------------------------------------
 --Evaluators
 ----------------------------------------------------------------------------------------------------------------------
--- Константа
+-- РљРѕРЅСЃС‚Р°РЅС‚Р°
 class "evaluator_need_sleeper" (property_evaluator)
 function evaluator_need_sleeper:__init(name, storage) super (nil, name)
 	self.st = storage
@@ -26,7 +26,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 --Actions
 ----------------------------------------------------------------------------------------------------------------------
--- Обычное поведение
+-- РћР±С‹С‡РЅРѕРµ РїРѕРІРµРґРµРЅРёРµ
 class "action_sleeper_activity" (action_base)
 function action_sleeper_activity:__init (npc, action_name, storage) super(nil, action_name)
 	self.st = storage
@@ -80,8 +80,8 @@ function action_sleeper_activity:reset_scheme()
 		end
 	end
 
-	-- Последний параметр (true) отключает валидацию путей, чтобы не возникало ошибки из-за использования
-	-- одноточечного path_walk пути без соответствующего path_look.
+	-- РџРѕСЃР»РµРґРЅРёР№ РїР°СЂР°РјРµС‚СЂ (true) РѕС‚РєР»СЋС‡Р°РµС‚ РІР°Р»РёРґР°С†РёСЋ РїСѓС‚РµР№, С‡С‚РѕР±С‹ РЅРµ РІРѕР·РЅРёРєР°Р»Рѕ РѕС€РёР±РєРё РёР·-Р·Р° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
+	-- РѕРґРЅРѕС‚РѕС‡РµС‡РЅРѕРіРѕ path_walk РїСѓС‚Рё Р±РµР· СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ path_look.
 	self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info,
 		nil, nil, { obj = self, func = self.callback }, true )
 	self.was_reset = true
@@ -157,7 +157,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
  	action:add_effect(world_property(properties["need_sleeper"], false))
   	manager:add_action(operators["action_sleeper"], action)
 	
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, action)
 
   	action = manager:action(xr_actions_id.alife)
@@ -170,7 +170,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.path_main = utils.cfg_get_string(ini, section, "path_main", npc, true,  gulag_name)
 	st.wakeable	 = utils.cfg_get_bool(ini, section, "wakeable", npc, false)
 
-	st.path_walk = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще не загружены.
+	st.path_walk = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
 	st.path_walk_info = nil
 	st.path_look = nil
 	st.path_look_info = nil

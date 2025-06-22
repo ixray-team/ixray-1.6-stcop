@@ -1,5 +1,5 @@
 --[[------------------------------------------------------------------------------------------------
-Зоны пси-излучения. Отыгрывают постпроцесс и фантомов по настройкам из custom_data
+Р—РѕРЅС‹ РїСЃРё-РёР·Р»СѓС‡РµРЅРёСЏ. РћС‚С‹РіСЂС‹РІР°СЋС‚ РїРѕСЃС‚РїСЂРѕС†РµСЃСЃ Рё С„Р°РЅС‚РѕРјРѕРІ РїРѕ РЅР°СЃС‚СЂРѕР№РєР°Рј РёР· custom_data
 --------------------------------------------------------------------------------------------------]]
 
 
@@ -14,21 +14,21 @@ function PsyAntenna:__init				()
 	self.phantom_spawn_probability		= 0	-- spawn probability (0..1)
 	self.phantom_spawn_radius			= 30.0	-- average radius 30.0m +-15m
 	self.phantom_spawn_height			= 2.5 --3	-- average height from actor pos +-1.5m
-	self.phantom_fov					= 45   -- ширина сектора перед глазами актёра, в котором могут рождаться фантомы
+	self.phantom_fov					= 45   -- С€РёСЂРёРЅР° СЃРµРєС‚РѕСЂР° РїРµСЂРµРґ РіР»Р°Р·Р°РјРё Р°РєС‚С‘СЂР°, РІ РєРѕС‚РѕСЂРѕРј РјРѕРіСѓС‚ СЂРѕР¶РґР°С‚СЊСЃСЏ С„Р°РЅС‚РѕРјС‹
 	-- antenna
-	self.hit_amplitude					= 1.0	-- размер хита = self.hit_amplitude*self.hit_intensity
+	self.hit_amplitude					= 1.0	-- СЂР°Р·РјРµСЂ С…РёС‚Р° = self.hit_amplitude*self.hit_intensity
 -- ----------------------------------------------------------------------------------------
 -- class variables initialize
 -- ----------------------------------------------------------------------------------------
 	self.eff_time						= 0
 	self.hit_time						= 0
 	self.phantom_time                   = 0
-	self.intensity_inertion				= 0.05	-- скорость изменения интенсивности ед/секунду
+	self.intensity_inertion				= 0.05	-- СЃРєРѕСЂРѕСЃС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РёРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚Рё РµРґ/СЃРµРєСѓРЅРґСѓ
 	self.hit_intensity					= 0
 	self.sound_intensity				= 0
-	self.sound_intensity_base			= 0	-- базовая интенсивность. к ней стремится текущая со скоростью self.intensity_inertion	
-	self.postprocess_count				= 0  --'счетчик зарегистрированных постпроцессов
-	self.postprocess					= {} --'контейнер постпроцессов
+	self.sound_intensity_base			= 0	-- Р±Р°Р·РѕРІР°СЏ РёРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ. Рє РЅРµР№ СЃС‚СЂРµРјРёС‚СЃСЏ С‚РµРєСѓС‰Р°СЏ СЃРѕ СЃРєРѕСЂРѕСЃС‚СЊСЋ self.intensity_inertion	
+	self.postprocess_count				= 0  --'СЃС‡РµС‚С‡РёРє Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹С… РїРѕСЃС‚РїСЂРѕС†РµСЃСЃРѕРІ
+	self.postprocess					= {} --'РєРѕРЅС‚РµР№РЅРµСЂ РїРѕСЃС‚РїСЂРѕС†РµСЃСЃРѕРІ
 
 -- ----------------------------------------------------------------------------------------
 -- sound
@@ -40,7 +40,7 @@ function PsyAntenna:__init				()
 	self.sound_obj_left.volume			= self.sound_intensity
 	self.sound_obj_right.volume			= self.sound_intensity
 	self.snd_volume						= level.get_snd_volume()
-	self.mute_sound_threshold			= 0 --' Предел до которого можно занижать звук уровня. 0 - можно заглушить полностью
+	self.mute_sound_threshold			= 0 --' РџСЂРµРґРµР» РґРѕ РєРѕС‚РѕСЂРѕРіРѕ РјРѕР¶РЅРѕ Р·Р°РЅРёР¶Р°С‚СЊ Р·РІСѓРє СѓСЂРѕРІРЅСЏ. 0 - РјРѕР¶РЅРѕ Р·Р°РіР»СѓС€РёС‚СЊ РїРѕР»РЅРѕСЃС‚СЊСЋ
 	self.max_mumble_volume				= 10
 end
 function PsyAntenna:destroy				()
@@ -206,13 +206,13 @@ function PsyAntenna:load(p)
 end
 
 ----------------------------------------------------------------------------------------------------
--- логическая схема для space restrictor
+-- Р»РѕРіРёС‡РµСЃРєР°СЏ СЃС…РµРјР° РґР»СЏ space restrictor
 ----------------------------------------------------------------------------------------------------
 
 
-local state_outside = 0 -- актер снаружи
-local state_inside  = 1 -- актер внутри
-local state_void  = 2 -- неизвестный статус
+local state_outside = 0 -- Р°РєС‚РµСЂ СЃРЅР°СЂСѓР¶Рё
+local state_inside  = 1 -- Р°РєС‚РµСЂ РІРЅСѓС‚СЂРё
+local state_void  = 2 -- РЅРµРёР·РІРµСЃС‚РЅС‹Р№ СЃС‚Р°С‚СѓСЃ
 
 psy_antenna = false
 
@@ -221,7 +221,7 @@ class "action_psy_antenna"
 function action_psy_antenna:__init( obj, storage )
 	self.object = obj
 	self.st     = storage
-	self.state  = state_void --' еще не ясно, в зоне он, или нет
+	self.state  = state_void --' РµС‰Рµ РЅРµ СЏСЃРЅРѕ, РІ Р·РѕРЅРµ РѕРЅ, РёР»Рё РЅРµС‚
 end
 function action_psy_antenna:reset_scheme( loading )
 --'	if loading then
@@ -350,7 +350,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = action_psy_antenna(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 

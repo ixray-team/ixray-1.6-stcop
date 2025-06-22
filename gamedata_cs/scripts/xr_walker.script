@@ -48,7 +48,7 @@ function action_walker_activity:finalize()
 	self.move_mgr:finalize()
 	action_base.finalize(self)
 end
---' Возвращает достиг ли персонаж точки начала работы схемы
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРѕСЃС‚РёРі Р»Рё РїРµСЂСЃРѕРЅР°Р¶ С‚РѕС‡РєРё РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ СЃС…РµРјС‹
 function action_walker_activity:position_riched()
 	return self.move_mgr:arrived_to_first_waypoint()
 end
@@ -83,19 +83,19 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	   	new_action:add_effect(world_property(properties["need_walker"], false))
 		manager:add_action(operators["action_walker"], new_action)
 
-		-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+		-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 		xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
 	  	new_action = manager:action(xr_actions_id.alife)
 	  	new_action:add_precondition(world_property(properties["need_walker"], false))
 end
 
--- Включение схемы
+-- Р’РєР»СЋС‡РµРЅРёРµ СЃС…РµРјС‹
 --
--- enabled - включена ли схема
--- path_walk - основной путь, по которому ходит охранник
--- path_look [опционально] - путь, куда смотрит охранник
--- team [опционально] - команда для синхронизации
+-- enabled - РІРєР»СЋС‡РµРЅР° Р»Рё СЃС…РµРјР°
+-- path_walk - РѕСЃРЅРѕРІРЅРѕР№ РїСѓС‚СЊ, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ С…РѕРґРёС‚ РѕС…СЂР°РЅРЅРёРє
+-- path_look [РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ] - РїСѓС‚СЊ, РєСѓРґР° СЃРјРѕС‚СЂРёС‚ РѕС…СЂР°РЅРЅРёРє
+-- team [РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ] - РєРѕРјР°РЅРґР° РґР»СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё
 --
 function set_scheme(npc, ini, scheme, section, gulag_name)
 	printf("DEBUG: set_scheme: scheme='%s', section='%s', gulag_name='%s'", scheme, section, tostring(gulag_name))
@@ -120,6 +120,6 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.suggested_state.moving  = utils.cfg_get_string(ini, section, "def_state_moving1", npc, false, "")
 	st.suggested_state.moving  = utils.cfg_get_string(ini, section, "def_state_moving", npc, false, "", st.suggested_state.moving)
 
-	st.path_walk_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
-	st.path_look_info = nil -- не загружены.
+	st.path_walk_info = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ
+	st.path_look_info = nil -- РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
 end

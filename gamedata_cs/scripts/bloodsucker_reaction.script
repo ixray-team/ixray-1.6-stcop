@@ -2,7 +2,7 @@ local target_obj
 ---------------------------------------------------------------------------------------------------------------------
 --Evaluators
 ----------------------------------------------------------------------------------------------------------------------
--- Константа
+-- РљРѕРЅСЃС‚Р°РЅС‚Р°
 class "evaluator_bloodsucker_reaction" (property_evaluator)
 function evaluator_bloodsucker_reaction:__init(name) super (nil, name)
 end
@@ -13,7 +13,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 --Actions
 ----------------------------------------------------------------------------------------------------------------------
--- Обычное поведение
+-- РћР±С‹С‡РЅРѕРµ РїРѕРІРµРґРµРЅРёРµ
 class "action_bloodsucker_reaction" (action_base)
 function action_bloodsucker_reaction:__init (npc, action_name) super(nil, action_name)
 	self.npc = npc	
@@ -40,7 +40,7 @@ function action_bloodsucker_reaction:initialize()
 end
 
 function action_bloodsucker_reaction:set_random_position()
-		-- нужно высчитать позиции для сталкеров прикрытия
+		-- РЅСѓР¶РЅРѕ РІС‹СЃС‡РёС‚Р°С‚СЊ РїРѕР·РёС†РёРё РґР»СЏ СЃС‚Р°Р»РєРµСЂРѕРІ РїСЂРёРєСЂС‹С‚РёСЏ
 		print_table(self.reaction_manager.npc_position)
 		
 		self.base_vertex_id = self.reaction_manager.npc_position[self.npc:id()].vertex

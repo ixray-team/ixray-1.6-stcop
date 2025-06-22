@@ -30,14 +30,14 @@ local task_id_by_type = {
 
 class "CRandomTask"
 function CRandomTask:__init()
-	--' На конструкторе вычитываем LTX и создаем заготовки квестов.
+	--' РќР° РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ РІС‹С‡РёС‚С‹РІР°РµРј LTX Рё СЃРѕР·РґР°РµРј Р·Р°РіРѕС‚РѕРІРєРё РєРІРµСЃС‚РѕРІ.
 	self.task_ini = ini_file("misc\\task_manager.ltx")
 	self.task_phrase_id = 100
 
-	--' Генератор айдишников квеста
+	--' Р“РµРЅРµСЂР°С‚РѕСЂ Р°Р№РґРёС€РЅРёРєРѕРІ РєРІРµСЃС‚Р°
 	self.id_generator = object_collection.object_collection()
 
-	--' Итерируемся по всем настройкам фраз
+	--' РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ РІСЃРµРј РЅР°СЃС‚СЂРѕР№РєР°Рј С„СЂР°Р·
 	if not self.task_ini:section_exist("list") then
 		abort("There is no section [list] in task_manager.ltx")
 	end
@@ -45,7 +45,7 @@ function CRandomTask:__init()
 	local id, value = "",""
 	local category = ""
 
-	--' начальная установка
+	--' РЅР°С‡Р°Р»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР°
 	self.task_info = {}
 	self.general_tasks = {}
 	self.eliminate_smart_tasks = {}
@@ -67,24 +67,24 @@ function CRandomTask:__init()
 		end
 
 		local type = utils.cfg_get_string(self.task_ini, id, "type", nil, false, "", "general")
-		--' Автоматом добавляем только обычные квесты.
+		--' РђРІС‚РѕРјР°С‚РѕРј РґРѕР±Р°РІР»СЏРµРј С‚РѕР»СЊРєРѕ РѕР±С‹С‡РЅС‹Рµ РєРІРµСЃС‚С‹.
 		if type == "storyline" then
 			self.general_tasks[id] = task_objects.CStorylineTask(self.task_ini, id, "storyline")
 		elseif type == "eliminate_smart" then
-			--' Заносим праобразы тасков в спец таблицу, из нее потом будем выбирать
-			--' наиболее подходящий для конкретного смарта.
+			--' Р—Р°РЅРѕСЃРёРј РїСЂР°РѕР±СЂР°Р·С‹ С‚Р°СЃРєРѕРІ РІ СЃРїРµС† С‚Р°Р±Р»РёС†Сѓ, РёР· РЅРµРµ РїРѕС‚РѕРј Р±СѓРґРµРј РІС‹Р±РёСЂР°С‚СЊ
+			--' РЅР°РёР±РѕР»РµРµ РїРѕРґС…РѕРґСЏС‰РёР№ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ СЃРјР°СЂС‚Р°.
 			self.eliminate_smart_tasks[id] = task_objects.CEliminateSmartTask(self.task_ini, id, "eliminate_smart")
 		elseif type == "capture_smart" then
-			--' Заносим праобразы тасков в спец таблицу, из нее потом будем выбирать
-			--' наиболее подходящий для конкретного смарта.
+			--' Р—Р°РЅРѕСЃРёРј РїСЂР°РѕР±СЂР°Р·С‹ С‚Р°СЃРєРѕРІ РІ СЃРїРµС† С‚Р°Р±Р»РёС†Сѓ, РёР· РЅРµРµ РїРѕС‚РѕРј Р±СѓРґРµРј РІС‹Р±РёСЂР°С‚СЊ
+			--' РЅР°РёР±РѕР»РµРµ РїРѕРґС…РѕРґСЏС‰РёР№ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ СЃРјР°СЂС‚Р°.
 			self.capture_smart_tasks[id] = task_objects.CCaptureSmartTask(self.task_ini, id, "capture_smart")
 		elseif type == "defend_smart" then
-			--' Заносим праобразы тасков в спец таблицу, из нее потом будем выбирать
-			--' наиболее подходящий для конкретного смарта.
+			--' Р—Р°РЅРѕСЃРёРј РїСЂР°РѕР±СЂР°Р·С‹ С‚Р°СЃРєРѕРІ РІ СЃРїРµС† С‚Р°Р±Р»РёС†Сѓ, РёР· РЅРµРµ РїРѕС‚РѕРј Р±СѓРґРµРј РІС‹Р±РёСЂР°С‚СЊ
+			--' РЅР°РёР±РѕР»РµРµ РїРѕРґС…РѕРґСЏС‰РёР№ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ СЃРјР°СЂС‚Р°.
 			self.defend_smart_tasks[id] = task_objects.CDefendSmartTask(self.task_ini, id, "defend_smart")
 		elseif type == "defend_smart_delay" then
-			--' Заносим праобразы тасков в спец таблицу, из нее потом будем выбирать
-			--' наиболее подходящий для конкретного смарта.
+			--' Р—Р°РЅРѕСЃРёРј РїСЂР°РѕР±СЂР°Р·С‹ С‚Р°СЃРєРѕРІ РІ СЃРїРµС† С‚Р°Р±Р»РёС†Сѓ, РёР· РЅРµРµ РїРѕС‚РѕРј Р±СѓРґРµРј РІС‹Р±РёСЂР°С‚СЊ
+			--' РЅР°РёР±РѕР»РµРµ РїРѕРґС…РѕРґСЏС‰РёР№ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ СЃРјР°СЂС‚Р°.
 			self.defend_smart_delay_tasks[id] = task_objects.CDefendSmartTaskDelay(self.task_ini, id, "defend_smart_delay")
 		elseif type == "take_reward" then
 			self.reward_tasks[id] = task_objects.CGetRewardTask(self.task_ini, id, "take_reward")
@@ -101,20 +101,20 @@ function CRandomTask:__init()
 		end
 	end
 
-	--' Таблица проинициализированных квестов.
+	--' РўР°Р±Р»РёС†Р° РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹С… РєРІРµСЃС‚РѕРІ.
 	self.inited_tasks = {}
 
-	--' Таблица наград, которые надо вручить игроку
+	--' РўР°Р±Р»РёС†Р° РЅР°РіСЂР°Рґ, РєРѕС‚РѕСЂС‹Рµ РЅР°РґРѕ РІСЂСѓС‡РёС‚СЊ РёРіСЂРѕРєСѓ
 	self.rewards = {}
 
-	--' Таблица чуваков, могущих выдавать награды
+	--' РўР°Р±Р»РёС†Р° С‡СѓРІР°РєРѕРІ, РјРѕРіСѓС‰РёС… РІС‹РґР°РІР°С‚СЊ РЅР°РіСЂР°РґС‹
 	self.rewarders = {}
-	--' Таблица чуваков, могущих выдавать квесты от имени всей группировки
+	--' РўР°Р±Р»РёС†Р° С‡СѓРІР°РєРѕРІ, РјРѕРіСѓС‰РёС… РІС‹РґР°РІР°С‚СЊ РєРІРµСЃС‚С‹ РѕС‚ РёРјРµРЅРё РІСЃРµР№ РіСЂСѓРїРїРёСЂРѕРІРєРё
 	self.taskers = {}
 
-	--' Таблица, в которой мы будем хранить таски, которые может выдать командир группировки.
+	--' РўР°Р±Р»РёС†Р°, РІ РєРѕС‚РѕСЂРѕР№ РјС‹ Р±СѓРґРµРј С…СЂР°РЅРёС‚СЊ С‚Р°СЃРєРё, РєРѕС‚РѕСЂС‹Рµ РјРѕР¶РµС‚ РІС‹РґР°С‚СЊ РєРѕРјР°РЅРґРёСЂ РіСЂСѓРїРїРёСЂРѕРІРєРё.
 	self.selected_faction_task = {}
-	--' Таблица заданий выданых на смарт
+	--' РўР°Р±Р»РёС†Р° Р·Р°РґР°РЅРёР№ РІС‹РґР°РЅС‹С… РЅР° СЃРјР°СЂС‚
 	self.tasks_by_smarts = {}
 end
 -- Save
@@ -134,7 +134,7 @@ function CRandomTask:save(packet)
 	end
 	self.id_generator:save(packet)
 
-	-- Сохранение списка наград
+	-- РЎРѕС…СЂР°РЅРµРЅРёРµ СЃРїРёСЃРєР° РЅР°РіСЂР°Рґ
 	n = 0
 	for k,v in pairs(self.rewards) do
 		n = n + 1
@@ -236,7 +236,7 @@ function CRandomTask:load(reader)
 	end
 	self.id_generator:load(reader)
 
-	-- Загрузка списка наград
+	-- Р—Р°РіСЂСѓР·РєР° СЃРїРёСЃРєР° РЅР°РіСЂР°Рґ
 	n = reader:r_u8()
 	for i=1,n do
 		local community = reader:r_stringZ()
@@ -282,7 +282,7 @@ function CRandomTask:load(reader)
 end
 --------------------------------------------------------------------------------
 
---' Выдача квеста игроку
+--' Р’С‹РґР°С‡Р° РєРІРµСЃС‚Р° РёРіСЂРѕРєСѓ
 function CRandomTask:give_task(task_id, community)
 --	printf("CRandomTask:give_task() task_id[%s] comm[%s]", tostring(task_id), tostring(community))
 	if self.task_info[task_id] == nil then
@@ -290,7 +290,7 @@ function CRandomTask:give_task(task_id, community)
 	end
 	self.task_info[task_id]:give_task(community)
 end
---' Проверяем, не выполнен ли таск
+--' РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РІС‹РїРѕР»РЅРµРЅ Р»Рё С‚Р°СЃРє
 function CRandomTask:task_complete(p1)
 	if self.task_info[p1] == nil then
 		return false
@@ -304,7 +304,7 @@ function CRandomTask:task_complete(p1)
 		return false
 	end
 end
---' Проверяем, не профейлен ли таск
+--' РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РїСЂРѕС„РµР№Р»РµРЅ Р»Рё С‚Р°СЃРє
 function CRandomTask:task_fail(p1)
 	--if last_ch_time == nil or time_global() - last_ch_time < 5000 then
 	--	printf("***tf %s", tostring(p1))
@@ -324,10 +324,10 @@ function CRandomTask:task_fail(p1)
 	end
 	return self.task_info[p1].last_check_task == "fail" or self.task_info[p1].last_check_task == "reversed"
 end
---' Коллбек таска
+--' РљРѕР»Р»Р±РµРє С‚Р°СЃРєР°
 function CRandomTask:task_callback(task, completed)
 --    printf("CRandomTask:task_callback")
-	--' Если задание выполнилось - надо выдать с него награду!
+	--' Р•СЃР»Рё Р·Р°РґР°РЅРёРµ РІС‹РїРѕР»РЅРёР»РѕСЃСЊ - РЅР°РґРѕ РІС‹РґР°С‚СЊ СЃ РЅРµРіРѕ РЅР°РіСЂР°РґСѓ!
 	local task_id = task:get_id()
 	local delta
 	--print_table(self.task_info)
@@ -386,7 +386,7 @@ function CRandomTask:task_callback(task, completed)
 	printf("--------------task_manager.task_callback()	end")
 ]]
 end
---' Выбор наиболее подходящего таска по условию
+--' Р’С‹Р±РѕСЂ РЅР°РёР±РѕР»РµРµ РїРѕРґС…РѕРґСЏС‰РµРіРѕ С‚Р°СЃРєР° РїРѕ СѓСЃР»РѕРІРёСЋ
 function CRandomTask:select_task(type, obj, faction)
 --	printf("CRandomTask:select_task")
     callstack()
@@ -433,7 +433,7 @@ function CRandomTask:select_task(type, obj, faction)
 		abort("Wrong type [%s] in select_task.", tostring(type))
 	end
 
-	--' Если для этого объекта уже есть инициализированный таск - нужно выдать его.
+	--' Р•СЃР»Рё РґР»СЏ СЌС‚РѕРіРѕ РѕР±СЉРµРєС‚Р° СѓР¶Рµ РµСЃС‚СЊ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Р№ С‚Р°СЃРє - РЅСѓР¶РЅРѕ РІС‹РґР°С‚СЊ РµРіРѕ.
 	if self.inited_tasks[key] ~= nil then
 		if type == "recover_item" then
 			if not self.inited_tasks[key]:check_target(obj, faction) or self.inited_tasks[key].status ~= "normal" then
@@ -449,11 +449,11 @@ function CRandomTask:select_task(type, obj, faction)
 	local max_prior = -1
 	local selected_task = nil
 
-	--' Итерируемся по всем квестам заданного типа
+	--' РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ РІСЃРµРј РєРІРµСЃС‚Р°Рј Р·Р°РґР°РЅРЅРѕРіРѕ С‚РёРїР°
 	for k,v in pairs(task_table) do
-		--' Проверяем каждый из них может ли он быть выдан
+		--' РџСЂРѕРІРµСЂСЏРµРј РєР°Р¶РґС‹Р№ РёР· РЅРёС… РјРѕР¶РµС‚ Р»Рё РѕРЅ Р±С‹С‚СЊ РІС‹РґР°РЅ
 		if v:check_target(obj, faction) then
-			--' Выбираем наиболее приоритетный из них
+			--' Р’С‹Р±РёСЂР°РµРј РЅР°РёР±РѕР»РµРµ РїСЂРёРѕСЂРёС‚РµС‚РЅС‹Р№ РёР· РЅРёС…
 			if v.prior > max_prior then
 				max_prior = v.prior
 				selected_task = v
@@ -465,7 +465,7 @@ function CRandomTask:select_task(type, obj, faction)
 		return
 	end
 	printf("!!!Init new task type[%s] for %s, key[%s], entity_id[%s]", tostring(type), tostring(faction), tostring(key), new_EId)
-	--' Заносим таск в список уже проинициализированных.
+	--' Р—Р°РЅРѕСЃРёРј С‚Р°СЃРє РІ СЃРїРёСЃРѕРє СѓР¶Рµ РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹С….
 	self.inited_tasks[key] = selected_task:get_inited_task(obj, faction, new_EId)
 	return self.inited_tasks[key]
 end
@@ -477,12 +477,12 @@ function CRandomTask:select_find_upgrade_task(obj, faction)
 		self.inited_find_upgrade_tasks[obj:id()] = {}
 	end
 
-	--' Итерируемся по всем квестам заданного типа
+	--' РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ РІСЃРµРј РєРІРµСЃС‚Р°Рј Р·Р°РґР°РЅРЅРѕРіРѕ С‚РёРїР°
 	for k,v in pairs(self.find_upgrade_tasks) do
 --		local task = self:select_task("find_upgrade", obj, faction)
-		--' Проверяем каждый из них может ли он быть выдан
+		--' РџСЂРѕРІРµСЂСЏРµРј РєР°Р¶РґС‹Р№ РёР· РЅРёС… РјРѕР¶РµС‚ Р»Рё РѕРЅ Р±С‹С‚СЊ РІС‹РґР°РЅ
 		if v:check_target(obj, faction) then
-			--' Заносим таск в список уже проинициализированных.
+			--' Р—Р°РЅРѕСЃРёРј С‚Р°СЃРє РІ СЃРїРёСЃРѕРє СѓР¶Рµ РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹С….
 			local task = v:get_inited_task(obj, faction, self.id_generator:get_id())
 			if self.inited_find_upgrade_tasks[obj:id()][task.id] == nil then
 				self.inited_find_upgrade_tasks[obj:id()][task.id] = task
@@ -491,7 +491,7 @@ function CRandomTask:select_find_upgrade_task(obj, faction)
 		end
 	end
 end
--- Выдача инициализированного квеста по entity_id
+-- Р’С‹РґР°С‡Р° РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅРѕРіРѕ РєРІРµСЃС‚Р° РїРѕ entity_id
 function CRandomTask:get_task_by_entity_id(entity_id)
 --	printf("CRandomTask:get_task_by_entity_id --->e_i[%s]", tostring(entity_id))
 --	callstack()
@@ -539,7 +539,7 @@ function CRandomTask:get_tasks_by_smart(smart_id)
 	--print_table(self.tasks_by_smarts)
 	return self.tasks_by_smarts[smart_id]
 end
---' Реиницаилизация приоритетов выданных квестов
+--' Р РµРёРЅРёС†Р°РёР»РёР·Р°С†РёСЏ РїСЂРёРѕСЂРёС‚РµС‚РѕРІ РІС‹РґР°РЅРЅС‹С… РєРІРµСЃС‚РѕРІ
 function CRandomTask:reinit_task_prior(faction)
 	for k,v in pairs(self.inited_tasks) do
 		if v.community == faction then
@@ -555,7 +555,7 @@ function CRandomTask:reinit_task_prior(faction)
 		end
 	end
 end
---' Регистрирование квеста, который может выдать группировка
+--' Р РµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРёРµ РєРІРµСЃС‚Р°, РєРѕС‚РѕСЂС‹Р№ РјРѕР¶РµС‚ РІС‹РґР°С‚СЊ РіСЂСѓРїРїРёСЂРѕРІРєР°
 function CRandomTask:register_faction_task(faction, task_object)
 	if self.selected_faction_task[faction] == nil then
 		self.selected_faction_task[faction] = {}
@@ -570,14 +570,14 @@ function CRandomTask:register_faction_task(faction, task_object)
 	task_object.added_to_faction = true
 
 	table.insert(self.selected_faction_task[faction], task_object)
-	--' Надо отсортировать квесты по повышению приоритета.
+	--' РќР°РґРѕ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°С‚СЊ РєРІРµСЃС‚С‹ РїРѕ РїРѕРІС‹С€РµРЅРёСЋ РїСЂРёРѕСЂРёС‚РµС‚Р°.
 	table.sort(self.selected_faction_task[faction], function(a,b) return a.prior > b.prior end)
 	--'printf("----------- table after insert -------------%s", tostring(faction))
 	--'print_table(self.selected_faction_task[faction])
 	--'printf("----------- table after insert -------------%s", tostring(faction))
 end
 
---' АНРегистрирование квеста, который может выдать группировка
+--' РђРќР РµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРёРµ РєРІРµСЃС‚Р°, РєРѕС‚РѕСЂС‹Р№ РјРѕР¶РµС‚ РІС‹РґР°С‚СЊ РіСЂСѓРїРїРёСЂРѕРІРєР°
 function CRandomTask:unregister_faction_task(faction, task_object)
 	--'printf("*** UNRegistering new task %s", tostring(faction))
 	--'printf("id %s", tostring(task_object.id))
@@ -601,12 +601,12 @@ function CRandomTask:unregister_faction_task(faction, task_object)
 end
 
 
---' Регистрируем нового выдавателя наград
+--' Р РµРіРёСЃС‚СЂРёСЂСѓРµРј РЅРѕРІРѕРіРѕ РІС‹РґР°РІР°С‚РµР»СЏ РЅР°РіСЂР°Рґ
 function CRandomTask:register_rewarder(npc_id, community)
 --	printf("register rewarder %s for %s", npc_id, community)
 	self.rewarders[community] = npc_id
 end
---' Регистрируем нового выдавателя квестов
+--' Р РµРіРёСЃС‚СЂРёСЂСѓРµРј РЅРѕРІРѕРіРѕ РІС‹РґР°РІР°С‚РµР»СЏ РєРІРµСЃС‚РѕРІ
 function CRandomTask:register_tasker(npc_id, community)
 	self.taskers[community] = npc_id
 end
@@ -639,13 +639,13 @@ function CRandomTask:immediate_give_reward(first_speaker, second_speaker, id)
 	end
 end
 
---' Проверяем можем ли мы сейчас выдать какой либо самоинициализующийся таск
+--' РџСЂРѕРІРµСЂСЏРµРј РјРѕР¶РµРј Р»Рё РјС‹ СЃРµР№С‡Р°СЃ РІС‹РґР°С‚СЊ РєР°РєРѕР№ Р»РёР±Рѕ СЃР°РјРѕРёРЅРёС†РёР°Р»РёР·СѓСЋС‰РёР№СЃСЏ С‚Р°СЃРє
 function CRandomTask:update()
 end
---' Регистрация целей для квестов.
+--' Р РµРіРёСЃС‚СЂР°С†РёСЏ С†РµР»РµР№ РґР»СЏ РєРІРµСЃС‚РѕРІ.
 function CRandomTask:register_target(obj)
 end
---' ОТРегистрация целей для квестов.
+--' РћРўР РµРіРёСЃС‚СЂР°С†РёСЏ С†РµР»РµР№ РґР»СЏ РєРІРµСЃС‚РѕРІ.
 function CRandomTask:unregister_target(obj)
 end
 
@@ -669,7 +669,7 @@ function task_fail(p1)
 end
 function task_callback(_task, state)
 --	printf("task_callback")
-	--' В случае есть квест выполнен или провален - надо вызвать обнуление.
+	--' Р’ СЃР»СѓС‡Р°Рµ РµСЃС‚СЊ РєРІРµСЃС‚ РІС‹РїРѕР»РЅРµРЅ РёР»Рё РїСЂРѕРІР°Р»РµРЅ - РЅР°РґРѕ РІС‹Р·РІР°С‚СЊ РѕР±РЅСѓР»РµРЅРёРµ.
 	if state == task.fail or state == task.completed then
 --		printf("task_callback1")
 		get_task_manager():task_callback(_task, state == task.completed)
@@ -699,12 +699,12 @@ function is_more_suitable(squad_obj)
 		return true
 	end
 
-	-- Идем по сквадам, высчитываем их степень подходящести.
+	-- РРґРµРј РїРѕ СЃРєРІР°РґР°Рј, РІС‹СЃС‡РёС‚С‹РІР°РµРј РёС… СЃС‚РµРїРµРЅСЊ РїРѕРґС…РѕРґСЏС‰РµСЃС‚Рё.
 	if squad_obj:get_script_target() == nil then
 		return true
 	end
 
-	-- Идем по сквадам, высчитываем их степень подходящести.
+	-- РРґРµРј РїРѕ СЃРєРІР°РґР°Рј, РІС‹СЃС‡РёС‚С‹РІР°РµРј РёС… СЃС‚РµРїРµРЅСЊ РїРѕРґС…РѕРґСЏС‰РµСЃС‚Рё.
 	for k,v in pairs(squad_smart_descr.squads) do
 		if v:get_script_target() == nil then
 			return false

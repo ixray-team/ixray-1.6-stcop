@@ -1,17 +1,17 @@
---' Диденко Руслан (Stohe), Чугай Александр (Chugai)
+--' Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe), Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ (Chugai)
 
 
 --function printf()
 --end
 
---' в работах поле object хранит id объекта
+--' РІ СЂР°Р±РѕС‚Р°С… РїРѕР»Рµ object С…СЂР°РЅРёС‚ id РѕР±СЉРµРєС‚Р°
 local pl_gulag_enemy = 0
 
 local gulag_tasks_file_name  = "misc\\gulag_tasks.ltx"
 local gulag_tasks_ltx        = ini_file( gulag_tasks_file_name )
 
-local job_position_threshold = 120 --'50  -- расстояние до места работы при котором персонаж в онлайне считается достигшим места работы
-local job_idle_after_death   = 10 -- в течении такого периода времени после смерти персонажа его работа будет недоступна
+local job_position_threshold = 120 --'50  -- СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РјРµСЃС‚Р° СЂР°Р±РѕС‚С‹ РїСЂРё РєРѕС‚РѕСЂРѕРј РїРµСЂСЃРѕРЅР°Р¶ РІ РѕРЅР»Р°Р№РЅРµ СЃС‡РёС‚Р°РµС‚СЃСЏ РґРѕСЃС‚РёРіС€РёРј РјРµСЃС‚Р° СЂР°Р±РѕС‚С‹
+local job_idle_after_death   = 10 -- РІ С‚РµС‡РµРЅРёРё С‚Р°РєРѕРіРѕ РїРµСЂРёРѕРґР° РІСЂРµРјРµРЅРё РїРѕСЃР»Рµ СЃРјРµСЂС‚Рё РїРµСЂСЃРѕРЅР°Р¶Р° РµРіРѕ СЂР°Р±РѕС‚Р° Р±СѓРґРµС‚ РЅРµРґРѕСЃС‚СѓРїРЅР°
 
 idle_nil  = nil
 idle_once = -1
@@ -20,11 +20,11 @@ idle_none = -2
 local path_fields = { "path_walk", "path_main", "path_home", "center_point" }
 
 ----------------------------------------------------------------------------------------------------------------------
--- Функции, которые могут вызываться извне
+-- Р¤СѓРЅРєС†РёРё, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ РІС‹Р·С‹РІР°С‚СЊСЃСЏ РёР·РІРЅРµ
 ----------------------------------------------------------------------------------------------------------------------
 
--- получить гулаг по имени смарта.
--- работает только для смартов, которые в онлайне.
+-- РїРѕР»СѓС‡РёС‚СЊ РіСѓР»Р°Рі РїРѕ РёРјРµРЅРё СЃРјР°СЂС‚Р°.
+-- СЂР°Р±РѕС‚Р°РµС‚ С‚РѕР»СЊРєРѕ РґР»СЏ СЃРјР°СЂС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ РІ РѕРЅР»Р°Р№РЅРµ.
 function get_gulag_by_name(name)
 	local strn = alife():object(name)
 	if strn then
@@ -35,15 +35,15 @@ function get_gulag_by_name(name)
 	end
 end
 
--- получить гулаг по story id смарта
--- работает всегда
+-- РїРѕР»СѓС‡РёС‚СЊ РіСѓР»Р°Рі РїРѕ story id СЃРјР°СЂС‚Р°
+-- СЂР°Р±РѕС‚Р°РµС‚ РІСЃРµРіРґР°
 function get_gulag_by_sid(sid)
 	local strn = alife():story_object(sid)
 
 	return strn
 end
 
--- получить гулаг по имени или story id смарта
+-- РїРѕР»СѓС‡РёС‚СЊ РіСѓР»Р°Рі РїРѕ РёРјРµРЅРё РёР»Рё story id СЃРјР°СЂС‚Р°
 function get_gulag( name_or_sid )
 	if type( name_or_sid ) == "number" then
 		return get_gulag_by_sid( name_or_sid )
@@ -52,7 +52,7 @@ function get_gulag( name_or_sid )
 	end
 end
 
--- получить гулаг персонажа
+-- РїРѕР»СѓС‡РёС‚СЊ РіСѓР»Р°Рі РїРµСЂСЃРѕРЅР°Р¶Р°
 -- obj=game_object
 function get_npc_smart(obj)
 	--printf("npc id is [%s]", obj:id())
@@ -68,7 +68,7 @@ function get_npc_smart(obj)
 	end
 end
 
--- получить кол-во населения смарта по имени
+-- РїРѕР»СѓС‡РёС‚СЊ РєРѕР»-РІРѕ РЅР°СЃРµР»РµРЅРёСЏ СЃРјР°СЂС‚Р° РїРѕ РёРјРµРЅРё
 function getGulagPopulation( name_or_sid )
 	local gulag = get_gulag( name_or_sid )
 
@@ -76,14 +76,14 @@ function getGulagPopulation( name_or_sid )
 	return ( gulag and gulag:get_population_comed() ) or 0
 end
 
--- получить кол-во населения смарта по имени (только пришедшие персонажи)
+-- РїРѕР»СѓС‡РёС‚СЊ РєРѕР»-РІРѕ РЅР°СЃРµР»РµРЅРёСЏ СЃРјР°СЂС‚Р° РїРѕ РёРјРµРЅРё (С‚РѕР»СЊРєРѕ РїСЂРёС€РµРґС€РёРµ РїРµСЂСЃРѕРЅР°Р¶Рё)
 function getGulagPopulationComed( name_or_sid )
 	local gulag = get_gulag( name_or_sid )
 
 	return ( gulag and gulag:get_population_comed() ) or 0
 end
 
--- установить отношение всех членов смарта к указанному объекту
+-- СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РѕС‚РЅРѕС€РµРЅРёРµ РІСЃРµС… С‡Р»РµРЅРѕРІ СЃРјР°СЂС‚Р° Рє СѓРєР°Р·Р°РЅРЅРѕРјСѓ РѕР±СЉРµРєС‚Сѓ
 function setGulagRelation( name_or_sid, relation, target_obj )
 	local gulag = get_gulag( name_or_sid )
 
@@ -92,7 +92,7 @@ function setGulagRelation( name_or_sid, relation, target_obj )
 	end
 end
 
--- установить расположенине всех членов смарта к указанному объекту
+-- СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°СЃРїРѕР»РѕР¶РµРЅРёРЅРµ РІСЃРµС… С‡Р»РµРЅРѕРІ СЃРјР°СЂС‚Р° Рє СѓРєР°Р·Р°РЅРЅРѕРјСѓ РѕР±СЉРµРєС‚Сѓ
 function setGulagGoodwill( name_or_sid, goodwill, target_obj )
 	local gulag = get_gulag( name_or_sid )
 
@@ -101,17 +101,17 @@ function setGulagGoodwill( name_or_sid, goodwill, target_obj )
 	end
 end
 
--- сделать указанного персонажа врагом всех персонажей смарта
+-- СЃРґРµР»Р°С‚СЊ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РІСЂР°РіРѕРј РІСЃРµС… РїРµСЂСЃРѕРЅР°Р¶РµР№ СЃРјР°СЂС‚Р°
 function setGulagEnemy( name_or_sid, target_obj )
 	setGulagRelation( name_or_sid, game_object.enemy, target_obj )
 end
 
--- сделать указанного персонажа врагом всех персонажей смарта, которые в онлайне
+-- СЃРґРµР»Р°С‚СЊ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РІСЂР°РіРѕРј РІСЃРµС… РїРµСЂСЃРѕРЅР°Р¶РµР№ СЃРјР°СЂС‚Р°, РєРѕС‚РѕСЂС‹Рµ РІ РѕРЅР»Р°Р№РЅРµ
 function setGulagNeutral( name_or_sid, target_obj )
 	setGulagRelation( name_or_sid, game_object.neutral, target_obj )
 end
 
--- освободить персонажа от работы.
+-- РѕСЃРІРѕР±РѕРґРёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р° РѕС‚ СЂР°Р±РѕС‚С‹.
 -- obj=game_object
 function resetJob( obj )
 		printf( "gulag resetJob: obj=%s", obj:name() )
@@ -147,9 +147,9 @@ function getCasualities( name_or_sid )
 	return ( gulag and gulag:getCasualities() ) or 0
 end
 
--- не находится ли источник информации вне информационного рестриктора?
--- если вне, то информация будет запрещена
--- функция кеширует game_object рестриктора
+-- РЅРµ РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё РёСЃС‚РѕС‡РЅРёРє РёРЅС„РѕСЂРјР°С†РёРё РІРЅРµ РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅРѕРіРѕ СЂРµСЃС‚СЂРёРєС‚РѕСЂР°?
+-- РµСЃР»Рё РІРЅРµ, С‚Рѕ РёРЅС„РѕСЂРјР°С†РёСЏ Р±СѓРґРµС‚ Р·Р°РїСЂРµС‰РµРЅР°
+-- С„СѓРЅРєС†РёСЏ РєРµС€РёСЂСѓРµС‚ game_object СЂРµСЃС‚СЂРёРєС‚РѕСЂР°
 function is_info_restricted( obj_id, info_pos )
 	local r = db.info_restr[obj_id]
 
@@ -170,16 +170,16 @@ function is_info_restricted( obj_id, info_pos )
 	return not r:inside( info_pos )
 end
 
---' Найти замену сталкеру на работе GUARD по истечению времени работы.
+--' РќР°Р№С‚Рё Р·Р°РјРµРЅСѓ СЃС‚Р°Р»РєРµСЂСѓ РЅР° СЂР°Р±РѕС‚Рµ GUARD РїРѕ РёСЃС‚РµС‡РµРЅРёСЋ РІСЂРµРјРµРЅРё СЂР°Р±РѕС‚С‹.
 function find_stalker_for_job(obj, need_job)
 	local smart = get_npc_smart(obj)
 
-	-- Тут мы типа выбираем чувака на какой то работе.
+	-- РўСѓС‚ РјС‹ С‚РёРїР° РІС‹Р±РёСЂР°РµРј С‡СѓРІР°РєР° РЅР° РєР°РєРѕР№ С‚Рѕ СЂР°Р±РѕС‚Рµ.
 	for k,v in pairs(smart.npc_info) do
 		local npc_job = smart.job_data[v.job_id]
 		if npc_job ~= nil and npc_job.reserve_job == true then
 			local selected_npc_data = smart.npc_info[k]
-			-- У выбранного чувака устанавливаем, что он нам нужен как замена гварду
+			-- РЈ РІС‹Р±СЂР°РЅРЅРѕРіРѕ С‡СѓРІР°РєР° СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј, С‡С‚Рѕ РѕРЅ РЅР°Рј РЅСѓР¶РµРЅ РєР°Рє Р·Р°РјРµРЅР° РіРІР°СЂРґСѓ
 			selected_npc_data.need_job = need_job
 			return
 		end
@@ -188,7 +188,7 @@ function find_stalker_for_job(obj, need_job)
 end
 
 function switch_to_desired_job(npc)
-	-- Переключает чувака на работу, которую он хочет (need_job). Работа выбирается отдельно.
+	-- РџРµСЂРµРєР»СЋС‡Р°РµС‚ С‡СѓРІР°РєР° РЅР° СЂР°Р±РѕС‚Сѓ, РєРѕС‚РѕСЂСѓСЋ РѕРЅ С…РѕС‡РµС‚ (need_job). Р Р°Р±РѕС‚Р° РІС‹Р±РёСЂР°РµС‚СЃСЏ РѕС‚РґРµР»СЊРЅРѕ.
 	local smart = get_npc_smart(npc)
 	smart:switch_to_desired_job(npc)
 end
@@ -196,8 +196,8 @@ end
 
 -----------------------------------------------------------------------------------------------------------------
 
--- загрузка динамических ltx
--- их имена: "*имя_смарттерейна*тип_гулага"
+-- Р·Р°РіСЂСѓР·РєР° РґРёРЅР°РјРёС‡РµСЃРєРёС… ltx
+-- РёС… РёРјРµРЅР°: "*РёРјСЏ_СЃРјР°СЂС‚С‚РµСЂРµР№РЅР°*С‚РёРї_РіСѓР»Р°РіР°"
 local dynamic_ltx = {}
 function loadLtx(name)
 	local h    = "*"..name
@@ -220,11 +220,11 @@ end
 
 
 
---' Возвращает имя смарта, какой смарт атакует указанный чувак.
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРјСЏ СЃРјР°СЂС‚Р°, РєР°РєРѕР№ СЃРјР°СЂС‚ Р°С‚Р°РєСѓРµС‚ СѓРєР°Р·Р°РЅРЅС‹Р№ С‡СѓРІР°Рє.
 function obj_attacking_smart(se_obj, smrttrn)
 	local board = sim_board.get_sim_board()
 	local squad = board.squads[se_obj.squad_id]
-	--' Получаем активное действие чувака
+	--' РџРѕР»СѓС‡Р°РµРј Р°РєС‚РёРІРЅРѕРµ РґРµР№СЃС‚РІРёРµ С‡СѓРІР°РєР°
 		if squad == nil then
 		--printf("NOTOAS: npc_id = %s squad", se_obj.id)
 				return nil
@@ -237,7 +237,7 @@ function obj_attacking_smart(se_obj, smrttrn)
 		return nil
 	end
 
-	--' Если отряд чем то занят, то возвращаем dest_smart этого действия.
+	--' Р•СЃР»Рё РѕС‚СЂСЏРґ С‡РµРј С‚Рѕ Р·Р°РЅСЏС‚, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµРј dest_smart СЌС‚РѕРіРѕ РґРµР№СЃС‚РІРёСЏ.
 	if current_action.dest_smrt_id == nil then
 		--printf("NOTOAS: npc_id = %s dest_smart", se_obj.id)
 		return nil
@@ -247,13 +247,13 @@ function obj_attacking_smart(se_obj, smrttrn)
 	return board.smarts[current_action.dest_smrt_id].smrt:name()
 end
 
---' Находится ли данный смарт в режиме обороны.
+--' РќР°С…РѕРґРёС‚СЃСЏ Р»Рё РґР°РЅРЅС‹Р№ СЃРјР°СЂС‚ РІ СЂРµР¶РёРјРµ РѕР±РѕСЂРѕРЅС‹.
 function defending_smart(se_obj, smrttrn)
 	local task = task_manager.get_task_manager():get_tasks_by_smart(smrttrn.id)
 
 	if task then
 		--printf("defending_smart %s check task %s(%s) [%s]", smrttrn:name(), task.type, task.name, task.status)
-		-- Если таск выдан на нашу цель
+		-- Р•СЃР»Рё С‚Р°СЃРє РІС‹РґР°РЅ РЅР° РЅР°С€Сѓ С†РµР»СЊ
 		if task.type == "capture_smart" and task.state == "counter_attack" then
 			local squad = sim_board.get_sim_board().squads[task.counter_squad]
 			if squad ~= nil then

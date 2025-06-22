@@ -24,7 +24,7 @@ function respawn_binder:net_spawn( server_object )
 		return false
 	end
 
-	-- получить ссылку на настоящий серверный объект
+	-- РїРѕР»СѓС‡РёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РЅР°СЃС‚РѕСЏС‰РёР№ СЃРµСЂРІРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚
 	self.se_respawn = alife():object( server_object.id )
 	printf("RESPAWN: [%s] net_spawn", self.object:name())
 	return true

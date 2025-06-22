@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------------------------------------------------------
---  Айдишники экшинов
+--  РђР№РґРёС€РЅРёРєРё СЌРєС€РёРЅРѕРІ
 ----------------------------------------------------------------------------------------------------------------------
 
--- Глобальные
+-- Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ
 global_actions           = stalker_ids.action_script
 action_script            = stalker_ids.action_script + 1
 alife                    = stalker_ids.action_alife_planner
@@ -13,7 +13,7 @@ bloodsucker_reaction	 = stalker_ids.action_script + 200
 actor_reaction			 = stalker_ids.action_script + 210
 smartcover_action	     = stalker_ids.action_script + 215
 test_reaction			 = stalker_ids.action_script + 218
--- Стохе
+-- РЎС‚РѕС…Рµ
 stohe_actions = stalker_ids.action_script + 220
 
 stohe_tradeseller_init      = stohe_actions + 1
@@ -69,7 +69,7 @@ combat_zombied_base                 = chugai_actions + 110
 combat_monolith_base                = chugai_actions + 120
 combat_camper_base                  = chugai_actions + 130
 
--- Змей
+-- Р—РјРµР№
 zmey_actions = chugai_actions + 1024
 zmey_action_guard_activity = zmey_actions + 100
 zmey_guard_base        = zmey_actions + 200
@@ -89,7 +89,7 @@ zmey_test_base         = zmey_actions + 600
 zmey_remark_base       = zmey_actions + 630
 zmey_companion_base    = zmey_actions + 660
 
--- Женя
+-- Р–РµРЅСЏ
 jon_actions = zmey_actions + 1024
 
 jon_stalker_zombie     = jon_actions + 0
@@ -106,7 +106,7 @@ jon_sniper_enabled     = jon_actions + 10
 jon_sniper_see_monster = jon_actions + 11
 jon_sniper_see_enemy   = jon_actions + 12
 jon_sniper_camper      = jon_actions + 13
---+5 Занято
+--+5 Р—Р°РЅСЏС‚Рѕ
 
 jon_outcast			   = jon_actions + 20
 jon_outcast_replics    = jon_actions + 21
