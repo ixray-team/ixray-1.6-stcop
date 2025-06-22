@@ -70,7 +70,11 @@
 
 	<fraglimit x="394" y="0" width="234" height="47" stretch="1">
 		<text y="5" align="c" font="graffiti32" r="238" g="155" b="23" a="255"/>
-		<texture>ui_hud_fragBig</texture>
 	</fraglimit>
 	
+	<global width="1024" height="768">
+	    <auto_static x="394" y="0" width="234" height="47" stretch="1">
+		    <texture>ui_hud_fragBig</texture>
+	    </auto_static>
+    </global>
 </w>
