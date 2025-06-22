@@ -60,7 +60,7 @@
 
   <question_item x="0" y="0" width="439" height="20" min_height="13">
 
-    <num_text x="0" y="3" width="8" height="20">
+    <num_text x="0" y="2" width="8" height="20">
       <text font="letterica18" color="ui_2"/>
     </num_text>
 
