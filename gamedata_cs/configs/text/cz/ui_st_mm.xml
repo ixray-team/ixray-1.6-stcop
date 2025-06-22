@@ -675,4 +675,13 @@
 	<string id="ui_st_invalid_saved_game">
 		<text>Verze uložené pozice neodpovídá aktuální verzi hry.</text>
 	</string>
+	<string id="st_opt_atest_msaa_dx10_0">
+		<text>DX10.0 [Standard]</text>
+	</string>
+	<string id="st_opt_atest_msaa_dx10_1">
+		<text>DX10.1 [Wy¿sza jakoœæ]</text>
+	</string>
+	<string id="st_opt_ultra">
+		<text>Ultra</text>
+	</string>
 </string_table>

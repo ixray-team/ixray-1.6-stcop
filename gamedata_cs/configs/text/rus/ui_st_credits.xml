@@ -432,4 +432,63 @@
 	<string id="st_thanks_all">
 		<text>От всей команды ОГРОМНОЕ СПАСИБО всем поклонникам и фанатам проекта S.T.A.L.K.E.R.</text>
 	</string>
+	<string id="st_thanks_litconc">
+		<text>Победителям второго литконкурса по мотивам игры "*S.T.A.L.K.E.R.*"</text>
+	</string>
+	<string id="st_thanks_litconc1">
+		<text>Михаил Черепанов</text>
+	</string>
+	<string id="st_thanks_litconc2">
+		<text>Егор Песков</text>
+	</string>
+	<string id="st_thanks_litconc3">
+		<text>Гордиан Александр</text>
+	</string>
+	<string id="st_thanks_litconc4">
+		<text>Hitman</text>
+	</string>
+	<string id="st_thanks_litconc5">
+		<text>Кащеев</text>
+	</string>
+	<string id="st_thanks_litconc6">
+		<text>Сергей Куликов</text>
+	</string>
+	<string id="st_thanks_litconc7">
+		<text>Владислав Белогородский</text>
+	</string>
+	<string id="st_thanks_litconc8">
+		<text>Роман Шемякин</text>
+	</string>
+	<string id="st_thanks_litconc9">
+		<text>Дмитрий Калинин</text>
+	</string>
+	<string id="st_thanks_litconc10">
+		<text>Сергей Берков</text>
+	</string>
+	<string id="st_thanks_litconc11">
+		<text>Максим Ваганов</text>
+	</string>
+	<string id="st_thanks_litconc12">
+		<text>Чистяков М.В.</text>
+	</string>
+	<string id="st_thanks_litconc13">
+		<text>Андрей Петров</text>
+	</string>
+	<string id="st_thanks_litconc14">
+		<text>Ирина Грин и Виктор Кузнецов</text>
+	</string>
+	<string id="st_thanks_litconc15">
+		<text>Сергей Недоруб</text>
+	</string>
+	<string id="st_thanks_litconc16">
+		<text>Вероника Аверина</text>
+	</string>
+	<string id="st_thanks_litconc17">
+		<text>А. Лобин</text>
+	</string>
+	<string id="st_thanks_litconc18">
+		<text>Владислав Дик</text>
+	</string>
+
+
 </string_table>

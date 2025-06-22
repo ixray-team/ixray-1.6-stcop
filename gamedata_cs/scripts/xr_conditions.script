@@ -775,7 +775,7 @@ end
 function is_faction_friend_to_actor(actor, npc, p)
 		if(p[1]~=nil) then
 --		return db.actor:community_goodwill(p[1])>1000
-				return relation_registry.community_goodwill(p[1], db.actor:id())>1000
+				return relation_registry.community_goodwill(p[1], db.actor:id())>=1000
 		else
 				return false
 		end

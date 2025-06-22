@@ -396,8 +396,8 @@ target_npc_or_box_name = mar_recover_item_3_stalker
 distanse = 100
 prior = 2
 faction = csky
-on_init = {=actor_on_level(marsh) -mar_recover_item_3_done} true, false
-on_complete = %+mar_recover_item_3_done%
+target_cond = {=actor_on_level(marsh) -mar_recover_item_3_done} true, false
+on_init = %+mar_recover_item_3_done%
 requested_items = mar_quest_af_cristall_flower_1
 community_relation_delta_complete = 300
 reward_money = {~20} 1000, {~50} 750, 500

@@ -442,11 +442,17 @@ function CCombat_manager:update_squad(id, data)
 	--if self.smart:name() == "esc_smart_terrain_4_10" then
 	--	printf("Sim_Combat[%s]: squad [%s] quest [%s] stage [%s] squad_online [%s]", self.smart:name(), id, tostring(self.combat_quest), data._stage, tostring(squad.squad_online))
 	--end
+	local function is_same_level(obj1, obj2)
+		local gg = game_graph()
+		local gv1 = gg:vertex(obj1.m_game_vertex_id)
+		local gv2 = gg:vertex(obj2.m_game_vertex_id)
+		return (gv1:level_id() == gv2:level_id())
+	end
 
 	if data._stage == "move" then
 		if not squad.squad_online then
 			local comander = alife():object(squad.commander_id)
-			if comander.attack_position ~= nil and
+			if comander.attack_position ~= nil and is_same_level(self.smart, comander) and
 				 comander.position:distance_to_sqr(comander.attack_position) < SQUAD_COME_ATTACK_OFFLINE_DIST
 			then
 				data._stage = "prepare"
