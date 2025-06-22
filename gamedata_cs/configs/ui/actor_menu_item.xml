@@ -139,6 +139,10 @@
 		<texture a="180">ui_upgrade_arrow2</texture>
 	</cell_item_upgrade>
 
+	<cell_item_custom_text x="1" y="1" width="24" height="16" stretch="1">
+		<text x="2" y="6" width="24" height="16" font="arial_14" color="ui_2" align="r" vert_align="c"/>
+	</cell_item_custom_text>
+
     <condition_progess_bar x="1" y="1" width="38" height="5" horz="1" min="0" max="1" pos="1">
 	    <background x="0" y="0" width="38" height="5">
             <texture r="62" g="74" b="74">ui_inGame2_inventory_item_status_bar_cop</texture>
