@@ -72,7 +72,7 @@ path_look = sniper_z1_1_look
 radius = 1
 def_state_campering = hide_na
 def_state_campering_fire = hide_sniper_fire
-on_game_timer = 40 | remark
+on_game_timer = 20 | remark
 invulnerable = true
 
 ; Убийство жертвы
@@ -82,9 +82,9 @@ combat_ignore_cond = always
 danger = danger_condition@2
 anim = hide_sniper_fire
 target = 201
-on_info = {+sniper_fire_scene_end } camper@fire2
+on_info = {+sniper_fire_scene_end} camper@fire2
 on_info2 = {+rush_7} camper@fire4
-invulnerable = true
+;invulnerable = true
 
 ; Стреляет по игроку
 [camper@fire2]
@@ -98,7 +98,7 @@ def_state_campering = hide_na
 def_state_campering_fire = hide_sniper_fire
 on_info = {+rush_4} camper@fire3
 on_info2 = {+cover_fire_hide} camper@hide
-invulnerable = true
+;invulnerable = true
 on_actor_in_zone = kat_hosp_z1_sniper_ignore_restr | camper@actor_ignore2
 
 [camper@actor_ignore2]
@@ -110,7 +110,7 @@ path_look = sniper_z1_1_look
 radius = 1
 def_state_campering = hide_na
 on_actor_not_in_zone = kat_hosp_z1_sniper_ignore_restr | camper@fire2
-invulnerable = true
+;invulnerable = true
 
 ; Прячется во время огня на прикрытие
 [camper@hide]
@@ -123,7 +123,7 @@ radius = 1
 def_state_campering = hide_na
 on_info = {+rush_4} camper@fire3
 on_info2 = {+cover_fire_end} camper@fire2
-invulnerable = true
+;invulnerable = true
 
 ; Переходит на вторую точку для прострела второго этажа
 [camper@fire3]
@@ -137,7 +137,7 @@ def_state_moving = sneak_run
 def_state_campering = hide_na
 def_state_campering_fire = hide_sniper_fire
 on_info = {+rush_7} camper@fire4
-invulnerable = true
+;invulnerable = true
 
 [camper@fire4]
 out_restr = z1_sniper_restr

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_activate_artefact">
+		<text>Attiva manufatto</text>
+	</string>
+	<string id="st_attach_gl_to_rifle">
+		<text>Attacca lanciagranate al fucile</text>
+	</string>
+	<string id="st_attach_scope_to_pistol">
+		<text>Attacca mirino alla pistola</text>
+	</string>
+	<string id="st_attach_scope_to_rifle">
+		<text>Attacca mirino al fucile</text>
+	</string>
+	<string id="st_attach_silencer_to_pistol">
+		<text>Attacca silenziatore alla pistola</text>
+	</string>
+	<string id="st_attach_silencer_to_rifle">
+		<text>Attacca silenziatore al fucile</text>
+	</string>
+	<string id="st_base_cost">
+		<text>Prezzo</text>
+	</string>
+	<string id="st_community">
+		<text>Gruppo:</text>
+	</string>
+	<string id="st_condition">
+		<text>Stato</text>
+	</string>
+	<string id="st_detach_gl">
+		<text>Smonta lanciagranate</text>
+	</string>
+	<string id="st_detach_scope">
+		<text>Smonta mirino</text>
+	</string>
+	<string id="st_detach_silencer">
+		<text>Smonta silenziatore</text>
+	</string>
+	<string id="st_dress_outfit">
+		<text>Indossa tuta</text>
+	</string>
+	<string id="st_drop">
+		<text>Lascia</text>
+	</string>
+	<string id="st_drop_all">
+		<text>Lascia tutto</text>
+	</string>
+	<string id="st_eat">
+		<text>Mangia</text>
+	</string>
+	<string id="st_kg">
+		<text>kg</text>
+	</string>
+	<string id="st_move_on_belt">
+		<text>Equipaggia</text>
+	</string>
+	<string id="st_move_to_bag">
+		<text>Sposta nello zaino</text>
+	</string>
+	<string id="st_move_to_slot">
+		<text>Sposta nello scomparto</text>
+	</string>
+	<string id="st_sell_item">
+		<text>Vendi oggetto</text>
+	</string>
+	<string id="st_ui_acid_sensor">
+		<text>Protezione dagli acidi</text>
+	</string>
+	<string id="st_ui_armor_static">
+		<text>Condizione armatura</text>
+	</string>
+	<string id="st_ui_fire_sensor">
+		<text>Protezione dal fuoco</text>
+	</string>
+	<string id="st_ui_health_static">
+		<text>Salute</text>
+	</string>
+	<string id="st_ui_main_sensor">
+		<text>Contaminazione\nradioattiva</text>
+	</string>
+	<string id="st_ui_psi_sensor">
+		<text>Psico-protezione</text>
+	</string>
+	<string id="st_ui_radia_sensor">
+		<text>Protezione dalle radiazioni</text>
+	</string>
+	<string id="st_ui_stamina_state">
+		<text>Vigore</text>
+	</string>
+	<string id="st_undress_outfit">
+		<text>Togliti la tuta</text>
+	</string>
+	<string id="st_unload_magazine">
+		<text>Scarica</text>
+	</string>
+	<string id="st_use">
+		<text>Usa</text>
+	</string>
+	<string id="st_weight">
+		<text>Peso</text>
+	</string>
+	<string id="ui_inv_accuracy">
+		<text>Precisione</text>
+	</string>
+	<string id="ui_inv_ammo_pistol">
+		<text>Compra munizioni standard per pistola (Q)</text>
+	</string>
+	<string id="ui_inv_ammo_rifle">
+		<text>Compra munizioni per fucile (W)</text>
+	</string>
+	<string id="ui_inv_bag">
+		<text>Zaino</text>
+	</string>
+	<string id="ui_inv_belt">
+		<text>Cintura</text>
+	</string>
+	<string id="ui_inv_bleeding">
+		<text>Emorragia</text>
+	</string>
+	<string id="ui_inv_cancel">
+		<text>Annulla</text>
+	</string>
+	<string id="ui_inv_cant_buy_item">
+		<text>Impossibile comprare</text>
+	</string>
+	<string id="ui_inv_clear">
+		<text>Cancella</text>
+	</string>
+	<string id="ui_inv_count_restr">
+		<text>Restrizioni quantitа</text>
+	</string>
+	<string id="ui_inv_damage">
+		<text>Danno</text>
+	</string>
+	<string id="ui_inv_default(F5)">
+		<text>Oggetti predefiniti (F5)</text>
+	</string>
+	<string id="ui_inv_description">
+		<text>Descrizione</text>
+	</string>
+	<string id="ui_inv_drop">
+		<text>Lascia</text>
+	</string>
+	<string id="ui_inv_equipment">
+		<text>Equipaggiamento</text>
+	</string>
+	<string id="ui_inv_exit">
+		<text>Esci</text>
+	</string>
+	<string id="ui_inv_granadelauncher_rifle">
+		<text>Compra lanciagranate per fucile (D)</text>
+	</string>
+	<string id="ui_inv_granades">
+		<text>Granate</text>
+	</string>
+	<string id="ui_inv_granades_rifle">
+		<text>Compra granate per lanciagranate (E)</text>
+	</string>
+	<string id="ui_inv_handling">
+		<text>Maneggevolezza</text>
+	</string>
+	<string id="ui_inv_has">
+		<text>Attuale:</text>
+	</string>
+	<string id="ui_inv_health">
+		<text>Salute</text>
+	</string>
+	<string id="ui_inv_heavy_weapons">
+		<text>Pesanti</text>
+	</string>
+	<string id="ui_inv_items_list">
+		<text>Elenco oggetti</text>
+	</string>
+	<string id="ui_inv_last_buy">
+		<text>Acquista set precedente</text>
+	</string>
+	<string id="ui_inv_last_buy(F4)">
+		<text>Ultimi oggetti (F4)</text>
+	</string>
+	<string id="ui_inv_money">
+		<text>Denaro</text>
+	</string>
+	<string id="ui_inv_need">
+		<text>Richiesto:</text>
+	</string>
+	<string id="ui_inv_not_enought_money">
+		<text>Denaro insufficiente</text>
+	</string>
+	<string id="ui_inv_ok">
+		<text>OK</text>
+	</string>
+	<string id="ui_inv_outfit_burn_protection">
+		<text>Ustione</text>
+	</string>
+	<string id="ui_inv_outfit_chemical_burn_protection">
+		<text>Ustione chim.</text>
+	</string>
+	<string id="ui_inv_outfit_explosion_protection">
+		<text>Esplosione</text>
+	</string>
+	<string id="ui_inv_outfit_fire_wound_protection">
+		<text>Proiettili</text>
+	</string>
+	<string id="ui_inv_outfit_params">
+		<text>Parametri</text>
+	</string>
+	<string id="ui_inv_outfit_radiation_protection">
+		<text>Radiazione</text>
+	</string>
+	<string id="ui_inv_outfit_shock_protection">
+		<text>Folgor.</text>
+	</string>
+	<string id="ui_inv_outfit_strike_protection">
+		<text>Impatto</text>
+	</string>
+	<string id="ui_inv_outfit_telepatic_protection">
+		<text>Telepatia</text>
+	</string>
+	<string id="ui_inv_outfit_wound_protection">
+		<text>Lacerazione</text>
+	</string>
+	<string id="ui_inv_outfits">
+		<text>Tute</text>
+	</string>
+	<string id="ui_inv_personal">
+		<text>Tuta</text>
+	</string>
+	<string id="ui_inv_pistols">
+		<text>Pistole</text>
+	</string>
+	<string id="ui_inv_power">
+		<text>Resistenza</text>
+	</string>
+	<string id="ui_inv_preset1(F1)">
+		<text>Predefinita 1 (F1)</text>
+	</string>
+	<string id="ui_inv_preset2(F2)">
+		<text>Predefinita 2 (F2)</text>
+	</string>
+	<string id="ui_inv_preset3(F3)">
+		<text>Predefinita 3 (F3)</text>
+	</string>
+	<string id="ui_inv_primary_weapons">
+		<text>Arma principale</text>
+	</string>
+	<string id="ui_inv_radiation">
+		<text>Radiazioni</text>
+	</string>
+	<string id="ui_inv_rank_restr">
+		<text>Restrizioni rango</text>
+	</string>
+	<string id="ui_inv_rate_of_fire">
+		<text>Rapiditа di fuoco</text>
+	</string>
+	<string id="ui_inv_reset_items(C)">
+		<text>Rimuovi oggetti (C)</text>
+	</string>
+	<string id="ui_inv_rest">
+		<text>Riposa</text>
+	</string>
+	<string id="ui_inv_rifles">
+		<text>Fucili d'assalto</text>
+	</string>
+	<string id="ui_inv_satiety">
+		<text>Fame</text>
+	</string>
+	<string id="ui_inv_scope_rifle">
+		<text>Compra mirino di precisione per fucile (S)</text>
+	</string>
+	<string id="ui_inv_sell_items(X)">
+		<text>Vendi tutti gli oggetti nello zaino (X)</text>
+	</string>
+	<string id="ui_inv_shop">
+		<text>Negozio</text>
+	</string>
+	<string id="ui_inv_shotguns">
+		<text>Doppiette</text>
+	</string>
+	<string id="ui_inv_silencer_pistol">
+		<text>Compra silenziatore per pistola (A)</text>
+	</string>
+	<string id="ui_inv_silencer_rifle">
+		<text>Compra silenziatore per fucile (F)</text>
+	</string>
+	<string id="ui_inv_sniper_rifles">
+		<text>Di precis.</text>
+	</string>
+	<string id="ui_inv_time">
+		<text>Tempo</text>
+	</string>
+	<string id="ui_inv_total_money">
+		<text>Denaro totale</text>
+	</string>
+	<string id="ui_inv_weight">
+		<text>Peso</text>
+	</string>
+	<string id="ui_inv_you_already_have">
+		<text>Hai giа</text>
+	</string>
+	<string id="ui_st_err_gs_not_available">
+		<text>Servizi in linea per S.T.A.L.K.E.R. non disponibili.</text>
+	</string>
+	<string id="ui_st_err_sb_master_server_conn_fail">
+		<text>Impossibile connettersi al server centrale</text>
+	</string>
+	<string id="ui_st_outfit_protect">
+		<text>Protezione:</text>
+	</string>
+	<string id="ui_st_preset_def">
+		<text>Oggetti predef.</text>
+	</string>
+	<string id="ui_st_preset_stored_to">
+		<text>Set d'acquisto personalizzato salvato nella slot:</text>
+	</string>
+	<string id="ui_total_weight">
+		<text>Peso totale:</text>
+	</string>
+	<string id="not_enough_money_partner">
+		<text>Il personaggio non ha abbastanza denaro.</text>
+	</string>
+	<string id="not_enough_money_actor">
+		<text>Non hai abbastanza denaro.</text>
+	</string>
+	<string id="ui_inv_outfit_additional_weight">
+		<text>Peso max.</text>
+	</string>
+</string_table>

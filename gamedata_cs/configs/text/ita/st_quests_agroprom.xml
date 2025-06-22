@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_additional_quest_1_name">
+		<text>Trova il bottino dello stalker morto</text>
+	</string>
+	<string id="agr_additional_quest_1_text">
+		<text>Trova il bottino dello stalker morto.</text>
+	</string>
+	<string id="agr_additional_quest_3_name">
+		<text>Trova lo stalker disperso</text>
+	</string>
+	<string id="agr_additional_quest_3_text">
+		<text>Trova lo stalker disperso.</text>
+	</string>
+	<string id="agr_at_blokpost_name">
+		<text>Parla con il leader della Duty</text>
+	</string>
+	<string id="agr_at_blokpost_text">
+		<text>Parla con il leader della Duty. Il generale Krylov potrebbe sapere dove si trova l'ingresso per il sottosuolo dell'Agroprom, dove pare che gli stalker che hanno raggiunto il centro della Zona avessero un nascondiglio.</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_name">
+		<text>Distruggi il campo dei banditi</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_text">
+		<text>Il campo dei banditi nella galleria deve essere distrutto. I banditi lo usano per lanciare degli attacchi contro il campo degli stalker.</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_name">
+		<text>Distruggi la squadra di banditi</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_text">
+		<text>Una squadra di banditi sorveglia una delle uscite sotterranee e talvolta aiuta altri banditi a salire in superficie. La squadra deve essere distrutta.</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_name">
+		<text>Distruggi la tana dei mutanti</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_text">
+		<text>L'area di fronte alla base degli stalker brulica di mutanti, e per questo и estremamente pericolosa. La tana dei mutanti deve essere distrutta.</text>
+	</string>
+	<string id="agr_defend_duty_base_1_name">
+		<text>Difendi la base della Duty</text>
+	</string>
+	<string id="agr_defend_duty_base_1_text">
+		<text>La base della Duty и sotto attacco. Aiuta a difenderla e verrai ricompensato.</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_name">
+		<text>Difendi la base degli stalker</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_text">
+		<text>La base degli stalker и in pericolo. Aiuta gli stalker a respingere l'attacco e verrai ricompensato.</text>
+	</string>
+	<string id="agr_go_in_hole_name">
+		<text>Scendi nel sottosuolo dell'Agroprom</text>
+	</string>
+	<string id="agr_go_in_hole_text">
+		<text>Devi scendere nel sottosuolo dell'Agroprom. L'unica via d'accesso attraversa il buco dei mutanti.</text>
+	</string>
+	<string id="agr_go_out_hole_name">
+		<text>Parla con Sakharov</text>
+	</string>
+	<string id="agr_go_out_hole_text">
+		<text>Le comunicazioni del gruppo di Strelok trovate nel nascondiglio sotterraneo spiegano molte cose. Strelok и andato dagli scienziati di Yantar. Raggiungi Yantar e parla con il professor Sakharov. Lui potrebbe sapere dove cercare Strelok.</text>
+	</string>
+	<string id="agr_go_to_hole_name">
+		<text>Raggiungi il buco</text>
+	</string>
+	<string id="agr_go_to_hole_text">
+		<text>I soldati della Duty hanno chiuso tutti gli accessi al sottosuolo e sigillato le uscite. L'unico modo per accedervi и attraverso i buchi che i mostri usano per salire in superficie. Devi raggiungere il buco.</text>
+	</string>
+	<string id="agr_mechanic_pda_1_name">
+		<text>Trova il PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_1_text">
+		<text>Trova il PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_2_name">
+		<text>Consegna il PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_2_text">
+		<text>Consegna il PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_name">
+		<text>Trova il PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_text">
+		<text>Trova il PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_name">
+		<text>Consegna il PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_text">
+		<text>Consegna il PDA.</text>
+	</string>
+	<string id="agr_no_task_name">
+		<text>Trova il nascondiglio del gruppo di stalker</text>
+	</string>
+	<string id="agr_no_task_text">
+		<text>Il PDA di Fang conteneva le coordinate di un nascondiglio di un gruppo di stalker che hanno raggiunto il centro della Zona, innescando un evento disastroso. И una scoperta importante, visto che il nascondiglio potrebbe contenere informazioni preziose. Devi trovare il PDA nel nascondiglio.</text>
+	</string>
+	<string id="agr_pda_map_animals_1_name">
+		<text>Trova la mappa delle migrazioni</text>
+	</string>
+	<string id="agr_pda_map_animals_1_text">
+		<text>Trova la mappa che indica i movimenti migratori dei mostri piщ rari della Zona.</text>
+	</string>
+	<string id="agr_pda_map_animals_2_name">
+		<text>Consegna la mappa delle migrazioni</text>
+	</string>
+	<string id="agr_pda_map_animals_2_text">
+		<text>Consegna la mappa delle migrazioni all'Inquisitore.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_name">
+		<text>Aiuta gli stalker</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_text">
+		<text>Un gruppo di stalker sta cercando di raggiungere gli scienziati di Yantar attraversando la palude. Aiutali ad arrivare a destinazione.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_name">
+		<text>Ottieni la ricompensa</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_text">
+		<text>Ottieni la ricompensa da Platonov.</text>
+	</string>
+	<string id="agr_start_name">
+		<text>Parla con il comandante dell'avamposto</text>
+	</string>
+	<string id="agr_start_text">
+		<text>Ottieni informazioni sulla situazione all'Agroprom dal comandante dell'avamposto.</text>
+	</string>
+	<string id="agr_take_reward_name">
+		<text>Ricevi la ricompensa da Krylov</text>
+	</string>
+	<string id="agr_take_reward_text">
+		<text>Il sottosuolo и allagato, e questo dovrebbe fermare gli attacchi dei mutanti contro la Duty, almeno per un po'. Il generale Krylov ti ricompenserа generosamente per aver compiuto la missione. Ricevi la ricompensa da Krylov.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_name">
+		<text>Trova informazioni su come bilanciare le parti automatiche delle mitragliatrici</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_text">
+		<text>Il tecnico Thunderov sta cercando un modo per aumentare la velocitа di fuoco di una mitragliatrice bilanciando le sue parti automatiche. Pagherа una bella somma a chiunque gli porterа delle informazioni utili.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_name">
+		<text>Trova informazioni su come modificare lo scarico delle mitragliatrici</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_text">
+		<text>Thunderov и quasi riuscito a perfezionare le caratteristiche della mitragliatrice. Ora gli serve solo altro tempo e alcuni dati tecnici sullo scarico del gas dell'arma.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_name">
+		<text>Trova informazioni sul freno di velocitа alla bocca per le pistole</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_text">
+		<text>Il tecnico degli stalker all'Agroprom sta cercando informazioni dettagliate sui freni di velocitа alla bocca per le pistole di grosso calibro.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_name">
+		<text>Trova informazioni sui meccanismi a pompa per le doppiette da battaglia</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_text">
+		<text>Il tecnico degli stalker all'Agroprom sta cercando informazioni dettagliate sui meccanismi a pompa per le doppiette da battaglia.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_name">
+		<text>Trova informazioni sulla modifica della canna delle pistole</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_text">
+		<text>Il tecnico degli stalker non possiede l'esperienza necessaria per modificare la canna di una pistola potente. И disposto a pagare per avere queste informazioni.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_name">
+		<text>Trova informazioni sul freno di velocitа alla bocca per le mitragliatrici</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_text">
+		<text>Il tecnico della Duty sta lavorando su una versione migliorata del freno di velocitа alla bocca delle mitragliatrici, ma gli mancano alcuni dati tecnici.</text>
+	</string>
+	<string id="agr_attack_monster_group_name">
+		<text>Distruggi il covo dei mutanti</text>
+	</string>
+	<string id="agr_attack_monster_group_text">
+		<text>I mutanti attaccano la fabbrica sporadicamente e a piccoli gruppi. Ucciderli nel loro covo dovrebbe far smettere gli attacchi.</text>
+	</string>
+	<string id="agr_recover_item_1_name">
+		<text>Recupera la doppietta del membro della Duty</text>
+	</string>
+	<string id="agr_recover_item_1_text">
+		<text>L'altro giorno eravamo in missione per ripulire una zona dai mutanti, quando ne abbiamo trovato uno bello grosso. Dopo un'ora di battaglia, eravamo a corto di munizioni e la bestia non voleva ancora arrendersi. Quindi ho dato l'ordine di ritirarsi, restando sul posto per coprire la fuga dei miei ragazzi. Ho sparato tutte le munizioni e alla fine ho lanciato la doppietta contro il mostro. E sai cosa и successo? Quel bastardo si и messo a rosicchiarla ignorandomi completamente. Recupera quella doppietta. Del resto и stata lei a salvarmi la vita!</text>
+	</string>
+	<string id="agr_recover_item_2_name">
+		<text>Recupera il PDA con le informazioni segrete</text>
+	</string>
+	<string id="agr_recover_item_2_text">
+		<text>Sono stato derubato dai banditi della Discarica, mercenario. Mi hanno preso tutto: denaro, armi, munizioni e le mie scorte di medicinali, oltre al mio prezioso PDA. Conteneva un sacco di informazioni sui nascondigli dei banditi nella Discarica. Devo consegnarlo a Krylov, altrimenti mi scuoierа vivo. Aiutami a recuperarlo!</text>
+	</string>
+	<string id="agr_recover_item_3_name">
+		<text>Recupera la valigetta del membro della Duty</text>
+	</string>
+	<string id="agr_recover_item_3_text">
+		<text>Mercenario, dei mutanti sbucati dal sottosuolo ci hanno costretti ad abbandonare le nostre posizioni e ripiegare. Non sono riuscito a prendere la mia valigetta, insieme alle mie armi, le munizioni, i medicinali e il mio rilevatore. Dovevo mettermi in salvo al piщ presto! Aiutami a recuperare quella valigetta.</text>
+	</string>
+	<string id="agr_recover_item_4_name">
+		<text>Recupera il fucile d'assalto del membro della Duty</text>
+	</string>
+	<string id="agr_recover_item_4_text">
+		<text>Ho litigato con una guida per una stupidata, e ora non vuole piщ portarmi dagli stalker! Dice che non vuole vedermi mai piщ. Non ho molta voglia di girarmi la Zona da solo, ovviamente. Ho lasciato la mia arma dagli stalker, quando sono andato a trovarli la scorsa settimana. Uno dei nostri era stato promosso e abbiamo festeggiato con una bella scorta di alcol. Alla fine ero devastato, e i ragazzi hanno faticato non poco per riportarmi in caserma... dimenticando perт il mio fucile! Potresti andare a prenderlo? Un soldato non puт vivere senza la propria arma.</text>
+	</string>
+</string_table>

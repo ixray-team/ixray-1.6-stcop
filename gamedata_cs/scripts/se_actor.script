@@ -34,11 +34,14 @@ function se_actor:STATE_Read(packet, size)
 --	if self.m_registred ~= true then
 --		return
 --	end
-	set_save_marker(packet, "load", false, "se_actor")
 
-	task_manager.get_task_manager():load(packet)
-	sim_board.get_sim_board().id_generator:load(packet)
-	minigames_manager.get_minigames_manager():load(packet)
+	if db.actor == nil then
+		set_save_marker(packet, "load", false, "se_actor")
+		task_manager.get_task_manager():load(packet)
+		sim_board.get_sim_board().id_generator:load(packet)
+		minigames_manager.get_minigames_manager():load(packet)
+		set_save_marker(packet, "load", true, "se_actor")
+	end
 
-	set_save_marker(packet, "load", true, "se_actor")
+
 end

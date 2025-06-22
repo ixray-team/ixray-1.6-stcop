@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_actor_destroy_wave1">
+		<text>The place where zombies appear</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_name">
+		<text>Don't let zombies get close to the stalkers on the roof</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_text">
+		<text>Cover the stalkers on the roof while they work the installation valve. Don't let zombies get near the repair squad on the roof!</text>
+	</string>
+	<string id="yan_actor_destroy_wave2">
+		<text>The place where zombies appear</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_name">
+		<text>Don't let zombies get close to the stalkers in the hangar</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_text">
+		<text>Cover the stalkers in the hangar while they work the installation valve. Don't let zombies get near the repair squad in the hangar!</text>
+	</string>
+	<string id="yan_actor_go_base_defence">
+		<text>Defend the scientists' base</text>
+	</string>
+	<string id="yan_actor_go_base_defence_name">
+		<text>Defend the scientists' base</text>
+	</string>
+	<string id="yan_actor_go_base_defence_text">
+		<text>Defend the scientists' base</text>
+	</string>
+	<string id="yan_actor_go_base_science">
+		<text>As long as zombies are attacking, the doors of the scientists' bunker are blocked. Repel the zombie attack to get inside the bunker and see the scientists</text>
+	</string>
+	<string id="yan_actor_go_base_science_name">
+		<text>Talk to Sakharov</text>
+	</string>
+	<string id="yan_actor_go_base_science_text">
+		<text>Strelok has left to see the scientists at Yantar. Go to Yantar and talk to professor Sakharov. He may know where to find Strelok</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest">
+		<text>The path to the Red Forest is open</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_name">
+		<text>Go to the Red Forest</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_text">
+		<text>The cooling station has been repaired and stabilized, so psy-emissions are at a minimum. The way to the Red Forest is safe. Go to the Red Forest - that's where Strelok is heading</text>
+	</string>
+	<string id="yan_actor_go_to_stalker">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_name">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_text">
+		<text>text in default</text>
+	</string>
+	<string id="yan_main_quest_line">
+		<text>Don't let the repair team die</text>
+	</string>
+	<string id="yan_main_quest_line_name">
+		<text>Hold your position!</text>
+	</string>
+	<string id="yan_main_quest_line_text">
+		<text>Hold your position!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy">
+		<text>Take the documents to Sakharov </text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_name">
+		<text>Take the documents to Sakharov</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_text">
+		<text>Take the documents to Sakharov. They will help him understand why Yantar became home to such strong psy-emission levels</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke">
+		<text>Fight your way through to the device</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_name">
+		<text>Fight your way through to the factory</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_text">
+		<text>The area around the factory is full of zombies. Join up with Lefty and his group to fight your way inside. Hurry - the psy-field level may become critical at any minute</text>
+	</string>
+	<string id="yan_quest_doc">
+		<text>Find the documents</text>
+	</string>
+	<string id="yan_quest_doc_name">
+		<text>Find PDA with documents</text>
+	</string>
+	<string id="yan_quest_doc_text">
+		<text>A group of stalkers found important documents in the factory area. They may help Sakharov determine the cause of the powerful psy-field at Yantar. The group's signal died near the factory exit. Find the PDA with the documents</text>
+	</string>
+	<string id="yan_quest_levsha">
+		<text>Meet Lefty</text>
+	</string>
+	<string id="yan_quest_levsha_name">
+		<text>Meet Lefty's group</text>
+	</string>
+	<string id="yan_quest_levsha_text">
+		<text>A group of stalkers is getting ready to fight their way through to the factory while the psy-emissions are at their lowest. Meet Lefty, the group's commander</text>
+	</string>
+	<string id="yan_repair_defend">
+		<text>Take up a position on the hangar roof</text>
+	</string>
+	<string id="yan_repair_defend_name">
+		<text>Follow the stalker onto the hangar roof</text>
+	</string>
+	<string id="yan_repair_defend_text">
+		<text>Lefty ordered everyone to assume their positions. Follow the stalker onto the roof and get in position</text>
+	</string>
+	<string id="yan_recover_item_1_name">
+		<text>Bring back the Scarlet Flower</text>
+	</string>
+	<string id="yan_recover_item_1_text">
+		<text>Help me, merc. There's an artifact in the Zone we call the Scarlet Flower. It's no use to a stalker but the ladies can't take their pretty eyes off it. I've got a date coming up and I figure I'm guaranteed to score if I can get one. That's why I'm still in the damn Zone - a flower has been spotted somewhere around here. The artifact looks like a magic flower which glows day and night. Bring me the artifact and I'll make it worth your while!</text>
+	</string>
+	<string id="yan_recover_item_2_name">
+		<text>Return the souvenir grenade</text>
+	</string>
+	<string id="yan_recover_item_2_text">
+		<text>Merc, there's something I need. I lost a souvenir, which looks like a grenade...but it's not a grenade...well, it is a grenade but it's one they use for training. Anyway, get it back for me... I think I know where you can find it - I was at the factory when something happened...my brain got all messed up and I nearly forgot who I am! When I came to, I was here, so I figure that grenade must be back at the factory. Return it for me!</text>
+	</string>
+</string_table>

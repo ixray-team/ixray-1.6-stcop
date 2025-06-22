@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_defend_bandit_base_name">
+		<text>Defend the bandit base</text>
+	</string>
+	<string id="gar_defend_bandit_base_text">
+		<text>Defend the bandit base from the enemy attack</text>
+	</string>
+	<string id="gar_quest_bring_money_name">
+		<text>Bring Napr two thousand in cash when it gets dark</text>
+	</string>
+	<string id="gar_quest_bring_money_text">
+		<text>Buy a medkit from Wild Napr at the flea market for 2,000. Major deals like this at the flea market only take place at night.</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_name">
+		<text>Bring Wild Napr the old PDA</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_text">
+		<text>Bring Wild Napr at the flea market the old PDA, found under the false bottom of the toolbox in Freshy's destroyed camp.</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_name">
+		<text>Kill the traitor</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_text">
+		<text>Kill Stringov for leading you into an ambush.</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_name">
+		<text>Take over the flea market together with the bandits</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_text">
+		<text>Massacre the diggers at the flea market to teach the others a lesson, and make sure that one of the bandits stays there to guard it.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_name">
+		<text>Take the old PDA from the toolbox</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_text">
+		<text>Take the old PDA in Freshy's camp to bring to Wild Napr. The PDA should be under the false bottom of the toolbox.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_name">
+		<text>Take the old PDA from Freshy's camp</text>
+	</string>
+	<string id="gar_quest_get_old_pda_text">
+		<text>Take Freshy's old PDA from him at the camp to bring to Wild Napr. If Freshy is not there, take the PDA from under the false bottom of the toolbox.</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_name">
+		<text>Take things from Stringov's body</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_text">
+		<text>Search Stringov's body and take everything valuable.</text>
+	</string>
+	<string id="gar_quest_get_weapons_name">
+		<text>Bring two thousand to Stringov</text>
+	</string>
+	<string id="gar_quest_get_weapons_text">
+		<text>Bring Stringov 2,000 in cash to buy a batch of smuggled weapons.</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_name">
+		<text>Take out a guy known as Stringov</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_text">
+		<text>Kill a guy called Stringov per Yoga's instructions.</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_name">
+		<text>Take out the smuggler and diggers</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_text">
+		<text>Kill the smuggler and the diggers who want to buy weapons from him.</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_name">
+		<text>Destroy the Night Hunters</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_text">
+		<text>Find and destroy the creatures that hunt diggers. You can start looking at the place where they attacked the survivor's group. It is likely that they can only be found at night.</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_name">
+		<text>Eliminate the guards at the bandit concentration camp</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_text">
+		<text>Free the captives together with the digger squad after eliminating the bandit concentration camp guards.</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_name">
+		<text>Meet the digger squad</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_text">
+		<text>Meet the digger squad and lead the attack on the bandit concentration camp.</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_name">
+		<text>Talk to Wild Napr</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_text">
+		<text>Find out what important business Wild Napr wanted to talk to you about at the flea market.</text>
+	</string>
+	<string id="gar_story_chase_digger_name">
+		<text>Get information from the digger messenger</text>
+	</string>
+	<string id="gar_story_chase_digger_text">
+		<text>Talk to the digger messenger to find out where Fang went.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_name">
+		<text>Find Fang</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_text">
+		<text>Find Fang in the basement by following his PDA signal.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_name">
+		<text>Catch up with Fang</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_text">
+		<text>Catch up with Fang by following his PDA signal.</text>
+	</string>
+	<string id="gar_story_find_cache_name">
+		<text>Find the stash</text>
+	</string>
+	<string id="gar_story_find_cache_text">
+		<text>Find Fang's group's stash.</text>
+	</string>
+	<string id="gar_story_find_diggers_name">
+		<text>Get information about Fang from the diggers</text>
+	</string>
+	<string id="gar_story_find_diggers_text">
+		<text>Try to find out Fang's whereabouts from the diggers he went to see, according to the trader.</text>
+	</string>
+	<string id="gar_story_get_pda_name">
+		<text>Pick up Fang's PDA</text>
+	</string>
+	<string id="gar_story_get_pda_text">
+		<text>Pick up the PDA that Fang dropped</text>
+	</string>
+	<string id="gar_story_go_to_freedom_name">
+		<text>Follow Fang to the Dark Valley</text>
+	</string>
+	<string id="gar_story_go_to_freedom_text">
+		<text>Follow Fang to the Dark Valley.</text>
+	</string>
+	<string id="gar_story_kill_dogs_name">
+		<text>Kill the blind dogs</text>
+	</string>
+	<string id="gar_story_kill_dogs_text">
+		<text>Kill the blind dogs that have locked in the digger messenger in the valley.</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_name">
+		<text>Search the digger's body</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_text">
+		<text>Search the digger's body for information about Fang.</text>
+	</string>
+	<string id="gar_quest_bandit_reward_name">
+		<text>Collect your reward from Tooth</text>
+	</string>
+	<string id="gar_quest_bandit_reward_text">
+		<text>Go see Tooth the trader and collect a reward for clearing the flea market.</text>
+	</string>
+	<string id="gar_quest_bandit_secret_name">
+		<text>Take the shooter from stash in the anomaly</text>
+	</string>
+	<string id="gar_quest_bandit_secret_text">
+		<text>Take the shooter Yoga talked about from the stash in the anomaly</text>
+	</string>
+	<string id="gar_quest_captive_reward_name">
+		<text>Take loot from the stash</text>
+	</string>
+	<string id="gar_quest_captive_reward_text">
+		<text>Take the loot from the old stash used by the diggers that were freed from the concentration camp.</text>
+	</string>
+	<string id="gar_quest_more_reward_name">
+		<text>Demand reward from Yoga</text>
+	</string>
+	<string id="gar_quest_more_reward_text">
+		<text>Demand an additional reward from Yoga for clearing the flea market.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_name">
+		<text>Find information about reinforced body armor</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_text">
+		<text>Bring Limpid a bottle of booze and some information about reinforced army body armor. In return he may be able to install something similar on a body suit.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_name">
+		<text>Find information about screening a suit</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_text">
+		<text>Limpid's never heard of psy-emissions, but if you provide him with all the necessary information, he could assemble and install a system on a suit that would protect the wearer against these emissions.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_name">
+		<text>Find information about a closed-cycle breathing module</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_text">
+		<text>Limpid, the bandit technician, can make any kind of modification, but to install a closed-cycle breathing module on a suit he needs additional information.</text>
+	</string>
+	<string id="gar_quest_redemption_name">
+		<text>Get your items back</text>
+	</string>
+	<string id="gar_quest_redemption_text">
+		<text>Get back the items taken by the bandits near the flea market.</text>
+	</string>
+	<string id="gar_recover_item_1_name">
+		<text>Return the Chaser 13</text>
+	</string>
+	<string id="gar_recover_item_1_text">
+		<text>Well, here's a story: one of our fellas caught some lame digger and took him for a walk between some anomalies. They both copped it in a Gravi and I don't have a problem with that, but that fella borrowed by Chaser for the job and it's still there. If you could get it back, that would be real nice.</text>
+	</string>
+	<string id="gar_recover_item_2_name">
+		<text>Find the modified weapon</text>
+	</string>
+	<string id="gar_recover_item_2_text">
+		<text>Hey brother, there's something you can do for me. We were sitting at Limpid's and he was making a real good shooter for some fella, all mods and shit. Well, that fella and our boss didn't get on too well, so Yoga told us to make that fella disappear. Well, we chased him into a bunch of anomalies nice and quiet, but that shooter is still there. Bring me that weapon and I'll make sure Tooth don't hold back with the reward.</text>
+	</string>
+	<string id="gar_recover_item_3_name">
+		<text>Deliver a bottle of Cossacks vodka</text>
+	</string>
+	<string id="gar_recover_item_3_text">
+		<text>Buddy, help me out and bring me some booze, would you? Just make sure, it's not the crap everyone else is drinking. I hid a couple of bottles of the good stuff in a decent spot but I can't go there myself right now. Go pick it up for me and make sure nobody sees you going there, OK?</text>
+	</string>
+	<string id="gar_recover_item_4_name">
+		<text>Return the rookie's jacket</text>
+	</string>
+	<string id="gar_recover_item_4_text">
+		<text>A guy came here from the Cordon the other day, one of them green and annoying types. He told everyone and his dog about his magic jacket, which he claimed could withstand any anomaly. I heard that even when the bandits captured him he wouldn't shut up until they chased him into a Gravi. Well, the poor bastard was right - the jacket survived the anomaly without a scratch. I could find a use for that jacket if you could bring it to me.</text>
+	</string>
+	<string id="gar_recover_item_5_name">
+		<text>Bring back the inscribed pistol</text>
+	</string>
+	<string id="gar_recover_item_5_text">
+		<text>Yeah, you can help me with something. I had a pistol and it was nothing special but I got it from my grandpa. I lost it in a mess...We got drunk and decided to scare the bandits during the right. When it got dark we crawled up to a camp we'd picked out during the day and started imitating mutant voices. It turned out there weren't any bandits there, and we got attacked by two bloodsuckers instead. I barely made it out alive and I even dropped my pistol back there!</text>
+	</string>
+</string_table>

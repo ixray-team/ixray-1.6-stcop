@@ -52,6 +52,7 @@
   <info_portion id="red_bridge_cover_allyes_complete"/>
   <info_portion id="red_bridge_cover_allyes2_complete"/>
   <info_portion id="red_bridge_csky_go_limansk"/>
+  <info_portion id="red_bridge_csky_go_limansk_1"/>
   <info_portion id="red_bridge_go_lever"/>
   <info_portion id="red_bridge_stalkers_go"/>
   <info_portion id="red_bridge_cs1"/>
@@ -69,7 +70,28 @@
   <info_portion id="red_bridge_sniper_target"/>
   <info_portion id="red_bridge_actor_talk_with_cs_commander"/>
   <info_portion id="red_bridge_sniper_first_task"/>
-    
+  <info_portion id="red_bridge_cs_commander_wait_1"/>
+  <info_portion id="red_bridge_cs_commander_wait_2"/>
+  <info_portion id="red_bridge_cs_commander_wait_3"/>
+  <info_portion id="red_bridge_cs_commander_wait_4"/>
+  <info_portion id="red_bridge_leshiy_wait_1"/>
+  <info_portion id="red_bridge_leshiy_wait_2"/>
+  <info_portion id="red_bridge_ally_2_wait_1"/>
+  <info_portion id="red_bridge_ally_3_wait_1"/>
+  <info_portion id="red_bridge_ally_4_wait_1"/>
+  <info_portion id="red_bridge_ally_4_wait_2"/>
+  <info_portion id="red_bridge_ally_5_wait_1"/>
+  <info_portion id="red_bridge_cs_soldier_1_wait_1"/>
+  <info_portion id="red_bridge_cs_soldier_2_wait_1"/>
+  <info_portion id="red_bridge_cs_soldier_2_wait_2"/>
+  <info_portion id="red_bridge_cs_soldier_3_wait_1"/>
+  <info_portion id="red_bridge_cs_soldier_4_wait_1"/>
+  <info_portion id="red_bridge_cs_soldier_4_wait_2"/>
+  <info_portion id="red_bridge_cs_soldier_4_wait_3"/>
+  <info_portion id="red_bridge_cs_soldier_5_wait_1"/>
+  <info_portion id="red_bridge_cs_soldier_6_wait_1"/>
+  <info_portion id="red_bridge_cs_soldier_7_wait_1"/>
+  
   <!-- pursuit Strelok -->
   
   <info_portion id="red_pursuit_strelok_go"/>

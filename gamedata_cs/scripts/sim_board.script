@@ -361,17 +361,23 @@ function sim_board:stop_sim()
 end
 -- Перевод игрока в группировку.
 function sim_board:set_actor_community(community)
-        ---- Устанавливаем группировку игрока
-        db.actor:set_character_community(actor_communitites[community], 0, 0)
+    ---- Устанавливаем группировку игрока
+    db.actor:set_character_community(actor_communitites[community], 0, 0)
+	local tm = task_manager.get_task_manager()
 
-        for k,v in pairs(self.players) do
-                if v.player_name == community then
-                        v.community_player = true
-                else
-                        v.community_player = false
-                end
-                v.brain:calculate_expansion_targets()
+    for k,v in pairs(self.players) do
+        if v.player_name == community then
+            v.community_player = true
+        else
+            v.community_player = false
+            -- Обнуляем все квесты, которые выдала эта группировка
+			for kk,vv in pairs(v.random_tasks) do
+				local task = tm:get_task_by_entity_id(vv)
+				task.last_check_task = "reversed"
+			end                        
         end
+        v.brain:calculate_expansion_targets()
+    end
 end
 --' Регистрация нового игрока.
 function sim_board:register_player(obj)

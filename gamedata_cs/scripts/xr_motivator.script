@@ -21,7 +21,7 @@ function motivator_binder:__init (obj) super(obj)
 	self.last_update = 0
 	----memusage.collect_info(self.object, "__init")
 
-    self.first_update = false
+		self.first_update = false
 	self.treasure_processed = false
 	self.now_in_combat = false
 	self.strelok_particles_added = false
@@ -40,23 +40,23 @@ function motivator_binder:extrapolate_callback(cur_pt)
 end
 
 function motivator_binder:reinit()
-    object_binder.reinit(self)
-    --memusage.collect_info(self.object, "reinit_start")
-    --printf("motivator_binder:reinit(): self.object:name()='%s'", self.object:name())
+		object_binder.reinit(self)
+		--memusage.collect_info(self.object, "reinit_start")
+		--printf("motivator_binder:reinit(): self.object:name()='%s'", self.object:name())
 
-    -- КОЛЛБЕКИ ЗДЕСЬ СТАВИТЬ НЕЛЬЗЯ! Здесь еще неизвестна активная схема.
-    -- Ставьте коллбеки в методе update в отмеченном комментарием месте.
+		-- КОЛЛБЕКИ ЗДЕСЬ СТАВИТЬ НЕЛЬЗЯ! Здесь еще неизвестна активная схема.
+		-- Ставьте коллбеки в методе update в отмеченном комментарием месте.
 
-    local char_ini = self.object:spawn_ini() or ini_file("scripts\\dummy.ltx")
+		local char_ini = self.object:spawn_ini() or ini_file("scripts\\dummy.ltx")
 
 ----------------------------------------------------------------------------------------------------------------------
 -- Общие скрипты
 ----------------------------------------------------------------------------------------------------------------------
-    db.storage[self.object:id()] = {  followers = {} }
-    self.st = db.storage[self.object:id()]
+		db.storage[self.object:id()] = {  followers = {} }
+		self.st = db.storage[self.object:id()]
 
-    --' Создание менеджера контроля положений тела
-    --memusage.collect_info(self.object, "before_statemgr")
+		--' Создание менеджера контроля положений тела
+		--memusage.collect_info(self.object, "before_statemgr")
 	self.st.state_mgr = state_mgr.bind_manager(self.object)
 
 	self.st.move_mgr = move_mgr.move_mgr(self.object)
@@ -99,7 +99,7 @@ function motivator_binder:net_spawn(sobject)
 
 	self.object:apply_loophole_direction_distance(1.0)
 
-    --' Загрузка историй для лагеря.   
+		--' Загрузка историй для лагеря.
 	if self.loaded == false then
 		local char_ini = ""
 		local spawn_ini = self.object:spawn_ini()
@@ -117,27 +117,27 @@ function motivator_binder:net_spawn(sobject)
 		printf("xr_info loaded!!!")
 		xr_info.loadInfo(self.object, char_ini)
 	end
-	
+
 	if not self.object:alive() then
 		return true
 	end
 -- setting npc relation and sympathy from storage
 	local relation = db.goodwill.relations and db.goodwill.relations[self.object:id()]
-    if relation ~= nil and db.actor then
-        game_relations.set_npcs_relation(self.object, db.actor, relation)
+		if relation ~= nil and db.actor then
+				game_relations.set_npcs_relation(self.object, db.actor, relation)
 	end
 	local sympathy = db.goodwill.sympathy and db.goodwill.sympathy[self.object:id()]
-    if sympathy ~= nil then
-        game_relations.set_npc_sympathy(self.object, sympathy)
+		if sympathy ~= nil then
+				game_relations.set_npc_sympathy(self.object, sympathy)
 	end
-    game_relations.set_level_faction_community(self.object)
-    db.add_enemy( self.object )
-    self.e_index = db.heli_enemy_count - 1
+		game_relations.set_level_faction_community(self.object)
+		db.add_enemy( self.object )
+		self.e_index = db.heli_enemy_count - 1
 
-    --' загрузка озвучки
-    --memusage.collect_info(self.object, "before_soundmgr")
-    sound_theme.init_npc_sound(self.object)
-    --memusage.collect_info(self.object, "after_soundmgr_netspawn_end")
+		--' загрузка озвучки
+		--memusage.collect_info(self.object, "before_soundmgr")
+		sound_theme.init_npc_sound(self.object)
+		--memusage.collect_info(self.object, "after_soundmgr_netspawn_end")
 
 
 	--' Для зомбированных чуваков говорим что аномалий не существует
@@ -176,7 +176,7 @@ function motivator_binder:net_destroy()
 	--printf("motivator_binder:net_destroy(): self.object:name()='%s'", self.object:name())
 	xrs_dyn_music.npc_table[self.object:id()] = nil
 	xrs_dyn_music.stop_combat(self.object:id())
-    xr_sound.stop_sounds_by_id(self.object:id())
+		xr_sound.stop_sounds_by_id(self.object:id())
 	local st = db.storage[self.object:id()]
 	if st.active_scheme then
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy", self.object)
@@ -188,7 +188,7 @@ function motivator_binder:net_destroy()
 
 	self:clear_callbacks()
 
-    if self.e_index ~= nil then
+		if self.e_index ~= nil then
 		db.delete_enemy( self.e_index )
 	end
 	if self.object:profile_name() == "stc_strelok" then
@@ -227,7 +227,7 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 		printf("HIT_CALLBACK: %s amount=%s bone=%s", obj:name(), amount, tostring(bone_index))
 		sr_territory.issue_event(self.object, "hit_callback", obj, amount, local_direction, who, bone_index)
 		xr_wounded.hit_callback(self.object:id())
-     	sim_combat.hit_callback(self.object:id(),who:id())
+			 sim_combat.hit_callback(self.object:id(),who:id())
 	end
 end
 
@@ -235,16 +235,6 @@ function motivator_binder:death_callback(victim, who)
 	--' Distemper 03.2008 --
 	xrs_dyn_music.stop_combat(self.object:id())
 	--' Если игрок был с квестом от механика - фейлить его
-	local tm = task_manager.get_task_manager()
-	local inited_find_upgrade_tasks = tm.inited_find_upgrade_tasks
-	if inited_find_upgrade_tasks and inited_find_upgrade_tasks[self.object:id()] then
-		for k,v in pairs(inited_find_upgrade_tasks[self.object:id()]) do
-			printf("failing task %s status %s", tostring(v.id), tostring(v.status) )
-			if v.status == "selected" then
-				v.last_check_task = "fail"
-			end
-		end
-	end
 	local st = db.storage[self.object:id()]
 	local npc = self.object
 	stalker_generic.remove_level_spot(npc, st)
@@ -272,7 +262,7 @@ function motivator_binder:death_callback(victim, who)
 
 	death_manager.drop_manager(self.object):create_release_item()
 
-    db.delete_enemy( self.e_index )
+		db.delete_enemy( self.e_index )
 
 	self:clear_callbacks()
 	-- Отключаем реакцию на кровососа
@@ -281,8 +271,8 @@ function motivator_binder:death_callback(victim, who)
 	if(actor_stats.remove_from_ranking~=nil)then
 		local community = self.object:character_community()
 		if community == "zombied" or
-		   community == "monolith" or
-		   community == "arena_enemy"
+			 community == "monolith" or
+			 community == "arena_enemy"
 		then
 		else
 			actor_stats.remove_from_ranking(self.object:id())
@@ -316,7 +306,7 @@ function motivator_binder:update(delta)
 		alife():release(alife():object(self.object:id()),true)
 		return
 	end
-	
+
 	local object_alive = self.object:alive()
 	local object = self.object
 	local actor = db.actor
@@ -330,7 +320,7 @@ function motivator_binder:update(delta)
 		-- Обрабатываем Override on_combat
 		local switched = false
 		local manager = object:motivation_action_manager()
-		if manager:initialized() and manager:current_action_id() == stalker_ids.action_combat_planner then						
+		if manager:initialized() and manager:current_action_id() == stalker_ids.action_combat_planner then
 			local overrides = xr_logic.generic_scheme_overrides(object)
 			if overrides then
 				if overrides.on_combat then
@@ -358,31 +348,31 @@ function motivator_binder:update(delta)
 		xr_combat.set_combat_type(object, actor, st_combat)
 	end
 
-    if self.first_update == false then
-        if object_alive == false then
+		if self.first_update == false then
+				if object_alive == false then
 			death_manager.drop_manager(object):create_release_item()
-        end
-        self.first_update = true
-    end
+				end
+				self.first_update = true
+		end
 	if time_global() - self.last_update > 1000 then
 		sr_light.check_light(object)
 		self.last_update = time_global()
-    end
+		end
 
-    --' проверка, не находится ли сталкер в одном из sr_bloodsucker
-    for k,v in pairs(bloodsuckers_restr) do
-        if v:inside(object:position()) and object:alive() then
-           if  bloodsucker_zone_enter[k] == nil then
-                -- printf("ZONE ENTERED")
-                bloodsucker_zone_enter[k] = object
-           end
+		--' проверка, не находится ли сталкер в одном из sr_bloodsucker
+		for k,v in pairs(bloodsuckers_restr) do
+				if v:inside(object:position()) and object:alive() then
+					 if  bloodsucker_zone_enter[k] == nil then
+								-- printf("ZONE ENTERED")
+								bloodsucker_zone_enter[k] = object
+					 end
 		else
 			if  bloodsucker_zone_enter[k] ~= nil then
 				-- printf("ZONE ENTERED")
 				bloodsucker_zone_enter[k] = nil
 			end
-        end
-    end
+				end
+		end
 
 	--' Выбираем активный сектор для НПС
 	self.st.active_sector = sr_danger.select_active_sectors(object)
@@ -393,7 +383,7 @@ function motivator_binder:update(delta)
 			self.st.state_mgr:update()
 			-- Апдейт торговли
 			if self.st.state_mgr.combat == false and
-			   self.st.state_mgr.alife == false
+				 self.st.state_mgr.alife == false
 			then
 				trade_manager.update(object)
 			end
@@ -416,10 +406,10 @@ function motivator_binder:update(delta)
 	end
 
 
---[[
-	object:info_clear()
+
+--	object:info_clear()
 	if object_alive then
-		local active_section = db.storage[object:id()].active_section
+		--[[		local active_section = db.storage[object:id()].active_section
 		if active_section then
 			object:info_add("section: " .. active_section)
 		end
@@ -441,7 +431,7 @@ function motivator_binder:update(delta)
 				local sim_combat = smart.combat_manager
 				object:info_add("sim_combat: stage[" .. sim_combat:get_squad_stage(squad).."]")
 			end
-		end
+		end]]
 
 		if object:is_talk_enabled() then
 			object:set_tip_text("character_use")
@@ -451,7 +441,7 @@ function motivator_binder:update(delta)
 	else
 		object:set_tip_text_default()
 	end
-]]
+
 end
 
 function motivator_binder:reload(section)
@@ -481,7 +471,7 @@ function motivator_binder:save(packet)
 --	treasure_manager.save(packet)
 	xr_sound.save_npc(packet, self.object:id())
 	dialog_manager.save_npc(packet, self.object:id())
-	
+
 	set_save_marker(packet, "save", true, "motivator_binder")
 end
 
@@ -570,6 +560,6 @@ function addCommonPrecondition(action)
 	action:add_precondition (world_property(xr_evaluators_id.abuse_base, false))
 end
 function register_bloodsucker_restr(obj)
-    printf("registering blood restr!!!")
-    bloodsuckers_restr[obj:id()] = obj
+		printf("registering blood restr!!!")
+		bloodsuckers_restr[obj:id()] = obj
 end

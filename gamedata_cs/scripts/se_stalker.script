@@ -24,7 +24,7 @@ function se_stalker:__init (section) super (section)
 
 	self.death_droped = false --'Генерил ли персонаж выпадаемые предметы или нет.
 
-    self.squad_id = nil --' ID Отряда, в котором зареген чувак.
+		self.squad_id = nil --' ID Отряда, в котором зареген чувак.
 
 	self.m_registred = false
 	self.sim_forced_online = false
@@ -75,33 +75,33 @@ function se_stalker:can_switch_online()
 		return cse_alife_human_stalker.can_switch_online(self)
 	end
 
-    if db.actor ~= nil and db.actor:alive () == false then
+		if db.actor ~= nil and db.actor:alive () == false then
 		return self.online
-    end
+		end
 
 	if self.online == false then
-	    return (xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil) and
-	    		cse_alife_human_stalker.can_switch_online(self)
-    else
-        if xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil then
-            return true
-        end
-        return false
-    end
+			return (xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil) and
+					cse_alife_human_stalker.can_switch_online(self)
+		else
+				if xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil then
+						return true
+				end
+				return false
+		end
 end
 function se_stalker:switch_online()
 	cse_alife_human_stalker.switch_online(self)
-    if self.squad_id ~= nil then
-    	local squad = self.board.squads[self.squad_id]
-        squad:switch_online(true, self.id)
-    end
+		if self.squad_id ~= nil then
+			local squad = self.board.squads[self.squad_id]
+				squad:switch_online(true, self.id)
+		end
 end
 function se_stalker:switch_offline()
 	cse_alife_human_stalker.switch_offline(self)
-    if self.squad_id ~= nil then
-    	local squad = self.board.squads[self.squad_id]
-        squad:switch_online(false, self.id)
-    end
+		if self.squad_id ~= nil then
+			local squad = self.board.squads[self.squad_id]
+				squad:switch_online(false, self.id)
+		end
 end
 --------------------
 function se_stalker:STATE_Write(packet)
@@ -179,8 +179,8 @@ function se_stalker:on_register()
 
 	self.board 	= sim_board.get_sim_board()
 	self.tm		= task_manager.get_task_manager()
-    local obj_ini = self:spawn_ini()
-    self.m_registred = true
+		local obj_ini = self:spawn_ini()
+		self.m_registred = true
 	--' Проверяем может ли сталкер быть спец персонажем по заданиям.
 	if obj_ini:section_exist("task_manager") then
 		--' Проверяем от имени кого он может выдавать награду
@@ -204,13 +204,13 @@ function se_stalker:on_register()
 	--' Отключаем старый метод выбора смарттеррейнов.
 	self:brain():can_choose_alife_tasks(false)
 
-    --' Выбор смарта
-    local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
-    local smart_obj = self.board:get_smart_by_name(smart)
-    if smart_obj == nil then
-        return
-    end
-    alife():object(smart_obj.id):register_npc(self)
+		--' Выбор смарта
+		local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
+		local smart_obj = self.board:get_smart_by_name(smart)
+		if smart_obj == nil then
+				return
+		end
+		alife():object(smart_obj.id):register_npc(self)
 end
 --------------------
 function se_stalker:on_unregister()
@@ -233,15 +233,15 @@ function se_stalker:on_death(killer)
 
 	smart_terrain.on_death(self)
 
-    if self.squad_id ~= nil then
-    	local squad = self.board.squads[self.squad_id]
+		if self.squad_id ~= nil then
+			local squad = self.board.squads[self.squad_id]
 		if squad == nil then
 			--printf("sim_board squads")
 			--print_table(self.board.squads)
 			abort("There is no squad with ID [%s]", self.squad_id)
 		end
-        squad:on_npc_death(self)
-    end
+				squad:on_npc_death(self)
+		end
 end
 --------------------
 function se_stalker:fill_exclusives()
@@ -257,11 +257,11 @@ end
 
 function se_stalker:update()
 	cse_alife_human_stalker.update(self)
-	
+
 	-- Тут мы попробуем вызвать апдейт отряда
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
-		if squad.commander_id == self.id then
+		if squad ~= nil and squad.commander_id == self.id then
 			squad:update()
 		end
 	end

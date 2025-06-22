@@ -31,12 +31,13 @@ military 	= sim_default_duty_0,  5, sim_default_duty_1, 10, sim_default_duty_2, 
 [expansion_0]
 base_squad_number = 0
 precondition_power = 0
-precondition_cond = {+val_destroy_killer_base_done} true, false
+precondition_cond = {+val_deliver_pda_done} true, false
 
 [expansion_1]  ;Контроль над агропромом
 base_squad_number = 30
 precondition_power = 0
 precondition_target = agr_smart_terrain_7_4, agr_smart_terrain_6_6
+precondition_actor_in_faction = true
 
 war_target_title = st_faction_war_duty_secure_level
 

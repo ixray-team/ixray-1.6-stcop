@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_artefact_huntesr_capture_smart_name">
+		<text>Protege a los stalkers que van al бrea anуmala.</text>
+	</string>
+	<string id="red_artefact_huntesr_capture_smart_text">
+		<text>Protege a los stalkers que van al бrea anуmala.</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_name">
+		<text>Defiende a los stalkers en el бrea anуmala.</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_text">
+		<text>Defiende a los stalkers en el бrea anуmala.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_name">
+		<text>Cubre a los mercenarios.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_text">
+		<text>Los mercenarios estбn atacando a los bandidos al otro lado del rнo. Proporciona fuego de cobertura y ayъdalos a llegar a la posiciуn.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_name">
+		<text>Mata a los bandidos.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_text">
+		<text>Hay demasiados bandidos y les estбn impidiendo a los mercenarios bajar el puente. Mata a tantos bandidos como puedas.</text>
+	</string>
+	<string id="red_bridge_cover_bridge_name">
+		<text>Cubre a los mercenarios cerca del panel de control.</text>
+	</string>
+	<string id="red_bridge_cover_bridge_text">
+		<text>Un mercenario llegado a una posiciуn cerca del panel de control del puente. Proporciona fuego de cobertura mientras el mercenario baja el puente.</text>
+	</string>
+	<string id="red_bridge_go_to_positon_name">
+		<text>Ve al punto de disparo.</text>
+	</string>
+	<string id="red_bridge_go_to_positon_text">
+		<text>Ve al punto de disparo en la primera planta de la casa de guardia. Es el mejor sitio para disparar a los bandidos.</text>
+	</string>
+	<string id="red_bridge_kill_sniper_name">
+		<text>Elimina a los francotiradores de la colina.</text>
+	</string>
+	<string id="red_bridge_kill_sniper_text">
+		<text>Los francotiradores tienen cubierto el panel de control del puente. Los mercenarios no podrбn bajar el puente si siguen asн. Elimina a los francotiradores de la colina.</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_name">
+		<text>Habla con Lebedev.</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_text">
+		<text>El puente ha sido bajado y la carretera a Limansk estб despejada. Habla con Lebedev.</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_name">
+		<text>Espera a que llegue el pelotуn stalker</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_text">
+		<text>Espera a que llegue el pelotуn stalker.</text>
+	</string>
+	<string id="red_bring_compass_name">
+		<text>Lleva la Brъjula a Forester.</text>
+	</string>
+	<string id="red_bring_compass_text">
+		<text>Forester logrу salir de una burbuja espacial hace varios dнas gracias a la Brъjula. El artefacto puede ayudar a sacar a los mercenarios de su burbuja. Trбele la Brъjula a Forester.</text>
+	</string>
+	<string id="red_find_compass_name">
+		<text>Encuentra el artefacto Brъjula.</text>
+	</string>
+	<string id="red_find_compass_text">
+		<text>Forester encontrу un artefacto ъnico en una anomalнa espacial, que es muy similar a la burbuja en la que estбn atrapados los mercenarios cerca de los almacenes militares. Los bandidos atracaron a Forester cuando volvнa y le quitaron el artefacto. Encuentra la Brъjula.</text>
+	</string>
+	<string id="red_find_forester_name">
+		<text>Habla con Forester.</text>
+	</string>
+	<string id="red_find_forester_text">
+		<text>Forester vive en la cabaсa abandonada. Puede ayudarte a encontrar un modo de llegar a Limansk. Habla con Forester.</text>
+	</string>
+	<string id="red_find_teleport_name">
+		<text>Encuentra la anomalнa espacial.</text>
+	</string>
+	<string id="red_find_teleport_text">
+		<text>La PDA del grupo desaparecido tenнa unas notas acerca de un camino que cruza el Bosque Rojo. En sus profundidades hay una anomalнa espacial que conduce a la vieja cabaсa en las afueras del bosque. Allн es donde vive Forester. Encuentra la anomalнa espacial.</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_name">
+		<text>Entrega la PDA con el mapa del Bosque Rojo.</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_text">
+		<text>Entrega la PDA con el mapa del Bosque Rojo.</text>
+	</string>
+	<string id="red_go_to_signal_sos_name">
+		<text>Responde a la seсal de socorro.</text>
+	</string>
+	<string id="red_go_to_signal_sos_text">
+		<text>No se conoce el camino que atraviesa el Bosque Rojo hasta Forester. Hay una seсal de socorro que viene del Bosque Rojo. Responde a la seсal.</text>
+	</string>
+	<string id="red_help_with_bridge_name">
+		<text>Ayuda a Cielo Despejado a conquistar el puente.</text>
+	</string>
+	<string id="red_help_with_bridge_text">
+		<text>Un pelotуn de mercenarios se acerca al puente de Limansk. Saldrбn en la orilla del rнo donde estбn los bandidos, asн que pronto habrб un tiroteo en el puente. Ayuda a Cielo Despejado a bajar el puente de Limansk.</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_name">
+		<text>Neutraliza la emboscada.</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_text">
+		<text>A Strelok lo cubre un grupo de stalkers. Neutraliza la emboscada.</text>
+	</string>
+	<string id="red_pursuit_strelok_name">
+		<text>Detйn a Strelok.</text>
+	</string>
+	<string id="red_pursuit_strelok_text">
+		<text>Strelok ha ido al tъnel. Ve tras йl y asegъrate de que no avance al centro de la Zona.</text>
+	</string>
+	<string id="red_pursuit_talk_csky_name">
+		<text>Detйn a Strelok.</text>
+	</string>
+	<string id="red_pursuit_talk_csky_text">
+		<text>Strelok estб muy cerca, a menos de cien metros. Persнguelo.</text>
+	</string>
+	<string id="red_stalker_reinforced_name">
+		<text>Conquista la vieja mina.</text>
+	</string>
+	<string id="red_stalker_reinforced_text">
+		<text>Conquista la vieja mina. El бrea tiene un gran nivel de actividad anуmala y muchos artefactos raros.</text>
+	</string>
+	<string id="red_go_to_military_base_name">
+		<text>Ve a la base del ejйrcito</text>
+	</string>
+	<string id="red_go_to_military_base_text">
+		<text>La base del ejйrcito tiene un potente transmisor que podemos usar para mandar una seсal al grupo atrapado en la burbuja espacial cerca de Limansk. Ve a los almacenes militares.</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_name">
+		<text>Encuentra el camino al бrea anуmala</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_text">
+		<text>La PDA del grupo desaparecido tenнa unas notas acerca de un camino que cruza el Bosque Rojo. En sus profundidades hay una anomalнa espacial que conduce a la vieja cabaсa en las afueras del bosque. Allн es donde vive Forester. Encuentra la anomalнa espacial.</text>
+	</string>
+	<string id="red_find_signals_on_military_name">
+		<text>Recibe el mensaje de radio.</text>
+	</string>
+	<string id="red_find_signals_on_military_text">
+		<text>Forester recibe fragmentos incomprensibles de comunicaciones de radio de un grupo sin identificar que estб atrapado en una extraсa anomalнa muy cerca de Limansk. Puede que el grupo conozca un camino alternativo a Limansk. Ve a los almacenes militares y encuentra un lugar adecuado para recibir una seсal mбs nнtida.</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_name">
+		<text>Recoge la PDA.</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_text">
+		<text>La PDA de un stalker muerto sigue activa. Puede que contenga informaciуn valiosa sobre el Bosque Rojo. Recoge esa PDA.</text>
+	</string>
+	<string id="red_recover_item_1_name">
+		<text>Recupera la PDA con el mapa del Bosque Rojo</text>
+	</string>
+	<string id="red_recover_item_1_text">
+		<text>Mercenario, nos vendrнa bien tu ayuda. Necesitamos un mapa preciso del Bosque Rojo. He oнdo de varios grupos de stalkers que intentaron explorarlo, pero casi todos desaparecieron. Encuentra sus notas y trбemelas.</text>
+	</string>
+	<string id="red_recover_item_2_name">
+		<text>Recupera la ametralladora del tanque</text>
+	</string>
+	<string id="red_recover_item_2_text">
+		<text>Tengo un trabajo para ti. Guardabosques me ha dicho que hay un viejo tanque soviйtico en el corazуn del bosque. Aparte de que apareciу tras la potente emisiуn, nadie sabe cуmo llegу allн. La cuestiуn es que el tanque estб casi intacto. Obviamente, no podrбs traerlo hasta aquн, pero basta con que desmontes la ametralladora que lleva. Trбeme la ametralladora y te recompensarй bien por tus desvelos.</text>
+	</string>
+	<string id="red_recover_item_3_name">
+		<text>Recupera el dispositivo experimental</text>
+	</string>
+	<string id="red_recover_item_3_text">
+		<text>Hay algo que puedes traerme. Estбbamos probando un prototipo para los cientнficos, un pequeсo dispositivo utilizado para medir la fuerza de las anomalнas. De momento no sirve de mucho: les costу dos dнas enseсarnos a usarlo. Recogнamos informaciуn en la antigua mina cuando algo ocurriу, algo nos atacу... Empezу a tirarnos toda clase de mierdas, y yo fui el ъnico que salн con vida. El aparato se quedу allн, con los chicos; se hundieron en las anomalнas y ya no salieron de allн. Esa cosa que nos atacу probablemente siga allн abajo, por lo que no serб fбcil recuperarla. Pero, si lo consigues, ganarбs una buena recompensa.</text>
+	</string>
+</string_table>

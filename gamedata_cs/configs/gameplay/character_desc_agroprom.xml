@@ -369,9 +369,9 @@
     <supplies>
       [spawn] \n
       wpn_beretta \n
-      ammo_11.43x23_hydro = 1 \n
+      ammo_9x19_fmj = 1 \n
       wpn_val \n
-      ammo_9x39_sp5 = 1 \n
+      ammo_9x39_ap = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -499,7 +499,7 @@
 		<supplies>
 			[spawn]
 			wpn_beretta = 1 \n
-			wpn_sig550 \n
+			wpn_lr300 \n
 			ammo_5.56x45_ss190 = 1 \n
 			ammo_9x19_fmj = 1 \n
 #include "gameplay\character_items.xml"

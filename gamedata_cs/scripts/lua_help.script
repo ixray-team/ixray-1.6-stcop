@@ -812,44 +812,44 @@ C++ class ui_events {
     const DRAG_DROP_ITEM_DB_CLICK = 24;
     const DRAG_DROP_ITEM_DRAG = 22;
     const DRAG_DROP_ITEM_DROP  = 23;
-    const DRAG_DROP_ITEM_RBUTTON_CLICK = 25;
-    const EDIT_TEXT_CHANGED = 80;
-    const EDIT_TEXT_COMMIT = 81;
-    const INTERACTIVE_ITEM_CLICK = 37;
-    const INVENTORY_ATTACH_ADDON  = 66;
-    const INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON = 73;
-    const INVENTORY_DETACH_SCOPE_ADDON = 69;
-    const INVENTORY_DETACH_SILENCER_ADDON = 71;
-    const INVENTORY_DROP_ACTION = 61;
-    const INVENTORY_EAT_ACTION = 62;
-    const INVENTORY_TO_BAG_ACTION = 65;
-    const INVENTORY_TO_BELT_ACTION  = 63;
-    const INVENTORY_TO_SLOT_ACTION = 64;
-    const LIST_ITEM_CLICKED = 33;
-    const LIST_ITEM_SELECT = 34;
-    const MESSAGE_BOX_CANCEL_CLICKED = 44;
-    const MESSAGE_BOX_COPY_CLICKED = 45;
-    const MESSAGE_BOX_NO_CLICKED = 43;
-    const MESSAGE_BOX_OK_CLICKED = 39;
-    const MESSAGE_BOX_QUIT_GAME_CLICKED = 42;
-    const MESSAGE_BOX_QUIT_WIN_CLICKED = 41;
-    const MESSAGE_BOX_YES_CLICKED = 40;
-    const OUTFIT_RETURNED_BACK = 60;
-    const PDA_CONTACTS_WND_CONTACT_SELECTED = 53;
-    const PDA_DIALOG_WND_BACK_BUTTON_CLICKED = 51;
-    const PDA_DIALOG_WND_MESSAGE_BUTTON_CLICKED = 52;
-    const PROPERTY_CLICKED = 38;
+    const DRAG_DROP_ITEM_RBUTTON_CLICK = 26;
+    const EDIT_TEXT_CHANGED = 81;
+    const EDIT_TEXT_COMMIT = 82;
+    const INTERACTIVE_ITEM_CLICK = 38;
+    const INVENTORY_ATTACH_ADDON  = 67;
+    const INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON = 74;
+    const INVENTORY_DETACH_SCOPE_ADDON = 70;
+    const INVENTORY_DETACH_SILENCER_ADDON = 72;
+    const INVENTORY_DROP_ACTION = 62;
+    const INVENTORY_EAT_ACTION = 63;
+    const INVENTORY_TO_BAG_ACTION = 66;
+    const INVENTORY_TO_BELT_ACTION  = 64;
+    const INVENTORY_TO_SLOT_ACTION = 65;
+    const LIST_ITEM_CLICKED = 34;
+    const LIST_ITEM_SELECT = 35;
+    const MESSAGE_BOX_CANCEL_CLICKED = 45;
+    const MESSAGE_BOX_COPY_CLICKED = 46;
+    const MESSAGE_BOX_NO_CLICKED = 44;
+    const MESSAGE_BOX_OK_CLICKED = 40;
+    const MESSAGE_BOX_QUIT_GAME_CLICKED = 43;
+    const MESSAGE_BOX_QUIT_WIN_CLICKED = 42;
+    const MESSAGE_BOX_YES_CLICKED = 41;
+    const OUTFIT_RETURNED_BACK = 61;
+    const PDA_CONTACTS_WND_CONTACT_SELECTED = 54;
+    const PDA_DIALOG_WND_BACK_BUTTON_CLICKED = 52;
+    const PDA_DIALOG_WND_MESSAGE_BUTTON_CLICKED = 53;
+    const PROPERTY_CLICKED = 39;
     const RADIOBUTTON_SET = 21;
-    const SCROLLBAR_HSCROLL = 30;
-    const SCROLLBAR_VSCROLL = 29;
-    const SCROLLBOX_MOVE = 28;
+    const SCROLLBAR_HSCROLL = 31;
+    const SCROLLBAR_VSCROLL = 30;
+    const SCROLLBOX_MOVE = 29;
     const STATIC_FOCUS_LOST = 15;
     const STATIC_FOCUS_RECEIVED = 14;
     const TAB_CHANGED = 18;
-    const TALK_DIALOG_QUESTION_CLICKED = 48;
-    const TALK_DIALOG_TRADE_BUTTON_CLICKED = 46;
-    const TALK_DIALOG_UPGRADE_BUTTON_CLICKED = 47;
-    const UNDRESS_OUTFIT = 59;
+    const TALK_DIALOG_QUESTION_CLICKED = 49;
+    const TALK_DIALOG_TRADE_BUTTON_CLICKED = 47;
+    const TALK_DIALOG_UPGRADE_BUTTON_CLICKED = 48;
+    const UNDRESS_OUTFIT = 60;
     const WINDOW_KEYBOARD_CAPTURE_LOST = 13;
     const WINDOW_KEY_PRESSED = 10;
     const WINDOW_KEY_RELEASED = 11;
@@ -2252,6 +2252,8 @@ C++ class CConsole {
 
     function get_integer(CConsole*, string);
 
+    function execute_deferred(CConsole*, string);
+
     function get_token(string);
 
     function show();
@@ -2800,6 +2802,27 @@ C++ class holder {
     function Action(number, number);
 
     function SetParam(number, vector);
+
+};
+
+C++ class CLevelChanger : CGameObject {
+    CLevelChanger ();
+
+    function Visual() const;
+
+    function _construct();
+
+    function getEnabled() const;
+
+    function net_Import(net_packet&);
+
+    function net_Export(net_packet&);
+
+    function getVisible() const;
+
+    function net_Spawn(cse_abstract*);
+
+    function use(CGameObject*);
 
 };
 
@@ -7825,7 +7848,7 @@ C++ class game_object {
 
     function get_helicopter();
 
-    function suitable_smart_cover(smart_cover_object*);
+    function suitable_smart_cover(game_object*);
 
     function parent() const;
 
@@ -12160,7 +12183,6 @@ namespace  {
     function log(string);
     function system_ini();
     function show_condition(ini_file*, string);
-    function bit_xor(number, number);
     function GetFontLetterica25();
     function GetFontMedium();
     function prefetch(string);
@@ -12175,6 +12197,7 @@ namespace  {
     function user_name();
     function GetARGB(number, number, number, number);
     function editor();
+    function bit_xor(number, number);
 
     namespace relation_registry {
         function change_community_goodwill(string, number, number);

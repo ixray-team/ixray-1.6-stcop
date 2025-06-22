@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_duty_bar_secret_1_descr">
+		<text>Descripciуn de secreto 1</text>
+	</string>
+	<string id="agr_duty_bar_secret_1_name">
+		<text>Secreto 1</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_descr">
+		<text>Descripciуn de secreto 2</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_name">
+		<text>Secreto 2</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_descr">
+		<text>Descripciуn de secreto 3</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_name">
+		<text>Secreto 3</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_descr">
+		<text>Descripciуn de secreto 4</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_name">
+		<text>Secreto 4</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_descr">
+		<text>Descripciуn de secreto 4</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_name">
+		<text>Secreto 5</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_descr">
+		<text>Descripciуn de secreto 6</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_name">
+		<text>Secreto 6</text>
+	</string>
+	<string id="device_pda_old">
+		<text>Vieja PDA de Freshy</text>
+	</string>
+	<string id="esc_treasure_novice_stalker_descr">
+		<text>He guardado estas cosas para una emergencia. Si alguna vez llega, vendrй aquн a por mis suministros.</text>
+	</string>
+	<string id="esc_treasure_novice_stalker_name">
+		<text>Escondite de novato</text>
+	</string>
+	<string id="esc_treasure_weapon_box_descr">
+		<text>Las armas y la municiуn serбn ъtiles para luchar contra los militares y los bandidos.</text>
+	</string>
+	<string id="esc_treasure_weapon_box_name">
+		<text>Caja fuerte con armas y municiуn</text>
+	</string>
+	<string id="st_agr_map_animals">
+		<text>PDA con mapa de migraciones</text>
+	</string>
+	<string id="st_agr_map_animals_descr">
+		<text>El mapa de migraciones ayuda a localizar especies raras de monstruos para la investigaciуn cientнfica.</text>
+	</string>
+	<string id="st_agr_mechanic_pda">
+		<text>PDA con datos de actualizaciones de armas</text>
+	</string>
+	<string id="st_agr_mechanic_pda_descr">
+		<text>Diagramas electrуnicos que ayudan a actualizar las armas.</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader">
+		<text>PDA con informaciуn valiosa</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader_descr">
+		<text>No hay datos.</text>
+	</string>
+	<string id="st_device_pda_fang">
+		<text>PDA de Fang</text>
+	</string>
+	<string id="st_device_pda_fang_descr">
+		<text>PDA de Fang</text>
+	</string>
+	<string id="st_device_pda_lost_squard_descr">
+		<text>Informaciуn secreta sobre actividad militar en los almacenes</text>
+	</string>
+	<string id="st_device_pda_lost_squard_fang">
+		<text>PDA del comandante del grupo de stalkers </text>
+	</string>
+	<string id="st_device_pda_military">
+		<text>PDA del general</text>
+	</string>
+	<string id="st_device_pda_military_descr">
+		<text>La PDA contiene informaciуn secreta sobre los planes a corto plazo del ejйrcito en el Cordуn.</text>
+	</string>
+	<string id="st_esc_device_pda_driver">
+		<text>PDA del amigo del conductor</text>
+	</string>
+	<string id="st_esc_device_pda_driver_descr">
+		<text>PDA del amigo del conductor</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card">
+		<text>Informaciуn sobre actualizaciones de armas</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card_descr">
+		<text>Informaciуn sobre actualizaciones de armas</text>
+	</string>
+	<string id="st_esc_military_documentation">
+		<text>Datos militares secretos</text>
+	</string>
+	<string id="st_esc_military_documentation_descr">
+		<text>Datos secretos</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard">
+		<text>PDA del comandante</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard_descr">
+		<text>PDA que pertenecнa al comandante del grupo de los stalkers. Contiene informaciуn valiosa sobre los planes de los bandidos para conquistar el territorio de los almacenes del ejйrcito.</text>
+	</string>
+	<string id="st_red_forest_pda_map">
+		<text>PDA con mapa del Bosque Rojo</text>
+	</string>
+	<string id="st_red_forest_pda_map_descr">
+		<text>Esta PDA tiene un mapa del Bosque Rojo que muestra el бrea anуmala y su anomalнa espacial. Parece que la anomalнa puede transportarte adonde vive Forester.</text>
+	</string>
+	<string id="device_pda_digger_descr">
+		<text>Esta PDA contiene documentaciуn tйcnica que puede ayudar a los cientнficos a descubrir quй ha causado un campo psнquico tan potente en Yantar.</text>
+	</string>
+	<string id="device_pda_digger_name">
+		<text>PDA del grupo perdido</text>
+	</string>
+	<string id="device_pda_garbage_traitor">
+		<text>PDA del contrabandista</text>
+	</string>
+	<string id="device_pda_garbage_traitor_descr">
+		<text>PDA del contrabandista, estaba entre las posesiones de Stringov.</text>
+	</string>
+	<string id="device_pda_old_descr">
+		<text>Vieja PDA, estaba en el fondo falso de la caja de herramientas del campamento de Freshy.</text>
+	</string>
+	<string id="flesh_up_a_novice_outfit_name">
+		<text>Unidad con datos del blindaje personal de kevlar superligero</text>
+	</string>
+	<string id="flesh_up_ab_pkm_name">
+		<text>Unidad con datos del equilibrado de las piezas automбticas de una ametralladora</text>
+	</string>
+	<string id="flesh_up_ab_svu_name">
+		<text>Unidad con datos de los caсones de los fusiles de francotirador</text>
+	</string>
+	<string id="flesh_up_abcd_pkm_name">
+		<text>Unidad con datos de la modificaciуn de la salida de aire de una ametralladora</text>
+	</string>
+	<string id="flesh_up_abcd_svu_name">
+		<text>Unidad con datos de un estabilizador electrуnico para fusiles de francotirador</text>
+	</string>
+	<string id="flesh_up_ac_ak74u_name">
+		<text>Unidad con datos del equilibrado de las piezas automбticas</text>
+	</string>
+	<string id="flesh_up_ac_desert_eagle_name">
+		<text>Unidad con datos del caсуn perforado de una pistola</text>
+	</string>
+	<string id="flesh_up_ac_mp5_name">
+		<text>Unidad con datos del caсуn perforado de un subfusil</text>
+	</string>
+	<string id="flesh_up_ac_spas12_name">
+		<text>Unidad con datos de los mecanismos de recarga de las escopetas de combate</text>
+	</string>
+	<string id="flesh_up_ac_wincheaster1300_name">
+		<text>Unidad con datos de los mecanismos de recarga de las escopetas</text>
+	</string>
+	<string id="flesh_up_aceg_scientific_outfit_name">
+		<text>Unidad con datos del blindaje personal reforzado del ejйrcito</text>
+	</string>
+	<string id="flesh_up_bd_desert_eagle_name">
+		<text>Unidad con datos de la modificaciуn del caсуn de una pistola</text>
+	</string>
+	<string id="flesh_up_bd_mp5_name">
+		<text>Unidad con datos de la modificaciуn del caсуn de los subfusiles</text>
+	</string>
+	<string id="flesh_up_bd_wincheaster1300_name">
+		<text>Unidad con datos del sistema de estabilizaciуn electrуnico para escopetas</text>
+	</string>
+	<string id="flesh_up_bdfh_scientific_outfit_name">
+		<text>Unidad con datos de un sistema de protecciуn psнquica</text>
+	</string>
+	<string id="flesh_up_cd_pkm_name">
+		<text>Unidad con datos del caсуn perforado de una ametralladora</text>
+	</string>
+	<string id="flesh_up_cd_svu_name">
+		<text>Unidad con datos del caсуn perforado de un fusil de francotirador</text>
+	</string>
+	<string id="flesh_up_fh_scientific_outfit_name">
+		<text>Unidad con datos de un mуdulo de respiraciуn de ciclo cerrado</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_desc">
+		<text>PDA con dibujos que solo un genio podrнa comprender.</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_name">
+		<text>PDA del colega del tнo Yar.</text>
+	</string>
+	<string id="st_device_pda_comendant_desc">
+		<text>PDA personal del comandante Lingov. Contiene informaciуn acerca de cуmo colaborar con los mercenarios, entre otras cosas.</text>
+	</string>
+	<string id="st_device_pda_comendant_name">
+		<text>PDA de Lingov</text>
+	</string>
+	<string id="st_device_pda_freedom">
+		<text>PDA de un luchador de Libertad</text>
+	</string>
+	<string id="st_device_pda_freedom_desc">
+		<text>PDA de un luchador de Libertad que contiene una grabaciуn de una conversaciуn entre los atacantes.</text>
+	</string>
+	<string id="st_esc_trader_habar_desc">
+		<text>Maletнn cerrado con una clave. Excepcionalmente valioso para Sidorovich.</text>
+	</string>
+	<string id="st_esc_trader_habar_name">
+		<text>Botнn</text>
+	</string>
+	<string id="st_pda_descr">
+		<text>No hay datos.</text>
+	</string>
+	<string id="st_pda_name">
+		<text>PDA</text>
+	</string>
+	<string id="st_agr_quest_duty_abakan">
+		<text>Fusil de asalto de un miembro de Deber</text>
+	</string>
+	<string id="st_agr_quest_duty_abakan_descr">
+		<text>El nъmero de inventario del fusil estб cuidadosamente marcado con esmalte blanco. Este grado de meticulosidad indica que pertenece a un soldado de Deber.</text>
+	</string>
+	<string id="st_agr_quest_duty_case">
+		<text>Maletнn de un miembro de Deber</text>
+	</string>
+	<string id="st_agr_quest_duty_case_descr">
+		<text>El maletнn estб protegido por una cerradura con combinaciуn. A juzgar por el sonido que hace, parece que contiene varios objetos. En la parte superior del maletнn hay una marca hecha con rotulador que indica que el dueсo es de Deber.</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda">
+		<text>PDA con informaciуn secreta</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda_descr">
+		<text>La PDA contiene varias entradas que dejan patente que pertenece a un miembro de Deber. El resto del contenido estб bien encriptado.</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12">
+		<text>Escopeta Destripadora</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12_descr">
+		<text>Parece que esta arma ha sido objeto de un ataque brutal. Un mensaje de fбbrica en la culata indica que la escopeta pertenece a una serie de ediciуn limitada, conocida por tener un mejor recubrimiento y un nombre terrible: "Destripadora".</text>
+	</string>
+	<string id="st_esc_quest_akm47">
+		<text>AKM-47/2 de premio</text>
+	</string>
+	<string id="st_esc_quest_akm47_descr">
+		<text>Un fusil viejo y desgastado con zarpazos en la culata. Un arma legendaria.</text>
+	</string>
+	<string id="st_esc_quest_luky_detector">
+		<text>Detector de la suerte</text>
+	</string>
+	<string id="st_esc_quest_luky_detector_descr">
+		<text>Un antiguo detector con chicle y pegatinas de plбtanos pegadas. Parece bastante corriente y es difнcil creer que alguien pueda considerarlo especial.</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka">
+		<text>Vodka "mбgico"</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka_descr">
+		<text>Un lнquido turbio con un fuerte olor a alcohol. Probablemente tenga 80 у 90 grados, asн que es mejor no probarlo.</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit">
+		<text>Botiquнn especial NPR-21p</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit_descr">
+		<text>El botiquнn estб seсalado con las palabras "Kit antirradiaciуn NPR-21p (modelo de prueba)". Las instrucciones contienen una lista enorme de efectos secundarios bastante desagradables.</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit">
+		<text>Chaqueta de cuero resistente</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit_descr">
+		<text>Parece que una anomalнa reventу al dueсo anterior de esta chaqueta aunque, extraсamente, la prenda no sufriу ni un rasguсo.</text>
+	</string>
+	<string id="st_gar_quest_vodka_2">
+		<text>Vodka cosacos</text>
+	</string>
+	<string id="st_gar_quest_vodka_2_descr">
+		<text>A juzgar por la pegatina precariamente enganchada y el extraсo poso que hay en el culo de la botella, este vodka es casero.</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle">
+		<text>Arma modificada</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle_descr">
+		<text>Un arma realmente terrible. Un tйcnico con cierta habilidad parece haber mejorado sus caracterнsticas iniciales.</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm">
+		<text>Pistola grabada</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm_descr">
+		<text>En la culata de esta pistola hay una inscripciуn. Lo que se alcanza a distinguir reza: "Por el s[...]vicio mбs a[...]б de la lla[...] del [...]ber".</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300">
+		<text>Chaser 13 bandido</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300_descr">
+		<text>Unas cuantas muescas en el caсуn de la escopeta parecen representar los stalkers que se han matado con esta arma.</text>
+	</string>
+	<string id="st_red_forest_pda_map_2">
+		<text>PDA con un mapa del Bosque Rojo</text>
+	</string>
+	<string id="st_red_forest_pda_map_2_descr">
+		<text>Esta PDA contiene un mapa del Bosque Rojo con marcas. Tales marcas indican zonas con niveles altos de radiaciуn. La ъltima entrada se realizу a las 23:15 y reza "Deberнamos habernos quedado a pasar la noche en el puente. No saldremos de este bosque de noche".</text>
+	</string>
+	<string id="st_red_quest_prototipe_device">
+		<text>Dispositivo experimental</text>
+	</string>
+	<string id="st_red_quest_prototipe_device_descr">
+		<text>Un dispositivo con varios interruptores e indicadores. No incluye instrucciones que puedan ayudar a comprender para quй sirve.</text>
+	</string>
+	<string id="st_red_quest_tank_minigun">
+		<text>Ametralladora de un tanque</text>
+	</string>
+	<string id="st_red_quest_tank_minigun_descr">
+		<text>Esta ametralladora estб pensada para montarse en la torreta de un tanque, aunque tambiйn se puede utilizar cogiйndola con las manos.</text>
+	</string>
+	<string id="st_val_quest_flash_movies">
+		<text>Unidad USB con pelнculas</text>
+	</string>
+	<string id="st_val_quest_flash_movies_descr">
+		<text>La unidad USB contiene las ъltimas pelнculas, pero no se pueden ver en una PDA debido a su resoluciуn.</text>
+	</string>
+	<string id="st_val_quest_guitar_serg">
+		<text>Guitarra de Serega</text>
+	</string>
+	<string id="st_val_quest_guitar_serg_descr">
+		<text>Una nota escrita en el mбstil de esta guitarra con un bolнgrafo indica que fue un regalo para alguien llamado Serega de parte de su novia.</text>
+	</string>
+	<string id="st_val_quest_scope_x8">
+		<text>Mira 8x</text>
+	</string>
+	<string id="st_val_quest_scope_x8_descr">
+		<text>Una mira excelente con una montura especial que probablemente sea la ъnica compatible con un fusil de caza.</text>
+	</string>
+	<string id="st_yan_quest_granade">
+		<text>Granada de recuerdo</text>
+	</string>
+	<string id="st_yan_quest_granade_descr">
+		<text>Una granada de entrenamiento. Hay una cadena y un llavero con forma de conejo blanco unidos al pasador.</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower">
+		<text>La Flor Escarlata</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower_descr">
+		<text>Un artefacto misterioso de origen desconocido. Prбcticamente no produce emisiones: su ъnico efecto conocido es el de atraer a las mujeres.</text>
+	</string>
+</string_table>

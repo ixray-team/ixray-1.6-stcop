@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="cant_walk">
+		<text>Sei troppo stanco per camminare</text>
+	</string>
+	<string id="cant_walk_weight">
+		<text>Sei troppo carico per proseguire</text>
+	</string>
+	<string id="car_character_use">
+		<text>Apri la porta ($$ACTION_USE$$)</text>
+	</string>
+	<string id="character_use">
+		<text>Parla ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use">
+		<text>Perquisisci($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use_or_drag">
+		<text>Perquisisci ($$ACTION_USE$$) \n Trascina il corpo (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+	<string id="general_complete_task">
+		<text>Missione completata:</text>
+	</string>
+	<string id="general_fail_task">
+		<text>Missione fallita:</text>
+	</string>
+	<string id="general_in_item">
+		<text>Oggetto ricevuto:</text>
+	</string>
+	<string id="general_in_money">
+		<text>Soldi ricevuti:</text>
+	</string>
+	<string id="general_new_task">
+		<text>Nuova missione:</text>
+	</string>
+	<string id="general_out_item">
+		<text>Oggetto perso:</text>
+	</string>
+	<string id="general_out_money">
+		<text>Denaro perso:</text>
+	</string>
+	<string id="general_reverse_task">
+		<text>Missione annullata:</text>
+	</string>
+	<string id="general_update_task">
+		<text>Missione aggiornata:</text>
+	</string>
+	<string id="gun_jammed">
+		<text>L'arma и inceppata. Devi ricaricarla.</text>
+	</string>
+	<string id="inventory_box_use">
+		<text>Fruga ($$ACTION_USE$$)</text>
+	</string>
+	<string id="inventory_item_use">
+		<text>Raccogli oggetto ($$ACTION_USE$$)</text>
+	</string>
+	<string id="level_changer_invitation">
+		<text>Passare ad un'altra localitа?</text>
+	</string>
+	<string id="physic_shell_use">
+		<text>Sposta oggetto ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_autosave">
+		<text>Salvataggio automatico</text>
+	</string>
+	<string id="st_codelock">
+		<text>Blocco combinazione ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_demo_play">
+		<text>NON DEFINITIVO</text>
+	</string>
+	<string id="st_found_new_pda">
+		<text>Reperita informazione:</text>
+	</string>
+	<string id="st_game_over">
+		<text>Partita terminata</text>
+	</string>
+	<string id="st_game_over_press_jump">
+		<text>Premi ($$ACTION_JUMP$$) per tornare al menu principale</text>
+	</string>
+	<string id="st_game_paused">
+		<text>Pausa</text>
+	</string>
+	<string id="st_game_saved">
+		<text>partita salvata</text>
+	</string>
+	<string id="st_helmet_countdown">
+		<text>Disattivazione protezione</text>
+	</string>
+	<string id="st_psy_danger">
+		<text>Livello critico di emissioni psioniche. Abbandonare immediatamente la zona pericolosa.</text>
+	</string>
+	<string id="st_radiation_danger">
+		<text>Pericolo: elevato livello di radiazioni. Protezione obbligatoria per passare.</text>
+	</string>
+	<string id="st_search_treasure">
+		<text>Perlustra il nascondiglio ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_tip">
+		<text>Messaggio</text>
+	</string>
+	<string id="tip_car_locked">
+		<text>Bloccata</text>
+	</string>
+	<string id="tip_car_use">
+		<text>Apri la porta ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_door_blocked">
+		<text>Porta bloccata</text>
+	</string>
+	<string id="tip_door_close">
+		<text>Premi ($$ACTION_USE$$) per chiudere la porta.</text>
+	</string>
+	<string id="tip_door_coded">
+		<text>La porta и bloccata da un codice.</text>
+	</string>
+	<string id="tip_door_decode">
+		<text>Premi ($$ACTION_USE$$) per decriptare il codice.</text>
+	</string>
+	<string id="tip_door_decoding">
+		<text>Decodificazione in corso</text>
+	</string>
+	<string id="tip_door_locked">
+		<text>La porta и chiusa.</text>
+	</string>
+	<string id="tip_door_open">
+		<text>Premi ($$ACTION_USE$$) per aprire la porta.</text>
+	</string>
+	<string id="tip_gate_close">
+		<text>Premi ($$ACTION_USE$$) per chiudere il cancello.</text>
+	</string>
+	<string id="tip_gate_locked">
+		<text>Il cancello и bloccato.</text>
+	</string>
+	<string id="tip_gate_open">
+		<text>Premi ($$ACTION_USE$$) per aprire il cancello.</text>
+	</string>
+	<string id="tip_grate_blocked">
+		<text>Griglia bloccata</text>
+	</string>
+	<string id="tips_agroprom_undeground">
+		<text>Permesso richiesto per entrare nel buco.</text>
+	</string>
+	<string id="tips_kran_press">
+		<text>Ruota valvola ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_radio_tower">
+		<text>Trasmetti messaggio radio ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_red_dynamit_undeground">
+		<text>Attiva il detonatore ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_secret_strelka">
+		<text>Nascondiglio di Strelok ($$ACTION_USE$$)</text>
+	</string>
+	<string id="mar_disabled_level_changer">
+		<text>Non puoi attraversare le Paludi senza una guida.</text>
+	</string>
+	<string id="shooting_fire">
+		<text>Fuoco!</text>
+	</string>
+	<string id="shooting_round_over">
+		<text>Fine del turno! Torna dal padrone.</text>
+	</string>
+	<string id="shooting_time_left">
+		<text>Tempo rimasto:</text>
+	</string>
+	<string id="shooting_your_count">
+		<text>Bersagli colpiti:</text>
+	</string>
+	<string id="shooting_your_points">
+		<text>Il tuo punteggio:</text>
+	</string>
+	<string id="shooting_your_time">
+		<text>Il tuo tempo:</text>
+	</string>
+	<string id="st_agru_warning_go_out">
+		<text>Esci dall'area pericolosa!</text>
+	</string>
+	<string id="st_agru_warning_time_left">
+		<text>Tempo all'allagamento:</text>
+	</string>
+	<string id="tips_agroprom_undeground2">
+		<text>Sottosuolo allagato</text>
+	</string>
+	<string id="level_changer_disabled">
+		<text>I sentieri s'infittiscono. Impossibile proseguire.</text>
+	</string>
+	<string id="tips_tranformer_off">
+		<text>Disattiva il generatore ($$ACTION_USE$$)</text>
+	</string>
+	<string id="ui_st_mp_experience_grow">
+		<text> -</text>
+	</string>
+	<string id="renegade">
+		<text>Rinnegati</text>
+	</string>
+	<string id="agru_cs_warning">
+		<text>ATTENZIONE! ZONA PERICOLOSA! USCIRE IMMEDIATAMENTE!</text>
+	</string>
+</string_table>

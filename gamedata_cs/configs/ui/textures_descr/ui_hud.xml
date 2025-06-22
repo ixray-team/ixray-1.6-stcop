@@ -92,6 +92,7 @@
     <texture id="ui_inv_icon_chemical_burn_immunity" x="538" y="130" width="18" height="18" />
     <texture id="ui_inv_icon_explosion_immunity" x="538" y="150" width="18" height="18" />
     <texture id="ui_inv_icon_fire_wound_immunity" x="538" y="170" width="18" height="18" />
+	<texture id="ui_inv_icon_additional_weight" x="538" y="190" width="18" height="18" />
 
     <texture id="ui_mg_progress_efficiency_empty" x="161" y="363" width="120" height="17" />
     <texture id="ui_mg_progress_efficiency_full" x="161" y="381" width="120" height="17" />
@@ -117,6 +118,7 @@
     <texture id="ui_hud2_rad01_back"	x="758" y="903" width="266" height="121" />
     <texture id="ui_hud2_rad01_back2v"	x="602" y="805" width="23" height="219" />
     <texture id="ui_hud2_rad01_over"	x="660" y="973" width="66" height="51" />
+    <texture id="ui_hud2_stamina_bk"	x="477" y="987" width="103" height="37" />
     <texture id="ui_hud2_rad01_arrow"	x="727" y="914" width="9" height="97" />
     <texture id="ui_hud2_rad01_arrow_shadow"	x="727" y="804" width="9" height="97" />
     <texture id="ui_hud2_rad01_progress" x="630" y="877" width="96" height="96" />
@@ -164,6 +166,8 @@
 <!-- logos -->
     <!--texture id="merc_wide"      x="454" y="842" width="125" height="54" /-->
     <!--texture id="merc_icon"      x="490" y="843" width="56" height="54" /-->
+
+    <texture id="ui_hud_shk_stamina_new"		x="789" y="862" width="68" height="14" />
 
 
     </file>
