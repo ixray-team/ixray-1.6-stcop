@@ -40,11 +40,8 @@
 
 
   <frame_top x="165" y="0" width="525" height="543">
-    <auto_static x="0" y="0" width="525" height="197" stretch="1">
-      <texture>ui_dlg_top</texture>
-    </auto_static>
-    <auto_static x="21" y="197" width="483" height="327" stretch="1">
-      <texture>ui_dlg_middle</texture>
+    <auto_static x="0" y="0" width="565" height="520" stretch="1">
+      <texture>ui_dlg_top_middle</texture>
     </auto_static>
     <auto_static x="10" y="347" width="28" height="220" stretch="1">
       <texture>ui_dlg_left_app</texture>
@@ -57,8 +54,8 @@
     </auto_static>
   </frame_bottom>
 
-  <answers_list	  x="36" y="60" width="453" height="444" always_show_scroll="1"/>
-  <questions_list x="36" y="45" width="453" height="139" always_show_scroll="0"/>
+  <answers_list	  x="36" y="60" width="455" height="441" always_show_scroll="1"/>
+  <questions_list x="36" y="45" width="455" height="139" always_show_scroll="0"/>
 
 
   <question_item x="0" y="0" width="439" height="20" min_height="13">
