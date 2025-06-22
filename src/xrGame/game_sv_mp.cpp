@@ -2356,14 +2356,14 @@ void	game_sv_mp::OnPlayerChangeName		(NET_Packet& P, ClientID sender)
 	if (!ps) return;
 
 	xrGameSpyServer* sv = smart_cast<xrGameSpyServer*>( m_server );
-	if( sv && sv->IsPublicServer() )
+	if( sv && sv->HasProtected() )
 	{
-		Msg( "Player \"%s\" try to change name on \"%s\" at public server.", ps->getName(), NewName );
+		Msg( "Player \"%s\" try to change name on \"%s\" at protected server.", ps->getName(), NewName );
 
 		NET_Packet			P_;
 		GenerateGameMessage (P_);
 		P_.w_u32				(GAME_EVENT_SERVER_STRING_MESSAGE);
-		P_.w_stringZ			("Server is public. Can\'t change player name!");
+		P_.w_stringZ			("Server is protected. Can\'t change player name!");
 		m_server->SendTo	( sender, P_ );
 		return;
 	}
