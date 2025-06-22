@@ -28,6 +28,8 @@ private:
 
 	CUIStatic*			m_resist_back[it_max];
 	CUIStatic*			m_indik[it_max];
+	CUIStatic*			m_ind_starvation;
+	CUIStatic*			m_resist_back_starvation;
 
 	CUITextWnd*			m_ui_weapon_sign_ammo;
 	Frect				m_ui_weapon_icon_rect;
@@ -95,6 +97,7 @@ public:
 
 			void 	UpdateZones			();
 			void	UpdateIndicators	( CActor* actor );
+			void	UpdateSatiety		(CActor* actor);
 
 			float	get_zone_cur_power	( ALife::EHitType hit_type );
 			float	get_main_sensor_value()	{ return m_radia_hit; }
