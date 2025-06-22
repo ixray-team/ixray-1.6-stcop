@@ -65,3 +65,6 @@ on_info = {+esc_take_habar_complete} sr_idle@go_garbage_task %=give_inited_task(
 on_info = {+esc_bring_habar_complete -gar_story_find_diggers_started} sr_idle@esc_gar %=give_inited_task(storyline:gar_story_find_diggers:csky) +gar_story_find_diggers_started%
 
 [sr_idle@esc_gar]
+on_timer = 5000 | {+esc_join_need_sound !is_faction_enemy_to_actor(stalker) !actor_in_stalker} sr_idle@end %=play_sound(esc_can_join_stalker:stalker:esc_leader_stalkerbase_name)%
+
+[sr_idle@end]

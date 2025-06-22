@@ -8,7 +8,7 @@ on_info = {!black_screen +agr_actor_inside_9 =actor_on_level(agroprom_undergroun
 on_signal = sound_end | sr_idle@line_1
 
 [sr_idle@line_1]
-on_info = {+agru_leader_dolg_task_complete} sr_idle@line_2 %=give_inited_task(storyline:agru_go_out_task:csky) =play_sound(agru_kran)%
+on_info = {+agru_leader_dolg_task_complete} sr_idle@line_2 %=give_inited_task(storyline:agru_go_out_task:csky) =play_sound(agru_kran) =add_cs_text(agru_cs_warning)%
 
 [sr_idle@line_2]
 on_info = {+agru_teleport_complete} sr_idle@line_2_1 %+agru_go_out_task_complete =give_inited_task(storyline:agr_take_reward:csky) +agr_duty_first_join +agr_duty_storyline_complete =play_sound(agr_base_commander_reward_pda:dolg:agr_duty_base_commander_name)%

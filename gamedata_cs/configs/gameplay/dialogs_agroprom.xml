@@ -16,7 +16,7 @@
     <dialog id="agr_duty_tir_dialog_hello">
         <phrase_list>
             <phrase id="3">
-                <text></text>
+                <text />
                 <precondition>minigame_dialogs.is_shooting_running</precondition>
                 <next>31</next>
             </phrase>
@@ -34,7 +34,7 @@
                 <next>113</next>
             </phrase>
             <phrase id="21111">
-                <text></text>
+                <text />
                 <next>211111</next>
             </phrase>
             <phrase id="2111111">
@@ -82,7 +82,7 @@
                 <next>2111</next>
             </phrase>
             <phrase id="2">
-                <text></text>
+                <text />
                 <precondition>minigame_dialogs.is_shooting_finished</precondition>
                 <next>21</next>
             </phrase>
@@ -238,45 +238,15 @@
                 <next>111111113</next>
             </phrase>
             <phrase id="0">
-                <text></text>
+                <text />
                 <next>1</next>
                 <next>2</next>
                 <next>3</next>
             </phrase>
             <phrase id="1">
-                <text></text>
+                <text />
                 <precondition>minigame_dialogs.is_shooting_valiable</precondition>
                 <next>11</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_dialog_go_to_leader">
-        <phrase_list>
-            <phrase id="01">
-                <text></text>
-                <next>011</next>
-                <next>012</next>
-            </phrase>
-            <phrase id="011">
-                <text></text>
-                <has_info>agr_duty_open</has_info>
-                <next>0111</next>
-            </phrase>
-            <phrase id="0111">
-                <text></text>
-                <give_info>on_leader</give_info>
-            </phrase>
-            <phrase id="012">
-                <text></text>
-                <dont_has_info>agr_duty_open</dont_has_info>
-                <next>0122</next>
-            </phrase>
-            <phrase id="0122">
-                <text></text>
-            </phrase>
-            <phrase id="0">
-                <text></text>
-                <next>01</next>
             </phrase>
         </phrase_list>
     </dialog>
@@ -310,19 +280,19 @@
         <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
             <phrase id="155">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="111">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="122">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="133">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="144">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="1">
                 <text>agr_duty_barman_you_1</text>
@@ -362,7 +332,7 @@
                 <next>5</next>
             </phrase>
             <phrase id="1">
-                <text></text>
+                <text />
                 <next>2</next>
             </phrase>
             <phrase id="3">
@@ -370,7 +340,7 @@
                 <next>4</next>
             </phrase>
             <phrase id="0">
-                <text></text>
+                <text />
                 <next>1</next>
             </phrase>
             <phrase id="2">
@@ -396,10 +366,10 @@
         <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
             <phrase id="122">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="133">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="1">
                 <text>agr_duty_mechanic_about_upgrade_1</text>
@@ -432,25 +402,6 @@
             </phrase>
             <phrase id="0">
                 <text>agr_duty_trader_about_fight_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_duty_trader_about_freetime">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="133">
-                <text></text>
-            </phrase>
-            <phrase id="122">
-                <text></text>
-            </phrase>
-            <phrase id="1">
-                <text>agr_duty_trader_about_freetime_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_duty_trader_about_freetime_0</text>
                 <action>dialog_manager.action_disable_phrase</action>
                 <next>1</next>
             </phrase>
@@ -499,25 +450,25 @@
         <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
             <phrase id="12">
-                <text></text>
+                <text />
                 <next>122</next>
             </phrase>
             <phrase id="122">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="13">
-                <text></text>
+                <text />
                 <next>133</next>
             </phrase>
             <phrase id="133">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="14">
-                <text></text>
+                <text />
                 <next>144</next>
             </phrase>
             <phrase id="144">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="1">
                 <text>agr_duty_weaponmaster_about_you_in_zone_1</text>
@@ -546,16 +497,16 @@
         <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
             <phrase id="111">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="122">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="133">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="144">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="1">
                 <text>agr_duty_zooman_about_zoo_1</text>
@@ -684,6 +635,7 @@
     <dialog id="agr_leader_first_join">
         <dont_has_info>agr_duty_first_join</dont_has_info>
         <dont_has_info>agru_open_story_door</dont_has_info>
+		<precondition>dialogs.actor_not_in_dolg</precondition>
         <phrase_list>
             <phrase id="2">
                 <text>agr_leader_first_join_2</text>
@@ -696,6 +648,638 @@
             </phrase>
             <phrase id="0">
                 <text>agr_leader_first_join_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_about_agroprom">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_about_agroprom_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_about_agroprom_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_commander_1">
+        <precondition>dialogs_agroprom.is_smart_captured_by_bandits_1</precondition>
+        <dont_has_info>agr_smart_terrain_6_4_simulation_task_complete</dont_has_info>
+        <dont_has_info>agr_smart_terrain_6_4_simulation_task</dont_has_info>
+        <phrase_list>
+            <phrase id="1122">
+                <text>agr_stalker_commander_1_1122</text>
+            </phrase>
+            <phrase id="112">
+                <text>agr_stalker_commander_1_112</text>
+                <next>1122</next>
+            </phrase>
+            <phrase id="33">
+                <text>agr_stalker_commander_1_33</text>
+                <has_info>agr_smart_terrain_6_4_simulation_task_complete</has_info>
+            </phrase>
+            <phrase id="222">
+                <text>agr_stalker_commander_1_222</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="22">
+                <text>agr_stalker_commander_1_22</text>
+                <has_info>agr_smart_terrain_6_4_simulation_task</has_info>
+                <next>222</next>
+            </phrase>
+            <phrase id="111">
+                <text>agr_stalker_commander_1_111</text>
+                <give_info>agr_smart_terrain_6_4_simulation_task</give_info>
+                <next>1111</next>
+            </phrase>
+            <phrase id="11">
+                <text>agr_stalker_commander_1_11</text>
+                <dont_has_info>agr_smart_terrain_6_4_simulation_task_complete</dont_has_info>
+                <dont_has_info>agr_smart_terrain_6_4_simulation_task</dont_has_info>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="1111">
+                <text>agr_stalker_commander_1_1111</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_commander_1_0</text>
+                <next>11</next>
+                <next>22</next>
+                <next>33</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_commander_1_about_situation">
+        <phrase_list>
+            <phrase id="4">
+                <text>agr_stalker_commander_1_about_situation_4</text>
+                <next>5</next>
+            </phrase>
+            <phrase id="5">
+                <text>agr_stalker_commander_1_about_situation_5</text>
+                <next>6</next>
+            </phrase>
+            <phrase id="7">
+                <text>agr_stalker_commander_1_about_situation_7</text>
+                <next>8</next>
+            </phrase>
+            <phrase id="8">
+                <text>agr_stalker_commander_1_about_situation_8</text>
+                <next>9</next>
+            </phrase>
+            <phrase id="9">
+                <text>agr_stalker_commander_1_about_situation_9</text>
+                <next>10</next>
+            </phrase>
+            <phrase id="10">
+                <text>agr_stalker_commander_1_about_situation_10</text>
+            </phrase>
+            <phrase id="6">
+                <text>agr_stalker_commander_1_about_situation_6</text>
+                <next>7</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>agr_stalker_commander_1_about_situation_2</text>
+                <next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>agr_stalker_commander_1_about_situation_3</text>
+                <next>4</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_commander_2">
+        <precondition>dialogs_agroprom.is_smart_captured_by_bandits_2</precondition>
+        <has_info>agr_smart_terrain_4_2_simulation_task_complete</has_info>
+        <dont_has_info>agr_smart_terrain_2_3_simulation_task_complete</dont_has_info>
+        <dont_has_info>agr_smart_terrain_2_3_simulation_task</dont_has_info>
+        <phrase_list>
+            <phrase id="222">
+                <text>agr_stalker_commander_2_222</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="112">
+                <text>agr_stalker_commander_2_112</text>
+                <next>1112</next>
+            </phrase>
+            <phrase id="1112">
+                <text>agr_stalker_commander_2_1112</text>
+            </phrase>
+            <phrase id="33">
+                <text>agr_stalker_commander_2_33</text>
+                <has_info>agr_smart_terrain_2_3_simulation_task_complete</has_info>
+            </phrase>
+            <phrase id="11">
+                <text>agr_stalker_commander_2_11</text>
+                <dont_has_info>agr_smart_terrain_2_3_simulation_task_complete</dont_has_info>
+                <dont_has_info>agr_smart_terrain_2_3_simulation_task</dont_has_info>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="22">
+                <text>agr_stalker_commander_2_22</text>
+                <has_info>agr_smart_terrain_2_3_simulation_task</has_info>
+                <next>222</next>
+            </phrase>
+            <phrase id="111">
+                <text>agr_stalker_commander_2_111</text>
+                <give_info>agr_smart_terrain_2_3_simulation_task</give_info>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>agr_stalker_commander_2_1111</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_commander_2_0</text>
+                <next>11</next>
+                <next>22</next>
+                <next>33</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_commander_2_about_situation">
+        <phrase_list>
+            <phrase id="1">
+                <text />
+                <next>2</next>
+            </phrase>
+            <phrase id="5">
+                <text>agr_stalker_commander_2_about_situation_5</text>
+                <next>6</next>
+            </phrase>
+            <phrase id="4">
+                <text>agr_stalker_commander_2_about_situation_4</text>
+                <next>5</next>
+            </phrase>
+            <phrase id="6">
+                <text>agr_stalker_commander_2_about_situation_6</text>
+            </phrase>
+            <phrase id="2">
+                <text>agr_stalker_commander_2_about_situation_2</text>
+                <next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>agr_stalker_commander_2_about_situation_3</text>
+                <next>4</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_commander_3">
+        <has_info>agr_smart_terrain_6_4_simulation_task_complete</has_info>
+        <dont_has_info>agr_smart_terrain_4_2_simulation_task_complete</dont_has_info>
+        <dont_has_info>agr_smart_terrain_4_2_simulation_task</dont_has_info>
+        <phrase_list>
+            <phrase id="1112">
+                <text>agr_stalker_commander_3_1112</text>
+            </phrase>
+            <phrase id="222">
+                <text>agr_stalker_commander_3_222</text>
+            </phrase>
+            <phrase id="1111">
+                <text>agr_stalker_commander_3_1111</text>
+            </phrase>
+            <phrase id="112">
+                <text>agr_stalker_commander_3_112</text>
+                <next>1112</next>
+            </phrase>
+            <phrase id="111">
+                <text>agr_stalker_commander_3_111</text>
+                <give_info>agr_smart_terrain_4_2_simulation_task</give_info>
+                <next>1111</next>
+            </phrase>
+            <phrase id="22">
+                <text>agr_stalker_commander_3_22</text>
+                <has_info>agr_smart_terrain_4_2_simulation_task</has_info>
+                <next>222</next>
+            </phrase>
+            <phrase id="33">
+                <text>agr_stalker_commander_3_33</text>
+                <has_info>agr_smart_terrain_4_2_simulation_task_complete</has_info>
+            </phrase>
+            <phrase id="11">
+                <text>agr_stalker_commander_3_11</text>
+                <dont_has_info>agr_smart_terrain_4_2_simulation_task_complete</dont_has_info>
+                <dont_has_info>agr_smart_terrain_4_2_simulation_task</dont_has_info>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_commander_3_0</text>
+                <next>11</next>
+                <next>22</next>
+                <next>33</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_guard_dialog">
+        <phrase_list>
+            <phrase id="4">
+                <text>agr_stalker_guard_dialog_4</text>
+            </phrase>
+            <phrase id="3">
+                <text>agr_stalker_guard_dialog_3</text>
+                <next>4</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>agr_stalker_guard_dialog_2</text>
+                <next>3</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_leader_about_contact">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_leader_about_contact_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_leader_about_contact_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_leader_about_join">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_leader_about_join_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_leader_about_join_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_leader_about_you">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="122">
+                <text />
+            </phrase>
+            <phrase id="133">
+                <text />
+            </phrase>
+            <phrase id="144">
+                <text />
+            </phrase>
+            <phrase id="22">
+                <text />
+            </phrase>
+            <phrase id="33">
+                <text />
+            </phrase>
+            <phrase id="44">
+                <text />
+            </phrase>
+            <phrase id="1">
+                <text>agr_stalker_leader_about_you_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_leader_about_you_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_leader_about_zone">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_leader_about_zone_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_leader_about_zone_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_mechanic_about_gun_and_armor_upgrades">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_mechanic_about_gun_and_armor_upgrades_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_mechanic_about_gun_and_armor_upgrades_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_mechanic_what_is_you_doing">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="133">
+                <text />
+            </phrase>
+            <phrase id="122">
+                <text />
+            </phrase>
+            <phrase id="33">
+                <text />
+            </phrase>
+            <phrase id="22">
+                <text />
+            </phrase>
+            <phrase id="1">
+                <text>agr_stalker_mechanic_what_is_you_doing_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_mechanic_what_is_you_doing_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_scientist_quest_complete">
+        <phrase_list>
+            <phrase id="333">
+                <text>agr_stalker_scientist_quest_complete_333</text>
+                <has_info>agr_stalker_scientist_quest_3</has_info>
+            </phrase>
+            <phrase id="33">
+                <text>agr_stalker_scientist_quest_complete_33</text>
+                <dont_has_info>agr_stalker_scientist_quest_2</dont_has_info>
+                <dont_has_info>agr_stalker_scientist_quest_3</dont_has_info>
+            </phrase>
+            <phrase id="5">
+                <text>agr_stalker_scientist_quest_complete_5</text>
+            </phrase>
+            <phrase id="4">
+                <text>agr_stalker_scientist_quest_complete_4</text>
+                <give_info>agr_stalker_scientist_quest_3</give_info>
+                <next>5</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <next>3</next>
+                <next>33</next>
+                <next>333</next>
+            </phrase>
+            <phrase id="3">
+                <text>agr_stalker_scientist_quest_complete_3</text>
+                <dont_has_info>agr_stalker_scientist_quest_3</dont_has_info>
+                <has_info>agr_stalker_scientist_quest_2</has_info>
+                <next>4</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_secret_trader_about_zone">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_secret_trader_about_zone_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_secret_trader_about_zone_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_secret_trader_quest">
+        <phrase_list>
+            <phrase id="11">
+                <text>agr_stalker_secret_trader_quest_11</text>
+                <has_info>agr_secret_trader_pda_quest_1</has_info>
+            </phrase>
+            <phrase id="2">
+                <text>agr_stalker_secret_trader_quest_2</text>
+                <give_info>agr_secret_trader_pda_quest_1</give_info>
+                <next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>agr_stalker_secret_trader_quest_3</text>
+            </phrase>
+            <phrase id="22">
+                <text>agr_stalker_secret_trader_quest_22</text>
+            </phrase>
+            <phrase id="1">
+                <text>agr_stalker_secret_trader_quest_1</text>
+                <dont_has_info>agr_secret_trader_pda_quest_1</dont_has_info>
+                <next>2</next>
+                <next>22</next>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_secret_trader_quest_0</text>
+                <next>1</next>
+                <next>11</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_secret_trader_quest_complete">
+        <has_info>agr_secret_trader_pda_quest_1</has_info>
+        <dont_has_info>agr_secret_trader_pda_quest_3</dont_has_info>
+        <phrase_list>
+            <phrase id="2">
+                <text>agr_stalker_secret_trader_quest_complete_2</text>
+                <precondition>dialogs_agroprom.actor_has_secret_trader_pda</precondition>
+                <action>dialogs_agroprom.transfer_secret_trader_pda</action>
+                <give_info>agr_secret_trader_pda_quest_3</give_info>
+                <next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>agr_stalker_secret_trader_quest_complete_3</text>
+            </phrase>
+            <phrase id="22">
+                <text>agr_stalker_secret_trader_quest_complete_22</text>
+                <precondition>dialogs_agroprom.actor_hasnt_secret_trader_pda</precondition>
+            </phrase>
+            <phrase id="1">
+                <text>agr_stalker_secret_trader_quest_complete_1</text>
+                <next>2</next>
+                <next>22</next>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_secret_trader_quest_complete_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_secret_trader_what_is_you_doing">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_secret_trader_what_is_you_doing_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_secret_trader_what_is_you_doing_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_secret_trader_who_are_you">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="122">
+                <text />
+            </phrase>
+            <phrase id="133">
+                <text />
+            </phrase>
+            <phrase id="22">
+                <text />
+            </phrase>
+            <phrase id="33">
+                <text />
+            </phrase>
+            <phrase id="1">
+                <text>agr_stalker_secret_trader_who_are_you_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_secret_trader_who_are_you_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_trader_about_dolg">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_trader_about_dolg_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_trader_about_dolg_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_trader_about_prisoner">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_trader_about_prisoner_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_trader_about_prisoner_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_trader_about_select">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="133">
+                <text />
+            </phrase>
+            <phrase id="122">
+                <text />
+            </phrase>
+            <phrase id="144">
+                <text />
+            </phrase>
+            <phrase id="22">
+                <text />
+            </phrase>
+            <phrase id="33">
+                <text />
+            </phrase>
+            <phrase id="44">
+                <text />
+            </phrase>
+            <phrase id="1">
+                <text>agr_stalker_trader_about_select_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_trader_about_select_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_stalker_trader_about_trader">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_stalker_trader_about_trader_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_stalker_trader_about_trader_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_dialog_go_to_leader">
+        <phrase_list>
+            <phrase id="01">
+                <text></text>
+                <next>011</next>
+                <next>012</next>
+            </phrase>
+            <phrase id="011">
+                <text></text>
+                <has_info>agr_duty_open</has_info>
+                <next>0111</next>
+            </phrase>
+            <phrase id="0111">
+                <text></text>
+                <give_info>on_leader</give_info>
+            </phrase>
+            <phrase id="012">
+                <text></text>
+                <dont_has_info>agr_duty_open</dont_has_info>
+                <next>0122</next>
+            </phrase>
+            <phrase id="0122">
+                <text></text>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>01</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_duty_trader_about_freetime">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="133">
+                <text></text>
+            </phrase>
+            <phrase id="122">
+                <text></text>
+            </phrase>
+            <phrase id="1">
+                <text>agr_duty_trader_about_freetime_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_duty_trader_about_freetime_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
                 <next>1</next>
             </phrase>
         </phrase_list>
@@ -810,12 +1394,10 @@
     <dialog id="agr_leader_join_duty">
         <has_info>agr_duty_first_join</has_info>
         <has_info>agru_open_story_door</has_info>
+		<precondition>dialogs.actor_not_in_dolg</precondition>
         <phrase_list>
             <phrase id="66666666">
                 <text>agr_leader_join_duty_66666666</text>
-            </phrase>
-            <phrase id="445">
-                <text></text>
             </phrase>
             <phrase id="33">
                 <text>agr_leader_join_duty_33</text>
@@ -835,39 +1417,10 @@
             <phrase id="66">
                 <text>agr_leader_join_duty_66</text>
                 <precondition>dialogs.actor_not_in_bandit</precondition>
-                <precondition>dialogs.actor_not_in_freedom</precondition>
                 <precondition>dialogs.actor_not_in_stalker</precondition>
-                <precondition>dialogs.actor_not_in_dolg</precondition>
                 <has_info>agru_open_story_door</has_info>
                 <next>444</next>
                 <next>445</next>
-            </phrase>
-            <phrase id="44444">
-                <text>agr_leader_join_duty_44444</text>
-                <next>444444</next>
-            </phrase>
-            <phrase id="44444444">
-                <text>agr_leader_join_duty_44444444</text>
-                <next>444444444</next>
-            </phrase>
-            <phrase id="444444444">
-                <text>agr_leader_join_duty_444444444</text>
-            </phrase>
-            <phrase id="44445">
-                <text>agr_leader_join_duty_44445</text>
-            </phrase>
-            <phrase id="4444444">
-                <text>agr_leader_join_duty_4444444</text>
-                <next>44444444</next>
-            </phrase>
-            <phrase id="444444">
-                <text>agr_leader_join_duty_444444</text>
-                <next>4444444</next>
-            </phrase>
-            <phrase id="4444">
-                <text>agr_leader_join_duty_4444</text>
-                <next>44444</next>
-                <next>44445</next>
             </phrase>
             <phrase id="44">
                 <text>agr_leader_join_duty_44</text>
@@ -876,10 +1429,29 @@
                 <next>444</next>
                 <next>445</next>
             </phrase>
+            <phrase id="445">
+                <text>agr_leader_join_duty_44444</text>
+            </phrase>
+            <phrase id="44444">
+                <text>agr_leader_join_duty_44444</text>
+                <next>444444</next>
+            </phrase>
+            <phrase id="444444">
+                <text>agr_leader_join_duty_444444</text>
+                <next>4444444</next>
+            </phrase>
+            <phrase id="4444444">
+                <text>agr_leader_join_duty_4444444</text>
+                <next>44444444</next>
+            </phrase>
             <phrase id="444">
                 <text>agr_leader_join_duty_444</text>
-                <action>dialogs.actor_set_dolg</action>
                 <next>4444</next>
+            </phrase>
+            <phrase id="4444">
+                <text>agr_leader_join_duty_4444</text>
+                <next>44444</next>
+                <next>44445</next>
             </phrase>
             <phrase id="0">
                 <text>agr_leader_join_duty_0</text>
@@ -888,590 +1460,19 @@
                 <next>44</next>
                 <next>55</next>
                 <next>66</next>
-                <next>77</next>
             </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_about_agroprom">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_about_agroprom_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_about_agroprom_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_commander_1">
-        <precondition>dialogs_agroprom.is_smart_captured_by_bandits_1</precondition>
-        <dont_has_info>agr_smart_terrain_6_4_simulation_task_complete</dont_has_info>
-        <dont_has_info>agr_smart_terrain_6_4_simulation_task</dont_has_info>
-        <phrase_list>
-            <phrase id="1122">
-                <text>agr_stalker_commander_1_1122</text>
-            </phrase>
-            <phrase id="112">
-                <text>agr_stalker_commander_1_112</text>
-                <next>1122</next>
-            </phrase>
-            <phrase id="33">
-                <text>agr_stalker_commander_1_33</text>
-                <has_info>agr_smart_terrain_6_4_simulation_task_complete</has_info>
-            </phrase>
-            <phrase id="222">
-                <text>agr_stalker_commander_1_222</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="22">
-                <text>agr_stalker_commander_1_22</text>
-                <has_info>agr_smart_terrain_6_4_simulation_task</has_info>
-                <next>222</next>
-            </phrase>
-            <phrase id="111">
-                <text>agr_stalker_commander_1_111</text>
-                <give_info>agr_smart_terrain_6_4_simulation_task</give_info>
-                <next>1111</next>
-            </phrase>
-            <phrase id="11">
-                <text>agr_stalker_commander_1_11</text>
-                <dont_has_info>agr_smart_terrain_6_4_simulation_task_complete</dont_has_info>
-                <dont_has_info>agr_smart_terrain_6_4_simulation_task</dont_has_info>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="1111">
-                <text>agr_stalker_commander_1_1111</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_commander_1_0</text>
-                <next>11</next>
-                <next>22</next>
-                <next>33</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_commander_1_about_situation">
-        <phrase_list>
-            <phrase id="4">
-                <text>agr_stalker_commander_1_about_situation_4</text>
-                <next>5</next>
-            </phrase>
-            <phrase id="5">
-                <text>agr_stalker_commander_1_about_situation_5</text>
-                <next>6</next>
-            </phrase>
-            <phrase id="7">
-                <text>agr_stalker_commander_1_about_situation_7</text>
-                <next>8</next>
-            </phrase>
-            <phrase id="8">
-                <text>agr_stalker_commander_1_about_situation_8</text>
-                <next>9</next>
-            </phrase>
-            <phrase id="9">
-                <text>agr_stalker_commander_1_about_situation_9</text>
-                <next>10</next>
-            </phrase>
-            <phrase id="10">
-                <text>agr_stalker_commander_1_about_situation_10</text>
-            </phrase>
-            <phrase id="6">
-                <text>agr_stalker_commander_1_about_situation_6</text>
-                <next>7</next>
-            </phrase>
-            <phrase id="1">
-                <text></text>
-                <next>2</next>
-            </phrase>
-            <phrase id="2">
-                <text>agr_stalker_commander_1_about_situation_2</text>
-                <next>3</next>
-            </phrase>
-            <phrase id="3">
-                <text>agr_stalker_commander_1_about_situation_3</text>
-                <next>4</next>
-            </phrase>
-            <phrase id="0">
-                <text></text>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_commander_2">
-        <precondition>dialogs_agroprom.is_smart_captured_by_bandits_2</precondition>
-        <has_info>agr_smart_terrain_4_2_simulation_task_complete</has_info>
-        <dont_has_info>agr_smart_terrain_2_3_simulation_task_complete</dont_has_info>
-        <dont_has_info>agr_smart_terrain_2_3_simulation_task</dont_has_info>
-        <phrase_list>
-            <phrase id="222">
-                <text>agr_stalker_commander_2_222</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="112">
-                <text>agr_stalker_commander_2_112</text>
-                <next>1112</next>
-            </phrase>
-            <phrase id="1112">
-                <text>agr_stalker_commander_2_1112</text>
-            </phrase>
-            <phrase id="33">
-                <text>agr_stalker_commander_2_33</text>
-                <has_info>agr_smart_terrain_2_3_simulation_task_complete</has_info>
-            </phrase>
-            <phrase id="11">
-                <text>agr_stalker_commander_2_11</text>
-                <dont_has_info>agr_smart_terrain_2_3_simulation_task_complete</dont_has_info>
-                <dont_has_info>agr_smart_terrain_2_3_simulation_task</dont_has_info>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="22">
-                <text>agr_stalker_commander_2_22</text>
-                <has_info>agr_smart_terrain_2_3_simulation_task</has_info>
-                <next>222</next>
-            </phrase>
-            <phrase id="111">
-                <text>agr_stalker_commander_2_111</text>
-                <give_info>agr_smart_terrain_2_3_simulation_task</give_info>
-                <next>1111</next>
-            </phrase>
-            <phrase id="1111">
-                <text>agr_stalker_commander_2_1111</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_commander_2_0</text>
-                <next>11</next>
-                <next>22</next>
-                <next>33</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_commander_2_about_situation">
-        <phrase_list>
-            <phrase id="1">
-                <text></text>
-                <next>2</next>
-            </phrase>
-            <phrase id="5">
-                <text>agr_stalker_commander_2_about_situation_5</text>
-                <next>6</next>
-            </phrase>
-            <phrase id="4">
-                <text>agr_stalker_commander_2_about_situation_4</text>
-                <next>5</next>
-            </phrase>
-            <phrase id="6">
-                <text>agr_stalker_commander_2_about_situation_6</text>
-            </phrase>
-            <phrase id="2">
-                <text>agr_stalker_commander_2_about_situation_2</text>
-                <next>3</next>
-            </phrase>
-            <phrase id="3">
-                <text>agr_stalker_commander_2_about_situation_3</text>
-                <next>4</next>
-            </phrase>
-            <phrase id="0">
-                <text></text>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_commander_3">
-        <has_info>agr_smart_terrain_6_4_simulation_task_complete</has_info>
-        <dont_has_info>agr_smart_terrain_4_2_simulation_task_complete</dont_has_info>
-        <dont_has_info>agr_smart_terrain_4_2_simulation_task</dont_has_info>
-        <phrase_list>
-            <phrase id="1112">
-                <text>agr_stalker_commander_3_1112</text>
-            </phrase>
-            <phrase id="222">
-                <text>agr_stalker_commander_3_222</text>
-            </phrase>
-            <phrase id="1111">
-                <text>agr_stalker_commander_3_1111</text>
-            </phrase>
-            <phrase id="112">
-                <text>agr_stalker_commander_3_112</text>
-                <next>1112</next>
-            </phrase>
-            <phrase id="111">
-                <text>agr_stalker_commander_3_111</text>
-                <give_info>agr_smart_terrain_4_2_simulation_task</give_info>
-                <next>1111</next>
-            </phrase>
-            <phrase id="22">
-                <text>agr_stalker_commander_3_22</text>
-                <has_info>agr_smart_terrain_4_2_simulation_task</has_info>
-                <next>222</next>
-            </phrase>
-            <phrase id="33">
-                <text>agr_stalker_commander_3_33</text>
-                <has_info>agr_smart_terrain_4_2_simulation_task_complete</has_info>
-            </phrase>
-            <phrase id="11">
-                <text>agr_stalker_commander_3_11</text>
-                <dont_has_info>agr_smart_terrain_4_2_simulation_task_complete</dont_has_info>
-                <dont_has_info>agr_smart_terrain_4_2_simulation_task</dont_has_info>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_commander_3_0</text>
-                <next>11</next>
-                <next>22</next>
-                <next>33</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_guard_dialog">
-        <phrase_list>
-            <phrase id="4">
-                <text>agr_stalker_guard_dialog_4</text>
-            </phrase>
-            <phrase id="3">
-                <text>agr_stalker_guard_dialog_3</text>
-                <next>4</next>
-            </phrase>
-            <phrase id="1">
-                <text></text>
-                <next>2</next>
-            </phrase>
-            <phrase id="2">
-                <text>agr_stalker_guard_dialog_2</text>
-                <next>3</next>
-            </phrase>
-            <phrase id="0">
-                <text></text>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_leader_about_contact">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_leader_about_contact_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_leader_about_contact_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_leader_about_join">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_leader_about_join_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_leader_about_join_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_leader_about_you">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="122">
-                <text></text>
-            </phrase>
-            <phrase id="133">
-                <text></text>
-            </phrase>
-            <phrase id="144">
-                <text></text>
-            </phrase>
-            <phrase id="22">
-                <text></text>
-            </phrase>
-            <phrase id="33">
-                <text></text>
-            </phrase>
-            <phrase id="44">
-                <text></text>
-            </phrase>
-            <phrase id="1">
-                <text>agr_stalker_leader_about_you_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_leader_about_you_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_leader_about_zone">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_leader_about_zone_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_leader_about_zone_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_mechanic_about_gun_and_armor_upgrades">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_mechanic_about_gun_and_armor_upgrades_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_mechanic_about_gun_and_armor_upgrades_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_mechanic_what_is_you_doing">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="133">
-                <text></text>
-            </phrase>
-            <phrase id="122">
-                <text></text>
-            </phrase>
-            <phrase id="33">
-                <text></text>
-            </phrase>
-            <phrase id="22">
-                <text></text>
-            </phrase>
-            <phrase id="1">
-                <text>agr_stalker_mechanic_what_is_you_doing_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_mechanic_what_is_you_doing_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_scientist_quest_complete">
-        <phrase_list>
-            <phrase id="333">
-                <text>agr_stalker_scientist_quest_complete_333</text>
-                <has_info>agr_stalker_scientist_quest_3</has_info>
-            </phrase>
-            <phrase id="33">
-                <text>agr_stalker_scientist_quest_complete_33</text>
-                <dont_has_info>agr_stalker_scientist_quest_2</dont_has_info>
-                <dont_has_info>agr_stalker_scientist_quest_3</dont_has_info>
-            </phrase>
-            <phrase id="5">
-                <text>agr_stalker_scientist_quest_complete_5</text>
-            </phrase>
-            <phrase id="4">
-                <text>agr_stalker_scientist_quest_complete_4</text>
-                <give_info>agr_stalker_scientist_quest_3</give_info>
-                <next>5</next>
-            </phrase>
-            <phrase id="1">
-                <text></text>
-                <next>3</next>
-                <next>33</next>
-                <next>333</next>
-            </phrase>
-            <phrase id="3">
-                <text>agr_stalker_scientist_quest_complete_3</text>
-                <dont_has_info>agr_stalker_scientist_quest_3</dont_has_info>
-                <has_info>agr_stalker_scientist_quest_2</has_info>
-                <next>4</next>
-            </phrase>
-            <phrase id="0">
-                <text></text>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_secret_trader_about_zone">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_secret_trader_about_zone_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_secret_trader_about_zone_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_secret_trader_quest">
-        <phrase_list>
-            <phrase id="11">
-                <text>agr_stalker_secret_trader_quest_11</text>
-                <has_info>agr_secret_trader_pda_quest_1</has_info>
-            </phrase>
-            <phrase id="2">
-                <text>agr_stalker_secret_trader_quest_2</text>
-                <give_info>agr_secret_trader_pda_quest_1</give_info>
-                <next>3</next>
-            </phrase>
-            <phrase id="3">
-                <text>agr_stalker_secret_trader_quest_3</text>
-            </phrase>
-            <phrase id="22">
-                <text>agr_stalker_secret_trader_quest_22</text>
-            </phrase>
-            <phrase id="1">
-                <text>agr_stalker_secret_trader_quest_1</text>
-                <dont_has_info>agr_secret_trader_pda_quest_1</dont_has_info>
-                <next>2</next>
-                <next>22</next>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_secret_trader_quest_0</text>
-                <next>1</next>
-                <next>11</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_secret_trader_quest_complete">
-        <has_info>agr_secret_trader_pda_quest_1</has_info>
-        <dont_has_info>agr_secret_trader_pda_quest_3</dont_has_info>
-        <phrase_list>
-            <phrase id="2">
-                <text>agr_stalker_secret_trader_quest_complete_2</text>
-                <precondition>dialogs_agroprom.actor_has_secret_trader_pda</precondition>
-                <action>dialogs_agroprom.transfer_secret_trader_pda</action>
-                <give_info>agr_secret_trader_pda_quest_3</give_info>
-                <next>3</next>
-            </phrase>
-            <phrase id="3">
-                <text>agr_stalker_secret_trader_quest_complete_3</text>
-            </phrase>
-            <phrase id="22">
-                <text>agr_stalker_secret_trader_quest_complete_22</text>
-                <precondition>dialogs_agroprom.actor_hasnt_secret_trader_pda</precondition>
-            </phrase>
-            <phrase id="1">
-                <text>agr_stalker_secret_trader_quest_complete_1</text>
-                <next>2</next>
-                <next>22</next>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_secret_trader_quest_complete_0</text>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_secret_trader_what_is_you_doing">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_secret_trader_what_is_you_doing_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_secret_trader_what_is_you_doing_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_secret_trader_who_are_you">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="122">
-                <text></text>
-            </phrase>
-            <phrase id="133">
-                <text></text>
-            </phrase>
-            <phrase id="22">
-                <text></text>
-            </phrase>
-            <phrase id="33">
-                <text></text>
-            </phrase>
-            <phrase id="1">
-                <text>agr_stalker_secret_trader_who_are_you_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_secret_trader_who_are_you_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_trader_about_dolg">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_trader_about_dolg_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_trader_about_dolg_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_trader_about_prisoner">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_trader_about_prisoner_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_trader_about_prisoner_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_trader_about_select">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="133">
-                <text></text>
-            </phrase>
-            <phrase id="122">
-                <text></text>
-            </phrase>
-            <phrase id="144">
-                <text></text>
-            </phrase>
-            <phrase id="22">
-                <text></text>
-            </phrase>
-            <phrase id="33">
-                <text></text>
-            </phrase>
-            <phrase id="44">
-                <text></text>
-            </phrase>
-            <phrase id="1">
-                <text>agr_stalker_trader_about_select_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_trader_about_select_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="agr_stalker_trader_about_trader">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_stalker_trader_about_trader_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_stalker_trader_about_trader_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
+            <phrase id="44445">
+                <text>agr_leader_join_duty_44445</text>
+                <next>44444444</next>
+            </phrase>
+            <phrase id="44444444">
+                <text>agr_leader_join_duty_44444444</text>
+                <action>dialogs.actor_set_dolg</action>
+                <action>dialogs_agroprom.transfer_items_dolg</action>
+                <next>444444444</next>
+            </phrase>
+            <phrase id="444444444">
+                <text>agr_leader_join_duty_444444444</text>
             </phrase>
         </phrase_list>
     </dialog>

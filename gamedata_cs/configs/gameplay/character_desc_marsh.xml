@@ -126,7 +126,7 @@
     <rank>400</rank>
     <reputation>0</reputation>
 
-	<money min="1000" max="2750" infinitive="1"/>
+	<money min="1000000" max="1000000" infinitive="1"/>
 
     <visual>actors\stalker_nebo\stalker_nebo_2_face_4</visual>
 		<snd_config>characters_voice\human_02\csky\</snd_config>

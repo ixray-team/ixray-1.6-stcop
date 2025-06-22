@@ -1,3 +1,37 @@
+function main()
+	for i=1,1000 do
+		news_manager.send_tip(db.actor, "dm_intro_1", nil, nil, nil, nil)
+	end
+	for i=1,1000 do
+		news_manager.send_treasure("st_gar_q3_n")
+	end
+--[[
+    local h = hit()
+    h.type = hit.fire_wound
+    h.power = 0.9
+    h.impulse = 0.0
+    h.direction = vector():set(0,0,1)
+    h.draftsman = db.actor
+
+	for k,v in pairs(bind_crow.crow_storage) do
+		local crow = v
+		if crow and crow:alive() then
+			crow:hit(h)
+		end
+	end
+]]
+--run_string for k,v in pairs(bind_crow.crow_storage) do local crow = v if crow and crow:alive() then crow:kill(crow) end end
+--	db.storage[2].object:iterate_inventory_box(iter, db.actor)
+end
+
+function iter(obj, item)
+	log(tostring(item:name()))
+	log(tostring(item:id()))
+end
+
+
+--[[
+alife():create("wpn_ak74", vector():set(0,0,0), 0, 0, db.storage[2].object:id())
 function draw_name(item)
 printf("%s",item:name())
 end
@@ -15,9 +49,9 @@ function main22()
 	    board:exit_smart(v, smart)
 	    board:remove_squad(v)
 	end
- 
+
 	local squad = board:create_squad(player.player_name, sim_squad_scripted.sim_squad_scripted, smart, "test_attack")
-	
+
 	board:enter_smart(squad, smart.id)
 
 	for k,v in pairs(squad.squad_npc) do
@@ -34,12 +68,12 @@ function stats()
 	local st = {}
 	for faction_id,faction in pairs(board.players) do
 		local fst = {}
-		
+
 		fst.id = faction_id
 		fst.resource_level 	= faction.resource_level
 		fst.absolute_power 	= faction.absolute_power
-		
-		
+
+
 		local squads = {}
 		local npc_stats = {}
 		for k,squad in pairs(faction.squads) do
@@ -48,10 +82,10 @@ function stats()
 			if squads[squad_level] == nil then
 				squads[squad_level] = {_total_power = 0}
 			end
-		
+
 			squads[squad_level][squad.squad_id] = {num = squad.npc_count, pow = squad.squad_power}
 			squads[squad_level]._total_power = squads[squad_level]._total_power + squad.squad_power
-			
+
 			-- Собираем распределение силы отделььных персонажей
 			for kk,npc_id in pairs(squad.squad_npc) do
 				local obj = alife():object(npc_id)
@@ -61,30 +95,30 @@ function stats()
 				end
 				npc_stats[obj_power] = npc_stats[obj_power] + 1
 			end
-			  
-		end 
-		
+
+		end
+
 		local sq_fin = {}
 		for k,v in pairs(squads) do
 			local total_power = v._total_power
 			v._total_power = nil
 			table.insert(sq_fin, {level = k, level_power = total_power, squads = v})
 		end
-		
-		table.sort(sq_fin, function(a,b) return a.level_power > b.level_power end)			
-		fst.squads 			= sq_fin		
-		
+
+		table.sort(sq_fin, function(a,b) return a.level_power > b.level_power end)
+		fst.squads 			= sq_fin
+
 		local npc_fin = {}
 		for k,v in pairs(npc_stats) do
 			table.insert(npc_fin, {pow = k, quan = v})
 		end
 		table.sort(npc_fin, function(a,b) return a.pow > b.pow end)
-		
+
 		fst.npc = npc_fin
-		table.insert(st, fst)				
+		table.insert(st, fst)
 	end
 
-	
+
 	table.sort(st, function(a,b) return a.absolute_power > b.absolute_power end)
 
 
@@ -96,16 +130,16 @@ function stats()
 		local pow, quan = 0,0
 		for kk,vv in pairs(v.npc) do
 			pow = pow + vv.pow*vv.quan
-			quan = quan + vv.quan			
+			quan = quan + vv.quan
 		end
-		
+
 		if quan > 0 then
 			printf("    npc: num (%s) ave_rank (%s)", quan, (pow/quan)*200)
 			for kk,vv in pairs(v.npc) do
 				printf("        power %s num %s rank %s", vv.pow, vv.quan, vv.pow*200)
 			end
 		end
-		
+
 		printf("    squads:")
 		for kk,vv in pairs(v.squads) do
 			local pow, num = 0,0
@@ -118,7 +152,7 @@ function stats()
 				printf("        %s : pow %s num %s ave_rank %s", kkk, vvv.pow, vvv.num, (vvv.pow/vvv.num)*200)
 			end
 		end
-		
+
 	end
 
 --	print_table(st)
@@ -129,13 +163,13 @@ end
 
 function spawns()
 	local board = sim_board.get_sim_board()
-	
+
 	printf("Monster lairs:")
 	for smart_id,level_id in pairs(board.mutant_lair) do
 		printf("    %s on level %s", board.smarts[smart_id].smrt:name(), alife():level_name(level_id))
 	end
 
-	printf("Respawn sectors:")	
+	printf("Respawn sectors:")
 	for smart_id,respawn_sector in pairs(board.spawn_smarts) do
 		printf("    %s", board.smarts[smart_id].smrt:name())
 		if type(respawn_sector) == "table" then
@@ -143,7 +177,7 @@ function spawns()
 		else
 			printf("      %s", board.smarts[smart_id].smrt:name())
 		end
-	end	
+	end
 end
 
 
@@ -192,3 +226,4 @@ function send_task(object_id, task_id, task_type, task_prio, ln)
         t:set_map_object_id                (object_id)
         db.actor:give_task                (t,0,false)
 end
+]]

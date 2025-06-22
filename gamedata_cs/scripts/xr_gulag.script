@@ -25,7 +25,7 @@ local path_fields = { "path_walk", "path_main", "path_home", "center_point" }
 
 -- получить гулаг по имени смарта.
 -- работает только дл€ смартов, которые в онлайне.
-function get_gulag_by_name(name)	
+function get_gulag_by_name(name)
 	local strn = alife():object(name)
 	if strn then
 		return strn
@@ -54,10 +54,13 @@ end
 
 -- получить гулаг персонажа
 -- obj=game_object
-function get_npc_smart(obj)	
+function get_npc_smart(obj)
 	--printf("npc id is [%s]", obj:id())
 	local se_obj = alife():object(obj:id())
-	if se_obj == nil then abort("server_obj is nil!!!!!") end
+	if se_obj == nil then
+		return nil
+	--	abort("server_obj is nil!!!!!")
+	end
 	if se_obj.m_smart_terrain_id ~= 65535 then
 		return alife():object(se_obj.m_smart_terrain_id)
 	else
@@ -112,7 +115,7 @@ end
 -- obj=game_object
 function resetJob( obj )
 		printf( "gulag resetJob: obj=%s", obj:name() )
-	
+
 		local gulag = get_npc_smart( obj )
 		if gulag then
 			gulag:free_obj_and_reinit( obj:id() )
@@ -179,7 +182,7 @@ function find_stalker_for_job(obj, need_job)
 			-- ” выбранного чувака устанавливаем, что он нам нужен как замена гварду
 			selected_npc_data.need_job = need_job
 			return
-		end	
+		end
 	end
 	--abort("Couldnt find reserved job")
 end
@@ -210,8 +213,8 @@ function loadLtx(name)
 			dynamic_ltx[h] = dltx
 			return dltx, h
 		end
-    	return nil, nil
-    end
+			return nil, nil
+		end
 end
 
 
@@ -221,33 +224,33 @@ end
 function obj_attacking_smart(se_obj, smrttrn)
 	local board = sim_board.get_sim_board()
 	local squad = board.squads[se_obj.squad_id]
-	--' ѕолучаем активное действие чувака	
-    if squad == nil then
-		--printf("NOTOAS: npc_id = %s squad", se_obj.id)	
-        return nil
-    end    
+	--' ѕолучаем активное действие чувака
+		if squad == nil then
+		--printf("NOTOAS: npc_id = %s squad", se_obj.id)
+				return nil
+		end
 
 	local current_action = squad.current_action
 
 	if current_action == nil then
-		--printf("NOTOAS: npc_id = %s action", se_obj.id)	
+		--printf("NOTOAS: npc_id = %s action", se_obj.id)
 		return nil
 	end
 
 	--' ≈сли отр€д чем то зан€т, то возвращаем dest_smart этого действи€.
 	if current_action.dest_smrt_id == nil then
-		--printf("NOTOAS: npc_id = %s dest_smart", se_obj.id)	
+		--printf("NOTOAS: npc_id = %s dest_smart", se_obj.id)
 		return nil
 	end
 
-	--printf("OAS: npc_id = %s, squad_id = %s, target_smart = %s", se_obj.id, squad.squad_id, current_action.dest_smrt:name())	
+	--printf("OAS: npc_id = %s, squad_id = %s, target_smart = %s", se_obj.id, squad.squad_id, current_action.dest_smrt:name())
 	return board.smarts[current_action.dest_smrt_id].smrt:name()
 end
 
 --' Ќаходитс€ ли данный смарт в режиме обороны.
 function defending_smart(se_obj, smrttrn)
 	local task = task_manager.get_task_manager():get_tasks_by_smart(smrttrn.id)
-	
+
 	if task then
 		--printf("defending_smart %s check task %s(%s) [%s]", smrttrn:name(), task.type, task.name, task.status)
 		-- ≈сли таск выдан на нашу цель
@@ -260,14 +263,14 @@ function defending_smart(se_obj, smrttrn)
 			end
 		end
 	end
-	
+
 	local squad = sim_board.get_sim_board().squads[se_obj.squad_id]
 --	if se_obj.squad_id == "esc_smart_terrain_6_8_stalker_patrol_2" then
 --		printf("   DS [%s]", tostring(se_obj.squad_id))
---	end	
-	if squad == nil then	
-        return false
-    end    	
+--	end
+	if squad == nil then
+				return false
+		end
 	local stage = smrttrn.combat_manager:get_squad_stage(squad)
 --	if se_obj.squad_id == "esc_smart_terrain_6_8_stalker_patrol_2" then
 --		printf("   DSC [%s] %s", se_obj.squad_id, tostring(stage))

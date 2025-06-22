@@ -12,6 +12,9 @@ yan_proriv_k_ystanovke
 
 yan_actor_go_to_red_forest
 
+yan_recover_item_1
+yan_recover_item_2
+
 [yan_main_quest_line]
 prior = 1
 type = storyline
@@ -117,8 +120,43 @@ task_type = additional
 name = sim_defend_smart
 text = sim_defend_smart_text
 faction = stalker
-prior = 4
+prior = 8
 target_cond = true
 wait_time = 0
 play_regard = nil
 ;reward_money = 1000
+
+
+;Recover Items
+
+[yan_recover_item_1]   ;Принести «Аленький цветочек»
+type = recover_item
+task_type = additional
+name = yan_recover_item_1_name
+text = yan_recover_item_1_text
+target_npc_or_box_name = yan_recover_item_1_corpse
+distanse = 100
+prior = 2
+faction = stalker
+target_cond = {=actor_on_level(yantar) -yan_recover_item_1_done} true, false
+on_init = %+yan_recover_item_1_done%
+requested_items = yan_quest_scarlet_flower
+community_relation_delta_complete = 100
+reward_money = 5000
+auto_faction = true
+
+[yan_recover_item_2]   ;Вернуть гранату-сувенир
+type = recover_item
+task_type = additional
+name = yan_recover_item_2_name
+text = yan_recover_item_2_text
+target_npc_or_box_name = yan_recover_item_2_corpse
+distanse = 100
+prior = 2
+faction = stalker
+target_cond = {=actor_on_level(yantar) -yan_recover_item_2_done} true, false
+on_init = %+yan_recover_item_2_done%
+requested_items = yan_quest_granade
+community_relation_delta_complete = 100
+reward_money = 1500
+auto_faction = true

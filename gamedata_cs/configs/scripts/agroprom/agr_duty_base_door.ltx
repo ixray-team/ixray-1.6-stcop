@@ -15,7 +15,7 @@ closed = true
 snd_open_start = trader_door_open_start
 snd_close_start = trader_door_close_start
 snd_close_stop = trader_door_close_stop
-on_info = {!is_smart_in_combat(agr_smart_terrain_1_6)} ph_door@open
+on_info = {!is_smart_in_combat(agr_smart_terrain_1_6)} ph_door@open, {!is_smart_captured(agr_smart_terrain_1_6)} ph_door@open
 
 [ph_door@open]
 locked = false
@@ -24,7 +24,7 @@ snd_open_start = trader_door_open_start
 snd_close_start = trader_door_close_start
 snd_close_stop = trader_door_close_stop
 on_use = ph_door@close
-on_info = {=is_smart_in_combat(agr_smart_terrain_1_6) !get_task_by_smart(agr_smart_terrain_1_6)} ph_door@locked
+on_info = {=is_smart_captured(agr_smart_terrain_1_6) =is_smart_in_combat(agr_smart_terrain_1_6) !get_task_by_smart(agr_smart_terrain_1_6)} ph_door@locked
 
 [ph_door@close]
 locked = false
@@ -33,4 +33,4 @@ snd_open_start = trader_door_open_start
 snd_close_start = trader_door_close_start
 snd_close_stop = trader_door_close_stop
 on_use = ph_door@open
-on_info = {=is_smart_in_combat(agr_smart_terrain_1_6) !get_task_by_smart(agr_smart_terrain_1_6)} ph_door@locked
+on_info = {=is_smart_captured(agr_smart_terrain_1_6) =is_smart_in_combat(agr_smart_terrain_1_6) !get_task_by_smart(agr_smart_terrain_1_6)} ph_door@locked

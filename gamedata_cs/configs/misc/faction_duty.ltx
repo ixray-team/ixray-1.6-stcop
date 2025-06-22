@@ -1,15 +1,29 @@
 [settings]
-resource_0 = sim_default_duty_0, 80, sim_default_duty_1, 20
-resource_1 = sim_default_duty_0, 50, sim_default_duty_1, 30, sim_default_duty_2, 20
-resource_2 = sim_default_duty_1, 50, sim_default_duty_2, 30, sim_default_duty_3, 20
-resource_3 = sim_default_duty_2, 50, sim_default_duty_3, 30, sim_default_duty_4, 20
-
 glory_0 = 0
 glory_1 = 1
 glory_2 = 2
 glory_3 = 3
 glory_4 = 4
 glory_5 = 5
+
+
+[spawn_by_resource]
+0 = sim_default_duty_0, 80, sim_default_duty_1, 20
+1 = sim_default_duty_0, 50, sim_default_duty_1, 30, sim_default_duty_2, 20
+2 = sim_default_duty_1, 50, sim_default_duty_2, 30, sim_default_duty_3, 20
+3 = sim_default_duty_2, 50, sim_default_duty_3, 30, sim_default_duty_4, 20
+
+
+
+[spawn_by_level]
+marsh 		= sim_default_duty_0, 40, sim_default_duty_1, 30, sim_default_duty_2, 15, sim_default_duty_3, 10, sim_default_duty_4,  5
+escape 		= sim_default_duty_0, 40, sim_default_duty_1, 30, sim_default_duty_2, 15, sim_default_duty_3, 10, sim_default_duty_4,  5
+garbage 	= sim_default_duty_0, 30, sim_default_duty_1, 40, sim_default_duty_2, 15, sim_default_duty_3, 10, sim_default_duty_4,  5
+darkvalley	= sim_default_duty_0, 20, sim_default_duty_1, 30, sim_default_duty_2, 30, sim_default_duty_3, 10, sim_default_duty_4, 10
+agroprom 	= sim_default_duty_0, 10, sim_default_duty_1, 20, sim_default_duty_2, 40, sim_default_duty_3, 20, sim_default_duty_4, 10
+yantar 		= sim_default_duty_0, 10, sim_default_duty_1, 15, sim_default_duty_2, 30, sim_default_duty_3, 45, sim_default_duty_4, 20
+red_forest 	= sim_default_duty_0,  5, sim_default_duty_1, 10, sim_default_duty_2, 15, sim_default_duty_3, 30, sim_default_duty_4, 40
+military 	= sim_default_duty_0,  5, sim_default_duty_1, 10, sim_default_duty_2, 15, sim_default_duty_3, 30, sim_default_duty_4, 40
 
 
 
@@ -62,7 +76,7 @@ level_up_snd = agr_dolg_expansion_3_up
 level_down_snd = agr_dolg_expansion_3_down
 
 [expansion_4]	;Захватить плацдарм на темной долине
-base_squad_number = 40
+base_squad_number = 50
 precondition_target = val_smart_terrain_5_7, val_smart_terrain_5_8 
 
 war_target_title = st_faction_war_duty_capture_darkvalley
@@ -76,7 +90,7 @@ level_up_snd = agr_dolg_expansion_4_up
 level_down_snd = agr_dolg_expansion_4_down
 
 [expansion_5]   ; Уничтожить базу свободы
-base_squad_number = 40
+base_squad_number = 60
 precondition_target_eliminate = val_smart_terrain_7_4
 
 war_target_title = st_faction_war_duty_eliminate_base
@@ -90,8 +104,7 @@ level_up_snd = agr_dolg_expansion_5_up
 level_down_snd = agr_dolg_expansion_5_down
 
 [expansion_6]   ; Расслабить булки.
-base_squad_number = 40
-precondition_power = 0.5
+base_squad_number = 60
 
 war_target_title = st_faction_war_duty_relax
 

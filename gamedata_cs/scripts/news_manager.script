@@ -66,7 +66,7 @@ tips_icons = {
 function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 	if news_id == nil then return false end
 
-	printf("try to send tips for [%s]", tostring(sender_id))
+--	printf("try to send tips for [%s]", tostring(sender_id))
 	if sender_id ~= nil then
 		local sim = alife()
 		if sim ~= nil then
@@ -107,7 +107,8 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 	end
 	local news_caption = game.translate_string("st_tip")
 	local news_text = game.translate_string(news_id)
-	actor:give_game_news(news_caption, news_text, texture, timeout*1000, showtime)
+--	actor:give_game_news(news_caption, news_text, texture, timeout*1000, showtime)
+	actor:give_game_news(news_caption, news_text, texture, timeout*1000, showtime, 1)
 
 	return true
 end
@@ -158,7 +159,7 @@ function send_sound(npc, faction, point, str, str2)
 	            texture = tips_icons[point]
 	        end
 		end
-		printf("--->texture="..tostring(texture))
+--		printf("--->texture="..tostring(texture))
 		local news_caption = game.translate_string("st_tip").." "..game.translate_string(faction)
 		if point_name ~= "" then
 			news_caption = news_caption..". "..point_name..":"
@@ -167,7 +168,8 @@ function send_sound(npc, faction, point, str, str2)
 		end
 
 
-		db.actor:give_game_news(news_caption, news_text, texture, 1000, 5000)
+--		db.actor:give_game_news(news_caption, news_text, texture, 1000, 5000)
+		db.actor:give_game_news(news_caption, news_text, texture, 1000, 5000, 1)
 
 		return true
 
@@ -199,13 +201,14 @@ function send_task(actor, type, task)
 	local news_caption = game.translate_string(action_descr_by_type[type])
 	local news_text = game.translate_string(task:get_title())
 	local task_type = task_manager.get_task_manager():get_task_by_entity_id(tonumber(task:get_id())).type
+    db.actor:give_game_news(news_caption, news_text, "ui_iconsTotal_"..task_type, 0, 15000)
+--[[
 	if db.actor:is_talking() then
---        local talk_text = news_caption.."\\n"..news_text
---        db.actor:give_talk_message(talk_text, "ui_iconsTotal_"..task_type, "iconed_answer_item")
         db.actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_"..task_type, "iconed_answer_item")
 	else
 	    db.actor:give_game_news(news_caption, news_text, "ui_iconsTotal_"..task_type, 0, 15000)
 	end
+]]
 end
 
 function send_treasure(name)
@@ -227,19 +230,15 @@ function relocate_item(actor, type, item, amount)
 	end
 	local news_caption = ""
 	local news_text = ""
---	local talk_text = ""
 	if type == "in" then
 		if amount == 1 then
 			news_caption = game.translate_string("general_in_item")
 			news_text = game.translate_string(get_inv_name(item))
---            talk_text = news_caption.."\\n"..news_text
 		else
 			news_caption = game.translate_string("general_in_item")
 			news_text = game.translate_string(get_inv_name(item)).." x"..amount
---            talk_text = news_caption.."\\n"..news_text
 		end
 		if db.actor:is_talking() then
---	        db.actor:give_talk_message(talk_text, "ui_iconsTotal_found_thing", "iconed_answer_item")
 	        db.actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_found_thing", "iconed_answer_item")
 		else
             db.actor:give_game_news(news_caption, news_text, "ui_iconsTotal_found_thing", 0, 3000)
@@ -248,31 +247,26 @@ function relocate_item(actor, type, item, amount)
 		if amount == 1 then
 			news_caption = game.translate_string("general_out_item")
 			news_text = game.translate_string(get_inv_name(item))
---            talk_text = news_caption.."\\n"..news_text
 		else
 			news_caption = game.translate_string("general_out_item")
 			news_text = game.translate_string(get_inv_name(item)).." x"..amount
---            talk_text = news_caption.."\\n"..news_text
 		end
 		if db.actor:is_talking() then
---	        db.actor:give_talk_message(talk_text, "ui_iconsTotal_lost_thing", "iconed_answer_item")
 	        db.actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_lost_thing", "iconed_answer_item")
 		else
 			db.actor:give_game_news(news_caption, news_text, "ui_iconsTotal_lost_thing", 0, 3000)
 		end
 	end
-
 end
+
 function relocate_money(actor, type, amount)
 	if db.actor == nil then return false end
 	--' Играем дефолтный звук
 	if type == "in" then
 		local news_caption = game.translate_string("general_in_money")
 		local news_text = game.translate_string(tostring(amount))
---		local talk_text = news_caption.."\\n"..news_text
 
 		if db.actor:is_talking() then
---	        db.actor:give_talk_message(talk_text, "ui_iconsTotal_found_money", "iconed_answer_item")
 	        db.actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_found_money", "iconed_answer_item")
 		else
 			db.actor:give_game_news(news_caption, news_text, "ui_iconsTotal_found_money", 0, 3000)
@@ -280,14 +274,11 @@ function relocate_money(actor, type, amount)
 	elseif type == "out" then
 		local news_caption = game.translate_string("general_out_money")
 		local news_text = game.translate_string(tostring(amount))
---		local talk_text = news_caption.."\\n"..news_text
 
 		if db.actor:is_talking() then
---	        db.actor:give_talk_message(talk_text, "ui_iconsTotal_lost_money", "iconed_answer_item")
 	        db.actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_lost_money", "iconed_answer_item")
 		else
 			db.actor:give_game_news(news_caption, news_text, "ui_iconsTotal_lost_money", 0, 3000)
 		end
 	end
-
 end

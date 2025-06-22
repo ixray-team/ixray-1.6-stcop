@@ -1,7 +1,16 @@
 [logic]
-active = sr_idle
+active = sr_idle@enter
 
-[sr_idle]
-on_actor_inside = {+val_deliver_pda_complete} sr_idle@end_section %+gar_story_came_to_ambush_door%
+[sr_idle@enter]
+on_actor_inside = {+val_deliver_pda_complete} sr_idle@exit_1 %+gar_story_came_to_ambush_door%
+
+[sr_idle@exit_1]
+on_actor_outside = {+gar_story_ambush_remove} sr_idle@exit_2
+
+[sr_idle@exit_2]
+on_actor_inside = sr_idle@exit_3 %+gar_quest_redemption_started =clear_smart_terrain(gar_smart_terrain_5_6)%
+
+[sr_idle@exit_3]
+on_timer = 2000 | sr_idle@end_section %=create_squad(gar_bandit_robbers:gar_smart_terrain_5_6) =give_inited_task(storyline:gar_quest_redemption:csky)%
 
 [sr_idle@end_section]

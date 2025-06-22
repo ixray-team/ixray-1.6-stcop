@@ -2,7 +2,7 @@
 ;; RPG7
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-[wpn_rpg7]:identity_immunities,weapon_probability,default_weapon_params
+[wpn_rpg7]:zero_immunities,weapon_probability,default_weapon_params
 
 GroupControlSection			= spawn_group
 discovery_dependency 		=
@@ -76,8 +76,8 @@ cam_max_angle_horz		= 15	;(degree) maximum shot horizontal degree
 cam_step_angle_horz		= 0.5	;(degree) size of step camera moved in horizontal position while shooting
 
 fire_dispersion_condition_factor 	= 5	;увеличение дисперсии в процентах при максимальном износе
-misfire_probability 			= 0.0001	;вероятность осечки при максимальном износе
-condition_shot_dec 			= 0.00003	;увеличение износа при каждом выстреле
+misfire_probability 			= 0.0	;вероятность осечки при максимальном износе
+condition_shot_dec 			= 0.0	;увеличение износа при каждом выстреле
 ;-------------------------------------------------------------------------------
 PDM_disp_base           = 1.0
 PDM_disp_vel_factor     = 1.0

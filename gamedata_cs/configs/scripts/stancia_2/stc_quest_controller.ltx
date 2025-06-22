@@ -16,6 +16,7 @@ on_timer2 = 4000 | sr_idle@strelok_gone_snd %+stc_final_cutscene_1%
 on_info = %=play_sound(stc_final_scene_after_lost_strelok)%
 on_timer = 3000 | {-stc_last_effector_1} %=stc_boom(blowout_hit_2) +stc_last_effector_1%
 on_timer2 = 8000 | {-stc_last_effector_2} %=stc_boom(blowout_hit_3) +stc_last_effector_2%  
+on_timer3 = 11000 | {-stc_surge_continued} %=continue_surge_on_stancia_2 +stc_surge_continued%
 on_signal = theme_end | sr_idle@kill_actor 
 
 [sr_idle@kill_actor]

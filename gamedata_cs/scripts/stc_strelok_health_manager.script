@@ -12,7 +12,7 @@ local head_bones = {[11] = true,
 					[22] = true}
 
 function set_cs_strelok_progress_health(strelok, amount)
-	printf("PL:cs_strelok_health[3]")
+	printf("PL:cs_strelok_health[3] amount:[%s]", tostring(amount))
 	local amount = amount or 0
 	local hud = get_hud()
 	local custom_static = hud:GetCustomStatic("cs_strelok_health")
@@ -81,6 +81,14 @@ local zone_infos_table = {["stc_strelok_loophole_check_1"] = "stc_strelok_can_ru
 	["stc_strelok_loophole_check_6"] = "stc_strelok_can_run_6",
 	["stc_strelok_loophole_check_7"] = "stc_strelok_can_run_7"
 						}
+local game_difficulty_multiplier = {
+									["0"] = 1,
+									["1"] = 0.8,
+									["2"] = 0.6,
+									["3"] = 0.5
+
+}
+						
 function hit_callback(obj, who, amount )
 	printf("pl:hit_callback: last_time_hitted [%s] time_global [%s]", tostring(strelok_last_hit_time), tostring(time_global()))
 	if has_alife_info("stc_strelok_dead") then
@@ -88,12 +96,16 @@ function hit_callback(obj, who, amount )
 	end
 		
 	if who:id() == db.actor:id() and db.actor:active_item():section() == "wpn_gauss_aes" and (strelok_last_hit_time == nil or (strelok_last_hit_time <= time_global() - 5000))  then -- and head_bones[bone_index] == true then
-		local fake_hit = 15
+		
+		local multiplier = game_difficulty_multiplier[tostring(level.get_game_difficulty())]
+		
+		local fake_hit = 15*multiplier
+		
 		for k,v in pairs(zone_infos_table) do
 			local zone = db.zone_by_name[k]
 			if zone:inside(obj:position()) then
 				db.actor:give_info_portion(v)
-				fake_hit = 5
+				fake_hit = 5*multiplier
 			end
 		end
 		set_cs_strelok_progress_health(obj, fake_hit)

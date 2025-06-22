@@ -3386,7 +3386,7 @@
   </specific_character>
 
 		<!-- monolith novice -->
- <specific_character id="sim_default_monolith_0_default" team_default = "1">
+ <specific_character id="sim_default_monolith_0_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_monolith_1</icon>
     <map_icon x="1" y="0"></map_icon>
@@ -3414,8 +3414,36 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
+ <specific_character id="sim_default_monolith_0_default_1" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>sim_default_monolith_0</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>150</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_1</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_mp5 \n
+      ammo_9x19_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
 		<!-- monolith expirienced -->
-  <specific_character id="sim_default_monolith_1_default" team_default = "1">
+  <specific_character id="sim_default_monolith_1_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_monolith_2</icon>
     <map_icon x="1" y="0"></map_icon>
@@ -3443,9 +3471,38 @@
 #include "gameplay\character_criticals_4.xml"
 #include "gameplay\character_dialogs.xml"
   </specific_character>
+  
+  <specific_character id="sim_default_monolith_1_default_1" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>sim_default_monolith_1</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>150</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300 \n
+      ammo_5.45x39_fmj = 1 \n
+      wpn_fort \n
+      ammo_9x18_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
 
 		<!-- monolith expirienced 2 -->
-  <specific_character id="sim_default_monolith_2_default" team_default = "1">
+  <specific_character id="sim_default_monolith_2_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_monolith_2</icon>
     <map_icon x="1" y="0"></map_icon>
@@ -3462,18 +3519,48 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_ak74 \n
-      ammo_5.45x39_fmj = 1 \n
+      wpn_abakan \n
+      ammo_5.45x39_ap = 1 \n
       wpn_fort \n
       ammo_9x18_fmj = 1 \n
-      grenade_rgd5 = 1 \n
+      grenade_f1 = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
     </supplies>
 #include "gameplay\character_criticals_4.xml"
 #include "gameplay\character_dialogs.xml"
-  </specific_character>
+	</specific_character>
+
+  <specific_character id="sim_default_monolith_2_default_1" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>sim_default_monolith_2</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_sig550 \n
+      ammo_5.56x45_ap = 1 \n
+      wpn_walther \n
+      ammo_9x19_fmj = 1 \n
+      grenade_f1 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
 
 		<!-- monolith veteran -->
   <specific_character id="sim_default_monolith_3_default" team_default = "1">
@@ -3493,10 +3580,10 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_ak74 \n
-      ammo_5.45x39_ap = 1 \n
-      wpn_fort \n
-      ammo_9x18_fmj = 1 \n
+      wpn_val \n
+      ammo_9x39_ap = 1 \n
+      wpn_colt1911 = 1 \n
+      ammo_11.43x23_fmj = 1 \n
       grenade_f1 = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
@@ -3526,8 +3613,8 @@
       device_torch \n
       wpn_groza \n
       ammo_9x39_ap = 1 \n
-      wpn_fort \n
-      ammo_9x18_fmj = 1 \n
+      wpn_colt1911 = 1 \n
+      ammo_11.43x23_fmj = 1 \n
       grenade_f1 = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"

@@ -92,45 +92,89 @@
             <texture a="0">ui_pda2_hl_quest_base</texture>
         </complex_map_spot_border>
 
-    <actor_location hint="disable_hint">
+
+    	<actor_location hint="disable_hint">
                 <level_map spot="actor_level_spot"/>
         </actor_location>
-
-        <actor_location_p hint="disable_hint">
-                <level_map spot="actor_level_spot_p"/>
-        </actor_location_p>
-
         <actor_level_spot x="0" y="0" width="25" height="25" alignment="c" location_level="-1">
                 <texture>ui_icons_newPDA_man</texture>
         </actor_level_spot>
 
+        <actor_location_p hint="disable_hint">
+                <level_map spot="actor_level_spot_p"/>
+        </actor_location_p>
         <actor_level_spot_p x="0" y="0" width="49" height="49" heading="1" alignment="c" location_level="-2">
                 <texture>ui_icons_newPDA_manArrow</texture>
         </actor_level_spot_p>
 
-        <level_changer>
-                <level_map spot="level_changer_spot" pointer="quest_pointer"/>
-                <mini_map  spot="level_changer_spot_mini"/>
-        </level_changer>
-        <level_changer_spot  x="0" y="0" width="50" height="50" alignment="c" stretch="1" scale="1" scale_min="1" scale_max="3">
-                <texture x="728" y="577" width="50" height="50">ui\ui_common</texture>
-        </level_changer_spot>
-        <level_changer_spot_mini  x="0" y="0" width="50" height="50" alignment="c" stretch="1" scale="1" scale_min="1" scale_max="3">
-                <texture x="728" y="577" width="50" height="50">ui\ui_common</texture>
-        </level_changer_spot_mini>
+
+        <level_changer_up>
+                <level_map spot="level_changer_up_spot" pointer="quest_pointer"/>
+        </level_changer_up>
+        <level_changer_up_spot x="0" y="0" width="19" height="21" alignment="c" location_level="1" heading_angle="1">
+                <texture r="10" g="250" b="250">ui_pda2_exit_point</texture>
+        </level_changer_up_spot>
+
+        <level_changer_up_right>
+                <level_map spot="level_changer_up_right_spot" pointer="quest_pointer"/>
+        </level_changer_up_right>
+        <level_changer_up_right_spot x="0" y="0" width="19" height="21" alignment="c" location_level="1" heading_angle="-45">
+                <texture r="10" g="250" b="250">ui_pda2_exit_point</texture>
+        </level_changer_up_right_spot>
+
+        <level_changer_right>
+                <level_map spot="level_changer_right_spot" pointer="quest_pointer"/>
+        </level_changer_right>
+        <level_changer_right_spot x="0" y="0" width="19" height="21" alignment="c" location_level="1" heading_angle="-90">
+                <texture r="10" g="250" b="250">ui_pda2_exit_point</texture>
+        </level_changer_right_spot>
+
+        <level_changer_right_down>
+                <level_map spot="level_changer_right_down_spot" pointer="quest_pointer"/>
+        </level_changer_right_down>
+        <level_changer_right_down_spot x="0" y="0" width="19" height="21" alignment="c" location_level="1" heading_angle="-135">
+                <texture r="10" g="250" b="250">ui_pda2_exit_point</texture>
+        </level_changer_right_down_spot>
+
+        <level_changer_down>
+                <level_map spot="level_changer_down_spot" pointer="quest_pointer"/>
+        </level_changer_down>
+        <level_changer_down_spot x="0" y="0" width="19" height="21" alignment="c" location_level="1" heading_angle="180">
+                <texture r="10" g="250" b="250">ui_pda2_exit_point</texture>
+        </level_changer_down_spot>
+
+        <level_changer_down_left>
+                <level_map spot="level_changer_down_left_spot" pointer="quest_pointer"/>
+        </level_changer_down_left>
+        <level_changer_down_left_spot x="0" y="0" width="19" height="21" alignment="c" location_level="1" heading_angle="135">
+                <texture r="10" g="250" b="250">ui_pda2_exit_point</texture>
+        </level_changer_down_left_spot>
+
+        <level_changer_left>
+                <level_map spot="level_changer_left_spot" pointer="quest_pointer"/>
+        </level_changer_left>
+        <level_changer_left_spot x="0" y="0" width="19" height="21" alignment="c" location_level="1" heading_angle="90">
+                <texture r="10" g="250" b="250">ui_pda2_exit_point</texture>
+        </level_changer_left_spot>
+
+        <level_changer_left_up>
+                <level_map spot="level_changer_left_up_spot" pointer="quest_pointer"/>
+        </level_changer_left_up>
+        <level_changer_left_up_spot x="0" y="0" width="19" height="21" alignment="c" location_level="1" heading_angle="45">
+                <texture r="10" g="250" b="250">ui_pda2_exit_point</texture>
+        </level_changer_left_up_spot>
 
 
         <treasure>
                 <level_map spot="treasure_spot" pointer="quest_pointer"/>
                 <mini_map  spot="treasure_spot_mini"/>
         </treasure>
-        <treasure_spot  x="0" y="0" width="19" height="19" alignment="c" stretch="1" scale="1" scale_min="1.1" scale_max="3.1">
+        <treasure_spot  x="0" y="0" width="19" height="19" alignment="c" stretch="1" scale="1" scale_min="1.1" scale_max="3.1" light_anim="map_spot_secrets" la_cyclic="0" la_texture="1" la_text="0" la_alpha="1">
                 <texture>ui_mapQuest_gold</texture>
         </treasure_spot>
         <treasure_spot_mini  x="0" y="0" width="13" height="13" alignment="c" stretch="0" scale="1" scale_min="1.1" scale_max="3.1">
                 <texture>ui_sm_mapQuest_gold</texture>
         </treasure_spot_mini>
-
 
 
         <alife_combat_fight>
@@ -756,6 +800,11 @@
 
 
 </map_spots>
+
+
+
+
+
 
 
 

@@ -46,7 +46,7 @@ float	modulate = 1.0;
 	float	epsilon;
 	float	timestep;
 float	forward = 1.0;
-	float4	halfVolumeDim;	//	Actually float3. We don't support float3 and float2
+	float4	floatVolumeDim;	//	Actually float3. We don't support float3 and float2
 }
 
 cbuffer AABBBounds

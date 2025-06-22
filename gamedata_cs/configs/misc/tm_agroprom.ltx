@@ -18,6 +18,20 @@ agr_additional_quest_6b
 agr_additional_quest_7a
 agr_additional_quest_7b
 agr_additional_quest_shooting
+;agr_bring_item_1
+;agr_bring_item_2
+;agr_bring_item_3
+;agr_bring_item_4
+;agr_bring_item_5
+;agr_bring_item_6
+;agr_bring_item_7
+;agr_bring_item_8
+;agr_bring_item_9
+;agr_bring_item_10
+agr_recover_item_1
+agr_recover_item_2
+agr_recover_item_3
+agr_recover_item_4
 
 [agr_no_task]
 type = storyline
@@ -37,7 +51,7 @@ name = agr_start_name
 text = agr_start_text
 target_story_ids = 1000
 condlist_0 = {+agr_actor_inside_2} complete
-condlist_1 = {=is_squad_enemy_to_actor(agr_smart_terrain_7_4_duty_1_squad)} reversed
+condlist_1 = {=is_squad_enemy_to_actor(agr_smart_terrain_7_4_duty_1_squad)} reversed, {+agr_smart_terrain_7_4_duty_1_squad_dead} reversed, {+agr_smart_terrain_7_4_duty_2_squad_dead} reversed
 on_reversed = %+agr_actor_inside_2 +agr_actor_inside_3%
 auto_faction = true
 
@@ -84,18 +98,18 @@ text = agr_defend_duty_base_1_text
 reward_money = 1000
 community_relation_delta_complete=+200
 community_relation_delta_fail=-200
-prior = 4
+prior = 12
 
 [agr_attack_bandits_group_1] ;1
 type = eliminate_smart
 task_type = additional
 auto_name = false
 target_cond = true
-prior = 10
+prior = 13
 target_cond = {-agr_smart_terrain_6_4_simulation_task_complete =target_smart_name(agr_smart_terrain_6_4)} true
 name = agr_attack_bandits_group_1_name
 text = agr_attack_bandits_group_1_text
-reward_money = 1000
+reward_money = 2000
 spot = secondary_task_location_complex
 on_complete = %+agr_smart_terrain_6_4_simulation_task_complete%
 community_relation_delta_complete=+200
@@ -107,11 +121,11 @@ type = eliminate_smart
 task_type = additional
 auto_name = false
 target_cond = true
-prior = 10
+prior = 13
 target_cond = {-agr_smart_terrain_3_2_simulation_task_complete =target_smart_name(agr_smart_terrain_2_3)} true
 name = agr_attack_bandits_group_2_name
 text = agr_attack_bandits_group_2_text
-reward_money = 1000
+reward_money = 2000
 spot = secondary_task_location_complex
 on_complete = %+agr_smart_terrain_2_3_simulation_task_complete%
 community_relation_delta_complete=+200
@@ -123,11 +137,11 @@ type = eliminate_smart
 task_type = additional
 auto_name = false
 target_cond = true
-prior = 10
+prior = 13
 target_cond = {-agr_smart_terrain_4_2_simulation_task_complete =target_smart_name(agr_smart_terrain_4_2)} true
 name = agr_attack_bandits_group_3_name
 text = agr_attack_bandits_group_3_text
-reward_money = 1000
+reward_money = 2000
 spot = secondary_task_location_complex
 on_complete = %+agr_smart_terrain_4_2_simulation_task_complete%
 community_relation_delta_complete=+200
@@ -144,7 +158,7 @@ target_story_ids = 1001
 condlist_0 = {+agr_take_reward_complete} complete
 immediate_reward = true
 reward_money = 10000
-prior = 2
+prior = 1
 auto_faction = true
 
 
@@ -277,9 +291,9 @@ task_type = additional
 name = st_bring_item_1_name
 text = st_bring_item_1_text
 target_cond = {~20} true
-prior = 5
+prior = 2
 faction = dolg
-requested_items = detector_elite
+requested_items = wpn_abakan_up2
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
 
@@ -290,9 +304,9 @@ task_type = additional
 name = st_bring_item_2_name
 text = st_bring_item_2_text
 target_cond = {~20} true
-prior = 5
+prior = 2
 faction = dolg
-requested_items = stalker_outfit
+requested_items = wpn_groza
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
 
@@ -303,9 +317,9 @@ task_type = additional
 name = st_bring_item_3_name
 text = st_bring_item_3_text
 target_cond = {~20} true
-prior = 5
+prior = 2
 faction = dolg
-requested_items = ammo_5.45x39_ap,ammo_5.45x39_ap
+requested_items = ammo_9x39_ap, ammo_9x39_ap, ammo_9x39_ap
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
 
@@ -316,9 +330,9 @@ task_type = additional
 name = st_bring_item_4_name
 text = st_bring_item_4_text
 target_cond = {~20} true
-prior = 5
+prior = 2
 faction = dolg
-requested_items = wpn_spas12
+requested_items = ammo_pkm_100
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
 
@@ -329,15 +343,11 @@ task_type = additional
 name = st_bring_item_5_name
 text = st_bring_item_5_text
 target_cond = {~20} true
-prior = 5
+prior = 2
 faction = dolg
-requested_items = ammo_5.45x39_fmj,ammo_5.45x39_fmj,ammo_5.45x39_fmj
+requested_items = ammo_12x76_dart, ammo_12x76_dart, ammo_12x76_dart
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
-
-;***************************************************
-; Квесты на принесение предметов.
-;***************************************************
 
 [agr_bring_item_6]
 auto_name = false
@@ -345,10 +355,10 @@ type = bring_item
 task_type = additional
 name = st_bring_item_1_name
 text = st_bring_item_1_text
-target_cond = {~20} true
-prior = 5
+target_cond = {~20 =actor_on_level(agroprom)} true
+prior = 2
 faction = stalker
-requested_items = grenade_rgd5,grenade_rgd5,grenade_rgd5
+requested_items = grenade_f1, grenade_f1, grenade_f1
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
 
@@ -358,10 +368,10 @@ type = bring_item
 task_type = additional
 name = st_bring_item_2_name
 text = st_bring_item_2_text
-target_cond = {~20} true
-prior = 5
+target_cond = {~20 =actor_on_level(agroprom)} true
+prior = 2
 faction = stalker
-requested_items = medkit,medkit
+requested_items = medkit_scientic, medkit_scientic
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
 
@@ -371,10 +381,10 @@ type = bring_item
 task_type = additional
 name = st_bring_item_3_name
 text = st_bring_item_3_text
-target_cond = {~20} true
-prior = 5
+target_cond = {~20 =actor_on_level(agroprom)} true
+prior = 2
 faction = stalker
-requested_items = ammo_12x70_buck,ammo_12x70_buck,ammo_12x70_buck
+requested_items = ammo_9x39_pab9, ammo_9x39_pab9
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
 
@@ -384,10 +394,10 @@ type = bring_item
 task_type = additional
 name = st_bring_item_4_name
 text = st_bring_item_4_text
-target_cond = {~20} true
-prior = 5
+target_cond = {~20 =actor_on_level(agroprom)} true
+prior = 2
 faction = stalker
-requested_items = ammo_9x18_fmj,ammo_9x18_fmj,ammo_9x18_fmj
+requested_items = wpn_vintorez
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
 
@@ -397,10 +407,10 @@ type = bring_item
 task_type = additional
 name = st_bring_item_5_name
 text = st_bring_item_5_text
-target_cond = {~20} true
-prior = 5
+target_cond = {~20 =actor_on_level(agroprom)} true
+prior = 2
 faction = stalker
-requested_items = ammo_5.45x39_fmj,ammo_5.45x39_fmj,ammo_5.45x39_fmj
+requested_items = detector_elite
 community_relation_delta_complete = 100
 reward_money = {~50} 750, {~50}, 1000, 500
 
@@ -413,3 +423,70 @@ name = agr_additional_quest_shooting_name
 text = agr_additional_quest_shooting_text
 target_story_ids = 1027
 condlist_0 = {=talking()} complete
+
+
+;Recover Items
+
+[agr_recover_item_1]   ;Вернуть дробовик долговцу
+type = recover_item
+task_type = additional
+name = agr_recover_item_1_name
+text = agr_recover_item_1_text
+target_npc_or_box_name = agr_recover_item_1_corpse
+distanse = 100
+prior = 2
+faction = dolg
+target_cond = {=actor_on_level(agroprom) -agr_recover_item_1_done} true, false
+on_init = %+agr_recover_item_1_done%
+requested_items = agr_quest_wpn_spas12
+community_relation_delta_complete = 100
+reward_money = 1000
+auto_faction = true
+
+[agr_recover_item_2]   ;Вернуть КПК с секретной информацией
+type = recover_item
+task_type = additional
+name = agr_recover_item_2_name
+text = agr_recover_item_2_text
+target_npc_or_box_name = agr_recover_item_2_corpse
+distanse = 100
+prior = 2
+faction = dolg
+target_cond = {=actor_on_level(agroprom) -agr_recover_item_2_done} true, false
+on_init = %+agr_recover_item_2_done%
+requested_items = agr_quest_duty_secret_pda
+community_relation_delta_complete = 100
+reward_money = 2000
+auto_faction = true
+
+[agr_recover_item_3]   ;Вернуть кейс долговца
+type = recover_item
+task_type = additional
+name = agr_recover_item_3_name
+text = agr_recover_item_3_text
+target_npc_or_box_name = agru_smart_terrain_1_box
+distanse = 100
+prior = 2
+faction = dolg
+target_cond = {=actor_on_level(agroprom) -agr_recover_item_3_done} true, false
+on_init = %+agr_recover_item_3_done%
+requested_items = agr_quest_duty_case
+community_relation_delta_complete = 100
+reward_money = 1000
+auto_faction = true
+
+[agr_recover_item_4]   ;Принести автомат долговца
+type = recover_item
+task_type = additional
+name = agr_recover_item_4_name
+text = agr_recover_item_4_text
+target_npc_or_box_name = agr_recover_item_4_corpse
+distanse = 100
+prior = 2
+faction = dolg
+target_cond = {=actor_on_level(agroprom) -agr_recover_item_4_done} true, false
+on_init = %+agr_recover_item_4_done%
+requested_items = agr_quest_duty_abakan
+community_relation_delta_complete = 100
+reward_money = 1000
+auto_faction = true

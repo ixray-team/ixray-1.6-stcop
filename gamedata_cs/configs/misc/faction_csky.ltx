@@ -1,15 +1,32 @@
 [settings]
-resource_0 = sim_default_csky_0, 50, sim_default_csky_1, 50   ;Какие профили спаунить в зависимости от уровня ресурсов группировки.
-resource_1 = sim_default_csky_1, 70, sim_default_csky_2, 30
-resource_2 = sim_default_csky_2, 60, sim_default_csky_3, 40
-resource_3 = sim_default_csky_3, 50, sim_default_csky_4, 50
-
 glory_0 = 0                ;Количество дополнительных отрядов, в зависимости от числа захваченных территориальных точек.
 glory_1 = 1
 glory_2 = 2
 glory_3 = 3
 glory_4 = 4
 glory_5 = 5
+
+
+
+[spawn_by_resource]
+0 = sim_default_csky_0, 50, sim_default_csky_1, 50   ;Какие профили спаунить в зависимости от уровня ресурсов группировки.
+1 = sim_default_csky_1, 70, sim_default_csky_2, 30
+2 = sim_default_csky_2, 60, sim_default_csky_3, 40
+3 = sim_default_csky_3, 50, sim_default_csky_4, 50
+
+
+[spawn_by_level]
+marsh 		= sim_default_csky_0, 40, sim_default_csky_1, 30, sim_default_csky_2, 15, sim_default_csky_3, 10, sim_default_csky_4,  5
+escape 		= sim_default_csky_0, 40, sim_default_csky_1, 30, sim_default_csky_2, 15, sim_default_csky_3, 10, sim_default_csky_4,  5
+garbage 	= sim_default_csky_0, 30, sim_default_csky_1, 40, sim_default_csky_2, 15, sim_default_csky_3, 10, sim_default_csky_4,  5
+darkvalley	= sim_default_csky_0, 20, sim_default_csky_1, 30, sim_default_csky_2, 30, sim_default_csky_3, 10, sim_default_csky_4, 10
+agroprom 	= sim_default_csky_0, 10, sim_default_csky_1, 20, sim_default_csky_2, 40, sim_default_csky_3, 20, sim_default_csky_4, 10
+yantar 		= sim_default_csky_0, 10, sim_default_csky_1, 15, sim_default_csky_2, 30, sim_default_csky_3, 45, sim_default_csky_4, 20
+red_forest 	= sim_default_csky_0,  5, sim_default_csky_1, 10, sim_default_csky_2, 15, sim_default_csky_3, 30, sim_default_csky_4, 40
+military 	= sim_default_csky_0,  5, sim_default_csky_1, 10, sim_default_csky_2, 15, sim_default_csky_3, 30, sim_default_csky_4, 40
+
+
+
 
 
 [expansion_0]                                ;Цели группировки на текущем левеле развития.

@@ -3,44 +3,58 @@
 #include "shadow.h"
 
 #ifdef USE_SUNFILTER
-float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
+float4 main ( v2p_TL2uv I  ) : SV_Target
 {
 	//float4 _P = tex2D( s_position, tc );
-	float4 _P = s_position.Sample( smp_nofilter, tc );
-	_P.w = 1.f;
+
+	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.Tex0, I.HPos, ISAMPLE) );
+
+#ifdef	GBUFFER_OPTIMIZATION
+	//	Emulate virtual offset
+	gbd.P += gbd.N*0.015f;
+#endif	//	GBUFFER_OPTIMIZATION
+
+	float4 _P = float4( gbd.P, 1.f);
 
 	float4 PS = mul( m_shadow,  _P );
 
-	half s	= shadowtest_sun( PS, tcJ ) * sunmask( _P );
+	float s	= shadowtest_sun( PS, I.Tex1 ) * sunmask( _P );
 
 	return s;
 }
 #else
-float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
+float4 main ( v2p_TL2uv I ) : SV_Target
 {
 	//float4 	_P	= tex2D( s_position, tc );
-	//half4	_N	= tex2D( s_normal, tc );
+	//float4	_N	= tex2D( s_normal, tc );
 
-	float4 	_P = s_position.Sample( smp_nofilter, tc );
-	half4	_N = s_normal.Sample( smp_nofilter, tc );
+	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.Tex0, I.HPos, ISAMPLE) );
+
+#ifdef	GBUFFER_OPTIMIZATION
+	//	Emulate virtual offset
+	gbd.P += gbd.N*0.015f;
+#endif	//	GBUFFER_OPTIMIZATION
+
+	float4 _P = float4( gbd.P, gbd.mtl );
+	float4  _N = float4( gbd.N, gbd.hemi );
 
 	// ----- light-model
-	half	m	= xmaterial;
+	float	m	= xmaterial;
 # ifndef USE_R2_STATIC_SUN
 			m 	= _P.w;
 # endif
-	half4	light	= plight_infinity ( m, _P, _N, Ldynamic_dir );
+	float4	light	= plight_infinity ( m, _P, _N, Ldynamic_dir );
 
 	// ----- shadow
   	float4 	P4 	= float4( _P.x, _P.y, _P.z, 1.f);
 	float4 	PS	= mul( m_shadow, P4 );
-	half 	s 	= sunmask( P4 );
+	float 	s 	= sunmask( P4 );
 	#ifdef 	USE_SJITTER
-	  		s 	*= shadowtest_sun( PS, tcJ );
+	  		s 	*= shadowtest_sun( PS, I.Tex1 );
 	#else
 	  		s 	*= shadow( PS );
 	#endif
 
-	return 		blend( Ldynamic_color * light * s, tc );
+	return 		blend( Ldynamic_color * light * s, I.Tex0 );
 }
 #endif
