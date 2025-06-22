@@ -109,7 +109,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		{
 			START_PROFILE("BaseMonster/Animation/HitEntity");
 
-			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("monster_claws", false, EngineExternal().ClearSkyMode() ? 3.0f : -1.0f);
+			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("monster_claws", false, 3.0f);
 			
 			float h1,p1;
 			Device.vCameraDirection.getHP	(h1,p1);
