@@ -91,7 +91,7 @@ void CUIActorMenu::Construct()
 	
 	m_RightDelimiter			= UIHelper::CreateStatic(uiXml, "right_delimiter", this);
 
-	if (uiXml.NavigateToNode("right_delimiter:trade_caption", 0) && EngineExternal().ClearSkyMode())
+	if (uiXml.NavigateToNode("right_delimiter:trade_caption", 0))
 	{
 		m_ActorTradeCaption = UIHelper::CreateTextWnd(uiXml, "right_delimiter:trade_caption", m_RightDelimiter);
 		m_ActorTradeCaption->AdjustWidthToText();
@@ -101,7 +101,7 @@ void CUIActorMenu::Construct()
 	
 	m_LeftDelimiter				= UIHelper::CreateStatic(uiXml, "left_delimiter", this);
 
-	if (uiXml.NavigateToNode("left_delimiter:trade_caption", 0) && EngineExternal().ClearSkyMode())
+	if (uiXml.NavigateToNode("left_delimiter:trade_caption", 0))
 	{
 		m_PartnerTradeCaption		= UIHelper::CreateTextWnd(uiXml, "left_delimiter:trade_caption", m_LeftDelimiter);
 		m_PartnerTradeCaption->AdjustWidthToText();
