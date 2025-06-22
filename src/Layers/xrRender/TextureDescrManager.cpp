@@ -57,10 +57,17 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 		[[maybe_unused]] bool NeedSave = tp.Load(*F);
 		FS.r_close(F);
 
-#ifdef _EDITOR
+//#ifdef _EDITOR
 		if (NeedSave)
 		{
-			IWriter* W = FS.w_open(InitialPath.c_str());
+			string_path		query;
+			FS.update_path	(query,"$app_data_root$","fix_texture_thm\\");
+
+			xr_string path(query);
+			path.append(fn);
+			path.append(".thm");
+
+			IWriter* W = FS.w_open(path.c_str());
 
 			W->open_chunk(THM_CHUNK_VERSION);
 			W->w_u16(0x0012);
@@ -73,7 +80,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 			tp.Save(*W);
 			FS.w_close(W);
 		}
-#endif
+//#endif
 
 		if (STextureParams::ttImage		== tp.type ||
 			STextureParams::ttTerrain	== tp.type ||
