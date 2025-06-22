@@ -60,6 +60,12 @@
 	<string id="st_move_to_slot">
 		<text>Sposta nello scomparto</text>
 	</string>
+	<string id="st_no_trade_tip_1">
+		<text>Al mercante non interessano oggetti come questi.</text>
+	</string>
+	<string id="st_no_trade_tip_2">
+		<text>L'oggetto è troppo danneggiato per essere scambiato.</text>
+	</string>
 	<string id="st_sell_item">
 		<text>Vendi oggetto</text>
 	</string>

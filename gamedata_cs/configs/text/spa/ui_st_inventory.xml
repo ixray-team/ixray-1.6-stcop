@@ -60,6 +60,12 @@
 	<string id="st_move_to_slot">
 		<text>poner en la ranura</text>
 	</string>
+	<string id="st_no_trade_tip_1">
+		<text>Al comerciante no le interesan estos objetos.</text>
+	</string>
+	<string id="st_no_trade_tip_2">
+		<text>El objeto está demasiado estropeado para venderlo.</text>
+	</string>
 	<string id="st_sell_item">
 		<text>vender objeto</text>
 	</string>
