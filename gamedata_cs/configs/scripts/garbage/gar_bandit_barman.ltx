@@ -20,6 +20,7 @@ path_look = gar_smart_terrain_3_5_bandit_barman_look
 def_state_standing = wait
 on_signal = turn_end | smartcover@lean_on_bar_fire ;smartcover@lean_on_bar_idle
 meet = meet
+combat_ignore_cond = true
 
 ;[smartcover@lean_on_bar_idle]
 ;cover_name = gar_smart_cover_bandit_barman_lead_stand_lean_on_bar
@@ -41,6 +42,7 @@ loophole_name = lead_stand_lean_on_bar
 cover_state = fire_target
 on_timer = 15000 | smartcover@lean_on_bar_fire_no_lookout ;{~33} ;, {~66} smartcover@lean_on_bar_idle, smartcover@lean_on_bar_lookout
 meet = meet
+combat_ignore_cond = true
 
 [smartcover@lean_on_bar_fire_no_lookout]
 cover_name = gar_smart_cover_bandit_barman_lead_stand_lean_on_bar
@@ -48,3 +50,4 @@ loophole_name = lead_stand_lean_on_bar
 cover_state = fire_no_lookout_target
 on_timer = 15000 | smartcover@lean_on_bar_fire ;{~33} smartcover@lean_on_bar_idle, {~66} smartcover@lean_on_bar_lookout,
 meet = meet
+combat_ignore_cond = true
