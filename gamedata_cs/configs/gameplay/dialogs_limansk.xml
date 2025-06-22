@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+    <dialog id="lim_bandit_wounded_dialog_1">
+        <phrase_list>
+            <phrase id="113">
+                <text>lim_bandit_wounded_dialog_1_113</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>lim_bandit_away</give_info>
+            </phrase>
+            <phrase id="112">
+                <text>lim_bandit_wounded_dialog_1_112</text>
+                <precondition>dialogs.actor_hasnt_medkit</precondition>
+                <next>1121</next>
+            </phrase>
+            <phrase id="1121">
+                <text>lim_bandit_wounded_dialog_1_1121</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>lim_bandit_wounded_dialog_1_11</text>
+                <next>111</next>
+                <next>112</next>
+                <next>113</next>
+            </phrase>
+            <phrase id="111">
+                <text>lim_bandit_wounded_dialog_1_111</text>
+                <precondition>dialogs.actor_have_medkit</precondition>
+                <action>dialogs.transfer_medkit</action>
+                <give_info>lim_bandit_have_medkit</give_info>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>lim_bandit_wounded_dialog_1_1111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="lim_bandit_wounded_dialog_2">
+        <phrase_list>
+            <phrase id="112">
+                <text>lim_bandit_wounded_dialog_2_112</text>
+                <next>1121</next>
+            </phrase>
+            <phrase id="113">
+                <text>lim_bandit_wounded_dialog_2_113</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>lim_bandit_wounded_go</give_info>
+            </phrase>
+            <phrase id="11">
+                <text>lim_bandit_wounded_dialog_2_11</text>
+                <dont_has_info>lim_bandit_wounded_dialog</dont_has_info>
+                <give_info>lim_bandit_say_abaut_ambush</give_info>
+                <next>111</next>
+                <next>112</next>
+                <next>113</next>
+            </phrase>
+            <phrase id="12">
+                <text>lim_bandit_wounded_dialog_2_12</text>
+                <has_info>lim_bandit_wounded_dialog</has_info>
+                <next>111</next>
+                <next>112</next>
+                <next>121</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+            <phrase id="111">
+                <text>lim_bandit_wounded_dialog_2_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <next>11</next>
+                <next>12</next>
+            </phrase>
+            <phrase id="1111">
+                <text>lim_bandit_wounded_dialog_2_1111</text>
+                <give_info>lim_bandit_wounded_dialog</give_info>
+                <next>1</next>
+            </phrase>
+            <phrase id="1121">
+                <text>lim_bandit_wounded_dialog_2_1121</text>
+                <give_info>lim_bandit_wounded_dialog</give_info>
+                <next>1</next>
+            </phrase>
+            <phrase id="121">
+                <text>lim_bandit_wounded_dialog_2_121</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>lim_bandit_wounded_go</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="lim_merc_helper_dialog">
+        <phrase_list>
+            <phrase id="1">
+                <text>lim_merc_helper_dialog_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>lim_merc_helper_dialog_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+            <phrase id="111">
+                <text>lim_merc_helper_dialog_111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>lim_merc_helper_sanks</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>

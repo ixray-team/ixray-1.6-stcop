@@ -1,0 +1,15 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+mil_militarybase_dead_1 +mil_militarybase_dead_2 +mil_militarybase_dead_3} sr_idle@in
+on_info2 = {+mil_alone_mission} sr_idle@in
+
+[sr_idle@in]
+on_actor_in_zone = mil_space_restrictor_radiotower | %+mil_actor_go_to_limansk% sr_idle@stop
+
+[sr_idle@stop]
+on_signal = sound_end | %+mil_sound_thanks% sr_idle@end
+
+[sr_idle@end]
+

@@ -1,0 +1,54 @@
+[logic]
+active = sr_idle@get_old_pda_start
+
+; Дать квест на получение старого ПДА
+[sr_idle@get_old_pda_start]
+on_info = {+gar_quest_get_old_pda_started} sr_idle@get_old_pda_box_start %=give_treasure(gar_treasure_quest_old_pda) =give_inited_task(storyline:gar_quest_get_old_pda:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+; Если рассказал про мёртвый лагерь или зашёл в него, дать квест на извлечение ПДА из ящика для инструментов
+[sr_idle@get_old_pda_box_start]
+on_info = {+gar_quest_get_old_pda_box_started} sr_idle@bring_old_pda_start %=give_inited_task(storyline:gar_quest_get_old_pda_box:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+; Если взял старый ПДА, дать квест на его доставку к Дикому Напру
+[sr_idle@bring_old_pda_start]
+on_info = {=actor_has_item(device_pda_old)} sr_idle@bring_money_start %+gar_quest_bring_old_pda_started =give_inited_task(storyline:gar_quest_bring_old_pda:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+; Если уже есть деньги - перейти к квесту на встречу с контрабандистом, иначе дать квест на сбор денег
+[sr_idle@bring_money_start]
+on_info = {+gar_quest_bring_money_done} sr_idle@get_weapon_start, {+gar_quest_bring_money_started} sr_idle@get_weapon_start %=give_inited_task(storyline:gar_quest_bring_money:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+; Дать квест на встречу с контрабандистом
+[sr_idle@get_weapon_start]
+on_info = {+gar_quest_get_weapons_started} sr_idle@destroy_ambush_start %=give_inited_task(storyline:gar_quest_get_weapons:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+; Дать квест на убийство предателя
+[sr_idle@destroy_ambush_start]
+on_info = {+gar_quest_get_weapons_destroy_ambush_told} sr_idle@get_traitor_pda_start %=give_inited_task(storyline:gar_quest_destroy_ambush:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+; Дать квест на осмотр ПДА предателя
+[sr_idle@get_traitor_pda_start]
+on_info = {+gar_quest_get_weapons_get_pda_told} sr_idle@speak_with_quester %=give_inited_task(storyline:gar_quest_get_traitor_pda:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+; Дать квест на разговор с диггером-квестовиком
+[sr_idle@speak_with_quester]
+on_info = {+gar_quest_get_weapons_quester_talked} sr_idle@meet_with_digger_fighters_start %=give_inited_task(storyline:gar_quest_speak_with_quester:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+; Дать квест на встречу с диггерами-бойцами 
+[sr_idle@meet_with_digger_fighters_start]
+on_info = {+gar_quest_meet_with_digger_fighters_started} sr_idle@liberate_conc_camp_start %=give_inited_task(storyline:gar_quest_meet_with_digger_fighters:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+; Дать квест на нападение на концлагерь
+[sr_idle@liberate_conc_camp_start]
+on_info = {+gar_quest_meet_with_digger_fighters_done} sr_idle@end_section %=give_inited_task(storyline:gar_quest_liberate_conc_camp:stalker)%
+on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
+
+[sr_idle@end_section]

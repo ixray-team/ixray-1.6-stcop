@@ -1,0 +1,13 @@
+[logic]
+active = nil
+;sr_idle
+
+[sr_idle]
+on_info = {!black_screen()} sr_cutscene
+
+[sr_cutscene]
+point = camera_point
+look = camera_look
+cam_effector = scenario_cam\generator_cam_01, scenario_cam\generator_cam_02, scenario_cam\generator_cam_04, scenario_cam\generator_cam_06, scenario_cam\generator_cam_07, scenario_cam\generator_cam_08, scenario_cam\generator_cam_09, scenario_cam\generator_cam_10, scenario_cam\generator_cam_11, scenario_cam\generator_cam_12, scenario_cam\generator_cam_13
+pp_effector = nil
+on_signal = cameff_end | nil %=activate_weapon_slot(2)%

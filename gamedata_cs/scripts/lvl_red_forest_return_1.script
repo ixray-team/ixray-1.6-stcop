@@ -1,0 +1,20 @@
+function main ()
+
+lvl_military_start.main()
+
+local infos_table = {
+"mil_start_after_red_forest",
+"mil_water_tower_radio",
+"mil_actor_inside_wtower"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+if level.name() == "red_forest" and not task_manager.get_task_manager().inited_tasks["csky_general_mil_talk_2_forester2"] then
+	xr_effects.give_inited_task(nil, nil, {"storyline", "mil_talk_2_forester2", "csky"})
+end
+
+end

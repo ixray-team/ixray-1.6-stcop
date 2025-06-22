@@ -1,0 +1,40 @@
+[logic]
+active = smartcover@fire
+level_spot = mechanic
+
+[smartcover@idle]
+path_walk = mar_smart_terrain_csky_base_tech_walk
+cover_name = mar_smart_cover_csky_tech_lead_sit_sleep_mechanic
+loophole_name = lead_sit_sleep_mechanic
+cover_state = idle_target
+on_timer = 14000 | smartcover@fire
+combat_ignore_cond = true
+meet = meet
+;target_path = mar_smart_terrain_csky_base_tech_look
+;target_enemy = actor
+def_state_moving = walk
+
+[smartcover@fire]
+path_walk = mar_smart_terrain_csky_base_tech_walk
+cover_name = mar_smart_cover_csky_tech_lead_sit_sleep_mechanic
+loophole_name = lead_sit_sleep_mechanic
+cover_state = lookout_target
+on_timer = 14000 | smartcover@idle
+combat_ignore_cond = true
+meet = meet
+;target_path = mar_smart_terrain_csky_base_tech_look
+def_state_moving = walk
+
+;-----------------------------------------------------------------------------
+
+[meet]
+meet_state = 3 | nil@nil
+meet_state_wpn = 3 | nil@nil
+victim = 0 | actor
+victim_wpn = 0 | actor
+use = true
+use_wpn = true
+precond = visibility
+sound_start 	= mar_csky_tech_meet
+sound_stop 		= mar_csky_tech_meet_bye
+quest_npc = true

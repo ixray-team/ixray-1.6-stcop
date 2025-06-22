@@ -1,0 +1,30 @@
+[dont_spawn_character_supplies]
+
+[logic]
+active = smartcover@idle
+level_spot = mechanic
+
+[smartcover@idle]
+cover_name = val_mechanic_smart_cover
+loophole_name = lead_sit_sleep_mechanic
+cover_state = idle_target
+on_timer = 14000 | smartcover@fire
+combat_ignore_cond = true
+meet = meet
+def_state_moving = walk
+
+[smartcover@fire]
+cover_name = val_mechanic_smart_cover
+loophole_name = lead_sit_sleep_mechanic
+cover_state = lookout_target
+on_timer = 14000 | smartcover@idle
+combat_ignore_cond = true
+meet = meet
+def_state_moving = walk
+
+[meet]
+meet_state 	= 3|nil@nil
+meet_state_wpn 	= 3|nil@nil
+sound_start = val_freedom_fixer_meet
+sound_stop 	= val_freedom_fixer_meet_bye
+quest_npc = true

@@ -1,0 +1,61 @@
+[logic]
+active = camper
+combat_ignore = combat_ignore
+on_combat = combat
+on_death = death
+
+[death]
+on_info = %-hospital_z1_enemy_4%
+
+[combat]
+on_info = {+rush_4} walker
+
+[walker@inc]
+danger = danger_condition@2
+combat_ignore_cond = always
+path_walk = enemy_floor2l_start_walk_1
+path_look = enemy_floor2l_start_look
+on_info = camper %=inc_counter(hospital_z1_left_cout)%
+group = 1
+
+[camper]
+danger = danger_condition
+combat_ignore_cond = always
+out_restr = enemy_floor2l_restr
+path_walk = enemy_floor2l_start_walk_1
+path_look = enemy_floor2l_start_look
+radius = 1
+def_state_campering = threat_na
+on_info = {+rush_4} camper@2
+group = 1
+
+[camper@2]
+danger = danger_condition
+;combat_ignore_cond = {=fighting_dist_ge(20)} always
+out_restr = enemy_floor2l_restr
+path_walk = enemy_floor2l_walk_1
+path_look = enemy_floor2l_look
+def_state_moving = assault
+def_state_campering = hide_na
+radius = 15
+on_info = {+minigun_off} walker
+group = 1
+
+[walker]
+danger = danger_condition
+out_restr = enemy_floor2l_restr
+path_walk = enemy_floor2l_walk_1
+path_look = enemy_floor2l_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+group = 1
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+
+[danger_condition@2]
+ignore_distance = 0
+
+[combat_ignore]

@@ -1,0 +1,20 @@
+[logic]
+active = camper@wait
+
+[camper@wait]
+out_restr = lim_final_enemy_restr_1
+combat_ignore_cond = true
+path_walk = lim_final_enemy_wait_1_walk
+path_look = lim_final_enemy_wait_1_walk
+on_info = {+lim_final_sniper_fire2} camper@fire
+
+[smartcover@fire]
+use_in_combat = true
+cover_name = lim_final_enemy_wait_1_cover
+cover_state = default_behaviour
+
+[camper@fire]
+out_restr = lim_final_enemy_restr_1
+path_walk = lim_final_enemy_fire_1_walk
+path_look = lim_final_enemy_fire_1_look
+radius = 30

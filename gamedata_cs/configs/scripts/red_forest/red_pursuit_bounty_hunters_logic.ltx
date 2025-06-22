@@ -1,0 +1,555 @@
+;*****************************
+;********* bounty hunter 1 ***********
+
+[logic@work1]
+active = camper@ambush_work1
+suitable = {=check_npc_name(red_bounty_hunter_1) -red_bounty_hunters_free -red_pursuit_bounty_hunter_surrender_info} true
+on_combat = combat@work1
+on_hit = hit
+on_death = death@work1
+prior = 70
+
+[death@work1]
+on_info = %=dec_counter(red_bounty_hunters_counter)%
+
+[combat@work1]
+on_info = %+red_pursuit_ambush_attack1%
+
+[hit]
+;on_info = {+red_pursuit_ambush_attack} %+red_pursuit_ambush_attack1%
+on_info = %+red_pursuit_ambush_attack1%
+
+[camper@hit_work1]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = always
+path_walk = ambush_1_walk
+path_look = ambush_1_look
+on_info = camper@ambush_work1 ;%=hit_npc_from_actor%
+
+[camper@ambush_work1]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+path_walk = ambush_1_walk
+path_look = ambush_1_look
+radius = 15
+def_state_moving = rush
+on_info = {+red_pursuit_ambush_attack1} camper@wait_work1 ;%=hit_npc_from_actor%
+on_info2 = {=actor_see_npc =see_actor} camper@wait_work1 ;%=hit_npc_from_actor%
+show_spot = false
+
+[camper@wait_work1]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+path_walk = ambush_1_walk
+path_look = ambush_1_look
+radius = 15
+def_state_moving = rush
+on_game_timer = 10 | walker@ambush_fire_work1 %=hit_npc_from_actor%
+show_spot = false
+
+[walker@ambush_fire_work1]
+out_restr = red_bridge_csky_restr
+path_walk = fire_1_walk
+path_look = fire_1_look
+on_game_timer = 50 | %=play_sound(red_pursuit_defend_tunel)%
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer2 = 5000 | %+red_bounty_hunters_free%
+on_info = {+red_pursuit_ambush_attack2} walker@bh_tunnel_work1
+shoot = terminal
+show_spot = false
+
+[walker@bh_tunnel_work1]
+out_restr = red_bridge_csky_restr
+path_walk = bh_1_walk
+path_look = bh_1_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+
+;*****************************
+;********* bounty hunter 2 ***********
+
+[logic@work2]
+active = camper@ambush_work2
+suitable = {=check_npc_name(red_bounty_hunter_2) -red_bounty_hunters_free -red_pursuit_bounty_hunter_surrender_info}
+on_combat = combat@work2
+on_hit = hit
+on_death = death@work2
+prior = 70
+
+[death@work2]
+on_info = %=dec_counter(red_bounty_hunters_counter)%
+
+[combat@work2]
+on_info = %+red_pursuit_ambush_attack1%
+
+[camper@hit_work2]
+out_restr = red_actor_position_restr
+combat_ignore_cond = true
+path_walk = ambush_2_walk
+path_look = ambush_2_look
+on_info = camper@ambush_work2 ;%=hit_npc_from_actor%
+
+[camper@ambush_work2]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+path_walk = ambush_2_walk
+path_look = ambush_2_look
+radius = 15
+def_state_moving = rush
+on_info = {+red_pursuit_ambush_attack1} camper@wait_work2 %=play_sound(red_pursuit_bounty_hunters_attack)%
+on_info2 = {=actor_see_npc =see_actor} camper@wait_work2 %=play_sound(red_pursuit_bounty_hunters_attack)%
+show_spot = false
+
+[camper@wait_work2]
+show_spot = false
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+path_walk = ambush_2_walk
+path_look = ambush_2_look
+radius = 15
+def_state_moving = rush
+on_game_timer = 10 | walker@ambush_fire2_work2 %=hit_npc_from_actor%
+
+[walker@ambush_fire2_work2]
+show_spot = false
+out_restr = red_bridge_csky_restr
+path_walk = ambush_2_walk
+path_look = fire_1_look
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+on_info = {+red_pursuit_ambush_attack2} walker@bh_tunnel_work2
+
+[walker@bh_tunnel_work2]
+;post_combat_time = 0,0
+out_restr = red_bridge_csky_restr
+path_walk = bh_2_walk
+path_look = bh_1_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+
+;*****************************
+;********* bounty hunter 3 ***********
+
+[logic@work3]
+active = camper@ambush_work3
+suitable = {=check_npc_name(red_bounty_hunter_3) -red_bounty_hunters_free -red_pursuit_bounty_hunter_surrender_info}
+on_combat = combat@work3
+on_hit = hit
+on_death = death@work3
+prior = 70
+
+[death@work3]
+on_info = %=dec_counter(red_bounty_hunters_counter)%
+
+[combat@work3]
+on_info = %+red_pursuit_ambush_attack1%
+
+[camper@hit_work3]
+out_restr = red_actor_position_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = ambush_3_walk
+path_look = ambush_4_look
+on_info = camper@ambush_work3 ;%=hit_npc_from_actor%
+
+[camper@ambush_work3]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = ambush_3_walk
+path_look = ambush_4_look
+radius = 10
+def_state_moving = rush
+on_info =  {+red_pursuit_ambush_attack1} camper@wait_work3 ;%=hit_npc_from_actor%
+on_info2 = {=actor_see_npc =see_actor} camper@wait_work3 ;%=hit_npc_from_actor%
+show_spot = false
+
+[camper@wait_work3]
+show_spot = false
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = ambush_3_walk
+path_look = ambush_3_look
+radius = 10
+def_state_moving = rush
+on_game_timer = 10 | walker@ambush_fire_work3 %=hit_npc_from_actor%
+
+[walker@ambush_fire_work3]
+combat_ignore_cond = {=enemy_in_zone(red_bridge_east_restr)}
+;post_combat_time = 0,0
+out_restr = red_bridge_csky_restr
+path_walk = ambush_3_walk
+path_look = fire_1_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+show_spot = false
+on_info = {+red_pursuit_ambush_attack2} walker@bh_tunnel_work3
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+
+[walker@bh_tunnel_work3]
+;post_combat_time = 0,0
+out_restr = red_bridge_csky_restr
+path_walk = bh_3_walk
+path_look = bh_1_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+
+;*****************************
+;********* bounty hunter 4 ***********
+
+[logic@work4]
+active = camper@ambush_work4
+suitable = {=check_npc_name(red_bounty_hunter_4) -red_bounty_hunters_free -red_pursuit_bounty_hunter_surrender_info}
+on_combat = combat@work4
+on_hit = hit
+on_death = death@work4
+prior = 70
+
+[death@work4]
+on_info = %=dec_counter(red_bounty_hunters_counter)%
+
+[combat@work4]
+on_info = %+red_pursuit_ambush_attack1%
+
+[camper@hit_work4]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = always
+path_walk = ambush_4_walk
+path_look = ambush_4_look
+on_info = camper@ambush_work4 %=hit_npc_from_actor%
+
+[camper@ambush_work4]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+path_walk = ambush_4_walk
+path_look = ambush_4_look
+radius = 10
+def_state_moving = rush
+on_info =  {+red_pursuit_ambush_attack1} camper@wait_work4 %=hit_npc_from_actor%
+on_info2 = {=actor_see_npc =see_actor} camper@wait_work4 %=hit_npc_from_actor%
+show_spot = false
+
+[camper@wait_work4]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+path_walk = ambush_4_walk
+path_look = ambush_4_look
+radius = 10
+def_state_moving = rush
+on_game_timer = 10 | walker@fight_work4 %=hit_npc_from_actor%
+show_spot = false
+
+[walker@fight_work4]
+show_spot = false
+out_restr = red_bridge_csky_restr
+path_walk = ambush_4_walk
+path_look = fire_1_look
+on_info = {+red_pursuit_ambush_attack2} walker@bh_tunnel_work4
+on_game_timer = 200 | %=play_sound(red_pursuit_defend_tunel)%
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer2 = 5000 | %+red_bounty_hunters_free%
+
+[walker@bh_tunnel_work4]
+out_restr = red_bridge_csky_restr
+path_walk = bh_4_walk
+path_look = bh_1_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+
+;*****************************
+;********* bounty hunter 5 ***********
+
+[logic@work5]
+active = camper@ambush_work5
+suitable = {=check_npc_name(red_bounty_hunter_5) -red_bounty_hunters_free -red_pursuit_bounty_hunter_surrender_info}
+on_combat = combat@work5
+on_hit = hit
+on_death = death@work5
+prior = 70
+
+[death@work5]
+on_info = %=dec_counter(red_bounty_hunters_counter)%
+
+[combat@work5]
+on_info = %+red_pursuit_ambush_attack1%
+
+[camper@hit_work5]
+out_restr = red_actor_position_restr
+combat_ignore_cond = always
+path_walk = ambush_5_walk
+path_look = ambush_5_look
+on_info = camper@ambush_work5 ;%=hit_npc_from_actor%
+
+[camper@ambush_work5]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = always
+path_walk = ambush_5_walk
+path_look = ambush_5_look
+radius = 10
+def_state_moving = rush
+on_info =  {+red_pursuit_ambush_attack1} camper@ambush_fire_work5
+on_info2 = {=actor_see_npc =see_actor} camper@ambush_fire_work5 %+red_pursuit_ambush_attack1%
+show_spot = false
+
+[camper@wait_work5]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+path_walk = ambush_5_walk
+path_look = ambush_5_look
+radius = 10
+def_state_moving = rush
+show_spot = false
+on_game_timer = 10 | camper@ambush_fire_work5 %=hit_npc_from_actor%
+
+[camper@ambush_fire_work5]
+out_restr = red_pursuit_track_restr
+path_walk = fire_5_walk
+path_look = fire_1_look
+radius = 10
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+def_state_moving = assault
+on_info = {+red_pursuit_ambush_attack2} walker@bh_tunnel_work4
+on_game_timer = 50 | %=play_sound(red_pursuit_defend_tunel)%
+on_game_timer2 = 5000 | %+red_bounty_hunters_free%
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+show_spot = false
+
+[walker@bh_tunnel_work5]
+out_restr = red_bridge_csky_restr
+path_walk = bh_5_walk
+path_look = bh_1_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+
+;*****************************
+;********* bounty hunter 6 ***********
+
+[logic@work6]
+active = camper@ambush_work6
+suitable = {=check_npc_name(red_bounty_hunter_6) -red_bounty_hunters_free -red_pursuit_bounty_hunter_surrender_info}
+on_combat = combat@work6
+on_hit = hit
+on_death = death@work6
+prior = 70
+
+[death@work6]
+on_info = %=dec_counter(red_bounty_hunters_counter)%
+
+[combat@work6]
+on_info = %+red_pursuit_ambush_attack1%
+
+[camper@hit_work6]
+out_restr = red_actor_position_restr
+combat_ignore_cond = always
+path_walk = ambush_6_walk
+path_look = ambush_2_look
+on_info = camper@ambush_work6 ;%=hit_npc_from_actor%
+
+[camper@ambush_work6]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = always
+path_walk = ambush_6_walk
+path_look = ambush_6_look
+radius = 10
+def_state_moving = rush
+on_info = {+red_pursuit_ambush_attack1} walker@ambush_fire_work6 ;%=hit_npc_from_actor%
+on_info2 = {=actor_see_npc =dist_to_actor_le(15)} walker@ambush_fire_work6 ;%=hit_npc_from_actor%
+show_spot = false
+
+[camper@wait_work6]
+out_restr = red_bridge_csky_restr
+combat_ignore_cond = true
+path_walk = ambush_6_walk
+path_look = ambush_6_look
+radius = 10
+def_state_moving = rush
+show_spot = false
+on_game_timer = 10 | walker@ambush_fire_work6 %=hit_npc_from_actor%
+
+[walker@ambush_fire_work6]
+out_restr = red_bridge_csky_restr
+path_walk = ambush_6_walk
+path_look = fire_1_look
+show_spot = false
+on_info = {+red_pursuit_ambush_attack2} walker@bh_tunnel_work6
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+
+[walker@bh_tunnel_work6]
+out_restr = red_bridge_csky_restr
+path_walk = bh_6_walk
+path_look = bh_1_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+
+
+;*****************************
+;********* bounty hunter surrender ***********
+[logic@work7]
+active = remark@surrender_work7
+suitable = {=check_npc_name(red_bounty_hunter_) +red_pursuit_bounty_hunter_surrender_info -red_bounty_hunters_free} true
+prior = 100
+on_death = death@work7
+
+[death@work7]
+on_info = %+red_bounty_hunters_free%
+
+[remark@surrender_work7]
+post_combat_time = 0,0
+path_walk = fire_1_walk
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hands_up
+target = actor
+meet = no_meet
+on_info = %=play_sound(red_pursuit_dont_shoot)%
+on_info2 = {+red_pursuit_camfly_begin} remark@surrender_silent_work7
+on_info3 = {=dist_to_actor_le(5) =actor_has_weapon()} remark@surrender2_work7
+on_info4 = {+red_bounty_hunters_go_info} walker@conduct_1_work7
+on_game_timer = 100 | remark@surrender_silent_work7
+
+
+[remark@surrender_silent_work7]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = wait
+target = actor
+meet = meet@surrender2_work7
+on_info = {+red_bounty_hunters_go_info} walker@conduct_1_work7
+on_info = {=dist_to_actor_le(5) =actor_has_weapon()} remark@surrender2_work7
+
+[remark@surrender2_work7]
+combat_ignore_cond = true
+anim = prisoner
+;target = actor
+meet = meet@surrender2_work7
+on_info = {+red_bounty_hunters_go_info} walker@conduct_1_work7
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 5000 | %+red_bounty_hunters_free%
+
+[meet@surrender2_work7]
+meet_state = 5|wait@nil
+meet_state_wpn = 5|prisoner@nil
+;meet_state_wpn = 30|hands_up@nil|5|prisoner@nil
+victim = 15 | actor
+victim_wpn = 15 | actor
+use	= true
+use_wpn	= true
+meet_dialog = red_bounty_hunter_dialog
+trade_enable = false
+on_info = {+red_bounty_hunters_go_info} walker@conduct_1_work7
+
+[walker@conduct_1_work7]
+meet = no_meet
+path_walk = ambush_walker_1_walk
+path_look = ambush_walker_1_walk
+def_state_moving1 = run
+def_state_moving2 = run
+def_state_moving3 = run
+def_state_standing = wait
+on_info = {=dist_to_actor_ge(10)} remark@wait_actor_1_work7 
+on_signal = action | walker@conduct_2_work7
+
+[remark@wait_actor_1_work7]
+meet = no_meet
+target = actor
+anim = wait
+on_info = {=dist_to_actor_ge(15)} remark@call_actor_1_work7
+on_info2 = {=dist_to_actor_le(10)} walker@conduct_1_work7
+
+[remark@call_actor_1_work7]
+meet = no_meet
+target = actor
+anim = hello
+on_info = {=dist_to_actor_le(15)} remark@wait_actor_1_work7
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 3000 | %+red_bounty_hunters_free%
+
+[walker@conduct_2_work7]
+meet = no_meet
+path_walk = ambush_walker_2_walk
+path_look = ambush_walker_2_walk
+def_state_moving1 = run
+def_state_moving2 = run
+def_state_moving3 = run
+def_state_standing = wait
+on_info = {=dist_to_actor_ge(10)} remark@wait_actor_2_work7 
+on_signal = action | walker@conduct_3_work7
+
+[remark@wait_actor_2_work7]
+meet = no_meet
+target = actor
+anim = wait
+on_info = {=dist_to_actor_ge(15)} remark@call_actor_2_work7
+on_info2 = {=dist_to_actor_le(10)} walker@conduct_2_work7
+
+[remark@call_actor_2_work7]
+meet = no_meet
+target = actor
+anim = hello
+on_info = {=dist_to_actor_le(15)} remark@wait_actor_2_work7
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 3000 | %+red_bounty_hunters_free%
+
+[walker@conduct_3_work7]
+meet = no_meet
+path_walk = ambush_walker_3_walk
+path_look = ambush_walker_3_walk
+def_state_moving1 = run
+def_state_moving2 = run
+def_state_moving3 = run
+def_state_standing = wait
+on_info = {=dist_to_actor_ge(10)} remark@wait_actor_3_work7 
+on_signal = action | walker@alert_work7 %+red_bounty_hunters_attack_2 =play_sound(red_pursuit_bounty_hunters_attack)%
+
+[remark@wait_actor_3_work7]
+meet = no_meet
+target = actor
+anim = wait
+on_info = {=dist_to_actor_ge(15)} remark@call_actor_3_work7
+on_info2 = {=dist_to_actor_le(10)} walker@conduct_3_work7
+
+[remark@call_actor_3_work7]
+meet = no_meet
+target = actor
+anim = hello
+on_info = {=dist_to_actor_le(15)} remark@wait_actor_2_work7
+on_actor_dist_ge_nvis = 100 | %+red_bounty_hunters_free%
+on_game_timer = 3000 | %+red_bounty_hunters_free%
+
+[walker@alert_work7]
+meet = no_meet
+combat_ignoe_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = ambush_walker_wait_walk
+path_look = ambush_walker_wait_look
+def_state_moving1 = sprint
+def_state_moving2 = sprint
+def_state_moving3 = sprint
+on_signal = action | walker@attack_work7
+
+[walker@attack_work7]
+path_walk = ambush_walker_wait_walk
+path_look = ambush_walker_wait_look

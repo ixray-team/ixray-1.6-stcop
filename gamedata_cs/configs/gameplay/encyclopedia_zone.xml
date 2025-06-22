@@ -1,0 +1,418 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<encyclopedia>
+    <!-- LIST OF ENCYCLOPEDIA ENTRIES -->
+
+    <!------------------------------------------------------------------->
+    <!--------------------------- ARTIFACTS ----------------------------->
+    <!------------------------------------------------------------------->
+
+
+    <!-------------------------------- af-medusa ----------------------------->
+
+    <article id="zone_artifact_af-medusa" name="af-medusa" group="Artifacts">
+        <ltx>af_medusa</ltx>
+        <text>enc_zone_artifact_af-medusa</text>
+    </article>
+
+    <!-------------------------------- af-cristall-flower ----------------------------->
+
+    <article id="zone_artifact_af-cristall-flower" name="af-cristall-flower" group="Artifacts">
+        <ltx>af_cristall_flower</ltx>
+        <text>enc_zone_artifact_af-cristall-flower</text>
+    </article>
+
+    <!-------------------------------- af-night-star ----------------------------->
+
+    <article id="zone_artifact_af-night-star" name="af-night-star" group="Artifacts">
+        <ltx>af_night_star</ltx>
+        <text>enc_zone_artifact_af-night-star</text>
+    </article>
+
+    <!-------------------------------- af-vyvert ----------------------------->
+
+    <article id="zone_artifact_af-vyvert" name="af-vyvert" group="Artifacts">
+        <ltx>af_vyvert</ltx>
+        <text>enc_zone_artifact_af-vyvert</text>
+    </article>
+
+    <!-------------------------------- af-gravi ----------------------------->
+
+    <article id="zone_artifact_af-gravi" name="af-gravi" group="Artifacts">
+        <ltx>af_gravi</ltx>
+        <text>enc_zone_artifact_af-gravi</text>
+    </article>
+
+    <!-------------------------------- af-gold-fish ----------------------------->
+
+    <article id="zone_artifact_af-gold-fish" name="af-gold-fish" group="Artifacts">
+        <ltx>af_gold_fish</ltx>
+        <text>enc_zone_artifact_af-gold-fish</text>
+    </article>
+
+    <!-------------------------------- af-blood ----------------------------->
+
+    <article id="zone_artifact_af-blood" name="af-blood" group="Artifacts">
+        <ltx>af_blood</ltx>
+        <text>enc_zone_artifact_af-blood</text>
+    </article>
+
+    <!-------------------------------- af-mincer-meat ----------------------------->
+
+    <article id="zone_artifact_af-mincer-meat" name="af-mincer-meat" group="Artifacts">
+        <ltx>af_mincer_meat</ltx>
+        <text>enc_zone_artifact_af-mincer-meat</text>
+    </article>
+
+    <!-------------------------------- af-soul ----------------------------->
+
+    <article id="zone_artifact_af-soul" name="af-soul" group="Artifacts">
+        <ltx>af_soul</ltx>
+        <text>enc_zone_artifact_af-soul</text>
+    </article>
+
+    <!-------------------------------- af-drops ----------------------------->
+
+    <article id="zone_artifact_af-drops" name="af-drops" group="Artifacts">
+        <ltx>af_drops</ltx>
+        <text>enc_zone_artifact_af-drops</text>
+    </article>
+
+    <!-------------------------------- af-fireball ----------------------------->
+
+    <article id="zone_artifact_af-fireball" name="af-fireball" group="Artifacts">
+        <ltx>af_fireball</ltx>
+        <text>enc_zone_artifact_af-fireball</text>
+    </article>
+
+    <!-------------------------------- af-cristall ----------------------------->
+
+    <article id="zone_artifact_af-cristall" name="af-cristall" group="Artifacts">
+        <ltx>af_cristall</ltx>
+        <text>enc_zone_artifact_af-cristall</text>
+    </article>
+
+    <!-------------------------------- af-electra-sparkler ----------------------------->
+
+    <article id="zone_artifact_af-electra-sparkler" name="af-electra-sparkler" group="Artifacts">
+        <ltx>af_electra_sparkler</ltx>
+        <text>enc_zone_artifact_af-electra-sparkler</text>
+    </article>
+
+    <!-------------------------------- af-electra-flash ----------------------------->
+
+    <article id="zone_artifact_af-electra-flash" name="af-electra-flash" group="Artifacts">
+        <ltx>af_electra_flash</ltx>
+        <text>enc_zone_artifact_af-electra-flash</text>
+    </article>
+
+    <!-------------------------------- af-electra-moonlight ----------------------------->
+
+    <article id="zone_artifact_af-electra-moonlight" name="af-electra-moonlight" group="Artifacts">
+        <ltx>af_electra_moonlight</ltx>
+        <text>enc_zone_artifact_af-electra-moonlight</text>
+    </article>
+
+    <!-------------------------------- af-rusty-thorn ----------------------------->
+
+    <article id="zone_artifact_af-rusty-thorn" name="af-rusty-thorn" group="Artifacts">
+        <ltx>af_rusty_thorn</ltx>
+        <text>enc_zone_artifact_af-rusty-thorn</text>
+    </article>
+
+    <!-------------------------------- af-rusty-kristall ----------------------------->
+
+    <article id="zone_artifact_af-rusty-kristall" name="af-rusty-kristall" group="Artifacts">
+        <ltx>af_rusty_kristall</ltx>
+        <text>enc_zone_artifact_af-rusty-kristall</text>
+    </article>
+
+    <!-------------------------------- af-rusty-sea-urchin ----------------------------->
+
+    <article id="zone_artifact_af-rusty-sea-urchin" name="af-rusty-sea-urchin" group="Artifacts">
+        <ltx>af_rusty_sea-urchin</ltx>
+        <text>enc_zone_artifact_af-rusty-sea-urchin</text>
+    </article>
+
+    <!-------------------------------- af-fuzz-kolobok ----------------------------->
+
+    <article id="zone_artifact_af-fuzz-kolobok" name="af-fuzz-kolobok" group="Artifacts">
+        <ltx>af_fuzz_kolobok</ltx>
+        <text>enc_zone_artifact_af-fuzz-kolobok</text>
+    </article>
+
+    <!-------------------------------- af-ameba-slime ----------------------------->
+
+    <article id="zone_artifact_af-ameba-slime" name="af-ameba-slime" group="Artifacts">
+        <ltx>af_ameba_slime</ltx>
+        <text>enc_zone_artifact_af-ameba-slime</text>
+    </article>
+
+    <!-------------------------------- af-ameba-slug ----------------------------->
+
+    <article id="zone_artifact_af-ameba-slug" name="af-ameba-slug" group="Artifacts">
+        <ltx>af_ameba_slug</ltx>
+        <text>enc_zone_artifact_af-ameba-slug</text>
+    </article>
+
+    <!-------------------------------- af-ameba-mica ----------------------------->
+
+    <article id="zone_artifact_af-ameba-mica" name="af-ameba-mica" group="Artifacts">
+        <ltx>af_ameba_mica</ltx>
+        <text>enc_zone_artifact_af-ameba-mica</text>
+    </article>
+
+    <!-------------------------------- af-dummy-glassbeads ----------------------------->
+
+    <article id="zone_artifact_af-dummy-glassbeads" name="af-dummy-glassbeads" group="Artifacts">
+        <ltx>af_dummy_glassbeads</ltx>
+        <text>enc_zone_artifact_af-dummy-glassbeads</text>
+    </article>
+
+    <!-------------------------------- af-dummy-pellicle ----------------------------->
+
+    <article id="zone_artifact_af-dummy-pellicle" name="af-dummy-pellicle" group="Artifacts">
+        <ltx>af_dummy_pellicle</ltx>
+        <text>enc_zone_artifact_af-dummy-pellicle</text>
+    </article>
+
+    <!-------------------------------- af-dummy-battery ----------------------------->
+
+    <article id="zone_artifact_af-dummy-battery" name="af-dummy-battery" group="Artifacts">
+        <ltx>af_dummy_battery</ltx>
+        <text>enc_zone_artifact_af-dummy-battery</text>
+    </article>
+
+    <!-------------------------------- af-dummy-dummy ----------------------------->
+
+    <article id="zone_artifact_af-dummy-dummy" name="af-dummy-dummy" group="Artifacts">
+        <ltx>af_dummy_dummy</ltx>
+        <text>enc_zone_artifact_af-dummy-dummy</text>
+    </article>
+
+    <!-------------------------------- af-dummy-spring ----------------------------->
+
+    <article id="zone_artifact_af-dummy-spring" name="af-dummy-spring" group="Artifacts">
+        <ltx>af_dummy_spring</ltx>
+        <text>enc_zone_artifact_af-dummy-spring</text>
+    </article>
+
+
+
+
+    <!------------------------------------------------------------------->
+    <!--------------------------- ANOMALIES ----------------------------->
+    <!------------------------------------------------------------------->
+
+
+    <!-------------------------------- Bald ----------------------------->
+
+    <article id="zone_anomalies_bald" name="Bald" group="Anomalies">
+        <texture x="0" y="400" width="200" height="150">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_bald</text>
+    </article>
+
+    <!-------------------------------- Gravi ----------------------------->
+
+    <article id="zone_anomalies_gravi" name="Gravi" group="Anomalies">
+        <texture x="0" y="850" width="200" height="150">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_gravi</text>
+    </article>
+
+    <!-------------------------------- Meat ----------------------------->
+
+    <article id="zone_anomalies_meat" name="Meat" group="Anomalies">
+        <texture x="1020" y="300" width="200" height="150">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_meat</text>
+    </article>
+
+    <!-------------------------------- Zharka ----------------------------->
+
+    <article id="zone_anomalies_zharka" name="Zharka" group="Anomalies">
+        <texture x="1020" y="450" width="150" height="150">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_zharka</text>
+    </article>
+
+    <!-------------------------------- Electra ----------------------------->
+
+    <article id="zone_anomalies_electra" name="Electra" group="Anomalies">
+        <texture x="0" y="700" width="200" height="150">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_electra</text>
+    </article>
+
+    <!------------------------------ Rusty --------------------------->
+
+    <article id="zone_anomalies_rusty" name="Rusty" group="Anomalies">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_rusty</text>
+    </article>
+
+    <!-------------------------------- Fuzz ----------------------------->
+
+    <article id="zone_anomalies_fuzz" name="Fuzz" group="Anomalies">
+        <texture x="1550" y="150" width="200" height="200">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_fuzz</text>
+    </article>
+
+    <!-------------------------------- Radioactive ----------------------------->
+
+    <article id="zone_anomalies_radioactive" name="Radioactive" group="Anomalies">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_radioactive</text>
+    </article>
+
+    <!-------------------------------- Ameba ----------------------------->
+
+    <article id="zone_anomalies_ameba" name="Ameba" group="Anomalies">
+        <texture x="400" y="400" width="200" height="200">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_ameba</text>
+    </article>
+
+    <!-------------------------------- Time ----------------------------->
+
+    <article id="zone_anomalies_time" name="Time" group="Anomalies">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_time</text>
+    </article>
+
+    <!-------------------------------- Lift ----------------------------->
+
+    <article id="zone_anomalies_lift" name="Lift" group="Anomalies">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_anomalies_lift</text>
+    </article>
+
+
+
+
+    <!------------------------------------------------------------------->
+    <!--------------------------- LOCATIONS ----------------------------->
+    <!------------------------------------------------------------------->
+
+
+    <!-------------------------------- Escape ----------------------------->
+
+    <article id="zone_locations_escape" name="Escape" group="Locations">
+        <texture x="600" y="150" width="150" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_escape</text>
+    </article>
+
+
+    <!-------------------------------- Garbage ----------------------------->
+
+    <article id="zone_locations_garbage" name="Garbage" group="Locations">
+        <texture x="750" y="150" width="150" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_garbage</text>
+    </article>
+
+
+    <!-------------------------------- Agroprom ----------------------------->
+
+    <article id="zone_locations_agroprom" name="Agroprom" group="Locations">
+        <texture x="600" y="250" width="150" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_agroprom</text>
+    </article>
+
+
+    <!-------------------------------- Darkdolina ----------------------------->
+
+    <article id="zone_locations_darkdolina" name="Darkdolina" group="Locations">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_darkdolina</text>
+    </article>
+
+
+    <!-------------------------------- Stancia ----------------------------->
+
+    <article id="zone_locations_stancia" name="Stancia" group="Locations">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_stancia</text>
+    </article>
+
+
+    <!-------------------------------- Bar ----------------------------->
+
+    <article id="zone_locations_bar" name="Bar" group="Locations">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_bar</text>
+    </article>
+
+
+    <!-------------------------------- Rostok ----------------------------->
+
+    <article id="zone_locations_rostok" name="Rostok" group="Locations">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_rostok</text>
+    </article>
+
+
+    <!-------------------------------- Yantar ----------------------------->
+
+    <article id="zone_locations_yantar" name="Yantar" group="Locations">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_yantar</text>
+    </article>
+
+
+    <!-------------------------------- Military-loc ----------------------------->
+
+    <article id="zone_locations_military-loc" name="Military-loc" group="Locations">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_military-loc</text>
+    </article>
+
+
+    <!-------------------------------- Pripiat ----------------------------->
+
+    <article id="zone_locations_pripiat" name="Pripiat" group="Locations">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_pripiat</text>
+    </article>
+    
+     <!-------------------------------- Pripiat ----------------------------->
+
+    <article id="zone_locations_radar" name="Radar" group="Locations">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_locations_radar</text>
+    </article>
+
+
+
+
+    <!------------------------------------------------------------------->
+    <!-------------------------- Zone-story ----------------------------->
+    <!------------------------------------------------------------------->
+
+
+    <!-------------------------------- Story-2006 ----------------------------->
+
+    <article id="zone_zone-story_story-2006" name="Story-2006" group="Zone-story">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_zone-story_story-2006</text>
+    </article>
+
+
+    <!-------------------------------- Story-2008 ----------------------------->
+
+    <article id="zone_zone-story_story-2008" name="Story-2008" group="Zone-story">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_zone-story_story-2008</text>
+    </article>
+
+
+    <!-------------------------------- Story-2010 ----------------------------->
+
+    <article id="zone_zone-story_story-2010" name="Story-2010" group="Zone-story">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_zone-story_story-2010</text>
+    </article>
+
+
+    <!-------------------------------- Story-raid ----------------------------->
+
+    <article id="zone_zone-story_story-raid" name="Story-raid" group="Zone-story">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_zone_zone-story_story-raid</text>
+    </article>
+
+</encyclopedia>
+

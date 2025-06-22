@@ -1,0 +1,37 @@
+--'--------------------------------------------------------------------------------------------------
+--' ИНформационные сектора. Денжеры из разных секторов игнорятся.
+--'--------------------------------------------------------------------------------------------------
+
+info_sectors = {}
+
+--' Определяем текущей сектор для NPC
+function select_active_sectors(npc)
+	local t = nil
+	local npc_position = npc:position()
+	for k,v in pairs(info_sectors) do		
+		if v:inside(npc_position) then
+			if t == nil then
+				t = {}
+			end
+			t[k] = v
+		end
+	end
+	return t
+end
+
+--' Проверяем находится ли денжер внутри указанного сектора.
+--' Если false - нужно игнорить денжер.
+function check_danger_position(position, sectors)
+	for k,v in pairs(sectors) do
+		if v:inside(position) then
+			return true
+		end
+	end
+	return false
+end
+
+function register_new_sector(sector)
+	if info_sectors[sector:id()] == nil then
+		info_sectors[sector:id()] = sector
+	end
+end

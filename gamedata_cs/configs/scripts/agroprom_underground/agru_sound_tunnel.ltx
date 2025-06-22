@@ -1,0 +1,22 @@
+[logic]
+active = sr_idle@line_0
+
+[sr_idle@line_0]
+on_info = {=actor_in_zone(agru_danger_zone) +agru_open_story_door} sr_idle@line_1
+
+[sr_idle@line_1]
+on_info = {+agru_leader_dolg_task_complete} sr_idle@line_3
+on_info2 = %=play_sound(agru_sound_rock) =run_cam_effector(kat_heli_down)% sr_idle@line_2
+
+[sr_idle@line_2]
+on_game_timer = 35 | sr_idle@line_1
+
+[sr_idle@line_3]
+on_info = {+agru_teleport_complete} sr_idle@end
+on_info2 = %=play_sound(agru_sound_rock) =run_cam_effector(kat_heli_down)% sr_idle@line_4
+
+[sr_idle@line_4]
+on_game_timer = 5 | sr_idle@line_3
+on_info = {+agru_teleport_complete} sr_idle@end
+
+[sr_idle@end]

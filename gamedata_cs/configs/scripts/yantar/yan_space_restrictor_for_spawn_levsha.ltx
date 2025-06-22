@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+yan_quest_levsha !squad_exist(yan_stalker_levsha_true)} sr_idle@spawn_2 %=create_squad(yan_stalker_levsha_true:yan_smart_terrain_for_squad_levsha)%
+
+[sr_idle@spawn_2]
+on_info = {!squad_exist(yan_stalker_levsha_2)} sr_idle@spawn_3 %=create_squad(yan_stalker_levsha_2:yan_smart_terrain_for_squad_levsha)%
+
+[sr_idle@spawn_3]
+on_info = {!squad_exist(yan_stalker_levsha_1)} sr_idle@spawn_stop %=create_squad(yan_stalker_levsha_1:yan_smart_terrain_for_squad_levsha)% ;--+yan_quest_levsha 
+
+[sr_idle@spawn_stop]

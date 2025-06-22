@@ -1,0 +1,82 @@
+----------------------------------------------------------------------------------------------------
+-- Схема котроля за территорией
+----------------------------------------------------------------------------------------------------
+
+territory = {}
+---------------------------------------------------------------------------------------------------------------------
+class "action_territory"
+function action_territory:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+function action_territory:update(delta)
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end	
+end
+function action_territory:hit_callback(obj, amount, local_direction, who, bone_index)
+	printf("territory hit callback: [%s][%s]", tostring(amount), tostring(who:name()))
+	if who:id() ~= db.actor:id() then
+		return
+	end
+	if obj:relation(db.actor) == game_object.enemy then
+		return
+	end	
+	xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.territory_hit)
+end
+function action_territory:death_callback(victim, who)
+	printf("territory death callback: [%s]", tostring(victim:name()), tostring(who:name()))
+	if who:id() ~= db.actor:id() then
+		return
+	end
+--	if victim:relation(db.actor) == game_object.enemy then
+--		return
+--	end	
+	xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.territory_death)		return
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(obj, ini, scheme, section, storage)
+	local new_action = action_territory(obj, storage)
+	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events(obj, storage, new_action)
+	sr_territory.subscribe_territory_for_events(obj, new_action)
+end
+
+function set_scheme(obj, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+
+	local tmp = utils.cfg_get_string(ini, section, "territory_hit", obj, false, "")
+	if tmp then
+		st.territory_hit = xr_logic.parse_condlist(obj, section, "territory_hit", tmp)
+	else
+		st.territory_hit = xr_logic.parse_condlist(obj, section, "territory_hit", "")
+	end
+	tmp = utils.cfg_get_string(ini, section, "territory_death", obj, false, "")
+	if tmp then
+		st.territory_death = xr_logic.parse_condlist(obj, section, "territory_death", tmp)
+	else
+		st.territory_death = xr_logic.parse_condlist(obj, section, "territory_death", "")
+	end
+end
+
+function issue_event(npc, type, ...)
+	local arg = {...}
+	if type == "hit_callback" then
+		for k,v in pairs(territory) do
+			v.hit_callback(v, unpack(arg))
+		end
+	end
+	if type == "death_callback" then
+		for k,v in pairs(territory) do
+			v.death_callback(v, unpack(arg))
+		end
+	end
+end
+
+function subscribe_territory_for_events(obj, new_action)
+	if territory[obj:id()] == nil then
+		territory[obj:id()] = new_action
+	end
+end

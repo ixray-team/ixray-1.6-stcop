@@ -1,0 +1,21 @@
+[logic]
+active = sr_psy_antenna@no_helmet
+
+[sr_psy_antenna@no_helmet]
+eff_intensity = 200
+hit_intensity = 50
+on_info = {+yan_low_psy_radiation_start} sr_psy_antenna@low_radiation
+on_info2 = {+yan_start_monologa_cut6} sr_idle@stop
+
+[sr_psy_antenna@low_radiation]
+eff_intensity = 60
+hit_intensity = 1
+on_info = {+yan_levsha_dead} sr_psy_antenna@high_level %=stc_boom =play_sound(yan_psy_high_level:stalker)%
+on_info2 = {+yan_start_monologa_cut6} sr_idle@stop
+
+[sr_psy_antenna@high_level]
+eff_intensity = 200
+hit_intensity = 60
+on_info = {+yan_start_monologa_cut6} sr_idle@stop
+
+[sr_idle@stop]

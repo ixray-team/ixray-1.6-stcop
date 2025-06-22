@@ -1,0 +1,27 @@
+[logic]
+active = sr_idle@undeground_polter
+
+[sr_idle@tushkano_spawn]
+on_info = sr_idle@tushkano_spawn2 %=inc_counter(red_tushkano_count) =spawn_object(red_undeground_tushkan_1:red_smart_terrain_3_2_tushkan_spawn_way_2:0)%
+
+[sr_idle@tushkano_spawn2]
+on_info = {!counter_greater(red_tushkano_count:5) ~50} %=inc_counter(red_tushkano_count) =spawn_object(red_undeground_tushkan_1:red_smart_terrain_3_2_tushkan_spawn_way_2:0)%, {!counter_greater(red_tushkano_count:5)} %=inc_counter(red_tushkano_count) =spawn_object(red_undeground_tushkan_1:red_smart_terrain_3_2_tushkan_spawn_way_1:0)%
+on_info2 = {=counter_equal(red_tushkano_count:5)} sr_idle@undeground_check
+
+[sr_idle@undeground_check]
+on_info = {=actor_in_zone(red_smart_terrain_3_2_undeground_restr)} sr_idle@tushkano_spawn3
+
+[sr_idle@tushkano_spawn3]
+on_info = {!counter_greater(red_tushkano_count:10) ~50} %=inc_counter(red_tushkano_count) =spawn_object(red_undeground_tushkan_1:red_smart_terrain_3_2_tushkan_spawn_way_2:0)%, {!counter_greater(red_tushkano_count:10)} %=inc_counter(red_tushkano_count) =spawn_object(red_undeground_tushkan_1:red_smart_terrain_3_2_tushkan_spawn_way_2:0)%
+on_game_timer = 200 | sr_idle@undeground_polter
+
+[sr_idle@undeground_polter]
+on_info = {=actor_in_zone(red_smart_terrain_3_2_undeground_restr_2)} sr_idle@wait %=inc_counter(red_polter_shoot_count) =dec_counter(red_polter_shoot_count)%
+
+[sr_idle@wait]
+on_game_timer = 20 | sr_idle@spawn_polter %=inc_counter(red_polter_count:2) =spawn_object(red_undeground_polter_1:red_smart_terrain_3_2_polter_spawn_way_1) =spawn_object(red_undeground_polter_1:red_smart_terrain_3_2_polter_spawn_way_2)%
+
+[sr_idle@spawn_polter]
+on_info = {!counter_greater(red_polter_count:1) ~50} %=inc_counter(red_polter_count) =spawn_object(red_undeground_polter_1:red_undeground_polter_walk:0)%, {!counter_greater(red_polter_count:1) ~50} %=inc_counter(red_polter_count) =spawn_object(red_undeground_polter_1:red_undeground_polter_walk:1)%, {!counter_greater(red_polter_count:1)} %=inc_counter(red_polter_count) =spawn_object(red_undeground_polter_1:red_undeground_polter_walk:5)%
+on_info2 = {=counter_equal(red_polter_shoot_count:3)} nil %+red_undeground_open =hit_obj_chemical(518:link:5000:300)%
+on_game_timer = 3000 | nil %+red_undeground_open =hit_obj_chemical(518:link:5000:300)%

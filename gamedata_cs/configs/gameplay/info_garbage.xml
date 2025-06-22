@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+	<info_portion id="gar_visited_level"/>
+
+	<info_portion id="gar_story_find_diggers_started"/>
+
+    <info_portion id="gar_story_reached_dead_diggers_camp"/>
+    <info_portion id="gar_story_searched_digger_body"/>
+    <info_portion id="gar_story_digger_pda_played"/>
+
+    <info_portion id="gar_story_messenger_warning"/>
+    <info_portion id="gar_story_spawn_messenger_dogs"/>
+    <info_portion id="gar_story_spawned_messenger_dogs"/>
+    <info_portion id="gar_story_digger_killed_or_hostile"/>
+    <info_portion id="gar_story_searched_messenger_body"/>
+    <info_portion id="gar_story_messenger_dogs_dead"/>
+    <info_portion id="gar_story_got_info_from_digger"/>
+    
+    <info_portion id="gar_story_stalkers_to_darkvalley"/>
+
+    <info_portion id="gar_story_came_to_ambush_door"/>
+
+    <info_portion id="gar_story_spawn_ambush_bandits"/>
+    <info_portion id="gar_story_ambush_talk_1_played"/>
+    <info_portion id="gar_story_ambush_talk_2_played"/>
+    <info_portion id="gar_story_ambush_talk_3_played"/>
+    <info_portion id="gar_story_ambush_talk_4_played"/>
+    <info_portion id="gar_story_ambush_remove"/>
+    <info_portion id="gar_story_need_to_find_fang_pda"/>
+    <info_portion id="gar_story_cannot_find_fang"/>
+  
+    <info_portion id="gar_story_got_fang_pda"/>
+
+    <info_portion id="gar_story_need_to_go_to_cache"/>
+
+    <info_portion id="gar_bandit_base_gate_closed"/>
+    <info_portion id="gar_bandit_base_minigame_dead"/>
+    <info_portion id="gar_bandit_base_minigame_first_win"/>
+    <info_portion id="gar_bandit_base_minigame_talked_at_end"/>
+    <info_portion id="gar_bandit_base_commentator_response"/>
+
+    <info_portion id="gar_flea_market_fixer_dead"/>
+
+    <info_portion id="gar_flea_market_stop_quest_line"/>
+    <info_portion id="gar_bandit_block_quest_line"/>
+
+
+    <info_portion id="gar_quest_killer_pseudodogs_told"/>
+    <info_portion id="gar_quest_killer_pseudodogs_started"/>
+    <info_portion id="gar_quest_killer_pseudodogs_forest_spawn_point"/>
+    <info_portion id="gar_quest_killer_pseudodogs_done"/>
+  
+    <info_portion id="gar_quest_tell_about_killer_pseudodogs_done"/>
+
+
+    <info_portion id="gar_quest_get_old_pda_told"/>
+    <info_portion id="gar_quest_get_old_pda_asked"/>
+    <info_portion id="gar_quest_get_old_pda_started"/>
+    <info_portion id="gar_quest_get_old_pda_camp_told"/>
+    
+    <info_portion id="gar_quest_get_old_pda_box_started"/>
+    
+    <info_portion id="gar_quest_bring_old_pda_started"/>
+    <info_portion id="gar_quest_bring_old_pda_done"/>
+
+	<info_portion id="gar_quest_bring_money_told"/>
+    <info_portion id="gar_quest_bring_money_started"/>
+    <info_portion id="gar_quest_bring_money_done"/>
+
+    <info_portion id="gar_quest_get_weapons_started"/>
+    <info_portion id="gar_quest_get_weapons_arrived"/>
+    <info_portion id="gar_quest_get_weapons_ambush_start"/>
+    <info_portion id="gar_quest_get_weapons_destroy_ambush_told"/>
+    <info_portion id="gar_quest_get_weapons_destroyed_ambush"/>
+    <info_portion id="gar_quest_get_weapons_get_pda_told"/>
+    <info_portion id="gar_quest_get_weapons_got_traitor_pda"/>
+    <info_portion id="gar_quest_get_weapons_quester_talked"/>
+  
+    <info_portion id="gar_quest_speak_with_quester_done"/>
+
+    <info_portion id="gar_quest_liberate_conc_camp_told"/>
+    <info_portion id="gar_quest_meet_with_digger_fighters_started"/>
+    <info_portion id="gar_quest_meet_with_digger_fighters_done"/>
+    <info_portion id="gar_quest_liberate_conc_camp_done"/>
+
+	<info_portion id="gar_quest_talk_with_captive_leader_started"/>
+    <info_portion id="gar_quest_talk_with_captive_leader_done"/>
+    
+    <info_portion id="gar_quest_captive_reward_done"/>
+    
+    
+    <info_portion id="gar_quest_kill_digger_traitor_barman"/>
+    <info_portion id="gar_quest_kill_smuggler_barman"/>
+    <info_portion id="gar_quest_destroy_flea_market_barman"/>
+    <info_portion id="gar_quest_bandit_secret_barman"/>
+  
+  
+    <info_portion id="gar_quest_kill_digger_traitor_told"/>
+    <info_portion id="gar_quest_kill_digger_traitor_started"/>
+    <info_portion id="gar_quest_kill_digger_traitor_call"/>
+    <info_portion id="gar_quest_kill_digger_traitor_going"/>
+    <info_portion id="gar_quest_kill_digger_traitor_explained"/>
+    <info_portion id="gar_quest_kill_digger_traitor_gone"/>
+    <info_portion id="gar_quest_kill_digger_traitor_done"/>
+    
+	<info_portion id="gar_quest_kill_smuggler_prepare"/>
+    <info_portion id="gar_quest_kill_smuggler_told"/>
+    <info_portion id="gar_quest_kill_smuggler_done"/>
+
+    <info_portion id="gar_quest_destroy_flea_market_told"/>
+    <info_portion id="gar_quest_destroy_flea_market_done"/>
+
+	<info_portion id="gar_quest_bandit_reward_started"/>
+	<info_portion id="gar_quest_bandit_reward_done"/>
+	
+	<info_portion id="gar_quest_more_reward_started"/>
+	
+    <info_portion id="gar_quest_bandit_secret_started"/>
+    <info_portion id="gar_quest_bandit_secret_done"/>
+    
+    
+    
+    <info_portion id="gar_bandit_join_invited"/>
+    <info_portion id="gar_bandit_join_talked_first"/>
+    <info_portion id="gar_bandit_join_enemy_wait"/>
+    
+    <info_portion id="gar_conc_camp_searcher_1_dead"/>
+    <info_portion id="gar_conc_camp_searcher_2_dead"/>
+    <info_portion id="gar_conc_camp_searcher_3_dead"/>
+    <info_portion id="gar_conc_camp_one_prisoner_dead"/>
+    <info_portion id="gar_conc_camp_two_prisoners_dead"/>
+    <info_portion id="gar_conc_camp_all_diggers_dead"/>
+    
+    <info_portion id="gar_conc_camp_arbaiten_1"/>
+    <info_portion id="gar_conc_camp_arbaiten_2"/>
+    <info_portion id="gar_conc_camp_arbaiten_3"/>
+    
+</game_information_portions>

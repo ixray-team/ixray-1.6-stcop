@@ -1,0 +1,29 @@
+function main ()
+
+lvl_red_forest_start.main()
+
+local infos_table = {
+"red_pursuit_csky_talk2",
+"red_pursuit_bounty_hunter_surrender_info",
+"red_actor_find_forester",
+"red_go_to_sos_signal_task_complete",
+"red_teleport_way",
+"red_teleport_way_2",
+"red_actor_find_teleport",
+"mil_start_after_red_forest",
+"red_forest_open",
+"red_strelok_task_end",
+"red_pursuit_task_end",
+"mil_start_storyline_info"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+if level.name() == "military" and not task_manager.get_task_manager().inited_tasks["csky_general_mil_blockpost"] then
+	xr_effects.give_inited_task(nil, nil, {"storyline", "mil_blockpost", "csky"})
+end
+
+end

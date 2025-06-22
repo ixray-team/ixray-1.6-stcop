@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+    <dialog id="yan_scientist_about_stalkers">
+        <dont_has_info>yan_questions_scientists</dont_has_info>
+        <dont_has_info>yan_vzyal_quest_doc</dont_has_info>
+        <dont_has_info>yan_quest_levsha</dont_has_info>
+        <phrase_list>
+            <phrase id="0">
+                <text>yan_scientist_about_stalkers_0</text>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>yan_scientist_about_stalkers_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>yan_scientist_about_stalkers_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>yan_scientist_about_stalkers_111</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="yan_scientist_about_zombie">
+        <dont_has_info>yan_questions_scientists</dont_has_info>
+        <dont_has_info>yan_vzyal_quest_doc</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>yan_scientist_about_zombie_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>yan_scientist_about_zombie_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>yan_scientist_about_zombie_111</text>
+            </phrase>
+            <phrase id="0">
+                <text>yan_scientist_about_zombie_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="yan_scientist_about_strelok">
+        <dont_has_info>yan_vzyal_quest_doc</dont_has_info>
+        <dont_has_info>yan_otnesi_doc_saharavy</dont_has_info>
+        <dont_has_info>yan_quest_levsha</dont_has_info>
+        <dont_has_info>yan_quest_doc</dont_has_info>
+        <phrase_list>
+            <phrase id="0">
+                <text>yan_scientist_about_strelok_0</text>
+                <dont_has_info>yan_vzyal_quest_doc</dont_has_info>
+                <dont_has_info>yan_otnesi_doc_saharavy</dont_has_info>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>yan_scientist_about_strelok_1</text>
+                <disable_info>yan_questions_scientists</disable_info>
+                <give_info>yan_vida4a_quest_doc</give_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>yan_scientist_about_strelok_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>yan_scientist_about_strelok_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>yan_scientist_about_strelok_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="11111">
+                <text>yan_scientist_about_strelok_11111</text>
+                <give_info>yan_vzyal_quest_doc</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="yan_levsha_hello_dialog">
+        <phrase_list>
+            <phrase id="111">
+                <text>yan_levsha_hello_dialog_111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="11">
+                <text>yan_levsha_hello_dialog_11</text>
+                <give_info>yan_proriv_k_ystanovke_start</give_info>
+                <next>111</next>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <next>11</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="yan_scientist_go_diggers">
+        <has_info>yan_vzyal_quest_doc</has_info>
+        <dont_has_info>yan_quest_doc</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>yan_scientist_go_diggers_1</text>
+                <disable_info>yan_vzyal_quest_doc</disable_info>
+                <give_info>yan_quest_doc</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>yan_scientist_go_diggers_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="yan_scientist_hello_dialog">
+        <phrase_list>
+            <phrase id="14">
+                <text>yan_scientist_hello_dialog_14</text>
+                <dont_has_info>yan_vzyal_quest_doc</dont_has_info>
+                <has_info>yan_quest_levsha</has_info>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+            </phrase>
+            <phrase id="13">
+                <text>yan_scientist_hello_dialog_13</text>
+                <dont_has_info>yan_vzyal_quest_doc</dont_has_info>
+                <has_info>yan_quest_levsha</has_info>
+                <has_info>yan_stop</has_info>
+            </phrase>
+            <phrase id="12">
+                <text>yan_scientist_hello_dialog_12</text>
+                <has_info>yan_quest_doc</has_info>
+            </phrase>
+            <phrase id="11">
+                <text>yan_scientist_hello_dialog_11</text>
+                <dont_has_info>yan_quest_doc</dont_has_info>
+                <give_info>yan_questions_scientists</give_info>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="yan_scientist_bring_documents">
+        <has_info>yan_otnesti_doc_saharavy</has_info>
+        <dont_has_info>yan_vzyal_quest_doc</dont_has_info>
+        <phrase_list>
+            <phrase id="0">
+                <text>yan_scientist_bring_documents_0</text>
+                <has_info>yan_otnesti_doc_saharavy</has_info>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>yan_scientist_bring_documents_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="111">
+                <text>yan_scientist_bring_documents_111</text>
+                <disable_info>yan_vzyal_quest_doc</disable_info>
+                <disable_info>yan_otnesti_doc_saharavy</disable_info>
+                <give_info>yan_quest_levsha</give_info>
+            </phrase>
+            <phrase id="11">
+                <text>yan_scientist_bring_documents_11</text>
+                <action>dialogs_yantar.give_pda</action>
+                <next>111</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>

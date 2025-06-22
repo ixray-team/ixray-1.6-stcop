@@ -1,0 +1,137 @@
+;****************************************************
+;** Файл с описанием озвученных историй
+;****************************************************
+
+
+[test_story]
+;номер, звук, пауза(сек)
+0 = teller,			intro_joke, 1
+1 = teller,			joke,		0.1
+2 = reaction_all, 	reac_laugh,	0.2
+3 = reaction,		reac_joke,	0
+
+
+
+[squad_begin_attack]
+0 = teller,		attack_begin, 0.1
+1 = reaction,	attack_begin_reply, 0.1
+2 = reaction,	attack_begin_reply, 0.1
+
+
+[squad_prepare_attack]
+0 = teller,		alife_prepare_attack, 0.1
+1 = teller,		alife_prepare_actor, 0.1
+
+[squad_prepare_attack_self]
+0 = teller,		alife_prepare_attack, 0.1
+1 = teller,		alife_prepare_self, 0.1
+
+
+[squad_csky_counter_attack]
+0 = reaction,		nil, 2
+1 = reaction,		alife_csky_counter_check, 1
+2 = reaction,		alife_csky_counter_check, 1
+3 = reaction,		alife_csky_counter_check, 1
+4 = reaction,		alife_csky_counter_check, 1
+
+[squad_stalker_counter_attack]
+0 = reaction,		nil, 2
+1 = reaction,		alife_stalker_counter_check, 1
+2 = reaction,		alife_stalker_counter_check, 1
+3 = reaction,		alife_stalker_counter_check, 1
+4 = reaction,		alife_stalker_counter_check, 1
+
+[squad_bandit_counter_attack]
+0 = reaction,		nil, 2
+1 = reaction,		alife_bandit_counter_check, 1
+2 = reaction,		alife_bandit_counter_check, 1
+3 = reaction,		alife_bandit_counter_check, 1
+4 = reaction,		alife_bandit_counter_check, 1
+
+[squad_renegade_counter_attack]
+0 = reaction,		nil, 2
+1 = reaction,		alife_bandit_counter_check, 1
+2 = reaction,		alife_bandit_counter_check, 1
+3 = reaction,		alife_bandit_counter_check, 1
+4 = reaction,		alife_bandit_counter_check, 1
+
+[squad_dolg_counter_attack]
+0 = reaction,		nil, 2
+1 = reaction,		alife_dolg_counter_check, 1
+2 = reaction,		alife_dolg_counter_check, 1
+3 = reaction,		alife_dolg_counter_check, 1
+4 = reaction,		alife_dolg_counter_check, 1
+
+[squad_freedom_counter_attack]
+0 = reaction,		nil, 2
+1 = reaction,		alife_freedom_counter_check, 1
+2 = reaction,		alife_freedom_counter_check, 1
+3 = reaction,		alife_freedom_counter_check, 1
+4 = reaction,		alife_freedom_counter_check, 1
+
+[squad_army_counter_attack]
+0 = reaction,		nil, 2
+1 = reaction,		alife_army_counter_check, 1
+2 = reaction,		alife_army_counter_check, 1
+3 = reaction,		alife_army_counter_check, 1
+4 = reaction,		alife_army_counter_check, 1
+
+[squad_zombied_counter_attack]
+0 = reaction,		nil, 1
+
+[squad_monolith_counter_attack]
+0 = reaction,		nil, 1
+
+[squad_killer_counter_attack]
+0 = reaction,		nil, 1
+
+[squad_csky_counter_launched]
+0 = reaction,		nil, 1
+1 = reaction,		alife_csky_counter_begin, 1
+2 = reaction,		alife_csky_counter_reply, 1
+3 = teller,			alife_wait_counter, 1.5
+
+[squad_stalker_counter_launched]
+0 = reaction,		nil, 1
+1 = reaction,		alife_stalker_counter_begin, 1
+2 = reaction,		alife_stalker_counter_reply, 1
+3 = teller,			alife_wait_counter, 1.5
+
+[squad_bandit_counter_launched]
+0 = reaction,		nil, 1
+1 = reaction,		alife_bandit_counter_begin, 1
+2 = reaction,		alife_bandit_counter_reply, 1
+3 = teller,			alife_wait_counter, 1.5
+
+[squad_renegade_counter_launched]
+0 = reaction,		nil, 1
+1 = reaction,		alife_bandit_counter_begin, 1
+2 = reaction,		alife_bandit_counter_reply, 1
+3 = teller,			alife_wait_counter, 1.5
+
+[squad_dolg_counter_launched]
+0 = reaction,		nil, 1
+1 = reaction,		alife_dolg_counter_begin, 1
+2 = reaction,		alife_dolg_counter_reply, 1
+3 = teller,			alife_wait_counter, 1.5
+
+[squad_freedom_counter_launched]
+0 = reaction,		nil, 1
+1 = reaction,		alife_freedom_counter_begin, 1
+2 = reaction,		alife_freedom_counter_reply, 1
+3 = teller,			alife_wait_counter, 1.5
+
+[squad_army_counter_launched]
+0 = reaction,		nil, 1
+1 = reaction,		alife_army_counter_begin, 1
+2 = reaction,		alife_army_counter_reply, 1
+3 = teller,			alife_wait_counter, 1.5
+
+[squad_zombied_counter_launched]
+0 = reaction,		nil, 1
+
+[squad_monolith_counter_launched]
+0 = reaction,		nil, 1
+
+[squad_killer_counter_launched]
+0 = teller,		alife_wait_counter, 1

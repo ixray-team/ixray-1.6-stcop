@@ -1,0 +1,59 @@
+[logic]
+active = ph_idle
+
+[ph_idle]
+on_info = {+hospital_z3_minigun_on} ph_minigun@actor
+
+[ph_minigun@actor]
+auto_fire = true
+target = actor
+;invulnerable = true
+fire_range = 150
+on_info = {=is_minigun_see_actor} %+hospital_z3_fierce_attack%
+on_info2 = {+hospital_z3_minigun_off} ph_idle2
+on_info3 = {+hospital_z3_cs_fire_2 -hospital_z3_spawn_3_on} ph_minigun@fire1
+
+[ph_minigun@fire1]
+auto_fire = true
+path_fire = z3_minigun_fire_1
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@fire2
+on_info = {=is_minigun_see_actor} ph_minigun@actor2
+on_info2 = {+hospital_z3_minigun_off} ph_idle2
+
+[ph_minigun@fire2]
+auto_fire = true
+path_fire = z3_minigun_fire_2
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@fire3
+on_info = {=is_minigun_see_actor} ph_minigun@actor2
+on_info2 = {+hospital_z3_minigun_off} ph_idle2
+
+[ph_minigun@fire3]
+auto_fire = true
+path_fire = z3_minigun_fire_3
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@pause
+on_info = {=is_minigun_see_actor} ph_minigun@actor2
+on_info2 = {+hospital_z3_minigun_off} ph_idle2
+
+[ph_minigun@pause]
+auto_fire = false
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@fire1
+on_info = {=is_minigun_see_actor} ph_minigun@actor2
+on_info2 = {+hospital_z3_minigun_off} ph_idle2
+
+[ph_minigun@actor2]
+auto_fire = true
+target = actor
+;invulnerable = true
+fire_range = 150
+on_info = {!is_minigun_see_actor} ph_minigun@fire1
+on_info2 = {+hospital_z3_minigun_off} ph_idle2
+
+[ph_idle2]

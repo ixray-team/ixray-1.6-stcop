@@ -1,0 +1,19 @@
+[logic@soldier03]
+active = walker
+suitable = {=check_npc_name(sim_default_duty_) -agru_leader_dolg_task_complete} true
+prior = 42
+
+[walker]
+path_walk = agr_duty_hole_soldier_3_walk
+path_look = agr_duty_hole_soldier_3_look
+on_info = {+snork} camper@2
+combat_ignore_cond = always
+out_restr = agr_out_restr_hole
+
+[camper@2]
+path_walk = agr_duty_hole_soldier_3_walk
+path_look = agr_duty_hole_soldier_3_look
+out_restr = agr_out_restr_hole
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+

@@ -1,0 +1,276 @@
+;«десь содержатс€ дескрипшены сквадов, которые потом можно создавать использу€ спец функции.
+
+;  LEVEL DARK VALLEY
+
+; -------------freedom-------------------------
+
+[val_smart_terrain_7_3_freedom]
+faction = freedom
+npc = sim_default_freedom_sniper, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = val_smart_terrain_7_3
+sympathy = 1
+relationship = neutrals
+
+[val_smart_terrain_7_4_freedom]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = val_smart_terrain_7_4
+sympathy = 1
+relationship = neutrals
+
+[val_smart_terrain_7_5_freedom]
+faction = freedom
+npc = sim_default_freedom_sniper, sim_default_freedom_sniper, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = val_smart_terrain_7_5
+sympathy = 1
+relationship = neutrals
+
+[val_smart_terrain_7_11_freedom]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = {+val_strike_antenna_two_captured} nil, {+val_strike_antenna_ready} val_smart_terrain_4_0, val_smart_terrain_7_11
+sympathy = 0
+relationship = neutrals
+
+[val_smart_terrain_5_7_freedom]
+faction = freedom
+npc = val_freedom_blockpost_guard_north_1, val_freedom_blockpost_guard_north_2, val_freedom_blockpost_guard_leader_north, sim_default_freedom_2, sim_default_freedom_2
+target_smart = {+val_strike_antenna_ready} nil, val_smart_terrain_5_7
+sympathy = 0
+relationship = neutrals
+
+[val_smart_terrain_5_8_freedom]
+faction = freedom
+npc = val_freedom_blockpost_guard_south_1, val_freedom_blockpost_guard_south_2, val_freedom_blockpost_guard_leader_south, sim_default_freedom_2, sim_default_freedom_2
+target_smart = {+val_strike_antenna_ready} nil, val_smart_terrain_5_8
+sympathy = 0
+relationship = neutrals
+
+[val_smart_terrain_9_5_freedom]
+faction = freedom
+npc = val_freedom_deadblockpost_guard_1, val_freedom_deadblockpost_guard_2, val_freedom_deadblockpost_guard_3, val_freedom_deadblockpost_guard_4, val_freedom_deadblockpost_guard_5
+target_smart = val_smart_terrain_9_5
+sympathy = 0
+relationship = neutrals
+
+; -------------freedom_attack-------------------------
+
+[val_smart_terrain_2_1_freedom]
+faction = freedom
+npc = val_freedom_attack_1, val_freedom_attack_2, val_freedom_attack_3, val_freedom_attack_4, val_freedom_attack_commander
+target_smart = val_smart_terrain_1_2:nil
+spawn_point = val_smart_terrain_2_1_spawn_point_to_killer_base
+attack_power = 400
+sympathy = 0
+relationship = neutrals
+on_death = %+val_freedom_2_1_dead%
+
+; -------------fredom_attack2-------------------------
+
+[val_smart_terrain_2_2_freedom]
+faction = freedom
+npc = val_freedom_attack_6, val_freedom_attack_7, val_freedom_attack_8, val_freedom_attack_9, val_freedom_attack_10
+target_smart = val_smart_terrain_1_2:nil
+spawn_point = val_smart_terrain_2_2_spawn
+attack_power = 400
+sympathy = 0.5
+relationship = neutrals
+on_death = %+val_freedom_2_2_dead%
+
+; -------------killer---------------------------------
+
+[val_smart_terrain_1_1_killer]
+faction = killer
+npc = val_killer_sniper_1, val_killer_sniper_2, val_killer_sniper_3, val_killer_sniper_4, val_killer_sniper_5
+target_smart = val_smart_terrain_1_2
+spawn_point = val_smart_terrain_1_1_spawn_point
+sympathy = 0
+relationship = enemy
+on_death = %+val_killer_1_1_dead% 
+
+[val_smart_terrain_1_2_killer]
+faction = killer
+npc = sim_default_killer_2, sim_default_killer_2, sim_default_killer_2, sim_default_killer_2, sim_default_killer_2
+target_smart = val_smart_terrain_1_2
+spawn_point = val_smart_terrain_1_2_spawn
+sympathy = 0
+relationship = enemy
+;on_death = %+val_killer_1_2_dead%
+
+[val_smart_terrain_1_3_killer]
+faction = killer
+npc = val_killer_1, val_killer_2, val_killer_3, val_killer_4, val_killer_5
+target_smart = val_smart_terrain_1_2
+spawn_point = val_smart_terrain_1_3_spawn_point
+sympathy = 0
+relationship = enemy
+on_death = %+val_killer_1_3_dead%
+
+[val_smart_terrain_1_4_killer]
+faction = killer
+npc = val_killer_sniper_6, val_killer_sniper_7, val_killer_sniper_8, val_killer_sniper_9, val_killer_sniper_10
+target_smart = val_smart_terrain_1_2
+spawn_point = val_smart_terrain_1_4_spawn_point
+sympathy = 0
+relationship = enemy
+on_death = %+val_killer_1_4_dead%
+
+[val_smart_terrain_1_5_killer]
+faction = killer
+npc = val_killer_6, val_killer_7, val_killer_8, val_killer_9, val_killer_10
+target_smart = val_smart_terrain_1_2
+spawn_point = val_smart_terrain_1_5_spawn_point
+sympathy = 0
+relationship = enemy
+on_death = %+val_killer_1_5_dead%
+
+; -------------freedom_attack_pric-------------------------
+
+[val_smart_terrain_3_0_freedom]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = val_smart_terrain_4_0:nil
+attack_power = 400
+spawn_point = val_smart_terrain_3_0_spawn_point
+sympathy = 0.1
+relationship = neutrals
+
+
+; -------------freedom_attack_pric_antenna_2-------------------------
+
+[val_smart_terrain_3_0_freedom_antenna_2]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = val_smart_terrain_4_0:nil
+attack_power = 400
+spawn_point = val_smart_terrain_3_0_spawn_point
+sympathy = 0.1
+relationship = neutrals
+
+; -------------killer_pric-------------------------
+
+[val_smart_terrain_4_0_killer]
+faction = killer
+npc = sim_default_killer_2, sim_default_killer_2, sim_default_killer_2, sim_default_killer_2, sim_default_killer_2
+target_smart = val_smart_terrain_4_0
+sympathy = 0
+relationship = enemy
+
+;---------------freedom_antenna----------------
+
+[val_smart_terrain_5_0_freedom_antenna]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = {+val_freedom_attack_antenna} val_smart_terrain_7_8:nil, val_smart_terrain_8_7
+attack_power = 400
+sympathy = 0.1
+relationship = neutrals
+
+;---------------freedom_antenna_2----------------
+
+[val_smart_terrain_5_2_freedom_antenna]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = val_smart_terrain_4_0:nil
+attack_power = 400
+spawn_point = val_smart_terrain_5_2_freedom_antenna
+sympathy = 0.1
+relationship = neutrals
+
+;---------------killer_antenna----------------
+
+[val_smart_terrain_6_0_killer_antenna]
+faction = killer
+npc = sim_default_killer_2, sim_default_killer_2, sim_default_killer_2, sim_default_killer_2, sim_default_killer_2
+target_smart = val_smart_terrain_7_8
+sympathy = 0
+relationship = enemy
+attack_power = 300
+
+;---------------killer_antenna_2----------------
+
+[val_smart_terrain_6_1_killer_antenna]
+faction = killer
+npc = sim_default_killer_2, sim_default_killer_2, sim_default_killer_2, sim_default_killer_2, sim_default_killer_2
+target_smart = val_smart_terrain_7_8
+attack_power = 400
+spawn_point = val_smart_terrain_6_1_spawn_point
+sympathy = 0
+relationship = enemy
+
+;---------------quest_spy---------------
+[val_smart_terrain_9_4_spy]
+faction = bandit
+npc = val_bandit_spy_2, val_bandit_spy_2, val_bandit_spy_2, val_bandit_spy_3
+target_smart = val_smart_terrain_9_4
+spawn_point = val_smart_terrain_9_4_spawn_point
+sympathy = 0
+relationship = enemy
+attack_power = 300
+
+; -------------monsters-------------------------
+
+; -------------boars-------------------------
+
+[val_boars_lair_guard_5_10]
+faction = monster
+npc = boar_normal, boar_normal, boar_normal, boar_normal, boar_normal
+target_smart = val_smart_terrain_5_10
+attack_power = 300
+
+[val_flesh_lair_guard_8_9]
+faction = monster
+npc = flesh_normal, flesh_normal, flesh_normal, flesh_normal, flesh_normal
+target_smart = val_smart_terrain_8_9
+attack_power = 300
+
+[val_flesh_lair_guard_7_8]
+faction = monster
+npc = flesh_normal, flesh_normal, flesh_normal, flesh_normal, flesh_normal
+target_smart = val_smart_terrain_7_8
+attack_power = 300
+
+[val_flesh_lair_guard_6_4]
+faction = monster
+npc = psy_dog
+target_smart = val_smart_terrain_6_4
+attack_power = 300
+
+[val_boar_lair_guard_9_2]
+faction = monster
+npc = boar_normal, boar_normal, boar_strong, boar_strong, boar_strong
+target_smart = val_smart_terrain_9_2
+attack_power = 300
+
+; -------------dogs-------------------------
+
+[val_dogs_lair_guard_1_1]
+faction = monster
+npc = dog_normal, dog_normal, dog_normal, dog_normal, dog_normal
+target_smart = val_smart_terrain_6_5:nil, val_smart_terrain_6_5
+attack_power = 400
+spawn_point = val_smart_terrain_7_6_spawn_point
+
+
+; -------------quest_kabani-------------------------
+[val_boar_lair_9_2]
+faction = monster
+npc = boar_normal, boar_normal, boar_normal, boar_normal, boar_strong
+target_smart = val_smart_terrain_7_5:val_smart_terrain_7_3, val_smart_terrain_7_4
+attack_power = 400
+spawn_point = val_smart_terrain_9_2_spawn_point
+
+[val_flesh_lair_6_4]
+faction = monster
+npc = flesh_normal, flesh_normal, flesh_normal, flesh_normal, flesh_strong
+target_smart = val_smart_terrain_7_3:val_smart_terrain_7_5, val_smart_terrain_7_4
+attack_power = 400
+spawn_point = val_smart_terrain_6_4_spawn_point
+
+; -------------quest_night_bloodsucker-------------------------
+[val_bloodsucker_lair_9_4]
+faction = monster
+npc = bloodsucker_normal, bloodsucker_strong
+target_smart = val_smart_terrain_9_4
+attack_power = 400
+spawn_point = val_smart_terrain_9_4_bloodsucker_spawn_point

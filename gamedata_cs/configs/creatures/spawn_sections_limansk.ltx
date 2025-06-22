@@ -1,0 +1,225 @@
+;**************************************************************
+; clear sky
+
+[lim_csky_commander]:stalker_die_hard
+$spawn                		= "respawn\lim_csky_commander"
+character_profile     = kat_cs_commander
+
+[lim_csky_commander_2]:stalker_die_hard
+$spawn                		= "respawn\lim_csky_commander_2"
+character_profile     = lim_cs_commander
+
+[lim_csky_tech]:stalker_die_hard
+$spawn                		= "respawn\lim_csky_tech"
+character_profile     = kat_cs_commander
+
+[lim_csky_soldier]:stalker_die_hard
+$spawn                     = "respawn\lim_csky_soldier"
+character_profile     = kat_cs_soldier
+spec_rank = veteran
+community = stalker
+
+[lim_stalker_enemy]:stalker
+$spawn               = "respawn\lim_stalker_enemy"
+character_profile    = lim_stalker_enemy
+spec_rank = veteran
+community = monolith
+
+;**************************************************************
+; enemy_bandit
+
+[lim_enemy_bandit_3]:stalker
+$spawn                     = "respawn\lim_enemy_bandit_3"
+character_profile     = sim_default_bandit_4
+spec_rank = veteran
+community = bandit
+custom_data = scripts\limansk\lim_bandit_ambush_window_enemy.ltx
+
+;**************************************************************
+; enemy_stalker
+
+;************************************************************** 
+;crossroad
+
+[lim_enemy_stalker_2]:stalker
+$spawn                     = "respawn\lim_enemy_stalker_2"
+character_profile     = sim_default_monolith_2
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_crossroad_window_enemy.ltx
+
+[lim_ambush_2_enemy_1_stalker]:stalker
+$spawn                     = "respawn\lim_ambush_2_enemy_1_stalker"
+character_profile     = sim_default_monolith_3
+
+[lim_ambush_2_enemy_2_stalker]:stalker
+$spawn                     = "respawn\lim_ambush_2_enemy_2_stalker"
+character_profile     = sim_default_monolith_3
+
+[lim_ambush_2_enemy_3_stalker]:stalker
+$spawn                     = "respawn\lim_ambush_2_enemy_3_stalker"
+character_profile     = sim_default_monolith_2
+
+[lim_ambush_2_enemy_4_stalker]:stalker
+$spawn                     = "respawn\lim_ambush_2_enemy_4_stalker"
+character_profile     = sim_default_monolith_2
+
+[lim_ambush_2_enemy_5_stalker]:stalker
+$spawn                     = "respawn\lim_ambush_2_enemy_5_stalker"
+character_profile     = sim_default_monolith_2
+
+[lim_barricade_enemy_1]:stalker
+$spawn                     = "respawn\lim_barricade_enemy_1"
+character_profile     = sim_default_monolith_3
+
+[lim_barricade_enemy_2]:stalker
+$spawn                     = "respawn\lim_barricade_enemy_2"
+character_profile     = sim_default_monolith_3
+
+[lim_barricade_enemy_3]:stalker
+$spawn                     = "respawn\lim_barricade_enemy_3"
+character_profile     = sim_default_monolith_3
+
+[lim_barricade_enemy_4]:stalker
+$spawn                     = "respawn\lim_barricade_enemy_4"
+character_profile     = sim_default_monolith_3
+
+[lim_barricade_enemy_5]:stalker
+$spawn                     = "respawn\lim_barricade_enemy_5"
+character_profile     = sim_default_monolith_3
+
+;*********** sniper *******************
+[lim_enemy_sniper_stalker_1]:stalker
+$spawn                     = "respawn\lim_enemy_sniper_stalker_1"
+character_profile     = lim_enemy_sniper_stalker
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_roof_sniper_1_logic.ltx
+
+[lim_enemy_sniper_stalker_2]:stalker
+$spawn                     = "respawn\lim_enemy_sniper_stalker_2"
+character_profile     = lim_enemy_sniper_stalker
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_roof_sniper_2_logic.ltx
+
+[lim_enemy_sniper_stalker_3]:stalker
+$spawn                     = "respawn\lim_enemy_sniper_stalker_3"
+character_profile     = lim_enemy_sniper_stalker
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_roof_sniper_3_logic.ltx
+
+[lim_enemy_sniper_stalker_4]:stalker
+$spawn                     = "respawn\lim_enemy_sniper_stalker_4"
+character_profile     = lim_enemy_sniper_stalker
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_roof_sniper_4_logic.ltx
+
+[lim_enemy_sniper_stalker_5]:stalker
+$spawn                     = "respawn\lim_enemy_sniper_stalker_5"
+character_profile     = lim_enemy_sniper_stalker
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_roof_sniper_5_logic.ltx
+
+[lim_enemy_sniper_stalker_6]:stalker
+$spawn                     = "respawn\lim_enemy_sniper_stalker_6"
+character_profile     = lim_enemy_sniper_stalker
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_roof_sniper_6_logic.ltx
+
+;*********** square enemy *******************
+
+[lim_enemy_stalker_window]:stalker
+$spawn                     = "respawn\lim_enemy_stalker_window"
+character_profile     = lim_stalker_enemy
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_square_window_enemy.ltx
+
+[lim_square_enemy_assaulter]:stalker
+$spawn                     = "respawn\lim_square_enemy_assaulter"
+character_profile     = lim_stalker_enemy
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_square_enemy_logic.ltx
+
+;*********** construction enemy *******************
+
+[lim_construction_enemy_1]:stalker
+$spawn                     = "respawn\lim_construction_enemy_1"
+character_profile     = lim_stalker_enemy
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_construction_enemy_1_logic.ltx
+
+[lim_construction_enemy_2]:stalker
+$spawn                     = "respawn\lim_construction_enemy_2"
+character_profile     = lim_stalker_enemy
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_construction_enemy_2_logic.ltx
+
+[lim_construction_enemy_3]:stalker
+$spawn                     = "respawn\lim_construction_enemy_3"
+character_profile     = lim_stalker_enemy
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_construction_enemy_3_logic.ltx
+
+[lim_construction_enemy_4]:stalker
+$spawn                     = "respawn\lim_construction_enemy_4"
+character_profile     = lim_stalker_enemy
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_construction_enemy_4_logic.ltx
+
+[lim_construction_enemy_5]:stalker
+$spawn                     = "respawn\lim_construction_enemy_5"
+character_profile     = lim_stalker_enemy
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_construction_enemy_5_logic.ltx
+
+[lim_construction_enemy_6]:stalker
+$spawn                     = "respawn\lim_construction_enemy_6"
+character_profile     = lim_stalker_enemy
+spec_rank = veteran
+community = monolith
+custom_data = scripts\limansk\lim_construction_enemy_6_logic.ltx
+
+;********* test ****************
+
+[lim_test_stalker_1]:stalker
+$spawn                     = "respawn\lim_test_stalker_1"
+character_profile     = sim_default_stalker_0
+custom_data = scripts\test_logic\test_logic1.ltx
+
+[lim_test_stalker_2]:stalker
+$spawn                     = "respawn\lim_test_stalker_2"
+character_profile     = sim_default_stalker_1
+custom_data = scripts\test_logic\test_logic2.ltx
+
+[lim_test_stalker_3]:stalker
+$spawn                     = "respawn\lim_test_stalker_3"
+character_profile     = sim_default_stalker_2
+custom_data = scripts\test_logic\test_logic3.ltx
+
+[lim_test_stalker_4]:stalker
+$spawn                     = "respawn\lim_test_stalker41"
+character_profile     = sim_default_stalker_3
+custom_data = scripts\test_logic\test_logic4.ltx
+
+[lim_test_stalker_5]:stalker
+$spawn                     = "respawn\lim_test_stalker_5"
+character_profile     = sim_default_stalker_4
+custom_data = scripts\test_logic\test_logic5.ltx
+
+[test_stalker_dual_weapon]:stalker
+$spawn                     = "respawn\test_stalker_dual_weapon"
+character_profile     = test_stalker_dual_weapon
+max_item_mass				= 10000.0
+use_single_item_rule		= false

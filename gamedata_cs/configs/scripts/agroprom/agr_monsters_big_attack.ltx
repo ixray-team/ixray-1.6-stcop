@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle@line_0
+
+[sr_idle@line_0]
+on_actor_in_zone = agr_smart_terrain_4_4_def | sr_idle@line_1
+
+[sr_idle@line_1]
+on_info = sr_idle@line_3 %+agr_monsters_big_attack%
+
+[sr_idle@line_3]

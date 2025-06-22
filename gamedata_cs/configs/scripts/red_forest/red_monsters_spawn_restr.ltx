@@ -1,0 +1,16 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {!squad_exist(red_snork_dangeon_keepers_2) =smart_squad_population(monster:red_smart_terrain_monsters:2)} sr_idle@spawn_monster_1 %=create_squad(red_snork_dangeon_keepers_2:red_smart_terrain_monsters)%
+
+[sr_idle@spawn_monster_1]
+on_game_timer = 3000 | {!squad_exist(red_snork_dangeon_keepers_2) =smart_squad_population(monster:red_smart_terrain_monsters:2)} sr_idle@spawn_monster_2 %=create_squad(red_snork_dangeon_keepers_2:red_smart_terrain_monsters)%
+;on_info = {=actor_in_zone(red_smart_terrain_monsters_defence) !squad_exist(red_snork_dangeon_keepers_1) !smart_squad_population(monster:red_smart_terrain_monsters:3)} %=create_squad(red_snork_dangeon_keepers_1:red_smart_terrain_monsters)%
+
+[sr_idle@spawn_monster_2]
+on_game_timer = 3000 | {!squad_exist(red_snork_dangeon_keepers_2) =smart_squad_population(monster:red_smart_terrain_monsters:2)} sr_idle@spawn_monster_3 %=create_squad(red_snork_dangeon_keepers_2:red_smart_terrain_monsters)%
+;on_info = {=actor_in_zone(red_smart_terrain_monsters_defence) !squad_exist(red_snork_dangeon_keepers_1) !smart_squad_population(monster:red_smart_terrain_monsters:3)} %=create_squad(red_snork_dangeon_keepers_1:red_smart_terrain_monsters)%
+
+[sr_idle@spawn_monster_3]
+on_game_timer = 9000 | {!squad_exist(red_snork_dangeon_keepers_2) =smart_squad_population(monster:red_smart_terrain_monsters:2)} sr_idle@spawn_monster_2 %=create_squad(red_snork_dangeon_keepers_2:red_smart_terrain_monsters)%

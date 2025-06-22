@@ -1,0 +1,50 @@
+[meet]
+meet_state 		= 3|nil@nil
+victim			= 3|actor
+sound_start 	= gar_bandit_barman_meet
+sound_stop 		= gar_bandit_barman_meet_bye
+use_wpn	= true
+use = true
+quest_npc = true
+
+[logic]
+active = walker@barman
+level_spot = quest_npc
+;suitable = {=check_npc_name(gar_bandit_barman)}
+;prior = 130
+trade = misc\trade\trade_barmen_all.ltx
+
+[walker@barman]
+path_walk = gar_smart_terrain_3_5_bandit_barman_walk
+path_look = gar_smart_terrain_3_5_bandit_barman_look
+def_state_standing = wait
+on_signal = turn_end | smartcover@lean_on_bar_fire ;smartcover@lean_on_bar_idle
+meet = meet
+
+;[smartcover@lean_on_bar_idle]
+;cover_name = gar_smart_cover_bandit_barman_lead_stand_lean_on_bar
+;loophole_name = lead_stand_lean_on_bar
+;cover_state = idle_target
+;on_timer = 15000 | {~33} smartcover@lean_on_bar_lookout, {~66} smartcover@lean_on_bar_fire, smartcover@lean_on_bar_fire_no_lookout
+;meet = meet
+
+;[smartcover@lean_on_bar_lookout]
+;cover_name = gar_smart_cover_bandit_barman_lead_stand_lean_on_bar
+;loophole_name = lead_stand_lean_on_bar
+;cover_state = lookout_target
+;on_timer = 15000 | {~33} smartcover@lean_on_bar_fire, {~66} smartcover@lean_on_bar_fire_no_lookout, smartcover@lean_on_bar_idle
+;meet = meet
+
+[smartcover@lean_on_bar_fire]
+cover_name = gar_smart_cover_bandit_barman_lead_stand_lean_on_bar
+loophole_name = lead_stand_lean_on_bar
+cover_state = fire_target
+on_timer = 15000 | smartcover@lean_on_bar_fire_no_lookout ;{~33} ;, {~66} smartcover@lean_on_bar_idle, smartcover@lean_on_bar_lookout
+meet = meet
+
+[smartcover@lean_on_bar_fire_no_lookout]
+cover_name = gar_smart_cover_bandit_barman_lead_stand_lean_on_bar
+loophole_name = lead_stand_lean_on_bar
+cover_state = fire_no_lookout_target
+on_timer = 15000 | smartcover@lean_on_bar_fire ;{~33} smartcover@lean_on_bar_idle, {~66} smartcover@lean_on_bar_lookout,
+meet = meet

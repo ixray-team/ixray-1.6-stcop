@@ -1,0 +1,79 @@
+-- Деньги для диггера на барахолке
+local money_for_digger = 2000
+
+-- Награды за квесты
+
+function reward_for_killer_pseudodogs(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "kolbasa")
+end
+
+function reward_for_old_pda(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_9x19_pbp", 2)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "vodka", 2)
+end
+
+function reward_for_money(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "medkit_scientic")
+end
+
+function reward_for_flea_market(first_speaker, second_speaker)
+	dialogs.relocate_money(first_speaker, 1000, out)
+end
+
+function reward_before_attack(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_12x76_dart", 5)
+end
+
+-- Функции для передачи денег за медкит
+
+function has_money_for_digger(first_speaker, second_speaker)
+	return first_speaker:money() >= money_for_digger
+end
+
+function hasnt_money_for_digger(first_speaker, second_speaker)
+	return has_money_for_digger(first_speaker, second_speaker) == false
+end
+
+function give_money_to_digger(first_speaker, second_speaker)
+	dialogs.relocate_money(second_speaker, money_for_digger, out)
+end
+
+function is_digger_fighters_alive(first_speaker, second_speaker)
+	return xr_conditions.squad_exist(gar_digger_fighters)
+end
+
+function is_digger_fighters_dead(first_speaker, second_speaker)
+	return is_digger_fighters_alive == false
+end
+
+function is_dark_night(first_speaker, second_speaker)
+    return level.get_time_hours() < 3 or level.get_time_hours() > 22
+end  
+
+function isnt_dark_night(first_speaker, second_speaker)
+	return is_dark_night(first_speaker, second_speaker) == false
+end
+
+function is_day(first_speaker, second_speaker)
+	return level.get_time_hours() >= 6 and level.get_time_hours() < 21
+end
+
+function isnt_day(first_speaker, second_speaker)
+	return is_day(first_speaker, second_speaker) == false
+end
+
+function give_old_pda(first_speaker, second_speaker)
+	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_old")
+end
+
+function if_actor_has_old_pda(first_speaker, second_speaker)
+	return first_speaker:object("device_pda_old") ~= nil
+end
+
+function if_actor_hasnt_old_pda(first_speaker, second_speaker)
+	return not if_actor_has_old_pda(first_speaker, second_speaker)
+end
+
+function give_traitor_pda(first_speaker, second_speaker)
+	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_garbage_traitor")
+end

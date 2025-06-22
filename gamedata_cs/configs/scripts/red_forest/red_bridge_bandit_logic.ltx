@@ -1,0 +1,528 @@
+;*****************************
+;********* bandit1 ***********
+
+[logic@work1]
+active = walker@enter_work1
+suitable = {=check_npc_name(red_bridge_renegade) +red_bridge_scene_begin} true
+on_death = death
+
+[death]
+on_info = %+red_bridge_bandit_attacked%
+
+;***** выходит из точки спауна *****
+[walker@enter_work1]
+out_restr = red_bridge_bandit_enter_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_1_walk
+path_look = enter_1_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = action | remark@actor_hunt_work1
+on_info = {-red_bridge_bandit_enter_true} walker@skirmish_fire_work1
+
+[remark@actor_hunt_work1]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 50 | walker@enter2_fire_work1
+
+[walker@enter2_fire_work1]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_1_walk
+path_look = enter_1_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_game_timer = 100 | walker@skirmish_fire_work1
+
+[walker@f1_work1]
+out_restr = red_bridge_fire_restr
+path_walk = f1_1_walk
+path_look = f1_1_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_allyes_skirmish} walker@skirmish_fire_work1
+
+[walker@skirmish_fire_work1]
+out_restr = red_bridge_bandit_skirmish_restr
+path_walk = skirmish_1_walk
+path_look = skirmish_1_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_down_done} walker@fire_free_work1
+on_info2 = {=hit_by_actor} remark@actor_hunt2_work1 %+red_bridge_bandit_attacked%
+on_info3 = {+red_bridge_bandit_attacked} remark@actor_hunt2_work1
+on_game_timer = 200 | remark@actor_hunt2_work1
+
+[remark@actor_hunt2_work1]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 150 | {!see_actor} walker@skirmish_fire_work1 %-red_bridge_bandit_attacked%
+
+[walker@fire_free_work1]
+out_restr = red_bridge_attack_restr
+path_walk = skirmish_1_walk
+path_look = skirmish_1_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+;*****************************
+;********* bandit2 ***********
+
+[logic@work2]
+active = walker@enter_work2
+suitable = {=check_npc_name(red_bridge_renegade) +red_bridge_scene_begin} true
+on_death = death
+
+;***** выходит из точки спауна *****
+[walker@enter_work2]
+out_restr = red_bridge_bandit_enter_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_2_walk
+path_look = enter_2_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = action | remark@actor_hunt_work2
+on_info = {-red_bridge_bandit_enter_true} walker@skirmish_fire_work2
+
+[remark@actor_hunt_work2]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 50 | walker@enter2_fire_work2
+
+[walker@enter2_fire_work2]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_2_walk
+path_look = enter_2_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_game_timer = 100 | walker@skirmish_fire_work2
+
+[walker@f1_work2]
+out_restr = red_bridge_fire_restr
+path_walk = f1_2_walk
+path_look = f1_2_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_allyes_skirmish} walker@skirmish_fire_work2
+
+[walker@skirmish_fire_work2]
+out_restr = red_bridge_bandit_skirmish_restr
+path_walk = skirmish_2_walk
+path_look = skirmish_2_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_down_done} walker@fire_free_work2
+on_info2 = {=hit_by_actor} remark@actor_hunt2_work2 %+red_bridge_bandit_attacked%
+on_info3 = {+red_bridge_bandit_attacked} remark@actor_hunt2_work2
+on_game_timer = 200 | remark@actor_hunt2_work2
+
+[remark@actor_hunt2_work2]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true
+anim = threat_fire
+target = actor
+on_game_timer = 150 | {!see_actor} walker@skirmish_fire_work2 %-red_bridge_bandit_attacked%
+
+[walker@fire_free_work2]
+out_restr = red_bridge_attack_restr
+path_walk = skirmish_2_walk
+path_look = skirmish_2_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+;*****************************
+;********* bandit3 ***********
+
+[logic@work3]
+active = walker@enter_work3
+suitable = {=check_npc_name(red_bridge_renegade) +red_bridge_scene_begin} true
+on_death = death
+
+;***** выходит из точки спауна *****
+[walker@enter_work3]
+out_restr = red_bridge_bandit_enter_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_3_walk
+path_look = enter_3_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = action | remark@actor_hunt_work3
+on_info = {-red_bridge_bandit_enter_true} walker@skirmish_fire_work3
+
+[remark@actor_hunt_work3]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 50 | walker@enter2_fire_work3
+
+[walker@enter2_fire_work3]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_3_walk
+path_look = enter_3_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_game_timer = 100 | walker@skirmish_fire_work3
+
+[walker@f1_work3]
+out_restr = red_bridge_fire_restr
+path_walk = f1_3_walk
+path_look = f1_3_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_allyes_skirmish} walker@skirmish_fire_work3
+
+[walker@skirmish_fire_work3]
+out_restr = red_bridge_bandit_skirmish_restr
+path_walk = skirmish_3_walk
+path_look = skirmish_3_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_down_done} walker@fire_free_work3
+on_info1 = {=hit_by_actor} remark@actor_hunt2_work3 %+red_bridge_bandit_attacked%
+on_info3 = {+red_bridge_bandit_attacked} remark@actor_hunt2_work3
+on_game_timer = 200 | remark@actor_hunt2_work3
+
+[remark@actor_hunt2_work3]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 150 | {!see_actor} walker@skirmish_fire_work3 %-red_bridge_bandit_attacked%
+
+[walker@fire_free_work3]
+out_restr = red_bridge_attack_restr
+path_walk = skirmish_3_walk
+path_look = skirmish_3_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+;*****************************
+;********* bandit4 ***********
+
+[logic@work4]
+active = walker@enter_work4
+suitable = {=check_npc_name(red_bridge_renegade) +red_bridge_scene_begin} true
+on_death = death
+
+;***** выходит из точки спауна *****
+[walker@enter_work4]
+out_restr = red_bridge_bandit_enter_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_4_walk
+path_look = enter_4_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = action | remark@actor_hunt_work4
+on_info = {-red_bridge_bandit_enter_true} walker@skirmish_fire_work4
+
+[remark@actor_hunt_work4]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 50 | walker@enter2_fire_work4
+
+[walker@enter2_fire_work4]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_4_walk
+path_look = enter_4_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_game_timer = 100 | walker@skirmish_fire_work4
+
+[walker@f1_work4]
+out_restr = red_bridge_fire_restr
+path_walk = f1_4_walk
+path_look = f1_4_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_allyes_skirmish} walker@skirmish_fire_work4
+
+[walker@skirmish_fire_work4]
+out_restr = red_bridge_bandit_skirmish_restr
+path_walk = skirmish_4_walk
+path_look = skirmish_4_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_down_done} walker@fire_free_work4
+on_info2 = {=hit_by_actor} remark@actor_hunt2_work4 %+red_bridge_bandit_attacked%
+on_info3 = {+red_bridge_bandit_attacked} remark@actor_hunt2_work4
+on_game_timer = 200 | remark@actor_hunt2_work4
+
+[remark@actor_hunt2_work4]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 150 | {!see_actor} walker@skirmish_fire_work4 %-red_bridge_bandit_attacked%
+
+[walker@fire_free_work4]
+out_restr = red_bridge_attack_restr
+path_walk = skirmish_4_walk
+path_look = skirmish_4_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+;*****************************
+;********* bandit5 ***********
+
+[logic@work5]
+active = walker@enter_work5
+suitable = {=check_npc_name(red_bridge_renegade) +red_bridge_scene_begin} true
+on_death = death
+
+;***** выходит из точки спауна *****
+[walker@enter_work5]
+out_restr = red_bridge_bandit_enter_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_5_walk
+path_look = enter_5_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = action | remark@actor_hunt_work5
+on_info = {-red_bridge_bandit_enter_true} walker@f1_work5
+
+[remark@actor_hunt_work5]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 50 | walker@enter2_fire_work5
+
+[walker@enter2_fire_work5]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_5_walk
+path_look = enter_5_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_game_timer = 100 | walker@f1_work5
+
+[walker@f1_work5]
+out_restr = red_bridge_fire_restr
+path_walk = f1_1_walk
+path_look = f1_1_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_allyes_skirmish} walker@skirmish_fire_work5
+
+[walker@skirmish_fire_work5]
+out_restr = red_bridge_bandit_skirmish_restr
+path_walk = skirmish_5_walk
+path_look = skirmish_5_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_down_done} walker@fire_free_work5
+on_info2 = {=hit_by_actor} remark@actor_hunt2_work5 %+red_bridge_bandit_attacked%
+on_info3 = {+red_bridge_bandit_attacked} remark@actor_hunt2_work5
+on_game_timer = 200 | remark@actor_hunt2_work5
+
+[remark@actor_hunt2_work5]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 150 | {!see_actor} walker@skirmish_fire_work5 %-red_bridge_bandit_attacked%
+
+[walker@fire_free_work5]
+out_restr = red_bridge_attack_restr
+path_walk = skirmish_5_walk
+path_look = skirmish_5_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+;*****************************
+;********* bandit6 ***********
+
+[logic@work6]
+active = walker@enter_work6
+suitable = {=check_npc_name(red_bridge_renegade) +red_bridge_scene_begin} true
+on_death = death
+
+;***** выходит из точки спауна *****
+[walker@enter_work6]
+out_restr = red_bridge_bandit_enter_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_6_walk
+path_look = enter_6_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = action | remark@actor_hunt_work6
+on_info = {-red_bridge_bandit_enter_true} walker@f1_work6
+
+[remark@actor_hunt_work6]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 50 | walker@enter2_fire_work6
+
+[walker@enter2_fire_work6]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_6_walk
+path_look = enter_6_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_game_timer = 100 | walker@f1_work6
+
+[walker@f1_work6]
+out_restr = red_bridge_fire_restr
+path_walk = f1_2_walk
+path_look = f1_2_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_allyes_skirmish} walker@skirmish_fire_work6
+
+[walker@skirmish_fire_work6]
+out_restr = red_bridge_bandit_skirmish_restr
+path_walk = skirmish_6_walk
+path_look = skirmish_6_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+red_bridge_down_done} walker@fire_free_work6
+on_info1 = {=hit_by_actor} remark@actor_hunt2_work6 %+red_bridge_bandit_attacked%
+on_info3 = {+red_bridge_bandit_attacked} remark@actor_hunt2_work6
+on_game_timer = 200 | remark@actor_hunt2_work6
+
+[remark@actor_hunt2_work6]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 150 | {!see_actor} walker@skirmish_fire_work6 %-red_bridge_bandit_attacked%
+
+[walker@fire_free_work6]
+out_restr = red_bridge_attack_restr
+path_walk = skirmish_6_walk
+path_look = skirmish_6_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+;*****************************
+;********* bandit7 ***********
+
+[logic@work7]
+active = walker@enter_work7
+suitable = {=check_npc_name(red_bridge_renegade) +red_bridge_scene_begin} true
+
+;***** выходит из точки спауна *****
+[walker@enter_work7]
+out_restr = red_bridge_bandit_enter_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_6_walk
+path_look = enter_6_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = action | remark@actor_hunt_work7
+on_info = {-red_bridge_bandit_enter_true} walker@f1_work7
+
+[remark@actor_hunt_work7]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 50 | walker@enter2_fire_work7
+
+[walker@enter2_fire_work7]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_6_walk
+path_look = enter_6_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_game_timer = 100 | walker@f1_work7
+
+[walker@f1_work7]
+out_restr = red_bridge_fire_restr
+path_walk = f1_3_walk
+path_look = f1_3_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+;*****************************
+;********* bandit8 ***********
+
+[logic@work8]
+active = walker@enter_work8
+suitable = {=check_npc_name(red_bridge_renegade) +red_bridge_scene_begin} true
+
+;***** выходит из точки спауна *****
+[walker@enter_work8]
+out_restr = red_bridge_bandit_enter_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_6_walk
+path_look = enter_6_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = action | remark@actor_hunt_work8
+on_info = {-red_bridge_bandit_enter_true} walker@f1_work8
+
+[remark@actor_hunt_work8]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_game_timer = 50 | walker@enter2_fire_work8
+
+[walker@enter2_fire_work8]
+out_restr = red_bridge_attack_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_east_restr)}
+path_walk = enter_6_walk
+path_look = enter_6_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_game_timer = 100 | walker@f1_work8
+
+[walker@f1_work8]
+out_restr = red_bridge_fire_restr
+path_walk = f1_4_walk
+path_look = f1_4_fire_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault

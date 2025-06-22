@@ -1,0 +1,13 @@
+[logic@squad_commander]
+active = walker@squad_commander
+suitable = {-esc_support_squad_attack} true, false
+
+[walker@squad_commander]
+path_walk = squad_commander_walk
+path_look = squad_commander_look
+meet = meet@squad_commander
+
+[meet@squad_commander]
+meet_dialog = esc_stalker_support_attack_atp
+use	= true
+use_wpn	= false

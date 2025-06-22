@@ -1,0 +1,14 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+yan_go_to_red_forest_cut6 -red_strelok_task_end} sr_idle@pursuit_cam_end %=stop_sim =run_postprocess(red_fade_out) +yan_end_quest_line +red_pursuit_boars_attack +red_pursuit_scene_begin =disable_ui =run_cam_effector_global(scenario_cam\cam_red_pursuit) =teleport_actor(red_pursuit_cameff_way:red_pursuit_cameff_look)%
+on_info2 = {+red_strelok_task_end} sr_idle@nil
+
+[sr_idle@pursuit_cam_end]
+on_signal = cameff_end | sr_idle@start_sim %=enable_ui%
+
+[sr_idle@start_sim]
+on_info = {+red_pursuit_task_end} sr_idle@nil %=start_sim%
+
+[sr_idle@nil]

@@ -1,0 +1,596 @@
+-- file:	UI_MP_MAIN.SCRIPT
+-- description:	MP dialog with Join Game/Create Server/Options
+-- created:	26.04.2005
+-- author:	Serge Vynnychenko
+-- mail:	narrator@gsc-game.kiev.ua
+--
+-- copyright 2005 GSC Game World
+
+class "mp_main" (CUIScriptWnd)
+
+function mp_main:__init() super()
+   self:SetFont(GetFontMedium()) --set base font for dialog.
+   
+   self:InitControls()
+   self:InitCallBacks()
+   self.tab:SetActiveTab("client")
+   
+end
+
+function mp_main:__finalize()
+	
+end
+
+function mp_main:InitControls()	
+
+	self:SetWndRect			(Frect():set(0,0,1024,768))
+
+	local xml				= CScriptXmlInit()
+	xml:ParseFile			("ui_mm_mp.xml")
+
+--	self.map_pic			= xml:InitStatic("static_map_pic", self)
+	local bk				= xml:InitStatic("background", self)
+--	self.map_info			= xml:InitMapInfo("cap_map_info", bk)
+	self:Enable				(true)
+	local wrk_area			= CUIWindow()
+	xml:InitWindow			("wrk_area", 0, wrk_area)
+	wrk_area:SetAutoDelete	(true)
+	self:AttachChild		(wrk_area)
+		
+	xml:InitAnimStatic		("anim_00", wrk_area)
+	
+	xml:InitStatic			("cap_multiplayer",wrk_area)
+	xml:InitStatic			("static_player_name",wrk_area)
+--	self.player_name		= xml:InitEditBox("edit_player_name", wrk_area)
+	self.player_name		= xml:InitMPPlayerName("edit_player_name", wrk_area)
+	xml:InitStatic			("cap_cd_key",wrk_area)
+	self.cdkey				= xml:InitCDkey("edit_cd_key", wrk_area)
+	self:Register			(self.cdkey, "edit_cd_key")
+	
+		
+	self.dlg_join				= ui_mm_mp_join.mp_join()
+	self.dlg_join:InitControls	(0,0, xml, self)
+	wrk_area:AttachChild		(self.dlg_join)
+	
+	self.dlg_options			= ui_mm_mp_options.mp_options()
+	self.dlg_options:InitControls(0,0, xml, self)
+	self.dlg_options:Show		(false)
+	wrk_area:AttachChild		(self.dlg_options)
+
+	self.dlg_server			= ui_mm_mp_server.mp_server()
+	self.dlg_server:InitControls(0,0, xml, self)
+	self.dlg_server:Show	(false)
+	wrk_area:AttachChild	(self.dlg_server)
+
+	btn						= xml:Init3tButton("btn_create", wrk_area)
+	self:Register			(btn, "btn_create")
+	self.btn_create			= btn
+	btn:Enable				(false)
+	
+	btn						= xml:Init3tButton("btn_join", wrk_area)
+	self:Register			(btn, "btn_join")
+	self.btn_join			= btn
+	
+	btn						= xml:Init3tButton("btn_cancel", wrk_area)
+	self:Register			(btn, "btn_cancel")
+	
+	self.tab				= xml:InitTab("tab",wrk_area)
+	self:Register			(self.tab, "tab")
+	
+	self.message_box		= CUIMessageBoxEx()
+	self:Register			(self.message_box, "msg_box")	
+	
+	
+	self.cap_download				= xml:InitStatic		("download_static",		wrk_area)
+	self.text_download				= xml:InitStatic		("download_text",		wrk_area)
+	self.download_progress			= xml:InitProgressBar	("progress_download",	wrk_area)
+	self.btn_cancel_download		= xml:Init3tButton		("btn_cancel_download", wrk_area)
+	self:Register					(self.btn_cancel_download, "btn_cancel_download")
+	
+	xml:InitStatic					("static_gs_logo",self)
+
+	local _ver = xml:InitStatic		("static_version",self)
+	local mm						= main_menu.get_main_menu()
+	_ver:SetText					("ver. " .. mm:GetGSVer())
+
+    self.player_name:SetText        ( mm:GetPlayerName() )
+    self.cdkey:SetText              ( mm:GetCDKey() )
+
+end
+
+function mp_main:UpdateControls()
+	local opt = COptionsManager()
+	opt:SetCurrentValues("mm_mp_client")
+	opt:SetCurrentValues("mm_mp_server")
+	opt:SetCurrentValues("mm_mp_srv_filter")
+
+	self.dlg_options:SetGameMode(self.map_list:GetCurGameType(), self)
+
+	local mm					= main_menu.get_main_menu()
+	self.player_name:SetText	( mm:GetPlayerName() )
+	self.cdkey:SetText			( mm:GetCDKey() )
+	
+--	self:OnGameModeChange()
+	
+	if( level.present() ) then
+		self.btn_create:Enable	(false)
+		self.btn_join:Enable	(false)
+		self.btn_direct_ip:Enable(false)
+		self.tab:Enable			(false)
+		self.cdkey:Enable		(false)
+		self.player_name:Enable	(false)
+	end
+end
+
+function mp_main:InitCallBacks()
+	self:AddCallback("btn_cancel",	ui_events.BUTTON_CLICKED,	self.OnBtn_Calncel,	self)
+	self:AddCallback("btn_create",	ui_events.BUTTON_CLICKED,	self.OnBtn_Create,	self)
+	self:AddCallback("btn_join",	ui_events.BUTTON_CLICKED,	self.OnBtn_Join,	self)
+	
+	self:AddCallback("check_empty",			ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
+	self:AddCallback("check_full",			ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
+	self:AddCallback("check_with_pass",		ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
+	self:AddCallback("check_without_pass",	ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
+	self:AddCallback("check_without_ff",	ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
+	self:AddCallback("check_with_battleye",	ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
+	self:AddCallback("check_listen_servers",ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)	
+	
+	self:AddCallback("btn_direct_ip",		ui_events.BUTTON_CLICKED,	self.OnBtn_DirectIP,self)
+	
+	-- ui_mm_mp_options	
+	self:AddCallback("spin_game_mode",		ui_events.BUTTON_CLICKED,	self.OnGameModeChange,self)	
+	
+	self:AddCallback("tab",					ui_events.TAB_CHANGED,		self.OnTabChange,	self)	
+	-- ui_mm_mp_join
+	self:AddCallback("btn_refresh",			ui_events.BUTTON_CLICKED,	self.OnBtn_Refresh,	self)
+	self:AddCallback("btn_quick_refresh",	ui_events.BUTTON_CLICKED,	self.OnBtn_RefreshQuick,self)
+	self:AddCallback("btn_server_info",		ui_events.BUTTON_CLICKED,	self.OnBtn_SrvInfo,self)	
+	self:AddCallback("radio_net_conn",		ui_events.TAB_CHANGED,		self.OnRadio_NetChanged,self)	
+	
+	-- msg_box
+	self:AddCallback("msg_box",				ui_events.MESSAGE_BOX_YES_CLICKED,			self.OnDirectIP_yes,self)
+	
+	self:AddCallback("edit_cd_key",			ui_events.EDIT_TEXT_COMMIT,	self.OnCDKeyChanged, self)
+	self:AddCallback("edit_player_name",	ui_events.EDIT_TEXT_COMMIT,	self.OnPlayerNameChanged, self)
+	
+	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
+end
+
+function mp_main:OnBtn_DirectIP()
+
+	self.message_box:InitMessageBox("message_box_direct_ip")
+	self:GetHolder():start_stop_menu(self.message_box,true)
+end
+
+function mp_main:OnDirectIP_yes()
+
+	if (string.len(self.message_box:GetHost()) ~= 0) then
+		local cmd = "start client(" .. self.message_box:GetHost() .. "/name=" .. self.player_name:GetText() .. "/psw=" .. self.message_box:GetPassword() .. ")"
+		local console = get_console()
+		console:execute(cmd)
+	end
+
+end
+
+function mp_main:OnCDKeyChanged()
+	local cmdstr = ""
+	tmp	= self.cdkey:GetText()
+
+	if tmp=="" then
+	 tmp = "clear"
+	end
+
+	cmdstr = "cdkey " .. tmp
+	local console = get_console()	
+	console:execute(cmdstr)
+end
+
+function mp_main:OnPlayerNameChanged()
+	local tmp	= self.player_name:GetText()
+	local cmdstr = "name " .. tmp
+	local console = get_console()	
+	console:execute(cmdstr)
+end
+
+function mp_main:OnBtn_SrvInfo()
+	self.server_list:ShowServerInfo()
+end
+
+function mp_main:OnGameModeChange()
+	log("mp_main:OnGameModeChange")
+	self.map_list:OnModeChange()
+--	self.dlg_options:SetGameMode(self.map_list:GetCurGameType(), self)
+end
+
+function mp_main:OnFilterChange()
+	local sf = SServerFilters()
+	sf.empty 			= self.filters.btn_check_empty:GetCheck()
+	sf.full				= self.filters.btn_check_full:GetCheck()
+	sf.with_pass		= self.filters.btn_check_with_pass:GetCheck()
+	sf.without_pass		= self.filters.btn_check_without_pass:GetCheck()
+	sf.without_ff		= self.filters.btn_check_without_ff:GetCheck()
+--	sf.with_battleye	= self.filters.btn_check_with_battleye:GetCheck()
+	sf.with_battleye	= false
+	sf.listen_servers	= self.filters.btn_check_listen_servers:GetCheck()
+	
+	self.server_list:SetFilters(sf)
+
+end
+
+function mp_main:OnTabChange()
+	self.dlg_join:Show(false)
+	self.dlg_options:Show(false)
+	self.dlg_server:Show(false)
+	self.btn_join:Enable(false)
+	self.btn_create:Enable(false)
+
+	local i = self.tab:GetActiveId()
+	if i == "client" then
+		self.dlg_join:Show(true)
+		self.btn_join:Enable(true)
+	elseif i == "options" then
+		self.dlg_options:Show(true)
+	else
+		self.map_list:LoadMapList()
+		self.map_list:OnModeChange()
+		self.dlg_server:Show(true)
+		self.btn_create:Enable(true)
+	end
+end
+
+function mp_main:OnRadio_NetChanged()
+	local i = self.radio_net_connection:GetActiveId()
+	self.server_list:NetRadioChanged(i~="internet")
+	
+	if i == "internet" then
+		self.server_list:RefreshList(false)
+	else
+		self.server_list:RefreshList(true)
+	end
+	
+	self:OnFilterChange()
+end
+
+function mp_main:OnBtn_Refresh()
+	local i = self.radio_net_connection:GetActiveId()
+	if i == "internet" then
+		self.server_list:RefreshList(false)
+	else
+		self.server_list:RefreshList(true)
+	end
+	self:OnFilterChange()
+
+end
+
+function mp_main:OnBtn_RefreshQuick()
+	self.server_list:RefreshQuick()
+end
+
+function mp_main:OnBtn_Calncel()
+	local opt = COptionsManager()
+	opt:SaveValues("mm_mp_client")
+	opt:SaveValues("mm_mp_server")
+	opt:SaveValues("mm_mp_srv_filter")
+
+	self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
+	self:GetHolder():start_stop_menu	(self,true)
+
+	self.owner:Show						(true)
+end
+
+function mp_main:OnBtn_Create()
+	if self.map_list:IsEmpty() then
+		self.message_box:InitMessageBox("select_map")
+		self:GetHolder():start_stop_menu(self.message_box,true)
+		return 
+	end
+	local mm = main_menu.get_main_menu()
+	if false == mm:ValidateCDKey()	then
+	 return
+	end
+	
+	local opt = COptionsManager()
+	local console = get_console()	
+	opt:SaveValues("mm_mp_server")
+	opt:SaveValues("mm_mp_client")
+	opt:SaveValues("mm_mp_srv_filter")
+	self.map_list:SaveMapList()
+	self:GatherServerData()
+	if self.check_dedicated:GetCheck() then
+		self.map_list:StartDedicatedServer()
+	else
+		local command = self.map_list:GetCommandLine(self.player_name:GetText())
+		console:execute("main_menu off")
+		console:execute(command)
+	end
+end
+
+function mp_main:GatherServerData()
+	local cmdstr = ""
+	local tmp;
+	
+	-- server name ------------------------------------------------------------------
+	tmp	= self.edit_server_name:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = "/hname=" .. tmp
+	end
+	-- password ---------------------------------------------------------------------
+	tmp = self.edit_password:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/psw=" .. tmp
+	end
+	-- max players ------------------------------------------------------------------
+	tmp = self.spin_max_players:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/maxplayers=" .. tmp
+	end
+	-- public server ----------------------------------------------------------------
+	tmp = self.check_public_server:GetCheck()
+	if true == tmp then
+		cmdstr = cmdstr .. "/public=1"
+	end
+
+	tmp = self.check_use_battleye:GetCheck()
+    tmp = tmp and self.check_public_server:GetCheck()
+	if true == tmp then
+		cmdstr = cmdstr .. "/battleye=1"
+	else
+		cmdstr = cmdstr .. "/battleye=0"
+	end
+
+--   tmp = self.check_battleye_auto_update:GetCheck()
+--	if true == tmp then
+--		cmdstr = cmdstr .. "/battleye_update=1"
+--	else
+--		cmdstr = cmdstr .. "/battleye_update=0"
+--	end
+
+	tmp = self.spin_max_ping:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/maxping=" .. tmp
+	end
+
+	-- spectator --------------------------------------------------------------------
+	if self.check_spectator:GetCheck() then
+		tmp = self.spin_spectator:GetText()
+		if string.len(tmp) > 0 then
+			cmdstr = cmdstr .. "/spectr=" .. tmp
+		end
+	end
+	
+	-- spectator options --		
+	tmp = 0;
+	if self.check_spec_freefly:GetCheck() then
+		tmp = tmp + 1
+	end
+	if self.check_spec_firsteye:GetCheck() then
+		tmp = tmp + 2
+	end
+	if self.check_spec_lookat:GetCheck() then
+		tmp = tmp + 4
+	end
+	if self.check_spec_freelook:GetCheck() then
+		tmp = tmp + 8
+	end
+	if self.check_spec_teamonly:GetCheck() then
+		tmp = tmp + 16
+	end
+	
+	cmdstr = cmdstr .. "/spectrmds=" .. tmp	
+	
+	-- allow voting ------------------------------------------------------------------
+	tmp = self.check_allow_voting:GetCheck()
+	if true == tmp then
+		cmdstr = cmdstr .. "/vote=1"
+	end
+	-- damage block ------------------------------------------------------------------
+	tmp = self.spin_damage_block:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/dmgblock=" .. tmp
+	end
+	if self.check_damage_block:GetCheck() then
+		cmdstr = cmdstr .. "/dmbi=1"
+	end
+	-- frag limit ---------------------------------------------------------------------
+	tmp = self.spin_frag_limit:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/fraglimit=" .. tmp
+	end
+	-- time limit ---------------------------------------------------------------------
+	tmp = self.spin_time_limit:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/timelimit=" .. tmp
+	end
+	-- friendly fire ------------------------------------------------------------------
+	tmp = self.spin_friendly_fire:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/ffire=" .. tmp
+	end
+	-- auto team balance --------------------------------------------------------------
+	if self.check_auto_team_balance:GetCheck() then
+		cmdstr = cmdstr .. "/abalance=1"
+	end	
+	-- auto team swap --------------------------------------------------------------
+	if self.check_auto_team_swap:GetCheck() then
+		cmdstr = cmdstr .. "/aswap=1"
+	end		
+	-- Force respawn --------------------------------------------------------------
+	if self.tab_respawn:GetActiveId() == "reinforcement" then
+		tmp = self.spin_force_respawn:GetText()
+		if string.len(tmp) > 0 then
+			cmdstr = cmdstr .. "/frcrspwn=" .. tmp
+		end
+	end
+	
+	-- ARTEFACTHUNT only ----------------------------------------------	
+	if GAME_TYPE.GAME_UNKNOWN ~= 0 then
+		if self.map_list:GetCurGameType() == GAME_TYPE.eGameIDArtefactHunt then
+			-- number of artefacts ---------------------------------------------------------
+			tmp = self.spin_artefacts_num:GetText()
+			if string.len(tmp) > 0 then
+				cmdstr = cmdstr .. "/anum=" .. tmp
+			end
+			-- aretefact delay --------------------------------------------------------------
+			tmp = self.spin_artefact_delay:GetText()
+			if string.len(tmp) > 0 then
+				cmdstr = cmdstr .. "/ardelta=" .. tmp
+			end
+			-- artefact stay ----------------------------------------------------------------
+			tmp = self.spin_artefact_stay:GetText()
+			if string.len(tmp) > 0 then
+				cmdstr = cmdstr .. "/astime=" .. tmp
+			end
+			
+			if self.tab_respawn:GetActiveId() == "artefactcapture" then -- artefact capture selected
+				cmdstr = cmdstr .. "/reinf=-1"
+			else
+				tmp = self.spin_reinforcement:GetText()
+				if string.len(tmp) > 0 then
+					cmdstr = cmdstr .. "/reinf=" .. tmp
+				end
+			end
+		end
+			-- CAPTURETHEARTEFACT only ---------------------------------------------- 
+		if self.map_list:GetCurGameType() == GAME_TYPE.eGameIDCaptureTheArtefact then
+			-- number of artefacts ---------------------------------------------------------
+			tmp = self.spin_artefacts_num:GetText()
+			if string.len(tmp) > 0 then
+				cmdstr = cmdstr .. "/anum=" .. tmp
+			end
+			
+			tmp = self.spin_reinforcement:GetText()
+			if string.len(tmp) > 0 then
+				cmdstr = cmdstr .. "/reinf=" .. tmp
+			end
+			
+			tmp = self.spin_artreturn_time:GetText()
+			if string.len(tmp) > 0 then
+				cmdstr = cmdstr .. "/artrettime=" .. tmp
+			end
+
+			if self.check_activated_return:GetCheck() then
+				cmdstr = cmdstr .. "/actret=1"
+			end
+		end
+	elseif GAME_TYPE.GAME_UNKNOWN == 0 then
+		if self.map_list:GetCurGameType() == GAME_TYPE.GAME_ARTEFACTHUNT then
+			-- number of artefacts ---------------------------------------------------------
+			tmp = self.spin_artefacts_num:GetText()
+			if string.len(tmp) > 0 then
+				cmdstr = cmdstr .. "/anum=" .. tmp
+			end
+			-- aretefact delay --------------------------------------------------------------
+			tmp = self.spin_artefact_delay:GetText()
+			if string.len(tmp) > 0 then
+				cmdstr = cmdstr .. "/ardelta=" .. tmp
+			end
+			-- artefact stay ----------------------------------------------------------------
+			tmp = self.spin_artefact_stay:GetText()
+			if string.len(tmp) > 0 then
+				cmdstr = cmdstr .. "/astime=" .. tmp
+			end
+			
+			if self.tab_respawn:GetActiveId() == "artefactcapture" then -- artefact capture selected
+				cmdstr = cmdstr .. "/reinf=-1"
+			else
+				tmp = self.spin_reinforcement:GetText()
+				if string.len(tmp) > 0 then
+					cmdstr = cmdstr .. "/reinf=" .. tmp
+				end
+			end
+		end
+	end
+	
+	-- friendly indicators --------------------------------------------------------------
+	if self.check_friendly_indicators:GetCheck() then
+		cmdstr = cmdstr .. "/fi=1" .. tmp
+	end	
+	-- friendly indicators --------------------------------------------------------------
+	if self.check_friendly_names:GetCheck() then
+		cmdstr = cmdstr .. "/fn=1" .. tmp
+	end	
+	-- anomaly time ---------------------------------------------------------------------	
+	if false == self.check_no_anmalies:GetCheck() then
+		tmp = self.spin_anomaly_time:GetText()
+		if string.len(tmp) > 0 then
+			cmdstr = cmdstr .. "/ans=1/anslen=" .. tmp
+		end
+	else
+		cmdstr = cmdstr .. "/ans=0"
+	end
+
+	-- pda hunt -------------------------------------------------------------------------
+	if self.check_pda_hunt:GetCheck() then
+		cmdstr = cmdstr .. "/pdahunt=1"
+	end	
+	
+	-- warm up time ---------------------------------------------------------------------
+	tmp = self.spin_warm_up_time:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/warmup=" .. tmp
+	end
+	-- rate of weather change -----------------------------------------------------------
+	tmp = self.spin_rate_of_change:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/etimef=" .. tmp
+	end
+		
+	self.map_list:SetServerParams(cmdstr)	
+end
+
+function mp_main:OnBtn_Join()
+	local opt = COptionsManager()
+	opt:SaveValues("mm_mp_client")
+	opt:SaveValues("mm_mp_server")
+	opt:SaveValues("mm_mp_srv_filter")
+	
+	self.server_list:SetPlayerName(self.player_name:GetText())	
+	self.server_list:ConnectToSelected()
+end
+
+function mp_main:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	
+	local bind = dik_to_bind(dik)
+	local console = get_console()
+	
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
+			self:GetHolder():start_stop_menu	(self,true)
+			self.owner:Show						(true)
+		end	
+	end
+   
+	return true
+end
+
+function mp_main:Update()
+	CUIScriptWnd.Update(self)
+	
+	local mm = main_menu.get_main_menu()
+	local sss = mm:GetPatchProgress()
+	
+	if sss:GetInProgress() then
+		self.text_download:Show					(true)
+		self.cap_download:Show					(true)
+		self.download_progress:Show				(true)
+		local _progr							= sss:GetProgress()
+		self.download_progress:SetProgressPos	(_progr)
+		local str								= string.format("%.0f%%(%s)",_progr,sss:GetFlieName())
+		self.text_download:SetText				(str)
+		self.btn_cancel_download:Show			(true)
+	else
+		self.text_download:Show					(false)
+		self.cap_download:Show					(false)
+		self.download_progress:Show				(false)
+		self.btn_cancel_download:Show			(false)
+	end
+end
+
+
+
+function mp_main:OnBtn_CancelDownload()
+	local mm = main_menu.get_main_menu()
+	mm:CancelDownload()
+end

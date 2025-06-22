@@ -1,0 +1,276 @@
+-----------------------------------------------------------------------------------
+-- Monster binding
+-----------------------------------------------------------------------------------
+
+function bind(obj)
+	printf("_bp: monster.bind: name='%s', id='%d'", obj:name(), obj:id())
+
+	-- Для спауна
+	--xr_spawner.spawn_client(obj)
+
+	local new_binder = generic_object_binder(obj)
+	obj:bind_object(new_binder)
+end
+
+local last_update = 0 -- combat
+------------------------------------------------------------------------------------
+class "generic_object_binder" (object_binder)
+
+function generic_object_binder:__init(obj) super(obj)
+	self.loaded = false
+end
+
+function generic_object_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function generic_object_binder:reinit()
+	object_binder.reinit(self)
+
+	-- У торговца нет поддержки перемещения
+	if self.object:clsid() ~= clsid.script_trader then
+		self.object:set_patrol_extrapolate_callback(generic_object_binder.extrapolate_callback, self)
+	end
+
+	db.storage[self.object:id()] = { }
+
+	self.st = db.storage[self.object:id()]
+
+	self.object:set_callback(callback.patrol_path_in_point, self.waypoint_callback, self)
+	self.object:set_callback(callback.hit,					self.hit_callback,		self)
+	self.object:set_callback(callback.death,				self.death_callback,	self)
+end
+
+function generic_object_binder:update(delta)
+	object_binder.update(self, delta)
+	if bind_stalker.to_delayed_alife_release_objects[self.object:id()] == true then
+		printf("releasing object ["..self.object:name().."]")
+		alife():release(alife():object(self.object:id()),true)
+	end
+
+    local object_alive = self.object:alive()
+	--' printf("_bp: generic_object_binder: UPDATE [name='%s' time=%d]",
+	--'	self.object:name(), time_global())
+
+	-- Апдейт торговли
+	if self.object:clsid() == clsid.script_trader then
+		trade_manager.update(self.object)
+	end
+
+	if object_alive then
+		if self.object:is_talk_enabled() then
+			self.object:set_tip_text("character_use")
+		else
+			self.object:set_tip_text("")
+		end
+		local st = db.storage[self.object:id()]
+		if st ~= nil and st.active_scheme ~= nil then
+			xr_logic.try_switch_to_another_section(self.object, st[st.active_scheme], db.actor)
+		end
+
+		-- Апдейт отряда
+		local squad = db.storage[self.object:id()].squad_obj
+		if squad ~= nil then
+			if squad.commander_id == self.object:id() then
+				squad:update()
+			end
+		end		
+	else
+		self.object:set_tip_text_default()
+	end
+
+--[[
+    self.object:info_clear()
+	if object_alive then
+		local active_section = db.storage[self.object:id()] and db.storage[self.object:id()].active_section
+		if active_section then
+			self.object:info_add("section: " .. active_section)
+		end
+		local best_enemy = self.object:best_enemy()
+		if best_enemy then
+			self.object:info_add("enemy: " .. best_enemy:name())
+		end
+		self.object:info_add(self.object:name().." ["..self.object:team().."]["..self.object:squad().."]["..self.object:group().."]")
+
+		if alife():object(self.object:id()) == nil then
+			return
+		end
+
+		local squad = db.storage[self.object:id()].squad_obj
+		if squad ~= nil then
+			self.object:info_add("squad_id: " .. squad.squad_id)
+			if squad.sim_combat_id ~= nil then
+				local sim_combat = sim_board.get_sim_board().smarts[squad.sim_combat_id].smrt.combat_manager
+				if sim_combat ~= nil then
+					self.object:info_add("sim_combat: stage[" .. sim_combat:get_squad_stage(squad).."]")
+				end
+			end
+		end
+	end
+]]
+	if self.st.active_section ~= nil then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
+	end
+end
+
+function generic_object_binder:extrapolate_callback()
+	-- Проверяем, что объект еще в онлайне
+	if db.storage[self.object:id()] == nil or
+	   db.storage[self.object:id()].object == nil
+	then
+		return
+	end
+
+
+	local cur_pt = self.object:get_current_point_index()
+    if self.object:get_script()	== false then
+       return false
+    end
+
+    local patrol_path = self.object:patrol()
+    if not level.patrol_path_exists(patrol_path) then
+		return false
+    	--abort("bind_monster:extrapolate_callback(). There is no patrol path [%s]", tostring(patrol_path))
+    end
+	if patrol(patrol_path):flags(cur_pt):get() == 0 then
+		--printf("_bp: generic_object_binder: extrapolate_callback: cur_pt = %d: true", cur_pt)
+		return true
+	end
+	--printf("_bp: generic_object_binder: extrapolate_callback: cur_pt = %d: false", cur_pt)
+	return false
+end
+
+function generic_object_binder:waypoint_callback(obj, action_type, index)
+	if self.st.active_section ~= nil then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "waypoint_callback", obj, action_type, index)
+	end
+end
+
+function generic_object_binder:death_callback(victim, who)
+	printf("stop_dead_id"..self.object:id())
+
+	if who:id() == db.actor:id() then
+		xr_statistic.addKillCount(self.object)
+		xr_statistic.inc_killed_monsters_counter()
+	end
+
+	if self.st.mob_death then
+		xr_logic.issue_event(self.object, self.st.mob_death, "death_callback", victim, who)
+	end
+
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
+	end
+	--' Наносим небольшой импульс вперед.
+	local h = hit()
+	h.draftsman = self.object
+	h.type = hit.fire_wound
+	h.direction = db.actor:position():sub(self.object:position())
+	h:bone("pelvis")
+	h.power = 1
+	h.impulse = 10
+	self.object:hit(h)
+
+	local obj_clsid = self.object:clsid()
+	if obj_clsid == clsid.poltergeist_s then
+		printf("releasing object ["..self.object:name().."]")
+	    alife():release(alife():object(self.object:name()), true)
+	end
+end
+
+function generic_object_binder:hit_callback(obj, amount, local_direction, who, bone_index)
+--	printf("HIT_CALLBACK: [%s] amount[%s]", obj:name(), amount)
+
+	if self.st.hit then
+		xr_logic.issue_event(self.object, self.st.hit, "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+
+	if amount > 0 then
+		printf("HIT_CALLBACK: %s amount=%s bone=%s who:id() = [%s] actor:id() = [%s]", obj:name(), amount, tostring(bone_index), who:id(), db.actor:id())
+     	sim_combat.hit_callback(self.object:id(),who:id())
+	end
+
+	if string.find( obj:name(), "bloodsucker_jumper") ~= nil then
+		if who:id() ~= db.actor:id() then
+						printf("bind_monster:hit_callback --- bloodsucker_health[%s],restored[%s]", tostring(obj.health), tostring(amount))
+			obj.health = obj.health + amount
+
+		end
+	end
+end
+
+function generic_object_binder:net_spawn(sobject)
+	if not object_binder.net_spawn(self, sobject) then
+		return false
+	end
+
+	if not self.object:alive() then
+		return true
+	end
+	if alife():object(self.object:id()) == nil then
+		return false
+	end
+	
+--	local pos = self.object:position()
+--	printf("net_spawn mpos[%s][%s][%s]", tostring(pos.x), tostring(pos.y), tostring(pos.z))
+
+	--' Кешируем squad
+	db.storage[self.object:id()].squad_obj = sim_board.get_sim_board().squads[alife():object(self.object:id()).squad_id]
+
+	db.add_obj(self.object)
+	if self.object:clsid() == clsid.script_trader then
+		smart_terrain.setup_gulag_and_logic_on_spawn( self.object, self.st, sobject, modules.stype_trader, self.loaded)
+	else
+		smart_terrain.setup_gulag_and_logic_on_spawn( self.object, self.st, sobject, modules.stype_mobile, self.loaded)
+	end
+
+	return true
+end
+
+function generic_object_binder:net_destroy()
+	self.object:set_callback(callback.death,				nil)
+	self.object:set_callback(callback.patrol_path_in_point, nil)
+	self.object:set_callback(callback.hit,					nil)
+    xr_sound.stop_sounds_by_id(self.object:id())
+
+	local st = db.storage[self.object:id()]
+	if st and st.active_scheme then
+		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
+	end
+
+	db.del_obj(self.object)
+	db.storage[self.object:id()] = nil
+	object_binder.net_destroy(self)
+end
+
+function generic_object_binder:reload(section)
+	object_binder.reload(self, section)
+	--printf("generic_object_binder:reload(): self.object:name()='%s'", self.object:name())
+end
+
+function generic_object_binder:net_save_relevant()
+	--printf("generic_object_binder:net_save_relevant(): self.object:name()='%s'", self.object:name())
+	return true
+end
+
+function generic_object_binder:save(packet)
+	
+	set_save_marker(packet, "save", false, "generic_object_binder")
+	object_binder.save(self, packet)
+	xr_logic.save_obj(self.object, packet)
+	if self.object:clsid() == clsid.script_trader then
+		trade_manager.save(self.object, packet)
+	end
+	set_save_marker(packet, "save", true, "generic_object_binder")
+end
+
+function generic_object_binder:load(reader)
+	self.loaded = true
+	set_save_marker(reader, "load", false, "generic_object_binder")
+	object_binder.load(self, reader)
+	xr_logic.load_obj(self.object, reader)
+	if self.object:clsid() == clsid.script_trader then
+		trade_manager.load(self.object, reader)
+	end
+	set_save_marker(reader, "load", true, "generic_object_binder")
+end

@@ -1,0 +1,868 @@
+--'******************************************************
+--'*	Объект группировки.
+--'******************************************************
+class "se_sim_faction"	(cse_alife_smart_zone)
+function se_sim_faction:__init (section) super (section)
+	self.sid = math.random(100000)
+	--printf("Creating faction sid %s", tostring(self.sid))
+	--callstack()
+
+	--' Свойства группировки.
+	self.squad_population_max = 0 --'Максимальное количество отрядов, которая группировка может иметь.
+	self.resource_level = 0		--' Уровень обеспеченности группировки. Влияет на качество сталкеров.
+	self.glory_level = 0		--' Уровень известности группировки. Влияет на приток молодых бойцов.
+
+	self.absolute_power = 0
+
+
+	--' Кеш целевых смартов для отрядов
+	self.squad_target_cache = {}
+
+	--' Спонсекции в зависимости от уровня ресурсов группировки
+	self.spawn_by_resource = {}
+	self.squads_by_glory = {}
+
+	self.community_player = false -- Флажок, является ли игрок членом данной группировки.
+
+	--' Уровни развития группировки
+	self.expansion_level = {}
+	self.current_expansion_level = 0
+
+
+	self.secondary_targets = {}
+
+	--' Квесты, выданные от имени группировки.
+	self.random_tasks = {}
+
+	-- Таблица сколько отрядов сейчас атакуют какой смарт
+	self.current_attack_quantity = {}
+
+	--' Таблица, содержащая список доступных отрядов.
+	self.squads = {}
+	self.start_position_filled = false
+end
+function se_sim_faction:on_register()
+	cse_alife_smart_zone.on_register( self )
+
+	--printf("register faction %s sid %s", self:name(), self.sid)
+	self:show()
+
+	--' Регистрируем игрока на игровом поле
+	self.board:register_player(self)
+
+	if self.player_name == "monster" or
+--	   self.player_name == "zombied" or
+	   self.player_name == "monolith"
+	then
+		self.brain = sim_faction_brain_mutant.faction_brain_mutant(self)
+	else
+		self.brain = sim_faction_brain_human.faction_brain_human(self)
+	end
+
+	self.brain:calculate_expansion_targets()
+	-- Инитим загруженные сквады
+	for k,squad in pairs(self.init_squad_queue) do
+		table.insert(self.squads, squad)
+
+		squad:init_squad_on_load()
+		-- Нужно зарегить отряд в sim_board
+		sim_board.get_sim_board().squads[squad.squad_id] = squad
+	end
+
+	self:fill_start_position()
+end
+-- Вычитка парамтеров из кастом даты
+function se_sim_faction:read_params()
+	local ini = self:spawn_ini()
+
+    self.board = sim_board.get_sim_board()
+
+	self.player_name = utils.cfg_get_string(ini, "faction", "name", self, true, "")
+
+
+	--' Вычитываем основные свойства группировки
+	self.setting_ini = ini_file(utils.cfg_get_string(ini, "faction", "settings", self, true, ""))
+	--' Заполняем спон секции в зависимости от техуровня группировки.
+	local i = 0
+	while self.setting_ini:line_exist("settings", "resource_"..tostring(i)) do
+		self.spawn_by_resource[i] = utils.parse_spawns(utils.cfg_get_string(self.setting_ini, "settings", "resource_"..tostring(i), self, true, ""))
+		i = i + 1
+	end
+	--' Заполняем зависимость кол-ва дополнительных отрядов от финансов
+	i = 0
+	while self.setting_ini:line_exist("settings", "glory_"..tostring(i)) do
+		self.squads_by_glory[i] = utils.cfg_get_number(self.setting_ini, "settings", "glory_"..tostring(i), self, true)
+		i = i + 1
+	end
+
+	--' Вычитываем и заполняем уровни экспансии группировки.
+	i = 0
+	while self.setting_ini:section_exist("expansion_"..tostring(i)) do
+		local section = "expansion_"..tostring(i)
+
+		local t = {}
+		t.id = i
+		t.section = section
+		t.base_squad_number = xr_logic.parse_condlist(self, "sim_faction", "base_squad_number", utils.cfg_get_string(self.setting_ini, section, "base_squad_number", self, true, ""))
+
+		t.respawn_idle_time = utils.cfg_get_number(self.setting_ini, section, "respawn_idle_time", self, false, 30)*60
+
+		local respawn_hours = parse_names(utils.cfg_get_string(self.setting_ini, section, "respawn_hours", self, false, "", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23"))
+		t.respawn_hours = {}
+ 		for k,v in pairs(respawn_hours) do
+ 			t.respawn_hours[v] = true
+ 		end
+
+		t.war_target_title  = utils.cfg_get_string(self.setting_ini, section, "war_target_title", self, false, "", "")
+		t.war_stage_icon  	= utils.cfg_get_string(self.setting_ini, section, "war_stage_icon", self, false, "", "")
+		t.war_stage_icon_complete  	= utils.cfg_get_string(self.setting_ini, section, "war_stage_icon_complete", self, false, "", "")
+		t.war_stage_icon_hint		= utils.cfg_get_string(self.setting_ini, section, "war_stage_icon_hint", self, false, "", "")
+		t.war_stage_icon_hint_complete	= utils.cfg_get_string(self.setting_ini, section, "war_stage_icon_hint_complete", self, false, "", "")
+
+		t.precondition_power = utils.cfg_get_number(self.setting_ini, section, "precondition_power", self, false, 0)
+		t.precondition_target = utils.parse_names(utils.cfg_get_string(self.setting_ini, section, "precondition_target", self, false, "", ""))
+		t.precondition_target_optional = utils.parse_names(utils.cfg_get_string(self.setting_ini, section, "precondition_target_optional", self, false, "", ""))
+		t.precondition_target_eliminate = utils.parse_names(utils.cfg_get_string(self.setting_ini, section, "precondition_target_eliminate", self, false, "", ""))
+		t.precondition_target_order = utils.cfg_get_string(self.setting_ini, section, "precondition_target_order", self, false, "", "free")
+
+		t.precondition_cond = xr_logic.parse_condlist(self, "sim_faction", "precondition_cond", utils.cfg_get_string(self.setting_ini, section, "precondition_cond", self, false, "", "true"))
+
+		t.level_up_snd  = utils.cfg_get_string(self.setting_ini, section, "level_up_snd", self, false, "")
+		t.level_down_snd  = utils.cfg_get_string(self.setting_ini, section, "level_down_snd", self, false, "")
+
+		i = i + 1
+
+		table.insert(self.expansion_level, t)
+	end
+	table.sort(self.expansion_level, function(a,b) return a.id < b.id end)
+	
+
+	if self.setting_ini:section_exist("secondary_targets") then
+		local n = self.setting_ini:line_count("secondary_targets")
+		for i=0,n-1 do	
+			local result, id, value	= self.setting_ini:r_line("secondary_targets",i,"","")
+			self.secondary_targets[id] = xr_logic.parse_condlist(self, "sim_faction", "secondary_targets", value) 
+		end
+	end	
+end
+function se_sim_faction:on_unregister()
+	cse_alife_smart_zone.on_unregister(self)
+end
+--' Заполнение стартового расположения
+function se_sim_faction:fill_start_position()
+	if self.start_position_filled == true then
+		return
+	end
+	--printf("FILL START POSITION [%s]", self.player_name)
+
+
+	self.start_position_filled = true
+	if not self.setting_ini:section_exist("start_position") then
+		return
+	end
+
+	local n = self.setting_ini:line_count("start_position")
+	for i=0,n-1 do
+		local result, id, value	= self.setting_ini:r_line("start_position",i,"","")
+
+		local smrt_names = utils.parse_names(value)
+		for k,v in pairs(smrt_names) do
+			local smart = self.board.smarts_by_names[v]
+			if smart == nil then
+				abort("Wrong smart name [%s] in start position for fraction[%s]", tostring(v), self.player_name)
+			end
+			local squad
+			local is_autogenerated_id = utils.cfg_get_bool(sim_board.squad_ltx, id, "auto_id", self, false, false)
+
+			if is_autogenerated_id then
+				squad = self.board:create_squad(self.player_name, sim_squad_scripted.sim_squad_scripted, smart, nil, id)
+			else
+				squad = self.board:create_squad(self.player_name, sim_squad_scripted.sim_squad_scripted, smart, id)
+			end
+			self.board:enter_smart(squad, smart.id)
+		end
+	end
+end
+function se_sim_faction:update()
+	cse_alife_smart_zone.update(self)
+	--printf("Faction %s update, exp [%s]", self.player_name, tostring(self.current_expansion_level))
+
+	self:calculate_absolute_power()
+
+	-- Пытаемся доспаунить персонажей
+	-- Проверяем не пришли ли время спауна
+	-- Проверяем, находимся ли мы в разрешенном промежутке.
+	local current_expansion_level = self.expansion_level[self.current_expansion_level]
+	if current_expansion_level == nil then
+--		printf("return no expansion")
+--		print_table(self.expansion_level)
+		return
+	end
+	local last_spawn_time = self.last_spawn_time
+	local current_game_time = game.get_game_time()
+
+--	printf("  check spawn sim %s", tostring(self.board.simulation_started))
+	--printf("  check spawn time %s", tostring(current_expansion_level.respawn_hours[tostring(level.get_time_hours())] == true))
+	--if last_spawn_time == nil then
+	--	printf("  check last spawn nil")
+	--else
+	--	printf("  check last spawn %s >= %s", current_game_time:diffSec(last_spawn_time), current_expansion_level.respawn_idle_time)
+	--end
+	if(db.actor) and self.board.simulation_started and current_expansion_level.respawn_hours[tostring(level.get_time_hours())] == true and
+	   (last_spawn_time == nil or
+	    current_game_time:diffSec(last_spawn_time) >= current_expansion_level.respawn_idle_time)
+	then
+		local squad_population = #self.squads
+		local squad_population_max = self.squad_population_max
+		local is_spawned = false
+		--printf("TRY TO SPAWN %s, curr %s max %s", self.player_name, squad_population, squad_population_max)
+		if squad_population < squad_population_max then
+			for i=squad_population,squad_population_max do
+				--' Ищем место для спауна.
+				local spawn_smart = self.board:get_spawn_smart(self)				
+				if spawn_smart ~= nil then
+					--printf("spawn_smart %s", spawn_smart:name())
+					--' Спауним
+					local squad = self.board:create_squad(self.player_name, sim_squad_generic.sim_squad_generic, spawn_smart)
+					self.board:enter_smart(squad, spawn_smart.id)
+					--' Пересчитываем Team, Squad, Group
+					for k,v in pairs(squad.squad_npc) do
+						local obj = alife():object(k)
+						self.board:setup_squad_and_group(obj)
+					end
+					squad:refresh()
+					is_spawned = true
+				else
+					--printf("spawn_smart NIL")
+					break
+				end
+			end
+		end
+		if is_spawned == false then
+			self.brain:calculate_expansion_targets()
+		end
+		self.last_spawn_time = current_game_time
+	end
+
+	--' Апдейтим все свои отряды.
+--	for k,v in pairs(self.squads) do
+--		v:update()
+--	end
+	if db.actor ~= nil and self.community_player == true and self.brain.reset_actor_tasks ~= nil then
+		if self.target_smart_value == nil then
+			self.brain:calculate_expansion_targets()
+		end
+		self.brain:reset_actor_tasks()
+	end
+	self:refresh()
+end
+--' Возвращает секцию, кого нужно заспаунить
+function se_sim_faction:get_spawn_section(custom_resource)
+	local spawn_data
+	if custom_resource ~= nil then
+		spawn_data = self.spawn_by_resource[custom_resource]
+	else
+		spawn_data = self.spawn_by_resource[self.resource_level]
+	end
+
+	if spawn_data == nil then
+		--' Не найдена настройка для текущего уровня. Нужно брать последний доступный.
+		local n = self.resource_level
+		while n >= 0 do
+			spawn_data = self.spawn_by_resource[n]
+            if spawn_data ~= nil then
+
+                break
+            end
+			n = n - 1
+		end
+		if spawn_data == nil then
+			abort("Couldn't find spawn_data for %s, science = %s", self:name(), tostring(self.resource_level))
+		end
+	end
+
+	local spawn_section = nil
+	local sum = 0
+	--' Производим рандомную взвешенную выборку
+	--' с учетом уже заспавленного количества человек.
+	for k,v in pairs(spawn_data) do
+			sum = sum + v.prob
+	end
+	sum = math.random(0, sum)
+	for k,v in pairs(spawn_data) do
+			sum = sum - v.prob
+			if sum <= 0 then
+				spawn_section = v.section
+				break
+			end
+	end
+	if spawn_section == nil then
+		abort("Couldn't find spawn_section for %s, science = %s", self:name(), tostring(self.resource_level))
+	end
+	return spawn_section
+end
+--' Рассчет количества доступных отрядов в группировке
+function se_sim_faction:calculate_total_squads()
+	local total_squad = self.squads_by_glory[self.glory_level]
+
+	if total_squad == nil then
+		--' Не найдена настройка для текущего уровня. Нужно брать последний доступный.
+		local n = 0
+		while n < self.glory_level do
+			total_squad = self.squads_by_glory[n]
+			n = n + 1
+		end
+		if total_squad == nil then
+			abort("Couldn't find squad_data for %s, glory = %s", self:name(), tostring(self.glory_level))
+		end
+	end
+	--printf("!!! %s", tostring(self.glory_level))
+	--print_table(self.squads_by_glory)
+
+	local exp_squads = tonumber(xr_logic.pick_section_from_condlist(db.actor, self, self.expansion_level[self.current_expansion_level].base_squad_number))
+
+	self.squad_population_max = exp_squads + total_squad
+end
+--' Просчет мозгов группировки.
+function se_sim_faction:faction_brain_update(after_load)
+	if after_load ~= true then
+		self.brain:calculate_current_expansion()
+	else
+		self.brain:calculate_expansion_targets()
+	end
+end
+
+-- Пустая функция для вызова из таск обжекта.
+function se_sim_faction:give_squad_task()
+end
+
+--' Рассчитываем цели для каждого отряда
+function se_sim_faction:calculate_squad_tasks()
+	--printf("*** for faction %s squads", self.player_name)
+	--for k,v in pairs(self.squads) do
+		--printf("    %s", v.squad_id)
+	--end
+
+	--callstack()
+	--printf("*** for faction %s target_smart_value", self.player_name)
+	--print_table(self.target_smart_value)
+
+	local distance_table = {}
+
+	self.squad_target_cache = {}
+	local squad_need_task = {}
+
+	-- Обнуляем текущее количество отправленных отрядов
+	for k,v in pairs(self.target_smart_value) do
+		v.num = 0
+	end
+
+	-- distance_table = { smart = smart, squads = {squad_id = distance} }
+	--' Строим кросстаблицу расстояний между отрядами и целями.
+	for k,squad in pairs(self.squads) do
+		--' Проверяем валидность таска.
+		--' Невалидными считается таск, который не нужен группировке.
+--		local is_valid = false
+		--printf("validation squad %s, assigned %s", squad.squad_id, tostring(squad.assigned_target_smart_id))
+--		if squad.assigned_target_smart_id ~= nil and self.target_smart_value[squad.assigned_target_smart_id] ~= nil then
+--			is_valid = true
+--		end
+
+		--' Проверяем есть ли у сквада скриптовая цель, если есть - то не считаем его
+		local script_target = squad:get_script_target()
+		if script_target ~= nil then
+			--printf("squad %s has script target %s", squad.squad_id, script_target)
+			self.squad_target_cache[squad.squad_id] = script_target
+			if self.target_smart_value[script_target] ~= nil then
+				self.target_smart_value[script_target].num = self.target_smart_value[script_target].num + 1
+			end
+
+		--' Если у отряда уже есть цели и она до сих пор валидна.
+--		elseif is_valid == true and
+--			   (self.board.smarts[squad.assigned_target_smart_id].smrt.player_name ~= self.player_name or
+--			   self.target_smart_value[squad.assigned_target_smart_id].num < self.target_smart_value[squad.assigned_target_smart_id].cap)
+--		then
+--			self.squad_target_cache[squad.squad_id] = squad.assigned_target_smart_id
+--			self.target_smart_value[squad.assigned_target_smart_id].num = self.target_smart_value[squad.assigned_target_smart_id].num + 1
+
+		--' В других случаях заносим сквад на получение нового таска.
+		else
+			table.insert(squad_need_task, squad)
+		end
+	end
+
+	--printf("*** for faction %s squad_need_task", self.player_name)
+	--for k,v in pairs(squad_need_task) do
+		--printf("    %s", v.squad_id)
+	--end
+
+	-- строим кросс таблицу
+	for k,smart_value in pairs(self.target_smart_value) do
+		local t = {}
+		local num = 0
+		for kk,squad in pairs(squad_need_task) do
+			if squad.smart_id == nil then
+				abort("NO SRC SMART %s", tostring(squad.squad_id))
+			end
+			local smart = nil
+			if squad.current_action == nil or squad.current_action.name == "stay_point" then 
+				smart = self.board.smarts[squad.smart_id].smrt
+			else
+				smart = self.board.smarts[squad.current_action.dest_smrt_id].smrt
+			end
+			
+			
+			-- Если отряд и цель в одном кластере, то дополняем в кросс таблицу
+			--printf("***** %s %s", tostring(smart.smart_level), tostring(smart_value.smart.smart_level))
+			--printf("      squad %s smart %s", squad.squad_id, smart:name())
+			--printf("      smart %s", smart_value.smart:name())
+
+			if sim_board.sim_level_cluster[smart.smart_level] == sim_board.sim_level_cluster[smart_value.smart.smart_level] then
+				local vid1 = smart.m_game_vertex_id
+				local vid2 = smart_value.smart.m_game_vertex_id
+				--printf("checking for %s from %s to %s dist %s", squad.squad_id, smart:name(), smart_value.smart:name(), utils.graph_distance(vid1, vid2))
+				table.insert(t, {squad_id = squad.squad_id, squad = squad, dist = utils.graph_distance(vid1, vid2)})
+				num = num + 1
+			end
+		end
+		if num > 0 then
+			--' Сортируем по каждому смарту данные во возрастанию.
+			table.sort(t, function(a,b) return a.dist < b.dist end)
+			table.insert(distance_table, {smart_value = smart_value, targets = t})
+		end
+	end
+
+
+	--Сортируем, чтобы вначале шли смарты с близкорасположенными отрядами
+	--table.sort(distance_table, function(a,b) return a.targets[1].dist < b.targets[1].dist end)
+	--printf("*** for faction %s distance_table", self.player_name)
+	--print_table(distance_table)
+
+	--' Функция, удаляющая отряд из списка на заполнение.
+	local function clear_squad(squad_id)
+		local remove_table = {}
+		for k,v in pairs(distance_table) do
+			local del_id = nil
+			for kk,vv in pairs(v.targets) do
+				if vv.squad.squad_id == squad_id then
+					del_id = kk
+					break
+				end
+			end
+			table.remove(distance_table[k].targets, del_id)
+
+			if #distance_table[k].targets < 1 then
+				table.insert(remove_table, k)
+			end
+		end
+		table.sort(remove_table, function(a,b) return a > b end)
+		for k,v in pairs(remove_table) do
+			--printf("*** ITERATION remove smart %s from squad", tostring(v))
+			table.remove(distance_table, v)
+		end
+	end
+
+	-- Распределяем отряды по смартам
+	while #distance_table > 0 do
+		if distance_table[1].targets[1] == nil then
+			break
+		else
+			-- Сортируем, чтобы вначале шли смарты с близкорасположенными отрядами
+			-- Пересортировываем каждый раз, так как при удалении может измениться порядок приоритетности смартов.
+			table.sort(distance_table, function(a,b) return a.targets[1].dist < b.targets[1].dist end)
+		end
+
+		--printf("*** ITERATION START")
+		--print_table(distance_table)
+
+		local v = distance_table[1]
+		local vv = v.targets[1]
+		exist = true
+		-- Если достигнут потолок - удаляем смарт.
+		if v.smart_value.num >= v.smart_value.cap then
+			--printf("*** ITERATION remove smart")
+			table.remove(distance_table, 1)
+		else
+			-- Выдаем отряду цель.
+			local target_descr_smart = v.smart_value.smart.id
+			self.squad_target_cache[vv.squad.squad_id] = target_descr_smart
+			v.smart_value.num = v.smart_value.num + 1
+
+			local tmp_squad_id = vv.squad_id
+			if v.smart_value.num >= v.smart_value.cap then
+				--printf("*** ITERATION remove smart1")
+				table.remove(distance_table, 1)
+			end
+
+			-- Удаляем этот отряд из остальной таблицы
+			--printf("*** ITERATION remove squad %s", tmp_squad_id)
+			clear_squad(tmp_squad_id)
+		end
+		--printf("*** ITERATION END")
+		--print_table(distance_table)
+	end
+
+	--printf("*** for faction %s squad_target_cache", self.player_name)
+	--print_table(self.squad_target_cache)
+end
+
+--' Регистрация нового отряда в группировке
+function se_sim_faction:register_squad(squad)
+	printf("register faction squad %s", squad.squad_id)
+	table.insert(self.squads, squad)
+end
+--' АнРегистрация нового отряда в группировке
+function se_sim_faction:unregister_squad(squad)
+	printf("unregister faction squad %s", squad.squad_id)
+--	for k,v in pairs(self.squads) do
+--		printf("  %s: %s", k, v.squad_id)
+--	end
+
+	local delete_id = nil
+	for k,v in pairs(self.squads) do
+		if v.squad_id == squad.squad_id then
+			delete_id = k
+			break
+		end
+	end
+	if delete_id == nil then
+		abort("Couldn't find squad to delete [%s]", squad.squad_id)
+	end
+
+	self:clear_squad_target(squad)
+	table.remove(self.squads, delete_id)
+
+--	printf("after %s", tostring(delete_id))
+--	for k,v in pairs(self.squads) do
+--		printf("  %s: %s", k, v.squad_id)
+--	end
+end
+--' Считает абсолютную силу группировки.
+function se_sim_faction:calculate_absolute_power()
+	--' Сила группировки состоит из трех слагаемых:
+
+	self.npc_count = 0
+	self.npc_power = 0
+	for k,v in pairs(self.squads) do
+		--' Количество НПС(территориальные точки)
+		self.npc_count = self.npc_count + v.npc_count
+		--' Качество НПС(денежные точки)
+		self.npc_power = self.npc_power + v.squad_power
+	end
+
+	if self.npc_count ~= 0 then
+		self.npc_power = self.npc_power/self.npc_count
+	end
+
+	--' Количество ресерчей.
+
+	self.absolute_power = self.npc_count * self.npc_power
+end
+
+
+--' Возвращает абсолютную силу группировки.
+function se_sim_faction:get_absolute_power()
+	return self.absolute_power
+end
+
+--' Возвращает относительную силу группировки.
+function se_sim_faction:get_relative_power()
+	local rel_enemy = sim_board.sim_fight[self.player_name]
+	if rel_enemy == nil then
+		return self.absolute_power * 0.0001
+	end
+	rel_enemy = self.board.players[rel_enemy]
+	if rel_enemy == nil then
+		return self.absolute_power * 0.0001
+	end
+
+	rel_enemy:calculate_absolute_power()
+	local enemy_power = rel_enemy:get_absolute_power()
+	if enemy_power == 0 then
+		return 1
+	end
+	return self.absolute_power /(enemy_power + self.absolute_power)
+end
+function se_sim_faction:get_war_target_title()
+	if self.expansion_level[self.current_expansion_level] then
+		return game.translate_string(self.expansion_level[self.current_expansion_level].war_target_title)
+	else
+		return ""
+	end
+end
+function se_sim_faction:get_war_stage_icon(expansion)
+	if expansion >= self.current_expansion_level then
+		return self.expansion_level[expansion].war_stage_icon
+	else
+		return self.expansion_level[expansion].war_stage_icon_complete
+	end
+end
+function se_sim_faction:get_war_stage_hint(expansion)
+	if expansion >= self.current_expansion_level then
+		return self.expansion_level[expansion].war_stage_icon_hint
+	else
+		return self.expansion_level[expansion].war_stage_icon_hint_complete
+	end
+end
+function se_sim_faction:get_war_target_descr()
+	local capture_descr = ""
+	local defend_descr = ""
+	local capture_exist = false
+	local defend_exist = false
+	if not(self.target_smart_value) then
+		return ""
+	end  
+	for k,v in pairs(self.target_smart_value) do
+		if v.smart.player_name ~= self.player_name then
+			if v.num > 0 then
+				if capture_exist == false then
+					capture_descr = capture_descr..game.translate_string("ui_st_capture").." "
+					capture_exist = true
+				else
+					capture_descr = capture_descr..", "
+				end
+				capture_descr = capture_descr..smart_names.get_smart_terrain_name(v.smart)
+			end
+		else
+			if defend_exist == false then
+				defend_descr = defend_descr..game.translate_string("ui_st_defend").." "
+				defend_exist = true
+			else
+				defend_descr = defend_descr..", "
+			end
+			defend_descr = defend_descr..smart_names.get_smart_terrain_name(v.smart)
+
+		end
+	end
+	if defend_exist == true then
+		capture_descr = capture_descr.."\\n\\n"..defend_descr
+	end
+	return capture_descr
+end
+
+function se_sim_faction:get_war_state_icon(stage)
+	local current_expansion_level = self.expansion_level[stage]
+	if current_expansion_level == nil then
+		return ""
+	end
+	if self.current_expansion_level > stage then
+		return current_expansion_level.war_stage_icon_complete
+	else
+		return current_expansion_level.war_stage_icon
+	end
+end
+function se_sim_faction:get_war_state_title(stage)
+	local current_expansion_level = self.expansion_level[stage]
+	if current_expansion_level == nil then
+		return ""
+	end
+	return current_expansion_level.war_stage_icon_hint
+end
+
+--' Возвращает отформатированную строку свойств игрока
+function se_sim_faction:get_player_props()
+	local props = self.player_name .. "\\n" ..
+                  "value = " .. tostring(self:get_relative_power()) .. "\\n" ..
+                  "power = " .. tostring(self:get_absolute_power()) .. "\\n" ..
+                  "   npc = " .. tostring(self.npc_count) .. "\\n" ..
+                  "   pow = " .. tostring(self.npc_power) .. "\\n" ..
+				  "expansion = " .. tostring(self.current_expansion_level) .. "\\n" ..
+                  "max_pop = " .. tostring(self.squad_population_max) .. "("..tostring(#self.squads)..")\\n" ..
+                  "resource = " .. tostring(self.resource_level) .. "\\n" ..
+                  "glory = " .. tostring(self.glory_level) .. "\\n"
+
+	return props
+end
+--' Отрисовка на карте
+function se_sim_faction:show()
+	if(_G.dev_debug) then
+		level.map_add_object_spot(self.id, "alife_presentation_faction_"..self.player_name, self:get_player_props())
+	end
+end
+--' Обновление информации о игроке на игровом поле
+function se_sim_faction:refresh()
+	if(_G.dev_debug) then
+		level.map_change_spot_hint(self.id, "alife_presentation_faction_"..self.player_name, self:get_player_props())
+	end
+end
+--' Убираем отрисовку на карте
+function se_sim_faction:hide()
+	if(_G.dev_debug) then
+		level.map_remove_object_spot(self.id, "alife_presentation_faction_"..self.player_name)
+	end
+end
+--' Очистка отряда из таргетов
+function se_sim_faction:clear_squad_target(squad)
+	self.squad_target_cache[squad.squad_id] = nil
+end
+--' Производим ход группировки.
+function se_sim_faction:find_target(squad)
+	--printf("Find target [%s]", squad.squad_id)
+	--print_table(self.squad_target_cache)
+	--' Раздаем цели отрядам.
+	return self.squad_target_cache[squad.squad_id]
+end
+
+-- Сейв
+function se_sim_faction:STATE_Write(packet)
+	cse_alife_smart_zone.STATE_Write(self, packet)
+
+	printf("save faction %s sid %s", self:name(), self.sid)
+
+	set_save_marker(packet, "save", false, "se_sim_faction")
+
+	packet:w_bool(self.community_player)
+	packet:w_bool(self.start_position_filled)
+	-- Текущий уровень развития
+	packet:w_u8(self.current_expansion_level)
+	-- Время последнего респауна
+	utils.w_CTime(packet, self.last_spawn_time)
+
+	local n = 0
+	for k,v in pairs(self.squad_target_cache) do
+		n = n + 1
+	end
+
+	packet:w_u8(n)
+	for k,v in pairs(self.squad_target_cache) do
+		packet:w_stringZ(k)
+		packet:w_u16(tonumber(v))
+	end
+
+	-- Случайные задания
+	n = 0
+	for k,v in pairs(self.random_tasks) do
+		n = n + 1
+	end
+	packet:w_u8(n)
+	for k,v in pairs(self.random_tasks) do
+		packet:w_u16(k)
+		packet:w_u16(v)
+	end
+
+	-- Сколько отрядов что атакуют
+	n = 0
+	for k,v in pairs(self.current_attack_quantity) do
+		n = n + 1
+	end
+	packet:w_u8(n)
+	for k,v in pairs(self.current_attack_quantity) do
+		packet:w_u16(k)
+		packet:w_u8(v)
+	end
+
+
+
+	-- Вызов сейва сквадов
+	n = 0
+	for k,v in pairs(self.squads) do
+		n = n + 1
+	end
+	packet:w_u16(n)
+	for k,v in pairs(self.squads) do
+		packet:w_stringZ(v.squad_id)
+		packet:w_stringZ(tostring(v.settings_id))
+		--' Сохраняем тип класса отряда: generic или scripted
+		if v.name == "sim_squad_scripted" then
+			packet:w_bool(true)
+		else
+			packet:w_bool(false)
+		end
+		v:save(packet)
+	end
+	set_save_marker(packet, "save", true, "se_sim_faction")
+end
+-- ЛОАД
+function se_sim_faction:STATE_Read(packet, size)
+	cse_alife_smart_zone.STATE_Read(self, packet, size)
+
+	-- под LevelEditor не пытаться читать из пакета ничего
+	if editor() then
+		return
+	end
+	--printf("load faction %s sid %s", self:name(), self.sid)
+
+	self:read_params()
+
+	--self.board = sim_board.get_sim_board()
+
+	set_save_marker(packet, "load", false, "se_sim_faction")
+
+	self.community_player = packet:r_bool()
+	self.start_position_filled = packet:r_bool()
+	-- Текущий уровень развития
+	self.current_expansion_level = packet:r_u8()
+	-- Время последнего респауна
+	self.last_spawn_time = utils.r_CTime(packet)
+
+	local n = packet:r_u8()
+
+	self.squad_target_cache = {}
+	for i = 1,n do
+		local id = packet:r_stringZ()
+		local value = packet:r_u16()
+		self.squad_target_cache[id] = value
+	end
+
+	-- Случайные задания
+	n = packet:r_u8()
+	self.random_tasks = {}
+	for i = 1,n do
+		local k = packet:r_u16()
+		local v = packet:r_u16()
+		self.random_tasks[k] = v
+	end
+
+	-- Сколько отрядов что атакуют
+	n = packet:r_u8()
+	self.current_attack_quantity = {}
+	for i = 1,n do
+		local k = packet:r_u16()
+		local v = packet:r_u8()
+		self.current_attack_quantity[k] = v
+	end
+
+	-- Вызов лоада сквадов
+	n = packet:r_u16()
+	self.squads = {}
+	local obj = alife():object(self.id)
+	self.init_squad_queue = {}
+	for i=1,n do
+		local squad = nil
+		local squad_id = packet:r_stringZ()
+		local settings_id = packet:r_stringZ()
+		if settings_id == "nil" then
+			settings_id = nil
+		end
+		local flag = packet:r_bool()
+		--printf("load squad %s (%s)", squad_id, tostring(flag))
+		if flag == true then
+			squad = sim_squad_scripted.sim_squad_scripted(self.board, self.player_name, squad_id, settings_id)
+		else
+			squad = sim_squad_generic.sim_squad_generic(self.board, self.player_name, squad_id, settings_id)
+		end
+		squad:load(packet)
+
+		-- Заносим сквады в очередь на инициализацию
+		table.insert(self.init_squad_queue, squad)
+	end
+	set_save_marker(packet, "load", true, "se_sim_faction")
+end
+
+
+
+function get_current_expansion(faction_id)
+	local player = sim_board.get_sim_board().players[faction_id]
+	if player == nil then
+		abort("There is no player with id %s", tostring(faction_id))
+	end
+	return player.expansion_level[player.current_expansion_level].section
+end
+
+function get_current_resource(faction_id)
+	local player = sim_board.get_sim_board().players[faction_id]
+	if player == nil then
+		abort("There is no player with id %s", tostring(faction_id))
+	end
+	return player.resource_level
+end

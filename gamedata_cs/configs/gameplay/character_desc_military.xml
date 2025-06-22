@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+  <specific_character id="mil_kostiuk" team_default = "1">
+    <name>mil_kostiuk_name</name>
+    <icon>ui_npc_u_freedom_4</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный командир Свободы.</bio>
+
+    <class>mil_kostiuk</class>
+    <community>freedom</community> 
+    <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+
+    <rank>600</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_4</visual>
+    <supplies>
+
+      [spawn] \n
+      wpn_desert_eagle \n
+      ammo_11.43x23_hydro = 1 \n
+      device_torch \n
+      wpn_val \n
+      ammo_9x39_ap = 10 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="mil_freedom_speaker" team_default = "1">
+    <name>mil_freedom_blockpost_name</name>
+    <icon>ui_npc_u_freedom_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>mil_freedom_speaker</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_1</visual>
+    <supplies>
+      [spawn] \n
+      wpn_pm \n
+      ammo_9x18_pmm = 1 \n
+      device_torch \n
+      wpn_sig550 \n
+      ammo_5.45x39_fmj = 10 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+    <start_dialog>hello_mil_freedom</start_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+<specific_character id="mil_hog" team_default = "1">
+    <name>mil_hog_name</name>
+    <icon>ui_npc_u_merc_4</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>mil_hog</class>
+    <community>killer</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+    <rank>300</rank>
+    <reputation>0</reputation>
+
+  <visual>actors\stalker_merc\stalker_merc_4</visual>
+    <supplies>
+      [spawn] \n
+      wpn_desert_eagle \n
+      ammo_11.43x23_hydro = 1 \n
+      device_torch \n
+      wpn_sig550 \n
+      ammo_5.45x39_fmj = 10 \n
+      hand_radio \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+  <start_dialog>hello_mil_killer</start_dialog>
+  <actor_dialog>mil_killer_about_what_is_you_doing</actor_dialog>
+  <actor_dialog>mil_killer_about_around</actor_dialog>
+  <actor_dialog>mil_killer_about_last_time</actor_dialog>
+  <actor_dialog>treasure_dialog</actor_dialog>
+  </specific_character>
+
+<specific_character id="mil_questman" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>mil_questman</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+
+    <rank>450</rank>
+    <reputation>800</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_2</visual>
+    <supplies>
+      [spawn] \n
+      wpn_pm \n
+      ammo_9x18_pmm = 1 \n
+      device_torch \n
+      wpn_sig550 \n
+      ammo_5.45x39_fmj = 10 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_dialogs.xml"
+#include "gameplay\character_criticals_4.xml"
+</specific_character>
+</xml>

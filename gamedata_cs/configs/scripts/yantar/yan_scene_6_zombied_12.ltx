@@ -1,0 +1,31 @@
+[logic]
+active = walker
+on_death = death@1
+on_hit = hit
+on_combat = combat
+;combat_ignore = combat_ignore
+
+[death@1]
+on_info = %+yan_destroy_wave1_1%
+
+[hit]
+on_info = %+alert_zombi_cut6_1%
+
+[combat]
+on_hit = hit
+combat_type = zombied
+
+[walker]
+path_walk = yan_walker_zombie_cut6_12_okr_walk
+path_look = yan_walker_zombie_cut6_12_okr_look
+danger = danger_condition
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+danger = danger_condition
+no_retreat = true 
+combat_ignore_cond = {=fighting_dist_ge(4)}
+group = 1
+
+[danger_condition]
+ignore_distance_sound = 5
+ignore_distance = 5

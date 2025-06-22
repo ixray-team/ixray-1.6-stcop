@@ -1,0 +1,51 @@
+need_jump = false
+
+local levels = { "marsh", "escape", "garbage",  "darkvalley", "agroprom", "agroprom_underground", "yantar", "red_forest",  "military", "limansk", "hospital", "stancia_2"}
+
+function try_to_jump()
+ 	if need_jump == true then
+ 		local console = get_console()
+		console:execute("flush")
+		
+		console:execute("save build_save_" .. tostring(time_global()) )
+		
+		if level.name() == "marsh" then
+			printf("BUILD:jumping to level [escape]")
+			console:execute("jump_to_level escape")
+		elseif level.name() == "escape" then
+			printf("BUILD:jumping to level [garbage]")
+			console:execute("jump_to_level darkvalley")
+		elseif level.name() == "garbage" then
+			printf("BUILD:jumping to level [darkvalley]")
+			console:execute("jump_to_level darkvalley")
+		elseif level.name() == "darkvalley" then
+			printf("BUILD:jumping to level [agroprom]")
+			console:execute("jump_to_level agroprom")
+		elseif level.name() == "agroprom" then
+			printf("BUILD:jumping to level [agroprom_underground]")
+			console:execute("jump_to_level agroprom_underground")
+		elseif level.name() == "agroprom_underground" then
+			printf("BUILD:jumping to level [yantar]")
+			console:execute("jump_to_level yantar")
+		elseif level.name() == "yantar" then
+			printf("BUILD:jumping to level [red_forest]")
+			console:execute("jump_to_level red_forest")
+		elseif level.name() == "red_forest" then
+			printf("BUILD:jumping to level [military]")
+			console:execute("jump_to_level military")
+		elseif level.name() == "military" then
+			printf("BUILD:jumping to level [limansk]")
+			console:execute("jump_to_level limansk")
+		elseif level.name() == "limansk" then
+			printf("BUILD:jumping to level [hospital]")
+			console:execute("jump_to_level hospital")
+		elseif level.name() == "hospital" then
+			printf("BUILD:jumping to level [stancia_2]")
+			console:execute("jump_to_level stancia_2")
+		elseif level.name() == "stancia_2" then		
+			printf("BUILD:QUIT!!!")
+			console:execute("jump_to_level marsh")
+--			console:execute("quit")
+		end
+	end
+end

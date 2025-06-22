@@ -1,0 +1,137 @@
+
+class "survival_zone"
+--' инициализация объекта класса
+function survival_zone:__init( obj, storage )
+
+	self.object = obj
+	self.st = storage
+	
+	
+end
+--' инициализация схемы поведения
+function survival_zone:reset_scheme()
+	self.is_actor_inside = nil
+	self.spawned_obj_table = {}
+	self.dead_obj_table = {}
+	self.killed_count = 0
+	self.spawned_count = 0  
+	self.max_enemies_count = 15
+	self.spawn_points_idle = {}
+	self.idle_time = 8000
+	self.stalkers_to_win = 20
+	self.survival_complete = nil
+end
+
+
+function survival_zone:update(delta)
+	if self.object:inside( db.actor:position() ) and self.is_actor_inside == nil  then		
+		self.is_actor_inside = true		
+	elseif self.is_actor_inside == true and not self.object:inside( db.actor:position() ) then
+		self.is_actor_inside = false 
+	end
+	
+	if self.is_actor_inside == true	and not self.objects_spawned then	
+		for k,v in pairs(self.st.path_table) do
+			self.spawn_points_idle[v] = time_global() + self.idle_time
+			
+			local ptr = patrol(v)
+    
+			local index = 0
+	
+			local obj = alife():create("arena_"..v,
+							ptr:point(index),
+							ptr:level_vertex_id(0),
+							ptr:game_vertex_id(0))
+			self.spawned_obj_table[obj.id] = obj
+			self.spawned_count = self.spawned_count + 1	
+		end	
+		self.objects_spawned = true
+		--local hud_demo = get_hud()
+    	--self.custom_static_demo = hud_demo:GetCustomStatic("cs_arena_kills")
+
+		--if self.custom_static_demo == nil then
+		--	hud_demo:AddCustomStatic("cs_arena_kills", true)
+		--	self.custom_static_demo = hud_demo:GetCustomStatic("cs_arena_kills")
+		--	self.custom_static_demo:wnd():SetTextST("Stalker killed:"..tostring(self.killed_count))
+		--end
+	end
+	if self.objects_spawned == true then 
+		if self.killed_count >= self.stalkers_to_win and self.survival_complete ~= true then
+			get_console():execute("r2_dof 0.1,0.2,0.3")
+			level.hide_indicators()
+			game.start_tutorial("after_arena_tutorial")
+			self.survival_complete = true
+		end
+		self:check_for_spawn_new_stalker()
+		self:check_for_release_corpses()
+	end	
+	--' выполняем архитектурное требование
+	if xr_logic.try_switch_to_another_section( self.object, self.st, db.actor ) 
+    then
+		return
+	end	
+end
+			
+function survival_zone:check_for_spawn_new_stalker()
+	local path_table = {}
+	local selected_path = nil
+	utils.copy_table(path_table, self.st.path_table)
+	
+	for i=1,#self.st.path_table do
+		local idx = math.random(#path_table)
+		selected_path = path_table[idx]
+		table.remove(path_table,idx)
+		if 	self.spawn_points_idle[selected_path] <= time_global() and self.spawned_count < self.max_enemies_count and self.spawned_count + self.killed_count < self.stalkers_to_win then
+			local ptr = patrol(selected_path)
+			local index = 0
+			local obj = alife():create("arena_"..selected_path,
+					ptr:point(index),
+					ptr:level_vertex_id(0),
+					ptr:game_vertex_id(0))
+			self.spawned_obj_table[obj.id] = obj			
+			self.spawned_count = self.spawned_count + 1	
+			self.spawn_points_idle[selected_path] = time_global() + self.idle_time
+		end
+	end
+	
+end
+function survival_zone:check_for_release_corpses()
+	local spawned_objects = {}
+	utils.copy_table(spawned_objects, self.spawned_obj_table)
+	for k,v in pairs(spawned_objects) do
+		if v:health() <= 0 then
+			table.insert(self.dead_obj_table,1, v)
+			self.spawned_obj_table[v.id] = nil
+			self.killed_count = self.killed_count + 1	
+			self.spawned_count = self.spawned_count - 1	
+	--	self.custom_static_demo:wnd():SetTextST("Stalker killed:"..tostring(self.killed_count))	
+		end
+	end
+	local dead_obj_count = #self.dead_obj_table
+	if dead_obj_count > 10 then
+		alife():release(self.dead_obj_table[dead_obj_count], true)
+		table.remove(self.dead_obj_table,dead_obj_count)
+	end
+end
+
+
+--' функция, осуществляющая вызов начала сцены когда персонаж входит в пространственный ограничитель
+
+function add_to_binder(npc, ini, scheme, section, storage)
+
+	--' printf("DEBUG: add_to_binder: scheme='%s', section='%s'", scheme, section)
+
+	local new_action = survival_zone(npc, storage)
+
+	--' Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+
+end
+function set_scheme(obj, ini, scheme, section, gulag_name)
+
+	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+	st.spawn_section = utils.cfg_get_string( ini, section, "spawn_section", obj, false, "", "arena_first_battle_stalker_2" )
+	local path = utils.cfg_get_string( ini, section, "spawn_path", obj, false, "", nil )
+	st.path_table    = parse_names(path)
+end

@@ -1,0 +1,12 @@
+[logic]
+active = sr_robbery
+
+[sr_robbery]
+smart_name = gar_smart_terrain_5_8
+commander_job = guard_2_walk, guard_3_walk, guard_4_walk, guard_5_walk
+on_info = {=actor_in_bandit} sr_idle, {!smart_captured_by_faction(gar_smart_terrain_5_8:bandit)} sr_idle
+dialog = gar_bandit_robbery
+inv_box = 718
+
+[sr_idle]
+on_info = {!actor_in_bandit =smart_captured_by_faction(gar_smart_terrain_5_8:bandit)} sr_robbery

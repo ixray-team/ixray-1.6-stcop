@@ -1,0 +1,20 @@
+[logic]
+active = ph_button@init
+
+[ph_button@init]
+anim = idle
+on_press = ph_button@deactivate_pre
+tooltip = tips_tranformer_off
+
+[ph_button@deactivate_pre]
+anim = idle
+on_game_timer = 5 | ph_button@deactivate %=play_sound(lim_electro_fience_swither)%
+tooltip = tips_tranformer_off
+
+[ph_button@deactivate]
+anim = off
+;on_game_timer = 15 | {+lim_final_sniper_off} ph_idle@nil %+lim_electro_fence_off%, ph_button@init
+on_game_timer = 15 | ph_idle@nil %+lim_electro_fence_off%, ph_button@init
+tooltip = tips_tranformer_off
+
+[ph_idle@nil]

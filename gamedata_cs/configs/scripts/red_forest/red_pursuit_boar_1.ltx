@@ -1,0 +1,25 @@
+[logic]
+active = mob_home
+
+[mob_home]
+path_home = red_pursuit_boar_home_1
+home_min_radius = 10
+home_max_radius = 15
+;aggressive_home = true
+actor_friendly = true
+npc_friendly = true
+on_info = {+red_pursuit_boars_attack} mob_walker
+
+[mob_walker]
+path_walk = red_pursuit_boars_walk_1
+actor_friendly = true
+npc_friendly = true
+on_actor_dist_le_nvis = 20 | mob_home@2
+on_signal = action | mob_home@2
+
+[mob_home@2]
+path_home = red_pursuit_boar_home_2
+home_min_radius = 50
+home_max_radius = 70
+aggressive_home = true
+on_info = {+red_pursuit_ambush_attack} nil

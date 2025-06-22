@@ -1,0 +1,179 @@
+--------------------------------------------------------------------------------
+local max_corpse_dist = 10
+local state_move_to_corpse  =   0
+local state_move_to_start   =   1
+local state_rest            =   2
+local state_kick            =   3  
+local state_turn            =   4
+local state_wait            =   5
+--------------------------------------------------------------------------------
+class "mob_kicker"
+------------------
+function mob_kicker:__init (npc, storage)
+    self.st = storage
+    self.object = npc
+    self.corpse = nil
+    self.corpse_pos = vector ():set (0, 0, 0)
+    self.pshell = nil
+    self.start_point = vector ():set (0, 0, 0)
+    self.dir = vector ():set (0, 0, 1)
+    self.start_point_id = -1
+    --self.move_to_start = true
+    self.state = state_wait
+    self.time = 0
+    self.rnd = 0
+    self.initialized = false
+    self.set = false
+end
+------------------
+function mob_kicker:reset_scheme ()    
+    xr_logic.mob_capture (self.object, true)
+    self.state = state_wait
+    self.initialized = false
+end
+------------------
+function mob_kicker:common ()
+	if not db.actor then
+		return false
+	end
+
+	if not xr_logic.is_active(self.object, self.st) then
+		return false
+	end
+
+	if mob_alife_mgr.alife_control(self.object, db.actor, self.st.alife_mode) then
+		return false
+	end
+	
+	-- Монстр после выхода из alife может уже быть не под скриптом, поэтому взять опять под скрипт
+	if not xr_logic.mob_captured(self.object) then
+		self:reset_scheme ()
+		return false
+	end
+
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return false
+	end
+    return true	    
+end
+------------------
+function mob_kicker:update (delta)
+    if self:common () == false then return end
+    
+    if self.initialized == false then
+       self:initialize ()
+       if self.initialized == false then return end
+    end    
+    
+    if self.state == state_move_to_corpse then
+       self:move_and_kick () 
+    elseif self.state == state_move_to_start then
+       self:move_to_start () 
+    end    
+           
+    
+end
+------------------
+function mob_kicker:move_and_kick   ()
+    if distance_between (self.object, self.corpse) < 2.2 then
+       local vDir = self.corpse:position ():sub (self.object:position ())
+       vDir:normalize ()
+       self.dir = vDir
+       if yaw_degree (vDir, self.object:direction ()) > 10 then
+          xr_logic.mob_capture (self.object, false)
+          xr_logic.mob_capture (self.object, true)
+          action (self.object, look (look.point, self.corpse:position ()), anim (anim.turn, 0), cond (cond.look_end))
+          return
+       else
+          --xr_logic.mob_capture (self.object, false)
+          --xr_logic.mob_capture (self.object, true)
+          --action (self.object, move (move.run_fwd, self.corpse), sound (sound.attack), cond(cond.time_end, cond.move_end))
+          --action (self.object, anim (anim.attack, 0), cond (cond.time_end, 600))
+          vDir.y = 0.6
+          local constant = 200000
+          self.pshell:apply_force (constant * self.dir.x, constant * self.dir.y, constant * self.dir.z)
+          self.state = state_move_to_start
+          self.time = device ():time_global () + math.random (300, 400)
+          self.start_point = self:select_point ()
+          self.set = false
+          return
+       end   
+    else
+       if self.rnd > 50 then 
+          action (self.object, move (move.run_fwd, self.corpse), sound (sound.attack), cond(cond.move_end))
+       else
+          action (self.object, move (move.run_fwd, self.corpse:position (), 0.5), sound (sound.attack), cond (cond.move_end))
+       end           
+       self.rnd = math.random (1, 100)
+    end          
+end
+------------------
+function mob_kicker:move_to_start () 
+--    if self.time ~= 0 then
+       --if self.object:action() ~= nil then return end
+       --self.time = 0
+    --end 
+    if self.start_point:distance_to (self.object:position ()) < 2 then
+       xr_logic.mob_capture (self.object, false)
+       xr_logic.mob_capture (self.object, true)
+       self.state = state_move_to_corpse
+       self:move_and_kick ()
+       return
+    end   
+        
+    if self.set == false then        
+       xr_logic.mob_capture (self.object, false)
+       xr_logic.mob_capture (self.object, true)
+       self.set = true
+       action (self.object, move (move.run_fwd, self.start_point, 0.5), cond (cond.move_end))
+    end
+    self.rnd = math.random (1, 100)
+end
+------------------
+function mob_kicker:select_point ()
+    local dir = self.corpse:position ():sub (self.corpse_pos)
+    local current = self.corpse:position ()
+    local dist
+    dir:normalize ()
+    if self.corpse_pos:distance_to (current) > max_corpse_dist then
+       dist = math.random (4, 8)
+    else
+       dir = self.object:position ():sub (self.corpse:position ())
+       dir:normalize ()
+       dir = vector_rotate_y (dir, math.random (30, 120))
+       dist = math.random (4, 8)
+    end   
+    self.start_point_id = level.vertex_in_direction (self.corpse:level_vertex_id (), dir, dist)
+    return level.vertex_position (self.start_point_id)
+end
+------------------
+function mob_kicker:initialize ()
+    printf ("INITALIZE CALLED")
+    self.corpse = self.object:get_corpse ()
+    if self.corpse == nil then return end
+    printf ("Found corpse : %s", self.corpse:name ())
+    self.corpse_pos = self.corpse:position ()
+    self.pshell = self.corpse:get_physics_shell ()
+    self.start_point = self.object:position ()
+    self.start_point_id = self.object:level_vertex_id ()
+    --self.move_to_start = false
+    self.state = state_move_to_corpse
+    self.time = 0
+    self.rnd = math.random (1, 100)
+    self.initialized = true
+end
+
+--------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	printf ("DEBUG: add_to_binder: npc:name()='%s', scheme='%s', section='%s'", npc:name(), scheme, section)
+
+	local new_action = mob_kicker (npc, storage)
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+--------------------------------------------------------------------------------
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind (npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions (ini, section, npc)
+	st.alife_mode   = mob_alife_mgr.cfg_get_mode (ini, section, npc)
+end
+

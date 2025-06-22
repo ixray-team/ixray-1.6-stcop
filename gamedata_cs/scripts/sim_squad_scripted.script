@@ -1,0 +1,329 @@
+--'******************************************************
+--'*	Боевой отряд группировки. (Скриптовая версия)
+--'*	Наследован от обычного боевого отряда.
+--'*	Отличия:
+--'*		- Детерминированные состав отряда
+--'*		- Возможность жестко указать активное действие
+--'******************************************************
+
+function printf()
+end
+
+class "sim_squad_scripted" (sim_squad_generic.sim_squad_generic)
+function sim_squad_scripted:__init(sim_board, player_id, squad_id, settings_id) super (sim_board, player_id, squad_id)
+	self.name = "sim_squad_scripted"
+	self.settings_id = settings_id or squad_id
+end
+--' Инициализация
+function sim_squad_scripted:init_squad(smart)
+	sim_squad_generic.sim_squad_generic.init_squad(self, smart)
+	self.action_condlist = xr_logic.parse_condlist(self, "assign_action", "target_smart", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "target_smart", self, false, "", ""))
+	self.death_condlist = xr_logic.parse_condlist(self, "death_condlist", "on_death", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "on_death", self, false, "", ""))
+	self.attack_power = xr_logic.parse_condlist(self, "attack_power", "attack_power", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "attack_power", self, false, "", ""))
+	self.invulnerability = xr_logic.parse_condlist(self, "invulnerability", "invulnerability", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "invulnerability", self, false, "", ""))
+	self.relationship = utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "relationship", self, false, "", nil)
+	self.sympathy = utils.cfg_get_number(sim_board.squad_ltx, self.settings_id, "sympathy", self, false, nil)
+	self.show_spot = xr_logic.parse_condlist(self, "show_spot", "show_spot", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "show_spot", self, false, "", "false"))
+
+	self.always_walk = utils.cfg_get_bool(sim_board.squad_ltx, self.settings_id, "always_walk", self, false)
+end
+--' Создание чуваков в отряд
+function sim_squad_scripted:create_npc(spawn_smart)
+	local spawn_sections = utils.parse_names(utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "npc", self, true, ""))
+
+	self.squad_power = 0
+
+	local spawn_point = utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "spawn_point", self, false, "")
+
+	--print_table(debug.getinfo(1))
+	printf("SPAWN SMART %s", spawn_smart:name())
+	--' Высчитываем базовую позицию спауна
+	local base_spawn_position = spawn_smart.position
+	local base_lvi = spawn_smart.m_level_vertex_id
+	local base_gvi = spawn_smart.m_game_vertex_id
+	if spawn_point ~= nil then
+		base_spawn_position = patrol(spawn_point):point(0)
+		base_lvi = patrol(spawn_point):level_vertex_id(0)
+		base_gvi = patrol(spawn_point):game_vertex_id(0)
+	elseif spawn_smart.spawn_point ~= nil then
+		base_spawn_position = patrol(spawn_smart.spawn_point):point(0)
+		base_lvi = patrol(spawn_smart.spawn_point):level_vertex_id(0)
+		base_gvi = patrol(spawn_smart.spawn_point):game_vertex_id(0)
+	end
+
+	local player = self.board.players[self.player_id]
+	local spawn_sections_ltx = system_ini()
+	for k,v in pairs(spawn_sections) do
+		local custom_data = utils.cfg_get_string(spawn_sections_ltx, v, "custom_data", self, false, "", "stalker_custom_data.ltx")
+		if custom_data ~= "stalker_custom_data.ltx" then
+			abort("INCORRECT npc_spawn_section USED [%s]. You cannot use npc with custom_data in squads", v)
+		end
+
+		local position = base_spawn_position
+		position.x = position.x + math.random(-2,2)
+		position.z = position.z + math.random(-2,2)
+
+		local obj =  alife():create(v,
+									position,
+									base_lvi,
+									base_gvi)
+
+        obj.squad_id = self.squad_id
+        self.squad_npc[obj.id] = obj.id
+
+		self.sound_manager:register_npc(obj.id)
+		if self.commander_id == nil then
+			self.commander_id = obj.id
+		end
+		self.npc_count = self.npc_count + 1
+		self.squad_power = self.squad_power + 5*obj:rank()/1000
+	end
+	self.smart_id = spawn_smart.id
+	self:refresh()
+end
+
+--' Возвращает скриптовую цель.
+function sim_squad_scripted:get_script_target()
+	local new_target = xr_logic.pick_section_from_condlist(db.actor, self, self.action_condlist)
+
+	if new_target == nil then
+		printf("[%s] get_script_target nil_condlist", self.squad_id)
+		return nil
+	end
+
+	if new_target ~= self.last_target then
+		self.last_target = new_target
+		--' Парсим новые задачи для отряда
+		self.parsed_targets = utils.parse_names(new_target)
+
+		if self.need_free_update ~= true then
+			self.next_target = 1
+		else
+			self.need_free_update = false
+		end
+	end
+
+
+	local nt = self:pick_next_target()
+	if nt == "nil" then
+		return nil
+	elseif nt == "loop" then
+		self.next_target = 1
+		nt = self:pick_next_target()
+	end
+	local point = self.board.smarts_by_names[nt]
+	if point == nil then
+		abort("Incorrect next point [%s] for squad [%s]", tostring(nt), self.squad_id)
+	end
+	return point.id
+end
+
+
+--' Выбор следующей цели
+function sim_squad_scripted:pick_next_target()
+	--printf("Picking next target for [%s] = %s by %s", self.squad_id, tostring(self.parsed_targets[self.next_target]), self.next_target)
+	return self.parsed_targets[self.next_target]
+end
+
+--' Рассчет дополнительной силы отряда в атаке
+function sim_squad_scripted:calculate_attack_power()
+	local attack_power = xr_logic.pick_section_from_condlist(db.actor, self, self.attack_power)
+
+	if attack_power == nil then
+		sim_squad_generic.sim_squad_generic.calculate_attack_power(self)
+		return
+	end
+	self.squad_attack_power = tonumber(attack_power)
+end
+
+--' Проверка пришел ли отряд в очередной поинт
+function sim_squad_scripted:check_squad_come_to_point()
+	--printf("[%s] check squad point", self.squad_id)
+	if self.parsed_targets == nil then
+		return true
+	end
+	--' Если мы уже дошли до точки.
+	local next_target = self.next_target or 0
+	if self.assigned_target_smart_id ~= nil and self.smart_id == self.assigned_target_smart_id then
+		if self.parsed_targets[next_target+1] ~= nil then
+			self.next_target = next_target+1
+			return true
+		end
+	end
+	return false
+end
+--' Проверка пришел ли отряд в очередной поинт
+function sim_squad_scripted:update_current_action()
+	local is_finished =	self.current_action:update()
+	if not is_finished then
+		return false
+	end
+	return true
+end
+function sim_squad_scripted:check_invulnerability()
+	if self.squad_online ~= true then
+		return
+	end
+
+	local invulnerability = xr_logic.pick_section_from_condlist(db.actor, self, self.invulnerability) == "true"
+
+	for k,v in pairs(self.squad_npc) do
+		local npc_st = db.storage[k]
+		if npc_st ~= nil then
+			local npc = npc_st.object
+			if npc:invulnerable() ~= invulnerabilty and utils.cfg_get_bool(npc_st.ini, npc_st.active_section, "invulnerable", npc, false, nil) == nil  then
+--				printf("RESET INVULNERABILITY. npc[%s] = [%s]", npc:name(), tostring(invulnerability))
+				npc:invulnerable(invulnerability)
+			end
+		end
+	end
+end
+function sim_squad_scripted:update()
+	self:check_invulnerability()
+	local script_target = self:get_script_target()
+	--printf("[%s] SCRIPTED UPDATE. Target[%s]", self.squad_id, tostring(script_target))
+	if not xr_surge_hide.surge_activated then
+		self.show_disabled = xr_logic.pick_section_from_condlist(db.actor, self, self.show_spot) == "true"
+		--log("--->"..tostring(self.show_disabled))
+	end
+	if script_target == nil then
+		sim_squad_generic.sim_squad_generic.update(self)
+		return
+	end
+	self.sound_manager:update()
+	self:calculate_attack_power()
+	local need_to_find_new_action = false
+	if self.assigned_target_smart_id ~= nil and self.assigned_target_smart_id == script_target then
+		if self.current_action ~= nil then
+			if self.current_action.name == "stay_point" then
+				--' Если экшн stay_point. Проверяем пришли ли до экшна.
+				if self:check_squad_come_to_point() then
+					--' Пришли в точку, перевыбрали цель
+					need_to_find_new_action = true
+					--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
+				else
+					--' Не пришли в точку, апдейтимся дальше
+					need_to_find_new_action = self:update_current_action()
+					--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
+				end
+			else
+				--' Если экшн attack_point. Проверяем пришли ли после экшна.
+				if self:update_current_action() then
+					self:check_squad_come_to_point()
+					need_to_find_new_action = true
+					--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
+				end
+			end
+		else
+			--' Проверяем пришли ли
+			self:check_squad_come_to_point()
+			need_to_find_new_action = true
+			--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
+		end
+	else
+		if self.current_action == nil then
+			local player = self.board.players[self.player_id]
+			player.squad_target_cache[self.squad_id] = script_target  --!!!
+			need_to_find_new_action = true
+			--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
+		else
+			if self.current_action.major == true then
+				if self:update_current_action() then
+					self:check_squad_come_to_point()
+					need_to_find_new_action = true
+					--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
+				end
+			else
+				local player = self.board.players[self.player_id]
+				player.squad_target_cache[self.squad_id] = script_target --!!!
+				need_to_find_new_action = true
+				--printf("[%s] SCRIPTED need_to_find_new_action %s", self.squad_id, tostring(need_to_find_new_action))
+				-- Так как мы "жестко" обрываем выполнения текущего действия, нужно выйти из сим_комбата
+				if self.sim_combat_id ~= nil then
+					self.board.smarts[self.sim_combat_id].smrt.combat_manager:unregister_squad(self)
+				end
+			end
+		end
+	end
+
+	if need_to_find_new_action == true then
+		self:find_target()
+		if self.current_action ~= nil then
+			self.current_action:finalize()
+			self.current_action = nil
+		end
+		--' Если у нас нет текущей цели - просим выдать нам задание.
+		self:get_next_action()
+	end
+end
+function sim_squad_scripted:save(packet)
+	sim_squad_generic.sim_squad_generic.save(self, packet)
+
+	set_save_marker(packet, "save", false, "sim_squad_scripted")
+
+	if self.next_target == nil then
+		packet:w_u8(-1)
+		packet:w_bool(false)
+	else
+		packet:w_u8(self.next_target)
+		packet:w_bool(true)
+	end
+
+	if self.relationship == "friend" then
+		packet:w_u8(1)
+	elseif self.relationship == "enemy" then
+		packet:w_u8(2)
+	elseif self.relationship == "neutral" then
+		packet:w_u8(3)
+	else
+		packet:w_u8(0)
+	end
+
+
+    if(self.sympathy==nil) then
+		packet:w_u8(-1)
+	else
+		packet:w_u8(self.sympathy)
+	end
+	set_save_marker(packet, "save", true, "sim_squad_scripted")
+end
+function sim_squad_scripted:load(packet)
+	sim_squad_generic.sim_squad_generic.load(self, packet)
+	set_save_marker(packet, "load", false, "sim_squad_scripted")
+
+	self:init_squad()
+
+	self.next_target = packet:r_u8()
+	if self.next_target == 255 then
+		self.next_target = nil
+	end
+
+	-- Нужно ли нам пропустить один репик таргета
+	self.need_free_update = packet:r_bool()
+
+	local s = packet:r_u8()
+	if s == 0 then
+		self.relationship = nil
+	elseif s == 1 then
+		self.relationship = "friend"
+		self:set_squad_relation(self.relationship)
+	elseif s == 2 then
+		self.relationship = "enemy"
+		self:set_squad_relation(self.relationship)
+	elseif s == 3 then
+		self.relationship = "neutral"
+		self:set_squad_relation(self.relationship)
+	end
+
+
+	local n = packet:r_u8()
+    if(n~=255) then
+		self.sympathy = n
+        self:set_squad_sympathy(n)
+	end
+	set_save_marker(packet, "load", true, "sim_squad_scripted")
+end
+
+
+
+

@@ -1,0 +1,28 @@
+[collide]
+ignore_static
+
+[logic]
+active = ph_door@locked_no_story
+
+[ph_door@locked]
+locked = true
+closed = true
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop
+
+[ph_door@open]
+locked = false
+closed = false
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop
+on_info = {+agru_door_1_closed} ph_door@locked
+
+[ph_door@locked_no_story]
+locked = true
+closed = true
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop
+on_info = {+agru_open_story_door} ph_door@open

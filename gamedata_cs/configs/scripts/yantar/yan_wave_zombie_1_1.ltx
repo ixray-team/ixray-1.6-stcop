@@ -1,0 +1,245 @@
+[logic]
+active = sr_idle@start
+
+;--спауним первую группу на крышу. скорость 1х
+[sr_idle@start]
+on_info = {+yan_ready_perekl_cut6} sr_idle@wave_1 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_1]
+on_game_timer = 80 | sr_idle@wave_1_2 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_way_3_walk) +yan_wave_zombie1_cut6%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_1_2]
+on_game_timer = 70 | sr_idle@wave_1_3 %=spawn_object(yan_wave_zombie_13:yan_walker_zombie_cut6_way_13_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_1_3]
+on_game_timer = 80 | sr_idle@wave_1_4 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_way_3_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_1_4]
+on_game_timer = 80 | sr_idle@wave_1_5 %=spawn_object(yan_wave_zombie_12:yan_walker_zombie_cut6_way_12_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1 
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_1_5]
+on_game_timer = 80 | sr_idle@wave_1 %=spawn_object(yan_wave_zombie_5:yan_walker_zombie_cut6_way_5_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1
+on_info3 = {+yan_game_over_cut6} nil
+
+;--спауним первую группу на крышу. скорость 2х
+[sr_idle@wave2x_1]
+on_game_timer = 70| sr_idle@wave2x_2 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_way_3_walk) -yan_wave_zombie1_cut6%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_fast_zombi_cut6} sr_idle@wave_3
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave2x_2]
+on_game_timer = 35 | sr_idle@wave2x_3 %=spawn_object(yan_wave_zombie_13:yan_walker_zombie_cut6_way_13_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_fast_zombi_cut6}sr_idle@wave_3
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave2x_3]
+on_game_timer = 70 | sr_idle@wave2x_4 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_way_1_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_fast_zombi_cut6} sr_idle@wave_3
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave2x_4]
+on_game_timer = 45 | sr_idle@wave2x_5 %=spawn_object(yan_wave_zombie_12:yan_walker_zombie_cut6_way_12_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_fast_zombi_cut6} sr_idle@wave_3
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave2x_5]
+on_game_timer = 35 | sr_idle@wave2x_1 %=spawn_object(yan_wave_zombie_5:yan_walker_zombie_cut6_way_5_walk)%
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info = {+yan_fast_zombi_cut6} sr_idle@wave_3
+on_info3 = {+yan_game_over_cut6} nil
+
+
+;-- спауним зомби в ангар
+[sr_idle@wave_3]
+on_info =  {+yan_wave_naval_roof1} sr_idle@wave3_1 ;%=play_sound(yan_wave_naval_roof)%
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_1]
+on_game_timer = 80 | sr_idle@wave3_2 %=spawn_object(yan_wave_zombie_8:yan_walker_zombie_cut6_way_8_walk)% 
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_2]
+on_game_timer = 70 | sr_idle@wave3_3 %=spawn_object(yan_wave_zombie_9:yan_walker_zombie_cut6_way_9_walk)% 
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_3]
+on_game_timer = 80 | sr_idle@wave3_4 %=spawn_object(yan_wave_zombie_8:yan_walker_zombie_cut6_way_8_walk)% 
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_4]
+on_game_timer = 60 | sr_idle@wave3_5 %=spawn_object(yan_wave_zombie_9:yan_walker_zombie_cut6_way_9_walk)% 
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_5]
+on_game_timer = 70 | sr_idle@wave3_6 %=spawn_object(yan_wave_zombie_8:yan_walker_zombie_cut6_way_8_walk)% 
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_6]
+on_game_timer = 60 | sr_idle@wave_3_end %=spawn_object(yan_wave_zombie_9:yan_walker_zombie_cut6_way_9_walk)% 
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_7]
+on_game_timer = 70 | sr_idle@wave_3_8 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_way_3_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_8]
+on_game_timer = 60 | sr_idle@wave_3_8 %=spawn_object(yan_wave_zombie_13:yan_walker_zombie_cut6_way_13_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_9]
+on_game_timer = 50 | sr_idle@wave3_4 %=spawn_object(yan_wave_zombie_8:yan_walker_zombie_cut6_way_8_walk)% 
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_10]
+on_game_timer = 60 | sr_idle@wave_3_11 %=spawn_object(yan_wave_zombie_13:yan_walker_zombie_cut6_way_13_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_11]
+on_game_timer = 50 | sr_idle@wave3_12 %=spawn_object(yan_wave_zombie_8:yan_walker_zombie_cut6_way_8_walk)% 
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave3_12]
+on_game_timer = 70 | sr_idle@wave_3_end %=spawn_object(yan_wave_zombie_13:yan_walker_zombie_cut6_way_13_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_3_end]
+on_game_timer = 350 | sr_idle@wave_1_2
+on_info = {+yan_game_over_cut6} nil
+
+
+[sr_idle@wave_1_7]
+on_game_timer = 55 | {+yan_ready_perekl_cut6} sr_idle@go_wave_2 %=spawn_object(yan_wave_zombie_5:yan_walker_zombie_cut6_1_5b_walk)% 
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop 
+on_info2 = {+yan_game_over_cut6} nil
+
+;--спауним вторую волну
+[sr_idle@go_wave_2]
+on_game_timer = 200 | sr_idle@wave_2_1 %-yan_wave_zombie1_cut6 -yan_warning_zombie_cut6 +yan_task1_end_cut6%
+on_info = {+yan_game_over_cut6} nil 
+ 
+[sr_idle@wave_2_1];
+on_game_timer = 50 | sr_idle@wave_2_2 %=spawn_object(yan_wave_zombie_2:yan_walker_zombie_cut6_1_2a_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@wait 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_2_2]
+on_game_timer = 55 | sr_idle@wave_2_3 %-yan_task1_end_cut6 =spawn_object(yan_wave_zombie_6:yan_walker_zombie_cut6_2_2b_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_2_3]
+on_game_timer = 50 |  sr_idle@wave_2_4 %=spawn_object(yan_wave_zombie_7:yan_walker_zombie_cut6_2_1b_walk)%
+on_info = {+yan_game_over_cut6} nil 
+  
+[sr_idle@wave_2_4]
+on_game_timer = 100 |  sr_idle@wave_2_5 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_1_3a_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_2_5]
+on_game_timer = 70 |  sr_idle@wave_2_6 %+yan_wave_zombie2_cut6 =spawn_object(yan_wave_zombie_5:yan_walker_zombie_cut6_1_5b_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_2_6]
+on_game_timer = 65 | sr_idle@wave_2_7 %=spawn_object(yan_wave_zombie_1:yan_walker_zombie_cut6_1_1a_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_2_7]
+on_game_timer = 70 | sr_idle@wave_2_8 %=spawn_object(yan_wave_zombie_13:yan_walker_zombie_cut6_1_3a_a_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@wait 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_2_8]
+on_game_timer = 75 | sr_idle@go_wave_3 %+yan_warning_zombie2_cut6 =spawn_object(yan_wave_zombie_2:yan_walker_zombie_cut6_1_2a_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+;--спауним третью волну
+[sr_idle@go_wave_3]
+on_game_timer = 200 | sr_idle@wave_3_1 %-yan_wave_zombie2_cut6 -yan_warning_zombie2_cut6 +yan_task2_end_cut6%
+on_info = {+yan_game_over_cut6} nil
+
+[sr_idle@start_wave_3]
+on_info = {+yan_ready_wave3_cut6} sr_idle@wave_3_1 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_3_1]
+on_game_timer = 150 |  sr_idle@wave_3_2 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_1_3a_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_3_2]
+on_game_timer = 65 | sr_idle@wave_3_3 %-yan_task2_end_cut6 =spawn_object(yan_wave_zombie_5:yan_walker_zombie_cut6_1_5b_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_3_3]
+on_game_timer = 65 |  sr_idle@wave_3_4 %=spawn_object(yan_wave_zombie_2:yan_walker_zombie_cut6_1_2a_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil 
+  
+[sr_idle@wave_3_4]
+on_game_timer = 75 |  sr_idle@wave_3_5 %=spawn_object(yan_wave_zombie_6:yan_walker_zombie_cut6_2_2b_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_3_5]
+on_game_timer = 45 |  sr_idle@wave_3_6 %=spawn_object(yan_wave_zombie_7:yan_walker_zombie_cut6_2_1b_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_3_6]
+on_game_timer = 60 | sr_idle@wave_1_3 %=spawn_object(yan_wave_zombie_8:yan_walker_zombie_cut6_2_3b_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_return_1_4]
+on_game_timer = 40 | sr_idle@wave_return_1_5 %=spawn_object(yan_wave_zombie_4:yan_walker_zombie_cut6_1_4b_walk)%
+on_info = %+yan_warning_zombie_cut6%
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@wait 
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@wave_return_1_5]
+on_game_timer = 55| sr_idle@stop %=spawn_object(yan_wave_zombie_2:yan_walker_zombie_cut6_1_2a_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@wait 
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@wait]
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_game_over_cut6} nil
+
+
+[sr_idle@stop]

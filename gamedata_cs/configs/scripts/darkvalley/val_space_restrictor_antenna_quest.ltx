@@ -1,0 +1,17 @@
+[logic]
+active = sr_idle@clear_smart_7_8
+
+[sr_idle@clear_smart_7_8]
+on_info = {+val_strike_antenna} sr_idle@create_squad %=clear_smart_terrain(val_smart_terrain_7_8) =clear_smart_terrain(val_smart_terrain_8_7)%
+
+[sr_idle@create_squad]
+on_game_timer = 20 | sr_idle@resp_kaban %=create_squad(val_smart_terrain_5_0_freedom_antenna:val_smart_terrain_8_7) =create_squad(val_smart_terrain_6_0_killer_antenna:val_smart_terrain_7_8) +val_strike_antenna_ready%
+
+[sr_idle@resp_kaban]
+on_info = sr_idle@resp_kaban_clear_smart %=clear_smart_terrain(val_smart_terrain_3_0) =clear_smart_terrain(val_smart_terrain_4_0) =remove_squad(val_smart_terrain_4_0_killer)%
+
+[sr_idle@resp_kaban_clear_smart]
+on_game_timer = 20 | sr_idle@resp_kaban_2 %=create_squad(val_smart_terrain_3_0_freedom_antenna_2:val_smart_terrain_3_0) =create_squad(val_smart_terrain_4_0_killer:val_smart_terrain_4_0) +val_strike_antenna_two_ready%
+
+[sr_idle@resp_kaban_2]
+;on_info = {+val_strike_antenna_two_captured} nil %=create_squad(val_boar_antenna_1_2:val_smart_terrain_5_10)%

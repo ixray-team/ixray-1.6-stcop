@@ -1,0 +1,20 @@
+[logic]
+active = smartcover@1
+
+[smartcover@1]
+cover_name 		= stc_first_scene_smart_cover
+loophole_name 	= lh_6
+cover_state 	= default_behaviour 
+on_info = {+stc_scene_start} walker@to_battle
+use_in_combat = true
+idle_min_time = 4
+idle_max_time = 5
+lookout_min_time = 2
+lookout_max_time = 3
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[walker@to_battle]
+path_walk = stc_battle_walk
+ 
+

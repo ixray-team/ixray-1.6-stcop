@@ -1,0 +1,8 @@
+[logic]
+active = sr_no_weapon
+
+[sr_no_weapon]
+on_info = {=is_smart_in_combat(val_smart_terrain_7_3:val_smart_terrain_7_4:val_smart_terrain_7_5)} sr_idle %+val_freedom_base_under_attack%
+
+[sr_idle]
+on_info = {!is_smart_in_combat(val_smart_terrain_7_3:val_smart_terrain_7_4:val_smart_terrain_7_5)} sr_no_weapon %-val_freedom_base_under_attack%

@@ -1,0 +1,19 @@
+[logic]
+active = sr_idle@line_0
+
+[sr_idle@line_0]
+on_info = {=actor_in_zone(agr_stalker_base_attack)} sr_idle@line_2 %+agr_stalker_base_start_attack_1%
+
+[sr_idle@line_2]
+on_game_timer = 600 | sr_idle@line_3 
+
+[sr_idle@line_3]
+on_info = {=actor_in_zone(agr_stalker_base_attack)} sr_idle@line_4 %+agr_stalker_base_start_attack_2%
+
+[sr_idle@line_4]
+on_game_timer = 600 | sr_idle@line_5 
+
+[sr_idle@line_5]
+on_info = {=actor_in_zone(agr_stalker_base_attack)} sr_idle@line_6 %+agr_stalker_base_start_attack_3%
+
+[sr_idle@line_6]

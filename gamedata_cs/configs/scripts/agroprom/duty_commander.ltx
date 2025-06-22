@@ -1,0 +1,105 @@
+[logic]
+active = walker@no_storyline
+on_use = use
+level_spot = quest_npc
+
+[task_manager]
+reward = dolg
+
+[walker@no_storyline]
+path_walk = agr_duty_commander_walk
+path_look = agr_duty_commander_look
+on_info = {+agr_actor_inside_3} walker
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+meet = no_meet
+invulnerable = true
+
+[walker]
+path_walk = agr_duty_commander_walk
+path_look = agr_duty_commander_look
+on_info = {+agr_duty_leader_raciya_end} walker@2
+on_info2 = {+agr_actor_inside_4 -agr_actor_inside_11 -agr_hole_leader_death} remark@1
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+meet = meet
+invulnerable = true
+
+[remark@1]
+target = actor
+anim = guard_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = sound_end | %+agr_racya_dialog_1% remark@2
+meet = no_meet
+snd = agr_base_leader_sergant_1_1
+invulnerable = true
+
+[remark@2]
+target = actor
+anim = guard_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_info = {+agr_racya_dialog_1_end} remark@3
+meet = no_meet
+invulnerable = true
+
+[remark@3]
+target = actor
+anim = guard_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+snd = agr_base_leader_sergant_3_3
+on_signal = sound_end | %+agr_racya_dialog_2% remark@4
+meet = no_meet
+invulnerable = true
+
+[remark@4]
+target = actor
+anim = guard_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_info = {+agr_racya_dialog_2_end} remark@5
+meet = no_meet
+invulnerable = true
+
+[remark@5]
+target = actor
+anim = wait
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_info = remark@end %=play_sound(agr_base_leader_sergant_5:dolg:agr_duty_base_commander_name)%
+meet = meet
+invulnerable = true
+
+[remark@end]
+target = actor
+anim = guard_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = sound_end | walker@2 %+agr_duty_leader_raciya_end%
+meet = no_meet
+invulnerable = true
+
+[walker@2]
+path_walk = agr_duty_commander_walk
+path_look = agr_duty_commander_look
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+meet = meet
+invulnerable = true
+
+[meet]
+meet_state 		= 5|ward@nil|10|wait@nil
+meet_state_wpn 		= 5|ward@nil|10|wait@nil
+victim 			= 5|actor
+victim_wpn 		= 10|actor
+use			= true
+use_wpn			= true
+trade_enable 		= false
+sound_start 		= agr_duty_leader_meet
+sound_stop 		= agr_duty_leader_meet_bye
+quest_npc = true
+
+[use]
+on_info = {+agr_actor_inside_11} %+agr_take_reward_complete%

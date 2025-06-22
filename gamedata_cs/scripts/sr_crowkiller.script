@@ -1,0 +1,139 @@
+--------------------------------------------------------------------------------
+-- Space restrictor scheme for crowkiller minigame -----------------------------
+-- Made by Peacemaker ----------------------------------------------------------
+-- 26.12.07 --------------------------------------------------------------------
+--------------------------------------------------------------------------------
+class "crowkiller"
+-- Class constructor
+function crowkiller:__init(obj, storage)
+    self.object = obj
+    self.st = storage
+    self.spawn_time_constant = 120000
+    self.time_for_spawn = time_global()
+    self.spawn_points_idle = {}
+    self.spawned_count = nil
+    self.idle_time = 0
+    self.new_highscore_set = storage.new_highscore_time == 0
+end
+-- On scheme switch resets all self params
+function crowkiller:reset_scheme()
+    for k,v in pairs(self.st.path_table) do
+        self.spawn_points_idle[v] = time_global()
+    end
+end
+-- Class update
+function crowkiller:update(delta)
+-- check for spawn crows on level
+    if(self.time_for_spawn<time_global()) then
+        self.spawned_count = #bind_crow.crow_storage
+        if(self.spawned_count<self.st.max_crows_on_level) then
+-- need to spawn
+            self:check_for_spawn_new_crow()
+        else
+-- now look for spawn later
+            self.time_for_spawn = time_global() + self.spawn_time_constant
+        end
+    end
+-- try to switch to another scheme
+    if(xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)) then
+        return
+    end
+-- minigame update
+    local MGM = minigames_manager.get_minigames_manager()
+    local state = MGM:get_minigame_state(self.st.game_name)
+	if(state~="valiable") then
+		if(state=="enabled") then
+	        MGM:start(self.st.game_name, self.object)
+	    elseif(state=="disabled") then
+            self:reset_scheme()
+		    get_hud():RemoveCustomStatic("crow_timer")
+	    	get_hud():RemoveCustomStatic("crow_timer_text")
+            MGM:set_minigame_state(self.st.game_name, "valiable")
+    		if(MGM:get_minigame_param(self.st.game_name, "win")) then
+				self.new_highscore_set = false
+		        xr_logic.switch_to_section(self.object, self.st.ini, self.st.on_win)
+		        return
+		    end
+		else
+			MGM:update(self.st.game_name, self.object)
+		end
+		self.idle_time = 0
+	else
+		if(self.idle_time==0) then
+	    	self.idle_time = time_global()
+	    else
+	    	if(self.idle_time<=time_global()-self.st.new_highscore_time) and not(self.new_highscore_set) then
+				MGM:set_minigame_param(self.st.game_name, "highscore", MGM:get_minigame_param(self.st.game_name, "highscore") + 1)
+				self.new_highscore_set = true
+	    	end
+	    end
+
+	end
+end
+-- Checks a need for spawn a new crow
+function crowkiller:check_for_spawn_new_crow()
+    local path_table = {}
+    utils.copy_table(path_table, self.st.path_table)
+    for i=1,#self.st.path_table do
+        local idx = math.random(#path_table)
+        local selected_path = path_table[idx]
+        table.remove(path_table,idx)
+        if(self.spawn_points_idle[selected_path]<=time_global()) then
+-- if we have not spawned already in this point
+            local ptr = patrol(selected_path)
+            local obj = alife():create("m_crow", ptr:point(0), ptr:level_vertex_id(0), ptr:game_vertex_id(0))
+            self.spawn_points_idle[selected_path] = time_global() + 10000
+            return
+        end
+    end
+end
+--------------------------------------------------------------------------------
+-- Standart functions
+--------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+    xr_logic.subscribe_action_for_events(npc, storage, crowkiller(npc, storage))
+end
+function set_scheme(obj, ini, scheme, section, gulag_name)
+-- standart lines: assigning new storage and binding our space restrictor
+    local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+    st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+-- getting maximum number of crows on level
+    st.max_crows_on_level = utils.cfg_get_number(ini, section, "max_crows_on_level", obj, false, 16)
+-- getting path names from custom_data
+    local path = utils.cfg_get_string(ini, section, "spawn_path", obj, false, "", nil)
+    st.path_table = parse_names(path)
+-- switch to scheme if win minigame
+    st.on_win = utils.cfg_get_string(ini, section, "on_win", obj, false, "", nil)
+-- getting game name from custom_data
+    st.game_name = utils.cfg_get_string(ini, section, "game_name", obj, false, "", "test_crowkiller")
+	local m = minigames_manager.get_minigames_manager()
+    m:set_current_crowkiller(st.game_name)
+-- set highscore parameter
+    st.highscore = utils.cfg_get_number(ini, section, "highscore", obj, false, 0)
+-- set timer parameter
+    st.timer = utils.cfg_get_number(ini, section, "timer", obj, false, 90)
+-- set number of crows to kill (needed for dialog)
+    local crows_to_kill = utils.cfg_get_string(ini, section, "crows_to_kill", obj, false, "", "{0,0,0,0}")
+    if(crows_to_kill~=nil) then
+		st.crows_to_kill = parse_nums(crows_to_kill)
+	else
+		st.crows_to_kill = {0,0,0,0}
+	end
+-- set money multiplier (crows_to_kill[i]*money_multiplier = reward_money)
+    st.money_multiplier = utils.cfg_get_number(ini, section, "money_multiplier", obj, false, 10)
+-- set championship money multiplier (crows_to_kill[i]*champion_multiplier = reward_money)
+    st.champion_multiplier = utils.cfg_get_number(ini, section, "champion_multiplier", obj, false, 100)
+-- set time after which new highscore is set if actor isn't playing
+	st.new_highscore_time = utils.cfg_get_number(ini, section, "new_highscore_time", obj, false, 100)*1000
+	if not(m:params_exist(st.game_name)) then
+	    m:create_new_minigame_parameter_list(st.game_name, minigame_crowkiller.CMGCrowKiller())
+	    m:set_minigame_param(st.game_name, "highscore", st.highscore)
+	    m:set_minigame_param(st.game_name, "timer", st.timer)
+	    m:set_minigame_param(st.game_name, "win", false)
+	    m:set_minigame_param(st.game_name, "crows_to_kill", st.crows_to_kill)
+	    m:set_minigame_param(st.game_name, "money_multiplier", st.money_multiplier)
+	    m:set_minigame_param(st.game_name, "champion_multiplier", st.champion_multiplier)
+	    m:set_minigame_param(st.game_name, "selected", 0)
+	    m:set_minigame_param(st.game_name, "game_type", "")
+	end
+end

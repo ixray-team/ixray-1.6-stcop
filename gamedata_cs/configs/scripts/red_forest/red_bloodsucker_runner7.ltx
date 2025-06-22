@@ -1,0 +1,56 @@
+[logic]
+active = mob_home
+;on_mob_combat = mob_combat
+
+[mob_combat]
+on_info = mob_home@2
+
+[mob_home@sound]
+path_home = red_bloodsucker_swarm_7_1
+home_min_radius = 30
+home_max_radius = 50
+aggressive_home = true
+;actor_friendly = true
+;npc_friendly = true
+state = invis
+on_info = mob_home ;%=play_sound(red_bloodsucker_spawn)%
+
+[mob_home]
+path_home = red_bloodsucker_swarm_7_1
+home_min_radius = 30
+home_max_radius = 50
+aggressive_home = true
+;actor_friendly = true
+;npc_friendly = true
+state = invis
+on_game_timer = 400 | mob_walker@2
+on_info = {=dist_to_actor_le(5)} mob_home@2
+
+[mob_home@2]
+path_home = red_bloodsucker_swarm_7_1
+home_min_radius = 30
+home_max_radius = 50
+aggressive_home = true
+;actor_friendly = true
+;npc_friendly = true
+state = vis
+on_game_timer = 150 | mob_walker
+on_info = {=health_le(0.5)} mob_walker
+
+[mob_walker]
+path_walk = red_bloodsucker_swarm_7_2
+actor_friendly = true
+npc_friendly = true
+braindead = true
+state = vis
+on_info = {=dist_to_actor_ge(5)} mob_walker@2
+on_signal = action | nil %-red_bloodsucker_spawn =destroy_object%
+
+[mob_walker@2]
+path_walk = red_bloodsucker_swarm_7_3
+actor_friendly = true
+npc_friendly = true
+braindead = true
+state = invis
+on_info = {=dist_to_actor_ge(15)} nil %-red_bloodsucker_spawn =destroy_object%
+on_signal = action | nil %-red_bloodsucker_spawn =destroy_object%

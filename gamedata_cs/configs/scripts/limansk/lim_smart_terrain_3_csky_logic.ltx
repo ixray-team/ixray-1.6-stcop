@@ -1,0 +1,255 @@
+;*****************************
+;********* csky ***********
+
+[logic@csky_work1]
+active = walker@talk_work1
+suitable = {=check_npc_name(lim_csky_commander) =is_gulag_attacking_target(lim_smart_terrain_4) -lim_condition6} true
+prior = 70
+on_combat = combat
+post_combat_time = 0,0
+
+[combat]
+on_info = %+lim_condition5%
+
+[walker@talk_work1]
+invulnerable = true
+path_walk = csky_patrol_1_walk
+on_game_timer = 5 | patrol@work1 %=play_sound(lim_cs_storm_troop_leader_order1) +lim_cs_go_to_squere%  
+
+[patrol@work1]
+invulnerable = true
+path_walk = csky_patrol_1_walk
+commander = true
+on_signal = action | walker@wait_work1 %+lim_csky_square_wait%
+on_info = %=restore_health%
+on_info2 = {+lim_condition5} walker@retreat_work1
+on_info3 = {+lim_csky_square_wait} walker@wait_work1
+
+[walker@wait_work1]
+invulnerable = true
+path_walk = csky_wait_1_walk
+path_look = csky_wait_1_look
+on_info = {+lim_condition5} walker@retreat_work1
+on_game_timer = 300 | %+lim_condition5%
+
+[walker@retreat_work1]
+invulnerable = true
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_1_walk
+path_look = csky_retreat_1_walk
+on_signal = action | walker@guard_work1
+on_info = %=restore_health =play_sound(lim_cs_storm_troop_leader_order2)%
+on_info2 = {=squad_in_zone(lim_csky_storm_troops:lim_smart_terrain_4_defence)} smartcover@work1 %+lim_go_to_canal_task =play_sound(lim_cs_storm_troop_leader_order2)% 
+on_game_timer = 100 | smartcover@work1 %+lim_go_to_canal_task =play_sound(lim_cs_storm_troop_leader_order2)%
+
+[smartcover@work1]
+use_in_combat = true
+invulnerable = true
+;out_restr = lim_smart_terrain_4_defence
+;loophole_name = lh_2
+cover_name = lim_smart_terrain_4_cover_1
+on_info = %=play_sound(lim_cs_storm_troop_leader_stay:csky)%
+on_game_timer = 250 | walker@guard_work1 %+lim_condition6%
+
+[walker@guard_work1]
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_1_walk
+path_look = csky_retreat_1_look
+on_game_timer = 250 | %+lim_condition6%
+
+;***********************************
+
+[logic@csky_work2]
+active = walker@talk2
+suitable = {=check_npc_name(lim_csky_soldier) =is_gulag_attacking_target(lim_smart_terrain_4) -lim_condition6} true
+prior = 70
+post_combat_time = 0,0
+
+[walker@talk2]
+combat_ignore_cond = true
+path_walk = wait_2_walk
+path_walk = wait_2_look
+on_info = {+lim_cs_go_to_squere} patrol@work2 
+
+[patrol@work2]
+invulnerable = true
+path_walk = csky_patrol_1_walk
+on_signal = action | walker@wait_work2 %+lim_csky_square_wait%
+on_info = %=restore_health%
+on_info2 = {+lim_condition5} walker@retreat_work2
+on_info3 = {+lim_csky_square_wait} walker@wait_work2
+
+[walker@wait_work2]
+invulnerable = true
+path_walk = csky_wait_2_walk
+path_look = csky_wait_2_look
+on_info = {+lim_condition5} walker@retreat_work2
+on_game_timer = 3600 | %+lim_condition5%
+
+[walker@retreat_work2]
+invulnerable = true
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_2_walk
+path_look = csky_retreat_2_walk
+on_signal = action | walker@gurad2
+on_info = %=restore_health%
+on_info2 = {=squad_in_zone(lim_csky_storm_troops:lim_smart_terrain_4_defence)} smartcover@work2
+on_game_timer = 100 | smartcover@work2
+
+[smartcover@work2]
+use_in_combat = true
+cover_name = lim_smart_terrain_4_cover_2
+
+;***********************************
+
+[logic@csky_work3]
+active = walker@talk3
+suitable = {=check_npc_name(lim_csky_soldier) =is_gulag_attacking_target(lim_smart_terrain_4) -lim_condition6} true
+prior = 70
+post_combat_time = 0,0
+
+[walker@talk3]
+combat_ignore_cond = true
+path_walk = wait_3_walk
+path_walk = wait_3_look
+on_info = {+lim_cs_go_to_squere} patrol@work3 
+
+[patrol@work3]
+invulnerable = true
+path_walk = csky_patrol_1_walk
+on_signal = action | walker@wait_work3 %+lim_csky_square_wait%
+on_info2 = {+lim_condition5} walker@retreat_work3
+on_info3 = {+lim_csky_square_wait} walker@wait_work3
+
+[walker@wait_work3]
+invulnerable = true
+path_walk = csky_wait_3_walk
+path_look = csky_wait_3_walk
+on_info = {+lim_condition5} walker@retreat_work3
+on_game_timer = 3600 | %+lim_condition5%
+
+[walker@retreat_work3]
+invulnerable = true
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_3_walk
+path_look = csky_retreat_3_walk
+on_signal = action | walker@guard_work3
+on_info2 = {=squad_in_zone(lim_csky_storm_troops:lim_smart_terrain_4_defence)} smartcover@work3
+on_game_timer = 150 | smartcover@work3
+
+[smartcover@work3]
+use_in_combat = true
+cover_name = lim_smart_terrain_4_cover_3
+
+;***********************************
+
+[logic@csky_work4]
+active = walker@talk4
+suitable = {=check_npc_name(lim_csky_soldier) =is_gulag_attacking_target(lim_smart_terrain_4) -lim_condition6} true
+prior = 70
+post_combat_time = 0,0
+
+[walker@talk4]
+combat_ignore_cond = true
+path_walk = wait_4_walk
+path_walk = wait_4_look
+on_info = {+lim_cs_go_to_squere} patrol@work4 
+
+[patrol@work4]
+invulnerable = true
+path_walk = csky_patrol_1_walk
+on_signal = action | walker@wait_work4 %+lim_csky_square_wait%
+on_info2 = {+lim_condition5} walker@retreat_work4
+on_info3 = {+lim_csky_square_wait} walker@wait_work4
+
+[walker@wait_work4]
+invulnerable = true
+path_walk = csky_wait_4_walk
+path_look = csky_wait_4_walk
+on_info = {+lim_condition5} walker@retreat_work4
+on_game_timer = 3600 | %+lim_condition5%
+
+[walker@retreat_work4]
+invulnerable = true
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_4_walk
+path_look = csky_retreat_4_walk
+on_signal = action | walker@guard_work4
+on_info2 = {=squad_in_zone(lim_csky_storm_troops:lim_smart_terrain_4_defence)} smartcover@work4
+on_game_timer = 100 | walker@retreat2_work4
+
+[walker@retreat2_work4]
+;invulnerable = true
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_4_walk
+path_look = csky_retreat_4_walk
+on_signal = action | walker@guard_work4
+on_info2 = {=squad_in_zone(lim_csky_storm_troops:lim_smart_terrain_4_defence)} smartcover@work4
+on_game_timer = 50 | smartcover@work4
+
+[smartcover@work4]
+use_in_combat = true
+cover_name = lim_smart_terrain_4_cover_4
+
+[walker@guard_work4]
+post_combat_time = 0,0
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_4_walk
+path_look = csky_retreat_4_look
+on_info = %=restore_health%
+
+;***********************************
+
+[logic@csky_work5]
+active = walker@talk5
+suitable = {=check_npc_name(lim_csky_soldier) =is_gulag_attacking_target(lim_smart_terrain_4) -lim_condition6} true
+prior = 70
+post_combat_time = 0,0
+
+[walker@talk5]
+combat_ignore_cond = true
+path_walk = wait_5_walk
+path_walk = wait_5_look
+on_info = {+lim_cs_go_to_squere} patrol@work5 
+
+[patrol@work5]
+invulnerable = true
+path_walk = csky_patrol_1_walk
+on_signal = action | walker@wait_work5 %+lim_csky_square_wait%
+on_info2 = {+lim_condition5} walker@retreat_work5
+on_info3 = {+lim_csky_square_wait} walker@wait_work5
+
+[walker@wait_work5]
+invulnerable = true
+path_walk = csky_wait_5_walk
+path_look = csky_wait_5_walk
+on_info = {+lim_condition5} walker@retreat_work5
+on_game_timer = 3600 | %+lim_condition5%
+
+[walker@retreat_work5]
+invulnerable = true
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_5_walk
+path_look = csky_retreat_5_walk
+on_signal = action | walker@guard_work5
+on_info2 = {=squad_in_zone(lim_csky_storm_troops:lim_smart_terrain_4_defence)} smartcover@work5
+on_game_timer = 50 | smartcover@work5
+
+[walker@retreat2_work5]
+;invulnerable = true
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_5_walk
+path_look = csky_retreat_5_walk
+on_signal = action | walker@guard_work5
+on_info2 = {=squad_in_zone(lim_csky_storm_troops:lim_smart_terrain_4_defence)} smartcover@work5
+on_game_timer = 100 | smartcover@work5
+
+[smartcover@work5]
+use_in_combat = true
+cover_name = lim_smart_terrain_4_cover_5
+
+[walker@guard_work5]
+out_restr = lim_smart_terrain_4_defence
+path_walk = csky_retreat_5_walk
+path_look = csky_retreat_5_look
+

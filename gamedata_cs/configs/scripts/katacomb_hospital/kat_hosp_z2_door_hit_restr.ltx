@@ -1,0 +1,23 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+hospital_z2_heli_crash} sr_idle@1
+
+[sr_idle@1]
+on_game_timer = 5 | sr_particle %=hit_obj_chemical(215:link:500:500:z2_heli_show_fire_6) =hit_obj_fire_wound(218:link:500:500:z2_heli_show_fire_6) =hit_obj_fire_wound(219:link:500:500:z2_heli_show_fire_6) =hit_obj_fire_wound(220:link:500:500:z2_heli_show_fire_6) ==hit_obj_fire_wound(220:link:500:500:z2_heli_show_fire_6) =hit_obj_fire_wound(222:link:500:500:z2_heli_show_fire_6) =hit_obj_fire_wound(223:link:500:500:z2_heli_show_fire_6) =hit_obj_fire_wound(224:link:500:500:z2_heli_show_fire_6)%
+
+[sr_particle]
+name = explosions\explosion_concrete_box
+path = z2_particle_1
+mode = 2
+looped = false
+on_game_timer = 50 | sr_idle@2
+
+[sr_idle@2]
+;on_info = %=hit_obj_fire_wound(218:link:5000000:5000000:z2_heli_show_fire_6) =hit_obj_fire_wound(219:link:5000000:5000000:z2_heli_show_fire_6) =hit_obj_fire_wound(220:link:5000000:5000000:z2_heli_show_fire_6) =hit_obj(221:link:500:500:z2_heli_show_fire_6) =hit_obj_fire_wound(222:link:5000000:5000000:z2_heli_show_fire_6)%
+on_actor_inside = %+hospital_z2_exit%
+on_game_timer = 50 | sr_idle@3
+
+[sr_idle@3]
+on_actor_inside = nil %+hospital_z2_exit%

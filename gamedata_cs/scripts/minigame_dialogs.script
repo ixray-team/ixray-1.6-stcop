@@ -1,0 +1,582 @@
+--------------------------------------------------------------------------------
+-- Exported functions for minigames' dialogs -----------------------------------
+-- Made by Peacemaker ----------------------------------------------------------
+-- 03.01.08 --------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--[[
+dialog precondition function's parameters:
+                                first_speaker       = gar_bandit_minigame,
+                                second_speaker      = single_player,
+                                dialog_name         = shooting_dialog,
+                                parent_phrase_id    = 5,
+                                current_phrase_id   = 52
+
+dialog action function's parameters:
+                                first_speaker       = gar_bandit_minigame,
+                                second_speaker      = single_player,
+                                dialog_name         = shooting_dialog,
+                                current_phrase_id   = 2
+--]]
+--------------------------------------------------------------------------------
+-- Minigame "SHOOTING"
+--------------------------------------------------------------------------------
+shooting_money_table = {
+                        training = {
+                                    wpn_pm_minigame =    {
+                                                            distance={275, 225},
+                                                            multiplier={0, 0}
+                                                         },
+                                    wpn_beretta_minigame = {
+                                                            distance={300, 260},
+                                                            multiplier={0, 0}
+                                                           },
+                                    wpn_ak74u_minigame = {
+                                                            distance={nil, 265, 250},
+                                                            multiplier={nil, 0, 0}
+                                                         },
+                                    wpn_mp5_minigame =   {
+                                                            distance={nil, 265, 250},
+                                                            multiplier={nil, 0, 0}
+                                                         },
+                                    wpn_ak74_minigame = {
+                                                            distance={nil, nil, 350, 300, 265},
+                                                            multiplier={nil, nil, 0, 0, 0}
+                                                        },
+                                    wpn_lr300_minigame = {
+                                                            distance={nil, nil, 300, 250, 225},
+                                                            multiplier={nil, nil, 0, 0, 0}
+                                                         },
+                                   },
+                        points = {
+                                    wpn_pm_minigame =    {
+                                                            distance={65, 55},
+                                                            multiplier={6.2, 10}
+                                                         },
+                                    wpn_beretta_minigame = {
+                                                            distance={70, 60},
+                                                            multiplier={6, 8}
+                                                           },
+                                    wpn_ak74u_minigame = {
+                                                            distance={nil, 60, 45},
+                                                            multiplier={nil, 7, 12}
+                                                         },
+                                    wpn_mp5_minigame =   {
+                                                            distance={nil, 60, 45},
+                                                            multiplier={nil, 7, 12}
+                                                         },
+                                    wpn_ak74_minigame = {
+                                                            distance={nil, nil, 70, 65, 55},
+                                                            multiplier={nil, nil, 5, 6.2, 10}
+                                                        },
+                                    wpn_lr300_minigame = {
+                                                            distance={nil, nil, 60, 50, 45},
+                                                            multiplier={nil, nil, 6, 8, 11}
+                                                         },
+                                 },
+                        count = {
+                                    wpn_pm_minigame =    {
+                                                            distance={3, 3},
+                                                            multiplier={350, 400}
+                                                         },
+                                    wpn_beretta_minigame = {
+                                                            distance={3, 3},
+                                                            multiplier={300, 375}
+                                                           },
+                                    wpn_ak74u_minigame = {
+                                                            distance={nil, 3, 4},
+                                                            multiplier={nil, 300, 275}
+                                                         },
+                                    wpn_mp5_minigame =   {
+                                                            distance={nil, 3, 4},
+                                                            multiplier={nil, 300, 275}
+                                                         },
+                                    wpn_ak74_minigame = {
+                                                            distance={nil, nil, 4, 4, 5},
+                                                            multiplier={nil, nil, 250, 225, 300}
+                                                        },
+                                    wpn_lr300_minigame = {
+                                                            distance={nil, nil, 3, 3, 4},
+                                                            multiplier={nil, nil, 375, 450, 400}
+                                                         },
+                                },
+                        three_hit_training = {
+                                    wpn_pm_minigame =    {
+                                                            distance={180, 180, 180},
+                                                            multiplier={0, 0, 0}
+                                                         },
+                                    wpn_beretta_minigame = {
+                                                            distance={195, 195, 195},
+                                                            multiplier={0, 0, 0}
+                                                           },
+                                    wpn_ak74u_minigame = {
+                                                            distance={nil, 170, 170, 170, 170},
+                                                            multiplier={nil, 0, 0, 0, 0}
+                                                         },
+                                    wpn_mp5_minigame =   {
+                                                            distance={nil, 200, 200, 200, 200},
+                                                            multiplier={nil, 0, 0, 0, 0}
+                                                         },
+                                    wpn_sig550_minigame = {
+                                                            distance={nil, nil, 190, 190, 190, 190},
+                                                            multiplier={nil, nil, 0, 0, 0, 0}
+                                                        },
+                                    wpn_val_minigame = {
+                                                            distance={nil, nil, 190, 190, 190, 190},
+                                                            multiplier={nil, nil, 0, 0, 0, 0}
+                                                         },
+                                			 },
+                        all_targets = {
+                                    wpn_pm_minigame =    {
+                                                            distance={20, 20, 20},
+                                                            multiplier={50, 50, 50}
+                                                         },
+                                    wpn_beretta_minigame = {
+                                                            distance={20, 20, 20},
+                                                            multiplier={50, 50, 50}
+                                                           },
+                                    wpn_ak74u_minigame = {
+                                                            distance={nil, 22, 22, 22, 22},
+                                                            multiplier={nil, 75, 75, 75, 75}
+                                                         },
+                                    wpn_mp5_minigame =   {
+                                                            distance={nil, 22, 22, 22, 22},
+                                                            multiplier={nil, 75, 75, 75, 75}
+                                                         },
+                                    wpn_sig550_minigame = {
+                                                            distance={nil, nil, 25, 25, 25, 25},
+                                                            multiplier={nil, nil, 100, 100, 100, 100}
+                                                        },
+                                    wpn_val_minigame = {
+                                                            distance={nil, nil, 25, 25, 25, 25},
+                                                            multiplier={nil, nil, 100, 100, 100, 100}
+                                                         },
+		                              },
+                        count_on_time = {
+                                    wpn_pm_minigame =    {
+                                                            distance={35, 35, 35},
+                                                            multiplier={10, 10, 10}
+                                                         },
+                                    wpn_beretta_minigame = {
+                                                            distance={35, 35, 35},
+                                                            multiplier={10, 10, 10}
+                                                           },
+                                    wpn_ak74u_minigame = {
+                                                            distance={nil, 20, 20, 20, 20},
+                                                            multiplier={nil, 25, 25, 25, 25}
+                                                         },
+                                    wpn_mp5_minigame =   {
+                                                            distance={nil, 25, 25, 25, 25},
+                                                            multiplier={nil, 20, 20, 20, 20}
+                                                         },
+                                    wpn_sig550_minigame = {
+                                                            distance={nil, nil, 20, 20, 20, 20},
+                                                            multiplier={nil, nil, 35, 35, 35, 35}
+                                                        },
+                                    wpn_val_minigame = {
+                                                            distance={nil, nil, 25, 25, 25, 25},
+                                                            multiplier={nil, nil, 28, 28, 28, 28}
+                                                         },
+                                        },
+                        ten_targets = {
+                                    wpn_pm_minigame =    {
+                                                            distance={20, 20, 20},
+                                                            multiplier={50, 50, 50}
+                                                         },
+                                    wpn_beretta_minigame = {
+                                                            distance={20, 20, 20},
+                                                            multiplier={50, 50, 50}
+                                                           },
+                                    wpn_ak74u_minigame = {
+                                                            distance={nil, 22, 22, 22, 22},
+                                                            multiplier={nil, 75, 75, 75, 75}
+                                                         },
+                                    wpn_mp5_minigame =   {
+                                                            distance={nil, 22, 22, 22, 22},
+                                                            multiplier={nil, 75, 75, 75, 75}
+                                                         },
+                                    wpn_sig550_minigame = {
+                                                            distance={nil, nil, 25, 25, 25, 25},
+                                                            multiplier={nil, nil, 100, 100, 100, 100}
+                                                        },
+                                    wpn_val_minigame = {
+                                                            distance={nil, nil, 25, 25, 25, 25},
+                                                            multiplier={nil, nil, 100, 100, 100, 100}
+                                                         },
+                                	  },
+                        two_seconds_standing = {
+                                    wpn_pm_minigame =    {
+                                                            distance={400, 400, 400},
+                                                            multiplier={1, 1, 1}
+                                                         },
+                                    wpn_beretta_minigame = {
+                                                            distance={420, 420, 420},
+                                                            multiplier={1, 1, 1}
+                                                           },
+                                    wpn_ak74u_minigame = {
+                                                            distance={nil, 320, 320, 320, 320},
+                                                            multiplier={nil, 2, 2, 2, 2}
+                                                         },
+                                    wpn_mp5_minigame =   {
+                                                            distance={nil, 450, 450, 450, 450},
+                                                            multiplier={nil, 1.5, 1.5, 1.5, 1.5}
+                                                         },
+                                    wpn_sig550_minigame = {
+                                                            distance={nil, nil, 270, 270, 270, 270},
+                                                            multiplier={nil, nil, 4, 4, 4, 4}
+                                                        },
+                                    wpn_val_minigame = {
+                                                            distance={nil, nil, 250, 250, 250, 250},
+                                                            multiplier={nil, nil, 4, 4, 4, 4}
+                                                         },
+											   },
+
+                       }
+-- Is minigame valiable?
+function is_shooting_valiable()
+	local manager = minigames_manager.get_minigames_manager()
+	local shooting = manager:get_current_shooting()
+    return (manager:get_minigame_state(shooting)=="valiable") or (manager:get_minigame_state(shooting)=="disabled")
+end
+-- Is minigame finished?
+function is_shooting_finished()
+	local manager = minigames_manager.get_minigames_manager()
+	local shooting = manager:get_current_shooting()
+    return manager:get_minigame_state(shooting)=="finished"
+end
+-- Is minigame running?
+function is_shooting_running()
+	local manager = minigames_manager.get_minigames_manager()
+	local shooting = manager:get_current_shooting()
+    return (manager:get_minigame_state(shooting)=="started") or (manager:get_minigame_state(shooting)=="running")
+end
+-- Set minigame type
+function set_shooting_type(fs, ss, dn, p)
+	local manager = minigames_manager.get_minigames_manager()
+	local shooting = manager:get_current_shooting()
+	local pi = tonumber(p)-111111110
+	if(pi==1) then
+	    manager:set_minigame_param(shooting, "game_type", "three_hit_training")
+	    manager:set_minigame_param(shooting, "ammo", 30)
+	elseif(pi==2) then
+	    manager:set_minigame_param(shooting, "game_type", "two_seconds_standing")
+	    manager:set_minigame_param(shooting, "ammo", 100)
+	elseif(pi==3) then
+	    manager:set_minigame_param(shooting, "game_type", "count_on_time")
+	    manager:set_minigame_param(shooting, "ammo", 100)
+--[[
+	elseif(pi==2) then
+	    manager:set_minigame_param(shooting, "game_type", "all_targets")
+	    manager:set_minigame_param(shooting, "ammo", 50)
+	    manager:set_minigame_param(shooting, "target_counter", 10)
+
+	    manager:set_minigame_param(shooting, "game_type", "ten_targets")
+	    manager:set_minigame_param(shooting, "ammo", 50)
+	    manager:set_minigame_param(shooting, "target_counter", 10)
+
+	if(pi==1) then
+	    manager:set_minigame_param(shooting, "game_type", "training")
+	    manager:set_minigame_param(shooting, "ammo", 50)
+	elseif(pi==2) then
+	    manager:set_minigame_param(shooting, "game_type", "points")
+	    manager:set_minigame_param(shooting, "ammo", 10)
+	elseif(pi==3) then
+	    manager:set_minigame_param(shooting, "game_type", "count")
+	    manager:set_minigame_param(shooting, "ammo", 10)
+]]
+	end
+end
+-- Set minigame weapon type
+function set_shooting_weapon(fs, ss, dn, pi)
+	local manager = minigames_manager.get_minigames_manager()
+	local shooting = manager:get_current_shooting()
+	local gt = manager:get_minigame_param(shooting, "game_type")
+	local p = tonumber(pi) - 11111111110
+	if(p==1) then
+	    manager:set_minigame_param(shooting, "wpn_type", "wpn_pm_minigame")
+	    manager:set_minigame_param(shooting, "distance", 1)
+	    manager:set_minigame_param(shooting, "win", shooting_money_table[gt]["wpn_pm_minigame"].distance[1])
+	elseif(p==2) then
+	    manager:set_minigame_param(shooting, "wpn_type", "wpn_beretta_minigame")
+	    manager:set_minigame_param(shooting, "distance", 1)
+	    manager:set_minigame_param(shooting, "win", shooting_money_table[gt]["wpn_beretta_minigame"].distance[1])
+	elseif(p==3) then
+	    manager:set_minigame_param(shooting, "wpn_type", "wpn_ak74u_minigame")
+	    manager:set_minigame_param(shooting, "distance", 2)
+	    manager:set_minigame_param(shooting, "win", shooting_money_table[gt]["wpn_ak74u_minigame"].distance[2])
+	elseif(p==4) then
+	    manager:set_minigame_param(shooting, "wpn_type", "wpn_mp5_minigame")
+	    manager:set_minigame_param(shooting, "distance", 2)
+	    manager:set_minigame_param(shooting, "win", shooting_money_table[gt]["wpn_mp5_minigame"].distance[2])
+	elseif(p==5) then
+	    manager:set_minigame_param(shooting, "wpn_type", "wpn_sig550_minigame")
+	    manager:set_minigame_param(shooting, "distance", 3)
+	    manager:set_minigame_param(shooting, "win", shooting_money_table[gt]["wpn_sig550_minigame"].distance[3])
+	elseif(p==6) then
+	    manager:set_minigame_param(shooting, "wpn_type", "wpn_val_minigame")
+	    manager:set_minigame_param(shooting, "distance", 3)
+	    manager:set_minigame_param(shooting, "win", shooting_money_table[gt]["wpn_val_minigame"].distance[3])
+	end
+end
+
+function get_weapons_name(fs, dn, pi)
+	local manager = minigames_manager.get_minigames_manager()
+	local shooting = manager:get_current_shooting()
+	local gt = manager:get_minigame_param(shooting, "game_type")
+	local p = tonumber(pi) - 11111111110
+	local tbl = {}
+    local str = ""
+	if(p==1) then
+    	str = game.translate_string("st_wpn_pm")
+	elseif(p==2) then
+    	str = game.translate_string("st_wpn_beretta")
+	elseif(p==3) then
+    	str = game.translate_string("st_wpn_ak74u")
+	elseif(p==4) then
+    	str = game.translate_string("st_wpn_mp5")
+	elseif(p==5) then
+    	str = game.translate_string("st_wpn_sig550")
+	elseif(p==6) then
+    	str = game.translate_string("st_wpn_val")
+	end
+	return str
+end
+-- return shooting bet phrase
+function get_shooting_bet_phrase()
+	local string = ""
+	local m = minigames_manager.get_minigames_manager()
+	local shooting = m:get_current_shooting()
+	local gt = m:get_minigame_param(shooting, "game_type")
+	local wt = m:get_minigame_param(shooting, "wpn_type")
+	local dist = m:get_minigame_param(shooting, "distance")
+	local win = m:get_minigame_param(shooting, "win")
+	if(gt=="training") or (gt=="three_hit_training") then
+		string = game.translate_string("agr_duty_tir_dialog_hello_tht_phrase").." "..win.."."
+--		string = "Удачной стрельбы! Тебе надо набрать очков не меньше, чем "..win.."."
+	elseif(gt=="points") or (gt=="two_seconds_standing") then
+		local mult = shooting_money_table[gt][wt].multiplier[dist]
+		string = game.translate_string("agr_duty_tir_dialog_hello_tss_phrase_part_1").." "..win..". "..game.translate_string("agr_duty_tir_dialog_hello_tss_phrase_part_2").." "..win*mult.." "..game.translate_string("st_rubles")
+--		string = "Тебе нужно набить за отведённое время очков не меньше, чем "..win..". Моя ставка на то, что ты не справишься: "..win*mult.."."
+	elseif(gt=="count") or (gt=="all_targets") or (gt=="count_on_time") or (gt=="ten_targets") then
+		local mult = shooting_money_table[gt][wt].multiplier[dist]
+		string = game.translate_string("agr_duty_tir_dialog_hello_cot_phrase_part_1").." "..win..". "..game.translate_string("agr_duty_tir_dialog_hello_cot_phrase_part_2").." "..win*mult.." "..game.translate_string("st_rubles")
+--		string = "Тебе нужно сбить за отведённое время мишеней не меньше, чем "..win..". Моя ставка на то, что ты не справишься: "..win*mult.."."
+	end
+	return string
+end
+-- has an actor such money count
+function have_money_for_shooting()
+	local m = minigames_manager.get_minigames_manager()
+	local shooting = m:get_current_shooting()
+	local gt = m:get_minigame_param(shooting, "game_type")
+	local wt = m:get_minigame_param(shooting, "wpn_type")
+	local dist = m:get_minigame_param(shooting, "distance")
+	return shooting_money_table[gt][wt].distance[dist]*shooting_money_table[gt][wt].multiplier[dist]<db.actor:money()
+end
+-- has an actor no such money count
+function have_no_money_for_shooting()
+	return not(have_money_for_shooting())
+end
+-- Set minigame valiable (start minigame)
+function start_shooting(first_speaker)
+	local m = minigames_manager.get_minigames_manager()
+	local shooting = m:get_current_shooting()
+	if(m:get_minigame_param(shooting, "obj_name")=="") then
+	    m:set_minigame_param(shooting, "obj_name", first_speaker:name())
+	end
+    m:set_minigame_state(shooting, "enabled")
+end
+-- return shooting win phrase
+function get_shooting_win_phrase(fs, ss)
+	get_hud():RemoveCustomStatic("shooting_counter")
+	get_hud():RemoveCustomStatic("shooting_get_ready")
+	local string = ""
+	local m = minigames_manager.get_minigames_manager()
+	local shooting = m:get_current_shooting()
+	local gt = m:get_minigame_param(shooting, "game_type")
+	local wt = m:get_minigame_param(shooting, "wpn_type")
+	local dist = m:get_minigame_param(shooting, "distance")
+	local win = m:get_minigame_param(shooting, "win")
+	if(gt=="training") or (gt=="three_hit_training") then
+		if(win==true) then
+			string = game.translate_string("agr_duty_tir_dialog_hello_tht_answer_good").." "..shooting_money_table[gt][wt].distance[dist].."."
+--			string = "Можешь смело переходить к игре на деньги. Ты набил больше "..shooting_money_table[gt][wt].distance[dist].."."
+		else
+			string = game.translate_string("agr_duty_tir_dialog_hello_tht_answer_bad").." "..shooting_money_table[gt][wt].distance[dist].."."
+--			string = "Попробуй еще потренироваться, тебе рановато играть на деньги. Ты набрал меньше "..shooting_money_table[gt][wt].distance[dist].."."
+		end
+	elseif(gt=="points") or (gt=="count") or (gt=="all_targets") or (gt=="count_on_time") or (gt=="ten_targets") or (gt=="two_seconds_standing") then
+		if(win==true) then
+			string = game.translate_string("agr_duty_tir_dialog_hello_answer_good")
+--			string = "Недооценил я тебя! Держи свои деньги - честно заработал."
+			dialogs.relocate_money(fs, shooting_money_table[gt][wt].distance[dist]*shooting_money_table[gt][wt].multiplier[dist], "in")
+		else
+			string = game.translate_string("agr_duty_tir_dialog_hello_answer_bad")
+--			string = "Ха, я опять не ошибся и выиграл. Ну, не расстраивайся — повезет в другой раз."
+			dialogs.relocate_money(fs, shooting_money_table[gt][wt].distance[dist]*shooting_money_table[gt][wt].multiplier[dist], "out")
+		end
+	end
+	return string
+end
+-- Set minigame valiable
+function set_shooting_valiable()
+	local m = minigames_manager.get_minigames_manager()
+	local shooting = m:get_current_shooting()
+    m:get_minigame_profile(shooting):restore_weapon()
+    m:set_minigame_state(shooting, "disabled")
+	db.actor:disable_info_portion("agr_shooting_door_exit")
+end
+--------------------------------------------------------------------------------
+-- Minigame "CROWKILLER"
+--------------------------------------------------------------------------------
+-- Is minigame valiable?
+function crowkiller_is_valiable()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+    return (m:get_minigame_state(crowkiller)=="valiable") or (m:get_minigame_state(crowkiller)=="disabled")
+end
+-- Is minigame finished?
+function crowkiller_is_finished()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+    return m:get_minigame_state(crowkiller)=="finished"
+end
+-- Is minigame winned?
+function crowkiller_is_winned()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+    return m:get_minigame_param(crowkiller, "win")
+end
+-- Opposite to previous function
+function crowkiller_is_not_winned()
+    return not(crowkiller_is_winned())
+end
+-- Is minigame breaked?
+function crowkiller_is_breaked()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+    return m:get_minigame_state(crowkiller)=="breaked"
+end
+-- Is minigame running?
+function crowkiller_is_running()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+    return (m:get_minigame_state(crowkiller)=="running") or (m:get_minigame_state(crowkiller)=="started")
+end
+-- Set crowkiller game type
+function set_crowkiller_game_type(fs, ss, dn, pi)
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+	if(dn=="gar_bandit_bookmaker_training") then
+		m:set_minigame_param(crowkiller, "game_type", "training")
+	elseif(dn=="gar_bandit_bookmaker_money") then
+		m:set_minigame_param(crowkiller, "game_type", "money")
+	elseif(dn=="gar_bandit_bookmaker_record") then
+		m:set_minigame_param(crowkiller, "game_type", "highscore")
+	end
+end
+-- Get phrases with crows to kill count
+function get_crows_to_kill_count(fs, dn, pi)
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+	local string = ""
+	if(pi=="1111") or (pi=="1112") or (pi=="1113") or (pi=="1114") then
+-- if game type is training or money
+		local i = tonumber(string.sub(pi, -1))
+		string = game.translate_string("crowkiller_dialog_crows_per_minute")..", "..tostring(m:get_minigame_param(crowkiller, "crows_to_kill")[i])
+	elseif(pi=="1") then
+-- if game type is highscore
+		string = game.translate_string("crowkiller_dialog_record_crows").." "..tostring(m:get_minigame_param(crowkiller, "highscore"))
+	end
+    return string
+end
+-- Select crows to kill count
+function set_crowkiller_selected_count(fs, ss, dn, pi)
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+	if(m:get_minigame_param(crowkiller, "game_type")=="highscore") then
+	    m:set_minigame_param(crowkiller, "selected", m:get_minigame_param(crowkiller, "highscore"))
+	else
+	    local i = tonumber(string.sub(pi, -1))
+	    m:set_minigame_param(crowkiller, "selected", m:get_minigame_param(crowkiller, "crows_to_kill")[i])
+	end
+end
+--!!! Get phrase with reward money
+function how_much_crowkiller_money()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+	return game.translate_string("crowkiller_dialog_money_stake").." "..tostring(m:get_minigame_param(crowkiller, "selected")*m:get_minigame_param(crowkiller, "money_multiplier"))
+end
+--!!! Get phrase with reward money
+function how_much_crowkiller_champ_money()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+	return game.translate_string("crowkiller_dialog_record_stake").." "..tostring(m:get_minigame_param(crowkiller, "highscore")*m:get_minigame_param(crowkiller, "champion_multiplier"))
+end
+-- Does actor have money
+function no_crowkiller_money()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+	return m:get_minigame_param(crowkiller, "selected")*m:get_minigame_param(crowkiller, "money_multiplier")>db.actor:money()
+end
+-- Does actor have no money
+function have_crowkiller_money()
+	return not(no_crowkiller_money())
+end
+-- Does actor have money for championship
+function no_crowkiller_money_champ()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+	return m:get_minigame_param(crowkiller, "highscore")*m:get_minigame_param(crowkiller, "champion_multiplier")>db.actor:money()
+end
+-- Does actor have nomoney for championship
+function have_crowkiller_money_champ()
+	return not(no_crowkiller_money_champ())
+end
+-- Set minigame valiable (start minigame)
+function start_crowkiller()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+    m:set_minigame_state(crowkiller, "enabled")
+end
+-- Set minigame valiable after finishing
+function set_crowkiller_valiable()
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+    m:set_minigame_state(crowkiller, "disabled")
+end
+-- Transfer stake from actor
+function transfer_stake(fs, ss, dn, pi)
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+	local num = 0
+	if(m:get_minigame_param(crowkiller, "game_type")=="money") then
+		num = m:get_minigame_param(crowkiller, "selected")*m:get_minigame_param(crowkiller, "money_multiplier")
+	    dialogs.relocate_money(ss, num, "out")
+	elseif(m:get_minigame_param(crowkiller, "game_type")=="highscore") then
+		num = m:get_minigame_param(crowkiller, "selected")*m:get_minigame_param(crowkiller, "champion_multiplier")
+	    dialogs.relocate_money(ss, num, "out")
+	end
+end
+-- Transfer winned money to actor
+function transfer_winned_money(fs, ss, dn, pi)
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+	local num = 0
+	if(m:get_minigame_param(crowkiller, "game_type")=="money") then
+		num = m:get_minigame_param(crowkiller, "selected")*m:get_minigame_param(crowkiller, "money_multiplier")
+	    dialogs.relocate_money(fs, num*2, "in")
+	elseif(m:get_minigame_param(crowkiller, "game_type")=="highscore") then
+		num = m:get_minigame_param(crowkiller, "selected")*m:get_minigame_param(crowkiller, "champion_multiplier")
+	    dialogs.relocate_money(fs, num*2, "in")
+	end
+end
+
+function crowkiller_game_type_training(fs, ss, dn, pi)
+	local m = minigames_manager.get_minigames_manager()
+	local crowkiller = m:get_current_crowkiller()
+    return m:get_minigame_param(crowkiller, "game_type")=="training"
+end
+
+function crowkiller_game_type_not_training(fs, ss, dn, pi)
+    return not(crowkiller_game_type_training(fs, ss, dn, pi))
+end

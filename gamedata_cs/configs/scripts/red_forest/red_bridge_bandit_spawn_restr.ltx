@@ -1,0 +1,32 @@
+[logic]
+active = sr_idle@check_scene
+
+[sr_idle@check_scene]
+on_info = {+red_pursuit_scene_begin} sr_idle@pursuit_spawn  %=inc_counter(bridge_bandit_cout) =dec_counter(bridge_bandit_cout)%
+on_info2 = {+red_bridge_scene_begin} sr_idle@spawn_count %=inc_counter(bridge_bandit_cout) =dec_counter(bridge_bandit_cout)%
+
+[sr_idle@pursuit_spawn]
+on_info = sr_idle@pursuit_wait %=clear_smart_terrain(red_bridge_bandit_smart) =inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_1:red_bridge_bandit_smart) =create_squad(red_bridge_bandit_groop_2:red_bridge_bandit_smart) =create_squad(red_bridge_bandit_groop_3:red_bridge_bandit_smart)% ; =set_squad_community_goodwill(red_bridge_bandit_groop_1:killer:enemy) =set_squad_community_goodwill(red_bridge_bandit_groop_2:killer:enemy) =set_squad_community_goodwill(red_bridge_bandit_groop_3:killer:enemy)%
+
+[sr_idle@pursuit_wait]
+on_game_timer = 3600 | {!counter_greater(bridge_bandit_cout:4) !squad_exist(red_bridge_bandit_groop_1)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_1:red_bridge_bandit_smart)%, {!counter_greater(bridge_bandit_cout:3) !squad_exist(red_bridge_bandit_groop_2)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_2:red_bridge_bandit_smart)%, {!counter_greater(bridge_bandit_cout:3) !squad_exist(red_bridge_bandit_groop_3)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_3:red_bridge_bandit_smart)%
+on_info = {+red_bridge_scene_begin} sr_idle@spawn_count
+
+[sr_idle@spawn_count]
+on_info  = {!squad_exist(red_bridge_bandit_groop_1) !counter_greater(bridge_bandit_cout:15)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_1:red_bridge_bandit_smart) =set_squad_community_goodwill(red_bridge_bandit_groop_1:killer:enemy)%
+on_info2 = {!squad_exist(red_bridge_bandit_groop_2) !counter_greater(bridge_bandit_cout:15)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_2:red_bridge_bandit_smart) =set_squad_community_goodwill(red_bridge_bandit_groop_2:killer:enemy)%
+on_info3 = {!squad_exist(red_bridge_bandit_groop_3) !counter_greater(bridge_bandit_cout:15)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_3:red_bridge_bandit_smart) =set_squad_community_goodwill(red_bridge_bandit_groop_3:killer:enemy)%
+on_info4 = {!squad_exist(red_bridge_bandit_groop_4) !counter_greater(bridge_bandit_cout:15)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_4:red_bridge_bandit_smart) =set_squad_community_goodwill(red_bridge_bandit_groop_4:killer:enemy)%
+on_info5 = {+red_bridge_allyes_skirmish2} sr_idle@spawn_count2
+
+[sr_idle@spawn_count2]
+on_info =  {!squad_exist(red_bridge_bandit_groop_2) +red_bridge_sniper_fire !counter_greater(bridge_bandit_cout:15)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_2:red_bridge_bandit_smart) =set_squad_community_goodwill(red_bridge_bandit_groop_2:killer:enemy)%
+on_info2 = {!squad_exist(red_bridge_bandit_groop_3) +red_bridge_sniper_fire !counter_greater(bridge_bandit_cout:15)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_3:red_bridge_bandit_smart) =set_squad_community_goodwill(red_bridge_bandit_groop_3:killer:enemy)%
+on_info3 = {!squad_exist(red_bridge_bandit_groop_4) +red_bridge_sniper_fire !counter_greater(bridge_bandit_cout:15)} %=inc_counter(bridge_bandit_cout) =create_squad(red_bridge_bandit_groop_4:red_bridge_bandit_smart) =set_squad_community_goodwill(red_bridge_bandit_groop_4:killer:enemy)%
+on_info4 = {+red_bridge_down_done} sr_idle@check_bandit
+
+[sr_idle@check_bandit]
+on_info = {!squad_exist(red_bridge_bandit_groop_1) !squad_exist(red_bridge_bandit_groop_2) !squad_exist(red_bridge_bandit_groop_3) !squad_exist(red_bridge_bandit_groop_4)} sr_idle@nil %+red_bridge_bandit_out =update_squad(red_allyes_recon_squad_1)%
+on_game_timer = 300 | sr_idle@nil %=kill_squad(red_bridge_bandit_groop_1) =kill_squad(red_bridge_bandit_groop_2) =kill_squad(red_bridge_bandit_groop_3) =kill_squad(red_bridge_bandit_groop_4) +red_bridge_bandit_out =update_squad(red_allyes_recon_squad_1)%
+
+[sr_idle@nil]

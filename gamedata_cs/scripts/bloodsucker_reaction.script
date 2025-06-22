@@ -1,0 +1,152 @@
+local target_obj
+---------------------------------------------------------------------------------------------------------------------
+--Evaluators
+----------------------------------------------------------------------------------------------------------------------
+--  онстанта
+class "evaluator_bloodsucker_reaction" (property_evaluator)
+function evaluator_bloodsucker_reaction:__init(name) super (nil, name)
+end
+function evaluator_bloodsucker_reaction:evaluate ()
+	return true
+end
+
+----------------------------------------------------------------------------------------------------------------------
+--Actions
+----------------------------------------------------------------------------------------------------------------------
+-- ќбычное поведение
+class "action_bloodsucker_reaction" (action_base)
+function action_bloodsucker_reaction:__init (npc, action_name) super(nil, action_name)
+	self.npc = npc	
+end
+function action_bloodsucker_reaction:initialize()
+	action_base.initialize(self)
+	self.reaction_manager = db.storage[db.storage[self.npc:id()].bloodsucker_zone_id].reaction_manager
+	self.target_npc = db.storage[self.reaction_manager.target_npc_id] and db.storage[self.reaction_manager.target_npc_id].object
+	self.target = self.reaction_manager.scene_manager.current
+	if self.reaction_manager.squad_npc_state[self.npc:id()] == "stand_search" then
+		state_mgr.set_state(self.npc, "bloodsucker_fear", nil, nil, nil, {animation = true}, false, nil)
+	else
+		self:set_random_position()
+	end	
+	self.timeout = math.random(500 , 1500)
+	self.start_time = time_global()
+	self.sound_played = false
+	self.first_phase_end = false
+	self.state_see_enemy = false
+	
+	
+	self.commander_sounds = {"characters_voice\\scenario\\marsh\\bloodsucker\\comander_to_squad_1",
+								"characters_voice\\scenario\\marsh\\bloodsucker\\comander_to_squad_2"}
+end
+
+function action_bloodsucker_reaction:set_random_position()
+		-- нужно высчитать позиции дл€ сталкеров прикрыти€
+		print_table(self.reaction_manager.npc_position)
+		
+		self.base_vertex_id = self.reaction_manager.npc_position[self.npc:id()].vertex
+		self.random_position = self.reaction_manager.npc_position[self.npc:id()].position
+		printf("for npc[%s] vertex [%s] position [%s:%s:%s]", self.npc:name(), tostring(self.base_vertex_id),
+			tostring(self.random_position.x), tostring(self.random_position.y), tostring(self.random_position.z))
+		if not self.npc:accessible(self.random_position) then
+			local ttp = vector():set(0,0,0)
+			self.base_vertex_id = self.npc:accessible_nearest(self.random_position, ttp)
+			self.random_position = level.vertex_position(self.base_vertex_id)
+		end
+		self.npc:set_dest_level_vertex_id(self.base_vertex_id)
+		if self.target_npc ~= nil then
+			local desired_direction = vector():sub(self.random_position,self.target_npc:position())
+			printf("desired_direction = %s", vec_to_str(desired_direction))	
+			if desired_direction ~= nil and not utils.vector_cmp(desired_direction, vector():set(0,0,0)) then
+				desired_direction:normalize()
+				self.npc:set_desired_direction(desired_direction)
+			end
+		end					
+		self.npc:set_path_type(game_object.level_path)
+		local state_table = {"raid"}
+		local rnd_anim = state_table[math.random(1,#state_table)]
+		state_mgr.set_state(self.npc, rnd_anim,nil, nil, nil, {animation = true})
+		if math.random(1,100) > 60 then
+			xr_sound.set_sound_play(self.npc:id(), "squad_fear")
+		end	
+end
+
+function action_bloodsucker_reaction:execute()
+	action_base.execute(self)
+	if not self.sound_played and self.start_time + self.timeout <= time_global() then
+		printf("setting sound blood for stalker [%s] timeout === [%s]", self.npc:name(), tostring(self.timeout))
+		xr_sound.set_sound_play(self.npc:id(), "alife_bloodsucker")
+		self.sound_played = true		
+	end	
+	if self.reaction_manager.squad_npc_state[self.npc:id()] ~= "stand_search" then
+		if self.reaction_manager.squad_npc_state[self.npc:id()] == "state_fire" then			
+			if self.comm_snd_played == nil then
+				state_mgr.set_state(self.npc, "bloodsucker_panic", nil, nil, {look_position = self.reaction_manager.scene_manager.current}, {animation = true}, false, nil)
+				xr_sound.set_sound_play(self.npc:id(), "fear_fire")				
+				self.commander_snd = sound_object(self.commander_sounds[math.random(1,2)])
+				if self.target_npc ~= nil then
+					self.commander_snd:play_no_feedback(self.target_npc, sound_object.s3d, 0, self.target_npc:position(), 1.0) --:play_at_pos(self.target_npc, self.target_npc:position(), 3, sound_object.s3d)
+				end					
+				self.comm_snd_played = true
+			end
+		elseif self.random_position:distance_to_sqr(self.npc:position()) <= 0.4 and not self.first_phase_end then
+			local state_table = {"bloodsucker_search"}
+			state_mgr.set_state(self.npc, state_table[math.random(1,#state_table)], nil, nil, {look_position = self.target}, nil, nil)
+			
+			self.first_phase_end = true
+		elseif self.first_phase_end ~= true then		
+			state_mgr.set_state(self.npc, "raid")
+		end
+	elseif self.reaction_manager.anim_end ~= nil then
+		if  self.reaction_manager.scene_manager.bloodsucker == nil then
+			state_mgr.set_state(self.npc, "bloodsucker_search", nil, nil, nil, {animation = true}, false, nil)
+		else
+			state_mgr.set_state(self.npc, "threat_fire", nil, nil, {look_position = self.reaction_manager.scene_manager.current}, {animation = true}, false, nil)
+		end
+	end
+	
+	
+end
+function action_bloodsucker_reaction:finalize()
+   	action_base.finalize(self)
+end
+
+
+
+function add_bloodsucker_reactions(npc)
+  	local operators    = {}
+  	local properties  = {}
+
+  	local manager = npc:motivation_action_manager()
+
+  	properties["need_bloodsucker_reaction"]   	= xr_evaluators_id.bloodsucker_reaction + 1
+	
+  	operators["bloodsucker_reaction"]   		= xr_actions_id.bloodsucker_reaction + 1
+
+  	-- evaluators
+  	manager:add_evaluator (properties["need_bloodsucker_reaction"],   this.evaluator_bloodsucker_reaction("need_bloodsucker_reaction"))
+
+  	local action = this.action_bloodsucker_reaction(npc, "action_bloodsucker_reaction")
+	action:add_precondition(world_property(stalker_ids.property_alive,true))
+	action:add_precondition(world_property(stalker_ids.property_danger,false))
+	action:add_precondition(world_property(stalker_ids.property_enemy,false))
+	action:add_precondition(world_property(stalker_ids.property_anomaly,false))
+ 	action:add_effect(world_property(properties["need_bloodsucker_reaction"], false))
+  	manager:add_action(operators["bloodsucker_reaction"], action)
+end
+
+
+function enabled_bloodsucker_reaction(npc, target)
+	local goal = world_state()			
+	goal:add_property(world_property(xr_evaluators_id.bloodsucker_reaction + 1,false))
+	local manager = npc:motivation_action_manager()
+	manager:set_goal_world_state(goal)
+	target_obj = target
+	--'printf("!!!!!")		
+end
+
+function disable_bloodsucker_reaction(npc)
+	local goal = world_state()			
+	goal:add_property(world_property(stalker_ids.property_puzzle_solved,true))
+	local manager = npc:motivation_action_manager()
+	manager:set_goal_world_state(goal)
+end

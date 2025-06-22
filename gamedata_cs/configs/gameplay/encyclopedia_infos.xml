@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<encyclopedia>
+    <!-- LIST OF ENCYCLOPEDIA ENTRIES -->
+    <article id="one" name="AK-74" group="Diary/Weapons/Machineguns" article_type="1">
+		<ltx>wpn_lr300</ltx>
+        <text>ak_74_desc</text>
+    </article>
+    <article id="bbb" name="AK-74_info" group="Diary/Weapons/Machineguns" article_type="1">
+        <texture x="250" y="250" width="250" height="100">ui\ui_icon_equipment</texture>
+        <text>ak_74_info</text>
+    </article>
+
+    <article id="two" name="Groza" group="Diary/Weapons/Machineguns" article_type="1">
+        <texture x="0" y="700" width="200" height="100">ui\ui_icon_equipment</texture>
+        <text>
+	        Groza\n\n
+        	TTX:\nRange - 600M\nMagazine capacity: 20 bullets
+        </text>
+    </article>
+    <article id="three" name="SVU" group="Diary/Weapons/Sniper rifles" article_type="1">
+        <texture x="250" y="300" width="250" height="100">ui\ui_icon_equipment</texture>
+        <text>
+	        SVU: Sniper rifle\n\n
+        	TTX:\nRange - 2000M\nMagazine capacity: 10 bullets 
+        </text>
+    </article>
+    <article id="four" name="PM" group="Diary/Weapons/Pistols" article_type="1">
+        <texture x="0" y="100" width="250" height="100">ui\ui_icon_equipment</texture>
+	<text>
+		PM: Pistolet Makarova\n\n
+		TTX:\nRange - 100M\nMagazine capacity: 7 bullets
+        </text>
+    </article>
+    <article id="five" name="Zombie" group="Diary/Creatures" article_type="1">
+        <texture x="0" y="600" width="250" height="100">ui\ui_icon_equipment</texture>
+        <text>
+		Zombies are very angry and hungry\ncreatures. They moving slowly but\n
+		his arms jaws very powerful.
+	</text>
+    </article>
+    
+    
+    <article id="six" name="Pseudo dog" group="Diary/Creatures" article_type="journal">
+        <texture x="0" y="300" width="250" height="100">ui\ui_icon_equipment</texture>
+        <text>
+		Pseudo dogs it is very evil\nsemidead dogs with huge\nmouth :)
+	</text>
+    </article>
+
+    <article id="andy_task_article" name="aaaaa" group="andy_task_1" article_type="task">
+        <texture x="0" y="100" width="250" height="100">ui\ui_icon_equipment</texture>
+        <text>
+		You can manually define map spots on map to mark some place
+	</text>
+    </article>
+
+    <article id="andy_task_article_1" name="aaaaa" group="andy_task_1/2" article_type="task">
+        <texture_ x="0" y="600" width="250" height="100">ui\ui_icon_equipment</texture_>
+        <text>
+		Zombies are very angry and hungry\ncreatures. They moving slowly but\n
+		his arms jaws very powerful.
+		</text>
+    </article>
+    <article id="andy_task_article_2" name="aaaaa" group="andy_task_1/2" article_type="task">
+        <texture x="0" y="600" width="250" height="100">ui\ui_icon_equipment</texture>
+        <text>
+		Zombies are very angry and hungry\ncreatures. They moving slowly but\n
+		his arms jaws very powerful.
+		</text>
+    </article>
+    <article id="andy_task_article_3" name="aaaaa" group="andy_task_1/3" article_type="task">
+        <texture x="0" y="600" width="250" height="100">ui\ui_icon_equipment</texture>
+        <text>
+		Zombies are very angry and hungry\ncreatures. They moving slowly but\n
+		his arms jaws very powerful.
+		</text>
+    </article>
+    
+</encyclopedia>
+

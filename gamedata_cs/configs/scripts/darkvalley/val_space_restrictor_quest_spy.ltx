@@ -1,0 +1,21 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+val_be_info_bandit_spy} sr_idle@2 %=create_squad(val_smart_terrain_9_4_spy:val_smart_terrain_9_4) =give_inited_task(storyline:val_bandit_spy:freedom)% 
+
+[sr_idle@2]
+on_game_timer = 10 | sr_idle@3
+
+[sr_idle@3]
+on_info = {=actor_in_zone(val_in_restrictor_azs_dom)} sr_idle@4 %+val_bandit_spy_found =give_inited_task(storyline:val_bandit_spy_kill:freedom)%
+on_info2 = {!squad_exist(val_smart_terrain_9_4_spy)} sr_idle@5 %+val_bandit_spy_found +val_bandit_spy_die%
+
+[sr_idle@4]
+on_info = {!squad_exist(val_smart_terrain_9_4_spy)} sr_idle@5 %+val_bandit_spy_die%
+
+[sr_idle@5]
+on_info = {+val_bandit_spy_die} sr_idle@6 %=give_inited_task(storyline:val_bandit_spy_return:freedom)%
+
+
+[sr_idle@6]

@@ -1,0 +1,269 @@
+[logic@levsha]
+active = camper@wait_cut5
+suitable = {=check_npc_name(yan_stalker_levsha) -yan_stop_spawn_cut6} true
+prior = 100
+post_combat_time = 0,0
+
+;--сцена 5 "Прорыв к Установке"
+[camper@wait_cut5]
+path_walk = stalker5_cut5_1_walk
+path_look = stalker5_cut5_1_look
+invulnerable = true
+radius = 0
+post_combat_time = 0,0
+combat_ignore_cond = {-yan_space_restrictor_actor_ready_cut5} true, {+yan_scene_6_snork_dead} true
+on_info = {+yan_scene_6_snork_dead} camper@timer_fire1_cut5 
+danger = danger_ignore
+
+[danger_ignore]
+ignore_distance = 0
+ignore_types = sound
+
+[camper@timer_fire1_cut5]
+path_walk = stalker5_cut5_1_walk
+path_look = stalker5_cut5_1_look
+wounded = wounded
+invulnerable = true
+radius = 0
+danger = danger_ignore
+combat_ignore_cond = always
+on_info = {+yan_proriv_k_ystanovke_start !talking} camper@timer_fire1_cut5_1
+meet = meet@1
+
+
+[camper@timer_fire1_cut5_1]
+path_walk = stalker5_cut5_1_walk
+path_look = stalker5_cut5_1_look
+wounded = wounded
+invulnerable = true
+radius = 0
+meet = meet@1
+danger = danger_ignore
+combat_ignore_cond = always
+on_timer = 3000 | camper@wait_professor_phrase %=play_sound(yan_professor_start_operation:ecolog:yan_st_sakharov_name) +yan_low_psy_radiation_start%
+
+[camper@wait_professor_phrase]
+path_walk = stalker5_cut5_1_walk
+path_look = stalker5_cut5_1_look
+wounded = wounded
+invulnerable = true
+radius = 0
+meet = no_meet
+danger = danger_ignore
+combat_ignore_cond = always
+on_signal = sound_end | camper@fire1_cut5_temp %=play_sound(yan_squad_assemble:stalker:yan_st_levsha_name) +yan_proriv_k_ystanovke%
+
+[meet@1]
+meet_state = 30 | hello_wpn@yan_levsha_hello_actor | 10 | guard@yan_levsha_hello_actor 
+meet_state_wpn = 15 | backoff@meet_weapon_wait
+use_wpn = false
+sound_start = yan_levsha_hello_actor
+sound_start_wpn = meet_weapon_wait
+victim = 30 | actor
+victim_wpn = 30 | actor
+use	= true
+use_wpn	= true
+meet_dialog = yan_levsha_hello_dialog 
+
+[camper@fire1_cut5_temp]
+path_walk = levsha_prepare_walk
+path_look = levsha_prepare_look
+combat_ignore_cond = {=fighting_dist_ge(15)}
+invulnerable = true
+meet = no_meet
+def_state_moving = assault
+on_signal = ready_to_zabor | camper@to_zabor_wait %+yan_scene_6_ready_to_zabor%
+danger = danger_ignore
+
+[camper@to_zabor_wait]
+path_walk = levsha_prepare_walk
+path_look = levsha_prepare_look
+combat_ignore_cond = true
+invulnerable = true
+def_state_moving = assault
+on_timer = 15000 | {-yan_zabor_1_already_jumping} camper@to_zabor %+yan_zabor_1_already_jumping%
+meet = no_meet
+danger = danger_ignore
+
+[camper@to_zabor]
+path_walk = zabor_walk
+path_look = zabor_look
+meet = no_meet
+def_state_moving = assault
+combat_ignore_cond = true
+on_signal = ready_to_jump | remark@zabor %-yan_zabor_1_already_jumping%
+invulnerable = true
+danger = danger_ignore
+
+[remark@zabor]
+anim = yan_zabor_0
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = anim_end | camper@fire1_cut5
+danger = danger_ignore
+
+[camper@fire1_cut5]
+invulnerable = true
+combat_ignore_cond = {=fighting_dist_ge(15)} 
+path_walk = stalker5_cut5_2_walk
+path_look = stalker5_cut5_2_look
+def_state_moving = assault
+radius = 3
+meet = no_meet
+on_info = {+yan_destroy_zombi20 _cut5 +yan_destroy_zombi21_cut5 +yan_space_restrictor_actor_go_cut5} camper@fire2_cut5
+
+[camper@fire2_cut5]
+invulnerable = true
+combat_ignore_cond = {=fighting_dist_ge(15)} 
+path_walk = stalker5_cut5_3_walk
+path_look = stalker5_cut5_3_look
+def_state_moving = assault
+radius = 3
+meet = no_meet
+on_info = {+yan_destroy_zombi22_cut5 +yan_destroy_zombi23_cut5} camper@fire3_cut5 
+
+[camper@fire3_cut5]
+invulnerable = true
+combat_ignore_cond = {=fighting_dist_ge(15)} 
+path_walk = stalker5_cut5_4_walk
+path_look = stalker5_cut5_4_look
+def_state_moving = assault
+radius = 3
+meet = no_meet
+on_info = {+yan_destroy_zombi26_cut5} camper@fire4_cut5 %=play_sound(yan_levsha_clear:stalker:yan_st_levsha_name)%
+
+[camper@fire4_cut5]
+invulnerable = true
+combat_ignore_cond = {=fighting_dist_ge(15)} 
+path_walk = stalker5_cut5_5_walk
+path_look = stalker5_cut5_5_look
+def_state_moving = assault
+radius = 3
+meet = no_meet
+on_info = {+yan_destroy_zombi29_cut5} camper@fire5_cut5 
+
+[camper@fire5_cut5]
+invulnerable = true
+combat_ignore_cond = {=fighting_dist_ge(15)} 
+path_walk = stalker5_cut5_6_walk
+path_look = stalker5_cut5_6_look
+def_state_moving = assault
+radius = 3
+meet = no_meet
+on_info = {+yan_destroy_zombi30_cut5} camper@fire6_cut5 %=play_sound(yan_levsha_clear:stalker:yan_st_levsha_name)%
+
+[camper@fire6_cut5]
+invulnerable = true
+combat_ignore_cond = {=fighting_dist_ge(15)} 
+path_walk = stalker5_cut5_7_walk
+path_look = stalker5_cut5_7_look
+def_state_moving = assault
+radius = 3
+meet = no_meet
+on_signal = on_position | {+yan_levsha_ready_cut6 =squad_in_zone_all(yan_stalker_levsha_1:yan_space_restrictor_tryba6_cut5) =squad_in_zone_all(yan_stalker_levsha_true:yan_space_restrictor_tryba6_cut5) =squad_in_zone_all(yan_stalker_levsha_2:yan_space_restrictor_tryba6_cut5)} remark@wait %+typoi +yan_zabor_stalker_5_on_position%
+
+[remark@wait]
+on_timer = 22000 | {-yan_zabor_2_already_jumping} camper@to_zabor_2 %+yan_zabor_2_already_jumping%
+invulnerable = true
+target = yan_smart_terrain_for_squad_levsha_stalker5_cut5_7_look,0
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = wait_na
+meet = no_meet
+
+[camper@to_zabor_2]
+path_walk = zabor_3_walk
+path_look = zabor_3_look
+def_state_moving = assault
+meet = no_meet
+combat_ignore_cond = always
+on_signal = ready_to_jump | remark@zabor_2 %-yan_zabor_2_already_jumping%
+invulnerable = true
+
+[remark@zabor_2]
+anim = yan_zabor_2
+meet = no_meet
+;target = yan_smart_terrain_for_squad_levsha_zabor_2_look,0
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = anim_end | camper@wait_cut6
+
+;-- сцена 6 "Ремонт Установки"
+[camper@wait_cut6]
+path_walk = stalker5_cut5_8_walk
+path_look = stalker5_cut5_8_look
+wounded = wounded
+invulnerable = true
+radius = 0
+danger = danger_condition
+combat_ignore_cond = always
+meet =  no_meet
+combat_ignore_cond = {-hit_cut6_stalker_1 -hit_cut6_stalker_2 -hit_cut6_stalker_3 -hit_cut6_stalker_4 -hit_cut6_stalker_5}
+on_actor_dist_le_nvis = 6 | {+yan_actor_ready_cut6_ok} remark@yan_give_orders %=play_sound(yan_give_orders:stalker:yan_st_levsha_name)%
+
+[remark@yan_give_orders]
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+anim = guard
+target = yan_smart_terrain_for_squad_levsha_stalker5_cut5_8_look, 00
+meet = no_meet
+on_signal = sound_end | remark@yan_give_orders_2 
+
+
+[remark@yan_give_orders_2]
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+anim = guard
+target = actor
+on_info = %=play_sound(yan_give_orders:stalker:yan_st_levsha_name)%
+on_signal = theme_end | camper@fire %+yan_ready_actor_cut6%
+;on_actor_dist_ge_nvis = 7 | camper@fire
+meet = no_meet
+
+[camper@fire]
+out_restr = yan_space_restrictor_cut6_for_group2
+on_signal = yan_ready_perekl_cut6 | %+yan_start_remove +yan_ready_perekl_cut6 -yan_ready_vikl_cut6% camper@fire1 
+path_walk = yan_per_3_walk
+path_look = yan_per_3_look
+def_state_moving = assault
+invulnerable = true
+combat_ignore_cond = always
+danger = danger_condition
+on_info = {+yan_stalker_5_kaput} camper@fire_not_inv
+meet = no_meet
+
+[camper@fire1]
+out_restr = yan_space_restrictor_cut6_for_group2
+path_walk = yan_per_3_walk
+path_look = yan_per_3_look
+def_state_moving = assault
+invulnerable = true
+combat_ignore_cond = always
+danger = danger_condition
+on_info = {+yan_stalker_3_kaput +yan_stalker_4_kaput} camper@fire_not_inv
+meet = no_meet
+
+[camper@fire_not_inv]
+out_restr = yan_space_restrictor_cut6_for_group2
+path_walk = yan_per_3_walk
+path_look = yan_per_3_look
+def_state_moving = assault
+combat_ignore_cond = always
+danger = danger_condition
+on_info = {-yan_stalker_5_kaput} camper@fire
+meet = no_meet
+invulnerable = false
+
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false
+
+

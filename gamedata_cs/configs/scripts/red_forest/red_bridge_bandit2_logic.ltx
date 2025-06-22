@@ -1,0 +1,272 @@
+;*****************************
+;********* bandit9 ***********
+
+[logic@work9]
+active = camper@wait_work9
+on_hit = hit@work9
+suitable = {=check_npc_name(red_bridge_renegade) -red_bridge_scene_begin} true
+prior = 150
+
+[hit@work9]
+on_info = %+red_pursuit_bandit_attack%
+
+[camper@wait_work9]
+combat_ignore_cond = true
+path_walk = pursuit_wait_9_walk
+path_look = pursuit_wait_9_look
+radius = 0
+on_info = {+red_pursuit_bandits_enter} patrol@enter_work9
+
+[patrol@enter_work9]
+;out_restr = red_bridge_bandit_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = pursuit_enter_10_walk
+path_look = pursuit_enter_10_look
+on_signal = action | walker@guard_work9 %+red_pursuit_bandit_guard_bridge%
+on_info = {+red_pursuit_bandit_attack} walker@guard2_work9
+on_info2 = {+red_pursuit_bandit_guard_bridge} walker@guard_work9
+
+[walker@guard_work9]
+combat_ignore_cond = true
+out_restr = red_bridge_bandit_restr
+path_walk = pursuit_bridge_guard_9_walk
+path_look = pursuit_bridge_guard_9_look
+on_info = {+red_pursuit_bandit_attack} walker@guard2_work9
+
+[walker@guard2_work9]
+out_restr = red_bridge_bandit_restr
+path_walk = pursuit_bridge_guard_9_walk
+path_look = pursuit_bridge_guard_9_look
+on_info = {-red_pursuit_bandit_attack} walker@guard_work9
+on_info2 = {=dist_to_actor_ge(100) !see_actor()} walker@guard_work9 %-red_pursuit_bandit_attack%
+
+;*****************************
+;********* bandit10 ***********
+
+[logic@work10]
+active = camper@wait_work10
+on_hit = hit@work10
+suitable = {=check_npc_name(red_bridge_renegade) -red_bridge_scene_begin} true
+prior = 150
+
+[hit@work10]
+on_info = %+red_pursuit_bandit_attack%
+
+[camper@wait_work10]
+combat_ignore_cond = true
+path_walk = pursuit_wait_10_walk
+path_look = pursuit_wait_9_look
+radius = 0
+on_info = {+red_pursuit_bandits_enter} patrol@enter_work10
+
+[patrol@enter_work10]
+;out_restr = red_bridge_bandit_restr
+combat_ignore_cond = true
+path_walk = pursuit_enter_10_walk
+path_look = pursuit_enter_10_look
+commander = true
+formation = back
+move_type = rush
+on_signal = action | walker@guard_work10 %+red_pursuit_bandit_guard_bridge%
+on_info = {+red_pursuit_bandit_attack} walker@guard2_work10
+on_info2 = {+red_pursuit_bandit_guard_bridge} walker@guard_work10
+
+[walker@guard_work10]
+combat_ignore_cond = true
+out_restr = red_bridge_bandit_restr
+path_walk = pursuit_bridge_guard_10_walk
+path_look = pursuit_bridge_guard_9_look
+;on_signal= action | walker@guard2_work10
+on_actor_in_zone = red_coast_restr | remark@actor_work10
+on_info = {+red_pursuit_bandit_attack} walker@guard2_work10
+
+[walker@guard2_work10]
+out_restr = red_bridge_bandit_restr
+path_walk = pursuit_bridge_guard_10_walk
+path_look = pursuit_bridge_guard_9_look
+on_info = {-red_pursuit_bandit_attack} walker@guard_work10
+on_info2 = {=dist_to_actor_ge(100) !see_actor()} walker@guard_work10 %-red_pursuit_bandit_attack%
+
+[remark@actor_work10]
+combat_ignore_cond = true
+out_restr = red_bridge_bandit_restr
+anim = backoff
+target = actor
+on_actor_not_in_zone = red_coast_restr | walker@guard_work10
+on_info = {+red_pursuit_bandit_attack} walker@guard2_work10
+;*****************************
+;********* bandit11 ***********
+
+[logic@work11]
+active = camper@wait_work11
+on_hit = hit@work11
+suitable = {=check_npc_name(red_bridge_renegade) -red_bridge_scene_begin} true
+prior = 150
+
+[hit@work11]
+on_info = %+red_pursuit_bandit_attack%
+
+[camper@wait_work11]
+combat_ignore_cond = true
+path_walk = pursuit_wait_11_walk
+path_look = pursuit_wait_9_look
+radius = 0
+on_info = {+red_pursuit_bandits_enter} patrol@enter_work11
+
+[patrol@enter_work11]
+;out_restr = red_bridge_bandit_restr
+combat_ignore_cond = true
+path_walk = pursuit_enter_10_walk
+path_look = pursuit_enter_10_look
+on_signal = action | walker@guard_work11 %+red_pursuit_bandit_guard_bridge%
+on_info = {+red_pursuit_bandit_attack} walker@guard2_work11
+on_info2 = {+red_pursuit_bandit_guard_bridge} walker@guard_work11
+
+[walker@guard_work11]
+combat_ignore_cond = true
+out_restr = red_bridge_bandit_restr
+path_walk = pursuit_bridge_guard_11_walk
+path_look = pursuit_bridge_guard_9_look
+on_actor_in_zone = red_coast_restr | remark@actor_work11
+on_info = {+red_pursuit_bandit_attack} walker@guard2_work11
+
+[walker@guard2_work11]
+out_restr = red_bridge_bandit_restr
+path_walk = pursuit_bridge_guard_11_walk
+path_look = pursuit_bridge_guard_9_look
+on_info = {-red_pursuit_bandit_attack} walker@guard2_work11
+on_info2 = {=dist_to_actor_ge(100) !see_actor()} walker@guard_work11 %-red_pursuit_bandit_attack%
+
+[remark@actor_work11]
+combat_ignore_cond = true
+out_restr = red_bridge_bandit_restr
+anim = backoff2
+target = actor
+on_actor_not_in_zone = red_coast_restr | walker@guard_work11
+on_info = {+red_pursuit_bandit_attack} walker@guard2_work11
+;*****************************
+;********* bandit12 ***********
+
+[logic@work12]
+active = camper@wait_work12
+on_hit = hit@work12
+suitable = {=check_npc_name(red_bridge_renegade) -red_bridge_scene_begin} true
+prior = 150
+
+[hit@work12]
+on_info = %+red_pursuit_bandit_attack%
+
+[camper@wait_work12]
+combat_ignore_cond = true
+path_walk = pursuit_wait_12_walk
+path_look = pursuit_wait_12_look
+radius = 0
+on_info = {+red_pursuit_bandits_enter} patrol@enter_work12
+
+[patrol@enter_work12]
+;out_restr = red_bridge_bandit_restr
+combat_ignore_cond = true
+path_walk = pursuit_enter_12_walk
+path_look = pursuit_enter_12_look
+move_type = rush
+on_signal = action | kamp@guard_work12 %+red_pursuit_bandit_guard_bridge2%
+on_info = {+red_pursuit_bandit_guard_bridge2} kamp@guard_work12
+on_info2 = {+red_pursuit_bandit_attack} kamp@guard_work12
+commander = true
+
+[kamp@guard_work12]
+combat_ignore_cond = true
+out_restr = red_bridge_bandit_restr
+center_point = pursuit_kamp
+def_state_moving = patrol
+on_info = {+red_pursuit_bandit_attack} remark@guard_work12
+
+[remark@guard_work12]
+anim = threat_na
+target = actor
+on_info = {-red_pursuit_bandit_attack} kamp@guard_work12
+on_info2 = {=dist_to_actor_ge(100) !see_actor()} kamp@guard_work12 %-red_pursuit_bandit_attack%
+
+;*****************************
+;********* bandit13 ***********
+
+[logic@work13]
+active = camper@wait_work13
+on_hit = hit@work13
+suitable = {=check_npc_name(red_bridge_renegade) -red_bridge_scene_begin} true
+prior = 150
+
+[hit@work13]
+on_info = %+red_pursuit_bandit_attack%
+
+[camper@wait_work13]
+combat_ignore_cond = true
+path_walk = pursuit_wait_13_walk
+path_look = pursuit_wait_12_look
+radius = 0
+on_info = {+red_pursuit_bandits_enter} patrol@enter_work13
+
+[patrol@enter_work13]
+;out_restr = red_bridge_bandit_restr
+combat_ignore_cond = true
+path_walk = pursuit_enter_12_walk
+path_look = pursuit_enter_12_look
+move_type = rush
+on_signal = action | kamp@guard_work13 %+red_pursuit_bandit_guard_bridge2%
+on_info = {+red_pursuit_bandit_guard_bridge2} kamp@guard_work13
+on_info2 = {+red_pursuit_bandit_attack} kamp@guard_work13
+
+[kamp@guard_work13]
+combat_ignore_cond = true
+out_restr = red_bridge_bandit_restr
+center_point = pursuit_kamp
+def_state_moving = patrol
+on_info = {+red_pursuit_bandit_attack} remark@guard_work13
+
+[remark@guard_work13]
+anim = threat_na
+target = actor
+on_info = {-red_pursuit_bandit_attack} kamp@guard_work13
+on_info2 = {=dist_to_actor_ge(100) !see_actor()} kamp@guard_work13 %-red_pursuit_bandit_attack%
+
+;*****************************
+;********* bandit14 ***********
+
+[logic@work14]
+active = camper@wait_work14
+on_hit = hit@work14
+suitable = {=check_npc_name(red_bridge_renegade) -red_bridge_scene_begin} true
+prior = 150
+
+[hit@work14]
+on_info = %+red_pursuit_bandit_attack%
+
+[camper@wait_work14]
+combat_ignore_cond = true
+path_walk = pursuit_wait_14_walk
+path_look = pursuit_wait_12_look
+radius = 0
+on_info = {+red_pursuit_bandits_enter} patrol@enter_work14
+
+[patrol@enter_work14]
+;out_restr = red_bridge_bandit_restr
+combat_ignore_cond = true
+path_walk = pursuit_enter_12_walk
+path_look = pursuit_enter_12_look
+move_type = rush
+on_signal = action | kamp@guard_work14
+on_info = {+red_pursuit_bandit_guard_bridge2} kamp@guard_work14
+on_info2 = {+red_pursuit_bandit_attack} kamp@guard_work14
+
+[kamp@guard_work14]
+out_restr = red_bridge_bandit_restr
+center_point = pursuit_kamp
+def_state_moving = patrol
+on_info = {+red_pursuit_bandit_attack} remark@guard_work14
+
+[remark@guard_work14]
+anim = threat_na
+target = actor
+on_info = {-red_pursuit_bandit_attack} kamp@guard_work14
+on_info2 = {=dist_to_actor_ge(100) !see_actor()} kamp@guard_work14 %-red_pursuit_bandit_attack%

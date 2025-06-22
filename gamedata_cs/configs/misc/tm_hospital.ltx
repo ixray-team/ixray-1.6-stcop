@@ -1,0 +1,120 @@
+[list_tm_hospital]
+hosp_enter_to_katacomb
+hosp_task_sniper_back_rush_1
+hosp_task_sniper_back_rush_2
+hosp_task_sniper_back_rush_3
+hosp_task_sniper_back_rush_4
+hosp_task_kill_sniper
+hosp_task_heli
+hosp_task_z2_exit
+hosp_task_z3_hold_out
+hosp_task_z3_help_csky_squad
+
+
+[hosp_enter_to_katacomb]
+type = storyline
+task_type = storyline
+name = hosp_task_general_name
+text = hosp_task_general_text
+target_story_ids = 231
+target_cond = {-hospital_general_task_complete} true
+prior = 1
+condlist_0 = {+hospital_general_task_complete} complete
+
+[hosp_task_sniper_back_rush_1]
+type = storyline
+task_type = additional
+name = hosp_task_sniper_back_rush_1_name
+text = hosp_task_sniper_back_rush_1_text
+target_story_ids = 210
+target_cond = true
+prior = 2
+condlist_0 = {+rush_2} complete
+on_complete = %+hosp_task_sniper_back_rush_1_complete%
+
+[hosp_task_sniper_back_rush_2]
+type = storyline
+task_type = additional
+name = hosp_task_sniper_back_rush_2_name
+text = hosp_task_sniper_back_rush_2_text
+target_story_ids = 212
+target_cond = true
+prior = 2
+condlist_0 = {+rush_4} complete
+on_complete = %+hosp_task_sniper_back_rush_2_complete%
+
+[hosp_task_sniper_back_rush_3]
+type = storyline
+task_type = additional
+name = hosp_task_sniper_back_rush_3_name
+text = hosp_task_sniper_back_rush_3_text
+target_story_ids = 214
+target_cond = true
+prior = 2
+condlist_0 = {+rush_6} complete
+condlist_1 = {+rush_7} reversed
+on_complete = %+hosp_task_sniper_back_rush_3_complete%
+on_reversed = %+hosp_task_sniper_back_rush_3_complete%
+
+[hosp_task_sniper_back_rush_4]
+type = storyline
+task_type = additional
+name = hosp_task_sniper_back_rush_4_name
+text = hosp_task_sniper_back_rush_4_text
+target_story_ids = 203
+target_cond = true
+prior = 2
+condlist_0 = {+rush_7} complete
+on_complete = %+hosp_task_sniper_back_rush_4_complete%
+
+[hosp_task_kill_sniper]
+type = storyline
+task_type = additional
+name = hosp_task_kill_sniper_name
+text = hosp_task_kill_sniper_text
+target_story_ids = 200
+target_cond = true
+prior = 2
+condlist_0 = {+sniper_off} complete
+
+[hosp_task_heli]
+type = storyline
+task_type = additional
+name = hosp_task_heli_name
+text = hosp_task_heli_text
+target_story_ids = 209
+target_cond = true
+prior = 2
+condlist_0 = {+hospital_z2_heli_crash} complete
+
+[hosp_task_z2_exit]
+type = storyline
+task_type = additional
+name = hosp_task_z2_exit_name
+text = hosp_task_z2_exit_text
+target_story_ids = 217
+target_cond = true
+prior = 2
+condlist_0 = {+hospital_z2_exit} complete
+
+[hosp_task_z3_hold_out]
+type = storyline
+task_type = additional
+name = hosp_task_z3_hold_out_name
+text = hosp_task_z3_hold_out_text
+target_story_ids = 232
+target_cond = true
+prior = 2
+condlist_0 = {+hospital_cs_entrance} complete
+on_complete = %+hosp_task_z3_hold_out_complete%
+
+[hosp_task_z3_help_csky_squad]
+type = storyline
+task_type = additional
+name = hosp_task_z3_help_csky_squad_name
+text = hosp_task_z3_help_csky_squad_text
+target_story_ids = 233
+target_cond = true
+prior = 2
+condlist_0 = {+hospital_cs_victory} complete
+

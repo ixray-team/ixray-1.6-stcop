@@ -1,0 +1,17 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+gar_quest_get_weapons_started} sr_idle@is_squad %=clear_smart_terrain(gar_smart_terrain_4_2) =create_squad(gar_bandit_get_weapons:gar_smart_terrain_4_2)%
+
+[sr_idle@is_squad]
+on_info = {=squad_exist(gar_bandit_get_weapons)} sr_idle@arrive
+
+[sr_idle@arrive]
+on_actor_inside = %+gar_quest_get_weapons_arrived%
+on_info = {+gar_quest_get_weapons_arrived} sr_idle@pda
+
+[sr_idle@pda]
+on_info = {=actor_has_item(device_pda_garbage_traitor)} sr_idle@end_section %+gar_quest_get_weapons_got_traitor_pda%
+
+[sr_idle@end_section]

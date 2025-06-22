@@ -1,0 +1,21 @@
+[logic]
+active = walker@stop
+on_death = death
+
+[walker@stop]
+path_walk = bes_selo_anomaly_2_walk
+path_look = bes_selo_anomaly_2_look
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+danger = danger
+meet = no_meet
+def_state_moving1 = run
+def_state_moving2 = run
+def_state_moving3 = run
+on_death = death
+
+[death]
+on_info = %+val_test_spawn_2_npc%
+
+[danger]
+ignore_distance = 0

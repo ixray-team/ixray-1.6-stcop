@@ -1,0 +1,30 @@
+function main ()
+
+lvl_garbage_return.main()
+
+local infos_table = {
+"gar_story_came_to_ambush_door",
+"gar_story_spawn_ambush_bandits",
+"gar_story_ambush_talk_1_played",
+"gar_story_ambush_talk_2_played",
+"gar_story_ambush_talk_3_played",
+"gar_story_ambush_talk_4_played",
+"gar_story_ambush_remove",
+"gar_story_need_to_find_fang_pda",
+"gar_story_got_fang_pda",
+"gar_story_cannot_find_fang",
+"gar_story_need_to_go_to_cache",
+"agr_duty_open",
+"agr_garbage_end"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+if level.name() == "agroprom" and not task_manager.get_task_manager().inited_tasks["csky_general_agr_no_task"] then
+	xr_effects.give_inited_task(nil, nil, {"storyline", "agr_no_task", "csky"})
+end
+	
+end

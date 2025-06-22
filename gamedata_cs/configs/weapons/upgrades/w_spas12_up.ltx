@@ -1,0 +1,281 @@
+[up_sect_a_spas12]
+cost		      		= 375
+value					= +15
+rpm						= 10
+
+[up_sect_b_spas12]
+cost		      		= 375
+value					= +20
+value2					= st_no_buck
+ammo_class		 		= ammo_12x76_zhekan, ammo_12x76_dart
+fire_dispersion_base	= -0.2
+bullet_speed   			= 50
+
+[up_sect_c_spas12]
+cost		      		= 375
+value					= -15
+
+inv_weight				= -0.5
+control_inertion_factor	= -0.2 ;1.2f
+PDM_disp_vel_factor 	= -0.5 ;1.7
+PDM_disp_accel_factor 	= -0.5 ;1.7
+
+[up_sect_d_spas12]
+cost		      		= 375
+value					= +30
+
+misfire_probability 	= -0.0025	    ;вероятность осечки при максимальном износе
+condition_shot_dec		= -0.00015
+
+[up_sect_e_spas12]
+cost		      		= 375
+value					= +30
+
+fire_dispersion_base	= -0.2
+
+cam_dispersion          = -1
+cam_dispersion_inc      = -1
+cam_step_angle_horz     = -1
+
+zoom_cam_dispersion			= -1
+zoom_cam_dispersion_inc		= -1
+zoom_cam_step_angle_horz	= -1
+
+[up_sect_f_spas12]
+cost		      		= 375
+value					= +2
+ammo_mag_size       	= +2
+
+[up_sect_g_spas12]
+cost		      		= 375
+value					= +30
+
+misfire_probability 	= -0.0025	    ;вероятность осечки при максимальном износе
+condition_shot_dec		= -0.00015
+
+[up_sect_ac_spas12]
+cost		      		= 1125
+value					= +25
+rpm						= 20
+
+[up_sect_bd_spas12]
+cost		      		= 1125
+value					= +20
+fire_dispersion_base	= -0.2
+ammo_mag_size       	= -2
+
+[up_a_spas12]
+scheme_index            = 0, 0
+known                   = 1
+effects                 = up_gr_ac_spas12
+section                 = up_sect_a_spas12
+property                = prop_rpm
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = on_weapon_upgrade_something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_auto_rpm2
+description             = st_upg_auto_rpm2_descr
+icon                    = ui_wp_upgrade_50
+
+;;...
+[up_b_spas12]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = up_gr_bd_spas12
+section                 = up_sect_b_spas12
+property                = prop_dispersion
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_barrel_rifled
+description             = st_upg_barrel_rifled_descr
+icon                    = ui_wp_upgrade_51
+
+[up_c_spas12]
+scheme_index            = 0, 2
+known                   = 1
+effects                 = up_gr_ac_spas12
+section                 = up_sect_c_spas12
+property                = prop_weight
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_poly_weight
+description             = st_upg_poly_weight_descr
+icon                    = ui_wp_upgrade_52
+
+[up_d_spas12]
+scheme_index            = 0, 3
+known                   = 1
+effects                 = up_gr_bd_spas12
+section                 = up_sect_d_spas12
+property                = prop_reliability
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_head_misfire
+description             = st_upg_head_misfire_descr
+icon                    = ui_wp_upgrade_53
+
+[up_e_spas12]
+scheme_index            = 0, 4
+known                   = 1
+effects                 = 
+section                 = up_sect_e_spas12
+property                = prop_dispersion
+
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_handle_accur2
+description             = st_upg_handle_accur2_descr
+icon                    = ui_wp_upgrade_56
+
+[up_f_spas12]
+scheme_index            = 0, 5
+known                   = 1
+effects                 = 
+section                 = up_sect_f_spas12
+property                = prop_ammo_size
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here_h
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_charger_big
+description             = st_upg_charger_big_descr
+icon                    = ui_wp_upgrade_57
+
+[up_g_spas12]
+scheme_index            = 0, 6
+known                   = 1
+effects                 = 
+section                 = up_sect_g_spas12
+property                = prop_reliability
+
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_surf_wear
+description             = st_upg_surf_wear_descr
+icon                    = ui_wp_upgrade_53
+
+
+[up_ac_spas12]
+scheme_index            = 1, 0
+known                   = 1
+effects                 = 
+section                 = up_sect_ac_spas12
+property                = prop_rpm
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_pomp_rpm
+description             = st_upg_pomp_rpm_descr
+icon                    = ui_wp_upgrade_55
+
+[up_bd_spas12]
+scheme_index            = 1, 1
+known                   = 1
+effects                 = 
+section                 = up_sect_bd_spas12
+property                = prop_dispersion
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_electro_accur
+description             = st_upg_electro_accur_descr
+icon                    = ui_wp_upgrade_54
+
+[up_gr_a_spas12]
+elements                = up_a_spas12
+
+[up_gr_b_spas12]
+elements                = up_b_spas12
+
+[up_gr_c_spas12]
+elements                = up_c_spas12
+
+[up_gr_d_spas12]
+elements                = up_d_spas12
+
+[up_gr_e_spas12]
+elements                = up_e_spas12
+
+[up_gr_f_spas12]
+elements                = up_f_spas12
+
+[up_gr_g_spas12]
+elements                = up_g_spas12
+
+[up_gr_ac_spas12]
+elements                = up_ac_spas12
+
+[up_gr_bd_spas12]
+elements                = up_bd_spas12

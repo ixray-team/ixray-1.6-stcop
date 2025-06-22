@@ -1,0 +1,129 @@
+; Здесь содержатся дескрипшены сквадов, которые потом можно создавать используя спец функции.
+;************************************************************************
+;**   Монстры
+;************************************************************************
+[mar_boars_generic]
+auto_id = true
+faction = monster
+npc = boar_weak, boar_weak, boar_weak, boar_weak, boar_weak
+
+
+
+;Эти сквады пока не юзаются
+[mar_boars_lair_guard_1]
+faction = monster
+npc = boar_weak, boar_weak, boar_weak, boar_weak, boar_weak, boar_weak
+target_smart = mar_smart_terrain_3_10
+
+
+[mar_boars_lair_guard_2]
+faction = monster
+npc = boar_weak, boar_weak, boar_weak, boar_weak, boar_weak, boar_weak, boar_weak
+target_smart = mar_smart_terrain_5_10
+
+[mar_boars_lair_guard_3]
+faction = monster
+npc = boar_weak, boar_weak, boar_weak, boar_weak, boar_weak, boar_weak, boar_weak, boar_weak
+target_smart = mar_smart_terrain_6_10
+
+
+
+;*******************************************************************************
+;**   Чистое Небо
+;*******************************************************************************
+[mar_csky_base_1]
+auto_id = true
+faction = csky
+npc = sim_default_csky_0, sim_default_csky_0, sim_default_csky_0, sim_default_csky_0, sim_default_csky_1
+target_smart = mar_smart_terrain_csky_base
+
+
+[mar_csky_5_12_defenders]
+faction = csky
+npc = sim_default_csky_0, sim_default_csky_0, sim_default_csky_0, sim_default_csky_0, sim_default_csky_1
+target_smart = mar_smart_terrain_5_12:nil
+spawn_point = mar_smart_terrain_5_12_defenders_spawn_point
+
+[mar_csky_general]
+auto_id = true
+faction = csky
+npc = sim_default_csky_0, sim_default_csky_0, sim_default_csky_0, sim_default_csky_0, sim_default_csky_1
+
+
+[mar_csky_general_weak]
+auto_id = true
+faction = csky
+npc = sim_default_csky_0, sim_default_csky_0, sim_default_csky_0, sim_default_csky_0
+
+
+
+
+;*******************************************************************************
+;**   Бандиты
+;*******************************************************************************
+[mar_renegade_generic]
+auto_id = true
+faction = renegade
+npc = sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0
+relationship=enemy
+sympathy=0
+
+[mar_renegade_generic_1]
+;auto_id = true
+faction = renegade
+npc = sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0
+target_smart = mar_smart_terrain_7_3
+relationship=enemy
+sympathy=0
+
+[mar_renegade_generic_2]:mar_renegade_generic_1
+target_smart = mar_smart_terrain_12_2
+
+[mar_renegade_generic_3]:mar_renegade_generic_1
+target_smart = mar_smart_terrain_11_11
+
+[mar_renegade_generic_4]:mar_renegade_generic_1
+target_smart = mar_smart_terrain_10_5
+
+[mar_renegade_generic_5]:mar_renegade_generic_1
+target_smart = mar_smart_terrain_4_5
+
+
+
+[mar_renegade_guards_1]
+faction = renegade
+npc = sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0
+target_smart = mar_smart_terrain_6_11:nil
+relationship=enemy
+sympathy=0
+
+[mar_renegade_guards_2]
+faction = renegade
+npc = sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0
+target_smart = mar_smart_terrain_8_11:nil
+relationship=enemy
+sympathy=0
+
+[mar_renegade_guards_3]
+faction = renegade
+npc = sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0
+target_smart = mar_smart_terrain_8_8:nil
+relationship=enemy
+sympathy=0
+
+;[mar_renegade_guards_attack_6_11_to_5_12]
+;faction = renegade
+;npc = sim_default_bandit_1, sim_default_bandit_1, sim_default_bandit_1, sim_default_bandit_1, sim_default_bandit_1
+;target_smart = mar_smart_terrain_5_12:nil
+;spawn_point = mar_renegade_guards_attack_6_11_to_5_12_spawnpoint
+;attack_power = 400
+;relationship=enemy
+;sympathy=0
+
+[mar_renegade_guards_attack_3_10_to_5_12]
+faction = renegade
+npc = sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_0
+target_smart = mar_smart_terrain_5_12:nil
+spawn_point = mar_renegade_guards_attack_3_10_to_5_12_spawnpoint
+relationship=enemy
+sympathy=0

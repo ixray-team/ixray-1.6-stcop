@@ -1,0 +1,19 @@
+[logic]
+active = camper
+
+[camper]
+combat_ignore_cond = always
+;out_restr = enemy_floor2l_restr
+path_walk = z3_spawn_way_6
+path_look = z3_enemy_look
+radius = 1
+
+[camper@2]
+post_combat_time = 0,0
+combat_ignore_cond = {=fighting_dist_ge(20)} always
+out_restr = enemy_floor2l_restr
+path_walk = enemy_floor2l_walk_2
+path_look = enemy_floor2l_look
+;radius = 10
+def_state_moving = assault
+def_state_campering = hide_na

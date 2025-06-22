@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@artefact_hunter_task
+
+[sr_idle@artefact_hunter_task]
+on_info = {+red_artefact_hunters_go} sr_idle@wait_for_task %+red_artefact_hunters_go2 =give_inited_task(storyline:red_artefact_hunters_defend_squad:stalker) =update_squad(red_stalker_artefact_hunters_1)%
+
+[sr_idle@wait_for_task]
+on_info = {!squad_exist(red_stalker_artefact_hunters_1)} sr_idle@nil %+red_artefact_hunters_task_fail%
+on_info2 = {=is_squad_enemy_to_actor(red_stalker_artefact_hunters_1)} sr_idle@nil %+red_artefact_hunters_task_fail%
+on_info3 = {+red_artefact_hunters_task_complete} sr_idle@nil
+
+[sr_idle@nil]

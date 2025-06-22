@@ -1,0 +1,173 @@
+[logic]
+active = remark@weapon_unstrapped
+post_combat_time = 0,0 
+
+[remark@weapon_unstrapped]
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+path_walk = barricade_hide_5_walk
+anim = threat
+on_game_timer = 50 | smartcover@wait
+
+[smartcover@wait]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+path_walk = barricade_hide_4_walk
+combat_ignore_cond = true
+cover_name = hosp_barricade_4_smartcover
+cover_state = default_behaviour
+on_info = {+hospital_z1_action} smartcover@hide2
+
+;-- пр€четс€ до начала сцены со снайпером
+[smartcover@hide]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_4_smartcover
+cover_state = default_behaviour
+on_info = {+cover_fire} smartcover@fire
+on_info2 = {+sniper_fire_scene_end} smartcover@hide2
+
+;-- стрел€ет до начала сцены со снайпером
+[smartcover@fire]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_4_smartcover
+cover_state = target_path
+target_path = barricade_fire_4_look
+on_info = {+cover_fire_end} smartcover@hide
+on_info2 = {+sniper_fire_scene} smartcover@hide
+on_info3 = {+sniper_fire_scene_end} smartcover@hide2
+
+;-- пр€четс€ 
+[smartcover@hide2]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_4_smartcover
+cover_state = idle_target
+on_info = {+cover_fire} smartcover@fire2
+on_info2 = {+sniper_off} camper@rush
+
+;-- стрел€ет, прикрывает игрока
+[smartcover@fire2]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_4_smartcover
+cover_state = target_path
+target_path = barricade_fire_4_look
+on_info = {+cover_fire_end} smartcover@hide2
+
+;-- проход отр€да „Ќ по второму этажу
+[camper@rush]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+path_walk = barricade_rush_3_walk
+path_look = barricade_rush_3_look
+radius = 5
+no_retreat = true
+def_state_moving = sneak_run
+on_signal = d | remark@dynamite
+meet = no_meet
+invulnerable = true
+
+[remark@dynamite]
+out_restr = kat_hosp_z1_cs_rush_restr
+combat_ignore_cond = always
+danger = danger_condition@2
+anim = dynamite
+target = barricade_rush_3_look,1
+on_game_timer = 50 | camper@rush2
+meet = no_meet
+invulnerable = true
+
+[camper@rush2]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+path_walk = barricade_rush_3_walk
+path_look = barricade_rush_3_look
+radius = 5
+no_retreat = true
+def_state_moving = sneak_run
+on_signal = boom | camper@final_wait %+door_blow_up%
+meet = no_meet
+invulnerable = true
+
+[camper@final_wait]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+combat_ignore_cond = always
+path_walk = barricade_rush_3_walk
+path_look = barricade_rush_3_look
+radius = 5
+no_retreat = true
+def_state_moving = sneak_run
+on_game_timer = 15 | camper@final
+meet = no_meet
+invulnerable = true
+
+;-- вырубает пулемет и занимает финальную точку перед проломом
+[camper@final]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+combat_ignore_cond = always
+path_walk = barricade_final_4_walk
+path_look = barricade_final_4_look
+radius = 5
+no_retreat = true
+def_state_moving = sneak_run
+meet = no_meet
+on_signal = minigun | remark %=play_sound(clear_sky_kill_gunner:csky)%
+invulnerable = true
+
+[remark]
+out_restr = kat_hosp_z1_cs_final_restr
+combat_ignore_cond = true
+danger = danger_condition
+anim = search
+target = barricade_final_4_look,0
+on_game_timer = 40 | %+minigun_off%
+on_game_timer2 = 50 | camper@final2 %=barrel_explode(208) +lim_z1_minigun_off_2%
+meet = no_meet
+invulnerable = true
+
+[camper@final2]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+path_walk = barricade_final_4_walk_2
+path_look = barricade_final_4_look_2
+radius = 0
+no_retreat = true
+meet = no_meet
+invulnerable = true
+on_game_timer = 20 | camper@final3 %=play_sound(clear_sky_gunner_killed:csky:st_ui_pda_legend_squad)%
+
+[camper@final3]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+path_walk = barricade_final_4_walk_2
+path_look = barricade_final_4_look_2
+radius = 0
+no_retreat = true
+meet = no_meet
+invulnerable = true
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_sound = 0
+ignore_distance_grenade = 0
+
+[danger_condition@rush]
+ignore_distance_corpse = 0
+
+[danger_condition@2]
+ignore_distance = 0

@@ -1,0 +1,119 @@
+[settings]
+resource_0 = sim_default_duty_0, 80, sim_default_duty_1, 20
+resource_1 = sim_default_duty_0, 50, sim_default_duty_1, 30, sim_default_duty_2, 20
+resource_2 = sim_default_duty_1, 50, sim_default_duty_2, 30, sim_default_duty_3, 20
+resource_3 = sim_default_duty_2, 50, sim_default_duty_3, 30, sim_default_duty_4, 20
+
+glory_0 = 0
+glory_1 = 1
+glory_2 = 2
+glory_3 = 3
+glory_4 = 4
+glory_5 = 5
+
+
+
+
+[expansion_0]
+base_squad_number = 0
+precondition_power = 0
+precondition_cond = {+val_destroy_killer_base_done} true, false
+
+[expansion_1]  ;Контроль над агропромом
+base_squad_number = 30
+precondition_power = 0
+precondition_target = agr_smart_terrain_7_4, agr_smart_terrain_6_6
+
+war_target_title = st_faction_war_duty_secure_level
+
+war_stage_icon 					= st_stage_icon_duty_secure_agroprom_no
+war_stage_icon_complete 		= st_stage_icon_duty_secure_agroprom_yes
+war_stage_icon_hint 			= st_stage_icon_duty_secure_agroprom_no
+war_stage_icon_hint_complete 	= st_stage_icon_duty_secure_agroprom_yes
+
+level_up_snd = agr_dolg_expansion_1_up
+
+[expansion_2]	;Захватить плацдарм на свалке
+base_squad_number = 30
+precondition_target = gar_smart_terrain_1_5, gar_smart_terrain_1_7
+
+war_target_title = st_faction_war_duty_capture_garbage
+
+war_stage_icon 					= st_stage_icon_duty_capture_garbage_no
+war_stage_icon_complete 		= st_stage_icon_duty_capture_garbage_yes
+war_stage_icon_hint 			= st_stage_icon_duty_capture_garbage_no
+war_stage_icon_hint_complete 	= st_stage_icon_duty_capture_garbage_yes
+
+level_up_snd = agr_dolg_expansion_2_up
+level_down_snd = agr_dolg_expansion_2_down
+
+[expansion_3]	;Захватить переходы на темную долину
+base_squad_number = 40
+precondition_target = gar_smart_terrain_8_3, gar_smart_terrain_8_7
+
+war_target_title = st_faction_war_duty_secure_garbage
+
+war_stage_icon 					= st_stage_icon_duty_secure_garbage_no
+war_stage_icon_complete 		= st_stage_icon_duty_secure_garbage_yes
+war_stage_icon_hint 			= st_stage_icon_duty_secure_garbage_no
+war_stage_icon_hint_complete 	= st_stage_icon_duty_secure_garbage_yes
+
+level_up_snd = agr_dolg_expansion_3_up
+level_down_snd = agr_dolg_expansion_3_down
+
+[expansion_4]	;Захватить плацдарм на темной долине
+base_squad_number = 40
+precondition_target = val_smart_terrain_5_7, val_smart_terrain_5_8 
+
+war_target_title = st_faction_war_duty_capture_darkvalley
+
+war_stage_icon 					= st_stage_icon_duty_capture_darkvalley_no
+war_stage_icon_complete 		= st_stage_icon_duty_capture_darkvalley_yes
+war_stage_icon_hint 			= st_stage_icon_duty_capture_darkvalley_no
+war_stage_icon_hint_complete 	= st_stage_icon_duty_capture_darkvalley_yes
+
+level_up_snd = agr_dolg_expansion_4_up
+level_down_snd = agr_dolg_expansion_4_down
+
+[expansion_5]   ; Уничтожить базу свободы
+base_squad_number = 40
+precondition_target_eliminate = val_smart_terrain_7_4
+
+war_target_title = st_faction_war_duty_eliminate_base
+
+war_stage_icon 					= st_stage_icon_duty_eliminate_freedom_no
+war_stage_icon_complete 		= st_stage_icon_duty_eliminate_freedom_yes
+war_stage_icon_hint 			= st_stage_icon_duty_eliminate_freedom_no
+war_stage_icon_hint_complete 	= st_stage_icon_duty_eliminate_freedom_yes
+
+level_up_snd = agr_dolg_expansion_5_up
+level_down_snd = agr_dolg_expansion_5_down
+
+[expansion_6]   ; Расслабить булки.
+base_squad_number = 40
+precondition_power = 0.5
+
+war_target_title = st_faction_war_duty_relax
+
+level_down_snd = agr_dolg_expansion_6_down
+
+
+[secondary_targets]
+mil_smart_terrain_3_8 = true
+
+[start_position]
+agr_smart_terrain_1_6_duty_1_base_squad = agr_smart_terrain_1_6
+agr_smart_terrain_1_6_duty_2_base_squad = agr_smart_terrain_1_6
+agr_smart_terrain_1_6_duty_3_base_squad = agr_smart_terrain_1_6
+agr_smart_terrain_1_6_duty_4_base_squad = agr_smart_terrain_1_6_near_1
+agr_smart_terrain_1_6_duty_5_base_squad = agr_smart_terrain_1_6_near_2
+agr_smart_terrain_7_4_duty_1_squad = agr_smart_terrain_7_4
+agr_smart_terrain_7_4_duty_2_squad = agr_smart_terrain_7_4
+agr_smart_terrain_6_6_duty_1_squad = agr_smart_terrain_6_6
+agr_smart_terrain_5_7_duty_1_squad = agr_smart_terrain_5_7
+red_stalker_gate_keepers_1 = red_smart_terrain_4_2
+red_stalker_gate_keepers_2 = red_smart_terrain_4_2
+red_stalker_gate_keepers_3 = red_smart_terrain_3_1
+red_stalker_gate_keepers_4 = red_smart_terrain_3_1
+mil_smart_terrain_4_5_duty_squad_1 = mil_smart_terrain_4_5
+mil_smart_terrain_4_5_duty_squad_1 = mil_smart_terrain_4_5

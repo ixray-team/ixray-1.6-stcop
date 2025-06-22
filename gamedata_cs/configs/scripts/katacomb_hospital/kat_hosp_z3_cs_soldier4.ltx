@@ -1,0 +1,44 @@
+[logic]
+active = camper@fire
+on_death = death
+
+[death]
+on_info = %-hospital_z3_cs_soldier4%
+
+
+[camper@fire]
+post_combat_time = 0,0
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_soldier4_walk
+path_look = z3_cs_commander_look
+radius = 0
+def_state_moving = sneak_run
+;def_state_campering_fire = hide_sniper_fire
+on_info = {+hospital_z3_cs_fire_1} camper@final
+wounded = wounded
+
+[camper@final]
+post_combat_time = 0,0
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_soldier4_walk_1
+path_look = z3_cs_soldier4_look_1
+radius = 0
+def_state_moving = sneak_run
+wounded = wounded
+on_info = {+hospital_z3_enemy_last_wave} camper@final2
+
+[camper@final2]
+post_combat_time = 0,0
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_soldier4_walk_1
+path_look = z3_cs_soldier1_look_1
+radius = 0
+def_state_moving = sneak_run
+wounded = wounded
+
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false

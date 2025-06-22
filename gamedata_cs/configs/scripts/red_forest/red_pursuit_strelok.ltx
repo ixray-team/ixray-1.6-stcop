@@ -1,0 +1,92 @@
+[logic]
+active = walker@wait_actor
+
+[walker@wait_actor]
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = red_pursuit_strelok_1_walk
+path_look = red_pursuit_strelok_1_walk
+def_state_moving1 = sprint
+def_state_moving2 = sprint
+def_state_moving3 = sprint
+;on_info = {=dist_to_actor_le(50) +red_pursuit_scene_begin} walker@go_tonnel
+on_info = {+red_pursuit_boars_attack} walker@go_tonnel2
+meet = no_meet
+
+[walker@go_tonnel]
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = red_pursuit_strelok_2_walk
+path_look = red_pursuit_strelok_2_walk
+def_state_moving1 = sprint
+def_state_moving2 = sprint
+def_state_moving3 = sprint
+on_signal = action | walker@go_tonnel2 %+red_pursuit_strelok_go_1%
+on_info = {+red_pursuit_strelok_go_1} walker@go_tonnel2
+meet = no_meet
+
+[walker@go_tonnel2]
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = red_pursuit_strelok_2_walk
+path_look = red_pursuit_strelok_2_walk
+def_state_moving1 = sprint
+def_state_moving2 = sprint
+def_state_moving3 = sprint
+on_signal = action | walker@go_tonnel3 %+red_pursuit_strelok_go_2%
+on_info = {+red_pursuit_strelok_go_2} walker@go_tonnel3
+meet = no_meet
+
+[walker@go_tonnel3]
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = red_pursuit_strelok_3_walk
+path_look = red_pursuit_strelok_3_walk
+def_state_moving1 = sprint
+def_state_moving2 = sprint
+def_state_moving3 = sprint
+on_signal = action | walker@go_tonnel4 %+red_pursuit_strelok_go_3%
+on_info = {+red_pursuit_strelok_go_3} walker@go_tonnel4
+meet = no_meet
+
+[walker@go_tonnel4]
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = red_pursuit_strelok_4_walk
+path_look = red_pursuit_strelok_4_walk
+def_state_moving1 = sprint
+def_state_moving2 = sprint
+def_state_moving3 = sprint
+on_signal = action | walker@wait %=play_sound(red_pursuit_strelok_threat:stalker:sim_strelok_name)%
+on_info = {+red_pursuit_strelok_go} walker@in_tonnel %=play_sound(red_pursuit_strelok_threat:stalker:sim_strelok_name)%
+on_info2 = {+red_pursuit_ambush_attack} walker@in_tonnel %=play_sound(red_pursuit_strelok_threat:stalker:sim_strelok_name)%
+meet = no_meet
+
+[walker@wait]
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = red_pursuit_strelok_hide_walk
+path_look = red_pursuit_strelok_hide_walk
+def_state_moving1 = sprint
+def_state_moving2 = sprint
+def_state_moving3 = sprint
+on_info = {+red_pursuit_strelok_go} walker@in_tonnel
+on_info2 = {+red_pursuit_ambush_attack} walker@in_tonnel
+meet = no_meet
+
+[walker@in_tonnel]
+invulnerable = true
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+path_walk = red_pursuit_strelok_5_walk
+path_look = red_pursuit_strelok_5_walk
+def_state_moving1 = sprint
+def_state_moving2 = sprint
+def_state_moving3 = sprint
+on_signal = action | {+red_pursuit_explode} %+red_pursuit_strelok_offline =destroy_object%

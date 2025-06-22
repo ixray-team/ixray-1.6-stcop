@@ -1,0 +1,24 @@
+test_effector = {
+					start = 	{
+									{anim = "scenario_cam\\marsh\\camera_mar_02_up", looped = false, local_pos = true},
+								},
+					idle =  	{
+									{anim = "scenario_cam\\marsh\\camera_mar_03_idle", looped = "{+test_info_1} false", local_pos = true},
+								},
+					finish =	{
+									{anim = "scenario_cam\\marsh\\camera_mar_04_on_foot", looped = false, local_pos = true},
+								}
+				}
+				
+mar_intro_effector = {
+					start = 	{
+									{anim = "scenario_cam\\marsh\\camera_mar_01", looped = false, local_pos = false},
+								},
+					idle =  	{
+									{anim = "scenario_cam\\marsh\\camera_mar_02_up", looped = false, local_pos = false},
+									{anim = "scenario_cam\\marsh\\camera_mar_03_idle", looped = "{+mar_intro_scene_2_end} false", local_pos = false},
+									{anim = "scenario_cam\\marsh\\camera_mar_04_on_foot", looped = false, local_pos = false},
+								},
+					finish =	{
+								}					
+				}

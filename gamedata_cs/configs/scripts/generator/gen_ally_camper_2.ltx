@@ -1,0 +1,49 @@
+[logic]
+active = camper@start
+combat_ignore = combat_ignore
+
+[combat_ignore]
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+
+[camper@start]
+path_walk = camp_2
+path_look = camp_look_rear
+def_state_moving = raid
+def_state_moving = raid_fire
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+out_restrictor = space_restrictor_allies
+combat_ignore_cond = {-gen_start_fighting} always
+on_info = {+gen_snork_anim_right_1_danger} remark@kill_snork_anim_right_1
+on_info2 = {+gen_snork_anim_right_2_danger} remark@kill_snork_anim_right_2
+on_info3 = {+gen_snork_anim_left_3_danger} remark@kill_snork_anim_left_3
+radius = 0
+invulnerable = true
+danger = danger_condition
+
+[remark@kill_snork_anim_right_1]
+anim = threat_fire
+target = logic@work6, gen_st_snorks
+on_info = {+gen_snork_anim_right_1_dead} camper@start
+combat_ignore_cond = always
+invulnerable = true
+danger = danger_condition
+
+[remark@kill_snork_anim_right_2]
+anim = threat_fire
+target = logic@work7, gen_st_snorks
+on_info = {+gen_snork_anim_right_2_dead} camper@start
+combat_ignore_cond = always
+invulnerable = true
+danger = danger_condition
+
+[remark@kill_snork_anim_left_3]
+anim = threat_fire
+target = logic@work4, gen_st_snorks
+on_info = {+gen_snork_anim_left_3_dead} camper@start
+combat_ignore_cond = always
+invulnerable = true
+danger = danger_condition
