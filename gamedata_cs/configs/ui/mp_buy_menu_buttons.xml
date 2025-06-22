@@ -215,33 +215,32 @@
 	<texture>ui_beltbut_patrons</texture>
 </btn_pistol_ammo>
 
-<btn_pistol_silencer x="484" y="108" width="22" height="22" hint="ui_inv_silencer_pistol" accel="kA">
+<btn_pistol_silencer x="510" y="108" width="22" height="22" hint="ui_inv_silencer_pistol" accel="kA">
 	<window_name>btn_pistol_silencer</window_name>
 	<texture>ui_beltbut_silencer</texture>
 </btn_pistol_silencer>
 
-
-<btn_rifle_ammo x="787" y="86" width="22" height="22" hint="ui_inv_ammo_rifle" accel="kW">
+<btn_rifle_ammo x="779" y="86" width="22" height="22" hint="ui_inv_ammo_rifle" accel="kW">
 	<window_name>btn_rifle_ammo</window_name>
 	<texture>ui_beltbut_patrons</texture>
 </btn_rifle_ammo>	
 
-<btn_rifle_ammo2 x="787" y="108" width="22" height="22" hint="ui_inv_granades_rifle" accel="kE">
+<btn_rifle_ammo2 x="779" y="108" width="22" height="22" hint="ui_inv_granades_rifle" accel="kE">
 	<window_name>btn_rifle_ammo2</window_name>
 	<texture>ui_beltbut_granadeBig</texture>
 </btn_rifle_ammo2>	
 
-<btn_rifle_silencer x="760" y="108" width="22" height="22" hint="ui_inv_silencer_rifle" accel="kF">
+<btn_rifle_silencer x="786" y="108" width="22" height="22" hint="ui_inv_silencer_rifle" accel="kF">
 	<window_name>btn_rifle_silencer</window_name>
 	<texture>ui_beltbut_silencer</texture>		
 </btn_rifle_silencer>
 
-<btn_rifle_scope x="738" y="108" width="22" height="22" hint="ui_inv_scope_rifle" accel="kS">
+<btn_rifle_scope x="764" y="108" width="22" height="22" hint="ui_inv_scope_rifle" accel="kS">
 	<window_name>btn_rifle_scope</window_name>
 	<texture>ui_beltbut_aim</texture>		
 </btn_rifle_scope>
 
-<btn_rifle_glauncher x="716" y="108" width="22" height="22" hint="ui_inv_granadelauncher_rifle" accel="kD">
+<btn_rifle_glauncher x="742" y="108" width="22" height="22" hint="ui_inv_granadelauncher_rifle" accel="kD">
 	<window_name>btn_rifle_glauncher</window_name>
 	<texture>ui_beltbut_granade</texture>
 </btn_rifle_glauncher>
