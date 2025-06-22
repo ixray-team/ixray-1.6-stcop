@@ -4,6 +4,10 @@
 #include "SoundManager.h"
 #include "../../../xrSound/stdafx.h"
 #include "../../../xrSound/Sound.h"
+
+#include <ogg/ogg.h>
+#include <vorbis/vorbisfile.h>
+
 UISoundEditorForm *UISoundEditorForm::Form = nullptr;
 
 UISoundEditorForm::UISoundEditorForm()
@@ -213,6 +217,28 @@ void UISoundEditorForm::InitItemList()
     m_ItemList->AssignItems(items/*, false, true*/);
 }
 
+float UISoundEditorForm::GetOGGDurationInSeconds(const char* filename)
+{
+    OggVorbis_File vf;
+    if (ov_fopen(filename, &vf) < 0)
+    {
+        Msg("! Error: not an Ogg Vorbis file: %s", filename);
+        return -1.0f;
+    }
+
+    // Длительность в секундах
+    double duration = ov_time_total(&vf, -1);
+
+    ov_clear(&vf);
+    return static_cast<float>(duration);
+}
+
+size_t UISoundEditorForm::GetFileSizeInBytes(const char* filename)
+{
+    time_t t = {};
+    return Platform::Stat(filename, t);
+}
+
 void UISoundEditorForm::OnItemsFocused(ListItem* item)
 {
     PropItemVec props;
@@ -239,6 +265,9 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
         ESoundThumbnail* thm = m_THM_Current.back();
         PlaySound(thm->SrcName());
 
+        string_path OggFilename;
+        FS.update_path(OggFilename, _game_sounds_, EFS.ChangeFileExt(thm->SrcName(), ".ogg").c_str());
+
         CanvasValue* C = 0;
         C = PHelper().CreateCanvas(props, "Attenuation", "", 64);
         C->tag = (size_t)this;
@@ -248,9 +277,14 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
         B->OnBtnClickEvent.bind(this, &UISoundEditorForm::OnAttClick);
 
         // NOTE: not supported in new sound
-        //PHelper().CreateCaption(props, "File Length", shared_str().printf("%.2f Kb", float(size) / 1024.f));
-        //PHelper().CreateCaption(props, "Total Time", shared_str().printf("%.2f sec", float(time) / 1000.f));
-        if (!m_Flags.is(flReadOnly)) {
+        float FileTime = GetOGGDurationInSeconds(OggFilename);
+        size_t TotalSize = GetFileSizeInBytes(OggFilename);
+
+        PHelper().CreateCaption(props, "File Length", shared_str().printf("%.2f Kb", float(TotalSize) / 1024.f));
+        PHelper().CreateCaption(props, "Total Time", shared_str().printf("%.2f sec", FileTime));
+
+        if (!m_Flags.is(flReadOnly))
+        {
             B = PHelper().CreateButton(props, "Control", "Play,Stop", ButtonValue::flFirstOnly);
             B->OnBtnClickEvent.bind(this, &UISoundEditorForm::OnControlClick);
         }
