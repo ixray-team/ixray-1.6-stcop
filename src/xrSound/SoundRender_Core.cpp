@@ -650,8 +650,36 @@ void CSoundRender_Core::set_user_env(CSound_environment* E)
 {
 	if ((0 == E) && !bUserEnvironment) return;
 
-	if (E) {
+	if (E)
+	{
 		s_user_environment = *((CSoundRender_Environment*)E);
+		sound_zone_params params = { 0 };
+		params.min = Fvector(1000000, 1000000, 1000000);
+		params.max = Fvector(-1000000, -1000000, -1000000);
+
+		params.version = s_user_environment.version;
+		params.name = s_user_environment.name;
+		params.environment = s_user_environment.Environment;
+		params.settings.room = s_user_environment.Room;
+		params.settings.room_rolloff_factor = s_user_environment.RoomRolloffFactor;
+		params.settings.decay_time = s_user_environment.DecayTime;
+		params.settings.decay_hf_ratio = s_user_environment.DecayHFRatio;
+		params.settings.reflections = s_user_environment.Reflections;
+		params.settings.reflections_delay = s_user_environment.ReflectionsDelay;
+		params.settings.reverb = s_user_environment.Reverb;
+		params.settings.reverb_delay = s_user_environment.ReverbDelay;
+		params.settings.environment_size = s_user_environment.EnvironmentSize;
+		params.settings.environment_diffusion = s_user_environment.EnvironmentDiffusion;
+		params.settings.air_absorption_hf = s_user_environment.AirAbsorptionHF;
+
+		params.center = params.max;
+		params.center.add(params.min);
+		params.center.div(2);
+		params.size = params.max;
+		params.size.sub(params.min);
+		params.size.div(2);
+
+		Mixer::AddEditorZone(params);
 		bUserEnvironment = TRUE;
 	} else {
 		bUserEnvironment = FALSE;
