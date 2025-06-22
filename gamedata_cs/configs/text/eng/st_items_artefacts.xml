@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_af_medusa_name">
+		<text>"Jellyfish"</text>
+	</string>
+	<string id="st_af_medusa_descr">
+		<text>This gravitational artifact absorbs radioactive particles, reducing the effects of radiation on the body. Very common in the Zone.</text>
+	</string>
+	<string id="st_af_cristall_flowe_name">
+		<text>"Stone Flower"</text>
+	</string>
+	<string id="st_af_cristall_flowe_descr">
+		<text>A stone deformed by an extreme gravitational force, this artifact has granite-like properties, can provide moderate protection against psy-emissions, and is radioactive.</text>
+	</string>
+	<string id="st_af_night_star_name">
+		<text>"Night Star"</text>
+	</string>
+	<string id="st_af_night_star_descr">
+		<text>This glowing artifact can generate a local directed low-gravity field. Reduces the weight of backpacks when placed near them. Widely used to increase maximum load. Emits radiation.</text>
+	</string>
+	<string id="st_af_vyvert_name">
+		<text>"Wrenched"</text>
+	</string>
+	<string id="st_af_vyvert_descr">
+		<text>This bizarrely-shaped artifact appears in places with increased gravitational activity. Acts as a kind of sponge that absorbs radioactive elements. In so doing, the artifact provides protection from outside radiation as well as from radioactive particles that have already made their way into the body.</text>
+	</string>
+	<string id="st_af_gravi_name">
+		<text>"Gravi"</text>
+	</string>
+	<string id="st_af_gravi_descr">
+		<text>Gravi is formed from metallic substances exposed to prolonged gravitation. This makes it capable of sustaining an antigravitational field, helping many stalkers carry greater loads. Emits radiation.</text>
+	</string>
+	<string id="st_af_gold_fish_name">
+		<text>"Goldfish"</text>
+	</string>
+	<string id="st_af_gold_fish_descr">
+		<text>The result of a superinteraction of gravitational fields, Goldfish produces its own strong directed gravitational field and significantly increases stalkers' load-carrying abilities, which explains why it's always in great demand. Emits radiation.</text>
+	</string>
+	<string id="st_af_blood_name">
+		<text>"Stone Blood"</text>
+	</string>
+	<string id="st_af_blood_descr">
+		<text>A reddish formation of compressed and twisted polymerized debris of plants, soil and bones. Can partially neutralize chemical poisons. Emits radiation.</text>
+	</string>
+	<string id="st_af_mincer_meat_name">
+		<text>"Meat Chunk"</text>
+	</string>
+	<string id="st_af_mincer_meat_descr">
+		<text>This organic artifact consists of fossilized, mutated animal tissues. Exudes a mucous fluid which partially neutralizes the effects of harmful chemicals on human skin. Emits radiation.</text>
+	</string>
+	<string id="st_af_soul_name">
+		<text>"Soul"</text>
+	</string>
+	<string id="st_af_soul_descr">
+		<text>A unique organic artifact with properties just as unique. Somehow it increases the body's overall recovery rate. Thanks to its reasonable price and an attractive appearance, this artifact is a valuable collector's item. Emits radiation.</text>
+	</string>
+	<string id="st_af_fuzz_kolobok_name">
+		<text>"Kolobok"</text>
+	</string>
+	<string id="st_af_fuzz_kolobok_descr">
+		<text>A relatively rare and expensive artifact, which forms in chemically active areas. Highly valued for its ability to increase the body's overall well-being. Emits radiation.</text>
+	</string>
+	<string id="st_af_baloon_name">
+		<text>"Bubble"</text>
+	</string>
+	<string id="st_af_baloon_descr">
+		<text>A compound of several hollow organic formations, this artifact emits a gaseous substance that can neutralize radioactive particles inside the body. This artifact is extremely valuable.</text>
+	</string>
+	<string id="st_af_glass_name">
+		<text>"Firefly"</text>
+	</string>
+	<string id="st_af_glass_descr">
+		<text>Firefly emits an unknown type of energy, which considerably speeds up healing in living beings, sometimes bringing people back from the dead in seconds. Emits radiation.</text>
+	</string>
+	<string id="st_af_fireball_name">
+		<text>"Fireball"</text>
+	</string>
+	<string id="st_af_fireball_descr">
+		<text>Even though Fireball is a thermal artifact, it can be handled without fear of being burned. This artifact is valued for its ability to maintain a temperature of 75 degrees within a small radius, virtually regardless of its surroundings. Emits radiation.</text>
+	</string>
+	<string id="st_af_cristall_name">
+		<text>"Crystal"</text>
+	</string>
+	<string id="st_af_cristall_descr">
+		<text>This artifact is formed in anomalous zones with intense thermal activity. Actively consumes excessive heat, remaining cool to the touch throughout. Emits radiation.</text>
+	</string>
+	<string id="st_af_dummy_glassbeads_name">
+		<text>"Mama's Beads"</text>
+	</string>
+	<string id="st_af_dummy_glassbeads_descr">
+		<text>The thermal nature of Mama's Beads is no longer a secret, but its shape still puzzles scientific minds. The emissions produced by pulses in its thicker sections increase the metabolism of living beings, which helps wounds heal quicker. Emits radiation.</text>
+	</string>
+	<string id="st_af_eye_name">
+		<text>"Eye"</text>
+	</string>
+	<string id="st_af_eye_descr">
+		<text>This artifact, which resembles the human eye, considerably increases the body's metabolism, helping wounds heal quicker. Experienced stalkers say that the Eye also brings luck. Right or wrong, it sure brings in money. Emits radiation. </text>
+	</string>
+	<string id="st_af_fire_name">
+		<text>"Flame"</text>
+	</string>
+	<string id="st_af_fire_descr">
+		<text>This rare artifact forms in areas of high thermal activity. Emits powerful infrared emissions, which intensify metabolic processes, healing wounds before its bearer's very eyes. This artifact is extremely valuable, but emits radiation.</text>
+	</string>
+	<string id="st_af_electra_sparkler_name">
+		<text>"Sparkler"</text>
+	</string>
+	<string id="st_af_electra_sparkler_descr">
+		<text>A bright representative of the electrostatic family of artifacts, this artifact can smooth fluctuations in electric field density. Emits radiation.</text>
+	</string>
+	<string id="st_af_electra_flash_name">
+		<text>"Flash"</text>
+	</string>
+	<string id="st_af_electra_flash_descr">
+		<text>Thanks to its heavily crystallized molecules, this electrostatic artifact is a powerful absorbent of electric charges, able to protect its bearer from electric shocks of up to 5,000 volts. Emits radiation.</text>
+	</string>
+	<string id="st_af_electra_moonlight_name">
+		<text>"Moonlight"</text>
+	</string>
+	<string id="st_af_electra_moonlight_descr">
+		<text>This unique electrostatic artifact can resonate under the influence of psy-waves. Stalkers have learned to fine-tune the artifact so that it resonates in opposite phase, thus absorbing psy-emissions. Emits radiation.</text>
+	</string>
+	<string id="st_af_dummy_battery_name">
+		<text>"Battery"</text>
+	</string>
+	<string id="st_af_dummy_battery_descr">
+		<text>The origin of this item remains a scientific enigma. It is known only that its composition includes dielectric elements, but scientists have yet to identify the exact physical conditions required for its formation. The artifact is popular in the Zone and valued by its residents and visitors for its restorative abilities. Emits radiation.</text>
+	</string>
+	<string id="st_af_dummy_dummy_name">
+		<text>"Shell"</text>
+	</string>
+	<string id="st_af_dummy_dummy_descr">
+		<text>This artifact used to be considered trash, devoid of any useful properties. However, scientists recently discovered that if kept in constant contact with the body, it has an excellent stimulating effect on the nervous system, replenishing the bearer's energy. Emits radiation.</text>
+	</string>
+	<string id="st_af_ice_name">
+		<text>"Snowflake"</text>
+	</string>
+	<string id="st_af_ice_descr">
+		<text>At first glance, this artifact resembles Kolobok. Some claim that it actually is Kolobok, its properties reinforced by exposure to a powerful electric field. The artifact has excellent electrostimulative properties, increasing the bearer's vitality considerably. Emits radiation.</text>
+	</string>
+</string_table>

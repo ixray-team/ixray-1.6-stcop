@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_comm_talk_11">
+		<text>Whatcha staring at, assface?</text>
+	</string>
+	<string id="esc_comm_talk_1111">
+		<text>Laugh all you want! If you're here to find out where I hid the case with the loot you're in for a disappointment. Go back to your beloved Zone! My boys are gonna obliterate your pathetic posse soon enough! And as for your ringleader  - we'll hang him on the bridge, so everyone can see what you get for messing with the military!</text>
+	</string>
+	<string id="esc_comm_talk_111111">
+		<text>Oh, really? Hrm... and how much would you charge for your services? What if I ask you to help out my boys by taking out those snipers at the railroad embankment?</text>
+	</string>
+	<string id="esc_leader_what_happens_1">
+		<text>How should I put it to you... Stalkers and the army used to work together. They gave us weapons, we gave them money, and everyone was happy. Sometimes they'd tell us if a new anomaly cluster emerged. But at some point their commander got too greedy for his own good. He hooked up with the bandits and began to sell them information about our movements. At first we thought the bandits were just lucky, but eventually we caught on to their shady dealings with the army. At that point we got together and decided that the time was ripe for some heads to roll.</text>
+	</string>
+	<string id="esc_leader_talk_11">
+		<text>Howdy, merc! We don't see too much of you at the Cordon... What brings you here?</text>
+	</string>
+	<string id="esc_leader_talk_22">
+		<text>So, did you learn anything useful?</text>
+	</string>
+	<string id="esc_leader_talk_33">
+		<text>Wow, this story's finally got a damn good ending! Now the army is going to stay behind the outpost for good.</text>
+	</string>
+	<string id="esc_leader_talk_44">
+		<text>Merc, you'll need to deal with the commander's pals.</text>
+	</string>
+	<string id="esc_leader_talk_55">
+		<text>What the hell are we going to do about the commander?...</text>
+	</string>
+	<string id="esc_leader_talk_1111">
+		<text>From Sidorovich, you say... so, you know about the commander, too? Alright, I'll be straight with you. We used to cooperate with the army. They'd allow us to transport goods safely through the outpost and let us in on some useful information. We paid well for their services. But then we found out that jerk of a commander worked for both sides - he supplied the bandits with our whereabouts! Then he went and sold two of our guys as slaves at the Garbage! That was the last straw.</text>
+	</string>
+	<string id="esc_leader_talk_111111">
+		<text>Yeah, I guess we got a little carried away... Can't figure out what to do now. We're holding the commander hostage, which is a kind of guarantee that the army's not going to bomb our asses back to the Stone Age with their choppers. We can't kill him, but we can't let him go either... The sly son of a bitch knows that we need him alive, and he's not caving in a damn inch. Trouble is, he's the only one who knows where the loot is hidden. If we don't deliver that loot to Sidorovich, he won't do business with us ever again. If we could only make this army bastard play by our rules, it would be a whole different ball game, believe me.</text>
+	</string>
+	<string id="esc_leader_talk_2222">
+		<text>Of course they'll save him - the rat bastard owes them a whole bunch of dough! He ran their operations on his own and stashed the cash away somewhere. Listen, I've got an idea. The commander's got only two men he can count on - they served together at the outpost and he cut them in on the deals, so they'll do whatever they can to get him out. If we dispose of them, the bastard will realize nobody's coming for him. He'll crack and we'll beat out of him the location of the stash with the loot. We split the money, and Sidorovich gets the case. What do you say?</text>
+	</string>
+	<string id="esc_leader_talk_222222">
+		<text>I have this feeling we won't have to look for them. Khaletskiy's buddies are wandering around here somewhere, planning to attack us. A small squad has been spotted at the elevator. Help us destroy them.</text>
+	</string>
+	<string id="esc_trader_meet_11">
+		<text>Hello, merc. Tell me, what brings you here?</text>
+	</string>
+	<string id="esc_trader_meet_22">
+		<text>Thanks for returning the case, merc. Now I can settle up with my client. The reason I've survived in the Zone as long as I have is that I always keep my word. You screw a client in this place and you're pretty likely to find a knife in your back real soon. Anyway, that's enough about me... About your stalker - he was here. His name is Fang, and he was looking for tube amplifiers and some other electronic crap... I'm not an expert in that sort of thing. I sold him the amp, but I didn't have the other stuff he was after, so I told him to visit the diggers at the Garbage. Recently some stalkers at the Garbage have dug up old buried equipment from after the accident at the Chernobyl NPP, and now the place is filled with all kinds of ancient components. Look for him there. And remember, if you want to trade - I'm your man. </text>
+	</string>
+	<string id="esc_trader_meet_44">
+		<text>Hey merc, I'm still waiting on that case. I suggest you keep that in mind. </text>
+	</string>
+	<string id="esc_trader_meet_55">
+		<text>So, what are you after?</text>
+	</string>
+	<string id="esc_trader_meet_2222">
+		<text>If you need anything else, you're always welcome here. I'm extending you a lifetime store discount for helping me deal with the military.</text>
+	</string>
+	<string id="esc_trader_meet_1111">
+		<text>Hmm... I see so many stalkers in here it's a pain to remember them all. Any reason I should strain my brain for you?</text>
+	</string>
+	<string id="esc_trader_meet_111111">
+		<text>Now we're talking business, I like that. Well, here's the thing: I've been here a while, my business is up and running, I get different orders here and there and people trust me. I have a problem with my last order, and the trouble is the client is very important, and the loot he's after is unique! Everything was going fine - stalkers would get the loot from inside the Zone, and the army boys were supposed to ensure they can get it through the Cordon. Well, the two parties started bickering over something and now this whole place has gone crazy! The result is that stalkers are fighting the military and nobody's got a clue where the loot is. And that doesn't suit me at all, 'cause the order needs to be completed. So, help me get the case with the loot, and I'll tell you all about your stalker and his components. Deal?</text>
+	</string>
+	<string id="esc_trader_meet_11111111">
+		<text>Visit the stalkers by the embankment. They've set up some sort of base there, and that's where they're holding the captive military commander - Khaletskiy. I don't care what you do at that base, I don't care if those fruitcakes want to continue playing Robin Hood's Merry Men - all I want is that case and the loot that's inside it. For starters, try talking to Valerian, the stalker leader. I'll let them know you're coming on my behalf. </text>
+	</string>
+	<string id="esc_comm_about_life_in_zone_1">
+		<text>Well, I owe you, man. Let me tell you something - I know that stalkers are trying to reach the center of the Zone. I've seen old military maps, and it turns out that the center of the Zone is where the Chernobyl nuclear power plant used to be. It might be a coincidence, but I'd keep that in mind if I were you. Trouble is, even military satellites can't view that area in any spectrum. They don't even fly over it anymore, because the interference is so strong that they spontaneously combust. Obviously, this is all top secret, but a buddy of mine in the missile forces told me about it at a booze-up. If you want my advice - stay away from the center of the Zone.</text>
+	</string>
+	<string id="esc_comm_about_prisoner_1">
+		<text>Think you're funny? Man, if we were talking under different circumstances I would give you a different answer... I am tired of this shit, buddy... The guys I started out with in the military have all got their shiny stars and decent outfits to run in better places than this. You think I've got nothing better to do than chase people like you around the Zone? I've had enough of this - this shithole, the friggin' Zone, the bastard stalkers, and that Sidorovich cocksucker... and let's not forget the mutants... we lay down our lives to stop them but they just keep on coming. And everyone on the outside just goes on and on about how "We have to protect the world from the horrors of the Zone" and "We won't let it happen"... Generals, those morons on TV... you could drown in their bullshit! And how many of these top brass have ever been on a raid in this place, crawling on their damn bellies in between anomalies, huh? How many of those lazy sons of bitches have cleared a sector or spent a day chasing stalkers through the Swamps? Those bastards are always using the army to plug the messiest holes!</text>
+	</string>
+	<string id="esc_comm_about_prisoner_111">
+		<text>So what if I let loot through the Cordon for some cash? I live and let others live, understand? Do you know even what my official salary is, asshole? Exactly, you try living on that! They pay me nothing and expect me to feel pride in my job and in my country... The bosses are making a killing out of the Zone, just like everyone else. Why shouldn't I? My job is to do what I'm ordered and survive. So, I'm surviving as best I can. Curse this whole place and all the assholes in it... I don't know whether to shoot them all or to blow my own brains out.</text>
+	</string>
+	<string id="esc_comm_about_prisoner_11111">
+		<text>Deceit? So what? I don't give two shits about you or your kind. You're not even supposed to be in here. You should've been shot on sight as soon as you crossed into the Zone. No shit, those are actually my orders. Trouble is, you can't get much off a dead body and I'm due better compensation for my service here. The army won't pay it, so I gotta take it for myself. As for your inter-faction conflicts - I really couldn't care less; you can kill each other all you like - won't hear me complaining.</text>
+	</string>
+	<string id="esc_comm_talk_33">
+		<text>Stalker, I may have lost my loot and my friends may be dead, but I've gotten out of tougher spots! You want to know where my stash is?</text>
+	</string>
+	<string id="esc_comm_talk_3333">
+		<text>Help me get out of here, stalker. Just hand me a pistol while nobody's looking and I'll do the rest myself.</text>
+	</string>
+	<string id="esc_comm_talk_333333">
+		<text>I'll be honest with you. The stash is in a pipe, near the anomalous zone.</text>
+	</string>
+	<string id="esc_comm_talk_44">
+		<text>Thank you for giving me your weapon.</text>
+	</string>
+	<string id="esc_comm_talk_5555">
+		<text>What else do you want?</text>
+	</string>
+	<string id="esc_leader_about_home_1">
+		<text>Pretty well, you say? I'd say really well! It came at a price though, because those army bastards kept squeezing us, organizing raids against us and shooting our brothers down from their choppers. \nThey controlled all the trading that went on, and if they caught you with loot they'd just take it from you. At the same time, doing jobs for them was hardly worth it - they paid jack shit, and that's if they paid at all. But justice is no sucker, not even in the Zone! When Khaletskiy sold us out to the bandits, we decided we've had enough of their shit and took him hostage. The rest of the army goons shat their pants - they haven't been bothering us since, seeing as we have their commander. \nSo, basically, we've clawed ourselves out a nice spot under the Zone's sun, and nothing will change that now! You need to appreciate the importance of these developments: we set up a stalker base and now the Cordon is in safe hands. And it's only going to get better from here, you can bet on it!</text>
+	</string>
+	<string id="esc_leader_about_home_111">
+		<text>Well, friend, we got more plans here than God Almighty on the first day of creation! We need to finish building the base - that's our priority. Then we'll need to recruit some more people... but they'll come to us themselves, you'll see! Folks know that we're fighting for a just cause! Once we have built a decent army, we'll show the bandits not to mess with us. We've been taking crap from them for ages, and there's no place for their kind in the Zone! And after that... well, I believe the day will come when we move deeper into the Zone. We might even reach the center - the dream of every stalker in here! We've got great things ahead of us, I'm telling you, man!</text>
+	</string>
+	<string id="esc_leader_about_home_11111">
+		<text>As you can see, we've got a lot to do here... But I truly believe that if you're happy with what you've got you're going to get a lot more! We've made a start here and that's the most important thing! We've already got a technician here, and a trader as well. They're good guys - you can visit them anytime and they'll help you out. When we get more people in here we'll really kick things off! I know I can lead men to great things! Remember, this is just the beginning!</text>
+	</string>
+	<string id="esc_leader_about_prisoner_1">
+		<text>He escaped! The cocksucker killed two guards and made off into the forest! We weren't able to find him! I've got no idea how he managed to get hold of a weapon.</text>
+	</string>
+	<string id="esc_trader_about_other_1">
+		<text>Let me explain this again for you. You bring me the loot stalkers and the military are squabbling over and I'll answer all your questions.</text>
+	</string>
+	<string id="esc_comm_about_info_0">
+		<text>What can I do for you?</text>
+	</string>
+	<string id="esc_comm_about_info_1">
+		<text>I'll buy any information I consider valuable. What do you know?</text>
+	</string>
+	<string id="esc_comm_about_info_11">
+		<text>Nothing.</text>
+	</string>
+	<string id="esc_comm_about_info_2">
+		<text>I killed a military commander and took his PDA. I'll trade it for loot.</text>
+	</string>
+	<string id="esc_comm_about_info_22">
+		<text>I don't have any valuable information for you at the moment.</text>
+	</string>
+	<string id="esc_comm_about_info_3">
+		<text>The PDA is valuable to me, I'll buy it from you.</text>
+	</string>
+	<string id="esc_comm_about_info_4">
+		<text>Sold.</text>
+	</string>
+	<string id="esc_comm_about_info_5">
+		<text>I changed my mind.</text>
+	</string>
+	<string id="esc_comm_about_life_in_zone_0">
+		<text>You heard any interesting rumors lately?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_0">
+		<text>So how did you end up in the stalker slammer?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_11">
+		<text>Well, if you're so tired of us then why do you allow smuggling to go on?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_1111">
+		<text>If you're so principled, how come you been selling bandits info about stalkers? Seems like deceit to me...</text>
+	</string>
+	<string id="esc_comm_talk_111">
+		<text>Hah, it's funny seeing a military commander behind bars.</text>
+	</string>
+	<string id="esc_comm_talk_11111">
+		<text>He's not my boss, I'm a mercenary.</text>
+	</string>
+	<string id="esc_comm_talk_1111111">
+		<text>Too expensive for a rat like you.</text>
+	</string>
+	<string id="esc_comm_talk_11111122">
+		<text>Daaamn... I bet my left nut it was Sidorovich! I knew he'd eventually try pulling deals behind my back. And he sure picked a good time to stab me in the back!... Oh, well, life's never been fair and never will. Listen, two army squads are ready to attack, one at the depot and another at the mill. They are under the command of Sokolov from the depot. Go to him and let him know I'm alive and well because stalkers don't have the guts to kill me. Tell him to begin the assault.</text>
+	</string>
+	<string id="esc_comm_talk_111121">
+		<text>Daaamn... I bet my left nut it was Sidorovich! I knew he'd eventually try pulling deals behind my back. And he sure picked a good time to stab me in the back!... Oh, well, life's never been fair and never will. Listen, two army squads are ready to attack, one at the depot and another at the mill. They are under the command of Sokolov from the depot. Go to him and let him know I'm alive and well because stalkers don't have the guts to kill me. Tell him to begin the assault.</text>
+	</string>
+	<string id="esc_comm_talk_21">
+		<text>Of course, my men worship their commander! They will die for me without a second thought!</text>
+	</string>
+	<string id="esc_comm_talk_333">
+		<text>I do, and what do you want in return?</text>
+	</string>
+	<string id="esc_comm_talk_33333">
+		<text>Here's a pistol, but if you get caught trying to escape - this never happened.</text>
+	</string>
+	<string id="esc_comm_talk_3333333">
+		<text>I hope you didn't trick me.</text>
+	</string>
+	<string id="esc_comm_talk_33334">
+		<text>Hah, dream on buddy. I ain't giving you my shooter.</text>
+	</string>
+	<string id="esc_comm_talk_334">
+		<text>I don't need your stinkin' stashes. You're a dirty rat and I'm not going to help you.</text>
+	</string>
+	<string id="esc_comm_talk_444">
+		<text>No problem.</text>
+	</string>
+	<string id="esc_comm_talk_55">
+		<text>What do you need now?</text>
+	</string>
+	<string id="esc_comm_talk_555">
+		<text>Well...</text>
+	</string>
+	<string id="esc_comm_talk_6666">
+		<text>What do you want?</text>
+	</string>
+	<string id="esc_driver_about_you_0">
+		<text>How did you end up in the Zone?</text>
+	</string>
+	<string id="esc_driver_about_you_1">
+		<text>How did I end up here? Same as always, I was assigned here. I thought they'd send me to a unit close to my town, but they sent me to the Zone. Here you can forget about writing letters or going on vacation. Well, during the day it's your typical service: orders, marching, saluting... but come nighttime you better start praying, 'cause it gets real scary. Say they send you out to guard the perimeter at night, and you keep hearing howling... closer and closer. Sometimes you even see the beast. I've gone gray from that shit... and the older soldiers are complete dicks - they wake you up at night and tell you to go get them vodka. I don't care if they kill me, but I ain't taking a step outside the base at night after that one time... Vitka, a guy that was drafted here along with me, did what they asked and they found him in the morning, all blue with eyes the size of APC wheels... he got so scared his heart ruptured and he died on the spot...</text>
+	</string>
+	<string id="esc_driver_fear_0">
+		<text>Please don't kill me!</text>
+	</string>
+	<string id="esc_driver_fear_11">
+		<text>There's a reason for everything. The commander and I were inspecting the perimeter when we were attacked. The guards were killed and they took the commander hostage - I barely made it out...</text>
+	</string>
+	<string id="esc_driver_fear_111">
+		<text>So why didn't you go back to your unit, soldier?</text>
+	</string>
+	<string id="esc_driver_fear_1111">
+		<text>How can I go back there now? They'll put me in front of a tribunal for abandoning the commander in no time!</text>
+	</string>
+	<string id="esc_driver_quest_0">
+		<text>How can I help you?</text>
+	</string>
+	<string id="esc_driver_quest_1">
+		<text>One of my best friends was running away from stalkers and decided to hide in a tunnel. He managed to get inside, but couldn't get back out and died from thirst. I tried to bring him water, but to no avail. It's really weird in there - I could see him right in front of me but just couldn't get to him. Could you try and get me some of his things? I want something to remember him by. But I'll tell you right off, I don't know how to get there, so you might want to ask stalkers - they know a lot more about the Zone than us soldiers.</text>
+	</string>
+	<string id="esc_driver_quest_11">
+		<text>I don't think you can.</text>
+	</string>
+	<string id="esc_driver_quest_2">
+		<text>OK, I'll try.</text>
+	</string>
+	<string id="esc_driver_quest_22">
+		<text>I don't have the time for that.</text>
+	</string>
+	<string id="esc_driver_quest_complete_0">
+		<text>I'm here about the job.</text>
+	</string>
+	<string id="esc_driver_quest_complete_1">
+		<text>So, how did it go?</text>
+	</string>
+	<string id="esc_driver_quest_complete_2">
+		<text>I brought you his PDA. That was the only thing left on his body.</text>
+	</string>
+	<string id="esc_driver_quest_complete_22">
+		<text>Nothing yet.</text>
+	</string>
+	<string id="esc_driver_quest_complete_222">
+		<text>That's a pity. Remember, I'm counting on you.</text>
+	</string>
+	<string id="esc_driver_quest_complete_3">
+		<text>Thank you, merc! Here's a little something for your help.</text>
+	</string>
+	<string id="esc_driver_who_are_you_0">
+		<text>Who are you?</text>
+	</string>
+	<string id="esc_driver_who_are_you_1">
+		<text>Semyon... private... Lambee... I was the driver for our commander, Khaletskiy. He wanted me to drive him to see the stalkers. We got to the embankment alright, but as soon as he went up to talk to the stalkers they tied him up and I legged it.</text>
+	</string>
+	<string id="esc_driver_who_are_you_2">
+		<text>So what are you gonna do?</text>
+	</string>
+	<string id="esc_driver_who_are_you_3">
+		<text>How can I go back there now? They'll put me in front of a tribunal for abandoning the commander in no time!</text>
+	</string>
+	<string id="esc_driver_who_are_you_4">
+		<text>Come with me. We'll wipe out the stalkers, save Khaletskiy and then split the loot!</text>
+	</string>
+	<string id="esc_driver_who_are_you_44">
+		<text>I see.</text>
+	</string>
+	<string id="esc_driver_who_are_you_5">
+		<text>Good idea, man, but I don't have a weapon. Give me a pistol and I'll go with you.</text>
+	</string>
+	<string id="esc_driver_who_are_you_6">
+		<text>Here, take this. You're not much use to me without a gun.</text>
+	</string>
+	<string id="esc_driver_who_are_you_66">
+		<text>I don't think so. I don't want others to find me with a bullet in my back.</text>
+	</string>
+	<string id="esc_leader_about_home_0">
+		<text>I see you've settled down here for good.</text>
+	</string>
+	<string id="esc_leader_about_home_11">
+		<text>I'm really happy for you - I'm not a fan of the military myself. What are your plans for the future?</text>
+	</string>
+	<string id="esc_leader_about_home_1111">
+		<text>Tell me about your base.</text>
+	</string>
+	<string id="esc_leader_about_prisoner_0">
+		<text>Where are you keeping Major Khaletskiy?</text>
+	</string>
+	<string id="esc_leader_about_you_0">
+		<text>How long have you been a stalker?</text>
+	</string>
+	<string id="esc_leader_about_you_1">
+		<text>I've been here for a while. Me and the boys were here back in 2000, collecting metal junk to recycle. Then the Zone emerged. We were pretty scared at first, but still decided to check for anything of value. We kept hauling metal scraps until we found our first artifact. And bam! it turned out to be worth its weight in gold. Imagine, these days artifacts ain't exactly plentiful, but back then hardly anyone was even aware of their existence. The money we made on that sale... just thinking about it makes my mouth water! It's not the same anymore...</text>
+	</string>
+	<string id="esc_leader_about_you_11">
+		<text>What are you doing at the Cordon?</text>
+	</string>
+	<string id="esc_leader_about_you_111">
+		<text>What kind of question is that? The Cordon really is the Zone's front entrance. We stalkers come here a lot. It's a nice place to relax, stock up on ammo and get an honest coin for your loot from Sidorovich. And if you need a partner, the Cordon's got a number of rookies who'll go through hell and high water for an old-timer. To them we're like living legends.</text>
+	</string>
+	<string id="esc_leader_about_zone_0">
+		<text>Tell me about the Zone.</text>
+	</string>
+	<string id="esc_leader_about_zone_1">
+		<text>You're asking me that? Why don't you ask an egghead - they're the ones putting it through microscopes and X-rays. Me, I don't know much about the Zone... To me it's just a place to make some money. All I want is to make enough so that a few years from now I can chill out in my own little villa by the sea somewhere.</text>
+	</string>
+	<string id="esc_leader_first_join_0">
+		<text>How can I join your clan?</text>
+	</string>
+	<string id="esc_leader_first_join_1">
+		<text>I'll make it easy for you! Show me that you're a good, trustworthy guy and I'll be happy to have you as a brother. But you know how they say that a friend in need is a friend indeed? Well, we've got our hands full with all sorts of crap, so if you help us out, we'll consider your test "passed with flying colors."</text>
+	</string>
+	<string id="esc_leader_first_join_11">
+		<text>I see.</text>
+	</string>
+	<string id="esc_leader_good_job_0">
+		<text>How else can I help the stalkers?</text>
+	</string>
+	<string id="esc_leader_good_job_1">
+		<text>A military squad at the depot is under the command of one of the deputy commanders at the Cordon. He has a PDA with valuable information.</text>
+	</string>
+	<string id="esc_leader_good_job_11">
+		<text>OK.</text>
+	</string>
+	<string id="esc_leader_good_job_12">
+		<text>Nothing so far.</text>
+	</string>
+	<string id="esc_leader_good_job_2">
+		<text>I killed the military commander and took his PDA. Perhaps it'll come in handy?</text>
+	</string>
+	<string id="esc_leader_good_job_3">
+		<text>Excellent, stalker. This PDA contains a lot of useful information - thank you. Here is your reward.</text>
+	</string>
+	<string id="esc_leader_good_job_4">
+		<text>Thank you!</text>
+	</string>
+	<string id="esc_leader_join_stalker_0">
+		<text>Can I join your clan? Have I done enough to be considered one of you?</text>
+	</string>
+	<string id="esc_leader_join_stalker_1">
+		<text>You helped a lot, no question about it, but...we're stalkers, and you don't strike me as one who's experienced in our ways. You should go deeper into the Zone and learn about it...While you do that, I'll sort out this dispute with the military and give you a shout as soon as!</text>
+	</string>
+	<string id="esc_leader_join_stalker_2">
+		<text>Man, we're up to our necks in unsolved problems...it's too early to think about that. How about we deal with them first and then see where we are?</text>
+	</string>
+	<string id="esc_leader_join_stalker_3">
+		<text>You're in Duty, no? You need to understand that our brotherhood and your commanders have...hrm...rather different views on the Zone. If you really want to join us, you're gonna have to forget your past with Duty. Agreed?</text>
+	</string>
+	<string id="esc_leader_join_stalker_33">
+		<text>Of course. There's nothing better than the free stalker life, is there?</text>
+	</string>
+	<string id="esc_leader_join_stalker_333">
+		<text>Oh? How about a cold beer and warm sand of an ocean beach? Eh, don't mind me...I hope you're already familiar with the stalker code?</text>
+	</string>
+	<string id="esc_leader_join_stalker_3333">
+		<text>I think it's best you tell me, just in case.</text>
+	</string>
+	<string id="esc_leader_join_stalker_33333">
+		<text>Well, it's pretty simple. Being a stalker means being human. Help your friends in tough times, don't rat them out or stab them in the back, share your medkits and rations with them, cover their backs in a fight and sleep under the same roof or by the same fire. Our main enemy right now are the stinking bandits - the parasites on our collective body. Our goal is to cleanse the Zone of their scum once and for all. Do that, and we'll all be happy!</text>
+	</string>
+	<string id="esc_leader_join_stalker_333333">
+		<text>I see.</text>
+	</string>
+	<string id="esc_leader_join_stalker_3333333">
+		<text>Well, that's it from me then. Congratulations to both of us on a new member of our friendly community! May you avoid mutants and anomalies on your travels, stalker! I've activated a codec in your PDA, which allows you to receive messages from other stalkers in the clan, as well as monitor our progress in the war against the bandits in the tactical menu. Congratulations once again!</text>
+	</string>
+	<string id="esc_leader_join_stalker_33333333">
+		<text>I see. Now if you excuse me, I'm gonna get back to my stalker business...</text>
+	</string>
+	<string id="esc_leader_join_stalker_33334">
+		<text>Sure. I've been in the Zone a long time.</text>
+	</string>
+	<string id="esc_leader_join_stalker_3334">
+		<text>I'll think about it.</text>
+	</string>
+	<string id="esc_leader_join_stalker_4">
+		<text>Well, well. Life in Freedom isn't quite free enough? You want to experience the real freedom of stalker life? That's fine, but keep in mind that even though we all have friends in Freedom, we play in our little sandbox and they play in theirs. If you want to join us, you're gonna have to quit their clan. Agreed?</text>
+	</string>
+	<string id="esc_leader_join_stalker_5">
+		<text>Of course! I liked you from the get-go, but I'm sure you understand that we had to test you first! After what you did, I'm happy to take you in right now. What do you say?</text>
+	</string>
+	<string id="esc_leader_talk_111">
+		<text>Sidorovich sent me.</text>
+	</string>
+	<string id="esc_leader_talk_11111">
+		<text>And you attacked the military?</text>
+	</string>
+	<string id="esc_leader_talk_1111111">
+		<text>I'm gonna go have a chat with the commander. He might crack and tell me where the case with the loot is.</text>
+	</string>
+	<string id="esc_leader_talk_222">
+		<text>He's a stubborn little asshole - doesn't say anything about the case. Instead, he goes on and on about his buddies saying that they won't give up on him and will definitely come save him.</text>
+	</string>
+	<string id="esc_leader_talk_22222">
+		<text>That's an option. You got any ideas on where I could find Khaletskiy's friends?</text>
+	</string>
+	<string id="esc_leader_talk_2222222">
+		<text>I'll do what I can.</text>
+	</string>
+	<string id="esc_leader_talk_66">
+		<text>Well, go talk to the commander then...</text>
+	</string>
+	<string id="esc_leader_what_happens_0">
+		<text>What happened here?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_0">
+		<text>What do you want?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_1">
+		<text>Where is Major Khaletskiy, the one you're holding hostage? He seems to be missing...</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_11">
+		<text>He ran away.</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_111">
+		<text>Wow. How did that happen?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_1111">
+		<text>Well, I was sitting there guarding him for what seemed like ages. I got real tired and closed my eyes for two minutes. Then I open them and "bam!" - he's gone.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_0">
+		<text>Leave me alone, I'm on duty.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_1">
+		<text>Just one question: what are you guarding here?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_11">
+		<text>We're guarding the new stalker territory.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_111">
+		<text>New? Can you explain?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_1111">
+		<text>Go to our base and ask there. I'm busy.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_2">
+		<text>Fair enough.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_3">
+		<text>What's that "black hole" in the bridge?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_33">
+		<text>Man, we ain't got a clue either, but whatever we throw in there disappears. We usually throw all our trash into it, to protect the environment, you know. But then we saw piles of our trash in an anomaly in one of the tunnels. Some really weird things are happening in the Zone. It's crazy!</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_0">
+		<text>Tell me about yourself.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_1">
+		<text>I value my independence, which is why I've always worked on my own and for myself. But when I heard that stalkers put a squeeze on the military and set up a base of their own, I didn't hesitate to come here. You know, I've met all kinds of folks in the Zone, and of all of them I like stalkers best. They're OK, you know? They don't have any stupid codes, rules, regulations and all that crap like the other factions. If you ask me, only stalkers should be allowed in the Zone in the first place. If that were the case, making money would be easier for us traders and things would settle down as well. Anyway, that's why I decided to help these lads.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_11">
+		<text>A technician is a rare sight in the Zone. Tell me what you can do.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_111">
+		<text>Well, don't expect me to supply you with trendy gadgets or complicated devices. But I've got a good head on my shoulders and I'm good at what I do. Don't be surprised if my skills end up saving your life someday. Most of the time I repair weapons and armor, but with the right components I could also improve your gun and equipment. If you want to know exactly what I can improve, take a look at the upgrades - I'm sure you'll work it out. </text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_1111">
+		<text>I take it you've seen much of the Zone. Have you seen anything unusual?</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_11111">
+		<text>Unusual? After that massive emission, I saw something really weird on my way here from Agroprom. A piece of land that used to be normal changed - became all warped and twisted. My radiation detector was going mental even before I got close. Later on the boys told me that it's one of the most powerful anomalies. The energy coming out of that place was enough to power a city block for weeks! The area is dangerous as hell, but the thing is, you can find some very rare artifacts by that twister. In any case, if you ever come across a place like that, be very careful.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_0">
+		<text>Listen, buddy, we just watched the military bring a crate of weapons and ammo to the depot. We have no use for it, but I figured you might be interested.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_1">
+		<text>That place is probably packed full of soldiers. Is the ammo really worth it?</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_2">
+		<text>Well, think about it. Local traders don't normally carry 5.45 caliber ammo - this is a great chance, plus the shooters are new. I mean, I know it's not really a one person job, so me and the boys will give you a hand for a small fee, say 500 roubles? You pay us that and keep whatever you find at the depot, deal?</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_3">
+		<text>Fine, though I gotta tell ya - usually I'm the one getting paid for doing work.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_33">
+		<text>Nah, I'll manage it on my own. Thanks for the tip.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_4">
+		<text>Don't worry about it, I used to be a mercenary too. Force of habit, you know?</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_0">
+		<text>Tell me about yourself.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_1">
+		<text>I'm a trader, although I haven't been one for long. As you can see we only just got here. Father Valerian said that you can be who you want to be, and I decided that I'm a trader there and then. And why not? I've got the skills and have known Sidorovich well enough to do as he does. Heck, I was renting out comic books for cash to students back at grade-school. Eh, those were the good days. Anyway, I'm kind of a natural businessman, you know? So here I am, getting my head around a new profession, so to speak. Right now I buy my stock from Sidorovich, so the prices ain't great, but I do have things that might interest you - some of the loot our boys brought back from the raids. </text>
+	</string>
+	<string id="esc_stalker_trader_about_you_111">
+		<text>Oh brother, we're gonna start living the good life now. Those army douche bags are gonna leave us alone and stalkers will reap the benefits. We'll be able to get some quality R&R at the Cordon after a long raid, and equipment quality will improve a great deal. On top of that, we'll get plenty of cash for our loot, not like before when the military took all our profits and left us scraps. Just you wait - we're going to have some fun with those bastards yet. Maybe send a few bullets their way at night just to keep them on their toes - that sure sounds fun to me, don't you agree? Heh... anyway, things will be different now, no doubt about it.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_2">
+		<text>So, you think life at the Cordon will change?</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_3">
+		<text>Oh brother, we're gonna start living the good life now. Those army douchebags are gonna leave us alone and stalkers will reap the benefits. We'll be able to get some quality R&R at the Cordon after a long raid, and equipment quality will improve a great deal. On top of that, we'll get plenty of cash for our loot, not like before when the military took all our profits and left us scraps. Just you wait - we're going to have some fun with those bastards yet. Maybe send a few bullets their way at night just to keep them on their toes - that sure sounds fun to me, don't you agree? Heh... anyway, things will be different now, no doubt about it.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_0">
+		<text>Can I help you?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_1">
+		<text>Help? Well, perhaps you can. You see, we've only just set up our base here, and before we even had the chance to secure the area, bandits started flocking here like flies to shit - robbing stalkers as they're bringing me loot. If this keeps up I'm gonna be broke before long. Another bandit squad has appeared right next to our base. Could you teach them a lesson for me?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_11">
+		<text>There's nothing you can do for me right now.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_2">
+		<text>No problem! I'll teach them a lesson they won't forget for a long time.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_22">
+		<text>Maybe another time.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_0">
+		<text>I'm here about the bandits.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_1">
+		<text>So, how did it go?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_2">
+		<text>I took the bandits out.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_22">
+		<text>It didn't, yet.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_222">
+		<text>Well, time is at a premium, merc.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_3">
+		<text>Thanks! Here's your reward.</text>
+	</string>
+	<string id="esc_trader_about_other_0">
+		<text>Can you tell me something interesting?</text>
+	</string>
+	<string id="esc_trader_about_questions_0">
+		<text>Will you answer my questions?</text>
+	</string>
+	<string id="esc_trader_about_questions_1">
+		<text>Well, you look like a serious fella, and I don't mind answering a serious fella's questions. Ask away...</text>
+	</string>
+	<string id="esc_trader_about_questions_11">
+		<text>You been here long?</text>
+	</string>
+	<string id="esc_trader_about_questions_111">
+		<text>A long, long time. I was one of the first in the Zone. Back then we didn't have radiation detectors or suits, so your life expectancy in this place was real short. That's why I've never been past the Garbage. That sort of thing isn't for me. I've got the brains for a different sort of business: I'm like engine grease, without me the engine falters and that means people start fighting. But when I'm around everyone's happy. Even though the Zone is full of wonders, the demand for these wonders is even bigger - be it from governments, special services, private agencies or fat cat collectors. I'm their link to this place: I facilitate trade between the Zone and the outside world. I know all the right people and I can solve just about any issue without leaving this room. That pretty much sums me up. </text>
+	</string>
+	<string id="esc_trader_about_questions_22">
+		<text>But why did you choose this place as your home?</text>
+	</string>
+	<string id="esc_trader_about_questions_222">
+		<text>Why am I here? Well, I like the weather and the scenery is just beautiful. Ha-ha! The truth is, I'm too old to wander the Zone as a stalker. Plus I'm hardly the kind to survive an encounter with a controller. It's calm around here, that's the main reason. People who need me will find me no matter where I am. If someone's got a serious order or they need some quality goods, they come to me and only me. And sometimes they even wait in line, too. Why? Because if I can't get loot through the Cordon, nobody can. </text>
+	</string>
+	<string id="esc_trader_about_questions_33">
+		<text>Tell me about the Zone.</text>
+	</string>
+	<string id="esc_trader_about_questions_333">
+		<text>It's not calm in the Zone at the moment. A couple of days ago an emission shook the whole Zone. I've only seen an emission that powerful once before - when the Zone appeared. Back then, the army put together a large force and moved into the center of the Zone to nuke the whole place to kingdom come. As soon as they got close to the center they got hit by an emission that made tanks sail through the air like kids' toys. Most of them died during the blast, and those who survived were just abandoned in the center of the Zone. They kept calling for help over the radio... But the generals didn't have the balls to send another group. The survivors died pretty quick, what with all those anomalies and without any protection. \nI have no idea why there was another emission like that. Maybe the Zone is pissed at someone? Can't have been the army, 'cause after that last time they don't even leave the Cordon. The only ones roaming all over the place are stalkers, and the Zone never seemed to care much about them... but here we are: emission after emission, each one stronger than the last. I have a bad feeling about this whole thing...</text>
+	</string>
+	<string id="esc_trader_about_questions_44">
+		<text>You heard any interesting rumors from deep inside the Zone?</text>
+	</string>
+	<string id="esc_trader_about_questions_444">
+		<text>There's always an interesting rumor or two going around. Many stalkers owe me so they feed me news through closed frequencies. The biggest piece of news out there is that paths to new parts of the Zone have opened up. Nobody has even heard of these places for years, let alone set foot in them. The roads used to be blocked by the deadliest anomalies, but there are fewer of them now. Getting through is still difficult, but it's possible! Can you imagine what that means for me? New areas mean new, possibly unheard of, artifacts. And who's going to get his old wrinkled paws on all that goodness? That's right, yours truly.</text>
+	</string>
+	<string id="esc_trader_about_situation_0">
+		<text>What's going on here?</text>
+	</string>
+	<string id="esc_trader_about_situation_1">
+		<text>In a word: chaos. Stalkers are fighting the army. There used to be rules. The military controlled the area, took their cut and let people smuggle stuff in and out. Once in a while they'd give stalkers a hard time just to keep up appearances, but that was about it. Well, those rules are no more. Eh, stalkers believe they're on the up 'cause they raised a bit of hell and took control of the Cordon. Poor bastards seem to refuse to see an inch beyond their nose. It's not like this is the end of it. Sure, the army boys are too damn scared to report on recent events to their HQ, because then their shady dealings will be exposed, but sooner or later there will be an inspection of the outpost, and it will all come to light. And then... well, we all know what will happen then: a special military operation. Trust me, one visit from a Spetsnaz platoon and there won't be a living soul left in this place. Oh, and all the jarheads at the outpost will be replaced. That means I'll lose all my contacts, and how am I gonna trade and smuggle once that happens? The stalkers are way out of their league. </text>
+	</string>
+	<string id="esc_trader_about_you_0">
+		<text>Tell me about yourself.</text>
+	</string>
+	<string id="esc_trader_about_you_1">
+		<text>What's there to tell? I'm old and sick, so I sit here nice and quiet and do a little business selling medkits, some sausage for the boys... It's not a lot, but better than living on a state pension, that's for sure.</text>
+	</string>
+	<string id="esc_trader_about_you_11">
+		<text>You're being modest, methinks. Others say different things about you.</text>
+	</string>
+	<string id="esc_trader_about_you_111">
+		<text>Well, they say many things, most of them untrue. Heck, I don't even know you. Let's make a deal - prove yourself through actions, not words, and I might be inclined to loosen my tongue. Well, how about it?</text>
+	</string>
+	<string id="esc_trader_about_zone_1">
+		<text>You want to hear tales of stalker adventures? Well, ask away.</text>
+	</string>
+	<string id="esc_trader_about_zone_111">
+		<text>Man, that was one heck of an emission... stronger than I can remember, that's for sure. It hit us so hard glass was bursting in my bunker, and it's right on the edge of the damn Zone! I don't know why it happened, but it sure as hell changed something. The word on the grapevine is that they found a road that leads to the old town of Limansk. Imagine that! Stalkers spent years wandering the woods looking for a way through the wall of anomalies, and then one day it just appears out of nowhere. There's not even any radiation anywhere along the road! It's the same with the Swamps - it used to be that you could only get there by military chopper, but these days you can even walk there if you're not afraid of getting your feet wet.</text>
+	</string>
+	<string id="esc_trader_about_zone_121">
+		<text>War? War's the same anywhere you go, and the Zone is no exception. Sure, folks would always find reasons to fight, be it loot or beliefs, but there was always order, and everyone knew his place. It's different now, after the emission... while Duty and Freedom were fighting over Limansk, like two hungry dogs over a bone, the bandits became real cocky and started squeezing stalkers pretty damn hard...</text>
+	</string>
+	<string id="esc_trader_about_zone_131">
+		<text>The center of the Zone? Hah! Lots of people have tried to get to the center, but nobody has ever come back. The only road there leads through the Brain Scorcher, and there's not a soul in the Zone who knows how to get around it! Hell, even if someone does find out, it's not like they'll tell anyone! Imagine you discover Aladdin's cave, would you go running around telling everyone where it is? Me and a few colleagues of mine, other traders that is, have been trying to find a way of getting past the Scorcher for a long time, but we're no closer to it than we were when we started!</text>
+	</string>
+	<string id="esc_trader_about_zone_13111">
+		<text>God knows what it is...That's what stalkers call the forest north of the military warehouses. They say that brains boil in there...literally. Even a healthy fella won't last ten minutes in those woods. We've offered stalkers good coin for accurate information about the Scorcher, but so far nobody has found anything. Folks go missing there from time to time, and they're eventually found dead. Or zombified...</text>
+	</string>
+	<string id="esc_trader_community_0">
+		<text>My relations with stalkers are ruined, I won't be able to find the loot and bring it to you!</text>
+	</string>
+	<string id="esc_trader_community_1">
+		<text>How could you let that happen, merc?! Anyway, I can help you make peace with them for some cash.</text>
+	</string>
+	<string id="esc_trader_community_2">
+		<text>I agree. Here, take the money.</text>
+	</string>
+	<string id="esc_trader_community_22">
+		<text>Nah, I'll deal with this myself.</text>
+	</string>
+	<string id="esc_trader_community_222">
+		<text>I don't have that much money right now.</text>
+	</string>
+	<string id="esc_trader_community_3">
+		<text>The stalkers will forgive you now. Don't let this happen again.</text>
+	</string>
+	<string id="esc_trader_community_33">
+		<text>Your funeral, buddy.</text>
+	</string>
+	<string id="esc_trader_community_333">
+		<text>Come back when you got enough.</text>
+	</string>
+	<string id="esc_trader_meet_111">
+		<text>They say a stalker was here recently, looking for rare components. You remember him?</text>
+	</string>
+	<string id="esc_trader_meet_11111">
+		<text>What would help jar your memory?</text>
+	</string>
+	<string id="esc_trader_meet_1111111">
+		<text>Yes, what exactly needs doing?</text>
+	</string>
+	<string id="esc_trader_meet_111111111">
+		<text>Deal.</text>
+	</string>
+	<string id="esc_trader_meet_222">
+		<text>Well, thanks for the info.</text>
+	</string>
+	<string id="esc_wolf_about_around_0">
+		<text>Anything interesting around here?</text>
+	</string>
+	<string id="esc_wolf_about_around_1">
+		<text>This is the Rookie Village. On the edge of the village you'll find Sidorovich's store. Further on is the military outpost, but you know that, seeing as you came from there. The road to the other side of the outpost leads deeper into the Zone.</text>
+	</string>
+	<string id="esc_wolf_about_around_11">
+		<text>Tell me about the Rookie Village.</text>
+	</string>
+	<string id="esc_wolf_about_around_111">
+		<text>Well, what can I say about the Rookie Village? The smarter boys in here stock up in Sidirovich's store with enough to last them a while and head off to the Garbage. You can get better artifacts there and it's not always as dangerous either. That's where they stay to get some experience under their belts. And those who stay behind... well, they're complete morons, to say the least. Some of the folk you see around here... damn hippies with their slippers and mesh bags looking for "adventure" or friggin' nerds that ain't never held nothing but a microscope in their girlie little hands. Such posers don't last long around here. Well, sometimes we do get a seasoned stalker or two come by to offload their loot to Sidorovich and chill out for a couple of days.</text>
+	</string>
+	<string id="esc_wolf_about_around_1111">
+		<text>You got a nice setup here. Do the military not bother you?</text>
+	</string>
+	<string id="esc_wolf_about_around_11111">
+		<text>Well, the military don't give us much of a hard time - we're the last thing on their minds. I even heard them say: "Why waste ammunition on stalkers? They'll all die in anomalies anyway." And we're not looking for trouble either - if they're after someone, we stay out of their way. When there's a raid or an inspection at the outpost we hole up in our basements and stay real quiet. We don't like conflicts, you know?</text>
+	</string>
+	<string id="esc_wolf_about_around_22">
+		<text>Tell me about Sidorovich.</text>
+	</string>
+	<string id="esc_wolf_about_around_222">
+		<text>That's a strange question coming from you. It ain't your first day in the Zone, but you're asking me about Sidorovich? Hell, everyone knows Sidorovich! He's the most respected trader in the whole Zone! If he can't fulfill your shopping needs, nobody can.</text>
+	</string>
+	<string id="esc_wolf_about_you_0">
+		<text>Tell me about yourself.</text>
+	</string>
+	<string id="esc_wolf_about_you_1">
+		<text>I'm the boss around here. I'm teaching these greenies and nerds how to not become mutant feed on their first trip into the Zone. It ain't easy, you know? I've spent a good chunk of my life in the Zone, and I've been trying to get out for some time now... God knows how long I've spent at the Cordon... but it's like this place just doesn't want to let me go. It's either a military raid, or another emission, or a profitable job... and every time I think "OK, just this once and then I'm outta here," but here I am.</text>
+	</string>
+	<string id="esc_wolf_about_zone_0">
+		<text>Tell me about this place.</text>
+	</string>
+	<string id="esc_wolf_about_zone_1">
+		<text>We're at the Cordon. The outside world is just beyond the military outpost, and everything on the other side is the Zone. Although you would hardly think so by looking at this place: anomalies and artifacts are few and far between, and even monsters are a rare sight. It's quiet in these parts, quieter than in the rest of the Zone anyhow, 'cause the military try to keep everything under control.  </text>
+	</string>
+	<string id="esc_wolf_about_zone_111">
+		<text>This is the Rookie Village. On the edge of the village you'll find Sidorovich's store. Further on is the military outpost, but you know that, seeing as you came from there. The road to the other side of the outpost leads deeper into the Zone.</text>
+	</string>
+	<string id="esc_wolf_brother_0">
+		<text>Wolf sent me for you. You're his brother, right?</text>
+	</string>
+	<string id="esc_wolf_brother_1">
+		<text>Yes, I'm his brother. I have a feeling I need to ditch this place ASAP. Thing is, I don't have a shooter...give me something, would you?</text>
+	</string>
+	<string id="esc_wolf_brother_2">
+		<text>Here, take this pistol.</text>
+	</string>
+	<string id="esc_wolf_brother_22">
+		<text>Here, take this shotgun.</text>
+	</string>
+	<string id="esc_wolf_brother_222">
+		<text>Here, take this assault rifle.</text>
+	</string>
+	<string id="esc_wolf_brother_2222">
+		<text>I don't have any.</text>
+	</string>
+	<string id="esc_wolf_brother_55">
+		<text>text in default</text>
+	</string>
+	<string id="esc_wolf_brother_complete_0">
+		<text>I got your brother out!</text>
+	</string>
+	<string id="esc_wolf_brother_complete_1">
+		<text>Great! Here's your reward.</text>
+	</string>
+	<string id="esc_wolf_novice_complete_0">
+		<text>I followed that stalker, just like you asked.</text>
+	</string>
+	<string id="esc_wolf_novice_complete_1">
+		<text>Great work, stalker. I hope that taught him a little humility.</text>
+	</string>
+	<string id="esc_wolf_novice_fail_0">
+		<text>Unfortunately, I couldn't protect him and he died.</text>
+	</string>
+	<string id="esc_wolf_novice_fail_1">
+		<text>Damn! I should have gone myself! He might have gotten upset, but at least he'd still be alive. Man, that's a real promising stalker we've lost.</text>
+	</string>
+	<string id="esc_wolf_novice_thank_you_0">
+		<text>Thanks for saving my lame ass, stalker. I thought I'd die in that forest, torn to shreds by those dogs. I'm never going into the forest on my own again.</text>
+	</string>
+	<string id="esc_wolf_other_works_0">
+		<text>Got any work for me?</text>
+	</string>
+	<string id="esc_wolf_other_works_1">
+		<text>Yes. The bandits took my brother hostage and they're demanding a huge ransom. We don't have anywhere near that kind of cash, and with these rookies we ain't never gonna get enough in such a short time. And even if we did, who's to say they won't just kill my brother after we hand it over?</text>
+	</string>
+	<string id="esc_wolf_other_works_11">
+		<text>Not yet.</text>
+	</string>
+	<string id="esc_wolf_other_works_111">
+		<text>One of my boys can't seem to deal with others thinking he's a rookie, so he's decided to take out a pack of dogs to earn some respect. He's a sharp lad and he's got a great shot, but he's young, you know? I worry about him. You think you could give him a hand?</text>
+	</string>
+	<string id="esc_wolf_other_works_1111">
+		<text>We're managing ourselves for now. Come back later - we might need your help again.</text>
+	</string>
+	<string id="esc_wolf_other_works_11111">
+		<text>No.</text>
+	</string>
+	<string id="esc_wolf_other_works_1112">
+		<text>No problem, where can I find him?</text>
+	</string>
+	<string id="esc_wolf_other_works_11121">
+		<text>Here are the coordinates.</text>
+	</string>
+	<string id="esc_wolf_other_works_1113">
+		<text>Sorry, not this time.</text>
+	</string>
+	<string id="esc_wolf_other_works_11131">
+		<text>You mercs are all the same - you don't give two shits about nobody!</text>
+	</string>
+	<string id="esc_wolf_other_works_2">
+		<text>Got ya, I'll try to get your brother out alive.</text>
+	</string>
+	<string id="esc_wolf_other_works_22">
+		<text>Thanks merc, I knew you'd help me. Here are the coordinates of their camp. Be careful and good luck!</text>
+	</string>
+	<string id="esc_wolf_other_works_3">
+		<text>Unfortunately, I can't help you.</text>
+	</string>
+	<string id="esc_wolf_other_works_4">
+		<text>That's not my problem.</text>
+	</string>
+	<string id="esc_wolf_other_works_44">
+		<text>Then piss off.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_0">
+		<text>So, hothead, you tired of being a hero yet?</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_11">
+		<text>Get away from me! I'll deal with the beasts myself! This will show them! They'll never call me a rookie again!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_1112">
+		<text>I'm scared!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_112">
+		<text>Take this pistol.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_1122">
+		<text>Take this shotgun.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_11222">
+		<text>Take this assault rifle.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_112222">
+		<text>I'll deal with them.</text>
+	</string>
+	<string id="esc_wolf_talk_0">
+		<text>This is a rookie village, not a mercenary camp, buddy.</text>
+	</string>
+	<string id="esc_wolf_talk_1">
+		<text>I'm here to see Sidorovich. </text>
+	</string>
+	<string id="esc_wolf_talk_11">
+		<text>He is in the bunker, just outside our village.</text>
+	</string>
+	<string id="esc_wolf_talk_111">
+		<text>Thanks, I'll go see him now.</text>
+	</string>
+	<string id="esc_wolf_talk_2">
+		<text>I have a job from Sidorovich - I need to drop by the stalker base.</text>
+	</string>
+	<string id="esc_wolf_talk_22">
+		<text>Well, that's just beyond the railroad embankment. It's real stalker heaven out there.</text>
+	</string>
+	<string id="esc_wolf_talk_222">
+		<text>Thanks.</text>
+	</string>
+</string_table>
