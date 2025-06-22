@@ -166,10 +166,15 @@ void CUIMainIngameWnd::Init()
 	if (!IsGameTypeSingle())
 	{
 		// Voice chat
-		m_icon_microphone = UIHelper::CreateStatic(uiXml, "icon_microphone", this);
-		m_icon_microphone->Show(true);
-
-		m_voice_distance = UIHelper::CreateTextWnd(uiXml, "voice_distance", this);
+		if (uiXml.NavigateToNode("icon_microphone"))
+		{
+			m_icon_microphone = UIHelper::CreateStatic(uiXml, "icon_microphone", this);
+			m_icon_microphone->Show(true);
+		}
+		if (uiXml.NavigateToNode("voice_distance"))
+		{
+			m_voice_distance = UIHelper::CreateTextWnd(uiXml, "voice_distance", this);
+		}
 
 		SetActiveVoiceIcon(false);
 	}
@@ -374,20 +379,23 @@ void CUIMainIngameWnd::Draw()
 
 void CUIMainIngameWnd::SetActiveVoiceIcon(bool active)
 {
-	R_ASSERT(m_icon_microphone || m_voice_distance);
-
 	u32 a = active ? 255 : 100;
-
-	u32 color = m_icon_microphone->GetTextureColor();
-	m_icon_microphone->SetTextureColor(subst_alpha(color, a));
-
-	color = m_voice_distance->GetTextColor();
-	m_voice_distance->SetTextColor(subst_alpha(color, a));
+	if (m_icon_microphone)
+	{
+		u32 color = m_icon_microphone->GetTextureColor();
+		m_icon_microphone->SetTextureColor(subst_alpha(color, a));
+	}
+	if (m_voice_distance)
+	{
+		u32 color = m_voice_distance->GetTextColor();
+		m_voice_distance->SetTextColor(subst_alpha(color, a));
+	}
 }
 
 void CUIMainIngameWnd::SetVoiceDistance(u8 distance)
 {
-	R_ASSERT(m_voice_distance);
+	if (!m_voice_distance)
+		return;
 
 	string16 text;
 	xr_sprintf(text, sizeof(text), "%u", distance);
