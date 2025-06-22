@@ -300,7 +300,7 @@ void CUIPdaWnd::DrawHint()
 	}
 	else if (m_sActiveSection == "eptFractionWar")
 	{
-		m_hint_wnd->Draw();
+		//m_hint_wnd->Draw();
 	}
 	else if (m_sActiveSection == "eptRanking")
 	{
