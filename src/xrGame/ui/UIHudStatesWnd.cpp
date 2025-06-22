@@ -542,9 +542,9 @@ void CUIHudStatesWnd::UpdateZones()
 	{
 		Msg(" self = %.2f   hit = %.2f", m_radia_self, m_radia_hit );
 	}*/
-
+	float detectRadZonePower = std::max(actor->conditions().m_fRadiationZonePower, power * 10);
 	if (m_arrow)
-		m_arrow->SetNewValue( m_radia_hit );
+		m_arrow->SetNewValue(detectRadZonePower);
 	if (m_arrow_shadow)
 		m_arrow_shadow->SetPos( m_arrow->GetPos() );
 /*
@@ -555,6 +555,7 @@ void CUIHudStatesWnd::UpdateZones()
 		m_zone_cur_power[ALife::infl_psi] = power;
 	}
 */
+
 	if ( !Level().hud_zones_list )
 	{
 		return;
@@ -573,7 +574,7 @@ void CUIHudStatesWnd::UpdateZones()
 	}
 
 	Fvector posf; 
-	posf.set( Device.vCameraPosition );
+	posf.set(Level().CurrentControlEntity()->Position());
 	Level().hud_zones_list->feel_touch_update( posf, m_zone_feel_radius_max );
 	
 	if ( Level().hud_zones_list->m_ItemInfos.size() == 0 )
@@ -597,7 +598,7 @@ void CUIHudStatesWnd::UpdateZones()
 		}
 */
 
-		Fvector P			= Device.vCameraPosition;
+		Fvector P			= Level().CurrentControlEntity()->Position();
 		P.y					-= 0.5f;
 		float dist_to_zone	= 0.0f;
 		float rad_zone		= 0.0f;
