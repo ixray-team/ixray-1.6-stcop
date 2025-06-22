@@ -281,7 +281,7 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 	}
 	//power restore speed progress bar
 	{
-		if (!m_state[stt_power]->m_progress->IsExpressionSystem)
+		if (m_state[stt_power]->m_progress && !m_state[stt_power]->m_progress->IsExpressionSystem)
 		{
 			value = actor->GetRestoreSpeed(ALife::ePowerRestoreSpeed) / actor->conditions().GetMaxPowerRestoreSpeed();
 			value = floor(value * 31) / 31; // number of sticks in progress bar
