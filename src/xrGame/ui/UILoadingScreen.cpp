@@ -8,7 +8,7 @@
 UILoadingScreen::UILoadingScreen()
     : loadingProgressBackground(nullptr), loadingProgress(nullptr), loadingProgressPercent(nullptr),
       loadingLogo(nullptr), loadingStage(nullptr), loadingHeader(nullptr),
-      loadingTipNumber(nullptr), loadingTip(nullptr) {
+      loadingTipNumber(nullptr), loadingTip(nullptr), rightProgressbarPresent(false) {
     UILoadingScreen::Initialize();
 }
 
@@ -21,7 +21,12 @@ void UILoadingScreen::Initialize() {
         if (uiXml.NavigateToNode("loading_progress_background", 0))
             loadingProgressBackground = UIHelper::CreateStatic(uiXml, "loading_progress_background", this);
         loadingProgress = UIHelper::CreateProgressBar(uiXml, "loading_progress", this);
-    };
+        if (uiXml.NavigateToNode("loading_progress_right", 0))
+        {
+            loadingProgressRight = UIHelper::CreateProgressBar(uiXml, "loading_progress_right", this);
+            rightProgressbarPresent = true;
+        }
+        };
 
     const auto loadBackground = [&] { CUIXmlInit::InitWindow(uiXml, "background", 0, this); };
 
@@ -54,15 +59,32 @@ void UILoadingScreen::Initialize() {
 
 void UILoadingScreen::Update(const int stagesCompleted, const int stagesTotal) {
     const float progress = float(stagesCompleted) / stagesTotal * loadingProgress->GetRange_max();
-    if (loadingProgress->GetProgressPos() < progress)
-        loadingProgress->SetProgressPos(progress);
+    if (rightProgressbarPresent)
+    {
+        if (loadingProgress->GetProgressPos() < progress/2)
+            loadingProgress->SetProgressPos(progress/2);
+        if (loadingProgressRight->GetProgressPos() < progress/2)
+            loadingProgressRight->SetProgressPos(progress/2);
+    }
+    else
+    {
+        if (loadingProgress->GetProgressPos() < progress)
+            loadingProgress->SetProgressPos(progress);
 
+    }
     CUIWindow::Update();
     Draw();
 }
 
-void UILoadingScreen::ForceFinish() {
-    loadingProgress->SetProgressPos(loadingProgress->GetRange_max());
+void UILoadingScreen::ForceFinish() 
+{
+    if (rightProgressbarPresent)
+    {
+        loadingProgress->SetProgressPos(loadingProgress->GetRange_max()/2);
+        loadingProgressRight->SetProgressPos(loadingProgressRight->GetRange_max()/2);
+    }
+    else
+        loadingProgress->SetProgressPos(loadingProgress->GetRange_max());
 }
 
 void UILoadingScreen::SetLevelLogo(const char* name) const { loadingLogo->InitTexture(name); }

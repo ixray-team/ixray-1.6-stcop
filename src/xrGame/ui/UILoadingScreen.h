@@ -13,6 +13,7 @@ class UILoadingScreen :
 {
     CUIStatic* loadingProgressBackground;
     CUIProgressBar* loadingProgress;
+    CUIProgressBar* loadingProgressRight;
     CUIStatic* loadingLogo;
     CUIStatic* loadingProgressPercent;
 
@@ -20,6 +21,7 @@ class UILoadingScreen :
     CUIStatic* loadingHeader;
     CUIStatic* loadingTipNumber;
     CUIStatic* loadingTip;
+    bool rightProgressbarPresent;
 
 public:
     UILoadingScreen();
