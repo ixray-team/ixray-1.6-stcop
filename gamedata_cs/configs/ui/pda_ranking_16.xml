@@ -74,7 +74,7 @@
 		<community_caption x="4" y="148" width="167" height="18" stretch="1">
 			<text align="l" font="letterica18" color="ui_3">ui_st_community</text>
 		</community_caption>
-		<community_static x="4" y="148" width="167" height="18" stretch="1">
+		<community_static x="70" y="148" width="167" height="18" stretch="1">
 			<text align="l" font="letterica18" color="ui_2"/>
 		</community_static>
 		

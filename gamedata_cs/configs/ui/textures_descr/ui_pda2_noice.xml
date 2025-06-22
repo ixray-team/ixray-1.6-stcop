@@ -154,7 +154,7 @@
 
 	<texture id="ui_pda2_fr2_b"     x="0" y="909" width="955" height="7" />
 	<texture id="ui_pda2_fr2_back"	x="0" y="909" width="955" height="7" />
-	<!--texture id="ui_pda2_fr2_e"     x="0" y="908" width="955" height="9" /-->
+	<texture id="ui_pda2_fr2_e"     x="0" y="908" width="955" height="9" />
 
     <texture id="ui_pda2_mtask_overlay"	x="978" y="418" width="42" height="37" />
 
