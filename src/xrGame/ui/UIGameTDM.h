@@ -28,8 +28,8 @@ public:
 protected:
 	CUIStatic*			m_team1_icon;
 	CUIStatic*			m_team2_icon;
-	CUITextWnd*			m_team1_score;
-	CUITextWnd*			m_team2_score;
+	CUIStatic*			m_team1_score;
+	CUIStatic*			m_team2_score;
 	CUITextWnd*			m_buy_msg_caption;
 public:
 	CUIGameTDM			();
