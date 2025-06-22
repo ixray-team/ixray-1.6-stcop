@@ -84,6 +84,12 @@ function update(npc)
 		tt.current_buy_item_condition_factor = str
 	end
 
+	str = tonumber(xr_logic.pick_section_from_condlist(db.actor, npc, tt.buy_item_condition_factor))
+	if tt.current_buy_item_condition_factor ~= str then
+		npc:buy_item_condition_factor(str)
+		tt.current_buy_item_condition_factor = str
+	end
+
 	if tt.buy_supplies == nil then
 		return
 	end
