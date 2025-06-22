@@ -1,0 +1,1653 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="dm_intro_1">
+		<text>Jak se vede? Tady tм vмtљinou nikdo hшejivэm slovem nepшivнtб, v poslednн dobм spнљ dostaneљ kulku do zad.</text>
+	</string>
+	<string id="dm_intro_2">
+		<text>Vнtej! Rбd zas jednou vidнm lidskou bytost mнsto rбkosн a pшнљer.</text>
+	</string>
+	<string id="dm_intro_3">
+		<text>Nazdar! Novej v baћinбch? Zatoulal jsem se sem po emisi a nмjak se odtud teп nemщћu vymotat.</text>
+	</string>
+	<string id="dm_intro_4">
+		<text>Novб tvбш v tйhle dншe! Vнtej!</text>
+	</string>
+	<string id="dm_intro_5">
+		<text>Nazdar! Mбљ chvilku? Nudнm se aћ k smrti...</text>
+	</string>
+	<string id="dm_intro_6">
+		<text>Nazdбrek, brбcho! Ty vypadбљ na pohodovэho chlapa!</text>
+	</string>
+	<string id="dm_intro_7">
+		<text>Lнbн se ti krajina? Stejnб srбgora na deset kilometrщ na vљechny strany, jen obиas to okoшenмj ruiny a pшнљery.</text>
+	</string>
+	<string id="dm_intro_8">
+		<text>Takћe jsi v tэhle zatracenэ dншe skonиil taky, co? Radљi si najmi prщvodce, pokud se odtud chceљ dostat.</text>
+	</string>
+	<string id="dm_intro_9">
+		<text>Hej! Ty seљ tady novej? Dбm ti radu - na mokшiny si dбvej bacha, snadno do nich zapadneљ aћ po uљi. Po kolejнch taky radљi nechoп, pokud teda nechceљ schytat kulku.</text>
+	</string>
+	<string id="dm_intro_10">
+		<text>Nejsem tady dlouho, ale uћ mi to tady fakt leze na nervy. Naneљtмstн dostat se odsud nenн tak snadnэ, jako se sem zatoulat.</text>
+	</string>
+	<string id="dm_intro_11">
+		<text>Zdravнm, иlovмиe! Taky se schovбvбљ? Vљichni kolem mм se schovбvajн - nмkteшн pшed svou minulostн, nмkteшн pшed sebou...</text>
+	</string>
+	<string id="dm_intro_12">
+		<text>Seљ v baћinбch poprvй? Tak poslouchej. Pшedevљнm si musнљ dбvat pozor na lidi. Monstra a pohyblivэ pнsky jsou uћ celkem v pohodм. Drћ se rбkosovejch porostщ a pшeћijeљ dэl.</text>
+	</string>
+	<string id="dm_about_0">
+		<text>Zatracenэ komбшi. To je poшбdnб anomбlie - dokбћou prokousnout gumovej plбљќ! A ostatnн mнstnн atrakce nejsou o moc lepљн, to mi vмш. Pobнhб tady jedna baћinatб potvora, ze kterэ opravdu padneљ na prdel, jestli mi rozumнљ?</text>
+	</string>
+	<string id="dm_about_1">
+		<text>Zуna je tvrdэ mнsto, pokud chceљ pшeћнt o samotм, ale tahle oblast je nejhorљн. Uћ mм unavuje bejt vydмљenej kaћdou minutu v hodinм. Chci se pшidat k nмjakэ frakci, ale moc na vэbмr nenн, buп nмjacн banditi, nebo ti stalkeшi v modrэm. Banditi mм moc neberou, nejsou to banditi jen tak pro nic za nic, ћe jo? Jednoho dne tм bodnou do ledvin jen tak pro prdel a hotovo, ne? Radљi bych se dal k tмm stalkerщm. Myslнљ, ћe mм vezmou? No ale fakt, jak bys to mohl vмdмt?</text>
+	</string>
+	<string id="dm_about_2">
+		<text>Tohle mнsto je vмtљinou domov zrбdcщ a odpadlнkщ, takovejch, kterэ nechtмjн mezi sebe ani banditi. Nмkolikrбt jsem zahlнdl hlнdky stalkerщ v modrejch uniformбch, шнkaj si Modrб obloha, Jasnб obloha, nebo tak nмco. Ale ti to berou moc vбћnм, potшebujou se trochu odvбzat! Svou zбkladnu udrћujou v tajnosti, fakt by mi nevadilo okouknout, co si tam schovбvaj.</text>
+	</string>
+	<string id="dm_about_3">
+		<text>No ty vole. Ponoћky mбm mokrэ, nohy samб pijavice, a svetr se mi z toho vlhka za chvilku rozpadne. Co bych teп dal za љikovnou kurvu, vanu plnou horkэ vody, nмjakэ suchэ hadry a skleniиku koтaku hezky v kшesle u krbu! Jenћe na mм иekб akorбt panбk vodky u tбborovэho ohnм a fтukбnн dalљнch srбищ, jako jsem jб. A dokonce ani to ne, jedinм ћe bych se pшidal k nмjakэmu gangu.</text>
+	</string>
+	<string id="dm_about_4">
+		<text>Znбљ tu Jasnou oblohu? Ten klan je tajemnej jak hrad v Karpatech, jakoby si hrбli na nмjakэ tajnэ agenty nebo tak. Dozvмdмl jsem se o nich jen nмco mбlo z odposlechnutэho rбdia. A z historek ostatnнch stalkerщ.</text>
+	</string>
+	<string id="dm_about_5">
+		<text>Baћiny jsou to nejuboћejљн mнsto, na jakэ se stalker mщћe dostat. Tady najdeљ akorбt lidi, kterэ utнkaj pшed vбћnмjљнma problйmama, neћ jsou mokшiny nebo mutanti. Venku by vмtљina z nich shnila ve vмzenн nebo pod pщl metrem hlнny. Jб se nмjak nepohodl s lidma z armбdy a tak jsem musel pobнhat po Zуnм, aћ emise otevшela cestu do tэhle ибsti. Je to dobrэ mнsto, kdyћ se chceљ schovat.</text>
+	</string>
+	<string id="dm_about_6">
+		<text>Povнdбm ti, kamarбde, pokud je na Zemi nмjakэ mнsto, kde se mщћeљ "ztratit", jsou to baћiny. Klidnм tady mщћeљ tэdny chodit furt dokola. Ale to chce jen mбlokdo a jeљtм mнт jich to zvlбdne. Pokud tм nedostanou pшнљery, zvlбdne to baћina, obojнho je tady dost. Jsem tady od doby, kdy sem byla poprvэ objevenб cesta, a je to to nejlepљн mнsto na schovбvaиku, jakэ v Zуnм najdeљ... dokud teda dokбћeљ pшeћнt.</text>
+	</string>
+	<string id="dm_about_7">
+		<text>Tyhle baћiny jsou plnэ ћivota a nemyslнm jen mutanty. Je tady spousta stalkerщ, nмkteшн se schovбvaj pшed zбkonem, jinн pшed dшнvмjљнma kamarбdama. A pшiљli na sprбvnэ mнsto! A pшiљli na sprбvnэ mнsto! Dнry v polнch anomбliн byly objevenэ teprve nedбvno, takћe je tady spousta neprozkoumanejch mнst. Ale ћivot tady kvщli tomu nenн o nic snazљн. Pobнhб tady aћ moc prohnilejch hajzlнkщ, klidnм tм odstшelej a okradou tvoji mrtvolu, a ani nemrknou.</text>
+	</string>
+	<string id="dm_about_8">
+		<text>Pшнљery, baћiny, celб zasranб Zуna! Uћ je mi z tмch baћin na blitн! Nepшiљel jsem sem jen abych si nasral do gatн pokaћdэ, kdyћ vнtr zaљustн listнm, zaљplouchб voda nebo se ozve vrиenн vrtulnнku. Moћnб bych se mмl narvat do nмjakэho klanu a vydupat si trochu lepљн mнsteиko? Copak se neћije lнp, kdyћ mбљ kamarбdy, kteшн ti hlнdaj zбda, a v noci se mщћeљ rozvalovat u ohnм? Zvlбљќ kdyћ si u nмj mщћeљ ohшбt polнvku, nebo opнct kousek prasete. Pшidej nмjakэho tэpka s kytarou a mбљ ъplnej rбj na Zemi!</text>
+	</string>
+	<string id="dm_about_9">
+		<text>Tady je to kaћdej den stejnэ: v rбkosн se schovбvaj mizerovй, v kaћdэ baћinм se nмkdo topн, po obloze lнtaj vrtulnнky a sestшelujou stalkery. No a nмkdy se tady objevн ti chlбpci v modrejch maskбинch, ti jsou z Jasnэ oblohy. Je zajнmavэ, jak je tady ten klan uћ dost dlouho, ale do nedбvna o nich nikdo neslyљel ani nevмdмl.</text>
+	</string>
+	<string id="dm_about_10">
+		<text>Pшed emisн si stalkeшi dvakrбt rozmэљleli, jestli sem vlezou. Aћ moc anomбlek a spousta baћin, vљude vlhko a smradu jeљtм vнc. Pak jsou tady pшнљery a komбшi jsou snad jeљtм horљн, navнc kam koukneљ, tam rбkosн. Proи se vщbec obtмћovat, ћe jo? Po emisi se vљechno zmмnilo. Anomбlie se pшesunuly a frakce vyrazily do boje, rvбt se o novэ ъzemн. Takћe tady teп spousta lidн ћije trochu lнp, i kdyћ to znн divnм. Vмtљinou otrhanci jako jб - a pбr pitomcщ, kteшн si dмlajн nadмje, ћe jim to tady bude jednou patшit.</text>
+	</string>
+	<string id="dm_about_11">
+		<text>No ty vole, uћ mм ty baћiny fakt lezou na nervy. Jo, mohl bych se vrбtit, ale mбm na krku pбr hшнchщ, kterэ mм nenechaj na pokoji, vнc o tom mluvit nechci. Nevadilo by mi pшidat se k nмjakэmu klanu, ale tady nenн ћбdnej, kterej by stбl za шeи, jen banditi.</text>
+	</string>
+	<string id="dm_about_12">
+		<text>Baћiny nejsou ћбdnej rбj, to je jasnэ, spнљ je to jako prdel Zemм, i na podmнnky Zуny. Ale proto jsem sem vlastnм pшiљel. Jedna parta si myslela, ћe jim nмco dluћнm, a nemohla se doиkat, aћ si to vyberou. A tak jsem tady, s mnohem vмtљн љancн na pшeћitн neћ kde jinde. V tomhle rбkosн mм nenajdou ani za sto let!</text>
+	</string>
+	<string id="dm_about_13">
+		<text>Nedбvno se tady objevila novб mнstnн frakce, шнkaj si Jasnб obloha. Nemбm tuљenн, o co jim jde, ale uћ jsem v ћivotм vidмl dost, abych ti mohl шнct, ћe ti chlapi jsou ъplnн magoшi. Chбpeљ, jak to myslнm? Jsou to nмjacн vмdбtoшi. Ale to jim nebrбnн v tom, aby to s bouchaиkama celkem umмli. A pokud mб chlap mozek a bouchaиku, tak si radљi rozmyslнm, jestli se mu postavнm do cesty, nebo ne.</text>
+	</string>
+	<string id="dm_action_info_0">
+		<text>Hej, moc se tady nevyptбvej a budeљ ћнt dэl. Шнkбm ti to z osobnн zkuљenosti. Nedбvno jsem byl taky ukecanej a zvмdavej, ale pak jsem se jednou dozvмdмl aћ moc. Vlastnм jsem mмl celkem љtмstн, ћe jsem skonиil tady, dнky emisi. Po baћinбch se mщћeљ toulat tэdny a neuvidнљ ani ћivбиka, teda kromм prasat a dalљнch potvor.</text>
+	</string>
+	<string id="dm_action_info_1">
+		<text>Sakra s tнm! To je prostм moje љtмstн... vћdycky jsem od ћivota dostal to nejlepљн, a teп si to vybнrб i s ъrokama. Myslнљ si snad, ћe to byl mщj nбpad, skonиit v tэhle dншe? Kdepak, mnм se v Zуnм daшilo dobшe. Byznys kvetl, vydмlбval jsem sluљnэ prachy. Ale musel jsem to zabalit, kdyћ se mн kбmoљi rozhodli, ћe mi vrazej kudlu do zad. Proи? Po tom ti nic nenн.</text>
+	</string>
+	<string id="dm_action_info_2">
+		<text>Mмl jsem smщlu pшi kartбch s mнstnнma zlodмjema. Љel jsem do toho naplno, vsadil jsem svщj vlastnн ћivot. Ale pak se mi nechtмlo zaplatit, tak jsem zdrhnul sem. Po cestм jsem se navнc dostal do pшestшelky s vojбkбma. A tak jsem teп tady a musнm to tбhnout s vљelijakэma љmejdama.</text>
+	</string>
+	<string id="dm_action_info_3">
+		<text>Neћ jsem sem pшiљel, tak jsem sedмl, protoћe to na mм jeden hajzl navlнknul. Hnнt v lochu se mi moc nechtмlo, tak jsme se s partou dalљнch rozhodli zdrhnout. Oddмlali jsme jednoho bachaшe, sebrali mu bouchaиku a zdrhali pшнmo do Zуny. Jakmile jsme se sem dostali, tak mм ti kriminбlnнci vidмli naposled. Nechci s nima nic mнt, jsou plnн sraиek, vнc neћ tyhle baћiny. Teп se schovбvбm tady.</text>
+	</string>
+	<string id="dm_action_info_4">
+		<text>Co se furt vyptбvбљ? Jak mбm vмdмt, ћe nejseљ prбskaи? No jo, dobшe, uklidni se. Vнm, ћe mм tady nikdo nenajde. No tak jo, poslouchej. Byl jsem dost blbej, abych okradl partu zlodмjщ. Kdyћ jsem si uvмdomil, ћe udмlaj cokoli, a fakt myslнm cokoli, aby svэ prachy dostali zpбtky, zdrhnul jsem do Zуny. Ale ti chamtivн sviтбci mм sem vystopovali a poslali na mм pбr ranaшщ. Mмl jsem dost љtмstн, ћe jsem se s boћн pomocн o ty mizery dokбzal postarat. Teп pшemejљlнm, ћe bych dal dohromady vlastnн gang. Mohli bychom to nмkam dotбhnout, cнtнm to v kostech.</text>
+	</string>
+	<string id="dm_action_info_5">
+		<text>Vћdycky jsem pшнmo tekl z akиnнch filmщ. Proto jsem pшiљel do Zуny, hrбt si na hollywoodskэho hrdinu. Jenћe jsem se samozшejmм zapletl do prщseru... a dalљнho a dalљнho, kam jsem vlezl, tam jsem mмl nepшбtele. Nakonec jsem musel zdrhnout do tэhle dнry. Jo, tady je zdechnout fakt snadnэ, ale kdykoli mщћeљ zapadnout do rбkosн a zmizet. Ale nenн to jako ve filmu... jen spousta krve a sraиek.</text>
+	</string>
+	<string id="dm_action_info_6">
+		<text>Jednoduchej pшнbмh - dostal jsem se do cesty jednomu velkэmu zvншeti a on vypsal na moji palici odmмnu. No a najednou jsem zjistil, ћe je Zуna plnб lovcщ odmмn. Musel jsem se zdekovat, tak jsem zmizel sem. Jakmile se to trochu uklidnн, tak si tu svini najdu a pokecбm si s nнm jako chlap s chlapem.</text>
+	</string>
+	<string id="dm_intro_13">
+		<text>Rбd tм vidнm!</text>
+	</string>
+	<string id="dm_intro_14">
+		<text>Zdravнm!</text>
+	</string>
+	<string id="dm_intro_15">
+		<text>Ahoj!</text>
+	</string>
+	<string id="dm_intro_16">
+		<text>Ano?</text>
+	</string>
+	<string id="dm_intro_17">
+		<text>Potшebujeљ pomoc?</text>
+	</string>
+	<string id="dm_intro_18">
+		<text>Mщћu ti pomoct?</text>
+	</string>
+	<string id="dm_intro_19">
+		<text>Vнtej v baћinбch!</text>
+	</string>
+	<string id="dm_intro_20">
+		<text>Radнm ti, dбvej si bacha na baћiny a monstra.</text>
+	</string>
+	<string id="dm_intro_21">
+		<text>Novej ksicht, to se tady zas tak иasto nevidн!</text>
+	</string>
+	<string id="dm_intro_22">
+		<text>Dбm ti radu, kamarбde, drћ se rбkosн, tam se mщћeљ snadno schovat.</text>
+	</string>
+	<string id="dm_intro_23">
+		<text>Pokud se chceљ dostat z baћin ven, budeљ si muset najнt prщvodce.</text>
+	</string>
+	<string id="dm_about_14">
+		<text>Baћiny byly po dlouhou dobu pro vмtљinu stalkerщ uzavшenэ. Hezky v klidu jsme tady zkoumali okolн a zahбnмli mutanty. Emise vљechno zmмnila. Anomбlie se pшesunuly a zaиaly se tady objevovat novэ tvбшe. Vмtљinou pшichбzejн z Kordonu. No, asi musн mнt poшбdnм velkej dщvod utнkat na mнsto, jako je tohle...</text>
+	</string>
+	<string id="dm_about_15">
+		<text>Baћiny jsou ъtoиiљtм renegбtщ vљeho druhu. Konин tady vљelijakй typy - nбhodnн samotбшi, vyhnanci z rщznэch frakcн, i prachsprostн kriminбlnнce. Pшivнtбme vљechny, nмkterэ s otevшenou nбruин, nмkterэ kopancem kanadou pшнmo do zadnice.</text>
+	</string>
+	<string id="dm_about_16">
+		<text>Musнme nмco udмlat, jinak bude pozdм! Zуna jakoby se probouzela ze spбnku. Poslednн emise byla tak silnб, aћ to vypadalo, ћe nastal ъplnej konec svмta. Nemщћeme se tady zakopat a иekat na ъplnou katastrofu. Ani si nedokбћu pшedstavit, co by to znamenalo. Pщvodnн vэbuch v Иernobylu by oproti tomu bylo jako vэbuch dмtskэ petardy.</text>
+	</string>
+	<string id="dm_about_17">
+		<text>Zkoumбme mнstnн anomбlnн aktivitu. Baћiny jsou na to ideбlnн mнsto. Uћ jsme objevili nмkolik zajнmavэch mнst a kaћdэm dnem nachбzнme novб. Jen kdybychom mмli vнc zdrojщ...</text>
+	</string>
+	<string id="dm_about_18">
+		<text>Tohle mнsto nenн jako ћбdnй jinй v Zуnм. Je tady spousta monster, to jo, ale jen mбlo anomбliн. Jinak je to ъplnм normбlnн baћina, jako kterбkoli jinб.</text>
+	</string>
+	<string id="dm_about_19">
+		<text>Baћiny bэvaly mнrumilovnй mнsto. Nikdo nбs neobtмћoval, nikdo tady nehledal artefakty. Ale na druhou stranu tady bylo stejnм tolik pшнleћitostн umшнt jako kdekoli jinde v Zуnм. Je to tady samб baћina a rбkosн, nikoho to sem netбhlo. Ale иasy se mмnн. Nemбm tuљenн, co se dмje mimo baћiny, ale v poslednн dobм sem z venku leze straљnб spousta љmejdщ.</text>
+	</string>
+	<string id="dm_about_20">
+		<text>Nenн moc co шнct - jsou tady baћiny, rбkosн a monstra. A samozшejmм obrovљtн komбшi. Kordon je na severozбpad odsud, Agroprom pшнmo na sever. Na jih a zбpad, za hranicemi Zуny, je normбlnн иistб zemм.</text>
+	</string>
+	<string id="dm_about_21">
+		<text>Do nedбvna tady byl celkem klid. Jen my, baћiny, kanci a prasata. Teп tady zaинnб bэt celkem tlaиenice a podle mм je to tlaиenice sloћenб z pмknejch mizerщ. Tady nemaj dobrэ lidi co pohledбvat. No tak, neurбћej se, ty jseљ urиitм vэjimka.</text>
+	</string>
+	<string id="dm_about_22">
+		<text>Za svэ bezpeин mщћeme vdмиit jen svэm vщdcщm, Lebedмvovi a Beanpolevovi. Nбљ tбbor je starб vesnice, kterб byla za dob Sovмtщ zatopenб, kdyћ se postavila pшehrada. Nenн oznaиenб na ћбdnэ mapм, takћe hledat nбs bez prщvodce je fakt hloupэ nбpad.</text>
+	</string>
+	<string id="dm_about_23">
+		<text>Pшiљli jsme sem, abychom unikli nechtмnй pozornosti. Proи? Mбme svй dщvody. Lebedмv nebo Beanpolev ti je mщћou шнct, pokud budou chtнt. Tady jsme schovanн i pшed nбvљtмvnнky baћin. Pokud se chceљ dostat na zбkladnu, nechoп sбm, najdi si prщvodce. Tak je to mnohem bezpeиnмjљн.</text>
+	</string>
+	<string id="dm_about_24">
+		<text>Je to tady mokrэ, studenэ, mizernэ a smrdн to tady jak v praseин prdeli. Co jeљtм bys potшeboval vмdмt? Mбm ti шнct, jakэ to je, kdyћ tм tбhne nмjakб mrcha za nohu aћ na dno baћiny? Nebo jak to vypadб, kdyћ tм bмhem pбr sekund pohltн pohyblivej pнsek?</text>
+	</string>
+	<string id="dm_about_25">
+		<text>Tohle je dobrэ mнsto na schovбvaиku. Pшed kэm? Pшed kэmkoli, aќ uћ jsou to banditi, armбda, nebo kdokoli jinэ, kdo tм nemб najнt. Staин skoиit do rбkosн a seљ fuи. Samozшejmм pokud se chceљ drћet u zemм, nedмlej to doslova. Je tady spousta zrбdnэch mнst, kterэ se nemщћou doиkat, aћ do nich nмkdo zapadne, o vљelijakэch mizernэch potvorбch nemluvм. Staин jednou blbм љlбpnout a hasta la vista, baby!</text>
+	</string>
+	<string id="dm_about_26">
+		<text>Po baћinбch klidnм mщћeљ pobнhat celэ dny a nikam se nedostaneљ. Vљude to vypadб stejnм. Voda, rбkosн a obиas nмjakб vegetace. Asi proto si to tady Lebedмv a Beanpolev vybrali na tбbor. Dokonce ani armбdnн vrtulnнky nбs tady nedokбћн objevit. Tak se nбm podaшilo dмlat svou prбci v klidu, v bezpeин pшed zvмdavci.</text>
+	</string>
+	<string id="dm_about_27">
+		<text>Schovбvбme se tady tak dlouho, aћ zaинnбm mнt pocit, ћe svмt je jedna velkб baћina. Slyљel jsem, ћe kdysi to tady byla normбlnн zemм, vesnice, pole a tak. Pak zaиali stavмt pшehradu pro vodnн elektrбrnu a vљechno tady zatopili. Buп to љpatnм spoинtali, nebo to prostм podмlali, ale vody bylo moc. Spoustu lidн nestaиili evakuovat vиas. A teп je to jedna velkб baћina.</text>
+	</string>
+	<string id="dm_about_28">
+		<text>Jen se rozhlнdni. Tak, uћ jsi vidмl vљechno, co je v baћinбch k vidмnн. Ty samэ sraиky, aќ se podнvбљ kam se podнvбљ. Rбkosн, napщl zatopenэ budovy a obиas kousek suchэ zemм. A zapomeт, ћe bys naљel naљi zбkladnu, i kdybys vмdмl, kde ji hledat. S ohledem na to, jak mбlo lidн o Jasnэ obloze vщbec vн, se nemusнme bбt, ћe by nбs kdy kdo objevil.</text>
+	</string>
+	<string id="dm_about_29">
+		<text>Jsme tady z jednoduchэcho dщvodu. Pшed emisн to byla nejodlehlejљн a nejnepшнstupnмjљн ибst Zуny. Samozшejmм jsi mohl zkusit jнt hloubмji k centru, ale takovou vэpravu nikdo nepшeћil. Zato tenhle okraj. Kordon je vэchod odsud, Agroprom na sever a ostatnн smмry... tam Zуna konин.</text>
+	</string>
+	<string id="dm_about_30">
+		<text>Jo, ptбљ se toho pravэho. Baћiny neznб nikdo tak dobшe jako Jasnб obloha. Jsme tady od... sakra, kdo vщbec vн? Na takovэmhle mнstм je tмћkэ sledovat datum. Budoucnost je stejnм mokrб a temnб jako souиasnб scenerie. Za chvнli ъplnм zapomeneљ poинtat dny. No, pokud se odsud chceљ dostat, musнљ mezi lidma z Jasnэ oblohy najнt prщvodce - kdybych ti jen poradil smмr, moc by ti to nepomohlo.</text>
+	</string>
+	<string id="dm_action_info_7">
+		<text>Tohle je naљe prбce. Emise se nбm fakt postarala o spoustu problйmщ. Abych pravdu шekl, nejsme zrovna vбleиnнci, ale v takovэhle dobм, pokud chceљ pшeћнt, musнљ vмdмt, jak zachбzet s bouchaиkou. Mбm pocit, ћe nбs brzo иekб poшбdnб akce.</text>
+	</string>
+	<string id="dm_action_info_8">
+		<text>Plnнm ъkol pro Lebedмva. Sorry, ale musнm mlиet, soukromб zбleћitost klanu.</text>
+	</string>
+	<string id="dm_action_info_9">
+		<text>Chystбm se na dalљн ъkol. V poslednн dobм je v baћinбch aћ moc љpatnejch lidн. Kaћdej si myslн, ћe kdyћ mбљ moc, tak mбљ pravdu. Zapomнnajн, ћe ke kaћdэ sнle se dб najнt silnмjљн sнla v opaиnэm smмru.</text>
+	</string>
+	<string id="dm_action_info_10">
+		<text>Jen se tak poflakuju, ale ne na dlouho. Jasnб obloha mб vћdycky spoustu prбce a v poslednн dobм je toho vнc a vнc.</text>
+	</string>
+	<string id="dm_action_info_11">
+		<text>Pшipravuju se na ъkol hluboko v baћinбch. Zуna zaинnб bэt poшбdnм neklidnб, takћe se musнme pшestat vбlet a makat. Pamatuj na mэ slova, stalkere: blнћн se velkэ zmмny.</text>
+	</string>
+	<string id="dm_action_info_12">
+		<text>Stejnм jako ostatnн zkoumбm Zуnu. Je to ta nejъћasnмjљн vмc, s jakou se kdy lidstvo setkalo. Nemмli bychom se Zуnou bojovat, musнme ji zkoumat, snaћit se ji pochopit a mнrumilovnм s nн souћнt. Zуna tady zщstane, to ti povнdбm.</text>
+	</string>
+	<string id="dm_action_info_13">
+		<text>Vљichni dмlбme to samэ - vмdeckэ vэzkum. Musнme Zуnu studovat. Kaћdэ den na nн nachбzнm novэ vмci, kvщli kterэm ћasnu. Je tady stejnм tolik nбdhernэch a ъћasnэch vмcн jako hrozivэch. Artefakty jsou sotva vrcholek ledovce. Zkuљenн stalkeшi vyprбvн o Monolitu ve stшedu Zуny, kterэ ti mщћe splnit kaћdй pшбnн. Pшбl bych si, abych ho jednou dokбzal najнt.</text>
+	</string>
+	<string id="dm_action_info_14">
+		<text>Moje pшнstroje zaregistrovaly silnou koncentraci energie, coћ znamenб sluљnou љanci na objevenн artefaktщ nebo anomбliн. Promмшil jsem to a poslal vэsledky Beanpolevovi. Teп иekбm na dalљн rozkazy.</text>
+	</string>
+	<string id="dm_action_info_15">
+		<text>Prбvм teп vщbec nic, ale mбm spoustu zodpovмdnosti. Jsme vмdci, technici a vojбci dohromady. Dneska bojujeme, zнtra jdeme na vмdeckou expedici - a tak se mi to lнbн.</text>
+	</string>
+	<string id="dm_action_info_16">
+		<text>K Jasnэ obloze jsem se dostal nбhodou. Jednou jsem se topil v baћinм, kdyћ mм tihle chlбpci vytбhli a zavedli do svэ zбkladny. Pokecal jsem s Lebedмvem a ten chlap vн, co шнkб. Znб Zуnu vнc, neћ by kterэ jinэ zajнmalo. Klan mб podle mм dobrej cнl, a tak jsem se pшidal a zaиal dмlat, co mщћu, abych pomohl.</text>
+	</string>
+	<string id="dm_action_info_17">
+		<text>Jsem dlouhodobej иlen, jeden z prvnнch v klanu. Studoval jsem Zуnu v baћinм od samotnэho zaибtku. Dмlбm rщznб mмшenн, kreslнm grafy, udrћuju vybavenн v provozu a tak dбl. Zastшelil jsem i pбr monster - samozшejmм ћe pro vэzkumnй ъиely. Ale v poslednн dobм musнme vytahovat zbranм инm dбl tнm иastмji.</text>
+	</string>
+	<string id="dm_action_info_18">
+		<text>Stejnм jako ostatnн tady sleduju, pozoruju a sbнrбm data. Myslнm, ћe Beanpolev a Lebedмv se dozvмdмli o Zуnм vнc neћ my vљichni ostatnн dohromady. Jen mбlokdy ale nмco шнkajн nбm obyиejnэm vojбkщm. Prostм se starбme jen o okamћitэ priority, zatнmco oni sledujн celkovэ obraz.</text>
+	</string>
+	<string id="dm_action_info_19">
+		<text>Иekбm na zprбvy od naљich. Jsou hluboko v baћinбch, plnн ъkol. Doba je zlб, mohli by potшebovat pomoct.</text>
+	</string>
+	<string id="dm_cool_info_0">
+		<text>Novэho je tady spousta. Napшнklad Emise... zmмnila vнc neћ jen Zуnu. Zmмnila nбs vљechny. Jakobychom byli vнc vzteklн, nebo tak nмco. Jednu chvнli jste hroznн kamarбdi, a najednou ti ten druhej mншн bouchaиkou mezi oиi. No, jб fakt nevнm, o иem to vlastnм mluvнm. Radљi se na to zeptej Lebedмva.</text>
+	</string>
+	<string id="dm_cool_info_1">
+		<text>Nastбvб vнc a vнc emisн - nмco takovйho jsem nikdy nevidмl. Zуna se otшбsб, mмnн vљechno kolem nбs. Znбmй cesty jsou najednou plnй smrtнcнch anomбliн a otvнrajн se jinб, dшнve uzavшenб mнsta. Baћiny se taky staly pшнstupnмjљн. Vsadнm se, ћe se tady o tohle mнsto brzo zaиnou rvбt ostatnн frakce.</text>
+	</string>
+	<string id="dm_cool_info_2">
+		<text>Jak mбm vмdмt, co je novэho? Ћijeme v baћinм, jako by to byla jinб planeta. Radљi se zeptej nмkoho, kdo nenн mнstnн.</text>
+	</string>
+	<string id="dm_cool_info_3">
+		<text>Emise prэ uvolnila cesty na spoustu rщznэch mнst, nejen baћiny. Mнsta, kde si dшнv stalkeшi mohli odpoиinout, jsou teп jako bludiљtм plnб anomбliн a jinб, kam se zatнm nikdo nedostal, jsou najednou otevшenэ a dajн se zkoumat a vybнrat.</text>
+	</string>
+	<string id="dm_cool_info_4">
+		<text>Podle naљeho vэzkumu ty stбle иastмjљн emise pro nбs neznamenajн nic dobrйho. Zуna se stala nestabilnн. Ty novй zmмny vyvolбvajн jeљtм vнce bojщ o novб teritoria, kterб byla dшнv kvщli anomбliнm nepшнstupnб. Nмco se brzo stane, a urиitм to nebude nic dobrэho.</text>
+	</string>
+	<string id="dm_cool_info_5">
+		<text>Stalkeшi v Kordonu prэ pмknм vyprбљili armбdм koћich. Sice nechбpu, jak to mohli dokбzat, ale vнљ, jak to je, jedna panн povнdala, co? No co jeљtм... na Smeќбku objevili sklad starэch vozidel, vybavenн a dalљнch uћiteиnэch vмcн, krбmy, kterэ pochбzн aћ z osmdesбtэho љestэho, z doby pщvodnн nehody. Pшedpoklбdalo se, ћe je to kontaminovanй, ale teп majн neuvмшitelnou cenu. Vypukla tam ъplnб zlatб horeиka, coћ tam pшilбkalo pмknм velkou grupu banditщ. Ti teп drћн celэ Smeќбk za koule a stahujou stalkery z kщћe zaћiva.</text>
+	</string>
+	<string id="dm_cool_info_6">
+		<text>Emise pшinesla pбr znepokojivэch zprбv. Pбr dnщ po nн bylo klidnэch, ale teп je vidмt, ћe to byl jen klid pшed bouшн. Spousta frakcн se zase chystб do boje, vиetnм naљн. Oni ale bojujн o ъzemн a nбљ cнl je velmi, velmi odliљnэ...</text>
+	</string>
+	<string id="dm_intro_24">
+		<text>Hej, brбcho!</text>
+	</string>
+	<string id="dm_intro_25">
+		<text>Chceљ se na nмco zeptat? Rбd ti pomщћu.</text>
+	</string>
+	<string id="dm_intro_26">
+		<text>Jen se ptej, dokud mбm nбladu ti odpovнdat.</text>
+	</string>
+	<string id="dm_intro_27">
+		<text>Nazdar, stalkere! Vнtej v Kordonu!</text>
+	</string>
+	<string id="dm_intro_28">
+		<text>Uћ je to nмjakб doba, co jsem v Kordonu vidмl zkuљenэho ћoldбka. Ty seљ jeden z nich, ћe jo?</text>
+	</string>
+	<string id="dm_intro_29">
+		<text>Zdravнm, brбcho! Vнtej u nбs!</text>
+	</string>
+	<string id="dm_intro_30">
+		<text>Rбd potkбvбm bratra ve zbrani!</text>
+	</string>
+	<string id="dm_intro_31">
+		<text>Nazdar! Drћ se blнzko nбs stalkerщ, protoћe armбda i banditi jsou v poslednн dobм hroznм otravnн.</text>
+	</string>
+	<string id="dm_about_31">
+		<text>Kordon je Kordon - okraj Zуny, dalo by se шнct vidlбkov Zуny. Je tady jen pбr anomбliн, skoro ћбdnэ artefakty a monstra jsou skoro neљkodnэ. Vedou odtud cesty na Smetiљtм a do Temnэho ъdolн. Taky se mщћeљ dostat do baћin, ale proи bys to sakra dмlal?</text>
+	</string>
+	<string id="dm_about_32">
+		<text>Bэvalo to tady celkem krotkэ. Naprostб rutina: novбиci se drћeli toho co umмli, stalkeшi sbнrali artefakty a prodбvali je Sidoroviиovi a armбda nбm poskytovala "ochranu" pшed bandity. Vojclovй byli vмtљinou celkem v pohodм. Ale pak se vљechno zmмnilo. Dorazila sem banda mizerщ ze Smeќбku a zaиala kљeftovat s velitelem vojбkщ. A najednou poшбdek skonиil a armбdм uћ se nedб vмшit. Ale vљechno zlэ je pro nмco dobrэ. Stalkeшi se spojili a tak uћ je teп nemщћe armбda tolik prohбnмt.</text>
+	</string>
+	<string id="dm_about_33">
+		<text>Dмlбљ si srandu? Takovej starej pes jako ty snad musel nмkdy o Kordonu slyљet. Je to startovnн plac pro vмtљinu zelenбищ. Vedou odtud cesty na nebezpeиnмjљн mнsta, jako je Smetiљtм, Temnэ ъdolн a baћiny. Jedinэ nebezpeин tady v okolн jsou banditi a armбda, kterб si zaинnб trochu moc vyskakovat. Ale brzo si to s nima vyшнdнme. Stalkeшi se nedбvno spojili prбvм kvщli tomu.</text>
+	</string>
+	<string id="dm_about_34">
+		<text>Fajn, je to takhle. Tбmhle za pevnщstkou je okraj Zуny... odkud jsme vљichni pшiљli. Ћбdnэ anomбlie ani monstra, ale to uћ vнљ. Na zбpad jsou baћiny. Tбmhle to je cesta do vesniиky zelenбищ a ke starэmu transportnнmu depu, kde je umнstмnб mнstnн vojenskб jednotka. Tбbor stalkerщ je hned za mostem a pak uћ je to ъzemн banditщ a Svobody - Smetiљtм a Temnэ ъdolн. To je tak vљechno.</text>
+	</string>
+	<string id="dm_about_35">
+		<text>Armбda, to je jen banda mizernэch proradnэch parchantщ. Majн za ъkol uzavшнt Zуnu, zablokovat vљechny pшнstupu. Ale nenapadlo tм nмkdy, jak je moћnэ, kolik zboћн z venku se sem dostбvб, a kolik artefaktщ a dalљнch nelegбlnнch vмcн se dostбvб ze Zуny ven? No samozшejmм, jde to pшes vojбky a mщћeљ se vsadit, ћe si na kaћdэm pшevozu namastн kapsy. Dшнv to bэvalo tak, ћe staиilo vojcly trochu podmazat a oni se postarali, aby bylo vљechno v pohodм, ale uћ to neplatн. Aќ zaplatнљ, nebo ne, nebudeљ v bezpeин. A tak se stalo, ћe stalkeшi pшestali strkat palice do pнsku jako dшнv, a mнsto toho se vojбkщm postavili. Dokonce se povнdб, ћe zajali velitele vojenskэho postavenн.</text>
+	</string>
+	<string id="dm_about_36">
+		<text>Je to v podstatм stejnэ jako kdekoli jinde. Pбr stalkerщ, kteшн hledajн koшist, pбr mizerщ, kteшн hledajн stalkery, kterэ by mohli obrat. Riskujeme ћivoty pшi zkoumбnн anomбliн a stшнlenн pшнљer pro kus chleba a vodky a co z toho? Ti hajzlovй nбm vљechno seberou. Ty nevнљ, o kom mluvнm? No pшece o armбdм. Teп samozшejmм sedмj na prdelнch, protoћe jsme vzali jejich velitele jako rukojmн. Nemщћou to ohlбsit vrchnнmu velenн, protoћe to by poslalo inspekci a to je to poslednн, co by ti mizerovй chtмli, aby nмkdo pшiљel na jejich kљefty. Takћe jsme se postarali, aby se teп hezky drћeli pшi zemi.</text>
+	</string>
+	<string id="dm_about_37">
+		<text>Stalkeшi se spojujou. Kdyћ to zaиne bэt moc tvrdэ, nemб smysl zkouљet jнd dбl sбm. Na jednэ stranм na nбs cenн zuby armбda, z druhэ strany se nбs snaћн zadusit banditi. Jsme mezi kladivem a kovadlinou a tak jsme se jim postavili. Jen aќ si pшijdou, my si to s nima vyшнdнme.</text>
+	</string>
+	<string id="dm_about_38">
+		<text>Vykaљlu se na tradiиnн stalkerskэ kecy o anomбliнch, radiaci a pшнљerбch, a шeknu ti poшбdnэ zprбvy. Stalkeшi a armбda se pohбdali po tom, co armбda sebrala aћ moc velkej kus koшisti. Takћe se stalkeшi naљtvali a zajali velitele vojбkщ. Vojбci pшiљli o morбlku fakt rychle. Jejich љйf byl samozшejmм dost chytrej, aby pшed nima koшist schoval. Takћe teп uvнzli na mrtvэm bodм - nemщћou si povolat pomoc zvenku, a nemщћou zaъtoиit na stalkery, aniћ by pшiљli o svэho velitele a s nнm i o prachy. Kromм toho se tady v poslednн dobм objevuje spousta hajzlнkщ ze Smetiљtм. To je podle mм tak vљechno. Dej si na sebe bacha.</text>
+	</string>
+	<string id="dm_about_39">
+		<text>V poslednн dobм se toho dмje spousta. Vмш mi, nebo ne, ale poprvэ za existenci Zуny dostali stalkeшi Kordon pod svou kontrolu. Dokonce si ze starэ farmy udмlali zбkladnu. Kdo by tohle иekal? Pokud to vydrћн, tak budou иasem celэ Zуnм vlбdnout stalkeшi. A to by se rozhodnм stбt mмlo.</text>
+	</string>
+	<string id="dm_about_40">
+		<text>Ћivot v Kordonu je teп pмknм drsnej. Stojнme proti armбdм i banditщm a dostбvбme od nich celkem dost na hubu. Armбda nбs poшбd prudн a ti chamtivн mizernн banditi majн sto chutн nбs o vљechno obrat. Ale poшбd je to tady bezpeиnмjљн neћ na vмtљinм jinэch mнst.</text>
+	</string>
+	<string id="dm_about_41">
+		<text>Frakce Zуny vбlин mezi sebou, bojujн o novб teritoria a pole artefaktщ. Kordon nenн vэjimka. Armбda, banditi, i stalkeшi - to jsme my - se rvou mezi sebou. My zatнm vyhrбvбme.</text>
+	</string>
+	<string id="dm_about_42">
+		<text>V Kordonu zaинnб Zуna. Tady zaинnajн vљichni novбиci a mмsнc dva se uин, jak to chodн. Pokud to teda nejsou naprostн kretйni. Ale to pro tebe nenн nic novэho, ћe ne? Ty mi jako novбиek nepшipadбљ.</text>
+	</string>
+	<string id="dm_about_43">
+		<text>Dшнv jsme s armбdou spolupracovali. My jsme sbнrali a paљovali artefakty a oni se koukali stranou, za poplatek samozшejmм. Ale pak si zaиali aћ moc vyskakovat. Brali nбm koшist, a dokonce na nбs poљtvali bandity. Tak jsme se s nima tak trochu pohбdali. Teп je to vбlka na dvм fronty - s armбdou i banditama.</text>
+	</string>
+	<string id="dm_about_44">
+		<text>Pшed nмjakou dobou naљi chlapi vykopali fakt cennej artefakt. Pшiљli o pмt chlapщ, neћ ho sem dostali, a ti co pшeћili, na tom moc dobшe nebyli. Zбkaznнk musel bэt fakt velkэ zvншe, protoћe Sidoroviи o nмm odmнtal cokoli шнct. Naљi chlapi uћ ten krбm skoro dodali, ale pak se velitel vojбkщ rozhodl, ћe chce vнc neћ fйrovej podнl. Ten hajzl dal tip nмjakэm banditщm, kteшн na naљe nachystali past. Chlapi to slнzli a koшist zmizela. Nejdшнv jsme chtмli velitele odprбsknout, ale pak jsme se ho rozhodli mнsto toho pouћнt jako rukojmн. Chcem jen co je naљe, a dшнv nebo pozdмji to z nмho vymlбtнme.</text>
+	</string>
+	<string id="dm_action_info_20">
+		<text>Jsem jako vљichni ostatnн - prostм se snaћнm nмjak protlouct a vydмlat pшi tom nмjakэ penнze. Nemщћu se doиkat, aћ tomu tady v Kordonu zaиnem љйfovat! Vмdмl jsem, ћe jednou se armбda i banditi doиkajн zaslouћenэ odplaty! A navнc bude kљeftovбnн s artefaktama mnohem snazљн.</text>
+	</string>
+	<string id="dm_action_info_21">
+		<text>Prozatнm jen sbнrбm zkuљenosti a љetшнm si penнze. Jakmile budu mнt dost, koupнm si poшбdnou bouchaиku a brnмnн a zamншнm pшнmo do stшedu Zуny. Povнdб se, ћe uћ to nмjacн chlapi dokбzali a naљli plniи pшбnн. Tam vyrazнm. A aћ ho najdu, svoje pшбnн si poшбdnм uћiju, to se vsaп!</text>
+	</string>
+	<string id="dm_action_info_22">
+		<text>Slyљel jsem pбr pohбdek o Zуnм a byl jsem dost velkэ blbec, abych jim uvмшil. Ale rychle jsem se pouиil, ћe zevnitш Zуny to vypadб jinak. Ukбzalo se, ћe nejsem tak drsnej, jak jsem si myslel. Umшнt tady je snadnэ, sbнrбnн artefaktщ ne. Ale co mм fakt zabнjн je to, ћe v celэ zatracenэ Zуnм prostм nenн klidnэ mнsto. I kdyћ spнm, tak jen na jedno oko jako zajнc.</text>
+	</string>
+	<string id="dm_action_info_23">
+		<text>Zуna mi uиarovala. Jen jsem projнћdмl, v podstatм jako turista, a chytlo mм to za koule. Lidi tady jsou opravdovн, aќ uћ jsou to kamarбdi, nebo nepшбtelй. Nebezpeин, pocit, ћe smrt инhб za kaћdэm rohem - tady se prostм cнtнљ naћivu! A jб si uћнvбm jednu kaћdou minutu tady.</text>
+	</string>
+	<string id="dm_action_info_24">
+		<text>Jsem tady kvщli kamarбdovi, иekбm na nмj. Nese koшist, kterou jsme naљli, ale rozdмlili jsme se a jб jsem se sem dostal o chvнli dшнv. Ne, ten se neztratil, je to poшбdnej drsтбk. Vsadнm se, ћe si prostм nмkde zaљel. Nebo moћnб narazil na starэho kamarбda a zdrћel se. V kaћdэm pшнpadм nemбm strach, kaћdou chvнli se musн objevit...</text>
+	</string>
+	<string id="dm_action_info_25">
+		<text>Nмjakэ mizera mi prodal mapu skrэљe a jб si zaинnбm myslet, ћe je to podfuk. Prolezl jsem celou oblast a nenн tam ani jeden zatracenэ artefakt. Aћ toho љmejda zase potkбm, zabiju ho!</text>
+	</string>
+	<string id="dm_action_info_26">
+		<text>Dбvбm si padla po poslednн vэpravм. Љli jsme aћ skoro k bariйшe a pшipravili obrannэ pozice pшed bestiema, kterэ tam lezou z centra. Mмli jsme dobrej tэm - Otrhanej Alex, Leљka Klouиek, Plesnivбk, vљechno starэ pбky. Nabral jsem sluљnou koшist, prodal za dobrэ prachy a teп si dбvбm oraz. Tohle je stejnм dobrэ mнsto na odpoиinek jako kterэkoli jinэ.</text>
+	</string>
+	<string id="dm_cool_info_7">
+		<text>Slyљel jsem, ћe se prej skupina stalkerщ probojovala do stшedu Zуny. To bylo tмsnм pшed tнm, neћ udeшila emise. Zajнmalo by mм, jestli se staиili dostat k plniиi pшбnн v иas...</text>
+	</string>
+	<string id="dm_cool_info_8">
+		<text>Sbнrбnн koшisti nikdy pшedtнm nebylo tak tмћkэ. I kdyћ unikneљ paшбtщm monster a dostaneљ se pшes pole anomбliн, jeљtм poшбd tм иekб kliиkovбnн mezi banditama po cestм a pak schovбvaиka pшed armбdou. V poslednн dobм nenн zas takovб vzбcnost, kdyћ se nмkdo vrбtн s mнт vмcma, neћ se kterэma zaиal. S tмma pijavicema by mмl koneиnм nмkdo nмco udмlat! Moћnб se stalkeшi koneиnм dajн dohromady a dajн jim lekci...</text>
+	</string>
+	<string id="dm_cool_info_9">
+		<text>Slyљels, co se dмje na Smetiљti? Jakmile tam stalkeшi objevili cennэ vybavenн a zaиali ho vykopбvat z hromad bordelu, zaиali se tam stahovat banditi jako mouchy k hromadм hoven. Dokonce si tam udмlali zбkladnu - aby mohli stalkery snбz odнrat. V poslednн dobм je to tam fakt tvrdэ. Kopбиi jsou okrбdanн a vraћdмnн hlava nehlava, komu se to nelнbн, skonин v koncentrбku. A to je moћnб jeљtм horљн osud neћ smrt, protoћe ty chudбky nutмj kopat v nejkontaminovanмjљнch oblastech Smeќбku. Ti chudбci umнrajн po tuctech z nemoci z ozбшenн a anomбliн, a banditi si na nich mastн kapsy. Zkrбtka a dobшe, kбmo, na Smetiљti si dбvej sakra bacha.</text>
+	</string>
+	<string id="dm_cool_info_10">
+		<text>Hned za Bariйrou je nмjakej Vypalovaи. Kaћdej, kdo se k nмmu pшiblнћн, skonин, usmaћн mu to mozek a tadб - novб zombice je na svмtм. Vypadб to, ћe se pшes nмj nikdo nedostal ћivej. Taky se povнdajн historky o plniиi pшбnн, ale tмm nevмшнm ani co by se za nehet veљlo.</text>
+	</string>
+	<string id="dm_intro_32">
+		<text>Narvi si dobrэ vychovбnн, kam ti slunce nesvнtн, a jdi k vмci! Co chceљ?</text>
+	</string>
+	<string id="dm_intro_33">
+		<text>Odpal, debile!</text>
+	</string>
+	<string id="dm_intro_34">
+		<text>No, tak ti asi taky шeknu ahoj. A co teп?</text>
+	</string>
+	<string id="dm_intro_35">
+		<text>Co se dмje?</text>
+	</string>
+	<string id="dm_intro_36">
+		<text>Hej, nemбљ cigбro?</text>
+	</string>
+	<string id="dm_intro_37">
+		<text>Jak to jde?</text>
+	</string>
+	<string id="dm_intro_38">
+		<text>Na potшesenн rukama si nepotrpнm. Co potшebujeљ?</text>
+	</string>
+	<string id="dm_intro_39">
+		<text>No ty krбvo! Odkud jsi vylezl? No tak, povнdej.</text>
+	</string>
+	<string id="dm_intro_40">
+		<text>Hele, novej kшen dorazil! Jak se vede?</text>
+	</string>
+	<string id="dm_intro_41">
+		<text>Nazdar brбcho! Jdeљ nмkoho odprбsknout? Jen pojп, mбme tady cнlщ dost.</text>
+	</string>
+	<string id="dm_intro_42">
+		<text>Taky tм zdravнm. Chceљ se na nмco zeptat?</text>
+	</string>
+	<string id="dm_intro_43">
+		<text>Nazdar. Buп v pohodм, nic si nezkouљej, jasnэ?</text>
+	</string>
+	<string id="dm_intro_44">
+		<text>Schovбvбm se pшed policajtama, a ty?</text>
+	</string>
+	<string id="dm_intro_45">
+		<text>Jak se mбљ? Dбvбm si padla, co ty?</text>
+	</string>
+	<string id="dm_intro_46">
+		<text>Hej, rбd vidнm, ћe seљ sбm a netбhne se za tebou ocбsek.</text>
+	</string>
+	<string id="dm_intro_47">
+		<text>Nazdar! Ty musнљ bejt v pмknэm prщseru, kdyћ lezeљ sem.</text>
+	</string>
+	<string id="dm_intro_48">
+		<text>No hele koho tady mбme! Smeќбk vнtб vљechny a vљechno, kromм smetн.</text>
+	</string>
+	<string id="dm_intro_49">
+		<text>No to mм poser! Odkud ty seљ, kбmo? Pшisedni, pokecбme.</text>
+	</string>
+	<string id="dm_intro_50">
+		<text>No hele! Nemбљ nбhodou nмjakэ cigбro navнc?</text>
+	</string>
+	<string id="dm_intro_51">
+		<text>Hele! No jeљtм ћe jseљ иlovмk, jinak by ti ustшelil palici. No jo, klнdek, pojп si pokecat.</text>
+	</string>
+	<string id="dm_intro_52">
+		<text>No ty vole! Ty nemбљ strach chodit jen tak sбm?</text>
+	</string>
+	<string id="dm_intro_53">
+		<text>No teda, tebe jsem dlouho nevidмl! Nedбvno jsem si na tebe vzpomnмl.</text>
+	</string>
+	<string id="dm_intro_54">
+		<text>No hele kdo sem pшilezl! Tak jo, povнdej.</text>
+	</string>
+	<string id="dm_intro_55">
+		<text>No nazdar. Pojп sem a povyprбvмj nмco novэho.</text>
+	</string>
+	<string id="dm_intro_56">
+		<text>No do prdele! Novej ksicht v Zуnм! Mi casa su casa, amigo!</text>
+	</string>
+	<string id="dm_intro_57">
+		<text>Hej, neшvi tak, jasnэ? Rychle pokecбme a pak pщjdem od sebe, jasnэ?</text>
+	</string>
+	<string id="dm_intro_58">
+		<text>Copak, brбcho? Co tady dмlбљ? No tak, povнdej.</text>
+	</string>
+	<string id="dm_intro_59">
+		<text>Hej, ty srбиi! Prostм jdi k vмci, nebo zmiz.</text>
+	</string>
+	<string id="dm_intro_60">
+		<text>Hej, ty vypadбљ, jak kdyby ti nмkdo narval do шiti klacek, seљ policajt nebo co?</text>
+	</string>
+	<string id="dm_intro_61">
+		<text>O иem si chceљ pokecat, srбиi?</text>
+	</string>
+	<string id="dm_about_45">
+		<text>Ti stalkeшi jsou pмknн srбиi. Snazљн uћ to fakt bejt nemщћe. Oni dшou a makaj, my na nм pak nabмhnem a je to jak oslниku otшes se.</text>
+	</string>
+	<string id="dm_about_46">
+		<text>Vypadбm jak informaиnн nбstмnka? Todle nenн knihovna, vole.</text>
+	</string>
+	<string id="dm_about_47">
+		<text>Radљi bмћ dбl, srбиi. S takovejma, jako seљ ty, se jб nebavнm, ale moje bouchaиka vбs mб rбda...</text>
+	</string>
+	<string id="dm_about_48">
+		<text>Pokud chceљ nмjakэ historky, jdi si pokecat s prasetem nebo slepsem. Jб se s cizнma nebavнm, zvlбљќ se srбиema.</text>
+	</string>
+	<string id="dm_about_49">
+		<text>Ale co, sakra, tak jб ti nмco povyprбvнm. Mнstnн љйf se jmenuje Joga, vrchnн boss tady vљeho kolem. Mб na zбkladnм svэ vlastnн hnнzdo plnэ drahejch vмcн. Pak je tady Borov - to je barman a pмknм namyљlenej rбdoby aristokrat. Kus ocaп je Agroprom, kde nбs ti posranн stalkeшi a pitomci z Povinnosti chrбnмj pшed monstrama, hehe. Pokud pщjdeљ na druhou stranu, dostaneљ se na mнsto, kde se prodбvaj mнstnн vмci na иernэm trhu. V noci je na trћiљti vнc vмcн, ale taky vнc nebezpeин, pшedevљнm brбchovй Asubeшi. No a kdyћ pщjdeљ jeљtм dбl, dostaneљ se ke Svobodм v Temnэm ъdolн.</text>
+	</string>
+	<string id="dm_about_50">
+		<text>Ty vole, Smeќбk je mнsto, kde komouљi nasypali vљechny moћnэ kontaminovanэ krбmy. Tranzistory, kretйnistory, rotory a dalљн potvory, vљak chбpeљ. No jasnм, nikomu by to k niиemu nebylo, nebejt naљн milovanэ Zуny. Nejspнљ sis vљimnul, ћe tady kљefty s vybavenнm ani opravny nenajdeљ, ale stejnм si musнme svэ krбmy nмjak drћet pohromadм. A dнky tomu je ta hromada radioaktivnнch sraиek jako zlatej dщl! No a radiace, na tu uћ vљichni serou, takћe sem lezou ъplnм vљichni i s kamarбdama, abychom je mohli snбz obrat. Nмkteшн vykopбvaj, jinн obchodujou a pak jsou ti nejlepљн, my, co vybнrбme poplatky.</text>
+	</string>
+	<string id="dm_about_51">
+		<text>Seru na љkolenн zelenбищ, tak neotravuj. Шeknu ti to bleskovм a na rovinu: tohle je naљe zбkladna, zбpadnм ocaп je Agroprom, kde sнdlн Povinnost a ti posranн stalkeшi, na vэchodм je Svoboda - ti jsou celkem v pohodм, ale mбme s nima nмjakэ problйmy. Na sever nechceљ - od emise je to tam samб anomбlie. No a dolщ na jih je Kordon, kde se rve armбda a jeљtм posranмjљн stalkeшi, neћ je normбlnн.</text>
+	</string>
+	<string id="dm_about_52">
+		<text>Smeќбk je nejlepљн plac v Zуnм, pшнsahбm. Dokud seљ silnej a mazanej, bude se ti tady daшit. Jakmile v tмch hromadбch bordelu naљli zajнmavэ vмci, pшiletмli sem stalkeшi, jako by je sem pшitahoval nмjakej magnet. A to zaиaly dobrэ иasy, aspoт pro nбs. Stalkeшi pшijdou, vyhrabou z tмch hroznejch hromad zajнmavэ vмci, a pak nбm je daj, my nemusнme ani zvednou prst. Ty, co se nechaj, poшбdnм zdanнme, ti co dмlaj problйmy nebo nбs nмjak naserou, zotroинme a vrazнme do koncentrбku.</text>
+	</string>
+	<string id="dm_about_53">
+		<text>Tahle pбrty je jen pro ty nejdrsnмjљн! Ћбdnэ srбиe tu netolerujem, jsme tady jen my - profesionбlnн kriminбlnнci. Jasnм, mбme tady i obyиejnэ љmejdy, ale kaћdej sprбvnej mafiбn potшebuje srбиe na љpinavou prбci, ћe jo. Akorбt kurvy nбm tady chybмj.</text>
+	</string>
+	<string id="dm_about_54">
+		<text>Na Smeќбku urиujem zбkony my, a ostatnн se jich drћej. Hlavnн zбkon je, o svou koшist se podмlнљ. Pokud se ti nechce, tak my se postarбme, aby se ti chtмlo. A vмш mi, kdo se tady pokusн vyskakovat, tak toho bude brzo litovat.</text>
+	</string>
+	<string id="dm_about_55">
+		<text>Tady hlнdбme naљe stalkerskэ kopбиe. Obиas se nмkdo snaћн bejt aћ moc chytrej. Chceљ hledat koшist, fajn, ale nezapomeт, ћe Smetiљtм je naљe! Jenom chceme spravedlivej poplatek za naљi pohostinnost. Tak nebuп nasranej, ћe tм pшi vstupu trochu otravovali. Tahle to tady prostм funguje.</text>
+	</string>
+	<string id="dm_about_56">
+		<text>Hej, kriple, zmizni! Bмћ si pokecat s kopбиema, oni ti to vysvмtlej, ћe to pochopнљ i ty.</text>
+	</string>
+	<string id="dm_about_57">
+		<text>My tady mбme na prбci poшбdnм skшнpat vљechny ty srбиe v okolн. Oni z naљн zemм koшistмj, a tak my koшistнme z nich. Starбme se, aby byl Smeќбk hezky v pohodм a civilizovanej, je to jasnэ?</text>
+	</string>
+	<string id="dm_about_58">
+		<text>Tady opravdovн chlapi vydмlбvaj poшбdnэ prachy. A vydмlбvaj je na srбинch, jako seљ ty, jak se ti to lнbн? Pшileze sem nмjakej srби, nemб prachy, nemб kam jнt, takћe ho dokopem, aby kopal a makal na nбs. Prohledбvaj tyhle hromady bordelu a hledaj nмjakэ zajнmavэ kousky, kterэ jim seberem a naљi pшekupnнci je prodaj. Tak to tady funguje.</text>
+	</string>
+	<string id="dm_about_59">
+		<text>To seљ jako nмjakej novinбш, nebo co? Chceљ o nбs napsat do novin? Ha ha ha! No tak jo, poslouchej. My jsme mнstnн rytншi, my vlбdnem Smetiљti. Dбљ nбm podнl a my tм nechбme bejt. Nezaplatнљ, seљ v prdeli. Teп tady mбme takovou malou zlatou horeиku. V tмch hromadбch bordelu jsou schovanэ nмjakэ starэ vмci jeљtм od sovмtщ, co maj teпka cenu svэ vбhy ve zlatм. Takћe kdyћ se zadluћнљ, nebo budeљ dмlat machry, vrazнme tм pшнmo do tбbora. A makat v tбboшe ja asi takovб sranda jako tмћit uran, vљude radiace, a navнc anomбlie. Ale na druhou stranu je to dobrб zprбva, pби se brzy pшestaneљ trбpit. Zdechneљ.</text>
+	</string>
+	<string id="dm_about_60">
+		<text>My se tady starбme o poшбdek a zбkon. Chбpej, aћ moc lidн se chce na Smeќбku napakovat. My jen vybнrбme mэtnэ, fйrovэ a jasnэ. Poskytujem bezpeиnэ pracovnн podmнnky a zajiљќujem bezpeиnost, ale to nмco stojн, coћ je ti snad jasnэ. A ten koncentraиnн tбbor? No, to je mнsto, kde konиej ti nejvмtљн srбиi, pro nм lepљн mнsto nenн. Jsou ъplnм na hovno, my jen posilujem pшнrodnн vэbмr, ћe jo!</text>
+	</string>
+	<string id="dm_about_61">
+		<text>My tomu tady љйfujem, je ti to jasnэ? Sedмli jsme tady jeљtм dшнv, neћ se sem vщbec dostal prvnн stalker. Haha, to иekбnн se vyplatilo.</text>
+	</string>
+	<string id="dm_action_info_27">
+		<text>Seљ snad mщj prбvnнk? Kdyћ se na nмco takovэho zeptбљ na ulici, mщћe to bejt tvoje poslednн otбzka...</text>
+	</string>
+	<string id="dm_action_info_28">
+		<text>Инm mнт toho vнљ, tнm lнp budeљ v noci spбt.</text>
+	</string>
+	<string id="dm_action_info_29">
+		<text>Co je ti vщbec po tom? To je jen moje vмc, a nikomu po tom nic nenн.</text>
+	</string>
+	<string id="dm_action_info_30">
+		<text>Mбm ti ustшelit palici hned, nebo ti mбm nejdшнv vysvмtlit, proи byla ta tvoje otбzka takovб pitomost?</text>
+	</string>
+	<string id="dm_action_info_31">
+		<text>Dмlбm tady fakt dobrэ kљefty. Vidнm kшena, poшбdnм ho pшiskшнpnu, podмlнm se o prachy s partou, nмco mбlo dбm Jogovi, pби ho respektuju, a hotovo. Nмkdy dмlбme vмtљн fuљky, ale neиekej, ћe ti o tom budu nмco vyprбvмt.</text>
+	</string>
+	<string id="dm_action_info_32">
+		<text>Co jako myslнљ tнm, co dмlбm v Zуnм? Schovбvбm se pшed pбr zvмdavejma dшнvмjљнma kamarбdama. Kdyћ jsem byl jeљtм venku, furt po mnм љli, vyptбvali se a pouиovali... a tak jsme se... rozeљli. Doufбm, ћe mi taky nejdeљ dмlat nмjakэ dementnн kбzбnн, ћe ne? Ne? Fajn, tak tбhni nмkam jinam.</text>
+	</string>
+	<string id="dm_action_info_33">
+		<text>Co na tom nechбpeљ? Je to rбj pro chlapi, kteшн vмdмj, jak to chodн. Strбћnн a ostatnн srбиi nejsou problйm, vydмlбvбnн penмz uћ snad ani nemщћe bэt snazљн. Odveп svou prбci dobшe a vydмlбљ balнk.</text>
+	</string>
+	<string id="dm_action_info_34">
+		<text>Dшнv jsem makal jako stalker. Bмhali jsme s kamarбdem po Zуnм, hledali koшist a sotva pшeћнvali. Jednou jsme narazili na kontrolйra a jenom jб jsem mмl dost љtмstн a dokбzal zdrhnout. Postaral jsem se, aby kбmoљ nezщstal zombie, ale slнbil jsem si, ћe uћ se tam nikdy nevrбtнm. Teп to tбhnu s touhle bandou. Celkem to tady jde, dokud si dбvбљ bacha, mнstnн nepatшej k lidem, kterэ by jen tak odpouљtмli, jestli mi rozumнљ.</text>
+	</string>
+	<string id="dm_action_info_35">
+		<text>Co je ti po tom, co? Staин mi na tebe jednou kouknout a jasnм vidнm, ћe mбљ vlastnн problйmy. V tэhle oblasti, kdyћ vнљ moc, mщћeљ taky zaklepat baиkorama mnohem dшнv, neћ by se ti lнbilo. Mimochodem, tvoje baиkory vypadaj fakt fajn, nechceљ mi je dбt, neћ s nima љlбpneљ na anomбlii? Ale no tak, zklidni se, jen si z tebe dмlбm prdel.</text>
+	</string>
+	<string id="dm_action_info_36">
+		<text>Na Smetiљti vљichni, vиetnм mм, dмlaj jedinou vмc - vydмlбvaj a љetшej si na dщchod. Kopбиi makaj, stalkeшi prolнzaj okolн a hledaj koшist, a my od nich vybнrбme danм za to, ћe tady udrћujem poшбdek. Je to pohodovka, mб to svэ vэhody.</text>
+	</string>
+	<string id="dm_action_info_37">
+		<text>Ty si snad myslнљ, ћe seљ nмjakej velkej drsтбk, kdyћ se takhle vyptбvбљ? To, co dмlбm, a to, o иem jsem ochotnej mluvit, jsou dvм naprosto rozdнlnэ vмci.</text>
+	</string>
+	<string id="dm_action_info_38">
+		<text>Obнrбm mнstnн stalkery a kopбиe. Oni se prohrabбvaj naљнm Smeќбkem a hledaj koшist, jб si za to vybнrбm podнl.</text>
+	</string>
+	<string id="dm_action_info_39">
+		<text>Chtмli jsme s kamarбdama vyrazit do Temnэho ъdolн a trochu obrat ty mizery ze Svobody. Ale nemщћem bez Jogova povolenн, on je tady љйf. Nemбm moc nбladu se mu plнst do cesty, tak to zatнm jenom promэљlнme.</text>
+	</string>
+	<string id="dm_action_info_40">
+		<text>K banditщm jsem se pшidal nбhodou. Mмl jsem se stбt stalkerem, ale nмjak to nevyљlo. Ale tohle je celkem v pohodм. Naљetшнm si nмjakэ prachy, poшнdнm si nмjakэ kontakty a dostanu podнl z koшisti na Smetiљti.</text>
+	</string>
+	<string id="dm_action_info_41">
+		<text>To mluvнљ se mnou? Copak ses zblбznil, ћe se ptбљ na takovэ vмci? Asi zavolбm pбr svejch kamarбdщ, ukбћem ti, co tady dмlбme s bezzubejma љtмтatama, kterэ by chtмly kousat.</text>
+	</string>
+	<string id="dm_cool_info_11">
+		<text>Uћ jsem byl ve spoustм lapбkщ, ale tenhle je vљechny trumfuje. Srdce Zуny je pшнmo tady na Smetiљti. Tady si dмlбme vlastnн zбkony. Chceљ ћнt - zaplatнљ, pokud ne, dostaneљ mнsto v koncentrбku, nebo dбvku olova do palice. Je ti to jasnэ?</text>
+	</string>
+	<string id="dm_cool_info_12">
+		<text>Na kterou Zуnu se ptбљ? Tuhle? To je jak dмtskэ hшiљtм v porovnбnн s jinejma lapбkama, kde jsem sedмl. Pro dobrэho chlapa je to ъplnej rбj. Ostnatej drбt a ozbrojenн vojбci? No to nic nenн. Mбme vlastnн armбdu. Mщћem se poflakovat, kde chcem, poљtu z venku nбm nikdo neomezuje, a mщћem chlastat kaћdej den do mrtva, prostм totбlnн pohodiиka! Jedinej problйm je to, ћe tu nejsou ћenskэ. Nelнbн se jim to tady. Obиas mi leze sperma na mozek tolik, aћ mi zaинnajн nмkteшн mutantni pшipadat sexy...</text>
+	</string>
+	<string id="dm_cool_info_13">
+		<text>No ty mбљ odvahu, ptбt se na takovэ vмci. A teп vypadni.</text>
+	</string>
+	<string id="dm_intro_62">
+		<text>Vybral sis љpatnou dobu na prochбzku po Smetiљti, brбcho.</text>
+	</string>
+	<string id="dm_intro_63">
+		<text>Hej, kбmo! Kdybys jen vмdмl, jak mм ti banditi serou...</text>
+	</string>
+	<string id="dm_intro_64">
+		<text>Rбd tм vidнm, brбcho!</text>
+	</string>
+	<string id="dm_intro_65">
+		<text>Љќastnou cestu, brбcho!</text>
+	</string>
+	<string id="dm_intro_66">
+		<text>Zlom vaz, kбmo! Vyhejbej se kulkбm a anomбliнm!</text>
+	</string>
+	<string id="dm_intro_67">
+		<text>Rбd vidнm bratra ve zbrani!</text>
+	</string>
+	<string id="dm_about_62">
+		<text>Prej tady pшed prvnн havбriн bejvala obrovskб dнra. Po vэbuchu v elektrбrnм sem zaиali tahat kontaminovanэ vozidla, vybavenн a dalљн krбmy, a sypat je do jбmy. Bylo toho tolik, ћe tu dнru ъplnм zasypali a jeљtм zbylo. No teп jsme tady my a s nadљenнm to prohrabбvame.</text>
+	</string>
+	<string id="dm_about_63">
+		<text>Kousek odsud je tбbor, kde drћej banditi stalkery, jako jsme my. Radљi bych zdechnul, neћ tam skonиit - nutмj tм kopat љestnбct hodin dennм a posнlaj tм do nejnebezpeиnмjљнch a nejradioaktivnмjљнch ибstн Zуny bez jakэkoli ochrany nebo vybavenн. Krmмj tм zbytkama, mlбtмj... asi chбpeљ, pro nм jsou stalkeшi jen dobytek, na kterэm se mщћou napakovat.</text>
+	</string>
+	<string id="dm_about_64">
+		<text>Pro novбиky to tady nenн snadnэ. Mнstnн bestie si tм klidnм dajн k snнdani a pшekupnнci novбиka s nadљenнm oderou aћ na kost. Kromм toho vљechny љikanujou banditi a ani ostatnн stalkeшi nejsou moc ochotnн poradit nebo nedejboћe pomoct. </text>
+	</string>
+	<string id="dm_about_65">
+		<text>Buп se stalkeшi jako my budou na Smetiљti drћet pohromadм, nebo nбm banditi seberou vљechno, co mбme. Jakmile jim nмco dluћнљ, tak je to jako jнzdenka do toho jejich koncentrбku, kde tм иekб veselej ћivot otroka. Naљtмstн tam nikdo dlouho nevydrћн, staин den kopat v nмjakэ kapse radiace a je po tobм. </text>
+	</string>
+	<string id="dm_about_66">
+		<text>Dneska vlбdnou Smetiљti banditi. Drћej nбs za koule tak pevnм, ћe se nemщћeљ bez povolenн ani vychcat. Chceљ sem pшijнt? Zaplatнљ. Chceљ odejнt? Zaplatнљ jeљtм vнc. I kdyћ najdeљ nмco cennэho, neznamenб to, ћe se s tнm dostaneљ ven ze Smetiљtм. Narazнљ na skupinku banditщ a mбљ dvм moћnosti, buп jim dбљ vљechno, nebo ti oni daj kuklu do palice. Nebo, a to je jeљtм horљн, tм poљlou hrabat v bordelu, dokud nezdechneљ v anomбlii nebo tм nedorazн radiace.</text>
+	</string>
+	<string id="dm_about_67">
+		<text>Na tohle mнsto se sypal radioaktivnн odpad. Natahali sem vљechno, co ve tmм svнtilo, a nikoho to nesralo, dokud se neobjevila Zуna. A teп maj starэ konzervy, rбdia a nбhradnн dнly cenu svэ vбhy ve zlatм, takћe sem leze spousta stalkerщ a zkouљн je vykopбvat. Jenћe banditi si toho vљimli a teп tady tэ dншe љйfujou. Nakonec dostanou vљechny prachy oni - my jen makбme a nic z toho nemбme.</text>
+	</string>
+	<string id="dm_about_68">
+		<text>Tady ovlбdajн vљechno banditi. Oni urиujou pravidla, vybнrajн od kopбищ danм a mastмj si kapsy na prбci ostatnнch. Stalkeшi prolнzajн radiokativnн bordel a vykopбvajн vмci po Sovмtech, ale vydмlaj na tom banditi... Mмl bys to vмdмt... vљak jsi musel zaplatit, abys sem mohl, ne? No, aћ pщjdeљ ven, budou chtнt jeљtм vнc, uvidнљ.</text>
+	</string>
+	<string id="dm_about_69">
+		<text>Jedinou dobrou vмc, kterou mщћeљ na Smeќбku dokбzat, je odsud utэct. Pro poctivэho stalkera tady nic nenн: i kdybys mмl љtмstн a nмco naљe, tak ti to buп seberou banditi, nebo pшi prohrabбvбnн toho bordelu chytneљ nezdravou dбvku radiace. Je mnohem lepљн jнt na vэchod ke Svobodм, do Temnэho ъdolн, nebo na zбpad k povinnosti a normбlnнm stalkerщm v Agropromu. To je naљe Zуna, Zуna stalkerщ. Tohle je ъzemн kriminбlnнkщ a nic dobrэho tм tady neиekб, to mi vмш.</text>
+	</string>
+	<string id="dm_about_70">
+		<text>Mщћeљ tady zbohatnout, to jo. Proи ne? Zrovna vиera jsem slyљel o stalkerovi, kterej naљel celou hromadu cennejch vмcн na Smetiљti. Nevнm, co pшesnм naљel, povнdб se aћ moc rщznejch verzн, ale zbohatnul, to je jasnэ. Taky nмco najdu a pak si koupнm poшбdnэ vybavenн a pшesunu se do divokэho ъzemн, tam najdeљ ty nejlepљн artefakty. </text>
+	</string>
+	<string id="dm_about_71">
+		<text>Zatracenэ Smetiљtм a dementnн zlatб horeиka! Fakt nejhorљн, co se mohlo stбt, nмjakej mizera naљel v tэ hromadм bordelu nмco cennэho! Hned se sem nastмhovali banditi a hezky srazili na kolena vљechny stalkery v okolн. Je ostuda, ћe naљe bratrstvo umoћnilo tмm љmejdщm ovlбdnout Zуnu i nбs. Dokonce tady maj ti mizerovй koncentrбk, kam posнlaj ty, co je naserou. V koncentrбku tм nutмj makat a prohrabбvat radioaktivnн bordel. Musнme odsud vypadnout, to mi vмш.</text>
+	</string>
+	<string id="dm_about_72">
+		<text>Hele, kбmo, инm dшнv vocaп vypadneљ, tнm lнp. Neиekб tм tady nic dobrэho, akorбt danм a poniћovбnн od banditщ, kudla v zбdech nebo pohodlnej flek v koncentrбku. Na tvэm mнstм bych odtud vypadnul, a to fakt rychle.</text>
+	</string>
+	<string id="dm_about_73">
+		<text>Tady je to takovej malej Klondajk v podбnн Zуny. Pochop, kamarбde, vљechno v Zуnм je pod zбmkem, armбda okolн uzamkla celkem tvrdм. Nмkdy je fakt problйm dostat se aspoт k proљlэ konzervм, natoћ k nбhradnнm dнlщm nebo vybavenн. A i kdyћ pшekupnнci nмco mбlo maj, nenн to lacinэ. Tady je to jinэ. Uvnitш tмch hromad bordelu mщћeљ najнt cennэ vмci, a zadarmo. Sem nasypali komouљi vљechno moћnэ, po tom co jim to bouchlo v Иernobylu. Jasnм, trochu to svнtн, a musнme banditщm dбt podнl ze vљeho, co najdem... ale stejnм se toho dб najнt spousta! Takћe popadni lopatu, kбmo, a zaиni kopat a kopat, dokud si nenajdeљ vlastnн zlatou ћнlu!</text>
+	</string>
+	<string id="dm_about_74">
+		<text>Pokud jeљtм poшбd nevнљ, co je Smetiљtм zaи, tak jб ti to povнm. Stalkeшi tady vyhrabбvajн vмci a banditi jim je berou. Dokonce si ti mizerovй postavili zбkladnu. Teп, kdyћ ovlбdaj celэ Smetiљtм, se jim ћije mnohem lнp, nedмlaj nic, jen obнraj kopбиe a bohatnou. Svinм! No a pak tady mщћeљ najнt nмco jako bleљн trh. Pшekupnнci vykupujou vмci od kopбищ a prodбvajн uћiteиnэ, nмkdy dokonce unikбtnн vмci. Vмtљina kљeftщ se dмlб v noci, takћe si dбvej bacha, vмtљina pшekupnнkщ ti s nadљenнm ve tmм zkusн podstrиit nмjakej љmejd. Takovэ "obchody" jim jdou fakt dobшe.</text>
+	</string>
+	<string id="dm_about_75">
+		<text>Tohle je mнsto, kde chamtivн a silnн ћijou z chamtivэch a hloupэch. Tak se nмjak pшihodilo, ћe tyhle hromady kontaminovanэho bordelu obsahujou, kromм naprosto zbyteиnejch krбmщ, nмkterэ vмci, kterэ jsou v Zуnм opravdu cennэ. To sem samozшejmм pшitahuje pitomce s velkэmi sny, jak hroznм zbohatnou. Problйm je v tom, ћe tady zbohatnou jenom silnн. Jб byl hlupбk a za svou hloupost jsem zaplatil i s ъroky.</text>
+	</string>
+	<string id="dm_action_info_42">
+		<text>Vмtљinou kopu, ale v poslednн dobм musнљ bэt fakt opatrnej, protoћe si kdekdo chce pшivydмlat na tom, co najdeљ. Dшнv byli jedinej problйm banditi, ale dneska mщћe bejt stejnм nebezpeиnej stalker vedle tebe. Nenн to jak za starejch dobrejch иasщ, kdys klidnм dal svou poslednн konzervu jinэmu stalkerovi a vмdмls, ћe kdyћ bude potшeba, udмlб to samэ pro tebe. Ale teп... fuj!</text>
+	</string>
+	<string id="dm_action_info_43">
+		<text>Nic moc. Stejnм jako ostatnн kopбиi se snaћнm nмjak pшeћнt a vydмlat si aspoт na chleba, konzervu a pбr nбbojщ. Kdyћ budu mнt љtмstн, zbohatnu a vypadnu odsud, ale nejdшнv bych se chtмl dostat k plniиi pшбnн, na to uћ иekбm fakt hodnм dlouho.</text>
+	</string>
+	<string id="dm_action_info_44">
+		<text>Jsem tady novej... jeљtм poшбd se rozhoduju, co budu dмlat. Musнm si fakt dбvat bacha, novн chlapi tady nejsou branн jako lidi. Vљichni mluvмj o hromadбch zlata, ale jб tady moc penмz nevidмl. Moћnб bych na to mмl zapomenout a mнsto toho se pшidat k Povinnosti...</text>
+	</string>
+	<string id="dm_action_info_45">
+		<text>Jsem jako vљichni ostatnн tady: doufбm v zбzrak. Moћnб se mi podaшн vyhrabat nмco tak cennэho, ћe bych si mohl vykoupit od banditщ svobodu, a pшitom mi zщstane dost, abych se stal bohatэ. Co, myslнљ ћe jen tak planм snнm? No uћ se to stalo dшнv, mщћe se to stбt zas. Slyљel jsem o kopбиovi, kterэ naљel krabici vojenskэch rбdiн. Prej je z nмj teп uznбvanej stalker, s nacpanэma kapsama a dobrэm vybavenнm. Ale teda je fakt, ћe jsem ho nikdy nepotkal, stalo se to dшнv, neћ jsem sem dorazil.</text>
+	</string>
+	<string id="dm_action_info_46">
+		<text>Hledбm v odpadcнch nмco cennйho. Je tady hromada vмcн z dob Sovмtщ, vљechno od konzerv s jнdlem aћ po dieselovэ motory. Takovэ vмci jsou v Zуnм celkem cennэ, staин ti mнt trpмlivost a zбsobu lйkщ proti radiaci.</text>
+	</string>
+	<string id="dm_action_info_47">
+		<text>Musнm splatit dluh. Pokud nenajdu banditщm dost koшisti, udмlajн ze mм otroka a donutн mм kopat na tмch nejnebezpeиnмjљнch mнstech, a to nenн sranda.</text>
+	</string>
+	<string id="dm_action_info_48">
+		<text>Byl jsem na cestм do Temnэho ъdolн, kdyћ mi ti љmejdi u vstupu sebrali vљechny penнze. Abych se dostal ven, musнm zaplatit taky. Nechci u ostatnнch stalkerщ vypadat jako chudej uboћбk, tak se snaћнm nмco mбlo vydмlat, neћ vyrazнm dбl. Problйm je v tom, ћe инm dэl pracuju, tнm vнc mэ dluhy narщstajн. Ale to je v pohodм, brzo se odsud dostanu.</text>
+	</string>
+	<string id="dm_action_info_49">
+		<text>Chtмl jsem se pшidat k Povinnosti u Agropromu. Jeden tэpek mi шнkal, ћe mi tam pomщћe, ale kdyћ jsme se dostali ke Smetiљti, utekl i s mэma penмzma. Teп se potuluju tady, snaћнm se vydмlat dost na rozumnэ vybavenн a zbranм. Nenн to snadnэ, to ti povнdбm. Banditi vмdн, ћe nenн chytrэ nechat kopбиe vyzbrojit se, takћe po nбs tvrdм jdou. Sehnat tady bouchaиku a munici je tмћkэ jako prase.</text>
+	</string>
+	<string id="dm_action_info_50">
+		<text>Mншili jsme s kamarбdem k Bariйшe, za pбr stalkerama, kterэ jsme znali, ale uvнzli jsme na Smetiљti. Kбmoљ byl natolik pitomej, ћe odmнtnul zaplatit a zaиal se s banditama hбdat. Oni se nehбdali, prostм ho sebrali jako otroka a hotovo. No a jб tady teпka dшu, abych vydмlal dost a mohl odsud vypadnout. Uћ mбm dokonce promyљlenou cestu a nabral jsem nмjakэ zkuљenosti, ale sehnat dost penмz nenн snadnэ, danм jsou tady ostrэ, a kromм toho sehnat zbranм a munici je skoro nemoћnэ, protoћe je banditi na vstupu zabavujou.</text>
+	</string>
+	<string id="dm_action_info_51">
+		<text>Mщj brбcha se ztratil v Zуnм. Vydal jsem se ho hledat, ale banditi mм zastavili. Pokecal jsem s nмkolika mнstnнma stalkerama a ti mi шekli, ћe brбcha tady chvнli byl. Teп se snaћнm najнt, co jenom mщћu... a snad pak najdu i jeho. Kdo vн, tшeba jeљtм ћije.</text>
+	</string>
+	<string id="dm_action_info_52">
+		<text>Mбm pocit, ћe tady hrabu uћ roky, snaћнm se najнt nмco cennмjљнho neћ starou konzervu. Zatнm jsem nemмl љtмstн, ale tбmhle Mнќa uљatej naљel motor a nмjakэ souибstky hned vedle mм. To je docela sluљnej nбlez, byl by jeљtм lepљн, kdyby naљel nмkoho, kdo to od nмj koupн. Hahah! No nic, urиitм brzo vyhrabu nмco uћiteиnэho.</text>
+	</string>
+	<string id="dm_action_info_53">
+		<text>Vlastnм jsem byl na cestм k Agropromu, ale chytla mм ta mнstnн zlatб horeиka. Naљel jsem pбr dobrэch vмcн, kterэ jsem prodal za sluљnэ prachy. A je fakt snazљн vydмlat, neћ zkouљet vytбhnout artefakty z anomбliн. Hlavnн je, ћe musнљ hlнdat ukazatel radiace, jinak budeљ po zbytek svэho krбtkэho mizernэho ћivota svнtit ve tmм jako vбnoиnн stromeиek...</text>
+	</string>
+	<string id="dm_action_info_54">
+		<text>Hledбm nмjakou koшist. Pшiљli jsme sem ve skupince z vesniиky novбиkщ, kdyћ jsme se doslechli, ћe na Smetiљti naљli nмjakэ starэ cennэ vмci. Шнkali jsme si, ћe neћ se nauинme hledat artefakty, pшiљli bychom o vљechnu zбbavu. Kdyћ o tom teп pшemejљlнm, fakt jsme mмli zщstat ve vesniиce. Dva chlapi chcнpli rovnou a dalљн makб v koncentrбku... kdo vн, moћnб uћ ho radiace taky zabila. Ty vole, kdybych se jen dokбzal dostat k bouchaиce, tak bych tмm banditщm ukбzal... pшipadajн mi jako poшбdnн idioti, ale majн to tady dobшe oљйfovanэ. Drћej nбs oddмlenэ a dostat se ke zbranнm je skoro nemoћnэ. Kopej si jak chceљ, ale rozhodnм si dбvej bacha, abyste nebyli vнc jak tшi najednou. Шнkбm ti, stalkeшi by se mмli dбt dohromady a vyhnat ty svinм ocaп.</text>
+	</string>
+	<string id="dm_cool_info_14">
+		<text>Slyљel jsem od pбr stalkerщ, kteшн byli nмjakou dobu v Agropromu, ћe mб Povinnost fakt problйmy s pшнљerama. Propadly se nмjakэ starэ katakomby nebo co, a teп odtamtud leze banda pмknм hnusnэch potvor.</text>
+	</string>
+	<string id="dm_cool_info_15">
+		<text>Љel jsem s kamarбdem k vojenskejm skladiљtнm - po emisi to zaиalo bejt fakt zlэ. Armбda dostala tvrdм na hubu, Svoboda se snaћн obsadit jejich zбkladnu, a ze stшedu Zуny vylejzaj pшнљery a monoliќбci, kteшн zabнjejн po cestм, na co pшijdou. Obиas mщћeљ na rбdiu slyљet kousky rozhovoru, ale samotnэ lidi nikde nenajdeљ. No a morбlnн pouиenн z toho je, ћe инm dбl do Zуny se vydбљ, tнm vмtљн problйmy musнљ pak шeљit.</text>
+	</string>
+	<string id="dm_cool_info_16">
+		<text>Po emisi jsou teп prej dostupnэ mнsta, na kterэ se dшнv nedalo dostat kvщli anomбliнm, jako je Иervenej les a baћiny. No ale zas na druhou stranu se teп nedб dostat na mнsta, kde to pшedtнm љlo. Tшeba do Rostoku uћ se dostat nejde... a to tam pшed emisн byla spousta stalkerщ... nikdo nevн, co se s nima stalo.</text>
+	</string>
+	<string id="dm_intro_68">
+		<text>Hej!</text>
+	</string>
+	<string id="dm_intro_69">
+		<text>Hej, ћoldбku. Jestli chceљ bojovat se zplozenci Zуny, pak je Povinnost tvэm spojencem.</text>
+	</string>
+	<string id="dm_intro_70">
+		<text>Hej! Pшidej se k Povinnosti - frakci pro opravdovэ chlapy.</text>
+	</string>
+	<string id="dm_intro_71">
+		<text>Dбvej si tady pozor, drћ se hlavnнch cest. Jeden blbej krok a nмjakб potvora si tм dб k snнdani.</text>
+	</string>
+	<string id="dm_intro_72">
+		<text>Hej!</text>
+	</string>
+	<string id="dm_intro_73">
+		<text>Zdravнm, pшнteli. Radнm ti, dбvej si tady pozor. Bejt pod ъtokem tшikrбt иtyшikrбt za noc nenн takovб sranda, jak to vypadб.</text>
+	</string>
+	<string id="dm_intro_74">
+		<text>Tohle nenн zrovna vhodnб doba na nбvљtмvu, stalkere. Mбme na krku opravdovou vбlku.</text>
+	</string>
+	<string id="dm_intro_75">
+		<text>Hej! Mмj oиi na љќopkбch, protoћe mнstnн bestie jsou fakt mazanэ, staин chvнli nedбvat pozor a ani neuvidнљ, co tм zabilo!</text>
+	</string>
+	<string id="dm_intro_76">
+		<text>Zdravнm, pшнteli. Vћdycky rбd vidнm jinэho stalkera.</text>
+	</string>
+	<string id="dm_intro_77">
+		<text>Copak? Tady mбљ jedno velkэ ukrajinskэ pшivнtбnн.</text>
+	</string>
+	<string id="dm_intro_78">
+		<text>Hej, brбcho! Jestli se chceљ na nмco zeptat, tak do toho.</text>
+	</string>
+	<string id="dm_about_76">
+		<text>Co шнct? Jen se rozhlнdni kolem a uvidнљ vљechno, co je tady k vidмnн.</text>
+	</string>
+	<string id="dm_about_77">
+		<text>Ty mizernэ potvory na nбs lezou ze vљech stran, je to jako by jich bylo vнc za kaћdou, kterou zabijeme! Ale co, stejnм zvнtмzнme. Jen potшebujem poшбdnэ zbranм a pбr dobrejch chlapщ. Mнt je, tak to tady poшeљнme za chviliиku a pomstнme svэ padlэ bratry. </text>
+	</string>
+	<string id="dm_about_78">
+		<text>Tohle mнsto je prokletэ, to ti povнdбm. Ne jen Agroprom, ale celб Zуna. Poшбd bojujeme, ale proti komu? Normбlnн potvory se takhle rychle pшece mnoћit nemщћou! Dneska je zmasakrujem, o to vнc je jich druhej den.</text>
+	</string>
+	<string id="dm_about_79">
+		<text>Hele, tady nechytneљ nic kromм kulky. V noci na nбs lezou obrovskэ bandy mutantщ, a my je zahбnнme. Naљe zбkladna v barбku dшнvмjљнho vэzkumnэho institutu, to uћ je jinej pшнbмh. Najdeљ tam bar, pшekupnнka, opravnu a dalљн vмci - vљak uvidнљ sбm. Na ъzemн neutrбlщ si mщћeљ odpoиinout a nechat si opravit bouchaиky, pokud s nima teda nejseљ ve sporu. Љйfuje jim Orest, pokud se nepletu. No a pokud chceљ odsud vypadnout, tak na vэchod je Smetiљtм, na severu jezero Jantar a zбkladna vмdбtorщ.</text>
+	</string>
+	<string id="dm_about_80">
+		<text>Dшнv tady bejval vэzkumnej institut, kterej se jmenoval, no jak jinak, vэzkumnej institut Agroprom. Aќ uћ se pouћнval dшнv k иemukoli, teпka je z nмj naљe zбkladna. Naљнm velitelem je generбl Krylov, ale my mu prostм шнkбme Komodor. Ne pшнmo do ksichtu, to samozшejmм ne. Pak je tady taky zбkladna neutrбlщ, v opuљtмnэ tovбrnм. Pokud zamншнљ na jih, dostaneљ se do baћin. Na vэchodм je Smetiљtм, teп je obsazenэ banditama. Ti hajzlovй zneuћнvaj toho, ћe nemбme иas se o nм prбvм teп jнt postarat. Na severu je jezero Jantar. Prej je tam nмjakэ divnэ zбшenн, kterэ mмnн lidi na zombбky. Je fakt, ћe jich z toho smмru иasto spousta ъtoин, takћe to moћnб nejsou jen povнdaиky. </text>
+	</string>
+	<string id="dm_about_81">
+		<text>Chceљ si poslechnout pшнbмhy o dobrodruћstvн stalkerщ? No tak to jsi pшiљel na љpatnэ mнsto, chlapиe. Tady je to tak reбlnэ, jak to jen jde. Kaћdou noc je tady tolik monster, ћe si ani nestaинme prбt posranэ kalhoty. Vidнљ ty dнry? Tбmhle, ty dнry v zemi? No, jakmile se setmн, tak z tмch vylezou a povнdбm ti, nenн to hezkэ. Nechodмj po jednom, nebo jen po pбr... kdyћ pшijdou na veинrek, jdou do toho naplno, sakra jo. Zabнjнme kolik jich to jen jde, ale nevypadб to, ћe by to k nмиemu bylo. Nмkde tam v podzemн musн bэt nмjakej zatracenej inkubбtor... Vybombit to tady celэ atomem je podle mм to nejlepљн a jedinэ, co se s tнm dб udмlat!</text>
+	</string>
+	<string id="dm_about_82">
+		<text>Je to tady pмknм horkэ, to ti nekecбm! Minulej tejden jsme se vraceli na zбkladnu a nechali tady pбr chlapщ. V noci mrchy zaъtoиily, to je tady normбlnн, ale kdyћ jsme se sem rбno vrбtili, nebylo tady nic. Ani stopa po naљich, ћбdnэ mrtvoly, ani lidн, ani potvor... jen krev, prбzdnэ rozervanэ kusy brnмnн a stopy v zemi. </text>
+	</string>
+	<string id="dm_about_83">
+		<text>Uћ mм to tady unavuje. Jsme tady иert vн kolik tэdnщ a s kaћdэm ъtokem pшнљer je to jen horљн a horљн. Mбm pocit, ћe uћ ve mnм nezщstбvб dost vzteku, abych se jim jeљtм postavil, o nedostatku munice ani nemluvнm. Nмkdy mбm prostм chuќ odhodit bouchaиku a jнt ty svinм љkrtit holejma rukama. Moћnб se nбm ty potvory hrabou v hlavбch? Ale co, brzo je vљechny postшнlнme, tak иi tak.</text>
+	</string>
+	<string id="dm_about_84">
+		<text>Jednou jsme po nбjezdu dostali zprбvu od naљich z Agropromu - "SOS! Pomoc, jsou vљude kolem!" a pak jsme slyљeli na rбdiu jen stшelbu, шev a vэkшiky. Bмhem pбr minut jsme posbнrali dvacet chlapщ a poslali je tam na pomoc, ale neћ jsme se tam dostali, vљude bylo mrtvo a ticho, nikde ani ћivбиka. Jen blikajнcн baterka pohozenб na zemi. Kdyћ vyљlo slunce, snaћili jsme se sledovat stopy, ale vedly do podzemн institutu. A kdyћ se po nedбvnэm nбjezdu tunel sesypal, mмli jsme strach zkusit jнt dovnitш. Nemusнm шнkat, ћe naљe uћ jsme nikdy nevidмli.</text>
+	</string>
+	<string id="dm_about_85">
+		<text>Seber si svэ otбzky a narvi si je nмkam, kбmo. Uћ tak se cнtнm dost mizernм. Kaћdou noc o nмkoho pшijdem, nмkdo padne v boji, jinej zmizн. Nмkdy dorazнљ rбno vystшнdat pozici a nenн tam nikdo, jen doutnajнcн ohniљtм a mrtvэ ticho. Fakt to hodnм drnkб na nervy, to mi vмш. Tak bмћ svejma otбzkam otravovat nмkoho jinэho. My bojovnнci z Povinnosti nepotшebujem tvou pomoc se zblбznмnнm se, zvlбdбme to sami.</text>
+	</string>
+	<string id="dm_about_86">
+		<text>Vљude kolem mбme pшedsunutэ stanoviљtм. Kaћdou noc vylezou potvory a je jich tolik, ћe ani nemusнљ mншit, staин to poшбdnм kropit. Vylнzajн z dмr v zemi a my se je snaћнme zahnat zpбtky. Odkud pшichбzн? Иert vн...</text>
+	</string>
+	<string id="dm_about_87">
+		<text>Mutanti vylнzaj z pod Agropromu. Шekl bych, ћe kdyћ se naљi chlapi pokouљeli vyhodit do vzduchu podzemnн tunely, tak se to celэ propadlo a prorvalo dнru k hnнzdu mutantщ. Uћ ani nepoинtбme, kolik jsme jich pozabнjeli. Hele, nejseљ nбhodou od Svobody, ћe ne? Tvщj ksicht mi sakra hodnм pшipomнnб jednoho tэpka, kterэho jsem kdysi znal... no nic, dбvej na sebe bacha.</text>
+	</string>
+	<string id="dm_about_88">
+		<text>Seљ poprvэ v Agropromu, co? No tak poslouchej. Mбme zбkladnu ve starэm vэzkumnэm institutu. Starou tovбrnu drћej neutrбlnн stalkeшi. Obиas na nбs ъtoиej zombбlovй od jezera Jantar, ze severu, z podzemн furt vylнzaj mutanti. Dбl na vэchod najdeљ Smetiљtм a kdyћ pщjdeљ na jih, najdeљ baћiny.</text>
+	</string>
+	<string id="dm_about_89">
+		<text>Mбme tady docela sluљnou zбkladnu, o tom nepochybuj. Stшelnici, zoo, Mнrumilovnej Atom, to je mнstnн bar, prostм vљechno, co chlap potшebuje k ћivotu. Ale bordel tady nedмlбme, disciplнna je tady maximбlnн!</text>
+	</string>
+	<string id="dm_about_90">
+		<text>Agroprom bэval vэzkumnej institut. Samozшejmм kdyћ se Zуna objevila, tak se s vэzkumem tak nмjak pшestalo, ћe jo. Ha ha. Mнsto toho ten barбk pouћнvбme jako zбkladnu na odrбћenн ъtokщ zplozencщ Zуny. Drћнme tady lajnu, snaћнme se zastavit monstra, kterэ lezou z podzemн. Bojujeme, abychom zachrбnili ћivoty ostatnнch stalkerщ, nмkdy za cenu svэch vlastnнch.</text>
+	</string>
+	<string id="dm_about_91">
+		<text>Dшнv to tady bejvalo snazљн, vнљ? Jasnм, byly tady pшнљery, ale ty jsme zvlбdali. Dneska je to fakt zlэ. Kaћdou noc tмch mrch postшнlнme tucty, ale инm vнc jich zabijeme, tнm vнc jich pшileze dalљн noc. Chcнpбme tady jako mouchy po biolitu.</text>
+	</string>
+	<string id="dm_about_92">
+		<text>My - tнm myslнm Povinnost - bojujeme s potvorama, kterэ se snaћн dostat na povrch, tak nemбme moc иas na kecy, doufбm, ћe to chбpeљ. Pokud chceљ pohodovou akci, jdi k zбkladnм neutrбlщ v opuљtмnэ tovбrnм, nebo mщћeљ zщstat tady a pomoct nбm, zkuљenн bojovnнci jsou tady vћdycky vнtanн. Nбљ velitel ti dobшe zaplatн za pomoc, kterou Povinnosti poskytneљ.</text>
+	</string>
+	<string id="dm_action_info_55">
+		<text>Ty seљ nмjakej zvмdavej, co? Chceљ vмdмt, proи stojнme proti Zуnм? Proto! Je to svatб vбlka, nic vнc, nic mнт! Buп vyhrajeme, nebo prohrajeme, nenн nic mezi, se Zуnou se nedб vyjednбvat. A tнm pбdem to znamenб, ћe buп seљ s nбma, nebo proti nбm.</text>
+	</string>
+	<string id="dm_action_info_56">
+		<text>Jak to tak asi vypadб? Nemбm co lepљнho na prбci, tak jsem si poшнdil konниek, malovбnн. Jen poиkej, aћ se setmн a dorazн иerstvб barva. Synu, je to vбlka proti mutantщm, opravdovб vбlka... krev, stшeva, to vљechno. Musнme alespoт jednou poшбdnм zatlaиit a ty mizernэ mutanty dorazit. Tнm myslнm, ћe jich prostм nemщћe bэt nekoneиno, ћe ne?</text>
+	</string>
+	<string id="dm_action_info_57">
+		<text>Bojuju se Zуnou. Chceљ vмdмt proи? No, pшedstav si, ћe ti nмjakб svinм vleze do domu, usadн se v rohu a zaиne tм pomalu i s rodinou vytlaиovat ven. Co bys v takovэ situaci udмlal? Popadneљ toho zasrance a vykopneљ ho, ne? No a to tady v podstatм dмlб Povinnost. Naљнm ъkolem je zahnat Zуnu tam, odkud vylezla, a nejlepљн zpщsob, jak to udмlat, je otevшenб vбlka. Co, mбљ snad lepљн nбpad?</text>
+	</string>
+	<string id="dm_action_info_58">
+		<text>Bojuju s potvorama, kterэ nбm brбnмj v noci spбt. Myslнm, ћe je povinnostн kaћdэho stalkera hubit zrщdy Zуny. Nechбpu, jak si nмkdo mщћe myslet opak. Kdyћ vшed nelйинљ, tak pak trpн celэ tмlo, ne? No a tyhle potvory by se chtмly rozљншit po celэ zemi. Pшedstav si budoucnost pro naљe dмti - koukneљ nalevo, monstrum, koukneљ napravo, anomбlie, to si pak nevybereљ.</text>
+	</string>
+	<string id="dm_action_info_59">
+		<text>Zуna je zlo, synu. Zlo, kterэ visн nad naљн planetou jako popravин sekera nad krkem odsouzence. Problйm je v tom, ћe to ne kaћdej chбpe. Tмch pбr, co to pochopilo, se dalo dohromady a zaloћilo Povinnost, skupinu, kterб se snaћн zabrбnit, aby se to zlo jeљtм vнc rozљншilo. Vidмls, kolik mutantщ odpravнme kaћdej den, pшedstav si, co by se stalo, kdybychom je nechali vylнzt ze Zуny. V podstatм jsme poslednн obrannб linie lidstva na tэhle planetм a jб opravdu nechбpu, jak vщbec nмkdo mщћe stбt proti nбm a nechбpat tak zбkladnн fakta.</text>
+	</string>
+	<string id="dm_action_info_60">
+		<text>Plnнm svou povinnost vщиi lidstvu, a nejsou to jen tak nмjakэ kecy, je to pravda. Pшed инm lidstvo zachraтuju? Pшed Zуnou a jejнmi zplozenci. Musнme zniиit zdroj tohohle zla a nбkazy dшнv, neћ zniин nбs.</text>
+	</string>
+	<string id="dm_action_info_61">
+		<text>Bojuju po boku svejch soudruhщ proti mutantщm. V poslednн dobм je tмch svinн vнc neћ dost. Navнc sem obиas od jezera Jantar lezou bandy zombiн a o ty se musнme postarat taky. Takћe pokud se chceљ pшidat k nejlepљнmu bojovэmu klanu љiroko daleko, Povinnost je tady pro tebe.</text>
+	</string>
+	<string id="dm_action_info_62">
+		<text>Snaћнm se rozhodnout, kterou bestii pшinэst Inkvizitorovi. Vede zoo v naљн zбkladnм, mб tam v klecнch vzorky mнstnн fauny. S radostн bych mu tam dotбhnul kontrolйra, ale ten by z nбs ze vљech nejspнљ nadмlal zombie, pokud by se nбm ho podaшilo dostat ћivэho.</text>
+	</string>
+	<string id="dm_action_info_63">
+		<text>K Povinnosti jsem se pшidal nedбvno, a bylo to nejlepљн rozhodnutн, jakэ jsem kdy v ћivotм udмlal. Chlapi jsou profнci a klan je disciplinovanej a dobшe organizovanej.</text>
+	</string>
+	<string id="dm_action_info_64">
+		<text>Jsem tady novej, poшбd se snaћнm pшijнt na to, jak to tady funguje. Dшнv jsem chodil po Zуnм sбm a teп se uинm krejt zбda tмch, kteшн se v tэhle tvrdэ dobм snaћej pшeћнt se mnou. </text>
+	</string>
+	<string id="dm_action_info_65">
+		<text>Dмlбm to, co se mi rozkбћe. Je to jako v armбdм. Mбme velitele, dщstojnнky a normбlnн vojcly. Vљechno je naprosto jasnэ. Poslouchej rozkazy a moћnб dokonce pшeћijeљ. </text>
+	</string>
+	<string id="dm_action_info_66">
+		<text>Bojuju s tмma zatracenejma potvorama. Co jinэho ti mбm шнct? Uћ mм unavuje, jak na nбs v noci furt ъtoиej, ale to bude v pohodм, nмjak to vyшeљнme. Nakonec najdem srdce Zуny a skonинme to s tou zrщdnostн jednou pro vћdycky.</text>
+	</string>
+	<string id="dm_action_info_67">
+		<text>Spousta mejch kamarбdщ se dala k Povinnosti, tak jsem se taky pшidal. Trvalo mi pбr mмsнcщ, neћ jsem se koneиnм rozhodnul, nebyl jsem si jistej, jestli udмlбm dobшe, ale teп kdyћ si vzpomenu na svэ pochyby, musнm se smбt! Bejt v Povinnosti je super, a taky mnohem bezpeиnмjљн, neћ se potulovat Zуnou na vlastnн pмst.</text>
+	</string>
+	<string id="dm_cool_info_17">
+		<text>Nic dobrэho. Kaћdej den je to horљн a horљн, zvlбљќ po velkэch emisнch. Zуna je nasranб a zaинnб bejt na lidi zlб. Monstra jsou rychlejљн, nasranмjљн a nemilosrdnмjљн. K tomu pшidej fakt, ћe klany vбlин mezi sebou, a celkovej obrбzek nevypadб moc dobшe. Jedna z naљich part vyrazila do Zуny... prej se tam otevшely novэ cesty na novэ ъzemн.</text>
+	</string>
+	<string id="dm_cool_info_18">
+		<text>Zуna je vћdycky jinб. Vћdycky najdeљ nмco novэho, ale je to chaotickэ. Je na иase, aby Povinnost prosadila v Zуnм aspoт nмjakej poшбdek. Jakmile se Zуna po emisi zmмnila, zaиaly boje - aby se urиilo, kdo bude љйfovat иemu. Pokud bychom zabrali pбr novэch oblastн, tak bychom nastolili rovnovбhu sil pro vљechny skupiny. No, moћnб aћ na Svobodu. No stejnм pщlka naљich chlapщ vyrazila hloubмjc do Zуny.</text>
+	</string>
+	<string id="dm_cool_info_19">
+		<text>Prej u baћin ћije novej druh mutanta. Prej vypadб hodnм jako upнr, akorбt je nebezpeиnмjљн. Pohybuje se tiљe kшovнm, hledб koшist, a pak najednou bum, uћ mб mrtvolu v paшбtech. Nejhorљн na tom je, ћe dшнv ћili jen kolem baћin, ale prej se jich pбr objevilo i tady nedaleko.</text>
+	</string>
+	<string id="dm_cool_info_20">
+		<text>Prej uћ nenн spousta anomбliн a artefaktщ vщbec vidмt. Шekl bych, ћe emise napumpovala do Zуny spoustu anomбlnн energie, coћ dбvб anomбliнm a artefaktщm novэ vlastnosti. Na tvэm mнstм bych si dбval bacha, teп uћ prostм nejde jen tak bмhat po Zуnм. Dneska je dobrej detektor rozdнl mezi ћivotem a smrtн, ale pokud chceљ najнt fakt dobrэ kousky, radљi si seћeт co nejlepљн. Pamatuj na to a dej na sebe bacha.</text>
+	</string>
+	<string id="dm_intro_79">
+		<text>Hej, nazdar!</text>
+	</string>
+	<string id="dm_intro_80">
+		<text>Jak se vede, brбcho!</text>
+	</string>
+	<string id="dm_intro_81">
+		<text>Guten tag! Nicht schiessen...tady jsme vљichni kamarбdi.</text>
+	</string>
+	<string id="dm_intro_82">
+		<text>Mбљ pro mм otбzku, stalkere?</text>
+	</string>
+	<string id="dm_intro_83">
+		<text>Potшebujeљ poradit?</text>
+	</string>
+	<string id="dm_intro_84">
+		<text>Vнtej, pшнteli.</text>
+	</string>
+	<string id="dm_intro_85">
+		<text>Co pro tebe mщћu udмlat?</text>
+	</string>
+	<string id="dm_intro_86">
+		<text>Pokud seљ v Temnэm ъdolн poprvэ, zastav se na zбkladnм Svobody. Dб se tam uћнt celkem dobrб prdel, zvlбљќ kdyћ poslouchбљ, jak se hбdб jejich mechanik s Aљotem.</text>
+	</string>
+	<string id="dm_intro_87">
+		<text>Hej, brбcho!</text>
+	</string>
+	<string id="dm_intro_88">
+		<text>Vнtej, pшнteli!</text>
+	</string>
+	<string id="dm_intro_89">
+		<text>Vнtej v zemi svobodnэch stalkerщ!</text>
+	</string>
+	<string id="dm_about_93">
+		<text>Tohle je nejlepљн mнsto v Zуnм, protoћe je tady zбkladna Svobody. Koho serou mutanti a anomбlie? Po pбr panбcнch uћ nenн problйm ani vortex, a pokud si chceљ dбt panбka, tak jsi pшiљel na sprбvnэ mнsto!</text>
+	</string>
+	<string id="dm_about_94">
+		<text>Temnэ ъdolн je ъtoиiљtм svobodnejch stalkerщ. Tady ti nikdo nebude kбzat o povinnosti a morбlce. V opuљtмnэ tovбrnм najdeљ nejlepљн klan v Zуnм, a fakt bys mмl uvaћovat, jestli se nepшidat! Mбme tady dobrэ mнsto. Na zбpad odsud je Smetiљtм, Kordon je jiћnм, na severu najdeљ vojenskэ skladiљtм.</text>
+	</string>
+	<string id="dm_about_95">
+		<text>Hlavnн atrakce v ъdolн je zбkladna Svobody. Nemщћeљ ji minout, prostм se koukej po velkэ tovбrnм. Nikdo nedokбћe opravit bouchaиku nebo brnмnн tak dobшe jak strejda Jar. Pokud chceљ dobrэ ceny na vybavenн, tak se stav za Aљotem. No a pokud si chceљ jen oddбchnout, zkus bar, Hlt Svobody. Maj poctivou mнru, a taky se tam dб sehnat prбce.</text>
+	</string>
+	<string id="dm_about_96">
+		<text>Prбvм teп mбme celkem problйmy - nмkdo zabнjн naљe po tuctech. Vљichni иlenovй Svobody, kteшн nemaj jinэ ъkoly, byli povolanн do Ъdolн, aby pomohli odhalit aspoт identitu ъtoиnнka. Zaиali jsme hlнdat i vstupy... v poslednн dobм prostм nemщћeљ bejt moc opatrnej.</text>
+	</string>
+	<string id="dm_about_97">
+		<text>Ъdolн je plnэ starэch opuљtмnэch tovбren a prej jsou tady dokonce v podzemн nмjakэ laboratoшe, samozшejmм taky opuљtмnэ. No, nevнm jak pod zemн, ale nad zemн jsme si zшнdili zбkladnu, v jednэ z tovбren. Aћ budeљ moct, stav se v naљem baru, uћijeљ si to, na to si mщћeљ vsadit.</text>
+	</string>
+	<string id="dm_about_98">
+		<text>Temnэ ъdolн? Co шнct? Ve vyprбvмnн pшнbмhщ nejsem dobrej. Proи se nezeptбљ Aљota nebo Gandћi? Jeden je obchodnнk, druhej barman, oba jsou na naљн zбkladnм, pokud je teda neznбљ. </text>
+	</string>
+	<string id="dm_about_99">
+		<text>Na ъdolн samotnэm nenн nic zvlбљtnнho. Najdeљ tady trochu od vљeho: pшнљery, anomбlie, a dokonce i pбr artefaktщ, kdyћ vнљ, kde se koukat. Kromм toho je to tady skoro stejnэ jako jinde, jen ty opuљtмnэ tovбrny se hodмj, na naљi zбkladnu jsou ъplnм ideбlnн.</text>
+	</string>
+	<string id="dm_about_100">
+		<text>Tohle je dobrэ mнsto pro novбиka stalkera. Je to blнzko Kordonu, anomбliн je jen pбr a daleko od sebe. Dokonce i na potvory tady narazнљ jen obиas. No a navнc, pokud mбљ љtмstн a najdeљ dobrou koшist, mщћeљ ji prodat na naљн zбkladnм, kde budeљ v bezpeин. Nejhorљн je prostм dostat se pшes vojenskэ pozice a Smetiљtм, a pшitom neschytat tolik radiace, ћe ti to uvaшн koule natvrdo.</text>
+	</string>
+	<string id="dm_about_101">
+		<text>V Temnэm ъdolн majн novбиci љanci zvlбdnout prбci stalkera a najнt svэ prvnн artefakty, zatнmco zkuљenн profнci si mщћou oddechnout od tэ noиnн mщry, kterб panuje v pravэ Zуnм, a nabrat sнly, neћ se tam zas vrбtн. Jak novбиci, tak mistшi si mщћou odpoиinout v Hltu Svobody, nechat si opravit vybavenн nebo smlouvat s Aљotem v jeho kљeftм, to vљechno uvnitш naљн zбkladny.</text>
+	</string>
+	<string id="dm_about_102">
+		<text>Mм na tomhle mнstм hlavnм zajнmб Hlt Svobody. Je to fakt dobrej bar, majiteli se шнkб Gandћa... coћ sedн, jestli mi rozumнљ? Mщћeљ si tam odpoиinout stejnм dobшe, jako bys byl v baru nмkde venku... Nevнm, co bych ti jeљtм шekl, protoћe mм nic jinэho moc nezajнmб.</text>
+	</string>
+	<string id="dm_about_103">
+		<text>Na zбkladnм Svobody je technik, kterej dokбћe postavit protiletadlovэ dмlo ze zrezavмlэho бkбиka. Povнdбm ti, ten chlap je gйnius. A mнstnн pшekupnнk je taky fajn chlap.</text>
+	</string>
+	<string id="dm_about_104">
+		<text>V poslednн dobм se dмjou divnэ vмci. Nмkdo hezky potichouиku zabнjн naљe. U vљech cest do ъdolн mбme pozice, ale vщbec to nepomбhб. Kaћdou chvнli nмkdo napadne nмkterou naљi skupinu, a to tak rychle, ћe neћ se tam dostanem, je po vљem. Navнc nemбme tuљenн, kdo by to mohl dмlat, uћ dokonce zaинnбme podezнrat nмkoho mezi sebou.</text>
+	</string>
+	<string id="dm_about_105">
+		<text>Ъdolн je v poslednн dobм jako hnнzdo srљтщ. Vљichni jsou vynervovanн, a kdyћ se objevн nмkdo novej, hned ho vљichni podezшнvajн. Vнљ, nмkdo nбm ruљн naљe pozice a my nemбme ani tuљenн, kdo by to mohl bejt. Proto v poslednн dobм nikomu moc nevмшнme, dokonce ani sobм mezi sebou. Chlapi jsou fakt nasranн, protoћe jsme vљichni pшi tмch ъtocнch pшiљli o nмjakэ kamarбdy.</text>
+	</string>
+	<string id="dm_about_106">
+		<text>A proи to chceљ vмdмt? Neber si to osobnм, ale v poslednн dobм si s nбma hrajou nмjacн mizerovй, ъtoиej na naљe zбkladny a hlнdky, a kdyћ se tam dostane pomoc, najde akorбt mrtvoly naљich. Ћбdnэ stopy, prostм nic... proto mezi sebou hledбme krysu.</text>
+	</string>
+	<string id="dm_about_174">
+		<text>V poslednн dobм se nedмje nic dobrэho. Nмkdo likviduje bojovnнky Svobody a nikdo nevн, kdo by to mohl bejt. Prostм ti ъtoиnнci vћdycky udeшн na naљe nejslabљн mнsto, jako by o nбs vмdмli ъplnм vљechno. Ty vole, ani nechci poинtat, o kolik lidн jsme uћ pшiљli, a nedokбћeme s tнm udмlat ani prd. Prostм sedнme a иekбme a sotva se trochu zklidnнme, dostanem signбl SOS od nмkterэ naљн pozice. No a kdyћ se tam dostanem, tak tam najdem akorбt mrtvoly. Mrtvoly naљich chlapщ. </text>
+	</string>
+	<string id="dm_about_175">
+		<text>Myslнm, ћe mбme ve Svobodм krysu. Nмkdo naљim nepшбtelщm pшedбvб informace, a oni toho vyuћнvajн. Ъtoиej tiљe, zabijou naљe chlapy a zmizej beze stop. Klan utrpмl tмћkэ ztrбty, coћ nбs fakt zabrzdilo v plбnu na obsazenн vojenskejch skladiљќ... no, to nic, toho si nevљнmej... Pшнsahбm, jestli se mi ta krysa nмkdy dostane do rukou, tak mi zaplatн za kaћdэho ztracenэho kamarбda i s ъrokama.</text>
+	</string>
+	<string id="dm_about_176">
+		<text>Pokud se ptбљ jen tak obecnм, tak to tady nenн nijak zvlбљќ jinэ neћ kdekoli jinde v Zуnм. Hledбme koшist, bojujeme, umнrбme, a plбnujeme budoucnost. Pokud se ptбљ na nмco specifickэho, musнm ti шнct, ћe to tady nenн moc zdravэ v poslednн dobм. Proto se neradi bavнme s lidma z venku.</text>
+	</string>
+	<string id="dm_action_info_68">
+		<text>Vљechno, co jen stalker mщћe: hledбm koшist, zabнjнm mutanty, a kdyћ mбm nмjakэ prachy, tak to oslavнm s kбmoљema na zбkladnм. Obиas ty kбmoљe taky pohшbнvбm, pokud z nich zbylo dost, aby mмlo smysl to pohшbнt.</text>
+	</string>
+	<string id="dm_action_info_69">
+		<text>Иekбm na toho kretйna svэho bэvalэho kamarбda. Naљli jsme spoleиnм koшist, ale na cestм zpбtky jsme narazili na smeиku иoklщ. Zaиal jsem po nich stшнlet a ani jsem si nevљimnul, ћe ta svinм utekla i s mэm batohem. Nechal mм tam samotnэho a vzal si i mщj podнl. Sotva jsem to pшeћil! Takћe teпka иekбm, abych zajistil, ћe on to nepшeћije. Jednou tudma musн projнt.</text>
+	</string>
+	<string id="dm_action_info_70">
+		<text>Nмjakou dobu jsem se chtмl pшidat ke Svobodм, ale nмjak jsem se k tomu nikdy nedokopal. A teп koukбљ na plnoprбvnэho иlena skupiny a opovaћ se dмlat nмjakэ vtнpky o prбvech a nesvйprбvnosti, jo? Ne ћe by mi to zas tak vadilo, ale uћ mi ty starэ fуrky lezou na nervy.</text>
+	</string>
+	<string id="dm_action_info_71">
+		<text>No prбvм se s tebou bavнm, jak ti to asi pшipadб? Ale jo, budu to brбt vбћnм, jsem stalker. Vнљ, co stalkeшi dмlaj, takћe vнљ, co dмlбm jб.</text>
+	</string>
+	<string id="dm_action_info_72">
+		<text>No, asi to pro tebe bude tмћkэ pochopit, ale... jб tady ћiju! Taky tady pracuju. Jako stalker. A mбme tady zбkladnu. Moћnб jsi nмkdy slyљel o klanu Svoboda? No, tak Temnэ ъdolн je naљe ъzemн. Co myslнљ, ћe asi иlen Svobody dмlб na ъzemн Svobody?</text>
+	</string>
+	<string id="dm_action_info_73">
+		<text>Snaћнm se vytahovat artefakty z anomбliн a zщstat pшi tom naћivu.</text>
+	</string>
+	<string id="dm_action_info_74">
+		<text>Snaћнm se pшepadnout jednoho psa. Nesmмj se! Nemбљ tuљenн, jak je ta иubka mazanб! V noci se pшiplazн k tбboru a zaиne vэt. Pokud na ni vystшelнљ, zdrhne, pak to ale obejde a zkusн to znova. Uћ jsem nespal tшi dny. Pokud zjistнm, kde ћije, tak tu malou kurvu zaљkrtнm holejma rukama!</text>
+	</string>
+	<string id="dm_action_info_75">
+		<text>S chlapama to tady hlнdбme, pro pшнpad, ћe by nмkdo zkusil zaъtoиit. Asi jsi uћ slyљel, ћe nмkdo ъtoин na naљe pozice a hlнdky, ne? Je to fakt ostuda, ti chlapi byli dobшн stalkeшi.</text>
+	</string>
+	<string id="dm_action_info_76">
+		<text>No, v Zуnм toho fakt zas tak moc dмlat nemщћeљ: hledat koшist, bojovat nebo zkoumat tajemstvн anomбliн. No a taky je tшeba zajistit, aby k tмm tajemstvнm mмli rovnej pшнstup vљichni. A o to se starбm jб.</text>
+	</string>
+	<string id="dm_action_info_77">
+		<text>Slyљels nмkdy o artefaktu Medъza? No, mбm za ъkol tenhle kousek najнt a prodat ho Aљotovi za poшбdnэ prachy. Teп mi dej pokoj a nech mм pшemejљlet, kde bych mohl nмjakej sehnat.</text>
+	</string>
+	<string id="dm_action_info_78">
+		<text>Vмdмls, ћe Svoboda taky studuje Zуnu? Nejsme vмdci, to je pravda, ale taky chceme vidмt, co tenhle zбzrak pшнrody vytvoшilo. Vљechno kolem nбs je dar lidstvu: vљechny ty anomбlie, artefakty a zбhadnэ emise. O иem jsme to mluvili? Jo, ty ses mм ptal, co tady dмlбm. Sbнrбm vэzkumnэ data, mмшнm radiaci pozadн, teplotu, vlhkost, zaznamenбvбm pшнtomnost pшнљer a anomбliн... no a teп, pokud by ti to nevadilo, bych v tom rбd pokraиoval.</text>
+	</string>
+	<string id="dm_action_info_79">
+		<text>No, tohle tady je naљe zбkladna, pokud sis nevљimnul, a vљechno, co dмlбm, se pшнmo tэkб tohohle jasnэho faktu. Takћe i kdyћ se tady jen tak poflakuju a vypadб to, ћe nedмlбm nic, ve skuteиnosti plnнm dva dщleћitэ ъkoly: starбm se, aby to vypadalo, ћe tady mбme spoustu lidн, a umoћтuju ostatnнm odpoинvat.</text>
+	</string>
+	<string id="dm_action_info_80">
+		<text>V Zуnм hledбm dobrodruћstvн, a tady v Temnэm ъdolн se ho dб najнt spousty. Mщћu to dмlat jen dнky Svobodм, a je mi fuk, jak pompуznм tohle prohlбљenн znн.</text>
+	</string>
+	<string id="dm_about_107">
+		<text>Hlavnн silou v ъdolн je Svoboda. I kdyћ v poslednн dobм utrpмli celkem ztrбty. Kaћdou chvнli nмkdo zniин nмkterou z pшedsunutэch pozicн. Obrбnci zemшou a nikdo nic nevidмl, nikdo nevн, jak se ъtoиnнkщm podaшilo vyhnout patrolбm Svobody, nebo co jsou vlastnм zaи. Docela jsem pшemэљlel, ћe se ke klanu pшidбm, ale umшнt jen tak pro nic za nic nemбm v plбnu, takћe zatнm nespмchбm.</text>
+	</string>
+	<string id="dm_about_108">
+		<text>Nenн to o moc jinэ neћ kde jinde, ani lepљн, ani horљн. Anomбlie, monstra, radiace a rozpadajнcн se sovмtskэ barбky. Farmy, tovбrny a tak. Jedinej rozdнl je zбkladna Svobody. Ti chlapi jsou fakt v pohodм, ale v poslednн dobм jim nмjak teиou nervy. Ne ћe bych se jim teda divil, kdyћ si uvмdomнm, jakэ problйmy v poslednн dobм maj.</text>
+	</string>
+	<string id="dm_about_109">
+		<text>Do nedбvna bylo Temnэ ъdolн jedno z nejpшнjemnмjљнch mнst v Zуnм, pokud se teda dб pouћнt slovo pшнjemnэ na popis nмjakэho placu v Zуnм. Bylo to tady stejnм nebezpeиnэ jako kdekoli jidne, ale dalo se tady vћdycky dost najнt pбr sluљnejch artefaktщ, nebyli tu ћбdnн banditi, vojбci, Vypalovaи mozku ani nic jinэho. No ale nedбvno zaиal nмkdo jнt Svobodм po krku a uћ to nenн tak rщћovэ, jak kdysi. Nenн zas tak neobvyklэ, ћe nevinnej kolemjdoucн schytб kulku mншenou na nмkoho z klanu.</text>
+	</string>
+	<string id="dm_about_110">
+		<text>Temnэ ъdolн je stranou hlavnнch cest do centra Zуny. Odsud se mщћeљ dostat jedinм do Kordonu a na Smetiљtм. Nejspнљ proto tudyma poшбd neprochбzн hromady lidн, jako na jinejch mнstech, a proto si to tady Svoboda vybrala jako mнsto pro zбkladnu. Pochybuju, ћe ti mщћu o klanu шнct jeљtм nмco, co sбm nevнљ.</text>
+	</string>
+	<string id="dm_about_111">
+		<text>Tohle je jedno z nejlepљнch mнst v Zуnм pro neutrбlnнho stalkera. Nejsou tady vojбci, banditi, a dokonce ani ti horљн mutanti. Klidnм se mщћeљ vyhэbat anomбliнm a sbнrat koшist, prostм bэt stalker, jak mб bэt.</text>
+	</string>
+	<string id="dm_about_112">
+		<text>Vidмl jsem mнsta, vedle kterэch vypadб Temnэ ъdolн jako mateшskб љkolka. Pseudopsi a anomбlie? Pche! Kdyћ strбvнљ tolik иasu toulбnнm se Zуnou jako jб, tak pochopнљ, иemu se smмju! Jen poиkej, aћ ti zkusн do hlavy vlнzt kontrolйr nebo kdyћ na tebe zniиeho nic skoин upнr! Pak si klidnм mщћeљ nasrat do kalhot a nemusнљ se za to stydмt. A to nenн ani polovina... slyљels nмkdy o Vypalovaиi mozku? To je fakt poшбdnej problйm. Nevidнљ ho, nemщћeљ se ho dotknout, a rozhodnм ho nemщћeљ zabнt, ale on takovэ problйmy nemб a pмknм tм osmaћн.</text>
+	</string>
+	<string id="dm_about_113">
+		<text>Svoboda tady tomu sice moћnб љйfuje, ale nejdou do toho jako banditi. Klidnм se tu mщћeљ poflakovat jak chceљ, sbнrat artefakty, a nemusнљ nikomu platit ћбdnэ mэtnэ ani danм. Podle mм je to nejlepљн plac v Zуnм.</text>
+	</string>
+	<string id="dm_about_114">
+		<text>Chlapi ze Svobody ti o tom шeknou vнc neћ jб. Tak proи nezajdeљ k nim na zбkladnu a nezeptбљ se? Nejsem tady zas tak dlouho a vмtљinou chodнm po furt stejnejch cestбch. Akorбt vнm, jak se dostat ze Smetiљtм na zбkladnu Svobody, a odtamtud na jih k farmм.</text>
+	</string>
+	<string id="dm_about_115">
+		<text>Prvnнch pбr tэdnщ si budeљ myslet, ћe je to tady nejlepљн mнsto v Zуnм. Je to tady celkem bezpeиnэ a chlapi ze Svobody jsou v pohodм. Snadno se s nima skamarбdнљ a pшi kљeftм tм neoberou. Po иase se ale zaиneљ nudit, protoћe ъdolн je moc daleko od hlavnнch cest a nic moc se tady nedмje. Je to dobrэ mнsto na odpoиinek, neћ zapadneљ zpбtky do chaosu normбlnн Zуny, ale kdyћ tady budeљ ћнt delљн dobu, zlenivнљ a zeslбbneљ. Podle mм je Smetiљtм na zбpadм lepљн volba, pшнpadnм mщћeљ jнt do Kordonu a srбt trochu vojбky.</text>
+	</string>
+	<string id="dm_about_116">
+		<text>Pokud seљ zdravej a chytrej, mщћeљ si tady vydмlat sluљnэ prachy plnмnнm ъkolщ pro Povinnost nebo prostм sbнrбnнm koшisti. Svoboda nemб spoleиnэ prachy jako banditi nebo asistenиnн fondy jako Povinnost, tady dostaneљ, co si vydмlбљ, co najdeљ, je tvoje. Obиas dмlбme dobrovolnэ pшнspмvky... na svбtky, kdyћ mб velitel narozeniny, nebo tak, ale pokud se ti nмco nelнbн, vћdycky se mщћeљ sebrat a zmizet do Kordonu, nebo kdyћ seљ fakt moc љtмdrej a ochotnej pшispнvat svэ tvrdм vydмlanэ prachy na dщchody banditщm, na zбpadм najdeљ Smetiљtм. </text>
+	</string>
+	<string id="dm_about_117">
+		<text>Pokud se necнtнљ na honмnн se s kontrolйrama a upнrama, tak je Temnэ ъdolн mнsto pro tebe. Pшнљer tady moc nenн, jen kanci, prasata a psi. A anomбlie, holt na ty musнљ dбvat bacha a obejнt je.</text>
+	</string>
+	<string id="dm_action_info_81">
+		<text>Pшiљel jsem do ъdolн sbнrat artefakty, ale ukбzalo se, ћe tady mб Zбkladnu Svoboda. Uћ nмjakou dobu se mi celkem zamlouvali a pшemэљlel jsem, ћe bych se pшidal, ale teп nikoho nepшibнrajн, protoћe nмkdo ъtoин na jejich pozice. Jsou nasranн a hroznм podezшнvavн - a kaћdэho by nejradљi strиili pod rentgen, jestli nбhodou v ћaludku nepaљuje bombu. No jasnм, pшehбnнm, kde by tady sehnali rentgen, ћe jo? No ale v kaћdэm pшнpadм jsou fakt celkem vynervovanэ, tak si jeљtм budu muset nмjakou dobu poиkat.</text>
+	</string>
+	<string id="dm_action_info_82">
+		<text>Pшiљel jsem se pшidat ke Svobodм, v poslednн dobм potшebujou иerstvou krev. Ale jsou fakt opatrnэ na to, koho si k sobм pustн, vypadб to, ћe majн mezi sebou nмjakou krysu.</text>
+	</string>
+	<string id="dm_action_info_83">
+		<text>Hledбm koшist, a tohle je jedno z nejbezpeиnмjљнch mнst. Tady se nemusнљ bбt љнlenejch danн jako na Smetiљti, hord mutantщ jako u Agropromu, a na kilometry daleko tady nepotkбљ ћбdnэho zkorumpovanэho vojбka. Anomбlie a obиasnэ potvory jsou celkem v pohodм, zvlбљќ kdyћ to porovnбљ s jinejma mнstama.</text>
+	</string>
+	<string id="dm_action_info_84">
+		<text>Lovнm mutanty. Pшekupnнci a vмdci platн za nмkterэ orgбny docela dobшe. Nevмшнљ? Bмћ se jich zeptat sбm.</text>
+	</string>
+	<string id="dm_action_info_85">
+		<text>Tohle je mщj domov. S klukama jsme si tady zшнdili vlastnн tбbor. Tady odpoинvбme mezi vэletama do Zуny, nenн to vщbec љpatnэ mнsto.</text>
+	</string>
+	<string id="dm_action_info_86">
+		<text>Pшiљel jsem sem, abych utekl pшed љpнnou a problйmama jinejch ибstн Zуny. Armбda ve skladiљtнch a v Kordonu se k nбm stalkerщm chovб jako ke zvншatщm, banditi na Smetiљti dмlajн, co se jim zrovna zachce, a Povinnost u Agropromu se ti pokouљн vyplбchnout mozek, abys bojoval se vљema, kdo nejsou s nima. Tady seљ svobodej a rovnej, taky иasto oћralej, coћ mi vyhovuje.</text>
+	</string>
+	<string id="dm_action_info_87">
+		<text>Oddмlil jsem se od svэ skupiny na Smetiљti. Nepohodli jsme se s bandity, protoћe jsme jim nechtмli zaplatit ty jejich danм, a to se jim vмtљinou moc nelнbн. Dali jsme jim sluљnej vэprask, ale pak jim dorazily posily a my museli zdrhat. Zamншil jsem na vэchod a skonиil tady, v Temnэm ъdolн. Nechci riskovat nбvrat pшes Smetiљtм, takћe doufбm, ћe se sem dostanou i ostatnн. Pak uvidнme, co budeme dмlat pak.</text>
+	</string>
+	<string id="dm_action_info_88">
+		<text>Nejsem v Zуnм moc dlouho, byl jsem zatнm jenom v Kordonu a na Smetiљti. Snaћнm se pшijнt na kloub, jak to tady chodн, a moћnб pшi tom i nabrat nмjakou koшist a vydмlat pбr penмz.</text>
+	</string>
+	<string id="dm_action_info_89">
+		<text>V Temnэm ъdolн prej mщћeљ najнt spoustu koшisti a rovnou ji prodat pшekupnнkovi Svobody. Ale uћ jsem tady nмjakou dobu a zatнm jsem nenaљel ani prd. Asi mбm prostм smщlu, nebo hledбm na blbejch mнstech? Fakt nevнm...</text>
+	</string>
+	<string id="dm_action_info_90">
+		<text>Aљot mб na prodej dobrэ brnмnн, ale jб zrovna nemбm moc penмz. Tak jsem se rozhodl kouknout po nмjakэ koшisti, protoћe chytrej chlap v ъdolн vћdycky nмjak vydмlб. Ale problйm je, ћe mi i tak prostм trochu chybн. Nмkdy utratнm moc penмz za munici nebo lйkбrniиky, nмkdy prostм vљechny prachy prochlastбm v baru Svobody.</text>
+	</string>
+	<string id="dm_cool_info_21">
+		<text>Po emisi je teп vљechno ъplnм novэ. Znбmэ a bezpeиnэ cesty uћ nejsou ani znбmэ, ani bezpeиnэ, a novэ musнљ hledat v baћinм. Na druhou stranu se teп dб dostat na mнsta Zуny, kde to dшнv neљlo. Kdo vн, jakэ tajemstvн tam иekajн? Prej se dokonce objevila cesta do malэho mмsteиka, od sovмtskejch иasщ nedotиenэho. Jakmile se o tom dozvмdмl nбљ љйf, poslal tam velkou skupinu chlapщ oинhnout to. Pak zjistil, ћe tam poslala jednotku i Povinnost, tak шekl naљim, aќ sebou sakra hodмj. Pokud se dozvнm nмco novэho, tak ti to шeknu.</text>
+	</string>
+	<string id="dm_cool_info_22">
+		<text>Tu emisi, kterб nedбvno otшбsla celou Zуnou, prej spustila skupina stalkerщ, kterэm se podaшilo dostat pшes Vypalovaи mozku a pшнmo do stшedu Zуny. No pшedstav si to, dostali se pшes Vypalovaи! Sakra, dokonce se vrбtili v jednom kuse! Zajнmalo by mм, co ty emise zpщsobuje... moћnб se to mstн samotnб Zуna?</text>
+	</string>
+	<string id="dm_cool_info_23">
+		<text>Anomбlie zaиaly bejt nebezpeиnмjљн. Uћ to nejsou jen malэ kapsy anomбlnн energie, staly se vмtљн a nebezpeиnмjљн. Dneska tм uћ nezachrбnн, kdyћ kolem sebe obиas rozhodнљ pбr љroubkщ - pokud chceљ pшeћнt radiaci a toxickэ vэpary, potшebujeљ sakra dobrej ochrannej oblek a na kaћdэm kroku se radљi dvakrбt rozmysli.</text>
+	</string>
+	<string id="dm_intro_90">
+		<text>Pozor na zombнky, kteшн lezou z tovбrny... je jich tam jak nasrбno!</text>
+	</string>
+	<string id="dm_intro_91">
+		<text>Uf, ty vole. Vypadбљ jako zombie, mбlem jsem ti rovnou ustшelil palici.</text>
+	</string>
+	<string id="dm_intro_92">
+		<text>Vнtej u jezera Jantar, kde chytneљ pмknej katar. Ha-ha! Chбpeљ? Zrэmoval jsem to! Ha-ha!</text>
+	</string>
+	<string id="dm_intro_93">
+		<text>Vнtej u Jantaru, brбcho.</text>
+	</string>
+	<string id="dm_intro_94">
+		<text>Seљ na sprбvnэ cestм, stalkere. Tvб pomoc by se nбm tady hodila.</text>
+	</string>
+	<string id="dm_intro_95">
+		<text>Hej, иlovмиe!</text>
+	</string>
+	<string id="dm_about_118">
+		<text>Hlavnм si zapamatuj, ћe sakra nemбљ lнzt k tovбrnм, odtamtud se nikdy nikdo nedostal. Sakra, zaиneљ magoшit jeљtм neћ se dostaneљ ke vstupu, a jen Zуna vн, co je vlastnм uvnitш.</text>
+	</string>
+	<string id="dm_about_119">
+		<text>Ty vole, tohle mнsto je fakt pмknм na nervy, to ti povнdбm. Od tovбrny na nбs furt lezou zombбci a my je masakrujem po desнtkбch, ale nikdo se nepokouљel dostat dovnitш a zjistit, co tam vlastnм je, teda nikdo, kdo by se pak vrбtil. Sбm jsem zkouљel k tovбrnм jнt, ale jakmile jsem se dostal trochu blнћ, ъplnм jsem cнtil, jak se mi rozpouљtн mozek. Nemohl jsem se pohnout, motala se mi palice, a mмl jsem pocit, ћe mi uvnitш hlavy nмco mluvн, ty vole, mбlem jsem se tam posral! Okamћitм jsem makal zpбtky, ale ty hlasy mi z hlavy nezmizely aћ do druhэho dne. Celkem si dokбћu pшedstavit hromady mrtvol tмch, kteшн se dostali o kousek blнћ neћ jб.</text>
+	</string>
+	<string id="dm_about_120">
+		<text>Dшнv tady bэvalo jezero Jantar, ale z toho je jen kaluћ smradlavэho odpadu. Na bшehu maj tбbor vмdбtoшi. Uvnitш svejch bunkrщ nмco zkoumaj a obиas vyrazej na expedici. Nмkdy nбm dokonce dajн prбci. Pokud budeљ mнt љtмstн, mщћeљ tady v okolн najнt nмjakej ten artefakt, nebo od mrtvэ zombice zнskat dobrou bouchaиku. Zombic tady rozhodnм nenн nedostatek. Problйm je, ћe vylнzaj ze starэ tovбrny a my se k nн ani nemщћeme pшiblнћit. Jakmile to zkusнљ, nмco ti zaиne vaшit mozek. Vљichni ti odvбћlivci, kteшн si na to troufli, tam zmizeli, tady zщstбvaj jen ti opatrnмjљн.</text>
+	</string>
+	<string id="dm_about_121">
+		<text>Jб tohle mнsto fakt nechбpu. Mщj kбmoљ se chtмl dostat dovnitш tovбrny, protoћe to je jedna z mбla jeљtм neprozkoumanejch oblastн Zуny. Шнkali jsme si, ћe uvnitш musн bэt nмjakб poшбdnб koшist. Ha! Jakmile jsme se dostali k brбnм, zaиal jsem se fakt motat, slyљel jsem divnэ zvuky a љeptбnн, a zaиal jsem mнt vidiny. Kбmoљ byl hned za mnou a dokбzal nбs dostat pryи: jakmile vidмl, ћe se motбm, popadnul mм a vytбhnul pryи. No a aby to nebylo vљechno, kdyћ jsme se vraceli, tak si nбs chlapi mбlem spletli se zombicema. Nechybмlo moc a odprбskli by nбs.</text>
+	</string>
+	<string id="dm_about_122">
+		<text>Vмdбtoшi majн tбbor u vyschlэho jezera, zatнmco stalkeшi bojujou z opevnмnejch pozic s nekoneиnejma hordama zombic. Nikdo nevн, co se dмje v tэ starэ tovбrnм, ale jakmile se k nн pшiblнћнљ, zaиneљ slyљet uvnitш hlavy hlasy, zaиneљ se motat a slбbnout.... Dokonce ani vмdбtoшi nevмdн, co se tam pшesnм dмje.</text>
+	</string>
+	<string id="dm_about_123">
+		<text>Tэhle oblasti se шнkб Jantar. Moћnб to kdysi bylo jezero, ale jestli se chceљ vбlet na plбћi u vody, budeљ muset jinam. Teп je tady akorбt bahno, radiace a tuna zombie. Pokud ti to nestaин, zkus navљtнvit starou tovбrnu. Ne ћe by ses k nн vщbec dostal. Lidi zmagoшej jeљtм dшнv, neћ se dostanou k brбnм.</text>
+	</string>
+	<string id="dm_about_124">
+		<text>Nejnebezpeиnмjљн mнsto v okolн je tovбrna. V oblasti kolem nн pщsobн nмjakй zvlбљtnн zбшenн a kaћdэ, kdo se pokouљel dostat dovnitш, pak vyprбvн podivnй pшнbмhy o hlasech, kterй slyљel uvnitш svй hlavy. Nмkteшн se z toho ъplnм zblбznili, a ti, kteшн mмli dost silnй nervy, aby to zkusili a veљli dovnitш, se uћ nikdy nedostali zpбtky.  </text>
+	</string>
+	<string id="dm_about_125">
+		<text>Kamarбdнme se tady s vмdбtorama. Brбnнme je pшed neustбlэma ъtokama zombic z opuљtмnэ tovбrny a oni nбm za to dбvaj lйky, vybavenн, a obиas i nмjakou prбci za prachy. Do samotnэ tovбrny se dostal jen mбlokdo, protoћe je tam nмjakэ divnэ zбшenн, co ti rozmaиkб mozek jako plechovku od piva. Ale ti, kterэm se tam podaшilo v obdobн klidu zalнzt a vrбtit se, s sebou pшinesli fakt cennou koшist.</text>
+	</string>
+	<string id="dm_about_126">
+		<text>Jsem si jistej, ћe uvnitш tovбrny bude urиitм nмco cennэho. Vsadнm se, ћe Sacharov a jeho vмdбtoшi by za to vyklopili sluљnej balнk. Ale problйm je, ћe nenн snadnэ se dostat dovnitш, zatнm se to nikomu nepovedlo. Buп tм zombice vшele uvнtaj, nebo... kdyћ se pшiblнћнљ, dмlб ti to nмco divnэho s hlavou. Lidi zaиnou vidмt rщznэ vмci a zaиnou se motat sem a tam. Pokud se rychle nezdekujeљ, je po tobм. Uћ jsem tak pшiљel o pбr kбmoљщ... vљichni chtмli odhalit tajemstvн tovбrny!</text>
+	</string>
+	<string id="dm_about_127">
+		<text>Pшed prvnн nehodou tady bэvalo jezero, jmйnem Jantar. Kdyћ tady stavмli tovбrnu, tak nмco podмlali v podzemн a voda z jezera nмkam zmizela, zщstala tady jen smradlavб kaluћ. Hned vedle zbytkщ jezera majн tбbor vмdбtoшi, a ta samб tovбrna, co kvщli nн zmizelo jezero, tady dмlб problйmy furt. Je kousek dбl po cestм.  Jakmile se k nн pшiblнћнљ, tak ti zaиne v palici pшeskakovat, vщbec nemщћeљ rozumnм pшemэљlet. Dovnitш se snaћej dostat jen sebevrazi, vљichni ostatnн jen pomбhajн vмdcщm a odstшelujou zombнky, kteшн obиas z tovбrny vylнzajн.</text>
+	</string>
+	<string id="dm_about_128">
+		<text>Tady u jezera Jantar jsou vмdci, kteшн zkoumajн Zуnu. Hlavnн mнstnн atrakce je tovбrna a spousta lidн tady kvщli emisнm zmizela. Nikdo, kdo vleze dovnitш, se zatнm nevrбtil, a nemбme nejmenљн tuљenн, co se s nima vlastnм stane.</text>
+	</string>
+	<string id="dm_about_129">
+		<text>Vмdci tady majн zбkladnu a stalkeшi z opevnмnэch pozic odstшelujou zombice. Jiћnм odsud je Agroprom, kde Povinnost buљн mutanty, a severnм odsud je Иervenэ les. Co je tam nevнme, protoћe se odtamtud jeљtм nikdo nevrбtil. </text>
+	</string>
+	<string id="dm_action_info_91">
+		<text>Pomбhбm vмdбtorщm s vэzkumem. Ne pшнmo, samozшejmм ћe ne. Ale s chlapama je brбnнme pшed zombicema, hlнdбme jejich expedice a nosнme Sacharovi rщznэ artefakty, orgбny mutantщ a podobnэ nesmysly, o kterэ si шekne. A oni zase studujou zбшenн, kterэ u tovбrny rozpouљtн lidem mozky. Jakmile najdou zpщsob, jak ho obejнt, tak do tovбrny vrazej ъplnм vљichni, aby tam hledali koшist, vљak uvidнљ.</text>
+	</string>
+	<string id="dm_action_info_92">
+		<text>Иekбm, aћ ti magoшi najdou zpщsob, jak se postarat o emise, kvщli kterэm nemщћem zalнzt do tovбrny. Co nбm brбnн? No tak se tam bмћ podнvat sбm. Nмco se ti zaиne vrtat v palici natolik, ћe za chvнli ani nevнљ, za kterej konec se drћн bouchaиka. Uћ tam vlezla spousta stalkerщ... a nikdy se nevrбtila.</text>
+	</string>
+	<string id="dm_action_info_93">
+		<text>Nabнdl jsem se jako dobrovolnнk, pomoct vмdбtorщm. Obnбљн to hlavnм to, ћe je brбnнme pшed vlnama zombie, kterэ na nм furt ъtoин. Je to dobrej kљeft, protoћe nбm dбvaj obvazy, lйky a munici. A navнc to nenн ani zas tak љpatnэ, dokud si dбvбљ bacha a drћнљ se u zemм. </text>
+	</string>
+	<string id="dm_action_info_94">
+		<text>Stalker veterбn mi prodal mapu vљech skrэљн v tйhle oblasti. Vљechny jsem se je nauиil nazpamмќ a mapu spбlil, takћe ze mм nic nedostaneљ. No uћ jsem vyиistil vљechny skrэљe mimo tovбrnu a byly pшesnм tam, kde mapa шнkala, ale nejlepљн jsou uvnitш tovбrny. Aћ Sacharov a jeho tэm pшijde na to, jak se postarat o to zбшenн, okamћitм tam vyrazнm.</text>
+	</string>
+	<string id="dm_action_info_95">
+		<text>Mмшнm tady nмco pro Sacharova. Dochбzн mu asistenti, tak sem tam platн stalkerщm, aby pro nмj nмco udмlali.</text>
+	</string>
+	<string id="dm_action_info_96">
+		<text>Pшekupnнk mi шekl, ћe se tady poflakuje mщj kбmoљ jeљtм z doby armбdy. Pшiљel jsem ho najнt. Pak se dбme dohromady a budem pracovat v Zуnм spoleиnм.</text>
+	</string>
+	<string id="dm_action_info_97">
+		<text>Ийиe, jsem utahanej. Uћ mм unavuje hledбnн koшisti v Zуnм, unavuje mм stшнlenн monster a boje s banditama o kousek volnэho mнsta pod sluncem. Dбvбm si tady trochu padla. Tady mi staин obиas odstшelit nмjakou zombici a vмdбtoшi mi za to jeљtм platмj. Jeљtм chvilku se tady budu jen tak poflakovat a pak zamншнm na nмjakэ nebezpeиnмjљн mнsto. V Zуnм platн pravidlo, ћe инm vмtљн nebezpeин, tнm lepљн koшist.</text>
+	</string>
+	<string id="dm_action_info_98">
+		<text>Po emisi jsem se rozhodl trochu prolнzt Zуnu a zjistit, co je novэho. Byl jsem vљude od baћin po Vypalovaи, i na mнstech, kterэ si ani nedokбћeљ pшedstavit. Sem jsem pшiљel prodat koшist a potkal jsem se s docela fajn partou. Od tэ doby bojujem spoleиnм.</text>
+	</string>
+	<string id="dm_action_info_99">
+		<text>Prбvм se dбvбm dohromady z poslednн pшestшelky. Nalezlo na nбs tolik mrtvбkщ, ћe jsme je sotva dokбzali postшнlet. Kdyby to byli normбlnн lidi, tak uћ tady nejsem. Naљtмstн jsou zombбci blbмjљн neћ politici, ћбdnб taktika, nic. I tak to ale byla poшбdnб bitva a jб chytnul zbloudilou kulku. Naљtмstн je to jen љkrбbnutн, budu v pohodм.</text>
+	</string>
+	<string id="dm_action_info_100">
+		<text>Chtмl jsem se dostat dovnitш tovбrny, ale teп tak nмjak nevнm. Na jednu stranu jsem skoro posranej strachy, ale na druhou bych fakt rбd vмdмl, co je uvnitш. Nмkdo to tajemstvн dшнv nebo pozdмji odhalн, tak proи bych to nemohl bэt jб?</text>
+	</string>
+	<string id="dm_action_info_101">
+		<text>Snaћнm se naљetшit dost penмz na poшбdnou zbraт. Pracuju pro vмdбtory - brбnнm zombicнm, aby jim lezly aћ do tбbora. Aћ naљetшнm dost, koupнm si bouchaиku a vyrazнm se toulat po Zуnм.</text>
+	</string>
+	<string id="dm_action_info_102">
+		<text>Pшiљel jsem sem z Agropromu, po tom, co jsem nмjakou dobu bojoval za Orestщv klan. Bylo na иase zmмnit pщsobiљtм. Teп bych se fakt rбd vydal do Иervenэho lesa, ale kvщli Vypalovaиi mozku v tovбrnм to prostм nejde. Jen dostat se dost blнzko uћ je ъkol jak svinм sбm o sobм.</text>
+	</string>
+	<string id="dm_action_info_103">
+		<text>Pomбhal jsem Povinnosti s mutantama u Agropromu, kdyћ tam dorazila banda zombic od Jantaru. Dali dohromady skupinku, kterб se o to mмla postarat, a mм se zeptali, jestli se nechci pшidat. No, pшiљli jsme sem, po cestм jsme vљechno vyиistili, a pak se chlapi z Povinnosti chtмli vrбtit. Jб zahlнdnul v laboratoшi vмdбtorщ dobrej ochrannej oblek na prodej, a tak jsem se rozhodl zщstat tady a naљetшit si na nмj.</text>
+	</string>
+	<string id="dm_action_info_104">
+		<text>NECH MМ BEJT!!! Co? Ne, ty ne. Jб uћ magoшнm, vole. Byl jsem tak blbej, ћe jsem zkusil vlнzt do tovбrny, podнvat se na vlastnн oиi, co tam je. No a teп jsem v prdeli. V hlavм to mбm ъplnм pomotanэ... jeљtм ћe mм chlapi dostali ven. Bavнm se tady s tebou, a pшitom slyљнm, jak mi v hlavм nмkdo љeptб. Zavшi sakra hubu! Ne, ty ne! Ech, radљi si mм nevљнmej.</text>
+	</string>
+	<string id="dm_cool_info_24">
+		<text>Slyљel jsem, ћe se skupinka stalkerщ pokusila prorazit do stшedu Zуny. Podle nмkterэch to dokбzali, podle jinэch ne, ale vљichni si myslн, ћe mezi jejich vэpravou a poslednн emisн je nмjakэ spojenн. Zajнmalo by mм, jestli naљli plniи pшбnн a nмco si pшбli.</text>
+	</string>
+	<string id="dm_cool_info_25">
+		<text>Slyљel jsem, ћe se prej v Zуnм ztratila celб frakce. Slyљels nмkdy o monoliќбcнch? No, kdysi brбnili Zуnu pшed ostatnнma, ale tмsnм pшed emisн vyrazili k centru. Od tэ doby o nich nikdo neslyљel, ale nedбvno zaиali od Vypalovaиe ъtoиit nмjacн drsnн stalkeшi, vљechny zabнjej a na nic se neptaj. Vнm to, protoћe jsem je vidмl u vojenskэch skladiљќ a podle mм to jsou ti samн monoliќбci, co zmizeli. Nepшekvapilo by mм to. Jejich uniformy fakt vypadaly stejnм. </text>
+	</string>
+	<string id="dm_cool_info_26">
+		<text>Po emisi se vљechno zmмnilo. Teп je to ъplnм jinб Zуna. Klany bojujou, z kaћdэ dнry vylнzajн pшнљery, objevujou se novэ ъzemн, zatнmco cesty na starэ jsou zablokovanэ anomбlkama. Dokonce se objevily i ъplnм novэ artefakty... co na to шнct? Cнtнm se, jako bych byl zase zelenби.</text>
+	</string>
+	<string id="dm_cool_info_27">
+		<text>Nedбvno jsem se doslechl, ћe mб armбda po emisi u vojenskejch skladщ fakt celkem velkэ problйmy. Svoboda dostala chuќ na jejich teritorium, takћe se teп vojбci mщћou akorбt schovбvat v zбkladnм a modlit se. Armбda je oslabenб, ale vн, ћe zбkladna je klни. No a pak se vyprбvн, ћe se z centra vracej monoliќбci. Vљichni jsme si byli jistн, ћe tam zaшvali. Ty vole, fakt bych s jednнm rбd pokecal a zeptal se ho, jak to v centru vypadб.</text>
+	</string>
+	<string id="dm_cool_info_28">
+		<text>Za jezerem Jantar se prэ objevila cesta do Rudйho lesa. Povнdб se o tom spousta podivnэch historek, jako ћe celэ les najednou, bмhem jedinйho dne, zrudnul a zahalil se mlhou. Od tй doby ho vљichni povaћujн za opravdu nebezpeиnй mнsto... mizн tam spousta lidн, a po иase do konce zmizely vљechny cesty, ketrй tam vedly. Dvakrбt bych se rozmэљlel, neћ bych vyrazil jeho smмrem.</text>
+	</string>
+	<string id="dm_cool_info_29">
+		<text>Ty vole, dмje se toho tolik, ћe ani nestнhбm drћet krok. Myslel jsem si, ћe Jantar je na okraji toho, co jsme v Zуnм prozkoumali, ale emise byla tak silnб, ћe se otevшely cesty do Иervenйho lesa a Limansku, dбvno ztracenэho mмsta. Pбr naљich chlapщ tam љlo pшes tovбrnu, ale netuљнm, jestli se pшes ni vщbec dostal. Taky jsem slyљel, ћe o vlбdu nad Limanskem teп bojuje Svoboda a Povinnost, dva nejvмtљн klany v Zуnм.</text>
+	</string>
+	<string id="dm_intro_96">
+		<text>To seљ zas ty? Co novэho tentokrбt?</text>
+	</string>
+	<string id="dm_intro_97">
+		<text>Vшelй pozdravenн, stalkere.</text>
+	</string>
+	<string id="dm_intro_98">
+		<text>Zdravнm, mladэ muћi!</text>
+	</string>
+	<string id="dm_intro_99">
+		<text>Zdravнm! Co chceљ?</text>
+	</string>
+	<string id="dm_intro_100">
+		<text>Chceљ obchodovat, nebo mбљ zбjem o prбci?</text>
+	</string>
+	<string id="dm_intro_101">
+		<text>Nejspнљ mбљ zбjem o informace. Odpovнm ti na vљechny otбzky, jak nejlнp budu moci.</text>
+	</string>
+	<string id="dm_intro_102">
+		<text>Jak se vede, kбmo?</text>
+	</string>
+	<string id="dm_intro_103">
+		<text>Tady mбљ pravэ uvнtбnн Svobody pro fakt svobodnэho stalkera.</text>
+	</string>
+	<string id="dm_intro_104">
+		<text>Hej, stalkere.</text>
+	</string>
+	<string id="dm_intro_105">
+		<text>Vypadбљ, ћe mбљ tisнc otбzek. Tak zaиni s prvnн! </text>
+	</string>
+	<string id="dm_about_130">
+		<text>Tohle je klниovб oblast Zуny - dб se odtud dostat k Vypalovaиi, do Rudйho lesa, do Limansku a dбl... ne ћe by nмkdo vмdмl, co ћe tam dбl vlastnм vщbec je. Je tu v okolн taky starб vojenskб zбkladna, kterou si tu armбda postavila jeљtм pшed velkou emisн. Dneska mб posбdku jen asi 20 lidн, a kdybychom se jн zmocnili, dostali bychom pod kontrolu pшilehlб ъzemн. Potшebujeme pomoct armбdм pшi evakuaci, jestli chбpeљ, jak to myslнm...</text>
+	</string>
+	<string id="dm_about_131">
+		<text>Cesta na sever jako by byla zablokovanб, kvщli Vypalovaиi mozkщ. Monoliќбkщm to ale nebrбnн, aby nбm sem lezli, a v poslednн dobм nejsou zrovna pшбtelљtн. Nejdшнv stшнlejн, a pak se stejnм nenamбhajн klбst otбzky. Kdyћ se vydбљ na jih, dojdeљ do Temnйho ъdolн a na zбpadм bys naљel Rudэ les. Nenн to zrovna nejhezин ибst Zуny, ale zase tam po иlovмku tolik nestшнlejн. Za lesem samotnэm pak naљli cestu do Limansku. Je to malй, ale strategicky dщleћitй mмsteиko, coћ je dщvod, proи o nм naљi chlapi svбdмjн krvavй boje s Povinnostн.</text>
+	</string>
+	<string id="dm_about_132">
+		<text>Bэvala tu vojenskб zбkladna a armбdnн sklady, ale emise s nima pмknм zatoиila. Tмm, kteшн to pшeћili, poшбdnм spadl hшebнnek - schovбvajн se na svй zбkladnм pшed stalkery a strachy jsou posranн aћ za uљima. Neustбle nalйhajн na ъstшedн, aby pro nм poslali zбchrannou vэpravu, ale nikdo jim na pomoc nejde. Hбdбm, ћe mimo Zуnu na tom asi taky nebudou moc dobшe. Je mi tмch chudбkщ parchantщ skoro aћ lнto - jsou to krysy, ale i krysy by mмly drћet pohromadм.</text>
+	</string>
+	<string id="dm_about_133">
+		<text>Armбda sklady pomмrnм dlouho pouћнvala, ale po poslednн emisi љlo vљechno na levaиku. Je to tam tak drsnэ, ћe jich pшeћilo jen pбr, hlavnм ti, kteшн se poschovбvali dovnitш do zбkladny. Vљichni, co byli venku, rщznм pochcнpali. Jak to vнm? Jo, hochu, Svoboda mб taky vэzvмdnou sluћbu, a mбme teп situaci pod kontrolou; a navнc se teп dali dohromady i samotбшљtн stalkeшi, aby poшeљili ty potvory, co se sem hrnou od Vypalovaиe mozkщ.</text>
+	</string>
+	<string id="dm_about_134">
+		<text>Kdyћ jsme se sem dostali poprvй, byl tu hroznэ chaos. Vojбci se vykaљlali na obranu bariйry a zahrabali se na zбkladnм. Problйm je, ћe bariйru je potшeba neustбle hlнdat, jinak sem nalezou vљelijakй pшнљery a zaиnou lidi vybнjet na potkбnн. Proto jsme ji taky zaиali brбnit sami, a potшebujeme vљechnu pomoc, kterou nбm kdo mщћe poskytnout, protoћe jestli bariйra padne - doplatнme na to vљichni.</text>
+	</string>
+	<string id="dm_about_135">
+		<text>Na kopci je bэvalб vojenskб zбkladna a doufбme, ћe se nбm ji brzy podaшн zabrat. Kousek odtud smмrem dolщ je malэ statek, jen pбr budov, a pak je tu ten srub na radioaktivnнch blatech. Kromм toho tady v okolн najdeљ jen pбr opuљtмnэch vesnic a naљe zбkladny. Ty hlavnн jsou podйl cest do Иervenйho lesa a do Temnйho ъdolн. Stalkeшi teп bariйru hlнdajн sami, snaћн se zadrћet vlny monoliќбkщ a mutantщ. Je to skoro zбzrak - nikdy bych neшekl, ћe stalkeшi spojн svй sнly z jinйho dщvodu neћ pro penнze!</text>
+	</string>
+	<string id="dm_about_136">
+		<text>Pokud se vydбљ na sever, dojdeљ k bariйшe, kde se stalkeшi snaћн drћet obrannou linii proti mutantщm, pшichбzejнcнm od Vypalovaиe. Napravo od bariйry najdeљ baћinu, je tam na blatech srub. Radљi se od nн drћ dбl, protoћe ъroveт radiace je tam po иertech vysokб. Kousek dбl od baћiny je vojenskб zбkladna. Naљe zбpadnн zбkladna stшeћн cestu do Иervenйho lesa a do Limansku - tam mб v souиasnй dobм namншeno vмtљina klanu - a jiћnн zбkladna hlнdб cestu do Temnйho ъdolн.</text>
+	</string>
+	<string id="dm_about_137">
+		<text>Vљechno se tady kolem mмnн, a pмknм rychle. V armбdnнch skladech bude mнt brzy skladiљtм Svoboda. Naљe zбkladny a opevnмnн drћн samotбшљtн stalkeшi, kteшн hlнdajн klниovм dщleћitй prщchody do tйto oblasti. Na severu brбnн bariйra mutantщm a nestvщrбm v odchodu ze stшedu Zуny. Jeљtм љtмstн, ћe stalkeшi bariйru hlнdajн, jinak by tady bylo zatracenм horko. Naљe zбpadnн zбkladna stшeћн cestu do Иervenйho lesa a dбl do Limansku a jiћnн zбkladna zajiљќuje bezpeиnou cestu do Temnйho ъdolн, kde mбme v souиasnй dobм zбkladnu. Teп se to tu jen hemћн nejrщznмjљнmi stalkery - majн radost ze svobody, protoћe armбda trин na zбkladnм. Hбdбm, ћe by se v opuљtмnэch vesnicнch a na statcнch dalo najнt pбr zajнmavэch artefaktщ a dalљнch vмcн.</text>
+	</string>
+	<string id="dm_about_138">
+		<text>Kdyћ armбda ztratila nad oblastн kontrolu, objevila se spousta stalkerщ, kteшн doufali, ћe se dostanou pшes Vypalovaи mozkщ. Pitomci! Шнkбm ti rovnou, pшes Vypalovaи se prostм nedб projнt. Nikdo, kdo to zkusil, se nikdy nevrбtil. Svoboda je tady, aby se zbavila armбdy a zaloћila si tu zбkladnu. Ostatnм, pokud mбme udrћet bariйru, potшebujeme zбkladnu nмkde poblнћ.</text>
+	</string>
+	<string id="dm_about_139">
+		<text>Tohle mнsto je domovem opravdovйho stalkerskйho bratrstva. Kolem vojenskэch skladiљќ se shromбћdili ti nejlepљн chlapi, a hledajн zpщsob, jak se dostat pшes Vypalovaи. Majн vysokou morбlku, a k tomu kaћdej tшi pшбnн, pokud ne rovnou dvacet, nachystanэch, aћ se dostanou k tй maљinм, co prэ ti splnн, na co si vzpomeneљ. Debilovй! Jsou dost chytшн na to, aby se dostali aћ ke skladщm, ale nemajн kapku rozumu, aby jim doљlo, ћe za Vypalovaиem leda tak natбhnou brka. Mмli by nбm mнsto toho pomoct tady u bariйry, protoћe ta jestli padne, tak nбm nejspнљ ani samotnэ plniи pшбnн nepomщћe!</text>
+	</string>
+	<string id="dm_about_140">
+		<text>Mмnн se to tady kaћdэm okamћikem. Fanatiиnн monoliќбci a mutanti ъtoин ve vlnбch od Vypalovaиe. A pak jsou tady ty fragmenty rozhlasovйho vysнlбnн, ze kterэch mi doslova bмhб mrбz po zбdech. Hбdбm, ћe je tady po emisi pohшeљovanэch spousta lidн, ale ћe mнsto aby pochcнpali, tak se prostм ztratili, jestli vнљ, jak to myslнm. Je to, jako by se nic nezmмnilo, ale oni se nemohli dostat ven. Moћnб je to nмjakб novб anomбlie, ze kterй nenн ъniku... kdo vн? Je mi tмch hochщ lнto, ale nemбm tuљenн, jak jim pomoct.</text>
+	</string>
+	<string id="dm_action_info_105">
+		<text>Jedinй, co musнme udмlat, je drћet bariйru a vytlaиit vojcly z jejich zбkladny. Nбљ љйf je chytrej manнk - mм by nikdy nenapadlo, ћe by se nбm bariйra brбnila mnohem lнp, kdybychom tady poblнћ mмli zбkladnu. Proto taky on vede Svobodu a jб tady s tebou vykecбvбm. Na druhй stranм, mм z jeho starostн hlava nebolн, a mщћu se namazat инm chci a jak chci, kdyћ se mi zlнbн, a nikomu po tom nic nenн!</text>
+	</string>
+	<string id="dm_action_info_106">
+		<text>Drћнme bariйru, jak jen to jde. Armбda ji po vэbuchu pшestala brбnit, a probilo se tudy tolik rщznэch potvor, ћe se z toho pшiposrali jeљtм i v Temnйm ъdolн. A tak nбљ љйf zorganizoval tuhle vэpravu. Pak se stala dalљн vмc - bariйrou se probili prvnн monoliќбci ze ztracenйho druћstva. Hбdбm, ћe nebylo tak "ztracenй", jak jsme si mysleli.</text>
+	</string>
+	<string id="dm_action_info_107">
+		<text>Hledбm naљe prщzkumnй druћstvo. Pшed emisн odeљli tнmto smмrem, a od tй doby po nich nenн ani vidu, ani slechu. Obиas zachytнme nмjakй ъtrћky jejich komunikace, vмtљinou volajн o pomoc a nadбvajн, ћe jim dochбzejн zбsoby. Je to divnб vмc, иlovмиe - mбme tu nмkde poblнћ ztracenй druћstvo, kterй dokonce vidн љpiиku vojenskй zбkladny, ale aќ chodн, kudy chodн, nepшiblнћili se k nн ani o fous. Je to, jako by uvнzli na nмjakй Mцbiovм pбsce. A tak jsem tady, lбmu si s tнm hlavu a snaћнm se pшijнt celй vмci na kloub.</text>
+	</string>
+	<string id="dm_action_info_108">
+		<text>Uzavшeli jsme s armбdou takovэ menљн kљeft. Pшivezeme jim stшelivo a oni nбm pшedajн zбkladnu. Mnм to pшipadб jako fйrovej kљeft. Vљak jsme taky s klukama "vyjednбvali", jak jsme nejlнp umмli.</text>
+	</string>
+	<string id="dm_action_info_109">
+		<text>Kdyћ zrovna s nikэm nebojujeme, coћ se moc иasto nestбvб, vмtљinou trинm tady a vyprбvнm historky a vtipy u tбborбku, a zalomнme do sebe s chlapama jednu dvм flaљky. Aћ poшeљнme kљefty tady a v Limansku - coћ jsou dvм nedotиenй oblasti Zуny - moћnб se nбm podaшн najнt nмjakej fнgl, jak se dostat do centra Zуny. Tam, odkud pшichбzejн monoliќбci.</text>
+	</string>
+	<string id="dm_action_info_110">
+		<text>Bavнm se dobшe. Chlastбm, oslavuju a dмlбm si prиu s kamarбdy. Kdo vн, co s nбma bude zнtra, za hodinku, moћnб dokonce za minutu? Moћnб љlбpnu do anomбlie nebo koupнm do ћaludku jednu olovмnou. Иlovмk se musн bavit, dokud je jeљtм naћivu.</text>
+	</string>
+	<string id="dm_action_info_111">
+		<text>Rozhodl jsem se, ћe se stanu hrdinou. Vzhledem k tomu, jakб je teп ve Svobodм situace, je postup v rбmci klanu pomмrnм jednoduchэ, a kdyћ se шбdnм proslavнm v boji, zajistн mi to mнsto v historii. Иlovмk ale dneska musн hrdinovat chytшe, pokud teda neaspiruje na purpurovэ srdce. Neschovбvat se za ostatnн, ale taky si nesmн koledovat o kulku.</text>
+	</string>
+	<string id="dm_action_info_112">
+		<text>Pшiљel jsem sem z Temnйho ъdolн jako dobrovolnнk, trochu tмm vojclщm zatopit. Chtмl jsem bэt tam, kde se nмco dмje, a taky jsem zatouћil po zmмnм - sedмt na zadku na fleku uћ mм fakt hroznм unavovalo.</text>
+	</string>
+	<string id="dm_action_info_113">
+		<text>Plnнm ъkoly, kterэ mi zadal velitel. Snad sis nemyslel, ћe je Povinnost jedinб, kde se nмkdo namбhб poslouchat rozkazy? My mбme taky disciplнnu - teda, kdyћ to situace vyћaduje. Musel bys bэt vypatlanэ, aby sis doopravdy myslel, ћe Svoboda mб jen samй santusбky a oћraly. Kdyby to tak bylo, nбљ klan by byli uћ dбvno pozabнjeli a zahrabali. </text>
+	</string>
+	<string id="dm_action_info_114">
+		<text>Vљichni se dali do boje, tak co jsem mмl dмlat? Zbabмlec nejsem, a vsaп boty, ћe zrбdce taky ne! Ostatnм tu bojujeme za tohlecto vљeobecnй dobro. Sranda musн bэt, ale tohleto je vбћnб vмc. Teп prostм nenн иas se jen tak poflakovat.</text>
+	</string>
+	<string id="dm_action_info_115">
+		<text>Bojuju. Proti komu? Eй, no, proti vљem, co jsou proti nбm. Nejsme jen tak nмjakб grupa anarchistщ - v klanu mбme zatracenм dobrэ poшбdek, a s nikэm se nesereme. Moћnб to nenн tak dobшe vidмt, jako v armбdм nebo u povinnosќovcщ, protoћe my jsme se ke klanu pшidali z touhy po svobodм a rovnosti, ale drћнme pospolu a taky sakra nмco zmщћem. Drћ se pevnм, kбmo, teп teda uvidнљ Svobodu v akci.</text>
+	</string>
+	<string id="dm_cool_info_30">
+		<text>Svoboda to teп nemб jednoduchй. Sotva jsme se sebrali z toho ъtoku banditщ a odhalili jsme љpehouna, naљel se za Иervenэm lesem Limansk a armбda pшestala mнt pod kontrolou svб zdejљн skladiљtм. Takћe jsme zaиali vнc bojщ najednou a teп mбme nepшбtele na nмkolika frontбch. Doufбm, ћe toho na nбs nakonec nebude moc.</text>
+	</string>
+	<string id="dm_cool_info_31">
+		<text>Vypadб to, jako by se Zуna po emisi rozpadla na jednotlivй bublinky. V tйhle oblasti se pohшeљuje spousta lidн a zdб se, ћe zmizli v nмjakй prostorovй bublinм, zщstali tam trиet a nemщћou ven - aќ jdou, kam jdou, nikam daleko nedolezou! Uvнzlo v tмch bublinбch pбr vбћnм dobrejch manнkщ, a kdyћ vylezeљ nмkam vejљ, mщћeљ zachytit kousky jejich volбnн o pomoc. Dбvej si na sebe bacha, jestli nechceљ, aby tм to vcuclo za nima.</text>
+	</string>
+	<string id="dm_cool_info_32">
+		<text>Po emisi se ukбzalo, ћe spousta dщleћitэch љtrek do centra Zуny prochбzн rovnou skrz skladiљtм. A pak naљe prщzkumnй skupinky dorazily dalљн den do Limansku, mмsteиka, o kterйm pшedtнm nikdo neslyљel. Moћnб by se odtud dalo dostat i na nмjakб dalљн mнsta, ale ve skuteиnosti hlavnм doufбm, ћe nмkdo koneиnм poшeљн tajemstvн Vypalovaиe a otevшe se nбm cesta na sever!</text>
+	</string>
+	<string id="dm_cool_info_33">
+		<text>Nedбvno se nбm podaшilo chytit tu krysu, co donбљela banditщm, kteшн pak pobнjeli naљe kluky jako dobytek. Hбdej, kdo to nakonec byl? No jo, nбљ velitel! Vypadбљ, ћe tм to moc nepшekvapuje - kdopak ti to uћ bonzl? Tak иi tak, ten parchant opravdu zradil vlastnн klan! Takovб ubohost! Љkoda, ћe jsem ho nemohl oddмlat sбm!</text>
+	</string>
+	<string id="dm_cool_info_34">
+		<text>Ty vole, Zуna bude brzo svobodnб a jmйno mйho klanu se bude ozэvat na kaћdym rohu! V Limansku se vypoшбdбme s Povinnostн a taky zabereme tady tu zбkladnu. Pak bychom se mмli bэt schopni nмjak dostat pшes Vypalovaи a љup na sever. Monoliќбkщm se to povedlo, tak bychom to mмli zvlбdnout taky, ћe jo. Netuљнm, co ћe to tam vlastnм naљli, ale podle toho, jak o to bojujн, to bude nмco dost dщleћitэho.</text>
+	</string>
+	<string id="dm_cool_info_35">
+		<text>Chystajн se velkй zmмny, brбcho! Vojenskй sklady a vщbec celб tahle oblast bude brzo patшit Svobodм. Naљe zбkladny uћ pokrэvajн vљechny dщleћitмjљн cesty a co nevidмt zabereme i tadytu vojenskou. Ta je taky u cesty, pшнmo na sever do centra Zуny, a aћ nмjak poшeљнme Vypalovaи, budeme prvnн, kdo se dozvн, jestli tam fakt je... ta plniиka pшбnн, vнљ, co myslнm.</text>
+	</string>
+	<string id="dm_intro_106">
+		<text>Halу, cizinиe!</text>
+	</string>
+	<string id="dm_intro_107">
+		<text>Vнtбm tм, stalkere!</text>
+	</string>
+	<string id="dm_intro_108">
+		<text>Hej!</text>
+	</string>
+	<string id="dm_about_141">
+		<text>Tohle je poslednн obyvatelnб ибst Zуny pшed Vypalovaиem mozkщ. Dokonce i kolem skladщ je to zamoшenй krveћнznivэmi potvorami a smrtelnм nebezpeиnэm ledasинm, ale co je dбl, to uћ tuplem nikdo netuљн. V Иervenйm lese se nedбvno naљly nмjakй novй cesty do neprozkoumanэch oblastн - slyљel jsem, ћe tam objevili malй mмsteиko, ale sбm jsem tam jeљtм nebyl.</text>
+	</string>
+	<string id="dm_about_142">
+		<text>Шekl bych, ћe nejdщleћitмjљн vмc љiroko daleko je tadyta vojenskб zбkladna. Svoboda se o ni pere s armбdou, protoћe vojclovй jsou po poslednн emisi skoro na dnм. Taky je tu v okolн pбr vesnic. Nenн to nic extra, ale v tмch polorozpadlэch starэch barabiznбch se obиas nмjakб koшist najde. Na severu je bariйra, kterou postavili stalkeшi, aby nбm sem od Vypalovaиe nelezlo tolik potvor. Jestli odtud chceљ odejнt, jdi spнљ na jih do Temnйho ъdolн, anebo kdyby ses chtмl podнvat, jak si to Povinnost rozdб skoro s celou Svobodou o novб ъzemн, mщћeљ jнt na zбpad do Иervenйho lesa.</text>
+	</string>
+	<string id="dm_about_143">
+		<text>Jde tady hlavnм o jednu vмc: malб skupina stalkerщ se snaћн zadrћet potvory a zombice, kterй sem lezou od Vypalovaиe. Vмtљina jednotek Svobody a Povinnosti se mydlн mezi sebou nмkde v Иervenйm lese. Slyљel jsem, ћe tam naљli cestu do nмjakйho malйho mмsteиka z doby pшed Zуnou, do Limansku.</text>
+	</string>
+	<string id="dm_about_144">
+		<text>Zaинnб tady bэt pмknм horko, kбmo. Po tй velkй emisi naљli stalkeшi cestu pшes Иervenэ les do Limansku. Cesta vede pшes vojenskб skladiљtм, a sotva to nмkdo rozkecal, Povinnost i Svoboda tнm smмrem okamћitм pohnuly kostrou. Taky u bariйry jde celkem do tuhйho, protoћe ъtoиnй vlny potvor uћ tam nejsou jedinэm problйmem. Vмш nebo nevмш, snaћн se tamtudy probнt taky monoliќбci... A to jsem si dlouho myslel, ћe jsou to o nich jenom kecy - teda, skoro aћ doteп!</text>
+	</string>
+	<string id="dm_about_145">
+		<text>Zуna se mмnн tak rychle, ћe si nejsem moc jistэ, co z toho, co o nн vнm, je jeљtм pravda. Na druhou stranu, netrинm tu zase tak dlouho, takћe ti menљн nalejvбrnu dбt mщћu. Povнdб se, ћe na severu je nмco jako Vypalovaи mozkщ, a slyљel jsem, ћe na zбpad odsud je Иervenэ les a Limansk, kde si ъdajnм jdou vzбjemnм po krku Povinnost a Svoboda.</text>
+	</string>
+	<string id="dm_about_146">
+		<text>Kdyћ jsme sem dorazili, mмla uћ Svoboda zelenй mozky celkem dobшe zpracovanй, a nevypadб to, ћe by toho chtмli jen tak nechat. Sedнme si tu na ostшн noћe - nechceme si naљtvat jednu stranu, ale z druhй nбs taky neиekб nic dobrйho. No, my tady od toho nejsme, tak co uћ.</text>
+	</string>
+	<string id="dm_about_147">
+		<text>Vљechno, co se tu dмje, je kvщli tй vojenskй zбkladnм. Ta sviтa stojн na zatracenм dщleћitйm mнstм, vlastnм na tom nejlepљнm, ze kterйho se dб kontrolovat okolн. Farmy a vesnice, kterй vidнљ v okolн, jsou ve srovnбnн s nн malй ryby. Proto taky Svoboda dмlб, co mщћe, aby se zбkladny zmocnila - uћ si zшнdili takovй menљн zбkladniиky u cesty do Temnйho ъdolн a do Иervenйho lesa. Ti chlapi fakt vмdн, co dмlajн. Severnн zбkladnu teп drћн samotбшљtн stalkeшi a snaћн se nadмlat sekanou z tamnнch muќбkщ, ale mбm ten dojem, ћe se jim tam Svoboda nasбиkuje hned, jak to tady poшeљн s tou zбkladnou.</text>
+	</string>
+	<string id="dm_about_148">
+		<text>Zdб se, ћe to tady co nevidмt pшevezme Svoboda. Co si vyшeљili problйmy mezi sebou, dostali se tady celkem daleko. Jsou tady, jsou uћ v Limansku a zatнm poшбd jeљtм drћн cestu do Temnйho ъdolн. Jo, шнkбm "zatнm", protoћe zabrali pomмrnм velkй ъzemн a jsou na nмm dost rozptэlenн: bojujн o Limansk, o vojenskou zбkladnu a ъstшedн majн poшбd dole v Temnйm. Mбm ten dojem, ћe jim to banditй v Temnйm ъdolн brzo vytmavн. Vљak si to pшedstav: staин, aby nмjakэ mazanмjљн bandita chvнli pшemэљlel hlavou, plnм vyuћil situaci a pмknм Svobodu skшнpnul. Jб bych to tak aspoт na jejich mнstм udмlal.</text>
+	</string>
+	<string id="dm_about_149">
+		<text>Tady to zavбnн nмjakou pмknм posranou magiн, kбmo. Chodнme poшбd dokoleиka a hledбme ztracenй kamarбdy, a co jsme zatнm naљli? Jednu potvoru vedle druhй. Kdyћ vylezeme kousek vejљ, je nмkdy slyљet ъtrћky jejich vysнlбnн, ale иert se vyznej v tom, co to mб vlastnм znamenat. A to nenн ani zdaleka vљechno! Jak je sakra moћnй, ћe se pшed bariйrou objevili monoliќбci? Jednoho jsem sбm vidмl. Byl zranмnэ, иumмl jen tak do prбzdna a poшбd dokoleиka si pro sebe mumlal: "Brбnit Monolit!" Myslнm, ћe vщbec necнtil bolest, protoћe se snaћil uљkrtit jednoho kбmoљe, dokud jsme do nмj nenasypali pбr zбsobnнkщ. Co vщbec chtмjн? Proи se po emisi vrбtili? Vљude akorбt samй otбzky, kбmo...</text>
+	</string>
+	<string id="dm_action_info_116">
+		<text>Hledбme naљe kluky, kterй jsme pшed emisн naposledy vidмli nмkde tady kolem. Na kopcнch je obиas chytбme, kdyћ vysнlajн rбdiem, ale jinak po nich nenн ani vidu, ani slechu! Nemбm nejmenљн tuљenн, kde je teda jako mбme zaинt hledat.</text>
+	</string>
+	<string id="dm_action_info_117">
+		<text>Jsme nмco na zpщsob zбchrannй mise, hledбme tu jedno naљe druћstvo. Emise je zastihla nмkde tady poblнћ, a pak jsme s nima ztratili spojenн. Tak poslali nбs, abychom kluky naљli... Nebo abychom se podнvali, co z nich zbylo.</text>
+	</string>
+	<string id="dm_action_info_118">
+		<text>Dneska se vљichni hrnou do centra Zуny a snaћн se rozlousknout jejн tajemstvн. Jo, mnм by taky nevadilo, kdybych znal odpovмdi na pбr otбzek, protoћe se snaћнm pшijнt na to, jak se dostat za ten pitomэ Vypalovaи. Poшбd nмkdo objevuje novй cesty, tak si шнkбm, to by bylo, aby aspoт jedna nevedla rovnou do srdce Zуny. Nevlнtnu na to jako prvnн a nebudu zkoumat kaћdou novou pмљinku - to bych musel bejt debil! Ale rбd bych vмdмl, co se dмje. Tшeba se nмkomu nakonec podaшн najнt zpщsob, jak se dobrat pravdy.</text>
+	</string>
+	<string id="dm_action_info_119">
+		<text>V podstatм tady jen tak љpicuju uљi, i kdyћ nбљ hlavnн ъkol je najнt ztracenй druћstvo. Zastihla je tady emise a od tй doby jsme je nevidмli. Obиas se pokouљejн navбzat komunikaci, ale zatнm se jim to nepodaшilo. Uћ jsme je tu hledali ъplnм vљude, nenechali jsme kбmen na kameni, a houby s octem! Uћ mi z toho jde mrбz po zбdech, иlovмиe!</text>
+	</string>
+	<string id="dm_action_info_120">
+		<text>Jsme jako vљichni ostatnн tady, kбmo - prostм иekбme na nмjakou dobrou duљi, kterб vymyslн, jak oblafnout Vypalovaи mozkщ. Aћ se to nмkomu podaшн, hezky si nakrбинme pшнmo doprostшed Zуny a nahrabeme si nejlepљн artefakty. Nevadн nбm, ћe nebudeme ъplnм prvnн. O to vмtљн je љance, ћe zщstanem zaћivu. Ne, nejsem zbabмlec, ale jsem prostм opatrnэ. Aћ budeљ starљн, tak ti to taky dojde....</text>
+	</string>
+	<string id="dm_action_info_121">
+		<text>Honнme se tu za duchy. Co, ty mi to nevмшнљ? No jo, no, abych pravdu шekl, jб bych si na tvйm mнstм taky moc nevмшil. Je to takhle: obиas se nбm podaшн zachytit ъtrћky vysнlбnн naљeho ztracenйho druћstva, dokonce je poznбme po hlase, ale zaboha nejsme ve stavu ty kluky najнt, navбzat s nimi spojenн nebo aspoт vyљpekulovat, odkud sakra ten signбl leze. Proto шнkбm, ћe je to jako nahбnмt duchy... Zatracenб blbб emise!</text>
+	</string>
+	<string id="dm_action_info_122">
+		<text>Иekбm na љйfa, aby mi dal rozkazy. Subordinace a tak podobnм. Љli jsme zachrбnit Leљijovu skupinu, ale nмjak se nбm to zkomplikovalo, jelikoћ ty pitomй zkurvysyny ne a ne najнt! A aby toho nebylo mбlo, pшiљli jsme v tй dмdinм u vodбrny o radistu. Vylezli jsme na vodбrenskou vмћ, ћe budeme mнt lepљн signбl, a zniиeho nic odnмkud vyhшezla jakбsi neviditelnб mrcha a oddмlala ho. Nemohli jsme s tнm dмlat ani prd, protoћe proti tмm potvorбm ћбdnэ vэcvik nemбme - v souиasnй dobм jsou naљнm hlavnнm protivnнkem jinн lidi.</text>
+	</string>
+	<string id="dm_action_info_123">
+		<text>Leљijova skupinka dokonиila pшed emisн pomмrnм dщleћitej ъkol - naљli velmi vzбcnэ artefakt. Uћ jsme dokonce i kontaktovali klienta a dali jsme mu vмdмt, ћe uћ se to nese, ale Leљij se s tнm nevrбtil. Jsme ћoldбci a шнdнme se podle kodexu - bez toho bychom nestбli za nic. Kontrakty se musн plnit. V termнnu. Kdybychom zdrbali nмjakou prбci, mмli bychom povмst v hajzlu a ћбdnэ sluљnэ klient uћ by nбm nedal dobrou zakбzku! Takћe uћ zase prolejzбme Zуnu jako stalkeшi.</text>
+	</string>
+	<string id="dm_cool_info_36">
+		<text>Pшбl bych si, abych vмdмl nмco o jejн historii. Jsme ћoldбci, kбmo. Do Zуny se vydбvбme, vћdycky jen abychom provedli urиitou misi a spolйhбme pшitom na peиlivй naplбnovбnн a vynikajнcн pшнpravu, kterб nбm mб umoћnit dosaћenн cнle.</text>
+	</string>
+	<string id="dm_cool_info_37">
+		<text>Slyљel jsem o jednom stalkerskйm klanu - nмjakэ Monolit - kterэ prэ se ztratil a teп se zase naљel. Jednoho dne se prostм pшestali ochomэtat kolem jako vљichni ostatnн tady a vypravili se do stшedu Zуny hledat nмjakэ plniи pшбnн. Pak o nich nikdo dlouho neslyљel pщl slova a teп se vrбtili. Problйm je, ћe nikdo nenн moc nadљenэ, kdyћ je vidн, protoћe v jednom kuse poшvбvajн nмjakб praљtмnб hesla a ъtoин na kaћdйho, koho zmerин.</text>
+	</string>
+	<string id="dm_cool_info_38">
+		<text>Nedбvno byla objevena cesta pшes Иervenэ les do Limansku, a svoboпбci uћ se tam dostali. Povinnost se o to taky snaћн. Hбdбm, ћe zatнmco si tu povнdбme, mydlн se uћ nмkde mezi sebou, protoћe jedni i druzн to zasranй mмsteиko chtмjн a hlavnм ho ani jedni dobrovolnм nenechajн jinйmu klanu. Svoboda mб teп dost expanzionistickou nбladu - snaћн se dobэt taky vojenskou zбkladnu! Emise vojclщm sice dala pмknм na frak, ale stalkeшi jim teп taky poшбdnм zatopili.</text>
+	</string>
+	<string id="dm_cool_info_39">
+		<text>Slyљel jsem, ћe se Povinnost pмknм zapotila, kdyћ se snaћili poшeљit ty muќбky u Agropromu. Nмco se jim pod zemн podмlalo a zaboha se nemohli s tмma potvorama vypoшбdat. Dodavatelй si tam nмjakou dobu pшipadali jako v rбji, tak vysokб byla poptбvka po stшelivu. Ale slyљel jsem, ћe to nakonec zvlбdl jeden jedinэ stalker na vlastnн pмst, ъdajnм to podzemн prostм zatopil a bylo po problйmu. Nemбm tuљenн, jestli je to pravda, ale kdyby byla, musel ten stalker bэt fakticky drsтбk. Nemбme tu moc lidн, kteшн by dobrovolnм vlezli do doupмte muќбkщ - znбљ to, podej Zуnм prst a nмco ti ho uhryzne. Jestli na toho stalkera nмkdy narazнm osobnм, budu si muset koupit klobouk, abych pшed nнm mohl smeknout.</text>
+	</string>
+	<string id="dm_intro_109">
+		<text>Je mi ctн se seznбmit se zaslouћilэm staшнkem.</text>
+	</string>
+	<string id="dm_intro_110">
+		<text>Hбdбm, ћe teп pшijde potшбsбnн rukama, hochu!</text>
+	</string>
+	<string id="dm_intro_111">
+		<text>Vнtej ve skladech.</text>
+	</string>
+	<string id="dm_about_150">
+		<text>Tohle je poslednн oblast v Zуnм, kterou jeљtм stalkeшi prozkoumali. Jsou tady nмjakй armбdnн sklady, a kdybys љel jeљtм dбl, dojdeљ k Vypalovaиi mozkщ - шнkб se, ћe kaћdэ, kdo se vystavн jeho vlivu, pшijde dшнve иi pozdмji o rozum. Jsou to ale vљechno spekulace, protoћe ve skuteиnosti se nevrбtil nikdo, kdo se tam nahoru vypravil. Cestu od Vypalovaиe mozkщ ke skladщm pшetнnб bariйra, kterб mб zabrбnit potvorбm, aby nбm sem lezly z centra. Po tй velkй emisi se tam zaиali objevovat taky monoliќбci. Nechбpu, o co jim v tйhle ибsti Zуny jde... moћnб chtмjн pozabнjet vљechny, kteшн by mohli ohrozit ten jejich vybбjenэ Monolit.</text>
+	</string>
+	<string id="dm_about_151">
+		<text>Armбda po emisi pшiznala barvu - opustili pozice a zahrabali se na zбkladnм jako krysy. I kdyћ, uћ jich tam zщstalo jen nмco kolem dvaceti, protoћe byli nejblнћ od centra, a tak se to dб pochopit. Jakmile armбda pшestala ovlбdat sklady, zaиal se sem stahovat kdejakэ hej poиkej: stalkeшi, ћoldбci, Povinnost a Svoboda. Dobrй je, ћe mмli stalkeшi dost rozumu, aby se dali dohromady a zaиali hlнdat bariйru. Kdyby vљechny ty mutanty a monoliќбky nikdo nezadrћel, doplatili bychom na to vљichni, dokonce i armбda v Kordonu.</text>
+	</string>
+	<string id="dm_about_152">
+		<text>O vojenskй zбkladnм a o bariйшe uћ ti nмkdo nмco шнkal, ne? No, jinak tu kolem nic extra nenн, jen pбr vesniиek a statek. A i o tмch je љkoda mluvit, ale v opuљtмnйm domм se dб kdyћtak schovat nebo se tam dб zшнdit zбkladna, za pшedpokladu, ћe se tam pшed tebou nedostali ћбdnн muќбci. Dбvej si bacha - nenн jich tu v okolн moc, ale nмjakэ se najdou.</text>
+	</string>
+	<string id="dm_about_153">
+		<text>Staиila nмkolikaminutovб praљivб emise, a vojenskб skladiљtм hned pшipadla stalkerщm. Zelenй mozky pшed Svobodou zalezly hluboko na zбkladnu a bojн se odtud vystrиit nos. Zato ty svinм monoliќбckй, ty se nebojн niиeho. Mysleli jsme si, ћe vљichni uћ dбvno pochcнpali, ale jsou naћivu dмlajн pмknou paseku - lezou k nбm odnмkud od Vypalovaиe a stшнlн na vљechno, co zmerин.</text>
+	</string>
+	<string id="dm_about_154">
+		<text>Tady v okolн se dмje nмco opravdu moc divnйho. Teп, kdyћ armбdu skoro vyшнdila emise, se sem nahrnula spousta rщznэch stalkerщ. Vљichni doufajн, ћe se jim podaшн dostat do centra Zуny. Nмkteшн si chtмjн nahrabat vzбcnй artefakty, jinн majн spadeno na plniи pшбnн a dalљн zas hledajн nмjakэ emzбckэ Monolit... Hбdбm, ћe jim vљem љplouchб na majбk, moћnб uћ je Vypalovaи tak trochu pшipekl.</text>
+	</string>
+	<string id="dm_about_155">
+		<text>Mщћu ti vљechno podrobnм popsat, protoћe kdyћ jsem hledal artefakty, prolezl jsem to tady kшнћem krбћem. Hlavnнm orientaиnнm bodem je tady v okolн vojenskб zбkladna. Stojн pмknм na kopeиku a je na ni odevљad dobшe vidмt. Na sever od nн je bariйra a na jihu je Temnй ъdolн. Pokud projdeљ pшes vesnici na zбpad, dostaneљ se do Иervenйho lesa. Taky jsou tu nмjakй statky a na blatech je takovej srub, ale jб bych tam na tvйm mнstм moc nelezl, radiace je tam poшбd docela silnб.</text>
+	</string>
+	<string id="dm_about_156">
+		<text>Armбda tady nechala spoustu uћiteиnэch vмcн. Problйm je, myslнm, ћe to vљechno zabavн Svoboda, protoћe teп mб v merku tu vojenskou zбkladnu. My jsme dostali leda tak barikбdy na cestм k Vypalovaиi a sbнrбme artefakty, kterй se tu povalujн. Jo, taky je tu pбr opuљtмnэch vesnic, klidnм se mщћeљ v nмkterйm barбku usadit. Kdyћ budeљ mнt kliku, moћnб si vybereљ takovэ, kde zdarma nafasujeљ neviditelnйho spoleиnнka se spoustou chapadel.</text>
+	</string>
+	<string id="dm_about_157">
+		<text>Armбda uћ tuhle oblast nemб pod kontrolou. Svoboda se chystб vojбиky "vyшeљit" jednou provћdy, a pak to tady bude stejnм dobrй jako v Temnйm ъdolн. Do tй doby ale mбme vlastnн ъkol, musнme brбnit bariйru. Kdyћ jsem vidмl, jakй mrchy nбm sem pшes bariйru lezou, nмjak mм pшeљla chuќ na dobrodruћstvн. Budu radљi, kdyћ pшi pokusu dostat se za Vypalovaи mozkщ natбhnou brka nмjacн jinн cucбci.</text>
+	</string>
+	<string id="dm_about_158">
+		<text>O bariйшe jsme se doslechli na zбkladnм Svobody v Temnйm ъdolн. Povнdalo se, ћe tady armбda dostala pмknм na prdel a normбlnн stalkeшi se spojili, aby brбnili oblast pшed monoliќбky. Vypravilo se nбs sem celй druћstvo, шнkali jsme si, ћe pomщћeme brбchщm a pшiloћнme ruku k dнlu, ale nakonec jsem to aћ sem zvlбdl jenom jб. Nмkteшн chlapi to иasem vzdali, pбr jich umшelo po cestм a nмkteшн, hбdбm, jsou poшбd jeљtм na cestм...</text>
+	</string>
+	<string id="dm_about_159">
+		<text>Armбdм se to tady vcelku rychle vymykб z rukou. Sklady po nich nedбvno pшevzali stalkeшi a spolu se Svobodou drћн vмtљinu klниovэch strategickэch bodщ v tйhle oblasti. Dali jsme se dohromady, dбl hlнdбme bariйru a odrбћнme љнlenй ъtoky monoliќбkщ a dмsivэch mutantщ, kteшн nбm sem lezou od radaru. Zбpadnн a jiћnн ибst oblasti mб pod kontrolou Svoboda, a celkem brzo zaberou i vojenskou zбkladnu. Jo, a taky jsme tady kolem vidмli pбr ћoldбkщ, kteшн hledali nмjakй svoje ztracenй druћstvo nebo tak nмco.</text>
+	</string>
+	<string id="dm_action_info_124">
+		<text>Zkus hбdat. Hledбm koшist, co taky jinйho. Vojcli uћ to tady pod palcem nemajн, tak si mщћem dмlat, co chcem. Taky se chystбm na cestu do centra Zуny. Obиas musim, jak vidнљ, pomбhat pшi obranм bariйry, ale to je zибsti i pro mou osobnн bezpeиnost a kromм toho si obиas po pшestшelce najdu fakt hezkou zbraт a posbнrбm si nбboje.</text>
+	</string>
+	<string id="dm_action_info_125">
+		<text>Pшiљel jsem bojovat u bariйry. Jeden kбmoљ v povinnosќбckйm baru mi vyprбvмl, ћe tady pбr chlapщ zшнdilo obranu proti mutantщm. Шнkal, ћe je tu skoro poшбd po kom stшнlet, tak jsem se sebral jeљtм ten veиer a љel jsem se k nim pшidat, aspoт bude nмjakб zбbava.</text>
+	</string>
+	<string id="dm_action_info_126">
+		<text>Vћdycky mм lбkaly neprobбdanэ ъzemн. Vнљ, jak to myslнm, do Zуny jsem pшiљel, protoћe uћ mм ta ubнjejнcн rutina venku lezla krkem a tady jsou poшбd nмjakэ tajemstvн, ve kterejch se mщћeљ љќбrat. A taky љlo o prachy. Иlovмk potшebuje jнdlo a munici, ale penнze dostane jenom za koшist. A taky doufбm, ћe se nмkomu podaшн projнt za Vypalovaи, protoћe hned, jak nмkdo najde cestu, vyrazim do centra Zуny. I kdyћ mбm jenom jedno tajnй pшбnн - aby celб Zуna zmizela.</text>
+	</string>
+	<string id="dm_action_info_127">
+		<text>Snaћнm se dohonit Svobodu. Chtмl jsem s nima jнt uћ do Limansku, ale dorazil jsem to Temnйho ъdolн pozdм a uћ byli na cestм. Aљot шнkal, ћe pщjdou tudy, ale neћ jsem sem dolezl jб, museli uћ projнt pшes Иervenэ les. Teп uћ je nedohonнm ani zaboha! Sбm tam nejdu, a nemyslнm, ћe by tнm smмrem brzy vyrazila nмjakб vмtљн skupinka...</text>
+	</string>
+	<string id="dm_action_info_128">
+		<text>Jen se snaћнm trochu popadnout dech, neћ vyrazнm do Иervenэho lesa. Rбd bych vмdмl, co tam vlastnм je - myslнm na druhй stranм, za Limanskem. Ћe se odtud ostatnн nevrбtili? No a co? Moћnб se nevrбtili, protoћe narazili na nмco zajнmavйho. Chci шнct, staин se podнvat na monoliќбky, o tмch nikdo neslyљel celй mмsнce a najednou se objevili... Bщh vн, co tam vlastnм naљli.</text>
+	</string>
+	<string id="dm_action_info_129">
+		<text>Zrovna jsem se s prбzdnэma rukama vrбtil z Иervenэho lesa. Snaћili jsme se pшes nмj s nмkolika kamarбdy projнt, ale z nмjakйho dщvodu jsme vљichni dostali hroznэ strach. Шeknu ti, ћe jsme se tak vydмsili, ћe jsme odtud pelбљili aћ k bariйшe. Je zбzrak, ћe nikdo z nбs neљlбpl do nмjakй anomбlie. A co je legraиnн, poшбd netuљнme, co nбs tak vydмsilo! Stejnм je to zatracenм divnej les.</text>
+	</string>
+	<string id="dm_action_info_130">
+		<text>Chtмl bych vidмt celou Zуnu. Teп jsem doљel aћ ke skladiљtнm a pшedtнm jsem proљel Kordon, blata, Agroprom a Temnй ъdolн. Dokonce jsem nмjakэ иas otroиil banditщm na Smeќбku. Aћ si to tady poшбdnм prohlнdnu, vydбm se zase o dщm dбl.</text>
+	</string>
+	<string id="dm_action_info_131">
+		<text>Uћ tu nenн moc ъzemн, kterэ by neovlбdala nмjakб frakce, a v Agropromu nebo na Smeќбku toho samotnэ stalker moc nezmщћe. Ani v Limansku - pшed nedбvnem ho objevili a hele, kolik lidн se tam hned cpe. Se sklady je to trochu jinй, protoћe tady nenн tak jasnб situace: armбdм uћ nepatшн, ale Svobodм zatнm taky ne tak docela. Kromм toho je tahle oblast blнzko k novм prozkoumбvanэm ъzemнm, a kdo se tam dostane, mб po starostech - budou tam ty nejvzбcnмjљн artefakty.</text>
+	</string>
+	<string id="dm_action_info_132">
+		<text>Hledбm jeden cennэ artefakt. Sidoroviи mм poћбdal, abych mu ho naљel, a u Kordonu ani v Temnйm ъdolн jsem ho neobjevil. Na Smeќбku je s hledбnнm koшisti tolik problйmщ, ћe to za tu nбmahu nestojн, a v Agropromu jsou dva stalkerskй klany, kterй tam nenechaly kбmen na kameni, tнm spнљ, ћe jim nмjakэ hrdina zatopil podzemн, a tak nemusн Povinnost trбvit vмtљinu иasu bojem s mutanty. Ale tady teп nikdo poшбdnм nevн, kterб bije, a tak bych tu mohl v klidu najнt, co hledбm.</text>
+	</string>
+	<string id="dm_action_info_133">
+		<text>Poslali mм sem z Temnйho ъdolн s dщleћitэm vzkazem pro mнstnнho velitele Svobody. Dostal jsem odmмnu a шekl jsem si, ћe bych se tu mohl trochu porozhlнdnout. Proи ne? Chlapi jsou tu sprбvnн a nikdo tady zatнm nezavбdн ћбdnэ blbэ pravidla. Jasnм, hodnм se tu stшнlн, je to tady samб vнla Anomбlka a monoliќбci nбs ani nenechajн poшбdnм vyspat, ale takovб holt uћ je Zуna, kбmo!</text>
+	</string>
+	<string id="dm_action_info_134">
+		<text>Chci jнt na sever, smмrem k Vypalovaиi. Шнkб se, ћe monoliќбci to zvlбdli a nмkolika jinэm stalkerщm prэ se taky podaшilo dojнt aћ k plniиi pшбnн a nenechat se pшitom rozebrat na souибstky. Nikdo netuљн, proи se vrбtili. Moћnб uћ jim doљlo ћrбdlo do kvйru nebo schytali moc radiace. To je jedno - kdyћ to zvlбdli jinн, dokбћu to taky, a je mi jedno, co si o tom kdo шнkб!</text>
+	</string>
+	<string id="dm_action_info_135">
+		<text>Vypadбљ, ћe uћ se po Zуnм potulujeљ dlouho, stalkere. Иekal bych, ћe uћ ses nauиil, ћe klбst podobnй otбzky nenн v poslednн dobм moc dobrej nбpad. Je ti po tom kulovэ s pшehazovaиkou. Kdybych ti chtмl nмco takovэho vyklбdat, шekl bych ti to sбm od sebe, ne? Nebo nмkomu, s kэm bych se o to chtмl podмlit. Zkus nмjakou lepљн otбzku.</text>
+	</string>
+	<string id="dm_cool_info_40">
+		<text>Kdyћ se zpoza bariйry zaиali hrnout zpбtky monoliќбci, chtмli jsme si jednoho odchytit a vytбhnout z nмj, jak se dostat kolem Vypalovaиe a dбl do centra Zуny. Иlovмиe, pшiљla u toho o ћivot spousta lidн a stбlo nбs to nмjakэch nбbojщ, ale nakonec se nбm to podaшilo. Manнk sice schytal pщl zбsobnнku pшнmo mezi ћebra, ale vypadal poшбd zatracenм moc pшi ћivotм: vrиel, љkubal sebou a chтapal po naљem љйfovi. Ptali jsme se ho po dobrйm, zkouљeli jsme to i po zlйm, ale neшekl nбm ani hovno, jenom poшбd dokoleиka jeиel: "Braтte Monolit!" Myslнm, ћe se jim na druhй stranм muselo stбt nмco... No, prostм jsme se ve skuteиnosti pшes Vypalovaи zas tak moc dostat nesnaћili, i kdyћ na druhou stranu, jestliћe k nбm sem lezou zpoza bariйry, tak tam nмjakб cesta bэt musн, ne? Co myslнљ?</text>
+	</string>
+	<string id="dm_cool_info_41">
+		<text>Podle nejnovмjљнch zprбv nмkdo naљel cestu do mмsteиka Limansk za Иervenym lesem, a Svoboda s Povinnostн se teп kvщli tomu bijou mezi sebou. Musн to bejt fakt pмknй mмsteиko, kdyћ jim to stojн za takovй krveprolitн.</text>
+	</string>
+	<string id="dm_cool_info_42">
+		<text>Slyљel jsem, ћe nмjakэ ћoldбk hodnм pomohl stalkerщm v Kordonu a vyшeљil potнћe, kterй tam mмli s armбdou. Armбda uћ se do nich od tй doby radљi moc nesere, protoћe se bojн, aby si to s nн nevyшнdili. A jak si tak vybavuju, jak mмl ten ћoldбk vypadat... teda, nebudeљ to nakonec ty? Nestyп se, kбmo, pojп sem, aќ ti mщћu potшбst pazourou! Seљ fakt borec!</text>
+	</string>
+	<string id="dm_cool_info_43">
+		<text>K emisнm dochбzн tak иasto, ћe je z toho skuteиnэ problйm. Uћ se to nestalo celkem dlouho. Vнљ, jak to myslнm - pшichбzejн jedna za druhou a Zуna se pokaћdй nмjak zmмnн. Nмkdy se po emisi dajн najнt novй anomбlky a nмkdy zas najdeљ cestu pшes pole starљнch anomбliн. Tak taky naљli cestu do Limansku, i kdyћ o nмm vмtљina stalkerщ v ћivotм neslyљela. Mбme tu kvщli tomu dost velkй ztrбty na ћivotech a nenн to zdaleka jen kvщli emisнm. Probнhб tady skuteиnб vбlka o ovlбdnutн novэch ъzemн a je obиas pмknм oљklivб.</text>
+	</string>
+	<string id="dm_cool_info_44">
+		<text>Co by se tu asi tak mohlo stбt novйho? Je tady klid a bezpeиno jako v mateшskй љkolce, co ve љkolce, v jeslнch. I kdyћ na druhou stranu, pokud se tu nejdшнv trochu nerozkoukбљ a nezjistнљ si, jak to tady chodн, mщћeљ jнt rovnou do Zуny a bude po tobм, neћ bys шekl љvec. Proto tady ti chytшejљн chvнli zщstбvajн, neћ se vydajн na dalљн cestu. Kromм toho si tu mщћeљ najнt celkem dobrй zbranм a vybavenн - vљichni to tak dмlajн.</text>
+	</string>
+	<string id="dm_action_info_136">
+		<text>Celkem nic. Snaћнm se zщstat naћivu - o to tady jde.</text>
+	</string>
+	<string id="dm_about_160">
+		<text>Jб tomu kurva furt nemщћu uvмшit, mбlem mм tu pшed hodinkou odkrбglovali! Byl jsem tady, mщћe to bэt tak pщl roku, vљude klнdek a ticho po pмљinм, a teп tady na tebe pod kaћdэm keшem инhб nмjakэ vypatlanэ vojcl! To je љнlenэ, иlovмиe...</text>
+	</string>
+	<string id="dm_cool_info_45">
+		<text>Coћe? Co chceљ vмdмt? Hele, jб ti teda nмco povнm: Povinnost jsou sice poliљi jak vyљitн, ale poшбdek udrћovat umн, to zase jo. Ale stejnм je moc rбd nemбm. Dмlajн, jako by jim vљechno patшilo: "neber si tohle, neber si tamto". A kromм toho uћ vymysleli, co se jako mщћe шнkat na veшejnosti a co si иlovмk musн nechat pro sebe! Dokonce jsem slyљel, ћe by Zуnu chtмli kousek po kousku zniиit. No, ne ћe by mм to pшekvapovalo, vљak to bэvaly zelenй mozky... do hбje s jejich pшedstavama. Problйm je, ћe jsem slyљel, ћe majн nмjakou podporu seshora.</text>
+	</string>
+	<string id="dm_about_161">
+		<text>Tohle ъzemн ovlбdб Povinnost a stanovila tady pravidla, kterб platн jako zбkon. Hlнdбme hranice Zуny a obиas zchladнme nмjakou tu horkou hlavu: chodн nбm sem celй davy idiotщ s hlavou v oblacнch... a pak tady chcнpajн po tuctech hned prvnн den.</text>
+	</string>
+	<string id="dm_about_162">
+		<text>Zajdi si do tбbora - tam se naposlouchбљ spousty kecщ. Zelenбиi, jako jsi ty, se tam obvykle zastavн, nechajн si povyprбvмt, co je kde novйho, a chvнli si odpoиinou. Jsou tu sice v okolн vojбci, ale nenн si s nimi potшeba dмlat vмtљн starosti. Ale na druhou stranu nenн dobrй se jim pшнliљ plйst do cesty, protoћe oni se moc nerozmэљlн, kdyћ mщћou odstшelit nмkoho z nбs... U obchodnнka je ale takovй pмknй klidnй mнsteиko, kde si klidnм mщћeљ dбt i dvacet.</text>
+	</string>
+	<string id="dm_cool_info_46">
+		<text>Uћ jsi slyљel, ћe Povinnost nabнrб novй иleny? Chvilku jsem o tom uvaћoval, ale pak jsem si шekl, ћe se s tнm nebudu otravovat. Bylo by to, jako kdybych se mмl vrбtit do armбdy: disciplнna a vљechno to svinstvo kolem... Svoje dva roky jsem si na vojnм odkroutil a staиilo mi to na celej ћivot...</text>
+	</string>
+	<string id="dm_action_info_137">
+		<text>No, шнkal jsem si, ћe pщjdu k Jantaru, ale pak jsem si to rozmyslel. Ti vypatlanci tam zшнdili plnм provozuschopnou vмdeckou zбkladnu. Vynalйzajн si tam v klнdku иert vн co, a kolem labiny se jim pшitom poflakujн zombice. Hotovб idylka, ne?</text>
+	</string>
+	<string id="dm_cool_info_47">
+		<text>Museli jsme nedбvno vyиistit oblast kolem jezera Jantar, a vzali jsme to fakt z gruntu! Jsou tam vмdeckй laboratoшe, ale taky je tam okolo vнc jak tuna zombбlщ, tak musнme tмm vмdбtorщm obиas tak trochu pomoct.</text>
+	</string>
+	<string id="dm_cool_info_48">
+		<text>Vнљ co? Jen aќ se Povinnost, Svoboda a koшistnнci o tuhle zemi klidnм poperou. Co je mi do toho? Bмћte se s tнm vљichni zahrabat...</text>
+	</string>
+	<string id="dm_action_info_138">
+		<text>Mбme tady teп prбci, stalkere. Nejen ћe je tady plnб prdel muќбkщ, navнc jsou tady i ti zasranн ћoldбci a ti vypatlanci ze Svobody, a vљichni nбm tu dмlajн potнћe...</text>
+	</string>
+	<string id="dm_cool_info_49">
+		<text>Nic. Prostм se neumнm jen tak flбkat. Seberu, co mщћu, kde mщћu, a snaћнm se z toho nмjak vyћнt. Na to, abych љel hloub do Zуny, se necнtнm, sakra pes! Tam, z kama jsem pшiљel, nebyla ћбdnб rozumnб rachota a navнc mi ta moje semetrika v jednom kuse stбla za zadkem... Musнm se nмjak ћivit, chбpeљ? Kdyћ budeљ tady na Smeќбku hledat a hrabat celэ den, mщћeљ najнt pбr zбkladnнch artefaktщ a za to uћ se dб koupit sluљnй ћrбdlo a nмco, инm bys ho splбchl do ћaludku.</text>
+	</string>
+	<string id="dm_cool_info_50">
+		<text>No, vнљ jak...  Pбr chlapщ se usadilo na Smeќбku a ostatnн se vypravili hloub do Zуny. Dб se tu najнt celkem dobrэ zboћн, to zas jo, ale ne kaћdэ mб na takovou prбci ћaludek. Nezkuљenн zelenбиi majн problйm, aby tu vщbec pшeћili, a pokud nemбљ hodnм dobrй vybavenн, celkem tutovм tady nemбљ љanci.</text>
+	</string>
+	<string id="dm_action_info_141">
+		<text>Do toho ti nic nenн... Neser lidi debilnнma otбzkama a nikdo se nebude srбt do tebe.</text>
+	</string>
+	<string id="dm_cool_info_51">
+		<text>Jб ty naљe vмdбtory pшнmo zboћтuju, иlovмиe! Jsou to legraиnн manнci, o tom ћбdnб! Vмtљinou ty svй zvмdavй nosнky vщbec nevystrkujн z bunkru, ale kdyћ uћ vylezou ven, jako onehdб... jo, to je nмco! Vљude samй vojenskй jednotky, vrtulnнky, бpйcйиka a tak! Pшнљtм tutovм vytбhnou z kufшнku bitevnн kшiћnнk, nebo aspoт obrnмnэ vlбиek...</text>
+	</string>
+	<string id="dm_cool_info_52">
+		<text>Co je tady novйho? Novйho nic, ale starэch sraиek je tady tolik, ћe bys v nich mohl topit prбvnнky. Banditi jsou tak drzн, ћe to snad ani nenн pravda! My tady riskujeme ћivot, prochбzнme anomбlky a hledбme artefakty a oni nбm to klidnм kradou... иurбci jedni svinљtн! Radљi se drћ v bezpeиnй vzdбlenosti od Smeќбku - to je pшesnм to pravй mнsto pro nм.</text>
+	</string>
+	<string id="dm_action_info_139">
+		<text>Zщstal jsem tady trиet, vidнљ, ne? Chtмl bych jнt domщ, ale nenechajн mм. Ale jinak nenн novйho nic... Chlapi, kteшн chodн dбl do Zуny - profнci - povнdajн rщznй vмci. Obиas taky donesou takovou koшist, aћ se ti na ni sbнhajн sliny. Ale vмtљina z nich se tam vщbec nedostane a jeљtм mнт se jich vrбtн.</text>
+	</string>
+	<string id="dm_cool_info_53">
+		<text>Teda, ne ћe by se mi chtмlo mluvit o tom, co se tady v poslednн dobм dмje...</text>
+	</string>
+	<string id="dm_cool_info_54">
+		<text>Uћ jsi slyљel ty kecy, ћe se Zуna rozrщstб? Myslнm, ћe na tom nмco bude, protoћe jsem na perimetru vidмl fakt hnusnэ muќбky, kteшн byli pшedtнm jenom ve stшedu Zуny. To nenн moc dobrэ, co?</text>
+	</string>
+	<string id="dm_cool_info_55">
+		<text>No, moћnб na vљech tмch шeиech o krveћнznivэch svinнch na hranicнch Zуny nмco bude. Co to ale mб spoleиnйho s tнm, jestli se Zуna rozrщstб? Jenom proto, ћe se pбr tмch mrch zatoulalo aћ na hranice... Nejspнљ nбm tam prostм proklouzli. Ћбdnй velkй pшekvбpko, vzhledem k tomu, ћe makбme ve dne v noci! Ale i tak si vedeme dobшe. Vљak neslyљнљ lidi venku za perimetrem v jednom kuse jeиet "pomoc, obklниili nбs mutanti", nebo snad jo?</text>
+	</string>
+	<string id="dm_about_167">
+		<text>Dбvej si pozor, tyhle chodнcн mrtvoly doslova zaplavily celou oblast. Jsou pomмrnм tupй, ale hroznм agresivnн. Jsme tady neustбle v obleћenн, ve dne v noci. Jinak шeиeno, moc bezpeиno tu zrovna nenн, mladнku...</text>
+	</string>
+	<string id="dm_about_168">
+		<text>Nevim, co bych ti na to mмl шнct. Nмco se dмje skoro poшбd, ale to je tady normбlnн. Venku tomu pochopitelnм nikdo moc nevмшн, ale vнљ jak, jsme tady v anomбlnн Zуnм.</text>
+	</string>
+	<string id="dm_cool_info_56">
+		<text>Chceљ novэ drby? Шeknu ti jeden, co je zaruиenм pravda: brzy tu zavlбdne lepљн poшбdek. Vyиistнme Zуnu od muќбkщ a taky od jistэch debilщ a pitomcщ...</text>
+	</string>
+	<string id="dm_cool_info_57">
+		<text>Slyљels, jak se chlapi z Povinnosti chvбstajн, co vљechno prэ nбm provedou? Slнbili, ћe nбs rozdrtн na prach, a to prэ bude jenom zaибtek. Celб ta vмc mi dмlб starosti... Zvlбљќ vzhledem k tomu, ћe se jim ъdajnм podaшilo sehnat novй vysoce kvalitnн vybavenн...</text>
+	</string>
+	<string id="dm_cool_info_58">
+		<text>Novinky, jo? Koho zajнmб, jakй шeиi lidi vedou? Stejnм nemщћeљ vмшit vљemu, co slyљнљ, jinak by ti z toho rychle hrбblo. Napшнklad se tvrdн, ћe se nмjakэ fakt tvrпбk stalker vrбtil z centra Zуny, pшinesl prэ nмco, co jeљtм nikdy nikdo nevidмl, a vydмlal na tom velkэ prachy... Takovejch pшнbмhщ ti klidnм navymэљlнm stovku za veиer i jб sбm!</text>
+	</string>
+	<string id="dm_help_12">
+		<text>Mockrбt dмkuju.</text>
+	</string>
+	<string id="dm_about_169">
+		<text>Co tady dмlбљ, jen tak bez ochrany? Omrzel tм ћivot, co? Tady kolem je vнla Anomбlka schovanб za kaћdэm keшem. Nikdo se tu bez ochrany nejde ani vyиurat, protoћe by za tu dobu schytal "zdravou" dбvku radiace.</text>
+	</string>
+	<string id="dm_about_170">
+		<text>Koukбm, ћe se tady moc nevyznбљ, a tak ti dбm jednu pшбtelskou radu: drћ se dбl od zelenejch mozkщ. Jak nмjakйho zahlнdneљ, mazej odtud, protoћe jsou pшesnм tak blbн, jak vypadajн. Nejdшнv tм pro jistotu pokropн pбr dбvkama a pak se jdou podнvat na doklady, co ћe to dneska ulovili.</text>
+	</string>
+	<string id="dm_intro_112">
+		<text>Dobrэ den.</text>
+	</string>
+	<string id="dm_intro_113">
+		<text>Dobrэ den.</text>
+	</string>
+	<string id="dm_intro_114">
+		<text>Hej, co je?</text>
+	</string>
+	<string id="dm_intro_115">
+		<text>Hele, vole!</text>
+	</string>
+	<string id="dm_intro_116">
+		<text>Hej!</text>
+	</string>
+	<string id="dm_intro_117">
+		<text>Jй, zdar!</text>
+	</string>
+	<string id="dm_intro_118">
+		<text>Ahoj.</text>
+	</string>
+	<string id="dm_intro_119">
+		<text>Zdravнm!</text>
+	</string>
+	<string id="dm_intro_120">
+		<text>Ahoj, stalkere.</text>
+	</string>
+	<string id="dm_intro_121">
+		<text>Zdravнm, stalkere!</text>
+	</string>
+	<string id="dm_intro_122">
+		<text>Hej, ty tam, stalkere!</text>
+	</string>
+	<string id="dm_intro_123">
+		<text>Co je?</text>
+	</string>
+	<string id="dm_intro_124">
+		<text>Vida, koho to tu mбme!</text>
+	</string>
+	<string id="dm_intro_125">
+		<text>Hele, kdopak to sem leze?</text>
+	</string>
+	<string id="dm_intro_126">
+		<text>Ahoj, иlovмиe.</text>
+	</string>
+	<string id="dm_about_165">
+		<text>Je to jako prochбzka po minovэm poli, akorбt ћe horљн. Obиas se tady dмjou vмci... Nemщћeљ si tady ani na vteшinku dбchnout!</text>
+	</string>
+	<string id="dm_about_171">
+		<text>Radнm ti, abys chodil po љpiиkбch. Dokaп chodнљ po љpiиkбch, dбvбљ si furt pozor, ale jak se na chvilku uvolnнљ, uћ je po tobм.</text>
+	</string>
+	<string id="dm_about_172">
+		<text>Musнљ si furt dбvat bacha, kam lezeљ, dokonce i ve spanн, protoћe se ti kdykoli mщћe stбt nмjakб hnusnб sviтбrna.</text>
+	</string>
+	<string id="dm_about_173">
+		<text>Dбvej si na ty parchanty pozor. Jsou horљн jak hejno kobylek!</text>
+	</string>
+	<string id="dm_help_0">
+		<text>Pomoc, brбcho!</text>
+	</string>
+	<string id="dm_help_1">
+		<text>Pomozte mi nмkdo!</text>
+	</string>
+	<string id="dm_help_2">
+		<text>Strбћe! Jsem zranмnэ! Pojпte sem!</text>
+	</string>
+	<string id="dm_help_3">
+		<text>Pomoc! Chcнpnu tady!</text>
+	</string>
+	<string id="dm_help_4">
+		<text>Kluci, potшebuju lйkбrniиku!</text>
+	</string>
+	<string id="dm_help_5">
+		<text>Doneste mi lйkбrniиku!</text>
+	</string>
+	<string id="dm_help_6">
+		<text>Potшebuju prvnн pomoc, kluci! Honem!</text>
+	</string>
+	<string id="dm_help_7">
+		<text>Potшebuju lйkбrniиku, kamarбdi!</text>
+	</string>
+	<string id="dm_help_8">
+		<text>Doneste mi nмkdo lйkбrniиku!</text>
+	</string>
+	<string id="dm_help_9">
+		<text>Kбmo, potшebuju lйkбrniиku... Lйkбrniиku, jo?</text>
+	</string>
+	<string id="dm_help_10">
+		<text>Pomoz mi, vole!</text>
+	</string>
+	<string id="dm_help_11">
+		<text>Hej, kбmo, nemмl bys pro mм lйkбrniиku, buп tak hodnэ?</text>
+	</string>
+	<string id="dm_cool_info_59">
+		<text>Slyљel jsem, ћe nбfukovй v Kordonu dali vojclщm pмknм na pamмtnou a toho jejich rбdoby velitele љoupli za mшнћe. Skoro bych se na to byl rбd podнval sбm. Chci шнct, takovб ostuda!</text>
+	</string>
+	<string id="dm_cool_info_60">
+		<text>Tahle pitomб vмc s emisema nenн ћбdnб sranda! Kdyћ tм to neusmaћн na fleku, mб to zilion dalљнch moћnostн, jak tм odpravit! Mмli jsme tu pбr moc hezkэch mнst, kde je to teп samб debilnн anomбlka.</text>
+	</string>
+	<string id="dm_cool_info_61">
+		<text>Mбme tady teп tuhletu "zlatou hйreиku", i kdyћ je to spнљ takovб starб unavenб herka. Stalkeшi makajн, pшekopбvajн kopce kvщli radioaktivnнm krбmщm, tu a tam najdou i nмjakou pouћitelnou koшist, a my dбvбme pozor, aby nikdo nedмlal potнћe.</text>
+	</string>
+	<string id="dm_cool_info_62">
+		<text>Pшed pбr dny Kolja a jeho chlapi schytali emisi, takћe v jeho botбch uћ nejspнљ chodн nмkdo jinэ, jestli vнљ, jak to myslнm. To se ti zkrбtka stane, kdyћ furt lezeљ ven ze zбkladny. Seп v tбboшe na prdeli a budeљ v pohodм.</text>
+	</string>
+	<string id="dm_cool_info_63">
+		<text>Nмjakэ zatracenэ stalker v Agropromu si dal dohromady nмco jako gang. Ti zatracenн zkurvysyni navмљeli bulнky na nos nмkolika naљim chlapщm, a pak je svбzali a obrali. Ale nezabili je, na to nemмli odvahu - dobшe vмdн, ћe bychom po nich tvrdм љli, kdyby љlo o pomstu za naљe chlapy. </text>
+	</string>
+	<string id="dm_sim_action_attack_point_enemy">
+		<text>Coћe? Nepшнtel uћ tluиe na dveшe a ty mi cpeљ tyhle љmejdy?</text>
+	</string>
+	<string id="dm_sim_action_attack_point_friend">
+		<text>Co potшebujeљ? My jdeme na setkбnн s naљima chlapama, majн tady poblнћ tбbor.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_none">
+		<text>Kousek odsud je pмknэ neobsazenэ mнsteиko. Prбvм tam jdeme.</text>
+	</string>
+	<string id="dm_sim_action_stay_point_enemy_near">
+		<text>Vo co ti jde? Prostм tu posedбvбme, drћнme hlнdky okolo tбbora a tak, vљude kolem nбs jsou nepшбtelй. Bмћ s tмma svejma dotazama do hбje.</text>
+	</string>
+	<string id="dm_sim_action_stay_point_none_near">
+		<text>Mбљ problйm? Sedнme tu na prdeli a dбvбme si pauzu. Je tu ticho a klid, vzduch je иistej...</text>
+	</string>
+	<string id="dm_actor_news_1">
+		<text>Nмco novэho?</text>
+	</string>
+	<string id="dm_actor_news_2">
+		<text>Co novэho?</text>
+	</string>
+	<string id="dm_actor_news_3">
+		<text>Mбљ nмjakэ novinky?</text>
+	</string>
+	<string id="dm_army_no_news_1">
+		<text>Jestli touћнљ po zprбvбch, najdi si televizi – tady slyљнљ jenom kaћdodennн buzeraci. Nщщщda...</text>
+	</string>
+	<string id="dm_army_no_news_2">
+		<text>Tбhni k иertu! Chceљ novinky, co? Kup si u novэho stбnku noviny, je to hned za rohem!</text>
+	</string>
+	<string id="dm_army_no_news_3">
+		<text>Jasnм, mбme fщru novэch zprбv... baћant by z toho mмl radost celej tejden. Jinak je to ale poшбd totйћ dokola.</text>
+	</string>
+	<string id="dm_army_no_news_4">
+		<text>Kdyby ses doslech o nмиem novэm, poљli to mэm smмrem, jo? Ha! Hele, nechceљ radљi zakљeftovat? Mбљ nмco cennэho?</text>
+	</string>
+	<string id="dm_bandit_no_news_1">
+		<text>Co by tady mohlo bejt novэho? Jinej den, stejnэ hovno!</text>
+	</string>
+	<string id="dm_bandit_no_news_2">
+		<text>Ten se ti povedl, vole! Pшece by sis nemyslel, ћe v tэhle prdeli mбme nмjakэ novinky, ne?</text>
+	</string>
+	<string id="dm_bandit_no_news_3">
+		<text>Ћivot je srби... ale to nenн nic novэho.</text>
+	</string>
+	<string id="dm_bandit_no_news_4">
+		<text>Bмћ s tim do prdele. Hele, nemбљ nмco na kљeft?</text>
+	</string>
+	<string id="dm_csky_no_news_1">
+		<text>Co novэho, jo? No, mщћeme si tu udшнt prdele. Uћ brzo snad dokбћeme chodit po Zуnм jako normбlnн lidi a nevyљilovat na kaћdэm kroku z anomбliн.</text>
+	</string>
+	<string id="dm_csky_no_news_2">
+		<text>O niиem nevнm. Kaћdej dej poшбd totйћ: bмћ tam, pohlнdej tohle... Jenom doufбme, ћe je to k nмиemu dobrэ.</text>
+	</string>
+	<string id="dm_csky_no_news_3">
+		<text>Mбm jenom jedinou novinku: Zуna nemб smysl pro humor. Snaћнme se jн zkoumat, ale kdykoliv by nбs mohla seћvejkat... Poslyљ, nбhodou nemбљ ћбdnэ uћiteиnэ artefakty, co?</text>
+	</string>
+	<string id="dm_csky_no_news_4">
+		<text>Nevнm... nic novэho mм nenapadб. Ale co bys шekl tшeba na malej obchщdek?</text>
+	</string>
+	<string id="dm_default_no_news_1">
+		<text>Na novinky nemбm иas! Novinky si tм vћdycky najdou, kdyћ musej. My tady akorбt tak bмhбme jako kшeиci ve љlapacнm mlэnku...</text>
+	</string>
+	<string id="dm_default_no_news_2">
+		<text>Nic novэho jsem neslyљel a dнky Bohu za to. Vљechny novinky tady jsou љpatnэ novinky, jestli mi rozumнљ. Takћe – a to zaklepбvбm na dшevo – snad vљechno zщstane pшi starэm.</text>
+	</string>
+	<string id="dm_default_no_news_3">
+		<text>Proи se vщbec zajнmбљ o novэ udбlosti? Dбvej si prostм na sebe bacha a snaћ se zщstat v jednom kuse. Mimochodem, nic na prodej asi nemбљ, co?</text>
+	</string>
+	<string id="dm_default_no_news_4">
+		<text>To se ptбљ toho pravэho. Hele, nechceљ radљi nмco vymмnit? Sesypeme svэ vмci na jednu hromadu a kaћdej si vezme, co se mu lнbн.</text>
+	</string>
+	<string id="dm_dolg_no_news_1">
+		<text>Aћ odsud vypadneme, to teprve budou novinky. Do tэ doby bude jenom samб prбce a ћбdnб zбbava...</text>
+	</string>
+	<string id="dm_dolg_no_news_2">
+		<text>Poшбd jsi v Zуnм – to je novinka, co? Jб vбs stalkery nikdy nepochopнm – je to vбћnм takovб sranda tahat s sebou zbraт a neprщstшelnou vestu, i kdyћ se jdete jenom vychcat do kшovн?</text>
+	</string>
+	<string id="dm_dolg_no_news_3">
+		<text>Tady se toho moc novэho nedozvнљ, kamarбde. To bys musel vyjнt ven ze Zуny. Ale obchod, to je jinб... mбљ nмco cennэho na vэmмnu?</text>
+	</string>
+	<string id="dm_dolg_no_news_4">
+		<text>Novinky bys rбd, jo? Dalљн skupinka idiotщ nabмhla do anomбlie, mutanti roztrhali dalљнch pбr lidн, vљechno pшi starэm... Hele, mбљ nмjakou koшist? Cokoliv na prodej?</text>
+	</string>
+	<string id="dm_freedom_no_news_1">
+		<text>Ty vole, k иemu ti budou aktuбlnн zprбvy? Zklidni se! Prostм se hoп do pohody a bav se...</text>
+	</string>
+	<string id="dm_freedom_no_news_2">
+		<text>Mбme dost slunниka, иerstvэho vzduchu a trбvy... fakt dobrэ trбvy... hele, vole, pшestaт si dмlat vrбsky a zaиni si to uћнvat!</text>
+	</string>
+	<string id="dm_freedom_no_news_3">
+		<text>V tмhle konиinбch je dost novinek... ale jб je nesleduju. Teиka. Teп mi radљi povмz, jestli mбљ nмco na prodej? Co bys шekl na obchod?</text>
+	</string>
+	<string id="dm_freedom_no_news_4">
+		<text>Poslouchej, kбmo, jб nevнm... my tady moc novinek neodebнrбme. Zkus se radљi naladit na praktiиtмjљн vlnu. Napшнklad nemмl bys nмco, co bych od tebe mohl koupit?</text>
+	</string>
+</string_table>

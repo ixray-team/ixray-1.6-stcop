@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_antirad">
+		<text>Leki przeciwpromienne</text>
+	</string>
+	<string id="st_antirad_descr">
+		<text>Opakowanie piguіek wspomagaj№cych usuwanie radionuklidуw z ciaіa. Piguіki nie chroni№ przed nowym promieniowaniem, zmniejszaj№ jedynie dotychczasow№ dawkк.</text>
+	</string>
+	<string id="st_bread">
+		<text>Chleb</text>
+	</string>
+	<string id="st_bread_descr">
+		<text>Nie znaleziono jeszcze piekarza w Zonie, ale ten chleb nie jest zakaїony i jest nawet caіkiem jadalny. W kaїdym razie nikt jeszcze nie zgіaszaі zaїaleс.</text>
+	</string>
+	<string id="st_conserva">
+		<text>"Њniadanie turysty"</text>
+	</string>
+	<string id="st_conserva_descr">
+		<text>Konserwy zabrane przez stalkerуw z wojskowych magazynуw. Powinny nadawaж siк do jedzenia, jeњli wierzyж dacie waїnoњci.</text>
+	</string>
+	<string id="st_kolbasa">
+		<text>Dietetyczna kieіbasa</text>
+	</string>
+	<string id="st_kolbasa_descr">
+		<text>Ta mieszanka kurczaka i substytutu sojowego w postaci kieіbasy sіuїy czкsto stalkerom za њniadanie, obiad i kolacjк w jednym.</text>
+	</string>
+	<string id="st_medkit">
+		<text>Apteczka</text>
+	</string>
+	<string id="st_medkit_descr">
+		<text>Podstawowa apteczka. Uїywana do leczenia rуїnego typu obraїeс - ran, oparzeс, zatruж, itd.</text>
+	</string>
+	<string id="st_medkit_army">
+		<text>Apteczka wojskowa</text>
+	</string>
+	<string id="st_medkit_army_descr">
+		<text>Specjalistyczny zestaw medyczny pomocny w leczeniu obraїeс fizycznych i zapobieganiu utracie krwi. W jego skіad wchodzi preparat zwiкkszaj№cy krzepliwoњж krwi, antybiotyki, stymulator ukіadu odpornoњciowego oraz leki przeciwbуlowe.</text>
+	</string>
+	<string id="st_medkit_science">
+		<text>Apteczka naukowcуw</text>
+	</string>
+	<string id="st_medkit_science_descr">
+		<text>Zestaw medyczny stworzony specjalnie dla Zony. W jego skіad wchodz№ њrodki do opatrywania i leczenia ran oraz do oczyszczania organizmu z radionuklidуw. Zapobiega rozwojowi chorуb popromiennych i obniїa stopieс napromieniowania.</text>
+	</string>
+	<string id="st_vodka">
+		<text>Wуdka "Kozak"</text>
+	</string>
+	<string id="st_vodka_descr">
+		<text>Wуdka produkowana przez GSC. Dobrze wchodzi i znacznie zmniejsza skutki promieniowania. Powinno siк jej uїywaж z umiarem.</text>
+	</string>
+	<string id="st_bandage">
+		<text>Bandaїe</text>
+	</string>
+	<string id="st_bandage_descr">
+		<text>Bandaїe. Pomagaj№ zatrzymaж krwawienie.</text>
+	</string>
+	<string id="st_energy_drink">
+		<text>Napуj energetyzuj№cy</text>
+	</string>
+	<string id="st_energy_drink_descr">
+		<text>Czкsto uїywany przez stalkerуw w dalekich podrуїach, kiedy nie ma czasu na postуj. Zawiera іatwo przyswajalne wкglowodany, jak rуwnieї њrodki stymuluj№ce uwalnianie adrenaliny do krwiobiegu.</text>
+	</string>
+	<string id="st_detector1">
+		<text>Detektor "Echo"</text>
+	</string>
+	<string id="st_detector1_descr">
+		<text>Detektor anomalii z wbudowanym licznikiem Geigera. Wytwarza sygnaі alarmowy przy zbliїaniu siк do anomalii. Moїe rуwnieї wykrywaж obecnoњж artefaktуw i mierzyж odlegіoњж do najbliїszego. Po zamkniкciu urz№dzenie wykrywa jedynie promieniowanie i anomalie. By aktywowaж tryb poszukiwania artefaktуw, naleїy podnieњж przedni№ osіonк urz№dzenia (anteny).</text>
+	</string>
+	<string id="st_detector2">
+		<text>Detektor "Niedџwiedџ"</text>
+	</string>
+	<string id="st_detector2_descr">
+		<text>Detektor anomalii z wbudowanym licznikiem Geigera. Moїe byж rуwnieї wykorzystywany do wykrywania artefaktуw. Oprуcz odlegіoњci do artefaktu wskazuje rуwnieї kierunek. Po zamkniкciu urz№dzenie wykrywa jedynie promieniowanie i anomalie. By aktywowaж tryb poszukiwania artefaktуw, naleїy podnieњж przedni№ osіonк urz№dzenia (anteny).</text>
+	</string>
+	<string id="st_detector3">
+		<text>Detektor "Wieles"</text>
+	</string>
+	<string id="st_detector3_descr">
+		<text>Detektor nowej generacji, stworzony do wykrywania artefaktуw. Wskazywane s№ one na specjalnym wyњwietlaczu, dziкki czemu іatwiej je znaleџж. Urz№dzenie zawiera licznik Geigera i moїe byж rуwnieї uїywane do wykrywania anomalii. Po zamkniкciu urz№dzenie wykrywa jedynie promieniowanie i anomalie. By aktywowaж tryb poszukiwania artefaktуw, naleїy unieњж przedni wyњwietlacz LED.</text>
+	</string>
+	<string id="st_cordon_case">
+		<text>Srebrna walizka.</text>
+	</string>
+	<string id="st_cordon_case_descr">
+		<text>Walizka zamkniкta na zamek z szyfrem. Zawiera bardzo cenne informacje o zaufanych handlarzach, ktуrym moїna sprzedawaж artefakty.</text>
+	</string>
+	<string id="st_fang_pda">
+		<text>PDA Kіa</text>
+	</string>
+	<string id="st_fang_pda_descr">
+		<text>Kieszonkowy komputer. Uїywany w Zonie jako notatnik, komunikator i urz№dzenie do nawigacji, a takїe rejestrator dџwiкku. Kaїdy PDA posiada niepowtarzalny identyfikator umoїliwiaj№cy namierzenie go.</text>
+	</string>
+	<string id="st_shukin_pda">
+		<text>PDA Lingowa</text>
+	</string>
+	<string id="st_shukin_pda_descr">
+		<text>Kieszonkowy komputer. Uїywany w Zonie jako notatnik, komunikator i urz№dzenie do nawigacji, a takїe rejestrator dџwiкku. Kaїdy PDA posiada niepowtarzalny identyfikator umoїliwiaj№cy namierzenie go.</text>
+	</string>
+	<string id="st_recorder">
+		<text>Dyktafon</text>
+	</string>
+	<string id="st_cooler_docs">
+		<text>Opis stacji chіodz№cej</text>
+	</string>
+	<string id="st_cooler_docs_descr">
+		<text>Teczka zawieraj№ca szczegуіowy opis i instrukcje naprawy stacjonarnej stacji chіodz№cej zlokalizowanej na terenie fabryki.</text>
+	</string>
+	<string id="st_compass">
+		<text>"Kompas"</text>
+	</string>
+	<string id="st_compass_descr">
+		<text>Rzadki artefakt - minкіo kilka lat od znalezienia ostatniego. Moїe wykrywaж luki w polach anomalii, sіuї№c za kompas. Uwaїa siк, їe umoїliwia swobodne przechodzenie przez najbardziej zіoїone pola anomalii. Maіo kto jednak potrafi siк nim posіugiwaж. </text>
+	</string>
+	<string id="st_guitar_descr">
+		<text>Siedmiostrunowa gitara.</text>
+	</string>
+	<string id="st_guitar_name">
+		<text>Gitara</text>
+	</string>
+</string_table>

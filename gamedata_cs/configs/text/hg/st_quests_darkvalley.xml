@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_bandit_spy_name">
+		<text>Szьntesd meg a lehetsйges veszйlyeket a benzinkъton!</text>
+	</string>
+	<string id="val_bandit_spy_text">
+		<text>Este sбpadt fйnyeket йszleltek az elhagyatott benzinkъton. Jбrj utбna a dolgoknak, йs szьntess meg minden lehetsйges veszйlyforrбst!</text>
+	</string>
+	<string id="val_bring_to_fang_name">
+		<text>Kцvesd Agyar PDA jelzйsйt!</text>
+	</string>
+	<string id="val_bring_to_fang_text">
+		<text>A Szabadsбg technikusa feltцrte Agyar PDA-jбnak frekvenciбjбt. Most mбr kцvetheted Agyar mozgбsбt. A jelzйs szerint a Szemйtdombon van. Kцvesd Agyar PDA jelzйsйt!</text>
+	</string>
+	<string id="val_check_blockpost_name">
+		<text>Derнtsd ki, hogy mi tцrtйnt a helyхrsйgen!</text>
+	</string>
+	<string id="val_check_blockpost_text">
+		<text>Ъgy tыnik, ismйt megtбmadtбk a Szabadsбg helyхrsйgйt. Derнtsd ki, hogy mi tцrtйnt, йs keress tъlйlхket a helyхrsйgen!</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_name">
+		<text>Kйrj eligazнtбst a parancsnoktуl!</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_text">
+		<text>Kйrj eligazнtбst a parancsnoktуl!</text>
+	</string>
+	<string id="val_come_to_comendant_name">
+		<text>Beszйlj a parancsnokkal!</text>
+	</string>
+	<string id="val_come_to_comendant_text">
+		<text>Kйrdezd a parancsnokot Agyarrуl!</text>
+	</string>
+	<string id="val_come_to_freedom_base_name">
+		<text>Keresd meg a Szabadsбg bбzisбt!</text>
+	</string>
+	<string id="val_come_to_freedom_base_text">
+		<text>Az бsatуk informбciуi alapjбn, Agyar Sцtйtvцlgybe ment, hogy megszerezze a hiбnyzу цsszetevхket. Keresd meg a Szabadsбg bбzisбt, йs kйrdezхskцdj ott Agyarrуl!</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_name">
+		<text>Beszйlj a helyхrsйg parancsnokбval!</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_text">
+		<text>Beszйlj a helyхrsйg parancsnokбval!</text>
+	</string>
+	<string id="val_deliver_ammo_name">
+		<text>Vigyйl lхszert a helyхrsйgre!</text>
+	</string>
+	<string id="val_deliver_ammo_text">
+		<text>Vigyйl lхszert a helyхrsйgre!</text>
+	</string>
+	<string id="val_deliver_pda_name">
+		<text>Vidd el a PDA-t Csehovnak!</text>
+	</string>
+	<string id="val_deliver_pda_text">
+		<text>A parancsnok PDA-jбn lйvх informбciуk segнthetnek kiderнteni a Szabadsбgnak, hogy ki tбmadja хket, йs hogy jutnak a Sцtйtvцlgybe. Vidd el a PDA-t a Szabadsбg vezetхjйnek!</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_name">
+		<text>Pusztнtsd el a vadkanodъt!</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_text">
+		<text>Pusztнtsd el a vadkanodъt!</text>
+	</string>
+	<string id="val_destroy_killer_base_name">
+		<text>Intйzd el a zsoldosokat!</text>
+	</string>
+	<string id="val_destroy_killer_base_text">
+		<text>Felfedeztйk a zsoldosok fхbбzisбt. Segнts a Szabadsбgnak megsemmisнteni! Нgy megszыnnйnek a Szabadsбgot йrt tбmadбsok, йs teljesen uralmuk alб vonhatnбk a Sцtйtvцlgyet.</text>
+	</string>
+	<string id="val_find_pda_name">
+		<text>Keresd meg a mыkцdх PDA-t!</text>
+	</string>
+	<string id="val_find_pda_text">
+		<text>Az egyik halott Szabadsбg katonбnak mйg mыkцdik a PDA-ja. Keresd meg a PDA-t! Йrtйkes informбciуkat tartalmazhat.</text>
+	</string>
+	<string id="val_go_to_freedom_leader_name">
+		<text>Vidd el a PDA-t Csehovnak!</text>
+	</string>
+	<string id="val_go_to_freedom_leader_text">
+		<text>A helyхrsйgen megцlt egyik Szabadsбg katona PDA-ja rцgzнtette a tбmadуk beszйlgetйsйt. A felvйtel segнt majd az azonosнtбsukban. Vidd el a PDA-t Csehovnak!</text>
+	</string>
+	<string id="val_go_to_trader_name">
+		<text>Menj el Asothoz a lхszerйrt!</text>
+	</string>
+	<string id="val_go_to_trader_text">
+		<text>Menj el Asothoz a Szabadsбg helyхrsйgre szбnt lхszerйrt!</text>
+	</string>
+	<string id="val_help_freedom_name">
+		<text>Segнts a Szabadsбgnak elintйzni a zsoldosokat!</text>
+	</string>
+	<string id="val_help_freedom_text">
+		<text>Segнts a Szabadsбgnak elintйzni a zsoldosokat!</text>
+	</string>
+	<string id="val_kill_flesh_name">
+		<text>Pusztнtsd el a pszeudokutyбt!</text>
+	</string>
+	<string id="val_kill_flesh_text">
+		<text>Pusztнtsd el a pszeudokutyбt, amely a bбzis mellett garбzdбlkodik!</text>
+	</string>
+	<string id="val_kill_komendant_name">
+		<text>Цld meg a parancsnokot!</text>
+	</string>
+	<string id="val_kill_komendant_text">
+		<text>A helyхrsйgen talбlt PDA rцgzнtette a tбmadуk beszйlgetйsйt. A felvйtelben elmondjбk, hogy parancsnok adta el a Szabadsбgnak a szьksйges informбciуkat, amivel a tбmadуk gyors йs vбratlan csapбsokat mйrhettek az хrjбratokra. Talбld meg az бrulуt, йs vidd el Csehovhoz! Йlve vagy halva!</text>
+	</string>
+	<string id="val_night_bloodsucker_name">
+		<text>Keresd meg a technikus barбtjбt!</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_name">
+		<text>Vidd el az цsszetevхt a technikusnak!</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_text">
+		<text>Vidd el az цsszetevхt a technikusnak!</text>
+	</string>
+	<string id="val_night_bloodsucker_text">
+		<text>Keresd meg a technikus barбtjбt!</text>
+	</string>
+	<string id="val_pursuit_comendant_name">
+		<text>Keresd meg a parancsnokot!</text>
+	</string>
+	<string id="val_pursuit_comendant_text">
+		<text>Keresd meg a parancsnokot!</text>
+	</string>
+	<string id="val_reply_to_sos_name">
+		<text>Vбlaszolj az SOS jelzйsre!</text>
+	</string>
+	<string id="val_reply_to_sos_text">
+		<text>Segнts visszaverni a tбmadбst!</text>
+	</string>
+	<string id="val_strike_antenna_name">
+		<text>Foglald el az antennбkat!</text>
+	</string>
+	<string id="val_strike_antenna_text">
+		<text>Foglald el йs tartsd meg az antennбkat, hogy бtvizsgбlhasd a terьletet!</text>
+	</string>
+	<string id="val_strike_antenna_two_name">
+		<text>Foglald el az antennбkat!</text>
+	</string>
+	<string id="val_strike_antenna_two_text">
+		<text>Foglald el йs tartsd meg az antennбkat, hogy бtvizsgбlhasd a terьletet!</text>
+	</string>
+	<string id="val_take_pda_name">
+		<text>Szerezd meg a parancsnok PDA-jбt!</text>
+	</string>
+	<string id="val_take_pda_text">
+		<text>A parancsnok cimborбi цltйk meg, miutбn a Szabadsбg keresni kezdte хt. A PDA-ja fontos informбciуkat tartalmaz azokrуl, akiknek segнtett.</text>
+	</string>
+	<string id="val_test">
+		<text>Segнts!</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_name">
+		<text>Vйgezz a fosztogatуcsapattal!</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_text">
+		<text>Egy fosztogatуcsapatra bukkantбl az elhagyatott benzinkъton. Vйgezz velьk!</text>
+	</string>
+	<string id="st_val_bandit_spy_return_name">
+		<text>Tйrj vissza a jutalmadйrt!</text>
+	</string>
+	<string id="st_val_bandit_spy_return_text">
+		<text>Megtalбltad, йs megцlted a fosztogatуcsapatot az elhagyatott benzinkъton. Menj el a csaposhoz, йs szбmolj be neki a fejlemйnyekrхl!</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_name">
+		<text>Keress informбciуkat a mesterlцvйsz puskбk csцveirхl!</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_text">
+		<text>A Szabadsбg technikusa, Jar, a nagy precizitбsъ fegyverek szakйrtхje. A mesterlцvйsz puskбk csцveirхl keres informбciуkat.</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_name">
+		<text>Keress informбciуt a mesterlцvйsz puskбk elektronikus stabilizбtorбrуl!</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_text">
+		<text>Jar, a technikus, takaros цsszeget fizetne a mesterlцvйsz puskбk elektronikus stabilizбciуs mechanizmusбrуl szуlу rйszletes informбciуkйrt.</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_name">
+		<text>Keress informбciуkat a mesterlцvйsz puskбk csхszбjfйkйrхl!</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_text">
+		<text>Jar, a technikus, informбciуkat szeretne a mesterlцvйsz puskбk csхszбjfйkйnek kйszнtйsйrхl. Ъgy mбr х is tudna gyбrtani egy ugyanolyat.</text>
+	</string>
+	<string id="val_recover_item_1_name">
+		<text>Vidd vissza a 8x-os tбvcsцvet!</text>
+	</string>
+	<string id="val_recover_item_1_text">
+		<text>Volt itt egy fickу a kцrnyйken, akinek remek tбvcsцve volt a stukkerйn. Az a fajta, amit nem talбlsz csak ъgy a Zуnбban. Prуbбlkoztam, prуbбlkoztam, de az istennek sem akarta eladni! Kйsхbb hozzбcsapуdott egy Kordonba tartу хrjбrattal, ami viszont soha nem йrkezett vissza, нgy gondolom valahol a kцrnyйken nyugodhat a stalker is. Hozd el nekem azt a tбvcsцvet, hogy Csehovnak ajбndйkozhassam! Talбn mйg parancsnoknak is kinevez majd.</text>
+	</string>
+	<string id="val_recover_item_2_name">
+		<text>Vidd vissza a filmekkel teli USB meghajtуt!</text>
+	</string>
+	<string id="val_recover_item_2_text">
+		<text>Segнts nekem, цregem! Filmet nйztьnk Gandzsбnбl a laptopjбn, amikor a parancsnok rajtakapott minket, йs elkezdett olyanokrуl hadovбlni, hogy szolgбlatban vagyok meg hasonlуk. Ha nem akadбlyozzuk meg, darabokra tцri a laptopot, ehelyett elvitte az USB meghajtуt, amin a filmek vannak, йs бtdobta a kerнtйsen a radioaktнv terьletre. Szerezd meg azt a meghajtуt, йs Gandzsa megjutalmaz!</text>
+	</string>
+	<string id="val_recover_item_3_name">
+		<text>Hozd vissza Serega gitбrjбt!</text>
+	</string>
+	<string id="val_recover_item_3_text">
+		<text>Valaki ellopta Serega gitбrjбt, hihetetlen, nem igaz? Х az egyetlen a kцrnyйken, aki tud gitбrozni, rбadбsul nem is rosszul, nem ъgy, mint a tцbbiek. Gyorsan kiderнtettьk, hogy ki lehet a tolvaj, de a fasszopу elrejtette valahova. Hozd vissza a gitбrt, mert Serega nem hajlandу mбsikon jбtszani, rendben?</text>
+	</string>
+</string_table>

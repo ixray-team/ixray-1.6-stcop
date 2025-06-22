@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Global Map">
+		<text>Mapa њwiata</text>
+	</string>
+	<string id="Local Map">
+		<text>Mapa okolicy</text>
+	</string>
+	<string id="Time">
+		<text>Czas</text>
+	</string>
+	<string id="actor">
+		<text>Najemnik</text>
+	</string>
+	<string id="actor_bandit">
+		<text>Bandyta</text>
+	</string>
+	<string id="actor_csky">
+		<text>Czyste Niebo</text>
+	</string>
+	<string id="actor_dolg">
+		<text>Powinnoњж</text>
+	</string>
+	<string id="actor_freedom">
+		<text>Wolnoњж</text>
+	</string>
+	<string id="actor_stalker">
+		<text>Samotnik</text>
+	</string>
+	<string id="agroprom">
+		<text>Instytut Badawczy "Agroprom"</text>
+	</string>
+	<string id="arena_enemy">
+		<text>Wrуg</text>
+	</string>
+	<string id="army">
+		<text>Wojskowy</text>
+	</string>
+	<string id="bandit">
+		<text>Bandyta</text>
+	</string>
+	<string id="csky">
+		<text>Czyste Niebo</text>
+	</string>
+	<string id="darkvalley">
+		<text>Dolina Mroku</text>
+	</string>
+	<string id="dolg">
+		<text>Powinnoњж</text>
+	</string>
+	<string id="ecolog">
+		<text>Naukowiec</text>
+	</string>
+	<string id="escape">
+		<text>Kordon</text>
+	</string>
+	<string id="freedom">
+		<text>Wolnoњж</text>
+	</string>
+	<string id="garbage">
+		<text>Wysypisko</text>
+	</string>
+	<string id="katacomb">
+		<text>Opuszczony szpital</text>
+	</string>
+	<string id="killer">
+		<text>Najemnik</text>
+	</string>
+	<string id="limansk">
+		<text>Limaсsk</text>
+	</string>
+	<string id="marsh">
+		<text>Bagna</text>
+	</string>
+	<string id="military">
+		<text>Magazyny wojskowe</text>
+	</string>
+	<string id="monolith">
+		<text>Monolit</text>
+	</string>
+	<string id="monster">
+		<text>Mutant</text>
+	</string>
+	<string id="pda_btn_close">
+		<text>Wyі№cz PDA</text>
+	</string>
+	<string id="pda_btn_fractionwar">
+		<text>Wojna frakcji</text>
+	</string>
+	<string id="pda_btn_fractionwar_hint">
+		<text>Informacja na temat bieї№cej wojny pomiкdzy frakcjami</text>
+	</string>
+	<string id="pda_btn_logs">
+		<text>Rejestr wiadomoњci</text>
+	</string>
+	<string id="pda_btn_logs_hint">
+		<text>Pokaї historiк wiadomoњci</text>
+	</string>
+	<string id="pda_btn_off_hint">
+		<text>Wyі№cz</text>
+	</string>
+	<string id="pda_btn_quests">
+		<text>Mapa</text>
+	</string>
+	<string id="pda_btn_quests_hint">
+		<text>Pokaї mapк Zony</text>
+	</string>
+	<string id="pda_btn_ranking">
+		<text>Postкp</text>
+	</string>
+	<string id="pda_btn_ranking_hint">
+		<text>Pokaї statystyki postкpуw</text>
+	</string>
+	<string id="pda_filter_news">
+		<text>Pokaї wieњci</text>
+	</string>
+	<string id="pda_filter_talk">
+		<text>Pokaї dialogi</text>
+	</string>
+	<string id="red_forest">
+		<text>Czerwony Las</text>
+	</string>
+	<string id="st_enemy">
+		<text>Wrogowie</text>
+	</string>
+	<string id="st_faction_war_csky_capture_enemy_base">
+		<text>Zajmij bazк wroga.</text>
+	</string>
+	<string id="st_faction_war_csky_need_more_power">
+		<text>Wzmocnij nasz№ pozycjк na Bagnach.</text>
+	</string>
+	<string id="st_faction_war_csky_relax">
+		<text>Wrуg pokonany.</text>
+	</string>
+	<string id="st_faction_war_csky_secure_level">
+		<text>Zabezpiecz wszystkie dojњcia do Bagien</text>
+	</string>
+	<string id="st_fraction_state">
+		<text>Siіa frakcji</text>
+	</string>
+	<string id="st_friend">
+		<text>Przyjaciele</text>
+	</string>
+	<string id="st_location">
+		<text>Miejsce:</text>
+	</string>
+	<string id="st_location_bandit">
+		<text>Wysypisko</text>
+	</string>
+	<string id="st_location_csky">
+		<text>Bagna</text>
+	</string>
+	<string id="st_location_dolg">
+		<text>Instytut Badawczy "Agroprom"</text>
+	</string>
+	<string id="st_location_freedom">
+		<text>Dolina Mroku</text>
+	</string>
+	<string id="st_location_stalker">
+		<text>Kordon</text>
+	</string>
+	<string id="stalker">
+		<text>Samotnik</text>
+	</string>
+	<string id="stancia_2">
+		<text>Elektrownia J№drowa</text>
+	</string>
+	<string id="trader">
+		<text>Handlarz</text>
+	</string>
+	<string id="ui_fraction_standing">
+		<text>Lista frakcji</text>
+	</string>
+	<string id="ui_no_fraction">
+		<text>Nie jesteњ czіonkiem їadnej frakcji.</text>
+	</string>
+	<string id="ui_pda_details">
+		<text># /szczegуіy</text>
+	</string>
+	<string id="ui_st_capture">
+		<text>Zajmij:</text>
+	</string>
+	<string id="ui_st_defend">
+		<text>Obroс:</text>
+	</string>
+	<string id="ui_st_enemy_frac_info">
+		<text>Informacje o frakcji</text>
+	</string>
+	<string id="ui_st_enemy_mem_count">
+		<text>Oddziaіy wrogiej frakcji</text>
+	</string>
+	<string id="ui_st_enemy_resource">
+		<text>Zasoby wrogiej frakcji</text>
+	</string>
+	<string id="ui_st_name_bandit">
+		<text>Bandyci</text>
+	</string>
+	<string id="ui_st_name_bandit_2">
+		<text>Renegaci</text>
+	</string>
+	<string id="ui_st_name_csky">
+		<text>Czyste Niebo</text>
+	</string>
+	<string id="ui_st_name_dolg">
+		<text>Powinnoњж</text>
+	</string>
+	<string id="ui_st_name_freedom">
+		<text>Wolnoњж</text>
+	</string>
+	<string id="ui_st_name_stalker">
+		<text>Stalkerzy</text>
+	</string>
+	<string id="ui_st_no_faction">
+		<text>Nie jesteњ czіonkiem їadnej frakcji.</text>
+	</string>
+	<string id="ui_st_our_frac_info">
+		<text>Informacje o frakcji</text>
+	</string>
+	<string id="ui_st_our_mem_count">
+		<text>Oddziaіy twojej frakcji</text>
+	</string>
+	<string id="ui_st_our_resource">
+		<text>Zasoby twojej frakcji</text>
+	</string>
+	<string id="ui_st_state_confrontation">
+		<text>Siіa frakcji</text>
+	</string>
+	<string id="ui_st_target_static">
+		<text>Bieї№cy cel twojej frakcji</text>
+	</string>
+	<string id="yantar">
+		<text>Jantar</text>
+	</string>
+	<string id="zombied">
+		<text>Zombi</text>
+	</string>
+	<string id="zoom_in_btn_hint">
+		<text>Przybliїenie</text>
+	</string>
+	<string id="zoom_out_btn_hint">
+		<text>Oddalenie</text>
+	</string>
+	<string id="month_april">
+		<text>kwiecieс</text>
+	</string>
+	<string id="month_august">
+		<text>sierpieс</text>
+	</string>
+	<string id="month_december">
+		<text>grudzieс</text>
+	</string>
+	<string id="month_february">
+		<text>luty</text>
+	</string>
+	<string id="month_january">
+		<text>styczeс</text>
+	</string>
+	<string id="month_july">
+		<text>lipiec</text>
+	</string>
+	<string id="month_june">
+		<text>czerwiec</text>
+	</string>
+	<string id="month_march">
+		<text>marzec</text>
+	</string>
+	<string id="month_may">
+		<text>maj</text>
+	</string>
+	<string id="month_november">
+		<text>listopad</text>
+	</string>
+	<string id="month_october">
+		<text>paџdziernik</text>
+	</string>
+	<string id="month_september">
+		<text>wrzesieс</text>
+	</string>
+	<string id="pda_cur_time">
+		<text>Obecny czas:</text>
+	</string>
+	<string id="pda_date_filter">
+		<text>Filtr danych</text>
+	</string>
+	<string id="pda_legend_caption">
+		<text>Legenda</text>
+	</string>
+	<string id="pda_logs_common">
+		<text>Wiadomoњci:</text>
+	</string>
+	<string id="pda_logs_frags">
+		<text>Wiadomoњci:</text>
+	</string>
+	<string id="pda_logs_list_caption">
+		<text>Wiadomoњci:</text>
+	</string>
+	<string id="pda_logs_missions">
+		<text>Wiadomoњci:</text>
+	</string>
+	<string id="pda_stat_1">
+		<text>Czas gry:</text>
+	</string>
+	<string id="pda_stat_2">
+		<text>Znalezione schowki:</text>
+	</string>
+	<string id="pda_stat_3">
+		<text>Zarobiona kasa:</text>
+	</string>
+	<string id="pda_stat_4">
+		<text>Wydana kasa:</text>
+	</string>
+	<string id="pda_stat_5">
+		<text>Otrzymane:</text>
+	</string>
+	<string id="pda_stat_6">
+		<text>Wykonane:</text>
+	</string>
+	<string id="pda_stat_7">
+		<text>Nieudane:</text>
+	</string>
+	<string id="pda_stat_8">
+		<text>Stalkerzy:</text>
+	</string>
+	<string id="pda_stat_9">
+		<text>Potwory:</text>
+	</string>
+	<string id="pda_stat_common">
+		<text>Ј№cznie</text>
+	</string>
+	<string id="pda_stat_frags">
+		<text>Zabici</text>
+	</string>
+	<string id="pda_stat_missions">
+		<text>Zadania</text>
+	</string>
+	<string id="st_lchanger_to_aes">
+		<text>Do Elektrowni J№drowej</text>
+	</string>
+	<string id="st_lchanger_to_agroprom">
+		<text>To Instytutu badawczego Agroprom</text>
+	</string>
+	<string id="st_lchanger_to_agroprom_und">
+		<text>Do podziemi "Agropromu"</text>
+	</string>
+	<string id="st_lchanger_to_darkvalley">
+		<text>Do Doliny Mroku</text>
+	</string>
+	<string id="st_lchanger_to_escape">
+		<text>Do Kordonu</text>
+	</string>
+	<string id="st_lchanger_to_garbage">
+		<text>Do Wysypiska</text>
+	</string>
+	<string id="st_lchanger_to_hospital">
+		<text>Do opuszczonego szpitala</text>
+	</string>
+	<string id="st_lchanger_to_limansk">
+		<text>Do Limaсska</text>
+	</string>
+	<string id="st_lchanger_to_marsh">
+		<text>Na bagna</text>
+	</string>
+	<string id="st_lchanger_to_military">
+		<text>Do magazynуw wojskowych</text>
+	</string>
+	<string id="st_lchanger_to_red_forest">
+		<text>Do Czerwonego Lasu</text>
+	</string>
+	<string id="st_lchanger_to_yantar">
+		<text>Nad Jantar</text>
+	</string>
+	<string id="st_ui_pda_legend_additional_task">
+		<text>Zadania poboczne</text>
+	</string>
+	<string id="st_ui_pda_legend_base">
+		<text>Bazy frakcji</text>
+	</string>
+	<string id="st_ui_pda_legend_enemies">
+		<text>Wrogowie</text>
+	</string>
+	<string id="st_ui_pda_legend_friends">
+		<text>Przyjaciele</text>
+	</string>
+	<string id="st_ui_pda_legend_lchanger">
+		<text>Drogi pomiкdzy lokacjami</text>
+	</string>
+	<string id="st_ui_pda_legend_main_task">
+		<text>Gіуwny budynek</text>
+	</string>
+	<string id="st_ui_pda_legend_mechanic">
+		<text>Mechanik</text>
+	</string>
+	<string id="st_ui_pda_legend_neutrals">
+		<text>Neutralni</text>
+	</string>
+	<string id="st_ui_pda_legend_scout">
+		<text>Przewodnik</text>
+	</string>
+	<string id="st_ui_pda_legend_secrets">
+		<text>Schowki</text>
+	</string>
+	<string id="st_ui_pda_legend_squad">
+		<text>Dowуdca oddziaіu</text>
+	</string>
+	<string id="st_ui_pda_legend_trader">
+		<text>Handlarz</text>
+	</string>
+	<string id="st_ui_pda_legend_vip">
+		<text>Waїna postaж</text>
+	</string>
+	<string id="ui_logs_center_caption">
+		<text>Historia wiadomoњci</text>
+	</string>
+	<string id="ui_map_btn_center">
+		<text>Wyњrodkuj na graczu</text>
+	</string>
+	<string id="ui_map_btn_down">
+		<text>Przesuс w dуі</text>
+	</string>
+	<string id="ui_map_btn_left">
+		<text>Przesuс w lewo</text>
+	</string>
+	<string id="ui_map_btn_legend">
+		<text>Pokaї legendк</text>
+	</string>
+	<string id="ui_map_btn_right">
+		<text>Przesuс w prawo</text>
+	</string>
+	<string id="ui_map_btn_up">
+		<text>Przesuс w gуrк</text>
+	</string>
+	<string id="ui_map_btn_zmreset">
+		<text>Oddal maksymalnie</text>
+	</string>
+	<string id="ui_map_btn_zoom_in">
+		<text>Przybliї</text>
+	</string>
+	<string id="ui_map_btn_zoom_out">
+		<text>Oddal</text>
+	</string>
+	<string id="ui_pda_secondary_task">
+		<text>Zadania poboczne</text>
+	</string>
+	<string id="ui_ranking_center_caption">
+		<text>Rankingi frakcji</text>
+	</string>
+	<string id="ui_show_second_task_wnd">
+		<text>Lista zadaс pobocznych</text>
+	</string>
+	<string id="ui_task_btn_focus_center">
+		<text>Wyњrodkuj mapк na zadaniu</text>
+	</string>
+	<string id="ui_task_btn_focus_center2">
+		<text>Wyњrodkuj mapк na zadaniu</text>
+	</string>
+	<string id="ui_task_btn_visible_map_spot">
+		<text>Wyњwietl wskaџnik na mapie</text>
+	</string>
+	<string id="ui_st_eliminate">
+		<text>Zniszcz:</text>
+	</string>
+	<string id="ui_st_capture_or">
+		<text>lub</text>
+	</string>
+	<string id="ui_st_capture_one_of">
+		<text>Zajmij jeden z nastкpuj№cych punktуw:</text>
+	</string>
+	<string id="st_faction_war_stalker_need_more_power">
+		<text>Osi№gnij przewagк</text>
+	</string>
+	<string id="st_faction_war_stalker_secure_level">
+		<text>Zabezpiecz њcieїki z Wysypiska</text>
+	</string>
+	<string id="st_faction_war_stalker_capture_placdarm">
+		<text>Zdob№dџ przyczуіek na Wysypisku</text>
+	</string>
+	<string id="st_faction_war_stalker_near_base">
+		<text>Przyciњnij bandytуw w ich bazie</text>
+	</string>
+	<string id="st_faction_war_stalker_eliminate_base">
+		<text>Zniszcz bazк bandytуw</text>
+	</string>
+	<string id="st_faction_war_stalker_relax">
+		<text>Bandyci zostali pokonani</text>
+	</string>
+	<string id="st_faction_war_bandit_need_more_power">
+		<text>Osi№gnij przewagк</text>
+	</string>
+	<string id="st_faction_war_bandit_secure_level">
+		<text>Przejmij kontrolк nad њcieїkami z Kordonu</text>
+	</string>
+	<string id="st_faction_war_bandit_capture_placdarm">
+		<text>Zdob№dџ przyczуіek w Kordonie</text>
+	</string>
+	<string id="st_faction_war_bandit_near_base">
+		<text>Zdob№dџ przyczуіek w bazie stalkerуw</text>
+	</string>
+	<string id="st_faction_war_bandit_eliminate_base">
+		<text>Zniszcz bazк stalkerуw</text>
+	</string>
+	<string id="st_faction_war_bandit_relax">
+		<text>Baza stalkerуw zniszczona</text>
+	</string>
+	<string id="st_faction_war_freedom_secure_level">
+		<text>Zabezpiecz њcieїki z Wysypiska</text>
+	</string>
+	<string id="st_faction_war_freedom_capture_garbage">
+		<text>Zdob№dџ przyczуіek na Wysypisku</text>
+	</string>
+	<string id="st_faction_war_freedom_secure_garbage">
+		<text>Dotrzyj do drogi do Instytutu Badawczego Agroprom</text>
+	</string>
+	<string id="st_faction_war_freedom_capture_agroprom">
+		<text>Zdob№dџ przyczуіek w Instytucie Badawczym Agroprom</text>
+	</string>
+	<string id="st_faction_war_freedom_eliminate_base">
+		<text>Zniszcz bazк "Powinnoњci"</text>
+	</string>
+	<string id="st_faction_war_freedom_relax">
+		<text>Baza "Powinnoњci" zniszczona</text>
+	</string>
+	<string id="st_faction_war_duty_secure_level">
+		<text>Zabezpiecz њcieїki z Wysypiska</text>
+	</string>
+	<string id="st_faction_war_duty_capture_garbage">
+		<text>Zdob№dџ przyczуіek na Wysypisku</text>
+	</string>
+	<string id="st_faction_war_duty_secure_garbage">
+		<text>Dotrzyj do њcieїki do Doliny Mroku</text>
+	</string>
+	<string id="st_faction_war_duty_capture_darkvalley">
+		<text>Zdob№dџ przyczуіek w Dolinie Mroku</text>
+	</string>
+	<string id="st_faction_war_duty_eliminate_base">
+		<text>Zniszcz bazк "Wolnoњci"</text>
+	</string>
+	<string id="st_faction_war_duty_relax">
+		<text>Baza "Wolnoњci" zniszczona</text>
+	</string>
+	<string id="st_stage_icon_csky_power_no">
+		<text>Nie osi№gnкliњmy przewagi</text>
+	</string>
+	<string id="st_stage_icon_csky_power_yes">
+		<text>Osi№gnкliњmy przewagк</text>
+	</string>
+	<string id="st_stage_icon_csky_capture_base_no">
+		<text>Baza renegatуw jest nienaruszona</text>
+	</string>
+	<string id="st_stage_icon_csky_capture_base_yes">
+		<text>Baza renegatуw zostaіa zniszczona</text>
+	</string>
+	<string id="st_stage_icon_csky_secure_marsh_no">
+		<text>Nie przejкliњmy kontroli nad drog№ do Kordonu</text>
+	</string>
+	<string id="st_stage_icon_csky_secure_marsh_yes">
+		<text>Kontrolujemy drogк do Kordonu</text>
+	</string>
+	<string id="st_stage_icon_stalker_power_no">
+		<text>Nie osi№gnкliњmy przewagi</text>
+	</string>
+	<string id="st_stage_icon_stalker_power_yes">
+		<text>Osi№gnкliњmy przewagк</text>
+	</string>
+	<string id="st_stage_icon_stalker_secure_escape_no">
+		<text>Nie przejкliњmy kontroli nad њcieїkami z Wysypiska</text>
+	</string>
+	<string id="st_stage_icon_stalker_secure_escape_yes">
+		<text>Kontrolujemy њcieїki z Wysypiska</text>
+	</string>
+	<string id="st_stage_icon_stalker_capture_garbage_no">
+		<text>Nie mamy przyczуіku na Wysypisku</text>
+	</string>
+	<string id="st_stage_icon_stalker_capture_garbage_yes">
+		<text>Mamy przyczуіek na Wysypisku</text>
+	</string>
+	<string id="st_stage_icon_stalker_eliminate_bandit_no">
+		<text>Baza bandytуw jest nienaruszona</text>
+	</string>
+	<string id="st_stage_icon_stalker_eliminate_bandit_yes">
+		<text>Baza bandytуw zostaіa zniszczona</text>
+	</string>
+	<string id="st_stage_icon_bandit_power_no">
+		<text>Nie osi№gnкliњmy przewagi</text>
+	</string>
+	<string id="st_stage_icon_bandit_power_yes">
+		<text>Osi№gnкliњmy przewagк</text>
+	</string>
+	<string id="st_stage_icon_bandit_secure_garbage_no">
+		<text>Nie przejкliњmy kontroli nad drog№ do Kordonu</text>
+	</string>
+	<string id="st_stage_icon_bandit_secure_garbage_yes">
+		<text>Kontrolujemy drogк do Kordonu</text>
+	</string>
+	<string id="st_stage_icon_bandit_capture_escape_no">
+		<text>Nie mamy przyczуіku w Kordonie</text>
+	</string>
+	<string id="st_stage_icon_bandit_capture_escape_yes">
+		<text>Mamy przyczуіek w Kordonie</text>
+	</string>
+	<string id="st_stage_icon_bandit_eliminate_stalker_no">
+		<text>Baza stalkerуw jest nienaruszona</text>
+	</string>
+	<string id="st_stage_icon_bandit_eliminate_stalker_yes">
+		<text>Baza stalkerуw zostaіa zniszczona</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_darkvalley_no">
+		<text>Nie przejкliњmy kontroli nad њcieїkami z Wysypiska</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_darkvalley_yes">
+		<text>Kontrolujemy њcieїki z Wysypiska</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_garbage_no">
+		<text>Nie mamy przyczуіku na Wysypisku</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_garbage_yes">
+		<text>Mamy przyczуіek na Wysypisku</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_garbage_no">
+		<text>Nie przejкliњmy kontroli nad drog№ do Agropromu</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_garbage_yes">
+		<text>Kontrolujemy drogк do Agropromu</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_agroprom_no">
+		<text>Nie mamy przyczуіku w Agropromie</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_agroprom_yes">
+		<text>Mamy przyczуіek w Agropromie</text>
+	</string>
+	<string id="st_stage_icon_freedom_eliminate_duty_no">
+		<text>Baza "Powinnoњci" jest nienaruszona</text>
+	</string>
+	<string id="st_stage_icon_freedom_eliminate_duty_yes">
+		<text>Baza "Powinnoњci" zostaіa zniszczona</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_agroprom_no">
+		<text>Nie przejкliњmy kontroli nad њcieїkami z Wysypiska</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_agroprom_yes">
+		<text>Kontrolujemy њcieїki z Wysypiska</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_garbage_no">
+		<text>Nie mamy przyczуіku na Wysypisku</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_garbage_yes">
+		<text>Mamy przyczуіek na Wysypisku</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_garbage_no">
+		<text>Nie przejкliњmy kontroli nad drog№ do Doliny Mroku</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_garbage_yes">
+		<text>Kontrolujemy drogк do Doliny Mroku</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_darkvalley_no">
+		<text>Nie mamy przyczуіku w Dolinie Mroku</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_darkvalley_yes">
+		<text>Mamy przyczуіek w Dolinie Mroku</text>
+	</string>
+	<string id="st_stage_icon_duty_eliminate_freedom_no">
+		<text>Baza "Wolnoњci" jest nienaruszona</text>
+	</string>
+	<string id="st_stage_icon_duty_eliminate_freedom_yes">
+		<text>Baza "Wolnoњci" zostaіa zniszczona</text>
+	</string>
+	<string id="st_location_renegade">
+		<text>Bagna</text>
+	</string>
+	<string id="st_ui_pda_legend_leader">
+		<text>Przywуdca frakcji</text>
+	</string>
+	<string id="st_target">
+		<text>Cel</text>
+	</string>
+	<string id="st_technic_specialization">
+		<text>Specjalizacja:</text>
+	</string>
+	<string id="st_technic_specialization_none">
+		<text>brak</text>
+	</string>
+	<string id="hospital">
+		<text>Opuszczony szpital</text>
+	</string>
+</string_table>

@@ -80,7 +80,7 @@ on_timer = 2500 | sr_idle@tutorial_guide_time_2 %+mar_intro_talk_with_guide_end 
 on_timer = 2500 | sr_idle@tutorial_tower_wait %=activate_weapon_slot(2) =enable_ui%
 
 [sr_idle@tutorial_tower_wait]
-on_info = {+mar_tutorial_tower_top_started} sr_idle@tutorial_kill_boars_wait %=give_inited_task(storyline:mar_tutorial_tower_top:csky)%
+on_info = {+mar_tutorial_tower_top_started} sr_idle@tutorial_kill_boars_wait %=give_inited_task(storyline:mar_tutorial_tower_top:csky)%, {=distance_to_obj_ge(306:260)} sr_idle@tutorial_surge
 
 [sr_idle@tutorial_kill_boars_wait]
 on_info = {+mar_tutorial_kill_boars_done -mar_tutorial_tower_top_done} sr_idle@tutorial_surge %+mar_tutorial_tower_top_reversed +mar_tutorial_help_done%, {+mar_tutorial_kill_boars_started} sr_idle@tutorial_dead_boars_wait %=give_inited_task(storyline:mar_tutorial_kill_boars:csky)%

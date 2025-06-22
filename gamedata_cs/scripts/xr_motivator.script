@@ -205,6 +205,7 @@ function motivator_binder:clear_callbacks()
 end
 
 function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_index)
+	callstack()
 	-- FIXME: коллбеки неплохо было бы регистрировать в общем storage, а не посхемно...
 	-- просто всегда ставить их при включении схемы и снимать при отключении.
 	if obj:profile_name() == "stc_strelok" then
@@ -232,6 +233,7 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 end
 
 function motivator_binder:death_callback(victim, who)
+	callstack()
 	--' Distemper 03.2008 --
 	xrs_dyn_music.stop_combat(self.object:id())
 	--' Если игрок был с квестом от механика - фейлить его

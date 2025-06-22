@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_stuff">
+		<text>DEVELOPER</text>
+	</string>
+	<string id="st_game_world">
+		<text>GSC GAME WORLD</text>
+	</string>
+	<string id="st_producer">
+		<text>Producer</text>
+	</string>
+	<string id="st_gsc">
+		<text>Sergiy "-GSC-" Grygorovich</text>
+	</string>
+	<string id="st_project_lead">
+		<text>Project Lead</text>
+	</string>
+	<string id="st_bolshakov">
+		<text>Anton Bolshakov</text>
+	</string>
+	<string id="st_lead_designer">
+		<text>Lead Designer</text>
+	</string>
+	<string id="st_negrobov">
+		<text>Yuriy Negrobov</text>
+	</string>
+	<string id="st_art_director">
+		<text>Art Director</text>
+	</string>
+	<string id="st_tolmachev">
+		<text>Ilya Tolmachev</text>
+	</string>
+	<string id="st_lead_programmer">
+		<text>Lead Programmer</text>
+	</string>
+	<string id="st_iassenev">
+		<text>Dmitriy Iassenev</text>
+	</string>
+	<string id="st_lead_game_designer">
+		<text>Lead Game Designer</text>
+	</string>
+	<string id="st_didenko">
+		<text>Ruslan Didenko</text>
+	</string>
+	<string id="st_art_department">
+		<text>Game Graphics</text>
+	</string>
+	<string id="st_level_design">
+		<text>Level Design</text>
+	</string>
+	<string id="st_zaitsev">
+		<text>Evgeniy Zaytsev</text>
+	</string>
+	<string id="st_mironov">
+		<text>Konstantin Mironov</text>
+	</string>
+	<string id="st_kurbatov">
+		<text>Sergey Kurbatov</text>
+	</string>
+	<string id="st_androshchuk">
+		<text>Roman Androshuk</text>
+	</string>
+	<string id="st_konstantinov">
+		<text>Yuriy Konstantinov</text>
+	</string>
+	<string id="st_pasichniy">
+		<text>Igor Pasichniy</text>
+	</string>
+	<string id="st_merkulov">
+		<text>Victor Merkulov</text>
+	</string>
+	<string id="st_maistrenko">
+		<text>Sergey Maystrenko</text>
+	</string>
+	<string id="st_lead_animator">
+		<text>Lead Animator</text>
+	</string>
+	<string id="st_markevich">
+		<text>Pavel Markevych</text>
+	</string>
+	<string id="st_animators">
+		<text>Animators</text>
+	</string>
+	<string id="st_yablun">
+		<text>Evgeniy Yablon</text>
+	</string>
+	<string id="st_korunchak">
+		<text>Vladimir Korunchak</text>
+	</string>
+	<string id="st_character_models">
+		<text>Characters Models</text>
+	</string>
+	<string id="st_kovach">
+		<text>Alexandr Kovach</text>
+	</string>
+	<string id="st_textures">
+		<text>Textures</text>
+	</string>
+	<string id="st_starodub">
+		<text>Ludmila Starodub</text>
+	</string>
+	<string id="st_sidorenko">
+		<text>Igor Sidorenko</text>
+	</string>
+	<string id="st_ui_art">
+		<text>UI and Graphics</text>
+	</string>
+	<string id="st_nesin">
+		<text>Roman Nesin</text>
+	</string>
+	<string id="st_lead_programmers">
+		<text>Lead Programmers</text>
+	</string>
+	<string id="st_kolomiech">
+		<text>Andrey Kolomiets</text>
+	</string>
+	<string id="st_kolomiech2">
+		<text>- Gameplay and UI</text>
+	</string>
+	<string id="st_lobanchikov">
+		<text>Igor Lobanchikov</text>
+	</string>
+	<string id="st_lobanchikov2">
+		<text>- Render</text>
+	</string>
+	<string id="st_slipchenko">
+		<text>Konstantin Slipchenko</text>
+	</string>
+	<string id="st_slipchenko2">
+		<text>- Physics and Animations</text>
+	</string>
+	<string id="st_programmers">
+		<text>Programmers</text>
+	</string>
+	<string id="st_maniluyk">
+		<text>Alexandr "loopzilla" Maniluk</text>
+	</string>
+	<string id="st_maniluyk2">
+		<text>- Network</text>
+	</string>
+	<string id="st_chechin">
+		<text>Sergey "Lain" Chechin</text>
+	</string>
+	<string id="st_chechin2">
+		<text>- Monsters AI</text>
+	</string>
+	<string id="st_sokolov">
+		<text>Evgeniy "sea" Sokolov </text>
+	</string>
+	<string id="st_sokolov2">
+		<text>- Gameplay and UI</text>
+	</string>
+	<string id="st_ivanchov">
+		<text>Sergey Ivantsov</text>
+	</string>
+	<string id="st_ivanchov2">
+		<text>- Optimization</text>
+	</string>
+	<string id="st_plichko">
+		<text>Alexandr Plichko</text>
+	</string>
+	<string id="st_scriptoman">
+		<text>- gameplay and scripts</text>
+	</string>
+	<string id="st_prishchepa">
+		<text>Sergey Pryshchepa</text>
+	</string>
+	<string id="st_khimera">
+		<text>Denis Khimera</text>
+	</string>
+	<string id="st_gamedesign_department">
+		<text>Game Designers</text>
+	</string>
+	<string id="st_verpahovskiy">
+		<text>Andrey Verpahovskiy</text>
+	</string>
+	<string id="st_dushinskiy">
+		<text>Petr Dushinskiy</text>
+	</string>
+	<string id="st_zakolukin">
+		<text>Andrey Zakolukin</text>
+	</string>
+	<string id="st_skripal">
+		<text>Yuriy Skripal</text>
+	</string>
+	<string id="st_demidenko">
+		<text>Alexandr Demidenko</text>
+	</string>
+	<string id="st_sound_producer">
+		<text>Sound Producer</text>
+	</string>
+	<string id="st_kuzmenko">
+		<text>Dmitry Kuzmenko</text>
+	</string>
+	<string id="st_original_music">
+		<text>Music</text>
+	</string>
+	<string id="st_mooze">
+		<text>MoozE</text>
+	</string>
+	<string id="st_omelchuk">
+		<text>Alexey Omelchuk</text>
+	</string>
+	<string id="st_additional_music">
+		<text>Additional Music</text>
+	</string>
+	<string id="st_firelake">
+		<text>FireLake</text>
+	</string>
+	<string id="st_addaraya">
+		<text>...</text>
+	</string>
+	<string id="st_actors">
+		<text>Actors</text>
+	</string>
+	<string id="st_vilkov">
+		<text>Aleksandr Vilkov</text>
+	</string>
+	<string id="st_bogush">
+		<text>Anatoliy Bogush</text>
+	</string>
+	<string id="st_tereshchyk">
+		<text>Vladimir Tereschuk</text>
+	</string>
+	<string id="st_german">
+		<text>Grigoriy German</text>
+	</string>
+	<string id="st_stalchuk">
+		<text>Oleg Stalchuk</text>
+	</string>
+	<string id="st_malukha">
+		<text>Evgeniy Malukha</text>
+	</string>
+	<string id="st_rozin">
+		<text>Ivan Rozin</text>
+	</string>
+	<string id="st_localization">
+		<text>Localization</text>
+	</string>
+	<string id="st_kuchma">
+		<text>Eugene "Smile" Kuchma</text>
+	</string>
+	<string id="st_dialogs">
+		<text>Game Dialogues</text>
+	</string>
+	<string id="st_besarab">
+		<text>Yuriy Besarab</text>
+	</string>
+	<string id="st_volinech">
+		<text>Taras "Tatarik" Volynets</text>
+	</string>
+	<string id="st_lefty">
+		<text>Lefty</text>
+	</string>
+	<string id="st_texts">
+		<text>Proofreading</text>
+	</string>
+	<string id="st_litvinenko">
+		<text>Vladimir Litvinenko</text>
+	</string>
+	<string id="st_eng_localization">
+		<text>English Localization</text>
+	</string>
+	<string id="st_kisin_language_services">
+		<text>Kisin Language Services</text>
+	</string>
+	<string id="st_pr_and_translator">
+		<text>Project Manager and Translator</text>
+	</string>
+	<string id="st_kisin">
+		<text>Konstantin Kisin</text>
+	</string>
+	<string id="st_eng_translator">
+		<text>Translator</text>
+	</string>
+	<string id="st_kropotov">
+		<text>Mikhail Kropotov</text>
+	</string>
+	<string id="st_eng_editor">
+		<text>Editor</text>
+	</string>
+	<string id="st_berelekhis">
+		<text>Mark Berelekhis</text>
+	</string>
+	<string id="st_eng_recordings">
+		<text>Recordings</text>
+	</string>
+	<string id="st_voiceworks">
+		<text>VoiceWorks Productions, Inc.</text>
+	</string>
+	<string id="st_casting_direction">
+		<text>Casting/Voice-Over Direction</text>
+	</string>
+	<string id="st_carrigan">
+		<text>Douglas Carrigan</text>
+	</string>
+	<string id="st_eng_engineer">
+		<text>Engineer</text>
+	</string>
+	<string id="st_johnson">
+		<text>Micah Johnson</text>
+	</string>
+	<string id="st_editor_design">
+		<text>Editor/VO sound design</text>
+	</string>
+	<string id="st_siedow">
+		<text>Jaimie Siedow</text>
+	</string>
+	<string id="st_eng_cast">
+		<text>Cast</text>
+	</string>
+	<string id="st_kaplan">
+		<text>Neil Kaplan</text>
+	</string>
+	<string id="st_blum">
+		<text>Steve Blum</text>
+	</string>
+	<string id="st_ward">
+		<text>Jim Ward</text>
+	</string>
+	<string id="st_pulcini">
+		<text>Anthony Pulcini</text>
+	</string>
+	<string id="st_horan">
+		<text>James Horan</text>
+	</string>
+	<string id="st_agranov">
+		<text>David Agranov</text>
+	</string>
+	<string id="st_atkin">
+		<text>Robin Atkin</text>
+	</string>
+	<string id="st_downes">
+		<text>Downes</text>
+	</string>
+	<string id="st_proctort">
+		<text>Philip Proctor</text>
+	</string>
+	<string id="st_stanton">
+		<text>Stephen Stanton</text>
+	</string>
+	<string id="st_albrech">
+		<text>Grant Albrecht</text>
+	</string>
+	<string id="st_szarabajka">
+		<text>Keith Szarabajka</text>
+	</string>
+	<string id="st_lowenthal">
+		<text>Yuri Lowenthal</text>
+	</string>
+	<string id="st_hale">
+		<text>Jennifer Hale</text>
+	</string>
+	<string id="st_ger_localization">
+		<text>German Localization</text>
+	</string>
+	<string id="st_umlau">
+		<text>Studio Umlaut</text>
+	</string>
+	<string id="st_ger_studio">
+		<text>Recording Studio</text>
+	</string>
+	<string id="st_msm_gmbh">
+		<text>MSM GmbH</text>
+	</string>
+	<string id="st_ger_voice_actors">
+		<text>Voice Actors</text>
+	</string>
+	<string id="st_barrenstein">
+		<text>Achim Barrenstein</text>
+	</string>
+	<string id="st_benjamin">
+		<text>Nick Benjamin</text>
+	</string>
+	<string id="st_betz">
+		<text>Michael Betz</text>
+	</string>
+	<string id="st_bornern">
+		<text>Erik Borner</text>
+	</string>
+	<string id="st_evertz">
+		<text>Stefan Evertz</text>
+	</string>
+	<string id="st_grober">
+		<text>Andreas Grober</text>
+	</string>
+	<string id="st_hauf">
+		<text>Susanne Hauf</text>
+	</string>
+	<string id="st_heynold">
+		<text>Helge Heynold</text>
+	</string>
+	<string id="st_karadeniz">
+		<text>Ozgur Karadeniz</text>
+	</string>
+	<string id="st_lindenau">
+		<text>Wolff von Lindenau</text>
+	</string>
+	<string id="st_schafer">
+		<text>Martin Schafer</text>
+	</string>
+	<string id="st_wachholz">
+		<text>Gero Wachholz</text>
+	</string>
+	<string id="st_fra_localization">
+		<text>French Localization</text>
+	</string>
+	<string id="st_fra_coordination">
+		<text>Project coordination</text>
+	</string>
+	<string id="st_fra_deiller">
+		<text>Claire Deiller</text>
+	</string>
+	<string id="st_fra_recordings">
+		<text>Recordings</text>
+	</string>
+	<string id="st_fra_productions">
+		<text>Hifi-Genie Productions</text>
+	</string>
+	<string id="st_fra_translation">
+		<text>Translation</text>
+	</string>
+	<string id="st_fra_bonin">
+		<text>David Bonin</text>
+	</string>
+	<string id="st_spa_localization">
+		<text>Spanish and Italian Localization</text>
+	</string>
+	<string id="st_spa_translations">
+		<text>Vertigo Translations srl</text>
+	</string>
+	<string id="st_spa_recordings">
+		<text>Audio recordings</text>
+	</string>
+	<string id="st_spa_synthesis">
+		<text>Synthesis US llc</text>
+	</string>
+	<string id="st_spa_manager">
+		<text>Project Manager</text>
+	</string>
+	<string id="st_spa_solbiati">
+		<text>Davide Solbiati</text>
+	</string>
+	<string id="st_lead_qa_department">
+		<text>Lead QA</text>
+	</string>
+	<string id="st_krivets">
+		<text>Dmitriy Krivets</text>
+	</string>
+	<string id="st_mikhailov">
+		<text>Pavel "CoRR" Mikhailov</text>
+	</string>
+	<string id="st_qa_department">
+		<text>Testers</text>
+	</string>
+	<string id="st_shelest">
+		<text>Sergey Shelest</text>
+	</string>
+	<string id="st_koval">
+		<text>Kirill Koval</text>
+	</string>
+	<string id="st_konovaya">
+		<text>Igor Konoval</text>
+	</string>
+	<string id="st_shevchuk">
+		<text>Gleb Shevchuk</text>
+	</string>
+	<string id="st_gurbanov">
+		<text>Ilshan Gurbanov</text>
+	</string>
+	<string id="st_gaiduchenko">
+		<text>Ivan Gaiduchenko</text>
+	</string>
+	<string id="st_semeniy">
+		<text>Maxim Semeniy</text>
+	</string>
+	<string id="st_voskolovich">
+		<text>Anastasiya Voskolovich</text>
+	</string>
+	<string id="st_voronin">
+		<text>Vladimir Voronin</text>
+	</string>
+	<string id="st_davidian">
+		<text>Dmitriy "Abe" Davidyan</text>
+	</string>
+	<string id="st_kirienko">
+		<text>Andrey "Darin" Kirienko</text>
+	</string>
+	<string id="st_poperechniy">
+		<text>Danila "West" Poperechniy</text>
+	</string>
+	<string id="st_falchenko">
+		<text>Yuriy "Dark" Falchenko</text>
+	</string>
+	<string id="st_dvornikov">
+		<text>Mikhail "Chips" Dvornikov</text>
+	</string>
+	<string id="st_usupov">
+		<text>Denis "Tetri$Zz" Yusupov</text>
+	</string>
+	<string id="st_dovgoluk">
+		<text>Elena "redstain" Dovgaluk</text>
+	</string>
+	<string id="st_mopev">
+		<text>Vladimir "Hein" Morev</text>
+	</string>
+	<string id="st_kozhukhar">
+		<text>Alexey Kozhukhar</text>
+	</string>
+	<string id="st_polozov">
+		<text>Nikolaj "vortigaunt" Polozov</text>
+	</string>
+	<string id="st_pr_department">
+		<text>PR Department</text>
+	</string>
+	<string id="st_yavorsky">
+		<text>Oleg Yavorsky</text>
+	</string>
+	<string id="st_yeltyshev">
+		<text>Valentin Yeltishev</text>
+	</string>
+	<string id="st_kuzhel">
+		<text>Olga Kuzhel</text>
+	</string>
+	<string id="st_promotional_material">
+		<text>Marketing Materials</text>
+	</string>
+	<string id="st_troekyrova">
+		<text>Olga Troekurova</text>
+	</string>
+	<string id="st_khivrenko">
+		<text>Ivan Khivrenko</text>
+	</string>
+	<string id="st_sales_department">
+		<text>Sales and Bizdev</text>
+	</string>
+	<string id="st_boyko">
+		<text>Victoria Boyko</text>
+	</string>
+	<string id="st_web_programmer">
+		<text>Web-programmer</text>
+	</string>
+	<string id="st_terlik">
+		<text>Sergey Terluk</text>
+	</string>
+	<string id="st_special_thanks">
+		<text>Special Thanks to:</text>
+	</string>
+	<string id="st_thanks_chernobyl">
+		<text>Alexander Novikov, Igor Gramotkin and the rest of Chernobyl Power Plant staff and administration for their ongoing support</text>
+	</string>
+	<string id="st_thanks_chernobyl2">
+		<text>Chernobyl Exclusion Zone Administration for allowing us to carry out our crazy explorations</text>
+	</string>
+	<string id="st_thanks_chernobyl3">
+		<text>Employees of Chernobylinterinform for their assistance</text>
+	</string>
+	<string id="st_thanks_naumova">
+		<text>Alexander Naumov for his great informational input and his noble mission</text>
+	</string>
+	<string id="st_thanks_firelake">
+		<text>FIRELAKE band (www.firelake.in.ua)</text>
+	</string>
+	<string id="st_thanks_firelake2">
+		<text>Ilya Novak for help with work on the plot</text>
+	</string>
+	<string id="st_thanks_firelake3">
+		<text>UKRGAME.NET for their constant support of S.T.A.L.K.E.R. online</text>
+	</string>
+	<string id="st_thanks_fanbase">
+		<text>FAN-BASE! Our thanks go to Aleksey "Don Reba" Badalov, Marcos "Pixel" Duarte, Megamat, Abe, Dark, Artem "BAC9-FLCL" Zuev, Maciej "Stierlitz" Prieditis, Dennis "Siro" Tchernov, Aleksey "Hash" Belendinov, Sooltan DJ, Ygrek, NatVac, xStream, Red75, sokol_jack, Stalker-Portal.ru (Alexander "Leks" Abramov, Igor "Gag" Soloviev, Aleksey "DaimoN" Dronov)</text>
+	</string>
+	<string id="st_thanks_fanbase2">
+		<text>Everyone who organized and participated in the S.T.A.L.K.E.R.: Reality role-playing airsoft game, especially:</text>
+	</string>
+	<string id="st_thanks_fanbase3">
+		<text>Dmitry "Comandor" Ivanov</text>
+	</string>
+	<string id="st_thanks_fanbase4">
+		<text>Eugene "Mulder" Khaletskiy</text>
+	</string>
+	<string id="st_thanks_fanbase5">
+		<text>Sergey "Tur" Leshenko</text>
+	</string>
+	<string id="st_thanks_fanbase6">
+		<text>Denis "Fiedel" Kotlyar</text>
+	</string>
+	<string id="st_thanks_fanbase7">
+		<text>Vladimir "Rover" Smolkin</text>
+	</string>
+	<string id="st_thanks_fanbase8">
+		<text>Dmitry "Professor" Gurevich</text>
+	</string>
+	<string id="st_thanks_fanbase9">
+		<text>Stanistlav "Chesba" Legkobit</text>
+	</string>
+	<string id="st_thanks_fanbase10">
+		<text>Konstantin "Inquisitor" Kriukov</text>
+	</string>
+	<string id="st_thanks_fanbase11">
+		<text>Igumen Valerian (Golovchenko) AKA oVal</text>
+	</string>
+	<string id="st_thanks_fanbase12">
+		<text>Аshot, BigZ, Gild, Zeel, Andrey Pauk.</text>
+	</string>
+	<string id="st_thanks_fanbase13">
+		<text>and the many fans from around the world who passionately supported the S.T.A.L.K.E.R. project</text>
+	</string>
+	<string id="st_thanks_all">
+		<text>A HUGE THANKS from the whole team to all fans of S.T.A.L.K.E.R.</text>
+	</string>
+	<string id="st_publisher">
+		<text>PUBLISHER</text>
+	</string>
+	<string id="st_koch_media">
+		<text>DEEP SILVER</text>
+	</string>
+	<string id="st_publisher_head">
+		<text>Head of Production</text>
+	</string>
+	<string id="st_publisher_moriz">
+		<text>Christian Moriz</text>
+	</string>
+	<string id="st_publisher_management">
+		<text>Product Management</text>
+	</string>
+	<string id="st_publisher_stettner">
+		<text>Maik Stettner</text>
+	</string>
+	<string id="st_publisher_production">
+		<text>Post Production/LQA</text>
+	</string>
+	<string id="st_publisher_schmidt">
+		<text>Michael K. Schmidt</text>
+	</string>
+	<string id="st_publisher_langer">
+		<text>Daniel Langer</text>
+	</string>
+	<string id="st_publisher_gaitzsch">
+		<text>Daniel Gaitzsch</text>
+	</string>
+	<string id="st_publisher_int_marketing">
+		<text>International Marketing</text>
+	</string>
+	<string id="st_publisher_larch">
+		<text>Georg Larch</text>
+	</string>
+	<string id="st_publisher_marketing">
+		<text>Marketing Manager GSA</text>
+	</string>
+	<string id="st_publisher_gerhold">
+		<text>Mario Gerhold</text>
+	</string>
+	<string id="st_publisher_beck">
+		<text>Oliver Beck</text>
+	</string>
+	<string id="st_publisher_press">
+		<text>International Press</text>
+	</string>
+	<string id="st_publisher_metzler">
+		<text>Martin Metzler</text>
+	</string>
+	<string id="st_publisher_pr">
+		<text>PR Manager GAS</text>
+	</string>
+	<string id="st_publisher_wein">
+		<text>Martin Wein</text>
+	</string>
+	<string id="st_publisher_design">
+		<text>Graphics and Design</text>
+	</string>
+	<string id="st_publisher_stein">
+		<text>Alexander Stein</text>
+	</string>
+	<string id="st_publisher_community">
+		<text>Community Management</text>
+	</string>
+	<string id="st_publisher_oberlerchner">
+		<text>Daniel "Oberle" Oberlerchner</text>
+	</string>
+	<string id="st_publisher_testing">
+		<text>Linguistic Testing</text>
+	</string>
+	<string id="st_publisher_grobhennig">
+		<text>Linda Grosshennig</text>
+	</string>
+	<string id="st_publisher_parakhen">
+		<text>Prachya Isaac Parakhen</text>
+	</string>
+	<string id="st_publisher_cuinet">
+		<text>Mikael Cuinet</text>
+	</string>
+	<string id="st_publisher_randall_mage">
+		<text>LocalSoft - Randall Mage</text>
+	</string>
+</string_table>

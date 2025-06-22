@@ -83,7 +83,13 @@ function action_actor_reaction:finalize()
 	self.comed = nil
 	self.random_position = nil
 	self.base_vertex_id = nil
-	self.npc:add_restrictions(self.def_restr, "")
+	local st = db.storage[self.npc:id()]
+	local active_section = st and st.active_section
+
+	if active_section ~= nil then
+		restrictor_manager.get_restrictor_manager(self.npc):reset_restrictions(st, active_section)
+	end
+
 	printf("finalize!!!!!")
 end
 

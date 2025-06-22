@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hosp_task_general_name">
+		<text>Juss be a Csernobili Atomerхmыbe!</text>
+	</string>
+	<string id="hosp_task_general_text">
+		<text>A Csernobili Atomerхmыbe egy romos kуrhбzon keresztьl lehet bejutni. Siess, Sztrelok бtjutott a Perzselхn, йs mбr nagyon kцzel van az erхmыhцz! Talбld meg a bejбratot a katakombбkba!</text>
+	</string>
+	<string id="hosp_task_heli_name">
+		<text>Intйzd el a helikoptert!</text>
+	</string>
+	<string id="hosp_task_heli_text">
+		<text>Lхdd le a katonai helikoptert!</text>
+	</string>
+	<string id="hosp_task_kill_sniper_name">
+		<text>Цld meg a mesterlцvйszt!</text>
+	</string>
+	<string id="hosp_task_kill_sniper_text">
+		<text>Errхl az oldalrуl nincs vйdve a mesterlцvйsz. Цld meg!</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_name">
+		<text>Lopуzz a mesterlцvйsz kцzelйbe!</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_text">
+		<text>A kуrhбz csarnokбt egy mesterlцvйsz йs egy gйppuskafйszek is vйdi. A mesterlцvйsz jуl vйdett helyen van. Juss бt a csarnokon, йs цld meg a mesterlцvйszt, amнg a Tiszta Йgbolt eltereli az ellensйg figyelmйt!</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_name">
+		<text>Juss бt a csarnok tъloldalбra!</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_text">
+		<text>A gйppuskбs valуsбgos pokollб vбltoztatja az alsу emeletet, mнg a mesterlцvйsz a felsх emeletet vйdi. A Tiszta Йgbolt eltereli egy kis ideig az ellensйg figyelmйt. Csak akkor mozogj, ha arra a Tiszta Йgbolt osztagparancsnoka utasнt!</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_name">
+		<text>Йrd el a hidat!</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_text">
+		<text>El kell йrned a hidat! Csak akkor mozogj, ha arra a Tiszta Йgbolt osztagparancsnoka utasнt, akik elterelik az ellensйg figyelmйt!</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_name">
+		<text>Juss бt a hнdon!</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_text">
+		<text>Juss бt a hнdon! Csak akkor mozogj, ha arra a Tiszta Йgbolt osztagparancsnoka utasнt, akik elterelik az ellensйg figyelmйt!</text>
+	</string>
+	<string id="hosp_task_z2_exit_name">
+		<text>Menj a kцvetkezх csarnokba!</text>
+	</string>
+	<string id="hosp_task_z2_exit_text">
+		<text>A lezuhanу helikopter kirobbantotta a falat йs megnyitotta az utat a kцvetkezх csarnokba. Folytasd utad a kцvetkezх csarnokba!</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_name">
+		<text>Fedezd a Tiszta Йgbolt osztagot!</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_text">
+		<text>A Tiszta Йgbolt osztag megindult, hogy felrobbantsa a gйppuskafйszket. Monolitiak tбmadtak rбjuk. Biztosнts zбrуtьzet a Tiszta Йgbolt osztagnak!</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_name">
+		<text>Tarts ki, amнg megйrkezik a segнtsйg!</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_text">
+		<text>Kцzeledik a Tiszta Йgbolt osztag. Tarts ki, amнg megйrkezik a felmentх sereg!</text>
+	</string>
+</string_table>

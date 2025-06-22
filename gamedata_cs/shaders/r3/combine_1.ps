@@ -22,7 +22,11 @@ struct	_out
 };
 
 //	TODO:	DX10: Replace Sample with Load
+#ifndef MSAA_OPTIMIZATION
 _out main ( _input I )
+#else
+_out main ( _input I, uint iSample : SV_SAMPLEINDEX )
+#endif
 {
 	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc0, I.pos2d, ISAMPLE) );
 	

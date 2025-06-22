@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="lim_destroy_ambush_2_name">
+		<text>Semmisнtsd meg az ellensйget a keresztezхdйsnйl!</text>
+	</string>
+	<string id="lim_destroy_ambush_2_text">
+		<text>Semmisнtsd meg az ellensйges csapatokat a keresztezхdйsnйl!</text>
+	</string>
+	<string id="lim_destroy_bandit_minigun_name">
+		<text>Semmisнtsd meg a gйppuskafйszket!</text>
+	</string>
+	<string id="lim_destroy_bandit_minigun_text">
+		<text>Nem akбrmilyen tыzharc alakult ki a keresztezхdйsnйl. A fosztogatуk kezйn lйvх bal oldali йpьlet pozнciуja ideбlis lenne az ъt megtisztнtбsбhoz. Semmisнtsd meg a gйppuskafйszket az йpьletben!</text>
+	</string>
+	<string id="lim_destroy_military_minigun_name">
+		<text>Semlegesнtsd a gйppuskafйszket!</text>
+	</string>
+	<string id="lim_destroy_military_minigun_text">
+		<text>Az ellensйg vйdelmi pozнciуt alakнtott ki egy йpьletben a hнd tъloldalбn. Folyamatos ellenхrzйs alatt tartjбk a terьletet, нgy a Tiszta Йgbolt osztag mйg csak бt sem tudott jutni a hнdon. El kell jutnod az йpьletbe, hogy semlegesнtsd az ellensйget! A Tiszta Йgbolt osztag addig eltereli a figyelmьket.</text>
+	</string>
+	<string id="lim_electro_fence_name">
+		<text>Kapcsold le a generбtort!</text>
+	</string>
+	<string id="lim_electro_fence_text">
+		<text>Elektromos egysйg bemйrve. Kapcsold le a generбtort, hogy megszыnjцn a kerнtйs бramellбtбsa!</text>
+	</string>
+	<string id="lim_find_way_through_construction_name">
+		<text>Juss бt az йpнtkezйsen!</text>
+	</string>
+	<string id="lim_find_way_through_construction_text">
+		<text>Kцzeledsz Limanszk elхvбrosбhoz. Az ъt egy befejezetlen йpьletegyьttesen бt vezet. Juss бt az йpнtkezйsen!</text>
+	</string>
+	<string id="lim_go_into_limansk_name">
+		<text>Derнtsd fel a Limanszkon бt vezetх utat!</text>
+	</string>
+	<string id="lim_go_into_limansk_text">
+		<text>Lebegyev parancsбra fel kell derнteni a Limanszkon бt vezetх utat, hogy biztonsбgosan бtkelhessen a Tiszta Йgbolt fхereje. Hбborъ tцrt ki a vбros utcбin, ъgyhogy lйgy уvatos!</text>
+	</string>
+	<string id="lim_go_to_canal_name">
+		<text>Menj a csatornбn бt a hнd irбnyбba!</text>
+	</string>
+	<string id="lim_go_to_canal_text">
+		<text>Az ellensйg tъlerхben van. Menekьlj a csatornбn бt a hнd irбnyбba!</text>
+	</string>
+	<string id="lim_destroy_ambush_1_name">
+		<text>Intйzd el a tбmadуkat!</text>
+	</string>
+	<string id="lim_destroy_ambush_1_text">
+		<text>Intйzd el a tбmadуkat!</text>
+	</string>
+	<string id="lim_electro_fence_actor_come_back_name">
+		<text>Tйrj vissza a csapatparancsnokhoz!</text>
+	</string>
+	<string id="lim_electro_fence_actor_come_back_text">
+		<text>Tйrj vissza a csapat parancsnokбhoz!</text>
+	</string>
+	<string id="lim_electro_fence_cs_soldier_cover_name">
+		<text>Segнts a harcosnak felosonni az orvlцvйszhez!</text>
+	</string>
+	<string id="lim_electro_fence_cs_soldier_cover_text">
+		<text>Segнts a Tiszta Йgbolt harcosбnak felosonni az orvlцvйszhez!</text>
+	</string>
+	<string id="lim_electro_fence_find_transformator_name">
+		<text>Talбld meg a generбtort!</text>
+	</string>
+	<string id="lim_electro_fence_find_transformator_text">
+		<text>A generбtorhoz vezetх utat egy villamoskerнtйs zбrja el. A vбrosban mбr rйgуta nincs бram, ami azt jelenti, hogy a kerнtйsnek fьggetlen бramforrбsa van. A vezetйkek a jobb oldalon levх intйzetbe vezetnek. Keresd meg a generбtort, ami бram alatt tartja a kerнtйst!</text>
+	</string>
+	<string id="lim_electro_fence_sniper_name">
+		<text>Intйzd el a mesterlцvйszt!</text>
+	</string>
+	<string id="lim_electro_fence_sniper_text">
+		<text>Megszыnt a kerнtйs бramellбtбsa. Most mбr gond nйlkьl a mesterlцvйsz kцzelйbe juthatsz. Intйzd el!</text>
+	</string>
+	<string id="lim_find_bridge_squad_comander_name">
+		<text>Talбld meg a csapatparancsnokot!</text>
+	</string>
+	<string id="lim_find_bridge_squad_comander_text">
+		<text>Talбld meg a csapat parancsnokбt!</text>
+	</string>
+</string_table>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="lim_bandit_wounded_dialog_1_11">
+		<text>Pomozte mi, kamarбdi. Vмnujte mi lйkбrniиku, kamarбd mб smrt na jazyku.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_111">
+		<text>Tumбљ.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1111">
+		<text>Vydrћ, jб nejdшнv oљetшнm kamarбda.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_112">
+		<text>Promiт, zrovna nemбm lйkбrniиku.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1121">
+		<text>Do prdele, kluci...</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_113">
+		<text>Jsi se bodnout, srбиi.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_11">
+		<text>Dнk, ћes mi zachrбnil prdel. Vypadбљ, jako ћe jdeљ do mмsteиka. Dбvej si bacha - Redovi lidi si v nмkterй z tмch ulic vpшedu nachystali pшepadбvaиku. U jednoho auta si natбhli drбt - nepшekraиuj pшes nмj. Drћ se na pravй stranм ulice a nezkшivн ti ani vlбsek.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_111">
+		<text>Kdo jeљtм je ve mмstм?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1111">
+		<text>Velkб spousta lidн a dмlajн tam dмsnэ bordel. Povinnost i Svoboda nabмhly pшнmo do mмsteиka - urиitм hledajн cestu dбl do centra Zуny. Vidмli jsme i nмkolik vrtulnнkщ, takћe armбda se taky dostavila. V mмsteиku je taky pбr stalkerщ, ale ti pшiљli z druhй strany, z centra Zуny.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_112">
+		<text>Co se dмje ve mмstм?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1121">
+		<text>Nбљ љйf se se svэma lidma zahrabal v jednom barбku kousek dбl po ulici. Jestli chceљ do mмsta, budeљ je z tй barabizny muset vykouшit.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_113">
+		<text>Dнk, aи nenн za co. A teп padej, neћ si to rozmyslнm a odprбsknu tм.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_12">
+		<text>Pospмљ si, chystбme se odsud zdekovat.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_121">
+		<text>To je ono, pohyb.</text>
+	</string>
+</string_table>

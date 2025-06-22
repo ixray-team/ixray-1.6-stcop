@@ -110,6 +110,7 @@ half4   main_ps_2_0  ( vf I )          : COLOR
 
 	//	Leaves
 	half4	leaves	= tex2D(s_leaves, I.tbase);
+			leaves.rgb *= water_intensity.r;
 	half	calc_cos = dot ( I.M3,  v2point);
 	half	calc_depth = saturate(waterDepth*calc_cos);
 	half	fLeavesFactor = smoothstep(0.025, 0.05, calc_depth );

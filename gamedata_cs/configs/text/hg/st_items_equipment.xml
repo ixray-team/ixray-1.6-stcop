@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_antirad">
+		<text>Sugбrzбs elleni drogok</text>
+	</string>
+	<string id="st_antirad_descr">
+		<text>Egy csomag tabletta, melyek aktнv цsszetevхiknek kцszцnhetхen segнtenek a szervezetnek kilцkni a sugбrzу elemeket. A tablettбk nem vйdik meg a szervezetet egy ъjabb sugбrzбstуl, csak csцkkentik az aktuбlis sugбrzбs mйrtйkйt.</text>
+	</string>
+	<string id="st_bread">
+		<text>Kenyйr</text>
+	</string>
+	<string id="st_bread_descr">
+		<text>Mйg sohasem lбttak pйkeket a Zуnбban, de ez a kenyйr nem fertхzцtt, йs mйg ehetх is. Eddig legalбbbis nem йrkezett panasz.</text>
+	</string>
+	<string id="st_conserva">
+		<text>„Turistбk reggelije”</text>
+	</string>
+	<string id="st_conserva_descr">
+		<text>A stalkerek бltal a hadsereg egyik raktбrбbуl ellopott konzervkajбk. Meg lehet enni хket, ha elhiszed, hogy mйg nem jбrt le a szavatossбguk.</text>
+	</string>
+	<string id="st_kolbasa">
+		<text>Diйtбs kolbбsz</text>
+	</string>
+	<string id="st_kolbasa_descr">
+		<text>Tetszik vagy nem, ez a kolbбsz, mely fхleg csirke йs szуja keverйke, a stalkerek leggyakoribb fogбsa reggelire, ebйdre йs vacsorбra.</text>
+	</string>
+	<string id="st_medkit">
+		<text>Elsхsegйlycsomag</text>
+	</string>
+	<string id="st_medkit_descr">
+		<text>Alapvetх elsхsegйlycsomag. Szбmos sebesьlйs kezelйsйre alkalmas – egyszerыbb sebesьlйs, йgйs, mйrgezйs, йs egyebek.</text>
+	</string>
+	<string id="st_medkit_army">
+		<text>Katonai elsхsegйlycsomag</text>
+	</string>
+	<string id="st_medkit_army_descr">
+		<text>Fizikai sйrьlйsek йs vйrzйs kezelйsйre цsszeбllнtott speciбlis csomag. Vйralvasztу szerek, fбjdalomcsillapнtуk, antibiotikumuk йs az immunrendszert stimulбlу szerek vannak benne.</text>
+	</string>
+	<string id="st_medkit_science">
+		<text>Tudomбnyos elsхsegйlycsomag</text>
+	</string>
+	<string id="st_medkit_science_descr">
+		<text>Egy olyan elsхsegйlycsomag, melyet kimondottan a Zуnбhoz бllнtottak цssze. A csomagban olyan anyagok vannak, melyekkel kezelni lehet a sйrьlйseket, csцkkenteni lehet a testben lйvх radioaktнv rйszecskйk szбmбt. Meggбtolja a sugбrzбs okozta rosszullйt kialakulбsбt, йs csцkkenti a sugбrzбs mйrtйkйt.</text>
+	</string>
+	<string id="st_vodka">
+		<text>„Kozбk vodka”</text>
+	</string>
+	<string id="st_vodka_descr">
+		<text>Kцnnyen lefolyik, йs jelentхsen csцkkenti a sugбrzбs hatбsбt. Mйrsйkelten kell fogyasztani.</text>
+	</string>
+	<string id="st_bandage">
+		<text>Kцtszer</text>
+	</string>
+	<string id="st_bandage_descr">
+		<text>Sebkцtцzйshez hasznбlt anyagok. Segнt csцkkenteni a vйrzйst.</text>
+	</string>
+	<string id="st_energy_drink">
+		<text>Energiaital</text>
+	</string>
+	<string id="st_energy_drink_descr">
+		<text>A stalkerek gyakran hasznбljбk olyan hosszabb ъtjaik sorбn, amikor nem бllhatnak meg. Az ital kцnnyen emйszthetх szйnhidrбtokat, valamint gyуgyszereket tartalmaz, melyek serkentik az adrenalin termelйsйt йs vйrbe juttatбsбt.</text>
+	</string>
+	<string id="st_detector1">
+		<text>„Visszhang” detektor</text>
+	</string>
+	<string id="st_detector1_descr">
+		<text>Ez a kйszьlйk, melyben egy Geiger-szбmlбlу is helyet kapott, kйpes йrzйkelni az anomбliбkat, йs riasztani, ha valaki a kцzelйbe kerьl. Kйpes йrzйkelni a relikviбkat is, megmutatva a legkцzelebbi tбrgy tбvolsбgбt. Zбrt бllapotban csak az anomбliбkat йs a sugбrzбst mйri. Ha a relikviбkat is szeretnйd megfigyelni, nyisd fel a berendezйs elхlapi paneljйt.</text>
+	</string>
+	<string id="st_detector2">
+		<text>„Medve” detektor</text>
+	</string>
+	<string id="st_detector2_descr">
+		<text>Ez a kйszьlйk, melyben egy Geiger-szбmlбlу is helyet kapott, kйpes йrzйkelni az anomбliбkat йs riasztani ha valaki a kцzelйbe kerьl. Nemcsak a relikviбk tбvolsбgбt, hanem azok irбnyбt is kйpes meghatбrozni. Zбrt бllapotban csak az anomбliбkat йs a sugбrzбst mйri. Ha a relikviбkat is szeretnйd megfigyelni, nyisd fel a berendezйs elхlapi paneljйt.</text>
+	</string>
+	<string id="st_detector3">
+		<text>„Velesz” detektor</text>
+	</string>
+	<string id="st_detector3_descr">
+		<text>Kцvetkezх generбciуs detektor, melyet kimondottan relikviбk felkutatбsбhoz fejlesztettek ki. A relikviбk egy kьlцnleges kйpernyхn jelennek meg, mely megkцnnyнti megtalбlбsukat. A mыszerben Geiger-szбmlбlу is van, kйpes az anomбliбk felkutatбsбra is. Zбrt бllapotban csak az anomбliбkat йs a sugбrzбst mйri. Ha a relikviбkat is szeretnйd megfigyelni, nyisd fel a berendezйs elхlapi paneljйt, ahol a LED-ek lбthatуak.</text>
+	</string>
+	<string id="st_cordon_case">
+		<text>Ezьst tбska</text>
+	</string>
+	<string id="st_cordon_case_descr">
+		<text>Egy kismйretы, kуdzбrral vйdett tбska. A tбska йrtйkes informбciуkat tartalmaz, olyan kereskedхkrхl, akik megbнzhatуak, йs бtveszik a relikviбkat.</text>
+	</string>
+	<string id="st_fang_pda">
+		<text>Agyar PDA-ja</text>
+	</string>
+	<string id="st_fang_pda_descr">
+		<text>Egy Pocket PC, amit a Zуnбban notebookkйnt, navigбciуs, hangrцgzнtх йs kommunikбciуs berendezйskйnt is hasznбlnak. Minden PDA egyedi azonosнtуval rendelkezik, нgy kцnnyebb kцvetni хket.</text>
+	</string>
+	<string id="st_shukin_pda">
+		<text>Sukin PDA-ja</text>
+	</string>
+	<string id="st_shukin_pda_descr">
+		<text>Egy Pocket PC, amit a Zуnбban notebookkйnt, navigбciуs, hangrцgzнtх йs kommunikбciуs berendezйskйnt is hasznбlnak. Minden PDA egyedi azonosнtуval rendelkezik, нgy kцnnyebb kцvetni хket.</text>
+	</string>
+	<string id="st_recorder">
+		<text>Diktafon</text>
+	</string>
+	<string id="st_cooler_docs">
+		<text>A hыtхбllomбs leнrбsa</text>
+	</string>
+	<string id="st_cooler_docs_descr">
+		<text>A dossziй rйszletes leнrбst йs javнtбsi ъtmutatуt tartalmaz a gyбr terьletйn lйvх hыtхбllomбsrуl.</text>
+	</string>
+	<string id="st_compass">
+		<text>„Irбnytы”</text>
+	</string>
+	<string id="st_compass_descr">
+		<text>Egy ritka relikvia. Sok йv eltelt azуta, hogy legutуbb talбltak egyet. A relikvia kйpes megtalбlni az anomбliбk mezejйben keletkezх rйseket, нgy amolyan irбnytыkйnt funkcionбl. Azt mondjбk rуla, hogy a segнtsйgйvel бt lehet kelni a legveszйlyesebb anomбliбkon is gyakorlatilag sйrtetlenьl. Nagyon kevesen tudjбk megfelelхen kezelni.</text>
+	</string>
+	<string id="st_guitar_descr">
+		<text>Hйthъrъ gitбr</text>
+	</string>
+	<string id="st_guitar_name">
+		<text>Gitбr</text>
+	</string>
+</string_table>

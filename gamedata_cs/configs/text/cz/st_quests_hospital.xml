@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hosp_task_general_name">
+		<text>Najdi cestu do иernobylskй elektrбrny</text>
+	</string>
+	<string id="hosp_task_general_text">
+		<text>Cesta do иernobylskй elektrбrny vede skrz poniиenou nemocnici. Spмchej - Stшelec uћ se dostal pшes Vypalovaи a je tйmмш u elektrбrny. Najdi vstup do katakomb.</text>
+	</string>
+	<string id="hosp_task_heli_name">
+		<text>Sestшel vrtulnнk</text>
+	</string>
+	<string id="hosp_task_heli_text">
+		<text>Sestшel armбdnн vrtulnнk.</text>
+	</string>
+	<string id="hosp_task_kill_sniper_name">
+		<text>Zabij odstшelovaиe</text>
+	</string>
+	<string id="hosp_task_kill_sniper_text">
+		<text>Odstшelovaи nenн kryt z boku. Zabij ho.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_name">
+		<text>Pшipliћ se k odstшelovaиi</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_text">
+		<text>Nemocniиnн hala je kryta odstшelovaиem a kulometnэm hnнzdem. Odstшelovaиova pozice je dobшe chrбnмnб. Jasnб obloha odlбkб pozornost nepшбtel, zatнmco ty pшebмhni halu a sejmi odstшelovaиe.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_name">
+		<text>Pшebмhni na druhou stranu haly</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_text">
+		<text>Kulometинk kropн palbou spodnн patro, zatнmco odstшelovaи se starб o to hornн. Jasnб obloha na chvнli odlбkб pozornost nepшбtel. Vybмhni teprve na signбl od velitele Jasnй oblohy.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_name">
+		<text>Dostaт se k mostu</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_text">
+		<text>Potшebujeљ se dostat k mostu. Vyraz teprve na signбl od velitele Jasnй oblohy, kterй odlбkб nepшнtele.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_name">
+		<text>Pшekroи most</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_text">
+		<text>Pшekroи most. Vyraz teprve na signбl od velitele Jasnй oblohy, kterй odlбkб nepшнtele.</text>
+	</string>
+	<string id="hosp_task_z2_exit_name">
+		<text>Pшebмhni do vedlejљн haly</text>
+	</string>
+	<string id="hosp_task_z2_exit_text">
+		<text>Padajнcн vrtulnнk poboшil zeп a otevшel tak cestu do vedlejљн haly. Pшebмhni do nн.</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_name">
+		<text>Kryj druћstvo Jasnй oblohy.</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_text">
+		<text>Druћstvo Jasnй oblohy postupuje, aby zniиilo kulometnй hnнzdo. Mezitнm na nм ъtoин vojбci Monolitu. Poskytni Jasnй obloze krycн palbu.</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_name">
+		<text>Drћ se, dokud nedorazн pomoc</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_text">
+		<text>Druћstvo Jasnй oblohy uћ se blнћн. Drћ se, dokud nedorazн posily.</text>
+	</string>
+</string_table>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="bandit_outfit_description">
+		<text>Tradiиnн vybavenн bandity  - koћenб bunda posнlenб kevlarem. Pro Zуnu je nedostateиnб. Obsahuje kapsy, do kterэch je moћnй vloћit dva artefakty.</text>
+	</string>
+	<string id="bandit_outfit_name">
+		<text>Bunda banditщ</text>
+	</string>
+	<string id="dolg_outfit_description">
+		<text>Modernizovanб verze ochrannйho obleku Povinnosti, na rozdнl od oblekщ sйrie PSZ poskytuje dobrou ochranu pшed anomбliemi. Pancйшovбnн dokбћe zastavit pistolovй stшelivo. Nenн moћnй modifikovat pro pшenбљenн artefaktщ.</text>
+	</string>
+	<string id="dolg_outfit_name">
+		<text>PS5-M "Universal Protection"</text>
+	</string>
+	<string id="exo_outfit_description">
+		<text>Prototyp vojenskйho exoskeletonu. Do sйriovй produkce se kvщli obrovskй cenм a nмkolika chybбm v designu nikdy nedostal. Pшesto se ale v malйm mnoћstvн vyrбbн v ilegбlnнch tovбrnбch mimo Ukrajinu. Toto je exoskeleton tшetн generace. Chyby, kterй sniћovaly mobilitu pшedchozн verze, byly napraveny a pancйшovбnн zesнleno.</text>
+	</string>
+	<string id="exo_outfit_name">
+		<text>Exoskeleton</text>
+	</string>
+	<string id="military_outfit_description">
+		<text>Vojenskэ obrnмnэ oblek Bulat je urиen k provбdмnн ъtokщ v anomбlnнch oblastech. Sklбdб se z tмћkйho vojenskйho osobnнho brnмnн, kompenzaиnнho systйmu a helmy Sphere-12M. Pancйшovбnн obleku dokбћe zastavit stшelu z ъtoиnй puљky. Nenн moћnй modifikovat pro pшenбљenн artefaktщ.</text>
+	</string>
+	<string id="military_outfit_name">
+		<text>Obrnмnэ oblek "Bulat"</text>
+	</string>
+	<string id="mp_exo_outfit_description">
+		<text>Exoskeleton vэbornм chrбnн pшed stшepinami a kulkami, ale sniћuje pohyblivost. A prщraznй stшelivo se o nмj dokбћe postarat.</text>
+	</string>
+	<string id="mp_exo_outfit_name">
+		<text>Exoskeleton</text>
+	</string>
+	<string id="mp_military_outfit_description">
+		<text>Armбdnн neprщstшelnэ oblek urиenэ pro pшepadovй akce. Poskytuje vynikajнcн ochranu pшed kulkami a stшepinami, aniћ by sniћoval vojбkovu pohyblivost. Prщraznй stшelivo ho vљak dokбћe poљkodit.</text>
+	</string>
+	<string id="mp_military_outfit_name">
+		<text>Armбdnн neprщstшelnэ oblek</text>
+	</string>
+	<string id="mp_scientific_outfit_description">
+		<text>Tento oblek je urиenэ pro provбdмnн vэzkumu v Zуnм. Mб dэchacн systйm s uzavшenэm cyklem a takй zabudovanэ systйm pro ochranu pшed anomбlnнmi poli. Velmi snadno poљkoditelnэ, tйmмш vщbec nechrбnн pшed fyzickэm poљkozenнm. Zabudovanэ systйm pro pшepravu artefaktщ.</text>
+	</string>
+	<string id="mp_scientific_outfit_name">
+		<text>Vмdeckэ oblek</text>
+	</string>
+	<string id="scientific_outfit_description">
+		<text>Tento oblek vyrбbн jeden z kyjevskэch obrannэch institutщ a pшedstavuje vynikajнcн alternativu k ruиnм vyrбbмnэm stalkerskэm oblekщm. Jde o vэbornou kombinaci neprщstшelnй vesty, uzavшenйho dэchacнho systйmu a integrovanйho systйmu potlaиovбnн anomбliн. Dнky vэbornм zvolenэm materiбlщm jde o nejlepљн oblek tйto tшнdy. Jedinou jeho nevэhodou je vysokб cena.</text>
+	</string>
+	<string id="scientific_outfit_name">
+		<text>SEVA oblek</text>
+	</string>
+	<string id="specops_outfit_description">
+		<text>Oblek speciбlnнch jednotek Berill-5M modifikovanэ pro pouћitн v Zуnм. Obsahuje vojenskou neprщstшelnou vestu PSZ-9a s berylliovэm zesнlenнm a helmu Sphere-08. Je urиen pro ъtoиnй operace v oblastech s vysokou radiacн. Pшed anomбliemi chrбnн jenom mбlo.</text>
+	</string>
+	<string id="specops_outfit_name">
+		<text>Obrnмnэ "Berill-5M"</text>
+	</string>
+	<string id="stalker_outfit_description">
+		<text>Stalkerskэ oblek vyrobenэ nмkэm z mнstnнch. Efektivnн kombinace lehkй vojenskй neprщstшelnй vesty a pogumovanйho lбtkovйho obleku. Aиkoli nedokбћe ochrбnit nositele ani pшed stшelami z pistole, je dнky svй nнzkй cenм a modifikaиnнm moћnostem velmi populбrnн. Obsahuje kapsy, do kterэch je moћnй vloћit dva artefakty.</text>
+	</string>
+	<string id="stalker_outfit_name">
+		<text>Oblek "Vэchod slunce"</text>
+	</string>
+	<string id="svoboda_heavy_outfit_description">
+		<text>Posнlenэ stalkerskэ oblek vyrбbмnэ zbrojншi frakce Svoboda. Je udмlanэ ze stшednн vojenskй neprщstшelnй vesty s plбty posнlenэmi zirkoniem, dobшe chrбnн pшed kulkami z puљek a stшepinami na stшednн i velkou vzdбlenost. Materiбl obleku se sklбdб ze dvou vrstev, speciбlnм vyиinмnй kщћe a lбtky s azbestovэmi vlбkny. Oblek dobшe chrбnн pшed radiacн a slabэmi anomбliemi.</text>
+	</string>
+	<string id="svoboda_heavy_outfit_name">
+		<text>Oblek "Strбћce Svobody"</text>
+	</string>
+	<string id="svoboda_light_outfit_description">
+		<text>Lehkэ stalkerskэ oblek vyrбbмnэ zbrojншi frakce Svoboda. Sklбdб se z lehkй vojenskй neprщstшelnй vesty posнlenй kevlarem. Dokбћe ochrбnit pшed slabэmi zbranмmi. Lбtka obleku je napuљtмnб speciбlnн smмsн, kterб zvyљuje ochranu pшed anomбliemi.</text>
+	</string>
+	<string id="svoboda_light_outfit_name">
+		<text>Oblek "Vнtr Svobody"</text>
+	</string>
+	<string id="csky_heavy_outfit_description">
+		<text>Standardnн vэstroj pouћнvanб ъtoиnэmi druћstvy Jasnй oblohy. Tato zbroj dokбћe zastavit vэstшel z pistole, zatнmco jejн integrovanб plynovб maska poskytuje dobrou ochranu pшed anomбliemi. Obsahuje i schrбnku na jeden artefakt. </text>
+	</string>
+	<string id="csky_heavy_outfit_name">
+		<text>Vesta JN-1</text>
+	</string>
+	<string id="csky_light_outfit_description">
+		<text>Tato vesta byla navrћena pro vэzkumnй operace v oblastech s nнzkou aktivitou anomбliн. Je vyrobena z kvalitnмjљнch materiбlщ a mб tak delљн ћivotnost. Obsahuje i schrбnku na jeden artefakt. </text>
+	</string>
+	<string id="csky_light_outfit_name">
+		<text>Vesta JN-3a</text>
+	</string>
+	<string id="dolg_heavy_outfit_description">
+		<text>Rannэ sluћebnн model Povinnosti. Proslavil se svou zabudovanou neprщstшelnou vestou a prakticky ћбdnou ochranou pшed anomбliemi. Vestu nelze modifikovat tak, aby obsahovala schrбnku na artefakty.</text>
+	</string>
+	<string id="dolg_heavy_outfit_name">
+		<text>PSZ-9d, "Vesta Povinnosti"</text>
+	</string>
+	<string id="exo_freedom_outfit_description">
+		<text>Vylepљenб verze obyиejnйho exoskeletu. Dнky vyuћitн lehинch materiбlщ mohli technici snнћit vбhu tйto kombinйzy a vylepљit jejн ћivotnost.</text>
+	</string>
+	<string id="exo_freedom_outfit_name">
+		<text>Exoskelet Svobody</text>
+	</string>
+	<string id="novice_outfit_description">
+		<text>Beћnэ ohoz zaинnajнcнho stalkera. Nezachrбnн tм ani pшed vэstшely ani pшed anomбliemi, ale je poшбd lepљн neћ nic. Lze vylepљit tak, aby pobral aћ dva artefakty.</text>
+	</string>
+	<string id="novice_outfit_name">
+		<text>Koћenб vesta</text>
+	</string>
+</string_table>

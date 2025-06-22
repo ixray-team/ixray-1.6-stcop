@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_duty_bar_secret_1_descr">
+		<text>1-es titok leнrбsa</text>
+	</string>
+	<string id="agr_duty_bar_secret_1_name">
+		<text>1-es titok</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_descr">
+		<text>2-es titok leнrбsa</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_name">
+		<text>2-es titok</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_descr">
+		<text>3-as titok leнrбsa</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_name">
+		<text>3-as titok</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_descr">
+		<text>4-es titok leнrбsa</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_name">
+		<text>4-es titok</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_descr">
+		<text>5-цs titok leнrбsa</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_name">
+		<text>5-цs titok</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_descr">
+		<text>6-os titok leнrбsa</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_name">
+		<text>6-os titok</text>
+	</string>
+	<string id="device_pda_old">
+		<text>Ъjfiъ rйgi PDA-ja</text>
+	</string>
+	<string id="esc_treasure_novice_stalker_descr">
+		<text>Ezeket a dolgokat tettem fйlre a nehйz idхkre. Ha egyszer ъgy alakul, biztos, visszajцvцk a kйszleteimйrt.</text>
+	</string>
+	<string id="esc_treasure_novice_stalker_name">
+		<text>Kopasz kйszlete</text>
+	</string>
+	<string id="esc_treasure_weapon_box_descr">
+		<text>Fegyverek йs lхszer, mйg hasznos lesz a hadsereggel йs fosztogatуkkal folytatott harcban.</text>
+	</string>
+	<string id="esc_treasure_weapon_box_name">
+		<text>Fegyverekkel йs lхszerrel teli szйf</text>
+	</string>
+	<string id="st_agr_map_animals">
+		<text>Vбndorlбsi tйrkйpet tartalmazу PDA</text>
+	</string>
+	<string id="st_agr_map_animals_descr">
+		<text>A vбndorlбsi tйrkйp segнtsйgйvel ritka бllatfajokat lehet megtalбlni a tudomбnyos kнsйrletekhez.</text>
+	</string>
+	<string id="st_agr_mechanic_pda">
+		<text>Fegyverfejlesztйssel kapcsolatos adatokat tartalmazу PDA</text>
+	</string>
+	<string id="st_agr_mechanic_pda_descr">
+		<text>Az elektrodiagramok segнtenek a fegyverfejlesztйsben.</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader">
+		<text>Йrtйkes informбciуt tartalmazу PDA</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader_descr">
+		<text>Nincs adat.</text>
+	</string>
+	<string id="st_device_pda_fang">
+		<text>Agyar PDA-ja</text>
+	</string>
+	<string id="st_device_pda_fang_descr">
+		<text>Agyar PDA-ja</text>
+	</string>
+	<string id="st_device_pda_lost_squard_descr">
+		<text>Titkos informбciуk a hadsereg tevйkenysйgeirхl a raktбrtelepen</text>
+	</string>
+	<string id="st_device_pda_lost_squard_fang">
+		<text>A stalker parancsnok PDA-ja</text>
+	</string>
+	<string id="st_device_pda_military">
+		<text>A tбbornok PDA-ja</text>
+	</string>
+	<string id="st_device_pda_military_descr">
+		<text>A PDA titkos informбciуkat tartalmaz a Kordonban бllomбsozу hadsereg jцvхbeni terveirхl.</text>
+	</string>
+	<string id="st_esc_device_pda_driver">
+		<text>A sofхr barбtjбnak PDA-ja</text>
+	</string>
+	<string id="st_esc_device_pda_driver_descr">
+		<text>A sofхr barбtjбnak PDA-ja</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card">
+		<text>Fegyverfejlesztйsekkel kapcsolatos informбciуk.</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card_descr">
+		<text>Fegyverfejlesztйsekkel kapcsolatos informбciуk.</text>
+	</string>
+	<string id="st_esc_military_documentation">
+		<text>Titkos katonai adat</text>
+	</string>
+	<string id="st_esc_military_documentation_descr">
+		<text>Titkos adat.</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard">
+		<text>A parancsnok PDA-ja</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard_descr">
+		<text>A stalker csapat parancsnokбnak PDA-ja. Rйszletes informбciуkat tartalmaz a fosztogatуk tervйrхl, mely szerint a hadsereg raktбrterьleteinek elfoglalбsбt tervezik.</text>
+	</string>
+	<string id="st_red_forest_pda_map">
+		<text>Vцrцs-erdх tйrkйpйt tartalmazу PDA</text>
+	</string>
+	<string id="st_red_forest_pda_map_descr">
+		<text>A PDA-n rajta van Vцrцs-erdх tйrkйpe, amely az anomбliбs terьletet йs a rajta lйvх tйranomбliбt mutatja. Ъgy tыnik, az anomбlia egyenesen az Erdйszhez vezet.</text>
+	</string>
+	<string id="device_pda_digger_descr">
+		<text>A PDA fontos technikai dokumentumokat tartalmaz, amelyek segнtsйgйvel a tudуsok kiderнthetek, mi idйzte elх a jantari pszichikus mezх feltыnйsйt.</text>
+	</string>
+	<string id="device_pda_digger_name">
+		<text>Az eltыnt osztag PDA-ja.</text>
+	</string>
+	<string id="device_pda_garbage_traitor">
+		<text>A csempйsz PDA-ja.</text>
+	</string>
+	<string id="device_pda_garbage_traitor_descr">
+		<text>A csempйsz PDA-ja, ami Sztringov holmijai kцzцtt volt.</text>
+	</string>
+	<string id="device_pda_old_descr">
+		<text>Egy rйgi PDA, ami a szerszбmoslбda kettхs feneke alatt volt, Ъjfiъ tбborбban.</text>
+	</string>
+	<string id="flesh_up_a_novice_outfit_name">
+		<text>Egy flash meghajtу, ami a pehelykцnnyы kevlбr pбncйlzatrуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_ab_pkm_name">
+		<text>Egy flash meghajtу, ami a gйppuskбk automatizбlt alkatrйszeinek kiegyensъlyozбsбrуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_ab_svu_name">
+		<text>Egy flash meghajtу, ami a mesterlцvйsz puskбk csцveirхl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_abcd_pkm_name">
+		<text>Egy flash meghajtу, ami a gйppuskбk gбzkiбramlбsбnak mуdosнtбsairуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_abcd_svu_name">
+		<text>Egy flash meghajtу, ami a mesterlцvйsz puskбk elektronikus stabilizбtorбrуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_ac_ak74u_name">
+		<text>Egy flash meghajtу, ami az automatizбlt alkatrйszek kiegyensъlyozбsбrуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_ac_desert_eagle_name">
+		<text>Egy flash meghajtу, ami a pisztolyok csхszбjfйkйrхl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_ac_mp5_name">
+		<text>Egy flash meghajtу, ami a gйppisztolyok csхszбjfйkйrхl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_ac_spas12_name">
+		<text>Egy flash meghajtу, ami a harci sцrйtes puskбk pumpбlу mechanizmusairуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_ac_wincheaster1300_name">
+		<text>Egy flash meghajtу, ami a sцrйtes puskбk pumpбlу mechanizmusбrуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_aceg_scientific_outfit_name">
+		<text>Egy flash meghajtу, ami a megerхsнtett katonai pбncйlzatrуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_bd_desert_eagle_name">
+		<text>Egy flash meghajtу, ami a pisztolycsцvek mуdosнtбsairуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_bd_mp5_name">
+		<text>Egy flash meghajtу, ami a gйppisztolycsцvek mуdosнtбsairуl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_bd_wincheaster1300_name">
+		<text>Egy flash meghajtу, ami a sцrйtes puskбk elektronikus stabilizбciуs rendszerйrхl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_bdfh_scientific_outfit_name">
+		<text>Egy flash meghajtу, ami a pszichikus vйdelmi rendszerrхl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_cd_pkm_name">
+		<text>Egy flash meghajtу, ami a gйppuskбk csхszбjfйkйrхl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_cd_svu_name">
+		<text>Egy flash meghajtу, ami a mesterlцvйsz puskбk csхszбjfйkйrхl tartalmaz adatokat.</text>
+	</string>
+	<string id="flesh_up_fh_scientific_outfit_name">
+		<text>Egy flash meghajtу, ami a zбrt ciklusъ lйgzхmodulrуl tartalmaz adatokat.</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_desc">
+		<text>Egy PDA tele tervrajzokkal, amiket csak egy zseni йrthet meg.</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_name">
+		<text>Jar apу barбtjбnak PDA-ja</text>
+	</string>
+	<string id="st_device_pda_comendant_desc">
+		<text>Sukin parancsnok szemйlyi PDA-ja. Tцbbek kцzцtt informбciуkat tartalmaz a zsoldosokkal valу egyьttmыkцdйsйrхl.</text>
+	</string>
+	<string id="st_device_pda_comendant_name">
+		<text>Sukin PDA-ja</text>
+	</string>
+	<string id="st_device_pda_freedom">
+		<text>Szolgбlatos stalker PDA-ja</text>
+	</string>
+	<string id="st_device_pda_freedom_desc">
+		<text>Egy Szabadsбg katona PDA-ja, ami rцgzнtette a tбmadуk beszйlgetйsйt.</text>
+	</string>
+	<string id="st_esc_trader_habar_desc">
+		<text>Szбmzбras bхrцnd. Rendнvьl йrtйkes Szidorovicsnak.</text>
+	</string>
+	<string id="st_esc_trader_habar_name">
+		<text>Zsбkmбny</text>
+	</string>
+	<string id="st_pda_descr">
+		<text>Nincs adat.</text>
+	</string>
+	<string id="st_pda_name">
+		<text>PDA</text>
+	</string>
+	<string id="st_agr_quest_duty_abakan">
+		<text>A szolgбlatos gйpkarabйlya</text>
+	</string>
+	<string id="st_agr_quest_duty_abakan_descr">
+		<text>A karabйly gyбrtбsi szбmбt fehйr festйkkel gondosan feltьntettйk. Az ilyen mйrtйkы alapossбg azt sugallja, hogy a fegyver egy szolgбlatoshoz tartozik. </text>
+	</string>
+	<string id="st_agr_quest_duty_case">
+		<text>A szolgбlatos lбdбja</text>
+	</string>
+	<string id="st_agr_quest_duty_case_descr">
+		<text>A lбdбn kombinбciуs zбr van. A csцrgйs alapjбn tцbb minden is lehet benne. A lбda tetejйn lбthatу feljegyzйs a tulajdonos szolgбlatos hнvуjelйt jelцli.</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda">
+		<text>Titkos informбciуkat tartalmazу PDA</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda_descr">
+		<text>A PDA szбmos feljegyzйst tartalmaz, ami egyйrtelmыvй teszi, hogy egy szolgбlatoshoz tartozik. A tartalom tцbbi rйszйt titkosнtottбk.</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12">
+		<text>Szakнtу sцrйtes puska</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12_descr">
+		<text>Ъgy tыnik, a fegyver miatt vйres harcok dъlhattak. A gyбri jelzйs alapjбn a fegyver egy limitбlt kiadбshoz tartozik, ami minхsйgibb borнtбsa йs ijesztх neve, a "Szakнtу" бltal ismerhetх fel.</text>
+	</string>
+	<string id="st_esc_quest_akm47">
+		<text>AKM-47/2-es trуfea</text>
+	</string>
+	<string id="st_esc_quest_akm47_descr">
+		<text>Egy rйgi, lestrapбlt gйpkarabйly, karom nyomokkal az agyбn. Legendбs fegyver.</text>
+	</string>
+	<string id="st_esc_quest_luky_detector">
+		<text>Mбzlis detektor</text>
+	</string>
+	<string id="st_esc_quest_luky_detector_descr">
+		<text>Egy rйgi detektor, rбgуgumis йs banбnos matricбkkal. Teljesen szokvбnyosnak nйz ki, nehйz elhinni, hogy valaki kьlцnlegesnek talбlja.</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka">
+		<text>Mбgikus vodka</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka_descr">
+		<text>Sцtйt folyadйk, бthatу alkoholos illattal. Kцrьlbelьl 80, 90%-os lehet, ъgyhogy nem бrt elkerьlni.</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit">
+		<text>NPR-21p speciбlis elsхsegйlycsomag</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit_descr">
+		<text>Az elsхsegйlycsomagra az "NPR-21p sugбrzбs elleni csomag (mintadarab)" szavakat vйstйk. Az ъtmutatу egy terjedelmes listбban taglalja a meglehetхsen kellemetlen mellйkhatбsokat.</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit">
+		<text>Tartуs bхrkabбt</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit_descr">
+		<text>Ъgy tыnik, a kabбt elхzх tulajdonosбt darabokra tйpte egy anomбlia, de bizarr mуdon a kabбton egy karcolбs sincs.</text>
+	</string>
+	<string id="st_gar_quest_vodka_2">
+		<text>2-es Kozбk vodka</text>
+	</string>
+	<string id="st_gar_quest_vodka_2_descr">
+		<text>A hanyagul felragasztott cнmke йs az ьveg aljбn levх furcsa ьledйk alapjбn, ez a vodka hбzi kйszнtйsы.</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle">
+		<text>Mуdosнtott fegyver</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle_descr">
+		<text>A fegyverek igazi rosszfiъja. Lбthatуan hozzбйrtх kezek jelentхsen fejlesztettek a kezdeti jellemzхin.</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm">
+		<text>Bevйsйses pisztoly</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm_descr">
+		<text>Egy bevйsйs lбthatу a pisztoly markolatбn. Annyi vehetх ki belхle, hogy "A kц..less.gen tъli sz.lgбl..ra."</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300">
+		<text>Egy fosztogatу Chaser 13-asa</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300_descr">
+		<text>A sцrйtes puska csцvйn lбthatу firkбk valуszнnыleg a fegyver бldozatбul esett stalkereket jelцlik.</text>
+	</string>
+	<string id="st_red_forest_pda_map_2">
+		<text>A Vцrцs-erdх tйrkйpйt tartalmazу PDA</text>
+	</string>
+	<string id="st_red_forest_pda_map_2_descr">
+		<text>A PDA Vцrцs-erdх tйrkйpйt tartalmazza, kьlцnbцzх jelzйsekkel. A jelzйsek a magas sugбrzбsъ terьleteket mutatjбk. Az utolsу bejegyzйst 23:15 perckor kelteztйk, tartalma: "A hнdnбl kellett volna tцltenьnk az йjszakбt, soha nem fogunk йjszaka kijutni ebbхl az erdхbхl!"</text>
+	</string>
+	<string id="st_red_quest_prototipe_device">
+		<text>Kнsйrleti szerkezet</text>
+	</string>
+	<string id="st_red_quest_prototipe_device_descr">
+		<text>Egy szerkezet kьlцnbцzх kapcsolуkkal йs indikбtorokkal. Nincs hozzб ъtmutatу, ami segнtene megйrteni a hasznбlatбt.</text>
+	</string>
+	<string id="st_red_quest_tank_minigun">
+		<text>Tank gйppuskбja</text>
+	</string>
+	<string id="st_red_quest_tank_minigun_descr">
+		<text>A gйppuskбt eredetileg tankra valу felszerelйsre szбntбk, de kйzben is tцkйletesen hasznбlhatу.</text>
+	</string>
+	<string id="st_val_quest_flash_movies">
+		<text>Filmekkel teli USB meghajtу</text>
+	</string>
+	<string id="st_val_quest_flash_movies_descr">
+		<text>Az USB meghajtу a legъjabb filmeket tartalmazza, de a felbontбsuk miatt PDA-n nem jбtszhatуk le.</text>
+	</string>
+	<string id="st_val_quest_guitar_serg">
+		<text>Serega gitбrja</text>
+	</string>
+	<string id="st_val_quest_guitar_serg_descr">
+		<text>Egy golyуstollal a gitбr testйre нrt ьzenet alapjбn, egy bizonyos Serega kapta ajбndйkba a barбtnхjйtхl.</text>
+	</string>
+	<string id="st_val_quest_scope_x8">
+		<text>8x-os tбvcsх</text>
+	</string>
+	<string id="st_val_quest_scope_x8_descr">
+		<text>Egy kivбlу tбvcsх egy speciбlis tartуval, ami valуszнnыleg csak vadбszpuskбval hasznбlhatу.</text>
+	</string>
+	<string id="st_yan_quest_granade">
+		<text>Emlйk-grбnбt</text>
+	</string>
+	<string id="st_yan_quest_granade_descr">
+		<text>Egy kikйpzйshez hasznбlt kйzigrбnбt. Egy lбnc йs egy fehйr nyъl formбjъ kulcskarika csatlakozik a biztosнtу karhoz.</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower">
+		<text>A Skarlбt Virбg</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower_descr">
+		<text>Egy titokzatos eredetы relikvia. Gyakorlatilag nem bocsбt ki kisugбrzбsokat. Egyetlen ismert hatбsa, hogy elkбprбztatja a nхket.</text>
+	</string>
+</string_table>

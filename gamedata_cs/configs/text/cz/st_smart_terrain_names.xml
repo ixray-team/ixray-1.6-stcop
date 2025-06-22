@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_name_agr_smart_terrain_1_11">
+		<text>Okraj lesa</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_2">
+		<text>Tбbor v baћinм</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_3">
+		<text>Starй tбboшiљtм</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6">
+		<text>Zбkladna Povinnosti</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_1">
+		<text>Severnн vchod</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_2">
+		<text>Vэchodnн vchod</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_near_2">
+		<text>Иervenэ roh</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_2">
+		<text>Tбboшiљtм poblнћ balvanu</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_3">
+		<text>Skrэљ pod kameny</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_5">
+		<text>Tбbor vedle zбkladny</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_3_5">
+		<text>Tбboшiљtм u srбzu</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_2">
+		<text>Tбbor pod vмћн</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4">
+		<text>Tбbor stalkerщ</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_1">
+		<text>Okolн ћelezniиnнho nбstupiљtм</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_2">
+		<text>Zadnн vэchod</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_3">
+		<text>Vэchodnн stanoviљtм</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_6">
+		<text>Stanoviљtм na silnici</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_2">
+		<text>Kruh z kamennщ</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_3">
+		<text>Barikбda z vagуnu</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_4">
+		<text>Silniиnн rozcestн</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7">
+		<text>Stanoviљtм u dнry</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7u">
+		<text>Podzemnн vchod</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_4">
+		<text>Slepэ konec tunelu</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_6">
+		<text>Improvizovanэ tбbor</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_4">
+		<text>Silnice na Smetiљtм</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_5">
+		<text>Tбboшiљtм na kopci</text>
+	</string>
+	<string id="st_name_agru_smart_terrain_1">
+		<text>Podzemн Agropromu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_11">
+		<text>Tajnэ tбbor</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_12">
+		<text>Kopec za vesnicн</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_16">
+		<text>Lesnн nбsep</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_12">
+		<text>Stшed vesnice</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_14">
+		<text>Tбborбk pod stromem</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_2">
+		<text>Strбт</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_4">
+		<text>Okraj lesa na ъpatн kopce</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_14">
+		<text>Stan v lese</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_16">
+		<text>Armбdnн stanoviљtм</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_4">
+		<text>Tбboшiљtм v kopcнch</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_6">
+		<text>Tбboшiљtм v kotlinм</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_7">
+		<text>Tбborбk v lese</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_10">
+		<text>Tбborбk v dolinм</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_11">
+		<text>Tбbor poblнћ dodбvky</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_13">
+		<text>Stanovэ tбbor</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_8">
+		<text>Tбboшiљtм pod mostem</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_9">
+		<text>Tбborбk u mostu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_10">
+		<text>Autobusovб zastбvka</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_11">
+		<text>Tбbor na kopci</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_12">
+		<text>Tбbor stalkerщ</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_2">
+		<text>Pшedsunutй stanoviљtм</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_4">
+		<text>Tбborбk u silnice</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_6">
+		<text>Bivak na louce</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_7">
+		<text>Neutrбlnн zбkladna</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_9">
+		<text>Vэtah</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_3">
+		<text>Skrэљ pod kameny</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_5">
+		<text>Tбbor v jedlovйm lese</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_6">
+		<text>Rozvaliny statku</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_7">
+		<text>Bivak ve svahu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_8">
+		<text>Stanoviљtм pod mostem</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_10">
+		<text>Improvizovanй tбboшiљtм</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_11">
+		<text>Parkoviљtм vozidel</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_9">
+		<text>Tбborбk u kolejн</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_10">
+		<text>Kopec za benzнnkou</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_6">
+		<text>Tichб skrэљ</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_8">
+		<text>Tбboшiљtм u nбspu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_9">
+		<text>Tбboшiљtм v borovicovйm lese</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_10">
+		<text>Tбborбk u tunelu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_7">
+		<text>Odlehlй tбboшiљtм</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_5">
+		<text>Barikбdy</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_7">
+		<text>Tбboшiљtм v kopcнch</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_3">
+		<text>Skrэљ u cesty</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_4">
+		<text>Skrэљ pod trubkami</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_2">
+		<text>Skrэљ v kotlinм</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_3">
+		<text>Tбboшiљtм kopбищ</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_5">
+		<text>Depo</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_6">
+		<text>Bivak na sklбdce</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_7">
+		<text>Vrakoviљtм</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_8">
+		<text>Tбboшiљtм za koncentraиnнm tбborem</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_2">
+		<text>Tбbor v dolinм</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_3">
+		<text>Tбboшiљtм u jeшбbu</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_4">
+		<text>Tбbor u depa</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_5">
+		<text>Mнsto zlomu</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_6">
+		<text>Svah hromady smetн</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_7">
+		<text>Tбboшiљtм u buldozeru</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_8">
+		<text>Tбbor u stezky</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_2">
+		<text>Severnн stanoviљtм</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_4">
+		<text>Mнsto setkбnн</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_5">
+		<text>Tбbor lovcщ pokladщ</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_6">
+		<text>Rozpadajнcн se jeшбb</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_8">
+		<text>Vstupnн stanoviљtм</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_1">
+		<text>Zapadlй stanoviљtм</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_3">
+		<text>Bleљн trh</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_4">
+		<text>Opevnмnб oblast</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_5">
+		<text>Tбboшiљtм na poli</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_6">
+		<text>Skrэљ v lese</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_7">
+		<text>Љtмrkovб jбma</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_2">
+		<text>Pelech hornнkщ</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_3">
+		<text>Bшeh malйho moибlu</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_4">
+		<text>Novй tбboшiљtм</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_3">
+		<text>Obrannй stanoviљtм</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_5">
+		<text>Laguna</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_7">
+		<text>Tбboшiљtм na cestм</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_1">
+		<text>Dvщr</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_10">
+		<text>Cesta k poћбrnн stanici</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_2">
+		<text>Dщm na rozcestн</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_3">
+		<text>Dvorek s terasou</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_4">
+		<text>Barikбda ve slepй uliиce</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_5">
+		<text>Malэ park u garбћн</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_6">
+		<text>Dщm na kopci</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_7">
+		<text>Skrэљ poblнћ mostu</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_8">
+		<text>Tбboшiљtм poblнћ kontrolnн mнstnosti</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_9">
+		<text>Tбbor na staveniљti</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_help_smart">
+		<text>Slepб uliиka</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_10">
+		<text>Tбborбk na bшehu</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_5">
+		<text>Strojovэ dvщr</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_7">
+		<text>Tбboшiљtм v baћinм</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_11">
+		<text>Jiћnн statek</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_3">
+		<text>Tбboшiљtм u nбklaпбku</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_12_2">
+		<text>Severnн statek</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_10">
+		<text>Rozcestн</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_3">
+		<text>Kotviљtм</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_7">
+		<text>Ostrov z balvanщ</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_5">
+		<text>Trosky vesnice</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_7">
+		<text>Bivak na klбdм</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_10">
+		<text>Љtмrkovб jбma</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_12">
+		<text>Rybбшskб vнska</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_8">
+		<text>Иerpacн stanice</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_10">
+		<text>Holэ ostrov</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_11">
+		<text>Rozhledna</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_4">
+		<text>Improvizovanэ tбbor</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_7">
+		<text>Pшнbшeћnн barikбdy</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_8">
+		<text>Bivak na lodi</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_3">
+		<text>Tбboшiљtм pod nбspem</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_7">
+		<text>Tбboшiљtм v pustinм</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_11">
+		<text>Starэ kostel</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_4">
+		<text>Tбboшiљtм v rбkosн</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_8">
+		<text>Vypбlenэ statek</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_9">
+		<text>Zaибtek stezky</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_9_10">
+		<text>Osamocenэ tбborбk</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_base">
+		<text>Zбkladna Jasnй oblohy</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_respawn">
+		<text>Skrytэ tбbor</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_terrain_csky_base">
+		<text>Zбkladna Jasnй oblohy</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_1">
+		<text>Tбbor mezi balvany</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_10">
+		<text>Skrэљ v uschlйm lese</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_2">
+		<text>Odlehlй opevnмnн</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_3">
+		<text>Tбboшiљtм v nнћinм</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_4">
+		<text>Odlehlэ statek</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_6">
+		<text>Havarovanэ vrtulnнk</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_2">
+		<text>Strбћnice</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_5">
+		<text>Opevnмnй stanoviљtм</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_8">
+		<text>Bariйra</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_2">
+		<text>Bivak ћoldбkщ</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_3">
+		<text>Vodбrenskб vмћ</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_5">
+		<text>Pokшivenб klбda</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_6">
+		<text>Silniиnн kшiћovatka</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_7">
+		<text>Bivak na betonovэch panelech</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_8">
+		<text>Tбbor stalkerщ</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_2">
+		<text>Barikбdy na kopci</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_4">
+		<text>Vstup do vesnice</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_5">
+		<text>Opevnмnн u zastбvky</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_6">
+		<text>Nбklaпбk na kшiћovatce</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_8">
+		<text>Chэљe v baћinбch</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_6_4">
+		<text>Silnice mezi kopci</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_10">
+		<text>Rozbitэ transformбtor</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_11">
+		<text>Tбbor mezi borovicemi</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_12">
+		<text>Tбbor u kasбren</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_2">
+		<text>Vstup do armбdnнho skladiљtм</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_4">
+		<text>Opuљtмnэ statek</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_7">
+		<text>Sportoviљtм</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_8">
+		<text>Dvщr zбkladny</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_9">
+		<text>Opuљtмnэ tunel</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_8_3">
+		<text>Budka</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base2">
+		<text>Odlehlй opevnмnн</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base3">
+		<text>Odlehlэ statek</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base4">
+		<text>Vodбrenskб vмћ</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base5">
+		<text>Bivak ћoldбkщ</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base_monster">
+		<text>Opevnмnн poblнћ vesnice</text>
+	</string>
+	<string id="st_name_red_bridge_ally_smart">
+		<text>Periferie Limansku</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_1">
+		<text>Tбbor u silnice</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_2">
+		<text>Kasбrna v dole</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_3">
+		<text>Pelech upнrщ</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_2">
+		<text>Tбbor u kapary</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_3">
+		<text>Psн pelech</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_5">
+		<text>Иarodмjnickэ kruh</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_5">
+		<text>Odpoинvбrna stalkerщ</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_6">
+		<text>Zamlћenб louka</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_3">
+		<text>Zlovмstnй tбboшiљtм</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_6">
+		<text>Temnэ Jar</text>
+	</string>
+	<string id="st_name_red_smart_terrain_bridge">
+		<text>Most do Limansku</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters">
+		<text>Nechvalnм znбmб stezka</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_2">
+		<text>Doupм mutantщ</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_3">
+		<text>Doupм pшed lesem</text>
+	</string>
+	<string id="st_name_red_terrain_ally_smart">
+		<text>Vstup do Limansku</text>
+	</string>
+	<string id="st_name_red_terrain_bandit_smart">
+		<text>Opevnмnн banditщ</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_10">
+		<text>Tбbor u benzнnky</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_9">
+		<text>Stшeљnн ploљina</text>
+	</string>
+	<string id="st_name_val_smart_terrain_1_2">
+		<text>Tovбrenskб hala</text>
+	</string>
+	<string id="st_name_val_smart_terrain_3_0">
+		<text>Barikбda u mostu</text>
+	</string>
+	<string id="st_name_val_smart_terrain_4_0">
+		<text>Tбboшiљtм na statku</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_10">
+		<text>Otevшenй tбboшiљtм</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_7">
+		<text>Koncovй stanoviљtм</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_8">
+		<text>Polnн tбbor</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_4">
+		<text>Hrbolatй tбboшiљtм</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_5">
+		<text>Tбbor na dnм koryta</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_6">
+		<text>Tбboшiљtм v ъћlabinм</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_0">
+		<text>Odlehlй periferie</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_11">
+		<text>Stanoviљtм poblнћ statku</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_3">
+		<text>Hangбr strэиka Jara</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_4">
+		<text>Zбkladna Svobody</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_5">
+		<text>Bar Douљek svobody</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_6">
+		<text>Stanoviљtм u vэtahu</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_8">
+		<text>Tбbor v mokшadech</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_6">
+		<text>Severnн barikбdy</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_7">
+		<text>Zastбvka</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_9">
+		<text>Ostrov</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_10">
+		<text>Tбbor mezi balvany</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_2">
+		<text>Vyvrбcenэ strom</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_4">
+		<text>Ъstшednн benzнnka</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_5">
+		<text>Tбboшiљtм na ъpatн kopce</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_6">
+		<text>Malэ a starэ vщz</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_1_6">
+		<text>Vzdбlenб hranice</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_4">
+		<text>Tovбrenskэ dvщr</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_5">
+		<text>Vstup do tovбrny</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_4">
+		<text>Hangбr</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_6">
+		<text>Nнћina plnб artefaktщ</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_2">
+		<text>Vyvrбcenэ strom</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_4">
+		<text>Vrcholek kopce</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_5">
+		<text>Budka elektrickйho transformбtoru</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_3">
+		<text>Ostrov v baћinм</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_5">
+		<text>Tбboшiљtм na stezce</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_6">
+		<text>Stanoviљtм</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_2">
+		<text>Tбboшiљtм za baћinou</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_4">
+		<text>Tбbor vмdcщ</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_for_squad_levsha">
+		<text>Tajnэ vstup</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_quest_saharov">
+		<text>Vэchod z komplexu</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_saharov">
+		<text>Zadnн vэchod</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base1">
+		<text>Bivak pod chatrин</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base3">
+		<text>Vмћ na kopci</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base4">
+		<text>Odtokovб trubka</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base5">
+		<text>Roh tovбrny</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base6">
+		<text>Obvodovй garбћe</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_spawn">
+		<text>Vyъstмnн trubky</text>
+	</string>
+</string_table>

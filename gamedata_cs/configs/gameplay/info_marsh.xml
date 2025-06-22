@@ -93,6 +93,8 @@
     
     <info_portion id="mar_story_empower_csky_done"></info_portion>
     <info_portion id="mar_story_empower_csky_reward"></info_portion>
+
+	<info_portion id="mar_story_capture_bandit_base_reward"></info_portion>
     
     <info_portion id="mar_story_guide_to_escape_talked"></info_portion>
     

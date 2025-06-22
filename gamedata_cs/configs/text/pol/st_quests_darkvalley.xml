@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_bandit_spy_name">
+		<text>Wyeliminuj zagroїenie na stacji benzynowej.</text>
+	</string>
+	<string id="val_bandit_spy_text">
+		<text>Noc№ na opuszczonej stacji benzynowej dostrzeїono przytіumione њwiatіa. Zbadaj sytuacjк i zlikwiduj potencjalne zagroїenie.</text>
+	</string>
+	<string id="val_bring_to_fang_name">
+		<text>Pod№їaj za sygnaіem PDA Kіa</text>
+	</string>
+	<string id="val_bring_to_fang_text">
+		<text>Technik frakcji Wolnoњж zіamaі czкstotliwoњж PDA Kіa. Moїesz teraz њledziж jego ruchy - wedіug sygnaіu przebywa aktualnie na Wysypisku. Pod№їaj za sygnaіem PDA Kіa.</text>
+	</string>
+	<string id="val_check_blockpost_name">
+		<text>Dowiedz siк, co siк staіo na posterunku</text>
+	</string>
+	<string id="val_check_blockpost_text">
+		<text>Wygl№da na to, їe ponownie zaatakowano posterunek frakcji Wolnoњж. Dowiedz siк, co siк staіo i sprawdџ, czy ktoњ przeїyі.</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_name">
+		<text>Odbierz rozkazy od dowуdcy</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_text">
+		<text>Odbierz rozkazy od dowуdcy</text>
+	</string>
+	<string id="val_come_to_comendant_name">
+		<text>Pomуw z dowуdc№</text>
+	</string>
+	<string id="val_come_to_comendant_text">
+		<text>Spytaj dowуdcк o Kіa</text>
+	</string>
+	<string id="val_come_to_freedom_base_name">
+		<text>Odszukaj bazк frakcji Wolnoњж</text>
+	</string>
+	<string id="val_come_to_freedom_base_text">
+		<text>Wedіug informacji kopaczy Kieі ruszyі do Doliny Mroku w poszukiwaniu pozostaіych czкњci. Odszukaj bazк frakcji Wolnoњж i popytaj tam o Kіa.</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_name">
+		<text>Pomуw z dowуdc№ posterunku</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_text">
+		<text>Pomуw z dowуdc№ posterunku</text>
+	</string>
+	<string id="val_deliver_ammo_name">
+		<text>Dostarcz amunicjк na posterunek</text>
+	</string>
+	<string id="val_deliver_ammo_text">
+		<text>Dostarcz amunicjк na posterunek</text>
+	</string>
+	<string id="val_deliver_pda_name">
+		<text>Dostarcz PDA Czechowowi</text>
+	</string>
+	<string id="val_deliver_pda_text">
+		<text>PDA dowуdcy zawiera duїo informacji, ktуre pomog№ frakcji Wolnoњж ustaliж toїsamoњж napastnikуw oraz zorientowaж siк, jak przedostaj№ siк do Doliny Mroku. Dostarcz PDA przywуdcy Wolnoњci.</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_name">
+		<text>Zniszcz norк dzikуw</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_text">
+		<text>Zniszcz norк dzikуw</text>
+	</string>
+	<string id="val_destroy_killer_base_name">
+		<text>Wyeliminuj najemnikуw</text>
+	</string>
+	<string id="val_destroy_killer_base_text">
+		<text>Odkryto gіуwn№ bazк najemnikуw - pomуї frakcji Wolnoњж j№ zniszczyж. Pozwoli to Wolnoњci powstrzymaж ataki i caіkowicie opanowaж Dolinк Mroku.</text>
+	</string>
+	<string id="val_find_pda_name">
+		<text>Odszukaj aktywne PDA</text>
+	</string>
+	<string id="val_find_pda_text">
+		<text>PDA jednego z zabitych bojownikуw Wolnoњci wci№ї jest aktywne; odszukaj je - moїe zawieraж cenne informacje.</text>
+	</string>
+	<string id="val_go_to_freedom_leader_name">
+		<text>Zanieњ PDA Czechowowi</text>
+	</string>
+	<string id="val_go_to_freedom_leader_text">
+		<text>PDA jednego z bojownikуw Wolnoњci zabitych na posterunku zawiera nagranie rozmowy dwуch napastnikуw. Pomoїe ono ich zidentyfikowaж. Zabierz PDA do Czechowa.</text>
+	</string>
+	<string id="val_go_to_trader_name">
+		<text>Zdob№dџ amunicjк u Aszota</text>
+	</string>
+	<string id="val_go_to_trader_text">
+		<text>Dostarcz na posterunek Wolnoњci amunicjк od Aszota</text>
+	</string>
+	<string id="val_help_freedom_name">
+		<text>Pomуї Wolnoњci wyeliminowaж najemnikуw</text>
+	</string>
+	<string id="val_help_freedom_text">
+		<text>Pomуї Wolnoњci wyeliminowaж najemnikуw</text>
+	</string>
+	<string id="val_kill_flesh_name">
+		<text>Zniszcz norк potworуw</text>
+	</string>
+	<string id="val_kill_flesh_text">
+		<text>Zniszcz norк potworуw</text>
+	</string>
+	<string id="val_kill_komendant_name">
+		<text>Zabij dowуdcк</text>
+	</string>
+	<string id="val_kill_komendant_text">
+		<text>PDA z posterunku zawieraіo nagranie rozmowy dwуch napastnikуw. Wynika z niego, їe to dowуdca sprzedaі informacje pozwalaj№ce napastnikom na wyprowadzanie szybkich i zaskakuj№cych uderzeс na patrole Wolnoњci. Odszukaj zdrajcк i dostarcz go Czechowowi їywego lub martwego.</text>
+	</string>
+	<string id="val_night_bloodsucker_name">
+		<text>Odszukaj przyjaciela technika</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_name">
+		<text>Zanieњ czкњж technikowi</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_text">
+		<text>Zanieњ czкњж technikowi</text>
+	</string>
+	<string id="val_night_bloodsucker_text">
+		<text>Odszukaj przyjaciela technika</text>
+	</string>
+	<string id="val_pursuit_comendant_name">
+		<text>Odszukaj dowуdcк</text>
+	</string>
+	<string id="val_pursuit_comendant_text">
+		<text>Odszukaj dowуdcк</text>
+	</string>
+	<string id="val_reply_to_sos_name">
+		<text>Odpowiedz na sygnaі SOS</text>
+	</string>
+	<string id="val_reply_to_sos_text">
+		<text>Pomуї w odparciu ataku.</text>
+	</string>
+	<string id="val_strike_antenna_name">
+		<text>Zdob№dџ anteny</text>
+	</string>
+	<string id="val_strike_antenna_text">
+		<text>Zdob№dџ i utrzymaj anteny, aby przeczesaж okolicк</text>
+	</string>
+	<string id="val_strike_antenna_two_name">
+		<text>Zdob№dџ anteny</text>
+	</string>
+	<string id="val_strike_antenna_two_text">
+		<text>Zdob№dџ i utrzymaj anteny, aby przeczesaж okolicк</text>
+	</string>
+	<string id="val_take_pda_name">
+		<text>Zabierz PDA dowуdcy</text>
+	</string>
+	<string id="val_take_pda_text">
+		<text>Kumple dowуdcy zabili go, gdy zaczкіa go szukaж Wolnoњж. Jego PDA zawiera waїne informacje o ludziach, ktуrym pomagaі.</text>
+	</string>
+	<string id="val_test">
+		<text>Pomуї</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_name">
+		<text>Zniszcz grupк bandytуw</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_text">
+		<text>Odszukaіeњ grupк bandytуw w opuszczonej stacji benzynowej. Zniszcz ich.</text>
+	</string>
+	<string id="st_val_bandit_spy_return_name">
+		<text>Wrуж, aby odebraж nagrodк</text>
+	</string>
+	<string id="st_val_bandit_spy_return_text">
+		<text>Odszukaіeњ i zniszczyіeњ grupк bandytуw w opuszczonej stacji benzynowej. Odwiedџ barmana i powiedz mu o tym.</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_name">
+		<text>Odszukaj informacje o lufach karabinуw snajperskich</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_text">
+		<text>Technik "Wolnoњci" - Jar - specjalizuje siк w broni precyzyjnej. Szuka informacji o lufach karabinуw snajperskich.</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_name">
+		<text>Odszukaj informacje o elektronicznym stabilizatorze dla karabinуw snajperskich</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_text">
+		<text>Technik Jar dobrze zapіaci za szczegуіowe informacje o mechanizmach elektronicznej stabilizacji karabinуw snajperskich.</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_name">
+		<text>Odszukaj informacje o hamulcach wylotowych dla karabinуw snajperskich</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_text">
+		<text>Technik Jar potrzebuje informacje o funkcjonowaniu hamulcуw wylotowych potкїnych karabinуw snajperskich. Dziкki nim bкdzie mуgі coњ takiego wyprodukowaж.</text>
+	</string>
+	<string id="val_recover_item_1_name">
+		<text>Zwrуж celownik 8x</text>
+	</string>
+	<string id="val_recover_item_1_text">
+		<text>Byі tu kolo z naprawdк fajnym celownikiem na spluwie - takim, jakiego prуїno szukaж w caіej Zonie. Mimo moich usilnych staraс nie chciaі mi go sprzedaж. Ruszyі z jednym z naszych patroli do Kordonu; patrol nie wrуciі, wiкc pewnie i ten stalker gdzieњ tam zgin№і. Przynieњ mi ten celownik, podarujк go Czechowowi - moїe awansuje mnie na dowуdcк...</text>
+	</string>
+	<string id="val_recover_item_2_name">
+		<text>Zwrуж pendrive z filmami</text>
+	</string>
+	<string id="val_recover_item_2_text">
+		<text>Pomуї mi, stary. Ogl№daliњmy z Gandzi№ film na jego laptopie, aї tu nagle wpada dowуdca i ruga mnie, їe zszedіem z warty. Chciaі rozwaliж laptopa, ale przekonaliњmy go, їeby tego nie robiі. Zabraі pendrive'a z filmem i wyrzuciі go za ogrodzenie, w strefк radioaktywn№. Odzyskaj pendrive'a, a Gandzia ciк nagrodzi.</text>
+	</string>
+	<string id="val_recover_item_3_name">
+		<text>Zwrуж gitarк Seregi</text>
+	</string>
+	<string id="val_recover_item_3_text">
+		<text>Niesamowite - ktoњ ukradі gitarк Seregi. Tylko on potrafi tu na niej graж - i to dobrze, nie tak, jak reszta tego taіatajstwa. Szybko wykryliњmy zіodzieja, ale lachoci№g zd№їyі j№ gdzieњ ukryж. Przynieњ tк gitarк - Serega nie chce graж na їadnej innej.</text>
+	</string>
+</string_table>

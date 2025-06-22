@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="pda_end_tutorial">
+		<text>No a to je zhruba vљechno...</text>
+	</string>
+	<string id="pda_start_tutorial">
+		<text>Vэuka krok za krokem.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_1">
+		<text>Tak fajn. Jak uћ asi vнљ, naљнm cнlem je zнskat kontrolu nad celэma baћinama, coћ nevyhnutelnм znamenб boj proti agresorщm.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_10">
+		<text>A nakonec tady vidнљ momentбlnн bojovej cнl a zбroveт i taktickэ mise, kterэ je k dosaћenн toho cнle nutnэ splnit.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_11">
+		<text>Dokonиenэ mise se budou vypisovat naspodu.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_2">
+		<text>V tэhle sekci najdeљ vљechny taktickэ podrobnosti o probнhajнcнch bojнch.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_3">
+		<text>Po levэ stranм vidнљ informace o svэ stбvajнcн frakci. Momentбlnм jsme to my, Jasnб obloha.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_4">
+		<text>Napravo vidнљ informace o naљem hlavnнm nepшнteli.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_5">
+		<text>Tohle je pшibliћnej ukazatel naљн vojenskэ sнly.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_6">
+		<text>Tady se ukazuje poиet naљich muћщ.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_7">
+		<text>A tohle je mнra naљн logistickэ podpory.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_8">
+		<text>Ty symboly ъplnм vespodu poskytujou specifickэ informace o naљн vэzbroji a vэstroji.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_9">
+		<text>Podobnэ ukazatele jsou i u naљeho nepшнtele.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_1">
+		<text>V poslednн zбloћce mбљ pшehled svэch vztahщ s jednotlivэma frakcema a ukazatele jejich vojenskэ sнly.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_2">
+		<text>Taky se tu zobrazujou tvoje statistiky.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_1">
+		<text>Podнvej se sem. Tohle je sekce Mise, tvщj hlavnн prщvodce.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_10">
+		<text>Kromм vэpisu jednotlivэch ъkolщ se tu ukazujou i umнstмnн spojeneckэch druћstev a souшadnice detekovanэch nepшбtel.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_2">
+		<text>Tohle ukazuje tvojн hlavnн misi...</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_3">
+		<text>...a taky zvolenou vedlejљн misi.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_4">
+		<text>Jestli mбљ nмkolik vedlejљнch misн, mщћeљ v nich listovat tмmahle tlaинtkama.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_5">
+		<text>Vмtљina misн se zбroveт ukazuje i na mapм. Vzбcnou vэjimkou jsou mise, u kterэch nelze lokalizovat cнl.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_6">
+		<text>Budeme potшebovat tvojн pomoc nejen pшi likvidovбnн nepшбtel, ale i pшi dobэvбnн strategickэch pozic.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_7">
+		<text>V podobnэch situacнch bude staиit, kdyћ naљim stшelcщm poskytneљ krycн palbu, zatнmco oni zaъtoиej na cнl.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_8">
+		<text>Mimochodem, nemмl bys ignorovat volбnн o pomoc – ћivoty naљich klukщ mщћou zбviset na tvэch иinech.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_9">
+		<text>Jestli chceљ detailnмjљн informace o nмjakэm bodм na mapм, podrћ nad nнm kurzor.</text>
+	</string>
+</string_table>

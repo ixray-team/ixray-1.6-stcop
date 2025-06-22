@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_actor_destroy_wave1">
+		<text>A hely, ahol megjelennek az йlхhalottak.</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_name">
+		<text>Ne engedd, hogy az йlхhalottak a stalkerek kцzelйbe jussanak a tetхn!</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_text">
+		<text>Fedezd a stalkereket a tetхn, amнg a szelepen dolgoznak! Ne engedd, hogy az йlхhalottak a javнtуosztag kцzelйbe jussanak a tetхn!</text>
+	</string>
+	<string id="yan_actor_destroy_wave2">
+		<text>A hely, ahol megjelennek az йlхhalottak.</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_name">
+		<text>Ne engedd, hogy az йlхhalottak a stalkerek kцzelйbe jussanak a hangбrban!</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_text">
+		<text>Fedezd a stalkereket a hangбrban, amнg a szelepen dolgoznak! Ne engedd, hogy az йlхhalottak a javнtуosztag kцzelйbe jussanak a hangбrban!</text>
+	</string>
+	<string id="yan_actor_go_base_defence">
+		<text>Vйdd meg a tudуsok bбzisбt!</text>
+	</string>
+	<string id="yan_actor_go_base_defence_name">
+		<text>Vйdd meg a tudуsok bбzisбt!</text>
+	</string>
+	<string id="yan_actor_go_base_defence_text">
+		<text>Vйdd meg a tudуsok bбzisбt!</text>
+	</string>
+	<string id="yan_actor_go_base_science">
+		<text>Amнg az йlхhalottak tбmadnak, a tudуsok bunker ajtaja zбrva marad. Verd vissza az йlхhalottak tбmadбsбt, hogy bejuss a bunkerbe, йs talбlkozz a tudуsokkal!</text>
+	</string>
+	<string id="yan_actor_go_base_science_name">
+		<text>Beszйlj Szaharovval!</text>
+	</string>
+	<string id="yan_actor_go_base_science_text">
+		<text>Sztrelok elment, hogy talбlkozzon a jantari tudуsokkal. Menj el Jantarba, йs beszйlj Szaharov professzorral! Х talбn tudja, hol van Sztrelok.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest">
+		<text>Megnyнlt a Vцrцs-erdхbe vezetх цsvйny.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_name">
+		<text>Menj a Vцrцs-erdхbe!</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_text">
+		<text>A hыtхбllomбst megjavнtottбk йs stabilizбltak, нgy a pszichikus kisugбrzбsok minimбlisra csцkkentek. A Vцrцs-erdхbe vezetх цsvйny most mбr biztonsбgos. Menj a Vцrцs-erdхbe! Odatart Sztrelok is.</text>
+	</string>
+	<string id="yan_actor_go_to_stalker">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_name">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_text">
+		<text>text in default</text>
+	</string>
+	<string id="yan_main_quest_line">
+		<text>Ne hagyd meghalni a javнtуosztagot!</text>
+	</string>
+	<string id="yan_main_quest_line_name">
+		<text>Tartsбtok a pozнciуtokat!</text>
+	</string>
+	<string id="yan_main_quest_line_text">
+		<text>Tartsбtok a pozнciуtokat!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy">
+		<text>Vidd el a dokumentumokat Szaharovnak!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_name">
+		<text>Vidd el a dokumentumokat Szaharovnak!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_text">
+		<text>Vidd el a dokumentumokat Szaharovnak! A segнtsйgьkkel vйgre rбjцhet, hogy miйrt vannak ilyen erхs pszichikus kisugбrzбsok Jantarban.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke">
+		<text>Verekedd бt magad a szerkezetig!</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_name">
+		<text>Verekedd бt magad a gyбrig!</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_text">
+		<text>A gyбr kцrьli terьleten csak ъgy nyьzsцgnek az йlхhalottak. Csatlakozz Balgбhoz йs a csapatбhoz, hogy bekьzdjйtek magatokat az йpьletbe! Siess, a pszichikus mezх szintje bбrmelyik pillanatban kritikussб vбlhat!</text>
+	</string>
+	<string id="yan_quest_doc">
+		<text>Talбld meg a dokumentumokat!</text>
+	</string>
+	<string id="yan_quest_doc_name">
+		<text>Talбld meg a dokumentumokat tartalmazу PDA-t!</text>
+	</string>
+	<string id="yan_quest_doc_text">
+		<text>Egy stalkercsapat fontos informбciуkra bukkant a gyбrban. A segнtsйgйvel talбn Szaharov kiderнthetnй, hogy mi okozza Jantarban a hatalmas erejы pszichikus mezхt. A csapat jelzйse nem messze a gyбr kijбratбtуl eltыnt. Talбld meg a dokumentumokat tartalmazу PDA-t!</text>
+	</string>
+	<string id="yan_quest_levsha">
+		<text>Talбlkozz Balgбval!</text>
+	</string>
+	<string id="yan_quest_levsha_name">
+		<text>Talбlkozz Balga csapatбval!</text>
+	</string>
+	<string id="yan_quest_levsha_text">
+		<text>Egy stalkercsapat kйszen бll, hogy бtverekedje magбt a gyбrig, amнg minimбlisak a pszichikus kisugбrzбsok. Talбlkozz Balgбval, a csapat parancsnokбval!</text>
+	</string>
+	<string id="yan_repair_defend">
+		<text>Foglalj el egy pozнciуt a hangбrtetхn!</text>
+	</string>
+	<string id="yan_repair_defend_name">
+		<text>Kцvesd a stalkert a hangбrtetхre!</text>
+	</string>
+	<string id="yan_repair_defend_text">
+		<text>Balga megparancsolta, hogy mindenki foglalja el a pozнciуjбt. Kцvesd a stalkert a tetхre, йs tйgy te is ъgy!</text>
+	</string>
+	<string id="yan_recover_item_1_name">
+		<text>Szerezd meg a Skarlбt Virбgot!</text>
+	</string>
+	<string id="yan_recover_item_1_text">
+		<text>Segнts rajtam, zsoldos! Van egy Skarlбt Virбg nevы relikvia a Zуnбban. Egy stalker ugyan nem sok hasznбt vennй, de a nхk egyenesen bolondulnak йrte. Nemsokбra randim lesz, йs gondoltam, ha szerzek egyet, garantбlt a siker. Ezйrt is vagyok mйg mindig ebben az бtkozott Zуnбban, valahol a kцzelben lбttak egy virбgot. A relikvia йjjel-nappal ragyog, mintha elvarбzsoltбk volna. Hozd el nekem, йs нgйrem, nem bбnod meg!</text>
+	</string>
+	<string id="yan_recover_item_2_name">
+		<text>Juttasd vissza az emlйk-grбnбtot!</text>
+	</string>
+	<string id="yan_recover_item_2_text">
+		<text>Zsoldos, lenne itt valami! Elveszнtettem egy ajбndйkot, ami hasonlнt egy kйzigrбnбthoz... de nem kйzigrбnбt... nos, igazбbуl az, de ezt kikйpzйsekhez hasznбltбk. Szeretnйm, ha visszahoznбd nekem... Azt hiszem, tudom is, hol talбlhatod meg. A gyбrban tцrtйnt velem valami... minden olyan zavaros volt, kis hнjбn azt is elfelejtettem, hogy ki vagyok. Mire feleszmйltem, mбr itt voltam, ъgyhogy a grбnбtnak a gyбrban kell lennie. Szerezd vissza!</text>
+	</string>
+</string_table>
