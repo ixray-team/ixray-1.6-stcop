@@ -32,6 +32,7 @@ UIInvUpgradeInfo::UIInvUpgradeInfo()
 	m_desc       = nullptr;
 	m_prereq     = nullptr;
 	m_properties_wnd = nullptr;
+	m_legacy_mode = EngineExternal().ClearSkyMode();
 }
 
 UIInvUpgradeInfo::~UIInvUpgradeInfo()
@@ -105,13 +106,13 @@ bool UIInvUpgradeInfo::init_upgrade( Upgrade_type* upgr, CInventoryItem* inv_ite
         }
 
         m_prereq->SetText(nullptr);
-        if (!EngineExternal().ClearSkyMode())
+        if (!m_legacy_mode)
             m_prereq->SetTextColor(color_rgba(255, 90, 90, 255));
 
         string512 str_res{};
         auto set_result_string = [&](pcstr desc, bool add = false)
         {
-            if (EngineExternal().ClearSkyMode())
+            if (m_legacy_mode)
             {
                 xr_strcpy(str_res, g_pStringTable->translate(desc).c_str());
             }
@@ -132,7 +133,7 @@ bool UIInvUpgradeInfo::init_upgrade( Upgrade_type* upgr, CInventoryItem* inv_ite
         switch (upg_res)
         {
         case inventory::upgrade::result_e_installed:
-            if (!EngineExternal().ClearSkyMode())
+            if (!m_legacy_mode)
                 m_prereq->SetTextColor(color_rgba(117, 255, 123, 255));
             m_prereq->SetTextST("st_upgr_installed");
             break;
@@ -158,7 +159,7 @@ bool UIInvUpgradeInfo::init_upgrade( Upgrade_type* upgr, CInventoryItem* inv_ite
             case inventory::upgrade::result_ok:
             case inventory::upgrade::result_e_precondition_money:
             case inventory::upgrade::result_e_precondition_quest:
-                if (EngineExternal().ClearSkyMode())
+                if (m_legacy_mode)
                 {
                     m_prereq->SetText(m_upgrade->get_prerequisites());
                     break;
