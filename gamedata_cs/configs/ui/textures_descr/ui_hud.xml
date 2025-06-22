@@ -124,11 +124,12 @@
     <texture id="ui_hud2_rad01_progress" x="630" y="877" width="96" height="96" />
 
 <!--resistanses & damage-->
-    <texture id="ui_hud2_res_back"	x="996" y="875" width="28" height="28" />
+    <texture id="ui_hud2_res_back"	x="429" y="987" width="28" height="28" />
     <texture id="ui_hud2_res_rad"	x="973" y="878" width="22" height="22" />
     <texture id="ui_hud2_res_psi"	x="951" y="878" width="22" height="22" />
     <texture id="ui_hud2_res_fire"	x="929" y="878" width="22" height="22" />
     <texture id="ui_hud2_res_acid"	x="907" y="878" width="22" height="22" />
+	<texture id="ui_hud2_res_eat"   x="995" y="878" width="22" height="22" />
 
 <!-- buy_menu-->
     <texture id="ui_btn_shotgun_e"	x="198" y="97" width="256" height="100" />
