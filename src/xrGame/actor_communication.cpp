@@ -101,6 +101,9 @@ void   CActor::UpdateAvailableDialogs	(CPhraseDialogManager* partner)
 	for(u32 i = 0; i<pInvOwnerPartner->CharacterInfo().ActorDialogs().size(); i++)
 		AddAvailableDialog(pInvOwnerPartner->CharacterInfo().ActorDialogs()[i], partner);
 
+	if (EngineExternal().ClearSkyMode())
+		AddAvailableDialog("actor_break_dialog", partner);
+
 	CPhraseDialogManager::UpdateAvailableDialogs(partner);
 }
 
@@ -119,10 +122,12 @@ void CActor::RunTalkDialog(CInventoryOwner* talk_partner, bool disable_break)
 	{	
 		StartTalk(talk_partner);
 
-		if(CurrentGameUI()->TopInputReceiver())
+		if (CurrentGameUI()->TopInputReceiver())
+		{
 			CurrentGameUI()->TopInputReceiver()->HideDialog();
-
- 		CurrentGameUI()->StartTalk(talk_partner->bDisableBreakDialog);
+		}
+		bool disableBreakDialog = EngineExternal().ClearSkyMode() ? disable_break : talk_partner->bDisableBreakDialog;
+ 		CurrentGameUI()->StartTalk(disableBreakDialog);
 	}
 }
 
