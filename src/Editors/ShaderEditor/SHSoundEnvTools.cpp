@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 
-
+#include "efx-presets.h"
 #include "ui_shadermain.h"
 #include "../../xrSound/stdafx.h"
 #include "../../xrSound/Sound.h"
