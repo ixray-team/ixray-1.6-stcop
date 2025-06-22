@@ -21,6 +21,9 @@ private:
 	game_cl_Deathmatch *	m_game;
 	typedef UIGameMP inherited;
 
+public:
+	CUIMapDesc*			m_pMapDesc;
+
 protected:
 	enum{
 		flShowFragList	= (1<<1),

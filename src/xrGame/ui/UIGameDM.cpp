@@ -46,6 +46,7 @@ CUIGameDM::CUIGameDM()
 {
 	m_game								= nullptr; 
 	m_voteStatusWnd						= nullptr;
+	m_pMapDesc							= nullptr;
 }
 
 //--------------------------------------------------------------------
@@ -54,7 +55,13 @@ void CUIGameDM::SetClGame (game_cl_GameState* g)
 	inherited::SetClGame(g);
 	m_game = smart_cast<game_cl_Deathmatch*>(g);
 	R_ASSERT(m_game);
-
+	
+	if (m_pMapDesc && m_pMapDesc->IsShown())
+	{
+		m_pMapDesc->ShowDialog(true);
+	}
+	delete_data(m_pMapDesc);
+	m_pMapDesc			= new CUIMapDesc		();
 	UpdateTeamPanels	();
 }
 
@@ -106,6 +113,7 @@ void CUIGameDM::UnLoad()
 	inherited::UnLoad		();
 	xr_delete				(m_pTeamPanels);
 	xr_delete				(m_voteStatusWnd);
+	delete_data				(m_pMapDesc);	
 }
 
 CUIGameDM::~CUIGameDM()
