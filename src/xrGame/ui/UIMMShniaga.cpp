@@ -65,6 +65,8 @@ void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, LPCSTR path)
 	CUIXmlInit::InitScrollView(xml_doc, _path,0,m_view);
 	xr_strconcat(_path,path,":shniaga:magnifire:y_offset");
 	m_offset = xml_doc.ReadFlt(_path,0,0);
+	xr_strconcat(_path, path, ":shniaga:speed");
+	m_run_speed = xml_doc.ReadInt(_path, 0, 300);
 
 	if (!g_pGameLevel || !g_pGameLevel->bReady) 
 	{
@@ -458,7 +460,7 @@ void CUIMMShniaga::ProcessEvent(EVENT ev)
 				m_origin = m_shniaga->GetWndPos().y;
 				m_destination = m_selected->GetWndPos().y - m_magnifier->GetWndPos().y;
 				m_destination += m_offset;
-				m_run_time = u32((log(1 + abs(m_origin - m_destination))/log(GetHeight()))*300);
+				m_run_time = u32((log(1 + abs(m_origin - m_destination))/log(GetHeight()))*m_run_speed);
 				if (m_run_time < 100)
 					m_run_time = 100;
 
