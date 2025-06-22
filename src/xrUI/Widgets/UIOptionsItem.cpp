@@ -30,7 +30,7 @@ void CUIOptionsItem::OnMessage(LPCSTR message)
 	// do nothing
 }
 
-LPCSTR CUIOptionsItem::GetOptStringValue()
+LPCSTR CUIOptionsItem::GetOptStringValue() const
 {
 	return Console->GetString(m_entry.c_str());
 }
