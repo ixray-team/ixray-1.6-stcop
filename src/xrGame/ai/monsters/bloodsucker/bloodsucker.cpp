@@ -60,7 +60,6 @@ CAI_Bloodsucker::CAI_Bloodsucker()
 	collision_off					= 	false;
 	m_force_visibility_state		=	unset;
 	m_runaway_invisible_time		=	0;
-
 	using namespace						detail::bloodsucker;
 	m_critical_hit_chance			=	default_critical_hit_chance;
 }
@@ -620,7 +619,7 @@ void CAI_Bloodsucker::UpdateCL()
 	update_invisibility				();
 	inherited::UpdateCL				();
 	CControlledActor::frame_update	();
-	character_physics_support()->movement()->CollisionEnable(!is_collision_off());
+	character_physics_support()->movement()->CollisionDynamicEnable(!is_collision_off());
 
 	if (g_Alive())
 	{

@@ -1531,6 +1531,16 @@ void		CPHMovementControl::CollisionEnable(BOOL enable)
 
 }
 
+void CPHMovementControl::CollisionDynamicEnable(BOOL enable)
+{
+	if (!m_character || !m_character->b_exist)
+		return;
+	if (enable)
+		m_character->collision_dynamic_enable();
+	else
+		m_character->collision_dynamic_disable();
+}
+
 void	CPHMovementControl::SetCharacterVelocity(const Fvector& v)
 {
 	if (m_character)

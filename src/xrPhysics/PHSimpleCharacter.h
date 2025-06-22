@@ -244,6 +244,8 @@ private:
 	virtual	void		step							(float dt)	{ CPHObject::step( dt ); }
 	virtual	void		collision_disable				()			{ CPHObject::collision_disable(); }
 	virtual	void		collision_enable				()			{ CPHObject::collision_enable(); }
+	void		collision_dynamic_enable() override { CPHObject::collision_dynamic_enable(); }
+	void		collision_dynamic_disable() override { CPHObject::collision_dynamic_disable(); }
 	virtual	void		NetRelcase						( IPhysicsShellHolder* O );
 protected:
 virtual	void	get_Box								( Fvector&	sz, Fvector& c )const;
