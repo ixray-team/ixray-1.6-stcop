@@ -156,5 +156,5 @@ namespace Platform
         return _wunlink(Platform::ANSI_TO_TCHAR_U8(path));
     }
 
-    size_t Stat(const char* path, time_t& Time);
+    XRCORE_API size_t Stat(const char* path, time_t& Time);
 }

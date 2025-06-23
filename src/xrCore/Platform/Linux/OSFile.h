@@ -270,7 +270,7 @@ namespace Platform
         return result;
     }
 
-    size_t Stat(const char* path, time_t& Time);
+    XRCORE_API size_t Stat(const char* path, time_t& Time);
 }
 
 inline int _rmdir(const char *path)
