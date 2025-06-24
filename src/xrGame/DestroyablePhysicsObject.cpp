@@ -96,7 +96,7 @@ void	CDestroyablePhysicsObject::Hit					(SHit* pHDS)
 		HDS.bone()
 	);
 
-	if (!hit_object_name.empty() && !hit_object_name.contains(HDS.who->cName()))
+	if ( !(hit_object_name.empty() || hit_object_name.contains(HDS.who->cName())) )
 		return;
 
 	HDS.power=CHitImmunity::AffectHit(HDS.power,HDS.hit_type);
@@ -116,12 +116,6 @@ void	CDestroyablePhysicsObject::Hit					(SHit* pHDS)
 void CDestroyablePhysicsObject::Destroy()
 {
 	VERIFY(!physics_world()->Processing());
-
-	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
-	{
-		setVisible(FALSE);
-	}
-
 	const CGameObject *who_object = smart_cast<const CGameObject*>(FatalHit().initiator());
 	callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object->lua_game_object() : 0);
 	CPHDestroyable::Destroy(ID(),"physic_destroyable_object");
