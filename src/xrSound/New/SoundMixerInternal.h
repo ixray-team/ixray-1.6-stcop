@@ -50,6 +50,7 @@ struct sound_slot_state
 
 namespace XRay::Sound::Mixer
 {
+    XRSOUND_API void AddEditorZone(sound_zone_params& params);
     XRSOUND_API void AddZone(sound_zone_params& params);
     XRSOUND_API void ResetZones();
     const XRSOUND_API xr_vector<sound_zone_params>& GetZones();

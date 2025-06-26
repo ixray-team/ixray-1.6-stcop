@@ -138,6 +138,7 @@ struct sound_mixer_state
 
 #ifndef DISABLE_STEAM_AUDIO
     bool ipl_hrtf_enabled;
+    bool editor_zone = false;
     xr_vector<u32> free_hrtf_slots;
     xr_vector<sound_hrtf_slot_state> hrtf_slots;
     IPLContext ipl_context;
@@ -163,7 +164,7 @@ Snd_EngineToIPLParams(const sound_reverb_settings& settings)
     constexpr float duration = 4.0f;
 
     IPLReflectionEffectParams params = { .type = IPL_REFLECTIONEFFECTTYPE_PARAMETRIC };
-
+    
     float decay_time = std::max(settings.decay_time, 0.1f);
     float hf_ratio = std::clamp(settings.decay_hf_ratio, 0.1f, 2.0f);
 
@@ -906,6 +907,11 @@ Snd_MixerRenderCallback(float* buffer)
                 DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos);
             }
 
+            if (mixer.editor_zone)
+            {
+                slot.zone_idx = 1;
+            }
+
             if (slot.zone_idx) {
                 sound_zone_params& zone = mixer.zones.at(slot.zone_idx - 1);
                 zone.use_count++;
@@ -957,6 +963,8 @@ Snd_MixerRenderCallback(float* buffer)
                 IPLReflectionEffectParams params = Snd_EngineToIPLParams(zone.settings);
 
                 iplReflectionEffectApply(zone.effect[ch], &params, &reverb_buf, &out_buf, nullptr);
+
+               // applyRoomFilter(process_buffer[ch], zone.settings.room, zone.settings.room_hf);
             }
 
             DSP_MixBuffer(bus_buffer, process_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
@@ -1652,7 +1660,14 @@ Mixer::GetParameters(u32 slot)
     return mixer.slots[slot - 1].parameters;
 }
 
-void 
+void XRay::Sound::Mixer::AddEditorZone(sound_zone_params& params)
+{
+    mixer.editor_zone = true;
+    ResetZones();
+    AddZone(params);
+}
+
+void
 Mixer::AddZone(sound_zone_params& params)
 {
 #ifndef DISABLE_STEAM_AUDIO
