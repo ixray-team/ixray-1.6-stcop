@@ -28,7 +28,7 @@ bool UIIconPicker::ShowIcons() {
 			ImGui::NewLine();
 		}
 
-		if (ImGui::ImageButton(Icons[it->name]->pSurface, ImVec2(button_size, button_size))) {
+		if (ImGui::ImageButton("##ibUIIconPicker001",Icons[it->name]->pSurface, ImVec2(button_size, button_size))) {
 			ImGui::Text("Button %d pressed", 0);
 			EPrefs->custom_icons[file_path.c_str()] = it->name;
 			return true;

@@ -89,8 +89,8 @@ void UIAIMapTool::Draw()
 		ImGui::PushItemWidth(-1);
 		float size = float(ImGui::CalcItemWidth());
 		{
-			float my_tex_w = (float)ImGui::GetIO().Fonts->TexWidth;
-			float my_tex_h = (float)ImGui::GetIO().Fonts->TexHeight;
+			float my_tex_w = (float)ImGui::GetIO().Fonts->TexData->Width;
+			float my_tex_h = (float)ImGui::GetIO().Fonts->TexData->Height;
 			
 			{
 				if (ImGui::RadioButton("Add    ", m_Mode == mdAppend)) { m_Mode = mdAppend; } ImGui::SameLine(0, -1);

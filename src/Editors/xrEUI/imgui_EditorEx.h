@@ -17,7 +17,7 @@ bool IXBeginMainMenuBar()
 	ImVec2 LogoSize = ImVec2(24, 24);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2((LogoButtonSize.x - LogoSize.x) / 2, (LogoButtonSize.y - LogoSize.y) / 2));
-	ImGui::ImageButton(UI->m_HeaderLogo->pSurface, LogoSize);
+	ImGui::ImageButton("##IXBeginMainMenuBar00", UI->m_HeaderLogo->pSurface, LogoSize);
 	ImGui::PopStyleVar();
 
 	return true;
@@ -52,13 +52,13 @@ void IXEndMainMenuBar()
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2((ControlButtonSize.x - ImageSize.x) / 2, (ControlButtonSize.y - ImageSize.y) / 2));
 
 
-	if (ImGui::ImageButton(UI->m_WinMin->pSurface, ImageSize))
+	if (ImGui::ImageButton("##IXEndMainMenuBar01",UI->m_WinMin->pSurface, ImageSize))
 		SendMessageW(EDevice->GetHWND(), WM_SYSCOMMAND, SC_MINIMIZE, 0);
 
-	if (ImGui::ImageButton((EDevice->isZoomed ? UI->m_WinRes->pSurface : UI->m_WinMax->pSurface), ImageSize))
+	if (ImGui::ImageButton("##IXEndMainMenuBar02", (EDevice->isZoomed ? UI->m_WinRes->pSurface : UI->m_WinMax->pSurface), ImageSize))
 		MaxBut = true;
 
-	if (ImGui::ImageButton(UI->m_WinClose->pSurface, ImageSize))
+	if (ImGui::ImageButton("##IXEndMainMenuBar03", UI->m_WinClose->pSurface, ImageSize))
 		SendMessageW(EDevice->GetHWND(), WM_CLOSE, 0, 0);
 
 

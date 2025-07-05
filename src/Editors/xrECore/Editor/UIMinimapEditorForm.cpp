@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIMinimapEditorForm.h"
 #include "../../../xrCore/os_clipboard.h"
+#include "imgui.h"
 
 UIMinimapEditorForm*    UIMinimapEditorForm::Form = nullptr;
 
@@ -272,23 +273,23 @@ void UIMinimapEditorForm::RenderCanvas()
 
 		if (element.EdSelected && !element.EdLocked) 
 		{
-			if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_UpArrow))) 
+			if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) 
 			{
 				element.position.y-=0.5f;
 				isEdited = true;
 			}
-			else if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_DownArrow)))
+			else if (ImGui::IsKeyPressed(ImGuiKey_DownArrow))
 			{
 				element.position.y+= 0.5f;
 				isEdited = true;
 			}
 
-			if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_LeftArrow))) 
+			if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) 
 			{
 				element.position.x-= 0.5f;
 				isEdited = true;
 			}
-			else if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_RightArrow))) 
+			else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow))
 			{
 				element.position.x+= 0.5f;
 				isEdited = true;
@@ -710,7 +711,7 @@ void UIMinimapEditorForm::CreateElementPopup()
 			el_new.position = ImVec2(0, 0);
 			el_new.name = CreatingData.name;
 			el_new.TexturePath = CreatingData.TexturePath;
-			el_new.Texture = nullptr;
+			el_new.Texture = 0/*nullptr*/;
 
 			string_path p;
 			if (!el_new.TexturePath.empty())
@@ -1195,7 +1196,7 @@ void UIMinimapEditorForm::Draw()
 
 	}
 	
-	if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Equal)))
+	if (ImGui::IsKeyPressed(ImGuiKey_Equal))
 	{
 		m_DebugView = !m_DebugView;
 	}
