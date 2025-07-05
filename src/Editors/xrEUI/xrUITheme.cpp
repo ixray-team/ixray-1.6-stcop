@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "xrUITheme.h"
+#include "imgui_user.h"
 
 #define _game_fonts_ "$game_fonts$"
 

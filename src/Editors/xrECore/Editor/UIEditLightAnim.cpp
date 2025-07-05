@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIEditLightAnim.h"
 #include "../xrEngine/LightAnimLibrary.h"
+#include "imgui_user.h"
 
 #include "ui_main.h"
 #define POINTER_HEIGHT 35

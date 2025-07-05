@@ -4,6 +4,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <imgui_user.h>
 
 constexpr u32 MainViewportSlot = 0;
 
@@ -63,7 +64,7 @@ void CImGuiManager::InitPlatform()
 	LoadImGuiFont(ImGui::MediumFont, "rus\\RobotoMono-Medium.ttf", scale);
 	LoadImGuiFont(ImGui::BoldFont, "rus\\RobotoMono-Bold.ttf", scale);
 
-	io.Fonts->Build();
+	//io.Fonts->Build();
 
 #ifdef DEBUG_DRAW
 	if (Core.ParamsData.test(ECoreParams::no_debug_panel))
