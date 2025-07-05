@@ -14,7 +14,7 @@ void UIKeyPressForm::Draw()
 	if (!bOpen)
 		return;
 
-	if (!ImGui::BeginPopupModal("Press any key", 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove, true))
+	if (!ImGui::BeginPopupModal("Press any key", 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 	{
 		ImGui::EndPopup();
 		return;
