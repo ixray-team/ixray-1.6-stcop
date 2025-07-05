@@ -229,7 +229,7 @@ void UIChooseForm::Update()
 	if (Form&& !Form->IsClosed())
 	{
 		ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_::ImGuiCond_FirstUseEver);
-		if (ImGui::BeginPopupModal("Choose form", nullptr,0,true))
+		if (ImGui::BeginPopupModal("Choose form", nullptr,0))
 		{
 			Form->Draw();
 			ImGui::EndPopup();
