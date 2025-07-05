@@ -1122,7 +1122,7 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 				IconColor.w = 0.3;
 			}
 
-			ImGui::Image(IconPtr->Icon->pSurface, ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor);
+			ImGui::Image(IconPtr->Icon->pSurface, ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
 
 			/*
 				Два варианта
@@ -1231,9 +1231,9 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 
 					if (ImGui::InputText("##ren", RenameObject.RenameBuf.data(), 255, ImGuiInputTextFlags_EnterReturnsTrue))
 						RenameObject.Active = false;
-
-					if (io.KeysDown[ImGuiKey_Escape])
-						RenameActionEnd();
+					//<IX> TODO: FIX ME 
+					//if (io.KeysDown[ImGuiKey_Escape])
+					//	RenameActionEnd();
 
 					RenameObject.Focus = ImGui::IsItemHovered();
 				}

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIEditLibrary.h"
 #include "../../xrECore/Editor/Library.h"
+#include "imgui_internal.h"
 
 static FS_FileSet modif_map;
 UIEditLibrary* UIEditLibrary::Form = nullptr;

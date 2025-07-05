@@ -3,11 +3,12 @@
 #endif
 
 #include "imgui_internal.h"
+#include "imgui_user.h"
 
 float ImGui::GetWindowBarHeight()
 {
     ImGuiWindow* window = GImGui->CurrentWindow;
-    return window->MenuBarHeight();
+    return window->MenuBarHeight;
 }
 bool ImGui::OpenPopupOnItemClick2(const char* str_id, ImGuiPopupFlags popup_flags)
 {

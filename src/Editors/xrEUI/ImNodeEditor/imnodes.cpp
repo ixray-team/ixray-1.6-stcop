@@ -349,8 +349,11 @@ namespace IMNODES_NAMESPACE
 
                 {
                     ImDrawCmd draw_cmd;
+#if IMGUI_VERSION_NUM < 19200
                     draw_cmd.ClipRect = draw_list->_ClipRectStack.back();
-                    draw_cmd.TextureId = draw_list->_TextureIdStack.back();
+#else
+                    draw_cmd.TexRef = draw_list->_TextureStack.back();
+#endif
                     channel._CmdBuffer.push_back(draw_cmd);
                 }
             }
