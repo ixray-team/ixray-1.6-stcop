@@ -1,4 +1,5 @@
 #include "imgui.h"
+#include "imgui_user.h"
 
 void IMGUI_API XRay::ImGui::MakeEditorTheme()
 {

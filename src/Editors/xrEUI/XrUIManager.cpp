@@ -6,6 +6,7 @@
 #include <SDL3/SDL.h>
 #include "xrUITheme.h"
 #include "ImGuizmo.h"
+#include "imgui_internal.h"
 
 XrUIManager::XrUIManager()
 {
@@ -80,7 +81,8 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	}
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	io.Fonts->Build();
+	//io.Fonts->Build();
+
 	//ImGui_ImplWin32_Init(hWnd);
 	ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window);
 	ImGui_ImplDX9_Init(device);
