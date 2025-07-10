@@ -499,9 +499,9 @@ void CGamePersistent::game_loaded()
 
 void CGamePersistent::update_game_loaded()
 {
-	xr_delete				(m_intro);
-	Msg("intro_delete ::update_game_loaded");
-	start_game_intro		();
+	xr_delete					(m_intro);
+	load_screen_renderer.stop	();
+	start_game_intro			();
 }
 
 void CGamePersistent::start_game_intro		()

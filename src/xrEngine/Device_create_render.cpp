@@ -264,6 +264,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::EndMenu();
 			}
 
+			ImGui::MenuItem("Click `Alt+I` (English language layout)");
 			ImGui::EndMainMenuBar();
 		}
 

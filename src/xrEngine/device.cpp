@@ -98,7 +98,7 @@ void CRenderDevice::End(void)
 
 			m_pRender->ResourcesDestroyNecessaryTextures	();
 			Memory.mem_compact								();
-			Msg												("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
+			// Msg("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
 			Msg												("* End of synchronization A[%d] R[%d]",b_is_Active, b_is_Ready);
 			if (loading_save_timer_started) 
 			{

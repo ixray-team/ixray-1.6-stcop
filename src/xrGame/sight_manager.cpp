@@ -71,9 +71,9 @@ void CSightManager::vfValidateAngleDependency(float x1, float &x2, float x3)
 BOOL g_ai_dbg_sight = 0;
 #endif // #ifdef DEBUG
 
-float g_ai_aim_min_speed = PI_DIV_8/2.f;
-float g_ai_aim_min_angle = PI_DIV_8/2.f;
-float g_ai_aim_max_angle = PI_DIV_4;
+float g_ai_aim_min_speed = 31;
+float g_ai_aim_min_angle = 0;
+float g_ai_aim_max_angle = 31;
 BOOL  g_ai_aim_use_smooth_aim = 1;
 
 static inline float	select_speed	( float const distance, float const speed, float const min_speed, float const min_distance, float const max_distance )

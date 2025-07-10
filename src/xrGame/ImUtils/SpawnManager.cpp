@@ -127,6 +127,7 @@ void InitSections()
 			else {
 				full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data());
 			}
+			xr_strlwr(full_path);
 			if (!FS.exist(full_path.c_str()))
 			{
 				Msg("! SpawnManager: failed to spawn [%s] visual not found: %s", name.data(), full_path.c_str());
@@ -797,9 +798,8 @@ void RenderSpawnManagerWindow() {
 
 			ImGui::EndTabBar();
 		}
-
-		ImGui::End();
 	}
+	ImGui::End();
 	ImGui::PopStyleColor(1);
 }
 
@@ -904,7 +904,7 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 	float h = pSettings->r_float(name, "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
 
 	ImGui::SeparatorText(name);
-	return ImGui::ImageButton(imname, surfaceParams.Surface, { w, h },
+	return ImGui::ImageButton(imname, surfaceParams.Surface, { w / (1 + isHQIcons), h / (1 + isHQIcons)},
 		{ x / surfaceParams.w, y / surfaceParams.h },
 		{ (x + w) / surfaceParams.w, (y + h) / surfaceParams.h });
 

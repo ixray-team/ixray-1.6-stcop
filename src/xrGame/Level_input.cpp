@@ -153,12 +153,21 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		{
 			if(b_ui_exist && CurrentGameUI()->TopInputReceiver() )
 			{
-					if(CurrentGameUI()->IR_UIOnKeyboardPress(key))	return;//special case for mp and main_menu
-					CurrentGameUI()->TopInputReceiver()->HideDialog();
-			}else
+				if(Device.Paused())
+				{
+					// Снимаем паузу, через Esc
+					Device.Pause(FALSE, TRUE, TRUE, "kQUIT");
+					return;
+				}
+
+				if(CurrentGameUI()->IR_UIOnKeyboardPress(key))	return;//special case for mp and main_menu
+				CurrentGameUI()->TopInputReceiver()->HideDialog();
+			}
+			else
 			{
 				Console->Execute("main_menu");
-			}return;
+			}
+			return;
 		}break;
 	};
 

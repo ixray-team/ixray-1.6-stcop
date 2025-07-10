@@ -290,7 +290,7 @@ void CALifeUpdateManager::load			(LPCSTR game_name, bool no_assert, bool new_onl
 
 #ifdef DEBUG
 	Memory.mem_compact					();
-	u32									memory_usage = Memory.mem_usage();
+	//u32									memory_usage = Memory.mem_usage();
 #endif
 
 	xr_strcpy								(g_last_saved_game,game_name);
@@ -304,7 +304,7 @@ void CALifeUpdateManager::load			(LPCSTR game_name, bool no_assert, bool new_onl
 		Level().OnAlifeSimulatorLoaded();
 
 #ifdef DEBUG
-	Msg									("* Loading alife simulator is successfully completed (%7.3f Mb)",float(Memory.mem_usage() - memory_usage)/1048576.0);
+	// Msg									("* Loading alife simulator is successfully completed (%7.3f Mb)",float(Memory.mem_usage() - memory_usage)/1048576.0);
 #endif
 //	g_pGamePersistent->LoadTitle		("st_server_connecting");
 	g_pGamePersistent->LoadTitle		(true, g_pGameLevel->name());

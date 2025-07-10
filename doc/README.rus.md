@@ -93,7 +93,7 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 - Поддержка формата сжатия __BC7__
 - Поддержка технологий NVIDIA DLSS и AMD FidelityFX Super Resolution 2 (FSR2)
 - Расширены возможности геймплея
-- [Расширены возможности __UI__](https://github.com/ixray-team/ixray-1.6-stcop/wiki/UI:-%D0%9E%D0%B1%D1%89%D0%B5%D0%B5)
+- [Расширены возможности __UI__](https://github.com/ixray-team/ixray-1.6-stcop/wiki/UI-%D0%9E%D0%B1%D1%89%D0%B5%D0%B5)
 - [Расширены возможности  __Lua__](https://github.com/ixray-team/ixray-1.6-stcop/wiki#%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D1%8B-lua)
 
 ## Минимальные системные требования
@@ -139,8 +139,6 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 ```sh
 # С GitHub
 git clone https://github.com/ixray-team/ixray-1.6-stcop.git
-# Или с GitLab
-git clone https://gitlab.com/ixray-team/ixray/ixray-1.6-stcop.git
 ```
 
 ### Генерация решения Visual Studio

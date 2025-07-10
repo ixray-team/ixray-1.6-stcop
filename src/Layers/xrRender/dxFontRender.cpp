@@ -126,7 +126,7 @@ void dxFontRender::OnRender(CGameFont& owner) {
 				vertexes->set(X2, GlyphY, clr, u2, v1);
 				++vertexes;
 
-				X = X2 + glyphInfo->Abc.abcC;
+				X = X2 + glyphInfo->Abc.abcC + owner.GetLetterSpacing();
 			}
 
 			// Unlock and draw

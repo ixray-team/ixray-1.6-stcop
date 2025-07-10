@@ -10,10 +10,6 @@ List of frequently asked questions
 
 IX-Ray is a project to improve the original X-Ray engine used for the initial trilogy of S.T.A.L.K.E.R. games. The IX-Ray Team is a team of IX-Ray project developers, consisting of former and current modders. For more details, see the project description.
 
-### The developers also list ImeSense, what is that?
-
-ImeSense is another of our more "general" teams focused on developing software and services beyond the scope of the S.T.A.L.K.E.R. game. The IX-Ray project is partially based on components, changes, and infrastructure from ImeSense.
-
 ### Why did the project take a long time to develop, but there was no information about it anywhere?
 
 The project was developed for quite some time by small efforts without fuss and haste. Moreover, we did not aim to create premature hype without having some completed fixes and improvements at that moment. We did not want to make empty promises. Now it no longer makes sense to hide anything, and the project has accumulated a significant number of changes.

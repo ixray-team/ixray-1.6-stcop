@@ -54,10 +54,10 @@ CGameFont::CGameFont(const char* section, u32 flags) : Name(section)
 		Data.OpenType = pSettings->r_bool(section, "opentype");
 
 	if (pSettings->line_exist(section, "letter_spacing"))
-		LetterSpacing = pSettings->r_float(section, "letter_spacing");
+		SetLetterSpacing(pSettings->r_float(section, "letter_spacing"));
 
 	if (pSettings->line_exist(section, "line_spacing"))
-		LineSpacing = pSettings->r_float(section, "line_spacing");
+		SetLineSpacing(pSettings->r_float(section, "line_spacing"));
 
 	// Init
 	pFontRender = RenderFactory->CreateFontRender();
@@ -67,6 +67,8 @@ CGameFont::CGameFont(const char* section, u32 flags) : Name(section)
 CGameFont::~CGameFont()
 {
 	// Shading
+	FT_Done_Face(OurFont);
+
 	RenderFactory->DestroyFontRender(pFontRender);
 	pFontRender = nullptr;
 
@@ -183,7 +185,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		R_ASSERT3(FontFile != nullptr, "Can't find default font: %s", DefPath);
 	}
 
-	FT_Face OurFont;
 	FT_Error FTError = FT_New_Memory_Face(FreetypeLib, (FT_Byte*)FontFile->pointer(), FontFile->length(), 0, &OurFont);
 	R_ASSERT3(FTError == 0, "FT_New_Memory_Face return error", FullPath);
 
@@ -285,10 +286,24 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		u32 TrueGlyph = glyphID;
 		if (Data.OpenType)
 		{
-			TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
+			// Если символ входит в CP1251 (0-255) — конвертируем
+			if (glyphID <= 0xFF)
+			{
+				TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
+			}
+			// Иначе оставляем как есть (Unicode)
+			else
+			{
+				TrueGlyph = glyphID;
+			}
 		}
 
 		FT_UInt FreetypeCharacter = FT_Get_Char_Index(OurFont, TrueGlyph);
+		if (FreetypeCharacter == 0 && glyphID != 0)
+		{
+			Msg("! Glyph not found: %d, TrueGlyph: %d", glyphID, TrueGlyph);
+			return;
+		}
 
 		FTError = FT_Load_Glyph(OurFont, FreetypeCharacter, FT_LOAD_RENDER);
 		R_ASSERT3(FTError == 0, "FT_Load_Glyph return error", FullPath);
@@ -316,7 +331,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		GlyphData[glyphID] = { region, widths, yOffset };
 
 		TargetX = TargetX2;
-		TargetX += 4;
+		TargetX += 4 + u32(GetLetterSpacing());
 	};
 
 	auto glyphID = FT_Get_First_Char(OurFont, &index);
@@ -326,7 +341,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
 	}
 
-	FT_Done_Face(OurFont);
 	fCurrentHeight = FontSizeInPixels;
 
 	string128 textureName;
@@ -485,35 +499,36 @@ const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
 
 int CGameFont::WidthOf(int ch)
 {
-	const Glyph* glyphInfo = GetGlyphInfo(ch);
-	return glyphInfo ? (glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC) : 5;
+	if (ch == '\t' || ch == '\n')
+		return 0;
+
+	if (const Glyph* glyphInfo = GetGlyphInfo(ch))
+		return glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC;
+
+	return OurFont->glyph->metrics.width / 64;
 }
 
 int CGameFont::WidthOf(const char* str)
 {
-	if (!str || !str[0])
-	{
-		return 0;
-	}
+	if (!str || !str[0]) return 0;
 
 	int size = 0;
+	int length = 0;
+	const float spacing = GetLetterSpacing();
 
-	if (IsUTF8(str))
-	{
-		auto asda = Platform::ANSI_TO_TCHAR(str);
-		int length = std::wcslen(asda);
-		for (int i = 0; i < length; i++)
-		{
-			size += WidthOf(asda[i]);
+	if (IsUTF8(str)) {
+		auto wideStr = Platform::ANSI_TO_TCHAR(str);
+		length = std::wcslen(wideStr);
+		for (int i = 0; i < length; i++) {
+			size += WidthOf(wideStr[i]);
+			if (i < length - 1) size += (int)spacing;
 		}
-
 	}
-	else
-	{
-		int length = xr_strlen(str);
-		for (int i = 0; i < length; i++)
-		{
+	else {
+		length = xr_strlen(str);
+		for (int i = 0; i < length; i++) {
 			size += WidthOf((u8)str[i]);
+			if (i < length - 1) size += (int)spacing;
 		}
 	}
 

@@ -90,7 +90,7 @@ void CAI_Space::load				(LPCSTR level_name)
 
 #ifdef DEBUG
 	Memory.mem_compact		();
-	u32						mem_usage = Memory.mem_usage();
+	//u32						mem_usage = Memory.mem_usage();
 	CTimer					timer;
 	timer.Start				();
 #endif
@@ -123,7 +123,7 @@ void CAI_Space::load				(LPCSTR level_name)
 	m_doors_manager			= new ::doors::manager( ai().level_graph().header().box() );
 
 #ifdef DEBUG
-	Msg						("* Loading ai space is successfully completed (%.3fs, %7.3f Mb)",timer.GetElapsed_sec(),float(Memory.mem_usage() - mem_usage)/1048576.0);
+	//Msg						("* Loading ai space is successfully completed (%.3fs, %7.3f Mb)",timer.GetElapsed_sec(),float(Memory.mem_usage() - mem_usage)/1048576.0);
 #endif
 }
 

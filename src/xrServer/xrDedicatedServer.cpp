@@ -44,7 +44,7 @@ int APIENTRY WinMain
 	Console->Execute("renderer renderer_r1");
 	
 	Engine.External.Initialize();
-	Console->Execute("stat_memory");
+	//Console->Execute("stat_memory");
 
 	EngineLoadStage4();
 

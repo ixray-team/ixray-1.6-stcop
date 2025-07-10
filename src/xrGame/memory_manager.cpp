@@ -329,6 +329,9 @@ void CMemoryManager::on_restrictions_change	()
 
 void CMemoryManager::make_object_visible_somewhen	(const CEntityAlive *enemy)
 {
+	if (!enemy || enemy->getDestroy()) // safety check if enemy disappears (usual scenario for fast fight command)
+		return;
+
 	squad_mask_type				mask = stalker().agent_manager().member().mask(&stalker());
 	MemorySpace::CVisibleObject	*obj = visual().visible_object(enemy);
 

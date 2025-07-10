@@ -21,6 +21,7 @@
 #	include <sse2neon/sse2neon.h>
 #else
 #	include <xmmintrin.h>
+#   include <x86intrin.h>
 #endif
 
 #define __declspec(t)

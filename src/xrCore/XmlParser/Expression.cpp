@@ -657,7 +657,7 @@ void CExpression::CompileExpression(xr_string& ExpressionStr, bool bAllowUnknowV
 
 ExpressionVarVariadic CExpression::ExecuteExpression()
 {
-    xr_string_map<xr_string, xr_string> DummyVariables;
+    static xr_string_map<xr_string, xr_string> DummyVariables;
     return ExecuteExpression(DummyVariables);
 }
 

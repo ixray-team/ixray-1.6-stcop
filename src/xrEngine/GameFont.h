@@ -2,6 +2,9 @@
 #include "MbHelpers.h"
 #include "../Include/xrRender/FontRender.h"
 
+struct FT_FaceRec_;
+using FT_Face = FT_FaceRec_*;
+
 class ENGINE_API CGameFont
 {
 	friend class dxFontRender;
@@ -168,13 +171,14 @@ public:
 	int WidthOf(const char* str);
 
 private:
-	float LetterSpacing; //that must be in CUIText from new font system
-	float LineSpacing; //that must be in CUIText from new font system
+	float LetterSpacing = 0; //that must be in CUIText from new font system
+	float LineSpacing = 0; //that must be in CUIText from new font system
 
 	const char* Name; //#TODO change type
 
 	u32 Size;
 	Style Style;
+	FT_Face OurFont;
 
 	xr_map<int, Glyph> GlyphData;
 

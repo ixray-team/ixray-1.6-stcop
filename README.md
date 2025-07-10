@@ -93,7 +93,7 @@ Latest release of the engine can be downloaded on the [releases page](https://gi
 - Supported __BC7__ compression format
 - Supported NVIDIA DLSS and AMD FidelityFX Super Resolution 2 (FSR2) Technologies
 - Extended gameplay features
-- [Extended __UI__ features](https://github.com/ixray-team/ixray-1.6-stcop/wiki/UI:-%D0%9E%D0%B1%D1%89%D0%B5%D0%B5)
+- [Extended __UI__ features](https://github.com/ixray-team/ixray-1.6-stcop/wiki/UI-%D0%9E%D0%B1%D1%89%D0%B5%D0%B5)
 - [Extended __Lua__ features](https://github.com/ixray-team/ixray-1.6-stcop/wiki#%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D1%8B-lua)
 
 ## Minimal system requirements
@@ -139,8 +139,6 @@ Download the repository firstly:
 ```sh
 # From GitHub
 git clone https://github.com/ixray-team/ixray-1.6-stcop.git
-# Or from GitLab
-git clone https://gitlab.com/ixray-team/ixray/ixray-1.6-stcop.git
 ```
 
 ### Generate Visual Studio solution

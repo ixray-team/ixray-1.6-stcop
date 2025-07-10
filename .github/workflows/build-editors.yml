@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-2022
+          - windows-2025
         preset:
           - Editors
         platform:
@@ -71,6 +71,7 @@ jobs:
         run: |
           cmake `
             --build `
+            --target LevelEditor ActorEditor ParticlesEditor ShaderEditor `
             --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
 
       - name: Upload binaries
@@ -113,7 +114,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-2022
+          - windows-2025
 
     runs-on: ${{ matrix.system }}
 
@@ -162,7 +163,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-2022
+          - windows-2025
         platform:
           - x64
         preset:

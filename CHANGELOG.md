@@ -4,6 +4,54 @@ English | [Русский](./doc/CHANGELOG.rus.md)
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.2.1 (June 2025)
+
+### Common
+
+- Updated publish on pipelines (@Drombeys, @ForserX)
+- Updated root documents (@Drombeys, @ggGhosTt, @GladiatorVS)
+
+### Engine
+
+- Added hint for the debug panel (@Drombeys)
+- Added letter spacing support in fonts (@Drombeys, @ForserX)
+- Added SSE support to CRC32 (@v2v3v4)
+- Deleted memory statistics in logs (@Drombeys, @St4lker0k765)
+- Fixed double update of particles (@ForserX)
+- Fixed get size of pixels from string for Chinese locale (@ForserX)
+- Fixed puddles generation (@ForserX)
+- Made `ParticleGroup` thread-safe (@Drombeys, @v2v3v4)
+- Made glyph conversion CP1251-aware but Unicode-friendly (@Drombeys)
+- Made UI show thread-safe (@Drombeys, @v2v3v4)
+- Updated manifests (@Drombeys)
+
+### Gameplay
+
+- Added ability to apply global scale for XML textures (@St4lker0k765)
+- Added additional dialog box keys support (@ForserX)
+- Added check for existence of `shell_bone` bone (@Drombeys)
+- Added security check for `Manager::upgrade_install` method (@Drombeys)
+- Applied lowercase to paths in spawner (@ForserX)
+- Fixed `CharacterCommunity` method work for mutants (@Drombeys)
+- Fixed crash after intensive fight (@St4lker0k765)
+- Fixed crosshair appearing if loadscreen is active (@St4lker0k765)
+- Fixed default values for character needs (@Drombeys)
+- Fixed dialogue exit after pause (@Drombeys)
+- Fixed HQ icons size in spawn manager (@St4lker0k765)
+- Fixed magazine reload scheme for `CWeaponRG6` class (@Shtrecker)
+- Fixed scroll focus (@Drombeys, @Hozar2002)
+- Fixed text offset (@Drombeys)
+- Fixed weapon ammo icon if HQ icons are enabled (@St4lker0k765)
+- Fixed window failing to minimize due to SpawnManager state (@wh1t3lord)
+- Improved logging of errors that break NPC torso animations (@Drombeys)
+- Locked `ai_aim_*` console commands (@Drombeys)
+
+### Resources
+
+- Fixed minimap position on widescreen (@OldSerpskiStalker)
+- Replaced default font with `Roboto Condensed` (@hkuprin)
+- Updated game splash (@GladiatorVS)
+
 ## Release 1.2 (April 2025)
 
 ### Common

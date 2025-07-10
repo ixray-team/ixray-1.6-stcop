@@ -94,7 +94,7 @@ extern int		g_upgrades_log;
 extern float	g_smart_cover_animation_speed_factor;
 
 extern	BOOL	g_ai_use_old_vision;
-float			g_aim_predict_time = 0.44f;
+float			g_aim_predict_time = 0;
 int				g_keypress_on_start = 1;
 
 extern ENGINE_API int m_look_cam_fp_zoom;
@@ -502,7 +502,7 @@ public:
 			return;
 		}
 
-		Console->Execute("stat_memory");
+//		Console->Execute("stat_memory");
 
 		string_path				S = {}, S1 = {};
 		strncpy_s(S, sizeof(S), args, _MAX_PATH - 1);
@@ -612,7 +612,7 @@ public:
 		if (MainMenu()->IsActive())
 			MainMenu()->Activate(false);
 
-		Console->Execute("stat_memory");
+//		Console->Execute("stat_memory");
 
 		if (Device.Paused())
 			Device.Pause(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
@@ -1792,7 +1792,8 @@ public:
 
 extern bool	IsGameTypeSingle();
 
-static bool isValidSection(std::string_view section) {
+static bool isValidSection(std::string_view section)
+{
 	std::string_view visual = pSettings->r_string(section.data(), "visual");
 	shared_str full_path;
 
@@ -1803,6 +1804,8 @@ static bool isValidSection(std::string_view section) {
 	else {
 		full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data());
 	}
+
+	xr_strlwr(full_path);
 
 	return FS.exist(full_path.c_str());
 }
@@ -2660,9 +2663,7 @@ void CCC_RegisterCommands()
 
 	CMD4(CCC_Integer, "g_sleep_time", &psActorSleepTime, 1, 24);
 
-	CMD4(CCC_Integer, "ai_use_old_vision", &g_ai_use_old_vision, 0, 1);
 
-	CMD4(CCC_Float, "ai_aim_predict_time", &g_aim_predict_time, 0.f, 10.f);
 
 #ifdef DEBUG
 	//extern BOOL g_use_new_ballistics;
@@ -2678,18 +2679,18 @@ void CCC_RegisterCommands()
 
 	extern BOOL g_ai_aim_use_smooth_aim;
 	CMD4(CCC_Integer, "ai_aim_use_smooth_aim", &g_ai_aim_use_smooth_aim, 0, 1);
-#endif // #ifdef DEBUG
 
-	extern float g_ai_aim_min_speed;
-	CMD4(CCC_Float, "ai_aim_min_speed", &g_ai_aim_min_speed, 0.f, 10.f * PI);
+	//CMD4(CCC_Integer, "ai_use_old_vision", &g_ai_use_old_vision, 0, 1);
+	//CMD4(CCC_Float, "ai_aim_predict_time", &g_aim_predict_time, 0.f, 10.f);
+	//extern float g_ai_aim_min_speed;
+	//CMD4(CCC_Float, "ai_aim_min_speed", &g_ai_aim_min_speed, 0.f, 10.f * PI);
 
-	extern float g_ai_aim_min_angle;
-	CMD4(CCC_Float, "ai_aim_min_angle", &g_ai_aim_min_angle, 0.f, 10.f * PI);
+	//extern float g_ai_aim_min_angle;
+	//CMD4(CCC_Float, "ai_aim_min_angle", &g_ai_aim_min_angle, 0.f, 10.f * PI);
 
-	extern float g_ai_aim_max_angle;
-	CMD4(CCC_Float, "ai_aim_max_angle", &g_ai_aim_max_angle, 0.f, 10.f * PI);
+	//extern float g_ai_aim_max_angle;
+	//CMD4(CCC_Float, "ai_aim_max_angle", &g_ai_aim_max_angle, 0.f, 10.f * PI);
 
-#ifdef DEBUG
 	extern BOOL g_debug_doors;
 	CMD4(CCC_Integer, "ai_debug_doors", &g_debug_doors, 0, 1);
 #endif // #ifdef DEBUG
