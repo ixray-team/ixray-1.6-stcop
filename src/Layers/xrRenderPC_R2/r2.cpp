@@ -666,10 +666,21 @@ HRESULT	CRender::shader_compile			(
 	char sh_name[MAX_PATH] = "";
 	u32 len	= 0;
 
-	for(u32 i = 0; i < m_ShaderOptions.size(); ++i) {
-		defines[def_it++] = m_ShaderOptions[i];
+	for(auto& [Name, Value] : EngineExternal().ShadersOptions) {
+		defines[def_it++] = {
+			Name.c_str(),
+			Value.c_str()
+		};
 	}
-
+	
+	for(auto& [Name, Value] : m_ShaderOptions) 
+	{
+		defines[def_it++] = {
+			Name,
+			Value
+		};
+	}
+	
 	// options
 	const int m_skinning = Engine.External.GetSkinningMode();
 	{

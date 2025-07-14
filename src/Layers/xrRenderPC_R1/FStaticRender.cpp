@@ -832,6 +832,13 @@ HRESULT	CRender::shader_compile			(
 	char	sh_name[MAX_PATH] = "";
 	u32 len	= 0;
 
+	for (auto& [Name, Value] : EngineExternal().ShadersOptions) {
+		defines[def_it++] = {
+			Name.c_str(),
+			Value.c_str()
+		};
+	}
+
 	// options
 	if (o.forceskinw)		{
 		defines[def_it].Name		=	"SKIN_COLOR";
