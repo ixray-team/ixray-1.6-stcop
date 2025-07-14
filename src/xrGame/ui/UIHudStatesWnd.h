@@ -24,16 +24,12 @@ private:
 
 	CUIStatic*			m_back_v = nullptr;
 	CUIStatic*			m_back_over_arrow = nullptr;
-	CUIStatic*			m_static_armor = nullptr;
 	CUIStatic*			m_bleeding = nullptr;
 
 	CUIStatic*			m_resist_back[it_max];
 	CUIStatic*			m_indik[it_max];
 	CUIStatic*			m_ind_starvation = nullptr;
 	CUIStatic*			m_resist_back_starvation = nullptr;
-
-	CUITextWnd*			m_ui_weapon_sign_ammo = nullptr;
-	Frect				m_ui_weapon_icon_rect;
 
 	CUIProgressShape*	m_progress_self = nullptr;
 	CUIArrow*			m_arrow = nullptr;
