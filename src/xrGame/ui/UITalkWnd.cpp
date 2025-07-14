@@ -82,7 +82,16 @@ void CUITalkWnd::InitTalkDialog()
 	UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOurInvOwner);
 	UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
 
+	if (UITalkDialogWnd->UIDialogFrameTop)
+		UITalkDialogWnd->UIDialogFrameTop->SetText(m_pOthersInvOwner->Name());
+	else
+		UITalkDialogWnd->UIDialogFrame->UITitleText.SetText(m_pOthersInvOwner->Name());
 
+	if (UITalkDialogWnd->UIDialogFrameBottom)
+		UITalkDialogWnd->UIDialogFrameBottom->SetText(m_pOurInvOwner->Name());
+	else
+		UITalkDialogWnd->UIOurPhrasesFrame->UITitleText.SetText(m_pOurInvOwner->Name());
+	
 	//очистить лог сообщений
 	UITalkDialogWnd->ClearAll();
 
