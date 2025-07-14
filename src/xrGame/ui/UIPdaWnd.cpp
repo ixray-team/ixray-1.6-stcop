@@ -19,7 +19,7 @@
 #include "UIMainIngameWnd.h"
 #include "../../xrUI/Widgets/UITabButton.h"
 #include "../../xrUI/Widgets/UIAnimatedStatic.h"
-
+#include "UIEventsWnd.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/Widgets/UIHint.h"
 #include "../../xrUI/Widgets/UIBtnHint.h"
@@ -47,6 +47,7 @@ CUIPdaWnd::CUIPdaWnd()
 	pUIRankingWnd    = nullptr;
 	pUILogsWnd       = nullptr;
 	UIPdaContactsWnd = nullptr;
+	pUIEventsWnd       = nullptr;
 	m_hint_wnd       = nullptr;
 	m_caption		 = nullptr;
 	m_caption_const	 = "";
@@ -69,6 +70,7 @@ CUIPdaWnd::~CUIPdaWnd()
 	delete_data( UIPdaContactsWnd );
 	delete_data( pUIRankingWnd );
 	delete_data( pUILogsWnd );
+	delete_data( pUIEventsWnd );
 	delete_data( m_hint_wnd );
 	delete_data( UINoice );
 	delete_data( pUIEncyclopediaWnd );
@@ -152,6 +154,12 @@ void CUIPdaWnd::Init()
 		pUITaskWnd					= new CUITaskWnd();
 		pUITaskWnd->hint_wnd		= m_hint_wnd;
 		pUITaskWnd->Init			();
+	}
+
+	if (UITabControl->GetButtonById("eptQuests"))
+	{
+		pUIEventsWnd = new CUIEventsWnd();
+		pUIEventsWnd->Init();
 	}
 
 	if (UITabControl->GetButtonById("eptFractionWar"))
@@ -240,8 +248,16 @@ void CUIPdaWnd::Show(bool status)
 		
 		if (m_sActiveSection == nullptr || strcmp(m_sActiveSection.c_str(), "") == 0)
 		{
-			SetActiveSubdialog				("eptTasks");
-			UITabControl->SetActiveTab		("eptTasks");
+			if (UITabControl->GetButtonById("eptTasks"))
+			{
+				SetActiveSubdialog("eptTasks");
+				UITabControl->SetActiveTab("eptTasks");
+			}
+			else
+			{
+				SetActiveSubdialog("eptQuests");
+				UITabControl->SetActiveTab("eptQuests");
+			}
 		}
 		else
 			SetActiveSubdialog(m_sActiveSection);
@@ -252,7 +268,10 @@ void CUIPdaWnd::Show(bool status)
 		if (m_pActiveDialog)
 		{
 			m_pActiveDialog->Show				(false);
-			m_pActiveDialog = pUITaskWnd; //hack for script window
+			if (pUITaskWnd)
+				m_pActiveDialog = pUITaskWnd; //hack for script window
+			else
+				m_pActiveDialog = pUIEventsWnd;
 		}
 		g_btnHint->Discard					();
 		g_statHint->Discard					();
@@ -301,6 +320,10 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	if ( section == "eptTasks" )
 	{
 		m_pActiveDialog = pUITaskWnd;
+	}
+	else if (section == "eptQuests")
+	{
+		m_pActiveDialog = pUIEventsWnd;
 	}
 	else if ( section == "eptFractionWar" )
 	{
@@ -385,6 +408,9 @@ void CUIPdaWnd::SetActiveCaption()
 
 void CUIPdaWnd::Show_SecondTaskWnd( bool status )
 {
+	if (!pUITaskWnd)
+		return;
+
 	if ( status )
 	{
 		SetActiveSubdialog( "eptTasks" );
@@ -394,6 +420,9 @@ void CUIPdaWnd::Show_SecondTaskWnd( bool status )
 
 void CUIPdaWnd::Show_MapLegendWnd( bool status )
 {
+	if (!pUITaskWnd)
+		return;
+
 	if ( status )
 	{
 		SetActiveSubdialog( "eptTasks" );
@@ -470,6 +499,7 @@ void CUIPdaWnd::Reset()
 {
 	inherited::ResetAll		();
 
+	if ( pUIEventsWnd )		pUIEventsWnd->ResetAll();
 	if ( pUITaskWnd )		pUITaskWnd->ResetAll();
 	if ( pUIFactionWarWnd )	pUIFactionWarWnd->ResetAll();
 	if ( UIPdaContactsWnd )	UIPdaContactsWnd->ResetAll();
