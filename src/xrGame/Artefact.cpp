@@ -107,7 +107,7 @@ void CArtefact::Load(LPCSTR section)
 		m_ArtefactHitImmunities.LoadImmunities(pSettings->r_string(section,"hit_absorbation_sect"),pSettings);
 	}
 	m_bCanSpawnZone			= !!pSettings->line_exist("artefact_spawn_zones", section);
-	m_af_rank				= pSettings->r_u8(section, "af_rank");
+	m_af_rank				= READ_IF_EXISTS(pSettings, r_u8, section, "af_rank", 0);
 	m_additional_weight		= pSettings->r_float(section,"additional_inventory_weight");
 	m_fDegradationRate		= READ_IF_EXISTS(pSettings, r_float, section, "degrade_rate", 0.0f);
 }
