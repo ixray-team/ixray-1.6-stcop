@@ -122,18 +122,11 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 
 	Register					(&UIToTradeButton);
 	AddCallbackStr("question_item", LIST_ITEM_CLICKED, CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnQuestionClicked));
-
-	// XXX: Support stringized (trade_btn, upgrade_btn, exit_btn) callbacks
-	// To support it we just should check that it doesn't called twice
-	//AddCallbackStr("trade_btn", BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnTradeClicked));
 	AddCallback(&UIToTradeButton, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnTradeClicked));
-
-	//AddCallbackStr("upgrade_btn", BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnUpgradeClicked));
 
 	if (UIToExitButton)
 	{
 		AddCallback(UIToExitButton, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnExitClicked));
-		//AddCallbackStr("exit_btn", BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnExitClicked));
 	}
 }
 
