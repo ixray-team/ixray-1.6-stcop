@@ -1,0 +1,109 @@
+-- AGROPROM
+
+function proceed()
+    local actor = db.actor
+
+	
+
+	if actor:object("agr_nii_security_shedule_file") then
+		actor:give_info_portion("agr_nii_security_shedule_file_have")
+	-- gunslinger's flash
+    elseif actor:object("gunslinger_flash") then 
+        actor:give_info_portion("agr_find_ghost_start")
+        return true
+
+	end
+
+	
+end
+
+function process_info_portion(info_id)
+	if info_id == "agr_krot_secret_info" and
+	   not has_alife_info("agr_find_gunslinger_cache_start")
+	then
+
+		db.actor:give_info_portion("agr_find_gunslinger_cache_start")
+        db.actor:give_info_portion("agr_krot_task_complete")
+        db.actor:give_info_portion("agr_factory_spawn_spetsnaz")
+
+	end
+	if info_id == "agr_sold_about_ratcatcher" then
+		level_tasks.add_location(304, "crlc_mdl", "agr_swamp_hint")
+		return true
+-- Zaporozhets
+	elseif info_id == "agr_zaz_location" then
+		level_tasks.add_location(307, "crlc_small", "agr_zaz_hint")
+		return true
+
+	elseif info_id == "agr_zaz_found" then
+		level_tasks.remove_location(307, "crlc_small")
+		return true
+-- collector entrance
+	elseif info_id == "agr_collector_entrance_info" then
+		level_tasks.add_location(311, "crlc_small", "to_agroprom_underground")
+		level_tasks.add_location(312, "crlc_small", "to_agroprom_underground")
+		level_tasks.add_location(313, "crlc_small", "to_agroprom_underground")
+		level_tasks.add_location(314, "crlc_small", "to_agroprom_underground")
+		level_tasks.add_location(315, "crlc_small", "to_agroprom_underground")
+		level_tasks.add_location(316, "crlc_small", "to_agroprom_underground")
+		return true
+
+-- captains chamber
+	elseif info_id == "agr_captains_chamber_info" then
+		level_tasks.add_location(306, "crlc_small", "agr_captains_chamber_hint")
+		return true
+
+-- agroprom factory location
+	elseif info_id == "agr_factory_location" then
+		level_tasks.add_location(320, "crlc_big", "agr_factory_hint")
+		return true
+-- agroprom nii location
+	elseif info_id == "agr_nii_location" then
+		level_tasks.add_location(321, "crlc_big", "agr_nii_hint")
+		return true
+
+	end
+
+	return false
+end
+
+----------------------------------------------------------------------------------------------
+
+function have_quest_case_02(task, objective)
+	return db.actor:object("quest_case_02") ~= nil
+end
+
+function have_krots_flash(task, objective)
+    if db.actor:object("krot_flash") ~= nil then
+       db.actor:give_info_portion ("agr_krot_task_complete")
+       return true
+    end   
+	return false
+end
+
+function agr_trader_documents()
+	news_manager.send_tip( db.actor, "tips_agr_trader_documents", nil, "trader", nil )
+end
+
+function have_gunslingers_flash(task, objective)
+    if db.actor:object("gunslinger_flash") ~= nil then
+       -- db.actor:give_info_portion ("agr_find_gunslinger_cache_final")
+       return true
+    end
+    return false   
+end
+
+function ghost_tips ()
+	news_manager.send_tip( db.actor, "ghost_tips", nil, "prizrak", nil )
+	db.actor:give_info_portion ("agr_gunslinger_flash_have")
+end
+
+function agr_actor_enemy ()
+    if level_object_by_sid (302) ~= nil then
+		local actor = db.actor
+		local npc = level_object_by_sid (302)
+		local t = db.storage[npc:id()].death
+		return npc:relation(actor) == game_object.enemy or (t ~= nil and t.killer == actor:id())
+	end
+    return false
+end

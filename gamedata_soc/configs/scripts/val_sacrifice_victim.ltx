@@ -1,0 +1,62 @@
+[logic@val_sacrifice_victim]
+active          = walker@val_sacrifice_victim_wait
+on_death        = death@val_sacrifice_victim
+combat_ignore   = combat_ignore
+
+[death@val_sacrifice_victim]
+on_info     = %+val_sacrifice_victim_dead% ; +val_sacrifice_finish%
+;on_info2    = {=killed_by(404)} %=hit_npc(404:bip01_spine1:1:1000)%, {=killed_by(405)} %=hit_npc(405:bip01_spine1:1:1000)%
+
+;--------------------------------------------------------------------------
+; start
+;--------------------------------------------------------------------------
+[walker@val_sacrifice_victim_wait]
+path_walk           = victim_wait_walk
+path_look           = victim_wait_look
+on_info             = {+val_sacrifice_start} remark@val_sacrifice_victim_phrase1
+on_info2            = {+val_sacrifice_guard1_dead +val_sacrifice_guard2_dead} %+val_sacrifice_finish%
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; start
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_victim_wait]
+anim                = wait
+target              = 404
+on_info             = {+val_sacrifice_start} remark@val_sacrifice_victim_phrase1
+on_info2            = {+val_sacrifice_guard1_dead +val_sacrifice_guard2_dead} %+val_sacrifice_finish%
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; фраза: 
+; ждем на фразу 3 первого охранника
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_victim_phrase1]
+anim                = wait
+snd                 = speech
+target              = 404
+on_signal           = sound_end | %+val_sacrifice_victim_phrase1_end%
+on_info             = {+val_sacrifice_guard1_phrase3_end} remark@val_sacrifice_victim_phrase2
+on_info2            = {+val_sacrifice_guard1_dead +val_sacrifice_guard2_dead} %+val_sacrifice_finish%
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; фраза: 
+; ждем на фразу 3 первого охранника
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_victim_phrase2]
+anim                = wait_na
+snd                 = speech
+target              = 404
+on_info             = {+val_sacrifice_guard1_dead +val_sacrifice_guard2_dead} %+val_sacrifice_finish%
+on_signal           = sound_end | remark@val_sacrifice_victim_stay %+val_sacrifice_victim_phrase2_end%
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; wait for scene end
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_victim_stay]
+anim                = wait_na
+target              = 404
+on_info             = {+val_sacrifice_guard1_dead +val_sacrifice_guard2_dead} %+val_sacrifice_finish%
+combat_ignore_cond  = always

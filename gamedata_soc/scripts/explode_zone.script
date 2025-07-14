@@ -1,0 +1,78 @@
+zone = nil
+
+fuelcan = nil
+
+begin = nil
+item = nil
+
+function main()
+	printf("SCRIPT STARTED")
+	while true do
+		if zone == nil then
+		        zone = level.object("zone_explode")
+		       	zone:set_callback (this.zone_enter, true)
+		       	zone:set_callback (this.zone_exit, false)
+			printf("FOUND ZONE")
+		end
+
+
+		if fuelcan == nil then
+		        fuelcan = level.object("explosive_tank")
+			fuelcan:set_nonscript_usable(false)
+
+			fuelcan:set_tip_text("don't toch it's gonna blow")
+		       	fuelcan:set_use_callback (this.fuelcan_use)
+			printf("FOUND FUELCAN")
+		end
+
+
+
+		if item ~= nil and
+		   begin ~= nil
+		then
+			if time_global() - begin > 10*1000 then
+				item:explode(0)
+				item = nil
+			else
+				printf("Time %d of 10", (time_global() - begin)/1000)
+				result_text = string.format("blow up in %d seconds", (time_global() - begin)/1000)
+				item:set_tip_text(result_text)	
+
+			end
+		end
+		wait()
+	end
+end
+
+function zone_enter(zzone, obj)
+	printf("ENTER %s", obj:name())
+
+	if obj ~= nil and
+	   obj:clsid() == clsid.obj_explosive then
+		printf("BOMB")
+		item = obj
+		begin = time_global()	
+	end
+end
+function zone_exit(zzone, obj)
+	printf("EXIT %s", obj:name())
+end
+
+
+function fuelcan_use(usable_obj, who_use_obj)
+
+
+	if item ~= nil then
+		return
+	end
+
+
+	printf("USE %s", who_use_obj:name())
+
+	item = usable_obj
+	begin = time_global()	
+
+	-- usable_obj:set_nonscript_usable(true)
+	-- usable_obj:set_tip_text_default()
+	-- usable_obj:clear_use_callback()
+end

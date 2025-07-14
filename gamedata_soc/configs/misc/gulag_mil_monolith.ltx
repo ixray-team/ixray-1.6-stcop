@@ -1,0 +1,201 @@
+;-------------------------------------------------------------------------------
+; Гулаг монолита у выхода на Радар
+;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+; Common
+;-------------------------------------------------------------------------------
+[danger_condition@mil_monolith]
+ignore_distance = 0
+
+[c_ignore@mil_monolith]
+
+;-------------------------------------------------------------------------------
+; Soldier 1
+;-------------------------------------------------------------------------------
+[logic@mil_monolith_soldier1]
+active = camper@mil_monolith_soldier1
+combat_ignore = c_ignore@mil_monolith
+
+[camper@mil_monolith_soldier1]
+path_walk = walk1_1
+path_look = look1
+on_signal = arrive | walker3@mil_monolith_soldier1
+combat_ignore_cond = {=dist_to_actor_ge(40)}
+radius = 15
+no_retreat = true
+
+[walker3@mil_monolith_soldier1]
+path_walk = walk1_2
+path_look = look1
+on_signal = arrive | kamp1@mil_monolith_soldier1
+
+[kamp1@mil_monolith_soldier1]
+center_point = kamp1
+
+
+;-------------------------------------------------------------------------------
+; Soldier 2
+;-------------------------------------------------------------------------------
+[logic@mil_monolith_soldier2]
+active = camper@mil_monolith_soldier2
+combat_ignore = c_ignore@mil_monolith
+
+[camper@mil_monolith_soldier2]
+path_walk = walk2_1
+path_look = look1
+on_signal = arrive | walker3@mil_monolith_soldier2
+combat_ignore_cond = {=dist_to_actor_ge(40)}
+radius = 15
+no_retreat = true
+
+[walker3@mil_monolith_soldier2]
+path_walk = walk2_2
+path_look = look1
+on_signal = arrive | kamp1@mil_monolith_soldier2
+
+[kamp1@mil_monolith_soldier2]
+center_point = kamp1
+
+
+;-------------------------------------------------------------------------------
+; Soldier 3
+;-------------------------------------------------------------------------------
+[logic@mil_monolith_soldier3]
+active = camper@mil_monolith_soldier3
+combat_ignore = c_ignore@mil_monolith
+
+[camper@mil_monolith_soldier3]
+path_walk = walk3_1
+path_look = look1
+on_signal = arrive | walker3@mil_monolith_soldier3
+combat_ignore_cond = {=dist_to_actor_ge(40)}
+radius = 15
+no_retreat = true
+
+[walker3@mil_monolith_soldier3]
+path_walk = walk3_2
+path_look = look1
+on_signal = arrive | kamp1@mil_monolith_soldier3
+
+[kamp1@mil_monolith_soldier3]
+center_point = kamp1
+
+
+;-------------------------------------------------------------------------------
+; Soldier 4
+;-------------------------------------------------------------------------------
+[logic@mil_monolith_soldier4]
+active = camper@mil_monolith_soldier4
+combat_ignore = c_ignore@mil_monolith
+
+[camper@mil_monolith_soldier4]
+path_walk = walk4_1
+path_look = look1
+on_signal = arrive | walker3@mil_monolith_soldier4
+combat_ignore_cond = {=dist_to_actor_ge(40)}
+radius = 15
+no_retreat = true
+
+[walker3@mil_monolith_soldier4]
+path_walk = walk4_2
+path_look = look1
+on_signal = arrive | kamp1@mil_monolith_soldier4
+
+[kamp1@mil_monolith_soldier4]
+center_point = kamp2
+
+
+;-------------------------------------------------------------------------------
+; Soldier 5
+;-------------------------------------------------------------------------------
+[logic@mil_monolith_soldier5]
+active = camper@mil_monolith_soldier5
+combat_ignore = c_ignore@mil_monolith
+
+[camper@mil_monolith_soldier5]
+path_walk = walk5_1
+path_look = look1
+on_signal = arrive | walker3@mil_monolith_soldier5
+combat_ignore_cond = {=dist_to_actor_ge(40)}
+radius = 15
+no_retreat = true
+
+[walker3@mil_monolith_soldier5]
+path_walk = walk5_2
+path_look = look1
+on_signal = arrive | kamp1@mil_monolith_soldier5
+
+[kamp1@mil_monolith_soldier5]
+center_point = kamp2
+
+
+;-------------------------------------------------------------------------------
+; Soldier 6
+;-------------------------------------------------------------------------------
+[logic@mil_monolith_soldier6]
+active = camper@mil_monolith_soldier6
+combat_ignore = c_ignore@mil_monolith
+
+[camper@mil_monolith_soldier6]
+path_walk = walk6_1
+path_look = look1
+on_signal = arrive | walker3@mil_monolith_soldier6
+combat_ignore_cond = {=dist_to_actor_ge(40)}
+radius = 15
+no_retreat = true
+
+[walker3@mil_monolith_soldier6]
+path_walk = walk6_2
+path_look = look1
+on_signal = arrive | kamp1@mil_monolith_soldier6
+
+[kamp1@mil_monolith_soldier6]
+center_point = kamp2
+
+
+;-------------------------------------------------------------------------------
+; Soldier 7
+;-------------------------------------------------------------------------------
+[logic@mil_monolith_soldier7]
+active = camper@mil_monolith_soldier7
+combat_ignore = c_ignore@mil_monolith
+
+[camper@mil_monolith_soldier7]
+path_walk = walk7_1
+path_look = look1
+on_signal = arrive | walker3@mil_monolith_soldier7
+combat_ignore_cond = {=dist_to_actor_ge(40)}
+radius = 15
+no_retreat = true
+
+[walker3@mil_monolith_soldier7]
+path_walk = walk7_2
+path_look = look1
+on_signal = arrive | kamp1@mil_monolith_soldier7
+
+[kamp1@mil_monolith_soldier7]
+center_point = kamp3
+
+;-------------------------------------------------------------------------------
+; Soldier 8
+;-------------------------------------------------------------------------------
+[logic@mil_monolith_soldier8]
+active = camper@mil_monolith_soldier8
+combat_ignore = c_ignore@mil_monolith
+
+[camper@mil_monolith_soldier8]
+path_walk = walk8_1
+path_look = look1
+on_signal = arrive | walker3@mil_monolith_soldier8
+combat_ignore_cond = {=dist_to_actor_ge(40)}
+radius = 15
+no_retreat = true
+
+[walker3@mil_monolith_soldier8]
+path_walk = walk8_2
+path_look = look1
+on_signal = arrive | kamp1@mil_monolith_soldier8
+
+[kamp1@mil_monolith_soldier8]
+center_point = kamp3

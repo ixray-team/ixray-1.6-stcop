@@ -1,0 +1,166 @@
+[logic]
+active = walker@hold
+combat_ignore = combat_ignore
+on_death = death
+
+[walker@hold]
+path_walk = agr_krot_hold_fake_walk
+path_look = agr_krot_hold_fake_look
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+meet = meet@hold
+on_info = {!actor_enemy +agr_krot_skirmish_start} walker@combat
+on_info2 = {!actor_enemy +agr_help_stalkers_done} walker@hold2
+danger = danger_condition 
+
+[walker@hold2]
+path_walk = agr_krot_hold_fake_walk
+path_look = agr_krot_hold_fake_look
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+meet = meet@hold
+on_info = {!actor_enemy +agr_krot_skirmish_start} walker@combat
+on_timer   = 30000 |{!actor_enemy} %+agr_krot_skirmish_start%
+danger = danger_condition 
+
+[meet@hold]
+meet_state     = 0 | hide_na@speech1
+meet_state_wpn = 0 | hide_na@speech1
+victim = actor
+victim_wpn = actor
+use = true
+use_wpn = true
+meet_dialog = agr_krot_help
+
+[walker@combat]
+path_walk = agr_krot_hold_fake_walk
+path_look = agr_krot_hold_fake_look
+on_info   = {!actor_enemy =agr_factory_hold_inactive} %+agr_help_krot_done% walker@wait_after_hold
+;on_info   = {+agr_help_krot_done +agr_help_stalkers_done} walker@wait_after_hold, {+agr_help_krot_done +agr_help_stalkers_assault_dead} walker@wait_after_hold
+meet = meet@no_use
+;danger = {+agr_help_krot_done +agr_help_stalkers_assault_dead} danger_condition@combat
+danger = danger_condition 
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+on_actor_dist_le = 8 | {!actor_enemy} remark@hold2
+
+[remark@hold2]
+anim = guard
+snd = agr_krot_fear
+target = actor
+on_info = {=actor_enemy} walker@combat_2
+on_signal = sound_end | walker@combat_2
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+danger = danger_condition 
+
+[walker@combat_2]
+path_walk = agr_krot_hold_fake_walk
+path_look = agr_krot_hold_fake_look_2
+on_info   = {=agr_factory_hold_inactive !actor_enemy} %+agr_help_krot_done% walker@wait_after_hold
+meet = meet@no_use
+danger = danger_condition 
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+
+[walker@wait_after_hold]
+path_walk = agr_krot_hold_walk
+path_look = agr_krot_hold_look
+meet = no_meet
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+on_actor_dist_le_nvis = 5 |{!actor_enemy} %+agr_krot_met% remark@thank
+on_info = {=actor_enemy -agr_factory_spawn_spetsnaz} %+agr_factory_spawn_spetsnaz%
+danger = danger_condition 
+
+[meet@wait_after_hold]
+meet_state     = 10 | hello_wpn@talk_hello
+meet_state_wpn = 10 | hello_wpn@talk_hello
+victim = 10 | actor
+victim_wpn = 10 | actor
+use = false
+use_wpn = false
+
+[remark@thank]
+snd = speech
+on_signal = sound_end | %+agr_krot_go_to_well +agr_factory_spawn_spetsnaz% walker@go_to_well
+anim = guard
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+target = actor
+danger = danger_condition 
+on_info = {=actor_enemy} walker@wait_after_hold
+meet = no_meet
+
+[walker@go_to_well]
+path_walk = agr_krot_to_well_walk
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = well | {!actor_enemy} walker@well 
+danger = danger_condition
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+meet = no_meet
+
+
+[walker@well]
+path_walk = agr_krot_well_walk
+path_look = agr_krot_well_look
+meet = no_meet
+on_actor_dist_le = 5 |{!actor_enemy} remark@thanks_2 ;%+agr_find_gunslinger_cache_start%
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+danger = danger_condition 
+
+[remark@thanks_2]
+anim = guard
+snd =  agr_krot_thanks_2
+target = actor
+on_signal = sound_end | walker@well2 
+danger = danger_condition
+meet = no_meet
+combat_ignore_cond = always
+on_info = {=actor_enemy} walker@wait_after_hold
+
+[walker@well2]
+path_walk = agr_krot_well_walk
+path_look = agr_krot_well_look
+meet = meet@well
+on_info = {!actor_enemy +agr_find_gunslinger_cache_start} walker@well3
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+danger = danger_condition 
+
+[walker@well3]
+path_walk = agr_krot_well_walk
+path_look = agr_krot_well_look
+meet = meet@well2
+combat_ignore_cond = {!actor_enemy !fighting_actor}
+danger = danger_condition 
+
+[meet@well]
+meet_state 		= 30|hello@wait|15|wait@wait|5|wait
+meet_state_wpn 	= 30|hello@wait|15|wait@wait|5|wait
+victim = 30 | actor
+victim_wpn = 30 | actor
+use = true
+use_wpn = true
+meet_dialog = agr_factory_krot_start
+
+[meet@well2]
+meet_state 		= 30|hello@wait|15|wait@wait|5|wait
+meet_state_wpn 	= 30|hello@wait|15|wait@wait|5|wait
+victim = 30 | actor
+victim_wpn = 30 | actor
+use = true
+use_wpn = true
+
+[meet@no_use]
+use = false
+use_wpn = false
+abuse = false
+
+[death]
+on_info = %+agr_krot_dead +sar2_death_19%
+
+[known_info]
+agr_krot_secret_info
+
+[danger_condition]
+ignore_distance = 0
+
+[danger_condition@combat]
+danger_expiration_time = 9000
+danger_inertion_time   = 9000
+ignore_distance_corpse = 0

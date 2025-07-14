@@ -1,0 +1,443 @@
+local t = {}
+
+function load_job(sj, gname, type, squad, groups)
+	-- Yantar Zombies
+	if type == "yantar_zombies" then
+		t = { section = "logic@yantar_zombies_kamp1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp1",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp1",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp1",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+
+		t = { section = "logic@yantar_zombies_kamp2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp2",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp2",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp2",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp3",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+
+		t = { section = "logic@yantar_zombies_kamp4",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp4",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp4",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp4",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_kamp4",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+
+
+
+		t = { section = "logic@yantar_zombies_walker",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_walker",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_walker",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_walker",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yantar_zombies_walker",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+	end
+	-- Yantar scientist
+	if type == "yan_scientist" then
+		t = { section = "logic@scientist_offline",
+			idle = 0,
+            online = false,
+			prior = 9, state = {0,1,2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 900
+						 end
+        }
+		table.insert(sj, t)	
+		t = { section = "logic@scientist_offline",
+			idle = 0,
+            online = false,
+			prior = 9, state = {3,4,5}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 905
+						 end
+        }
+		table.insert(sj, t)	
+        t = { section = "logic@scientist_out_rest",
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 905
+						 end
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@scientist_not_in_rest",
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[2],
+		    online = true,
+			in_rest = "yantar_bunker_space_restrictor", out_rest = "",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 905
+						 end
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@scientist_return_out_rest",
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 905
+						 end
+		}
+		table.insert(sj, t)
+        t = { section = "logic@scientist_out_rest",
+			idle = 0,
+			prior = 5, state = {3}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 900
+						 end
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@scientist_not_in_rest",
+			idle = 0,
+			prior = 5, state = {4}, squad = squad, group = groups[2],
+		    online = true,
+			in_rest = "yantar_bunker_space_restrictor", out_rest = "",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 900
+						 end
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@scientist_return_out_rest",
+			idle = 0,
+			prior = 5, state = {5}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 900
+						 end
+		}
+		table.insert(sj, t)
+	end
+	if type == "yan_tonnel_snorks" then
+		t = { section = "logic@yan_tonnel_snork_home_1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@yan_tonnel_snork_home_1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yan_tonnel_snork_home_1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@yan_tonnel_snork_home_1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@yan_tonnel_snork_home_2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yan_tonnel_snork_home_2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@yan_tonnel_snork_home_2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@yan_tonnel_snork_home_2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yan_tonnel_snork_home_2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@yan_tonnel_snork_home_3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@yan_tonnel_snork_home_3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yan_tonnel_snork_home_3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@yan_tonnel_snork_home_3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@yan_tonnel_snork_home_3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@yan_tonnel_snork_home_3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+
+end
+
+function load_states(gname, type)
+    if type == "yantar_zombies" then
+		return function(gulag)
+			return 0
+		end
+    end
+    if type == "yan_scientist" then
+		return function(gulag)
+			local t
+
+			if 	has_alife_info("bar_heli_scene_professor_die") then
+				t = 0
+			else
+				t = 3
+			end
+
+			if has_alife_info("yan_scientist_gulag_state_2") then 
+				return t+1
+			end
+			if has_alife_info("yan_scientist_gulag_state_3") then 
+				return t+2
+			end
+			
+			return t
+		end
+    end
+	
+	if type == "yan_tonnel_snorks" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+end
+
+
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	return nil
+end
+
+function checkStalker(npc_community, gulag_type)
+	if gulag_type == "yantar_zombies" then
+		return npc_community == "zombied"
+	end
+	if gulag_type == "yan_scientist" then
+		return npc_community == "ecolog"
+	end
+
+	return false
+end
+
+
+function checkMonster(npc_community, gulag_type)
+	if gulag_type == "yan_tonnel_snorks" then 
+		return npc_community == "snork"
+	end
+
+	return false
+end

@@ -1,0 +1,78 @@
+	<string id="agr_find_ghost">
+		<text>Узнать о судьбе Призрака</text>
+	</string>
+	<string id="agr_gunslinger_cache">
+		<text>Тайник Стрелка</text>
+	</string>
+	<string id="agr_help_krot">
+		<text>Спасти Крота</text>
+	</string>
+	<string id="agr_help_krot_0">
+		<text>Помочь Кроту отбиться от военных</text>
+	</string>
+	<string id="agr_help_krot_1">
+		<text>Уничтожить военных</text>
+	</string>
+	<string id="agr_help_krot_2">
+		<text>Спасти Крота</text>
+	</string>
+	<string id="agr_help_stalkers">
+		<text>Помочь сталкерам</text>
+	</string>
+	<string id="agr_help_stalkers_0">
+		<text>Помочь сталкерам отбиться от военных</text>
+	</string>
+	<string id="agr_help_stalkers_1">
+		<text>Уничтожить военных</text>
+	</string>
+	<string id="agr_help_stalkers_2">
+		<text>Помочь сталкерам отбиться от военных</text>
+	</string>
+	<string id="agr_krot">
+		<text>Встретиться со сталкерами</text>
+	</string>
+	<string id="agr_meet_krot_band">
+		<text>Получить информацию о Стрелке</text>
+	</string>
+	<string id="agr_meet_krot_band_0">
+		<text>Получить от Крота информацию</text>
+	</string>
+	<string id="agr_meet_krot_band_1">
+		<text>Встретиться с группировкой Крота</text>
+	</string>
+	<string id="agr_meet_krot_band_2">
+		<text>Получить информацию от Крота</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache">
+		<text>Найти тайник группировки Стрелка</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache_0">
+		<text>Найти тайник группировки Стрелка.</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache_1">
+		<text>Найти тайник</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache_2">
+		<text>Найти в тайнике информацию о Стрелке</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache_3">
+		<text>Выбраться из подземелья</text>
+	</string>
+	<string id="agroprom_find_stalker_phantom">
+		<text>Найти Призрака</text>
+	</string>
+	<string id="agroprom_find_stalker_phantom_0">
+		<text>Призрак знает где Стрелок.</text>
+	</string>
+	<string id="agroprom_get_military_documents">
+		<text>Найти документы военных</text>
+	</string>
+	<string id="agroprom_get_military_documents_0">
+		<text>НИИ Агропром</text>
+	</string>
+	<string id="agroprom_get_military_documents_1">
+		<text>Выкрасть военные документы</text>
+	</string>
+	<string id="agroprom_get_military_documents_2">
+		<text>Отнести документы бармену</text>
+	</string>

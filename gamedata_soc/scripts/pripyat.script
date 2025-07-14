@@ -1,0 +1,178 @@
+-----------------------------------------------------------------------------------
+-- Test Definitions
+-----------------------------------------------------------------------------------
+local object_list		= {}
+local smart_terrains	= {}
+
+object_list["test1"] = {
+    "pri_followers_stalker3",
+    "pri_followers_stalker2",
+    "pri_followers_stalker1",
+    "pri_followers_leader",
+    "pri_wave1_monolith1",
+    "pri_wave1_monolith4",
+    "pri_wave1_monolith3",
+    "pri_wave1_monolith2",
+    "pri_followers_bomber",
+    "pri_wave2_monolith1",
+    "pri_wave2_monolith2",
+    "pri_wave2_monolith3",
+    "pri_wave2_monolith4",
+    "pri_wave2_monolith5",
+    "pri_wave2_monolith6",
+    "pri_wave4_monolith1",
+    "pri_wave4_monolith2",
+    "pri_wave4_monolith4",
+    "pri_wave4_monolith3",
+    "pri_wave4_monolith5",
+    "pri_wave5_monolith3",
+    "pri_wave5_monolith4",
+    "pri_wave5_monolith1",
+    "pri_wave5_monolith2",
+    "pri_sideway_left_kamp_monolith1",
+    "pri_sideway_left_kamp_monolith2",
+    "pri_sideway_left_kamp_monolith3",
+    "pri_sideway_left_kamp_monolith4",
+    "pri_dog_strong_0005",
+    "pri_dog_strong_0006",
+    "pri_dog_strong_0007",
+    "pri_dog_strong_0008",
+    "pri_dog_strong_0009",
+    "pri_dog_strong_0010",
+    "pri_dog_strong_0011",
+    "pri_dog_strong_0013",
+    "pri_wave6_monolith2",
+    "pri_wave6_monolith3",
+    "pri_wave2_monolith7",
+    "pri_wave2_monolith8",
+    "pri_wave2_monolith9",
+    "pri_wave4_monolith6",
+    "pri_wave7_monolith1",
+    "pri_wave7_monolith2",
+    "pri_wave7_monolith3",
+    "pri_wave7_monolith4",
+    "pri_wave7_monolith5",
+    "pri_wave7_monolith6",
+    "pri_wave7_monolith7",
+    "pri_corner_monolith2",
+    "pri_corner_monolith3",
+    "pri_corner_monolith1",
+    "pri_stalker_zombied1",
+    "pri_stalker_zombied2",
+    "pri_stalker_zombied3",
+    "pri_stalker_zombied4",
+    "pri_stalker_zombied5",
+    "pri_stalker_zombied6",
+    "pri_stalker_zombied7",
+    "pri_controller1",
+    "pri_controller2",
+    "pri_controller3",
+    "pri_soldier_suicide1",
+    "pri_soldier_suicide2",
+    "pri_gigant1",
+    "pri_gigant2",
+    "pri_gigant3",
+    "pri_gigant4",
+    "pri_gigant5",
+    "pri_gigant6",
+    "pri_gigant7",
+    "pri_monolith_roof",
+    "pri_monolith_01",
+    "pri_monolith_02",
+    "pri_monolith_03",
+    "pri_monolith_04",
+    "pri_monolith_08",
+    "pri_monolith_07",
+    "pri_monolith_06",
+    "pri_monolith_05",
+    "pri_monolith_09",
+    "pri_monolith_10",
+    "pri_monolith_11",
+    "pri_monolith_12",
+    "pri_monolith_13",
+    "pri_monolith_14",
+    "pri_monolith_15",
+    "pri_monolith_16",
+    "pri_monolith_17",
+    "pri_monolith_18",
+    "pri_monolith_19",
+    "pri_monolith_20",
+    "pri_monolith_21",
+    "pri_monolith_22",
+    "pri_monolith_23",
+    "pri_monolith_24",
+    "pri_monolith_25",
+    "pri_monolith_26",
+    "pri_monolith_27",
+    "pri_monolith_balcony_sniper1",
+    "pri_monolith_balcony_sniper2",
+    "pri_wave4_monolith8",
+
+   -- "pri_snork_strong_0000",
+    "pri_snork_strong_0001",
+    "pri_snork_strong_0002",
+    "pri_snork_strong_0003",
+    "pri_snork_strong_0004",
+    "pri_snork_strong_0005",
+    "pri_snork_strong_0006",
+    "pri_snork_strong_0007",
+    "pri_snork_strong_0008",
+    "pri_snork_strong_0009",
+    "pri_snork_strong_0010",
+    "pri_snork_strong_0011",
+    "pri_snork_strong_0012",
+    "pri_snork_strong_0013",
+    "pri_snork_strong_0014",
+    "pri_m_tushkano_e",
+    "pri_m_tushkano_e_0000",
+    "pri_m_tushkano_e_0001",
+    "pri_m_tushkano_e_0002",
+    "pri_m_tushkano_e_0003",
+    "pri_m_tushkano_e_0004",
+    "pri_m_tushkano_e_0005",
+    "pri_m_tushkano_e_0006",
+    "pri_m_tushkano_e_0007",
+    "pri_m_tushkano_e_0008",
+    "pri_m_tushkano_e_0009",
+    "pri_m_tushkano_e_0010",
+    "pri_m_tushkano_e_0011",
+    "pri_m_tushkano_e_0012",
+    "pri_m_tushkano_e_0013",
+    "pri_m_tushkano_e_0014"
+}
+
+
+-- define all smart terrains
+smart_terrains["test1"] = {
+    "pri_followers",
+    "pri_ambush7",
+    "pri_zombied",
+    "pri_monolith",
+    "pri_stadium",
+    "pri_snork_nest1",
+    "pri_snork_nest2"
+}
+
+------------------------------------------------------------------------------
+object_list["test2"] = {
+    --"pri_snork_strong"
+}
+
+smart_terrains["test2"] = {
+}
+
+------------------------------------------------------------------------------
+-- Base Run function (load extern)
+------------------------------------------------------------------------------
+function r(index)
+	test_utils.setup_test(object_list, smart_terrains)
+	test_utils.run_test(index)
+end
+
+------------------------------------------------------------------------------
+-- Main function (called on level load)
+------------------------------------------------------------------------------
+function main()
+	test_utils.setup_test(object_list, smart_terrains)
+	test_utils.run_global()
+end

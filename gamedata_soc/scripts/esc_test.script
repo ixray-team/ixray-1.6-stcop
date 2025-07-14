@@ -1,0 +1,179 @@
+-----------------------------------------------------------------------------------
+-- Test Definitions
+-----------------------------------------------------------------------------------
+local object_list		= {}
+local smart_terrains	= {}
+
+-- 1
+object_list["test1"] = {
+	"esc_suicidal_flesh",
+	"esc_lager1",
+	"esc_lager2",
+	"esc_lager3",
+	"esc_lager4",
+	"esc_lager5",
+	"esc_lager6",
+	"esc_lager7",
+	"esc_wolf",
+	"esc_vagon_newbie1",
+	"esc_vagon_newbie2",
+	"esc_vagon_wounded",
+	"esc_bd__m_dog_e_0008",
+	"esc_bd_m_dog_e_0009",
+	"esc_bd__m_dog_e_0010",
+	"esc_bd__m_dog_e_0011",
+	"esc_bd__m_dog_e_0012",
+	"esc_bd__m_dog_e_0013",
+	"esc_bd__m_boar_e_0006",
+	"esc_bd__m_boar_e_0007",
+	"esc_bd__m_boar_e_0008",
+	"esc_novice_attacker1",
+	"esc_novice_attacker2",
+	"esc_novice_attacker3",
+	"esc_factory_bandit1",
+	"esc_factory_bandit2",
+	"esc_factory_bandit3",
+	"esc_factory_bandit6",
+	"esc_factory_bandit5",
+	"esc_factory_bandit4",
+	"esc_factory_bandit_camper",
+	"esc_gar_bandit1",
+	"esc_gar_bandit2",
+	"esc_fox",
+	"esc_bridge_soldier1",
+	"esc_bridge_soldier2",
+	"esc_bridge_soldier3",
+	"esc_bridge_soldier4",
+	"esc_bridge_soldier5",
+	"esc_dog_weak",
+	"esc_dog_weak_0000",
+	"esc_dog_weak_0001",
+	"esc_dog_weak_0002",
+	"esc_dog_weak_0003",
+	"esc_dog_weak_0004",
+	"esc_dog_weak_0005",
+	"esc_dog_weak_0006",
+	"esc_dog_weak_0007",
+	"esc_dog_weak_0008",
+	"esc_stalker_0006",
+	"esc_specnaz1",
+	"esc_specnaz2",
+	"esc_specnaz3",
+	"esc_specnaz4",
+	"esc_specnaz5",
+	"esc_specnaz6",
+	"esc_blokpost_soldier1",
+	"esc_blokpost_soldier2",
+	"esc_blokpost_soldier3",
+	"esc_blokpost_soldier4",
+	"esc_blokpost_soldier5",
+	"esc_blokpost_soldier6",
+	"esc_blokpost_soldier7",
+	"esc_blokpost_soldier8",
+	"esc_blokpost_soldier9",
+	"esc_blokpost_soldier10",
+	"esc_stalker_fanat",
+	"esc_killer1",
+	"esc_killer2",
+	"esc_killer3",
+	"esc_killer4",
+	"esc_killer6",
+	"esc_killer7",
+	"esc_killer8",
+	"esc_stalker_corpse",
+	"esc_stalker",
+	"esc_stalker_0000",
+	"esc_zombie_normal",
+	"esc_zombie_normal_0000",
+	"esc_zombie_normal_0001",
+	"esc_zombie_normal_0002",
+	"esc_zombie_normal_0003",
+	"esc_zombie_normal_0004",
+	"esc_zombie_normal_0005",
+	"esc_zombie_normal_0006",
+	"esc_zombie_normal_0007",
+	"esc_flesh_normal",
+	"esc_flesh_normal_0007",
+	"esc_zombie_normal_0008",
+	"esc_zombie_normal_0009",
+	"esc_zombie_normal_0010",
+	"esc_zombie_normal_0011",
+	"esc_zombie_normal_0012",
+	"esc_zombie_normal_0013",
+	"esc_zombie_normal_0014",
+	"esc_zombie_normal_0015",
+	"esc_zombie_normal_0016",
+	"esc_zombie_normal_0017",
+	"esc_zombie_normal_0018",
+	"esc_zombie_normal_0019",
+	"esc_zombie_normal_0020",
+	"esc_zombie_normal_0021",
+	"esc_zombie_normal_0022",
+	"esc_zombie_normal_0023",
+	"esc_zombie_normal_0024",
+	"esc_zombie_normal_0025",
+	"esc_zombie_normal_0026",
+	"esc_zombie_normal_0027",
+	"esc_stalker_0001",
+	"esc_zombie_normal_0028",
+	"esc_zombie_normal_0029",
+	"esc_zombie_normal_0030",
+	"esc_zombie_normal_0031",
+	"esc_zombie_normal_0032",
+	"esc_zombie_normal_0033",
+	"esc_zombie_normal_0034",
+	"esc_flesh_normal_0000",
+	"esc_flesh_normal_0001",
+	"esc_flesh_normal_0002",
+	"esc_flesh_normal_0003",
+	"esc_flesh_normal_0004",
+	"esc_flesh_normal_0005",
+	"esc_flesh_normal_0006",
+	"esc_flesh_normal_0008"
+}
+
+
+-- define smart terrains
+smart_terrains["test1"] = {
+	"esc_blokpost",
+	"esc_bridge",
+	"esc_dogs_to_fox",
+	"esc_fabrika_bandit",
+	"esc_killers",
+	"esc_lager",
+	"esc_specnaz"
+}
+
+object_list["test2"] = {
+	"esc_dog_swarm_0000",
+	"esc_dog_swarm_0001",
+	"esc_dog_swarm_0002",
+	"esc_dog_swarm_0003",
+	"esc_dog_swarm_0004",
+	"esc_dog_swarm_0005",
+	"esc_dog_swarm_0006",
+	"esc_dog_swarm_0007",
+	"esc_dog_swarm_0008",
+	"esc_dog_swarm_0009"
+}
+
+-- define smart terrains
+smart_terrains["test2"] = {
+	"esc_dogs_swarm"
+}
+
+------------------------------------------------------------------------------
+-- Base Run function (load extern)
+------------------------------------------------------------------------------
+function r(index)
+	test_utils.setup_test(object_list, smart_terrains)
+	test_utils.run_test(index)
+end
+
+------------------------------------------------------------------------------
+-- Main function (called on level load)
+------------------------------------------------------------------------------
+function main()
+	test_utils.setup_test(object_list, smart_terrains)
+	test_utils.run_global()
+end

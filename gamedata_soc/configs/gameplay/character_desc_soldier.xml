@@ -1,0 +1,632 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+
+<!---------------------------SOLDIER COMMANDER----------------------->
+	<specific_character id="soldier_commander1" team_default = "1">
+		<name>Командир</name>
+		<icon x="6" y="2"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Детальная информация отсутствует.</bio>
+
+		<class>Soldier_commander</class>
+		<community>military</community>
+		
+		<rank>60</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_beret_1</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pbp = 1 \n
+			wpn_ak74u \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>	
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_commander2" team_default = "1">
+		<name>Командир</name>
+		<icon x="6" y="2"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Детальная информация отсутствует.</bio>
+
+		<class>Soldier_commander</class>
+		<community>military</community>
+		
+		<rank>60</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_beret_2</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pbp = 1 \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_commander3" team_default = "1">
+		<name>Командир</name>
+		<icon x="6" y="2"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Детальная информация отсутствует.</bio>
+
+		<class>Soldier_commander</class>
+		<community>military</community>
+		
+		<rank>60</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_beret_3</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pbp = 1 \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+<!---------------------------SOLDIER PRIVATE----------------------->
+	<specific_character id="soldier_regular_default1" team_default = "1">
+		<name>Рядовой солдат</name>
+		<icon x="12" y="2"></icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>Рядовой солдат. Детальная информация отсутствует.</bio>
+
+		<team>Soldier_regular</team>
+		
+		<class>Soldier_regular</class>
+		<community>military</community>
+		
+		<rank>30</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_bandana</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pbp = 1 \n
+			wpn_ak74u \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>	
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_regular_default2" team_default = "1">
+		<name>Рядовой солдат</name>
+		<icon x="12" y="2"></icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>Рядовой солдат. Детальная информация отсутствует.</bio>
+
+		<team>Soldier_regular</team>
+		
+		<class>Soldier_regular</class>
+		<community>military</community>
+		
+		<rank>30</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_bandana_1</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pbp = 1 \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_regular_default3" team_default = "1">
+		<name>Рядовой солдат</name>
+		<icon x="12" y="2"></icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>Рядовой солдат. Детальная информация отсутствует.</bio>
+
+		<team>Soldier_regular</team>
+		
+		<class>Soldier_regular</class>
+		<community>military</community>
+		
+		<rank>30</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_bandana_2</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pbp = 1 \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_regular_default4" team_default = "1">
+		<name>Рядовой солдат</name>
+		<icon x="12" y="2"></icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>Рядовой солдат. Детальная информация отсутствует..</bio>
+
+		<team>Soldier_regular</team>
+		
+		<class>Soldier_regular</class>
+		<community>military</community>
+		
+		<rank>30</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_bandana_3</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pbp = 1 \n
+			wpn_ak74 \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_regular_default5" team_default = "1">
+		<name>Рядовой солдат</name>
+		<icon x="12" y="2"></icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>Рядовой солдат. Детальная информация отсутствует.</bio>
+
+		<team>Soldier_regular</team>
+		
+		<class>Soldier_regular</class>
+		<community>military</community>
+		
+		<rank>30</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_bandana_4</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pbp = 1 \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+<!---------------------------SOLDIER SNIPER---------------------->
+	<specific_character id="soldier_sniper_default1" team_default = "1">
+		<name>Рядовой солдат</name>
+		<icon x="12" y="2"></icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>Рядовой солдат. Детальная информация отсутствует.</bio>
+
+		<team>Soldier_sniper</team>
+		
+		<class>Soldier_sniper</class>
+		<community>military</community>
+		
+		<rank>60</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_obichniy</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pbp = 1 \n
+			wpn_svu \n
+			ammo_7.62x54_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_sniper_default2" team_default = "1">
+		<name>Рядовой солдат</name>
+		<icon x="12" y="2"></icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>Рядовой солдат. Детальная информация отсутствует.</bio>
+
+		<team>Soldier_sniper</team>
+		
+		<class>Soldier_sniper</class>
+		<community>military</community>
+	
+		<rank>60</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_bandana</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pbp = 1 \n
+			wpn_svu \n
+			ammo_7.62x54_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+			</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_sniper_default3" team_default = "1">
+		<name>Рядовой солдат</name>
+		<icon x="12" y="2"></icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>Рядовой солдат. Детальная информация отсутствует.</bio>
+
+		<team>Soldier_sniper</team>
+		
+		<class>Soldier_sniper</class>
+		<community>military</community>
+		
+		<rank>60</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_bandana_6</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pbp = 1 \n
+			wpn_svd \n
+			ammo_7.62x54_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+			</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>	
+	
+<!---------------------------SOLDIER SPECNAZ---------------------->
+	<specific_character id="soldier_specnaz_default1" team_default = "1">
+		<name>Неизвестный военный</name>
+		<icon x="14" y="2"></icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio>Армейский спецназ. Хорошо экипирован. Детальная информация недоступна.</bio>
+
+		<team>Soldier_specnaz</team>
+		
+		<class>Soldier_specnaz</class>
+		<community>military</community>
+		
+		<rank>80</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_spetsnaz</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pbp = 1 \n
+			wpn_vintorez \n
+			ammo_9x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_specnaz_default2" team_default = "1">
+		<name>Неизвестный военный</name>
+		<icon x="14" y="2"></icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio>Армейский спецназ. Хорошо экипирован. Детальная информация недоступна.</bio>
+
+		<team>Soldier_specnaz</team>
+		
+		<class>Soldier_specnaz</class>
+		<community>military</community>
+		
+		<rank>80</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_spetsnaz</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pbp = 1 \n
+			wpn_val \n
+			ammo_9x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+	
+		<specific_character id="soldier_specnaz_default3" team_default = "1">
+		<name>Неизвестный военный</name>
+		<icon x="14" y="2"></icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio>Армейский спецназ. Хорошо экипирован. Детальная информация недоступна.</bio>
+
+		<team>Soldier_specnaz</team>
+		
+		<class>Soldier_specnaz</class>
+		<community>military</community>
+		
+		<rank>80</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\soldier\soldier_antigas</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pbp = 1 \n
+			wpn_abakan = 1, scope launcher cond=0.9 \n
+	    	ammo_5.45x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+	
+<!---------------------------SOLDIER MASTER----------------------->
+	<specific_character id="soldier_military_default" team_default = "1">
+		<name>Неизвестный солдат</name>
+		<icon x="6" y="4"></icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio> Военный сталкер. Хорошо вооружен и очень опасен.
+		Детальная информация недоступна.</bio>
+
+		<team>Soldier_military</team>
+		
+		<class>Soldier_military</class>
+		<community>military</community>
+		
+		<rank>90</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\militari\stalker_militari_1</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 1 \n
+			wpn_groza = 1, scope launcher cond=0.9 \n
+			ammo_9x39_sp5 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_military_default2" team_default = "1">
+		<name>Неизвестный солдат</name>
+		<icon x="6" y="4"></icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio>Военный сталкер-ветеран. Очень хорошо вооружен, защищен и очень опасен.
+		Детальная информация недоступна.</bio>
+
+		<team>Soldier_military</team>
+		
+		<class>Soldier_military</class>
+		<community>military</community>
+		
+		<rank>90</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\militari\stalker_militari_2</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_usp \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_val \n
+			ammo_9x39_sp5 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="soldier_military_default3" team_default = "1">
+		<name>Неизвестный солдат</name>
+		<icon x="6" y="4"></icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio>Военный сталкер-ветеран. Очень хорошо вооружен, защищен и очень опасен.
+		Детальная информация недоступна..</bio>
+
+		<team>Soldier_military</team>
+		
+		<class>Soldier_military</class>
+		<community>military</community>
+		
+		<rank>90</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\militari\stalker_militari_antigas_2</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_usp \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_vintorez \n
+			ammo_9x39_sp5 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+<specific_character id="soldier_military_default4" team_default = "1">
+		<name>Неизвестный солдат</name>
+		<icon x="6" y="4"></icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio>Военный сталкер. Очень хорошо вооружен, защищен и очень опасен.
+		Детальная информация недоступна.</bio>
+
+		<team>Soldier_military</team>
+		
+		<class>Soldier_military</class>
+		<community>military</community>
+		
+		<rank>90</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\militari\stalker_militari_antigas_1</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_usp \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_val \n
+			ammo_9x39_sp5 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+<!--
+	<specific_character id="soldier_default" team_default = "1">
+		<name>Неизвестный военный.</name>
+		<icon x="0" y="9"></icon>
+		<map_icon x="0" y="4"></map_icon>
+		<bio>Один из бесчисленного количества военных, отправленных охранять Зону.</bio>
+
+		<team>Soldier</team>
+		<rank>50</rank>
+		<reputation>50</reputation>
+	</specific_character>
+	
+	<specific_character id="stalker_steck">
+		<name>Стек</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Кузин Васька Степанович, или попросту Стек, во
+		время взрыва станции проходил срочную службу недалеко от Чернобыля.Во время 
+		отселения остался на отчужденной территории, как сам теперь говорит «по глупости». 
+		Когда появились первые признаки аномальной природы зоны – Стек стал считать себя 
+		защитником Земли, и всеми силами боролся против Зоны.</bio>
+
+		<team>Stalker</team>
+		<rank>60</rank>
+		<reputation>70</reputation>
+
+		<visual>actors\soldier\soldier_bandana_3</visual>
+				
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_sokol">
+		<name>Алекс "Сокол" Соколов</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Необычайно спокойный. Никогда не обвинит кого-то, пока не
+		будет точно уверен в происшедшем. Ненавидит драки, предпочитает выяснять
+		отношения без применения силовых методов. Всегда уверен в себе. Не любит
+		находиться в центре внимания. Проходил подготовку в антитеррористической группе
+		«СОБР».</bio>
+
+		<team>Stalker</team>
+		<rank>50</rank>
+		<reputation>80</reputation>
+
+		<visual>actors\soldier\soldier_bandana_6</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+
+<!---------------------------SOLDIER SPECNAZ AES---------------------->
+	<specific_character id="soldier_specnaz_aes" team_default = "1">
+		<name>Неизвестный военный</name>
+		<icon x="14" y="2"></icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio>Армейский спецназ. Хорошо экипирован. Детальная информация недоступна.</bio>
+
+		<team>Soldier_specnaz</team>
+		
+		<class>Soldier_specnaz_aes</class>
+		<community>military</community>
+		
+		<rank>80</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\militari\stalker_militari_antigas_2</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pbp = 1 \n
+			wpn_abakan = 1, scope launcher cond=0.9 \n
+	    	ammo_5.45x39_ap = 1 \n
+			device_torch \n
+		</supplies>		
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	-->
+</xml>

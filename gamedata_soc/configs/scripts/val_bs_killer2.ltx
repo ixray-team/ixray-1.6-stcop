@@ -1,0 +1,17 @@
+[logic]
+active = camper1
+combat_ignore = combat_ignore
+
+[combat_ignore]
+
+[camper1]
+radius = 0
+path_walk = val_bs_killer2_walk
+path_look = val_bs_killer2_look
+on_info = {+val_bs_victim_killed} walker1
+combat_ignore_cond = {=check_fighting(403)}, {=check_fighting(401) -val_sacrifice_victim_free}
+
+[walker1]
+path_walk = val_bs_killer2_leave_walk
+path_look = val_bs_killer2_leave_look
+combat_ignore_cond = {=check_fighting(403)}, {=check_fighting(401) -val_sacrifice_victim_free}

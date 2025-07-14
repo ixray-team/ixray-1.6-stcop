@@ -1,0 +1,15 @@
+    <article id="sar_command_center_info" name="sar_monolith_destroy" article_type="task" group="sar_monolith_destroy/0">
+        <text>sar_command_center_text</text>
+    </article>
+
+	<article id="sar_monolith_call_info" name="sar_monolith" article_type="task" group="sar_monolith/0">
+        <text>sar_monolith_call_text</text>
+    </article>
+    
+    <article id="zones_mystery" name="sar_warlab" article_type="task" group="sar_warlab">
+        <text>zones_mystery_text</text>
+    </article>
+    
+    <article id="sar_secret_lab_info" name="sar_secret_lab" article_type="task" group="sar_secret_lab">
+        <text>sar_secret_lab_text</text>
+    </article>

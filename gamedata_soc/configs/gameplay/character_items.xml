@@ -1,0 +1,3 @@
+harmonica_a = 1, prob=0.7 \n
+guitar_a = 1, prob=0.7 \n
+device_torch = 1, prob=0.5 \n

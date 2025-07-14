@@ -1,0 +1,2119 @@
+;*****************************************************************
+; Bar visitor
+;*****************************************************************
+[danger@bar_inside]
+ignore_distance = 40
+
+[logic@bar_visitors_kamp1]
+active = kamp@bar_visitors_kamp1
+
+[kamp@bar_visitors_kamp1]
+center_point = kamp_1
+soundgroup = bar_visitors_kamp1
+danger = danger@bar_inside
+
+[logic@bar_visitors_kamp2]
+active = kamp@bar_visitors_kamp2
+
+[kamp@bar_visitors_kamp2]
+center_point = kamp_2
+soundgroup = bar_visitors_kamp2
+danger = danger@bar_inside
+
+[logic@bar_visitors_kamp3]
+active = kamp@bar_visitors_kamp3
+
+[kamp@bar_visitors_kamp3]
+center_point = kamp_3
+soundgroup = bar_visitors_kamp3
+danger = danger@bar_inside
+
+[logic@bar_visitors_kamp4]
+active = kamp@bar_visitors_kamp4
+
+[kamp@bar_visitors_kamp4]
+center_point = kamp_4
+soundgroup = bar_visitors_kamp4
+danger = danger@bar_inside
+
+[logic@bar_visitors_walker]
+active = walker@bar_visitors_walker
+
+[walker@bar_visitors_walker]
+path_walk = walker_walk
+meet = meet@bar_visitors_walker
+danger = danger@bar_inside
+sound_idle = state
+
+[meet@bar_visitors_walker]
+meet_state 		= 3| guard@talk_hello|4| guard
+meet_state_wpn 	= 3| guard@talk_hello|4| guard
+victim 			= 3| actor
+victim_wpn 		= 3| actor
+use = true
+use_wpn = true
+
+
+[logic@bar_visitors_arena_1]
+active = walker@@bar_visitors_arena_1
+
+[walker@@bar_visitors_arena_1]
+path_walk = arena_walk_1
+path_look = arena_look_1
+soundgroup = bar_visitors_arena_1
+danger = danger@bar_inside
+sound_idle = state
+
+[logic@bar_visitors_arena_2]
+active = walker@@bar_visitors_arena_2
+
+[walker@@bar_visitors_arena_2]
+path_walk = arena_walk_2
+path_look = arena_look_2
+soundgroup = bar_visitors_arena_1
+danger = danger@bar_inside
+sound_idle = state
+
+[logic@bar_visitors_arena_3]
+active = walker@@bar_visitors_arena_3
+
+[walker@@bar_visitors_arena_3]
+path_walk = arena_walk_3
+path_look = arena_look_3
+soundgroup = bar_visitors_arena_1
+danger = danger@bar_inside
+sound_idle = state
+
+[logic@bar_visitors_arena_4]
+active = walker@@bar_visitors_arena_4
+
+[walker@@bar_visitors_arena_4]
+path_walk = arena_walk_4
+path_look = arena_look_4
+soundgroup = bar_visitors_arena_1
+danger = danger@bar_inside
+sound_idle = state
+
+[logic@bar_visitors_arena_5]
+active = walker@@bar_visitors_arena_5
+
+[walker@@bar_visitors_arena_5]
+path_walk = arena_walk_5
+path_look = arena_look_5
+soundgroup = bar_visitors_arena_2
+danger = danger@bar_inside
+sound_idle = state
+
+[logic@bar_visitors_arena_6]
+active = walker@@bar_visitors_arena_6
+
+[walker@@bar_visitors_arena_6]
+path_walk = arena_walk_6
+path_look = arena_look_6
+soundgroup = bar_visitors_arena_2
+danger = danger@bar_inside
+sound_idle = state
+
+[logic@bar_visitors_arena_7]
+active = walker@@bar_visitors_arena_7
+
+[walker@@bar_visitors_arena_7]
+path_walk = arena_walk_7
+path_look = arena_look_7
+danger = danger@bar_inside
+sound_idle = state
+
+[logic@bar_visitors_arena_8]
+active = walker@@bar_visitors_arena_2
+
+[walker@@bar_visitors_arena_8]
+path_walk = arena_walk_8
+path_look = arena_look_8
+soundgroup = bar_visitors_arena_2
+danger = danger@bar_inside
+sound_idle = state
+
+; пост перед входом во двор "долга"
+
+[actor_dialogs]
+id = bar_dolg_base_guard_acces
+
+[logic1@bar_dolg_general_guard_left]
+active = walker@bar_dolg_general_guard_left
+actor_dialogs = actor_dialogs
+
+[walker@bar_dolg_general_guard_left]
+path_walk = guard_left_walk
+path_look = guard_left_look
+meet = meet@bar_dolg_general_guard_busy
+soundgroup = bar_dolg_base_guard1
+
+[logic2@bar_dolg_general_guard_right]
+active = walker@bar_dolg_general_guard_right
+actor_dialogs = actor_dialogs
+
+[walker@bar_dolg_general_guard_right]
+path_walk = guard_right_walk
+path_look = guard_right_look
+meet = meet@bar_dolg_general_guard_busy
+soundgroup = bar_dolg_base_guard1
+
+[logic3@bar_dolg_general_guard_center]
+active = walker@bar_dolg_general_guard_center
+actor_dialogs = actor_dialogs
+on_death = death@bar_dolg_general_guard_center
+
+[walker@bar_dolg_general_guard_center]
+path_walk = guard_center_walk
+path_look = guard_center_look
+meet = meet@bar_dolg_general_guard
+soundgroup = bar_dolg_base_guard1
+
+[death@bar_dolg_general_guard_center]
+on_info = %+sar2_death_40%
+
+[meet@bar_dolg_general_guard]
+meet_dialog = bar_dolg_base_guard_start
+use = true
+use_wpn = true
+victim 			= 15| actor
+victim_wpn 		= 15| actor
+zone = bar_dolg_general_warn_zone|{+bar_dolg_base_pass}guard,threat@{+bar_dolg_base_pass}talk_hello,bar_dolg_guard_stop
+precond			= visibility
+
+[meet@bar_dolg_general_guard_busy]
+abuse = false
+use = false
+use_wpn = false
+victim 			= nil
+victim_wpn 		= nil
+meet_state 		= 5|guard@bar_dolg_guard_busy
+meet_state_wpn 	= 5|guard@bar_dolg_guard_busy
+precond			= usability
+;{+bar_dolg_base_pass}guard,threat@{+bar_dolg_base_pass}state,threat_stop
+;|bar_dolg_general_guard_zone|{+bar_dolg_base_pass}guard,threat@{+bar_dolg_base_pass}state,threat_stop|bar_dolg_general_kill_zone|{-bar_dolg_base_pass}true
+
+[logic4@bar_dolg_general_kamp]
+active = kamp1@bar_dolg_general_kamp
+
+[kamp1@bar_dolg_general_kamp]
+center_point = kamp_center
+soundgroup = bar_dolg_general_kamp
+danger = danger@bar_inside
+
+[logic5@bar_dolg_general_patrol1]
+active = walker4@bar_dolg_general_patrol1
+
+[walker4@bar_dolg_general_patrol1]
+path_walk = patrol_1_walk
+path_look = patrol_1_look
+soundgroup = bar_dolg_general_patrol1
+danger = danger@bar_inside
+
+[logic6@bar_dolg_general_patrol2]
+active = walker5@bar_dolg_general_patrol2
+
+[walker5@bar_dolg_general_patrol2]
+path_walk = patrol_2_walk
+path_look = patrol_2_look
+soundgroup = bar_dolg_general_patrol1
+danger = danger@bar_inside
+
+[logic6@bar_dolg_general_camper]
+active = walker1@bar_dolg_general_camper
+
+[walker1@bar_dolg_general_camper]
+path_walk = camper_1_walk
+path_look = camper_1_look
+def_state_moving = assault
+def_state_moving_fire = assault_fire
+def_state_campering = hide
+def_state_campering_fire = hide_fire
+soundgroup = bar_dolg_general_patrol1
+danger = danger@bar_inside
+
+[logic7@bar_dolg_general_camper]
+active = walker2@bar_dolg_general_camper
+
+[walker2@bar_dolg_general_camper]
+path_walk = camper_2_walk
+path_look = camper_2_look
+def_state_moving = assault
+def_state_moving_fire = assault_fire
+def_state_campering = hide
+def_state_campering_fire = hide_fire
+soundgroup = bar_dolg_general_camper
+danger = danger@bar_inside
+
+[logic8@bar_dolg_general_camper]
+active = walker3@bar_dolg_general_camper
+
+[walker3@bar_dolg_general_camper]
+path_walk = camper_3_walk
+path_look = camper_3_look
+def_state_moving = assault
+def_state_moving_fire = assault_fire
+def_state_campering = hide
+def_state_campering_fire = hide_fire
+soundgroup = bar_dolg_general_camper
+danger = danger@bar_inside
+
+[logic9@bar_dolg_general_camper]
+active = walker4@bar_dolg_general_camper
+
+[walker4@bar_dolg_general_camper]
+path_walk = camper_4_walk
+path_look = camper_4_look
+def_state_moving = assault
+def_state_moving_fire = assault_fire
+def_state_campering = hide
+def_state_campering_fire = hide_fire
+soundgroup = bar_dolg_general_camper
+danger = danger@bar_inside
+
+[logic10@bar_dolg_general_camper]
+active = walker5@bar_dolg_general_camper
+
+[walker5@bar_dolg_general_camper]
+path_walk = camper_5_walk
+path_look = camper_5_look
+def_state_moving = assault
+def_state_moving_fire = assault_fire
+def_state_campering = hide
+def_state_campering_fire = hide_fire
+soundgroup = bar_dolg_general_camper
+danger = danger@bar_inside
+
+; ВЕТЕРАНЫ ДОЛГА
+
+[logic1@bar_dolg_veterans_guard_bunker1]
+active = walker@bar_dolg_veterans_guard_bunker
+actor_dialogs = actor_dialogs
+
+[walker@bar_dolg_veterans_guard_bunker]
+path_walk = guard_bunker_1_walk
+path_look = guard_bunker_1_look
+meet = meet@bar_dolg_veterans_guard_bunker
+soundgroup = bar_dolg_veterans_guard_bunker
+danger = danger@bar_inside
+def_state_standing = guard
+
+[meet@bar_dolg_veterans_guard_bunker]
+meet_state 		= 5|guard@talk_hello
+meet_state_wpn 	= 5|guard@talk_hello
+meet_dialog = bar_dolg_guard_bunker_start 
+use = true
+use_wpn = true
+victim 			= 1| actor
+victim_wpn 		= 1| actor
+zone = bar_dolg_veterans_bunker_warn_zone|{-bar_dolg_community_leader}threat@bar_dolg_guard_stop,{+bar_dolg_community_leader}guard@talk_hello
+precond			= usability
+
+[logic2@bar_dolg_veterans_guard_bunker2]
+active = walker2@bar_dolg_veterans_guard_bunker
+actor_dialogs = actor_dialogs
+
+[walker2@bar_dolg_veterans_guard_bunker]
+path_walk = guard_bunker_2_walk
+path_look = guard_bunker_2_look
+meet = meet@bar_dolg_veterans_guard_bunker
+soundgroup = bar_dolg_veterans_guard_bunker
+danger = danger@bar_inside
+def_state_standing = guard
+
+[logic3@bar_dolg_veterans_gates1]
+active = walker2@bar_dolg_veterans_gates1
+
+[walker2@bar_dolg_veterans_gates1]
+path_walk = guard_gates_walk1
+path_look = guard_gates_look1
+soundgroup = bar_dolg_veterans_gates1
+danger = danger@bar_inside
+
+[logic4@bar_dolg_veterans_gates2]
+active = walker3@bar_dolg_veterans_gates2
+
+[walker3@bar_dolg_veterans_gates2]
+path_walk = guard_gates_walk2
+path_look = guard_gates_look2
+soundgroup = bar_dolg_veterans_gates1
+danger = danger@bar_inside
+
+[logic5@bar_dolg_veterans_gates_alarm1]
+active = walker6@bar_dolg_veterans_gates_alarm1
+
+[walker6@bar_dolg_veterans_gates_alarm1]
+path_walk = guard_gates_walk1
+path_look = guard1_alarm
+soundgroup = bar_dolg_veterans_gates1
+danger = danger@bar_inside
+
+[logic6@bar_dolg_veterans_gates_alarm2]
+active = walker7@bar_dolg_veterans_gates_alarm2
+
+[walker7@bar_dolg_veterans_gates_alarm2]
+path_walk = guard_gates_walk2
+path_look = guard2_alarm
+soundgroup = bar_dolg_veterans_gates1
+danger = danger@bar_inside
+
+; БУНКЕР ДОЛГА
+
+[logic2@bar_dolg_bunker]
+active = walker2@bar_dolg_bunker
+
+[walker2@bar_dolg_bunker]
+path_walk = guard_2_walk
+path_look = guard_2_look
+meet = meet@bar_dolg_bunker
+soundgroup = bar_dolg_bunker
+danger = danger@bar_inside
+
+[logic3@bar_dolg_bunker]
+active = walker3@bar_dolg_bunker
+
+[walker3@bar_dolg_bunker]
+path_walk = rest_2_walk
+path_look = rest_2_look
+soundgroup = bar_dolg_bunker
+danger = danger@bar_inside
+
+[logic4@bar_dolg_bunker]
+active = walker4@bar_dolg_bunker
+
+[walker4@bar_dolg_bunker]
+path_walk = rest_1_walk
+path_look = rest_1_look
+soundgroup = bar_dolg_bunker
+danger = danger@bar_inside
+
+[logic5@bar_dolg_bunker]
+active = sleeper1@bar_dolg_bunker
+
+[sleeper1@bar_dolg_bunker]
+path_main = sleeper_1
+soundgroup = bar_dolg_bunker
+danger = danger@bar_inside
+
+[meet@bar_dolg_bunker]
+use = true
+use_wpn = true
+victim 			= 10| actor
+victim_wpn 		= 10| actor
+meet_state 		= 5|guard@talk_hello|4|guard
+meet_state_wpn 	= 10|guard@threat_weap|7|threat@threat_weap|5|threat@threat_weap
+precond			= usability
+
+
+
+; Застава 1
+
+[logic@bar_dolg_zastava1_cammander_1]
+active = walker1@bar_dolg_zastava1_cammander_1
+on_death = death@bar_dolg_zastava1_cammander_1
+
+[walker1@bar_dolg_zastava1_cammander_1]
+path_walk = commander_1_walk
+path_look = commander_1_look
+meet = meet@bar_dolg_zastava_comander1
+soundgroup = bar_dolg_zastava1
+danger = danger@zastava_1
+
+[death@bar_dolg_zastava1_cammander_1]
+on_info = %+sar2_death_22%
+
+[logic@bar_dolg_zastava1_walker1]
+active = walker1@bar_dolg_zastava1_walker1
+
+[walker1@bar_dolg_zastava1_walker1]
+path_walk = guard_1_walk
+path_look = guard_1_look
+meet = meet@bar_dolg_zastava1
+soundgroup = bar_dolg_zastava1
+danger = danger@zastava_1
+
+[logic@bar_dolg_zastava1_walker2]
+active = walker2@bar_dolg_zastava1_walker2
+
+[walker2@bar_dolg_zastava1_walker2]
+path_walk = guard_2_walk
+path_look = guard_2_look
+meet = meet@bar_dolg_zastava1
+soundgroup = bar_dolg_zastava1
+danger = danger@zastava_1
+
+[logic@bar_dolg_zastava1_walker3]
+active = walker3@bar_dolg_zastava1_walker3
+
+[walker3@bar_dolg_zastava1_walker3]
+path_walk = guard_3_walk
+;path_look = guard_3_look
+meet = meet@bar_dolg_zastava1
+soundgroup = bar_dolg_zastava1
+danger = danger@zastava_1
+
+[meet@bar_dolg_zastava1]
+meet_state 		= 20| guard@wait|4| guard
+meet_state_wpn 	= 20| guard@wait| 15| threat@threat_weap
+victim 			= 20| actor
+victim_wpn 		= 20| actor
+use = true
+use_wpn = true
+meet_dialog = bar_dolg_zastava
+precond			= visibility
+
+[meet@bar_dolg_zastava_comander1]
+meet_state 		= 10| guard@wait|4| guard
+meet_state_wpn 	= 10| guard@wait| 7| threat@threat_weap
+victim 			= 10| actor
+victim_wpn 		= 10| actor
+use = true
+use_wpn = false
+precond			= usability
+
+[danger@zastava_1]
+ignore_distance = 10
+
+; Застава 2
+
+[logic@bar_dolg_zastava2_walker1]
+active = walker@bar_dolg_zastava2_walker1
+
+[walker@bar_dolg_zastava2_walker1]
+path_walk = square_1_place_4_walk
+path_look = square_1_place_1_look
+meet = meet@bar_dolg_zastava2
+soundgroup = bar_dolg_zastava2
+danger = danger@zastava_1
+
+[logic@bar_dolg_zastava2_walker2]
+active = walker@bar_dolg_zastava2_walker2
+
+[walker@bar_dolg_zastava2_walker2]
+path_walk = square_1_place_6_walk
+path_look = square_1_place_6_look
+meet = meet@bar_dolg_zastava2
+soundgroup = bar_dolg_zastava2
+danger = danger@zastava_1
+
+[logic@bar_dolg_zastava2_walker3]
+active = walker@bar_dolg_zastava2_walker3
+
+[walker@bar_dolg_zastava2_walker3]
+path_walk = square_1_place_2_walk
+path_look = square_1_place_1_look
+meet = meet@bar_dolg_zastava2
+soundgroup = bar_dolg_zastava2
+danger = danger@zastava_1
+
+[meet@bar_dolg_zastava2]
+meet_state 		= 50| guard@talk_hello|4| guard
+meet_state_wpn 	= 50| guard@talk_hello| 20| threat@threat_weap
+victim 			= 20| actor
+victim_wpn 		= 20| actor
+use = true
+use_wpn = true
+meet_dialog = bar_dolg_zastava
+precond			= usability
+
+
+; НЕХОРОШИЕ СТАЛКЕРЫ ВЕТЕРАНЫ
+
+[logic@bar_evil_veterans_walker1]
+active = walker@bar_evil_veterans_walker1
+
+[walker@bar_evil_veterans_walker1]
+path_walk = guard_1_walk
+path_look = guard_1_look
+soundgroup = bar_evil_veterans
+
+[logic@bar_evil_veterans_walker2]
+active = walker@bar_evil_veterans_walker2
+
+[walker@bar_evil_veterans_walker2]
+path_walk = guard_2_walk
+path_look = guard_2_look
+soundgroup = bar_evil_veterans
+
+[logic@bar_evil_veterans_walker3]
+active = walker@bar_evil_veterans_walker3
+
+[walker@bar_evil_veterans_walker3]
+path_walk = guard_3_walk
+soundgroup = bar_evil_veterans
+
+[logic@bar_evil_veterans_camper4]
+active = walker@bar_evil_veterans_camper4
+
+[walker@bar_evil_veterans_camper4]
+path_walk = guard_4_walk_alarm
+path_look = guard_4_look_alarm
+radius = 5
+soundgroup = bar_evil_veterans
+
+[logic@bar_evil_veterans_camper1]
+active = camper@bar_evil_veterans_camper1
+on_death = death@bar_evil_veterans_camper1
+
+[death@bar_evil_veterans_camper1]
+on_info = %+sar2_death_45%
+
+[camper@bar_evil_veterans_camper1]
+path_walk = leader_walk
+path_look = leader_look
+radius = 4
+soundgroup = bar_evil_veterans
+
+[logic@bar_evil_veterans_kamp1]
+active = kamp@bar_evil_veterans_kamp1
+
+[kamp@bar_evil_veterans_kamp1]
+center_point = sit_point1
+soundgroup = bar_evil_veterans_kamp1
+
+[logic@bar_evil_veterans_kamp2]
+active = kamp@bar_evil_veterans_kamp2
+
+[kamp@bar_evil_veterans_kamp2]
+center_point = sit_point1
+soundgroup = bar_evil_veterans_kamp2
+
+[logic@bar_evil_veterans_kamp3]
+active = kamp@bar_evil_veterans_kamp3
+
+[kamp@bar_evil_veterans_kamp3]
+center_point = sit_point1
+soundgroup = bar_evil_veterans_kamp3
+
+[logic@bar_evil_veterans_kamp4]
+active = kamp@bar_evil_veterans_kamp4
+
+[kamp@bar_evil_veterans_kamp4]
+center_point = sit_point1
+soundgroup = bar_evil_veterans_kamp4
+
+
+[logic@bar_evil_veterans_alarm1]
+active = camper2@bar_evil_veterans_alarm1
+
+[camper2@bar_evil_veterans_alarm1]
+path_walk = alarm_1_walk
+path_look = alarm_1_look
+radius = 5
+soundgroup = bar_evil_veterans_alarm1
+
+[logic@bar_evil_veterans_alarm2]
+active = camper3@bar_evil_veterans_alarm2
+
+[camper3@bar_evil_veterans_alarm2]
+path_walk = alarm_2_walk
+path_look = alarm_2_look
+radius = 5
+soundgroup = bar_evil_veterans_alarm1
+
+[logic@bar_evil_veterans_alarm3]
+active = camper5@bar_evil_veterans_alarm3
+
+[camper5@bar_evil_veterans_alarm3]
+path_walk = alarm_3_walk
+path_look = alarm_3_look
+radius = 5
+soundgroup = bar_evil_veterans_alarm1
+
+;*******************************************************************
+; Свобода, атакующая ученых
+;*******************************************************************
+[helihunter@bar_freedom_attack]
+dist = 100
+ 
+[combat_ignore@rostok_killers] 
+
+[death@bar_freedom_attack_commander]
+on_info = %+bar_kill_professor_volkodav_dead +bar_heli_scene_volkodav_die +rostok_actor_kill_killer +sar2_death_44%
+
+[death@bar_freedom_attack_killer]
+on_info = {=killed_by_actor} nil %+rostok_actor_kill_killer%
+
+[logic@bar_freedom_offline_walker]
+active = walker@bar_freedom_offline_walker
+
+[walker@bar_freedom_offline_walker]
+path_walk = offline_walk
+path_look = camper_1_look
+
+;*******************************************************
+
+[logic@bar_freedom_attack_sniper_1]
+active = camper@bar_freedom_attack_sniper_1
+heli_hunter = helihunter@bar_freedom_attack
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_sniper_1]
+path_walk = camper_1_walk
+path_look = camper_1_look
+def_state_moving = assault
+heli_hunter = {-bar_ecolog_crush_heli_down} true, false
+soundgroup = bar_freedom_attack1
+on_info = {=rostok_dist_to_actor_le(35)} walker@bar_freedom_attack_actor_near_1
+danger = danger_condition@freedom_attackers
+
+[walker@bar_freedom_attack_actor_near_1]
+path_walk = camper_1_walk
+path_look = camper_1_look
+on_info = {!rostok_dist_to_actor_le(40)} camper@bar_freedom_attack_sniper_1
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_sniper_c1]
+active = camper1@bar_freedom_attack_sniper_1
+on_death = death@bar_freedom_attack_killer
+
+[camper1@bar_freedom_attack_sniper_1]
+path_walk = acamper_1_walk
+path_look = acamper_1_look
+def_state_moving = assault
+radius = 15
+;no_retreat = true
+soundgroup = bar_freedom_attack1
+danger = danger_condition@freedom_attackers
+
+;********************************************************
+
+[logic@bar_freedom_attack_sniper_2]
+active = camper@bar_freedom_attack_sniper_2
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_sniper_2]
+path_walk = camper_2_walk
+path_look = camper_2_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+on_info = {=rostok_dist_to_actor_le(35)} walker@bar_freedom_attack_actor_near_2
+danger = danger_condition@freedom_attackers
+
+[walker@bar_freedom_attack_actor_near_2]
+path_walk = camper_2_walk
+path_look = camper_2_look
+on_info = {!rostok_dist_to_actor_le(40)} camper@bar_freedom_attack_sniper_2
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_sniper_c2]
+active = camper1@bar_freedom_attack_sniper_2
+on_death = death@bar_freedom_attack_killer
+
+[camper1@bar_freedom_attack_sniper_2]
+path_walk = acamper_2_walk
+path_look = acamper_2_look
+def_state_moving = assault
+radius = 15
+;no_retreat = true
+soundgroup = bar_freedom_attack1
+danger = danger_condition@freedom_attackers
+
+;*******************************************************
+
+[logic@bar_freedom_attack_sniper_3]
+active = camper1@bar_freedom_attack_sniper_3 
+heli_hunter = helihunter@bar_freedom_attack
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_sniper_3]
+path_walk = camper_3_walk
+path_look = camper_3_look
+def_state_moving = assault
+heli_hunter = {-bar_ecolog_crush_heli_down} true, false
+soundgroup = bar_freedom_attack1
+on_info = {=rostok_dist_to_actor_le(35)} walker@bar_freedom_attack_actor_near_3
+danger = danger_condition@freedom_attackers
+
+[walker@bar_freedom_attack_actor_near_3]
+path_walk = camper_3_walk
+path_look = camper_3_look
+on_info = {!rostok_dist_to_actor_le(40)} camper@bar_freedom_attack_sniper_3
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_sniper_c3]
+active = camper1@bar_freedom_attack_sniper_3
+on_death = death@bar_freedom_attack_killer
+
+[camper1@bar_freedom_attack_sniper_3]
+path_walk = acamper_3_walk
+path_look = acamper_3_look
+def_state_moving = assault
+radius = 15
+;no_retreat = true
+soundgroup = bar_freedom_attack1
+danger = danger_condition@freedom_attackers
+
+;*******************************************************
+
+[logic@bar_freedom_attack_sniper_4]
+active = camper@bar_freedom_attack_sniper_4
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_sniper_4]
+path_walk = camper_4_walk
+path_look = camper_4_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+on_info = {=rostok_dist_to_actor_le(35)} walker@bar_freedom_attack_actor_near_4
+danger = danger_condition@freedom_attackers
+
+[walker@bar_freedom_attack_actor_near_4]
+path_walk = camper_4_walk
+path_look = camper_4_look
+on_info = {!rostok_dist_to_actor_le(40)} camper@bar_freedom_attack_sniper_4
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_sniper_c4]
+active = camper1@bar_freedom_attack_sniper_4
+on_death = death@bar_freedom_attack_killer
+
+[camper1@bar_freedom_attack_sniper_4]
+path_walk = acamper_4_walk
+path_look = acamper_4_look
+def_state_moving = assault
+radius = 15
+;no_retreat = true
+soundgroup = bar_freedom_attack1
+danger = danger_condition@freedom_attackers
+
+;*******************************************************
+
+[logic@bar_freedom_attack_guard_1]
+active = camper@bar_freedom_attack_guard_1
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_guard_1]
+path_walk = guard_1_walk
+path_look = guard_1_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+radius = 0
+combat_ignore_cond = always
+on_info = {+bar_ecolog_crush_heli_down} camper@bar_freedom_attack_guard_rpg
+danger = danger_condition@freedom_attackers
+
+[camper@bar_freedom_attack_guard_rpg]
+path_walk = guard_1_walk
+path_look = guard_1_look
+heli_hunter = true
+radius = 0
+def_state_moving = assault
+def_state_campering = threat_na
+soundgroup = bar_freedom_attack1
+on_timer = 3000 | nil %=kill%
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_guard_c1]
+active = camper1@bar_freedom_attack_guard_1
+on_death = death@bar_freedom_attack_killer
+
+[camper1@bar_freedom_attack_guard_1]
+path_walk = aguard_1_walk
+path_look = aguard_1_look
+def_state_moving = assault
+radius = 15
+;no_retreat = true
+soundgroup = bar_freedom_attack1
+danger = danger_condition@freedom_attackers
+
+;*****************************************************************
+
+[logic@bar_freedom_attack_guard_2]
+active = camper@bar_freedom_attack_guard_2
+heli_hunter = helihunter@bar_freedom_attack
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_guard_2]
+path_walk = guard_2_walk
+path_look = guard_2_look
+def_state_moving = assault
+heli_hunter = {-bar_ecolog_crush_heli_down} true, false
+soundgroup = bar_freedom_attack1
+on_info = {=rostok_dist_to_actor_le(35)} walker@bar_freedom_attack_actor_near_guard_2
+danger = danger_condition@freedom_attackers
+
+[walker@bar_freedom_attack_actor_near_guard_2]
+path_walk = guard_2_walk
+path_look = guard_2_look
+on_info = {!rostok_dist_to_actor_le(40)} camper@bar_freedom_attack_guard_2
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_guard_c2]
+active = camper1@bar_freedom_attack_guard_2
+on_death = death@bar_freedom_attack_killer
+
+[camper1@bar_freedom_attack_guard_2]
+path_walk = aguard_2_walk
+path_look = aguard_2_look
+def_state_moving = assault
+radius = 15
+;no_retreat = true
+soundgroup = bar_freedom_attack1
+danger = danger_condition@freedom_attackers
+
+;***********************************************************************
+
+[logic@bar_freedom_attack_commander]
+active = camper@bar_freedom_attack_commander
+on_death = death@bar_freedom_attack_commander
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_commander]
+path_walk = commandir_walk
+path_look = commandir_look
+def_state_moving = assault
+meet = meet@freedom_volkodav
+;combat_ignore_cond = {!see_actor}
+on_info = {-bar_freedom_talk_end +bar_freedom_talk_v1} remark@volkodav_talk_1
+danger = danger_condition@freedom_attackers
+
+[remark@volkodav_talk_1]
+snd = rostok_volkodav_talk_1
+on_signal = sound_end | %+bar_freedom_talk_c1%
+sound_end = nil
+no_move = true
+no_rotate = true
+;combat_ignore_cond = {!see_actor}
+on_info = {+bar_freedom_talk_v2} remark@volkodav_talk_2
+danger = danger_condition@freedom_attackers
+
+[remark@volkodav_talk_2]
+snd = rostok_volkodav_talk_2
+on_signal = sound_end | %+bar_freedom_talk_c2%
+no_move = true
+no_rotate = true
+combat_ignore_cond = {!see_actor}
+on_info = {+bar_freedom_talk_end} camper@bar_freedom_attack_commander
+danger = danger_condition@freedom_attackers
+
+;*********************************************************************************
+
+
+[logic@bar_freedom_attack_camper_6]
+active = camper@bar_freedom_attack_camper_6
+on_death = death@bar_freedom_attack_killer
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_camper_6]
+path_walk = camper_6_walk
+path_look = camper_6_look
+def_state_moving = assault
+radius = 20
+;combat_ignore_cond = always
+on_info = {-bar_freedom_talk_end +bar_actor_heared_freedom_talk} remark@camper_talk
+soundgroup = bar_freedom_attack1
+danger = danger_condition@freedom_attackers
+
+[remark@camper_talk]
+snd = rostok_volkodav_assistant_talk_1
+on_signal = sound_end | %+bar_freedom_talk_v1%
+combat_ignore_cond = {!see_actor}
+danger = danger_condition@freedom_attackers
+on_info = {+bar_freedom_talk_c1} remark@camper_talk_1
+ 
+[remark@camper_talk_1]
+snd = rostok_volkodav_assistant_talk_2
+on_signal = sound_end | %+bar_freedom_talk_v2%
+combat_ignore_cond = always
+on_info = {+bar_freedom_talk_c2} remark@camper_talk_2
+
+[remark@camper_talk_2]
+snd = rostok_volkodav_assistant_talk_3
+on_signal = sound_end | %+bar_freedom_talk_end%
+combat_ignore_cond = always
+on_info = {+bar_freedom_talk_end} camper@bar_freedom_attack_camper_6
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_camper6_c1]
+active = camper@bar_freedom_attack_acamper_6
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_acamper_6]
+path_walk = acamper_6_walk
+path_look = acamper_6_look
+def_state_moving = assault
+radius = 25
+;no_retreat = true
+soundgroup = bar_freedom_attack1
+danger = danger_condition@freedom_attackers
+
+;*********************************************************************************
+
+[logic@bar_freedom_attack_camper_5]
+active = camper@bar_freedom_attack_camper_5
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_camper_5]
+path_walk = camper_5_walk
+path_look = camper_5_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+radius = 15
+;no_retreat = true
+on_info = {=rostok_dist_to_actor_le(35)} walker@bar_freedom_attack_actor_near_5
+danger = danger_condition@freedom_attackers
+
+[walker@bar_freedom_attack_actor_near_5]
+path_walk = camper_5_walk
+path_look = camper_5_look
+on_info = {!rostok_dist_to_actor_le(40)} camper@bar_freedom_attack_camper_5
+danger = danger_condition@freedom_attackers
+
+;*******************************************************************************
+
+[logic@bar_freedom_attack_sniper_7]
+active = camper@bar_freedom_attack_sniper_7
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_sniper_7]
+path_walk = camper_7_walk
+path_look = camper_7_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+radius = 15
+;no_retreat = true
+on_info = {=rostok_dist_to_actor_le(35)} walker@bar_freedom_attack_actor_near_7
+danger = danger_condition@freedom_attackers
+
+[walker@bar_freedom_attack_actor_near_7]
+path_walk = camper_7_walk
+path_look = camper_7_look
+on_info = {!rostok_dist_to_actor_le(40)} camper@bar_freedom_attack_sniper_7
+danger = danger_condition@freedom_attackers
+
+
+;*************************************************************************************
+
+[logic@bar_freedom_attack_camper7]
+active = camper@bar_freedom_attack_camper_7
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_camper_7]
+path_walk = camper7_walk
+path_look = camper78910_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+radius = 15
+;no_retreat = true
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_camper8]
+active = camper@bar_freedom_attack_camper_8
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_camper_8]
+path_walk = camper8_walk
+path_look = camper78910_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+radius = 25
+;no_retreat = true
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_camper9]
+active = camper@bar_freedom_attack_camper_9
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_camper_9]
+path_walk = camper9_walk
+path_look = camper78910_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+radius = 15
+;no_retreat = true
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_camper10]
+active = camper@bar_freedom_attack_camper_10
+on_death = death@bar_freedom_attack_killer
+
+[camper@bar_freedom_attack_camper_10]
+path_walk = camper10_walk
+path_look = camper78910_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+radius = 15
+;no_retreat = true
+danger = danger_condition@freedom_attackers
+
+
+
+
+
+
+;chasing
+
+[logic@bar_freedom_attack_chaser_1]
+active = camper@bar_freedom_attack_chaser_1
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_1]
+path_walk = chase_1_walk
+path_look = chase_1_look
+on_signal = arrived_1 | walker@bar_freedom_attack_chaser_1
+def_state_moving = sprint
+radius = 5
+no_retreat = true
+soundgroup = bar_freedom_attack1
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_chaser_2]
+active = camper@bar_freedom_attack_chaser_2
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_2]
+path_walk = chase_2_walk
+path_look = chase_2_look
+on_signal = arrived_2 | walker@bar_freedom_attack_chaser_2
+def_state_moving = sprint
+radius = 5
+no_retreat = true
+soundgroup = bar_freedom_attack1
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_2
+
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+
+[logic@bar_freedom_attack_chaser_3]
+active = camper@bar_freedom_attack_chaser_3
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_3]
+path_walk = chase_3_walk
+path_look = chase_3_look
+on_signal = arrived_3 | walker@bar_freedom_attack_chaser_3
+def_state_moving = sprint
+radius = 5
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_3
+
+[logic@bar_freedom_attack_chaser_4]
+active = camper@bar_freedom_attack_chaser_4
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_4]
+path_walk = chase_4_walk
+path_look = chase_4_look
+on_signal = arrived_4 | walker@bar_freedom_attack_chaser_4
+def_state_moving = sprint
+radius = 5
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_4
+
+[logic@bar_freedom_attack_chaser_5]
+active = camper@bar_freedom_attack_chaser_5
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_5]
+path_walk = chase_5_walk
+path_look = chase_5_look
+on_signal = arrived_5 | walker@bar_freedom_attack_chaser_5
+def_state_moving = sprint
+radius = 5
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_5
+
+[logic@bar_freedom_attack_chaser_6]
+active = camper@bar_freedom_attack_chaser_6
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_6]
+path_walk = chase_6_walk
+path_look = chase_6_look
+on_signal = arrived_6 | walker@bar_freedom_attack_chaser_6
+def_state_moving = sprint
+radius = 5
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_6
+
+[logic@bar_freedom_attack_chaser_7]
+active = camper@bar_freedom_attack_chaser_7
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_7]
+path_walk = chase_7_walk
+path_look = chase_7_look
+on_signal = arrived_7 | walker@bar_freedom_attack_chaser_7
+def_state_moving = sprint
+radius = 5
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_7
+
+[logic@bar_freedom_attack_chaser_8]
+active = camper@bar_freedom_attack_chaser_8
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_8]
+path_walk = chase_8_walk
+path_look = chase_8_look
+on_signal = arrived_8 | walker@bar_freedom_attack_chaser_8
+def_state_moving = sprint
+radius = 5
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_8
+
+[logic@bar_freedom_attack_chaser_9]
+active = camper@bar_freedom_attack_chaser_9
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_9]
+path_walk = chase_9_walk
+path_look = chase_9_look
+on_signal = arrived_9 | walker@bar_freedom_attack_chaser_9
+def_state_moving = sprint
+radius = 5
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_9
+
+[logic@bar_freedom_attack_chaser_10]
+active = camper@bar_freedom_attack_chaser_10
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_10]
+path_walk = chase_10_walk
+path_look = chase_2_look
+def_state_moving = sprint
+radius = 0
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_10
+
+[logic@bar_freedom_attack_chaser_11]
+active = camper@bar_freedom_attack_chaser_11
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_11]
+path_walk = chase_11_walk
+path_look = chase_2_look
+def_state_moving = sprint
+radius = 0
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_11
+
+[logic@bar_freedom_attack_chaser_12]
+active = camper@bar_freedom_attack_chaser_12
+combat_ignore = combat_ignore@rostok_killers
+
+[camper@bar_freedom_attack_chaser_12]
+path_walk = chase_12_walk
+path_look = chase_2_look
+def_state_moving = sprint
+radius = 0
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_12
+
+[logic@bar_freedom_attack_chaser_13]
+active = camper@bar_freedom_attack_chaser_13
+combat_ignore = combat_ignore@rostok_killers
+on_death = death@bar_freedom_attack_commander
+
+[camper@bar_freedom_attack_chaser_13]
+path_walk = chase_13_walk
+path_look = chase_2_look
+def_state_moving = sprint
+radius = 0
+no_retreat = true
+soundgroup = bar_freedom_attack1
+;combat_ignore_cond = {!see_actor_and_kruglov}
+danger = danger_condition@freedom_attackers
+on_info = {=rostok_dist_to_actor_le(25)} walker@bar_freedom_attack_chaser_13
+
+
+
+;walkers
+ 
+
+[walker@bar_freedom_attack_chaser_1]
+path_walk = chase_1_walk
+path_look = chase_1_look
+soundgroup = bar_freedom_attack1
+
+
+[walker@bar_freedom_attack_chaser_2]
+path_walk = chase_2_walk
+path_look = chase_2_look
+soundgroup = bar_freedom_attack1
+
+
+[walker@bar_freedom_attack_chaser_3]
+path_walk = chase_3_walk
+path_look = chase_3_look
+soundgroup = bar_freedom_attack1
+
+
+[walker@bar_freedom_attack_chaser_4]
+path_walk = chase_4_walk
+path_look = chase_4_look
+soundgroup = bar_freedom_attack1
+
+
+[walker@bar_freedom_attack_chaser_5]
+path_walk = chase_5_walk
+path_look = chase_5_look
+soundgroup = bar_freedom_attack1
+
+
+[walker@bar_freedom_attack_chaser_6]
+path_walk = chase_6_walk
+path_look = chase_6_look
+soundgroup = bar_freedom_attack1
+
+
+[walker@bar_freedom_attack_chaser_7]
+path_walk = chase_7_walk
+path_look = chase_7_look
+soundgroup = bar_freedom_attack1
+
+
+[walker@bar_freedom_attack_chaser_8]
+path_walk = chase_8_walk
+path_look = chase_8_look
+soundgroup = bar_freedom_attack1
+
+
+[walker@bar_freedom_attack_chaser_9]
+path_walk = chase_9_walk
+path_look = chase_9_look
+soundgroup = bar_freedom_attack1
+
+[walker@bar_freedom_attack_chaser_10]
+path_walk = chase_10_walk
+path_look = chase_9_look
+soundgroup = bar_freedom_attack1
+
+[walker@bar_freedom_attack_chaser_11]
+path_walk = chase_11_walk
+path_look = chase_9_look
+soundgroup = bar_freedom_attack1
+
+[walker@bar_freedom_attack_chaser_12]
+path_walk = chase_12_walk
+path_look = chase_9_look
+soundgroup = bar_freedom_attack1
+
+[walker@bar_freedom_attack_chaser_13]
+path_walk = chase_13_walk
+path_look = chase_9_look
+soundgroup = bar_freedom_attack1
+
+[logic@bar_freedom_attack_camper_1_relax]
+active = walker@bar_freedom_attack_camper_1_relax
+
+[walker@bar_freedom_attack_camper_1_relax]
+path_walk = relax_1_walk
+path_look = relax_1_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+
+[logic@bar_freedom_attack_camper_2_relax]
+active = walker@bar_freedom_attack_camper_2_relax
+
+[walker@bar_freedom_attack_camper_2_relax]
+path_walk = relax_2_walk
+path_look = relax_2_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+
+[logic@bar_freedom_attack_camper_3_relax]
+active = walker@bar_freedom_attack_camper_3_relax
+
+[walker@bar_freedom_attack_camper_3_relax]
+path_walk = relax_3_walk
+path_look = relax_3_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+
+[logic@bar_freedom_attack_camper_4_relax]
+active = walker@bar_freedom_attack_camper_4_relax
+
+[walker@bar_freedom_attack_camper_4_relax]
+path_walk = relax_4_walk
+path_look = relax_4_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+
+[logic@bar_freedom_attack_camper_5_relax]
+active = walker@bar_freedom_attack_camper_5_relax
+
+[walker@bar_freedom_attack_camper_5_relax]
+path_walk = relax_5_walk
+path_look = relax_5_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+
+[logic@bar_freedom_attack_camper_6_relax]
+active = walker@bar_freedom_attack_camper_6_relax
+
+[walker@bar_freedom_attack_camper_6_relax]
+path_walk = relax_6_walk
+path_look = relax_6_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+
+[logic@bar_freedom_attack_camper_7_relax]
+active = walker@bar_freedom_attack_camper_7_relax
+
+[walker@bar_freedom_attack_camper_7_relax]
+path_walk = relax_7_walk
+path_look = relax_7_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+
+[logic@bar_freedom_attack_camper_8_relax]
+active = walker@bar_freedom_attack_camper_8_relax
+
+[walker@bar_freedom_attack_camper_8_relax]
+path_walk = relax_8_walk
+path_look = relax_8_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+
+[logic@bar_freedom_attack_camper_9_relax]
+active = walker@bar_freedom_attack_camper_9_relax
+
+[walker@bar_freedom_attack_camper_9_relax]
+path_walk = relax_9_walk
+path_look = relax_9_look
+def_state_moving = assault
+soundgroup = bar_freedom_attack1
+
+
+[logic@bar_freedom_attack_commander_relax]
+active = walker@bar_freedom_attack_commander_relax
+on_death = death@bar_freedom_attack_commander
+
+[walker@bar_freedom_attack_commander_relax]
+path_walk = relax_volkodav_walk
+path_look = relax_volkodav_look
+def_state_moving = assault
+meet = meet@freedom_volkodav
+soundgroup = bar_freedom_attack1
+
+;*******************************************************************
+; Засада на стройке
+;*******************************************************************
+
+[logic@bar_freedom_chaser_attack_1]
+active = camper@bar_freedom_chaser_attack_1
+
+[camper@bar_freedom_chaser_attack_1]
+path_walk = 1_walk
+path_look = 1_look
+def_state_moving = rush
+
+[logic@bar_freedom_chaser_attack_2]
+active = camper@bar_freedom_chaser_attack_2
+
+[camper@bar_freedom_chaser_attack_2]
+path_walk = 2_walk
+path_look = 2_look
+def_state_moving = rush
+
+[logic@bar_freedom_chaser_attack_3]
+active = camper@bar_freedom_chaser_attack_3
+
+[camper@bar_freedom_chaser_attack_3]
+path_walk = 3_walk
+path_look = 3_look
+def_state_moving = rush
+
+[logic@bar_freedom_chaser_attack_4]
+active = camper@bar_freedom_chaser_attack_4
+
+[camper@bar_freedom_chaser_attack_4]
+path_walk = 4_walk
+path_look = 4_look
+def_state_moving = rush
+
+[logic@bar_freedom_chaser_attack_hide_1]
+active = camper@bar_freedom_chaser_attack_hide_1
+
+[camper@bar_freedom_chaser_attack_hide_1]
+path_walk = hide_1_walk
+path_look = hide_1_look
+radius = 10
+def_state_moving = rush
+
+[logic@bar_freedom_chaser_attack_hide_2]
+active = camper@bar_freedom_chaser_attack_hide_2
+
+[camper@bar_freedom_chaser_attack_hide_2]
+path_walk = hide_2_walk
+path_look = hide_2_look
+radius = 10
+def_state_moving = rush
+
+[logic@bar_freedom_chaser_attack_hide_3]
+active = camper@bar_freedom_chaser_attack_hide_3
+
+[camper@bar_freedom_chaser_attack_hide_3]
+path_walk = hide_3_walk
+path_look = hide_3_look
+radius = 10
+def_state_moving = rush
+
+[logic@bar_freedom_chaser_attack_hide_4]
+active = camper@bar_freedom_chaser_attack_hide_4
+
+[camper@bar_freedom_chaser_attack_hide_4]
+path_walk = hide_4_walk
+path_look = hide_4_look
+radius = 10
+def_state_moving = rush
+
+
+
+
+
+
+
+;*******************************************************************
+; Ученные
+;*******************************************************************
+
+
+[meet@ecolog_crush]
+meet_state = 2|hide
+meet_state_wpn = 2|hide
+victim = actor
+victim_wpn = actor
+use = true
+use_wpn = true
+meet_dialog = bar_ecolog_dialog
+precond			= visibility
+
+[meet@ecolog_kruglov]
+;meet_state =  3|hello
+;meet_state_wpn =  3|hello
+;victim = actor
+;victim_wpn = actor
+use = true
+use_wpn = true
+precond			= visibility
+
+[meet@ecolog_kruglov_1]
+meet_state =  6|wait
+meet_state_wpn =  6|wait
+victim = actor
+victim_wpn = actor
+use = true
+use_wpn = true
+precond			= visibility
+
+
+[logic@bar_ecolog_crush_sniper_1]
+active = camper@bar_ecolog_crush_sniper_1
+on_hit = hit@ecolog_crush
+combat_ignore = combat_ignore
+
+[camper@bar_ecolog_crush_sniper_1]
+path_walk = sniper_1_walk
+path_look = sniper_1_look
+def_state_moving = assault
+on_info = {+bar_rescue_research_chasing_start} walker@bar_ecolog_crush_sniper_chase_1
+meet = meet@ecolog_crush
+soundgroup = bar_ecolog_crush1
+wounded = wounded@ignore_kruglov
+
+[logic@bar_ecolog_crush_sniper_2]
+active = camper@bar_ecolog_crush_sniper_2
+on_hit = hit@ecolog_crush
+combat_ignore = combat_ignore
+
+[camper@bar_ecolog_crush_sniper_2]
+path_walk = sniper_2_walk
+path_look = sniper_2_look
+def_state_moving = assault
+on_info = {+bar_rescue_research_chasing_start} walker@bar_ecolog_crush_sniper_chase_2
+meet = meet@ecolog_crush
+wounded = wounded@ignore_kruglov
+soundgroup = bar_ecolog_crush1
+
+[logic@bar_ecolog_crush_sniper_3]
+active = camper@bar_ecolog_crush_sniper_3
+on_hit = hit@ecolog_crush
+combat_ignore = combat_ignore
+
+[camper@bar_ecolog_crush_sniper_3]
+path_walk = sniper_3_walk
+path_look = sniper_3_look
+def_state_moving = assault
+on_info = {+bar_rescue_research_chasing_start} walker@bar_ecolog_crush_sniper_chase_3
+meet = meet@ecolog_crush
+soundgroup = bar_ecolog_crush1
+wounded = wounded@ignore_kruglov
+
+[logic@bar_ecolog_crush_sniper_4]
+active = camper@bar_ecolog_crush_sniper_4
+on_hit = hit@ecolog_crush
+combat_ignore = combat_ignore
+
+[camper@bar_ecolog_crush_sniper_4]
+path_walk = sniper_4_walk
+path_look = sniper_4_look
+def_state_moving = assault
+on_info = {+bar_rescue_research_chasing_start} walker@bar_ecolog_crush_sniper_chase_4
+meet = meet@ecolog_crush
+soundgroup = bar_ecolog_crush1
+wounded = wounded@ignore_kruglov
+
+
+; chasing
+
+[walker@bar_ecolog_crush_sniper_chase_1]
+path_walk = chase_1_walk
+path_look = chase_1_look
+def_state_moving = rush
+;on_info = {+bar_rescue_research_chasing_end} camper@bar_ecolog_crush_sniper_1
+meet = meet@ecolog_crush
+soundgroup = bar_ecolog_crush1
+;combat_ignore_cond = always
+wounded = wounded@ignore_kruglov
+on_info = {!rostok_dist_to_actor_le(40)}  %=kill%
+
+[walker@bar_ecolog_crush_sniper_chase_2]
+path_walk = chase_2_walk
+path_look = chase_2_look
+def_state_moving = rush
+;on_info = {+bar_rescue_research_chasing_end} camper@bar_ecolog_crush_sniper_2
+meet = meet@ecolog_crush
+soundgroup = bar_ecolog_crush1
+;combat_ignore_cond = always
+wounded = wounded@ignore_kruglov
+on_info = {!rostok_dist_to_actor_le(40)}  %=kill%
+
+[walker@bar_ecolog_crush_sniper_chase_3]
+path_walk = chase_3_walk
+path_look = chase_3_look
+def_state_moving = rush
+;on_info = {+bar_rescue_research_chasing_end} camper@bar_ecolog_crush_sniper_3
+meet = meet@ecolog_crush
+soundgroup = bar_ecolog_crush1
+;combat_ignore_cond = always
+wounded = wounded@ignore_kruglov
+on_info = {!rostok_dist_to_actor_le(40)}  %=kill%
+
+[walker@bar_ecolog_crush_sniper_chase_4]
+path_walk = chase_4_walk
+path_look = chase_4_look
+def_state_moving = rush
+;on_info = {+bar_rescue_research_chasing_end} camper@bar_ecolog_crush_sniper_4
+meet = meet@ecolog_crush
+soundgroup = bar_ecolog_crush1
+;combat_ignore_cond = always
+wounded = wounded@ignore_kruglov
+on_info = {!rostok_dist_to_actor_le(40)}  %=kill%
+
+
+;KRUGLOV
+[hit@ecolog_professor]
+on_info = %=bar_ecolog_hit%
+
+[wounded@ignore_kruglov]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false
+
+[logic@bar_ecolog_professor]
+active = camper@bar_ecolog_professor
+on_death = death@ecolog_crush
+combat_ignore = combat_ignore
+
+[camper@bar_ecolog_professor]
+path_walk = professor_walk
+path_look = professor_look
+def_state_moving = assault
+meet = meet@ecolog_kruglov
+radius = 0
+combat_ignore_cond = always
+on_info = {+rostok_objective_1} camper@bar_ecolog_professor_w 
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[camper@bar_ecolog_professor_w]
+path_walk = professor_walk
+path_look = professor_look_w
+def_state_moving = assault
+meet = meet@ecolog_kruglov
+radius = 0
+combat_ignore_cond = always
+on_info = {=rostok_dist_to_actor_le(7)} remark@kruglov_dialog_1
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+
+[remark@kruglov_dialog_1]
+snd = rostok_kruglov_help_1
+anim = hello_wpn
+target = actor
+meet = meet@ecolog_kruglov
+combat_ignore_cond = {!actor_enemy}
+on_info = {+bar_kruglov_follow_actor} remark@kruglov_dialog_2
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[remark@kruglov_dialog_2]
+snd = rostok_kruglov_help_2
+anim = guard_na
+target = actor
+meet = meet@ecolog_kruglov
+combat_ignore_cond = {!actor_enemy}
+on_signal = sound_end | walker@bar_ecolog_professor_companion 
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[walker@bar_ecolog_professor_companion]
+path_walk = escape_1_walk
+on_signal = freedom_chase | camper@bar_rescue_research_hide_1a %=bar_freedom_spam_5 +bar_rescue_research_chasing_start =smart_terrain_force_update(bar_ecolog_crush)%
+combat_ignore_cond = {!actor_enemy}
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[camper@bar_rescue_research_hide_1a]
+path_walk = escape_1a_walk
+path_look = escape_hide_1_look
+on_signal = arrived_1 | camper@bar_rescue_research_hide_1 %=rostok_kruglov_attract_1 -bar_kruglov_follow_talk =smart_terrain_force_update(bar_freedom_attack)%
+combat_ignore_cond = {!actor_enemy}
+def_state_moving = assault
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+meet = no_meet
+
+[camper@bar_rescue_research_hide_1]
+path_walk = escape_hide_1_walk
+path_look = escape_hide_1_look
+def_state_moving = assault
+def_state_campering = hide_na
+meet = meet@ecolog_kruglov
+no_retreat = true
+radius = 0
+on_info = {+bar_rescue_research_chasing_end} camper@bar_ecolog_professor_companion_1 
+on_info2 = {=rostok_gulag_inactive} remark@bar_ecolog_professor_companion_1 %+bar_rescue_research_chasing_end% 
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[remark@bar_ecolog_professor_companion_1]
+snd = rostok_kruglov_help_6
+anim = hide_na
+target = actor
+on_signal = sound_end | camper@bar_ecolog_professor_companion_1 %+bar_kruglov_follow_talk%
+combat_ignore_cond = {!actor_enemy}
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+tips = rostok_kruglov_follow
+meet = no_meet
+
+
+[camper@bar_ecolog_professor_companion_1]
+path_walk = escape_2_walk
+path_look = escape_hide_2_look
+radius = 0
+no_retreat = true
+on_signal = bandits_alive | {=rostok_gulag_2_inactive} camper@bar_ecolog_professor_companion_2a %+bar_bandits_dead%, camper@bar_ecolog_professor_companion_1a %+bar_bandits_alive -bar_kruglov_follow_talk =play_snd(characters_voice\scenario\Rostok\killer_radio_enemy_3)%
+def_state_moving = assault
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+meet = no_meet
+
+[camper@bar_ecolog_professor_companion_1a]
+path_walk = escape_2a_walk
+path_look = escape_hide_2_look
+radius = 0
+no_retreat = true
+on_signal = arrived_hide_2 | camper@bar_rescue_research_hide_2 %=rostok_kruglov_attract_2%
+def_state_moving = assault
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+meet = no_meet
+
+[camper@bar_rescue_research_hide_2]
+path_walk = escape_hide_2_walk
+path_look = escape_hide_2_look
+meet = meet@ecolog_kruglov
+def_state_moving = assault
+radius = 0
+on_info = {+bar_bandits_dead} camper@bar_ecolog_professor_companion_2a
+on_info2 = {=rostok_gulag_2_inactive} remark@bar_ecolog_professor_companion_2 
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[remark@bar_ecolog_professor_companion_2]
+snd = rostok_kruglov_help_6
+anim = hide_na
+target = actor
+on_signal = sound_end | camper@bar_ecolog_professor_companion_2a %+bar_bandits_dead%
+combat_ignore_cond = {!actor_enemy}
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+tips = rostok_kruglov_follow
+meet = no_meet
+
+[camper@bar_ecolog_professor_companion_2a]
+path_walk = escape_3a_walk
+path_look = escape_look
+on_signal = ambush | camper@bar_rescue_research_ambush_hide %-bar_kruglov_follow_talk =rostok_kruglov_ambush%
+on_info = {+rostok_spawn_naemniki} camper@bar_rescue_research_ambush_hide %-bar_kruglov_follow_talk%
+def_state_moving = assault
+radius = 0
+no_retreat = true
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+meet = no_meet
+
+[camper@bar_rescue_research_ambush_hide]
+path_walk = escape_hide_3_walk
+path_look = escape_hide_3_look
+meet = meet@ecolog_kruglov
+def_state_moving = assault
+radius = 0
+on_info = {+bar_ambush_dead} camper@bar_ecolog_professor_companoin_2
+on_info2 = {+rostok_ambush_killer_1_die +rostok_ambush_killer_2_die +rostok_ambush_killer_3_die} remark@bar_ecolog_professor_companion_2a 
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[remark@bar_ecolog_professor_companion_2a]
+snd = rostok_kruglov_help_6
+anim = hide_na
+target = actor
+on_signal = sound_end | camper@bar_ecolog_professor_companoin_2 %+bar_ambush_dead%
+combat_ignore_cond = {!actor_enemy}
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+tips = rostok_kruglov_follow
+meet = no_meet
+
+[camper@bar_ecolog_professor_companoin_2]
+path_walk = escape_3_walk
+path_look = escape_look
+radius = 0
+no_retreat = true
+on_signal = fire_anomaly | %+bar_fire_anomaly_forward%
+on_info = {+bar_fire_anomaly_forward} camper@bar_rescue_research_hide_3 %-bar_kruglov_follow_talk%
+def_state_moving = assault
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+meet = no_meet
+
+[camper@bar_rescue_research_hide_3]
+path_walk = escape_stay
+path_look = escape_look
+meet = meet@ecolog_kruglov
+radius = 0
+on_info = {=rostok_dist_to_actor_le(12)} remark@bar_ecolog_professor_torrid
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[remark@bar_ecolog_professor_torrid]
+snd = rostok_kruglov_torrid
+anim = guard
+target = actor
+on_info = {+bar_kruglov_follow_tunnel} camper@bar_ecolog_professor_torrid %+bar_go_through_anomaly%
+combat_ignore_cond = {!actor_enemy}
+danger = danger_condition@2
+meet = meet@ecolog_kruglov
+wounded = wounded@ignore_kruglov
+
+[camper@bar_ecolog_professor_torrid]
+path_walk = torrid_walk
+path_look = escape_4_look
+radius = 0
+no_retreat = true
+combat_ignore_cond = {!actor_enemy}
+on_signal = arrived_torrid |camper@bar_ecolog_professor_companoin_3
+def_state_moving = assault
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+meet = no_meet
+
+
+[camper@bar_ecolog_professor_companoin_3]
+path_walk = escape_4_walk
+path_look = escape_4_look
+radius = 0
+no_retreat = true
+on_signal = arrived |camper@bar_rescue_research_hide_4 %+bar_rescue_research_follow -bar_kruglov_follow_talk%
+def_state_moving = assault
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+meet = no_meet
+
+
+[camper@bar_rescue_research_hide_4]
+path_walk = end_walk
+path_look = end_look
+meet = meet@ecolog_kruglov_1
+radius = 0
+on_info = {=rostok_dist_to_actor_le(7)} remark@kruglov_exit_dialog_1 
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[remark@kruglov_exit_dialog_1]
+snd = rostok_kruglov_help_3
+anim = guard
+target = actor
+meet = meet@ecolog_kruglov
+combat_ignore_cond = {!actor_enemy}
+on_info = {+bar_rescue_research_reward} remark@kruglov_exit_dialog_2 %+bar_rescue_research_done%
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[remark@kruglov_exit_dialog_2]
+snd = rostok_kruglov_help_4
+anim = guard
+target = actor
+meet = meet@ecolog_kruglov
+combat_ignore_cond = {!actor_enemy}
+on_signal = sound_end | walker@bar_ecolog_professor_exit
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[walker@bar_ecolog_professor_exit]
+path_walk = escape_5_walk
+meet = meet@ecolog_kruglov_1
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+on_timer = 5000 | walker@bar_ecolog_professor_exit_w 
+
+[walker@bar_ecolog_professor_exit_w]
+path_walk = escape_5_walk
+meet = no_meet
+danger = danger_condition@2
+wounded = wounded@ignore_kruglov
+
+[death@ecolog_crush]
+;on_info = {=killed_by_actor +bar_kill_professor_start} %+bar_rescue_research_dead +bar_kill_professor_done +bar_rescue_research_corruped +bar_heli_scene_professor_die%, {+bar_kill_professor_start} %+bar_rescue_research_dead +bar_kill_professor_fail +bar_rescue_research_corruped +bar_heli_scene_professor_die%, %+bar_rescue_research_dead +bar_rescue_research_corruped +bar_heli_scene_professor_die%
+on_info = {-bar_rescue_research_done} %+bar_rescue_research_fail +bar_heli_scene_professor_die +bar_rescue_research_corruped +sar2_death_13%, %+bar_heli_scene_professor_die +sar2_death_13%
+
+[danger_condition@2]
+ignore_distance       = 0
+ignore_distance_grenade = 0
+ignore_distance_corpse  = 0
+ignore_distance_danger_hit     = 0
+ignore_distance_sound   = 0
+danger_inertion_time_grenade = 0
+danger_inertion_time_corpse = 0
+danger_inertion_time_hit = 0
+danger_inertion_time_sound = 0
+
+[danger_condition@freedom_attackers]
+ignore_distance       = 0
+ignore_distance_grenade = 0
+ignore_distance_corpse  = 0
+ignore_distance_sound   = 0 
+danger_inertion_time_sound = 1
+
+
+;*******************************************************************
+; Засада боевиков Наемников на стройке
+;*******************************************************************
+
+[logic@bar_svoboda_ambush_sniper_1]
+active = camper@bar_svoboda_ambush_sniper_1
+
+[camper@bar_svoboda_ambush_sniper_1]
+path_walk = 1_walk
+path_look = 1_look
+sniper = true
+radius = 15
+soundgroup = bar_svoboda_ambush1
+
+[logic@bar_svoboda_ambush_sniper_2]
+active = camper@bar_svoboda_ambush_sniper_2
+
+[camper@bar_svoboda_ambush_sniper_2]
+path_walk = 2_walk
+path_look = 2_look
+soundgroup = bar_svoboda_ambush1
+radius = 25
+
+[logic@bar_svoboda_ambush_sniper_3]
+active = camper@bar_svoboda_ambush_sniper_3
+
+[camper@bar_svoboda_ambush_sniper_3]
+path_walk = 3_walk
+path_look = 3_look
+soundgroup = bar_svoboda_ambush1
+radius = 20
+
+[logic@bar_svoboda_ambush_sniper_4]
+active = camper@bar_svoboda_ambush_sniper_4
+
+[camper@bar_svoboda_ambush_sniper_4]
+path_walk = 4_walk
+path_look = 4_look
+soundgroup = bar_svoboda_ambush1
+radius = 15
+
+[logic@bar_svoboda_ambush_sniper_5]
+active = camper@bar_svoboda_ambush_sniper_5
+on_death = death@bar_svoboda_ambush_sniper_5
+
+[death@bar_svoboda_ambush_sniper_5]
+on_info = %+sar2_death_56%
+
+[camper@bar_svoboda_ambush_sniper_5]
+path_walk = 5_walk
+path_look = 5_look
+soundgroup = bar_svoboda_ambush1
+radius = 25
+
+[logic@bar_svoboda_ambush_sniper_6]
+active = camper@bar_svoboda_ambush_sniper_6
+
+[camper@bar_svoboda_ambush_sniper_6]
+path_walk = 6_walk
+path_look = 6_look
+sniper = true
+soundgroup = bar_svoboda_ambush1
+radius = 15
+
+[logic@bar_svoboda_ambush_sniper_7]
+active = camper@bar_svoboda_ambush_sniper_7
+
+[camper@bar_svoboda_ambush_sniper_7]
+path_walk = 7_walk
+path_look = 7_look
+soundgroup = bar_svoboda_ambush1
+radius = 25
+
+
+
+;*****************************************************************
+; ARENA MONSTR
+;*****************************************************************
+[logic@bar_arena_monstr_pseudodog_none]
+active = mob_walker@bar_arena_monstr
+on_death = mob_death@bar_arena_monstr_pseudodog
+
+[mob_walker@bar_arena_monstr]
+path_walk = walk_2
+path_look = look
+
+[logic@bar_arena_monstr_pseudodog]
+active = mob_walker@bar_arena_monstr_pseudodog
+on_death = mob_death@bar_arena_monstr_pseudodog
+
+[mob_walker@bar_arena_monstr_pseudodog]
+path_walk = walk
+path_look = look
+on_signal = arrived |  %+bar_arena_monstr_ready =bar_arena_hit%
+
+[mob_death@bar_arena_monstr_pseudodog]
+on_info = %+bar_arena_pseudodog_defeated +bar_arena_monstr_dead%
+
+
+[logic@bar_arena_monstr_snork_none]
+active = mob_walker@bar_arena_monstr
+on_death = mob_death@bar_arena_monstr_snork
+
+[logic@bar_arena_monstr_snork]
+active = mob_walker@bar_arena_monstr_snork
+on_death = mob_death@bar_arena_monstr_snork
+
+[mob_walker@bar_arena_monstr_snork]
+braindead = true
+path_walk = walk
+path_look = look
+on_signal = arrived |  %+bar_arena_monstr_ready =bar_arena_hit%
+
+[mob_death@bar_arena_monstr_snork]
+on_info = %+bar_arena_snork_defeated +bar_arena_monstr_dead%
+
+
+[logic@bar_arena_monstr_bloodsucker_none]
+active = mob_walker@bar_arena_monstr
+on_death = mob_death@bar_arena_monstr_bloodsucker
+
+[logic@bar_arena_monstr_bloodsucker]
+active = mob_walker@bar_arena_monstr_bloodsucker
+on_death = mob_death@bar_arena_monstr_bloodsucker
+
+[mob_walker@bar_arena_monstr_bloodsucker]
+braindead = true
+path_walk = walk
+path_look = look
+on_signal = arrived |  %+bar_arena_monstr_ready =bar_arena_hit%
+
+[mob_death@bar_arena_monstr_bloodsucker]
+on_info = %+bar_arena_bloodsucker_defeated +bar_arena_monstr_dead%
+
+
+[logic@bar_arena_monstr_burer_none]
+active = mob_walker@bar_arena_monstr
+on_death = mob_death@bar_arena_monstr_burer
+
+[logic@bar_arena_monstr_burer]
+active = mob_walker@bar_arena_monstr_burer
+on_death = mob_death@bar_arena_monstr_burer
+
+[mob_walker@bar_arena_monstr_burer]
+braindead = true
+path_walk = walk
+path_look = look
+on_signal = arrived |  %+bar_arena_monstr_ready =bar_arena_hit%
+
+[mob_death@bar_arena_monstr_burer]
+on_info = %+bar_arena_burer_defeated +bar_arena_monstr_dead%
+
+
+[logic@bar_arena_monstr_savage_none]
+active = mob_walker@bar_arena_monstr
+on_death = death@bar_arena_monstr_savage
+
+[logic@bar_arena_monstr_savage]
+active = camper@bar_arena_monstr_savage
+on_death = death@bar_arena_monstr_savage
+
+[camper@bar_arena_monstr_savage]
+path_walk = walk
+path_look = look
+on_signal = arrived |  %+bar_arena_monstr_ready =bar_arena_hit%
+danger = danger@bar_arena_monstr_savage
+
+[danger@bar_arena_monstr_savage]
+ignore_distance = 0
+ignore_types = grenade, hit, corpse, sound
+
+[death@bar_arena_monstr_savage]
+on_info = %+bar_arena_savage_defeated +bar_arena_monstr_dead +sar2_death_53%		
+		
+		
+		
