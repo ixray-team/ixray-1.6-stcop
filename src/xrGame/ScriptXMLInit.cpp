@@ -377,6 +377,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitWindow",				&CScriptXmlInit::InitWindow)
 		.def("InitFrame",				&CScriptXmlInit::InitFrame)
 		.def("InitFrameLine",			&CScriptXmlInit::InitFrameLine)
+		.def("InitLabel",				&CScriptXmlInit::InitFrameLine)
 		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
 		.def("InitStackPanel",			&CScriptXmlInit::InitStackPanel)
