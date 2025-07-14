@@ -40,10 +40,13 @@ DLL_Pure *CHudItem::_construct()
 
 void CHudItem::Load(LPCSTR section)
 {
-	hud_sect				= pSettings->r_string		(section,"hud");
+	hud_sect				= READ_IF_EXISTS(pSettings, r_string, section,"hud", nullptr);
 	hud_sect_cache = hud_sect;
 
-	m_animation_slot		= pSettings->r_u32			(section,"animation_slot");
+	if (m_animation_slot != u32(-1)) // if it has default hardcoded slot, then don't crash
+		pSettings->read_if_exists(m_animation_slot, section, "animation_slot");
+	else // if it doesn't, then crash if line is missing from config
+		m_animation_slot		= pSettings->r_u32			(section,"animation_slot");
 
 	m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", .2f);
 	m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", 1.f);

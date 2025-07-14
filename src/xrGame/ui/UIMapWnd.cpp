@@ -80,31 +80,35 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	m_map_move_step					= uiXml.ReadAttribFlt( start_from, 0, "map_move_step", 10.0f );
 
-	m_UILevelFrame					= new CUIWindow(); m_UILevelFrame->SetAutoDelete(true);
-
-	CUIWindow* levelFrameParent = this;
-	xr_strconcat(pth,start_from,":level_frame");
-	if (!uiXml.NavigateToNode(pth))
-	{
-		xr_strconcat(pth, start_from, ":main_wnd:main_map_frame:level_frame");
-		CUIWindow* levelFrameParent = m_UIMainFrame;
-	}
-	xml_init.InitWindow				(uiXml, pth, 0, m_UILevelFrame);
-
 	m_UIMainFrame					= new CUIFrameWindow(); m_UIMainFrame->SetAutoDelete(true);
 	AttachChild						(m_UIMainFrame);
 	xr_strconcat(pth,start_from,":main_map_frame");
+
+	bool useShadowOfChernobylMap = false;
 	if (!uiXml.NavigateToNode(pth))
 	{
+		useShadowOfChernobylMap = true;
 		xr_strconcat(pth, start_from, ":main_wnd:main_map_frame");
 	}
 	xml_init.InitFrameWindow		(uiXml, pth, 0, m_UIMainFrame);
 
+	m_UILevelFrame					= new CUIWindow(); m_UILevelFrame->SetAutoDelete(true);
+
+	CUIWindow* levelFrameParent = this;
+	CUIWindow* scrollParent = this;
+	xr_strconcat(pth,start_from,":level_frame");
+	if (useShadowOfChernobylMap)
+	{
+		xr_strconcat(pth, start_from, ":main_wnd:main_map_frame:level_frame");
+		levelFrameParent = m_UIMainFrame;
+		scrollParent = m_UIMainFrame;
+	}
+	xml_init.InitWindow				(uiXml, pth, 0, m_UILevelFrame);
 	levelFrameParent->AttachChild		(m_UILevelFrame);
 
-	xr_strconcat(pth, start_from, ":main_wnd:map_header_frame_line");
-	if (uiXml.NavigateToNode(pth))
+	if (useShadowOfChernobylMap)
 	{
+		xr_strconcat(pth, start_from, ":main_wnd:map_header_frame_line");
 		UIMainMapHeader = UIHelper::CreateFrameLine(uiXml, pth, m_UIMainFrame);
 	}
 
@@ -115,10 +119,10 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		xr_strconcat(pth,start_from,":main_map_frame");
 		dx = uiXml.ReadAttribFlt( pth, 0, "dx", 0.0f );
 		dy = uiXml.ReadAttribFlt( pth, 0, "dy", 0.0f );
-		sx = uiXml.ReadAttribFlt( pth, 0, "sx", 5.0f );
-		sy = uiXml.ReadAttribFlt( pth, 0, "sy", 5.0f );
+		sx = uiXml.ReadAttribFlt( pth, 0, "sx", 0.0f );
+		sy = uiXml.ReadAttribFlt( pth, 0, "sy", 0.0f );
 
-		CUIWindow* rect_parent			= m_UIMainFrame;//m_UILevelFrame;
+		CUIWindow* rect_parent			= useShadowOfChernobylMap ? m_UILevelFrame : m_UIMainFrame;
 		Frect r							= rect_parent->GetWndRect();
 
         auto tempScroll = new CUIFixedScrollBar();
@@ -134,7 +138,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		m_UIMainScrollH->SetStepSize	( _max( 1, (int)(m_UILevelFrame->GetWidth()*0.1f) ) );
 		m_UIMainScrollH->SetPageSize	( (int)m_UILevelFrame->GetWidth() ); // iFloor
 		m_UIMainScrollH->SetAutoDelete(true);
-		AttachChild						(m_UIMainScrollH);
+		scrollParent->AttachChild		(m_UIMainScrollH);
 		Register						(m_UIMainScrollH);
 		AddCallback						(m_UIMainScrollH, SCROLLBAR_HSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollH));
 
@@ -151,7 +155,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		m_UIMainScrollV->SetStepSize	( _max( 1, (int)(m_UILevelFrame->GetHeight()*0.1f) ) );
 		m_UIMainScrollV->SetPageSize	( (int)m_UILevelFrame->GetHeight() );
 		m_UIMainScrollV->SetAutoDelete(true);
-		AttachChild						(m_UIMainScrollV);
+		scrollParent->AttachChild		(m_UIMainScrollV);
 		Register						(m_UIMainScrollV);
 		AddCallback						(m_UIMainScrollV,SCROLLBAR_VSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollV));
 	}
@@ -190,11 +194,11 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		for (;it!=end; it++)
 		{
 			shared_str map_name		= it->first;
+			xr_strlwr				(map_name);
 
 			if (!pGameIni->line_exist(map_name, "global_rect"))
 				continue;
 
-			xr_strlwr				(map_name);
 			R_ASSERT2				(m_GameMaps.end() == m_GameMaps.find(map_name), "Duplicate level name not allowed");
 			
 			CUICustomMap*& l		= m_GameMaps[map_name];

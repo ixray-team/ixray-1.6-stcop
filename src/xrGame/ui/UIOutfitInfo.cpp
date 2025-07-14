@@ -4,7 +4,7 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIDoubleProgressBar.h"
 #include "UIHelperGame.h"
-
+#include "../../xrUI/Widgets/UIScrollView.h"
 #include "../CustomOutfit.h"
 #include "../ActorHelmet.h"
 #include "../Actor.h"
@@ -101,9 +101,14 @@ void CUIOutfitImmunity::SetProgressValue(float cur, float comp)
 CUIOutfitInfo::CUIOutfitInfo()
 {
 	m_Prop_line = nullptr;
+	m_listWnd = nullptr;
 	for ( u32 i = 0; i < max_count; ++i )
 	{
 		m_items[i] = nullptr;
+	}
+	for (u32 i = 0; i < max_count; ++i)
+	{
+		m_items_legacy[i] = nullptr;
 	}
 }
 
@@ -113,6 +118,10 @@ CUIOutfitInfo::~CUIOutfitInfo()
 	{
 		xr_delete( m_items[i] );
 	}
+	for ( u32 i = 0; i < max_count; ++i )
+	{
+		xr_delete( m_items_legacy[i] );
+	}
 }
 
 void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
@@ -121,7 +130,16 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 
 	CUIXmlInit::InitWindow( xml_doc, base_str, 0, this );
 	
-	string128 buf;
+	string256 buf;
+
+	xr_strconcat(buf, base_str, ":scroll_view");
+	if (xml_doc.NavigateToNode(buf))
+	{
+		m_listWnd = new CUIScrollView();
+		m_listWnd->SetAutoDelete(true);
+		AttachChild(m_listWnd);
+		CUIXmlInit::InitScrollView(xml_doc, buf, 0, m_listWnd);
+	}
 
 	xr_strconcat(buf, base_str, ":caption");
 	if (xml_doc.NavigateToNode(buf))
@@ -153,6 +171,14 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 		else
 		{
 			xr_delete(m_items[i]);
+			xr_strconcat(buf, base_str, ":static_", immunity_names[i]);
+			if (xml_doc.NavigateToNode(buf))
+			{
+				m_items_legacy[i] = new CUIStatic();
+				CUIStatic* _s = m_items_legacy[i];
+				_s->SetAutoDelete(false);
+				CUIXmlInit::InitStatic(xml_doc, buf, 0, _s);
+			}
 		}
 	}
 	pos.x = GetWndSize().x;
@@ -167,8 +193,14 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 		return;
 	}
 
+
 	for ( u32 i = 0; i < max_count; ++i )
 	{
+		if (m_items_legacy[i])
+		{
+			SetItem(cur_outfit, i, false);
+		}
+
 		if ( i == ALife::eHitTypeFireWound || !m_items[i] )
 		{
 			continue;
@@ -262,4 +294,39 @@ void CUIOutfitInfo::UpdateInfo(CHelmet* cur_helmet, CHelmet* slot_helmet)
 		m_items[ALife::eHitTypeFireWound]->SetProgressValue( cur, slot );
 	}
 
+}
+
+void CUIOutfitInfo::SetItem(CCustomOutfit* outfit, u32 hitType, bool force_add)
+{
+    string128  _buff;
+    float      _val_outfit = 0.0f;
+    float      _val_af     = 0.0f;
+
+    CUIStatic* _s          = m_items_legacy[hitType];
+
+    _val_outfit            = outfit->GetDefHitTypeProtection(ALife::EHitType(hitType));
+
+    _val_af                = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(hitType));
+
+    if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
+    {
+        if (_s->GetParent() != nullptr)
+            m_listWnd->RemoveWindow(_s);
+        return;
+    }
+
+    // LPCSTR _clr_outfit, _clr_af;
+    LPCSTR _imm_name = *g_pStringTable->translate(immunity_st_names[hitType]);
+
+    int    _sz       = sprintf_s(_buff, sizeof(_buff), "%s ", _imm_name);
+    _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_outfit > 0.0f) ? "%c[green]" : "%c[red]", _val_outfit * 100.0f);
+
+    if (!fsimilar(_val_af, 0.0f))
+    {
+        _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]", _val_af * 100.0f);
+    }
+    _s->SetText(_buff);
+
+    if (_s->GetParent() == nullptr)
+        m_listWnd->AddWindow(_s, false);
 }

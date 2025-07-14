@@ -42,12 +42,6 @@ void CUICustomMap::Initialize(shared_str name, LPCSTR sh_name)
 	{
 		Init_internal(name, *pGameIni, name.c_str(), sh_name);
 	}
-	else // Step 3: If also failed, use default map
-	{
-		Msg("! default LevelMap used for level[%s]",name.c_str());
-		Init_internal	(name, *pGameIni, "def_map", sh_name);
-		m_name			= name;
-	}
 	if(levelIni != g_pGameLevel->pLevel)
 		xr_delete(levelIni);
 }
@@ -78,10 +72,14 @@ void CUICustomMap::Init_internal(const shared_str& name, CInifile& pLtx, const s
 	Fvector4				tmp;
 	LPCSTR tex;
 
-	if( pLtx.line_exist(m_name,"texture") ){
-		tex			= pLtx.r_string(m_name,"texture");
-		tmp		= pLtx.r_fvector4(m_name,"bound_rect");
-	}else{
+	if( pLtx.line_exist(sect_name,"texture") )
+	{
+		tex			= pLtx.r_string(sect_name,"texture");
+		tmp		= pLtx.r_fvector4(sect_name,"bound_rect");
+	}
+	else
+	{
+		Msg("! default LevelMap used for level[%s], config[%s]", name.c_str(), pLtx.fname());
 		tex = "ui\\ui_nomap2";
 		tmp.set(-10000.0f,-10000.0f,10000.0f,10000.0f);
 	}
@@ -391,7 +389,7 @@ float CUIGlobalMap::CalcOpenRect(const Fvector2& center_point, Frect& map_desire
 
 CUILevelMap::CUILevelMap(CUIMapWnd* p)
 {
-	legacySpotScaling		= false;
+	SpotScaling			= eScalingDefault;
 	m_mapWnd			= p;
 	Show				(false);
 }
@@ -413,7 +411,7 @@ void CUILevelMap::Draw()
 				if(sp->m_bScale)
 				{
 					Fvector2 sz			= sp->m_originSize;
-					if (!legacySpotScaling)
+					if (SpotScaling == eScalingDefault)
 					{
 						float k				= gmz;
 
@@ -426,7 +424,7 @@ void CUILevelMap::Draw()
 						sz.mul				(k);
 						sp->SetWndSize		(sz);
 					}
-					else
+					else if (SpotScaling == eScalingCS)
 					{
 						if (gmz > sp->m_scale_bounds.x && gmz < sp->m_scale_bounds.y)
 						{
@@ -438,6 +436,11 @@ void CUILevelMap::Draw()
 						{
 							sp->SetWndSize(sz);
 						}
+					}
+					else
+					{
+						sz.mul(gmz);
+						sp->SetWndSize(sz);
 					}
 				}
 				else if(sp->m_scale_bounds.x > 0.0f)
@@ -459,7 +462,9 @@ void CUILevelMap::Init_internal	(const shared_str& name, CInifile& pLtx, const s
 	m_GlobalRect.set		(tmp.x, tmp.y, tmp.z, tmp.w);
 
 	if (EngineExternal().ClearSkyMode())
-		legacySpotScaling = true;
+		SpotScaling = eScalingCS;
+	else if (EngineExternal().ShadowOfChernobylMode())
+		SpotScaling = eScalingSoC;
 
 #ifdef DEBUG
 	float kw = m_GlobalRect.width	()	/	BoundRect().width	();

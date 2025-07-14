@@ -55,6 +55,7 @@ public:
 	void				SwitchToTrade			();
 	void				SwitchToUpgrade			();
 	void				AddIconedMessage		(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name);
+    void				AddIconedMessage		(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 

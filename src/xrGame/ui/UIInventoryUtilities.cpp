@@ -367,6 +367,35 @@ const shared_str InventoryUtilities::GetDateAsString(ALife::_TIME_ID date, EDate
 	return bufDate;
 }
 
+const shared_str InventoryUtilities::GetDateAsStringLegacy(ALife::_TIME_ID date, EDatePrecision datePrec, char dateSeparator)
+{
+	string32 bufDate;
+
+	ZeroMemory(bufDate, sizeof(bufDate));
+
+	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
+
+	split_time(date, year, month, day, hours, mins, secs, milisecs);
+
+	// Date
+	switch (datePrec)
+	{
+	case edpDateToYear:
+		sprintf_s(bufDate, "%04i", year);
+		break;
+	case edpDateToMonth:
+		sprintf_s(bufDate, "%02i%c%04i", month, dateSeparator, year);
+		break;
+	case edpDateToDay:
+		sprintf_s(bufDate, "%02i%c%02i%c%04i", day, dateSeparator, month, dateSeparator, year);
+		break;
+	default:
+		R_ASSERT(!"Unknown type of date precision");
+	}
+
+	return bufDate;
+}
+
 LPCSTR InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to)
 {
 	u32 year1,month1,day1,hours1,mins1,secs1,milisecs1;

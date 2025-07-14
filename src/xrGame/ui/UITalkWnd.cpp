@@ -64,6 +64,7 @@ void CUITalkWnd::InitTalkWnd()
 	UITalkDialogWnd->InitTalkDialogWnd();
 }
 
+static bool useCharacterNames = EngineExternal().ShadowOfChernobylMode();
 void CUITalkWnd::InitTalkDialog()
 {
 	m_pActor = Actor();
@@ -82,16 +83,19 @@ void CUITalkWnd::InitTalkDialog()
 	UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOurInvOwner);
 	UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
 
-	if (UITalkDialogWnd->UIDialogFrameTop)
-		UITalkDialogWnd->UIDialogFrameTop->SetText(m_pOthersInvOwner->Name());
-	else
-		UITalkDialogWnd->UIDialogFrame->UITitleText.SetText(m_pOthersInvOwner->Name());
+	if (useCharacterNames)
+	{
+		if (UITalkDialogWnd->UIDialogFrameTop)
+			UITalkDialogWnd->UIDialogFrameTop->SetText(m_pOthersInvOwner->Name());
+		else
+			UITalkDialogWnd->UIDialogFrame->UITitleText.SetText(m_pOthersInvOwner->Name());
 
-	if (UITalkDialogWnd->UIDialogFrameBottom)
-		UITalkDialogWnd->UIDialogFrameBottom->SetText(m_pOurInvOwner->Name());
-	else
-		UITalkDialogWnd->UIOurPhrasesFrame->UITitleText.SetText(m_pOurInvOwner->Name());
-	
+		if (UITalkDialogWnd->UIDialogFrameBottom)
+			UITalkDialogWnd->UIDialogFrameBottom->SetText(m_pOurInvOwner->Name());
+		else
+			UITalkDialogWnd->UIOurPhrasesFrame->UITitleText.SetText(m_pOurInvOwner->Name());
+	}
+
 	//очистить лог сообщений
 	UITalkDialogWnd->ClearAll();
 
@@ -490,6 +494,11 @@ void CUITalkWnd::StopSnd()
 void CUITalkWnd::AddIconedMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
 {
 	UITalkDialogWnd->AddIconedAnswer(caption, text, texture_name, templ_name);
+}
+
+void CUITalkWnd::AddIconedMessage(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name)
+{
+	UITalkDialogWnd->AddIconedAnswer(text, texture_name, texture_rect, templ_name);
 }
 
 void CUITalkWnd::StopTalk()
