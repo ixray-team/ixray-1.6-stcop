@@ -53,6 +53,7 @@ enum class EEngineExternalRender
 {
 	DisableLoadScreenTips,
 	UseDynamicSnowMask,
+	UseLegacyParticleLoader,
 	None
 };
 
