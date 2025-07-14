@@ -751,7 +751,6 @@ int get_actor_points(LPCSTR sect)
 {
 	return Actor()->StatisticMgr().GetSectionPoints(sect);
 }
-
 extern int get_actor_ranking();
 extern void add_human_to_top_list(u16 id);
 extern void remove_human_from_top_list(u16 id);
