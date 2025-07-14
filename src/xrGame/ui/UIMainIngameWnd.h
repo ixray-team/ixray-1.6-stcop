@@ -63,6 +63,8 @@ public:
 
 	CUIStackPanel* UIStackPanelBoosters;
 	CUIStackPanel* UIStackPanelIndicators;
+	//иконка, показывающая количество активных PDA
+	CUIStatic*			UIPdaOnline;
 
 	CUIHudStatesWnd* m_ui_hud_states;
 
@@ -104,18 +106,19 @@ protected:
 	// - ранения
 	// - голода
 	// - усталости
-	CUIStatic* UIWeaponJammedIcon;
-	//	CUIStatic			UIRadiaitionIcon;
-	//	CUIStatic			UIWoundIcon;
-	//	CUIStatic			UIStarvationIcon;
-	//	CUIStatic			UIPsyHealthIcon;
-	CUIStatic* UIInvincibleIcon;
-	//	CUIStatic			UISleepIcon;
-	CUIStatic* UIArtefactIcon;
+	CUIStatic* 			UIWeaponJammedIcon;
+	CUIStatic*			UIRadiaitionIcon;
+	CUIStatic*			UIWoundIcon;
+	CUIStatic*			UIStarvationIcon;
+	CUIStatic*			UIPsyHealthIcon;
+	CUIStatic* 			UIInvincibleIcon;
+//	CUIStatic			UISleepIcon;
+	CUIStatic* 			UIArtefactIcon;
 
 	CUIScrollView* m_UIIcons;
 	CUIWindow* m_pMPChatWnd;
 	CUIWindow* m_pMPLogWnd;
+	bool				useLegacyIndicators;
 
 	// Car
 	CUICarPanel UICarPanel;
@@ -144,11 +147,11 @@ public:
 	{
 		ewiAll = 0,
 		ewiWeaponJammed,
-		//		ewiRadiation,
-		//		ewiWound,
-		//		ewiStarvation,
-		//		ewiPsyHealth,
-		//		ewiSleep,
+		ewiRadiation,
+		ewiWound,
+		ewiStarvation,
+		ewiPsyHealth,
+//		ewiSleep,
 		ewiInvincible,
 		ewiArtefact,
 	};

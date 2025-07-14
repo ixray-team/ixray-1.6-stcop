@@ -92,6 +92,11 @@ public:
 	CUITextWnd*			m_ui_grenade = nullptr;
 	II_BriefInfo		m_item_info;
 	CUIStatic*			m_radia_damage = nullptr;
+	Frect				m_ui_weapon_icon_rect;
+	CUITextWnd*			m_ui_weapon_sign_ammo = nullptr;
+	CUIStatic*			m_static_armor = nullptr;
+	CUIStatic*			m_static_health = nullptr;
+	CUIStatic*			m_static_weapon = nullptr;
 	
 	CUIProgressBar*		m_ui_health_bar = nullptr;
 	CUIProgressBar*		m_ui_armor_bar = nullptr;
