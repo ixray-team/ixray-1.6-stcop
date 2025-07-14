@@ -579,6 +579,36 @@ void CUITradeWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 	lst->m_f_item_db_click			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemDbClick);
 	lst->m_f_item_selected			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemSelected);
 	lst->m_f_item_rbutton_click		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemRButtonClick);
+	lst->m_f_item_focus_received	= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemFocusReceive);
+	lst->m_f_item_focus_lost		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemFocusLost);
+	lst->m_f_item_focused_update	= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemFocusedUpdate);
+}
+
+bool CUITradeWnd::OnItemFocusReceive(CUICellItem* itm)
+{
+	itm->m_selected = true;
+
+	return true;
+}
+
+bool CUITradeWnd::OnItemFocusLost(CUICellItem* itm)
+{
+	if (itm)
+	{
+		itm->m_selected = false;
+	}
+
+	return true;
+}
+
+bool CUITradeWnd::OnItemFocusedUpdate(CUICellItem* itm)
+{
+	if (itm)
+	{
+		itm->m_selected = true;
+	}
+
+	return true;
 }
 
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool b)
