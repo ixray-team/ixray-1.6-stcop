@@ -239,6 +239,11 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("skip_transfer_enemy",			&CScriptGameObject::skip_transfer_enemy)
 		.def("set_home",					(void (CScriptGameObject::*)(LPCSTR,float,float,bool,float))(&CScriptGameObject::set_home))
 		.def("set_home",					(void (CScriptGameObject::*)(u32,float,float,bool,float))(&CScriptGameObject::set_home))
+		.def("set_home", +[](CScriptGameObject* self, pcstr name, float r_min, float r_max, bool aggressive)
+			{
+				const float r_middle = (r_min + r_max) / 2;
+				self->set_home(name, r_min, r_max, aggressive, r_middle);
+			})
 		.def("remove_home",					&CScriptGameObject::remove_home)
 		.def("berserk",						&CScriptGameObject::berserk)
 		.def("can_script_capture",			&CScriptGameObject::can_script_capture)
