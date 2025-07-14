@@ -220,4 +220,5 @@ protected:
 	virtual		void				WriteGameState			(CInifile& ini, LPCSTR sect, bool bRoundResult);
 	shared_str m_not_free_ammo_str;
 	virtual	bool CanChargeFreeAmmo(char const * ammo_section);
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

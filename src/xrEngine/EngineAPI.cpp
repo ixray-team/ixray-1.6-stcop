@@ -129,10 +129,6 @@ void CEngineAPI::Initialize(void)
 	// game
 	{
 		LPCSTR g_name	= "xrGame";
-		if (EngineExternal().ShadowOfChernobylMode())
-		{
-			g_name = "xrGameSOC";
-		}
 
 		Msg("Loading DLL: %s",g_name);
 		hGame = Platform::LoadLibrary(g_name);
