@@ -527,22 +527,48 @@ void	CRender::Statistics	(CGameFont* _F)
 #endif
 }
 
-xr_string CRender::getShaderParams() {
-	xr_string params = "";
-	if (!m_ShaderOptions.empty()) {
-		params.append("(").append(m_ShaderOptions[0].Name);
+xr_string CRender::getShaderParams()
+{
+	if (!m_ShaderOptions.empty())
+	{
+		u32 start_crc = 0xffffffff;
 
-		for (auto i = 1u; i < m_ShaderOptions.size(); ++i) {
-			params.append(",").append(m_ShaderOptions[i].Name);
+		for (auto& [Name, Value] : m_ShaderOptions)
+		{
+			start_crc = crc32(Name.data(), Name.size(), start_crc);
+			start_crc = crc32(Value.data(), Value.size(), start_crc);
 		}
 
-		params.append(")");
+		xr_string params = "_";
+		params += xr_string::ToString(start_crc);
+
+		return params;
 	}
-	return params;
+	return "";
 }
 
-void CRender::addShaderOption(const char* name, const char* value) {
-	m_ShaderOptions.emplace_back(name, value);
+xr_string CRender::getShaderParamsDebug() {
+	if (!m_ShaderOptions.empty()) {
+		xr_string params = "";
+
+		for (auto& [Name, Value] : m_ShaderOptions) {
+			params += Name + (Value[0] ? "_" + Value : "") + ",";
+		}
+
+		params[params.size() - 1] = ' ';
+		return params;
+	}
+	return "";
+}
+
+void CRender::clearAllShaderOptions()
+{
+	m_ShaderOptions = EngineExternal().ShadersOptions;
+}
+
+void CRender::addShaderOption(const char* name, const char* value)
+{
+	m_ShaderOptions[name] = value;
 }
 
 static HRESULT create_shader				(
@@ -665,11 +691,16 @@ HRESULT	CRender::shader_compile			(
 
 	char sh_name[MAX_PATH] = "";
 	u32 len	= 0;
+	
 
-	for(u32 i = 0; i < m_ShaderOptions.size(); ++i) {
-		defines[def_it++] = m_ShaderOptions[i];
+	for (auto& [Name, Value] : m_ShaderOptions)
+	{
+		defines[def_it++] = {
+			Name.c_str(),
+			Value.c_str()
+		};
 	}
-
+	
 	// options
 	const int m_skinning = Engine.External.GetSkinningMode();
 	{
