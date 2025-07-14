@@ -488,6 +488,9 @@ void CUIHudStatesWnd::Load_section()
 
 void CUIHudStatesWnd::Load_section_type( ALife::EInfluenceType type, LPCSTR section )
 {
+	if (!pSettings->section_exist(section))
+		return;
+		
 	/*m_zone_max_power[type] = pSettings->r_float( section, "max_power" );
 	if ( m_zone_max_power[type] <= 0.0f )
 	{

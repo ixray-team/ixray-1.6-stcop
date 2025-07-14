@@ -9,6 +9,11 @@ class CUIStatic;
 class CUICellItem;
 class CUIDragItem;
 
+enum EListType{
+		iwSlot,
+		iwBag,
+		iwBelt
+};
 
 struct CUICell{
 							CUICell					()						{m_item=NULL; Clear();}

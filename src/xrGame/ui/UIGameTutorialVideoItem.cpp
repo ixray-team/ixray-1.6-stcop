@@ -98,7 +98,8 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 
 	if (snd_name && snd_name[0])
 	{
-		if (FS.exist(snd_name))
+		string_path _fn;
+		if (FS.exist(_fn, "$game_sounds$", snd_name, ".ogg"))
 		{
 			m_sound.create		(snd_name,st_Effect,sg_Undefined);	
 		}

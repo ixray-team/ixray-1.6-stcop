@@ -8,6 +8,11 @@ enum ETaskState{
 	eTaskStateDummy			= u16(-1)
 };
 
+typedef shared_str		TASK_ID;
+
+using TASK_ID_VECTOR = xr_vector<TASK_ID>;
+using TASK_ID_IT = TASK_ID_VECTOR::iterator;
+
 // all task has `storyline`-type now (10.10.2008)(sea)
 enum ETaskType{
 	eTaskTypeStoryline		= 0,
@@ -19,6 +24,8 @@ enum ETaskType{
 
 
 constexpr pcstr g_active_task_no_task___internal = "__xr_no_task_-_nullptr__";
+
+constexpr auto ROOT_TASK_OBJECTIVE = static_cast<u16>(0); // task itself
 
 extern shared_str g_active_task_id[eTaskTypeCount];
 class CGameTask;
