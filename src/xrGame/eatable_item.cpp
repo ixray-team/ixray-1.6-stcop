@@ -226,7 +226,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 			}
 		}
 
-		if (CurrentGameUI() && GetMaxUses() > 1)
+		if (&CurrentGameUI()->ActorMenu() && GetMaxUses() > 1)
 		{
 			CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
 		}

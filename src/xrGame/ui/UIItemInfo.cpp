@@ -157,8 +157,11 @@ bool CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 		UIBackpackParams = new CUIArtefactParams(CUIArtefactParams::CParamType::eParamTypeBackpack);
 		UIBackpackParams->InitFromXml(uiXml);
 
-		UIBoosterInfo					= new CUIBoosterInfo();
-		UIBoosterInfo->InitFromXml		(uiXml);
+		if (uiXml.NavigateToNode("booster_params"))
+		{
+			UIBoosterInfo = new CUIBoosterInfo();
+			UIBoosterInfo->InitFromXml(uiXml);
+		}
 
 		//UIDesc_line						= new CUIStatic();
 		//AttachChild						(UIDesc_line);	

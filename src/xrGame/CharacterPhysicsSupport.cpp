@@ -83,6 +83,7 @@ CCharacterPhysicsSupport::~CCharacterPhysicsSupport()
 	
 }
 
+static bool m_legacy_hit_anims = EngineExternal().ShadowOfChernobylMode();
 CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity)
 	: m_pPhysicsShell(aentity->PPhysicsShell()),
 	m_EntityAlife(*aentity),
@@ -107,7 +108,7 @@ CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* ae
 	m_flags.assign( 0 );
 	m_flags.set(fl_death_anim_on,FALSE);
 	m_flags.set(fl_skeleton_in_shell,FALSE);
-	m_flags.set(fl_use_hit_anims,TRUE);
+	m_flags.set(fl_use_hit_anims, !m_legacy_hit_anims);
 	m_pPhysicsShell = nullptr;
 	switch(atype)
 	{

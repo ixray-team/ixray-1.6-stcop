@@ -63,7 +63,7 @@ public:
 	void				InitCharacterInfo		(Fvector2 pos, Fvector2 size, LPCSTR xml_name);
 	void				InitCharacterInfo		(CUIXml* xml_doc, LPCSTR node_str);
 	void				Init_StrInfoItem		(CUIXml& xml_doc, LPCSTR item_str, UIItemType type);
-	void				Init_IconInfoItem		(CUIXml& xml_doc, LPCSTR item_str, UIItemType type);
+	void				Init_IconInfoItem		(CUIXml& xml_doc, LPCSTR item_str, UIItemType type, bool enableStretchByDefault = false);
 
 	void				InitCharacter			(u16 id);
 	void				ClearInfo				();
