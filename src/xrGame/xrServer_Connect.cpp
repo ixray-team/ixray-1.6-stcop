@@ -19,6 +19,9 @@
 
 LPCSTR xrServer::get_map_download_url(LPCSTR level_name, LPCSTR level_version)
 {
+	if (EngineExternal().ShadowOfChernobylMode())
+		return "";
+
 	R_ASSERT(level_name && level_version);
 	LPCSTR ret_url = "";
 	CInifile* level_ini = pApp->GetArchiveHeader(level_name, level_version);
