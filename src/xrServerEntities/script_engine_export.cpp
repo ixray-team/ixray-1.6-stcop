@@ -271,6 +271,17 @@ void export_classes	(lua_State *L)
 	CPhysicsShellHolder::script_register(L);
 	CWeaponAmmo::script_register(L);
 	CGameTaskManager::script_register(L);
+
+	RPoint::script_register(L);
+	game_PlayerState::script_register(L);
+	game_GameState::script_register(L);
+	SZoneMapEntityData::script_register(L);
+	game_cl_mp::script_register(L);
+	game_cl_mp_script::script_register(L);
+	game_sv_GameState::script_register(L);
+	game_sv_Deathmatch::script_register(L);
+	game_sv_mp::script_register(L);
+	game_sv_mp_script::script_register(L);
 	CScriptXRParser::script_register(L);
 
 	// Ехидна Эдишен

@@ -250,10 +250,11 @@ public:
 
 	virtual		bool				Is_Spectator_TeamCamera_Allowed () {return m_bSpectator_TeamCamera && !Level().IsDemoPlay();};
 	virtual		bool				Is_Spectator_Camera_Allowed			(CSpectator::EActorCameras Camera);
+	virtual		bool				Is_Rewarding_Allowed			() const { return false; };
 				
 				void				SendPlayerStarted();
 	virtual		void				OnConnected				();
-	virtual		LPCSTR				GetGameScore			(string32&	score_dest) = 0;
+	virtual		LPCSTR				GetGameScore			(string32&	score_dest) {return ""; };
 #ifdef XR_MP_BUILD
 	screenshot_manager				ss_manager;
 #endif //  XR_MP_BUILD
@@ -328,4 +329,5 @@ public:
 	virtual game_cl_mp* cast_game_cl_mp() override { return this; }
 
 #include "game_cl_mp_messages_menu.h"
+				DECLARE_SCRIPT_REGISTER_FUNCTION
 };

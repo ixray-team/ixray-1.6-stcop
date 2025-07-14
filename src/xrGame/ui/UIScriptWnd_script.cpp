@@ -17,7 +17,6 @@
 #include "../../xrUI/Widgets/UIListWnd.h"
 #include "../../xrUI/Widgets/UITrackBar.h"
 #include "../../xrUI/Widgets/UIComboBox.h"
-#include "../../xrUI/Widgets/UICheckButton.h"
 #include "uiscriptwnd_script.h"
 
 using namespace luabind;

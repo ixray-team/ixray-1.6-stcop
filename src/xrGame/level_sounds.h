@@ -25,6 +25,8 @@ struct	SMusicTrack
 #ifdef DEBUG
 	shared_str		m_DbgName;
 #endif
+	ref_sound		m_SourceLeft;
+	ref_sound		m_SourceRight;
 	ref_sound		m_SourceStereo;
 	Ivector2		m_ActiveTime;
 	Ivector2		m_PauseTime;

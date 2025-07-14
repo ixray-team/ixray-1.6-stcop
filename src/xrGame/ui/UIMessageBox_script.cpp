@@ -19,6 +19,7 @@ void CUIMessageBox::script_register(lua_State *L)
 
 		class_<CUIMessageBoxEx, CUIDialogWnd>("CUIMessageBoxEx")
 		.def(constructor<>())
+		.def("Init",	&CUIMessageBoxEx::InitMessageBox) // SoC compatibility
 		.def("InitMessageBox",	&CUIMessageBoxEx::InitMessageBox)
 		.def("SetText",		&CUIMessageBoxEx::SetText)
 		.def("GetHost",		&CUIMessageBoxEx::GetHost)
