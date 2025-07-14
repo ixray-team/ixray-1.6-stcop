@@ -1,0 +1,21 @@
+	<string id="bun_code">
+		<text>A number haunts me, as if it's chasing me from a previous life. I knew it then, when I didn't believe. I remember it now - 342089. It's the code to a door but I do not remember the way to the door.</text>
+	</string>
+	<string id="bun_monolith_pda">
+		<text>Monolith soldier's PDA</text>
+	</string>
+	<string id="rad_code_door_info">
+		<text>The dead scientist had a map with a door marked on it. Code 1287975</text>
+	</string>
+	<string id="rad_code_door_info_name">
+		<text>Code door</text>
+	</string>
+	<string id="rad_get_to_aes_desc">
+		<text>Barkeep:"Everyone here just went crazy when they found out! Everyone who could started pushing towards the center of the Zone: loners, Freedom, Duty, even mercs. The one who gets there first will get everything! Wish granter, the klondike of artifacts, and the devil knows what else. Hurry up, if the Granter is indeed in the sarcophagus of the station, then the one who gets there first will get his wishes granted. Right now there's a detachment of veterans gathering in front of Pripyat. If you hurry, you'll be able to go with them."</text>
+	</string>
+	<string id="rad_sleep_info">
+		<text>I turned off the Scorcher. For some reason, I lost conciousness just as I did it. Then, I had a dream: I saw again the massive Chernobyl power plant and the sarcophagus. Then a flash. The shining Monolith inside the sarcophagus. I understand that it is the Wish-Granting Machine. A stalker, exhausted and in rags, reaches feebly out to it...a bright flash and I see a fragment of the first dream... A man stands with his back to me and keeps shooting. Someone shouts, "Strelok!". The man shudders, freezes for a moment and then starts to turn slowly...but the pictures slide past, as if a film was played backwards, and I see how he uses his weapon to force the rats back into the station... I realize that I was there. I must go to the Monolith.</text>
+	</string>
+	<string id="rad_sleep_info1">
+		<text>The Scorcher is done with</text>
+	</string>

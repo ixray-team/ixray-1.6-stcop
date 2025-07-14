@@ -1,0 +1,46 @@
+-- File:		UI_MM_MP_SERVER.SCRIPT
+-- Description:		server tab for MP menu
+-- Created:		10.06.2005
+-- Author:		Serge Vynnychenko
+-- Mail:		narrator@gsc-game.kiev.ua
+--
+-- Copyright 2005 GSC Game World
+
+class "mp_server" (CUIWindow)
+
+function mp_server:__init() super()
+end
+
+function mp_server:__finalize()
+
+end
+
+function mp_server:InitControls(x, y, xml, handler)
+	self:Init(x,y, 738, 416)
+	self:SetAutoDelete(true)
+	
+	-- SPIN BOXES	
+	handler.spin_max_players = xml:InitSpinNum("tab_server:spin_max_players", self)
+	handler.spin_mode = xml:InitSpinText("tab_server:spin_game_mode", self)
+	handler:Register(handler.spin_mode,"spin_game_mode")
+	local map_list = xml:InitMapList("tab_server:map_list", self)
+	map_list:SetWeatherSelector(handler.spin_weather)
+	map_list:SetModeSelector(handler.spin_mode)
+	map_list:LoadMapList()
+	map_list:SetMapPic(handler.map_pic)
+	map_list:SetMapInfo(handler.map_info)
+
+	handler.map_list = map_list;
+	xml:InitLabel("tab_server:cap_server_settings", self)	
+	xml:InitStatic("tab_server:cap_server_name",	self)
+	xml:InitStatic("tab_server:cap_password",		self)
+	xml:InitStatic("tab_server:cap_game_mode",		self)
+	xml:InitStatic("tab_server:cap_max_players",	self)
+	-- CHECK BOXES
+	handler.check_dedicated = xml:InitCheck("tab_server:check_dedicated", self);
+
+	-- EDIT BOXES
+	handler.edit_server_name = xml:InitEditBox("tab_server:edit_server_name", self)
+	handler.edit_password = xml:InitEditBox("tab_server:edit_password", self)
+end
+

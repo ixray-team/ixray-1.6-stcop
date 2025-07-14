@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+    <dialog id="raid_stalker">
+        <phrase_list>
+            <phrase id="111">
+                <text>raid_stalker_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="11111">
+                <text>raid_stalker_11111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="1111">
+                <text>raid_stalker_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>raid_stalker_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="trader">
+        <phrase_list>
+            <phrase id="1131">
+                <text>trader_1131</text>
+                <next>112</next>
+                <next>113</next>
+                <next>114</next>
+            </phrase>
+            <phrase id="532">
+                <text>trader_532</text>
+                <next>11411</next>
+            </phrase>
+            <phrase id="4111">
+                <text>trader_4111</text>
+                <next>11411</next>
+            </phrase>
+            <phrase id="1121">
+                <text>trader_1121</text>
+                <next>11211</next>
+            </phrase>
+            <phrase id="11211">
+                <text>trader_11211</text>
+                <next>112111</next>
+            </phrase>
+            <phrase id="112">
+                <text>trader_112</text>
+                <next>1121</next>
+            </phrase>
+            <phrase id="112111">
+                <text>trader_112111</text>
+                <next>112</next>
+                <next>113</next>
+                <next>114</next>
+            </phrase>
+            <phrase id="114">
+                <text>trader_114</text>
+                <next>1141</next>
+            </phrase>
+            <phrase id="1141">
+                <text />
+                <next>11411</next>
+            </phrase>
+            <phrase id="113">
+                <text>trader_113</text>
+                <next>1131</next>
+            </phrase>
+            <phrase id="2">
+                <text>trader_2</text>
+                <next>21</next>
+            </phrase>
+            <phrase id="21">
+                <text>trader_21</text>
+                <next>11411</next>
+            </phrase>
+            <phrase id="31">
+                <text>trader_31</text>
+                <next>11411</next>
+            </phrase>
+            <phrase id="411">
+                <text>trader_411</text>
+                <next>4111</next>
+            </phrase>
+            <phrase id="512">
+                <text>trader_512</text>
+                <next>114111</next>
+            </phrase>
+            <phrase id="521">
+                <text>trader_521</text>
+                <next>11411</next>
+            </phrase>
+            <phrase id="522">
+                <text>trader_522</text>
+                <next>11411</next>
+            </phrase>
+            <phrase id="54">
+                <text>trader_54</text>
+                <next>11411</next>
+            </phrase>
+            <phrase id="4">
+                <text>trader_4</text>
+                <next>41</next>
+            </phrase>
+            <phrase id="3">
+                <text>trader_3</text>
+                <next>31</next>
+            </phrase>
+            <phrase id="531">
+                <text>trader_531</text>
+                <next>11411</next>
+            </phrase>
+            <phrase id="53">
+                <text>trader_53</text>
+                <next>531</next>
+                <next>532</next>
+            </phrase>
+            <phrase id="41">
+                <text>trader_41</text>
+                <next>411</next>
+            </phrase>
+            <phrase id="511">
+                <text>trader_511</text>
+                <next>114111</next>
+            </phrase>
+            <phrase id="52">
+                <text>trader_52</text>
+                <next>521</next>
+                <next>522</next>
+            </phrase>
+            <phrase id="11">
+                <text>trader_11</text>
+                <next>112</next>
+                <next>113</next>
+                <next>114</next>
+            </phrase>
+            <phrase id="5">
+                <text>trader_5</text>
+                <next>51</next>
+                <next>52</next>
+                <next>53</next>
+                <next>54</next>
+            </phrase>
+            <phrase id="11411">
+                <text>trader_11411</text>
+                <next>114111</next>
+            </phrase>
+            <phrase id="1">
+                <text>trader_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="6">
+                <text>trader_6</text>
+                <action>dialogs.break_dialog</action>
+                <next>61</next>
+            </phrase>
+            <phrase id="114111">
+                <text>trader_114111</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+                <next>6</next>
+                <next>7</next>
+            </phrase>
+            <phrase id="51">
+                <text>trader_51</text>
+                <next>511</next>
+                <next>512</next>
+            </phrase>
+            <phrase id="61">
+                <text>trader_61</text>
+                <next>11411</next>
+            </phrase>
+            <phrase id="7">
+                <text>trader_7</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+                <next>6</next>
+                <next>7</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="vagonchik_stalker">
+        <phrase_list>
+            <phrase id="11111">
+                <text>vagonchik_stalker_11111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="1111">
+                <text>vagonchik_stalker_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="11">
+                <text>vagonchik_stalker_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <next>11</next>
+            </phrase>
+            <phrase id="111">
+                <text>vagonchik_stalker_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="volk">
+        <phrase_list>
+            <phrase id="211111">
+                <text>volk_211111</text>
+                <next>211</next>
+                <next>212</next>
+                <next>213</next>
+            </phrase>
+            <phrase id="2111">
+                <text>volk_2111</text>
+                <next>21111</next>
+                <next>21112</next>
+            </phrase>
+            <phrase id="21111">
+                <text>volk_21111</text>
+                <next>211111</next>
+            </phrase>
+            <phrase id="21112">
+                <text>volk_21112</text>
+                <next>211121</next>
+            </phrase>
+            <phrase id="211121">
+                <text>volk_211121</text>
+                <next>211</next>
+                <next>212</next>
+                <next>213</next>
+            </phrase>
+            <phrase id="2121">
+                <text>volk_2121</text>
+                <next>21211</next>
+            </phrase>
+            <phrase id="212111">
+                <text>volk_212111</text>
+                <next>211</next>
+                <next>212</next>
+                <next>213</next>
+            </phrase>
+            <phrase id="21211">
+                <text>volk_21211</text>
+                <next>212111</next>
+            </phrase>
+            <phrase id="212">
+                <text>volk_212</text>
+                <next>2121</next>
+            </phrase>
+            <phrase id="211">
+                <text>volk_211</text>
+                <next>2111</next>
+            </phrase>
+            <phrase id="21">
+                <text>volk_21</text>
+                <next>211</next>
+                <next>212</next>
+                <next>213</next>
+            </phrase>
+            <phrase id="213">
+                <text>volk_213</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="11">
+                <text>volk_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1">
+                <text>volk_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="31">
+                <text>volk_31</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="3">
+                <text>volk_3</text>
+                <next>31</next>
+            </phrase>
+            <phrase id="412">
+                <text>volk_412</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="422">
+                <text>volk_422</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="411">
+                <text>volk_411</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="421">
+                <text>volk_421</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="43">
+                <text>volk_43</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="41">
+                <text>volk_41</text>
+                <next>411</next>
+                <next>412</next>
+            </phrase>
+            <phrase id="42">
+                <text>volk_42</text>
+                <next>421</next>
+                <next>422</next>
+            </phrase>
+            <phrase id="51">
+                <text>volk_51</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>volk_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>volk_1111</text>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+                <next>6</next>
+            </phrase>
+            <phrase id="2">
+                <text>volk_2</text>
+                <next>21</next>
+            </phrase>
+            <phrase id="4">
+                <text>volk_4</text>
+                <next>41</next>
+                <next>42</next>
+                <next>43</next>
+            </phrase>
+            <phrase id="5">
+                <text>volk_5</text>
+                <action>dialogs.break_dialog</action>
+                <next>51</next>
+            </phrase>
+            <phrase id="6">
+                <text>volk_6</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+                <next>6</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="hlam">
+        <phrase_list>
+            <phrase id="31">
+                <text>hlam_31</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="11">
+                <text>hlam_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text />
+                <next>1111</next>
+            </phrase>
+            <phrase id="21">
+                <text>hlam_21</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1">
+                <text>hlam_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="2">
+                <text>hlam_2</text>
+                <next>21</next>
+            </phrase>
+            <phrase id="3">
+                <text>hlam_3</text>
+                <next>31</next>
+            </phrase>
+            <phrase id="4">
+                <text>hlam_4</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+            </phrase>
+            <phrase id="1111">
+                <text />
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="brodyaga">
+        <phrase_list>
+            <phrase id="23">
+                <text></text>
+                <next>111</next>
+            </phrase>
+            <phrase id="5">
+                <text></text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="12">
+                <text></text>
+                <next>111</next>
+            </phrase>
+            <phrase id="13">
+                <text></text>
+                <next>111</next>
+            </phrase>
+            <phrase id="21">
+                <text></text>
+                <next>111</next>
+            </phrase>
+            <phrase id="22">
+                <text></text>
+                <next>111</next>
+            </phrase>
+            <phrase id="3">
+                <text></text>
+                <next>31</next>
+            </phrase>
+            <phrase id="2">
+                <text></text>
+                <next>21</next>
+                <next>22</next>
+                <next>23</next>
+            </phrase>
+            <phrase id="11">
+                <text></text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+            </phrase>
+            <phrase id="41">
+                <text></text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text></text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="4">
+                <text></text>
+                <next>41</next>
+            </phrase>
+            <phrase id="31">
+                <text></text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1111">
+                <text></text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="napad">
+        <phrase_list>
+            <phrase id="1">
+                <text></text>
+                <next>11</next>
+                <next>12</next>
+            </phrase>
+            <phrase id="113">
+                <text>napad_113</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>go_to_vodka</give_info>
+            </phrase>
+            <phrase id="111">
+                <text>napad_111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="112">
+                <text>napad_112</text>
+                <next>1121</next>
+            </phrase>
+            <phrase id="1121">
+                <text>napad_1121</text>
+                <next>11211</next>
+                <next>11212</next>
+            </phrase>
+            <phrase id="11211">
+                <text>napad_11211</text>
+                <precondition>dialogs.dont_have_a_vodka</precondition>
+                <next>112111</next>
+            </phrase>
+            <phrase id="11212">
+                <text>napad_11212</text>
+                <precondition>dialogs.have_a_vodka</precondition>
+                <next>112121</next>
+            </phrase>
+            <phrase id="1121211">
+                <text>napad_1121211</text>
+                <give_info>sniper_dead</give_info>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+            <phrase id="1121111">
+                <text>napad_1121111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>go_to_vodka</give_info>
+            </phrase>
+            <phrase id="11">
+                <text>napad_11</text>
+                <dont_has_info>go_to_vodka</dont_has_info>
+                <next>111</next>
+                <next>112</next>
+                <next>113</next>
+            </phrase>
+            <phrase id="12">
+                <text>napad_12</text>
+                <has_info>go_to_vodka</has_info>
+                <next>111</next>
+                <next>112</next>
+                <next>113</next>
+            </phrase>
+            <phrase id="112121">
+                <text>napad_112121</text>
+                <action>dialogs.transfer_vodka</action>
+                <next>1121211</next>
+            </phrase>
+            <phrase id="112111">
+                <text>napad_112111</text>
+                <give_info>go_to_vodka</give_info>
+                <next>1121111</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+	<dialog id="tutorial_wounded">
+		<phrase_list>
+			<phrase id="0">
+				<text>Брат, поделись аптечкой, помираю!</text>
+				<next>1</next>
+				<next>3</next>
+			</phrase>
+			<phrase id="1">
+				<precondition>dialogs.medikit_yes</precondition>
+				<text>Возьми, потом сочтемся</text>
+				<action>dialogs.transfer_medikit2</action>
+				<give_info>tutorial_wounded_help</give_info>
+				<next>11</next>
+			</phrase>
+			<phrase id="11">
+				<text>Спасибо, браток. Волк с тобой расчитается.</text>
+			</phrase>
+			<phrase id="3">
+				<precondition>dialogs.medikit_no</precondition>
+				<text>Увы, нет у меня аптечки.</text>
+			</phrase>
+		</phrase_list>
+	</dialog>
+</game_dialogs>

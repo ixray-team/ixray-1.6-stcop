@@ -1,0 +1,72 @@
+[logic@val_rob_leader]
+active = walker@val_rob_leader_start
+
+;--------------------------------------------------------------------------
+; стартовый диалог
+;--------------------------------------------------------------------------
+[meet@val_rob_start]
+meet_dialog     = val_rob_dialog
+meet_state      = 30|wait
+meet_state_wpn  = 30|threat@threat_weap
+victim          = 30|actor
+victim_wpn      = 30|actor
+use             = true
+use_wpn         = false
+
+;--------------------------------------------------------------------------
+; игнорирование игрока
+;--------------------------------------------------------------------------
+[meet@val_rob_ignore]
+meet_state      = 0|wait
+meet_state_wpn  = 0|wait
+victim          = 0|actor
+victim_wpn      = 0|actor
+use             = false
+use_wpn         = false
+
+
+;--------------------------------------------------------------------------
+[walker@val_rob_leader_start]
+path_walk           = leader_walk
+path_look           = leader_look
+on_info             = {+val_rob_actor_enter} remark@val_rob_leader_call
+;on_info             = {+val_rob_buying} remark@val_rob_leader_wait_to_go ;walker@val_rob_leader_to_kamp
+;on_actor_dist_le    = 30 | remark@val_rob_leader_call
+meet                = meet@ignore_abuse ;meet@val_rob_start
+
+[remark@val_rob_leader_call]
+anim                = wait
+snd                 = val_rob_leader_call
+tips                = val_rob_leader_call
+target              = actor
+on_actor_dist_ge_nvis = 35 | walker@val_rob_leader_start
+on_actor_dist_le_nvis = 10 | remark@val_rob_leader_talk
+meet                = meet@ignore_abuse ;meet@val_rob_start
+
+[remark@val_rob_leader_talk]
+anim                = wait
+target              = actor
+on_info             = {+val_rob_buying} remark@val_rob_leader_wait_to_go
+on_actor_dist_ge    = 35 | walker@val_rob_leader_start
+meet                = meet@val_rob_start
+
+[remark@val_rob_leader_wait_to_go]
+anim                = wait
+on_timer            = 4500 | walker@val_rob_leader_to_kamp
+meet                = meet@val_rob_start
+
+[walker@val_rob_leader_to_kamp]
+path_walk           = leader_kamp_walk
+path_look           = leader_kamp_look
+def_state_moving1   = run
+def_state_moving2   = run
+def_state_moving3   = run
+on_signal           = arrived | remark@val_rob_leader_jeer
+meet                = no_meet 
+
+[remark@val_rob_leader_jeer]
+anim                = wait_na
+snd                 = val_rob_leader_jeer
+tips                = val_rob_leader_jeer_1
+on_signal           = sound_end | kamp@val_rob_kamp
+meet                = no_meet ;meet@val_rob_ignore

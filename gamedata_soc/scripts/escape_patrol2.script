@@ -1,0 +1,81 @@
+local units = {
+              {
+              name = "escape_patrol_commander2",
+              id = -1,
+              in_zone = false
+              },
+              {
+              name = "escape_patrol_soldier1",
+              id = -1,
+              in_zone = false
+              },              
+              {
+              name = "escape_patrol_soldier2",
+              id = -1,
+              in_zone = false
+              }
+              }              
+              
+--------------------------------------------------------------------------------------              
+function main ()
+    for a = 1, table.getn (units), 1 do
+        npc = get_level_object (units[a].name)
+        if npc ~= nil then units[a].id = npc:id () end
+    end    
+    
+    local zone = get_level_object ("escape_patrol_zone")
+    zone:set_callback (this.on_enter, true)
+    
+    while true do
+        wait (1000)
+        if this.check_zone () == true then
+           for a = 1, table.getn (units), 1 do
+               local npc = level.object_by_id (units[a].id) 
+               if npc ~= nil and npc:alive () == true then
+                  this.switch_offline (npc)
+               end
+           end
+           zone:clear_callback (true)
+           return
+        end
+    end    
+    
+end              
+--------------------------------------------------------------------------------------              
+function on_enter (zone, obj)
+    for a = 1, table.getn (units), 1 do
+        if obj:id () == units[a].id then
+           units[a].in_zone = true
+        end
+    end        
+end
+--------------------------------------------------------------------------------------              
+function check_zone ()
+    --printf ("Check zone called")
+    for a = 1, table.getn (units), 1 do
+        local npc = level.object_by_id (units[a].id)
+        if npc ~= nil then
+           if npc:alive () == false then units[a].in_zone = true end
+        end   
+        if units[a].in_zone == false then 
+           --printf ("Object out of zone") 
+           return false 
+        end
+    end    
+    return true
+end
+--------------------------------------------------------------------------------------              
+function switch_offline (npc)
+
+    if npc == nil or npc:alive () == false then return end
+    local sim = alife ()
+    if sim ~= nil then
+       sim:set_switch_online  (npc:id (), false) 
+       sim:set_switch_offline (npc:id (), true)
+       printf ("Object %s move to offline at %d time", npc:name (), device ():time_global ())
+    else
+       printf ("Object %s set sleep", npc:name ()) 
+       xr_sleeper.set_sleeper (npc, true)
+    end       
+end
+--------------------------------------------------------------------------------------              

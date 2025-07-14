@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w>
+	<frameline>ui_spiner</frameline>
+	<button_up>ui_spiner_button_t</button_up>
+	<button_down>ui_spiner_button_b</button_down>
+	<spin_height>22</spin_height>
+	<button_size_x>11</button_size_x>
+	<button_size_y>11</button_size_y>
+	<button_offset>1</button_offset>
+</w>

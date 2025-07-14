@@ -1,0 +1,52 @@
+--
+-- DELME
+--
+
+local communities = {"dolg", "military", "freedom", "monolith"}
+
+---------------------------------------------------------------------------------
+class "military_radio" (property_evaluator)
+----------------------
+function military_radio:__init (name) super (nil, name)
+    self.sound_s = { 
+                   rnd = 100,
+                   maxidle = math.random (240, 300),
+                   sumidle = math.random (2, 10),
+                   themes = { "military_radio"} 
+                   }
+    
+end
+----------------------
+function military_radio:evaluate ()
+    
+    -- check for current play sound
+	if self.object:active_sound_count() > 0 then 
+	   return true
+    end
+    
+    xr_sound.sound_update (self.object, self.sound_s)
+            
+    return true
+end
+----------------------
+function add_to_binder (npc, char_ini)
+    local manager = npc:motivation_action_manager ()
+    manager:add_evaluator (xr_evaluators_id.sidor_military_radio, this.military_radio ("evaluator_radio"))
+end
+----------------------
+
+function add (npc, action)
+
+    --if alife () == nil then
+    --if npc:community () == "soldier" then
+       action:add_precondition (world_property (xr_evaluators_id.sidor_military_radio, true))
+    --end   
+    --end    
+    
+    --local comm = npc:character_community ()
+    --for a = 1, table.getn (communities), 1 do
+        --if communities[a] == comm then
+           --action:add_precondition (world_property (xr_evaluators_id.sidor_military_radio, true))
+        --end   
+    --end       
+end

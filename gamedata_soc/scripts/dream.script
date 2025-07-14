@@ -1,0 +1,215 @@
+----------------------------------------------------------------------------------------------------
+-- Dream manager
+----------------------------------------------------------------------------------------------------
+-- Author: Oleg Kreptul (Haron) haronk@ukr.net 2005
+----------------------------------------------------------------------------------------------------
+ function printf() end
+
+can_sleep   = false
+dream_prob  = -1
+type        = "all"
+dream_types = {all = 2}
+
+local def_global_regular_probability = 80
+local def_regular_probability = 2
+local def_regular_type = "normal"
+
+class "dream_mgr"
+
+function dream_mgr:__init()
+    printf("dream <init>: START INITIALIZATION")
+
+	local ini = ini_file("misc\\dream.ltx")
+    self.regular = nil
+    self.scenario = {}
+
+    if ini:section_exist("dreams") then
+        self.regular_probability = def_global_regular_probability
+        if ini:line_exist("dreams", "regular_probability") then
+            local rp = ini:r_float("dreams", "regular_probability")
+            if rp >= 0 or rp <= 100 then
+                self.regular_probability = rp
+            end
+        end
+        if ini:line_exist("dreams", "dream_types") then
+            local rt_str = ini:r_string("dreams", "dream_types")
+            if rt_str then
+                for rt in string.gfind(rt_str, "([%w_]+)") do
+                    dream_types[rt] = 1
+                end
+            end
+        end
+        if ini:line_exist("dreams", "regular") then
+            self.regular = {}
+            local rd_str = ini:r_string("dreams", "regular")
+
+            if rd_str then
+                for rd_sect in string.gfind(rd_str, "([%w_]+)") do
+                    if ini:section_exist(rd_sect) then
+                        if ini:line_exist(rd_sect, "dream") then
+                            local dream_path = ini:r_string(rd_sect, "dream")
+                            local prob = def_regular_probability
+                            local tp = def_regular_type
+
+                            if ini:line_exist(rd_sect, "probability") then
+                                local p = ini:r_float(rd_sect, "probability")
+                                if p >= 0 then
+                                    prob = p
+                                end
+                            end
+
+                            if ini:line_exist(rd_sect, "type") then
+                                local t = ini:r_float(rd_sect, "type")
+                                if dream_types[t] == 1 then
+                                    tp = t
+                                end
+                            end
+
+                            self.regular[rd_sect] = {dream_path, prob, tp}
+                        else
+                            printf("dream <error>: can't find field <dream> in section [%s].", rd_sect)
+                        end
+                    else
+                        printf("dream <error>: can't find section [%s] defined in the field <regular> in section [dreams].", rd_sect)
+                    end
+                end
+            end
+        else
+            printf("dream <error>: can't find field <regular> in section [dreams].")
+        end
+
+        if ini:line_exist("dreams", "scenario") then
+            self.scenario = {}
+            local sd_str = ini:r_string("dreams", "scenario")
+
+            if sd_str then
+                for sd_sect in string.gfind(sd_str, "([%w_]+)") do
+                    if ini:section_exist(sd_sect) then
+                        if ini:line_exist(sd_sect, "dream") then
+                            local dream_path = ini:r_string(sd_sect, "dream")
+
+                            if ini:line_exist(sd_sect, "cond") then
+                                local cond = xr_logic.cfg_get_condlist(ini, sd_sect, "cond", self)
+                                local to_regular = nil
+
+                                if ini:line_exist(sd_sect, "to_regular") then
+                                    local prob = def_regular_probability
+                                    local tp = def_regular_type
+                                    local tr = ini:r_string(sd_sect, "to_regular")
+                                    local at, to, p, t = string.find(tr, "(%d+),(%w+)")
+                                    p = tonumber(p)
+                                    if p then
+                                        prob = p
+                                    end
+                                    if dream_types[t] == 1 then
+                                        tp = t
+                                    end
+                                    to_regular = {prob, tp}
+                                end
+
+                                self.scenario[sd_sect] = {dream_path, cond, to_regular}
+                            else
+                                printf("dream <error>: can't find field <cond> in section [%s].", sd_sect)
+                            end
+                        else
+                            printf("dream <error>: can't find field <dream> in section [%s].", sd_sect)
+                        end
+                    else
+                        printf("dream <error>: can't find section [%s] defined in the field <scenario> in section [dreams].", sd_sect)
+                    end
+                end
+            end
+        else
+            printf("dream <error>: can't find field <scenario> in section [dreams].")
+        end
+    else
+        printf("dream <error>: can't find section [dreams].")
+    end
+
+    printf("dream <init>: END INITIALIZATION")
+end
+
+function dream_mgr:name()
+    return "dream_mgr"
+end
+
+function dream_mgr:get_dream()
+    local k, v
+    local dream = nil
+
+    for k, v in pairs(self.scenario) do
+	    local c = xr_logic.pick_section_from_condlist(db.actor, self, v[2].condlist)
+	    --printf("dream <sleep>: dream(%s) cond(%s)", k, tostring(c))
+	    if c == "true" or c == "" then
+	        dream = k
+	        --printf("dream <sleep>: take")
+	        break
+	    end
+    end
+    
+    if not dream then -- check regular dream
+        local rval = math.random(100)
+        local rp = self.regular_probability
+
+        if dream_prob >= 0 then
+            rp = dream_prob
+        end
+
+        if rval < rp and dream_types[type] then
+            local prob_power = 0
+
+            for k, v in pairs(self.regular) do
+                if type == "all" or type == v[3] then
+                    prob_power = prob_power + v[2]
+                end
+            end
+            
+            if prob_power > 0 then
+                local cur_prob = 0
+
+                rval = math.random(prob_power)
+                for k, v in pairs(self.regular) do
+                    if type == "all" or type == v[3] then
+                        if rval <  cur_prob + v[2] then
+                            return v[1]
+                        else
+                            cur_prob = cur_prob + v[2]
+                        end
+                    end
+                end
+            end
+        end
+    else
+        v = self.scenario[dream]
+        if v[3] then -- put this dream into regular
+            self.regular[dream] = {v[1], v[3][1], v[3][2]}
+            self.scenario[dream] = nil
+        end
+        return v[1]
+    end
+
+    return "" -- no dreams
+end
+
+----------------------------------------------------------------------------------------------------
+--- Sleep callbacks
+----------------------------------------------------------------------------------------------------
+
+local dream_manager = dream_mgr()
+
+function can_sleep_callback()
+    -- function must return "can_sleep" to allow actor sleeping,
+    -- otherwise return string_table identifier that describes  reason
+    if can_sleep == true then
+        printf("dream <can_sleep_callback>: can_sleep")
+        return "can_sleep" -- registered keyword
+    else
+        printf("dream <can_sleep_callback>: cant_sleep_not_on_solid_ground")
+        return "cant_sleep_not_on_solid_ground"
+    end
+end	
+
+function sleep_video_name_callback()
+	-- function returns video file name or empty string
+    return dream_manager:get_dream()
+end

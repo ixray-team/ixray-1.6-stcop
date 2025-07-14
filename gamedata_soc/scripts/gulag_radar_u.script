@@ -1,0 +1,1062 @@
+local t = {}
+local gulags = {}
+
+function load_job(sj, gname, type, squad, groups)
+
+      if type == "bun_camper1" then
+		t = { section = "logic@bun_camper1_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper1_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper2" then
+		t = { section = "logic@bun_camper2_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper2_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+		
+	   if type == "bun_camper3" then
+		t = { section = "logic@bun_camper3_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper3_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper4" then
+		t = { section = "logic@bun_camper4_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper4_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper5" then
+		t = { section = "logic@bun_camper5_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper5_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper6" then
+		t = { section = "logic@bun_camper6_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper6_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper7" then
+		t = { section = "logic@bun_camper7_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper7_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+       
+		 if type == "bun_camper8" then
+		t = { section = "logic@bun_camper8_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper8_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper9" then
+		t = { section = "logic@bun_camper9_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper9_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper10" then
+		t = { section = "logic@bun_camper10_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper10_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper11" then
+		t = { section = "logic@bun_camper11_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper11_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper12" then
+		t = { section = "logic@bun_camper12_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper12_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper13" then
+		t = { section = "logic@bun_camper13_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper13_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper14" then
+		t = { section = "logic@bun_camper14_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper14_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper15" then
+		t = { section = "logic@bun_camper15_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper15_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+       
+        if type == "bun_camper16" then
+		t = { section = "logic@bun_camper16_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper16_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper17" then
+		t = { section = "logic@bun_camper17_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper17_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper18" then
+		t = { section = "logic@bun_camper18_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper18_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper19" then
+		t = { section = "logic@bun_camper19_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper19_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+       
+        if type == "bun_camper20" then
+		t = { section = "logic@bun_camper20_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper20_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper21" then
+		t = { section = "logic@bun_camper21_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper21_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+        if type == "bun_camper22" then
+		t = { section = "logic@bun_camper22_camper1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+        table.insert(sj, t)
+		
+		t = { section = "logic@bun_camper22_camper11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_bunker"
+							end
+		}
+		table.insert(sj, t)
+       end
+       
+       
+		if type == "bun_patrol1" then
+		t = { section = "logic@bun_patrol1_patrol1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+
+       t = { section = "logic@bun_patrol1_patrol2",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+		
+		t = { section = "logic@bun_patrol1_patrol11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+
+       t = { section = "logic@bun_patrol1_patrol21",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+		
+       end
+       
+       if type == "bun_patrol2" then
+		t = { section = "logic@bun_patrol2_patrol1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+
+       t = { section = "logic@bun_patrol2_patrol2",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+		
+		t = { section = "logic@bun_patrol2_patrol11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+
+       t = { section = "logic@bun_patrol2_patrol21",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+		
+       end
+       
+       
+       if type == "bun_patrol3" then
+		t = { section = "logic@bun_patrol3_patrol1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+
+       t = { section = "logic@bun_patrol3_patrol2",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+		
+		t = { section = "logic@bun_patrol3_patrol11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+
+       t = { section = "logic@bun_patrol3_patrol21",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+		
+       end
+       
+       if type == "bun_patrol4" then
+		t = { section = "logic@bun_patrol4_patrol1",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+
+       t = { section = "logic@bun_patrol4_patrol2",
+			idle = 0,
+			prior = 1, state = {0},
+			online = false, 
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+		
+		t = { section = "logic@bun_patrol4_patrol11",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+
+       t = { section = "logic@bun_patrol4_patrol21",
+			idle = 0,
+			prior = 1, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info) return obj_info.profile_name == "rad_monolit_master"
+							end
+		}
+		table.insert(sj, t)	
+		
+       end
+      
+      
+       
+       
+		
+      
+       if type == "bun_krovosos_nest" then
+		t = { section = "logic@bun_krovosos_nest_home1",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "bun_krovosos_border3"
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@bun_krovosos_nest_home2",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = "bun_krovosos_border2"
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@bun_krovosos_nest_home3",
+			idle = 0,
+			prior = 1, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+      end
+      
+
+end
+
+function load_states(gname, type)
+ 
+   if type == "bun_camper1" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+   
+   if type == "bun_camper2" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper3" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper4" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	
+	if type == "bun_camper5" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper6" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper7" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper8" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper9" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper10" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper11" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper12" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper13" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	
+	if type == "bun_camper14" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper15" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper16" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper17" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper18" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper19" then
+		return function(gulag)
+			if has_alife_info("+bun_actor_vstal") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper20" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper21" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_camper22" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_patrol1" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_patrol2" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_patrol3" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	if type == "bun_patrol4" then
+		return function(gulag)
+			if has_alife_info("bun_antenna_off") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	
+    if type == "bun_krovosos_nest" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+end
+
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	return nil
+end
+--------------------------------------------------------------------------
+function checkStalker(npc_community, gulag_type)
+    
+    if gulag_type == "bun_camper1" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper2" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper3" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper4" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper5" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper6" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper7" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper8" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper9" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper10" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper11" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper12" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper13" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper14" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper15" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper16" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper17" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper18" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper19" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper20" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper21" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_camper22" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_patrol1" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_patrol2" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_patrol3" then
+	   return npc_community == "monolith"
+	end
+	
+	if gulag_type == "bun_patrol4" then
+	   return npc_community == "monolith"
+	end
+
+	return false
+end
+
+function checkMonster( npc_community, gulag_type )
+
+   if gulag_type == "bun_krovosos_nest" then
+	   return npc_community == "bloodsucker"
+	end 
+	return false
+end

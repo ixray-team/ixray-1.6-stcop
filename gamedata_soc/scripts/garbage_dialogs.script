@@ -1,0 +1,30 @@
+
+function has_dolg_bribe(actor, npc)
+	return actor:money() >= 500
+end
+
+function give_dolg_bribe(actor, npc)
+	dialogs.relocate_money(npc, 500, "out")	
+end
+
+function hellcar_payment (stalker, player)
+	dialogs.relocate_money(stalker, 2000, "in")
+	db.actor:give_info_portion("gar_hellcar_thanks")
+end
+
+function seryi_payment (stalker, player)
+	dialogs.relocate_money(stalker, 2500, "in")
+end
+
+function blokpost_pass (actor, npc)
+     if dialogs.actor_in_dolg() == true or
+          has_alife_info("gar_free_pass")
+     then
+          return true
+     end
+     return false
+end
+
+function give_money_from_newbie(first_speaker, second_speaker)	
+	dialogs.relocate_money(first_speaker, 500, "in")
+end

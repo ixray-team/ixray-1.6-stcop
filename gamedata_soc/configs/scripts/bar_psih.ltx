@@ -1,0 +1,60 @@
+[logic]
+active = walker@start
+
+[walker@start]
+path_walk = bar_bar_psih_walk
+path_look = bar_bar_psih_look
+wounded = wounded@pre_medkit
+meet = meet@pre_medkit
+on_info = {+bar_psih_nopain} walker@nopain
+
+[meet@pre_medkit]
+use = true
+use_wpn = true
+
+[wounded@pre_medkit]
+hp_state = 100|psycho_pain@bar_psycho_pain
+hp_state_see = 100|psycho_pain@bar_psycho_pain
+psy_state = 0|psycho_pain@bar_psycho_pain
+hp_victim = 100|nil
+hp_cover = 100|false
+hp_fight = 100|false
+help_dialog = nil
+
+
+[walker@nopain]
+path_walk = bar_bar_psih_walk
+path_look = bar_bar_psih_look
+wounded = wounded@nopain
+meet = meet@nopain
+on_info = {+bar_psih_suicide} walker@suicide
+
+[wounded@nopain]
+hp_state = 100|psycho_pain@nil
+hp_state_see = 100|psycho_pain@nil
+psy_state = 0|psycho_pain@nil
+hp_victim = 100|nil
+hp_cover = 100|false
+hp_fight = 100|false
+help_dialog = nil
+
+[meet@nopain]
+use = true
+use_wpn = true
+meet_dialog = bar_bar_psih_start_gorbun
+
+
+[walker@suicide]
+path_walk = bar_bar_psih_walk
+path_look = bar_bar_psih_look
+wounded = wounded@suicide
+
+[wounded@suicide]
+hp_state = 100|psycho_shoot@bar_psycho_goodluck
+hp_state_see = 100|psycho_shoot@bar_psycho_goodluck
+psy_state = 0|psycho_shoot@bar_psycho_goodluck
+hp_victim = 100|nil
+hp_cover = 100|false
+hp_fight = 100|false
+synsound = psycho_shoot@bar_psycho_goodluck
+help_dialog = nil
