@@ -33,6 +33,8 @@ protected:
 	CUI3tButton*			m_btn_close;
 
 	CUIStatic*				UIMainPdaFrame;
+	CUIStatic*				m_updatedSectionImage;
+	CUIStatic*				m_oldSectionImage;
 	CUIStatic*				UINoice;
 	
 	CUIStatic*				m_caption;
@@ -43,6 +45,7 @@ protected:
 	// Текущий активный диалог
 	CUIWindow*				m_pActiveDialog;
 	shared_str				m_sActiveSection;
+	xr_vector<Fvector2>		m_sign_places_main;
 
 	UIHint*					m_hint_wnd;
 
@@ -50,6 +53,7 @@ protected:
 	CUIFrameLineWnd*		UITimerBackground;
 
 	void					UpdateDateTime					();
+	void					DrawUpdatedSections				();
 private:
 	bool m_isSetActiveSubdialog = false;
 	const char* m_onSetActiveSubdialog = {};
