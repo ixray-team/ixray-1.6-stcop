@@ -20,7 +20,8 @@
 #include "Inventory.h"
 #include "UIInventoryWnd.h"
 #include "game_cl_base.h"
-
+#include "UICarBodyWnd.h"
+#include "uitradewnd.h"
 #include "../xrEngine/x_ray.h"
 #include "ui/UICellItem.h"
 
@@ -46,6 +47,8 @@ CUIGameCustom::CUIGameCustom()
 	m_msgs_xml(nullptr),		
 	m_ActorMenu(nullptr), 
 	m_InventoryMenu(nullptr),
+	m_CarBodyMenu(nullptr),
+	m_TradeMenu(nullptr),
 	m_PdaMenu(nullptr),		
 	m_window(nullptr), 
 	UIMainIngameWnd(nullptr), 
@@ -224,6 +227,8 @@ void CUIGameCustom::OnInventoryAction(PIItem item, u16 action_type)
 {
 	if (m_ActorMenu != nullptr && m_ActorMenu->IsShown() )
 		m_ActorMenu->OnInventoryAction( item, action_type );
+	else if (m_InventoryMenu != nullptr && m_InventoryMenu->IsShown())
+		m_InventoryMenu->InitInventory_delayed();
 }
 
 #include "ui/UIGameTutorial.h"
@@ -271,6 +276,14 @@ void CUIGameCustom::HideActorMenu()
 	else if (m_InventoryMenu && m_InventoryMenu->IsShown())
 	{
 		m_InventoryMenu->HideDialog();
+	}
+	else if (m_CarBodyMenu && m_CarBodyMenu->IsShown())
+	{
+		m_CarBodyMenu->HideDialog();
+	}
+	else if (m_TradeMenu && m_TradeMenu->IsShown())
+	{
+		m_TradeMenu->Show(false);
 	}
 }
 
@@ -342,16 +355,25 @@ void CUIGameCustom::HidePdaMenu()
 void  CUIGameCustom::StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner)
 {
 	//.	if( MainInputReceiver() )	return;
+	if (m_ActorMenu)
+	{
+		m_ActorMenu->SetActor(pActorInv);
+		m_ActorMenu->SetPartner(pOtherOwner);
 
-	m_ActorMenu->SetActor(pActorInv);
-	m_ActorMenu->SetPartner(pOtherOwner);
-
-	m_ActorMenu->SetMenuMode(mmTrade);
-	m_ActorMenu->ShowDialog(true);
+		m_ActorMenu->SetMenuMode(mmTrade);
+		m_ActorMenu->ShowDialog(true);
+	}
+	else if (m_TradeMenu)
+	{
+		m_TradeMenu->InitTrade(pActorInv, pOtherOwner);
+		m_TradeMenu->Show(true);
+		m_TradeMenu->StartTrade();
+	}
 }
 
 void  CUIGameCustom::StartUpgrade(CInventoryOwner* pActorInv, CInventoryOwner* pMech)
 {
+	R_ASSERT2(m_ActorMenu, "No actor menu detected - cannot initialize upgrade window");
 	//.	if( MainInputReceiver() )	return;
 
 	m_ActorMenu->SetActor(pActorInv);
@@ -394,11 +416,19 @@ void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pO
 		backpack_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
 	}
 
-	m_ActorMenu->SetActor(pActorInv);
-	m_ActorMenu->SetPartner(pOtherOwner);
+	if (m_ActorMenu)
+	{
+		m_ActorMenu->SetActor(pActorInv);
+		m_ActorMenu->SetPartner(pOtherOwner);
 
-	m_ActorMenu->SetMenuMode(mmDeadBodySearch);
-	m_ActorMenu->ShowDialog(true);
+		m_ActorMenu->SetMenuMode(mmDeadBodySearch);
+		m_ActorMenu->ShowDialog(true);
+	}
+	else if (m_CarBodyMenu)
+	{
+		m_CarBodyMenu->InitCarBody(pActorInv, pOtherOwner);
+		m_CarBodyMenu->ShowDialog(true);
+	}
 }
 
 void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox) //Deadbody search
@@ -413,13 +443,20 @@ void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox
 	{
 		backpack_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
 	}
-
-	m_ActorMenu->SetActor(pActorInv);
-	m_ActorMenu->SetInvBox(pBox);
 	VERIFY(pBox);
+	if (m_ActorMenu)
+	{
+		m_ActorMenu->SetActor(pActorInv);
+		m_ActorMenu->SetInvBox(pBox);
 
-	m_ActorMenu->SetMenuMode(mmDeadBodySearch);
-	m_ActorMenu->ShowDialog(true);
+		m_ActorMenu->SetMenuMode(mmDeadBodySearch);
+		m_ActorMenu->ShowDialog(true);
+	}
+	else if (m_CarBodyMenu)
+	{
+		m_CarBodyMenu->InitCarBody(pActorInv, pBox);
+		m_CarBodyMenu->ShowDialog(true);
+	}
 }
 
 void CUIGameCustom::SetClGame(game_cl_GameState* g)
@@ -432,6 +469,8 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(m_msgs_xml);
 	xr_delete					(m_ActorMenu);
 	xr_delete					(m_InventoryMenu);
+	xr_delete					(m_CarBodyMenu);
+	xr_delete					(m_TradeMenu);
 	xr_delete					(m_PdaMenu);
 	xr_delete					(m_window);
 	xr_delete					(UIMainIngameWnd);
@@ -457,7 +496,9 @@ void CUIGameCustom::Load()
 		}
 		else
 		{
+			m_CarBodyMenu			= new CUICarBodyWnd	();
 			m_InventoryMenu			= new CUIInventoryWnd	();
+			m_TradeMenu				= new CUITradeWnd	();
 		}
 
 		R_ASSERT				(nullptr==m_PdaMenu);
