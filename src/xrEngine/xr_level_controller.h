@@ -64,6 +64,8 @@ enum EGameActions
 	kSKIN,
 	kTEAM,
 	kACTIVE_JOBS,
+	kMAP,
+	kCONTACTS,
 						
 	kVOTE_BEGIN,
 	kSHOW_ADMIN_MENU,
@@ -88,6 +90,7 @@ enum EGameActions
 
 	kUSE_BANDAGE,
 	kUSE_MEDKIT,
+	kENGINE,
 
 	kCUSTOM1,
 	kCUSTOM2,
