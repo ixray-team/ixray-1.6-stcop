@@ -8,7 +8,7 @@
 
 #include "../Level.h"
 #include "UIGameCustom.h"
-
+#include "UIStalkersRankingWnd.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UITabControl.h"
@@ -30,7 +30,8 @@
 #include "UIScriptWnd.h"
 #include "UIPdaContactsWnd.h"
 #include "UIEncyclopediaWnd.h"
-#include "UIStalkersRankingWnd.h"
+#include "uiactorinfo.h"
+#include "uidiarywnd.h"
 
 #define PDA_XML		"pda.xml"
 
@@ -49,6 +50,12 @@ CUIPdaWnd::CUIPdaWnd()
 	pUILogsWnd       = nullptr;
 	UIPdaContactsWnd = nullptr;
 	pUIEventsWnd       = nullptr;
+	pUIStalkersRankingWnd = nullptr;
+	pUIEncyclopediaWnd = nullptr;
+	pUIActorInfoWnd	 = nullptr;
+	pUIDiaryWnd		 = nullptr;
+	pUIMapWnd		 = nullptr;
+
 	m_hint_wnd       = nullptr;
 	m_caption		 = nullptr;
 	m_caption_const	 = "";
@@ -57,8 +64,6 @@ CUIPdaWnd::CUIPdaWnd()
 	UITimerBackground = nullptr;
 	UINoice			 = nullptr;
 	m_btn_close		 = nullptr;
-	pUIEncyclopediaWnd = nullptr;
-	pUIStalkersRankingWnd = nullptr;
 	m_updatedSectionImage = nullptr;
 	m_oldSectionImage = nullptr;
 	m_sign_places_main.clear();
@@ -75,12 +80,16 @@ CUIPdaWnd::~CUIPdaWnd()
 	delete_data( pUIRankingWnd );
 	delete_data( pUILogsWnd );
 	delete_data( pUIEventsWnd );
+	delete_data( pUIStalkersRankingWnd );
+	delete_data( pUIEncyclopediaWnd );
+	delete_data( pUIActorInfoWnd );
+	delete_data( pUIDiaryWnd );
+	delete_data( pUIMapWnd );
+
 	delete_data( m_hint_wnd );
 	delete_data( UINoice );
 	delete_data( m_updatedSectionImage );
 	delete_data( m_oldSectionImage );
-	delete_data( pUIEncyclopediaWnd );
-	delete_data( pUIStalkersRankingWnd );
 }
 
 void CUIPdaWnd::Init()
@@ -202,12 +211,30 @@ void CUIPdaWnd::Init()
 		pUILogsWnd->Init				();
 	}
 
-	
 	if (UITabControl->GetButtonById("eptEncyclopedia"))
 	{
 		pUIEncyclopediaWnd = new CUIEncyclopediaWnd();
 		pUIEncyclopediaWnd->Init();
 	}
+
+	if (UITabControl->GetButtonById("eptActorStatistic"))
+	{
+		pUIActorInfoWnd = new CUIActorInfoWnd();
+		pUIActorInfoWnd->Init();
+	}
+
+	if (UITabControl->GetButtonById("eptDiary"))
+	{
+		pUIDiaryWnd = new CUIDiaryWnd();
+		pUIDiaryWnd->Init();
+	}
+	
+	if (UITabControl->GetButtonById("eptMap"))
+	{
+		pUIMapWnd = new CUIMapWnd();
+		pUIMapWnd->Init("pda_map.xml", "map_wnd");
+	}
+
 
 	if (uiXml.NavigateToNode("noice_static"))
 	{
@@ -362,8 +389,12 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	}
 	else if (section == "eptRanking")
 	{
-		if (IsGameTypeSingle()) {
-			m_pActiveDialog = pUIRankingWnd;
+		if (IsGameTypeSingle()) 
+		{
+			if (pUIRankingWnd)
+				m_pActiveDialog = pUIRankingWnd;
+			else
+				m_pActiveDialog = pUIStalkersRankingWnd;
 		}
 	}
 	else if (section == "eptRankingGlobal")
@@ -377,6 +408,18 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	else if (section == "eptEncyclopedia")
 	{
 		m_pActiveDialog = pUIEncyclopediaWnd;
+	}
+	else if (section == "eptActorStatistic")
+	{
+		m_pActiveDialog = pUIActorInfoWnd;
+	}
+	else if (section == "eptDiary")
+	{
+		m_pActiveDialog = pUIDiaryWnd;
+	}
+	else if (section == "eptMap")
+	{
+		m_pActiveDialog = pUIMapWnd;
 	}
 	if (m_isSetActiveSubdialog)
 	{
@@ -487,7 +530,8 @@ void CUIPdaWnd::DrawHint()
 	}
 	else if (m_sActiveSection == "eptRanking")
 	{
-		pUIRankingWnd->DrawHint();
+		if (pUIRankingWnd)
+			pUIRankingWnd->DrawHint();
 	}
 	else if (m_sActiveSection == "eptLogs")
 	{
@@ -595,14 +639,38 @@ void CUIPdaWnd::Reset()
 {
 	inherited::ResetAll		();
 
-	if ( pUIEventsWnd )		pUIEventsWnd->ResetAll();
-	if ( pUITaskWnd )		pUITaskWnd->ResetAll();
-	if ( pUIFactionWarWnd )	pUIFactionWarWnd->ResetAll();
-	if ( UIPdaContactsWnd )	UIPdaContactsWnd->ResetAll();
-	if ( pUIRankingWnd )	pUIRankingWnd->ResetAll();
-	if ( pUILogsWnd )		pUILogsWnd->ResetAll();
-	if ( pUIEncyclopediaWnd )	pUIEncyclopediaWnd->ResetAll();
-	if ( pUIStalkersRankingWnd )	pUIStalkersRankingWnd->ResetAll();
+	if ( pUIEventsWnd )		
+		pUIEventsWnd->ResetAll();
+
+	if ( pUITaskWnd )		
+		pUITaskWnd->ResetAll();
+
+	if ( pUIFactionWarWnd )	
+		pUIFactionWarWnd->ResetAll();
+
+	if ( UIPdaContactsWnd )	
+		UIPdaContactsWnd->ResetAll();
+
+	if ( pUIRankingWnd )	
+		pUIRankingWnd->ResetAll();
+
+	if ( pUIStalkersRankingWnd )	
+		pUIStalkersRankingWnd->ResetAll();
+
+	if ( pUILogsWnd )		
+		pUILogsWnd->ResetAll();
+
+	if ( pUIEncyclopediaWnd )		
+		pUIEncyclopediaWnd->ResetAll();
+
+	if ( pUIActorInfoWnd )	
+		pUIActorInfoWnd->ResetAll();
+
+	if ( pUIDiaryWnd )	
+		pUIDiaryWnd->ResetAll();
+	
+	if ( pUIMapWnd )	
+		pUIMapWnd->ResetAll();
 }
 
 void CUIPdaWnd::SetCaption( LPCSTR text )
