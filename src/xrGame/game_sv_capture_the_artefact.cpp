@@ -1506,8 +1506,8 @@ void game_sv_CaptureTheArtefact::OnPlayerHitPlayer_Case(
 		SHit* pHitS
 	)
 {
-	//if (pHitS->hit_type != ALife::eHitTypePhysicStrike)
-	//{
+	if (pHitS->hit_type != ALife::eHitTypePhysicStrike)
+	{
 		if (ps_hitter && ps_hitted)
 		{
 			if (ps_hitter->team == ps_hitted->team && ps_hitter != ps_hitted)
@@ -1521,7 +1521,7 @@ void game_sv_CaptureTheArtefact::OnPlayerHitPlayer_Case(
 			pHitS->power = 0;
 			pHitS->impulse = 0;
 		}
-//	}
+	}
 };
 
 void game_sv_CaptureTheArtefact::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA)

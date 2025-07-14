@@ -1166,7 +1166,7 @@ void CPHMovementControl::ApplyHit(const Fvector& dir,const float P,ALife::EHitTy
 			case ALife::eHitTypeExplosion:											;//stop
 			case ALife::eHitTypeFireWound:											;//stop
 			case ALife::eHitTypeWound_2:											;break;//stop		//knife's alternative fire
-//			case ALife::eHitTypePhysicStrike:	SetVelocity(Fvector().set(0,0,0))	;break;//stop
+			case ALife::eHitTypePhysicStrike:	SetVelocity(Fvector().set(0,0,0))	;break;//stop
 			default:																NODEFAULT	;
 		}
 	}
