@@ -585,22 +585,32 @@ void CUIPdaWnd::PdaContentsChanged	(pda_section::part type)
 {
 	bool b = true;
 
-	if(type==pda_section::encyclopedia){
+	if (type == pda_section::encyclopedia && pUIEncyclopediaWnd)
+	{
 		pUIEncyclopediaWnd->ReloadArticles	();
-	}else
-	if(type==pda_section::news){
-		pUIDiaryWnd->AddNews				();
-		pUIDiaryWnd->MarkNewsAsRead			(pUIDiaryWnd->IsShown());
-	}else
-	if(type==pda_section::quests){
+	}
+	else if (type == pda_section::news && pUIDiaryWnd)
+	{
+		pUIDiaryWnd->AddNews();
+		pUIDiaryWnd->MarkNewsAsRead(pUIDiaryWnd->IsShown());
+	}
+	else if (type == pda_section::quests && pUIEventsWnd)
+	{
 		pUIEventsWnd->Reload				();
-	}else
-	if(type==pda_section::contacts){
-		UIPdaContactsWnd->Reload			();
+	}
+	else if (type == pda_section::contacts)
+	{
+		if (UIPdaContactsWnd)
+			UIPdaContactsWnd->Reload			();
+		b = false;
+	}
+	else
+	{
 		b = false;
 	}
 
-	if(b){
+	if(b)
+	{
 		g_pda_info_state |= type;
 		CurrentGameUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, true);
 	}
