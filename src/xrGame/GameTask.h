@@ -93,7 +93,7 @@ public:
     auto GetTaskState() const { return m_task_state; }
 
     auto GetTaskType() const { return m_task_type; }
-    virtual CMapLocation* LinkedMapLocation() { return m_linked_map_location; }
+    virtual CMapLocation* LinkedMapLocation();
 
     ETaskState UpdateState();
 

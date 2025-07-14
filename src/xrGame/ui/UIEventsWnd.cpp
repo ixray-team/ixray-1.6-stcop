@@ -289,16 +289,15 @@ bool CUIEventsWnd::ItemHasDescription(CUITaskItemLegacy* itm)
 {
 	if(itm->ObjectiveIdx()==0)// root
 	{
-		bool bHasLocation	= itm->GameTask()->LinkedMapLocation();
-		return bHasLocation;
-	}else
+		return itm->GameTask()->LinkedMapLocation();
+	}
+	else
 	{
 		SGameTaskObjective	*obj				= itm->Objective();
 		CMapLocation* ml						= obj->LinkedMapLocation();
 		bool bHasLocation						= (nullptr != ml);
 		bool bIsMapMode							= GetDescriptionMode(); 
-		bool b									= (bIsMapMode&&bHasLocation&&ml->SpotEnabled());
-		return b;
+		return (bIsMapMode && bHasLocation && ml->SpotEnabled());
 	}
 }
 void CUIEventsWnd::Reset()
