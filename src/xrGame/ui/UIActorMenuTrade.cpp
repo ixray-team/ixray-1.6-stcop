@@ -160,7 +160,7 @@ void CUIActorMenu::DeInitTradeMode()
 	if (!CurrentGameUI())
 		return;
 
-	if (CurrentGameUI()->TalkMenu->IsShown())
+	if (CurrentGameUI()->TalkMenu && CurrentGameUI()->TalkMenu->IsShown())
 	{
 		CurrentGameUI()->TalkMenu->NeedUpdateQuestions();
 	}
