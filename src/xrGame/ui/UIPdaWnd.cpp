@@ -387,7 +387,10 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	}
 	else if (section == "eptContacts")
 	{
-		m_pActiveDialog = UIPdaContactsWnd;
+		if (UIPdaContactsWnd) // safety check for contacts keybind
+			m_pActiveDialog = UIPdaContactsWnd;
+		else
+			m_pActiveDialog = pUITaskWnd;
 		g_pda_info_state &= ~pda_section::contacts;
 	}
 	else if (section == "eptRanking")
@@ -427,7 +430,10 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	}
 	else if (section == "eptMap")
 	{
-		m_pActiveDialog = pUIMapWnd;
+		if (pUIMapWnd) // safety check for map keybind
+			m_pActiveDialog = pUIMapWnd;
+		else
+			m_pActiveDialog = pUITaskWnd;
 		g_pda_info_state &= ~pda_section::map;
 	}
 	if (m_isSetActiveSubdialog)
