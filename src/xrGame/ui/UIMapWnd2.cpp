@@ -32,10 +32,13 @@ void CUIMapWnd::init_xml_nav( CUIXml& xml, LPCSTR start_from )
 
 		string512 temp;
 		m_btn_nav[btn_zoom_reset] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":global_map_btn"), UIMainMapHeader);
+		Register(m_btn_nav[btn_zoom_reset]);
 		m_btn_nav[btn_actor] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":actor_btn"), UIMainMapHeader);
+		Register(m_btn_nav[btn_actor]);
 		m_btn_nav[btn_zoom_more] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":zoom_in_btn"), UIMainMapHeader);
+		Register(m_btn_nav[btn_zoom_more]);
 		m_btn_nav[btn_zoom_less] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":zoom_out_btn"), UIMainMapHeader);
-
+		Register(m_btn_nav[btn_zoom_less]);
 	}
 	AddCallback( m_btn_nav[btn_legend],						BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnLegend_Push	) );
 //	AddCallback( m_btn_nav[btn_up]->WindowName(),			BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnUp_Push		) );

@@ -41,6 +41,7 @@ private:
 	const char* m_onPropertyBoxAddProperties = {};
 
 	float						m_map_move_step;
+	bool						m_use_legacy_map;
 
 	float						m_currentZoom;
 	CUIGlobalMap*				m_GlobalMap;
@@ -56,6 +57,7 @@ private:
 
 	CUIMapLocationHint*			m_map_location_hint;
 	CUIPdaSpot*					m_UserSpotWnd;
+	CUITextWnd*					m_text_hint;
 
 	enum EBtnPos
 	{

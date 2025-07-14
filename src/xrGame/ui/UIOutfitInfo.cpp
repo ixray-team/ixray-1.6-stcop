@@ -190,12 +190,15 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 	CActor* actor = Level().CurrentViewEntity()->cast_actor();
 	if ( !actor || !cur_outfit )
 	{
+		for (u32 i = 0; i < max_count; ++i)
+		{
+			if (m_items_legacy[i])
+				SetItem(nullptr, i, false);
+		}
 		return;
 	}
-
-
 	for ( u32 i = 0; i < max_count; ++i )
-	{
+	{	
 		if (m_items_legacy[i])
 		{
 			SetItem(cur_outfit, i, false);
@@ -304,9 +307,10 @@ void CUIOutfitInfo::SetItem(CCustomOutfit* outfit, u32 hitType, bool force_add)
 
     CUIStatic* _s          = m_items_legacy[hitType];
 
-    _val_outfit            = outfit->GetDefHitTypeProtection(ALife::EHitType(hitType));
+    _val_outfit            = outfit ? outfit->GetDefHitTypeProtection(ALife::EHitType(hitType)) : 0.f;
 
     _val_af                = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(hitType));
+	_val_af                = 1.0f - _val_af;
 
     if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
     {
