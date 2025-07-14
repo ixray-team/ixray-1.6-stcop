@@ -46,6 +46,11 @@ public:
 	CUIStatic* UIDialogFrameTop;
 	CUIStatic* UIDialogFrameBottom;
 
+	CUIStatic*			UIStaticTop;
+	CUIStatic*			UIStaticBottom;
+	CUIFrameLineWnd*	UIDialogFrame;
+	CUIFrameLineWnd*	UIOurPhrasesFrame;
+
 	Fvector2			m_btn_pos[3];
 	CUI3tButton			UIToTradeButton;
 	CUI3tButton*		UIToExitButton;
