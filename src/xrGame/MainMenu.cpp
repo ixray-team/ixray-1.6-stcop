@@ -152,7 +152,21 @@ void CMainMenu::ReadTextureInfo()
 
 		CUITextureMaster::ParseShTexInfo(fn3);
 	}
+	if (pSettings->section_exist("texture_desc"))
+	{
+		xr_string itemsList;
+		string256 single_item;
 
+		itemsList = pSettings->r_string("texture_desc", "files");
+		int itemsCount = _GetItemCount(itemsList.c_str());
+
+		for (int i = 0; i < itemsCount; i++)
+		{
+			_GetItem(itemsList.c_str(), i, single_item);
+			strcat(single_item, ".xml");
+			CUITextureMaster::ParseShTexInfoLegacy(single_item);
+		}
+	}
 }
 
 extern ENGINE_API BOOL	bShowPauseString;
@@ -793,6 +807,8 @@ LPCSTR CMainMenu::GetGSVer()
 	}
 	else
 	{
+		if (EngineExternal().ShadowOfChernobylMode())
+			xr_strcpy(buff, "1.0007(rc1)");
 		if (EngineExternal().ClearSkyMode())
 			xr_strcpy(buff, "1.5.10");
 		else

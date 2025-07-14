@@ -21,6 +21,7 @@ struct		RPoint
 	u32		BlockTime;
 	RPoint(){P.set(.0f,0.f,.0f);A.set(.0f,0.f,.0f); TimeToUnfreeze = 0; bBlocked = false;}
 	bool	operator ==		(const u16& ID)	const			{ return (bBlocked && BlockedByID == ID);		}
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 struct Bonus_Money_Struct {
@@ -31,7 +32,7 @@ struct Bonus_Money_Struct {
 	Bonus_Money_Struct() {Money = 0; Reason = 0; Kills=0;}
 };
 
-struct game_PlayerState final
+struct game_PlayerState
 {
 	//string64	name;
 	u8			team;
@@ -120,6 +121,7 @@ struct game_PlayerState final
 
 	s32					LastBuyAcount;
 	bool				m_bClearRun;
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 struct	game_TeamState
@@ -225,4 +227,5 @@ public:
 	virtual		float				GetEnvironmentGameTimeFactor		();
 				void				SetEnvironmentGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
 	virtual		void				SetEnvironmentGameTimeFactor		(const float fTimeFactor);
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
