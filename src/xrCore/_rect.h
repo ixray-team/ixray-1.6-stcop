@@ -98,7 +98,7 @@ typedef _rect<int>		Irect;
 template <class T>
 BOOL	_valid			(const _rect<T>& m)		
 { 
-	return m.lt._valid() && m.rb._valid();
+	return _valid(m.lt) && _valid(m.rb);
 }
 
 #endif
