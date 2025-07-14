@@ -35,6 +35,7 @@ class UI_API CUITextureMaster{
 public:
 
 	static void ParseShTexInfo			(LPCSTR xml_file);
+	static void ParseShTexInfoLegacy	(LPCSTR xml_file); // for SoC
 	static void FreeTexInfo				();
 	static void FreeCachedShaders		();
 
@@ -44,6 +45,7 @@ public:
 	static float	GetTextureHeight	(const shared_str&  texture_name);
 	static float	GetTextureWidth		(const shared_str&  texture_name);
 	static Frect	GetTextureRect		(const shared_str&  texture_name);
+	static LPCSTR	GetTextureFileName	(LPCSTR texture_name);
 	static void		GetTextureShader	(const shared_str&  texture_name, ui_shader& sh);
 	static TEX_INFO	FindItem			(const shared_str&  texture_name);
 	static bool		ItemExist			(const shared_str&	texture_name);
