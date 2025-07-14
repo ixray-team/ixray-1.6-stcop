@@ -862,8 +862,9 @@ bool CUIXmlInit::InitTabControl(CUIXml &xml_doc, LPCSTR path, int index, CUITabC
 		if (!newButton->m_btn_id.size())
 		{
 			string32 temp;
-			xr_sprintf(temp, "tab_button_%d", i);
+			xr_sprintf(temp, "%d", i);
 			newButton->m_btn_id = temp;
+			newButton->m_btn_id_default_assigned = true;
 		}
 		pWnd->AddItem(newButton);
 	}

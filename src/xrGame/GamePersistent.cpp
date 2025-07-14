@@ -980,8 +980,8 @@ void CGamePersistent::UpdateDof()
 {
 	PROF_EVENT("CGamePersistent UpdateDof");
 
-	static float diff_far = pSettings->r_float("zone_pick_dof", "far");//70.0f;
-	static float diff_near = pSettings->r_float("zone_pick_dof", "near");//-70.0f;
+	static float diff_far = READ_IF_EXISTS(pSettings, r_float, "zone_pick_dof", "far", 70.f);//70.0f;
+	static float diff_near = READ_IF_EXISTS(pSettings, r_float, "zone_pick_dof", "near", -70.f);//-70.0f;
 
 	if (m_bPickableDOF)
 	{

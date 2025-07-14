@@ -14,6 +14,10 @@
 
 CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 {
+	for ( u32 i = 0; i < _max_item_index; ++i )
+	{
+		m_info_items[i] = nullptr;
+	}
 	for ( u32 i = 0; i < ALife::eHitTypeWound_2; ++i )
 	{
 		m_immunity_item[i] = nullptr;
@@ -33,6 +37,7 @@ CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 
 CUIArtefactParams::~CUIArtefactParams()
 {
+	delete_data	( m_info_items );
 	delete_data	( m_immunity_item );
 	delete_data	( m_restore_item );
 	xr_delete(m_disp_condition);
@@ -91,6 +96,49 @@ LPCSTR af_restore_caption[] =  // ALife::EConditionRestoreType
 	"ui_inv_radiation",
 };
 
+LPCSTR af_item_sect_names[] = {
+	"health_restore_speed",
+	"radiation_restore_speed",
+	"satiety_restore_speed",
+	"power_restore_speed",
+	"bleeding_restore_speed",
+
+	"burn_immunity",
+	"strike_immunity",
+	"shock_immunity",
+	"wound_immunity",
+	"radiation_immunity",
+	"telepatic_immunity",
+	"chemical_burn_immunity",
+	"explosion_immunity",
+	"fire_wound_immunity",
+};
+
+LPCSTR af_item_param_names[] = {
+	"ui_inv_health",
+	"ui_inv_radiation",
+	"ui_inv_satiety",
+	"ui_inv_power",
+	"ui_inv_bleeding",
+
+	"ui_inv_outfit_burn_protection",			// "(burn_imm)",
+	"ui_inv_outfit_strike_protection",			// "(strike_imm)",
+	"ui_inv_outfit_shock_protection",			// "(shock_imm)",
+	"ui_inv_outfit_wound_protection",			// "(wound_imm)",
+	"ui_inv_outfit_radiation_protection",		// "(radiation_imm)",
+	"ui_inv_outfit_telepatic_protection",		// "(telepatic_imm)",
+	"ui_inv_outfit_chemical_burn_protection",	// "(chemical_burn_imm)",
+	"ui_inv_outfit_explosion_protection",		// "(explosion_imm)",
+	"ui_inv_outfit_fire_wound_protection",		// "(fire_wound_imm)",
+};
+
+LPCSTR af_actor_param_names[] = {
+	"satiety_health_v",
+	"radiation_v",
+	"satiety_v",
+	"satiety_power_v",
+	"wound_incarnation_v",
+};
 void CUIArtefactParams::InitFromXml( CUIXml& xml )
 {
 	LPCSTR base	= "af_params";
@@ -146,13 +194,31 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		}
 
 		m_restore_item[i] = new UIArtefactParamItem();
-		m_restore_item[i]->Init( xml, af_restore_section_names[i] );
-		m_restore_item[i]->SetAutoDelete(false);
+		if (m_restore_item[i]->Init( xml, af_restore_section_names[i]))
+		{
+			m_restore_item[i]->SetAutoDelete(false);
 
-		name = g_pStringTable->translate(af_restore_caption[i]).c_str();
-		m_restore_item[i]->SetCaption( name );
+			name = g_pStringTable->translate(af_restore_caption[i]).c_str();
+			m_restore_item[i]->SetCaption( name );
 
-		xml.SetLocalRoot( base_node );
+			xml.SetLocalRoot( base_node );
+		}
+		else
+		{
+			xr_delete(m_restore_item[i]);
+		}
+	}
+	for (u32 i = _item_start; i < _max_item_index; ++i)
+	{
+		string256					_buff;
+		xr_strconcat(_buff, base, ":static_", af_item_sect_names[i]);
+		if (xml.NavigateToNode(_buff))
+		{
+			m_info_items[i] = new CUIStatic();
+			CUIStatic* _s = m_info_items[i];
+			_s->SetAutoDelete(false);
+			CUIXmlInit::InitStatic(xml, _buff, 0, _s);
+		}
 	}
 	
 	if (xml.NavigateToNode("af_slots"))
@@ -166,6 +232,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		xml.SetLocalRoot(base_node);
 	}
 
+	if (xml.NavigateToNode("additional_weight"))
 	{
 		m_additional_weight = new UIArtefactParamItem();
 		m_additional_weight->Init( xml, "additional_weight" );
@@ -194,6 +261,8 @@ bool CUIArtefactParams::Check(const shared_str& af_section)
 
 void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 {
+	string128					_buff;
+	float						_h = 0.0f;
 	DetachAll();
 	if (m_Prop_line)
 		AttachChild( m_Prop_line );
@@ -251,7 +320,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 			}
 
 			val = pSettings->r_float(af_section, af_restore_section_names[i]);
-			if (fis_zero(val))
+			if (fis_zero(val) || !m_restore_item[i])
 			{
 				continue;
 			}
@@ -263,6 +332,55 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 			h += m_restore_item[i]->GetWndSize().y;
 			AttachChild(m_restore_item[i]);
+		}
+		for(u32 i=_item_start; i<_max_item_index; ++i)
+		{
+			CUIStatic* _s			= m_info_items[i];
+			if (!_s) continue;
+
+			float					_val;
+			if(i<_max_item_index1)
+			{
+				float _actor_val	= pSettings->r_float	("actor_condition", af_actor_param_names[i]);
+				_val				= pSettings->r_float	(af_section, af_item_sect_names[i]);
+	
+				if					(fis_zero(_val))				continue;
+			
+				_val				= (_val/_actor_val)*100.0f;
+			}else
+			{
+				shared_str _sect	= pSettings->r_string(af_section, "hit_absorbation_sect");
+				_val				= pSettings->r_float(_sect, af_item_sect_names[i]);
+				if					(fsimilar(_val, 1.0f))				continue;
+				_val				= (1.0f - _val);
+				_val				*= 100.0f;
+
+			}
+			LPCSTR _sn = "%";
+			if(i==_item_radiation_restore_speed || i==_item_power_restore_speed)
+			{
+				_val				/= 100.0f;
+				_sn					= "";
+			}
+
+			LPCSTR _color = (_val>0)?"%c[green]":"%c[red]";
+		
+			if(i==_item_bleeding_restore_speed)
+				_val		*=	-1.0f;
+
+			if(i==_item_bleeding_restore_speed || i==_item_radiation_restore_speed)
+				_color = (_val>0)?"%c[red]":"%c[green]";
+
+
+			sprintf_s					(	_buff, "%s %s %+.0f %s", 
+										g_pStringTable->translate(af_item_param_names[i]).c_str(), 
+										_color, 
+										_val, 
+										_sn);
+			_s->SetText				(_buff);
+			_s->SetWndPos			(Fvector2().set(_s->GetWndPos().x, _h));
+			_h						+= _s->GetWndSize().y;
+			AttachChild				(_s);
 		}
 	}
 	else if (!is_backpack())
@@ -283,7 +401,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 	{
 		val	= READ_IF_EXISTS(pSettings, r_float, af_section, "additional_inventory_weight", 0.0f);
-		if ( !fis_zero(val) )
+		if ( m_additional_weight && !fis_zero(val) )
 		{
 			m_additional_weight->SetValue(val * (is_artefact() ? pInvItem.GetCondition() : 1));
 
