@@ -97,6 +97,24 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
 
 }
 
+void CActor::AddGameTask(const CInfoPortion* info_portion) const
+{
+	VERIFY2(info_portion, "info_portion is nullptr");
+	if (!info_portion)
+	{
+		Msg("! [%s] info_portion is nullptr!", __FUNCTION__);
+		return;
+	}
+	const xr_vector<shared_str>& tasks = info_portion->GameTasks();
+	if (tasks.empty())
+		return;
+
+	for (const shared_str& taskId : tasks)
+	{
+		Level().GameTaskManager()->GiveGameTaskToActor(taskId, 0);
+	}
+}
+
 void  CActor::AddGameNews			 (GAME_NEWS_DATA& news_data)
 {
 
@@ -120,6 +138,7 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 	info_portion.Load(info_id);
 
 	AddEncyclopediaArticle(&info_portion);
+	AddGameTask(&info_portion);
 
 	callback(GameObject::eInventoryInfo)(lua_game_object(), *info_id);
 
