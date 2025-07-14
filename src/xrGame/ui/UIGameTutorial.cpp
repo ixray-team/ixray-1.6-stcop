@@ -17,6 +17,17 @@
 
 extern ENGINE_API BOOL bShowPauseString;
 
+CUISequenceItem::CUISequenceItem(CUISequencer* owner) :
+	m_owner(owner) 
+{ 
+	m_compatibility_mode = eCompatibilityDefault;
+	if (EngineExternal().ClearSkyMode())
+		m_compatibility_mode = eCompatibilityCS;
+	else if (EngineExternal().ShadowOfChernobylMode())
+		m_compatibility_mode = eCompatibilitySoC;
+	m_flags.zero(); 
+}
+
 void CallFunction(shared_str const& func)
 {
 	luabind::functor<void>		functor_to_call;
