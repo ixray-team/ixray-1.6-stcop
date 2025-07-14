@@ -98,15 +98,28 @@ ALife::EInfluenceType CUIHudStatesWnd::get_indik_type( ALife::EHitType hit_type 
 
 void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 {
-	CUIXmlInit::InitWindow( xml, path, 0, this );
 	XML_NODE* stored_root = xml.GetLocalRoot();
-	
-	XML_NODE* new_root = xml.NavigateToNode( path, 0 );
-	xml.SetLocalRoot( new_root );
+	if (xml.NavigateToNode(path))
+	{
+		CUIXmlInit::InitWindow(xml, path, 0, this);
+		XML_NODE* new_root = xml.NavigateToNode(path, 0);
+		xml.SetLocalRoot(new_root);
+	}
 
+	if (xml.NavigateToNode("back"))
+		m_back            = UIHelper::CreateStatic( xml, "back", this );
 
-	m_back            = UIHelper::CreateStatic( xml, "back", this );
-	m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", this );
+	if (xml.NavigateToNode("static_weapon"))
+		m_static_weapon = UIHelper::CreateStatic(xml, "static_weapon", this);
+
+	CUIWindow* healthBarParent = this;
+	if (xml.NavigateToNode("static_health"))
+	{
+		m_static_health = UIHelper::CreateStatic(xml, "static_health", this);
+		healthBarParent = m_static_health;
+	}
+
+	m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", healthBarParent);
 	m_ui_health_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_health", 0, "expression", nullptr) != nullptr;
 
 	if (xml.NavigateToNode("back_v", 0))
@@ -152,7 +165,11 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	m_lanim_name				= xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
 	if (xml.NavigateToNode("static_ammo", 0))
 	{
-		m_ui_weapon_sign_ammo = UIHelper::CreateTextWnd(xml, "static_ammo", this);
+		CUIWindow* ammoSignParent = this;
+		if (m_static_weapon)
+			ammoSignParent = m_static_weapon;
+
+		m_ui_weapon_sign_ammo = UIHelper::CreateTextWnd(xml, "static_ammo", ammoSignParent);
 	}
 
 	if (xml.NavigateToNode("static_cur_ammo", 0))
@@ -320,11 +337,11 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	else
 		m_ui_weapon_ammo_color_inactive = color_rgba(238, 155, 23, 150);
 
-	m_fire_mode = UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
 	
 	// Check if fire mode icon mode is enabled
 	if (xml.NavigateToNode("static_fire_mode", 0))
 	{
+		m_fire_mode = UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
 		int use_icon = xml.ReadAttribInt("static_fire_mode", 0, "use_icon", 0);
 		if (use_icon == 1)
 		{
@@ -376,7 +393,11 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		m_ui_grenade = UIHelper::CreateTextWnd(xml, "static_grenade", this);
 	}
 	
-	m_ui_weapon_icon			= UIHelper::CreateStatic( xml, "static_wpn_icon", this );
+	CUIWindow* wpnIconParent = this;
+	if (m_static_weapon)
+		wpnIconParent = m_static_weapon;
+	
+	m_ui_weapon_icon			= UIHelper::CreateStatic( xml, "static_wpn_icon", wpnIconParent);
 	m_ui_weapon_icon->SetShader( InventoryUtilities::GetEquipmentIconsShader() );
 //	m_ui_weapon_icon->Enable	( false );
 	m_ui_weapon_icon_rect		= m_ui_weapon_icon->GetWndRect();
@@ -390,7 +411,12 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 
 	if (xml.NavigateToNode("progress_bar_armor", 0))
 	{
-		m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", this);
+		CUIWindow* armorBarParent = this;
+		if (xml.GetLocalRoot() == stored_root)
+			armorBarParent = m_static_armor;
+
+		m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", armorBarParent);
+		m_ui_armor_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_armor", 0, "expression", nullptr) != nullptr;
 	}
 
 	if (xml.NavigateToNode("progress", 0))
@@ -417,9 +443,12 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	{
 		m_back_over_arrow = UIHelper::CreateStatic(xml, "back_over_arrow", this);
 	}
-	m_ui_stamina_bar = UIHelper::CreateProgressBar(xml, "progress_bar_stamina", this);
-	m_ui_stamina_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_stamina", 0, "expression", nullptr) != nullptr;
-
+	if (xml.NavigateToNode("progress_bar_stamina", 0))
+	{
+		m_ui_stamina_bar = UIHelper::CreateProgressBar(xml, "progress_bar_stamina", this);
+		m_ui_stamina_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_stamina", 0, "expression", nullptr) != nullptr;
+	}
+	
 	if (xml.NavigateToNode("bleeding", 0))
 	{
 		m_bleeding = UIHelper::CreateStatic(xml, "bleeding", this);
@@ -506,7 +535,7 @@ void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 		}
 	}
 
-	if (!m_ui_stamina_bar->IsExpressionSystem)
+	if (m_ui_stamina_bar && !m_ui_stamina_bar->IsExpressionSystem)
 	{
 		float cur_stamina = actor->conditions().GetPower();
 		m_ui_stamina_bar->SetProgressPos(iCeil(cur_stamina * 100.0f * 35.f) / 35.f);
@@ -514,6 +543,19 @@ void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 		{
 			m_ui_stamina_bar->m_UIProgressItem.ResetColorAnimation();
 		}
+	}
+
+	if (m_ui_armor_bar && !m_ui_armor_bar->IsExpressionSystem)
+	{
+		float cur_armor = 0.f;
+		if (actor->GetOutfit() != nullptr && actor->GetHelmet() != nullptr)
+			cur_armor = (actor->GetOutfit()->GetCondition() * 0.5f) + (actor->GetHelmet()->GetCondition() * 0.5f);
+		else if (actor->GetOutfit() != nullptr)
+			cur_armor = actor->GetOutfit()->GetCondition();
+		else if (actor->GetHelmet() != nullptr)
+			cur_armor = actor->GetHelmet()->GetCondition();
+
+		m_ui_armor_bar->SetProgressPos(iCeil(cur_armor * 100.0f * 35.f) / 35.f);
 	}
 
 	CCustomOutfit* outfit = actor->GetOutfit();
@@ -555,30 +597,53 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 		item->GetBriefInfo(m_item_info);
 
-		//		UIWeaponBack.SetText		( str_name.c_str() );
-		
-		// Fire mode display: icon or text
-		if (m_use_fire_mode_icons && m_ui_fire_mode_icon)
+		if (m_static_weapon)
 		{
-			// Icon mode
-			shared_str fire_mode_str = m_item_info.fire_mode.c_str();
-			auto it = m_fire_mode_icon_map.find(fire_mode_str);
-			
-			if (it != m_fire_mode_icon_map.end())
+			string256 ammoName;
+			if (m_item_info.fire_mode.size())
 			{
-				shared_str icon_name = it->second;
+				xr_sprintf(ammoName, sizeof(ammoName), "%s (%s)", m_item_info.name.c_str(), m_item_info.fire_mode.c_str());
+			}
+			else
+			{
+				xr_sprintf(ammoName, "%s", m_item_info.name.c_str());
+			}
+
+			m_static_weapon->SetText(ammoName);
+		}
 				
-				// Try to load texture from ui_textures_descr
-				if (CUITextureMaster::ItemExist(icon_name.c_str()))
+		// Fire mode display: icon or text
+		if (m_fire_mode)
+		{
+			if (m_use_fire_mode_icons && m_ui_fire_mode_icon)
+			{
+				// Icon mode
+				shared_str fire_mode_str = m_item_info.fire_mode.c_str();
+				auto it = m_fire_mode_icon_map.find(fire_mode_str);
+			
+				if (it != m_fire_mode_icon_map.end())
 				{
-					m_ui_fire_mode_icon->InitTexture(icon_name.c_str());
-					m_ui_fire_mode_icon->SetStretchTexture(true);
-					m_ui_fire_mode_icon->Show(true);
-					m_fire_mode->Show(false);
+					shared_str icon_name = it->second;
+				
+					// Try to load texture from ui_textures_descr
+					if (CUITextureMaster::ItemExist(icon_name.c_str()))
+					{
+						m_ui_fire_mode_icon->InitTexture(icon_name.c_str());
+						m_ui_fire_mode_icon->SetStretchTexture(true);
+						m_ui_fire_mode_icon->Show(true);
+						m_fire_mode->Show(false);
+					}
+					else
+					{
+						// Fallback to text if icon not found
+						m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+						m_fire_mode->Show(true);
+						m_ui_fire_mode_icon->Show(false);
+					}
 				}
 				else
 				{
-					// Fallback to text if icon not found
+					// No mapping found, use text
 					m_fire_mode->SetText(m_item_info.fire_mode.c_str());
 					m_fire_mode->Show(true);
 					m_ui_fire_mode_icon->Show(false);
@@ -586,18 +651,11 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			}
 			else
 			{
-				// No mapping found, use text
+				// Text mode (default)
 				m_fire_mode->SetText(m_item_info.fire_mode.c_str());
-				m_fire_mode->Show(true);
-				m_ui_fire_mode_icon->Show(false);
+				if (m_ui_fire_mode_icon)
+					m_ui_fire_mode_icon->Show(false);
 			}
-		}
-		else
-		{
-			// Text mode (default)
-			m_fire_mode->SetText(m_item_info.fire_mode.c_str());
-			if (m_ui_fire_mode_icon)
-				m_ui_fire_mode_icon->Show(false);
 		}
 		
 		// If text mode is enabled, display ammo name instead of icon
@@ -845,7 +903,8 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			}
 		}
 
-		m_fire_mode->Show(true);
+		if (m_fire_mode)
+			m_fire_mode->Show(true);
 
 		if (m_ui_grenade)
 		{
@@ -888,7 +947,11 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 		if (m_ui_weapon_third_ammo)
 			m_ui_weapon_third_ammo->Show(false); //Alundaio: Third Ammo
 
-		m_fire_mode->Show(false);
+		if (m_static_weapon)
+			m_static_weapon->SetText("");
+
+		if (m_fire_mode)
+			m_fire_mode->Show(false);
 		
 		if (m_ui_fire_mode_icon)
 			m_ui_fire_mode_icon->Show(false);
@@ -1095,6 +1158,9 @@ void CUIHudStatesWnd::UpdateIndicators( CActor* actor )
 
 	for ( int i = 0; i < it_max ; ++i ) // it_max = ALife::infl_max_count-1
 	{
+		if (!m_indik[i])
+			return;
+
 		UpdateIndicatorType( actor, (ALife::EInfluenceType)i );
 	}
 }
@@ -1130,7 +1196,8 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 		VERIFY2( 0, "Failed EIndicatorType for CStatic!" );
 		return;
 	}
-
+	if (!m_indik[type])
+		return;
 
 	constexpr u32 c_white  = color_rgba( 255, 255, 255, 255 );
 	constexpr u32 c_green  = color_rgba( 0, 255, 0, 255 );
@@ -1247,7 +1314,7 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 
 void CUIHudStatesWnd::SwitchLA( bool state, ALife::EInfluenceType type )
 {
-	if ( state == m_cur_state_LA[type] )
+	if ( state == m_cur_state_LA[type] || !m_indik[type])
 	{
 		return;
 	}
@@ -1282,17 +1349,11 @@ void CUIHudStatesWnd::DrawZoneIndicators()
 
 	UpdateIndicators(actor);
 
-	if(m_indik[ALife::infl_rad]->IsShown())
-		m_indik[ALife::infl_rad]->Draw();
-
-	if(m_indik[ALife::infl_fire]->IsShown())
-		m_indik[ALife::infl_fire]->Draw();
-
-	if(m_indik[ALife::infl_acid]->IsShown())
-		m_indik[ALife::infl_acid]->Draw();
-
-	if(m_indik[ALife::infl_psi]->IsShown())
-		m_indik[ALife::infl_psi]->Draw();
+	for (int i = 0; i < it_max; ++i) // it_max = ALife::infl_max_count-1
+	{
+		if (m_indik[i] && m_indik[i]->IsShown())
+			m_indik[i]->Draw();
+	}
 }
 
 void CUIHudStatesWnd::FakeUpdateIndicatorType(u8 t, float power)
