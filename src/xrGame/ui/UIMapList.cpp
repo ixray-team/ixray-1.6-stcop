@@ -547,6 +547,11 @@ void CUIMapList::script_register(lua_State* L)
 			value("eGameIDTeamDeathmatch",		int(eGameIDTeamDeathmatch)),
 			value("eGameIDArtefactHunt",		int(eGameIDArtefactHunt)),
 			value("eGameIDCaptureTheArtefact",	int(eGameIDCaptureTheArtefact)),
+			// SoC only
+			value("GAME_DEATHMATCH",			int(eGameIDDeathmatch)),
+			value("GAME_TEAMDEATHMATCH",		int(eGameIDTeamDeathmatch)),
+			value("GAME_ARTEFACTHUNT",		int(eGameIDArtefactHunt)),
+
 			value("eGameIDFreeMp",				int(eGameIDFreeMP))
 		]
 	];
