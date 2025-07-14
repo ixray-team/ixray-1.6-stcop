@@ -159,9 +159,8 @@ void Manager::load_all_inventory()
 void Manager::load_all_properties()
 {
 	LPCSTR properties_section = "upgrades_properties";
-
-	VERIFY2(pSettings->section_exist(properties_section), make_string<const char*>("Section [%s] does not exist !", properties_section));
-	VERIFY2(pSettings->line_count(properties_section), make_string<const char*>("Section [%s] is empty !", properties_section));
+	if (!pSettings->section_exist(properties_section))
+		return;
 
 	CInifile::Sect& inv_section = pSettings->r_section(properties_section);
 
