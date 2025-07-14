@@ -24,6 +24,8 @@ CUITalkDialogWnd::CUITalkDialogWnd()
 	m_ClickedQuestionID(""),
 	UIDialogFrameTop(nullptr),
 	UIDialogFrameBottom(nullptr),
+	UIDialogFrame(nullptr),
+	UIOurPhrasesFrame(nullptr),
 	m_btn_pos(),
 	UIToExitButton(nullptr),
 	UIOurIcon(nullptr),
@@ -45,20 +47,42 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 	m_uiXml->Load				(CONFIG_PATH, UI_PATH, TALK_XML);
 	CUIXmlInit					ml_init;
 
-	CUIXmlInit::InitWindow		(*m_uiXml, "main", 0, this);
+	if (m_uiXml->NavigateToNode("main"))
+	{
+		CUIXmlInit::InitWindow(*m_uiXml, "main", 0, this);
+	}
+	else
+	{
+		SetWndPos(Fvector2().set(0, 0));
+		SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
+	}
+
+	if (m_uiXml->NavigateToNode("top_background"))
+	{
+		UIStaticTop = UIHelper::CreateStatic(*m_uiXml, "top_background", this);
+	}
+	if (m_uiXml->NavigateToNode("bottom_background"))
+	{
+		UIStaticBottom = UIHelper::CreateStatic(*m_uiXml, "bottom_background", this);
+	}
+
+	CUIXml xml_character;
+	const char* charInfoProfile = "talk_character.xml";
+	if (!xml_character.Load(CONFIG_PATH, UI_PATH, "talk_character.xml"))
+		charInfoProfile = "trade_character.xml";
 
 	if (m_uiXml->NavigateToNode("right_character_icon"))
 	{
 		UIOurIcon = UIHelper::CreateStatic(*m_uiXml, "right_character_icon", this);
 		UIOurIcon->AttachChild(&UICharacterInfoLeft);
-		UICharacterInfoLeft.InitCharacterInfo(Fvector2().set(0, 0), UIOurIcon->GetWndSize(), "talk_character.xml");
+		UICharacterInfoLeft.InitCharacterInfo(Fvector2().set(0, 0), UIOurIcon->GetWndSize(), charInfoProfile);
 	}
 
 	if (m_uiXml->NavigateToNode("left_character_icon"))
 	{
 		UIOthersIcon = UIHelper::CreateStatic(*m_uiXml, "left_character_icon", this);
 		UIOthersIcon->AttachChild(&UICharacterInfoRight);
-		UICharacterInfoRight.InitCharacterInfo(Fvector2().set(0, 0), UIOthersIcon->GetWndSize(), "talk_character.xml");
+		UICharacterInfoRight.InitCharacterInfo(Fvector2().set(0, 0), UIOthersIcon->GetWndSize(), charInfoProfile);
 	}
 
 	CUIWindow* answersParent = this;
@@ -76,6 +100,20 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 	{
 		UIDialogFrameTop = UIHelper::CreateStatic(*m_uiXml, "frame_top", this);
 		answersParent = UIDialogFrameTop;
+	}
+	if (m_uiXml->NavigateToNode("frame_line_window"))
+	{
+		//основной фрейм диалога
+		UIDialogFrame = new CUIFrameLineWnd();
+		AttachChild(UIDialogFrame);
+		CUIXmlInit::InitFrameLine(*m_uiXml, "frame_line_window", 0, UIDialogFrame);
+		answersParent = UIDialogFrame;
+
+		// Фрейм с нащими фразами
+		UIOurPhrasesFrame = new CUIFrameLineWnd();
+		AttachChild(UIOurPhrasesFrame);
+		CUIXmlInit::InitFrameLine(*m_uiXml, "frame_line_window", 1, UIOurPhrasesFrame);
+		questionsParent = UIOurPhrasesFrame;
 	}
 
 	//Ответы
@@ -319,6 +357,8 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 
 	if (UIDialogFrameTop)
 		UIDialogFrameTop->Show(!b);
+	else if (UIDialogFrame)
+		UIDialogFrame->Show(!b);
 
 	UIToTradeButton.Show(!b);
 	if ( mechanic_mode )

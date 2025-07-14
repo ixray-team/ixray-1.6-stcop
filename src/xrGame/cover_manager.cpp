@@ -100,10 +100,13 @@ void CCoverManager::compute_static_cover	()
 			return;
 		}
 
-		if (vertex.low_cover(0) + vertex.low_cover(1) + vertex.low_cover(2) + vertex.low_cover(3))
+		if (Graph.header().version() != XRAI_SOC_VERSION) // If using SoC spawn, ignore low covers.
 		{
-			m_temp[range] = edge_vertex(range);
-			return;
+			if (vertex.low_cover(0) + vertex.low_cover(1) + vertex.low_cover(2) + vertex.low_cover(3))
+			{
+				m_temp[range] = edge_vertex(range);
+				return;
+			}
 		}
 
 		m_temp[range] = false;

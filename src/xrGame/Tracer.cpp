@@ -10,9 +10,9 @@ const float TRACER_SIZE = 0.13f;
 
 CTracer::CTracer()
 {
-	LPCSTR sh_name		= pSettings->r_string("bullet_manager", "tracer_shader");
-	LPCSTR tx_name		= pSettings->r_string("bullet_manager", "tracer_texture");
-	m_circle_size_k		= pSettings->r_float("bullet_manager", "fire_circle_k");
+	LPCSTR sh_name		= READ_IF_EXISTS(pSettings, r_string, "bullet_manager", "tracer_shader", "effects\\bullet_tracer");
+	LPCSTR tx_name		= READ_IF_EXISTS(pSettings, r_string, "bullet_manager", "tracer_texture", "fx\\fx_tracer");
+	m_circle_size_k		= READ_IF_EXISTS(pSettings, r_float, "bullet_manager", "fire_circle_k", .5f);
 
 	sh_Tracer->create	(sh_name, tx_name);
 	
