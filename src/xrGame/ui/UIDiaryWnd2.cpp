@@ -15,8 +15,9 @@
 #include "../actor.h"
 #include "../alife_registry_wrappers.h"
 #include "../encyclopedia_article.h"
+#include "UIPdaAux.h"
 
-//extern u32			g_pda_info_state;
+extern u32			g_pda_info_state;
 
 CUIDiaryWnd::CUIDiaryWnd()
 {
@@ -205,7 +206,7 @@ void CUIDiaryWnd::LoadJournalTab			(ARTICLE_DATA::EArticleType _type)
 			}
 		}
 	}
-	//g_pda_info_state	&=	!pda_section::journal;
+	g_pda_info_state	&=	!pda_section::journal;
 
 }
 
@@ -219,7 +220,7 @@ void CUIDiaryWnd::LoadNewsTab	()
 {
 	m_UIRightWnd->AttachChild	(m_UINewsWnd);
 	m_UINewsWnd->Show			(true);
-	//g_pda_info_state			&= ~pda_section::news;
+	g_pda_info_state			&= ~pda_section::news;
 }
 
 void CUIDiaryWnd::OnSrcListItemClicked	(CUIWindow* w,void* p)
@@ -250,17 +251,17 @@ void CUIDiaryWnd::Draw()
 
 	pos		= m_sign_places[eNews];
 	pos.add(tab_pos);
-	/*if (g_pda_info_state & pda_section::news)
+	if (g_pda_info_state & pda_section::news)
 		draw_sign								(m_updatedSectionImage, pos);
-	else*/
+	else
 		draw_sign								(m_oldSectionImage, pos);
 	
 
 	pos		= m_sign_places[eJournal];
 	pos.add(tab_pos);
-	/*if (g_pda_info_state & pda_section::journal)
+	if (g_pda_info_state & pda_section::journal)
 		draw_sign								(m_updatedSectionImage, pos);
-	else*/
+	else
 		draw_sign								(m_oldSectionImage, pos);
 }
 
