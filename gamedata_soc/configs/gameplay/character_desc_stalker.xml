@@ -1,0 +1,967 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+	
+	
+	
+	
+	
+	
+
+	<specific_character id="stalker_esc_bariga" team_default = "1">
+		<name>Сталкер "Барыга"</name>
+		<icon x="24" y="2"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Просто барыга.</bio>
+
+		<class>stalker_esc_bariga</class>
+		<community>stranger</community>
+		
+		<rank>20</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\novice\green_stalker_8</visual>
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_fmj = 1 \n
+			wpn_bm16 \n
+			ammo_12x70_buck = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>escape_lager_hlam_hello</start_dialog>
+		<actor_dialog>escape_lager_hlam_talk_people</actor_dialog>
+	</specific_character>
+
+<!---------------------------STALKER NOVICE----------------------->
+	<specific_character id="stalker_novice_default1" team_default = "1">
+		<name>Неизвестный новичок</name>
+		<icon x="20" y="2"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Новичок. Недавно в Зоне. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_novice</class>
+		<community>stranger</community>
+		
+		<rank>20</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\novice\green_stalker_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_fmj = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>escape_lager_access</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_novice_default2" team_default = "1">
+		<name>Неизвестный новичок</name>
+		<icon x="20" y="2"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Новичок. Недавно в Зоне. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_novice</class>
+		<community>stranger</community>
+		
+		<rank>20</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\novice\green_stalker_2</visual>
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_fmj = 1 \n
+			device_torch \n
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>escape_lager_access</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_novice_default3" team_default = "1">
+		<name>Неизвестный новичок</name>
+		<icon x="20" y="2"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Новичок. Недавно в Зоне. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_novice</class>
+		<community>stranger</community>
+		
+		<rank>20</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\novice\green_stalker_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_fmj = 1 \n
+			device_torch \n
+			wpn_toz34 \n
+			ammo_12x70_buck \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>escape_lager_access</actor_dialog>	
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_novice_default4" team_default = "1">
+		<name>Неизвестный новичок</name>
+		<icon x="20" y="2"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Новичок. Недавно в Зоне. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_novice</class>
+		<community>stranger</community>
+		
+		<rank>20</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\novice\green_stalker_4</visual>
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_fmj = 1 \n
+			device_torch \n		
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>escape_lager_access</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_novice_default5" team_default = "1">
+		<name>Неизвестный новичок</name>
+		<icon x="20" y="2"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Новичок. Недавно в Зоне. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_novice</class>
+		<community>stranger</community>
+		
+		<rank>20</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\novice\green_stalker_5</visual>
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_fmj = 1 \n
+			device_torch \n
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>escape_lager_access</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_novice_default6" team_default = "1">
+		<name>Неизвестный новичок</name>
+		<icon x="30" y="10"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Новичок. Недавно в Зоне. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_novice</class>
+		<community>stranger</community>
+		
+		<rank>20</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\novice\green_stalker_6</visual>
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_fmj = 1 \n
+			device_torch \n
+			wpn_toz34 \n
+			ammo_12x70_buck \n			
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>escape_lager_access</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_novice_default9" team_default = "1">
+		<name>Неизвестный новичок</name>
+		<icon x="0" y="2"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Новичок. Недавно в Зоне. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_novice</class>
+		<community>stranger</community>
+		
+		<rank>20</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\novice\green_stalker_9</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_fmj = 1 \n
+			device_torch \n
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>escape_lager_access</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_novice_default10" team_default = "1">
+		<name>Неизвестный новичок</name>
+		<icon x="28" y="10"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Новичок. Недавно в Зоне. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_novice</class>
+		<community>stranger</community>
+		
+		<rank>20</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\novice\green_stalker_10</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_fmj = 1 \n
+			device_torch \n
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>escape_lager_access</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+<!---------------------------STALKER GENERAL---------------------->
+	<specific_character id="stalker_general_default1" team_default = "1">
+		<name>Неизвестный сталкер</name>
+		<icon x="2" y="2"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_general</class>
+		<community>stalker</community>
+		
+		<rank>40</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_hood_9</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_pmm = 1 \n
+			wpn_bm16 \n
+			ammo_12x76_zhekan = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+				
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+		<actor_dialog>agr_factory_stalker_about</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_esc</actor_dialog>
+
+	</specific_character>
+
+<specific_character id="stalker_general_default2" team_default = "1">
+		<name>Неизвестный сталкер</name>
+		<icon x="2" y="2"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_general</class>
+		<community>stalker</community>
+		
+		<rank>40</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_balon_8</visual>
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_pmm = 1 \n
+			wpn_mp5 \n
+			ammo_9x19_fmj = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+				
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+		<actor_dialog>agr_factory_stalker_about</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_esc</actor_dialog>
+</specific_character>
+
+<specific_character id="stalker_general_default3" team_default = "1">
+		<name>Неизвестный сталкер</name>
+		<icon x="2" y="2"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_general</class>
+		<community>stalker</community>
+		
+		<rank>40</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_rukzak_2</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_fmj = 1 \n
+			wpn_mp5 \n
+			ammo_9x19_fmj = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+		<actor_dialog>agr_factory_stalker_about</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_esc</actor_dialog>
+</specific_character>
+
+	<specific_character id="stalker_general_default4" team_default = "1">
+		<name>Неизвестный сталкер</name>
+		<icon x="2" y="2"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_general</class>
+		<community>stalker</community>
+		
+		<rank>40</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_hood_2</visual>
+		<supplies>
+			[spawn] \n
+			wpn_hpsa \n
+			ammo_9x19_fmj = 1 \n
+			wpn_ak74u \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+		<actor_dialog>agr_factory_stalker_about</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_esc</actor_dialog>
+	</specific_character>
+	
+	<specific_character id="stalker_general_default5" team_default = "1">
+		<name>Неизвестный сталкер</name>
+		<icon x="2" y="2"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_general</class>
+		<community>stalker</community>
+		
+		<rank>40</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_hood_8</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pbp \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+		<actor_dialog>agr_factory_stalker_about</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_esc</actor_dialog>
+	</specific_character>
+	
+<!---------------------------STALKER VETERAN---------------------->
+	<specific_character id="stalker_veteran_default1" team_default = "1">
+		<name>Неизвестный ветеран</name>
+		<icon x="2" y="2"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Сталкер ветеран. Возможно хорошо экипирован. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_veteran</class>
+		<community>stalker</community>
+			
+		<rank>70</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_hood_9</visual>
+		<supplies>
+			[spawn] \n
+			wpn_hpsa \n
+			ammo_9x19_pbp = 1 \n
+			wpn_spas12 \n
+			ammo_12x70_buck = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>
+
+	<specific_character id="stalker_veteran_default2" team_default = "1">
+		<name>Неизвестный ветеран</name>
+		<icon x="2" y="2"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Сталкер ветеран. Возможно хорошо экипирован. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_veteran</class>
+		<community>stalker</community>
+			
+		<rank>70</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_hood_8</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj = 1 \n
+			wpn_ak74 \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>
+
+	<specific_character id="stalker_veteran_default3" team_default = "1">
+		<name>Неизвестный ветеран</name>
+		<icon x="20" y="8"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Сталкер ветеран. Возможно хорошо экипирован. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_veteran</class>
+		<community>stalker</community>
+		
+		<rank>70</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pbp = 1 \n
+			wpn_l85 \n
+			ammo_5.56x45_ss190 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>
+
+	<specific_character id="stalker_veteran_default4" team_default = "1">
+		<name>Неизвестный ветеран</name>
+		<icon x="20" y="8"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Сталкер ветеран. Возможно хорошо экипирован. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_veteran</class>
+		<community>stalker</community>
+	
+		<rank>70</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj = 1 \n
+			wpn_lr300 \n
+			ammo_5.56x45_ss190 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>
+
+	<specific_character id="stalker_veteran_default5" team_default = "1">
+		<name>Неизвестный ветеран</name>
+		<icon x="20" y="8"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Сталкер ветеран. Возможно хорошо экипирован. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_veteran</class>
+		<community>stalker</community>
+			
+		<rank>70</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj = 1 \n
+			wpn_l85 \n
+			ammo_5.56x45_ss190 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>
+
+<!---------------------------STALKER MASTER----------------------->
+	<specific_character id="stalker_master_default1" team_default = "1">
+		<name>Неизвестный мастер</name>
+		<icon x="10" y="0"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Один из ветеранов Зоны. Этот сталкер знает Зону как своих пять пальцев.
+		Обычно хорошо экипирован и очень опасен. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_master</class>
+		<community>stalker</community>
+		
+		<rank>95</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp = 1 \n
+			wpn_ak74 = 1, 1, 0, 0 \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+						
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>
+
+	<specific_character id="stalker_master_default2" team_default = "1">
+		<name>Неизвестный мастер</name>
+		<icon x="10" y="0"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Один из ветеранов Зоны. Этот сталкер знает Зону как своих пять пальцев.
+		Обычно хорошо экипирован и очень опасен. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_master</class>
+		<community>stalker</community>
+		
+		<rank>95</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_fmj = 1 \n
+			wpn_lr300 = 1, 1, 0, 0 \n
+			ammo_5.56x45_ap \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>
+
+	<specific_character id="stalker_master_default3" team_default = "1">
+		<name>Неизвестный мастер</name>
+		<icon x="10" y="0"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Один из ветеранов Зоны. Этот сталкер знает Зону как своих пять пальцев.
+		Обычно хорошо экипирован и очень опасен. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_master</class>
+		<community>stalker</community>
+		
+		<rank>95</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 1 \n
+			wpn_l85 \n
+			ammo_5.56x45_ap \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>
+
+	<specific_character id="stalker_master_default4" team_default = "1">
+		<name>Неизвестный мастер</name>
+		<icon x="20" y="8"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Один из ветеранов Зоны. Этот сталкер знает Зону как своих пять пальцев.
+		Обычно хорошо экипирован и очень опасен. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_master</class>
+		<community>stalker</community>
+				
+		<rank>95</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_fn2000 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>	
+
+	<specific_character id="stalker_master_default5" team_default = "1">
+		<name>Неизвестный мастер</name>
+		<icon x="20" y="8"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Один из ветеранов Зоны. Этот сталкер знает Зону как своих пять пальцев.
+		Обычно хорошо экипирован и очень опасен. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_master</class>
+		<community>stalker</community>
+		
+		<rank>95</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_ak74 = 1, 0, 0, 0 \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>	
+
+<!--	
+	<specific_character id="stalker_demon">
+		<name>Олег "Демон" Гусаров</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Бывший “черный берет”, проходил службу в Белоцерковской бригаде Спецназа.
+		Сверхсрочник, старший сержант, по специальности снайпер и подрывник. По
+		состоянию души - “волк-одиночка”. В Зону никогда не берет с собой напарников,
+		предпочитая действовать один. Неоднократно ему предлагали вступить в
+		кланы – всегда отказывался наотрез именно по этой причине.</bio>
+
+		<team>Stalker</team>
+		<rank>80</rank>
+		<reputation>70</reputation>
+
+		<visual>actors\neytral\stalker_neytral_hood_9</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_leshiy">
+		<name>Леший</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Леший, так его прозвал брат, пришел в зону юным
+		идеалистом. Но несколько лет жизни на волосок от смерти сделали его циничным
+		реалистом. Считает зону своим домом, а тех, кто не прошел испытание зоной – недостойными
+		жить на Земле.</bio>
+
+		<team>Stalker</team>
+		<rank>40</rank>
+		<reputation>60</reputation>
+
+		<visual>actors\soldier\soldier_bandana_2</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_chuchelo">
+		<name>Чучело</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Контрабандист со стажем. Долгое время промышлял в Африке и Южной Америке. 
+		Облетевшие весь мир истории о чернобыльских мутантах привели его на Украину. За 
+		короткий промежуток времени сумел вывезти из запретной зоны несколько сотен чучел 
+		мутантов, за что получил прозвище «Чучело». В промежутках между «работой» в Зоне – 
+		преуспевающий торговец. Любит костюмы от Армани и галстуки от Версаче, но стволы 
+		предпочитает советские.</bio>
+
+		<team>Stalker</team>
+		<rank>80</rank>
+		<reputation>25</reputation>
+
+		<visual>actors\soldier\soldier_bandana_4</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_upir">
+		<name>Упырь</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Невероятно везучий сталкер. Много раз его группа оказывалась на волосок от смерти, и всегда он был
+		единственным, кому удавалось спастись. У сталкеров пользуется дурной славой
+		«несчастливого талисмана». С некоторых пор всегда ходит в одиночку.</bio>
+
+		<team>Stalker</team>
+		<rank>60</rank>
+		<reputation>10</reputation>
+
+		<visual>actors\soldier\soldier_bandana_5</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_diodor">
+		<name>Отец Диодор</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Бывший афганец. Во время одной из засад маджахедов
+		резко уверовал в Бога. После Афгана иммигрирует в Польшу, где поступает в
+		духовную семинарию. После окончания семинарии некоторое время проповедует в
+		Львовской католической церкви. После взрыва на ЧАЭС записывается добровольцем
+		помогать пострадавшим. Последние несколько лет проповедует на территории Зоны</bio>
+
+		<team>Stalker</team>
+		<rank>70</rank>
+		<reputation>90</reputation>
+
+		<visual>actors\soldier\soldier_beret</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_zob">
+		<name>Зоб</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>В повседневной жизни
+		флегматик, не выражает свои эмоции, спокоен. Однако при сильных впечатлениях вспыльчив,
+		агрессивен. Интеллигент. Материалист, ужасно жалеет о том, что попал в Зону. После
+		окончания медицинского института был направлен в Зону, где лагерю учёных
+		требовался ассистент нейрохирурга. Препарирует мозг мутантов и исследует их
+		психокинетические способности. Ждёт пенсии и возможности жить в столице
+		подальше от этого гиблого места.</bio>
+
+		<team>Stalker</team>
+		<rank>30</rank>
+		<reputation>40</reputation>
+
+		<visual>actors\soldier\soldier_beret_1</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_neumeha">
+		<name>Неумеха</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Неумехе 20 лет. На большой земле ничего и никого у него не осталось, и он решил приехать
+		сюда. Уезжать из Зоны ему попросту некуда. в Зоне просто сводит концы с концами.Очень
+		многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но
+		никогда один, чаще примазывается к группам сталкеров. Но мало кто соглашается
+		брать его, ведь он лишь лишняя обуза. Хабар собирает очень редко. Живет на
+		подачки от других сталкеров и поэтому весь в долгах.</bio>
+		
+		<team>Stalker</team>
+		<rank>20</rank>
+		<reputation>10</reputation>
+
+		<visual>actors\soldier\soldier_beret_2</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_kocherga">
+		<name>Кочерга</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Свиреп, зол, груб,
+		эгоистичен, жесток, бесчувственен, холоден. Никто не знает, когда и как он попал
+		в Зону. Его боятся и недолюбливают. В Зоне просто живёт, у него нет ни
+		будущего, ни прошлого. После одной из своих многочисленных вылазок в Зону
+		потерял память и очень многое забыл. Не помнит, откуда он, не помнит своё
+		настоящее имя, часты провалы в памяти. Например, может забыть нового знакомого
+		через час после знакомства, и, восприняв его как врага, убить.</bio>
+		
+		<team>Stalker</team>
+		<rank>70</rank>
+		<reputation>10</reputation>
+
+		<visual>actors\soldier\soldier_beret_3</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_barin">
+		<name>Барин</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Хам, подхалим, лицемер, трус. Жизненным
+		кредо Барина можно было бы назвать фразу после нас - хоть потоп. Из
+		всего старается извлечь выгоду. При всём при этом очень честолюбив и обидчив. В
+		Зону приехал, как бы это банально не звучало, за деньгами. И вот уже второй год
+		в Зоне занимается добычей материальных ценностей любыми способами.</bio>
+		
+		<team>Stalker</team>
+		<rank>60</rank>
+		<reputation>20</reputation>
+
+		<visual>actors\soldier\soldier_beret_4</visual>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="stalker_vorobey">
+		<name>Воробей</name>
+		<icon x="0" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Воробью 27 лет. Хитёр,
+		дальновиден, но иногда совершает грубейшие ошибки. Временами подл. В целом,
+		оставляет о себе двойственное впечатление. Худ и бледен. В Зону пришёл из
+		любопытства и сам себе дал обещание - два месяца в Зоне - и домой. Но так здесь
+		и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю,
+		сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он
+		долго не мог прийти в себя. С тех пор отмечает тот день (9 октября), как свой
+		второй день рождения.</bio>
+		
+		<team>Stalker</team>
+		<rank>50</rank>
+		<reputation>20</reputation>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+<!---------------------------STALKER SNIPER----------------------->
+	<specific_character id="stalker_sniper" team_default = "1">
+		<name>Неизвестный мастер</name>
+		<icon x="10" y="0"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Сталкер ветеран. Возможно хорошо экипирован. Детальная информация отсутствует.</bio>
+
+		<class>Stalker_sniper</class>
+		<community>stalker</community>
+		
+		<rank>50</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\neytral\stalker_neytral_hood_9</visual>
+		<supplies>
+			[spawn] \n
+			wpn_hpsa \n
+			ammo_9x19_pbp = 1 \n
+			wpn_svd \n
+			ammo_7.62x54_7h14 = 1 \n
+			device_torch \n
+		</supplies>
+						
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+		<actor_dialog>gar_stalker_about_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_level</actor_dialog>
+		<actor_dialog>agr_stalker_talk_about_ratcatcher</actor_dialog>
+
+	</specific_character>
+	-->
+</xml>

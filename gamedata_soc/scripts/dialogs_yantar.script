@@ -1,0 +1,34 @@
+function have_kruglov_flash(first_speaker, second_speaker)
+  	return first_speaker:object("kruglov_flash") ~= nil
+end
+function give_kruglov_flash(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "kruglov_flash", "out")
+end
+function give_ecolog_outfit(first_speaker, second_speaker)
+	if not has_alife_info("yan_ecolog_outfit_given") then
+		dialogs.relocate_item_section(second_speaker, "ecolog_outfit", "in")
+		db.actor:give_info_portion("yan_ecolog_outfit_given")
+	end
+end
+
+function yan_professor_talk_outfit (first_speaker, second_speaker)
+	if not has_alife_info("bar_x16_documents_start") and has_alife_info("bar_heli_scene_professor_die") then
+		return true
+	end
+	if not has_alife_info("bar_x16_documents_start") then
+		if has_alife_info("bar_rescue_research_done") and  has_alife_info("yan_ecolog_outfit_given") then
+			return true
+		else 
+			return false
+		end
+		return true
+	end
+	return false
+end
+
+function yan_professor_task_x16_precond (first_speaker, second_speaker)
+	if has_alife_info("bar_rescue_research_fail") or has_alife_info("bar_heli_scene_professor_die") then
+		return true
+	end
+	return false
+end

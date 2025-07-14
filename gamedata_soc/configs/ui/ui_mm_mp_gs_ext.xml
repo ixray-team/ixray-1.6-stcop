@@ -1,0 +1,4 @@
+
+<static_gs_logo x="850" y="717" width="128" height="35" stretch="1">
+	<texture x="0" y="0" width="256" height="70">ui\ui_gs_logo</texture>
+</static_gs_logo>

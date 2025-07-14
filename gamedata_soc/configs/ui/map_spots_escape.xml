@@ -1,0 +1,83 @@
+
+	<tutorial_artefact_location hint="tutorial_artefact" store="1">
+		<level_map spot="tutorial_artefact_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="tutorial_artefact_spot" pointer="quest_pointer"></mini_map>
+	</tutorial_artefact_location>
+
+	<tutorial_wounded_location hint="tutorial_wounded" store="1">
+		<level_map spot="tutorial_wounded_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="tutorial_wounded_spot" pointer="quest_pointer"></mini_map>
+	</tutorial_wounded_location>
+
+	<escape_trader_location hint="escape_trader" store="1">
+		<level_map spot="escape_trader_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="escape_trader_spot" pointer="quest_pointer"></mini_map>
+	</escape_trader_location>
+
+	<esc_anomaly_field_location hint="esc_anomaly_field" store="1">
+		<level_map spot="esc_anomaly_field_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="esc_anomaly_field_spot" pointer="quest_pointer"></mini_map>
+	</esc_anomaly_field_location>
+
+	<esc_stalker_fox_location hint="esc_anomaly_field" store="1">
+		<level_map spot="esc_stalker_fox_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="esc_stalker_fox_spot" pointer="quest_pointer"></mini_map>
+	</esc_stalker_fox_location>
+
+	<esc_blockpost_box_location hint="blockpost_box" store="1">
+		<level_map spot="esc_blockpost_box_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="esc_blockpost_box_spot" pointer="quest_pointer"></mini_map>
+	</esc_blockpost_box_location>
+
+	<esc_bridge_stalkers_location hint="esc_bridge_stalkers" store="1">
+		<level_map spot="esc_bridge_stalkers_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="esc_bridge_stalkers_spot" pointer="quest_pointer"></mini_map>
+	</esc_bridge_stalkers_location>
+
+	<esc_dynamite_location hint="esc_dynamite" store="1">
+		<level_map spot="esc_dynamite_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="esc_dynamite_spot" pointer="quest_pointer"></mini_map>
+	</esc_dynamite_location>
+
+	<esc_wolf_location hint="esc_wolf" store="1">
+		<level_map spot="esc_wolf_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="esc_wolf_spot" pointer="quest_pointer"></mini_map>
+	</esc_wolf_location>
+
+	<!-- quest spots -->
+	<tutorial_artefact_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="64" y="128" width="32" height="32">ui\ui_icons_map</texture>
+	</tutorial_artefact_spot>
+	
+	<tutorial_wounded_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="224" y="64" width="32" height="32">ui\ui_icons_map</texture>
+	</tutorial_wounded_spot>
+	
+	<escape_trader_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="192" y="0" width="32" height="32">ui\ui_icons_map</texture>
+	</escape_trader_spot>
+
+	<esc_anomaly_field_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="32" y="160" width="32" height="32">ui\ui_icons_map</texture>
+	</esc_anomaly_field_spot>
+
+	<esc_stalker_fox_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="224" y="64" width="32" height="32">ui\ui_icons_map</texture>
+	</esc_stalker_fox_spot>
+
+	<esc_blockpost_box_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="160" y="32" width="32" height="32">ui\ui_icons_map</texture>
+	</esc_blockpost_box_spot>
+
+	<esc_bridge_stalkers_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="0" y="0" width="32" height="32">ui\ui_icons_map</texture>
+	</esc_bridge_stalkers_spot>
+
+	<esc_dynamite_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="96" y="192" width="32" height="32">ui\ui_icons_map</texture>
+	</esc_dynamite_spot>
+
+	<esc_wolf_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="32" y="0" width="32" height="32">ui\ui_icons_map</texture>
+	</esc_wolf_spot>
+

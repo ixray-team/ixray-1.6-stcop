@@ -1,0 +1,12 @@
+[logic]
+active = mob_remark@hold
+
+[mob_eluder@process]
+path = dar_way_checker
+on_actor_not_in_zone = dar_sr_floor3 | nil
+
+[mob_remark@hold]
+anim = stand_idle_0
+time = 50000
+on_signal = action_end | mob_remark@hold
+on_actor_in_zone = dar_sr_floor3 | mob_eluder@process

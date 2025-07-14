@@ -1,0 +1,42 @@
+[logic]
+active = ph_idle@system_idle
+
+[ph_idle@system_idle]
+on_info = {+yan_labx16_switcher_1_off -yan_labx16_switcher_1_end} ph_sound@switcher_1, {+yan_labx16_switcher_primary_off} ph_sound@primary_off %=yan_gluk%
+on_info2 = {+yan_labx16_switcher_2_off -yan_labx16_switcher_2_end} ph_sound@switcher_2
+on_info3 = {+yan_labx16_switcher_3_off -yan_labx16_switcher_3_end} ph_sound@switcher_3 , {+yan_labx16_switcher_primary_try} ph_sound@switcher_primary
+
+
+[ph_sound@switcher_1]
+snd = system_message_2
+on_timer = 5000 | ph_idle@system_idle %+yan_labx16_switcher_1_end%
+
+[ph_sound@switcher_2]
+snd = system_message_3
+on_timer = 5000 | ph_idle@system_idle %+yan_labx16_switcher_2_end%
+
+[ph_sound@switcher_3]
+snd = system_message_4
+on_timer = 5000 | ph_idle@system_idle %+yan_labx16_switcher_3_end%
+
+[ph_sound@switcher_primary]
+snd = system_message_1
+on_timer = 15000 | ph_idle@system_idle %-yan_labx16_switcher_primary_try%
+
+[ph_sound@primary_off]
+snd = system_message_3
+on_timer = 1000 | ph_idle@primary_idle %=run_cam_effector(radar_stop:2506:false)%
+
+[ph_idle@primary_idle]
+on_timer = 9000 | ph_idle@primary_idle_2 %=run_postprocess(agr_u_fade)%
+
+[ph_idle@primary_idle_2]
+on_timer = 3000 | ph_idle@primary_idle_3 %=start_yantar_dream =disable_ui%
+
+[ph_idle@primary_idle_3]
+on_info  = {+yantar_find_ghost_task_start} ph_idle@primary_idle_4 %=run_cam_effector(prison_1:2508:false)%
+
+[ph_idle@primary_idle_4]
+on_timer = 4000 | nil %=enable_ui%
+
+

@@ -1,0 +1,27 @@
+
+<video_player x="10" y="10" width="300" height="300" auto_play="0" file_="car\trabantnoise" file__="car\Movie-003_Rats_OutPut-010">
+	<surface x="0" y="0" width="300" height="280" stretch="1"/>
+
+	<buttons_tab x="0" y="280" width="300" height="20">
+
+		<button x="40" y="0" width="40" height="20">
+		<window_name>stop_btn</window_name>
+			<text x="0" y="0" font="letterica18" r="255" g="255" b="255">stop</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</button>
+
+		<button x="0" y="0" width="40" height="20">
+			<window_name>play_btn</window_name>
+			<text x="0" y="0" font="letterica18" r="255" g="255" b="255">play</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</button>
+
+
+
+	</buttons_tab>
+</video_player>
+

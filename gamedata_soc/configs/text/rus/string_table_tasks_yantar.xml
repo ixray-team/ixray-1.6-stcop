@@ -1,0 +1,72 @@
+	<string id="yan_find_ghost">
+		<text>Взять документы у Призрака</text>
+	</string>
+	<string id="yan_find_ghost_task">
+		<text>Взять документы</text>
+	</string>
+	<string id="yan_find_vasilyev_task">
+		<text>Проникнуть в лабораторию</text>
+	</string>
+	<string id="yan_find_labX16">
+		<text>Проникнуть в лабораторию X16</text>
+	</string>
+	<string id="yan_find_scientist">
+		<text>Сделать замеры излучения</text>
+	</string>
+	<string id="yan_find_vasilyev">
+		<text>Обыскать труп Васильева</text>
+	</string>
+	<string id="yan_kill_brain">
+		<text>Отключить пси-излучение</text>
+	</string>
+	<string id="yan_kill_brain_task">
+		<text>Отключить питание установки</text>
+	</string>
+	<string id="yan_kill_brain_task_2">
+		<text>Выбраться из лаборатории</text>
+	</string>
+	<string id="yan_provodnik_about_doctor">
+		<text>Поговорить с проводником</text>
+	</string>
+	<string id="yan_provodnik_task">
+		<text>Встретиться с проводником</text>
+	</string>
+	<string id="yan_psi_zone_find">
+		<text>Сопроводить Круглова к месту замера</text>
+	</string>
+	<string id="yan_psi_zone_find_semenov">
+		<text>Сопроводить Семенова к месту замера</text>
+	</string>
+	<string id="yan_return_to_bunker">
+		<text>Принести результаты Сахарову</text>
+	</string>
+	<string id="yan_scientist_return">
+		<text>Поговорить с Сахаровым</text>
+	</string>
+	<string id="yan_scientist_return_task">
+		<text>Поговорить с Сахаровым</text>
+	</string>
+	<string id="yan_secret_tonnel">
+		<text>Выбраться через секретный тоннель</text>
+	</string>
+	<string id="yan_switcher_off_1">
+		<text>Отключить 1-ый блок управления</text>
+	</string>
+	<string id="yan_switcher_off_2">
+		<text>Отключить 2-ой блок управления</text>
+	</string>
+	<string id="yan_switcher_off_3">
+		<text>Отключить 3-ий блок управления</text>
+	</string>
+	<string id="yan_talk_to_kruglov">
+		<text>Поговорить с Кругловым</text>
+	</string>
+	<string id="yan_talk_to_semenov">
+		<text>Поговорить с Семеновым</text>
+	</string>
+	<string id="yan_vasilyev_pda">
+		<text>КПК Васильева</text>
+	</string>
+	<string id="yan_zombie_zone">
+		<text>Предположительное местонахождение лаборатории X16</text>
+	</string>

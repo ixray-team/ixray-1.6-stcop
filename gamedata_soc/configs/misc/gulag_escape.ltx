@@ -1,0 +1,2118 @@
+;-------------------------------------------------------------------------------------------------
+;-- ESCAPE BLOCKPOST
+;-------------------------------------------------------------------------------------------------
+[logic@esc_blockpost_patrol1]
+active = patrol@esc_blokpost_day_patrol_commander
+
+[patrol@esc_blokpost_day_patrol_commander]
+path_walk = day_patrol_walk
+path_look = day_patrol_look
+formation = back
+commander = true
+
+
+[logic@esc_blockpost_follower1]
+active = patrol@esc_blokpost_day_patrol_follower1
+
+[patrol@esc_blokpost_day_patrol_follower1]
+path_walk = day_patrol_walk
+path_look = day_patrol_look
+formation = back
+commander = false
+
+
+[logic@esc_blockpost_follower2]
+active = patrol@esc_blokpost_day_patrol_follower2
+
+[patrol@esc_blokpost_day_patrol_follower2]
+path_walk = day_patrol_walk
+path_look = day_patrol_look
+formation = back
+commander = false
+
+
+[logic@esc_blockpost_commander_day]
+active = camper@esc_blockpost_commander_day
+on_death = death@commander
+
+[camper@esc_blockpost_commander_day]
+path_walk = commander_walk
+path_look = commander_look
+
+[death@commander]
+on_info = %+esc_commander_die%
+
+
+[logic@esc_blockpost_post1]
+active = walker@esc_blockpost_post1
+
+[walker@esc_blockpost_post1]
+path_walk = post_walk1
+path_look = post_look1
+
+
+[logic@esc_blockpost_post2]
+active = walker@esc_blockpost_post2
+
+[walker@esc_blockpost_post2]
+path_walk = post_walk2
+path_look = post_look2
+
+
+[logic@esc_blockpost_camper_day]
+active = camper@esc_blockpost_camper_day
+
+[camper@esc_blockpost_camper_day]
+path_walk = camper_day_walk
+path_look = camper_day_look
+sniper = true
+def_state_campering = threat
+
+
+[logic@esc_blockpost_patrol_yard]
+active = walker@esc_blockpost_patrol_yard
+
+[walker@esc_blockpost_patrol_yard]
+path_walk = patrol_yard_walk
+
+
+[logic@esc_blockpost_watch_tv1]
+active = walker@esc_blockpost_watch_tv1
+
+[walker@esc_blockpost_watch_tv1]
+path_walk = watch_walk1
+path_look = watch_look1
+
+
+[logic@esc_blockpost_watch_tv2]
+active = walker@esc_blockpost_watch_tv2
+
+[walker@esc_blockpost_watch_tv2]
+path_walk = watch_walk2
+path_look = watch_look2
+
+
+[logic@esc_blockpost_kamp1]
+active = kamp@esc_blockpost_kamp1
+
+[kamp@esc_blockpost_kamp1]
+center_point = kamp
+path_walk = kamp_task
+soundgroup = esc_blokpost_soldier
+
+
+[logic@esc_blockpost_kamp2]
+active = kamp@esc_blockpost_kamp2
+on_death = death@commander
+
+[kamp@esc_blockpost_kamp2]
+center_point = kamp
+path_walk = kamp_task
+soundgroup = esc_blokpost_soldier
+
+
+[logic@esc_blockpost_sleep1]
+active = sleeper@esc_blockpost_sleep1
+
+[sleeper@esc_blockpost_sleep1]
+path_main = sleep1
+wakeable = false
+
+
+[logic@esc_blockpost_sleep2]
+active = sleeper@esc_blockpost_sleep2
+
+[sleeper@esc_blockpost_sleep2]
+path_main = sleep2
+wakeable = false
+
+
+[logic@esc_blockpost_sleep3]
+active = sleeper@esc_blockpost_sleep3
+
+[sleeper@esc_blockpost_sleep3]
+path_main = sleep3
+wakeable = false
+
+
+[logic@esc_blockpost_sleep4]
+active = sleeper@esc_blockpost_sleep4
+
+[sleeper@esc_blockpost_sleep4]
+path_main = sleep4
+wakeable = false
+
+
+[logic@esc_blockpost_comander_guard1]
+active = walker@esc_blockpost_comander_guard1
+
+[walker@esc_blockpost_comander_guard1]
+path_walk = guard_walk1
+path_look = guard_look1
+
+
+[logic@esc_blockpost_comander_guard2]
+active = walker@esc_blockpost_comander_guard2
+
+[walker@esc_blockpost_comander_guard2]
+path_walk = guard_walk2
+path_look = guard_look2
+
+
+[logic@esc_blockpost_camper1]
+active = camper@esc_blockpost_camper1
+
+[camper@esc_blockpost_camper1]
+path_walk = camper1_walk
+path_look = camper1_look
+sniper = true
+
+
+[logic@esc_blockpost_camper2]
+active = camper@esc_blockpost_camper2
+
+[camper@esc_blockpost_camper2]
+path_walk = camper2_walk
+path_look = camper2_look
+sniper = true
+
+
+[logic@esc_blockpost_alarm_patrol1]
+active = walker@esc_blockpost_alarm_patrol1
+
+[walker@esc_blockpost_alarm_patrol1]
+path_walk = alarm1_walk
+
+
+[logic@esc_blockpost_alarm_patrol2]
+active = walker@esc_blockpost_alarm_patrol2
+
+[walker@esc_blockpost_alarm_patrol2]
+path_walk = alarm2_walk
+
+
+;-----------------------------------------------------------------------------
+;------------------------------  ESCAPE SPECNAZ  -----------------------------
+;-----------------------------------------------------------------------------
+[logic@esc_specnaz_kamp]
+active = kamp@esc_specnaz_kamp
+
+[kamp@esc_specnaz_kamp]
+center_point = kamp
+soundgroup = esc_blokpost_specnaz
+
+
+[logic@esc_specnaz_raid1]
+active = walker@esc_specnaz_raid1
+
+[walker@esc_specnaz_raid1]
+path_walk = way1
+path_look = look1
+on_signal = start_raid| patrol@esc_specnaz_raid1
+
+[patrol@esc_specnaz_raid1]
+path_walk = walk_raid1
+formation = line
+commander = true
+move_type = raid
+
+
+[logic@esc_specnaz_raid2]
+active = walker@esc_specnaz_raid2
+
+[walker@esc_specnaz_raid2]
+path_walk = way2
+path_look = look2
+on_signal = start_raid| patrol@esc_specnaz_raid2
+
+[patrol@esc_specnaz_raid2]
+path_walk = walk_raid2
+formation = line
+commander = true
+move_type = raid
+
+
+[logic@esc_specnaz_follower1]
+active = walker@esc_specnaz_follower1
+
+[walker@esc_specnaz_follower1]
+path_walk = way3
+path_look = look1
+on_signal = start_raid| patrol@esc_specnaz_follower1
+
+[patrol@esc_specnaz_follower1]
+path_walk = walk_raid1
+formation = line
+move_type = raid
+
+
+[logic@esc_specnaz_follower2]
+active = walker@esc_specnaz_follower2
+
+[walker@esc_specnaz_follower2]
+path_walk = way4
+path_look = look1
+on_signal = start_raid| patrol@esc_specnaz_follower2
+
+[patrol@esc_specnaz_follower2]
+path_walk = walk_raid1
+formation = line
+move_type = raid
+
+
+[logic@esc_specnaz_follower3]
+active = walker@esc_specnaz_follower3
+
+[walker@esc_specnaz_follower3]
+path_walk = way5
+path_look = look2
+on_signal = start_raid| patrol@esc_specnaz_follower3
+
+[patrol@esc_specnaz_follower3]
+path_walk = walk_raid2
+formation = line
+move_type = raid
+
+
+[logic@esc_specnaz_follower4]
+active = walker@esc_specnaz_follower4
+
+[walker@esc_specnaz_follower4]
+path_walk = way6
+path_look = look2
+on_signal = start_raid| patrol@esc_specnaz_follower4
+
+[patrol@esc_specnaz_follower4]
+path_walk = walk_raid2
+formation = line
+move_type = raid
+
+;-------------------------------------------------------------------------------------------------
+;-- ESCAPE LAGER
+;-------------------------------------------------------------------------------------------------
+; Волк
+[logic@esc_lager_volk]
+active = walker@esc_lager_volk_walker1
+on_death = death@wolf
+
+[walker@esc_lager_volk_walker1]
+path_walk = wolf_walk
+path_look = wolf_look
+meet = meet@wolf
+on_actor_dist_le = 23| {+tutorial_wounded_start -esc_kill_bandits_quest_kill} remark@esc_lager_volk1 
+on_actor_dist_le_nvis = 5| walker@esc_lager_volk_walker2
+danger = danger_condition@shustryi
+
+[remark@esc_lager_volk1]
+anim = hello_wpn
+snd = esc_wolf_say_thanks
+target = actor
+on_signal = sound_end| walker@esc_lager_volk_walker2
+on_actor_dist_le_nvis = 5| walker@esc_lager_volk_walker2
+danger = danger_condition@shustryi
+
+[walker@esc_lager_volk_walker2]
+path_walk = wolf_walk
+path_look = wolf_look
+meet = meet@wolf
+on_info = {+esc_kill_bandits_quest_have} remark@esc_lager_volk2
+danger = danger_condition@shustryi
+
+[remark@esc_lager_volk2]
+anim = guard_rac
+snd = esc_wolf_radio
+target = actor
+on_signal = sound_end| remark@esc_lager_volk3 %=play_snd_from_radio%
+on_info = {+esc_petruha_report} walker@esc_lager_volk_walker3
+meet = no_meet
+danger = danger_condition@shustryi
+
+[remark@esc_lager_volk3]
+anim = guard_rac
+;snd = esc_wolf_radio_1
+target = actor
+on_timer = 5000 | walker@esc_lager_volk_walker3 %+esc_petruha_report%
+on_info = {+esc_petruha_report} walker@esc_lager_volk_walker3
+meet = no_meet
+danger = danger_condition@shustryi
+
+[walker@esc_lager_volk_walker3]
+path_walk = wolf_walk
+path_look = wolf_look
+meet = meet@wolf
+danger = danger_condition@shustryi
+
+[meet@wolf]
+meet_state		= 15|guard@wait
+meet_state_wpn	= 15|backoff@threat_weap
+victim		= 15|actor
+victim_wpn		= 15|actor
+use			= true
+use_wpn		= false
+syndata		= backoff@threat_weap
+meet_dialog = {-agroprom_military_case_have} escape_lager_volk_talk, escape_lager_leader_hello
+
+[death@wolf]
+on_info = %+esc_wolf_dead%
+
+
+;Fanat
+[logic@esc_lager_fanat]
+active = walker@esc_lager_fanat
+on_death = death@fanat
+
+[walker@esc_lager_fanat]
+path_walk = wolf_walk
+path_look = wolf_look
+meet = meet@wolf
+on_actor_dist_le = 7 | {-escape_lager_spawn_killers -escape_lager_killers_die} remark@esc_fanat_need_help
+danger = danger_condition@shustryi
+
+[remark@esc_fanat_need_help]
+anim = guard
+target = actor
+snd = esc_fanat_dialog
+on_signal = sound_end| remark@esc_lager_fanat_wait
+meet = no_meet
+abuse = false
+danger = danger_condition@shustryi
+
+[remark@esc_lager_fanat_wait]
+anim = guard
+on_info = {+escape_lager_spawn_killers} walker@esc_lager_fanat
+meet = meet@wolf
+target = actor
+danger = danger_condition@shustryi
+
+;Шустрый
+
+[logic@esc_lager_shustryi]
+active = camper@esc_lager_prisoner
+combat_ignore = combat_ignore
+
+[camper@esc_lager_prisoner]
+path_walk = prisoner_walk
+path_look = prisoner_look
+combat_ignore_cond = always
+def_state_campering = prisoner
+on_info = {=esc_bandits_die} remark@esc_lager_help
+on_info2 = {+tutorial_wounded_give_info} sleeper4@esc_lager
+meet = no_meet
+danger = danger_condition@shustryi
+
+[remark@esc_lager_help]
+snd = esc_shustryi_help
+anim = prisoner
+meet = no_meet
+target = esc_lager_prisoner_look, 0
+on_actor_dist_le = 5| remark@esc_lager_prisoner
+combat_ignore_cond = always
+danger = danger_condition@shustryi
+on_signal = sound_end| remark@esc_shustryi_wait
+on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
+
+[remark@esc_shustryi_wait]
+anim = prisoner
+meet = no_meet
+target = esc_lager_prisoner_look, 0
+on_actor_dist_le = 5| remark@esc_lager_prisoner
+combat_ignore_cond = always
+danger = danger_condition@shustryi
+on_timer = 10000| remark@esc_lager_help
+on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
+
+
+[remark@esc_lager_prisoner]
+anim = wait
+anim_reset = false
+target = esc_lager_prisoner_look, 0
+snd = esc_shustryi_thanks
+on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
+on_signal = sound_end| remark@wait_player_at_lager
+combat_ignore_cond = always
+meet = meet@no_meet
+danger = danger_condition@shustryi
+
+[remark@wait_player_at_lager]
+anim = wait
+anim_reset = false
+target = actor
+meet = meet@friend
+danger = danger_condition@shustryi
+on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
+
+[sleeper4@esc_lager]
+path_main = sleep4
+meet = meet@friend
+danger = danger_condition@shustryi
+
+[danger_condition@shustryi]
+ignore_distance = 0
+
+;охранники
+
+[logic@esc_lager_zoneguard1]
+active = walker@esc_lager_zoneguard1
+
+[walker@esc_lager_zoneguard1]
+path_walk  = guard_walk1
+path_look  = guard_look1
+meet = meet@zoneguard_novice_lager1
+
+[meet@zoneguard_novice_lager1]
+meet_state 		= 10| wait@talk_hello
+meet_state_wpn 	= 10| threat@threat_weap
+victim 			= 10| actor
+victim_wpn 		= 10| actor
+use			= true
+use_wpn		= true
+meet_dialog		= escape_lager_guard_start_dialog
+
+
+[logic@esc_lager_zoneguard2]
+active = walker@esc_lager_zoneguard2
+
+[walker@esc_lager_zoneguard2]
+path_walk  = guard_walk2
+path_look  = guard_look2
+meet = meet@zoneguard_novice_lager2
+
+[meet@zoneguard_novice_lager2]
+meet_state 		= 10| wait@talk_hello
+meet_state_wpn 	= 10| threat@threat_weap
+victim 			= 10| actor
+victim_wpn 		= 10| actor
+use			= true
+use_wpn		= true
+meet_dialog		= escape_lager_guard_start_dialog
+
+
+[logic@esc_lager_walker1]
+active = walker1@esc_lager
+
+[walker1@esc_lager]
+path_walk  = guard_walk1
+path_look  = guard_look1
+meet = meet@lager
+
+
+[logic@esc_lager_walker2]
+active = walker2@esc_lager
+
+[walker2@esc_lager]
+path_walk  = guard_walk2
+path_look  = guard_look2
+meet = meet@lager
+
+
+[logic@esc_lager_walker3]
+active = walker3@esc_lager
+
+[walker3@esc_lager]
+path_walk  = guard_walk3
+meet = meet@lager
+
+
+[logic@esc_lager_walker4]
+active = walker4@esc_lager
+
+[walker4@esc_lager]
+path_walk  = guard_walk4
+meet = meet@lager
+
+
+; сидящие днём у костра
+[logic@esc_lager_kamp1]
+active = kamp1@esc_lager
+
+[kamp1@esc_lager]
+center_point  = camp_center
+path_walk = camp_center_task
+soundgroup = esc_lager
+meet = meet@lager
+
+
+;спящие ночью
+[logic@esc_lager_sleeper1]
+active = sleeper1@esc_lager
+
+[sleeper1@esc_lager]
+path_main = sleep1
+meet = meet@lager
+
+
+[logic@esc_lager_sleeper2]
+active = sleeper2@esc_lager
+
+[sleeper2@esc_lager]
+path_main = sleep2
+meet = meet@lager
+
+
+[logic@esc_lager_sleeper3]
+active = sleeper3@esc_lager
+
+[sleeper3@esc_lager]
+path_main = sleep3
+meet = meet@lager
+
+
+;спящие ночью и днём
+
+[logic@esc_lager_sleeper5]
+active = sleeper5@esc_lager
+
+[sleeper5@esc_lager]
+path_main = sleep5
+meet = meet@lager
+
+
+[logic@esc_lager_sleeper6]
+active = sleeper6@esc_lager
+
+[sleeper6@esc_lager]
+path_main = sleep6
+meet = meet@lager
+
+
+[logic@esc_lager_sleeper7]
+active = sleeper7@esc_lager
+
+[sleeper7@esc_lager]
+path_main = sleep7
+meet = meet@lager
+
+
+; защита лагеря
+[logic@esc_lager_defend1]
+active = walker@esc_lager_defend1
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager
+
+[walker@esc_lager_defend1]
+path_walk = defend1_walk
+path_look = defend1_look
+combat_ignore_cond = {-esc_open_lager_fire}
+
+
+[logic@esc_lager_defend2]
+active = walker@esc_lager_defend2
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager
+
+[walker@esc_lager_defend2]
+path_walk = defend2_walk
+path_look = defend2_look
+combat_ignore_cond = {-esc_open_lager_fire}
+
+
+[logic@esc_lager_defend3]
+active = walker@esc_lager_defend3
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager
+
+[walker@esc_lager_defend3]
+path_walk = defend3_walk
+path_look = defend3_look
+combat_ignore_cond = {-esc_open_lager_fire}
+
+
+[logic@esc_lager_defend4]
+active = walker@esc_lager_defend4
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager
+
+[walker@esc_lager_defend4]
+path_walk = defend4_walk
+path_look = defend4_look
+combat_ignore_cond = {-esc_open_lager_fire}
+
+
+[logic@esc_lager_defend5]
+active = walker@esc_lager_defend5
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager
+
+[walker@esc_lager_defend5]
+path_walk = defend5_walk
+path_look = defend5_look
+combat_ignore_cond = {-esc_open_lager_fire}
+
+
+[logic@esc_lager_defend6]
+active = camper@esc_lager_defend6
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager
+
+[camper@esc_lager_defend6]
+path_walk = defend6_walk
+path_look = defend6_look
+combat_ignore_cond = {-esc_open_lager_fire}
+radius = 5
+on_info = {=gulag_population_le(esc_lager:6)} walker@esc_lager_defend_new1
+
+[walker@esc_lager_defend_new1]
+path_walk = guard_walk4
+
+
+[logic@esc_lager_defend7]
+active = camper@esc_lager_defend7
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager
+
+[camper@esc_lager_defend7]
+path_walk = defend7_walk
+path_look = defend7_look
+combat_ignore_cond = {-esc_open_lager_fire}
+radius = 5
+on_info = {=gulag_population_le(esc_lager:6)} walker@esc_lager_defend_new2
+
+[walker@esc_lager_defend_new2]
+path_walk = guard_walk4
+
+
+[logic@esc_lager_defend8]
+active = camper@esc_lager_defend8
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager
+
+[camper@esc_lager_defend8]
+path_walk = defend8_walk
+path_look = defend8_look
+combat_ignore_cond = {-esc_open_lager_fire}
+radius = 5
+on_info = {=gulag_population_le(esc_lager:6)} walker@esc_lager_defend_new3
+
+[walker@esc_lager_defend_new3]
+path_walk = guard_walk4
+
+
+[logic@esc_lager_defend9]
+active = camper@esc_lager_defend9
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager_petruha
+
+[camper@esc_lager_defend9]
+path_walk = defend9_walk
+path_look = defend9_look
+combat_ignore_cond = {-esc_open_lager_fire}
+radius = 5
+on_info = {=gulag_population_le(esc_lager:6)} walker@esc_lager_defend_new4
+
+[walker@esc_lager_defend_new4]
+path_walk = guard_walk4
+
+
+[logic@esc_lager_defend10]
+active = camper@esc_lager_defend10
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager_tolik
+
+[camper@esc_lager_defend10]
+path_walk = defend10_walk
+path_look = defend10_look
+combat_ignore_cond = {-esc_open_lager_fire}
+radius = 5
+on_info = {=gulag_population_le(esc_lager:6)} walker@esc_lager_defend_new5
+
+[walker@esc_lager_defend_new5]
+path_walk = guard_walk4
+
+
+[logic@esc_lager_defend11]
+active = camper@esc_lager_defend11
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@lager
+
+[camper@esc_lager_defend11]
+path_walk = defend11_walk
+path_look = defend11_look
+combat_ignore_cond = {-esc_open_lager_fire}
+radius = 5
+on_info = {=gulag_population_le(esc_lager:6)} walker@esc_lager_defend_new6
+
+[walker@esc_lager_defend_new6]
+path_walk = guard_walk4
+
+
+[logic@esc_lager_defend12]
+active = remark@esc_lager_defend12
+combat_ignore = combat_ignore
+on_hit = hit@lager
+on_death = death@fanat
+
+[remark@esc_lager_defend12]
+path_walk = wolf_walk
+anim = guard
+snd = esc_fanat_ready
+on_signal = sound_end| walker@esc_lager_defend12
+meet = meet@wolf
+danger = danger_condition@shustryi
+
+[walker@esc_lager_defend12]
+path_walk = defend12_walk
+path_look = defend12_look
+combat_ignore_cond = {-esc_open_lager_fire}
+meet = meet@wolf
+danger = danger_condition@shustryi
+
+
+[logic@esc_lager_defend13]
+active = walker@esc_lager_defend13
+on_death = death@wolf
+
+[walker@esc_lager_defend13]
+path_walk = defend13_walk
+path_look = defend13_look
+
+
+[meet@lager]
+meet_dialog = esc_lager_no_talk
+
+[combat_ignore]
+
+[hit@lager]
+on_info = %+esc_open_lager_fire%
+
+[death@lager]
+on_info = %+esc_open_lager_fire%
+
+[death@lager_petruha]
+on_info = %+esc_open_lager_fire%
+
+[death@lager_tolik]
+on_info = %+esc_open_lager_fire%
+
+[death@fanat]
+on_info = %+esc_open_lager_fire +esc_fanat_die%
+
+[hit@killers]
+on_info = %+esc_open_lager_fire +esc_open_killer_fire%
+
+[death@killers]
+on_info = %+esc_open_lager_fire +esc_open_killer_fire%
+
+;-------------------------------------------------------------------------------------------------
+;-- ESCAPE FACTORY BANDITS
+;-------------------------------------------------------------------------------------------------
+[logic@esc_fabrika_bandit_walker1]
+active = walker1@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker1@esc_fabrika_bandit]
+path_walk = day_walk1
+path_look = day_look1
+def_state_moving = raid
+def_state_moving_fire = raid_fire
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+combat_ignore_cond = {=check_fighting(004)}
+
+
+[logic@esc_fabrika_bandit_walker2]
+active = walker2@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker2@esc_fabrika_bandit]
+path_walk = day_walk2
+path_look = day_look2
+combat_ignore_cond = {=check_fighting(004)}
+
+
+[logic@esc_fabrika_bandit_walker3]
+active = walker3@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker3@esc_fabrika_bandit]
+path_walk = day_walk3
+path_look = day_look3
+def_state_moving = raid
+def_state_moving_fire = raid_fire
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+combat_ignore_cond = {=check_fighting(004)}
+
+
+;[logic@esc_fabrika_bandit_walker4]
+;active = walker4@esc_fabrika_bandit
+;combat_ignore = combat_ignore
+
+;[walker4@esc_fabrika_bandit]
+;path_walk = day_walk4
+;path_look = day_look4
+;combat_ignore_cond = {=check_fighting(004)}
+
+
+[logic@esc_fabrika_bandit_walker4]
+active = walker4@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker4@esc_fabrika_bandit]
+path_walk = day_walk4
+path_look = day_look4
+combat_ignore_cond = {=check_fighting(004)}
+on_info = {+esc_prison} remark4@esc_fabrika_bandit
+
+[remark4@esc_fabrika_bandit]
+anim = sit
+target = 004
+snd = esc_bandit_shustryi
+on_signal = sound_end| remark5@esc_fabrika_bandit
+combat_ignore_cond = {=check_fighting(004)}
+on_info = {-esc_prison} walker4@esc_fabrika_bandit
+
+[remark5@esc_fabrika_bandit]
+anim = sit
+target = 004
+on_timer = 10000| remark4@esc_fabrika_bandit
+combat_ignore_cond = {=check_fighting(004)}
+on_info = {-esc_prison} walker4@esc_fabrika_bandit
+
+
+[logic@esc_fabrika_bandit_kamp]
+active = kamp@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[kamp@esc_fabrika_bandit]
+center_point = camp_center
+;path_walk = camp_center_task
+soundgroup = esc_bandits_factory
+combat_ignore_cond = {=check_fighting(004)}
+
+
+[camper@esc_fabrika_bandit_walker1]
+active = walker11@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker11@esc_fabrika_bandit]
+path_walk = day_alarm_walk1
+path_look = day_alarm_look1
+combat_ignore_cond = {=check_fighting(004)}
+
+
+[camper@esc_fabrika_bandit_walker2]
+active = walker22@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker22@esc_fabrika_bandit]
+path_walk = day_alarm_walk2
+path_look = day_alarm_look2
+combat_ignore_cond = {=check_fighting(004)}
+
+
+[camper@esc_fabrika_bandit_walker3]
+active = walker33@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker33@esc_fabrika_bandit]
+path_walk = day_alarm_walk3
+path_look = day_alarm_look3
+combat_ignore_cond = {=check_fighting(004)}
+
+
+[camper@esc_fabrika_bandit_walker4]
+active = walker44@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker44@esc_fabrika_bandit]
+path_walk = day_alarm_walk4
+path_look = day_alarm_look4
+combat_ignore_cond = {=check_fighting(004)}
+
+
+[camper@esc_fabrika_bandit_walker5]
+active = walker55@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker55@esc_fabrika_bandit]
+path_walk = day_alarm_walk5
+path_look = day_alarm_look5
+combat_ignore_cond = {=check_fighting(004)}
+
+
+[camper@esc_fabrika_bandit_walker6]
+active = walker66@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker66@esc_fabrika_bandit]
+path_walk = day_alarm_walk6
+path_look = day_alarm_look6
+combat_ignore_cond = {=check_fighting(004)}
+
+
+[camper@esc_fabrika_bandit_walker7]
+active = walker7@esc_fabrika_bandit
+combat_ignore = combat_ignore
+
+[walker7@esc_fabrika_bandit]
+path_walk = day_night_sniper_walk
+path_look = day_night_sniper_look
+combat_ignore_cond = {=check_fighting(004)}
+
+
+
+;-----------------------------------
+;----- Soldiers on the bridge ------
+;-----------------------------------
+
+[logic@esc_bridge_post1]
+active = walker@esc_bridge_post1
+combat_ignore = combat_ignore@esc_bridge
+on_hit = hit@soldier
+on_death = death@soldier
+
+[walker@esc_bridge_post1]
+path_walk = post1_walk
+path_look = post1_look
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+
+[logic@esc_bridge_post2]
+active = walker@esc_bridge_post2
+combat_ignore = combat_ignore@esc_bridge
+on_hit = hit@soldier
+on_death = death@soldier_kuzn
+
+[walker@esc_bridge_post2]
+path_walk = post2_walk
+path_look = post2_look
+meet = meet@sold_zoneguard
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+on_actor_dist_le_nvis = 35 | remark@esc_bridge_post2_1
+on_info = {+esc_bridge_pass_fire} walker3@esc_bridge_post2
+
+[remark@esc_bridge_post2_1]
+anim = guard
+target = actor
+on_actor_dist_le_nvis = 20 | remark@esc_bridge_post2
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+on_info = {+esc_bridge_pass_fire} walker3@esc_bridge_post2
+
+[remark@esc_bridge_post2]
+anim = guard
+target = actor
+snd = esc_bridge_soldiers
+on_signal = sound_end| walker2@esc_bridge_post2
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+[walker2@esc_bridge_post2]
+path_walk = post2_walk
+path_look = post2_look
+meet = meet@sold_zoneguard
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+[walker3@esc_bridge_post2]
+path_walk = post2_walk
+path_look = post2_look
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+
+[logic@esc_bridge_post3]
+active = walker@esc_bridge_post3
+combat_ignore = combat_ignore@esc_bridge
+on_hit = hit@soldier
+on_death = death@soldier
+
+[walker@esc_bridge_post3]
+path_walk = post3_walk
+path_look = post3_look
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+on_info = {+esc_bridge_pass_fire} walker@esc_bridge_post3_fire %=bar_arena_hit%
+
+[walker@esc_bridge_post3_fire]
+path_walk = post3_walk
+path_look = post3_look
+on_info = {-esc_bridge_pass_fire} walker@esc_bridge_post3
+
+[logic@esc_bridge_post4]
+active = walker@esc_bridge_post4
+combat_ignore = combat_ignore@esc_bridge
+on_hit = hit@soldier
+on_death = death@soldier
+
+[walker@esc_bridge_post4]
+path_walk = post4_walk
+path_look = post4_look
+meet = meet@sold_zoneguard
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+on_info = {+esc_bridge_pass_fire} walker2@esc_bridge_post4 %=bar_arena_hit%
+
+[walker2@esc_bridge_post4]
+path_walk = post4_walk
+path_look = post4_look
+on_info = {-esc_bridge_pass_fire} walker@esc_bridge_post4
+
+
+[logic@esc_bridge_post5]
+active = walker@esc_bridge_post5
+on_hit = hit@soldier
+on_death = death@soldier
+combat_ignore = combat_ignore@esc_bridge
+
+[walker@esc_bridge_post5]
+path_walk = post5_walk
+path_look = post5_look
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+
+[logic@esc_bridge_post6]
+active = walker@esc_bridge_post6
+combat_ignore = combat_ignore@esc_bridge
+on_hit = hit@soldier
+on_death = death@soldier
+
+[walker@esc_bridge_post6]
+path_walk = post6_walk
+path_look = post6_look
+meet = meet@sold_zoneguard
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+on_actor_dist_le = 25| remark@esc_bridge_post2
+on_info = {+esc_bridge_pass_fire} walker3@esc_bridge_post6
+
+[remark@esc_bridge_post6]
+anim = guard
+target = actor
+snd = esc_bridge_soldiers
+on_signal = sound_end| walker2@esc_bridge_post6
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+[walker2@esc_bridge_post6]
+path_walk = post6_walk
+path_look = post6_look
+meet = meet@sold_zoneguard
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+[walker3@esc_bridge_post6]
+path_walk = post6_walk
+path_look = post6_look
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+[logic@esc_bridge_kamp1]
+active = kamp@esc_bridge_post1
+combat_ignore = combat_ignore@esc_bridge
+
+[kamp@esc_bridge_post1]
+center_point = kamp_point
+path_walk = kamp_point_task
+soundgroup = esc_bridge_soldiers
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+
+[logic@esc_bridge_kamp3]
+active = kamp@esc_bridge_post3
+combat_ignore = combat_ignore@esc_bridge
+
+[kamp@esc_bridge_post3]
+center_point = kamp_point
+path_walk = kamp_point_task
+soundgroup = esc_bridge_soldiers
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+
+[logic@esc_bridge_kamp4]
+active = kamp@esc_bridge_post4
+combat_ignore = combat_ignore@esc_bridge
+
+[kamp@esc_bridge_post4]
+center_point = kamp_point
+path_walk = kamp_point_task
+soundgroup = esc_bridge_soldiers
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+
+[logic@esc_bridge_patrol]
+active = walker@esc_bridge_patrol
+combat_ignore = combat_ignore@esc_bridge
+
+[walker@esc_bridge_patrol]
+path_walk = patrol_walk
+path_look = patrol_look
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor =is_alive(032)}
+
+
+[meet@sold_zoneguard]
+meet_state 		= 30| {+esc_bridge_pass_on} guard, guard@ {+esc_bridge_pass_on} talk_hello, wait
+meet_state_wpn 	= 30| {+esc_bridge_pass_on} guard, guard@ {+esc_bridge_pass_on} talk_hello, wait
+victim 			= 30| actor
+victim_wpn 		= 30| actor
+use			= true
+use_wpn		= true
+;zone			= esc_bridge_kill_zone|{-esc_bridge_pass_on} true@ {-esc_bridge_pass_on} esc_bridge_soldiers
+meet_dialog		= esc_bridge_soldiers_start
+precond = visibility
+
+[combat_ignore@esc_bridge]
+combat_ignore_cond = {-esc_bridge_pass_fire =fighting_actor}
+
+[hit@soldier]
+on_info = {=hit_by_actor} %+esc_bridge_pass_fire%
+
+[death@soldier]
+on_info = {=killed_by_actor} %+esc_bridge_pass_fire%
+
+[death@soldier_kuzn]
+on_info = {=killed_by_actor} %+esc_bridge_pass_fire%
+
+
+;-------------------------------
+;---------- Killers ------------
+;-------------------------------
+[logic@esc_killer_leader_raid]
+active = walker@esc_killer_leader_raid
+on_hit = hit@killers
+on_death = death@killers
+combat_ignore = combat_ignore
+
+[walker@esc_killer_leader_raid]
+path_walk = raid1_walk
+path_look = raid1_look
+combat_ignore_cond = {-esc_open_killer_fire}
+def_state_moving = patrol
+team = killers
+on_signal = fires| remark@esc_killer_leader_raid %=esc_direction_fire%
+
+[remark@esc_killer_leader_raid]
+snd = esc_lager_killer
+anim = guard
+on_timer = 15000| %+esc_open_lager_fire%
+combat_ignore_cond = {-esc_open_killer_fire}
+
+
+
+[logic@esc_killer1_raid]
+active = patrol@esc_killer1_raid
+on_hit = hit@killers
+on_death = death@killers
+combat_ignore = combat_ignore
+
+[patrol@esc_killer1_raid]
+path_walk = raid2_walk
+path_look = raid2_look
+combat_ignore_cond = {-esc_open_killer_fire}
+formation = back
+commander = true
+
+
+[logic@esc_killer2_raid]
+active = patrol@esc_killer2_raid
+on_hit = hit@killers
+on_death = death@killers
+combat_ignore = combat_ignore
+
+[patrol@esc_killer2_raid]
+path_walk = raid3_walk
+path_look = raid3_look
+combat_ignore_cond = {-esc_open_killer_fire}
+formation = back
+commander = true
+
+
+[logic@esc_killer3_raid]
+active = walker@esc_killer3_raid
+on_hit = hit@killers
+on_death = death@killers
+combat_ignore = combat_ignore
+
+[walker@esc_killer3_raid]
+path_walk = raid4_walk
+path_look = raid4_look
+combat_ignore_cond = {-esc_open_killer_fire}
+def_state_moving = patrol
+
+
+[logic@esc_killer4_raid]
+active = walker@esc_killer4_raid
+on_hit = hit@killers
+on_death = death@killers
+combat_ignore = combat_ignore
+
+[walker@esc_killer4_raid]
+path_walk = raid5_walk
+path_look = raid5_look
+combat_ignore_cond = {-esc_open_killer_fire}
+def_state_moving = patrol
+
+
+[logic@esc_killer5_raid]
+active = walker@esc_killer5_raid
+on_hit = hit@killers
+on_death = death@killers
+combat_ignore = combat_ignore
+
+[walker@esc_killer5_raid]
+path_walk = raid6_walk
+path_look = raid6_look
+combat_ignore_cond = {-esc_open_killer_fire}
+def_state_moving = patrol
+
+
+[logic@esc_killer1_follower]
+active = patrol@esc_killer1_follower
+on_hit = hit@killers
+on_death = death@killers
+combat_ignore = combat_ignore
+
+[patrol@esc_killer1_follower]
+formation = back
+combat_ignore_cond = {-esc_open_killer_fire}
+path_walk = raid2_walk
+
+
+[logic@esc_killer2_follower]
+active = patrol@esc_killer2_follower
+on_hit = hit@killers
+on_death = death@killers
+combat_ignore = combat_ignore
+
+[patrol@esc_killer2_follower]
+combat_ignore_cond = {-esc_open_killer_fire}
+path_walk = raid3_walk
+formation = back
+
+
+[logic@esc_killer_fight]
+active = walker@esc_killers_fight
+
+[walker@esc_killers_fight]
+path_walk = lager_patrol
+
+
+[logic@esc_killer_kamp]
+active = kamp@esc_killer_kamp
+
+[kamp@esc_killer_kamp]
+center_point = kamp
+path_walk = kamp_task
+soundgroup = esc_killers
+
+
+
+[logic@esc_killer_kamp_wait]
+active = kamp@esc_killer_kamp_wait
+
+[kamp@esc_killer_kamp_wait]
+center_point = kamp_wait
+soundgroup = esc_killers_wait
+danger = danger_condition@esc_killers
+
+
+[logic@esc_killer_kamp_guard1]
+active = camper@esc_killer_kamp_guard1
+
+[camper@esc_killer_kamp_guard1]
+path_walk = kamp_guard_walk1
+path_look = kamp_guard_look1
+danger = danger_condition@esc_killers
+
+
+[logic@esc_killer_kamp_guard2]
+active = camper@esc_killer_kamp_guard2
+
+[camper@esc_killer_kamp_guard2]
+path_walk = kamp_guard_walk2
+path_look = kamp_guard_look2
+danger = danger_condition@esc_killers
+
+
+[logic@esc_killer_kamp_guard3]
+active = camper@esc_killer_kamp_guard3
+
+[camper@esc_killer_kamp_guard3]
+path_walk = kamp_guard_walk3
+path_look = kamp_guard_look3
+danger = danger_condition@esc_killers
+
+[danger_condition@esc_killers]
+ignore_ distance_sound = 10
+
+
+
+
+[logic@esc_killer_kamp_offline]
+active = kamp@esc_killer_kamp_offline
+
+[kamp@esc_killer_kamp_offline]
+center_point = kamp_wait
+
+;--------------------------
+;-------- ЗАСАДА ----------
+;--------------------------
+[logic@esc_ambush1]
+active = walker@esc_ambush1
+
+[walker@esc_ambush1]
+path_walk = walk1
+path_look = look1
+
+
+[logic@esc_ambush2]
+active = walker@esc_ambush2
+
+[walker@esc_ambush2]
+path_walk = walk2
+path_look = look2
+
+;------------------------------
+;------ Трупы у вагона --------
+;------------------------------
+
+[logic@esc_corps_wounded]
+active = walker@wounded_esc_corps_wounded
+on_death = death@esc_corps_wounded
+
+[walker@wounded_esc_corps_wounded]
+path_walk = esc_wounded_walk
+path_look = esc_wounded_look
+wounded = wounded@esc_corps_wounded_heavy
+on_info = {+tutorial_wounded_help} remark@thanks_esc_corps_wounded
+danger = danger_condition@tolik
+meet = meet@esc_corps_wounded
+on_info2 = {+esc_kill_bandits_quest_kill} %=hit_npc(esc_killers_kamp_wait:bip01_spine1:1000:0)%
+
+[remark@thanks_esc_corps_wounded]
+anim = wait
+target = actor
+snd = esc_tolik_thanks
+;wounded = wounded@esc_corps_wounded
+on_signal = sound_end| remark@wait_esc_corps_wounded %=run_tutorial_if_newbie(part_12_relations)%
+danger = danger_condition@tolik
+;meet = meet@friend
+meet = no_meet
+abuse = false
+;on_info = %=run_tutorial_if_newbie(part_12_relations)%
+
+[remark@wait_esc_corps_wounded]
+anim = wait
+target = actor
+;wounded = wounded@esc_corps_wounded
+danger = danger_condition@tolik
+meet = meet@friend
+abuse = false
+on_timer = 60000| walker@to_lager_esc_corps_wounded %+tutorial_wounded_heal%
+
+[walker@to_lager_esc_corps_wounded]
+path_walk = esc_vagon_wounded_to_lager
+path_look = esc_wounded_to_lager_look
+on_signal = thanks| {-esc_wolf_dead} walker@to_gulag_esc_corps_wounded, %+esc_wounded_arrive%
+meet = no_meet
+;meet = meet@esc_corps_wounded
+danger = danger_condition@tolik
+abuse = false
+
+[remark@esc_corps_wounded]
+snd = esc_tolik_to_wolf
+target = 006
+anim = guard
+on_signal = sound_end| walker@to_gulag_esc_corps_wounded
+danger = danger_condition@tolik
+meet = no_meet
+abuse = false
+
+[walker@to_gulag_esc_corps_wounded]
+path_walk = esc_to_gulag
+on_signal = wounded_arrive| %+esc_wounded_arrive%
+on_info = %+esc_wounded_arrive%
+
+[wounded@esc_corps_wounded_heavy]
+hp_state = 35|wounded_heavy@help_heavy
+hp_state_see = 35|wounded_heavy@esc_tolik_help
+hp_victim = 35|nil
+hp_cover = 35|false
+hp_fight = 35|false
+help_dialog = tutorial_wounded_give_medkit
+
+[wounded@esc_corps_wounded]
+hp_state = 100|wounded@wait
+hp_state_see = 100|wounded@wait
+hp_victim = 100|nil
+hp_cover = 100|false
+hp_fight = 100|false
+help_dialog = tutorial_wounded_give_medkit
+
+[meet@esc_corps_wounded]
+meet_state		= 2|wait@wait
+meet_state_wpn	= 2|wait@wait
+victim			= 2|actor
+victim_wpn		= 2|actor
+use				= true
+use_wpn			= true
+
+
+[danger_condition@tolik]
+ignore_distance = 0
+
+
+[death@esc_corps_wounded]
+on_info = {=killed_by_actor} %+tutorial_wounded_die%, %+tutorial_wounded_death%
+
+;------------------------------
+;------- Dogs to fox ----------
+;------------------------------
+
+[logic@esc_dogs_to_fox_home]
+active = mob_home@esc_dogs_to_fox_home
+
+[mob_home@esc_dogs_to_fox_home]
+path_home = path1
+home_min_radius = 15
+home_max_radius = 30
+aggressive_home
+panic = 0
+
+
+[logic@esc_dogs_to_fox]
+active = mob_walker@esc_dogs_to_fox_home2
+
+[mob_walker@esc_dogs_to_fox_home2]
+path_walk = path2
+on_info = mob_walker@esc_dogs_to_fox_home3 %=esc_hit_from_fox%
+panic = 0
+
+[mob_walker@esc_dogs_to_fox_home3]
+path_walk = path2
+panic = 0
+
+;------------------------------
+;-------- Dogs swarm ----------
+;------------------------------
+
+[logic@esc_dogs_swarm1]
+active = mob_home@esc_dogs_swarm1
+
+[mob_home@esc_dogs_swarm1]
+path_home = path1
+home_min_radius = 30
+home_max_radius = 50
+
+
+[logic@esc_dogs_swarm2]
+active = mob_home@esc_dogs_swarm1
+
+[mob_home@esc_dogs_swarm2]
+path_home = path2
+home_min_radius = 30
+home_max_radius = 50
+
+
+[logic@esc_dogs_swarm3]
+active = mob_home@esc_dogs_swarm3
+
+[mob_home@esc_dogs_swarm3]
+path_home = path3
+home_min_radius = 30
+home_max_radius = 50
+
+
+;------------------------------
+;-----Boars Dogs rush ---------
+;------------------------------
+
+[logic@esc_boars_dogs]
+active = mob_home@esc_boars_dogs
+
+[mob_home@esc_boars_dogs]
+path_home = home_point
+home_min_radius = 45
+home_max_radius = 70
+
+
+[logic@esc_boars_dogs_old]
+active = mob_home@esc_boars_dogs_2
+
+[mob_home@esc_boars_dogs_2]
+path_home = home_2
+home_min_radius = 15
+home_max_radius = 20
+
+
+;----------------------------
+;------ zombie_1 ------------
+;----------------------------
+
+[logic@esc_zombie_1_fd]
+active = mob_fake_death@esc_zombie_1_fd
+on_hit = hit@zombie
+
+[mob_fake_death@esc_zombie_1_fd]
+on_info = {+esc_zombie_rise2} mob_home@esc_zombie_1_fd
+path_home = home_point_1
+
+[mob_home@esc_zombie_1_fd]
+path_home = home_point
+home_min_radius = 20
+home_max_radius = 35
+
+[hit@zombie]
+on_info = %+esc_zombie_rise2%
+
+
+[logic@esc_zombie_2_fd]
+active = mob_fake_death@esc_zombie_2_fd
+on_hit = hit@zombie
+
+[mob_fake_death@esc_zombie_2_fd]
+on_info = {+esc_zombie_rise2} mob_home@esc_zombie_1_fd
+path_home = home_point_2
+
+
+[logic@esc_zombie_3_fd]
+active = mob_fake_death@esc_zombie_2_fd
+on_hit = hit@zombie
+
+[mob_fake_death@esc_zombie_3_fd]
+on_info = {+esc_zombie_rise2} mob_home@esc_zombie_1_fd
+path_home = home_point_3
+
+
+[logic@esc_zombie_4_fd]
+active = mob_fake_death@esc_zombie_4_fd
+on_hit = hit@zombie
+
+[mob_fake_death@esc_zombie_4_fd]
+on_info = {+esc_zombie_rise2} mob_home@esc_zombie_1_fd
+path_home = home_point_4
+
+
+[logic@esc_zombie_5_fd]
+active = mob_fake_death@esc_zombie_5_fd
+on_hit = hit@zombie
+
+[mob_fake_death@esc_zombie_5_fd]
+on_info = {+esc_zombie_rise2} mob_home@esc_zombie_1_fd
+path_home = home_point_5
+
+
+[logic@esc_zombie_6_fd]
+active = mob_fake_death@esc_zombie_6_fd
+on_hit = hit@zombie
+
+[mob_fake_death@esc_zombie_6_fd]
+on_info = {+esc_zombie_rise2} mob_home@esc_zombie_1_fd
+path_home = home_point_6
+
+
+;--------------------------
+;------- zombie2 ----------
+;--------------------------
+[logic@esc_zombie_2_home]
+active = mob_home@esc_zombie_2_home
+
+[mob_home@esc_zombie_2_home]
+path_home = home
+home_min_radius = 60
+home_max_radius = 90
+
+
+[logic@esc_zombie_2_home2]
+active = mob_home@esc_zombie_2_home2
+
+[mob_home@esc_zombie_2_home2]
+path_home = home2
+home_min_radius = 60
+home_max_radius = 90
+
+
+[logic@esc_zombie_2_home3]
+active = mob_home@esc_zombie_2_home3
+
+[mob_home@esc_zombie_2_home3]
+path_home = home3
+home_min_radius = 60
+home_max_radius = 90
+
+[logic@esc_zombie_2_home4]
+active = mob_home@esc_zombie_2_home4
+
+[mob_home@esc_zombie_2_home4]
+path_home = home4
+home_min_radius = 60
+home_max_radius = 90
+
+
+;-------------------------
+;------- Flesh 1 ---------
+;-------------------------
+[logic@esc_flesh_1_camp]
+active = mob_camp@esc_flesh_1_camp
+
+[mob_camp@esc_flesh_1_camp]
+path_look = look
+path_home = walk
+time_change_point = 60000
+home_min_radius = 15
+home_max_radius = 30
+
+
+;--------------------------
+;------ Bridge Boars ------
+;--------------------------
+[logic@esc_bridge_boar]
+active = mob_home@esc_bridge_boar
+
+[mob_home@esc_bridge_boar]
+path_home = path1
+home_min_radius = 20
+home_max_radius = 40
+
+;--------------------------
+;------ Small Homes ------
+;--------------------------
+[logic@esc_small_home1]
+active = mob_home@esc_small_home1
+
+[mob_home@esc_small_home1]
+path_home = home
+home_min_radius = 20
+home_max_radius = 40
+
+
+[logic@esc_small_home2]
+active = mob_home@esc_small_home2
+
+[mob_home@esc_small_home2]
+path_home = home
+home_min_radius = 20
+home_max_radius = 40
+
+
+[logic@esc_small_home3]
+active = mob_home@esc_small_home3
+
+[mob_home@esc_small_home3]
+path_home = home
+home_min_radius = 20
+home_max_radius = 40
+
+
+[logic@esc_small_home4]
+active = mob_home@esc_small_home4
+
+[mob_home@esc_small_home4]
+path_home = home
+home_min_radius = 10
+home_max_radius = 20
+
+
+[logic@esc_small_home5]
+active = mob_home@esc_small_home5
+
+[mob_home@esc_small_home5]
+path_home = home
+home_min_radius = 20
+home_max_radius = 40
+
+
+[logic@esc_small_home6]
+active = mob_home@esc_small_home6
+
+[mob_home@esc_small_home6]
+path_home = home
+home_min_radius = 20
+home_max_radius = 40
+
+;-------------------------
+;------- Flesh 2 ---------
+;-------------------------
+[logic@esc_flesh_2_camp]
+active = mob_camp@esc_flesh_2_camp
+
+[mob_camp@esc_flesh_2_camp]
+path_look = look
+path_home = walk
+time_change_point = 60000
+home_min_radius = 15
+home_max_radius = 30
+
+
+;------------------------
+;--- Атака на Фабрику ---
+;------------------------
+
+[logic@esc_assault1]
+active = walker@esc_assault1
+on_hit = hit@esc_assault1
+on_death = death@esc_assault1
+combat_ignore = combat_ignore
+
+[hit@esc_assault1]
+on_info = %+esc_assault_start%
+
+[death@esc_assault1]
+on_info = %+esc_assault_start%
+
+[death@petruha_friend]
+on_info = %+esc_petruha_friend_die%
+
+[walker@esc_assault1]
+path_walk = walk_wait1
+path_look = look_wait1
+on_info = {+esc_bandits_start} walker@esc_assault1_wait
+danger = danger_condition@esc_assault
+meet = no_meet
+show_spot = false 
+
+[walker@esc_assault1_wait]
+path_walk = walk_syn2
+path_look = look_syn2
+on_info = {+esc_bandits_assault} patrol@esc_assault1
+on_signal = run| patrol@esc_assault1 %+esc_bandits_assault%
+meet = no_meet
+
+[patrol@esc_assault1]
+path_walk = escape_factory_way1
+path_look = escape_factory_look1
+formation = back
+combat_ignore_cond = {-esc_assault_start}
+meet = no_meet
+;danger = danger_condition@esc_assault
+
+
+
+[logic@esc_assault2]
+active = walker@esc_assault2
+on_hit = hit@esc_assault1
+on_death = death@petruha_friend
+combat_ignore = combat_ignore
+
+[walker@esc_assault2]
+path_walk = walk_wait2
+path_look = look_wait2
+danger = danger_condition@esc_assault
+on_info = {+esc_bandits_start} walker@esc_assault2_wait
+meet = no_meet
+show_spot = false 
+
+[walker@esc_assault2_wait]
+path_walk = walk_syn2
+path_look = look_syn2
+on_signal = run| patrol@esc_assault2 %+esc_bandits_assault%
+on_info = {+esc_bandits_assault} patrol@esc_assault2
+meet = no_meet
+
+[patrol@esc_assault2]
+path_walk = escape_factory_way1
+path_look = escape_factory_look1
+formation = back
+combat_ignore_cond = {-esc_assault_start}
+meet = no_meet
+;danger = danger_condition@esc_assault
+
+
+[logic@esc_assault3]
+active = walker1@esc_assault3
+on_hit = hit@esc_assault1
+on_death = death@esc_assault3
+combat_ignore = combat_ignore
+
+[death@esc_assault3]
+on_info = %+esc_assault_start +esc_petruha_die%
+
+[walker1@esc_assault3]
+path_walk = escape_btr_path1
+path_look = escape_btr_look1
+on_actor_dist_le_nvis = 10| remark@call_esc_assault3
+meet = no_meet
+danger = danger_condition@esc_assault
+wounded = wounded@petruha
+
+[remark@call_esc_assault3]
+anim = guard
+snd = esc_petruha_call
+target = actor
+on_signal = sound_end| remark@talk_esc_assault 
+meet = no_meet
+wounded = wounded@petruha
+on_info = {+esc_bandits_start} remark@kamp_esc_assault3 %=smart_terrain_force_update(esc_assault)%
+
+[remark@talk_esc_assault]
+anim = guard
+target = actor
+on_info = {+esc_bandits_start} remark@kamp_esc_assault3 %=smart_terrain_force_update(esc_assault)%
+meet = meet@attacker
+wounded = wounded@petruha
+
+[remark@kamp_esc_assault3]
+anim = guard
+snd = esc_factory_raid
+on_signal = sound_end| walker@wait_esc_assault 
+target = actor
+meet = no_meet
+wounded = wounded@petruha
+
+[walker@wait_esc_assault]
+path_walk = escape_btr_path1
+path_look = look_syn3
+;on_signal = run| patrol@esc_assault3 %+esc_bandits_assault%
+on_info = {+esc_bandits_assault} patrol@esc_assault3
+meet = no_meet
+wounded = wounded@petruha
+
+
+[patrol@esc_assault3]
+path_walk = escape_factory_way1
+path_look = escape_factory_look1
+commander = true
+formation = back
+on_signal = assault_start| %+esc_assault_start%
+combat_ignore_cond = {-esc_assault_start}
+meet = no_meet
+wounded = wounded@petruha
+
+[wounded@petruha]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false
+
+[logic@esc_assault_fight1]
+active = walker@esc_assault_fight1
+
+[walker@esc_assault_fight1]
+path_walk = final3
+path_look = final3_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+
+[logic@esc_assault_fight2]
+active = walker@esc_assault_fight2
+on_death = death@petruha_friend
+
+[walker@esc_assault_fight2]
+path_walk = final2
+path_look = final2_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+
+[logic@esc_assault_fight3]
+active = walker@esc_assault_fight3
+on_death = death@esc_assault3
+
+[walker@esc_assault_fight3]
+path_walk = final1
+path_look = final1_look
+meet = no_meet
+wounded = wounded@petruha
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+
+[logic@esc_assault_home1]
+active = kamp@esc_assault_home1
+
+[kamp@esc_assault_home1]
+center_point = kamp_center1
+on_info = {+esc_petruha_friend_die +esc_petruha_die -esc_petruha_report2 -esc_report_send} remark@esc_assault_home1
+
+[remark@esc_assault_home1]
+path_walk = escape_factory_return_path
+anim = guard_rac
+meet = no_meet
+on_actor_dist_le_nvis = 20 | remark@esc_assault_home11
+on_actor_dist_ge_nvis = 20 | remark@esc_assault_home11 %+esc_petruha_report2%
+
+[remark@esc_assault_home11]
+path_walk = escape_factory_return_path
+anim = guard_rac
+snd = esc_petruha_raport
+on_signal = sound_end| kamp@esc_assault_home1 %+esc_report_send%
+meet = no_meet
+tips = tip_petruha_report
+danger = danger_condition@esc_assault
+
+
+[logic@esc_assault_home2]
+active = kamp@esc_assault_home2
+on_death = death@petruha_friend
+
+[kamp@esc_assault_home2]
+center_point = kamp_center1
+on_info = {+esc_petruha_die -esc_petruha_report2 -esc_report_send} remark@esc_assault_home1
+
+[remark@esc_assault_home2]
+path_walk = escape_factory_return_path
+anim = guard_rac
+meet = no_meet
+on_actor_dist_le_nvis = 20 | remark@esc_assault_home22
+on_actor_dist_ge_nvis = 20 | remark@esc_assault_home22 %+esc_petruha_report2%
+
+[remark@esc_assault_home22]
+path_walk = escape_factory_return_path
+anim = guard_rac
+snd = esc_petruha_raport
+on_signal = sound_end| kamp@esc_assault_home1 %+esc_report_send%
+meet = no_meet
+tips = tip_petruha_report
+danger = danger_condition@esc_assault
+
+[logic@esc_assault_home_leader]
+active = remark@esc_assault_home
+on_death = death@esc_assault3
+
+[remark@esc_assault_home]
+path_walk = escape_factory_return_path
+anim = guard_rac
+snd = esc_petruha_raport
+on_signal = sound_end| kamp@esc_assault_home_leader
+meet = no_meet
+tips = tip_petruha_report
+wounded = wounded@petruha
+danger = danger_condition@esc_assault
+
+[kamp@esc_assault_home_leader]
+center_point = kamp_center1
+meet = meet@friend
+wounded = wounded@petruha
+
+
+[logic@esc_assault_kamp]
+active = kamp@esc_assault_kamp
+
+[kamp@esc_assault_kamp]
+center_point = kamp_center1
+meet = meet@friend
+
+[danger_condition@esc_assault]
+;ignore_distance_sound = 10
+ignore_distance = 0
+
+[meet@attacker]
+meet_state	= 5|guard@wait
+meet_state_wpn	= 5|guard@wait
+victim		= 5|actor
+victim_wpn	= 5|actor
+use		= true
+use_wpn		= true
+meet_dialog	= escape_factory_assault_start
+
+;---------------------------------
+;-------- Лагерь у Лиса ----------
+;---------------------------------
+
+[logic@esc_stalker_camp_provodnik]
+active = kamp@esc_stalker_camp_provodnik
+
+[kamp@esc_stalker_camp_provodnik]
+center_point = camp_point
+path_walk = camp_point_task
+meet = meet@neutral
+
+
+
+[logic@esc_stalker_fox]
+active = walker@esc_stalker_fox
+on_death = death@esc_stalker_fox
+
+[walker@esc_stalker_fox]
+path_walk = esc_wounded_fox_walk
+path_look = esc_wounded_fox_look
+wounded = wounded@esc_stalker_fox
+meet = no_meet
+on_info = {+escape_fox_heal} remark@esc_stalker_fox
+on_actor_in_zone = esc_ambush_out_restrictor| remark@esc_stalker_fox %=hit_npc(esc_stalker_camp_camp_point:bip01_spine1:1000:0)%
+
+[remark@esc_stalker_fox]
+anim = guard
+target = actor
+meet = meet@esc_stalker_fox_2
+on_info = {+escape_stalker_done !_used} camper@esc_stalker_fox
+
+
+[camper@esc_stalker_fox]
+path_walk = esc_fox_walk
+path_look = esc_fox_look
+on_info = {+escape_stalker_dog_die} remark@end_esc_stalker_fox
+meet = no_meet
+
+[remark@end_esc_stalker_fox]
+snd = esc_fox_thanks
+anim = guard
+target = actor
+on_signal = sound_end|kamp@esc_stalker_fox
+meet = no_meet
+danger = danger_condition@fox
+
+[wounded@esc_stalker_fox]
+hp_state = 30|help_me@help|29|wounded_heavy@help_heavy
+hp_state_see = 30|wounded@help_see|29|wounded_heavy@help_heavy
+psy_state = 50|{=best_pistol}psy_armed,psy_pain@wounded_psy|20| {=best_pistol}psy_shoot,psy_pain@{=best_pistol}wounded_psy_shoot,wounded_psy
+hp_victim = 30|nil|10|nil
+hp_cover = 30|true|29|false
+hp_fight = 30|true|29|false
+syndata = wounded@help
+help_dialog = escape_fox_hello_dialog
+
+[kamp@esc_stalker_fox]
+center_point = esc_fox_kamp
+path_walk = esc_fox_kamp_task
+meet = meet@esc_stalker_fox
+danger = danger_condition@fox
+
+[death@esc_stalker_fox]
+on_info = %+esc_dogs_return%
+
+
+[danger_condition@fox]
+ignore_distance = 20
+
+
+[meet@esc_stalker_fox]
+meet_state	= 3|wait@wait
+meet_state_wpn	= 3|wait@wait
+victim		= 3|actor
+victim_wpn	= 3|actor
+use		= true
+use_wpn		= true
+meet_dialog     = escape_fox_hello_dialog
+
+[meet@esc_stalker_fox_2]
+meet_state	= 3|guard@wait
+meet_state_wpn	= 3|guard@wait
+victim		= 3|actor
+victim_wpn	= 3|actor
+use		= true
+use_wpn		= true
+meet_dialog     = escape_fox_hello_dialog
+
+
+
+
+[logic@esc_stalker_camp1]
+active = kamp@esc_stalker_camp1
+
+[kamp@esc_stalker_camp1]
+center_point = camp_point
+
+
+[logic@esc_stalker_camp2]
+active = kamp@esc_stalker_camp2
+
+[kamp@esc_stalker_camp2]
+center_point = camp_point
+
+
+[logic@esc_stalker_camp3]
+active = walker@esc_stalker_camp3
+
+[walker@esc_stalker_camp3]
+path_walk = walk
+path_look = look
+

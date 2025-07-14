@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding="UTF-8"?>
+
+<game_news_templates>
+	<news_template index="0" ignore="1">
+		<text>%s was retreated from battlefield...</text>
+	</news_template>
+
+	<news_template index="1" ignore="1">
+		<text>%s and %s were retreated from battlefield...</text>
+	</news_template>
+
+	<news_template index="2" ignore="0">
+		<text>%s killed by %s</text>
+	</news_template>
+
+	<news_template index="3" ignore="0">
+		<text>%s and %s was killed by themselves</text>
+	</news_template>
+</game_news_templates>

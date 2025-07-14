@@ -1,0 +1,60 @@
+[logic@val_escort_guard1]
+active          = patrol@val_escort_guard1_wait
+on_death        = death@val_escort_guard1_wait
+on_hit          = hit@val_escort_guard1_wait
+on_combat       = combat@val_escort_guard1_wait
+combat_ignore   = combat_ignore
+
+[death@val_escort_guard1_wait]
+on_info     = %-val_escort_guard1_combat +val_escort_guard1_dead%
+on_info2    = {=killed_by_actor} %+val_escort_actor_helped%
+
+[hit@val_escort_guard1_wait]
+on_info     = {=hit_by_actor} %+val_escort_combat +val_escort_actor_helped%, %+val_escort_guard1_combat%
+on_info2    = {+val_escort_combat -val_escort_nap1_start_combat} %+val_escort_captive_enemy%
+on_info3    = {=hitted_by(406) -val_escort_captive_enemy} %+val_escort_nap1_start_combat%
+
+[combat@val_escort_guard1_wait]
+on_info     = %+val_escort_guard1_combat%
+on_info2    = {=see_actor -val_escort_nap1_start_combat -val_escort_captive_enemy} %+val_escort_captive_enemy%
+on_info3    = {=see_actor -val_escort_combat} %+val_escort_combat% ;remark@val_escort_guard1_fight
+
+;--------------------------------------------------------------------------
+; wait for scene start
+;--------------------------------------------------------------------------
+[patrol@val_escort_guard1_wait]
+path_walk           = captive_wait_walk
+path_look           = captive_wait_look
+on_info             = {+val_escort_start}           patrol@val_escort_guard1_walk
+on_info2            = {+val_escort_captive_dead}    remark@val_escort_guard1_free
+combat_ignore_cond  = {=check_fighting(400)}
+
+;--------------------------------------------------------------------------
+; escort captive
+;--------------------------------------------------------------------------
+[patrol@val_escort_guard1_walk]
+path_walk           = captive_walk
+path_look           = captive_look
+formation           = back
+on_info             = {+val_escort_combat}          remark@val_escort_guard1_fight
+on_info2            = {+val_escort_captive_dead}    remark@val_escort_guard1_free
+on_info3            = {+val_escort_scene_fail}      remark@val_escort_guard1_free
+combat_ignore_cond  = {=check_fighting(400)}
+;combat_ignore_cond  = {=check_fighting(400:406)}
+
+;--------------------------------------------------------------------------
+; fight with actor and nap1
+;--------------------------------------------------------------------------
+[remark@val_escort_guard1_fight]
+anim                = wait_na
+on_info             = {+val_escort_captive_enemy}   remark@val_escort_guard1_free
+on_info2            = {+val_escort_captive_dead}    remark@val_escort_guard1_free
+on_info3            = {+val_escort_nap1_dead}       patrol@val_escort_guard1_walk   %-val_escort_combat%
+combat_ignore_cond  = {=check_fighting(400)}
+
+;--------------------------------------------------------------------------
+; 
+;--------------------------------------------------------------------------
+[remark@val_escort_guard1_free]
+anim                = wait
+on_info             = %+val_escort_guards_free -val_escort_guard1_combat%

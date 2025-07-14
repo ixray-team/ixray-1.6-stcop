@@ -1,0 +1,215 @@
+class "game_cl_LastStanding" (game_cl_mp_script)
+
+function game_cl_LastStanding:__init() super()
+end
+
+
+function game_cl_LastStanding:__finalize()
+end
+
+function game_cl_LastStanding:createPlayerState()
+
+   return game_last_ps.game_last_playerState()
+
+end
+
+function game_cl_LastStanding:Init()
+	m_b_zone_callback_inited = false
+end
+
+
+function game_cl_LastStanding:net_import_state	( P)
+	game_cl_mp_script.net_import_state	(self, P)
+end
+
+function game_cl_LastStanding:CanBeReady	()
+	return true
+end
+
+function game_cl_LastStanding:shedule_Update (dt)
+	game_cl_mp_script.shedule_Update	(self, dt)
+	
+
+   if self.m_game_ui ~= nil then
+      self.m_game_ui:ShowPlayersList(self:Phase()==game_phases.GAME_PHASE_PENDING)
+      
+      if (self:Phase()==game_phases.GAME_PHASE_PENDING) then
+         self.m_game_ui:SetTodoCaption("Press FIRE to enter the game")
+--         self.m_game_ui:SetLifeCaption("")
+      end
+
+      if self:Phase()==game_phases.GAME_PHASE_INPROGRESS then
+         local ps_local	= self:GetLocalPlayer()
+         local msg = string.format("You have %d lives", ps_local.lifecount)
+            self.m_game_ui:SetLifeCaption(msg)
+            msg = string.format("%d:%d",ps_local.lifecount,ps_local.lifecount)
+            self.m_header_wnd:SetScore(msg)
+            self.m_header_wnd:SetRoundTime(self:GetRoundTime())
+         
+         if   ps_local.lifecount~=0 then
+            if ps_local:testFlag(game_player_flags.GAME_PLAYER_FLAG_VERY_VERY_DEAD) then
+               self.m_game_ui:SetTodoCaption("Press Fire to enter the game")
+            else
+               self.m_game_ui:SetTodoCaption("Kill your enemies")
+            end
+
+         else
+            self.m_game_ui:SetTodoCaption("You are out of game :(")
+         end
+      end
+   end
+
+end
+
+function game_cl_LastStanding:createGameUI ()
+	game_cl_mp_script.createGameUI	(self)
+
+   self.m_game_ui = game_last_ui.ui_game_LastStanding()
+   self.m_game_ui:SetClGame(self)
+   self.m_game_ui:Init()
+   
+   self.m_inventory_wnd = CUIInventoryWnd()
+
+   self.m_testWnd = game_last_tmp.test_dialog()
+   self.m_testWnd:SetClGame(self)
+   self.m_dlg_ = game_last_dialog.uiDialog()
+   self.m_dlg_:SetClGame(self)
+
+   self.m_char_dlg = game_last_charselect_dlg.char_dialog()
+   self.m_char_dlg:SetClGame(self)
+
+   self.m_header_wnd = game_last_header_wnd.header_wnd()
+   self.m_game_ui:AddDialogToRender(self.m_header_wnd)  --always visible.use RemoveDialogToRender to hide this window
+   return self.m_game_ui
+end
+
+
+function game_cl_LastStanding:GetMapEntities(ent_container)
+    --draw players on map
+   local D = SZoneMapEntityData()
+
+   local players_count = self:GetPlayersCount()
+   for it=0,players_count-1 do
+       local ps_who = self:GetPlayerByOrderID(it)
+        if  (ps_who:testFlag(game_player_flags.GAME_PLAYER_FLAG_VERY_VERY_DEAD)==false) and 
+            (ps_who:testFlag(game_player_flags.GAME_PLAYER_FLAG_SPECTATOR)==false) then
+
+            local game_object = self:GetObjectByGameID(ps_who.GameID)
+            if game_object ~=nil then
+               D.pos = game_object:position()
+               D.color = GetARGB(255,255,0,0)
+               ent_container:push_back(D)
+            end
+         end
+   end
+
+
+end
+
+function game_cl_LastStanding:TranslateGameMessage(msg, P)
+   if msg == game_messages.GAME_EVENT_ROUND_STARTED then
+      self:CommonMessageOut("R O U N D  S T A R T E D")
+
+   elseif msg == game_messages.GAME_EVENT_ROUND_END then
+      local msg = P:r_stringZ()
+      self.m_game_ui:SetLifeCaption(msg)
+      self:CommonMessageOut(msg)
+
+   elseif msg == game_messages.GAME_EVENT_PLAYER_CONNECTED then
+      local name = P:r_stringZ()
+      local msg = string.format("Player %s connected.", name)
+      self:CommonMessageOut(msg)
+   
+   elseif msg == game_messages.GAME_EVENT_PLAYER_DISCONNECTED then
+      local name = P:r_stringZ()
+      local msg = string.format("Player %s disconnected.", name)
+      self:CommonMessageOut(msg)
+
+   else
+      game_cl_mp_script.TranslateGameMessage(self,msg, P)
+   end
+
+end
+
+
+function game_cl_LastStanding:OnKeyboardPress(key)
+
+	if key_bindings.kWPN_FIRE == key  then
+	
+		local b_need_to_send_ready = false
+
+		local ps_local	= self:GetLocalPlayer()
+        if ps_local == nil then
+            return false
+        end
+
+      local game_object = self:GetObjectByGameID(ps_local.GameID)
+		if game_object == nil then return false end
+
+		local is_actor = game_object:clsid() == clsid.actor
+		local is_spectator = game_object:clsid() == clsid.spectator
+		
+
+		b_need_to_send_ready =	
+		( is_actor and  (ps_local:testFlag(game_player_flags.GAME_PLAYER_FLAG_VERY_VERY_DEAD)) )		or
+		( self:Phase() == game_phases.GAME_PHASE_PENDING		)								or
+		( is_spectator and self:CanBeReady()	)
+
+      local b_is_in_game = (ps_local.lifecount~=0 and self:Phase() == game_phases.GAME_PHASE_INPROGRESS) or
+                                          (self:Phase() == game_phases.GAME_PHASE_PENDING)
+		
+		if b_need_to_send_ready and b_is_in_game then
+				local P = net_packet()
+				self:GameEventGen	(P, ps_local.GameID	)
+				P:w_u16(game_messages.GAME_EVENT_PLAYER_READY);
+				self:EventSend	(P)
+            return true
+		
+         else
+           return false
+      end
+
+	end
+
+   if key_bindings.kINVENTORY == key then
+      self:StartStopMenu(self.m_inventory_wnd,true)
+      return true
+   end
+
+   if key_bindings.kSCORES == key then
+      self.m_game_ui:ShowFragList(true)
+      return true
+   end
+
+	if (self:Phase() ~= game_phases.GAME_PHASE_INPROGRESS) and 
+      (key_bindings.kQUIT ~= key) and 
+      (key_bindings.kCONSOLE ~= key)  then	
+         return  true
+      end
+
+--see bind commands in user.lxt (bind ext_1 kY and bind ext_2 kU)
+   if key_bindings.kEXT_1 == key then
+--      self:StartStopMenu(self.m_testWnd,true)
+      self:StartStopMenu(self.m_dlg_, true)
+      return true
+   end
+
+   if key_bindings.kEXT_2 == key then
+      self:StartStopMenu(self.m_char_dlg,true)
+      return true
+   end
+
+
+
+	return game_cl_mp_script.OnKeyboardPress(self, key)
+
+end
+
+function game_cl_LastStanding:OnKeyboardRelease(key)
+   if key_bindings.kSCORES == key then
+      self.m_game_ui:ShowFragList(false)
+      return true
+   end
+
+	return game_cl_mp_script.OnKeyboardRelease(self, key)
+end

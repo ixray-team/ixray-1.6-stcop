@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Antirad">
+		<text>Антирадиационные препараты</text>
+	</string>
+	<string id="Arm-heavy">
+		<text>Тяжёлое сталкеровское снаряжение</text>
+	</string>
+	<string id="Arm-light">
+		<text>Лёгкое сталкеровское снаряжение</text>
+	</string>
+	<string id="Arm-medium">
+		<text>Среднее сталкеровское снаряжение</text>
+	</string>
+	<string id="bandage">
+		<text>Бинт</text>
+	</string>
+	<string id="Binocul">
+		<text>Бинокль</text>
+	</string>
+	<string id="Bread">
+		<text>Хлеб</text>
+	</string>
+	<string id="cit_deadcity_maps_desc">
+		<text>Подробная карта Мёртвого города, содержащая схему расположения позиций наёмников</text>
+	</string>
+	<string id="cit_deadcity_maps_name">
+		<text>Карта Мёртвого города</text>
+	</string>
+	<string id="cit_doctors_key_desc">
+		<text>Ключ Доктора от тайника в Припяти</text>
+	</string>
+	<string id="cit_doctors_key_short_desc">
+		<text>Ключ Доктора</text>
+	</string>
+	<string id="Conserva">
+		<text>"Радость туриста"</text>
+	</string>
+	<string id="Detect1">
+		<text>Детектор аномалий</text>
+	</string>
+	<string id="Devic">
+		<text>Приборы и устройства</text>
+	</string>
+	<string id="device-PDA">
+		<text>КПК</text>
+	</string>
+	<string id="device-torch">
+		<text>Фонарик</text>
+	</string>
+	<string id="enc_equipment_armors_arm-heavy">
+		<text>Защитный костюм. Вес - 18 кг. Особенности: защищает тело от "студня", "жгучего пуха", большинства аномалий и механических повреждений. Грудная клетка и спина защищены встроенными биометаллическими пластинами. Оборудован герметичным металлопластиковым шлемом и двумя кислородными баллонами. Внимание: при продолжительном использовании приходит в негодность - повреждается и рвётся.</text>
+	</string>
+	<string id="enc_equipment_armors_arm-light">
+		<text>Защитный костюм. Вес - 8 кг. Особенности: защищает тело от воздействия слабых аномалий и механических повреждений. Оборудован кислородной маской. Внимание: при продолжительном использовании приходит в негодность - повреждается и рвётся.</text>
+	</string>
+	<string id="enc_equipment_armors_arm-medium">
+		<text>Защитный костюм. Вес - 12 кг. Особенности: защищает тело от "студня", "жгучего пуха", многих аномалий и механических повреждений. Оборудован герметичным шлемом и кислородным баллоном. Внимание: при продолжительном использовании приходит в негодность - повреждается и рвётся.</text>
+	</string>
+	<string id="enc_equipment_armors_sci2">
+		<text>Защитный скафандр красного цвета с герметичным шлемом. Вес - 11 кг. Особенности: защищает тело от огня, кислот, газов, воздействия разнообразных аномалий, "жгучего пуха" и механических повреждений. Оборудован двумя кислородными баллонами. Внимание: при продолжительном использовании приходит в негодность - повреждается и рвётся.</text>
+	</string>
+	<string id="enc_equipment_devic_binocul1">
+		<text>Армейский портативный бинокль.</text>
+	</string>
+	<string id="enc_equipment_devic_detect1">
+		<text>Устройство, определяющее наличие аномальных полей и возмущений и сообщающее о них звуковым сигналом. Для работы необходимо активировать, разместив прибор на поясе.</text>
+	</string>
+	<string id="enc_equipment_devic_device-PDA1">
+		<text>Карманный персональный компьютер - незаменимое устройство в Зоне.</text>
+	</string>
+	<string id="enc_equipment_devic_device-torch1">
+		<text>Фонарик с довольно мощной лампой. Весьма полезная вещь в условиях недостаточной освещённости.</text>
+	</string>
+	<string id="enc_equipment_devic_device-torch1_m1">
+		<text>Фонарик с довольно мощной лампой. Благодаря усовершенствованному трансформатору уменьшено время зарядки аккумулятора.</text>
+	</string>
+	<string id="enc_equipment_energydrink">
+		<text>Отличный энергетический напиток "Non Stop". Содержит кофеин, таурин и мощный витаминный комплекс, снимающие усталость и прибавляющие силы. Не в состоянии сделать даже шаг? Тогда это именно то, что нужно.</text>
+	</string>
+	<string id="enc_equipment_food_bread1">
+		<text>Неизвестно, кто умудряется печь батоны на территории Зоны, однако этот хлеб не заражен и вполне съедобен. Во всяком случае, никто из сталкеров пока не жаловался.</text>
+	</string>
+	<string id="enc_equipment_food_conserva1">
+		<text>Консервы с растащенного сталкерами армейского продовольственного склада. Срок годности вроде бы не истёк.</text>
+	</string>
+	<string id="enc_equipment_food_kolbasa1">
+		<text>Часто за неимением лучшего эта колбаса - смесь курятины и соевого заменителя - завтрак, обед и ужин сталкера.</text>
+	</string>
+	<string id="enc_equipment_food_vodka1">
+		<text>Водка производства компании "GSC". Хорошо пьётся, заметно снижает воздействие радиации, однако злоупотреблять ей не следует.</text>
+	</string>
+	<string id="enc_equipment_medi_antirad1">
+		<text>Снижают воздействие радиации на организм.</text>
+	</string>
+	<string id="enc_equipment_medi_bandage1">
+		<text>Перевязочный материал. Помогает остановить кровотечение.</text>
+	</string>
+	<string id="enc_equipment_medi_medkit1">
+		<text>Универсальный медицинский набор. Позволяет справляться с травмами различного вида и степени сложности - ранениями, ожогами, отравлениями и прочим.</text>
+	</string>
+	<string id="enc_equipment_medi_medkit2">
+		<text>Специализированный медицинский набор для борьбы с физическими повреждениями и кровотечением. В него входят компоненты для ускорения свертывания крови, обезболивающие, антибиотики и иммунные стимуляторы.</text>
+	</string>
+	<string id="enc_equipment_medi_medkit3">
+		<text>Медицинский набор, разработанный специально для работы в условиях Зоны. Состав набора подобран как для борьбы с ранениями, так и для вывода радионуклидов из организма. Препятствует развитию лучевой болезни, а также снижает дозу накопленной радиации.</text>
+	</string>
+	<string id="energy_drink_name">
+		<text>Энергетический напиток "Non Stop"</text>
+	</string>
+	<string id="energy_drink_short_name">
+		<text>Энергетический напиток "Non Stop"</text>
+	</string>
+	<string id="Equipment">
+		<text>Экипировка и еда</text>
+	</string>
+	<string id="Food">
+		<text>Продукты питания</text>
+	</string>
+	<string id="Kolbasa">
+		<text>Колбаса "Практическая"</text>
+	</string>
+	<string id="Medi">
+		<text>Медицинские препараты</text>
+	</string>
+	<string id="Medkit">
+		<text>Аптечка</text>
+	</string>
+	<string id="Medkit_army">
+		<text>Армейская аптечка</text>
+	</string>
+	<string id="Medkit_scientific">
+		<text>Научная аптечка</text>
+	</string>
+	<string id="Sci2">
+		<text>Научный EXP-4</text>
+	</string>
+	<string id="Vodka">
+		<text>Водка "Казаки"</text>
+	</string>
+	<string id="st_detector">
+		<text>Детектор аномалий</text>
+	</string>
+	<string id="st_detector_descr">
+		<text>Предназначен для обнаружения аномальных зон, а также очагов радиоактивного загрязнения.</text>
+	</string>
+	<string id="st_grenade_gd5">
+		<text>Дымовая граната</text>
+	</string>
+</string_table>

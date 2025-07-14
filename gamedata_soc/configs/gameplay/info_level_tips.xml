@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+    
+	<info_portion id="tips_esc_trader_about_pda">
+	</info_portion>
+
+	<info_portion id="tips_esc_trader_quest_1">
+	</info_portion>
+
+	<info_portion id="tutorial_trader_search_corpses">
+	</info_portion>
+
+	<info_portion id="tutorial_trader_help_wounded">
+	</info_portion>
+
+	<info_portion id="tutorial_trader_give_medikit">
+	</info_portion>
+
+	<info_portion id="tips_esc_trader_how_to_talk">
+	</info_portion>
+
+	<info_portion id="tips_esc_trader_activate_pda">
+	</info_portion>
+
+	<info_portion id="tips_esc_trader_activate_map">
+	</info_portion>
+
+ 	<info_portion id="tips_esc_trader_about_anomalies">
+	</info_portion>
+	
+	<info_portion id="mil_info_max_village"></info_portion>
+	<info_portion id="mil_info_max_mines"></info_portion>
+	<info_portion id="mil_info_freedom_radio"></info_portion>
+	<info_portion id="mil_info_to_all"></info_portion>
+	<info_portion id="mil_sniper_to_player_warning"></info_portion>
+
+</game_information_portions>

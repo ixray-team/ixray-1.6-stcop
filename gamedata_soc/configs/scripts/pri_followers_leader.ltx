@@ -1,0 +1,103 @@
+[logic]
+active = kamp@start
+combat_ignore = combat_ignore
+
+[combat_ignore]
+
+;--------------------------------------------------------------------------
+; стандартный диалог
+;--------------------------------------------------------------------------
+[meet@def]
+meet_state = 1|wait
+;meet_state_wpn = 15|threat@threat_weap
+victim = 1|actor
+victim_wpn = 1|actor
+use = false
+use_wpn = false
+
+[meet@main]
+meet_dialog = pri_followers_start_dlg
+meet_state = 10|hello@talk_hello|5|guard@wait
+meet_state_wpn = 15|threat@threat_weap
+victim = 30|actor
+victim_wpn = 20|actor
+use = true
+use_wpn = false
+
+;--------------------------------------------------------------------------
+[kamp@start]
+center_point = pri_start_kamp_point
+meet = meet@main
+on_info = {+pri_followers_start} walker@wave1 ;camper@wave1
+combat_ignore_cond = always
+
+[walker@wave1]
+path_walk = pri_followers_leader_walk1
+path_look = pri_followers_leader_look1
+team = followers
+def_state_moving1 = sneak
+def_state_moving2 = rush
+def_state_moving3 = rush
+on_info = {+pri_wave1_monolith1_dead +pri_wave1_monolith2_dead +pri_wave1_monolith3_dead +pri_wave1_monolith4_dead} walker@wave2
+on_signal = arrived | {-pri_wave1_start} %+pri_wave1_start%
+
+[walker@wave2]
+path_walk = pri_followers_leader_walk1
+path_look = pri_followers_leader_look1
+
+;--- OLD VERSION ---------------------------------------------------------
+[camper@wave1]
+path_walk = pri_followers_leader_walk1
+path_look = pri_followers_leader_look1
+team = followers
+def_state_moving = rush
+def_state_campering = hide
+radius = 3
+no_retreat = true
+meet = meet@def
+on_signal = arrived | {-pri_wave1_start} %+pri_wave1_start%
+on_info = {+pri_wave1_hide} camper@wave1_hide1
+
+[camper@wave1_hide1]
+path_walk = pri_wave1_followers_leader_hide_walk1
+path_look = pri_wave1_followers_leader_hide_look1
+def_state_moving = rush
+def_state_campering = hide
+radius = 0
+no_retreat = true
+meet = meet@def
+on_signal = arrived | camper@wave1_hide2
+combat_ignore_cond = always
+
+[camper@wave1_hide2]
+path_walk = pri_wave1_followers_leader_hide_walk1
+path_look = pri_wave1_followers_leader_hide_look1
+def_state_moving = rush
+def_state_campering = hide
+radius = 0
+no_retreat = true
+meet = meet@def
+on_info = {+pri_wave1_monolith1_dead} camper@wave1_hide3
+combat_ignore_cond = {!check_fighting(800)}
+
+[camper@wave1_hide3]
+path_walk = pri_wave1_followers_leader_hide_walk1
+path_look = pri_wave1_followers_leader_hide_look1
+def_state_moving = rush
+def_state_campering = hide
+radius = 0
+no_retreat = true
+meet = meet@def
+on_info = {+pri_wave1_monolith2_dead +pri_wave1_monolith3_dead +pri_wave1_monolith4_dead} camper@wave2
+
+[camper@wave2]
+path_walk = pri_followers_leader_walk2
+path_look = pri_followers_leader_look2
+team = followers
+def_state_moving = rush
+def_state_campering = hide
+radius = 3
+no_retreat = true
+meet = meet@def
+;on_signal = arrived | {-pri_wave1_start} %+pri_wave1_start%
+;on_signal2 = change | camper@wave2

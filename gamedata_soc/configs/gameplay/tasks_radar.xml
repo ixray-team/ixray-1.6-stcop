@@ -1,0 +1,66 @@
+	
+
+	<game_task id="rad_get_to_aes" prio="250">
+		<title>rad_get_to_aes</title>
+		<objective>
+			<text>rad_get_to_aes</text>
+			<icon>ui_iconsTotal_rad_get_to_aes</icon>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+			<article>rad_get_to_aes</article>
+		</objective>
+		<objective>
+			<text>pripyat_task_title</text>
+			<map_location_type hint="pripyat_task_title">green_location</map_location_type>
+			<object_story_id>pri_bomber</object_story_id>
+			<infoportion_complete>pri_followers_leader_phrase1_end</infoportion_complete>
+		</objective>
+		<objective>
+			<text>pripyat_task_objective_1</text>
+			<map_location_type hint="pripyat_task_objective_1">green_location</map_location_type>
+			<object_story_id>pri_bomber</object_story_id>
+			<map_location_hidden>1</map_location_hidden>
+			<infoportion_complete>pri_aes_mapspot</infoportion_complete>
+			<infoportion_fail>pri_followers_all_dead</infoportion_fail>
+		</objective>
+		<objective>
+			<text>pripyat_task_objective_2</text>
+			<map_location_type hint="pripyat_task_objective_2">green_location</map_location_type>
+			<object_story_id>pri_stadium_entrance</object_story_id>
+			<map_location_hidden>1</map_location_hidden>
+			<infoportion_complete>pri_stadium_reached</infoportion_complete>
+		</objective>
+		<objective>
+			<text>rad_get_to_aes_1</text>
+			<map_location_type hint="aes_sarcofag_hint">green_location</map_location_type>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+			<object_story_id>aes_sarcofag</object_story_id>
+            <map_location_hidden>1</map_location_hidden>
+		</objective>
+	</game_task>
+
+<!--DELME: only for presentation -->
+	<game_task id="pripyat_task_1" prio="277">
+		<title>pripyat_task_title</title>
+		<objective>
+			<text>pripyat_task_title</text>
+			<icon x="50" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>pri_stadium_reached</infoportion_complete>
+			<infoportion_complete>pri_stadium_scene_start</infoportion_complete>
+		</objective>
+		<objective>
+			<text>pripyat_task_objective_1</text>
+			<map_location_type hint="pripyat_task_objective_1">green_location</map_location_type>
+			<object_story_id>pri_bomber</object_story_id>
+			<infoportion_complete>pri_wave7_end</infoportion_complete>
+			<infoportion_fail>pri_followers_all_dead</infoportion_fail>
+		</objective>
+		<objective>
+			<text>pripyat_task_objective_2</text>
+			<map_location_type hint="pripyat_task_objective_2">green_location</map_location_type>
+			<object_story_id>pri_stadium_entrance</object_story_id>
+			<map_location_hidden>1</map_location_hidden>
+			<infoportion_complete>pri_stadium_reached</infoportion_complete>
+			<infoportion_complete>pri_stadium_scene_start</infoportion_complete>
+			
+		</objective>
+	</game_task>

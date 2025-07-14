@@ -1,0 +1,55 @@
+--in-game window. Show score, time etc.
+--dd---
+class "header_wnd" (CUIScriptWnd)
+
+function header_wnd:__init() super()
+   self:SetFont(GetFontMedium())
+   self:InitControls()
+end
+
+
+function header_wnd:__finalize  ()
+end
+
+
+function header_wnd:InitControls()
+    local ScreenW = device().width
+    
+--    local left_pos  = (ScreenW-370)/2
+    local left_pos  = (1024-370)/2
+    local top_pos  = 10
+    local width     = 370
+    local height     = 40
+   self:Init(left_pos,top_pos,width,height) --init position on center
+
+   local txt_base   = CUIStatic()
+   txt_base:SetAutoDelete(true)
+   txt_base:SetWindowName("txt_base")
+   txt_base:Init("andy\\andy_header",0,0,width,height)
+   txt_base:ClipperOn()
+   self:AttachChild(txt_base)
+    
+   self.m_score_label = CUIStatic()
+   self.m_score_label:SetAutoDelete(false) --member variable.
+   self.m_score_label:Init(195,8,97,16)
+   self.m_score_label:SetTextAlign(CGameFont.alCenter) --horizontal align
+   self.m_score_label:SetTextY(-1)--vertical align (-1 is Center)
+   txt_base:AttachChild(self.m_score_label)
+   self.m_score_label:SetText("0:0") --initial text
+
+   self.m_round_time_label = CUIStatic()
+   self.m_round_time_label:SetAutoDelete(false)
+   self.m_round_time_label:Init(22,8,100,12)
+   self.m_round_time_label:SetTextAlign(CGameFont.alLeft)
+   self.m_round_time_label:SetTextY(-1)
+   txt_base:AttachChild(self.m_round_time_label)
+   self.m_round_time_label:SetText("Time: 00:00:00")
+end
+
+function header_wnd:SetScore(score)
+   self.m_score_label:SetText(score)
+end
+
+function header_wnd:SetRoundTime(t)
+   self.m_round_time_label:SetText(t)
+end

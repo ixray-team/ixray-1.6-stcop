@@ -1,0 +1,545 @@
+[danger@mil_freedom_attack]
+ignore_distance = 0
+
+;-------------------------------------------------------------------------------------------------
+;Атака хутора Долга
+;-------------------------------------------------------------------------------------------------
+;----------------------------------- Макс-----------------------
+; Поведение:
+; 1. Идет к точке встречи с игроком 
+; 2. Идет к точке сбора
+; 3. Говорит фразу "Толян, возьмешь Лысого и Косого, зайдете справа"
+; 4. Говорит фразу "Колян, ты зайдешь им в зад"
+; 5. По окончании ответа Коляна ждет окончания хохота салаг, идет в сторону хутора
+; 6. В состоянии кэмпера воюет
+; 7. Возвращается на базу
+
+
+[logic@mil_freedom_max_attack]
+active = walker2@mil_freedom_max_attack
+on_death = death@mil_freedom_max_attack
+
+[death@mil_freedom_max_attack]
+on_info = %+sar2_death_47%
+
+[walker2@mil_freedom_max_attack]                    ;Поведение 1
+path_walk = max_center_walk
+path_look = max_center_look
+meet = on_meet@mil_freedom_max_attack
+on_info = {+mil_max_talk3} walker11@mil_freedom_max_attack
+danger = danger@mil_freedom_attack
+
+[on_meet@mil_freedom_max_attack]
+meet_state = 10|ward@mil_max_to_actor
+meet_state_wpn = 10|ward@mil_max_to_actor
+victim = 20|nil|10|actor
+victim_wpn = 20|nil|10|actor
+use = true
+use_wpn = false
+meet_dialog = mil_max_dialog
+
+[walker11@mil_freedom_max_attack]                   ;Поведение 2
+path_walk = attack_way7_1
+path_look = attack_look_max1
+on_signal = arrive | remark1@mil_freedom_max_attack
+team = freedom
+meet = no_meet
+danger = danger@mil_freedom_attack
+
+[remark1@mil_freedom_max_attack]                    ;Поведение 3
+snd = mil_max_to_tolyan
+anim = wait
+on_signal = action_end | remark2@mil_freedom_max_attack
+danger = danger@mil_freedom_attack
+target = logic@mil_freedom_stalker4_attack
+meet = no_meet
+
+[remark2@mil_freedom_max_attack]
+snd = mil_max_to_kolyan
+anim = wait
+on_signal = action_end | %+mil_freedom_attack_continue1% walker22@mil_freedom_max_attack
+target = logic@mil_freedom_stalker4_attack
+danger = danger@mil_freedom_attack
+meet = no_meet
+
+[walker22@mil_freedom_max_attack]                   ;Поведение 4
+path_walk = attack_way7_2
+path_look = attack_look1_2
+on_signal = arrive | %+mil_freedom_arrive% camper13@mil_freedom_max_attack
+;no_retreat = true
+danger = danger@mil_freedom_attack
+meet = no_meet
+team = freedom_attack
+
+[camper13@mil_freedom_max_attack]                   ;Поведение 5
+path_walk = attack_way7_3
+path_look = attack_look3
+danger = danger@mil_freedom_attack
+on_info = {+mil_dolg_dead} walker14@mil_freedom_max_attack
+no_retreat = true
+radius = 20
+meet = no_meet
+def_state_moving = sneak
+
+[remark4@mil_freedom_max_attack]
+snd = mil_freedom_victory5
+no_rotate = true
+no_move = true
+anim = wait
+on_signal = action_end | walker15@mil_freedom_max_attack
+meet = no_meet
+
+[walker14@mil_freedom_max_attack]                    ;Поведение 6
+path_walk = attack_way7_5
+path_look = attack_look5
+danger = danger@mil_freedom_attack
+meet = no_meet
+on_signal = search | walker15@mil_freedom_max_attack
+
+[walker15@mil_freedom_max_attack]
+path_walk = attack_way7_4
+path_look = attack_look4
+on_signal = return | %-mil_freedom_attack%
+meet = no_meet
+team = freedom
+
+
+
+;---------------------------------------------------------------------------------
+; Просто солдат 1
+; Поведение:
+; 1. Идет на точку сбора
+; 2. Смеется после фразы Коляна
+; 3. Идет на хутор
+; 4. Война
+; 5. Возврат на базу
+;---------------------------------------------------------------------------------
+[logic@mil_freedom_stalker1_attack]
+active = walker11@mil_freedom_stalker1_attack
+
+[walker11@mil_freedom_stalker1_attack]
+path_walk = attack_way9_1
+path_look = attack_look1
+team = freedom
+on_info = {+mil_freedom_attack_continue2} remark1@mil_freedom_stalker1_attack
+danger = danger@mil_freedom_attack
+meet = no_meet
+
+[remark1@mil_freedom_stalker1_attack]
+snd = mil_collect_laugh1
+no_rotate = true
+no_move = true
+anim = guard
+on_signal = action_end | walker15@mil_freedom_stalker1_attack
+danger = danger@mil_freedom_attack
+target = 702
+meet = no_meet
+
+[walker15@mil_freedom_stalker1_attack]
+path_walk = attack_way9_2
+path_look = attack_look3_2
+on_info = {+mil_freedom_arrive} camper13@mil_freedom_stalker1_attack
+combat_ignore_cond = always
+danger = danger@mil_freedom_attack
+team = freedom_attack
+meet = no_meet
+
+[camper13@mil_freedom_stalker1_attack]
+path_walk = attack_way9_3
+path_look = attack_look3
+on_signal = final | walker14@mil_freedom_stalker1_attack
+on_info = {+mil_dolg_dead} walker14@mil_freedom_stalker1_attack
+danger = danger@mil_freedom_attack
+no_retreat = true
+radius = 20
+def_state_moving = sneak
+meet = no_meet
+
+[walker14@mil_freedom_stalker1_attack]
+path_walk = attack_way9_4
+path_look = attack_look4
+on_signal = return | %-mil_freedom_attack%
+meet = no_meet
+team = freedom
+
+;---------------------------------------------------------------------------------
+; Колян
+; Поведение:
+; 1. Идет на точку сбора
+; 2. Ответ на фразу Макса (из поведения 4)
+; 3. Идет на хутор
+; 4. Война
+; 5. Возврат на базу
+;---------------------------------------------------------------------------------
+[logic@mil_freedom_stalker2_attack]
+active = walker11@mil_freedom_stalker2_attack
+
+[walker11@mil_freedom_stalker2_attack]
+path_walk = attack_way8_1
+path_look = attack_look1
+on_info = {+mil_freedom_attack_continue1} remark1@mil_freedom_stalker2_attack
+team = freedom
+danger = danger@mil_freedom_attack
+meet = no_meet
+
+[remark1@mil_freedom_stalker2_attack]
+snd = mil_kolyan
+no_rotate = true
+no_move = true
+anim = guard
+on_signal = action_end | %+mil_freedom_attack_continue2%
+on_info = {+mil_freedom_attack_continue3} walker15@mil_freedom_stalker2_attack
+danger = danger@mil_freedom_attack
+target = 702
+meet = no_meet
+
+[walker15@mil_freedom_stalker2_attack]
+path_walk = attack_way8_2
+path_look = attack_look2_2
+on_info = {+mil_freedom_arrive} camper13@mil_freedom_stalker2_attack
+combat_ignore_cond = always
+danger = danger@mil_freedom_attack
+team = freedom_attack
+meet = no_meet
+
+[camper13@mil_freedom_stalker2_attack]
+path_walk = attack_way8_3
+path_look = attack_look3
+on_signal = final | walker14@mil_freedom_stalker2_attack
+no_retreat = true
+radius = 20
+danger = danger@mil_freedom_attack
+on_info = {+mil_dolg_dead} walker14@mil_freedom_stalker2_attack
+def_state_moving = sneak
+meet = no_meet
+
+[walker14@mil_freedom_stalker2_attack]
+path_walk = attack_way8_4
+path_look = attack_look4
+on_signal = return | %-mil_freedom_attack%
+team = freedom
+meet = no_meet
+
+
+;---------------------------------------------------------------------------------
+; Просто солдат 2
+; Поведение:
+; 1. Идет на точку сбора
+; 2. Смеется после фразы Коляна
+; 3. Идет на хутор
+; 4. Война
+; 5. Возврат на базу
+;---------------------------------------------------------------------------------
+[logic@mil_freedom_stalker4_attack]
+active = walker11@mil_freedom_stalker4_attack
+
+[walker11@mil_freedom_stalker4_attack]
+path_walk = attack_way2_1
+path_look = attack_look1
+on_info = {+mil_freedom_attack_continue2} remark1@mil_freedom_stalker4_attack
+team = freedom
+danger = danger@mil_freedom_attack
+meet = no_meet
+
+[remark1@mil_freedom_stalker4_attack]
+snd = mil_collect_laugh2
+no_rotate = true
+no_move = true
+anim = guard
+on_signal = action_end | %+mil_freedom_attack_continue3% walker15@mil_freedom_stalker4_attack
+danger = danger@mil_freedom_attack
+target = 702
+meet = no_meet
+
+[walker15@mil_freedom_stalker4_attack]
+path_walk = attack_way2_2
+path_look = attack_look3_2
+on_info = {+mil_freedom_arrive} camper13@mil_freedom_stalker4_attack
+combat_ignore_cond = always
+danger = danger@mil_freedom_attack
+team = freedom_attack
+meet = no_meet
+
+[camper13@mil_freedom_stalker4_attack]
+path_walk = attack_way2_3
+path_look = attack_look3
+on_signal = final | walker14@mil_freedom_stalker4_attack
+no_retreat = true
+radius = 20
+danger = danger@mil_freedom_attack
+on_info = {+mil_dolg_dead} walker14@mil_freedom_stalker4_attack
+def_state_moving = sneak
+meet = no_meet
+
+[walker14@mil_freedom_stalker4_attack]
+path_walk = attack_way2_4
+path_look = attack_look4
+on_signal = return | %-mil_freedom_attack%
+team = freedom
+meet = no_meet
+
+;---------------------------------------------------------------------------------
+; Просто солдат 3
+; Поведение:
+; 1. Идет на точку сбора
+; 2. Смеется после фразы Коляна
+; 3. Идет на хутор
+; 4. Война
+; 5. Возврат на базу
+;---------------------------------------------------------------------------------
+[logic@mil_freedom_stalker5_attack]
+active = walker11@mil_freedom_stalker5_attack
+
+[walker11@mil_freedom_stalker5_attack]
+path_walk = attack_way1_1
+path_look = attack_look1
+on_info = {+mil_freedom_attack_continue2} remark1@mil_freedom_stalker5_attack
+team = freedom
+danger = danger@mil_freedom_attack
+meet = no_meet
+
+[remark1@mil_freedom_stalker5_attack]
+snd = mil_collect_laugh3
+no_rotate = true
+no_move = true
+anim = guard
+on_info = {+mil_freedom_attack_continue3} walker15@mil_freedom_stalker5_attack
+danger = danger@mil_freedom_attack
+target = 702
+meet = no_meet
+
+[walker15@mil_freedom_stalker5_attack]
+path_walk = attack_way1_2
+path_look = attack_look2_2
+on_info = {+mil_freedom_arrive} camper13@mil_freedom_stalker5_attack
+combat_ignore_cond = always
+danger = danger@mil_freedom_attack
+team = freedom_attack
+meet = no_meet
+
+[camper13@mil_freedom_stalker5_attack]
+path_walk = attack_way1_3
+path_look = attack_look3
+on_signal = final | walker14@mil_freedom_stalker5_attack
+no_retreat = true
+radius = 20
+danger = danger@mil_freedom_attack
+on_info = {+mil_dolg_dead} walker14@mil_freedom_stalker5_attack
+def_state_moving = sneak
+meet = no_meet
+
+[walker14@mil_freedom_stalker5_attack]
+path_walk = attack_way1_4
+path_look = attack_look4
+on_signal = return | %-mil_freedom_attack%
+danger = danger@mil_freedom_attack
+team = freedom
+meet = no_meet
+
+;---------------------------------------------------------------------------------
+; Просто солдат 4
+; Поведение:
+; 1. Идет на точку сбора
+; 2. Смеется после фразы Коляна
+; 3. Идет на хутор
+; 4. Война
+; 5. Возврат на базу
+;---------------------------------------------------------------------------------
+[logic@mil_freedom_stalker6_attack]
+active = walker11@mil_freedom_stalker6_attack
+
+[walker11@mil_freedom_stalker6_attack]
+path_walk = attack_way4_1
+path_look = attack_look1
+on_info = {+mil_freedom_attack_continue2} remark1@mil_freedom_stalker6_attack
+team = freedom
+danger = danger@mil_freedom_attack
+meet = no_meet
+
+[remark1@mil_freedom_stalker6_attack]
+snd = mil_collect_laugh4
+no_rotate = true
+no_move = true
+anim = guard
+on_info = {+mil_freedom_attack_continue3} walker15@mil_freedom_stalker6_attack
+danger = danger@mil_freedom_attack
+target = 702
+meet = no_meet
+
+[walker15@mil_freedom_stalker6_attack]
+path_walk = attack_way4_2
+path_look = attack_look2_2
+on_info = {+mil_freedom_arrive} camper13@mil_freedom_stalker6_attack
+combat_ignore_cond = always
+danger = danger@mil_freedom_attack
+team = freedom_attack
+meet = no_meet
+
+[camper13@mil_freedom_stalker6_attack]
+path_walk = attack_way4_3
+path_look = attack_look3
+on_signal = final | walker14@mil_freedom_stalker6_attack
+no_retreat = true
+radius = 20
+danger = danger@mil_freedom_attack
+on_info = {+mil_dolg_dead} walker14@mil_freedom_stalker6_attack
+def_state_moving = sneak
+meet = no_meet
+
+[walker14@mil_freedom_stalker6_attack]
+path_walk = attack_way4_4
+path_look = attack_look4
+on_signal = return | %-mil_freedom_attack%
+team = freedom
+meet = no_meet
+
+;---------------------------------------------------------------------------------
+; Просто солдат 5
+; Поведение:
+; 1. Идет на точку сбора
+; 2. Смеется после фразы Коляна
+; 3. Идет на хутор
+; 4. Война
+; 5. Возврат на базу
+;---------------------------------------------------------------------------------
+[logic@mil_freedom_stalker7_attack]
+active = walker11@mil_freedom_stalker7_attack
+
+[walker11@mil_freedom_stalker7_attack]
+path_walk = attack_way6_1
+path_look = attack_look1
+on_info = {+mil_freedom_attack_continue2} remark1@mil_freedom_stalker7_attack
+team = freedom
+danger = danger@mil_freedom_attack
+meet = no_meet
+
+[remark1@mil_freedom_stalker7_attack]
+snd = mil_collect_laugh5
+no_rotate = true
+no_move = true
+anim = guard
+on_info = {+mil_freedom_attack_continue3} walker15@mil_freedom_stalker7_attack
+danger = danger@mil_freedom_attack
+target = 702
+meet = no_meet
+
+[walker15@mil_freedom_stalker7_attack]
+path_walk = attack_way6_2
+path_look = attack_look1_2
+on_info = {+mil_freedom_arrive} camper13@mil_freedom_stalker7_attack
+combat_ignore_cond = always
+danger = danger@mil_freedom_attack
+team = freedom_attack
+meet = no_meet
+
+[camper13@mil_freedom_stalker7_attack]
+path_walk = attack_way6_3
+path_look = attack_look3
+on_signal = final | walker14@mil_freedom_stalker7_attack
+no_retreat = true
+radius = 20
+danger = danger@mil_freedom_attack
+on_info = {+mil_dolg_dead} walker14@mil_freedom_stalker7_attack
+def_state_moving = sneak
+meet = no_meet
+
+[walker14@mil_freedom_stalker7_attack]
+path_walk = attack_way6_4
+path_look = attack_look4
+on_signal = return | %-mil_freedom_attack%
+team = freedom
+meet = no_meet
+
+;---------------------------------------------------------------------------------
+; Просто солдат 6
+; Поведение:
+; 1. Идет на точку сбора
+; 2. Смеется после фразы Коляна
+; 3. Идет на хутор
+; 4. Война
+; 5. Возврат на базу
+;---------------------------------------------------------------------------------
+[logic@mil_freedom_stalker8_attack]
+active = walker11@mil_freedom_stalker8_attack
+
+[walker11@mil_freedom_stalker8_attack]
+path_walk = attack_way3_1
+path_look = attack_look1
+on_info = {+mil_freedom_attack_continue3} walker15@mil_freedom_stalker8_attack
+team = freedom
+danger = danger@mil_freedom_attack
+meet = no_meet
+
+[walker15@mil_freedom_stalker8_attack]
+path_walk = attack_way3_2
+path_look = attack_look3_2
+on_info = {+mil_freedom_arrive} camper13@mil_freedom_stalker8_attack
+combat_ignore_cond = always
+danger = danger@mil_freedom_attack
+team = freedom_attack
+meet = no_meet
+
+[camper13@mil_freedom_stalker8_attack]
+path_walk = attack_way3_3
+path_look = attack_look3
+on_signal = final | walker14@mil_freedom_stalker8_attack
+no_retreat = true
+radius = 20
+danger = danger@mil_freedom_attack
+on_info = {+mil_dolg_dead} walker14@mil_freedom_stalker8_attack
+def_state_moving = sneak
+meet = no_meet
+
+[walker14@mil_freedom_stalker8_attack]
+path_walk = attack_way3_4
+path_look = attack_look4
+on_signal = return | %-mil_freedom_attack%
+team = freedom
+meet = no_meet
+
+;---------------------------------------------------------------------------------
+; Просто солдат 7
+; Поведение:
+; 1. Идет на точку сбора
+; 2. Смеется после фразы Коляна
+; 3. Идет на хутор
+; 4. Война
+; 5. Возврат на базу
+;---------------------------------------------------------------------------------
+[logic@mil_freedom_stalker9_attack]
+active = walker11@mil_freedom_stalker9_attack
+
+[walker11@mil_freedom_stalker9_attack]
+path_walk = attack_way5_1
+path_look = attack_look1
+on_info = {+mil_freedom_attack_continue3} walker15@mil_freedom_stalker9_attack
+team = freedom
+danger = danger@mil_freedom_attack
+meet = no_meet
+
+[walker15@mil_freedom_stalker9_attack]
+path_walk = attack_way5_2
+path_look = attack_look1_2
+on_info = {+mil_freedom_arrive} camper13@mil_freedom_stalker9_attack
+combat_ignore_cond = always
+danger = danger@mil_freedom_attack
+team = freedom_attack
+meet = no_meet
+
+[camper13@mil_freedom_stalker9_attack]
+path_walk = attack_way5_3
+path_look = attack_look3
+on_signal = final | walker14@mil_freedom_stalker9_attack
+no_retreat = true
+radius = 20
+danger = danger@mil_freedom_attack
+def_state_moving = sneak
+on_info = {+mil_dolg_dead} walker14@mil_freedom_stalker9_attack
+meet = no_meet
+
+[walker14@mil_freedom_stalker9_attack]
+path_walk = attack_way5_4
+path_look = attack_look4
+on_signal = return | %-mil_freedom_attack%
+meet = no_meet
+

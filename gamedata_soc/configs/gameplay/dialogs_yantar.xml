@@ -1,0 +1,692 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+    <dialog id="yantar_wounded_scientist">
+        <phrase_list>
+            <phrase id="21">
+                <text>yantar_wounded_scientist_21</text>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <dont_has_info>yan_find_scientist_done</dont_has_info>
+                <dont_has_info>yan_scientist_return_to_bunker</dont_has_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>yantar_wounded_scientist_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>yantar_wounded_scientist_111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>yan_scientist_return_to_bunker</give_info>
+            </phrase>
+            <phrase id="2">
+                <text />
+                <dont_has_info>yan_find_scientist_done</dont_has_info>
+                <has_info>yan_scientist_return_to_bunker</has_info>
+                <next>211</next>
+            </phrase>
+            <phrase id="211">
+                <text>yantar_wounded_scientist_211</text>
+            </phrase>
+            <phrase id="3">
+                <text />
+                <has_info>yan_find_scientist_done</has_info>
+                <next>31</next>
+            </phrase>
+            <phrase id="31">
+                <text>yantar_wounded_scientist_31</text>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="yantar_help_scientist">
+        <phrase_list>
+            <phrase id="4">
+                <text />
+                <dont_has_info>yan_find_scientist_start</dont_has_info>
+                <has_info>yan_kruglov_hello</has_info>
+                <has_info>yantar_professor_phrase_2</has_info>
+                <next>41</next>
+            </phrase>
+            <phrase id="41">
+                <text>yantar_help_scientist_41</text>
+            </phrase>
+            <phrase id="71">
+                <text>yantar_help_scientist_71</text>
+            </phrase>
+            <phrase id="8">
+                <text />
+                <dont_has_info>yantar_professor_phrase_2</dont_has_info>
+                <next>81</next>
+            </phrase>
+            <phrase id="81">
+                <text>yantar_help_scientist_81</text>
+            </phrase>
+            <phrase id="9">
+                <text />
+                <dont_has_info>yan_spawn_ghost</dont_has_info>
+                <has_info>yan_scientist_researching</has_info>
+                <next>91</next>
+            </phrase>
+            <phrase id="91">
+                <text>yantar_help_scientist_91</text>
+            </phrase>
+            <phrase id="31">
+                <text>yantar_help_scientist_31</text>
+            </phrase>
+            <phrase id="3">
+                <text />
+                <dont_has_info>yan_scientist_researching</dont_has_info>
+                <has_info>yan_scientist_point_to_1</has_info>
+                <next>31</next>
+            </phrase>
+            <phrase id="2">
+                <text />
+                <dont_has_info>yan_find_scientist_start</dont_has_info>
+                <dont_has_info>yan_kruglov_hello</dont_has_info>
+                <dont_has_info>bar_heli_scene_professor_die</dont_has_info>
+                <give_info>yan_kruglov_hello</give_info>
+                <has_info>yantar_professor_phrase_2</has_info>
+                <next>21</next>
+            </phrase>
+            <phrase id="7">
+                <text />
+                <has_info>yan_find_scientist_done</has_info>
+                <next>71</next>
+            </phrase>
+            <phrase id="21">
+                <text>yantar_help_scientist_21</text>
+            </phrase>
+            <phrase id="61">
+                <text>yantar_help_scientist_61</text>
+            </phrase>
+            <phrase id="101">
+                <text>yantar_help_scientist_101</text>
+            </phrase>
+            <phrase id="51">
+                <text>yantar_help_scientist_51</text>
+                <next>511</next>
+            </phrase>
+            <phrase id="511">
+                <text>yantar_help_scientist_511</text>
+                <next>512</next>
+            </phrase>
+            <phrase id="512">
+                <text>yantar_help_scientist_512</text>
+                <next>513</next>
+            </phrase>
+            <phrase id="514">
+                <text>yantar_help_scientist_514</text>
+                <next>515</next>
+            </phrase>
+            <phrase id="515">
+                <text>yantar_help_scientist_515</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="513">
+                <text>yantar_help_scientist_513</text>
+                <give_info>yan_kruglov_after_actor</give_info>
+                <next>514</next>
+            </phrase>
+            <phrase id="6">
+                <text />
+                <dont_has_info>yan_find_scientist_semenov_start</dont_has_info>
+                <dont_has_info>yan_kruglov_hello</dont_has_info>
+                <has_info>bar_heli_scene_professor_die</has_info>
+                <has_info>yantar_professor_phrase_2</has_info>
+                <next>61</next>
+            </phrase>
+            <phrase id="10">
+                <text />
+                <dont_has_info>yan_scientist_point_to_1</dont_has_info>
+                <has_info>yan_kruglov_after_actor</has_info>
+                <next>101</next>
+            </phrase>
+            <phrase id="5">
+                <text />
+                <dont_has_info>yan_scientist_point_to_1</dont_has_info>
+                <dont_has_info>yan_kruglov_after_actor</dont_has_info>
+                <has_info>yan_find_scientist_semenov_start</has_info>
+                <next>51</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+                <next>2</next>
+                <next>7</next>
+                <next>8</next>
+                <next>9</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+                <next>6</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="111">
+                <text>yantar_help_scientist_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111111">
+                <text>yantar_help_scientist_1111111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="111111">
+                <text>yantar_help_scientist_111111</text>
+                <next>1111111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>yantar_help_scientist_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="11111">
+                <text>yantar_help_scientist_11111</text>
+                <give_info>yan_kruglov_after_actor</give_info>
+                <next>111111</next>
+            </phrase>
+            <phrase id="11">
+                <text>yantar_help_scientist_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <dont_has_info>yan_scientist_point_to_1</dont_has_info>
+                <dont_has_info>yan_kruglov_after_actor</dont_has_info>
+                <has_info>yan_find_scientist_task_start</has_info>
+                <next>11</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="yantar_general_ucheniy_talk_start">
+        <phrase_list>
+            <phrase id="211144">
+                <text>yantar_general_ucheniy_talk_start_211144</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="211143">
+                <text>yantar_general_ucheniy_talk_start_211143</text>
+                <next>211144</next>
+            </phrase>
+            <phrase id="211142">
+                <text>yantar_general_ucheniy_talk_start_211142</text>
+                <next>211143</next>
+            </phrase>
+            <phrase id="2111411">
+                <text>yantar_general_ucheniy_talk_start_2111411</text>
+            </phrase>
+            <phrase id="211141">
+                <text>yantar_general_ucheniy_talk_start_211141</text>
+                <next>211142</next>
+                <next>2111411</next>
+            </phrase>
+            <phrase id="121122">
+                <text>yantar_general_ucheniy_talk_start_121122</text>
+            </phrase>
+            <phrase id="12112">
+                <text>yantar_general_ucheniy_talk_start_12112</text>
+                <next>121122</next>
+            </phrase>
+            <phrase id="121111">
+                <text>yantar_general_ucheniy_talk_start_121111</text>
+            </phrase>
+            <phrase id="12">
+                <text>yantar_general_ucheniy_talk_start_12</text>
+                <next>121</next>
+            </phrase>
+            <phrase id="1211">
+                <text>yantar_general_ucheniy_talk_start_1211</text>
+                <next>12111</next>
+                <next>12112</next>
+            </phrase>
+            <phrase id="12111">
+                <text>yantar_general_ucheniy_talk_start_12111</text>
+                <has_info>bar_rescue_research_reward</has_info>
+                <next>121111</next>
+            </phrase>
+            <phrase id="121">
+                <text>yantar_general_ucheniy_talk_start_121</text>
+                <next>1211</next>
+            </phrase>
+            <phrase id="101422">
+                <text>yantar_general_ucheniy_talk_start_101422</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>yan_find_scientist_semenov_start</give_info>
+                <give_info>yan_find_scientist_task_start</give_info>
+            </phrase>
+            <phrase id="101412">
+                <text>yantar_general_ucheniy_talk_start_101412</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>yan_find_scientist_start</give_info>
+                <give_info>yan_find_scientist_task_start</give_info>
+            </phrase>
+            <phrase id="2111211">
+                <text>yantar_general_ucheniy_talk_start_2111211</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>yan_find_scientist_start</give_info>
+                <give_info>yan_find_scientist_task_start</give_info>
+            </phrase>
+            <phrase id="211132">
+                <text>yantar_general_ucheniy_talk_start_211132</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>yan_find_scientist_semenov_start</give_info>
+                <give_info>yan_find_scientist_task_start</give_info>
+            </phrase>
+            <phrase id="21115">
+                <text>yantar_general_ucheniy_talk_start_21115</text>
+                <next>211151</next>
+            </phrase>
+            <phrase id="9112">
+                <text>yantar_general_ucheniy_talk_start_9112</text>
+                <next>9113</next>
+            </phrase>
+            <phrase id="21113">
+                <text>yantar_general_ucheniy_talk_start_21113</text>
+                <has_info>bar_heli_scene_professor_die</has_info>
+                <next>211131</next>
+            </phrase>
+            <phrase id="211131">
+                <text>yantar_general_ucheniy_talk_start_211131</text>
+                <next>211132</next>
+            </phrase>
+            <phrase id="211151">
+                <text>yantar_general_ucheniy_talk_start_211151</text>
+            </phrase>
+            <phrase id="41111">
+                <text>yantar_general_ucheniy_talk_start_41111</text>
+                <next>411111</next>
+            </phrase>
+            <phrase id="41113">
+                <text>yantar_general_ucheniy_talk_start_41113</text>
+                <next>41114</next>
+            </phrase>
+            <phrase id="41114">
+                <text>yantar_general_ucheniy_talk_start_41114</text>
+                <action>dialogs.break_dialog</action>
+                <action>yantar_dialog.yantar_give_bad_psy_helmet</action>
+                <give_info>yan_find_vasilyev_start</give_info>
+            </phrase>
+            <phrase id="2111">
+                <text>yantar_general_ucheniy_talk_start_2111</text>
+                <next>21111</next>
+            </phrase>
+            <phrase id="21111">
+                <text>yantar_general_ucheniy_talk_start_21111</text>
+                <next>21112</next>
+                <next>21113</next>
+                <next>21115</next>
+            </phrase>
+            <phrase id="9116">
+                <text>yantar_general_ucheniy_talk_start_9116</text>
+                <action>dialogs.break_dialog</action>
+                <action>yantar_dialog.yantar_give_good_psy_helmet</action>
+                <give_info>yan_find_vasilyev_start</give_info>
+            </phrase>
+            <phrase id="311114">
+                <text>yantar_general_ucheniy_talk_start_311114</text>
+                <action>dialogs.break_dialog</action>
+                <action>yantar_dialog.yantar_give_good_psy_helmet</action>
+                <give_info>yan_find_vasilyev_start</give_info>
+            </phrase>
+            <phrase id="911">
+                <text>yantar_general_ucheniy_talk_start_911</text>
+                <next>9111</next>
+            </phrase>
+            <phrase id="9111">
+                <text>yantar_general_ucheniy_talk_start_9111</text>
+                <next>9112</next>
+            </phrase>
+            <phrase id="4111">
+                <text>yantar_general_ucheniy_talk_start_4111</text>
+                <next>41111</next>
+            </phrase>
+            <phrase id="411">
+                <text>yantar_general_ucheniy_talk_start_411</text>
+                <next>4111</next>
+            </phrase>
+            <phrase id="4111111">
+                <text>yantar_general_ucheniy_talk_start_4111111</text>
+                <next>41111111</next>
+            </phrase>
+            <phrase id="411111">
+                <text>yantar_general_ucheniy_talk_start_411111</text>
+                <next>4111111</next>
+            </phrase>
+            <phrase id="41112">
+                <text>yantar_general_ucheniy_talk_start_41112</text>
+                <next>41113</next>
+            </phrase>
+            <phrase id="41111111">
+                <text>yantar_general_ucheniy_talk_start_41111111</text>
+                <next>41112</next>
+            </phrase>
+            <phrase id="511111111">
+                <text>yantar_general_ucheniy_talk_start_511111111</text>
+                <next>51112</next>
+            </phrase>
+            <phrase id="51112">
+                <text>yantar_general_ucheniy_talk_start_51112</text>
+                <next>51113</next>
+            </phrase>
+            <phrase id="51113">
+                <text>yantar_general_ucheniy_talk_start_51113</text>
+                <next>51114</next>
+            </phrase>
+            <phrase id="51114">
+                <text>yantar_general_ucheniy_talk_start_51114</text>
+                <action>yantar_dialog.yantar_give_bad_psy_helmet</action>
+                <action>dialogs.break_dialog</action>
+                <give_info>yan_find_vasilyev_start</give_info>
+            </phrase>
+            <phrase id="5111111">
+                <text>yantar_general_ucheniy_talk_start_5111111</text>
+                <next>511111111</next>
+            </phrase>
+            <phrase id="511111">
+                <text>yantar_general_ucheniy_talk_start_511111</text>
+                <next>5111111</next>
+            </phrase>
+            <phrase id="51111">
+                <text>yantar_general_ucheniy_talk_start_51111</text>
+                <next>511111</next>
+            </phrase>
+            <phrase id="9115">
+                <text>yantar_general_ucheniy_talk_start_9115</text>
+                <next>9116</next>
+            </phrase>
+            <phrase id="9114">
+                <text>yantar_general_ucheniy_talk_start_9114</text>
+                <next>9115</next>
+            </phrase>
+            <phrase id="9113">
+                <text>yantar_general_ucheniy_talk_start_9113</text>
+                <next>9114</next>
+            </phrase>
+            <phrase id="1014">
+                <text>yantar_general_ucheniy_talk_start_1014</text>
+                <next>10141</next>
+                <next>10142</next>
+                <next>10143</next>
+            </phrase>
+            <phrase id="101431">
+                <text>yantar_general_ucheniy_talk_start_101431</text>
+            </phrase>
+            <phrase id="10143">
+                <text>yantar_general_ucheniy_talk_start_10143</text>
+                <next>101431</next>
+            </phrase>
+            <phrase id="211">
+                <text>yantar_general_ucheniy_talk_start_211</text>
+                <next>2111</next>
+            </phrase>
+            <phrase id="3111">
+                <text>yantar_general_ucheniy_talk_start_3111</text>
+                <next>31111</next>
+            </phrase>
+            <phrase id="31111">
+                <text>yantar_general_ucheniy_talk_start_31111</text>
+                <next>311111</next>
+            </phrase>
+            <phrase id="311111">
+                <text>yantar_general_ucheniy_talk_start_311111</text>
+                <next>311112</next>
+            </phrase>
+            <phrase id="311112">
+                <text>yantar_general_ucheniy_talk_start_311112</text>
+                <next>311113</next>
+            </phrase>
+            <phrase id="511">
+                <text>yantar_general_ucheniy_talk_start_511</text>
+                <next>5111</next>
+            </phrase>
+            <phrase id="5111">
+                <text>yantar_general_ucheniy_talk_start_5111</text>
+                <next>51111</next>
+            </phrase>
+            <phrase id="10141">
+                <text>yantar_general_ucheniy_talk_start_10141</text>
+                <dont_has_info>bar_heli_scene_professor_die</dont_has_info>
+                <next>101411</next>
+            </phrase>
+            <phrase id="10142">
+                <text>yantar_general_ucheniy_talk_start_10142</text>
+                <has_info>bar_heli_scene_professor_die</has_info>
+                <next>101421</next>
+            </phrase>
+            <phrase id="101421">
+                <text>yantar_general_ucheniy_talk_start_101421</text>
+                <next>101422</next>
+            </phrase>
+            <phrase id="101411">
+                <text>yantar_general_ucheniy_talk_start_101411</text>
+                <next>101412</next>
+            </phrase>
+            <phrase id="811">
+                <text>yantar_general_ucheniy_talk_start_811</text>
+                <precondition>dialogs_yantar.have_kruglov_flash</precondition>
+                <action>dialogs_yantar.give_kruglov_flash</action>
+                <action>yantar_dialog.yantar_give_quest_artefact</action>
+                <give_info>yantar_scientist_talk_helmet</give_info>
+                <give_info>yan_find_scientist_done</give_info>
+                <next>8111</next>
+            </phrase>
+            <phrase id="8111">
+                <text>yantar_general_ucheniy_talk_start_8111</text>
+                <next>81111</next>
+            </phrase>
+            <phrase id="81111">
+                <text>yantar_general_ucheniy_talk_start_81111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="812">
+                <text>yantar_general_ucheniy_talk_start_812</text>
+                <next>8121</next>
+            </phrase>
+            <phrase id="8121">
+                <text>yantar_general_ucheniy_talk_start_8121</text>
+            </phrase>
+            <phrase id="311">
+                <text>yantar_general_ucheniy_talk_start_311</text>
+                <next>3111</next>
+            </phrase>
+            <phrase id="1011">
+                <text>yantar_general_ucheniy_talk_start_1011</text>
+                <give_info>yantar_professor_talk_about_brain</give_info>
+                <next>1012</next>
+            </phrase>
+            <phrase id="1012">
+                <text>yantar_general_ucheniy_talk_start_1012</text>
+                <next>1013</next>
+            </phrase>
+            <phrase id="1013">
+                <text>yantar_general_ucheniy_talk_start_1013</text>
+                <next>1014</next>
+            </phrase>
+            <phrase id="311113">
+                <text>yantar_general_ucheniy_talk_start_311113</text>
+                <next>311114</next>
+            </phrase>
+            <phrase id="21">
+                <text>yantar_general_ucheniy_talk_start_21</text>
+            </phrase>
+            <phrase id="24">
+                <text></text>
+                <has_info>yantar_attack_start</has_info>
+                <has_info>yan_kill_brain_done</has_info>
+                <next>241</next>
+            </phrase>
+            <phrase id="241">
+                <text>yantar_general_ucheniy_talk_start_241</text>
+            </phrase>
+            <phrase id="111">
+                <text>yantar_general_ucheniy_talk_start_111</text>
+                <give_info>yantar_professor_talk_about_brain</give_info>
+                <next>211</next>
+            </phrase>
+            <phrase id="11">
+                <text>yantar_general_ucheniy_talk_start_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="221">
+                <text>yantar_general_ucheniy_talk_start_221</text>
+            </phrase>
+            <phrase id="22">
+                <text></text>
+                <action>dialogs_yantar.give_ecolog_outfit</action>
+                <dont_has_info>yan_ecolog_outfit_given</dont_has_info>
+                <dont_has_info>bar_heli_scene_professor_die</dont_has_info>
+                <dont_has_info>bar_x16_documents_start</dont_has_info>
+                <has_info>bar_rescue_research_done</has_info>
+                <next>221</next>
+            </phrase>
+            <phrase id="211121">
+                <text>yantar_general_ucheniy_talk_start_211121</text>
+                <next>2111211</next>
+            </phrase>
+            <phrase id="21112">
+                <text>yantar_general_ucheniy_talk_start_21112</text>
+                <dont_has_info>bar_heli_scene_professor_die</dont_has_info>
+                <next>211121</next>
+            </phrase>
+            <phrase id="3">
+                <text></text>
+                <action>yantar_dialog.yantar_give_quest_artefact</action>
+                <dont_has_info>yan_scientist_die</dont_has_info>
+                <dont_has_info>yan_find_vasilyev_start</dont_has_info>
+                <has_info>yan_find_scientist_done</has_info>
+                <next>31</next>
+            </phrase>
+            <phrase id="31">
+                <text>yantar_general_ucheniy_talk_start_31</text>
+                <next>311</next>
+            </phrase>
+            <phrase id="4">
+                <text></text>
+                <dont_has_info>yan_find_vasilyev_start</dont_has_info>
+                <dont_has_info>yan_scientist_return_to_bunker</dont_has_info>
+                <dont_has_info>bar_heli_scene_professor_die</dont_has_info>
+                <has_info>yan_scientist_die</has_info>
+                <next>41</next>
+            </phrase>
+            <phrase id="41">
+                <text>yantar_general_ucheniy_talk_start_41</text>
+                <next>411</next>
+            </phrase>
+            <phrase id="51">
+                <text>yantar_general_ucheniy_talk_start_51</text>
+                <next>511</next>
+            </phrase>
+            <phrase id="6">
+                <text></text>
+                <dont_has_info>yantar_attack_start</dont_has_info>
+                <has_info>yan_find_vasilyev_start</has_info>
+                <has_info>yan_find_scientist_task_start</has_info>
+                <next>61</next>
+            </phrase>
+            <phrase id="61">
+                <text>yantar_general_ucheniy_talk_start_61</text>
+            </phrase>
+            <phrase id="7">
+                <text></text>
+                <dont_has_info>yan_find_scientist_done</dont_has_info>
+                <dont_has_info>yan_scientist_die</dont_has_info>
+                <has_info>yan_find_scientist_task_start</has_info>
+                <next>71</next>
+            </phrase>
+            <phrase id="71">
+                <text>yantar_general_ucheniy_talk_start_71</text>
+            </phrase>
+            <phrase id="81">
+                <text>yantar_general_ucheniy_talk_start_81</text>
+                <next>811</next>
+                <next>812</next>
+            </phrase>
+            <phrase id="91">
+                <text>yantar_general_ucheniy_talk_start_91</text>
+                <next>911</next>
+            </phrase>
+            <phrase id="101">
+                <text>yantar_general_ucheniy_talk_start_101</text>
+                <next>1011</next>
+            </phrase>
+            <phrase id="10">
+                <text></text>
+                <action>dialogs_yantar.give_ecolog_outfit</action>
+                <dont_has_info>bar_heli_scene_professor_die</dont_has_info>
+                <dont_has_info>yan_find_scientist_start</dont_has_info>
+                <has_info>bar_rescue_research_done</has_info>
+                <has_info>bar_x16_documents_start</has_info>
+                <next>101</next>
+            </phrase>
+            <phrase id="231">
+                <text>yantar_general_ucheniy_talk_start_231</text>
+                <next>2311</next>
+            </phrase>
+            <phrase id="2311">
+                <text>yantar_general_ucheniy_talk_start_2311</text>
+                <give_info>yan_kill_brain_done</give_info>
+            </phrase>
+            <phrase id="23">
+                <text></text>
+                <dont_has_info>yan_kill_brain_done</dont_has_info>
+                <has_info>yantar_attack_start</has_info>
+                <next>231</next>
+            </phrase>
+            <phrase id="2">
+                <text></text>
+                <precondition>dialogs_yantar.yan_professor_talk_outfit</precondition>
+                <next>21</next>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <precondition>dialogs_yantar.yan_professor_task_x16_precond</precondition>
+                <dont_has_info>yan_find_scientist_task_start</dont_has_info>
+                <has_info>bar_x16_documents_start</has_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+                <next>6</next>
+                <next>7</next>
+                <next>8</next>
+                <next>9</next>
+                <next>10</next>
+                <next>2</next>
+                <next>22</next>
+                <next>23</next>
+                <next>24</next>
+            </phrase>
+            <phrase id="8">
+                <text></text>
+                <dont_has_info>yantar_scientist_talk_helmet</dont_has_info>
+                <dont_has_info>yan_find_scientist_done</dont_has_info>
+                <has_info>yan_scientist_return_to_bunker</has_info>
+                <has_info>yan_scientist_die</has_info>
+                <next>81</next>
+            </phrase>
+            <phrase id="9">
+                <text></text>
+                <dont_has_info>yan_find_vasilyev_start</dont_has_info>
+                <has_info>yan_scientist_die</has_info>
+                <has_info>yan_find_scientist_done</has_info>
+                <next>91</next>
+            </phrase>
+            <phrase id="5">
+                <text></text>
+                <dont_has_info>yan_scientist_return_to_bunker</dont_has_info>
+                <dont_has_info>yan_find_vasilyev_start</dont_has_info>
+                <has_info>yan_scientist_die</has_info>
+                <has_info>bar_heli_scene_professor_die</has_info>
+                <next>51</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>

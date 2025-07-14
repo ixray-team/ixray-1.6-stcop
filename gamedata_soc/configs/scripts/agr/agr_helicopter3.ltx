@@ -1,0 +1,27 @@
+[logic]
+active = heli_move@idle1
+
+[heli_move@idle1]
+path_move = agr_heli3_idle_move
+engine_sound = false
+on_info = {-agr_factory_heli_scene_end +agr_factory_heli_start} heli_move@idle1_timed
+combat_ignore = true
+
+[heli_move@idle1_timed]
+path_move = agr_heli3_idle_move
+engine_sound = false
+on_timer = 21000| heli_move@descent %+agr_factory_heli_scene_end%
+combat_ignore = true
+
+[heli_move@descent]
+path_move = agr_factory_heli3_move
+on_signal = path_end | heli_move@idle2
+combat_ignore = true
+invulnerable = true
+immortal = true
+
+[heli_move@idle2]
+path_move = agr_heli3_idle_move2
+engine_sound = false
+combat_ignore = true
+

@@ -1,0 +1,39 @@
+	<string id="agr_captains_chamber_hint">
+		<text>Каптёрка капитана</text>
+	</string>
+	<string id="agr_collector_entrance_hint">
+		<text>Вход в катакомбы</text>
+	</string>
+	<string id="agr_factory_hint">
+		<text>Завод</text>
+	</string>
+	<string id="agr_find_gunslinger_cache_hint">
+		<text>Найти в катакомбах тайник Стрелка</text>
+	</string>
+	<string id="agr_give_case_to_barman_hint">
+		<text>Отдать бармену документы</text>
+	</string>
+	<string id="agr_help_krot_hint">
+		<text>Спасти Крота</text>
+	</string>
+	<string id="agr_help_stalkers_hint">
+		<text>Спасти сталкеров</text>
+	</string>
+	<string id="agr_meet_krot_hint">
+		<text>Встретиться с Кротом</text>
+	</string>
+	<string id="agr_nii_hint">
+		<text>НИИ "Агропром". База военных</text>
+	</string>
+	<string id="agr_swamp_hint">
+		<text>Безопасное место</text>
+	</string>
+	<string id="agr_take_case_hint">
+		<text>Украсть документы</text>
+	</string>
+	<string id="agr_take_krots_info_hint">
+		<text>Взять у Крота информацию о тайнике</text>
+	</string>
+	<string id="agr_zaz_hint">
+		<text>Запорожец</text>
+	</string>

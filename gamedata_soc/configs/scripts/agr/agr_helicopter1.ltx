@@ -1,0 +1,53 @@
+[logic]
+active = heli_move@idle_start
+
+[heli_move@idle_start]
+path_move = agr_heli1_idle_start
+engine_sound = false
+combat_ignore = true
+invulnerable = true
+immortal = true
+on_info = {-agr_factory_heli_scene_end +agr_factory_heli_start} heli_move@descent %=play_snd(characters_voice\scenario\aes\aes_chopers_begin)%
+
+[heli_move@descent]
+path_move = agr_factory_heli1_move
+on_signal = path_end | heli_move@idle
+combat_ignore = true
+invulnerable = true
+immortal = true
+
+[heli_move@idle]
+path_move = agr_heli1_idle_move
+engine_sound = false
+combat_ignore = true
+on_info = {+agr_factory_spawn_spetsnaz} heli_move@idle2 
+
+[heli_move@idle2]
+path_move = agr_heli1_idle_move
+engine_sound = false
+combat_ignore = true
+on_timer = 30000 | heli_move@patrol %=play_snd(characters_voice\scenario\aes\aes_desant_proceed2)%
+
+[heli_move@patrol]
+path_move = agr_factory_heli1_move1
+combat_use_rocket = false
+;on_actor_in_zone = agr_factory_heli_zone | %=heli_set_enemy_actor% 
+on_game_timer = 7200 | heli_move@idle3
+invulnerable = true
+immortal = true
+combat_safe_altitude = -10
+
+[heli_move@idle3]
+path_move = agr_heli1_idle_move
+engine_sound = true
+combat_ignore = true
+on_timer = 30000 | heli_move@idle4
+invulnerable = true
+immortal = true
+
+[heli_move@idle4]
+path_move = agr_heli1_idle_move
+engine_sound = false
+combat_ignore = true
+invulnerable = true
+immortal = true

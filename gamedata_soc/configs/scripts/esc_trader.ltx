@@ -1,0 +1,241 @@
+[logic]
+active = {+esc_trader_hello_played} mob_trader@new_idle1, mob_trader@new_start_wait
+on_trade = mob_trade@new
+trade = misc\trade_trader.ltx
+
+; ------------------------------------------------------------------------------------------------------
+; СТАРТ
+; ------------------------------------------------------------------------------------------------------
+; Ждем немного
+[mob_trader@new_start_wait]
+anim_global = chair_hack_idle
+on_timer = 5000| mob_trader@new_start_intro1
+can_talk = false
+tip_text = 
+
+;Подвигаемся к игроку
+[mob_trader@new_start_intro1]
+anim_global = chair_hack_to_desk
+on_signal = animation_end| mob_trader@new_start_intro2 %+esc_trader_hello_played%
+can_talk = false
+tip_text =
+
+;Первая фраза "я тебя спас..."
+[mob_trader@new_start_intro2]
+anim_global = first_phrase
+anim_head	= first_phrase
+sound_phrase = trader_monolog1
+on_signal = animation_end| mob_trader@new_start_intro3
+can_talk = false
+tip_text =
+
+; Ждем немного, включаем управление
+[mob_trader@new_start_intro3]
+anim_global = desk_idle
+tip = tips_esc_trader_how_to_talk
+on_info = {=talking} mob_trader@new_idle1
+on_timer = 5000 | mob_trader@new_start_intro4
+
+
+; Говорим вторую фразу (что стоишь? подходи)
+[mob_trader@new_start_intro4]
+anim_global = desk_talk
+anim_head = normal
+sound_phrase = trader_come_here2
+on_signal = sound_phrase_end | mob_trader@new_idle1
+;on_info = {=talking} mob_trader@new_idle1 ; обрывать фразу
+on_actor_dist_ge_nvis = 5 | {-esc_trader_bye_played +esc_trader_hello_played} mob_trader@new_bye %+esc_trader_bye_played%
+
+;----------------------------------
+;------------- Idle ---------------
+;----------------------------------
+
+;Основной idle (1) - за столом
+[mob_trader@new_idle1]
+anim_global = desk_idle
+on_signal = animation_end| {~25} mob_trader@new_idle1_to_idle3, {~50} mob_trader@new_idle1_to_idle5, {~75} mob_trader@new_idle1_to_idle2, mob_trader@new_idle1_to_idle1
+on_info = {=talking} mob_trader@new_idle1_to_idle3
+on_actor_dist_ge_nvis = 5 | {-esc_trader_bye_played +esc_trader_hello_played} mob_trader@new_bye %+esc_trader_bye_played%
+on_actor_dist_ge_nvis2 = 12 | mob_trader@new_wait
+
+; Idle (2) - по диагонали
+[mob_trader@new_idle2]
+anim_global = diagonal_idle
+on_signal = animation_end| {~25} mob_trader@new_idle2_to_idle3, {~50} mob_trader@new_idle2_to_idle4, {~75} mob_trader@new_idle2_to_idle1, mob_trader@new_idle2_to_idle2
+on_info = {=talking} mob_trader@new_idle2_to_idle3
+on_actor_dist_ge_nvis = 5 | {-esc_trader_bye_played +esc_trader_hello_played} mob_trader@new_bye %+esc_trader_bye_played%
+on_actor_dist_ge_nvis2 = 12 | mob_trader@new_wait
+
+; Idle (3) - откинувшись на спинку
+[mob_trader@new_idle3]
+anim_global = chair_hack_idle
+on_signal = animation_end| {~30} mob_trader@new_idle3_to_idle2, {~70} mob_trader@new_idle3_to_idle1, mob_trader@new_idle3_to_idle3
+on_info = {=talking} mob_trader@new_talking
+on_actor_dist_ge_nvis = 5 | {-esc_trader_bye_played +esc_trader_hello_played} mob_trader@new_bye %+esc_trader_bye_played%
+on_actor_dist_ge_nvis2 = 12 | mob_trader@new_wait
+
+; Idle (4) - за компьютером
+[mob_trader@new_idle4]
+anim_global = compute_idle
+on_signal = animation_end| {~40} mob_trader@new_idle4_to_idle2, mob_trader@new_idle4_to_idle4
+on_info = {=talking} mob_trader@new_idle4_to_idle2
+on_actor_dist_ge_nvis = 5 | {-esc_trader_bye_played +esc_trader_hello_played} mob_trader@new_bye %+esc_trader_bye_played%
+on_actor_dist_ge_nvis2 = 12 | mob_trader@new_wait
+
+; Idle (5) - читает
+[mob_trader@new_idle5]
+anim_global = listen_idle
+on_signal = animation_end| {~45} mob_trader@new_idle5_to_idle1, mob_trader@new_idle5_to_idle5
+on_info = {=talking} mob_trader@new_idle5_to_idle1
+on_actor_dist_ge_nvis = 5 | {-esc_trader_bye_played +esc_trader_hello_played} mob_trader@new_bye %+esc_trader_bye_played%
+on_actor_dist_ge_nvis2 = 12 | mob_trader@new_wait
+;----------------------------------
+;--------   Автопереходы   --------
+;----------------------------------
+
+; Стол - стол (промежуточная)
+[mob_trader@new_idle1_to_idle1]
+anim_global = desk_idle
+on_signal = animation_end| mob_trader@new_idle1
+
+; Диагональ - диагональ (промежуточная)
+[mob_trader@new_idle2_to_idle2]
+anim_global = diagonal_idle
+on_signal = animation_end| mob_trader@new_idle2
+
+; Спинка - спинка (промежуточная)
+[mob_trader@new_idle3_to_idle3]
+anim_global = chair_hack_idle
+on_signal = animation_end| mob_trader@new_idle3
+
+; Компьютер - компьютер (промежуточная)
+[mob_trader@new_idle4_to_idle4]
+anim_global = compute_idle
+on_signal = animation_end| mob_trader@new_idle4
+
+; Читает - читает (промежуточная)
+[mob_trader@new_idle5_to_idle5]
+anim_global = listen_idle
+on_signal = animation_end| mob_trader@new_idle5
+
+;----------------------------------
+;----- Переходы  между idle-ми ----
+;----------------------------------
+
+; Диагональ - компьютер
+[mob_trader@new_idle2_to_idle4]
+anim_global = diagonal_to_compute
+on_signal = animation_end| mob_trader@new_idle4
+
+; Компьютер - диагональ
+[mob_trader@new_idle4_to_idle2]
+anim_global = compute_idle_to_diagonal
+on_signal = animation_end| mob_trader@new_idle2
+
+; Диагональ - спинка
+[mob_trader@new_idle2_to_idle3]
+anim_global = diagonal_to_chair_hack
+on_signal = animation_end| {=talking} mob_trader@new_talking, mob_trader@new_idle3
+
+; Спинка - диагональ
+[mob_trader@new_idle3_to_idle2]
+anim_global = chair_hack_to_diagonal
+on_signal = animation_end| mob_trader@new_idle2
+
+; Стол - спинка
+[mob_trader@new_idle1_to_idle3]
+anim_global = desk_to_chair_hack
+on_signal = animation_end|{=talking} mob_trader@new_talking, mob_trader@new_idle3
+
+; Спинка - стол
+[mob_trader@new_idle3_to_idle1]
+anim_global = chair_hack_to_desk
+on_signal = animation_end| mob_trader@new_idle1
+
+; Стол - диагональ
+[mob_trader@new_idle1_to_idle2]
+anim_global = desk_to_diagonal
+on_signal = animation_end| mob_trader@new_idle2
+
+; Диагональ - стол
+[mob_trader@new_idle2_to_idle1]
+anim_global = diagonal_to_desk
+on_signal = animation_end| mob_trader@new_idle1
+
+; Стол - читает
+[mob_trader@new_idle1_to_idle5]
+anim_global = desk_to_listen
+on_signal = animation_end| mob_trader@new_idle5
+
+; Читает - стол
+[mob_trader@new_idle5_to_idle1]
+anim_global = listen_to_desk
+on_signal = animation_end| mob_trader@new_idle1
+
+
+;--------------------------------------
+;------------- Разговор ---------------
+;--------------------------------------
+
+[mob_trader@new_talking]
+anim_global = chair_hack_talk
+anim_head = normal
+on_info = {!talking} mob_trader@new_idle3
+
+;--------------------------------------
+;------------ Торговля ----------------
+;--------------------------------------
+
+[mob_trade@new]
+anim_global = chair_hack_idle
+on_info = {=trading =trade_exchanged} mob_trader@new_trade_exchanged
+on_info2 = {!trading =trade_exchanged} mob_trader@new_trade_good
+on_info3 = {!trading !trade_exchanged} mob_trader@new_trade_bad
+
+[mob_trader@new_trade_bad]
+;anim_global = diagonal_talk
+anim_global = chair_hack_idle
+anim_head = angry
+sound_phrase = trader_bad_trade
+on_signal = sound_phrase_end | mob_trader@new_idle2
+on_actor_dist_ge_nvis = 12 | mob_trader@new_wait
+
+[mob_trader@new_trade_exchanged]
+;anim_global = diagonal_talk
+anim_global = chair_hack_idle
+anim_head = normal
+sound_phrase = trader_exchanged
+on_signal = sound_phrase_end | mob_trader@new_idle2
+on_actor_dist_ge_nvis = 12 | mob_trader@new_wait
+
+[mob_trader@new_trade_good]
+;anim_global = diagonal_talk
+anim_global = chair_hack_idle
+anim_head = good
+sound_phrase = trader_good_trade
+on_signal = sound_phrase_end | mob_trader@new_idle2
+on_actor_dist_ge_nvis = 12 | mob_trader@new_wait
+
+
+;-------------------------------------
+;---------- Приветствия --------------
+;-------------------------------------
+
+[mob_trader@new_hello]
+anim_global = hello
+anim_head = normal
+sound_phrase = trader_hello_what_have_you_got
+on_signal = animation_end | mob_trader@new_idle2
+
+[mob_trader@new_bye]
+on_actor_dist_ge_nvis = 12 |mob_trader@new_wait
+anim_global = hello
+anim_head = normal
+sound_phrase = trader_bye
+on_signal = animation_end | mob_trader@new_wait
+
+[mob_trader@new_wait]
+anim_global = diagonal_idle_short
+on_actor_dist_le_nvis = 3 | {-esc_trader_hello_played} mob_trader@new_hello %+esc_trader_hello_played%
+on_actor_dist_ge_nvis = 5 | {-esc_trader_bye_played +esc_trader_hello_played} mob_trader@new_bye %+esc_trader_bye_played%
+on_actor_dist_ge_nvis2 = 12    | %-esc_trader_hello_played -esc_trader_bye_played%

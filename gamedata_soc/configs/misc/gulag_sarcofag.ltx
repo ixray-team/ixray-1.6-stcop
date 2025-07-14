@@ -1,0 +1,162 @@
+;************************
+;*** Monolith_general ***
+;************************
+
+[logic@sar_monolith_general_post1_1]
+active = camper@sar_monolith_general_post1_1
+
+[camper@sar_monolith_general_post1_1]
+path_walk = post1_1_walk
+path_look = post1_1_look
+radius = 5
+
+
+[logic@sar_monolith_general_post1_2]
+active = camper@sar_monolith_general_post1_2
+
+[camper@sar_monolith_general_post1_2]
+path_walk = post1_2_walk
+path_look = post1_2_look
+radius = 10
+
+
+[logic@sar_monolith_general_post2_1]
+active = camper@sar_monolith_general_post2_1
+
+[camper@sar_monolith_general_post2_1]
+path_walk = post2_1_walk
+path_look = post2_1_look
+radius = 10
+
+
+[logic@sar_monolith_general_post2_2]
+active = camper@sar_monolith_general_post2_2
+
+[camper@sar_monolith_general_post2_2]
+path_walk = post2_2_walk
+path_look = post2_2_look
+radius = 5
+
+
+[logic@sar_monolith_general_patrol]
+active = patrol@sar_monolith_general_patrol
+
+[patrol@sar_monolith_general_patrol]
+path_walk = patrol_walk
+commander = true
+
+
+[logic@sar_monolith_general_patrol_follower1]
+active = patrol@sar_monolith_general_patrol_follower1
+
+[patrol@sar_monolith_general_patrol_follower1]
+path_walk = patrol_walk
+
+
+[logic@sar_monolith_general_patrol_room]
+active = walker@sar_monolith_general_patrol_room
+
+[walker@sar_monolith_general_patrol_room]
+path_walk = patrol_walk_room
+
+
+[logic@sar_monolith_general_kamp]
+active = kamp@sar_monolith_general_kamp
+
+[kamp@sar_monolith_general_kamp]
+center_point = kamp
+
+
+
+;************************
+;**** Monolith_skald ****
+;************************
+
+[logic@sar_monolith_sklad_patrol1]
+active = walker@sar_monolith_sklad_patrol1
+
+[walker@sar_monolith_sklad_patrol1]
+path_walk = patrol
+
+[logic@sar_monolith_sklad_patrol2]
+active = walker@sar_monolith_sklad_patrol2
+
+[walker@sar_monolith_sklad_patrol2]
+path_walk = patrol
+
+
+[logic@sar_monolith_sklad_patrol_follower]
+active = follower@sar_monolith_sklad_patrol_follower
+
+[follower@sar_monolith_sklad_patrol_follower]
+formation_line = false
+anim_walk = patrol
+distance = 2
+
+
+[logic@sar_monolith_sklad_guard1]
+active = camper@sar_monolith_sklad_guard1
+
+[camper@sar_monolith_sklad_guard1]
+path_walk = walk1
+path_look = look1
+radius = 10
+
+
+[logic@sar_monolith_sklad_guard2]
+active = camper@sar_monolith_sklad_guard2
+
+[camper@sar_monolith_sklad_guard2]
+path_walk = walk2
+path_look = look2
+radius = 10
+
+
+[logic@sar_monolith_sklad_patrol_ambush]
+active = walker@sar_monolith_sklad_patrol_ambush
+
+[walker@sar_monolith_sklad_patrol_ambush]
+path_walk = ambush_walk
+path_look = ambush_look
+
+
+
+[logic@sar_monolith_guard_offline]
+active = walker@sar_monolith_guard_offline
+
+[walker@sar_monolith_guard_offline]
+path_walk = offline_walk
+
+
+[logic@sar_monolith_guard_camper_1]
+active = camper@sar_monolith_guard_camper_1
+
+[camper@sar_monolith_guard_camper_1]
+path_walk = walk_4
+path_look = look_1
+radius = 7
+danger = danger@sar_monolith_guard
+def_state_moving = raid
+
+[logic@sar_monolith_guard_camper_2]
+active = camper@sar_monolith_guard_camper_2
+
+[camper@sar_monolith_guard_camper_2]
+path_walk = walk_2
+path_look = look_1
+radius = 7
+danger = danger@sar_monolith_guard
+def_state_moving = raid
+
+[logic@sar_monolith_guard_camper_3]
+active = camper@sar_monolith_guard_camper_3
+
+[camper@sar_monolith_guard_camper_3]
+path_walk = walk_3
+path_look = look_1
+radius = 7
+danger = danger@sar_monolith_guard
+def_state_moving = raid
+
+[danger@sar_monolith_guard]
+ignore_distance = 0

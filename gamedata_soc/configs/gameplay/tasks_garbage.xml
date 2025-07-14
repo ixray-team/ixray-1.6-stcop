@@ -1,0 +1,95 @@
+
+	<game_task id="garbage_meet_stalker" prio="482">
+		<title>garbage_meet_stalker</title>
+		<objective>
+			<text>garbage_meet_stalker_0</text>
+			<icon>ui_iconsTotal_garbage_meet_stalker</icon>
+			<infoportion_complete>garbage_meetstalker_done</infoportion_complete>
+			<infoportion_fail>garbage_meetstalker_die</infoportion_fail>
+			<article>meet_seryi_start</article>
+		</objective>
+		<objective>
+			<text>garbage_meet_stalker_1</text>
+			<icon>ui_iconsTotal_garbage_meet_stalker</icon>
+			<map_location_type hint="garbage_meet_stalker_1">green_location</map_location_type>
+			<object_story_id>Garbage_Seriy</object_story_id>
+			<infoportion_complete>garbage_meetstalker_done</infoportion_complete>
+			<infoportion_fail>garbage_meetstalker_die</infoportion_fail>
+			<infoportion_set_complete>garbage_meetstalker_end</infoportion_set_complete>
+			<infoportion_set_fail>garbage_meetstalker_end</infoportion_set_fail>
+		</objective>
+	</game_task>
+	
+	<game_task id="gar_kill_boars" prio="440">
+		<title>gar_kill_boars</title>
+		<objective>
+			<text>gar_kill_boars_main</text>
+			<icon>ui_iconsTotal_gar_kill_boars</icon>
+			<infoportion_complete>gar_kill_boars_request</infoportion_complete>
+			<article>gar_kill_boars_descr</article>
+		</objective>
+		<objective>
+			<text>gar_kill_boars_1</text>
+			<icon>ui_iconsTotal_gar_kill_boars</icon>
+			<map_location_type hint="gar_kill_boars_1">green_location</map_location_type>
+			<object_story_id>gar_boars_nest</object_story_id>
+			<infoportion_complete>gar_kill_boars_done</infoportion_complete>
+		</objective>
+		<objective>
+			<text>gar_kill_boars_2</text>
+			<icon>ui_iconsTotal_gar_kill_boars</icon>
+			<map_location_type hint="gar_kill_boars_2">green_location</map_location_type>
+			<object_story_id>gar_dolg_blockpost</object_story_id>
+			<infoportion_complete>gar_kill_boars_request</infoportion_complete>
+			
+		</objective>
+	</game_task>
+	
+	<game_task id="gar_help_dymon" prio="475">
+		<title>gar_help_dymon</title>
+		<objective>
+			<text>gar_defend_garbage</text>
+			<icon>ui_iconsTotal_gar_help_dymon</icon>
+			<function_complete>garbage_tasks.task_hellcar_complete</function_complete>
+			<function_fail>garbage_tasks.task_hellcar_fail</function_fail>
+			<article>graveyard_raid</article>
+		</objective>
+		<objective>
+			<text>gar_kill_bandits</text>
+			<icon x="50" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="gar_kill_bandits">green_location</map_location_type>
+			<object_story_id>gar_bandits_leader</object_story_id>
+			<infoportion_complete>gar_bandits_killed</infoportion_complete>
+		</objective>
+		<objective>
+			<text>gar_hellcar_alive</text>
+			<icon>ui_iconsTotal_gar_help_dymon</icon>
+			<map_location_type hint="gar_hellcar_alive">green_location</map_location_type>
+			<object_story_id>gar_hellcar</object_story_id>
+			<infoportion_fail>gar_hellcar_death</infoportion_fail>
+			<infoportion_set_fail>gar_hellcar_death</infoportion_set_fail>
+			<infoportion_complete>gar_hellcar_dialog_end</infoportion_complete>
+		</objective>
+	</game_task>
+	
+	<game_task id="gar_car_graveyard_quest" prio="480">
+		<title>gar_car_graveyard_quest</title>
+		<objective>
+			<text>gar_dialog_hellcar</text>
+			<icon>ui_iconsTotal_gar_car_graveyard_quest</icon>
+			<map_location_type hint="gar_hellcar_alive">green_location</map_location_type>
+			<object_story_id>gar_hellcar</object_story_id>
+			<infoportion_complete>gar_hellcar_help</infoportion_complete>
+    	<infoportion_fail>gar_hellcar_reject</infoportion_fail>
+			<function_fail>garbage_tasks.task_hellcar_fail2</function_fail>
+			<article>help_for_hellcar</article>
+		</objective>
+		<objective>
+			<text>gar_dialog_hellcar_1</text>
+			<icon x="0" y="150" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="gar_hellcar_alive">green_location</map_location_type>
+			<object_story_id>gar_hellcar</object_story_id>
+		</objective>
+	</game_task>
+	
+	

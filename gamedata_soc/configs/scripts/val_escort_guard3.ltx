@@ -1,0 +1,29 @@
+[logic]
+active = follower1
+on_death = death
+on_hit = hit
+combat_ignore = combat_ignore
+on_combat = combat
+
+[death]
+on_info = {=killed_by_actor} %+val_escort_actor_helped%
+
+[hit]
+on_info = {=hit_by_actor} %+val_escort_actor_helped%
+
+[combat]
+on_info = %+val_escort_guard3_combat%
+
+[follower1]
+leader = 400
+anim_walk = patrol
+anim_run = assault
+combat_ignore_cond = {=val_fighting_captive -val_escort_captive_fight -val_escort_captive_can_leave}
+on_info = {+val_escort_actor_helped} walker1 %-val_escort_guard3_combat%, %-val_escort_guard3_combat%
+on_signal = leader_dead | walker1
+
+[walker1]
+path_walk = val_escort_guard3_return_walk 
+path_look = val_escort_guard3_return_look
+combat_ignore_cond = {=val_fighting_captive -val_escort_captive_fight -val_escort_captive_can_leave}
+

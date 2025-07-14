@@ -1,0 +1,150 @@
+	<string id="esc_bandits_on_factory">
+		<text>Уничтожить бандитов на фабрике</text>
+	</string>
+	<string id="esc_bandits_on_factory_0">
+		<text>Уничтожить бандитов засевших на фабрике.</text>
+	</string>
+	<string id="esc_bandits_on_factory_1">
+		<text>Убить всех бандитов на фабрике</text>
+	</string>
+	<string id="esc_bandits_on_factory_2">
+		<text>Поговорить с торговцем</text>
+	</string>
+	<string id="esc_bandits_on_factory_3">
+		<text>Поговорить с Волком</text>
+	</string>
+	<string id="esc_blockpost_case_to_trader">
+		<text>Украсть ящик с блокпоста</text>
+	</string>
+	<string id="esc_blockpost_case_to_trader_0">
+		<text>Украсть с блокпоста ящик с важными документами.</text>
+	</string>
+	<string id="esc_blockpost_case_to_trader_1">
+		<text>Украсть ящик с блокпоста</text>
+	</string>
+	<string id="esc_blockpost_case_to_trader_2">
+		<text>Принести ящик торговцу</text>
+	</string>
+	<string id="esc_defend_lager">
+		<text>Защитить лагерь новичков от наемников</text>
+	</string>
+	<string id="esc_defend_lager_from_killers_0">
+		<text>Защитить лагерь новичков от наемников.</text>
+	</string>
+	<string id="esc_defend_lager_from_killers_1">
+		<text>Уничтожить отряд наемников</text>
+	</string>
+	<string id="esc_defend_lager_from_killers_2">
+		<text>Поговорить с командиром новичков</text>
+	</string>
+	<string id="esc_dinamit_to_volk">
+		<text>Уничтожить бандитов на АТП</text>
+	</string>
+	<string id="esc_dinamit_to_volk_0">
+		<text>Уничтожить бандитов на АТП и отчитаться перед Волком.</text>
+	</string>
+	<string id="esc_dinamit_to_volk_1">
+		<text>Встретиться с людьми Волка</text>
+	</string>
+	<string id="esc_dinamit_to_volk_2">
+		<text>Уничтожить всех бандитов</text>
+	</string>
+	<string id="esc_dinamit_to_volk_3">
+		<text>Поговорить с Волком</text>
+	</string>
+	<string id="esc_help_wounded_from_raid">
+		<text>Узнать у Лиса о Стрелке</text>
+	</string>
+	<string id="esc_help_wounded_from_raid_0">
+		<text>Оказать помощь раненому сталкеру</text>
+	</string>
+	<string id="esc_help_wounded_from_raid_1">
+		<text>Помочь Лису</text>
+	</string>
+	<string id="esc_help_wounded_from_raid_2">
+		<text>Получить информацию о Стрелке</text>
+	</string>
+	<string id="esc_wounded_to_trader_gift">
+		<text>Доставить пакет торговцу.</text>
+	</string>
+	<string id="esc_wounded_to_trader_gift_0">
+		<text>Доставить пакет торговцу. Он сможет тебе помочь.</text>
+	</string>
+	<string id="garbage_meet_stalker">
+		<text>Встретиться с Серым.</text>
+	</string>
+	<string id="garbage_meet_stalker_0">
+		<text>Встретиться с Серым на свалке.</text>
+	</string>
+	<string id="meet_with_doctor">
+		<text>Встретиться с Доктором</text>
+	</string>
+	<string id="meet_with_doctor_1">
+		<text>Встретиться с Доктором</text>
+	</string>
+	<string id="meet_with_doctor_2">
+		<text>Встретиться с Доктором в тайнике Стрелка</text>
+	</string>
+	<string id="storyline_escape_eliminate_gunslinger">
+		<text>Убить Стрелка</text>
+	</string>
+	<string id="storyline_escape_find_gunslinger">
+		<text>Найти Стрелка</text>
+	</string>
+	<string id="tutorial_find_artefact">
+		<text>Найти артефакт</text>
+	</string>
+	<string id="tutorial_find_artefact_0">
+		<text>Найти свой первый артефакт.</text>
+	</string>
+	<string id="tutorial_find_artefact_1">
+		<text>Найти артефакт</text>
+	</string>
+	<string id="tutorial_find_artefact_2">
+		<text>Принести артефакт торговцу.</text>
+	</string>
+	<string id="tutorial_help_wounded">
+		<text>Забрать информацию у разведчика</text>
+	</string>
+	<string id="tutorial_help_wounded_0">
+		<text>Принести информацию торговцу</text>
+	</string>
+	<string id="tutorial_help_wounded_1">
+		<text>Поговорить с Волком</text>
+	</string>
+	<string id="tutorial_help_wounded_2">
+		<text>Взять у Шустрого флешку</text>
+	</string>
+	<string id="tutorial_help_wounded_3">
+		<text>Принести флешку торговцу</text>
+	</string>
+	<string id="esc_trader_job">
+		<text>Работа на торговца</text>
+	</string>
+	<string id="esc_trader_job_text">
+		<text>Получить спецзадание у торговца</text>
+	</string>
+	<string id="bar_barman_job">
+		<text>Работа на бармена</text>
+	</string>
+	<string id="bar_barman_job_text">
+		<text>Обратиться к бармену за работой</text>
+	</string>
+	<string id="yan_scientist_job">
+		<text>Помощь ученым</text>
+	</string>
+	<string id="yan_scientist_job_text">
+		<text>Предложить свою помощь ученым</text>
+	</string>
+	<string id="find_railroad_passage">
+		<text>Пробраться за железнодорожную насыпь</text>
+	</string>
+	<string id="find_railroad_passage_1">
+		<text>Встретиться с провожатым</text>
+	</string>
+	<string id="find_railroad_passage_2">
+		<text>Пересечь железнодорожную насыпь</text>
+	</string>
+	<string id="find_railroad_passage_text">
+		<text>Прежде чем углубиться в Зону, необходимо пересечь старую железнодорожную насыпь. Единственный безопасный проход в ней охраняется военным. Однако есть небольшой туннель слева, новички обычно ходят через него. Там тебя будет ждать один из моих должников.</text>
+	</string>

@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+  <string id="mp_art_destroyed">
+    <text>Артефакт был уничтожен.</text>
+  </string>
+  <string id="mp_art_spowned">
+    <text>Артефакт рожден. Принесите его на базу, чтобы заработать очко.</text>
+  </string>
+  <string id="mp_artefacts">
+    <text>артефакты</text>
+  </string>
+  <string id="mp_artefacts_upcase">
+    <text>Артефактов</text>
+  </string>
+  <string id="mp_auto_select">
+    <text>Автовыбор</text>
+  </string>
+  <string id="mp_back">
+    <text>Назад</text>
+  </string>
+  <string id="mp_ban">
+    <text>Заблокировать</text>
+  </string>
+  <string id="mp_by_anomaly">
+    <text>аномалией</text>
+  </string>
+  <string id="mp_cancel">
+    <text>Отмена</text>
+  </string>
+  <string id="mp_change_map">
+    <text>Изменить карту</text>
+  </string>
+  <string id="mp_change_weather">
+    <text>Изменить погоду</text>
+  </string>
+  <string id="mp_chat">
+    <text>Чат</text>
+  </string>
+  <string id="mp_connected">
+    <text>подсоединился</text>
+  </string>
+  <string id="mp_deaths">
+    <text>смерти</text>
+  </string>
+  <string id="mp_description">
+    <text>Описание</text>
+  </string>
+  <string id="mp_disconnected">
+    <text>отсоеденился</text>
+  </string>
+  <string id="mp_enter_text">
+    <text>Введите текст для голосования</text>
+  </string>
+  <string id="mp_entered_game">
+    <text>вошел в игру</text>
+  </string>
+  <string id="mp_first_eye">
+    <text>(От первого лица)</text>
+  </string>
+  <string id="mp_frags">
+    <text>фраги</text>
+  </string>
+  <string id="mp_frags_upcase">
+    <text>Фрагов</text>
+  </string>
+  <string id="mp_free_fly">
+    <text>(Свободный полет)</text>
+  </string>
+  <string id="mp_free_look">
+    <text>(От третьего лица)</text>
+  </string>
+  <string id="mp_from">
+    <text>от</text>
+  </string>
+  <string id="mp_go">
+    <text>ВПЕРЕД!</text>
+  </string>
+  <string id="mp_has_drop_art">
+    <text>потерял%s Артефакт</text>
+  </string>
+  <string id="mp_has_tak_art">
+    <text>взял%s Артефакт</text>
+  </string>
+  <string id="mp_headhuntrs">
+    <text>Наемники</text>
+  </string>
+  <string id="mp_is_now">
+    <text>теперь</text>
+  </string>
+  <string id="mp_joined">
+    <text>присоединился к</text>
+  </string>
+  <string id="mp_kick">
+    <text>Выбросить</text>
+  </string>
+  <string id="mp_look_at">
+    <text>(Свободно привязанный)</text>
+  </string>
+  <string id="mp_map_desc">
+    <text>Описание карты</text>
+  </string>
+  <string id="mp_match_started">
+    <text>Началось сражение!!!</text>
+  </string>
+  <string id="mp_modes">
+    <text>Режимы</text>
+  </string>
+  <string id="mp_name">
+    <text>имя</text>
+  </string>
+  <string id="mp_next">
+    <text>Дальше</text>
+  </string>
+  <string id="mp_no_voted">
+    <text>Не проголосовали</text>
+  </string>
+  <string id="mp_ping">
+    <text>пинг</text>
+  </string>
+  <string id="mp_player_wins">
+    <text>Игрок %s выиграл бой!</text>
+  </string>
+  <string id="mp_players">
+    <text>Игроков</text>
+  </string>
+  <string id="mp_press_fire2spectator">
+    <text>Нажмите Огонь, чтобы перейти в режим наблюдения</text>
+  </string>
+  <string id="mp_press_jump2pay_spaw">
+    <text>Нажмите прыжок, чтобы купить моментальное рождение</text>
+  </string>
+  <string id="mp_press_jump2select_skin">
+    <text>Нажмите прыжок, чтобы выбрать форму</text>
+  </string>
+  <string id="mp_press_jump2select_team">
+    <text>Нажмите прыжок, чтобы выбрать команды</text>
+  </string>
+  <string id="mp_press_jump2spawn">
+    <text>Нажмите прыжок, чтобы родиться</text>
+  </string>
+  <string id="mp_press_jump2start">
+    <text>Нажмите прыжок, чтобы стартовать</text>
+  </string>
+  <string id="mp_press_to_buy">
+    <text>Нажмите ($$ACTION_BUY_MENU$$) для доступа к меню покупки</text>
+  </string>
+  <string id="mp_press_yes2pay">
+    <text>Вы имеете %d$. Вы можете купить рождение за %d$. Нажмите "Да", чтобы заплатить.</text>
+  </string>
+  <string id="mp_ready">
+    <text>Внимание...</text>
+  </string>
+  <string id="mp_restart">
+    <text>Рестарт</text>
+  </string>
+  <string id="mp_restart_fast">
+    <text>Быстрый рестарт</text>
+  </string>
+  <string id="mp_scores">
+    <text>зарабатывают очко</text>
+  </string>
+  <string id="mp_select_ban">
+    <text>Выберите игрока для которого назначить голосование, чтобы его заблокировать</text>
+  </string>
+  <string id="mp_select_category">
+    <text>Выберите категорию голосования</text>
+  </string>
+  <string id="mp_select_kick">
+    <text>Выберите игрока для которого назначить голосование, чтобы его выкинуть</text>
+  </string>
+  <string id="mp_select_kick_player">
+    <text>Выберите игрока для которого назначить голосование, чтобы его выкинуть</text>
+  </string>
+  <string id="mp_select_map">
+    <text>Выберите карту для голосования</text>
+  </string>
+  <string id="mp_skin_selection">
+    <text>Выбор формы</text>
+  </string>
+  <string id="mp_spectator">
+    <text>Наблюдатель</text>
+  </string>
+  <string id="mp_spectators">
+    <text>НАБЛЮДАТЕЛИ</text>
+  </string>
+  <string id="mp_status">
+    <text>статус</text>
+  </string>
+  <string id="mp_switched_to">
+    <text>перешел к</text>
+  </string>
+  <string id="mp_team_free_stalkers">
+    <text>Свобода</text>
+  </string>
+  <string id="mp_team_selection">
+    <text>Выбор команды</text>
+  </string>
+  <string id="mp_team_wins">
+    <text>Команда %s ВЫИГРЫВАЕТ!</text>
+  </string>
+  <string id="mp_text">
+    <text>Текст</text>
+  </string>
+  <string id="mp_time2respawn">
+    <text>Время до рождения</text>
+  </string>
+  <string id="mp_time2start">
+    <text>Время до старта:</text>
+  </string>
+  <string id="mp_timeleft">
+    <text>Осталось времени : %d:%d; Agreed %.2f</text>
+  </string>
+  <string id="mp_vote_no">
+    <text>Против</text>
+  </string>
+  <string id="mp_vote_yes">
+    <text>За</text>
+  </string>
+  <string id="mp_voted">
+    <text>проголосовал</text>
+  </string>
+  <string id="mp_voted_no">
+    <text>"Против"</text>
+  </string>
+  <string id="mp_voted_yes">
+    <text>"За"</text>
+  </string>
+  <string id="mp_voting_broken">
+    <text>Голосование аннулировано сервером!</text>
+  </string>
+  <string id="mp_voting_started">
+    <text>Голосование '%s' было начато %s.</text>
+  </string>
+  <string id="mp_voting_started_msg">
+    <text>Голосование начато!</text>
+  </string>
+  <string id="mp_weather_clear">
+    <text>Чистая</text>
+  </string>
+  <string id="mp_weather_cloudy">
+    <text>Облачная</text>
+  </string>
+  <string id="mp_weather_night">
+    <text>Ночь</text>
+  </string>
+  <string id="mp_weather_rain">
+    <text>Дождь</text>
+  </string>
+  <string id="mp_with_backstab">
+    <text>зарезан!!!</text>
+  </string>
+  <string id="mp_with_headshot">
+    <text>в голову!!!</text>
+  </string>
+  <string id="mp_your_rank">
+    <text>Ваш ранг теперь</text>
+  </string>
+  <string id="ui_st_description">
+    <text>Описание</text>
+  </string>
+  <string id="ui_st_team1_name">
+    <text>Свобода</text>
+  </string>
+  <string id="ui_st_team2_name">
+    <text>Наемники</text>
+  </string>
+  <string id="af_neutral">
+    <text>Артефакт</text>
+  </string>
+  <string id="self">
+    <text>Меченый</text>
+  </string>
+  <string id="friend">
+    <text>Союзник</text>
+  </string>
+  <string id="team_base_1">
+    <text>База Свободы</text>
+  </string>
+  <string id="team_base_2">
+    <text>База Наемников</text>
+  </string>
+  <string id="mp_si_no">
+    <text>Нет</text>
+  </string>
+  <string id="mp_si_yes">
+    <text>Да</text>
+  </string>
+  <string id="mp_si_min">
+    <text>мин</text>
+  </string>
+  <string id="mp_si_sec">
+    <text>сек</text>
+  </string>
+  <string id="mp_si_maprotation">
+    <text>Поворот карты</text>
+  </string>
+  <string id="mp_si_voting">
+    <text>Голосование</text>
+  </string>
+  <string id="mp_si_enabled">
+    <text>Вкл</text>
+  </string>
+  <string id="mp_si_disabled">
+    <text>Выкл</text>
+  </string>
+  <string id="mp_si_spectatormodes">
+    <text>Режимы наблюдения:</text>
+  </string>
+  <string id="mp_si_servername">
+    <text>Имя сервера:</text>
+  </string>
+  <string id="mp_si_version">
+    <text>Версия:</text>
+  </string>
+  <string id="mp_si_free_fly">
+    <text>- Свободный полет</text>
+  </string>
+  <string id="mp_si_first_eye">
+    <text>- От первого лица</text>
+  </string>
+  <string id="mp_si_look_at">
+    <text>- От третьего лица</text>
+  </string>
+  <string id="mp_si_free_look">
+    <text>- Свободный обзор</text>
+  </string>
+  <string id="mp_si_team_only">
+    <text>- Только команда</text>
+  </string>
+  <string id="mp_si_fraglimit">
+    <text>Лимит фрагов</text>
+  </string>
+  <string id="mp_si_time_limit">
+    <text>Лимит времени</text>
+  </string>
+  <string id="mp_si_invinsibility_indicators">
+    <text>- Индикаторы</text>
+  </string>
+  <string id="mp_si_invinsibility_time">
+    <text>- Время</text>
+  </string>
+  <string id="mp_si_invinsibility">
+    <text>Невидимость:</text>
+  </string>
+  <string id="mp_si_anomalies">
+    <text>Аномалии</text>
+  </string>
+  <string id="mp_si_anomalies_period">
+    <text>Период аномалий</text>
+  </string>
+  <string id="mp_si_infinite">
+    <text>Бесконечный</text>
+  </string>
+  <string id="mp_si_forcerespawn">
+    <text>Принудительное рожд.</text>
+  </string>
+  <string id="mp_si_warmuptime">
+    <text>Разминка</text>
+  </string>
+  <string id="mp_si_autoteam_balance">
+    <text>Авто-баланс команд</text>
+  </string>
+  <string id="mp_si_autoteam_swap">
+    <text>Авто-смена команд</text>
+  </string>
+  <string id="mp_si_friendly_indicators">
+    <text>Индикаторы союзников</text>
+  </string>
+  <string id="mp_si_friendly_names">
+    <text>Имена союзников</text>
+  </string>
+  <string id="mp_si_friendly_fire">
+    <text>Огонь по союзникам</text>
+  </string>
+  <string id="mp_si_artefacts">
+    <text>Артефакты:</text>
+  </string>
+  <string id="mp_si_afcount">
+    <text>- Количество</text>
+  </string>
+  <string id="mp_si_afstaytime">
+    <text>- Время</text>
+  </string>
+  <string id="mp_si_afrespawntime">
+    <text>- Появление</text>
+  </string>
+  <string id="mp_si_players_respawn">
+    <text>Рождение игроков</text>
+  </string>
+  <string id="mp_si_artefact_captured">
+    <text>Артефакт захвачен</text>
+  </string>
+  <string id="mp_si_any_time">
+    <text>Любое время</text>
+  </string>
+  <string id="mp_si_shielded_bases">
+    <text>Защищенные базы</text>
+  </string>
+  <string id="mp_si_return_players">
+    <text>Возврат на базы</text>
+  </string>
+  <string id="mp_si_afbearer_cant_sprint">
+    <text>Не бегать с артефактом</text>
+  </string>
+</string_table>

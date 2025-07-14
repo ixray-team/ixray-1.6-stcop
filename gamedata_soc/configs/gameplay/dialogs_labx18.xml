@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes" ?>
+<game_dialogs>
+    <dialog id="dar_explorer_dialog">
+        <phrase_list>
+            <phrase id="6121">
+                <text>dar_explorer_dialog_6121</text>
+            </phrase>
+            <phrase id="6111">
+                <text>dar_explorer_dialog_6111</text>
+                <next>9</next>
+            </phrase>
+            <phrase id="6131">
+                <text>dar_explorer_dialog_6131</text>
+                <next>9</next>
+            </phrase>
+            <phrase id="801">
+                <text></text>
+                <dont_has_info>dar_explorer_dlg_open</dont_has_info>
+                <dont_has_info>dar_explorer_dlg_completed</dont_has_info>
+                <give_info>dar_explorer_dlg_open</give_info>
+                <next>8011</next>
+            </phrase>
+            <phrase id="8011">
+                <text>dar_explorer_dialog_8011</text>
+                <next>1</next>
+                <next>2</next>
+            </phrase>
+            <phrase id="1">
+                <text>dar_explorer_dialog_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>dar_explorer_dialog_11</text>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="2521">
+                <text>dar_explorer_dialog_2521</text>
+                <next>9</next>
+            </phrase>
+            <phrase id="271">
+                <text>dar_explorer_dialog_271</text>
+            </phrase>
+            <phrase id="112">
+                <text>dar_explorer_dialog_112</text>
+                <next>2111</next>
+            </phrase>
+            <phrase id="2">
+                <text>dar_explorer_dialog_2</text>
+                <next>21</next>
+            </phrase>
+            <phrase id="21">
+                <text>dar_explorer_dialog_21</text>
+                <next>211</next>
+                <next>212</next>
+                <next>111</next>
+            </phrase>
+            <phrase id="2111">
+                <text>dar_explorer_dialog_2111</text>
+                <next>21111</next>
+                <next>21112</next>
+                <next>21113</next>
+            </phrase>
+            <phrase id="21111">
+                <text>dar_explorer_dialog_21111</text>
+                <next>2121</next>
+            </phrase>
+            <phrase id="21112">
+                <text>dar_explorer_dialog_21112</text>
+                <next>25</next>
+            </phrase>
+            <phrase id="21113">
+                <text>dar_explorer_dialog_21113</text>
+                <next>25</next>
+            </phrase>
+            <phrase id="25">
+                <text>dar_explorer_dialog_25</text>
+                <next>251</next>
+                <next>253</next>
+            </phrase>
+            <phrase id="251">
+                <text>dar_explorer_dialog_251</text>
+                <next>2511</next>
+            </phrase>
+            <phrase id="2511">
+                <text>dar_explorer_dialog_2511</text>
+                <next>26</next>
+            </phrase>
+            <phrase id="212">
+                <text>dar_explorer_dialog_212</text>
+                <next>2121</next>
+            </phrase>
+            <phrase id="211">
+                <text>dar_explorer_dialog_211</text>
+                <next>2111</next>
+            </phrase>
+            <phrase id="111">
+                <text>dar_explorer_dialog_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>dar_explorer_dialog_1111</text>
+                <next>11111</next>
+                <next>11112</next>
+            </phrase>
+            <phrase id="11111">
+                <text>dar_explorer_dialog_11111</text>
+                <next>51</next>
+            </phrase>
+            <phrase id="51">
+                <text>dar_explorer_dialog_51</text>
+                <next>511</next>
+                <next>512</next>
+            </phrase>
+            <phrase id="11112">
+                <text>dar_explorer_dialog_11112</text>
+                <give_info>dar_explorer_actor_has_docs</give_info>
+                <next>61</next>
+            </phrase>
+            <phrase id="61">
+                <text>dar_explorer_dialog_61</text>
+                <next>511</next>
+                <next>512</next>
+            </phrase>
+            <phrase id="511">
+                <text>dar_explorer_dialog_511</text>
+                <give_info>dar_explorer_dlg_angry</give_info>
+                <next>5111</next>
+            </phrase>
+            <phrase id="512">
+                <text>dar_explorer_dialog_512</text>
+                <next>5121</next>
+            </phrase>
+            <phrase id="5121">
+                <text>dar_explorer_dialog_5121</text>
+                <next>9</next>
+            </phrase>
+            <phrase id="802">
+                <text></text>
+                <has_info>dar_explorer_dlg_completed</has_info>
+                <next>8021</next>
+            </phrase>
+            <phrase id="8021">
+                <text>dar_explorer_dialog_8021</text>
+            </phrase>
+            <phrase id="803">
+                <text></text>
+                <dont_has_info>dar_explorer_actor_has_docs</dont_has_info>
+                <has_info>dar_explorer_dlg_open</has_info>
+                <next>8031</next>
+            </phrase>
+            <phrase id="8031">
+                <text>dar_explorer_dialog_8031</text>
+                <next>253</next>
+                <next>26</next>
+            </phrase>
+            <phrase id="26">
+                <text>dar_explorer_dialog_26</text>
+                <next>2121</next>
+            </phrase>
+            <phrase id="2121">
+                <text>dar_explorer_dialog_2121</text>
+                <next>9</next>
+            </phrase>
+            <phrase id="804">
+                <text></text>
+                <has_info>dar_explorer_dlg_open</has_info>
+                <has_info>dar_explorer_actor_has_docs</has_info>
+                <next>8041</next>
+            </phrase>
+            <phrase id="8041">
+                <text>dar_explorer_dialog_8041</text>
+                <next>253</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>801</next>
+                <next>802</next>
+                <next>803</next>
+                <next>804</next>
+            </phrase>
+            <phrase id="253">
+                <text>dar_explorer_dialog_253</text>
+                <give_info>dar_explorer_dlg_angry</give_info>
+                <next>5111</next>
+            </phrase>
+            <phrase id="5111">
+                <text>dar_explorer_dialog_5111</text>
+                <next>9</next>
+            </phrase>
+            <phrase id="9">
+                <text>dar_explorer_dialog_9</text>
+                <action>dialogs.break_dialog</action>
+                <disable_info>dar_explorer_dlg_open</disable_info>
+                <give_info>dar_explorer_dlg_completed</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>

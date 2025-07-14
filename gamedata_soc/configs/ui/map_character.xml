@@ -1,0 +1,14 @@
+﻿<?xml version='1.0' encoding="UTF-8"?>
+<!-- CHARACTER INFO IN THE INVENTORY MENU -->
+<window>
+	<!-- NAME -->
+	<name_static x="0" y="0" width="240" height="60">
+		<text x="0" y="0" font="letterica16" r="255" g="128" b="64"></text>
+	</name_static>
+
+	<!-- RANK -->
+	<rank_static x="0" y="25" width="240" height="60">
+		<text x="0" y="0" font="letterica16" r="255" g="255" b="255"></text>
+	</rank_static>
+</window>
+

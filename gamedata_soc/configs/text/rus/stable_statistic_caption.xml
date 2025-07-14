@@ -1,0 +1,174 @@
+	<string id="bandit_experienced">
+		<text>бандит, опытный</text>
+	</string>
+	<string id="bandit_master">
+		<text>бандит, мастер</text>
+	</string>
+	<string id="bandit_novice">
+		<text>бандит, новичок</text>
+	</string>
+	<string id="bandit_veteran">
+		<text>бандит, ветеран</text>
+	</string>
+	<string id="bloodsucker_normal">
+		<text>подземный кровосос</text>
+	</string>
+	<string id="bloodsucker_strong">
+		<text>черный кровосос</text>
+	</string>
+	<string id="bloodsucker_weak">
+		<text>кровосос</text>
+	</string>
+	<string id="boar_normal">
+		<text>взрослый кабан</text>
+	</string>
+	<string id="boar_strong">
+		<text>матерый кабан</text>
+	</string>
+	<string id="boar_weak">
+		<text>молодой кабан</text>
+	</string>
+	<string id="burer_weak">
+		<text>бюрер</text>
+	</string>
+	<string id="controller_weak">
+		<text>контролер</text>
+	</string>
+	<string id="dog_normal">
+		<text>пес крысодав</text>
+	</string>
+	<string id="dog_strong">
+		<text>собака альбинос</text>
+	</string>
+	<string id="dog_weak">
+		<text>дикий пес</text>
+	</string>
+	<string id="dolg_experienced">
+		<text>"Долг", опытный</text>
+	</string>
+	<string id="dolg_master">
+		<text>"Долг", мастер</text>
+	</string>
+	<string id="dolg_veteran">
+		<text>"Долг", ветеран</text>
+	</string>
+	<string id="ecolog_experienced">
+		<text>ученый, опытный</text>
+	</string>
+	<string id="ecolog_novice">
+		<text>ученый, новичок</text>
+	</string>
+	<string id="flesh_normal">
+		<text>лесная плоть</text>
+	</string>
+	<string id="flesh_strong">
+		<text>болотная плоть</text>
+	</string>
+	<string id="flesh_weak">
+		<text>степная плоть</text>
+	</string>
+	<string id="freedom_experienced">
+		<text>"Свобода", опытный</text>
+	</string>
+	<string id="freedom_master">
+		<text>"Свобода", мастер</text>
+	</string>
+	<string id="freedom_veteran">
+		<text>"Свобода", ветеран</text>
+	</string>
+	<string id="killer_experienced">
+		<text>наемник, опытный</text>
+	</string>
+	<string id="killer_master">
+		<text>наемник, мастер</text>
+	</string>
+	<string id="killer_veteran">
+		<text>наемник, ветеран</text>
+	</string>
+	<string id="military_experienced">
+		<text>военный, сержант</text>
+	</string>
+	<string id="military_master">
+		<text>военный, капитан</text>
+	</string>
+	<string id="military_novice">
+		<text>военный, рядовой</text>
+	</string>
+	<string id="military_veteran">
+		<text>военный, лейтенант</text>
+	</string>
+	<string id="monolith_experienced">
+		<text>"Монолит", опытный</text>
+	</string>
+	<string id="monolith_master">
+		<text>"Монолит", мастер</text>
+	</string>
+	<string id="monolith_novice">
+		<text>"Монолит", новичок</text>
+	</string>
+	<string id="monolith_veteran">
+		<text>"Монолит", ветеран</text>
+	</string>
+	<string id="neutral_experienced">
+		<text>сталкер, опытный</text>
+	</string>
+	<string id="neutral_master">
+		<text>сталкер, мастер</text>
+	</string>
+	<string id="neutral_novice">
+		<text>сталкер, новичок</text>
+	</string>
+	<string id="neutral_veteran">
+		<text>сталкер, ветеран</text>
+	</string>
+	<string id="poltergeist_weak">
+		<text>полтергейст</text>
+	</string>
+	<string id="pseudo_gigant_weak">
+		<text>псевдогигант</text>
+	</string>
+	<string id="pseudodog_normal">
+		<text>матерая псевдособака</text>
+	</string>
+	<string id="pseudodog_strong">
+		<text>серая псевдособака</text>
+	</string>
+	<string id="pseudodog_weak">
+		<text>псевдособака</text>
+	</string>
+	<string id="psy_dog">
+		<text>сумеречная псевдособака</text>
+	</string>
+	<string id="snork_normal">
+		<text>снорк падальщик</text>
+	</string>
+	<string id="snork_strong">
+		<text>снорк людоед</text>
+	</string>
+	<string id="snork_weak">
+		<text>снорк</text>
+	</string>
+	<string id="tushkano_weak">
+		<text>тушкан</text>
+	</string>
+	<string id="zombie_normal">
+		<text>зарезать</text>
+	</string>
+	<string id="zombie_strong">
+		<text>зарезать</text>
+	</string>
+	<string id="zombie_weak">
+		<text>зарезать</text>
+	</string>
+	<string id="zombied_experienced">
+		<text>зомбированный, опытный</text>
+	</string>
+	<string id="zombied_master">
+		<text>зомбированный, мастер</text>
+	</string>
+	<string id="zombied_novice">
+		<text>зомбированный, новичок</text>
+	</string>
+	<string id="zombied_veteran">
+		<text>зомбированный, ветеран</text>
+	</string>

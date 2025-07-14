@@ -1,0 +1,28 @@
+function proceed()
+    local actor = db.actor
+
+	if not has_alife_info("pri_monolith_decoder_got") and
+		actor:object("decoder") ~= nil 
+	then
+		actor:give_info_portion("pri_monolith_decoder_got")
+	end       	
+	if not has_alife_info("pri_decoder_docs_conclusion_info") and
+		actor:object("pri_decoder_documents") ~= nil 
+	then
+		actor:give_info_portion("pri_decoder_docs_conclusion_info")
+	end       	
+end
+
+function process_info_portion(info_id)
+	if info_id == "pri_show_zones" then
+		level_tasks.add_location(824, "crlc_mdl", "pri_bus_station_zone_hint")
+		level_tasks.add_location(826, "crlc_mdl", "pri_monolith_base_zone_hint")
+		level_tasks.add_location(827, "crlc_big", "pri_stadium_zone_hint")
+	elseif info_id == "cit_jail_doctor_pryp_task" then
+		level_tasks.add_location(825, "crlc_big", "pri_hotel_zone_hint")
+	else
+        return false
+	end
+
+	return true
+end

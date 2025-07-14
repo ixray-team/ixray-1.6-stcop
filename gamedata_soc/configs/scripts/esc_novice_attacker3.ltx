@@ -1,0 +1,34 @@
+[logic]
+active = kamp
+on_hit = hit
+on_death = death
+combat_ignore = combat_ignore
+
+[hit]
+on_info = %+esc_assault_start%
+
+[death]
+on_info = %+esc_assault_start%
+
+[combat_ignore]
+
+[kamp]
+center_point = kamp_center
+on_info = {+esc_bandits_assault} walker
+
+[walker]
+path_walk = escape_factory_way3
+path_look = escape_factory_look3
+team = escape_attack_team
+on_signal = flight | walker@fight 
+on_info = {+esc_kill_bandits_quest_kill}walker2
+combat_ignore_cond = {-esc_assault_start}
+
+[walker@fight]
+path_walk = esc_assault_final3
+path_look = esc_assault_final3_look
+on_info = {+esc_kill_bandits_quest_kill}walker2
+def_state_moving3 = assault
+
+[walker2]
+path_walk = escape_factory_return_path

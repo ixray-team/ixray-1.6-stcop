@@ -1,0 +1,919 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+<!---------------------------SVOBODA PROFILES----------------------->
+
+<!---------------------------SVOBODA SPECNAZ----------------------->
+	<specific_character id="mil_Svoboda_specnaz" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_sv_hood_9</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_specnaz_bio</bio>
+
+		<team>Svoboda_specnaz</team>
+
+        <snd_config>characters_voice\human_03\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<class>mil_Svoboda_specnaz</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+		<rank>679</rank>
+		<reputation>110</reputation>
+
+		<visual>actors\svoboda\stalker_sv_hood_9</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp  \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_sig550 = 1 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+		
+#include "gameplay\character_criticals_5.xml"
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+<!---------------------------SVOBODA ENGINEER----------------------->
+	<specific_character id="mil_Svoboda_engineer" team_default = "1">
+		<name>mil_Svoboda_engineer_name</name>
+		<icon>ui_npc_u_stalker_sv_rukzak_3</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_engineer_bio</bio>
+
+		<team>Svoboda_specnaz</team>
+
+        <snd_config>characters_voice\human_01\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<class>mil_Svoboda_engineer</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+		<rank>896</rank>
+		<reputation>139</reputation>
+
+		<visual>actors\svoboda\stalker_sv_rukzak_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp \n
+			wpn_sig550 = 1 \n
+			ammo_5.56x45_ap = 1 \n
+			wpn_addon_scope = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+		
+		<start_dialog>mil_screw_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"		
+	</specific_character>
+
+<!---------------------------SVOBODA REGULAR----------------------->
+	<specific_character id="mil_Svoboda_regular" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_sv_rukzak_1_1</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_regular_bio</bio>
+
+		<team>Svoboda_regular</team>
+
+        <snd_config>characters_voice\human_01\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<class>mil_Svoboda_regular</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+		
+		<rank>368</rank>
+		<reputation>74</reputation>
+
+		<visual>actors\svoboda\stalker_sv_rukzak_1_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj \n
+			wpn_lr300 \n
+			ammo_5.56x45_ss190 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+		
+#include "gameplay\character_criticals_5.xml"
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
+<!---------------------------SVOBODA SNIPER---------------------->
+	<specific_character id="mil_Svoboda_sniper" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_sv_rukzak_3_1</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_sniper_bio</bio>
+
+		<team>Svoboda_sniper</team>
+
+        <snd_config>characters_voice\human_01\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<class>mil_Svoboda_sniper</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+		<rank>560</rank>
+		<reputation>81</reputation>
+
+		<visual>actors\svoboda\stalker_sv_rukzak_3_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro = 1 \n
+            wpn_svu \n
+            ammo_7.62x54_ap = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"				
+		</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
+<!---------------------------SVOBODA SPECNAZ STUKACH---------------------->
+	<specific_character id="mil_Svoboda_stukach" team_default = "1">
+		<name>mil_Svoboda_stukach_name</name>
+		<icon>ui_npc_u_stalker_sv_rukzak_1</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>mil_Svoboda_stukach_bio</bio>
+
+		<team>Svoboda_stukach</team>
+
+        <snd_config>characters_voice\human_01\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<class>mil_Svoboda_stukach</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+		<rank>540</rank>
+		<reputation>58</reputation>
+
+		<visual>actors\svoboda\stalker_sv_rukzak_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp = 1 \n
+			wpn_wincheaster1300 \n
+			ammo_12x76_zhekan = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+		
+#include "gameplay\character_criticals_5.xml"	
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
+<!---------------------------SVOBODA ZONEGUARD---------------------->
+	<specific_character id="mil_Svoboda_zoneguard" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_sv_exoskeleton</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_zoneguard_bio</bio>
+
+		<team>Svoboda_specnaz</team>
+		
+		<class>mil_Svoboda_zoneguard</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+        <snd_config>characters_voice\human_03\freedom\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<rank>910</rank>
+		<reputation>125</reputation>
+
+		<visual>actors\svoboda\stalker_sv_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp  \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_sig550 = 1 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+
+#include "gameplay\character_criticals_2.xml"
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>mil_zoneguard_common1</actor_dialog>
+		<actor_dialog>mil_zoneguard_common2</actor_dialog>
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
+<!---------------------------SVOBODA BODYGUARD---------------------->
+	<specific_character id="mil_Svoboda_bodyguard" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_sv_exoskeleton</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_bodyguard_bio</bio>
+
+		<team>Svoboda_regular</team>
+
+        <snd_config>characters_voice\human_03\freedom\</snd_config>
+		<crouch_type>0</crouch_type>
+		
+		<class>mil_Svoboda_bodyguard</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+		
+		<rank>903</rank>
+		<reputation>101</reputation>
+
+		<visual>actors\svoboda\stalker_sv_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp  \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_wincheaster1300 \n
+			ammo_12x76_zhekan = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+
+#include "gameplay\character_criticals_2.xml"
+#include "gameplay\character_dialogs.xml"				
+	</specific_character>
+	
+
+<!---------------------------SVOBODA LEADER---------------------->
+	<specific_character id="mil_Svoboda_leader" team_default = "1">
+		<name>mil_Svoboda_leader_name</name>
+		<icon>ui_npc_u_stalker_sv_leader</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_leader_bio</bio>
+
+        <snd_config>characters_voice\human_02\freedom\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<class>mil_Svoboda_leader</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+		
+		<rank>914</rank>
+		<reputation>136</reputation>
+
+		<visual>actors\svoboda\stalker_sv_leader</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp  \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_g36 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>tm_freedom_dialog</actor_dialog>
+		<actor_dialog>tm_freedom_reward</actor_dialog>
+#include "gameplay\character_dialogs.xml"
+	</specific_character>	
+
+<!---------------------------SVOBODA TRADER----------------------->
+	<specific_character id="mil_Svoboda_trader" team_default = "1">
+		<name>mil_Svoboda_trader_name</name>
+		<icon>ui_npc_u_stalker_sv_balon_1</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_trader_bio</bio>
+
+		<team>Svoboda_master</team>
+		
+		<class>mil_Svoboda_trader</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+        <snd_config>characters_voice\human_02\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<rank>730</rank>
+		<reputation>96</reputation>
+
+		<visual>actors\svoboda\stalker_sv_balon_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_sig550 \n
+			ammo_5.56x45_ap = 1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+
+		<start_dialog>mil_trader_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
+<!---------------------------SVOBODA MASTER MAX----------------------->
+	<specific_character id="mil_Svoboda_master_Max" team_default = "1">
+		<name>mil_Svoboda_master_Max_name</name>
+		<icon>ui_npc_u_stalker_sv_max</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_master_Max_bio</bio>
+
+		<team>Svoboda_master</team>
+
+        <snd_config>characters_voice\human_02\freedom\</snd_config>
+		<crouch_type>0</crouch_type>
+		
+		<class>mil_Svoboda_master_Max</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+		
+		<rank>912</rank>
+		<reputation>145</reputation>
+
+		<visual>actors\svoboda\stalker_sv_max</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp  \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_svu \n
+			ammo_7.62x54_7h14 = 1 \n
+			wpn_walther \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+
+		<start_dialog>mil_max_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"		
+	</specific_character>
+<!---------------------------SVOBODA MASTER----------------------->
+	<specific_character id="mil_Svoboda_master" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_sv_rukzak_1_1</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_master_bio</bio>
+
+		<team>Svoboda_master</team>
+		
+		<class>mil_Svoboda_master</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+        <snd_config>characters_voice\human_03\freedom\</snd_config>
+		<crouch_type>0</crouch_type>
+		
+		<rank>930</rank>
+		<reputation>126</reputation>
+
+		<visual>actors\svoboda\stalker_sv_rukzak_1_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp  \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_g36 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+		
+#include "gameplay\character_criticals_5.xml"
+#include "gameplay\character_dialogs.xml"			
+	</specific_character>
+<!---------------------------SVOBODA COOK----------------------->
+	<specific_character id="mil_Svoboda_cook" team_default = "1">
+		<name>mil_Svoboda_cook_name</name>		
+		<icon>ui_npc_u_stalker_sv_cook</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_cook_bio</bio>
+		
+		<class>mil_Svoboda_cook</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+        <snd_config>characters_voice\human_02\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<rank>644</rank>
+		<reputation>84</reputation>
+
+		<visual>actors\svoboda\stalker_sv_cook</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_fmj = 1 \n
+			wpn_wincheaster1300 \n
+			ammo_12x76_zhekan = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"				
+		</supplies>
+		
+#include "gameplay\character_criticals_5.xml"
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>mil_cook_common1</actor_dialog>
+		<actor_dialog>mil_cook_common2</actor_dialog>
+		<actor_dialog>mil_cook_common3</actor_dialog>
+		<actor_dialog>mil_cook_common4</actor_dialog>
+		<actor_dialog>mil_cook_common5</actor_dialog>
+		<actor_dialog>mil_cook_common6</actor_dialog>
+ 		<actor_dialog>mil_cook_drink_for_rg6_1</actor_dialog>
+        <actor_dialog>mil_cook_drink_for_rg6_2</actor_dialog>
+        <actor_dialog>mil_cook_drink_for_rg6_3</actor_dialog>
+        <actor_dialog>mil_cook_drunk_question_about_rg6_1</actor_dialog>
+        <actor_dialog>mil_cook_drunk_question_about_rg6_2</actor_dialog>
+        <actor_dialog>mil_cook_drunk_question_about_rg6_3</actor_dialog>
+#include "gameplay\character_dialogs.xml"        
+
+	</specific_character>
+<!---------------------------SVOBODA BLOCKPOST LEADER---------------------->
+	<specific_character id="mil_Svoboda_blockpost_leader" team_default = "1">
+		<name>mil_Svoboda_blockpost_leader_name</name>
+		<icon>ui_npc_u_stalker_sv_balon_10</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>mil_Svoboda_blockpost_leader_bio</bio>
+
+    	<team>Svoboda_master</team>
+		
+		<class>mil_Svoboda_blockpost_leader</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+		<rank>916</rank>
+		<reputation>149</reputation>
+
+        <snd_config>characters_voice\human_02\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<visual>actors\svoboda\stalker_sv_balon_10</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp  \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_g36 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+#include "gameplay\character_dialogs.xml"
+
+		<actor_dialog>mil_freedom_commander_common2</actor_dialog>
+	</specific_character>
+<!---------------------------SVOBODA MASTER UGRUMIY----------------------->
+	<specific_character id="mil_Svoboda_master_Ugrumiy" team_default = "1">
+		<name>mil_Svoboda_master_Ugrumiy_name</name>		
+		<icon>ui_npc_u_stalker_sv_nauchniy</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Svoboda_master_Ugrumiy_bio</bio>
+
+		<team>Svoboda_master</team>
+		
+		<class>mil_Svoboda_master_Ugrumiy</class>
+		<community>freedom</community> <terrain_sect>stalker_freedom_terrain</terrain_sect>
+
+		<snd_config>characters_voice\human_03\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<rank>902</rank>
+		<reputation>113</reputation>
+
+		<visual>actors\svoboda\stalker_sv_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp  \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_g36 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+	
+
+
+	
+<!---------------------------DOLG PROFILES----------------------->
+<!---------------------------DOLG SPECNAZ---------------------->
+	<specific_character id="mil_Dolg_specnaz" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_do_antigas</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>mil_Dolg_specnaz_bio</bio>
+
+		<class>mil_Dolg_specnaz</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+
+		<rank>720</rank>
+		<reputation>96</reputation>
+
+        <snd_config>characters_voice\human_03\dolg\</snd_config>
+  		<crouch_type>0</crouch_type>
+
+        <panic_threshold>0.0</panic_threshold>
+
+		<visual>actors\dolg\stalker_do_antigas</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp \n
+			wpn_groza \n
+			ammo_9x39_sp5 \n	
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"				
+		</supplies>
+		
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"			
+	</specific_character>
+<!---------------------------DOLG SPECNAZ SILENCE---------------------->
+	<specific_character id="mil_Dolg_specnaz_silence" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_do_exoskeleton</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>mil_Dolg_specnaz_silence_bio</bio>
+
+		<class>mil_Dolg_specnaz_silence</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+
+        <snd_config>characters_voice\human_03\dolg\</snd_config>
+  		<crouch_type>0</crouch_type>
+
+		<rank>932</rank>
+		<reputation>79</reputation>
+		
+		<panic_threshold>0.0</panic_threshold>
+
+		<visual>actors\dolg\stalker_do_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp \n
+			wpn_groza \n
+			ammo_9x39_sp5 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+
+#include "gameplay\character_criticals_2.xml"
+#include "gameplay\character_dialogs.xml"				
+	</specific_character>	
+<!---------------------------DOLG SPECNAZ CHEREP---------------------->
+	<specific_character id="mil_Dolg_specnaz_cherep" team_default = "1">
+		<name>mil_Dolg_specnaz_cherep_name</name>
+		<icon>ui_npc_u_stalker_do_exoskeleton</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>mil_Dolg_specnaz_cherep_bio</bio>
+
+		<team>Dolg_specnaz</team>
+
+		<class>mil_Dolg_specnaz_cherep</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+
+		<rank>915</rank>
+		<reputation>135</reputation>
+		
+		<panic_threshold>0.0</panic_threshold>
+
+        <snd_config>characters_voice\human_03\dolg\</snd_config>
+  		<crouch_type>0</crouch_type>
+
+		<visual>actors\dolg\stalker_do_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n	
+			wpn_val \n
+			ammo_9x39_pab9 = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>		
+
+#include "gameplay\character_criticals_2.xml"
+#include "gameplay\character_dialogs.xml"
+	</specific_character>	
+	
+	
+<!---------------------------KILLERS PROFILES----------------------->
+<!---------------------------KILLER IHFORMATOR---------------------->
+	<specific_character id="mil_Killer_informator" team_default = "1">
+		<name>mil_Killer_informator_name</name>
+		<icon>ui_npc_u_stalker_ki_informator</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>mil_Killer_informator_bio</bio>
+
+		
+		<class>mil_Killer_informator</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+
+		<rank>904</rank>
+		<reputation>-149</reputation>
+
+        <snd_config>characters_voice\human_02\\</snd_config>
+  		<crouch_type>-1</crouch_type>
+
+		<visual>actors\killer\stalker_ki_informator</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+				
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+<!---------------------------KILLER SPECNAZ---------------------->
+	<specific_character id="mil_Killer_specnaz" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_ki_antigas</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>mil_Killer_specnaz_bio</bio>
+
+		<team>Killer_specnaz</team>
+		
+		<class>mil_Killer_specnaz</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+
+        <snd_config>characters_voice\human_03\killer\</snd_config>
+  		<crouch_type>-1</crouch_type>
+		<rank>740</rank>
+		<reputation>-86</reputation>
+
+		<visual>actors\killer\stalker_ki_antigas</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp \n
+			wpn_lr300 \n
+			ammo_5.56x45_ss190 = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"					
+	</specific_character>
+
+<!---------------------------KILLER SNIPER---------------------->
+	<specific_character id="mil_killer_sniper" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_ki_mask</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>mil_killer_sniper_bio</bio>
+
+		<team>Killer_sniper</team>
+
+        <snd_config>characters_voice\human_03\killer\</snd_config>
+  		<crouch_type>-1</crouch_type>
+		
+		<class>mil_killer_sniper</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+
+		<rank>820</rank>
+		<reputation>-102</reputation>
+
+		<visual>actors\killer\stalker_ki_mask</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp \n
+			wpn_l85 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+	#include "gameplay\character_dialogs.xml"				
+	</specific_character>
+
+<!---------------------------KILLER MASTER----------------------->
+	<specific_character id="mil_killer_master" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_ki_exoskeleton</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>mil_killer_master_bio</bio>
+
+		<team>Killer_master</team>
+
+        <snd_config>characters_voice\human_03\killer\</snd_config>
+  		<crouch_type>-1</crouch_type>		
+		
+		<class>mil_killer_master</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+
+		
+		<rank>913</rank>
+		<reputation>-123</reputation>
+
+		<visual>actors\killer\stalker_ki_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+		
+#include "gameplay\character_criticals_2.xml"
+	#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+
+	
+	
+<!---------------------------NEUTRAL PROFILES----------------------->
+<!---------------------------STALKER MASTER----------------------->
+	<specific_character id="mil_Stalker_master" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_exoskeleton</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>
+
+		<class>mil_Stalker_master</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>924</rank>
+		<reputation>19</reputation>
+
+        <snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj \n
+			wpn_val \n
+			ammo_9x39_sp5 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+		
+#include "gameplay\character_criticals_2.xml"
+#include "gameplay\character_dialogs.xml"						
+	</specific_character>
+<!---------------------------STALKER VETERAN---------------------->
+	<specific_character id="mil_Stalker_veteran" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_nauchniy</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>mil_Stalker_veteran_bio</bio>
+
+		<class>mil_Stalker_veteran</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+			
+		<rank>856</rank>
+		<reputation>-2</reputation>
+
+        <snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>-1</crouch_type>
+
+		<visual>actors\neytral\stalker_neytral_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"			
+	</specific_character>
+	
+<!---------------------------SOME PROFILES----------------------->
+<!---------------------------SVOBODA CRAZY STALKER----------------------->
+        <specific_character id="mil_Svoboda_zombi_stalker" team_default = "1">
+                <name>mil_Svoboda_zombi_stalker_name</name>
+                <icon>ui_npc_u_stalker_zombie5</icon>
+                <map_icon x="5" y="0"></map_icon>
+                <bio>mil_Svoboda_zombi_stalker_bio</bio>
+
+
+                <class>mil_Svoboda_zombi_stalker</class>
+                <community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+
+                <snd_config>characters_voice\human_02\zombied\</snd_config>
+  				<crouch_type>-1</crouch_type>
+
+                <rank>569</rank>
+                <reputation>-40</reputation>
+
+                <visual>actors\stalker_zombi\stalker_zombie5</visual>
+                <supplies>
+                        [spawn] \n
+						wpn_walther \n
+						ammo_9x19_fmj \n
+                        wpn_ak74 = 1, 1, 1, 0 \n
+                        ammo_5.45x39_ap = 1 \n
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+        </specific_character> 
+<!---------------------------MONOLIT REGULAR----------------------->
+  <specific_character id="mil_Monolit_regular" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_stalker_mo_hood_9</icon>
+    <map_icon x="3" y="0"></map_icon>
+    <bio>mil_Monolit_regular_bio</bio>
+
+	<class>mil_Monolit_regular</class>
+    <community>monolith</community>
+
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+  	<crouch_type>-1</crouch_type>
+
+    <rank>340</rank>
+    <reputation>-186</reputation>
+
+    <visual>actors\monolit\stalker_mo_hood_9</visual>
+    <supplies>
+      [spawn] \n
+      wpn_fort \n
+      ammo_9x18_fmj = 1 \n
+      wpn_ak74 \n
+      ammo_5.45x39_ap = 1 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+	
+		<start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+<!---------------------------MONOLIT MASTER----------------------->
+  <specific_character id="mil_Monolit_master" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_stalker_mo_exo</icon>
+    <map_icon x="3" y="0"></map_icon>
+    <bio>mil_Monolit_master_bio</bio>
+
+    <class>mil_Monolit_master</class>
+    <community>monolith</community>
+
+
+    <rank>934</rank>
+    <reputation>-564</reputation>
+
+    <panic_threshold>0.0</panic_threshold>
+
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+ 	<crouch_type>0</crouch_type>
+
+    <visual>actors\monolit\stalker_mo_exo</visual>
+    <supplies>
+      [spawn] \n
+      wpn_fort \n
+      ammo_9x18_fmj = 1 \n
+	  wpn_val \n
+	
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+	
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+  </specific_character>
+	
+</xml>

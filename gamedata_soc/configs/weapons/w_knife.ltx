@@ -1,0 +1,127 @@
+[wpn_knife]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn              		= "weapons\knife"
+$npc                		= off
+$prefetch 		    		= 8
+scheduled           		= off
+cform						= skeleton
+description					= enc_weapons1_wpn-knife
+
+ef_weapon_type				= 1
+
+class						= WP_KNIFE
+
+visual						= weapons\knife\wpn_knife.ogf
+inv_name					= st_knife
+
+inv_name_short				= st_knife
+inv_weight					= 0
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 18
+inv_grid_y					= 8
+
+kill_msg_x					= 197
+kill_msg_y					= 177
+kill_msg_width				= 53
+kill_msg_height				= 16
+
+show_ammo					= false
+
+slot						= 0
+animation_slot				= 5
+single_handed				= 1
+
+hud							= wpn_knife_hud
+	
+cost						= 70
+
+hand_dependence		     	= 1
+
+cam_relax_speed          	= 5.0
+cam_dispersion           	= 0.9
+cam_max_angle		     	= 7
+cam_max_angle_horz			= 5.0
+cam_step_angle_horz			= 0.5
+
+
+fire_dispersion          	= 0.5
+fire_dispersion_add      	= 5.3
+fire_dispersion_relax    	= 0.6
+fire_dispersion_base	 	= 0.5
+disp_vel_factor		     	= 0.9
+disp_crouch_factor	     	= 0.75
+disp_jump_factor	     	= 7
+fire_dispersion_condition_factor = 0.0
+misfire_probability 		= 0.0
+condition_shot_dec 			= 0.0
+
+direction                	= 0, 0, 1
+shell_point		         	= 0.0, 0.0, 0.0
+fire_point               	= 0.0, 0.1, 0.4
+
+flame_particles			 	= 
+
+rpm_empty_click 	     	= 200
+
+; ttc	
+hit_power                	= 1.80, 2.00, 2.20, 2.40
+hit_impulse		         	= 120
+hit_type				 	= wound
+
+hit_power_2                	= 1.80, 2.00, 2.20, 2.40
+hit_impulse_2	         	= 120
+hit_type_2				 	= wound_2
+
+fire_distance            	= 1.4;1.8
+bullet_speed			 	= 1000;500			;начальная скорость пули
+rpm                      	= 1000;600
+; end ttc
+
+normal                   	= 0, 1, 0
+position                 	= -0.021, -0.078, 0.0
+orientation              	= 0,90,0
+startup_ammo             	= 1000
+wm_size                  	= 0.10
+
+light_disabled				= true
+
+ph_mass			         	= 4
+
+ammo_limit		         	= 180
+ammo_current		     	= 90
+ammo_elapsed		     	= 0
+	
+ammo_mag_size		     	= 0
+ammo_class				 	= ammo_9x39_pab9
+	
+min_radius               	= 50
+max_radius               	= 50
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+zoom_enabled				= false
+
+snd_shoot					= weapons\knife_1
+
+weapon_remove_time			= 5000	;время уничтожения оружия (с учетом TimeFactor) для мультиплеера
+
+[wpn_knife_hud]
+shell_point					= 0.0, 0.0, 0.0
+fire_point          		= 0.05, 0.0, 0.1
+fire_bone           		= wpn_knife_0
+
+orientation         		= 0,0,0
+position            		= 0,0,0
+visual              		= weapons\knife\wpn_knife_hud.ogf
+
+anim_idle					= idle
+anim_draw					= draw
+anim_hide					= hide
+anim_shoot1_start			= shoot1_start
+anim_shoot2_start			= shoot2_start
+anim_shoot1_end				= shoot1_end
+anim_shoot2_end				= shoot2_end
+anim_idle_sprint			= idle_sprint

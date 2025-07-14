@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+    <info_portion id="escape_novice_need_weapon">
+        <location>
+            <level>l01_escape</level>
+            <object>001</object>
+            <icon name="" x="2" y="3" width="1" height="1" marker="0"></icon>
+            <text>Помочь ограбленному новичку</text>
+        </location>
+    </info_portion>
+    <info_portion id="escape_novice_has_weapon">
+        <disable>escape_novice_need_weapon</disable>
+    </info_portion>
+
+    <info_portion id="escape_factory_bandits_dead">
+    </info_portion>
+    <info_portion id="garbage_robber_processed">
+    </info_portion>
+
+
+    <info_portion id="agroprom_factory_combat">
+    </info_portion>
+
+    <info_portion id="rostok_heli_start">
+    </info_portion>
+
+    <info_portion id="rostok_heli_down">
+    </info_portion>
+
+  <info_portion id="escape_need_blockpost_case">
+        <location>
+            <level>l01_escape</level>
+            <object>000</object>
+      <icon name="Ящик" x="5" y="1" width="1" height="1" r="238" g="155" b="23" marker="0"></icon>
+            <text>Украсть ящик с блокпоста</text>
+        </location>
+        <task>escape_blockpost_case</task>
+    </info_portion>
+    <info_portion id="escape_take_blockpost_case">
+    <location>
+            <level>l01_escape</level>
+            <object>003</object>
+      <icon name="Торговец" x="6" y="0" width="1" height="1" r="238" g="155" b="23" marker="1"></icon>
+            <text>Принеси ящик торговцу.</text>
+        </location>
+        <disable>escape_need_blockpost_case</disable>
+        <dialog>escape_trader_done_blockpost_box</dialog>
+    </info_portion>
+    <info_portion id="escape_have_blockpost_case">
+        <disable>escape_need_blockpost_case</disable>
+        <disable>escape_take_blockpost_case</disable>
+    </info_portion>
+
+    <info_portion id="escape_trader_need_artefact">
+        <location>
+            <level>l01_escape</level>
+            <x>163</x>
+            <y>72</y>
+      <icon name="Аномалия" x="1" y="5" width="1" height="1" r="238" g="155" b="23" marker="0"></icon>
+            <text>Предполагаемое место артефакта.</text>
+        </location>
+        <location>
+            <level>l01_escape</level>
+            <x>208</x>
+            <y>108</y>
+      <icon name="Аномалия" x="1" y="5" width="1" height="1" r="238" g="155" b="23" marker="0"></icon>
+            <text>Предполагаемое место артефакта.</text>
+        </location>
+        <location>
+            <level>l01_escape</level>
+            <x>221</x>
+            <y>154</y>
+      <icon name="Аномалия" x="1" y="5" width="1" height="1" r="238" g="155" b="23" marker="0"></icon>
+            <text>Предполагаемое место артефакта.</text>
+        </location>
+        <location>
+            <level>l01_escape</level>
+            <x>186</x>
+            <y>159</y>
+      <icon name="Аномалия" x="1" y="5" width="1" height="1" r="238" g="155" b="23" marker="0"></icon>
+            <text>Предполагаемое место артефакта.</text>
+        </location>
+        <location>
+            <level>l01_escape</level>
+            <object>002</object>
+      <icon name="" x="2" y="16" width="0" height="0" r="238" g="155" b="23" marker="1"></icon>
+      <text></text>
+        </location>
+        <task>escape_trader_need_artefact</task>
+    </info_portion>
+    <info_portion id="escape_trader_find_artefact">
+        <location>
+            <level>l01_escape</level>
+            <object>003</object>
+      <icon name="Торговец" x="6" y="0" width="1" height="1" r="238" g="155" b="23" marker="1"></icon>
+            <text>Принеси артефакт торговцу.</text>
+        </location>
+        <disable>escape_trader_need_artefact</disable>
+    <dialog>escape_trader_done_artefact</dialog>
+    </info_portion>
+    <info_portion id="escape_trader_have_artefact">
+        <disable>escape_trader_find_artefact</disable>
+        <disable>escape_trader_need_artefact</disable>
+    </info_portion>
+
+  <info_portion id="escape_need_agroprom_documents">
+        <location>
+            <level>l03_agroprom</level>
+            <object>200</object>
+      <icon name="Документы" x="5" y="1" width="1" height="1" r="238" g="155" b="23" marker="1"></icon>
+            <text>Важные военные документы.</text>
+        </location>
+        <task>agroprom_get_military_documents</task>
+    </info_portion>
+    <info_portion id="agroprom_take_agroprom_documents">
+        <disable>escape_need_agroprom_documents</disable>
+    </info_portion>
+    <info_portion id="bar_have_agroprom_documents">
+        <disable>escape_need_agroprom_documents</disable>
+        <disable>agroprom_take_agroprom_documents</disable>
+    </info_portion>
+
+
+
+<!-- OTHER LEVELS SECTION-->
+    <info_portion id="garbage_find_stalker">
+        <location>
+            <level>l02_garbage</level>
+            <x>-118</x>
+            <y>263</y>
+      <icon x="0" y="1" width="1" height="1" r="238" g="155" b="23" marker="1"></icon>
+            <text>Встретьтесь с сталкером.</text>
+        </location>
+        <task>garbage_meet_stalker</task>
+    </info_portion>
+    <info_portion id="garbage_find_dead_stalker">
+    <disable>garbage_find_stalker</disable>
+    </info_portion>
+
+    <info_portion id="agroprom_meet_gunslinger_band">
+        <location>
+            <level>l03_agroprom</level>
+            <x>-18</x>
+            <y>18</y>
+      <icon x="5" y="4" width="1" height="1" r="238" g="155" b="23" marker="1"></icon>
+            <text>Встретьтесь с группировкой Стрелка.</text>
+        </location>
+    <task>agroprom_meet_gunslinger_band</task>
+    </info_portion>
+    <info_portion id="agroprom_find_gunslinger_band">
+        <location>
+            <level>l03_agroprom</level>
+            <x>-47</x>
+            <y>-37</y>
+      <icon x="4" y="4" width="1" height="1" r="238" g="155" b="23" marker="1"></icon>
+            <text>Найдите тайник группировки Стрелка.</text>
+        </location>
+    <task>agroprom_find_gunslinger_hide</task>
+    <disable>agroprom_meet_gunslinger_band</disable>
+    </info_portion>
+
+	<!-- Используется для отладки скрипта -->
+	<info_portion id="escape_stalker_help">
+	</info_portion>
+
+
+
+	<info_portion id="storyline_start">
+	</info_portion>
+
+	<info_portion id="tutorial_artefact_gain">
+	</info_portion>
+
+	<info_portion id="tutorial_artefact_start">
+	</info_portion>
+
+	<info_portion id="tutorial_wounded_help">
+	</info_portion>
+
+	<info_portion id="tutorial_wounded_die">
+	</info_portion>
+
+	<info_portion id="tutorial_trader_search_corpses">
+		<text>Обыщи трупы</text>
+	</info_portion>
+
+	<info_portion id="tutorial_trader_give_medikit">
+		<text>Дай ему аптечку</text>
+	</info_portion>
+
+	<info_portion id="tutorial_trader_help_wounded">
+		<text>Дай раненому аптечку</text>
+	</info_portion>
+
+</game_information_portions>

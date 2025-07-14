@@ -1,0 +1,11 @@
+[logic]
+active = mob_walker1
+on_death = mob_death
+
+[mob_death]
+on_info = %+val_bs_victim_killed =val_bs_victim_dead%
+
+[mob_walker1]
+path_walk = val_bs_victim_walk
+path_look = val_bs_victim_look
+friendly = true

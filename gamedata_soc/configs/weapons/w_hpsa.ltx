@@ -1,0 +1,193 @@
+[wpn_hpsa]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn               	    = "weapons\hpsa"					; option for Level Editor
+$npc						= on				; option for Level Editor
+$prefetch 					= 8
+scheduled            		= off              ; option for ALife Simulator
+cform                    	= skeleton
+class                    	= WP_HPSA
+min_radius               	= 0
+max_radius               	= 30
+description					= enc_weapons1_wpn-hpsa
+														
+ef_weapon_type				= 5
+
+;--- scope weapons -----------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range 
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 500
+
+ammo_limit		 			= 120
+ammo_current		 		= 0
+ammo_elapsed		 		= 0
+
+ammo_mag_size		 		= 13
+ammo_class		 			= ammo_9x19_fmj, ammo_9x19_pbp
+
+
+hand_dependence		 		= 1
+single_handed				= 1
+
+slot 			 			= 1		; // primary
+animation_slot				= 1		; type of the animation that will be used
+
+inv_name					= wpn_hpsa
+inv_name_short				= wpn_hpsa
+inv_weight					= 0.88	;.5
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 16
+inv_grid_y					= 7
+
+kill_msg_x			= 126
+kill_msg_y			= 154
+kill_msg_width		= 35
+kill_msg_height		= 23
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.27 		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 8.2;1.2	;скорость возврата в исходное положение
+cam_dispersion          	= 0.6	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 1.2	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.005	    ;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00043	;увеличение износа при каждом выстреле
+;-----------------------------------------------------------------------------------
+
+direction                	= 0, 0, 1
+fire_point               	= 0.0, 0.129, 0.179
+
+flame_particles		   		= weapons\generic_weapon03
+smoke_particles		   		= weapons\generic_shoot_00
+
+shell_point		 			= 0.0, 0.129, 0.05
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles	 			= weapons\generic_shells
+rpm_empty_click 	 		= 200
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.70
+hit_impulse		 	= 125
+hit_type 			= fire_wound
+fire_distance            	= 1000
+
+bullet_speed			= 355		;начальная скорость пули
+rpm                      	= 240
+; end ttc
+
+use_aim_bullet				= true		;Поддерживается ли первая суппер пуля
+time_to_aim					= 1.0	
+
+silencer_hit_power       	= 0.70
+silencer_hit_impulse	 	= 60
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 230
+
+hud                      	= wpn_hpsa_hud
+normal                   	= 0, 1, 0
+position                 	= -0.021, -0.085, 0.0
+orientation              	= 0, 0, 0
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+;strap_position         		= -0.1,-0.45,0.2			; position (offset) and orientation of the weapon when it is strapped
+;strap_orientation      		= 1.57,0,0						; (3rd person view)
+;strap_bone0					= bip01_spine2
+;strap_bone1					= bip01_spine1
+
+startup_ammo             	= 90
+visual                   	= weapons\hpsa\wpn_hpsa.ogf
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 2.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 1
+;cost			 			= 450
+
+;addons
+scope_status				= 0
+silencer_status				= 0;2
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor	    	= 55
+
+;звуки
+snd_draw					= weapons\pm_draw
+snd_holster					= weapons\generic_holster
+snd_shoot					= weapons\t_hpsa_shot       ;walther_p99_shoot ; hpsa_shoot
+snd_empty					= weapons\pistol_empty
+snd_reload					= weapons\pm_reload, 0.8
+snd_close					= weapons\generic_close
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; silencer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+silencer_name  				= wpn_addon_silencer		; section name for the attachable silencer
+silencer_x 					= 68						; offset in inventory icon
+silencer_y 					= -16					
+
+;params when silencer is attached 
+;similar to corresponding params without prefix silencer_
+
+;silencer_flame_particles 	= weapons\generic_weapon01
+silencer_smoke_particles 	= weapons\generic_shoot_00
+snd_silncer_shot			= weapons\w_ak74_shot1 
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+ 
+[wpn_hpsa_hud]
+
+shell_point			= -0.425000,-0.005000,0.060000
+shell_dir		 			= 0.0, 1.0, 0.0
+
+fire_point               	= -0.130000,0.000000,0.070000
+fire_bone                	= wpn_body
+orientation              	= 0,0,0
+position                 	= 0,0,0
+visual                   	= weapons\hpsa\wpn_hpsa_hud.ogf
+
+anim_holster				= holster
+anim_idle					= idle
+anim_empty					= empty
+anim_reload					= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot1
+anim_shot_last				= shoot_last
+anim_close					= holster ;close
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.148200,0.073200,-0.125300
+zoom_rotate_x		= 0.009100
+zoom_rotate_y		= 0.001500
+

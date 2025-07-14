@@ -1,0 +1,158 @@
+;-------------------------------------------------------------------------------------------------
+;-- Блокпост Свободы у выхода на Радар
+;-------------------------------------------------------------------------------------------------
+;------- общий лагерь
+[logic@mil_fblockpost_stalker]
+active = kamp@mil_fblockpost_stalker
+
+[kamp@mil_fblockpost_stalker]
+center_point = kamp
+path_walk = kamp_task
+meet = no_meet
+
+;------- командир
+[logic@mil_fblockpost_commander]
+active = walker1@mil_fblockpost_commander
+actor_dialogs = dialogs@mil_fblockpost_commander
+on_death = death@mil_fblockpost_commander
+
+[death@mil_fblockpost_commander]
+on_info = %+mil_fblockpost_commander_dead +sar2_death_39%
+
+[dialogs@mil_fblockpost_commander]
+id = mil_freedom_commander_common1, mil_freedom_commander_common2
+
+[walker1@mil_fblockpost_commander]
+path_walk = commander_walk
+path_look = commander_look
+meet = on_meet@mil_fblockpost_commander
+danger = danger@mil_freedom
+
+[on_meet@mil_fblockpost_commander]
+meet_state = 10|ward
+meet_state_wpn = 10|ward
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+use_wpn = true
+meet_dialog = mil_freedom_commander
+
+
+;-- патруль 1
+[logic@mil_fblockpost_patrol1]
+active = walker1@mil_fblockpost_patrol1
+
+[walker1@mil_fblockpost_patrol1]
+path_walk = patrol_walk1
+path_look = patrol_look1
+meet = no_meet
+danger = danger@mil_freedom
+
+;-- патруль 2
+[logic@mil_fblockpost_patrol2]
+active = walker1@mil_fblockpost_patrol2
+
+[walker1@mil_fblockpost_patrol2]
+path_walk = patrol_walk2
+path_look = patrol_look2
+meet = no_meet
+danger = danger@mil_freedom
+
+
+;-- кэмперы
+[logic@mil_fblockpost_camper1]
+active = camper1@mil_fblockpost_camper1
+meet = no_meet
+
+[camper1@mil_fblockpost_camper1]
+path_walk = camp_walk01
+path_look = camp_look01
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper2]
+active = camper1@mil_fblockpost_camper2
+meet = no_meet
+
+[camper1@mil_fblockpost_camper2]
+path_walk = camp_walk02
+path_look = camp_look02
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper3]
+active = camper1@mil_fblockpost_camper3
+meet = no_meet
+
+[camper1@mil_fblockpost_camper3]
+path_walk = camp_walk03
+path_look = camp_look03
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper4]
+active = camper1@mil_fblockpost_camper4
+meet = no_meet
+
+[camper1@mil_fblockpost_camper4]
+path_walk = camp_walk04
+path_look = camp_look04
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper5]
+active = camper1@mil_fblockpost_camper5
+meet = no_meet
+
+[camper1@mil_fblockpost_camper5]
+path_walk = camp_walk05
+path_look = camp_look05
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+;--
+[logic@mil_fblockpost_camper6]
+active = camper1@mil_fblockpost_camper6
+meet = no_meet
+
+[camper1@mil_fblockpost_camper6]
+path_walk = camp_walk06
+path_look = camp_look06
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper7]
+active = camper1@mil_fblockpost_camper7
+meet = no_meet
+
+[camper1@mil_fblockpost_camper7]
+path_walk = camp_walk07
+path_look = camp_look07
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+

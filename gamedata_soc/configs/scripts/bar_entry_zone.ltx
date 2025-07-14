@@ -1,0 +1,22 @@
+[logic]
+active = sr_idle@respawn1
+
+[sr_idle@respawn1]
+on_actor_inside = {~33} sr_idle@respawn2 %+bar_bar_square_1_state_1%, {~66} sr_idle@respawn2 %+bar_bar_square_1_state_2%, sr_idle@respawn2 %+bar_bar_square_1_state_3%
+
+[sr_idle@respawn2]
+on_actor_inside = {~33} sr_idle@respawn3 %+bar_bar_square_2_state_1%, {~66} sr_idle@respawn3 %+bar_bar_square_2_state_2%, sr_idle@respawn3 %+bar_bar_square_2_state_3%
+
+[sr_idle@respawn3]
+on_actor_inside = {~33} sr_idle@idle1 %+bar_bar_square_3_state_1%, {~66} sr_idle@idle1 %+bar_bar_square_3_state_2%, sr_idle@idle1 %+bar_bar_square_3_state_3%
+
+
+
+[sr_idle@idle1]
+on_actor_outside = sr_idle@idle2 %-bar_bar_square_1_state_1 -bar_bar_square_1_state_2 -bar_bar_square_1_state_3%
+
+[sr_idle@idle2]
+on_actor_outside = sr_idle@idle3 %-bar_bar_square_2_state_1 -bar_bar_square_2_state_2 -bar_bar_square_2_state_3%
+
+[sr_idle@idle3]
+on_actor_outside = sr_idle@respawn1 %-bar_bar_square_3_state_1 -bar_bar_square_3_state_2 -bar_bar_square_3_state_3%

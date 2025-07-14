@@ -1,0 +1,53 @@
+    <article id="storyline_seriy_flash_info" name="agr_meet_krot_band" article_type="task" group="agr_meet_krot_band/0">
+        <texture x="200" y="800" width="200" height="150">ui\ui_icon_photo</texture>
+        <text>storyline_seriy_flash_info</text>
+    </article>
+    
+    <article id="help_for_hellcar" name="gar_car_graveyard_quest" article_type="task" group="gar_car_graveyard_quest/0">
+        <text>help_for_neitrals_text</text>
+    </article>
+    
+    <article id="graveyard_raid" name="gar_help_dymon" article_type="task" group="gar_help_dymon/0">
+        <text>graveyard_raid_text</text>
+    </article>
+    <article id="gar_kill_boars_descr" name="gar_kill_boars_descr" article_type="task" group="gar_kill_boars/0">
+        <text>gar_kill_boars_descr</text>
+    </article>
+    
+    
+    <!-- Артиклы из журнала -->
+    <article id="sl_beginning" name="sl_beginning" article_type="Journal" group="memuars">
+        <text>sl_beginning_text</text>
+    </article>   
+    
+    <article id="sl_first_opinions" name="sl_first_opinions" article_type="Journal" group="memuars">
+        <text>sl_first_opinions_text</text>
+    </article>
+
+	<article id="sl_wishmaster_legend" name="sl_wishmaster_legend" article_type="Journal" group="memuars">
+        <text>sl_wishmaster_legend_text</text>
+    </article>
+    
+    <article id="sl_first_deep_raid" name="sl_first_deep_raid" article_type="Journal" group="memuars">
+        <text>sl_first_deep_raid_text</text>
+    </article>
+    
+    <article id="sl_usefull_info" name="sl_usefull_info" article_type="Journal" group="memuars">
+        <text>sl_usefull_info_text</text>
+    </article>
+    
+    <article id="sl_fox_meet" name="sl_fox_meet" article_type="Journal" group="memuars">
+        <text>sl_fox_meet_text</text>
+    </article>
+    
+    <article id="sl_seryi_meet" name="sl_seryi_meet" article_type="Journal" group="memuars">
+        <text>sl_seryi_meet_text</text>
+    </article>
+    
+    <article id="sl_provodnik" name="sl_provodnik" article_type="Journal" group="memuars">
+        <text>sl_provodnik_text</text>
+    </article>
+    
+    <article id="sl_monolith_off" name="sl_monolith_off" article_type="Journal" group="memuars">
+        <text>sl_monolith_off_text</text>
+    </article>
