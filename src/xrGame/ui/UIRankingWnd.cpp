@@ -258,7 +258,6 @@ void CUIRankingWnd::Init()
 		}
 	}
 	// Alundaio: CoC Rankings
-	// St4lker0k765: it's not necessary for CoP anymore
 	if (xml.NavigateToNode("coc_ranking_background", 0))
 	{
 		m_coc_ranking_background = UIHelper::CreateFrameWindow(xml, "coc_ranking_background", this);
