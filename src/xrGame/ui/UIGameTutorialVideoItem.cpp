@@ -32,6 +32,8 @@ CUISequenceVideoItem::CUISequenceVideoItem(CUISequencer* owner):CUISequenceItem(
 CUISequenceVideoItem::~CUISequenceVideoItem()
 {
 	m_sound.stop			();
+	m_sound_mono[0].stop	();
+	m_sound_mono[1].stop	();
 	delete_data				(m_wnd);
 	delete_data				(m_wnd_bg);
 }
@@ -96,7 +98,18 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 
 	if (snd_name && snd_name[0])
 	{
-		m_sound.create		(snd_name,st_Effect,sg_Undefined);	
+		if (FS.exist(snd_name))
+		{
+			m_sound.create		(snd_name,st_Effect,sg_Undefined);	
+		}
+		else
+		{
+			string_path			_l, _r;
+			xr_strconcat(_l, snd_name, "_l");
+			xr_strconcat(_r, snd_name, "_r");
+			m_sound_mono[0].create(_l, st_Effect, sg_Undefined);
+			m_sound_mono[1].create(_r, st_Effect, sg_Undefined);
+		}
 	}
 	xml->SetLocalRoot		(_stored_root);
 }
@@ -125,14 +138,14 @@ void CUISequenceVideoItem::Update()
 		}
 	}else return;
 
-	//u32 sync_tm				= (0==m_sound._handle())?Device.dwTimeContinual:(m_sound._feedback()?m_sound._feedback()->play_time():m_sync_time);
+	ref_sound snd			= m_sound.handle() ? m_sound : m_sound_mono[0];
 	u32 sync_tm				= Device.dwTimeContinual;
 	m_sync_time				= sync_tm;
 	// processing A&V
 
 	if (m_texture->HasTexture())
 	{
-		BOOL is_playing		= m_sound.handle() ? m_sound.is_playing() : m_texture->video_IsPlaying();
+		BOOL is_playing		= snd.handle() ? snd.is_playing() : m_texture->video_IsPlaying();
 		if (is_playing)
 		{
 			m_texture->video_Sync(m_sync_time);
@@ -141,7 +154,15 @@ void CUISequenceVideoItem::Update()
 			// sync start
 			if (m_flags.test(etiNeedStart))
 			{
-				m_sound.play_at_pos		(nullptr, Fvector().set(0.0f,0.f,0.0f), sm_Intro);
+				if (m_sound.handle())
+					m_sound.play		(nullptr, sm_Intro);
+				else
+				{
+					m_sound_mono[0].play(nullptr, sm_Intro);
+					//m_sound_mono[0].set_panning(1.0f, 0.f);
+					m_sound_mono[1].play(nullptr, sm_Intro);
+					//m_sound_mono[1].set_panning(0.f, 1.0f);
+				}
 				m_texture->video_Play	(FALSE, m_sync_time);
 				m_flags.set				(etiNeedStart,FALSE);
 				CUIWindow* w			= m_owner->MainWnd()->FindChild("back");

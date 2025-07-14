@@ -166,6 +166,7 @@ class CUISequenceVideoItem final : public CUISequenceItem
 {
 	typedef CUISequenceItem	inherited;
 	ref_sound				m_sound;
+	ref_sound				m_sound_mono[2];
 	FactoryPtr<IUISequenceVideoItem>	m_texture;
 	enum {	
 		etiPlaying			= (1<<(eti_last+0)),
