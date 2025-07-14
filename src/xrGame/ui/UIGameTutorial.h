@@ -83,16 +83,23 @@ protected:
 		etiStoredCursorState= (1<<6),
 		eti_last			= 7,
 	};
+	Flags32					m_flags;
 	xr_vector<shared_str>	m_start_lua_functions;
 	xr_vector<shared_str>	m_stop_lua_functions;
 	luabind::functor<void>	m_onframe_functor;
 
-	Flags32					m_flags;
 	CUISequencer*			m_owner;
+	enum CompatibilityMode
+	{
+		eCompatibilityDefault,
+		eCompatibilityCS,
+		eCompatibilitySoC
+	};
+	CompatibilityMode		m_compatibility_mode;
 
 	virtual float			current_factor		(){return 1;}
 public:
-							CUISequenceItem		(CUISequencer* owner):m_owner(owner){m_flags.zero();}
+							CUISequenceItem		(CUISequencer* owner);
 	virtual					~CUISequenceItem	(){}
 	virtual void			Load				(CUIXml* xml, int idx)=0;
 
