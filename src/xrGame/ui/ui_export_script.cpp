@@ -16,6 +16,7 @@
 #include "ui/UIMMShniaga.h"
 #include "../xrUI/Widgets/UIComboBox.h"
 #include "../xrUI/Widgets/UIOptionsManagerScript.h"
+#include "../xrUI/Widgets/UIMultiTextStatic.h"
 #include "../xrUI/Widgets/UIListWnd.h"
 #include "ui/UIMapInfo.h"
 #include "map_manager.h"
@@ -71,6 +72,9 @@ void UIRegistrator::script_register(lua_State *L)
 				value("alCenter",					int(CGameFont::alCenter))
 			],
 
+		class_<CUICaption>("CUICaption")
+			.def("addCustomMessage",	&CUICaption::addCustomMessage)
+			.def("setCaption",			&CUICaption::setCaption),
 
 		class_<Patch_Dawnload_Progress>("Patch_Dawnload_Progress")
 			.def("GetInProgress",	&Patch_Dawnload_Progress::GetInProgress)

@@ -211,7 +211,7 @@ void CGameTask::Load(const shared_str& id)
 
 		//------infoportion_complete
 		{
-			const int info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_complete");
+			int info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_complete");
 			objective.m_completeInfos.resize(info_num);
 
 			for (int j = 0; j < info_num; ++j)
@@ -625,6 +625,11 @@ void SGameTaskObjective::save(IWriter& stream)
 	save_data				(m_map_hint,		stream);
 	save_data				(m_map_location,	stream);
 	save_data				(m_map_object_id,	stream);
+
+	save_data				(m_completeInfos,	stream);
+	save_data				(m_failInfos,		stream);
+	save_data				(m_infos_on_complete, stream);
+	save_data				(m_infos_on_fail,	stream);
 }
 
 void SGameTaskObjective::load(IReader& stream)
@@ -650,6 +655,11 @@ void SGameTaskObjective::load(IReader& stream)
 	load_data				(m_map_hint,		stream);
 	load_data				(m_map_location,	stream);
 	load_data				(m_map_object_id,	stream);
+
+	load_data				(m_completeInfos,	stream);
+	load_data				(m_failInfos,		stream);
+	load_data				(m_infos_on_complete, stream);
+	load_data				(m_infos_on_fail,	stream);
 }
 
 void CGameTask::save(IWriter& stream)

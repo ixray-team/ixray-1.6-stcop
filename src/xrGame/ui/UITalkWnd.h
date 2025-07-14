@@ -14,7 +14,7 @@ class CActor;
 class CInventoryOwner;
 class CPhraseDialogManager;
 class CUITalkDialogWnd;
-//class CUITradeWnd;
+class CUITradeWnd;
 ///////////////////////////////////////
 //
 ///////////////////////////////////////
@@ -73,6 +73,7 @@ public:
 	bool				b_disable_break;
 	CUITalkDialogWnd*	UITalkDialogWnd;
 protected:
+	CUITradeWnd*		UITradeWnd;
 
 	CActor*				m_pActor;
 	CInventoryOwner*	m_pOurInvOwner;
