@@ -151,10 +151,12 @@ float3 v_sun_wrap(float3 n, float w)
 }
 float3 p_hemi(float2 tc)
 {
-    // float3	t_lmh 	= tex2D		(s_hemi, tc);
-    // return  dot	(t_lmh,1.h/3.h);
     float4 t_lmh = tex2D(s_hemi, tc);
+#ifdef USE_SOC_LIGHTING
+    return dot(t_lmh.rgb, 1.h / 3.h);
+#else
     return t_lmh.a;
+#endif
 }
 
 #endif // COMMON_H
