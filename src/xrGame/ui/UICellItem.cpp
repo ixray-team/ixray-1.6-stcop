@@ -49,13 +49,11 @@ CUICellItem::~CUICellItem()
 
 void CUICellItem::init()
 {
-	static CUIXml uiXml;
-	static bool is_xml_ready = false;
+	CUIXml uiXml;
 
-	if (!is_xml_ready)
+	if (!uiXml.Load(CONFIG_PATH, UI_PATH, "actor_menu_item.xml"))
 	{
-		uiXml.Load(CONFIG_PATH, UI_PATH, "actor_menu_item.xml");
-		is_xml_ready = true;
+		return;
 	}
 	
 	m_text					= new CUIStatic();
@@ -136,22 +134,25 @@ void CUICellItem::Update()
 	}
 	
 	PIItem item = (PIItem)m_pData;
-	if ( item )
-	{
-		m_has_upgrade = item->has_any_upgrades();
-
-//		Fvector2 size      = GetWndSize();
-//		Fvector2 up_size = m_upgrade->GetWndSize();
-//		pos.x = size.x - up_size.x - 4.0f;
-		Fvector2 pos;
-		pos.set( m_upgrade_pos );
-		if ( ChildsCount() )
-		{
-			pos.x += m_text->GetWndSize().x + 2.0f;
-		}
-		m_upgrade->SetWndPos( pos );
-	}
-	m_upgrade->Show( m_has_upgrade );
+    m_has_upgrade = item ? item->has_any_upgrades() : false;
+    if (m_upgrade)
+    {
+        if (item)
+        {
+            //		Fvector2 size      = GetWndSize();
+            //		Fvector2 up_size = m_upgrade->GetWndSize();
+            //		pos.x = size.x - up_size.x - 4.0f;
+            Fvector2 pos;
+            pos.set(m_upgrade_pos);
+            if (ChildsCount())
+            {
+                const float textSize = m_text ? m_text->GetWndSize().x : 0.f;
+                pos.x += textSize + 2.0f;
+            }
+            m_upgrade->SetWndPos(pos);
+        }
+        m_upgrade->Show(m_has_upgrade);
+    }
 	UpdateCustomMarksAndText();
 }
 
@@ -403,18 +404,23 @@ bool CUICellItem::HasChild(CUICellItem* item)
 
 void CUICellItem::UpdateItemText()
 {
-	if ( ChildsCount() )
-	{
-		string32	str;
-		xr_sprintf( str, "x%d", ChildsCount()+1 );
-		m_text->TextItemControl()->SetText( str );
-		m_text->Show( true );
-	}
-	else
-	{
-		m_text->TextItemControl()->SetText( "" );
-		m_text->Show( false );
-	}
+    string32 tempStr;
+    pcstr finalText = nullptr;
+    if (ChildsCount())
+    {
+        xr_sprintf(tempStr, "x%d", ChildsCount() + 1);
+        finalText = tempStr;
+    }
+
+    if (m_text)
+    {
+        m_text->Show(nullptr != finalText);
+        m_text->SetText(finalText);
+    }
+    else
+    {
+        this->SetText(finalText);
+    }
 }
 
 void CUICellItem::Mark( bool status )
