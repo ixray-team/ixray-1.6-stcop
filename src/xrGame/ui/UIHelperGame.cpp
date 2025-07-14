@@ -7,9 +7,8 @@
 
 #include "StdAfx.h"
 #include "UIHelperGame.h"
-#include "../xrUI/UIXmlInit.h"
-
-#include "ui/UIDragDropReferenceList.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "UIDragDropReferenceList.h"
 
 CUIDragDropListEx* UIHelperGame::CreateDragDropListEx(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent)
 {

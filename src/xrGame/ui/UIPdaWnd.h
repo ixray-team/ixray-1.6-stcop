@@ -21,6 +21,7 @@ class CUIAnimatedStatic;
 class UIHint;
 class CMapSpot;
 class CUIPdaContactsWnd;
+class CUIEventsWnd;
 class CUIEncyclopediaWnd;
 class CUIStalkersRankingWnd;
 
@@ -59,6 +60,7 @@ public:
 	CUIRankingWnd*			pUIRankingWnd;
 	CUILogsWnd*				pUILogsWnd;
 	CUIPdaContactsWnd*		UIPdaContactsWnd;
+	CUIEventsWnd*			pUIEventsWnd;
 	CUIEncyclopediaWnd*		pUIEncyclopediaWnd;
 	CUIStalkersRankingWnd*	pUIStalkersRankingWnd;
 

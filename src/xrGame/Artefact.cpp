@@ -108,13 +108,13 @@ void CArtefact::Load(LPCSTR section)
 	}
 	m_bCanSpawnZone			= !!pSettings->line_exist("artefact_spawn_zones", section);
 	m_af_rank				= READ_IF_EXISTS(pSettings, r_u8, section, "af_rank", 0);
-	m_additional_weight		= pSettings->r_float(section,"additional_inventory_weight");
+	m_additional_weight		= READ_IF_EXISTS(pSettings, r_float, section,"additional_inventory_weight", 0.0f);
 	m_fDegradationRate		= READ_IF_EXISTS(pSettings, r_float, section, "degrade_rate", 0.0f);
 }
 
 BOOL CArtefact::net_Spawn(CSE_Abstract* DC) 
 {
-	if(pSettings->r_bool(cNameSect(),"can_be_controlled") )
+	if(READ_IF_EXISTS(pSettings, r_bool, cNameSect(),"can_be_controlled", false) )
 		m_detectorObj				= new SArtefactDetectorsSupport(this);
 
 	BOOL result						= inherited::net_Spawn(DC);
