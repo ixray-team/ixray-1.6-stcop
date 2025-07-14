@@ -22,8 +22,11 @@ class UIHint;
 class CMapSpot;
 class CUIPdaContactsWnd;
 class CUIEventsWnd;
-class CUIEncyclopediaWnd;
 class CUIStalkersRankingWnd;
+class CUIEncyclopediaWnd;
+class CUIActorInfoWnd;
+class CUIDiaryWnd;
+class CUIMapWnd;
 
 class CUIPdaWnd final : public CUIDialogWnd
 {
@@ -65,9 +68,12 @@ public:
 	CUILogsWnd*				pUILogsWnd;
 	CUIPdaContactsWnd*		UIPdaContactsWnd;
 	CUIEventsWnd*			pUIEventsWnd;
-	CUIEncyclopediaWnd*		pUIEncyclopediaWnd;
 	CUIStalkersRankingWnd*	pUIStalkersRankingWnd;
-
+	CUIEncyclopediaWnd*		pUIEncyclopediaWnd;
+	CUIActorInfoWnd*		pUIActorInfoWnd;
+	CUIDiaryWnd*			pUIDiaryWnd;
+	CUIMapWnd*				pUIMapWnd;
+	
 	CMapSpot*				pSelectedMapSpot;
 
 	virtual void			Reset				();

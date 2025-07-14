@@ -90,6 +90,10 @@ CInventory::CInventory()
 	m_fTotalWeight								= -1.f;
 	m_dwModifyFrame								= 0;
 	m_drop_last_frame							= false;
+	m_iMaxBelt									= 0;
+	if (EngineExternal().ShadowOfChernobylMode())
+		m_iMaxBelt								= pSettings->r_s32		("inventory","max_belt");
+
 	
 	InitPriorityGroupsForQSwitch				();
 	m_next_item_iteration_time					= 0;
@@ -1388,14 +1392,15 @@ bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 
 u32 CInventory::BeltWidth() const
 {
-	if (CActor* pActor = m_pOwner->cast_actor())
+	CActor* pActor = m_pOwner->cast_actor();
+	if (pActor != nullptr && !m_iMaxBelt)
 	{
 		if (CCustomOutfit* outfit = pActor->GetOutfit())
 		{
 			return outfit->get_artefact_count();
 		}
 	}
-	return 0; //m_iMaxBelt;
+	return m_iMaxBelt;
 }
 
 void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_trade) const

@@ -25,6 +25,20 @@ void CUIMapLocationHint::Init(CUIXml& uiXml, LPCSTR path)
 {
 	CUIXmlInit						xml_init;
 
+	if (!uiXml.NavigateToNode(path))
+	{
+		CUIXml xml_new;
+		xml_new.Load(CONFIG_PATH, UI_PATH, "hint_item.xml");
+
+		xml_init.InitFrameWindow(xml_new, "hint_item:frame", 0, this);
+
+		CUIStatic* S = nullptr;
+		S = init_static_field(xml_new, "hint_item", "description");
+		AttachChild(S);
+		m_info["simple_text"] = S;
+		return;
+	}
+
 	xml_init.InitFrameWindow		(uiXml,path,0,this);
 
 	CUIStatic* S					= nullptr;
@@ -60,11 +74,16 @@ void CUIMapLocationHint::Init(CUIXml& uiXml, LPCSTR path)
 void CUIMapLocationHint::SetInfoMode(u8 mode)
 {
 	m_info["simple_text"]->Show		(mode==1);
-	m_info["t_icon"]->Show			(mode==2);
-	m_info["t_caption"]->Show		(mode==2);
-	m_info["t_time"]->Show			(mode==2);
-	m_info["t_time_rem"]->Show		(mode==2);
-	m_info["t_hint_text"]->Show		(mode==2);
+	if (m_info["t_icon"])
+		m_info["t_icon"]->Show			(mode==2);
+	if (m_info["t_caption"])
+		m_info["t_caption"]->Show		(mode==2);
+	if (m_info["t_time"])
+		m_info["t_time"]->Show			(mode==2);
+	if (m_info["t_time_rem"])
+		m_info["t_time_rem"]->Show		(mode==2);
+	if (m_info["t_hint_text"])
+		m_info["t_hint_text"]->Show		(mode==2);
 }
 
 void CUIMapLocationHint::Draw_()
@@ -97,6 +116,9 @@ void CUIMapLocationHint::SetInfoMSpot(CMapSpot* spot)
 
 void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 {
+	if (!m_info["t_icon"])
+		return;
+
 	SetInfoMode						(2);
 	CUIStatic* S					= m_info["t_icon"];
 	
