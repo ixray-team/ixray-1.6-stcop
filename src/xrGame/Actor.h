@@ -234,6 +234,8 @@ public:
 	void				HitArtefactsCondition(SHit& hit);
 			float		HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type);
 			float		GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type);
+	virtual void		MoveArtefactBelt		(const CArtefact* artefact, bool on_belt);
+	const xr_vector<const CArtefact*>& ArtefactsOnBelt() {return m_ArtefactsOnBelt;}
 
 protected:
 	//звук тяжелого дыхания
@@ -241,6 +243,9 @@ protected:
 	ref_sound			m_BloodSnd = {};
 	ref_sound			m_DangerSnd = {};
 	ref_sound			m_rainOnHelmetSnd = {};
+
+	xr_vector<const CArtefact*> m_ArtefactsOnBelt;
+
 protected:
 	// Death
 	float					m_hit_slowmo;
