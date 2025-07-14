@@ -28,48 +28,62 @@ using namespace luabind;
 CUIXml* g_gameTaskXml = nullptr;
 
 
-ALife::_STORY_ID story_id(LPCSTR story_id)
+ALife::_STORY_ID	story_id	(LPCSTR story_id)
 {
-    const int res = object_cast<int>(
-        object(
-            luabind::get_globals(ai().script_engine().lua())
-                ["story_ids"]
-        )
-        [story_id]
-    );
-    return ALife::_STORY_ID(res);
+	int res=
+							(
+		object_cast<int>(
+			luabind::object(
+				luabind::get_globals(
+					ai().script_engine().lua()
+				)
+				["story_ids"]
+			)
+			[story_id]
+		)
+	);
+	Msg("Story id: %s", story_id);
+	return ALife::_STORY_ID(res);
 }
 
-u16 storyId2GameId(ALife::_STORY_ID id)
+u16 storyId2GameId	(ALife::_STORY_ID id)
 {
-    if (ai().get_alife())
-    {
-        CSE_ALifeDynamicObject* so = ai().alife().story_objects().object(id, true);
-        return (so) ? so->ID : u16(-1);
-    }
-
-    const u32 cnt = Level().Objects.o_count();
-    for (u32 it = 0; it < cnt; ++it)
-    {
-        CObject* O = Level().Objects.o_get_by_iterator(it);
-        CGameObject* GO = smart_cast<CGameObject*>(O);
-        if (GO->story_id() == id)
-            return GO->ID();
-    }
-    return u16(-1);
+	if(ai().get_alife())
+	{ 
+		CSE_ALifeDynamicObject* so = ai().alife().story_objects().object(id, true);
+		Msg("Story id number: %d", id);
+		return (so)?so->ID:u16(-1);
+	}
+	else
+	{
+		u32 cnt = Level().Objects.o_count();
+		for(u32 it=0;it<cnt;++it)
+		{
+			CObject* O = Level().Objects.o_get_by_iterator(it);
+			CGameObject* GO = smart_cast<CGameObject*>(O);
+			if(GO->story_id()==id)
+				return GO->ID();
+		}
+		return u16(-1);
+	}
 }
 
 SGameTaskObjective::SGameTaskObjective()
 	: m_task_state(eTaskStateDummy),
 	m_task_type(eTaskTypeDummy),
-	m_idx(ROOT_TASK_OBJECTIVE) {
+	m_idx(ROOT_TASK_OBJECTIVE) 
+{
+	m_linked_map_location = nullptr;
 }
 
 SGameTaskObjective::SGameTaskObjective(CGameTask* parent, u16 idx)
     : m_parent(parent),
       m_task_state(eTaskStateDummy),
       m_task_type(eTaskTypeDummy),
-      m_idx(idx) {}
+      m_idx(idx) 
+{
+	m_linked_map_location = nullptr;
+}
 
 CGameTask::CGameTask()
     : SGameTaskObjective(this, ROOT_TASK_OBJECTIVE) {}

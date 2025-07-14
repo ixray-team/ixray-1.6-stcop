@@ -239,7 +239,7 @@ void CObjectFactory::register_classes	()
 	add<CUIGameFMP>												(CLSID_GAME_UI_FREEMP,			"game_ui_freemp");
 
 #	ifndef NO_SINGLE
-		ADD_MP(CActor,CActorMP,CSE_ALifeCreatureActor,CSE_ActorMP	,CLSID_OBJECT_ACTOR				,"actor");
+	ADD_MP(CActor,CActorMP,CSE_ALifeCreatureActor,CSE_ActorMP	,CLSID_OBJECT_ACTOR				,"actor");
 #	else // #ifndef NO_SINGLE
 		ADD(CActorMP,CSE_ActorMP	,CLSID_OBJECT_ACTOR				,"actor");
 #	endif // #ifndef NO_SINGLE
@@ -391,10 +391,7 @@ void CObjectFactory::register_classes	()
 	ADD(CHairsZone				,CSE_ALifeZoneVisual			,CLSID_Z_RUSTYH					,"zone_rusty_hair");
 	ADD(CMosquitoBald			,CSE_ALifeAnomalousZone			,CLSID_Z_DEAD					,"zone_dead");
 
-	if (EngineExternal().ShadowOfChernobylMode())
-		ADD(CLevelChanger		,CSE_ALifeLevelChanger			,CLSID_LEVEL_CHANGER_LEGACY		,"level_changer");
-	else
-		ADD(CLevelChanger		,CSE_ALifeLevelChanger			,CLSID_LEVEL_CHANGER			,"level_changer");
+	ADD(CLevelChanger			,CSE_ALifeLevelChanger			,CLSID_LEVEL_CHANGER			,"level_changer");
 
 	ADD(CScriptZone				,CSE_ALifeSpaceRestrictor		,CLSID_SCRIPT_ZONE				,"script_zone");
 	ADD(CSmartZone				,CSE_ALifeSmartZone				,CLSID_SMART_ZONE				,"smart_zone");
