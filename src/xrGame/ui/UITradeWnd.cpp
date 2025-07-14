@@ -32,49 +32,12 @@
 #define				TRADE_CHARACTER_XML	"trade_character.xml"
 #define				TRADE_ITEM_XML		"trade_item.xml"
 
-
-struct CUITradeInternal{
-	CUIStatic			UIStaticTop;
-	CUIStatic			UIStaticBottom;
-
-	CUIStatic			UIOurBagWnd;
-	CUIStatic			UIOurMoneyStatic;
-	CUIStatic			UIOthersBagWnd;
-	CUIStatic			UIOtherMoneyStatic;
-	CUIDragDropListEx	UIOurBagList;
-	CUIDragDropListEx	UIOthersBagList;
-
-	CUIStatic			UIOurTradeWnd;
-	CUIStatic			UIOthersTradeWnd;
-	CUIMultiTextStatic	UIOurPriceCaption;
-	CUIMultiTextStatic	UIOthersPriceCaption;
-	CUIDragDropListEx	UIOurTradeList;
-	CUIDragDropListEx	UIOthersTradeList;
-
-	//кнопки
-	CUI3tButton			UIPerformTradeButton;
-	CUI3tButton			UIToTalkButton;
-
-	//информация о персонажах 
-	CUIStatic			UIOurIcon;
-	CUIStatic			UIOthersIcon;
-	CUICharacterInfo	UICharacterInfoLeft;
-	CUICharacterInfo	UICharacterInfoRight;
-
-	//информация о перетаскиваемом предмете
-	CUIStatic			UIDescWnd;
-	CUIItemInfo			UIItemInfo;
-
-	SDrawStaticStruct*	UIDealMsg;
-};
-
 CUITradeWnd::CUITradeWnd()
 	:	m_bDealControlsVisible	(false),
 		m_pTrade(nullptr),
 		m_pOthersTrade(nullptr),
 		bStarted(false)
 {
-	m_uidata = new CUITradeInternal();
 	Init();
 	Show(false);
 	SetCurrentItem			(nullptr);
@@ -82,11 +45,10 @@ CUITradeWnd::CUITradeWnd()
 
 CUITradeWnd::~CUITradeWnd()
 {
-	m_uidata->UIOurBagList.ClearAll		(true);
-	m_uidata->UIOurTradeList.ClearAll	(true);
-	m_uidata->UIOthersBagList.ClearAll	(true);
-	m_uidata->UIOthersTradeList.ClearAll(true);
-	xr_delete							(m_uidata);
+	UIOurBagList.ClearAll				(true);
+	UIOurTradeList.ClearAll				(true);
+	UIOthersBagList.ClearAll			(true);
+	UIOthersTradeList.ClearAll			(true);
 }
 
 void CUITradeWnd::Init()
@@ -98,77 +60,77 @@ void CUITradeWnd::Init()
 	xml_init.InitWindow					(uiXml, "main", 0, this);
 
 	//статические элементы интерфейса
-	AttachChild							(&m_uidata->UIStaticTop);
-	xml_init.InitStatic					(uiXml, "top_background", 0, &m_uidata->UIStaticTop);
-	AttachChild							(&m_uidata->UIStaticBottom);
-	xml_init.InitStatic					(uiXml, "bottom_background", 0, &m_uidata->UIStaticBottom);
+	AttachChild							(&UIStaticTop);
+	xml_init.InitStatic					(uiXml, "top_background", 0, &UIStaticTop);
+	AttachChild							(&UIStaticBottom);
+	xml_init.InitStatic					(uiXml, "bottom_background", 0, &UIStaticBottom);
 
 	//иконки с изображение нас и партнера по торговле
-	AttachChild							(&m_uidata->UIOurIcon);
-	xml_init.InitStatic					(uiXml, "static_icon", 0, &m_uidata->UIOurIcon);
-	AttachChild							(&m_uidata->UIOthersIcon);
-	xml_init.InitStatic					(uiXml, "static_icon", 1, &m_uidata->UIOthersIcon);
-	m_uidata->UIOurIcon.AttachChild		(&m_uidata->UICharacterInfoLeft);
-	m_uidata->UICharacterInfoLeft.InitCharacterInfo	(Fvector2().set(0,0), Fvector2().set(m_uidata->UIOurIcon.GetWidth(), m_uidata->UIOurIcon.GetHeight()), TRADE_CHARACTER_XML);
-	m_uidata->UIOthersIcon.AttachChild	(&m_uidata->UICharacterInfoRight);
-	m_uidata->UICharacterInfoRight.InitCharacterInfo(Fvector2().set(0,0), Fvector2().set(m_uidata->UIOthersIcon.GetWidth(), m_uidata->UIOthersIcon.GetHeight()), TRADE_CHARACTER_XML);
+	AttachChild							(&UIOurIcon);
+	xml_init.InitStatic					(uiXml, "static_icon", 0, &UIOurIcon);
+	AttachChild							(&UIOthersIcon);
+	xml_init.InitStatic					(uiXml, "static_icon", 1, &UIOthersIcon);
+	UIOurIcon.AttachChild		(&UICharacterInfoLeft);
+	UICharacterInfoLeft.InitCharacterInfo	(Fvector2().set(0,0), Fvector2().set(UIOurIcon.GetWidth(), UIOurIcon.GetHeight()), TRADE_CHARACTER_XML);
+	UIOthersIcon.AttachChild	(&UICharacterInfoRight);
+	UICharacterInfoRight.InitCharacterInfo(Fvector2().set(0,0), Fvector2().set(UIOthersIcon.GetWidth(), UIOthersIcon.GetHeight()), TRADE_CHARACTER_XML);
 
 
 	//Списки торговли
-	AttachChild							(&m_uidata->UIOurBagWnd);
-	xml_init.InitStatic					(uiXml, "our_bag_static", 0, &m_uidata->UIOurBagWnd);
-	AttachChild							(&m_uidata->UIOthersBagWnd);
-	xml_init.InitStatic					(uiXml, "others_bag_static", 0, &m_uidata->UIOthersBagWnd);
+	AttachChild							(&UIOurBagWnd);
+	xml_init.InitStatic					(uiXml, "our_bag_static", 0, &UIOurBagWnd);
+	AttachChild							(&UIOthersBagWnd);
+	xml_init.InitStatic					(uiXml, "others_bag_static", 0, &UIOthersBagWnd);
 
-	m_uidata->UIOurBagWnd.AttachChild	(&m_uidata->UIOurMoneyStatic);
-	xml_init.InitStatic					(uiXml, "our_money_static", 0, &m_uidata->UIOurMoneyStatic);
+	UIOurBagWnd.AttachChild	(&UIOurMoneyStatic);
+	xml_init.InitStatic					(uiXml, "our_money_static", 0, &UIOurMoneyStatic);
 
-	m_uidata->UIOthersBagWnd.AttachChild(&m_uidata->UIOtherMoneyStatic);
-	xml_init.InitStatic					(uiXml, "other_money_static", 0, &m_uidata->UIOtherMoneyStatic);
+	UIOthersBagWnd.AttachChild(&UIOtherMoneyStatic);
+	xml_init.InitStatic					(uiXml, "other_money_static", 0, &UIOtherMoneyStatic);
 
-	AttachChild							(&m_uidata->UIOurTradeWnd);
-	xml_init.InitStatic					(uiXml, "static", 0, &m_uidata->UIOurTradeWnd);
-	AttachChild							(&m_uidata->UIOthersTradeWnd);
-	xml_init.InitStatic					(uiXml, "static", 1, &m_uidata->UIOthersTradeWnd);
+	AttachChild							(&UIOurTradeWnd);
+	xml_init.InitStatic					(uiXml, "static", 0, &UIOurTradeWnd);
+	AttachChild							(&UIOthersTradeWnd);
+	xml_init.InitStatic					(uiXml, "static", 1, &UIOthersTradeWnd);
 
-	m_uidata->UIOurTradeWnd.AttachChild	(&m_uidata->UIOurPriceCaption);
-	CUIXmlInitGame::InitMultiTextStatic		(uiXml, "price_mt_static", 0, &m_uidata->UIOurPriceCaption);
+	UIOurTradeWnd.AttachChild	(&UIOurPriceCaption);
+	CUIXmlInitGame::InitMultiTextStatic		(uiXml, "price_mt_static", 0, &UIOurPriceCaption);
 
-	m_uidata->UIOthersTradeWnd.AttachChild(&m_uidata->UIOthersPriceCaption);
-	CUIXmlInitGame::InitMultiTextStatic		(uiXml, "price_mt_static", 0, &m_uidata->UIOthersPriceCaption);
+	UIOthersTradeWnd.AttachChild(&UIOthersPriceCaption);
+	CUIXmlInitGame::InitMultiTextStatic		(uiXml, "price_mt_static", 0, &UIOthersPriceCaption);
 
 	//Списки Drag&Drop
-	m_uidata->UIOurBagWnd.AttachChild	(&m_uidata->UIOurBagList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 0, &m_uidata->UIOurBagList);
+	UIOurBagWnd.AttachChild	(&UIOurBagList);	
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 0, &UIOurBagList);
 
-	m_uidata->UIOthersBagWnd.AttachChild(&m_uidata->UIOthersBagList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 1, &m_uidata->UIOthersBagList);
+	UIOthersBagWnd.AttachChild(&UIOthersBagList);	
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 1, &UIOthersBagList);
 
-	m_uidata->UIOurTradeWnd.AttachChild	(&m_uidata->UIOurTradeList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 2, &m_uidata->UIOurTradeList);
+	UIOurTradeWnd.AttachChild	(&UIOurTradeList);	
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 2, &UIOurTradeList);
 
-	m_uidata->UIOthersTradeWnd.AttachChild(&m_uidata->UIOthersTradeList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 3, &m_uidata->UIOthersTradeList);
+	UIOthersTradeWnd.AttachChild(&UIOthersTradeList);	
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 3, &UIOthersTradeList);
 
 	
-	AttachChild							(&m_uidata->UIDescWnd);
-	xml_init.InitStatic					(uiXml, "desc_static", 0, &m_uidata->UIDescWnd);
-	m_uidata->UIDescWnd.AttachChild		(&m_uidata->UIItemInfo);
-	m_uidata->UIItemInfo.InitItemInfo			(Fvector2().set(0,0), Fvector2().set(m_uidata->UIDescWnd.GetWidth(), m_uidata->UIDescWnd.GetHeight()), TRADE_ITEM_XML);
+	AttachChild							(&UIDescWnd);
+	xml_init.InitStatic					(uiXml, "desc_static", 0, &UIDescWnd);
+	UIDescWnd.AttachChild		(&UIItemInfo);
+	UIItemInfo.InitItemInfo			(Fvector2().set(0,0), Fvector2().set(UIDescWnd.GetWidth(), UIDescWnd.GetHeight()), TRADE_ITEM_XML);
 
 
-	AttachChild							(&m_uidata->UIPerformTradeButton);
-	xml_init.Init3tButton					(uiXml, "button", 0, &m_uidata->UIPerformTradeButton);
+	AttachChild							(&UIPerformTradeButton);
+	xml_init.Init3tButton					(uiXml, "button", 0, &UIPerformTradeButton);
 
-	AttachChild							(&m_uidata->UIToTalkButton);
-	xml_init.Init3tButton					(uiXml, "button", 1, &m_uidata->UIToTalkButton);
+	AttachChild							(&UIToTalkButton);
+	xml_init.Init3tButton					(uiXml, "button", 1, &UIToTalkButton);
 
-	m_uidata->UIDealMsg					= nullptr;
+	UIDealMsg					= nullptr;
 
-	BindDragDropListEnents				(&m_uidata->UIOurBagList);
-	BindDragDropListEnents				(&m_uidata->UIOthersBagList);
-	BindDragDropListEnents				(&m_uidata->UIOurTradeList);
-	BindDragDropListEnents				(&m_uidata->UIOthersTradeList);
+	BindDragDropListEnents				(&UIOurBagList);
+	BindDragDropListEnents				(&UIOthersBagList);
+	BindDragDropListEnents				(&UIOurTradeList);
+	BindDragDropListEnents				(&UIOthersTradeList);
 }
 
 void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
@@ -178,10 +140,10 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
 	m_pInvOwner							= pOur;
 	m_pOthersInvOwner					= pOthers;
-	m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText(*g_pStringTable->translate("ui_st_opponent_items"));
+	UIOthersPriceCaption.GetPhraseByIndex(0)->SetText(*g_pStringTable->translate("ui_st_opponent_items"));
 
-	m_uidata->UICharacterInfoLeft.InitCharacter(m_pInvOwner);
-	m_uidata->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
+	UICharacterInfoLeft.InitCharacter(m_pInvOwner);
+	UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
 
 	m_pInv								= &m_pInvOwner->inventory();
 	m_pOthersInv						= &m_pOthersInvOwner->inventory();
@@ -199,11 +161,11 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
 void CUITradeWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
-	if(pWnd == &m_uidata->UIToTalkButton && msg == BUTTON_CLICKED)
+	if(pWnd == &UIToTalkButton && msg == BUTTON_CLICKED)
 	{
 		SwitchToTalk();
 	}
-	else if(pWnd == &m_uidata->UIPerformTradeButton && msg == BUTTON_CLICKED)
+	else if(pWnd == &UIPerformTradeButton && msg == BUTTON_CLICKED)
 	{
 		PerformTrade();
 	}
@@ -214,7 +176,7 @@ void CUITradeWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 void CUITradeWnd::Draw()
 {
 	inherited::Draw				();
-	if(m_uidata->UIDealMsg)		m_uidata->UIDealMsg->Draw();
+	if(UIDealMsg)		UIDealMsg->Draw();
 
 }
 
@@ -237,12 +199,12 @@ void CUITradeWnd::Update()
 	inherited::Update				();
 	UpdateCameraDirection			(smart_cast<CGameObject*>(m_pOthersInvOwner), m_pOthersInvOwner->GetFocusingOnNpc());
 
-	if(m_uidata->UIDealMsg){
-		m_uidata->UIDealMsg->Update();
-		if( !m_uidata->UIDealMsg->IsActual()){
+	if(UIDealMsg){
+		UIDealMsg->Update();
+		if( !UIDealMsg->IsActual()){
 			CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
 			CurrentGameUI()->RemoveCustomStatic("not_enough_money_other");
-			m_uidata->UIDealMsg			= nullptr;
+			UIDealMsg			= nullptr;
 		}
 	}
 }
@@ -258,7 +220,7 @@ void CUITradeWnd::Show(bool status)
 
 		SetCurrentItem(nullptr);
 		ResetAll();
-		m_uidata->UIDealMsg = nullptr;
+		UIDealMsg = nullptr;
 	}
 	else
 	{
@@ -266,17 +228,17 @@ void CUITradeWnd::Show(bool status)
 		if (bStarted)
 			StopTrade();
 
-		m_uidata->UIDealMsg = nullptr;
+		UIDealMsg = nullptr;
 
 		if (CurrentGameUI()) {
 			CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
 			CurrentGameUI()->RemoveCustomStatic("not_enough_money_other");
 		}
 
-		m_uidata->UIOurBagList.ClearAll(true);
-		m_uidata->UIOurTradeList.ClearAll(true);
-		m_uidata->UIOthersBagList.ClearAll(true);
-		m_uidata->UIOthersTradeList.ClearAll(true);
+		UIOurBagList.ClearAll(true);
+		UIOurTradeList.ClearAll(true);
+		UIOthersBagList.ClearAll(true);
+		UIOthersTradeList.ClearAll(true);
 	}
 }
 
@@ -298,8 +260,8 @@ void CUITradeWnd::StopTrade()
 bool CUITradeWnd::CanMoveToOther(PIItem pItem)
 {
 
-	float r1				= CalcItemsWeight(&m_uidata->UIOurTradeList);	// our
-	float r2				= CalcItemsWeight(&m_uidata->UIOthersTradeList);	// other
+	float r1				= CalcItemsWeight(&UIOurTradeList);	// our
+	float r2				= CalcItemsWeight(&UIOthersTradeList);	// other
 
 	float itmWeight			= pItem->Weight();
 	float otherInvWeight	= m_pOthersInv->CalcTotalWeight();
@@ -327,14 +289,14 @@ bool CUITradeWnd::ToOurTrade()
 {
 	if (!CanMoveToOther(CurrentIItem()))	return false;
 
-	move_item				(CurrentItem(), &m_uidata->UIOurBagList, &m_uidata->UIOurTradeList);
+	move_item				(CurrentItem(), &UIOurBagList, &UIOurTradeList);
 	UpdatePrices			();
 	return					true;
 }
 
 bool CUITradeWnd::ToOthersTrade()
 {
-	move_item				(CurrentItem(), &m_uidata->UIOthersBagList, &m_uidata->UIOthersTradeList);
+	move_item				(CurrentItem(), &UIOthersBagList, &UIOthersTradeList);
 	UpdatePrices			();
 
 	return					true;
@@ -342,7 +304,7 @@ bool CUITradeWnd::ToOthersTrade()
 
 bool CUITradeWnd::ToOurBag()
 {
-	move_item				(CurrentItem(), &m_uidata->UIOurTradeList, &m_uidata->UIOurBagList);
+	move_item				(CurrentItem(), &UIOurTradeList, &UIOurBagList);
 	UpdatePrices			();
 	
 	return					true;
@@ -350,7 +312,7 @@ bool CUITradeWnd::ToOurBag()
 
 bool CUITradeWnd::ToOthersBag()
 {
-	move_item				(CurrentItem(), &m_uidata->UIOthersTradeList, &m_uidata->UIOthersBagList);
+	move_item				(CurrentItem(), &UIOthersTradeList, &UIOthersBagList);
 	UpdatePrices			();
 
 	return					true;
@@ -396,7 +358,7 @@ u32 CUITradeWnd::CalcItemsPrice(CUIDragDropListEx* pList, CTrade* pTrade, bool b
 void CUITradeWnd::PerformTrade()
 {
 
-	if (m_uidata->UIOurTradeList.ItemsCount()==0 && m_uidata->UIOthersTradeList.ItemsCount()==0) 
+	if (UIOurTradeList.ItemsCount()==0 && UIOthersTradeList.ItemsCount()==0) 
 		return;
 
 	int our_money			= (int)m_pInvOwner->get_money();
@@ -411,58 +373,58 @@ void CUITradeWnd::PerformTrade()
 	{
 		m_pOthersTrade->OnPerformTrade(m_iOthersTradePrice, m_iOurTradePrice);
 		
-		TransferItems		(&m_uidata->UIOurTradeList,		&m_uidata->UIOthersBagList, m_pOthersTrade,	true);
-		TransferItems		(&m_uidata->UIOthersTradeList,	&m_uidata->UIOurBagList,	m_pOthersTrade,	false);
+		TransferItems		(&UIOurTradeList,		&UIOthersBagList, m_pOthersTrade,	true);
+		TransferItems		(&UIOthersTradeList,	&UIOurBagList,	m_pOthersTrade,	false);
 	}else
 	{
 		if(others_money<0)
-			m_uidata->UIDealMsg		= CurrentGameUI()->AddCustomStatic("not_enough_money_other", true);
+			UIDealMsg		= CurrentGameUI()->AddCustomStatic("not_enough_money_other", true);
 		else
-			m_uidata->UIDealMsg		= CurrentGameUI()->AddCustomStatic("not_enough_money_mine", true);
+			UIDealMsg		= CurrentGameUI()->AddCustomStatic("not_enough_money_mine", true);
 
 
-		m_uidata->UIDealMsg->m_endTime	= Device.fTimeGlobal+2.0f;// sec
+		UIDealMsg->m_endTime	= Device.fTimeGlobal+2.0f;// sec
 	}
 	SetCurrentItem			(nullptr);
 }
 
 void CUITradeWnd::DisableAll()
 {
-	m_uidata->UIOurBagWnd.Enable			(false);
-	m_uidata->UIOthersBagWnd.Enable			(false);
-	m_uidata->UIOurTradeWnd.Enable			(false);
-	m_uidata->UIOthersTradeWnd.Enable		(false);
+	UIOurBagWnd.Enable			(false);
+	UIOthersBagWnd.Enable			(false);
+	UIOurTradeWnd.Enable			(false);
+	UIOthersTradeWnd.Enable		(false);
 }
 
 void CUITradeWnd::EnableAll()
 {
-	m_uidata->UIOurBagWnd.Enable			(true);
-	m_uidata->UIOthersBagWnd.Enable			(true);
-	m_uidata->UIOurTradeWnd.Enable			(true);
-	m_uidata->UIOthersTradeWnd.Enable		(true);
+	UIOurBagWnd.Enable			(true);
+	UIOthersBagWnd.Enable			(true);
+	UIOurTradeWnd.Enable			(true);
+	UIOthersTradeWnd.Enable		(true);
 }
 
 void CUITradeWnd::UpdatePrices()
 {
-	m_iOurTradePrice	= CalcItemsPrice	(&m_uidata->UIOurTradeList,		m_pOthersTrade, true);
-	m_iOthersTradePrice = CalcItemsPrice	(&m_uidata->UIOthersTradeList,	m_pOthersTrade, false);
+	m_iOurTradePrice	= CalcItemsPrice	(&UIOurTradeList,		m_pOthersTrade, true);
+	m_iOthersTradePrice = CalcItemsPrice	(&UIOthersTradeList,	m_pOthersTrade, false);
 
 
 	string256				buf;
 	sprintf_s					(buf, "%d RU", m_iOurTradePrice);
-	m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str = buf;
+	UIOurPriceCaption.GetPhraseByIndex(2)->str = buf;
 	sprintf_s					(buf, "%d RU", m_iOthersTradePrice);
-	m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str = buf;
+	UIOthersPriceCaption.GetPhraseByIndex(2)->str = buf;
 
 	sprintf_s					(buf, "%d RU", m_pInvOwner->get_money());
-	m_uidata->UIOurMoneyStatic.SetText(buf);
+	UIOurMoneyStatic.SetText(buf);
 
 	if(!m_pOthersInvOwner->InfinitiveMoney()){
 		sprintf_s					(buf, "%d RU", m_pOthersInvOwner->get_money());
-		m_uidata->UIOtherMoneyStatic.SetText(buf);
+		UIOtherMoneyStatic.SetText(buf);
 	}else
 	{
-		m_uidata->UIOtherMoneyStatic.SetText("---");
+		UIOtherMoneyStatic.SetText("---");
 	}
 }
 
@@ -485,13 +447,13 @@ void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList,
 void CUITradeWnd::UpdateLists(EListType mode)
 {
 	if(mode==eBoth||mode==e1st){
-		m_uidata->UIOurBagList.ClearAll(true);
-		m_uidata->UIOurTradeList.ClearAll(true);
+		UIOurBagList.ClearAll(true);
+		UIOurTradeList.ClearAll(true);
 	}
 
 	if(mode==eBoth||mode==e2nd){
-		m_uidata->UIOthersBagList.ClearAll(true);
-		m_uidata->UIOthersTradeList.ClearAll(true);
+		UIOthersBagList.ClearAll(true);
+		UIOthersTradeList.ClearAll(true);
 	}
 
 	UpdatePrices						();
@@ -501,14 +463,14 @@ void CUITradeWnd::UpdateLists(EListType mode)
 		ruck_list.clear					();
    		m_pInv->AddAvailableItems		(ruck_list, true);
 		std::sort						(ruck_list.begin(),ruck_list.end(),InventoryUtilities::GreaterRoomInRuck);
-		FillList						(ruck_list, m_uidata->UIOurBagList, true);
+		FillList						(ruck_list, UIOurBagList, true);
 	}
 
 	if(mode==eBoth||mode==e2nd){
 		ruck_list.clear					();
 		m_pOthersInv->AddAvailableItems	(ruck_list, true);
 		std::sort						(ruck_list.begin(),ruck_list.end(),InventoryUtilities::GreaterRoomInRuck);
-		FillList						(ruck_list, m_uidata->UIOthersBagList, false);
+		FillList						(ruck_list, UIOthersBagList, false);
 	}
 }
 
@@ -551,13 +513,13 @@ bool CUITradeWnd::OnItemDrop(CUICellItem* itm)
 	if(old_owner==new_owner || !old_owner || !new_owner)
 					return false;
 
-	if(old_owner==&m_uidata->UIOurBagList && new_owner==&m_uidata->UIOurTradeList)
+	if(old_owner==&UIOurBagList && new_owner==&UIOurTradeList)
 		ToOurTrade				();
-	else if(old_owner==&m_uidata->UIOurTradeList && new_owner==&m_uidata->UIOurBagList)
+	else if(old_owner==&UIOurTradeList && new_owner==&UIOurBagList)
 		ToOurBag				();
-	else if(old_owner==&m_uidata->UIOthersBagList && new_owner==&m_uidata->UIOthersTradeList)
+	else if(old_owner==&UIOthersBagList && new_owner==&UIOthersTradeList)
 		ToOthersTrade			();
-	else if(old_owner==&m_uidata->UIOthersTradeList && new_owner==&m_uidata->UIOthersBagList)
+	else if(old_owner==&UIOthersTradeList && new_owner==&UIOthersBagList)
 		ToOthersBag				();
 
 	return true;
@@ -568,13 +530,13 @@ bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
 	SetCurrentItem						(itm);
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
 	
-	if(old_owner == &m_uidata->UIOurBagList)
+	if(old_owner == &UIOurBagList)
 		ToOurTrade				();
-	else if(old_owner == &m_uidata->UIOurTradeList)
+	else if(old_owner == &UIOurTradeList)
 		ToOurBag				();
-	else if(old_owner == &m_uidata->UIOthersBagList)
+	else if(old_owner == &UIOthersBagList)
 		ToOthersTrade			();
-	else if(old_owner == &m_uidata->UIOthersTradeList)
+	else if(old_owner == &UIOthersTradeList)
 		ToOthersBag				();
 	else
 		R_ASSERT2(false, "wrong parent for cell item");
@@ -597,20 +559,12 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 {
 	if(m_pCurrentCellItem == itm) return;
 	m_pCurrentCellItem				= itm;
-	m_uidata->UIItemInfo.InitItem	(CurrentItem());
-	
-	if(!m_pCurrentCellItem)		return;
 
-	CUIDragDropListEx* owner	= itm->OwnerList();
-	bool bBuying				= (owner==&m_uidata->UIOurBagList) || (owner==&m_uidata->UIOurTradeList);
+	CUIDragDropListEx* owner	= itm ? itm->OwnerList() : nullptr;
 
-	if(itm && m_uidata->UIItemInfo.UICost){
+	bool bBuying				= (owner==&UIOurBagList) || (owner==&UIOurTradeList);
 
-		string256			str;
-
-		sprintf_s				(str, "%d RU", m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying) );
-		m_uidata->UIItemInfo.UICost->SetText (str);
-	}
+	UIItemInfo.InitItem	(CurrentItem(), nullptr, itm ? m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying) : u32(-1));
 }
 
 void CUITradeWnd::SwitchToTalk()
