@@ -15,6 +15,7 @@ class	CMissile;
 class	CInventoryItem;
 class	CUIHudStatesWnd;
 class	CUIMotionIcon;
+class	CUIArtefactPanel;
 class	CUIStackPanel;
 
 class CUIMainIngameWnd final :
@@ -63,6 +64,7 @@ public:
 
 	CUIStackPanel* UIStackPanelBoosters;
 	CUIStackPanel* UIStackPanelIndicators;
+
 	//иконка, показывающая количество активных PDA
 	CUIStatic*			UIPdaOnline;
 
@@ -141,6 +143,7 @@ protected:
 	bool m_ind_boost_power_svg_inited;
 	bool m_ind_boost_rad_svg_inited;
 public:
+	CUIArtefactPanel* m_artefactPanel;
 
 	// Енумы соответсвующие предупреждающим иконкам 
 	enum EWarningIcons
