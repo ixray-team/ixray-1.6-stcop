@@ -23,6 +23,7 @@
 #include "../game_cl_base.h"
 #include "../Level.h"
 #include "../seniority_hierarchy_holder.h"
+#include "UIArtefactPanel.h"
 
 #include "../date_time.h"
 #include "../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
@@ -405,6 +406,13 @@ void CUIMainIngameWnd::Init()
 		UIZoneMap->MapFrame().AttachChild(UIMotionIcon);
 	else
 		AttachChild(UIMotionIcon);
+
+	if (uiXml.NavigateToNode("artefact_panel") && IsGameTypeSingle())
+	{
+		m_artefactPanel = new CUIArtefactPanel();
+		m_artefactPanel->InitFromXML(uiXml, "artefact_panel", 0);
+		this->AttachChild(m_artefactPanel);
+	}
 
 	m_ui_hud_states = new CUIHudStatesWnd();
 	m_ui_hud_states->SetAutoDelete(true);
