@@ -50,7 +50,7 @@ void CUICharacterInfo::InitCharacterInfo(Fvector2 pos, Fvector2 size, CUIXml* xm
 	inherited::SetWndPos(pos);
 	inherited::SetWndSize(size);
 
-	Init_IconInfoItem( *xml_doc, "icon_static",         eIcon		  ); // SoC compatibility
+	Init_IconInfoItem( *xml_doc, "icon_static",         eIcon, true   ); // SoC compatibility
 	Init_IconInfoItem( *xml_doc, "icon",                eIcon         );
 	Init_IconInfoItem( *xml_doc, "icon_over",           eIconOver     );
 
@@ -106,7 +106,7 @@ void CUICharacterInfo::Init_StrInfoItem( CUIXml& xml_doc, LPCSTR item_str, UIIte
 	}
 }
 
-void CUICharacterInfo::Init_IconInfoItem( CUIXml& xml_doc, LPCSTR item_str, UIItemType type)
+void CUICharacterInfo::Init_IconInfoItem( CUIXml& xml_doc, LPCSTR item_str, UIItemType type, bool enableStretchByDefault )
 {
 	if ( xml_doc.NavigateToNode( item_str, 0 ) )
 	{
@@ -118,6 +118,8 @@ void CUICharacterInfo::Init_IconInfoItem( CUIXml& xml_doc, LPCSTR item_str, UIIt
 		pItem->Enable( true );
 		AttachChild( pItem );
 		pItem->SetAutoDelete( true );
+		if (enableStretchByDefault)
+			pItem->SetStretchTexture(true);
 	}
 }
 
