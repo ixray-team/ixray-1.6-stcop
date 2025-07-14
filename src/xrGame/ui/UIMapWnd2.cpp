@@ -7,22 +7,36 @@
 #include "../../xrUI/UIHelper.h"
 #include "UITaskWnd.h"
 
-void CUIMapWnd::init_xml_nav( CUIXml& xml )
+void CUIMapWnd::init_xml_nav( CUIXml& xml, LPCSTR start_from )
 {
-	m_btn_nav_parent = UIHelper::CreateStatic( xml, "btn_nav_parent", this );
-	
-	VERIFY( hint_wnd );
-
-	string64 buf;
-	for ( u8 i = 0; i < max_btn_nav; ++i )
+	if (xml.NavigateToNode("btn_nav_parent"))
 	{
-		xr_sprintf( buf, "btn_nav_parent:btn_nav_%d", i );
+		m_btn_nav_parent = UIHelper::CreateStatic(xml, "btn_nav_parent", this);
 
-		m_btn_nav[i] = UIHelper::Create3tButton( xml, buf, m_btn_nav_parent );
-		Register( m_btn_nav[i] );
-//.		m_btn_nav[i]->set_hint_wnd( hint_wnd );
+		VERIFY(hint_wnd);
+
+		string64 buf;
+		for (u8 i = 0; i < max_btn_nav; ++i)
+		{
+			xr_sprintf(buf, "btn_nav_parent:btn_nav_%d", i);
+
+			m_btn_nav[i] = UIHelper::Create3tButton(xml, buf, m_btn_nav_parent);
+			Register(m_btn_nav[i]);
+			//.		m_btn_nav[i]->set_hint_wnd( hint_wnd );
+		}
 	}
+	else
+	{
+		string512 pth;
+		xr_strconcat(pth, start_from, ":main_wnd:map_header_frame_line:tool_bar");
 
+		string512 temp;
+		m_btn_nav[btn_zoom_reset] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":global_map_btn"), UIMainMapHeader);
+		m_btn_nav[btn_actor] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":actor_btn"), UIMainMapHeader);
+		m_btn_nav[btn_zoom_more] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":zoom_in_btn"), UIMainMapHeader);
+		m_btn_nav[btn_zoom_less] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":zoom_out_btn"), UIMainMapHeader);
+
+	}
 	AddCallback( m_btn_nav[btn_legend],						BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnLegend_Push	) );
 //	AddCallback( m_btn_nav[btn_up]->WindowName(),			BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnUp_Push		) );
 	AddCallback( m_btn_nav[btn_zoom_more],					BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomMore_Push) );
@@ -45,19 +59,19 @@ void CUIMapWnd::UpdateNav()
 	}
 	m_nav_timing = Device.dwTimeGlobal;
 
-	if ( m_btn_nav[btn_up]->CursorOverWindow() && m_btn_nav[btn_up]->GetButtonState() == CUIButton::BUTTON_PUSHED )
+	if (m_btn_nav[btn_up] && m_btn_nav[btn_up]->CursorOverWindow() && m_btn_nav[btn_up]->GetButtonState() == CUIButton::BUTTON_PUSHED )
 	{
 		MoveMap( Fvector2().set( 0.0f, m_map_move_step ) );
 	}
-	else if ( m_btn_nav[btn_left]->CursorOverWindow() && m_btn_nav[btn_left]->GetButtonState() == CUIButton::BUTTON_PUSHED )
+	else if (m_btn_nav[btn_left] && m_btn_nav[btn_left]->CursorOverWindow() && m_btn_nav[btn_left]->GetButtonState() == CUIButton::BUTTON_PUSHED )
 	{
 		MoveMap( Fvector2().set( m_map_move_step, 0.0f ) );
 	}
-	else if ( m_btn_nav[btn_right]->CursorOverWindow() && m_btn_nav[btn_right]->GetButtonState() == CUIButton::BUTTON_PUSHED )
+	else if (m_btn_nav[btn_right] && m_btn_nav[btn_right]->CursorOverWindow() && m_btn_nav[btn_right]->GetButtonState() == CUIButton::BUTTON_PUSHED )
 	{
 		MoveMap( Fvector2().set( -m_map_move_step, 0.0f ) );
 	}
-	else if ( m_btn_nav[btn_down]->CursorOverWindow() && m_btn_nav[btn_down]->GetButtonState() == CUIButton::BUTTON_PUSHED )
+	else if (m_btn_nav[btn_down] && m_btn_nav[btn_down]->CursorOverWindow() && m_btn_nav[btn_down]->GetButtonState() == CUIButton::BUTTON_PUSHED )
 	{
 		MoveMap( Fvector2().set( 0.0f, -m_map_move_step ) );
 	}

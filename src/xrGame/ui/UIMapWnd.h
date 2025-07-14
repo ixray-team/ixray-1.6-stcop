@@ -52,6 +52,7 @@ private:
 	CUIScrollBar*				m_UIMainScrollH;
 	CUIWindow*					m_UILevelFrame;
 	FRbmkMapActionPlanner*		m_ActionPlanner;
+	CUIFrameLineWnd*			UIMainMapHeader;
 
 	CUIMapLocationHint*			m_map_location_hint;
 	CUIPdaSpot*					m_UserSpotWnd;
@@ -125,7 +126,7 @@ public:
 	UIHint*						hint_wnd;
 
 protected:
-	void						init_xml_nav			(CUIXml& xml);
+	void						init_xml_nav			(CUIXml& xml, LPCSTR start_from);
 	void						ShowHint				(bool extra = false);
 	void						Activated				();
 

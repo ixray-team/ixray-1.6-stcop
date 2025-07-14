@@ -11,7 +11,7 @@
 
 #include "../xrEngine/string_table.h"
 #include "../xrEngine/xr_input.h"
-
+#include "../../xrUI/UIHelper.h"
 #include "../../xrUI/Widgets/UIFixedScrollBar.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
@@ -46,6 +46,7 @@ CUIMapWnd::CUIMapWnd()
 	m_map_move_step			= 10.0f;
 	m_UserSpotWnd			= nullptr;
 	m_cur_location			= nullptr;
+	UIMainMapHeader			= nullptr;
 
 	m_scroll_mode			= false;
 	m_nav_timing			= Device.dwTimeGlobal;
@@ -80,18 +81,35 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	m_map_move_step					= uiXml.ReadAttribFlt( start_from, 0, "map_move_step", 10.0f );
 
 	m_UILevelFrame					= new CUIWindow(); m_UILevelFrame->SetAutoDelete(true);
+
+	CUIWindow* levelFrameParent = this;
 	xr_strconcat(pth,start_from,":level_frame");
+	if (!uiXml.NavigateToNode(pth))
+	{
+		xr_strconcat(pth, start_from, ":main_wnd:main_map_frame:level_frame");
+		CUIWindow* levelFrameParent = m_UIMainFrame;
+	}
 	xml_init.InitWindow				(uiXml, pth, 0, m_UILevelFrame);
-//	m_UIMainFrame->AttachChild		(m_UILevelFrame);
-	AttachChild						(m_UILevelFrame);
 
 	m_UIMainFrame					= new CUIFrameWindow(); m_UIMainFrame->SetAutoDelete(true);
 	AttachChild						(m_UIMainFrame);
 	xr_strconcat(pth,start_from,":main_map_frame");
+	if (!uiXml.NavigateToNode(pth))
+	{
+		xr_strconcat(pth, start_from, ":main_wnd:main_map_frame");
+	}
 	xml_init.InitFrameWindow		(uiXml, pth, 0, m_UIMainFrame);
 
+	levelFrameParent->AttachChild		(m_UILevelFrame);
+
+	xr_strconcat(pth, start_from, ":main_wnd:map_header_frame_line");
+	if (uiXml.NavigateToNode(pth))
+	{
+		UIMainMapHeader = UIHelper::CreateFrameLine(uiXml, pth, m_UIMainFrame);
+	}
+
 	m_scroll_mode = (uiXml.ReadAttribInt(start_from, 0, "scroll_enable", 0) == 1)? true : false;
-	if ( m_scroll_mode )
+	if ( m_scroll_mode || EngineExternal().ShadowOfChernobylMode() )
 	{
 		float dx, dy, sx, sy;
 		xr_strconcat(pth,start_from,":main_map_frame");
@@ -138,11 +156,13 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		AddCallback						(m_UIMainScrollV,SCROLLBAR_VSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollV));
 	}
 
-	m_map_location_hint					= new CUIMapLocationHint();
 	xr_strconcat(pth,start_from,":map_hint_item");
-	m_map_location_hint->Init			(uiXml, pth);
-	m_map_location_hint->SetAutoDelete	(false);
-
+	if (uiXml.NavigateToNode(pth))
+	{
+		m_map_location_hint = new CUIMapLocationHint();
+		m_map_location_hint->Init(uiXml, pth);
+		m_map_location_hint->SetAutoDelete(false);
+	}
 // Load maps
 
 	m_GlobalMap								= new CUIGlobalMap(this);
@@ -154,7 +174,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	m_GlobalMap->SetMinZoom					(m_GlobalMap->GetCurrentZoom().x);
 	m_currentZoom							= m_GlobalMap->GetCurrentZoom().x;
 	
-	init_xml_nav( uiXml );
+	init_xml_nav( uiXml, start_from );
 
 	// initialize local maps
 	xr_string sect_name;
@@ -360,11 +380,15 @@ void CUIMapWnd::Draw()
 	m_dbg_info->Draw		();
 #endif // DEBUG/**/
 
-	m_btn_nav_parent->Draw();
+	if (m_btn_nav_parent)
+		m_btn_nav_parent->Draw();
 }
 
 void CUIMapWnd::MapLocationRelcase(CMapLocation* ml)
 {
+	if (!m_map_location_hint)
+		return;
+
 	CUIWindow*	owner = m_map_location_hint->GetOwner();
 	if (owner)
 	{
@@ -376,6 +400,9 @@ void CUIMapWnd::MapLocationRelcase(CMapLocation* ml)
 
 void CUIMapWnd::DrawHint()
 {
+	if (!m_map_location_hint)
+		return;
+
 	CUIWindow*	owner = m_map_location_hint->GetOwner();
 	if ( owner )
 	{
@@ -708,7 +735,7 @@ void CUIMapWnd::ViewActor()
 
 void CUIMapWnd::ShowHintStr(CUIWindow* parent, LPCSTR text) //map name
 {
-	if(m_map_location_hint->GetOwner())
+	if(!m_map_location_hint || m_map_location_hint->GetOwner())
 		return;
 
 	m_map_location_hint->SetInfoStr		(text);
@@ -718,6 +745,9 @@ void CUIMapWnd::ShowHintStr(CUIWindow* parent, LPCSTR text) //map name
 
 void CUIMapWnd::ShowHintSpot( CMapSpot* spot )
 {
+	if (!m_map_location_hint)
+		return;
+
 	CUIWindow* owner = m_map_location_hint->GetOwner();
 	if ( !owner )
 	{
@@ -751,6 +781,9 @@ void CUIMapWnd::ShowHintTask( CGameTask* task, CUIWindow* owner )
 
 void CUIMapWnd::ShowHint( bool extra )
 {
+	if (!m_map_location_hint)
+		return;
+
 	Frect vis_rect;
 	if ( extra )
 	{
@@ -770,7 +803,7 @@ void CUIMapWnd::ShowHint( bool extra )
 
 void CUIMapWnd::HideHint(CUIWindow* parent)
 {
-	if(m_map_location_hint->GetOwner() == parent)
+	if(m_map_location_hint && m_map_location_hint->GetOwner() == parent)
 	{
 		HideCurHint();
 	}
@@ -778,7 +811,8 @@ void CUIMapWnd::HideHint(CUIWindow* parent)
 
 void CUIMapWnd::HideCurHint()
 {
-	m_map_location_hint->SetOwner( nullptr );
+	if (m_map_location_hint)
+		m_map_location_hint->SetOwner( nullptr );
 }
 
 void CUIMapWnd::Hint(const shared_str& text)
