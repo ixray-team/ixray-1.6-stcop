@@ -11,8 +11,7 @@
 
 class CUIListWnd;
 
-class UI_API CUITreeViewItem:
-	public CUIListItem
+class UI_API CUITreeViewItem: public CUIListItem
 {
 	typedef CUIListItem inherited;
 	// Являемся ли мы началом подыерархии
@@ -124,5 +123,5 @@ using GroupTree_it = GroupTree::iterator;
 
 //////////////////////////////////////////////////////////////////////////
 
-UI_API void CreateTreeBranch(shared_str nestingTree, shared_str leafName, CUIListWnd*pListToAdd, int leafProperty,
+UI_API void CreateTreeBranch(shared_str nestingTree, shared_str leafName, CUIListWnd *pListToAdd, int leafProperty,
 					  CGameFont *pRootFont, u32 rootColor, CGameFont *pLeafFont, u32 leafColor, bool markRead);

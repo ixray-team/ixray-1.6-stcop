@@ -369,9 +369,9 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
 	WINDOW_LIST::reverse_iterator first = m_ChildWndList.rend();
 
-	for(u32 i = 0; it!=first; ++it, i++)
+	for (u32 i = 0; it != first; ++it, i++)
 	{
-		CUIWindow* w	= (*it);
+		CUIWindow* w = (*it);
 		if (!w)
 		{
 			Msg("! Founded incorrect child window in [%s] childlist(%d)", *m_windowName, i);

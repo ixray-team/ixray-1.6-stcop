@@ -137,4 +137,11 @@ enum EUIMessages
 	//CUITrackBar
 	TRACK_VALUE_CHANGED,
 
+	// SoC only
+	// CUITradeWnd
+	TRADE_WND_CLOSED,
+
+	// BuyWeaponWnd
+	XR_MENU_LEVEL_CHANGED,
+	MP_MONEY_CHANGE,
 };

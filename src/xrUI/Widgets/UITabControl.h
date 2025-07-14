@@ -32,6 +32,9 @@ public:
 	// Добавление кнопки-закладки в список закладок контрола
 	bool				AddItem						(LPCSTR pItemName, LPCSTR pTexName, Fvector2 pos, Fvector2 size);
 	bool				AddItem						(CUITabButton *pButton);
+	void				RemoveItemById				(const shared_str& id);
+	void				RemoveItemById_script		(LPCSTR id)						{ RemoveItemById(id); }
+	void				RemoveItemByIndex			(u32 index);
 
 	void				RemoveAll					();
 
@@ -40,9 +43,11 @@ public:
 
 	const shared_str&	GetActiveId					()	const						{ return m_sPushedId; }
 	LPCSTR				GetActiveId_script			();
+			int			GetActiveIndex				() const;
 	const shared_str&	GetPrevActiveId				()								{ return m_sPrevPushedId; }
 			void		SetActiveTab				(const shared_str& sNewTab);
 			void		SetActiveTab_script			(LPCSTR sNewTab)				{SetActiveTab(sNewTab);};
+			void		SetActiveTabByIndex			(u32 index);
 	const	u32			GetTabsCount				() const						{ return (u32)m_TabsArr.size(); }
 	
 	// Режим клавилатурных акселераторов (вкл/выкл)
@@ -53,6 +58,7 @@ public:
 	TABS_VECTOR *		GetButtonsVector			()								{ return &m_TabsArr; }
 	CUITabButton*		GetButtonById				(const shared_str& id);
 	CUITabButton*		GetButtonById_script		(LPCSTR s)						{ return GetButtonById(s);}
+	CUITabButton*		GetButtonByIndex			(u32 index) const;
 
 	void		ResetTab					();
 
