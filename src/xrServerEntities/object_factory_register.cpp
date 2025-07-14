@@ -391,7 +391,10 @@ void CObjectFactory::register_classes	()
 	ADD(CHairsZone				,CSE_ALifeZoneVisual			,CLSID_Z_RUSTYH					,"zone_rusty_hair");
 	ADD(CMosquitoBald			,CSE_ALifeAnomalousZone			,CLSID_Z_DEAD					,"zone_dead");
 
-	ADD(CLevelChanger			,CSE_ALifeLevelChanger			,CLSID_LEVEL_CHANGER			,"level_changer");
+	if (EngineExternal().ShadowOfChernobylMode())
+		ADD(CLevelChanger		,CSE_ALifeLevelChanger			,CLSID_LEVEL_CHANGER_LEGACY		,"level_changer");
+	else
+		ADD(CLevelChanger		,CSE_ALifeLevelChanger			,CLSID_LEVEL_CHANGER			,"level_changer");
 
 	ADD(CScriptZone				,CSE_ALifeSpaceRestrictor		,CLSID_SCRIPT_ZONE				,"script_zone");
 	ADD(CSmartZone				,CSE_ALifeSmartZone				,CLSID_SMART_ZONE				,"smart_zone");
