@@ -38,7 +38,7 @@ class SGameTaskObjective : public IPureSerializeObject<IReader, IWriter>
     friend class CGameTaskManager;
 
 protected:
-    CGameTask* m_parent{};
+    CGameTask* m_parent;
     ETaskState m_task_state;
     ETaskType m_task_type;
     SScriptTaskHelper m_pScriptHelper;
@@ -59,15 +59,15 @@ public:
     // map
     shared_str m_map_hint;
     shared_str m_map_location;
-    u16 m_map_object_id{};
-    bool m_def_location_enabled{};
-    CMapLocation* m_linked_map_location{};
+    u16 m_map_object_id;
+    bool m_def_location_enabled;
+    CMapLocation* m_linked_map_location;
 
     // timing
-    ALife::_TIME_ID m_ReceiveTime{};
-    ALife::_TIME_ID m_FinishTime{};
-    ALife::_TIME_ID m_TimeToComplete{};
-    ALife::_TIME_ID m_timer_finish{};
+    ALife::_TIME_ID m_ReceiveTime;
+    ALife::_TIME_ID m_FinishTime;
+    ALife::_TIME_ID m_TimeToComplete;
+    ALife::_TIME_ID m_timer_finish;
 
 private:
     // infos
@@ -160,8 +160,8 @@ class CGameTask : public SGameTaskObjective
 {
 public:
     shared_str  m_ID;
-    u32 m_priority{};
-    bool m_read{};
+    u32 m_priority;
+    bool m_read;
 
 private:
     OBJECTIVES_VECTOR m_Objectives;

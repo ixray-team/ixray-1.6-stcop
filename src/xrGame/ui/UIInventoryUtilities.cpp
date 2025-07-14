@@ -270,11 +270,11 @@ const shared_str InventoryUtilities::GetGameTimeAsString(ETimePrecision timePrec
 	return GetTimeAsString(Level().GetGameTime(), timePrec, timeSeparator);
 }
 
-const shared_str InventoryUtilities::GetTimeAndDateAsString(ALife::_TIME_ID time)
+const shared_str InventoryUtilities::GetTimeAndDateAsString(ALife::_TIME_ID time, bool legacyMode)
 {
 	string256 buf;
 	LPCSTR time_str = GetTimeAsString( time, etpTimeToMinutes ).c_str();
-	LPCSTR date_str = GetDateAsString( time, edpDateToDay ).c_str();
+	LPCSTR date_str = legacyMode ? GetDateAsStringLegacy( time, edpDateToDay ).c_str() : GetDateAsString( time, edpDateToDay ).c_str();
 	xr_strconcat(buf, time_str, ", ", date_str );
 	return buf;
 }
