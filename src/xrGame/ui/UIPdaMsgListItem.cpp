@@ -7,13 +7,14 @@ void CUIPdaMsgListItem::SetFont(CGameFont* pFont)
 {
 	if (&UITimeText)
 		UITimeText.SetFont		(pFont);
-	if (&UICaptionText)
-		UICaptionText.SetFont	(pFont);
+	if (UICaptionText)
+		UICaptionText->SetFont	(pFont);
 	UIMsgText.SetFont		(pFont);
 }
 
 void CUIPdaMsgListItem::InitPdaMsgListItem(const Fvector2& size)
 {
+	UICaptionText = nullptr;
 	inherited::SetWndSize	(size);
 
 	CUIXml					uiXml;
@@ -31,8 +32,9 @@ void CUIPdaMsgListItem::InitPdaMsgListItem(const Fvector2& size)
 
 	if (uiXml.NavigateToNode("caption_static"))
 	{
-		AttachChild(&UICaptionText);
-		xml_init.InitTextWnd(uiXml, "caption_static", 0, &UICaptionText);
+		UICaptionText = new CUITextWnd();
+		AttachChild(UICaptionText);
+		xml_init.InitTextWnd(uiXml, "caption_static", 0, UICaptionText);
 	}
 	AttachChild				(&UIMsgText);
 	xml_init.InitTextWnd	(uiXml, uiXml.NavigateToNode("msg_static") ? "msg_static" : "text_static", 0, &UIMsgText);
