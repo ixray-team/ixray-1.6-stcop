@@ -311,24 +311,39 @@ void CUIMainIngameWnd::Init()
 		m_ind_boost_rad = UIHelper::CreateStatic(uiXml, "indicator_booster_rad", boosterParent);
 		m_ind_boost_rad->Show(false);
 	}
-	// Загружаем иконки 
-/*	if ( IsGameTypeSingle() )
-	{
-		xml_init.InitStatic		(uiXml, "starvation_static", 0, &UIStarvationIcon);
-		UIStarvationIcon.Show	(false);
+	
+	useLegacyIndicators = !EngineExternal().ClearSkyMode();
 
-//		xml_init.InitStatic		(uiXml, "psy_health_static", 0, &UIPsyHealthIcon);
-//		UIPsyHealthIcon.Show	(false);
+	// Загружаем иконки 
+	if ( IsGameTypeSingle() )
+	{
+		if (uiXml.NavigateToNode("starvation_static"))
+		{
+			UIStarvationIcon = UIHelper::CreateStatic(uiXml, "starvation_static", this);
+			UIStarvationIcon->Show(false);
+		}
+
+		if (uiXml.NavigateToNode("psy_health_static"))
+		{
+			UIPsyHealthIcon = UIHelper::CreateStatic(uiXml, "psy_health_static", this);
+			UIPsyHealthIcon->Show(false);
+		}
 	}
-*/
+	
 	UIWeaponJammedIcon = UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
 	UIWeaponJammedIcon->Show(false);
 
-	//	xml_init.InitStatic			(uiXml, "radiation_static", 0, &UIRadiaitionIcon);
-	//	UIRadiaitionIcon.Show		(false);
+	if (uiXml.NavigateToNode("radiation_static"))
+	{
+		UIRadiaitionIcon = UIHelper::CreateStatic(uiXml, "radiation_static", nullptr);
+		UIRadiaitionIcon->Show(false);
+	}
 
-	//	xml_init.InitStatic			(uiXml, "wound_static", 0, &UIWoundIcon);
-	//	UIWoundIcon.Show			(false);
+	if (uiXml.NavigateToNode("wound_static"))
+	{
+		UIWoundIcon = UIHelper::CreateStatic(uiXml, "wound_static", nullptr);
+		UIWoundIcon->Show(false);
+	}
 
 	UIInvincibleIcon = UIHelper::CreateStatic(uiXml, "invincible_static", nullptr);
 	UIInvincibleIcon->Show(false);
@@ -347,7 +362,7 @@ void CUIMainIngameWnd::Init()
 		"wounds",
 		"starvation",
 		"fatigue",
-		"invincible"
+		"invincible",
 		"artefact"
 	};
 
@@ -391,12 +406,32 @@ void CUIMainIngameWnd::Init()
 	else
 		AttachChild(UIMotionIcon);
 
-	UIStaticDiskIO = UIHelper::CreateStatic(uiXml, "disk_io", this);
-
 	m_ui_hud_states = new CUIHudStatesWnd();
 	m_ui_hud_states->SetAutoDelete(true);
 	AttachChild(m_ui_hud_states);
 	m_ui_hud_states->InitFromXml(uiXml, "hud_states");
+
+	if (uiXml.NavigateToNode("static_pda_online") && IsGameTypeSingleCompatible())
+	{
+		UIPdaOnline = new CUIStatic();
+		xml_init.InitStatic(uiXml, "static_pda_online", 0, UIPdaOnline);
+		UIZoneMap->Background().AttachChild(UIPdaOnline);
+	}
+
+	if (uiXml.NavigateToNode("disk_io"))
+	{
+		UIStaticDiskIO = UIHelper::CreateStatic(uiXml, "disk_io", this);
+	}
+	else
+	{
+		UIStaticDiskIO = new CUIStatic();
+		AttachChild(UIStaticDiskIO);
+		UIStaticDiskIO->SetWndPos(Fvector2().set(1000, 750));
+		UIStaticDiskIO->SetWndSize(Fvector2().set(16, 16));
+		UIStaticDiskIO->InitTexture("ui\\ui_disk_io");
+		UIStaticDiskIO->SetTextureRect(Frect().set(0.f / UI().get_current_kx(), 0.f, 32 / UI().get_current_kx(), 32));
+		UIStaticDiskIO->SetStretchTexture(true);
+	}
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -626,6 +661,67 @@ void CUIMainIngameWnd::Update()
 			SetWarningIconColor(ewiArtefact, 0x00ffffff );
 		}
 	}
+
+	if (!useLegacyIndicators)
+		return;
+
+	EWarningIcons i = ewiWeaponJammed;
+
+	while (i < ewiInvincible)
+	{
+		float value = 0;
+		switch (i)
+		{
+			//radiation
+		case ewiRadiation:
+			value = pActor->conditions().GetRadiation();
+			break;
+		case ewiWound:
+			value = pActor->conditions().BleedingSpeed();
+			break;
+		case ewiWeaponJammed:
+		{
+			u16 slot = pActor->inventory().GetActiveSlot();
+			CWeapon* weapon = smart_cast<CWeapon*>(pActor->inventory().ItemFromSlot(slot));
+			if (weapon)
+				value = 1 - weapon->GetConditionToShow();
+			break;
+		}
+		case ewiStarvation:
+			value = 1 - pActor->conditions().GetSatiety();
+			break;
+		case ewiPsyHealth:
+			value = 1 - pActor->conditions().GetPsyHealth();
+			break;
+		default:
+			R_ASSERT(!"Unknown type of warning icon");
+		}
+
+		xr_vector<float>::reverse_iterator	rit;
+
+		// Сначала проверяем на точное соответсвие
+		rit = std::find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
+
+		// Если его нет, то берем последнее меньшее значение ()
+		if (rit == m_Thresholds[i].rend()) {
+			rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(),
+				[value](float threshold) { return threshold < value; });
+		}
+		// Минимальное и максимальное значения границы
+		float min = m_Thresholds[i].front();
+		float max = m_Thresholds[i].back();
+
+		if (rit != m_Thresholds[i].rend()) {
+			float v = *rit;
+			SetWarningIconColor(i, color_argb(0xFF, clampr<u32>(static_cast<u32>(255 * ((v - min) / (max - min) * 2)), 0, 255),
+				clampr<u32>(static_cast<u32>(255 * (2.0f - (v - min) / (max - min) * 2)), 0, 255),
+				0));
+		}
+		else
+			TurnOffWarningIcon(i);
+
+		i = (EWarningIcons)(i + 1);
+	}
 }//update
 
 
@@ -783,21 +879,30 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 	case ewiWeaponJammed:
 		SetWarningIconColorUI	(UIWeaponJammedIcon, cl);
 		if (bMagicFlag) break;
-
-/*	case ewiRadiation:
-		SetWarningIconColorUI	(&UIRadiaitionIcon, cl);
+	case ewiRadiation:
+	{
+		if (UIRadiaitionIcon)
+			SetWarningIconColorUI(UIRadiaitionIcon, cl);
 		if (bMagicFlag) break;
+	}
 	case ewiWound:
-		SetWarningIconColorUI	(&UIWoundIcon, cl);
+	{
+		if (UIWoundIcon)
+			SetWarningIconColorUI(UIWoundIcon, cl);
 		if (bMagicFlag) break;
-
+	}
 	case ewiStarvation:
-		SetWarningIconColorUI	(&UIStarvationIcon, cl);
+	{
+		if (UIStarvationIcon)
+			SetWarningIconColorUI(UIStarvationIcon, cl);
 		if (bMagicFlag) break;	
+	}
 	case ewiPsyHealth:
-		SetWarningIconColorUI	(&UIPsyHealthIcon, cl);
+	{
+		if (UIPsyHealthIcon)
+			SetWarningIconColorUI(UIPsyHealthIcon, cl);
 		if (bMagicFlag) break;
-*/
+	}
 	case ewiInvincible:
 		SetWarningIconColorUI	(UIInvincibleIcon, cl);
 		if (bMagicFlag) break;
