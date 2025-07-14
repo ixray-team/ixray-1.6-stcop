@@ -197,7 +197,7 @@ float CActorCondition::GetZoneMaxPower( ALife::EHitType hit_type ) const
 	case ALife::eHitTypeExplosion:
 	case ALife::eHitTypeFireWound:
 	case ALife::eHitTypeWound_2:
-//	case ALife::eHitTypePhysicStrike:
+	case ALife::eHitTypePhysicStrike:
 		return 1.0f;
 	case ALife::eHitTypeWound:
 		return m_max_wound_protection;
@@ -931,7 +931,7 @@ bool CActorCondition::PlayHitSound(SHit* pHDS)
 		case ALife::eHitTypeExplosion:
 		case ALife::eHitTypeFireWound:
 		case ALife::eHitTypeWound_2:
-//		case ALife::eHitTypePhysicStrike:
+		case ALife::eHitTypePhysicStrike:
 			return true;
 			break;
 
