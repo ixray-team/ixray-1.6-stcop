@@ -59,8 +59,12 @@ void CUIZoneMap::Init()
 
 	m_activeMap->SetRounded(m_background.WndSizeIsProbablyRelative());
 
+	legacyMapMode = !uiXml.NavigateToNode("minimap:static_counter"); // St4lker0k765: может есть варианты и получше, 
+																				   // но пока это единственное что приходит на ум, увы
 	xml_init.InitStatic				(uiXml, "minimap:compass", 0, &m_compass);
-	m_background.AttachChild		(&m_compass);
+
+	if (!legacyMapMode)
+		m_background.AttachChild		(&m_compass);
 
 	m_clipFrame.AttachChild			(&m_center);
 
@@ -110,16 +114,23 @@ void CUIZoneMap::Init()
 
 	if ( IsGameTypeSingleCompatible() )
 	{
-		xml_init.InitStatic			(uiXml, "minimap:static_counter", 0, &m_Counter);
-		m_background.AttachChild	(&m_Counter);
-		xml_init.InitTextWnd		(uiXml, "minimap:static_counter:text_static", 0, &m_Counter_text);
-		m_Counter.AttachChild		(&m_Counter_text);
+		if (legacyMapMode)
+			return;
 
-        if (m_Counter.WndPosIsProbablyRelative())
+		m_Counter = new CUIStatic();
+		xml_init.InitStatic			(uiXml, "minimap:static_counter", 0, m_Counter);
+		m_background.AttachChild	(m_Counter);
+
+		m_Counter_text = new CUITextWnd();
+		xml_init.InitTextWnd		(uiXml, "minimap:static_counter:text_static", 0, m_Counter_text);
+		m_Counter_text->SetText( "" );
+		m_Counter->AttachChild		(m_Counter_text);
+
+        if (m_Counter->WndPosIsProbablyRelative())
         {
-            temp = m_Counter.GetWndPos();
+            temp = m_Counter->GetWndPos();
             temp.mul(m_background.GetWndSize());
-            m_Counter.SetWndPos(temp);
+            m_Counter->SetWndPos(temp);
         }
 	}
 
@@ -197,7 +208,10 @@ void CUIZoneMap::UpdateRadar		(Fvector pos)
 		if (m_activeMap->GetPointerDistance() > 0.5f)
 		{
 			string64 str;
-			xr_sprintf(str, "%.0f m", m_activeMap->GetPointerDistance());
+			if (legacyMapMode)
+				xr_sprintf(str, "%.1f m.", m_activeMap->GetPointerDistance());
+			else
+				xr_sprintf(str, "%.0f m", m_activeMap->GetPointerDistance());
 			m_pointerDistanceText->SetText(str);
 		}
 		else
