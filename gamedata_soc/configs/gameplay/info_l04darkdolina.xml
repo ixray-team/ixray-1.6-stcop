@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<game_information_portions>
+
+<!-- Стартует машина около бензоколонки -->
+<info_portion id="val_truck_start"></info_portion>
+<info_portion id="val_truck_arrived"></info_portion>
+<info_portion id="val_tunnel_start"></info_portion>
+
+</game_information_portions>

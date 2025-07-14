@@ -1,0 +1,31 @@
+function normal(shader, t_base, t_second, t_detail)
+    shader:begin("deffer_model", "forward_base")
+        :fog(true)
+        :zb(true, false)
+        :blend(true, blend.srcalpha, blend.invsrcalpha)
+        :aref(true, 0)
+        :sorting(3, true)
+        :scope(true)
+
+    shader:dx10texture("s_base", t_base)
+
+    shader:dx10texture("env_s0", "$user$env_s0")
+    shader:dx10texture("env_s1", "$user$env_s1")
+
+    shader:dx10texture("sky_s0", "$user$sky0")
+    shader:dx10texture("sky_s1", "$user$sky1")
+
+    shader:dx10texture("s_material", "$user$material")
+
+    shader:dx10sampler("smp_base")
+    shader:dx10sampler("smp_rtlinear")
+    shader:dx10sampler("smp_material")
+end
+
+function l_special(shader, t_base, t_second, t_detail)
+    shader:begin("scope_lense_mask", "scope_lense_mask")
+	: zb(false, true) : scope(true) : fog(false)
+	
+	shader : dx10texture("s_position", "$user$position")
+    shader : dx10sampler("smp_base")
+end

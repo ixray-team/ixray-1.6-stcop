@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+<!---------------------------ECOLOG------------------------------>
+	<specific_character id="ecolog_default1" team_default = "1">
+		<name>Неизвестный ученый</name>
+		<icon x="10" y="4"></icon>
+		<map_icon x="1" y="6"></map_icon>
+		<bio>Научный работник. Детальная информация отсутствует.</bio>
+
+		<team>Ecolog_general</team>
+		
+		<class>ecolog_general</class>
+		<community>ecolog</community>
+		
+		<rank>50</rank>
+		<reputation>50</reputation>
+
+		<visual>actors\nauchniy\nauchniy_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_fmj = 1 \n
+			wpn_spas12 \n
+			ammo_12x70_buck = 1 \n
+		</supplies>
+				
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="ecolog_default2" team_default = "1">
+		<name>Неизвестный ученый</name>
+		<icon x="10" y="4"></icon>
+		<map_icon x="1" y="6"></map_icon>
+		<bio>Научный работник. Детальная информация отсутствует.</bio>
+
+		<team>Ecolog_general</team>
+		
+		<class>ecolog_general</class>
+		<community>ecolog</community>
+		
+		<rank>50</rank>
+		<reputation>50</reputation>
+
+		<visual>actors\nauchniy\nauchniy_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_fmj = 1 \n
+			wpn_mp5 \n
+			ammo_9x19_fmj = 1 \n
+		</supplies>
+				
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+<!---------------------------ECOLOG GUARD------------------------>
+	<specific_character id="ecolog_guard_default1" team_default = "1">
+		<name>Неизвестный ученый</name>
+		<icon x="8" y="4"></icon>
+		<map_icon x="0" y="6"></map_icon>
+		<bio>Охрана мобильного научного лагеря. Детальная информация отсутствует.</bio>
+
+		<team>Ecolog_guard</team>
+
+		<class>Ecolog_guard</class>
+		<community>ecolog</community>
+
+		
+		<rank>80</rank>
+		<reputation>50</reputation>
+
+		<visual>actors\nauchniy\nauchniy_0</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp \n
+			ammo_11.43x23_fmj = 1 \n
+			wpn_l85 \n
+			ammo_5.56x45_ss190 = 1 \n
+		</supplies>
+			
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="ecolog_guard_default2" team_default = "1">
+		<name>Неизвестный ученый</name>
+		<icon x="10" y="4"></icon>
+		<map_icon x="1" y="6"></map_icon>
+		<bio>Научный работник. Детальная информация отсутствует.</bio>
+
+		<team>Ecolog_general</team>
+		
+		<class>ecolog_general</class>
+		<community>ecolog</community>
+		
+		<rank>80</rank>
+		<reputation>50</reputation>
+
+		<visual>actors\nauchniy\nauchniy_0</visual>
+		<supplies>
+			[spawn] \n
+			wpn_hpsa \n
+			ammo_9x19_fmj = 1 \n
+			wpn_lr300 \n
+			ammo_5.56x45_ss190 = 1 \n
+		</supplies>
+				
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+	
+</xml>

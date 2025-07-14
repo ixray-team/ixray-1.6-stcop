@@ -1,0 +1,83 @@
+[logic]
+active = ph_sound@idle
+ 
+[ph_sound@idle]
+snd = dolg_speech
+min_idle = 5000
+max_idle = 15000
+on_info = {+bar_arena_start} ph_idle@idle, {+bar_territory_nodolg_1_hit -bar_dolg_territory_1_hit_notify} ph_sound@1_hit, {+bar_territory_nodolg_2_hit -bar_dolg_territory_2_hit_notify} ph_sound@2_hit, {+bar_territory_nodolg_kill -bar_dolg_territory_kill_notify} ph_sound@kill, {=bar_dolg_alarm} ph_sound@alarm
+on_info2 = {+bar_start_megafon} ph_sound@start_megafon
+ 
+[ph_sound@start_megafon]
+snd = bar_start_megafon
+on_timer = 45000|ph_sound@idle %-bar_start_megafon%
+
+[ph_sound@1_hit]
+snd = dolg_megafon_1_hit
+on_timer = 15000|ph_sound@idle %+bar_dolg_territory_1_hit_notify%
+on_info = {+bar_territory_nodolg_2_hit -bar_dolg_territory_2_hit_notify} ph_sound@2_hit, {+bar_territory_nodolg_kill -bar_dolg_territory_kill_notify} ph_sound@kill
+
+[ph_sound@2_hit]
+snd = dolg_megafon_2_hit
+on_timer = 15000|ph_sound@idle %+bar_dolg_territory_2_hit_notify +bar_dolg_territory_1_hit_notify%
+on_info = {+bar_territory_nodolg_kill -bar_dolg_territory_kill_notify} ph_sound@kill
+
+[ph_sound@kill]
+snd = dolg_megafon_kill
+on_timer = 15000|ph_sound@idle %+bar_dolg_territory_kill_notify +bar_dolg_territory_1_hit_notify +bar_dolg_territory_2_hit_notify%
+
+[ph_sound@alarm]
+snd = dolg_alarm
+on_info = {!bar_dolg_alarm} ph_sound@idle
+
+
+[ph_idle@idle]
+on_info ={+bar_arena_start_introduce +bar_arena_actor_afraid} ph_sound@actor_afraid, {+bar_arena_start_introduce +bar_arena_pseudodog_choosen} ph_sound@introduce_pseudodog, {+bar_arena_start_introduce +bar_arena_snork_choosen} ph_sound@introduce_snork, {+bar_arena_start_introduce +bar_arena_bloodsucker_choosen} ph_sound@introduce_bloodsucker, {+bar_arena_start_introduce +bar_arena_burer_choosen} ph_sound@introduce_burer, {+bar_arena_start_introduce +bar_arena_savage_choosen} ph_sound@introduce_savage
+
+[ph_sound@actor_afraid]
+snd = arena_actor_afraid
+on_signal = theme_end| ph_idle@idle %-bar_arena_start_introduce +bar_arena_reset%
+	
+[ph_sound@introduce_pseudodog]
+snd = arena_introduce_pseudodog
+on_signal = theme_end| ph_idle@fight %-bar_arena_start_introduce%
+
+[ph_sound@introduce_snork]
+snd = arena_introduce_snork
+on_signal = theme_end| ph_idle@fight %-bar_arena_start_introduce%
+
+[ph_sound@introduce_bloodsucker]
+snd = arena_introduce_bloodsucker
+on_signal = theme_end| ph_idle@fight %-bar_arena_start_introduce%
+
+[ph_sound@introduce_burer]
+snd = arena_introduce_burer
+on_signal = theme_end| ph_idle@fight %-bar_arena_start_introduce%
+
+[ph_sound@introduce_savage]
+snd = arena_introduce_savage
+on_signal = theme_end| ph_idle@fight %-bar_arena_start_introduce%
+
+[ph_idle@fight]
+on_info = {-bar_arena_start} ph_sound@idle, {+bar_arena_actor_victory +bar_arena_20_p +bar_arena_start_introduce} ph_sound@victory, {+bar_arena_actor_victory +bar_arena_start_introduce} ph_sound@victory, {+bar_arena_actor_lose +bar_arena_start_introduce} ph_sound@lose, {+bar_arena_actor_dead +bar_arena_start_introduce} ph_sound@death,  {+bar_arena_monstr_ready +bar_arena_start_introduce} ph_sound@fight_begin
+
+
+[ph_sound@fight_begin]
+snd = arena_fight_begin
+on_signal = theme_end| ph_idle@fight %-bar_arena_start_introduce%
+
+[ph_sound@victory]
+snd = arena_fight_victory
+on_signal = theme_end| ph_sound@idle %-bar_arena_start_introduce%
+
+[ph_sound@victory_notime]
+snd = arena_fight_victory_notime
+on_signal = theme_end| ph_sound@idle %-bar_arena_start_introduce%
+
+[ph_sound@lose]
+snd = arena_fight_lose
+on_signal = theme_end| ph_sound@idle %-bar_arena_start_introduce%
+
+[ph_sound@death]
+snd = arena_fight_death
+on_signal = theme_end| ph_sound@idle %-bar_arena_start_introduce%

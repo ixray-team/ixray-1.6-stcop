@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+	<!-- NEWS LIST -->
+	<list x="0" y="5" width="434" height="426" right_ident="10" scroll_profile="pda">
+        <font font="letterica18" r="225" g="225" b="250"/>
+    </list>
+    
+	<news_item  x="0" y="0" width="400" height="100">
+		<text_cont x="55" y="10" width="350" height="10" complex_mode="1">
+			<text align="l" font="letterica16" r="255" g="255" b="250"/>
+		</text_cont>
+		
+		<date_text_cont x="280" y="10" width="120" height="10">
+			<text align="l" font="letterica16" r="200" g="200" b="200"/>
+		</date_text_cont>
+		
+		<image x="0" y="11" width="49" height="29" stretch="1"/>
+	</news_item>	
+
+	<talk_item  x="0" y="0" width="400" height="100">
+		<text_cont x="70" y="30" width="330" height="10" complex_mode="1">
+			<text align="l" font="letterica18" r="255" g="255" b="250"/>
+		</text_cont>
+		
+		<date_text_cont x="65" y="10" width="160" height="10">
+			<text align="l" font="letterica16" r="200" g="200" b="200"/>
+		</date_text_cont>
+		
+		<image x="0" y="13" width="61" height="40" stretch="1"/>
+		
+	</talk_item>	
+	
+</window>

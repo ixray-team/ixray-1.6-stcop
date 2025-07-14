@@ -1,0 +1,70 @@
+[logic]
+active = walker1
+on_hit = hit
+on_death = death
+combat_ignore = combat_ignore
+
+[hit]
+on_info = %+esc_assault_start%
+
+[death]
+on_info = %+esc_assault_start%
+
+[combat_ignore]
+
+[walker1]
+path_walk = escape_btr_path1
+path_look = escape_btr_look1
+on_info = {+esc_bandits_start} walker@to_kamp
+;on_info2 = {+esc_bandits_assault} walker
+meet = meet@attacker
+
+[walker@to_kamp]
+path_walk = esc_to_camp_walk
+path_look = esc_to_camp_look
+on_signal = bandits_assault| remark@kamp
+
+[remark@kamp]
+anim = guard
+snd = esc_factory_raid
+on_signal = sound_end | walker %+esc_bandits_assault%
+
+[walker]
+path_walk = escape_factory_way1
+path_look = escape_factory_look1
+team = escape_attack_team
+on_signal = flight | remark
+on_info = {+esc_kill_bandits_quest_kill}walker2
+combat_ignore_cond = {-esc_assault_start}
+
+[remark]
+anim = hide
+snd = esc_factory_attack
+combat_ignore_cond = {-esc_assault_start}
+on_signal = sound_end| walker@fight %+esc_assault_start%
+
+[walker@fight]
+path_walk = esc_assault_final1
+path_look = esc_assault_final1_look
+on_info = {+esc_kill_bandits_quest_kill}remark@victory
+def_state_moving3 = assault
+
+[remark@victory]
+anim = hello
+snd = esc_factory_victory
+on_signal = sound_end| walker2
+
+[walker2]
+path_walk = escape_factory_return_path
+meet = meet@attacker
+
+[meet@attacker]
+meet_state		= 20|wait@wait
+meet_state_wpn	= 20|wait@wait
+victim		= 20|actor
+victim_wpn		= 20|actor
+use		= true
+use_wpn		= false
+syndata		= hello@hail
+meet_dialog	= escape_factory_assault_hello
+

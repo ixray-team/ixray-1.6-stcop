@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<game_information_portions>
+    <info_portion id="cit_level_fake_start"></info_portion>
+
+    <info_portion id="cit_fail_first_task"></info_portion>
+
+    <info_portion id="cit_jail_door_opened"></info_portion>
+    <info_portion id="cit_actor_is_free"></info_portion>
+    <info_portion id="cit_actor_out_killers_base"></info_portion>
+    <info_portion id="cit_actor_near_grates"></info_portion>
+
+    <info_portion id="cit_jail_start_waking"></info_portion>
+    <info_portion id="cit_jail_actor_wake"></info_portion>
+    <info_portion id="cit_jail_scene_start"></info_portion>
+    <info_portion id="cit_jail_guard2_talk_to_guard1"></info_portion>
+    <info_portion id="cit_jail_guard2_talk_to_doctor"></info_portion>
+    <info_portion id="cit_jail_guard2_near_grates"></info_portion>
+    <info_portion id="cit_jail_kill_actor"></info_portion>
+    <info_portion id="cit_jail_doctor_out_start"></info_portion>
+    <info_portion id="cit_jail_doctor_out_end"></info_portion>
+    <info_portion id="cit_jail_guard1_close_door"></info_portion>
+    <info_portion id="cit_jail_doctor_leave"></info_portion>
+    
+    <info_portion id="cit_doctor_talk"></info_portion>
+    <info_portion id="cit_doctor_dead"></info_portion>
+
+    <info_portion id="cit_jail_doctor_pryp_task">
+		<task>cit_doctor_task</task>
+		<article>cit_doctor_task</article>
+    </info_portion>
+
+    <info_portion id="cit_jail_doctor_weapon_task">
+		<task>cit_doctor_weapon_task</task>
+		<article>cit_doctor_weapon_task_art</article>
+    </info_portion>
+    <info_portion id="cit_jail_doctor_weapon_task_end"></info_portion>
+
+    <info_portion id="cit_jail_doctor_escape_task">
+		<task>cit_doctor_escape_task</task>
+		<article>cit_doctor_escape_task_art</article>
+    </info_portion>
+    <info_portion id="cit_actor_in_sewer"></info_portion>
+    <info_portion id="cit_actor_in_car"></info_portion>
+    <info_portion id="cit_jail_doctor_escape_task_end"></info_portion>
+
+    <info_portion id="cit_doctor_shows_deadcity_zones"></info_portion>
+
+    <info_portion id="cit_button_break_start"></info_portion>
+    <info_portion id="cit_button_broken"></info_portion>
+
+    <info_portion id="cit_heli_scene_start"></info_portion>
+    <info_portion id="cit_heli_start"></info_portion>
+    <info_portion id="cit_heli_end"></info_portion>
+
+    <!-- Охота на сталкера около входа на уровень -->
+    <info_portion id="cit_hunt_start"></info_portion>
+    
+    <!-- Места на уровне -->
+    <info_portion id="cit_places"></info_portion>
+
+    <!-- Квесты -->
+    <!-- Документы, компрометирующие наемников -->
+	<info_portion id="cit_documents_need">
+		<task>cit_documents</task>
+		<article>cit_compromat_documents</article>
+	</info_portion>
+	<info_portion id="cit_documents_find">
+		<article>cit_killers_documents_art</article>
+	</info_portion>
+	<info_portion id="cit_documents_give"></info_portion>
+	
+	<!-- Карта базы наемников -->
+	<info_portion id="cit_map_need">
+		<task>cit_killers_base</task>
+		<article>cit_base_location</article>
+	</info_portion>
+	<info_portion id="cit_map_find">
+		<article>cit_deadcity_maps_art</article>
+	</info_portion>
+	<info_portion id="cit_map_give"></info_portion>
+	
+	<!-- Убить лидера наемников -->
+	<info_portion id="cit_leader_need_kill"></info_portion>
+	<info_portion id="cit_leader_killed"></info_portion>
+	<info_portion id="cit_leader_has_flash"></info_portion>
+	<info_portion id="cit_leader_reward"></info_portion>
+
+	<!-- Узнать, что случилось с Василием Петровичем -->
+	<info_portion id="cit_vp_search"></info_portion>
+	<info_portion id="cit_vp_info"></info_portion>
+	<info_portion id="cit_vp_find"></info_portion>
+	<info_portion id="cit_vp_say"></info_portion>
+	<info_portion id="cit_victor_die"></info_portion>
+	
+    <info_portion id="cit_doctor_meet_conclusion_info">
+	    <article>cit_doctor_meet_conclusion_art</article>
+    </info_portion>
+
+	<info_portion id="cit_leave_forever"></info_portion>
+	
+</game_information_portions>

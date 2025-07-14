@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+	<info_portion id="yan_kill_brain_task_start">
+		
+	</info_portion>
+	<info_portion id="yan_find_scientist_start">
+		<task>yan_find_scientist</task>
+	</info_portion>
+	<info_portion id="yan_find_scientist_semenov_start">
+		<task>yan_find_scientist_semenov</task>
+	</info_portion>
+	<info_portion id="yan_find_scientist_task_start"></info_portion>
+	<info_portion id="yan_find_vasilyev_start">
+		<task>yan_find_vasilyev_task</task>
+		<article>journal_before_vasilyev_pda</article>
+	</info_portion>
+	<info_portion id="yan_find_vasilyev_end">
+		<article>yan_vasilyev_info</article>
+	</info_portion>
+	<info_portion id="yan_find_laboratory_end">
+	</info_portion>
+	<info_portion id="yantar_vasilyev_info">
+		<task>yan_kill_brain_task</task>
+	</info_portion>
+	<info_portion id="yantar_find_ghost_task_end">
+		<article>journal_after_find_ghost</article>
+		<task>yan_kill_brain_task_2</task>
+	</info_portion>
+	<info_portion id="yantar_find_ghost_task_start">
+		<task>yan_find_ghost_task</task>
+	</info_portion>
+	<info_portion id="yan_scientist_return_task">
+		<task>yan_scientist_return_task</task>
+	</info_portion>
+	<info_portion id="yantar_hello_scientist"></info_portion>	
+	<info_portion id="yan_find_vasilyev_done"></info_portion>
+	<info_portion id="yan_scientist_start_research"></info_portion>
+	<info_portion id="yan_scientist_return_to_bunker"></info_portion>
+	<info_portion id="yan_scientist_gulag_state_2"></info_portion>
+	<info_portion id="yan_scientist_gulag_state_3"></info_portion>
+	<info_portion id="yan_scientist_die">
+		<disable>yan_scientist_door_2_open</disable>
+		<disable>yan_scientist_door_1_open</disable>
+	</info_portion>
+	<info_portion id="yantar_kruglov_talk"></info_portion>
+	<info_portion id="yan_scientist_door_2_open"></info_portion>
+	<info_portion id="yan_scientist_door_1_open"></info_portion>
+	<info_portion id="yantar_scientists_talk"></info_portion>
+	<info_portion id="yantar_kruglov_phrase_1"></info_portion>
+	<info_portion id="yantar_professor_phrase_2"></info_portion>
+	<info_portion id="yantar_kruglov_phrase_2"></info_portion>
+	<info_portion id="yantar_scientists_talk_end"></info_portion>
+	<info_portion id="yan_scientist_exit"></info_portion>
+	<info_portion id="yan_disable_ui"></info_portion>
+	<info_portion id="yantar_ghost_talk_2"></info_portion>
+	<info_portion id="yantar_klyk_talk"></info_portion>
+	<info_portion id="yantar_professor_talk_about_brain"></info_portion>
+	<info_portion id="yantar_professor_talk_about_brain_end"></info_portion>
+	<info_portion id="yan_kruglov_after_actor"></info_portion>
+	<info_portion id="yantar_scientist_talk_good_quest"></info_portion>
+	<info_portion id="yantar_scientist_talk_good_quest_1"></info_portion>
+	<info_portion id="yantar_scientist_talk_semenov_die_1"></info_portion>
+	<info_portion id="yantar_scientist_talk_semenov_die"></info_portion>
+	
+	
+	<info_portion id="yan_zombie_on_actor_wake"></info_portion>
+	<info_portion id="yan_bunker_door_1_open"></info_portion>
+	<info_portion id="yan_bunker_door_1_close"></info_portion>
+	<info_portion id="yan_bunker_door_2_open"></info_portion>
+	<info_portion id="yan_actor_must_sleep"></info_portion>
+	<info_portion id="labx16_find"></info_portion>
+	<info_portion id="yan_kill_brain_done"></info_portion>
+	<info_portion id="yan_kruglov_hello"></info_portion>
+	<info_portion id="yan_find_scientist_done"></info_portion>
+	<info_portion id="yan_scientist_researching"></info_portion>
+	<info_portion id="yan_scientist_point_to_1"></info_portion>
+	<info_portion id="yan_psi_zone_find_done"></info_portion>
+	<!-- Yantar zombied respawn -->
+	<info_portion id="yan_zombied_respawn_01"></info_portion>
+	<info_portion id="yan_zombied_respawn_02"></info_portion>
+	<info_portion id="yan_zombied_respawn_03"></info_portion>
+	<info_portion id="yan_zombied_respawn_04"></info_portion>
+	<info_portion id="yan_zombied_respawn_05"></info_portion>
+	<info_portion id="yan_zombied_respawn_06"></info_portion>
+	<info_portion id="yan_zombied_respawn_07"></info_portion>
+	<info_portion id="yan_zombied_respawn_08"></info_portion>
+	<info_portion id="yan_spawn_ghost"></info_portion>
+	<info_portion id="yantar_scientist_talk_helmet"></info_portion>
+	
+
+	<!-- Yantar zombied after braindead -->
+	<info_portion id="yantar_attack_start"></info_portion>
+	<info_portion id="set_heli_enemy_actor"></info_portion>
+	<info_portion id="yantar_heli_1_die"></info_portion>
+	<info_portion id="yantar_heli_2_die"></info_portion>
+	<info_portion id="yantar_heli_3_die"></info_portion>
+	<info_portion id="yan_spawn_zombies_1"></info_portion>
+	<info_portion id="yan_spawn_zombies_2"></info_portion>
+	<info_portion id="yan_actor_talk_ucheniy"></info_portion>
+	<info_portion id="yan_ecolog_outfit_given"></info_portion>
+
+	<!-- Yantar Tunnel start -->
+	<info_portion id="yantar_tunnel_start"></info_portion>
+	<info_portion id="yantar_tunnel_finish">
+		<article>journal_after_kill_brain</article>
+	</info_portion>
+
+	<!-- Lab X16 switchers -->
+	<info_portion id="yan_labx16_switcher_1_off"></info_portion>
+	<info_portion id="yan_labx16_switcher_2_off"></info_portion>
+	<info_portion id="yan_labx16_switcher_3_off"></info_portion>
+	<info_portion id="yan_labx16_switcher_primary_off"></info_portion>
+	
+	<info_portion id="yan_labx16_switcher_1_end"></info_portion>
+	<info_portion id="yan_labx16_switcher_2_end"></info_portion>
+	<info_portion id="yan_labx16_switcher_3_end"></info_portion>
+	<info_portion id="yan_labx16_switcher_primary_try"></info_portion>
+	<!-- Spawn Provodnik -->
+	<info_portion id="yan_provodnik_spawn">
+		<task>yan_provodnik_task</task>
+	</info_portion>
+	<info_portion id="yan_has_ghost_pda"></info_portion>
+	<info_portion id="yan_test_info"></info_portion>
+
+
+	<info_portion id="yan_controller_respawn_01"></info_portion>
+	<info_portion id="brain_snork_respawn_01"></info_portion>
+
+	<info_portion id="yan_giant_spawner_01"></info_portion>
+
+	<info_portion id="x16_zasada_2"></info_portion>
+	<info_portion id="x16_zasada_3"></info_portion>
+	<info_portion id="x16_zasada_4"></info_portion>
+	
+	<info_portion id="yan_tonnel_snork_spawn_1"></info_portion>
+	<info_portion id="yan_tonnel_snork_spawn_2"></info_portion>
+	<info_portion id="yan_tonnel_snork_spawn_3"></info_portion>
+	<info_portion id="yan_tonnel_snork_spawn_4"></info_portion>
+	<info_portion id="yan_tonnel_snork_spawn_5"></info_portion>
+
+    <info_portion id="scientist_job">
+		<task>yan_scientist_job</task>
+    </info_portion>
+  <info_portion id="yantar_ecolog_give_reward"></info_portion>
+
+</game_information_portions>

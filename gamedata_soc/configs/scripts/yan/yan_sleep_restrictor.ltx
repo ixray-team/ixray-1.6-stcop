@@ -1,0 +1,20 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+yan_spawn_ghost} sr_idle@2_1 %=yan_gluk%
+
+[sr_idle@2_1]
+on_timer = 3000 | sr_idle@2_2 %=run_postprocess(agr_u_fade)%
+
+[sr_idle@2_2]
+on_timer = 2500 | sr_idle@2 %=run_postprocess(deadcity_wake) =yan_actor_sleep_1 =run_cam_effector(dream:1002:true)  =yan_dream_voices =disable_ui%
+
+[sr_idle@2]
+on_timer = 15000 | sr_idle@2_3 %=yan_actor_sleep%
+
+[sr_idle@2_3]
+on_timer = 3000 | sr_idle@3 %=stop_cam_effector(1002) =run_cam_effector(prison_0:1003:true)%
+
+[sr_idle@3]
+on_timer = 7000 | nil %=stop_cam_effector(1003) =run_cam_effector(prison_1) =enable_ui -yan_spawn_ghost%

@@ -1,0 +1,64 @@
+[logic]
+active          = heli_move@wait
+
+[heli_move@wait]
+path_move       = pri_heli4_wait2_path
+immortal        = true
+combat_ignore   = true
+on_info         = {+pri_helicopters2_start} heli_move@go
+engine_sound    = false
+
+[heli_move@go]
+path_move       = pri_heli4_go2_path
+immortal        = true
+combat_ignore   = true
+on_signal       = arrived | heli_move@wait_stadium
+
+[heli_move@wait_stadium]
+path_move       = pri_heli4_wait_stadium_path
+engine_sound    = false
+combat_ignore   = true
+on_info         = {+pri_stadium_heli_start} heli_move@wait_stadium2 ;pri_stadium_scene_start
+
+[heli_move@wait_stadium2]
+path_move       = pri_heli4_wait_stadium_path
+;engine_sound    = false
+combat_ignore   = true
+on_timer        = 3000 | heli_move@hunt_gigants
+
+[heli_move@hunt_gigants]
+path_move       = pri_heli4_hunt_path
+path_look       = pri_heli4_hunt_look
+rocket_delay    = 700
+combat_ignore   = true
+on_signal       = arrived | heli_move@go_away %+pri_stadium_scene_end% ;heli_move@hunt_gigant1
+
+[heli_move@hunt_gigant1]
+path_move           = pri_heli4_hunt2_path
+combat_enemy        = 815
+combat_use_rocket   = false
+combat_use_mgun     = true
+combat_safe_altitude = -180
+combat_ignore       = true
+on_timer            = 15000 | heli_move@hunt_gigant2
+on_info             = {=is_dead(815)} heli_move@hunt_gigant2
+
+[heli_move@hunt_gigant2]
+path_move           = pri_heli4_hunt2_path
+combat_enemy        = 816
+combat_use_rocket   = false
+combat_use_mgun     = true
+combat_safe_altitude = -40
+combat_ignore       = true
+on_timer            = 10000 | heli_move@go_away %+pri_stadium_scene_end%
+on_info             = {=is_dead(816)} heli_move@go_away %+pri_stadium_scene_end%
+
+[heli_move@go_away]
+path_move       = pri_heli4_leave_path
+;on_signal       = arrived | heli_move@go_away_silent
+mute            = false
+combat_ignore   = true
+
+[heli_move@go_away_silent]
+path_move       = pri_heli4_leave_path
+engine_sound    = false

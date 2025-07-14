@@ -1,0 +1,34 @@
+[logic]
+active = heli_move@idle
+
+
+[heli_move@idle]
+engine_sound = false
+path_move = agr_nii_way_suspend
+;combat_ignore_cond = always
+on_info = {+agr_nii_helicopter_atack} heli_move@patrol
+combat_safe_altitude = -10
+
+[heli_move@patrol]
+combat_use_rocket = false
+combat_use_mgun = true
+path_move = agr_nii_heli_patrol
+;on_info = %=heli_set_enemy_actor%
+;on_timer = 1200000 | heli_move@idle2
+on_signal = path_end | heli_move@idle2
+;on_actor_in_zone = agr_nii_heli_zone | %=heli_set_enemy_actor -agr_nii_helicopter_atack%
+combat_safe_altitude = -10
+
+
+[heli_move@idle2]
+engine_sound = true
+path_move = agr_nii_way_suspend
+;combat_ignore_cond = always
+on_timer = 30000| heli_move@idle3
+combat_safe_altitude = -10
+
+[heli_move@idle3]
+engine_sound = false
+path_move = agr_nii_way_suspend
+combat_ignore_cond = always
+combat_safe_altitude = -10

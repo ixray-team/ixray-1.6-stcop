@@ -1,0 +1,72 @@
+	<string id="bar_darklab_documents">
+		<text>Найти документы в подземной лаборатории</text>
+	</string>
+	<string id="bar_darklab_documents_1">
+		<text>Забрать у Борова ключ от лаборатории</text>
+	</string>
+	<string id="bar_darklab_documents_2">
+		<text>Выбраться с базы бандитов</text>
+	</string>
+	<string id="bar_darklab_documents_3">
+		<text>Найти вход в лабораторию</text>
+	</string>
+	<string id="bar_darklab_documents_4">
+		<text>Пробраться на базу</text>
+	</string>
+	<string id="bar_darklab_documents2">
+		<text>Найти документы в Х-18</text>
+	</string>
+	<string id="bar_darklab_documents2_1">
+		<text>Найти документы</text>
+	</string>
+	<string id="bar_darklab_documents2_2">
+		<text>Принести документу бармену</text>
+	</string>
+	<string id="dar_codedoor_1">
+		<text>Открыть кодовую дверь</text>
+	</string>
+	<string id="dar_codedoor_1_1">
+		<text>Найти код к двери</text>
+	</string>
+	<string id="dar_codedoor_1_2">
+		<text>Открыть дверь с помощью кода</text>
+	</string>
+	<string id="dar_codedoor_2">
+		<text>Открыть дверь в командный центр</text>
+	</string>
+	<string id="dar_codedoor_2_1">
+		<text>Найти код к двери</text>
+	</string>
+	<string id="dar_codedoor_2_2">
+		<text>Открыть дверь с помощью кода</text>
+	</string>
+	<string id="val_captive_help">
+		<text>Отбить долговца</text>
+	</string>
+	<string id="val_captive_help_1">
+		<text>Следовать за Пулей к месту засады</text>
+	</string>
+	<string id="val_captive_help_2">
+		<text>Уничтожить бандитов и спасти долговца</text>
+	</string>
+	<string id="val_come_to_trader">
+		<text>Выбраться через южные ворота</text>
+	</string>
+	<string id="val_come_to_trader_0">
+		<text>Вернуться к торговцу</text>
+	</string>
+	<string id="val_come_to_trader_1">
+		<text>Выбраться из Темной Долины</text>
+	</string>
+	<string id="val_come_to_trader_2">
+		<text>Показать документы торговцу</text>
+	</string>
+	<string id="val_prisoner_help">
+		<text>Спасти долговца</text>
+	</string>
+	<string id="val_prisoner_help_0">
+		<text>Вытащить долговца из плена бандитов</text>
+	</string>
+	<string id="val_prisoner_help_main">
+		<text>Освободить долговца из тюрьмы бандитов</text>
+	</string>

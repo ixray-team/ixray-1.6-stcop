@@ -1,0 +1,26 @@
+[logic]
+active = ph_door@locked
+
+[ph_door@locked]
+locked = true
+closed = true
+tip_open = tip_door_coded
+on_info = {=actor_has_decoder} ph_door@coded
+
+[ph_door@coded]
+locked = true
+closed = true
+tip_open = tip_door_decode
+on_info = {!actor_has_decoder} ph_door@locked
+on_use = ph_door@decoding %+sar_access_decoding%
+
+[ph_door@decoding]
+locked = true
+closed = true
+tip_open = tip_door_decoding
+on_info = {+sar_finish_decoding} ph_door@unlocked
+
+[ph_door@unlocked]
+locked = false
+closed = false
+show_tips = false

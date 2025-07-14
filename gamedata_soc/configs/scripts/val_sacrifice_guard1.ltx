@@ -1,0 +1,111 @@
+[logic@val_sacrifice_guard1]
+active          = camper@val_sacrifice_guard1_wait
+on_combat       = combat@val_sacrifice
+on_death        = death@val_sacrifice_guard1
+combat_ignore   = combat_ignore
+
+[death@val_sacrifice_guard1]
+on_info     = %+val_sacrifice_guard1_dead%
+on_info2    = {+val_sacrifice_guard2_dead} %+val_sacrifice_finish%
+;on_info3    = {=killed_by_actor} %+val_sacrifice_plr_detected +val_sacrifice_finish%
+
+;--------------------------------------------------------------------------
+; ждем пока жертва не скажет первую фразу
+;--------------------------------------------------------------------------
+[camper@val_sacrifice_guard1_wait]
+path_walk                   = guard1_walk 
+path_look                   = guard1_look
+def_state_campering         = guard
+def_state_campering_fire    = guard_fire
+def_state_moving            = patrol
+def_state_moving_fire       = patrol_fire
+on_info                     = {+val_sacrifice_victim_phrase1_end} remark@val_sacrifice_guard1_phrase1
+meet                        = no_meet
+danger                      = danger@val_sacrifice_guard
+combat_ignore_cond          = {=check_fighting(401)}
+
+;--------------------------------------------------------------------------
+; фраза: Ну давай, типа собирайся. Боров сказал отвести этого болвана на Базу Монолита.
+; ждем на 2 фразы второго охранника
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_guard1_phrase1]
+anim                = guard_na
+snd                 = speech
+target              = 405
+on_signal           = sound_end | %+val_sacrifice_guard1_phrase1_end%
+on_info             = {+val_sacrifice_guard2_phrase2_end} remark@val_sacrifice_guard1_phrase2
+meet                = no_meet
+danger              = danger@val_sacrifice_guard
+combat_ignore_cond  = {=check_fighting(401)}
+
+;--------------------------------------------------------------------------
+; фраза: Угу. А у меня есть идея.
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_guard1_phrase2]
+anim                = guard
+snd                 = speech
+target              = 405
+on_signal           = sound_end | remark@val_sacrifice_guard1_phrase3
+meet                = no_meet
+danger              = danger@val_sacrifice_guard
+combat_ignore_cond  = {=check_fighting(401)}
+
+;--------------------------------------------------------------------------
+; фраза: А ну прыгай в яму козел.
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_guard1_phrase3]
+anim                = threat
+snd                 = speech
+target              = 401
+on_signal           = sound_end | %+val_sacrifice_guard1_phrase3_end%
+on_info             = {+val_sacrifice_victim_phrase2_end} remark@val_sacrifice_guard1_phrase4
+meet                = no_meet
+danger              = danger@val_sacrifice_guard
+combat_ignore_cond  = {=check_fighting(401)}
+
+;--------------------------------------------------------------------------
+; фраза: Ну как хочешь.
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_guard1_phrase4]
+anim                = threat
+snd                 = speech
+target              = 401
+on_signal           = sound_end | camper@val_sacrifice_guard1_kill %+val_sacrifice_guard1_phrase4_end%
+meet                = no_meet
+danger              = danger@val_sacrifice_guard
+combat_ignore_cond  = {=check_fighting(401)}
+
+;--------------------------------------------------------------------------
+; убиваем пленного
+;--------------------------------------------------------------------------
+[camper@val_sacrifice_guard1_kill]
+path_walk                   = guard1_walk 
+path_look                   = guard1_look
+def_state_campering         = threat
+def_state_campering_fire    = threat_fire
+radius                      = 0
+no_retreat                  = true
+on_info                     = {+val_sacrifice_victim_dead} remark@val_sacrifice_guard1_phrase5
+meet                        = no_meet
+danger                      = danger@val_sacrifice_guard
+
+;--------------------------------------------------------------------------
+; убиваем пленного
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_guard1_kill]
+anim                = threat
+target              = 401
+on_info             = {+val_sacrifice_victim_dead} remark@val_sacrifice_guard1_phrase5
+meet                = no_meet
+danger              = danger@val_sacrifice_guard
+combat_ignore_cond  = {=check_fighting(401)}
+
+;--------------------------------------------------------------------------
+; фраза: Все! Нет человека - нет проблемы. Скажем Борову, что типа доставили пленника куда следует. Идем.
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_guard1_phrase5]
+anim                = guard
+snd                 = speech
+on_signal           = sound_end | %+val_sacrifice_finish%
+meet                = no_meet
+danger              = danger@val_sacrifice_guard

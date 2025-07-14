@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<encyclopedia>
+    <!-- LIST OF ENCYCLOPEDIA ENTRIES -->
+
+
+    <!-------------------------------- Niva ----------------------------->
+
+    <article id="vehicles_niva" name="Niva" group="Vehicles">
+        <texture x="900" y="150" width="124" height="100">ui\ui_icon_photo</texture>
+        <text>enc_vehicles_niva</text>
+    </article>
+
+
+    <!-------------------------------- btr-70 ----------------------------->
+
+    <article id="vehicles_btr-70" name="btr-70" group="Vehicles">
+        <texture x="350" y="500" width="150" height="100">ui\ui_icon_photo</texture>
+        <text>enc_vehicles_btr-70</text>
+    </article>
+
+
+    
+    <!-------------------------------- mi-24 ----------------------------->
+
+    <article id="vehicles_mi-24" name="mi-24" group="Vehicles">
+        <texture x="350" y="400" width="150" height="100">ui\ui_icon_photo</texture>
+        <text>enc_vehicles_mi-24</text>
+    </article>
+
+
+    <!-------------------------------- Kamaz ----------------------------->
+
+    <article id="vehicles_kamaz" name="Kamaz" group="Vehicles">
+        <texture x="750" y="250" width="150" height="100">ui\ui_icon_photo</texture>
+        <text>enc_vehicles_kamaz</text>
+    </article>
+
+    
+    <!-------------------------------- UAZ ----------------------------->
+
+    <article id="vehicles_uaz" name="Uaz" group="Vehicles">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_vehicles_uaz</text>
+    </article>
+     <!-------------------------------- Zaporozh ----------------------------->
+
+    <article id="vehicles_zaporozh" name="Zaporozh" group="Vehicles">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_vehicles_zaporozh</text>
+    </article>
+
+
+
+   </encyclopedia>
+

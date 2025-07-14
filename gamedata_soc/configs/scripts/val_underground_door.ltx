@@ -1,0 +1,26 @@
+[logic]
+active = ph_door@locked
+
+[ph_door@locked]
+locked = true
+closed = true
+snd_open_start = trader_door_locked
+on_use = {+val_actor_has_barman_key +val_actor_has_borov_key} ph_door@closed %+val_x18_door_open +dar_run_quest%
+
+[ph_door@closed]
+locked = false
+closed = true
+on_use = ph_door@open
+snd_init = trader_door_unlock
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop
+
+[ph_door@open]
+locked = false
+closed = false
+on_use = ph_door@closed
+snd_init = trader_door_unlock
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop
