@@ -218,13 +218,18 @@ bool CUIEventsWnd::GetDescriptionMode		()
 
 void CUIEventsWnd::ShowDescription			(CGameTask* t, int idx)
 {
-	if(GetDescriptionMode()){//map
+	if(GetDescriptionMode())
+	{//map
 		SGameTaskObjective& o		= t->Objective(idx);
 		CMapLocation* ml			= o.LinkedMapLocation();
 
-		if(ml&&ml->SpotEnabled())
+		if (ml && ml->SpotEnabled())
+		{
+			ml->CalcPosition();
 			m_UIMapWnd->SetTargetMap(ml->GetLevelName(), ml->GetPosition(), true);
-	}else
+		}
+	}
+	else
 	{//articles
 		SGameTaskObjective& o		= t->Objective(0);
 		idx							= 0;
