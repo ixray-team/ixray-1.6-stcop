@@ -83,10 +83,15 @@ constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
 CUIMainIngameWnd::CUIMainIngameWnd()
 :/*m_pGrenade(nullptr),m_pItem(nullptr),*/m_pPickUpItem(nullptr),m_pMPChatWnd(nullptr),UIArtefactIcon(nullptr),m_pMPLogWnd(nullptr)
 {
+	UIStaticDiskIO				= nullptr;
 	UIZoneMap					= new CUIZoneMap();
 	UIWeaponJammedIcon			= nullptr;
 	UIInvincibleIcon			= nullptr;
 	UIArtefactIcon				= nullptr;
+	UIPsyHealthIcon				= nullptr;
+	UIStarvationIcon			= nullptr;
+	UIRadiaitionIcon			= nullptr;
+	UIWoundIcon					= nullptr;
 	UIStackPanelBoosters		= nullptr;
 	UIStackPanelIndicators		= nullptr;
 	m_ind_bleeding_svg_inited = false;
@@ -119,6 +124,10 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 	xr_delete					(UIWeaponJammedIcon);
 	xr_delete					(UIInvincibleIcon);
 	xr_delete					(UIArtefactIcon);
+	xr_delete					(UIPsyHealthIcon);
+	xr_delete					(UIStarvationIcon);
+	xr_delete					(UIRadiaitionIcon);
+	xr_delete					(UIWoundIcon);
 }
 
 void CUIMainIngameWnd::Init()
@@ -127,7 +136,9 @@ void CUIMainIngameWnd::Init()
 	uiXml.Load(CONFIG_PATH, UI_PATH, MAININGAME_XML);
 
 	CUIXmlInit					xml_init;
-	xml_init.InitWindow(uiXml, "main", 0, this);
+	
+	if (uiXml.NavigateToNode("main"))
+		xml_init.InitWindow(uiXml, "main", 0, this);
 
 	Enable(false);
 
@@ -320,20 +331,22 @@ void CUIMainIngameWnd::Init()
 	{
 		if (uiXml.NavigateToNode("starvation_static"))
 		{
-			UIStarvationIcon = UIHelper::CreateStatic(uiXml, "starvation_static", this);
+			UIStarvationIcon = UIHelper::CreateStatic(uiXml, "starvation_static", nullptr);
 			UIStarvationIcon->Show(false);
 		}
 
 		if (uiXml.NavigateToNode("psy_health_static"))
 		{
-			UIPsyHealthIcon = UIHelper::CreateStatic(uiXml, "psy_health_static", this);
+			UIPsyHealthIcon = UIHelper::CreateStatic(uiXml, "psy_health_static", nullptr);
 			UIPsyHealthIcon->Show(false);
 		}
 	}
-	
-	UIWeaponJammedIcon = UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
-	UIWeaponJammedIcon->Show(false);
 
+	if (uiXml.NavigateToNode("weapon_jammed_static") && !m_ind_weapon_broken)
+	{
+		UIWeaponJammedIcon = UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
+		UIWeaponJammedIcon->Show(false);
+	}
 	if (uiXml.NavigateToNode("radiation_static"))
 	{
 		UIRadiaitionIcon = UIHelper::CreateStatic(uiXml, "radiation_static", nullptr);
@@ -619,6 +632,23 @@ void CUIMainIngameWnd::Update()
 	{
 		lookat_player = Game().lookat_player();
 	}
+
+	if (UIPdaOnline && !(Device.dwFrame % 20) && IsGameTypeSingleCompatible())
+	{
+		string256				text_str;
+		CPda* _pda = pActor->GetPDA();
+		u32 _cn = 0;
+		if (_pda && 0 != (_cn = _pda->ActiveContactsNum()))
+		{
+			sprintf_s(text_str, "%d", _cn);
+			UIPdaOnline->SetText(text_str);
+		}
+		else
+		{
+			UIPdaOnline->SetText("");
+		}
+	};
+
 	bool b_God = ( GodMode() || ( !lookat_player ) )? true : lookat_player->testFlag(GAME_PLAYER_FLAG_INVINCIBLE);
 	if ( b_God )
 	{
@@ -885,7 +915,8 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 	case ewiAll:
 		bMagicFlag = false;
 	case ewiWeaponJammed:
-		SetWarningIconColorUI	(UIWeaponJammedIcon, cl);
+		if (UIWeaponJammedIcon && !m_ind_weapon_broken)
+			SetWarningIconColorUI	(UIWeaponJammedIcon, cl);
 		if (bMagicFlag) break;
 	case ewiRadiation:
 	{
