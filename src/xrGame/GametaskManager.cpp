@@ -165,6 +165,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
     if (m_flags.test(eMultipleTasks))
         type = t->GetTaskType();
 
+    t->SetTaskState(state, objective_id);
 
     const bool isRoot      = objective_id == ROOT_TASK_OBJECTIVE;
     const bool isActiveObj = t->ActiveObjectiveIdx() == objective_id;
@@ -186,7 +187,7 @@ void CGameTaskManager::SetTaskState(const shared_str& id, ETaskState state, u16 
 {
     const bool objectiveSpecified = objective_id != ROOT_TASK_OBJECTIVE;
     CGameTask* t = HasGameTask(id, objectiveSpecified);
-    if (NULL == t)
+    if (!t)
     {
         Msg("! actor does not has task [%s]%s", *id, objectiveSpecified ? "" : " or it is completed");
         return;
