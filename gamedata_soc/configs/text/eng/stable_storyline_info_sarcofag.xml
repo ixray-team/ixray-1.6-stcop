@@ -1,0 +1,12 @@
+	<string id="sar_command_center_text">
+		<text>Doctor: "Everything that you said about Monolith is right - it's just an illusion created by a laboratory near the Sarcophagus...judging by everything, it's the only way to penetrate to the real secret of the Zone...Which you were always trying to figure out."</text>
+	</string>
+	<string id="sar_monolith_call_text">
+		<text>I heard the call of the Monolith. He called me to him. Now I ought to go to him and get the answers to all my questions.</text>
+	</string>
+	<string id="sar_secret_lab_text">
+		<text>Doctor: "So here's the deal. There's a decoder for opening the door which leads to the system of operation of Monolith. The decoder is hidden in a secret stash in Propyat. I'm giving you the coordinates of its location and the key. You'll take the decoder, find the right door in the sarcophagus, and then...and then you'll see how it goes."</text>
+	</string>
+	<string id="zones_mystery_text">
+		<text>You made it after all, stalker. You turned out to be much stronger than we initially thought. Well, the time for us to talk has come. Head towards the signal. We'll be waiting for you.</text>
+	</string>

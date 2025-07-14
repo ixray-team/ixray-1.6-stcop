@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+    <string id="renderer_r4">
+		<text>Ул. полное освещение (DX11)</text>
+    </string>
+	<string id="ui_mm_r4_enable_tessellation">
+		<text>Тесселяция</text>
+	</string>
+	<string id="ui_mm_ssao_text">
+		<text>Режим SSAO</text>
+	</string>
+	<string id="st_opt_extreme">
+		<text>макс. высоко</text>
+	</string>
+	<string id="ui_mm_confirm_changes">
+		<text>Применить сделанные изменения? Все изменения будут отменены через</text>
+	</string>
+	<string id="ui_mm_r1_detail_textures">
+		<text>Детальные текстуры</text>
+	</string>
+	<string id="ui_st_trade_hint">
+		<text>Открыть окно торговли ($$ACTION_SPRINT_TOGGLE$$)</text>
+	</string>
+	<string id="ui_st_upgrade_hint">
+		<text>Открыть окно ремонта и модификации ($$ACTION_SPRINT_TOGGLE$$)</text>
+	</string>
+	<string id="st_press_any_key">
+		<text>Нажмите любую клавишу для перехода к игре</text>
+	</string>
+	<string id="ui_mm_crouch_toggle">
+		<text>Режим сесть/встать</text>
+	</string>
+	<string id="ui_st_disable_hud">
+		<text>Показывать интерфейс</text>
+	</string>
+	<string id="ui_ammo_count">
+		<text>Ёмк. магазина</text>
+	</string>
+	<string id="ui_ammo_types">
+		<text>Боеприпасы</text>
+	</string>
+	<string id="st_kg">
+		<text>кг</text>
+	</string>
+	<string id="ui_mm_snd_device">
+		<text>Звуковое устройство</text>
+	</string>
+	<string id="ui_mm_r2_detail_bump">
+		<text>Детальный рельеф</text>
+	</string>
+	<string id="ui_mm_r2_steep_parallax">
+		<text>Steep parallax</text>
+	</string>
+	<string id="st_opt_high">
+		<text>высоко</text>
+	</string>
+	<string id="st_opt_low">
+		<text>низко</text>
+	</string>
+	<string id="st_opt_medium">
+		<text>средне</text>
+	</string>
+	<string id="st_opt_off">
+		<text>отключено</text>
+	</string>
+	<string id="st_opt_ultra">
+		<text>очень высоко</text>
+	</string>
+	<string id="ui_mm_r4_enable_tessellation">
+		<text>Тесселяция</text>
+	</string>
+	<string id="ui_mm_volumetric_light">
+		<text>Объёмный свет</text>
+	</string>
+	<string id="ui_mm_r2_sun_quality">
+		<text>Качество солнца</text>
+	</string>
+	<string id="ui_mm_sun_shafts">
+		<text>Солнечные лучи</text>
+	</string>
+	<string id="ui_mm_ssao">
+		<text>по умолчанию</text>
+	</string>
+	<string id="ui_mm_r3_dynamic_wet_surfaces">
+		<text>Намокание плоскостей</text>
+	</string>
+	<string id="ui_mm_r3_volumetric_smoke">
+		<text>Объёмный дым</text>
+	</string>
+	<string id="ui_mm_dof">
+		<text>Глубина резкости</text>
+	</string>
+	<string id="ui_mm_soft_particles">
+		<text>Мягкие частицы</text>
+	</string>
+	<string id="ui_mm_soft_water">
+		<text>Мягкая вода</text>
+	</string>
+</string_table>

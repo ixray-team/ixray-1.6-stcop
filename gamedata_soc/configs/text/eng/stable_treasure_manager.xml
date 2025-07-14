@@ -1,0 +1,1296 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_secret_0000_descr">
+		<text>For now our secret stash is in the tunnel. That's a good place - few know about it, and the anomalies will keep others from getting in.</text>
+	</string>
+	<string id="agr_secret_0000_name">
+		<text>Seriy's secret stash</text>
+	</string>
+	<string id="agr_secret_0001_descr">
+		<text>I hid it in the stump by the tunnel. There's a good hole there.</text>
+	</string>
+	<string id="agr_secret_0001_name">
+		<text>Stump with hole</text>
+	</string>
+	<string id="agr_secret_0002_descr">
+		<text>I buried some goodies under the cross by the bush.</text>
+	</string>
+	<string id="agr_secret_0002_name">
+		<text>The mark is under the cross</text>
+	</string>
+	<string id="agr_secret_0003_descr">
+		<text>Dropped the backpack under the fallen tree.</text>
+	</string>
+	<string id="agr_secret_0003_name">
+		<text>Backpack under tree</text>
+	</string>
+	<string id="agr_secret_0004_descr">
+		<text>Stuck the backpack into the pipe by the factory. Nobody will find it.</text>
+	</string>
+	<string id="agr_secret_0004_name">
+		<text>Backpack of a chimney sweeper</text>
+	</string>
+	<string id="agr_secret_0005_descr">
+		<text>Stashed the chest on the roof of the factory - that way nobody will find it. Problem is, it will rust under the rain.</text>
+	</string>
+	<string id="agr_secret_0005_name">
+		<text>Chest on the roof</text>
+	</string>
+	<string id="agr_secret_0006_descr">
+		<text>They were shooting. Had to drop the backpack under the train car behind the seat. At least I got away. I'll go back and get it.</text>
+	</string>
+	<string id="agr_secret_0006_name">
+		<text>Drunkard's backpack</text>
+	</string>
+	<string id="agr_secret_0007_descr">
+		<text>Hid it under the cross, behind the cisterns. Dig a little, just don't get carried away.</text>
+	</string>
+	<string id="agr_secret_0007_name">
+		<text>By the three cisterns</text>
+	</string>
+	<string id="agr_secret_0008_descr">
+		<text>I put the backpack towards the top at the factory, that way nobody will see it. Problem is, I don't exactly remember what's in it.</text>
+	</string>
+	<string id="agr_secret_0008_name">
+		<text>Backpack is in the porthole</text>
+	</string>
+	<string id="agr_secret_0009_descr">
+		<text>I hid my things in a chest inside the factory</text>
+	</string>
+	<string id="agr_secret_0009_name">
+		<text>Radioactive chest</text>
+	</string>
+	<string id="agr_secret_0010_descr">
+		<text>In the chest under the stairs there's a secret stash.</text>
+	</string>
+	<string id="agr_secret_0010_name">
+		<text>Chest in the stairwell</text>
+	</string>
+	<string id="agr_secret_0011_descr">
+		<text>I hid it in the chest, nobody will check anyway.</text>
+	</string>
+	<string id="agr_secret_0011_name">
+		<text>Factory chest</text>
+	</string>
+	<string id="agr_secret_0012_descr">
+		<text>Dropped the bag out the window. Will pick it up later.</text>
+	</string>
+	<string id="agr_secret_0012_name">
+		<text>The bag is on the support beam</text>
+	</string>
+	<string id="agr_secret_0013_descr">
+		<text>Kolyan and I had a nice walk at the Agroprom. We found a bunch of junk, but managed to hide a few things. We put the chest in the trash bin.</text>
+	</string>
+	<string id="agr_secret_0013_name">
+		<text>Trash bin</text>
+	</string>
+	<string id="agr_secret_0014_descr">
+		<text>I found a safe under a fallen tree. Going to hide everything there for now.</text>
+	</string>
+	<string id="agr_secret_0014_name">
+		<text>Safe under the tree</text>
+	</string>
+	<string id="agr_secret_0015_descr">
+		<text>I threw the things into the pipe, will get them later. I had to, otherwise I would have obviously taken them along. Just hope they don't get wet.</text>
+	</string>
+	<string id="agr_secret_0015_name">
+		<text>Things in the pipe</text>
+	</string>
+	<string id="agr_secret_0016_descr">
+		<text>The goods are in the old pipe, we'll have to tell the guys that. I'm not climbing in there.</text>
+	</string>
+	<string id="agr_secret_0016_name">
+		<text>Radioactive pipe</text>
+	</string>
+	<string id="agr_secret_0017_descr">
+		<text>Ran away from the base, to hell with them! Dodged the stalkers' fire. Hid my stuff in a pile in a pipe.  I'll hang out here until they leave, then I'll pick it up.</text>
+	</string>
+	<string id="agr_secret_0017_name">
+		<text>The pile</text>
+	</string>
+	<string id="agr_secret_0018_descr">
+		<text>There is a half buried safe under the bush - that's where I hide everything.</text>
+	</string>
+	<string id="agr_secret_0018_name">
+		<text>Safe under the bush</text>
+	</string>
+	<string id="agr_secret_0019_descr">
+		<text>They discovered the chest under the support beam. Someone was dragging it along all the way from Scientific Research Institute. Let's wait for the windflier and then pick it up.</text>
+	</string>
+	<string id="agr_secret_0019_name">
+		<text>Archive box</text>
+	</string>
+	<string id="agr_secret_0020_descr">
+		<text>Hid my stuff in an iron capsule</text>
+	</string>
+	<string id="agr_secret_0020_name">
+		<text>Under the trap door</text>
+	</string>
+	<string id="agr_secret_0021_descr">
+		<text>There is a half buried safe under the bush - that's where I hide everything.</text>
+	</string>
+	<string id="agr_secret_0021_name">
+		<text>Under the bush by the wall</text>
+	</string>
+	<string id="agr_secret_0022_descr">
+		<text>Good chest for collecting extra junk</text>
+	</string>
+	<string id="agr_secret_0022_name">
+		<text>Chest from the institute</text>
+	</string>
+	<string id="agr_secret_0023_descr">
+		<text>Hid it in the safe, but then the soldiers came and now I can't get the goods.</text>
+	</string>
+	<string id="agr_secret_0023_name">
+		<text>Agrosafe</text>
+	</string>
+	<string id="agr_secret_0024_descr">
+		<text>Threw my junk in the pipe - will get it later.</text>
+	</string>
+	<string id="agr_secret_0024_name">
+		<text>The body of the truck</text>
+	</string>
+	<string id="agr_secret_0025_descr">
+		<text>Take the things from the rotted log</text>
+	</string>
+	<string id="agr_secret_0025_name">
+		<text>Rotted log</text>
+	</string>
+	<string id="agr_secret_0026_descr">
+		<text>Good chest for collecting extra junk. The institute's equipment inventory was once there.</text>
+	</string>
+	<string id="agr_secret_0026_name">
+		<text>Zavhoz chest</text>
+	</string>
+	<string id="agr_secret_0027_descr">
+		<text>Good chest for small things. I kept my metalworking instruments in a chest like that at home.</text>
+	</string>
+	<string id="agr_secret_0027_name">
+		<text>Metalworking inventory</text>
+	</string>
+	<string id="agr_u_secret_0000_descr">
+		<text>The bandits hide something under the pipe, need to check it out. It's clear from our conversation that they keep their supplies there.</text>
+	</string>
+	<string id="agr_u_secret_0000_name">
+		<text>Bandits' communal "fund"</text>
+	</string>
+	<string id="agr_u_secret_0001_descr">
+		<text>Hid the backpack behind slabs of concrete, packing light. I'll be hungry but at least alive.</text>
+	</string>
+	<string id="agr_u_secret_0001_name">
+		<text>Backpack is in a side-street</text>
+	</string>
+	<string id="agr_u_secret_0002_descr">
+		<text>Chest is behind a rusted "barrel" in the underground, everything is in it. There's no way I'm going back there. It's a miracle that I busted the bloodsucker. Still don't remember how.</text>
+	</string>
+	<string id="agr_u_secret_0002_name">
+		<text>Bloodsucker's chest</text>
+	</string>
+	<string id="agr_u_secret_0003_descr">
+		<text>There are some goodies behind the door. I'm answering for the goods in store!</text>
+	</string>
+	<string id="agr_u_secret_0003_name">
+		<text>Stalker's goodies</text>
+	</string>
+	<string id="agr_u_secret_0004_descr">
+		<text>I dug up some goodies here. A clever spot for my secret stash. There's no way you'd find it on a yellow barrel.</text>
+	</string>
+	<string id="agr_u_secret_0004_name">
+		<text>Mole hole</text>
+	</string>
+	<string id="bar_secret_0000_description">
+		<text>I hid the backpack by the Duty base. Will pick it up later</text>
+	</string>
+	<string id="bar_secret_0000_name">
+		<text>Hidden backpack</text>
+	</string>
+	<string id="bar_secret_0001_description">
+		<text>A large pack of dogs went after me. If I didn't leave my backpack I wouldn't have made it to the gate</text>
+	</string>
+	<string id="bar_secret_0001_name">
+		<text>The backpack that was left behind</text>
+	</string>
+	<string id="bar_secret_0002_description">
+		<text>Everything that was left they buried under the cross</text>
+	</string>
+	<string id="bar_secret_0002_name">
+		<text>Secret stash under the cross</text>
+	</string>
+	<string id="bar_secret_0003_description">
+		<text>Dropped my backpack here - it'll be easier that way</text>
+	</string>
+	<string id="bar_secret_0003_name">
+		<text>Backpack</text>
+	</string>
+	<string id="bar_secret_0004_description">
+		<text>Ammo of the Duty's security checkpoint is stored in a bunker, but nobody's keeping an eye on the chest</text>
+	</string>
+	<string id="bar_secret_0004_name">
+		<text>Supplies in the bunker</text>
+	</string>
+	<string id="bar_secret_0005_description">
+		<text>I saw how a dutyer stuck something in the pipe by the gate</text>
+	</string>
+	<string id="bar_secret_0005_name">
+		<text>Secret stash</text>
+	</string>
+	<string id="bar_secret_0006_description">
+		<text>All of this belonged to him, might as well stay here for the time being</text>
+	</string>
+	<string id="bar_secret_0006_name">
+		<text>Secret stash under the cross</text>
+	</string>
+	<string id="bar_secret_0007_description">
+		<text>I'm going to the bar, left the backpack in the hangar</text>
+	</string>
+	<string id="bar_secret_0007_name">
+		<text>Backpack</text>
+	</string>
+	<string id="bar_secret_0008_description">
+		<text>They say that there's something valuable hidden on the Duty's territory in the switchboard.</text>
+	</string>
+	<string id="bar_secret_0008_name">
+		<text>Swithboard with a secret stash</text>
+	</string>
+	<string id="bar_secret_0009_description">
+		<text>I stuck the chest in top of the tower in front of the Duty - no one will notice it</text>
+	</string>
+	<string id="bar_secret_0009_name">
+		<text>Secret stash on the tower</text>
+	</string>
+	<string id="bar_secret_0010_description">
+		<text>Hid it in the pipe under the stairs</text>
+	</string>
+	<string id="bar_secret_0010_name">
+		<text>Secret stash</text>
+	</string>
+	<string id="bar_secret_0011_description">
+		<text>Hid the goods not far from the bar, behind the anomalies - nobody will get in there. And even if they got there they wouldn't know how to open it. But it's all very simple - just pull up slightly at the door, and everything will open.</text>
+	</string>
+	<string id="bar_secret_0011_name">
+		<text>Arny's secret stash</text>
+	</string>
+	<string id="bar_secret_0012_description">
+		<text>Buried the goods not far from the bar</text>
+	</string>
+	<string id="bar_secret_0012_name">
+		<text>Secret stash</text>
+	</string>
+	<string id="bar_secret_0013_description">
+		<text>By the bar, in a chest</text>
+	</string>
+	<string id="bar_secret_0013_name">
+		<text>Chest</text>
+	</string>
+	<string id="bar_secret_0014_description">
+		<text>Hid the chest on a side-street by the bar</text>
+	</string>
+	<string id="bar_secret_0014_name">
+		<text>Small chest</text>
+	</string>
+	<string id="bar_secret_0015_description">
+		<text>Buried it under the cross behind the pine trees</text>
+	</string>
+	<string id="bar_secret_0015_name">
+		<text>Secret stash</text>
+	</string>
+	<string id="bar_secret_0016_description">
+		<text>Under the cross, not far from the passage into the Dark Territory</text>
+	</string>
+	<string id="bar_secret_0016_name">
+		<text>Secret stash</text>
+	</string>
+	<string id="bar_secret_0017_description">
+		<text>Hid the chest with the antirad in a pipe by the Arena</text>
+	</string>
+	<string id="bar_secret_0017_name">
+		<text>Small chest</text>
+	</string>
+	<string id="bar_secret_0018_description">
+		<text>Hid my crap in a pipe under the tower</text>
+	</string>
+	<string id="bar_secret_0018_name">
+		<text>Secret stash</text>
+	</string>
+	<string id="bar_secret_0019_description">
+		<text>There's a secret stash under the cross</text>
+	</string>
+	<string id="bar_secret_0019_name">
+		<text>Secret stash</text>
+	</string>
+	<string id="esc_secret_0000_descr">
+		<text>I hid army supplies in a train car during regrouping. Not to forget.</text>
+	</string>
+	<string id="esc_secret_0000_name">
+		<text>Train car above the bridge</text>
+	</string>
+	<string id="esc_secret_0001_descr">
+		<text>I saw a stalker go down under an anomaly by the train tunnel in the woods. Seemed like he had some pretty good stuff.</text>
+	</string>
+	<string id="esc_secret_0001_name">
+		<text>Things belonging to the one who perished in the anomaly</text>
+	</string>
+	<string id="esc_secret_0002_descr">
+		<text>I hid the habar by the bandits' camp under the cross</text>
+	</string>
+	<string id="esc_secret_0002_name">
+		<text>The cross by the bandits' camp</text>
+	</string>
+	<string id="esc_secret_0003_descr">
+		<text>The chest stolen by the bandits has been found in the cellar of the central building. Need to prepare a detachment and get it.</text>
+	</string>
+	<string id="esc_secret_0003_name">
+		<text>Bandits' warehouse</text>
+	</string>
+	<string id="esc_secret_0004_descr">
+		<text>When my comrades and I were fighting off the dogs in uniform, I buried some goods under the bridge. Let them stay there for now.</text>
+	</string>
+	<string id="esc_secret_0004_name">
+		<text>Under the cross</text>
+	</string>
+	<string id="esc_secret_0005_descr">
+		<text>I stuck the backpack in the cellar. I'll be back later - can't get to it right now.</text>
+	</string>
+	<string id="esc_secret_0005_name">
+		<text>Shelter in the cellar</text>
+	</string>
+	<string id="esc_secret_0006_descr">
+		<text>I found a half-buried safe on the farm. I'll keep the goods there for now.</text>
+	</string>
+	<string id="esc_secret_0006_name">
+		<text>Safe on the farm</text>
+	</string>
+	<string id="esc_secret_0007_descr">
+		<text>A little bird told me that somebody's hiding something in the train car on the bridge. Will need to check it out on the way back. I wonder who...</text>
+	</string>
+	<string id="esc_secret_0007_name">
+		<text>Container in the train car</text>
+	</string>
+	<string id="esc_secret_0008_descr">
+		<text>Hid the goods right under the roof of the little house by the bridge.</text>
+	</string>
+	<string id="esc_secret_0008_name">
+		<text>Goods of the shooter</text>
+	</string>
+	<string id="esc_secret_0009_descr">
+		<text>Hid my crap in one of the chests not far from the bridge. That's it, I'm calling it quits and leaving the Zone. Farewell, brothers! I'll never forget the motherland.</text>
+	</string>
+	<string id="esc_secret_0009_name">
+		<text>Things by the bridge</text>
+	</string>
+	<string id="esc_secret_0010_descr">
+		<text>One of the stalkers choked by the newbies' camp. Check out his goods.</text>
+	</string>
+	<string id="esc_secret_0010_name">
+		<text>The backpack is near the village</text>
+	</string>
+	<string id="esc_secret_0011_descr">
+		<text>Found out from Lihoi that the secret stash is in the cellar. He was talking too much so we shut him up for good.</text>
+	</string>
+	<string id="esc_secret_0011_name">
+		<text>Cellar in the village</text>
+	</string>
+	<string id="esc_secret_0012_descr">
+		<text>Found a great hiding place in the cellar. I'll wait until someone puts something there.</text>
+	</string>
+	<string id="esc_secret_0012_name">
+		<text>A good place</text>
+	</string>
+	<string id="esc_secret_0013_descr">
+		<text>Found out from Vorpal that there's a secret stash in the cellar. Our men were carrying out a scouting expedition in the area. Let's check it out.</text>
+	</string>
+	<string id="esc_secret_0013_name">
+		<text>Vorpal's secret stash</text>
+	</string>
+	<string id="esc_secret_0014_descr">
+		<text>They saw that the commander has a tricky chest in his office, and there's a ton of valuable goods there.</text>
+	</string>
+	<string id="esc_secret_0014_name">
+		<text>The valuables of the commander</text>
+	</string>
+	<string id="esc_secret_0015_descr">
+		<text>Some stalker croaked not far from the camp of the newbies. We should see what he was carrying. Who lets them in here anyway?</text>
+	</string>
+	<string id="esc_secret_0015_name">
+		<text>By a country road</text>
+	</string>
+	<string id="esc_secret_0016_descr">
+		<text>The goodies are hidden in the bandits' cellar. They weren't there before so let's wait for the right time to take them all. </text>
+	</string>
+	<string id="esc_secret_0016_name">
+		<text>The robbers' cellar</text>
+	</string>
+	<string id="esc_secret_0017_descr">
+		<text>Discovered the inventory in the pipe, not far from the farm. Once the stockade is over, I'll definitely come back.</text>
+	</string>
+	<string id="esc_secret_0017_name">
+		<text>Gas pipe</text>
+	</string>
+	<string id="esc_secret_0018_descr">
+		<text>Threw my backpack off not far from the post, should pick it up as soon as possible, before the commander transfers us to a new location.</text>
+	</string>
+	<string id="esc_secret_0018_name">
+		<text>Hidden things</text>
+	</string>
+	<string id="esc_secret_0019_descr">
+		<text>I left the chest at the tower for now. Will pick it up when I can.</text>
+	</string>
+	<string id="esc_secret_0019_name">
+		<text>Tower at the check-point</text>
+	</string>
+	<string id="gar_secret_0000_descr">
+		<text>I saw how a bandit hid his goods in a chest in the hangar. How can I quietly steal it?</text>
+	</string>
+	<string id="gar_secret_0000_name">
+		<text>Bandits' storage</text>
+	</string>
+	<string id="gar_secret_0001_descr">
+		<text>Vasya and I went to check things out and suddenly a bullet hit him. And I had nothing to do with it. It's the damn bullet. I hid the stuff away in a pipe.</text>
+	</string>
+	<string id="gar_secret_0001_name">
+		<text>Old crane</text>
+	</string>
+	<string id="gar_secret_0002_descr">
+		<text>Grizzly croaked with all of his stuff at the Garbage, in the train tunnel behind the diesel. Pity about Grizzly.</text>
+	</string>
+	<string id="gar_secret_0002_name">
+		<text>Grizzly's things</text>
+	</string>
+	<string id="gar_secret_0003_descr">
+		<text>Stowed the goodies away in a pipe at the garbage.</text>
+	</string>
+	<string id="gar_secret_0003_name">
+		<text>Pipe on the North pile</text>
+	</string>
+	<string id="gar_secret_0004_descr">
+		<text>The things are in the garbage, in one of the pipes. If you don't know exactly where they are, you won't find them.</text>
+	</string>
+	<string id="gar_secret_0004_name">
+		<text>Extra cash in the scrap metal</text>
+	</string>
+	<string id="gar_secret_0005_descr">
+		<text>I hid the stuff in a metal pipe next to the two cisterns. I should pick it up, but don't have the time.</text>
+	</string>
+	<string id="gar_secret_0005_name">
+		<text>Iron furnace next to the cistern.</text>
+	</string>
+	<string id="gar_secret_0006_descr">
+		<text>There are some useful things hidden among the radioactive waste, where few hang around.</text>
+	</string>
+	<string id="gar_secret_0006_name">
+		<text>Pipe on the East pile</text>
+	</string>
+	<string id="gar_secret_0007_descr">
+		<text>Someone's backpack is lying around in the valley, with anomalies all around. How could you get to it?</text>
+	</string>
+	<string id="gar_secret_0007_name">
+		<text>Nobody's backpack</text>
+	</string>
+	<string id="gar_secret_0008_descr">
+		<text>Finished off the traitor in the swamp... we buried him there too and left his goodies under the cross. Had more important things to worry about.</text>
+	</string>
+	<string id="gar_secret_0008_name">
+		<text>The belongings of the murdered one</text>
+	</string>
+	<string id="gar_secret_0009_descr">
+		<text>There's a secret stash in the shadows - a good place to hide it.</text>
+	</string>
+	<string id="gar_secret_0009_name">
+		<text>Rotted stump</text>
+	</string>
+	<string id="gar_secret_0010_descr">
+		<text>There's a log in the forest with a hold inside. In the hole there's treasure - it's time to get it.</text>
+	</string>
+	<string id="gar_secret_0010_name">
+		<text>Log in the forest</text>
+	</string>
+	<string id="gar_secret_0011_descr">
+		<text>Petrenko wanted to pass on the word that there's information about the secret stash of the Strelok faction at the Garbage. Here in the valley floor there has to be a manhole, he explained how there's a trick to opening it. As soon as everything calms down, we gotta go there check it out.</text>
+	</string>
+	<string id="gar_secret_0011_name">
+		<text>Storage of the Strelok faction</text>
+	</string>
+	<string id="gar_secret_0012_descr">
+		<text>Hid it in the car, the Long One said it was a good place.</text>
+	</string>
+	<string id="gar_secret_0012_name">
+		<text>Secret stash in the car</text>
+	</string>
+	<string id="gar_secret_0013_descr">
+		<text>Put the backpack in the bus - seems unnoticeable</text>
+	</string>
+	<string id="gar_secret_0013_name">
+		<text>Stalker's backpack in the bus</text>
+	</string>
+	<string id="gar_secret_0014_descr">
+		<text>I put the supplies in the chest, and the chest into the old house around the corner. Still can't understand what that structure is for.</text>
+	</string>
+	<string id="gar_secret_0014_name">
+		<text>Assorted supplies</text>
+	</string>
+	<string id="gar_secret_0015_descr">
+		<text>There is a safe partially buried in a pile of trash. Everything's in the safe. Better not forget what was in it.</text>
+	</string>
+	<string id="gar_secret_0015_name">
+		<text>Safe in the South pile.</text>
+	</string>
+	<string id="gar_secret_0016_descr">
+		<text>Put the goodies on the pile of trash in the pipe</text>
+	</string>
+	<string id="gar_secret_0016_name">
+		<text>Storage in the scrap metal yard.</text>
+	</string>
+	<string id="gar_secret_0017_descr">
+		<text>The head of radio communications passed along a message to us: retreat. I found a chest, threw in what I had on me, and retreated empty-handed.</text>
+	</string>
+	<string id="gar_secret_0017_name">
+		<text>Supplies in the chest</text>
+	</string>
+	<string id="gar_secret_0018_descr">
+		<text>I stuck the habar into the pipe at the garbage. It won't stay there for long.</text>
+	</string>
+	<string id="gar_secret_0018_name">
+		<text>Pipe by the bus</text>
+	</string>
+	<string id="gar_secret_0019_descr">
+		<text>It's easy to hide the backpack in the ruins. I hope it won't be hard to pick it up, if the bandits don't get in the way.</text>
+	</string>
+	<string id="gar_secret_0019_name">
+		<text>Backpack in the ruins</text>
+	</string>
+	<string id="gar_secret_0020_descr">
+		<text>While the dutyers were shooting, I hid the habar in the train car. Somehow I have to get in to pick it up. And to thank the Duty.</text>
+	</string>
+	<string id="gar_secret_0020_name">
+		<text>Chest at the heavily armed military checkpoint</text>
+	</string>
+	<string id="gar_secret_0021_descr">
+		<text>They say that Weakling choked at the Garbage - need to drop by to check out the goods. Otherwise there'll be many interested parties coming in.</text>
+	</string>
+	<string id="gar_secret_0021_name">
+		<text>Backpack of Weakling</text>
+	</string>
+	<string id="gar_secret_0022_descr">
+		<text>For now I'll hide the goods in the pothole. Maybe they won't find them.</text>
+	</string>
+	<string id="gar_secret_0022_name">
+		<text>String bag in the pothole</text>
+	</string>
+	<string id="gar_secret_0023_descr">
+		<text>An anomaly got someone by the escalator - the backpack is in view, but hard to get to.</text>
+	</string>
+	<string id="gar_secret_0023_name">
+		<text>Under the dipper</text>
+	</string>
+	<string id="gar_secret_0024_descr">
+		<text>Barely made it under the beams, but at least the backpack's well hidden - nobody will try to climb in here.</text>
+	</string>
+	<string id="gar_secret_0024_name">
+		<text>The extra cash is under the concrete blocks</text>
+	</string>
+	<string id="mil_secret_0000_description">
+		<text>Hid the goods in the log - don't think anyone will find them.</text>
+	</string>
+	<string id="mil_secret_0000_name">
+		<text>Secret stash in the log</text>
+	</string>
+	<string id="mil_secret_0001_description">
+		<text>Hid the junk in the furnace.</text>
+	</string>
+	<string id="mil_secret_0001_name">
+		<text>Secret stash in the furnace</text>
+	</string>
+	<string id="mil_secret_0002_description">
+		<text>Hid the junk in the office of KAMAZ</text>
+	</string>
+	<string id="mil_secret_0002_name">
+		<text>Secret stash in KAMAZ</text>
+	</string>
+	<string id="mil_secret_0003_description">
+		<text>Buried some goodies under the cross by the village.</text>
+	</string>
+	<string id="mil_secret_0003_name">
+		<text>Treasure under the cross</text>
+	</string>
+	<string id="mil_secret_0004_description">
+		<text>Threw my things into the pipe, will pick them up later.</text>
+	</string>
+	<string id="mil_secret_0004_name">
+		<text>Secret stash in the pipe</text>
+	</string>
+	<string id="mil_secret_0005_description">
+		<text>Secret stash in the chest inside the water tower</text>
+	</string>
+	<string id="mil_secret_0005_name">
+		<text>Treasure in the tower</text>
+	</string>
+	<string id="mil_secret_0006_description">
+		<text>Stuck my backpack into the furnace, it'll come in handy later.</text>
+	</string>
+	<string id="mil_secret_0006_name">
+		<text>Furnace secret stash</text>
+	</string>
+	<string id="mil_secret_0007_description">
+		<text>Hid the goodies in the car in the abandoned village.</text>
+	</string>
+	<string id="mil_secret_0007_name">
+		<text>Auto-secret stash</text>
+	</string>
+	<string id="mil_secret_0008_description">
+		<text>Left the backpack in the radiation ruins. Was afraid to show my face there.</text>
+	</string>
+	<string id="mil_secret_0008_name">
+		<text>Dangerous secret</text>
+	</string>
+	<string id="mil_secret_0009_description">
+		<text>Buried the goodies under the cross in a hidden place.</text>
+	</string>
+	<string id="mil_secret_0009_name">
+		<text>Stalker's stash</text>
+	</string>
+	<string id="mil_secret_0010_description">
+		<text>Hid away the backpack with the equipment in a cozy spot.</text>
+	</string>
+	<string id="mil_secret_0010_name">
+		<text>Backpack with equipment</text>
+	</string>
+	<string id="mil_secret_0011_description">
+		<text>Hid my crap in the car on a hill</text>
+	</string>
+	<string id="mil_secret_0011_name">
+		<text>Secret stash on a hill</text>
+	</string>
+	<string id="mil_secret_0012_description">
+		<text>A helicopter fell right by the abandoned military base, and the chest is right there, under the helicopter. One problem - there are anomalies and radiation all over the place.</text>
+	</string>
+	<string id="mil_secret_0012_name">
+		<text>Chest from the helicopter</text>
+	</string>
+	<string id="mil_secret_0013_description">
+		<text>Buried the goodies on the hill, under the cross</text>
+	</string>
+	<string id="mil_secret_0013_name">
+		<text>Secret in the tombstone</text>
+	</string>
+	<string id="mil_secret_0014_description">
+		<text>There's a secret stash in the stump - a good place</text>
+	</string>
+	<string id="mil_secret_0014_name">
+		<text>Secret stump</text>
+	</string>
+	<string id="mil_secret_0015_description">
+		<text>Left the backpack in the cabin of the crane. Will pick it up later</text>
+	</string>
+	<string id="mil_secret_0015_name">
+		<text>Secret stash of the high altitude worker</text>
+	</string>
+	<string id="mil_secret_0016_description">
+		<text>Everything is in the chest, in a train car not far from the base. That's how we planned it, now all we have to do is wait.</text>
+	</string>
+	<string id="mil_secret_0016_name">
+		<text>The agreed-upon secret stash</text>
+	</string>
+	<string id="mil_secret_0017_description">
+		<text>Stuck the goods into the log. Don't think they'll find anything.</text>
+	</string>
+	<string id="mil_secret_0017_name">
+		<text>Treasure in the log</text>
+	</string>
+	<string id="mil_secret_0018_description">
+		<text>Stuck the goodies into a pipe of the shore of a lake</text>
+	</string>
+	<string id="mil_secret_0018_name">
+		<text>Pipe with goods</text>
+	</string>
+	<string id="mil_secret_0019_description">
+		<text>Hid my things in an iron capsule</text>
+	</string>
+	<string id="mil_secret_0019_name">
+		<text>Secret stash of the stalker</text>
+	</string>
+	<string id="mil_secret_0020_description">
+		<text>Stuck the goods into a log, don't think they'll find them</text>
+	</string>
+	<string id="mil_secret_0020_name">
+		<text>Goodies in the log</text>
+	</string>
+	<string id="mil_secret_0021_description">
+		<text>Good chest for storing extra junk</text>
+	</string>
+	<string id="mil_secret_0021_name">
+		<text>Good supply chest</text>
+	</string>
+	<string id="mil_secret_0022_description">
+		<text>Hid away the backpack with the goods in the tunnel</text>
+	</string>
+	<string id="mil_secret_0022_name">
+		<text>Backpack in the tunnel</text>
+	</string>
+	<string id="mil_secret_0023_description">
+		<text>Good chest for storing extra junk</text>
+	</string>
+	<string id="mil_secret_0023_name">
+		<text>Chest with goods</text>
+	</string>
+	<string id="mil_secret_0024_description">
+		<text>Stuck the goods into a log, don't think they'll find them</text>
+	</string>
+	<string id="mil_secret_0024_name">
+		<text>Secret stash in the log</text>
+	</string>
+	<string id="mil_secret_0025_description">
+		<text>Threw the goods into the chest - will get them later</text>
+	</string>
+	<string id="mil_secret_0025_name">
+		<text>Temporary secret stash</text>
+	</string>
+	<string id="mil_secret_0026_description">
+		<text>Hid the things in the manhole. They'll come in handy one day.</text>
+	</string>
+	<string id="mil_secret_0026_name">
+		<text>Steel secret stash</text>
+	</string>
+	<string id="mil_secret_0027_description">
+		<text>Threw the goods into the chest - will get them later</text>
+	</string>
+	<string id="mil_secret_0027_name">
+		<text>Chest with goodies</text>
+	</string>
+	<string id="mil_secret_0028_description">
+		<text>Hid the goodies in the car right under the Freedom noses, didn't have any time to look for a better place</text>
+	</string>
+	<string id="mil_secret_0028_name">
+		<text>Secret stash in the car</text>
+	</string>
+	<string id="pri_secret_0000_description">
+		<text>They say that some famous stalker kicked the bucket here, and nobody's picked up his goods yet</text>
+	</string>
+	<string id="pri_secret_0000_name">
+		<text>Things of the dead stalker</text>
+	</string>
+	<string id="pri_secret_0001_description">
+		<text>They say that there's a chest in the garage with a whole ton of goodies</text>
+	</string>
+	<string id="pri_secret_0001_name">
+		<text>Treasure in the garage</text>
+	</string>
+	<string id="pri_secret_0002_description">
+		<text>They say there's a chest in the kindergarten with a whole ton of goodies in it</text>
+	</string>
+	<string id="pri_secret_0002_name">
+		<text>Old secret stash</text>
+	</string>
+	<string id="pri_secret_0003_description">
+		<text>They buried Fang in Pripyat under a monument. They left all of his goodies with him - it's not right to take away from the dead.</text>
+	</string>
+	<string id="pri_secret_0003_name">
+		<text>Fang's goodies</text>
+	</string>
+	<string id="pri_secret_0004_description">
+		<text>The last that they knew about him is that he was the sole survivor after the scorcher. He left all the supplies in some old supermarket, and moved on out. Everything went not the way it was planned, and that was the best leader of Freedom in all of our history.</text>
+	</string>
+	<string id="pri_secret_0004_name">
+		<text>Supplies of the leader of Freedom</text>
+	</string>
+	<string id="rad_secret_0000_description">
+		<text>The cross is on the way to the scorcher, didn't go any further, hid everything there under it.</text>
+	</string>
+	<string id="rad_secret_0000_name">
+		<text>Murk's treasure</text>
+	</string>
+	<string id="rad_secret_0001_description">
+		<text>Some stalker perished here, and his goodies are still lying around, nobody can get to them</text>
+	</string>
+	<string id="rad_secret_0001_name">
+		<text>Goodies of the dead stalker</text>
+	</string>
+	<string id="rad_secret_0002_description">
+		<text>They say that there's a half-buried safe in the forest and there's a bunch of goodies inside</text>
+	</string>
+	<string id="rad_secret_0002_name">
+		<text>Goodies in the safe</text>
+	</string>
+	<string id="rad_secret_0003_description">
+		<text>They told them not to fly over the Scorcher, and look what happend. They landed in the middle of the forest, and it's unlikely that anyone survived. We were supposed to get the stuff that was with them.</text>
+	</string>
+	<string id="rad_secret_0003_name">
+		<text>Package for Duty</text>
+	</string>
+	<string id="rad_secret_0004_description">
+		<text>They say that the supplies of the faction, who were trying to get to the center of the Zone, are still under the radiation of the Scorcher. None of them returned, and the supplies remained there waiting for someone to pick them up.</text>
+	</string>
+	<string id="rad_secret_0004_name">
+		<text>Supplies of the reckless group</text>
+	</string>
+	<string id="rad_secret_0005_description">
+		<text>They say that the leader of some former faction croaked here, and there was a valuable amount of goodies with him</text>
+	</string>
+	<string id="rad_secret_0005_name">
+		<text>Goodies of the leader of former faction</text>
+	</string>
+	<string id="ros_secret_0000_description">
+		<text>Hid the backpack behind the iron plate</text>
+	</string>
+	<string id="ros_secret_0000_name">
+		<text>Hidden backpack</text>
+	</string>
+	<string id="ros_secret_0001_description">
+		<text>Stashed the goodies under the cross</text>
+	</string>
+	<string id="ros_secret_0001_name">
+		<text>Secret stash under the cross</text>
+	</string>
+	<string id="ros_secret_0002_description">
+		<text>Hid a little something in the chest under the little house. Shouldn't forget about it.</text>
+	</string>
+	<string id="ros_secret_0002_name">
+		<text>Chest under the small house</text>
+	</string>
+	<string id="ros_secret_0003_description">
+		<text>I was about to stick the backpack under the steps, when those jerks appeared. Man, how will I get it back?</text>
+	</string>
+	<string id="ros_secret_0003_name">
+		<text>Stalker's backpack</text>
+	</string>
+	<string id="ros_secret_0004_description">
+		<text>There's a half buried safe in the corner behind the tree. That's where all my junk will be for now.</text>
+	</string>
+	<string id="ros_secret_0004_name">
+		<text>Secret stash behind the tree</text>
+	</string>
+	<string id="ros_secret_0005_description">
+		<text>They hid everything in a chest in the garage that they took over during the rain.</text>
+	</string>
+	<string id="ros_secret_0005_name">
+		<text>Secret stash in the garage</text>
+	</string>
+	<string id="ros_secret_0006_description">
+		<text>Hid some things in the chest behind the booth</text>
+	</string>
+	<string id="ros_secret_0006_name">
+		<text>Hidden chest</text>
+	</string>
+	<string id="ros_secret_0007_description">
+		<text>Stuck the backpack in a hole. Seems unnoticeable from above.</text>
+	</string>
+	<string id="ros_secret_0007_name">
+		<text>Backpack in the secret stash</text>
+	</string>
+	<string id="ros_secret_0008_description">
+		<text>Hid the small chest in a safe spot</text>
+	</string>
+	<string id="ros_secret_0008_name">
+		<text>Chest in a safe spot</text>
+	</string>
+	<string id="ros_secret_0009_description">
+		<text>My backpack is up right under the roof. It's there for a rainy day.</text>
+	</string>
+	<string id="ros_secret_0009_name">
+		<text>Secret stash of the stalker</text>
+	</string>
+	<string id="ros_secret_0010_description">
+		<text>They say there's a safe in that little house, and that there's something in it</text>
+	</string>
+	<string id="ros_secret_0010_name">
+		<text>Safe in the house</text>
+	</string>
+	<string id="ros_secret_0011_description">
+		<text>Hid it in the house in a pipe. Careful, everything's out of whack there</text>
+	</string>
+	<string id="ros_secret_0011_name">
+		<text>Secret stash in the pipe</text>
+	</string>
+	<string id="ros_secret_0012_description">
+		<text>Take what we talked about from the chest. Usually nobody looks in there</text>
+	</string>
+	<string id="ros_secret_0012_name">
+		<text>Hidden chest</text>
+	</string>
+	<string id="ros_secret_0013_description">
+		<text>Hid it under the cross on a side street</text>
+	</string>
+	<string id="ros_secret_0013_name">
+		<text>Secret stash under the cross</text>
+	</string>
+	<string id="ros_secret_0014_description">
+		<text>They hid the extra supplies under the concrete at the construction site</text>
+	</string>
+	<string id="ros_secret_0014_name">
+		<text>Secret stash under the concrete</text>
+	</string>
+	<string id="ros_secret_0015_description">
+		<text>In case we need to take off quickly, we'll put the habar into the chest at the construction site.</text>
+	</string>
+	<string id="ros_secret_0015_name">
+		<text>Secret stash of the Lucky One</text>
+	</string>
+	<string id="ros_secret_0016_description">
+		<text>Hid it in one of the side streets at the construction site</text>
+	</string>
+	<string id="ros_secret_0016_name">
+		<text>Nychka</text>
+	</string>
+	<string id="ros_secret_0017_description">
+		<text>Stuck everything into some pipe - will pick it up later</text>
+	</string>
+	<string id="ros_secret_0017_name">
+		<text>Secret stash in the pipe</text>
+	</string>
+	<string id="ros_secret_0018_description">
+		<text>Hid the medicine in a chest not far from the construction site</text>
+	</string>
+	<string id="ros_secret_0018_name">
+		<text>Chest with medicine</text>
+	</string>
+	<string id="ros_secret_0019_description">
+		<text>Dragged the chest into the cabin of the crane</text>
+	</string>
+	<string id="ros_secret_0019_name">
+		<text>Chest in the crane</text>
+	</string>
+	<string id="ros_secret_0020_description">
+		<text>Hid my goods in a manhole in the corner.</text>
+	</string>
+	<string id="ros_secret_0020_name">
+		<text>Secret stash in the manhole</text>
+	</string>
+	<string id="ros_secret_0021_description">
+		<text>Went after the artifact and got into an anomaly. I was barely able to walk and dropped the backpack in the corner.</text>
+	</string>
+	<string id="ros_secret_0021_name">
+		<text>The dropped backpack</text>
+	</string>
+	<string id="ros_secret_0022_description">
+		<text>Stuck the chest right under the roof by the tower so that nobody would notice.</text>
+	</string>
+	<string id="ros_secret_0022_name">
+		<text>Small chest under the roof</text>
+	</string>
+	<string id="ros_secret_0023_description">
+		<text>We hid what we found in the pipe not far from the construction site.</text>
+	</string>
+	<string id="ros_secret_0023_name">
+		<text>Secret stash in the pipe</text>
+	</string>
+	<string id="ros_secret_0024_description">
+		<text>Stuck all the goods into the log. Don't think they'll find it.</text>
+	</string>
+	<string id="ros_secret_0024_name">
+		<text>Secret stash</text>
+	</string>
+	<string id="ros_secret_0025_description">
+		<text>Dropped the backpack off by the crane</text>
+	</string>
+	<string id="ros_secret_0025_name">
+		<text>Backpack</text>
+	</string>
+	<string id="val_secret_0000_description">
+		<text>Hid the bit of goodies under the cross by the mountain</text>
+	</string>
+	<string id="val_secret_0000_name">
+		<text>Secret stash under the cross</text>
+	</string>
+	<string id="val_secret_0001_description">
+		<text>Stuck the goods into the log. Don't think they'll find it.</text>
+	</string>
+	<string id="val_secret_0001_name">
+		<text>Secret stash in the log</text>
+	</string>
+	<string id="val_secret_0002_description">
+		<text>Stuck the backpack under the bridge. Let it stay there for now.</text>
+	</string>
+	<string id="val_secret_0002_name">
+		<text>Backpack under the bridge</text>
+	</string>
+	<string id="val_secret_0003_description">
+		<text>Put the chest into the car by the swamp</text>
+	</string>
+	<string id="val_secret_0003_name">
+		<text>Car with the secret stash</text>
+	</string>
+	<string id="val_secret_0004_description">
+		<text>There's a secret stash in a stump - good place for it</text>
+	</string>
+	<string id="val_secret_0004_name">
+		<text>Secret stash in a stump</text>
+	</string>
+	<string id="val_secret_0005_description">
+		<text>Found a great chest on the farm. I'll keep the supplies there for now.</text>
+	</string>
+	<string id="val_secret_0005_name">
+		<text>Chest with supplies</text>
+	</string>
+	<string id="val_secret_0006_description">
+		<text>Threw my things into the pipe. Will pick them up later.</text>
+	</string>
+	<string id="val_secret_0006_name">
+		<text>Secret stash in the pipe</text>
+	</string>
+	<string id="val_secret_0007_description">
+		<text>Hid the backpack under a pine tree</text>
+	</string>
+	<string id="val_secret_0007_name">
+		<text>Secret stash under the pine tree</text>
+	</string>
+	<string id="val_secret_0008_description">
+		<text>The newbie ended up stealing the chest from the bandits. He put it into the Niva which turned up side down. He says that by the looks of it, it's a government chest. We'll have to arm our guys and take it.</text>
+	</string>
+	<string id="val_secret_0008_name">
+		<text>Government chest</text>
+	</string>
+	<string id="val_secret_0009_description">
+		<text>There are robberies everywhere. They're even stealing even from their own... but they'll never find my chest</text>
+	</string>
+	<string id="val_secret_0009_name">
+		<text>Chest</text>
+	</string>
+	<string id="val_secret_0010_description">
+		<text>Hid my things in the manhole. Maybe they'll come in handy some day.</text>
+	</string>
+	<string id="val_secret_0010_name">
+		<text>Secret stash in the manhole</text>
+	</string>
+	<string id="val_secret_0011_description">
+		<text>Threw the backpack under a tree. Otherwise, I wouldn't have escaped the bandits.</text>
+	</string>
+	<string id="val_secret_0011_name">
+		<text>Stalker's backpack</text>
+	</string>
+	<string id="val_secret_0012_description">
+		<text>Put my junk into a pipe, will pick it up later</text>
+	</string>
+	<string id="val_secret_0012_name">
+		<text>Secret stash</text>
+	</string>
+	<string id="val_secret_0013_description">
+		<text>Everything I stole from Borov I hid away in a safe under the pine tree. Now I have to wait it out while they finish freaking out.</text>
+	</string>
+	<string id="val_secret_0013_name">
+		<text>Hidden safe</text>
+	</string>
+	<string id="val_secret_0014_description">
+		<text>The temporary headquarters are in the train car, as is the chest with the supplies</text>
+	</string>
+	<string id="val_secret_0014_name">
+		<text>Warehouse in the train car</text>
+	</string>
+	<string id="val_secret_0015_description">
+		<text>Barely made it into the pipe under the road. Now I'll have a place to hide me backpack</text>
+	</string>
+	<string id="val_secret_0015_name">
+		<text>Secret place in the pipe</text>
+	</string>
+	<string id="val_secret_0016_description">
+		<text>Threw the goods into the chest - will get them later</text>
+	</string>
+	<string id="val_secret_0016_name">
+		<text>Chest with goods</text>
+	</string>
+	<string id="val_secret_0017_description">
+		<text>I'm hiding the goodies behind the pipe - it's hard to get to, but at least they won't take off with it</text>
+	</string>
+	<string id="val_secret_0017_name">
+		<text>Secret stash behind the pipe</text>
+	</string>
+	<string id="val_secret_0018_description">
+		<text>Found some cartriges in the electricity room</text>
+	</string>
+	<string id="val_secret_0018_name">
+		<text>Secret stash in the electricity room</text>
+	</string>
+	<string id="val_secret_0019_description">
+		<text>We left everything that we found in the chest, we'll pick it up when we're returning</text>
+	</string>
+	<string id="val_secret_0019_name">
+		<text>Secret stash in the chest</text>
+	</string>
+	<string id="val_secret_0020_description">
+		<text>Hid the backpack of the newbie, and he never found it</text>
+	</string>
+	<string id="val_secret_0020_name">
+		<text>Hidden backpack</text>
+	</string>
+	<string id="val_secret_0021_description">
+		<text>The chest was left in the van - needs to be picked up</text>
+	</string>
+	<string id="val_secret_0021_name">
+		<text>Forgotten chest</text>
+	</string>
+	<string id="val_secret_0022_description">
+		<text>Found a safe at the gas station and hid my goods in it. Seems like nobody ever goes there.</text>
+	</string>
+	<string id="val_secret_0022_name">
+		<text>Safe at the gas station</text>
+	</string>
+	<string id="val_secret_0023_description">
+		<text>Dragged the chest on the cistern</text>
+	</string>
+	<string id="val_secret_0023_name">
+		<text>Chest</text>
+	</string>
+	<string id="val_secret_0024_description">
+		<text>Hid the supplies in the safe at the gas station.</text>
+	</string>
+	<string id="val_secret_0024_name">
+		<text>Safe at the gas station</text>
+	</string>
+	<string id="val_secret_0025_description">
+		<text>There's some chest in the car at the bandits' camp. We need to sneak into the car and check it out - I feel there's something in there</text>
+	</string>
+	<string id="val_secret_0025_name">
+		<text>Chest in the car</text>
+	</string>
+	<string id="val_secret_0026_description">
+		<text>Put the chest into the secret stash - it's a reliable place</text>
+	</string>
+	<string id="val_secret_0026_name">
+		<text>Chest in the secret stash</text>
+	</string>
+	<string id="val_secret_0027_description">
+		<text>Left the backpack in an abandoned building. Good, nobody's around.</text>
+	</string>
+	<string id="val_secret_0027_name">
+		<text>The left-behind backpack</text>
+	</string>
+	<string id="val_secret_0028_description">
+		<text>We'll store the goods in a safe in a nondescript place. If the soldiers don't come today, then they'll come tomorrow. They won't look around for very long so the most valuable stuff will be left for me.</text>
+	</string>
+	<string id="val_secret_0028_name">
+		<text>Borov's secret stash</text>
+	</string>
+	<string id="val_secret_0029_description">
+		<text>Stashed away the backpack by the building</text>
+	</string>
+	<string id="val_secret_0029_name">
+		<text>Backpack in a secret place</text>
+	</string>
+	<string id="val_secret_0030_description">
+		<text>Stuck the goodies in a nondescript chest. Will get them later</text>
+	</string>
+	<string id="val_secret_0030_name">
+		<text>Nondescript chest</text>
+	</string>
+	<string id="val_secret_0031_description">
+		<text>Hid the backpack under the car, nobody will bother looking there</text>
+	</string>
+	<string id="val_secret_0031_name">
+		<text>Hidden backpack</text>
+	</string>
+	<string id="val_secret_0032_description">
+		<text>Hid the goodies in the car right under the bandits' noses, didn't have any time to look for a better place</text>
+	</string>
+	<string id="val_secret_0032_name">
+		<text>Secret stash in the car</text>
+	</string>
+	<string id="x16_secret_0000_description">
+		<text>Rumor has is that there was a stalker who got into the lab and hid his goodies in the electrical outlets in the elevator shaft. When it came time to pick it up, he couldn't.</text>
+	</string>
+	<string id="x16_secret_0000_name">
+		<text>Goodies in the electrical outlets</text>
+	</string>
+	<string id="x16_secret_0001_description">
+		<text>Rumor has it that there was a stalker who penetrated into this lab and he knocked off in the area where they were carrying out the experiments, with all of his goods.</text>
+	</string>
+	<string id="x16_secret_0001_name">
+		<text>Scout's backpack</text>
+	</string>
+	<string id="x18_secret_0000_description">
+		<text>Smoked put everything into a safe in the underground laboratory. Not a bad place - nobody has the keys to the lab. Only problem is, there are rocks that start flying all over the place allof a sudden. They say someone got killed like that.</text>
+	</string>
+	<string id="x18_secret_0000_name">
+		<text>Secret stash of Smoked</text>
+	</string>
+	<string id="x18_secret_0001_description">
+		<text>Had to leave the backpack</text>
+	</string>
+	<string id="x18_secret_0001_name">
+		<text>The left-behind backpack</text>
+	</string>
+	<string id="yan_secret_0000_description">
+		<text>The cross is on a hill, and the backpack is under it</text>
+	</string>
+	<string id="yan_secret_0000_name">
+		<text>Secret stash under the cross</text>
+	</string>
+	<string id="yan_secret_0001_description">
+		<text>They say there's a half-buried safe on a small island in the swamp. Need to get informed about it</text>
+	</string>
+	<string id="yan_secret_0001_name">
+		<text>Old safe</text>
+	</string>
+	<string id="yan_secret_0002_description">
+		<text>Stuck the goods into a pipe by the camp</text>
+	</string>
+	<string id="yan_secret_0002_name">
+		<text>Pipe with goods</text>
+	</string>
+	<string id="yan_secret_0003_description">
+		<text>Stashed away the goodies behind the garages</text>
+	</string>
+	<string id="yan_secret_0003_name">
+		<text>Backpack behind the garages</text>
+	</string>
+	<string id="yan_secret_0004_description">
+		<text>Hid away the bacpack in a booth, right behind the iron scrap</text>
+	</string>
+	<string id="yan_secret_0004_name">
+		<text>Backpack with the loot</text>
+	</string>
+	<string id="yan_secret_0005_description">
+		<text>Put the chest into the bus - seems to be unnoticeable</text>
+	</string>
+	<string id="yan_secret_0005_name">
+		<text>Secret stash in the bus</text>
+	</string>
+	<string id="yan_secret_0006_description">
+		<text>The goodies are hidden in the car not far from the territory. The radiation is not very high.</text>
+	</string>
+	<string id="yan_secret_0006_name">
+		<text>The loot is in the car</text>
+	</string>
+	<string id="yan_secret_0007_description">
+		<text>They say there's somebody's goodies there, but they can't get to it because of the radiation.</text>
+	</string>
+	<string id="yan_secret_0007_name">
+		<text>Old backpack</text>
+	</string>
+	<string id="yan_secret_0008_description">
+		<text>They say that here there's a secret stash of some grouping. I only wonder how they got here with the radiation?</text>
+	</string>
+	<string id="yan_secret_0008_name">
+		<text>Secret stash of a grouping</text>
+	</string>
+	<string id="yan_secret_0009_description">
+		<text>Another volunteer stalker croaked because another prototype didn't protect him from the radiation. He only made it to the middle of the territory, and stayed there. Saharov wants to take more precise measurements, but I won't go, else I'll end up staying there myself, not far from the territory.</text>
+	</string>
+	<string id="yan_secret_0009_name">
+		<text>Backpack of the tester</text>
+	</string>
+	<string id="yan_secret_0010_description">
+		<text>They say that there is somebody's habar, but there's no way to get there because of the radiation.</text>
+	</string>
+	<string id="yan_secret_0010_name">
+		<text>Old secret stash</text>
+	</string>
+	<string id="yan_secret_0011_description">
+		<text>Gotta take off. Saharov and Kruglov are total psychos - they want me to go with some stalker into the center of radiation. Screw them, as soon as I gather all the supplies in the manhole, I'm taking off.</text>
+	</string>
+	<string id="yan_secret_0011_name">
+		<text>Secret stash of the scientist</text>
+	</string>
+	<string id="yan_secret_0012_description">
+		<text>Stuck the goods in a log, don't think they'll find it.</text>
+	</string>
+	<string id="yan_secret_0012_name">
+		<text>Treasure in a log</text>
+	</string>
+	<string id="yan_secret_0013_description">
+		<text>They say that there's somebody's safe here, but there's no way to get to it because of the radiation.</text>
+	</string>
+	<string id="yan_secret_0013_name">
+		<text>Chest with goods</text>
+	</string>
+	<string id="st_found_new_treasure">
+		<text>Information about stash</text>
+	</string>
+</string_table>

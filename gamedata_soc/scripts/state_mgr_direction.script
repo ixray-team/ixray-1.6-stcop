@@ -31,6 +31,7 @@ function eva_state_mgr_direction:evaluate()
 		if look_object_type(self.object, self.st) == true then
 			dir.y = 0
 		end		
+		dir:normalize()
         if utils.vector_cmp_prec(sight_type.m_vector, dir, 0.01) ~= true then
             --printf("%s false vector", self.object:name())
             --printf("%s %s %s", sight_type.m_vector.x, sight_type.m_vector.y, sight_type.m_vector.z)
@@ -116,6 +117,15 @@ function act_state_mgr_direction_turn:turn()
 		local dir = vector():sub(self.st.look_position, self.object:position())
 		if self.st.point_obj_dir == true then
 			dir.y = 0
+		end
+		dir:normalize()
+		if utils.vector_cmp(dir, vector():set(0,0,0)) then
+			callstack()
+			printf("Before normalize direction [%s]", vec_to_str(vector():sub(self.st.look_position, self.object:position())))
+			printf("You are trying to set wrong direction %s (look_pos = [%s] npc_pos = [%s])!!!", vec_to_str(dir), vec_to_str(self.st.look_position), vec_to_str(self.object:position()))
+			-- Затычка, если дирекшн плохой, то ставим текущий и меняем позицию куда смотреть(для эвалуатора)
+			self.st.look_position = vector():set(self.object:position().x + self.object:direction().x,self.object:position().y + self.object:direction().y,self.object:position().z + self.object:direction().z)
+			dir = self.object:direction()
 		end
 		self.object:set_sight(look.direction, dir, true)
 	end

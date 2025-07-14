@@ -4,10 +4,10 @@
 
 Texture3D s_lut;
 
-float3 main(v2p_aa_AA I) : SV_Target
+float3 main(PSInputFullscreen I) : SV_Target
 {
-    float3 Color = max(0.0f, dof(I.Tex0));
-    float4 Bloom = s_bloom.Sample(smp_rtlinear, I.Tex0);
+    float3 Color = max(0.0f, dof(I.texcoord));
+    float4 Bloom = s_bloom.Sample(smp_rtlinear, I.texcoord);
 
 #ifdef USE_CGIM_BLOOM_TWEAK
 	Bloom = BrokeBloom(Bloom);

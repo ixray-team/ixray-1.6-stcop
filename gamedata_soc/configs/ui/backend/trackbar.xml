@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w>
+	<button_texture_name>ui_slider_button</button_texture_name>
+	<track_texture_name>ui_slider_e</track_texture_name>
+	<size>1</size>
+	<stretch>1</stretch>
+</w>

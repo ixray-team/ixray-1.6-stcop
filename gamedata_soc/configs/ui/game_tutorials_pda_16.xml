@@ -1,0 +1,293 @@
+
+<!-- ------------------------------------------------------------------------- -->
+	<part_1_pda>
+	<global_wnd/>
+	<function_on_stop>xr_effects.esc_init_dialod</function_on_stop>
+<!--
+		<global_wnd x="0" y="0" width="1024" height="768">
+			<auto_static x="900" y="10" width="150" height="50">
+				<text font="graffiti22" r="255" g="0" b="0" a="255">pda_tutorial</text>
+			</auto_static>
+		</global_wnd>
+-->	
+
+		<!--Это	твой личный ПДА- полезная хреновина,
+					которая будет помогать тебе не сдохнуть в Зоне. Ну а если и сдохнешь, то хоть
+					другие знать будут как и где. Хе-хе. Шучу. Давай напомню кратко, как
+					пользоваться…-->
+		<!--item>
+			<length_sec>17</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			
+			
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_1</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_quests</pda_section>
+			<main_wnd/>
+		</item-->
+
+		<item><!--Твои Задания расположены в первом разделе ПДА.-->
+			<length_sec>4</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<cursor_pos/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_2</sound>
+			<grab_input>1</grab_input>
+			<pda_section>pda_quests</pda_section>
+
+			<main_wnd>
+				<auto_static start_time="0" length_sec="4" x="206" y="608" width="50" height="50"  stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w2</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+		
+		<item><!--Для большинства заданий есть кнопки переключения на дополнительную информацию к заданию…-->
+			<length_sec>6</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_3</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_quests</pda_section>
+
+			<main_wnd>
+				<auto_static start_time="0" length_sec="6" x="434" y="186" width="50" height="50"  stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w2</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+		
+		<!--Запомни - каждое новое задание автоматически переключает целеуказание на мини-карте на себя-->
+		<!--item>
+			<length_sec>9</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_4</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_quests</pda_section>
+			<main_wnd/>
+		</item-->
+
+		<item><!--Дальше: Второй раздел ПДА - это Карта.-->
+			<length_sec>5</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_5</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_map</pda_section>
+			<main_wnd>
+				<auto_static start_time="0" length_sec="4" x="256" y="608" width="50" height="50"  stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w1</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+
+		<item><!--…кнопки над картой позволят тебе увеличивать или уменьшать карту…кхе-->
+			<length_sec>5</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_6</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_map</pda_section>
+			<main_wnd>
+				<auto_static start_time="2" length_sec="4" x="288" y="135" width="30" height="30" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w1</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+				
+				<auto_static start_time="2" length_sec="4" x="309" y="135" width="30" height="30" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w2</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+
+		<item><!--…э-эээ… плюс отцентрировать карту по твоему месторасположению…что еще?-->
+			<length_sec>5</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_7</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_map</pda_section>
+			<main_wnd>
+				<auto_static start_time="4" length_sec="2" x="214" y="135" width="30" height="30" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w1</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+
+		<delme_item><!--…Еще сможешь добавлять или убирать собственные пометки на карте... -->
+			<length_sec>6</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_8</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_quests</pda_section>
+			<main_wnd>
+				<auto_static start_time="1" length_sec="4" x="839" y="135" width="30" height="30" alignment="c" stretch="1"
+							light_anim="ui_pda_contacts" la_cyclic="1" la_texture="1" la_alpha="1">
+					<window_name>w1</window_name>
+					<texture>ui_icons_newPDA_CrclMiddle_h</texture>
+				</auto_static>
+				<auto_static start_time="1" length_sec="4" x="859" y="135" width="30" height="30" alignment="c" stretch="1"
+							light_anim="ui_pda_contacts" la_cyclic="1" la_texture="1" la_alpha="1">
+					<window_name>w2</window_name>
+					<texture>ui_icons_newPDA_CrclMiddle_h</texture>
+				</auto_static>
+			</main_wnd>
+		</delme_item>
+		
+		<!--вобщем разберешься…там не сложно…В ПДА есть раздел Контакты -->
+		<!--item>
+			<length_sec>8</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_9</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_quests</pda_section>
+			<main_wnd/>
+		</item-->
+
+		<item><!--В контактах список сталкеров, которые находятся в радиусе 50 метров. 
+					Плюс их короткое описание, ранг, группировка и вероятное отношение к тебе. 
+					Запомни, пока ты - нейтрал, и только от тебя зависит, как к тебе будут относится потом. 
+					Если поможешь кому, то обрати внимание, как изменится его отношение к тебе...  -->
+			<length_sec>27</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_11</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_contacts</pda_section>
+			<main_wnd>
+				<auto_static start_time="0" length_sec="4" x="377" y="608" width="50" height="50" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w1</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+				
+				<auto_static start_time="4" length_sec="19" x="222" y="211" width="50" height="50" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w2</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+
+		<item><!--…Будь осторожен, если рядом враги, на визоре они отмечаются красным, 
+					друзья отмечены зеленым, нейтралы - желтым. А..ну и ПДА мертвых сталкеров подсвечиваются серым. 
+					В мародерстве помогает. гы-ыы…Что еще?...ах да есть Дневник…-->
+			<length_sec>22</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<function_on_start>mob_trader.on_start_tutorial_item_1</function_on_start>
+			<function_on_stop>mob_trader.on_stop_tutorial_item</function_on_stop>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_12</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_closed</pda_section>
+			<main_wnd>
+				<auto_static start_time="0" length_sec="18" x="90" y="100" width="150" height="150" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w1</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+		
+		<item><!--.. ну тут и говорить нечего - там записывается вся информация, которая тебе нужна, 
+					плюс новости…даже то, что я тебе сейчас втолковываю, ты там найдешь…Потом…В разделе ПДА 
+					под названием Рейтинг…кх-хх-->
+			<length_sec>16</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_13</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_diary</pda_section>
+			<main_wnd>
+				<auto_static start_time="0" length_sec="4" x="315" y="608" width="50" height="50" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w1</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+
+		<item><!--...увидишь лучшую двадцатку сталкеров, которых я знаю - я переодически обновляю эту 
+					информацию для поддержания соревновательного духа..гы-ыыы..Глядишь и ты когда-нить вырвешся в лидеры..
+					Кто знает?..Твои собственные успехи заносятся в раздел Статистика…-->
+			<length_sec>21</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_14</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_ranking</pda_section>
+			<main_wnd>
+				<auto_static start_time="0" length_sec="4" x="427" y="608" width="50" height="50" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w1</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+		
+		<item><!--ну там все просто..э-эээ...Далее....Энциклопедия..К-хе-->
+			<length_sec>6</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_14_1</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_statistics</pda_section>
+			<main_wnd>
+				<auto_static start_time="0" length_sec="4" x="485" y="608" width="50" height="50" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w1</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+
+		<item><!--В нее заносится информация о Зоне и советы по выживанию, которые ты найдешь или получишь 
+					от сталкеров.... В принципе все.. -->
+			<length_sec>11</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_15</sound>
+			<cursor_pos/>
+			<grab_input>1</grab_input>
+			<pda_section>pda_encyclopedia</pda_section>
+			<main_wnd>
+				<auto_static start_time="0" length_sec="6" x="542" y="608" width="50" height="50" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+					<window_name>w1</window_name>
+					<texture>ui_highlight</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+		<item><!--	А-аа..еще….В твоей моделе ПДА, есть сканер радиочастот широкого спектра, со встроенным 
+					дешифратором. Радиус метров 400, так что сможешь даже сообщения вояк ловить. 
+					Моя рация тянет в радиусе 30 километров и я тебя всегда найду. 
+					Будешь получать от меня задания и последние новости. А на первых порах помогу советом. 
+					Все ясно или повторить для тех кто в танке? Гы-гы.-->
+			<length_sec>31</length_sec>
+			<pause_state>off</pause_state>
+			<guard_key/>
+			<disabled_key>use</disabled_key>
+			<disabled_key>inventory</disabled_key>
+			<sound>characters_voice\scenario\trader\trader_tutorial_pda_15_1</sound>
+			<cursor_pos/>
+			<grab_input>0</grab_input>
+			<pda_section/>
+			<main_wnd/>
+		</item>
+
+	</part_1_pda>

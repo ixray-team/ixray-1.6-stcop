@@ -1,0 +1,1170 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="artefact">
+		<text>Get the artifact.</text>
+	</string>
+	<string id="barmen_defend_camp_1">
+		<text>Protect the stalkers' camp at the Garbage from bandits' assault</text>
+	</string>
+	<string id="barmen_defend_camp_1_descr">
+		<text>Protect the stalkers' camp at the Garbage from bandits' assault</text>
+	</string>
+	<string id="barmen_defend_camp_1_text">
+		<text>A group of stalkers is coming to visit me, and I am personally interested in their safe arrival. They'll stay not far from the Bar. One penitent criminal element almost voluntary informed us that they are going to be attacked soon. So, head in that direction and protect their camp from the assault.</text>
+	</string>
+	<string id="barmen_defend_camp_2">
+		<text>Help stalkers fight off the bandits at Agroprom</text>
+	</string>
+	<string id="barmen_defend_camp_2_descr">
+		<text>Help stalkers fight off the bandits at Agroprom</text>
+	</string>
+	<string id="barmen_defend_camp_2_text">
+		<text>So here's the deal. Recently a group of stalkers went to Agroprom. The last time they contacted, they said that there was something valuable in the underground, but they were pressed hard by the badits. They're holding on, but they can't clear out. Will you help them out?</text>
+	</string>
+	<string id="barmen_eliminate_camp_1">
+		<text>Eliminate the bandits at the Garbage.</text>
+	</string>
+	<string id="barmen_eliminate_camp_1_descr">
+		<text>Wipe out the bandit gang that settled at the Garbage. It has to be a quick and efficient operation.</text>
+	</string>
+	<string id="barmen_eliminate_camp_1_text">
+		<text>A job, eh? Let’s see what we’ve got... Aha! Here you go: can you knock out that pack of bandits at the Garbage? The Duty, with all their speeches about law and order, just can’t get down to it. Those are some rare scumbags, so they won't last long anyway. But the guy who gets them first will score big... and the booze is on me, of course.</text>
+	</string>
+	<string id="barmen_eliminate_camp_2">
+		<text>Eliminate the Mercs and bandits in Rostok.</text>
+	</string>
+	<string id="barmen_eliminate_camp_2_descr">
+		<text>Destroy the group of Mercs and bandits that block the passage through Rostok.</text>
+	</string>
+	<string id="barmen_eliminate_camp_2_text">
+		<text>There’s a gang of Mercs not far away, in Rostok. They hit it off with the bandits, so now they’re scheming to block the passage through the plant. I don’t need to tell you what a nuisance it is, it’s got to be resolved straight away. The Duty guys and some of the old-timers have already gone to teach them a lessons, but we haven’t heard from them in a while... So why don’t you... eh... go and check on them. The money's good, too.</text>
+	</string>
+	<string id="barmen_eliminate_camp_3">
+		<text>Eliminate the bandits at the farmstead.</text>
+	</string>
+	<string id="barmen_eliminate_camp_3_descr">
+		<text>It's all simple: clear the farmstead of bandits.</text>
+	</string>
+	<string id="barmen_eliminate_camp_3_text">
+		<text>There’s the farmstead by the old warehouses. Used to be a perfect place for a rendezvous, to exchange goods, you know... that sort of thing. But now the bandits have occupied it and, by the looks of it, they are not about to make off. Now, that doesn’t suit me at all. I need this farmstead asap. I don’t care what happens to the lodgers.</text>
+	</string>
+	<string id="barmen_eliminate_camp_4">
+		<text>Purge the bandits' camp at Wild Territory</text>
+	</string>
+	<string id="barmen_eliminate_camp_4_descr">
+		<text>Purge the bandits' camp at Wild Territory</text>
+	</string>
+	<string id="barmen_eliminate_camp_4_text">
+		<text>There are bandits at the Wild Territory. We can't let these dregs of society breed insanitariness right near the bar. It's essential to wipe out their camp.</text>
+	</string>
+	<string id="barmen_eliminate_camp_5">
+		<text>Destroy the lair of wild mutant dogs at the Wild Territory</text>
+	</string>
+	<string id="barmen_eliminate_camp_5_descr">
+		<text>Destroy the lair of wild mutant dogs at the Wild Territory</text>
+	</string>
+	<string id="barmen_eliminate_camp_5_text">
+		<text>A few of our guys went on an expedition, came back alone. All torn up, bloody, glassy eyes. Ran into dogs, most likely. There's a whole pack of them there. So, find their lair and kill every last one of them.</text>
+	</string>
+	<string id="barmen_eliminate_camp_6">
+		<text>Destroy the group of bandits at the Agroprom.</text>
+	</string>
+	<string id="barmen_eliminate_camp_6_descr">
+		<text>Destroy the group of bandits at the Agroprom.</text>
+	</string>
+	<string id="barmen_eliminate_camp_6_text">
+		<text>I remember how in '94 the racketeers latched on to me - cough it up, they said. Man, I went through hell then, I had a restaurant and all. Back then there was no case against them! And here I find out that the same gang's working in the Agroprom, making a profit off of the artifacts they find there. But here I can do something. I even know exactly where they're hiding. Do me a favor, punish them.</text>
+	</string>
+	<string id="barmen_eliminate_camp_7">
+		<text>Destroy the lair of snorks in the Dark Valley</text>
+	</string>
+	<string id="barmen_eliminate_camp_7_descr">
+		<text>Destroy the lair of snorks in the Dark Valley</text>
+	</string>
+	<string id="barmen_eliminate_camp_7_text">
+		<text>Yeah...It seems that the ones who say that the zone is expanding are right. They spotted a few snorks in the Dark Valley, but before they never saw them there. And here some started to panic. The Dutiers promised to destroy the snorks, but they can't seem to get around to doing it. Will you take it on?</text>
+	</string>
+	<string id="barmen_find_artefact_1">
+		<text>Find the Meat chunk artifact</text>
+	</string>
+	<string id="barmen_find_artefact_1_descr">
+		<text>Find the Meat chunk artifact that heals ailments and injuries.</text>
+	</string>
+	<string id="barmen_find_artefact_1_text">
+		<text>Some padres have stopped by, left an order for a Meat chunk. You know, they have a certain interest in this healing artifact... those rotten miracle-workers! Anyway... You gonna do it? It’s up to you.</text>
+	</string>
+	<string id="barmen_find_artefact_2">
+		<text>Find the Crystal Thorn artifact</text>
+	</string>
+	<string id="barmen_find_artefact_2_descr">
+		<text>Find the Crystal Thorn artifact that protects against psi-attacks.</text>
+	</string>
+	<string id="barmen_find_artefact_2_text">
+		<text>A "crone"?.. No, that’s not it. "Crystal corn"?.. No, wrong again... Bugger! "Crystal Thorn", that’s it! So here’s the deal: I have an order for this artifact, "Crystal Thorn". Have you heard of it? They say that if you’ve got one, no creature will be able to mess with your brain. So what do you say?</text>
+	</string>
+	<string id="barmen_find_artefact_3">
+		<text>Find the Night Star artifact</text>
+	</string>
+	<string id="barmen_find_artefact_3_descr">
+		<text>Find the Night Star artifact to help the national military research effort.</text>
+	</string>
+	<string id="barmen_find_artefact_3_text">
+		<text>I need the Night Star artifact. I'm sorry to say it doesn't grant any wishes, been there, done that, but it can make you wealthy. Scientists pay a lot for it. They say they make some military things out of it...So, are you up for it?</text>
+	</string>
+	<string id="barmen_find_artefact_4">
+		<text>Find the artifact Flash</text>
+	</string>
+	<string id="barmen_find_artefact_4_descr">
+		<text>Find the artifact Flash</text>
+	</string>
+	<string id="barmen_find_artefact_4_text">
+		<text>The assignment is simple and the pay is good. You have to find the artifact Flash. Don't even ask who ordered it and why. Well, will you do it?</text>
+	</string>
+	<string id="barmen_find_artefact_5">
+		<text>Find artifact Goldfish</text>
+	</string>
+	<string id="barmen_find_artefact_5_descr">
+		<text>Find artifact Goldfish</text>
+	</string>
+	<string id="barmen_find_artefact_5_text">
+		<text>Marked One, you know the story about the fairytale about the Goldfish? Yeah, yeah, that's the one. There are a bunch of jokes about it too. So anyway, there's this old man who keeps on wanting to catch it. Bottom line, I need the one-of-a-kind artifact called Goldfish, the client is from the outside, respectable. Will you help out?</text>
+	</string>
+	<string id="barmen_find_item_1">
+		<text>Find psi-suit</text>
+	</string>
+	<string id="barmen_find_item_1_descr">
+		<text>Find the suit that provides efficient protection against psi-emissions. The place to look for it is the deserted labs in the Dark Valley.</text>
+	</string>
+	<string id="barmen_find_item_1_text">
+		<text>In those labs in the Dark Valley, they were trying to find a way to protect human brains from psi-emissions. They were taking their time, that’s for sure... Anyway, one of their attempts actually was a success, and there’s supposed to be this suit somewhere that you can wear and even kiss the controller. Yep, it’s that good. So if you get me this doodah, I’ll never forget it.</text>
+	</string>
+	<string id="barmen_find_item_2">
+		<text>Find the foreigner's gun.</text>
+	</string>
+	<string id="barmen_find_item_2_descr">
+		<text>An interesting assignment. The name rings a bell... but where do I know him from?</text>
+	</string>
+	<string id="barmen_find_item_2_text">
+		<text>There once was this foreigner in our neck of the woods... Gordon was his name? His whole manner gave out an experienced stalker, but he said he’d never been to the Zone. But anyway, that’s not the point. He did vanish somewhere in the Zone eventually. But he had this rather curious thing, the Black Kite. If I could just take a closer look at it...</text>
+	</string>
+	<string id="barmen_find_item_3">
+		<text>Find the modified Vintar</text>
+	</string>
+	<string id="barmen_find_item_3_descr">
+		<text>Find the modified Vintar. Apparently, the place to look is the Red Forest area.</text>
+	</string>
+	<string id="barmen_find_item_3_text">
+		<text>There was this odd story. This one fellow pops up, pockets full of dough, and sets off hiring himself a gang, not the old-timers though, but more of the nippy type. Bought tons of gear... I had this one brand new Vintar, a marvelous gun! - so I was fool enough to sell it to him. I won’t lie to you, I made quite a bit of money... except this whole crew got knocked out close to the Red Forest. What can I say, they died for nothing... well, a good lesson for all to learn: you can’t pave your way through the Zone with money. But anyway... I can't stop thinking about that Vintar, such a bang-up gun rusting somewhere! Won’t you find it for me? I’m paying good money!</text>
+	</string>
+	<string id="barmen_kill_stalker_1">
+		<text>Kill the soldier</text>
+	</string>
+	<string id="barmen_kill_stalker_1_descr">
+		<text>A soldier has to bite the dust. The job is a piece of cake, except... it’s weird that the target’s a man in uniform, and the customer really has his dander up.</text>
+	</string>
+	<string id="barmen_kill_stalker_1_text">
+		<text>I need you to take down this grunt... don't ask me who he is, what do I care! Just do it. So? Can I entrust you with it?</text>
+	</string>
+	<string id="barmen_kill_stalker_2">
+		<text>Kill the stalker</text>
+	</string>
+	<string id="barmen_kill_stalker_2_descr">
+		<text>Do in one of the stalkers. Death to the cheater, that's the trader's revenge.</text>
+	</string>
+	<string id="barmen_kill_stalker_2_text">
+		<text>You know, there’s this type of men that you could never say a bad word about... you trust him as you trust yourself, right? You bank on him... But suddenly you find out that he is the vilest and meanest son of a bitch... So here’s the deal: there’s this one case that needs to get sorted. Do it, and I’ll take care of the rest.</text>
+	</string>
+	<string id="barmen_kill_stalker_3">
+		<text>Kill the stalker from the Monolith grouping</text>
+	</string>
+	<string id="barmen_kill_stalker_3_descr">
+		<text>Find trader's ex-friend and help him die.</text>
+	</string>
+	<string id="barmen_kill_stalker_3_text">
+		<text>I used to have a friend... hard to believe, eh? Ah! we came to the Zone together when none of this stuff was here... The things we used to do, the places we used to go to... oh well, we were young, didn’t give a damn about anything... But he could never get enough. He wanted to go to the center of the Zone and was talking me into it, but I refused, and did the right thing... We had a really bad row, and he left on his own... And now I hear someone saw him there... he’s with Monolith now. So the deal is, Marked One... As a friend, do this for me, find him and... well, don’t make him suffer, it must be bad enough... He was like a brother to me, you know?</text>
+	</string>
+	<string id="barmen_kill_stalker_4">
+		<text>Kill the stalker called Vampire</text>
+	</string>
+	<string id="barmen_kill_stalker_4_descr">
+		<text>Find and kill the stalker called Vampire.</text>
+	</string>
+	<string id="barmen_kill_stalker_4_text">
+		<text>That's it, I’ve had enough of this scumbag! I mean Vampire; do you know him? That bastard! Sucking luck out of people instead of blood. Whoever goes with him, they all die, all to a man, but he always comes back safe and sound! Done it five times now! That’s evil, don’t you think? I’d love to put some flowers on this Vampire’s grave... So, do you take the job?</text>
+	</string>
+	<string id="barmen_kill_stalker_5">
+		<text>Kill the stalker called Sparrow</text>
+	</string>
+	<string id="barmen_kill_stalker_5_descr">
+		<text>Find Sparrow and avenge the death of another stalker.</text>
+	</string>
+	<string id="barmen_kill_stalker_5_text">
+		<text>Damn musketeers! Playing D'Artagnan, assholes! As if surfing around anomalies and bowing to bullets is not enough, the oafs have now taken to fighting duels! Get this: there was this row... no one can even remember any more what started it. So these two dumbheads decided to shed some blood. And there you go, one dropped dead... a fine stalker he was, too! And the other one, Sparrow, beetled off, because I’d be the first one to put a bullet in his head. Find him. I’m sure he’s still in the Zone. Will you do it?</text>
+	</string>
+	<string id="barmen_monster_part_1">
+		<text>Obtain the flesh's eye</text>
+	</string>
+	<string id="barmen_monster_part_1_descr">
+		<text>Obtain the flesh's eye</text>
+	</string>
+	<string id="barmen_monster_part_1_text">
+		<text>Soon we're having a party, there'll be a fancy dinner, and certain local gourmets who are in especially high spirits (we don't need to point fingers) will definitely want to try my special recipie - eyes of "flesh" under a pork sauce. That is, in its own juices under mayonnaise. Basically, I need the eye of that beast, and quickly.</text>
+	</string>
+	<string id="barmen_monster_part_2">
+		<text>Bring the hoof of a boar</text>
+	</string>
+	<string id="barmen_monster_part_2_descr">
+		<text>Bring the hoof of a boar</text>
+	</string>
+	<string id="barmen_monster_part_2_text">
+		<text>Do you know that we prepare horns and hooves? This is a big rarity. They make great jewelry from the local mutated hooves - I know a jeweler, he's interested. So go on ahead, find the boar's hoof, and there'll be cash in your pocket.</text>
+	</string>
+	<string id="dolg_defend_lager_1">
+		<text>Protect the security post of the Duty</text>
+	</string>
+	<string id="dolg_defend_lager_1_descr">
+		<text>Protect the security post of the Duty at the Garbage.</text>
+	</string>
+	<string id="dolg_defend_lager_1_text">
+		<text>So, you probably ran into our guys at the Garbage. They're there as a sort of an exterior post protecting the bar from mutants coming down from the dark valley. Information has come in that the sick herd of boar is approaching them. Help them fight off the mutants, and I'll owe you one.</text>
+	</string>
+	<string id="dolg_eliminate_lager_1">
+		<text>Destroy the zombie</text>
+	</string>
+	<string id="dolg_eliminate_lager_1_descr">
+		<text>Destroy the zombie longlivers at Yantar.</text>
+	</string>
+	<string id="dolg_eliminate_lager_1_text">
+		<text>Recently we sent a group to Yantar. Unfortunately, nobody from the group returned. I was informed that they saw a few zombied stalkers from the group not far from the mobile lab of the scientists at Yantar. We can't allow them to remain in that horrible state. Your assignment: find and destroy that, which they've become.</text>
+	</string>
+	<string id="dolg_eliminate_lager_10">
+		<text>Get rid of the pack of dogs.</text>
+	</string>
+	<string id="dolg_eliminate_lager_10_descr">
+		<text>Get rid of the pack of dogs at the Garbage.</text>
+	</string>
+	<string id="dolg_eliminate_lager_10_text">
+		<text>We, naturally, don't give assignments to foreign stalkers. On the other hand, this is a simple task, so there's no point making our guys do it. So listen. You need to purge a small lair of beasts at the Garbage. One of our groups is already working there, so in case of trouble you'll have a place to retreat to. On the other hand, there shouldn't be any problems because there aren't many beasts there - not more than ten. Most likely dogs: recently there were reports of a migration of a large pack of them in the area. You can get to carrying out the assignment.</text>
+	</string>
+	<string id="dolg_eliminate_lager_11">
+		<text>Destroy the stalkers' camp</text>
+	</string>
+	<string id="dolg_eliminate_lager_11_descr">
+		<text>Destroy the stalkers' camp at Agroprom</text>
+	</string>
+	<string id="dolg_eliminate_lager_11_text">
+		<text>There's one delicate matter, but our guys definitely shouldn't be involved in it. The presence of neutrals on the factory at Agroprom isn't advantageous for our allies. Here's the assignment: free the promzone from the presence of stalkers, no matter who they are and what group they belong to. Understood?</text>
+	</string>
+	<string id="dolg_eliminate_lager_12">
+		<text>Destroy the detachment of Mercs</text>
+	</string>
+	<string id="dolg_eliminate_lager_12_descr">
+		<text>Destroy the detachment of Mercs at the Rostok</text>
+	</string>
+	<string id="dolg_eliminate_lager_12_text">
+		<text>So here's the assignment: you need to destroy the detachment of snipers of the mercs group. The situation: these snipers are holding the last floor of the building site complex. Assumed amout: not less than two, nor more than five. They're armed, judging by everything, with sniper rifles. Suggestion: don't show your face there during the day.</text>
+	</string>
+	<string id="dolg_eliminate_lager_13">
+		<text>Protect the bandits' base</text>
+	</string>
+	<string id="dolg_eliminate_lager_13_descr">
+		<text>Protect the bandits' main base in the Dark Valley.</text>
+	</string>
+	<string id="dolg_eliminate_lager_13_text">
+		<text>It is imperative to raid the bandits' main base and destroy the maximum amout of live strength of the enemy. That's in the Dark Valley, there where there's an unfinished science center. The enemy is numbering at thirty fighters; armed with light automatic weapons, guns, shotguns. Everything clear?</text>
+	</string>
+	<string id="dolg_eliminate_lager_14">
+		<text>Eliminate the snorks.</text>
+	</string>
+	<string id="dolg_eliminate_lager_14_descr">
+		<text>Eliminate the snorks in the tunnels in the Yantar sector.</text>
+	</string>
+	<string id="dolg_eliminate_lager_14_text">
+		<text>This time you'll need to get to purging. The tunnels at Yantar are simply breaking from all the snorks: there's around ten of them there. Yeah, now you can't weather the storm there as before...</text>
+	</string>
+	<string id="dolg_eliminate_lager_2">
+		<text>Destroy the herd of fleshes</text>
+	</string>
+	<string id="dolg_eliminate_lager_2_descr">
+		<text>Destroy the herd of fleshes at the Wild Territory.</text>
+	</string>
+	<string id="dolg_eliminate_lager_2_text">
+		<text>We tracked the migration of a large herd of beasts...Quite disgusting swine-like mutants whom everyone calls fleshes. Now they're in the area of the Garbage. All of our people are busy, but these beasts need to be destroyed. It's a special kind of job - we'll pay.</text>
+	</string>
+	<string id="dolg_eliminate_lager_3">
+		<text>Destroy the pseudodogs</text>
+	</string>
+	<string id="dolg_eliminate_lager_3_descr">
+		<text>Purge the lair of pseudodogs by the military warehouses.</text>
+	</string>
+	<string id="dolg_eliminate_lager_3_text">
+		<text>Our allies have notified us about the discovery of a lair of monsters on the territory by the military warehouses. We believe it's a pack of pseudodogs. We shouldn't be messing around in that area right now, so it's an assignment for a neutral. Are you in?</text>
+	</string>
+	<string id="dolg_eliminate_lager_4">
+		<text>Destroy the security post of the Mercs</text>
+	</string>
+	<string id="dolg_eliminate_lager_4_descr">
+		<text>Destroy the security post of the Mercs not far from the military warehouses.</text>
+	</string>
+	<string id="dolg_eliminate_lager_4_text">
+		<text>Lately there's been an increase in the activity of groups of Mercs, there's been a few attacks on the scientists, researchers working in the zone. We can't leave that unpunished. We need to carry out a small punitive operation. The goal: the security post of the Mercs by the military warehouses, behind the abandoned village.</text>
+	</string>
+	<string id="dolg_eliminate_lager_5">
+		<text>Destroy the Mercs in the Wild Territory</text>
+	</string>
+	<string id="dolg_eliminate_lager_5_descr">
+		<text>Destroy the Mercs in the Wild Territory</text>
+	</string>
+	<string id="dolg_eliminate_lager_5_text">
+		<text>A group of scientists is planning to study the Wild Territory. But lately it hasn't been safe there, the Mercs have gotten activated. Make sure that there aren't any more Mercs in the Wild Territory.</text>
+	</string>
+	<string id="dolg_eliminate_lager_6">
+		<text>Kill the bandits</text>
+	</string>
+	<string id="dolg_eliminate_lager_6_descr">
+		<text>Kill the bandits who got into the Wild Territory.</text>
+	</string>
+	<string id="dolg_eliminate_lager_6_text">
+		<text>I'll make this short. The bandits got around our security posts at the Bar and are now located in the Wild Territory. They need to be eliminated.</text>
+	</string>
+	<string id="dolg_eliminate_lager_7">
+		<text>Destroy the controller</text>
+	</string>
+	<string id="dolg_eliminate_lager_7_descr">
+		<text>Destroy the controller at Yantar.</text>
+	</string>
+	<string id="dolg_eliminate_lager_7_text">
+		<text>To carry out this assignment you need to have special skills. The scientists have reported to us that they noticed a controller at Yantar, by the entrance to the underground lab (in the center building). Controllers are very dangerous, but I'm sure you'll manage.</text>
+	</string>
+	<string id="dolg_eliminate_lager_8">
+		<text>Purge the freedomers</text>
+	</string>
+	<string id="dolg_eliminate_lager_8_descr">
+		<text>Purge the abandoned village not far from the military warehouses from the freedomers.</text>
+	</string>
+	<string id="dolg_eliminate_lager_8_text">
+		<text>There's been an increase in the activity of the Freedom patrol in the abandoned village by the military warehouses. Purge the village from fighters. After carrying out this assignment a special reward awaits you.</text>
+	</string>
+	<string id="dolg_eliminate_lager_9">
+		<text>Destroy the bandits</text>
+	</string>
+	<string id="dolg_eliminate_lager_9_descr">
+		<text>Destroy the bandits at the Garbage.</text>
+	</string>
+	<string id="dolg_eliminate_lager_9_text">
+		<text>The current situation is unfavorable, the bandits are gathering in the areas of the Garbage and the Dark Valley. The best solution is to carry out two preemptive strikes at the same time! Our fighters will take on the valley, and you'll get the Garbage.</text>
+	</string>
+	<string id="dolg_find_item_1">
+		<text>Find the enhanced rifle</text>
+	</string>
+	<string id="dolg_find_item_1_descr">
+		<text>Find the sample of enhanced TRs 301 near the military warehouses.</text>
+	</string>
+	<string id="dolg_find_item_1_text">
+		<text>Someone helps the mercs. Quite recently they got equipped with machine-guns, enhanced for sniper fire. You understand that it's a dangerous toy? Well, I'm interested in such a gun. My gratitude will be pertinent, be sure.</text>
+	</string>
+	<string id="dolg_kill_stalker_1">
+		<text>Neutralize the bandit</text>
+	</string>
+	<string id="dolg_kill_stalker_1_descr">
+		<text>Neutralize the bandit Poker.</text>
+	</string>
+	<string id="dolg_kill_stalker_1_text">
+		<text>Subject's nickname - Poker. One of the most cruel bandits' leader, swine and rapist...Evidently his head is not okay: they say he caught a rare disease in the Zone. Now he suffers quite frequent lapses of memory, and when he gains consciousness, he can't remember who and where he is. Nevertheless, he's always armed and very aggressive. Presumable location: Dark Valley. Ready for the task?</text>
+	</string>
+	<string id="drunk_dolg_find_item">
+		<text>Find the weapon of the Dutyer.</text>
+	</string>
+	<string id="drunk_dolg_find_item_descr">
+		<text>The Dutyer is asking you to find his weapon, he lost it somewhere in the Dark Valley during another scouting expedition.</text>
+	</string>
+	<string id="drunk_dolg_find_item_text">
+		<text>Shouldn't have freaked out like that. How the zone messes with your head. Thought I had good nerves, never afraid of anything, and here this. This howling in the ears. Everything was going as usual. There was a scouting expedition to the Dark Valley, we got down into the trench with Krivoi to cover the rest of the group, and then once I heard the howling, I was gripped by fear. Damn, I don't even remember how I got to the coordinate. When I returned to the base, Voronin almost shot me on the spot: he had just given me an enhanced cannon, for good service, so to speak. And here...I paniced and took off so fast that I left the cannon there. Could you bring it back for me, else where will I go now without a decent weapon.</text>
+	</string>
+	<string id="ecolog_eliminate_lager_1">
+		<text>Purge the lair of the snorks</text>
+	</string>
+	<string id="ecolog_eliminate_lager_1_descr">
+		<text>Destroy the lair of the snorks at Yantar.</text>
+	</string>
+	<string id="ecolog_eliminate_lager_1_text">
+		<text>I want to offer you a small amout of money that you'll receive if the snorks living in the swamps will stop bothering me and my colleagues. Sometimes when we're carrying out our experiments, we can't even concentrate.</text>
+	</string>
+	<string id="ecolog_eliminate_lager_2">
+		<text>Destroy the lair of wild dogs</text>
+	</string>
+	<string id="ecolog_eliminate_lager_2_descr">
+		<text>Purge the lair or wild dogs in the Wild Territory</text>
+	</string>
+	<string id="ecolog_eliminate_lager_2_text">
+		<text>There's a mutant-dogs' lair at the Wild Territory, I want you to travel there and clear it up. These mutants are particularly dangerous for our expeditions. I now that zoologists won't favor this, but this is not a zoo here, I must admit. Such beasts spread rabies, plague or god knows what else.</text>
+	</string>
+	<string id="ecolog_find_artefact_1">
+		<text>Bring the Fireball artifact</text>
+	</string>
+	<string id="ecolog_find_artefact_1_descr">
+		<text>Bring the Fireball artifact to the scientists for researches</text>
+	</string>
+	<string id="ecolog_find_artefact_1_text">
+		<text>We've managed to obtain the artifact in laboratory conditions! This is a breakthrough! Now all the world will hear about our success. And the Nobel Prize will be close at hand! This is the unique artifact - "Pellicle", it's main quality is to protect from the chemical burns. Do you want me to give it to you on behalf of science? However, I do have one request - in return I need the artifact "Fireball", do you know about such? Unique thermal qualities of its surface require thorough research.</text>
+	</string>
+	<string id="ecolog_find_artefact_2">
+		<text>Find the "Gravi" artifact</text>
+	</string>
+	<string id="ecolog_find_artefact_2_descr">
+		<text>Bring the "Gravi" artifact to the hands of the scientists.</text>
+	</string>
+	<string id="ecolog_find_artefact_2_text">
+		<text>We've approached closely to the comprehension of the nature of gravitation, practically, soon enough we'll be able to create a new generation of engines on the antigravity basis, and quite probably the path to the stars will open to us. For that, we need "Gravi" artifact, and fast.</text>
+	</string>
+	<string id="ecolog_find_artefact_3">
+		<text>Find the "Jellyfish" artifact</text>
+	</string>
+	<string id="ecolog_find_artefact_3_descr">
+		<text>The scientists need the "Jellyfish" artifact to carry out researches in the field of space-time.</text>
+	</string>
+	<string id="ecolog_find_artefact_3_text">
+		<text>Our research team is on the brink of discovering the mystery of space-time. The possibility of teleportation is no longer fantasy! The Vortex is an anomaly which squeezes space rather than just gravitationally affecting objects, as believe some of my ossified opponents-theorists, who sit in the warm research facility earnestly chewing chalk. Their glasses will fog up when they find out what results science can achieve when you work in the field! Please get me the artifact "Jellyfish".</text>
+	</string>
+	<string id="ecolog_find_artefact_4">
+		<text>Find the "Moonlight" artifact</text>
+	</string>
+	<string id="ecolog_find_artefact_4_descr">
+		<text>Provide "Moonlight" to the scientists at Yantar. A good artifact...</text>
+	</string>
+	<string id="ecolog_find_artefact_4_text">
+		<text>We desperately need materials for continuing our research in the field of energetics. You see, we learned to generate energy with the help of artifacts. Granted, this works while the KPD isn't high enough. We were able to get the best results with the artifact Moonlight. Please bring us a sample for experiments.</text>
+	</string>
+	<string id="ecolog_find_artefact_5">
+		<text>Find the artifact called Sea Urchin</text>
+	</string>
+	<string id="ecolog_find_artefact_5_descr">
+		<text>The scientists need the Sea Urchin artifact to improve their suits</text>
+	</string>
+	<string id="ecolog_find_artefact_5_text">
+		<text>You are probably aware of the fact that our suits provide the best defence against radiation. The secret lies in the fact that we saturate them with a lotion made out of quite a rare artifact. To manufacture another series of these suits we need such an artifact. You call it "Sea Urchin".</text>
+	</string>
+	<string id="ecolog_find_item_1">
+		<text>Bring the unique bodysuit</text>
+	</string>
+	<string id="ecolog_find_item_1_descr">
+		<text>Bring the unusual bodysuit from the underground laboratory X16.</text>
+	</string>
+	<string id="ecolog_find_item_1_text">
+		<text>We have some business with you. Recently we hired a stalker to get into the laboratory. Even then I noticed his unusual bodysuit - it gave off noticeable heat. The stalker said that the bodysuit itself can heal wounds. Bottom line - the stalker didn't return from the lab. Oh no - don't even think it! We had nothing to do with it! And his bodysuit is most likely still there. I would be very glad to get it for research.</text>
+	</string>
+	<string id="ecolog_monster_part_1">
+		<text>Bring a part of the snork's body</text>
+	</string>
+	<string id="ecolog_monster_part_1_descr">
+		<text>It's a piece of cake getting a fragment of a snork in these parts.</text>
+	</string>
+	<string id="ecolog_monster_part_1_text">
+		<text>We got acquainted with Semenov back in the university where I was giving lectures on genetics, and he was my student. Thus I became his scientific chief. Back then, we were only slightly unveiling the curtain of mystery of genome modification. So what was I saying? Oh, right. For genetic experiments we will need the samples of fresh cells of the muscular tissue of snork. You will have to search the bogs for this genic material. There is a hypothesis that snorks as species are the new level of human's evolution. In order to know this for sure, DNA test must be procured!</text>
+	</string>
+	<string id="ecolog_monster_part_2">
+		<text>Bring the eye of a flesh</text>
+	</string>
+	<string id="ecolog_monster_part_2_descr">
+		<text>I'd better keep my body away from these eggheads just in case! Very well, I'll get them a flesh's eye, and they can do all they want with their volunteers.</text>
+	</string>
+	<string id="ecolog_monster_part_2_text">
+		<text>Good news, young man: we have a very interesting assignment for you! I think as an intellectual being with quite a bit of experience you will be able to appreciate my colleagues' theories. The thing is, our research revealed: the eyes of the creatures called flesh in the common language, are equipped with... are you following me?... with olfactory receptors! Thus, they can not only see with their eyes, but smell with them as well! We're getting ready for an operation on transplanting this miraculous eye to one of ... one of our voluntary assistants. I believe we're about to start a craze! By the way, would you like to become a recepient of this rather amazing organ?</text>
+	</string>
+	<string id="ecolog_monster_part_3">
+		<text>Bring the tail of a blind dog</text>
+	</string>
+	<string id="ecolog_monster_part_3_descr">
+		<text>Well, look at Science! Trying to find a second brain in humans?.. Poor dogs, one of them will have to do without a tail now.</text>
+	</string>
+	<string id="ecolog_monster_part_3_text">
+		<text>Welcome, eh... traveler! I'm so glad you dropped by: we are in need of a man to take part in a highly important experiment. My colleague Brenter wants to try and cook a meal using local fauna for a practical experiment to study the influence of mutated protein on human body. For a start, we decided to try the boars. We need ham. A boar's leg, do you undestand? And if you agree to do it, please select the healthiest specimen.</text>
+	</string>
+	<string id="ecolog_monster_part_4">
+		<text>Bring the leg of a boar</text>
+	</string>
+	<string id="ecolog_monster_part_4_descr">
+		<text>Gourmet thrillseekers... Alright, I'll get them some ham.</text>
+	</string>
+	<string id="ecolog_monster_part_4_text">
+		<text>Good day, colleague! I hope you know that dogs belong to the vertebrates subtype... meaning their vertebral column starts with the head and ends with the tail. And here's the catch! One of my young collegues proved theoretically that the spine of the blind dogs - this is how you named this type of animals - starts from the tail, not from the head! Think of it, it totally turns upside down our assumptions pertaining to this area of knowledge. There are already some rather daring theories about human beings having around their sacrum a... well, this is a subject of many discussions. In short, we need the head of the dog, the blind dog, which through ignorance we considered to be its tail.</text>
+	</string>
+	<string id="ecolog_monster_part_5">
+		<text>Bring the bloodsucker's jaw</text>
+	</string>
+	<string id="ecolog_monster_part_5_descr">
+		<text>What they are going to do with bloodsucker's jaw, I don't care. I care about how much they will give me for this rarity.</text>
+	</string>
+	<string id="ecolog_monster_part_5_text">
+		<text>Oh, stalker, glad to see you! Listen… You already met bloodsuckers in your adventures, right? If not, then we want it to happen. Bring us the lower jaw of the representative of this species, with all his so to say tableware. Unfortunately, I can't disclose the details of the experiment, besides it will negatively impact the stability of your psyche. We'll be waiting.</text>
+	</string>
+	<string id="eliminate_lager">
+		<text>Camp elimination.</text>
+	</string>
+	<string id="find_item">
+		<text>Find the item.</text>
+	</string>
+	<string id="freedom_defend_lager_1">
+		<text>Protect the stalkers at Agroprom</text>
+	</string>
+	<string id="freedom_defend_lager_1_descr">
+		<text>Fight off the bandits' attack of the stalkers' camp at Agroprom.</text>
+	</string>
+	<string id="freedom_defend_lager_1_text">
+		<text>There's a group of stalkers, they live at the Agroprom. Average guys, they understand that the Zone is a place of freedom, that laws don't apply here and you just have to live right, based on your own morals. And now they're thinking about maybe joining us. Yeah, help them fight off the bandits? And we'll send you some ammo.</text>
+	</string>
+	<string id="freedom_defend_lager_2">
+		<text>Protect border</text>
+	</string>
+	<string id="freedom_defend_lager_2_descr">
+		<text>Protect the border near the army warehouses from monsters.</text>
+	</string>
+	<string id="freedom_defend_lager_2_text">
+		<text>Here come the monsters again from the side of the Scorcher. Help the guys at the border hold them off. I guarantee a reward.</text>
+	</string>
+	<string id="freedom_eliminate_camp_1">
+		<text>Destroy the military camp</text>
+	</string>
+	<string id="freedom_eliminate_camp_1_descr">
+		<text>Destroy the military camp by the Agroprom Research Institute.</text>
+	</string>
+	<string id="freedom_eliminate_camp_1_text">
+		<text>The military are staging a gradual Zone takeover. We need to slow them down, otherwise the Zone will turn into a research zoo. One of the military camps is right by the Agroprom. If you manage to purge the place a bit, it will slow down Zone's takeover by the army.</text>
+	</string>
+	<string id="freedom_eliminate_camp_2">
+		<text>Destroy the Merc camp</text>
+	</string>
+	<string id="freedom_eliminate_camp_2_descr">
+		<text>Destroy the Merc camp by the warehouses.</text>
+	</string>
+	<string id="freedom_eliminate_camp_2_text">
+		<text>Listen, here's the deal. The Merc camp needs to be destroyed. We could leave them be, they're good shots... except they've been really asking for it, sneaking into our territory, trying to bribe my people. It's time to teach them a lesson. Can you do it?</text>
+	</string>
+	<string id="freedom_eliminate_camp_3">
+		<text>Destroy the Duty detachment</text>
+	</string>
+	<string id="freedom_eliminate_camp_3_descr">
+		<text>Destroy the clean-up Duty faction in Rostok.</text>
+	</string>
+	<string id="freedom_eliminate_camp_3_text">
+		<text>How 'bout going on a hunt? Duty's clean-up detachment showed up at Rostok. This is a great chance to take them by surprise. Duty keeps sending guys hunting for the monsters, but in the process they don't hesitate to shoot whoever isn't up to their likening. This detachment needs to be finished off before Duty comes to Rostok. There shouldn't be too many people: three or four veterans and a couple of rookies.</text>
+	</string>
+	<string id="freedom_eliminate_camp_4">
+		<text>Destroy the Duty outpost</text>
+	</string>
+	<string id="freedom_eliminate_camp_4_descr">
+		<text>Destroy the Duty outpost at the Garbage as soon as possible.</text>
+	</string>
+	<string id="freedom_eliminate_camp_4_text">
+		<text>There's a very urgent job. The passage from the Garbage to the Bar needs to be cleared of the Duty unit... They've taken to hiding there and robbing the passers-by. We're expecting a very important package, but now it must not be ruled out that Duty already know about our courier and will try to waylay him. We need to wipe off this roadblock, even if for a little while. Ok?</text>
+	</string>
+	<string id="freedom_eliminate_camp_5">
+		<text>Clear the village.</text>
+	</string>
+	<string id="freedom_eliminate_camp_5_descr">
+		<text>Clear the village of bloodsuckers and, if possible eliminate the controller.</text>
+	</string>
+	<string id="freedom_eliminate_camp_5_text">
+		<text>Man, will you look at all those bloodsucking monsters swarming in the village! No one gets within a hundred meters of it, except complete dumbheads. And some say they've been seeing things there... a controller is all we need right now! Anyway, it's high time we put an end to it. I'm not forcing you, to tell you the truth I wouldn't go there myself. But if you're not afraid, then my gratitude won't have any bounds.</text>
+	</string>
+	<string id="freedom_eliminate_camp_6">
+		<text>Destroy the herd of boars and fleshes</text>
+	</string>
+	<string id="freedom_eliminate_camp_6_descr">
+		<text>Destroy the herd of boars and fleshes by the military warehouses.</text>
+	</string>
+	<string id="freedom_eliminate_camp_6_text">
+		<text>Our sniper sits at the entrance to the base. He sits there on the tower at night...it's quiet, night-time...and suddenly there's an explosion, wild screeching, a flash! What the!...It turns out, boars and fleshes got into the habit of wandering around by the minefield. The devil knows what makes them go there, but sure enough at least once every week one of those beasts gets torn up by a mine. The assignment is simple - kill all of those suckers off. Will you do it?</text>
+	</string>
+	<string id="freedom_eliminate_camp_7">
+		<text>Destroy the herd of rodents</text>
+	</string>
+	<string id="freedom_eliminate_camp_7_descr">
+		<text>Destroy the herd of rodents in the Wild Territory.</text>
+	</string>
+	<string id="freedom_eliminate_camp_7_text">
+		<text>There are no rodents anywhere near our base, those these creatures can get anywhere. And just recently there were so many of them here - you wouldn't believe it. Two months we dealt with them..hehehe. So, we figured out where the rodents came from to our base. From the Wild Territory, you follow? There's a fear that these jumping rats will multiply and return. We need a man to take care of them for us. Will you go?</text>
+	</string>
+	<string id="freedom_find_item_1">
+		<text>Steal the sniper rifle</text>
+	</string>
+	<string id="freedom_find_item_1_descr">
+		<text>Steal the modified SVDm 2 from the Duty warehouse.</text>
+	</string>
+	<string id="freedom_find_item_1_text">
+		<text>There is a special assignment. And pretty tough, too... So, you'll need to retrieve an improved Dragunov from the Duty warehouse. This piece even has a name of its own, but never mind. The main thing is that with its awesome scope and recoil canceller you can shoot a squirrel in its eye from 400 meters. So, I trust you'll do it!</text>
+	</string>
+	<string id="freedom_find_item_2">
+		<text>Obtain the modified Chaser 13</text>
+	</string>
+	<string id="freedom_find_item_2_descr">
+		<text>Obtain the modified Chaser 13 from the scientists.</text>
+	</string>
+	<string id="freedom_find_item_2_text">
+		<text>I hear the eggheads managed to improve the Chaser shotgun by using an artifact. The knockdown power of this thing is the same as a howitzer. So why don't you pay them a visit and see if you can make a bargain. I'll make up for all expenses!</text>
+	</string>
+	<string id="freedom_find_item_3">
+		<text>Bring the bulletproof vest</text>
+	</string>
+	<string id="freedom_find_item_3_descr">
+		<text>Bring the new model of the bulletproof vest.</text>
+	</string>
+	<string id="freedom_find_item_3_text">
+		<text>Some of the grunts are sporting a new type of bulletproof vests. The inside lining is soaked in some healing ointment or something like that... anyway, it makes small wounds heal up very fast. And imagine what luck: just the other day ten of those guys ran into Yantar, and only six returned, with three on their shoulders. You follow? One of them got left behind. If you get us his bullteproof vest, we'll examine it and make us a lot of them too.</text>
+	</string>
+	<string id="freedom_kill_stalker_1">
+		<text>Kill Duty's security chief</text>
+	</string>
+	<string id="freedom_kill_stalker_1_descr">
+		<text>Kill Duty's security chief and try do it as quietly as possible.</text>
+	</string>
+	<string id="freedom_kill_stalker_1_text">
+		<text>It would be well for Duty's security chief to quietly disappear. And when they're in a deep mess, I'll be able to plant a few of my guys in their gang. And then, the devil can pull off any stunt... alright, I better shut up. I suggest you take care of him from a distance, without kicking up a fuss.</text>
+	</string>
+	<string id="freedom_kill_stalker_2">
+		<text>Kill Captain Ivantsov</text>
+	</string>
+	<string id="freedom_kill_stalker_2_descr">
+		<text>Kill Captain Ivantsov, the closest aide of the Duty leader.</text>
+	</string>
+	<string id="freedom_kill_stalker_2_text">
+		<text>It's a tough job, I'm warning you right away, but it's worth it. Ivantsov, a close aide of the Duty leader, has been asking for it. He does the dirtiest jobs: punitive operations, raids... If you only knew how many of our guys he's killed off! It's high time we did away with this slimeball. So if you make up your mind to do it, I suggest you get yourself well armed.</text>
+	</string>
+	<string id="freedom_kill_stalker_3">
+		<text>Kill Colonel Petrenko</text>
+	</string>
+	<string id="freedom_kill_stalker_3_descr">
+		<text>Kill Colonel Petrenko, one of the founders of the Duty faction.</text>
+	</string>
+	<string id="freedom_kill_stalker_3_text">
+		<text>Colonel Petrenko... I don't know if you've heard the name or met him, but it would be good for the two of you to meet. This man is one of the Duty founders and one of our worst enemies. Try to make sure your conversation ends as fast as possible... for him. Can you handle that?</text>
+	</string>
+	<string id="freedom_kill_stalker_4">
+		<text>Destroy the neutral stalker</text>
+	</string>
+	<string id="freedom_kill_stalker_4_descr">
+		<text>Find and destroy the neutral stalker</text>
+	</string>
+	<string id="freedom_kill_stalker_4_text">
+		<text>There's a fellow who's walking around not far from here. He shot one of ours down once. And something like that can't be forgiven. Will you take the job? We'll pay, don't worry.</text>
+	</string>
+	<string id="freedom_kill_stalker_5">
+		<text>Kill one of the Duty commanders</text>
+	</string>
+	<string id="freedom_kill_stalker_5_descr">
+		<text>Kill one of the Duty commanders</text>
+	</string>
+	<string id="freedom_kill_stalker_5_text">
+		<text>I'll pay for the head of any Duty leader! Knock one off and come back for reward.</text>
+	</string>
+	<string id="freedom_kill_stalker_6">
+		<text>Kill the stalker called Scarecrow.</text>
+	</string>
+	<string id="freedom_kill_stalker_6_descr">
+		<text>Eliminate the stalker called Scarecrow</text>
+	</string>
+	<string id="freedom_kill_stalker_6_text">
+		<text>We eliminate monsters, except for us it's a matter of survival, not profit. Mutant populations are not as numerous; besides, they're living beings too, so we can't permit their annihilation. Some individuals refuse to understand it. An apt illustration is the stalker called Scarecrow. He got his nickname for a reason, selling stuffed mutants. We've warned him before, but all for nothing. So can you do a good deed for mother Earth?</text>
+	</string>
+	<string id="freedom_kill_stalker_7">
+		<text>Kill the stalker called Barin.</text>
+	</string>
+	<string id="freedom_kill_stalker_7_descr">
+		<text>Kill the stalker called Barin, chief quartermaster of the Duty faction.</text>
+	</string>
+	<string id="freedom_kill_stalker_7_text">
+		<text>A cad, bootlicker, hypocrite and coward... that's stalker Barin for you. As you can see, a man with a marvellous character, which helped him get to the top of Duty. Currently supplies the faction with supplies and foodstuff, though he takes part in raids from time to time. We need to get rid of him, especially since all the clues regarding Duty logistics lead to Barin.</text>
+	</string>
+	<string id="freedom_monster_part_1">
+		<text>Bring a boar's leg</text>
+	</string>
+	<string id="freedom_monster_part_1_descr">
+		<text>Bring a boar's leg</text>
+	</string>
+	<string id="freedom_monster_part_1_text">
+		<text>We're planning a dinner party to celebrate Bob Marley's birthday. So why don't you get us some delicious ham? The more the better! Jah will never forget you!</text>
+	</string>
+	<string id="hunter_eliminate_lager">
+		<text>Destroy the lair of the bloodsucker.</text>
+	</string>
+	<string id="hunter_eliminate_lager_descr">
+		<text>The hunter is asking to purge the lair of the bloodsucker in the village near the military warehouses, and in return he promises a rare artifact.</text>
+	</string>
+	<string id="hunter_eliminate_lager_text">
+		<text>Have you ever run into a bloodsucker? Horrible thing, isn't it? Well the other day I went to the village by the military warehouses, thought I'd look for some artifacts. And imagine this: suddenly I see a bloodsucker, black, and with scars all over. He's sitting over the corpse, doesn't see me. I freaked out and made a run for it. I shouldn't have started running though, because he heard me and went after me, and there was all this howling all around me and then I understood that he wasn't alone. I think they have a lair there. If you could chase them away from there, I would give you a rare artifact that I found a couple days ago.</text>
+	</string>
+	<string id="kill_stalker">
+		<text>Kill the stalker.</text>
+	</string>
+	<string id="lisiy_kill_stalker">
+		<text>Kill the traitor.</text>
+	</string>
+	<string id="lisiy_kill_stalker_descr">
+		<text>The Bald One wants you to kill one stalker who took off with a very rare artifact.</text>
+	</string>
+	<string id="lisiy_kill_stalker_text">
+		<text>A while ago another stalker and I went looking for an artifact right next to the scorcher. We found so much stuff, even found a couple of artifacts that I'd never seen before, not even pictures of them. So that son of a bitch tricked me. During the last night he snuck off and hid the most valuable artifacts. And then tried to tell me that they disappeared on their own. A couple days ago I saw one of those very rare artifacts at the barkeep's. I was so pissed... Anyway, stalker, if you could find him, send him a lead greeting from me. And while you're at it, maybe you can find out where his secret stash is and get the second artifact. It's worth it, believe me.</text>
+	</string>
+	<string id="mercenary_kill_stalker">
+		<text>Kill master stalker.</text>
+	</string>
+	<string id="mercenary_kill_stalker_descr">
+		<text>The merc should pay for the assassination of each master. The fewer masters there are, the easier it is for the mercs.</text>
+	</string>
+	<string id="mercenary_kill_stalker_text">
+		<text>We're not interested in the fact that walking dreadnoughts might wander across the Zone: stalkers in exo-skeletons armed to the teeth. The work becomes even more dangerous and harder over this. The fewer of them there are - the better it is for us. Kill one of them - and receive your reward.</text>
+	</string>
+	<string id="monster_part">
+		<text>Get a part of a monster body.</text>
+	</string>
+	<string id="petrenko_kill_stalker">
+		<text>Destroy the stalker from Freedom.</text>
+	</string>
+	<string id="petrenko_kill_stalker_descr">
+		<text>One stalker, a former dutyer, who had a lot of important information about objects at Pripyat, recently came over to the Freedom side. He needs to be killed before he says too much.</text>
+	</string>
+	<string id="petrenko_kill_stalker_text">
+		<text>Listen here. We have maps of Pripyat - not up-to-date ones, but old ones, made in the early 90's. The most important thing on them is the marking of all military objects: underground warehouses, bomb shelters. Now there's little use from it, of course, but if we find a road to Pripyat, this information will become priceless. Here's the problem though. One of the officers went over to the Freedom side, and he knew about this information. Bottom line, he needs to be silenced before he says too much.</text>
+	</string>
+	<string id="return_for_reward">
+		<text>Come back for the reward.</text>
+	</string>
+	<string id="return_for_reward_bring">
+		<text>Bring the customer what's been promised.</text>
+	</string>
+	<string id="shustriy_find_item">
+		<text>Find the perfected suit.</text>
+	</string>
+	<string id="shustriy_find_item_descr">
+		<text>Nimble told us about the stash of the bandits where they hid the habar. He's asking to bring back the stolen suit, for a reward, of course.</text>
+	</string>
+	<string id="shustriy_find_item_text">
+		<text>While I was incaptivity, I heard the bandits talking about their secret stash, where they keep the habar. Heard that they hid a cool coat there, and the next day some monster got his eye on the stash. And he became so interested in it that now they're afraid to go there. Do me a favor, bring me the suit, and I'll pay you well.</text>
+	</string>
+	<string id="tm_barman_has_no_job">
+		<text>I can't offer anything at the moment.</text>
+	</string>
+	<string id="tm_barman_job_ask">
+		<text>And what do you want to talk about?</text>
+	</string>
+	<string id="tm_barman_job_complete">
+		<text>Great job, award well deserved!</text>
+	</string>
+	<string id="tm_barman_job_what">
+		<text>What's up?</text>
+	</string>
+	<string id="tm_barman_list_job">
+		<text>Look what we've got now:</text>
+	</string>
+	<string id="tm_defend_camp_1">
+		<text>Cover the Duty detachment from the attack of the bandits in the Dark Valley</text>
+	</string>
+	<string id="tm_defend_camp_1_descr">
+		<text>Cover the Duty detachment from the attack of the bandits in the Dark Valley</text>
+	</string>
+	<string id="tm_defend_camp_1_text">
+		<text>I finally managed to get it into the thick heads of the dutyers that it's high time to purge the Garbage from bandits. The Duty will get to enlarge its territory and they won't damage my regular clients as often. Well, here's the deal - the leadership of the Duty decided, for starters, to cut off the flow of bandits from the Dark Valley. So they sent out a blockade detachment and discovered that the bandits didn't like that. Who would have thought! So what I'm wondering is, could you help them secure the entrance to the Valley? I'll thank you handsomely.</text>
+	</string>
+	<string id="tm_dolg_has_no_job">
+		<text>There are no jobs available right now.</text>
+	</string>
+	<string id="tm_dolg_job_ask">
+		<text>What do you want to discuss?</text>
+	</string>
+	<string id="tm_dolg_job_complete">
+		<text>Good boy! Job well done.</text>
+	</string>
+	<string id="tm_dolg_job_what">
+		<text>I'm listening.</text>
+	</string>
+	<string id="tm_dolg_list_job">
+		<text>Here's the job update:</text>
+	</string>
+	<string id="tm_drunk_dolg_has_no_job">
+		<text>For the moment there's nothing.</text>
+	</string>
+	<string id="tm_drunk_dolg_job_ask">
+		<text>What assignment do you want to talk about?</text>
+	</string>
+	<string id="tm_drunk_dolg_job_complete">
+		<text>Assignment is complete - and here is the reward!</text>
+	</string>
+	<string id="tm_drunk_dolg_job_what">
+		<text>And what about the assignment?</text>
+	</string>
+	<string id="tm_drunk_dolg_list_job">
+		<text>There is something:</text>
+	</string>
+	<string id="tm_ecolog_has_no_job">
+		<text>Sorry, but we don't have any jobs at the moment.</text>
+	</string>
+	<string id="tm_ecolog_job_ask">
+		<text>What is the job you would like to talk about?</text>
+	</string>
+	<string id="tm_ecolog_job_complete">
+		<text>You did a great job! Allow me to present you with your reward.</text>
+	</string>
+	<string id="tm_ecolog_job_what">
+		<text>I'm listening.</text>
+	</string>
+	<string id="tm_ecolog_list_job">
+		<text>Here's what I can offer:</text>
+	</string>
+	<string id="tm_eliminate_camp_1">
+		<text>Destroy the bandit camp at the Garbage.</text>
+	</string>
+	<string id="tm_eliminate_camp_1_descr">
+		<text>Eliminate the bandits at the Garbage who rob stalkers on the way back from the Zone. The trader will be happy.</text>
+	</string>
+	<string id="tm_eliminate_camp_1_text">
+		<text>The bandits have rallied lately, getting in the way of honest people trading... So make a beeline for the Garbage, I've been told these scumbags have settled down near the scrapyard. You look into this matter, and everyone will be grateful to you, and I'll be generous with the reward. Agreed?</text>
+	</string>
+	<string id="tm_eliminate_camp_2">
+		<text>Destroy the bandit camp at the Auto park.</text>
+	</string>
+	<string id="tm_eliminate_camp_2_descr">
+		<text>Eliminate the bandits at the Auto park. Apparently, they're new to the Zone, so the job is gonna be easy.</text>
+	</string>
+	<string id="tm_eliminate_camp_2_text">
+		<text>The bandits have been hanging around the Auto park again. So did you guess already what the job is about? Well then... jump to it! Pass our warmest greetings to them and come back, I'll thank you then. Deal?</text>
+	</string>
+	<string id="tm_eliminate_camp_3">
+		<text>Eliminate the bandits by the Agroprom Research Institute.</text>
+	</string>
+	<string id="tm_eliminate_camp_3_descr">
+		<text>Eliminate the bandits by the Agroprom Research Institute. Better stay on friendly terms with the trader.</text>
+	</string>
+	<string id="tm_eliminate_camp_3_text">
+		<text>Some bandits turned up by the Agroprom Research Institute. They're disturbing my diggers when they sort through the rubbish. You solve the problem, I'll owe you.</text>
+	</string>
+	<string id="tm_eliminate_camp_4">
+		<text>Purge the area from mutants.</text>
+	</string>
+	<string id="tm_eliminate_camp_4_descr">
+		<text>Purge the area from mutants.</text>
+	</string>
+	<string id="tm_eliminate_camp_4_text">
+		<text>There is one thing, pretty easy. They want to bring some foreign tourist over. He paid some dough to my homies to get to look at the zone. And the area where they're gonna show him around needs to be cleared of mutants. Will you do it?</text>
+	</string>
+	<string id="tm_eliminate_camp_5">
+		<text>Eliminate two bandits at the Garbage.</text>
+	</string>
+	<string id="tm_eliminate_camp_5_descr">
+		<text>Make the road to one of the best places in the Zone accessible to all.</text>
+	</string>
+	<string id="tm_eliminate_camp_5_text">
+		<text>Recently one of the best places in the Zone became inaccessible for lovers of the wonderful. At the Garbage...yeah, the Garbage, there's a quaint little place like nothing else, where all your sadness leaves you, where you forget about the dirt, about money, about blood. Forgot, that is, because now there are two dirty freaks sitting there, who threaten to kill anyone who doesn't pay them for being able to enter the place. Get rid of them - I have no other place to take the tourists.</text>
+	</string>
+	<string id="tm_eliminate_camp_6">
+		<text>Kill the bloodsucker in the Dark Valley</text>
+	</string>
+	<string id="tm_eliminate_camp_6_descr">
+		<text>Kill the bloodsucker in the Dark Valley</text>
+	</string>
+	<string id="tm_eliminate_camp_6_text">
+		<text>They say that the troops left the Dark Valley. And then monsters started pouring out of every crevice. The stalkers already spotted a bloodsucker there, and an extraordinary one at that - he's not afraid of open spaces. Any way, once word gets around to the scientist, they'll definitely want to study this bloodsucker. And I want to be the person who hands them over the body. Your job is to kill the bloodsucker, and I'll take care of the rest.</text>
+	</string>
+	<string id="tm_find_artefact_1">
+		<text>Find the Jellyfish artifact</text>
+	</string>
+	<string id="tm_find_artefact_1_descr">
+		<text>Find the Jellyfish artifact formed in the Springboard anomaly</text>
+	</string>
+	<string id="tm_find_artefact_1_text">
+		<text>Some guy from the Big Land asked for a Jellyfish. It's not a lot of money, but it's a milk run. Take it!</text>
+	</string>
+	<string id="tm_find_artefact_2">
+		<text>Find the Stone Flower artifact</text>
+	</string>
+	<string id="tm_find_artefact_2_descr">
+		<text>Find the Stone Flower artifact formed in the Springboard anomaly. The pay is supposed to be pretty good.</text>
+	</string>
+	<string id="tm_find_artefact_2_text">
+		<text>I have a request for the Stone Flower. The order is from the jewellers, by the way, so let's try to make the pretty ladies happy, eh? If you get it, you'll get the money and a bottle to drink to their health...</text>
+	</string>
+	<string id="tm_find_artefact_3">
+		<text>Find the Night Star artifact</text>
+	</string>
+	<string id="tm_find_artefact_3_descr">
+		<text>Find the Night Star, a rare and expensive artifact.</text>
+	</string>
+	<string id="tm_find_artefact_3_text">
+		<text>There is this one little job... rather unpleasant. Apparently, it's coming from the military, they're working on some new protection. Anyway, there's an order for the Night Star. It's quite a rare artifact, but it provides pretty good protection from bullets... So will you do it? I'll pay you well!</text>
+	</string>
+	<string id="tm_find_artefact_4">
+		<text>Find the artifact called Chunk of Meat</text>
+	</string>
+	<string id="tm_find_artefact_4_descr">
+		<text>Find the wound-healing artifact called Chunk of Meat</text>
+	</string>
+	<string id="tm_find_artefact_4_text">
+		<text>There's an order for an artifact, the kind that heals wounds, called Chunk of Meat! They have a clinic of some sort. If you get it you'll get paid and help people at the same time.</text>
+	</string>
+	<string id="tm_find_item_1">
+		<text>Find the perfected pistol</text>
+	</string>
+	<string id="tm_find_item_1_descr">
+		<text>Obtain the gun called Fort that has, rumor has it, a larger amount of cartridges in its magazine. Its last known owner was the commander of the military checkpoint under the broken down bridge.</text>
+	</string>
+	<string id="tm_find_item_1_text">
+		<text>Man, now there's a fad about using rigged weapons and nobody wants to shoot from normal weapons anymore, not even the newbies! Anyway, there's an order for an improved machine gun. Rumor has it the commander of the soldiers, the one who collects money for passing under the bridge, has a "Fort" with a fat cartridge clip. Will you get it?</text>
+	</string>
+	<string id="tm_freedom_has_no_job">
+		<text>There's no job right now, really...</text>
+	</string>
+	<string id="tm_freedom_job_ask">
+		<text>So what is it that you want to discuss?</text>
+	</string>
+	<string id="tm_freedom_job_complete">
+		<text>Here's a fine young man! Excellent job, here's your money.</text>
+	</string>
+	<string id="tm_freedom_job_what">
+		<text>What's up?</text>
+	</string>
+	<string id="tm_freedom_list_job">
+		<text>Here's what I've got:</text>
+	</string>
+	<string id="tm_hunter_has_no_job">
+		<text>For the moment there's nothing.</text>
+	</string>
+	<string id="tm_hunter_job_ask">
+		<text>What assignment do you want to talk about?</text>
+	</string>
+	<string id="tm_hunter_job_complete">
+		<text>Assignment is complete - and here is the reward!</text>
+	</string>
+	<string id="tm_hunter_job_what">
+		<text>And what about the assignment?</text>
+	</string>
+	<string id="tm_hunter_list_job">
+		<text>There is something:</text>
+	</string>
+	<string id="tm_job_nothing">
+		<text>It's alright. Some other time.</text>
+	</string>
+	<string id="tm_job_refuse">
+		<text>I refuse to do this job.</text>
+	</string>
+	<string id="tm_kill_stalker_1">
+		<text>Kill the bandit leader</text>
+	</string>
+	<string id="tm_kill_stalker_1_descr">
+		<text>Kill the bandit leader who crossed the trader. Most likely he won't be alone... Tough job, but the pay covers it all. The Garbage is the place to look for him.</text>
+	</string>
+	<string id="tm_kill_stalker_1_text">
+		<text>You'll have to finish off this one dandy, one of the bandit leaders. The other day the bandits, by his order, intercepted my courier and shook him up and I don't waste words with those who touch my people... In a word, if you get it done, I'll return the favor. So are you up for it?</text>
+	</string>
+	<string id="tm_kill_stalker_2">
+		<text>Kill the trader stalker</text>
+	</string>
+	<string id="tm_kill_stalker_2_descr">
+		<text>Kill a stalker... Well, that's not the best job, lifting a hand against a fellow worker. But the pay is pretty good, and this may be what matters the most.</text>
+	</string>
+	<string id="tm_kill_stalker_2_text">
+		<text>I'm having a confrontation with this one trader. Well, if he doesn't want to cooperate, the hell with him! But I won't let anyone start filthy rumors. In short, he needs to be wasted so the others don't get out of hand. Let them all know who's the boss here...</text>
+	</string>
+	<string id="tm_kill_stalker_3">
+		<text>Kill the rookie stalker</text>
+	</string>
+	<string id="tm_kill_stalker_3_descr">
+		<text>Finish off a rookie stalker, who may not be a rookie at all... Then who is he? Ah, who cares! As long as the job's not messy.</text>
+	</string>
+	<string id="tm_kill_stalker_3_text">
+		<text>There's this one guy here loafing about, pretending to be a rookie, but he's rather weird... So anyway, if he suddenly disappears, you'll be doing me a great favor. You know what I mean?</text>
+	</string>
+	<string id="tm_kill_stalker_4">
+		<text>Kill the stalker called Fiend</text>
+	</string>
+	<string id="tm_kill_stalker_4_descr">
+		<text>Eliminate one of the trader Sidorovich's rivals, a stalker called Fiend.</text>
+	</string>
+	<string id="tm_kill_stalker_4_text">
+		<text>The Fiend, aka Oleg Gusarov... used to serve in Spetsnaz. As long as he minded his own business, I had nothing against him, a loner is a loner. But I hear he's mustering a gang to crush down the cordon and take control over smuggling operations from the Zone. Now this is a major problem and it has to be solved quick. So will you do it?</text>
+	</string>
+	<string id="tm_kill_stalker_5">
+		<text>Kill Father Diodor</text>
+	</string>
+	<string id="tm_kill_stalker_5_descr">
+		<text>To kill a man preaching in the Zone against gathering and selling artifacts? Exactly.</text>
+	</string>
+	<string id="tm_kill_stalker_5_text">
+		<text>I always said business and religion can't go together, they can never cross, and should never ever meddle in the other's affairs! It's just this padre, Lord forgive me, Diodor... well... he just can't see this simple truth. He keeps raving about artifact hunting, says that trading in them drives people to sin not just in the Zone, but in the whole world, on and on along those lines. Get this, he preaches the destruction of artifacts altogether! See what he is up to? The worst bit is that he's actually got some converts! I've tried to approach this Diodor this way and other, but he just keeps at it. Here's the deal: you're going to send him upstairs where he can preach all he likes... you get the point, right? And I'll give you a cool artifact. So, we've got a deal?</text>
+	</string>
+	<string id="tm_kill_stalker_6">
+		<text>Kill the "sales representative"</text>
+	</string>
+	<string id="tm_kill_stalker_6_descr">
+		<text>Kill the "sales representative". The trader is looking after his reputation</text>
+	</string>
+	<string id="tm_kill_stalker_6_text">
+		<text>Imagine this: there's some weirdo running around here who introduces himself as my sales representative, uses my reputation, and then tries to hand off second-rate stuff! Broken barrells, the armor that's falling apart, expired canned goods. I've already had to deal with a few unhappy clients. Bottom line, I need a man to have a little chat with that "sales representative", whatever it takes.</text>
+	</string>
+	<string id="tm_lisiy_has_no_job">
+		<text>For the moment there's nothing.</text>
+	</string>
+	<string id="tm_lisiy_job_ask">
+		<text>What assignment do you want to talk about?</text>
+	</string>
+	<string id="tm_lisiy_job_complete">
+		<text>Assignment is complete - and here is the reward!</text>
+	</string>
+	<string id="tm_lisiy_job_what">
+		<text>And what about the assignment?</text>
+	</string>
+	<string id="tm_lisiy_list_job">
+		<text>There is something:</text>
+	</string>
+	<string id="tm_mercenary_has_no_job">
+		<text>Nothing for the current moment.</text>
+	</string>
+	<string id="tm_mercenary_job_ask">
+		<text>What task do you want to talk about?</text>
+	</string>
+	<string id="tm_mercenary_job_complete">
+		<text>Task complete... and here's the reward!</text>
+	</string>
+	<string id="tm_mercenary_job_what">
+		<text>So what's with the task?</text>
+	</string>
+	<string id="tm_mercenary_list_job">
+		<text>There is something:</text>
+	</string>
+	<string id="tm_monster_part_1">
+		<text>Bring the jaw of the bloodsucker</text>
+	</string>
+	<string id="tm_monster_part_1_descr">
+		<text>So the tooth of the bloodsucker brings good luck? Let's see if it'll bring luck to the bloodsucker</text>
+	</string>
+	<string id="tm_monster_part_1_text">
+		<text>I heard a superstition that the tooth of a bloodsucker brings good luck. As if the one who wears that tooth around his neck gets past the anomalies, and artifacts fall right into his hands. Anyway, it's all bullshit, but there are some dopes who believe it all and are ready to pay well for it. If you bring the jaw of a bloodsucker, I'll pay you well.</text>
+	</string>
+	<string id="tm_monster_part_2">
+		<text>Bring over the tail of the pseudodog</text>
+	</string>
+	<string id="tm_monster_part_2_descr">
+		<text>Bring over the tail of the pseudodog</text>
+	</string>
+	<string id="tm_monster_part_2_text">
+		<text>Winter's coming soon. And what do chicks like to wear there on the Big Land during winter? That's right - furs. So now there's a new fashion going around, making various accessories from the tails of pseudodogs. It's some sort of special fur! Bottom line, there's an order for such a tail. Will you take it?</text>
+	</string>
+	<string id="tm_petrenko_has_no_job">
+		<text>For the moment there's nothing.</text>
+	</string>
+	<string id="tm_petrenko_job_ask">
+		<text>Which assignment do you want to talk about?</text>
+	</string>
+	<string id="tm_petrenko_job_complete">
+		<text>Assignment is complete - and here is the reward!</text>
+	</string>
+	<string id="tm_petrenko_job_what">
+		<text>And what about the assignment?</text>
+	</string>
+	<string id="tm_petrenko_list_job">
+		<text>There is something:</text>
+	</string>
+	<string id="tm_reward_job">
+		<text>I'm here for the job.</text>
+	</string>
+	<string id="tm_seek_job_abandon">
+		<text>I'm not interested in that kind of jobs.</text>
+	</string>
+	<string id="tm_seek_job_no">
+		<text>Some other time.</text>
+	</string>
+	<string id="tm_seek_job_yes">
+		<text>I'm up for it.</text>
+	</string>
+	<string id="tm_seek_new_job">
+		<text>I need a job. Do you have something for me?</text>
+	</string>
+	<string id="tm_shustriy_has_no_job">
+		<text>For the moment there's nothing.</text>
+	</string>
+	<string id="tm_shustriy_job_ask">
+		<text>Which assignment do you want to talk about?</text>
+	</string>
+	<string id="tm_shustriy_job_complete">
+		<text>Assignment is complete - and here is the reward!</text>
+	</string>
+	<string id="tm_shustriy_job_what">
+		<text>And what about the assignment?</text>
+	</string>
+	<string id="tm_shustriy_list_job">
+		<text>There is something:</text>
+	</string>
+	<string id="tm_trader_has_no_job">
+		<text>There's no job right now.</text>
+	</string>
+	<string id="tm_trader_job_ask">
+		<text>What job do you want to talk about?</text>
+	</string>
+	<string id="tm_trader_job_complete">
+		<text>Job's done... and here's the reward!</text>
+	</string>
+	<string id="tm_trader_job_what">
+		<text>What about the job?</text>
+	</string>
+	<string id="tm_trader_list_job">
+		<text>Here's something:</text>
+	</string>
+	<string id="tm_wolf_has_no_job">
+		<text>For the moment there's nothing.</text>
+	</string>
+	<string id="tm_wolf_job_ask">
+		<text>Which assignment do you want to talk about?</text>
+	</string>
+	<string id="tm_wolf_job_complete">
+		<text>Assignment is complete - and here is the reward!</text>
+	</string>
+	<string id="tm_wolf_job_what">
+		<text>And what about the assignment?</text>
+	</string>
+	<string id="tm_wolf_list_job">
+		<text>There is something:</text>
+	</string>
+	<string id="tm_zastava_commander_has_no_job">
+		<text>For the moment there's nothing.</text>
+	</string>
+	<string id="tm_zastava_commander_job_ask">
+		<text>Which assignment do you want to talk about?</text>
+	</string>
+	<string id="tm_zastava_commander_job_complete">
+		<text>Assignment is complete - and here is the reward!</text>
+	</string>
+	<string id="tm_zastava_commander_job_what">
+		<text>And what about the assignment?</text>
+	</string>
+	<string id="tm_zastava_commander_list_job">
+		<text>There is something:</text>
+	</string>
+	<string id="wolf_eliminate_lager_1">
+		<text>Destroy the boar lair</text>
+	</string>
+	<string id="wolf_eliminate_lager_1_descr">
+		<text>The boars made a lair next to the place where Wolf and his friend made a storage. Wolf asks to purge the lair, and promised to handsomely reward you.</text>
+	</string>
+	<string id="wolf_eliminate_lager_1_text">
+		<text>My friend and I had a storage here not far from the car park, where the forest is more dense. Basically, just what you need. But recently the boars made a lair there, and now we can't get to the storage. Help - kill the boars, and I'll thank you, for myself and for my friend.</text>
+	</string>
+	<string id="wolf_eliminate_lager_2">
+		<text>Destroy the mutants at the farm</text>
+	</string>
+	<string id="wolf_eliminate_lager_2_descr">
+		<text>Wolf asks to purge the farm from mutants, wants to set up an outpost camp there.</text>
+	</string>
+	<string id="wolf_eliminate_lager_2_text">
+		<text>Though this is the border of the Zone, newbies have it tough even here. The bandits are only half the problem - they at least understand Russian. But the mutants - it's really tough with them. They made themselves a lair at the abandoned farm, took over the only good place for an outpost camp. If you manage to purge the farm from the mutants, I'll owe you.</text>
+	</string>
+	<string id="zastava_commander_eliminate_lager">
+		<text>Purge the dog lair</text>
+	</string>
+	<string id="zastava_commander_eliminate_lager_descr">
+		<text>There's a pack of dogs by the South checkpoint at the Bar. The head of the checkpoint asks to purge their lair. Promises to reward.</text>
+	</string>
+	<string id="zastava_commander_eliminate_lager_text">
+		<text>Despite our efforts, some monsters still manage to break through from the Garbage. Well you yourself probably saw a pack of dogs to the south of us. If you kill them you'll get a reward.</text>
+	</string>
+	<string id="defend_lager">
+		<text>Camp defense</text>
+	</string>
+</string_table>

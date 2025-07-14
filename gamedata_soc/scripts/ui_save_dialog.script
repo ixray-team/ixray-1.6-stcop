@@ -1,9 +1,4 @@
--- File:        UI_SAVE_DIALOG.SCRIPT
--- Description: Save Dialog for STALKER
--- Created:     27.9.2004
--- Author:      Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
--- Copyright:   2004 GSC Game World
--- Version:     0.8
+saved_game_extension	= save_extension()
 
 class "save_item" (CUIListItemEx)
 
@@ -46,14 +41,14 @@ function save_dialog:__finalize()
 end
 
 function save_dialog:FillList()
-	local flist = getFS():file_list_open_ex("$game_saves$",FS.FS_ListFiles,"*.sav")
+	local flist = getFS():file_list_open_ex("$game_saves$",FS.FS_ListFiles,"*" ..saved_game_extension)
 	local f_cnt = flist:Size()
 	
 	flist:Sort(FS.FS_sort_by_modif_down)
 	
 	for	it=0, f_cnt-1 	do
 		local file		=	flist:GetAt(it)			
-		local file_name = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - 4))
+		local file_name = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - string.len(saved_game_extension)))
 		local date_time = "[" .. file:ModifDigitOnly() .. "]"
 		--menu_item =  .. 
 		self:AddItemToList(file_name, date_time)
@@ -190,7 +185,7 @@ function save_dialog:OnButton_ok_clicked()
 	-- check for match name
 	local f = getFS()
 	local flist = f:file_list_open("$game_saves$",FS.FS_ListFiles)
-	local file_struct = f:exist("$game_saves$", self.new_save .. ".sav" )
+	local file_struct = f:exist("$game_saves$", self.new_save .. saved_game_extension )
 
 	if file_struct ~= nil then
 		self.mbox_mode = 1

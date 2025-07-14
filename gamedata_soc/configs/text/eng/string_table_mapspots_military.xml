@@ -1,0 +1,60 @@
+	<string id="mil_cap_hint">
+		<text>Talk to Barrier checkpoint commander</text>
+	</string>
+	<string id="mil_courier_hint1">
+		<text>Follow the snitch</text>
+	</string>
+	<string id="mil_courier_hint2">
+		<text>Wait for the snitch to call the agent</text>
+	</string>
+	<string id="mil_courier_hint3">
+		<text>Kill the snitch</text>
+	</string>
+	<string id="mil_courier_hint4">
+		<text>Kill the informer</text>
+	</string>
+	<string id="mil_crazy_hint">
+		<text>Take the crazy stalker's flash drive from him</text>
+	</string>
+	<string id="mil_dolg_khutor">
+		<text>Duty farmstead</text>
+	</string>
+	<string id="mil_freedom_sniper">
+		<text>Kill the sniper</text>
+	</string>
+	<string id="mil_hunters_hint1">
+		<text>Talk to Murk</text>
+	</string>
+	<string id="mil_hunters_hint2">
+		<text>Go back to Skinflint</text>
+	</string>
+	<string id="mil_kill_dolg_hint">
+		<text>Destroy the Duty squad</text>
+	</string>
+	<string id="mil_kill_lukash_hint">
+		<text>Kill Lukash</text>
+	</string>
+	<string id="mil_miser_hint">
+		<text>Skinflint</text>
+	</string>
+	<string id="mil_report_to_max_hint">
+		<text>Report to Max</text>
+	</string>
+	<string id="mil_return_to_lukash_hint">
+		<text>Report to Lukash</text>
+	</string>
+	<string id="mil_return_to_max_hint">
+		<text>Give the flash drive to Max</text>
+	</string>
+	<string id="mil_rg6_hint1">
+		<text>Find the cook in the Freedom base</text>
+	</string>
+	<string id="mil_rg6_hint2">
+		<text>Talk to Chef</text>
+	</string>
+	<string id="mil_rg6_hint3">
+		<text>Take the Bulldog 6 from the stash in the village</text>
+	</string>
+	<string id="mil_watertower_hint">
+		<text>Water tower</text>
+	</string>

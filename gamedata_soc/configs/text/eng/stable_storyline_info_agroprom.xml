@@ -1,0 +1,48 @@
+	<string id="agr_find_ghost_descr">
+		<text>...found our that one of Strelok's guys is called Ghost. At least some hint. If I can find the Ghost - I'll be able to find Strelok too.</text>
+	</string>
+	<string id="agr_journal_cache">
+		<text>Well, it seems that the stash gave me a new direction to follow. I found a flash drive with what appears to be a diary used by Strelok's group. Despite the few entries, I could work out that the group had two other members: Ghost and Fang. The diary also mentioned a "mutual friend" but I don't know whether he was part of the group. He definitely helped them out, that's for sure. According to Ghost's entry, Fang died when they were ambushed. So, at last, I have something solid: the name of someone who definitely knows Strelok - Ghost. As for Strelok himself, he may be somewhere in the North of the Zone.</text>
+	</string>
+	<string id="agr_journal_krot">
+		<text>Well, meeting Mole paid off - it seems that the group's stash really exists and it's located in the catacombs below the Institute...I'll have to go there. I don't know what I'll find there...but I hope this stash helps me solve my own mystery...</text>
+	</string>
+	<string id="agr_krot_secret_info">
+		<text>Follow the spiral staircase down into the room with the columns. Move across the room towards the exit and enter a large room with pipes in the ceiling. Go down to the second exit, enter the tunnel and turn left. There will be a right turn at the end. Go directly to the exit from the small room and turn right. Look for a hole in the left wall next to the words "Don't enter - you'll die". That's the entrance to Strelok's stash.</text>
+	</string>
+	<string id="agr_krot_secret_info_name">
+		<text>Strelok's stash</text>
+	</string>
+	<string id="agr_military_case">
+		<text>\nInvestigation report.\n For official use only.\n To SBU Colonel V.M. Kruchelnikov, head of project "TRUTH".\n From Captain D.F. Maksimenko, \ncommander of "Search-2" group.\n\n Memo.\n Our group consisting of 3 investigators and a squad of SBU Special Forces conducted searched at Agroprom, the former Research Institute for agriculture on radiation-affected soil, from 12.05.2012 to 25.05.2012. Most of the equipment and documentation was missing however the few things we were able to find allow us to come to the following conclusion: over the period from 2005 to 2008, the Institute did not conduct any research in its official fields of study. All the results of its "work" sent to the Ministry of Agriculture were falsified. Simultaneously, the Institute's management, specifically Petr Danilovich Strizh, continued to receive state financing, equipment and consumables and transferred them to a laboratory designated X18 using forged consignment notes, which provided cover for the operation by indicating that the materials were being transferred to an auxiliary facility for experiments. X18 appears to be a code name adopted by the group of people implicated in this affair, since our database contains no mention of this laboratory. Judging by the analysis of the documents we found, this laboratory is located within an hour's drive from the Institute. It is likely to be a clandestine facility so I would request the involvement of our analytical department. The lab's field of research is not clear and available documents contain no helpful information in this regard but do make references to the infamous professor Chubko and also mention some "Group". It is my firm belief that we have come to the end of the line and the analytical department will now have plenty of work to do.\n\n Attached is an archived file containing consignment notes for consumable materials and equipment transferred to some auxiliary facility and an extract from correspondence between Strizh and Chubko.\n\n Captain D.F. Maksimenko 26.05.2012\n To professor V.M. Chubko. From P.D. Strizh, Head of Agroprom Research Institute, Doctor of Agricultural Sciences. Dear Vadim Mikhailovich, As agreed, I am sending the next batch of consumable materials and equipment to our experimental facility to help you with your research, which is so essential for agriculture. I arranged financing for the experiments by describing them as pilot experiments in fields studied by the Institute so there won't be any problems with the Ministry. How are the experiments progressing? I am still deeply impressed by what you showed me last time. Sincerely yours, P.D. Strizh DAS To P.D. Strizh Please accept my gratitute, Petr Danilovich, we've received everything. My team is very impressed with the laser spectrometer - if not for you, it would take me eons to acquire this model through my channels. Of course the Ministry of Agriculture will be happy to receive OUR results...you really made an old man laugh with that one! The experiments are continuing normally and the things you saw last time are dwarfed by our latest achievements. You should visit more often - I am always happy to see you and it's only an hour's drive to our "experimental facility" as you called it :) I almost forgot, I have news for you: next Monday I will be discussing your candidacy with the Group. I think they will support me. Sincerely yours, professor V.M. Chubko To professor V.M. Chubko From P.D. Strizh, Head of Agroprom Research Institute, Doctor of Agricultural Sciences Dear Vadim Mikhailovich, thank you for your trust. I am touched and will do my best to prove you right. I think it is every scientist's dreams to take part in such an experiment and I will be absolutely delighted to be accepted into the Group. Sincerely yours, P.D. Strizh P.S. I managed to get two of the latest Japanese broadband oscilloscopes from the Ministry and will send them over at the earliest opportunity.</text>
+	</string>
+	<string id="agr_military_case_name">
+		<text>Investigation report</text>
+	</string>
+	<string id="agr_nii_security_plan">
+		<text>The chart details the patrols, sentries and guard towers. The HQ is on the third floor of the Institute. That's where the documents are kept. By day the area is infested with patrols. There are less of them at night and the guards are relieved at 11pm. There are few people in the main building at this time. If you want to get into the base, you should choose the catacombs, the gate is not an option.</text>
+	</string>
+	<string id="agr_nii_security_plan_name">
+		<text>Agroprom Research Institute guard chart</text>
+	</string>
+	<string id="agr_rats_n_soldiers_text">
+		<text>The army is annoyed by rats which climb out of the collectors. They punish soldiers by sending them into the collectors.</text>
+	</string>
+	<string id="agr_task_case">
+		<text>Trader: "As soon as you steal the briefcase from the Institute take it to the Barkeep. He runs the 100 Rads - the stalker bar. It's located on the site of the former Rostok factory."</text>
+	</string>
+	<string id="article_agr_krot_sos">
+		<text>SOS, the army is killing a fellow stalker! Guys, if you can hear me - help!</text>
+	</string>
+	<string id="article_agr_krot_sos_name">
+		<text>Meeting Mole</text>
+	</string>
+	<string id="article_agr_krot_sos1">
+		<text>Mole: "Help me, I'm gonna get killed!"</text>
+	</string>
+	<string id="st_operation_agroprom">
+		<text>The Agroprom operation</text>
+	</string>
+	<string id="storyline_gunslinger_flash_info">
+		<text>Received from Ghost: \n \n Strelok, I have some shitty news. Fang died. They were waiting for us in the village by the warehouses, and I think they were waiting a long time. Three of them. Seems like your average neutrals. Fang sensed them somehow. You know full well he has a good sense. We ran two of the down - clearly bandits - but the third turned out smarter than his buddies. He was sitting with Vintar about 100 meters away. Anyway, there's no more Fang. So next time we'll go to the center together, just the two of us. And here's another thing: those two had our descriptions. I can't figure out who would want us killed, although actually there are quite a few who have something against us. I let the third one get away - I think it was one of the mercs. Had a big scar on his face. Hazel eyes. I'll try to find him. \n So that's the deal. Keep an eye out and good luck. \n Ghost \n \n to Ghost \n\n "Hey there buddy. \n Leaving you some info, won't try to get connected, noticed someone following me. \n Dude, I went North...There where we were...Will try to make it through solo...Sorry but had no time to wait for you...Will explain later. \n And that freak that killed Fang will be sorry he was ever born...I'll cut him to pieces...you find out who he is, and I'll be back soon - we'll have it out with him. \n We're meeting at our mutual friend's place - you know who and where :) \n Good luck. \n Strelok” \n \n To Strelok \n \n “Hey. Came. You weren’t there. You shouldn’t have gone to the center alone. But no big deal. I know where and with whom to find you :) \n Ghost”</text>
+	</string>

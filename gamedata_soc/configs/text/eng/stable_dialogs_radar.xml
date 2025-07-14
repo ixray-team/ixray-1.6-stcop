@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="rad_chief_start_dialog_0">
+		<text>Hey!</text>
+	</string>
+	<string id="rad_chief_start_dialog_100">
+		<text>Hey!</text>
+	</string>
+	<string id="rad_find_deputy_dialog_1_0">
+		<text>Where's the money for the mission?</text>
+	</string>
+	<string id="rad_find_deputy_dialog_1_100">
+		<text>Find my deputy and you'll get your money!</text>
+	</string>
+	<string id="rad_find_deputy_dialog_1_1000">
+		<text>OK but don't lie to me this time!</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_1_0">
+		<text>Who are you?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_1_10">
+		<text>Leha the Jaw is my name! These rogues are my crew!</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_1_100">
+		<text>What are you doing here?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_1_20">
+		<text>My boys and I are resting! When we're done we'll head to Pripyat!</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_2_0">
+		<text>What do you know about Pripyat?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_2_10">
+		<text>It's an old abandoned city from the communist era! From history! I reckon it's full of monsters and hordes of Monolith fighters now! No one who has gone there before ever returned!</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_2_100">
+		<text>You think it's dangerous?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_2_20">
+		<text>No doubt about it - nobody has ever come back from there.</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_3_0">
+		<text>You seen any soldiers around?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_3_10">
+		<text>No, I ain't seen any soldiers for a long time.</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_3_100">
+		<text>What about military stalkers?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_3_20">
+		<text>Rumour has it that they showed up right by the Red Forest, by the antennae! When they were turned off many people went to the Red Forest and further into Pripyat! We've been here for a day and we haven't seen anyone. Someone probably blocked the road here.</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_3_200">
+		<text>You think the military blocked the road to the Red Forest?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_3_30">
+		<text>I don't think it was the military, I haven't seen any for a long time but military stalkers could have done it! They don't waste any time. They're the no-nonsense types, they work quickly and efficiently in their teams or solo... it's weird that they didn't block the road here earlier.</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_3_300">
+		<text>Why did they not go to Pripyat or block the road there?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_3_40">
+		<text>I don't know. Maybe they're afraid or they're getting ready for something. I can only guess.</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_0">
+		<text>Maybe you've got a mission for me?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_10">
+		<text>Well, I have one but it's not easy...will you do it?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_100">
+		<text>Saying it's not easy doesn't scare me!</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_101">
+		<text>Nah, no way. I don't have the time!</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_11">
+		<text>I understand. I'm afraid myself... would prefer to spend some money instead of sending my guys or going myself.</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_20">
+		<text>Good! The job is to find my scouts, Crowbar and Log! They went to Pripyat since I decided not to rush in and sent my best guys instead! Find them alive and bring them here. If they're dead bring me their weapons! Do this for me and you'll get 2000!!!</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_200">
+		<text>OK, deal!</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_201">
+		<text>Not enough. How about 4000 and we have a deal?</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_21">
+		<text>That's all I can offer you for this job!</text>
+	</string>
+	<string id="rad_find_stalkers_dialog_4_30">
+		<text>OK, I'll wait for you here!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_1_0">
+		<text>Mission accomplished!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_1_100">
+		<text>Great, give me his PDA!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_1_1000">
+		<text>Here. Now the money!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_1_1100">
+		<text>You're trying to pull a fast one on me. He didn't have anything!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_1_1200">
+		<text>I'm gonna waste you right now!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_1_1300">
+		<text>If I see you again you're a dead man!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_1_1400">
+		<text>OK, I understand. Good luck!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_1_200">
+		<text>I can't give you anything, I don't have any money. You can keep his stuff if you want.</text>
+	</string>
+	<string id="rad_found_deputy_dialog_1_300">
+		<text>I don't have any money! Go away!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_2_0">
+		<text>I couldn't find him!</text>
+	</string>
+	<string id="rad_found_deputy_dialog_2_10">
+		<text>Find him fast if you want your money!</text>
+	</string>
+	<string id="rad_found_stalkers_dialog_1_0">
+		<text>I found your boys. They died but here are their weapons!</text>
+	</string>
+	<string id="rad_found_stalkers_dialog_1_100">
+		<text>Thanks, they're dead then. I don't think there's any point going to Pripyat now! There's a problem though - I don't have your money. My deputy disappeared and he had all the money!</text>
+	</string>
+	<string id="rad_found_stalkers_dialog_1_1001">
+		<text>OK, I'll find him! Tell me where to look for him. And don't even think about trying to cheat me out of my cash this time!!!</text>
+	</string>
+	<string id="rad_found_stalkers_dialog_1_200">
+		<text>I don't think he got very far. He's probably here or here, I'll mark it on the map for you! When you find him, bring him or his PDA back here!</text>
+	</string>
+	<string id="rad_found_stalkers_dialog_1_2000">
+		<text>OK, wait for me!!!</text>
+	</string>
+	<string id="rad_found_stalkers_dialog_2_0">
+		<text>I couldn't find them.</text>
+	</string>
+	<string id="rad_found_stalkers_dialog_2_10">
+		<text>Find them fast! I can't wait forever!!! Good luck!</text>
+	</string>
+</string_table>

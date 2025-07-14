@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Army">
+		<text>Army</text>
+	</string>
+	<string id="Bandits">
+		<text>Bandits</text>
+	</string>
+	<string id="Duty">
+		<text>Duty faction</text>
+	</string>
+	<string id="enc_social_military_army">
+		<text>Regular army soldiers. They guard all roads into the Zone, patrol its perimeter, kill mutants and hunt down looters. \nSpetsnaz - elite army troops, usually dispatched to the Zone to conduct rescue operations and other special missions.</text>
+	</string>
+	<string id="enc_social_military_milstalkers">
+		<text>Soldiers who underwent special training following their service in the Zone or stalkers who voluntarily signed a contract with the Army. Usually equipped with various support gear and well-armed. Used mainly to study the causes and effects of the catastrophe and to map out the Zone. They can work on their own or in small detachments of up to five people. Military stalkers do not allow normal stalkers to approach and open fire on sight.</text>
+	</string>
+	<string id="enc_social_scientists_mobile-groups">
+		<text>Erased</text>
+	</string>
+	<string id="enc_social_scientists_mobile-labs">
+		<text>A mobile lab resembles a small, armored bunker with tiny windows of tainted glass. The lab is capable of withstanding a lot of damage and with its reliable life-support systems it can work autonomously for several months. The bunker is delivered into the Zone by a transport helicopter. The lab staff never allow visitors past the external air-lock chamber, so no stalker has ever been inside one.</text>
+	</string>
+	<string id="enc_social_stalker-clans_bandits">
+		<text>Members of the criminal underworld who came to the Zone for different reasons: to make money by selling artifacts, hide from the law or trade in weapons. The Zone is full of bandits, ranging from common thugs to serious criminals, most of whom are members of one gang or another. Although the Zone gangs frequently fight among themselves, the criminal element still poses a serious problem for normal stalkers.</text>
+	</string>
+	<string id="enc_social_stalker-clans_duty">
+		<text>A paramilitary group known for its discipline, whose members live according to a strict code. Duty members are the only group to refuse to trade unique items from the Zone with the outside world. According to rumors, all artifacts found by the group are passed on to scientists. Its members consider protecting the outside world from the Zone's dangers their primary objective. Most of the group's operations concern destroying monsters, hence Duty raids often save normal stalkers from serious trouble. The faction has long been at war with Freedom.</text>
+	</string>
+	<string id="enc_social_stalker-clans_freedom">
+		<text>Anarchists and daredevils who declare themselves fighters for a free access to the Zone and consequently find themselves in constant conflict with the army, military stalkers and the Duty faction. These so-called freedom warriors believe in sharing all information about the Zone with the rest of the world and challenge the state's monopoly over the Zone's secrets and wonders.</text>
+	</string>
+	<string id="enc_social_stalker-clans_killers">
+		<text>The most clandestine and secretive faction in the Zone; some don't even believe in its existence. There are those who regularly use the Mercs' services as they are true pros, able to quickly deal with any stalker and even annihilate a small group of opponents. Their services do not come cheap - the Mercs demand a king's ransom for their services in money or artifacts. The location of their base remains a secret, suggesting that it is deep inside the Zone.</text>
+	</string>
+	<string id="enc_social_stalker-clans_loners">
+		<text>Stalkers exploring the Zone on their own. Most stalkers work this way since being a member of a group takes precious time, and part of the loot. Then there are some who simply prefer solitude and independence.</text>
+	</string>
+	<string id="enc_social_stalker-clans_monolith">
+		<text>This group displays many features of a religious sect. Its members believe in the existence of a complex alien crystal, the Monolith, located somewhere in the center of the Zone. Most stalkers treat Monolith adepts with contempt and consider them as lunatics. From its inception the group strives to block all progress towards the center of the Zone, protecting the Monolith from other stalkers. Rumor has it that the group has a large base deep in the Zone, but its exact location is know only to the members.</text>
+	</string>
+	<string id="enc_social_stalker-clans_zomstalkers">
+		<text>Poor souls subjected to prolonged exposure in Yantar and a few other heavily radiated sectors. Careless stalkers gone mad and turned into walking corpses. Many such corpses wander the Zone, some wander as far as the perimeter. They are beyond help because the destructive process is irreversible. Zombified stalkers are still able to use their weapons, but they are quite dumb and can be heard mumbling meaningless, fragmented sentences to themselves. They gradually lose all their skills and turn into zombies. They are usually very aggressive and can present a serious threat in large numbers.</text>
+	</string>
+	<string id="Freedom">
+		<text>Freedom faction</text>
+	</string>
+	<string id="Killers">
+		<text>Mercs</text>
+	</string>
+	<string id="Loners">
+		<text>Lone stalkers</text>
+	</string>
+	<string id="Military">
+		<text>Militarized units</text>
+	</string>
+	<string id="Milstalkers">
+		<text>Military stalkers</text>
+	</string>
+	<string id="Mobile-groups">
+		<text>Research groups</text>
+	</string>
+	<string id="Mobile-labs">
+		<text>Mobile science lab</text>
+	</string>
+	<string id="Monolith">
+		<text>Monolith faction</text>
+	</string>
+	<string id="Scientists">
+		<text>Scientists</text>
+	</string>
+	<string id="Social">
+		<text>Factions</text>
+	</string>
+	<string id="Stalker-clans">
+		<text>Stalker clans</text>
+	</string>
+	<string id="Zomstalkers">
+		<text>Zombified stalkers</text>
+	</string>
+</string_table>

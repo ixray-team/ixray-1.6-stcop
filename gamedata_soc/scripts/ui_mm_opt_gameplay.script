@@ -9,21 +9,85 @@ end
 
 function opt_gameplay:InitControls(x, y, xml, handler)
 
-	self:Init(x,y, 738, 416)
-	self:SetAutoDelete(true)
+    self:SetWndPos(vector2():set(x,y))
+    self:SetWndSize(vector2():set(738,416))
+    self:SetAutoDelete(true)
 	
-	self.bk = xml:InitFrame("frame_gameplay", self)
-	
-	xml:InitStatic("tab_gameplay:cap_difficulty",		self)
-	
-	xml:InitCheck("tab_gameplay:check_tips",			self)
-	xml:InitCheck("tab_gameplay:check_crosshair",		self)
-	xml:InitCheck("tab_gameplay:check_dyn_crosshair", 	self)
-	xml:InitCheck("tab_gameplay:check_show_weapon", 	self)
-	xml:InitCheck("tab_gameplay:check_dist", 			self)
-	xml:InitComboBox("tab_gameplay:list_difficulty",	self)
+	if xml:NodeExist("frame_gameplay", 0) then
+		self.bk = xml:InitFrame("frame_gameplay", self)
+	end
+    self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
-	local btn
-	btn = xml:Init3tButton	("tab_gameplay:btn_check_updates", self)
-	handler:Register		(btn, "btn_check_updates")
+    local _st
+    local addControl = function(crl)	
+        self.scroll_v:AddWindow(crl, true)
+        crl:SetAutoDelete(false)
+    end
+
+    local lineFrame = function (text)
+        local static = xml:InitStatic("video_adv:templ_item", nil)
+        local temp = xml:InitFrameLine("video_adv:header_setup", static)
+        local tempText = xml:InitTextWnd("video_adv:cap_header_setup", temp)
+        tempText:SetTextST(text)
+		addControl(static)
+    end
+	
+    local addTrack = function (text, command, step, mode, show_value, magnitude)
+        _st = xml:InitStatic("video_adv:templ_item", nil)
+        local temp = xml:InitTrackBar("video_adv:track_template_" .. mode, _st)
+        local tempText = xml:InitTextWnd("video_adv:cap_template", _st)
+		temp:AssignProps(command, "mm_opt_gameplay")
+		temp:SetDrawingValue(show_value)
+		if magnitude then
+			temp:SetMagnitude(magnitude)
+		end
+		temp:SetStep(step)
+        tempText:SetTextST(text)
+		addControl(_st)
+    end
+	
+	local addCheck = function (text, command)
+		_st = xml:InitStatic("video_adv:templ_item", nil)
+        local temp = xml:InitCheck("video_adv:check_template", _st)
+        local tempText = xml:InitTextWnd("video_adv:cap_template", _st)
+		temp:AssignProps(command, "mm_opt_gameplay")
+		tempText:SetTextST(text)
+		addControl(_st)
+    end
+
+    local addComboBox = function (text, command, list_length, show_scroll)
+		_st = xml:InitStatic("video_adv:templ_item", nil)
+        local temp = xml:InitComboBox("video_adv:list_template", _st)
+        local tempText = xml:InitTextWnd("video_adv:cap_template", _st)
+ 		temp:SetListLength(list_length)
+		temp:SetVertScroll(show_scroll)
+		temp:AssignProps(command, "mm_opt_video_adv")
+		tempText:SetTextST(text)
+		addControl(_st)
+    end
+	
+	lineFrame("st_common_settings")
+	
+	addComboBox("ui_mm_difficulty", "g_game_difficulty", 4, false)
+	addComboBox("ui_mm_lang", "language", 4, false)
+	
+	lineFrame("st_gameplay_settings")
+
+	addTrack("ui_mm_bobbing_factor", "g_bobbing_factor", 0.1, "float", true, 10)
+	addCheck("ui_mm_hit_slowmo", "g_hit_slowmo")
+	addCheck("ui_mm_wpn_aim_toggle", "wpn_aim_toggle")
+	if is_cop() then
+		addCheck("ui_mm_important_save", "g_important_save")
+	end	
+	addCheck("ui_mm_show_weapon", "hud_weapon")
+	addCheck("ui_mm_crouch_toggle", "g_crouch_toggle")
+
+	lineFrame("st_ui_settings")
+
+	addCheck("ui_mm_show_crosshair", "hud_crosshair")
+	addCheck("ui_mm_dyn_crosshair", "cl_dynamiccrosshair")
+	addCheck("ui_mm_crosshair_distance", "hud_crosshair_dist")
+	addCheck("ui_mm_tips", "hud_info")
+ 	addCheck("ui_st_disable_hud", "hud_draw")
+ 	addCheck("ui_rs_fps_show", "rs_fps_show")
 end

@@ -1,6 +1,0 @@
-function main()
-	while true do
-		printf	("coroutine is working!")
-		wait	(1000)
-	end
-end

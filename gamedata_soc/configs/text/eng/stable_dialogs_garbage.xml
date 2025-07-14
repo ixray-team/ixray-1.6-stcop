@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_dolg_blokpost_11">
+		<text>Halt, stalker. You can't go any further!</text>
+	</string>
+	<string id="gar_dolg_blokpost_111">
+		<text>Why?</text>
+	</string>
+	<string id="gar_dolg_blokpost_1111">
+		<text>Because that's our territory - Duty territory; and we're very picky about who we let through into our base. If you don't have anything important to discuss with our leaders you ain't getting past here.</text>
+	</string>
+	<string id="gar_dolg_blokpost_11111">
+		<text>I see.</text>
+	</string>
+	<string id="gar_dolg_blokpost_111111">
+		<text>Those are the rules.</text>
+	</string>
+	<string id="gar_dolg_blokpost_11112">
+		<text>I need to pass, I have some business with the Barkeep.</text>
+	</string>
+	<string id="gar_dolg_blokpost_111121">
+		<text>Yes, Barkeep told us about you. You can pass.</text>
+	</string>
+	<string id="gar_dolg_blokpost_1111211">
+		<text>I'd rather pay. Here.</text>
+	</string>
+	<string id="gar_dolg_blokpost_11112111">
+		<text>Good! You can go, but you better have some really important business with the Barkeep, you hear? And be careful - there's lots of anomalies ahead.</text>
+	</string>
+	<string id="gar_dolg_blokpost_1111212">
+		<text>What's the favor?</text>
+	</string>
+	<string id="gar_dolg_blokpost_11112121">
+		<text>Nothing much. There is a herd of boars wandering nearby that needs to be killed. Take 'em out and consider your passage paid for.</text>
+	</string>
+	<string id="gar_dolg_blokpost_111121211">
+		<text>Deal.</text>
+	</string>
+	<string id="gar_dolg_blokpost_1111212111">
+		<text>Good luck, stalker.</text>
+	</string>
+	<string id="gar_dolg_blokpost_111121212">
+		<text>I don't have the money.</text>
+	</string>
+	<string id="gar_dolg_blokpost_1111212121">
+		<text>Well, then you better start looking for it!</text>
+	</string>
+	<string id="gar_dolg_blokpost_111122">
+		<text>I don't have the money.</text>
+	</string>
+	<string id="gar_dolg_blokpost_111123">
+		<text>Well, you can't go through to the bar then.</text>
+	</string>
+	<string id="gar_dolg_blokpost_1231">
+		<text>Thanks for helping us fighting off the boars, take the deserved reward.</text>
+	</string>
+	<string id="gar_dolg_blokpost_12311">
+		<text>Thanks!</text>
+	</string>
+	<string id="gar_dolg_blokpost_22">
+		<text>So, you killed those boars yet?</text>
+	</string>
+	<string id="gar_dolg_blokpost_221">
+		<text>Not yet.</text>
+	</string>
+	<string id="gar_dolg_blokpost_2211">
+		<text>Shame. When you start cutting them up for chops, bring me one, would you?</text>
+	</string>
+	<string id="gar_dolg_blokpost_222">
+		<text>Yeah, I killed them all.</text>
+	</string>
+	<string id="gar_dolg_blokpost_2221">
+		<text>OK, go on. And say "hi" to the Barkeep for me, will you?</text>
+	</string>
+	<string id="gar_dolg_blokpost_33">
+		<text>Say "hi" for the Barkeep from me when you see him. Oh, and don't forget - there are lots of anomalies on the way, so be careful.</text>
+	</string>
+	<string id="gar_dramm_novice_start_0">
+		<text>Thanks man- you really helped me out. I won't forget it.</text>
+	</string>
+	<string id="gar_dramm_novice_start_1">
+		<text>What's going on here?</text>
+	</string>
+	<string id="gar_dramm_novice_start_11">
+		<text>OK.</text>
+	</string>
+	<string id="gar_dramm_novice_start_2">
+		<text>We're trying to clear the Garbage of bandits. My friends are going to ambush a bandit squad nearby. If we don't stop them, they'll take control of the Garbage and nobody will be able to go deeper into the Zone. Talk to our commander. He and his men are near here, at the machinery scrapyard. I'm going there myself - we can go together if you want.</text>
+	</string>
+	<string id="gar_dramm_novice_start_21">
+		<text>Let's go.</text>
+	</string>
+	<string id="gar_dramm_novice_start_3">
+		<text>Can you tell me anything about the Garbage?</text>
+	</string>
+	<string id="gar_dramm_novice_start_31">
+		<text>There ain't much to tell, man. The Garbage is...a dump. Duty fighters guard the northern road to the Bar. You might want to avoid them - Duty is full of real nasty types. To the right are the paths into the Dark Valley but the radiation levels are very high there. A little closer is the Grimpen Mire - terrible marshes full of anomalies. They say it's easy to find some decent artifacts there but even easier to find a lot of trouble. Oh well, at least there ain't no Hound of the Baskervilles in the Mire!</text>
+	</string>
+	<string id="gar_dramm_novice_start_311">
+		<text>Go on.</text>
+	</string>
+	<string id="gar_dramm_novice_start_3111">
+		<text>To the right, by the marshes, there's a secret hiding place. You'll see a metallic construction overhanging a puddle. My stash is right below it...I put it there a while ago but you saved my life and you probably need it more than I do anyway. So feel free to use it</text>
+	</string>
+	<string id="gar_dramm_novice_start_31111">
+		<text>Thanks man, that's useful info.</text>
+	</string>
+	<string id="gar_dramm_novice_start_312">
+		<text>That's interesting, thanks.</text>
+	</string>
+	<string id="gar_hellcar_start_11">
+		<text>Hey stalker, you're just in time! We could really use your help. Those bandit bastards are trying to take control of the Garbage. We had a shootout here half an hour ago and managed to take down three of the dogs. The others retreated, but I'm dead certain they are going to come back with reinforcements any minute now. There aren't too many of us left and another man wouldn't hurt.</text>
+	</string>
+	<string id="gar_hellcar_start_111">
+		<text>Go on.</text>
+	</string>
+	<string id="gar_hellcar_start_1111">
+		<text>We've set up an ambush for them here. They'll be coming from the West, from the Agroprom Research Institute. Help us destroy their reinforcements and you won't regret it!</text>
+	</string>
+	<string id="gar_hellcar_start_11111">
+		<text>OK, I'll help you.</text>
+	</string>
+	<string id="gar_hellcar_start_111111">
+		<text>Great.</text>
+	</string>
+	<string id="gar_hellcar_start_11112">
+		<text>It's none of my business and I don't want to get involved.</text>
+	</string>
+	<string id="gar_hellcar_start_111121">
+		<text>As you wish. You'll be cursing your stupidity every time you pay those boneheads for passage into the Zone.</text>
+	</string>
+	<string id="gar_hellcar_start_11113">
+		<text>I've killed them all.</text>
+	</string>
+	<string id="gar_hellcar_start_111131">
+		<text>You're the man! But I'll play it safe just in case.</text>
+	</string>
+	<string id="gar_hellcar_start_21">
+		<text>We have nothing to talk about.</text>
+	</string>
+	<string id="gar_hellcar_start_3111">
+		<text>Thanks man, you really helped us out there. Will you accept some cash? A small token of our gratitude.</text>
+	</string>
+	<string id="gar_hellcar_start_31111">
+		<text>Sure.</text>
+	</string>
+	<string id="gar_hellcar_start_311111">
+		<text>Here, this should pay for the medical treatment to recover your health.</text>
+	</string>
+	<string id="gar_hellcar_start_3111111">
+		<text>Thank you.</text>
+	</string>
+	<string id="gar_hellcar_start_31113">
+		<text>Tell me about yourself.</text>
+	</string>
+	<string id="gar_hellcar_start_311131">
+		<text>Bes's my name. I came to these parts three years ago. Like many of the guys in the Zone I'm a fugitive, wanted for two murders and GBH. A few years ago a friend of mine got battered pretty bad - they had to literally stitch him back together at the hospital. So I paid the bastards who did it a little "visit". When the coppers showed up I had to shoot one of them and jump out of a third-floor window - I've been here since. I've done well in this place but the list of my crimes has got a little longer too. I try to fight the lawless just as I did on the outside. I train up rookies and teach them to survive in the Zone.</text>
+	</string>
+	<string id="gar_hellcar_start_3111311">
+		<text>So why don't you join Duty if you feel that way?</text>
+	</string>
+	<string id="gar_hellcar_start_31113111">
+		<text>Duty fights against the Zone, I fight for the people. Besides, they're too closely linked with the government and the army. I don't want to wake up in a cold cell one day.</text>
+	</string>
+	<string id="gar_hellcar_start_311131111">
+		<text>Good luck to you.</text>
+	</string>
+	<string id="gar_hellcar_start_31114">
+		<text>What's this place?</text>
+	</string>
+	<string id="gar_hellcar_start_311141">
+		<text>The Garbage. We are right at home here. You see the heaps of crap? You don't want to go there, trust me. So full of radioactive waste, the Geiger counters go off the scale. This is the only decent way into the Zone and bandits have been increasingly active here lately. They're shit scared of going deeper into the Zone, into Duty territory, like experienced stalkers. But those hyenas just love robbing the rookies here. So, if nobody else cares, we have to stand our ground and fight ourselves.</text>
+	</string>
+	<string id="gar_hellcar_start_3111411">
+		<text>Go on.</text>
+	</string>
+	<string id="gar_hellcar_start_31114111">
+		<text>Everywhere, and especially here, you gotta act like a human being, not like some greed-driven animal. That's my outlook on life.</text>
+	</string>
+	<string id="gar_hellcar_start_311141112">
+		<text>Are there any large buildings in the Garbage?</text>
+	</string>
+	<string id="gar_hellcar_start_31114111211">
+		<text>Thank you.</text>
+	</string>
+	<string id="gar_hellcar_start_31115">
+		<text>Thanks, I don't need anything from you.</text>
+	</string>
+	<string id="gar_hellcar_start_3112">
+		<text>I know quite a lot, I could share some information with you.</text>
+	</string>
+	<string id="gar_hellcar_start_41">
+		<text>The job ain't done. Let's finish it and talk later.</text>
+	</string>
+	<string id="gar_hellcar_start_51">
+		<text>Hey, Marked One.</text>
+	</string>
+	<string id="gar_seriy_start_11">
+		<text>Dammit it man, this ain't no time for talking! In a few seconds the only things talking will be guns. Help me fight them off and we can talk after.</text>
+	</string>
+	<string id="gar_seriy_start_22">
+		<text>Thanks for the help, things got pretty hairy. What are you doing here anyway?</text>
+	</string>
+	<string id="gar_seriy_start_221">
+		<text>I am looking for information about Strelok. Fox told me about you, so I came for a chat.</text>
+	</string>
+	<string id="gar_seriy_start_2211">
+		<text>OK, you helped me out for free so I'll tell you. One of the guys, a former "digger" called Mole is waiting for me. He dug up Strelok's stash but I don't know if he found anything there. Here are the coordinates of our meeting place. Tell him I sent you. They'll be looking for me now, so I am going to disappear for a while. Here's some cash for your help too.</text>
+	</string>
+	<string id="gar_seriy_start_2212">
+		<text>Thanks for the information.</text>
+	</string>
+	<string id="gar_seriy_start_222">
+		<text>I am looking for information about Strelok, maybe you know something?</text>
+	</string>
+	<string id="gar_seriy_start_2221">
+		<text>OK, you helped me out for free, so I'll tell you. One of the guys, a former "digger" called Mole, is waiting for me. He dug up Strelok's stash and found documents that explain a few things. He had some bandits on his tail so he had to leave the documents but he remembered the place. They'll be looking for me now so I am gonna disappear for a while. Here are the coordinates of the meeting place with Mole. Tell him I sent you. I'll upload some info to your PDA. Here's some cash for your help too.</text>
+	</string>
+	<string id="gar_seriy_start_2222">
+		<text>Thanks for the information.</text>
+	</string>
+	<string id="gar_seriy_start_33">
+		<text>Hey man! Things got pretty hairy here a minute ago, I have to say. What are you doing here anyway?</text>
+	</string>
+	<string id="gar_seriy_start_44">
+		<text>A safe path, stalker. A safe path past the anomalies and straight to the artifacts.</text>
+	</string>
+	<string id="gar_seriy_start_441">
+		<text>What can one find at the Garbage?</text>
+	</string>
+	<string id="gar_seriy_start_4411">
+		<text>You can find a lot of trouble real quick, that's for sure. But since you're such an explorer I'll tell you what I know. To the East there is a little forest. Nothing interesting there and it's full of dogs, so be careful. This railway track will lead you to a tunnel. There are lots of anomalies there, maybe something else too but I don't know - never really looked very hard. You probably know about the Duty checkpoint in the North. That's basically all I know about this place.</text>
+	</string>
+	<string id="gar_seriy_start_44112">
+		<text>Thanks for the information.</text>
+	</string>
+	<string id="gar_seryi_about_garbage_0">
+		<text>Listen man, what can I find at this Garbage?</text>
+	</string>
+	<string id="gar_seryi_about_garbage_1">
+		<text>You can find a lot of trouble real quick, that's for sure. But since you're such an explorer I'll tell you what I know. To the East there is a little forest. Nothing interesting there and it's full of dogs, so be careful. This railway track will lead you to a tunnel. There are lots of anomalies there, maybe something else too but I don't know - never really looked very hard. You probably know about the Duty checkpoint in the North. That's basically all I know about this place.</text>
+	</string>
+	<string id="gar_seryi_about_garbage_11">
+		<text>Thanks for the info. I'll keep it in mind.</text>
+	</string>
+	<string id="gar_stalker_about_level_0">
+		<text>Can you tell me anything about this place?</text>
+	</string>
+	<string id="gar_stalker_about_level_1">
+		<text>Well, listen. Everywhere you look it's a big stinking dump. After the accident in 1986 they brought radioactive waste, cranes and all the destroyed machinery here. Basically, it's full of useless crap and a few anomalies here and there. You can even find some artifacts, but they're not spectacular so that's why you'll mostly find rookies in this place. Lots of rookies means lots of bandits, so it's best not to hang around too long. Further to the East there are loads of radiation pockets; you can't go there without protection. Going South you'll reach the border of the Zone. Go North and you'll eventually reach Rostok factory and the stalker bar. To the East is the Dark Valley, a gloomy, misty place. To the West is the Agroprom Research Institute. I'll mark safe pathways on your map.</text>
+	</string>
+	<string id="gar_hellcar_start_3111411121">
+		<text>In the center there's a large hangar, usually it's pretty quiet there. Worst comes to worst, you can spend the night there. If you go west, in the direction of the Agroprom, there's a bandit camp there, and that's where those freaks that we killed off a while ago were coming from. But I have a feeling that there's more of them there.</text>
+	</string>
+</string_table>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="speech_attack">
+		<text>Attack!</text>
+	</string>
+	<string id="speech_covermeartifact">
+		<text>I'm going for the artifact! Cover me.</text>
+	</string>
+	<string id="speech_followme">
+		<text>Follow me!</text>
+	</string>
+	<string id="speech_guardartifact">
+		<text>Guard the artifact. Don't attack yet!</text>
+	</string>
+	<string id="speech_holdingpos">
+		<text>I'm holding ground</text>
+	</string>
+	<string id="speech_holdpos">
+		<text>Hold the position!</text>
+	</string>
+	<string id="speech_icoverartifact">
+		<text>Go for the artifact! I'll cover you.</text>
+	</string>
+	<string id="speech_needhelp">
+		<text>Need help</text>
+	</string>
+	<string id="speech_needmoney">
+		<text>No money, buy some equipment</text>
+	</string>
+	<string id="speech_no">
+		<text>No</text>
+	</string>
+	<string id="speech_noenemy">
+		<text>No-one around</text>
+	</string>
+	<string id="speech_report">
+		<text>Report on the situation!</text>
+	</string>
+	<string id="speech_retreat">
+		<text>Fall back!</text>
+	</string>
+	<string id="speech_roger">
+		<text>Roger</text>
+	</string>
+	<string id="speech_silence">
+		<text>Quiet, everyone!</text>
+	</string>
+	<string id="speech_sticktogether">
+		<text>Keep close together</text>
+	</string>
+	<string id="speech_takeartifact">
+		<text>Go for the artifact!</text>
+	</string>
+</string_table>
