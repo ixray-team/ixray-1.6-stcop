@@ -1,0 +1,19 @@
+    <article id="rad_code_door_info" name="rad_code_door_info_name" group="Diary">
+        <texture x="400" y="250" width="200" height="150">ui\ui_icon_photo</texture>
+        <text>rad_code_door_info</text>
+    </article>
+
+    <article id="rad_get_to_aes" name="rad_get_to_aes" article_type="task" group="rad_get_to_aes/0">
+        <text>rad_get_to_aes_desc</text>
+    </article> 
+
+    
+    
+    <article id="rad_sleep_info" name="rad_sleep_info1" article_type="Journal" group="memuars">
+        <text>rad_sleep_info</text>
+    </article> 
+    
+    
+    <article id="bun_code" name="bun_monolith_pda" article_type="Journal" group="Found_PDA">
+        <text>bun_code</text>
+    </article> 

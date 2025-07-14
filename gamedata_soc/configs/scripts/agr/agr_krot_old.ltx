@@ -1,0 +1,74 @@
+[logic]
+active = walker@hold
+combat_ignore = combat_ignore
+on_death = death
+meet = meet
+
+[walker@hold]
+path_walk = agr_krot_hold_fake_walk
+path_look = agr_krot_hold_fake_look
+combat_ignore_cond = always
+meet = meet@hold
+on_info = {+agr_krot_skirmish_start} walker@combat
+
+[meet@hold]
+meet_state     = 5 | hide_na@speech1
+meet_state_wpn = 5 | hide_na@speech1
+victim = actor
+victim_wpn = actor
+use = true
+use_wpn = true
+meet_dialog = agr_krot_help
+
+[walker@combat]
+path_walk = agr_krot_hold_walk
+path_look = agr_krot_hold_look
+radius    = 5
+on_info   = {=gulag_empty(agr_factory_hold)} %+agr_help_krot_done% walker@wait_after_hold
+
+[walker@wait_after_hold]
+path_walk = agr_krot_hold_walk
+path_look = agr_krot_hold_look
+meet = meet@wait_after_hold
+on_actor_dist_le = 5 | %+agr_factory_spawn_spetsnaz% remark@thank
+
+[meet@wait_after_hold]
+meet_state     = 30 | hello@talk_hello
+meet_state_wpn = 30 | hello@talk_hello
+victim = 30 | actor
+victim_wpn = 30 | actor
+
+[remark@thank]
+snd = speech
+on_signal = sound_end | %+agr_krot_go_to_well% walker@go_to_well
+no_danger = true
+anim = idle
+
+[walker@go_to_well]
+path_walk = agr_krot_to_well_walk
+def_state_moving1 = rush
+on_signal = well | walker@well
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 0
+
+[walker@well]
+path_walk = agr_krot_well_walk
+path_look = agr_krot_well_look
+meet = meet@well
+
+[meet@well]
+;meet_state     = 30 | hello@wait | 10 |
+;meet_state_wpn = 30 | hello@wait
+meet_state 		= 30 | hello@wait |20| wait@wait| 10| ward@wait
+meet_state_wpn 	= 30 | hello@wait |20| threat@threat_weap
+victim = 30 | actor
+victim_wpn = 30 | actor
+use = true
+use_wpn = false
+meet_dialog = agr_factory_krot_start
+
+
+[death]
+on_info = %+agr_krot_dead%

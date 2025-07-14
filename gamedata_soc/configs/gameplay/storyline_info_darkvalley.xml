@@ -1,0 +1,87 @@
+<article article_type="journal" group="Found_PDA" id="dar_password_info1" name="LabX18 first key">
+    <text>
+        pass_to_1st_door
+    </text>
+</article>
+<article article_type="journal" group="Found_PDA" id="dar_password_info2" name="LabX18 second key">
+    <text>
+        pass_to_2nd_door
+    </text>
+</article>
+
+<article article_type="task" group="dar_codedoor_1/0" id="dar_password_info11" name="LabX18 first key">
+    <text>
+        pass_to_1st_door
+    </text>
+</article>
+<article article_type="task" group="dar_codedoor_2/0" id="dar_password_info22" name="LabX18 second key">
+    <text>
+        pass_to_2nd_door
+    </text>
+</article>
+
+<article article_type="journal" group="LabX18_information" id="dar_document1" name="dar_document1">
+    <text>
+        documents_1
+    </text>
+</article>
+<article article_type="journal" group="LabX18_information" id="dar_document2" name="dar_document2">
+    <text>
+        documents_2
+    </text>
+</article>
+<article article_type="journal" group="LabX18_information" id="dar_document3" name="dar_document3">
+    <text>
+        documents_3
+    </text>
+</article>
+<article article_type="journal" group="LabX18_information" id="dar_document4" name="dar_document4">
+    <text>
+        documents_4
+    </text>
+</article>
+<article article_type="journal" group="LabX18_information" id="dar_document5" name="dar_document5">
+    <text>
+        documents_5
+    </text>
+</article>
+<article article_type="journal" group="memuars" id="val_x18_conclusion_art" name="val_x18_conclusion">
+    <text>
+        val_x18_conclusion_txt
+    </text>
+</article>
+
+<article article_type="journal" group="memuars" id="sl_x18_dream" name="sl_x18_dream_name">
+    <text>
+        sl_x18_dream_text
+    </text>
+</article>
+
+
+<article article_type="task" group="val_captive_help/0" id="val_captive_help_art" name="val_captive_help">
+    <text>val_captive_help_txt</text>
+</article>
+<article article_type="task" group="val_prisoner_help/0" id="val_prisoner_help_art" name="val_prisoner_help">
+    <text>val_prisoner_help_art_txt</text>
+</article>
+
+<article article_type="task" group="bar_darklab_documents/0" id="bar_darklab_documents_art" name="bar_darklab_documents">
+    <text>
+        bar_darklab_documents_txt
+    </text>
+</article>
+<article article_type="task" group="bar_darklab_documents2/0" id="bar_darklab_documents2_art" name="bar_darklab_documents2">
+    <text>
+        bar_darklab_documents2_txt
+    </text>
+</article>
+<article article_type="task" group="dar_codedoor_1/0" id="dar_codedoor_1_art" name="dar_codedoor_1">
+    <text>
+        dar_codedoor_1_txt
+    </text>
+</article>
+<article article_type="task" group="dar_codedoor_2/0" id="dar_codedoor_2_art" name="dar_codedoor_2">
+    <text>
+        dar_codedoor_2_txt
+    </text>
+</article>

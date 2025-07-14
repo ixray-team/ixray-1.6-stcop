@@ -1,0 +1,48 @@
+	<string id="descr_yan_find_ghost_task">
+		<text>Vasiliev: "...these are the co-ordinates of the entrance to Lab X16. The entrance is located in the basement of the central building; the building's purpose is unknown. I guess it is used for the technical servicing of the underground emitters: based on the documentation from N***, the intended purpose of this project is the full-scale development of psychotronic weapons with large area effects on...\n\n ...all the necessary documents are in our possession and we know how to turn off the emitter. We're going down inside the lab with Ghost. Zombies are coming out from everywhere...\n\n ...everything is going to the dogs, Ghost has gone absolutely insane and is delirious. Looks like he's succumbed to the emission. I've abandoned everything and started to go back through the tunnels...\n\n ...I'm in the swamps, where's the bunker? Damn, damn, damn!!! I can't pinpoint my location! That coward Sakharov isn't responding!!! What's happening??? ...zombies are everywhere and I'm running out of ammo..."</text>
+	</string>
+	<string id="descr_yan_find_lab">
+		<text>Sakharov: "All you need to do is find Vasiliev's corpse and obtain accurate information about the location of the laboratory. Then get inside the laboratory and find Ghost. Ghost knew how to turn off the emission and how to get out of there afterwards."</text>
+	</string>
+	<string id="descr_yan_find_scientist">
+		<text>Sakharov: "If you can take the measurements together with our associate, I will give you a calibrated prototype that will let you get inside the laboratory."</text>
+	</string>
+	<string id="descr_yan_find_scientist_semenov">
+		<text>Sakharov: "If you can take the measurements together with our associate, I will give you a calibrated prototype that will let you get inside the laboratory."</text>
+	</string>
+	<string id="descr_yan_kill_brain">
+		<text>Sakharov: "Well done, Marked One, you've made it to the laboratory after all. It is extremely important for us to study the mechanism that is based in the laboratory. Try to disable it so that we can investigate it.\n\n ...listen, the prototype will not be able to protect you against severe radiation. I've thought of this beforehand, so there is a timer in our armor that will start ticking when you come under strong exposure. When the time is up, the prototype will stop protecting you. Be most careful and don't forget about the timer."</text>
+	</string>
+	<string id="descr_yan_kill_brain_2">
+		<text>The device is turned off. You will just have to get out of there alive.</text>
+	</string>
+	<string id="descr_yan_provodnik_task">
+		<text>Ghost: "Entry #257\n >>Guide, I am sending a man to meet you, we have important information for Doctor, help him out. \n >>Guide: "Good. But, Ghost, let's not repeat what happened last time. You make the trip yourself, I've wanted to have a chat with you for a while. I'll be waiting at the usual place, in the camp by the bridge. Don't get lost and don't let the army patrols get you."</text>
+	</string>
+	<string id="descr_yan_scientist_return_task">
+		<text>Sakharov: "What happened??? He's dead??? Take the measurements and return immediately!!!"</text>
+	</string>
+	<string id="journal_after_find_ghost">
+		<text>I'm shocked! Ghost is the same person as the man on the photo from the file attached to the mission to kill Strelok. I'm thoroughly confused. There must have been some mistake. But who made the mistake? There is no answer yet. From Ghost's records I learned the name of their "mutual acquaintance" - the fourth man in Strelok's group - Doctor. He has been helping the group for a long time playing the role of their "headquarters". He can be found through a stalker by the name of Guide, who frequents Cordon. Alright, Guide, just don't go dying all of a sudden... before we meet. On Ghost's dead body I also found documents regarding the "Psi-Brain" mechanism. The whole neigborhood was under the influence of that piece of trash - it zombified everyone who came within range. I learned that there is another mechanism in Lab X19, and that's what is likely to be the Brain Scorcher. I also learned that these mechanisms are not always operating at full strength. There are periods when their power is lowered to cool down the apparatus.</text>
+	</string>
+	<string id="journal_after_find_ghost_name">
+		<text>One more puzzle</text>
+	</string>
+	<string id="journal_after_kill_brain">
+		<text>After turning off that horrible "brain in a tube" I fell unconscious. The pressure of the last few days must have taken its toll. While I was out, I had a dream...A photograph. A gray-haired man is holding it in his hands and a huge dog is at his feet. The man is looking into the distance, but around him there is only a swamp; the landscape doesn't look at all like what's on the photo. In the fog I can see the silhouette of someone walking away. The man is talking to himself: "If it's so important, why didn't you tell me what this place is and where you got the photo"... then... on the side I see a smiling young man standing on the threshold of the cabin, who says cheerfully: "If only you knew where I was and what I saw there!" He extends his arm holding a marvellous device which lights up the whole cabin. The dog starts to growl and squeezes into a corner; the gray-haired man mumbles: "Some day these games will spell trouble for you." ...flash... the same young man with his face covered in blood stumbles inside the cabin door and falls... Lightning flashes in the sky, heavy rain is pouring down ...flash... The cabin bed with the young man covered in bandages. He is unconscious; the gray-haired man mumbles: "Hang in there, son". Some personal things are piled in a corner and among them there is that strange photo ...flash... the photo is in the hands of the gray-haired man. The young man, now with scars on his face, is about to leave. The gray-haired man asks him: "Where are you off to now?". The gloomy answer follows: "The North"...flash... then I woke up.</text>
+	</string>
+	<string id="journal_after_kill_brain_name">
+		<text>The second dream</text>
+	</string>
+	<string id="journal_before_vasilyev_pda">
+		<text>So, here I am just one step away from one of Strelok's men. Ghost went to the underground Lab X16 with one of the scientists. There is only one "but" - I'm not likely to find him alive. The scientist was coming back from there alone and was killed when approaching the camp. The scientists gave me some kind of device to protect me against these obscure emissions. I hope it works. They want me to get inside and unplug the emitter - then they will be able to study it on site. God help me.</text>
+	</string>
+	<string id="journal_before_vasilyev_pda_name">
+		<text>One step away from Ghost</text>
+	</string>
+	<string id="storyline_ghost_info">
+		<text>Entry #257\n >>Guide, I am sending someone to meet you. We have important information for Doctor, help him out\n >>> Good. But, Ghost, let's not repeat what happened last time. You come yourself, I've wanted to have a chat with you for a while. I'll be waiting at the usual place, in the camp near the bridge. Don't get lost and don't let the army patrols catch you."\n\n Entry #384\n …At the last moment, Vasiliev chickened out and instead of unplugging the lower console, he just ran off when the door opened. I shouldn't have relied on him - Strelok was right not to trust these lying dogs. My only chance is to reach the door before the controller...</text>
+	</string>
+	<string id="storyline_vasilyev_info">
+		<text>...these are the co-ordinates of the entrance to Lab X16. The entrance is located in the basement of the central building; the building's purpose is unknown. I guess it is used for the technical servicing of the underground emitters: based on the documentation from N***, the intended purpose of this project is the full-scale development of psychotronic weapons with huge area effects on...\n\n ...all the necessary documents are in our possession and we know how to turn off the emitter. We're going down inside the lab with Ghost. Zombies are coming out from everywhere...\n\n ...everything is going to the dogs, Ghost has gone absolutely insane and is delirious. Looks like he's succumbed to the emission. I've abandoned everything and started to go back through the tunnels...\n\n ...I'm in the swamps, where's the bunker? Damn, damn, damn!!! I can't pinpoint my location! That coward Sakharov isn't responding!!! What's happening??? ...zombies are everywhere and I'm running out of ammo...</text>
+	</string>

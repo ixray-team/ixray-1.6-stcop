@@ -1,0 +1,150 @@
+	<string id="mil_blockpost_job">
+		<text>Оказать помощь блокпосту Свободы "Барьер"</text>
+	</string>
+	<string id="mil_courier">
+		<text>Стукач</text>
+	</string>
+	<string id="mil_courier_job">
+		<text>Разобраться со стукачом</text>
+	</string>
+	<string id="mil_courier_phase1">
+		<text>Добраться до хутора</text>
+	</string>
+	<string id="mil_courier_phase2">
+		<text>Дождаться пока стукач вызовет информатора</text>
+	</string>
+	<string id="mil_courier_phase3">
+		<text>Уничтожить стукача</text>
+	</string>
+	<string id="mil_courier_phase4">
+		<text>Уничтожить информатора</text>
+	</string>
+	<string id="mil_courier_phase5">
+		<text>Доложить Лукашу о выполнении</text>
+	</string>
+	<string id="mil_crazy">
+		<text>Безумный сталкер</text>
+	</string>
+	<string id="mil_dolg">
+		<text>Группа "Долга"</text>
+	</string>
+	<string id="mil_dolg_assault_freedom">
+		<text>Помочь отряду Долга в устранении Лукаша</text>
+	</string>
+	<string id="mil_kill_lukash">
+		<text>Убить Лукаша</text>
+	</string>
+	<string id="mil_dolg_assault_support">
+		<text>Уничтожить снайпера</text>
+	</string>
+	<string id="mil_dolg_return_to_khutor">
+		<text>Вернуться на хутор Долга и получить гонорар</text>
+	</string>
+	<string id="mil_dolg_return_to_skull">
+		<text>Вернуться к Черепу</text>
+	</string>
+	<string id="mil_fblockpost_commander">
+		<text>Командир блокпоста "Кеп"</text>
+	</string>
+	<string id="mil_fblockpost_phase2">
+		<text>Помочь в уничтожении прорывающегося отряда Монолита</text>
+	</string>
+	<string id="mil_fblockpost_phase3">
+		<text>Поговорить с командиром блокпоста "Барьер"</text>
+	</string>
+	<string id="mil_find_cook">
+		<text>Найти повара на базе Свободы</text>
+	</string>
+	<string id="mil_freedom_rg6_task">
+		<text>Достать Бульдог 6 у Свободы</text>
+	</string>
+	<string id="mil_go_max">
+		<text>Доложить Максу</text>
+	</string>
+	<string id="mil_go_to_miser_task">
+		<text>Сходить на базу Свободы к Скряге за наградой</text>
+	</string>
+	<string id="mil_go_to_miser_task_main">
+		<text>Получить награду за убитых кровососов</text>
+	</string>
+	<string id="mil_hunters_phase1">
+		<text>Найти Угрюмого в деревне</text>
+	</string>
+	<string id="mil_hunters_phase2">
+		<text>Уничтожить кровососов</text>
+	</string>
+	<string id="mil_hunters_phase3">
+		<text>Вернуться к Скряге за артефактом</text>
+	</string>
+	<string id="mil_hunters_task">
+		<text>Уничтожить кровососов в деревне</text>
+	</string>
+	<string id="mil_kill_controller">
+		<text>Убить кровососов</text>
+	</string>
+	<string id="mil_kill_controller_main">
+		<text>Убить кровососов</text>
+	</string>
+	<string id="mil_kill_dolg">
+		<text>Уничтожить группу</text>
+	</string>
+	<string id="mil_lukash">
+		<text>Лукаш</text>
+	</string>
+	<string id="mil_max">
+		<text>Макс</text>
+	</string>
+	<string id="mil_put_flash_to_max">
+		<text>Отдать флешку Максу</text>
+	</string>
+	<string id="mil_kill_sniper">
+		<text>Убить снайпера на вышке</text>
+	</string>
+	<string id="mil_quest_report_dolg">
+		<text>Сообщить о выполнении группе Долга</text>
+	</string>
+	<string id="mil_return_lukash">
+		<text>Вернуться к Лукашу</text>
+	</string>
+	<string id="mil_return_to_ugrumy">
+		<text>Сообщить Угрюмому о выполнении</text>
+	</string>
+	<string id="mil_return_to_voronin">
+		<text>Отнести Бульдог-6 генералу Воронину</text>
+	</string>
+	<string id="mil_rg6">
+		<text>Найти Бульдог-6</text>
+	</string>
+	<string id="mil_secret">
+		<text>Схрон бандитов</text>
+	</string>
+	<string id="mil_sniper">
+		<text>Снайпер</text>
+	</string>
+	<string id="mil_mad_job">
+		<text>Получить флешку у безумного снайпера</text>
+	</string>
+	<string id="mil_talk_cook">
+		<text>Поговорить с поваром</text>
+	</string>
+	<string id="mil_talk_with_cap">
+		<text>Поговорить с командиром блокпоста Свободы Кэпом</text>
+	</string>
+	<string id="mil_test_task_phase1">
+		<text>Зайти в рестриктор 1</text>
+	</string>
+	<string id="mil_test_task_phase2">
+		<text>Зайти в рестриктор 2</text>
+	</string>
+	<string id="mil_test_task_phase3">
+		<text>Поднять Бульдог-6 для выполнения задачи или ТРс 301 для провала</text>
+	</string>
+	<string id="mil_test_task_title">
+		<text>Тестовая задача</text>
+	</string>
+	<string id="mil_ugrumy">
+		<text>Угрюмый</text>
+	</string>
+	<string id="mil_lukash_job">
+		<text>Уничтожить группу Долга</text>
+	</string>

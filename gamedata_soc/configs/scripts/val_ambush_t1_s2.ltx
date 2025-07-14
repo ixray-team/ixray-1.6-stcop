@@ -1,0 +1,36 @@
+;[logic]
+;active = walker@peaceful
+;combat_ignore = combat_ignore
+
+[combat_ignore]
+
+[walker@peaceful]
+path_walk = val_ambush_t1_s2_walk
+path_look = val_ambush_t1_s2_look
+combat_ignore_cond = {=fighting_actor}
+on_actor_dist_le = 20 | {-val_t1_ambush_started} remark@hello %+val_t1_ambush_started%, remark@attention
+on_actor_in_zone = val_ambush_kill_zone | walker@aggressive
+
+[remark@hello]
+no_move = true
+anim = hello
+snd = talk_hello
+snd_timeout = 0
+;snd_anim_sync = true
+meet_dialog = val_ambush_dialog
+meet_state = guard
+meet_talk_enabled = true
+combat_ignore_cond = {=fighting_actor}
+on_actor_dist_ge = 20 | walker@peaceful %-val_t1_ambush_started%
+on_info = {!see_actor} walker@peaceful %-val_t1_ambush_started%
+on_actor_in_zone = val_ambush_kill_zone | walker@aggressive
+
+[remark@attention]
+no_move = true
+anim = threat
+combat_ignore_cond = {=fighting_actor}
+on_actor_in_zone = val_ambush_kill_zone | walker@aggressive
+
+[walker@aggressive]
+path_walk = val_ambush_t1_s2_walk
+path_look = val_ambush_t1_s2_look

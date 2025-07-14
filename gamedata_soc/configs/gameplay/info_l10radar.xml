@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+	<info_portion id="rad_wood_bloodsucker_start">
+	</info_portion>
+
+	<info_portion id="rad_wood_controller_dead">
+	</info_portion>
+
+	<info_portion id="rad_code_door">
+		<article>rad_code_door_info</article>
+	</info_portion>
+	<info_portion id="rad_code_door_found">
+	</info_portion>
+	<info_portion id="rad_code_door_unlocked">
+	</info_portion>
+
+	<info_portion id="rad_lab_door_unlocked">
+	</info_portion>
+
+	<info_portion id="rad_find_stalkers_reward_start">
+		<task>rad_find_stalkers</task>
+	</info_portion>
+	<info_portion id="rad_find_stalkers_free_start">
+		<task>rad_find_stalkers</task>
+	</info_portion>
+	<info_portion id="rad_find_stalkers_found">
+	</info_portion>
+	<info_portion id="rad_find_stalkers_return_ak">
+	</info_portion>
+	<info_portion id="rad_find_stalkers_done">
+		<disable>rad_find_stalkers_reward_start</disable>
+		<disable>rad_find_stalkers_free_start</disable>
+		<disable>rad_find_stalkers_found</disable>
+		<disable>rad_find_stalkers_return_ak</disable>
+	</info_portion>
+	<info_portion id="rad_find_treasurer_start">
+		<task>rad_find_treasurer</task>
+	</info_portion>
+	<info_portion id="rad_find_treasurer_done">
+	</info_portion>
+
+	<info_portion id="rad_suicide_stalker_died">
+	</info_portion>
+
+	<info_portion id="rad_suicide_artefact_given">
+	</info_portion>
+
+	<info_portion id="rad_suicide_kill_self">
+	</info_portion>
+	
+<!-- new circulation -->
+	<info_portion id="rad_start_camp_talks">
+	</info_portion>
+	
+	<info_portion id="rad_start_suicide">
+	</info_portion>
+	
+	<info_portion id="rad_start_cache_guards">
+	</info_portion>
+	
+	<info_portion id="rad_alarm">
+	</info_portion>
+	
+	<info_portion id="rad_after_antenna_turned_off">
+	</info_portion>
+
+	<info_portion id="rad_start_svoboda_vs_dolg">
+	</info_portion>
+	
+	<info_portion id="rad_here_i_come">
+	</info_portion>	
+	
+	<info_portion id="rad_pre_drop_barrel3">
+	</info_portion>		
+
+	<info_portion id="rad_pre_drop_barrel4">
+	</info_portion>		
+
+	<info_portion id="rad_drop_barrel1">
+	</info_portion>	
+	
+	<info_portion id="rad_drop_barrel2">
+	</info_portion>	
+	
+	<info_portion id="rad_drop_barrel3">
+	</info_portion>
+	
+	<info_portion id="rad_drop_barrel4">
+	</info_portion>	
+	
+	<info_portion id="rad_drop_barrel5">
+	</info_portion>	
+	
+	<info_portion id="rad_start_ambush_after_tramplin">
+	</info_portion>	
+		
+	<info_portion id="rad_start_ambush_before_tramplin">
+	</info_portion>	
+	
+	<info_portion id="rad_start_far_road_ambush">
+	</info_portion>		
+	
+	<info_portion id="rad_start_far_road_btr_ambush">
+	</info_portion>	
+		
+	<info_portion id="rad_start_ambush_after_valley">
+	</info_portion>	
+	
+	<info_portion id="rad_start_ambush_in_antenna_tunnel">
+	</info_portion>		
+	
+	
+	<info_portion id="rad_allow_suicide">
+	</info_portion>		
+
+	<info_portion id="rad_pre_start_monolith_vs_military">
+	</info_portion>		
+	
+	<info_portion id="rad_start_monolith_vs_military">
+	</info_portion>	
+	
+	<info_portion id="rad_start_snork1_jumping">
+	</info_portion>	
+	
+	<info_portion id="rad_start_snork1_jumping2">
+	</info_portion>	
+	
+	<info_portion id="rad_antennas_reached">
+	</info_portion>		
+	
+	<info_portion id="rad_bun_found">
+	</info_portion>	
+		
+	<info_portion id="bun_antenna_off">
+	</info_portion>	
+	
+	<info_portion id="bun_patrol_start">
+		<article>rad_sleep_info</article>
+	</info_portion>	
+	
+	<info_portion id="bun_actor_fall">
+	</info_portion>	
+	
+	<info_portion id="bun_actor_vstal">
+	</info_portion>	
+	
+	<info_portion id="bun_ptr1">
+	        <article>bun_code</article>
+	</info_portion>
+	
+	<info_portion id="bun_ptr2">
+	</info_portion>
+	
+	<info_portion id="bun_ptr3">
+	</info_portion>
+	
+	<info_portion id="bun_ptr4">
+	</info_portion>
+	
+	<info_portion id="bun_snd_psi_hit">
+	</info_portion>
+	
+	<info_portion id="bun_codelock_open">
+	</info_portion>
+	
+	<info_portion id="bun_blood">
+	</info_portion>
+	
+	<info_portion id="bun_blood_finish">
+	</info_portion>
+		
+</game_information_portions>
+
+

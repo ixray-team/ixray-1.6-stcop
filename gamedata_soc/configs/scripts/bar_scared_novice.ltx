@@ -1,0 +1,54 @@
+[logic]
+active = walker@need_help
+
+
+[walker@need_help]
+path_walk = bar_scared_novice_start_walk
+path_look = bar_scared_novice_start_look
+meet = scared_meet
+on_info = {+bar_scared_novice_start} walker@go_hide, {+bar_scared_novice_attack} walker@go_attack
+
+[scared_meet]
+meet_state		= 50|hello@hail|20|wait@state
+meet_state_wpn	= 50|hello@hail|20|wait@state
+victim			= 50|actor
+victim_wpn		= 50|actor
+use				= true
+use_wpn			= true
+syndata			= hello@hail
+meet_dialog		= bar_scared_novice_start
+
+[walker@go_hide]
+path_walk = bar_scared_novice_1_walk
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = path_end | walker@wait_tree %+bar_scared_novice_hide%
+
+[walker@wait_tree]
+path_walk = bar_scared_novice_1_walk
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+meet = scared_meet_hide
+on_info = {+bar_scared_novice_attack} walker@go_attack
+
+[scared_meet_hide]
+meet_state		= 2|hide
+meet_state_wpn	= 2|hide
+victim			= 2|actor
+victim_wpn		= 2|actor
+use				= true
+use_wpn			= true
+meet_dialog		= bar_scared_novice_start
+
+[walker@go_attack]
+path_walk = bar_scared_novice_kamp_walk
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = attack_end | %+bar_scared_novice_done%
+meet = scared_meet_hide

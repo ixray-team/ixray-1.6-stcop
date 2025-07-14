@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_factory_krot_start_0">
+		<text>Спасибо тебе за твою помощь, сталкер! Не приди ты вовремя, я был бы уже покойником.</text>
+	</string>
+	<string id="agr_factory_krot_start_10001">
+		<text>Я ищу информацию о Стрелке, может ты что-нибудь знаешь?</text>
+	</string>
+	<string id="agr_factory_krot_start_10002">
+		<text>Как мне попасть в эти подвалы?</text>
+	</string>
+	<string id="agr_factory_krot_start_15001">
+		<text>Тайник Стрелка?\n</text>
+	</string>
+	<string id="agr_factory_krot_start_15002">
+		<text>Спасибо за информацию.</text>
+	</string>
+	<string id="agr_factory_krot_start_1501">
+		<text>Да, я слышал о таком, он вроде тоже промышлял в этих местах. К тому же где-то в местных подвалах находится тайник Стрелка. Говорили даже, что здесь была база его группировки.</text>
+	</string>
+	<string id="agr_factory_krot_start_1502">
+		<text>Тут один из многих входов, через него ты попадешь в один из соединенных друг с другом подвалов, ну а там смотри сам, карты у меня нет, они очень длинные с множеством комнат и довольно запутаны.</text>
+	</string>
+	<string id="agr_factory_krot_start_2">
+		<text>Я ищу информацию о Стрелке, Серый мне говорил, что ты что-то знаешь.</text>
+	</string>
+	<string id="agr_factory_krot_start_30001">
+		<text>Спасибо.</text>
+	</string>
+	<string id="agr_factory_krot_start_3001">
+		<text>Да, мы тоже его искали, только ничего не нашли. Я тебе скину информацию, может тебе повезет. Там вся информация о тайнике, которая у нас есть.</text>
+	</string>
+	<string id="agr_factory_stalker_about_0">
+		<text>Что здесь происходит?</text>
+	</string>
+	<string id="agr_factory_stalker_about_1">
+		<text>Воюем, а точнее сидим и подставляем свои задницы под пули. Более подробно у Крота спрашивай. Он здесь за главного.</text>
+	</string>
+	<string id="agr_factory_stalker_start_0">
+		<text>Ух! Ну тут и заварушка была, врагу не пожелаешь. Совсем эти военные борзеют.</text>
+	</string>
+	<string id="agr_krot_about_agroprom_0">
+		<text>Где находится НИИ Агропром?</text>
+	</string>
+	<string id="agr_krot_about_agroprom_10">
+		<text>Недалеко отсюда. Пройди по дороге на запад - она ведёт прямо к одним из ворот НИИ.</text>
+	</string>
+	<string id="agr_krot_about_agroprom_100">
+		<text>Говорят там сейчас военные обосновались?</text>
+	</string>
+	<string id="agr_krot_about_agroprom_120">
+		<text>Спасибо за информацию.</text>
+	</string>
+	<string id="agr_krot_about_agroprom_20">
+		<text>Да, там сейчас база военных. Я не в курсе сколько их там, но могу сказать, военных там не меньше, чем один взвод. Они хорошо вооружены, и прорваться, если ты уж решишься, не получится - завалят, пикнуть не успеешь. Лучше всего туда проникать ночью, днем базу хорошо охраняют, у там них везде посты стоят. А вообще, я слышал, что на болотах прячется служивый, который сбежал с этой базы. Потруси его - он тебе всё выложит.</text>
+	</string>
+	<string id="agr_krot_actor_hasnot_met_seriy_0">
+		<text>Что тут происходит?</text>
+	</string>
+	<string id="agr_krot_actor_hasnot_met_seriy_100">
+		<text>Я со своими ребятами нашли тут неплохое местечко с артефактами, когда на нас непонятно почему напали военные. Не пойму, чего они от нас хотели?!</text>
+	</string>
+	<string id="agr_krot_actor_hasnot_met_seriy_200">
+		<text>Да, я слышал о таком, он вроде тоже промышлял в этих местах, здесь неплохое место. Он ушел отсюда давно, точно не знаю когда и куда. Больше мне ничего не известно.</text>
+	</string>
+	<string id="agr_krot_actor_hasnot_met_seriy_2000">
+		<text>Ты ведь здесь не зря сидел? Иначе зачем военный спецназ тут высадился?</text>
+	</string>
+	<string id="agr_krot_actor_hasnot_met_seriy_250">
+		<text>Хорошо, мне еще кое-что известно о Стрелке.</text>
+	</string>
+	<string id="agr_krot_actor_hasnot_met_seriy_2500">
+		<text>Да? Мне это очень нужно знать!</text>
+	</string>
+	<string id="agr_krot_actor_hasnot_met_seriy_3500">
+		<text>Если ты меня обманул, я тебя найду, и доделаю то, что военные не смогли!</text>
+	</string>
+	<string id="agr_krot_actor_hasnot_met_seriy_400">
+		<text>Я тебя не обманываю. Знаю, что тут никто никому не доверяет, но тут у тебя выбор небольшой.</text>
+	</string>
+	<string id="agr_krot_actor_met_seriy_100">
+		<text>Серый? Ну хорошо, слушай. Говорят что Стрелок промышлял в этих местах. К тому же где-то в местных подвалах находится тайник Стрелка. Говорили даже, что здесь была база его группировки. Мы тоже искали тайник, только ничего не нашли. Я тебе скину информацию, может тебе повезет. Там вся информация о тайнике, которая у нас есть.</text>
+	</string>
+	<string id="agr_krot_actor_met_seriy_2000">
+		<text>Что ты еще знаешь?</text>
+	</string>
+	<string id="agr_krot_actor_met_seriy_250">
+		<text>Больше мне ничего не известно, все что я знал уже тебе сказал, дальше ты сам должен действовать. Желаю тебе удачи.</text>
+	</string>
+	<string id="agr_krot_help_0">
+		<text>Помоги, сталкер!!!</text>
+	</string>
+	<string id="agr_krot_help_10">
+		<text>Хорошо.</text>
+	</string>
+	<string id="agr_ratcatcher_start_0">
+		<text>Не стреляй, братишка!</text>
+	</string>
+	<string id="agr_stalker_esc_0">
+		<text>Что делаешь?</text>
+	</string>
+	<string id="agr_stalker_esc_20">
+		<text>C завода иду, это дальше по дороге. Не знаю как, но про нашу группу пронюхали военные. Не стал я их дожидаться и свалил оттуда. Надеюсь, наши все уже слиняли, а то, если долго задержатся, им точно недолго жить осталось: ты же видел вертолёты.</text>
+	</string>
+	<string id="agr_stalker_esc_300">
+		<text>Понял, спасибо.</text>
+	</string>
+	<string id="agr_stalker_esc_400">
+		<text>Понял, спасибо.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_0">
+		<text>У меня есть пара вопросов.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_10">
+		<text>Что ты хочешь узнать?</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_1000">
+		<text>Что тут в районе интересного?</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_120">
+		<text>Сколько тебе надо?</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_130">
+		<text>Вот, держи деньги. Говори, где оно.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_131">
+		<text>Да пошел ты.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_140">
+		<text>Спасибо.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_20">
+		<text>Да есть пара мест! Тока придется немного раскошелится!</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_21">
+		<text>Раньше спокойно всё было. А сейчас чё-то военные разбушевались. Мочат всех. Вот бандитов недавно выкурили. Говорят, часть успела уйти в катакомбы.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_30">
+		<text>Ну, тридцать и по рукам?</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_40">
+		<text>Тут рядом есть выход из железнодорожного тоннеля. В нем, в тупике перед завалом достаточно безопасно. По крайнем мере пока там никого спящим не съели.\n Еще, на северо-западе от завода есть болото, в нем вагон, там можно спокойно перекантоваться. Только вокруг него радиация, заходить лучше с западной стороны. И еще, там недавно видели какого-то солдатика, явно с базы на НИИ. Пару дней уже там сидит. Он крышей, наверное, поехал - подохнет одиночку.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher_9999">
+		<text>Пока!</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_0">
+		<text>Что у вас тут интересного творится?</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_1">
+		<text>Про Крысолова знаешь? Информация будет стоить 30 денег.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_11">
+		<text>По рукам.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_111">
+		<text>Есть у нас тут один герой местный, зовут Крысолов. Живет он на болотах. Он развел столько крыс в коллекторах, что что они скоро съедят заживо легавых.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_1111">
+		<text>Отлично. Спасибо.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_1112">
+		<text>Расскажи подробнее о коллекторах.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_11121">
+		<text>Коллекторы... Да обычная вонючая канализация. Отводит агропромовские стоки к ближайшему водоему. \n</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_111211">
+		<text>Отлично. Пока. Береги себя.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_12">
+		<text>Знаю уже. Спасибо.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_121">
+		<text>Больше ничего рассказать не могу.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_13">
+		<text>У меня не достаточно средств.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_14">
+		<text>Мне это не интересно.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_3">
+		<text>Что у вас тут интересного творится?</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_31">
+		<text>Совсем ничего.</text>
+	</string>
+	<string id="agr_stalker_talk_about_ratcatcher1_311">
+		<text>Ясно. Пока!</text>
+	</string>
+	<string id="agr_stalker_talk_level_0">
+		<text>Расскажи мне об этом месте.</text>
+	</string>
+	<string id="agr_stalker_talk_level_1">
+		<text>Это территория НИИ "Агропром". Само здание института находится на юго-западе. А завод на севере - это производственно-техническая база института. Здания давно заброшены были, и взять там нечего. Но последнее время военные начали что-то активно искать.</text>
+	</string>
+	<string id="agr_stalker_talk_level_2">
+		<text>Расскажи поподробнее об институте.</text>
+	</string>
+	<string id="agr_stalker_talk_level_21">
+		<text>Об институте этом легенды ходят. До аварии в 1986 году здесь только и было, что одиноко стоящее здание института селекции и генетики злаковых. А на месте завода были экспериментальные поля. После аварии институт закрыли, а поля сожгли. А потом вспомнили, здание побелили, обнесли забором, бараки построили. На месте полей выстроили завод. Уж не знаю чем там в институте занимались, но денег явно не жалели.</text>
+	</string>
+	<string id="agr_stalker_talk_level_3">
+		<text>Расскажи поподробнее о заводе.</text>
+	</string>
+	<string id="agr_stalker_talk_level_31">
+		<text>Завод этот выстроили в конце восьмидесятых. Вроде как для того, чтобы строить и проверять машины, которые способны обрабатывать радиоактивно-зараженную почву. Но насколько я знаю, никто ни одной такой машины так и не увидел. Сейчас он пуст совсем. Только сталкеры любят там останавливаться. Говорят что довольно безопасное место, если не заглядывать в темные углы.</text>
+	</string>
+	<string id="agr_stalker_talk_level_4">
+		<text>Спасибо.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_0">
+		<text>Что делаешь?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_10">
+		<text>Прячусь тут. Мне проблем не надо.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_100">
+		<text>От кого прячешься?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_120">
+		<text>Катакомбы?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_130">
+		<text>Ты знаешь где в НИИ Агропром хранятся документы?\n</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_140">
+		<text>Что дальше делать собираешься?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_141">
+		<text>Что дальше делать собираешься?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_20">
+		<text>Я из разведотряда. Нас в катакомбы послали, чтоб посмотреть, что там творится под базой. Там полная жопа. Я один убежал. Остальные, наверное, уже не жильцы. Но возвращаться на базу я не хочу. Нами вечно все дыры в этой проклятой зоне затыкают, чёртовы ублюдки.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_30">
+		<text>Подземные туннели. Они ведут из НИИ за его территорию, я покажу тебе, где входы. Карт самих катакомб у меня нет.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_40">
+		<text>В штабе. Он на третьем этаже института. Там же эти чертовы бумажки. Но туда еще добраться надо.\nДнем территория патрулируется полностью. Ночью патрулей меньше. Если хочешь на базу пролезть, то сразу скажу: через ворота не пройдёшь, самый реальный путь - через катакомбы.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks_50">
+		<text>Хм. Не знаю. По военным законам я дезертир. А выбираться из Зоны как-то нужно. \n Когда мы сюда пришли, тут в гараже Запорожец стоял, почти на ходу. Я его к жизни вернул за полчаса, а капитан, собака, его себе забрал - мол ему по уставу положено! По дороге, что тут рядом катался, и у ворот под дождь бросил. Вот бы спереть этот Запорожец - на колесах убегать надежнее!</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_0">
+		<text>Здравствуй.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_01">
+		<text>С чем пожаловал?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_011">
+		<text>Расскажи мне о коллекторе. Как в него попасть, и где входы и выходы?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_0111">
+		<text>В коллекторе сейчас опасно. Входов шесть. Два из них на территории института - там база военных. Территория НИИ патрулируется. Расписание патрулей находится у капитана в каптерке.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_01111">
+		<text>Откуда столько информации?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_011111">
+		<text>Крысы рассказали.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_0111111">
+		<text>Ясно. Прощай. Удачи тебе.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_012">
+		<text>Ни с чем. До встречи.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_013">
+		<text>Ты кто?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_0134">
+		<text>Живу здесь. Если это можно жизнью назвать. А так, развожу крыс в коллекторе, тем самым донимаю военных в институте.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_0135">
+		<text>Я Крысолов.</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_01351">
+		<text>Что ты делаешь в этом болоте?</text>
+	</string>
+	<string id="agr_swamp_ratcatcher_talks1_123">
+		<text>А... понятно.... я в общем не из этой сказки.\nХа-ха-ха...</text>
+	</string>
+</string_table>

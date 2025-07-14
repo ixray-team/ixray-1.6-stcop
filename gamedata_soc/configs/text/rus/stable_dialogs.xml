@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="actor_break_dialog_0">
+		<text>До встречи!</text>
+	</string>
+	<string id="actor_help_wounded_0">
+		<text>Как ты?</text>
+	</string>
+	<string id="actor_help_wounded_1">
+		<text>Хреново мне, не видишь что ли? Нужна аптечка, или хотя бы бинт.</text>
+	</string>
+	<string id="actor_help_wounded_11">
+		<text>Держи аптечку.</text>
+	</string>
+	<string id="actor_help_wounded_111">
+		<text>Спасибо, брат, не забуду.</text>
+	</string>
+	<string id="actor_help_wounded_12">
+		<text>Держи бинт.</text>
+	</string>
+	<string id="actor_help_wounded_13">
+		<text>Извини, ничего нет.</text>
+	</string>
+	<string id="actor_help_wounded_131">
+		<text>Как же ты в Зоне ходишь? Зацепит тебя какая-то зараза, а ты даже вылечить себя не сможешь.</text>
+	</string>
+	<string id="actor_help_wounded_14">
+		<text>Хех, что ж ты так? Извини, свои я тебе не дам, иначе сам останусь ни с чем.</text>
+	</string>
+	<string id="actor_help_wounded_141">
+		<text>Твое дело, но не думай, что это делает тебе чести.</text>
+	</string>
+	<string id="hello_dialog_2">
+		<text>Привет!</text>
+	</string>
+	<string id="hello_dialog_3">
+		<text>Слышь, браток, помоги!</text>
+	</string>
+</string_table>

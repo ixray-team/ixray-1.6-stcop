@@ -1,0 +1,54 @@
+	<string id="bar_darklab_documents_1_hint">
+		<text>Боров</text>
+	</string>
+	<string id="bar_darklab_documents_2_hint">
+		<text>Туннель</text>
+	</string>
+	<string id="bar_darklab_documents_3_hint">
+		<text>Вход в лабораторию</text>
+	</string>
+	<string id="bar_darklab_documents_4_hint">
+		<text>Труба</text>
+	</string>
+	<string id="bar_darklab_documents2_1_hint">
+		<text>Документы из лаборатории</text>
+	</string>
+	<string id="bar_darklab_documents2_2_hint">
+		<text>Бармен</text>
+	</string>
+	<string id="val_captive_help_1_hint">
+		<text>Пуля</text>
+	</string>
+	<string id="val_captive_help_2_hint">
+		<text>Пленный</text>
+	</string>
+	<string id="val_come_to_trader_1_hint">
+		<text>Южные ворота</text>
+	</string>
+	<string id="val_come_to_trader_2_hint">
+		<text>Торговец</text>
+	</string>
+	<string id="val_prisoner_help_main_hint">
+		<text>Плененный долговец</text>
+	</string>
+	<string id="val_sos_help_main_hint">
+		<text>Раненый сталкер</text>
+	</string>
+	<string id="val_zone_bandits_hint">
+		<text>Лагерь бандитов</text>
+	</string>
+	<string id="val_zone_farm_hint">
+		<text>Ферма.\nКупить Гаусс.</text>
+	</string>
+	<string id="val_zone_monolith_hint">
+		<text>Старая фабрика</text>
+	</string>
+	<string id="val_zone_pipe_hint">
+		<text>Канализационная труба</text>
+	</string>
+	<string id="val_zone_robbers_hint">
+		<text>Заброшенная свиноферма</text>
+	</string>
+	<string id="val_zone_south_gate_hint">
+		<text>Ворота</text>
+	</string>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+    <dialog id="gar_dolg_bribe">
+        <phrase_list>
+            <phrase id="111">
+                <text>gar_dolg_bribe_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>gar_dolg_bribe_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="112">
+                <text>gar_dolg_bribe_112</text>
+                <next>1121</next>
+            </phrase>
+            <phrase id="1121">
+                <text>gar_dolg_bribe_1121</text>
+                <next>11211</next>
+            </phrase>
+            <phrase id="11111">
+                <text>gar_dolg_bribe_11111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="11211">
+                <text>gar_dolg_bribe_11211</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="121">
+                <text>gar_dolg_bribe_121</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="12">
+                <text>gar_dolg_bribe_12</text>
+                <next>121</next>
+            </phrase>
+            <phrase id="11">
+                <text>gar_dolg_bribe_11</text>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="1">
+                <text>gar_dolg_bribe_1</text>
+                <next>11</next>
+                <next>12</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="stalker_wounded_friend">
+        <phrase_list>
+            <phrase id="1">
+                <text></text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text></text>
+            </phrase>
+            <phrase id="2">
+                <text></text>
+                <next>21</next>
+                <next>22</next>
+            </phrase>
+            <phrase id="21">
+                <text></text>
+            </phrase>
+            <phrase id="22">
+                <text></text>
+            </phrase>
+            <phrase id="3">
+                <text></text>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="optional_dialog_test">
+		<precondition>dialogs.dialog_allowed</precondition>    
+        <phrase_list>
+			<phrase id="0">
+				<precondition>dialogs.dialog_allowed</precondition> 
+                <text>optional_dialog_test_0</text>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+				<precondition>dialogs.dialog_allowed</precondition>             
+                <text>optional_dialog_test_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+				<precondition>dialogs.dialog_allowed</precondition>             
+                <text>optional_dialog_test_11</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>

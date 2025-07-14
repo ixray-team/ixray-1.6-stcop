@@ -1,0 +1,200 @@
+-- File:        UI_SPAWN_DIALOG.SCRIPT
+-- Description: temp file to load spawn files
+-- Created:     25.12.2004
+-- Copyright:   2004 GSC Game World
+-- Author:      Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
+-- Version:     0.9
+
+class "spawn_item" (CUIListItemEx)
+
+function spawn_item:__init() super()
+	self:SetWndRect		(0,0,430,22)
+	
+	local ca = 255
+	local cr = 216
+	local cg = 186
+	local cb = 140
+	
+	self.fn					= CUIStatic	()
+	self.fn:SetAutoDelete	(true)
+	self:AttachChild		(self.fn)
+	self.fn:SetWndRect		(0,0,230,22)
+	self.fn:SetText			("filename")
+	self.fn:SetFont			(GetFontLetterica18Russian())
+	self.fn:SetTextColor	(ca,cr,cg,cb)
+
+	self.fage				= CUIStatic	()
+	self.fage:SetAutoDelete	(true)
+	self:AttachChild		(self.fage)
+	self.fage:SetWndRect	(230,0,200,22)
+	self.fage:SetText		("fileage")
+	self.fage:SetFont		(GetFontLetterica16Russian())
+	self.fage:SetTextColor	(ca,cr,cg,cb)
+end
+
+class "spawn_dialog" (ui_base_dialog.base_dialog)
+
+function spawn_dialog:__init() super()
+   self:SetFont(GetFontMedium()) --set base font for dialog.
+   
+   self:InitControls()
+   self:InitCallBacks()
+   self:FillList()
+end
+
+function spawn_dialog:__finalize()
+
+end
+
+function spawn_dialog:SetClGame  (game_cl)
+   self.m_game_cl = game_cl
+end
+
+function spawn_dialog:FillList()
+
+	local f = getFS();
+	local flist = f:file_list_open_ex("$game_spawn$",FS.FS_ListFiles,"*.spawn")
+	local f_cnt = flist:Size()
+	
+	flist:Sort(FS.FS_sort_by_modif_down)
+	
+	for	it=0, f_cnt-1 	do
+		local file		=	flist:GetAt(it)			
+		local file_name = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - 6))
+		local date_time = "[" .. file:Modif() .. "]"
+		--menu_item =  .. 
+		self:AddItemToList(file_name, date_time)
+	end
+	
+end
+
+function spawn_dialog:InitControls()
+	ui_base_dialog.base_dialog.InitControls(self, "Load Spawn File")
+	
+	----- DATA ----	
+	local list_rect_f     = {x = self.left_align_x,
+						     y = self.top_align_y,
+						     width = 0,
+						     height = 0}
+	list_rect_f.width  = self.main_rect.width  - self.indent*2*2 
+	list_rect_f.height = self.main_rect.height - self.indent*2 - list_rect_f.y 
+	
+	local list_ind = 10
+	local list_rect       = {x = list_rect_f.x + list_ind,
+							 y = list_rect_f.y + list_ind,
+							 width = list_rect_f.width - list_ind*2,
+							 height = list_rect_f.height - list_ind*2}
+							 
+	
+	
+	----- CODE -------
+
+	------------LIST-----------------
+    local txt_list   = CUIFrameWindow()  --background for ListView
+    txt_list:SetAutoDelete(true)
+    txt_list:Init(self.texture_list_frame, list_rect_f.x, list_rect_f.y, list_rect_f.width, list_rect_f.height)
+    self.main_frame:AttachChild(txt_list) 
+
+    local list_wnd = CUIListWnd()
+    list_wnd:SetAutoDelete(true)
+    list_wnd:SetWindowName("list_window")
+	list_wnd:SetItemHeight(20)
+    list_wnd:Init(list_rect.x, list_rect.y, list_rect.width, list_rect.height)
+    list_wnd:EnableScrollBar(true)
+	list_wnd:ShowSelectedItem(true)
+	self:Register(list_wnd)
+    self.main_frame:AttachChild(list_wnd)
+
+	-----> BUTTONS
+	--- LOAD
+    local btn   = CUI3tButton()
+	btn:SetAutoDelete(true) 
+	btn:SetWindowName("button_load") 
+	btn:Init(self.btn_left.texture,self.btn_left.x, self.btn_left.y, self.btn_left.width, self.btn_left.height)
+    btn:SetText("Load")
+	btn:SetFont(self.button_font)
+--	btn:SetTextAlign(CGameFont.alCenter) 
+--	btn:SetTextY(self.button_indent) 
+	self:Register(btn) --for event-handling
+	self.main_frame:AttachChild(btn)
+	
+	--- DELETE
+    btn   = CUI3tButton()
+	btn:SetAutoDelete(true) 
+	btn:SetWindowName("button_del") 
+	btn:Init(self.btn_center.texture, self.btn_center.x, self.btn_center.y, self.btn_center.width, self.btn_center.height)
+    btn:SetText("Delete")
+	btn:SetFont(self.button_font)
+--	btn:SetTextAlign(CGameFont.alCenter) 
+--	btn:SetTextY(self.button_indent) 
+	btn:Enable(false)
+	self:Register(btn) --for event-handling
+	self.main_frame:AttachChild(btn)
+	
+	--- BACK
+    btn   = CUI3tButton()
+    btn:SetAutoDelete(true)
+    btn:SetWindowName("button_back")	
+	btn:Init(self.btn_right.texture,self.btn_right.x, self.btn_right.y, self.btn_right.width, self.btn_right.height) 	
+	btn:SetText("Back")
+	btn:SetFont(self.button_font)
+--	btn:SetTextAlign(CGameFont.alCenter)
+--	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)
+end
+
+function spawn_dialog:InitCallBacks()
+	self:AddCallback("button_load",		ui_events.BUTTON_CLICKED,             self.OnButton_load_clicked,	self)
+	self:AddCallback("button_back",		ui_events.BUTTON_CLICKED,             self.OnButton_back_clicked,	self)
+end
+
+function spawn_dialog:OnButton_load_clicked()	
+	local console = get_console()
+	local list = self:GetListWnd("list_window")	
+	local index = list:GetSelectedItem()
+	
+	if index == -1 then return end
+		
+	local item  = list:GetItem(index)
+	local fname = item.fn:GetText()
+
+	console:execute("disconnect")
+	console:execute("main_menu off")
+	console:execute("start server(" .. fname .. "/single/alife/new) client(localhost)")	
+end
+
+function spawn_dialog:OnButton_back_clicked()
+	self:GetHolder():start_stop_menu	(self.owner, true) --new
+	self:GetHolder():start_stop_menu	(self,true)
+	self.owner:Show						(true)
+end
+
+function spawn_dialog:OnKeyboard(dik, keyboard_action)  --virtual function
+   ui_base_dialog.base_dialog.OnKeyboard(self,dik,keyboard_action)
+	
+   DIK_RETURN = 28
+   WINDOW_KEY_PRESSED = 6
+	
+	if dik == DIK_RETURN and keyboard_action == WINDOW_KEY_PRESSED then
+		self:GetHolder():start_stop_menu	(self.owner, true) --new
+		self:GetHolder():start_stop_menu	(self,true)
+		self.owner:Show						(true)
+	end
+   
+	return true
+end
+
+function spawn_dialog:AddItemToList(file_name, date_time)
+	
+	local _itm			= spawn_item()
+	_itm.fn:SetText		(file_name)
+	_itm.fage:SetText	(date_time)
+
+	local list_box		= self:GetListWnd("list_window")
+	list_box:AddItem	(_itm)
+	
+end
+
+
+

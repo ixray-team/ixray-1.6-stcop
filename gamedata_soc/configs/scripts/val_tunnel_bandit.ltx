@@ -1,0 +1,38 @@
+[logic@val_sacrifice_tunnel_bandit]
+active = camper@val_sacrifice_tunnel_bandit_wait
+on_combat = combat@val_sacrifice
+combat_ignore = combat_ignore
+
+;--------------------------------------------------------------------------
+; ждем пока игрок не зайдет в стартовую зону
+;--------------------------------------------------------------------------
+[camper@val_sacrifice_tunnel_bandit_wait]
+path_walk                   = tunnel_bandit_walk 
+path_look                   = tunnel_bandit_look
+def_state_campering         = threat
+def_state_campering_fire    = threat_fire
+def_state_moving            = guard
+def_state_moving_fire       = guard_fire
+on_info                     = {+val_tunnel_talk_start} remark@val_sacrifice_tunnel_bandit_phrase
+combat_ignore_cond          = {=check_fighting(403:401)}
+
+;--------------------------------------------------------------------------
+; монолог: Ну в натуре Боров обнаглел! Я бля из Зоны пришел, устал, а он, курва,
+;          меня отправляет патрулировать лагерь. Да кто рискнет сюда пробраться?
+;          Не, короче, пойду-ка я лучше посплю, на хрена мне тут торчать?
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_tunnel_bandit_phrase]
+anim                = guard
+snd                 = speech
+target              = val_sacrifice_tunnel_bandit_look, 0
+on_signal           = sound_end | walker@val_sacrifice_tunnel_bandit_leave
+meet                = meet@val_sacrifice
+combat_ignore_cond  = {=check_fighting(403:401)}
+
+;--------------------------------------------------------------------------
+; leave
+;--------------------------------------------------------------------------
+[walker@val_sacrifice_tunnel_bandit_leave]
+path_walk                   = tunnel_bandit_leave_walk
+on_signal                   = arrived | %+val_tunnel_finish%
+combat_ignore_cond          = {=check_fighting(403:401)}

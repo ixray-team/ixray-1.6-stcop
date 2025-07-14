@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+
+	<info_portion id="aes_desant_wave1"></info_portion>
+	<info_portion id="aes_desant_wave2"></info_portion>
+	<info_portion id="aes_desant_wave3"></info_portion>
+	<info_portion id="aes_desant_wave4"></info_portion>
+	<info_portion id="aes_desant_wave5"></info_portion>
+	<info_portion id="aes_desant_wave6"></info_portion>
+	<info_portion id="aes_heli_down"></info_portion>
+	<info_portion id="aes_monolit_hunter"></info_portion>
+	<info_portion id="aes_actor_desant"></info_portion>
+	<info_portion id="aes_actor_gate"></info_portion>
+	<info_portion id="aes_move_battle"></info_portion>
+	<info_portion id="aes_desant_go"></info_portion>
+	<info_portion id="aes_sound_begin"></info_portion>
+	<info_portion id="aes_monster_ambush"></info_portion>
+	<info_portion id="aes_monster_ambush2"></info_portion>
+	<info_portion id="aes_2chopers_attack"></info_portion>
+	<info_portion id="aes_first_sound"></info_portion>
+	<info_portion id="aes_choper_anomaly"></info_portion>
+	<info_portion id="aes_actor_btr"></info_portion>
+	<info_portion id="aes_first_wave_sound"></info_portion>
+	<info_portion id="aes_choper_hunt_1"></info_portion>
+	<info_portion id="aes_choper_hunt_2"></info_portion>
+	<info_portion id="aes_desant_proceed1"></info_portion>
+	<info_portion id="aes_desant_proceed2"></info_portion>
+	<info_portion id="aes_desant_proceed3"></info_portion>
+	<info_portion id="aes_desant_proceed4"></info_portion>
+	<info_portion id="aes_gonduras_sound"></info_portion>
+	<info_portion id="aes_dog"></info_portion>
+	<info_portion id="aes_desant_proceed_part2"></info_portion>
+	<info_portion id="aes_desant_proceed_part3"></info_portion>
+	<info_portion id="aes_desant_gate"></info_portion>
+	<info_portion id="aes_desant_gate2"></info_portion>
+	<info_portion id="aes_monster_sound"></info_portion>
+	<info_portion id="aes_actor_road"></info_portion>
+	<info_portion id="aes_monolit_blockpost2"></info_portion>
+	<info_portion id="aes_actor_bridge"></info_portion>
+	<info_portion id="aes_actor_road2"></info_portion>
+	<info_portion id="aes_desant_snipers"></info_portion>
+	<info_portion id="aes_desant_wave7"></info_portion>
+	<info_portion id="aes_actor_ambush"></info_portion>
+	<info_portion id="aes_actor_ambush2"></info_portion>
+	<info_portion id="aes_actor_ambush3"></info_portion>
+	<info_portion id="aes_choper_flame"></info_portion>
+	<info_portion id="aes_zabor"></info_portion>
+	<info_portion id="aes_blockpost_sound"></info_portion>
+	<info_portion id="aes_actor_hunt"></info_portion>
+	<info_portion id="aes_uknown_sound"></info_portion>
+	<info_portion id="aes_grif_sound"></info_portion>
+	<info_portion id="aes_bridge_ambush_sound"></info_portion>
+	<info_portion id="aes_rpg_sound1"></info_portion>
+	<info_portion id="aes_rpg_sound2"></info_portion>
+	<info_portion id="aes_actor_dead"></info_portion>
+	<info_portion id="aes_timer_60000"></info_portion>
+	<info_portion id="aes_timer_120000"></info_portion>
+	<info_portion id="aes_timer_180000"></info_portion>
+	<info_portion id="aes_choper_patrol_sound"></info_portion>
+	<info_portion id="aes_choper_crush_sound"></info_portion>
+	<info_portion id="aes_sniper_desant_sound"></info_portion>
+	<info_portion id="aes_lun_desant_sound"></info_portion>
+	<info_portion id="aes_sniper_talk_sound"></info_portion>
+	<info_portion id="aes_actor_btr_move"></info_portion>
+	<info_portion id="aes_actor_btr_ambush"></info_portion>
+	<info_portion id="aes_rpg_sound3"></info_portion>
+	<info_portion id="aes_road_sound1"></info_portion>
+	<info_portion id="aes_road_sound2"></info_portion>
+	<info_portion id="aes_choper_down_1"></info_portion>
+	<info_portion id="aes_choper_down_2"></info_portion>
+	<info_portion id="aes_choper_down_3"></info_portion>
+	<info_portion id="aes_enter_battle_sound"></info_portion>
+	<info_portion id="aes_commander_out_sound"></info_portion>
+	<info_portion id="aes_sniper_out_sound"></info_portion>
+	<info_portion id="aes_actor_ambush5"></info_portion>
+	<info_portion id="aes_timer_20000"></info_portion>
+	<info_portion id="aes_timer_5000"></info_portion>
+	<info_portion id="aes_sniper_talk_1"></info_portion>
+	
+	<info_portion id="aes_arrive_to"></info_portion>
+	<info_portion id="aes_found_sarcofag"></info_portion>
+	<info_portion id="aes_get_soldier_map">
+		<article>aes_soldier_info</article>
+	</info_portion>
+	
+	<info_portion id="aes_activate_zone"></info_portion>
+	<info_portion id="aes_activate_sound"></info_portion>
+	<info_portion id="aes_activate_zone_immediate"></info_portion>
+	
+
+
+
+	<info_portion id="aes2_sniper_ambush1"></info_portion>
+	<info_portion id="aes2_sniper_ambush2"></info_portion>
+	<info_portion id="aes2_sniper_ambush3"></info_portion>
+	<info_portion id="aes2_rpg_ambush1"></info_portion>
+	<info_portion id="aes2_rpg_ambush2"></info_portion>
+	<info_portion id="aes2_rpg_ambush3"></info_portion>
+	<info_portion id="aes2_rpg_ambush4"></info_portion>
+	<info_portion id="aes2_rpg_ambush5"></info_portion>
+	<info_portion id="aes2_monolit_ambush1"></info_portion>
+	<info_portion id="aes2_monolit_ambush2"></info_portion>
+	<info_portion id="aes2_monolit_ambush3"></info_portion>
+	<info_portion id="aes2_monolit_ambush4"></info_portion>
+	<info_portion id="aes2_monolit_ambush5"></info_portion>
+	<info_portion id="aes2_monolit_ambush6"></info_portion>
+	<info_portion id="aes2_monolit_ambush7"></info_portion>
+	<info_portion id="aes2_monolit_ambush8"></info_portion>
+	<info_portion id="aes2_monolit_ambush9"></info_portion>
+	<info_portion id="aes2_monolit_ambush10"></info_portion>
+	<info_portion id="aes2_monolit_ambush11"></info_portion>
+	<info_portion id="aes2_teleport_trader"></info_portion>
+	<info_portion id="aes2_monolit_teleport1"></info_portion>
+	<info_portion id="aes2_monolit_teleport2"></info_portion>
+	<info_portion id="aes2_monolit_teleport3"></info_portion>
+	<info_portion id="aes2_monolit_teleport4"></info_portion>
+	<info_portion id="aes2_monolit_teleport5"></info_portion>
+	<info_portion id="aes2_monolit_teleport6"></info_portion>
+	<info_portion id="aes2_monolit_teleport7"></info_portion>
+	<info_portion id="aes2_monolit_teleport8"></info_portion>
+	<info_portion id="aes2_monolit_teleport9"></info_portion>
+	<info_portion id="aes2_monolit_teleport10"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready1"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready2"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready3"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready4"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready5"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready6"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready7"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready8"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready9"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready10"></info_portion>
+	<info_portion id="aes2_sniper_ready1"></info_portion>
+	<info_portion id="aes2_sniper_ready2"></info_portion>
+	<info_portion id="aes2_sniper_ready3"></info_portion>
+	<info_portion id="aes2_sniper_ready4"></info_portion>
+	<info_portion id="aes2_sniper_ready5"></info_portion>
+	<info_portion id="aes2_monolit_roof29_1"></info_portion>
+	<info_portion id="aes2_monolit_roof29_2"></info_portion>
+	<info_portion id="aes2_monolit_roof29_3"></info_portion>
+	<info_portion id="aes2_monolit_roof29_4"></info_portion>
+	<info_portion id="aes2_monolit_roof29_5"></info_portion>
+	<info_portion id="aes2_monolit_ambush_rpg1"></info_portion>
+	<info_portion id="aes2_monolit_ambush_rpg2"></info_portion>
+	<info_portion id="aes2_snork_jumper1"></info_portion>
+	<info_portion id="aes2_snork_jumper2"></info_portion>
+	<info_portion id="aes2_snork_jumper3"></info_portion>
+	<info_portion id="aes2_snork_jumper4"></info_portion>
+	<info_portion id="aes2_snork_jumper5"></info_portion>
+	<info_portion id="aes2_snork_jumper6"></info_portion>
+	<info_portion id="aes2_snork_ambush1"></info_portion>
+	<info_portion id="aes2_snork_ambush2"></info_portion>
+	<info_portion id="aes2_snork_ambush3"></info_portion>
+	<info_portion id="aes2_snork_attack"></info_portion>
+	<info_portion id="aes2_snork_wall1"></info_portion>
+	<info_portion id="m9_ready"></info_portion>
+	<info_portion id="aes2_monolit_first_ambush"></info_portion>
+	<info_portion id="aes2_monolit_first_ambush_2"></info_portion>
+	
+	<info_portion id="aes2_monolit_teleport_final_1"></info_portion>
+	<info_portion id="aes2_monolit_teleport_ready_final"></info_portion>
+
+
+
+
+	<!-- OSOZNANIE -->
+	<info_portion id="oso_who_are_you"></info_portion>
+	<info_portion id="oso_what_is_the_zone"></info_portion>
+	<info_portion id="oso_what_about_me"></info_portion>
+	<info_portion id="oso_why_chernobyl"></info_portion>
+	<info_portion id="oso_chernobyl_crush"></info_portion>
+	<info_portion id="oso_stalker"></info_portion>
+	<info_portion id="oso_death_truck"></info_portion>
+	<info_portion id="oso_what_next"></info_portion>	
+	<info_portion id="oso_question"></info_portion>
+   
+
+
+</game_information_portions>
+

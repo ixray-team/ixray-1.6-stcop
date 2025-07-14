@@ -1,0 +1,386 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+	<specific_character id="killer_leader">
+		<name>Лидер наемников</name>
+		<icon x="14" y="0"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Злой и страшный серый волк.</bio>
+
+		<team>Killer_leader</team>				
+		<community>killer</community>
+		
+		<rank>95</rank>
+		<reputation>-70</reputation>
+
+		<visual>actors\killer\stalker_ki_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n			
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+	
+<!---------------------------KILLER REGULAR----------------------->
+	<specific_character id="killer_regular_default1" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="18" y="4"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Судя по всему в Зоне недавно. Детальная информация отсутствует.</bio>
+
+		<team>Killer_regular</team>
+		
+		<class>Killer_regular</class>
+		<community>killer</community>
+					
+		<rank>40</rank>
+		<reputation>-30</reputation>
+
+		<visual>actors\killer\stalker_ki_head_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_pmm = 1 \n
+			wpn_mp5 \n
+			ammo_9x19_fmj = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="killer_regular_default2" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="18" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Судя по всему в Зоне недавно. Детальная информация отсутствует.</bio>
+
+		<team>Killer_regular</team>
+		
+		<class>Killer_regular</class>
+		<community>killer</community>
+					
+		<rank>40</rank>
+		<reputation>-30</reputation>
+
+		<visual>actors\killer\stalker_ki_head_4</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pmm = 1 \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="killer_regular_default3" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="18" y="2"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Судя по всему в Зоне недавно. Детальная информация отсутствует.</bio>
+
+		<team>Killer_regular</team>
+		
+		<class>Killer_regular</class>
+		<community>killer</community>
+					
+		<rank>40</rank>
+		<reputation>-30</reputation>
+
+		<visual>actors\killer\stalker_ki_head_5</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pb \n
+			ammo_9x18_pbp = 1 \n
+			wpn_bm16 \n
+			ammo_12x76_zhekan = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+		
+<!---------------------------KILLER SNIPER---------------------->
+	<specific_character id="killer_sniper_default1" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="28" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Судя по всему в Зоне недавно. Детальная информация отсутствует.</bio>
+
+		<team>Killer_sniper</team>
+		
+		<class>Killer_sniper</class>
+		<community>killer</community>
+
+		<rank>50</rank>
+		<reputation>-50</reputation>
+
+		<visual>actors\killer\stalker_ki_mask</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 1 \n
+			wpn_svu \n
+			ammo_7.62x54_ap = 1 \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	
+<!---------------------------KILLER SPECNAZ---------------------->
+	<specific_character id="killer_specnaz_default1" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="4" y="2"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Возможно хорошо вооружен. Детальная информация отсутствует.</bio>
+
+		<team>Killer_specnaz</team>
+		
+		<class>Killer_specnaz</class>
+		<community>killer</community>
+
+		<rank>70</rank>
+		<reputation>-50</reputation>
+
+		<visual>actors\killer\stalker_ki_antigas</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp = 1 \n
+			wpn_spas12 \n
+			ammo_12x76_dart = 1 \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="killer_specnaz_default2" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="4" y="2"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Возможно хорошо вооружен. Детальная информация отсутствует.</bio>
+
+		<team>Killer_specnaz</team>
+		
+		<class>Killer_specnaz</class>
+		<community>killer</community>
+
+		<rank>70</rank>
+		<reputation>-50</reputation>
+
+		<visual>actors\killer\stalker_ki_antigas</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp = 1 \n
+			wpn_l85 = 1, 0, 0, 0 \n
+			ammo_5.56x45_ap = 1 \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="killer_specnaz_default3" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="30" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Возможно хорошо вооружен. Детальная информация отсутствует.</bio>
+
+		<team>Killer_specnaz</team>
+		
+		<class>Killer_specnaz</class>
+		<community>killer</community>
+
+		<rank>70</rank>
+		<reputation>-50</reputation>
+
+		<visual>actors\killer\stalker_ki_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 1 \n
+			wpn_ak74 = 1, 1, 1, 0 \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="killer_specnaz_default4" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="30" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Возможно хорошо вооружен. Детальная информация отсутствует.</bio>
+
+		<team>Killer_specnaz</team>
+		
+		<class>Killer_specnaz</class>
+		<community>killer</community>
+
+		<rank>70</rank>
+		<reputation>-50</reputation>
+
+		<visual>actors\killer\stalker_ki_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 1 \n
+			wpn_ak74 = 1, 1, 1, 0 \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+			
+<!---------------------------KILLER MASTER----------------------->
+	<specific_character id="killer_master_default1" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="30" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Хорошо вооружен и очень опасен. Детальная информация отсутствует.</bio>
+
+		<team>Killer_master</team>
+		
+		
+		<class>Killer_master</class>
+		<community>killer</community>
+
+		
+		<rank>90</rank>
+		<reputation>-50</reputation>
+
+		<visual>actors\killer\stalker_ki_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_usp \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+	<specific_character id="killer_master_default2" team_default = "1">
+		<name>Неизвестный наемник</name>
+		<icon x="14" y="0"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Неизвестный наемник. Хорошо вооружен и очень опасен. Детальная информация отсутствует.</bio>
+
+		<team>Killer_master</team>
+		
+		
+		<class>Killer_master</class>
+		<community>killer</community>
+
+		
+		<rank>90</rank>
+		<reputation>-50</reputation>
+
+		<visual>actors\killer\stalker_ki_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro = 1 \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+<!---------------------------KILLER SPECNAZ STUKACH---------------------->
+	<specific_character id="killer_specnaz_stukach" team_default = "1">
+		<name>Павлик</name>
+		<icon x="22" y="8"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Сталкер группировки "Свобода". Детальная информация отсутствует.</bio>
+
+		<team>Killer_specnaz</team>
+		
+		<class>Killer_specnaz_stukach</class>
+		<community>killer</community>
+
+		<rank>70</rank>
+		<reputation>-50</reputation>
+
+		<visual>actors\svoboda\stalker_sv_rukzak_2</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp = 1 \n
+			wpn_spas12 \n
+			ammo_12x76_dart = 1 \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+		
+<!---------------------------KILLER IHFORMATOR---------------------->
+	<specific_character id="killer_informator" team_default = "1">
+		<name>Ара</name>
+		<icon x="28" y="14"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>Известный на всю Зону информатор и осведомитель.</bio>
+
+		<team>Killer_specnaz</team>
+		
+		<class>Killer_informator</class>
+		<community>killer</community>
+
+		<rank>70</rank>
+		<reputation>-50</reputation>
+
+		<visual>actors\killer\stalker_ki_informator</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp = 1 \n
+			wpn_fn2000 \n
+			ammo_5.56x45_ss190 = 1 \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>general_pda_talk</actor_dialog>
+		<actor_dialog>esc_stalker_talk_level</actor_dialog>
+	</specific_character>
+
+</xml>
