@@ -254,13 +254,61 @@ void CUISequenceSimpleItem::Start()
 	if (g_pGameLevel)
 	{
 		bool bShowPda			= false;
-		if (     !_stricmp( m_pda_section, "pda_tasks"       ) ) {CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptTasks");		bShowPda = true;	}
-		else if( !_stricmp( m_pda_section, "pda_fraction_war") ) {CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptFractionWar");bShowPda = true;	}
-		else if( !_stricmp( m_pda_section, "pda_ranking"     ) ) {CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptRanking");	bShowPda = true;	}
-		else if( !_stricmp( m_pda_section, "pda_logs"        ) ) {CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptLogs");		bShowPda = true;	}
+		if (     !_stricmp( m_pda_section, "pda_tasks"       ) ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptTasks");		
+			bShowPda = true;	
+		}
+		else if( !_stricmp( m_pda_section, "pda_fraction_war") ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptFractionWar");
+			bShowPda = true;	
+		}
+		else if( !_stricmp( m_pda_section, "pda_ranking"     ) ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptRanking");	
+			bShowPda = true;	
+		}
+		else if( !_stricmp( m_pda_section, "pda_logs"        ) ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptLogs");		
+			bShowPda = true;	
+		}
 		else if( !_stricmp( m_pda_section, "pda_show_second_task_wnd" ) )
 		{
-			CurrentGameUI()->PdaMenu().Show_SecondTaskWnd(true);	bShowPda = true;
+			CurrentGameUI()->PdaMenu().Show_SecondTaskWnd(true);	
+			bShowPda = true;
+		}
+		// SoC only
+		else if( !_stricmp( m_pda_section, "pda_contacts") ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptContacts");
+			bShowPda = true;	
+		}
+		else if( !_stricmp( m_pda_section, "pda_map") ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptMap");
+			bShowPda = true;	
+		}
+		else if( !_stricmp( m_pda_section, "pda_quests") ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptQuests");
+			bShowPda = true;	
+		}
+		else if( !_stricmp( m_pda_section, "pda_diary") ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptDiary");
+			bShowPda = true;	
+		}
+		else if( !_stricmp( m_pda_section, "pda_statistics") ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptActorStatistic");
+			bShowPda = true;	
+		}
+		else if( !_stricmp( m_pda_section, "pda_encyclopedia") ) 
+		{
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptEncyclopedia");
+			bShowPda = true;	
 		}
 		
 		if (CurrentGameUI())
