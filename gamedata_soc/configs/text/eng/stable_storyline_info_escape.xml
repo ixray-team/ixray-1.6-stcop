@@ -1,0 +1,81 @@
+	<string id="about_enciclopedia">
+		<text>This is the encyclopaedia. As you progress in the game, information about the world around you will be added here, sorted by topic.</text>
+	</string>
+	<string id="about_pda">
+		<text>About the encyclopaedia</text>
+	</string>
+	<string id="Bandit's flash">
+		<text>Factory bandit's PDA</text>
+	</string>
+	<string id="blokpost_case_text">
+		<text>Trader: get inside the army outpost and steal the case containing the report of the military expedition to the northern part of the Zone.</text>
+	</string>
+	<string id="Dead novice's flash">
+		<text>Dead rookie's PDA</text>
+	</string>
+	<string id="defend_lager_text">
+		<text>Fanatic: Help us defend against the Mercs who ordered the rookies to clear off the camp. The plan goes like that. Everyone hides, so the camp looks deserted, we let the Mercs inside the camp, then attack on captain's order.</text>
+	</string>
+	<string id="doctor_meet">
+		<text>Guide's PDA</text>
+	</string>
+	<string id="doctor_meet_2">
+		<text>Meeting Doctor</text>
+	</string>
+	<string id="doctor_meet_quest_text">
+		<text>Doctor: I will be waiting for a man who comes from Strelok to the hiding place used by Strelok and his men. If he's our man, he'll know the place.</text>
+	</string>
+	<string id="doctor_meet_text">
+		<text>OK, I'll meet with Ghost's man. I will be waiting for him in Strelok's hiding place. If he's one of our own, he will know where to look for me. Doctor.</text>
+	</string>
+	<string id="esc_flash_task_descr">
+		<text>Trader: "...my guys were coming back from an assignment and disappeared. One of them - called Nimble - was bringing me some info...And they all disappeared really close by because they missed the bridge. Don't know what to think. Anyway: find Nimble, dead or alive, just as long as he has the flash drive. Bring it to me. Nimble was one of Wolf's men - and Wolf is here in the camp. Ask him, he probably knows something. He'll help you with weapons and gear."</text>
+	</string>
+	<string id="esc_fox_info">
+		<text>Seriy to Fox: a friend wants me to give a helping hand to a bunch of stalkers that dug out Strelok's stash. I'm off to the hangar at the Garbage with my boys. That's where you can find me.</text>
+	</string>
+	<string id="esc_kolyan_lost">
+		<text>Yesterday one brother went to scout the deserted mill and we haven't heard from him since. We need to go there and see where he disappeared to.</text>
+	</string>
+	<string id="factory_dynamit_text">
+		<text>Wolf: bring the dynamite stolen by the bandits at the factory. To help you, there are scouts under the bridge, come to them and say "Hello from the underworld" - that's the password. Lead them into battle.</text>
+	</string>
+	<string id="factory_trader_text">
+		<text>Wolf: clear the bandits at the factory with the help of my scouts behind the bridge, then return and report.</text>
+	</string>
+	<string id="Flash dead stalker">
+		<text>Dead stalker's PDA</text>
+	</string>
+	<string id="gunslinger_clan_cache">
+		<text>...came to in the den of some dude, can't remember anything. Just have a PDA on me with a picture of some other dude. There's just one message in the PDA - kill Strelok.</text>
+	</string>
+	<string id="help_to_fox">
+		<text>Trader: Fox has come back from his raid and is asking for help. Perhaps he knows something about Strelok.</text>
+	</string>
+	<string id="meet_seryi_text">
+		<text>Fox: Seriy is sitting in the hangar at the Garbage, he knows more about Strelok.</text>
+	</string>
+	<string id="military_case_text">
+		<text>Trader: steal the expedition report from the military at the Agroprom Research Institute, take it to the 100 Rads bar and give it to the Barkeep.</text>
+	</string>
+	<string id="Seryi flash">
+		<text>Fox's PDA</text>
+	</string>
+	<string id="storyline_fox_flash_info">
+		<text>Tolik's diary. Trader sent us to spy on the military at the Agroprom Research Institute. Got there and shot everybody, bandits and military alike. Dug out some interesting stuff, I'm encoding the rest *gibberish text that looks like a cipher*</text>
+	</string>
+	<string id="storyline_seryi_info">
+		<text>Seriy to Fox: one guy I know asked to meet a group of stalkers who sniffed out Strelok's hiding place. I'll be at the Garbage, come over if you want.</text>
+	</string>
+	<string id="Tolik flash">
+		<text>Tolik's PDA</text>
+	</string>
+	<string id="tutorial_artefact_find">
+		<text>Trader: there is a Whirligig anomaly field close by. There is an artifact in its center. Get it.</text>
+	</string>
+	<string id="tutorial_moving_anomaly_text">
+		<text>There's a very strange anomaly here. It looks like it's moving. I'll try to calculate its movement times and path, because I don't have the cash to pay the soldiers for passage.</text>
+	</string>
+	<string id="tutorial_secret_place">
+		<text>I left a small cache at the deserted farm. It's got some food and ammo. I'm way too weak to carry it now. I'm not sure if I can make it to the camp.</text>
+	</string>

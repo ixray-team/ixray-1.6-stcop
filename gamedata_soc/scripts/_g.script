@@ -15,9 +15,67 @@ function load_scheme(filename, scheme, stype)
 end
 
 ----------------------------------------------------------------------
+local scripts_to_print =	{
+							["stalker_generic"] = true,
+							["xr_smartcover"] = true,
+							["xr_logic"] = true,
+							["xr_conditions"] = true,
+							["xr_cover"] = true,
+							["xr_motivator"] = true,
+							["xr_walker"] = true,
+							["xr_camper"] = true,
+							["xr_kamp"] = true,
+							["restrictor_manager"] = true,
+							["sim_board"] = true,
+							["sim_faction"] = true,
+							["post_combat_idle"] = true,
+							["xr_death"] = true,
+							["xr_sound"] = true,
+							["utils"] = true,
+							["treasure_manager"] = true,
+							["object_collection"] = true,
+							["se_actor"] = true,
+							["smart_terrain"] = true,
+							["bind_physic_object"] = true,
+							["bind_heli"] = true,
+							["bind_anomaly_zone"] = true,
+							["bind_stalker"] = true,
+							["state_mgr_animation"] = true,
+							["se_stalker"] = true,
+							["db"] = true,
+							["sim_squad_generic"] = true,
+							["sim_squad_scripted"] = true,
+							["se_smart_cover"] = true,
+							["se_monster"] = true,
+							["dialog_manager"] = true,
+							["xr_combat_ignore"] = true,
+							["xr_remark"] = true,
+							["cover_manager"] = true,
+							["xr_danger"]	 = true,
+							["task_manager"] = true,
+							["task_objects"]	 = true
+							}
 
 function printf(fmt,...)
-	log(string.format(fmt,...))
+	local is_g = 0
+	local result = fmt
+	if debug == nil then
+		log(string.format(fmt,...))
+		return
+	end
+	local info_table = debug.getinfo(2)
+	local script_name = string.gsub(info_table.short_src, "%.script", "")
+	script_name = string.gsub(script_name, "gamedata\\scripts\\", "")
+
+	if scripts_to_print[script_name] == false then return end
+
+	script_name,is_g = string.gsub(script_name, "_g", "")
+	if is_g == 0 then
+		result = script_name..":("..info_table.currentline.."):"..fmt
+	else
+		result = fmt
+	end
+	log(string.format(result,...))
 end
 
 ----------------------------------------------------------------------
@@ -1111,9 +1169,6 @@ end
 -- Крешнуть игру (после вывода сообщения об ошибке в лог)
 function abort(fmt, ...)
 	local reason = string.format(fmt, ...)
-	assert("ERROR: " .. reason)
-	printf("ERROR: " .. reason)
-	printf("%s")
 end
 
 function set_postprocess(name_ini_file)
@@ -1281,3 +1336,14 @@ quest_section["hunters_toz"]		= true
 quest_section["bar_ecolog_flash"]	= true
 quest_section["bar_tiran_pda"]		= true
 quest_section["bar_lucky_pda"]		= true
+
+function vec_to_str (vector)
+	if vector == nil then return "nil" end
+	return string.format("[%d:%d:%d]", vector.x, vector.y, vector.z)
+end
+
+function callstack()
+	if debug ~= nil then
+		log(debug.traceback(2))
+	end
+end

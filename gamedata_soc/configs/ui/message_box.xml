@@ -638,4 +638,79 @@
     </button_ok>
   </msg_box_error_loading>
 
+  <message_box_yes_no type="yes_no" x="200" y="250" width="510" height="206">
+    <texture>ui_frame_error</texture>
+
+    <picture x="35" y="65" width="77" height="77">
+      <texture>ui_frame_error_sign_info</texture>
+    </picture>
+
+    <message_text x="170" y="40" width="310" height="60" complex_mode="1">
+      <text r="216" g="186" b="140" font="letterica18"  >a</text>
+    </message_text>
+
+    <button_yes x="250" y="154" width="117" height="29" check_mode="0">
+      <window_name>button_yes</window_name>
+      <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_yes</text>
+      <texture>ui_button_ordinary</texture>
+    </button_yes>
+    <button_no x="370" y="154" width="117" height="29" check_mode="0">
+      <window_name>button_no</window_name>
+      <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_no</text>
+      <texture>ui_button_ordinary</texture>
+    </button_no>
+  </message_box_yes_no>
+
+  <message_box_ok type="ok" x="200" y="250" width="510" height="206">
+    <texture>ui_frame_error</texture>
+
+    <picture x="35" y="65" width="77" height="77">
+      <texture>ui_frame_error_sign_alarm</texture>
+    </picture>
+
+    <message_text x="170" y="40" width="310" height="60" complex_mode="1">
+      <text r="216" g="186" b="140" font="letterica18" >a</text>
+    </message_text>
+
+    <button_ok x="370" y="154" width="117" height="29" check_mode="0">
+      <window_name>button_ok</window_name>
+      <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_ok</text>
+      <texture>ui_button_ordinary</texture>
+    </button_ok>
+  </message_box_ok>
+
+  <message_box_download_level type="yes_no_copy" x="200" y="250" width="510" height="206">
+    <texture>ui_frame_error</texture>
+
+    <picture x="35" y="65" width="77" height="77">
+      <texture>ui_frame_error_sign_alarm</texture>
+    </picture>
+
+    <message_text x="170" y="40" width="310" height="60" complex_mode="1">
+      <text r="216" g="186" b="140" font="letterica18" >download_map</text>
+    </message_text>
+
+	<edit_url  x="170" y="90" width="270" height="24" read_only="1" max_symb_count="110">
+      <text x="3" font="letterica16" r="207" g="155" b="80" vert_align="c"></text>
+      <texture>ui_linetextSmall_e</texture>
+    </edit_url>
+
+	<button_copy x="160" y="125" width="208" height="29" check_mode="0">
+	  <window_name>button_copy</window_name>
+      <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_copy_url</text>
+      <texture>ui_button_ordinary</texture>
+    </button_copy>
+	
+    <button_yes x="230" y="154" width="137" height="29" check_mode="0">
+	  <window_name>button_yes</window_name>
+      <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_download_map</text>
+      <texture>ui_button_ordinary</texture>
+    </button_yes>
+    <button_no x="370" y="154" width="117" height="29" check_mode="0">
+	  <window_name>button_no</window_name>
+      <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_cancel</text>
+      <texture>ui_button_ordinary</texture>
+    </button_no>
+  </message_box_download_level>
+  
 </window>

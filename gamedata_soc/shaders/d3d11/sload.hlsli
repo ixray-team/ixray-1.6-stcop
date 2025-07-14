@@ -105,8 +105,8 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
     float4 BumpX = s_bumpX.Sample(smp_base, I.tcdh.xy);
 
     #ifdef USE_PBR
-		M.Normal.xy = Bump.wy * 2.0 - 1.0;
-		M.Normal.z = sqrt(1.0f - saturate(dot(M.Normal.xy, M.Normal.xy)));
+		M.Normal.xy = Bump.wy - 128.0f / 255.0f;
+		M.Normal.z = sqrt(1.0f - dot(M.Normal.xy, M.Normal.xy));
 
 		M.Metalness = BumpX.x;
 		M.Roughness = BumpX.y;

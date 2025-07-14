@@ -1,9 +1,4 @@
--- File:        UI_LOAD_DIALOG.SCRIPT
--- Description: Load Dialog for STALKER
--- Created:     28.10.2004
--- Copyright:   2004 GSC Game World
--- Author:      Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
--- Version:     0.5
+saved_game_extension	= save_extension()
 
 class "load_item" (CUIListItemEx)
 
@@ -49,14 +44,14 @@ end
 function load_dialog:FillList()
 
 	local f = getFS()
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly),"*.sav")
+	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly),"*"..saved_game_extension)
 	local f_cnt = flist:Size()
 	
 	flist:Sort(FS.FS_sort_by_modif_down)
 	
 	for	it=0, f_cnt-1 	do
 		local file		=	flist:GetAt(it)			
-		local file_name = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - 4))
+		local file_name = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - string.len(saved_game_extension)))
 		local date_time = "[" .. file:ModifDigitOnly() .. "]"
 		--menu_item =  .. 
 		self:AddItemToList(file_name, date_time)
@@ -134,7 +129,7 @@ end
 
 function delete_save_game(filename)
 
-	local save_file		= filename .. ".sav"
+	local save_file		= filename .. saved_game_extension
 	local dds_file		= filename .. ".dds"
 	
 	local f = getFS()
@@ -160,7 +155,7 @@ end
 
 function file_data(fname)
 	local f = getFS();
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname .. ".sav")
+	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname .. saved_game_extension)
 	local f_cnt = flist:Size()
 	
 	if f_cnt > 0 then
@@ -216,7 +211,7 @@ function load_dialog:OnListItemClicked()
 	self.file_caption:SetText	(item_text)
 	self.file_data:SetText		(file_data(item_text))
 	
-	if file_exist(item_text .. ".sav") ~= true then
+	if file_exist(item_text .. saved_game_extension) ~= true then
 		list_box:RemoveItem(itm_index)
 		return
 	end
