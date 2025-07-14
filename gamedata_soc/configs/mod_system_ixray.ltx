@@ -1,0 +1,139 @@
+; This is due to the fact that GSC has prescribed the sound of a gun being pulled out
+; w_knife.ltx
+![wpn_knife]
+snd_draw = weapons\draw_silent
+
+![inventory]
+slot_persistent_4 = false ;grenades
+
+![actor_look_cam_psp]
+!offset
+!autoaim_speed_y
+!autoaim_speed_x
+
+offset_right = -0.4,0.2,0.0
+offset_left = 0.314,0.2,0.0
+use_inertion = true
+
+;items.ltx
+![bread]
+use_text = st_eat
+eat_portions_num = 1
+
+![kolbasa]
+use_text = st_eat
+eat_portions_num = 1
+
+![conserva]
+use_text = st_eat
+eat_portions_num = 1
+
+![antirad]
+eat_portions_num = 1
+
+![vodka]
+use_text = st_drink
+eat_portions_num = 1
+
+![device_torch]
+sound_activate          = device\torch_click
+sound_deactivate        = device\torch_click_off
+
+;w_f1.ltx
+![grenade_f1]
+detonation_threshold_hit= 0.3
+explosion_on_hit = true
+explosion_hit_types = 6, 8 
+explosive_while_not_activated = true
+
+;w_rgd5.ltx
+![grenade_rgd5]
+detonation_threshold_hit = 0.3
+explosion_on_hit = true
+explosion_hit_types = 6, 8 
+explosive_while_not_activated = true
+
+;helicopter.ltx
+![helicopter]
+ssa_dyn_factor = 0.001
+ssa_d_cam = 300.0
+
+;prefetch_mp.ltx
+; FreeMP mode
+[prefetch_objects_fmp]:prefetch_objects_mp
+[prefetch_visuals_fmp]:prefetch_visuals_mp
+
+[prefetch_objects_freemp]:prefetch_objects_mp
+[prefetch_visuals_freemp]:prefetch_visuals_mp
+
+[night_vision_base]
+snd_night_vision_on			= weapons\nv_start
+snd_night_vision_off		= weapons\nv_off
+snd_night_vision_idle		= weapons\nv_loop
+snd_night_vision_broken		= weapons\nv_off
+
+night_vision_disabled_maps						= ai_test,ai_test2, andy_test_
+
+;creatures/monsters.ltx
+![monsters_common]
+corpse_remove_game_time_interval = 24 ; in hours
+stay_after_death_time_interval = 36 ; in hours
+
+;items.ltx
+![device_torch]
+default_to_ruck = false
+
+![device_pda]
+default_to_ruck = false
+
+![outfit_base]
+default_to_ruck = false
+
+![af_base]
+default_to_ruck = true
+
+;m_poltergeist.ltx
+![m_poltergeist_e]
+enable_corpse_on_death = true
+
+
+;effectors.ltx
+![bobbing_effector] ; Gunslinger Style
+
+;спринт
+sprint_amplitude		= 	0.014
+sprint_speed			= 	10.0
+
+;бег
+run_amplitude			=	0.0075
+run_speed			=	10.0
+zoom_run_amplitude		=	0.005
+zoom_run_speed			=	7.0
+
+;замедление/прицеливание
+walk_amplitude			=	0.005
+walk_speed				=   7.0
+zoom_walk_amplitude		=	0.005
+zoom_walk_speed			=   7.0
+
+;присяд
+crouch_amplitude		=   0.0056
+crouch_speed			=   7.5
+zoom_crouch_amplitude	=   0.0056
+zoom_crouch_speed		=   7.5
+
+;присяд+замедление
+slow_crouch_amplitude   =   0.0042
+slow_crouch_speed       =   5.625
+zoom_slow_crouch_amplitude   =   0.0042
+zoom_slow_crouch_speed       =   5.625
+
+;тяжелое дыхание
+limp_amplitude			=	0.011
+limp_speed				=	6.0
+zoom_limp_amplitude		=	0.007
+zoom_limp_speed			=	6.0
+
+
+;Скорость изменения амплитуды раскачки при смене режима перемещения
+amplitude_delta			= 	0.01 

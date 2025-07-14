@@ -39,7 +39,6 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	float3 n0 = s_nmap.Sample(smp_base, I.tnorm0).xyz;
 	float3 n1 = s_nmap.Sample(smp_base, I.tnorm1).xyz;
 	float3 Navg = n0 + n1 - 1.0f;
-	Navg.z = abs(Navg.z);
 
     float3 Nw = normalize(mul(float3x3(I.M1, I.M2, I.M3), Navg).xyz);
 	

@@ -1,0 +1,107 @@
+[general]
+Platform = soc 							; Platform mode. Supported values: cop (Call of Pripyat), cs (Clear Sky)
+title = st_ixray_title_soc 				; Mod name
+SaveImageSize = 128, 128               	; Size of saved thumbnail image
+
+[shaders_options]
+USE_LEGACY_LIGHT = 1                   	; 1 - legacy pipeline, 0 - PBR pipeline
+USE_SOC_LIGHTING = 1				   	; For levels with SoC lightmap format
+USE_DIFFUSE_SKY_COLOR = 1			   	; For SoC weather
+
+; Hozar: Use brga skycolor format
+; USE_BGRA_SKYCOLOR = 1;
+
+; Hozar: Use original GSC format for sky ToneMapping
+; USE_LEGACY_SKY_TONEMAP = 1
+
+; CGIM2 compatibility
+; USE_CGIM_SKY_TWEAK = 1
+; USE_CGIM_WHITE_TWEAK = 1
+; USE_CGIM_COLOR_TWEAK = 1
+; USE_CGIM_BLOOM_TWEAK = 1
+
+; Hozar: Use normal on Hemi calc
+; USE_NORMAL_HEMI_DISTRIBUTION = 1
+
+; Hozar: For PBS pipeline
+; IBL_FAKE_IRRADANCE = 1
+; IBL_REMAP_IRRADANCE = 1
+; IBL_REMAP_REFLECTIONS = 1
+; IBL_REMAP_POSITIVE_Y = 1
+; IBL_MAX_LOD = 10
+; USE_FULL_SKY_SPHERE = 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Engine features
+
+[ui]
+DisableCharacterInfo = false			; Disable character information
+DisableInventoryGrid = false 			; Uses ui\ui_grid_alt.dds instead of ui\ui_grid.dds
+WeaponIconScale = 0.9 					; Scale factor for static_wpn_icon in maingame.xml. For CoP it's 0.8, for CS - 0.65, for SoC - 0.9
+ShowLoadingStages = true 				; Loading stages from CS/SoC
+DisableMotionIcon = false				; Disable motion icon
+PdaRearrangeTabButtons = true			; for CS style buttons, where their size depends on text
+UseSavedGameStatic = true				; Use custom static for save games
+DisableHudRenderingOnMaster = false     ; Disable HUD on Master difficulty. Gunslinger Mod style
+ShowQuickSlotByDefault = true           ; Visible quick slots by default
+InventoryItemCountPrefix = "x"          ; Prefix shown in item counter, quick slots for example
+RenderingType = raster                  ; raster or default = means you need to specify icons by your own (fallback); vector = new way for rendering using svg images;
+
+[physics]
+DeadBodyRagdoll = false                 ; Enable ragdoll body
+
+[gameplay]
+EnableThirst = false                    ; Thirst
+EnableSleepiness = false                ; Sleepiness
+EnableAiDieInAnomaly = true            	; Ai Die In Anomaly
+EnableNPCLookAtActor = true             ; NPC Look at actor
+EnableAutoreload = false                ; Enable automatic weapon reloading
+EnableMonstersInventory = true          ; Enable monsters inventory
+EnableWeaponInertion = true             ; Gunslinger Mod Style
+EnableWeaponCollision = false           ; Shoker Mod Style
+EnableActorStepWallmarks = false        ; Actor step wallmarks AIW Style
+EnableAlternateZoomFovCalc = false		; Don't turn it on unnecessarily! Breaks the original weapon system.
+EnableInventoryPistolSlot = true 		; 2nd slot for pistols only (like in CS/SoC)
+EnableImproveWeaponMisfire = false		; Gunslinger Mod Style
+EnableDelayedWeaponActions = false		; Gunslinger Mod Style
+EnableLegacyUpgradeSystem = true		; Use upgrade system from Clear Sky
+EnableEngineArtefactSpawn = true		; Read parameters for artefacts spawn directly from anomaly's configs (only for SoC)
+
+[spawn_supplies]
+EnableLoadoutsSupplies 						= true; Use loadouts for npc profiles
+;; select one option ;;
+EnableSpawnFullRandomLoadout				= false; Spawn all sections by once random loadout included for npc 
+EnableSpawnOnceRandomItemPerEachLoadouts	= true; Spawn by one item each loadouts included for npc (CoC Style)
+EnableSpawnOnceRandomitemByRandomLoadout	= false; Spawn once random item by all included loadouts for npc
+
+; Dialogs
+DialogFovScale = 0.75 ; Increasing fov during dialogue
+TalkDof = 0.0, 0.5, 5.0, 0.0 ; Degree of background blurring in dialogue
+; Sprint
+EnableBlockSprintInReload = true        ; Enable block sprint in reload
+DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
+SprintFovFactor = 3.0                   ; FOV magnification power while running
+
+[render]
+DisableLoadScreenTips = true           	; Disable load screen tips
+UseDynamicSnowMask = false              ; Use dynamic snow mask
+FontAtlasSize = 4096                    ; Texture atlas size value. Must be in the order of two
+UseLegacyParticleLoader = true 			; Use SoC format for particles.xr
+
+[environment]
+ReadSunConfig = false                   ; Enable sun movement in configurations
+
+[localization]
+PreferedFallbackLanguage = eng
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Extended sections
+
+[player_hud]
+PlayerHudOmfAdditional = dynamics\weapons\hud_hands_animation\*.omf ; Place your omf file pathes 
+
+; Need [gameplay]:EnableActorStepWallmarks
+[step_wallmark] 
+materials = earth, test1    ; Material names
+left_mark = l_foot          ; left foot wallmark section
+right_mark = r_foot         ; right foot wallmark section

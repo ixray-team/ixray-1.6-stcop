@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="cit_doctor_escape_dialog_0">
+		<text>I need answers to several questions.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1">
+		<text>Ask away, I'll try to help.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_11">
+		<text>Where are my things?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_111">
+		<text>The leader usually keeps all the confiscated stuff. His room is on the top floor. My things were taken there when they caught me.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1111">
+		<text>Thanks!</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_12">
+		<text>How can I get out of here?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_121">
+		<text>When they were leading me around I noticed a sewer grate under the stairs on the first floor... If you managed to open the cell it would be possible to get out of here using that sewer... It's best to go West and then you can use the tunnel to get to Freedom.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1211">
+		<text>Thanks for the information.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_14">
+		<text>Who captured us?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_141">
+		<text>We're being held by the Mercs. Nobody really knows who they are but there are rumors that they work together with foreign intelligence services. The location of this base is top secret - no one knows how to get into the Dead City. Many people are very interested in this information, especially Freedom and Duty.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1411">
+		<text>Go on.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_14111">
+		<text>If you manage to get a map of the Dead City, a successful assault will be possible. The Mercs or the bandits probably have one. You could try to get it.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_141111">
+		<text>Thanks for the information.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_15">
+		<text>What do you know about this place?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_151">
+		<text>The city is split into two sections. We're on the Merc side. To the South beyond the square is where the bandits are. They're holed up in the school building Southwest of the city. In between the bases, there is a run down five-floor building and a few relatively intact ones. If the shit hits the fan, you can sit it out there. There are also some garages and a couple of small houses around that area. There are a couple of five-floor buildings and a dozen garages on the bandits' side too. The former city council building is on the other side of the square.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1511">
+		<text>Thanks for the information.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_16">
+		<text>Who's in charge here?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_161">
+		<text>A truly nasty guy named Dushman. I've seen him carrying around a folder with some documents a couple of times. I reckon there's something interesting inside.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1611">
+		<text>Thanks for the information.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_17">
+		<text>Nope, nothing.</text>
+	</string>
+	<string id="cit_doctor_hello_dialog_11">
+		<text>Strelok! Where the hell have you been??? I haven't seen you or the guys since the last raid! I was getting worried!</text>
+	</string>
+	<string id="cit_doctor_hello_dialog_21">
+		<text>So, you feeling better? You thinking clearly?</text>
+	</string>
+	<string id="cit_doctor_main_dialog_0">
+		<text>Strelok???</text>
+	</string>
+	<string id="cit_doctor_main_dialog_1">
+		<text>Yeah, you're Strelok! Who else would you be? I'm Doc, don't you recognize me? What happened to you, friend? You don't look well. We went into the Zone together for 2 years. You really don't remember me?</text>
+	</string>
+	<string id="cit_doctor_main_dialog_11">
+		<text>No, I don't.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_2">
+		<text>You don't??? Strelok, what the...? You're not joking around, are you? Man... What about the guys, our guys? Fang, Ghost? You remember them, don't you?</text>
+	</string>
+	<string id="cit_doctor_main_dialog_21">
+		<text>I don't remember Fang, and Ghost is dead - I found his body in Yantar.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_3">
+		<text>Ghost!!?!?! Dead??!!! Dammit, how could that happen?! They... they were the best. What happened to you?</text>
+	</string>
+	<string id="cit_doctor_main_dialog_31">
+		<text>I don't know what happened, I don't remember.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_4">
+		<text>Wait, I need to calm down. That's some shitty news man. I think it's all linked with your last trip into the Zone. When we saw each other the last time, you left me the key from the stash at Pripyat and the map of how to find it. I've managed to keep it - hid it from the Mercs. Here, take it, hide it well. Perhaps you'll find somthing there. You were saying that there's some trick with the Monolith. But I don't understand what it was about, and you didn't either.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_41">
+		<text>I see. Where are we? I don't remember how I got here.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_5">
+		<text>We're in Dead City! In the Merc camp.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_6">
+		<text>We're in Dead City!.. In the Merc camp...</text>
+	</string>
+	<string id="quest_cit_reward_0">
+		<text>By the way, I have information about the Mercs. Interested?</text>
+	</string>
+	<string id="quest_cit_reward_1">
+		<text>Depends on the information.</text>
+	</string>
+	<string id="quest_cit_reward_11">
+		<text>I have a map which details the location of their base, guard posts, the way to get in without being noticed and a lot more.</text>
+	</string>
+	<string id="quest_cit_reward_111">
+		<text>Sounds valuable. I'll give you 3000 for it.</text>
+	</string>
+	<string id="quest_cit_reward_1111">
+		<text>Deal. Here.</text>
+	</string>
+	<string id="quest_cit_reward_11111">
+		<text>Great! Here's your reward. Soon stalkers will argue about whether the Mercs even existed at all!</text>
+	</string>
+	<string id="quest_cit_reward_1112">
+		<text>Not, that's not enough.</text>
+	</string>
+	<string id="quest_cit_reward_11121">
+		<text>As you wish, I'm not giving you any more.</text>
+	</string>
+	<string id="quest_cit_reward_13">
+		<text>Nothing worthwhile. Just the usual gossip. Sorry.</text>
+	</string>
+	<string id="quest_cit_reward_131">
+		<text>If you find out something more specific come back. I'll pay you.</text>
+	</string>
+</string_table>

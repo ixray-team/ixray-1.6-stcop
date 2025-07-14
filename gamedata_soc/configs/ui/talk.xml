@@ -23,19 +23,43 @@
 		<text align="c"	font="graffiti22" r="238" g="153" b="26">ui_st_trade</text>
 	</button>
 
-	<frame_line_window x="218" y="42" width="600" height="470" vertical="1">
-		<texture>ui_talk_dialogue</texture>		
-		<title x="25" y="3" width="190" height="22">
-			<text font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
-		</title>
-	</frame_line_window>
+	<frame_top x="218" y="42" width="600" height="470" stretch="1">
+		<auto_static x="0" y="0" width="600" height="75" stretch="1">
+			<texture>ui_talk_dialogue_b</texture>	
+		</auto_static>
+		<auto_static x="0" y="75" width="600" height="96" stretch="1">
+			<texture>ui_talk_dialogue_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="171" width="600" height="96" stretch="1">
+			<texture>ui_talk_dialogue_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="267" width="600" height="96" stretch="1">
+			<texture>ui_talk_dialogue_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="363" width="600" height="67" stretch="1">
+			<texture height="67">ui_talk_dialogue_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="430" width="600" height="40" stretch="1">
+			<texture>ui_talk_dialogue_e</texture>	
+		</auto_static>
+		<text x="25" y="7" font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
+	</frame_top>
 
-	<frame_line_window x="218" y="485" width="600" height="250" vertical="1">
-		<texture>ui_talk_dialogue2</texture>		
-		<title x="25" y="60" width="190" height="22">
-			<text font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
-		</title>
-	</frame_line_window>
+	<frame_bottom x="218" y="485" width="600" height="250" stretch="1">
+		<auto_static x="0" y="0" width="600" height="98" stretch="1">
+			<texture>ui_talk_dialogue2_b</texture>	
+		</auto_static>
+		<auto_static x="0" y="98" width="600" height="96" stretch="1">
+			<texture>ui_talk_dialogue2_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="194" width="600" height="16" stretch="1">
+			<texture height="16">ui_talk_dialogue2_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="210" width="600" height="40" stretch="1">
+			<texture>ui_talk_dialogue2_e</texture>	
+		</auto_static>
+		<text x="25" y="60" font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
+	</frame_bottom>
 
 	<questions_list x="30" y="100" width="547" height="120" right_ident="5" always_show_scroll="0"/>
 
@@ -43,7 +67,11 @@
 
 
 	<question_item x="0" y="0" width="527" height="20" min_height="13">
-		<content_text x="0" y="0" width="520" height="20">
+	    <num_text x="0" y="0" width="10" height="20">
+            <text font="letterica18" r="255" g="232" b="208"/>
+        </num_text>
+		
+		<content_text x="20" y="0" width="500" height="20">
 		<text font="letterica18" r="255" g="232" b="208" align="l" complex_mode="1"/>
 		<text_color>
 			<t r="231" g="168" b="12"/> <e r="255" g="232" b="208"/> <h r="255" g="255" b="255"/>

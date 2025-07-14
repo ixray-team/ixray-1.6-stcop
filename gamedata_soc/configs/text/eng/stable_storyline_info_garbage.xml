@@ -1,0 +1,63 @@
+	<string id="gar_seryi_info">
+		<text>Mole and Co. moused out Strelok's stash at the Agroprom, not far from the derelict factory. Why don't you go and find out what's going on there. After all, he invited us to join the search.</text>
+	</string>
+	<string id="memuars">
+		<text>Personal note</text>
+	</string>
+	<string id="sl_beginning">
+		<text>Who am I?</text>
+	</string>
+	<string id="sl_beginning_text">
+		<text>Damn it, it's all a haze now... I remember a car... They drove me somewhere for a long time and my whole body hurt... There was darkness... What happened before that? I've no idea... So confused... Now this fat guy calls me the Marked One, probably because of the strange tattoo on my arm, and then there's this weird mission to kill some guy called Strelok on my PDA... Is it even my PDA? Looking at Strelok's photo I'm not even sure if I knew him or not... Dammit! It's all like a bad dream you can't wake up from! What to do? Where to go? And worst of all: who am I? OK, OK, calm down, control yourself. The first thing I'll have to do is do some jobs for this Sidorovich. He claims to have saved my life after all... That shouldn't be too bad. I'll take a walk, calm down myself and perhaps my head will be clearer.</text>
+	</string>
+	<string id="sl_first_deep_raid">
+		<text>The first deep raid</text>
+	</string>
+	<string id="sl_first_deep_raid_text">
+		<text>So, I am going on my first deep raid into the Zone. The target is the Agroprom Research Institute. I need to recover some documents belonging to a military expedition. Apart from the mission the trader gave me some information about an area to the North, on the way to the Zone's center, where the "brains boil"... Probably more of a legend than a fact, but since there's clearly something wrong with my head I probably should take a look at it and talk to some people. You never know - maybe I've been there before... Also, the trader told me that Strelok discovered a way to get through the area and the traders want to know it. Their reasons are clear - they want to access untouched artifact fields. Well, I'm going to help them, I guess.</text>
+	</string>
+	<string id="sl_first_opinions">
+		<text>First impressions</text>
+	</string>
+	<string id="sl_first_opinions_text">
+		<text>Well, well... Got some fresh air, saw the local wildlife... Interestingly I seem to remember some of it already, but it's all in a haze... Had a chance to try the local "amusement" called anomalies... Judging by the fact that I survived I've probably come across them before, but my brain stubbornly refuses to remember... Sidorovich is one clever bastard - he knows he can use me almost for free and that's exactly what he wants to do. Still, maybe he'll help me find this bloody Strelok fella... He's my only connection with my past.</text>
+	</string>
+	<string id="sl_fox_meet">
+		<text>Meeting Fox</text>
+	</string>
+	<string id="sl_fox_meet_text">
+		<text>I met up with Fox. It's that bad news, good news scenario. The bad news is that he knows little about Strelok. The good news is that his brother called Seriy knows more. It seems Seriy is in a hangar about 2 kilometers North of here, in some dump full of radioactive waste. My task is clear: get there before he leaves.</text>
+	</string>
+	<string id="sl_monolith_off">
+		<text>Turn off the Monolith</text>
+	</string>
+	<string id="sl_monolith_off_text">
+		<text>I am only a step away from the people who created this damn network of psi-units all over the Zone. The Monolith is just another zombifier it seems, with the exception that someone took the care to install a hologram in the shape of a huge crystal inside the sarcophagus. When the "lucky" ones approach it, it messes up their brains. Maybe it even makes them believe that their wishes have come true, who knows? Have I been affected by this shit before? I'm not sure, but whoever is behind this will soon be answering my questions. They even invited me... Well, here I come, you bastards!</text>
+	</string>
+	<string id="sl_provodnik">
+		<text>Guide</text>
+	</string>
+	<string id="sl_provodnik_text">
+		<text>Guide said Doctor thinks he's being followed and will stay at Strelok's old hideout. Well, I guess I'll have to pay him a visit there.</text>
+	</string>
+	<string id="sl_seryi_meet">
+		<text>Meeting Seriy</text>
+	</string>
+	<string id="sl_seryi_meet_text">
+		<text>My hopes of learning something about Strelok must be put on hold for a while longer: Seriy sent me to meet a stalker called Mole, who apparently knows the location of Strelok's secret stash... Not much, but if he's right, at least I would have something... Who knows, maybe I'll learn something useful there.</text>
+	</string>
+	<string id="sl_usefull_info">
+		<text>The trader's useful information</text>
+	</string>
+	<string id="sl_usefull_info_text">
+		<text>Hmm... The trader didn't let me down and I'm grateful to him - he gave me a leg up in my search for Strelok. Apparently a stalker called Fox has shown up nearby and he's asking for help. Sidorovich thinks Fox might know Strelok.</text>
+	</string>
+	<string id="sl_wishmaster_legend">
+		<text>The legend of the wish-granting machine</text>
+	</string>
+	<string id="sl_wishmaster_legend_text">
+		<text>A bit of the local folklore I picked up: Legend has it there is a wish-granting machine deep inside the Zone... The exact location is unknown but it's somewhere in the center. Apparently, all you need to do is get to it and... all of a sudden your life becomes much, much easier. Hmm... How about finding it and saying "I want to remember everything about my past!" Then again, I wouldn't want to waste a wish - what if I remembered everything and it turns out I am a complete bastard? Wouldn't that be a bummer. I wonder how many wishes it grants.</text>
+	</string>
+	<string id="storyline_seriy_flash_info">
+		<text>Bruiser writes to Seriy: Mole and Co dug up Strelok's stash at the Institute. Find out what's going on. Seriy to Bruiser: They'll go to the Bar afterwards anyway so I'll just wait for them on the way at the Garbage.</text>
+	</string>

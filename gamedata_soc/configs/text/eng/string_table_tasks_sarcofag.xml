@@ -1,0 +1,48 @@
+	<string id="sar_monolith">
+		<text>Wish granter</text>
+	</string>
+	<string id="sar_monolith_0">
+		<text>Get to Monolith</text>
+	</string>
+	<string id="sar_monolith_1">
+		<text>Sneak in to the sarcophagus</text>
+	</string>
+	<string id="sar_monolith_2">
+		<text>Find the Wish Granter</text>
+	</string>
+	<string id="sar_monolith_destroy">
+		<text>The Monolith's secret.</text>
+	</string>
+	<string id="sar_monolith_destroy_0">
+		<text>Infiltrate the secret lab.</text>
+	</string>
+	<string id="sar_monolith_destroy_1">
+		<text>Solve the Monolith's secret.</text>
+	</string>
+	<string id="sar_monolith_destroy_2">
+		<text>Destroy the Monolith's power generators.</text>
+	</string>
+	<string id="sar_perception">
+		<text>The Zone's secret.</text>
+	</string>
+	<string id="sar_perception_1">
+		<text>Meet whoever is behind the Monolith.</text>
+	</string>
+	<string id="sar_perception_2">
+		<text>Find the secret lab and meet the "puppeteers".</text>
+	</string>
+	<string id="sar_secret_lab">
+		<text>Secret lab</text>
+	</string>
+	<string id="sar_secret_lab_0">
+		<text>Enter the secret bunker.</text>
+	</string>
+	<string id="sar_secret_lab_1">
+		<text>Find the hidden door.</text>
+	</string>
+	<string id="sar_secret_lab_2">
+		<text>Open it using the decoder.</text>
+	</string>
+	<string id="sar_secret_lab_3">
+		<text>Find out what is behind the door.</text>
+	</string>

@@ -1,0 +1,22 @@
+
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lua",
+            "request": "launch",
+            "name": "LuaPanda",
+            "description": "IX-Ray Lua Debug",
+            "cwd": "${workspaceFolder}",
+            "luaFileExtension": "script",
+            "connectionPort": 8818,
+            "stopOnEntry": true,
+            "useCHook": true,
+            "autoPathMode": true,
+            "updateTips": true
+        }
+    ]
+}

@@ -53,10 +53,10 @@
 		<visual>actors\neytral\stalker_neytral_hood_9</visual>
 		<supplies>
 			[spawn] \n
-			wpn_pm \n
-			ammo_9x18_pmm = 1 \n
-			wpn_bm16 \n
-			ammo_12x76_zhekan = 1 \n
+			;wpn_pm \n
+			;ammo_9x18_pmm = 1 \n
+			;wpn_bm16 \n
+			;ammo_12x76_zhekan = 1 \n
 			device_torch \n
 #include "gameplay\character_items.xml"
 		</supplies>

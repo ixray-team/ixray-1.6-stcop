@@ -1,0 +1,24 @@
+	<string id="general_ecolog_tip_1">
+		<text>What happened? Is he dead? Come back immediately!</text>
+	</string>
+	<string id="general_ecolog_tip_2">
+		<text>What happened? Is he dead? Take the samples and come back immediately!</text>
+	</string>
+	<string id="storyline_ghost_tip">
+		<text>Ghost's audio recording.</text>
+	</string>
+	<string id="storyline_vasilyev_tip">
+		<text>Vasiliev's audio recording.</text>
+	</string>
+	<string id="tips_labx16switcher_press">
+		<text>To turn the miracle machine off press ($$ACTION_USE$$)</text>
+	</string>
+	<string id="yan_saharov_message">
+		<text>Good man, Marked One, you made it after all. It's extremely important that we study the machine in the lab. Try turning it off so that we can have a look at it.</text>
+	</string>
+	<string id="yan_saharov_message_2">
+		<text>Listen, this prototype won't protect you from powerful emissions for long. I expected this, so every time an emission is detected, a timer is activated. When the time runs out, the prototype will no longer protect you, so be careful and keep an eye on the time.</text>
+	</string>
+	<string id="yan_saharov_message_3">
+		<text>Great work, Marked One. The emission has been turned off and you're still alive. I need to warn you, however. We called in a couple of military helicopters to clear the area of zombies. You would be advised not to wander around unless you have to. Oh, and by the way, pop into our bunker every once in a while, won't you?</text>
+	</string>

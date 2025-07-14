@@ -56,6 +56,9 @@
 
 #include "localization.ltx"
 
+; IX-Ray
+#include "misc\radiation_counter.ltx"
+
 [sound]
 occlusion_scale	= 0.4
 snd_collide_min_volume=0.1
@@ -102,7 +105,7 @@ files = game_tasks
 take_dist		= 2
 max_weight		= 50
 max_ruck		= 56
-max_belt		= 5 ;//16
+max_belt		= 5 ;16
 slots			= 11
 
 slot_persistent_1  = true		;knife
@@ -115,7 +118,6 @@ slot_persistent_7  = false		;outfit
 slot_persistent_8  = true		;pda
 slot_persistent_9  = true		;detector
 slot_persistent_10  = true		;torch
-
 
 [lights_hanging_lamp]
 GroupControlSection	= spawn_group
@@ -286,9 +288,8 @@ lim_pitch                = -0.7, 1
 lim_yaw                  = 0, 0
 lim_zoom                 = 1, 5
 rot_speed                = 2, 2, 2
-offset					= 0.4,0.2,-1.1
-autoaim_speed_y			= 0.5, 3.14    ;min,max speed
-autoaim_speed_x			= 0.5, 3.14
+offset_right        = -0.4,0.2,0.0
+offset_left         = 0.314,0.2,0.0
 
 [mounted_weapon_cam]
 lim_pitch                = -0.5, 0.5
@@ -583,7 +584,7 @@ swing_normal_amp2	= .05
 swing_normal_rot1	= 30.0
 swing_normal_rot2	= 1.0
 swing_normal_speed	= 2.0
-;// fast
+; fast
 swing_fast_amp1		= 0.35;0.25
 swing_fast_amp2		= .20;0.15
 swing_fast_rot1		= 5
@@ -592,9 +593,9 @@ swing_fast_speed	= 0.5;1
 
 [ph_capture_visuals]
 
-;//Список объектов которые можно таскать.
+;Список объектов которые можно таскать.
 
-;//bandit
+; bandit
 actors\bandit\stalker_bandit_1
 actors\bandit\stalker_bandit_2
 actors\bandit\stalker_bandit_3
@@ -609,7 +610,7 @@ actors\bandit\stalker_bandit_drunk
 actors\bandit\stalker_bandit_master
 actors\bandit\stalker_bandit_veteran
 
-;//dolg
+; dolg
 actors\dolg\stalker_do_antigas
 actors\dolg\stalker_do_balon_1
 actors\dolg\stalker_do_balon_2
@@ -626,11 +627,11 @@ actors\dolg\stalker_do_mask
 actors\dolg\stalker_do_mask_1
 actors\dolg\stalker_do_nauchniy
 
-;//ecolog
+; ecolog
 actors\ecolog\stalker_ecolog
 actors\ecolog\stalker_ecolog_military
 
-;//killer
+; killer
 actors\killer\stalker_ki_antigas
 actors\killer\stalker_ki_exoskeleton
 actors\killer\stalker_ki_head_1
@@ -646,17 +647,17 @@ actors\killer\stalker_ki_nauchniy
 actors\killer\stalker_ki_temp
 actors\killer\stalker_ki_temp2
 
-;//militari
+; militari
 actors\militari\stalker_militari_1
 actors\militari\stalker_militari_2
 actors\militari\stalker_militari_antigas_1
 actors\militari\stalker_militari_antigas_2
 
-;//nauchniy
+; nauchniy
 actors\nauchniy\nauchniy_0
 actors\nauchniy\nauchniy_1
 
-;//neytral
+; neytral
 actors\neytral\stalker_bar_security
 actors\neytral\stalker_neytral_balon_1
 actors\neytral\stalker_neytral_balon_2
@@ -687,7 +688,7 @@ actors\neytral\stalker_neytral_rukzak_6
 actors\neytral\stalker_neytral_rukzak_7
 actors\neytral\stalker_prizrak
 
-;//novice
+; novice
 actors\novice\green_stalker_1
 actors\novice\green_stalker_10
 actors\novice\green_stalker_11
@@ -701,7 +702,7 @@ actors\novice\green_stalker_8
 actors\novice\green_stalker_9
 actors\novice\green_stalker_antigas
 
-;//soldier
+; soldier
 actors\soldier\soldier_antigas
 actors\soldier\soldier_bandana
 actors\soldier\soldier_bandana_1
@@ -722,7 +723,7 @@ actors\soldier\soldier_spetsnaz
 actors\soldier\stalker_military_black
 actors\soldier\stalker_military_green
 
-;//stalker_zombi
+; stalker_zombi
 actors\stalker_zombi\stalker_zombie_specnaz
 actors\stalker_zombi\stalker_zombie1
 actors\stalker_zombi\stalker_zombie2
@@ -737,7 +738,7 @@ actors\stalker_zombi\zombie_fresh_0
 actors\stalker_zombi\zombie_fresh_1
 actors\stalker_zombi\zombie_fresh_2
 
-;//svoboda
+; svoboda
 actors\svoboda\stalker_sv_balon_1
 actors\svoboda\stalker_sv_balon_10
 actors\svoboda\stalker_sv_cook
@@ -753,13 +754,13 @@ actors\svoboda\stalker_sv_rukzak_2
 actors\svoboda\stalker_sv_rukzak_3
 actors\svoboda\stalker_sv_rukzak_3_1
 
-;//ucheniy
+; ucheniy
 actors\ucheniy\ucheniy_1
 actors\ucheniy\ucheniy_2
 actors\ucheniy\ucheniy_3
 actors\ucheniy\ucheniy_4
 
-;//Monolith
+; Monolith
 actors\monolit\stalker_mo_exo
 actors\monolit\stalker_mo_head_1
 actors\monolit\stalker_mo_head1

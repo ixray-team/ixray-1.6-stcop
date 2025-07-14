@@ -3,12 +3,12 @@
     <texture id="ui_string_01_b" x="0" y="0" width="32" height="32" />
     <texture id="ui_string_01_back" x="32" y="0" width="32" height="32" />
     <texture id="ui_string_01_e" x="64" y="0" width="32" height="32" />
-    <texture id="ui_string_02_b" x="96" y="0" width="32" height="32" />
-    <texture id="ui_string_02_back" x="128" y="0" width="32" height="32" />
-    <texture id="ui_string_02_e" x="160" y="0" width="32" height="32" />
-    <texture id="ui_string_03_b" x="192" y="0" width="32" height="32" />
-    <texture id="ui_string_03_back" x="224" y="0" width="32" height="32" />
-    <texture id="ui_string_03_e" x="256" y="0" width="32" height="32" />
+    <texture id="ui_string_02_b" x="96" y="0" width="32" height="27" />
+    <texture id="ui_string_02_back" x="128" y="0" width="32" height="27" />
+    <texture id="ui_string_02_e" x="160" y="0" width="32" height="27" />
+    <texture id="ui_string_03_b" x="192" y="0" width="32" height="17" />
+    <texture id="ui_string_03_back" x="224" y="0" width="32" height="17" />
+    <texture id="ui_string_03_e" x="256" y="0" width="32" height="17" />
     <texture id="ui_string_04_b" x="288" y="0" width="32" height="32" />
     <texture id="ui_string_04_back" x="320" y="0" width="32" height="32" />
     <texture id="ui_string_04_e" x="352" y="0" width="32" height="32" />

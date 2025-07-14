@@ -1,7 +1,0 @@
-function main()
-	quest_bar.main()
-	
-	db.actor:give_info_portion("agroprom_military_case_done")
-	
-	db.actor:give_info_portion("bar_darklab_document_start")
-end

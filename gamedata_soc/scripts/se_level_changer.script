@@ -1,0 +1,20 @@
+class "se_level_changer" (cse_alife_level_changer)
+--------------------
+function se_level_changer:__init(section) super (section)
+end
+--------------------
+function se_level_changer:on_register()
+	cse_alife_level_changer.on_register(self)
+end
+--------------------
+function se_level_changer:on_unregister()
+	cse_alife_level_changer.on_unregister(self)
+end
+--------------------
+function se_level_changer:STATE_Write(packet)
+	cse_alife_level_changer.STATE_Write(self, packet)
+end
+--------------------
+function se_level_changer:STATE_Read(packet, size)
+	cse_alife_level_changer.STATE_Read(self, packet, size)
+end

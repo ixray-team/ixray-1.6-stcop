@@ -7,8 +7,6 @@
 uniform float4 m_lmap[2];
 uniform int Ldynamic_hud;
 
-//LVutner: Force early-z
-[earlydepthstencil]
 float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 {
     float2 tcProj = I.tc.xy / I.tc.w;
@@ -48,5 +46,4 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 	Lightmap = PushGamma(Lightmap);
     return float4(Lightmap.xyz * Light.xyz, 0.0f);
 }
-
 
