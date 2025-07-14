@@ -25,6 +25,8 @@ CUIZoneMap::CUIZoneMap()
 visible(true)
 {	
 	m_clock_wnd = nullptr;
+	m_Counter_text = nullptr;
+	m_Counter = nullptr;
 	m_pointerDistanceText = nullptr;
 	disabled = false;
 }
@@ -68,7 +70,6 @@ void CUIZoneMap::Init()
 
 	m_clipFrame.AttachChild			(&m_center);
 
-	m_Counter_text.SetText( "" );
 	visible = true;
 
 	Fvector2 temp;
@@ -177,10 +178,11 @@ void CUIZoneMap::Update()
 				xr_sprintf(text_str, sizeof(text_str), "%d", cn);
 			}
 		}
-		m_Counter_text.SetText(text_str);
+		if (m_Counter_text)
+			m_Counter_text->SetText(text_str);
 	}
-	if (!renderHUD)
-		m_Counter_text.SetText("");
+	if (!renderHUD && m_Counter_text)
+		m_Counter_text->SetText("");
 
 	UpdateRadar(Device.vCameraPosition);
 	float h, p;
@@ -285,5 +287,6 @@ void CUIZoneMap::OnSectorChanged(int sector)
 
 void CUIZoneMap::Counter_ResetClrAnimation()
 {
-	m_Counter_text.ResetColorAnimation();
+	if (m_Counter_text)
+		m_Counter_text->ResetColorAnimation();
 }
