@@ -59,4 +59,5 @@ public:
 
 	CUIXml						m_ui_task_item_xml;
 
+	virtual CUIWindow* ui_cast_window() { return this; }
 };

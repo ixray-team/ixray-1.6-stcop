@@ -189,7 +189,6 @@ list(FILTER XGM_SRC_FILES EXCLUDE REGEX "DynamicHeightMap.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "WeaponMounted.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "LevelFogOfWar.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ai/monsters/rats/ai_rat_fsm.*")
-list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/IUWpnParams.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIRankFraction.*")
 
 # xrGame project
