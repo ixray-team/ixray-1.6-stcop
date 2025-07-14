@@ -151,6 +151,9 @@ public:
 	void				InvalidateState				()							{ m_dwModifyFrame = Device.dwFrame; }
 	void				Items_SetCurrentEntityHud	(bool current_entity);
 	bool				isBeautifulForActiveSlot	(CInventoryItem *pIItem);
+	// Максимальное кол-во объектов
+	//на поясе
+	u32					m_iMaxBelt;	
 protected:
 	void					UpdateDropTasks		();
 	void					UpdateDropItem		(PIItem pIItem);
@@ -174,6 +177,7 @@ protected:
 	float				m_fMaxWeight;
 	// текущий вес в инвентаре
 	float				m_fTotalWeight;
+	
 
 	//кадр на котором произошло последнее изменение в инвенторе
 	u32					m_dwModifyFrame;
