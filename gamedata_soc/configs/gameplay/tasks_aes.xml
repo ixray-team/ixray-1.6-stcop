@@ -1,0 +1,97 @@
+
+	<game_task id="aes_military_task">
+		<title>aes_military_task</title>
+		<objective>
+			<text>aes_military_task</text>
+			<icon x="50" y="50" width="50" height="50">ui\ui_icons_task</icon>
+		</objective>
+		<objective>
+			<text>aes_military_task_1</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_1">green_location</map_location_type>
+			<object_story_id>aes_gate</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_2</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_3</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_3">green_location</map_location_type>
+			<object_story_id>aes_sarcofag</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_4</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_4">green_location</map_location_type>
+			<object_story_id>aes_monolit1</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_5</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_5">green_location</map_location_type>
+			<object_story_id>aes_monolit2</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_6</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_6">green_location</map_location_type>
+			<object_story_id>aes_sapsan</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_7</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_7">green_location</map_location_type>
+			<object_story_id>aes_korshun</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_8</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_8">green_location</map_location_type>
+			<object_story_id>aes_yastreb</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_9</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_9">green_location</map_location_type>
+			<object_story_id>aes_pustelga</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_10</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_10">green_location</map_location_type>
+			<object_story_id>aes_sokol</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_11</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_11">green_location</map_location_type>
+			<object_story_id>aes_grif</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_12</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_12">green_location</map_location_type>
+			<object_story_id>aes_sova</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+		<objective>
+			<text>aes_military_task_13</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="aes_military_task_13">green_location</map_location_type>
+			<object_story_id>aes_lun</object_story_id>
+			<infoportion_complete>aes_found_sarcofag</infoportion_complete>
+		</objective>
+	</game_task>

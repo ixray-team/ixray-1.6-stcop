@@ -1,0 +1,46 @@
+
+    <article id="storyline_gunslinger_flash_info" name="Gunslinger Flash" article_type="task" group="agr_find_ghost/0">
+        <texture x="0" y="0" width="350" height="250">ui\ui_icon_photo</texture>
+        <text>storyline_gunslinger_flash_info</text>
+    </article>
+
+    <article id="agr_rats_n_soldiers" name="agr_rats_n_soldiers" article_type="task" group="agroprom_get_military_documents">
+        <texture x="400" y="250" width="200" height="150">ui\ui_icon_photo</texture>
+        <text>agr_rats_n_soldiers_text</text>
+    </article>
+    
+    <article id="agr_nii_security_plan" name="agr_nii_security_plan_name" article_type="journal" group="st_operation_agroprom">
+        <texture x="400" y="600" width="300" height="300">ui\ui_icon_photo</texture>
+        <text>agr_nii_security_plan</text>
+    </article>
+
+    <article id="agroprom_find_gunslinger_cache" name="agroprom_find_gunslinger_cache" article_type="task" group="agroprom_find_gunslinger_cache/0">
+        <texture x="650" y="350" width="370" height="250">ui\ui_icon_photo</texture>
+        <text>agr_krot_secret_info</text>
+    </article>
+
+    <article id="agr_military_case" name="agr_military_case_name" article_type="journal" group="st_operation_agroprom">
+        <text>agr_military_case</text>
+    </article>
+
+    <article id="agr_journal_krot" name="article_agr_krot_sos_name" article_type="journal" group="memuars">
+        <text>agr_journal_krot</text>
+    </article>
+	<article id="agr_journal_cache" name="agr_krot_secret_info_name" article_type="journal" group="memuars">
+        <text>agr_journal_cache</text>
+    </article>
+    <article id="agr_task_case" name="agr_military_case_name" article_type="task" group="agroprom_get_military_documents/0">
+        <text>agr_task_case</text>
+    </article>
+     <article id="article_agr_krot_sos" name="article_agr_krot_sos_name" article_type="task" group="agr_help_stalkers">
+        <text>article_agr_krot_sos</text>
+    </article>
+     <article id="article_agr_krot_sos1" name="article_agr_krot_sos_name" article_type="task" group="agr_help_krot">
+        <text>article_agr_krot_sos1</text>
+    </article>
+     <article id="agr_find_ghost_descr" name="agr_find_ghost" article_type="task" group="agr_find_ghost/0">
+        <text>agr_find_ghost_descr</text>
+    </article>
+
+
+  

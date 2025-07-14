@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<colors>
+	<!-- For applying specified color insert "%cColorName" into the text -->
+	<color name="red" r="255" g="0" b="0"/>
+	<color name="green" r="0" g="255" b="0"/>
+	<color name="blue" r="0" g="0" b="255"/>
+	<color name="UI_orange" r="238" g="153" b="26"/>
+	
+	<color name="white" r="255" g="255" b="255"/>
+	<color name="gray"  r="128" g="128" b="128"/>
+	<color name="ui_clr_1"  r="240" g="217" b="182"/>
+	<color name="ui_clr_2"  r="216" g="186" b="140"/>
+	<color name="ui_clr_3"  r="135" g="123" b="116"/>
+	<!-- Use "%cDEFAULT" color when need to switch to default color of UI element -->
+</colors>

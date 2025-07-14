@@ -1,0 +1,3 @@
+function transfer_ak74( first_speaker, second_speaker )
+	dialogs.relocate_item_section( second_speaker, "pri_lom_ak74", "out" )
+end

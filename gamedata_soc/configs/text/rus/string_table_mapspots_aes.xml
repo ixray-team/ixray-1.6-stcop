@@ -1,0 +1,39 @@
+	<string id="aes_btr1">
+		<text>Броненосец 1</text>
+	</string>
+	<string id="aes_btr2">
+		<text>Броненосец 2</text>
+	</string>
+	<string id="aes_btr3">
+		<text>Броненосец 3</text>
+	</string>
+	<string id="aes_grif">
+		<text>Гриф</text>
+	</string>
+	<string id="aes_korshun">
+		<text>Коршун</text>
+	</string>
+	<string id="aes_kvartet">
+		<text>Квартет</text>
+	</string>
+	<string id="aes_lun">
+		<text>Лунь</text>
+	</string>
+	<string id="aes_pustelga">
+		<text>Пустельга</text>
+	</string>
+	<string id="aes_sapsan">
+		<text>Сапсан</text>
+	</string>
+	<string id="aes_sarcofag_hint">
+		<text>Вход в саркофаг</text>
+	</string>
+	<string id="aes_sokol">
+		<text>Сокол</text>
+	</string>
+	<string id="aes_sova">
+		<text>Сова</text>
+	</string>
+	<string id="aes_yastreb">
+		<text>Ястреб</text>
+	</string>

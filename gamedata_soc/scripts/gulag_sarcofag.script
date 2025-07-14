@@ -1,0 +1,200 @@
+local t = {}
+
+function load_job(sj, gname, type, squad, groups)
+	if type == "sar_monolith_general" then
+		t = { section = "logic@sar_monolith_general_post1_1",
+			idle = 0,
+			prior = 9, state = {0},
+			in_rest = "", out_rest = "sar_camp_room"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_post1_2",
+			idle = 0,
+			prior = 6, state = {0},
+			in_rest = "", out_rest = "sar_camp_room"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_post2_1",
+			idle = 0,
+			prior = 9, state = {0},
+			in_rest = "", out_rest = "sar_camp_room"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_post2_2",
+			idle = 0,
+			prior = 6, state = {0},
+			in_rest = "", out_rest = "sar_camp_room"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_patrol",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "sar_patrol_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_patrol_follower1",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "sar_patrol_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_patrol_room",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "sar_camp_room"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_kamp",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_kamp",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_kamp",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_general_kamp",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	
+	if type == "sar_monolith_sklad" then
+		t = { section = "logic@sar_monolith_sklad_patrol1",
+			idle = 0,
+			prior = 7, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_sklad_patrol2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_sklad_patrol_ambush",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_sklad_guard1",
+			idle = 0,
+			prior = 9, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_sklad_guard2",
+			idle = 0,
+			prior = 9, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	
+	if type == "sar_monolith_guard" then
+		t = { section = "logic@sar_monolith_guard_offline",
+			idle = 0,
+			prior = 7, state = {0},
+			-- online = false,
+			in_rest = "", out_rest = "mon_guard_offline_restr"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_guard_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			-- online = false,
+			in_rest = "", out_rest = "mon_guard_offline_restr",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_guard_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			-- online = false,
+			in_rest = "", out_rest = "mon_guard_offline_restr",
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@sar_monolith_guard_camper_1",
+			idle = 0,
+			prior = 5, state = {1},
+			in_rest = "", out_rest = "mon_contorol_room_restr",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_guard_camper_1",
+			idle = 0,
+			prior = 5, state = {1},
+			in_rest = "", out_rest = "mon_contorol_room_restr",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@sar_monolith_guard_camper_1",
+			idle = 0,
+			prior = 5, state = {1},
+			in_rest = "", out_rest = "mon_contorol_room_restr",
+		}
+		table.insert(sj, t)
+
+
+
+		
+	end
+end
+
+
+
+function load_states(gname, type)
+	if type == "sar_monolith_general" then
+		return function(gulag)
+			return 0
+		end
+    end
+    if type == "sar_monolith_sklad" then
+		return function(gulag)
+			return 0
+		end
+    end
+    if type == "sar_monolith_guard" then
+		return function(gulag)
+			if has_alife_info("mon_door_unlocked") then
+				return 1
+			end
+			return 0
+		end
+    end
+end
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	return nil
+end
+
+function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+	if gulag_type == "sar_monolith_general" then
+		return npc_community == "monolith"
+	end
+	if gulag_type == "sar_monolith_sklad" then
+		return npc_community == "monolith"
+	end
+	if gulag_type == "sar_monolith_guard" then
+		return se_obj:profile_name() == "sar_monolith_guard"
+	end
+	return false
+end
+
+function checkMonster(npc_community, gulag_type)
+		
+	return false
+end

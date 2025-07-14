@@ -1,0 +1,107 @@
+
+local killCountProps = {
+	neutral_novice = 1, neutral_experienced = 2, neutral_veteran = 3, neutral_master = 4,
+	monolith_novice = 1, monolith_experienced = 2, monolith_veteran = 3, monolith_master = 4,
+	military_novice = 1, military_experienced = 2, military_veteran = 3, military_master = 4,
+	killer_novice = 1, killer_experienced = 2, killer_veteran = 3, killer_master = 4,
+	ecolog_novice = 1, ecolog_experienced = 2, ecolog_veteran = 3, ecolog_master = 4,
+	dolg_novice = 1, dolg_experienced = 2, dolg_veteran = 3, dolg_master = 4,
+	freedom_novice = 1, freedom_experienced = 2, freedom_veteran = 3, freedom_master = 4,
+	bandit_novice = 1, bandit_experienced = 2, bandit_veteran = 3, bandit_master = 4,
+	zombied_novice = 1, zombied_experienced = 2, zombied_veteran = 3, zombied_master = 4,
+	
+	tushkano_weak = 1,
+	flesh_weak = 1, flesh_normal = 2, flesh_strong = 3,
+	boar_weak = 1, boar_normal = 2, boar_strong = 3,
+	dog_weak = 1, dog_normal = 2, dog_strong = 3,
+	pseudodog_weak = 1, pseudodog_normal = 2, pseudodog_strong = 3,
+	psy_dog_weak = 1, psy_dog_normal = 2, psy_dog_strong = 3,
+	snork_weak = 2, snork_normal = 3, snork_strong = 4,
+	poltergeist_weak = 2,
+	pseudo_gigant_weak = 4,
+	controller_weak = 4,
+	bloodsucker_weak = 1, bloodsucker_normal = 2, bloodsucker_strong = 3
+}
+
+local sect_alias = {	
+	tushkano_normal = "tushkano_weak", tushkano_strong = "tushkano_weak",
+	poltergeist_normal = "poltergeist_weak", poltergeist_strong = "poltergeist_weak",
+	pseudo_gigant_normal = "pseudo_gigant_weak", pseudo_gigant_strong = "pseudo_gigant_weak",
+	controller_normal = "controller_weak", controller_strong = "controller_weak",
+	psy_dog_weak = "psy_dog", psy_dog_normal = "psy_dog", psy_dog_strong = "psy_dog", rad_psy_dog = "psy_dog"
+}
+
+monster_classes = {
+			[clsid.tushkano_s    ] = "tushkano",
+			[clsid.flesh_s       ] = "flesh",
+			[clsid.boar_s        ] = "boar",
+			[clsid.dog_s         ] = "dog",
+			[clsid.pseudodog_s   ] = "pseudodog",
+			[clsid.psy_dog_s     ] = "psy_dog",
+			[clsid.psy_dog_phantom_s] = "NIL",
+			[clsid.snork_s       ] = "snork",
+			[clsid.poltergeist_s ] = "poltergeist",
+			[clsid.gigant_s      ] = "pseudo_gigant",
+			[clsid.controller_s  ] = "controller",
+			[clsid.bloodsucker_s ] = "bloodsucker"
+		}		
+
+
+function addKillCount(npc)
+	local props, sect = getNpcType(npc)
+	if props == nil then
+		return
+	end
+
+	local sect_name
+	if sect_alias[sect] ~= nil then
+		sect_name = sect_alias[sect]
+	else
+		sect_name = sect
+	end
+
+	if killCountProps[sect_name] == nil then
+--'		print_table(sect_alias)
+--'		abort("Statistic ERROR: required section [%s] not present, based [%s]", tostring(sect_name), tostring(sect))
+		return
+	end
+	actor_stats.add_points(props, sect_name, 1, killCountProps[sect_name])
+	db.actor:set_character_rank(db.actor:character_rank() + killCountProps[sect_name])
+end
+
+
+function getNpcType(npc)
+	if IsStalker(npc) then
+		local community = "neutral"
+		if npc:character_community() == "monolith" then
+			community = "monolith"
+		elseif npc:character_community() == "military" then
+			community = "military"
+		elseif npc:character_community() == "killer" then
+			community = "killer"
+		elseif npc:character_community() == "ecolog" then
+			community = "ecolog"
+		elseif npc:character_community() == "dolg" then
+			community = "dolg"
+		elseif npc:character_community() == "freedom" then
+			community = "freedom"
+		elseif npc:character_community() == "bandit" then
+			community = "bandit"
+		elseif npc:character_community() == "zombied" then
+			community = "zombied"
+		end
+		local rank = ranks.get_obj_rank_name(npc)
+		return "stalkerkills", community.."_"..rank
+	else
+		local community = monster_classes[get_clsid(npc)]
+		if community == nil then
+			abort("Statistic ERROR: cannot find monstr class for [%s]", npc:name())
+		end
+		if community == "NIL" then
+			return nil,nil
+		end
+		
+		local rank = ranks.get_obj_rank_name(npc)
+		return "monsterkills", community.."_"..rank
+	end	
+end

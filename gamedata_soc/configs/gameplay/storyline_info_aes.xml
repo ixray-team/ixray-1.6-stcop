@@ -1,0 +1,4 @@
+	<article id="aes_soldier_info" name = "aes_military_task_head" group="aes_military_task" article_type = "journal">
+        <texture x="700" y="600" width="370" height="300">ui\ui_icon_photo</texture>
+        <text>aes_soldier_info</text>
+	</article>

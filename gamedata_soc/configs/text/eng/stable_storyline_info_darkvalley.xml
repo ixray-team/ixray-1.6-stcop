@@ -1,0 +1,75 @@
+	<string id="bar_darklab_documents_txt">
+		<text>Barkeep: "According to the documents you brought from Agroprom, things are starting to clear up, but some data is missing. There is evidence to suggest the presence of a Brain Scorcher which blocks the road to the North, but no one knows exactly what it is. Also, there is mention of Lab X18 whose description matches that of abandoned underground structures in the Dark Valley. Its present activity is unknown and besides, bandits have now set up their base in the Dark Valley.\n Several Duty scouts went there very recently, but so far there is no news from them.\n To get inside the lab, you will need two electronic keys; I will give you one, but the second one you will have to take from Borov, the bandit leader. \n\n So, you need to take the second key to the lab from Borov, then sneak inside the lab and get the documents.</text>
+	</string>
+	<string id="bar_darklab_documents2_txt">
+		<text>It's necessary to find the documents about the researches previously done in lab x-18. They can shed some light on the "Brain Scorcher".</text>
+	</string>
+	<string id="dar_codedoor_1_txt">
+		<text>A combination lock is blocking the way into the depths of the lab. You must find someone who knows the combination.</text>
+	</string>
+	<string id="dar_codedoor_2_txt">
+		<text>There is another door, and there certainly is something behind it. You must discover the code that opens this door.</text>
+	</string>
+	<string id="dar_document1">
+		<text>The beginning of the experiment</text>
+	</string>
+	<string id="dar_document2">
+		<text>The second stage of the experiment</text>
+	</string>
+	<string id="dar_document3">
+		<text>Security report</text>
+	</string>
+	<string id="dar_document4">
+		<text>Attack on the personnel</text>
+	</string>
+	<string id="dar_document5">
+		<text>The last stage of the experiment</text>
+	</string>
+	<string id="documents_1">
+		<text>A week ago it was decided to increase the intensity of radiation on the test subjects. No changes were detected in the first few days. After several days strange metamorphoses started to occur: hair loss, heightened aggressiveness. Several subjects were literally trampled by their peers.</text>
+	</string>
+	<string id="documents_2">
+		<text>Subjects' condition has stabilized. The amount of hair is now 10% of the original amount. Their claws and teeth have grown considerably. Bursts of activity exhibit seemingly random behaviour and are not directed at their peers. Senior lab technician A.N. Burnov speculated that this may indicate an increase in the subjects' intellect. It was decided to test the new modulation of psi-emissions on the subjects.</text>
+	</string>
+	<string id="documents_3">
+		<text>Chief of Security: Yesterday security guard G.P. Glebov tossed a piece of meat to the subjects just for fun. They tore apart and devoured it in mere seconds. Subsequently several individuals tried to break out of the cells. Because of this, lab technicians were unable to obtain the necessary test samples. Although G.P. Glebov's actions were ill-considered, I propose that maintenance personnel be equipped with airguns for adequate protection in the event of emergencies.</text>
+	</string>
+	<string id="documents_4">
+		<text>Chief of Security: Yesterday the experiment almost got out of control. Two dozen test subjects broke out and vandalised two laboratory rooms. Fortunately, the research personnel were able to lock themselves up upstairs. We were ordered to clear the main laboratory room. In the course of the operation, three guards suffered bites. Hopefully, they will be OK. I wish the experiment is soon over.</text>
+	</string>
+	<string id="documents_5">
+		<text>Yesterday we delivered a new modulation of psi-emissions to the test subjects. It appeared as though their brains simply got roasted. I can hardly imagine how this emission would affect humans. We have tested every type of emission and the results match those obtained in other laboratories. The experiment can now be considered complete. Presumably, in one week's time, we will be ready to conduct the experiment on larger creatures.</text>
+	</string>
+	<string id="LabX18 first key">
+		<text>2nd level access code</text>
+	</string>
+	<string id="LabX18 second key">
+		<text>1st level access code</text>
+	</string>
+	<string id="LabX18_information">
+		<text>Information from X18</text>
+	</string>
+	<string id="pass_to_1st_door">
+		<text>Excellent, Colleague. I'm glad that you've received 2nd level access. At last you will find out what goes on in our laboratory. Your access code is 1243. Chief of Laboratory X-18, Piotr Ilyitch Kalugin.</text>
+	</string>
+	<string id="pass_to_2nd_door">
+		<text>Dear colleague, may I remind you that starting tomorrow you will attend to the container in the central laboratory room. You must inspect the containers every two hours. Report everything directly to me. The code to the central laboratory room is 9524. Chief of Laboratory X18, Piotr Ilyitch Kalugin.</text>
+	</string>
+	<string id="sl_x18_dream_name">
+		<text>A strange dream</text>
+	</string>
+	<string id="sl_x18_dream_text">
+		<text>I had a strange dream. The colossal Chernobyl power plant emerges in the twilight. Everything looks peaceful. A lonely man appears. I see him from behind against the background of the plant. The wind starts to blow. Suddenly hordes of rats begin to skitter away from the station in all directions. The man, with his back still turned to me, shoots at the rats. There is an abrupt scream: "Strelok!". The man shudders, freezes for a moment, then starts to turn slowly in my direction, but... just an instant before I am to get a glance at his face, I wake up. What does this dream mean? I don't know, but I think it's something I have seen before.</text>
+	</string>
+	<string id="val_captive_help_txt">
+		<text>Duty member Bullet wants me to rescue his partner who was captured by bandits. He is soon to be escorted to the deserted factory.</text>
+	</string>
+	<string id="val_prisoner_help_art_txt">
+		<text>Dutyer: "They have another one of ours: Serega. They're keeping him in the cellar...there's a large building there...not finished...Help him out, okay? Or they'll put an end to him too..."</text>
+	</string>
+	<string id="val_x18_conclusion">
+		<text>Lab X18</text>
+	</string>
+	<string id="val_x18_conclusion_txt">
+		<text>Hell... Lab X18 wasn't fun...and its current residents...I didn't think things like that existed. I found some documents...I didn't understand much of what was written in there except that they contained technical specifications for some components for Kaimanov emitters. What's interesting is that the parts were destined for another lab with the codename X16 and it's probably a secret one too.</text>
+	</string>

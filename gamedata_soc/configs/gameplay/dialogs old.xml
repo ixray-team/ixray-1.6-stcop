@@ -1,0 +1,351 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_dialogs>
+
+	<dialog id="trader_job">
+		<phrase_list>
+			<phrase id="0">
+				<text>Артефакты?</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>ДА, блин, артефакты!!!!.</text>
+				<script_text>trader_job.artefacts_task_text</script_text>
+			</phrase>
+
+		</phrase_list>
+	</dialog>
+	
+    <dialog id="dolg_talk_about">
+        <phrase_list>
+            <phrase id="0">
+                <text>Чего ты хочешь?</text>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>Дай мне в морду!</text>
+                <next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>Палучи!</text>
+                <action>dialogs.kickass</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+    <dialog id="barman_bar">
+        <phrase_list>
+            <phrase id="0">
+                <text>Да...</text>
+                <give_info>rostok_heli_start</give_info>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>Дело есть...</text>
+                <next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>Ну пошли.</text>
+                <next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>Пошли.</text>
+                <next>4</next>
+            </phrase>
+            <phrase id="4">
+                <action>barman.to_small_room</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+    <dialog id="barman_room">
+        <phrase_list>
+            <phrase id="0">
+                <text>Ну, чего тебе?</text>
+                <next>1</next>
+                <next>2</next>
+            </phrase>
+            <phrase id="1">
+            	<text>Мне ничего не нужно</text>
+            	<next>6</next>
+            </phrase>
+            <phrase id="2">
+                <text>Я насчёт Бобика...</text>
+                <next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>Эх... Бобик... Моя первая любовь...</text>
+                <next>4</next>
+            </phrase>
+            <phrase id="4">
+                <text>Расскажи подробнее</text>
+                <next>5</next>
+            </phrase>
+            <phrase id="5">
+                <action>barman.about_bobik</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="6">
+                <action>barman.from_small_room</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+    <dialog id="dolg_leader">
+        <phrase_list>
+            <phrase id="0">
+                <text>Я тут самый главный</text>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>Молодец!</text>
+                <next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>Угу</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+<!-- FINAL DIALOGS -->
+    <dialog id="hello_dialog">
+        <phrase_list>
+            <phrase id="0">
+                <text>Привет</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+    <dialog id="actor_break_dialog" priority="-1">
+	<phrase_list>
+	    <phrase id="0">
+			<text>До встречи.</text>
+			<action>dialogs.break_dialog</action>
+	    </phrase>                                                                                               
+	</phrase_list>
+    </dialog>
+    
+	<dialog id="general_pda_talk" pda="1">
+	<precondition>dialogs.is_bad_relation</precondition>
+	<phrase_list>
+	   	<phrase id="0">
+			<text>Привет. Есть свободная минутка?</text>
+			<next>1</next>
+			<next>11</next>
+		</phrase>                                                                                               
+	   	<phrase id="1">
+			<text>Да. Чем могу помочь?</text>
+			<next>2</next>			
+			<next>3</next>
+			<next>10</next>
+		</phrase>
+	   	<phrase id="11">
+			<text>Занят. Не мешай.</text>
+		</phrase>
+	   	<phrase id="10">
+			<text>Я отключаюсь. Пока.</text>
+		</phrase>
+	   	<phrase id="2">
+			<text>Есть дело, давай встретимся?</text>
+			<next>21</next>
+			<next>22</next>
+		</phrase>
+	   	<phrase id="21">
+	   		<precondition>dialogs.want_trade</precondition>
+			<text>Согласен. Жду тебя здесь. Координаты у тебя на PDA.</text>
+			<action>dialogs.trade_init</action>
+			<next>10</next>
+		</phrase>
+	   	<phrase id="22">
+	   		<precondition>dialogs.dont_want_trade</precondition>
+			<text>Нет. Не сегодня.</text>
+			<next>10</next>
+		</phrase>
+	   	<phrase id="3">
+			<text>Помоги мне!</text>
+			<next>31</next>
+			<next>32</next>
+		</phrase>
+	   	<phrase id="31">
+			<text>Уже иду.</text>
+			<action>dialogs.helper_init</action>
+			<next>10</next>
+		</phrase>
+	   	<phrase id="32">
+			<text>Не могу. Своих дел выше крыши.</text>
+			<next>10</next>
+		</phrase>	
+	</phrase_list>
+	</dialog>
+
+
+    <dialog id="stalker_helper">
+        <phrase_list>
+            <phrase id="0">
+                <text>Что случилось?</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="1">
+                <precondition>dialogs.is_medikit_present</precondition>
+                <text>Брат, поделись аптечкой, помираю!</text>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+            </phrase>
+            <phrase id="11">
+                <precondition>dialogs.is_good_relation</precondition>
+                <text>Возьми, потом отблагодаришь.</text>
+                <action>dialogs.drop_medikit</action>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="12">
+                <precondition>dialogs.is_health_good</precondition>
+                <text>Слушай, по-моему у тебя все в порядке со здоровьем.</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="13">
+                <precondition>dialogs.is_medikit_no_present</precondition>
+                <text>Нет у меня аптечки, извини.</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="14">
+                <precondition>dialogs.is_bad_relation</precondition>
+                <text>Только за деньги. 300 монет - и аптечка твоя.</text>
+                <next>141</next>
+                <next>142</next>
+            </phrase>
+            <phrase id="141">
+                <text>Держи деньги, барыга. Давай аптечку.</text>
+                <next>1411</next>
+            </phrase>
+            <phrase id="1411">
+                <text>По рукам.</text>
+                <action>dialogs.sell_medikit</action>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="142">
+                <text>Нет у меня таких денег.</text>
+                <next>1412</next>
+            </phrase>
+            <phrase id="1412">
+                <text>Ну, я тебе не "Красный крест".</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="2">
+                <text>Нужно оружие, выручи, а?</text>
+                <next>21</next>
+                <next>22</next>
+            </phrase>
+            <phrase id="21">
+                <precondition>dialogs.have_extra_weapon</precondition>
+                <text>Без проблем, выбирай. Отдам по себестоимости.</text>
+                <action>dialogs.trade_help</action>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="22">
+                <precondition>dialogs.no_have_extra_weapon</precondition>
+                <text>Извини, ничего нет.</text>
+                <next>1</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="3">
+                <text>Нужна огневая поддержка. Поможешь?</text>
+                <next>31</next>
+                <next>32</next>
+            </phrase>
+            <phrase id="31">
+                <precondition>dialogs.is_good_relation</precondition>
+                <text>Ну пойдем, посмотрим кого ты там испугался.</text>
+                <action>dialogs.activate_helper_follow</action>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="32">
+                <precondition>dialogs.is_bad_relation</precondition>
+                <text>Не, давай как-нибудь сам, без меня.</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>10</next>
+            </phrase>
+            <phrase id="10">
+                <text>Уже все, спасибо.</text>
+                <action>dialogs.disable_helper_2</action>
+                <next>101</next>
+            </phrase>
+            <phrase id="101">
+                <text>Ну как знаешь.</text>
+                <action>dialogs.disable_helper</action>
+            </phrase>
+        </phrase_list>
+    </dialog>  
+           
+    <dialog id="stalker_wounded_friend">
+        <phrase_list>
+            <phrase id="0">
+                <text>Брат, поделись аптечкой, помираю!</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+            </phrase>
+            <phrase id="1">
+                <precondition>dialogs.medikit_yes</precondition>
+                <text>Возьми, потом сочтемся</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>Спасибо, браток.</text>
+                <action>dialogs.transfer_medikit</action>
+                <action>dialogs.disable_wounded</action>
+            </phrase>
+            <phrase id="2">
+                <precondition>dialogs.medikit_yes</precondition>
+                <text>Могу только продать.</text>
+                <next>21</next>
+                <next>22</next>
+            </phrase>
+            <phrase id="21">
+                <precondition>dialogs.have_money</precondition>
+                <text>Давай, на том свете мне деньги не понадобятся.</text>
+                <action>dialogs.wounded_trade</action>
+                <action>dialogs.sell_medikit</action>
+            </phrase>
+            <phrase id="22">
+                <precondition>dialogs.not_have_money</precondition>
+                <text>Нет, у меня денег.</text>
+            </phrase>
+            <phrase id="3">
+                <precondition>dialogs.medikit_no</precondition>
+                <text>Увы, нет у меня аптечки.</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+</game_dialogs>

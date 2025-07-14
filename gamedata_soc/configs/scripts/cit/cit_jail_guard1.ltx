@@ -1,0 +1,217 @@
+[logic@cit_killers_jail_guard]
+active              = walker@jail_guard1
+combat_ignore       = combat_ignore
+;on_hit              = hit
+
+;[hit]
+;on_info             = {=hit_by_actor} remark@kill_actor2
+
+[danger@jail_guard_sleep]
+ignore_distance_sound  = 2
+ignore_distance_corpse = 2
+ignore_distance_grenade = 2
+
+[meet@jail_guard]
+meet_state      = 1 | wait_na
+meet_state_wpn  = 1 | wait_na
+victim          = 1 | nil
+victim_wpn     = 1 | nil
+use             = false
+use_wpn         = false
+
+;-----------------------------------------------------------------------------------------------------------
+;--- патрулируем возле решетки
+;-----------------------------------------------------------------------------------------------------------
+[walker@jail_guard1]
+path_walk           = jail_guard_walk
+path_look           = jail_guard_look
+on_info             = {+cit_jail_guard2_talk_to_guard1} remark@look_at_guard2_1
+on_info2            = {+cit_jail_door_opened} walker@jail_guard_close_door1
+on_info3            = {+cit_doctor_dead} walker@jail_guard2
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- закрываем решетку, если она вдруг "случайно" открылась
+;-----------------------------------------------------------------------------------------------------------
+[walker@jail_guard_close_door1]
+path_walk           = jail_guard_button_press_walk
+path_look           = jail_guard_button_press_look
+def_state_moving1   = walk
+def_state_moving2   = walk
+def_state_moving3   = walk
+on_info             = {-cit_jail_door_opened} walker@jail_guard1
+on_signal           = pressed | walker@jail_guard1 %-cit_jail_door_opened%
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- слушаем, что нам говорит второй охранник
+;-----------------------------------------------------------------------------------------------------------
+[remark@look_at_guard2_1]
+anim                = wait
+target              = logic@cit_killers_base_guard ;1202 ; guard2
+on_info             = {+cit_jail_kill_actor} remark@jail_guard_kill_actor, {+cit_jail_guard2_talk_to_doctor} walker@jail_guard_go_to_button
+on_info2            = {+cit_doctor_dead} walker@jail_guard2
+;on_info             = {+cit_jail_kill_actor} remark@jail_guard_kill_actor, {+cit_jail_doctor_out_start} walker@jail_guard_open_door
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_jail_door_opened -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- 
+;-----------------------------------------------------------------------------------------------------------
+[walker@jail_guard_go_to_button]
+path_walk           = jail_guard_button_press_walk
+path_look           = jail_guard_bw_look
+def_state_moving1   = walk
+def_state_moving2   = walk
+def_state_moving3   = walk
+on_info             = {+cit_jail_doctor_out_start} walker@jail_guard_open_door ;, {+cit_jail_kill_actor} remark@jail_guard_kill_actor
+on_info2            = {+cit_doctor_dead} walker@jail_guard2
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- если актер не послушался и не отошел к стене, убиваем его
+;-----------------------------------------------------------------------------------------------------------
+[remark@jail_guard_kill_actor]
+anim                = wait_na
+on_info             = {=actor_dead +cit_jail_doctor_out_start} walker@jail_guard_open_door
+combat_ignore_cond  = {=cit_combat_ignore()} ;{=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- открываем решетку, чтоб выпустить доктора
+;-----------------------------------------------------------------------------------------------------------
+[walker@jail_guard_open_door]
+path_walk           = jail_guard_button_press_walk
+path_look           = jail_guard_button_press_look
+def_state_moving1   = walk
+def_state_moving2   = walk
+def_state_moving3   = walk
+on_info             = {+cit_jail_door_opened} remark@look_at_actor
+on_info2            = {+cit_doctor_dead} walker@jail_guard2
+on_signal           = pressed | remark@look_at_actor %+cit_jail_door_opened%
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_near_grates -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- смотрим за игроком, шоб не сбежал
+;-----------------------------------------------------------------------------------------------------------
+[remark@look_at_actor]
+anim                = wait_na
+target              = actor ;1200
+on_info             = {+cit_jail_guard1_close_door} walker@jail_guard_close_door2
+on_info2            = {+cit_doctor_dead} walker@jail_guard2
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_near_grates -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- закрываем решетку
+;-----------------------------------------------------------------------------------------------------------
+[walker@jail_guard_close_door2]
+path_walk           = jail_guard_button_press_walk
+path_look           = jail_guard_button_press_look
+def_state_moving1   = walk
+def_state_moving2   = walk
+def_state_moving3   = walk
+on_info             = {-cit_jail_door_opened} walker@jail_guard2
+on_signal           = pressed | walker@jail_guard2 %-cit_jail_door_opened%
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_near_grates -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- патрулируем возле решетки
+;-----------------------------------------------------------------------------------------------------------
+[walker@jail_guard2]
+path_walk           = jail_guard_walk
+path_look           = jail_guard_look
+on_timer            = 10000 | {=actor_alive} walker@jail_guard_go_sleep_say, kamp@jail_guard_go_sleep ;walker@jail_guard_go_sleep
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- детский час1
+;-----------------------------------------------------------------------------------------------------------
+[walker@jail_guard_go_sleep_say]
+path_walk           = jail_guard_sleep_say_walk
+path_look           = base_guard_kill_actor_look
+on_signal           = arrived | remark@jail_guard_sleep_say
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- детский час2
+;-----------------------------------------------------------------------------------------------------------
+[remark@jail_guard_sleep_say]
+anim                = guard
+target              = actor
+snd                 = cit_jail_guard_sleep
+on_signal           = sound_end | kamp@jail_guard_go_sleep ;walker@jail_guard_go_sleep
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- детский час3
+;-----------------------------------------------------------------------------------------------------------
+[walker@jail_guard_go_sleep]
+path_walk           = jail_guard_sleep_walk
+path_look           = jail_guard_sleep_look
+on_signal           = arrived | remark@jail_guard_sleep
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- детский час4
+;-----------------------------------------------------------------------------------------------------------
+[kamp@jail_guard_go_sleep]
+center_point        = kamp5
+radius              = 1.6
+def_state_moving    = patrol
+heli_hunter         = {+cit_heli_start -cit_heli_end}
+on_timer            = 25000 | remark@jail_guard_sleep
+meet                = no_meet ;meet@jail_guard
+soundgroup          = cit_killers_kamp5_sg
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- детский час5
+;-----------------------------------------------------------------------------------------------------------
+[remark@jail_guard_sleep]
+anim                = sleep_sit
+target              = cit_killers_kamp5,0
+on_timer            = 300000 | walker@jail_guard3
+on_info             = {=hit_by_actor} remark@jail_guard_kill_actor2
+on_info2            = {+cit_heli_start -cit_heli_end} camper@jail_guard_attack
+danger              = danger@jail_guard_sleep
+combat_ignore_cond  = always ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- патрулируем возле решетки
+;-----------------------------------------------------------------------------------------------------------
+[walker@jail_guard3]
+path_walk           = jail_guard_walk
+path_look           = jail_guard_look
+heli_hunter         = {+cit_heli_start -cit_heli_end}
+on_timer            = 240000 | kamp@jail_guard_go_sleep ;walker@jail_guard_go_sleep
+meet                = no_meet ;meet@jail_guard
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- 
+;-----------------------------------------------------------------------------------------------------------
+[camper@jail_guard_attack]
+path_walk           = jail_guard_attack_walk
+path_look           = jail_guard_attack_look
+no_retreat          = true
+radius              = 0
+on_info             = {+cit_heli_end} walker@jail_guard3
+combat_ignore_cond  = {=cit_combat_ignore(cit_actor_is_free)} ;{=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}
+
+;-----------------------------------------------------------------------------------------------------------
+;--- убиваем актера
+;-----------------------------------------------------------------------------------------------------------
+[remark@jail_guard_kill_actor2]
+anim                = wait_na
+target              = nil
+;on_info             = {=actor_dead +cit_jail_doctor_out_start} walker@jail_guard_open_door
+combat_ignore_cond  = {=cit_combat_ignore()} ;{=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}

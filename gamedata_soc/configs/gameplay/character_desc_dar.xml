@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+	<specific_character id="dar_stalker_explorer" team_default = "1">
+		<name>Джек</name>
+		<icon x="8" y="0"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Опытный сталкер. Держит ухо востро. </bio>
+
+		<class>dar_stalker_explorer</class>
+		<community>stalker</community>
+		
+		<rank>90</rank>
+		<reputation>0</reputation>
+ 
+		<visual>actors\novice\green_stalker_7</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj \n
+			device_torch \n
+		</supplies>
+					
+		<start_dialog>dar_explorer_dialog</start_dialog>
+	</specific_character>
+	
+	<specific_character id="dar_corpse_default1" team_default = "1">
+		<name>Неизвестно</name>
+		<icon x="0" y="8"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Нет информации.</bio>
+
+		<class>dar_corpse</class>
+		<community>stalker</community>
+		
+		<rank>90</rank>
+		<reputation>0</reputation>
+ 
+		<visual>actors\hero\stalker_monolith</visual>
+		<supplies>
+			[spawn] \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+	
+	<specific_character id="dar_corpse_default2" team_default = "1">
+		<name>Неизвестно</name>
+		<icon x="0" y="8"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Нет информации.</bio>
+
+		<class>dar_corpse</class>
+		<community>stalker</community>
+		
+		<rank>90</rank>
+		<reputation>0</reputation>
+ 
+		<visual>actors\ucheniy\ucheniy_4</visual>
+		<supplies>
+			[spawn] \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+	
+	<specific_character id="dar_corpse_default3" team_default = "1">
+		<name>Неизвестно</name>
+		<icon x="0" y="8"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Нет информации.</bio>
+
+		<class>dar_corpse</class>
+		<community>stalker</community>
+		
+		<rank>90</rank>
+		<reputation>0</reputation>
+ 
+		<visual>actors\hero\stalker_novice</visual>
+		<supplies>
+			[spawn] \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+	
+		<specific_character id="dar_corpse_default4" team_default = "1">
+		<name>Неизвестно</name>
+		<icon x="0" y="8"></icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>Нет информации.</bio>
+
+		<class>dar_corpse</class>
+		<community>stalker</community>
+		
+		<rank>90</rank>
+		<reputation>0</reputation>
+ 
+		<visual>actors\stalker_zombi\stalker_zombie5</visual>
+		<supplies>
+			[spawn] \n
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+</xml>

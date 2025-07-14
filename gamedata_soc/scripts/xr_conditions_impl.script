@@ -1,0 +1,52 @@
+
+function dist_less(a1, a2)
+	return a1.dist < a2.dist
+end
+
+function gar_dm_nearest_bandit(actor, npc, which)
+	--printf("_bp: gar_dm_nearest_bandit: npc='%s', which=%d", npc:name(), which)
+	local dists = {}
+	local n = 1
+
+	local gar_dm_bandit1 = level_object_by_sid(101)
+	if gar_dm_bandit1 and gar_dm_bandit1:alive() then
+		dists[n] = { who = gar_dm_bandit1, dist = distance_between(actor, gar_dm_bandit1) }
+		n = n + 1
+	end
+
+	local gar_dm_bandit2 = level_object_by_sid(102)
+	if gar_dm_bandit2 and gar_dm_bandit2:alive() then
+		dists[n] = { who = gar_dm_bandit2, dist = distance_between(actor, gar_dm_bandit2) }
+		n = n + 1
+	end
+
+	local gar_dm_bandit3 = level_object_by_sid(103)
+	if gar_dm_bandit3 and gar_dm_bandit3:alive() then
+		dists[n] = { who = gar_dm_bandit3, dist = distance_between(actor, gar_dm_bandit3) }
+		n = n + 1
+	end
+
+	if n <= which then
+		--printf("_bp: gar_dm_nearest_bandit: n (%d) <= which (%d): return false", n, which)
+		return false
+	end
+
+	table.sort(dists, dist_less)
+
+	local i_am_the_one = dists[which].who:id() == npc:id()
+	--printf("_bp: gar_dm_nearest_bandit: dist[which].who='%s', npc='%s': return %s", dists[which].who:name(), npc:name(),
+	--	if_then_else(i_am_the_one, "true", "false"))
+
+	return i_am_the_one
+end
+
+function actor_has_object(actor, obj_name)
+	return actor:object(obj_name) ~= nil
+end
+
+function esc_vagon_all_dead()
+	local o1 = level_object_by_sid( 12 ) --"esc_vagon_newbie1"
+	local o2 = level_object_by_sid( 13 ) --"esc_vagon_newbie2"
+
+	return ( o1 ~= nil and not o1:alive() ) and ( o2 ~= nil and not o2:alive() )
+end

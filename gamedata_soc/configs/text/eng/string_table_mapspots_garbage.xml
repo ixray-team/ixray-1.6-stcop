@@ -1,0 +1,48 @@
+	<string id="gar_angar">
+		<text>Abandoned hangar.</text>
+	</string>
+	<string id="gar_bandit_agr">
+		<text>Bandit camp by the exit from Agroprom.</text>
+	</string>
+	<string id="gar_bandit_post">
+		<text>Bandit base on the road to Agroprom.</text>
+	</string>
+	<string id="gar_bandits_leader">
+		<text>Bandit raid led by the boss.</text>
+	</string>
+	<string id="gar_boars_nest">
+		<text>Horde of boars.</text>
+	</string>
+	<string id="gar_car_graveyard">
+		<text>Vehicle scrapyard.</text>
+	</string>
+	<string id="gar_dogs_in_forest">
+		<text>Dog-infested forest</text>
+	</string>
+	<string id="gar_dolg_blokpost">
+		<text>Duty checkpoint on the road to the Bar.</text>
+	</string>
+	<string id="gar_hellcar">
+		<text>A group of neutral stalkers calling for help.</text>
+	</string>
+	<string id="gar_newbie">
+		<text>A scared and tired rookie.</text>
+	</string>
+	<string id="gar_secret1">
+		<text>The rookie's secret stash.</text>
+	</string>
+	<string id="gar_seriy">
+		<text>Seriy's group.</text>
+	</string>
+	<string id="gar_swamp">
+		<text>The Grimpen Mire.</text>
+	</string>
+	<string id="gar_trash1">
+		<text>Piles of rubbish with anomalies and artifacts.</text>
+	</string>
+	<string id="gar_tunnel">
+		<text>Railroad tunnel.</text>
+	</string>
+	<string id="gar_wounded_help">
+		<text>SOS signal. Probably a wounded stalker.</text>
+	</string>

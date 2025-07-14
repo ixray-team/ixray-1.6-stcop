@@ -1,0 +1,18 @@
+[logic]
+active = walker@button
+combat_ignore = combat_ignore
+
+[combat_ignore]
+
+[walker@button]
+path_walk = val_prisoner_guard_button_walk
+path_look = val_prisoner_guard_button_look
+on_signal = pressed | walker@leave %-val_prisoner_door_unlocked -val_prisoner_door_unlocked_demo%
+combat_ignore_cond = {=check_fighting(403)}, {+val_sacrifice_plr_detected} never, {=fighting_actor -val_prisoner_free}, {=val_fighting_sacrifice_victim}, {=val_fighting_prisoner -val_prisoner_free}
+
+[walker@leave]
+path_walk = val_prisoner_guard_leave_walk
+path_look = val_prisoner_guard_leave_look
+combat_ignore_cond = {=check_fighting(403)}, {+val_sacrifice_plr_detected} never, {=fighting_actor -val_prisoner_free}, {=val_fighting_sacrifice_victim}, {=val_fighting_prisoner -val_prisoner_free}
+
+

@@ -1,0 +1,150 @@
+	<string id="mil_blockpost_job">
+		<text>Assist at Freedom's Barrier outpost.</text>
+	</string>
+	<string id="mil_courier">
+		<text>Snitch.</text>
+	</string>
+	<string id="mil_courier_job">
+		<text>Deal with the snitch.</text>
+	</string>
+	<string id="mil_courier_phase1">
+		<text>Get to the farmstead.</text>
+	</string>
+	<string id="mil_courier_phase2">
+		<text>Wait until the snitch brings out his agent.</text>
+	</string>
+	<string id="mil_courier_phase3">
+		<text>Get rid of the snitch.</text>
+	</string>
+	<string id="mil_courier_phase4">
+		<text>Get rid of the agent.</text>
+	</string>
+	<string id="mil_courier_phase5">
+		<text>Report to Lukash about the mission.</text>
+	</string>
+	<string id="mil_crazy">
+		<text>Crazy stalker.</text>
+	</string>
+	<string id="mil_dolg">
+		<text>Duty faction</text>
+	</string>
+	<string id="mil_dolg_assault_freedom">
+		<text>Help the Duty faction eliminate Lukash</text>
+	</string>
+	<string id="mil_kill_lukash">
+		<text>Kill Lukash</text>
+	</string>
+	<string id="mil_dolg_assault_support">
+		<text>Get rid of the sniper</text>
+	</string>
+	<string id="mil_dolg_return_to_khutor">
+		<text>Return to the Duty farmstead and receive my fee</text>
+	</string>
+	<string id="mil_dolg_return_to_skull">
+		<text>Return to Skull</text>
+	</string>
+	<string id="mil_fblockpost_commander">
+		<text>Outpost commander Cap</text>
+	</string>
+	<string id="mil_fblockpost_phase2">
+		<text>Help destroy the Monolith's strike squad</text>
+	</string>
+	<string id="mil_fblockpost_phase3">
+		<text>Talk to Barrier outpost commander</text>
+	</string>
+	<string id="mil_find_cook">
+		<text>Find the cook in the Freedom base</text>
+	</string>
+	<string id="mil_freedom_rg6_task">
+		<text>Obtain an Bulldog 6 from Freedom</text>
+	</string>
+	<string id="mil_go_max">
+		<text>Report to Max.</text>
+	</string>
+	<string id="mil_go_to_miser_task">
+		<text>Go to the Freedom base to see Skinflint and get a reward</text>
+	</string>
+	<string id="mil_go_to_miser_task_main">
+		<text>Receive a reward for the destroyed bloodsuckers</text>
+	</string>
+	<string id="mil_hunters_phase1">
+		<text>Find Murk in the village</text>
+	</string>
+	<string id="mil_hunters_phase2">
+		<text>Kill the bloodsuckers</text>
+	</string>
+	<string id="mil_hunters_phase3">
+		<text>Return to Skinflint for the artifact</text>
+	</string>
+	<string id="mil_hunters_task">
+		<text>Kill the bloodsuckers in the village</text>
+	</string>
+	<string id="mil_kill_controller">
+		<text>Kill the bloodsuckers</text>
+	</string>
+	<string id="mil_kill_controller_main">
+		<text>Kill the bloodsuckers</text>
+	</string>
+	<string id="mil_kill_dolg">
+		<text>Destroy the Duty squad.</text>
+	</string>
+	<string id="mil_lukash">
+		<text>Lukash.</text>
+	</string>
+	<string id="mil_max">
+		<text>Max.</text>
+	</string>
+	<string id="mil_put_flash_to_max">
+		<text>Give Max the flash drive.</text>
+	</string>
+	<string id="mil_kill_sniper">
+		<text>Kill the tower sniper</text>
+	</string>
+	<string id="mil_quest_report_dolg">
+		<text>Report about the mission to the Duty squad</text>
+	</string>
+	<string id="mil_return_lukash">
+		<text>Return to Lukash.</text>
+	</string>
+	<string id="mil_return_to_ugrumy">
+		<text>Report to Murk about the mission</text>
+	</string>
+	<string id="mil_return_to_voronin">
+		<text>Bring the Bulldog 6 to General Voronin</text>
+	</string>
+	<string id="mil_rg6">
+		<text>Find Bulldog 6</text>
+	</string>
+	<string id="mil_secret">
+		<text>Bandit cache.</text>
+	</string>
+	<string id="mil_sniper">
+		<text>Sniper.</text>
+	</string>
+	<string id="mil_mad_job">
+		<text>Get a flash drive from the crazy sniper.</text>
+	</string>
+	<string id="mil_talk_cook">
+		<text>Talk to Chef</text>
+	</string>
+	<string id="mil_talk_with_cap">
+		<text>Talk to Cap, the Freedom outpost commander</text>
+	</string>
+	<string id="mil_test_task_phase1">
+		<text>Enter restrictor 1</text>
+	</string>
+	<string id="mil_test_task_phase2">
+		<text>Enter restrictor 2</text>
+	</string>
+	<string id="mil_test_task_phase3">
+		<text>Lift the Bulldog 6 in the air if mission is complete, the TRs 301 in case of failure</text>
+	</string>
+	<string id="mil_test_task_title">
+		<text>Test mission</text>
+	</string>
+	<string id="mil_ugrumy">
+		<text>Murk.</text>
+	</string>
+	<string id="mil_lukash_job">
+		<text>Destroy the Duty company</text>
+	</string>

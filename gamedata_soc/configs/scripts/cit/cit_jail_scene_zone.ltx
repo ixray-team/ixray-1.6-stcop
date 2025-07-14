@@ -1,0 +1,11 @@
+[logic]
+active    = sr_idle1 %=run_postprocess(deadcity_wake) =disable_ui =run_cam_effector(prison_0:1001:true) =drop_actor_inventory(cit_jail_drop_inventory)%
+ 
+[sr_idle1]
+on_info   = {+cit_jail_actor_wake} sr_idle2
+ 
+[sr_idle2]
+on_timer  = 3000 | sr_idle3 %=stop_cam_effector(1001) =run_cam_effector(prison_1)%
+ 
+[sr_idle3]
+on_timer  = 7000 | nil %=enable_ui% ;%=enable_ui_elements(hud:input)%

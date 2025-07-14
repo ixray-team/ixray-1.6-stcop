@@ -1,0 +1,7 @@
+<!-- bar rostok locations and spots -->
+<volkodav_location>
+		<level_map spot="crlc_mdl_spot"></level_map>
+		<mini_map spot="crlc_big_spot"></mini_map>
+</volkodav_location>
+
+	<!-- spots -->
