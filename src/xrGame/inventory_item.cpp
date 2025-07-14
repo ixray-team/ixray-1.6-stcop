@@ -181,7 +181,7 @@ void CInventoryItem::Load(LPCSTR section)
 
 	if ( BaseSlot() != NO_ACTIVE_SLOT || Belt())
 	{
-		bool defaultRuck = (BaseSlot() != NO_ACTIVE_SLOT && !Belt()) ? false : true;
+		bool defaultRuck = (BaseSlot() != NO_ACTIVE_SLOT && !Belt() && !cast_weapon_ammo()) ? false : true;
 		m_flags.set					(FRuckDefault, READ_IF_EXISTS(pSettings, r_bool, section, "default_to_ruck", defaultRuck));
 		m_flags.set					(FAllowSprint, READ_IF_EXISTS(pSettings, r_bool, section, "sprint_allowed", true));
 		m_fControlInertionFactor	= READ_IF_EXISTS(pSettings, r_float, section, "control_inertion_factor", 1.0f);
