@@ -125,9 +125,9 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 
 		_si->m_wnd->TextItemControl()->SetTextComplexMode(true);
 		_si->m_wnd->Show			(false);
-		if (EngineExternal().CallOfPripyatMode())
+		if (m_compatibility_mode == eCompatibilityDefault)
 			_si->m_wnd->SetWidth		(_si->m_wnd->GetWidth()*UI().get_current_kx());
-		else if (UI().is_widescreen())
+		else if (m_compatibility_mode == eCompatibilityCS && UI().is_widescreen())
 			_si->m_wnd->SetWidth		(_si->m_wnd->GetWidth() / 1.2f);
 
 
