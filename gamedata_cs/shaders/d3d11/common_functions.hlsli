@@ -264,17 +264,32 @@ float3 unpack_D3DCOLOR(float3 c)
 float3 p_hemi(float2 tc)
 {
     float4 t_lmh = s_hemi.Sample(smp_rtlinear, tc);
-    return t_lmh.w;
+
+#ifdef USE_SOC_LIGHTING
+	float r_lmh = (1.0/3.0);
+	return dot(t_lmh.xyz, float3(r_lmh, r_lmh, r_lmh));
+#else // USE_SOC_LIGHTING
+	return t_lmh.w;
+#endif // USE_SOC_LIGHTING
 }
 
 float get_hemi(float4 lmh)
 {
-    return lmh.w;
+#ifdef USE_SOC_LIGHTING
+	float r_lmh = (1.0/3.0);
+	return dot(lmh.xyz, float3(r_lmh, r_lmh, r_lmh));
+#else // USE_SOC_LIGHTING
+	return lmh.w;
+#endif // USE_SOC_LIGHTING
 }
 
 float get_sun(float4 lmh)
 {
-    return lmh.y;
+#ifdef USE_SOC_LIGHTING
+	return lmh.w;
+#else // USE_SOC_LIGHTING
+	return lmh.y;
+#endif // USE_SOC_LIGHTING
 }
 
 float3 v_sun(float3 N)
