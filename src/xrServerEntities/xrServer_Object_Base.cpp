@@ -414,7 +414,7 @@ xr_token game_types[]={
 	{ "any_game",				eGameIDNoGame				},
 	{ "single",					eGameIDSingle				},
 	{ "deathmatch",				eGameIDDeathmatch			},
-	{ "team_deathmatch",		eGameIDTeamDeathmatch		},
+	{ "teamdeathmatch",			eGameIDTeamDeathmatch		},
 	{ "artefacthunt",			eGameIDArtefactHunt			},
 	{ "capture_the_artefact",	eGameIDCaptureTheArtefact	},
 	{ "freemp",					eGameIDFreeMP				},
