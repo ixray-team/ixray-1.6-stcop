@@ -116,7 +116,34 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	t->m_timer_finish				= t->m_ReceiveTime + timer_ttl      * 1000; //ms
 
 	std::stable_sort				(GetGameTasks().begin(), GetGameTasks().end(), task_prio_pred);
+	
+	ARTICLE_VECTOR& article_vector = Actor()->encyclopedia_registry->registry().objects();
 
+
+	SGameTaskObjective	*obj = nullptr;
+	for (u32 i = 0; i < t->GetObjectivesCount(); ++i) 
+	{
+		obj = &t->Objective(i);
+		if(obj->m_article_id.size())
+		{
+			FindArticleByIDPred pred(obj->m_article_id);
+			if( std::find_if(article_vector.begin(), article_vector.end(), pred) == article_vector.end() )
+			{
+				CEncyclopediaArticle article;
+				article.Load(obj->m_article_id);
+				article_vector.push_back(ARTICLE_DATA(obj->m_article_id, Level().GetGameTime(), article.data()->articleType));
+			}
+		}
+
+		if(obj->m_map_object_id!=u16(-1) && obj->m_map_location.size() && obj->m_def_location_enabled)
+		{
+			CMapLocation* ml =	Level().MapManager().AddMapLocation(obj->m_map_location, obj->m_map_object_id);
+			if(obj->m_map_hint.size())	
+				ml->SetHint(obj->m_map_hint);
+			ml->DisablePointer			();
+			ml->SetSerializable			(true);
+		}
+	}
 	t->OnArrived					();
 
 	if (!m_flags.test(eMultipleTasks))
@@ -158,6 +185,15 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
     ETaskType type = eTaskTypeStoryline;
     if (m_flags.test(eMultipleTasks))
         type = t->GetTaskType();
+	
+	SGameTaskObjective* o = &t->Objective(objective_id);
+	CMapLocation* ml = o->LinkedMapLocation();
+	if(((state==eTaskStateFail)||(state==eTaskStateCompleted)) && ml )
+	{
+		Level().MapManager().RemoveMapLocation(o->m_map_location, o->m_map_object_id);
+		o->m_map_location			= nullptr;
+		o->m_map_object_id			= u16(-1);
+	}
 
     t->SetTaskState(state, objective_id);
 
@@ -242,6 +278,14 @@ void CGameTaskManager::UpdateTasks						()
 				ml->EnablePointer();
 		}
 	}
+	SGameTaskObjective* obj = ActiveObjective();
+	if (obj)
+	{
+		Level().MapManager().DisableAllPointers();
+		CMapLocation* ml = obj->LinkedMapLocation();
+		if (ml && !ml->PointerEnabled())
+			ml->EnablePointer();
+	}
 
 	if(	m_flags.test(eChanged) )
 		UpdateActiveTask();
@@ -306,6 +350,14 @@ void CGameTaskManager::SetActiveTask(CGameTask* task, u16 objective_id)
 
         m_flags.set(eChanged, TRUE);
         task->m_read = true;
+
+		Level().MapManager().DisableAllPointers();
+		if (ActiveObjective())
+		{
+			CMapLocation* ml = ActiveObjective()->LinkedMapLocation();
+			if (ml)
+				ml->EnablePointer();
+		}
     }
 }
 

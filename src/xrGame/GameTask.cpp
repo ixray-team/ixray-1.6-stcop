@@ -79,6 +79,7 @@ SGameTaskObjective::SGameTaskObjective()
 	m_FinishTime = 0;
 	m_TimeToComplete = 0;
 	m_timer_finish = 0;
+	m_article_id = nullptr;
 }
 
 SGameTaskObjective::SGameTaskObjective(CGameTask* parent, u16 idx)
@@ -94,6 +95,7 @@ SGameTaskObjective::SGameTaskObjective(CGameTask* parent, u16 idx)
 	m_FinishTime = 0;
 	m_TimeToComplete = 0;
 	m_timer_finish = 0;
+	m_article_id = nullptr;
 }
 
 CGameTask::CGameTask()
@@ -798,4 +800,12 @@ void SGameTaskKey::load(IReader &stream)
 void SGameTaskKey::destroy()
 {
 	delete_data(game_task);
+}
+
+CMapLocation* SGameTaskObjective::LinkedMapLocation() 
+{ 
+	if (m_map_location.size() == 0) 
+		return nullptr;
+
+	return Level().MapManager().GetMapLocation(m_map_location, m_map_object_id);
 }
