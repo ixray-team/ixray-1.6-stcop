@@ -157,6 +157,7 @@ public:
 
 protected:
 	virtual void	AddEncyclopediaArticle(const CInfoPortion* info_portion) const;
+	virtual void	AddGameTask				(const CInfoPortion* info_portion) const;
 struct SDefNewsMsg{
 		GAME_NEWS_DATA*	news_data;
 		u32				time;

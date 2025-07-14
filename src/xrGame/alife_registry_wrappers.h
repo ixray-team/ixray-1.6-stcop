@@ -48,7 +48,6 @@ public:
 	}
 };
 
-//class CKnownContactsRegistryWrapper :	public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CKnownContactsRegistry> > {};
 class CEncyclopediaRegistryWrapper :	public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CEncyclopediaRegistry> > {};
 class CGameNewsRegistryWrapper :		public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameNewsRegistry> > {};
 class CInfoPortionWrapper :				public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CInfoPortionRegistry> > {};

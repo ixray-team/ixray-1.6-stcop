@@ -18,6 +18,7 @@
 #include "ui/UITalkWnd.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "UIInventoryWnd.h"
 #include "game_cl_base.h"
 
 #include "../xrEngine/x_ray.h"
@@ -41,9 +42,15 @@ struct predicate_find_stat
 };
 
 CUIGameCustom::CUIGameCustom()
-	: m_msgs_xml(nullptr),		m_ActorMenu(nullptr), 
-	  m_PdaMenu(nullptr),		m_window(nullptr), 
-	  UIMainIngameWnd(nullptr), m_pMessagesWnd(nullptr), TalkMenu(nullptr)
+	: 
+	m_msgs_xml(nullptr),		
+	m_ActorMenu(nullptr), 
+	m_InventoryMenu(nullptr),
+	m_PdaMenu(nullptr),		
+	m_window(nullptr), 
+	UIMainIngameWnd(nullptr), 
+	m_pMessagesWnd(nullptr), 
+	TalkMenu(nullptr)
 {
 	ShowGameIndicators		(true);
 	ShowCrosshair			(true);
@@ -215,7 +222,7 @@ void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
 
 void CUIGameCustom::OnInventoryAction(PIItem item, u16 action_type)
 {
-	if ( m_ActorMenu->IsShown() )
+	if (m_ActorMenu != nullptr && m_ActorMenu->IsShown() )
 		m_ActorMenu->OnInventoryAction( item, action_type );
 }
 
@@ -403,6 +410,7 @@ void CUIGameCustom::UnLoad()
 {
 	xr_delete					(m_msgs_xml);
 	xr_delete					(m_ActorMenu);
+	xr_delete					(m_InventoryMenu);
 	xr_delete					(m_PdaMenu);
 	xr_delete					(m_window);
 	xr_delete					(UIMainIngameWnd);
@@ -421,8 +429,15 @@ void CUIGameCustom::Load()
 		R_ASSERT				(nullptr==TalkMenu);
 		TalkMenu				= new CUITalkWnd();
 
-		R_ASSERT				(nullptr==m_ActorMenu);
-		m_ActorMenu				= new CUIActorMenu		();
+		CUIXml inventoryXml;
+		if (inventoryXml.Load(CONFIG_PATH, UI_PATH, "actor_menu.xml"))
+		{
+			m_ActorMenu				= new CUIActorMenu		();
+		}
+		else
+		{
+			m_InventoryMenu			= new CUIInventoryWnd	();
+		}
 
 		R_ASSERT				(nullptr==m_PdaMenu);
 		m_PdaMenu				= new CUIPdaWnd			();

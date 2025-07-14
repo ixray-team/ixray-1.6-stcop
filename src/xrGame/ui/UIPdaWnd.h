@@ -45,6 +45,10 @@ protected:
 
 	UIHint*					m_hint_wnd;
 
+	CUIFrameLineWnd*		UIMainButtonsBackground;
+	CUIFrameLineWnd*		UITimerBackground;
+
+	void					UpdateDateTime					();
 private:
 	bool m_isSetActiveSubdialog = false;
 	const char* m_onSetActiveSubdialog = {};

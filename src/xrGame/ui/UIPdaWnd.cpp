@@ -48,6 +48,13 @@ CUIPdaWnd::CUIPdaWnd()
 	pUILogsWnd       = nullptr;
 	UIPdaContactsWnd = nullptr;
 	m_hint_wnd       = nullptr;
+	m_caption		 = nullptr;
+	m_caption_const	 = "";
+	m_clock			 = nullptr;
+	UIMainButtonsBackground = nullptr;
+	UITimerBackground = nullptr;
+	UINoice			 = nullptr;
+	m_btn_close		 = nullptr;
 	pUIEncyclopediaWnd = nullptr;
 	pUIStalkersRankingWnd = nullptr;
 
@@ -79,10 +86,20 @@ void CUIPdaWnd::Init()
 	CUIXmlInit::InitWindow	(uiXml, "main", 0, this);
 
 	UIMainPdaFrame			= UIHelper::CreateStatic	( uiXml, "background_static", this );
-	m_caption				= UIHelper::CreateStatic	( uiXml, "caption_static", this );
-	m_caption_const			= ( m_caption->TextItemControl()->GetText() );
+	if (uiXml.NavigateToNode("caption_static"))
+	{
+		m_caption				= UIHelper::CreateStatic	( uiXml, "caption_static", this );
+		m_caption_const			= ( m_caption->TextItemControl()->GetText() );
+	}
+
 	if (uiXml.NavigateToNode("clock_wnd"))
-	m_clock					= UIHelper::CreateTextWnd	( uiXml, "clock_wnd", this );
+		m_clock					= UIHelper::CreateTextWnd	( uiXml, "clock_wnd", this );
+
+	if (uiXml.NavigateToNode("mbbackground_frame_line"))
+		UIMainButtonsBackground = UIHelper::CreateFrameLine	( uiXml, "mbbackground_frame_line", UIMainPdaFrame);
+
+	if (uiXml.NavigateToNode("timer_frame_line"))
+		UITimerBackground = UIHelper::CreateFrameLine(uiXml, "timer_frame_line", UIMainPdaFrame);
 
 	if (uiXml.NavigateToNode("anim_static"))
 	{
@@ -91,8 +108,11 @@ void CUIPdaWnd::Init()
 		m_anim_static->SetAutoDelete(true);
 		CUIXmlInit::InitAnimatedStatic(uiXml, "anim_static", 0, m_anim_static);
 	}
-	m_btn_close				= UIHelper::Create3tButton( uiXml, "close_button", this );
-	m_hint_wnd				= UIHelper::CreateHint( uiXml, "hint_wnd" );
+	if (uiXml.NavigateToNode("close_button"))
+		m_btn_close				= UIHelper::Create3tButton( uiXml, "close_button", this );
+
+	if (uiXml.NavigateToNode("hint_wnd"))
+		m_hint_wnd				= UIHelper::CreateHint( uiXml, "hint_wnd" );
 
 	UITabControl					= new CUITabControl();
 	UITabControl->SetAutoDelete		(true);
@@ -100,9 +120,39 @@ void CUIPdaWnd::Init()
 	CUIXmlInit::InitTabControl		(uiXml, "tab", 0, UITabControl);
 	UITabControl->SetMessageTarget	(this);
 
-	pUITaskWnd					= new CUITaskWnd();
-	pUITaskWnd->hint_wnd		= m_hint_wnd;
-	pUITaskWnd->Init			();
+	std::tuple<LPCSTR,LPCSTR> 
+		tabLegacyList[] = 
+	{ 
+		{"0", "eptQuests"},
+		{"1", "eptMap"},
+		{"2", "eptDiary"},
+		{"3", "eptContacts"},
+		{"4", "eptRankingGlobal"},
+		{"5", "eptActorStatistic"},
+		{"6", "eptEncyclopedia"},
+	};
+	for (u32 i = 0; i < UITabControl->GetTabsCount(); i++)
+	{
+		CUITabButton* btn = UITabControl->GetButtonByIndex(i);
+		if (!btn || !btn->IsIdDefaultAssigned())
+			continue;
+
+		for (const auto& [id, replace] : tabLegacyList)
+		{
+			if (btn->m_btn_id == id)
+			{
+				btn->m_btn_id = replace;
+				break;
+			}
+		}
+	}
+
+	if (UITabControl->GetButtonById("eptTasks"))
+	{
+		pUITaskWnd					= new CUITaskWnd();
+		pUITaskWnd->hint_wnd		= m_hint_wnd;
+		pUITaskWnd->Init			();
+	}
 
 	if (UITabControl->GetButtonById("eptFractionWar"))
 	{
@@ -116,17 +166,23 @@ void CUIPdaWnd::Init()
 		UIPdaContactsWnd = new CUIPdaContactsWnd();
 		UIPdaContactsWnd->Init();
 	}
-	pUIRankingWnd					= new CUIRankingWnd();
-	pUIRankingWnd->Init				();
-
+	if (UITabControl->GetButtonById("eptRanking"))
+	{
+		pUIRankingWnd					= new CUIRankingWnd();
+		pUIRankingWnd->Init				();
+	}
+	
 	if (UITabControl->GetButtonById("eptRankingGlobal"))
 	{
 		pUIStalkersRankingWnd = new CUIStalkersRankingWnd();
 		pUIStalkersRankingWnd->Init();
 	}
 
-	pUILogsWnd						= new CUILogsWnd();
-	pUILogsWnd->Init				();
+	if (UITabControl->GetButtonById("eptLogs"))
+	{
+		pUILogsWnd						= new CUILogsWnd();
+		pUILogsWnd->Init				();
+	}
 
 	
 	if (UITabControl->GetButtonById("eptEncyclopedia"))
@@ -135,9 +191,12 @@ void CUIPdaWnd::Init()
 		pUIEncyclopediaWnd->Init();
 	}
 
-	UINoice					= new CUIStatic();
-	UINoice->SetAutoDelete	( true );
-	CUIXmlInit::InitStatic	( uiXml, "noice_static", 0, UINoice );
+	if (uiXml.NavigateToNode("noice_static"))
+	{
+		UINoice					= new CUIStatic();
+		UINoice->SetAutoDelete	( true );
+		CUIXmlInit::InitStatic	( uiXml, "noice_static", 0, UINoice );
+	}
 
 	const static bool rearrangeButtons = EngineExternal()[EEngineExternalUI::PdaRearrangeTabButtons];
 	if (rearrangeButtons)
@@ -158,7 +217,7 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 		}
 	case BUTTON_CLICKED:
 		{
-			if ( pWnd == m_btn_close )
+			if (m_btn_close && pWnd == m_btn_close )
 			{
 				HideDialog();
 			}
@@ -200,6 +259,23 @@ void CUIPdaWnd::Show(bool status)
 	}
 }
 
+void CUIPdaWnd::UpdateDateTime()
+{
+	if (!UITimerBackground)
+		return;
+
+	static shared_str prevStrTime = " ";
+	xr_string strTime = *InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes);
+				strTime += " ";
+				strTime += *InventoryUtilities::GetGameDateAsString(InventoryUtilities::edpDateToDay);
+
+	if (xr_strcmp(strTime.c_str(), prevStrTime))
+	{
+		UITimerBackground->UITitleText.SetText(strTime.c_str());
+		prevStrTime = strTime.c_str();
+	}
+}
+
 void CUIPdaWnd::Update()
 {
 	inherited::Update();
@@ -207,8 +283,10 @@ void CUIPdaWnd::Update()
 		m_pActiveDialog->Update();
 	if (m_clock)
 		m_clock->TextItemControl().SetText(InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes).c_str());
+	UpdateDateTime();
 
-	Device.seqParallel.push_back(xr_make_delegate(pUILogsWnd, &CUILogsWnd::PerformWork));
+	if (pUILogsWnd)
+		Device.seqParallel.push_back(xr_make_delegate(pUILogsWnd, &CUILogsWnd::PerformWork));
 }
 
 void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
@@ -337,7 +415,8 @@ void CUIPdaWnd::Draw()
 	inherited::Draw();
 //.	DrawUpdatedSections();
 	DrawHint();
-	UINoice->Draw(); // over all
+	if (UINoice)
+		UINoice->Draw(); // over all
 }
 
 void CUIPdaWnd::DrawHint()
@@ -366,12 +445,14 @@ void CUIPdaWnd::DrawHint()
 	{
 		pUIStalkersRankingWnd->DrawHint();
 	}
-	m_hint_wnd->Draw();
+	if (m_hint_wnd)
+		m_hint_wnd->Draw();
 }
 
 void CUIPdaWnd::UpdatePda()
 {
-	pUILogsWnd->UpdateNews();
+	if (pUILogsWnd)
+		pUILogsWnd->UpdateNews();
 
 	if (m_sActiveSection == "eptTasks")
 	{
@@ -381,7 +462,8 @@ void CUIPdaWnd::UpdatePda()
 
 void CUIPdaWnd::UpdateRankingWnd()
 {
-	pUIRankingWnd->Update();
+	if (pUIRankingWnd)
+		pUIRankingWnd->Update();
 }
 
 void CUIPdaWnd::Reset()
@@ -399,7 +481,8 @@ void CUIPdaWnd::Reset()
 
 void CUIPdaWnd::SetCaption( LPCSTR text )
 {
-	m_caption->TextItemControl()->SetText( text );
+	if (m_caption)
+		m_caption->TextItemControl()->SetText( text );
 }
 
 void RearrangeTabButtons(CUITabControl* pTab)
