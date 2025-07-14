@@ -28,10 +28,16 @@ void hmodel(out float3 hdiffuse, out float3 hspecular,
     // material
     float4 light = tex3D(s_material, float3(hscale, hspec, m)).xxxy;
 
+#ifdef USE_DIFFUSE_SKY_COLOR
+	float4 weather_color = L_sky_color;
+#else
+	float4 weather_color = L_hemi_color;
+#endif
+
     // diffuse color
     float3 e0d = texCUBElod(env_s0, float4(nw, 0.0f));
     float3 e1d = texCUBElod(env_s1, float4(nw, 0.0f));
-    float3 env_d = L_hemi_color.xyz * lerp(e0d, e1d, L_hemi_color.w);
+    float3 env_d = weather_color.xyz * lerp(e0d, e1d, weather_color.w);
     env_d *= env_d; // contrast
     hdiffuse = env_d * light.xyz + L_ambient.rgb;
 
@@ -40,7 +46,7 @@ void hmodel(out float3 hdiffuse, out float3 hspecular,
 
     float3 e0s = texCUBElod(env_s0, float4(vreflect, 0.0f));
     float3 e1s = texCUBElod(env_s1, float4(vreflect, 0.0f));
-    float3 env_s = L_hemi_color.xyz * lerp(e0s, e1s, L_hemi_color.w);
+    float3 env_s = weather_color.xyz * lerp(e0s, e1s, weather_color.w);
     env_s *= env_s;
     hspecular = env_s * light.w * s;
 }
