@@ -18,12 +18,7 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-shared_str g_active_task_id[eTaskTypeCount] =
-{
-	g_active_task_no_task___internal,
-	g_active_task_no_task___internal,
-	g_active_task_no_task___internal
-};
+shared_str g_active_task_id[eTaskTypeCount];
 
 struct FindTaskByID{
 	shared_str	id;
@@ -53,10 +48,7 @@ CGameTaskManager::CGameTaskManager()
 
 	for (auto& taskId : g_active_task_id)
 	{
-		if (!taskId.size())
-			taskId = g_active_task_no_task___internal;
-
-		if (taskId != g_active_task_no_task___internal)
+		if (taskId.size())
 		{
 			CGameTask* t = HasGameTask(taskId, true);
 			if (t)
@@ -143,9 +135,11 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	}
 
 	//установить флажок необходимости прочтения тасков в PDA
-	if ( CurrentGameUI() )
+	if (CurrentGameUI())
+	{
 		CurrentGameUI()->UpdatePda();
-
+		CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::quests);
+	}
 	t->ChangeStateCallback();
 
 	return t;
@@ -179,8 +173,11 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
         t->SetActiveObjective(objective_id + 1);
     }
 
-    if (CurrentGameUI())
-        CurrentGameUI()->UpdatePda();
+	if (CurrentGameUI())
+	{
+		CurrentGameUI()->UpdatePda();
+		CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::quests);
+	}
 }
 
 void CGameTaskManager::SetTaskState(const shared_str& id, ETaskState state, u16 objective_id /*= ROOT_TASK_OBJECTIVE*/)
@@ -279,9 +276,6 @@ CGameTask* CGameTaskManager::ActiveTask(ETaskType type)
 	shared_str& t_id = g_active_task_id[t];
 
 	if (!t_id.size())
-		t_id = g_active_task_no_task___internal;
-
-	if (t_id == g_active_task_no_task___internal)
 		return nullptr;
 
 	return HasGameTask(t_id, true);
@@ -454,7 +448,6 @@ void CGameTaskManager::DumpTasks()
 
 CGameTaskManager* get_task_manager() { return Level().GameTaskManager(); }
 
-
 void CGameTaskManager::script_register(lua_State* pState)
 {
 	if (pState)
@@ -469,4 +462,11 @@ void CGameTaskManager::script_register(lua_State* pState)
 				luabind::def("get_game_task_manager", get_task_manager)
 			];
 	}
+}
+
+SGameTaskObjective* CGameTaskManager::ActiveObjective()
+{
+	CGameTask* t = ActiveTask();
+
+	return (t) ? &t->ActiveObjective() : nullptr;
 }
