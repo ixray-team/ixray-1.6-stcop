@@ -14,6 +14,7 @@
 #include "../MainMenu.h"
 #include "../../xrScripts/script_engine.h"
 #include "../ai_space.h"
+#include "uiinventorywnd.h"
 
 extern ENGINE_API BOOL bShowPauseString;
 
@@ -209,6 +210,7 @@ void CUISequenceSimpleItem::Update()
 		{
 			if (CurrentGameUI()->PdaMenu().IsShown()		||
 				(&CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu().IsShown())		||
+				(&CurrentGameUI()->InventoryWnd() && CurrentGameUI()->InventoryWnd().IsShown()) ||
 				CurrentGameUI()->TalkMenu->IsShown()			||
 				CurrentGameUI()->UIChangeLevelWnd->IsShown() ||
 				(MainMenu()->IsActive() && !m_owner->m_flags.test(CUISequencer::etsOverMainMenu) )
