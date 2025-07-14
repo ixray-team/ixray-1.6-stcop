@@ -21,15 +21,32 @@
 #include "Hit.h"
 #include "../../../xrScripts/script_callback_ex.h"
 
-void CAI_Crow::SAnim::Load	(IKinematicsAnimated* visual, LPCSTR prefix)
+void CAI_Crow::SAnim::Load	(IKinematicsAnimated* visual, LPCSTR prefix, LPCSTR prefix2)
 {
 	const MotionID		&M = visual->ID_Cycle_Safe(prefix);
-	if (M)				m_Animations.push_back(M);
-	for (int i=0; (i<MAX_ANIM_COUNT)&&(m_Animations.size()<MAX_ANIM_COUNT); ++i){
+	if (M)				
+		m_Animations.push_back(M);
+	else
+	{
+		const MotionID& _M = visual->ID_Cycle_Safe(prefix2);
+		if (_M)
+			m_Animations.push_back(_M);
+	}
+	for (int i=0; (i<MAX_ANIM_COUNT)&&(m_Animations.size()<MAX_ANIM_COUNT); ++i)
+	{
 		string128		sh_anim;
 		xr_sprintf			(sh_anim,"%s_%d",prefix,i);
 		const MotionID	&M_ = visual->ID_Cycle_Safe(sh_anim);
-		if (M_)			m_Animations.push_back(M_);
+		if (M_)			
+			m_Animations.push_back(M_);
+		else
+		{
+			xr_sprintf(sh_anim, "%s_%d", prefix2, i);
+			const MotionID& M__ = visual->ID_Cycle_Safe(sh_anim);
+			if (M__)
+				m_Animations.push_back(M_);
+
+		}
 	}
 	R_ASSERT			(m_Animations.size());
 }
@@ -139,11 +156,11 @@ BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
 	// animations
 	IKinematicsAnimated*	M		= Visual()->dcast_PKinematicsAnimated();
 	R_ASSERT(M);
-	m_Anims.m_death.Load		(M,"death");
-	m_Anims.m_death_dead.Load	(M,"death_drop");
-	m_Anims.m_death_idle.Load	(M,"death_idle");
-	m_Anims.m_fly.Load			(M,"fly_fwd");
-	m_Anims.m_idle.Load			(M,"fly_idle");
+	m_Anims.m_death.Load		(M,"death","norm_death");
+	m_Anims.m_death_dead.Load	(M,"death_drop","norm_death_dead");
+	m_Anims.m_death_idle.Load	(M,"death_idle","norm_death_idle");
+	m_Anims.m_fly.Load			(M,"fly_fwd","norm_fly_fwd");
+	m_Anims.m_idle.Load			(M,"fly_idle","norm_idle");
 
 	o_workload_frame = 0;
 	o_workload_rframe = 0;
@@ -184,7 +201,9 @@ void CAI_Crow::switch2_FlyUp()
 }
 void CAI_Crow::switch2_FlyIdle()
 {
-	Visual()->dcast_PKinematicsAnimated()->PlayCycle	(m_Anims.m_idle.GetRandom());
+	MotionID anm = m_Anims.m_idle.GetRandom();
+	if (anm.valid())
+		Visual()->dcast_PKinematicsAnimated()->PlayCycle	(anm);
 }
 void CAI_Crow::switch2_DeathDead()
 {

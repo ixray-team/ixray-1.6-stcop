@@ -75,6 +75,9 @@ public:
 	CUIOutfitInfo*			UIOutfitInfo;
 	CUIBoosterInfo*			UIBoosterInfo;
 	CUIGrenadeParams*		UIGrenadeParams;
+	// legacy
+	CUIStatic*				UICondition;
+	CUIProgressBar*			UICondProgresBar;
 
 	Fvector2			UIItemImageSize; 
 	CUIStatic*			UIItemImage;
