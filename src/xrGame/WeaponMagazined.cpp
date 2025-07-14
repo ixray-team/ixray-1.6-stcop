@@ -1428,7 +1428,7 @@ void CWeaponMagazined::SelectShotSound()
 			}
 			else
 			{
-				m_sSndShotCurrent = "sndSilencerShot";
+				m_sSndShotCurrent = m_layered_sounds.FindSoundItem("sndSilencerShot", false) ? "sndSilencerShot" : "sndShot";
 			}
 		}
 	}
