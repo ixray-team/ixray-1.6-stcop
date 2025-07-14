@@ -83,7 +83,7 @@ void CGameSpy_Full::Update()
 	m_pGS_ATLAS->Think	();
 };
 
-const char* CGameSpy_Full::GetGameVersion()
+const char* CGameSpy_Full::GetGameVersion(int PlatformID)
 {
-	return xrGS_GetGameVersion();
+	return xrGS_GetGameVersion(PlatformID);
 };
