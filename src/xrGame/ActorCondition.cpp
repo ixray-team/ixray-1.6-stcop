@@ -162,11 +162,11 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 		Sleepiness.HealthBoost		= pSettings->r_float(section,"sleepiness_health_v");
 	}
 
-	m_zone_max_power[ALife::infl_rad]	= pSettings->r_float(section, "radio_zone_max_power" );
-	m_zone_max_power[ALife::infl_fire]	= pSettings->r_float(section, "fire_zone_max_power" );
-	m_zone_max_power[ALife::infl_acid]	= pSettings->r_float(section, "acid_zone_max_power" );
-	m_zone_max_power[ALife::infl_psi]	= pSettings->r_float(section, "psi_zone_max_power" );
-	m_zone_max_power[ALife::infl_electra]= pSettings->r_float(section, "electra_zone_max_power" );
+	m_zone_max_power[ALife::infl_rad]	= READ_IF_EXISTS(pSettings, r_float, section, "radio_zone_max_power", 1.0f);
+	m_zone_max_power[ALife::infl_fire]	= READ_IF_EXISTS(pSettings, r_float, section, "fire_zone_max_power", 1.0f);
+	m_zone_max_power[ALife::infl_acid]	= READ_IF_EXISTS(pSettings, r_float, section, "acid_zone_max_power", 1.0f);
+	m_zone_max_power[ALife::infl_psi]	= READ_IF_EXISTS(pSettings, r_float, section, "psi_zone_max_power", 1.0f);
+	m_zone_max_power[ALife::infl_electra]= READ_IF_EXISTS(pSettings, r_float, section, "electra_zone_max_power", 1.0f);
 
 	m_max_power_restore_speed = READ_IF_EXISTS(pSettings, r_float, section, "max_power_restore_speed", 1.0f);
 	m_max_wound_protection = READ_IF_EXISTS(pSettings,r_float,section,"max_wound_protection",1.0f);
