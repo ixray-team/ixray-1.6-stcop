@@ -19,6 +19,7 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 		shared_str	m_temp_id;
+		u32			m_temp_index;
 
 		Fvector2	m_text_ident_normal;
 		Fvector2	m_text_ident_cursor_over;
