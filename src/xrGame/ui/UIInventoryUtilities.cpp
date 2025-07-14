@@ -398,6 +398,45 @@ LPCSTR InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife
 
 //////////////////////////////////////////////////////////////////////////
 
+void InventoryUtilities::UpdateWeight(CUIStatic &wnd, bool withPrefix)
+{
+	CInventoryOwner *pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	R_ASSERT(pInvOwner);
+	string128 buf;
+	ZeroMemory(buf, sizeof(buf));
+
+	float total = pInvOwner->inventory().CalcTotalWeight();
+	float max	= pInvOwner->MaxCarryWeight();
+
+	string16 cl;
+	ZeroMemory(cl, sizeof(cl));
+
+	if (total > max)
+	{
+		strcpy(cl, "%c[red]");
+	}
+	else
+	{
+		strcpy(cl, "%c[UI_orange]");
+	}
+
+	string32 prefix;
+	ZeroMemory(prefix, sizeof(prefix));
+
+	if (withPrefix)
+	{
+		sprintf_s(prefix, "%%c[default]%s ", *g_pStringTable->translate("ui_inv_weight"));
+	}
+	else
+	{
+		strcpy(prefix, "");
+	}
+
+	sprintf_s(buf, "%s%s%3.1f %s/%5.1f", prefix, cl, total, "%c[UI_orange]", max);
+	wnd.SetText(buf);
+	//	UIStaticWeight.ClipperOff();
+}
+
 void InventoryUtilities::UpdateWeightStr(CUITextWnd &wnd, CUITextWnd &wnd_max, CInventoryOwner *pInvOwner)
 {
 	R_ASSERT		(pInvOwner);

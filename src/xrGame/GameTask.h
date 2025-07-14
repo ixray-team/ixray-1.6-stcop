@@ -31,102 +31,181 @@ public:
 			void			init_functors	(xr_vector<shared_str>& v_src, task_state_functors& v_dest);
 };
 
-class CGameTask
+class SGameTaskObjective : public IPureSerializeObject<IReader, IWriter>
 {
-private:
-	ETaskState								m_task_state;
-	ETaskType								m_task_type;
-	SScriptTaskHelper						m_pScriptHelper;
+    friend struct SGameTaskKey;
+    friend class CGameTask;
+    friend class CGameTaskManager;
+
+protected:
+    CGameTask* m_parent{};
+    ETaskState m_task_state;
+    ETaskType m_task_type;
+    SScriptTaskHelper m_pScriptHelper;
+
 public:
-	shared_str								m_icon_texture_name;
-	// map
-	shared_str								m_map_hint;
-	shared_str								m_map_location;
-	u16										m_map_object_id;
+    u16 m_idx;
+    shared_str m_Title;
+    shared_str m_Description;
+
+    // encyclopedia
+    shared_str m_article_id;
+    shared_str m_article_key;
+
+    // icon
+    Frect m_icon_rect;
+    shared_str m_icon_texture_name;
+
+    // map
+    shared_str m_map_hint;
+    shared_str m_map_location;
+    u16 m_map_object_id{};
+    bool m_def_location_enabled{};
+    CMapLocation* m_linked_map_location{};
+
+    // timing
+    ALife::_TIME_ID m_ReceiveTime{};
+    ALife::_TIME_ID m_FinishTime{};
+    ALife::_TIME_ID m_TimeToComplete{};
+    ALife::_TIME_ID m_timer_finish{};
 
 private:
-	//infos
-	xr_vector<shared_str>					m_completeInfos;
-	xr_vector<shared_str>					m_failInfos;
-	xr_vector<shared_str>					m_infos_on_complete;
-	xr_vector<shared_str>					m_infos_on_fail;
+    // infos
+    xr_vector<shared_str> m_completeInfos;
+    xr_vector<shared_str> m_failInfos;
+    xr_vector<shared_str> m_infos_on_complete;
+    xr_vector<shared_str> m_infos_on_fail;
 
-	// functions
-	task_state_functors						m_fail_lua_functions;
-	task_state_functors						m_complete_lua_functions;
+    // functions
+    task_state_functors m_fail_lua_functions;
+    task_state_functors m_complete_lua_functions;
 
-	task_state_functors						m_lua_functions_on_complete;
-	task_state_functors						m_lua_functions_on_fail;
-	
-	CMapLocation*							m_linked_map_location;
+    task_state_functors m_lua_functions_on_complete;
+    task_state_functors m_lua_functions_on_fail;
 
-	void					SendInfo		(const xr_vector<shared_str>&);
-	bool					CheckInfo		(const xr_vector<shared_str>&) const;
-	void					CallAllFuncs	(const task_state_functors& v);
-	bool					CheckFunctions	(const task_state_functors& v) const;
-
-	void					CreateMapLocation(bool on_load);
-	bool isTaskCompleted();
-	bool isTaskFail();
-	void checkTask();
-
-							CGameTask		(const CGameTask&);
 public:
-							CGameTask		();
+    SGameTaskObjective();
+    SGameTaskObjective(CGameTask* parent, u16 idx);
 
-	void 					save_task		(IWriter &stream);
-	void 					load_task		(IReader &stream);
+    CGameTask* GetParent() const { return m_parent; }
 
+    void SetTaskState(ETaskState state);
+    auto GetTaskState() const { return m_task_state; }
 
-	shared_str				m_ID;
-	shared_str				m_Title;
-	shared_str				m_Description;
-	ALife::_TIME_ID			m_ReceiveTime;
-	ALife::_TIME_ID			m_FinishTime;
-	ALife::_TIME_ID			m_TimeToComplete;
-	ALife::_TIME_ID			m_timer_finish;
-	u32						m_priority;
-	bool					m_read;
+    auto GetTaskType() const { return m_task_type; }
+    virtual CMapLocation* LinkedMapLocation() { return m_linked_map_location; }
 
-	void					OnArrived				();
-	void					RemoveMapLocations		(bool notify);
-	void					ChangeMapLocation		(LPCSTR new_map_location, u16 new_map_object_id);
+    ETaskState UpdateState();
 
-	void					ChangeStateCallback		();
-	void					SetTaskState			(ETaskState state);
-	ETaskState				GetTaskState			() const					{return m_task_state;};
-	ETaskType				GetTaskType				() const					{return m_task_type;}
+    void save(IWriter& stream) override;
+    void load(IReader& stream) override;
 
-	ETaskState				UpdateState				();
-	IC CMapLocation*		LinkedMapLocation		() {return m_linked_map_location;}
+private:
+    void SendInfo(const xr_vector<shared_str>&);
+    bool CheckInfo(const xr_vector<shared_str>&) const;
+    void CallAllFuncs(const task_state_functors& v);
+    bool CheckFunctions(const task_state_functors& v) const;
 
-// for scripting access
-	void					SetTitle_script			(LPCSTR _title)				{m_Title = _title;}
-	LPCSTR					GetTitle_script			()							{return m_Title.c_str();}
-	void					SetPriority_script		(int _prio)					{m_priority	= _prio;}
-	int						GetPriority_script		()							{return m_priority;}
-    int						GetType_script			()							{return m_task_type;}
-	void					SetType_script			(int t)						{m_task_type = (ETaskType)t;}
+protected:
+    virtual void ChangeStateCallback();
+    void CreateMapLocation(bool on_load);
 
-	LPCSTR					GetID_script			()							{return m_ID.c_str();}
-	void					SetID_script			(LPCSTR _id)				{m_ID = _id;}
-	void					SetDescription_script	(LPCSTR _desc)				{m_Description = _desc;}
-	void					SetIconName_script		(LPCSTR _tex)				{m_icon_texture_name = _tex;}
-	LPCSTR					GetIconName_script		()							{return m_icon_texture_name.c_str();}
-	void					SetMapHint_script		(LPCSTR _hint)				{m_map_hint = _hint;}
+public:
+    void RemoveMapLocations(bool notify);
+    void ChangeMapLocation(pcstr new_map_location, u16 new_map_object_id);
 
-	void					SetMapLocation_script	(LPCSTR _mls)				{m_map_location = _mls;}
-	void					SetMapObjectID_script	(int _id)					{m_map_object_id = (u16)_id;}
+    // for scripting access
+    auto GetType_script() const { return m_task_type; }
+    void SetType_script(int t)  { m_task_type = (ETaskType)t; }
 
-	void 					AddCompleteInfo_script	(LPCSTR _str);
-	void 					AddFailInfo_script		(LPCSTR _str);
-	void 					AddOnCompleteInfo_script(LPCSTR _str);
-	void 					AddOnFailInfo_script	(LPCSTR _str);
-	void 					AddCompleteFunc_script	(LPCSTR _str);
-	void 					AddFailFunc_script		(LPCSTR _str);
-	void 					AddOnCompleteFunc_script(LPCSTR _str);
-	void 					AddOnFailFunc_script	(LPCSTR _str);
+    auto GetID() const { return m_idx; }
 
-	void					CommitScriptHelperContents();
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    auto GetTitle_script() const { return m_Title.c_str(); }
+    void SetTitle_script(pcstr title) { m_Title = title; }
+
+    auto GetDescription_script() const { return m_Description.c_str(); }
+    void SetDescription_script(pcstr desc) { m_Description = desc; }
+
+    // encyclopedia
+    void SetArticleID_script(LPCSTR id) { m_article_id = id; }
+    void SetArticleKey_script(LPCSTR key) { m_article_key = key; }
+
+    auto GetIconName_script() const { return m_icon_texture_name.c_str(); }
+    void SetIconName_script(pcstr tex);
+
+    // map
+    void SetMapHint_script(pcstr hint) { m_map_hint = hint; }
+    void SetMapLocation_script(pcstr mls) { m_map_location = mls; }
+    void SetMapObjectID_script(int id) { m_map_object_id = (u16)id; }
+
+    // callbacks and infos
+    void AddCompleteInfo_script(pcstr str);
+    void AddCompleteFunc_script(pcstr str);
+
+    void AddOnCompleteInfo_script(pcstr str);
+    void AddOnCompleteFunc_script(pcstr str);
+
+    void AddFailInfo_script(pcstr str);
+    void AddFailFunc_script(pcstr str);
+
+    void AddOnFailInfo_script(pcstr str);
+    void AddOnFailFunc_script(pcstr str);
+
+    void CommitScriptHelperContents();
+};
+
+using OBJECTIVES_VECTOR = xr_vector<SGameTaskObjective>;
+
+class CGameTask : public SGameTaskObjective
+{
+public:
+    shared_str  m_ID;
+    u32 m_priority{};
+    bool m_read{};
+
+private:
+    OBJECTIVES_VECTOR m_Objectives;
+    u16 m_active_objective{ ROOT_TASK_OBJECTIVE };
+
+public:
+    CGameTask();
+    CGameTask(const TASK_ID& id);
+
+    void Load(const shared_str& id);
+
+    void save(IWriter& stream) override;
+    void load(IReader& stream) override;
+
+    void ChangeStateCallback() override;
+
+    u16 ActiveObjectiveIdx() const;
+    auto ActiveObjective() { return Objective(m_active_objective); }
+    SGameTaskObjective& Objective(u16 idx);
+    const SGameTaskObjective& Objective(u16 idx) const;
+    ETaskState ObjectiveState(u16 idx) const;
+    void SetActiveObjective(u16 idx);
+    u16 GetObjectivesCount(bool without_root = false) const;
+
+    using SGameTaskObjective::SetTaskState;
+    void SetTaskState(ETaskState state, u16 objective_id);
+    bool HasObjectiveInProgress() const;
+
+    // map
+    void OnArrived();
+    CMapLocation* LinkedMapLocation() override;
+
+    void FillEncyclopedia() const;
+
+    // for scripting access
+    void Load_script(pcstr id) { Load(id); }
+    
+    auto GetID_script() const { return m_ID.c_str(); }
+    void SetID_script(pcstr id) { m_ID = id; }
+
+    auto GetPriority_script() const { return m_priority; }
+    void SetPriority_script(int prio) { m_priority = prio; }
+
+    void AddObjective_script(SGameTaskObjective* O);
+    SGameTaskObjective* GetObjective_script(u16 objective_id);
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
