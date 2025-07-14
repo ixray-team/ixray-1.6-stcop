@@ -40,7 +40,7 @@
 	<menu_main btn_height="30" font="graffiti22" a="255" r="0" g="0" b="0">
 		<btn name="btn_new_game"	caption="ui_mm_newgame" />
 		<btn name="btn_load"		caption="ui_mm_load_game" />
-		<btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" />
+		<!--btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" /-->
 		<btn name="btn_options"		caption="ui_mm_options_n" />
 		<btn name="btn_credits"		caption="ui_mm_credits" />
 		<btn name="btn_quit"		caption="ui_mm_quit2windows" />
@@ -50,7 +50,7 @@
 		<btn name="btn_new_game"	caption="ui_mm_newgame" />
 		<btn name="btn_load"		caption="ui_mm_load_game" />
 		<btn name="btn_lastsave"	caption="ui_mm_last_save" />
-		<btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" />
+		<!--btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" /-->
 		<btn name="btn_options"		caption="ui_mm_options_n" />
 		<btn name="btn_credits"		caption="ui_mm_credits" />
 		<btn name="btn_quit"		caption="ui_mm_quit2windows" />
@@ -87,7 +87,7 @@
 	<menu_main_mm btn_height="30" font="graffiti22" a="255" r="0" g="0" b="0">
 		<btn name="btn_ret"			caption="ui_mm_return_game" />
 		<btn name="btn_options"		caption="ui_mm_options_n" />
-    <btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" />
+    <!--btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" /-->
     <btn name="btn_credits"		caption="ui_mm_credits" />
 		<btn name="btn_quit_to_mm"	caption="ui_mm_disconnect" />
 		<btn name="btn_quit"		caption="ui_mm_quit2windows" />
@@ -105,6 +105,14 @@
 		
 	</menu_sound>
 
+	<english_lang x="15" y="700" width="32" height="32">
+		<texture>ui_flag_usa_soc</texture>
+	</english_lang>
+	
+	<russian_lang x="60" y="700" width="32" height="32" stretch="1">
+		<texture>ui_flag_russia_soc</texture>
+	</russian_lang>
+	
 	<static_version x="15" y="740" width="100" height="30">
 		<text align="l" font="graffiti19" r="135" g="123" b="116" complex_mode="0"/>
 	</static_version>

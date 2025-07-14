@@ -1,0 +1,39 @@
+	<string id="agr_captains_chamber_hint">
+		<text>Captain's armory</text>
+	</string>
+	<string id="agr_collector_entrance_hint">
+		<text>Catacomb entrance</text>
+	</string>
+	<string id="agr_factory_hint">
+		<text>Factory</text>
+	</string>
+	<string id="agr_find_gunslinger_cache_hint">
+		<text>Find Strelok's secret stash in the catacombs</text>
+	</string>
+	<string id="agr_give_case_to_barman_hint">
+		<text>Give the documents to the Barkeep</text>
+	</string>
+	<string id="agr_help_krot_hint">
+		<text>Save Mole</text>
+	</string>
+	<string id="agr_help_stalkers_hint">
+		<text>Save the stalkers</text>
+	</string>
+	<string id="agr_meet_krot_hint">
+		<text>Meet Mole</text>
+	</string>
+	<string id="agr_nii_hint">
+		<text>Agroprom Research Institute. Military base</text>
+	</string>
+	<string id="agr_swamp_hint">
+		<text>Safe place</text>
+	</string>
+	<string id="agr_take_case_hint">
+		<text>Steal the documents</text>
+	</string>
+	<string id="agr_take_krots_info_hint">
+		<text>Get information about the stash from Mole</text>
+	</string>
+	<string id="agr_zaz_hint">
+		<text>Zaporozhets</text>
+	</string>

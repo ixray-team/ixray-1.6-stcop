@@ -10,28 +10,21 @@
 
 Texture2D<float> s_occ;
 
-struct _input
-{
-    float4 tc0 : TEXCOORD0;
-    float2 tcJ : TEXCOORD1;
-    float4 pos2d : SV_POSITION;
-};
-
-float4 main(_input I) : SV_Target
+float4 main(PSInputFullscreen I) : SV_Target
 {
     IXrayGbuffer O;
-    GbufferUnpack(I.tc0.xy, I.pos2d.xy, O);
-    float3 Light = s_accumulator.Load(int3(I.pos2d.xy, 0)).xyz;
+    GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
+    float3 Light = s_accumulator.Load(int3(I.hpos.xy, 0)).xyz;
 
 #ifdef USE_R2_STATIC_SUN
     Light += O.SSS * DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
 #endif
 
-    float Occ = O.AO * s_occ.SampleLevel(smp_rtlinear, I.tc0.xy, 0.0f).x;
+    float Occ = O.AO * s_occ.SampleLevel(smp_rtlinear, I.texcoord.xy, 0.0f).x;
 
 #ifndef USE_LEGACY_LIGHT
 	#ifdef USE_SSLR_REFLECTIONS
-		float3 SpecularIrradance = s_refl.SampleLevel(smp_rtlinear, I.tc0, 0.0).xyz;
+		float3 SpecularIrradance = s_refl.SampleLevel(smp_rtlinear, I.texcoord, 0.0).xyz;
 		SpecularIrradance *= rcp(1.00001f - SpecularIrradance);
 	#else
 		float3 SpecularIrradance = CompureSpecularIrradance(reflect(O.View, O.Normal), O.Hemi, O.Roughness);

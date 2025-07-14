@@ -11,8 +11,9 @@ float4 main(p_TL I, float4 pos2d : SV_POSITION) : SV_Target
     // float4 NH = float4(O.Normal, O.Hemi);
     float L = O.Hemi + O.SSS;
 
+#ifndef USE_SOC_LIGHTING
     clip(L);
-
+#endif
     return float4(L, L, L, L);
 }
 

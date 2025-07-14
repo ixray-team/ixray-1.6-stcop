@@ -30,19 +30,19 @@
 	</state_sprint>
 
 	<power_progress  x="24" y="94" width="43" height="7" horz="1" min="0" max="100" pos="50">
-		<progress>
+		<progress stretch="1">
 			<texture>ui_hud_shk_stamina</texture>
 		</progress>
 	</power_progress>
 	
 	<luminosity_progress x="79" y="34" width="8" height="71" horz="0" min="0" max="200" pos="100">
-		<progress>
+		<progress stretch="1">
 			<texture>ui_hud_shk_light</texture>
 		</progress>
 	</luminosity_progress>
 	
 	<noise_progress x="8" y="34" width="8" height="71" horz="0" min="0" max="400" pos="100">
-		<progress>
+		<progress stretch="1">
 			<texture>ui_hud_shk_noise</texture>
 		</progress>
 	</noise_progress>

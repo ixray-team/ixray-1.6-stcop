@@ -1,0 +1,36 @@
+	<string id="mil_actor_blockpost">
+		<text>You're approaching the Barrier. Don't even think about messing around. We'll be more than happy to accept any help though.</text>
+	</string>
+	<string id="mil_after_sniper_dead">
+		<text>Marked One, get over here for your share and further instructions</text>
+	</string>
+	<string id="mil_fblockpost_warning">
+		<text>Marked One, go back to your position</text>
+	</string>
+	<string id="mil_info_freedom_radio">
+		<text>If you spend the whole night at the Tower in the village something is GUARANTEED to happen...</text>
+	</string>
+	<string id="mil_info_max_mines">
+		<text>Don't forget the mines! One mistake and you're toast...</text>
+	</string>
+	<string id="mil_info_max_village">
+		<text>Be careful, Marked One. Apparently there's a new anomaly in the village. The bastard's fast and invisible!</text>
+	</string>
+	<string id="mil_info_to_all">
+		<text>Attention all those wishing to liquefy their brains: the road to the Red forest is protected by a Monolith unit and as you probably know those guys shoot first and don't ask questions later. Good luck.</text>
+	</string>
+	<string id="mil_max_attack_signal">
+		<text>Charge! Let's waste the bastards!</text>
+	</string>
+	<string id="mil_mission_complete">
+		<text>Our job here is done. Retreat to the farmstead. We will sort out the payment there.</text>
+	</string>
+	<string id="mil_scull_attack_signal">
+		<text>Forward boys! The way is clear!</text>
+	</string>
+	<string id="mil_scull_info">
+		<text>Marked One, take down those snipers!</text>
+	</string>
+	<string id="mil_sniper_to_player_warning">
+		<text>Be careful, Marked One, or you'll catch a bullet...</text>
+	</string>

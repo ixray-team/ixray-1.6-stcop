@@ -1,0 +1,72 @@
+	<string id="bar_darklab_documents">
+		<text>Find the documents in the underground lab</text>
+	</string>
+	<string id="bar_darklab_documents_1">
+		<text>Take the key to the lab from Borov</text>
+	</string>
+	<string id="bar_darklab_documents_2">
+		<text>Get out of the bandit base</text>
+	</string>
+	<string id="bar_darklab_documents_3">
+		<text>Find the entrance to the lab</text>
+	</string>
+	<string id="bar_darklab_documents_4">
+		<text>Sneak into the base</text>
+	</string>
+	<string id="bar_darklab_documents2">
+		<text>Find the documents in X18</text>
+	</string>
+	<string id="bar_darklab_documents2_1">
+		<text>Find the documents</text>
+	</string>
+	<string id="bar_darklab_documents2_2">
+		<text>Bring the documents to the Barkeep</text>
+	</string>
+	<string id="dar_codedoor_1">
+		<text>Find the codelocked door</text>
+	</string>
+	<string id="dar_codedoor_1_1">
+		<text>Discover the code that opens the door</text>
+	</string>
+	<string id="dar_codedoor_1_2">
+		<text>Open the door using the code</text>
+	</string>
+	<string id="dar_codedoor_2">
+		<text>Open the door to the control center</text>
+	</string>
+	<string id="dar_codedoor_2_1">
+		<text>Discover the code that opens the door</text>
+	</string>
+	<string id="dar_codedoor_2_2">
+		<text>Open the door using the code</text>
+	</string>
+	<string id="val_captive_help">
+		<text>Free the Dutyer</text>
+	</string>
+	<string id="val_captive_help_1">
+		<text>Follow Bullet to the ambush location</text>
+	</string>
+	<string id="val_captive_help_2">
+		<text>Kill the bandits and rescue the Dutyer</text>
+	</string>
+	<string id="val_come_to_trader">
+		<text>Return to the trader</text>
+	</string>
+	<string id="val_come_to_trader_0">
+		<text>Return to the trader</text>
+	</string>
+	<string id="val_come_to_trader_1">
+		<text>Get out of the Dark Valley</text>
+	</string>
+	<string id="val_come_to_trader_2">
+		<text>Show documents to the trader</text>
+	</string>
+	<string id="val_prisoner_help">
+		<text>Free the Dutyer from prison</text>
+	</string>
+	<string id="val_prisoner_help_0">
+		<text>Pull the Dutyer out of the bandit prison</text>
+	</string>
+	<string id="val_prisoner_help_main">
+		<text>Free the Duty member from the bandit prison</text>
+	</string>

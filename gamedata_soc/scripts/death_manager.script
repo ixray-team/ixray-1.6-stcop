@@ -113,7 +113,7 @@ end
 function drop_manager:create_release_item()
   --' Спрашиваем у серверного объекта генерились ли предметы
   local se_obj = alife():object(self.npc:id())
-  if se_obj.death_droped == true then
+  if se_obj == nil or se_obj.death_droped == true then
     return
   end
   se_obj.death_droped = true
@@ -132,6 +132,9 @@ function drop_manager:create_release_item()
     --' Необходимо составить список объектов которые могут быть заспавнены для персонажа
 
     local spawn_items = item_by_community[self.npc:character_community()]    
+    if spawn_items == nil then
+    	return
+    end
     for k,v in pairs(spawn_items) do
         --' По каждому объекту необходимо получить зависимости    
         if check_item_dependence(self.npc, k) == true then
@@ -148,33 +151,33 @@ function keep_item(npc, item)
     local section = item:section()
 
     if section == "bolt" then
-        return false
+        return
     end
 
     if always_keep_item[section] == true then
-        return true
+        return
     end
 
     local item_id = item:id()
-    local item_in_slot = npc:item_in_slot(1)
-    if item_in_slot ~= nil and
-       item_in_slot:id() == item_id
+    local item_in_slot = npc:item_in_slot(2)
+    if item_in_slot ~= nil and item_in_slot:id() == item_id
     then
         item:unload_magazine()
     --' Тут надо уменьшить кондишн оружия
-		item:set_condition((math.random(15)+75)/100)
-        return true
+		item:set_condition((math.random(15)+65)/100)
+        return
     end
-    item_in_slot = npc:item_in_slot(2)
-    if item_in_slot ~= nil and
-       item_in_slot:id() == item_id
+    item_in_slot = npc:item_in_slot(3)
+    if item_in_slot ~= nil and item_in_slot:id() == item_id
     then
         item:unload_magazine()
     --' Тут надо уменьшить кондишн оружия
-		item:set_condition((math.random(15)+75)/100)
-        return true
+		item:set_condition((math.random(15)+65)/100)
+        return
     end
-    alife():release(alife():object(item:id()), true)
+	if not npc:marked_dropped(item) then
+	    alife():release(alife():object(item:id()), true)
+	end
 end
 
 --' Функция спавнит необходимое число предметов

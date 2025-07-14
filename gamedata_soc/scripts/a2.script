@@ -1,3 +1,0 @@
-function new_action(obj)
-	action(obj, anim( anim.attack , 0), cond( cond.time_end, 50000))
-end

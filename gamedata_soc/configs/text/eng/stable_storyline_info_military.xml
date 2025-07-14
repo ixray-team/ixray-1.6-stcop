@@ -1,0 +1,51 @@
+	<string id="mil_actor_main_quest_descr">
+		<text>According to General Voronin, only Freedom has one of these guns. How I get it is my own business. I was told that one way would be to hang out with the Freedom stalker called Chef. The General says he likes his drink more than he should. I should stock up on vodka just in case I can use it.</text>
+	</string>
+	<string id="mil_blockpost_job_descr">
+		<text>It's imperative to protect the barrier from attack from the direction of the Brain Scorcher.</text>
+	</string>
+	<string id="mil_blockpost_job2_descr">
+		<text>Lukash: "If you have it in you, you can go to the security checkpoint by the exit to Red Forest - based on some indications they're expecting another attempt at a break in from the mutants or Monolith</text>
+	</string>
+	<string id="mil_courier_doc_descr">
+		<text>Freedom has acquired Bulldog 6 grenade launchers. Two of them. One is in the arsenal, the other somewhere in the village.\n\n</text>
+	</string>
+	<string id="mil_courier_job_descr">
+		<text>Lukash: "Sad but true - we have a snitch among us...His name is Pavlik. He's sending information to the other side, and we need to stop it. Your job is to follow him to the farmstead and find out who he's reporting the information to. He left a while ago, so you'll have to catch up. Remember this: You can and need to finish him off, but not before he reveals the one he's giving the information to. You'll have to eliminate the second dude too."</text>
+	</string>
+	<string id="mil_crazy_flash_info">
+		<text>... today we went to the village again on a hunt. Everything same as always. \n\n Where did that beast come from? Must have sneaked through near Red Forest. All the guys are down, I'm the only one standing... I'll try to sneak out at night... \n\n I don't remember how I got out. It was pure hell... My head is splitting open - pictures, sounds, I don't know where they are coming from. Goddamn radiation. On top of that, the bloody detector is kaputt. I must rest and I'll feel better.</text>
+	</string>
+	<string id="mil_dolg_kill_lukash_descr">
+		<text>Enter the base with Duty members.\nEliminate three snipers. \nKill Lukash.</text>
+	</string>
+	<string id="mil_dolg_kill_sniper_descr">
+		<text>Kill the sniper at the tower. Be careful, don't catch a bullet between the eyes.</text>
+	</string>
+	<string id="mil_flash_bandit_descr">
+		<text>Crap, those Duty assholes kicked us out from a fat place. They dug in near our farmstead. We didn't even have time to get our things from the attic. No big deal though - Freedom base is near, so they won't hang on too long.</text>
+	</string>
+	<string id="mil_flash_max_descr">
+		<text>Today we shook down a few soldiers on their way to Red Forest - scored some Bulldog 6s. They are awesome. Lukash took one, and Murk hid the other in the village, in one of the basements.</text>
+	</string>
+	<string id="mil_flash_ugrumy_descr">
+		<text>1. The Devil made me go to Red Forest. I barely made it - a little slower and I would have made for just another exhibit with liquified brains.\n\n 2: Four thugs surrounded me like I was a three-year old. I did my part - didn't see their trap. I was only saved by their chattiness and greed. Instead of stuffing me full of lead, they jumped out and began disrobing me - got hooked on the suit. That was their last mistake; still, one of them caught me with a bullet... heh, I'm getting old...\n\n 3: By the time I arrived, Strelok's messenger was no longer breathing. Three bloodsuckers are a match for anyone, but this guy took out four of them, and a few more bloody trails lead out in different directions. The only information on him is a door code (19840519), but identifying the door it unlocks doesn't seem possible.\n\n 4: We intercepted a few army men on their way to Red Forest. They carried no documents or orders, but were very adequately equipped. I think I'll leave that Bulldog 6 in the basement until I need it.</text>
+	</string>
+	<string id="mil_freedom_rg6_task_descr">
+		<text>Voronin: "Freedom has a few great granade PG-6 granade launchers. If you could manage to sneak into their territory and steal at least one such granade launcher, then I would handsomely reward you. Since you're not in our faction, you can easily build some rapport with Freedom and, with any luck, steal the PG-6. I'll forward you the info about the location of Freedom. There you have to find a certain Chef, a member of the group Freedom, he knows exactly where the PG-6es are stored. He has a weakness for drink, so try to get him drunk. For that, take a lot of vodka along."</text>
+	</string>
+	<string id="mil_go_to_miser_descr">
+		<text>Hrm. I will get my reward at Freedom's base from Skinflint... Nice name. I should hope for a can of meat with last year's best by date.</text>
+	</string>
+	<string id="mil_hunters_task_descr">
+		<text>Clean out the bloodsuckers in the village. Got to be careful or they'll drink all my blood and leave me for dead.</text>
+	</string>
+	<string id="mil_hunters_task_descr2">
+		<text>Clean out the bloodsuckers in the village. Got to be careful or they'll drink all my blood and leave me for dead.</text>
+	</string>
+	<string id="mil_lukash_job_descr">
+		<text>Lukash decided to carry out a counterattack on the Duty detachment at the cottage. Max, one of the veterans from Freedom, will head the operation. My job is to help them.</text>
+	</string>
+	<string id="mil_mad_flash_job_descr">
+		<text>I wonder what this crazy guy at the swamp can possibly know. I'll figure it out. The important thing is to avoid all those old mines. But - they must be rusty enough to explode from a bolt.</text>
+	</string>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Blind">
+		<text>Blind dog</text>
+	</string>
+	<string id="Bloodsucker">
+		<text>Bloodsucker</text>
+	</string>
+	<string id="Boar">
+		<text>Boar</text>
+	</string>
+	<string id="Crow">
+		<text>Crow</text>
+	</string>
+	<string id="enc_mutant_blind_general">
+		<text>Several generations of the dog species have lived and died since the catastrophe. Each was more affected by the Zone than the previous one. Rapid mutation lead to a vast improvement in previously peripheral abilities, frequently at the expense of primary ones. The most notable biological change was the loss of sight, paired with an uncanny development of smell. As it turned out, blind cubs survived in the Zone as well as normal ones, if not better. As a result, the common dog quickly became extinct in the Zone, giving way to a new breed - that of blind dogs. The animals instinctively identify and avoid anomalies, radiation, and other invisible dangers that plague the Zone. Like their wild ancestors - the wolves - blind dogs hunt in packs. An encounter with a large group of these animals can be dangerous even to an experiences and well-armed stalker.</text>
+	</string>
+	<string id="enc_mutant_bloodsucker_general">
+		<text>Experienced stalkers describe this semi-legendary beast as a tall, hunched humanoid with a mess of tentacles where its mouth should be. According to those who saw it and lived to tell the tale, the creature uses its tentacles to cling to the victim's throat, paralyze it, and suck it dry of blood. A dry, mummified shell is all that's left of what used to be a living human being. The most astounding feature of the bloodsucker, however, is its ability to become invisible. Countless dead or missing stalkers are said to have perished in the merciless grip of a bloodsucker. The lucky few who have survived an encounter tell spine-chilling tales of marshes and subterranean areas haunted by the Zone's version of Count Dracula.</text>
+	</string>
+	<string id="enc_mutant_boar_general">
+		<text>A massive, mutated animal, reaching 1.5 meters at the shoulder. The Zone boar's aggressiveness and ability to survive surpass by far those of its relatives outside the contaminated area. Radiation and anomalies left their mark on the physical appearance of the animal as well: its fur is entirely gone in some places, and long and bristly in others. The hooves have evolved into sturdy, sharp claws, the pupils became colorless, and the boar's bald head is marred by pigmentation disorders and deep wrinkles. Zone boars are quite resistant to radiation and can stay in heavily contaminated areas for longer periods of time. They usually charge at their victims, trying to knock them over and then rip them to shreds.</text>
+	</string>
+	<string id="enc_mutant_crow_general">
+		<text>The only bird species to have survived in the Zone, enduring increased radiation levels and effectively avoiding anomalies. While the army pilots need to rely on complex detectors to avoid gravitational disturbances, the crow seems to rely on its own senses for that - a mystery that drives ornithologists and biologists mad. Various theories attempting to explain the phenomenon exist, all of them pointing to a highly specialized development of the bird's brain.</text>
+	</string>
+	<string id="enc_mutant_flesh_general">
+		<text>Like most other living creatures in the Zone, the domestic pig also underwent serious biological changes since the day of the catastrophe. It seems the genes responsible for metabolism were especially affected in this case. Mutant pigs, known simply as Flesh among the stalkers, are one of the most vivid examples of the Zone's disastrous perversion of nature. Mutant pigs developed a protective layer of scales and exoskeletal plates. Their regeneration potential increased several times, as did the complexity of their nervous system. Just like a normal pig, a Flesh is an omnivore and may attack a stalker if hungry.</text>
+	</string>
+	<string id="enc_mutant_poltergeist_general">
+		<text>Supernatural in the eyes of some, invisible creatures haunting the deeper reaches of the Zone, usually haunting old, abandoned buildings. Nothing is known about their origin, although rumors in circulation claim they are spirits of stalkers hit by a massive wave of radiation. Their mysterious appearances and disappearances seem to correspond to the poltergeist legend, hence the name. Known encounters with poltergeists are quite diverse in fact: from mischievous laughter and blood-chilling howling, to deadly fireballs appearing out of nowhere. Unfortunately, all information about the poltergeist phenomenon originates from unclear and contradictory stories of questionable validity.</text>
+	</string>
+	<string id="enc_mutant_pseudodog_general">
+		<text>Despite the name, the pseudodogs evolved directly from wolves. The animals inhabiting the forests at the time of the catastrophe gave rise to one of the Zone's most dangerous mutant species. Pseudodogs are about as different from mutant dogs as wild wolves differ from poodles. The creatures mark and guard their territory carefully, attacking anyone stupid enough to venture onto their land on sight. Lightning-fast reflexes, uncanny dexterity and razor-sharp teeth make the pseudodog a formidable enemy for large mutants and well-armed stalkers.</text>
+	</string>
+	<string id="enc_mutant_pseudogiant_general">
+		<text>The pseudogiant resembles a massive, drop-shaped abdomen with a pair of disproportionately large limbs. The limbs are arms and legs at the same time. The creature uses them to move around and grab its victims. An adult pseudogiant can weigh up to two tons and stand 2 meters tall. Their clumsy appearance might be deceiving, since they can move very rapidly if needed. Their muscles are exceptionally powerful and their bones are as hard as steel. The creature's brain is protected by a sturdy (up to 10 centimeters thick) skull, while many complex functions are controlled by the spinal medulla. Another astonishing feature of the beast is its ability to create local shock waves, which damage all living things in the vicinity.</text>
+	</string>
+	<string id="enc_mutant_snork_general">
+		<text>It seems these creatures were human at some point, though it is difficult to imagine what conditions could turn a human being into such disgusting beast. Snorks are insane creatures leading a beast's life and differing little from other carnivorous monsters in the Zone. They move on all fours in long jumps, constantly sniffing the ground in hope of picking up the scent of prey. They hunt carefully, in a calculated manner, frequently setting up ambushes. Thanks to its uncanny reflexes and powerful muscles, the snork can approach the victim, pin it down in one long, accurate jump, and tear it to shreds in a matter of seconds. Strips of army uniforms and other clothing are occasionally found on their bodies. It stands to reason that they are all that's left of missing military stalkers.</text>
+	</string>
+	<string id="enc_mutant_tushkano">
+		<text>In fact these animals are not related to jerboas, although there is a distinct resemblance. Attempts at determining the exact species from which this rodent evolved have so far been unsuccessful, although its ancestor must have been a gregarious rodent. Reaching up to 40cm at the shoulder, the animal is far more dexterous, aggressive and ravenous than its desert cousin. Mutant rodents live mainly in basements of destroyed buildings, feeding on everything they can get their teeth in, from plants to careless stalkers. Occasionally a pack of rodents will attack and kill large animals and mutants, tearing them apart before they can escape.</text>
+	</string>
+	<string id="enc_mutant_zombie_general">
+		<text>The Brain Scorcher strips its victim of mind and reason, leaving only an empty, mindless shell. The brainless bodies then turn into zombies, following only the most basic instincts, wandering aimlessly around the Zone without weapons or clothing. Zombies are little more than sluggish walking corpses, caring only about food and sleep. They eat and drink just about anything they can get their claws on, hence they are virtually soaked in radiation and toxic waste. Usually they roam the Zone without any apparent purpose or just lie corpse-like in abandoned buildings. However, as soon as they sense the presence of a human being, they attack immediately. Experienced stalkers have learned to avoid them if they can.</text>
+	</string>
+	<string id="Flesh">
+		<text>Flesh</text>
+	</string>
+	<string id="General">
+		<text>General information</text>
+	</string>
+	<string id="mutant_boar_leg">
+		<text>Boar's hoof</text>
+	</string>
+	<string id="mutant_boar_leg_description">
+		<text>Boar's hooves can be used to produce a number of drugs, including an antiradiation serum.</text>
+	</string>
+	<string id="mutant_dog_tail">
+		<text>Dog tail</text>
+	</string>
+	<string id="mutant_dog_tail_description">
+		<text>The resistance of mutant dogs' skin to electricity and chemical agents has long been the subject of scientific attention. Since the animal's tail is almost completely free of fat tissue, it is especially suited for lab examination.</text>
+	</string>
+	<string id="mutant_flesh_eye">
+		<text>Flesh eye</text>
+	</string>
+	<string id="mutant_flesh_eye_description">
+		<text>The mutated, swollen eye of the Flesh acquired a number of strange characteristics, the most useful of which is the ability to regenerate the lens. The specifics of the process are hitherto unknown, although such discovery would most certainly revolutionize modern medicine. You can play your part in scientific development by selling Flesh eyes to scientists for their experiments.</text>
+	</string>
+	<string id="mutant_krovosos_jaw">
+		<text>Bloodsucker tentacles</text>
+	</string>
+	<string id="mutant_krovosos_jaw_description">
+		<text>Bloodsucker tentacles contain a special gland producing a ferment capable of dissolving the skin and simultaneously preventing blood from clotting. Discovering the ferment's composition could be the cornerstone of a whole series of great medical advances.</text>
+	</string>
+	<string id="mutant_psevdodog_tail">
+		<text>Pseudodog tail</text>
+	</string>
+	<string id="mutant_psevdodog_tail_description">
+		<text>The resistance of mutant dogs' skin to electricity and chemical agents has long been the subject of scientific attention. Since the animal's tail is almost completely free of fat tissue, it is especially suited for lab examination.</text>
+	</string>
+	<string id="mutant_snork_leg">
+		<text>Snork foot</text>
+	</string>
+	<string id="mutant_snork_leg_description">
+		<text>Snork feet contain a huge number of highly elastic tendons. This explains the beast's ability to make those unbelievably long jumps.</text>
+	</string>
+	<string id="Mutants">
+		<text>Animals and mutants</text>
+	</string>
+	<string id="Poltergeist">
+		<text>Poltergeist</text>
+	</string>
+	<string id="Pseudodog">
+		<text>Pseudodog</text>
+	</string>
+	<string id="Pseudogiant">
+		<text>Pseudogiant</text>
+	</string>
+	<string id="Snork">
+		<text>Snork</text>
+	</string>
+	<string id="Tushkano">
+		<text>Rodent</text>
+	</string>
+	<string id="Zombie">
+		<text>Zombie</text>
+	</string>
+	<string id="Controller">
+		<text>controller</text>
+	</string>
+	<string id="enc_mutant_controller_general">
+		<text>A rare mutant seen near to the center of the Zone. Bears a superficial resemblance of a humanoid with a disproportionately big head. Possesses a good perception, and an ability to control the behavior of less developed creatures. Mature specimen are capable of taking control over human's head. This is a ferocious enemy, and even the most experienced stalkers are afraid of meeting it.</text>
+	</string>
+</string_table>
