@@ -1446,10 +1446,20 @@ void CActor::save(NET_Packet &output_packet)
 	CInventoryOwner::save(output_packet);
 	output_packet.w_u8(u8(m_bOutBorder));
 	CUITaskWnd* task_wnd = HUD().GetGameUI()->PdaMenu().pUITaskWnd;
-	output_packet.w_u8(task_wnd->IsTreasuresEnabled() ? 1 : 0);
-	output_packet.w_u8(task_wnd->IsQuestNpcsEnabled() ? 1 : 0);
-	output_packet.w_u8(task_wnd->IsSecondaryTasksEnabled() ? 1 : 0);
-	output_packet.w_u8(task_wnd->IsPrimaryObjectsEnabled() ? 1 : 0);
+	if (task_wnd)
+	{
+		output_packet.w_u8(task_wnd->IsTreasuresEnabled() ? 1 : 0);
+		output_packet.w_u8(task_wnd->IsQuestNpcsEnabled() ? 1 : 0);
+		output_packet.w_u8(task_wnd->IsSecondaryTasksEnabled() ? 1 : 0);
+		output_packet.w_u8(task_wnd->IsPrimaryObjectsEnabled() ? 1 : 0);
+	}
+	else
+	{
+		output_packet.w_u8(1);
+		output_packet.w_u8(1);
+		output_packet.w_u8(1);
+		output_packet.w_u8(1);
+	}
 
 	cam_Active()->save(output_packet);
 	output_packet.w_u8(cam_active);
@@ -1469,11 +1479,20 @@ void CActor::load(IReader &input_packet)
 	CInventoryOwner::load(input_packet);
 	m_bOutBorder=!!(input_packet.r_u8());
 	CUITaskWnd* task_wnd = HUD().GetGameUI()->PdaMenu().pUITaskWnd;
-	task_wnd->TreasuresEnabled(!!input_packet.r_u8());
-	task_wnd->QuestNpcsEnabled(!!input_packet.r_u8());
-	task_wnd->SecondaryTasksEnabled(!!input_packet.r_u8());
-	task_wnd->PrimaryObjectsEnabled(!!input_packet.r_u8());
-
+	if (task_wnd)
+	{
+		task_wnd->TreasuresEnabled(!!input_packet.r_u8());
+		task_wnd->QuestNpcsEnabled(!!input_packet.r_u8());
+		task_wnd->SecondaryTasksEnabled(!!input_packet.r_u8());
+		task_wnd->PrimaryObjectsEnabled(!!input_packet.r_u8());
+	}
+	else
+	{
+		input_packet.r_u8();
+		input_packet.r_u8();
+		input_packet.r_u8();
+		input_packet.r_u8();
+	}
 	cam_Active()->load(input_packet);
 	cam_Set(EActorCameras(input_packet.r_u8()));
 
