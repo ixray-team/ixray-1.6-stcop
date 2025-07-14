@@ -1,0 +1,48 @@
+	<string id="gar_car_graveyard_quest">
+		<text>Respond to the call for help</text>
+	</string>
+	<string id="gar_defend_garbage">
+		<text>Repel the bandit raid.</text>
+	</string>
+	<string id="gar_dialog_hellcar">
+		<text>Offer your help to the leader of the neutral squad.</text>
+	</string>
+	<string id="gar_dialog_hellcar_1">
+		<text>Offer your help to Bes.</text>
+	</string>
+	<string id="gar_hellcar_alive">
+		<text>Talk to Bes.</text>
+	</string>
+	<string id="gar_help_dymon">
+		<text>Repel the bandit raid.</text>
+	</string>
+	<string id="gar_help_tunnel_newbie">
+		<text>Help the rookie from the Garbage</text>
+	</string>
+	<string id="gar_kill_bandits">
+		<text>Destroy the bandit raid</text>
+	</string>
+	<string id="gar_kill_boars">
+		<text>Help the Duty checkpoint</text>
+	</string>
+	<string id="gar_kill_boars_1">
+		<text>Kill the boars.</text>
+	</string>
+	<string id="gar_kill_boars_2">
+		<text>Talk with the Duty commander</text>
+	</string>
+	<string id="gar_kill_boars_descr">
+		<text>Duty: "Hello, the Duty faction is speaking from the Garbage. There's a wave of mutants going from the Dark Valley towards the bar. We guarantee our gratitude to all who will help kill off the scum. On the word of the Duty."</text>
+	</string>
+	<string id="gar_kill_boars_main">
+		<text>The quest to get through to the bar.</text>
+	</string>
+	<string id="garbage_meet_stalker_1">
+		<text>Learn something of Strelok from Seriy.</text>
+	</string>
+	<string id="graveyard_raid_text">
+		<text>Bes: "The bandit scum is trying to gain control over the Garbage. There was a brawl here half an hour ago. We killed three of the freaks. The rest of the fellows retreated, but I have a feeling they'll be back any minute now with reinforcements. There are few of us and an extra barrell wouldn't hurt. If you help us destroy their reinforcements, then I'll return the favor."</text>
+	</string>
+	<string id="help_for_neitrals_text">
+		<text>There's been a shootout at the abandoned vehicle graveyard between neutral forces and bandits. The neutrals managed to fight the bandits off but are calling for help.</text>
+	</string>

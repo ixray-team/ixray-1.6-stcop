@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="pri_followers_start_dlg_21">
+		<text>Let's move up the street. If anything happens, cover me.</text>
+	</string>
+	<string id="pri_followers_start_dlg_211">
+		<text>OK.</text>
+	</string>
+	<string id="pri_followers_start_dlg_31">
+		<text>Thanks for the help, Marked One. That was a hard fight. We can rest here. If you wanna keep going, I'll tell you more about the area. If you go back and turn right you'll reach the bus station. That area is open and not very safe. If you go forward you'll end up in front of the hotel. To the right of it is the Monolith base. Those guys have no limits. Behind the base is the stadium. We were planning to get to the station through it. That's all.</text>
+	</string>
+	<string id="pri_followers_start_dlg_311">
+		<text>Thank you.</text>
+	</string>
+	<string id="pri_followers_start_dlg_41">
+		<text>Thanks for the help. Good luck.</text>
+	</string>
+	<string id="pri_followers_start_dlg_411">
+		<text>Bye.</text>
+	</string>
+</string_table>

@@ -12,7 +12,7 @@
 	</static_health>
 
 	<progress_bar_health x="24" y="5" width="84" height="10" horz="1" min="0" max="100" pos="0">
-		<progress>
+		<progress stretch="1">
 			<texture>ui_hud_shk_health</texture>
 		</progress>
 	</progress_bar_health>
@@ -25,7 +25,7 @@
 	</static_armor>
 
 	<progress_bar_armor x="24" y="21" width="84" height="10" horz="1" min="0" max="100" pos="0">
-		<progress>
+		<progress stretch="1">
 			<texture>ui_hud_shk_armour</texture>
 		</progress>
 	</progress_bar_armor>

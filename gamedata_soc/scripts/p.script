@@ -1,3 +1,0 @@
-function main ()
-        set_postprocess ("scripts\\postprocess.ltx")
-end

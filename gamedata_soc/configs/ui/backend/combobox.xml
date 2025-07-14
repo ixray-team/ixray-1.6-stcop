@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w>
+	<frameline_default>ui_cb_linetext_e</frameline_default>
+	<frameline_highlighted>ui_cb_linetext_h</frameline_highlighted>
+	<list_box>ui_cb_listline</list_box>
+	<list_frame>ui_cb_listbox</list_frame>
+	<arrow>ui_cb_arrow</arrow>
+	<height>23</height>
+</w>

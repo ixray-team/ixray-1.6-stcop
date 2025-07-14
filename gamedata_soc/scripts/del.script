@@ -1,3 +1,0 @@
-function main()
-         printf("111111%s", this.script_name())
-end

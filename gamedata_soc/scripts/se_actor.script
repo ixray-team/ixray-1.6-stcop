@@ -1,0 +1,21 @@
+class "se_actor"	(cse_alife_creature_actor)
+--------------------
+function se_actor:__init (section) super (section)
+end
+
+function se_actor:on_register()
+	cse_alife_creature_actor.on_register(self)
+end
+
+function se_actor:on_unregister()
+	cse_alife_creature_actor.on_unregister(self)
+end
+
+--------------------
+function se_actor:STATE_Write(packet)
+	cse_alife_creature_actor.STATE_Write(self, packet)
+end
+--------------------
+function se_actor:STATE_Read(packet, size)
+	cse_alife_creature_actor.STATE_Read(self, packet, size)
+end
