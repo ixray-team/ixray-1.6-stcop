@@ -20,9 +20,10 @@ private:
 	CUIStatic					m_compass;
 	CUITextWnd*					m_pointerDistanceText;
 	CUIWindow					m_clipFrame;
-	CUIStatic					m_Counter;
-	CUITextWnd					m_Counter_text;
+	CUIStatic*					m_Counter;
+	CUITextWnd*					m_Counter_text;
 	u8							m_current_map_idx;
+	bool						legacyMapMode;
 
 public:
 								CUIZoneMap		();
