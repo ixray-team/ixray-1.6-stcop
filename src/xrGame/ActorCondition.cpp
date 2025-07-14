@@ -461,7 +461,7 @@ void CActorCondition::UpdateRadiation()
 		m_fRadiationZonePower = 0;
 		for (CObject* pFeelObject : m_object->q_nearest)
 		{
-			if (pFeelObject == nullptr || pFeelObject->getDestroy()) 
+			if (pFeelObject == nullptr || pFeelObject->getDestroy() || pFeelObject->CLS_ID == 0) 
 			{
 				continue;
 			}
