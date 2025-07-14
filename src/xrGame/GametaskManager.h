@@ -6,6 +6,7 @@
 class CGameTaskWrapper;
 class CGameTask;
 class CMapLocation;
+class SGameTaskObjective;
 
 class CGameTaskManager
 {
@@ -39,7 +40,7 @@ public:
 	void			UpdateTasks						();
 
 	CGameTask*				ActiveTask						(ETaskType type = eTaskTypeStoryline);
-//	void					SetActiveTask					(const shared_str& id, ETaskType type = eTaskTypeStoryline);
+	SGameTaskObjective*		ActiveObjective					();
 	void					SetActiveTask					(CGameTask* task);
 	void					SetActiveTask					(CGameTask* task, u16 objective_id);
 	u32						ActualFrame						() const {return m_actual_frame;}
