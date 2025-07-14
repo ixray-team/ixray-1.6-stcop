@@ -76,10 +76,17 @@ void CUICustomMap::Init_internal(const shared_str& name, CInifile& pLtx, const s
 {
 	m_name					= name;
 	Fvector4				tmp;
+	LPCSTR tex;
 
-	m_texture				= pLtx.r_string(sect_name,"texture");
+	if( pLtx.line_exist(m_name,"texture") ){
+		tex			= pLtx.r_string(m_name,"texture");
+		tmp		= pLtx.r_fvector4(m_name,"bound_rect");
+	}else{
+		tex = "ui\\ui_nomap2";
+		tmp.set(-10000.0f,-10000.0f,10000.0f,10000.0f);
+	}
+	m_texture				= tex;
 	m_shader_name			= sh_name;
-	tmp						= pLtx.r_fvector4(sect_name,"bound_rect");
 	
 	if(!Heading())
 	{
