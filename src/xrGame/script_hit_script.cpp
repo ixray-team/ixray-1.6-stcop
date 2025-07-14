@@ -31,6 +31,7 @@ void CScriptHit::script_register(lua_State *L)
 				value("explosion",				int(ALife::eHitTypeExplosion)),
 				value("fire_wound",				int(ALife::eHitTypeFireWound)),
 				value("light_burn",				int(ALife::eHitTypeLightBurn)),
+				value("physic_strike",			int(ALife::eHitTypePhysicStrike)),
 				value("dummy",					int(ALife::eHitTypeMax))
 			]
 			.def_readwrite("power",				&CScriptHit::m_fPower)
