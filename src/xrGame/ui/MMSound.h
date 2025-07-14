@@ -22,6 +22,8 @@ protected:
 
 	IC	bool		check_file			(LPCSTR fname);
 
+	ref_sound		m_music_l;
+	ref_sound		m_music_r;
 	ref_sound		m_music_stereo;
 
 	ref_sound		m_whell;

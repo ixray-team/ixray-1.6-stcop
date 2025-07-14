@@ -17,6 +17,7 @@ struct SZoneMapEntityData{
 	Fvector	pos;
 	u32		color;
 	SZoneMapEntityData(){pos.set(.0f,.0f,.0f);color = 0xff00ff00;}
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 struct WeaponUsageStatistic;
