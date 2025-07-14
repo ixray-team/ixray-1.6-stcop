@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<w>
+
+	<fraglimit x="393" y="2" width="236" height="40">
+		<text align="c" font="graffiti22" r="238" g="155" b="23" a="255"/>
+	</fraglimit>
+
+	<reinforcement x="492" y="3" width="40" height="40" text="1"  sector_count="30" clockwise="0">
+		<front x="2" y="34" width="33" height="33">
+			<texture>ui_hud_teamF_counterC</texture>
+			<text font="letterica18" r="200" g="200" b="200" align="c" vert_align="c" complex_mode="0"/>
+		</front>
+		<back x="0" y="0" width="36" height="70">
+			<texture>ui_hud_teamF_counter</texture>
+		</back>
+	</reinforcement>
+
+</w>

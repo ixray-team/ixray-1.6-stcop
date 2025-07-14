@@ -1,0 +1,62 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+rostok_sniper_1_die +rostok_sniper_2_die +rostok_sniper_3_die +rostok_sniper_4_die} sr_idle@volkodav , {-bar_ecolog_crush_heli_start} sr_idle@post_heli %+bar_ecolog_crush_heli_start =bar_crush_heli_start%
+
+
+
+
+
+[sr_idle@volkodav]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 2000 | sr_idle@sniper %=play_snd(characters_voice\scenario\Rostok\volkodav_radio_enemy_1)%
+
+[sr_idle@sniper]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 7000 | sr_idle@volkodav_1 %=play_snd(characters_voice\scenario\Rostok\killer_radio_enemy_1)%
+
+[sr_idle@volkodav_1]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 5000 | sr_idle@sniper_1 %=play_snd(characters_voice\scenario\Rostok\volkodav_radio_enemy_2)%
+
+[sr_idle@sniper_1]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 4000 | sr_idle@heli_start %=play_snd(characters_voice\scenario\Rostok\killer_radio_enemy_2)%
+
+[sr_idle@heli_start]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 3000 | sr_idle@post_heli %+bar_ecolog_crush_heli_start =bar_crush_heli_start%
+
+[sr_idle@post_heli]
+on_info2 = {-bar_heli_scene_stay_online} nil
+on_info = {+bar_ecolog_crush_heli_down} sr_idle@kruglov_attract %=bar_crush_heli_down%
+
+
+[sr_idle@kruglov_attract]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 9000 | {=actor_in_zone(rostok_volkodav_fire_sound_end)} sr_idle@kruglov_attract_2 %=rostok_kruglov_tip_1%, {+rostok_camera_start} sr_idle@kruglov_attract_2 %=rostok_kruglov_tip_1%
+
+[sr_idle@kruglov_attract_2]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 8500 | sr_idle@freedom %=rostok_kruglov_tip_2 +bar_rescue_research_start% 
+
+
+[sr_idle@freedom]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 12000|{+bar_freedom_attack_ecolog} nil  %=bar_freedom_attack_start% ,{-bar_heli_scene_volkodav_die -bar_freedom_attack_ecolog} sr_idle@ecolog_2 %=bar_freedom_spam_1%
+                                                                                                                                                                                            	
+
+[sr_idle@ecolog_2]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 7000| {+bar_freedom_attack_ecolog} nil %=bar_freedom_attack_start%,{-bar_heli_scene_volkodav_die -bar_freedom_attack_ecolog -rostok_objective_1} sr_idle@freedom_3 %=bar_ecolog_spam_2%
+
+[sr_idle@freedom_3]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 8000| {+bar_freedom_attack_ecolog} nil %=bar_freedom_attack_start%,{-bar_heli_scene_volkodav_die -bar_freedom_attack_ecolog} sr_idle@ecolog_3 %=bar_freedom_spam_3%
+
+[sr_idle@ecolog_3]
+on_info = {-bar_heli_scene_stay_online} nil
+on_timer = 7000| {+bar_freedom_attack_ecolog} nil %=bar_freedom_attack_start%,{-bar_heli_scene_volkodav_die -bar_freedom_attack_ecolog -rostok_objective_1} nil %=bar_ecolog_spam_3%
+
+

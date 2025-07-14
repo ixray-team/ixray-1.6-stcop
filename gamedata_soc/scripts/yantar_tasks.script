@@ -1,0 +1,30 @@
+function proceed()
+
+end
+function process_info_portion(info_id)
+end
+
+function yan_labx16_mapspot (actor, npc)
+    	level_tasks.add_location (907, "green_location")
+end
+function has_labx16_documents ()
+        if db.actor:object ("lab_x16_documents") ~= nil then
+           db.actor:give_info_portion ("yantar_find_ghost_task_end")
+           db.actor:give_info_portion ("yan_x16_documents_gain")
+           return true
+        end    
+		return false
+end
+function switchers_off ()
+		return has_alife_info("yan_labx16_switcher_1_off") and has_alife_info("yan_labx16_switcher_2_off") and has_alife_info("yan_labx16_switcher_3_off") 
+end
+function has_kruglov_flash ()
+		return db.actor:object ("kruglov_flash") ~= nil
+end
+function yan_scientist_task_fail ()
+		return has_alife_info("yan_scientist_die") and not has_alife_info("yan_scientist_return_to_bunker")
+end
+
+function yantar_vasilyev_spam (actor, npc)
+    news_manager.send_tip(db.actor, "storyline_vasilyev_tip", nil, "ecolog", nil, 903)
+end

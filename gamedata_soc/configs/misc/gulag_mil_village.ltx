@@ -1,0 +1,104 @@
+;-------------------------------------------------------------------------------------------------
+;-- Village freedom kamp
+;-------------------------------------------------------------------------------------------------
+;-- ugrumy
+[logic@mil_village_ugrumy]
+active = walker1@mil_village_ugrumy
+on_death = death@mil_village_ugrumy
+
+[death@mil_village_ugrumy]
+on_info = %+mil_ugrumy_dead +mil_hunt_ready +sar2_death_52%
+
+[kamp@mil_village_ugrumy]
+center_point = kamp
+meet = meet@mil_village_ugrumy
+danger = danger@mil_freedom
+path_walk = kamp1_task
+
+[walker1@mil_village_ugrumy]
+path_walk = ugrumy_meet_walk
+path_look = ugrumy_meet_look
+meet = meet@mil_village_ugrumy
+danger = danger@mil_freedom
+
+[meet@mil_village_ugrumy]
+meet_state = 5|ward@talk_hello
+meet_state_wpn = 5|ward
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+use_wpn = false
+meet_dialog = mil_hunter_dialog
+on_info = {-mil_actor_in_kamp_zone} kamp@mil_village_ugrumy
+
+;--specnaz
+[logic@mil_village_soldier1]
+active = kamp@mil_village_soldier1
+on_death = death@mil_village_ugrumy
+
+[kamp@mil_village_soldier1]
+center_point = kamp
+danger = danger@mil_freedom
+path_walk = kamp1_task
+
+;--regular
+[logic@mil_village_soldier2]
+active = kamp@mil_village_soldier2
+on_death = death@mil_village_ugrumy
+
+[kamp@mil_village_soldier2]
+center_point = kamp
+danger = danger@mil_freedom
+path_walk = kamp1_task
+
+
+;-------------------------------------------------------------------------------------------------------
+; village search artefacts
+;-------------------------------------------------------------------------------------------------------
+[logic@mil_village_ugrumy_search]
+active = kamp2@mil_village_ugrumy
+on_death = death@mil_village_ugrumy
+
+[kamp2@mil_village_ugrumy]
+center_point = kamp
+meet = meet@mil_village_ugrumy
+on_timer = 240000 | walker@mil_village_ugrumy_search
+path_walk = kamp1_task
+
+[walker@mil_village_ugrumy_search]
+path_walk = search_path1
+path_look = search_look1
+on_signal = final | kamp2@mil_village_ugrumy
+
+;-------
+[logic@mil_village_specnaz_search]
+active = kamp2@mil_village_soldier1
+
+[kamp2@mil_village_soldier1]
+center_point = kamp
+on_timer = 180000 | walker@mil_village_specnaz_search
+path_walk = kamp1_task
+
+[walker@mil_village_specnaz_search]
+path_walk = search_path2
+path_look = search_look2
+on_signal = final | kamp2@mil_village_soldier1
+
+;-------
+[logic@mil_village_regular_search]
+active = kamp2@mil_village_soldier2
+
+[kamp2@mil_village_soldier2]
+center_point = kamp
+on_timer = 120000 | walker@mil_village_regular_search
+path_walk = kamp1_task
+
+[walker@mil_village_regular_search]
+path_walk = search_path3
+path_look = search_look3
+on_signal = final | kamp2@mil_village_soldier2
+;-------
+
+
+
+

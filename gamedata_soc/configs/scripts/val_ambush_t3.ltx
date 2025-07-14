@@ -1,0 +1,46 @@
+[logic]
+active = kamp@peaceful
+combat_ignore = combat_ignore
+on_hit = hit
+on_death = death
+
+[hit]
+on_info = kamp@aggressive %+val_ambush_kill_plr%
+
+[death]
+on_info = kamp@aggressive %+val_ambush_kill_plr%
+
+[combat_ignore]
+
+[kamp@peaceful]
+center_point = val_ambush_t3_kamp
+combat_ignore_cond = {=fighting_actor}
+on_actor_dist_le = 15 | {-val_ambush_t3_started} remark@hello %+val_ambush_t3_started%
+on_actor_in_zone = val_ambush_t3_kill_zone | kamp@aggressive %+val_ambush_kill_plr%
+on_info = {+val_ambush_kill_plr} kamp@aggressive, {+val_ambush_t3_started} remark@attention
+
+[remark@hello]
+no_move = true
+anim = hello
+snd = val_ambush_come_here
+snd_timeout = 0
+;snd_anim_sync = true
+meet_dialog = val_ambush_dialog
+meet_state = wait
+meet_talk_enabled = true
+combat_ignore_cond = {=fighting_actor}
+on_actor_dist_le = 5 | %+val_ambush_t3_plr_near%
+on_actor_dist_ge_nvis = 17 | {+val_ambush_t3_plr_near} kamp@aggressive %+val_ambush_kill_plr%, kamp@peaceful %-val_ambush_t3_started%
+on_info = {+val_ambush_kill_plr} kamp@aggressive
+--on_info2 = {!see_actor} kamp@peaceful %-val_ambush_t3_started%
+on_actor_in_zone = val_ambush_t3_kill_zone | kamp@aggressive %+val_ambush_kill_plr%
+
+[remark@attention]
+no_move = true
+anim = threat
+combat_ignore_cond = {=fighting_actor}
+on_actor_in_zone = val_ambush_t3_kill_zone | kamp@aggressive %+val_ambush_kill_plr%
+on_info = {+val_ambush_kill_plr} kamp@aggressive, {-val_ambush_t3_started} kamp@peaceful
+
+[kamp@aggressive]
+center_point = val_ambush_t3_kamp

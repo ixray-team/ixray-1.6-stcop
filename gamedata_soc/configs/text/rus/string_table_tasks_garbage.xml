@@ -1,0 +1,48 @@
+	<string id="gar_car_graveyard_quest">
+		<text>Ответить на призыв о помощи</text>
+	</string>
+	<string id="gar_defend_garbage">
+		<text>Уничтожить рейд бандитов</text>
+	</string>
+	<string id="gar_dialog_hellcar">
+		<text>Предложить свою помощь лидеру нейтралов</text>
+	</string>
+	<string id="gar_dialog_hellcar_1">
+		<text>Предложить свою помощь Бесу</text>
+	</string>
+	<string id="gar_hellcar_alive">
+		<text>Поговорить с Бесом</text>
+	</string>
+	<string id="gar_help_dymon">
+		<text>Отбить рейд бандитов</text>
+	</string>
+	<string id="gar_help_tunnel_newbie">
+		<text>Помочь новичку со свалки</text>
+	</string>
+	<string id="gar_kill_bandits">
+		<text>Уничтожить рейд бандитов</text>
+	</string>
+	<string id="gar_kill_boars">
+		<text>Помочь заставе Долга</text>
+	</string>
+	<string id="gar_kill_boars_1">
+		<text>Убить кабанов</text>
+	</string>
+	<string id="gar_kill_boars_2">
+		<text>Поговорить с командиром заставы</text>
+	</string>
+	<string id="gar_kill_boars_descr">
+		<text>Долг: "Всем прием, говорит застава Долга на свалке. Из темной Долины по направлению к бару идет волна мутантов. Всем кто поможет отстрелять нечисть, признательность с нашей стороны гарантируем. Слово Долга."</text>
+	</string>
+	<string id="gar_kill_boars_main">
+		<text>Квест для прохода на Бар</text>
+	</string>
+	<string id="garbage_meet_stalker_1">
+		<text>Узнать у Серого о Стрелке</text>
+	</string>
+	<string id="graveyard_raid_text">
+		<text>Бес: "Бандитское отродье пытается получить контроль над Свалкой. Здесь полчаса назад была драка. Троих уродов мы положили. Остальные братки отступили, но явно вот-вот вернутся с подкреплением. Нас мало и лишний ствол не помешает. Если поможешь нам уничтожить их подкрепление, то я в долгу не останусь."</text>
+	</string>
+	<string id="help_for_neitrals_text">
+		<text>На кладбище машин произошла перестрелка между нейтралами и бандитами. Нейтралы отбились, но зовут на помощь.</text>
+	</string>

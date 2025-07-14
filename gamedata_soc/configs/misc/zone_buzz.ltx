@@ -1,0 +1,127 @@
+[zone_buzz]
+GroupControlSection			= spawn_group_zone
+$spawn 						= "zones\buzz"
+$prefetch 					= 16
+class						= ZS_MBALD
+
+hit_impulse_scale			= 0.0
+effective_radius			= 1.0 ;размер радиуса в процентах от оригинального, где действует зона
+
+ef_anomaly_type				= 1
+ef_weapon_type				= 13
+
+sound						= 
+postprocess					= postprocess_flame
+	
+artefacts					= af_ameba_slime, 0.8, af_ameba_slug, 0.2, af_ameba_mica, 0.0
+BirthProbability 			= 0.2
+
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.99
+max_start_power		= 1.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+
+idle_particles				= anomaly2\studen_idle_bottom
+blowout_particles			= anomaly2\studen_blowout
+
+hit_small_particles			= anomaly2\group_items\studen_idle_bottom_00
+hit_big_particles			= anomaly2\group_items\studen_idle_bottom_00
+idle_small_particles		= anomaly2\group_items\studen_idle_bottom_00
+idle_big_particles			= anomaly2\group_items\studen_idle_bottom_00
+
+idle_sound					= anomaly\buzz_idle; bfuzz_blowout		;постоянный звук
+blowout_sound				= anomaly\buzz_hit; bfuzz_hit		;во время выброса(удара) в центре аномалии	
+hit_sound					= anomaly\buzz_hit; bfuzz_hit		;на персонаже, когда тот получает хит
+entrance_sound				= anomaly\buzz_hit; bfuzz_hit		;при попадании объекта в аномалию
+
+hit_type					= chemical_burn
+							  
+disable_time				= 10000	;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small			= -1	;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time			= 50000	;время отключения idle партиклов
+
+ignore_nonalive				= false
+ignore_small				= false
+ignore_artefacts			= false
+
+blowout_light				= on
+light_color		    		= 1.1,1.7,1.4
+light_animation             = light_green_01
+light_range		    		= 5
+light_time 		    		= 0.35
+light_height				= 0.75			;подъем источника света на высоту
+
+
+idle_light					= on
+idle_light_range			= 3.0
+idle_light_range_delta 		= 0.25
+idle_light_anim				= light_green_02
+idle_light_height			= 0.70			;подъем источника света на высоту
+
+awaking_time				= 50
+blowout_time				= 100	
+accamulate_time				= 500
+
+visible_by_detector 		= off
+
+blowout_wind				= off
+
+blowout_wind_time_start 	= 0
+blowout_wind_time_peak  	= 600
+blowout_wind_time_end		= 899
+blowout_wind_power			= 0.5			;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;рождение артефактов во время срабатывания
+spawn_blowout_artefacts = off
+
+
+[zone_buzz_weak]:zone_buzz
+$spawn 						= "zones\buzz weak"
+artefacts					= af_ameba_slime, 0.8, af_ameba_slug, 0.2, af_ameba_mica, 0.0
+BirthProbability 			= 0.2
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.14
+max_start_power		= 0.15
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 1
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 50  ;вероятность заспавнить артефакт в процентах.
+
+[zone_buzz_average]:zone_buzz
+$spawn 						= "zones\buzz average"
+artefacts					= af_ameba_slime, 0.6, af_ameba_slug, 0.4, af_ameba_mica, 0.0
+BirthProbability 			= 0.2
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.49
+max_start_power		= 0.50
+attenuation			= 1
+period				= 1
+min_artefact_count	= 1
+max_artefact_count	= 1
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 70  ;вероятность заспавнить артефакт в процентах.
+
+[zone_buzz_strong]:zone_buzz
+$spawn 						= "zones\buzz strong"
+artefacts					= af_ameba_slime, 0.2, af_ameba_slug, 0.6, af_ameba_mica, 0.2
+BirthProbability 			= 0.2
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.99
+max_start_power		= 1.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 1
+max_artefact_count	= 2
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 90  ;вероятность заспавнить артефакт в процентах.

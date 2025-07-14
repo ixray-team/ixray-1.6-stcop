@@ -1,0 +1,17 @@
+[logic]
+active = camper1
+on_death = death
+combat_ignore = combat_ignore
+ 
+[death]
+on_info = %+val_stairs_victim1_dead%
+ 
+[camper1]
+path_walk = val_stairs_victim1_walk
+path_look = val_stairs_victim1_look
+radius = 0
+def_state_moving = sneak
+def_state_campering = hide
+def_state_campering_fire = hide_fire
+no_retreat = true
+combat_ignore_cond = always

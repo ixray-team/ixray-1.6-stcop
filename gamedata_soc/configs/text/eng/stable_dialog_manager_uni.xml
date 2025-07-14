@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="dm_general_action_info">
+		<text>What are you doing here?</text>
+	</string>
+	<string id="dm_general_cool_info">
+		<text>Can you tell me something interesting?</text>
+	</string>
+	<string id="dm_general_cool_info_no_more">
+		<text>Don't know anything else.</text>
+	</string>
+	<string id="dm_general_help_bandage">
+		<text>Take the bandage.</text>
+	</string>
+	<string id="dm_general_help_medkit">
+		<text>Take the first aid kit.</text>
+	</string>
+	<string id="dm_general_trade_info">
+		<text>Interested in information. For money.</text>
+	</string>
+	<string id="dm_general_trade_info_caption">
+		<text>I can offer the following:</text>
+	</string>
+	<string id="dm_general_trade_info_hasno">
+		<text>Can't offer anything.</text>
+	</string>
+	<string id="dm_general_trade_info_nothing">
+		<text>Some other time.</text>
+	</string>
+</string_table>

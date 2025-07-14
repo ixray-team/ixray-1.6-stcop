@@ -1,0 +1,85 @@
+
+-------------------
+class "aes_deadzone"
+-------------------
+function aes_deadzone:__init (obj, storage)
+	self.object         = obj
+	self.st             = storage
+	self.actor_inside   = false
+end
+-------------------
+function aes_deadzone:reset_scheme()
+    self.actor_inside = false
+
+	self.hit_time						= 0
+	self.hit_power                      = 0
+end
+-------------------
+function aes_deadzone:deactivate()
+	if self.state == state_inside then
+	   level.set_snd_volume (self.snd_volume)
+	   self:zone_leave      ()
+	end
+end
+-------------------
+function aes_deadzone:update (delta)
+	if xr_logic.try_switch_to_another_section (self.object, self.st, db.actor) then
+		return
+	end
+	
+	self.actor_inside = self.object:inside (db.actor:position ())
+
+	if self.actor_inside == true then
+		level.add_pp_effector("radiation.ppe", 777, true)
+	else
+		level.remove_pp_effector(777)
+	end
+
+	self:update_hit (delta)
+end
+-------------------
+function aes_deadzone:update_hit		(delta)
+    if self.actor_inside == false then
+       self.hit_power = 0
+       return
+    end
+    self.hit_power = self.hit_power + (delta * 0.001) * (self.st.hit_intensity * 0.01)
+    if time_global () - self.hit_time < 1000 then
+       return 
+    end    
+    printf ("HIT POWER = %f", self.hit_power)
+    self.hit_time = time_global ()
+    local h = hit ()
+    h.power = self.hit_power
+	h.direction = vector ():set (0, 0, 0)
+	h.impulse	= 0
+	h.draftsman = db.actor
+	h.type = hit.radiation
+	db.actor:hit (h)
+	
+	h.type = hit.shock
+	db.actor:hit (h)
+	
+end
+-------------------
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+
+	local new_action = aes_deadzone (npc, storage)
+
+	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+---------------------------------------------------------------------------------------------------------------------
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
+	--st.intensity = utils.cfg_get_number (ini, section, "intensity", npc, true) * 0.01
+	--st.intensity_speed = utils.cfg_get_number (ini, section, "intensity_speed", npc, true) * 0.01
+    st.hit_intensity = utils.cfg_get_number (ini, section, "hit_intensity", npc, true)
+	
+end

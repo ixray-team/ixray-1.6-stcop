@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<!-- OLD!!! OLD !!!! OLD!!! -->
+<window x="0" y="0" w="640" h="480" r="227" g="121" b="222" texture="1">
+
+	<!-- health -->
+	<static x="860" y="635" width="150" height="200">
+		<text x="80" y="5" font="small" r="255" g="255" b="255" a="130">health</text>
+		<texture>ui\ui_mn_health</texture>
+	</static>
+	<!-- map -->
+	<static x="5" y="5" width="150" height="200">
+		<texture>ui\ui_mg_back_map</texture>
+	</static>
+	
+	<!-- radiation -->
+	<static x="935" y="235" width="50" height="50">
+		<texture>ui\ui_mg_icon_radiation_small</texture>
+	</static>
+	<static x="935" y="235" width="50" height="50">
+		<texture>ui\ui_mg_icon_radiation_medium</texture>
+	</static>
+	<static x="935" y="235" width="50" height="50">
+		<texture>ui\ui_mg_icon_radiation_hard</texture>
+	</static>
+	
+	<!-- wound -->
+	<static x="940" y="300" width="100" height="50">
+		<texture>ui\ui_mg_icon_wound</texture>
+	</static>
+	
+	<!-- WEAPON -->
+	<static x="860" y="685" width="200" height="100">
+		<text x="0" y="4" font="small" r="255" g="255" b="255" a="130"></text>
+		<texture>ui\ui_mn_weapons</texture>
+	</static>
+	<!-- ammo name -->
+	<static x="65" y="22" width="120" height="30">
+		<text x="0" y="0" font="graffiti32" r="238" g="155" b="23" a="255">Ammo</text>
+	</static>
+	<!-- weapon name -->
+	<static x="85" y="4" width="100" height="30">
+		<text x="0" y="0" font="small" r="255" g="255" b="255" a="130">Wpn</text>
+	</static>
+	<!-- weapon icon -->
+	<static x="12" y="10" width="50" height="50"></static>
+
+	<!-- pda online icon -->
+	<static x="1" y="187" width="200" height="32">
+		<texture>ui\ui_mg_back_pager</texture>
+		<text x="103" y="2" font="normal" r="239" g="154" b="29" a="230"></text>
+	</static>
+
+
+	<!-- PDA Message List-->
+	<list x="15" y="325" width="525" height="420" item_height = "70"></list>
+	
+
+	<!-- health bar -->
+	<progress_bar x="876" y="658" length="120" broad="20" horz="1" min="0" max="100" pos="0">
+		<texture tile="0" length="120" r="255" g="50" b="50">ui\ui_mg_progress_efficiency_full</texture>
+		<background x="0" y="0">ui\ui_mg_progress_efficiency_empty</background>
+	</progress_bar>
+
+	<!-- armor bar -->
+	<progress_bar x="876" y="613" length="120" broad="20" horz="1" min="0" max="100" pos="0">
+		<texture tile="0" length="120" r="0" g="0" b="255">ui\ui_mg_progress_efficiency_full</texture>
+		<background x="0" y="0">ui\ui_mg_progress_efficiency_empty</background>
+	</progress_bar>
+
+	<!-- "health" string OLD!!! REMOVE AFTER UPDATE  -->
+	<static x="80" y="6" width="100" height="30">
+		<text x="0" y="0" font="small" r="255" g="255" b="255" a="130">armor</text>
+	</static>
+
+	<!-- "armor" string OLD!!! REMOVE AFTER UPDATE  -->
+	<static x="80" y="6" width="100" height="30">
+		<text x="0" y="0" font="small" r="255" g="255" b="255" a="130">armor</text>
+	</static>              
+
+	<!-- armor -->
+	<static x="860" y="590" width="150" height="200">
+		<text x="80" y="5" font="small" r="255" g="255" b="255" a="130">armor</text>
+		<texture>ui\ui_mn_health</texture>
+	</static>
+
+	<!--WARNING ICONS-->
+	<weapon_jammed_static	x="940" y="190" width="50" height="50">
+		<texture>ui\ui_mn_weapons_jammed</texture>
+	</weapon_jammed_static>
+
+	<radiation_static		x="940" y="270" width="50" height="50">
+		<texture>ui\ui_mn_radiations_hard</texture>
+	</radiation_static>
+
+	<wound_static			x="940" y="350" width="50" height="50">
+		<texture>ui\ui_mn_wounds_hard</texture>
+	</wound_static>
+
+	<starvation_static		x="940" y="430" width="50" height="50">
+		<texture>ui\ui_mn_starvation_hard</texture>
+	</starvation_static>
+
+	<fatigue_static			x="940" y="510" width="50" height="50">
+		<texture>ui\ui_mn_fatigue_hard</texture>
+	</fatigue_static>
+    
+	<!-- MONEY INDICATORS. MP ONLY -->
+	<money_mt_static		x="860" y="40" width="200" height="200">
+		<text x="85" y="4" font="small" r="255" g="255" b="255" a="130">money</text>
+		<texture>ui\ui_mn_weapons</texture>
+		
+		<phrase x="20" y="15" font="graffiti50" r="238" g="155" b="23" a="255"></phrase>
+		<phrase x="20" y="65" font="graffiti32" r="238" g="155" b="23" a="255">
+			<animation anim="fade" period="3" cyclic="0"></animation>
+		</phrase>
+	</money_mt_static>
+
+
+</window>

@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="dm_action_info_0">
+		<text>How can there be anything new here? Think of this as kindergarten, preschool even. Granted, if you don't hang around here, you'll get sacked in five minutes in the Zone, so there. The smart ones stay here a while, and then they go the devil knows where. Besides, you can make it here with ammo or weapons, there's no question about it. Everyone does it.</text>
+	</string>
+	<string id="dm_action_info_1">
+		<text>All I have to do is wait for those pansies in uniform to go out for lunch...There's no point to hang out here, I need to go to the Big Land, but they won't let me, no matter what. I'm not the only one trying to get out either, but still we can't slip by them yet.</text>
+	</string>
+	<string id="dm_action_info_10">
+		<text>Not far from here the fellows in uniform needed something. They didn't used to come here - cleared everything out spick-n-snap before me, right down to cutting down the cables. And now it seems they found...I couldn't get even close to the building - they noticed me right away and started shooting. Glad I made it out without a hold in my hide. </text>
+	</string>
+	<string id="dm_action_info_100">
+		<text>Nothing. Trying to make it, that's all.</text>
+	</string>
+	<string id="dm_action_info_11">
+		<text>We're getting together a team of those who can't get enough of climbing underground in the Zone. There's an old factory, and under it there are all these powerlines. They say there's a bunch of goodies there, always something new to check out. Very interesting...</text>
+	</string>
+	<string id="dm_action_info_12">
+		<text>Not new - old! They say that Strelok's old base used to be located here. I wonder what kind of traces one could find from that time, if they really looked hard?</text>
+	</string>
+	<string id="dm_action_info_13">
+		<text>Can you believe it - an hour ago I almost got into a mess! I was here half a year ago - peace and quiet, but now these razorheads in their outfits under every bush! It's crazy, man...</text>
+	</string>
+	<string id="dm_action_info_14">
+		<text>You're lucky, stalker, that the bandits didn't get you: they have a base pretty close to here. Oh how I would have totalled it if I could...But for now we're just observing. This is their supporting base - the headquarters are located closer to the center of the Zone.</text>
+	</string>
+	<string id="dm_action_info_15">
+		<text>They say there used to be an impressive lab here, camoflauged. Oh...On the one hand it'd be great to find the entrance - I bet there are lots of goodies inside. On the other hand, it gives me the heebie-jeebies...</text>
+	</string>
+	<string id="dm_action_info_16">
+		<text>Did you know that in what's now the Dark Valley, before the catastrophe there used to be an underground scientific research complex? I don't know what it was meant for, but I'm sure nothing good. They say different things about it, but mostly it's bad. Terrible thing.</text>
+	</string>
+	<string id="dm_action_info_17">
+		<text>And so what? What do you want to hear? I'll tell you this much: "dutiers" are definitely the cops, but they know how to keep the order, that's for sure. But overall I don't like them very much. They're like the landlords everywhere - don't take this, don't carry that out of the Zone...Not only that, but they've already determined what you're allowed to say in the Big Land and what you're supposed to be hush-hush about! They blab, and actually want to destroy the Zone, little by little. Well that doesn't surprise me, coming from former soldiers....they're all dreamers. What's worse is that, they say, their support comes all the way from the top.</text>
+	</string>
+	<string id="dm_action_info_18">
+		<text>This territory is now controled by the Duty, and the rules of the Duty are the law of the land. We control the borders of the zone and cool off hot heads: the poor fools come here in whole caravans, amateurs, romantics...and then die off in groups on the very first day.</text>
+	</string>
+	<string id="dm_action_info_19">
+		<text>Were you at our half-way camp? Granted, it's not just ours - you can run into most anyone here. What's important is that it's a good place, without any trash, and all the news about the Zone drain in here. You can almost always hear something useful, or at least chat with folks about nothing in particular. Too bad that Baldy with his group left the day before yesterday - so this time I didn't even get to see him.</text>
+	</string>
+	<string id="dm_action_info_2">
+		<text>Let's head to camp, you'll hear all the rumors there. All who are doing this for the first time - the rookies like you - usually drop by to pick up some pointers or rest a while. There are soldiers standing nearby: don't be too afraid of them, but don't get in their way either - they can shoot and not think twice about it...Here by the trader - well, the retailer of the local merchandise - there's a nice, calm little place where you can break camp. </text>
+	</string>
+	<string id="dm_action_info_20">
+		<text>Right now, stalker, this place is safe, and we're trying to keep it that way. There are many people here: some who've made it their home and don't go beyond the surrounding area, others who are preparing for yet another raid. Such a shame that Irokez didn't come back. He loved to set rookies like yourself on the way of the righteous. </text>
+	</string>
+	<string id="dm_action_info_21">
+		<text>Did you hear that the Duty has announced that it's recruiting new members? I thought about it a minute, but then decided - the hell with it. Before long they'll draft me...Don't need that kind of discipline. I served my two years, and that was enough for me...</text>
+	</string>
+	<string id="dm_action_info_22">
+		<text>If you haven't heard yet, I'm letting you know: we're recruiting new members. If you have some experience, come, you won't regret it. At the base ask for Petrenko.</text>
+	</string>
+	<string id="dm_action_info_23">
+		<text>Did you come to look at the matches too - want to place a bid or something? Well what do you know! There's an arena here somewhere, and you're a total zero! So check this out: members of the Duty squad catch mutants, right? After the research, if the beasts are still alive, they let them loose on the arena. And these babes come in all shapes and sizes - some, you'll look at them and die laughing, others - you'll wet your pants.</text>
+	</string>
+	<string id="dm_action_info_24">
+		<text>They just provided the arena with new meat. Entertainment for the people, and for us a good way to earn a few percent from the bids. We'll prove to the stalkers that the Duty isn't just wagging its tongue, but that we do the real thing.</text>
+	</string>
+	<string id="dm_action_info_25">
+		<text>Hey listen, have you been to the Rostok? It used to be quiet there, but now it's tough going there alone - your average wild field, much too many mutants there now. Let's go together, what do you say?...On the other hand...I don't know you, and you don't know me. What if...Yeah, dude, sorry. Let's split.</text>
+	</string>
+	<string id="dm_action_info_26">
+		<text>We're just back from Rostok. You don't need to show your face there, especially if you're alone. Want to stay alive? Then you better not go.</text>
+	</string>
+	<string id="dm_action_info_27">
+		<text>Well I was thinking of going to Yantar, but then thought, screw it. There the eggheads set up a full-fledged scientific base in the Zone. They're digging around in the devil knows what while zombies are romping all around outside the complex. How idyllic, my goodness.</text>
+	</string>
+	<string id="dm_action_info_28">
+		<text>They were purging the Yantar zone recently...yeah, cleaned it up pretty well! There are research laboratories there, but too many zombies all around. So we have to regularly haul over there to help the scientists out.</text>
+	</string>
+	<string id="dm_action_info_29">
+		<text>By the old warehouses, you know - the Freedom base. They're happy fellows, have some soul; it's such a pleasure to chat with them over a bottle of wine. And Duty isn't there all the time like around the bar.</text>
+	</string>
+	<string id="dm_action_info_3">
+		<text>There's an old factory nearby, and we keep on cleaning it of bandits, and each time they come back again! It hasn't even been a month since last time, and they're already back. You better be more careful there...</text>
+	</string>
+	<string id="dm_action_info_30">
+		<text>Freedom is hiding out behind the old warehouses...break them all down, these freaken...</text>
+	</string>
+	<string id="dm_action_info_31">
+		<text>Leave before it gets dark! During the day it's more or less okay, but once the sun sets...</text>
+	</string>
+	<string id="dm_action_info_32">
+		<text>Stalker, leave! We're going to take down the cordoning off. For now we keep it up only during the day, and leave for the night - it's too creepy here at night.</text>
+	</string>
+	<string id="dm_action_info_33">
+		<text>You see, during the night you need to keep yourself hidden, and preferable behind a good set of doors. During the dark part of the day we find ourselves basically under seige.</text>
+	</string>
+	<string id="dm_action_info_34">
+		<text>Well buddy, it seems you're not up to date? During the night you have to snooze somewhere far away from here. Here during the night even a granade launcher doesn't always help.</text>
+	</string>
+	<string id="dm_action_info_35">
+		<text>You know what, let the Duty guys and the Freedom guys and the marauders figure out who this part belongs to. What is it to me? To hell with it all...</text>
+	</string>
+	<string id="dm_action_info_36">
+		<text>We're working here now, stalker. Not only is there a bunch of these wretches breeding here, but also those asses the mercs and the retards from the Freedom faction get in the way...</text>
+	</string>
+	<string id="dm_action_info_37">
+		<text>I have to warn you that it's not very safe here even during the day. Once in a while there is a shoot-off, as far as I understand, theirs is some long-standing conflicts between the various local bandit factions.</text>
+	</string>
+	<string id="dm_action_info_38">
+		<text>Listen, why don't you tell me - this is our territory, right? It's easier for us to hold off the wretches that come here from the center of the Zone, isn't it? The eggheads can mess around trying to figure out who's bothering them, but the Duty and the marauders can get the hell out of here.</text>
+	</string>
+	<string id="dm_action_info_39">
+		<text>And you don't know? They treaded a new path here to be able to get past the Duty patrol right to the perimeter with all the goods. Get here from Yantar, and then using the backways all the way to Agroprom - and you're there!</text>
+	</string>
+	<string id="dm_action_info_4">
+		<text>Nothing. I don't know squat. I grab a bite here and there, trying to make enough for my daily bread. It's too creepy going into the Zone itself - to hell with it. And there's no work at home, my wife's on my case - gotta live somehow. Here at the Garbage, if you look around for a day, you can get some artifacts together. And it'll do for your bread and butter.</text>
+	</string>
+	<string id="dm_action_info_40">
+		<text>And why are you here? Planning to go to Yantar, or are you trying to sneak some artifacts past a brother?</text>
+	</string>
+	<string id="dm_action_info_41">
+		<text>I won't conceal the fact that here your stalker colleagues offer us from time to time some quite interesting anomalous formations - artifacts is what you call them. Because of...shall we say...the uncertain level of control over them...these places form a kind of highly active smuggling trail. </text>
+	</string>
+	<string id="dm_action_info_42">
+		<text>What's wrong with you man? We laid a path just so that we wouldn't have to run into the fellows from the Duty faction if we wanted to get to the Big Land for something. Though they still hang around here from time to time, at least they don't know anything for now and so you can get around them.</text>
+	</string>
+	<string id="dm_action_info_43">
+		<text>I'm just coming back from Yantar. Thought I'd pass something off to science as usual, but they're all locked in their bunkers, don't go out even during the day, if only to another propeller. So if you're planning to head in that direction, might as well change course...</text>
+	</string>
+	<string id="dm_action_info_44">
+		<text>There is research going on in the Yantar zone, but recently there's been more zombies that are hanging around those parts. So we're defending the entrances.</text>
+	</string>
+	<string id="dm_action_info_45">
+		<text>I don't even know what to tell you. I wanted to get back into our complex - it's called Yantar, as you probably know. And here there's this: they say that while before it was just plain dangerous, now it's simply impossible to get through. Maybe they're exaggerating?</text>
+	</string>
+	<string id="dm_action_info_46">
+		<text>I was at Yantar, the science is completely dead there: sneaking around, hiding...They're living only off of the supplies the spinners drop off. On the other hand, there really are a lot of zombies there now. If you spend a week living there among them, you'll start sneaking around yourself. That's the kind of place it is. Not very pleasant.</text>
+	</string>
+	<string id="dm_action_info_47">
+		<text>To the dogs with him. Who does he think he is to be hanging out with zombies?! So many of them in the stupid complex - and they keep on coming. And there's more and more of them there.</text>
+	</string>
+	<string id="dm_action_info_48">
+		<text>We're trying to stop the movement of zombies from the laboratory complex. To say honestly, I totally wouldn't mind if you joined - we have a shortage of men...</text>
+	</string>
+	<string id="dm_action_info_49">
+		<text>You know, we're also gathering various data..For instance, I'm researching the main ways in which the quasilives...that is, zombies according to your terminology...spread. Would you be willing to share your findings?</text>
+	</string>
+	<string id="dm_action_info_5">
+		<text>Yeah that's about it...Some feed off the Garbage, collecting little junk, others penetrate deeper into the Zone. Naturally, there you can find much better items, but not everyone will want to go there. That's no place for rookies, and if you don't have any ammo, don't even think about going there - it's a lost cause. </text>
+	</string>
+	<string id="dm_action_info_50">
+		<text>Did you get to shoot at the zombies climbing out of the laboratory windows? Well you better watch it - they're not afraid of anything, don't feel any pain, in other words, wretches without any brains.</text>
+	</string>
+	<string id="dm_action_info_51">
+		<text>I'm going to apply for a position in the laboratory! Hey man, relax - I'm kidding. You know that if you wander into these parts, you're as good as dead. Best case scenario, you'll turn into a zombie.</text>
+	</string>
+	<string id="dm_action_info_52">
+		<text>I'm warning you: don't go into the lab. Well, if you really want to go then go, I won't hold you back by force. Just that they don't come back from there alive.</text>
+	</string>
+	<string id="dm_action_info_53">
+		<text>You see, I would like to warn you. You shouldn't go into the laboratory. Nobody, in fact, should go there: it's linked to major alterations in the psychology and metabolism of an individual, and, I'm afraid, these affects are not reversible.</text>
+	</string>
+	<string id="dm_action_info_54">
+		<text>There! Now I'm going to shed some light on you...enlighten you...basically will save the lost sheep. So here's the deal man: don’t aim your skis towards the laboratory complex. It's shady there, very shady. People disappear there, and then at times come back to haunt you at night. Only these aren't some vampire horror stories, but the real truth about zombies. That's how it is.</text>
+	</string>
+	<string id="dm_action_info_55">
+		<text>Have you seen our smartasses, the color of the United, damn it, Nations? Lately they're completely chickening out. Gotta call in the whole regiment along with the airforce for protection just to take a few steps off the base.</text>
+	</string>
+	<string id="dm_action_info_56">
+		<text>And what's it to you? Don't bother them with stupid questions, and then they'll leave you alone as well.</text>
+	</string>
+	<string id="dm_action_info_57">
+		<text>You see, we usually don't leave the bunker without the necessary protection: the conditions of the surrounding territory don't permit it. I'm a sort of an exception - don't really like large expeditions, all this fuss, soldiers...But in any case, I'm afraid I can't tell you anything helpful for the time being.</text>
+	</string>
+	<string id="dm_action_info_58">
+		<text>I get a kick out of our happy science! I just totally dig it, man. It usually doesn't show its face out of the bunker. And even if it does show its face, like it did the other day - my goodness! Troops everywhere, propellers, armor technology! They might as well haul a battleship here, or at least an armored train.</text>
+	</string>
+	<string id="dm_action_info_59">
+		<text>It's already the third day that I'm hanging out here, observing. There's a laboratory here, right? Nobody's gone in it from the very beginning, the Dutiers used to purge zombies only on top, and now stopped completely, right? But science had to go in there. That means they found a way to protect themselves, the devil knows from what. So I'm thinking, why not snoop around, find out - I bet there are so many goodies there that you may as well rake them in with a shovel.</text>
+	</string>
+	<string id="dm_action_info_6">
+		<text>In the last few days whole packs of animals are coming out of the Dark Valley. What's forcing them out of there is unclear, but they're really pushing out of there, as if from a fire. And in the eastern sector the mutants are breeding like flies. All we can do is keep shooting them down. So that's the news.</text>
+	</string>
+	<string id="dm_action_info_60">
+		<text>And what are you looking for here? Also trying to get into the laboratory? Did you hear a fairy tale about magical instruments and piles of artifacts? Man...when will you idiots ever learn?</text>
+	</string>
+	<string id="dm_action_info_61">
+		<text>I work here, young man. Simply work here, carrying out my duty before science and humanity. And if you wish you find out about the abandoned laboratory, the same thing that every stalker I meet thinks I know, I will tell you: I don't know and don't want to know. This topic doesn't interest me and never interested me, is that clear?!</text>
+	</string>
+	<string id="dm_action_info_62">
+		<text>Maybe the brains really did come up with some sort of instrument? I wonder what's hidden in that damned laboratory. Even if there aren't any goodies there - still it's interesting.</text>
+	</string>
+	<string id="dm_action_info_63">
+		<text>I'm wondering - maybe I should join Freedom? There's their base, in the old army warehouses. And why not? Seem like pretty smart guys, and so what if they're a bit disorganized? It's even better that way: I don't need to be disciplined, I know what I'm supposed to be doing - not like this is my first month here.</text>
+	</string>
+	<string id="dm_action_info_64">
+		<text>You're not too friendly with Freedom, are you? Fine, fine, don't get all upset. I think that soon we'll run them off of the warehouses. They don't have any organization nor any discipline - a big herd. A pack at best. And they dare stand up against us, those NATO fledglings.</text>
+	</string>
+	<string id="dm_action_info_65">
+		<text>I meet up with one of the Duty men when there's a cease-fire. We share. The man's actually smart, but, shit, narrow-minded like your tank. You see, our philosophy is completely different from theirs: you can only tame the Zone, assimilate it, but not destroy it. To do it we need open access to all of the information: someone will come up with something eventually. But they're all about "close it" and "lock it" and "don't spread it around"...Retards, complete retards. On the other hand, it makes sense: when the whole political machine is behind you, you're not supposed to think outside of the box.</text>
+	</string>
+	<string id="dm_action_info_66">
+		<text>There's a little cottage here, used to be calm but now there are some creeps breeding here. Better loop around, so that's why I'm going around...Hey man, I warned you.</text>
+	</string>
+	<string id="dm_action_info_67">
+		<text>I want to warn you, stalker, right away: the bloodsuckers have long since made a nest in the village, and maybe something worse, so be careful.</text>
+	</string>
+	<string id="dm_action_info_68">
+		<text>There's nothing new. There are no more artifacts here, and in those little cottages bloodsuckers used to live, we shot them off best as we could. Now I went, and can't get to the place. Intuition, maybe, but I can't and that's it. No way. There is death there...</text>
+	</string>
+	<string id="dm_action_info_69">
+		<text>I'm getting the hell out of here! Bummed around for four weeks on the border, and that's it - enough out of me! Freaks are constantly coming over here from the direction of the Scorcher, and each day more and more of them...</text>
+	</string>
+	<string id="dm_action_info_7">
+		<text>Now many have become "trashmen". Before they didn't used to even look in the piles - such high radiation that it'll hard-boil eggs for you in half an hour. And now that it's gotten harder with the goodies, they'll wrap themselves in protection, take some chemicals, and climb in to look. There's all sorts of stuff that comes up there, though usually it's little junk.</text>
+	</string>
+	<string id="dm_action_info_70">
+		<text>If you're coming here, to our blockade, I respect you. If not - get the hell out of my sight! We need real men and not sissies: got enough of those already...</text>
+	</string>
+	<string id="dm_action_info_71">
+		<text>You're here for the blockage, man? All the better - at least one more normal person will be here. We organized this thing and held it together pretty well...but then all the beasts had to come our way!...Now it's tough and every barrell counts.</text>
+	</string>
+	<string id="dm_action_info_72">
+		<text>Aren't you up to date? The way to the center of the Zone has been opened! Either it opened on its own or someone tried really hard - if so thanks to them whole-heartedly. Now all you have to do it gather the finest goods!</text>
+	</string>
+	<string id="dm_action_info_73">
+		<text>You might have waited, stalker. Don't run after everything. Just tell me: do you know what's over there? That's right, you don't know. Don't know whether there's anything there or not. What kinds of traps await you, you don't know either. Then why the hell are you trying to break through like a herd of buffalo?</text>
+	</string>
+	<string id="dm_action_info_74">
+		<text>The way to the center is free, understand?! Now there's a straight path right to the center! Now everyone is gonna haul over there. What's important is to be among the first, the gather the firstfruit!</text>
+	</string>
+	<string id="dm_action_info_75">
+		<text>Keep on trucking ahead - you'll see everything yourself! Don't you want to see for yourself what's going on ahead? Well then you're totally...blessed. There must be so many goods there! For example, you heard about the Granter of Wishes, right?</text>
+	</string>
+	<string id="dm_action_info_76">
+		<text>Just like children, for goodness sake! "Wish Granter", "Klondike of Artifacts"...can't believe my ears!</text>
+	</string>
+	<string id="dm_action_info_77">
+		<text>I want to find out myself what's beyond the horizon, man! What if we'll be able to find out, in one blow, all the explanations for why the Zone is the way it is?</text>
+	</string>
+	<string id="dm_action_info_78">
+		<text>Did you see the skyscrapers? That's already Pripyat. The station is right behind it. Oh how I wish to get in there...just that it's hard to tell what's roaming in there nowadays.</text>
+	</string>
+	<string id="dm_action_info_79">
+		<text>Let me explain. There's Pripyat. Behind it - Chernobyl NPP. What's going on there and who's inhabiting these parts, is unknown. This is the place for us. We'll find something, as usual.</text>
+	</string>
+	<string id="dm_action_info_8">
+		<text>Not up to date! And I'm just heading towards the bar, to chat with folks. What, you've never been there? Goodness! So here's the deal: the way you're standing, just keep on moving north. The bar's just around the corner. It's very helpful to drop by there, especially for newbies like you it's like prescribed by the doctor: there are experienced men there, who knows, they may help out, tell you something, how and what. One thing, you'll run into our buddies from the Duty on the way...and here it depends - if you're lucky, they'll like you. If not, well then they won't.</text>
+	</string>
+	<string id="dm_action_info_80">
+		<text>Pripyat! Pinch me damn it! Finally! From here it's just a ways away to the station. Damn, hard to know though who you can run into here - what critter is sharpening its teeth waiting for you.</text>
+	</string>
+	<string id="dm_action_info_81">
+		<text>Listen, friend...Are you also hearing a voice in your head, or am I hallucinating? Keeps on murmuring something over and over again...</text>
+	</string>
+	<string id="dm_action_info_82">
+		<text>Damn, another one...So here's the deal. I'll try to explain for the billionth time what kind of telepathic effect people here experience. Voices not heard from the outside are constantly calling them towards the center of the Zone promising to grant every wish for the one who is able to touch...what's it called?...Oh yeah, some monolith.</text>
+	</string>
+	<string id="dm_action_info_83">
+		<text>Do you hear a voice? Cool, just like a player in your head! Shame there's only one track though: come to me and you'll have great happiness. Two hours harping on the same thing.</text>
+	</string>
+	<string id="dm_action_info_84">
+		<text>And you can't guess what it is? You're trying to break through to the station yourself too! Well and so are we - what else is new?! Just as long as we can get these retards off the road...</text>
+	</string>
+	<string id="dm_action_info_85">
+		<text>The territory of the station is very close! For now we still can't deal with the resistance of the monolithians!</text>
+	</string>
+	<string id="dm_action_info_86">
+		<text>There it is, Chernobyl NPP, within arms' reach. Just a bit left, but these damned bitches are so stubborn, won't let us through! No big deal, we'll clear them out in no time!</text>
+	</string>
+	<string id="dm_action_info_9">
+		<text>Listen, friend, you don't know yourself about the Agroprom? I wanted to go there, but everyone started mocking me: there aren't any goods there anymore, they cleaned the place a while ago, and now only anomalies left. Do you know, are they serious or are they just saying that to joke around? I'm pretty new here - believe what the locals say...Maybe they're all together in on it, just to mess around? All they need is a reason to laugh their heads off, these jerks!</text>
+	</string>
+	<string id="dm_action_info_94">
+		<text>Wait! Go fast, but don't hurry too much. There are monolithians all around, they know the city through and through, put up lots of traps. Need to be careful. </text>
+	</string>
+	<string id="dm_action_info_95">
+		<text>I'm warning you: for now a large portion of the city is controlled by the Monolith faction. Lots of traps - they know the city like the back of their hand. Keep a sharp eye out and check your weapons.</text>
+	</string>
+	<string id="dm_action_info_96">
+		<text>Oh, what I would gladly do is cover the city with a bomb carpet. Swine...the only place they're not hiding is in sand boxes and flower pots. How many people have already died because of these creeps!</text>
+	</string>
+	<string id="dm_action_info_97">
+		<text>Listen, who knows this Granter...maybe it's not eternal, so there won't be enough for everybody? And what's one to do? Get down on all fours? And you, dude, I promise you this: if we get there, you're going after me...</text>
+	</string>
+	<string id="dm_action_info_98">
+		<text>Duty has to break through to the center, if not first then one of the first! Just imagine, stalker, that some psycho - and all of you here are either physics, paranoics and oligophrens - gets to the thing that really can grant any wish, huh? And then what?</text>
+	</string>
+	<string id="dm_action_info_99">
+		<text>News of the century: everyone who can walk and carry a weapon is here now! Anything can happen here! You just get it into your head: Anything that you wish! And then someone'll come along and say "I want for the Zone to disappear from now on and forever more". Huh? Do you grasp the dimensions of the tragedy? We're all going to end up in the middle of nowhere, all of us!</text>
+	</string>
+	<string id="dm_cool_info_0">
+		<text>Something new? To hell with your new, when there's so much old shit that you couldn't scoop it out with a ladle. The bandits went mad, the swine! We tread between the anomalies trying to get the artifacts, and they're the ones stealing other people's goods...Asses! Just watch out and don't wander into the Garbage - that's exactly their kind of place.</text>
+	</string>
+	<string id="dm_cool_info_1">
+		<text>I'm stuck here, you got it, stuck. I want to go home, and they're not letting me. That's all the news. The guys that walk deep into the Zone, the ones that have been around, they say different things. And at times they bring the goodies too - you'd get jealous. They say that there are places like mounds of gold: all for the taking. Granted, not many will get there, and even less will make it back with the finds.</text>
+	</string>
+	<string id="dm_cool_info_10">
+		<text>A week ago Otter burned out on the Scorcher. It'd make sense if it was some yellow-bellied rookie - but he's been a stalker many years. They say he was even on Strelok's team. And then all of a sudden...</text>
+	</string>
+	<string id="dm_cool_info_100">
+		<text>Well I'm not really up to date with all the latest news.</text>
+	</string>
+	<string id="dm_cool_info_11">
+		<text>You tell me this, stalker: why do you, loners, sometimes go nuts? Do you lack some basic discipline? The other week one decided to go past the Scorcher. And they say he was experienced too...There's an easier way to get rid of your brains -  barrell in the mouth and fire away!</text>
+	</string>
+	<string id="dm_cool_info_12">
+		<text>Screw these mercs. They've been drinking our blood for a long time, and now they've turned on the eggheads too. And why did they give in? Because of some ransom? Or to share their Nobel prizes?</text>
+	</string>
+	<string id="dm_cool_info_13">
+		<text>Lately the mercs have become much more active. We also call them marauders. There's another kind of swine here, don't know if you heard. Kind of like bandits, except experts in the ways of war. Strange thing, they used to prefer to attack stalkers, but as of late have become more interested in scientists. But you look out in any case, I wouldn't put it past them to shoot your head off either.</text>
+	</string>
+	<string id="dm_cool_info_14">
+		<text>Heard a rumor that the eggheads dug up something awesome. And suddenly everybody went nuts: the troops and the mercs, and even the Duty guys aren't far behind.</text>
+	</string>
+	<string id="dm_cool_info_15">
+		<text>If you want to know about the same thing that everyone's been bugging me about for the last two days, then I'm telling you: go and take a bath! If I knew and they didn't forbid me, I would have told. But as it stands, I don't know - don't know shit! What did those scientists find? Where did our leadership go? What do I have to do with any of it?! They're off for vacation, and don't have to answer to us and explain themselves.</text>
+	</string>
+	<string id="dm_cool_info_16">
+		<text>Ha! Everybody's gone nuts around here! The Confederate with his group have returned from a raid, dragged a bunch of artifacts in - mama mia! Of course Confederate is silent - don't utter a word, as usual - and all of his guys are joking around as if they went up to the Yukon and struck gold...the swine!</text>
+	</string>
+	<string id="dm_cool_info_17">
+		<text>During the last few days there are all these beasts coming in from the scorcher. The people by the old warehouses constructed a barrier; for now they seem to manage. If it doesn't weaken...they'll have to go for reinforcements, there's nothing else to do...</text>
+	</string>
+	<string id="dm_cool_info_18">
+		<text>Did you hear rumors going around that the Zone is growing? I think it's true: I saw such a frightening humanoid monster right by the perimeter that before you could only run into towards the center of the Zone. Things don't look good, do they?</text>
+	</string>
+	<string id="dm_cool_info_19">
+		<text>Very possible that they're not lying about the bloodsuckers by the border of the Zone. But what does that have to do with the widening of the Zone? So a pack wandered off towards the border, so they got through. Sometimes we have to spend a few days straight patrolling! And we work just fine. Because past the perimeters nobody's screaming, "Help, we're being surrounded by mutants!".</text>
+	</string>
+	<string id="dm_cool_info_2">
+		<text>Yeah, it is kind of sad, after all. Just the other day Otter died, absolutely for nothing. Just can't believe it...and you haven't ever heard about Otter, have you? Well, he was practically a professor - here from the very first year, he knew the Zone like the back of his hand...and then like that out of the blue! There are some real experienced stalkers out there, but the Zone still takes them. There are others who end up going back to the Big Land. </text>
+	</string>
+	<string id="dm_cool_info_20">
+		<text>What do you think, does the barman know the details about what the scientists dug up? Listen, maybe he even hooked up with science? Seems like lately he finds more experienced stalkers and gives them strange assignments. Doesn't explain anything, just says, go here and there...and the places are dangerous and no goodies in sight. And what the heck is he looking for there?</text>
+	</string>
+	<string id="dm_cool_info_21">
+		<text>Something strange is going on. The zombies that used to be afraid to go into the light are now trudging around all over the place. What the hell is that all about?!</text>
+	</string>
+	<string id="dm_cool_info_22">
+		<text>The zombies became more aggressive and active for some reason. Before we used to purge them right in the complex itself, but now we can only hold the entrances to the complex. But you didn't hear it from me, understand?</text>
+	</string>
+	<string id="dm_cool_info_23">
+		<text>Be careful because these walking corpses have flooded the whole territory. Very dumb and aggressive. We are constantly under seige - day and night. So it's quite dangerous here, young man.</text>
+	</string>
+	<string id="dm_cool_info_24">
+		<text>Oooh, I bet the eggheads have messed something up in that lab of theirs. Before it wasn't very easy to run into a zombie, but now they're just pouring out of the complex. What's most important, is that they're wandering around as if they lost something and are looking for it.</text>
+	</string>
+	<string id="dm_cool_info_25">
+		<text>Rumors are going around that science hired one of ours to go down to the lab. Gave him something...some sort of protective gear...and nothing else, and no more details.</text>
+	</string>
+	<string id="dm_cool_info_26">
+		<text>They blab all sorts of things. They even say that some nut turned up who talked with a scientist and agreed to go down to the lab for them for some reason. Now there's some nonesense!</text>
+	</string>
+	<string id="dm_cool_info_27">
+		<text>And here's the big joke of the week! The eggheads gave one of your guys a pretty good grant, and so he climbed into the lab with one of their instruments. Another victim, dammit!</text>
+	</string>
+	<string id="dm_cool_info_28">
+		<text>I think something's brewing again. The eggheads dug something up that has everyone standing on their ears, which means that you and I won't have any peace either. </text>
+	</string>
+	<string id="dm_cool_info_29">
+		<text>The devil knows. Just started hustling us around twice as much as before - either a blockade, or a purge...and there is a significant increase in troop numbers in the Zone as well.</text>
+	</string>
+	<string id="dm_cool_info_3">
+		<text>It's all sad, that much I know. There's always been lots of people on the periphery, but half of them have never been deep into the Zone and there aren't enough artifacts for everyone. They even tore out and took away everything that they could from the labratories and factories. Soon there won't be anything left to do here but open a restaurant...with an exotic view and cuisine.</text>
+	</string>
+	<string id="dm_cool_info_30">
+		<text>I don't even know what to tell you...There's always something going on here, but within the bounds of reason. Although they don't think so on the Big Land, but you and I are, so to speak, in an anomalous zone now.</text>
+	</string>
+	<string id="dm_cool_info_31">
+		<text>The eggheads are sniffing something out. A hell knows that secret they've already stumbled upon, but they're certainly got the troops wrapped around their little finger. And those are searching all over the Agroprom and the Dark Valley already, searching, searching, trying to find something...</text>
+	</string>
+	<string id="dm_cool_info_32">
+		<text>With every day there's more and more crap coming out of the Scorcher, and the guys from Duty and Freedom decided to bitch around again. So they'll kill each other off, and then what? How long can we hold the border all by ourselves?</text>
+	</string>
+	<string id="dm_cool_info_33">
+		<text>The mutants are trying harder and harder to get past the barrier. Lately it's been really hard. If some people put an end to their retarded ways, we would have had more success!</text>
+	</string>
+	<string id="dm_cool_info_34">
+		<text>The Duty keeps on screaming about their super-heroic deeds on the barrier. If only someone believed them...We began this deal, and we're the ones that keep it going, and on top of that many of the loners like yourself willingly stayed behind. But those guys from the Duty....the assess..to hell with them!</text>
+	</string>
+	<string id="dm_cool_info_35">
+		<text>I heard that Duty has totally sold out. They keep on saying something like "we're all volunteers who want to establish safety and order in the Zone"...yeah right, volunteers! Some sponsor gave these so-called volunteers so much ammo, such barrells, that you'd die from envy. And so they sold out.</text>
+	</string>
+	<string id="dm_cool_info_36">
+		<text>What rumors are going around? I'll tell you without any rumors: soon there'll be more order. We'll purge the Zone from all sorts of beasts, and from certain asses too...</text>
+	</string>
+	<string id="dm_cool_info_37">
+		<text>Did you hear what the guys from Duty are saying they'll do to us? "Turn them to dust" - and that's just the bare minimum. This whole thing worries me...Especially since, people say, they've rearmed themselves with state-of-the-art equipment.</text>
+	</string>
+	<string id="dm_cool_info_38">
+		<text>What news? We sit here, the animals come at us, we shoot them off, then they come again, only stronger. Granted, a few times the military propellers came by, and it seems they flew even past the Scorcher.</text>
+	</string>
+	<string id="dm_cool_info_39">
+		<text>What news can there be...same old, same old. Mutants, Freedom...although recently soldiers started flying by on propellers. At least they could have shot at a beast once...but no, none of that...</text>
+	</string>
+	<string id="dm_cool_info_4">
+		<text>News? Who cares what they say! You can't believe everything everyone says. For example, they say that some experienced stalker came from the inner areas, brought something nobody's ever seen before, impressed a ton of chicks...Well I can make up a hundred stories like that myself!</text>
+	</string>
+	<string id="dm_cool_info_40">
+		<text>I saw some military propellers: imagine this, they flew overhead and headed past the Brain Scorcher! Well, I'm thinking, they're gonna crash now. But nothing - they just keep on going. Hung out there for a while, twirled around, and then headed back. Typical, right?</text>
+	</string>
+	<string id="dm_cool_info_41">
+		<text>Oh now that there's a way to the center - there must be so much treasure lying right under your feet!</text>
+	</string>
+	<string id="dm_cool_info_42">
+		<text>Now that there are ways of getting to the center of the Zone relatively safely, stalkers are drawn to it like flies to honey. Yeah...greed really isn't humanity's greatest quality.</text>
+	</string>
+	<string id="dm_cool_info_43">
+		<text>Now this is the life! While all those from the bar and the perimeter are still trying to get here, we'll get all the best stuff! We'll gather all the best goodies, and let the others pick up the little junk after us.</text>
+	</string>
+	<string id="dm_cool_info_44">
+		<text>Well they say that it actually exists - the Granter of wishes. Somebody even managed to get to it already, and to wish a whole ton of wishes...</text>
+	</string>
+	<string id="dm_cool_info_45">
+		<text>Listen, buddy, I know that anything can happen in the Zone. Saw it myself. But these stories about the immediate granting of wishes about a private hotel on the Carribeans - is complete bullshit and nothing else. </text>
+	</string>
+	<string id="dm_cool_info_46">
+		<text>Don't you know? Two of our guys - some of the very first who made it to the center - actually got to the Granter of wishes and wished! Their whole life they dreamed about islands in a warm sea, so now they must be sunbathing somewhere in the tropics.</text>
+	</string>
+	<string id="dm_cool_info_47">
+		<text>We found a hero - the main guy from Freedom. Everyone thought that he went back to the Big Land, but actually he took a small team and somehow made it past the scorcher. Now there's a man.</text>
+	</string>
+	<string id="dm_cool_info_48">
+		<text>In the formerly inaccessible zone one of the Freedom detachments was discovered. How did they manage to get through unharmed and then survive a few weeks here? Can't even imagine. I guess we underestimated these guys.</text>
+	</string>
+	<string id="dm_cool_info_49">
+		<text>Imagine this - they found our Mikluha! And the guys that were with him also survived. They sneaked past the braineraser, and then spent a month just killing time, couldn't get back out.</text>
+	</string>
+	<string id="dm_cool_info_5">
+		<text>There's something sticky brewing. Rumors are going around that the leader of the Duty faction, the head honcho, didn't just leave the Zone on business, but made a deal with the Freedom faction. Well they could have made the same deal in the open, because now everything's a muddle. Things don't look good. On the other hand, the experienced guys say that they started fighting back in the day for no good reason. Just hope the cabinet freaks from the Big Land don't drag us all into another meat grinder</text>
+	</string>
+	<string id="dm_cool_info_50">
+		<text>You heard?! The troops made it for what was all ready. They'll be here soon! They found out that the scorcher broke down, and decided to take all the goods for themselves!..</text>
+	</string>
+	<string id="dm_cool_info_51">
+		<text>New information has just come in: there's going to be a massive-scale landing of army troops at the station. My advice for you is this: if you want to snag at least a bit of the goodies, hurry.</text>
+	</string>
+	<string id="dm_cool_info_52">
+		<text>It's a complete chaos, that's what it is! But you see, the corridor has opened, they purged the station from all kinds of shit - and there you have it, the military is ready to take advantage of it! No shame and no conscience. </text>
+	</string>
+	<string id="dm_cool_info_53">
+		<text>I don't get one thing: how could the members of the Freedom faction hold out for a month here? Do they have invisible cloaks or something? There's no way!</text>
+	</string>
+	<string id="dm_cool_info_54">
+		<text>Did you understand what's going on here? Well I just gained new respect for Mikluha! Imagine - to survive four weeks in this shit, and not to lose any of your guys either!</text>
+	</string>
+	<string id="dm_cool_info_55">
+		<text>Here some of them went crazy. And to think, they all used to be pretty tough guys, but now are slobering like the biggest retards. Scary. </text>
+	</string>
+	<string id="dm_cool_info_56">
+		<text>The closer you get to the station, the stronger the unknown telepathic force becomes. Some have started going insane, others are traumatized and are seeing things. Maybe this is a good time to retreat a bit..</text>
+	</string>
+	<string id="dm_cool_info_57">
+		<text>Listen, people here are really losing their minds. Somebody sees a stone and begins hollering that it is his damned artifact, that he saw it first, and that everyone should go south. Another one sees Dja on a cloud embracing his buddies who disappeared years ago...No, there's definitely some sick shit going on here.</text>
+	</string>
+	<string id="dm_cool_info_6">
+		<text>The troops are bustling about - searching, digging. Before the propellers used to fly only to Yantar - protected the scientists, carried supplies and technology. But now they're practically invading - planning all sorts of expeditions, driving around on APC's. Already saw them on the Agroprom and in the Dark Valley. Don't understand it.</text>
+	</string>
+	<string id="dm_cool_info_7">
+		<text>They say that again someone tried to get through the scorcher. Well obviously he never came back...you never heard of the Brain Scorcher? What's wrong with you, man?! It's the biggest danger in this whole area! Only problem is that all the horrors they say about it are mostly true.</text>
+	</string>
+	<string id="dm_cool_info_8">
+		<text>Here, besides the bandits, the troops started roaming around for some reason. Before you'd see a helicopter once in a hundred years, but now they're flying around the whole Zone, practically. Did they lose something or what?</text>
+	</string>
+	<string id="dm_cool_info_9">
+		<text>I want to warn you, stalker. The soldiers here lately seem to have gone mad. Before they used to calmly and quietly protect the scientists, but now it's as if their tail got burned or something: dashing around, bustling...Not in the most peaceful mood - shot at your brother more than once already, and even among us they've wounded two men in the last week.</text>
+	</string>
+	<string id="dm_help_thanks_1">
+		<text>Thank you very much.</text>
+	</string>
+	<string id="dm_intro_0">
+		<text>What are you doing, walking around without any protection? Tired of living, is that it? There's an anomaly behind every bush - whack, and you're a gonner! Here they don't even pee without protection, you'll get a dose of radiation in right away.</text>
+	</string>
+	<string id="dm_intro_1">
+		<text>Seems like you don't know your way around well yet, so I'll warn you as a friend: have nothing to do with the military. Once you spot one, get the hell out of there cuz they have no brains. First they'll put a bullet or ten into you, and then check the documents to see your name.</text>
+	</string>
+	<string id="dm_intro_10">
+		<text>Here the Duty guys rule. Our dear beloved police force, or something like that. Keep this in mind to avoid trouble. </text>
+	</string>
+	<string id="dm_intro_100">
+		<text>Good day.</text>
+	</string>
+	<string id="dm_intro_101">
+		<text>Good day.</text>
+	</string>
+	<string id="dm_intro_102">
+		<text>I wish you well.</text>
+	</string>
+	<string id="dm_intro_103">
+		<text>Hey dude!</text>
+	</string>
+	<string id="dm_intro_104">
+		<text>Hey.</text>
+	</string>
+	<string id="dm_intro_105">
+		<text>Oh hey!</text>
+	</string>
+	<string id="dm_intro_106">
+		<text>Hello.</text>
+	</string>
+	<string id="dm_intro_107">
+		<text>Greetings!</text>
+	</string>
+	<string id="dm_intro_108">
+		<text>Hello, stalker.</text>
+	</string>
+	<string id="dm_intro_109">
+		<text>Greetings, stalker.</text>
+	</string>
+	<string id="dm_intro_11">
+		<text>You're located in an area where order is maintained by the Duty group. Every demand of the patrol must be carried out without any resistance; all the necessary explanations will be given if need arise. Although the code of behavior here is simple: treat everyone with common curtesy, and everything will be good.</text>
+	</string>
+	<string id="dm_intro_110">
+		<text>Hey you, stalker!</text>
+	</string>
+	<string id="dm_intro_111">
+		<text>Hello.</text>
+	</string>
+	<string id="dm_intro_112">
+		<text>Well who have we got here?!</text>
+	</string>
+	<string id="dm_intro_113">
+		<text>And who is this we have here?</text>
+	</string>
+	<string id="dm_intro_114">
+		<text>Hello, man.</text>
+	</string>
+	<string id="dm_intro_12">
+		<text>If you have questions, then head straight for the bar and don't bother me. They'll tell you all about it there, and answer your questions, and ask their own. But I'm tight on time.</text>
+	</string>
+	<string id="dm_intro_13">
+		<text>First time here? Then I suggest you go to the bar: there your colleagues will tell you all the latest news.</text>
+	</string>
+	<string id="dm_intro_14">
+		<text>Try not to get too close to zombies, and don't go to the laboratory, got it?</text>
+	</string>
+	<string id="dm_intro_15">
+		<text>I don't recommend you to get near the laboratory: too many zombies.</text>
+	</string>
+	<string id="dm_intro_16">
+		<text>You know, I would suggest that you keep your distance from the laboratory complex.</text>
+	</string>
+	<string id="dm_intro_17">
+		<text>You watch out for zombies - they're dumb, aren't afraid of anything. And better not go to the laboratory - they have their breeding grounds there or something...</text>
+	</string>
+	<string id="dm_intro_18">
+		<text>You keep in mind that the Brain Scorcher is close. Don't even think about heading north.</text>
+	</string>
+	<string id="dm_intro_19">
+		<text>Watch out - if you don't want to lose your brains, don't go any further north from here.</text>
+	</string>
+	<string id="dm_intro_2">
+		<text>Be careful when you get past the bridge, got it? There are too many wondering dogs there. If you don't pay attention, they'll tear you apart in no time.</text>
+	</string>
+	<string id="dm_intro_20">
+		<text>You look out for yourself! You know that the Scorcher is very close; if you go north, you'll be another dead retard.</text>
+	</string>
+	<string id="dm_intro_21">
+		<text>It's as if we’re walking through a mine field, only worse. The devil knows what goes on in here - can't relax even for a second.</text>
+	</string>
+	<string id="dm_intro_22">
+		<text>I suggest you heighten your attention, and once you heighten it, keep it alert and don't relax. The minute you relax, you're a gonner - the death will get you on the spot.</text>
+	</string>
+	<string id="dm_intro_23">
+		<text>Here you have to be on your toes all the time! Sleep with one eye open! Shit can happen to you any minute here.</text>
+	</string>
+	<string id="dm_intro_24">
+		<text>Be careful with the dickheads! They're like cockroaches here, tons of them!</text>
+	</string>
+	<string id="dm_intro_25">
+		<text>Destroy the so-called monolithians as soon as you see them. They're very dangerous - real fanatics!</text>
+	</string>
+	<string id="dm_intro_26">
+		<text>There are some retards here, they call themselves Monoliths...or someone else started calling them that - well, no matter. Basically, they're not afraid of pain. If they run out of cartridges they jump on you themselves and literally try to gnaw through your throat. So, if you see one, don't think twice about it and fire right away.</text>
+	</string>
+	<string id="dm_intro_3">
+		<text>Listen here. If you see a tunnel, don't go in. I'm telling it to you straight, cuz not everyone has the brains not to get themselves into shit. They won't even be able to carry you out afterwards - you'll be left splattered in pieces on the walls. That's already the Zone, understand?</text>
+	</string>
+	<string id="dm_intro_4">
+		<text>Why are you empty? Did you also run into the freaks under the bridge? The bitches! They almost killed me just now. Had to give them almost all of my goods! And they're sitting around, patroling. Be it bandits, be it these troops on the checkpoints, makes no difference.</text>
+	</string>
+	<string id="dm_intro_5">
+		<text>Why are you going all alone? There are lots of razorheads here, can catch you at any moment! Lately, I heard, they completely lost it - now they're even attacking the security checkpoints!</text>
+	</string>
+	<string id="dm_intro_6">
+		<text>I'm warning you if you're not up-to-date: lately the bandits have been moving around in here. This is already the second shoot-out with them in just a week. Be careful and watch out - they've already sent six loners to the other side.</text>
+	</string>
+	<string id="dm_intro_7">
+		<text>Did you by any chance hear what the troops needed in the Research Institute wing? Why have they become so active?</text>
+	</string>
+	<string id="dm_intro_8">
+		<text>You be more careful here. The limitless are hiding out in the main building. In one word, they're jackals - no conscience, no mercy...they would have killed everyone off.</text>
+	</string>
+	<string id="dm_intro_9">
+		<text>You shouldn't go into the Dark Valley alone. There's a nice tight bandit nest here in one of the buildings - still can't smoke them out of there. Be careful not to run into them, man.</text>
+	</string>
+	<string id="dm_intro_help_1">
+		<text>Help friend!</text>
+	</string>
+	<string id="dm_intro_help_10">
+		<text>Somebody help!</text>
+	</string>
+	<string id="dm_intro_help_11">
+		<text>Guards! I'm wounded! Come here!</text>
+	</string>
+	<string id="dm_intro_help_12">
+		<text>Help! I'm dying!</text>
+	</string>
+	<string id="dm_intro_help_2">
+		<text>Guys, bring the first aid kit!</text>
+	</string>
+	<string id="dm_intro_help_3">
+		<text>Bring the first aid kit!</text>
+	</string>
+	<string id="dm_intro_help_4">
+		<text>Anti-shock, guys! Hurry!</text>
+	</string>
+	<string id="dm_intro_help_5">
+		<text>The first aid kit, men!</text>
+	</string>
+	<string id="dm_intro_help_6">
+		<text>Somebody, give me the first aid kit!</text>
+	</string>
+	<string id="dm_intro_help_7">
+		<text>Friend, the first aid kit...the kit!</text>
+	</string>
+	<string id="dm_intro_help_8">
+		<text>Help, dude!</text>
+	</string>
+	<string id="dm_intro_help_9">
+		<text>Hey friend, can you share your first aid kit, can you?</text>
+	</string>
+</string_table>

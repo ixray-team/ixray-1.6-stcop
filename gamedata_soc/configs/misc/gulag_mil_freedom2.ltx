@@ -1,0 +1,479 @@
+;-------------------------------------------------------------------------------------------------
+;combat state 1
+;-------------------------------------------------------------------------------------------------
+;------------------------------------- Lukash --------------------------------------
+[logic@mil_freedom_lukash_combat1]
+active = camper1@mil_freedom_lukash_combat1
+on_death = on_death@mil_freedom_lukash_combat1
+
+[on_death@mil_freedom_lukash_combat1]
+on_info = %+mil_lukash_dead +sar2_death_49%
+
+[camper1@mil_freedom_lukash_combat1]
+path_walk = defense_walk1
+path_look = defense_look1
+radius = 20
+wounded_enabled = false
+danger = danger@mil_freedom
+
+;------------------------------------- Скряга --------------------------------------
+[logic@mil_freedom_trader_combat1]
+active = camper1@mil_freedom_trader_combat1
+on_death = on_death@mil_freedom_trader_combat1
+trade = misc\trade_freedom.ltx
+
+[on_death@mil_freedom_trader_combat1]
+on_info = %+sar2_death_48%
+
+[camper1@mil_freedom_trader_combat1]
+path_walk = trader_walk2
+path_look = trader_look2
+radius = 4
+wounded_enabled = false
+danger = danger@mil_freedom
+
+;------------------------------------- Охранник арсенала --------------------------
+;[logic@mil_freedom_arsenal_combat1]
+;active = camper1@mil_freedom_arsenal_combat1
+
+;[camper1@mil_freedom_arsenal_combat1]
+;path_walk = defense_walk5
+;path_look = defense_look5
+;radius = 1
+;no_retreat = true
+
+;------------------------------------- Охранник у Лукаша -------------------------
+[logic@mil_freedom_guard_combat1]
+active = camper1@mil_freedom_guard_combat1
+
+[camper1@mil_freedom_guard_combat1]
+path_walk = defense_walk4
+path_look = defense_look4
+radius = 3
+no_retreat = true
+danger = danger@mil_freedom
+
+;------------------------------------- Телохранитель 1 --------------------------
+[logic@mil_freedom_bodyguard1_combat1]
+active = camper1@mil_freedom_bodyguard1
+on_death = on_death@mil_freedom_bodyguard1_combat1
+
+[on_death@mil_freedom_bodyguard1_combat1]
+on_info = %+sar2_death_32%
+
+[camper1@mil_freedom_bodyguard1]
+path_walk = defense_walk3
+path_look = defense_look3
+radius = 30
+danger = danger@mil_freedom
+
+;------------------------------------- Телохранитель 2 --------------------------
+[logic@mil_freedom_bodyguard2_combat1]
+active = camper1@mil_freedom_bodyguard2
+on_death = on_death@mil_freedom_bodyguard1_combat1
+
+[camper1@mil_freedom_bodyguard2]
+path_walk = defense_walk2
+path_look = defense_look2
+radius = 30
+danger = danger@mil_freedom
+
+;------------------------------------- Макс --------------------------
+[logic@mil_freedom_max_combat1]
+active = camper1@mil_freedom_max_combat1
+on_death = death@mil_freedom_max_combat1
+
+[camper1@mil_freedom_max_combat1]
+path_walk = camp_walk7
+path_look = camp_look7
+radius = 20
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+[death@mil_freedom_max_combat1]
+on_info = %=military_max_dead +sar2_death_47%
+
+;----------------------------------- Мужик у костра 1-----------------------
+[logic@mil_freedom_stalker1_combat1]
+active = camper1@mil_freedom_stalker1_combat1
+
+[camper1@mil_freedom_stalker1_combat1]
+path_walk = camp_walk9
+path_look = camp_look9
+radius = 20
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+
+;----------------------------------- Мужик у костра 3-----------------------
+[logic@mil_freedom_stalker3_combat1]
+active = camper1@mil_freedom_stalker3_combat1
+
+[camper1@mil_freedom_stalker3_combat1]
+path_walk = stukach_walk1
+path_look = stukach_look1
+no_retreat = true
+radius = 0
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Патрульный мужик (одиночка)-----------------------
+[logic@mil_freedom_stalker4_combat1]
+active = camper1@mil_freedom_stalker4_combat1
+
+[camper1@mil_freedom_stalker4_combat1]
+path_walk = camp_walk2
+path_look = camp_look2
+radius = 20
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Патрульный командир -----------------------
+[logic@mil_freedom_stalker5_combat1]
+active = camper1@mil_freedom_stalker5_combat1
+
+[camper1@mil_freedom_stalker5_combat1]
+path_walk = camp_walk1
+path_look = camp_look1
+radius = 20
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+
+;----------------------------------- Патрульный мужик 1 -----------------------
+[logic@mil_freedom_stalker6_combat1]
+active = camper1@mil_freedom_stalker6_combat1
+
+[camper1@mil_freedom_stalker6_combat1]
+path_walk = camp_walk11
+path_look = camp_look11
+radius = 20
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Патрульный мужик 2 -----------------------
+[logic@mil_freedom_stalker7_combat1]
+active = camper1@mil_freedom_stalker7_combat1
+
+[camper1@mil_freedom_stalker7_combat1]
+path_walk = camp_walk6
+path_look = camp_look6
+radius = 20
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Охранник на входе -----------------------
+[logic@mil_freedom_stalker8_combat1]
+active = camper1@mil_freedom_stalker8_combat1
+
+[camper1@mil_freedom_stalker8_combat1]
+path_walk = camp_walk12_10
+path_look = camp_look12_10
+radius = 5
+no_retreat = true
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Мужик на входе 1 -----------------------
+[logic@mil_freedom_stalker9_combat1]
+active = camper1@mil_freedom_stalker9_combat1
+
+[camper1@mil_freedom_stalker9_combat1]
+path_walk = camp_walk3_10
+path_look = camp_look3_10
+radius = 5
+no_retreat = true
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Мужик на входе 2 -----------------------
+[logic@mil_freedom_stalker10_combat1]
+active = camper1@mil_freedom_stalker10_combat1
+
+[camper1@mil_freedom_stalker10_combat1]
+path_walk = camp_walk5_10
+path_look = camp_look5_10
+radius = 5
+no_retreat = true
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Просто мужик 1 -----------------------
+[logic@mil_freedom_stalker11_combat1]
+active = camper1@mil_freedom_stalker11_combat1
+
+[camper1@mil_freedom_stalker11_combat1]
+path_walk = gulag_defense_walk1
+path_look = gulag_defense_look1
+radius = 10
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Просто мужик 2 -----------------------
+[logic@mil_freedom_stalker12_combat1]
+active = camper1@mil_freedom_stalker12_combat1
+
+[camper1@mil_freedom_stalker12_combat1]
+path_walk = gulag_defense_walk2
+path_look = gulag_defense_look2
+radius = 10
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Просто мужик 3 -----------------------
+[logic@mil_freedom_stalker13_combat1]
+active = camper1@mil_freedom_stalker13_combat1
+
+[camper1@mil_freedom_stalker13_combat1]
+path_walk = gulag_defense_walk3
+path_look = gulag_defense_look3
+radius = 10
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Просто мужик 4 -----------------------
+[logic@mil_freedom_stalker14_combat1]
+active = camper1@mil_freedom_stalker14_combat1
+
+[camper1@mil_freedom_stalker14_combat1]
+path_walk = gulag_defense_walk4
+path_look = gulag_defense_look4
+radius = 10
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Просто мужик 5 -----------------------
+[logic@mil_freedom_stalker15_combat1]
+active = camper1@mil_freedom_stalker15_combat1
+
+[camper1@mil_freedom_stalker15_combat1]
+path_walk = gulag_defense_walk5
+path_look = gulag_defense_look5
+radius = 10
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+;----------------------------------- Просто мужик 6 -----------------------
+[logic@mil_freedom_stalker16_combat1]
+active = camper1@mil_freedom_stalker16_combat1
+
+[camper1@mil_freedom_stalker16_combat1]
+path_walk = gulag_defense_walk6
+path_look = gulag_defense_look6
+radius = 10
+wounded_enabled = false
+def_state_moving = run
+danger = danger@mil_freedom
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;-------------------------------------------------------------------------------------------------
+;combat state 2
+;-------------------------------------------------------------------------------------------------
+[logic@mil_freedom_defence1]
+active = walker1@mil_freedom_defence1
+
+[walker1@mil_freedom_defence1]
+path_walk = gulag_res_walk1
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence2]
+active = walker1@mil_freedom_defence2
+
+[walker1@mil_freedom_defence2]
+path_walk = gulag_res_walk_0000
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence3]
+active = walker1@mil_freedom_defence3
+
+[walker1@mil_freedom_defence3]
+path_walk = gulag_res_walk_0001
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence4]
+active = walker1@mil_freedom_defence4
+
+[walker1@mil_freedom_defence4]
+path_walk = gulag_res_walk_0002
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence5]
+active = walker1@mil_freedom_defence5
+
+[walker1@mil_freedom_defence5]
+path_walk = gulag_res_walk_0003
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence6]
+active = walker1@mil_freedom_defence6
+
+[walker1@mil_freedom_defence6]
+path_walk = gulag_res_walk_0004
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence7]
+active = walker1@mil_freedom_defence7
+
+[walker1@mil_freedom_defence7]
+path_walk = gulag_res_walk_0005
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence8]
+active = walker1@mil_freedom_defence8
+
+[walker1@mil_freedom_defence8]
+path_walk = gulag_res_walk_0006
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence9]
+active = walker1@mil_freedom_defence9
+
+[walker1@mil_freedom_defence9]
+path_walk = gulag_res_walk_0007
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence10]
+active = walker1@mil_freedom_defence10
+
+[walker1@mil_freedom_defence10]
+path_walk = gulag_res_walk_0008
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence11]
+active = walker1@mil_freedom_defence11
+
+[walker1@mil_freedom_defence11]
+path_walk = gulag_res_walk_0009
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence12]
+active = walker1@mil_freedom_defence12
+
+[walker1@mil_freedom_defence12]
+path_walk = gulag_res_walk_0010
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence13]
+active = walker1@mil_freedom_defence13
+
+[walker1@mil_freedom_defence13]
+path_walk = gulag_res_walk_0011
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence14]
+active = walker1@mil_freedom_defence14
+
+[walker1@mil_freedom_defence14]
+path_walk = gulag_res_walk_0012
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence15]
+active = walker1@mil_freedom_defence15
+
+[walker1@mil_freedom_defence15]
+path_walk = gulag_res_walk_0013
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence16]
+active = walker1@mil_freedom_defence16
+
+[walker1@mil_freedom_defence16]
+path_walk = gulag_res_walk_0014
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence17]
+active = walker1@mil_freedom_defence17
+
+[walker1@mil_freedom_defence17]
+path_walk = gulag_res_walk_0015
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence18]
+active = walker1@mil_freedom_defence18
+
+[walker1@mil_freedom_defence18]
+path_walk = gulag_res_walk_0016
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence19]
+active = walker1@mil_freedom_defence19
+
+[walker1@mil_freedom_defence19]
+path_walk = gulag_res_walk_0017
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence20]
+active = walker1@mil_freedom_defence20
+
+[walker1@mil_freedom_defence20]
+path_walk = gulag_res_walk_0018
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence21]
+active = walker1@mil_freedom_defence21
+
+[walker1@mil_freedom_defence21]
+path_walk = gulag_res_walk_0019
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence22]
+active = walker1@mil_freedom_defence22
+
+[walker1@mil_freedom_defence22]
+path_walk = gulag_res_walk_0020
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---
+[logic@mil_freedom_defence23]
+active = walker1@mil_freedom_defence23
+
+[walker1@mil_freedom_defence23]
+path_walk = gulag_res_walk_0021
+path_look = gulag_res_look1
+danger = danger@mil_freedom
+;---

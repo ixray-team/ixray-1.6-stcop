@@ -1,0 +1,35 @@
+[logic]
+active = walker1
+on_hit = hit
+combat_ignore = combat_ignore
+
+[hit]
+on_info = {=hit_by_actor} nil
+
+[walker1]
+path_walk = val_stairs_victim2_walk
+path_look = val_stairs_victim2_wait_look
+;radius = 0
+def_state_moving1 = assault
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+;no_retreat = true
+combat_ignore_cond = always
+on_info = {+val_stairs_start} walker2
+danger = danger1
+
+[walker2]
+path_walk = val_stairs_victim2_walk
+path_look = val_stairs_victim2_look
+;radius = 0
+def_state_moving1 = assault
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+;no_retreat = true
+on_info = {+val_stairs_heli_arrived} nil
+combat_ignore_cond = always
+danger = danger1
+
+[danger1]
+ignore_distance_sound = 2
+

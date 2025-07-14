@@ -1,0 +1,17 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = walker@1
+on_death = death@arena
+
+[death@arena]
+on_info = %=dec_counter(arena_counter) =bar_arena_add_ammo =arena_release%
+
+[walker@1]
+path_walk = bar_arena_walk_3_1
+on_info = walker@2 %=inc_counter(arena_counter) =bar_arena_hit%
+
+[walker@2]
+path_walk = bar_arena_walk_3_1
+

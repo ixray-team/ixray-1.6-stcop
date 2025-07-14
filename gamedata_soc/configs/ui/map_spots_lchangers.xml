@@ -1,0 +1,29 @@
+
+<!-- level changers -->
+	<lchanger_up_location hint="lchanger_up">
+		<level_map  spot="lchanger_up_spot"></level_map>
+	</lchanger_up_location>
+	<lchanger_up_spot x="0" y="0" width="32" height="32" heading="1" alignment="c">
+		<texture x="96" y="160" width="32" height="32">ui\ui_icons_map</texture>
+	</lchanger_up_spot>
+
+	<lchanger_down_location hint="lchanger_down">
+		<level_map  spot="lchanger_down_spot"></level_map>
+	</lchanger_down_location>
+	<lchanger_down_spot x="0" y="0" width="32" height="32" heading="1" alignment="c">
+		<texture x="128" y="160" width="32" height="32">ui\ui_icons_map</texture>
+	</lchanger_down_spot>
+
+	<lchanger_right_location hint="lchanger_right">
+		<level_map  spot="lchanger_right_spot"></level_map>
+	</lchanger_right_location>
+	<lchanger_right_spot x="0" y="0" width="32" height="32" heading="1" alignment="c">
+		<texture x="160" y="160" width="32" height="32">ui\ui_icons_map</texture>
+	</lchanger_right_spot>
+
+	<lchanger_left_location hint="lchanger_left">
+		<level_map  spot="lchanger_left_spot"></level_map>
+	</lchanger_left_location>
+	<lchanger_left_spot x="0" y="0" width="32" height="32" heading="1" alignment="c">
+		<texture x="192" y="160" width="32" height="32">ui\ui_icons_map</texture>
+	</lchanger_left_spot>

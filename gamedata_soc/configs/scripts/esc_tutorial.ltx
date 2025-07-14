@@ -1,0 +1,53 @@
+[logic]
+active = sr_idle@tutorial
+
+[sr_idle@tutorial]
+on_info = {+esc_tutorial_start} sr_idle@tutorial_jump
+
+[sr_idle@tutorial_jump]
+on_info = {+esc_find_railroad_passage_find_stalker -encyclopedy_tutorial_diary} sr_idle@wait_diary_tutor
+on_info2 = {+encyclopedy_tutorial_jump} sr_idle@tutorial_crouch
+on_timer = 1000 | sr_idle@wait_jump_tutor
+
+[sr_idle@tutorial_crouch]
+on_info = {+esc_find_railroad_passage_find_stalker -encyclopedy_tutorial_diary} sr_idle@wait_diary_tutor
+on_info2 = {+encyclopedy_tutorial_crouch} sr_idle@tutorial_sprint
+on_timer = 7000 | sr_idle@wait_crouch_tutor
+
+[sr_idle@tutorial_sprint]
+on_info = {+esc_find_railroad_passage_find_stalker -encyclopedy_tutorial_diary} sr_idle@wait_diary_tutor
+on_info2 = {+encyclopedy_tutorial_sprint} sr_idle@tutorial_binoc
+on_timer = 7000 | sr_idle@wait_sprint_tutor
+
+[sr_idle@tutorial_binoc]
+on_info = {+esc_find_railroad_passage_find_stalker -encyclopedy_tutorial_diary} sr_idle@wait_diary_tutor
+on_info2 = {+encyclopedy_tutorial_binocular} sr_idle@tutorial_relat
+on_timer = 20000 | sr_idle@wait_binoc_tutor
+
+[sr_idle@tutorial_relat]
+on_info = {+esc_find_railroad_passage_find_stalker -encyclopedy_tutorial_diary} sr_idle@wait_diary_tutor
+on_info2 = {+encyclopedy_tutorial_relation} sr_idle@tutorial_diary
+on_timer = 20000 | sr_idle@wait_relat_tutor
+
+[sr_idle@tutorial_diary]
+on_info = {+esc_find_railroad_passage_find_stalker -encyclopedy_tutorial_diary} sr_idle@wait_diary_tutor
+on_info2 = {+encyclopedy_tutorial_diary} nil
+
+;Отыгрыш туториалов
+[sr_idle@wait_diary_tutor]
+on_info = {=can_send_tutorial} sr_idle@tutorial %+encyclopedy_tutorial_diary =run_tutorial(part_pda_diary)%
+
+[sr_idle@wait_jump_tutor]
+on_info = {=can_send_tutorial} sr_idle@tutorial_crouch %+encyclopedy_tutorial_jump =run_tutorial(part_3_jump)%
+
+[sr_idle@wait_crouch_tutor]
+on_info = {=can_send_tutorial} sr_idle@tutorial_sprint %+encyclopedy_tutorial_crouch =run_tutorial(part_4_crouch)%
+
+[sr_idle@wait_sprint_tutor]
+on_info = {=can_send_tutorial} sr_idle@tutorial_binoc %+encyclopedy_tutorial_sprint =run_tutorial(part_10_sprint)%
+
+[sr_idle@wait_binoc_tutor]
+on_info = {=can_send_tutorial} sr_idle@tutorial_relat %+encyclopedy_tutorial_binocular =run_tutorial(part_2_binocular)%
+
+[sr_idle@wait_relat_tutor]
+on_info = {=can_send_tutorial} sr_idle@tutorial_diary %+encyclopedy_tutorial_relation =run_tutorial(part_12_relations)%

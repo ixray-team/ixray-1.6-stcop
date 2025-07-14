@@ -1,0 +1,19 @@
+[logic]
+active = walker
+
+[walker]
+path_walk = rad_suicide_walk_way
+path_look = rad_suicide_look_way
+wounded = wounded@suicide
+meet = meet
+
+[wounded@suicide]
+psy_state = 100|{+rad_start_suicide =actor_has_item(good_psy_helmet)}psy_shoot,psy_armed@{+rad_start_suicide =actor_has_item(good_psy_helmet)}wounded_psy_shoot,wounded_psy
+hp_victim = 100|nil
+hp_cover = 100|false
+hp_fight = 100|false
+help_dialog = nil
+
+[meet]
+use = false
+use_wpn = false

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes" ?>
+<game_dialogs>
+    <dialog id="rad_find_stalkers_dialog_3">
+        <phrase_list>
+            <phrase id="200">
+                <text>rad_find_stalkers_dialog_3_200</text>
+                <next>30</next>
+            </phrase>
+            <phrase id="30">
+                <text>rad_find_stalkers_dialog_3_30</text>
+                <next>300</next>
+            </phrase>
+            <phrase id="300">
+                <text>rad_find_stalkers_dialog_3_300</text>
+                <next>40</next>
+            </phrase>
+            <phrase id="40">
+                <text>rad_find_stalkers_dialog_3_40</text>
+            </phrase>
+            <phrase id="20">
+                <text>rad_find_stalkers_dialog_3_20</text>
+                <next>200</next>
+            </phrase>
+            <phrase id="100">
+                <text>rad_find_stalkers_dialog_3_100</text>
+                <next>20</next>
+            </phrase>
+            <phrase id="0">
+                <text>rad_find_stalkers_dialog_3_0</text>
+                <next>10</next>
+            </phrase>
+            <phrase id="10">
+                <text>rad_find_stalkers_dialog_3_10</text>
+                <next>100</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="rad_find_stalkers_dialog_1">
+        <phrase_list>
+            <phrase id="0">
+                <text>rad_find_stalkers_dialog_1_0</text>
+                <next>10</next>
+            </phrase>
+            <phrase id="10">
+                <text>rad_find_stalkers_dialog_1_10</text>
+                <next>100</next>
+            </phrase>
+            <phrase id="100">
+                <text>rad_find_stalkers_dialog_1_100</text>
+                <next>20</next>
+            </phrase>
+            <phrase id="20">
+                <text>rad_find_stalkers_dialog_1_20</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="rad_find_stalkers_dialog_2">
+        <phrase_list>
+            <phrase id="0">
+                <text>rad_find_stalkers_dialog_2_0</text>
+                <next>10</next>
+            </phrase>
+            <phrase id="10">
+                <text>rad_find_stalkers_dialog_2_10</text>
+                <next>100</next>
+            </phrase>
+            <phrase id="100">
+                <text>rad_find_stalkers_dialog_2_100</text>
+                <next>20</next>
+            </phrase>
+            <phrase id="20">
+                <text>rad_find_stalkers_dialog_2_20</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="rad_found_stalkers_dialog_2">
+        <has_info>rad_find_stalkers_reward_start</has_info>
+        <dont_has_info>rad_find_stalkers_reward_found</dont_has_info>
+        <phrase_list>
+            <phrase id="10">
+                <text>rad_found_stalkers_dialog_2_10</text>
+            </phrase>
+            <phrase id="0">
+                <text>rad_found_stalkers_dialog_2_0</text>
+                <next>10</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="rad_find_stalkers_dialog_4">
+        <dont_has_info>rad_find_stalkers_reward_start</dont_has_info>
+        <dont_has_info>rad_find_stalkers_free_start</dont_has_info>
+        <dont_has_info>rad_find_stalkers_done</dont_has_info>
+        <phrase_list>
+            <phrase id="11">
+                <text>rad_find_stalkers_dialog_4_11</text>
+            </phrase>
+            <phrase id="201">
+                <text>rad_find_stalkers_dialog_4_201</text>
+                <next>21</next>
+            </phrase>
+            <phrase id="21">
+                <text>rad_find_stalkers_dialog_4_21</text>
+            </phrase>
+            <phrase id="100">
+                <text>rad_find_stalkers_dialog_4_100</text>
+                <next>20</next>
+            </phrase>
+            <phrase id="20">
+                <text>rad_find_stalkers_dialog_4_20</text>
+                <next>200</next>
+                <next>201</next>
+            </phrase>
+            <phrase id="200">
+                <text>rad_find_stalkers_dialog_4_200</text>
+                <give_info>rad_find_stalkers_reward_start</give_info>
+                <next>30</next>
+            </phrase>
+            <phrase id="30">
+                <text>rad_find_stalkers_dialog_4_30</text>
+            </phrase>
+            <phrase id="10">
+                <text>rad_find_stalkers_dialog_4_10</text>
+                <next>100</next>
+                <next>101</next>
+            </phrase>
+            <phrase id="101">
+                <text>rad_find_stalkers_dialog_4_101</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="0">
+                <text>rad_find_stalkers_dialog_4_0</text>
+                <next>10</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="rad_chief_start_dialog">
+        <phrase_list>
+            <phrase id="100">
+                <text>rad_chief_start_dialog_100</text>
+            </phrase>
+            <phrase id="0">
+                <text>rad_chief_start_dialog_0</text>
+                <next>100</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="rad_find_deputy_dialog_1">
+        <has_info>rad_find_stalkers_done</has_info>
+        <dont_has_info>rad_find_treasurer_start</dont_has_info>
+        <phrase_list>
+            <phrase id="0">
+                <text>rad_find_deputy_dialog_1_0</text>
+                <next>100</next>
+            </phrase>
+            <phrase id="100">
+                <text>rad_find_deputy_dialog_1_100</text>
+                <next>1000</next>
+            </phrase>
+            <phrase id="1000">
+                <text>rad_find_deputy_dialog_1_1000</text>
+                <give_info>rad_find_treasurer_start</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="rad_found_stalkers_dialog_1">
+        <has_info>rad_find_stalkers_found</has_info>
+        <dont_has_info>rad_find_stalkers_done</dont_has_info>
+        <phrase_list>
+            <phrase id="200">
+                <text>rad_found_stalkers_dialog_1_200</text>
+                <next>2000</next>
+            </phrase>
+            <phrase id="2000">
+                <text>rad_found_stalkers_dialog_1_2000</text>
+                <give_info>rad_find_treasurer_start</give_info>
+            </phrase>
+            <phrase id="1001">
+                <text>rad_found_stalkers_dialog_1_1001</text>
+                <next>200</next>
+            </phrase>
+            <phrase id="100">
+                <text>rad_found_stalkers_dialog_1_100</text>
+                <next>1001</next>
+            </phrase>
+            <phrase id="0">
+                <text>rad_found_stalkers_dialog_1_0</text>
+                <action>rad_dialogs.transfer_ak74</action>
+                <give_info>rad_find_stalkers_return_ak</give_info>
+                <next>100</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="rad_found_deputy_dialog_2">
+        <has_info>rad_find_treasurer_start</has_info>
+        <phrase_list>
+            <phrase id="10">
+                <text>rad_found_deputy_dialog_2_10</text>
+            </phrase>
+            <phrase id="0">
+                <text>rad_found_deputy_dialog_2_0</text>
+                <next>10</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="rad_found_deputy_dialog_1">
+        <has_info>rad_find_treasurer_start</has_info>
+        <phrase_list>
+            <phrase id="200">
+                <text>rad_found_deputy_dialog_1_200</text>
+                <next>1100</next>
+            </phrase>
+            <phrase id="1100">
+                <text>rad_found_deputy_dialog_1_1100</text>
+                <next>300</next>
+            </phrase>
+            <phrase id="300">
+                <text>rad_found_deputy_dialog_1_300</text>
+                <next>1200</next>
+                <next>1300</next>
+                <next>1400</next>
+            </phrase>
+            <phrase id="1400">
+                <text>rad_found_deputy_dialog_1_1400</text>
+            </phrase>
+            <phrase id="1300">
+                <text>rad_found_deputy_dialog_1_1300</text>
+            </phrase>
+            <phrase id="1200">
+                <text>rad_found_deputy_dialog_1_1200</text>
+            </phrase>
+            <phrase id="100">
+                <text>rad_found_deputy_dialog_1_100</text>
+                <next>1000</next>
+            </phrase>
+            <phrase id="1000">
+                <text>rad_found_deputy_dialog_1_1000</text>
+                <next>200</next>
+            </phrase>
+            <phrase id="0">
+                <text>rad_found_deputy_dialog_1_0</text>
+                <next>100</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>

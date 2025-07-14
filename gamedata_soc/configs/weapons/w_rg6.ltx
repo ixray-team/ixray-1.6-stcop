@@ -1,0 +1,158 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_rg-6]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                   	= "weapons\rg-6"					; option for Level Editor
+$npc			 			= on				; option for Level Editor
+$prefetch 		 			= 2
+scheduled                	= off              ; option for ALife Simulator
+cform                    	= skeleton
+class                    	= WP_RG6
+min_radius               	= 20
+max_radius               	= 50
+description					= enc_weapons1_wpn-rg-6
+
+ef_main_weapon_type			= 4
+ef_weapon_type				= 9
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range 
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+cost					 	= 12000
+weapon_class			 	= heavy_weapon
+
+tri_state_reload			= on
+
+ammo_limit		 			= 60
+ammo_current		 		= 10
+ammo_elapsed		 		= 0
+
+ammo_mag_size		 		= 6
+ammo_class		 			= ammo_vog-25, ammo_vog-25p
+launch_speed				= 76;50 ;for rocket
+sprint_allowed				= false
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.5  ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 2.0	;скорость возврата в исходное положение
+cam_dispersion          	= 4.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_max_angle				= 12		;максимальный угол отдачи
+cam_max_angle_horz			= 5.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz			= 0.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	    ;вероятность осечки при максимальном износе 
+condition_shot_dec 			= 0.00003	;увеличение износа при каждом выстреле
+;-----------------------------------------------------------------------------------
+
+hand_dependence 	 		= 1
+single_handed				= 0
+
+slot 				 		= 2		; // secondary
+animation_slot		 		= 10	; type of the animation that will be used
+
+inv_name					= wpn-rg-6
+inv_name_short				= wpn-rg-6
+inv_weight					= 6.2
+
+inv_grid_width				= 4
+inv_grid_height				= 2
+inv_grid_x					= 0
+inv_grid_y					= 8
+
+kill_msg_x			= 0
+kill_msg_y			= 172
+kill_msg_width		= 68
+kill_msg_height		= 30
+
+direction                	= 0, 0, 1
+shell_point				 	= 0.0, 0.120, 0.20
+fire_point               	= 0.0, 0.120, 0.452
+fire_point2              	= 0.0, 0.120, 0.452
+
+flame_particles		   		= weapons\generic_weapon05
+smoke_particles		   		= weapons\generic_shoot_00
+rpm_empty_click 	   		= 200
+; ttc
+
+hit_power        			= 0.75
+hit_impulse      			= 210
+hit_type 					= fire_wound
+
+fire_distance            	= 100
+bullet_speed			 	= 76			;начальная скорость пули
+rpm                      	= 100
+; end ttc
+
+hud                      	= wpn_rg-6_hud
+normal                   	= 0, 1, 0
+position                 	= -0.026, -0.111, 0.
+orientation              	= 0, 0, 0
+startup_ammo             	= 0
+visual                   	= weapons\rg-6\wpn_rg-6.ogf
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 6.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 3
+;cost			 			= 900
+
+;addons
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor	    	= 55
+
+;звуки
+snd_draw					= weapons\generic_draw
+snd_holster					= weapons\generic_holster
+snd_shoot					= weapons\tm_toz34_shot
+snd_empty					= weapons\generic_empty
+snd_reload					= weapons\toz34_reload
+snd_shoot_duplet			= weapons\toz34_shoot_both
+
+snd_open_weapon				= weapons\pistol_empty		;change me
+snd_add_cartridge			= weapons\w1300_load		;was gen_grenload
+snd_close_weapon			= weapons\pistol_empty		;change me
+
+ 
+[wpn_rg-6_hud]
+shell_point		 			= 0.0, 0.0, 0.0
+fire_point			= -0.090000,0.100000,0.000000
+fire_point			= -0.090000,0.100000,0.000000
+fire_bone                	= wpn_body
+orientation              	= 0, 0, 0
+position                 	= 0, 0, 0
+visual                   	= weapons\rg-6\wpn_rg-6_hud.ogf
+
+anim_idle					= idle
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_shoot_both 			= shoot
+anim_idle_aim				= idle_aim
+
+anim_open_weapon			= reload1
+anim_add_cartridge			= reload2
+anim_close_weapon			= reload3
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.248400,-0.166700,-0.002000
+zoom_rotate_x		= -0.137300
+zoom_rotate_y		= 0.050000
+
+;время поворота HUD (сек)
+;zoom_rotate_time			= 0.7
+

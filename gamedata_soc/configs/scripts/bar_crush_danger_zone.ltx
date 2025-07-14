@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle@idle
+
+[sr_idle@idle]
+on_actor_inside = {-bar_freedom_attack_ecolog} %+bar_freedom_attack_ecolog%
+on_info = {+bar_freedom_attack_ecolog +bar_rescue_research_start} sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+bar_freedom_defence_ecolog} sr_idle@ecolog_defence
+
+[sr_idle@ecolog_defence]
+on_info = {+bar_heli_scene_volkodav_die} nil
+on_timer = 4000 |{-bar_heli_scene_volkodav_die -rostok_objective_1} nil %=bar_freedom_defence_ecolog% , nil

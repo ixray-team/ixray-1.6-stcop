@@ -1,0 +1,336 @@
+
+	<game_task id="bar_resque_information" prio="365">
+		<title>bar_resque_information</title>
+		<objective>
+			<text>bar_resque_scientific_information</text>
+			<icon>ui_iconsTotal_bar_resque_information</icon>
+			<map_location_type hint="bar_resque_scientific_information_bring">green_location</map_location_type>
+			<object_story_id>bar_ecolog_professor</object_story_id>
+			<infoportion_complete>bar_kruglov_follow_actor</infoportion_complete>
+			<infoportion_fail>bar_rescue_research_fail</infoportion_fail>
+			<article>descr_bar_resque_information_1</article>
+		</objective>
+		<objective>
+			<text>bar_resque_scientific_information_get</text>
+			<map_location_type hint="bar_resque_scientific_information_get">green_location</map_location_type>
+			<object_story_id>rostok_tainyi_hod</object_story_id>
+			<infoportion_complete>rostok_objective_1</infoportion_complete>
+		</objective>
+		<objective>
+			<text>bar_resque_scientific_information_get_2</text>
+			<map_location_type hint="bar_resque_scientific_information_bring">green_location</map_location_type>
+			<object_story_id>bar_ecolog_professor</object_story_id>
+			<infoportion_complete>bar_kruglov_follow_actor</infoportion_complete>
+		</objective>
+	</game_task>
+		
+		
+	<game_task id="bar_resque_information_2" prio="360">
+		<title>bar_resque_information_2</title>
+		<objective>
+			<text>bar_resque_scientific_information_2</text>
+			<icon>ui_iconsTotal_bar_resque_information</icon>
+			<map_location_type hint="bar_resque_scientific_information_2">green_location</map_location_type>
+			<object_story_id>bar_ecolog_professor</object_story_id>
+			<infoportion_complete>bar_rescue_research_done</infoportion_complete>
+			<infoportion_fail>bar_rescue_research_fail</infoportion_fail>
+			<article>descr_bar_resque_information_2</article>
+		</objective>
+		<objective>
+			<text>bar_resque_scientific_follow</text>
+			<map_location_type hint="bar_resque_scientific_information_2">green_location</map_location_type>
+			<object_story_id>bar_ecolog_professor</object_story_id>
+			<infoportion_complete>bar_rescue_research_follow</infoportion_complete>
+			<infoportion_fail>bar_rescue_research_fail</infoportion_fail>
+		</objective>
+		<objective>
+			<text>bar_resque_scientific_information_bring</text>
+			<map_location_type hint="bar_resque_scientific_information_bring">green_location</map_location_type>
+			<object_story_id>bar_ecolog_professor</object_story_id>
+			<infoportion_complete>bar_rescue_research_done</infoportion_complete>
+			<infoportion_fail>bar_rescue_research_fail</infoportion_fail>
+		</objective>
+	</game_task>
+
+	
+
+	<game_task id="bar_hunter_rifle">
+		<title>bar_hunter_rifle</title>
+		<objective>
+			<text>bar_bring_hunter_rifle</text>
+			<icon x="150" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>bar_bar_hunter_quest_finish</infoportion_complete>
+			<article>descr_bar_hunter_rifle</article>
+		</objective>
+		<objective>
+			<text>bar_hunter_find_rifle</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_hunter_find_rifle">green_location</map_location_type>
+			<object_story_id>bar_hunter_toz</object_story_id>
+			<function_complete>bar_rostok_tasks.has_hunter_rifle</function_complete>
+			<infoportion_set_complete>bar_bar_hunter_quest_find_rifle</infoportion_set_complete>
+		</objective>
+		<objective>
+			<text>bar_hunter_return_rifle</text>
+			<icon x="150" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_hunter_return_rifle">green_location</map_location_type>
+			<object_story_id>bar_hunter</object_story_id>			
+			<infoportion_complete>bar_bar_hunter_quest_finish</infoportion_complete>
+		</objective>
+	</game_task>
+
+	<game_task id="bar_crazy_veterans_quest">
+		<title>bar_crazy_veterans_quest</title>
+		<objective>
+			<text>bar_kill_veterans</text>
+			<icon x="400" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>bar_kill_veteran_done</infoportion_complete>
+			<article>descr_bar_crazy_veterans_quest</article>
+		</objective>
+		<objective>
+			<text>bar_kill_crazy_veterans</text>
+			<icon x="450" y="100" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_kill_crazy_veterans">green_location</map_location_type>
+			<object_story_id>bar_crazy_veterans_leader</object_story_id>			
+			<function_complete>bar_rostok_tasks.has_lucky_pda</function_complete>
+			<infoportion_set_complete>bar_dolg_veteran_gain</infoportion_set_complete>
+		</objective>
+		<objective>
+			<text>bar_kill_crazy_veterans_pda</text>
+			<icon x="450" y="100" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_kill_crazy_veterans">green_location</map_location_type>
+			<object_story_id>bar_crazy_veterans_leader</object_story_id>			
+			<function_complete>bar_rostok_tasks.has_lucky_pda</function_complete>
+		</objective>
+		<objective>
+			<text>bar_bring_pda_lucky</text>
+			<icon x="450" y="100" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_bring_pda_lucky">blue_location</map_location_type>
+			<object_story_id>bar_Barman</object_story_id>
+			<infoportion_complete>bar_kill_veteran_done</infoportion_complete>
+		</objective>
+	</game_task>
+
+
+	<game_task id="bar_dolg_community_quest">
+		<title>bar_dolg_community_quest</title>
+		<objective>
+			<icon x="150" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<article>descr_bar_dolg_community_quest</article>
+			<infoportion_complete>bar_dolg_community_leader_done</infoportion_complete>
+		</objective>
+		<objective>
+			<text>bar_dolg_community_quest_vernost</text>
+			<icon x="150" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_dolg_community_quest_vernost">blue_location</map_location_type>
+			<object_story_id>bar_dolg_general_voronin</object_story_id>
+			<infoportion_complete>bar_svoboda_rg6_done</infoportion_complete>
+		</objective>
+		<objective>
+			<text>bar_dolg_community_quest_prisyaga</text>
+			<icon x="150" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_dolg_community_quest_prisyaga">blue_location</map_location_type>
+			<object_story_id>bar_dolg_general_voronin</object_story_id>
+			<infoportion_complete>bar_dolg_community_leader_done</infoportion_complete>
+		</objective>
+	</game_task>
+
+	<game_task id="bar_dolg_base_rules" prio="430">
+		<title>bar_dolg_base_rules</title>
+		<objective>
+			<icon x="150" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_fail>bar_dolg_territory_kill_notify</infoportion_fail>
+			<infoportion_complete>bar_dolg_base_rules_finish</infoportion_complete>			
+		</objective>
+		<objective>
+			<text>bar_dolg_base_rules_talk</text>
+			<icon x="150" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_dolg_base_rules_talk">green_location</map_location_type>
+			<object_story_id>bar_dolg_guard_commander</object_story_id>
+			<infoportion_complete>bar_dolg_base_rules_finish</infoportion_complete>			
+		</objective>
+	</game_task>
+
+
+	<game_task id="bar_dolg_test_quest">
+		<title>bar_dolg_test_quest</title>
+		<objective>
+			<icon x="150" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>bar_dolg_veteran_done</infoportion_complete>
+			<article>descr_bar_dolg_test_quest</article>
+		</objective>
+		<objective>
+			<text>bar_dolg_win_on_arena</text>
+			<icon x="150" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>bar_arena_pseudodog_defeated</infoportion_complete>
+		</objective>
+		<objective>
+			<text>bar_dolg_return_to_ivancov</text>
+			<icon x="150" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_dolg_return_to_ivancov">green_location</map_location_type>
+			<object_story_id>bar_dolg_captain_ivancov</object_story_id>
+			<infoportion_complete>bar_dolg_veteran_done</infoportion_complete>
+		</objective>
+	</game_task>
+
+	<game_task id="bar_dolg_svoboda_ambush_quest">
+		<title>bar_dolg_svoboda_ambush_quest</title>
+		<objective>
+			<text>bar_dolg_svoboda_ambush_quest</text>
+			<icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>bar_kill_svoboda_ambush_done</infoportion_complete>
+			<article>descr_bar_dolg_svoboda_ambush_quest</article>
+		</objective>
+		<objective>
+			<text>bar_dolg_kill_tiran</text>
+			<icon x="450" y="100" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type>green_location</map_location_type>
+			<object_story_id>bar_svoboda_ambush_tiran</object_story_id>
+			<function_complete>bar_rostok_tasks.has_tiran_pda</function_complete>
+			<infoportion_set_complete>bar_kill_svoboda_ambush_killed</infoportion_set_complete>			
+		</objective>
+		<objective>
+			<text>bar_dolg_tiran_pda</text>
+			<icon x="450" y="100" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type>green_location</map_location_type>
+			<object_story_id>bar_svoboda_ambush_tiran</object_story_id>
+			<function_complete>bar_rostok_tasks.has_tiran_pda</function_complete>
+		</objective>
+		<objective>
+			<text>bar_dolg_svoboda_ambush_return</text>
+			<icon x="450" y="100" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type>blue_location</map_location_type>
+			<object_story_id>bar_Barman</object_story_id>
+			<infoportion_complete>bar_kill_svoboda_ambush_done</infoportion_complete>
+		</objective>
+	</game_task>
+
+
+	<game_task id="bar_dolg_svoboda_leader_kill_quest">
+		<title>bar_dolg_svoboda_leader_kill_quest</title>
+		<objective>
+			<icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>bar_kill_svoboda_leader_done</infoportion_complete>
+			<article>descr_bar_dolg_svoboda_leader_kill_quest</article>
+		</objective>
+		<objective>
+			<text>mil_svoboda_leader_kill</text>
+			<icon x="350" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="mil_svoboda_leader_kill">blue_location</map_location_type>
+			<object_story_id>Mil_Lukash</object_story_id>
+			<infoportion_complete>mil_kill_svoboda_leader_killed</infoportion_complete>
+		</objective>
+		<objective>
+			<text>mil_svoboda_leader_stripe</text>
+			<icon x="350" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="mil_svoboda_leader_kill">blue_location</map_location_type>
+			<object_story_id>Mil_Lukash</object_story_id>
+			<infoportion_complete>mil_kill_svoboda_leader_killed</infoportion_complete>
+		</objective>
+		<objective>
+			<text>bar_dolg_svoboda_leader_kill_return</text>
+			<icon x="150" y="0" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bar_dolg_svoboda_leader_kill_return">blue_location</map_location_type>
+			<object_story_id>bar_dolg_general_voronin</object_story_id>
+			<infoportion_complete>bar_kill_svoboda_leader_done</infoportion_complete>
+		</objective>
+	</game_task>
+	
+
+	<game_task id="bar_x16_documents" prio="380">
+		<title>bar_x16_documents</title>
+		<objective>
+			<text>x16_yantar</text>
+			<icon x="400" y="50" width="50" height="50">ui_iconsTotal_bar_x16_documents</icon>
+			<infoportion_complete>bar_x16_documents_done</infoportion_complete>
+			<article>descr_bar_x16_documents</article>
+		</objective>
+		<objective>
+			<text>look_for_x16_lab</text>
+			<icon x="400" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type>green_location</map_location_type>
+			<object_story_id>yan_general_ecolog</object_story_id>
+			<infoportion_complete>yan_x16_documents_gain</infoportion_complete>	
+		</objective>
+		<objective>
+			<text>bring_x16_documents</text>
+			<icon x="400" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="bring_x16_documents">blue_location</map_location_type>
+			<object_story_id>bar_Barman</object_story_id>
+			<infoportion_complete>bar_x16_documents_done</infoportion_complete>	
+		</objective>
+	</game_task>
+
+	<game_task id="bar_radar_deactivate" prio="305">
+		<title>bar_radar_deactivate</title>
+		<objective>
+			<icon>ui_iconsTotal_bar_radar_deactivate</icon>
+			<infoportion_complete>bar_deactivate_radar_done</infoportion_complete>
+		</objective>
+		<objective>
+			<text>get_to_antennas</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="find_and_deactivate_radar">green_location</map_location_type>
+
+            <object_story_id>rad_antenna</object_story_id>
+			<infoportion_complete>rad_antennas_reached</infoportion_complete>
+		</objective>
+		<objective>
+			<text>find_and_deactivate_radar</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			 <map_location_type hint="find_and_deactivate_radar">green_location</map_location_type> 
+			 <object_story_id>rad_bunker</object_story_id>
+			 
+			<infoportion_complete>rad_bun_found</infoportion_complete>
+		</objective>
+		<objective>
+			<text>deactivate_radar_now</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="find_and_deactivate_radar">green_location</map_location_type> 
+			 <object_story_id>rad_swith</object_story_id>
+			<infoportion_complete>bar_deactivate_radar_done</infoportion_complete>
+		</objective>
+	</game_task>
+
+
+	<game_task id="bar_barman_job_1" prio="0">
+		<title>bar_barman_job</title>
+		<objective>
+			<icon>ui_iconsTotal_bar_barman_job</icon>
+			<infoportion_complete>bar_darklab_document_start</infoportion_complete>
+		</objective>
+		<objective>
+			<text>bar_barman_job_text</text>
+			<map_location_type hint="bar_barman_job_text">blue_location</map_location_type>
+			<object_story_id>bar_Barman</object_story_id>
+			<infoportion_complete>bar_darklab_document_start</infoportion_complete>
+		</objective>
+	</game_task>
+	<game_task id="bar_barman_job_2" prio="0">
+		<title>bar_barman_job</title>
+		<objective>
+			<icon>ui_iconsTotal_bar_barman_job</icon>
+			<infoportion_complete>bar_x16_documents_start</infoportion_complete>
+		</objective>
+		<objective>
+			<text>bar_barman_job_text</text>
+			<map_location_type hint="bar_barman_job_text">blue_location</map_location_type>
+			<object_story_id>bar_Barman</object_story_id>
+			<infoportion_complete>bar_x16_documents_start</infoportion_complete>
+		</objective>
+	</game_task>
+	<game_task id="bar_barman_job_3" prio="0">
+		<title>bar_barman_job</title>
+		<objective>
+			<icon>ui_iconsTotal_bar_barman_job</icon>
+			<infoportion_complete>bar_deactivate_radar_start</infoportion_complete>
+		</objective>
+		<objective>
+			<text>bar_barman_job_text</text>
+			<map_location_type hint="bar_barman_job_text">blue_location</map_location_type>
+			<object_story_id>bar_Barman</object_story_id>
+			<infoportion_complete>bar_deactivate_radar_start</infoportion_complete>
+		</objective>
+	</game_task>
+	
+	

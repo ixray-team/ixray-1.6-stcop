@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------------
+class "torch_light"
+---------------------------------
+function torch_light:__init (npc)
+    self.npc = npc
+    self.always_on = false
+    self.npc_id = npc:id ()
+    db.storage[self.npc_id].light_state = false
+    db.storage[self.npc_id].npc_control = false
+end
+---------------------------------
+function torch_light:update ()
+
+    local obj = self.npc:object ("device_torch")
+    if obj == nil or self.npc:alive () == false then return end
+    
+    if db.storage[self.npc_id].npc_control == true then
+       obj:enable_attachable_item (db.storage[self.npc_id].light_state)
+       return
+    end    
+    
+    if utils.is_day () == false or self.always_on == true then
+       if math.random (1, 100) < 15 then 
+          obj:enable_attachable_item (true)
+       end   
+    else   
+       obj:enable_attachable_item (false) 
+    end
+        
+end
+---------------------------------
+function torch_light:set_always_on (value)
+    self.always_on = value
+end
+---------------------------------
