@@ -233,33 +233,51 @@ extern CUISequencer* g_tutorial2;
 
 bool CUIGameCustom::ShowActorMenu()
 {
-	if ( m_ActorMenu->IsShown() )
+	if (m_ActorMenu)
 	{
-		m_ActorMenu->HideDialog();
-	}else
+		if (m_ActorMenu->IsShown())
+		{
+			m_ActorMenu->HideDialog();
+		}
+		else
+		{
+			HidePdaMenu();
+			CInventoryOwner* pIOActor	= Level().CurrentViewEntity() != nullptr ? Level().CurrentViewEntity()->cast_inventory_owner() : nullptr;
+			VERIFY(pIOActor);
+			m_ActorMenu->SetActor(pIOActor);
+			m_ActorMenu->SetMenuMode(mmInventory);
+			m_ActorMenu->ShowDialog(true);
+		}
+	}
+	else
 	{
-		HidePdaMenu();
-		CInventoryOwner* pIOActor	= Level().CurrentViewEntity() != nullptr ? Level().CurrentViewEntity()->cast_inventory_owner() : nullptr;
-		VERIFY						(pIOActor);
-		m_ActorMenu->SetActor		(pIOActor);
-		m_ActorMenu->SetMenuMode	(mmInventory);
-		m_ActorMenu->ShowDialog		(true);
+		if (m_InventoryMenu->IsShown())
+			m_InventoryMenu->HideDialog();
+		else
+		{
+			HidePdaMenu();
+			m_InventoryMenu->ShowDialog(true);
+		}
 	}
 	return true;
 }
 
 void CUIGameCustom::HideActorMenu()
 {
-	if ( m_ActorMenu->IsShown() )
+	if (m_ActorMenu && m_ActorMenu->IsShown() )
 	{
 		m_ActorMenu->HideDialog();
+	}
+	else if (m_InventoryMenu && m_InventoryMenu->IsShown())
+	{
+		m_InventoryMenu->HideDialog();
 	}
 }
 
 //Alundaio:
 void CUIGameCustom::UpdateActorMenu()
 {
-	if (m_ActorMenu->IsShown())
+	if (m_ActorMenu && m_ActorMenu->IsShown())
 	{
 		m_ActorMenu->UpdateActor();
 		m_ActorMenu->RefreshCurrentItemCell();
@@ -268,6 +286,9 @@ void CUIGameCustom::UpdateActorMenu()
 
 CScriptGameObject* CUIGameCustom::CurrentItemAtCell()
 {
+	if (!m_ActorMenu)
+		return (0);
+
 	CUICellItem* itm = m_ActorMenu->CurrentItem();
 	if (!itm->m_pData)
 	{
@@ -432,7 +453,7 @@ void CUIGameCustom::Load()
 		CUIXml inventoryXml;
 		if (inventoryXml.Load(CONFIG_PATH, UI_PATH, "actor_menu.xml"))
 		{
-			m_ActorMenu				= new CUIActorMenu		();
+		m_ActorMenu				= new CUIActorMenu		();
 		}
 		else
 		{
