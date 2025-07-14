@@ -483,12 +483,12 @@ bool CUIInventoryWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		if(SDL_SCANCODE_KP_7 == dik && CurrentIItem())
 		{
 			CurrentIItem()->ChangeCondition(-0.05f);
-			UIItemInfo.InitItem(CurrentIItem());
+			UIItemInfo.InitItem(CurrentItem());
 		}
 		else if(SDL_SCANCODE_KP_8 == dik && CurrentIItem())
 		{
 			CurrentIItem()->ChangeCondition(0.05f);
-			UIItemInfo.InitItem(CurrentIItem());
+			UIItemInfo.InitItem(CurrentItem());
 		}
 #endif
 	}
