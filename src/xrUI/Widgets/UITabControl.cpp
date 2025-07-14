@@ -80,6 +80,31 @@ bool CUITabControl::AddItem(CUITabButton *pButton)
 	return						true;
 }
 
+void CUITabControl::RemoveItemById(const shared_str& id)
+{
+    const auto it = std::find(m_TabsArr.begin(), m_TabsArr.end(), id);
+    const bool tabControlItemFound = it != m_TabsArr.end();
+
+    R_ASSERT(tabControlItemFound);
+    if (tabControlItemFound)
+    {
+        DetachChild(*it);
+        m_TabsArr.erase(it);
+    }
+}
+
+void CUITabControl::RemoveItemByIndex(u32 index)
+{
+    R_ASSERT(m_TabsArr.size() > index);
+
+    // Меняем значение заданного элемента, и последнего элемента.
+    // Так как у нас хранятся указатели операция будет проходить быстро.
+    std::swap(m_TabsArr[index], m_TabsArr.back());
+
+    DetachChild(m_TabsArr.back());
+    m_TabsArr.pop_back();
+}
+
 void CUITabControl::RemoveAll()
 {
 	TABS_VECTOR_it it = m_TabsArr.begin();
@@ -154,6 +179,16 @@ void CUITabControl::OnTabChange(const shared_str& sCur, const shared_str& sPrev)
 	GetMessageTarget()->SendMessage			(this, TAB_CHANGED, nullptr);
 }
 
+int CUITabControl::GetActiveIndex() const
+{
+    for (int i = 0; i < (int)m_TabsArr.size(); ++i)
+    {
+        if (m_TabsArr[i]->m_btn_id == m_sPushedId)
+            return i;
+    }
+    return -1;
+}
+
 void CUITabControl::SetActiveTab(const shared_str& sNewTab)
 {
 	if (m_sPushedId == sNewTab)
@@ -163,6 +198,16 @@ void CUITabControl::SetActiveTab(const shared_str& sNewTab)
 	OnTabChange			(m_sPushedId, m_sPrevPushedId);
 	
 	m_sPrevPushedId		= m_sPushedId;
+}
+
+void CUITabControl::SetActiveTabByIndex(u32 index)
+{
+	CUITabButton* newBtn = GetButtonByIndex(index);
+	CUITabButton* prevBtn = GetButtonById(GetActiveId());
+	if (newBtn == prevBtn)
+		return;
+
+	SetActiveTab(newBtn->m_btn_id);
 }
 
 bool CUITabControl::OnKeyboardAction(int dik, EUIMessages keyboard_action)
@@ -195,23 +240,12 @@ CUITabButton* CUITabControl::GetButtonById(const shared_str& id)
 	else
 		return nullptr;
 }
-/*
-const shared_str CUITabControl::GetCommandName(const shared_str& id)
-{ 
-	CUITabButton* tb			= GetButtonById(id);
-	R_ASSERT2					(tb, id.c_str());
 
-	return (GetButtonByIndex(i))->WindowName();
-};
-
-CUIButton* CUITabControl::GetButtonByCommand(const shared_str& n)
+CUITabButton* CUITabControl::GetButtonByIndex(u32 index) const
 {
-	for(u32 i = 0; i<m_TabsArr.size(); ++i)
-		if(m_TabsArr[i]->WindowName() == n)
-			return m_TabsArr[i];
-
-	return nullptr;
-}*/
+    R_ASSERT(index < (int)m_TabsArr.size());
+    return m_TabsArr[index];
+}
 
 void CUITabControl::ResetTab()
 {
@@ -234,7 +268,5 @@ void CUITabControl::Enable(bool status)
 	for(u32 i=0; i<m_TabsArr.size(); ++i)
 		m_TabsArr[i]->Enable(status);
 
-//	m_sPushedId		= "";
-//	m_sPrevPushedId	= "";
 	inherited::Enable(status);
 }

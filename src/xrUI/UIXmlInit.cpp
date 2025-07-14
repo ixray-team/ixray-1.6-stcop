@@ -116,6 +116,10 @@ bool CUIXmlInit::InitFrameWindow(CUIXml& xml_doc, LPCSTR path,
 	bool result = InitWindow(xml_doc, path, index, pWnd, fatal);
 	result &= InitTexture(xml_doc, path, index, pWnd, fatal);
 
+	string256 buf;
+	xr_strconcat(buf, path, ":title");
+	if (xml_doc.NavigateToNode(buf, index)) InitStatic(xml_doc, buf, index, pWnd->UITitleText);
+
 	return result;
 }
 
@@ -906,6 +910,10 @@ bool CUIXmlInit::InitFrameLine(CUIXml& xml_doc, LPCSTR path, int index, CUIFrame
 	pWnd->SetTextureColor	(color);
 
 	InitWindow		(xml_doc, path, index, pWnd);
+
+	xr_strconcat(buf, path, ":title");
+	if (xml_doc.NavigateToNode(buf, index)) InitStatic(xml_doc, buf, index, &pWnd->UITitleText);
+
 	return pWnd->InitFrameLineWnd(*base_name, pos, size, !vertical, fatal);
 }
 

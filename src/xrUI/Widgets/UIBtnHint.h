@@ -2,6 +2,7 @@
 #include "UIFrameWindow.h"
 
 class CUITextWnd;
+class CUIFrameLineWnd;
 
 class UI_API CUIButtonHint :
 	public CUIFrameWindow
@@ -9,6 +10,8 @@ class UI_API CUIButtonHint :
 	CUIWindow*			m_ownerWnd;
 
 	CUITextWnd*			m_text;
+	CUIFrameLineWnd*	m_border;
+
 	bool				m_enabledOnFrame;
 public:
 					CUIButtonHint	();

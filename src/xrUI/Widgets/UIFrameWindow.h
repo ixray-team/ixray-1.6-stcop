@@ -1,6 +1,6 @@
 #pragma once
 #include "UIWindow.h"
-
+#include "UIStatic.h"
 
 class UI_API CUIFrameWindow: public CUIWindow,
 					  public ITextureOwner
@@ -27,6 +27,9 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual ITextureOwner* ui_cast_texture_owner() { return this; }
 
+	//текст заголовка
+	CUIStatic*		UITitleText;
+	CUIStatic*		GetTitleStatic				()										{return UITitleText;};
 protected:
 	bool			m_bTextureVisible;
 

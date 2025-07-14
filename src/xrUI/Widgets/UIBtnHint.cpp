@@ -3,20 +3,31 @@
 #include "UIFrameWindow.h"
 #include "UIStatic.h"
 #include "UIXmlInit.h"
+#include "UIFrameLineWnd.h"
 
 UI_API CUIButtonHint* g_btnHint = nullptr; 
 UI_API CUIButtonHint* g_statHint = nullptr;
 
 CUIButtonHint::CUIButtonHint	()
-:m_ownerWnd(nullptr),m_enabledOnFrame(false)
+:m_ownerWnd(nullptr),m_enabledOnFrame(false), m_border(nullptr)
 {
 //	Device.seqRender.Add		(this, REG_PRIORITY_LOW-1000);
 
 	CUIXmlInit					xml_init;
 	CUIXml						uiXml;
 	uiXml.Load					(CONFIG_PATH, UI_PATH, "hint_item.xml");
-	xml_init.InitFrameWindow	(uiXml,"button_hint",0,this);
-	
+
+	if (uiXml.NavigateToNode("button_hint:texture")) // COP
+		xml_init.InitFrameWindow	(uiXml,"button_hint",0,this);
+	else // CS
+	{
+		xml_init.InitWindow(uiXml, "button_hint", 0, this);
+
+		m_border = new CUIFrameLineWnd();
+		m_border->SetAutoDelete(true);
+		AttachChild(m_border);
+		xml_init.InitFrameLine(uiXml, "button_hint:frame_line", 0, m_border);
+	}
 	m_text						= new CUITextWnd();
 	m_text->SetAutoDelete		(true);
 	AttachChild					(m_text);
@@ -33,7 +44,14 @@ void CUIButtonHint::OnRender	()
 	if(m_enabledOnFrame)
 	{
 		m_text->Update		();
-		SetTextureColor		(color_rgba(255,255,255,color_get_A(m_text->GetTextColor())));
+
+        const u32 color = color_rgba(255, 255, 255, color_get_A(m_text->GetTextColor()));
+
+        if (m_border)
+            m_border->SetTextureColor(color);
+        else
+            SetTextureColor(color);
+
 		Draw				();
 		m_enabledOnFrame	= false;
 	}
@@ -43,14 +61,24 @@ void CUIButtonHint::SetHintText	(CUIWindow* w, LPCSTR text)
 {
 	m_ownerWnd					= w;
 	m_text->SetTextST			(text);
+    if (m_border)
+    {
+        m_text->AdjustWidthToText();
+        const float hh = _max(m_text->GetWidth()+30.0f, 80.0f);
+        SetWidth(hh);
+        m_border->SetWidth(hh); // XXX: CUIFrameLineWnd ignores this. Fix
+    }
+    else
+    {
+        m_text->AdjustHeightToText();
 
-	m_text->AdjustHeightToText	();
+        const Fvector2 new_size
+        {
+            GetWndSize().x,
+            m_text->GetWndSize().y + 20.0f
+        };
 
-	Fvector2					new_size;
-	new_size.x					= GetWndSize().x;
-	new_size.y					= m_text->GetWndSize().y+20.0f;
-
-	SetWndSize					(new_size);
-
+        SetWndSize(new_size);
+    }
 	m_text->ResetColorAnimation	();
 }
