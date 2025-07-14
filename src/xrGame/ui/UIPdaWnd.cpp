@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "UIPdaWnd.h"
 #include "../PDA.h"
-
+#include "uipdaaux.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "UIInventoryUtilities.h"
@@ -374,10 +374,12 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	if ( section == "eptTasks" )
 	{
 		m_pActiveDialog = pUITaskWnd;
+		g_pda_info_state &= ~pda_section::quests;
 	}
 	else if (section == "eptQuests")
 	{
 		m_pActiveDialog = pUIEventsWnd;
+		g_pda_info_state &= ~pda_section::quests;
 	}
 	else if ( section == "eptFractionWar" )
 	{
@@ -386,6 +388,7 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	else if (section == "eptContacts")
 	{
 		m_pActiveDialog = UIPdaContactsWnd;
+		g_pda_info_state &= ~pda_section::contacts;
 	}
 	else if (section == "eptRanking")
 	{
@@ -396,6 +399,7 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 			else
 				m_pActiveDialog = pUIStalkersRankingWnd;
 		}
+		g_pda_info_state &= ~pda_section::ranking;
 	}
 	else if (section == "eptRankingGlobal")
 	{
@@ -404,22 +408,27 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	else if ( section == "eptLogs" )
 	{
 		m_pActiveDialog = pUILogsWnd;
+		g_pda_info_state &= ~pda_section::news;
 	}
 	else if (section == "eptEncyclopedia")
 	{
 		m_pActiveDialog = pUIEncyclopediaWnd;
+		g_pda_info_state &= ~pda_section::encyclopedia;
 	}
 	else if (section == "eptActorStatistic")
 	{
 		m_pActiveDialog = pUIActorInfoWnd;
+		g_pda_info_state &= ~pda_section::statistics;
 	}
 	else if (section == "eptDiary")
 	{
 		m_pActiveDialog = pUIDiaryWnd;
+		g_pda_info_state &= ~pda_section::diary;
 	}
 	else if (section == "eptMap")
 	{
 		m_pActiveDialog = pUIMapWnd;
+		g_pda_info_state &= ~pda_section::map;
 	}
 	if (m_isSetActiveSubdialog)
 	{
@@ -565,6 +574,32 @@ void CUIPdaWnd::UpdateRankingWnd()
 	if (pUIRankingWnd)
 		pUIRankingWnd->Update();
 }
+
+void CUIPdaWnd::PdaContentsChanged	(pda_section::part type)
+{
+	bool b = true;
+
+	if(type==pda_section::encyclopedia){
+		pUIEncyclopediaWnd->ReloadArticles	();
+	}else
+	if(type==pda_section::news){
+		pUIDiaryWnd->AddNews				();
+		pUIDiaryWnd->MarkNewsAsRead			(pUIDiaryWnd->IsShown());
+	}else
+	if(type==pda_section::quests){
+		pUIEventsWnd->Reload				();
+	}else
+	if(type==pda_section::contacts){
+		UIPdaContactsWnd->Reload			();
+		b = false;
+	}
+
+	if(b){
+		g_pda_info_state |= type;
+		CurrentGameUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, true);
+	}
+
+}
 void draw_sign		(CUIStatic* s, Fvector2& pos)
 {
 	s->SetWndPos		(pos);
@@ -586,51 +621,51 @@ void CUIPdaWnd::DrawUpdatedSections				()
 
 	pos = m_sign_places_main[0];
 	pos.add(tab_pos);
-/*	if (g_pda_info_state & pda_section::quests)
+	if (g_pda_info_state & pda_section::quests)
 		draw_sign								(m_updatedSectionImage, pos);
-	else*/
+	else
 		draw_sign								(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[1];
 	pos.add(tab_pos);
-/*	if (g_pda_info_state & pda_section::map)
+	if (g_pda_info_state & pda_section::map)
 		draw_sign								(m_updatedSectionImage, pos);
-	else*/
+	else
 		draw_sign								(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[2];
 	pos.add(tab_pos);
-/*	if (g_pda_info_state & pda_section::diary)
+	if (g_pda_info_state & pda_section::diary)
 		draw_sign								(m_updatedSectionImage, pos);
-	else*/
+	else
 		draw_sign								(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[3];
 	pos.add(tab_pos);
-/*	if (g_pda_info_state & pda_section::contacts)
+	if (g_pda_info_state & pda_section::contacts)
 		draw_sign								(m_updatedSectionImage, pos);
-	else*/
+	else
 		draw_sign								(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[4];
 	pos.add(tab_pos);
-/*	if (g_pda_info_state & pda_section::ranking)
+	if (g_pda_info_state & pda_section::ranking)
 		draw_sign								(m_updatedSectionImage, pos);
-	else*/
+	else
 		draw_sign								(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[5];
 	pos.add(tab_pos);
-/*	if (g_pda_info_state & pda_section::statistics)
+	if (g_pda_info_state & pda_section::statistics)
 		draw_sign								(m_updatedSectionImage, pos);
-	else*/
+	else
 		draw_sign								(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[6];
 	pos.add(tab_pos);
-/*	if (g_pda_info_state & pda_section::encyclopedia)
+	if (g_pda_info_state & pda_section::encyclopedia)
 		draw_sign								(m_updatedSectionImage, pos);
-	else*/
+	else
 		draw_sign								(m_oldSectionImage, pos);
 	
 }

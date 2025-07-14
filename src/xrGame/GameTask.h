@@ -179,7 +179,7 @@ public:
     void ChangeStateCallback() override;
 
     u16 ActiveObjectiveIdx() const;
-    auto ActiveObjective() { return Objective(m_active_objective); }
+    SGameTaskObjective& ActiveObjective() { return Objective(m_active_objective); }
     SGameTaskObjective& Objective(u16 idx);
     const SGameTaskObjective& Objective(u16 idx) const;
     ETaskState ObjectiveState(u16 idx) const;

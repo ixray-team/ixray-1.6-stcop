@@ -2,6 +2,7 @@
 
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "../encyclopedia_article_defs.h"
+#include "UIPdaAux.h"
 
 class CInventoryOwner;
 class CUIFrameLineWnd;
@@ -111,6 +112,7 @@ public:
 			void			SetActiveSubdialog	(const shared_str& section);
 			void			SetActiveSubdialog_script(LPCSTR section)				{ SetActiveSubdialog((const shared_str&)section); };
 	virtual bool			StopAnyMove			(){return false;}
+			void			PdaContentsChanged	(pda_section::part type);
 
 			void			UpdatePda			();
 			void			UpdateRankingWnd	();
