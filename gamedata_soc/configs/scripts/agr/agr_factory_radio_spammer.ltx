@@ -1,0 +1,19 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+;on_info = {+agr_factory_heli_start} sr_idle1
+
+[sr_idle1]
+on_timer = 15000 | %=play_snd(characters_voice\scenario\aes\aes_desant_proceed_part_2)% sr_idle2
+on_info = {+agr_help_krot_start} nil %=play_snd(characters_voice\scenario\aes\aes_second_desant_wave)% 
+
+
+[sr_idle2]
+on_timer = 15000 | %=play_snd(characters_voice\scenario\aes\aes_first_desant_wave)% sr_idle3
+on_info = {+agr_help_krot_start} nil %=play_snd(characters_voice\scenario\aes\aes_second_desant_wave)% 
+
+
+[sr_idle3]
+on_info = {+agr_help_krot_start} nil %=play_snd(characters_voice\scenario\aes\aes_second_desant_wave)% 
+

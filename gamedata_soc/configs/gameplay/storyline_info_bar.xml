@@ -1,0 +1,57 @@
+    <article id="bar_ecolog_research_normal" name="Kruglov_research" group="Found_PDA" article_type="journal">
+        <text>bar_ecolog_research_normal</text>
+    </article>
+    <article id="bar_ecolog_research_corrupted" name="Kruglov_research" group="Found_PDA" article_type="journal">
+        <text>bar_ecolog_research_corrupted</text>
+    </article>
+    <article id="rostok_tunel_gordon_diary" name="st_gordon_diary" group="Found_PDA" article_type="journal">
+        <text>rostok_tunel_gordon_diary</text>
+    </article>
+    <article id="descr_bar_resque_information_1" name="resque information" group="bar_resque_information/0" article_type="task">        
+        <text>descr_bar_resque_information</text>
+    </article>
+    <article id="descr_bar_resque_information_2" name="resque information_2" group="bar_resque_information_2/0" article_type="task">        
+        <text>descr_bar_resque_information_2</text>
+    </article>
+    <article id="descr_bar_kill_professor" name="kill professor" group="Diary" article_type="task">
+        <text>descr_bar_kill_professor</text>
+    </article>
+    <article id="descr_bar_hunter_rifle" name="hunter rifle" group="bar_hunter_rifle/0" article_type="task">
+        <text>descr_bar_hunter_rifle</text>
+    </article>
+    <article id="descr_bar_crazy_veterans_quest" name="crazy veterans quest" group="bar_crazy_veterans_quest/0" article_type="task">
+        <text>descr_bar_crazy_veterans_quest</text>
+    </article>
+    <article id="descr_bar_dolg_community_quest" name="dolg test quest" group="bar_dolg_community_quest/0" article_type="task">
+        <text>descr_bar_dolg_community_quest</text>
+    </article>
+    <article id="descr_bar_dolg_test_quest" name="dolg test quest" group="bar_dolg_test_quest/0" article_type="task">
+        <text>descr_bar_dolg_test_quest</text>
+    </article>
+    <article id="descr_bar_dolg_svoboda_ambush_quest" name="dolg svoboda ambush quest" group="bar_dolg_svoboda_ambush_quest/0" article_type="task">
+        <text>descr_bar_dolg_svoboda_ambush_quest</text>
+    </article>
+    <article id="descr_bar_dolg_svoboda_leader_kill_quest" name="dolg svoboda leader kill quest" group="bar_dolg_svoboda_leader_kill_quest/0" article_type="task">
+        <text>descr_bar_dolg_svoboda_leader_kill_quest</text>
+    </article>
+    <article id="descr_bar_x16_documents" name="x16 documents" group="bar_x16_documents/0" article_type="task">
+        <text>descr_bar_x16_documents</text>
+    </article>
+    <article id="descr_bar_radar_deactivate" name="radar deactivate" article_type="task" group="bar_radar_deactivate/0">
+        <text>descr_bar_radar_deactivate</text>
+    </article>
+	<article id="journal_bar_x16_documents" name="journal_bar_x16_documents_name" group="memuars" article_type="journal">
+           <text>journal_bar_x16_documents</text>
+    </article>
+    <article id="journal_bar_darklab_documents" name="journal_bar_darklab_documents_name" group="memuars" article_type="journal">
+           <text>journal_bar_darklab_documents</text>
+    </article>
+    <article id="journal_before_darklab_documents" name="journal_before_darklab_documents_name" group="memuars" article_type="journal">
+           <text>journal_before_darklab_documents</text>
+    </article>
+    <article id="journal_before_radar_task" name="journal_before_radar_task_name" group="memuars" article_type="journal">
+           <text>journal_before_radar_task</text>
+    </article>
+    <article id="journal_after_agroprom_documents" name="journal_after_agroprom_documents_name" group="memuars" article_type="journal">
+           <text>journal_after_agroprom_documents</text>
+    </article>

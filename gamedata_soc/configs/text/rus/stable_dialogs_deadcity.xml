@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="cit_doctor_escape_dialog_0">
+		<text>Мне нужны ответы на некоторые вопросы.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1">
+		<text>Спрашивай, постараюсь ответить.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_11">
+		<text>Где мои вещи?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_111">
+		<text>Все отобранное барахло лидер обычно складывает у себя. Его комната на верхнем этаже. По крайней мере туда мои вещи отнесли, когда поймали.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1111">
+		<text>Спасибо!</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_12">
+		<text>Как отсюда можно выбраться?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_121">
+		<text>Пока меня вели, я заметил канализационный люк под лестницей на первом этаже...\nЕсли б удалось открыть решетку камеры, то через этот ход можно было бы смотаться отсюда... \nА уходить лучше на Запад, там по тоннелю можно к Свободе выбраться.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1211">
+		<text>Спасибо за информацию.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_14">
+		<text>Кто нас захватил в плен?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_141">
+		<text>Мы попали к наемникам. Кто они - достоверно неизвестно никому, но ходят слухи , что они сотрудничают с иностранными спецслужбами. Расположение этой базы - большой секрет, никто не знает как пробраться в мертвый город. Этим секретом очень многие интересуются, особенно Свобода и Долг.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1411">
+		<text>Продолжай.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_14111">
+		<text>Если добудешь карту мертвого города, то штурм этого гадюшника не за горами. Скорее всего она есть или у наемников или у бандитов. Ты мог бы попробовать ее найти.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_141111">
+		<text>Спасибо за информацию</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_15">
+		<text>Что ты знаешь об этом месте?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_151">
+		<text>Город поделен на две части. Там, где мы сидим - территория наемников, южнее за площадью территория бандитов. Их база в здании школы в юго-западной части города. Между базами - развалины пятиэтажки. Рядом - несколько пятиэтажек, относительно целых. В случае чего можно там отсидеться. Вокруг гаражи и пара мелких приусадебных домиков. На половине бандитов тоже пара пятиэтажек и с десяток гаражей. На другой стороне площади - здание бывшего горсовета.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1511">
+		<text>Спасибо за информацию.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_16">
+		<text>Кто всем этим заправляет?</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_161">
+		<text>Пренеприятнейший тип. Душманом зовут. Заметил пару раз у него в руках какую-то папку с документами. Думаю в них должно быть кой чего интересного.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_1611">
+		<text>Спасибо за информацию.</text>
+	</string>
+	<string id="cit_doctor_escape_dialog_17">
+		<text>Нет, ничего.</text>
+	</string>
+	<string id="cit_doctor_hello_dialog_11">
+		<text>Стрелок! Ты где пропадал??? Тебя с ребятами не было с последней вылазки! Я уж было волноваться начал.</text>
+	</string>
+	<string id="cit_doctor_hello_dialog_21">
+		<text>Ну что, очухался, голова в норме?</text>
+	</string>
+	<string id="cit_doctor_main_dialog_0">
+		<text>Стрелок???</text>
+	</string>
+	<string id="cit_doctor_main_dialog_1">
+		<text>Ну да, ты Стрелок, а кто же? Доктор я, ты что не узнаешь меня? Эй, дружище, что с тобой стряслось, да ты сам не свой. Мы же с тобой 2 года в Зону ходили. Неужели не помнишь?</text>
+	</string>
+	<string id="cit_doctor_main_dialog_11">
+		<text>Не помню.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_2">
+		<text>Не помнишь??? Стрелок, ты чего? Ты же не шутишь, над старым другом, нет? Мда... А ребят, ребят наших ты помнишь? Клыка, Призрака?</text>
+	</string>
+	<string id="cit_doctor_main_dialog_21">
+		<text>Клыка не помню, а Призрак мертв, его труп я нашел на Янтаре.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_3">
+		<text>Призрак!!!?? Мертв??!!! Черт подери, как это могло произойти?! Да они же... да они же одни из лучших были. Черт, что же с вами там стряслось то?</text>
+	</string>
+	<string id="cit_doctor_main_dialog_31">
+		<text>Не знаю что произошло, не помню я.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_4">
+		<text>Погоди, дай я хоть в себя приду, после таких новостей. У меня только одна мысль - все это как-то связано с последней вашей вылазкой к центру Зоны. Когда мы виделись последний раз, ты оставил мне ключ от тайника на Припяти и схему, как его найти. Я сумел их сохранить, наемники не нашли. Вот держи, только спрячь хорошо. Возможно там что-то найдешь. А еще ты постоянно говорил что с Монолитом какой-то подвох. Но я так понимаю ты и сам тогда не понимал о чем речь.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_41">
+		<text>Ясно. А где мы находимся? Я не помню как сюда попал.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_5">
+		<text>Мы в мертвом городе! В лагере наемников.</text>
+	</string>
+	<string id="cit_doctor_main_dialog_6">
+		<text>Мы в мертвом городе!... В лагере наемников...</text>
+	</string>
+	<string id="quest_cit_reward_0">
+		<text>Кстати, у меня есть информация о наемниках. Тебе это интересно?</text>
+	</string>
+	<string id="quest_cit_reward_1">
+		<text>Смотря, что это за информация.</text>
+	</string>
+	<string id="quest_cit_reward_11">
+		<text>Есть карта, на которой отмечено местоположение их базы. А также места застав, как туда скрытно пройти и много другой полезной информации.</text>
+	</string>
+	<string id="quest_cit_reward_111">
+		<text>Согласен, эта информация представляет ценность, в размере трех тысяч.</text>
+	</string>
+	<string id="quest_cit_reward_1111">
+		<text>Подходит. Держи.</text>
+	</string>
+	<string id="quest_cit_reward_11111">
+		<text>Отлично. А вот и твоя награда.\nСкоро сталкеры будут долго спорить, была ли такая группировка как Наемники или это очередная легенда Зоны.</text>
+	</string>
+	<string id="quest_cit_reward_1112">
+		<text>Нет, это слишком мало.</text>
+	</string>
+	<string id="quest_cit_reward_11121">
+		<text>Ну как хочешь, а больше я все равно не дам.</text>
+	</string>
+	<string id="quest_cit_reward_13">
+		<text>Да нет, извини, ничего стоящего. Обычные сплетни.</text>
+	</string>
+	<string id="quest_cit_reward_131">
+		<text>Если что-то накопаешь конкретное, приходи, я заплачу.</text>
+	</string>
+</string_table>

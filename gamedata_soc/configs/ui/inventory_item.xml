@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<w>
+
+	<static_name x="23" y="188" width="185" height="30" stretch="1">
+		<text font="letterica18" r="238" g="155" b="23" complex_mode="1" align="l" vert_align="c"/>		
+	</static_name>
+
+	<static_weight x="23" y="222" width="90" height="20" stretch="1">
+		<text align="l" x="0" y="0" font="letterica18" r="135" g="128" b="122"/>
+	</static_weight>
+
+	<static_cost x="215" y="188" width="110" height="30" stretch="1">
+		<text font="letterica18" r="238" g="155" b="23" align="c" vert_align="c"/>
+	</static_cost>
+
+	<static_condition x="113" y="222" width="95" height="20" stretch="1">
+		<text align="r" x="0" y="0" font="letterica18" r="135" g="128" b="122">st_condition</text>
+	</static_condition>
+
+	<descr_list x="24" y="245" width="300" height="193" always_show_scroll="0" left_ident="16">
+		<font font="letterica16" r="240" g="217" b="182"/>
+	</descr_list>
+
+	<image_static x="170" y="100" width="300" height="160" alignment="c" stretch="1"/>		
+	
+    <condition_progress x="215" y="227" width="107" height="8" horz="1" min="0" max="100" pos="100">
+		<min_color r="255" g="0" b="0"/>
+		<max_color r="0" g="255" b="0"/>
+		<progress>
+			<texture>ui_mg_progress_efficiency_full</texture>
+		</progress>        
+    </condition_progress>
+    
+    <wpn_params x="0" y="0" width="157" height="70">
+		<cap_accuracy x="0" y="8" width="121" height="8">
+			<text font="letterica16" r="124" g="119" b="115">ui_inv_accuracy</text>
+		</cap_accuracy>		
+		<cap_handling x="142" y="8" width="121" height="8">
+			<text font="letterica16" r="124" g="119" b="115">ui_inv_handling</text>
+		</cap_handling>
+		<cap_damage x="0" y="39" width="121" height="8">
+			<text font="letterica16" r="124" g="119" b="115">ui_inv_damage</text>
+		</cap_damage>
+		<cap_rpm x="142" y="39" width="121" height="8">
+			<text font="letterica16" r="124" g="119" b="115">ui_inv_rate_of_fire</text>
+		</cap_rpm>
+		
+		<progress_accuracy x="0" y="24" width="121" height="8" horz="1">
+			<progress>
+				<texture a="255" r="255" g="255" b="255">ui_buymenu_progBar</texture>
+			</progress>
+			<background>
+				<texture a="100" r="255" g="255" b="255">ui_buymenu_progBar</texture>
+			</background>
+		</progress_accuracy>		
+		<progress_handling x="142" y="24" width="121" height="8" horz="1">
+			<progress>
+				<texture a="255" r="255" g="255" b="255">ui_buymenu_progBar</texture>
+			</progress>
+			<background>
+				<texture a="100" r="255" g="255" b="255">ui_buymenu_progBar</texture>
+			</background>
+		</progress_handling>
+		<progress_damage x="0" y="55" width="121" height="8" horz="1">
+			<progress>
+				<texture a="255" r="255" g="255" b="255">ui_buymenu_progBar</texture>
+			</progress>
+			<background>
+				<texture a="100" r="255" g="255" b="255">ui_buymenu_progBar</texture>
+			</background>
+		</progress_damage>		
+		<progress_rpm x="142" y="55" width="121" height="8" horz="1">
+			<progress>
+				<texture a="255" r="255" g="255" b="255">ui_buymenu_progBar</texture>
+			</progress>
+			<background>
+				<texture a="100" r="255" g="255" b="255">ui_buymenu_progBar</texture>
+			</background>
+		</progress_rpm>
+		
+	</wpn_params>
+	
+#include "ui\af_params.xml"
+	
+</w>

@@ -1,0 +1,420 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<encyclopedia>
+    <!-- LIST OF ENCYCLOPEDIA ENTRIES -->
+
+    <!------------------------------------------------------------------->
+    <!--------------------------- AMMO ----------------------------->
+    <!------------------------------------------------------------------->
+
+
+    <!-------------------------------- ammo-9x18-fmj ----------------------------->
+
+    <article id="weapons1_ammo_ammo-9x18-fmj" name="ammo-9x18-fmj" group="Weapons1/Ammo">
+        <ltx>ammo_9x18_fmj</ltx>
+        <text>enc_weapons1_ammo_ammo-9x18-fmj</text>
+    </article>
+
+    <!-------------------------------- ammo-9x18-pmm ----------------------------->
+
+    <article id="weapons1_ammo_ammo-9x18-pmm" name="ammo-9x18-pmm" group="Weapons1/Ammo">
+        <ltx>ammo_9x18_pmm</ltx>
+        <text>enc_weapons1_ammo_ammo-9x18-pmm</text>
+    </article>
+
+    <!-------------------------------- ammo-9x19-fmj ----------------------------->
+
+    <article id="weapons1_ammo_ammo-9x19-fmj" name="ammo-9x19-fmj" group="Weapons1/Ammo">
+        <ltx>ammo_9x19_fmj</ltx>
+        <text>enc_weapons1_ammo_ammo-9x19-fmj</text>
+    </article>
+
+    <!-------------------------------- ammo-9x19-pbp ----------------------------->
+
+    <article id="weapons1_ammo_ammo-9x19-pbp" name="ammo-9x19-pbp" group="Weapons1/Ammo">
+        <ltx>ammo_9x19_pbp</ltx>
+        <text>enc_weapons1_ammo_ammo-9x19-pbp</text>
+    </article>
+
+    <!-------------------------------- ammo-11.43x23-fmj ----------------------------->
+
+    <article id="weapons1_ammo_ammo-11.43x23-fmj" name="ammo-11.43x23-fmj" group="Weapons1/Ammo">
+        <ltx>ammo_11.43x23_fmj</ltx>
+        <text>enc_weapons1_ammo_ammo-11.43x23-fmj</text>
+    </article>
+
+    <!-------------------------------- ammo-11.43x23-hydro ----------------------------->
+
+    <article id="weapons1_ammo_ammo-11.43x23-hydro" name="ammo-11.43x23-hydro" group="Weapons1/Ammo">
+        <ltx>ammo_11.43x23_hydro</ltx>
+        <text>enc_weapons1_ammo_ammo-11.43x23-hydro</text>
+    </article>
+
+    <!-------------------------------- ammo-5.45x39-fmj ----------------------------->
+
+    <article id="weapons1_ammo_ammo-5.45x39-fmj" name="ammo-5.45x39-fmj" group="Weapons1/Ammo">
+        <ltx>ammo_5.45x39_fmj</ltx>
+        <text>enc_weapons1_ammo_ammo-5.45x39-fmj</text>
+    </article>
+
+    <!-------------------------------- ammo-5.45x39-ap ----------------------------->
+
+    <article id="weapons1_ammo_ammo-5.45x39-ap" name="ammo-5.45x39-ap" group="Weapons1/Ammo">
+        <ltx>ammo_5.45x39_ap</ltx>
+        <text>enc_weapons1_ammo_ammo-5.45x39-ap</text>
+    </article>
+
+    <!-------------------------------- ammo-9x39-pab9 ----------------------------->
+
+    <article id="weapons1_ammo_ammo-9x39-pab9" name="ammo-9x39-pab9" group="Weapons1/Ammo">
+        <ltx>ammo_9x39_pab9</ltx>
+        <text>enc_weapons1_ammo_ammo-9x39-pab9</text>
+    </article>
+
+    <!-------------------------------- ammo-9x39-ap ----------------------------->
+
+    <article id="weapons1_ammo_ammo-9x39-ap" name="ammo-9x39-ap" group="Weapons1/Ammo">
+        <ltx>ammo_9x39_ap</ltx>
+        <text>enc_weapons1_ammo_ammo-9x39-ap</text>
+    </article>
+
+    <!-------------------------------- ammo-9x39-sp5 ----------------------------->
+
+    <article id="weapons1_ammo_ammo-9x39-sp5" name="ammo-9x39-sp5" group="Weapons1/Ammo">
+        <ltx>ammo_9x39_sp5</ltx>
+        <text>enc_weapons1_ammo_ammo-9x39-sp5</text>
+    </article>
+
+    <!-------------------------------- ammo-5.56x45-ss190 ----------------------------->
+
+    <article id="weapons1_ammo_ammo-5.56x45-ss190" name="ammo-5.56x45-ss190" group="Weapons1/Ammo">
+        <ltx>ammo_5.56x45_ss190</ltx>
+        <text>enc_weapons1_ammo_ammo-5.56x45-ss190</text>
+    </article>
+
+    <!-------------------------------- ammo-5.56x45-ap ----------------------------->
+
+    <article id="weapons1_ammo_ammo-5.56x45-ap" name="ammo-5.56x45-ap" group="Weapons1/Ammo">
+        <ltx>ammo_5.56x45_ap</ltx>
+        <text>enc_weapons1_ammo_ammo-5.56x45-ap</text>
+    </article>
+
+    <!-------------------------------- ammo-7.62x54-7h1 ----------------------------->
+
+    <article id="weapons1_ammo_ammo-7.62x54-7h1" name="ammo-7.62x54-7h1" group="Weapons1/Ammo">
+        <ltx>ammo_7.62x54_7h1</ltx>
+        <text>enc_weapons1_ammo_ammo-7.62x54-7h1</text>
+    </article>
+
+    <!-------------------------------- ammo-7.62x54-ap ----------------------------->
+
+    <article id="weapons1_ammo_ammo-7.62x54-ap" name="ammo-7.62x54-ap" group="Weapons1/Ammo">
+        <ltx>ammo_7.62x54_ap</ltx>
+        <text>enc_weapons1_ammo_ammo-7.62x54-ap</text>
+    </article>
+
+    <!-------------------------------- ammo-7.62x54-7h14 ----------------------------->
+
+    <article id="weapons1_ammo_ammo-7.62x54-7h14" name="ammo-7.62x54-7h14" group="Weapons1/Ammo">
+        <ltx>ammo_7.62x54_7h14</ltx>
+        <text>enc_weapons1_ammo_ammo-7.62x54-7h14</text>
+    </article>
+
+    <!-------------------------------- ammo-12x70-buck ----------------------------->
+
+    <article id="weapons1_ammo_ammo-12x70-buck" name="ammo-12x70-buck" group="Weapons1/Ammo">
+        <ltx>ammo_12x70_buck</ltx>
+        <text>enc_weapons1_ammo_ammo-12x70-buck</text>
+    </article>
+
+    <!-------------------------------- ammo-12x76-zhekan ----------------------------->
+
+    <article id="weapons1_ammo_ammo-12x76-zhekan" name="ammo-12x76-zhekan" group="Weapons1/Ammo">
+        <ltx>ammo_12x76_zhekan</ltx>
+        <text>enc_weapons1_ammo_ammo-12x76-zhekan</text>
+    </article>
+
+    <!-------------------------------- ammo-12x76-dart ----------------------------->
+
+    <article id="weapons1_ammo_ammo-12x76-dart" name="ammo-12x76-dart" group="Weapons1/Ammo">
+        <ltx>ammo_12x76_dart</ltx>
+        <text>enc_weapons1_ammo_ammo-12x76-dart</text>
+    </article>
+
+    <!-------------------------------- ammo-m209 ----------------------------->
+
+    <article id="weapons1_ammo_ammo-m209" name="ammo-m209" group="Weapons1/Ammo">
+        <ltx>ammo_m209</ltx>
+        <text>enc_weapons1_ammo_ammo-m209</text>
+    </article>
+
+    <!-------------------------------- ammo-vog-25 ----------------------------->
+
+    <article id="weapons1_ammo_ammo-vog-25" name="ammo-vog-25" group="Weapons1/Ammo">
+        <ltx>ammo_vog-25</ltx>
+        <text>enc_weapons1_ammo_ammo-vog-25</text>
+    </article>
+
+    <!-------------------------------- ammo-vog-25p ----------------------------->
+
+    <article id="weapons1_ammo_ammo-vog-25p" name="ammo-vog-25p" group="Weapons1/Ammo">
+        <ltx>ammo_vog-25p</ltx>
+        <text>enc_weapons1_ammo_ammo-vog-25p</text>
+    </article>
+
+    <!-------------------------------- ammo-og-7b ----------------------------->
+
+    <article id="weapons1_ammo_ammo-og-7b" name="ammo-og-7b" group="Weapons1/Ammo">
+        <ltx>ammo_og-7b</ltx>
+        <text>enc_weapons1_ammo_ammo-og-7b</text>
+    </article>
+
+    <!-------------------------------- ammo-gauss ----------------------------->
+
+    <article id="weapons1_ammo_ammo-gauss" name="ammo-gauss" group="Weapons1/Ammo">
+        <ltx>ammo_gauss</ltx>
+        <text>enc_weapons1_ammo_ammo-gauss</text>
+    </article>
+
+
+
+    <!------------------------------------------------------------------->
+    <!--------------------------- WEAPONS ----------------------------->
+    <!------------------------------------------------------------------->
+
+
+    <!-------------------------------- wpn-pm ----------------------------->
+
+    <article id="weapons1_wpn-pm" name="wpn-pm" group="Weapons1">
+        <ltx>wpn_pm</ltx>
+        <text>enc_weapons1_wpn-pm</text>
+    </article>
+
+    <!-------------------------------- wpn-pb ----------------------------->
+
+    <article id="weapons1_wpn-pb" name="wpn-pb" group="Weapons1">
+        <ltx>wpn_pb</ltx>
+        <text>enc_weapons1_wpn-pb</text>
+    </article>
+
+    <!-------------------------------- wpn-fort ----------------------------->
+
+    <article id="weapons1_wpn-fort" name="wpn-fort" group="Weapons1">
+        <ltx>wpn_fort</ltx>
+        <text>enc_weapons1_wpn-fort</text>
+    </article>
+
+    <!-------------------------------- wpn-walther ----------------------------->
+
+    <article id="weapons1_wpn-walther" name="wpn-walther" group="Weapons1">
+        <ltx>wpn_walther</ltx>
+        <text>enc_weapons1_wpn-walther</text>
+    </article>
+
+    <!-------------------------------- wpn-beretta ----------------------------->
+
+    <article id="weapons1_wpn-beretta" name="wpn-beretta" group="Weapons1">
+        <ltx>wpn_beretta</ltx>
+        <text>enc_weapons1_wpn-beretta</text>
+    </article>
+
+    <!-------------------------------- wpn-sig220 ----------------------------->
+
+    <article id="weapons1_wpn-sig220" name="wpn-sig220" group="Weapons1">
+        <ltx>wpn_sig220</ltx>
+        <text>enc_weapons1_wpn-sig220</text>
+    </article>
+
+    <!-------------------------------- wpn-colt1911 ----------------------------->
+
+    <article id="weapons1_wpn-colt1911" name="wpn-colt1911" group="Weapons1">
+        <ltx>wpn_colt1911</ltx>
+        <text>enc_weapons1_wpn-colt1911</text>
+    </article>
+
+    <!-------------------------------- wpn-toz34 ----------------------------->
+
+    <article id="weapons1_wpn-toz34" name="wpn-toz34" group="Weapons1">
+        <ltx>wpn_toz34</ltx>
+        <text>enc_weapons1_wpn-toz34</text>
+    </article>
+
+    <!-------------------------------- wpn-bm16 ----------------------------->
+
+    <article id="weapons1_wpn-bm16" name="wpn-bm16" group="Weapons1">
+        <ltx>wpn_bm16</ltx>
+        <text>enc_weapons1_wpn-bm16</text>
+    </article>
+
+    <!-------------------------------- wpn-spas12 ----------------------------->
+
+    <article id="weapons1_wpn-spas12" name="wpn-spas12" group="Weapons1">
+        <ltx>wpn_spas12</ltx>
+        <text>enc_weapons1_wpn-spas12</text>
+    </article>
+    
+     <!-------------------------------- wpn-wincheaster1300 ----------------------------->
+
+    <article id="weapons1_wpn-wincheaster1300" name="wpn-wincheaster1300" group="Weapons1">
+        <ltx>wpn_wincheaster1300</ltx>
+        <text>enc_weapons1_wpn-wincheaster1300</text>
+    </article>
+
+    <!-------------------------------- wpn-mp5 ----------------------------->
+
+    <article id="weapons1_wpn-mp5" name="wpn-mp5" group="Weapons1">
+        <ltx>wpn_mp5</ltx>
+        <text>enc_weapons1_wpn-mp5</text>
+    </article>
+
+    <!-------------------------------- wpn-ak74 ----------------------------->
+
+    <article id="weapons1_wpn-ak74" name="wpn-ak74" group="Weapons1">
+        <ltx>wpn_ak74</ltx>
+        <text>enc_weapons1_wpn-ak74</text>
+    </article>
+
+    <!-------------------------------- wpn-ak74u ----------------------------->
+
+    <article id="weapons1_wpn-ak74u" name="wpn-ak74u" group="Weapons1">
+        <ltx>wpn_ak74u</ltx>
+        <text>enc_weapons1_wpn-ak74u</text>
+    </article>
+
+    <!-------------------------------- wpn-vintorez ----------------------------->
+
+    <article id="weapons1_wpn-vintorez" name="wpn-vintorez" group="Weapons1">
+        <ltx>wpn_vintorez</ltx>
+        <text>enc_weapons1_wpn-vintorez</text>
+    </article>
+
+    <!-------------------------------- wpn-val ----------------------------->
+
+    <article id="weapons1_wpn-val" name="wpn-val" group="Weapons1">
+        <ltx>wpn_val</ltx>
+        <text>enc_weapons1_wpn-val</text>
+    </article>
+
+    <!-------------------------------- wpn-groza ----------------------------->
+
+    <article id="weapons1_wpn-groza" name="wpn-groza" group="Weapons1">
+        <ltx>wpn_groza</ltx>
+        <text>enc_weapons1_wpn-groza</text>
+    </article>
+
+    <!-------------------------------- wpn-abakan ----------------------------->
+
+    <article id="weapons1_wpn-abakan" name="wpn-abakan" group="Weapons1">
+        <ltx>wpn_abakan</ltx>
+        <text>enc_weapons1_wpn-abakan</text>
+    </article>
+
+    <!-------------------------------- wpn-lr300 ----------------------------->
+
+    <article id="weapons1_wpn-lr300" name="wpn-lr300" group="Weapons1">
+        <ltx>wpn_lr300</ltx>
+        <text>enc_weapons1_wpn-lr300</text>
+    </article>
+
+    <!-------------------------------- wpn-fn2000 ----------------------------->
+
+    <article id="weapons1_wpn-fn2000" name="wpn-fn2000" group="Weapons1">
+        <ltx>wpn_fn2000</ltx>
+        <text>enc_weapons1_wpn-fn2000</text>
+    </article>
+
+    <!-------------------------------- wpn-l85 ----------------------------->
+
+    <article id="weapons1_wpn-l85" name="wpn-l85" group="Weapons1">
+        <ltx>wpn_l85</ltx>
+        <text>enc_weapons1_wpn-l85</text>
+    </article>
+    
+    <!-------------------------------- wpn-g36 ----------------------------->
+
+    <article id="weapons1_wpn-g36" name="wpn-g36" group="Weapons1">
+        <ltx>wpn_g36</ltx>
+        <text>enc_weapons1_wpn-g36</text>
+    </article>
+    
+    <!-------------------------------- wpn-sig550 ----------------------------->
+
+    <article id="weapons1_wpn-sig550" name="wpn-sig550" group="Weapons1">
+        <ltx>wpn_sig550</ltx>
+        <text>enc_weapons1_wpn-sig550</text>
+    </article>
+
+    <!-------------------------------- wpn-svd ----------------------------->
+
+    <article id="weapons1_wpn-svd" name="wpn-svd" group="Weapons1">
+        <ltx>wpn_svd</ltx>
+        <text>enc_weapons1_wpn-svd</text>
+    </article>
+
+    <!-------------------------------- wpn-svu ----------------------------->
+
+    <article id="weapons1_wpn-svu" name="wpn-svu" group="Weapons1">
+        <ltx>wpn_svu</ltx>
+        <text>enc_weapons1_wpn-svu</text>
+    </article>
+
+    <!-------------------------------- wpn-gauss ----------------------------->
+
+    <article id="weapons1_wpn-gauss" name="wpn-gauss" group="Weapons1">
+        <ltx>wpn_gauss</ltx>
+        <text>enc_weapons1_wpn-gauss</text>
+    </article>
+
+    <!-------------------------------- wpn-addon-grenade-launcher ----------------------------->
+
+    <article id="weapons1_wpn-addon-grenade-launcher" name="wpn-addon-grenade-launcher" group="Weapons1">
+        <ltx>wpn_addon_grenade_launcher</ltx>
+        <text>enc_weapons1_wpn-addon-grenade-launcher</text>
+    </article>
+
+    <!-------------------------------- wpn-addon-grenade-launcher-m203 ----------------------------->
+
+    <article id="weapons1_wpn-addon-grenade-launcher-m203" name="wpn-addon-grenade-launcher-m203" group="Weapons1">
+        <ltx>wpn_addon_grenade_launcher_m203</ltx>
+        <text>enc_weapons1_wpn-addon-grenade-launcher-m203</text>
+    </article>
+
+    <!-------------------------------- wpn-rg-6 ----------------------------->
+
+    <article id="weapons1_wpn-rg-6" name="wpn-rg-6" group="Weapons1">
+        <ltx>wpn_rg-6</ltx>
+        <text>enc_weapons1_wpn-rg-6</text>
+    </article>
+
+    <!-------------------------------- wpn-rpg7 ----------------------------->
+
+    <article id="weapons1_wpn-rpg7" name="wpn-rpg7" group="Weapons1">
+        <ltx>wpn_rpg7</ltx>
+        <text>enc_weapons1_wpn-rpg7</text>
+    </article>
+
+    <!-------------------------------- grenade-f1 ----------------------------->
+
+    <article id="weapons1_grenade-f1" name="grenade-f1" group="Weapons1">
+        <ltx>grenade_f1</ltx>
+        <text>enc_weapons1_grenade-f1</text>
+    </article>
+
+    <!-------------------------------- grenade-rgd5 ----------------------------->
+
+    <article id="weapons1_grenade-rgd5" name="grenade-rgd5" group="Weapons1">
+        <ltx>grenade_rgd5</ltx>
+        <text>enc_weapons1_grenade-rgd5</text>
+    </article>
+
+    <!-------------------------------- grenade-gd05 ----------------------------->
+
+    <article id="weapons1_grenade-gd05" name="grenade-gd05" group="Weapons1">
+        <ltx>grenade_gd-05</ltx>
+        <text>enc_weapons1_grenade-gd05</text>
+    </article>
+
+
+
+
+</encyclopedia>
+

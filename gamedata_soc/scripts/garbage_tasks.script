@@ -1,0 +1,152 @@
+function proceed()
+	if db.actor ~= nil and 
+		has_alife_info("garbage_meetstalker_die") and
+		has_alife_info("agr_can_ask_krot_about_gunslinger") and
+		not has_alife_info("agr_krot_band_start")
+	then
+		db.actor:give_info_portion("agr_krot_band_start")
+		news_manager.send_tip(db.actor, "gar_seryi_info")
+	end
+end
+
+function task_hellcar_complete()
+	if has_alife_info("gar_hellcar_help") and
+	   has_alife_info("gar_bandits_killed") and
+	   (has_alife_info("gar_hellcar_death") or
+	   has_alife_info("gar_hellcar_dialog_end"))
+	then
+		return true
+	else
+		return false
+	end
+end
+
+function task_hellcar_fail()
+	if (xr_gulag.getGulagPopulation("gar_hellcar_group") < 1) or has_alife_info("gar_hellcar_death")
+	then
+		return true
+	else
+		return false
+	end
+end
+
+function task_hellcar_fail2()
+	local actor = db.actor
+	if 	(xr_gulag.getCasualities("gar_hellcar_group") > 0 and
+	   not has_alife_info("gar_hellcar_help")) or has_alife_info("gar_hellcar_death")
+	then
+	   return true
+	else
+		return false
+	end
+end
+
+
+function process_info_portion(info_id)
+	-- garbage
+
+		
+	if info_id == "gar_hellcar_death" then
+		level_tasks.remove_location(107, "green_location")
+		
+	elseif info_id == "gar_wounded_help" then
+		level_tasks.add_location(109, "green_location", "gar_wounded_help")
+
+	elseif info_id == "gar_wounded_fight" then
+		level_tasks.remove_location(109, "green_location")
+	
+	
+--  Fake_spots
+
+	elseif info_id == "gar_add_fake_spot1" and not level_tasks.is_map_spot_present (112, "gar_spot_swamp_location") then
+		level_tasks.add_location(112, "crlc_big", "gar_swamp")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot1" then
+		level_tasks.remove_location(112, "crlc_big")
+	
+				
+	elseif info_id == "gar_add_fake_spot2" and not level_tasks.is_map_spot_present (113, "gar_spot_secret1_location") then
+		level_tasks.add_location(113, "crlc_small", "gar_secret1")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot2" then
+		level_tasks.remove_location(113, "crlc_small")
+		
+		
+	elseif info_id == "gar_add_fake_spot3" and not level_tasks.is_map_spot_present (114, "gar_spot_car_graveyard_location") then
+		level_tasks.add_location(114, "crlc_big", "gar_car_graveyard")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot3" then
+		level_tasks.remove_location(114, "crlc_big")	
+	
+	
+	elseif info_id == "gar_add_fake_spot4" and not level_tasks.is_map_spot_present (115, "gar_spot_dolg_blokpost_location") then
+		level_tasks.add_location(115, "crlc_mdl", "gar_dolg_blokpost")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot4" then
+		level_tasks.remove_location(115, "crlc_mdl")
+		
+		
+	elseif info_id == "gar_add_fake_spot5" and not level_tasks.is_map_spot_present (116, "gar_spot_angar_location") then
+		level_tasks.add_location(116, "crlc_mdl", "gar_angar")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot5" then
+		level_tasks.remove_location(116, "crlc_mdl")
+		
+		
+	elseif info_id == "gar_add_fake_spot6" and not level_tasks.is_map_spot_present (117, "gar_spot_bandit_agr_location") then
+		level_tasks.add_location(117, "crlc_mdl", "gar_bandit_agr")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot6" then
+		level_tasks.remove_location(117, "crlc_mdl")
+		
+		
+	elseif info_id == "gar_add_fake_spot7" and not level_tasks.is_map_spot_present (118, "gar_spot_tunnel_location") then
+		level_tasks.add_location(118, "crlc_small", "gar_tunnel")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot7" then
+		level_tasks.remove_location(118, "crlc_small")							
+		
+		
+	elseif info_id == "gar_add_fake_spot8" and not level_tasks.is_map_spot_present (119, "gar_spot_dogs_forest_location") then
+		level_tasks.add_location(119, "crlc_big", "gar_dogs_in_forest")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot8" then
+		level_tasks.remove_location(119, "crlc_big")		
+		
+		
+	elseif info_id == "gar_add_fake_spot9" and not level_tasks.is_map_spot_present (120, "gar_spot_trash1_location") then
+		level_tasks.add_location(120, "crlc_big", "gar_trash1")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot9" then
+		level_tasks.remove_location(120, "crlc_big")		
+		
+		
+	elseif info_id == "gar_add_fake_spot10" and not level_tasks.is_map_spot_present (121, "gar_spot_trash2_location") then
+		level_tasks.add_location(121, "crlc_big", "gar_trash1")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot10" then
+		level_tasks.remove_location(121, "crlc_big")
+		
+		
+	elseif info_id == "gar_add_fake_spot11" and not level_tasks.is_map_spot_present (122, "gar_spot_trash3_location") then
+		level_tasks.add_location(122, "crlc_big", "gar_trash1")
+	return true
+		
+	elseif info_id == "gar_remove_fake_spot11" then
+		level_tasks.remove_location(122, "crlc_big")				
+	
+		
+	end
+	
+	return false
+end

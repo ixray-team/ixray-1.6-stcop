@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="svoboda_outfit_name_m1">
+		<text>Kombez Freedom M2</text>
+	</string>
+	<string id="team_1_desc">
+		<text>The anarchists of the Zone. They believe that the Zone is a haven for freedom, and that all the laws, rules and traditions of the outside world do not apply there. Their motto is "Do as you wish and let others do the same." They try to stop the government from placing the Zone under its control, and fight against the Mercs. Freedom fighters use mainly Soviet and Russian weapons.</text>
+	</string>
+	<string id="team_1_name">
+		<text>Freedom faction (Free Stalkers)</text>
+	</string>
+	<string id="team_2_desc">
+		<text>Drifters and cutthroats from all over the world, nothing's below them. Their motto is "Pecunia non olet - Money does not smell." There are artifacts here and so there's bound to be money. Mercs use mainly Western weapons.</text>
+	</string>
+	<string id="team_2_name">
+		<text>Merc faction (Headhunters)</text>
+	</string>
+</string_table>

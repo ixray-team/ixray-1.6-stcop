@@ -1,0 +1,188 @@
+[rat_group]
+GroupControlSection	= spawn_group
+$spawn               = "monsters\rat-group"		; option for Level Editor
+$npc			     = on				; option for Level Editor
+Human		     	 = off				; option for ALife Simulator
+class                = AI_RAT_G			; AI class
+monster_section      = m_rat_e
+
+[m_rat_e]:monster_base
+GroupControlSection	 = spawn_group
+$spawn               = "monsters\rat"	; option for Level Editor
+$npc			     = on				; option for Level Editor
+$prefetch 			 = 128
+visual				 = monsters\rat\rat_1
+corpse_visual		 = monsters\rat\rat_1
+
+Scheduled		     = on				; option for ALife Simulator
+Human		     	 = off				; option for ALife Simulator
+Health			     = 15				; option for ALife Simulator
+MinSpeed		     = 1.0				; option for ALife Simulator
+MaxSpeed		     = 1.5				; option for ALife Simulator
+going_speed          = 1.0				; option for ALife Simulator
+retreat_threshold	 = 0.2
+eye_fov				 = 170
+eye_range			 = 10
+MaxHealthValue		 = 15				; range [0..200]
+hit_power			 = 5
+hit_type			 = wound
+transparency_threshold	 = 1.0
+DynamicObjectsCount	 = 32
+DynamicSoundsCount	 = 32
+
+smart_terrain_choose_interval	= 20:00:00
+
+killer_clsids			= Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
+
+ef_creature_type	 = 1				; option for evaluation functions
+ef_weapon_type		 = 1
+ef_detector_type	 = 1
+panic_threshold		= 0.1
+
+cform                        = skeleton			; collision class
+class                        = AI_RAT			; AI class
+
+ph_box0_center 		     =   0.0,   0.11, -0.22
+ph_box0_size 		     =   0.085, 0.11, 0.525
+ph_box1_center 		     =   0.0,   0.11, -0.22
+ph_box1_size 		     =   0.085, 0.11, 0.525
+ph_crash_speed_min			= 10
+ph_crash_speed_max			= 30
+ph_collision_damage_factor	= 0.1
+ph_mass 				= 2
+cost					= 5
+
+;открытые раны
+bleeding_v					= 0						;потеря крови при номинальной ране в секунду
+wound_incarnation_v			= 0.0				;крутизна кривой заживления (какой процент раны останется после заживления в игровую секунду)
+min_wound_size				= 0.01
+
+
+bone_torso		     = bip01_spine1 		; bone name
+bone_head		     = bip01_head		; bone name
+weapon_usage		     = 0			; boolean
+
+EyeYShift		     = .15			; meters
+
+MinVoiceInterval	     =  30000			; milliseconds
+MaxVoiceInterval	     = 120000			; milliseconds
+VoiceRefreshRate	     =   2500			; milliseconds
+
+sound_death			 = monsters\rat\death_
+sound_hit			 = monsters\rat\hit_
+sound_attack		 = monsters\rat\attack_
+sound_voice			 = monsters\rat\idle_
+sound_eat			 = monsters\rat\eat_
+
+ChangeActiveStateProbability = 1.0 			; range [0..1]
+ActiveCountPercent	     =   16				; percents
+StandingCountPercent	 =   16				; percents
+PassiveScheduleMin	     =  100				; microseconds
+PassiveScheduleMax       = 1000				; microseconds
+
+LostMemoryTime		     = 20000			; milliseconds
+LostRecoilTime		     =  2000			; milliseconds
+UnderFireDistance	     =   100			; meters
+RetreatTime				 = 10000			; milliseconds
+RetreatDistance		     =   100			; meters
+AttackStraightDistance	 =    10			; meters
+StableDistance		     =     5			; meters
+WallMinTurnValue	     =    90 			; degrees
+WallMaxTurnValue	     =   270			; degrees
+
+AngleSpeed				 = 0.2	            ; degrees per second
+GoalChangeDelta	 	     = 10.0				; seconds
+GoalVariation	  	     = 10.0, 0.0, 20.0	; each coordinate in meters
+AngularStandSpeed		 = 360				; degrees
+AngularMinSpeed			 = 360				; degrees
+AngularMaxSpeed			 = 30				; degrees
+AngularAttackSpeed		 = 10				; degrees
+
+MoraleDeathDistance	     = 50				; meters
+SoundThreshold		     = 0.06             ; range [0..1]
+
+ActionRefreshRate	     = 500			; milliseconds
+MaxHealthValue		     = 15			; range [0..200]
+
+EatMemberCorpses	     = 1			; range {0,1}
+Cannibalism				 = 1			; range {0,1}
+EatCorpseInterval	     = 600000		; milliseconds
+
+corp_mass				 = 500			;
+
+;terrain		             = 3,255,255,255,30,60, 4,255,255,255,30,60, 11,255,255,255,30,60, 12,255,255,255,30,60, 13,255,255,255,30,60, 14,255,255,255,30,60, 15,255,255,255,30,60
+;terrain		             = 1,255,255,255,30,60, 2,255,255,255,30,60, 3,255,255,255,30,60, 4,255,255,255,30,60
+;terrain				 = 255,255,255,255,30,40
+terrain				 = rats_terrain
+
+;inventory item information
+cost			= 0
+inv_name		= "dead rat"
+inv_name_short	= "rat"
+inv_weight		= 1.0	;.5
+
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 8
+inv_grid_y			= 13
+inv_weight			= 0.5
+food_value			= 10
+
+; eatable item
+eat_health = -0.1										
+eat_satiety = 0.2
+eat_power = -0.05
+eat_radiation = 0.01	;0.03;
+wounds_heal_perc = 0
+eat_portions_num = -1
+
+hit_type = wound
+
+;entity condition
+
+satiety_v = 0.0001			;0.01			;скорость уменьшения сытости со временем
+radiation_v = 0.00001		;0.004			;скорость уменьшения радиации
+satiety_power_v = 0.001		;0.01			;увеличение силы при уменьшении сытости 
+satiety_health_v = 0.001	;0.03			;увеличение здоровья при уменьшении сытости 
+satiety_critical = -1.0		;0.25						;критическое значения сытости (в процентах от 0..1) когда здоровье начианает уменьшаться
+radiation_health_v = 0.01	;0.006			;уменьшение здоровья при воздействии радиации
+bleeding_v = 0.05			;0.02			;потеря крови при максимальной ране
+wound_incarnation_v = 0.01	;0.001		    ;скорость заживания раны 
+morale_v			= 0.01					;скорость восстановления морали
+health_hit_part = 1.0		;0.8			;процент хита, уходящий на отнимание здоровья
+power_hit_part = 1.0		;0.9			;процент хита, уходящий на отнимание силы
+psy_health_v = 0.1						;скорость восстановления psy-здоровья
+
+burn_immunity = 1.0				;коэффициенты иммунитета 
+strike_immunity = 1.0
+shock_immunity = 1.0
+wound_immunity = 1.0		
+radiation_immunity	= 0.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity = 1.0
+explosion_immunity = 1.0
+fire_wound_immunity  = 1.0
+
+sleep_health = 1.0		;1.5				;коэффициенты скоростей изменения параметров во время сна
+sleep_power = 1.0		;1.5
+sleep_satiety = 1.0		;0.8
+sleep_radiation = 1.0	;1.1
+sleep_psy_health = 1.0
+
+material				= creatures\small
+DynamicObjectsCount		= 32
+
+;species of monster
+species						= rat
+
+[rats_terrain]
+	255,000,255,255 ;на всех уровнях, по графам без описания
+	255,004,255,255 ;на всех уровнях, по мертвой земле
+	255,005,255,255 ;на всех уровнях, по деревням
+	255,006,255,255 ;на всех уровнях, по городам
+	255,007,255,255 ;на всех уровнях, по промзастройкам
+	255,008,255,255 ;на всех уровнях, по туннелям
+	255,009,255,255 ;на всех уровнях, по подземельям
+	255,014,255,255 ;на всех уровнях, по железнодорожным насыпям
+	255,015,255,255 ;на всех уровнях, по искусственным заграждениям

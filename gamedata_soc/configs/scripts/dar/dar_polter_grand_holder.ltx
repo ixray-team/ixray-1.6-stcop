@@ -1,0 +1,8 @@
+[logic]
+active = mob_remark@hold
+
+[mob_remark@hold]
+anim = stand_idle_0
+time = 50000
+on_signal = action_end | mob_remark@hold
+on_info = {+dar_codelock2_unlock} nil

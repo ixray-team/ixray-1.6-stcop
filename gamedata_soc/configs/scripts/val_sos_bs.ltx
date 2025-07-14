@@ -1,0 +1,23 @@
+[logic@val_sos_bs]
+active = mob_camp1
+on_combat = mob_combat
+
+[mob_combat]
+on_info = nil %=disable_combat_handler%
+
+[mob_camp1]
+path_home = bs_walk
+path_look = bs_look
+state = invis
+;friendly = true
+on_actor_dist_le = 3 | mob_camp2 %=monster_berserk%
+on_info = {+val_sos_actor_near_wounded} mob_camp2 %=monster_berserk%
+
+[mob_camp2]
+path_home = bs_attack_walk
+path_look = bs_attack_look
+state = vis
+;on_actor_dist_le = 3 | nil
+;friendly = true
+;on_signal = arrived | nil
+

@@ -1,0 +1,26 @@
+[logic]
+active = zoneguard1
+
+[zoneguard1]
+path_walk = mil_freedom_zoneguard_walk_kill2
+path_look = mil_freedom_zoneguard_look_kill2
+zone_warn = mil_freedom_leader_kill_zone
+no_move = true
+;snd = 
+on_actor_in_zone = mil_freedom_leader_kill_zone | {=actor_has_weapon} zoneguard2
+team = freedom_bodyguards3
+on_info = {+mil_freedom_under_attack} camper1
+
+[zoneguard2]
+path_walk = mil_freedom_zoneguard_walk_kill2
+path_look = mil_freedom_zoneguard_look_kill2
+zone_warn = mil_freedom_leader_warn_zone
+zone_guard = mil_freedom_leader_kill_zone
+no_move = true
+team = freedom_bodyguards3
+
+[camper1]
+path_walk = mil_defense_walk3
+path_look = mil_defense_look3
+radius = 5
+on_info = {-mil_freedom_under_attack} zoneguard1

@@ -1,0 +1,169 @@
+<game_task id="val_come_to_trader" prio="395">
+    <title>val_come_to_trader_1</title>
+    <objective key="0">
+        <icon height="50" width="50" x="100" y="0">ui\ui_icons_task</icon>
+        <infoportion_complete>esc_return</infoportion_complete>
+        <infoportion_fail>bar_darklab_document_done</infoportion_fail>
+    </objective>
+    <objective key="1">
+        <text>val_come_to_trader</text>
+        <icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+        <map_location_type hint="val_come_to_trader">green_location</map_location_type>
+        <object_story_id>val_exit_gate</object_story_id>
+        <infoportion_complete>esc_return</infoportion_complete>
+    </objective>
+</game_task>
+
+<game_task id="val_prisoner_help" prio="415">
+    <title>val_prisoner_help</title>
+    <objective key="0">
+        <icon>ui_iconsTotal_val_prisoner_help</icon>
+        <infoportion_complete>val_prisoner_free</infoportion_complete>
+        <infoportion_fail>val_prisoner_dead</infoportion_fail>
+		<article>val_prisoner_help_art</article>
+    </objective>
+    <objective key="1">
+        <text>val_prisoner_help_main</text>
+        <icon height="50" width="50" x="150" y="0">ui\ui_icons_task</icon>
+        <map_location_type hint="val_prisoner_help_main_hint">green_location</map_location_type>
+        <object_story_id>val_prisoner</object_story_id>
+    </objective>
+</game_task>
+
+
+<game_task id="val_captive_help" prio="420">
+    <title>val_captive_help</title>
+    <objective key="0">
+        <icon>ui_iconsTotal_val_captive_help</icon>
+        <function_fail>darkvalley_tasks.escort_task_fail</function_fail>
+        <function_complete>darkvalley_tasks.escort_task_done</function_complete>
+        <infoportion_fail>val_escort_nap1_dead</infoportion_fail>
+	    <article>val_captive_help_art</article>
+    </objective>
+    <objective key="1">
+        <text>val_captive_help_1</text>
+        <icon height="50" width="50" x="150" y="0">ui\ui_icons_task</icon>
+        <map_location_type hint="val_captive_help_1_hint">green_location</map_location_type>
+        <object_story_id>val_escort_nap1</object_story_id>
+        <infoportion_complete>val_escort_actor_at_ambush</infoportion_complete>
+        <infoportion_fail>val_escort_nap1_dead</infoportion_fail>
+    </objective>
+    <objective key="2">
+        <text>val_captive_help_2</text>
+        <icon height="50" width="50" x="150" y="0">ui\ui_icons_task</icon>
+        <map_location_type hint="val_captive_help_2_hint">green_location</map_location_type>
+        <map_location_hidden>1</map_location_hidden>
+        <object_story_id>val_escort_captive</object_story_id>
+    </objective>
+</game_task>
+
+
+<game_task id="bar_darklab_documents" prio="435">
+    <title>bar_darklab_documents</title>
+    <objective key="0">
+        <icon>ui_iconsTotal_bar_darklab_documents</icon>
+        <infoportion_complete>val_x18_door_open</infoportion_complete>
+		<article>bar_darklab_documents_art</article>
+    </objective>
+    <objective key="4">
+        <text>bar_darklab_documents_4</text>
+        <icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+        <map_location_type hint="bar_darklab_documents_4_hint">green_location</map_location_type>
+        <object_story_id>val_zone_pipe</object_story_id>
+        <infoportion_complete>val_actor_on_bandits_base</infoportion_complete>
+    </objective>
+    <objective key="1">
+        <text>bar_darklab_documents_1</text>
+        <icon height="50" width="50" x="50" y="50">ui\ui_icons_task</icon>
+        <map_location_type hint="bar_darklab_documents_1_hint">blue_location</map_location_type>
+        <object_story_id>val_borov</object_story_id>
+        <infoportion_complete>val_actor_has_borov_key</infoportion_complete>
+    </objective>
+    <objective key="2">
+        <text>bar_darklab_documents_2</text>
+        <icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+        <infoportion_complete>val_actor_leave_bandits_base</infoportion_complete>
+        <map_location_type hint="bar_darklab_documents_2_hint">green_location</map_location_type>
+        <object_story_id>val_zone_exit_tunnel</object_story_id>
+    </objective>
+    <objective key="3">
+        <text>bar_darklab_documents_3</text>
+        <icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+        <map_location_type hint="bar_darklab_documents_3_hint">green_location</map_location_type>
+        <object_story_id>val_door_to_x18</object_story_id>
+        <infoportion_complete>val_x18_door_open</infoportion_complete>
+    </objective>
+</game_task>
+
+
+<game_task id="bar_darklab_documents2" prio="399">
+    <title>bar_darklab_documents2</title>
+    <objective key="0">
+        <icon>ui_iconsTotal_bar_darklab_documents2</icon>
+        <infoportion_complete>bar_darklab_document_done</infoportion_complete>
+		<article>bar_darklab_documents2_art</article>
+    </objective>
+    <objective key="1">
+        <text>bar_darklab_documents2_1</text>
+        <icon height="50" width="50" x="200" y="100">ui\ui_icons_task</icon>
+        <map_location_type hint="bar_darklab_documents2_1_hint">green_location</map_location_type>
+        <object_story_id>bar_darklab_documents</object_story_id>
+        <function_complete>darkvalley_tasks.has_darklab_documents</function_complete>
+        <infoportion_set_complete>bar_darklab_document_gain</infoportion_set_complete>
+        <infoportion_set_complete>dar_document5</infoportion_set_complete>
+        <infoportion_set_complete>val_raid_start</infoportion_set_complete>
+    </objective>
+    <objective key="2">
+        <text>bar_darklab_documents2_2</text>
+        <icon height="50" width="50" x="400" y="50">ui\ui_icons_task</icon>
+        <map_location_type hint="bar_darklab_documents2_2_hint">blue_location</map_location_type>
+        <object_story_id>bar_Barman</object_story_id>
+        <infoportion_complete>bar_darklab_document_done</infoportion_complete>
+    </objective>
+</game_task>
+
+
+<game_task id="dar_codedoor_1" prio="405">
+    <title>dar_codedoor_1</title>
+    <objective key="0">
+        <icon>ui_iconsTotal_dar_codedoor_1</icon>
+        <infoportion_complete>dar_open_door1</infoportion_complete>
+		<article>dar_codedoor_1_art</article>
+    </objective>
+    <objective key="1">
+        <text>dar_codedoor_1_1</text>
+        <icon>ui_iconsTotal_dar_codedoor_1</icon>
+        <infoportion_complete>dar_password_info1</infoportion_complete>
+        <map_location_type>green_location</map_location_type>
+        <object_story_id>dar_corpse_1</object_story_id>        
+    </objective>
+    <objective key="2">
+        <text>dar_codedoor_1_2</text>
+        <icon>ui_iconsTotal_dar_codedoor_1</icon>
+        <map_location_type>green_location</map_location_type>
+        <object_story_id>dar_codedoor_1</object_story_id>
+    </objective>
+</game_task>
+
+
+<game_task id="dar_codedoor_2" prio="400">
+    <title>dar_codedoor_2</title>
+    <objective key="0">
+        <icon>ui_iconsTotal_dar_codedoor_2</icon>
+        <infoportion_complete>dar_open_door2</infoportion_complete>
+		<article>dar_codedoor_2_art</article>
+    </objective>
+    <objective key="1">
+        <text>dar_codedoor_2_1</text>
+        <icon height="50" width="50" x="350" y="150">ui\ui_icons_task</icon>
+        <infoportion_complete>dar_password_info2</infoportion_complete>
+        <map_location_type>green_location</map_location_type>
+        <object_story_id>dar_corpse_2</object_story_id>
+    </objective>
+    <objective key="2">
+        <text>dar_codedoor_2_2</text>
+        <icon>ui_iconsTotal_dar_codedoor_2</icon>
+        <map_location_type>green_location</map_location_type>
+        <object_story_id>dar_codedoor_2</object_story_id>
+    </objective>
+</game_task>

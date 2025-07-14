@@ -1,0 +1,101 @@
+[logic]
+active              = remark@wait_update ;walker@go_to_actor
+on_death            = death
+combat_ignore       = combat_ignore
+
+[death]
+on_info             = %+cit_doctor_dead +cit_jail_doctor_leave +sar2_death_3%
+
+[meet@scene_start]
+meet_state          = 3 | {-cit_jail_start_waking} doctor_wakeup, wait
+meet_state_wpn 	    = 3 | {-cit_jail_start_waking} doctor_wakeup, wait
+victim 			    = 3 | actor
+victim_wpn 		    = 3 | actor
+
+;-----------------------------------------------------------------------------------------------------------
+;--- ждем
+;-----------------------------------------------------------------------------------------------------------
+[remark@wait_update]
+anim                = wait_na
+target              = actor
+on_info             = {!black_screen} remark@wait_actor_wake ;walker@go_to_actor
+combat_ignore_cond  = always
+
+;-----------------------------------------------------------------------------------------------------------
+;--- 
+;-----------------------------------------------------------------------------------------------------------
+[walker@go_to_actor]
+path_walk           = cit_jail_doctor_start_walk
+path_look           = cit_jail_doctor_start_look
+on_signal           = arrived | remark@wait_actor_wake
+;on_info             = {!black_screen} remark@wait_actor_wake
+combat_ignore_cond  = always
+
+;-----------------------------------------------------------------------------------------------------------
+;--- ждем пока актер проснется
+;-----------------------------------------------------------------------------------------------------------
+[remark@wait_actor_wake]
+anim                = doctor_wakeup
+target              = actor
+on_timer            = 6000 | remark@talk_to_actor %+cit_jail_start_waking =play_snd_now(cit_doctor_start_dlg)%
+;on_signal           = action_end | remark@talk_to_actor %+cit_jail_start_waking =play_snd_now(cit_doctor_start_dlg)%
+combat_ignore_cond  = always
+
+;-----------------------------------------------------------------------------------------------------------
+;--- разговариваем с актером
+;-----------------------------------------------------------------------------------------------------------
+[remark@talk_to_actor]
+anim                = wait_na
+anim_reset          = false
+target              = actor
+on_signal           = action_end | remark@look_at_guard1 %+cit_jail_actor_wake%
+combat_ignore_cond  = always
+
+;-----------------------------------------------------------------------------------------------------------
+;--- просто смотрим на актера
+;-----------------------------------------------------------------------------------------------------------
+[remark@look_at_guard1]
+anim                = wait
+target              = actor
+;target              = logic@cit_killers_jail_guard, cit_killers ;1201 ; guard1
+on_info             = {+cit_jail_guard2_talk_to_guard1} remark@look_at_guard2
+;on_info             = {+cit_jail_guard2_talk_to_doctor} remark@look_at_guard2
+combat_ignore_cond  = always
+
+;-----------------------------------------------------------------------------------------------------------
+;--- смотрим на второго охранника, когда он разговаривает с нами
+;-----------------------------------------------------------------------------------------------------------
+[remark@look_at_guard2]
+anim                = wait
+target              = logic@cit_killers_base_guard, cit_killers ;1202 ; guard2
+on_info             = {+cit_jail_door_opened =actor_alive} remark@bye_to_actor, {+cit_jail_door_opened} walker@go_out
+combat_ignore_cond  = always
+
+;-----------------------------------------------------------------------------------------------------------
+;--- прощаемся с актером
+;-----------------------------------------------------------------------------------------------------------
+[remark@bye_to_actor]
+anim                = wait_na
+target              = actor
+snd                 = cit_doctor_end_dlg ;speech
+on_signal           = sound_end | walker@go_out
+combat_ignore_cond  = always
+
+;-----------------------------------------------------------------------------------------------------------
+;--- выходим из камеры
+;-----------------------------------------------------------------------------------------------------------
+[walker@go_out]
+path_walk           = cit_jail_doctor_out_walk
+path_look           = cit_jail_doctor_out_look
+on_signal           = arrived | %+cit_jail_doctor_out_end%
+on_info             = {-cit_jail_door_opened} walker@leave
+combat_ignore_cond  = always
+
+;-----------------------------------------------------------------------------------------------------------
+;--- уходим
+;-----------------------------------------------------------------------------------------------------------
+[walker@leave]
+path_walk           = cit_jail_doctor_leave_walk
+path_look           = cit_jail_doctor_leave_look
+on_signal           = arrived | %+cit_jail_doctor_leave%
+combat_ignore_cond  = always

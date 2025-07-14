@@ -1,0 +1,2171 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_stuff">
+		<text>GSC:</text>
+	</string>
+	<string id="st_producer">
+		<text>Продюсер</text>
+	</string>
+	<string id="st_gsc">
+		<text>Сергей "-GSC-" Григорович</text>
+	</string>
+	<string id="st_project_lead">
+		<text>Лидер проекта</text>
+	</string>
+	<string id="st_bolshakov">
+		<text>Антон Большаков</text>
+	</string>
+	<string id="st_lead_designer">
+		<text>Ведущие дизайнеры</text>
+	</string>
+	<string id="st_prokhorov">
+		<text>Андрей "Prof" Прохоров</text>
+	</string>
+	<string id="st_yuriy_negrobov">
+		<text>Юрий Негробов</text>
+	</string>
+	<string id="st_lead_programmers">
+		<text>Ведущие программисты</text>
+	</string>
+	<string id="st_shyshkovtsov">
+		<text>Олесь Шишковцов</text>
+	</string>
+	<string id="st_maksymchuk">
+		<text>Александр Максимчук</text>
+	</string>
+	<string id="st_iassenev">
+		<text>Дмитрий Ясенев</text>
+	</string>
+	<string id="st_kolomiets">
+		<text>Андрей Коломиец</text>
+	</string>
+	<string id="st_art_department">
+		<text>ОТДЕЛ ГРАФИКИ</text>
+	</string>
+	<string id="st_level_design">
+		<text>Дизайн</text>
+	</string>
+	<string id="st_level_design2">
+		<text>уровней</text>
+	</string>
+	<string id="st_tkachenko">
+		<text>Андрей "Rainbow"</text>
+	</string>
+	<string id="st_tkachenko2">
+		<text>Ткаченко</text>
+	</string>
+	<string id="st_kurbatov">
+		<text>Сергей "Mike"</text>
+	</string>
+	<string id="st_kurbatov2">
+		<text>Курбатов</text>
+	</string>
+	<string id="st_tuz">
+		<text>Вениамин</text>
+	</string>
+	<string id="st_tuz2">
+		<text>Туз</text>
+	</string>
+	<string id="st_demidenko">
+		<text>Ким</text>
+	</string>
+	<string id="st_demidenko2">
+		<text>Демиденко</text>
+	</string>
+	<string id="st_zaitsev">
+		<text>Евгений </text>
+	</string>
+	<string id="st_zaitsev2">
+		<text>Зайцев</text>
+	</string>
+	<string id="st_pavlenko">
+		<text>Александр "SU-27"</text>
+	</string>
+	<string id="st_pavlenko2">
+		<text>Павленко</text>
+	</string>
+	<string id="st_efimov">
+		<text>Владимир А.</text>
+	</string>
+	<string id="st_efimov2">
+		<text>Ефимов </text>
+	</string>
+	<string id="st_shpilevoy">
+		<text>Дмитрий </text>
+	</string>
+	<string id="st_shpilevoy2">
+		<text>Шпилевой </text>
+	</string>
+	<string id="st_suprun">
+		<text>Богдан </text>
+	</string>
+	<string id="st_suprun2">
+		<text>Супрун</text>
+	</string>
+	<string id="st_karmalskiy">
+		<text>Сергей "Karma"</text>
+	</string>
+	<string id="st_karmalskiy2">
+		<text>Кармальский</text>
+	</string>
+	<string id="st_petrovskiy">
+		<text>Юрий "Jip"</text>
+	</string>
+	<string id="st_petrovskiy2">
+		<text>Петровский</text>
+	</string>
+	<string id="st_shelekhov">
+		<text>Максим "ghouL"</text>
+	</string>
+	<string id="st_shelekhov2">
+		<text>Шелехов</text>
+	</string>
+	<string id="st_pshenichniy">
+		<text>Александр "LEX"</text>
+	</string>
+	<string id="st_pshenichniy2">
+		<text>Пшеничный</text>
+	</string>
+	<string id="st_grabovskiy">
+		<text>Ярослав </text>
+	</string>
+	<string id="st_grabovskiy2">
+		<text>Грабовский</text>
+	</string>
+	<string id="st_karpenko">
+		<text>Евгений "Frodo"</text>
+	</string>
+	<string id="st_karpenko2">
+		<text>Карпенко</text>
+	</string>
+	<string id="st_animation">
+		<text>Анимация</text>
+	</string>
+	<string id="st_lead_animator">
+		<text>Ведущий аниматор</text>
+	</string>
+	<string id="st_animators">
+		<text>Аниматоры</text>
+	</string>
+	<string id="st_vladimir_korunchak">
+		<text>Владимир </text>
+	</string>
+	<string id="st_vladimir_korunchak2">
+		<text>Корунчак</text>
+	</string>
+	<string id="st_kravcova">
+		<text>Валерия </text>
+	</string>
+	<string id="st_kravcova2">
+		<text>Кравцова</text>
+	</string>
+	<string id="st_sergiy_volchanov">
+		<text>Сергей </text>
+	</string>
+	<string id="st_sergiy_volchanov2">
+		<text>Волчанов</text>
+	</string>
+	<string id="st_olga_volchanova">
+		<text>Ольга </text>
+	</string>
+	<string id="st_olga_volchanova2">
+		<text>Волчанова </text>
+	</string>
+	<string id="st_character_models">
+		<text>Модели персонажей</text>
+	</string>
+	<string id="st_character_models2">
+		<text>Models</text>
+	</string>
+	<string id="st_goncharenko">
+		<text>Слава "Glory"</text>
+	</string>
+	<string id="st_goncharenko2">
+		<text>Гончаренко</text>
+	</string>
+	<string id="st_konovalchuk">
+		<text>Руслан </text>
+	</string>
+	<string id="st_konovalchuk2">
+		<text>Коновальчук</text>
+	</string>
+	<string id="st_textures">
+		<text>Текстуры</text>
+	</string>
+	<string id="st_podorvaniy">
+		<text>Анатолий </text>
+	</string>
+	<string id="st_podorvaniy2">
+		<text>Подорваный </text>
+	</string>
+	<string id="st_kovach">
+		<text>Александр </text>
+	</string>
+	<string id="st_kovach2">
+		<text>Ковач</text>
+	</string>
+	<string id="st_art">
+		<text>Интерфейс и графика</text>
+	</string>
+	<string id="st_lukash">
+		<text>Виктор </text>
+	</string>
+	<string id="st_lukash2">
+		<text>Лукаш</text>
+	</string>
+	<string id="st_khivrenko">
+		<text>Иван </text>
+	</string>
+	<string id="st_khivrenko2">
+		<text>Хивренко </text>
+	</string>
+	<string id="st_nesin">
+		<text>Роман </text>
+	</string>
+	<string id="st_nesin2">
+		<text>Несин</text>
+	</string>
+	<string id="st_troekurova">
+		<text>Ольга </text>
+	</string>
+	<string id="st_troekurova2">
+		<text>Троекурова</text>
+	</string>
+	<string id="st_kotov">
+		<text>Владимир </text>
+	</string>
+	<string id="st_kotov2">
+		<text>Котов</text>
+	</string>
+
+	<string id="st_programming_department">
+		<text>ОТДЕЛ ПРОГРАММИРОВАНИЯ</text>
+	</string>
+	<string id="st_engine">
+		<text>Движок</text>
+	</string>
+	<string id="st_shyshkovtsov_render">
+		<text>Олесь Шишковцов</text>
+	</string>
+	<string id="st_shyshkovtsov_render2">
+		<text>- Рендер</text>
+	</string>
+	<string id="st_maksymchuk_editors">
+		<text>Александр Максимчук</text>
+	</string>
+	<string id="st_maksymchuk_editors2">
+		<text>- Редакторы</text>
+	</string>
+	<string id="st_iassenev_ai">
+		<text>Дмитрий Ясенев</text>
+	</string>
+	<string id="st_iassenev_ai2">
+		<text>- ИИ/Симуляция</text>
+	</string>
+	<string id="st_kolomiets_gameplay">
+		<text>Андрей Коломиец</text>
+	</string>
+	<string id="st_kolomiets_gameplay2">
+		<text>- Наполнение</text>
+	</string>
+	<string id="st_maximov">
+		<text>Виталий Максимов</text>
+	</string>
+	<string id="st_maximov2">
+		<text>- Сетевая игра</text>
+	</string>
+	<string id="st_slipchenko">
+		<text>Константин Слипченко</text>
+	</string>
+	<string id="st_slipchenko2">
+		<text>- Физика</text>
+	</string>
+	<string id="st_gemeitsev">
+		<text>Сергей Жемейцев</text>
+	</string>
+	<string id="st_gemeitsev2">
+		<text>- ИИ монстров</text>
+	</string>
+	<string id="st_ivantsov_optimization">
+		<text>Сергей Иванцов</text>
+	</string>
+	<string id="st_ivantsov_optimization2">
+		<text>- Оптимизация</text>
+	</string>
+	<string id="st_dobronravin">
+		<text>Юрий Добронравин</text>
+	</string>
+	<string id="st_dobronravin2">
+		<text>- Наполнение, Интерфейс</text>
+	</string>
+	<string id="st_gameplay_tools">
+		<text>Инструментарий</text>
+	</string>
+	<string id="st_gameplay_tools2">
+		<text>наполнения игры и скрипты</text>
+	</string>
+	<string id="st_didenko">
+		<text>Руслан </text>
+	</string>
+	<string id="st_didenko2">
+		<text>Диденко</text>
+	</string>
+	<string id="st_chugai">
+		<text>Александр </text>
+	</string>
+	<string id="st_chugai2">
+		<text>Чугай</text>
+	</string>
+	<string id="st_fidrya">
+		<text>Андрей </text>
+	</string>
+	<string id="st_fidrya2">
+		<text>Фидря</text>
+	</string>
+	<string id="st_khryptul">
+		<text>Олег </text>
+	</string>
+	<string id="st_khryptul2">
+		<text>Хриптул</text>
+	</string>
+	<string id="st_eugene_negrobov">
+		<text>Евгений </text>
+	</string>
+	<string id="st_eugene_negrobov2">
+		<text>Негробов</text>
+	</string>
+	<string id="st_plichko">
+		<text>Александр </text>
+	</string>
+	<string id="st_plichko2">
+		<text>Пличко</text>
+	</string>
+	<string id="st_tunduk">
+		<text>Владимир </text>
+	</string>
+	<string id="st_tunduk2">
+		<text>Тундук</text>
+	</string>
+	<string id="st_additional_programming">
+		<text>Дополнительное программирование </text>
+	</string>
+	<string id="st_nikolaev">
+		<text>Андрей </text>
+	</string>
+	<string id="st_nikolaev2">
+		<text>Николаев </text>
+	</string>
+	<string id="st_vinnichenko">
+		<text>Сергей </text>
+	</string>
+	<string id="st_vinnichenko2">
+		<text>Винниченко</text>
+	</string>
+	<string id="st_reutsky">
+		<text>Виктор </text>
+	</string>
+	<string id="st_reutsky2">
+		<text>Реутский</text>
+	</string>
+	<string id="st_marchenko">
+		<text>Роман </text>
+	</string>
+	<string id="st_marchenko2">
+		<text>Марченко </text>
+	</string>
+
+	<string id="st_gamedesign_department">
+		<text>ОТДЕЛ</text>
+	</string>
+	<string id="st_gamedesign_department2">
+		<text>ГЕЙМ-ДИЗАЙНА</text>
+	</string>
+	<string id="st_sityanov">
+		<text>Алексей </text>
+	</string>
+	<string id="st_sityanov2">
+		<text>Сытьянов</text>
+	</string>
+	<string id="st_aristov">
+		<text>Вячеслав "must_die"</text>
+	</string>
+	<string id="st_aristov2">
+		<text>Аристов</text>
+	</string>
+	<string id="st_veretiannikov">
+		<text>Иван "E1"</text>
+	</string>
+	<string id="st_veretiannikov2">
+		<text>Веретянников</text>
+	</string>
+	<string id="st_verpahovskiy">
+		<text>Андрей </text>
+	</string>
+	<string id="st_verpahovskiy2">
+		<text>Верпаховский</text>
+	</string>
+	<string id="st_volvach">
+		<text>Денис </text>
+	</string>
+	<string id="st_volvach2">
+		<text>Волвач</text>
+	</string>
+	<string id="st_dushynsky">
+		<text>Петр </text>
+	</string>
+	<string id="st_dushynsky2">
+		<text>Душинский</text>
+	</string>
+	<string id="st_konstantinov">
+		<text>Юрий </text>
+	</string>
+	<string id="st_konstantinov2">
+		<text>Константинов</text>
+	</string>
+	<string id="st_kuzmin">
+		<text>Константин </text>
+	</string>
+	<string id="st_kuzmin2">
+		<text>Кузьмин</text>
+	</string>
+	<string id="st_lekhno">
+		<text>Дмитрий "Krondor"</text>
+	</string>
+	<string id="st_lekhno2">
+		<text>Лехно</text>
+	</string>
+	<string id="st_nekhaychuk">
+		<text>Константин </text>
+	</string>
+	<string id="st_nekhaychuk2">
+		<text>Нехайчук</text>
+	</string>
+	<string id="st_shyshkin">
+		<text>Роман </text>
+	</string>
+	<string id="st_shyshkin2">
+		<text>Шишкин</text>
+	</string>
+	<string id="st_sound_producer">
+		<text>Звукорежиссер</text>
+	</string>
+	<string id="st_kuzmenko">
+		<text>Дмитрий Кузьменко</text>
+	</string>
+	<string id="st_original_music">
+		<text>Музыка</text>
+	</string>
+	<string id="st_mooze">
+		<text>MoozE</text>
+	</string>
+	<string id="st_additional_music">
+		<text>Дополнительная музыка</text>
+	</string>
+	<string id="st_firelake">
+		<text>FireLake</text>
+	</string>
+	<string id="st_holler">
+		<text>Маркус Холлер</text>
+	</string>
+	<string id="st_addaraya">
+		<text>Addaraya</text>
+	</string>
+	<string id="st_localization_department">
+		<text>Локализация</text>
+	</string>
+	<string id="st_kuchma">
+		<text>Евгений 'Smile' Кучма</text>
+	</string>
+	<string id="st_textwork">
+		<text>Работа с текстами</text>
+	</string>
+	<string id="st_litvinenko">
+		<text>Владимир Литвиненко</text>
+	</string>
+	<string id="st_qa_department">
+		<text>ОТДЕЛ КОНТРОЛЯ КАЧЕСТВА</text>
+	</string>
+	<string id="st_dyukov">
+		<text>Петр </text>
+	</string>
+	<string id="st_dyukov2">
+		<text>Дюков</text>
+	</string>
+	<string id="st_krivets">
+		<text>Дмитрий </text>
+	</string>
+	<string id="st_krivets2">
+		<text>Кривец</text>
+	</string>
+	<string id="st_scripal">
+		<text>Юрий </text>
+	</string>
+	<string id="st_scripal2">
+		<text>Скрипаль</text>
+	</string>
+	<string id="st_bragin">
+		<text>Кирилл </text>
+	</string>
+	<string id="st_bragin2">
+		<text>Брагин </text>
+	</string>
+	<string id="st_naprasniy">
+		<text>Денис </text>
+	</string>
+	<string id="st_naprasniy2">
+		<text>Напрасный </text>
+	</string>
+	<string id="st_pr_department">
+		<text>PR ОТДЕЛ</text>
+	</string>
+	<string id="st_yavorsky">
+		<text>Олег 'Yava' Яворский</text>
+	</string>
+	<string id="st_yeltyshev">
+		<text>Валентин 'Atem' Елтышев</text>
+	</string>
+	<string id="st_ananyev">
+		<text>Денис 'Blackbird' Ананьев</text>
+	</string>
+	<string id="st_besarab">
+		<text>Юрий 'Gagarin' Бесараб</text>
+	</string>
+	<string id="st_terlyuk">
+		<text>Сергей Терлюк</text>
+	</string>
+	<string id="st_reclama">
+		<text>Рекламные материалы</text>
+	</string>
+	<string id="st_nesin_reclama">
+		<text>Роман Несин</text>
+	</string>
+	<string id="st_troekurova_reclama">
+		<text>Ольга Троекурова</text>
+	</string>
+	<string id="st_khivrenko_reclama">
+		<text>Иван Хивренко</text>
+	</string>
+	<string id="st_sales_department">
+		<text>ОТДЕЛ ПРОДАЖ</text>
+	</string>
+	<string id="st_grushko">
+		<text>Сергей Грушко</text>
+	</string>
+	<string id="st_boyko">
+		<text>Виктория Бойко</text>
+	</string>
+
+	<string id="st_russian_voice">
+		<text>Актеры</text>
+	</string>
+	<string id="st_vilkov">
+		<text>Александр  </text>
+	</string>
+	<string id="st_vilkov2">
+		<text>Вилков</text>
+	</string>
+	<string id="st_bogush">
+		<text>Анатолий </text>
+	</string>
+	<string id="st_bogush2">
+		<text> Богуш</text>
+	</string>
+	<string id="st_podubinskiy">
+		<text>Андрей  </text>
+	</string>
+	<string id="st_podubinskiy2">
+		<text>Подубинский</text>
+	</string>
+	<string id="st_girich">
+		<text>Анжелика  </text>
+	</string>
+	<string id="st_girich2">
+		<text>Гирич</text>
+	</string>
+	<string id="st_malukha">
+		<text>Евгений  </text>
+	</string>
+	<string id="st_malukha2">
+		<text>Малуха</text>
+	</string>
+	<string id="st_german">
+		<text>Григорий  </text>
+	</string>
+	<string id="st_german2">
+		<text>Герман</text>
+	</string>
+	<string id="st_rozin">
+		<text>Иван  </text>
+	</string>
+	<string id="st_rozin2">
+		<text>Розин</text>
+	</string>
+	<string id="st_borisenok">
+		<text>Юрий  </text>
+	</string>
+	<string id="st_borisenok2">
+		<text> Борисенок</text>
+	</string>
+	<string id="st_stalchuk">
+		<text>Олег  </text>
+	</string>
+	<string id="st_stalchuk2">
+		<text>Стальчук</text>
+	</string>
+	<string id="st_gofurov">
+		<text>Руслан  </text>
+	</string>
+	<string id="st_gofurov2">
+		<text>Гофуров</text>
+	</string>
+	<string id="st_tereschuk">
+		<text>Владимир  </text>
+	</string>
+	<string id="st_tereschuk2">
+		<text>Терещук</text>
+	</string>
+
+
+	<!-- THQ  -->
+
+	<string id="st_thq">
+		<text>THQ:</text>
+	</string>
+	<string id="st_thq_h">
+		<text>THQ</text>
+	</string>
+	<string id="st_qa">
+		<text>QA</text>
+	</string>
+	<string id="st_directorqa">
+		<text>Director, Quality Assurance</text>
+	</string>
+	<string id="st_vallejo">
+		<text>Monica Vallejo</text>
+	</string>
+	<string id="st_qamanagers">
+		<text>QA Managers</text>
+	</string>
+	<string id="st_waibel">
+		<text>Mario Waibel</text>
+	</string>
+	<string id="st_motoda">
+		<text>Michael Motoda</text>
+	</string>
+	<string id="st_test_supervisor">
+		<text>Test Supervisor</text>
+	</string>
+	<string id="st_sapienza">
+		<text>David Sapienza</text>
+	</string>
+	<string id="st_test_lead">
+		<text>Test Leads</text>
+	</string>
+	<string id="st_wong">
+		<text>Warren Wong</text>
+	</string>
+
+	<string id="st_testers">
+		<text>Testers</text>
+	</string>
+	<string id="st_blais">
+		<text>Adam</text>
+	</string>
+	<string id="st_blais2">
+		<text>Blais</text>
+	</string>
+	<string id="st_lopez">
+		<text>Aaron</text>
+	</string>
+	<string id="st_lopez2">
+		<text>Lopez</text>
+	</string>
+	<string id="st_aarsvold">
+		<text>Andrew </text>
+	</string>
+	<string id="st_aarsvold2">
+		<text>Aarsvold</text>
+	</string>
+	<string id="st_aguilar">
+		<text>Carlos</text>
+	</string>
+	<string id="st_aguilar2">
+		<text>Aguilar</text>
+	</string>
+	<string id="st_letwinch">
+		<text>Casey </text>
+	</string>
+	<string id="st_letwinch2">
+		<text>Letwinch</text>
+	</string>
+	<string id="st_wiemer">
+		<text>Dustin  </text>
+	</string>
+	<string id="st_wiemer2">
+		<text>Wiemer </text>
+	</string>
+	<string id="st_deerson">
+		<text>Eric</text>
+	</string>
+	<string id="st_deerson2">
+		<text>Deerson</text>
+	</string>
+	<string id="st_whitebread">
+		<text>Eric</text>
+	</string>
+	<string id="st_whitebread2">
+		<text>Whitebread</text>
+	</string>
+	<string id="st_swartz">
+		<text>Eric</text>
+	</string>
+	<string id="st_swartz2">
+		<text>Swartz</text>
+	</string>
+	<string id="st_fiorentine">
+		<text>Evin </text>
+	</string>
+	<string id="st_fiorentine2">
+		<text>Fiorentine</text>
+	</string>
+	<string id="st_rand">
+		<text>Herb </text>
+	</string>
+	<string id="st_rand2">
+		<text>Rand</text>
+	</string>
+	<string id="st_tharp">
+		<text>Ian</text>
+	</string>
+	<string id="st_tharp2">
+		<text>Tharpe</text>
+	</string>
+	<string id="st_padovan">
+		<text>John</text>
+	</string>
+	<string id="st_padovan2">
+		<text>Padovan</text>
+	</string>
+	<string id="st_castaneda">
+		<text>Jose </text>
+	</string>
+	<string id="st_castaneda2">
+		<text>Castaneda</text>
+	</string>
+	<string id="st_plianpho">
+		<text>Chalermchai "Kata"</text>
+	</string>
+	<string id="st_plianpho2">
+		<text>Plianpho</text>
+	</string>
+	<string id="st_moore">
+		<text>Kayron </text>
+	</string>
+	<string id="st_moore2">
+		<text>Moore</text>
+	</string>
+	<string id="st_heeter">
+		<text>Kevin </text>
+	</string>
+	<string id="st_heeter2">
+		<text>Heeter</text>
+	</string>
+	<string id="st_oldfield">
+		<text>Matt </text>
+	</string>
+	<string id="st_oldfield2">
+		<text>Oldfield</text>
+	</string>
+	<string id="st_mejia">
+		<text>Osvaldo</text>
+	</string>
+	<string id="st_mejia2">
+		<text>Mejia</text>
+	</string>
+	<string id="st_donnell">
+		<text>Rory </text>
+	</string>
+	<string id="st_donnell2">
+		<text>O'Donnell</text>
+	</string>
+	<string id="st_escobar">
+		<text>Rudy  </text>
+	</string>
+	<string id="st_escobar2">
+		<text>Escobar</text>
+	</string>
+	<string id="st_johnson">
+		<text>Ryan  </text>
+	</string>
+	<string id="st_johnson2">
+		<text>Johnson</text>
+	</string>
+	<string id="st_allman">
+		<text>Scott  </text>
+	</string>
+	<string id="st_allman2">
+		<text>Allman</text>
+	</string>
+	<string id="st_tester">
+		<text>Scott </text>
+	</string>
+	<string id="st_tester2">
+		<text>Tester </text>
+	</string>
+	<string id="st_wright">
+		<text>Selvin</text>
+	</string>
+	<string id="st_wright2">
+		<text>Wright</text>
+	</string>
+	<string id="st_malloy">
+		<text>Steven </text>
+	</string>
+	<string id="st_malloy2">
+		<text>Malloy </text>
+	</string>
+	<string id="st_thurman">
+		<text>Tim</text>
+	</string>
+	<string id="st_thurman2">
+		<text>Thurman</text>
+	</string>
+	<string id="st_fong">
+		<text>Trevor  </text>
+	</string>
+	<string id="st_fong2">
+		<text>Fong </text>
+	</string>
+	<string id="st_sexton">
+		<text>Walter </text>
+	</string>
+	<string id="st_sexton2">
+		<text>Sexton</text>
+	</string>
+	<string id="st_kemp">
+		<text>Willis </text>
+	</string>
+	<string id="st_kemp2">
+		<text>Kemp</text>
+	</string>
+
+	<string id="st_pc_specialist">
+		<text>PC Specialist</text>
+	</string>
+	<string id="st_gonzalez">
+		<text>Ruben Gonzalez</text>
+	</string>
+
+	<string id="st_bloch">
+		<text>Jonathan Bloch</text>
+	</string>
+	<string id="st_bloch2">
+		<text>Bloch</text>
+	</string>
+
+	<string id="st_leippi">
+		<text>Christopher Leippi</text>
+	</string>
+	<string id="st_leippi2">
+		<text>Leippi</text>
+	</string>
+
+
+
+	<string id="st_pcsupervisor">
+		<text>PC Supervisor</text>
+	</string>
+	<string id="st_krenz">
+		<text>Jim Krenz</text>
+	</string>
+	<string id="st_qatechnicians">
+		<text>QA Technicians</text>
+	</string>
+	<string id="st_jones">
+		<text>Richard Jones</text>
+	</string>
+	<string id="st_zlotnicki">
+		<text>Michael Zlotnicki</text>
+	</string>
+	<string id="st_drolet">
+		<text>Justin Drolet</text>
+	</string>
+
+	<string id="st_mastering_lab_supervisor">
+		<text>Mastering Lab Supervisor</text>
+	</string>
+	<string id="st_dunnet">
+		<text>Anthony</text>
+	</string>
+	<string id="st_dunnet2">
+		<text>Dunnet</text>
+	</string>
+	<string id="st_mastering_lab_technicians">
+		<text>Mastering Lab Technicians</text>
+	</string>
+	<string id="st_peters">
+		<text>Glen</text>
+	</string>
+	<string id="st_peters2">
+		<text>Peters</text>
+	</string>
+	<string id="st_arnold">
+		<text>T.Ryan</text>
+	</string>
+	<string id="st_arnold2">
+		<text>Arnold</text>
+	</string>
+	<string id="st_salguero">
+		<text>Heidi</text>
+	</string>
+	<string id="st_salguero2">
+		<text>Salguero</text>
+	</string>
+	<string id="st_fell">
+		<text>Ryan</text>
+	</string>
+	<string id="st_fell2">
+		<text>Fell</text>
+	</string>
+	<string id="st_remastering_project_manager">
+		<text>Remastering Project Manager</text>
+	</string>
+	<string id="st_batarse">
+		<text>Charles</text>
+	</string>
+	<string id="st_batarse2">
+		<text>Batarse</text>
+	</string>
+
+	<string id="st_database_administrator">
+		<text>Database Administrator</text>
+	</string>
+	<string id="st_gill">
+		<text>Jonathan Gill</text>
+	</string>
+	<string id="st_database_applications_engineer">
+		<text>Database Applications Engineer</text>
+	</string>
+	<string id="st_kincaid">
+		<text>Brian Kincaid</text>
+	</string>
+
+	<string id="st_game_evaluation_team">
+		<text>Game Evaluation Team</text>
+	</string>
+	<string id="st_frazier">
+		<text>Scott</text>
+	</string>
+	<string id="st_frazier2">
+		<text>Frazier</text>
+	</string>
+	<string id="st_elzie">
+		<text>Matt</text>
+	</string>
+	<string id="st_elzie2">
+		<text>Elzie</text>
+	</string>
+	<string id="st_weiss">
+		<text>Eric</text>
+	</string>
+	<string id="st_weiss2">
+		<text>Weiss</text>
+	</string>
+	<string id="st_emerson">
+		<text>Chris</text>
+	</string>
+	<string id="st_emerson2">
+		<text>Emerson</text>
+	</string>
+	<string id="st_human_factors_design_specialist">
+		<text>Human Factors Design Specialist</text>
+	</string>
+	<string id="st_kowalewski">
+		<text>Ray</text>
+	</string>
+	<string id="st_kowalewski2">
+		<text>Kowalewski</text>
+	</string>
+	<string id="st_wilson">
+		<text>David</text>
+	</string>
+	<string id="st_wilson2">
+		<text>Wilson</text>
+	</string>
+
+	<string id="st_qa_operations_coordinator">
+		<text>QA Operations Coordinator</text>
+	</string>
+	<string id="st_nelson">
+		<text>Steve Nelson</text>
+	</string>
+	<string id="st_hr_generalist">
+		<text>HR Generalist</text>
+	</string>
+	<string id="st_waldman">
+		<text>Eve Waldman</text>
+	</string>
+
+	<string id="st_qa_special_thanks">
+		<text>QA Special Thanks</text>
+	</string>
+	<string id="st_wagman">
+		<text>Mark Wagman</text>
+	</string>
+
+	<string id="st_headquarters">
+		<text>HEADQUARTERS</text>
+	</string>
+	<string id="st_executive_staff">
+		<text>EXECUTIVE STAFF</text>
+	</string>
+	<string id="st_executive_vice_president">
+		<text>Executive Vice President</text>
+	</string>
+	<string id="st_worldwide_studios">
+		<text>Worldwide Studios</text>
+	</string>
+	<string id="st_sorenson">
+		<text>Jack Sorenson</text>
+	</string>
+	<string id="st_worldwide_publishing">
+		<text>Worldwide Publishing</text>
+	</string>
+	<string id="st_flock">
+		<text>Kelly Flock</text>
+	</string>
+
+	<string id="st_product_development">
+		<text>PRODUCT DEVELOPMENT</text>
+	</string>
+	<string id="st_senior_vice_president">
+		<text>Senior Vice President,</text>
+	</string>
+	<string id="st_product_development_s">
+		<text>Product Development</text>
+	</string>
+	<string id="st_dauterman">
+		<text>Steve Dauterman</text>
+	</string>
+
+	<string id="st_executive_producer">
+		<text>Executive Producer</text>
+	</string>
+	<string id="st_sharpe">
+		<text>Dean Sharpe</text>
+	</string>
+	<string id="st_associate_producer">
+		<text>Associate Producer</text>
+	</string>
+	<string id="st_icenbice">
+		<text>Evan Icenbice</text>
+	</string>
+	<string id="st_senior_global_localization_manager">
+		<text>Senior Global Localization Manager</text>
+	</string>
+	<string id="st_small">
+		<text>Amy Small</text>
+	</string>
+	<string id="st_european_localization_director">
+		<text>European Localization Director</text>
+	</string>
+	<string id="st_dieck">
+		<text>Susanne Dieck</text>
+	</string>
+	<string id="st_european_localization_engineer">
+		<text>European Localization Engineer</text>
+	</string>
+	<string id="st_kurtz">
+		<text>Bernd Kurtz</text>
+	</string>
+	<string id="st_localization_technician">
+		<text>Localization Technician</text>
+	</string>
+	<string id="st_herbertz">
+		<text>Andreas Herbertz</text>
+	</string>
+
+	<string id="st_global_brand_management">
+		<text>GLOBAL BRAND MANAGEMENT</text>
+	</string>
+	<string id="st_aniello">
+		<text>Bob Aniello</text>
+	</string>
+
+	<string id="st_director_global_brand">
+		<text>Director, Global Brand</text>
+	</string>
+	<string id="st_carraway">
+		<text>Brad Carraway</text>
+	</string>
+	<string id="st_brand_manager">
+		<text>Brand Manager</text>
+	</string>
+	<string id="st_robinson">
+		<text>Monica Robinson</text>
+	</string>
+	<string id="st_vice_president">
+		<text>Vice President,</text>
+	</string>
+	<string id="st_corporate_communications">
+		<text>Corporate Communications</text>
+	</string>
+	<string id="st_pieri">
+		<text>Liz Pieri</text>
+	</string>
+	<string id="st_global_pr_manager">
+		<text>Global PR Manager</text>
+	</string>
+	<string id="st_cunis">
+		<text>Guy Cunis</text>
+	</string>
+
+	<string id="st_media_relations_manager">
+		<text>Media Relations Manager</text>
+	</string>
+	<string id="st_cassel">
+		<text>Rob Cassel</text>
+	</string>
+	<string id="st_vanasin">
+		<text>Vanessa Vanasin</text>
+	</string>
+	<string id="st_media_relations_coordinator">
+		<text>Media Relations Coordinator</text>
+	</string>
+	<string id="st_mitchell">
+		<text>Craig Mitchell</text>
+	</string>
+
+	<string id="st_legal">
+		<text>Legal</text>
+	</string>
+	<string id="st_carrillo">
+		<text>Brandy</text>
+	</string>
+	<string id="st_carrillo2">
+		<text>Carrillo</text>
+	</string>
+	<string id="st_fingerman">
+		<text>Debbie</text>
+	</string>
+	<string id="st_fingerman2">
+		<text>Fingerman</text>
+	</string>
+	<string id="st_carlson">
+		<text>Jenni</text>
+	</string>
+	<string id="st_carlson2">
+		<text>Carlson</text>
+	</string>
+	<string id="st_kennedy">
+		<text>Jim</text>
+	</string>
+	<string id="st_kennedy2">
+		<text>Kennedy</text>
+	</string>
+
+	<string id="st_creative_services">
+		<text>CREATIVE SERVICES</text>
+	</string>
+	<string id="st_director_creative_services">
+		<text>Director - Creative Services</text>
+	</string>
+	<string id="st_liebeskind">
+		<text>Howard Liebeskind</text>
+	</string>
+	<string id="st_creative_services_manager">
+		<text>Creative Services Manager</text>
+	</string>
+	<string id="st_somdal">
+		<text>Kirk Somdal</text>
+	</string>
+
+	<string id="st_video_production_manager">
+		<text>Video Production Manager</text>
+	</string>
+	<string id="st_folino">
+		<text>Christopher Folino</text>
+	</string>
+	<string id="st_video_production_coordinator">
+		<text>Video Production Coordinator</text>
+	</string>
+	<string id="st_rivas">
+		<text>Melissa Rivas</text>
+	</string>
+
+	<string id="st_thq_international">
+		<text>THQ INTERNATIONAL</text>
+	</string>
+	<string id="st_svp_european_publishing">
+		<text>SVP European Publishing</text>
+	</string>
+	<string id="st_curran">
+		<text>Ian Curran</text>
+	</string>
+	<string id="st_director_global_brand_management">
+		<text>Director, Global Brand Management</text>
+	</string>
+	<string id="st_pattison">
+		<text>Michael Pattison</text>
+	</string>
+
+	<string id="st_senior_global_brand_manager">
+		<text>Senior Global Brand Manager</text>
+	</string>
+	<string id="st_torode">
+		<text>Mickey Torode</text>
+	</string>
+	<string id="st_global_brand_manager">
+		<text>Global Brand Manager</text>
+	</string>
+	<string id="st_claudia_kuehl">
+		<text>Claudia Kuehl</text>
+	</string>
+	<string id="st_assistant_global_brand_manager">
+		<text>Assistant Global Brand Manager</text>
+	</string>
+	<string id="st_newall">
+		<text>Anthony Newall</text>
+	</string>
+
+	<string id="st_online_manager">
+		<text>Online Manager</text>
+	</string>
+
+	<string id="st_huw_beynon">
+		<text>Huw Beynon</text>
+	</string>
+
+	<string id="st_uk_product_manager">
+		<text>UK Product Manager</text>
+	</string>
+
+
+	<string id="st_laura_disney">
+		<text>Laura Disney</text>
+	</string>
+
+	<string id="st_uk_pr_manager">
+		<text>UK PR Manager</text>
+	</string>
+
+	<string id="st_helen_jones">
+		<text>Helen Jones</text>
+	</string>
+
+	<string id="st_export_marketing_manager">
+		<text>Export Marketing Manager</text>
+	</string>
+	<string id="st_shepherd">
+		<text>Gayle Shepherd</text>
+	</string>
+	<string id="st_keighrann">
+		<text>Luke Keighran</text>
+	</string>
+	<string id="st_product_manager_germany">
+		<text>Product Manager, Germany</text>
+	</string>
+	<string id="st_skrok">
+		<text>Melanie Skrok</text>
+	</string>
+	<string id="st_head_of_pr_germany">
+		<text>Head of PR, Germany</text>
+	</string>
+	<string id="st_reckenthaler">
+		<text>Georg Reckenthaler</text>
+	</string>
+
+	<string id="st_marketing_manager_nordic">
+		<text>Marketing Manager, Nordic</text>
+	</string>
+	<string id="st_viby">
+		<text>Henrik Viby</text>
+	</string>
+	<string id="st_pr_manager_nordic">
+		<text>PR Manager, Nordic</text>
+	</string>
+	<string id="st_jakobsen">
+		<text>Peter Jakobsen</text>
+	</string>
+	<string id="st_senior_product_manager_france">
+		<text>Senior Product Manager, France</text>
+	</string>
+	<string id="st_goldstein">
+		<text>Jeremy Goldstein</text>
+	</string>
+	<string id="st_pr_manager_france">
+		<text>PR Manager, France</text>
+	</string>
+	<string id="st_benzadon">
+		<text>Jerome Benzadon</text>
+	</string>
+
+	<string id="st_product_manager_spain">
+		<text>Product Manager, Spain</text>
+	</string>
+	<string id="st_manu">
+		<text>Javier Manu</text>
+	</string>
+	<string id="st_pr_manager_spain">
+		<text>PR Manager, Spain</text>
+	</string>
+	<string id="st_vazquez">
+		<text>Jorge Nicolas Vazquez</text>
+	</string>
+	<string id="st_marketing_and_pr_manager_benelux">
+		<text>Marketing and PR Manager, Benelux</text>
+	</string>
+	<string id="st_wolff">
+		<text>Robin Wolff</text>
+	</string>
+
+	<string id="st_product_manager_asia_pacific">
+		<text>Product Manager, Asia Pacific</text>
+	</string>
+	<string id="st_chris_wright">
+		<text>Chris Wright</text>
+	</string>
+	<string id="st_pr_promotions_coordinator">
+		<text>PR and Promotions Co-ordinator,</text>
+	</string>
+	<string id="st_asia_pacific">
+		<text>Asia Pacific</text>
+	</string>
+	<string id="st_taylor">
+		<text>Drew Taylor</text>
+	</string>
+	<string id="st_korea_product_manager">
+		<text>Korea Product Manager</text>
+	</string>
+	<string id="st_jung">
+		<text>James Jung</text>
+	</string>
+	<string id="st_japan_product_manager">
+		<text>Japan Product Manager</text>
+	</string>
+	<string id="st_takahiro_morita">
+		<text>Takahiro Morita</text>
+	</string>
+
+	<string id="st_international_art_director">
+		<text>International Art Director</text>
+	</string>
+	<string id="st_enzmann">
+		<text>Till Enzmann</text>
+	</string>
+	<string id="st_dtp_operator">
+		<text>DTP Operator (ICS)</text>
+	</string>
+	<string id="st_johnen">
+		<text>Anja</text>
+	</string>
+	<string id="st_johnen2">
+		<text>Johnen</text>
+	</string>
+	<string id="st_tapper">
+		<text>Detlef</text>
+	</string>
+	<string id="st_tapper2">
+		<text>Tapper</text>
+	</string>
+	<string id="st_offenberg">
+		<text>Dirk</text>
+	</string>
+	<string id="st_offenberg2">
+		<text>Offenberg</text>
+	</string>
+	<string id="st_spangenberg">
+		<text>Jens</text>
+	</string>
+	<string id="st_spangenberg2">
+		<text>Spangenberg</text>
+	</string>
+	<string id="st_stauvermann">
+		<text>Jorg</text>
+	</string>
+	<string id="st_stauvermann2">
+		<text>Stauvermann</text>
+	</string>
+	<string id="st_sackers">
+		<text>Ramona</text>
+	</string>
+	<string id="st_sackers2">
+		<text>Sackers</text>
+	</string>
+	<string id="st_stell">
+		<text>Ramona</text>
+	</string>
+	<string id="st_stell2">
+		<text>Stell</text>
+	</string>
+
+	<string id="st_cd_centre">
+		<text>CD PROJEKT LOCALISATION CENTRE</text>
+	</string>
+	<string id="st_pm">
+		<text>Project Manager</text>
+	</string>
+	<string id="st_grzywaczewski">
+		<text>Pawel Grzywaczewski</text>
+	</string>
+	<string id="st_lead_testers">
+		<text>Lead Testers</text>
+	</string>
+	<string id="st_watroba">
+		<text>Lukasz Watroba</text>
+	</string>
+	<string id="st_pustul">
+		<text>Elzbieta Pustul</text>
+	</string>
+	<string id="st_wojtania">
+		<text>Zbigniew Wojtania</text>
+	</string>
+	<string id="st_stranowski">
+		<text>Marcin Stranowski</text>
+	</string>
+
+
+	<string id="st_cd_testers">
+		<text>Testers</text>
+	</string>
+	<string id="st_piotrowski">
+		<text>Jan</text>
+	</string>
+	<string id="st_piotrowski2">
+		<text>Piotrowski</text>
+	</string>
+	<string id="st_spolny">
+		<text>Kamil</text>
+	</string>
+	<string id="st_spolny2">
+		<text>Spolny</text>
+	</string>
+	<string id="st_skoczek">
+		<text>Artur</text>
+	</string>
+	<string id="st_skoczek2">
+		<text>Skoczek</text>
+	</string>
+	<string id="st_slupecki">
+		<text>Michal</text>
+	</string>
+	<string id="st_slupecki2">
+		<text>Slupecki</text>
+	</string>
+	<string id="st_dybiec">
+		<text>Mateusz</text>
+	</string>
+	<string id="st_dybiec2">
+		<text>Dybiec</text>
+	</string>
+	<string id="st_wielebski">
+		<text>Michal</text>
+	</string>
+	<string id="st_wielebski2">
+		<text>Wielebski</text>
+	</string>
+	<string id="st_chorek">
+		<text>Lukasz</text>
+	</string>
+	<string id="st_chorek2">
+		<text>Chorek</text>
+	</string>
+	<string id="st_zajdel">
+		<text>Sylwester</text>
+	</string>
+	<string id="st_zajdel2">
+		<text>Zajdel</text>
+	</string>
+	<string id="st_jadczak">
+		<text>Hubert</text>
+	</string>
+	<string id="st_jadczak2">
+		<text>Jadczak</text>
+	</string>
+	<string id="st_falak">
+		<text>Karol</text>
+	</string>
+	<string id="st_falak2">
+		<text>Falak</text>
+	</string>
+	<string id="st_sulkowski">
+		<text>Przemyslaw</text>
+	</string>
+	<string id="st_sulkowski2">
+		<text>Sulkowski</text>
+	</string>
+	<string id="st_krukowski">
+		<text>Wojciech</text>
+	</string>
+	<string id="st_krukowski2">
+		<text>Krukowski</text>
+	</string>
+	<string id="st_jozwik">
+		<text>Blazej</text>
+	</string>
+	<string id="st_jozwik2">
+		<text>Jozwik</text>
+	</string>
+	<string id="st_szczytowski">
+		<text>Arkadiusz</text>
+	</string>
+	<string id="st_szczytowski2">
+		<text>Szczytowski</text>
+	</string>
+	<string id="st_pomianowski">
+		<text>Mateusz</text>
+	</string>
+	<string id="st_pomianowski2">
+		<text>Pomianowski</text>
+	</string>
+	<string id="st_przyjemski">
+		<text>Marek</text>
+	</string>
+	<string id="st_przyjemski2">
+		<text>Przyjemski</text>
+	</string>
+	<string id="st_bucko">
+		<text>Andrzej</text>
+	</string>
+	<string id="st_bucko2">
+		<text>Bucko</text>
+	</string>
+	<string id="st_iwanow">
+		<text>Aleksandra</text>
+	</string>
+	<string id="st_iwanow2">
+		<text>Iwanow</text>
+	</string>
+	<string id="krol">
+		<text>Karol</text>
+	</string>
+	<string id="krol2">
+		<text>Krol</text>
+	</string>
+	<string id="st_roguski">
+		<text>Maciej </text>
+	</string>
+	<string id="st_roguski2">
+		<text>Roguski</text>
+	</string>
+	<string id="st_wonko">
+		<text>Piotr</text>
+	</string>
+	<string id="st_wonko2">
+		<text>Wonko</text>
+	</string>
+	<string id="st_jedrzejewski">
+		<text>Michal </text>
+	</string>
+	<string id="st_jedrzejewski2">
+		<text>Jedrzejewski</text>
+	</string>
+	<string id="st_kohorewicz">
+		<text>Grzegorz</text>
+	</string>
+	<string id="st_kohorewicz2">
+		<text>Kohorewicz</text>
+	</string>
+	<string id="st_polkowski">
+		<text>Damian</text>
+	</string>
+	<string id="st_polkowski2">
+		<text>Polkowski</text>
+	</string>
+	<string id="st_rzadca">
+		<text>Jacek</text>
+	</string>
+	<string id="st_rzadca2">
+		<text>Rzadca</text>
+	</string>
+	<string id="st_gorzkowski">
+		<text>Pawel</text>
+	</string>
+	<string id="st_gorzkowski2">
+		<text>Gorzkowski</text>
+	</string>
+	<string id="st_dobrodziej">
+		<text>Maciej </text>
+	</string>
+	<string id="st_dobrodziej2">
+		<text>Dobrodziej</text>
+	</string>
+	<string id="st_rzeznicki">
+		<text>Dominik </text>
+	</string>
+	<string id="st_rzeznicki2">
+		<text>Rzeznicki</text>
+	</string>
+	<string id="st_pawlowski">
+		<text>Arkadiusz</text>
+	</string>
+	<string id="st_pawlowski2">
+		<text>Pawlowski</text>
+	</string>
+	<string id="st_chotnicki">
+		<text>Lukasz </text>
+	</string>
+	<string id="st_chotnicki2">
+		<text>Chotnicki</text>
+	</string>
+	<string id="st_thanks_cd_projekt">
+		<text>Special thanks from CD Projekt to:</text>
+	</string>
+	<string id="st_graj">
+		<text>Maciej Graj</text>
+	</string>
+	<string id="st_dabrowski">
+		<text>Jacek Dabrowski</text>
+	</string>
+	<string id="st_lewandowska">
+		<text>Dominika Szulc-Lewandowska </text>
+	</string>
+	<string id="st_centkowski">
+		<text>Dariusz Centkowski</text>
+	</string>
+
+	<string id="st_additional_writing">
+		<text>Additional Writing</text>
+	</string>
+	<string id="st_adams">
+		<text>Ernest Adams</text>
+	</string>
+	<string id="st_linguistic_testing_performed">
+		<text>Linguistic Testing performed</text>
+	</string>
+	<string id="st_by_babel_media">
+		<text>by Babel Media Ltd.</text>
+	</string>
+	<string id="st_cleve">
+		<text>Norbert Cleve</text>
+	</string>
+	<string id="st_lungo">
+		<text>Igor Lungo</text>
+	</string>
+	<string id="st_luu">
+		<text>Hoang-Minh Luu</text>
+	</string>
+	<string id="st_diez">
+		<text>Bruno Diez</text>
+	</string>
+	<string id="st_sound_designed">
+		<text>Sound designed</text>
+	</string>
+	<string id="st_by_bob">
+		<text>by Bob and Barn Ltd.</text>
+	</string>
+	<string id="st_english_audio_recorded">
+		<text>English Audio recorded</text>
+	</string>
+	<string id="st_by_voiceworks_productions">
+		<text>by VoiceWorks Productions</text>
+	</string>
+	<string id="st_sound_supervisors">
+		<text>Sound Supervisors</text>
+	</string>
+	<string id="st_barnabas">
+		<text>Andrew Barnabas</text>
+	</string>
+	<string id="st_paul_arnold">
+		<text>Paul Arnold</text>
+	</string>
+	<string id="st_sound_designers">
+		<text>Sound Designers</text>
+	</string>
+	<string id="st_brock">
+		<text>Andrew Brock</text>
+	</string>
+	<string id="st_dave_sullivan">
+		<text>Dave Sullivan</text>
+	</string>
+
+	<string id="st_weapons_recorded">
+		<text>Weapons recorded at:</text>
+	</string>
+	<string id="st_crawford_private_range">
+		<text>Crawford Private Range, Roundrock, Texas </text>
+	</string>
+	<string id="st_texas_tactical">
+		<text>Texas Tactical Outdoor Range, Henley, Texas </text>
+	</string>
+	<string id="st_stevens">
+		<text>Stevens' Farm, Bay, Arkansas </text>
+	</string>
+	<string id="st_disused_pit">
+		<text>Disused Gravel Pit, Bono, Arkansas </text>
+	</string>
+
+	<string id="st_gun">
+		<text>Gun Wranglers:</text>
+	</string>
+	<string id="st_crawford">
+		<text>Clark Crawford</text>
+	</string>
+	<string id="st_marco">
+		<text>Aaron Marco</text>
+	</string>
+	<string id="st_ou">
+		<text>Steve Ou, for Spreadfire Arms</text>
+	</string>
+	<string id="st_steve_stevens">
+		<text>Steve Stevens</text>
+	</string>
+	<string id="st_meeker">
+		<text>Gary Meeker</text>
+	</string>
+	<string id="st_recording_post">
+		<text>Recording and Post Production by Andrew Brock </text>
+	</string>
+	<string id="creature">
+		<text>Creature Vocal Performances by Paul Arnold and Andrew Brock</text>
+	</string>
+	<string id="foley">
+		<text>Foley Artists - Andrew Barnabas and Dave Sullivan</text>
+	</string>
+
+	<!-- PLASTIC WAX    -->
+
+	<string id="st_wax">
+		<text>PLASTIC WAX:</text>
+	</string>
+	<string id="st_director">
+		<text>Director</text>
+	</string>
+	<string id="st_maddams">
+		<text>Nathan Maddams</text>
+	</string>
+	<string id="st_wax_executive_producer">
+		<text>Executive Producer</text>
+	</string>
+	<string id="st_pittorino">
+		<text>Tony Pittorino</text>
+	</string>
+	<string id="st_producers">
+		<text>Producers</text>
+	</string>
+	<string id="st_kreibig">
+		<text>Tim Kreibig</text>
+	</string>
+	<string id="st_tolliday">
+		<text>Rebecca Tolliday</text>
+	</string>
+	<string id="st_whitham">
+		<text>Rodney Whitham</text>
+	</string>
+	<string id="st_production_manager">
+		<text>Production Manager</text>
+	</string>
+	<string id="st_simmons">
+		<text>Kirsty Simmons</text>
+	</string>
+	<string id="st_modeling_lead">
+		<text>Modeling Lead</text>
+	</string>
+	<string id="st_guy_robinson">
+		<text>Guy Robinson</text>
+	</string>
+	<string id="st_modeling">
+		<text>Modeling</text>
+	</string>
+	<string id="st_mahoney">
+		<text>Damien</text>
+	</string>
+	<string id="st_mahoney2">
+		<text>Mahoney</text>
+	</string>
+	<string id="st_paget">
+		<text>Michael</text>
+	</string>
+	<string id="st_paget2">
+		<text>Paget</text>
+	</string>
+	<string id="st_baker">
+		<text>Shamus</text>
+	</string>
+	<string id="st_baker2">
+		<text>Baker</text>
+	</string>
+	<string id="st_little">
+		<text>David</text>
+	</string>
+	<string id="st_little2">
+		<text>Little</text>
+	</string>
+	<string id="st_wood">
+		<text>Dean</text>
+	</string>
+	<string id="st_wood2">
+		<text>Wood</text>
+	</string>
+	<string id="st_pritchard">
+		<text>Richard</text>
+	</string>
+	<string id="st_pritchard2">
+		<text>Pritchard</text>
+	</string>
+	<string id="st_texture_lead">
+		<text>Texture And Matte Painting Lead</text>
+	</string>
+	<string id="st_pedlow">
+		<text>Kris Pedlow</text>
+	</string>
+	<string id="st_texture_artist">
+		<text>Texture Artist</text>
+	</string>
+	<string id="st_tyrone_maddams">
+		<text>Tyrone Maddams</text>
+	</string>
+	<string id="st_mocap">
+		<text>Mocap</text>
+	</string>
+	<string id="st_azad">
+		<text>Sina Azad</text>
+	</string>
+	<string id="st_animation_mocap">
+		<text>Animation, Mocap</text>
+	</string>
+	<string id="st_maniscalco">
+		<text>Samuel Maniscalco</text>
+	</string>
+	<string id="st_animation_lead">
+		<text>Animation Lead</text>
+	</string>
+	<string id="st_simper">
+		<text>Damien </text>
+	</string>
+	<string id="st_simper2">
+		<text> Simper</text>
+	</string>
+	<string id="st_wax_animation">
+		<text>Animation</text>
+	</string>
+	<string id="st_chris_wilson">
+		<text>Chris</text>
+	</string>
+	<string id="st_chris_wilson2">
+		<text>Wilson</text>
+	</string>
+	<string id="st_kerrigan">
+		<text>Kate </text>
+	</string>
+	<string id="st_kerrigan2">
+		<text> Kerrigan</text>
+	</string>
+	<string id="st_to">
+		<text>Philip </text>
+	</string>
+	<string id="st_to2">
+		<text> To</text>
+	</string>
+	<string id="st_willis">
+		<text>Ray </text>
+	</string>
+	<string id="st_willis2">
+		<text> Willis</text>
+	</string>
+	<string id="st_lighting_rendering_lead">
+		<text>Lighting Rendering Lead</text>
+	</string>
+	<string id="st_brown">
+		<text>David Brown</text>
+	</string>
+	<string id="st_lighting_rendering">
+		<text>Lighting Rendering</text>
+	</string>
+	<string id="st_douglass">
+		<text>Ian Douglass</text>
+	</string>
+	<string id="st_compositing_lead">
+		<text>Compositing Lead</text>
+	</string>
+	<string id="st_roberts">
+		<text>Ron Roberts</text>
+	</string>
+	<string id="st_compositing">
+		<text>Compositing</text>
+	</string>
+	<string id="st_adam_jones">
+		<text>Adam Jones</text>
+	</string>
+	<string id="st_french">
+		<text>Matthew French</text>
+	</string>
+	<string id="st_spinaze">
+		<text>Peter Spinaze</text>
+	</string>
+	<string id="st_fx">
+		<text>FX</text>
+	</string>
+	<string id="st_allan">
+		<text>Hugh </text>
+	</string>
+	<string id="st_allan2">
+		<text> Carrick-Allan</text>
+	</string>
+	<string id="st_cheng">
+		<text>Sidney </text>
+	</string>
+	<string id="st_cheng2">
+		<text> Cheng</text>
+	</string>
+	<string id="st_harris">
+		<text>Christopher </text>
+	</string>
+	<string id="st_harris2">
+		<text> Harris</text>
+	</string>
+	<string id="st_macgowan">
+		<text>Adam </text>
+	</string>
+	<string id="st_macgowan2">
+		<text> MacGowan</text>
+	</string>
+	<string id="st_cloth_fx">
+		<text>Cloth FX</text>
+	</string>
+	<string id="st_eye_candy_animation">
+		<text>Eye Candy Animation</text>
+	</string>
+	<string id="st_sound_design_and_compositing">
+		<text>Sound Design And Compositing</text>
+	</string>
+	<string id="st_spoard">
+		<text>Stuart Spoard</text>
+	</string>
+
+
+
+	<!-- SPECIAL THANKS -->
+
+	<string id="st_special_thanks">
+		<text>Отдельная благодарность:</text>
+	</string>
+	<string id="st_thanks_avdeev">
+		<text>Владимиру Авдееву</text>
+	</string>
+	<string id="st_special_thanks_1">
+		<text>Sveta</text>
+	</string>
+	<string id="st_special_thanks_2">
+		<text>Ладимир</text>
+	</string>
+	<string id="st_special_thanks_3">
+		<text>Menno Wittebrood</text>
+	</string>
+	<string id="st_special_thanks_4">
+		<text>Jason Meyer</text>
+	</string>
+
+	<string id="st_thanks_chernobyl">
+		<text>Генеральному директору ЧАЭС Игорю Грамоткину,</text>
+	</string>
+	<string id="st_thanks_chernobyl2">
+		<text>заместителю технического директора по безопасности ЧАЭС Александру Новикову</text>
+	</string>
+	<string id="st_thanks_chernobyl3">">
+		<text>а также остальному персоналу и администрации Чернобыльской Электростанции за поддержку</text>
+	</string>
+	<string id="st_thanks_administration">
+		<text>Администрации Зоны отчуждения за разрешение</text>
+	</string>
+	<string id="st_thanks_administration2">
+		<text>проводить наши сумасшедшие исследования</text>
+	</string>
+	<string id="st_thanks_chernobylinterinform">
+		<text>Римме Киселице  , Марине Поляковой</text>
+	</string>
+	<string id="st_thanks_chernobylinterinform2">
+		<text>и остальному персоналу агентства </text>
+	</string>
+	<string id="st_thanks_chernobylinterinform3">
+		<text>Чернобыльинтеринформ за заботу,</text>
+	</string>
+	<string id="st_thanks_chernobylinterinform4">
+		<text>обилие информации и за сытные обеды</text>
+	</string>
+
+	<string id="st_line_horiz">
+		<text>________________</text>
+	</string>
+	<string id="st_line_vert">
+		<text>|</text>
+	</string>
+ 	<string id="st_thanks_naumov">
+		<text>Александру Наумову за огромный информационный  </text>
+	</string>
+	<string id="st_thanks_naumov2">
+		<text>вклад и за его благородную миссию</text>
+	</string>
+
+	<string id="st_thanks_merregnon">
+		<text>Томасу Боэкеру, Маркусу Холлеру</text>
+	</string>
+	<string id="st_thanks_merregnon2">
+		<text>и студии Merregnon® Studios</text>
+	</string>
+	<string id="st_thanks_merregnon3">
+		<text>(http://merregnon-studios.com/)</text>
+	</string>
+	<string id="st_thanks_merregnon4">
+		<text>в целом за их работу по созданию</text>
+	</string>
+	<string id="st_thanks_merregnon5">
+		<text>великолепной оркестровой музыки для нас</text>
+	</string>
+	<string id="st_thanks_firelake">
+		<text>Группе FIRELAKE (www.firelake.kiev.ua)</text>
+	</string>
+	<string id="st_thanks_firelake2">
+		<text>и их друзьям Addaraya за роковые темы</text>
+	</string>
+	<string id="st_thanks_firelake3">
+		<text>и за поддержку в разработке</text>
+	</string>
+	<string id="st_thanks_fanbase">
+		<text>-= ФАНАТАМ! =-</text>
+	</string>
+	<string id="st_thanks_fanbase2">
+		<text>От всего сердца благодарим Вакуара "HeadHunter" Тарика,</text>
+	</string>
+	<string id="st_thanks_fanbase3">
+		<text>Алексея "Don Reba" Бадалова, Эмиль aka Redrick,</text>
+	</string>
+	<string id="st_thanks_fanbase4">
+		<text>Петера Съобера, Pixel, Michi, nasa800, LPKorn3324,</text>
+	</string>
+	<string id="st_thanks_fanbase5">
+		<text>Leks, Cpcat, Rad-X, Sosed, Amoki, Claws,</text>
+	</string>
+	<string id="st_thanks_fanbase6">
+		<text>Siro/Dennis, Никласа Ридевинга, Отто Бааманна</text>
+	</string>
+	<string id="st_thanks_fanbase7">
+		<text>и Майка Брешнайдера, cractus01, Марселя Клеффманна,</text>
+	</string>
+	<string id="st_thanks_fanbase8">
+		<text>Николая Дашевского, Abe, Антона Бровко, Mario, fen1x,</text>
+	</string>
+
+	<string id="st_thanks_fanbase9">
+		<text>Диму Кудрявцева, Рубена Коса, Лева Соколова aka Davinci,</text>
+	</string>
+	<string id="st_thanks_fanbase10">
+		<text>Максима Попенкера, Алексей Шоленберг, DEICIDE[NBF],</text>
+	</string>
+	<string id="st_thanks_fanbase11">
+		<text>Круглов Павел aka BuHHu-nyx, Малыхин Алексей, Holoduk,</text>
+	</string>
+	<string id="st_thanks_fanbase12">
+		<text>Вячеслав Романченко, Ян Олешковский aka Mad Dog,</text>
+	</string>
+	<string id="st_thanks_fanbase13">
+		<text>Samael aka Ариманов, RVCool, Lestat, Сергей Пивин, Gall,</text>
+	</string>
+	<string id="st_thanks_fanbase14">
+		<text>Critic, Дмитрий “DoN Rumata” Козлов, Кондратьев С.А.,</text>
+	</string>
+	<string id="st_thanks_fanbase15">
+		<text>Дмитрий Калинин, Макс Тарасов, Андрей Рогозин aka Raga,</text>
+	</string>
+	<string id="st_thanks_fanbase16">
+		<text>Михаил Алесич, Пъедимон Алессандро, Bad, Marf, Vantala,</text>
+	</string>
+	<string id="st_thanks_fanbase17">
+		<text>Behringer, DA_Star, STALKER Sanek, Дейв Миллер (P R E Y),</text>
+	</string>
+
+	<string id="st_thanks_fanbase18">
+		<text>Goodspeed, Ian_C, Grisly Silence, Midnight Rambler, Dale Oleverio,</text>
+	</string>
+	<string id="st_thanks_fanbase19">
+		<text>ruintertained, UltimateGecko, Snowgim, Franz La Zerte, Chickenballz,</text>
+	</string>
+
+	<string id="st_thanks_fanbase20">
+		<text>Алана Ногуейра да Гаму и всех остальных многочисленных</text>
+	</string>
+	<string id="st_thanks_fanbase21">
+		<text>поклонников по всему миру, которые страстно поддерживали </text>
+	</string>
+	<string id="st_thanks_fanbase22">
+		<text>S.T.A.L.K.E.R. на протяжении всех этих лет</text>
+	</string>
+	<string id="st_thanks_all">
+		<text>От всей команды ОГРОМНОЕ СПАСИБО всем тем,</text>
+	</string>
+	<string id="st_thanks_all2">
+		<text>кто помогал появиться на свет проекту S.T.A.L.K.E.R.</text>
+	</string>
+	<string id="st_thanks_all3">
+		<text>и поддерживал нас, несмотря ни на что!</text>
+	</string>
+	<string id="st_thanks_all4">
+		<text>Ваши благие дела не будут забыты!</text>
+	</string>
+
+	<string id="st_thanks_license1">
+		<text>Мы хотели бы выразить огромную признательность следующим Open-source проектам:</text>
+	</string>
+
+	<string id="st_thanks_license2">
+		<text>ode.org за физический движок (Open Dynamic Engine, ODE)</text>
+	</string>
+	<string id="st_thanks_license3">
+		<text>lua.org за язык скриптования (Lua)</text>
+	</string>
+	<string id="st_thanks_license4">
+		<text>luajit.luaforge.net за оптимизирующий на лету компилятор Lua (LuaJIT)</text>
+	</string>
+	<string id="st_thanks_license5">
+		<text>www.rasterbar.com/products/luabind.html за компоновочную библиотеку Lua (Luabind)</text>
+	</string>
+	<string id="st_thanks_license6">
+		<text>xiph.org за видео (Theora) и аудио (Vorbis) кодеки</text>
+	</string>
+	<string id="st_thanks_license7">
+		<text>jrsoftware.org за инсталлятор (Inno Setup)</text>
+	</string>
+	<string id="st_thanks_license8">
+		<text>openal.org за аудио библиотеку (OpenAL)</text>
+	</string>
+	<string id="st_thanks_license9">
+		<text>boost.org за библиотеку шаблонов (Boost)</text>
+	</string>
+	<string id="st_thanks_license10">
+		<text>sourceforge.net/projects/loki-lib за библиотеку шаблонов (Loki)</text>
+	</string>
+	<string id="st_thanks_license11">
+		<text>Don Clugston (codeproject.com/cpp/FastDelegate.asp http://www.codeproject.com/cpp/FastDelegate.asp)</text>
+	</string>
+	<string id="st_thanks_license12">
+		<text>за его библиотеку fastdelegate (fastdelegate)</text>
+	</string>
+
+	<string id="st_thanks_license13">
+		<text>intelle-soft.com за бесплатную библиотеку отлавливания глюков BugTrap</text>
+	</string>
+
+	<string id="st_thanks_license14">
+		<text>Отдельная благодарность компаниям, которые помогали нам с оптимизацией игры:</text>
+	</string>
+
+	<string id="st_thanks_license15">
+		<text>Intel</text>
+	</string>
+	<string id="st_thanks_license16">
+		<text>AMD</text>
+	</string>
+	<string id="st_thanks_license17">
+		<text>nVidia</text>
+	</string>
+
+        <string id="st_ui_art">
+		<text>Интерфейс</text>
+	</string>
+	<string id="st_ui_art2">
+		<text>пользователя</text>
+	</string>
+	<string id="st_programming_department_full">
+		<text>ОТДЕЛ ПРОГРАММИРОВАНИЯ</text>
+	</string>
+</string_table>

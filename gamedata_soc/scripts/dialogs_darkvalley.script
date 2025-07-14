@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+--	created:	2005/02/28
+--	created:	28:2:2005   16:08
+--	filename: 	x:\gamedata\scripts\dialogs_darkvalley.script
+--	file path:	x:\gamedata\scripts
+--	file base:	dialogs_darkvalley
+--	file ext:	script
+--	author:		Andrey Fidrya aka Zmey
+--  updated by: Oleg Kreptul (Haron)
+--	
+--	purpose:	dialog support for Dark Valley
+-------------------------------------------------------------------------
+
+-- function printf() end
+
+function val_rob_actor_has_money(actor, npc)
+	return actor:money() >= 800
+end
+
+function val_rob_actor_reloc_money(actor, npc)
+	dialogs.relocate_money(npc, 800, "out")
+end
+
+function val_escort_reward(npc, actor)
+    dialogs.relocate_money(npc, 1300, "in")
+    dialogs.relocate_item_section(npc, "wpn_addon_scope", "in")
+end

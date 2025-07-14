@@ -1,0 +1,24 @@
+ [logic]
+ active = walker@job
+ combat_ignore = combat_ignore
+ 
+ [walker@job]
+ path_walk = bar_arena_man_walk
+ path_look = bar_arena_man_look
+ meet = meet@job
+ combat_ignore_cond = {!actor_enemy}
+ danger = danger_condition
+ 
+ [meet@job]
+ meet_state = 10 | wait
+ meet_state_wpn = 10 | wait
+ victim = 10 | actor
+ victim_wpn = 10 | actor
+ use = true
+ use_wpn = true
+ meet_dialog = bar_arena_man_start
+ 
+ [danger_condition]
+ ignore_distance = 0
+ 
+ [combat_ignore]

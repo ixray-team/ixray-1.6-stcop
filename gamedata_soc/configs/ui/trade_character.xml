@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+	<icon_static x="18" y="35" width="165" height="108"/>
+	
+	<name_static x="23" y="7" width="153" height="22">
+		<text font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>
+	</name_static>
+
+	<rank_caption x="23" y="150" width="153" height="15">
+		<text align="l" font="letterica16" r="216" g="186" b="140">ui_st_rank</text>
+	</rank_caption>
+	<rank_static x="23" y="150" width="153" height="15">
+		<text align="r" font="letterica16" r="240" g="217" b="182"/>
+	</rank_static>
+	
+
+	<community_caption x="23" y="164" width="153" height="15">
+		<text align="l" font="letterica16" r="216" g="186" b="140">ui_st_community</text>
+	</community_caption>
+	<community_static x="23" y="164" width="153" height="15">
+		<text align="r" font="letterica16" r="240" g="217" b="182"/>
+	</community_static>
+
+
+	<relation_caption x="23" y="177" width="153" height="15">
+		<text align="l" font="letterica16" r="216" g="186" b="140">ui_st_relation</text>
+	</relation_caption>
+	<relation_static x="23" y="177" width="153" height="15">
+		<text align="r" font="letterica16" r="240" g="217" b="182"/>
+	</relation_static>
+
+</window>
+

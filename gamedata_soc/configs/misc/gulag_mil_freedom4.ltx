@@ -1,0 +1,138 @@
+;Дополнительные работы для гулага Свободы в четвертом состоянии
+
+[danger@mil_freedom4]
+ignore_distance = 0
+;------------------------------------- Lukash --------------------------------------
+[logic@mil_freedom_commander]
+active = walker1@mil_freedom_commander
+on_death = on_death@mil_freedom_lukash_free
+
+[on_death@mil_freedom_lukash_free]
+on_info = %+sar2_death_49%
+
+[walker1@mil_freedom_commander]
+path_walk = leader_walk
+path_look = leader_look
+meet = meet@mil_freedom_commander
+danger = danger@mil_freedom4
+
+[meet@mil_freedom_commander]
+meet_state = 5|ward@talk_hello
+meet_state_wpn = 5|ward
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+use_wpn = false
+
+
+-------------------------
+;Снайпер на первой вышке (на него задание дает Череп)
+-------------------------
+
+[logic@mil_freedom_sniper14]
+active = camper1@mil_freedom_sniper14
+
+[camper1@mil_freedom_sniper14]
+path_walk = camp_walk4
+path_look = camp_look4
+sniper = true
+enemy_idle = 60000
+radius = 20
+
+-------------------------
+;Снайпер на второй вышке (средняя, в центре базы)
+-------------------------
+[logic@mil_freedom_sniper24]
+active = camper1@mil_freedom_sniper24
+on_combat = combat@mil_freedom_sniper24
+
+[combat@mil_freedom_sniper24]
+on_info = {-mil_freedom_under_attack +mil_dolg_before_explode} camper1@mil_freedom_sniper24 %+mil_freedom_under_attack%
+
+[camper1@mil_freedom_sniper24]
+path_walk = sniper_walk1
+path_look = sniper_look1
+radius = 0
+no_retreat = true
+on_info = {+mil_freedom_under_attack} camper2@mil_freedom_sniper24
+
+[camper2@mil_freedom_sniper24]
+path_walk = sniper_defense_walk1
+path_look = sniper_defense_look1
+sniper = true
+radius = 0
+on_info = {-mil_freedom_under_attack} camper1@mil_freedom_sniper24
+
+
+-------------------------
+;Снайпер на третьей вышке (справа от пролома в заборе)
+-------------------------
+
+[logic@mil_freedom_sniper54]
+active = camper1@mil_freedom_sniper54
+on_combat = combat@mil_freedom_sniper54
+
+[combat@mil_freedom_sniper54]
+on_info = {-mil_freedom_under_attack +mil_dolg_before_explode} camper1@mil_freedom_sniper54 %+mil_freedom_under_attack%
+
+[camper1@mil_freedom_sniper54]
+path_walk = sniper_walk2
+path_look = sniper_look2
+radius = 0
+no_retreat = true
+on_info = {+mil_freedom_under_attack} camper2@mil_freedom_sniper54
+
+[camper2@mil_freedom_sniper54]
+path_walk = sniper_defense_walk2
+path_look = sniper_defense_look2
+sniper = true
+radius = 0
+on_info = {-mil_freedom_under_attack} camper1@mil_freedom_sniper54
+
+
+-------------------------
+;Снайпер на пятой вышке (возле шлагбаума)
+-------------------------
+[logic@mil_freedom_sniper34]
+active = walker1@mil_freedom_sniper34
+on_combat = combat@mil_freedom_sniper34
+
+[combat@mil_freedom_sniper34]
+on_info = {-mil_freedom_under_attack +mil_dolg_before_explode} camper1@mil_freedom_sniper34 %+mil_freedom_under_attack%
+
+[walker1@mil_freedom_sniper34]
+path_walk = path_walk10
+path_look = path_look10
+on_info = {+mil_freedom_under_attack} camper1@mil_freedom_sniper34
+
+[camper1@mil_freedom_sniper34]
+path_walk = camp_walk10
+path_look = camp_look10
+radius = 20
+on_info = {-mil_freedom_under_attack} walker1@mil_freedom_sniper34
+sniper = true
+
+-------------------------
+;Снайпер на четвертой вышке (возле центрального здания)
+-------------------------
+[logic@mil_freedom_sniper44]
+active = camper1@mil_freedom_sniper44
+on_combat = combat@mil_freedom_sniper44
+
+[combat@mil_freedom_sniper44]
+on_info = {-mil_freedom_under_attack +mil_dolg_before_explode} camper1@mil_freedom_sniper44 %+mil_freedom_under_attack%
+
+[camper1@mil_freedom_sniper44]
+path_walk = sniper_walk3
+path_look = sniper_look3
+radius = 0
+no_retreat = true
+on_info = {+mil_freedom_under_attack} camper2@mil_freedom_sniper44
+
+[camper2@mil_freedom_sniper44]
+path_walk = sniper_defense_walk3
+path_look = sniper_defense_look3
+sniper = true
+radius = 0
+on_info = {-mil_freedom_under_attack} camper1@mil_freedom_sniper44
+

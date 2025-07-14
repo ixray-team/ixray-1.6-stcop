@@ -1,0 +1,172 @@
+[wpn_wincheaster1300]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                   	= "weapons\winchester1300"					; option for Level Editor
+$npc			 			= on				; option for Level Editor
+$prefetch 		 			= 8
+scheduled                	= off              ; option for ALife Simulator
+cform                    	= skeleton
+class                    	= WP_SHOTG
+min_radius               	= 0
+max_radius               	= 50
+description					= enc_weapons1_wpn-wincheaster1300
+
+ef_main_weapon_type			= 1
+ef_weapon_type				= 7
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range 
+holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+tri_state_reload			= on
+
+cost					 	= 2150	;1000
+weapon_class			 	= shotgun
+
+
+ammo_limit		 			= 60
+ammo_current		 		= 10
+ammo_elapsed		 		= 0
+
+ammo_mag_size		 		= 6
+ammo_class		 			= ammo_12x70_buck, ammo_12x76_zhekan, ammo_12x76_dart
+
+;-----------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base		= 0.5  ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 7.0	;скорость возврата в исходное положение
+cam_dispersion          	= 3.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 1.0   
+cam_max_angle				= 12	;максимальный угол отдачи
+cam_max_angle_horz	= 9.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz	= 1.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.005	    ;вероятность осечки при максимальном износе 
+misfire_condition_k			= 0.05
+condition_shot_dec 			= 0.0005	;увеличение износа при каждом выстреле
+;-----------------------------------------------------------------------------------
+
+hand_dependence 	 		= 1
+single_handed				= 0
+
+slot 				 		= 2		; // secondary
+animation_slot		 		= 9		; type of the animation that will be used
+
+inv_name					= wpn-wincheaster1300
+inv_name_short				= wpn-wincheaster1300
+inv_weight				= 3.0
+
+inv_grid_width				= 5
+inv_grid_height				= 1
+inv_grid_x					= 10
+inv_grid_y					= 5
+
+kill_msg_x			= 171
+kill_msg_y			= 104
+kill_msg_width		= 75
+kill_msg_height		= 20
+
+direction                	= 0, 0, 1
+shell_point				 	= 0.0, 0.180, 0.647
+fire_point               	= 0.0, 0.158, 0.647
+fire_point2              	= 0.0, 0.158, 0.647
+
+flame_particles		   		= weapons\generic_weapon05
+smoke_particles		   		= weapons\generic_shoot_00
+rpm_empty_click 	   		= 200
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.7
+PDM_disp_accel_factor 		= 1.7
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+
+hit_power        			= 0.83, 0.87, 0.90, 0.93
+hit_impulse      			= 240
+hit_type 					= fire_wound
+
+fire_distance            	= 50
+bullet_speed			 	= 400			;начальная скорость пули
+rpm                      	= 100 ;70            ;60 = 1 секунда
+; end ttc
+
+hud                      	= wpn_winchester1300_hud
+normal                   	= 0, 1, 0
+position                 	= -0.024, -0.097, 0.
+orientation              	= 0, 0, 0      ;значение устанавливается в градусах
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+;под мишкой
+strap_position         		= -0.26,-0.10,0.05			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -15,-9,110				; (3rd person view in degrees)
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo             	= 10
+visual                   	= weapons\winchester1300\wpn_winchester1300.ogf
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 6.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 3
+;cost			 			= 900
+
+;addons
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor	    	= 55
+
+;звуки
+snd_draw					= weapons\generic_draw
+snd_holster					= weapons\generic_holster
+snd_shoot					= weapons\tm_spas12_shot      ;toz34_shoot
+snd_empty					= weapons\generic_empty
+snd_reload					= weapons\toz34_reload
+snd_shoot_duplet			= weapons\toz34_shoot_both
+
+snd_open_weapon				= weapons\w1300_open		;
+snd_add_cartridge			= weapons\w1300_load		;was gen_grenload
+snd_close_weapon			= weapons\w1300_close		;
+ 
+[wpn_winchester1300_hud]
+shell_point		 			= 0.0, 0.0, 0.0
+fire_point      			= 0.000000,0.125000,0.315000
+fire_point2				    = 0.000000,0.125000,0.315000
+fire_bone                	= wpn_body
+orientation              	= 0, 0, 0
+position                 	= 0, 0, 0
+visual                   	= weapons\winchester1300\wpn_winchester1300_hud.ogf
+
+anim_idle					= idle
+anim_reload					= draw
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_shoot_both 			= shoot
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+
+anim_open_weapon			= reload1
+anim_add_cartridge			= reload2
+anim_close_weapon			= reload3
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.120200,0.049100,-0.002000
+zoom_rotate_x		= 0.063400
+zoom_rotate_y		= 0.000500
+;время поворота HUD (сек)
+;zoom_rotate_time			= 0.7

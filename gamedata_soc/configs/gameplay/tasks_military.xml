@@ -1,0 +1,370 @@
+<game_task id="mil_kill_sniper" prio="300">
+  <title>mil_kill_sniper</title>
+  <objective>
+    <text>mil_kill_sniper</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <infoportion_fail>mil_dolg_task_fail</infoportion_fail>
+    <infoportion_complete>mil_dolg_skull_sniper_end</infoportion_complete>
+    <article>mil_dolg_kill_sniper</article>
+  </objective>
+  <objective>
+    <text>mil_kill_sniper</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_freedom_sniper">green_location</map_location_type>
+    <object_story_id>Mil_Sniper</object_story_id>
+    <infoportion_complete>mil_sniper_dead</infoportion_complete>
+    <infoportion_fail>mil_dolg_dead</infoportion_fail>
+    <infoportion_set_fail>mil_dolg_task_fail</infoportion_set_fail>
+    <function_fail>mil_tasks.dolg_job_fail1</function_fail>
+  </objective>
+  <objective>
+    <text>mil_dolg_return_to_skull</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_dolg_task_report">blue_location</map_location_type>
+    <object_story_id>Mil_Dolg_Zoneguard</object_story_id>
+    <function_fail>mil_tasks.sniper_task_fail</function_fail>
+    <infoportion_complete>mil_dolg_skull_talk</infoportion_complete>
+    <infoportion_fail>mil_dolg_auto_attack</infoportion_fail>
+    <infoportion_set_complete>mil_dolg_skull_sniper_end</infoportion_set_complete>
+    <infoportion_set_fail>mil_dolg_skull_sniper_end</infoportion_set_fail>
+    <map_location_hidden>1</map_location_hidden>
+  </objective>
+</game_task>
+
+<game_task id="mil_kill_lukash" prio="295">
+  <title>mil_kill_lukash</title>
+  <objective>
+    <text>mil_dolg_assault_freedom</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <infoportion_fail>mil_dolg_lukash_kill_fail</infoportion_fail>
+    <function_complete>mil_tasks.final_subtask_dolg_main</function_complete>
+    <infoportion_complete>mil_dolg_task_final</infoportion_complete>
+    <infoportion_set_complete>mil_dolg_mission_complete</infoportion_set_complete>
+    <function_fail>mil_tasks.dolg_job_fail2</function_fail>
+    <article>mil_dolg_kill_lukash</article>
+  </objective>
+  <objective>
+    <text>mil_dolg_assault_support</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <infoportion_complete>mil_sniper1_dead</infoportion_complete>
+    <map_location_type hint="mil_freedom_sniper">green_location</map_location_type>
+    <object_story_id>Mil_Sniper1</object_story_id>
+    <function_fail>mil_tasks.dolg_job_fail2</function_fail>
+  </objective>
+  <objective>
+    <text>mil_dolg_assault_support</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <infoportion_complete>mil_sniper2_dead</infoportion_complete>
+    <map_location_type hint="mil_freedom_sniper">green_location</map_location_type>
+    <object_story_id>Mil_Sniper2</object_story_id>
+    <function_fail>mil_tasks.dolg_job_fail2</function_fail>
+  </objective>
+  <objective>
+    <text>mil_dolg_assault_support</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <infoportion_complete>mil_sniper3_dead</infoportion_complete>
+    <map_location_type hint="mil_freedom_sniper">green_location</map_location_type>
+    <object_story_id>Mil_Sniper3</object_story_id>
+    <function_fail>mil_tasks.dolg_job_fail2</function_fail>
+  </objective>
+  <objective>
+    <text>mil_kill_lukash</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_kill_lukash_hint">blue_location</map_location_type>
+    <object_story_id>Mil_Lukash</object_story_id>
+    <map_location_hidden>1</map_location_hidden>
+    <infoportion_complete>mil_lukash_dead</infoportion_complete>
+    <infoportion_set_fail>mil_dolg_lukash_kill_fail</infoportion_set_fail>
+    <function_fail>mil_tasks.dolg_job_fail2</function_fail>
+  </objective>
+  <objective>
+    <text>mil_dolg_return_to_khutor</text>
+    <map_location_hidden>1</map_location_hidden>
+    <icon x="50" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_dolg_khutor">blue_location</map_location_type>
+    <object_story_id>Mil_Dolg_Khutor</object_story_id>
+    <map_location_hidden>1</map_location_hidden>
+    <infoportion_complete>mil_dolg_task_final</infoportion_complete>
+    <infoportion_fail>mil_dolg_dead</infoportion_fail>
+    <function_fail>mil_tasks.dolg_job_fail2</function_fail>
+  </objective>
+</game_task>
+
+<game_task id="mil_mad_job" prio="295">
+  <title>mil_mad_job</title>
+  <objective>
+    <text>mil_mad_job</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <infoportion_complete>mil_max_job_complete</infoportion_complete>
+    <function_fail>mil_tasks.max_job_failed</function_fail>
+    <article>mil_mad_flash_job</article>
+  </objective>
+  <objective>
+    <text>mil_mad_job</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_crazy_hint">blue_location</map_location_type>
+    <object_story_id>Mil_Crazy</object_story_id>
+    <infoportion_fail>mil_max_dead</infoportion_fail>
+    <function_complete>mil_tasks.mil_task_crazy_flash_have</function_complete>
+  </objective>
+  <objective>
+    <text>mil_put_flash_to_max</text>
+    <icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_return_to_max_hint">blue_location</map_location_type>
+    <object_story_id>Mil_Master_Max</object_story_id>
+    <infoportion_complete>mil_max_job_complete</infoportion_complete>
+    <infoportion_fail>mil_max_dead</infoportion_fail>
+    <map_location_hidden>1</map_location_hidden>
+  </objective>
+</game_task>
+
+<game_task id="mil_lukash_job" prio="300">
+  <title>mil_lukash_job</title>
+  <objective>
+    <text>mil_kill_dolg</text>
+    <icon>ui_iconsTotal_mil_lukash_job</icon>
+    <function_fail>mil_tasks.lukash_job_fail</function_fail>
+    <infoportion_complete>mil_lukash_dolg_task_complete</infoportion_complete>
+    <infoportion_set_complete>mil_lukash_task_dolg_end</infoportion_set_complete>
+    <infoportion_set_fail>mil_lukash_task_dolg_end</infoportion_set_fail>
+    <article>mil_lukash_job_descr</article>
+  </objective>
+  <objective>
+    <text>mil_go_max</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_report_to_max_hint">green_location</map_location_type>
+    <object_story_id>Mil_Master_Max</object_story_id>
+    <function_fail>mil_tasks.lukash_job_fail</function_fail>
+    <infoportion_complete>mil_max_arrive</infoportion_complete>
+    <infoportion_fail>mil_max_dead</infoportion_fail>
+    <infoportion_set_fail>mil_lukash_dolg_task_fail</infoportion_set_fail>
+  </objective>
+  <objective>
+    <text>mil_kill_dolg</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_kill_dolg_hint">crlc_mdl</map_location_type>
+    <object_story_id>Mil_Dolg_Zoneguard</object_story_id>
+    <function_fail>mil_tasks.lukash_job_fail</function_fail>
+    <infoportion_complete>mil_dolg_dead</infoportion_complete>
+    <map_location_hidden>1</map_location_hidden>
+  </objective>
+  <objective>
+    <text>mil_return_lukash</text>
+    <icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_return_to_lukash_hint">blue_location</map_location_type>
+    <object_story_id>Mil_Lukash</object_story_id>
+    <function_fail>mil_tasks.lukash_job_fail</function_fail>
+    <infoportion_complete>mil_lukash_dolg_task_complete</infoportion_complete>
+    <map_location_hidden>1</map_location_hidden>
+  </objective>
+</game_task>
+
+<game_task id="mil_courier_job" prio="295">
+  <title>mil_courier_job</title>
+  <objective>
+    <icon>ui_iconsTotal_mil_courier_job</icon>
+    <infoportion_complete>mil_leader_quest2_complete</infoportion_complete>
+    <function_fail>mil_tasks.courier_job_failed</function_fail>
+    <function_call_complete>mil_tasks.switch_mutants_online</function_call_complete>
+    <function_call_fail>mil_tasks.switch_mutants_online</function_call_fail>
+    <article>mil_courier_job_descr</article>
+  </objective>
+  <objective>
+    <text>mil_courier_phase1</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_courier_hint1">green_location</map_location_type>
+    <object_story_id>Mil_Courier</object_story_id>
+    <infoportion_complete>mil_courier_in_khutor_zone</infoportion_complete>
+    <infoportion_complete>mil_actor_in_khutor_zone</infoportion_complete>
+    <infoportion_fail>mil_courier_see_actor</infoportion_fail>
+    <infoportion_set_fail>mil_leader_quest2_failed</infoportion_set_fail>
+  </objective>
+  <objective>
+    <text>mil_courier_phase2</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_courier_hint2">green_location</map_location_type>
+    <object_story_id>Mil_Courier</object_story_id>
+    <infoportion_complete>mil_actor_in_khutor_zone</infoportion_complete>
+    <infoportion_complete>mil_courier_call</infoportion_complete>
+    <infoportion_fail>mil_courier_dead</infoportion_fail>
+    <infoportion_set_fail>mil_leader_quest2_failed</infoportion_set_fail>
+    <map_location_hidden>1</map_location_hidden>
+  </objective>
+  <objective>
+    <text>mil_courier_phase3</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_courier_hint3">green_location</map_location_type>
+    <object_story_id>Mil_Courier</object_story_id>
+    <infoportion_complete>mil_courier_dead</infoportion_complete>
+    <infoportion_fail>mil_courier_khutor_leave</infoportion_fail>
+    <infoportion_set_fail>mil_leader_quest2_failed</infoportion_set_fail>
+  </objective>
+  <objective>
+    <text>mil_courier_phase4</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_courier_hint4">green_location</map_location_type>
+    <object_story_id>Mil_Informator</object_story_id>
+    <infoportion_complete>mil_ara_dead</infoportion_complete>
+    <infoportion_fail>mil_ara_leave</infoportion_fail>
+    <infoportion_set_fail>mil_leader_quest2_failed</infoportion_set_fail>
+    <map_location_hidden>1</map_location_hidden>
+  </objective>
+  <objective>
+    <text>mil_courier_phase5</text>
+    <icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_return_to_lukash_hint">blue_location</map_location_type>
+    <object_story_id>Mil_Lukash</object_story_id>
+    <infoportion_complete>mil_leader_quest2_complete</infoportion_complete>
+    <map_location_hidden>1</map_location_hidden>
+  </objective>
+</game_task>
+
+<game_task id="mil_blockpost_job" prio="290">
+  <title>mil_blockpost_job</title>
+  <objective>
+    <text>mil_blockpost_job</text>
+    <icon>ui_iconsTotal_mil_blockpost_job</icon>
+    <infoportion_complete>mil_fblockpost_quest_reward</infoportion_complete>
+    <function_fail>mil_tasks.fblockpost_job_failed</function_fail>
+    <article>mil_blockpost_job_descr</article>
+  </objective>
+  <objective>
+    <text>mil_fblockpost_phase3</text>
+    <infoportion_complete>mil_freedom_commander_talk</infoportion_complete>
+    <infoportion_fail>mil_fblockpost_commander_dead</infoportion_fail>
+    <map_location_type hint="mil_cap_hint">blue_location</map_location_type>
+    <object_story_id>Mil_Kap</object_story_id>
+  </objective>
+  <objective>
+    <text>mil_fblockpost_phase2</text>
+    <infoportion_complete>mil_fblockpost_quest_complete</infoportion_complete>
+    <infoportion_fail>mil_fblockpost_quest_fail</infoportion_fail>
+  </objective>
+  <objective>
+    <text>mil_fblockpost_phase3</text>
+    <infoportion_complete>mil_fblockpost_quest_reward</infoportion_complete>
+    <infoportion_fail>mil_fblockpost_commander_dead</infoportion_fail>
+    <map_location_type hint="mil_cap_hint">blue_location</map_location_type>
+    <object_story_id>Mil_Kap</object_story_id>
+  </objective>
+</game_task>
+
+
+<game_task id="mil_freedom_rg6_task" prio="425">
+  <title>mil_freedom_rg6_task</title>
+  <objective>
+    <text>mil_freedom_rg6_task</text>
+    <icon>ui_iconsTotal_mil_freedom_rg6_task</icon>
+    <infoportion_complete>bar_svoboda_rg6_done</infoportion_complete>
+    <article>mil_freedom_rg6_task_descr</article>
+  </objective>
+  <objective>
+    <text>mil_find_cook</text>
+    <icon x="200" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_rg6_hint1">green_location</map_location_type>
+    <object_story_id>Mil_Freedom_base</object_story_id>
+    <function_fail>mil_tasks.fail_rg6_task</function_fail>
+    <infoportion_complete>mil_cook_question_already</infoportion_complete>
+  </objective>
+  <objective>
+    <text>mil_talk_cook</text>
+    <icon x="200" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_rg6_hint2">green_location</map_location_type>
+    <object_story_id>Mil_Cook</object_story_id>
+    <map_location_hidden>1</map_location_hidden>
+    <infoportion_complete>mil_freedom_cook_rg6_ask</infoportion_complete>
+    <infoportion_set_complete>mil_cook_question_already</infoportion_set_complete>
+    <function_fail>mil_tasks.fail_rg6_task</function_fail>
+  </objective>
+  <objective>
+    <text>mil_rg6</text>
+    <icon x="50" y="150" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_rg6_hint3">green_location</map_location_type>
+    <object_story_id>Mil_RG6</object_story_id>
+    <function_complete>mil_tasks.mil_task_rg6_have</function_complete>
+    <infoportion_set_complete>mil_svoboda_rg6_gain</infoportion_set_complete>
+    <map_location_hidden>1</map_location_hidden>
+  </objective>
+  <objective>
+    <text>mil_return_to_voronin</text>
+    <icon x="50" y="150" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_return_to_voronin">green_location</map_location_type>
+    <object_story_id>bar_dolg_general_voronin</object_story_id>
+    <infoportion_complete>bar_svoboda_rg6_done</infoportion_complete>
+  </objective>
+</game_task>
+
+
+<game_task id = "mil_hunters_task" prio="300">
+  <title>mil_hunters_task</title>
+  <objective>
+    <icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <infoportion_complete>mil_miser_task_complete</infoportion_complete>
+    <function_fail>mil_tasks.miser_task_failed</function_fail>
+    <article>mil_hunters_task_descr2</article>
+  </objective>
+  <objective>
+    <text>mil_hunters_phase2</text>
+    <icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_watertower_hint">green_location</map_location_type>
+    <object_story_id>Mil_WaterTower</object_story_id>
+    <infoportion_set_complete>mil_controller_dead</infoportion_set_complete>
+    <infoportion_set_complete>mil_hunt_ready</infoportion_set_complete>
+    <function_complete>mil_tasks.bloodsuckers_dead</function_complete>
+    <infoportion_fail>mil_miser_task_failed</infoportion_fail>
+  </objective>
+  <objective>
+    <text>mil_hunters_phase3</text>
+    <icon x="200" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_hunters_hint2">blue_location</map_location_type>
+    <object_story_id>Mil_Miser</object_story_id>
+    <infoportion_complete>mil_miser_task_complete</infoportion_complete>
+    <infoportion_fail>mil_miser_task_failed</infoportion_fail>
+    <map_location_hidden>1</map_location_hidden>
+  </objective>
+</game_task>
+
+<game_task id = "mil_go_to_miser" prio="299">
+  <title>mil_go_to_miser_task_main</title>
+  <objective>
+    <icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <infoportion_complete>mil_go_to_miser_end</infoportion_complete>
+    <infoportion_fail>mil_miser_dead</infoportion_fail>
+    <article>mil_go_to_miser_descr</article>
+  </objective>
+  <objective>
+    <text>mil_go_to_miser_task</text>
+    <icon x="200" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_miser_hint">blue_location</map_location_type>
+    <object_story_id>Mil_Miser</object_story_id>
+    <infoportion_complete>mil_go_to_miser_end</infoportion_complete>
+    <infoportion_fail>mil_miser_dead</infoportion_fail>
+  </objective>
+</game_task>
+
+<game_task id = "mil_kill_controller" prio="300">
+  <title>mil_kill_controller_main</title>
+  <objective>
+    <icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <infoportion_complete>mil_hunt_end</infoportion_complete>
+    <infoportion_fail>mil_ugrumy_dead</infoportion_fail>
+    <article>mil_hunters_task_descr</article>
+  </objective>
+  <objective>
+    <text>mil_kill_controller</text>
+    <icon x="200" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_watertower_hint">green_location</map_location_type>
+    <object_story_id>Mil_WaterTower</object_story_id>
+    <infoportion_set_complete>mil_controller_dead</infoportion_set_complete>
+    <infoportion_set_complete>mil_controller_ready</infoportion_set_complete>
+    <function_complete>mil_tasks.bloodsuckers_dead</function_complete>
+  </objective>
+  <objective>
+    <text>mil_return_to_ugrumy</text>
+    <icon x="200" y="50" width="50" height="50">ui\ui_icons_task</icon>
+    <map_location_type hint="mil_hunters_hint1">blue_location</map_location_type>
+    <object_story_id>Mil_Hunter3</object_story_id>
+    <infoportion_complete>mil_hunt_end</infoportion_complete>
+    <infoportion_fail>mil_ugrumy_dead</infoportion_fail>
+  </objective>
+</game_task>

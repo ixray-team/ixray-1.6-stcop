@@ -1,0 +1,26 @@
+[logic]
+active      = sr_idle1
+
+[sr_idle1]
+on_info     = {+val_raid_start} sr_sound_act1 ;dar_document4
+
+[sr_sound_act1]
+snd         = characters_voice\scenario\val\val_desant_1
+delay       = 1750
+delay_max   = 3560
+on_signal   = sound_end | sr_idle2
+
+[sr_idle2]
+on_timer    = 2157| nil %=send_tip(val_monolith_trader_pda1:trader) +val_come_to_trader_task%
+
+[sr_sound_act2]
+snd         = characters_voice\scenario\val\val_desant_3
+delay       = 12360
+delay_max   = 16330
+on_signal   = sound_end | nil ;sr_sound_act3
+
+[sr_sound_act3]
+snd         = characters_voice\scenario\val\val_desant_3
+delay       = 1170
+delay_max   = 2200
+on_signal   = sound_end | nil

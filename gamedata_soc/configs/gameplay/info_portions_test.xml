@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+	<info_portion id="article_test">
+		<article>sl_beginning</article>
+		<article>sl_first_opinions</article>
+		<article>sl_usefull_info</article>
+		<article>sl_wishmaster_legend</article>		
+		<article>sl_first_deep_raid</article>		
+		<article>sl_fox_meet</article>
+		<article>sl_seryi_meet</article>
+		<article>agr_journal_krot</article>
+		<article>agr_journal_cache</article>
+		<article>journal_after_agroprom_documents</article>
+		<article>journal_before_darklab_documents</article>
+		<article>sl_x18_dream</article>
+		<article>journal_bar_darklab_documents</article>
+		<article>journal_bar_x16_documents</article>
+		<article>journal_before_vasilyev_pda</article>
+		<article>journal_after_find_ghost</article>
+		<article>journal_after_kill_brain</article>
+		<article>cit_doctor_meet_conclusion_art</article>
+		<article>journal_before_radar_task</article>
+		<article>sl_provodnik</article>
+		<article>rad_sleep_info</article>
+		<article>pri_decoder_docs_conclusion_art</article>		
+		<article>sl_monolith_off</article>
+		
+		<article>storyline_fox_flash_info</article>
+		<article>rostok_tunel_gordon_diary</article>
+		<article>storyline_seryi_info</article>
+		<article>esc_kolyan_lost</article>
+		<article>yan_vasilyev_info</article>		
+		<article>tutorial_secret_place</article>
+		<article>tutorial_moving_anomaly</article>
+		<article>esc_provodnik_pda</article>
+		<article>dar_password_info1</article>
+		<article>dar_password_info2</article>
+		<article>dar_document1</article>
+		<article>dar_document2</article>
+		<article>dar_document3</article>
+		<article>dar_document4</article>
+		<article>dar_document5</article>
+		<article>bun_code</article>
+		<article>bar_ecolog_research_normal</article>
+		<article>bar_ecolog_research_corrupted</article>					
+		<article>agr_nii_security_plan</article>
+		<article>agr_military_case</article>
+
+	</info_portion>
+
+
+
+	<info_portion id="test_1">
+		<task>pl_task_1</task>
+	</info_portion>
+
+</game_information_portions>

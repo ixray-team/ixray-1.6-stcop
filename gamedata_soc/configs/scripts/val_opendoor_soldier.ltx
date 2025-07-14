@@ -1,0 +1,68 @@
+[logic]
+active = camper@spawn
+on_death = death
+on_hit = hit
+combat_ignore = combat_ignore
+
+[death]
+on_info = %+val_escort_captive_dead +val_opendoor_end%
+
+[hit]
+on_info = {-val_opendoor_plr_detected =hit_by_actor} walker@leave %+val_opendoor_plr_detected +val_opendoor_end%
+
+[combat_ignore]
+
+;--------------------------------------------------------------------------
+; стандартный диалог
+;--------------------------------------------------------------------------
+[meet@def]
+meet_state = 1|guard
+meet_state_wpn = 1|guard
+victim = 1|actor
+victim_wpn = 1|actor
+use = false
+use_wpn = false
+
+;--------------------------------------------------------------------------
+; схемы
+;--------------------------------------------------------------------------
+[camper@spawn]
+path_walk = val_opendoor_soldier_wait_walk
+path_look = val_opendoor_soldier_wait_look
+radius = 0
+no_retreat = true
+on_info = {+val_opendoor_soldier_start} camper@start
+combat_ignore_cond = {!fighting_actor}
+
+[camper@start]
+path_walk = val_opendoor_soldier_walk
+path_look = val_opendoor_soldier_look
+def_state_moving = assault
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+radius = 0
+on_signal = fight | remark@fight
+combat_ignore_cond = {=fighting_actor -val_opendoor_plr_detected}
+
+[remark@fight]
+no_move = true
+no_rotate = true
+anim = threat
+on_info = {=is_dead_one(410)} remark@talk ;, {+val_opendoor_plr_detected} nil
+combat_ignore_cond = {!check_fighting(410)}, {=fighting_actor -val_opendoor_plr_detected}
+
+[remark@talk]
+snd = speech
+anim = guard_rac
+meet = meet@def
+on_signal = sound_end | walker@leave %+val_opendoor_end%
+;on_info = {+val_opendoor_plr_detected} nil ;walker@gulag
+combat_ignore_cond = {=fighting_actor -val_opendoor_plr_detected}
+
+[walker@leave]
+path_walk = val_opendoor_soldier_leave_walk
+path_look = val_opendoor_soldier_leave_look
+;meet = meet@def
+on_signal = arrived | nil ;walker@gulag
+;on_info = {+val_opendoor_plr_detected} nil ;walker@gulag
+combat_ignore_cond = {=fighting_actor -val_opendoor_plr_detected}

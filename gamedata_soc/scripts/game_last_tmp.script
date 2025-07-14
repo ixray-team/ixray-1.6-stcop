@@ -1,0 +1,83 @@
+
+class "test_dialog" (CUIScriptWnd)
+
+function test_dialog:__init() super()
+   self:SetFont(GetFontMedium())
+   self:InitControls()
+   self:InitCallBacks()
+end
+
+function test_dialog:__finalize  ()
+end
+
+
+function test_dialog:SetClGame  (game_cl)
+   self.m_game_cl = game_cl
+end
+
+function test_dialog:InitControls()
+   self:Init(100,100,500,500) --init position 
+
+   local txt_main   = CUIStatic()
+   txt_main:SetAutoDelete(true)              --always
+   txt_main:SetWindowName("static_0")
+   txt_main:Init("ui\\ui_map_escape",0,0,500,500) --init texture and position relatively parent
+--   txt_main:SetColor(GetARGB(255,0,0,255))
+   txt_main:ClipperOn()
+   self:AttachChild(txt_main)
+---------------------------------------
+   local btn   = CUIButton()
+   btn:SetAutoDelete(true) 
+   btn:SetWindowName("button_1")
+   
+   btn:Init("ui\\ui_button_01",10,10,256,64)
+--   btn:Init(10,10,100,100) --or without texture
+   btn:SetText("my_button")
+   btn:SetTextAlign(CGameFont.alCenter) --horizontal align
+   btn:SetTextY(32) --vertical align(pixel)
+   self:Register(btn)
+   txt_main:AttachChild(btn)
+--------------------------------------
+   btn   = CUIButton()
+   btn:SetAutoDelete(true)
+   btn:SetWindowName("button_2")
+   
+   btn:Init("ui\\ui_button_01",200,10,256,64) 
+   btn:SetText("my_second_button")
+   btn:SetTextAlign(CGameFont.alCenter) --horizontal align
+   btn:SetTextY(32) --vertical align(pixel)
+   self:Register(btn)
+   txt_main:AttachChild(btn)
+
+--------------------------------------
+   local txt   = CUIStatic()
+   txt:SetAutoDelete(true)
+   txt:SetWindowName("static_1")
+   txt:Init("ui\\ui_inv_belt",10,150,100,100)
+--   txt:Init(10,150,100,100)
+   txt:SetText("my_text")
+   txt:SetTextAlign(CGameFont.alLeft) --horizontal align
+   txt:SetTextY(80) --vertical align
+   txt:ClipperOn()
+   self:Register(txt) --requires for event-handler
+   txt_main:AttachChild(txt)
+--------------------------------------
+
+end
+
+function test_dialog:InitCallBacks()
+   self:AddCallback("button_1",ui_events.BUTTON_CLICKED,self,"OnButton_1_clicked")
+   self:AddCallback("button_2",ui_events.BUTTON_CLICKED,self,"OnButton_2_clicked")
+end
+
+function test_dialog:OnButton_1_clicked()
+   printf("test_dialog:OnButton_1_clicked()")
+   local s0 = self:GetStatic("static_0")
+   s0:InitTexture("ui\\ui_map_military")
+end
+
+function test_dialog:OnButton_2_clicked()
+   printf("test_dialog:OnButton_2_clicked()")
+   local s0 = self:GetStatic("static_0")
+   s0:InitTexture("ui\\ui_map_escape")
+end

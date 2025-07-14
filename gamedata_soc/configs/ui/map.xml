@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<!-- Minimap  -->	
+<window x="0" y="0" w="700" h="480" r="227" g="121" b="222" texture="1">
+
+	<!-- A frame with map and buttons -->	
+	<frame_window x="76" y="62" width="761" height="475" a="90">
+		<texture>ui_pda_frame_sub</texture>		
+	</frame_window>
+	<!-- PDA STATIC HEADER -->
+    <map_header_frame_line x="8" y="17" width="745" height="21">
+        <title x="10" y="1" width="435" height="18">
+            <text font="letterica16" r="255" g="255" b="255"></text>
+        </title>
+        <texture>ui_string_03</texture>        
+    </map_header_frame_line>
+
+
+	<!-- MAP BACKGROUND --> 
+	<window x="8" y="44" width="725" height="406"></window>
+
+	<!--  MULYAJ --> 
+	<static x="130" y="0" width="240" height="280">
+		<text x="0" y="0" font="normal" r="255" g="255" b="255"></text>
+	</static>
+	
+	<static x="730" y="295" width="240" height="280">
+		<text x="0" y="0" font="normal" r="255" g="255" b="255"></text>
+	</static>
+
+	<gl_button x="11" y="11" width="128" height="256">
+		<text font="letterica16" r="255" g="255" b="255"></text>		
+	</gl_button>
+
+
+	<button x="710" y="90" width="150" height="40">
+		<texture>ui\ui_button_02</texture>
+		<text></text>
+	</button>
+	<button x="710" y="130" width="150" height="40">
+		<texture>ui\ui_button_02</texture>
+		<text></text>
+	</button>
+	<button x="710" y="170" width="150" height="40">
+		<texture>ui\ui_button_02</texture>
+		<text></text>
+	</button>
+	<button x="710" y="210" width="150" height="40">
+		<texture>ui\ui_button_02</texture>
+		<text></text>
+	</button>
+	
+	<map_name_static x="550" y="30" width="240" height="280">
+		<text x="0" y="0" font="letterica18" r="255" g="255" b="255">Karta Name</text>
+	</map_name_static>
+ 	
+	<map_goals_list x="540" y="50" width="250" height="500" item_height="18">
+		<font font="letterica16" r="45" g="250" b="200"></font>
+	</map_goals_list>
+	
+	<!-- Local map name -->
+	<local_map_name_static x="550" y="370" width="240" height="280">
+		<text x="0" y="0" font="letterica25" r="225" g="225" b="250">Karta Name</text>
+	</local_map_name_static>	
+
+</window>
+

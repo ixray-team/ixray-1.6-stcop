@@ -1,0 +1,322 @@
+--------------------------------------------------------------------------------------------------------
+-- Dialog & InfoPortions Function
+--------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------
+-- Trader
+--------------------------------------------------------------------------------------------------------
+function trader_alredy_give_job(trader, actor)
+	if (has_alife_info("agroprom_military_case") and not has_alife_info("agroprom_military_case_done")) or
+	   (has_alife_info("escape_blockpost_case") and not has_alife_info("escape_blockpost_case_done")) or
+	   (has_alife_info("tutorial_artefact_start") and not has_alife_info("tutorial_artefact_done")) or
+	   (has_alife_info("tutorial_wounded_start") and not has_alife_info("esc_serious_talk"))
+	then
+		return true
+	end
+	return false 
+end
+
+function trader_give_extra_job(trader, actor)
+	local actor = db.actor
+	if has_alife_info("escape_blockpost_case") and not has_alife_info("escape_blockpost_case_done")
+	then
+		return true
+	end
+	return false
+end
+
+function bandits_die(actor,npc)
+	local actor = db.actor
+	if has_alife_info("esc_kill_bandits_quest_kill") and not has_alife_info("esc_kill_bandits_noquest_kill")
+	then
+		return true
+	end
+	return false
+end
+
+function trader_need_extra_job(trader, actor)
+	if not has_alife_info("escape_blockpost_case") and 
+	    has_alife_info("esc_return")
+	then
+		return true
+	end
+	return false
+end
+
+function is_tutorial()
+	return not has_alife_info("tutorial_end")
+end
+
+function is_not_tutorial()
+	return has_alife_info("tutorial_end")
+end
+
+function is_not_tutorial_art(actor, trader)
+	local tutorial_artefact = db.actor:object("af_blood_tutorial")
+	if (has_alife_info("tutorial_artefact_start") and not has_alife_info("tutorial_artefact_done")
+		and  tutorial_artefact ~= nil) or has_alife_info("tutorial_artefact_done")
+	then
+		return true
+	end
+	return false
+end
+
+function not_final_job(trader, actor)
+	local actor = db.actor
+	return not has_alife_info("escape_blockpost_case_done")
+end
+
+function trader_test(actor, npc)
+ 	printf ("!!!!!")	
+	return true
+end
+
+
+
+function trader_dont_give_job(first_speaker, second_speaker)
+	return not trader_alredy_give_job(first_speaker, second_speaker)
+end
+
+function finalize_quests(first_speaker, second_speaker)
+	if tutorial_artefact_end(first_speaker, second_speaker) == true or
+	   tutorial_wounded_end(first_speaker, second_speaker) == true
+	then
+		return true
+	end
+	return false
+end
+
+function not_finalize_quests(first_speaker, second_speaker)
+	return not this.finalize_quests(first_speaker, second_speaker)	
+end
+
+function tutorial_artefact_end(first_speaker, second_speaker)
+	local actor = db.actor
+	local tutorial_artefact = first_speaker:object("af_blood_tutorial")
+	if has_alife_info("tutorial_artefact_start") and 
+	   not has_alife_info("tutorial_artefact_done") and
+	   tutorial_artefact ~= nil
+	then
+		return true
+	end
+	return false
+end
+
+function tutorial_artefact_have_not(first_speaker, second_speaker)
+	local actor = db.actor
+	local tutorial_artefact = first_speaker:object("af_blood_tutorial")
+	if has_alife_info("tutorial_artefact_start") and 
+	   not has_alife_info("tutorial_artefact_done") and
+	   tutorial_artefact == nil
+	then
+		return true
+	end
+	return false
+end
+
+function tutorial_wounded_end(first_speaker, second_speaker)
+	local actor = db.actor
+	-- local wounded_flash = first_speaker:object("esc_wounded_flash")
+	if has_alife_info("tutorial_wounded_start")	and 
+		has_alife_info("tutorial_wounded_give_info")	and 	
+	   not has_alife_info("esc_serious_talk")
+ -- and   wounded_flash ~= nil
+	then
+		return true
+	end
+	return false
+end
+
+function trader_dont_has_job(first_speaker, second_speaker)
+    if trader_need_military_case(first_speaker, second_speaker) == false and
+	   trader_need_blockpost_box(first_speaker, second_speaker) == false
+	then
+		return true
+	end
+	return false
+end
+
+
+--' Escape tutorial artefact
+function have_tutorial_artefact(first_speaker, second_speaker)
+  	return first_speaker:object("af_blood_tutorial") ~= nil
+end
+function give_medkit(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "medkit", "in")
+end
+function give_tutorial_artefact(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "af_blood_tutorial", "out")
+end
+
+
+--' Meet fox
+function have_fox_info(first_speaker, second_speaker)
+  	return first_speaker:object("fox_flash") ~= nil
+end
+
+--' fox help
+
+function transfer_medikit_to_fox (player, wounded)
+	wounded:set_relation(game_object.friend, player)
+	db.actor:give_info_portion("escape_fox_heal")
+end
+
+function give_weapon_to_actor (trader, actor)
+    dialogs.relocate_item_section(trader, "wpn_pm", "in")
+    dialogs.relocate_item_section(trader, "ammo_9x18_fmj", "in")
+	dialogs.relocate_item_section(trader, "ammo_9x18_fmj", "in")
+    dialogs.relocate_item_section(trader, "wpn_knife", "in")     
+end
+
+
+--' Escape blockpost box
+function have_blockpost_case(first_speaker, second_speaker)
+  	return first_speaker:object("quest_case_01") ~= nil
+end
+
+
+function give_blockpost_case(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "quest_case_01", "out")
+end
+
+function give_blockpost_case_reward(first_speaker, second_speaker)
+	dialogs.relocate_money(first_speaker, 2000, "in")
+end
+
+--' Agroprom military case
+function trader_need_military_case(first_speaker, second_speaker)
+    if has_alife_info("esc_serious_talk") and
+	   not has_alife_info("agroprom_military_case")
+	then
+		return true
+	end
+	return false
+end
+
+--' Escape trader artefact
+function have_artefact_from_fleshes(first_speaker, second_speaker)
+	local actor = db.actor
+	if actor ~= nil and
+	   (actor:object("af_vyvert") ~= nil or
+	   actor:object("af_gravi") ~= nil or
+	   actor:object("af_gold_fish") ~= nil)
+	then
+		return true
+	end
+  	return false
+end
+
+
+--' ящик с блокпоста
+function trader_need_blockpost_box(first_speaker, second_speaker)
+    if has_alife_info("tutorial_end") and
+	   has_alife_info("esc_trader_speak") and
+	   not has_alife_info("escape_blockpost_case")
+	then
+		return true
+	end
+	return false
+end
+
+--' tutorial wounded in vagon
+function wounded_need_help(first_speaker, second_speaker)
+	local actor = db.actor
+	return actor ~= nil and not has_alife_info( "tutorial_wounded_help" )
+end
+
+--' trader needs military documents
+function trader_need_military_document(first_speaker, second_speaker)
+    if has_alife_info("escape_blockpost_case_done") and
+	   not has_alife_info("agroprom_military_case")
+	then
+		return true
+	end
+	return false
+end
+
+--' trader dialog about docs from labx18
+function actor_has_documents (actor, npc)
+	if actor:object("dar_document4") then
+		return true
+	else
+		return false
+	end
+end
+
+--' Escape dynamite for Wolf
+function transfer_wolf_reward(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "af_medusa", "in")
+end
+
+function wolf_additional_reward(first_speaker, second_speaker)
+    dialogs.relocate_item_section(first_speaker, "medkit", "in")
+    dialogs.relocate_item_section(first_speaker, "bandage", "in")
+    dialogs.relocate_item_section(first_speaker, "wpn_fort", "in")
+    dialogs.relocate_item_section(first_speaker, "grenade_f1", "in") 
+    dialogs.relocate_item_section(first_speaker, "ammo_9x18_fmj", "in")        
+end
+
+
+--' Escape Wounded's flash
+function wounded_give_flash(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "esc_wounded_flash", "in")
+end
+
+function have_wounded_flash(first_speaker, second_speaker)
+  	return first_speaker:object("esc_wounded_flash") ~= nil
+end
+function dont_have_wounded_flash(first_speaker, second_speaker)
+  	return not have_wounded_flash(first_speaker, second_speaker)
+end
+
+function give_wounded_flash(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "esc_wounded_flash", "out")
+	dialogs.relocate_money(second_speaker, 1500, "in")
+end
+
+function give_knife_to_actor(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "wpn_knife", "in")
+end
+
+--' Escape bandits factory
+function give_factory_reward_trader(first_speaker, second_speaker)
+	dialogs.relocate_money(first_speaker, 500, "in")
+end
+
+--' Give X-18 documents read
+
+function give_documents_reward (first_speaker, second_speaker)
+	dialogs.relocate_money(first_speaker, 1000, "in")
+end
+
+
+--' Kill killers raid
+function give_reward_killers(first_speaker, second_speaker)
+	dialogs.relocate_money(first_speaker, 2500, "in")
+end
+
+
+--' Soldiers on bridge
+function has_soldiers_bribe(actor, npc)
+	return actor:money() >= 500
+end
+
+function give_soldiers_bribe(actor, npc)
+	dialogs.relocate_money(npc, 500, "out")	
+end
+
+function fox_pay_money(actor, npc)
+	dialogs.relocate_money(npc, 1500, "in")	
+	treasure_manager.get_treasure_manager():give_treasure("esc_secret_truck_goods")
+end
+
+function run_tutorial_pda(first_speaker, second_speaker)
+	printf("!-!-!")
+	first_speaker:stop_talk()
+    second_speaker:stop_talk()
+	game.start_tutorial("part_1_pda")
+end
+
+function wolf_precond_univ (actor, npc)
+	return has_alife_info("esc_kill_bandits_quest_done") or (has_alife_info("tutorial_wounded_give_info") and not has_alife_info("esc_kill_bandits_quest_have"))
+end

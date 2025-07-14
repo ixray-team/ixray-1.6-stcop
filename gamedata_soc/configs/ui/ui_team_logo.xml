@@ -1,0 +1,5 @@
+<ui_texture>
+    <file_name>ui\ui_team_logo</file_name>
+    <texture id="green_team_logo" x="0" y="0" width="256" height="256" />
+    <texture id="blue_team_logo" x="256" y="0" width="256" height="256" />
+</ui_texture>

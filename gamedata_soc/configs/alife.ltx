@@ -1,0 +1,135 @@
+[organizations]																; a list of organization sections
+	agroprom
+	militaries
+	scientists
+		
+[agroprom]
+	name					= "Agroprom Research Institute"					; organization public name
+	discoveries				= discovery_magnet,discovery_magnetic_field,discovery_electro_magnetic_force	; discoveries can be discovered
+	join_probability		= 1.0											; a probability to join zone investigations
+	left_probability		= 0.1											; a probability to left zone investigations
+	trader_rank				= 1												; rank of the trader to deal with
+
+[militaries]
+	name					= "KGB : Special Purpose Forces"				; organization public name
+	discoveries				= discovery_magnetic_field,discovery_electro_magnetic_force,discovery_magnetic_battery	; discoveries can be discovered
+	join_probability		= 1.0											; a probability to join zone investigations
+	left_probability		= 0.1											; a probability to left zone investigations
+	trader_rank				= 1												; rank of the trader to deal with
+
+[scientists]
+	name					= "NASA: Scientific Laboratory"					; organization public name
+	discoveries				= discovery_magnet,discovery_electro_magnetic_force,discovery_magnetic_battery	; discoveries can be discovered
+	join_probability		= 1.0											; a probability to join zone investigations
+	left_probability		= 0.1											; a probability to left zone investigations
+	trader_rank				= 1												; rank of the trader to deal with
+
+[Japan_Lab]
+	name					= "Japan Research Laboratories"					; organization public name
+	discoveries				= discovery_magnet,discovery_magnetic_field,discovery_electro_magnetic_force	; discoveries can be discovered
+	join_probability		= 0.2											; a probability to join zone investigations
+	left_probability		= 0.2											; a probability to left zone investigations
+	trader_rank				= 1												; rank of the trader to deal with
+
+[USA_Lab]
+	name					= "USA Research Laboratories"					; organization public name
+	discoveries				= discovery_magnet,discovery_magnetic_field,discovery_electro_magnetic_force	; discoveries can be discovered
+	join_probability		= 0.2											; a probability to join zone investigations
+	left_probability		= 0.2											; a probability to left zone investigations
+	trader_rank				= 1												; rank of the trader to deal with
+
+[Uzbekistan_Lab]
+	name					= "Uzbekistan Research Laboratories"					; organization public name
+	discoveries				= discovery_magnet,discovery_magnetic_field,discovery_electro_magnetic_force	; discoveries can be discovered
+	join_probability		= 0.2											; a probability to join zone investigations
+	left_probability		= 0.2											; a probability to left zone investigations
+	trader_rank				= 1												; rank of the trader to deal with
+
+[Soviet_Lab]
+	name					= "USSR Research Laboratories"					; organization public name
+	discoveries				= discovery_magnet,discovery_magnetic_field,discovery_electro_magnetic_force	; discoveries can be discovered
+	join_probability		= 0.4											; a probability to join zone investigations
+	left_probability		= 0.1											; a probability to left zone investigations
+	trader_rank				= 1												; rank of the trader to deal with
+
+[discovery_magnet]
+	name					= "Surrealistics effect of magnet"				; discovery public name
+	success_probability		= 0.4											; a probability to make a discovery
+	destroy_probability		= 0.1											; a probability to make an excident during investigations
+	result_probability		= 0.5											; discovery getting result probability
+	unfreeze_probability	= 0.1											; discovery freeze probability after destruction
+	demand_on_success		= af_medusa,3,15,50,350							; artefacts per week (section, count, price)
+	artefacts				= af_medusa,10,510 								; artefacts to make a discovery
+	discovery_dependence	= 												; if this discoveries are invented, then this 
+	sections				= m_detector									; sections of the objects being invented after this discovery
+	already_invented		= 0												; bool, if discovery has been already invented
+
+[discovery_magnetic_field]
+	name					= "Magnetic force field"						; discovery public name
+	success_probability		= 0.3											; a probability to make a discovery
+	destroy_probability		= 0.3											; a probability to make an excident during investigations
+	result_probability		= 0.4											; discovery getting result probability
+	unfreeze_probability	= 0.2											; discovery freeze probability after destruction
+	demand_on_success		= af_medusa,3,20,70,450							; artefacts per week (section, count, price)
+	artefacts				= af_medusa,30,630								; artefacts to make a discovery
+	discovery_dependence	= 						;discovery_magnet								; if this discoveries are invented, then this 
+	sections				= wpn_fn2000									; sections of the objects being invented after this discovery
+	already_invented		= 0												; bool, if discovery has been already invented
+
+[discovery_electro_magnetic_force]
+	name					= "Electro magnetic force"						; discovery public name
+	success_probability		= 0.2											; a probability to make a discovery
+	destroy_probability		= 0.3											; a probability to make an excident during investigations
+	result_probability		= 0.7											; discovery getting result probability
+	unfreeze_probability	= 0.2											; discovery freeze probability after destruction
+	demand_on_success		= af_medusa,4,8,50,150							; artefacts per week (section, count_min, count_max, price_min, price_max)
+	artefacts				= af_medusa,10,1000								; artefacts to make a discovery (section, count, price)
+	discovery_dependence	= 						;discovery_magnetic_field						; if this discoveries are invented, then this 
+	sections				= 												; sections of the objects being invented after this discovery
+	already_invented		= 0												; bool, if discovery has been already invented
+
+[discovery_magnetic_battery]
+	name					= "Magnetic battery"							; discovery public name
+	success_probability		= 0.3											; a probability to make a discovery
+	destroy_probability		= 0.2											; a probability to make an excident during investigations
+	result_probability		= 0.7											; discovery getting result probability
+	unfreeze_probability	= 0.2											; discovery freeze probability after destruction
+	demand_on_success		= af_medusa,4,8,50,150							; artefacts per week (section, count_min, count_max, price_min, price_max)
+	artefacts				= af_medusa,5,1200								; artefacts to make a discovery (section, count, price)
+	discovery_dependence	= discovery_magnetic_field						; if this discoveries are invented, then this 
+	sections				= wpn_rpg_7										; sections of the objects being invented after this discovery
+	already_invented		= 0												; bool, if discovery has been already invented
+
+[discovery_vintorez]
+	name					= "Weapon Vintorez with strong magnetic effects"; discovery public name
+	success_probability		= 0.3											; a probability to make a discovery
+	destroy_probability		= 0.3											; a probability to make an excident during investigations
+	result_probability		= 0.6											; discovery getting result probability
+	unfreeze_probability	= 0.2											; discovery freeze probability after destruction
+	demand_on_success		= af_medusa,4,8,50,150							; artefacts per week (section, count_min, count_max, price_min, price_max)
+	artefacts				= af_medusa,7,800								; artefacts to make a discovery (section, count, price)
+	discovery_dependence	= discovery_magnet								; if this discoveries are invented, then this 
+	sections				= m_detector									; sections of the objects being invented after this discovery
+	already_invented		= 0												; bool, if discovery has been already invented
+
+[alife]
+    schedule_min				= 1												; milliseconds
+    schedule_max				= 1												; milliseconds
+    process_time				= 900											; microseconds
+    update_monster_factor		= 0.1
+    time_factor					= 10;	1;	;396.0;скорость для демонстрации смены дня и ночи		
+    normal_time_factor			= 10;	животные в оффлайне перемещаются со скоростью, делённой на этот фактор (чтобы не бегали очень быстро)
+    max_combat_iteration_count	= 5	;10											; maximum combat iteration count
+    switch_distance				= 150;0	;150	;75.0											; metres
+    switch_factor				= 0.1											; 
+    start_time					= 05:30:00	;16:30:00
+    start_date					= 01.05.2012
+    autosave_interval			= 01:05:00
+    delay_autosave_interval		= 00:00:30
+	objects_per_update			= 10
+	start_game_callback			= _G.start_game_callback					; on starting new game or loading saved one
+	
+[online_offline_group]
+	class						= ON_OFF_G									; Class identifier
+	script_binding				= 
+	

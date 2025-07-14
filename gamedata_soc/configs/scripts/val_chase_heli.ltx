@@ -1,0 +1,75 @@
+[logic]
+active = heli_move@wait
+
+[heli_move@wait]
+path_move           = val_chase_heli_wait_move
+engine_sound        = false
+on_info             = {+val_raid_start} heli_move@ready
+
+[heli_move@ready]
+path_move           = val_chase_heli_ready_move
+path_look           = val_chase_heli_ready_look
+engine_sound        = true
+combat_enemy        = nil
+combat_use_rocket   = false
+combat_use_mgun     = true
+;invulnerable       = true
+on_info             = {+val_chase_start} heli_move@start
+
+[heli_move@start]
+path_move           = val_chase_heli_start_move
+path_look           = val_chase_heli_start_look
+engine_sound        = true
+;combat_enemy        = nil
+;combat_use_rocket   = false
+;combat_use_mgun     = true
+;invulnerable        = true
+;on_info             = {+val_stairs_start} heli_move@start
+;on_info             = {=heli_health_le(0.25)} heli_move@die
+immortal            = true
+on_signal           = arrived | heli_move@finish %+val_raid_end% ;heli_move@chase
+
+[heli_move@finish]
+path_move     = val_chase_heli_die_move
+engine_sound  = true
+combat_ignore = true
+immortal      = true
+
+
+;--- Old ------------------------------------------------------------
+[heli_move@chase]
+path_move           = val_chase_heli_chase_move
+engine_sound        = true
+combat_enemy        = actor
+combat_use_rocket   = true
+combat_use_mgun     = false
+combat_safe_altitude = -40
+;invulnerable       = true
+immortal            = true
+on_info             = {=heli_health_le(0.25)} heli_move@die
+
+[heli_move@die]
+path_move     = val_chase_heli_chase_move
+combat_ignore = true
+immortal      = true
+on_info       = {~25} heli_move@die1, {~50} heli_move@die2, {~75} heli_move@die3, heli_move@die4
+
+[heli_move@die1]
+path_move     = val_chase_heli_die_move1
+combat_ignore = true
+immortal      = true
+
+[heli_move@die2]
+path_move     = val_chase_heli_die_move2
+combat_ignore = true
+immortal      = true
+
+[heli_move@die3]
+path_move     = val_chase_heli_die_move3
+combat_ignore = true
+immortal      = true
+
+[heli_move@die4]
+path_move     = val_chase_heli_die_move4
+combat_ignore = true
+immortal      = true

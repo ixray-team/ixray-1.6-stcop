@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+
+<game_information_portions>
+
+	<!-- Бой бандитов и киллеров -->
+	<info_portion id="mil_killer_with_bandits_combat"></info_portion>
+	
+	<!-- Атака Долга -->
+	<info_portion id="mil_sniper1_dead"></info_portion>
+	<info_portion id="mil_sniper2_dead"></info_portion>
+	
+	<!-- Атака Свободы -->
+	<info_portion id="mil_freedom_attack"></info_portion>
+
+	<!-- Пьянство с Поваром -->
+	<info_portion id="mil_freedom_cook_drink_1"></info_portion>
+	<info_portion id="mil_freedom_cook_drink_2"></info_portion>
+	<info_portion id="mil_freedom_cook_drink_3"></info_portion>
+	<info_portion id="mil_freedom_cook_rg6_1"></info_portion>
+	<info_portion id="mil_freedom_cook_rg6_2"></info_portion>	
+	<info_portion id="mil_freedom_cook_rg6_3"></info_portion>
+
+</game_information_portions>

@@ -1,0 +1,144 @@
+	<string id="bar_arena_actor_afraid">
+		<text>Бой отменяется. Претендент испугался и не вышел на ринг.</text>
+	</string>
+	<string id="bar_arena_fight_10">
+		<text>Прошло 10 секунд!</text>
+	</string>
+	<string id="bar_arena_fight_20">
+		<text>Прошло 20 секунд!</text>
+	</string>
+	<string id="bar_arena_fight_30">
+		<text>Прошло 30 секунд!</text>
+	</string>
+	<string id="bar_arena_fight_40">
+		<text>Прошло 40 секунд!</text>
+	</string>
+	<string id="bar_arena_fight_50">
+		<text>Прошло 50 секунд!</text>
+	</string>
+	<string id="bar_arena_fight_60">
+		<text>Прошла минута!</text>
+	</string>
+	<string id="bar_arena_fight_70">
+		<text>Прошла минута и 10 секунд!</text>
+	</string>
+	<string id="bar_arena_fight_80">
+		<text>Прошла минута и 20 секунд!</text>
+	</string>
+	<string id="bar_arena_fight_90">
+		<text>Прошло полторы минуты!</text>
+	</string>
+	<string id="bar_arena_fight_begin">
+		<text>Бой начался!</text>
+	</string>
+	<string id="bar_arena_fight_bloodsucker">
+		<text>Внимание! Внимание! Скоро на Арене начнется новый бой! В левом углу арены, кровожадный и вечно голодный Кровосос! В правом углу арены, человек? Да, человек! Все называют его Меченым!</text>
+	</string>
+	<string id="bar_arena_fight_burer">
+		<text>Внимание! Внимание! Скоро на Арене начнется новый бой! В левом углу арены, он знает кунг-фу, он умеет гнуть ложки, это Бюрер! В правом углу арены, герой, чей поиск никогда не закончится! Все называют его Меченым!</text>
+	</string>
+	<string id="bar_arena_fight_dead">
+		<text>Итак! Противник уложил претендента. Вот так номер!</text>
+	</string>
+	<string id="bar_arena_fight_lose">
+		<text>Итак! Претендент таки уложил противника, но не успел в отведенное время и проиграл!</text>
+	</string>
+	<string id="bar_arena_fight_pseudodog">
+		<text>Внимание! Внимание! Скоро на Арене начнется новый бой! В левом углу арены, белая, пушистая, но невероятно злая Псевдособака! В правом углу арены, пришедший из ниоткуда, идущий в никуда. Все называют его Меченым!</text>
+	</string>
+	<string id="bar_arena_fight_savage">
+		<text>Внимание! Внимание! Скоро на Арене начнется новый бой! В левом углу арены, вы знаете его, вы любите его. А он вас ненавидит. Это Зверь! В правом углу арены, все еще живой, Меченый!</text>
+	</string>
+	<string id="bar_arena_fight_snork">
+		<text>Внимание! Внимание! Скоро на Арене начнется новый бой! В левом углу арены, знаток восточных единоборств и правильного питания Снорк! В правом углу арены, человек без прошлого. Все называют его Меченым!</text>
+	</string>
+	<string id="bar_arena_fight_timeout">
+		<text>Время вышло! Претендент проиграл, но все еще борется за свою жизнь!</text>
+	</string>
+	<string id="bar_arena_fight_victory">
+		<text>Итак! Претендент успел уложить противника в отведенное время и выиграл!</text>
+	</string>
+	<string id="bar_ecolog_attack">
+		<text>Как вам будет угодно.</text>
+	</string>
+	<string id="bar_ecolog_crush_attract_actor">
+		<text>Сталкер, друг! Умоляю не уходи, помоги нам! Анархисты сбили наш вертолет и сейчас нас будут добивать. У нас есть раненые, нам нужна твоя помощь!</text>
+	</string>
+	<string id="bar_ecolog_crush_heli_down">
+		<text>Хехе, вот и все. Нету вашего вертолета! Сейчас и вы получите, крысы правительственные!</text>
+	</string>
+	<string id="bar_ecolog_crush_start_heli">
+		<text>Ну все Волкодав, ты допрыгался. Сюда летит военный вертолет. Сейчас они вас, как щенков!</text>
+	</string>
+	<string id="bar_ecolog_escape">
+		<text>Профессор сбежал! Срочно всем в погоню за Кругловым! Он не мог далеко уйти.</text>
+	</string>
+	<string id="bar_ecolog_hit">
+		<text>Меченый, помоги мне!!! Меня убивают!!!</text>
+	</string>
+	<string id="bar_ecolog_spam_1">
+		<text>Обойдешься, шакал. Сперва школу закончи, а потом будешь ультиматумы ставить.</text>
+	</string>
+	<string id="bar_ecolog_spam_2">
+		<text>Если вы нападете, я уничтожу информацию. Фиг вам, а не мои труды.</text>
+	</string>
+	<string id="bar_ecolog_spam_3">
+		<text>Если не хотите, чтобы я уничтожил результаты исследований - держитесь подальше.</text>
+	</string>
+	<string id="bar_ecolog_spam_4">
+		<text>Волкодав, уводи своих собак, пока хвосты не ободрали!</text>
+	</string>
+	<string id="bar_freedom_attack">
+		<text>Все, разговоры окончены. Начинается стрельба.</text>
+	</string>
+	<string id="bar_freedom_attack_attract_actor">
+		<text>Мужик, давай сюды! Дело есть. Вместе добьем этих правительственных крыс.</text>
+	</string>
+	<string id="bar_freedom_attack_spy">
+		<text>Меченый. Ты, сучонок, за подставу нам еще заплатишь.</text>
+	</string>
+	<string id="bar_freedom_chase">
+		<text>Они идут за нами!? Меченый, останови их!</text>
+	</string>
+	<string id="bar_freedom_spam_1">
+		<text>Короче, ты, ученый болван. Или отдаешь мне результаты, или уедешь отсюда в пластиковом мешке.</text>
+	</string>
+	<string id="bar_freedom_spam_2">
+		<text>Круглов, я не знаю латыни, но я знаю язык оружия. Мне попросить вас на нем? Или вы сами отдадите информацию?</text>
+	</string>
+	<string id="bar_freedom_spam_3">
+		<text>Профессор, ты же умный человек. Отдай информацию и иди на все четыре стороны.</text>
+	</string>
+	<string id="bar_freedom_spam_4">
+		<text>Круглов, ты еще не понял?! Мы сбили ваш долбанный вертолет и нам нужна та информация, которую вы везете. После того как ты нам ее отдашь, можешь со своими ребятами валить. Это ваш последний шанс выбраться отсюда, давай флэшку и проваливай</text>
+	</string>
+	<string id="bar_psih_come">
+		<text>Срочно дуй сюда! Возле Радара мои ребята отловили спятившего сталкера, сейчас пытаемся его допрашивать.</text>
+	</string>
+	<string id="bar_territory_dolg_1_hit">
+		<text>Меченый, ты что спятил? Немедленно прекрати стрельбу! Это приказ!</text>
+	</string>
+	<string id="bar_territory_dolg_2_hit">
+		<text>Меченый, немедленно прекрати стрельбу! Если ты ослушаешься приказа ты труп!</text>
+	</string>
+	<string id="bar_territory_dolg_3_hit">
+		<text>Меченый. За нарушение кодекса Долга ты изгнан из группировки. Отныне ты наш враг.</text>
+	</string>
+	<string id="bar_territory_dolg_kill">
+		<text>Меченый, ты ослушался приказа! Теперь ты труп! Долг такого не прощает!</text>
+	</string>
+	<string id="bar_territory_nodolg_1_hit">
+		<text>Прекратить стрельбу! На территории Долга стрельба запрещена! Ослушавшиеся будут наказаны!</text>
+	</string>
+	<string id="bar_territory_nodolg_2_hit">
+		<text>Внимание! За нарушение закона о применении оружия на территории Долга, Меченый объявлен преступником.</text>
+	</string>
+	<string id="bar_territory_nodolg_kill">
+		<text>Внимание! Обнаружен убийца! Приказ всем находящимся на территории Долга! Срочно уничтожить убийцу!</text>
+	</string>
+	<string id="rostok_kruglov_spam_1">
+		<text>Сталкер, помоги! На нас напали наемники, половина наших погибла. Помоги нам, мы в долгу не останемся.</text>
+	</string>
+	<string id="rostok_kruglov_spam_2">
+		<text>Помоги нам пробиться через засаду возле завода, я тебе скинул координаты. Будь осторожней, Волкодав с головорезами возле вертолета.</text>
+	</string>

@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+	
+	<!-- атака бандитов на Серого -->
+	<info_portion id="garbage_meetstalker_start">
+		<task>garbage_meet_stalker</task>
+		<article>sl_fox_meet</article>
+	</info_portion>
+	<info_portion id="garbage_meetstalker_done"></info_portion>
+	<info_portion id="garbage_meetstalker_die"></info_portion>
+	<info_portion id="garbage_meetstalker_end">
+		<article>sl_seryi_meet</article>
+	</info_portion>
+	<info_portion id="gar_seryi_drug_die"></info_portion>
+	<info_portion id="gar_seryi_drug2_die"></info_portion>
+	
+	<info_portion id="gar_seryi_actor_enter"></info_portion>
+	<info_portion id="gar_distance_shooting"></info_portion>
+	<info_portion id="gar_seryi_ceitnot"></info_portion>
+	<info_portion id="gar_seryi_open_fire"></info_portion>
+	<info_portion id="gar_seryi_counter_fire"></info_portion>
+	<info_portion id="gar_begin_assault"></info_portion>
+	<info_portion id="gar_seryi_silence"></info_portion>
+	<info_portion id="gar_seryi_change_st"></info_portion>
+	<info_portion id="gar_seryi_meet"></info_portion>
+	
+	<!-- атака сталкеров и бандитов -->
+	<info_portion id="gar_bandit_leader_dead"></info_portion>
+	<info_portion id="gar_alarm"></info_portion>
+	<info_portion id="gar_bandits_raid"></info_portion>
+	<info_portion id="gar_bandits_damaged"></info_portion>
+	<info_portion id="gar_hellcar_help">
+		<task>gar_help_dymon</task>
+	</info_portion>
+	<info_portion id="gar_hellcar_reject"></info_portion>
+	<info_portion id="gar_open_fire"></info_portion>
+	<info_portion id="gar_counter_fire"></info_portion>
+	<info_portion id="gar_direction"></info_portion>
+	<info_portion id="gar_start_graveyard"></info_portion>
+	<info_portion id="gar_start_quest">
+		<task>gar_car_graveyard_quest</task>
+	</info_portion>
+	<info_portion id="gar_no_mapspot"></info_portion>
+	<info_portion id="gar_animation_radio"></info_portion>
+	<info_portion id="gar_bandits_killed"></info_portion>
+	<info_portion id="gar_after_battle"></info_portion>
+	<info_portion id="gar_hellcar_dialog_end"></info_portion>
+	<info_portion id="gar_hellcar_death"></info_portion>
+	<info_portion id="gar_hellcar_death_2"></info_portion>
+	<info_portion id="gar_hellcar_thanks"></info_portion>
+	<info_portion id="gar_hellcar_alarm"></info_portion>
+	
+	
+	<!-- Застава Долга -->
+	<info_portion id="gar_kill_boars_quest">
+		<task>gar_kill_boars</task>
+	</info_portion>	
+	<info_portion id="gar_kill_boars_done"></info_portion>
+	<info_portion id="gar_kill_boars_request"></info_portion>	
+	<info_portion id="gar_free_pass"></info_portion>
+
+	<!-- Тестовые инфопошены -->
+	<info_portion id="gar_test_info1"></info_portion>
+	<!-- Долг рулит флешей -->
+	<info_portion id="gar_test_info2"></info_portion>
+	<!-- кабаны рулят Долг -->
+	
+	<!-- Псевдораненый -->
+	<info_portion id="gar_wounded_help"></info_portion>
+	<info_portion id="gar_wounded_fight"></info_portion>
+	
+	<!-- Новичок в туннеле -->
+	<info_portion id="gar_help_newbie">
+		<task>gar_help_tunnel_newbie</task>
+	</info_portion>
+	<info_portion id="gar_help_newbie_done"></info_portion>
+	<info_portion id="gar_help_newbie_die"></info_portion>
+	<info_portion id="gar_help_newbie_reward"></info_portion>
+	<info_portion id="gar_help_newbie_exit"></info_portion>
+		
+  <!-- Драм-момент -->
+  <info_portion id="gar_dm_novice_asked_for_help"></info_portion>
+  <info_portion id="gar_dm_bandit_warned_plr"></info_portion>
+  <info_portion id="gar_dm_bandit1_dead"></info_portion>
+  <info_portion id="gar_dm_bandit2_dead"></info_portion>
+  <info_portion id="gar_dm_bandit3_dead"></info_portion>
+  <info_portion id="gar_dm_novice_dead"></info_portion>
+  <info_portion id="gar_dm_bandit2_warn_plr"></info_portion>
+  <info_portion id="gar_dm_bandit2_warned_plr"></info_portion>
+  <info_portion id="gar_dm_bandit1_demand"></info_portion>
+  <info_portion id="gar_dm_bandit2_demand"></info_portion>
+  <info_portion id="gar_dm_bandit3_demand"></info_portion>
+  <info_portion id="gar_dm_newbie_no_money"></info_portion>
+  <info_portion id="gar_dm_end"></info_portion>
+  <info_portion id="gar_dm_novice_change_st"></info_portion>
+  <info_portion id="gar_dm_bandits_change_st"></info_portion>
+	
+	<!-- Fake spots objects-->
+	<info_portion id="gar_add_fake_spot1"></info_portion>
+	<info_portion id="gar_remove_fake_spot1"></info_portion>
+	<info_portion id="gar_add_fake_spot2"></info_portion>
+	<info_portion id="gar_remove_fake_spot2"></info_portion>
+	<info_portion id="gar_add_fake_spot3"></info_portion>
+	<info_portion id="gar_remove_fake_spot3"></info_portion>
+	<info_portion id="gar_add_fake_spot4"></info_portion>
+	<info_portion id="gar_remove_fake_spot4"></info_portion>
+	<info_portion id="gar_add_fake_spot5"></info_portion>
+	<info_portion id="gar_remove_fake_spot5"></info_portion>
+	<info_portion id="gar_add_fake_spot6"></info_portion>
+	<info_portion id="gar_remove_fake_spot6"></info_portion>
+	<info_portion id="gar_add_fake_spot7"></info_portion>
+	<info_portion id="gar_remove_fake_spot7"></info_portion>
+	<info_portion id="gar_add_fake_spot8"></info_portion>
+	<info_portion id="gar_remove_fake_spot8"></info_portion>
+	<info_portion id="gar_add_fake_spot9"></info_portion>
+	<info_portion id="gar_remove_fake_spot9"></info_portion>
+	<info_portion id="gar_add_fake_spot10"></info_portion>
+	<info_portion id="gar_remove_fake_spot10"></info_portion>
+	<info_portion id="gar_add_fake_spot11"></info_portion>
+	<info_portion id="gar_remove_fake_spot11"></info_portion>
+	
+	<info_portion id="gar_hellcar_tips_end"></info_portion>
+
+
+
+</game_information_portions>

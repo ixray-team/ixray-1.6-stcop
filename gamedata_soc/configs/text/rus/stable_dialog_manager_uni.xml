@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="dm_general_action_info">
+		<text>Чем ты здесь занимаешься?</text>
+	</string>
+	<string id="dm_general_cool_info">
+		<text>Что можешь интересного рассказать?</text>
+	</string>
+	<string id="dm_general_cool_info_no_more">
+		<text>Больше ничего не знаю</text>
+	</string>
+	<string id="dm_general_help_bandage">
+		<text>Держи бинт.</text>
+	</string>
+	<string id="dm_general_help_medkit">
+		<text>Держи аптечку.</text>
+	</string>
+	<string id="dm_general_trade_info">
+		<text>Интересует информация. За деньги.</text>
+	</string>
+	<string id="dm_general_trade_info_caption">
+		<text>Могу предложить следующее:</text>
+	</string>
+	<string id="dm_general_trade_info_hasno">
+		<text>Ничего предложить не могу.</text>
+	</string>
+	<string id="dm_general_trade_info_nothing">
+		<text>Как-нибудь в другой раз.</text>
+	</string>
+</string_table>

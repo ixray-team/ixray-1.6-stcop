@@ -1,0 +1,22 @@
+function proceed()
+    local actor = db.actor
+
+	-- Radar
+	if not has_alife_info("rad_code_door") and
+	   actor:object("rad_scientist_flash")
+	then
+		actor:give_info_portion("rad_code_door") 
+	end
+
+
+
+end
+
+function process_info_portion(info_id)
+	if info_id == "rad_code_door" then
+		level_tasks.add_location(1001, "rad_code_door_location")
+	elseif info_id == "rad_code_door_found" then
+		level_tasks.remove_location(1001, "rad_code_door_location")
+	end
+	return false
+end
