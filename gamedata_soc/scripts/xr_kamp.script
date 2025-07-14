@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------------------------
 --	Схема лагерь. Чудак(и) у костра.
 --	автор: Диденко Руслан (Stohe)
---	TODO: 
+--	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 --function printf()
 --end
@@ -27,7 +27,7 @@ function evaluator_on_position:__init(name, storage) super (nil, name)
 	self.a = storage
 end
 function evaluator_on_position:evaluate()
-    if self.object:level_vertex_id() == self.a.pos_vertex then
+		if self.object:level_vertex_id() == self.a.pos_vertex then
 		return true
 	end
 	return false
@@ -46,32 +46,39 @@ function action_go_position:initialize()
 --	self.object:set_path_evaluator()
 	self.object:set_desired_position()
 	self.object:set_desired_direction()
-	
+
 	self.a.pos_vertex = nil
+	self.a.npc_position_num = nil
 end
 function action_go_position:execute ()
 	action_base.execute (self)
 
-	if db.actor then
-		if xr_logic.try_switch_to_another_section(self.object, self.a, db.actor) then
-			return
-		end
-	end	
-	
-	local tmp_pos_vertex = kamps[self.a.center_point]:getDestVertex(self.object:id(), self.a.radius)
-	if self.a.pos_vertex ~= tmp_pos_vertex then
+	-- Спрашиваем где сидеть
+	local tmp_pos_vertex, npc_position_num = kamps[self.a.center_point]:getDestVertex(self.object, self.a.radius)
+	if self.a.npc_position_num ~= npc_position_num then
+		self.a.npc_position_num = npc_position_num
 		self.a.pos_vertex = tmp_pos_vertex
-		
-		if not self.object:accessible(self.a.pos_vertex) then
-			--'printf("[%s] KAMP NODE NOT ACCESSIBLE. Get accessible nearest", self.object:name())
-			local ttp = vector():set(0,0,0)
-			self.a.pos_vertex = self.object:accessible_nearest(level.vertex_position(self.a.pos_vertex), ttp)
-		end
-		
-		self.a.pp = patrol(self.a.center_point):level_vertex_id(0)
-		self.a.pp = level.vertex_in_direction(self.a.pp, vector():set(math.random(-1,1), 0, math.random(-1,1)), math.random(0,0.5))
+
+		--' Определяем куда смотреть.
+		self.a.pp = patrol(self.a.center_point):point(0)
+
+		local dir = vector():set(math.random(-1,1), 0, math.random(-1,1))
+		dir:normalize()
+
+		local delta_dist = math.random(0,0.5)
+ 		self.a.pp.x = self.a.pp.x + dir.x * delta_dist
+		self.a.pp.z = self.a.pp.z + dir.z * delta_dist
+
+
+
 		self.object:set_dest_level_vertex_id(self.a.pos_vertex)
-		self.object:set_desired_direction(vector():sub(level.vertex_position(self.a.pp),level.vertex_position(self.a.pos_vertex)))
+		--printf("vertex_position")
+		local desired_direction = vector():sub(self.a.pp,level.vertex_position(self.a.pos_vertex))
+		--printf("desired_direction = %s", vec_to_str(desired_direction))
+		if desired_direction ~= nil and not utils.vector_cmp(desired_direction, vector():set(0,0,0)) then
+			desired_direction:normalize()
+			self.object:set_desired_direction(desired_direction)
+		end
 		self.object:set_path_type(game_object.level_path)
 		state_mgr.set_state(self.object, self.a.def_state_moving)
 	end
@@ -91,7 +98,7 @@ function action_wait:initialize()
 --	self.object:set_path_evaluator()
 	self.object:set_desired_position()
 	self.object:set_desired_direction()
-	
+
 	kamps[self.a.center_point]:increasePops(self.object)
 end
 function action_wait:activate_scheme()
@@ -106,7 +113,7 @@ function action_wait:execute()
 	local state, sound, substate = kamps[self.a.center_point]:updateNpc(self.object)
 	
 	--' повернуть его лицом к центру	
-	state_mgr.set_state(self.object, state, nil, nil, {look_position = level.vertex_position(self.a.pp)}, nil, nil, {subanim = substate})
+	state_mgr.set_state(self.object, state, nil, nil, {look_position = self.a.pp}, nil, nil, {subanim = substate})			
 	xr_sound.set_sound(self.object, sound)
 end
 function action_wait:finalize()
@@ -139,7 +146,7 @@ function CKampManager:__init(path)
 					 {dir = vector():set(1, 0, -1),	used = nil}}
 	self.npc = {}
 	self.population = 0
-	self.kamp_state = "idle"	
+	self.kamp_state = "idle"
 	-- Где то здесь распарсим патрульный путь и проапдейтим вектор позиций.
 	-- 0 вершина - центр лагеря.
 	-- 1 флаг - сектор занят, в поинте можно сидеть.
@@ -147,7 +154,7 @@ function CKampManager:__init(path)
 	for k = 1, self.patrol:count() - 1 do
 		-- если есть 1 или 2 флажок - отметить сектор как занятый
 		if self.patrol:flag(k,1) or
-		   self.patrol:flag(k,2)
+			 self.patrol:flag(k,2)
 		then
 			-- отметить сектор как занятый
 			for key,value in pairs(self.position) do
@@ -157,21 +164,21 @@ function CKampManager:__init(path)
 					if yaw <=23 then
 						--'printf("KAMP node[%s], sector[%s,] yaw[%s]", k, key, yaw_degree(dir, value.dir))
 						value.used = -1
-						break						
+						break
 					end
 				end
 			end
-			
+
 		end
-		
+
 		-- если есть 1 флажок - создать место для сидения в точке пути
 		if self.patrol:flag(k,1) then
 			-- создать точку для сидения
 			table.insert(self.position, {vertex = self.patrol:level_vertex_id(k)})
-		end		
+		end
 	end
 	--print_table(self.position)
-	--Таблица соответствий состояния лагеря и допустимых анимаций и звуков.	
+	--Таблица соответствий состояния лагеря и допустимых анимаций и звуков.
 	self.avail_state = {idle				= { directed	= { "wait", "sit", "sit_ass", "sit_knee", "eat_kolbasa", "eat_vodka", "eat_energy", "eat_bread", "trans"}},
 						pre_harmonica		= { directed	= { "wait_harmonica"},
 												undirected	= { "wait", "sit", "sit_ass", "sit_knee", "eat_kolbasa", "eat_vodka", "eat_energy", "eat_bread", "trans"}},
@@ -221,24 +228,25 @@ function CKampManager:__init(path)
 						joke				= { min = 5000, soundstart = true },
 						post_joke			= { min = 3000 }}
 	-- Таблица глобальных состояний лагеря.
-	self.kamp_states = { idle = true, 
+	self.kamp_states = { idle = true,
 						 pre_harmonica = false, harmonica = false, post_harmonica = false,
 						 pre_guitar = false, guitar = false, post_guitar = false,
 						 story = false, post_story = false,
 						 pre_joke = true, joke = true, post_joke = true}
 	-- Таблица допустимых переходов между состояниями с вероятностями.
 	self.trans_kamp = { idle			= { idle = 0, pre_harmonica = 30, pre_guitar = 30, story = 0, pre_joke = 40 }, 
-						pre_harmonica	= { harmonica = 100 }, 
-						harmonica		= { post_harmonica = 100 }, 
+						pre_harmonica	= { harmonica = 100 },
+						harmonica		= { post_harmonica = 100 },
 						post_harmonica	= { idle = 70, harmonica = 30 },
-						pre_guitar		= { guitar = 100 }, 
-						guitar			= { post_guitar = 100 }, 
+						pre_guitar		= { guitar = 100 },
+						guitar			= { post_guitar = 100 },
 						post_guitar		= { idle = 70, guitar = 30 },
 						story			= { post_story = 100 }, 
 						post_story		= { idle = 100 },
 						pre_joke		= { joke = 100 }, 
 						joke			= { post_joke = 100 }, 
 						post_joke		= { idle = 100 }}
+
 	-- Хранилище для режиссера лагеря. Режиссерем является сталкер, затеявший необычное поведение
 	self.director = nil
 end
@@ -252,9 +260,9 @@ function CKampManager:selectPosition(npc_id)
 		end
 	end
 	--' затем из доступных позиций выбрать рандомно одну.
-	if table.getn(free) > 0 then
+	if #free > 0 then
 		--printf("KAMP [%s] free node > 0", npc_id)
-		local rr = math.random(table.getn(free))
+		local rr = math.random(#free)
 		self.position[free[rr]].used = npc_id
 		self.npc[npc_id].position = free[rr]
 	end
@@ -263,28 +271,66 @@ function CKampManager:selectPosition(npc_id)
 	--printf("KAMP [%s] position table", npc_id)
 	--print_table(self.position)
 end
-function CKampManager:getDestVertex(npc_id, radius)
+function CKampManager:getDestVertex(npc, radius)
+	local npc_id = npc:id()
 	--printf("get dest Vertex called [%s]", npc_id)
 	if self.npc[npc_id].position == nil then
-		printf("-------debug_info-------------")
-		print_table(self.npc)
-		printf("-------debug_info-------------")
-		print_table(self.position)
-		printf("-------debug_info-------------")
+		--printf("-------debug_info------------- %s", self.kamp_name)
+		--print_table(self.npc)
+		--printf("-------debug_info------------- %s", self.kamp_name)
+		--print_table(self.position)
+		--printf("-------debug_info------------- %s", self.kamp_name)
 		abort("get dest Vertex: nil [%s]", npc_id)
 		return nil
 	end
-	
-	local position = self.position[self.npc[npc_id].position]
-	if position.vertex ~= nil then
-		--printf("vertex preselected [%s]", npc_id)
-		return position.vertex
-	end
+
 	-- высчитываем вертех по направлению
-   	local pp = level.vertex_in_direction(self.center, self.position[self.npc[npc_id].position].dir, radius)
-   	pp = level.vertex_in_direction(pp, vector():set(math.random(-1,1), 0, math.random(-1,1)), math.random(0,0.5))
-	--printf("vertex selected [%s]", npc_id)   	
-	return pp		
+	-- Берем позицию в заданном направлении, затем берем ниарест точку от нее.
+
+	local pp = self.patrol:point(0)
+	local dir = self.position[self.npc[npc_id].position].dir
+
+	-- Считаем рандомное отклонение направления.
+	dir.x = dir.x + math.random(-1,1)/5
+	dir.z = dir.z + math.random(-1,1)/5
+	dir:normalize()
+
+	radius = radius + math.random(-0.3,0.3)
+
+ 	local dest_vertex = 4294967295
+	 local isValid = true
+	 local iteration_tries_failed = 0
+ 	while dest_vertex == 4294967295 do
+		if iteration_tries_failed > 5 then
+			break
+		end
+
+ 		local tmp_pos = vector():set(0,0,0)
+		tmp_pos.x = pp.x + dir.x * radius
+		tmp_pos.z = pp.z + dir.z * radius
+		tmp_pos.y = pp.y
+	 	dest_vertex = level.vertex_id(tmp_pos)
+		if dest_vertex == 4294967295 then
+			if radius < 1 then
+				printf("Invalid AI map at kamp point [%s]", self.kamp_name)
+				iteration_tries_failed = iteration_tries_failed + 1
+				isValid = false
+			else
+				radius = radius - 0.5
+			end
+		end
+ 	end
+
+	 if not npc:accessible(dest_vertex) or not isValid then
+		--printf("vertex_position %s", tostring(dest_vertex))
+		local vp = level.vertex_position(dest_vertex)
+		--printf("Nearest for npc[%s] kamp [%s] position [%s:%s:%s]", npc:name(), tostring(self.kamp_name),tostring(vp.x), tostring(vp.y), tostring(vp.z))
+		local nearest_vertex = npc:accessible_nearest(vp, vector():set(0,0,0))
+		--printf("Nearest for npc[%s] kamp [%s] position [%s:%s:%s]", npc:name(), tostring(self.kamp_name), vec_to_str(nearest_vertex))
+		return nearest_vertex, self.npc[npc_id].position
+	end
+
+	return dest_vertex, self.npc[npc_id].position
 end
 function CKampManager:proceedState(npc)
 	-- Проверка на таймаут
@@ -293,17 +339,17 @@ function CKampManager:proceedState(npc)
 	if self.npc[npc_id].need_sound_begin == true then
 		if active_sound_count == 0 then
 			return
-		else			
+		else
 			self.npc[npc_id].need_sound_begin = false
 		end
 	end
 	if self.begin ~= nil and
-	   time_global() - self.begin < self.timeout[self.kamp_state].min
+		 time_global() - self.begin < self.timeout[self.kamp_state].min
 	then
 		return
 	end
 
-	-- Если режиссер не закончил говорить - ждем конца фразы.
+	--' Если режиссер не закончил говорить - ждем конца фразы.
 	if active_sound_count > 0 then
 		return
 	end
@@ -325,10 +371,12 @@ function CKampManager:proceedState(npc)
 			self.selected_story = nil
 		end
 	end
+
+	--printf("Proceed state for [%s]", npc_id)
 	-- Определяются допустимые в данный момент переходы.
 	local temp = {}
 	local max_rnd = 0
-	for k,v in pairs(self.trans_kamp[self.kamp_state]) do		
+	for k,v in pairs(self.trans_kamp[self.kamp_state]) do
 		-- Определяются допустимые состояния для лагеря.
 		if self.kamp_states[k] == true then
 			temp[k] = v
@@ -345,7 +393,7 @@ function CKampManager:proceedState(npc)
 	for k,v in pairs(temp) do
 		p = p - v
 		if p <= 0 then
-			printf("Selected [%s]", k)
+			--printf("Selected [%s]", k)
 			if k == "idle" then
 				self.director = nil
 				if self.kamp_state ~= "idle" then
@@ -358,7 +406,7 @@ function CKampManager:proceedState(npc)
 				end
 				self.director = npc_id
 				self.censor = nil
-			end			
+			end
 			self.kamp_state = k
 			self.begin = time_global()
 			-- Меняем таймаут для истории
@@ -384,8 +432,9 @@ function CKampManager:proceedRole(npc, director)
 	local sound = ""
 	local state = ""
 	local npc_id = npc:id()
+	-- Выбирать новое состояние только раз в какое то время.
 	if self.npc[npc_id].begin == nil or
-	   time_global() - self.npc[npc_id].begin >= self.npc[npc_id].state_idle
+		 time_global() - self.npc[npc_id].begin >= self.npc[npc_id].state_idle
 	then
 		if director then
 			states = self.avail_state[self.kamp_state].directed
@@ -393,8 +442,9 @@ function CKampManager:proceedRole(npc, director)
 		else
 			states = self.avail_state[self.kamp_state].undirected
 			sound = self.avail_sound[self.kamp_state].undirected
-		end
-		-- Выбирать новое состояние только раз в какое то время.
+		end											   
+		
+		--' Выбираем только те анимации, которые может играть НПС.
 		local temp = {}
 		for k,v in pairs(states) do
 			if self.npc[npc_id].states[v] == true then
@@ -411,18 +461,18 @@ function CKampManager:proceedRole(npc, director)
 		end
 
 		self.npc[npc_id].begin = time_global()
-		state = temp[math.random(table.getn(temp))]
+		state = temp[math.random(#temp)]
 		self.npc[npc_id].state_selected = state
-		self.npc[npc_id].state_idle = math.random(15000,20000)		
+		self.npc[npc_id].state_idle = math.random(15000,20000)
 	else
 		if director then
 			sound = self.avail_sound[self.kamp_state].directed
 		else
 			sound = self.avail_sound[self.kamp_state].undirected
 		end
-		state = self.npc[npc_id].state_selected	
+		state = self.npc[npc_id].state_selected
 	end
-	--printf("Proceed Role state [%s] sound [%s]", state, sound)	
+	--printf("Proceed Role state [%s] sound [%s]", state, sound)
 	return state, sound
 end
 function CKampManager:updateNpc(npc)
@@ -437,7 +487,7 @@ function CKampManager:updateNpc(npc)
 	end
 	-- Говорим чудаку выбрать себе состояние для текущего состояния лагеря.
 	local state, sound = self:proceedRole(npc, director)
-	
+
 	local substate = nil
 	if state == "wait_harmonica" then
 		if sound == "pre_harmonica" and self.npc[npc_id].new == true then
@@ -545,14 +595,14 @@ function CKampManager:updateNpc(npc)
 		sound = ""
 	end
 
-	--printf("Proceed Update Npc [%s] sound [%s]", state, sound)	
+	--printf("Proceed Update Npc [%s] sound [%s]", state, sound)
 	return state, sound, substate
 end
 function CKampManager:checkNpcAbility(npc)
 	local npc_id = npc:id()
-	
+
 	if npc:character_community() ~= "monolith" and
-	   npc:character_community() ~= "zombied"
+		 npc:character_community() ~= "zombied"
 	then
 		-- есть колбасу
 		if npc:object("kolbasa") then
@@ -615,29 +665,20 @@ function CKampManager:checkNpcAbility(npc)
 			self.kamp_states["pre_joke"] = false
 			self.kamp_states["joke"] = false
 			self.kamp_states["post_joke"] = false
-		end	
+		end
 	end
-	
-	-- Если чувак знает истории, надо добавить их к лагерю
---[[
-	if self.population > 1 and db.story_by_id[npc:id()] ~= nil then
-		self.kamp_states["story"] = true
-		self.kamp_states["post_story"] = true
-	else
-		self.kamp_states["story"] = false
-		self.kamp_states["post_story"] = false	
-	end
-]]
+
+
 end
 function CKampManager:addNpc(npc)
-	printf("KAMP [%s] add npc", npc:name())
+	--printf("KAMP [%s] add npc", npc:name())
 	if self.npc[npc:id()] ~= nil then
-		printf("NPC is already exist")
+		--printf("NPC is already exist")
 		return
 	end
-	
+
 	if npc:character_community() == "monolith" or
-	   npc:character_community() == "zombied"
+		 npc:character_community() == "zombied"
 	then
 		self.npc[npc:id()] = {name = npc:name(), position = nil, current = nil, speak = 0, states = {
 								stand_wait = false, sit = false, sit_ass = false, sit_knee = false, declarate = true,
@@ -649,10 +690,9 @@ function CKampManager:addNpc(npc)
 								eat_kolbasa = false, eat_vodka = false, eat_energy = false, eat_bread = false, trans = false,
 								play_harmonica = false, play_guitar = false, play_joke = false, play_story = false}}
 	end
-	self:selectPosition(npc:id())	
+	self:selectPosition(npc:id())
 end
 function CKampManager:removeNpc(npc)
-	printf("KAMP [%s] remove npc", npc:name())
 	local npc_id = npc:id()
 	if self.npc[npc_id] ~= nil then
 		-- Если удаляем режиссера - необходимо форсированно перевести лагерь в идловое состояние.
@@ -668,7 +708,7 @@ function CKampManager:removeNpc(npc)
 			xr_sound.set_sound(npc, nil)
 			stop_play_sound(npc)
 		end
-	
+
 		self.position[self.npc[npc_id].position].used = nil
 		self.npc[npc_id] = nil
 	end
@@ -687,19 +727,17 @@ function add_to_binder(object, ini, scheme, section, storage)
 	local properties	= {}
 
 	local manager = object:motivation_action_manager()
-	
+
 	properties["kamp_end"]		= xr_evaluators_id.stohe_kamp_base + 1
 	properties["on_position"]	= xr_evaluators_id.stohe_kamp_base + 2
-	properties["contact"]		= xr_evaluators_id.stohe_meet_base + 1    
+	properties["contact"]		= xr_evaluators_id.stohe_meet_base + 1
 
 	operators["go_position"]	= xr_actions_id.stohe_kamp_base + 1
 	operators["wait"]		= xr_actions_id.stohe_kamp_base + 3
 
-	-- Evaluators                                                                            
+	-- Evaluators
 	manager:add_evaluator (properties["kamp_end"], 		this.evaluator_kamp_end		("kamp_end", storage, "kamp_end"))
 	manager:add_evaluator (properties["on_position"],	this.evaluator_on_position	("kamp_on_position", storage, "kamp_on_position"))
-
-	printf("PRP %s", stalker_ids.property_script)
 
 	-- Actions
 	local action = this.action_wait (object:name(),"action_kamp_wait", storage)
@@ -712,7 +750,7 @@ function add_to_binder(object, ini, scheme, section, storage)
 	action:add_effect 		(world_property(properties["kamp_end"], 	true))
 	manager:add_action (operators["wait"], action)
 	xr_logic.subscribe_action_for_events(object, storage, action)
-	
+
 	action = this.action_go_position (object:name(),"action_go_kamp", storage)
 	action:add_precondition		(world_property(stalker_ids.property_alive, true))
 	action:add_precondition		(world_property(stalker_ids.property_danger,false))
@@ -723,7 +761,7 @@ function add_to_binder(object, ini, scheme, section, storage)
 	action:add_effect 		(world_property(properties["on_position"], 	true))
 	manager:add_action (operators["go_position"], action)
 
-	action = manager:action (xr_actions_id.alife)	
+	action = manager:action (xr_actions_id.alife)
 	action:add_precondition		(world_property(properties["kamp_end"],		true))
 
 end
@@ -731,11 +769,11 @@ end
 function set_scheme(npc, ini, scheme, section, gulag_name)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 
-	st.logic     = xr_logic.cfg_get_switch_conditions(ini, section, npc)		
-    
+	st.logic     = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
 	st.center_point = utils.cfg_get_string(ini, section, "center_point", npc, true,  gulag_name)
 	st.radius		= utils.cfg_get_number(ini, section, "radius", npc, false, 2)
-	
+
 	if kamps[st.center_point] == nil then
 		kamps[st.center_point] = CKampManager(st.center_point)
 	end

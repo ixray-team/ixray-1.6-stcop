@@ -19,12 +19,6 @@
 
 #include "common.hlsli"
 
-struct PSInput
-{
-	float4 hpos : SV_POSITION;
-	float2 texcoord : TEXCOORD0;
-};
-
 float gtao_parameters; //Factor used to transform world space radius into screen space
 
 float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal, float2 texcoord, float2 jitter)
@@ -50,8 +44,8 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 	//View direction
 	float3 view_direction = -normalize(view_position);
 
-	//Screen-space radius (clamped)
-	float screen_radius = min((GTAO_RADIUS * gtao_parameters) / view_position.z, 256.0);
+	//Screen-space radius
+	float screen_radius = (GTAO_RADIUS * gtao_parameters) / view_position.z;
 
 	//Slice scale
 	//Y flipped as in original GTAO paper, DirectX hello
@@ -152,7 +146,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 }
 
 Texture3D s_blue_noise;
-uint main(PSInput I) : SV_Target
+uint main(PSInputFullscreen I) : SV_Target
 {
 	//Sample depth buffer
 	float zbuffer = s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x;
@@ -179,5 +173,4 @@ uint main(PSInput I) : SV_Target
 
 	//Pack the data into R32_UINT (16 bits for depth, and 16 for occlusion)
 	return asuint(f32tof16(Point.z)) | (asuint(f32tof16(occlusion)) << 16);
-
 }

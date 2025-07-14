@@ -1,7 +1,0 @@
-prefetch("test_auto_load")
-
-function main()
-	printf("before")
-	test_auto_load.test()
-	printf("after")
-end

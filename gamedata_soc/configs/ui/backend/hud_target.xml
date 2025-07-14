@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w>
+	<shader>hud\cursor</shader>
+	<texture>ui\cursor</texture>
+	<enemy_color r="255" g="0" b="0" a="128"/>
+	<friend_color r="0" g="255" b="0" a="128"/>
+	<neutral_color r="255" g="255" b="128" a="128"/>
+	<default_color r="255" g="255" b="255" a="128"/>
+	<target_font font="graffiti19"/>
+</w>

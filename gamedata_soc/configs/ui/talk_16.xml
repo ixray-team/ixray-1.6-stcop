@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
 
-	<left_character_icon x="15" y="32" width="150" height="220"  stretch="1">
+	<left_character_icon x="111" y="32" width="150" height="220"  stretch="1">
 		<texture>ui_charinfo_left</texture>
-		<texture_offset x="-6" y="0"/>
+		<texture_offset x="-4" y="0"/>
 	</left_character_icon>
 	
-	<right_character_icon x="850" y="32" width="150" height="220" stretch="1">
+	<right_character_icon x="777" y="32" width="150" height="220" stretch="1">
 		<texture>ui_charinfo_right</texture>
-		<texture_offset x="2" y="0"/>
+		<texture_offset x="4" y="0"/>
 	</right_character_icon>
 	
 	<top_background x="85" y="0" width="854" height="32" stretch="1">
@@ -24,19 +24,43 @@
 		<text align="c"	font="graffiti22" r="238" g="153" b="26">ui_st_trade</text>
 	</button>
 
-	<frame_line_window x="258" y="42" width="500" height="470" vertical="1" stretch="1">
-		<texture>ui_talk_dialogue</texture>		
-		<title x="25" y="7" width="190" height="22">
-			<text font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
-		</title>
-	</frame_line_window>
+	<frame_top x="258" y="42" width="500" height="470" stretch="1">
+		<auto_static x="0" y="0" width="500" height="75" stretch="1">
+			<texture>ui_talk_dialogue_b</texture>	
+		</auto_static>
+		<auto_static x="0" y="75" width="500" height="96" stretch="1">
+			<texture>ui_talk_dialogue_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="171" width="500" height="96" stretch="1">
+			<texture>ui_talk_dialogue_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="267" width="500" height="96" stretch="1">
+			<texture>ui_talk_dialogue_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="363" width="500" height="67" stretch="1">
+			<texture height="67">ui_talk_dialogue_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="430" width="500" height="40" stretch="1">
+			<texture>ui_talk_dialogue_e</texture>	
+		</auto_static>
+		<text x="25" y="7" font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
+	</frame_top>
 
-	<frame_line_window x="258" y="485" width="500" height="250" vertical="1" stretch="1">
-		<texture>ui_talk_dialogue2</texture>		
-		<title x="25" y="60" width="190" height="22">
-			<text font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
-		</title>
-	</frame_line_window>
+	<frame_bottom x="258" y="485" width="500" height="250" stretch="1">
+		<auto_static x="0" y="0" width="500" height="98" stretch="1">
+			<texture>ui_talk_dialogue2_b</texture>	
+		</auto_static>
+		<auto_static x="0" y="98" width="500" height="96" stretch="1">
+			<texture>ui_talk_dialogue2_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="194" width="500" height="16" stretch="1">
+			<texture height="16">ui_talk_dialogue2_back</texture>	
+		</auto_static>
+		<auto_static x="0" y="210" width="500" height="40" stretch="1">
+			<texture>ui_talk_dialogue2_e</texture>	
+		</auto_static>
+		<text x="25" y="60" font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
+	</frame_bottom>
 
 	<questions_list x="17" y="100" width="467" height="125" right_ident="5" always_show_scroll="0"/>
 
@@ -44,8 +68,13 @@
 
 
 	<question_item x="0" y="0" width="467" height="20" min_height="13">
-		<content_text x="0" y="0" width="460" height="20">
-		<text font="letterica18" r="255" g="232" b="208" align="l"/>
+	
+		<num_text x="0" y="0" width="8" height="20">
+			<text font="letterica18" r="255" g="232" b="208"/>
+		</num_text>
+
+		<content_text x="15" y="0" width="445" height="20">
+		<text font="letterica18" r="255" g="232" b="208" align="l" complex_mode="1"/>
 		<text_color>
 			<t r="231" g="168" b="12"/> <e r="255" g="232" b="208"/> <h r="255" g="255" b="255"/>
 		</text_color>

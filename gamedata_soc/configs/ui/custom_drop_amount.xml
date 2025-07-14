@@ -1,0 +1,34 @@
+<w>
+
+  <custom_drop x="200" y="250" width="510" height="206">
+    <texture>ui_frame_error</texture>
+
+    <picture x="35" y="65" width="77" height="77">
+      <texture>ui_frame_error_sign_alarm</texture>
+    </picture>
+
+    <text_hint x="170" y="40" width="310" height="60" complex_mode="1">
+      <text r="216" g="186" b="140" font="letterica18" align="c">st_custom_drop_hint</text>
+    </text_hint>
+
+    <trackbar x="175" y="60" width="300" height="20" mode="integer" step="1" show_value="1"/>
+
+    <value_min x="170" y="80" width="310" height="20" complex_mode="1">
+      <text r="216" g="186" b="140" font="letterica18" align="l">1</text>
+    </value_min>
+
+    <value_max x="170" y="80" width="310" height="20" complex_mode="1">
+      <text r="216" g="186" b="140" font="letterica18" align="r">999</text>
+    </value_max>
+
+    <button_yes x="250" y="154" width="117" height="29" check_mode="0">
+	  <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_yes</text>
+      <texture>ui_button_ordinary</texture>
+    </button_yes>
+    <button_no x="370" y="154" width="117" height="29" check_mode="0">
+      <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_no</text>
+      <texture>ui_button_ordinary</texture>
+    </button_no>
+  </custom_drop>
+  
+</w>
