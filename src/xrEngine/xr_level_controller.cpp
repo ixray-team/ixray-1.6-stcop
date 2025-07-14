@@ -70,6 +70,8 @@ ENGINE_API _action  actions[]		= {
 	{ "skin_menu",			kSKIN					,_mp},		
 	{ "team_menu",			kTEAM					,_mp},		
 	{ "active_jobs",		kACTIVE_JOBS			,_both},
+	{ "map",				kMAP					,_both},
+	{ "contacts",			kCONTACTS				,_sp},
 																
 	{ "vote_begin",			kVOTE_BEGIN				,_mp},		
 	{ "show_admin_menu",	kSHOW_ADMIN_MENU		,_mp},		
@@ -93,6 +95,7 @@ ENGINE_API _action  actions[]		= {
 	{ "alife_command",		kALIFE_CMD				,_sp},		
 	{ "use_bandage",		kUSE_BANDAGE			,_sp},
 	{ "use_medkit",			kUSE_MEDKIT				,_sp},
+	{ "engine",				kENGINE					,_sp},
 
 	{ "custom1",			kCUSTOM1				,_sp},
 	{ "custom2",			kCUSTOM2				,_sp},
