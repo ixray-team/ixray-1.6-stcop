@@ -9,6 +9,9 @@ CUIFrameWindow::CUIFrameWindow()
 :m_bTextureVisible(false)
 {
 	m_texture_color	= color_argb(255,255,255,255);
+	UITitleText					= new CUIStatic();
+	UITitleText->SetAutoDelete	(true);
+	AttachChild					(UITitleText);
 }
 
 void CUIFrameWindow::SetWndSize(const Fvector2& sz)
@@ -151,7 +154,9 @@ bool CUIFrameWindow::InitTextureEx(pcstr texture, pcstr shader, bool fatal /*= t
     }
 
     m_bTextureVisible = !failed;
-    return !failed;
+	UITitleText->SetWndPos(Fvector2().set(0, 0));
+	UITitleText->SetWndSize(Fvector2().set(GetWidth(), 50.f));
+	return !failed;
 }
 
 bool CUIFrameWindow::InitTexture(pcstr texture, bool fatal)
