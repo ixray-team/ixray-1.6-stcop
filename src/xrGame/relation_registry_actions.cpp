@@ -77,7 +77,7 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 	static CHARACTER_GOODWILL friend_fight_help_goodwill		= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_fight_help_goodwill");
 	static CHARACTER_GOODWILL neutral_fight_help_goodwill		= pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_fight_help_goodwill");
 	static CHARACTER_GOODWILL enemy_fight_help_goodwill			= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_fight_help_goodwill");
-	static CHARACTER_GOODWILL community_member_fight_help_goodwill	= pSettings->r_s32(ACTIONS_POINTS_SECT, "community_member_fight_help_goodwill");
+	static CHARACTER_GOODWILL community_member_fight_help_goodwill	= READ_IF_EXISTS(pSettings, r_s32, ACTIONS_POINTS_SECT, "community_member_fight_help_goodwill", 1000);
 
 	static CHARACTER_REPUTATION_VALUE friend_fight_help_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_fight_help_reputation");
 	static CHARACTER_REPUTATION_VALUE neutral_fight_help_reputation = pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_fight_help_reputation");
