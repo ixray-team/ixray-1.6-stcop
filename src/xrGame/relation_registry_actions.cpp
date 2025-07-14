@@ -38,7 +38,7 @@ struct SAttackGoodwillStorage
 		enemy_attack_goodwill		= pSettings->r_s32(ACTIONS_POINTS_SECT, s);
 
 		xr_strconcat(s,prefix,"community_member_attack_goodwill");
-		community_member_attack_goodwill = pSettings->r_s32(ACTIONS_POINTS_SECT, s);
+		community_member_attack_goodwill = READ_IF_EXISTS(pSettings, r_s32, ACTIONS_POINTS_SECT, s, 0);
 
 
 		xr_strconcat(s,prefix,"friend_attack_reputation");

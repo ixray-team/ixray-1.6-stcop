@@ -129,7 +129,7 @@ public:
 	TIItemContainer			m_ruck, m_belt;
 	TIItemContainer			m_activ_last_items;
 
-protected:
+//protected:
 	TISlotArr				m_slots;
 public:
 	//возвращает все кроме PDA в слоте и болта
