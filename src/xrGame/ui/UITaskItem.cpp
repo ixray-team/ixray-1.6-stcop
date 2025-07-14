@@ -166,8 +166,6 @@ void CUITaskRootItem::Update		()
 			m_switchDescriptionBtn->InitTexture	("ui_icons_newPDA_showmap");
 	}
 
-	//m_switchDescriptionBtn->SetButtonState(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_NORMAL : CUIButton::BUTTON_PUSHED);
-
 	if(m_remTimeStatic->IsShown())
 	{
 		string512									buff, buff2;
@@ -248,7 +246,6 @@ void CUITaskSubItem::SetGameTask	(CGameTask* gt, u16 obj_idx)
 	SetHeight									(h);
 	switch (obj->GetTaskState())
 	{
-//.		case eTaskUserDefined:
 		case eTaskStateInProgress:
 			m_stateStatic->InitTexture				("ui_icons_PDA_subtask_active");
 			m_descriptionStatic->SetTextColor		(m_active_color);
@@ -269,8 +266,8 @@ void CUITaskSubItem::SetGameTask	(CGameTask* gt, u16 obj_idx)
 void CUITaskSubItem::Update					()
 {
 	inherited::Update						();
-	const SGameTaskObjective	*obj		= &m_GameTask->Objective(m_TaskObjectiveIdx);
-	bool bIsActive							= (Level().GameTaskManager()->ActiveTask() == &m_GameTask->Objective(m_TaskObjectiveIdx));
+	SGameTaskObjective	*obj				= &m_GameTask->Objective(m_TaskObjectiveIdx);
+	bool bIsActive							= (Level().GameTaskManager()->ActiveObjective() == obj); 
 	m_ActiveObjectiveStatic->Show			(bIsActive);
 	m_showDescriptionBtn->Show				(m_EventsWnd->ItemHasDescription(this));
 
@@ -281,8 +278,8 @@ bool CUITaskSubItem::OnDbClick()
 	SGameTaskObjective	*obj					= &m_GameTask->Objective(m_TaskObjectiveIdx);
 	if(obj->GetTaskState()!=eTaskStateInProgress)	return true;
 
-	bool bIsActive								= (Level().GameTaskManager()->ActiveTask() == obj);
-	Level().GameTaskManager()->SetActiveTask((!bIsActive)?m_GameTask:nullptr);
+	bool bIsActive								= (Level().GameTaskManager()->ActiveObjective() == obj); 
+	Level().GameTaskManager()->SetActiveTask((!bIsActive)?m_GameTask:nullptr, m_TaskObjectiveIdx);
 	return										true;
 }
 
@@ -300,213 +297,3 @@ void CUITaskSubItem::MarkSelected (bool b)
 {
 	m_showDescriptionBtn->SetButtonState	(b ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
 }
-
-/*
-CUIUserTaskItem::CUIUserTaskItem(CUIEventsWnd* w)
-:inherited(w)
-{
-	m_edtWnd = nullptr;
-	Init();
-}
-
-CUIUserTaskItem::~CUIUserTaskItem			()
-{
-	delete_data	(m_edtWnd);
-}
-
-void  CUIUserTaskItem::Init					()
-{
-	inherited::Init					();
-	CUIXml&							uiXml = m_EventsWnd->m_ui_task_item_xml;
-
-	m_image							= new CUIStatic();		m_image->SetAutoDelete(true);				AttachChild(m_image);
-
-	m_descriptionStatic				= new CUIStatic();		m_descriptionStatic->SetAutoDelete(true);	AttachChild(m_descriptionStatic);
-
-	m_captionStatic					= new CUIStatic();		m_captionStatic->SetAutoDelete(true);	AttachChild(m_captionStatic);
-	
-
-	m_showLocationBtn				= new CUI3tButton();	m_showLocationBtn->SetAutoDelete(true);		AttachChild(m_showLocationBtn);
-	m_showLocationBtn->				SetWindowName("m_showLocationBtn");
-	Register						(m_showLocationBtn);
-	AddCallback						(m_showLocationBtn->WindowName(),BUTTON_CLICKED,boost::bind(&CUIUserTaskItem::OnShowLocationClicked,this));
-
-	m_showPointerBtn				= new CUI3tButton();	m_showPointerBtn->SetAutoDelete(true);		AttachChild(m_showPointerBtn);
-	m_showPointerBtn->				SetWindowName("m_showPointerBtn");
-	Register						(m_showPointerBtn);
-	AddCallback						(m_showPointerBtn->WindowName(),BUTTON_CLICKED,boost::bind(&CUIUserTaskItem::OnShowPointerClicked,this));
-
-
-	m_editTextBtn					= new CUI3tButton();	m_editTextBtn->SetAutoDelete(true);		AttachChild(m_editTextBtn);
-	m_editTextBtn->					SetWindowName("m_editTextBtn");
-	Register						(m_editTextBtn);
-	AddCallback						(m_editTextBtn->WindowName(), BUTTON_CLICKED,boost::bind(&CUIUserTaskItem::OnEditTextClicked,this));
-
-	m_removeBtn						= new CUI3tButton();	m_removeBtn->SetAutoDelete(true);		AttachChild(m_removeBtn);
-	m_removeBtn->					SetWindowName("m_removeBtn");
-	Register						(m_removeBtn);
-	AddCallback						(m_removeBtn->WindowName(), BUTTON_CLICKED,boost::bind(&CUIUserTaskItem::OnRemoveClicked,this));
-
-
-	CUIXmlInit xml_init;
-	xml_init.InitWindow				(uiXml,"task_user_item",0,this);
-
-	xml_init.InitStatic				(uiXml,"task_user_item:image",0,m_image);
-	xml_init.InitStatic				(uiXml,"task_user_item:description",0,m_descriptionStatic);
-	xml_init.InitStatic				(uiXml,"task_user_item:caption",0,m_captionStatic);
-	xml_init.Init3tButton			(uiXml,"task_user_item:location_btn",0,m_showLocationBtn);
-	xml_init.Init3tButton			(uiXml,"task_user_item:show_pointer_btn",0,m_showPointerBtn);
-	xml_init.Init3tButton			(uiXml,"task_user_item:edit_text_btn",0,m_editTextBtn);
-	xml_init.Init3tButton			(uiXml,"task_user_item:remove_btn",0,m_removeBtn);
-
-}
-
-void CUIUserTaskItem::Update					()
-{
-	inherited::Update		();
-	SGameTaskObjective	*obj				= &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
-	CMapLocation* ml						= obj->LinkedMapLocation();
-	bool bHasLocation						= (nullptr != ml);
-	m_showPointerBtn->Show					(bHasLocation && ml->SpotEnabled());
-	if(bHasLocation)
-	{
-		bool bPointer						= (Actor()->GameTaskManager().ActiveObjective() == obj);
-		m_showPointerBtn->SetButtonMode		(bPointer ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
-//.		bool bShown							= m_GameTask->ShownLocations();
-		bool bShown							= true;
-		m_showLocationBtn->SetButtonMode	(bShown ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
-	}
-}
-
-void CUIUserTaskItem::SetGameTask				(CGameTask* gt, u16 obj_idx)
-{
-	inherited::SetGameTask			(gt, obj_idx);
-	CStringTable		stbl;
-	SGameTaskObjective	*obj = &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
-
-	m_image->InitTexture		(*obj->icon_texture_name);
-	Frect r						= obj->icon_rect;
-	m_image->SetOriginalRect	(r.x1, r.y1, r.x2, r.y2);
-	m_image->ClipperOn			();
-	m_image->SetStretchTexture	(true);
-
-	m_captionStatic->SetText					(*stbl.translate(gt->m_Title));
-	m_captionStatic->AdjustHeightToText			();
-
-	float h1 = _max( m_image->GetWndPos().y+m_image->GetHeight(),
-					m_captionStatic->GetWndPos().y + m_captionStatic->GetHeight() );
-	m_descriptionStatic->SetWndPos				(m_descriptionStatic->GetWndPos().x, h1+4.0f);
-
-	m_descriptionStatic->SetText				(*stbl.translate(obj->description));
-	m_descriptionStatic->AdjustHeightToText		();
-
-	float h = _max(	m_image->GetWndPos().y+m_image->GetHeight(),
-					m_descriptionStatic->GetWndPos().y+ m_descriptionStatic->GetHeight());
-
-	SetHeight									(h+10.0f);
-}
-
-void CUIUserTaskItem::OnShowPointerClicked	()
-{
-	bool bPushed = m_showPointerBtn->GetCheck();
-	if(bPushed)
-		Actor()->GameTaskManager().SetActiveTask((bPushed)?m_GameTask->m_ID:"", m_TaskObjectiveIdx);
-//.	m_GameTask->HighlightSpotOnMap			(m_TaskObjectiveIdx,bPushed);
-}
-
-void CUIUserTaskItem::OnShowLocationClicked	()
-{
-//.	bool bPushed = m_showLocationBtn->GetCheck	();
-//.	m_GameTask->ShowLocations					(bPushed);
-}
-
-void CUIUserTaskItem::MarkSelected				(bool b)
-{
-}
-
-void CUIUserTaskItem::OnDescriptionChanged		()
-{
-	Objective()->description = m_descriptionStatic->GetText();
-}
-
-void CUIUserTaskItem::OnEditTextClicked		()
-{
-	delete_data			(m_edtWnd);
-	m_edtWnd			= new CUIUserTaskEditWnd(this);
-	m_edtWnd->Start		();
-}
-
-void CUIUserTaskItem::OnRemoveClicked		()
-{
-	Level().MapManager().RemoveMapLocation(Objective()->LinkedMapLocation());
-}
-
-
-CUIUserTaskEditWnd::CUIUserTaskEditWnd		(CUIUserTaskItem* itm)
-{
-	m_userTask = itm;
-	Init();
-}
-
-void CUIUserTaskEditWnd::SendMessage		(CUIWindow* pWnd, s16 msg, void* pData)
-{
-	CUIWndCallback::OnEvent(pWnd, msg, pData);
-}
-
-void CUIUserTaskEditWnd::Start()
-{
-	CStringTable stbl;
-
-//.	m_userTask = itm;
-	m_editCaption->SetText			(*stbl.translate(m_userTask->GameTask()->m_Title));
-	m_editDescription->SetText		(*stbl.translate(m_userTask->Objective()->description));
-	HUD().GetUI()->StartStopMenu	(this,true);
-}
-
-void CUIUserTaskEditWnd::OnOk			()
-{
-	m_userTask->GameTask()->m_Title			= m_editCaption->GetText();
-	m_userTask->Objective()->description	= m_editDescription->GetText();
-	m_userTask->Objective()->LinkedMapLocation	()->SetHint(m_editDescription->GetText());
-	m_userTask->m_EventsWnd->Reload			();
-
-	GetHolder()->StartStopMenu				(this, false);
-}
-
-void CUIUserTaskEditWnd::OnCancel				()
-{
-	GetHolder()->StartStopMenu(this, false);
-}
-
-void CUIUserTaskEditWnd::Init					()
-{
-	Hide					();
-	CUIXml&					uiXml = m_userTask->m_EventsWnd->m_ui_task_item_xml;
-
-	m_background		= new CUIFrameWindow();		m_background->SetAutoDelete(true);
-	AttachChild			(m_background);
-	
-	m_btnOk				= new CUI3tButton();	m_btnOk->SetAutoDelete(true);		m_background->AttachChild(m_btnOk);
-	m_btnOk->SetWindowName("m_btnOk");
-	Register			(m_btnOk);
-	AddCallback			(m_btnOk->WindowName(),BUTTON_CLICKED,boost::bind(&CUIUserTaskEditWnd::OnOk,this));
-
-	m_btnCancel			= new CUI3tButton();	m_btnCancel->SetAutoDelete(true);	m_background->AttachChild(m_btnCancel);
-	m_btnCancel->SetWindowName("m_btnCancel");
-	Register			(m_btnCancel);
-	AddCallback			(m_btnCancel->WindowName(),BUTTON_CLICKED,boost::bind(&CUIUserTaskEditWnd::OnCancel,this));
-
-	m_editCaption		= new CUIEditBox();			m_editCaption->SetAutoDelete(true);		m_background->AttachChild(m_editCaption);
-	m_editDescription	= new CUIEditBoxEx();		m_editDescription->SetAutoDelete(true); m_background->AttachChild(m_editDescription);
-
-
-	CUIXmlInit xml_init;
-	xml_init.InitWindow				(uiXml,"edit_user_item",0,								this);
-	xml_init.InitFrameWindow		(uiXml,"edit_user_item:background",0,					m_background);
-	xml_init.Init3tButton			(uiXml,"edit_user_item:background:ok_btn",0,			m_btnOk);
-	xml_init.Init3tButton			(uiXml,"edit_user_item:background:cancel_btn",0,		m_btnCancel);
-	xml_init.InitEditBox			(uiXml,"edit_user_item:background:edit_caption",0,		m_editCaption);
-	xml_init.InitEditBoxEx			(uiXml,"edit_user_item:background:edit_description",0,	m_editDescription);
-
-}
-*/
