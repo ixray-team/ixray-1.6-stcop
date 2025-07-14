@@ -27,7 +27,7 @@
 		<font font="letterica16" r="240" g="217" b="182"/>
 	</descr_list>
     
-    <condition_progress x="450" y="50" width="110" height="8" horz="1" min="0" max="100" pos="100">
+    <condition_progress x="477" y="50" width="115" height="8" horz="1" min="0" max="100" pos="100">
 		<min_color r="255" g="0" b="0"/>
 		<max_color r="0" g="255" b="0"/>
 		<progress>

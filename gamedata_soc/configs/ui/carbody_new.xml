@@ -18,7 +18,7 @@
 
 	<dragdrop_list_our x="22" y="35" width="283" height="418"
 			cell_width = "38" cell_height="38" rows_num="11" cols_num="7" 
-			unlimited="1" group_similar="1"/>
+			unlimited="1" group_similar="1" condition_progress_bar="1"/>
 
 	<others_bag_static x="683" y="260" width="520" height="518" stretch="1">
 		<texture>ui\ui_dg_inventory_exchange_trade</texture>
@@ -27,7 +27,7 @@
 
 	<dragdrop_list_other x="22" y="35" width="283" height="418"
 			cell_width="38" cell_height="38" rows_num="11" cols_num="7" 
-			unlimited="1" group_similar="1"/>
+			unlimited="1" group_similar="1" condition_progress_bar="1"/>
 
 	<frame_window x="355" y="262" width="310" height="455">
 		<texture>ui_frame</texture>		
@@ -41,7 +41,7 @@
 	</descr_static>
 
 	<auto_static x="380" y="448" width="220" height="30">
-		<text font="graffiti22" r="238" g="153" b="26">ui_st_description</text>
+		<text font="graffiti22" r="255" g="255" b="255" a="128">ui_st_description</text>
 	</auto_static>
 
 	<top_background x="0" y="0" width="1024" height="128">
@@ -56,6 +56,11 @@
         <texture>ui_button_main01</texture>
         <text align="c" font="graffiti22" r="238" g="153" b="26">ui_st_take_all</text>
 	</take_all_btn>
+
+	<put_all_btn x="0" y="725" width="157" height="48" hR="255" hB="83" hG="179" highlight_text="1">
+        <texture>ui_button_main01</texture>
+        <text align="c" font="graffiti22" r="238" g="153" b="26">ui_st_put_all</text>
+	</put_all_btn>
 
 </window>
 

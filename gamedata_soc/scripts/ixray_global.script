@@ -1,0 +1,49 @@
+math.randomseed(time_global())
+
+_G.isMarshal = marshal ~= nil
+_G.isLfs = lfs ~= nil
+
+_G.bit_and = bit.band
+_G.bit_or = bit.bor
+_G.bit_xor = bit.bxor
+_G.bit_not = bit.bnot
+
+--// Some X-Ray block
+_G.DebugLog = false
+
+_G.log = function (str) 
+    if DebugLog then
+        SemiLog(str)
+    end
+    if DebuggerMode then
+        LuaPanda.printToVSCode(str,1,2)
+    end
+end
+
+function register(object_factory)
+	class_registrator.cs_register(object_factory, "CCar", "se_car.se_car", "SCRPTCAR", "car_s")
+end
+
+_G.convert_class_name = function(obj)
+	if obj then
+		local name = class_info(obj).name
+
+		if name == "game_object" then
+			return "client"
+		else
+			return "server"
+		end
+	else
+		return "nil"
+	end
+end
+
+_G.g_EnablePrintfXRScript = false
+
+-- используется для выявления сигнатур функций которые заложены в xr_conditions
+_G.printf_xrscript = function(fmt, ...)
+	if g_EnablePrintfXRScript then
+		log(debug.traceback(1))
+		printf(fmt, ...)
+	end
+end

@@ -1,0 +1,132 @@
+	<string id="bar_bring_hunter_rifle">
+		<text>Return the hunter's family rifle</text>
+	</string>
+	<string id="bar_bring_PDA_lucky">
+		<text>Bring the leader's PDA to the Barkeep</text>
+	</string>
+	<string id="bar_crazy_veterans_quest">
+		<text>Kill the mad veterans</text>
+	</string>
+	<string id="bar_dolg_base_rules">
+		<text>Register at the Duty guard commander</text>
+	</string>
+	<string id="bar_dolg_base_rules_fin">
+		<text>Return to the Barkeep</text>
+	</string>
+	<string id="bar_dolg_base_rules_talk">
+		<text>Find the Duty guard commander and register yourself</text>
+	</string>
+	<string id="bar_dolg_bring_rg6">
+		<text>Get an Bulldog 6 for General Voronin</text>
+	</string>
+	<string id="bar_dolg_community_quest">
+		<text>Join the Duty faction</text>
+	</string>
+	<string id="bar_dolg_community_quest_prisyaga">
+		<text>Swear the oath</text>
+	</string>
+	<string id="bar_dolg_community_quest_recomendation">
+		<text>Get a reference from Captain Ivantsov</text>
+	</string>
+	<string id="bar_dolg_community_quest_vernost">
+		<text>Prove your loyalty to Duty</text>
+	</string>
+	<string id="bar_dolg_find_cook">
+		<text>Earn the Freedom cook's trust and find out where the Bulldog 6s is stored</text>
+	</string>
+	<string id="bar_dolg_find_rg6">
+		<text>Infiltrate the Freedom base, find and steal an Bulldog 6</text>
+	</string>
+	<string id="bar_dolg_info_gain">
+		<text>Find the intercepted information about Lab X18</text>
+	</string>
+	<string id="bar_dolg_kill_tiran">
+		<text>Kill Tyran, the leader of the squad</text>
+	</string>
+	<string id="bar_dolg_return_info">
+		<text>Return information about Lab X18 to General Voronin</text>
+	</string>
+	<string id="bar_dolg_return_rg6">
+		<text>Bring the Bulldog 6 to General Voronin</text>
+	</string>
+	<string id="bar_dolg_rg6_quest">
+		<text>Mission required to join Duty</text>
+	</string>
+	<string id="bar_dolg_svoboda_ambush_quest">
+		<text>Eliminate the Mercs</text>
+	</string>
+	<string id="bar_dolg_svoboda_ambush_return">
+		<text>Give the stripes to General Voronin</text>
+	</string>
+	<string id="bar_dolg_tiran_PDA">
+		<text>Take Tyran's PDA</text>
+	</string>
+	<string id="bar_hunter_find_rifle">
+		<text>Find the family rifle</text>
+	</string>
+	<string id="bar_hunter_return_rifle">
+		<text>Return the rifle to the hunter at the Bar</text>
+	</string>
+	<string id="bar_hunter_rifle">
+		<text>Find the family rifle</text>
+	</string>
+	<string id="bar_kill_crazy_veterans">
+		<text>Kill the leader of the veterans</text>
+	</string>
+	<string id="bar_kill_crazy_veterans_PDA">
+		<text>Take their leader's PDA</text>
+	</string>
+	<string id="bar_kill_veterans">
+		<text>Destroy the mad veterans' camp</text>
+	</string>
+	<string id="bar_radar_deactivate">
+		<text>Turn off the Brain Scorcher</text>
+	</string>
+	<string id="bar_resque_information">
+		<text>Meet Kruglov</text>
+	</string>
+	<string id="bar_resque_information_2">
+		<text>Lead Kruglov to Yantar</text>
+	</string>
+	<string id="bar_resque_scientific_follow">
+		<text>Lead Kruglov to the exit to Yantar</text>
+	</string>
+	<string id="bar_resque_scientific_information">
+		<text>...</text>
+	</string>
+	<string id="bar_resque_scientific_information_bring">
+		<text>Talk to Kruglov</text>
+	</string>
+	<string id="bar_resque_scientific_information_get">
+		<text>Get through to Kruglov</text>
+	</string>
+	<string id="bar_resque_scientific_information_get_2">
+		<text>Talk to professor Kruglov</text>
+	</string>
+	<string id="bar_x16_documents">
+		<text>Find the documents in X16 lab</text>
+	</string>
+	<string id="bring_x16_documents">
+		<text>Bring the documents to the Barkeep</text>
+	</string>
+	<string id="deactivate_radar_now">
+		<text>Deactivate the machine</text>
+	</string>
+	<string id="find_and_deactivate_radar">
+		<text>Find the entrance to the control bunker</text>
+	</string>
+	<string id="get_to_antennas">
+		<text>Reach the antennae</text>
+	</string>
+	<string id="Kruglov_research">
+		<text>Kruglov's research</text>
+	</string>
+	<string id="look_for_x16_lab">
+		<text>Find the X16 documents</text>
+	</string>
+	<string id="wpn-winchester_m1">
+		<text>Combat Chaser</text>
+	</string>
+	<string id="x16_yantar">
+		<text>Talk to the scientists</text>
+	</string>

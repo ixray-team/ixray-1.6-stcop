@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="bandit_outfit_description">
+		<text>Traditional outfit of a bandit - a leather jacket with kevlar elements. Provides protection highly insufficient for the Zone's severe conditions.</text>
+	</string>
+	<string id="bandit_outfit_description_m">
+		<text>Common weak bandit body armor with mail plates sewn in its backing. Almost everyone can do it, but not everyone by far will have enough patience to.</text>
+	</string>
+	<string id="bandit_outfit_name">
+		<text>Bandit jacket</text>
+	</string>
+	<string id="bandit_outfit_name_m">
+		<text>Mail jacket</text>
+	</string>
+	<string id="dolg_outfit_description">
+		<text>Produced by one of Kiev's defence research institutes and commissioned by the Duty faction. It is as simple and reliable as the standard PSZ-9 model, but due to the new materials, it provides good protection from various harmful impacts, including firearm damage. The vest still needs some work because it has no breathing protection system.</text>
+	</string>
+	<string id="dolg_outfit_description_m1">
+		<text>Duty armor suit with enhanced parameters of protection against bites and cuts.</text>
+	</string>
+	<string id="dolg_outfit_name">
+		<text>PSZ-9d Duty Armor</text>
+	</string>
+	<string id="dolg_outfit_name_m1">
+		<text>Hunter PSZ-9d</text>
+	</string>
+	<string id="dolg_scientific_outfit_description">
+		<text>A wonderful protective suit for the Zone. Stalkers appreciate it because it combines excellent anomaly-proof and bullet-proof qualities. It includes the PSZ-9d suit, a closed cycle breathing system and an integrated system of anomalous field suppression. It provides quality bullet and splinter protection.</text>
+	</string>
+	<string id="dolg_scientific_outfit_name">
+		<text>PSZ-9Md Universal Protection</text>
+	</string>
+	<string id="ecolog_outfit_description">
+		<text>A SSP-99 chemical protection suit specially designed for the Zone conditions. It is used by scientific expeditions and the eco-stalkers who cooperate with them. It has an integrated air-filtering and air-conditioning system. It is heat and electricity resistant, provides good protection from radiation and biological anomalies. It is resistant to chemically aggressive environments. It is not designed for combat, so it provides neither bullet, nor splinter protection.</text>
+	</string>
+	<string id="ecolog_outfit_name">
+		<text>SSP-99 Ecologist</text>
+	</string>
+	<string id="exo_outfit_description">
+		<text>A military exoskeleton prototype. It never went into serial production, because of extreme cost and some design flaws. It is however produced in small batches in small illegal factories outside of Ukraine. This is a third generation exoskeleton. The design defects which used to decrease its mobility were eliminated and the armor was reinforced. It provides excellent bullet and splinter protection. It has a low level of anomaly protection.</text>
+	</string>
+	<string id="exo_outfit_description_m1">
+		<text>Basic device for night vision is replaced by a more modern model with a digital filtration of the signal sent.</text>
+	</string>
+	<string id="exo_outfit_name">
+		<text>Exoskeleton</text>
+	</string>
+	<string id="killer_outfit_description">
+		<text>Stalker suit from the Merc faction. Its design is based on the suit used by the special forces of the Western armies. Due to a special treatment of the fabric, the armor has a strengthened stability during the physical movement of its plates. Its protective properties are slightly better then those of the PSZ-7 military bulletproof suits.</text>
+	</string>
+	<string id="killer_outfit_description_m1">
+		<text>There is chain mail sown into the lining of the coat, which raises the level of protection against firearm attack and monster bites. A PNV is also included in the set.</text>
+	</string>
+	<string id="killer_outfit_name">
+		<text>Merc suit</text>
+	</string>
+	<string id="killer_outfit_name_m1">
+		<text>Reinforced suit</text>
+	</string>
+	<string id="military_outfit_description">
+		<text>This Skat-9M bulletproof military suit is designed for assault operations in areas of anomalous activity. It includes a PSZ-12p heavy military bulletproof suit, an integrated compensation suit and a Sphere-12M helmet. It provides perfect protection from bullets and splinters and it doesn’t decrease the soldier’s mobility. It has a balanced system of anomaly protection.</text>
+	</string>
+	<string id="military_outfit_name">
+		<text>Military armored suit</text>
+	</string>
+	<string id="monolit_outfit_description">
+		<text>Stalker suit from the Monolith faction. The producer is unknown. Its protective properties are slightly worse then those of the PSZ-9a military bulletproof vest. Its structure is similar to the suit popular with neutral stalkers which combines a bulletproof vest and a radiation protection suit. It provides good protection from gunfire. Its level of anomaly protection is low due to the absence of an air filtering system.</text>
+	</string>
+	<string id="monolit_outfit_name">
+		<text>Monolith suit</text>
+	</string>
+	<string id="novice_outfit_description_m">
+		<text>They took this coat off of the body of one of the stalkers who died in the anomaly "fruit punch". Having laid a long time in the anomaly, the coat obtained the ability to speed up metabolism.</text>
+	</string>
+	<string id="novice_outfit_name_m">
+		<text>Skinner anomaly</text>
+	</string>
+	<string id="outfit_soldier_description">
+		<text>An ordinary thick jacket, one of the many. It slightly increases bullet and splinter protection. It does not protect from anomalies and other affects.</text>
+	</string>
+	<string id="outfit_soldier_name">
+		<text>Leather jacket</text>
+	</string>
+	<string id="protection_outfit_description">
+		<text>High quality modified SSP-99 suit. It provides increased body protection from bullet and splinter damage. It is designed for the guards working with scientific expeditions. It provides good protection from radiation and biological anomalies. It is resistant to chemically aggressive environments and other effects dangerous to the body.</text>
+	</string>
+	<string id="protection_outfit_name">
+		<text>SSP-99M suit</text>
+	</string>
+	<string id="scientific_outfit_description">
+		<text>This suit was produced by one of Kiev's defence research institutes and represents an excellent alternative to stalker hand-made suits. It is an excellent combination of an bulletproof vest, a closed cycle breathing system and an integrated system of anomalous field suppression. Due to the perfect choice of the materials, it is a good choice. The only disadvantage is its price.</text>
+	</string>
+	<string id="scientific_outfit_name">
+		<text>SEVA suit</text>
+	</string>
+	<string id="specnaz_outfit_description_m1">
+		<text>The fabric of the suit is saturated with a streptozoidal lotion, which speeds up the healing of wounds.</text>
+	</string>
+	<string id="specnaz_outfit_name_m1">
+		<text>Healing Beril</text>
+	</string>
+	<string id="specops_outfit_description">
+		<text>A Berill-5M special forces suit modified for the Zone environment. It includes a PSZ-9a military bulletproof vest with beryllium coating and a Sphere-08 helmet. It is designed for assault operations in areas with high background radiation. Its level of anomaly protection is low.</text>
+	</string>
+	<string id="specops_outfit_name">
+		<text>Berill-5M armored suit</text>
+	</string>
+	<string id="stalker_outfit_description">
+		<text>Stalker suit manufactured by "folk craftsmen". It is an effective combination of a light military bulletproof vest and of a rubberized fabric suit. It is reinforced with inserted kevlar plates and provides good protection from weak gunfire. All in all it is highly inefficient for carrying out deep raids and serious operations in the knots of the Zone.</text>
+	</string>
+	<string id="stalker_outfit_description_m1">
+		<text>Rumor has it that the ghost stalker never carries a first aid kit with him. Everything heals on him like on a dog. They say that he has an unusual suit that he got on an anomaly.</text>
+	</string>
+	<string id="stalker_outfit_description_m2">
+		<text>The former owner of this thing was a real tourist and, it seems, often went on very difficult, on the verge of human endurance, hiking trips. He knew how to distribute correctly the weight that he carried, and which things to give preference to. The coat pockets and the educated choice of the backpack allow its owner to carry a heavy weight.</text>
+	</string>
+	<string id="stalker_outfit_name">
+		<text>Stalker suit</text>
+	</string>
+	<string id="stalker_outfit_name_m1">
+		<text>Ghost Suit</text>
+	</string>
+	<string id="stalker_outfit_name_m2">
+		<text>Tourist Suit</text>
+	</string>
+	<string id="svoboda_heavy_outfit_description">
+		<text>Reinforced stalker suit produced by the gunsmiths of the Freedom faction. It is made up of a medium military bulletproof vest plated with reinforcing zirconium elements which provide good protection from rifle bullets and splinters from medium and long range. The material of the suit consists of two layers: specially treated leather and fabric with asbestos yarn. The suit provides good protection from radiation and various weak anomalies.</text>
+	</string>
+	<string id="svoboda_heavy_outfit_name">
+		<text>Guardian of Freedom suit</text>
+	</string>
+	<string id="svoboda_light_outfit_description">
+		<text>Light stalker suit produced by the gunsmiths of the Freedom faction. It consists of a light military bulletproof vest with reinforcing kevlar plates. It can protect from weak weapons. The fabric of the suit is treated with a special mixture which increases anomaly activity resistance.</text>
+	</string>
+	<string id="svoboda_light_outfit_name">
+		<text>Wind of Freedom suit</text>
+	</string>
+	<string id="mp_exo_outfit_description">
+		<text>The exoskeleton protects marvelously from bullet and splinter fire, however it lowers mobility. It is vulnerable to armor bullets.</text>
+	</string>
+	<string id="mp_exo_outfit_name">
+		<text>Exoskeleton PNB-4UZ</text>
+	</string>
+	<string id="mp_military_outfit_description">
+		<text>Army bulletproof suit is created for carrying out storming operations. Provides an excellent source of protection from bullet and splinter fire without lowering the mobility of the soldier. Vulnerable to armor bullets.</text>
+	</string>
+	<string id="mp_military_outfit_name">
+		<text>Army bulletproof suit.</text>
+	</string>
+	<string id="mp_scientific_outfit_description">
+		<text>This particular bodysuit is designed for carrying out research in the Zone. It has a breathing system with a closed cycle, as well as a built-in system for nullifying the activity of anomalous fields, thanks to which it protects marvelously from anomalies. Very vulnerable due to the weak protection. Has a built-in container for transporting artifacts.</text>
+	</string>
+	<string id="mp_scientific_outfit_name">
+		<text>Scientific bodysuit</text>
+	</string>
+</string_table>
