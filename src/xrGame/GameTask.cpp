@@ -42,7 +42,6 @@ ALife::_STORY_ID	story_id	(LPCSTR story_id)
 			[story_id]
 		)
 	);
-	Msg("Story id: %s", story_id);
 	return ALife::_STORY_ID(res);
 }
 
@@ -51,7 +50,6 @@ u16 storyId2GameId	(ALife::_STORY_ID id)
 	if(ai().get_alife())
 	{ 
 		CSE_ALifeDynamicObject* so = ai().alife().story_objects().object(id, true);
-		Msg("Story id number: %d", id);
 		return (so)?so->ID:u16(-1);
 	}
 	else
@@ -74,6 +72,13 @@ SGameTaskObjective::SGameTaskObjective()
 	m_idx(ROOT_TASK_OBJECTIVE) 
 {
 	m_linked_map_location = nullptr;
+	m_parent = nullptr;
+	m_map_object_id = u16(-1);
+	m_def_location_enabled = false;
+	m_ReceiveTime = 0;
+	m_FinishTime = 0;
+	m_TimeToComplete = 0;
+	m_timer_finish = 0;
 }
 
 SGameTaskObjective::SGameTaskObjective(CGameTask* parent, u16 idx)
@@ -83,14 +88,26 @@ SGameTaskObjective::SGameTaskObjective(CGameTask* parent, u16 idx)
       m_idx(idx) 
 {
 	m_linked_map_location = nullptr;
+	m_map_object_id = u16(-1);
+	m_def_location_enabled = false;
+	m_ReceiveTime = 0;
+	m_FinishTime = 0;
+	m_TimeToComplete = 0;
+	m_timer_finish = 0;
 }
 
 CGameTask::CGameTask()
-    : SGameTaskObjective(this, ROOT_TASK_OBJECTIVE) {}
+    : SGameTaskObjective(this, ROOT_TASK_OBJECTIVE) 
+{
+	m_priority = 0;
+	m_read = false;
+}
 
 CGameTask::CGameTask(const TASK_ID& id)
 	: SGameTaskObjective(this, ROOT_TASK_OBJECTIVE)
 {
+	m_priority = 0;
+	m_read = false;
 	Load(id);
 }
 
@@ -188,7 +205,7 @@ void CGameTask::Load(const shared_str& id)
 
 		if (object_story_id)
 		{
-			const ALife::_STORY_ID _sid = story_id(object_story_id);
+			ALife::_STORY_ID _sid = story_id(object_story_id);
 			objective.m_map_object_id = storyId2GameId(_sid);
 		}
 
@@ -646,6 +663,7 @@ void CGameTask::save(IWriter& stream)
 
 	for (auto& objective : m_Objectives)
 		save_data(objective, stream);
+	save_data				(m_active_objective, stream);
 }
 
 void CGameTask::load(IReader& stream)
@@ -663,6 +681,7 @@ void CGameTask::load(IReader& stream)
 		m_Objectives[i].m_parent = this;
 		load_data(m_Objectives[i], stream);
 	}
+	load_data				(m_active_objective, stream);
 
 	CommitScriptHelperContents();
 	CreateMapLocation		(true);
