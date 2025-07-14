@@ -15,7 +15,7 @@ ENGINE_API xr_token hit_types_token []=
 	{ "chemical_burn",				eHitTypeChemicalBurn						},
 	{ "explosion",					eHitTypeExplosion							},
 	{ "wound_2",					eHitTypeWound_2								},
-//	{ "physic_strike",				eHitTypePhysicStrike						},
+	{ "physic_strike",				eHitTypePhysicStrike						},
 	{ "light_burn",					eHitTypeLightBurn							},
 	{ 0,							0											}
 };
