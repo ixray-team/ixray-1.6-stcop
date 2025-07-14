@@ -98,6 +98,9 @@ protected:
 	bool				OnItemDbClick				(CUICellItem* itm);
 	bool				OnItemSelected				(CUICellItem* itm);
 	bool				OnItemRButtonClick			(CUICellItem* itm);
+	bool				OnItemFocusReceive			(CUICellItem* itm);
+	bool				OnItemFocusLost				(CUICellItem* itm);
+	bool				OnItemFocusedUpdate			(CUICellItem* itm);
 
 
 	CUIStatic					UIProgressBack;

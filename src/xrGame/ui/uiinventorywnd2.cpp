@@ -329,6 +329,33 @@ bool CUIInventoryWnd::OnItemRButtonClick(CUICellItem* itm)
 	return						false;
 }
 
+bool CUIInventoryWnd::OnItemFocusReceive(CUICellItem* itm)
+{
+	itm->m_selected = true;
+
+	return true;
+}
+
+bool CUIInventoryWnd::OnItemFocusLost(CUICellItem* itm)
+{
+	if (itm)
+	{
+		itm->m_selected = false;
+	}
+
+	return true;
+}
+
+bool CUIInventoryWnd::OnItemFocusedUpdate(CUICellItem* itm)
+{
+	if (itm)
+	{
+		itm->m_selected = true;
+	}
+
+	return true;
+}
+
 CUIDragDropListEx* CUIInventoryWnd::GetSlotList(u32 slot_idx)
 {
 	if(slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[slot_idx].m_bPersistent)	return nullptr;
