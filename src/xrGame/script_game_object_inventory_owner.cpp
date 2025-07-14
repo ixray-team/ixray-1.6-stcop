@@ -93,6 +93,19 @@ void _AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPC
 	}
 }
 
+xrTime CScriptGameObject::GetInfoTime(LPCSTR info_id)
+{
+	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
+	if (!pInventoryOwner)
+		return xrTime(0);
+
+	INFO_DATA info_data;
+	if (pInventoryOwner->GetInfo(info_id, info_data))
+		return xrTime(info_data.receive_time);
+	else
+		return xrTime(0);
+}
+
 void _give_news(LPCSTR caption, LPCSTR news, LPCSTR texture_name, int delay, int show_time, int type);
 
 void CScriptGameObject::GiveGameNews(LPCSTR caption, LPCSTR news, LPCSTR texture_name, int delay, int show_time)
@@ -840,22 +853,26 @@ LPCSTR CScriptGameObject::sound_voice_prefix() const
 	return 0;
 }
 
-ETaskState CScriptGameObject::GetGameTaskState(LPCSTR task_id)
+#include "GametaskManager.h"
+ETaskState CScriptGameObject::GetGameTaskState	(LPCSTR task_id, u16 objective_id)
 {
 	shared_str shared_name = task_id;
-	
-	if (CGameTask* t = Level().GameTaskManager()->HasGameTask(shared_name, true))
-	{
-		return t->GetTaskState();
-	}
+	CGameTask* t = Level().GameTaskManager()->HasGameTask(shared_name, true);
 
-	return eTaskStateDummy;
+	if(nullptr==t) 
+		return eTaskStateDummy;
+	if (objective_id >= t->GetObjectivesCount())
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "wrong objective num", task_id);
+		return eTaskStateDummy;
+	}
+	return t->ObjectiveState(objective_id);
 }
 
-void CScriptGameObject::SetGameTaskState(ETaskState state, LPCSTR task_id)
+void CScriptGameObject::SetGameTaskState	(ETaskState state, LPCSTR task_id, u16 objective_id)
 {
-	shared_str shared_name = task_id;
-	Level().GameTaskManager()->SetTaskState(shared_name, state);
+	shared_str shared_name	= task_id;
+	Level().GameTaskManager()->SetTaskState(shared_name, state, objective_id);
 }
 
 void CScriptGameObject::SwitchToTrade()

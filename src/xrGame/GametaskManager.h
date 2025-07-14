@@ -30,16 +30,18 @@ public:
 	vGameTasks&				GetGameTasks					();
 	CGameTask*				HasGameTask						(const CMapLocation* ml, bool only_inprocess);
 	CGameTask*				HasGameTask						(const shared_str& id, bool only_inprocess);
+	CGameTask*				GiveGameTaskToActor				(const shared_str& id, u32 timeToComplete, bool bCheckExisting = true, u32 timer_ttl = 0);
 	CGameTask*				GiveGameTaskToActor				(CGameTask* t, u32 timeToComplete, bool bCheckExisting, u32 timer_ttl);
 	void test_groid();
-	void					SetTaskState					(const shared_str& id, ETaskState state);
-	void					SetTaskState					(CGameTask* t, ETaskState state);
+	void					SetTaskState					(const shared_str& id, ETaskState state, u16 objective_id = ROOT_TASK_OBJECTIVE);
+	void					SetTaskState					(CGameTask* t, ETaskState state, u16 objective_id = ROOT_TASK_OBJECTIVE);
 
 	void			UpdateTasks						();
 
 	CGameTask*				ActiveTask						(ETaskType type = eTaskTypeStoryline);
 //	void					SetActiveTask					(const shared_str& id, ETaskType type = eTaskTypeStoryline);
 	void					SetActiveTask					(CGameTask* task);
+	void					SetActiveTask					(CGameTask* task, u16 objective_id);
 	u32						ActualFrame						() const {return m_actual_frame;}
 	
 	CGameTask*				IterateGet						(CGameTask* t, ETaskState state, ETaskType type, bool bForward);

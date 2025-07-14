@@ -247,7 +247,7 @@ void CAI_Stalker::LoadSounds		(LPCSTR section)
 	sound().add						(pSettings->r_string(section,"sound_kill_wounded"),					100, SOUND_TYPE_MONSTER_TALKING,	5, u32(eStalkerSoundMaskKillWounded),				eStalkerSoundKillWounded,				head_bone_name, new CStalkerSoundData(this));
 	sound().add						(pSettings->r_string(section,"sound_enemy_critically_wounded"),		100, SOUND_TYPE_MONSTER_TALKING,	4, u32(eStalkerSoundMaskEnemyCriticallyWounded),	eStalkerSoundEnemyCriticallyWounded,	head_bone_name, new CStalkerSoundData(this));
 	sound().add						(pSettings->r_string(section,"sound_enemy_killed_or_wounded"),		100, SOUND_TYPE_MONSTER_TALKING,	4, u32(eStalkerSoundMaskEnemyKilledOrWounded),		eStalkerSoundEnemyKilledOrWounded,		head_bone_name, new CStalkerSoundData(this));
-	sound().add						(pSettings->r_string(section,"sound_throw_grenade"),				100, SOUND_TYPE_MONSTER_TALKING,	5, u32(eStalkerSoundMaskKillWounded),				eStalkerSoundThrowGrenade,				head_bone_name, new CStalkerSoundData(this));
+	sound().add						(READ_IF_EXISTS(pSettings, r_string, section, "sound_throw_grenade", pSettings->r_string(section, "sound_attack")),				100, SOUND_TYPE_MONSTER_TALKING,	5, u32(eStalkerSoundMaskKillWounded),				eStalkerSoundThrowGrenade,				head_bone_name, new CStalkerSoundData(this));
 }
 
 void CAI_Stalker::reload			(LPCSTR section)
@@ -278,7 +278,7 @@ void CAI_Stalker::reload			(LPCSTR section)
 
 	m_can_select_weapon				= true;
 
-	LPCSTR queue_sect				= pSettings->r_string(*cNameSect(),"fire_queue_section");
+	LPCSTR queue_sect				= READ_IF_EXISTS(pSettings, r_string, *cNameSect(),"fire_queue_section", "");
 	if(xr_strcmp(queue_sect, "") && pSettings->section_exist(queue_sect))
 	{
 		m_pstl_min_queue_size_far			= READ_IF_EXISTS(pSettings,r_u32,queue_sect,"pstl_min_queue_size_far", 1);
