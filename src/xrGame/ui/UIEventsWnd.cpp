@@ -36,8 +36,6 @@ void CUIEventsWnd::Init				()
 {
 	CUIXml uiXml;
 	uiXml.Load(CONFIG_PATH, UI_PATH, "pda_events.xml");
-	//bool xml_result					= uiXml.Load(CONFIG_PATH, UI_PATH, "pda_events.xml");
-	//R_ASSERT3						(xml_result, "xml file not found", "pda_events.xml");
 
 	CUIXmlInit xml_init;
 	xml_init.InitWindow				(uiXml, "main_wnd", 0, this);
@@ -181,17 +179,13 @@ void CUIEventsWnd::Show(bool status)
 bool CUIEventsWnd::Filter(CGameTask* t)
 {
 	ETaskState task_state		= t->Objective(0).GetTaskState();
-//	bool bprimary_only			= m_primary_or_all_filter_btn->GetCheck();
 
-	return (false/*m_currFilter==eOwnTask && task_state==eTaskUserDefined*/ )		||
-			( 
-			  ( true/*!bprimary_only || (bprimary_only && t->m_is_task_general)*/ )	&&
+	return 
 				(
 					(m_currFilter==eAccomplishedTask	&& task_state==eTaskStateCompleted )||
 					(m_currFilter==eFailedTask			&& task_state==eTaskStateFail )||
 					(m_currFilter==eActiveTask			&& task_state==eTaskStateInProgress )
-				)
-			);
+				);
 }
 
 
