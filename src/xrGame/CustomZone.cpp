@@ -286,7 +286,7 @@ void CCustomZone::Load(LPCSTR section)
 	m_ef_anomaly_type			= pSettings->r_u32(section,"ef_anomaly_type");
 	m_ef_weapon_type			= pSettings->r_u32(section,"ef_weapon_type");
 	
-	m_zone_flags.set			(eAffectPickDOF, pSettings->r_bool (section, "pick_dof_effector"));
+	m_zone_flags.set			(eAffectPickDOF, READ_IF_EXISTS(pSettings, r_bool, section, "pick_dof_effector", false));
 }
 
 BOOL CCustomZone::net_Spawn(CSE_Abstract* DC) 
