@@ -648,7 +648,28 @@ void CMapListHelper::Load()
 		gw.m_weather_name		= (*wi).first;
 		gw.m_start_time			= (*wi).second;
 	}
+	
+	//read original maps from config
+	CInifile::RootIt it			= map_list_cfg.sections().begin();
+	CInifile::RootIt it_e		= map_list_cfg.sections().end();
+	for( ;it!=it_e; ++it)
+	{
+		m_storage.resize		(m_storage.size()+1);
+		SGameTypeMaps&	M		= m_storage.back();
+		M.m_game_type_name	= (*it)->Name;
+		M.m_game_type_id		= (EGameIDs)get_token_id(game_types, M.m_game_type_name.c_str() );
 
+		CInifile::SectCIt sit	= (*it)->Data.begin();
+		CInifile::SectCIt sit_e	= (*it)->Data.end();
+		
+		for( ;sit!=sit_e; ++sit)
+		{
+			SGameTypeMaps::SMapItm	Itm;
+			Itm.map_name			= (*sit).first;
+			Itm.map_ver				= "1.0";
+			M.m_map_names.push_back	(Itm);
+		}
+	}
 	// scan for additional maps
 	FS_FileSet			fset;
 	FS.file_list		(fset,_game_levels_,FS_ListFiles,"*level.ltx");
@@ -668,12 +689,12 @@ void CMapListHelper::Load()
 	xr_string prev_root				= game_levels->m_Root;
 	game_levels->_set_root			(tmp_entrypoint);
 
-	CLocatorAPI::archives_it it		= FS.m_archives.begin();
-	CLocatorAPI::archives_it it_e	= FS.m_archives.end();
+	CLocatorAPI::archives_it arch_it		= FS.m_archives.begin();
+	CLocatorAPI::archives_it arch_it_e	= FS.m_archives.end();
 
-	for(;it!=it_e;++it)
+	for(; arch_it != arch_it_e;++arch_it)
 	{
-		CLocatorAPI::archive& A		= *it;
+		CLocatorAPI::archive& A		= *arch_it;
 		if(A.hSrcFile)				continue;
 
 		LPCSTR ln					= A.header->r_string("header", "level_name");
