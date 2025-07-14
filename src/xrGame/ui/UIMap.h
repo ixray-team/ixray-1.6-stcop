@@ -107,7 +107,13 @@ class CUILevelMap final :
 	typedef  CUICustomMap inherited;
 
 	CUIMapWnd*					m_mapWnd;
-	bool						legacySpotScaling;
+	enum SpotScaleMode 
+	{
+		eScalingDefault,
+		eScalingCS,
+		eScalingSoC
+	};
+	SpotScaleMode				SpotScaling;
 	Frect						m_GlobalRect;
 
 public:
