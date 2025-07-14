@@ -230,5 +230,6 @@ public:
 	virtual game_sv_CaptureTheArtefact* cast_game_sv_capturetheartefact() override { return nullptr; }
 	virtual game_sv_Single* cast_game_sv_single() override { return nullptr; }
 	virtual game_sv_freemp* cast_game_sv_freemp() override { return nullptr; }
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

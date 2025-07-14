@@ -201,6 +201,7 @@ public:
 	virtual		void				DumpOnlineStatistic		(){};
 				
 				bool				CheckNewPlayer			(xrClientData* CL);
+				DECLARE_SCRIPT_REGISTER_FUNCTION
 				
 	IC			CALifeSimulator		&alife					() const
 	{
