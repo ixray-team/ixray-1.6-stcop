@@ -27,6 +27,87 @@ void fix_texture_thm_name(LPSTR fn)
 		0==_stricmp(_ext,".ogm")	) )
 		*_ext = 0;
 }
+void CTextureDescrMngr::LoadLTX()
+{
+	string_path				fname;		
+	FS.update_path			(fname,"$game_textures$","textures.ltx");
+
+	if (FS.exist(fname))
+	{
+		CInifile			ini(fname);
+		if (ini.section_exist("association"))
+		{
+			CInifile::Sect& data	= ini.r_section("association");
+			CInifile::SectCIt I		= data.Data.begin();
+			CInifile::SectCIt E		= data.Data.end();
+			for ( ; I!=E; ++I)	
+			{
+				const CInifile::Item& item	= *I;
+
+				texture_desc& desc		= m_texture_details[item.first];
+				cl_dt_scaler*& dts = m_detail_scalers[item.first];
+				desc.m_assoc			= new texture_assoc();
+
+				string_path				T;
+				float					s;
+
+				int res = sscanf					(*item.second,"%[^,],%f",T,&s);
+				R_ASSERT(res==2);
+				desc.m_assoc->detail_name = T;
+				if (dts)
+					dts->scale = s;
+				else
+					dts = new cl_dt_scaler(s);
+
+//				desc.m_assoc->cs		= new cl_dt_scaler(s);
+
+				desc.m_assoc->usage		= 0;
+				if(strstr(item.second.c_str(),"usage[diffuse_or_bump]"))
+					desc.m_assoc->usage	= (1<<0)|(1<<1);
+				else
+				if(strstr(item.second.c_str(),"usage[bump]"))
+					desc.m_assoc->usage	= (1<<1);
+				else
+				if(strstr(item.second.c_str(),"usage[diffuse]"))
+					desc.m_assoc->usage	= (1<<0);
+			}
+		}//"association"
+
+		if (ini.section_exist("specification"))
+		{
+			CInifile::Sect& 	sect = ini.r_section("specification");
+			for (CInifile::SectCIt I2=sect.Data.begin(); I2!=sect.Data.end(); ++I2)	
+			{
+				const CInifile::Item& item	= *I2;
+
+				texture_desc& desc		= m_texture_details[item.first];
+				desc.m_spec				= new texture_spec();
+
+				string_path				bmode;
+				int res = sscanf		(item.second.c_str(),"bump_mode[%[^]]], material[%f]",bmode,&desc.m_spec->m_material);
+				R_ASSERT(res==2);
+				if ((bmode[0]=='u')&&(bmode[1]=='s')&&(bmode[2]=='e')&&(bmode[3]==':'))
+				{
+					// bump-map specified
+					desc.m_spec->m_bump_name	=	bmode+4;
+				}
+			}
+		}//"specification"
+#ifdef _EDITOR
+		if (ini.section_exist("types"))
+		{
+			CInifile::Sect& 	data = ini.r_section("types");
+			for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); I++)	
+			{
+				CInifile::Item item	= *I;
+
+				texture_desc& desc		= m_texture_details[item.first];
+				desc.m_type				= (STextureParams::ETType)atoi(item.second.c_str());
+			}
+		}//"types"
+#endif
+	}//file-exist
+}
 
 void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 {
@@ -177,6 +258,7 @@ void CTextureDescrMngr::Load()
 	TT.Start				();
 #endif // #ifdef DEBUG
 
+	LoadLTX					();
 	LoadTHM					("$game_textures$");
 	LoadTHM					("$level$");
 
