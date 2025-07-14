@@ -81,7 +81,7 @@ void CUIInventoryWnd::Init()
 
 
 	UIDescrWnd.AttachChild				(&UIItemInfo);
-	UIItemInfo.InitItemInfo				(INVENTORY_ITEM_XML);
+	UIItemInfo.InitItemInfo				(Fvector2().set(0, 0), Fvector2().set(UIDescrWnd.GetWidth(), UIDescrWnd.GetHeight()), INVENTORY_ITEM_XML);
 
 	AttachChild							(&UIPersonalWnd);
 	xml_init.InitFrameWindow			(uiXml, "character_frame_window", 0, &UIPersonalWnd);

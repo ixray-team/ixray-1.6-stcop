@@ -129,6 +129,27 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		}
 		break;
 	}
+
+	case kMAP:
+	{
+		if (!pActor->inventory_disabled())
+		{
+			PdaMenu().SetActiveSubdialog("eptMap");
+			ShowPdaMenu();
+		}
+		break;
+	}
+
+	case kCONTACTS:
+	{
+		if (!pActor->inventory_disabled())
+		{
+			PdaMenu().SetActiveSubdialog("eptContacts");
+			ShowPdaMenu();
+		}
+		break;
+	}
+
 	case kINVENTORY:
 		{
 			if (!pActor->inventory_disabled())
@@ -162,9 +183,16 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
                 if (t1 || t2)
                 {
                     CGameTask* t = (t1) ? t1 : t2;
-                    m_game_objective->m_static->TextItemControl()->SetTextST(t->m_Title.c_str());
-					SDrawStaticStruct* sm2 = AddCustomStatic("secondary_task", true);
-                    sm2->m_static->TextItemControl()->SetTextST(t->m_Description.c_str());
+					if (m_msgs_xml->NavigateToNode("secondary_task"))
+					{
+           	        	m_game_objective->m_static->TextItemControl()->SetTextST(t->m_Title.c_str());
+						SDrawStaticStruct* sm2 = AddCustomStatic("secondary_task", true);
+                   		sm2->m_static->TextItemControl()->SetTextST(t->m_Description.c_str());
+					}
+					else
+					{
+						m_game_objective->m_static->TextItemControl()->SetTextST(Level().GameTaskManager()->ActiveObjective()->m_Description.c_str());
+					}
                 }
                 else
                 {
