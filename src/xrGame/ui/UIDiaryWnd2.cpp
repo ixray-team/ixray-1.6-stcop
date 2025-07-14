@@ -125,7 +125,13 @@ void CUIDiaryWnd::OnFilterChanged			(CUIWindow* w, void*)
 
 void CUIDiaryWnd::Reload	(EDiaryFilter new_filter)
 {
-//.	if(m_currFilter==new_filter) return;
+	if (m_currFilter == eNone)
+	{
+		m_currFilter = eJournal;
+		LoadJournalTab(ARTICLE_DATA::eJournalArticle);
+		m_FilterTab->SetActiveTabByIndex(eJournal);
+		return;
+	}
 
 	switch (m_currFilter){
 		case eJournal:

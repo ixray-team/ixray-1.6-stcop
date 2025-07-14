@@ -526,7 +526,12 @@ void CUIAnswerItemIconed::Init(LPCSTR text, LPCSTR texture_name, Frect texture_r
 {
 	inherited::Init(text, "");
 	m_icon->InitTexture(texture_name);
-	m_icon->SetTextureRect(texture_rect);
+	Frect texture_rect_;
+
+	texture_rect_.lt.set(texture_rect.x1, texture_rect.y1);
+	texture_rect_.rb.set(texture_rect.x2, texture_rect.y2);
+	texture_rect_.rb.add(texture_rect_.lt);
+	m_icon->GetUIStaticItem().SetTextureRect(texture_rect_);
 	m_icon->TextureOn();
 	m_icon->SetStretchTexture(true);
 }
