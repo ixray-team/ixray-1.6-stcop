@@ -31,6 +31,7 @@
 #include "ai/trader/ai_trader.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "game_cl_single.h"
+#include "ui/UIPdaAux.h"
 //#include "ui/UIDiaryWnd.h"
 
 void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
@@ -68,10 +69,8 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
         n = *(article.data()->name);
         callback(GameObject::eArticleInfo)(lua_game_object(), g, n, _atype);
 
-        /* Shadow of Chernobyl encyclopedia, return this code
         if (CurrentGameUI())
         {
-            CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
             pda_section::part p = pda_section::encyclopedia;
             switch (article.data()->articleType)
             {
@@ -85,9 +84,8 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
                 break;
             default: NODEFAULT;
             };
-            pGameSP->PdaMenu->PdaContentsChanged(p);
+			CurrentGameUI()->PdaMenu().PdaContentsChanged(p);
         }
-        */
         
         if (CurrentGameUI())
         {
