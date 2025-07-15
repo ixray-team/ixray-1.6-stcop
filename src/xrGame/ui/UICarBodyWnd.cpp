@@ -118,6 +118,8 @@ void CUICarBodyWnd::Init()
 	m_pUIItemInfo					= new CUIItemInfo(); m_pUIItemInfo->SetAutoDelete(true);
 	m_pUIDescWnd->AttachChild		(m_pUIItemInfo);
 	m_pUIItemInfo->InitItemInfo		(Fvector2().set(0,0), Fvector2().set(m_pUIDescWnd->GetWidth(), m_pUIDescWnd->GetHeight()), CARBODY_ITEM_XML);
+	
+	xml_init.InitAutoStaticGroup	(uiXml, "", 0, this);
 
 
 	m_pUIPropertiesBox				= new CUIPropertiesBox(); m_pUIPropertiesBox->SetAutoDelete(true);
@@ -418,7 +420,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 	CAntirad*				pAntirad		= smart_cast<CAntirad*>			(CurrentIItem());
 	CBottleItem*			pBottleItem		= smart_cast<CBottleItem*>		(CurrentIItem());
     bool					b_show			= false;
-	
+
 	LPCSTR _action				= nullptr;
 	if(pMedkit || pAntirad)
 	{
