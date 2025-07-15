@@ -39,6 +39,8 @@ public:
 	void 				SwitchToTalk				();
 	void 				StartTrade					();
 	void 				StopTrade					();
+
+	void				clear_highlight_lists		();
 protected:
 	CUIStatic			UIStaticTop;
 	CUIStatic			UIStaticBottom;
@@ -60,6 +62,7 @@ protected:
 	//кнопки
 	CUI3tButton			UIPerformTradeButton;
 	CUI3tButton			UIToTalkButton;
+	bool				m_highlight_clear;
 
 	//информация о персонажах 
 	CUIStatic			UIOurIcon;
@@ -117,6 +120,13 @@ protected:
 	void				SetCurrentItem				(CUICellItem* itm);
 	CUICellItem*		CurrentItem					();
 	PIItem				CurrentIItem				();
+	
+	void				set_highlight_item			(CUICellItem* cell_item);
+	void				highlight_armament			(PIItem item, CUIDragDropListEx* ddlist);
+	void				highlight_ammo_for_weapon	(PIItem weapon_item, CUIDragDropListEx* ddlist);
+	void				highlight_weapons_for_ammo	(PIItem ammo_item, CUIDragDropListEx* ddlist);
+	bool				highlight_addons_for_weapon	(PIItem weapon_item, CUICellItem* ci);
+	void				highlight_weapons_for_addon	(PIItem addon_item, CUIDragDropListEx* ddlist);
 
 	bool				OnItemDrop			(CUICellItem* itm);
 	bool				OnItemStartDrag		(CUICellItem* itm);
