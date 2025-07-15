@@ -179,6 +179,8 @@ void CUIInventoryWnd::Init()
 	::Sound->create						(sounds[eInvItemUse],		uiXml.Read("snd_item_use",		0,	nullptr),st_Effect,sg_SourceType);
 
 	uiXml.SetLocalRoot					(stored_root);
+	m_highlight_clear = true;
+	clear_highlight_lists();
 }
 
 EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
@@ -396,6 +398,7 @@ void	CUIInventoryWnd::SendEvent_ActivateSlot	(PIItem	pItem)
 	pItem->object().u_EventGen		(P, GEG_PLAYER_ACTIVATE_SLOT, pItem->object().H_Parent()->ID());
 	P.w_u32							(pItem->BaseSlot());
 	pItem->object().u_EventSend		(P);
+	clear_highlight_lists			();
 }
 
 void	CUIInventoryWnd::SendEvent_Item2Slot			(PIItem	pItem)
@@ -405,6 +408,7 @@ void	CUIInventoryWnd::SendEvent_Item2Slot			(PIItem	pItem)
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
 	g_pInvWnd->PlaySnd				(eInvItemToSlot);
+	clear_highlight_lists			();
 };
 
 void	CUIInventoryWnd::SendEvent_Item2Belt			(PIItem	pItem)
@@ -414,6 +418,7 @@ void	CUIInventoryWnd::SendEvent_Item2Belt			(PIItem	pItem)
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
 	g_pInvWnd->PlaySnd				(eInvItemToBelt);
+	clear_highlight_lists			();
 };
 
 void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem)
@@ -424,6 +429,7 @@ void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem)
 	pItem->object().u_EventSend		(P);
 
 	g_pInvWnd->PlaySnd				(eInvItemToRuck);
+	clear_highlight_lists			();
 };
 
 void	CUIInventoryWnd::SendEvent_Item_Drop(PIItem	pItem)
@@ -438,6 +444,7 @@ void	CUIInventoryWnd::SendEvent_Item_Drop(PIItem	pItem)
 		pItem->object().u_EventSend(P);
 	}
 	g_pInvWnd->PlaySnd				(eInvDropItem);
+	clear_highlight_lists			();
 };
 
 void	CUIInventoryWnd::SendEvent_Item_Eat			(PIItem	pItem)
@@ -447,6 +454,7 @@ void	CUIInventoryWnd::SendEvent_Item_Eat			(PIItem	pItem)
 	pItem->object().u_EventGen		(P, GEG_PLAYER_ITEM_EAT, pItem->object().H_Parent()->ID());
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
+	clear_highlight_lists			();
 };
 
 

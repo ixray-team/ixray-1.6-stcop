@@ -29,6 +29,10 @@
 #include "../../xrUI/UICursor.h"
 #include "UIHelperGame.h"
 
+#include "../WeaponBinoculars.h"
+#include "../WeaponKnife.h"
+#include "../WeaponMagazinedWGrenade.h"
+
 #define				CAR_BODY_XML		"carbody_new.xml"
 #define				CARBODY_ITEM_XML	"carbody_item.xml"
 
@@ -131,7 +135,8 @@ void CUICarBodyWnd::Init()
 	BindDragDropListEnents			(m_pUIOurBagList);
 	BindDragDropListEnents			(m_pUIOthersBagList);
 
-
+	m_highlight_clear = true;
+	clear_highlight_lists();
 }
 
 void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryBox* pInvBox)
@@ -464,7 +469,7 @@ void CUICarBodyWnd::EatItem()
 	CGameObject::u_EventGen		(P, GEG_PLAYER_ITEM_EAT, Actor()->ID());
 	P.w_u16						(CurrentIItem()->object().ID());
 	CGameObject::u_EventSend	(P);
-
+	clear_highlight_lists		();
 }
 
 
@@ -581,7 +586,7 @@ void move_item (u16 from_id, u16 to_id, u16 what_id)
 											);
 	P.w_u16									(what_id);
 	CGameObject::u_EventSend				(P);
-
+	CUICarBodyWnd().clear_highlight_lists	();
 }
 
 bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check)
@@ -619,6 +624,7 @@ void CUICarBodyWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 bool CUICarBodyWnd::OnItemFocusReceive(CUICellItem* itm)
 {
 	itm->m_selected = true;
+	set_highlight_item(itm);
 
 	return true;
 }
@@ -629,6 +635,7 @@ bool CUICarBodyWnd::OnItemFocusLost(CUICellItem* itm)
 	{
 		itm->m_selected = false;
 	}
+	clear_highlight_lists();
 
 	return true;
 }
@@ -638,7 +645,241 @@ bool CUICarBodyWnd::OnItemFocusedUpdate(CUICellItem* itm)
 	if (itm)
 	{
 		itm->m_selected = true;
+		if (m_highlight_clear)
+		{
+			set_highlight_item(itm);
+		}
 	}
 
 	return true;
+}
+
+void CUICarBodyWnd::set_highlight_item(CUICellItem* cell_item)
+{
+	PIItem item = (PIItem)cell_item->m_pData;
+	if (!item)
+	{
+		return;
+	}
+
+	highlight_armament(item, m_pUIOurBagList);
+	highlight_armament(item, m_pUIOthersBagList);
+	m_highlight_clear = false;
+}
+
+
+void CUICarBodyWnd::clear_highlight_lists()
+{
+
+	m_pUIOurBagList->clear_select_armament();
+	m_pUIOthersBagList->clear_select_armament();
+
+	m_highlight_clear = true;
+}
+
+void CUICarBodyWnd::highlight_armament(PIItem item, CUIDragDropListEx* ddlist)
+{
+	ddlist->clear_select_armament();
+	highlight_ammo_for_weapon(item, ddlist);
+	highlight_weapons_for_ammo(item, ddlist);
+	highlight_weapons_for_addon(item, ddlist);
+}
+
+void CUICarBodyWnd::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDropListEx* ddlist )
+{
+	VERIFY( weapon_item );
+	VERIFY( ddlist );
+	static xr_vector<shared_str>	ammo_types;
+	ammo_types.resize(0);
+
+	CWeapon* weapon = smart_cast<CWeapon*>(weapon_item);
+	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(weapon_item);
+	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(weapon_item);
+	if ( !weapon || binoc || knife)
+	{
+		return;
+	}
+	ammo_types.assign( weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end() );
+
+	CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(weapon_item);
+	if ( wg )
+	{
+		if ( wg->IsGrenadeLauncherAttached() && wg->m_ammoTypes2.size() )
+		{
+			ammo_types.insert( ammo_types.end(), wg->m_ammoTypes2.begin(), wg->m_ammoTypes2.end() );
+		}
+	}
+	
+	if ( ammo_types.size() == 0 )
+	{
+		return;
+	}
+	xr_vector<shared_str>::iterator ite = ammo_types.end();
+	
+	u32 const cnt = ddlist->ItemsCount();
+	for ( u32 i = 0; i < cnt; ++i )
+	{
+		CUICellItem* ci = ddlist->GetItemIdx(i);
+		PIItem item = (PIItem)ci->m_pData;
+		if ( !item )
+		{
+			continue;
+		}
+		CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(item);
+		if ( !ammo )
+		{
+			highlight_addons_for_weapon( weapon_item, ci );
+			continue; // for i
+		}
+		shared_str const& ammo_name = item->object().cNameSect();
+
+		xr_vector<shared_str>::iterator itb = ammo_types.begin();
+		for ( ; itb != ite; ++itb )
+		{
+			if ( ammo_name._get() == (*itb)._get() )
+			{
+				ci->m_select_armament = true;
+				break; // itb
+			}
+		}
+	}//for i
+
+}
+
+void CUICarBodyWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropListEx* ddlist )
+{
+	VERIFY( ammo_item );
+	VERIFY( ddlist );
+	CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(ammo_item);
+	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(ammo_item);
+	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(ammo_item);
+	if ( !ammo  )
+	{
+		return;
+	}
+	
+	shared_str const& ammo_name = ammo_item->object().cNameSect();
+
+	u32 const cnt = ddlist->ItemsCount();
+	for ( u32 i = 0; i < cnt; ++i )
+	{
+		CUICellItem* ci = ddlist->GetItemIdx(i);
+		PIItem item = (PIItem)ci->m_pData;
+		if ( !item )
+		{
+			continue;
+		}
+		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		if (!weapon || binoc || knife)
+		{
+			continue;
+		}
+
+		xr_vector<shared_str>::iterator itb = weapon->m_ammoTypes.begin();
+		xr_vector<shared_str>::iterator ite = weapon->m_ammoTypes.end();
+		for ( ; itb != ite; ++itb )
+		{
+			if ( ammo_name._get() == (*itb)._get() )
+			{
+				ci->m_select_armament = true;
+				break; // for itb
+			}
+		}
+		
+		CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(item);
+		if ( !wg || !wg->IsGrenadeLauncherAttached() || !wg->m_ammoTypes2.size() )
+		{
+			continue; // for i
+		}
+		itb = wg->m_ammoTypes2.begin();
+		ite = wg->m_ammoTypes2.end();
+		for ( ; itb != ite; ++itb )
+		{
+			if ( ammo_name._get() == (*itb)._get() )
+			{
+				ci->m_select_armament = true;
+				break; // for itb
+			}
+		}
+	}//for i
+
+}
+
+bool CUICarBodyWnd::highlight_addons_for_weapon( PIItem weapon_item, CUICellItem* ci )
+{
+	PIItem item = (PIItem)ci->m_pData;
+	if ( !item )
+	{
+		return false;
+	}
+
+	CScope* pScope = smart_cast<CScope*>(item);
+	if (pScope && weapon_item->CanAttach(item))
+	{
+		ci->m_select_armament = true;
+		return true;
+	}
+
+	CSilencer* pSilencer = smart_cast<CSilencer*>(item);
+	if ( pSilencer && weapon_item->CanAttach(pSilencer) )
+	{
+		ci->m_select_armament = true;
+		return true;
+	}
+
+	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(item);
+	if ( pGrenadeLauncher && weapon_item->CanAttach(pGrenadeLauncher) )
+	{
+		ci->m_select_armament = true;
+		return true;
+	}
+	return false;
+}
+
+void CUICarBodyWnd::highlight_weapons_for_addon( PIItem addon_item, CUIDragDropListEx* ddlist )
+{
+	VERIFY( addon_item );
+	VERIFY( ddlist );
+
+	CScope*				pScope				= smart_cast<CScope*>			(addon_item);
+	CSilencer*			pSilencer			= smart_cast<CSilencer*>		(addon_item);
+	CGrenadeLauncher*	pGrenadeLauncher	= smart_cast<CGrenadeLauncher*>	(addon_item);
+
+	if ( !pScope && !pSilencer && !pGrenadeLauncher )
+	{
+		return;
+	}
+	
+	u32 const cnt = ddlist->ItemsCount();
+	for ( u32 i = 0; i < cnt; ++i )
+	{
+		CUICellItem* ci = ddlist->GetItemIdx(i);
+		PIItem item = (PIItem)ci->m_pData;
+		if ( !item )
+		{
+			continue;
+		}
+		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		if ( !weapon )
+		{
+			continue;
+		}
+
+		if (pScope && weapon->ScopeAttachable() && weapon->ScopeFit(pScope))
+		{
+			ci->m_select_armament = true;
+			continue;
+		}
+		if ( pSilencer && weapon->CanAttach(pSilencer) )
+		{
+			ci->m_select_armament = true;
+			continue;
+		}
+		if ( pGrenadeLauncher && weapon->CanAttach(pGrenadeLauncher) )
+		{
+			ci->m_select_armament = true;
+			continue;
+		}
+
+	}//for i
 }
