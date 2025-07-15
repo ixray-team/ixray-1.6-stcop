@@ -37,6 +37,7 @@ using namespace InventoryUtilities;
 #define				INVENTORY_XML			"inventory_new.xml"
 
 
+extern void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
 CUIInventoryWnd*	g_pInvWnd = nullptr;
 
@@ -392,68 +393,81 @@ void CUIInventoryWnd::DetachAddon(const char* addon_name)
 }
 
 
-void	CUIInventoryWnd::SendEvent_ActivateSlot	(PIItem	pItem)
+void CUIInventoryWnd::SendEvent_ActivateSlot(u16 slot, u16 recipient)
 {
 	NET_Packet						P;
-	pItem->object().u_EventGen		(P, GEG_PLAYER_ACTIVATE_SLOT, pItem->object().H_Parent()->ID());
-	P.w_u32							(pItem->BaseSlot());
-	pItem->object().u_EventSend		(P);
+	CGameObject::u_EventGen			(P, GEG_PLAYER_ACTIVATE_SLOT, recipient);
+	P.w_u16							(slot);
+	CGameObject::u_EventSend		(P);
 	clear_highlight_lists			();
 }
 
-void	CUIInventoryWnd::SendEvent_Item2Slot			(PIItem	pItem)
+void CUIInventoryWnd::SendEvent_Item2Slot(PIItem pItem, u16 recipient, u16 slot_id)
 {
+	if(pItem->parent_id()!=recipient)
+		move_item_from_to			(pItem->parent_id(), recipient, pItem->object_id());
+
 	NET_Packet						P;
-	pItem->object().u_EventGen		(P, GEG_PLAYER_ITEM2SLOT, pItem->object().H_Parent()->ID());
+	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM2SLOT, pItem->object().H_Parent()->ID());
 	P.w_u16							(pItem->object().ID());
-	pItem->object().u_EventSend		(P);
-	g_pInvWnd->PlaySnd				(eInvItemToSlot);
+	P.w_u16							(slot_id);
+	CGameObject::u_EventSend		(P);
 	clear_highlight_lists			();
+
+	PlaySnd							(eInvItemToSlot);
 };
 
-void	CUIInventoryWnd::SendEvent_Item2Belt			(PIItem	pItem)
+void CUIInventoryWnd::SendEvent_Item2Belt(PIItem pItem, u16 recipient)
 {
+	if(pItem->parent_id()!=recipient)
+		move_item_from_to			(pItem->parent_id(), recipient, pItem->object_id());
+
 	NET_Packet						P;
-	pItem->object().u_EventGen		(P, GEG_PLAYER_ITEM2BELT, pItem->object().H_Parent()->ID());
+	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM2BELT, pItem->object().H_Parent()->ID());
 	P.w_u16							(pItem->object().ID());
-	pItem->object().u_EventSend		(P);
-	g_pInvWnd->PlaySnd				(eInvItemToBelt);
+	CGameObject::u_EventSend		(P);
 	clear_highlight_lists			();
+
+	PlaySnd							(eInvItemToBelt);
 };
 
-void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem)
+void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem, u16 recipient)
 {
-	NET_Packet						P;
-	pItem->object().u_EventGen		(P, GEG_PLAYER_ITEM2RUCK, pItem->object().H_Parent()->ID());
-	P.w_u16							(pItem->object().ID());
-	pItem->object().u_EventSend		(P);
+	if(pItem->parent_id()!=recipient)
+		move_item_from_to			(pItem->parent_id(), recipient, pItem->object_id());
 
-	g_pInvWnd->PlaySnd				(eInvItemToRuck);
+	NET_Packet						P;
+	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM2RUCK, pItem->object().H_Parent()->ID());
+	P.w_u16							(pItem->object().ID());
+	CGameObject::u_EventSend		(P);
 	clear_highlight_lists			();
+
+	PlaySnd							(eInvItemToRuck);
 };
 
-void	CUIInventoryWnd::SendEvent_Item_Drop(PIItem	pItem)
+void CUIInventoryWnd::SendEvent_Item_Drop(PIItem pItem, u16 recipient)
 {
-	pItem->SetDropManual			(TRUE);
-
-	if( OnClient() )
-	{
-		NET_Packet					P;
-		pItem->object().u_EventGen	(P, GE_OWNERSHIP_REJECT, pItem->object().H_Parent()->ID());
-		P.w_u16						(pItem->object().ID());
-		pItem->object().u_EventSend(P);
-	}
-	g_pInvWnd->PlaySnd				(eInvDropItem);
+	R_ASSERT(pItem->parent_id()==recipient);
+	if (!IsGameTypeSingle())
+		pItem->DenyTrade();
+	//pItem->SetDropManual			(TRUE);
+	NET_Packet					P;
+	pItem->object().u_EventGen	(P,GE_OWNERSHIP_REJECT,pItem->parent_id());
+	P.w_u16						(pItem->object().ID());
+	pItem->object().u_EventSend	(P);
+	PlaySnd						(eInvDropItem);
 	clear_highlight_lists			();
-};
+}
 
-void	CUIInventoryWnd::SendEvent_Item_Eat			(PIItem	pItem)
+void CUIInventoryWnd::SendEvent_Item_Eat(PIItem pItem, u16 recipient)
 {
-	R_ASSERT						(pItem->m_pInventory==m_pInv);
+	if(pItem->parent_id()!=recipient)
+		move_item_from_to			(pItem->parent_id(), recipient, pItem->object_id());
+
 	NET_Packet						P;
-	pItem->object().u_EventGen		(P, GEG_PLAYER_ITEM_EAT, pItem->object().H_Parent()->ID());
+	CGameObject::u_EventGen			(P, GEG_PLAYER_ITEM_EAT, recipient);
 	P.w_u16							(pItem->object().ID());
-	pItem->object().u_EventSend		(P);
+	CGameObject::u_EventSend		(P);
 	clear_highlight_lists			();
 };
 
