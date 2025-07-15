@@ -22,7 +22,8 @@ void CUIInventoryWnd::EatItem(PIItem itm)
 	SetCurrentItem							(nullptr);
 	if(!itm->Useful())						return;
 
-	SendEvent_Item_Eat						(itm);
+	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	SendEvent_Item_Eat						(itm, pInvOwner->object_id());
 
 	PlaySnd									(eInvItemUse);
 }
