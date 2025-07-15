@@ -124,12 +124,12 @@ protected:
 	bool						DropItem					(PIItem itm, CUIDragDropListEx* lst);
 	bool						TryUseItem					(PIItem itm);
 	//----------------------	-----------------------------------------------
-	void						SendEvent_Item2Slot			(PIItem	pItem);
-	void						SendEvent_Item2Belt			(PIItem	pItem);
-	void						SendEvent_Item2Ruck			(PIItem	pItem);
-	void						SendEvent_Item_Drop			(PIItem	pItem);
-	void						SendEvent_Item_Eat			(PIItem	pItem);
-	void						SendEvent_ActivateSlot		(PIItem	pItem);
+	void						SendEvent_Item2Slot			(PIItem	pItem, u16 parent, u16 slot_id);
+	void						SendEvent_Item2Belt			(PIItem	pItem, u16 parent);
+	void						SendEvent_Item2Ruck			(PIItem	pItem, u16 parent);
+	void						SendEvent_Item_Drop			(PIItem	pItem, u16 parent);
+	void						SendEvent_Item_Eat			(PIItem	pItem, u16 parent);
+	void						SendEvent_ActivateSlot		(u16 slot, u16 recipient);
 
 	//---------------------------------------------------------------------
 
