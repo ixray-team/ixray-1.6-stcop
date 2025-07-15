@@ -72,9 +72,23 @@ void CUIActorInfoWnd::Init()
 	UICharacterInfo->InitCharacterInfo		(Fvector2().set(0,0),UICharacterWindow->GetWndSize(), ACTOR_CHARACTER_XML);
 
 	//Элементы автоматического добавления
-	xml_init.InitAutoStaticGroup					(uiXml, "right_auto_static", 0, UICharIconFrame);
-	xml_init.InitAutoStaticGroup				(uiXml, "left_auto_static", 0, UIInfoFrame);
-
+	int leftStaticCount					= uiXml.GetNodesNum(uiXml.GetRoot(), "left_auto_static");
+	for (int i = 0; i < leftStaticCount; ++i)
+	{
+		CUIStatic* leftStatic = new CUIStatic();
+		leftStatic->SetAutoDelete(true);
+		UIInfoFrame->AttachChild(leftStatic);
+		xml_init.InitStatic(uiXml, "left_auto_static", i, leftStatic);
+	}
+	
+	int rightStaticCount					= uiXml.GetNodesNum(uiXml.GetRoot(), "right_auto_static");
+	for (int i = 0; i < rightStaticCount; ++i)
+	{
+		CUIStatic* rightStatic = new CUIStatic();
+		rightStatic->SetAutoDelete(true);
+		UICharIconFrame->AttachChild(rightStatic);
+		xml_init.InitStatic(uiXml, "right_auto_static", i, rightStatic);
+	}
 }
 
 void CUIActorInfoWnd::Show(bool status)
