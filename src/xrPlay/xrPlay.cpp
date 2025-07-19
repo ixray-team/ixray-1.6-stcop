@@ -13,6 +13,8 @@
 #include "../xrCore/git_version.h"
 #include "UIEditorMain.h"
 
+#include "chezzeRun.h"
+
 void EnumerateDisplayModes()
 {
 	PROF_EVENT("EnumerateDisplayModes");
@@ -89,9 +91,16 @@ int APIENTRY WinMain
 		return -1;
 	}
 
-	//std::jthread s(splash::Show); //
+	//std::jthread s(//splash::Show); //
 
-	splash::SetProgressStatus(5, "Initializing debugger");
+	//splash::SetProgressStatus(5, "Initializing debugger");
+	auto& client = ChezzeClient::Instance();
+
+	if (client.Connect("127.0.0.1", 19878)) {
+		//
+	}
+	client.SplashInfo("5","Initializing debugger");
+
 	Debug._initialize(false);
 
 	// Check for another instance
@@ -113,59 +122,67 @@ int APIENTRY WinMain
 		return 1;
 	}
 #endif
-	splash::SetProgressStatus(10, "Calculating display modes");
+	client.SplashInfo("10", "Calculating display modes");
+	//splash::SetProgressStatus(10, "Calculating display modes");
 	EnumerateDisplayModes();
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, SDL_WINDOW_HIDDEN);
 	//SDL_HideWindow(g_AppInfo.Window);
 
-	splash::SetProgressStatus(20, "Initializing xrCore");
+	//splash::SetProgressStatus(20, "Initializing xrCore");
+	client.SplashInfo("20", "Initializing xrCore");
+
 	EngineLoadStage1(lpCmdLine);
 	//plat
-	std::jthread s(splash::Show);
+	//std::jthread s(splash::Show);
 #ifdef DEBUG_DRAW
 	xrLogger::EnableFastDebugLog();
 #endif
-	splash::SetProgressStatus(30, "Initializing engine");
+	//splash::SetProgressStatus(30, "Initializing engine");
+	client.SplashInfo("30", "Initializing engine");
 	EngineLoadStage2();
 
-	splash::SetProgressStatus(40, "Calculating renderer list");
+	//splash::SetProgressStatus(40, "Calculating renderer list");
+	client.SplashInfo("40", "Calculating renderer list");
 	Engine.External.CreateRendererList();
 
-		{
-			PROF_EVENT("Console::Create");
-	Console = new CConsole();
-		}
-	splash::SetProgressStatus(50, "Reading user settings");
+	{
+		PROF_EVENT("Console::Create");
+		Console = new CConsole();
+	}
+	//splash::SetProgressStatus(50, "Reading user settings");
+	client.SplashInfo("50", "Reading user settings");
 	EngineLoadStage3();
 
-		{
-			PROF_EVENT("Select Render");
-	if (Core.ParamsData.test(ECoreParams::r4)) {
-		Console->Execute("renderer renderer_r4");
-	}
-	else if (Core.ParamsData.test(ECoreParams::r2)) {
-		Console->Execute("renderer renderer_r2");
-			}
-			else {
-		CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
-		pTmp->Execute(Console->ConfigFile);
-		xr_delete(pTmp);
-		// В любом случае надо вызывать команду CCC_R2
-		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
-	}
+	{
+		PROF_EVENT("Select Render");
+		if (Core.ParamsData.test(ECoreParams::r4)) {
+			Console->Execute("renderer renderer_r4");
 		}
-
-	splash::SetProgressStatus(60, "Initializing engine external");
+		else if (Core.ParamsData.test(ECoreParams::r2)) {
+			Console->Execute("renderer renderer_r2");
+		}
+		else {
+			CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
+			pTmp->Execute(Console->ConfigFile);
+			xr_delete(pTmp);
+			// В любом случае надо вызывать команду CCC_R2
+			Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
+		}
+	}
+	client.SplashInfo("60", "Initializing engine external");
+	//splash::SetProgressStatus(60, "Initializing engine external");
 	Engine.External.Initialize();
 
 	//Console->Execute("stat_memory");
 	Msg("IX-Ray %s %s build info: hash[%s] branch[%s] commit author[%s]", EngineExternal().GetCurrentPlatformFullName(), _VER, _HASH, _BRANCH, _AUTHOR);
 
-	splash::SetProgressStatus(70, "Creating device");
+	//splash::SetProgressStatus(70, "Creating device");
+	client.SplashInfo("70", "Creating device");
 	EngineLoadStage4();
 
-	splash::SetProgressStatus(80, "Loading custom settings");
+	//splash::SetProgressStatus(80, "Loading custom settings");
+	client.SplashInfo("80", "Loading custom settings");
 	LoadCustomSettings();
 	
 #ifdef DEBUG_DRAW
@@ -174,18 +191,21 @@ int APIENTRY WinMain
 	ECSViewDraw();
 #endif
 
-	splash::SetProgressStatus(90, "Loading menu");
+	//splash::SetProgressStatus(90, "Loading menu");
 
+	client.SplashInfo("90", "Loading menu");
 	EngineLoadStage5();
-	splash::Close();
+	//splash::Close();
 
 	MigrateToGameWindow();
+	client.Execute("spl_hide");
+
 	EngineLoadStage6();
 
 	xr_delete(g_pStringTable);
 
 	Core._destroy();
-	s.join();
+	//s.join();
 #ifdef NO_MULTI_INSTANCES		
 	// Delete application presence mutex
 	CloseHandle(hCheckPresenceMutex);
