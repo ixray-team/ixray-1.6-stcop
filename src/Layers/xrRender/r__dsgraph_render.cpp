@@ -24,6 +24,7 @@ ICF float calcLOD(float ssa/*fDistSq*/, float R)
 
 void CDSGraphManager::r_dsgraph_render_graph_sorted(R_dsgraph::mapDSGraphItems& graph, bool _clear)
 {
+	if (!graph.size()) return;
 	for (R_dsgraph::mapDSGraphItems::TNode& item : graph)
 	{
 		dxRender_Visual* V = item.key;
@@ -284,7 +285,7 @@ void CDSGraphManager::r_dsgraph_capture_static()
 			// Determine visibility for static geometry hierrarhy
 			for (auto& pair : m_sector_frustums)
 			{
-				for (auto& frustum_node : pair.val.frustums)
+				for (auto& frustum_node : pair.val.first)
 					add_Static((IRenderVisual*)pair.key->root(), frustum_node, frustum_node.getMask());
 			}
 		}
@@ -465,7 +466,7 @@ void CDSGraphManager::r_dsgraph_capture_dynamic(CObject* O)
 				if (!is_sector_visible(sector))
 					continue;
 
-				for (CFrustum& frustum : m_sector_frustums.find(sector)->val.frustums)
+				for (CFrustum& frustum : m_sector_frustums.find(sector)->val.first)
 				{
 					if (frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 					{

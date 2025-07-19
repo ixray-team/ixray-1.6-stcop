@@ -309,7 +309,7 @@ float CVisualMemoryManager::object_luminocity	(const CGameObject *game_object) c
 float CVisualMemoryManager::get_object_velocity	(const CGameObject *game_object, const CNotYetVisibleObject &not_yet_visible_object) const
 {
 	//Alundaio: no need to check velocity on anything but stalkers, mutants and actor
-	if (!smart_cast<CEntityAlive const*>(game_object))
+	if (!const_cast<CGameObject*>(game_object)->cast_entity_alive())
 		return (0.f);
 	//-Alundaio
 

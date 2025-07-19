@@ -293,6 +293,7 @@ void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 
 void CLevel::net_Update	()
 {
+	PROF_EVENT("net_Update");
 	if(game_configured){
 		// If we have enought bandwidth - replicate client data on to server
 		Device.Statistic->netClient2.Begin	();

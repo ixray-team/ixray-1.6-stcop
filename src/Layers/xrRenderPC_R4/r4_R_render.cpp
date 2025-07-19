@@ -199,11 +199,11 @@ void CRender::Render()
 			CFrustum F;
 			F.CreateFromMatrix(cTrans, FRUSTUM_P_ALL);
 
-			GMBase.traverse(pLastSector, F, PointPos, cTrans);
-			GMBase.r_dsgraph_capture();
+			GMRefl.traverse(pLastSector, F, PointPos, cTrans);
+			GMRefl.r_dsgraph_capture();
 
 			RCache.set_xform_view(cView);
-			GMBase.RGraph.mapStaticSorted.Wmark.clear(); GMBase.RGraph.mapDynamicSorted.Wmark.clear();
+			GMRefl.RGraph.mapStaticSorted.Wmark.clear(); GMRefl.RGraph.mapDynamicSorted.Wmark.clear();
 
 			RContext->ClearRenderTargetView(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
 			RContext->ClearDepthStencilView(Target->rt_Depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0);
@@ -216,7 +216,7 @@ void CRender::Render()
 			RCache.set_Stencil(FALSE);
 			RCache.set_ColorWriteEnable();
 
-			GMBase.r_dsgraph_render_graph(0);
+			GMRefl.r_dsgraph_render_graph(0);
 		}
 
 		RContext->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());

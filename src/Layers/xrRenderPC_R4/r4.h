@@ -108,7 +108,9 @@ public:
 	CDSGraphManager GMBase = CDSGraphManager(u32(CDSGraphManager::VQ_HOM + CDSGraphManager::VQ_SSA + CDSGraphManager::VQ_FADE),
 		u32(STYPE_RENDERABLE + STYPE_PARTICLE + STYPE_LIGHTSOURCE),
 		{ true,true,true,true,false,false,false });
-
+	CDSGraphManager GMRefl = CDSGraphManager(u32(CDSGraphManager::VQ_HOM + CDSGraphManager::VQ_SSA + CDSGraphManager::VQ_FADE),
+		u32(STYPE_RENDERABLE + STYPE_PARTICLE + STYPE_LIGHTSOURCE),
+		{ true,true,true,true,false,false,false });
 	xr_task_group												main_task_static, main_task_dynamic, sun_cascades_task, raimwet_task;
 	shared_str													c_sbase			;
 	shared_str													c_lmaterial		;

@@ -50,19 +50,60 @@ CSector::~CSector()
 //
 extern float r_ssaDISCARD			;
 extern float r_ssaLOD_A, r_ssaLOD_B ;
-
-void CSector::traverse(CFrustum &F, CDSGraphManager& DM)
+IC CFrustum CreateFrustumFromPortal(sPoly* poly, Fvector& vBase, Fmatrix& mFullXFORM)
 {
+	CFrustum F;
+	Fplane P;
+	P.build_precise	((*poly)[0],(*poly)[1],(*poly)[2]);
+
+	if (poly->size()>6) {
+		F.SimplifyPoly_AABB(poly,P);
+		P.build_precise	((*poly)[0],(*poly)[1],(*poly)[2]);
+	}
+
+	// Check plane orientation relative to viewer
+	// and reverse if needed
+	if (P.classify(vBase)<0)
+	{
+		std::reverse(poly->begin(),poly->end());
+		P.build_precise	((*poly)[0],(*poly)[1],(*poly)[2]);
+	}
+
+	// Base creation
+	F.CreateFromPoints(poly->begin(),poly->size(),vBase);
+
+	// Near clipping plane
+	F._add		(P);
+
+	// Far clipping plane
+	Fmatrix &M	= mFullXFORM;
+	P.n.x		= -(M._14 - M._13);
+	P.n.y		= -(M._24 - M._23);
+	P.n.z		= -(M._34 - M._33);
+	P.d			= -(M._44 - M._43);
+	float denom = 1.0f / P.n.magnitude();
+	P.n.x		*= denom;
+	P.n.y		*= denom;
+	P.n.z		*= denom;
+	P.d			*= denom;
+	F._add		(P);
+
+	return F;
+}
+
+void CSector::traverse(CFrustum &&F, CDSGraphManager& DM)
+{
+	PROF_EVENT("CSector::traverse")
 	// Register traversal process
 	auto SNODE = DM.m_sector_frustums.insert(this);
+	SNODE->val.first.push_back(F);
 
 	Fvector& cam_pos = Device.vCameraPosition_saved;
 	float test_sphere_r = Device.fViewportNear + EPS_L;
 	// Search visible portals and go through them
 	for	(CPortal* PORTAL : m_portals)
 	{
-		SNODE->val.portals.push_back(PORTAL);
-
+		if (SNODE->val.second.find(PORTAL)) continue;
 		// Early-out sphere
 		if (!F.testSphere_dirty(PORTAL->S.P, PORTAL->S.R))
 			continue;
@@ -121,13 +162,10 @@ void CSector::traverse(CFrustum &F, CDSGraphManager& DM)
 		if(pSector)
 		{
 			// Create _new_ frustum and recurse
-			CFrustum Clip;
-			Clip.CreateFromPortal(P, PORTAL->P.n, DM.i_vBase, DM.i_mXFORM);
-			pSector->traverse(Clip, DM);
+			SNODE->val.second.insert(PORTAL);
+			pSector->traverse(CreateFrustumFromPortal(P, DM.i_vBase, DM.i_mXFORM), DM);
 		}
 	}
-
-	SNODE->val.frustums.push_back(std::move(F));
 }
 
 void CSector::load(IReader& fs)

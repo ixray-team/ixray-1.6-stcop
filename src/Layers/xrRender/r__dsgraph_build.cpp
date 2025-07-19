@@ -52,14 +52,14 @@ void CDSGraphManager::r_dsgraph_insert_dynamic(dxRender_Visual *pVisual, Fmatrix
 	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && i_mask[sh_d->flags.iPriority/2])
 	{
 		if (i_mask[CDSGraphManager::fl_hud])
-			RGraph.mapHUDSorted.Distort.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh_d, i_mask[CDSGraphManager::fl_hud] });
+			RGraph.mapHUDSorted.Distort.insert(pVisual, DSGraphItem{ val_pObject, xform, sh_d, SSA, i_mask[CDSGraphManager::fl_hud] });
 		else
-			RGraph.mapDynamicSorted.Distort.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh_d, i_mask[CDSGraphManager::fl_hud] });
+			RGraph.mapDynamicSorted.Distort.insert(pVisual, DSGraphItem{ val_pObject, xform, sh_d, SSA, i_mask[CDSGraphManager::fl_hud] });
 	}
 
 	if (sh_d && sh_d->flags.bScopeMask && i_mask[CDSGraphManager::fl_deffered] && i_mask[CDSGraphManager::fl_hud])
 	{
-		RGraph.mapHUDSorted.ScopeLens.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh_d, i_mask[CDSGraphManager::fl_hud] });
+		RGraph.mapHUDSorted.ScopeLens.insert(pVisual, DSGraphItem{ val_pObject, xform, sh_d, SSA, i_mask[CDSGraphManager::fl_hud] });
 	}
 
 	// Select shader
@@ -79,15 +79,15 @@ void CDSGraphManager::r_dsgraph_insert_dynamic(dxRender_Visual *pVisual, Fmatrix
 	{
 		if (sh->flags.bStrictB2F)	
 		{
-			RGraph.mapHUDSorted.Sorted.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh, i_mask[CDSGraphManager::fl_hud] });
+			RGraph.mapHUDSorted.Sorted.insert(pVisual, DSGraphItem{ val_pObject, xform, sh, SSA, i_mask[CDSGraphManager::fl_hud] });
 			return;
 		} 
 		else 
 		{
-			RGraph.mapHUD.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh, i_mask[CDSGraphManager::fl_hud] });
+			RGraph.mapHUD.insert(pVisual, DSGraphItem{ val_pObject, xform, sh, SSA, i_mask[CDSGraphManager::fl_hud] });
 #if RENDER!=R_R1
 			if (sh->flags.bEmissive) 
-				RGraph.mapHUDSorted.Emissive.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh_d, i_mask[CDSGraphManager::fl_hud] });
+				RGraph.mapHUDSorted.Emissive.insert(pVisual, DSGraphItem{ val_pObject, xform, sh_d, SSA, i_mask[CDSGraphManager::fl_hud] });
 #endif	//	RENDER!=R_R1
 			return;
 		}
@@ -95,7 +95,7 @@ void CDSGraphManager::r_dsgraph_insert_dynamic(dxRender_Visual *pVisual, Fmatrix
 
 	// Shadows registering
 #if RENDER==R_R1
-	DSGraphItem item = DSGraphItem{ SSA,val_pObject,xform,nullptr,i_mask[CDSGraphManager::fl_hud] };
+	DSGraphItem item = DSGraphItem{ val_pObject, xform, nullptr, SSA, i_mask[CDSGraphManager::fl_hud] };
 	R_dsgraph::mapDSGraphItems::TNode N = { pVisual, item };
 	RImplementation.L_Shadows->add_element(N);
 #endif
@@ -105,7 +105,7 @@ void CDSGraphManager::r_dsgraph_insert_dynamic(dxRender_Visual *pVisual, Fmatrix
 	// strict-sorting selection
 	if (sh->flags.bStrictB2F)
 	{
-		RGraph.mapDynamicSorted.Sorted.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh, i_mask[CDSGraphManager::fl_hud] });
+		RGraph.mapDynamicSorted.Sorted.insert(pVisual, DSGraphItem{ val_pObject, xform, sh, SSA, i_mask[CDSGraphManager::fl_hud] });
 		return;
 	}
 
@@ -116,14 +116,14 @@ void CDSGraphManager::r_dsgraph_insert_dynamic(dxRender_Visual *pVisual, Fmatrix
 	// c) Should not cast shadows
 	// d) Should be rendered to accumulation buffer in the second pass
 	if (sh->flags.bEmissive)
-		RGraph.mapDynamicSorted.Emissive.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh_d, i_mask[CDSGraphManager::fl_hud] });
+		RGraph.mapDynamicSorted.Emissive.insert(pVisual, DSGraphItem{ val_pObject, xform, sh_d, SSA, i_mask[CDSGraphManager::fl_hud] });
 
 	if (sh->flags.bWmark && i_mask[CDSGraphManager::fl_wmarks])
 	{
 		if (i_mask[CDSGraphManager::fl_hud])
-			RGraph.mapHUDSorted.Wmark.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh, i_mask[CDSGraphManager::fl_hud] });
+			RGraph.mapHUDSorted.Wmark.insert(pVisual, DSGraphItem{ val_pObject, xform, sh, SSA, i_mask[CDSGraphManager::fl_hud] });
 		else
-			RGraph.mapDynamicSorted.Wmark.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, sh, i_mask[CDSGraphManager::fl_hud] });
+			RGraph.mapDynamicSorted.Wmark.insert(pVisual, DSGraphItem{ val_pObject, xform, sh, SSA, i_mask[CDSGraphManager::fl_hud] });
 		return;
 	}
 #endif
@@ -176,7 +176,7 @@ void CDSGraphManager::r_dsgraph_insert_dynamic(dxRender_Visual *pVisual, Fmatrix
 #if RENDER==R_R1
 		Ntex->val.insert(pVisual, item);
 #else
-		Ntex->val.insert(pVisual, DSGraphItem{ SSA, val_pObject, xform, nullptr, i_mask[CDSGraphManager::fl_hud] });
+		Ntex->val.insert(pVisual, DSGraphItem{ val_pObject, xform, nullptr, SSA, i_mask[CDSGraphManager::fl_hud] });
 #endif
 
 	}
@@ -197,7 +197,7 @@ void CDSGraphManager::r_dsgraph_insert_static(dxRender_Visual *pVisual)
 	VERIFY(pVisual->shader._get());
 	ShaderElement* sh_d	= &*pVisual->shader->E[4];
 	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && i_mask[sh_d->flags.iPriority/2])
-		RGraph.mapStaticSorted.Distort.insert(pVisual, DSGraphItem{ SSA, nullptr, &Fidentity, sh_d,false });
+		RGraph.mapStaticSorted.Distort.insert(pVisual, DSGraphItem{ nullptr, &Fidentity, sh_d, SSA });
 
 	// Select shader
 	ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual,distSQ);
@@ -210,7 +210,7 @@ void CDSGraphManager::r_dsgraph_insert_static(dxRender_Visual *pVisual)
 	// strict-sorting selection
 	if (sh->flags.bStrictB2F)
 	{
-		RGraph.mapStaticSorted.Sorted.insert(pVisual, DSGraphItem{ SSA, nullptr, &Fidentity, sh,false });
+		RGraph.mapStaticSorted.Sorted.insert(pVisual, DSGraphItem{ nullptr, &Fidentity, sh, SSA });
 		return;
 	}
 
@@ -221,11 +221,11 @@ void CDSGraphManager::r_dsgraph_insert_static(dxRender_Visual *pVisual)
 	// c) Should not cast shadows
 	// d) Should be rendered to accumulation buffer in the second pass
 	if (sh->flags.bEmissive)
-		RGraph.mapStaticSorted.Emissive.insert(pVisual, DSGraphItem{ SSA, nullptr, &Fidentity, sh_d,false });
+		RGraph.mapStaticSorted.Emissive.insert(pVisual, DSGraphItem{ nullptr, &Fidentity, sh_d, SSA });
 
 	if (sh->flags.bWmark && i_mask[CDSGraphManager::fl_wmarks])
 	{
-		RGraph.mapStaticSorted.Wmark.insert(pVisual, DSGraphItem{SSA, nullptr, &Fidentity, sh,false });
+		RGraph.mapStaticSorted.Wmark.insert(pVisual, DSGraphItem{ nullptr, &Fidentity, sh, SSA });
 		return;
 	}
 #endif
@@ -274,7 +274,7 @@ void CDSGraphManager::r_dsgraph_insert_static(dxRender_Visual *pVisual)
 		mapDSGraphStates::TNode* Nstate	= Ncs->val.insert(pass.state->state);
 		mapDSGraphTextures::TNode* Ntex = Nstate->val.insert(pass.T._get());
 
-		Ntex->val.insert(pVisual, DSGraphItem{SSA,nullptr,nullptr,nullptr,false});
+		Ntex->val.insert(pVisual, DSGraphItem{nullptr, nullptr, nullptr, SSA});
 	}
 }
 
@@ -453,7 +453,7 @@ void CDSGraphManager::add_Static(IRenderVisual* piVisual, CFrustum& frustum, u32
 			if (ssa < r_ssaDISCARD)
 				return;
 
-			RGraph.mapLOD.insert(pVisual, { ssa, nullptr, nullptr, nullptr });
+			RGraph.mapLOD.insert(pVisual, { nullptr, nullptr, nullptr, ssa });
 		}
 #if RENDER!=R_R1
 		if (ssa > r_ssaLOD_B || i_mask[CDSGraphManager::fl_shmap])//phase shmap
@@ -507,7 +507,7 @@ void CDSGraphManager::add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 				if (ssa < r_ssaDISCARD)
 					break;
 
-				RGraph.mapLOD.insert(pVisual, { ssa, nullptr, nullptr, nullptr });
+				RGraph.mapLOD.insert(pVisual, { nullptr, nullptr, nullptr, ssa });
 			}
 #if RENDER!=R_R1
 			if (ssa > r_ssaLOD_B || i_mask[CDSGraphManager::fl_shmap])//phase shmap

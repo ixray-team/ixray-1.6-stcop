@@ -120,7 +120,7 @@ void CObject::processing_deactivate	()
 
 void CObject::setEnabled(BOOL _enabled)
 {
-	if (Props.bDestroy) return;
+	if (Props.bDestroy || !SpatialComponent.get()) return;
 	if (_enabled)
 	{
 		Props.bEnabled = 1;	

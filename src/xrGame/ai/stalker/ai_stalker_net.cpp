@@ -74,7 +74,6 @@ void CAI_Stalker::net_Import(NET_Packet& P)
 	}
 
 	R_ASSERT(Remote());
-	u8 flags;
 
 	P.r_float();
 

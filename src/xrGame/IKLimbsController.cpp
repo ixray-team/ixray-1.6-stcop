@@ -350,12 +350,35 @@ void CIKLimbsController:: IKVisualCallback( IKinematics* K )
 			{
 				if(!Sh->m_pPhysicsShell)
 				{
-					PROF_EVENT("IK_UPDATE_CALCULATE");
-					ik->_pose_extrapolation.update(O->XFORM());
-					for (CIKLimb& limb : ik->_bone_chains)
-						ik->LimbUpdate(limb);
+					Fvector ce;
+					O->Center(ce);
+					if (Render->ViewBase.testSphere_dirty(ce, O->Radius()))
+					{
+						if (Device.vCameraPosition.distance_to_sqr(O->Position()) > 3000.f)
+						{
+							//if (Device.dwFrame < ik->optimize_frame)
+							IKinematics* K = O->Visual()->dcast_PKinematics();
+							u16 root = K->LL_GetBoneRoot();
+							CBoneInstance& root_bi = K->LL_GetBoneInstance(root);
+							root_bi.reset_callback();
+							return;
+							//ik->optimize_frame = Device.dwFrame + Random.randI(8);
+						}
 
-					ik->Calculate();
+						PROF_EVENT("IK_UPDATE_CALCULATE");
+						ik->_pose_extrapolation.update(O->XFORM());
+						for (CIKLimb& limb : ik->_bone_chains)
+							ik->LimbUpdate(limb);
+
+						ik->Calculate();
+					}
+					else
+					{
+						IKinematics* K = O->Visual()->dcast_PKinematics();
+						u16 root = K->LL_GetBoneRoot();
+						CBoneInstance& root_bi = K->LL_GetBoneInstance(root);
+						root_bi.reset_callback();
+					}
 				}
 			}
 		}

@@ -8,7 +8,7 @@
 void CDSGraphManager::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM)
 {
 	if (!start) return;
-	PROF_EVENT("CPortalTraverser::traverse")
+	PROF_EVENT("CDSGraphManager::traverse")
 
 	if (i_options & VQ_FADE)
 	{
@@ -26,11 +26,11 @@ void CDSGraphManager::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fmat
 	{
 		for (auto& pair : m_sector_frustums)
 		{
-			pair.val.frustums.clear();
-			pair.val.portals.clear();
+			pair.val.first.clear();
+			pair.val.second.clear();
 		}
 	}
-	i_start->traverse(F,*this);
+	i_start->traverse(std::move(F),*this);
 }
 
 void CDSGraphManager::set_Object(IRenderable* O)

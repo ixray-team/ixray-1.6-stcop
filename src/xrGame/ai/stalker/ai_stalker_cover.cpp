@@ -116,19 +116,8 @@ const CCoverPoint *CAI_Stalker::find_best_cover		(const Fvector &position_to_cov
 	float								minimum_enemy_distance, maximum_enemy_distance;
 	compute_enemy_distances				(minimum_enemy_distance, maximum_enemy_distance);
 
-	if (!best_weapon())
-		m_ce_best->can_use_smart_covers	(false);
-	else {
-		CWeapon* weapon					= smart_cast<CWeapon*>(best_weapon());
-		if (!weapon)
-			m_ce_best->can_use_smart_covers	(false);
-		else {
-			if (weapon->BaseSlot() != INV_SLOT_3)
-				m_ce_best->can_use_smart_covers	(false);
-			else
-				m_ce_best->can_use_smart_covers	(true);
-		}
-	}
+	CInventoryItem* best_wpn = best_weapon();
+	m_ce_best->can_use_smart_covers(best_wpn && best_wpn->cast_weapon() && best_wpn->BaseSlot() == INV_SLOT_3);
 
 	m_ce_best->setup					(position_to_cover_from, minimum_enemy_distance,maximum_enemy_distance,minimum_enemy_distance);
 	const CCoverPoint					*point = ai().cover_manager().best_cover(Position(),10.f,*m_ce_best,CStalkerMovementRestrictor(this,true));

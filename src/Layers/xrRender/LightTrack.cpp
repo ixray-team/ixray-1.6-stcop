@@ -191,8 +191,8 @@ void	CROS_impl::update	(IRenderable* O)
 	if					(0==O->renderable.visual)			return;
 	VERIFY				(smart_cast<CROS_impl*>			(O->renderable_ROS()));
 	//float	dt			=	Device.fTimeDelta;
-
-	CObject*	_object	= smart_cast<CObject*>	(O);
+	PROF_EVENT("CROS_impl::update");
+	CObject*	_object	= O->dcast_CObject();
 
 	// select sample, randomize position inside object
 	vis_data &vis = O->renderable.visual->getVisData();
@@ -347,7 +347,7 @@ void	CROS_impl::update_smooth	(IRenderable* O)
 		return;
 
 	dwFrameSmooth			=	Device.dwFrame;
-
+	PROF_EVENT("CROS_impl::update_smooth");
 #if RENDER==R_R1
 	if (O && (0==result_count)) 
 		update(O)						;	// First time only
@@ -425,7 +425,7 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
 
 void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
 {
-	CObject*	_object	= smart_cast<CObject*>	(O);
+	CObject*	_object	= O->dcast_CObject();
 	float	dt			=	Device.fTimeDelta;
 
 	vis_data &vis = O->renderable.visual->getVisData();

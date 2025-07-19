@@ -60,10 +60,6 @@ bool CAI_Stalker::useful		(const CItemManager *manager, const CGameObject *objec
 	if (!memory().item().useful(object))
 		return			(false);
 
-	const CInventoryItem *inventory_item = GO->cast_inventory_item();
-	if (!inventory_item || !inventory_item->useful_for_NPC())
-		return			(false);
-
 	if(GO->cast_missile())
 	{
 		const CBolt* bolt = smart_cast<const CBolt*>(GO->cast_missile());
@@ -72,7 +68,7 @@ bool CAI_Stalker::useful		(const CItemManager *manager, const CGameObject *objec
 	}
 
 	CInventory			*inventory_non_const = const_cast<CInventory*>(&inventory());
-	CInventoryItem		*inventory_item_non_const = const_cast<CInventoryItem*>(inventory_item);
+	CInventoryItem		*inventory_item_non_const = const_cast<CInventoryItem*>(GO->cast_inventory_item());
 	if (!inventory_non_const->CanTakeItem(inventory_item_non_const))
 		return			(false);
 

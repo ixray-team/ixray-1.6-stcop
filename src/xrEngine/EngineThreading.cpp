@@ -70,6 +70,9 @@ void XRay::Engine::CalculateBonesThread()
 
 		spatial->spatial_updatesector();
 
+		if ((spatial->spatial.type & STYPE_PARTICLE) || (spatial->spatial.type & STYPE_LIGHTSOURCE))
+			return true;
+
 		return false;
 	}), spatials.end());
 

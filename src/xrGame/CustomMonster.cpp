@@ -788,12 +788,6 @@ void CCustomMonster::net_Destroy()
 			&CCustomMonster::update_sound_player
 		)
 	);
-	Device.remove_from_seq_parallel	(
-		xr_make_delegate(
-			this,
-			&CCustomMonster::Exec_Visibility
-		)
-	);
 	
 #ifdef DEBUG
 	if (Level().m_level_debug != nullptr)

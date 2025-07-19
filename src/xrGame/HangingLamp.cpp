@@ -225,7 +225,8 @@ void CHangingLamp::UpdateCL	()
 		if (light_bone!=BI_NONE){
 			Fmatrix M = PKinematics(Visual())->LL_GetTransform_safed(light_bone);
 			xf.mul		(XFORM(),M);
-			VERIFY(!fis_zero(DET(xf)));
+			if (fis_zero(DET(xf)))
+				xf = XFORM();
 		}else{
 			xf.set		(XFORM());
 		}

@@ -31,7 +31,8 @@ bool CItemManager::is_useful		(const CGameObject *object) const
 {
 	return					(m_object->useful(this,object));
 }
-
+#include "memory_manager.h"
+#include "enemy_manager.h"
 bool CItemManager::useful			(const CGameObject *object) const
 {
 	if (object->getDestroy())
@@ -54,21 +55,24 @@ bool CItemManager::useful			(const CGameObject *object) const
 		return false;
 
 	auto gameObject = const_cast<CGameObject*>(object);
-	if (gameObject == nullptr && gameObject->UsedAI_Locations())
+	if (!gameObject->UsedAI_Locations())
 		return false;
 
-	if (!m_object->movement().restrictions().accessible(object->Position()))
+	const CInventoryItem* inventory_item = gameObject ? gameObject->cast_inventory_item() : NULL;
+	if (!inventory_item || !inventory_item->useful_for_NPC())
 		return				(false);
 
-	if (!m_object->movement().restrictions().accessible(object->ai_location().level_vertex_id()))
-		return				(false);
-	CGameObject* GO = const_cast<CGameObject*>(object);
-	const CInventoryItem	*inventory_item = GO ? GO->cast_inventory_item() : NULL;
-	if (inventory_item && !inventory_item->useful_for_NPC())
+	if (m_stalker && !m_stalker->can_take(inventory_item))
 		return				(false);
 
-	if ( m_stalker && (!m_stalker->can_take(inventory_item) || !m_stalker->movement().restrictions().accessible(inventory_item->object().Position())) )
-		return				(false);
+	if (m_stalker && !m_stalker->memory().enemy().selected())
+	{
+		if (!m_object->movement().restrictions().accessible(object->Position()))
+			return				(false);
+
+		if (!m_object->movement().restrictions().accessible(object->ai_location().level_vertex_id()))
+			return				(false);
+	}
 
 	if ( !ai().get_level_graph() )
 		return				(false);

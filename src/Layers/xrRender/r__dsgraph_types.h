@@ -68,10 +68,10 @@ namespace R_dsgraph
 {
 	struct DSGraphItem
 	{
-		float ssa = 0.0f;
 		IRenderable* pObject = nullptr;
 		Fmatrix* pMatrix = nullptr;
 		ShaderElement* pSE = nullptr;
+		float ssa = 0.0f;
 		bool b_hud_mode = false;
 	};
 
