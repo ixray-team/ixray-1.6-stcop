@@ -64,8 +64,8 @@ void UIGameMP::ShowMapDesc()
 
 bool UIGameMP::IsServerInfoShown	()
 {
-	VERIFY(m_pServerInfo);
-	return m_pServerInfo->IsShown();
+	if (m_pServerInfo)
+		return m_pServerInfo->IsShown();
 }
 
 //shows only if it has some info ...
@@ -74,7 +74,6 @@ bool UIGameMP::ShowServerInfo()
 	if (Level().IsDemoPlay())
 		return true;
 
-	VERIFY2(m_pServerInfo, "game client UI not created");
 	if (!m_pServerInfo)
 	{
 		return false;
@@ -112,16 +111,18 @@ void UIGameMP::SetClGame(game_cl_GameState* g)
 
 		xr_delete(m_pServerInfo);
 	}
-	m_pServerInfo			= new CUIServerInfo();	
+	CUIXml xml_doc;
+	if (xml_doc.Load(CONFIG_PATH, UI_PATH, "server_info.xml"))
+		m_pServerInfo			= new CUIServerInfo();
 }
 
 void UIGameMP::SetServerLogo(u8 const * data_ptr, u32 data_size)
 {
-	VERIFY(m_pServerInfo);
-	m_pServerInfo->SetServerLogo(data_ptr, data_size);
+	if (m_pServerInfo)
+		m_pServerInfo->SetServerLogo(data_ptr, data_size);
 }
 void UIGameMP::SetServerRules(u8 const * data_ptr, u32 data_size)
 {
-	VERIFY(m_pServerInfo);
-	m_pServerInfo->SetServerRules(data_ptr, data_size);
+	if (m_pServerInfo)
+		m_pServerInfo->SetServerRules(data_ptr, data_size);
 }
