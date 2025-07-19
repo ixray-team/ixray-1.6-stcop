@@ -262,6 +262,7 @@ void CUIStatsPlayerList::Update()
 	{
 		if(items.empty())
 		{
+			xrCriticalSectionGuard guard(csUi);
 			Clear();
 			ShowHeader(false);
 			return;

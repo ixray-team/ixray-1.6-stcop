@@ -120,6 +120,8 @@ class CUIGameCustom :
 {
 protected:
 	CUIWindow*			m_window;
+	CUICaption*			GameCaptions			() {return m_pgameCaptions;}
+	CUICaption*			m_pgameCaptions;
 	CUIXml*				m_msgs_xml;
 	typedef xr_vector<SDrawStaticStruct*>	st_vec;
 	typedef st_vec::iterator				st_vec_it;
@@ -177,6 +179,11 @@ public:
 	void				StartCarBody			(CInventoryOwner* pActorInv, CInventoryBox* pBox);
 
 	virtual void		HideShownDialogs		();
+
+			void		AddCustomMessage		(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color);
+			void		AddCustomMessage		(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color/*, LPCSTR def_text*/, float flicker );
+			void		CustomMessageOut		(LPCSTR id, LPCSTR msg, u32 color);
+			void		RemoveCustomMessage		(LPCSTR id);
 
 	SDrawStaticStruct*	AddCustomStatic			(LPCSTR id, bool bSingleInstance, float ttlDefault = -1.0f);
 	SDrawStaticStruct*	AddHudMessage			(LPCSTR text, LPCSTR text2 = nullptr, LPCSTR id = nullptr, bool trnslate_second_text = false, float time = 3.f, bool bSingleInstance = true);
