@@ -93,10 +93,14 @@ static void 	build_callback	(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, 
 {
 	g_pGameLevel->Load_GameSpecific_CFORM( T, Tcnt );
 }
-
+xrCriticalSection lloadcs;
 BOOL IGame_Level::Load			(u32 dwNum) 
 {
 	PROF_EVENT("IGame_Level::Load");
+	xrCriticalSectionGuard guard(&lloadcs);
+	if (bReady) return TRUE;
+	extern xr_task_group prefetch_task;
+	prefetch_task.wait();
 	// Initialize level data
 	pApp->Level_Set				( dwNum );
 	string_path					temp;
@@ -118,7 +122,7 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	// CForms
 	g_pGamePersistent->SetLoadStageTitle("st_loading_cform");
 	g_pGamePersistent->LoadTitle	();
-	ObjectSpace.Load			( build_callback );
+	ObjectSpace.Load			( [](Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* params){g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);});
 	//Sound->set_geometry_occ		( &Static );
 	Sound->set_geometry_occ		(ObjectSpace.GetStaticModel	());
 	Sound->set_handler			( _sound_event );

@@ -298,7 +298,7 @@ void CALifeUpdateManager::new_game			(LPCSTR save_name)
 		funct((LPCSTR)save_name);
 	}
 }
-
+extern xr_task_group level_load;
 void CALifeUpdateManager::load			(LPCSTR game_name, bool no_assert, bool new_only)
 {
 	PROF_EVENT("Load Alife Simulator");
@@ -325,6 +325,7 @@ void CALifeUpdateManager::load			(LPCSTR game_name, bool no_assert, bool new_onl
 #endif
 	g_pGamePersistent->SetLoadStageTitle("st_server_connecting");
 	g_pGamePersistent->LoadTitle		(true, g_pGameLevel->name());
+	level_load.wait();
 }
 
 void CALifeUpdateManager::reload		(LPCSTR section)

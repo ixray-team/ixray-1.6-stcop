@@ -206,73 +206,6 @@ void execUserScript()
 	Console->ExecuteScript(Console->ConfigFile);
 }
 
-ENGINE_API void EngineLoadStage4()
-{
-	PROF_EVENT("EngineLoadStage4");
-	InitSound1();
-	execUserScript();
-	InitSound2();
-
-	// ...command line for auto start
-	{
-		LPCSTR	pStartup = strstr(Core.Params, "-start ");
-		if (pStartup)				Console->Execute(pStartup + 1);
-	}
-	{
-		LPCSTR	pStartup = strstr(Core.Params, "-load ");
-		if (pStartup)				Console->Execute(pStartup + 1);
-	}
-
-	// Initialize APP
-	g_FontManager = new CFontManager();
-	bool ValidRenderDeviceInit = Device.InitRenderDevice(Engine.External.GetAPI());
-	R_ASSERT(ValidRenderDeviceInit);
-
-	Device.Create();
-	g_FontManager->InitializeFonts();
-	pFPSCounter = new FPS::FPSCounter();
-}
-
-ENGINE_API void EngineLoadStage5()
-{
-	PROF_EVENT("EngineLoadStage5");
-	LALib.OnCreate();
-	pApp = new CApplication();
-	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
-	g_SpatialSpace = new ISpatial_DB();
-	g_SpatialSpacePhysic = new ISpatial_DB();
-	g_SpatialSpaceLights = new ISpatial_DB();
-
-	// Main cycle
-	//Memory.mem_usage();
-	Device.Run					( );
-	// Destroy APP
-	xr_delete					( g_SpatialSpacePhysic	);
-	xr_delete					( g_SpatialSpace		);
-	DEL_INSTANCE				( g_pGamePersistent		);
-	xr_delete					( pApp					);
-	g_pEventManager->Event.Dump			( );
-
-	xr_delete(pFPSCounter);
-
-	// Destroying
-//.	destroySound();
-	destroyInput();
-
-	destroySettings();
-
-	LALib.OnDestroy				( );
-	
-	destroyConsole();
-
-	//очищение памяти таблицы строк
-	CStringTable::Destroy();
-
-	destroySound();
-	destroyEngine();
-}
-
-
 #define dwStickyKeysStructSize sizeof( STICKYKEYS )
 #define dwFilterKeysStructSize sizeof( FILTERKEYS )
 #define dwToggleKeysStructSize sizeof( TOGGLEKEYS )
@@ -452,6 +385,76 @@ ENGINE_API void EngineLoadStage3()
 		sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
 		xr_strcpy(Console->ConfigFile, c_name);
 	}
+}
+
+ENGINE_API void EngineLoadStage4()
+{
+	PROF_EVENT("EngineLoadStage4");
+	InitSound1();
+	execUserScript();
+	InitSound2();
+
+	// ...command line for auto start
+	{
+		LPCSTR	pStartup = strstr(Core.Params, "-start ");
+		if (pStartup)				Console->Execute(pStartup + 1);
+	}
+	{
+		LPCSTR	pStartup = strstr(Core.Params, "-load ");
+		if (pStartup)				Console->Execute(pStartup + 1);
+	}
+
+	// Initialize APP
+	g_FontManager = new CFontManager();
+
+	bool ValidRenderDeviceInit = Device.InitRenderDevice(Engine.External.GetAPI());
+	R_ASSERT(ValidRenderDeviceInit);
+
+	Device.Create();
+
+	g_FontManager->InitializeFonts();
+
+	PROF_EVENT("pFPSCounter");
+	pFPSCounter = new FPS::FPSCounter();
+}
+
+ENGINE_API void EngineLoadStage5()
+{
+	PROF_EVENT("EngineLoadStage5");
+	LALib.OnCreate();
+	pApp = new CApplication();
+	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
+	g_SpatialSpace = new ISpatial_DB();
+	g_SpatialSpacePhysic = new ISpatial_DB();
+	g_SpatialSpaceLights = new ISpatial_DB();
+
+	// Main cycle
+	//Memory.mem_usage();
+	Device.Run();
+	// Destroy APP
+	xr_delete(g_SpatialSpacePhysic);
+	xr_delete(g_SpatialSpace);
+	DEL_INSTANCE(g_pGamePersistent);
+	xr_delete(pApp);
+	g_pEventManager->Event.Dump();
+
+	xr_delete(pFPSCounter);
+
+	// Destroying
+//.	destroySound();
+	destroyInput();
+
+	destroySettings();
+
+	LALib.OnDestroy();
+
+	destroyConsole();
+
+	//очищение памяти таблицы строк
+	CStringTable::Destroy();
+
+	destroySound();
+	destroyEngine();
 }
 
 int ENGINE_API WinMain_impl(HINSTANCE hInstance,

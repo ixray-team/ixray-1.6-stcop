@@ -203,22 +203,25 @@ public:
 public:
 	IC	CTexture*					get_ActiveTexture			(u32 stage)
 	{
-		if (stage<CTexture::rstVertex)			return textures_ps[stage];
-		else if (stage<CTexture::rstGeometry)	return textures_vs[stage-CTexture::rstVertex];
+		CTexture* T = NULL;
+		if (stage<CTexture::rstVertex)			T = textures_ps[stage];
+		else if (stage<CTexture::rstGeometry)	T = textures_vs[stage-CTexture::rstVertex];
 #ifdef USE_DX11
-		else if (stage<CTexture::rstHull)	return textures_gs[stage-CTexture::rstGeometry];
-		else if (stage<CTexture::rstDomain) return textures_hs[stage-CTexture::rstHull];
-		else if (stage<CTexture::rstCompute) return textures_ds[stage-CTexture::rstDomain];
-		else if (stage<CTexture::rstInvalid) return textures_cs[stage-CTexture::rstCompute];
+		else if (stage<CTexture::rstHull)	T = textures_gs[stage-CTexture::rstGeometry];
+		else if (stage<CTexture::rstDomain) T = textures_hs[stage-CTexture::rstHull];
+		else if (stage<CTexture::rstCompute) T = textures_ds[stage-CTexture::rstDomain];
+		else if (stage<CTexture::rstInvalid) T = textures_cs[stage-CTexture::rstCompute];
+#endif
 		else
 		{
 			VERIFY(!"Invalid texture stage");
-			return 0;
 		}
-#else //USE_DX11
-		VERIFY(!"Invalid texture stage");
-		return 0;
-#endif
+		while (T&&!T->flags.bLoaded)
+		{
+			SwitchToThread();
+		}
+
+		return T;
 	}
 
 #ifdef USE_DX11

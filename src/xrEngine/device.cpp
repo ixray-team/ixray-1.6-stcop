@@ -94,8 +94,8 @@ void CRenderDevice::End(void)
 
 			m_pRender->ResourcesDestroyNecessaryTextures	();
 			Memory.mem_compact								();
-			// Msg("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
-			Msg												("* End of synchronization A[%d] R[%d]",b_is_Active, b_is_Ready);
+			//Msg												("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
+			//Msg												("* End of synchronization A[%d] R[%d]",b_is_Active, b_is_Ready);
 			if (loading_save_timer_started) 
 			{
 				Msg("* Game Loading Timer: Finished for %d ms", loading_save_timer.GetElapsed_ms());
@@ -188,8 +188,8 @@ void CRenderDevice::on_idle		()
 	{
 		{
 			PROF_EVENT("Loading...");
-		if (g_loading_events.front()())
-			g_loading_events.pop_front();
+			if (g_loading_events.front()())
+				g_loading_events.pop_front();
 		}
 		PROF_EVENT("LoadDraw");
 		pApp->LoadDraw();
@@ -350,7 +350,7 @@ void CRenderDevice::Run()
 	// Message cycle
 	seqAppStart.Process(rp_AppStart);
 
-	m_pRender->ClearTarget();
+	//m_pRender->ClearTarget();
 	message_loop();
 
 	seqAppEnd.Process(rp_AppEnd);

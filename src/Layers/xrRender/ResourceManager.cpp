@@ -146,6 +146,7 @@ ShaderElement* CResourceManager::_CreateElement			(ShaderElement& S)
 
 void CResourceManager::_DeleteElement(const ShaderElement* S)
 {
+	xrCriticalSectionGuard guard(creationGuard);
 	if (0==(S->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	if (reclaim(v_elements,S))						return;
 	Msg	("! ERROR: Failed to find compiled 'shader-element'");
@@ -351,16 +352,20 @@ void CResourceManager::DeferredUpload()
 	if (!RDEVICE.b_is_Ready) return;
 
 #ifndef _EDITOR
-	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
-		xr_parallel_foreach(m_textures.begin(), m_textures.end(), [](auto& pair)
+	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD))
+	{
+		static DWORD this_thread_id = 0;
+		this_thread_id = GetCurrentThreadId();
+		xr_parallel_foreach(m_textures.begin(), m_textures.end(), [](std::pair<const char* const, CTexture*>& pair)
 		{
+			if (this_thread_id != GetCurrentThreadId()) { PROF_THREAD("X-Ray PPL Thread") }
 			pair.second->Load();
 		});
 	} 
 	else 
 #endif // _EDITOR
 	{
-		for (auto& pair : m_textures) {
+		for (std::pair<const char* const, CTexture*>& pair : m_textures) {
 			pair.second->Load();
 		}
 	}

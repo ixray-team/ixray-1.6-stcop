@@ -10,15 +10,13 @@ ILevelGraph::~ILevelGraph()
 {
 }
 
-#include <memory_resource>
+
 bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPath, float MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const
 {
 	// Пул памяти для минимизации аллокаций
-	static thread_local std::array<std::byte, 1024 * 1024> buffer; // Буфер на 1 МБ
-	static thread_local std::pmr::monotonic_buffer_resource pool{ buffer.data(), buffer.size() };
-	static thread_local std::pmr::unordered_map<u32, u32> TempCameFrom{ &pool };
-	static thread_local std::pmr::unordered_map<u32, float> TempCostSoFar{ &pool };
-	static thread_local std::pmr::vector<std::pair<float, u32>> TempPriorityNode{ &pool };
+	static thread_local std::unordered_map<u32, u32> TempCameFrom{};
+	static thread_local std::unordered_map<u32, float> TempCostSoFar{};
+	static thread_local std::vector<std::pair<float, u32>> TempPriorityNode{};
 
 	// Очистка данных
 	TempCameFrom.clear();

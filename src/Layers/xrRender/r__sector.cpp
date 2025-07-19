@@ -136,7 +136,7 @@ void CSector::traverse(CFrustum &F, CDSGraphManager& DM)
 		}
 	}
 
-	SNODE->val.frustums.push_back(std::move(F));
+	SNODE->val.frustums.push_back(F);
 }
 
 void CSector::load(IReader& fs)

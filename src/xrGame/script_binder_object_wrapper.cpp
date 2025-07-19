@@ -123,7 +123,7 @@ bool CScriptBinderObjectWrapper::net_SaveRelevant_static(CScriptBinderObject *sc
 
 void CScriptBinderObjectWrapper::net_Relcase			(CScriptGameObject *object)
 {
-	luabind::call_member<void>		(this,"net_Relcase",object);
+	//luabind::call_member<void>		(this,"net_Relcase",object);
 }
 
 void CScriptBinderObjectWrapper::net_Relcase_static		(CScriptBinderObject *script_binder_object, CScriptGameObject *object)

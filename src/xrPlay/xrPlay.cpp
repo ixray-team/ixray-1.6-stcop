@@ -55,14 +55,22 @@ void EnumerateDisplayModes()
 	}
 }
 
-
+#include "../xrEngine/Render.h"
 void MigrateToGameWindow()
 {
 	PROF_EVENT("MigrateToGameWindow");
 	SDL_ShowWindow(g_AppInfo.Window);
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
-		
-	Console->Execute("vid_restart");
+
+	if(Render->get_generation()== IRender_interface::GENERATION_DX90)
+	{
+		Device.Reset();
+	}
+	else
+	{
+		Device.ResizeWindow(psCurrentVidMode[0], psCurrentVidMode[1]);
+	}
+	
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Device.Width, &Device.Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
 }
@@ -127,17 +135,17 @@ int APIENTRY WinMain
 
 	EngineLoadStage1(lpCmdLine);
 
-		{
-			PROF_EVENT("g_pGPU");
-	g_pGPU = new CNvReader();
-	g_pGPU->Initialize();
-	if (!((CNvReader*)(g_pGPU))->bSupport)
 	{
-		xr_delete(g_pGPU);
-		g_pGPU = new CAMDReader;
+		PROF_EVENT("g_pGPU");
+		g_pGPU = new CNvReader();
 		g_pGPU->Initialize();
-	}
+		if (!((CNvReader*)(g_pGPU))->bSupport)
+		{
+			xr_delete(g_pGPU);
+			g_pGPU = new CAMDReader;
+			g_pGPU->Initialize();
 		}
+	}
 #ifdef DEBUG
 	xrLogger::EnableFastDebugLog();
 #endif
@@ -170,19 +178,16 @@ int APIENTRY WinMain
 
 	Engine.External.Initialize();
 
-	//Console->Execute("stat_memory");
 	Msg("IX-Ray CoP %s build info: hash[%s] branch[%s] commit author[%s]", _VER, _HASH, _BRANCH, _AUTHOR);
-
+	splash::hide();
 	EngineLoadStage4();
 
 	LoadCustomSettings();
 
 	// Splash wnd => Game wnd
-	splash::hide();
-		SDL_DestroyWindow(wnd1);
-		
+	SDL_DestroyWindow(wnd1);
 	MigrateToGameWindow();
-	
+
 #ifdef DEBUG_DRAW
 	RenderUI();
 	EditorLuaInit();

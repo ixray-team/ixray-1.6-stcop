@@ -347,6 +347,7 @@ public:
 	virtual ~CLevel();
 
 	//названияе текущего уровня
+	void						set_name				(const shared_str& level_name){ map_data.m_name = level_name;}
 	virtual shared_str			name					() const;
 			shared_str			version					() const { return map_data.m_map_version.c_str(); } //this method can be used ONLY from CCC_ChangeGameType
 

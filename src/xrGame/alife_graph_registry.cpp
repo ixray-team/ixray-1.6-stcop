@@ -63,10 +63,27 @@ void CALifeGraphRegistry::update			(CSE_ALifeDynamicObject *object)
 	if (!item || !item->attached())
 		add							(object,object->m_tGraphID);
 }
-
-void CALifeGraphRegistry::setup_current_level	()
+#include "level.h"
+xr_task_group level_load;
+void CALifeGraphRegistry::setup_current_level()
 {
-	m_level						= new CALifeLevelRegistry(ai().game_graph().vertex(actor()->m_tGraphID)->level_id());
+	u8 level_id = ai().game_graph().vertex(actor()->m_tGraphID)->level_id();
+
+	if(!Device.IsEditorMode())
+	{
+		GameGraph::LEVEL_MAP::const_iterator I = ai().game_graph().header().levels().find(level_id);
+		Level().set_name((*I).second.name());
+		int levelid = pApp->Level_ID(*(*I).second.name(), "1.0", true);
+		static std::thread::id this_thread_id;
+		this_thread_id = std::this_thread::get_id();
+		level_load.run([=]()
+		{
+			if (this_thread_id != std::this_thread::get_id()) { PROF_THREAD("X-Ray PPL Thread") }
+			Level().Load(levelid);
+		});
+	}
+
+	m_level						= new CALifeLevelRegistry(level_id);
 	level().set_process_time	(m_process_time);
 	for (int i=0, n=ai().game_graph().header().vertex_count(); i<n; ++i)
 		if (ai().game_graph().vertex(i)->level_id() == level().level_id()) {
@@ -87,8 +104,12 @@ void CALifeGraphRegistry::setup_current_level	()
 	GameGraph::LEVEL_MAP::const_iterator I = ai().game_graph().header().levels().find(ai().game_graph().vertex(actor()->m_tGraphID)->level_id());
 	R_ASSERT2					(ai().game_graph().header().levels().end() != I,"Graph point level ID not found!");
 
-	int							id = pApp->Level_ID(*(*I).second.name(),"1.0", true);
-	VERIFY3						(id >= 0,"Level is corrupted or doesn't exist",*(*I).second.name());
+	if (Device.IsEditorMode())
+	{
+		int							id = pApp->Level_ID(*(*I).second.name(), "1.0", true);
+		VERIFY3(id >= 0, "Level is corrupted or doesn't exist", *(*I).second.name());
+	}
+
 	ai().load					(*(*I).second.name());
 }
 
