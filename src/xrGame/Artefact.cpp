@@ -77,7 +77,15 @@ void CArtefact::Load(LPCSTR section)
 				IKinematics* K			= PKinematics(Visual());
 				R_ASSERT2				(K, cNameSect().c_str());
 				u16 bone_id				= K->LL_BoneID(m_sParticlesBone.c_str());
-				R_ASSERT2				(bone_id!=BI_NONE, m_sParticlesBone.c_str());
+				
+				if (bone_id == BI_NONE)
+				{
+					shared_str message;
+					message.printf("Can`t find particle bone [%s] in [%s] section", m_sParticlesBone.c_str(), section);
+					
+					R_ASSERT2(bone_id!=BI_NONE, message.c_str());
+				}
+
 				CParticlesPlayer::AppendBone(bone_id);
 			}
 		}
@@ -191,7 +199,14 @@ void CArtefact::SwitchAfParticles(bool bOn)
 			IKinematics* K			= PKinematics(Visual());
 			R_ASSERT2				(K, cNameSect().c_str());
 			u16 bone_id				= K->LL_BoneID(m_sParticlesBone.c_str());
-			R_ASSERT2				(bone_id!=BI_NONE, m_sParticlesBone.c_str());
+			if (bone_id == BI_NONE)
+			{
+				shared_str message;
+				message.printf("Can`t find particle bone [%s]", m_sParticlesBone.c_str());
+
+				R_ASSERT2(bone_id != BI_NONE, message.c_str());
+			}
+
 			CParticlesPlayer::StartParticles(m_sParticlesName,bone_id,dir,ID(),-1, false);
 			
 	}else
@@ -567,7 +582,14 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 			IKinematics* K			= PKinematics(m_parent->Visual());
 			R_ASSERT2				(K, m_parent->cNameSect().c_str());
 			u16 bone_id				= K->LL_BoneID(m_parent->PS_bone());
-			R_ASSERT2				(bone_id!=BI_NONE, m_parent->PS_bone());
+
+			if (bone_id == BI_NONE)
+			{
+				shared_str message;
+				message.printf("Can`t find particle bone [%s] in [%s] section", m_parent->PS_bone(), m_parent->cNameSect().c_str());
+
+				R_ASSERT2(bone_id != BI_NONE, message.c_str());
+			}
 
 			m_parent->CParticlesPlayer::StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID());
 		}
@@ -592,7 +614,14 @@ void SArtefactDetectorsSupport::Blink()
 		IKinematics* K			= PKinematics(m_parent->Visual());
 		R_ASSERT2				(K, m_parent->cNameSect().c_str());
 		u16 bone_id				= K->LL_BoneID(m_parent->PS_bone());
-		R_ASSERT2				(bone_id!=BI_NONE, m_parent->PS_bone());
+
+		if (bone_id == BI_NONE)
+		{
+			shared_str message;
+			message.printf("Can`t find particle bone [%s] in [%s] section", m_parent->PS_bone(), m_parent->cNameSect().c_str());
+
+			R_ASSERT2(bone_id != BI_NONE, message.c_str());
+		}
 
 		m_parent->CParticlesPlayer::StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID(), 1000, true);
 	}
