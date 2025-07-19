@@ -389,9 +389,21 @@ void CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
 void CModelPool::Prefetch()
 {
 	// prefetch visuals
-	string256 section;
-	xr_strconcat(section, "prefetch_visuals_", g_pGamePersistent->m_game_params.m_game_type);
-	CInifile::Sect& sect = pSettings->r_section(section);
+	xr_string section = "prefetch_visuals_";
+	section += g_pGamePersistent->m_game_params.m_game_type;
+
+	// Workaround for SoC sections
+	if (!pSettings->section_exist(section.c_str()))
+	{
+		if (section.compare("prefetch_visuals_dm"))
+			section = "prefetch_visuals_deathmatch";
+		if (section.compare("prefetch_visuals_tdm"))
+			section = "prefetch_visuals_teamdeathmatch";
+		if (section.compare("prefetch_visuals_ah"))
+			section = "prefetch_visuals_artefacthunt";
+	}
+
+	CInifile::Sect& sect = pSettings->r_section(section.c_str());
 	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
 	{
 		const CInifile::Item& item = *I;

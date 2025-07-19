@@ -17,6 +17,7 @@
 #include "map_location.h"
 #include "clsid_game.h"
 #include "ui/UIActorMenu.h"
+#include "ui/uiinventorywnd.h"
 #include "Weapon.h"
 #include "../xrEngine/string_table.h"
 
@@ -245,8 +246,10 @@ BOOL game_cl_Deathmatch::CanCallBuyMenu			()
 	{
 		return FALSE;
 	};
-	if ( m_game_ui && m_game_ui->ActorMenu().IsShown() )
+	if ( m_game_ui )
 	{
+		if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown()) 
+			|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
 		return FALSE;
 	}
 	/*if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
@@ -259,8 +262,10 @@ BOOL game_cl_Deathmatch::CanCallBuyMenu			()
 BOOL game_cl_Deathmatch::CanCallSkinMenu			()
 {
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
-	if ( m_game_ui && m_game_ui->ActorMenu().IsShown() )
+	if ( m_game_ui )
 	{
+		if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown()) 
+			|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
 		return FALSE;
 	}
 	/*if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
@@ -660,9 +665,11 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 	//-----------------------------------------------
 	//if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown() && !CanCallInventoryMenu())
 	//	StartStopMenu(m_game_ui->m_pInventoryMenu,true);
-	if ( m_game_ui && m_game_ui->ActorMenu().IsShown() && !CanCallInventoryMenu() )
+	if ( m_game_ui )
 	{
-		m_game_ui->HideActorMenu();
+		if (((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown())
+			|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown())) && !CanCallInventoryMenu())
+			m_game_ui->HideActorMenu();
 	}
 		
 	//-----------------------------------------
@@ -747,7 +754,8 @@ bool	game_cl_Deathmatch::OnKeyboardPress			(int key)
 		{
 			if (m_game_ui)
 			{
-				if ( m_game_ui->ActorMenu().IsShown() )
+				if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown())
+					|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
 				{
 					m_game_ui->HideActorMenu();
 				}
@@ -1112,7 +1120,8 @@ void				game_cl_Deathmatch::OnGameRoundStarted				()
 	}
 	if (pCurBuyMenu) pCurBuyMenu->ClearPreset(_preset_idx_last);
 	//-----------------------------------------------------------------
-	if ( m_game_ui && m_game_ui->ActorMenu().IsShown() )
+	if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown())
+		|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
 	{
 		m_game_ui->HideActorMenu();
 	}
@@ -1189,9 +1198,11 @@ void game_cl_Deathmatch::OnPlayerFlagsChanged(game_PlayerState* ps)
 
 	if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 	{
-		if ( ps == local_player && m_game_ui && m_game_ui->ActorMenu().IsShown() )
+		if ( ps == local_player && m_game_ui)
 		{
-			m_game_ui->HideActorMenu();
+			if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown())
+				|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
+				m_game_ui->HideActorMenu();
 		}
 		return;
 	}
