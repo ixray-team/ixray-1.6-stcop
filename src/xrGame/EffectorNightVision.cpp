@@ -8,6 +8,8 @@
 #include "CustomOutfit.h"
 #include "ActorHelmet.h"
 
+ENGINE_API extern bool turn_nvg;
+
 void CNightVisionEffector::SwitchNightVision()
 {
 	if (OnClient())
@@ -102,7 +104,17 @@ CNightVisionEffector::~CNightVisionEffector()
 
 void CNightVisionEffector::Start(const shared_str& sect, bool play_sound)
 {
-	AddEffector(m_pActor, effNightvision, sect);
+	static const bool used_shader_nvg = !!psDeviceFlags.test(rsR4);
+
+	if (used_shader_nvg)
+	{
+		turn_nvg = true;
+	}
+	else
+	{
+		AddEffector(m_pActor, effNightvision, sect);
+	}
+
 	if (play_sound)
 	{
 		PlaySounds(eStartSound);
@@ -112,24 +124,42 @@ void CNightVisionEffector::Start(const shared_str& sect, bool play_sound)
 
 void CNightVisionEffector::Stop(const float factor, bool play_sound)
 {
-	CEffectorPP* pp = m_pActor->Cameras().GetPPEffector((EEffectorPPType)effNightvision);
-	if (pp)
+	static const bool used_shader_nvg = !!psDeviceFlags.test(rsR4);
+
+	if (used_shader_nvg)
 	{
-		pp->Stop(factor);
-
-		if (play_sound)
+		if (turn_nvg)
 		{
-			PlaySounds(eStopSound);
-		}
+			turn_nvg = false;
+			if (play_sound)
+			{
+				PlaySounds(eStopSound);
+			}
 
-		m_sounds.StopSound("NightVisionIdleSnd");
+			m_sounds.StopSound("NightVisionIdleSnd");
+		}
+	}
+	else
+	{
+		CEffectorPP* pp = m_pActor->Cameras().GetPPEffector((EEffectorPPType)effNightvision);
+		if (pp)
+		{
+			pp->Stop(factor);
+
+			if (play_sound)
+			{
+				PlaySounds(eStopSound);
+			}
+
+			m_sounds.StopSound("NightVisionIdleSnd");
+		}
 	}
 }
 
 bool CNightVisionEffector::IsActive()
 {
 	CEffectorPP* pp = m_pActor->Cameras().GetPPEffector((EEffectorPPType)effNightvision);
-	return pp != nullptr;
+	return pp != nullptr || turn_nvg;
 }
 
 void CNightVisionEffector::PlaySounds(EPlaySounds which)
