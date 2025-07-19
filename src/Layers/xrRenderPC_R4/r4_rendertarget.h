@@ -47,6 +47,7 @@ public:
 	IBlender*					b_gtao;
 	IBlender*					b_taa;
 	IBlender*					b_gamma;
+	IBlender*					b_nvg;
 
 #ifdef DEBUG
 	struct		dbg_line_t		{
@@ -132,6 +133,7 @@ private:
 	ref_shader					s_gtao;
 	ref_shader					s_puddles;
 	ref_shader					s_taa;
+	ref_shader					s_nvg;
 
 	// For gamma correction in windowed mode
 	ref_shader					s_gamma;
@@ -287,6 +289,8 @@ public:
 
 	void						phase_gtao				();
 	void						phase_sslr				();
+
+	void						phase_nvg				();
 
 	void						phase_puddles			();
 
