@@ -100,6 +100,8 @@ file(GLOB_RECURSE XGM_SOURCE_SERV_FILES
 	"xrServer*.*"
 	"game_*.*"
 )
+file(GLOB_RECURSE XGM_SOURCE_STORY_ID_FILES "ScriptsSubsystems/StoryID/*.*")
+file(GLOB_RECURSE XGM_SOURCE_CONDLIST_ID_FILES "ScriptsSubsystems/Condlist/*.*")
 
 file(GLOB_RECURSE XGM_SOURCE_AI_STALKER_FILES "ai/stalker/*.*")
 file(GLOB_RECURSE XGM_SOURCE_AI_TRADER_FILES "ai/trader/*.*")
@@ -167,6 +169,7 @@ source_group("inventory" FILES ${XGM_SOURCE_INV_FILES})
 source_group("weapons" FILES ${XGM_SOURCE_WPN_FILES})
 source_group("ai/legacy_planner" FILES ${XGM_SOURCE_LEGACY_FILES})
 source_group("AnimNotify" FILES ${XGM_SOURCE_ANIM_NOTIFY_FILES})
+source_group("scripts/story_id" FILES ${XGM_SOURCE_STORY_ID_FILES})
 source_group("scripts/condlist" FILES ${XGM_SOURCE_CONDLIST_ID_FILES})
 source_group("scripts/others" FILES ${XGM_SOURCE_SCRIPT_FILES})
 
