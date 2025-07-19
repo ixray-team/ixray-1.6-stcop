@@ -103,6 +103,7 @@ file(GLOB_RECURSE XGM_SOURCE_SERV_FILES
 
 file(GLOB_RECURSE XGM_SOURCE_AI_STALKER_FILES "ai/stalker/*.*")
 file(GLOB_RECURSE XGM_SOURCE_AI_TRADER_FILES "ai/trader/*.*")
+file(GLOB_RECURSE XGM_SOURCE_CONDLIST_ID_FILES "ScriptsSubsystems/Condlist/*.*")
 file(GLOB_RECURSE XGM_SOURCE_AI_BASE_FILES "ai/monsters/base_monster/*.*")
 file(GLOB_RECURSE XGM_SOURCE_AI_GS_FILES "ai/monsters/group_states/*.*")
 file(GLOB_RECURSE XGM_SOURCE_AI_STATE_FILES "ai/monsters/states/*.*")
@@ -166,6 +167,8 @@ source_group("inventory" FILES ${XGM_SOURCE_INV_FILES})
 source_group("weapons" FILES ${XGM_SOURCE_WPN_FILES})
 source_group("ai/legacy_planner" FILES ${XGM_SOURCE_LEGACY_FILES})
 source_group("AnimNotify" FILES ${XGM_SOURCE_ANIM_NOTIFY_FILES})
+source_group("scripts/condlist" FILES ${XGM_SOURCE_CONDLIST_ID_FILES})
+source_group("scripts/others" FILES ${XGM_SOURCE_SCRIPT_FILES})
 
 source_group("imgui/utils" FILES ${XGM_SOURCE_IMGUI_INGAME_FILES})
 source_group("ai/scripting" FILES ${XGM_SOURCE_AI_SCRIPT})
