@@ -12,7 +12,9 @@ namespace compression
 		VERIFY(dest == nullptr);
 		string_path			file_name;
 		FS.update_path(file_name, _game_config_, "mp\\ppmd_updates.mdl");
-		R_ASSERT2(FS.exist(file_name), "can't find configs\\mp\\ppmd_updates.mdl");
+
+		if(!FS.exist(file_name))
+			return;
 
 		IReader* reader = FS.r_open(file_name);
 		R_ASSERT(reader);
@@ -34,14 +36,17 @@ namespace compression
 
 	XRNETSERVER_API void init_lzo(u8*& dest_wm, u8*& wm_buffer, lzo_dictionary_buffer& dest_dict)
 	{
+		string_path			file_name;
+		FS.update_path(file_name, "$game_config$", "mp\\lzo_updates.dic");
+
+		if (!FS.exist(file_name))
+			return;
+
 		lzo_initialize();
 		wm_buffer = static_cast<u8*>(xr_malloc(LZO1X_999_MEM_COMPRESS + 16));
 		// buffer must be alligned to 16 bytes
 		dest_wm = (u8*)(size_t(wm_buffer + 16) & ~0xf);
 
-		string_path			file_name;
-		FS.update_path(file_name, _game_config_, "mp\\lzo_updates.dic");
-		R_ASSERT2(FS.exist(file_name), "can't find configs\\mp\\lzo_updates.dic");
 		IReader* reader = FS.r_open(file_name);
 		u32					buffer_size = reader->length();
 		u8* buffer = (u8*)xr_malloc(buffer_size);

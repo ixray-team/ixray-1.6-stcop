@@ -45,7 +45,8 @@ struct predicate_find_stat
 CUIGameCustom::CUIGameCustom()
 	: 
 	m_msgs_xml(nullptr),		
-	m_ActorMenu(nullptr), 
+	m_pgameCaptions(nullptr),
+	m_ActorMenu(nullptr),
 	m_InventoryMenu(nullptr),
 	m_CarBodyMenu(nullptr),
 	m_PdaMenu(nullptr),		
@@ -114,7 +115,8 @@ void CUIGameCustom::OnFrame()
 void CUIGameCustom::Render()
 {
 	PROF_EVENT("CUIGameCustom::Render");
-
+	GameCaptions()->Draw();
+	
 	{
 		xrCriticalSectionGuard guard(ui_lock);
 		for (auto& it : m_custom_statics)
@@ -156,6 +158,27 @@ void CUIGameCustom::Render()
 		m_pMessagesWnd->Draw();
 
 	DoRenderDialogs();
+}
+
+void CUIGameCustom::AddCustomMessage		(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color/* LPCSTR def_text*/ )
+{
+	GameCaptions()->addCustomMessage(id,x,y,font_size,pFont,(CGameFont::EAligment)alignment,color,"");
+}
+
+void CUIGameCustom::AddCustomMessage		(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color, /*LPCSTR def_text,*/ float flicker )
+{
+	AddCustomMessage(id,x,y,font_size, pFont, alignment, color);
+	GameCaptions()->customizeMessage(id, CUITextBanner::tbsFlicker)->fPeriod = flicker;
+}
+
+void CUIGameCustom::CustomMessageOut(LPCSTR id, LPCSTR msg, u32 color)
+{
+	GameCaptions()->setCaption(id,msg,color,true);
+}
+
+void CUIGameCustom::RemoveCustomMessage		(LPCSTR id)
+{
+	GameCaptions()->removeCustomMessage(id);
 }
 
 SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstance, float ttlDefault)
@@ -456,6 +479,7 @@ void CUIGameCustom::SetClGame(game_cl_GameState* g)
 void CUIGameCustom::UnLoad()
 {
 	xr_delete					(m_msgs_xml);
+	xr_delete					(m_pgameCaptions);
 	xr_delete					(m_ActorMenu);
 	xr_delete					(m_InventoryMenu);
 	xr_delete					(m_CarBodyMenu);
@@ -473,6 +497,9 @@ void CUIGameCustom::Load()
 		R_ASSERT				(nullptr==m_msgs_xml);
 		m_msgs_xml				= new CUIXml();
 		m_msgs_xml->Load		(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+
+		R_ASSERT				(nullptr== m_pgameCaptions);
+		m_pgameCaptions			= new CUICaption();
 
 		CUIXml inventoryXml;
 		if (inventoryXml.Load(CONFIG_PATH, UI_PATH, "actor_menu.xml"))

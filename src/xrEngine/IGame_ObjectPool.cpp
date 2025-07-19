@@ -17,11 +17,23 @@ void IGame_ObjectPool::prefetch()
 {
 	R_ASSERT(m_PrefetchObjects.empty());
 
-	string256 section;
-
 	// prefetch objects
-	xr_strconcat(section, "prefetch_objects_", g_pGamePersistent->m_game_params.m_game_type);
-	CInifile::Sect const& sect = pSettings->r_section(section);
+	xr_string section = "prefetch_objects_";
+	section += g_pGamePersistent->m_game_params.m_game_type;
+
+	// Workaround for SoC sections
+	if (!pSettings->section_exist(section.c_str()))
+	{
+		if (section.compare("prefetch_objects_dm"))
+			section = "prefetch_objects_deathmatch";
+		if (section.compare("prefetch_objects_tdm"))
+			section = "prefetch_objects_teamdeathmatch";
+		if (section.compare("prefetch_objects_ah"))
+			section = "prefetch_objects_artefacthunt";
+	}
+
+	CInifile::Sect const& sect = pSettings->r_section(section.c_str());
+	
 	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++) 
 	{
 		const CInifile::Item& item = *I;
