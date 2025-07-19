@@ -438,8 +438,8 @@ inline void CStepManager::PlayRainStep(const bool bHudView)
 	{
 		pos = zero_vel;
 	}
-	const int count = m_rain_steps.size();
-	m_rain_steps[Random.randI(count)].play_no_feedback(m_object, bHudView ? sm_2D : 0, 0, &pos, &rainVolume);
+
+	m_rain_steps[Random.randI(m_rain_steps.size())].play_no_feedback(m_object, bHudView ? sm_2D : 0, 0, &pos, &rainVolume);
 }
 
 inline void CStepManager::PlayExoStep(const bool bHudView)

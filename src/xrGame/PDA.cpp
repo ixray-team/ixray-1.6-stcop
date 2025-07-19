@@ -57,7 +57,9 @@ void CPda::shedule_Update(u32 dt)
 	inherited::shedule_Update	(dt);
 
 	if(!H_Parent() || H_Parent()->getDestroy()) return;
-	Position().set	(H_Parent()->Position());
+
+	if(!CAttachableItem::enabled())
+		Position().set(H_Parent()->Position());
 
 	if( IsOn() && Level().CurrentEntity() && Level().CurrentEntity()->ID()==H_Parent()->ID() )
 	{

@@ -589,9 +589,10 @@ void CParticleGroup::OnFrame(u32 u_dt)
 
 void CParticleGroup::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	m_InitialPosition		= m.c;
-	for (SItemVecIt i_it=items.begin(); i_it!=items.end(); i_it++) 
-		i_it->UpdateParent(m,velocity,bXFORM);
+	for (SItem& item : items) 
+		item.UpdateParent(m,velocity,bXFORM);
 }
 
 BOOL CParticleGroup::Compile(CPGDef* def)
@@ -599,8 +600,8 @@ BOOL CParticleGroup::Compile(CPGDef* def)
 	xrCriticalSectionGuard guard(&onframe_lock);
 	m_Def 						= def;
 	// destroy existing
-	for (SItemVecIt i_it=items.begin(); i_it!=items.end(); i_it++) 
-		i_it->Clear();
+	for (SItem& item : items)
+		item.Clear();
 	items.clear();
 	// create new
 	if (m_Def){
@@ -629,36 +630,39 @@ void CParticleGroup::Stop(BOOL bDefferedStop)
 	}else{
 		m_RT_Flags.set	(flRT_Playing,FALSE);
 	}
-	for (SItemVecIt i_it=items.begin(); i_it!=items.end(); i_it++) i_it->Stop(bDefferedStop);
+	for (SItem& item : items)
+		item.Stop(bDefferedStop);
 }
 
 void CParticleGroup::OnDeviceCreate()
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
-	for (SItemVecIt i_it=items.begin(); i_it!=items.end(); i_it++) i_it->OnDeviceCreate();
+	for (SItem& item : items)
+		item.OnDeviceCreate();
 }
 
 void CParticleGroup::OnDeviceDestroy()
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
-	for (SItemVecIt i_it=items.begin(); i_it!=items.end(); i_it++) i_it->OnDeviceDestroy();
+	for (SItem& item : items)
+		item.OnDeviceDestroy();
 }
 
 u32 CParticleGroup::ParticlesCount()
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
 	int p_count=0;
-	for (SItemVecIt i_it=items.begin(); i_it!=items.end(); i_it++)
-		p_count 	+= i_it->ParticlesCount();
+	for (SItem& item : items)
+		p_count += item.ParticlesCount();
 	return p_count;
 }
 
 void CParticleGroup::SetHudMode(BOOL b)
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
-	for (SItemVecIt i_it=items.begin(); i_it!=items.end(); ++i_it)
+	for (SItem& item : items)
 	{
-		CParticleEffect* E	= static_cast<CParticleEffect*>(i_it->_effect);
+		CParticleEffect* E	= static_cast<CParticleEffect*>(item._effect);
 		E->SetHudMode(b);
 	}
 }
@@ -670,16 +674,17 @@ BOOL CParticleGroup::GetHudMode()
 	{
 		CParticleEffect* E	= static_cast<CParticleEffect*>(items[0]._effect);
 		return E->GetHudMode();
-	}else
-		return FALSE;
+	}
+
+	return FALSE;
 }
 
 void CParticleGroup::SetLiveUpdate(BOOL b)
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
-	for (SItemVecIt i_it=items.begin(); i_it!=items.end(); ++i_it)
+	for (SItem& item : items)
 	{
-		CParticleEffect* E	= static_cast<CParticleEffect*>(i_it->_effect);
+		CParticleEffect* E	= static_cast<CParticleEffect*>(item._effect);
 		E->SetLiveUpdate(b);
 	}
 }
@@ -691,6 +696,7 @@ BOOL CParticleGroup::GetLiveUpdate()
 	{
 		CParticleEffect* E	= static_cast<CParticleEffect*>(items[0]._effect);
 		return E->GetLiveUpdate();
-	}else
-		return FALSE;
+	}
+
+	return FALSE;
 }

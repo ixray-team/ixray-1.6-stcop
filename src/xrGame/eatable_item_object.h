@@ -45,7 +45,7 @@ public:
 	virtual void	save					(NET_Packet &output_packet);
 	virtual void	load					(IReader &input_packet);
 	virtual BOOL	net_SaveRelevant		()								{return TRUE;}
-	virtual void	renderable_Render		();
+	virtual void	renderable_Render		(IDSGraphManager* DM = nullptr);
 	virtual void	reload					(LPCSTR section);
 	virtual void	reinit					();
 	virtual void	activate_physic_shell	();

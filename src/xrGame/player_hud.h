@@ -190,7 +190,7 @@ struct attachable_hud_item
 	void update						(bool bForce);
 	void update_hud_additional		(Fmatrix& trans);
 	void setup_firedeps				(firedeps& fd);
-	void render						();	
+	void render						(IDSGraphManager* DM = nullptr);
 	void render_item_ui				();
 	bool render_item_ui_query		();
 	bool need_renderable			();
@@ -233,7 +233,7 @@ struct animator_item
 	animator_item(player_hud* pParent, const shared_str& section);
 	~animator_item();
 	void update(bool bForce);
-	void render();
+	void render(IDSGraphManager* DM = nullptr);
 
 	void anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed);
 	u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md);
@@ -247,7 +247,7 @@ public:
 	void			load				(const shared_str& model_name);
 	void			load_default		();
 	void			update				(const Fmatrix& trans);
-	void			render_hud			();	
+	void			render_hud			(IDSGraphManager* DM = nullptr);
 	void			render_item_ui		();
 	bool			render_item_ui_query();
 

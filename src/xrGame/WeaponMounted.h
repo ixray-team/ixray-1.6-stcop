@@ -75,7 +75,7 @@ public:
 	virtual void			UpdateCL			();
 	virtual void			shedule_Update		(u32 dt);
 
-	virtual void			renderable_Render	();
+	virtual void			renderable_Render	(IDSGraphManager* DM = nullptr);
 
 	virtual	BOOL			UsedAI_Locations	(){return FALSE;}
 

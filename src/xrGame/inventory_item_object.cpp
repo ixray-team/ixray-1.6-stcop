@@ -141,10 +141,10 @@ void CInventoryItemObject::load				(IReader &packet)
 	CInventoryItem::load				(packet);
 }
 
-void CInventoryItemObject::renderable_Render()
+void CInventoryItemObject::renderable_Render(IDSGraphManager* DM)
 {
-	CPhysicItem::renderable_Render		();
-	CInventoryItem::renderable_Render	();
+	CPhysicItem::renderable_Render		(DM);
+	CInventoryItem::renderable_Render	(DM);
 }
 
 void CInventoryItemObject::reload			(LPCSTR section)

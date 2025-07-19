@@ -241,6 +241,7 @@ ENGINE_API void EngineLoadStage5()
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
 	g_SpatialSpace = new ISpatial_DB();
 	g_SpatialSpacePhysic = new ISpatial_DB();
+	g_SpatialSpaceLights = new ISpatial_DB();
 
 	// Main cycle
 	//Memory.mem_usage();

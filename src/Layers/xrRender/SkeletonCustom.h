@@ -104,6 +104,8 @@ public:
 	u32							dwFirstRenderFrame;
 
 	void						StoreVisualMatrix(Fmatrix& world_matrix);
+
+	xrCriticalSection			UCalc_Mutex;
 protected:
 	SkeletonWMVec				wallmarks;
 	u32							wm_frame;
@@ -114,6 +116,7 @@ protected:
     CInifile*					pUserData;
 	CBoneInstance*				bone_instances;	// bone instances
 	vecBones*					bones;			// all bones	(shared)
+	u16							bones_size;
 	u16							iRoot;			// Root bone index
 
 	// Fast search
@@ -123,9 +126,6 @@ protected:
 	BOOL						Update_Visibility		;
 	u32							UCalc_Time				;
 	s32							UCalc_Visibox			;
-
-	xrCriticalSection			UCalc_Mutex;
-	xrCriticalSection			UCalc_Mutex2;
 
 	VisMask						visimask;
     
@@ -204,6 +204,7 @@ public:
 	u16						_BCL	LL_BoneCount		()	const			{	return u16(bones->size());										}
 	u16								LL_VisibleBoneCount	()					{	return visimask.count();										}
 	ICF Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
+	ICF Fmatrix&			_BCL	LL_GetTransform_safed(u16 bone_id)		{ xrCriticalSectionGuard guard(&UCalc_Mutex); return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF Fmatrix&					LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only
 	ICF Fmatrix&					LL_GetTransform_R_old(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform_old;		}	// rendering only old

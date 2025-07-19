@@ -62,12 +62,12 @@ public:
 	virtual bool		ActivateItem		();
 	virtual void		DeactivateItem	();
 	virtual void		UpdateCL			();
-	virtual void		renderable_Render	();
-	virtual void		on_renderable_Render();
+	virtual void		renderable_Render	(IDSGraphManager* DM = nullptr);
+	virtual void		on_renderable_Render(IDSGraphManager* DM = nullptr);
 	virtual void		OnMoveToRuck		(const SInvItemPlace& prev);
 
 	virtual bool			use_parent_ai_locations	() const
 	{
-		return				CInventoryItemObject::use_parent_ai_locations	() && (Device.dwFrame != dwXF_Frame);
+		return				CInventoryItemObject::use_parent_ai_locations()&&IsHidden();
 	}
 };

@@ -1,6 +1,6 @@
 #pragma once
-
-#include "../xrRender/r__dsgraph_structure.h"
+#include "../xrRender/r__dsgraph_manager.h"
+#include "../xrRender/r__sector.h"
 
 #include "../xrRender/PSLibrary.h"
 
@@ -21,14 +21,9 @@
 class dxRender_Visual;
 
 // definition
-class CRender													:	public R_dsgraph_structure
+class CRender : public IRender_interface, public pureFrame
 {
 public:
-	enum	{
-		PHASE_NORMAL,
-		PHASE_POINT,
-		PHASE_SPOT
-	};
 	struct		_options	{
 		u32		vis_intersect		: 1;	// config
 		u32		distortion			: 1;	// run-time modified
@@ -73,6 +68,15 @@ public:
 	CDetailManager*												Details;
 	CModelPool*													Models;
 
+	//CFrustum rainwet_cull_frustum;
+	//Fvector3 rainwet_cull_COP;
+	//Fmatrix rainwet_cull_xform;
+	//
+	//CDSGraphManager GMRainWet = CDSGraphManager(u32(0), u32(STYPE_RENDERABLE), { true,false,false,false,true,false,false });
+	CDSGraphManager GMBase = CDSGraphManager(u32(CDSGraphManager::VQ_HOM + CDSGraphManager::VQ_SSA + CDSGraphManager::VQ_FADE),
+		u32(STYPE_RENDERABLE + STYPE_PARTICLE + STYPE_LIGHTSOURCE),
+		{ true,true,true,true,false,false,false });
+
 	CRenderTarget*												Target;			// Render-target
 
 	// R1-specific global constants
@@ -94,11 +98,6 @@ private:
 	void								LoadLights				(IReader *fs);
 	void								LoadSectors				(IReader *fs);
 	void								LoadSWIs				(CStreamReader	*fs);
-
-	BOOL								add_Dynamic				(dxRender_Visual	*pVisual, u32 planes);		// normal processing
-	void								add_Static				(dxRender_Visual	*pVisual, u32 planes);
-	void								add_leafs_Dynamic		(dxRender_Visual	*pVisual); // if detected node's full visibility
-	void								add_leafs_Static		(dxRender_Visual	*pVisual);						// if detected node's full visibility
 
 public:
 	ShaderElement*						rimp_select_sh_static	(dxRender_Visual	*pVisual, float cdist_sq);
@@ -150,18 +149,15 @@ public:
 	virtual IRender_Sector*			detectSector			(const Fvector& P);
 	IRender_Sector*					detectLastSector		(const Fvector& P);
 	IRender_Sector*					detectSector			(const Fvector& P, Fvector& D);
-	xr_vector<IRender_Sector*>		detectSectors_sphere	(CSector* sector, const Fvector& b_center, const Fvector& b_dim);
-	xr_vector<IRender_Sector*>		detectSectors_frustum	(CSector* sector, CFrustum* _frustum);
+	void							detectSectors_sphere	(CSector* sector, FixedSet<IRender_Sector*>& m_sectors, const Fvector& b_center, const Fvector& b_dim);
+	void							detectSectors_frustum	(CSector* sector, FixedSet<IRender_Sector*>& m_sectors, CFrustum* _frustum);
 	int								translateSector			(IRender_Sector* pSector);
 	virtual IRender_Target*			getTarget				();
 	virtual SurfaceParams getSurface(const char* nameTexture) override;
 
 	// Main 
 	virtual void					flush					();
-	virtual void					set_Object				(IRenderable*		O	);
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
-	virtual void					add_Visual				(IRenderVisual*	V);			// add visual leaf (no culling performed at all)
-	virtual void					add_Geometry			(IRenderVisual*	V	);			// add visual(s)	(all culling performed)
 
 	// wallmarks
 	virtual void					add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false);

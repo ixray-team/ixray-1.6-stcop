@@ -10,120 +10,115 @@ ILevelGraph::~ILevelGraph()
 {
 }
 
-bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPath,float MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const
+#include <memory_resource>
+bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPath, float MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const
 {
-	thread_local	xr_vector<std::pair<float, u32>>	TempPriorityNode;
-	thread_local	xr_hash_map<u32, u32>				TempCameFrom;
-	thread_local	xr_hash_map<u32, float>				TempCostSoFar;
-					float								m_distance_xz = header().cell_size();
+	// Пул памяти для минимизации аллокаций
+	static thread_local std::array<std::byte, 1024 * 1024> buffer; // Буфер на 1 МБ
+	static thread_local std::pmr::monotonic_buffer_resource pool{ buffer.data(), buffer.size() };
+	static thread_local std::pmr::unordered_map<u32, u32> TempCameFrom{ &pool };
+	static thread_local std::pmr::unordered_map<u32, float> TempCostSoFar{ &pool };
+	static thread_local std::pmr::vector<std::pair<float, u32>> TempPriorityNode{ &pool };
 
-	TempPriorityNode.clear();
+	// Очистка данных
 	TempCameFrom.clear();
 	TempCostSoFar.clear();
+	TempPriorityNode.clear();
 	OutPath.clear();
-	
-	
-	u32 FromID = start_vertex_id;
-	u32 ToID = dest_vertex_id;
-		
-	if (FromID == ToID)
+
+	// Проверка начальных условий
+	if (start_vertex_id == dest_vertex_id)
 	{
 		OutPath.push_back(start_vertex_id);
 		return true;
 	}
-		
-	if(!is_accessible(FromID) || !is_accessible(ToID))
-	{
+
+	if (!is_accessible(start_vertex_id) || !is_accessible(dest_vertex_id))
 		return false;
-	}
 
-	TempPriorityNode.push_back({0.f, FromID});
-	TempCameFrom.insert({FromID, FromID});
-	TempCostSoFar.insert( {FromID, 0.f});
+	// Инициализация
+	TempPriorityNode.emplace_back(0.f, start_vertex_id);
+	TempCameFrom[start_vertex_id] = start_vertex_id;
+	TempCostSoFar[start_vertex_id] = 0.f;
 
-	auto CalcCost = [m_distance_xz](CVertex* Node1,CVertex* Node2)
-	{
-		return m_distance_xz;
-	};
-	auto DistanceNode = [this,m_distance_xz](CVertex* Node1,CVertex* Node2)
-	{
-		float x1; float y1;
-		float x2; float y2;
-		unpack_xz(Node1,x1,y1);
-		unpack_xz(Node2,x2,y2);
-		return m_distance_xz*2*(fabs(x1-x2)+fabs(y1-y2));
-	};
+	const float cell_size = header().cell_size();
+
+	// Основной цикл A*
 	while (!TempPriorityNode.empty())
 	{
+		// Извлекаем узел с наименьшим приоритетом (последний элемент в отсортированном векторе)
 		u32 CurrentNodeID = TempPriorityNode.back().second;
 		TempPriorityNode.pop_back();
-		if (CurrentNodeID == ToID)
+
+		// Целевой узел найден
+		if (CurrentNodeID == dest_vertex_id)
 		{
-			u32 NextNode = ToID;
-			while (NextNode != FromID)
+			u32 current = dest_vertex_id;
+			while (current != start_vertex_id)
 			{
-				OutPath.insert( OutPath.begin(),NextNode);
-				NextNode = TempCameFrom[NextNode];
+				OutPath.insert(OutPath.begin(), current);
+				current = TempCameFrom[current];
 			}
-			OutPath.insert( OutPath.begin(),NextNode);
+			OutPath.insert(OutPath.begin(), start_vertex_id);
 			return true;
 		}
-		
+
+		// Ограничение на количество итераций
+		if (MaxIterationCount == 0)
+			break;
+		MaxIterationCount--;
+
+		// Обработка соседей
 		CVertex* Node = vertex(CurrentNodeID);
 		for (s32 NeighborIndex = 0; NeighborIndex < 4; NeighborIndex++)
 		{
 			u32 NeighborID = Node->link(NeighborIndex);
-			if (!is_accessible(NeighborID)) continue;
+			if (!is_accessible(NeighborID))
+				continue;
 
+			// Вычисление новой стоимости
+			float NewCost = TempCostSoFar[CurrentNodeID] + cell_size;
 
-			if(MaxIterationCount == 0) continue;
-			MaxIterationCount--;
+			// Проверка, стоит ли обрабатывать соседа
+			auto it = TempCostSoFar.find(NeighborID);
+			if (it != TempCostSoFar.end() && it->second <= NewCost) continue;
+			if (TempCostSoFar.size() >= MaxVisitedNodeCount) continue;
 
-			CVertex* Neighbor = vertex(NeighborID);
-			float NewCost = TempCostSoFar[CurrentNodeID] + CalcCost(Node, Neighbor);
-			auto TempCostSoFarIterator = TempCostSoFar.find(NeighborID);
-			if ((TempCostSoFarIterator != TempCostSoFar.end() &&TempCostSoFarIterator->second > NewCost)|| (TempCostSoFarIterator == TempCostSoFar.end() &&MaxVisitedNodeCount > TempCostSoFar.size()))
-			{
-				const float Distance = DistanceNode(vertex(ToID), Neighbor);
+			// Проверка расстояния
+			float x1, y1, x2, y2;
+			unpack_xz(vertex(dest_vertex_id), x1, y1);
+			unpack_xz(vertex(NeighborID), x2, y2);
+			float Distance = cell_size * 2 * (std::abs(x1 - x2) + std::abs(y1 - y2));
+			if (Distance > MaxRange)
+				continue;
 
-				if(Distance>MaxRange)
-				{
-					continue;
+			// Обновление данных
+			TempCostSoFar[NeighborID] = NewCost;
+			float priority = NewCost + Distance;
+
+			// Вставка в отсортированную позицию
+			auto insert_pos = std::lower_bound(
+				TempPriorityNode.begin(), TempPriorityNode.end(),
+				std::make_pair(priority, NeighborID),
+				[](const std::pair<float, u32>& a, const std::pair<float, u32>& b) {
+					return a.first > b.first; // Сортировка по убыванию
 				}
+			);
+			TempPriorityNode.insert(insert_pos, { priority, NeighborID });
 
-				if(TempCostSoFarIterator != TempCostSoFar.end())
-				{
-					TempCostSoFarIterator->second = NewCost; 
-				}
-				else
-				{
-					TempCostSoFar.insert({NeighborID,NewCost});
-				}
-
-				float  priority = NewCost + Distance;
-				TempPriorityNode.insert(std::upper_bound(TempPriorityNode.begin(),TempPriorityNode.end(),std::pair<float, u32>{priority,NeighborID},[](const std::pair<float, u32>& Left, const std::pair<float, u32>& Right) {return Left.first > Right.first; }),{priority,NeighborID});
-
-				
-				auto TempCameFromIterator = TempCameFrom.find(NeighborID);
-				if(TempCameFromIterator!=TempCameFrom.end())
-				{
-					TempCameFromIterator->second = CurrentNodeID; 
-				}
-				else
-				{
-					TempCameFrom.insert({NeighborID,CurrentNodeID});
-				}
-			}
+			// Обновление информации о пути
+			TempCameFrom[NeighborID] = CurrentNodeID;
 		}
 	}
+
 	return false;
 }
 
 u32 ILevelGraph::SearchNearestVertex(u32 VertexID, const Fvector& TargetPosition, float Range) const
 {
-	thread_local	xr_vector<std::pair<float, u32>>	TempPriorityNode;
-	thread_local	xr_map<u32, u32>					TempCameFrom;
-	thread_local	xr_map<u32, float>					TempCostSoFar;
+	static thread_local	xr_vector<std::pair<float, u32>>	TempPriorityNode;
+	static thread_local	xr_map<u32, u32>					TempCameFrom;
+	static thread_local	xr_map<u32, float>					TempCostSoFar;
 					float								m_distance_xz			= header().cell_size();
 
 	float BestDistanceToTarget = flt_max;
@@ -144,21 +139,6 @@ u32 ILevelGraph::SearchNearestVertex(u32 VertexID, const Fvector& TargetPosition
 	TempCameFrom.insert({FromID, FromID});
 	TempCostSoFar.insert( {FromID, 0.f });
 
-	auto CalcCost = [m_distance_xz](CVertex* Node1,CVertex* Node2)
-	{
-		return m_distance_xz;
-	};
-	auto IsAccessible = [this,x0,y0,MaxRangeSqr](u32 NodeID)
-	{
-		if(!is_accessible(NodeID))
-		{
-			return false;
-		}
-		int x4,y4;
-		unpack_xz(vertex(NodeID),x4,y4);
-		return (static_cast<u32>(_sqr(x0 - x4) + _sqr(y0 - y4)) <= MaxRangeSqr);
-	};
-
 	while (!TempPriorityNode.empty())
 	{
 		u32 CurrentNodeID = TempPriorityNode.back().second;
@@ -177,11 +157,16 @@ u32 ILevelGraph::SearchNearestVertex(u32 VertexID, const Fvector& TargetPosition
 		for (s32 NeighborIndex = 0; NeighborIndex < 4; NeighborIndex++)
 		{
 			u32 NeighborID = Node->link(NeighborIndex);
-			if (!IsAccessible(NeighborID)) continue;
+			if (!is_accessible(NeighborID)) continue;
+
+			int x4, y4;
+			unpack_xz(vertex(NeighborID), x4, y4);
+
+			if (int(_sqr(x0 - x4) + _sqr(y0 - y4)) > MaxRangeSqr) continue;
 
 
 			CVertex* Neighbor = vertex(NeighborID);
-			float NewCost = TempCostSoFar[CurrentNodeID] + CalcCost(Node, Neighbor);
+			float NewCost = TempCostSoFar[CurrentNodeID] + m_distance_xz;
 			auto TempCostSoFarIterator = TempCostSoFar.find(NeighborID);
 			if ((TempCostSoFarIterator != TempCostSoFar.end() &&TempCostSoFarIterator->second > NewCost)|| (TempCostSoFarIterator == TempCostSoFar.end()))
 			{

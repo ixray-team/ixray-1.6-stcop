@@ -66,115 +66,165 @@ class dxRender_Visual;
 
 namespace R_dsgraph
 {
-	// Elementary types
-	struct _NormalItem
+	struct DSGraphItem
 	{
-		float ssa;
-		dxRender_Visual* pVisual;
-	};
-
-	struct _MatrixItem
-	{
-		float ssa;
-		IRenderable* pObject;
-		dxRender_Visual* pVisual;
-		Fmatrix Matrix;				// matrix (copy)
-	};
-
-	struct _MatrixItemS	: public _MatrixItem
-	{
-		ShaderElement* se;
-	};
-
-	struct _LodItem
-	{
-		float ssa;
-		dxRender_Visual* pVisual;
+		float ssa = 0.0f;
+		IRenderable* pObject = nullptr;
+		dxRender_Visual* pVisual = nullptr;
+		Fmatrix* pMatrix = nullptr;
+		ShaderElement* pSE = nullptr;
+		bool b_hud_mode = false;
 	};
 
 #ifdef USE_RESOURCE_DEBUGGER
-		using vs_type = ref_vs;
-		using ps_type = ref_ps;
+	using vs_type = ref_vs;
+	using ps_type = ref_ps;
 #ifdef USE_DX11
-		using gs_type = ref_gs;
-		using hs_type = ref_hs;
-		using ds_type = ref_ds;
+	using gs_type = ref_gs;
+	using hs_type = ref_hs;
+	using ds_type = ref_ds;
 #endif //USE_DX11
 #else
-	#ifdef USE_DX11	//	DX10 needs shader signature to propperly bind deometry to shader
-		using vs_type = SVS*;
-		using gs_type = ID3DGeometryShader*;
-		using hs_type = ID3D11HullShader*;
-		using ds_type = ID3D11DomainShader*;
-	#else //USE_DX11
-		using vs_type = ID3DVertexShader*;
-	#endif
-		using ps_type = ID3DPixelShader*;
-#endif
 
-
-
-	// NORMAL
-	using mapNormalDirect = xr_vector<_NormalItem,render_allocator::helper<_NormalItem>::result>;
-	using mapNormalItems = mapNormalDirect;
-	using mapNormalTextures = FixedMAP<STextureList*,mapNormalItems,render_allocator>;
-	using mapNormalStates = FixedMAP<ID3DState*,mapNormalTextures,render_allocator>;
-	using mapNormalCS = FixedMAP<R_constant_table*,mapNormalStates,render_allocator>;
-#ifdef USE_DX11
-	struct	mapNormalAdvStages
-	{
-		hs_type		hs;
-		ds_type		ds;
-		mapNormalCS	mapCS;
-	};
-	using mapNormalPS = FixedMAP<ps_type, mapNormalAdvStages,render_allocator>;
-#else
-	using mapNormalPS = FixedMAP<ps_type, mapNormalCS,render_allocator>;
-#endif
-#ifdef USE_DX11
-	using mapNormalGS = FixedMAP<gs_type, mapNormalPS,render_allocator>;
-	using mapNormalVS = FixedMAP<vs_type, mapNormalGS,render_allocator>;
+#ifdef USE_DX11	//	DX10 needs shader signature to propperly bind deometry to shader
+	using vs_type = SVS*;
+	using gs_type = ID3DGeometryShader*;
+	using hs_type = ID3D11HullShader*;
+	using ds_type = ID3D11DomainShader*;
 #else //USE_DX11
-	using mapNormalVS = FixedMAP<vs_type, mapNormalPS,render_allocator>;
+	using vs_type = ID3DVertexShader*;
 #endif
-	using mapNormal_T = mapNormalVS;
-	using mapNormalPasses_T = mapNormal_T[SHADER_PASSES_MAX];
+	using ps_type = ID3DPixelShader*;
+#endif
 
-
-
-	// MATRIX
-	using mapMatrixDirect = xr_vector<_MatrixItem,render_allocator::helper<_MatrixItem>::result>;
-	using mapMatrixItems = mapMatrixDirect;
-	using mapMatrixTextures = FixedMAP<STextureList*,mapMatrixItems,render_allocator>;
-	using mapMatrixStates = FixedMAP<ID3DState*,mapMatrixTextures,render_allocator>;
-	using mapMatrixCS = FixedMAP<R_constant_table*,mapMatrixStates,render_allocator>;
+	using mapDSGraphItems = xr_vector<DSGraphItem, render_allocator::helper<DSGraphItem>::result>;
+	using mapDSGraphTextures = FixedMAP<STextureList*,mapDSGraphItems,render_allocator>;
+	using mapDSGraphStates = FixedMAP<ID3DState*,mapDSGraphTextures,render_allocator>;
+	using mapDSGraphCS = FixedMAP<R_constant_table*,mapDSGraphStates,render_allocator>;
 #ifdef USE_DX11
-	struct	mapMatrixAdvStages
+	struct mapDSGraphAdvStages
 	{
-		hs_type		hs;
-		ds_type		ds;
-		mapMatrixCS	mapCS;
+		hs_type hs;
+		ds_type ds;
+		mapDSGraphCS mapCS;
 	};
-	using mapMatrixPS = FixedMAP<ps_type, mapMatrixAdvStages,render_allocator>;
+	using mapDSGraphPS = FixedMAP<ps_type, mapDSGraphAdvStages,render_allocator>;
 #else
-	using mapMatrixPS = FixedMAP<ps_type, mapMatrixCS,render_allocator>;
+	using mapDSGraphPS = FixedMAP<ps_type, mapDSGraphCS,render_allocator>;
 #endif
 #ifdef USE_DX11
-	using mapMatrixGS = FixedMAP<gs_type, mapMatrixPS,render_allocator>;
-	using mapMatrixVS = FixedMAP<vs_type, mapMatrixGS,render_allocator>;
+	using mapDSGraphGS = FixedMAP<gs_type, mapDSGraphPS,render_allocator>;
+	using mapDSGraphVS = FixedMAP<vs_type, mapDSGraphGS,render_allocator>;
 #else //USE_DX11
-	using mapMatrixVS = FixedMAP<vs_type, mapMatrixPS,render_allocator>;
+	using mapDSGraphVS = FixedMAP<vs_type, mapDSGraphPS,render_allocator>;
 #endif
-	using mapMatrix_T = mapMatrixVS;
-	using mapMatrixPasses_T = mapMatrix_T[SHADER_PASSES_MAX];
+	using mapDSGraphPasses = mapDSGraphVS[SHADER_PASSES_MAX];
 
-	// Top level
-	using mapSorted_T = FixedMAP<float,_MatrixItemS,render_allocator>;
-	using mapSorted_Node = mapSorted_T::TNode;
+	struct DynamicSceneRgraph
+	{
+		struct mapSorted
+		{
+			mapDSGraphItems Sorted;
 
-	using mapHUD_T = FixedMAP<float, _MatrixItemS, render_allocator>;
-	using mapHUD_Node = mapHUD_T::TNode;
+			mapDSGraphItems Wmark;
+			mapDSGraphItems Emissive;
+			mapDSGraphItems Distort;
+			mapDSGraphItems ScopeLens;
+		};
 
-	using mapLOD_T = FixedMAP<float,_LodItem,render_allocator>;
-	using mapLOD_Node = mapLOD_T::TNode;
+		mapDSGraphPasses mapStaticPasses[2];	// 2==(priority/2)
+		mapSorted mapStaticSorted;
+
+		mapDSGraphPasses mapDynamicPasses[2]; // 2==(priority/2)
+		mapSorted mapDynamicSorted;
+
+		mapDSGraphItems mapHUD;
+		mapSorted mapHUDSorted;
+
+		mapDSGraphItems mapLOD;
+
+		IC void clear_graph(mapDSGraphPasses* graph, u32 _priority)
+		{
+			PROF_EVENT("r_dsgraph_clear_graph");
+			for (u32 iPass = 0; iPass < SHADER_PASSES_MAX; ++iPass)
+			{
+				mapDSGraphVS& vs = graph[_priority][iPass];
+				for (mapDSGraphVS::TNode& Nvs : vs)
+				{
+#ifdef USE_DX11
+					mapDSGraphGS& gs = Nvs.val;
+					for (mapDSGraphGS::TNode& Ngs : gs)
+					{
+						mapDSGraphPS& ps = Ngs.val;
+#else //USE_DX11
+						mapDSGraphPS& ps = Nvs.val;
+#endif
+						for (mapDSGraphPS::TNode& Nps : ps)
+						{
+#ifdef USE_DX11
+							mapDSGraphCS& cs = Nps.val.mapCS;
+#else
+							mapDSGraphCS& cs = Nps.val;
+#endif
+							for (mapDSGraphCS::TNode& Ncs : cs)
+							{
+								mapDSGraphStates& states = Ncs.val;
+								for (mapDSGraphStates::TNode& Nstate : states)
+								{
+									mapDSGraphTextures& tex = Nstate.val;
+									for (mapDSGraphTextures::TNode& Ntex : tex)
+										Ntex.val.clear();
+									tex.clear();
+								}states.clear();
+							}cs.clear();
+						}ps.clear();
+#ifdef USE_DX11
+					}gs.clear();
+#endif //USE_DX11
+				}vs.clear();
+			}
+		}
+		IC void clear_dynamic()
+		{
+			clear_graph(mapDynamicPasses, 0);
+			clear_graph(mapDynamicPasses, 1);
+
+			mapDynamicSorted.Wmark.clear();
+			mapDynamicSorted.Emissive.clear();
+			mapDynamicSorted.Sorted.clear();
+			mapDynamicSorted.Distort.clear();
+		}
+		IC void clear_static()
+		{
+			clear_graph(mapStaticPasses, 0);
+			clear_graph(mapStaticPasses, 1);
+
+			mapStaticSorted.Wmark.clear();
+			mapStaticSorted.Emissive.clear();
+			mapStaticSorted.Sorted.clear();
+			mapStaticSorted.Distort.clear();
+		}
+
+		IC void clear_hud()
+		{
+			mapHUD.clear();
+			mapHUDSorted.Wmark.clear();
+			mapHUDSorted.Emissive.clear();
+			mapHUDSorted.Sorted.clear();
+			mapHUDSorted.Distort.clear();
+		}
+
+		IC void clear_lods()
+		{
+			mapLOD.clear();
+		}
+
+		IC void clear()
+		{
+			clear_dynamic();
+			clear_static();
+			clear_hud();
+			clear_lods();
+		}
+	};
 };

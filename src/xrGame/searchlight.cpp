@@ -170,9 +170,9 @@ void CProjector::UpdateCL	()
 }
 
 
-void CProjector::renderable_Render()
+void CProjector::renderable_Render(IDSGraphManager* DM)
 {
-	inherited::renderable_Render	();
+	inherited::renderable_Render	(DM);
 }
 
 BOOL CProjector::UsedAI_Locations()

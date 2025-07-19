@@ -53,12 +53,10 @@ void CAttachmentOwner::net_Destroy()
 	R_ASSERT(attached_objects().empty());
 }
 
-void CAttachmentOwner::renderable_Render		()
+void CAttachmentOwner::renderable_Render		(IDSGraphManager* DM)
 {
-	xr_vector<CAttachableItem*>::iterator	I = m_attached_objects.begin();
-	xr_vector<CAttachableItem*>::iterator	E = m_attached_objects.end();
-	for ( ; I != E; ++I)
-		(*I)->renderable_Render();
+	for (CAttachableItem* item : m_attached_objects)
+		item->renderable_Render(DM);
 }
 
 void AttachmentCallback(IKinematics* tpKinematics)

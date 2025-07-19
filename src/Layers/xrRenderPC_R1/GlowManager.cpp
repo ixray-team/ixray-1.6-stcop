@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////
 CGlow::CGlow()// : ISpatial(g_SpatialSpace)
 {
-	ISpatialOwner::spatial_create(g_SpatialSpace, this, STYPE_RENDERABLE);
+	ISpatialOwner::spatial_create(g_SpatialSpace, this, STYPE_GLOW);
 	flags.bActive = false;
 	position.set(0, 0, 0);
 	direction.set(0, 0, 0);

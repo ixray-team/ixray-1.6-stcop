@@ -194,10 +194,10 @@ bool CWeaponAmmo::Get(CCartridge &cartridge)
 	return true;
 }
 
-void CWeaponAmmo::renderable_Render() 
+void CWeaponAmmo::renderable_Render(IDSGraphManager* DM)
 {
 	if(!m_ready_to_destroy)
-		inherited::renderable_Render();
+		inherited::renderable_Render(DM);
 }
 
 void CWeaponAmmo::UpdateCL() 

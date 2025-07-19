@@ -199,7 +199,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 	bone_map_P		= new accel		();
 	bones			= new vecBones	();
 	bone_instances	= nullptr;
-
+	bones_size		= u16(0);
 	// Load bones
 	bool FoundedChunk = !!data->find_chunk(OGF_S_BONE_NAMES);
 	R_ASSERT2(FoundedChunk, "Not found chunk OGF_S_BONE_NAMES");
@@ -302,6 +302,8 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 	wm_frame		= u32(-1);
 
     LL_Validate		();
+
+	bones_size = bones->size();
 }
 
 IC void iBuildGroups(CBoneData* B, U16Vec& tgt, u16 id, u16& last_id)
@@ -316,7 +318,7 @@ void CKinematics::LL_Validate()
 {
 	// check breakable
     BOOL bCheckBreakable			= FALSE;
-    for (u16 k=0; k<LL_BoneCount(); k++){
+    for (u16 k=0; k< LL_BoneCount(); k++){
         if (LL_GetData(k).IK_data.ik_flags.is(SJointIKData::flBreakable)&&(LL_GetData(k).IK_data.type!=jtNone)) {
         	bCheckBreakable			= TRUE;
             break;
@@ -371,10 +373,11 @@ void CKinematics::Copy(dxRender_Visual *P)
 {
 	inherited::Copy	(P);
 
-	CKinematics* pFrom = dynamic_cast<CKinematics*>(P);
+	CKinematics* pFrom = (CKinematics*)P->dcast_PKinematics();
 	VERIFY(pFrom);
 	pUserData  = pFrom->pUserData;
 	bones	   = pFrom->bones;
+	bones_size = pFrom->bones_size;
 	iRoot	   = pFrom->iRoot;
 	bone_map_N = pFrom->bone_map_N;
 	bone_map_P = pFrom->bone_map_P;
@@ -506,7 +509,7 @@ void CKinematics::Visibility_Update	()
 	Update_Visibility	= FALSE		;
 	// check visible
 	for (u32 c_it=0; c_it<children.size(); c_it++)				{
-		CSkeletonX*		_c	=	dynamic_cast<CSkeletonX*>	(children[c_it]); VERIFY (_c)	;
+		CSkeletonX*		_c	= smart_cast<CSkeletonX*>(children[c_it]); VERIFY (_c)	;
 		if				(!_c->has_visible_bones())	{
 			// move into invisible list
 			children_invisible.push_back	(children[c_it]);	
@@ -518,7 +521,7 @@ void CKinematics::Visibility_Update	()
 
 	// check invisible
 	for (u32 _it=0; _it<children_invisible.size(); _it++)	{
-		CSkeletonX*		_c	=	dynamic_cast<CSkeletonX*>	(children_invisible[_it]); VERIFY (_c)	;
+		CSkeletonX*		_c	= smart_cast<CSkeletonX*>(children_invisible[_it]); VERIFY (_c)	;
 		if				(_c->has_visible_bones())	{
 			// move into visible list
 			children.push_back				(children_invisible[_it]);	
@@ -633,7 +636,8 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
     test_sphere.set			(cp,size); 
 	U16Vec					test_bones;
 	test_bones.reserve		(LL_BoneCount());
-	for (unsigned short k=0; k<LL_BoneCount(); k++){
+	for (u16 k=0; k<LL_BoneCount(); k++)
+	{
 		CBoneData& BD		= LL_GetData(k);  
 		if (LL_GetBoneVisible(k)&&!BD.shape.flags.is(SBoneShape::sfNoPickable)){
 			Fobb& obb		= cache_obb[k];
@@ -771,29 +775,32 @@ int CKinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16> >& groups)
 
 void CKinematics::StoreVisualMatrix(Fmatrix& world_matrix)
 {
-	PROF_EVENT("StoreVisualMatrix")
-
-	if (dwFirstRenderFrame != RDEVICE.dwFrame) {
-		if(dwFirstRenderFrame != 0) {
+	if (dwFirstRenderFrame != RDEVICE.dwFrame)
+	{
+		if(dwFirstRenderFrame != 0)
+		{
 			mOldWorldMartrix.set(mOldWorldMartrixTmp);
 			mOldWorldMartrixTmp.set(world_matrix);
 
-			for(u16 i = 0; i < LL_BoneCount(); ++i) {
-				auto& Bi = LL_GetBoneInstance(i);
+			for(u16 i = 0; i < LL_BoneCount(); ++i)
+			{
+				CBoneInstance& BI = LL_GetBoneInstance(i);
 
-				Bi.mRenderTransform_old.set(Bi.mRenderTransform_tmp);
-				Bi.mRenderTransform_tmp.set(Bi.mRenderTransform);
+				BI.mRenderTransform_old.set(BI.mRenderTransform_tmp);
+				BI.mRenderTransform_tmp.set(BI.mRenderTransform);
 			}
 		}
-		else {
+		else
+		{
 			mOldWorldMartrixTmp.set(world_matrix);
 			mOldWorldMartrix.set(mOldWorldMartrixTmp);
 
-			for(u16 i = 0; i < LL_BoneCount(); ++i) {
-				auto& Bi = LL_GetBoneInstance(i);
+			for(u16 i = 0; i < LL_BoneCount(); ++i)
+			{
+				CBoneInstance& BI = LL_GetBoneInstance(i);
 
-				Bi.mRenderTransform_tmp.set(Bi.mRenderTransform);
-				Bi.mRenderTransform_old.set(Bi.mRenderTransform_tmp);
+				BI.mRenderTransform_tmp.set(BI.mRenderTransform);
+				BI.mRenderTransform_old.set(BI.mRenderTransform_tmp);
 			}
 		}
 		dwFirstRenderFrame = RDEVICE.dwFrame;

@@ -202,8 +202,8 @@ void CWeapon::UpdateXForm	()
 	}
 	else {
 		// V->CalculateBones();
-		mL = V->LL_GetTransform(boneL);
-		mR = V->LL_GetTransform(boneR);
+		mL = V->LL_GetTransform_safed(boneL);
+		mR = V->LL_GetTransform_safed(boneR);
 	}
 
 	// Calculate
@@ -236,42 +236,35 @@ void CWeapon::UpdateXForm	()
 
 void CWeapon::UpdateFireDependencies_internal()
 {
-	if (Device.dwFrame!=dwFP_Frame) 
+	if ( GetHUDmode() )
 	{
-		dwFP_Frame			= Device.dwFrame;
+		HudItemData()->setup_firedeps		(m_current_firedeps);
+		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
+	} else 
+	{
+		// 3rd person or no parent
+		Fmatrix& parent			= XFORM();
 
-		UpdateXForm			();
-
-		if ( GetHUDmode() )
+		if(H_Parent() && H_Parent()->cast_actor() && render_item_ui_query())
 		{
-			HudItemData()->setup_firedeps		(m_current_firedeps);
-			VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
-		} else 
-		{
-			// 3rd person or no parent
-			Fmatrix& parent			= XFORM();
-
-			if(H_Parent() && H_Parent()->cast_actor() && render_item_ui_query())
-			{
-				Level().Cameras().camera_Matrix(parent);
-				parent.j.invert();
-				parent.i.invert();
-			}
-
-			Fvector& fp				= vLoadedFirePoint;
-			Fvector& fp2			= vLoadedFirePoint2;
-			Fvector& sp				= vLoadedShellPoint;
-
-			parent.transform_tiny	(m_current_firedeps.vLastFP,fp);
-			parent.transform_tiny	(m_current_firedeps.vLastFP2,fp2);
-			parent.transform_tiny	(m_current_firedeps.vLastSP,sp);
-			
-			m_current_firedeps.vLastFD.set	(0.f,0.f,1.f);
-			parent.transform_dir	(m_current_firedeps.vLastFD);
-
-			m_current_firedeps.m_FireParticlesXForm.set(parent);
-			VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
+			Level().Cameras().camera_Matrix(parent);
+			parent.j.invert();
+			parent.i.invert();
 		}
+
+		Fvector& fp				= vLoadedFirePoint;
+		Fvector& fp2			= vLoadedFirePoint2;
+		Fvector& sp				= vLoadedShellPoint;
+
+		parent.transform_tiny	(m_current_firedeps.vLastFP,fp);
+		parent.transform_tiny	(m_current_firedeps.vLastFP2,fp2);
+		parent.transform_tiny	(m_current_firedeps.vLastSP,sp);
+		
+		m_current_firedeps.vLastFD.set	(0.f,0.f,1.f);
+		parent.transform_dir	(m_current_firedeps.vLastFD);
+
+		m_current_firedeps.m_FireParticlesXForm.set(parent);
+		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
 	}
 }
 
@@ -1542,21 +1535,19 @@ bool CWeapon::need_renderable()
 	return !(IsZoomed() && ZoomTexture() && !IsRotatingToZoom() && !IsHudModelForceUnhide());
 }
 
-void CWeapon::renderable_Render		()
+void CWeapon::renderable_Render		(IDSGraphManager* DM)
 {
-	UpdateXForm				();
-
-	//нарисовать подсветку
-
-	RenderLight				();	
-
 	//если мы в режиме снайперки, то сам HUD рисовать не надо
 	if(IsZoomed() && !IsRotatingToZoom() && ZoomTexture())
 		RenderHud		(FALSE);
 	else
 		RenderHud		(TRUE);
 
-	inherited::renderable_Render	();
+	inherited::renderable_Render	(DM);
+
+	//нарисовать подсветку
+
+	RenderLight();
 }
 
 void CWeapon::signal_HideComplete()
@@ -2612,7 +2603,7 @@ void CWeapon::OnZoomOut()
 
 CUIWindow* CWeapon::ZoomTexture()
 {
-	return UseScopeTexture() ? m_UIScope : nullptr;
+	return nullptr; //UseScopeTexture() ? m_UIScope : nullptr;
 }
 
 bool CWeapon::UseScopeTexture()

@@ -24,13 +24,13 @@
 #include "../../xrParticles/ParticlesAsyncManager.h"
 using namespace R_dsgraph;
 
-CRender													RImplementation;
+CRender RImplementation;
 
 //////////////////////////////////////////////////////////////////////////
 ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq)
 {
 	switch (phase)		{
-	case PHASE_NORMAL:	return (RImplementation.L_Projector->shadowing()?pVisual->shader->E[SE_R1_NORMAL_HQ]:pVisual->shader->E[SE_R1_NORMAL_LQ])._get();
+	case PHASE_NORMAL:	return (L_Projector->shadowing()?pVisual->shader->E[SE_R1_NORMAL_HQ]:pVisual->shader->E[SE_R1_NORMAL_LQ])._get();
 	case PHASE_POINT:	return pVisual->shader->E[SE_R1_LPOINT]._get();
 	case PHASE_SPOT:	return pVisual->shader->E[SE_R1_LSPOT]._get();
 	default:			NODEFAULT;
@@ -99,14 +99,15 @@ void					CRender::create					()
 //.	HWOCC.occq_create			(occq_size);
 
 	xrRender_apply_tf			();
-	::PortalTraverser.initialize();
+	GMBase.initialize();
 	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueuedDeffer);
+
 }
 
 void CRender::destroy()
 {
 	m_bMakeAsyncSS = false;
-	::PortalTraverser.destroy();
+	GMBase.destroy();
 	//.	HWOCC.occq_destroy			();
 	PSLibrary.OnDestroy();
 
@@ -117,7 +118,6 @@ void CRender::destroy()
 	xr_delete(Target);
 	Device.seqFrame.Remove(this);
 
-	r_dsgraph_destroy();
 	Device.ModelDefferClear = nullptr;
 }
 
@@ -240,18 +240,11 @@ IRender_Light*			CRender::light_create			()					{ return L_DB->Create();								
 
 IRender_Glow*			CRender::glow_create			()					{ return new CGlow();								}
 
-void					CRender::flush					()					{ r_dsgraph_render_graph	(0);						}
+void					CRender::flush					()					{ RImplementation.GMBase.r_dsgraph_render_graph	(0);						}
 
 BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
-ENGINE_API	extern xr_atomic_bool g_bRendering;
-void					CRender::add_Visual				(IRenderVisual* V)
-{
-	VERIFY				(g_bRendering);
-	add_leafs_Dynamic	((dxRender_Visual*)V);
-}
-void					CRender::add_Geometry			(IRenderVisual* V ){ add_Static((dxRender_Visual*)V,View->getMask());						}
 
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts, bool UseCameraDirection)
 {
@@ -299,42 +292,18 @@ void					CRender::add_Occluder			(Fbox2&	bb_screenspace	)
 	HOM.occlude				(bb_screenspace);
 }
 
-#include "../../xrEngine/PS_instance.h"
-void					CRender::set_Object				(IRenderable*		O )	
-{
-	VERIFY					(g_bRendering);
-	val_pObject				= O;		// nullptr is OK, trust me :)
-	if (val_pObject)		{
-		VERIFY(dynamic_cast<CObject*>(O)||dynamic_cast<CPS_Instance*>(O));
-		if (O->renderable.pROS) { VERIFY(dynamic_cast<CROS_impl*>(O->renderable.pROS)); }
-	}
-	if (PHASE_NORMAL==phase)	{
-		if (L_Shadows)
-			L_Shadows->set_object	(O);
-		
-		if (L_Projector)
-			L_Projector->set_object	(O);
-	} else {
-		if (L_Shadows)
-			L_Shadows->set_object(0);
-
-		if (L_Projector)
-			L_Projector->set_object	(0);
-	}
-}
 void					CRender::apply_object			(IRenderable*		O )
 {
 	if (0==O)			return	;
-	if (PHASE_NORMAL==phase	&& O->renderable_ROS())		{
+	if (PHASE_NORMAL==phase	&& O->renderable_ROS())
+	{
 		CROS_impl& LT		= *((CROS_impl*)O->renderable.pROS);
-		VERIFY(dynamic_cast<CObject*>(O)||dynamic_cast<CPS_Instance*>(O));
-		VERIFY(dynamic_cast<CROS_impl*>(O->renderable.pROS));
 		float o_hemi		= 0.5f*LT.get_hemi						();
 		float o_sun			= 0.5f*LT.get_sun						();
 		RCache.set_c		(c_ldynamic_props,o_sun,o_sun,o_sun,o_hemi);
 		// shadowing
 		if ((LT.shadow_recv_frame==Device.dwFrame) && O->renderable_ShadowReceive())	
-			RImplementation.L_Projector->setup	(LT.shadow_recv_slot);
+			L_Projector->setup	(LT.shadow_recv_slot);
 	}
 }
 
@@ -394,7 +363,6 @@ void CRender::Calculate				()
 
 	// Frustum & HOM rendering
 	ViewBase.CreateFromMatrix		(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
-	View							= 0;
 	if (!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
 		HOM.Enable									();
 		HOM.Render									(ViewBase);
@@ -414,164 +382,17 @@ void CRender::Calculate				()
 		vLastCameraPos.set(Device.vCameraPosition);
 	}
 
-	// Check if camera is too near to some portal - if so force DualRender
-	if (rmPortals) 
-	{
-		Fvector box_radius;		box_radius.set(EPS_L*2,EPS_L*2,EPS_L*2);
-		Sectors_xrc.box_options	(CDB::OPT_FULL_TEST);
-		Sectors_xrc.box_query	(rmPortals,Device.vCameraPosition,box_radius);
-		for (int K=0; K<Sectors_xrc.r_count(); K++)
-		{
-			CPortal*	pPortal		= (CPortal*) Portals[rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
-			pPortal->bDualRender	= TRUE;
-		}
-	}
 	//
 	if (L_DB)
 		L_DB->Update();
 
 	// Main process
-	marker	++;
-	if (pLastSector)
-	{
-		// Traverse sector/portal structure
-		PortalTraverser.traverse	
-			(
-			pLastSector,
-			ViewBase,
-			Device.vCameraPosition,
-			Device.mFullTransform,
-			CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE
-			);
+	GMBase.traverse(pLastSector, ViewBase, Device.vCameraPosition, Device.mFullTransform);
+	GMBase.r_dsgraph_capture(true, true);
 
-		// Determine visibility for static geometry hierrarhy
-		if  (psDeviceFlags.test(rsDrawStatic))	{
-			for (u32 s_it=0; s_it<PortalTraverser.r_sectors.size(); s_it++)
-			{
-				CSector*	sector		= (CSector*)PortalTraverser.r_sectors[s_it];
-				dxRender_Visual*	root	= sector->root();
-				for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
-				{
-					set_Frustum			(&(sector->r_frustums[v_it]));
-					add_Geometry		(root);
-				}
-			}
-		}
-
-		// Traverse object database
-		if  (psDeviceFlags.test(rsDrawDynamic))	{
-			g_SpatialSpace->q_frustum
-			(
-			lstRenderables,
-			ISpatial_DB::O_ORDERED,
-			STYPE_RENDERABLE + STYPE_PARTICLE + STYPE_LIGHTSOURCE,
-			ViewBase);//nearest sorting
-
-			// Determine visibility for dynamic part of scene
-			set_Object							(0);
-
-			if (psGameFlags.test(rsActorShadow)) {
-				g_hud->Render_First();
-			}
-
-			g_hud->Render_Last					( );	
-			u32 uID_LTRACK						= 0xffffffff;
-			if (phase==PHASE_NORMAL)			{
-				uLastLTRACK	++;
-				if (lstRenderables.size())		uID_LTRACK	= uLastLTRACK%lstRenderables.size();
-
-				// update light-vis for current entity / actor
-				CObject*	O					= g_pGameLevel->CurrentViewEntity();
-				if (O)		{
-					CROS_impl*	R					= (CROS_impl*) O->ROS();
-					if (R)		R->update			(O);
-				}
-			}
-			for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
-			{
-				ISpatial*	spatial		= lstRenderables[o_it].get();		spatial->spatial_updatesector	();
-				CSector*	sector		= (CSector*)spatial->spatial.sector	;
-				if	(0==sector)										
-					continue;	// disassociated from S/P structure
-
-				// Filter only not light spatial
-				if	(PortalTraverser.i_marker != sector->r_marker && (spatial->spatial.type&STYPE_RENDERABLE || spatial->spatial.type&STYPE_PARTICLE) )	continue;	// inactive (untouched) sector
-
-				if(spatial->spatial.type&STYPE_RENDERABLE || spatial->spatial.type&STYPE_PARTICLE)
-				{
-					for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
-					{
-						set_Frustum			(&(sector->r_frustums[v_it]));
-						if (!View->testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R)) continue;
-						// renderable
-						IRenderable*	renderable		= spatial->dcast_Renderable	();
-						if (renderable)
-						{
-							// Occlusiond
-							vis_data&		v_orig			= renderable->renderable.visual->getVisData();
-							vis_data		v_copy			= v_orig;
-							v_copy.box.xform				(renderable->renderable.xform);
-							BOOL			bVisible		= HOM.visible(v_copy);
-							v_orig.accept_frame				= v_copy.accept_frame;
-							v_orig.marker					= v_copy.marker;
-							v_orig.hom_frame				= v_copy.hom_frame;
-							v_orig.hom_tested				= v_copy.hom_tested;
-							if (!bVisible)					break;	// exit loop on frustums
-
-							// rendering
-							if (o_it==uID_LTRACK && renderable->renderable_ROS())	{
-								// track lighting environment
-								CROS_impl*		T = (CROS_impl*)renderable->renderable_ROS();
-								T->update			(renderable);
-							}
-							set_Object						(renderable);
-							renderable->renderable_Render	();
-							set_Object						(0);	//? is it needed at all
-						}
-						else if (CGlow* glow = spatial->dcast_CGlow())
-						{
-							// It may be an glow
-							L_Glows->add(glow);
-						}
-						break;	// exit loop on frustums
-					}
-				}
-
-				if (spatial->spatial.type & STYPE_LIGHTSOURCE)
-				{
-					if ( ViewBase.testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R) )
-					{
-						VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
-						// lightsource
-						if (light* L = (light*)spatial->dcast_Light())
-						{
-							if (L->SpatialComponent->spatial.sector)
-							{
-								vis_data& vis = L->get_homdata();
-								if (HOM.visible(vis))	L_DB->add_light(L);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// Calculate miscelaneous stuff
-		L_Shadows->calculate								();
-		L_Projector->calculate								();
-	}
-	else
-	{
-		set_Object											(0);
-		/*
-		g_pGameLevel->pHUD->Render_First					();	
-		g_pGameLevel->pHUD->Render_Last						();	
-
-		// Calculate miscelaneous stuff
-		L_Shadows->calculate								();
-		L_Projector->calculate								();
-		*/
-	}
+	// Calculate miscelaneous stuff
+	L_Shadows->calculate								();
+	L_Projector->calculate								();
 
 	// End calc
 	Device.Statistic->RenderCALC.End	();
@@ -610,35 +431,31 @@ void	CRender::Render		()
 	Device.Statistic->RenderDUMP.Begin();
 	// Begin
 	Target->Begin								();
-	o.vis_intersect								= FALSE			;
 	phase										= PHASE_NORMAL	;
-	r_dsgraph_render_hud						();				// hud
-	r_dsgraph_render_graph						(0);			// normal level
-	if(Details)Details->Render					();				// grass / details
-	r_dsgraph_render_lods						(true,false);	// lods - FB
+	GMBase.r_dsgraph_render_hud();				// hud
+	GMBase.r_dsgraph_render_graph(0);			// normal level
+	if(Details)Details->Render();				// grass / details
+	GMBase.r_dsgraph_render_lods(true,false);	// lods - FB
 
 	g_pGamePersistent->Environment().RenderSky	();				// sky / sun
 	g_pGamePersistent->Environment().RenderClouds	();				// clouds
 
-	r_pmask										(true,false);	// disable priority "1"
-	o.vis_intersect								= TRUE			;
 	L_Dynamic->render							(0);				// addititional light sources
 	if(Wallmarks){
 		g_r										= 0;
 		Wallmarks->Render						();				// wallmarks has priority as normal geometry
 	}
-	HOM.Enable									();
-	o.vis_intersect								= FALSE			;
+
 	phase										= PHASE_NORMAL	;
-	r_pmask										(true,true);	// enable priority "0" and "1"
 	if(L_Shadows)L_Shadows->render				();				// ... and shadows
-	r_dsgraph_render_lods						(false,true);	// lods - FB
+	GMBase.r_dsgraph_render_lods(false,true);	// lods - FB
+	GMBase.r_dsgraph_render_static(1);			// normal level, secondary priority
 	CParticlesAsync::Wait();
-	r_dsgraph_render_graph						(1);			// normal level, secondary priority
+	GMBase.r_dsgraph_render_dynamic(1, true);			// normal level, secondary priority
 	L_Dynamic->render							(1);			// addititional light sources, secondary priority
 	phase = PHASE_NORMAL;
-	PortalTraverser.fade_render					();				// faded-portals
-	r_dsgraph_render_sorted						();				// strict-sorted geoms
+	GMBase.fade_render							();				// faded-portals
+	GMBase.r_dsgraph_render_sorted();				// strict-sorted geoms
 	if(L_Glows)L_Glows->Render					();				// glows
 	g_pGamePersistent->Environment().RenderFlares	();				// lens-flares
 	g_pGamePersistent->Environment().RenderLast	();				// rain/thunder-bolts
@@ -648,8 +465,8 @@ void	CRender::Render		()
 	{
 		for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 		{
-			R_ASSERT( mapNormalPasses[_priority][iPass].size() == 0);
-			R_ASSERT( mapMatrixPasses[_priority][iPass].size() == 0);
+			R_ASSERT( GMBase.RGraph.mapStaticPasses[_priority][iPass].size() == 0);
+			R_ASSERT( GMBase.RGraph.mapDynamicPasses[_priority][iPass].size() == 0);
 		}
 	}
 

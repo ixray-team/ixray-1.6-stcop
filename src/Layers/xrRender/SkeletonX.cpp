@@ -272,6 +272,7 @@ void CSkeletonX::_Copy		(CSkeletonX *B)
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
+	xrCriticalSectionGuard guard(&Parent->UCalc_Mutex);
 	//PROF_EVENT("CSkeletonX::_Render");
 
 #ifdef USE_DX11

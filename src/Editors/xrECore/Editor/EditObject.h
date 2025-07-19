@@ -490,6 +490,7 @@ virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ ret
 	virtual u16			_BCL	LL_BoneCount()const 																	{ return (u16)BoneCount(); }
 	virtual u16					LL_VisibleBoneCount() 																	{ VERIFY(false); return 0; }
 	virtual ICF Fmatrix& _BCL	LL_GetTransform(u16 bone_id) 															{ return GetBone( bone_id )->_LTransform(); }
+	virtual ICF Fmatrix& _BCL	LL_GetTransform_safed(u16 bone_id) 															{ return GetBone( bone_id )->_LTransform(); }
 	virtual ICF const Fmatrix& _BCL	LL_GetTransform(u16 bone_id) const 													{ return GetBone( bone_id )->_LTransform(); }
 	virtual ICF Fmatrix&		LL_GetTransform_R(u16 bone_id);
 	virtual Fobb&				LL_GetBox(u16 bone_id);

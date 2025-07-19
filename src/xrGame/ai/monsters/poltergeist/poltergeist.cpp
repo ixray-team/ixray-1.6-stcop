@@ -296,10 +296,10 @@ void CPoltergeist::Show()
 	ability()->on_show	();
 }
 
-void CPoltergeist::renderable_Render()
+void CPoltergeist::renderable_Render(IDSGraphManager* DM)
 {
 	Visual()->getVisData().hom_frame = Device.dwFrame;
-	inherited::renderable_Render();
+	inherited::renderable_Render(DM);
 }
 
 void CPoltergeist::UpdateCL()

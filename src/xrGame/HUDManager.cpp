@@ -42,9 +42,6 @@ void CHUDManager::OnFrame()
 	if(!b_online)						
 		return;
 
-	PROF_EVENT("CHUDManager::OnFrame");
-	m_pHUDTarget->CursorOnFrame();
-
 	if (Device.IsEditorMode())
 	{
 		OnFrameMT();
@@ -58,6 +55,8 @@ void CHUDManager::OnFrameMT()
 		return;
 	PROF_EVENT("CHUDManager::OnFrameMT");
 
+	m_pHUDTarget->CursorOnFrame();
+
 	if (Device.dwPrecacheFrame == 0)
 		Level().GameTaskManager()->UpdateTasks();
 
@@ -68,8 +67,8 @@ void CHUDManager::OnFrameMT()
 //--------------------------------------------------------------------
 
 ENGINE_API extern float psHUD_FOV;
-
-void CHUDManager::Render_First()
+//R1 Actor Shadow
+void CHUDManager::Render_First(IDSGraphManager* DM)
 {
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2|HUD_DRAW_RT2))
 	{
@@ -99,10 +98,12 @@ void CHUDManager::Render_First()
 	}
 
 	// only shadow 
-	::Render->set_Invisible			(TRUE);
-	::Render->set_Object			(O->H_Root());
-	O->renderable_Render			();
-	::Render->set_Invisible			(FALSE);
+	DM->set_Invisible(true);
+	DM->set_Object(O->H_Root());
+
+	O->renderable_Render(DM);
+
+	DM->set_Invisible();
 }
 
 bool need_render_hud()
@@ -127,19 +128,19 @@ bool need_render_hud()
 	return true;
 }
 
-void CHUDManager::Render_Last()
+void CHUDManager::Render_Last(IDSGraphManager* DM)
 {
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2|HUD_DRAW_RT2))return;
 	if (0==pUIGame)					return;
 
 	if(!need_render_hud())			return;
 
-	CObject*	O					= g_pGameLevel->CurrentViewEntity();
+	CObject* O = g_pGameLevel->CurrentViewEntity();
 	// hud itself
-	::Render->set_HUD				(TRUE);
-	::Render->set_Object			(O->H_Root());
-	O->OnHUDDraw					(this);
-	::Render->set_HUD				(FALSE);
+	DM->set_HUD(true);
+	DM->set_Object(O->H_Root());
+	O->OnHUDDraw(this, DM);
+	DM->set_HUD();
 }
 
 #include "player_hud.h"

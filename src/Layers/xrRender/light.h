@@ -5,7 +5,7 @@
 //#include "../../xrEngine/xr_object.h"
 #if (RENDER==R_R2) || (RENDER==R_R4)
 #	include "light_package.h"
-#	include "light_smapvis.h"
+#include "../xrRender/r__dsgraph_manager.h"
 #endif //(RENDER==R_R2) || (RENDER==R_R4)
 
 class light :	
@@ -33,15 +33,24 @@ public:
 	CObject			*ignore_object, *decor_object[6];
 	vis_data		hom			;
 	u32				frame_render;
-	
+	light*			m_parent;
+	u8				m_moving_frames;
 #if RENDER!=R_R1
-	xr_vector<IRender_Sector*> m_sectors;
+	FixedSet<IRender_Sector*> m_sectors;
 #endif	//	RENDER!=R_R1
 
 	float			m_volumetric_quality;
 	float			m_volumetric_intensity;
 	float			m_volumetric_distance;
-
+#ifndef _EDITOR
+	CDSGraphManager GMLight = CDSGraphManager(u32(0),
+#if RENDER==R_R1
+		u32(STYPE_RENDERABLE),
+#else
+		u32(STYPE_RENDERABLE + STYPE_RENDERABLESHADOW),
+#endif
+		{ true,false,false,false,true,false,false });
+#endif
 #if (RENDER==R_R2) || (RENDER==R_R4) || defined(_EDITOR)
 	float			falloff;			// precalc to make light equal to zero at light range
 	float	        attenuation0;		// Constant attenuation		
@@ -49,22 +58,21 @@ public:
 	float	        attenuation2;		// Quadratic attenuation	
 
 #ifndef _EDITOR
-	light*						omnipart	[6]	;
-	smapvis			svis;		// used for 6-cubemap faces
+	light*						omnipart[6];
 #endif
 
 	ref_shader		s_spot;
 	ref_shader		s_point;
 	ref_shader		s_volumetric;
 
-	u32				m_xform_frame;
+	u32				m_xform_frame, m_parent_p_frame, m_parent_u_frame;
+
 	Fmatrix			m_xform;
 
 	struct _vis		
 	{
 		u32			frame2test;		// frame the test is sheduled to
-		u32			query_id;		// ID of occlusion query
-		u32			query_order;	// order of occlusion query
+		ID3DQuery*	Q;
 		bool		visible;		// visible/invisible
 		bool		pending;		// test is still pending
 		u16			smap_ID;
@@ -97,6 +105,7 @@ public:
 			u32							posX;
 			u32							posY;
 			BOOL						transluent;
+			CFrustum					frustum;
 		}	S;
 
 	};
@@ -107,10 +116,12 @@ public:
 public:
 #if RENDER!=R_R1
 	void get_sectors();
-	bool has_light_visible_from_sectors();
+	bool has_light_visible_from_sectors(CDSGraphManager& DM);
+	bool has_outdoor_light();
 	xrCriticalSection sectors_lc;
 #endif	//	RENDER!=R_R1
 	virtual void	set_type				(LT type)						{ flags.type = type;		}
+	virtual LT		get_type				()								{ return (LT)flags.type;	}
 	virtual void	set_active				(bool b);
 	virtual bool	get_active				()								{ return flags.bActive;		}
 	virtual void	set_shadow				(bool b);
@@ -145,7 +156,6 @@ public:
 
 	virtual	void	spatial_move			();
 	virtual	Fvector	spatial_sector_point	();
-	virtual	void	spatial_updatesector_internal ();
 
 	virtual IRender_Light*	dcast_Light		()	{ return this; }
 
@@ -156,7 +166,7 @@ public:
 	void			optimize_smap_size		();
 	void			vis_prepare				();
 	void			vis_update				();
-	void			export_ 					(light_Package& dest);
+	void			export_ 				();
 	void			set_attenuation_params	(float a0, float a1, float a2, float fo);
 #endif // _EDITOR
 #endif // (RENDER==R_R2) || (RENDER==R_R4)

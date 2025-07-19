@@ -158,7 +158,8 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 void	CKinematics::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool ignore_callbacks)
 {
 	R_ASSERT(id<LL_BoneCount());
-	CBoneInstance bi = LL_GetBoneInstance(id);
+	xrCriticalSectionGuard guard(&UCalc_Mutex);
+	CBoneInstance bi = bone_instances[id];
 	Fvector last_c = bi.mTransform.c;
 	BoneChain_Calculate(&LL_GetData(id),bi,mask_channel,ignore_callbacks);
 #ifndef MASTER_GOLD
@@ -170,13 +171,12 @@ void	CKinematics::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool igno
 
 void CKinematics::Bone_Calculate(CBoneData* bd, Fmatrix *parent)
 {
-	xrCriticalSectionGuard guard(&UCalc_Mutex2);
-	u16							SelfID				= bd->GetSelfID();
-	CBoneInstance				&BONE_INST			= LL_GetBoneInstance(SelfID);
+	u16 SelfID = bd->GetSelfID();
+	CBoneInstance& BONE_INST = bone_instances[SelfID];
 	CLBone( bd, BONE_INST, parent, u8(-1) );
 	// Calculate children
-	for (xr_vector<CBoneData*>::iterator C=bd->children.begin(); C!=bd->children.end(); C++)
-		Bone_Calculate( *C, &BONE_INST.mTransform );
+	for (CBoneData* bd : bd->children)
+		Bone_Calculate(bd, &BONE_INST.mTransform );
 
 }
 
@@ -203,7 +203,7 @@ void	CKinematics::BoneChain_Calculate		(const CBoneData* bd, CBoneInstance &bi, 
 	u16 ParentID				= bd->GetParentID();
 	R_ASSERT( ParentID != BI_NONE );
 	CBoneData* ParrentDT		= &LL_GetData(ParentID);
-	CBoneInstance parrent_bi	= LL_GetBoneInstance(ParentID);
+	CBoneInstance parrent_bi	= bone_instances[ParentID];
 	BoneChain_Calculate(ParrentDT, parrent_bi, mask_channel, ignore_callbacks);
 	CLBone( bd, bi, &parrent_bi.mTransform, mask_channel );
 	//restore callback

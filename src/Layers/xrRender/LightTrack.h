@@ -68,6 +68,8 @@ private:
 
 	Fvector					approximate			;
 
+	xr_vector<ISpatialShared> lstSpatial;
+
 #if RENDER!=R_R1
 	Fvector					last_position;
 	s32						ticks_to_update;

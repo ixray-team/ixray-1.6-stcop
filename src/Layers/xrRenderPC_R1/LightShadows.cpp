@@ -81,12 +81,13 @@ CLightShadows::~CLightShadows()
 	cache.clear				();
 }
 
-void CLightShadows::set_object	(IRenderable* O)
+void CLightShadows::set_object	(IRenderable* O, IDSGraphManager& DM)
 {
+	xrCriticalSectionGuard guard(&cs);
 	if (0==O)	current		= 0;
 	else 
 	{
-		if (!O->renderable_ShadowGenerate()	|| RImplementation.val_bHUD || ((CROS_impl*)O->renderable_ROS())->shadow_gen_frame==Device.dwFrame)
+		if (!O->renderable_ShadowGenerate()	|| DM.i_mask[IDSGraphManager::fl_hud] || ((CROS_impl*)O->renderable_ROS())->shadow_gen_frame==Device.dwFrame)
 		{
 			current		= 0;
 			return;
@@ -126,6 +127,7 @@ void CLightShadows::set_object	(IRenderable* O)
 
 void CLightShadows::add_element	(NODE& N)
 {
+	xrCriticalSectionGuard guard(&cs);
 	if (0==current)										return;
 	VERIFY2	(casters.back()->nodes.size()<24,"Object exceeds limit of 24 renderable parts/materials");
 	if (0==N.pVisual->shader->E[SE_R1_LMODELS]._get())	return;
@@ -135,6 +137,7 @@ void CLightShadows::add_element	(NODE& N)
 //
 void CLightShadows::calculate	()
 {
+	xrCriticalSectionGuard guard(&cs);
 	if (casters.empty())		return;
 
 	BOOL bRTS					= FALSE;
@@ -259,7 +262,7 @@ void CLightShadows::calculate	()
 				NODE& N					=	C.nodes[n_it];
 				dxRender_Visual *V		=	N.pVisual;
 				RCache.set_Element		(V->shader->E[SE_R1_LMODELS]);
-				RCache.set_xform_world	(N.Matrix);
+				RCache.set_xform_world	(*N.pMatrix);
 				V->Render				(-1.0f);
 			}
 			
@@ -414,6 +417,7 @@ void  PLC_calc3_SSE(int& c0, int& c1, int& c2, CRenderDevice& Device_, Fvector* 
 
 void CLightShadows::render	()
 {
+	xrCriticalSectionGuard guard(&cs);
 	// Gain access to collision-DB
 	CDB::MODEL*		DB		= g_pGameLevel->ObjectSpace.GetStaticModel();
 	CDB::TRI*		TRIS	= DB->get_tris();

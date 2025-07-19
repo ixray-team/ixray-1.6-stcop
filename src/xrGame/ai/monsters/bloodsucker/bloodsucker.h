@@ -201,7 +201,7 @@ public:
 
 			virtual	char* get_monster_class_name () { return (char*) "bloodsucker"; }
 
-			virtual void  renderable_Render		 ();
+			virtual void  renderable_Render		 (IDSGraphManager* DM = nullptr);
 
 #ifdef DEBUG
 	virtual CBaseMonster::SDebugInfo show_debug_info();

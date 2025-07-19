@@ -17,7 +17,7 @@ private:
 	static	const	int		P_o_count		= P_o_line*P_o_line;
 
 	//
-	typedef	R_dsgraph::_MatrixItem	NODE;		
+	typedef	R_dsgraph::DSGraphItem	NODE;
 	struct	recv			{
 		IRenderable*		O			;
 		Fvector				C			;
@@ -33,13 +33,15 @@ private:
 	xr_vector<recv>			cache;			// same as number of slots
 	xr_vector<IRenderable*>	receivers;
 	xr_vector<int>			taskid;
+	xr_vector<dxRender_Visual*> lstVisuals;
 
 	ref_rt					RT			;
 	shared_str				c_xform		;
 	shared_str				c_clamp		;
 	shared_str				c_factor	;
+	xrCriticalSection		cs;
 public:
-	void					set_object		(IRenderable*	O);
+	void					set_object		(IRenderable*	O, IDSGraphManager& DM);
 	BOOL					shadowing		()			{ return current!=0;	}
 	void					calculate		();
 	void					setup			(int slot);

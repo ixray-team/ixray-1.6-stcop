@@ -49,17 +49,17 @@ IRender_Sector* CRender::detectLastSector(const Fvector& P)
 	if(SectorsCount()==1)
 		return pOutdoorSector;
 
-	auto detectSector = [&](const Fvector& P, Fvector& dir) -> IRender_Sector*
+	static auto detectSector = [](const Fvector& P, Fvector& dir) -> IRender_Sector*
 	{
 		sectors_detect_xrc.ray_options		(CDB::OPT_ONLYNEAREST);
 		// Portals model
-		if (rmPortals)	
+		if (RImplementation.rmPortals)	
 		{
-			sectors_detect_xrc.ray_query	(rmPortals,P,dir,1000.f);
+			sectors_detect_xrc.ray_query	(RImplementation.rmPortals,P,dir,1000.f);
 			if (sectors_detect_xrc.r_count()) {
 				CDB::RESULT *RP = sectors_detect_xrc.r_begin();
-				CDB::TRI*	pTri	= rmPortals->get_tris() + RP->id;
-				CPortal*	pPortal	= (CPortal*) Portals[pTri->dummy];
+				CDB::TRI*	pTri	= RImplementation.rmPortals->get_tris() + RP->id;
+				CPortal*	pPortal	= (CPortal*)RImplementation.Portals[pTri->dummy];
 				CSector* S = pPortal->getSectorFacing(P);
 				FHierrarhyVisual* pV = (FHierrarhyVisual*)S->root();
 				if(pV)
@@ -74,7 +74,7 @@ IRender_Sector* CRender::detectLastSector(const Fvector& P)
 		sectors_detect_xrc.ray_query	(g_pGameLevel->ObjectSpace.GetStaticModel(),P,dir,1000.f);
 		if (sectors_detect_xrc.r_count()) {
 			CDB::RESULT *RP = sectors_detect_xrc.r_begin();
-			return getSector(RP->sector);
+			return RImplementation.getSector(RP->sector);
 		}
 
 		return nullptr;
@@ -141,10 +141,10 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
 	}
 }
 
-xr_vector<IRender_Sector*> CRender::detectSectors_sphere(CSector* sector, const Fvector& b_center, const Fvector& b_dim)
+void CRender::detectSectors_sphere(CSector* sector, FixedSet<IRender_Sector*>& m_sectors, const Fvector& b_center, const Fvector& b_dim)
 {
-	xr_vector<IRender_Sector*> m_sectors;
-	m_sectors.push_back(sector);
+	m_sectors.clear();
+	m_sectors.insert(sector);
 	if (rmPortals)
 	{
 		sectors_detect_xrc.box_options(CDB::OPT_FULL_TEST);
@@ -160,19 +160,18 @@ xr_vector<IRender_Sector*> CRender::detectSectors_sphere(CSector* sector, const 
 			CSector *pBack = pPortal->Back();
 
 			if(pFront)
-				m_sectors.push_back(pFront);
+				m_sectors.insert(pFront);
 
 			if(pBack)
-				m_sectors.push_back(pBack);
+				m_sectors.insert(pBack);
 		}
 	}
-	return m_sectors;
 }
 
-xr_vector<IRender_Sector*> CRender::detectSectors_frustum(CSector* sector, CFrustum* _frustum)
+void CRender::detectSectors_frustum(CSector* sector, FixedSet<IRender_Sector*>& m_sectors, CFrustum* _frustum)
 {
-	xr_vector<IRender_Sector*> m_sectors;
-	m_sectors.push_back(sector);
+	m_sectors.clear();
+	m_sectors.insert(sector);
 	if (rmPortals)
 	{
 		sectors_detect_xrc.frustum_options(CDB::OPT_FULL_TEST);
@@ -188,11 +187,10 @@ xr_vector<IRender_Sector*> CRender::detectSectors_frustum(CSector* sector, CFrus
 			CSector *pBack = pPortal->Back();
 
 			if(pFront)
-				m_sectors.push_back(pFront);
+				m_sectors.insert(pFront);
 
 			if(pBack)
-				m_sectors.push_back(pBack);
+				m_sectors.insert(pBack);
 		}
 	}
-	return m_sectors;
 }

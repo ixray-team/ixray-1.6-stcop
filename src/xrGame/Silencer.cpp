@@ -46,7 +46,7 @@ void CSilencer::OnH_B_Independent(bool just_before_destroy)
 	inherited::OnH_B_Independent(just_before_destroy);
 }
 
-void CSilencer::renderable_Render() 
+void CSilencer::renderable_Render(IDSGraphManager* DM)
 {
-	inherited::renderable_Render();
+	inherited::renderable_Render(DM);
 }

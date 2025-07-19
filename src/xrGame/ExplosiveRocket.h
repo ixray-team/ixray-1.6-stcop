@@ -58,7 +58,7 @@ public:
 
 	virtual void			OnH_A_Chield		()				{inherited::OnH_A_Chield();}
 	virtual void			OnH_B_Chield		()				{inherited::OnH_B_Chield();}
-	virtual void			renderable_Render	()				{inherited::renderable_Render();}
+	virtual void			renderable_Render	(IDSGraphManager* DM = nullptr)				{inherited::renderable_Render(DM);}
 	virtual void			make_Interpolation	();
 	virtual void			PH_B_CrPr			(); // actions & operations before physic correction-prediction steps
 	virtual void			PH_I_CrPr			(); // actions & operations after correction before prediction steps

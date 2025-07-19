@@ -255,12 +255,12 @@ float CParticlesObject::shedule_Scale		()
 	return Device.vCameraPosition.distance_to(Position())/200.f; 
 }
 
-void CParticlesObject::renderable_Render	()
+void CParticlesObject::renderable_Render	(IDSGraphManager* DM)
 {
 	VERIFY					(renderable.visual);
 
-	::Render->set_Transform	(&renderable.xform);
-	::Render->add_Visual	(renderable.visual);
+	DM->add_Dynamic(renderable.visual, &renderable.xform);
+	renderable.visual->getVisData().hom_frame = Device.dwFrame;
 }
 
 bool CParticlesObject::IsAutoRemove			()

@@ -222,10 +222,7 @@ void CRenderTarget::phase_combine()
 	// Distortion filter
 	BOOL bDistort = RImplementation.o.distortion_enabled; // This can be modified
 	{
-		u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
-		if((count < 1 && !_menu_pp)) {
-			bDistort= FALSE;
-		}
+		if ((0 == RImplementation.GMBase.RGraph.mapStaticSorted.Distort.size() && 0 == RImplementation.GMBase.RGraph.mapDynamicSorted.Distort.size() && 0 == RImplementation.GMBase.RGraph.mapHUDSorted.Distort.size()) && !_menu_pp)		bDistort = FALSE;
 		if(bDistort) {
 			GPU_EVENT(render_distort_objects);
 			FLOAT ColorRGBA_[4] = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
@@ -237,7 +234,7 @@ void CRenderTarget::phase_combine()
 			RCache.set_CullMode(CULL_CCW);
 			RCache.set_Stencil(FALSE);
 			RCache.set_ColorWriteEnable();
-			RImplementation.r_dsgraph_render_distort();
+			RImplementation.GMBase.r_dsgraph_render_distort();
 
 			if(g_pGamePersistent) {
 				g_pGamePersistent->OnRenderPPUI_PP();	// PP-UI

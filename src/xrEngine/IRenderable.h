@@ -22,7 +22,7 @@ public:
 	virtual								~IRenderable				();
 	IRender_ObjectSpecific*				renderable_ROS				()	;
 
-	virtual	void						renderable_Render			()	= 0;
+	virtual	void						renderable_Render			(IDSGraphManager* DM = nullptr) = 0;
 	virtual	BOOL						renderable_ShadowGenerate	()	{ return FALSE; };
 	virtual	BOOL						renderable_ShadowReceive	()	{ return FALSE; };
 

@@ -119,10 +119,13 @@ void CTorch::Switch(bool light_on)
 	{
 		light_render->set_active(light_on);
 		
-		// CActor *pA = smart_cast<CActor *>(H_Parent());
-		//if(!pA)
-			light_omni->set_decor_object(H_Parent());
-			light_omni->set_active(light_on);
+		if(light_on && H_Parent() && H_Parent()->cast_actor())
+		{
+			m_prev_hp.x = -H_Parent()->cast_actor()->cam_Active()->yaw;
+			m_prev_hp.y = -H_Parent()->cast_actor()->cam_Active()->pitch;
+		}
+		light_omni->set_decor_object(H_Parent());
+		light_omni->set_active(light_on);
 	}
 	glow_render->set_active					(light_on);
 
@@ -216,129 +219,133 @@ void CTorch::OnH_B_Independent(bool just_before_destroy)
 
 	m_sounds.StopAllSounds();
 }
-
-void CTorch::UpdateCL() 
+static void dbg_text_renderer(const Fvector& pos, u32 color = color_rgba(0,255,100,255), shared_str str = "+")
 {
-	PROF_EVENT("CTorch::UpdateCL")
-	inherited::UpdateCL			();
-	
+    Fvector4		v_res;
+    Device.mFullTransform.transform(v_res, pos);
+
+    float x = (1.f + v_res.x) / 2.f * (Device.Width);
+    float y = (1.f - v_res.y) / 2.f * (Device.Height);
+
+    if (v_res.z < 0 || v_res.w < 0)
+        return;
+
+    if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y>1.f)
+        return;
+
+	g_FontManager->pFontSystem->SetAligment(CGameFont::alCenter);
+	g_FontManager->pFontSystem->SetColor(color);
+	g_FontManager->pFontSystem->Out(x, y, "%s", str.c_str());
+}
+
+void CTorch::Update()
+{
 	if (!m_switched_on)			return;
 
-	CBoneInstance			&BI = PKinematics(Visual())->LL_GetBoneInstance(guid_bone);
-	Fmatrix					M;
+	Fmatrix M = PKinematics(Visual())->LL_GetTransform(guid_bone);
 
-	if (H_Parent()) 
+	if (H_Parent())
 	{
-		CActor*			actor = smart_cast<CActor*>(H_Parent());
-		if (actor)		PKinematics(H_Parent()->Visual())->CalculateBones_Invalidate	();
+		if (!AlwaysTheCrow())
+			MakeMeCrow();
+
+		CActor* actor = H_Parent()->cast_actor();
+		//if (actor)		PKinematics(H_Parent()->Visual())->CalculateBones_Invalidate();
 
 		if ((H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition) < _sqr(OPTIMIZATION_DISTANCE) || GameID() != eGameIDSingle))
 		{
 			// near camera
-			PKinematics(H_Parent()->Visual())->CalculateBones
-			(
-				!!Render->ViewBase.testSphere_dirty(H_Parent()->SpatialComponent->spatial.sphere.P,
-				H_Parent()->SpatialComponent->spatial.sphere.R + SpatialComponent->spatial.sphere.R + light_render->get_homdata().sphere.R)
-			);
+			//PKinematics(H_Parent()->Visual())->CalculateBones
+			//(
+			//	!!Render->ViewBase.testSphere_dirty(H_Parent()->SpatialComponent->spatial.sphere.P,
+			//		H_Parent()->SpatialComponent->spatial.sphere.R + SpatialComponent->spatial.sphere.R + light_render->get_homdata().sphere.R)
+			//);
+			if(actor && actor->HUDview())
+				PKinematics(H_Parent()->Visual())->CalculateBones(TRUE);
 
-			M.mul_43(XFORM(), BI.mTransform);
+			M.mulA_43(XFORM());
 		}
-		else 
+		else
 		{
 			// approximately the same
-			M		= H_Parent()->XFORM		();
-			H_Parent()->Center				(M.c);
-			M.c.y	+= H_Parent()->Radius	()*2.f/3.f;
+			M = H_Parent()->XFORM();
+			H_Parent()->Center(M.c);
+			M.c.y += H_Parent()->Radius() * 2.f / 3.f;
 		}
 
 		if (actor)
 		{
-			m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
-			m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_Active()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
-			if(actor->active_cam()==eacFirstEye)
+			if (actor->HUDview())
 			{
+				m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
+				m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_Active()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
+
 				light_render->set_ignore_object(H_Parent());
 				light_omni->set_ignore_object(H_Parent());
 				light_omni->set_decor_object(nullptr);
-			}
-			else
-			{
-				light_render->set_ignore_object(nullptr);
-				light_omni->set_ignore_object(nullptr);
-				light_omni->set_decor_object(H_Parent());
-			}
 
-			Fvector			dir, right, up;
-			dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
-			Fvector::generate_orthonormal_basis_normalized(dir, up, right);
+				Fvector			dir, right, up;
+				dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
+				Fvector::generate_orthonormal_basis_normalized(dir, up, right);
 
+				Fvector offset = M.c;
+				offset.mad(M.i, TORCH_OFFSET.x);
+				offset.mad(M.j, TORCH_OFFSET.y);
+				offset.mad(M.k, TORCH_OFFSET.z);
+				light_render->set_position(offset);
 
-			Fvector offset = M.c;
-			offset.mad(M.i, TORCH_OFFSET.x);
-			offset.mad(M.j, TORCH_OFFSET.y);
-			offset.mad(M.k, TORCH_OFFSET.z);
-			light_render->set_position(offset);
-
-			if (true /*false*/)
-			{
 				offset = M.c;
 				offset.mad(M.i, OMNI_OFFSET.x);
 				offset.mad(M.j, OMNI_OFFSET.y);
 				offset.mad(M.k, OMNI_OFFSET.z);
 				light_omni->set_position(offset);
-			}
 
-			glow_render->set_position(M.c);
-
-			if (!actor->HUDview())
-			{
-				u16 head_bone = actor->Visual()->dcast_PKinematics()->LL_BoneID("bip01_head");
-
-				CBoneInstance& BI2 = actor->Visual()->dcast_PKinematics()->LL_GetBoneInstance(head_bone);
-				Fmatrix M2;
-				M2.mul(actor->XFORM(), BI2.mTransform);
-
-				light_render->set_rotation(M2.k, M2.i);
+				light_render->set_rotation(dir, right);
 			}
 			else
 			{
-				light_render->set_rotation(dir, right);
+				light_render->set_ignore_object(nullptr);
+				light_render->set_position(M.c);
+				light_render->set_rotation(M.k, M.i);
+
+				light_omni->set_ignore_object(nullptr);
+				light_omni->set_decor_object(H_Parent());
+				light_omni->set_position(M.c);
 			}
 
-			light_omni->set_rotation(dir, right);
-			glow_render->set_direction(dir);
-
+			glow_render->set_direction(M.k);
+			glow_render->set_position(M.c);
 		}
-		else 
+		else
 		{
-			if (can_use_dynamic_lights()) 
+			if (can_use_dynamic_lights())
 			{
-				light_render->set_position	(M.c);
-				light_render->set_rotation	(M.k,M.i);
+				light_render->set_position(M.c);
+				light_render->set_rotation(M.k, M.i);
 
-				Fvector offset				= M.c; 
-				offset.mad					(M.i,OMNI_OFFSET.x);
-				offset.mad					(M.j,OMNI_OFFSET.y);
-				offset.mad					(M.k,OMNI_OFFSET.z);
-				light_omni->set_position	(M.c);
-				light_omni->set_rotation	(M.k,M.i);
-			}//if (can_use_dynamic_lights()) 
+				Fvector offset = M.c;
+				offset.mad(M.i, OMNI_OFFSET.x);
+				offset.mad(M.j, OMNI_OFFSET.y);
+				offset.mad(M.k, OMNI_OFFSET.z);
+				light_omni->set_position(M.c);
+				light_omni->set_rotation(M.k, M.i);
+			}
 
-			glow_render->set_position	(M.c);
-			glow_render->set_direction	(M.k);
+			glow_render->set_position(M.c);
+			glow_render->set_direction(M.k);
 		}
-	}//if(HParent())
-	else 
+	}
+	else
 	{
-		if (getVisible() && m_pPhysicsShell) 
+		if (getVisible() && m_pPhysicsShell)
 		{
-			M.mul						(XFORM(),BI.mTransform);
+			M.mulA_43(XFORM());
 
-			m_switched_on			= false;
+			m_switched_on = false;
 			light_render->set_active(false);
 			light_omni->set_active(false);
-			glow_render->set_active	(false);
-		}//if (getVisible() && m_pPhysicsShell)  
+			glow_render->set_active(false);
+		}
 	}
 
 	if (!m_switched_on)					return;
@@ -348,17 +355,37 @@ void CTorch::UpdateCL()
 
 	int						frame;
 	// возвращает в формате BGR
-	u32 clr					= lanim->CalculateBGR(Device.fTimeGlobal,frame); 
+	u32 clr = lanim->CalculateBGR(Device.fTimeGlobal, frame);
 
 	Fcolor					fclr;
-	fclr.set				((float)color_get_B(clr),(float)color_get_G(clr),(float)color_get_R(clr),1.f);
-	fclr.mul_rgb			(fBrightness/255.f);
+	fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);
+	fclr.mul_rgb(fBrightness / 255.f);
 	if (can_use_dynamic_lights())
 	{
-		light_render->set_color	(fclr);
-		light_omni->set_color	(fclr);
+		light_render->set_color(fclr);
+		light_omni->set_color(fclr);
 	}
-	glow_render->set_color		(fclr);
+	glow_render->set_color(fclr);
+}
+
+void CTorch::shedule_Update(u32 dt)
+{
+	inherited::shedule_Update(dt);
+	//Update();
+
+	if (H_Parent() && m_switched_on && !AlwaysTheCrow() && enabled())
+	{
+		MakeMeCrow();
+		//dbg_text_renderer(XFORM().c);
+	}
+}
+
+void CTorch::UpdateCL() 
+{
+	PROF_EVENT("CTorch::UpdateCL")
+	inherited::UpdateCL			();
+	
+	Update();
 }
 
 
@@ -424,17 +451,17 @@ void CTorch::afterDetach()
 	Switch(false);
 }
 
-void CTorch::renderable_Render()
+void CTorch::renderable_Render(IDSGraphManager* DM)
 {
 	if (IsGameTypeSingle())
 	{
-		inherited::renderable_Render();
+		inherited::renderable_Render(DM);
 	}
 	else
 	{
 		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
 		if (m_switched_on && pActor)
-			inherited::renderable_Render();
+			inherited::renderable_Render(DM);
 	}
 }
 

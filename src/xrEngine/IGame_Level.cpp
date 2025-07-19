@@ -37,6 +37,9 @@ IGame_Level::IGame_Level	()
 
 IGame_Level::~IGame_Level()
 {
+	Device.details_task.wait();
+	Device.secondary_tasks.wait();
+
 	if (Core.ParamsData.test(ECoreParams::nes_texture_storing))
 		Device.m_pRender->ResourcesStoreNecessaryTextures();
 

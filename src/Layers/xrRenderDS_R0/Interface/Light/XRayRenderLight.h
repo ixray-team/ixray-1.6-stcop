@@ -6,6 +6,7 @@ class CDS0_RenderLight :
 
 public:
 	virtual void set_type(LT type) override {};
+	virtual LT get_type() override { return IRender_Light::LT::POINT; };
 	virtual void set_active(bool) {};
 	virtual bool get_active() { return false; }
 	virtual void set_shadow(bool) {};

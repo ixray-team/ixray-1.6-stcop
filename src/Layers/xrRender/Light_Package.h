@@ -10,5 +10,4 @@ public:
 	xr_vector<light*>		v_shadowed;
 public:
 	void					clear				();
-	void					sort				();
 };

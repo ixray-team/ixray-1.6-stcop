@@ -132,6 +132,7 @@ void CObjectSpace::Create(Fvector* verts, CDB::TRI* tris, const hdrCFORM& H, CDB
 
 	g_SpatialSpace->initialize(m_BoundingVolume);
 	g_SpatialSpacePhysic->initialize(m_BoundingVolume);
+	g_SpatialSpaceLights->initialize(m_BoundingVolume);
 }
 
 //----------------------------------------------------------------------

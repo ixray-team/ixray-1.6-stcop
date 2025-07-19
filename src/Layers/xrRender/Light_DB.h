@@ -12,7 +12,6 @@ public:
 	ref_light				sun_original;
 	ref_light				sun_adapted;
 	light*					rain_light;
-	light_Package			package;
 public:
 	void					add_light			(light*		L	);
 

@@ -232,10 +232,9 @@ void CRender::create()
 	HWOCC.occq_create(occq_size);
 
 	rmNormal();
-	marker = 0;
 
 	xrRender_apply_tf();
-	::PortalTraverser.initialize();
+	GMBase.initialize();
 
 	FluidManager.Initialize(70, 70, 70);
 	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
@@ -247,33 +246,18 @@ void CRender::destroy()
 {
 	m_bMakeAsyncSS = false;
 	FluidManager.Destroy();
-	::PortalTraverser.destroy();
+	GMBase.destroy();
 
 	HWOCC.occq_destroy();
 	xr_delete(Models);
 	xr_delete(Target);
 	PSLibrary.OnDestroy();
 	Device.seqFrame.Remove(this);
-	r_dsgraph_destroy();
 	Device.ModelDefferClear = nullptr;
 }
 
-void CRender::reset_begin() {
-	// Update incremental shadowmap-visibility solver
-	// BUG-ID: 10646
-	{
-		u32 it = 0;
-		for(it = 0; it < Lights_LastFrame.size(); it++) {
-			if(0 == Lights_LastFrame[it])	continue;
-			try {
-				Lights_LastFrame[it]->svis.resetoccq();
-			}
-			catch(...) {
-				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
-			}
-		}
-		Lights_LastFrame.clear();
-	}
+void CRender::reset_begin()
+{
 
 	if (b_loaded)
 	{
@@ -461,7 +445,7 @@ IRender_Glow* CRender::glow_create() {
 }
 
 void CRender::flush() {
-	r_dsgraph_render_graph(0);
+	RImplementation.GMBase.r_dsgraph_render_graph(0);
 }
 
 BOOL CRender::occ_visible(vis_data& P) {
@@ -474,13 +458,6 @@ BOOL CRender::occ_visible(sPoly& P) {
 
 BOOL CRender::occ_visible(Fbox& P) {
 	return HOM.visible(P);
-}
-
-void CRender::add_Visual(IRenderVisual* V) {
-	add_leafs_Dynamic((dxRender_Visual*)V);
-}
-void CRender::add_Geometry(IRenderVisual* V) {
-	add_Static((dxRender_Visual*)V, View->getMask());
 }
 
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts, bool UseCameraDirection) 
@@ -527,10 +504,6 @@ void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMar
 
 void CRender::add_Occluder(Fbox2& bb_screenspace) {
 	HOM.occlude(bb_screenspace);
-}
-
-void CRender::set_Object(IRenderable* O) {
-	val_pObject = O;
 }
 
 void CRender::rmNear() {

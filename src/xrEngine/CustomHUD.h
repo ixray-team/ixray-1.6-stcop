@@ -16,7 +16,7 @@ ENGINE_API extern Flags32		psHUD_Flags;
 
 class ENGINE_API IRender_Visual;
 class CUI;
-
+class IDSGraphManager;
 class ENGINE_API CCustomHUD:
 	public DLL_Pure,
 	public IEventReceiver,
@@ -26,8 +26,8 @@ public:
 					CCustomHUD				();
 	virtual			~CCustomHUD				();
 
-	virtual		void		Render_First			(){;}
-	virtual		void		Render_Last				(){;}
+	virtual		void		Render_First			(IDSGraphManager* DM = nullptr){;}
+	virtual		void		Render_Last				(IDSGraphManager* DM = nullptr){;}
 
 	virtual		void		OnFrame					(){;}
 	virtual		void		OnFrameMT				(){;}

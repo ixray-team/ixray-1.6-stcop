@@ -2195,14 +2195,11 @@ void CActor::shedule_Update	(u32 DT)
 }
 
 #include "debug_renderer.h"
-void CActor::renderable_Render	()
+void CActor::renderable_Render	(IDSGraphManager* DM)
 {
 	VERIFY(_valid(XFORM()));
-	inherited::renderable_Render			();
-	if(1/*!HUDview()*/)
-	{
-		CInventoryOwner::renderable_Render	();
-	}
+	inherited::renderable_Render(DM);
+	CInventoryOwner::renderable_Render(DM);
 	VERIFY(_valid(XFORM()));
 }
 
@@ -2252,16 +2249,16 @@ extern	BOOL	g_ShowAnimationInfo		;
 #endif // DEBUG
 // HUD
 
-void CActor::OnHUDDraw(CCustomHUD* Z)
+void CActor::OnHUDDraw(CCustomHUD* Z, IDSGraphManager* DM)
 {
 	R_ASSERT(IsFocused());
 
 	if (!((mstate_real & mcLookout) && !IsGameTypeSingleCompatible()))
-		g_player_hud->render_hud();
+		g_player_hud->render_hud(DM);
 
 	if (CGameObject* pGameObject = Holder() != nullptr ? Holder()->cast_game_object() : nullptr)
 	{
-		pGameObject->OnHUDDraw(Z);
+		pGameObject->OnHUDDraw(Z, DM);
 	}
 #if 0//ndef NDEBUG
 	if (Level().CurrentControlEntity() == this && g_ShowAnimationInfo)

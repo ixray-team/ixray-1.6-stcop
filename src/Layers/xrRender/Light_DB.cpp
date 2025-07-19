@@ -189,7 +189,7 @@ void			CLight_DB::add_light		(light* L)
 #endif
 
 #if (RENDER==R_R2) || (RENDER==R_R4)
-void			CLight_DB::add_light		(light* L)
+void CLight_DB::add_light(light* L)
 {
 	if (Device.dwFrame==L->frame_render)	return;
 	L->frame_render							=	Device.dwFrame		;
@@ -198,10 +198,7 @@ void			CLight_DB::add_light		(light* L)
 	if (L->flags.bStatic && !ps_r2_ls_flags.test(R2FLAG_R1LIGHTS))	return;
 
 	if(Device.vCameraPosition.distance_to_sqr(L->SpatialComponent->spatial.sphere.P)>_sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))	return;
-
-	if (!L->has_light_visible_from_sectors()) return;
-
-	L->export_(package);
+	L->export_();
 }
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 
@@ -261,7 +258,4 @@ void			CLight_DB::Update			()
 			sun_adapted->set_position (OP);
 		}
 	}
-
-	// Clear selection
-	package.clear	();
 }

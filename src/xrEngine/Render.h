@@ -42,6 +42,7 @@ public:
 	};
 public:
 	virtual void					set_type			(LT type)							= 0;
+	virtual LT						get_type			()									= 0;
 	virtual void					set_active			(bool)								= 0;
 	virtual bool					get_active			()									= 0;
 	virtual void					set_shadow			(bool)								= 0;
@@ -171,9 +172,59 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Renderer)
-class	ENGINE_API	IRender_interface
+class ENGINE_API IDSGraphManager
 {
 public:
+	enum
+	{
+		fl_deffered,
+		fl_forward,
+		fl_wmarks,
+        fl_normal,
+        fl_shmap,
+        fl_invisible,
+        fl_hud,
+		fl_max,
+	};
+	IRenderable* val_pObject = nullptr;
+	bool i_mask[fl_max]{};//deffered,forward,wmarks,normal,shmap,val_invisible,val_hud
+
+	virtual void add_Static(IRenderVisual* pVisual, CFrustum& frustum, u32 planes) = 0;
+	virtual void add_Dynamic(IRenderVisual* piVisual, Fmatrix* xform) = 0;
+
+	virtual void set_Object(IRenderable* O = nullptr) = 0;
+	IRenderable* get_Object() { return val_pObject; }
+
+	void set_HUD(bool V = false) { i_mask[fl_hud]=V; }
+	bool get_HUD() { return i_mask[fl_hud]; }
+
+	void set_Invisible(bool V = false) { i_mask[fl_invisible] = V; }
+
+	virtual IDSGraphManager* dcast_IPortalTraverser() { return this; }
+};
+
+class ENGINE_API IRender_interface
+{
+public:
+	enum
+	{
+		PHASE_NORMAL = 0,	// E[0]
+		PHASE_SMAP = 1,	// E[1]
+		PHASE_REFLECT = 2,
+		//r1
+		PHASE_POINT = 3,
+		PHASE_SPOT = 4,
+	};
+	enum
+	{
+		MMSM_OFF = 0,
+		MMSM_ON,
+		MMSM_AUTO,
+		MMSM_AUTODETECT
+	};
+	u32 phase = PHASE_NORMAL;
+	BOOL b_loaded = FALSE;
+
 	enum GenerationLevel
 	{
 		GENERATION_R1				= 81,
@@ -195,7 +246,6 @@ public:
 
 	// data
 	CFrustum						ViewBase;
-	CFrustum*						View;
 public:
 	// feature level
 	virtual	GenerationLevel			get_generation			()											= 0;
@@ -244,16 +294,8 @@ public:
 	virtual SurfaceParams			getSurface(const char* nameTexture) { R_ASSERT(!"Method is not overridden"); return SurfaceParams(); };
 
 	// Main 
-	IC		void					set_Frustum				(CFrustum*	O	)							{ VERIFY(O);	View = O;			}
-	virtual void					set_Transform			(Fmatrix*	M	)							{};
-	virtual void					set_HUD					(BOOL 		V	)							{};
-	virtual BOOL					get_HUD					()											{ return 0; };
-	virtual void					set_Invisible			(BOOL 		V	)							{};
 	virtual void					flush					()											{};	
-	virtual void					set_Object				(IRenderable*		O	)					{};
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{};	// mask screen region as oclluded (-1..1, -1..1)
-	virtual void					add_Visual				(IRenderVisual*	V)						{};	// add visual leaf	(no culling performed at all)
-	virtual void					add_Geometry			(IRenderVisual*	V	)					{};	// add visual(s)	(all culling performed)
 	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
 
 	//	Prefer this function when possible

@@ -161,7 +161,7 @@ public:
 	// debug
 #ifdef DEBUG_DRAW
 	virtual void		OnRender				( );
-	virtual void		OnHUDDraw				(CCustomHUD* hud);
+	virtual void		OnHUDDraw				(CCustomHUD* hud, IDSGraphManager* DM = nullptr);
 #endif
 
 	virtual bool		bfExecMovement			(){return(false);};

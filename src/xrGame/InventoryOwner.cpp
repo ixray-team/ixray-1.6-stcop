@@ -332,25 +332,25 @@ bool CInventoryOwner::IsTrading()
 }
 
 //==============
-void CInventoryOwner::renderable_Render		()
+void CInventoryOwner::renderable_Render		(IDSGraphManager* DM)
 {
 	if (inventory().ActiveItem())
-		inventory().ActiveItem()->renderable_Render();
+		inventory().ActiveItem()->renderable_Render(DM);
 
 	if (CEntityAlive* CurrEntity = cast_entity_alive(); CurrEntity == Actor())
 	{
 		PIItem rWeapon = inventory().ItemFromSlot(INV_SLOT_3);
 		bool rValid = rWeapon ? rWeapon->BaseSlot() == INV_SLOT_3 : false;
 		if (rWeapon && rValid && rWeapon != inventory().ActiveItem())
-			rWeapon->renderable_Render();
+			rWeapon->renderable_Render(DM);
 
 		PIItem lWeapon = inventory().ItemFromSlot(INV_SLOT_2);
 		bool lValid = lWeapon ? lWeapon->BaseSlot() == INV_SLOT_3 : false;
 		if (lWeapon && lValid && lWeapon != inventory().ActiveItem())
-			lWeapon->renderable_Render();
+			lWeapon->renderable_Render(DM);
 	}
 
-	CAttachmentOwner::renderable_Render();
+	CAttachmentOwner::renderable_Render(DM);
 }
 
 void CInventoryOwner::OnItemTake			(CInventoryItem *inventory_item)

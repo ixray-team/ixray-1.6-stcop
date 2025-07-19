@@ -62,7 +62,7 @@ public:
 	virtual CInventory*		GetInventory		(){return NULL;};
 	virtual void			cam_Update			(float dt, float fov=90.0f);
 
-	virtual void			renderable_Render	();
+	virtual void			renderable_Render	(IDSGraphManager* DM = nullptr);
 
 	virtual bool			attach_Actor		(CGameObject* actor);
 	virtual void			detach_Actor		();

@@ -21,8 +21,8 @@ public:
 	virtual					~CHUDManager		();
 	virtual		void		OnEvent				(EVENT E, u64 P1, u64 P2);
 
-	virtual		void		Render_First		();
-	virtual		void		Render_Last			();	   
+	virtual		void		Render_First		(IDSGraphManager* DM = nullptr);
+	virtual		void		Render_Last			(IDSGraphManager* DM = nullptr);
 	virtual		void		OnFrame				();
 
 	virtual		void		OnFrameMT			();

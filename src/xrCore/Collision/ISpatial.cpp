@@ -12,6 +12,7 @@
 
 ISpatial_DB*		g_SpatialSpace			= nullptr;
 ISpatial_DB*		g_SpatialSpacePhysic	= nullptr;
+ISpatial_DB*		g_SpatialSpaceLights	= nullptr;
 
 Fvector	c_spatial_offset	[8]	= 
 {
@@ -100,7 +101,6 @@ BOOL	verify_sp	(ISpatialShared sp, Fvector& node_center, float node_radius)
 
 void ISpatial::Register()
 {
-	spatial.type |= STYPEFLAG_INVALIDSECTOR;
 	if (spatial.node_ptr)
 	{
 		// already registered - nothing to do
@@ -134,9 +134,6 @@ void ISpatial::Move()
 {
 	if (spatial.node_ptr)
 	{
-		//*** somehow it was determined that object has been moved
-		spatial.type |= STYPEFLAG_INVALIDSECTOR;
-
 		//*** check if we are supposed to correct it's spatial location
 		if (spatial_inside())	
 			return;		// ???
@@ -161,14 +158,19 @@ Fvector ISpatial::OwnerSectorPoint()
 	return RawOwner ? RawOwner->spatial_sector_point() : spatial.sphere.P;
 }
 
-void ISpatial::spatial_updatesector_internal()
+void ISpatial::spatial_updatesector()
 {
-	IRender_Sector* S = ::Render->detectSector(OwnerSectorPoint());
-	spatial.type &=	~STYPEFLAG_INVALIDSECTOR;
+	Fvector curr_sector_point = OwnerSectorPoint();
 
-	if (S)
-		spatial.sector = S;
-}
+	if ((FALSE == curr_sector_point.similar(spatial.last_sector_point) || spatial.sector == nullptr))
+	{
+		PROF_EVENT("spatial_updatesector");
+		if (IRender_Sector* S = ::Render->detectSector(OwnerSectorPoint()))
+			spatial.sector = S;
+	}
+
+	spatial.last_sector_point = curr_sector_point;
+};
 
 //////////////////////////////////////////////////////////////////////////
 void ISpatial_NODE::_init(ISpatial_NODE* _parent)

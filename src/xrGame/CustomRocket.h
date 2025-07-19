@@ -53,7 +53,7 @@ public:
 	virtual BOOL UsedAI_Locations	()			{return	(FALSE);}
 	virtual bool Useful				() const	{return (m_eState == eInactive);	}
 
-	virtual void renderable_Render() {inherited::renderable_Render();}
+	virtual void renderable_Render(IDSGraphManager* DM = nullptr) {inherited::renderable_Render(DM);}
 
 	//создание физической оболочки
 	virtual void			activate_physic_shell	();

@@ -25,7 +25,7 @@ public:
 
 	virtual bool		shedule_Needed		()	{return true;};
 	virtual float		shedule_Scale		()	;
-	virtual void		renderable_Render	();
+	virtual void		renderable_Render	(IDSGraphManager* DM = nullptr);
 	void				PerformAllTheWork	();
 
 	Fvector&			Position			();

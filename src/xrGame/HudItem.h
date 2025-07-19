@@ -147,7 +147,7 @@ public:
 	virtual void				PlayAnimIdleSprint();
 
 	virtual void				UpdateCL			();
-	virtual void				renderable_Render	();
+	virtual void				renderable_Render	(IDSGraphManager* DM = nullptr);
 
 
 	virtual void				UpdateHudAdditonal	(Fmatrix&);
@@ -307,7 +307,7 @@ public:
 	IC		u32					animation_slot			()				{ return m_animation_slot;}
 	InertionData&				CurrentInertionData		()				{ return m_current_inertion;}
 
-	virtual void				on_renderable_Render	() = 0;
+	virtual void				on_renderable_Render	(IDSGraphManager* DM = nullptr) = 0;
 	virtual void				debug_draw_firedeps		() {};
 
 	virtual CHudItem*			cast_hud_item			()				{ return this; }

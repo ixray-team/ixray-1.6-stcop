@@ -38,7 +38,7 @@ public:
 	virtual bool				shedule_Needed			();
 
 	virtual void				UpdateCL				()											;
-	virtual void				renderable_Render		()											; 
+	virtual void				renderable_Render		(IDSGraphManager* DM = nullptr)											;
 	virtual void				ChangeCondition			(float fDeltaCondition)						{CInventoryItem::ChangeCondition(fDeltaCondition);};
 	virtual void				StartTimerEffects		()											;
 

@@ -121,7 +121,7 @@ public:
 	virtual void						OnEvent				( NET_Packet& P, u16 type		);
 
 	// Render
-	virtual void						renderable_Render			();
+	virtual void						renderable_Render			(IDSGraphManager* DM = nullptr);
 	virtual BOOL						renderable_ShadowGenerate	();
 	virtual	void						feel_sound_new				(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power);
 	virtual	Feel::Sound*				dcast_FeelSound				()	{ return this;	}
@@ -361,7 +361,7 @@ public:
 	void					g_SetAnimation		(u32 mstate_rl);
 	void					g_SetSprintAnimation(u32 mstate_rl,MotionID &head,MotionID &torso,MotionID &legs);
 public:
-	virtual void			OnHUDDraw			(CCustomHUD* hud);
+	virtual void			OnHUDDraw			(CCustomHUD* hud, IDSGraphManager* DM = nullptr);
 			BOOL			HUDview				( )const ;
 
 	//visiblity 

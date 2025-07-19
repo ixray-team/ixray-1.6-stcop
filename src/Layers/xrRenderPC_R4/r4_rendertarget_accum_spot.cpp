@@ -169,12 +169,6 @@ void CRenderTarget::accum_spot(light* L) {
 }
 
 void CRenderTarget::accum_volumetric(light* L) {
-	if (L == nullptr)
-	{
-		return;
-	}
-
-	if(!L->flags.bVolumetric) return;
 	PROF_EVENT("CRenderTarget::accum_volumetric")
 	phase_vol_accumulator();
 

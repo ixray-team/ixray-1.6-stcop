@@ -301,10 +301,10 @@ void CAI_Crow::UpdateCL		()
 		XFORM().set					(m_pPhysicsShell->mXFORM);
 	}
 }
-void CAI_Crow::renderable_Render	()
+void CAI_Crow::renderable_Render	(IDSGraphManager* DM)
 {
 	UpdateWorkload(Device.fTimeDelta * (Device.dwFrame - o_workload_frame));
-	inherited::renderable_Render	();
+	inherited::renderable_Render	(DM);
 	o_workload_rframe				= Device.dwFrame	;
 }
 

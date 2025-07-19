@@ -153,11 +153,14 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 		{
 			CDetail::SlotItem& Instance = *S.get();
 
-			if (RImplementation.pOutdoorSector && PortalTraverser.i_marker != RImplementation.pOutdoorSector->r_marker)
+			if (!RImplementation.GMBase.is_sector_visible(RImplementation.pOutdoorSector))
 				continue;
 
 			if (RImplementation.phase == CRender::PHASE_SMAP && L)
 			{
+				if (!L->GMLight.is_sector_visible(RImplementation.pOutdoorSector))
+					continue;
+
 				if(L->position.distance_to_sqr(Instance.pos) >= _sqr(L->range))
 					continue;
 			}

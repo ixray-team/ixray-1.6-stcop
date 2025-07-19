@@ -41,8 +41,7 @@ enum
 	STYPE_LIGHTSOURCEHEMI		= (1<<8),
 	STYPE_RENDERABLESHADOW		= (1<<9),
 	STYPE_PARTICLE				= (1<<10),
-
-	STYPEFLAG_INVALIDSECTOR		= (1<<16)
+	STYPE_GLOW					= (1<<11),
 };
 //////////////////////////////////////////////////////////////////////////
 // Comment: 
@@ -91,11 +90,9 @@ public:
 
 		// Cached node center for TBV optimization
 		Fvector node_center = {};
-
+		Fvector last_sector_point = {0.f,0.f,0.f};
 		// Cached node bounds for TBV optimization
-		float node_radius;
-		float ssa_dyn_factor = 0.002f;
-		float ssa_d_cam = 220.f;	
+		float node_radius=EPS;
 
 		// Cached parent node for "empty-members" optimization
 		ISpatial_NODE* node_ptr = nullptr;		
@@ -112,7 +109,6 @@ private:
 
 public:
 	BOOL spatial_inside		()			;
-	void spatial_updatesector_internal()	;
 
 private:
 	void	Register();
@@ -125,11 +121,7 @@ public:
 	Fvector OwnerSectorPoint();
 	void OwnerReset(ISpatialOwner* ptr) { RawOwner = ptr; };
 
-	ICF void spatial_updatesector()	
-	{
-		if (0== (spatial.type&STYPEFLAG_INVALIDSECTOR))	return;
-		spatial_updatesector_internal				()	;
-	};
+	void spatial_updatesector();
 
 	CObject*		dcast_CObject		();
 	Feel::Sound*	dcast_FeelSound		();
@@ -265,9 +257,9 @@ public:
 	void							q_frustum		(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_or, const CFrustum& _frustum);
 };
 
-XRCORE_API extern ISpatial_DB*		g_SpatialSpace			;
-XRCORE_API extern ISpatial_DB*		g_SpatialSpacePhysic	;
-
+XRCORE_API extern ISpatial_DB*		g_SpatialSpace;
+XRCORE_API extern ISpatial_DB*		g_SpatialSpacePhysic;
+XRCORE_API extern ISpatial_DB*		g_SpatialSpaceLights;
 #pragma pack(pop)
 
 #endif // #ifndef XRENGINE_ISPATIAL_H_INCLUDED

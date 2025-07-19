@@ -257,7 +257,7 @@ public:
 	virtual IRender_Sector* detectSector(const Fvector& P);
 
 	// Main 
-	IC		void					set_Frustum(CFrustum* O) { VERIFY(O);	View = O; }
+	IC		void					set_Frustum(CFrustum* O) { VERIFY(O); }
 	virtual void					set_HUD(BOOL 		V);
 	virtual BOOL					get_HUD();
 	virtual void					set_Invisible(BOOL 		V);

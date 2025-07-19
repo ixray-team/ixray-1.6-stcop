@@ -50,5 +50,5 @@ void CMercuryBall::UpdateCLChild()
 			}
 		}
 	} 
-	else if(H_Parent()) XFORM().set(H_Parent()->XFORM());
+	else if(H_Parent() && IsHidden()) XFORM().set(H_Parent()->XFORM());
 }

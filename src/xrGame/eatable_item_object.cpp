@@ -133,10 +133,10 @@ void CEatableItemObject::load				(IReader &packet)
 	CEatableItem::load				(packet);
 }
 
-void CEatableItemObject::renderable_Render()
+void CEatableItemObject::renderable_Render(IDSGraphManager* DM)
 {
-	CPhysicItem::renderable_Render		();
-	CEatableItem::renderable_Render	();
+	CPhysicItem::renderable_Render		(DM);
+	CEatableItem::renderable_Render	(DM);
 }
 
 void CEatableItemObject::reload			(LPCSTR section)

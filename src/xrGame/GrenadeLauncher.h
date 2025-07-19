@@ -21,7 +21,7 @@ public:
 	virtual void OnH_B_Independent	(bool just_before_destroy);
 
 	virtual void UpdateCL			();
-	virtual void renderable_Render	();
+	virtual void renderable_Render	(IDSGraphManager* DM = nullptr);
 
 	float	GetGrenadeVel() {return m_fGrenadeVel;}
 	

@@ -274,7 +274,7 @@ void CRenderDevice::on_idle		()
 	// *** Resume threads
 	// Capture end point - thread must run only ONE cycle
 	// Release start point - allow thread to run
-
+	secondary_tasks.run(&XRay::Engine::CalculateBonesThread);
 	secondary_tasks.run(&XRay::Engine::GameThread);
 
 	if (!g_dedicated_server)

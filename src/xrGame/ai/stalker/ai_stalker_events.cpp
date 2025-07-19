@@ -107,11 +107,11 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 void CAI_Stalker::on_ownership_reject	( CObject*O, bool just_before_destroy )
 {
 	m_pPhysics_support->in_UpdateCL			();
-	IKinematics* const kinematics			= smart_cast<IKinematics*>(Visual());
-	kinematics->CalculateBones_Invalidate	();
-	kinematics->CalculateBones				(true);
+	//IKinematics* kinematics			= PKinematics(Visual());
+	//kinematics->CalculateBones_Invalidate	();
+	//kinematics->CalculateBones				(true);
 
-	CGameObject* const game_object			= smart_cast<CGameObject*>(O);
+	CGameObject* game_object			= O->cast_game_object();
 	VERIFY									(game_object);
 	
 	if ( !inventory().DropItem(game_object, just_before_destroy, just_before_destroy) )

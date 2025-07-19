@@ -2,14 +2,6 @@
 #define	QueryHelper_included
 #pragma once
 
-//	Interface
-IC HRESULT CreateQuery( ID3DQuery **ppQuery , D3DQUERYTYPE Type);
-IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize );
-IC HRESULT BeginQuery( ID3DQuery *pQuery);
-IC HRESULT EndQuery( ID3DQuery *pQuery);
-
-//	Implementation
-
 #ifdef USE_DX11
 
 IC HRESULT CreateQuery ( ID3DQuery **ppQuery, D3DQUERYTYPE Type)
@@ -29,10 +21,10 @@ IC HRESULT CreateQuery ( ID3DQuery **ppQuery, D3DQUERYTYPE Type)
 	return RDevice->CreateQuery( &desc, ppQuery);
 }
 
-IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize )
+IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize, UINT Flags = 0)
 {
 	//	Use D3Dxx_ASYNC_GETDATA_DONOTFLUSH for prevent flushing
-	return RContext->GetData(pQuery, pData, DataSize, 0);
+	return RContext->GetData(pQuery, pData, DataSize, Flags);
 }
 
 IC HRESULT BeginQuery( ID3DQuery *pQuery)
@@ -54,7 +46,7 @@ IC HRESULT CreateQuery ( ID3DQuery **ppQuery, D3DQUERYTYPE Type)
 	return RDevice->CreateQuery(Type, ppQuery);
 }
 
-IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize )
+IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize, UINT Flags = 0)
 {
 	return pQuery->GetData( pData, DataSize, D3DGETDATA_FLUSH);
 }

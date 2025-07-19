@@ -160,12 +160,12 @@ void	CWeaponMounted::shedule_Update(u32 dt)
 	inherited::shedule_Update(dt);
 }
 
-void	CWeaponMounted::renderable_Render()
+void	CWeaponMounted::renderable_Render(IDSGraphManager* DM)
 {
 	//нарисовать подсветку
 	RenderLight();
 
-	inherited::renderable_Render	();
+	inherited::renderable_Render	(DM);
 }
 
 void	CWeaponMounted::OnMouseMove			(int dx, int dy)

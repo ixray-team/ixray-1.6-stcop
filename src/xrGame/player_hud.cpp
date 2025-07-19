@@ -366,10 +366,9 @@ bool  attachable_hud_item::need_renderable()
 	return m_parent_hud_item->need_renderable();
 }
 
-void attachable_hud_item::render()
+void attachable_hud_item::render(IDSGraphManager* DM)
 {
-	::Render->set_Transform		(&m_item_transform);
-	::Render->add_Visual		(m_model->dcast_RenderVisual());
+	DM->add_Dynamic		(m_model->dcast_RenderVisual(), &m_item_transform);
 	debug_draw_firedeps			();
 	m_parent_hud_item->render_hud_mode();
 }
@@ -1216,33 +1215,35 @@ void player_hud::render_item_ui()
 		m_attached_items[1]->render_item_ui();
 }
 
-void player_hud::render_hud()
+void player_hud::render_hud(IDSGraphManager* DM)
 {
 	bool b_r0 = (m_attached_items[0] && m_attached_items[0]->need_renderable());
 	bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
 
 	if(b_r0 || b_r1 || m_animator_item && m_animator_item->IsPlaying || m_bhands_visible)
 	{
-		::Render->set_Transform(&m_transform);
-		::Render->add_Visual(m_model->dcast_RenderVisual());
+		DM->add_Dynamic(m_model->dcast_RenderVisual(), &m_transform);
 	}
 
-	if(b_r0) {
-		m_attached_items[0]->render();
+	if(b_r0)
+	{
+		m_attached_items[0]->render(DM);
 	}
 
-	if(b_r1) {
-		m_attached_items[1]->render();
+	if(b_r1)
+	{
+		m_attached_items[1]->render(DM);
 	}
 
 	if (m_animator_item && m_animator_item->IsPlaying)
-		m_animator_item->render();
+		m_animator_item->render(DM);
 
 	if(m_show_legs && Actor() && m_legs_model)
 	{
 		bool isClimb = Actor()->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcClimb;
-		if(!isClimb) {
-			auto bHud = ::Render->get_HUD();
+		if(!isClimb)
+		{
+			bool bHud = DM->get_HUD();
 			IKinematics* actor_model = Actor()->Visual()->dcast_PKinematics();
 
 			actor_model->CalculateBones(TRUE);
@@ -1281,12 +1282,9 @@ void player_hud::render_hud()
 			auto& BoneInstance = m_legs_model->LL_GetData(BoneID);
 			m_legs_model->Bone_Calculate(&BoneInstance, &m_legs_model->LL_GetTransform(BoneInstance.GetParentID()));
 
-			::Render->set_HUD(FALSE);
-
-			::Render->set_Transform(&Actor()->XFORM());
-			::Render->add_Visual(m_legs_model->dcast_RenderVisual());
-
-			::Render->set_HUD(bHud);
+			DM->set_HUD(FALSE);
+			DM->add_Dynamic(m_legs_model->dcast_RenderVisual(), &Actor()->XFORM());
+			DM->set_HUD(bHud);
 		}
 	}
 }
@@ -2103,13 +2101,12 @@ void animator_item::update(bool bForce)
 	}
 }
 
-void animator_item::render()
+void animator_item::render(IDSGraphManager* DM)
 {
 	if (!m_item)
 		return;
 
-	::Render->set_Transform(&m_item_transform);
-	::Render->add_Visual(m_item->dcast_RenderVisual());
+	DM->add_Dynamic(m_item->dcast_RenderVisual(), &m_item_transform);
 }
 
 void animator_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed)

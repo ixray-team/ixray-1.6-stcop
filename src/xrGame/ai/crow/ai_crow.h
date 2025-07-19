@@ -112,7 +112,7 @@ public:
 	virtual void	net_Destroy					();
 	virtual BOOL	renderable_ShadowGenerate	()			{ return FALSE;	}
 	virtual BOOL	renderable_ShadowReceive	()			{ return FALSE;	}
-	virtual void	renderable_Render			();
+	virtual void	renderable_Render			(IDSGraphManager* DM = nullptr);
 	virtual void	shedule_Update				(u32 DT);
 	virtual void	UpdateCL					();
 
