@@ -28,6 +28,7 @@
 #	include "ai/crow/ai_crow.h"
 #	include "ui/UIActorMenu.h"
 #	include	"ActorCondition.h"
+#	include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 #endif
 
 void export_classes	(lua_State *L)
@@ -268,5 +269,6 @@ void export_classes	(lua_State *L)
 	CPhysicsShellHolder::script_register(L);
 	CWeaponAmmo::script_register(L);
 	CGameTaskManager::script_register(L);
+	CScriptXRParser::script_register(L);
 #endif
 }
