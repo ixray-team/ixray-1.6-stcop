@@ -57,7 +57,7 @@ target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")
 target_include_directories(xrRender_R4 PUBLIC "${AMD_FSR2}/build/native/include/")
-target_include_directories(xrRender_R4 PUBLIC "${NVIDIA_DLSS_SDK}/include/")
+target_include_directories(xrRender_R4 PUBLIC "${NVIDIA_DLSS}/include/")
 
 # Project defines
 target_compile_definitions(xrRender_R4 PRIVATE XRRENDER_R4_EXPORTS)
@@ -86,13 +86,13 @@ add_custom_command(TARGET ${PROJECT_NAME}
 )
 
 if (WIN32 AND "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    target_link_directories(xrRender_R4 PUBLIC "${NVIDIA_DLSS_SDK}/lib/Windows_x86_64/x86_64/")
+    target_link_directories(xrRender_R4 PUBLIC "${NVIDIA_DLSS}/lib/")
     target_link_libraries(xrRender_R4 PUBLIC "nvsdk_ngx_d.lib")
 
     # Copy binaries
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVIDIA_DLSS_SDK}/lib/Windows_x86_64/rel/nvngx_dlss.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVIDIA_DLSS}/bin/nvngx_dlss.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     )
 endif()
 
