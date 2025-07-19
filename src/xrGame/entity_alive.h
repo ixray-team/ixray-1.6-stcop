@@ -220,9 +220,10 @@ private:
 	typedef xr_vector< std::pair<u16,float> >	hit_bone_surface_areas_type;
 
 private:
+	mutable xrSRWLock					m_hit_bone_lock;
 	mutable hit_bone_surface_areas_type	m_hit_bone_surface_areas;
 	mutable CRandom						m_hit_bones_random;
-	mutable bool						m_hit_bone_surface_areas_actual;
+	mutable xr_atomic_bool				m_hit_bone_surface_areas_actual;
 };
 
 #include "entity_alive_inline.h"

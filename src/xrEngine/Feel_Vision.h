@@ -3,9 +3,8 @@
 #include "../xrCore/Collision/xr_collide_defs.h"
 #include "Render.h"
 #include "pure_relcase.h"
-
+#include "xr_object.h"
 class IRender_Sector;
-class CObject;
 class ISpatial;
 
 namespace Feel
@@ -25,7 +24,8 @@ namespace Feel
 		collide::rq_results			RQR;
 		xr_vector<ISpatialShared>	r_spatial;
 		CObject const*				m_owner;
-
+		CFrustum					Frustum;
+		xrSRWLock					lock_query, lock_visible;
 		void						o_new		(CObject* E);
 		void						o_delete	(CObject* E);
 		void						o_trace		(Fvector& P, float dt, float vis_threshold);
@@ -50,19 +50,36 @@ namespace Feel
 		void						feel_vision_query		(Fmatrix& mFull,	Fvector& P);
 		void						feel_vision_update		(CObject* parent,	Fvector& P, float dt, float vis_threshold);
 		void				feel_vision_relcase		(CObject* object);
-		void						feel_vision_get			(xr_vector<CObject*>& R)		{
-			R.clear					();
-			xr_vector<feel_visible_Item>::iterator I=feel_visible.begin(),E=feel_visible.end();
-			for (; I!=E; I++)	if (positive(I->fuzzy)) R.push_back(I->O);
-		}
-		Fvector						feel_vision_get_vispoint(CObject* _O)					{
-			xr_vector<feel_visible_Item>::iterator I=feel_visible.begin(),E=feel_visible.end();
-			for (; I!=E; I++)		if (_O == I->O) {
-				VERIFY	(positive(I->fuzzy));
-				return	I->cp_LAST;
+		void feel_vision_get(xr_vector<CObject*>& R)
+		{
+			R.clear();
+			R.reserve(feel_visible.size());
+			xrSRWLockGuard guard(&lock_visible, true);
+			for (const feel_visible_Item& item : feel_visible)
+			{
+				if (item.O && !item.O->getDestroy() && positive(item.fuzzy))
+					R.push_back(item.O);
 			}
-			VERIFY2		(0, "There is no such object in the potentially visible list" );
-			return		Fvector().set(flt_max,flt_max,flt_max);
+		}
+
+		Fvector feel_vision_get_vispoint(CObject* _O)
+		{
+			static Fvector feel_zero_point = { 0.f,0.f,0.f };
+			if (!_O || _O->getDestroy() || feel_visible.empty())
+				return feel_zero_point;
+
+			xrSRWLockGuard guard(&lock_visible, true);
+			auto it = std::find_if(feel_visible.begin(), feel_visible.end(),
+				[_O](const feel_visible_Item& item) {
+					return _O == item.O && positive(item.fuzzy);
+				});
+
+			if (it != feel_visible.end())
+			{
+				return it->cp_LAST;
+			}
+
+			return feel_zero_point;
 		}
 		virtual		BOOL			feel_vision_isRelevant	(CObject* O)					= 0;
 		virtual		float			feel_vision_mtl_transp	(CObject* O, u32 element)		= 0;	

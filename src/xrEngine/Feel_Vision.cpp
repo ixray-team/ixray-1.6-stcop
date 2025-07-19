@@ -3,7 +3,6 @@
 #include "IGame_Level.h"
 #include "Feel_Vision.h"
 #include "Render.h"
-#include "xr_object.h"
 #include "xr_collide_form.h"
 #include "IGame_Level.h"
 #include "../xrCore/Collision/cl_intersect.h"
@@ -43,6 +42,7 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
 }
 void	Vision::o_new(CObject* O)
 {
+	xrSRWLockGuard guard(&lock_visible, false);
 	feel_visible.push_back(feel_visible_Item());
 	feel_visible_Item& I = feel_visible.back();
 	I.O = O;
@@ -56,42 +56,60 @@ void	Vision::o_new(CObject* O)
 }
 void	Vision::o_delete(CObject* O)
 {
-	xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), TE = feel_visible.end();
-	for (; I != TE; I++)
-		if (I->O == O) {
-			feel_visible.erase(I);
-			return;
-		}
+	xrSRWLockGuard guard(&lock_visible, false);
+	auto it = std::find_if(feel_visible.begin(), feel_visible.end(),
+		[O](const feel_visible_Item& item) { return item.O == O; });
+
+	if (it != feel_visible.end()) {
+		feel_visible.erase(it);
+	}
 }
 
 void	Vision::feel_vision_clear()
 {
-	seen.clear();
-	query.clear();
-	diff.clear();
-	feel_visible.clear();
+	{
+		xrSRWLockGuard guard(&lock_query, false);
+		seen.clear();
+		query.clear();
+		diff.clear();
+	}
+	{
+		xrSRWLockGuard guard(&lock_visible, false);
+		feel_visible.clear();
+	}
 }
 
 void	Vision::feel_vision_relcase(CObject* object)
 {
-	xr_vector<CObject*>::iterator Io;
-	Io = std::find(seen.begin(), seen.end(), object);
-	if (Io != seen.end())	seen.erase(Io);
-	Io = std::find(query.begin(), query.end(), object);
-	if (Io != query.end())query.erase(Io);
-	Io = std::find(diff.begin(), diff.end(), object);
-	if (Io != diff.end())	diff.erase(Io);
-	xr_vector<feel_visible_Item>::iterator Ii = feel_visible.begin(), IiE = feel_visible.end();
-	for (; Ii != IiE; ++Ii)if (Ii->O == object) { feel_visible.erase(Ii); break; }
+	{
+		xrSRWLockGuard guard(&lock_query, false);
+		xr_vector<CObject*>::iterator Io;
+		Io = std::find(seen.begin(), seen.end(), object);
+		if (Io != seen.end())seen.erase(Io);
+		Io = std::find(query.begin(), query.end(), object);
+		if (Io != query.end())query.erase(Io);
+		Io = std::find(diff.begin(), diff.end(), object);
+		if (Io != diff.end())diff.erase(Io);
+	}
+	{
+		xrSRWLockGuard guard(&lock_visible, false);
+		auto it = std::find_if(feel_visible.begin(), feel_visible.end(),
+			[object](const feel_visible_Item& item) { return item.O == object; });
+
+		if (it != feel_visible.end()) {
+			feel_visible.erase(it);
+		}
+	}
 }
 
 void Vision::feel_vision_query(Fmatrix& mFull, Fvector& P)
 {
-	CFrustum Frustum;
+	xrSRWLockGuard guard(&lock_query, false);
+	
 	Frustum.CreateFromMatrix(mFull, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
 	// Traverse object database
-	r_spatial.resize(0);
+	r_spatial.clear();
 	g_SpatialSpace->q_frustum
 	(
 		r_spatial,
@@ -118,43 +136,49 @@ void Vision::feel_vision_query(Fmatrix& mFull, Fvector& P)
 
 void	Vision::feel_vision_update(CObject* parent, Fvector& P, float dt, float vis_threshold)
 {
-	// B-A = objects, that become visible
-	if (!seen.empty())
+	PROF_EVENT("feel_vision_update");
 	{
-		xr_vector<CObject*>::iterator E = std::remove(seen.begin(), seen.end(), parent);
-		seen.resize(E - seen.begin());
+		xrSRWLockGuard guard(&lock_query, false);
+		// B-A = objects, that become visible
+		if (!seen.empty())
+		{
+			xr_vector<CObject*>::iterator E = std::remove(seen.begin(), seen.end(), parent);
+			seen.resize(E - seen.begin());
 
+			{
+				diff.resize(_max(seen.size(), query.size()));
+				xr_vector<CObject*>::iterator	E_ = std::set_difference(
+					seen.begin(), seen.end(),
+					query.begin(), query.end(),
+					diff.begin());
+				diff.resize(E_ - diff.begin());
+				for (u32 i = 0; i < diff.size(); i++)
+					o_new(diff[i]);
+			}
+		}
+
+		// A-B = objects, that are invisible
+		if (!query.empty())
 		{
 			diff.resize(_max(seen.size(), query.size()));
-			xr_vector<CObject*>::iterator	E_ = std::set_difference(
-				seen.begin(), seen.end(),
+			xr_vector<CObject*>::iterator	E = std::set_difference(
 				query.begin(), query.end(),
+				seen.begin(), seen.end(),
 				diff.begin());
-			diff.resize(E_ - diff.begin());
+			diff.resize(E - diff.begin());
 			for (u32 i = 0; i < diff.size(); i++)
-				o_new(diff[i]);
+				o_delete(diff[i]);
 		}
-	}
 
-	// A-B = objects, that are invisible
-	if (!query.empty())
-	{
-		diff.resize(_max(seen.size(), query.size()));
-		xr_vector<CObject*>::iterator	E = std::set_difference(
-			query.begin(), query.end(),
-			seen.begin(), seen.end(),
-			diff.begin());
-		diff.resize(E - diff.begin());
-		for (u32 i = 0; i < diff.size(); i++)
-			o_delete(diff[i]);
+		// Copy results and perform traces
+		query = seen;
 	}
-
-	// Copy results and perform traces
-	query = seen;
 	o_trace(P, dt, vis_threshold);
 }
-void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
+void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
+{
 	RQR.r_clear();
+	xrSRWLockGuard guard(&lock_visible, true);
 	xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
 	for (; I != E; I++) {
 		if (0 == I->O->CFORM()) { I->fuzzy = -1; continue; }
