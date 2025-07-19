@@ -21,6 +21,9 @@
 #include "UIHelperGame.h"
 #include "UITeamPanels.h"
 #include "object_broker.h"
+#include "../../xrUI/UIFontDefines.h"
+#include "UIFrags.h"
+#include "UIDMStatisticWnd.h"
 
 #define MSGS_OFFS 510
 
@@ -45,6 +48,22 @@
 CUIGameDM::CUIGameDM()
 {
 	m_game								= nullptr; 
+
+	m_pFragLists						= nullptr;
+	m_pPlayerLists						= nullptr;
+	m_pStatisticWnds					= nullptr;
+	m_pTeamPanels						= nullptr;
+
+	m_time_caption						= nullptr;
+	m_spectrmode_caption				= nullptr;
+	m_spectator_caption					= nullptr;
+	m_pressjump_caption					= nullptr;
+	m_pressbuy_caption					= nullptr;
+	m_round_result_caption				= nullptr;
+	m_force_respawn_time_caption		= nullptr;
+	m_demo_play_caption					= nullptr;
+	m_warm_up_caption					= nullptr;
+
 	m_voteStatusWnd						= nullptr;
 	m_pMapDesc							= nullptr;
 }
@@ -69,7 +88,54 @@ void	CUIGameDM::Init(int stage)
 {
 	if(stage==0)
 	{ // shared
-		m_pTeamPanels					= new UITeamPanels();
+		CUIXml xml_test;
+		if (xml_test.Load(CONFIG_PATH, UI_PATH, TEAM_PANELS_DM_XML_NAME))
+		{
+			m_pTeamPanels = new UITeamPanels();
+			m_pTeamPanels->Init(TEAM_PANELS_DM_XML_NAME, "team_panels_wnd");
+		}
+		else
+		{
+			xml_test.Load(CONFIG_PATH, UI_PATH, "stats.xml");
+
+			CUIFrags* pFragList = new CUIFrags();
+			CUIFrags* pPlayerList = new CUIFrags();
+			CUIDMStatisticWnd* pStatisticWnd = new CUIDMStatisticWnd();
+			pFragList->SetAutoDelete(true);
+			pPlayerList->SetAutoDelete(true);
+			pStatisticWnd->SetAutoDelete(true);
+
+
+			float ScreenW = UI_BASE_WIDTH;
+			float ScreenH = UI_BASE_HEIGHT;
+			//-----------------------------------------------------------
+			pFragList->Init(xml_test, "stats_wnd", "frag_wnd_dm");
+			pPlayerList->Init(xml_test, "players_wnd", "frag_wnd_dm");
+
+			Frect FrameRect = pFragList->GetWndRect();
+			float FrameW = FrameRect.right - FrameRect.left;
+			float FrameH = FrameRect.bottom - FrameRect.top;
+			pFragList->SetWndPos(Fvector2().set((ScreenW - FrameW) / 2.0f, (ScreenH - FrameH) / 2.0f));
+
+			m_pFragLists = new CUIWindow();
+			m_pFragLists->AttachChild(pFragList);
+			//-----------------------------------------------------------
+			FrameRect = pPlayerList->GetWndRect();
+			FrameW = FrameRect.right - FrameRect.left;
+			FrameH = FrameRect.bottom - FrameRect.top;
+			pPlayerList->SetWndPos(Fvector2().set((ScreenW - FrameW) / 2.0f, (ScreenH - FrameH) / 2.0f));
+
+			m_pPlayerLists = new CUIWindow();
+			m_pPlayerLists->AttachChild(pPlayerList);
+			//-----------------------------------------------------------
+			FrameRect = pStatisticWnd->GetFrameRect();
+			FrameW = FrameRect.right - FrameRect.left;
+			FrameH = FrameRect.bottom - FrameRect.top;
+			pStatisticWnd->SetWndRect(Frect().set((ScreenW - FrameW) / 2.0f, (ScreenH - FrameH) / 2.0f, FrameW, FrameH));
+
+			m_pStatisticWnds = new CUIWindow();
+			m_pStatisticWnds->AttachChild(pStatisticWnd);
+		}
 		m_pMoneyIndicator				= new CUIMoneyIndicator();
 		m_pMoneyIndicator->SetAutoDelete(true);
 		m_pRankIndicator				= new CUIRankIndicator();
@@ -78,22 +144,72 @@ void	CUIGameDM::Init(int stage)
 		m_pFragLimitIndicator->SetAutoDelete(true);
 		
 		inherited::Init					(stage);
-		m_time_caption					= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_timelimit", m_window);
-		m_spectrmode_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_spetatormode", m_window);
-		m_spectator_caption				= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_spectator", m_window);
-		m_pressjump_caption				= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_pressjump", m_window);
-		m_pressbuy_caption				= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_pressbuy", m_window);
-		m_round_result_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_round_result", m_window);
-		m_force_respawn_time_caption	= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_force_respawn_time", m_window);
-		m_demo_play_caption				= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_demo_play", m_window);
-		m_warm_up_caption				= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_warm_up", m_window);
+		if (m_msgs_xml->NavigateToNode("mp_timelimit"))
+			m_time_caption				= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_timelimit", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_time_caption_legacy, DI2PX(0.0f), DI2PY(-0.8f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, TIME_MSG_COLOR, "");
+		}
+		if (m_msgs_xml->NavigateToNode("mp_spetatormode"))
+			m_spectrmode_caption		= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_spetatormode", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_spectrmode_caption_legacy, DI2PX(0.0f), DI2PY(-0.7f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, SPECTRMODE_MSG_COLOR, "");
+		}
+		if (m_msgs_xml->NavigateToNode("mp_spectator"))
+			m_spectator_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_spectator", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_spectator_caption_legacy, DI2PX(0.0f), DI2PY(0.0f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
+		}
+		if (m_msgs_xml->NavigateToNode("mp_pressjump"))
+			m_pressjump_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_pressjump", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_pressjump_caption_legacy, DI2PX(0.0f), DI2PY(0.9f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
+		}
+		if (m_msgs_xml->NavigateToNode("mp_pressbuy"))
+			m_pressbuy_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_pressbuy", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_pressbuy_caption_legacy, DI2PX(0.0f), DI2PY(0.95f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
+		}
+		if (m_msgs_xml->NavigateToNode("mp_round_result"))
+			m_round_result_caption		= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_round_result", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_round_result_caption_legacy, DI2PX(0.0f), DI2PY(-0.1f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, ROUND_RESULT_COLOR, "");
+		}
+		if (m_msgs_xml->NavigateToNode("mp_force_respawn_time"))
+			m_force_respawn_time_caption	= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_force_respawn_time", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_force_respawn_time_caption_legacy, DI2PX(0.0f), DI2PY(-0.9f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
+		}
+		if (m_msgs_xml->NavigateToNode("mp_demo_play"))
+			m_demo_play_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_demo_play", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_demo_play_caption_legacy, DI2PX(-1.0f), DI2PY(-0.95f), SZ(0.05f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alLeft, DEMOPLAY_COLOR, "");
+		}
+		if (m_msgs_xml->NavigateToNode("mp_warm_up"))
+			m_warm_up_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_warm_up", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_warm_up_caption_legacy, DI2PX(0.0f), DI2PY(-0.75f), SZ(0.05f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, WARM_UP_COLOR, "");
+		}
 	}
 	if(stage==1)
 	{ //unique
-		m_pTeamPanels->Init				(TEAM_PANELS_DM_XML_NAME, "team_panels_wnd");
 		CUIXml							uiXml;
 		uiXml.Load						(CONFIG_PATH, UI_PATH, "ui_game_dm.xml");
-		CUIXmlInit::InitWindow			(uiXml,"global", 0, m_window);
+		if (uiXml.NavigateToNode("global"))
+			CUIXmlInit::InitWindow			(uiXml,"global", 0, m_window);
+		else
+		{
+			m_window->SetWndPos(Fvector2().set(0, 0));
+			m_window->SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
+		}
 		m_pMoneyIndicator->InitFromXML	(uiXml);
 		m_pRankIndicator->InitFromXml	(uiXml);
 		CUIXmlInit::InitStatic			(uiXml,"fraglimit",0, m_pFragLimitIndicator);
@@ -111,6 +227,9 @@ void	CUIGameDM::Init(int stage)
 void CUIGameDM::UnLoad()
 {
 	inherited::UnLoad		();
+	xr_delete				(m_pStatisticWnds);
+	xr_delete				(m_pFragLists);
+	xr_delete				(m_pPlayerLists);
 	xr_delete				(m_pTeamPanels);
 	xr_delete				(m_voteStatusWnd);
 	delete_data				(m_pMapDesc);	
@@ -123,65 +242,112 @@ CUIGameDM::~CUIGameDM()
 
 void CUIGameDM::SetTimeMsgCaption(LPCSTR str)
 {
-	m_time_caption->SetTextST(str);
+	if (m_time_caption)
+		m_time_caption->SetTextST(str);
+	else
+		GameCaptions()->setCaption(m_time_caption_legacy, str, TIME_MSG_COLOR, true);
 }
 
 void CUIGameDM::ShowFragList(bool bShow)
 {
-	if (bShow && m_pTeamPanels)
-		AddDialogToRender(m_pTeamPanels);
+	if (bShow)
+	{
+		if (m_pTeamPanels)
+			AddDialogToRender(m_pTeamPanels);
+		else if (m_pFragLists)
+			AddDialogToRender(m_pFragLists);
+	}
 	else
-		RemoveDialogToRender(m_pTeamPanels);
+	{
+		if (m_pTeamPanels)
+			RemoveDialogToRender(m_pTeamPanels);
+		else if (m_pFragLists)
+			RemoveDialogToRender(m_pFragLists);
+	}
 }
 
 void CUIGameDM::ShowPlayersList(bool bShow)
 {
-	if (bShow && m_pTeamPanels)
-		AddDialogToRender(m_pTeamPanels);
+	if (bShow)
+	{
+		if (m_pTeamPanels)
+			AddDialogToRender(m_pTeamPanels);
+		else if (m_pPlayerLists)
+			AddDialogToRender(m_pPlayerLists);
+	}
 	else
-		RemoveDialogToRender(m_pTeamPanels);
+	{
+		if (m_pTeamPanels)
+			RemoveDialogToRender(m_pTeamPanels);
+		else if (m_pPlayerLists)
+			RemoveDialogToRender(m_pPlayerLists);
+	}
 }
 
 
 void CUIGameDM::SetSpectrModeMsgCaption(LPCSTR str)
 {
-	m_spectrmode_caption->SetTextST(str);
+	if (m_spectrmode_caption)
+		m_spectrmode_caption->SetTextST(str);
+	else
+		GameCaptions()->setCaption(m_spectrmode_caption_legacy, str, SPECTRMODE_MSG_COLOR, true);
 }
 
 void CUIGameDM::SetSpectatorMsgCaption(LPCSTR str)
 {
-	m_spectator_caption->SetTextST(str);
+	if (m_spectator_caption)
+		m_spectator_caption->SetTextST(str);
+	else if (GameCaptions()) 
+		GameCaptions()->setCaption(m_spectator_caption_legacy, str, NORMAL_MSG_COLOR, true);
 }
 
 void CUIGameDM::SetPressJumpMsgCaption(LPCSTR str)
 {
-	m_pressjump_caption->SetTextST(str);
+	if (m_pressjump_caption)
+		m_pressjump_caption->SetTextST(str);
+	else
+		GameCaptions()->setCaption(m_pressjump_caption_legacy, str, NORMAL_MSG_COLOR, true);
 }
 
 void CUIGameDM::SetPressBuyMsgCaption(LPCSTR str)
 {
-	m_pressbuy_caption->SetTextST(str);
+	if (m_pressbuy_caption)
+		m_pressbuy_caption->SetTextST(str);
+	else
+		GameCaptions()->setCaption(m_pressbuy_caption_legacy, str, NORMAL_MSG_COLOR, true);
 }
 
 
 void CUIGameDM::SetRoundResultCaption(LPCSTR str)
 {
-	m_round_result_caption->SetTextST(str);
+	if (m_round_result_caption)
+		m_round_result_caption->SetTextST(str);
+	else
+		GameCaptions()->setCaption(m_round_result_caption_legacy, str, ROUND_RESULT_COLOR, true);
 }
 
 void CUIGameDM::SetForceRespawnTimeCaption(LPCSTR str)
 {
-	m_force_respawn_time_caption->SetTextST(str);
+	if (m_force_respawn_time_caption)
+		m_force_respawn_time_caption->SetTextST(str);
+	else
+		GameCaptions()->setCaption(m_force_respawn_time_caption_legacy, str, NORMAL_MSG_COLOR, true);
 }
 
 void CUIGameDM::SetDemoPlayCaption(LPCSTR str)
 {
-	m_demo_play_caption->SetTextST(str);
+	if (m_demo_play_caption)
+		m_demo_play_caption->SetTextST(str);
+	else
+		GameCaptions()->setCaption(m_demo_play_caption_legacy, str, DEMOPLAY_COLOR, true);
 }
 
 void CUIGameDM::SetWarmUpCaption(LPCSTR str)
 {
-	m_warm_up_caption->SetTextST(str);
+	if (m_warm_up_caption)
+		m_warm_up_caption->SetTextST(str);
+	else
+		GameCaptions()->setCaption(m_warm_up_caption_legacy, str, WARM_UP_COLOR, true);
 }
 
 void CUIGameDM::SetVoteMessage					(LPCSTR str)
@@ -253,6 +419,9 @@ void CUIGameDM::SetFraglimit(int local_frags, int fraglimit)
 
 void CUIGameDM::UpdateTeamPanels()
 {
-	m_pTeamPanels->NeedUpdatePanels();
-	m_pTeamPanels->NeedUpdatePlayers();
+	if (m_pTeamPanels)
+	{
+		m_pTeamPanels->NeedUpdatePanels();
+		m_pTeamPanels->NeedUpdatePlayers();
+	}
 }
