@@ -205,7 +205,7 @@ void CUIStatic::Update()
 		}
 	}
 
-	if(CursorOverWindow() && m_stat_hint_text.size() && !g_statHint->Owner() && Device.dwTimeGlobal>m_dwFocusReceiveTime+700)
+	if(CursorOverWindow() && m_stat_hint_text.size() && !g_statHint->Owner() && Device.dwTimeContinual>m_dwFocusReceiveTime+700)
 	{
 		g_statHint->SetHintText	(this, m_stat_hint_text.c_str());
 

@@ -235,7 +235,7 @@ void UITaskListWndItem::Update()
 
 	if ( m_task && m_name->CursorOverWindow() && show_hint_can )
 	{
-		if ( Device.dwTimeGlobal > ( m_name->FocusReceiveTime() + 700 ) )
+		if ( Device.dwTimeContinual > ( m_name->FocusReceiveTime() + 700 ) )
 		{
 			show_hint = true;
 			GetMessageTarget()->SendMessage( this, PDA_TASK_SHOW_HINT, (void*)m_task );
