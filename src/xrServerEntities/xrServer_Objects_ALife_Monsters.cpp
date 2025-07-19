@@ -1409,6 +1409,7 @@ CSE_ALifeCreatureActor::CSE_ALifeCreatureActor	(LPCSTR caSection) : CSE_ALifeCre
 	velocity.set				(0.f,0.f,0.f);
 	m_holderID					=u16(-1);
 	mstate						= 0;
+	m_script_story_ID = "actor";
 }
 
 CSE_ALifeCreatureActor::~CSE_ALifeCreatureActor()
