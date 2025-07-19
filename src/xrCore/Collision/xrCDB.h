@@ -119,14 +119,12 @@ namespace CDB
 		IC const TRI*			get_tris		()	const 	{ return tris;		}
 		IC TRI*					get_tris		()			{ return tris;		}
 		IC int					get_tris_count	()	const	{ return tris_count;}
-		IC void					syncronize		()	const
+		IC void					syncronize		()
 		{
 			if (S_READY!=status)
 			{
 				Log						("! WARNING: syncronized CDB::query");
-				xrCriticalSection*	C	= (xrCriticalSection*) &cs;
-				C->Enter				();
-				C->Leave				();
+				xrCriticalSectionGuard guard(&cs);
 			}
 		}
 

@@ -224,7 +224,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 	if (!m_def)
 		return;
 
-	m_def->syncronize();
+	const_cast<MODEL*>(m_def)->syncronize();
 
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();

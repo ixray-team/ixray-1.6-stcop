@@ -90,13 +90,14 @@ void CObjectSpace::Load(LPCSTR path, LPCSTR fname, CDB::build_callback build_cal
 
 void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
 {
-	hdrCFORM H;
-
 	// Cache for cform
 	string_path LevelName = {};
-	u32 crc = crc32(F->pointer(), F->length());
 	auto LevelPath = FS.get_path("$level$")->m_Add;
-	IReader* pReaderCache = nullptr;
+	static IReader* pReaderCache = nullptr;
+	pReaderCache = nullptr;
+	static IReader* pReader = nullptr;
+	pReader = F;
+	u32 crc = crc32(pReader->pointer(), pReader->length());
 
 	if (LevelPath != nullptr)
 	{
@@ -104,35 +105,53 @@ void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
 		pReaderCache = CDB::GetModelCache(LevelName, crc);
 	}
 
-	F->r(&H, sizeof(hdrCFORM));
-	Fvector* verts = (Fvector*)F->pointer();
-	CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
-	
-	if (pReaderCache != nullptr)
-	{
-		// Just restore
-		Create(verts, tris, H, build_callback, pReaderCache, true);
-	}
-	else
-	{
-		IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
-		pWriterCache->w_u32(crc);
-		Create(verts, tris, H, build_callback, pWriterCache, false);
-	}
-	
-	FS.r_close(F);
-}
-
-void CObjectSpace::Create(Fvector* verts, CDB::TRI* tris, const hdrCFORM& H, CDB::build_callback build_callback, void* pRW, bool RWMode)
-{
+	hdrCFORM H;
+	pReader->r(&H, sizeof(hdrCFORM));
 	R_ASSERT(CFORM_CURRENT_VERSION == H.version);
-	Static.build(verts, H.vertcount, tris, H.facecount, build_callback, nullptr, pRW, RWMode);
-
 	m_BoundingVolume.set(H.aabb);
 
 	g_SpatialSpace->initialize(m_BoundingVolume);
 	g_SpatialSpacePhysic->initialize(m_BoundingVolume);
 	g_SpatialSpaceLights->initialize(m_BoundingVolume);
+	static xr_task_group async_cform_load;
+	async_cform_load.run([=]()
+	{
+		Fvector* verts = (Fvector*)pReader->pointer();
+		CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
+
+		if (pReaderCache != nullptr)
+		{
+			// Just restore
+			Create(verts, tris, H, build_callback, pReaderCache, true, false);
+		}
+		else
+		{
+			if (pReaderCache != nullptr)
+			{
+				FS.r_close(pReaderCache);
+			}
+
+			IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
+			pWriterCache->w_u32(crc);
+			Create(verts, tris, H, build_callback, pWriterCache, false, false);
+		}
+
+		FS.r_close(pReader);
+	});
+}
+
+void CObjectSpace::Create(Fvector* verts, CDB::TRI* tris, const hdrCFORM& H, CDB::build_callback build_callback, void* pRW, bool RWMode, bool init_bounds)
+{
+	Static.build(verts, H.vertcount, tris, H.facecount, build_callback, nullptr, pRW, RWMode);
+
+	if(init_bounds)
+	{
+		m_BoundingVolume.set(H.aabb);
+
+		g_SpatialSpace->initialize(m_BoundingVolume);
+		g_SpatialSpacePhysic->initialize(m_BoundingVolume);
+		g_SpatialSpaceLights->initialize(m_BoundingVolume);
+	}
 }
 
 //----------------------------------------------------------------------

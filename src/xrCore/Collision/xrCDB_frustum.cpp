@@ -109,7 +109,7 @@ void COLLIDER::frustum_query(const MODEL* m_def, const CFrustum& F)
 	if (!m_def)
 		return;
 
-	m_def->syncronize();
+	const_cast<MODEL*>(m_def)->syncronize();
 
 	// Get nodes
 	const AABBNoLeafNode* pNodes = ((AABBNoLeafTree*)m_def->tree->GetTree())->GetNodes();
