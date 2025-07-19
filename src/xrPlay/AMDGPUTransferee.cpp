@@ -228,7 +228,7 @@ void CAMDReader::MakeGPUCount()
 
 	if (status != AGS_SUCCESS)
 	{
-		Msg("! AGS: Initialization failed (%d)", status);
+		Msg("! AGS: Initialization failed (%s)", AGSGetErrorString(status));
 		return;
 	}
 
@@ -358,4 +358,27 @@ void CAMDReader::GetDX11Device(ID3D11Device** pDevice, ID3D11DeviceContext** pIm
 	*pImmediateContext = ReturnedParams.pImmediateContext;
 	*pSwapChain = ReturnedParams.pSwapChain;
 	FeatureLevel = ReturnedParams.FeatureLevel;
+}
+
+const char* CAMDReader::AGSGetErrorString(AGSReturnCode code)
+{
+	switch (code)
+	{
+	case AGS_SUCCESS:
+		return "Success";
+	case AGS_FAILURE:
+		return "General failure";
+	case AGS_INVALID_ARGS:
+		return "Invalid arguments";
+	case AGS_OUT_OF_MEMORY:
+		return "Out of memory";
+	case AGS_MISSING_D3D_DLL:
+		return "Missing required D3D DLL";
+	case AGS_LEGACY_DRIVER:
+		return "Legacy AMD driver detected (not supported)";
+	case AGS_NO_AMD_DRIVER_INSTALLED:
+		return "No AMD driver installed";
+	default:
+		return "Unknown AGS error";
+	}
 }
