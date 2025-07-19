@@ -1,6 +1,7 @@
 #ifndef ParticlesObjectH
 #define ParticlesObjectH
 
+#include "psystem.h"
 #include "../xrEngine/PS_instance.h"
 
 class PARTICLES_API CParticlesObject :
