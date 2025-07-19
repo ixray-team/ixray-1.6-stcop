@@ -521,7 +521,7 @@ void CConsole::DrawRect( Frect const& r, u32 color )
 	UIRender->PushPoint( r.x1, r.y2, 0.0f, color, 0.0f, 1.0f );
 }
 
-void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
+void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool Silent)
 {
 	u32  str_size = xr_strlen( cmd_str );	
 	char* edt = new char[str_size + 1];
@@ -532,10 +532,14 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 	edt[str_size] = 0;
 
 	scroll_delta	= 0;
-	reset_cmd_history_idx();
-	reset_selected_tip();
 
-	text_editor::remove_spaces( edt );
+	if (!Silent)
+	{
+		reset_cmd_history_idx();
+		reset_selected_tip();
+	}
+
+	text_editor::remove_spaces(edt);
 	if ( edt[0] == 0 )
 	{
 		return;
