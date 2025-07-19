@@ -14,6 +14,7 @@ class CUIMapDesc;
 class UITeamPanels;
 class CUITextWnd;
 class CUIStatic;
+class CUIWindow;
 
 class CUIGameDM: public UIGameMP
 {
@@ -30,6 +31,11 @@ protected:
 		fl_force_dword	= u32(-1)	};
 
 
+	CUIWindow*						m_pFragLists;
+	CUIWindow*						m_pPlayerLists;
+	//-----------------------------------------
+	CUIWindow*						m_pStatisticWnds;
+	//-----------------------------------------
 	UITeamPanels*					m_pTeamPanels;
 
 	CUITextWnd*						m_time_caption;
@@ -41,6 +47,16 @@ protected:
 	CUITextWnd*						m_force_respawn_time_caption;
 	CUITextWnd*						m_demo_play_caption;
 	CUITextWnd*						m_warm_up_caption;
+	
+	shared_str						m_time_caption_legacy = "timelimit";
+	shared_str						m_spectrmode_caption_legacy = "spetatormode";
+	shared_str						m_spectator_caption_legacy = "spectator";
+	shared_str						m_pressjump_caption_legacy = "pressjump";
+	shared_str						m_pressbuy_caption_legacy = "pressbuy";
+	shared_str						m_round_result_caption_legacy = "round_result";
+	shared_str						m_force_respawn_time_caption_legacy = "force_respawn_time";
+	shared_str						m_demo_play_caption_legacy = "demo_play";
+	shared_str						m_warm_up_caption_legacy = "warm_up";
 
 	CUIMoneyIndicator*				m_pMoneyIndicator;
 	CUIRankIndicator*				m_pRankIndicator;
