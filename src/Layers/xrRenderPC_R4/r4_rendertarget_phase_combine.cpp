@@ -347,6 +347,13 @@ void CRenderTarget::phase_combine()
 		PhaseAberration();
 	}
 
+	
+	//Aight, so here we should enable/disable nvg
+	{
+		GPU_EVENT(phase_nvg);
+		phase_nvg();
+	}
+	
 	{
 		GPU_EVENT(phase_pp);
 		phase_pp();
