@@ -70,7 +70,6 @@ namespace R_dsgraph
 	{
 		float ssa = 0.0f;
 		IRenderable* pObject = nullptr;
-		dxRender_Visual* pVisual = nullptr;
 		Fmatrix* pMatrix = nullptr;
 		ShaderElement* pSE = nullptr;
 		bool b_hud_mode = false;
@@ -97,7 +96,7 @@ namespace R_dsgraph
 	using ps_type = ID3DPixelShader*;
 #endif
 
-	using mapDSGraphItems = xr_vector<DSGraphItem, render_allocator::helper<DSGraphItem>::result>;
+	using mapDSGraphItems = FixedMAP<dxRender_Visual*,DSGraphItem, render_allocator>;
 	using mapDSGraphTextures = FixedMAP<STextureList*,mapDSGraphItems,render_allocator>;
 	using mapDSGraphStates = FixedMAP<ID3DState*,mapDSGraphTextures,render_allocator>;
 	using mapDSGraphCS = FixedMAP<R_constant_table*,mapDSGraphStates,render_allocator>;

@@ -7,7 +7,6 @@
 #include "LightTrack.h"
 void CDSGraphManager::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM)
 {
-	xrCriticalSectionGuard guard(&T_CS);
 	if (!start) return;
 	PROF_EVENT("CPortalTraverser::traverse")
 
@@ -17,27 +16,21 @@ void CDSGraphManager::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fmat
 		f_portals.clear();
 	}
 
-	VERIFY				(start);
-	i_marker			++;
 	i_vBase				= vBase;
 	i_frustum			= F;
 	i_mXFORM			= mXFORM;
 	i_start				= start;
 
-	m_visuals_static.clear();
-	m_visuals_dynamic.clear();
-
+	xrSRWLockGuard guard(&S_LC,false);
 	if(m_sector_frustums.size())
 	{
 		for (auto& pair : m_sector_frustums)
 		{
-			pair.val.sector_marker = 0;
 			pair.val.frustums.clear();
-			//pair.val.portals.clear();
+			pair.val.portals.clear();
 		}
 	}
 	i_start->traverse(F,*this);
-	return;
 }
 
 void CDSGraphManager::set_Object(IRenderable* O)

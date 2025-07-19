@@ -195,10 +195,10 @@ public:
 	virtual void set_Object(IRenderable* O = nullptr) = 0;
 	IRenderable* get_Object() { return val_pObject; }
 
-	void set_HUD(bool V = false) { i_mask[fl_hud]=V; }
-	bool get_HUD() { return i_mask[fl_hud]; }
+	virtual void set_HUD(bool V = false) { i_mask[fl_hud]=V; }
+	virtual bool get_HUD() { return i_mask[fl_hud]; }
 
-	void set_Invisible(bool V = false) { i_mask[fl_invisible] = V; }
+	virtual void set_Invisible(bool V = false) { i_mask[fl_invisible] = V; }
 
 	virtual IDSGraphManager* dcast_IPortalTraverser() { return this; }
 };

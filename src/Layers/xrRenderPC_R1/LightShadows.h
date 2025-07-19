@@ -13,7 +13,7 @@ class	CLightShadows
 {
 private:
 	//
-	typedef	R_dsgraph::DSGraphItem	NODE;
+	typedef	R_dsgraph::mapDSGraphItems::TNode	NODE;
 	struct	caster			{
 		IRenderable*		O;
 		Fvector				C;

@@ -56,7 +56,7 @@ EScene::EScene()
 		m_SceneTools.insert(std::make_pair((ObjClassID)i,(ESceneToolBase*)NULL));
 	g_SpatialSpace = new ISpatial_DB();
 	g_SpatialSpacePhysic = new ISpatial_DB();
-
+	g_SpatialSpaceLights = new ISpatial_DB();
 // 	Build options
 	m_SummaryInfo	= 0;
 }

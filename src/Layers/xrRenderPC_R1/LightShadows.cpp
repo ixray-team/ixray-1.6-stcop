@@ -130,7 +130,7 @@ void CLightShadows::add_element	(NODE& N)
 	xrCriticalSectionGuard guard(&cs);
 	if (0==current)										return;
 	VERIFY2	(casters.back()->nodes.size()<24,"Object exceeds limit of 24 renderable parts/materials");
-	if (0==N.pVisual->shader->E[SE_R1_LMODELS]._get())	return;
+	if (0==N.key->shader->E[SE_R1_LMODELS]._get())	return;
 	casters.back()->nodes.push_back		(N);
 }
 
@@ -260,9 +260,9 @@ void CLightShadows::calculate	()
 			for (u32 n_it=0; n_it<C.nodes.size(); n_it++)
 			{
 				NODE& N					=	C.nodes[n_it];
-				dxRender_Visual *V		=	N.pVisual;
+				dxRender_Visual *V		=	N.key;
 				RCache.set_Element		(V->shader->E[SE_R1_LMODELS]);
-				RCache.set_xform_world	(*N.pMatrix);
+				RCache.set_xform_world	(*N.val.pMatrix);
 				V->Render				(-1.0f);
 			}
 			

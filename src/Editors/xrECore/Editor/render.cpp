@@ -292,12 +292,25 @@ BOOL CRender::occ_visible(vis_data& P)
 {
 	return occ_visible(P.box);
 }
+class CDSGraphManager : public IDSGraphManager //заглушка
+{
+public:
+	virtual void add_Static(IRenderVisual* pVisual, CFrustum& frustum, u32 planes) {};
+	virtual void add_Dynamic(IRenderVisual* piVisual, Fmatrix* xform) { RImplementation.set_Transform(xform); RImplementation.add_Visual(piVisual); };
 
+	virtual void set_Object(IRenderable* O = nullptr) { RImplementation.set_Object(O); };
+	virtual IRenderable* get_Object() { return NULL; }
+
+	virtual void set_HUD(bool V = false) { RImplementation.set_HUD(V); }
+	virtual bool get_HUD() { return RImplementation.get_HUD(); }
+
+	virtual void set_Invisible(bool V = false) { RImplementation.set_Invisible(V); }
+};
 void CRender::Calculate()
 {
 	if (dwFrameCalc == Device.dwFrame)
 		return;
-
+	static CDSGraphManager GM;
 	// Transfer to global space to avoid deep pointer access
 	g_fSCREEN = float(EDevice->TargetWidth * EDevice->TargetHeight);
 	r_ssaDISCARD = (ssaDISCARD * ssaDISCARD) / g_fSCREEN;
@@ -330,8 +343,8 @@ void CRender::Calculate()
 		set_Object(0);
 		if (g_hud)
 		{
-			g_hud->Render_First();	// R1 shadows
-			g_hud->Render_Last();
+			g_hud->Render_First(&GM);	// R1 shadows
+			g_hud->Render_Last(&GM);
 		}
 		u32 uID_LTRACK = 0xffffffff;
 		/*if (phase == PHASE_NORMAL)*/
@@ -374,8 +387,38 @@ void CRender::Calculate()
 			if(!!(pSpatial->spatial.type & STYPE_RENDERABLE) || !!(pSpatial->spatial.type & STYPE_PARTICLE)) 
 			{
 				set_Object(renderable);
-				renderable->renderable_Render();
+				renderable->renderable_Render(&GM);
 				set_Object(nullptr);
+			}
+		}
+
+		g_SpatialSpaceLights->q_frustum
+		(
+			lstRenderables,
+			ISpatial_DB::O_ORDERED,
+			STYPE_LIGHTSOURCE,
+			ViewBase
+		);
+
+		for (ISpatialShared& pSpatial : lstRenderables)
+		{
+			if (pSpatial->spatial.type & STYPE_LIGHTSOURCE)
+			{
+				if (light* L = (light*)pSpatial->dcast_Light())
+				{
+					if (Device.dwFrame == L->frame_render) continue;
+					L->frame_render = Device.dwFrame;
+					L->flags.bShadow = FALSE;
+					L->flags.bOccq = FALSE;
+					if (L->flags.type == IRender_Light::SPOT)
+					{
+						m_spotlights.push_back(L);
+					}
+					else
+					{
+						m_pointlights.push_back(L);
+					}
+				}
 			}
 		}
 	}
