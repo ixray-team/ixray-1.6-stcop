@@ -25,6 +25,13 @@
 
 #include "../xrPhysics/PhysicsCommon.h"
 
+// lua to cpp
+#include "ScriptsSubsystems/Condlist/script_xr_conditions.h"
+#include "ScriptsSubsystems/Condlist/script_xr_effects.h"
+#include "ScriptsSubsystems/Condlist/script_xr_logic.h"
+
+ENGINE_API bool g_dedicated_server;
+
 const int max_objects_size			= 2*1024;
 const int max_objects_size_in_save	= 8*1024;
 
@@ -167,6 +174,24 @@ void CLevel::net_Stop()
 	}
 
 	ai().script_engine().collect_all_garbage();
+
+	#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
+	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (m_pScriptXRCondition)
+	{
+		m_pScriptXRCondition->destroy();
+	}
+
+	if (m_pScriptXREffects)
+	{
+		m_pScriptXREffects->destroy();
+	}
+
+	if (m_pScriptXRParser)
+	{
+		m_pScriptXRParser->destroy();
+	}
+	#endif
 
 #ifdef DEBUG
 	show_animation_stats		();
@@ -606,7 +631,17 @@ void				CLevel::OnConnectRejected		()
 
 //	if (MainMenu()->GetErrorDialogType() != CMainMenu::ErrNoError)
 //		MainMenu()->SetErrorDialog(CMainMenu::ErrServerReject);
-};
+}
+
+CScriptXRConditionsStorage* CLevel::getScriptXRConditions(void) const
+{
+	return m_pScriptXRCondition;
+}
+
+CScriptXRParser* CLevel::getScriptXRParser(void) const
+{
+	return m_pScriptXRParser;
+}
 
 void				CLevel::net_OnChangeSelfName			(NET_Packet* P)
 {
