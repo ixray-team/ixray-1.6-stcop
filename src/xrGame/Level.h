@@ -18,6 +18,14 @@
 #include "game_cl_base.h"
 #include "FreeMP/ScriptEvents.h"
 
+// always try to forward declare your script implementations
+class CRandomManager;
+
+// lua to cpp forward declarations
+class CScriptXRConditionsStorage;
+class CScriptXREffectsStorage;
+class CScriptXRParser;
+
 class	CHUDManager;
 class	CParticlesObject;
 class	xrServer;
@@ -104,6 +112,9 @@ protected:
 	CPHCommander				*m_ph_commander;
 	CPHCommander				*m_ph_commander_scripts;
 	CPHCommander				*m_ph_commander_physics_worldstep;
+	CScriptXRConditionsStorage* m_pScriptXRCondition;
+	CScriptXREffectsStorage* m_pScriptXREffects;
+	CScriptXRParser* m_pScriptXRParser;
 	// Local events
 	EVENT						eChangeRP;
 	EVENT						eDemoPlay;
@@ -150,6 +161,9 @@ public:
 	NET_Packet* GetLastClientScriptEvent();
 	void PopLastClientScriptEvent();
 	u32 GetSizeClientScriptEvent();
+	CScriptXRConditionsStorage* getScriptXRConditions(void) const;
+	CScriptXRParser* getScriptXRParser(void) const;
+
 private:
 			
 			void				OnSecureMessage			(NET_Packet & P);

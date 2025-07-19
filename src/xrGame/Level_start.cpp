@@ -15,6 +15,11 @@
 #include "ui/UICDkey.h"
 #include "object_factory.h"
 
+// lua to cpp
+#include "ScriptsSubsystems/Condlist/script_xr_conditions.h"
+#include "ScriptsSubsystems/Condlist/script_xr_effects.h"
+#include "ScriptsSubsystems/Condlist/script_xr_logic.h"
+
 int		g_cl_save_demo = 0;
 extern XRCORE_API bool g_allow_heap_min;
 
@@ -73,7 +78,7 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 		else
 		{
 			m_caClientOptions			= op_client;
-		};		
+		};
 	};
 	m_caServerOptions			    = op_server;
 	//---------------------------------------------------------------------
@@ -106,7 +111,7 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start4));
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start5));
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start6));
-	
+
 	return net_start_result_total;
 }
 
@@ -135,9 +140,9 @@ bool CLevel::net_start1				()
 		if (xr_strcmp(p.m_alife,"alife"))
 		{
 			shared_str l_ver			= game_sv_GameState::parse_level_version(m_caServerOptions);
-			
+
 			map_data.m_name				= game_sv_GameState::parse_level_name(m_caServerOptions);
-			
+
 			if (!g_dedicated_server)
 				g_pGamePersistent->LoadTitle(true, map_data.m_name);
 
@@ -189,7 +194,7 @@ bool CLevel::net_start3				()
 		string4096	tmp;
 		xr_strcpy(tmp, m_caClientOptions.c_str());
 		xr_strcat(tmp, PortStr);
-		
+
 		m_caClientOptions = tmp;
 	}
 	//add password string to client, if don't have one
@@ -198,7 +203,7 @@ bool CLevel::net_start3				()
 		{
 			string64	PasswordStr = "";
 			const char* PSW = strstr(m_caServerOptions.c_str(), "psw=") + 4;
-			if (strchr(PSW, '/')) 
+			if (strchr(PSW, '/'))
 				strncpy_s(PasswordStr, PSW, strchr(PSW, '/') - PSW);
 			else
 				xr_strcpy(PasswordStr, PSW);
@@ -273,7 +278,7 @@ bool CLevel::net_start6				()
 		}
 	}else{
 		Msg				("! Failed to start client. Check the connection or level existance.");
-		
+
 		if (m_connect_server_err==xrServer::ErrConnect&&!psNET_direct_connect && !g_dedicated_server) 
 		{
 			DEL_INSTANCE	(g_pGameLevel);
@@ -323,7 +328,7 @@ bool CLevel::net_start6				()
 				MainMenu()->Show_DownloadMPMap(dialog_string, download_url);
 			}
 		}
-		else 
+		else
 		{
 			DEL_INSTANCE	(g_pGameLevel);
 			Console->Execute("main_menu on");
@@ -348,7 +353,7 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 	P.r_stringZ(game_type_name);
 	if(game && !xr_strcmp(game_type_name, game->type_name()) )
 		return;
-	
+
 	xr_delete(game);
 #ifdef DEBUG
 	Msg("- Game configuring : Started ");
@@ -359,11 +364,29 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 	game->Init				();
 	m_bGameConfigStarted	= TRUE;
 
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
+	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (m_pScriptXRCondition)
+	{
+		m_pScriptXRCondition->initialize(this);
+	}
+
+	if (m_pScriptXREffects)
+	{
+		m_pScriptXREffects->initialize(this);
+	}
+
+	if (m_pScriptXRParser)
+	{
+		m_pScriptXRParser->initialize(this, m_pScriptXRCondition, m_pScriptXREffects);
+	}
+#endif
+
 	if (!IsGameTypeSingle())
 	{
 		init_compression();
 	}
-	
+
 	R_ASSERT				(Load_GameSpecific_After ());
 }
 
