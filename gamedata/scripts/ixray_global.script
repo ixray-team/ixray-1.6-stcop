@@ -47,3 +47,11 @@ _G.printf_xrscript = function(fmt, ...)
 		printf(fmt, ...)
 	end
 end
+
+_G.get_story_object_id = function (story_obj_id)
+	local result = story_objects.get_story_objects_registry():get(story_obj_id)
+	if result == 65535 then
+		return nil
+	end
+	return result
+end

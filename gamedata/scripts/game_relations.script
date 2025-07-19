@@ -107,14 +107,15 @@ end
 
 function set_squad_goodwill(squad_id, new_goodwill)
 	printf("Applying new game relation [%s] between squad [%s] and npc [%s] !", new_goodwill, squad_id, "actor")
-	local squad = get_story_squad(squad_id)
-	if squad == nil then
-		if type(squad_id) == "string" then
+	local squad = nil
+	if type(squad_id) == "string" then
+		squad = get_story_squad(squad_id)
+		if squad == nil then
 			printf("there is no story squad with id [%s]", squad_id)
 			return
-		else
-			squad = alife():object(squad_id)
 		end
+	else
+		squad = alife():object(squad_id)
 	end
 	if squad then
 		squad:set_squad_relation(new_goodwill)
@@ -131,14 +132,15 @@ function set_squad_goodwill_to_npc(npc, squad_id, new_goodwill)
 	elseif(new_goodwill=="friend") then
 		goodwill = 1000
 	end
-	local squad = get_story_squad(squad_id)
-	if squad == nil then
-		if type(squad_id) == "string" then
+	local squad = nil
+	if type(squad_id) == "string" then
+		squad = get_story_squad(squad_id)
+		if squad == nil then
 			printf("there is no story squad with id [%s]", squad_id)
 			return
-		else
-			squad = alife():object(squad_id)
 		end
+	else
+		squad = alife():object(squad_id)
 	end
 	if squad then
 		for k in squad:squad_members() do
@@ -159,14 +161,15 @@ function set_squad_community_goodwill(squad_id, community, new_goodwill)
 	elseif(new_goodwill=="friend") then
 		goodwill = 1000
 	end
-	local squad = get_story_squad(squad_id)
-	if squad == nil then
-		if type(squad_id) == "string" then
+	local squad = nil
+	if type(squad_id) == "string" then
+		squad = get_story_squad(squad_id)
+		if squad == nil then
 			printf("there is no story squad with id [%s]", squad_id)
 			return
-		else
-			squad = alife():object(squad_id)
 		end
+	else
+		squad = alife():object(squad_id)
 	end
 	if squad then
 		for k in squad:squad_members() do
