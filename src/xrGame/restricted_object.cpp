@@ -125,9 +125,7 @@ u32	CRestrictedObject::accessible_nearest	(const Fvector &position, Fvector &res
 
 bool CRestrictedObject::accessible			(const Fvector &position) const
 {
-	START_PROFILE("Restricted Object/Accessible");
 	return						(accessible(position,EPS_L));
-	STOP_PROFILE;
 }
 
 bool CRestrictedObject::accessible			(const Fvector &position, float radius) const
@@ -142,8 +140,6 @@ bool CRestrictedObject::accessible			(const Fvector &position, float radius) con
 
 bool CRestrictedObject::accessible			(u32 level_vertex_id) const
 {
-	START_PROFILE("Restricted Object/Accessible");
-
 	if (!ai().level_graph().valid_vertex_id(level_vertex_id))
 	{
 #ifndef MASTER_GOLD
@@ -156,7 +152,6 @@ bool CRestrictedObject::accessible			(u32 level_vertex_id) const
 	}
 
 	return						(accessible(level_vertex_id,EPS_L));
-	STOP_PROFILE;
 }
 
 bool CRestrictedObject::accessible			(u32 level_vertex_id, float radius) const

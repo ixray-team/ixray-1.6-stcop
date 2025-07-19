@@ -27,11 +27,14 @@ void CDSGraphManager::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fmat
 	m_visuals_static.clear();
 	m_visuals_dynamic.clear();
 
-	for (auto& pair : m_sector_frustums)
+	if(m_sector_frustums.size())
 	{
-		pair.val.sector_marker = 0;
-		pair.val.frustums.clear();
-		//pair.val.portals.clear();
+		for (auto& pair : m_sector_frustums)
+		{
+			pair.val.sector_marker = 0;
+			pair.val.frustums.clear();
+			//pair.val.portals.clear();
+		}
 	}
 	i_start->traverse(F,*this);
 	return;

@@ -149,16 +149,19 @@ namespace R_dsgraph
 			for (u32 iPass = 0; iPass < SHADER_PASSES_MAX; ++iPass)
 			{
 				mapDSGraphVS& vs = graph[_priority][iPass];
+				if (!vs.size()) continue;
 				for (mapDSGraphVS::TNode& Nvs : vs)
 				{
 #ifdef USE_DX11
 					mapDSGraphGS& gs = Nvs.val;
+					if (!gs.size()) continue;
 					for (mapDSGraphGS::TNode& Ngs : gs)
 					{
 						mapDSGraphPS& ps = Ngs.val;
 #else //USE_DX11
 						mapDSGraphPS& ps = Nvs.val;
 #endif
+						if (!ps.size()) continue;
 						for (mapDSGraphPS::TNode& Nps : ps)
 						{
 #ifdef USE_DX11
@@ -166,12 +169,15 @@ namespace R_dsgraph
 #else
 							mapDSGraphCS& cs = Nps.val;
 #endif
+							if (!cs.size()) continue;
 							for (mapDSGraphCS::TNode& Ncs : cs)
 							{
 								mapDSGraphStates& states = Ncs.val;
+								if (!states.size()) continue;
 								for (mapDSGraphStates::TNode& Nstate : states)
 								{
 									mapDSGraphTextures& tex = Nstate.val;
+									if (!tex.size()) continue;
 									for (mapDSGraphTextures::TNode& Ntex : tex)
 										Ntex.val.clear();
 									tex.clear();

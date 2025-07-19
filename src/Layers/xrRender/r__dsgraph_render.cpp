@@ -52,12 +52,14 @@ void CDSGraphManager::r_dsgraph_render_graph(R_dsgraph::mapDSGraphPasses* graph,
 	for (u32 iPass = 0; iPass < SHADER_PASSES_MAX; ++iPass)
 	{
 		mapDSGraphVS& vs = graph[_priority][iPass];
+		if (!vs.size()) continue;
 		for (mapDSGraphVS::TNode& Nvs : vs)
 		{
 			RCache.set_VS(Nvs.key);
 
 #ifdef USE_DX11
 			mapDSGraphGS& gs = Nvs.val;
+			if (!gs.size()) continue;
 			for (mapDSGraphGS::TNode& Ngs : gs)
 			{
 				RCache.set_GS(Ngs.key);
@@ -66,6 +68,7 @@ void CDSGraphManager::r_dsgraph_render_graph(R_dsgraph::mapDSGraphPasses* graph,
 #else //USE_DX11
 				mapDSGraphPS& ps = Nvs.val;
 #endif
+				if (!ps.size()) continue;
 				for (mapDSGraphPS::TNode& Nps : ps)
 				{
 					RCache.set_PS(Nps.key);
@@ -76,22 +79,26 @@ void CDSGraphManager::r_dsgraph_render_graph(R_dsgraph::mapDSGraphPasses* graph,
 #else
 					mapDSGraphCS& cs = Nps.val;
 #endif
+					if (!cs.size()) continue;
 					for (mapDSGraphCS::TNode& Ncs : cs)
 					{
 						RCache.set_Constants(Ncs.key);
 
 						mapDSGraphStates& states = Ncs.val;
+						if (!states.size()) continue;
 						for (mapDSGraphStates::TNode& Nstate : states)
 						{
 							RCache.set_States(Nstate.key);
 
 							mapDSGraphTextures& tex = Nstate.val;
+							if (!tex.size()) continue;
 							for (mapDSGraphTextures::TNode& Ntex : tex)
 							{
 								RCache.set_Textures(Ntex.key);
 								RImplementation.apply_lmaterial();
 
 								mapDSGraphItems& items = Ntex.val;
+								if (!items.size()) continue;
 								for (DSGraphItem& Ni : items)
 								{
 									if(!static_geometry)
