@@ -19,6 +19,8 @@
 #include "Level.h"
 #include "map_manager.h"
 
+#include "ScriptsSubsystems/StoryID/StoryIDManager.h"
+
 void CSE_ALifeDynamicObject::on_spawn()
 {
 }
@@ -32,7 +34,9 @@ void CSE_ALifeDynamicObject::on_register()
 		VERIFY(object);
 	}
 
-	if (!alife().graph().level().object(object->ID,true))
+	//CScriptStoryIDManager::GetInstance().VerifiedRegisterObject(this); -> Конфликт с оригинальные скриптами
+
+	if (!alife().graph().level().object(object->ID, true))
 		clear_client_data();
 }
 
@@ -53,6 +57,7 @@ void CSE_ALifeDynamicObject::on_unregister()
 
 
 	Level().MapManager().OnObjectDestroyNotify(ID);
+	//CScriptStoryIDManager::GetInstance().Unregister(ID); -> Конфликт с оригинальные скриптами
 }
 
 void CSE_ALifeDynamicObject::switch_online			()

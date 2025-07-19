@@ -128,6 +128,7 @@ public:
 	flags32							m_flags;
 	ALife::_STORY_ID				m_story_id;
 	ALife::_SPAWN_STORY_ID			m_spawn_story_id;
+	shared_str						m_script_story_ID;
 
 #ifdef XRGAME_EXPORTS
 	CALifeSimulator					*m_alife_simulator;
