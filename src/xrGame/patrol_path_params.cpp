@@ -12,11 +12,12 @@
 #include "patrol_path_manager.h"
 #include "ai_space.h"
 
-CPatrolPathParams::CPatrolPathParams(LPCSTR caPatrolPathToGo, const PatrolPathManager::EPatrolStartType tPatrolPathStart, const PatrolPathManager::EPatrolRouteType tPatrolPathStop, bool bRandom, u32 index) {
+CPatrolPathParams::CPatrolPathParams(LPCSTR caPatrolPathToGo, const PatrolPathManager::EPatrolStartType tPatrolPathStart, const PatrolPathManager::EPatrolRouteType tPatrolPathStop, bool bRandom, u32 index)
+{
 	m_path_name = caPatrolPathToGo;
 	m_path = ai().patrol_paths().path(m_path_name, true);
 
-	THROW3(m_path, "There is no patrol path", caPatrolPathToGo);
+	R_ASSERT3(m_path, "There is no patrol path", caPatrolPathToGo);
 
 	m_tPatrolPathStart = tPatrolPathStart;
 	m_tPatrolPathStop = tPatrolPathStop;
