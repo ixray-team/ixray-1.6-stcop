@@ -565,116 +565,16 @@ end
 
 
 function pick_section_from_condlist(actor, npc, condlist)
-	local rval = nil -- math.random(100)
-	--printf("_bp: pick_section_from_condlist: rval = %d", rval)
+	if get_xr_parser_manager() then 
+        local result = get_xr_parser_manager():pick_section_from_condlist(
+            actor,
+            npc,
+            tostring(condlist)
+        )
+        return result
+    end
 
-	local newsect = nil
-	local infop_conditions_met
-	for n, cond in pairs(condlist) do
-		infop_conditions_met = true -- изначально считаем, что все условия переключения удовлетворены
-		for inum, infop in pairs(cond.infop_check) do
-			if infop.prob then
-				if not rval then
-					rval = math.random(100)
-				end
-				if infop.prob < rval then
-					infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
-					break
-				end
-			elseif infop.func then
-				--printf("_bp: infop.func = %s", infop.func)
-				if not xr_conditions[infop.func] then
-					if type(npc.name) == "function" then
-						abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-							"not defined in xr_conditions.script", npc:name(), infop.func)
-					else
-						abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-							"not defined in xr_conditions.script", tostring(npc.name), infop.func)
-					end
-				end
-				--if xr_conditions[infop.func](actor, npc) then
-				if infop.params then
-					if xr_conditions[infop.func](actor, npc, infop.params) then
-						if not infop.expected then
-							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
-							break
-						end
-					else
-						if infop.expected then
-							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
-							break
-						end
-					end
-				else
-					if xr_conditions[infop.func](actor, npc) then
-						if not infop.expected then
-							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
-							break
-						end
-					else
-						if infop.expected then
-							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
-							break
-						end
-					end
-				end
-			elseif has_alife_info(infop.name) then
-				if not infop.required then
-					--'printf("FAILED: actor has infop '%s', which is NOT needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-					infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
-					break
-				else
-					--'printf("PASSED: actor has infop '%s', which is needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-				end
-			else
-				if infop.required then
-					--'printf("FAILED: actor has NO infop '%s', which is needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-					infop_conditions_met = false -- инфопоршена нет, но он нужен
-					break
-				else
-					--'printf("PASSED: actor has NO infop '%s', which is not needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-				end
-			end
-		end
-		--printf("_bp: infop_cond_met = %s", utils.to_str(infop_conditions_met))
-		if infop_conditions_met then
-			-- Условия выполнены. Независимо от того, задана ли секция, нужно проставить требуемые
-			-- infoportions:
-			for inum, infop in pairs(cond.infop_set) do
-				if db.actor == nil then
-					abort("TRYING TO SET INFOS THEN ACTOR IS NIL")
-				end
-				if infop.func then
-					if not xr_effects[infop.func] then
-						abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-							"not defined in xr_effects.script", if_then_else(npc, npc:name(), "nil"), infop.func)
-					end
-					if infop.params then
-						xr_effects[infop.func](actor, npc, infop.params)
-					else
-						xr_effects[infop.func](actor, npc)
-					end
-				elseif infop.required then
-					if not has_alife_info(infop.name) then
-						actor:give_info_portion(infop.name)
-					end
-				else
-					if has_alife_info(infop.name) then
-						--printf("*INFO [disabled]*: npc='%s' id='%s'", actor:name(),infop.name)
-						disable_info(infop.name)
-					end
-				end
-			end
-			if cond.section == "never" then
-				return nil
-			else
-				return cond.section
-			end
-		end
-	end
-
-	--printf("_bp: pick_section_from_condlist: nil")
-	return nil
+    return nil
 end
 
 -- Выполняет переключение на указанную секцию, если задана.
@@ -928,66 +828,7 @@ end
 --   2 = { infop_check = { 1 = {"infop3" = true}, 2 = {"infop4" = false} }, infop_set = {}, section = "section2" },
 -- }
 function parse_condlist(npc, section, field, src)
-	local lst = {}
-
-	-- 1) Разбиваем на разделенные запятыми части:
-	local at, to, infop_check_lst, remainings, infop_set_lst, newsect
-
-	--printf("_bp: src = %s", src)
-
-	local n = 1
-	for fld in string.gfind(src, "%s*([^,]+)%s*") do
-		-- Здесь fld это набор infoportions в {} и имя секции, на которую переключиться.
-		lst[n] = {}
-		--printf("_bp: iter %d: fld = %s", n, fld)
-
-		-- Выделяем список infoportions для проверки:
-		at, to, infop_check_lst = string.find(fld, "{%s*(.*)%s*}")
-		if infop_check_lst then
-			--printf("_bp: infop_check_lst: [%s]", infop_check_lst)
-
-			-- Выделяем оставшуюся часть поля, т.е. имя секции плюс список infoportions для установки:
-			remainings = string.sub(fld, 1, at - 1) .. string.sub(fld, to + 1)
-		else
-			-- Список infoportions для проверки не был задан, следовательно, ничего не удаляем:
-			remainings = fld
-		end
-		--printf("_bp: remainings: %s", remainings)
-
-		-- Выделяем список infoportions для установки из remainings:
-		at, to, infop_set_lst = string.find(remainings, "%%%s*(.*)%s*%%")
-		if infop_set_lst then
-			-- Выделяем оставшуюся часть поля, т.е. имя секции:
-			newsect = string.sub(remainings, 1, at - 1) .. string.sub(remainings, to + 1)
-		else
-			-- Список infoportions для установки не был задан, следовательно, remainings и есть имя секции.
-			newsect = remainings
-		end
-		--printf("_bp: newsect: %s", newsect)
-
-		-- И сразу trim имя секции:
-		at, to, newsect = string.find(newsect, "%s*(.*)%s*")
-		if not newsect then
-			abort_syntax_error_in_cond(npc, section, field)
-		end
-
-		-- Имя секции теперь можно сохранить:
-		lst[n].section = newsect
-
-		-- Теперь нужно распарсить infoportions в строке infop_check_lst и
-		-- заполнить массив infop_check: { "infop_name" = true/false }.
-		-- На входе имеем строку вида "  +infop1  -infop2 +infop3 ... "
-		lst[n].infop_check = {}
-		parse_infop(lst[n].infop_check, infop_check_lst)
-
-		-- То же самое для устанавливаемых infoportions:
-		lst[n].infop_set = {}
-		parse_infop(lst[n].infop_set, infop_set_lst)
-
-		n = n + 1
-	end
-
-	return lst
+	return src
 end
 
 function cfg_get_number_and_condlist(ini, section, field, npc)
