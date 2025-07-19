@@ -53,6 +53,15 @@
 
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/console_vars.h"
+
+#include "ScriptsSubsystems/Condlist/CondlistGC.h"
+
+// lua to cpp
+#include "ScriptsSubsystems/Condlist/script_xr_conditions.h"
+#include "ScriptsSubsystems/Condlist/script_xr_effects.h"
+#include "ScriptsSubsystems/Condlist/script_xr_logic.h"
+#include "level_changer.h"
+
 #ifdef DEBUG_DRAW
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"
@@ -194,6 +203,14 @@ CLevel::CLevel():
 	m_chunk = 0;
 	spawn = 0;
 
+	GCondlistGC = new CCondlistGarbageCollector;
+
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
+	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	m_pScriptXRCondition = new CScriptXRConditionsStorage();
+	m_pScriptXREffects = new CScriptXREffectsStorage();
+	m_pScriptXRParser = new CScriptXRParser();
+#endif
 }
 
 extern CAI_Space *g_ai_space;
@@ -253,6 +270,12 @@ CLevel::~CLevel()
 
 	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
+	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	xr_delete(m_pScriptXRCondition);
+	xr_delete(m_pScriptXREffects);
+	xr_delete(m_pScriptXRParser);
+#endif
 	xr_delete					(game);
 	xr_delete					(game_events);
 
@@ -322,6 +345,7 @@ CLevel::~CLevel()
 	}
 	deinit_compression();
 
+	xr_delete(GCondlistGC);
 	xr_delete(m_game_graph);
 	m_chunk->close();
 	FS.r_close(spawn);
@@ -560,6 +584,11 @@ void CLevel::OnFrame()
 #ifdef DEBUG
 	DBG_RenderUpdate();
 #endif // #ifdef DEBUG
+
+	if (GCondlistGC != nullptr)
+	{
+		GCondlistGC->Update();
+	}
 
 	Fvector	temp_vector;
 	m_feel_deny.feel_touch_update(temp_vector, 0.f);
