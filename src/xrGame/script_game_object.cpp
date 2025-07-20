@@ -814,13 +814,16 @@ void CScriptGameObject::StartTrade(CScriptGameObject* obj)
 {
 	if (CActor* actor = obj->object().cast_actor())
 	{
-		CUIActorMenu& ActorMenu = CurrentGameUI()->ActorMenu();
+		CInventoryOwner* pActorInv = smart_cast<CInventoryOwner*>(actor);
+		if (!pActorInv)
+			return;
 
-		ActorMenu.SetActor(actor->cast_inventory_owner());
-		ActorMenu.SetPartner(object().cast_inventory_owner());
+		CInventoryOwner* pOtherOwner = smart_cast<CInventoryOwner*>(&object());
+		if (!pOtherOwner)
+			return;
 
-		ActorMenu.SetMenuMode(mmTrade);
-		ActorMenu.ShowDialog(true);
+		if (CurrentGameUI())
+			CurrentGameUI()->StartTrade(pActorInv, pOtherOwner);
 	}
 }
 
@@ -828,13 +831,16 @@ void CScriptGameObject::StartUpgrade(CScriptGameObject* obj)
 {
 	if (CActor* actor = obj->object().cast_actor())
 	{
-		CUIActorMenu& ActorMenu = CurrentGameUI()->ActorMenu();
+		CInventoryOwner* pActorInv = smart_cast<CInventoryOwner*>(actor);
+		if (!pActorInv)
+			return;
 
-		ActorMenu.SetActor(actor->cast_inventory_owner());
-		ActorMenu.SetPartner(object().cast_inventory_owner());
+		CInventoryOwner* pOtherOwner = smart_cast<CInventoryOwner*>(&object());
+		if (!pOtherOwner)
+			return;
 
-		ActorMenu.SetMenuMode(mmUpgrade);
-		ActorMenu.ShowDialog(true);
+		if (CurrentGameUI())
+			CurrentGameUI()->StartUpgrade(pActorInv, pOtherOwner);
 	}
 }
 
