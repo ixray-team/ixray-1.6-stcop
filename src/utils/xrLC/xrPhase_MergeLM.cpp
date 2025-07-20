@@ -327,11 +327,11 @@ void CBuild::xrPhase_MergeLM()
 void CBuild::xrPhase_SaveLmaps()
 {
 	Status("Destroying deflectors...");
-	clMsg("Start Destroy Deflectors: Memory: %llu mb used", u32(GetMemoryUsed() / 1024 / 1024));
+	clMsg("Start Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
 	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
 		xr_delete(lc_global_data()->g_deflectors()[it]);
 	lc_global_data()->g_deflectors().clear();
-	clMsg("End Destroy Deflectors: Memory: %llu mb used", u32(GetMemoryUsed() / 1024 / 1024));
+	clMsg("End Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
 
 	Status("Start Saving Lmaps: ");
 	size_t USED_MEMORY = 0;
