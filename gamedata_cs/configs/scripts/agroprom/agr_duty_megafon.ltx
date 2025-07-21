@@ -1,0 +1,24 @@
+[logic]
+active = sr_idle@prefirst
+on_hit = hit
+
+[sr_idle@prefirst]
+on_info = {+agr_duty_megafon_start} sr_idle@first
+
+[sr_idle@first]
+on_info = {+agr_duty_megafon_hit} sr_idle@off
+on_info2 = sr_idle@wait %=play_sound(agr_base_dolg_megafon_0)%
+
+[sr_idle@wait]
+on_signal = sound_end | sr_idle@pause
+
+[sr_idle@pause]
+on_timer = 45000 | sr_idle@first
+
+[sr_idle@off]
+
+
+[hit]
+on_info = %+agr_duty_megafon_hit%
+
+

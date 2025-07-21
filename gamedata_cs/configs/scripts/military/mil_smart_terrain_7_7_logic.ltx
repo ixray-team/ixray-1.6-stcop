@@ -1,0 +1,427 @@
+;--Military last Standing
+
+[logic@work1]
+active = walker@house_1
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military =check_npc_name(sim_default_military_)} true
+
+[walker@house_1]
+path_walk = house_1_walk
+path_look = house_1_look
+out_restr = mil_home
+
+[logic@work2]
+active = walker@house_2
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military =check_npc_name(sim_default_military_)} true
+
+[walker@house_2]
+path_walk = house_2_walk
+path_look = house_2_look
+out_restr = mil_home
+
+[logic@work3]
+active = walker@house_3
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military =check_npc_name(sim_default_military_)} true
+
+[walker@house_3]
+path_walk = house_3_walk
+path_look = house_3_look
+out_restr = mil_home
+
+[logic@work4]
+active = walker@house_4
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military =check_npc_name(sim_default_military_)} true
+
+[walker@house_4]
+path_walk = house_4_walk
+path_look = house_4_look
+out_restr = mil_home
+
+[logic@work5]
+active = walker@house_5
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military =check_npc_name(sim_default_military_)} true
+
+[walker@house_5]
+path_walk = house_5_walk
+path_look = house_5_look
+out_restr = mil_home
+
+[logic@work6]
+active = walker@house_6
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military {=check_npc_name(sim_default_military_)} true
+
+[walker@house_6]
+path_walk = house_6_walk
+path_look = house_6_look
+out_restr = mil_home
+
+[logic@work7]
+active = walker@house_7
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military =check_npc_name(sim_default_military_)} true
+
+[walker@house_7]
+path_walk = house_7_walk
+path_look = house_7_look
+out_restr = mil_home
+
+[logic@work8]
+active = walker@house_8
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military =check_npc_name(sim_default_military_)} true
+
+[walker@house_8]
+path_walk = house_8_walk
+path_look = house_8_look
+out_restr = mil_home
+
+[logic@work14]
+active = walker@house_14
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military =check_npc_name(sim_default_military_)} true
+
+[walker@house_14]
+path_walk = house_9_walk
+path_look = house_9_look
+out_restr = mil_home
+
+[logic@work15]
+active = walker@house_15
+suitable = {+mil_merc_talked_f1_f2_wt1 -mil_destroy_house_military =check_npc_name(sim_default_military_)} true
+
+[walker@house_15]
+path_walk = house_10_walk
+path_look = house_10_look
+out_restr = mil_home
+
+[logic@work9]
+active = walker@deftower_9
+suitable = {+mil_merc_talked_f1_f2_wt1 =check_npc_name(sim_default_military_3)} true
+
+[walker@deftower_9_fire]
+path_walk = towerdef_1_walk
+path_look = towerdef_1_fire_look
+out_restr = mil_near_home
+on_info = {+mil_actor_attack_house} walker@deftower_9
+
+[walker@deftower_9]
+path_walk = towerdef_1_walk
+path_look = towerdef_1_look
+out_restr = mil_near_home
+on_info = {-mil_merc_talked_i_hate_freedom +mil_merc_talked_f1_f2_wt1 -mil_actor_attack_house} walker@deftower_9_fire
+
+[logic@work10]
+active = walker@deftower_10
+suitable = {+mil_merc_talked_f1_f2_wt1 =check_npc_name(sim_default_military_)} true
+
+[walker@deftower_10]
+path_walk = towerdef_2_walk
+path_look = towerdef_2_look
+out_restr = mil_near_home
+
+[logic@work11]
+active = walker@deftower_11
+suitable = {+mil_merc_talked_f1_f2_wt1 =check_npc_name(sim_default_military_)} true
+
+[walker@deftower_11]
+path_walk = towerdef_3_walk
+path_look = towerdef_3_look
+out_restr = mil_near_home
+
+[logic@work12]
+active = walker@deftower_12
+suitable = {+mil_merc_talked_f1_f2_wt1 =check_npc_name(sim_default_military_)} true
+
+[walker@deftower_12]
+path_walk = towerdef_4_walk
+path_look = towerdef_4_look
+out_restr = mil_near_home
+
+;Зомбирование
+
+[logic@zombied1]
+active = patrol@zombied1_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied1_no_danger]
+path_walk = zombied_1_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied1_danger
+
+[patrol@zombied1_danger]
+path_walk = zombied_1_walk
+on_actor_dist_ge = 20 | patrol@zombied1_no_danger
+
+[logic@zombied2]
+active = patrol@zombied2_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied2_no_danger]
+path_walk = zombied_2_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied2_danger
+
+[patrol@zombied2_danger]
+path_walk = zombied_2_walk
+on_actor_dist_ge = 20 | patrol@zombied2_no_danger
+
+[logic@zombied3]
+active = patrol@zombied3_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied3_no_danger]
+path_walk = zombied_3_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied3_danger
+
+[patrol@zombied3_danger]
+path_walk = zombied_3_walk
+on_actor_dist_ge = 20 | patrol@zombied3_no_danger
+
+[logic@zombied4]
+active = patrol@zombied4_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied4_no_danger]
+path_walk = zombied_4_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied4_danger
+
+[patrol@zombied4_danger]
+path_walk = zombied_4_walk
+on_actor_dist_ge = 20 | patrol@zombied4_no_danger
+
+[logic@zombied5]
+active = patrol@zombied5_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied5_no_danger]
+path_walk = zombied_5_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied5_danger
+
+[patrol@zombied5_danger]
+path_walk = zombied_5_walk
+on_actor_dist_ge = 20 | patrol@zombied5_no_danger
+
+[logic@zombied6]
+active = patrol@zombied6_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied6_no_danger]
+path_walk = zombied_6_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied6_danger
+
+[patrol@zombied6_danger]
+path_walk = zombied_6_walk
+on_actor_dist_ge = 20 | patrol@zombied6_no_danger
+
+[logic@zombied7]
+active = patrol@zombied7_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied7_no_danger]
+path_walk = zombied_7_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied7_danger
+
+[patrol@zombied7_danger]
+path_walk = zombied_7_walk
+on_actor_dist_ge = 20 | patrol@zombied7_no_danger
+
+[logic@zombied8]
+active = patrol@zombied8_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied8_no_danger]
+path_walk = zombied_8_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied8_danger
+
+[patrol@zombied8_danger]
+path_walk = zombied_8_walk
+on_actor_dist_ge = 20 | patrol@zombied8_no_danger
+
+[logic@zombied9]
+active = patrol@zombied9_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied9_no_danger]
+path_walk = zombied_9_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied9_danger
+
+[patrol@zombied9_danger]
+path_walk = zombied_9_walk
+on_actor_dist_ge = 20 | patrol@zombied9_no_danger
+
+[logic@zombied10]
+active = patrol@zombied10_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied10_no_danger]
+path_walk = zombied_10_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied10_danger
+
+[patrol@zombied10_danger]
+path_walk = zombied_10_walk
+on_actor_dist_ge = 20 | patrol@zombied10_no_danger
+
+
+[logic@zombied11]
+active = patrol@zombied11_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied11_no_danger]
+path_walk = zombied_11_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied11_danger
+
+[patrol@zombied11_danger]
+path_walk = zombied_11_walk
+on_actor_dist_ge = 20 | patrol@zombied11_no_danger
+
+[logic@zombied12]
+active = patrol@zombied12_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied12_no_danger]
+path_walk = zombied_12_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied12_danger
+
+[patrol@zombied12_danger]
+path_walk = zombied_12_walk
+on_actor_dist_ge = 20 | patrol@zombied12_no_danger
+
+[logic@zombied13]
+active = patrol@zombied13_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied13_no_danger]
+path_walk = zombied_13_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied13_danger
+
+[patrol@zombied13_danger]
+path_walk = zombied_13_walk
+on_actor_dist_ge = 20 | patrol@zombied13_no_danger
+
+[logic@zombied14]
+active = patrol@zombied14_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied14_no_danger]
+path_walk = zombied_14_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied14_danger
+
+[patrol@zombied14_danger]
+path_walk = zombied_14_walk
+on_actor_dist_ge = 20 | patrol@zombied14_no_danger
+
+[logic@zombied15]
+active = patrol@zombied15_no_danger
+suitable = {=check_npc_name(mil_zombied)} true
+
+[patrol@zombied15_no_danger]
+path_walk = zombied_15_walk
+combat_ignore_cond = true
+on_actor_dist_le = 20 | patrol@zombied15_danger
+
+[patrol@zombied15_danger]
+path_walk = zombied_15_walk
+on_actor_dist_ge = 20 | patrol@zombied15_no_danger
+
+
+;;; Soldiers with zombiers ;;;
+
+
+[logic@military_soldier_01]
+active = walker@military_soldier_01
+suitable = {=check_npc_name(mil_soldier_with_zombier)} true
+
+[walker@military_soldier_01]
+path_walk = towerdef_1_walk
+path_look = towerdef_1_look
+on_actor_dist_ge_nvis = 50 | smartcover@military_soldier_01
+
+[smartcover@military_soldier_01]
+cover_name = mil_smart_terrain_7_7_exclusive_smartcover_1
+loophole_name = lh_2
+cover_state = fire_target
+use_in_combat = true
+on_actor_dist_le_nvis = 50 | walker@military_soldier_01
+
+[logic@military_soldier_02]
+active = walker@military_soldier_02
+suitable = {=check_npc_name(mil_soldier_with_zombier)} true
+
+[walker@military_soldier_02]
+path_walk = towerdef_2_walk
+path_look = towerdef_2_look
+on_actor_dist_ge_nvis = 50 | smartcover@military_soldier_02
+
+[smartcover@military_soldier_02]
+cover_name = mil_smart_terrain_7_7_exclusive_smartcover_2
+loophole_name = lh_1
+cover_state = fire_target
+use_in_combat = true
+on_actor_dist_le_nvis = 50 | walker@military_soldier_02
+
+[logic@military_soldier_03]
+active = walker@military_soldier_03
+suitable = {=check_npc_name(mil_soldier_with_zombier)} true
+
+[walker@military_soldier_03]
+path_walk = towerdef_3_walk
+path_look = towerdef_3_look
+on_actor_dist_ge_nvis = 50 | smartcover@military_soldier_03
+
+[smartcover@military_soldier_03]
+cover_name = mil_smart_terrain_7_7_exclusive_smartcover_3
+loophole_name = lh_3
+cover_state = fire_target
+use_in_combat = true
+on_actor_dist_le_nvis = 50 | walker@military_soldier_03
+
+[logic@military_soldier_04]
+active = walker@military_soldier_04
+suitable = {=check_npc_name(mil_soldier_with_zombier)} true
+
+[walker@military_soldier_04]
+path_walk = towerdef_4_walk
+path_look = towerdef_4_look
+on_actor_dist_ge_nvis = 50 | smartcover@military_soldier_04
+
+[smartcover@military_soldier_04]
+cover_name = mil_smart_terrain_7_7_exclusive_smartcover_4
+loophole_name = lh_3
+cover_state = fire_target
+use_in_combat = true
+on_actor_dist_le_nvis = 50 | walker@military_soldier_04
+
+[logic@military_sniper]
+active = camper@military_sniper_wait
+suitable = {=check_npc_name(sim_default_military_)} true
+
+[camper@military_sniper_wait]
+path_walk = towerdef_5_walk
+path_look = towerdef_5_look
+out_restr = mil_restrictor_towerdef_2
+sniper = true
+combat_ignore_cond = always
+on_actor_in_zone = mil_space_restrictors_7_7_sniper | remark@military_sniper_attack
+
+[remark@military_sniper_attack]
+anim = hide_fire
+target = actor
+out_restr = mil_restrictor_towerdef_2
+combat_ignore_cond = {!is_enemy_actor} 
+on_actor_not_in_zone = mil_space_restrictors_7_7_sniper | camper@military_sniper_wait
+on_info = {=dist_to_actor_le(5)} walker@military_sniper_defend
+
+[walker@military_sniper_defend]
+path_walk = towerdef_5_walk
+path_look = towerdef_5_look
+out_restr = mil_restrictor_towerdef_2
+on_actor_not_in_zone = mil_space_restrictors_7_7_sniper | camper@military_sniper_wait
+on_info = {=dist_to_actor_ge(5)} remark@military_sniper_attack

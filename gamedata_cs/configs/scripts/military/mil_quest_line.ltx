@@ -1,0 +1,54 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_info = {+forester_talked_2 =actor_on_level(military)} sr_idle@mil_talk_2_merc_2_task
+on_info2 = {+mil_start_after_red_forest} sr_idle@spawn %+mil_start_after_red_forest_completed =clear_smart_terrain(mil_smart_terrain_4_2) =clear_smart_terrain(mil_smart_terrain_4_3)%
+
+[sr_idle@spawn]
+on_info = sr_idle@bridge %=create_squad(mil_killer_invaders:mil_smart_terrain_4_2) =create_squad(mil_bloodsucker_lair:mil_smart_terrain_4_3)%
+
+[sr_idle@bridge]
+on_info = {+mil_actor_bridge} sr_idle@mil_bloodsucker_task %=give_inited_task(storyline:mil_hires:freedom)%, {+mil_freedom_speaker_death} sr_idle@mil_bloodsucker_task %=give_inited_task(storyline:mil_hires:freedom)%
+on_info2 = {+mil_reach_merc_done -mil_bs_dead -mil_actor_inside_wtower} sr_idle@mil_reach_tower_task %=give_inited_task(eliminate_smart:mil_smart_terrain_4_3:killer) =give_inited_task(storyline:mil_reach_tower_task:killer)%
+on_info3 = {+mil_water_tower_radio} sr_idle@mil_talk_2_forester2 %+mil_reach_merc_done%
+
+[sr_idle@mil_bloodsucker_task]
+on_info = {+mil_reach_merc_done -mil_bs_dead -mil_actor_inside_wtower} sr_idle@mil_reach_tower_task %=give_inited_task(eliminate_smart:mil_smart_terrain_4_3:killer) =give_inited_task(storyline:mil_reach_tower_task:killer)% 
+on_info2 = {+mil_water_tower_radio} sr_idle@mil_talk_2_forester2 %+mil_reach_merc_done%
+
+[sr_idle@mil_reach_tower_task]
+on_info = {+mil_free_2_tower} sr_idle@mil_talk_2_forester2
+on_info2 = {+mil_water_tower_radio} sr_idle@mil_talk_2_forester2
+
+[sr_idle@mil_talk_2_forester2]
+on_info = {+mil_actor_inside_wtower} sr_idle@mil_talk_2_merc_2_task %=give_inited_task(storyline:mil_talk_2_forester2:csky)%
+
+[sr_idle@mil_talk_2_merc_2_task]
+on_info = {+forester_talked_2 -mil_hog_death} sr_idle@mil_talk_2_fr_com %=give_inited_task(storyline:mil_talk_2_merc_2_task:csky)%
+on_info2 = {+forester_talked_2 +mil_hog_death} sr_idle@mil_contact_with_clear_sky_commander %+mil_merc_talked_f1_f2_wt1 +mil_merc_talked_i_hate_freedom =give_inited_task(storyline:mil_transfer_coo:csky) =remove_squad(mil_zombied_1) =remove_squad(mil_zombied_2) =remove_squad(mil_zombied_3) =remove_squad(mil_squard_with_zombiers) =remove_squad(mil_dogs_lair_3) =create_squad(mil_military_7_7_1_squad:mil_smart_terrain_7_7) =create_squad(mil_military_7_7_2_squad:mil_smart_terrain_7_7) =create_squad(mil_military_7_7_3_squad:mil_smart_terrain_7_7) +mil_alone_mission%
+
+[sr_idle@mil_talk_2_fr_com]
+on_info = {+mil_merc_talked_f1_f2_wt1 -mil_merc_talked_i_hate_freedom} sr_idle@help_battle %=give_inited_task(storyline:mil_talk_2_fr_com:killer) =remove_squad(mil_zombied_1) =remove_squad(mil_zombied_2) =remove_squad(mil_zombied_3) =remove_squad(mil_squard_with_zombiers) =remove_squad(mil_dogs_lair_3) =create_squad(mil_military_7_7_1_squad:mil_smart_terrain_7_7) =create_squad(mil_military_7_7_2_squad:mil_smart_terrain_7_7) =create_squad(mil_military_7_7_3_squad:mil_smart_terrain_7_7) =create_squad(mil_freedom_attack_base_1:mil_smart_terrain_7_8)%
+on_info2 = {+mil_merc_talked_f1_f2_wt1 +mil_merc_talked_i_hate_freedom} sr_idle@mil_contact_with_clear_sky_commander %=give_inited_task(storyline:mil_transfer_coo:csky) =remove_squad(mil_zombied_1) =remove_squad(mil_zombied_2) =remove_squad(mil_zombied_3) =remove_squad(mil_squard_with_zombiers) =remove_squad(mil_dogs_lair_3) =create_squad(mil_military_7_7_1_squad:mil_smart_terrain_7_7) =create_squad(mil_military_7_7_2_squad:mil_smart_terrain_7_7) =create_squad(mil_military_7_7_3_squad:mil_smart_terrain_7_7) +mil_alone_mission%
+
+[sr_idle@help_battle]
+on_info = {+mil_actor_with_freedom_squad} sr_idle@pretransfer_coo %+mil_treasure_1_complete%
+
+[sr_idle@pretransfer_coo]
+on_info = sr_idle@transfer_coo %+mil_actor_attack_house =give_inited_task(eliminate_smart:mil_smart_terrain_7_7:freedom) =give_treasure(mil_treasure_weapon_box) +mil_treasure_1_complete%
+
+[sr_idle@mil_actor_attack_house]
+on_info = {+mil_militarybase_dead_1 +mil_militarybase_dead_2 -mil_militarybase_dead_3} sr_idle@transfer_coo %=give_inited_task(eliminate_smart:mil_smart_terrain_7_7:freedom) =play_sound(mil_freedom_com_finish_task_pda) +mil_destroy_military_finish%
+on_info2 = {+mil_militarybase_dead_1 +mil_militarybase_dead_2 +mil_militarybase_dead_3} sr_idle@mil_contact_with_clear_sky_commander %=give_inited_task(storyline:mil_transfer_coo:csky)%
+
+[sr_idle@transfer_coo]
+on_info = {+mil_militarybase_dead_1 +mil_militarybase_dead_2 +mil_militarybase_dead_3} sr_idle@mil_contact_with_clear_sky_commander %=give_inited_task(storyline:mil_transfer_coo:csky)%
+
+[sr_idle@mil_contact_with_clear_sky_commander]
+on_info = {+mil_actor_go_to_limansk +mil_sound_thanks} sr_idle@final %=give_inited_task(storyline:mil_contact_with_clear_sky_commander:csky) =create_squad(mil_dogs_lair_6:mil_smart_terrain_7_11)%
+
+[sr_idle@final]
+on_game_timer = 30 | %=play_sound(mil_meet_4n_com_task:csky:mar_csky_commander_name)% sr_idle@end
+
+[sr_idle@end]

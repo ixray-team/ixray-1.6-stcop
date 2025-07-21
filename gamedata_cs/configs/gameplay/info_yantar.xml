@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+
+
+
+ 
+  ;------сцена 2 "Оборона базы учёных"-----------
+  <info_portion id="yan_ready_actor_cut2"/> ;--сигнал на появление ГГ на уровне
+  <info_portion id="yan_death_stalker4_cut2"/> ;--сигнал на смерть сталкера4
+  <info_portion id="yan_death_stalker1_cut2"/> ;--сигнал на смерть сталкера1
+  <info_portion id="yan_death_stalker2_cut2"/> ;--сигнал на смерть сталкера2
+  <info_portion id="yan_death_stalker3_cut2"/> ;--сигнал на смерть сталкера3
+  <info_portion id="yan_death_stalker5_cut2"/> ;--сигнал на смерть сталкера5(Левшу)
+  <info_portion id="yan_death_stalker6_cut2"/> ;--сигнал на смерть сталкера6
+  <info_portion id="yan_death_stalker7_cut2"/> ;--сигнал на смерть сталкера7 
+  <info_portion id="yan_alarm_signal_cut2"/> ;--сигнал на выдачу звукового сигнала тревоги
+  <info_portion id="yan_alarm_signal_stalkers_cut2"/> ;--сигнал на получение звукового сигнала тревоги(для сталкеров)
+  <info_portion id="yan_destroy_alarm_signal_cut2"/> ;--сигнал на отмену проигрыша звукового сиганала тревоги
+  <info_portion id="yan_destroy_zombi1_cut2"/> ;--сигнал на смерть зомби1
+  <info_portion id="yan_destroy_zombi2_cut2"/> ;--сигнал на смерть зомби2
+  <info_portion id="yan_destroy_zombi4_cut2"/> ;--сигнал на смерть зомби4
+  <info_portion id="yan_destroy_zombi6_cut2"/> ;--сигнал на смерть зомби6
+  <info_portion id="yan_destroy_zombi7_cut2"/> ;--сигнал на смерть зомби7
+  <info_portion id="yan_destroy_zombi10_cut2"/> ;--сигнал на смерть зомби10
+  <info_portion id="yan_destroy_zombi11_cut2"/> ;--сигнал на смерть зомби11   
+  <info_portion id="yan_end_talk_with_scientics"/> ;--сигнал на конец задания "поговори с учёным"
+  <info_portion id="yan_stalker_squad_sci_base_death"/> - ;--сигнал на смерть сквада сталкеров базы учёных
+  <info_portion id="yan_squad_zombi_in_sci_base"/>
+  <info_portion id="yan_squad_zombi_in_sci_base2"/>
+  <info_portion id="yan_squad_zombi_in_sci_base3"/>
+  <info_portion id="yan_squad_zombi_in_sci_base4"/>
+  <info_portion id="yan_squad_zombi_in_sci_base5"/>
+  <info_portion id="yan_squad_zombi_in_sci_base6"/>
+  <info_portion id="start_surge"/> ;-- сигнал на старт спауна зомби(выброс)
+  <info_portion id="yan_second_visit"/> ;--диалоговый сигнал
+  <info_portion id="yan_quest_digger_doc"/> ;--диалоговый сигнал
+  <info_portion id="yan_kak_proiti_za_strelkom"/> ;--диалоговый сигнал
+  <info_portion id="yan_vida4a_quest_doc"/> ;--сигнал на выдачу квеста с документами(+минимапа)
+  <info_portion id="yan_sdal_quest_doc"/>
+  <info_portion id="yan_proriv_k_ystanovke"/>
+  
+  <info_portion id="yan_levsha_dead"/>
+
+  
+
+  <info_portion id="yan_levwa_quest_doc"/>
+  <info_portion id="yan_questions_scientists"/> 
+  <info_portion id="yan_soglasie_quest_doc"/>
+  <info_portion id="yan_vzyal_quest_doc"/>
+  <info_portion id="yan_quest_doc"/>
+  <info_portion id="yan_otnesti_doc_saharavy"/> ;--инфопоршен на задание "Отнести документы Сахарову"
+  <info_portion id="yan_quest_levsha"/>
+  <info_portion id="yan_stop"/> ;--проверочный
+  <info_portion id="yan_actor_in_sci_base"/>
+  <info_portion id="yan_go_to_positions_cut6"/>  ;--инфопоршен для перехода сталкеров в сцену 6 "Ремонт установки"
+  <info_portion id="yan_actor_away_door1"/> ;-- инфопроршен на нахождение игрока рядом с дверью1
+  <info_portion id="yan_actor_away_door2"/> ;-- инфопроршен на нахождение игрока рядом с дверью2
+  <info_portion id="yan_actor_away_saharov"/>  ;-- инфопроршен на нахождение игрока рядом с сахаровым
+
+
+  ;------сцена 5 "Прорыв к Установке"-----------
+  <info_portion id="yan_space_restrictor_actor_ready_cut5"/> ;--сигнал на вхождение
+  <info_portion id="yan_destroy_zombi20_cut5"/> ;-- сигнал на смерть зомби20
+  <info_portion id="yan_destroy_zombi21_cut5"/>
+  <info_portion id="yan_destroy_zombi22_cut5"/> ;-- сигнал на смерть зомби22
+  <info_portion id="yan_destroy_zombi23_cut5"/> ;-- сигнал на смерть зомби23
+  <info_portion id="yan_destroy_zombi24_cut5"/> ;-- сигнал на смерть зомби24
+  <info_portion id="yan_destroy_zombi25_cut5"/> ;-- сигнал на смерть зомби25
+  <info_portion id="yan_destroy_zombi26_cut5"/>
+  <info_portion id="yan_destroy_zombi27_cut5"/>
+  <info_portion id="yan_destroy_zombi28_cut5"/>
+  <info_portion id="yan_destroy_zombi29_cut5"/>
+  <info_portion id="yan_destroy_zombi30_cut5"/>
+  <info_portion id="yan_destroy_zombi31_cut5"/>
+  <info_portion id="yan_destroy_zombi32_cut5"/>
+  <info_portion id="yan_space_restrictor_actor_go_cut5"/>
+
+
+  ;------сцена 6 "Починка Установки"-----------
+
+  <info_portion id="yan_default_stalker_1_death"/>
+  <info_portion id="yan_default_stalker_2_death"/>
+  <info_portion id="yan_levsha_ready_cut6"/>
+  <info_portion id="typoi"/>
+  <info_portion id="yan_actor_ready_cut6_ok"/>
+  <info_portion id="yan_ready_actor_cut6"/>
+  <info_portion id="yan_ready_actor2_cut6"/>
+  <info_portion id="hit_cut6_stalker_1"/>
+  <info_portion id="hit_cut6_stalker_2"/>
+  <info_portion id="hit_cut6_stalker_3"/>
+  <info_portion id="hit_cut6_stalker_4"/>
+  <info_portion id="hit_cut6_stalker_5"/>
+  <info_portion id="yan_ready_vikl_cut6"/>
+  <info_portion id="yan_ready_perekl_cut6"/>
+  <info_portion id="yan_warning_zombie_cut6"/>
+  <info_portion id="yan_warning_zombie2_cut6"/>
+  <info_portion id="yan_start_frase_cut6"/>
+  <info_portion id="yan_start_frase2_cut6"/>
+  <info_portion id="yan_task1_end_cut6"/>
+  <info_portion id="yan_task2_end_cut6"/>
+  <info_portion id="yan_death_cut6_stalker2"/>
+  <info_portion id="yan_death_cut6_stalker1"/>
+  <info_portion id="yan_death_cut6_stalker5"/>;-- сигнал на смерть лидера группы
+  <info_portion id="yan_fast_zombi_cut6"/>
+  <info_portion id="yan_hero_in_zone"/>
+  <info_portion id="yan_ready_actor_position_cut6"/> 
+  <info_portion id="alert_zombi_cut6_1"/>
+  <info_portion id="yan_naprnik_roof_5"/>
+  
+  
+  ;------инфопоршены на выдачу\снятие задания
+  <info_portion id="yan_actor_start_to_go"/>  ;--сигнал на выдачу задания "Занять позицию"
+  <info_portion id="yan_go_home_cut6"/>
+  <info_portion id="yan_actor_go_to_stalker"/> ;--сигнал на выдачу задания "Уточни позицию у сталкера"
+  <info_portion id="yan_actor_destroy_wave1"/> ;--сигнал на выдачу задания "Уничтожь первую волну"
+  <info_portion id="yan_actor_destroy_wave2"/> ;--сигнал на выдачу задания "Уничтожь вторую волну"
+  <info_portion id="yan_ready_wave2_cut6"/>
+  <info_portion id="yan_ready_wave3_cut6"/>
+  <info_portion id="yan_wave_zombie1_cut6"/> ;--сигнал на выдачу мапспота и задания "Уничтожь первую волну"
+  <info_portion id="yan_wave_zombie2_cut6"/> ;--сигнал на выдачу мапспота и задания "Уничтожь вторую волну"
+  <info_portion id="yan_destroy_wave1_1"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave1_2"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave1_3"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave1_4"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave1_5"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave2_1"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave2_2"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave2_3"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave2_4"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave2_5"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave3_1"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave3_2"/> ;--сигнал на смерть зомби
+  <info_portion id="yan_destroy_wave3_3"/> ;--сигнал на смерть зомби 
+  <info_portion id="yan_end_quest_line"/>  ;--сиганл на конец квестовой части на Янтаре
+  <info_portion id="yan_go_to_red_forest_cut6"/>
+  <info_portion id="yan_zombied_on_krisha_cut6"/>
+  <info_portion id="yan_zombied_in_angar_cut6"/>
+  <info_portion id="yan_professor_cut6"/>
+  <info_portion id="yan_otvet_stalkera_cut6"/>
+  <info_portion id="yan_otryad_go_home_cut6"/>
+  <info_portion id="yan_stop_spawn_cut6"/>
+  <info_portion id="yan_start_monologa_cut6"/>
+  <info_portion id="yan_hold_position_cut6"/>
+  <info_portion id="yan_ready_position_stalker3"/>
+  <info_portion id="yan_ready_position_stalker4"/>
+  <info_portion id="yan_stalker_3_kaput"/> ;--снятие неуязвимости у сталкера на крыше
+  <info_portion id="yan_stalker_4_kaput"/> ;--снятие неуязвимости у сталкера на крыше
+  <info_portion id="yan_stalker_5_kaput"/>
+  <info_portion id="yan_wave_speedx2_cut6"/>
+  <info_portion id="yan_start_remove"/>
+  <info_portion id="yan_wave1_go"/> ;--старт озвучки для крыши
+  <info_portion id="yan_wave_naval"/> ;--озвучка навала на крышу
+  <info_portion id="yan_roof_nores_stalker3"/> ;--озвучка снятия бессмертия у сталкера3
+  <info_portion id="yan_roof_nores_stalker4"/> ;--озвучка снятия бессмертия у сталкера4
+  <info_portion id="yan_roof_nores_stalker5"/> ;--озвучка снятия бессмертия у сталкера5
+  <info_portion id="yan_death_stalker4_cut6"/>
+  <info_portion id="yan_death_stalker3_cut6"/>
+  <info_portion id="yan_death_stalker5_cut6"/>
+  <info_portion id="yan_game_over_cut6"/>
+  <info_portion id="yan_naprnik_roof_4"/>
+  <info_portion id="yan_naprnik_roof_3"/>
+  <info_portion id="yan_naprnik_roof_1"/>
+  <info_portion id="yan_naprnik_roof_2"/>
+  <info_portion id="yan_death_group1_cut6"/>
+  <info_portion id="yan_wave_naval_roof1"/>
+
+  ;------сцена 5 "Прорыв к установке"-----------
+  <info_portion id="yan_smena_position_1"/> ;-- сигнал на смену позиции сталкерами(может быть заменена на сигналы смерти определённых зомби)
+  <info_portion id="yan_smena_position_2"/>
+  <info_portion id="yan_smena_position_3"/>
+  <info_portion id="yan_smena_position_4"/>
+  <info_portion id="yan_smena_position_5"/>
+  <info_portion id="yan_smena_position_6"/>
+
+  <info_portion id="yan_proriv_k_ystanovke_start"/>
+  <info_portion id="yan_ui_disabled"/>
+  <info_portion id="yan_scene_6_snork_dead"/>
+  <info_portion id="yan_low_psy_radiation_start"/>
+  <info_portion id="yan_scene_6_ready_to_zabor"/>
+  <info_portion id="yan_zabor_1_already_jumping"/>
+  <info_portion id="yan_zabor_stalker_7_on_position"/>
+  <info_portion id="yan_zabor_stalker_4_on_position"/>
+  <info_portion id="yan_zabor_stalker_2_on_position"/>
+  <info_portion id="yan_zabor_stalker_1_on_position"/>
+  <info_portion id="yan_zabor_stalker_5_on_position"/>
+  <info_portion id="yan_zabor_2_already_jumping"/>
+  <info_portion id="yan_group_in_angar"/>
+  <info_portion id="yan_not_go_to_roof"/>
+  <info_portion id="yan_squad2_ready"/>
+  
+
+</game_information_portions>

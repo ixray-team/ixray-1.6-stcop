@@ -1,0 +1,32 @@
+#include "common.h"
+
+//	Igor: used for volumetric light
+Texture2D 	s_vollight;
+
+struct	_input      
+{
+	float4	tc0	: TEXCOORD0;	// tc.xy, tc.w = tonemap scale
+};
+
+struct	_out
+{
+        half4	low		: SV_Target0;
+        half4	high	: SV_Target1;
+};
+
+//	TODO: DX10: Use load instead of sample
+_out main( _input I )
+{
+	// final tone-mapping
+	half          	tm_scale        = I.tc0.w;	// interpolated from VS
+
+	_out	o;
+	half4	color;
+
+//	color = tex2D(s_vollight, I.tc0);
+	color = s_vollight.Sample( smp_nofilter, I.tc0);
+
+	tonemap(o.low, o.high, color, tm_scale );
+
+	return o;
+}

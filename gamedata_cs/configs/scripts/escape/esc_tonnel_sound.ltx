@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+esc_actor_inside_traders_dung +esc_actor_inside_tonnel -esc_reach_stalker_base_complete} ph_idle@w8 %=play_sound(esc_railroadpost_yes:stalker)%
+
+[ph_idle@w8]

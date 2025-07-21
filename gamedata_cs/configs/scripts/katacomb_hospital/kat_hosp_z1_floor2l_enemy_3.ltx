@@ -1,0 +1,52 @@
+[logic]
+active = camper@combat
+combat_ignore = combat_ignore
+on_hit = hit
+
+[hit]
+on_info = walker@combat
+
+[walker@wait]
+out_restr = safe_restr_5
+danger = danger_condition@2
+combat_ignore_cond = always
+path_walk = z1_enemy_floor2l_fire_walk_1
+path_look = z1_enemy_floor2l_look
+on_info = {+rush_2} camper@combat
+group = 1
+
+[camper@combat]
+out_restr = safe_restr_5
+combat_ignore_cond = {!is_enemy_actor} always
+danger = danger_condition
+radius = 5
+path_walk = z1_enemy_floor2l_fire_walk_1
+path_look = z1_enemy_floor2l_look
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_info = {+rush_4} camper@combat2
+group = 1
+
+[camper@combat2]
+out_restr = safe_restr_5
+danger = danger_condition
+radius = 10
+path_walk = z1_enemy_floor2l_fire2_walk_1
+path_look = z1_enemy_floor2l_look2
+group = 1
+
+[walker@combat]
+out_restr = safe_restr_5
+danger = danger_condition
+path_walk = z1_enemy_floor2l_fire2_walk_1
+path_look = z1_enemy_floor2l_look2
+group = 1
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+
+[danger_condition@2]
+ignore_distance = 0
+
+[combat_ignore]

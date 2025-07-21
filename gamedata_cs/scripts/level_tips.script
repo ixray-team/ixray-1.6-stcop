@@ -1,0 +1,32 @@
+-- DELETE THIS SCRIPT
+
+--[[------------------------------------------------------------------------------------------------
+Подсказки на уровне
+Автор: Диденко Руслан (Stohe)
+Переделка под рестрикторы: Чугай Александр (Chugai)
+--------------------------------------------------------------------------------------------------]]
+
+class "level_tip"
+
+function level_tip:__init( zone, binder, ini )
+	self.object = zone
+	self.binder = binder
+
+	self.info   = utils.cfg_get_string( ini, "tips", "name",   zone, true,  "", "" )
+	self.type   = utils.cfg_get_string( ini, "tips", "type",   zone, false, "", "news" )
+	self.sender = utils.cfg_get_string( ini, "tips", "sender", zone, false, "", nil )
+	self.conditions = xr_logic.cfg_get_condlist( ini, "tips", "conditions", zone )
+end
+
+function level_tip:update()
+	if self.binder.actor_inside and
+	   ( self.conditions == nil or
+	   xr_logic.pick_section_from_condlist( db.actor, nil, self.conditions.condlist ) ~= nil )
+	then
+		if self.type == "tips" then
+			news_manager.send_tip( db.actor, self.info, nil, self.sender )
+		elseif self.type == "news" then
+			news_manager.send_news( db.actor, self.info )
+		end
+	end
+end

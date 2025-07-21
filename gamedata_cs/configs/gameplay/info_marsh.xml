@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+    <info_portion id="mar_tower_defended"></info_portion>
+    <info_portion id="mar_tower_captured"></info_portion>
+    <info_portion id="mar_boar_killed"></info_portion>
+    <info_portion id="mar_plant_captured"></info_portion>
+    <info_portion id="mar_hidden_from_heli"></info_portion>    
+    <info_portion id="mar_start_heli"></info_portion>
+    <info_portion id="mar_heli_away"></info_portion>
+    <info_portion id="mar_heli_see_actor"></info_portion>
+    <info_portion id="mar_heli_turn"></info_portion>
+    
+    <info_portion id="mar_recover_item_1_done"></info_portion>
+    <info_portion id="mar_recover_item_2_done"></info_portion>
+    <info_portion id="mar_recover_item_3_done"></info_portion>
+    <info_portion id="mar_recover_item_4_done"></info_portion>
+    <info_portion id="mar_recover_item_5_done"></info_portion>
+
+
+    <info_portion id="mar_renegade_base_captured"></info_portion>
+   
+    <info_portion id="mar_intro_scene_1_talked_4"></info_portion>
+    <info_portion id="mar_intro_scene_2_start"></info_portion>
+    
+    
+    <info_portion id="mar_intro_start"></info_portion>  
+    <info_portion id="mar_intro_scene_1_talked_1"></info_portion> 
+    <info_portion id="mar_intro_scene_1_talked_2"></info_portion> 
+    <info_portion id="mar_intro_scene_1_talked_3"></info_portion> 
+    <info_portion id="mar_intro_scene_1_end"></info_portion>
+    
+    
+    <info_portion id="mar_intro_scene_2_woke"></info_portion>
+    <info_portion id="mar_intro_scene_2_talk"></info_portion>
+    <info_portion id="mar_intro_scene_2_end"></info_portion>
+    <info_portion id="mar_intro_scene_2_cameff_end"></info_portion>
+    
+    <info_portion id="mar_intro_talk_with_barman_done"></info_portion>
+    <info_portion id="mar_intro_talk_with_barman_radio_timer"></info_portion>
+    <info_portion id="mar_intro_talk_with_barman_break"></info_portion>
+    
+    <info_portion id="mar_intro_talk_with_commander_1_started"></info_portion>
+    <info_portion id="mar_intro_talk_with_commander_1_done"></info_portion>
+    <info_portion id="mar_intro_talk_with_commander_1_radio_timer"></info_portion>
+    <info_portion id="mar_intro_talk_with_commander_1_break"></info_portion>
+    <info_portion id="mar_intro_talk_with_commander_1_radio_played"></info_portion>
+    <info_portion id="mar_intro_talk_with_commander_1_tutorial"></info_portion>
+    
+    <info_portion id="mar_intro_talk_with_trader_started"></info_portion>
+    <info_portion id="mar_intro_talk_with_trader_radio_timer"></info_portion>
+    <info_portion id="mar_intro_talk_with_trader_radio_played"></info_portion>
+    <info_portion id="mar_intro_talk_with_trader_done"></info_portion>
+    
+    <info_portion id="mar_intro_talk_with_guide_started"></info_portion>
+    <info_portion id="mar_intro_talk_with_guide_done"></info_portion>
+    <info_portion id="mar_intro_talk_with_guide_end"></info_portion>
+    
+    <info_portion id="mar_tutorial_tower_top_shout"></info_portion>
+    <info_portion id="mar_tutorial_tower_top_started"></info_portion>
+    <info_portion id="mar_tutorial_tower_top_reversed"></info_portion>
+    <info_portion id="mar_tutorial_tower_top_done"></info_portion>
+    
+    <info_portion id="mar_tutorial_kill_boars_started"></info_portion>
+    <info_portion id="mar_tutorial_kill_boars_reversed"></info_portion>
+    <info_portion id="mar_tutorial_kill_boars_done"></info_portion>
+    
+    <info_portion id="mar_tutorial_return_to_base_reversed"></info_portion>
+    
+    <info_portion id="mar_tutorial_help_done"></info_portion>
+    <info_portion id="mar_tutorial_help_reversed"></info_portion>
+    
+    <info_portion id="mar_tutorial_surge_warned"></info_portion>
+    
+    <info_portion id="mar_tutorial_returned_to_base"></info_portion>
+    
+    <info_portion id="mar_tutorial_returned_got_on_feet"></info_portion>
+    
+    <info_portion id="mar_intro_talk_with_commander_2_started"></info_portion>
+    <info_portion id="mar_intro_talk_with_commander_2_done"></info_portion>
+    <info_portion id="mar_intro_talk_with_commander_2_choose"></info_portion>
+    <info_portion id="mar_intro_talk_with_commander_2_decide"></info_portion>
+    
+    <info_portion id="mar_intro_talk_with_commander_3_done"></info_portion>
+    <info_portion id="mar_intro_talk_with_commander_3_control"></info_portion>
+    
+    <info_portion id="mar_intro_talk_with_tactic_told"></info_portion>
+    <info_portion id="mar_intro_talk_with_tactic_done"></info_portion>
+    
+    <info_portion id="mar_story_go_to_marsh_done"></info_portion>
+    
+    <info_portion id="mar_story_empower_csky_done"></info_portion>
+    <info_portion id="mar_story_empower_csky_reward"></info_portion>
+    
+    <info_portion id="mar_story_guide_to_escape_talked"></info_portion>
+    
+    <info_portion id="mar_story_go_to_escape_done"></info_portion>
+    
+    
+    <info_portion id="mar_csky_trader_first_talked"></info_portion>
+    
+    <info_portion id="mar_csky_guide_teleport_to_marsh"></info_portion>
+    <info_portion id="mar_csky_guide_teleport_to_base"></info_portion>
+    <info_portion id="mar_csky_guide_teleport_to_escape"></info_portion>
+    <info_portion id="mar_csky_guide_teleport_talk_marsh"></info_portion>
+    <info_portion id="mar_csky_guide_teleport_talk_base"></info_portion>
+    
+    <info_portion id="mar_csky_expansion_changed"></info_portion>
+ 
+    
+    <info_portion id="mar_lvl_sim"></info_portion>
+</game_information_portions>

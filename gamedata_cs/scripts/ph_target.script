@@ -1,0 +1,71 @@
+--------------------------------------------------------------------------------
+-- Physical object scheme for shooting target ----------------------------------
+-- Made by Peacemaker ----------------------------------------------------------
+-- 04.01.08 --------------------------------------------------------------------
+--------------------------------------------------------------------------------
+class "CPHTarget"
+-- Class constructor
+function CPHTarget:__init(obj, storage)
+    self.object = obj
+    self.st = storage
+-- store class object in global storage
+    db.storage[obj:name()] = self
+
+    self.hit_update_time = 0
+    self.anim_time = 0
+end
+-- On scheme switch resets all self params and lay down the target
+function CPHTarget:reset_scheme()
+    self:anim_down()
+    self.hit_update_time = 0
+    self.anim_time = 0
+end
+-- Target update
+function CPHTarget:update()
+    if(self.anim_time<time_global()-self.st.anim_callback_delta_time) then
+-- if animation ended then callback
+        minigames_manager.get_minigames_manager():animation_end(self.object)
+    end
+    if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+        return
+    end
+end
+-- Target hit callback (is called on every bone's hit)
+function CPHTarget:hit_callback(obj, amount, local_direction, who, bone_index)
+	xr_sound.set_sound_play(self.object:id(), "shooting_target_hit")
+    local time = time_global()
+    if(self.hit_update_time<=time-self.st.hit_update_delta_time) then
+-- if we hitted more than one bone at once
+        self.hit_update_time = time
+        minigames_manager.get_minigames_manager():on_target_hit(obj, amount, local_direction, who, bone_index)
+    end
+end
+-- Get up the target
+function CPHTarget:anim_up()
+	xr_sound.set_sound_play(self.object:id(), "shooting_target_up")
+    self.anim_time = time_global()
+    self.object:get_physics_object():stop_anim()
+    self.object:get_physics_object():run_anim_forward()
+end
+-- Lay down the target
+function CPHTarget:anim_down()
+	xr_sound.set_sound_play(self.object:id(), "shooting_target_down")
+    self.anim_time = time_global()
+    self.object:get_physics_object():stop_anim()
+    self.object:get_physics_object():run_anim_back()
+end
+--------------------------------------------------------------------------------
+-- Standart functions
+--------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+    xr_logic.subscribe_action_for_events(npc, storage, CPHTarget(npc, storage))
+end
+function set_scheme(npc, ini, scheme, section, gulag_name)
+-- standart lines: assigning new storage and binding our space restrictor
+    local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+    st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+-- getting delta time for hit update from custom_data
+    st.hit_update_delta_time = utils.cfg_get_number(ini, section, "hit_update_delta_time", obj, false, 150)
+-- getting delta time for anim callback from custom_data
+    st.anim_callback_delta_time = utils.cfg_get_number(ini, section, "anim_callback_delta_time", obj, false, 1500)
+end

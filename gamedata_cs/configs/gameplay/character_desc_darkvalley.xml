@@ -1,0 +1,615 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+  <specific_character id="val_freedom_leader" team_default = "1">
+    <name>val_freedom_leader_name</name>
+    <icon>ui_npc_u_freedom_2_face_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_leader</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>930</rank>lf
+    <reputation>0</reputation>
+    <money min="50000" max="100000" infinitive="0"/>
+    <visual>actors\stalker_freedom\stalker_freedom_2_face_2</visual>
+		<snd_config>characters_voice\human_02\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_svu \n
+      ammo_7.62x54_7h1 = 5 \n
+      wpn_beretta \n
+      ammo_9x19_fmj = 2 \n
+      grenade_f1 = 3 \n
+      hand_radio \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <actor_dialog>val_freedom_leader_questions_dialog</actor_dialog>
+    <start_dialog>val_freedom_leader_hello_dialog</start_dialog>
+    <actor_dialog>val_freedom_leader_about_clan</actor_dialog>
+    <actor_dialog>val_freedom_leader_about_zone</actor_dialog>
+    <actor_dialog>val_freedom_leader_about_dolg</actor_dialog>
+    <actor_dialog>val_freedom_leader_join_first</actor_dialog>
+    <actor_dialog>val_freedom_leader_join_main</actor_dialog>
+  </specific_character>
+
+
+  <specific_character id="val_freedom_comendant" team_default = "1">
+    <name>val_freedom_comendant_name</name>
+    <icon>ui_npc_u_freedom_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_comendant</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>600</rank>
+    <reputation>0</reputation>
+	<money min="5000" max="10000" infinitive="0"/>
+    <visual>actors\stalker_freedom\stalker_freedom_3</visual>
+    <snd_config>characters_voice\human_01\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_sig550 \n
+      ammo_5.56x45_ss190 = 5 \n
+      wpn_beretta \n
+      ammo_9x19_fmj = 5 \n
+      grenade_f1 = 10 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>val_freedom_comendant_hello_dialog</start_dialog>
+    <actor_dialog>val_comendant_about_freedom</actor_dialog>
+    <actor_dialog>val_comendant_about_news</actor_dialog>
+  </specific_character>   
+
+
+  <specific_character id="val_freedom_trader" team_default = "1">
+    <name>val_freedom_trader_name</name>
+    <icon>ui_npc_u_freedom_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_trader</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+	<money min="10000" max="27500" infinitive="1"/>
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
+    <snd_config>characters_voice\human_01\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300 \n
+      ammo_5.56x45_ss190 = 5 \n
+      wpn_hpsa \n
+      ammo_9x19_fmj = 5 \n
+      grenade_f1 = 10 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>val_freedom_trader_hello_dialog</start_dialog>
+<!--    <actor_dialog>val_freedom_trader_questions_dialog</actor_dialog> -->
+    <actor_dialog>val_trader_about_freedom</actor_dialog>
+    <actor_dialog>val_trader_where_manufactured</actor_dialog>
+    <actor_dialog>val_trader_about_said</actor_dialog>
+  </specific_character>
+
+
+  <specific_character id="val_freedom_fixer" team_default = "1">
+    <name>val_freedom_fixer_name</name>
+    <icon>ui_npc_u_freedom_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_fixer</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>600</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
+    <snd_config>characters_voice\human_02\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_wincheaster1300 \n
+      ammo_12x76_dart = 1 \n
+      ammo_12x76_zhekan = 2\n
+      wpn_desert_eagle \n
+      ammo_11.43x23_hydro = 1 \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+	<mechanic_mode>1</mechanic_mode>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>val_freedom_fixer_hello_dialog</start_dialog>
+    <actor_dialog>val_fixer_about_weapons</actor_dialog>
+    <actor_dialog>val_fixer_about_power</actor_dialog>
+    <actor_dialog>val_fixer_about_benefit</actor_dialog>
+    <actor_dialog>tm_upgr_task</actor_dialog>
+    <actor_dialog>find_upgrade_task</actor_dialog>    
+    <actor_dialog>treasure_dialog</actor_dialog>
+    
+  </specific_character>
+  
+  
+  <specific_character id="val_freedom_barmen" team_default = "1">
+    <name>val_freedom_barmen_name</name>
+    <icon>ui_npc_u_freedom_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_barmen</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+	<money min="2000" max="7500" infinitive="0"/>
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
+    <snd_config>characters_voice\human_01\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_beretta \n
+      ammo_9x19_fmj = 5 \n
+      wpn_l85 \n
+      ammo_5.56x45_ap = 1\n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies> 
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>val_freedom_barmen_hello_dialog</start_dialog>
+    <actor_dialog>val_barmen_about_barmen</actor_dialog>
+    <actor_dialog>val_barmen_about_zone</actor_dialog>
+    <actor_dialog>val_freedom_barmen_questions_dialog_complete</actor_dialog>    
+    <actor_dialog>val_freedom_barmen_questions_dialog</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+    <actor_dialog>tm_reward_task</actor_dialog>
+  </specific_character>
+
+
+  <specific_character id="val_freedom_blockpost_guard_leader_north" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_blockpost_guard_leader_north</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>600</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_3</visual>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300 \n
+      ammo_5.56x45_ap = 1 \n
+      wpn_fort \n
+      ammo_9x18_fmj = 1 \n
+      grenade_f1 = 2 \n
+      hand_radio \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+
+
+  <specific_character id="val_freedom_blockpost_guard_leader_south" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_blockpost_guard_leader_south</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>600</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_3</visual>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300 \n
+      ammo_5.56x45_ap = 1 \n
+      wpn_fort \n
+      ammo_9x18_fmj = 1 \n
+      grenade_f1 = 2 \n
+      hand_radio \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+
+
+  <specific_character id="val_freedom_blockpost_guard" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_blockpost_guard</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
+    <snd_config>characters_voice\human_01\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_l85 \n
+      ammo_7.62x54_ap = 3 \n
+      wpn_hpsa \n
+      ammo_9x19_fmj = 5 \n
+      grenade_f1 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+
+
+  <specific_character id="val_freedom_deadblockpost_guard" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_deadblockpost_guard</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
+    <snd_config>characters_voice\human_02\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_ak74 \n
+      ammo_5.45x39_fmj = 1 \n
+      wpn_hpsa \n
+      ammo_9x19_fmj = 2 \n
+      grenade_f1 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>val_freedom_deadblockpost_hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+
+<specific_character id="val_freedom_deadblockpost_guard_pda" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>val_freedom_deadblockpost_guard_pda</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_3</visual>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_l85 \n
+      ammo_5.56x45_ss190 = 5 \n
+      wpn_hpsa \n
+      ammo_9x19_fmj = 5 \n
+      grenade_rgd5 = 1 \n
+      device_pda_freedom \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>val_freedom_deadblockpost_pda_hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+
+
+  <specific_character id="val_freedom_base_sniper" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+     
+    <class>val_freedom_base_sniper</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
+    <snd_config>characters_voice\human_02\freedom\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_svd \n
+      ammo_7.62x54_7h1 = 5 \n
+      wpn_pm \n
+      ammo_9x18_fmj = 5 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+
+
+  <specific_character id="val_killer_sniper" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_merc_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>val_killer_sniper</class>
+    <community>killer</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+    <rank>350</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_merc\stalker_merc_2</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300 = 1, scope, silencer \n
+      ammo_5.56x45_ap = 2 \n
+      wpn_beretta \n
+      ammo_9x19_fmj = 1 \n
+      grenade_f1 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+
+
+  <specific_character id="val_freedom_attack" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>val_freedom_attack</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_2</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_ak74 \n
+      ammo_5.45x39_fmj = 5 \n
+      wpn_hpsa \n
+      ammo_9x19_fmj = 5 \n
+      grenade_f1 = 2 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+
+
+  <specific_character id="val_freedom_attack_commander" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>val_freedom_attack_commander</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+
+    <rank>600</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_3</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300 = 1, scope, silencer \n
+      ammo_5.56x45_ss190 = 2 \n
+      wpn_colt1911 \n
+      ammo_11.43x23_fmj = 2 \n
+      grenade_f1 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>val_freedom_attack_commander_hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+  
+  
+  <specific_character id="val_killer" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_merc_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>val_killer</class>
+    <community>killer</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+    <rank>350</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_merc\stalker_merc_2</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300 \n
+      ammo_5.56x45_ap = 1 \n
+      wpn_sig220 \n
+      ammo_11.43x23_fmj = 2 \n
+      grenade_f1 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+  
+  
+  <specific_character id="val_bandit_spy" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_bandit_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>val_bandit_spy</class>
+    <community>bandit</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_01\bandit\</snd_config>
+
+    <rank>250</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_bandit\stalker_bandit_2</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_ak74 \n
+      ammo_5.45x39_fmj = 5 \n
+      wpn_hpsa \n
+      ammo_9x19_fmj = 5 \n
+      grenade_rgd5 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+  
+  
+  <specific_character id="val_bandit_spy_pda" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_bandit_4</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>val_bandit_spy_pda</class>
+    <community>bandit</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_01\bandit\</snd_config>
+
+    <rank>250</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_bandit\stalker_bandit_4</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_wincheaster1300 \n
+      ammo_12x76_zhekan = 5 \n
+      wpn_colt1911 \n
+      ammo_11.43x23_fmj = 5 \n
+      grenade_rgd5 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"      
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"    
+  </specific_character>
+  
+  <specific_character id="val_default_freedom_sniper_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>val_default_freedom_sniper</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_02\freedom\</snd_config>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_svd \n
+      ammo_7.62x54_7h1 = 1 \n
+      wpn_beretta = 1 \n
+      ammo_9x19_fmj = 1 \n
+      grenade_rgd5 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+</xml>

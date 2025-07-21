@@ -1,0 +1,289 @@
+[wpn_groza]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection     = spawn_group
+discovery_dependency    =
+$spawn					= "weapons\groza"                ; option for Level Editor
+$npc                    = on                                ; option for Level Editor
+$prefetch               = 8
+scheduled               = off                                ; option for ALife Simulator
+cform                   = skeleton
+class                   = WP_AK74
+min_radius              = 30
+max_radius              = 100
+description             = st_wpn_groza_descr
+
+ef_main_weapon_type     = 2
+ef_weapon_type          = 6
+
+default_to_ruck         = false
+sprint_allowed       	= true
+control_inertion_factor = 1.0
+
+;---DOF-------------------------------------------------------------------------
+zoom_dof				= 0.5, 1.0, 180
+reload_dof				= 0.0, 0.5, 5, 1.7
+;-------------------------------------------------------------------------------
+upgrades                = up_gr_ab_groza, up_gr_cd_groza, up_gr_ef_groza, up_gr_gh_groza, up_gr_j_groza
+installed_upgrades      =
+upgrade_scheme          = upgrade_scheme_u15
+;-------------------------------------------------------------------------------
+holder_range_modifier   = 1.0                       ; во сколько раз увеличивается eye_range
+holder_fov_modifier     = 0.7              ; во сколько раз увеличивается eye_fov
+;-------------------------------------------------------------------------------
+
+cost                    = 9000
+weapon_class            = assault_rifle        ; Type of the weapon
+
+ammo_limit              = 210
+ammo_current            = 180
+ammo_elapsed            = 20
+
+ammo_mag_size           = 20
+ammo_class              = ammo_9x39_pab9, ammo_9x39_ap ;ammo_9x39_sp5
+grenade_class           = ammo_vog-25, ammo_vog-25p
+fire_modes              = 1, -1
+launch_speed            = 10
+hand_dependence         = 1
+single_handed           = 0
+
+slot                    = 2                ; // secondary
+animation_slot          = 8                ; type of the animation that will be used
+
+inv_name                = st_wpn_groza
+inv_name_short          = st_wpn_groza
+inv_weight              = 3.2
+
+inv_grid_width          = 4
+inv_grid_height         = 2
+inv_grid_x              = 0
+inv_grid_y              = 14
+
+kill_msg_x              = 67
+kill_msg_y              = 123
+kill_msg_width          = 64
+kill_msg_height         = 30
+
+;-------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base    = 0.7        ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor = 1.2f
+
+;отдача
+cam_relax_speed         = 10        ;скорость возврата в исходное положение
+cam_relax_speed_ai      = 360     ;скорость возврата в исходное положение
+cam_dispersion          = 0.6        ;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc      = 0.6       ;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion_frac     = 0.7       ;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
+cam_max_angle           = 5.0        ;максимальный угол отдачи
+cam_max_angle_horz      = 10.0        ;(degree) maximum shot horizontal degree
+cam_step_angle_horz     = 1.7        ;(degree) size of step camera moved in horizontal position while shooting
+
+zoom_cam_relax_speed         = 10	    ; scope & ironsight
+zoom_cam_relax_speed_ai      = 360
+zoom_cam_dispersion          = 0.4
+zoom_cam_dispersion_inc      = 0.4
+zoom_cam_dispersion_frac     = 0.7
+zoom_cam_max_angle           = 10.0
+zoom_cam_max_angle_horz      = 5.0
+zoom_cam_step_angle_horz     = 1.5
+
+fire_dispersion_condition_factor = 5        ;увеличение дисперсии в процентах при максимальном износе
+misfire_probability     = 0.003        ;вероятность осечки при максимальном износе
+misfire_condition_k     = 0.05
+condition_shot_dec      = 0.0001		 ;увеличение износа при каждом выстреле
+;-------------------------------------------------------------------------------
+
+position                = -0.026, -0.144, 0.0
+orientation             = 0, 0, 0
+
+fire_point              = 0.000000,0.194,0.274
+fire_point2             = 0.0, 0.156, 0.285
+
+flame_particles         = weapons\generic_weapon05
+smoke_particles         = weapons\generic_shoot_00
+grenade_flame_particles = weapons\generic_weapon01
+
+shell_point             = 0.0, 0.194, 0.04
+shell_dir               = 0.0, 0.0, 0.4
+shell_particles         = weapons\generic_shells
+
+PDM_disp_base           = 1.0
+PDM_disp_vel_factor     = 1.5
+PDM_disp_accel_factor   = 1.5
+PDM_disp_crouch         = 1.0
+PDM_disp_crouch_no_acc  = 1.0
+
+; ttc
+hit_power				= 0.4, 0.4, 0.4, 0.4
+hit_impulse				= 100
+hit_type				= fire_wound
+
+hit_probability_gd_novice  = 0.80
+hit_probability_gd_stalker = 0.80
+hit_probability_gd_veteran = 0.80
+hit_probability_gd_master  = 0.80
+
+fire_distance           = 100
+bullet_speed            = 250
+rpm                     = 650
+rpm_empty_click         = 200
+
+grenade_vel 			= 30 ;76
+; end ttc
+
+use_aim_bullet          = true                ;Поддерживается ли первая суппер пуля
+time_to_aim             = 3.0
+
+hud                     = wpn_groza_hud
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+;под мишкой
+strap_position          = -0.15,-0.38,0.35			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation       = -10,-5,10					; (3rd person view in degrees)
+strap_bone0             = bip01_spine2
+strap_bone1             = bip01_spine1
+
+startup_ammo            = 90
+visual                  = dynamics\weapons\wpn_groza\wpn_groza.ogf
+
+light_disabled				= false
+light_color             = 0.6,0.5,0.3
+light_range             = 5
+light_var_color         = 0.05
+light_var_range         = 0.5
+light_time              = 0.2
+
+ph_mass                 = 5
+;cost                   = 2100
+
+;addons
+scope_status            = 2
+silencer_status         = 2
+grenade_launcher_status = 1
+
+zoom_enabled            = true                                                ; (on,off)zoom mode (right mouse button)
+zoom_rotate_time		= 0.25
+scope_zoom_factor       = 50                                                ; fov for zoom mode
+
+scope_name              = wpn_addon_scope
+scope_x                 = 63
+scope_y                 = -1
+silencer_name           = wpn_addon_silencer
+silencer_x              = 180
+silencer_y              = 16
+grenade_launcher_name   = wpn_addon_grenade_launcher
+grenade_launcher_x      = 109
+grenade_launcher_y      = 30
+
+;звуки
+snd_draw                = weapons\generic_draw
+snd_holster             = weapons\generic_holster
+snd_shoot					= weapons\n_groza_shot
+;snd_shoot1					= weapons\n_groza_shot
+;snd_shoot2					= weapons\n_groza_shot
+;snd_shoot3					= weapons\n_groza_shot
+
+
+snd_empty               = weapons\gen_empty, 0.5
+snd_reload              = weapons\groza_reload, 0.7
+snd_shoot_grenade       = weapons\gen_grenshoot
+snd_reload_grenade      = weapons\gen_grenload, 1.0, 1.2
+snd_switch              = weapons\groza_switch, 1.0, 0.5
+snd_bore		= weapons\groza_bore
+
+;настройки для глушителя
+silencer_hit_power      = 0.55, 0.55, 0.55, 0.55
+silencer_hit_impulse    = 120
+silencer_fire_distance  = 250
+silencer_bullet_speed   = 600
+
+;silencer_flame_particles  = weapons\generic_weapon01
+silencer_smoke_particles   = weapons\generic_shoot_00
+
+snd_silncer_shot        = weapons\w_ak74_shot1
+
+silencer_light_color    = 0.6,0.5,0.3
+silencer_light_range    = 0.01
+silencer_light_var_color= 0.05
+silencer_light_var_range= 0.5
+silencer_light_time     = 0.2
+
+
+[wpn_groza_hud]:hud_base
+zoom_hide_crosshair	= true
+attach_place_idx	= 0
+item_visual					= dynamics\weapons\wpn_groza\wpn_groza_hud.ogf
+
+hands_position				= -0.057500,-0.182500,0.254500
+hands_orientation			= -0.650000,0.599990,1.749998
+
+
+hands_position_16x9				= -0.033000,-0.188499,0.209999
+hands_orientation_16x9			= 0.400000,3.199998,0.299999
+
+item_position				= -0.004407,0.006848,-0.002064
+item_orientation			= -15.517174,-2.455023,362.066071
+
+
+shell_point					= 0.025,0.063,-0.109
+shell_dir               = 0.0, 1.0, 0.0
+shell_bone					= wpn_body
+
+
+fire_point		= 0,0.047,0.349
+fire_bone      	      = wpn_body
+fire_point2					= 0.0,0.003,0.321
+fire_bone2					= wpn_body
+
+anm_show             	= groza_draw
+anm_hide             	= groza_holster
+anm_idle             	= groza_idle
+anm_idle_sprint         = groza_idle_sprint
+anm_idle_moving 			= groza_idle_moving
+anm_shots               = groza_shoot
+anm_reload              = groza_reload
+anm_idle_aim           	= groza_idle_aim
+
+anm_switch              = groza_switch_off
+anm_switch_g            = groza_switch_on
+anm_bore						= groza_idle_bore
+
+anm_show_w_gl           = groza_draw
+anm_hide_w_gl           = groza_holster
+anm_idle_w_gl           = groza_idle
+anm_shots_w_gl          = groza_shoot
+anm_reload_w_gl         = groza_reload
+anm_idle_w_gl_aim       = groza_idle_aim
+anm_idle_sprint_w_gl		= groza_idle_sprint
+anm_idle_moving_w_gl		= groza_idle_moving
+anm_bore_w_gl				= groza_idle_bore
+
+anm_show_g         		= groza_draw_grenade
+anm_hide_g         		= groza_holster_grenade
+anm_idle_g          		= groza_idle_grenade
+anm_reload_g       		= groza_reload_grenade
+anm_idle_g_aim      		= groza_idle_aim_grenade
+anm_shots_g         		= groza_shoot_grenade
+anm_idle_sprint_g			= groza_idle_sprint_grenade
+anm_idle_moving_g			= groza_idle_moving_grenade
+anm_bore_g				= groza_idle_grenade
+
+
+aim_hud_offset_pos				= -0.095000,-0.028500,-0.014000
+aim_hud_offset_rot				= -0.020000,0.002500,0.007500
+aim_hud_offset_pos_16x9				= -0.118500,-0.008000,0.126500
+aim_hud_offset_rot_16x9				= 0.032500,0.020000,-0.022500
+
+gl_hud_offset_pos				= -0.029500,-0.048500,0.000000
+gl_hud_offset_rot				= -0.065000,-0.077500,0.007500
+
+gl_hud_offset_pos_16x9				= -0.054500,-0.034500,0.000000
+gl_hud_offset_rot_16x9				= -0.022500,-0.065000,-0.020000
+
+lean_hud_offset_pos	= 0,0,0
+lean_hud_offset_rot	= 0,0,0
+
+
+;-----------------------------------------------------------------------------
+; Уникальные
+;-----------------------------------------------------------------------------
+

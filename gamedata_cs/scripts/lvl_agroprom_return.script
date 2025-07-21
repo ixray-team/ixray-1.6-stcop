@@ -1,0 +1,32 @@
+function main ()
+
+lvl_agroprom_u_start.main()
+
+local infos_table = {
+"agru_door_1_closed",
+"agru_open_story_door",
+"agru_controller_death",
+"agru_leader_dolg_task_complete",
+"agru_tushkano_run",
+"agru_go_out_task_complete",
+"agru_find_secret_task_complete",
+"agru_go_out_end_task_complete",
+"agr_actor_inside_9",
+"agr_actor_inside_10",
+"agru_open_story_door",
+"agru_teleport_complete",
+"agr_duty_first_join",
+"agr_duty_storyline_complete",
+"agru_end_agroprom_underhround"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+--if level.name() == "agroprom" then
+--	xr_effects.give_inited_task(nil, nil, {"storyline", "", ""})
+--end
+	
+end

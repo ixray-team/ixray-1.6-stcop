@@ -1,0 +1,16 @@
+[logic]
+active = remark@1
+
+[remark@1]
+anim = hide_na
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+meet = no_meet
+on_info = {+stc_scout_talk} remark@rac
+
+[remark@rac]
+anim = hide_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+meet = no_meet
+on_info = {+stc_first_scene_cameff_end} %=destroy_object%

@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@atrefact_hunters_capture_smart_task
+
+
+[sr_idle@atrefact_hunters_capture_smart_task]
+on_info = {+red_artefact_hunters_go} sr_idle@atrefact_hunters_defend_smart_task %=give_inited_task(capture_smart:red_smart_terrain_6_3:stalker)%
+
+[sr_idle@atrefact_hunters_defend_smart_task]
+on_info = {+red_artefact_hunters_task_complete} sr_idle@artefact_huters_search %=give_inited_task(defend_smart:red_smart_terrain_6_3:stalker)%
+
+[sr_idle@artefact_huters_search]
+on_game_timer = 1200 | nil

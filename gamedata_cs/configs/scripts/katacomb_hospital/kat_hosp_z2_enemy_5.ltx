@@ -1,0 +1,75 @@
+[logic]
+active = walker@hide
+combat_ignore = combat_ignore
+on_death = death
+
+[death]
+on_info = %-hospital_z2_enemy_5 =dec_counter(hospital_z2_cout)%
+
+[walker]
+combat_ignore_cond = true
+path_walk = z2_sw_enemy_5_walk
+path_look = z2_enemy_look
+on_info = walker@hide %=inc_counter(hospital_z2_cout)%
+group = 2
+
+[walker@hide]
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+combat_ignore_cond = true
+path_walk = z2_enemy_hide_5_walk
+path_look = z2_enemy_look
+on_info = {+hospital_z2_enter} walker@nw
+group = 2
+
+[walker@sw]
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+path_walk = z2_sw_enemy_5_walk
+path_look = z2_enemy_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+hospital_z2_actor_se} walker@se
+on_info2 = {+hospital_z2_actor_ne} walker@ne
+on_info3 = {+hospital_z2_actor_nw} walker@nw
+group = 2
+
+[walker@se]
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+path_walk = z2_se_enemy_5_walk
+path_look = z2_enemy_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+hospital_z2_actor_sw} walker@sw
+on_info2 = {+hospital_z2_actor_ne} walker@ne
+on_info3 = {+hospital_z2_actor_nw} walker@nw
+group = 2
+
+[walker@nw]
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+path_walk = z2_nw_enemy_5_walk
+path_look = z2_enemy_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+hospital_z2_actor_se} walker@se
+on_info2 = {+hospital_z2_actor_ne} walker@ne
+on_info3 = {+hospital_z2_actor_sw} walker@sw
+group = 2
+
+[walker@ne]
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+path_walk = z2_ne_enemy_5_walk
+path_look = z2_enemy_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+hospital_z2_actor_se} walker@se
+on_info2 = {+hospital_z2_actor_nw} walker@nw
+on_info3 = {+hospital_z2_actor_sw} walker@sw
+group = 2

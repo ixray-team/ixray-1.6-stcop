@@ -1,0 +1,910 @@
+--'******************************************************
+--'*        Реестр смарт-террейнов. Игровое поле симуляции.
+--'******************************************************
+
+--' В этом ltx хранятся дескрипторы сквадов.
+squad_ltx = ini_file("misc\\squad_descr.ltx")
+
+local board = nil
+
+--' Таблица соответствий сквадов уровням.
+squad_by_level = {
+        stohe_selo = 1,
+        marsh = 2,
+        escape = 3,
+        garbage = 4,
+        agroprom   = 5,
+        darkvalley   = 6,
+        agroprom_underground   = 7,
+        yantar     = 8,
+        red_forest     = 9,
+        military     = 10,
+        limansk     = 11,
+        hospital     = 12,
+        stancia_2    = 13
+}
+
+sim_fight = {
+        csky = "renegade",
+        renegade = "csky",
+        stalker = "bandit",
+        bandit = "stalker"
+}
+
+sim_level_cluster = {
+        marsh                                        = 1,
+        escape                                        = 2,
+        garbage                                        = 2,
+        darkvalley                                = 2,
+        agroprom                                = 2,
+        agroprom_underground        = 3,
+        yantar                                        = 2,
+        red_forest                                = 2,
+        military                                = 2,
+        limansk                                        = 4,
+        hospital                                = 5,
+        stancia_2                                 = 6
+}
+
+faction_cluster	= {
+		csky = 1,
+		stalker = 2,
+		bandit = 2,
+		duty = 2,
+		freedom = 2
+}
+
+local actor_communitites = {
+        csky                 = "actor_csky",
+        dolg                 = "actor_dolg",
+        freedom         = "actor_freedom",
+        bandit                 = "actor_bandit",
+        stalker         = "actor_stalker",
+        none			= "actor"
+}
+--' Активность группировок по времени суток. В таблицах забито повышение за 1 час ожидания.
+faction_activity = {
+        csky        = { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+                        [06] = 00, [07] = 00, [08] = 00, [09] = 01, [10] = 01, [11] = 01,
+                        [12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+                        [18] = 01, [19] = 01, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+
+        dolg        = { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
+                                [06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
+                                [12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+                                [18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
+
+        freedom        = { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
+                                [06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
+                                [12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+                                [18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
+
+        stalker        = { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
+                                [06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
+                                [12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+                                [18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
+
+
+        bandit        = { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+                                [06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 01, [11] = 00,
+                                [12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+                                [18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
+
+        renegade= { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+                                [06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 01, [11] = 01,
+                                [12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+                                [18] = 01, [19] = 01, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+
+        army                    = { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+                                [06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
+                                [12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
+                                [18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+
+        killer         = { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+                                [06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
+                                [12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
+                                [18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+
+        monolith= { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+                                [06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
+                                [12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
+                                [18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+
+        zombied        = { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+                                [06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
+                                [12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
+                                [18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+
+        monster        = { [00] = 01, [01] = 01, [02] = 01, [03] = 01, [04] = 01, [05] = 01,
+                                [06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
+                                [12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+                                [18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 01, [23] = 01}
+}
+
+function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive, front)
+-- Высчитываем вес проверяемой точки (Потом вставить увеличение веса в зависимости от занятости поинта)
+	local board = get_sim_board()
+    local point_value = prev_point.value
+-- Если точка запрещена для нашего вида
+    if point.forbidden_point ~= nil and point.forbidden_point == squad.player_id then
+	    point_value = point_value + 3000
+    elseif (sim_level_cluster[point.smart_level] == sim_level_cluster[board.smarts[src_smart_id].smrt.smart_level]) and
+	    is_point_avail(point, squad.player_id) then
+-- Если точка доступна и она в одном кластере с нами
+	    if point.player_name == "none" then
+            -- точка ничья
+            point_value = point_value + 1
+            local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id])
+            if friendly_squad_quan >= point.squad_capacity then
+                point_value = point_value + 1000
+            end
+        elseif point.player_name == squad.player_id then
+            -- точка наша
+            local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id]) + board:get_smart_population(point)
+            if friendly_squad_quan < point.squad_capacity then
+                -- Если точка наша и есть пустые места - вес 1
+                point_value = point_value + 1
+            else
+                -- Если точка наша и пустых мест нет - вес 1000
+                point_value = point_value + 1000
+            end
+        else
+	        -- точка врага
+            local enemy_power = 0
+            for k,v in pairs(board.smarts[point.id].squads) do
+                enemy_power = enemy_power + v.squad_power
+            end
+            -- Вес точки увеличиваем на силу вражеских отрядов в точке
+            point_value = point_value + enemy_power
+            if point.combat_manager:point_under_attack() then
+                point_value = point_value + 100
+            end
+            local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id])
+            if friendly_squad_quan >= point.squad_capacity then
+                point_value = point_value + 1000
+            end
+        end
+    else
+-- Если точка закрыта для симуляции - назначаем максимальный вес.
+        point_value = point_value + 2000
+    end
+
+-- Если это финальная точка - путь найден, выходим.
+    if point.id == tgt_smart_id then
+-- Найдена финальная точка!
+        arhive[point.id] = {id = point.id, value = point_value, prev = prev_point.id}
+        return true
+    end
+
+-- Если точка есть в архиве - игнорить.
+    if arhive[point.id] ~= nil then
+        return false
+    end
+
+-- Если точка есть в волне и текущее значение меньше чем в волне - изменить значение. Иначе - игнорить.
+    local exist = false
+    for k,v in pairs(front) do
+        if v.id == point.id then
+            exist = k
+            break
+        end
+    end
+    if exist ~= false then
+        if front[exist].value > point_value then
+            front[exist].value = point_value
+            front[exist].prev = prev_point.id
+        end
+        return false
+    end
+
+-- Если точки нет в волне - добавить.
+    table.insert(front, {id = point.id, value = point_value, prev = prev_point.id})
+    return false
+end
+
+function iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
+-- Сортируем архив граничных точек и берем с минимальным весом.
+	local board = get_sim_board()
+    table.sort(front, function(a,b) return a.value < b.value end)
+
+    local next_point = front[1]
+    if next_point == nil then
+        print_table(arhive)
+        local src_smart_name, tgt_smart_name = alife():object(src_smart_id):name(), alife():object(tgt_smart_id):name()
+        abort("Path between [%s] and [%s] doesnt exist for [%s].", src_smart_name, tgt_smart_name, squad.squad_id)
+    end
+
+-- Берем соседние смарты.
+    local nearest_points = board:get_nearest_smarts(next_point)
+    for k,v in pairs(nearest_points) do
+        if calc_point(v, next_point, squad, src_smart_id, tgt_smart_id, arhive, front) == true then
+            arhive[next_point.id] = front[1]
+            return true
+        end
+    end
+-- Переносим точку в архив
+	if next_point.id ~= src_smart_id then
+        arhive[next_point.id] = front[1]
+    end
+    table.remove(front, 1)
+    return iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function calc_conductor_point(point, prev_point, npc, src_smart_id, tgt_smart_id, arhive, front)
+	local board = get_sim_board()
+    local point_value = prev_point.value
+    local community = npc:character_community()
+	local point_player = point.player_name
+    if point_player == "none" then
+        -- точка ничья
+        point_value = point_value + 300
+    elseif point_player == community then
+        -- точка наша
+        point_value = point_value + 100
+    else
+        if game_relations.get_factions_community(point_player, community) < 0 then
+            -- точка врага
+            return false
+        else
+            -- точка не вражеской фракции
+            point_value = point_value + 1000
+        end
+    end
+-- Если это финальная точка - путь найден, выходим.
+    if point.id == tgt_smart_id then
+        arhive[point.id] = {id = point.id, value = point_value, prev = prev_point.id}
+        return true
+    end
+-- Если точка есть в архиве - игнорить.
+    if arhive[point.id] ~= nil then
+        return false
+    end
+-- Если точка есть в волне и текущее значение меньше чем в волне - изменить значение. Иначе - игнорить.
+    local exist = false
+    for k,v in pairs(front) do
+        if v.id == point.id then
+            exist = k
+            break
+        end
+    end
+    if exist ~= false then
+        if front[exist].value > point_value then
+            front[exist].value = point_value
+            front[exist].prev = prev_point.id
+        end
+        return false
+    end
+-- Если точки нет в волне - добавить.
+    table.insert(front, {id = point.id, value = point_value, prev = prev_point.id})
+    return false
+end
+
+function iterate_conductor_point(npc, src_smart_id, tgt_smart_id, arhive, front)
+-- Сортируем архив граничных точек и берем с минимальным весом.
+	local board = get_sim_board()
+    table.sort(front, function(a,b) return a.value < b.value end)
+    local next_point = front[1]
+    if next_point == nil then
+		return false
+    end
+-- Берем соседние смарты.
+    local nearest_points = board:get_nearest_smarts(next_point)
+    for k,v in pairs(nearest_points) do
+        if calc_conductor_point(v, next_point, npc, src_smart_id, tgt_smart_id, arhive, front) == true then
+            arhive[next_point.id] = front[1]
+            return true
+        end
+    end
+-- Переносим точку в архив
+	if next_point.id ~= src_smart_id then
+        arhive[next_point.id] = front[1]
+    end
+    table.remove(front, 1)
+    return iterate_conductor_point(npc, src_smart_id, tgt_smart_id, arhive, front)
+end
+
+class "sim_board"
+function sim_board:__init()
+        --' Таблица содержащая смарты и данные о них в формате:
+        --' smart = {smrt, targets = {}, dangers = {}, squads = {}, stayed_squad_quan = 0}
+        self.smarts = {}
+		self.simulation_started = false
+
+        --' Таблица смартов по именам.
+        self.smarts_by_names = {}
+
+        --' Таблица участвующих игроков.
+        self.players = {}
+
+        --' Таблица существующих отрядов.
+        self.squads = {}
+
+        --' отрисовывается ли сейчас поле на карте.
+--'        self.show_flag = false
+
+        --' Генератор айдишников отряда
+        self.id_generator = object_collection.object_collection()
+
+        --' Таблица спаунсмартов. Смарт = уровень.
+        self.spawn_smarts = {}
+        -- Таблица для логовов мутантов на уровнях
+        self.mutant_lair = {}
+
+        -- Временная таблица
+        self.tmp_assigned_squad = {}
+        self.tmp_entered_squad = {}
+
+        printf("CREATE NEW SIM BOARD [%s]", tostring(self.sid))
+end
+function sim_board:start_sim()
+	self.simulation_started = true
+end
+function sim_board:stop_sim()
+	self.simulation_started = false
+end
+-- Перевод игрока в группировку.
+function sim_board:set_actor_community(community)
+        ---- Устанавливаем группировку игрока
+        db.actor:set_character_community(actor_communitites[community], 0, 0)
+
+        for k,v in pairs(self.players) do
+                if v.player_name == community then
+                        v.community_player = true
+                else
+                        v.community_player = false
+                end
+                v.brain:calculate_expansion_targets()
+        end
+end
+--' Регистрация нового игрока.
+function sim_board:register_player(obj)
+        if self.players[obj.player_name] ~= nil then
+                abort("Player already exist in list [%s]", obj:name())
+        end
+
+        self.players[obj.player_name] = obj
+end
+--' АнРегистрация игрока.
+function sim_board:unregister_player(obj)
+        if self.players[obj.player_name] == nil then
+                abort("Trying to unregister nil player [%s]", obj:name())
+        end
+
+        self.players[obj.player_name] = nil
+end
+--' Регистрация нового смарта.
+function sim_board:register_smart(obj)
+        printf("register_smart %s", obj:name())
+        if self.smarts[obj.id] ~= nil then
+                abort("Smart already exist in list [%s]", obj:name())
+        end
+
+        self.smarts[obj.id] = {smrt = obj, targets = {}, dangers = {}, squads = {}, stayed_squad_quan = 0}
+
+        self.smarts_by_names[obj:name()] = obj
+
+        if obj.respawn_sector ~= nil then
+                self:register_spawn_smart(obj)
+        end
+        if obj.mutant_lair == true then
+                self:register_mutant_lair(obj)
+        end
+end
+-- Инициализация смарта
+function sim_board:init_smart(obj)
+        if self.tmp_assigned_squad[obj.id] ~= nil then
+                for k,v in pairs(self.tmp_assigned_squad[obj.id]) do
+                        self:assign_squad_to_smart(v, obj.id)
+                end
+                self.tmp_assigned_squad[obj.id] = nil
+        end
+        if self.tmp_entered_squad[obj.id] ~= nil then
+                for k,v in pairs(self.tmp_entered_squad[obj.id]) do
+                        self:assign_squad_to_smart(v, obj.id)
+                end
+                self.tmp_entered_squad[obj.id] = nil
+        end
+end
+--' АнРегистрация смарта.
+function sim_board:unregister_smart(obj)
+        if self.smarts[obj.id] == nil then
+                abort("Trying to unregister nil smart [%s]", obj:name())
+        end
+
+        self.smarts[obj.id] = nil
+end
+--' Заполнение спаунточек
+function sim_board:register_spawn_smart(smart)
+        self.spawn_smarts[smart.id] =  smart.respawn_sector
+end
+--' Заполнение логов монстров
+function sim_board:register_mutant_lair(smart)
+        self.mutant_lair[smart.id] =  game_graph():vertex(smart.m_game_vertex_id):level_id()
+end
+--' Поиск точки для спауна.
+function sim_board:get_spawn_smart(player)
+	--printf("get spawn smart for %s", player.player_name)
+    --' итерируемся по спаун смартам
+    for k,v in pairs(self.spawn_smarts) do
+        --' Отсеиваем смарты, близко-распложенные к игроку.
+        local smart = self.smarts[k].smrt
+        --printf("  check smart %s", smart:name())
+        if is_point_avail(smart, player.player_name) then
+        	--printf("    point avail")
+            if self:get_smart_squad_quantity(smart, player) + self:get_smart_population(smart) < smart.squad_capacity then
+            	--printf("    cap allowed")
+                local spawn_player = xr_logic.pick_section_from_condlist(db.actor_proxy, smart, v)
+                --printf("    spawn player %s", tostring(spawn_player))
+                if spawn_player == "all" or spawn_player == player.player_name then
+                	--printf("    owner suit")
+                    if (smart.player_name == "none" or smart.player_name == player.player_name) and
+                      (alife():level_id() ~= game_graph():vertex(smart.m_game_vertex_id):level_id() or
+                       db.actor:position():distance_to_sqr(smart.position) > smart.respawn_radius*smart.respawn_radius)
+                    then
+                        --' Среди остальных берем смарт, который наиболее близок к незахваченной целевой точке группировки.
+                        return smart --' Для теста пока берем первый подходящий.
+                    end
+                    --printf("    no distance")
+                end
+            end
+        end
+    end
+    return nil
+end
+
+--' Создание нового отряда
+function sim_board:create_squad(player_id, squad_class, spawn_smart, sq_id, settings_id)
+        local squad_id = tostring(sq_id or self.id_generator:get_id())
+
+        if self.squads[squad_id] ~= nil then
+                abort("Two or more squad with id[%s] found!!!", squad_id)
+        end
+
+        local squad = squad_class(self, player_id, squad_id, settings_id)
+        squad:init_squad(spawn_smart)
+        printf("Creating squad[%s] in smart[%s]", squad_id, spawn_smart:name())
+        self.squads[squad_id] = squad
+
+        --' Определяем в каком смарте создать новый отряд
+        squad:create_npc(spawn_smart)
+        squad:set_squad_sympathy()
+        squad:set_squad_relation()
+        self:assign_squad_to_smart(squad, spawn_smart.id)
+
+        --' Пересчитываем Team, Squad, Group
+        for k,v in pairs(squad.squad_npc) do
+                local obj = alife():object(k)
+                squad.board:setup_squad_and_group(obj)
+        end
+        --' Регистрануть новый отряд в его группировке.
+        self.players[player_id]:register_squad(squad)
+        self.players[player_id]:faction_brain_update()
+        return squad
+end
+--' Удалить отряд
+function sim_board:remove_squad(squad)
+        printf("Remove squad %s", squad.squad_id)
+--        callstack()
+        if squad.sim_combat_id ~= nil then
+                local sim_combat = self.smarts[squad.sim_combat_id].smrt.combat_manager
+                sim_combat:unregister_squad(squad)
+        end
+
+        if squad.current_action == nil or
+       squad.current_action.dest_smrt == nil
+        then
+                squad.board:exit_smart(squad, self.smarts[squad.smart_id].smrt)
+        end
+        if squad.sim_combat_id ~= nil then
+                src_smart.combat_manager:unregister_squad(squad)
+        end
+        squad:hide()
+
+        local player = self.players[squad.player_id]
+        self:assign_squad_to_smart(squad, nil)
+
+        squad:clear_npc()
+
+        --' АнРегистрануть новый отряд в его группировке.
+        player:unregister_squad(squad)
+
+        --' Удалить отряд
+        self.squads[squad.squad_id] = nil
+
+        self.id_generator:remove(tonumber(squad.squad_id))
+
+        for k,v in pairs(self.players) do
+                v:faction_brain_update()
+        end
+end
+--' Назначение отряда в смарт.
+function sim_board:assign_squad_to_smart(squad, smart_id)
+        -- Если смарта нету (например на загрузке он еще не загружен), то мы загоняем данные
+        -- во временную таблицу. И на загрузке смарта автодобавляем их.
+        printf("assigned squad %s to smart [%s].", tostring(squad.squad_id), tostring(smart_id))
+--        callstack()
+
+        if smart_id ~= nil and self.smarts[smart_id] == nil then
+                printf("   to tmp")
+                if self.tmp_assigned_squad[smart_id] == nil then
+                        self.tmp_assigned_squad[smart_id] = {}
+                end
+                table.insert(self.tmp_assigned_squad[smart_id], squad)
+                return
+        end
+
+
+        --' Убираем отряд из старого смарта
+        local old_smart_id = nil
+    if squad.smart_id ~= nil then
+        old_smart_id = squad.smart_id
+    end
+        if old_smart_id ~= nil then
+        self.smarts[old_smart_id].squads[squad.squad_id] = nil
+                self.smarts[old_smart_id].smrt:refresh()
+        end
+
+        if smart_id == nil then
+                return
+        end
+
+        --' Передаем айди смарта отряду
+    --if old_smart_id ~= smart_id then
+                squad:assign_smart(self.smarts[smart_id].smrt)
+    --end
+
+        --' Прописываем отряд в новом смарте.
+        self.smarts[smart_id].squads[squad.squad_id] = squad
+
+        self.smarts[smart_id].smrt:refresh()
+end
+--' Отряд покидает смарт (уменьшаются ресурсы)
+function sim_board:exit_smart(squad, smart)
+    if smart == nil then
+		return
+    end
+    if squad.entered_smart ~= smart.id then
+		return
+    end
+    local player = self.players[squad.player_id]
+    --' Проверка на валидность
+    if smart.player_name ~= player.player_name then
+		abort("Incorrect exit_smart call for squad %s from %s!!!  %s ~= %s", tostring(squad.squad_id), smart:name(), tostring(smart.player_name), tostring(player.player_name))
+    end
+
+    squad.entered_smart = nil
+
+    printf("Squad %s exit smart %s. Quan = %s", tostring(squad.squad_id), smart:name(), tostring(self.smarts[smart.id].stayed_squad_quan))
+    self.smarts[smart.id].stayed_squad_quan = self.smarts[smart.id].stayed_squad_quan - 1
+    self.smarts[smart.id].squads[squad.squad_id] = nil
+
+    if not smart.combat_manager:point_under_attack() then
+		self:reset_nearest_squads(smart)
+    end
+    --' Проверка последний ли мы отряд.
+    if self.smarts[smart.id].stayed_squad_quan > 0 then
+		self.players[squad.player_id]:calculate_squad_tasks()
+		return
+    end
+
+    --' Уменьшаем ресурсы
+    if smart.sim_type == "resource" then
+        player.resource_level = player.resource_level - 1
+    end
+
+    player:faction_brain_update()
+    smart.player_name = "none"
+    printf("Player %s lose point %s!", player.player_name, smart:name())
+
+    --' Апдейтим отрисовку.
+    smart:refresh()
+end
+--' Отряд занимает смарт (увеличиваются ресурсы)
+function sim_board:enter_smart(squad, smart_id, after_load)
+        if self.smarts[smart_id] == nil then
+                printf("   to tmp")
+                if self.tmp_entered_squad[smart_id] == nil then
+                        self.tmp_entered_squad[smart_id] = {}
+                end
+                table.insert(self.tmp_entered_squad[smart_id], squad)
+                return
+        end
+
+        local smart = self.smarts[smart_id].smrt
+
+        local player = self.players[squad.player_id]
+        if squad.entered_smart ~= nil then
+                abort("Couldn enter to smart, becouse i'm not leave old one. Squad [%s]", squad.squad_id)
+        end
+        squad.entered_smart = smart_id
+        printf("Squad %s enter smart %s. Quan = %s", tostring(squad.squad_id), smart:name(), tostring(self.smarts[smart_id].stayed_squad_quan))
+        --' Первый отряд регистрится в смарте
+        if self.smarts[smart_id].stayed_squad_quan == 0 then
+                --' Проверка на валидность
+                if smart.player_name ~= "none" then
+                        abort("Incorrect enter_smart call for squad %s!!!", tostring(squad.squad_id))
+                end
+
+--                local new_smart = self.smarts[smart_id]
+                smart.player_name = player.player_name
+                printf("Player %s capture point %s!", player.player_name, smart:name())
+                --' Увеличиваем ресурсы
+                if smart.sim_type == "resource" then
+					player.resource_level = player.resource_level + 1
+            	end
+            	player:faction_brain_update(after_load)
+                --' Апдейтим отрисовку.
+                smart:refresh()
+        else
+                player:calculate_squad_tasks()
+        end
+        self.smarts[smart_id].stayed_squad_quan = self.smarts[smart_id].stayed_squad_quan + 1
+		squad:spawn_box_items(smart_id)
+end
+
+-- установить squad и group в соответствии с работой
+function sim_board:setup_squad_and_group(obj)
+        --printf("tsg["..obj:name().."]")
+        local level_name = level.name()
+        --' Группу берем из уровня.
+        local obj = alife():object(obj.id)
+        local group = 0
+        if squad_by_level[level_name] ~= nil then
+                group = squad_by_level[level_name]
+        end
+        change_team_sqaud_group(obj, obj.team, obj.squad, group)
+
+        --' Сквад берем из смарта.
+        local squad = self.squads[obj.squad_id]
+        if squad == nil then
+                change_team_sqaud_group(obj, obj.team, 0, obj.group)
+                --printf("TSG1: [%s][%s][%s]", tostring(obj.team), tostring(obj.squad), tostring(obj.group))
+                return
+        end
+
+        local smart = self.smarts[squad.smart_id].smrt
+        if squad.current_action ~= nil and squad.current_action.name == "attack_point" then
+                smart = self.smarts[squad.current_action.dest_smrt_id].smrt
+        end
+
+        if smart == nil then
+                change_team_sqaud_group(obj, obj.team, 0, obj.group)
+                --printf("TSG2: [%s][%s][%s]", tostring(obj.team), tostring(obj.squad), tostring(obj.group))
+                return
+        end
+        change_team_sqaud_group(obj, obj.team, smart.squad_id, obj.group)
+        --printf("TSG3: [%s][%s][%s]", tostring(obj.team), tostring(obj.squad), tostring(obj.group))
+end
+
+--' Построение кросс таблицы переходов
+function sim_board:build_cross_table(obj)
+        printf("build cross table for %s", obj:name())
+        --' Вычитать у смарта на кого он может нападать.
+        local ini  = obj:spawn_ini()
+        local ttt = utils.cfg_get_string(ini, "smart_terrain", "targets", obj, true, "", "")
+        local targets
+        if ttt == nil then
+                targets = {}
+        else
+                targets = parse_names(ttt)
+        end
+
+        for k,v in pairs(targets) do
+                local target_smart = self.smarts_by_names[v]
+
+                if target_smart == nil then
+                        abort("Wrong target name [%s] for smart [%s]", v, obj:name())
+                end
+                --' Занести эти данные в цели.
+                self.smarts[obj.id].targets[target_smart.id] = target_smart
+
+                --' У целей пометить данный смарт как опасность.
+                self.smarts[target_smart.id].dangers[obj.id] = obj
+        end
+end
+--' Возвращает смарты, соседние с данным.
+function sim_board:get_nearest_smarts(smart)
+        return self.smarts[smart.id].targets
+end
+--' Возвратить смарт по его имени.
+function sim_board:get_smart_by_name(name)
+        return self.smarts_by_names[name]
+end
+--' Возвращает имя игрока, владеющего смартом.
+function sim_board:get_smart_player(smart)
+        return smart.player_name
+end
+--' Возвращает количество отрядов в смарте.
+function sim_board:get_smart_population(smart)
+        return self.smarts[smart.id].stayed_squad_quan
+--        local i = 0
+--        for k,v in pairs(self.smarts[smart.id].squads) do
+--                i = i + 1
+--        end
+--        return i
+end
+--' СТатистика отрядов по смарту. Возвращает количество отрядов, которые атакуют точку
+function sim_board:get_smart_squad_quantity(smart, player)
+        return player.current_attack_quantity[smart.id] or 0
+--[[
+        local friendly_squad_quan = 0
+        local smart_id = smart.id
+    for k,v in pairs(player.squads) do
+                if v.current_action ~= nil then
+                        if v.current_action.name == "attack_point" and
+                           v.current_action.dest_smrt_id == smart_id
+                        then
+                                friendly_squad_quan = friendly_squad_quan + 1
+                        elseif v.current_action.name == "stay_point" and
+                                   v.current_action.src_smrt_id == smart_id
+                        then
+                                friendly_squad_quan = friendly_squad_quan + 1
+                        end
+                else
+                        if v.smart_id == smart_id then
+                                friendly_squad_quan = friendly_squad_quan + 1
+                        end
+                end
+    end
+    return friendly_squad_quan
+]]
+end
+
+-- Определение пути по графу смартов.
+function sim_board:find_path(src_smart_id, tgt_smart_id, squad)
+    if src_smart_id == tgt_smart_id then
+        return {{id = src_smart_id, value = 0}}
+    end
+-- Очередь узлов для экспансии.
+    local front = {}
+    table.insert(front, {id = src_smart_id, value = 0, prev = true})
+-- Тут мы будем хранить отработанные точки с указателями на направление кратчайшего пути в них.
+    local arhive = {}
+-- Запускаем итерационный поиск.
+    local is_founded = iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
+-- Проверка на корректность поиска
+    if is_founded == false then
+        abort("PATH NOT FOUNDED from[%s] to[%s] for squad[%s]", src_smart_id, tgt_smart_id, squad.squad_id)
+    end
+
+-- Высчитываем пути
+    local step = tgt_smart_id
+    local path = {}
+    table.insert(path, {id = step, value = arhive[step].value})
+    while arhive[step].prev ~= src_smart_id do
+        step = arhive[step].prev
+        table.insert(path, {id = step, value = arhive[step].value})
+    end
+    table.sort(path, function(a,b) return a.value < b.value end)
+    return path
+end
+-- Определение пути по графу смартов.
+function sim_board:find_conductor_path(src_smart_id, tgt_smart_id, npc)
+    if src_smart_id == tgt_smart_id then
+        return {{id = src_smart_id, value = 0}}
+    end
+-- Очередь узлов для экспансии.
+    local front = {}
+    table.insert(front, {id = src_smart_id, value = 0, prev = true})
+-- Тут мы будем хранить отработанные точки с указателями на направление кратчайшего пути в них.
+    local arhive = {}
+-- Запускаем итерационный поиск.
+    local is_founded = iterate_conductor_point(npc, src_smart_id, tgt_smart_id, arhive, front)
+-- Высчитываем пути
+    local step = tgt_smart_id
+    local path = {}
+	if is_founded then
+	    table.insert(path, {id = step, value = arhive[step].value})
+	    while arhive[step].prev ~= src_smart_id do
+	        step = arhive[step].prev
+	        table.insert(path, {id = step, value = arhive[step].value})
+	    end
+	    table.sort(path, function(a,b) return a.value < b.value end)
+	end
+    return path
+end
+
+function sim_board:actor_near_smart(smart)
+        return db.actor:position():distance_to_sqr(smart.position) < 255
+end
+
+--' Если в соседних точках у отрядов действие stay_smart - обнуляем его, чтобы они могли перевыбрать цель.
+function sim_board:reset_nearest_squads(smart)
+    printf("Reset nearest squads [%s]", smart:name())
+    for k,v in pairs(self:get_nearest_smarts(smart)) do
+        for kk,vv in pairs(self.smarts[v.id].squads) do
+            if vv.current_action ~= nil and vv.current_action.name == "stay_point" then
+				--printf("reseting squad %s in %s", vv.squad_id, v:name())
+                --' Перед выбором нового убираем персонажа из текущего комбат менеджера
+                if v.sim_combat_id ~= nil then
+                    local sim_combat = self.smarts[v.sim_combat_id].smrt.combat_manager
+                    sim_combat:unregister_squad(vv)
+                end
+                vv.current_action:finalize()
+                vv.current_action = nil
+                vv:update()
+            end
+        end
+    end
+end
+
+
+
+
+--' Отрисовка игрового поля на карте.
+function sim_board:show()
+--[[        if self.show_flag == true then
+                return
+        end
+        self.show_flag = true
+
+        --' Отрисовываем игроков.
+        for k,v in pairs(self.players) do
+                v:show()
+        end
+
+        --' Отрисовываем смарты.
+        for k,v in pairs(self.smarts) do
+                v.smrt:show()
+        end]]
+end
+--' Убирание отрисовки игрового поля на карте.
+function sim_board:hide()
+--[[        if self.show_flag == false then
+                return
+        end
+        self.show_flag = false
+
+        --' Убираем отрисовку игроков.
+        for k,v in pairs(self.players) do
+                v:hide()
+        end
+
+        --' Убираем отрисовку смартов.
+        for k,v in pairs(self.smarts) do
+                v:hide()
+        end
+]]
+end
+
+--' Получение игрового поля.
+function get_sim_board()
+        if board == nil then
+                board = sim_board()
+        end
+        return board
+end
+
+--' Обнуление списка на создании игры.
+function clear()
+        board = nil
+end
+
+-- Проверяет доступность смарттеррейна для симуляции
+function is_point_avail(point, faction_id)
+        if point.no_mutant == true and faction_id == "monster" then
+                return false
+        end
+        if point.sim_avail == nil then
+                return true
+        end
+        return xr_logic.pick_section_from_condlist(db.actor_proxy, nil, point.sim_avail) == "true"
+end
+
+
+
+--' Тестовые функции
+function print()
+        --print_table(get_sim_board().smarts)
+end

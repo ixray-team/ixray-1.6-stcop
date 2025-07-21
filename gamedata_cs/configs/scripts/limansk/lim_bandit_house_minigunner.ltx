@@ -1,0 +1,55 @@
+[logic]
+active = camper@wait
+on_death = death
+relation = enemy
+
+[death]
+on_info = %+lim_bandit_house_go%
+
+[camper@wait]
+out_restr = lim_bandit_house_zone_1
+combat_ignore_cond = true
+on_info = {=health_le(0.9) !actor_in_zone(lim_bandit_house_zone_1)} ;%=restore_health%
+path_walk = lim_bandit_house_minigunner_walk
+path_look = lim_bandit_house_minigunner_look
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+def_state_moving = assault
+on_info = {+lim_bandit_house_attack1} camper@minigunner
+
+[camper@minigunner]
+combat_ignore_cond = {!is_enemy_actor}
+out_restr = lim_bandit_house_zone_1
+path_walk = lim_bandit_house_minigunner_walk
+path_look = lim_bandit_house_minigunner_fire_look
+def_state_campering = hide_na
+def_state_campering_fire = threat_fire
+def_state_moving = assault
+radius = 5
+on_info = {=see_actor =actor_in_zone(lim_bandit_fire)} remark@fire_actor
+;on_info2 = {=actor_out_zone(lim_bandit_house_zone_1)} ;%=restore_health%
+
+[remark@fire_actor]
+invulnerable = true
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_info = {!see_actor =actor_out_zone(lim_bandit_fire)} camper@minigunner
+;on_info2 = {=actor_out_zone(lim_bandit_house_zone_1)} ;%=restore_health%
+
+[camper@minigunner2]
+combat_ignore_cond = {!is_enemy_actor}
+out_restr = lim_bandit_house_zone_1
+path_walk = lim_bandit_house_minigunner_walk
+path_look = lim_bandit_house_minigunner_fire_look
+def_state_campering = hide_na
+def_state_campering_fire = threat_fire
+def_state_moving = assault
+radius = 15
+on_info2 = {=see_actor =actor_in_zone(lim_bandit_fire)} remark@fire2_actor
+
+[remark@fire2_actor]
+combat_ignore_cond = true ;{!is_enemy_actor}
+anim = threat_fire
+target = actor
+on_info = {!see_actor =actor_out_zone(lim_bandit_fire)} camper@minigunner2

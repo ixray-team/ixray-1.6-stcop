@@ -1,0 +1,24 @@
+[settings]
+science_0 = arena_first_battle_stalker_1 , 0
+
+wealth_0 = 0
+
+[expansion_0]
+base_squad_number = 0
+sim_prior = prior_0
+
+
+
+; Приоритеты это:
+; Тип_смарта = X, Y.
+; Тип смарта - это либо base либо science либо artefact либо имя смарта
+; X - сумма которая искусственно добавляется к оценке важности данного смарта
+; Y - Коэфициент влияния sim_value на оценку смарта. Формула: оценка = X * (1 + Y*(sim_value-1))
+
+
+[prior_0]
+base = 100, 0  
+science = 1, 0.2
+artefact = 1, 0.2
+
+

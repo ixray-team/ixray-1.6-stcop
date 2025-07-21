@@ -1,0 +1,40 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = sr_idle@2 %=disable_level_changer(704) =disable_level_changer(705) +gar_visited_level%
+
+[sr_idle@2]
+; Зашёл в лагерь - новое перекрывающее задание
+;lvl
+on_info = {+gar_story_got_info_from_digger} sr_idle@5, {+esc_bring_habar_complete +gar_story_reached_dead_diggers_camp} sr_idle@3 %=give_inited_task(storyline:gar_story_search_digger_bodies:csky)%
+
+[sr_idle@3]
+; ПДА отыграл - два квеста завершилось, новый выдался
+on_info = {+gar_story_digger_pda_played} sr_idle@4 %=give_inited_task(storyline:gar_story_chase_digger:csky)%
+
+[sr_idle@4]
+on_info = {+gar_story_got_info_from_digger} sr_idle@5 %=give_inited_task(storyline:gar_story_go_to_freedom:csky)%
+
+[sr_idle@5]
+on_info = {+val_temp_start_quest_complete +gar_story_came_to_ambush_door} sr_idle@6 %=give_inited_task(storyline:gar_story_chase_pda_signal_cellar:csky)%
+
+[sr_idle@6]
+on_info = {+gar_story_need_to_find_fang_pda} sr_idle@7 %=give_inited_task(storyline:gar_story_get_pda:csky)%
+
+[sr_idle@7]
+on_info = {+gar_story_need_to_go_to_cache} sr_idle@8 %=give_inited_task(storyline:agr_no_task:csky) +agr_garbage_end%
+
+[sr_idle@8]
+on_info = {+gar_story_need_to_go_to_cache} sr_idle@9 %=disable_level_changer(707)%
+
+[sr_idle@9]
+on_info = {+agr_actor_on_agroprom} sr_idle@10 %=enable_level_changer(707)%
+
+[sr_idle@10]
+on_info = {+red_strelok_task_end} sr_idle@11 %=enable_level_changer(704)%
+
+[sr_idle@11]
+on_info = {+mil_start_after_red_forest_completed} sr_idle@end_section %=enable_level_changer(705)%
+
+[sr_idle@end_section]

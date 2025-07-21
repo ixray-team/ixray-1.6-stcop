@@ -1,0 +1,327 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+  <specific_character id="kat_cs_soldier_default1" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_nebo_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>kat_cs_soldier</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_2</visual>
+		<snd_config>characters_voice\human_03\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_ak74_up2 = 1, scope \n
+      ammo_5.45x39_ap \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>dm_hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="kat_cs_soldier_default2" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_nebo_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>kat_cs_soldier</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_2</visual>
+    <snd_config>characters_voice\human_03\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_ak74_up2 = 1, scope \n
+      ammo_5.45x39_ap \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>dm_hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="kat_cs_soldier_default3" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_nebo_3</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio></bio>
+
+		<class>kat_cs_soldier</class>
+		<community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>400</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\stalker_nebo\stalker_nebo_3</visual>
+		<snd_config>characters_voice\human_03\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300_up2 = 1, scope \n
+      ammo_5.45x39_ap \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>dm_hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="kat_cs_commander_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_nebo_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>kat_cs_commander</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>900</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_1</visual>
+		<snd_config>characters_voice\human_01\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      hand_radio \n
+	  wpn_binoc \n
+      wpn_ak74_up2 = 1, scope, launcher \n
+      ammo_5.45x39_ap \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    <mechanic_mode>1</mechanic_mode>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>dm_hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="kat_cs_grenadier_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_nebo_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>kat_cs_grenadier</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_2</visual>
+		<snd_config>characters_voice\human_03\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+	  wpn_binoc \n
+      wpn_ak74_up2 = 1, scope, launcher \n
+      ammo_5.45x39_ap \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="kat_enemy_soldier_default1" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>kat_enemy_soldier</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+    <supplies>
+      [spawn] \n
+      wpn_ak74 \n
+      ammo_5.45x39_ap \n
+      grenade_f1 = 3 \n
+
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+
+
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+    <specific_character id="kat_enemy_soldier_default2" team_default = "1">
+      <name>GENERATE_NAME_stalker</name>
+      <icon>ui_npc_u_monolith_2</icon>
+      <map_icon x="1" y="0"></map_icon>
+      <bio></bio>
+
+      <class>kat_enemy_soldier</class>
+      <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+      <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+      <rank>400</rank>
+      <reputation>0</reputation>
+
+      <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+      <supplies>
+        [spawn] \n
+      	wpn_ak74 \n
+      	ammo_5.45x39_ap \n
+		grenade_f1 = 3 \n
+  
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+      </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+      <start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+    <specific_character id="kat_enemy_soldier_default3" team_default = "1">
+      <name>GENERATE_NAME_stalker</name>
+      <icon>ui_npc_u_monolith_3</icon>
+      <map_icon x="1" y="0"></map_icon>
+      <bio></bio>
+
+      <class>kat_enemy_soldier</class>
+      <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+      <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+      <rank>400</rank>
+      <reputation>0</reputation>
+
+      <visual>actors\stalker_monolith\stalker_monolith_3</visual>
+      <supplies>
+        [spawn] \n
+     	wpn_val \n
+      	ammo_9x39_ap = 1 \n
+      	grenade_f1 = 3 \n
+        
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+      </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+     <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="kat_enemy_grenadier_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>kat_enemy_grenadier</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+    <supplies>
+      [spawn] \n
+      wpn_ak74 \n
+      ammo_5.45x39_ap \n
+      grenade_f1 = 10 \n
+      
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+<start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="kat_enemy_sniper_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>kat_enemy_sniper</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+    <supplies>
+      [spawn] \n
+      wpn_abakan = 1, scope \n
+      ammo_5.45x39_ap \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="kat_enemy_sniper_strong" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>kat_enemy_sniper_strong</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+    <supplies>
+      [spawn] \n
+      wpn_svu \n
+      ammo_7.62x54_7h1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+</xml>

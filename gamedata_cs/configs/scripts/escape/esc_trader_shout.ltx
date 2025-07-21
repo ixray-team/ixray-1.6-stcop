@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle@play_sound
+
+[sr_idle@play_sound]
+on_info = {=dist_to_actor_le(124) +mar_story_go_to_escape_done -esc_reach_trader_complete} sr_idle@bb %=play_sound(esc_trader_call:stalker:escape_trader_name)%
+
+[sr_idle@bb]

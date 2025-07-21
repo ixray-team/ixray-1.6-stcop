@@ -1,0 +1,41 @@
+[logic@work1]
+active = walker@1
+suitable = {=check_npc_name(mil_freedom_speaker)} true
+on_death = death
+
+[walker@1]
+path_walk = leader_1_walk
+path_look = leader_1_look
+meet = meet@1
+on_info = {+mil_actor_bridge} walker@2
+on_info2 = {+mil_merc_talked} walker@3
+
+[walker@2]
+path_walk = leader_1_walk
+path_look = leader_1_look
+meet = meet@2
+on_info = {+mil_merc_talked} walker@3
+
+[walker@3]
+path_walk = leader_1_walk
+path_look = leader_1_look
+meet = no_meet
+
+[death]
+on_info = %+mil_freedom_speaker_death%
+
+[meet@1]
+meet_state = 15| ward@mil_enter_first
+meet_state_wpn = 15| ward@mil_enter_first
+victim = 15| actor
+victim_wpn = 15| actor
+use	= true
+use_wpn	= false
+
+[meet@2]
+meet_state = 10| wait@nil
+meet_state_wpn = 10| wait@nil
+victim = 10| actor
+victim_wpn = 10| actor
+use	= true
+use_wpn	= false

@@ -1,0 +1,24 @@
+[logic]
+active = camper@sniper_2_work2
+on_death = death
+
+[death]
+on_info = %+lim_military_minigun2_out%
+
+[camper@sniper_2_work2]
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = lim_smart_terrain_6_spec_sniper_2_walk
+path_look = lim_smart_terrain_6_spec_sniper_2_look
+def_state_campering = threat_na
+def_state_campering_fire = threat_sniper_fire
+def_state_moving = assault
+radius = 15
+;on_info = {=dist_to_actor_ge(15)} %=restore_health%
+on_info = {=health_le(0.7) =dist_to_actor_ge(15)} remark@medic_work2
+
+[remark@medic_work2]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = wounded
+on_game_timer = 30 | camper@sniper_2_work2
+on_info = %=restore_health%

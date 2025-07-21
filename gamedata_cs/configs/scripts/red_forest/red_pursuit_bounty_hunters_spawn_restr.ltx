@@ -1,0 +1,17 @@
+[logic]
+active = sr_idle@spawn_bounty_hunters
+
+[sr_idle@spawn_bounty_hunters]
+on_info = {+red_pursuit_scene_begin} sr_idle@check_bh_count %=clear_smart_terrain(red_smart_terrain_bridge) =inc_counter(red_bounty_hunters_counter:6) =create_squad(red_pursuit_bounty_hunters_squad_1:red_smart_terrain_bridge) =create_squad(red_pursuit_bounty_hunters_squad_2:red_smart_terrain_bridge) =clear_smart_terrain(red_smart_terrain_4_5) =create_squad(red_pursuit_bounty_hunters_squad_3:red_smart_terrain_4_5)%
+
+[sr_idle@check_bh_count]
+on_info = {=counter_equal(red_bounty_hunters_counter:1) =squad_exist(red_pursuit_bounty_hunters_squad_2)} sr_idle@check_bh_surrender %+red_pursuit_bounty_hunter_surrender_info =set_squad_goodwill(red_pursuit_bounty_hunters_squad_2:neutral)%, {=counter_equal(red_bounty_hunters_counter:1) =squad_exist(red_pursuit_bounty_hunters_squad_1)} sr_idle@check_bh_surrender %+red_pursuit_bounty_hunter_surrender_info =set_squad_goodwill(red_pursuit_bounty_hunters_squad_1:neutral)%
+
+[sr_idle@check_bh_surrender]
+on_info = {+red_bounty_hunters_attack_2} sr_idle@wait_bh_reaction
+
+[sr_idle@wait_bh_reaction]
+on_game_timer = 20 | {=squad_exist(red_pursuit_bounty_hunters_squad_2)} sr_idle@nil %=set_squad_goodwill(red_pursuit_bounty_hunters_squad_2:enemy) =set_squad_goodwill(red_pursuit_bounty_hunters_squad_3:enemy)%, {=squad_exist(red_pursuit_bounty_hunters_squad_1)} sr_idle@nil %=set_squad_goodwill(red_pursuit_bounty_hunters_squad_1:enemy) =set_squad_goodwill(red_pursuit_bounty_hunters_squad_3:enemy)%
+on_info = {!squad_exist(red_pursuit_bounty_hunters_squad_1) !squad_exist(red_pursuit_bounty_hunters_squad_2)} sr_idle@nil %+red_bounty_hunters_free%
+
+[sr_idle@nil]

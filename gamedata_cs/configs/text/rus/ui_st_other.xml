@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Btn_Cancel">
+		<text>Отменить</text>
+	</string>
+	<string id="Btn_No">
+		<text>Нет</text>
+	</string>
+	<string id="Btn_OK">
+		<text>OK</text>
+	</string>
+	<string id="Btn_Yes">
+		<text>Да</text>
+	</string>
+	<string id="bad">
+		<text>Плохо</text>
+	</string>
+	<string id="enemy">
+		<text>Враг</text>
+	</string>
+	<string id="excellent">
+		<text>Отлично</text>
+	</string>
+	<string id="experienced">
+		<text>Опытный</text>
+	</string>
+	<string id="friendly">
+		<text>Друг</text>
+	</string>
+	<string id="global_map">
+		<text>Карта Зоны</text>
+	</string>
+	<string id="good">
+		<text>Хорошо</text>
+	</string>
+	<string id="id_mp_money">
+		<text>Деньги</text>
+	</string>
+	<string id="indifferent">
+		<text>Безразлично</text>
+	</string>
+	<string id="master">
+		<text>Мастер</text>
+	</string>
+	<string id="mm_mp_pda_hunt">
+		<text>Бонус за КПК</text>
+	</string>
+	<string id="mp_only_one_voting">
+		<text>Разрешено только одно активное голосование</text>
+	</string>
+	<string id="neutral">
+		<text>Нейтрал</text>
+	</string>
+	<string id="novice">
+		<text>Новичок</text>
+	</string>
+	<string id="st_audio">
+		<text>Звук</text>
+	</string>
+	<string id="st_bolt">
+		<text>Болт</text>
+	</string>
+	<string id="st_client_connecting_to">
+		<text>Клиент: Соединение с</text>
+	</string>
+	<string id="st_client_spawning">
+		<text>Клиент: Создание</text>
+	</string>
+	<string id="st_client_synchronising">
+		<text>Клиент: Синхронизация</text>
+	</string>
+	<string id="st_controll">
+		<text>Управление</text>
+	</string>
+	<string id="st_creating_new_game">
+		<text>Создание новой игры</text>
+	</string>
+	<string id="st_drink">
+		<text>выпить</text>
+	</string>
+	<string id="st_game">
+		<text>Игра</text>
+	</string>
+	<string id="st_item_used">
+		<text>Использовано</text>
+	</string>
+	<string id="st_items">
+		<text>Предметы</text>
+	</string>
+	<string id="st_level">
+		<text>Уровень</text>
+	</string>
+	<string id="st_loading_ai_objects">
+		<text>Загрузка ИИ объектов</text>
+	</string>
+	<string id="st_loading_alife_simulator">
+		<text>Сервер: Загрузка симуляции жизни</text>
+	</string>
+	<string id="st_loading_cform">
+		<text>Загрузка формы объектов</text>
+	</string>
+	<string id="st_loading_details">
+		<text>Загрузка детальных объектов</text>
+	</string>
+	<string id="st_loading_geometry">
+		<text>Загрузка геометрии</text>
+	</string>
+	<string id="st_loading_saved_game">
+		<text>Загрузка игры</text>
+	</string>
+	<string id="st_loading_sectors_portals">
+		<text>Загрузка секторов и порталов</text>
+	</string>
+	<string id="st_loading_shaders">
+		<text>Загрузка шейдеров</text>
+	</string>
+	<string id="st_loading_spatial_db">
+		<text>Загрузка базы пространств</text>
+	</string>
+	<string id="st_loading_textures">
+		<text>Загрузка текстур</text>
+	</string>
+	<string id="st_mp_direct_ip">
+		<text>Прямой IP</text>
+	</string>
+	<string id="st_no_active_task">
+		<text>Нет активного задания</text>
+	</string>
+	<string id="st_not_enough_money">
+		<text>Недостаточно денег</text>
+	</string>
+	<string id="st_not_enough_money_npc">
+		<text>У НПС недостаточно денег</text>
+	</string>
+	<string id="st_opening_stream">
+		<text>Открытие потока</text>
+	</string>
+	<string id="st_prefetching_objects">
+		<text>Кэширование объектов</text>
+	</string>
+	<string id="st_server_connecting">
+		<text>Сервер: Соединение</text>
+	</string>
+	<string id="st_server_starting">
+		<text>Сервер: Старт</text>
+	</string>
+	<string id="st_validating_cdkey">
+		<text>Проверка ключа</text>
+	</string>
+	<string id="st_video">
+		<text>Видео</text>
+	</string>
+	<string id="terrible">
+		<text>Ужасно</text>
+	</string>
+	<string id="ui_st_btn_cancel">
+		<text>Отмена</text>
+	</string>
+	<string id="ui_st_btn_no">
+		<text>Нет</text>
+	</string>
+	<string id="ui_st_btn_ok">
+		<text>ОК</text>
+	</string>
+	<string id="ui_st_btn_yes">
+		<text>Да</text>
+	</string>
+	<string id="ui_st_cant_run_r2">
+		<text>Вы не можете запустить второй рендер на вашем компьютере</text>
+	</string>
+	<string id="ui_st_community">
+		<text>Группировка</text>
+	</string>
+	<string id="ui_st_conn_cdkey_disabled">
+		<text>Ошибка соединения: Ваш CD-key заблокирован. Свяжитесь со службой поддержки.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_in_use">
+		<text>Ошибка соединения: такой CD-key уже используется</text>
+	</string>
+	<string id="ui_st_conn_cdkey_invalid">
+		<text>Ошибка соединения: неверный CD-key</text>
+	</string>
+	<string id="ui_st_conn_invalid_host">
+		<text>Ошибка соединения: неверный хост</text>
+	</string>
+	<string id="ui_st_conn_invalid_pass">
+		<text>Ошибка соединения: неверный пароль</text>
+	</string>
+	<string id="ui_st_conn_new_patch">
+		<text>Доступен новый патч. \n Версия: %s\n %s\n Хотите загрузить его сейчас?</text>
+	</string>
+	<string id="ui_st_conn_no_new_patch">
+		<text>Нет новых патчей</text>
+	</string>
+	<string id="ui_st_conn_rejected_server">
+		<text>Ошибка соединения: соединение прервано сервером</text>
+	</string>
+	<string id="ui_st_conn_sess_full">
+		<text>Ошибка соединения: сервер заполнен</text>
+	</string>
+	<string id="ui_st_conn_version_differs">
+		<text>Ошибка соединения: различные версии</text>
+	</string>
+	<string id="ui_st_connecting_to_masterserver">
+		<text>Соединение с мастер-сервером</text>
+	</string>
+	<string id="ui_st_days">
+		<text>дн.</text>
+	</string>
+	<string id="ui_st_error">
+		<text>Ошибка</text>
+	</string>
+	<string id="ui_st_error_loading">
+		<text>Ошибка загрузки</text>
+	</string>
+	<string id="ui_st_file_exist_owerwrite_q">
+		<text>Файл с таким именем уже существует. Перезаписать?</text>
+	</string>
+	<string id="ui_st_file_name_is_empty">
+		<text>Имя файла пустое</text>
+	</string>
+	<string id="ui_st_hours">
+		<text>час.</text>
+	</string>
+	<string id="ui_st_kicked_by_server">
+		<text>Отключён. Причина:</text>
+	</string>
+	<string id="ui_st_leave">
+		<text>Уйти</text>
+	</string>
+	<string id="ui_st_load_game_confirm">
+		<text>Загрузка игры приведет к потере несохраненных данных. Желаете продолжить?</text>
+	</string>
+	<string id="ui_st_mins">
+		<text>мин.</text>
+	</string>
+	<string id="ui_st_months">
+		<text>мес.</text>
+	</string>
+	<string id="ui_st_opponent_items">
+		<text>Рюкзак</text>
+	</string>
+	<string id="ui_st_params">
+		<text>Параметры</text>
+	</string>
+	<string id="ui_st_patch_download_error">
+		<text>Невозможно загрузить патч.</text>
+	</string>
+	<string id="ui_st_patch_download_success">
+		<text>Патч успешно загружен. Желаете установить?</text>
+	</string>
+	<string id="ui_st_price">
+		<text>Цена</text>
+	</string>
+	<string id="ui_st_rank">
+		<text>Ранг</text>
+	</string>
+	<string id="ui_st_relation">
+		<text>Отношение</text>
+	</string>
+	<string id="ui_st_reputation">
+		<text>Репутация</text>
+	</string>
+	<string id="ui_st_secs">
+		<text>сек.</text>
+	</string>
+	<string id="ui_st_select_one_map">
+		<text>Пожалуйста, выберите хотя бы одну карту</text>
+	</string>
+	<string id="ui_st_take_all">
+		<text>Взять всё</text>
+	</string>
+	<string id="ui_st_time_remains">
+		<text>Осталось</text>
+	</string>
+	<string id="ui_st_trade">
+		<text>Торговать</text>
+	</string>
+	<string id="ui_st_upgrade">
+		<text>Улучшить</text>
+	</string>
+	<string id="ui_st_voting_disabled">
+		<text>Голосование отключено</text>
+	</string>
+	<string id="ui_st_want_to_leave_game_q">
+		<text>Вы действительно хотите покинуть игру?</text>
+	</string>
+	<string id="ui_st_your_items">
+		<text>Вещи Стрелка</text>
+	</string>
+	<string id="very_bad">
+		<text>оч. плохо</text>
+	</string>
+	<string id="very_good">
+		<text>оч. хорошо</text>
+	</string>
+	<string id="veteran">
+		<text>Ветеран</text>
+	</string>
+	<string id="st_no_buck">
+		<text>не стреляет дробью</text>
+	</string>
+	<string id="st_rubles">
+		<text>рублей.</text>
+	</string>
+	<string id="ui_inv_repair">
+		<text>Починить</text>
+	</string>
+	<string id="ui_repair_button_hint">
+		<text>Починить</text>
+	</string>
+	<string id="ui_total_price">
+		<text>Всего</text>
+	</string>
+	<string id="lim_bandit_ambush_spot">
+		<text>Засада бандитов</text>
+	</string>
+</string_table>

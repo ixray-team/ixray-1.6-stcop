@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle@blya
+
+[sr_idle@blya]
+on_info = {+start_surge} %=add_custom_static(cs_yantar_td:yantar_td)% sr_idle@blya2
+
+[sr_idle@blya2]
+on_info = {-start_surge} sr_idle@stop
+
+[sr_idle@stop]
+on_game_timer = 70 | %=remove_custom_static(cs_yantar_td)% sr_idle@blya

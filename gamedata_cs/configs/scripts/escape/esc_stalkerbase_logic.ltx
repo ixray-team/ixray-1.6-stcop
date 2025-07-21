@@ -1,0 +1,36 @@
+;Hello guard
+
+[logic@work1]
+active = walker@enter_work1
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 41
+
+[walker@enter_work1]
+path_walk = grd_1_walk
+path_look = grd_1_look
+on_actor_in_zone = esc_space_restrictor_stalkerbase | {!gulag_enemy_actor(esc_smart_terrain_5_7)} remark@idle_g
+
+[remark@idle_g]
+anim = ward
+on_info = {!gulag_enemy_actor(esc_smart_terrain_5_7) +esc_reach_trader_complete -esc_stalker_leader_meet} walker@last_g_work1 %=play_sound(esc_stalkerbase_guard_redirect:stalker)%
+target = actor
+
+[walker@last_g_work1]
+path_walk = grd_1_walk
+path_look = grd_1_look
+
+;Prisoner Guard
+
+[logic@work2]
+active = walker@work2
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 40
+
+[walker@work2]
+path_walk = storywalker_1_walk
+path_look = storywalker_1_look
+meet = meet@work2
+out_restr = esc_space_restrictor_in_restr_1
+
+[meet@work2]
+meet_dialog = {+esc_prisoner_go_out} esc_stalker_about_prisoner

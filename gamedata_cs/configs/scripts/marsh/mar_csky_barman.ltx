@@ -1,0 +1,96 @@
+[logic]
+active = smartcover@intro_3
+trade = misc\trade\trade_barmen_all.ltx
+level_spot = quest_npc
+
+[smartcover@intro_3]
+path_walk = mar_smart_terrain_csky_base_barman_walk
+cover_name = mar_smart_cover_csky_barman_lead_stand_lean_on_bar
+loophole_name = lead_stand_lean_on_bar
+cover_state = idle_target
+on_info = {+mar_intro_talk_with_commander_1_done} smartcover@main_idle, {+mar_intro_talk_with_commander_1_started} smartcover@intro_3_no_meet %=play_sound(mar_csky_barman_reply_0:csky:mar_csky_barman_name)%
+combat_ignore_cond = true
+meet = meet@no_break
+;target_path = mar_smart_terrain_csky_base_barman_look
+;target_enemy = actor
+def_state_moving = walk
+
+[smartcover@intro_3_no_meet]
+path_walk = mar_smart_terrain_csky_base_barman_walk
+cover_name = mar_smart_cover_csky_barman_lead_stand_lean_on_bar
+loophole_name = lead_stand_lean_on_bar
+cover_state = idle_target
+on_signal = sound_end | smartcover@main_idle
+combat_ignore_cond = true
+meet = no_meet
+;target_path = mar_smart_terrain_csky_base_barman_look
+def_state_moving = walk
+
+;-----------------------------------------------------------------------------
+
+[smartcover@main_idle]
+path_walk = mar_smart_terrain_csky_base_barman_walk
+cover_name = mar_smart_cover_csky_barman_lead_stand_lean_on_bar
+loophole_name = lead_stand_lean_on_bar
+cover_state = idle_target
+on_timer = 15000 | {~50 !talking} smartcover@main_lookout, {!talking} smartcover@main_fire_no_lookout
+combat_ignore_cond = true
+meet = meet@main
+;target_path = mar_smart_terrain_csky_base_barman_look
+;target_enemy = actor
+def_state_moving = walk
+
+[smartcover@main_lookout]
+path_walk = mar_smart_terrain_csky_base_barman_walk
+cover_name = mar_smart_cover_csky_barman_lead_stand_lean_on_bar
+loophole_name = lead_stand_lean_on_bar
+cover_state = lookout_target
+on_timer = 15000 | {~50} smartcover@main_fire_no_lookout, smartcover@main_idle
+on_info = {=talking} smartcover@main_idle
+combat_ignore_cond = true
+meet = meet@main
+;target_path = mar_smart_terrain_csky_base_barman_look
+;target_enemy = actor
+def_state_moving = walk
+
+[smartcover@main_fire_no_lookout]
+path_walk = mar_smart_terrain_csky_base_barman_walk
+cover_name = mar_smart_cover_csky_barman_lead_stand_lean_on_bar
+loophole_name = lead_stand_lean_on_bar
+cover_state = fire_no_lookout_target
+on_timer = 15000 | {~50} smartcover@main_idle, smartcover@main_lookout
+on_info = {=talking} smartcover@main_idle
+combat_ignore_cond = true
+meet = meet@main
+;target_path = mar_smart_terrain_csky_base_barman_look
+;target_enemy = actor
+def_state_moving = walk
+
+;-----------------------------------------------------------------------------
+
+[meet@no_break]
+meet_state = 3| nil@nil
+meet_state_wpn = 3| nil@nil
+victim = 0|actor
+victim_wpn = 0|actor
+use = true
+use_wpn = true
+precond = visibility
+meet_dialog	= mar_csky_barman_intro_dialog
+allow_break = false
+trade_enable = false
+sound_start 	= mar_csky_barman_meet
+;sound_stop 		= mar_csky_barman_meet_bye
+quest_npc = true
+
+[meet@main]
+meet_state = 3| nil@nil
+meet_state_wpn = 3| nil@nil
+victim = 0|actor
+victim_wpn = 0|actor
+use = true
+use_wpn = true
+precond = visibility
+sound_start 	= mar_csky_barman_meet
+sound_stop 		= mar_csky_barman_meet_bye
+quest_npc = true

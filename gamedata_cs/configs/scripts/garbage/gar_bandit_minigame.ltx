@@ -1,0 +1,44 @@
+[logic]
+active = walker@main_minigame
+;suitable = {=check_npc_name(gar_bandit_minigame)}
+;prior = 130
+on_death = death@minigame
+level_spot = quest_npc
+
+[walker@main_minigame]
+path_walk = gar_smart_terrain_3_5_bandit_minigame_walk
+path_look = gar_smart_terrain_3_5_bandit_minigame_look
+on_info  = {=check_crowkiller_state(finished) =crowkiller_winned =crowkiller_game_type(highscore) -gar_bandit_base_minigame_first_win} walker@catch_minigame %=play_sound(gar_bandit_minigame_man_win_first:bandit:gar_bandit_minigame_name) +gar_bandit_base_minigame_first_win%
+on_info2 = {=check_crowkiller_state(finished) =crowkiller_winned =crowkiller_game_type(highscore) +gar_bandit_base_minigame_first_win} walker@catch_minigame %=play_sound(gar_bandit_minigame_man_win_player:bandit:gar_bandit_minigame_name)%
+on_info3 = {=check_crowkiller_state(finished) =crowkiller_winned !crowkiller_game_type(highscore)} walker@catch_minigame %=play_sound(gar_bandit_minigame_man_win_npc:bandit:gar_bandit_minigame_name)%
+on_info4 = {=check_crowkiller_state(finished) !crowkiller_winned} walker@catch_minigame %=play_sound(gar_bandit_minigame_man_lose:bandit:gar_bandit_minigame_name)%
+on_info5 = {=check_crowkiller_state(breaked)} walker@catch_minigame %=play_sound(gar_bandit_minigame_man_gone:bandit:gar_bandit_minigame_name)%
+meet = meet@minigame
+
+[walker@catch_minigame]
+path_walk = gar_smart_terrain_3_5_bandit_minigame_walk
+path_look = gar_smart_terrain_3_5_bandit_minigame_look
+on_signal = sound_end | walker@wait_minigame %+gar_bandit_base_minigame_talked_at_end%
+meet = meet@minigame
+
+[walker@wait_minigame]
+path_walk = gar_smart_terrain_3_5_bandit_minigame_walk
+path_look = gar_smart_terrain_3_5_bandit_minigame_look
+on_info = {=check_crowkiller_state(valiable)} walker@main_minigame
+meet = meet@minigame
+
+[meet@minigame]
+;meet_state = 2|nil@meet_general_wait
+use_wpn	= {!is_playing_sound} true, false
+use = {!is_playing_sound} true, false
+victim = 20 | actor
+victim_wpn = 20 | actor
+trade_enable = false
+allow_break = false
+meet_state 	= 5|nil@nil
+sound_start = gar_bandit_bookmaker_meet
+sound_stop = gar_bandit_bookmaker_meet_bye
+quest_npc = true
+
+[death@minigame]
+on_info = nil %+gar_bandit_base_minigame_dead%

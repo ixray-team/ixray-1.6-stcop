@@ -1,0 +1,49 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+yan_ready_actor_cut6} sr_idle@2
+
+[sr_idle@2]
+on_info =  {+yan_wave_zombie1_cut6} sr_idle@1
+
+[sr_idle@1]
+on_game_timer = 90 | sr_idle@frase1 
+
+[sr_idle@frase1]
+on_info = {+yan_task1_end_cut6} sr_idle@start_frase
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@professor %+yan_start_monologa_cut6%
+
+[sr_idle@start_frase]
+on_game_timer = 15 | sr_idle@start_warning_zombie2 %+yan_start_frase_cut6 -yan_start_frase2_cut6%
+on_info = {+yan_stop_spawn_cut6} sr_idle@professor %+yan_start_monologa_cut6%
+
+[sr_idle@start_warning_zombie2]
+on_info = {+yan_warning_zombie2_cut6} sr_idle@frase2 
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@professor %+yan_start_monologa_cut6%
+
+[sr_idle@frase2]
+on_game_timer = 25 | sr_idle@ready_quest_start %+yan_start_frase2_cut6 -yan_start_frase_cut6%  
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@professor %+yan_start_monologa_cut6%
+
+[sr_idle@ready_quest_start]
+on_info = {+yan_warning_zombie2_cut6} sr_idle@frase1 
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@professor %+yan_start_monologa_cut6%
+
+;[sr_idle@ready_quest]
+;on_info2 = {+yan_stop_spawn_cut6} sr_idle@professor %+yan_start_monologa_cut6%
+
+[sr_idle@professor]
+on_game_timer = 75 | sr_idle@otvet_stalkera %+yan_professor_cut6%
+
+[sr_idle@otvet_stalkera]
+on_game_timer = 75 | sr_idle@stalker_ready %+yan_otvet_stalkera_cut6%
+
+[sr_idle@stalker_ready]
+on_game_timer = 70 | sr_idle@actor_go_to_red_forest %+yan_go_to_red_forest_cut6%
+
+[sr_idle@actor_go_to_red_forest]
+on_game_timer = 200 | sr_idle@stop %+yan_otryad_go_home_cut6%
+
+
+[sr_idle@stop]

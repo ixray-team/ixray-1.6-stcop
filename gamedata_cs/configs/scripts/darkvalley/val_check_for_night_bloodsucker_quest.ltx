@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+val_night_bloodsucker_started} sr_idle@2
+
+[sr_idle@2]
+on_info = {=actor_has_item(device_pda_bloodsucker) -val_night_bloodsucker_fail} nil %+val_night_bloodsucker_complete =create_squad(val_bloodsucker_lair_9_4:val_smart_terrain_9_4)%

@@ -1,0 +1,72 @@
+[logic]
+active = ph_idle
+
+[ph_idle]
+auto_fire = false
+on_info = {+esc_fire +esc_minigunner} ph_minigun@actor
+
+[ph_minigun@shoot]
+auto_fire = true
+path_fire = esc_minigun_fire_way_1
+fire_range = 95
+on_game_timer = 5 | ph_minigun@actor
+on_info = {-esc_minigunner} ph_idle
+
+[ph_minigun@shoot_2] ;--стреляет по точкам
+auto_fire = true
+path_fire = esc_minigun_fire_way_2
+fire_range = 100
+on_game_timer = 5 | ph_minigun@shoot_3
+on_info = {-esc_minigunner} ph_idle
+
+[ph_minigun@shoot_3]
+auto_fire = true
+path_fire = esc_minigun_fire_way_3
+fire_range = 100
+on_game_timer = 5 | ph_minigun@shoot_4
+on_info = {-esc_minigunner} ph_idle
+
+[ph_minigun@shoot_4]
+auto_fire = true
+path_fire = esc_minigun_fire_way_4
+fire_range = 100
+on_game_timer = 5 | ph_minigun@shoot_5
+on_info = {-esc_minigunner} ph_idle
+
+[ph_minigun@shoot_5]
+auto_fire = true
+path_fire = esc_minigun_fire_way_5
+fire_range = 100
+on_game_timer = 5 | ph_minigun@actor
+on_info = {-esc_minigunner} ph_idle
+
+[ph_minigun@actor]
+auto_fire = true
+target = actor
+track_target = true
+shoot_only_on_visible = false
+fire_range = 100
+fire_repeat = 5
+fire_time = 5
+on_info = {-esc_minigunner} ph_idle@stop 
+on_info2 = {=dist_to_actor_ge(100)} ph_idle@stop %-esc_alarm +esc_alarm_alarm%
+on_target_nvis = actor | ph_minigun@actor_hidden
+
+[ph_idle@stop]
+auto_fire = false
+on_info = {=dist_to_actor_le(100) +esc_minigunner} ph_minigun@actor %+esc_alarm% 
+on_info2 = %-esc_alarm -esc_alarm_alarm%
+on_info3 = {-esc_minigunner} ph_idle
+
+[ph_minigun@actor_hidden]
+auto_fire = false
+target = actor
+track_target = true
+shoot_only_on_visible = false
+fire_range = 100
+fire_repeat = 5
+fire_time = 5
+on_info = {-esc_minigunner} ph_idle@stop 
+on_info2 = {=dist_to_actor_ge(100)} ph_idle@stop %-esc_alarm +esc_alarm_alarm%
+on_target_vis = actor | ph_minigun@actor
+on_game_timer = 100 | {-esc_mil_minigun_hide_info} %+esc_mil_patrol +esc_silence +esc_mil_minigun_hide_info%

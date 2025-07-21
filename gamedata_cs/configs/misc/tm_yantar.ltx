@@ -1,0 +1,124 @@
+[list_tm_yantar]
+yan_main_quest_line
+yan_repair_defend
+yan_actor_destroy_wave1
+yan_actor_destroy_wave2
+yan_actor_go_base_science
+yan_actor_go_base_defence
+yan_quest_doc
+yan_otnesti_doc_saharavy
+yan_quest_levsha
+yan_proriv_k_ystanovke
+
+yan_actor_go_to_red_forest
+
+[yan_main_quest_line]
+prior = 1
+type = storyline
+task_type = storyline
+target_story_ids = 800
+name = yan_main_quest_line_name
+text = yan_main_quest_line_text
+condlist_0 = {+yan_hold_position_cut6} complete
+
+[yan_repair_defend]
+prior = 3
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_story_ids = 801
+name = yan_repair_defend_name
+text = yan_repair_defend_text
+condlist_0 = {+yan_ready_actor_position_cut6} complete
+on_complete = %+yan_hold_position_cut6%
+
+[yan_actor_destroy_wave1] 
+prior = 3
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_story_ids = 802
+name = yan_actor_destroy_wave1_name
+text = yan_actor_destroy_wave1_text
+on_complete = %+yan_ready_wave2_cut6 +yan_hold_position_cut6%
+condlist_0 = {+yan_task1_end_cut6} complete
+condlist_1 = {+yan_stop_spawn_cut6} complete
+
+[yan_actor_destroy_wave2]
+prior = 3 
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_story_ids = 803
+name = yan_actor_destroy_wave2_name
+text = yan_actor_destroy_wave2_text
+condlist_0 = {+yan_task2_end_cut6} complete
+condlist_1 = {+yan_stop_spawn_cut6} complete
+on_complete = %+yan_ready_wave3_cut6 +yan_hold_position_cut6%
+
+[yan_actor_go_to_red_forest] 
+prior = 4
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_story_ids = 804
+name = yan_actor_go_to_red_forest_name
+text = yan_actor_go_to_red_forest_text
+condlist_0 = {+yan_end_quest_line} complete  
+
+[yan_actor_go_base_science]
+prior = 1
+type = storyline
+task_type = storyline
+target_story_ids = 805
+name = yan_actor_go_base_science_name
+text = yan_actor_go_base_science_text
+condlist_0 = {+yan_questions_scientists} complete
+
+[yan_quest_doc]
+prior = 1
+type = storyline
+task_type = storyline
+target_story_ids = 807
+name = yan_quest_doc_name
+text = yan_quest_doc_text
+condlist_0 = {+yan_otnesti_doc_saharavy} complete
+
+[yan_otnesti_doc_saharavy]
+prior = 1
+type = storyline
+task_type = storyline
+target_story_ids = 808
+name = yan_otnesti_doc_saharavy_name
+text = yan_otnesti_doc_saharavy_text
+condlist_0 = {+yan_quest_levsha} complete
+
+[yan_quest_levsha]
+prior = 1
+type = storyline
+task_type = storyline
+target_story_ids = 809
+name = yan_quest_levsha_name
+text = yan_quest_levsha_text
+condlist_0 = {+yan_proriv_k_ystanovke} complete
+
+[yan_proriv_k_ystanovke]
+prior = 1
+type = storyline
+task_type = storyline
+target_story_ids = 810
+name = yan_proriv_k_ystanovke_name
+text = yan_proriv_k_ystanovke_text
+condlist_0 = {+yan_actor_start_to_go} complete
+
+[yan_actor_go_base_defence]
+type = defend_smart
+task_type = additional
+name = sim_defend_smart
+text = sim_defend_smart_text
+faction = stalker
+prior = 4
+target_cond = true
+wait_time = 0
+play_regard = nil
+;reward_money = 1000

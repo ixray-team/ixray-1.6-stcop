@@ -1,0 +1,3 @@
+function main()
+        db.actor:disable_info_portion("agru_nvidia_presentation")
+end

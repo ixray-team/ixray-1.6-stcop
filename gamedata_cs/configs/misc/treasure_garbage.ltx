@@ -1,0 +1,299 @@
+[list_treasure_garbage]
+gar_treasure_quest_old_pda
+gar_treasure_quest_smuggler_weapons
+gar_treasure_quest_reward_in_anomaly
+gar_treasure_quest_digger_reward
+gar_treasure_1
+gar_treasure_2
+gar_treasure_3
+gar_treasure_4
+gar_treasure_5
+gar_treasure_6
+gar_treasure_7
+gar_treasure_8
+gar_treasure_9
+gar_treasure_10
+gar_treasure_11
+gar_treasure_12
+gar_treasure_13
+gar_treasure_14
+gar_treasure_15
+gar_treasure_16
+gar_treasure_17
+gar_treasure_18
+gar_treasure_19
+gar_treasure_20
+gar_quest_treasure_1
+gar_quest_treasure_2
+gar_quest_treasure_3
+gar_quest_treasure_4
+gar_quest_treasure_5
+gar_quest_treasure_6
+gar_quest_treasure_7
+gar_quest_treasure_8
+gar_quest_treasure_9
+gar_quest_treasure_10
+
+[gar_treasure_quest_old_pda]
+target = gar_treasure_quest_old_pda
+name = gar_treasure_quest_old_pda
+description = gar_treasure_quest_old_pda_descr
+items = device_pda_old
+community = stalker
+condlist = false
+
+[gar_treasure_quest_smuggler_weapons]
+target = gar_treasure_quest_smuggler_weapons
+name = gar_treasure_quest_smuggler_weapons
+description = gar_treasure_quest_smuggler_weapons_descr
+items = wpn_ak74u, wpn_ak74, wpn_l85, wpn_wincheaster1300, wpn_mp5
+community = bandit
+condlist = false
+
+[gar_treasure_quest_reward_in_anomaly]
+target = gar_treasure_quest_reward_in_anomaly
+name = gar_treasure_quest_reward_in_anomaly
+description = gar_treasure_quest_reward_in_anomaly_descr
+items = wpn_colt1911_up2
+community = bandit
+condlist = false
+on_empty = %+gar_quest_bandit_secret_done%
+
+[gar_treasure_quest_digger_reward]
+target = gar_treasure_quest_reward_in_anomaly
+name = gar_treasure_quest_digger_reward
+description = gar_treasure_quest_digger_reward_descr
+items = wpn_colt1911_up2
+community = stalker
+condlist = false
+on_empty = %+gar_quest_captive_reward_done%
+
+[gar_treasure_1] ;Электрощит в мусоре
+target = gar_treasure_1
+name = st_gar_electric_box_01
+description = st_gar_electric_box_01_descr
+items = medkit, 1, antirad, 2
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_2] ;Электрощит под навесом
+target = gar_treasure_2
+name = st_gar_electric_box_02
+description = st_gar_electric_box_02_descr
+items = wpn_mp5, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_3] ;Труба на свалке
+target = gar_treasure_3
+name = st_gar_pipe_02
+description = st_gar_pipe_02_descr
+items = wpn_hpsa, 1, medkit, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_4] ;Труба у основания крана
+target = gar_treasure_4
+name = st_gar_pipe_05
+description = st_gar_pipe_05_descr
+items = wpn_beretta, 1, vodka, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_5] ;Рюкзак под елкой
+target = gar_treasure_5
+name = st_gar_rucksack_02
+description = st_gar_rucksack_02_descr
+items = medkit, 1, bandage, 3
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_6] ;Тайник у кладбища техники
+target = gar_treasure_6
+name = st_gar_rucksack_03
+description = st_gar_rucksack_03_descr
+items = ammo_12x76_zhekan, 12, antirad, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_7] ;Крыша тепловоза
+target = gar_treasure_7
+name = st_gar_rucksack_04
+description = st_gar_rucksack_04_descr
+items = wpn_ak74u, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_8] ;Сейф в луже
+target = gar_treasure_8
+name = st_gar_seif_01
+description = st_gar_seif_01_descr
+items = ammo_og-7b, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_9] ;Сейф под опорой
+target = gar_treasure_9
+name = st_gar_seif_03
+description = st_gar_seif_03_descr
+items = energy_drink, 5, wpn_hpsa, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_10] ;Дупло бревна
+target = gar_treasure_10
+name = st_gar_trees_log_01
+description = st_gar_trees_log_01_descr
+items = medkit, 1, antirad, 1, bandage, 1 
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_11] ;Бревно за дубом
+target = gar_treasure_11
+name = st_gar_trees_log_02
+description = st_gar_trees_log_02_descr
+items = conserva, 4, energy_drink, 3
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_12] ;Бревно в кустах
+target = gar_treasure_12
+name = st_gar_trees_log_03
+description = st_gar_trees_log_03_descr
+items = vodka, 5, antirad, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_13] ;Тайник беглецов
+target = gar_treasure_13
+name = st_gar_trees_stump_01
+description = st_gar_trees_stump_01_descr
+items = ammo_12x76_zhekan, 20
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_14] ;Тайник на отшибе
+target = gar_treasure_14
+name = st_gar_trees_stump_03
+description = st_gar_trees_stump_03_descr
+items = medkit, 1, antirad, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_15] ;Схрон у базы
+target = gar_treasure_15
+name = st_gar_trees_stump_04
+description = st_gar_trees_stump_04_descr
+items = medkit, 1, wpn_hpsa, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_16] ;Электрошит на свалке
+target = gar_treasure_16
+name = st_gar_electric_box_02_ss
+description = st_gar_electric_box_02_ss_descr
+items = antirad, 2
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_17] ;Раструб
+target = gar_treasure_17
+name = gar_equipment_pipe_01_ss
+description = gar_equipment_pipe_01_ss_descr
+items = bandage, 6, energy_drink, 5
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_18] ;Труба у мотора
+target = gar_treasure_18
+name = gar_equipment_pipe_02_ss
+description = gar_equipment_pipe_02_ss_descr
+items = medkit, 1, antirad, 1, wpn_beretta, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_19] ;Рюкзак в кабине крана
+target = gar_treasure_19
+name = st_gar_rucksack_02_1_ss
+description = st_gar_rucksack_02_1_ss_descr
+items = conserva, 10, energy_drink, 4, vodka, 1
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_treasure_20] ;Схрон от врагов
+target = gar_treasure_20
+name = st_gar_rucksack_02_ss
+description = st_gar_rucksack_02_ss_descr
+items = medkit, 2, ammo_12x76_zhekan, 8
+condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+
+[gar_quest_treasure_1]
+target = gar_q1_n
+name = st_gar_q1_n
+description = st_gar_q1_n_descr
+items = flesh_up_bd_desert_eagle
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 500
+say_item_name = true
+
+[gar_quest_treasure_2]
+target = gar_q2_n
+name = st_gar_q2_n
+description = st_gar_q2_n_descr
+items = flesh_up_ac_desert_eagle
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 500
+say_item_name = true
+
+[gar_quest_treasure_3]
+target = gar_q3_n
+name = st_gar_q3_n
+description = st_gar_q3_n_descr
+items = wpn_l85, 1
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 3500
+say_item_name = true
+
+[gar_quest_treasure_4]
+target = gar_q4_n
+name = st_gar_q4_n
+description = st_gar_q4_n_descr
+items = wpn_colt1911, 1, ammo_11.43x23_hydro, 8
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 1200
+say_item_name = true
+
+[gar_quest_treasure_5]
+target = gar_q5_n
+name = st_gar_q5_n
+description = st_gar_q5_n_descr
+items = antirad, 4
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 900
+say_item_name = false
+
+[gar_quest_treasure_6]
+target = gar_q6_t_l
+name = st_gar_q6_t_l
+description = st_gar_q6_t_l_descr
+items = flesh_up_fh_scientific_outfit
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 1500
+say_item_name = true
+
+[gar_quest_treasure_7]
+target = gar_q7_t_l
+name = st_gar_q7_t_l
+description = st_gar_q7_t_l_descr
+items = antirad, 2, bandage, 3, vodka, 1
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 500
+say_item_name = false
+
+[gar_quest_treasure_8]
+target = gar_q8_t_a
+name = st_gar_q8_t_a
+description = st_gar_q8_t_a_descr
+items = flesh_up_bdfh_scientific_outfit
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 1500
+say_item_name = true
+
+[gar_quest_treasure_9]
+target = gar_q9_n
+name = st_gar_q9_n
+description = st_gar_q9_n_descr
+items = ammo_12x76_zhekan, 26, medkit, 2
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 500
+say_item_name = false
+
+[gar_quest_treasure_10]
+target = gar_q10_n
+name = st_gar_q10_n
+description = st_gar_q10_n_descr
+items = medkit, 1, antirad, 1
+condlist = {=actor_on_level(garbage)} true, false
+treasure_cost = 400
+say_item_name = false

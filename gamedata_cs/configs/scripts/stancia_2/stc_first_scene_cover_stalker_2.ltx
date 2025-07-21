@@ -1,0 +1,48 @@
+[logic]
+active = smartcover@1
+
+[smartcover@1]
+cover_name 		= stc_first_scene_smart_cover_2
+loophole_name 	= lh_2
+cover_state 	= default_behaviour 
+use_in_combat = true
+idle_min_time = 4
+idle_max_time = 5
+lookout_min_time = 2
+lookout_max_time = 3
+on_info = {!black_screen} smartcover@1w
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[smartcover@1w]
+cover_name 		= stc_first_scene_smart_cover_2
+loophole_name 	= lh_2
+cover_state 	= default_behaviour 
+use_in_combat = true
+idle_min_time = 4
+idle_max_time = 5
+lookout_min_time = 2
+lookout_max_time = 3
+on_info = {+stc_scene_start} walker@to_battle
+on_timer = 4000 | smartcover@2
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[smartcover@2]
+cover_name 		= stc_first_scene_smart_cover_2
+loophole_name 	= lh_2
+cover_state 	= default_behaviour
+target_path =  stc_first_scene_smart_cover_2_path
+on_info = {+stc_scene_start} walker@to_battle
+on_timer = 4000 | smartcover@1w
+use_in_combat = true
+idle_min_time = 4
+idle_max_time = 5
+lookout_min_time = 2
+lookout_max_time = 3
+invulnerable = true
+
+[walker@to_battle]
+path_walk = stc_battle_walk
+invulnerable = false

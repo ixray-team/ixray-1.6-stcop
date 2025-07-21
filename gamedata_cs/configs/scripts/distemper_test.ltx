@@ -1,0 +1,11 @@
+[logic]
+active=sr_idle
+
+[sr_idle]
+on_info=sr_idle@1 %=turn_off(65004)%
+
+[sr_idle@1]
+on_timer = 10000 | sr_idle@2 %=turn_on_and_force(65004:55:13000)%
+
+[sr_idle@2]
+on_timer = 16000 | sr_idle %=turn_off_and_force(65004)%

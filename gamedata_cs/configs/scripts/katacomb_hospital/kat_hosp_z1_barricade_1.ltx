@@ -1,0 +1,163 @@
+[logic]
+active = remark@wait ;smartcover@wait
+post_combat_time = 0,0 
+
+[remark@wait]
+danger = danger_condition
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+path_walk = barricade_hide_1_walk
+anim = guard
+on_game_timer = 20 | smartcover@wait 
+
+[smartcover@wait]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+path_walk = barricade_hide_1_walk
+combat_ignore_cond = true
+cover_name = hosp_barricade_1_smartcover
+cover_state = default_behaviour
+on_info = {+hospital_z1_action} smartcover@hide2
+
+;-- прячется до начала сцены со снайпером
+
+[smartcover@hide]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_1_smartcover
+cover_state = default_behaviour
+on_info = {+cover_fire} smartcover@fire
+on_info2 = {+sniper_fire_scene_end} smartcover@hide2
+
+;-- стреляет до начала сцены со снайпером
+
+[smartcover@fire]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_1_smartcover
+cover_state = fire_target
+target_path = barricade_fire_1_look
+on_info = {+cover_fire_end} smartcover@hide
+on_info2 = {+sniper_fire_scene} smartcover@hide
+on_info3 = {+sniper_fire_scene_end} smartcover@hide2
+
+;-- прячется 
+[smartcover@hide2]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_1_smartcover
+cover_state = idle_target
+on_info = {+cover_fire} smartcover@fire2
+on_info2 = {+sniper_off} camper@rush
+
+;-- стреляет, прикрывает игрока
+
+[smartcover@fire2]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+path_walk = barricade_hide_1_walk
+combat_ignore_cond = true
+cover_name = hosp_barricade_1_smartcover
+cover_state = fire_target
+target_path = barricade_fire_1_look
+on_info = {+cover_fire_end} smartcover@hide2
+
+;-- проход отряда ЧН по второму этажу
+[camper@rush]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+path_walk = barricade_rush_1_walk
+path_look = barricade_rush_1_look
+radius = 5
+meet = no_meet
+no_retreat = true
+def_state_moving = sneak_run
+on_info = {+door_blow_up} camper@final_wait
+invulnerable = true
+
+[camper@final_wait]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+path_walk = barricade_rush_1_walk
+path_look = barricade_rush_1_look
+radius = 0
+meet = no_meet
+no_retreat = true
+def_state_moving = sneak_run
+on_game_timer = 60 | camper@final
+invulnerable = true
+
+;-- отряд ЧН занимает финальные точки перед проломом
+[camper@final]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+path_walk = barricade_final_1_walk
+path_look = barricade_final_1_look
+radius = 0
+no_retreat = true
+meet = no_meet
+def_state_moving = sneak_run
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_game_timer = 50 | camper@final1
+invulnerable = true
+
+[camper@final1]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+path_walk = barricade_final_1_walk
+path_look = barricade_final_1_look_3
+radius = 0
+no_retreat = true
+meet = no_meet
+def_state_moving = sneak_run
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_game_timer = 2 | camper@final2
+invulnerable = true
+
+[camper@final2]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+path_walk = barricade_final_1_walk
+path_look = barricade_final_1_look_2
+radius = 0
+no_retreat = true
+meet = no_meet
+def_state_moving = sneak_run
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_game_timer = 50 | camper@final3
+invulnerable = true
+
+[camper@final3]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+path_walk = barricade_final_1_walk
+path_look = barricade_final_1_look_3
+radius = 0
+no_retreat = true
+meet = no_meet
+def_state_moving = sneak_run
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_game_timer = 2 | camper@final
+invulnerable = true
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_sound = 0
+ignore_distance_grenade = 0
+
+[danger_condition@rush]
+ignore_distance_corpse = 0

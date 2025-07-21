@@ -1,0 +1,119 @@
+--------------------------------------------------------------------------------
+-- Animated doors' binder
+--------------------------------------------------------------------------------
+function bind(obj)
+	obj:bind_object(agru_door_binder(obj))
+	db.storage[obj:id()] = {}
+end
+--------------------------------------------------------------------------------
+class "agru_door_binder" (object_binder)
+function agru_door_binder:__init(obj) super(obj)
+	self.idle_snd = sound_object("device\\bridge\\motor_run")
+	self.down_snd = sound_object("device\\bridge\\motor_stop")
+	self.start_snd = sound_object("device\\bridge\\motor_start")
+	self.stop_snd = sound_object("device\\bridge\\motor_stop")
+	self.idle = 5000
+	self.is_idle = true
+	self.is_play_fwd = false
+	self.idle_end = 0
+end
+
+function agru_door_binder:net_spawn(server_object)
+	if not(object_binder.net_spawn(self, server_object)) then
+		return false
+	end
+	db.add_anim_obj(self.object, self)
+	self.object:set_callback(callback.script_animation, self.animation_end_callback, self)
+	return true
+end
+
+function agru_door_binder:net_destroy()
+	self.idle_snd:stop()
+	self.down_snd:stop()
+	self.start_snd:stop()
+	self.stop_snd:stop()
+	self.object:set_callback(callback.script_animation, nil)
+	db.del_anim_obj(self.object)
+	object_binder.net_destroy(self)
+end
+
+function agru_door_binder:update(delta)
+	object_binder.update(self, delta)
+    if self.anim_time then
+        self.object:get_physics_object():anim_time_set(self.anim_time)
+        self.anim_time = nil
+    end
+	if not self.is_idle then
+		if(self.idle_end<=game.time()) then
+			if self.is_play_fwd then
+				self.object:get_physics_object():run_anim_forward()
+			else
+				self.object:get_physics_object():run_anim_back()
+			end
+		end
+	else
+		self.object:get_physics_object():stop_anim()
+		if self.idle_snd then
+			self.idle_snd:stop()
+		end
+	end
+end
+
+function agru_door_binder:anim_forward()
+	self.idle_snd:stop()
+	self.object:get_physics_object():stop_anim()
+	self.idle_end = self.idle + game.time()
+	self.start_snd:play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
+	self.idle_snd:play_at_pos(self.object, self.object:position(), 2, sound_object.s3d + sound_object.looped)
+	self.is_idle = false
+	self.is_play_fwd = true
+end
+
+function agru_door_binder:anim_backward()
+	self.idle_snd:stop()
+	self.object:get_physics_object():stop_anim()
+	self.idle_end = self.idle + game.time()
+	self.start_snd:play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
+	self.idle_snd:play_at_pos(self.object, self.object:position(), 2, sound_object.s3d + sound_object.looped)
+	self.is_idle = false
+	self.is_play_fwd = false
+end
+
+function agru_door_binder:anim_stop()
+	self.object:get_physics_object():stop_anim()
+	self.is_idle = true
+	self.stop_snd:play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
+end
+
+function agru_door_binder:animation_end_callback(is_end)
+	if(is_end) then
+		self.stop_snd:play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
+		self.is_idle = true
+	end
+end
+-- Standart function for save
+function agru_door_binder:net_save_relevant()
+	return true
+end
+-- Saving crow
+function agru_door_binder:save(packet)
+	set_save_marker(packet, "save", false, "agru_door_binder")
+	object_binder.save(self, packet)
+	xr_logic.save_obj(self.object, packet)
+	packet:w_bool(self.is_idle)
+	packet:w_bool(self.is_play_fwd)
+	packet:w_u32(self.idle_end)
+	packet:w_float(self.object:get_physics_object():anim_time_get())
+	set_save_marker(packet, "save", true, "agru_door_binder")
+end
+-- Loading crow
+function agru_door_binder:load(packet)
+	set_save_marker(packet, "load", false, "agru_door_binder")
+	object_binder.load(self, packet)
+	xr_logic.load_obj(self.object, packet)
+	self.is_idle = packet:r_bool()
+	self.is_play_fwd = packet:r_bool()
+	self.idle_end = packet:r_u32()
+	self.anim_time = packet:r_float()
+	set_save_marker(packet, "load", true, "agru_door_binder")
+end

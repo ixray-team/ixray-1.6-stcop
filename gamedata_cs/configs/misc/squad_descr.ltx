@@ -1,0 +1,90 @@
+#include "squad_descr_escape.ltx"
+#include "squad_descr_marsh.ltx"
+#include "squad_descr_garbage.ltx"
+#include "squad_descr_agroprom.ltx"
+#include "squad_descr_dark_valley.ltx"
+#include "squad_descr_redforest.ltx"
+#include "squad_descr_military.ltx"
+#include "squad_descr_yantar.ltx"
+#include "squad_descr_limansk.ltx"
+#include "squad_descr_agroprom_underground.ltx"
+; «десь содержатс€ дескрипшены сквадов, которые потом можно создавать использу€ спец функции.
+
+
+[test_duty]
+faction = dolg
+npc = sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_4
+target_smart = smart5:smart1:nil
+
+[test_stalker]
+auto_id = true
+faction = stalker
+npc = sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1
+target_smart = test_smart_2
+
+[test_freedom]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+
+[test_attack]
+faction = dolg
+npc = sim_default_duty_1
+target_smart = test_terrain_2
+
+
+[pl]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = smart_terrain_4
+spawn_point = smart_terrain_4_spawn
+
+[arena_squad]
+faction = arena_enemy
+npc = arena_first_battle_stalker_1, arena_first_battle_stalker_1, arena_first_battle_stalker_1, arena_first_battle_stalker_1, arena_first_battle_stalker_1
+active_task = stay_point@arena_smart
+spawn_point = arena_smart_spawn
+target_smart = arena_smart
+
+[test_freedom21]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+;relationship = friend
+;sympathy = 0
+
+[test_freedom2]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+;active_task = smart_terrain_3
+relationship = friend
+;sympathy = 0
+
+[test_freedom22]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+
+[test_duty2]
+faction = dolg
+npc = sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_4
+relationship = friend
+;sympathy = 0
+
+[test_duty21]
+faction = dolg
+npc = sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_4
+;relationship = friend
+;sympathy = 0
+
+[test_csky]
+faction = csky
+npc = sim_default_csky_2, sim_default_csky_2, sim_default_csky_2, sim_default_csky_2, sim_default_csky_2
+;active_task = smart_terrain_3
+;relationship = friend
+;sympathy = 0
+
+[test_bandit]
+faction = bandit
+npc = sim_default_bandit_3,sim_default_bandit_3,sim_default_bandit_3,sim_default_bandit_3,sim_default_bandit_3
+;active_task = smart_terrain_3
+relationship = friend
+;show_spot = {-test_info_1} true, false
+;sympathy = 0

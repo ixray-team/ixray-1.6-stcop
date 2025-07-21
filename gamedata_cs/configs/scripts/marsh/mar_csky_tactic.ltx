@@ -1,0 +1,73 @@
+[logic]
+active = smartcover@main_2
+level_spot = quest_npc
+
+[smartcover@main_1]
+path_walk = mar_smart_terrain_csky_base_tactic_walk
+cover_name = mar_smart_cover_csky_tactic_lead_sit_sleep_mechanic
+loophole_name = lead_sit_sleep_mechanic
+cover_state = idle_target
+on_info = {!talking} smartcover@main_2
+combat_ignore_cond = true
+meet = meet@main_tactic
+;target_path = mar_smart_terrain_csky_base_tactic_look
+;target_enemy = actor
+def_state_moving = walk
+
+[smartcover@main_2]
+path_walk = mar_smart_terrain_csky_base_tactic_walk
+cover_name = mar_smart_cover_csky_tactic_lead_sit_sleep_mechanic
+loophole_name = lead_sit_sleep_mechanic
+cover_state = lookout_target
+on_info = {=talking} smartcover@main_1
+on_info2 = {+mar_intro_talk_with_commander_3_control -mar_intro_talk_with_tactic_done =actor_in_zone(mar_space_restrictor_tactic)} smartcover@main_autouse_1
+combat_ignore_cond = true
+meet = meet@main_tactic
+;target_path = mar_smart_terrain_csky_base_tactic_look
+def_state_moving = walk
+
+[smartcover@main_autouse_1]
+path_walk = mar_smart_terrain_csky_base_tactic_walk
+cover_name = mar_smart_cover_csky_tactic_lead_sit_sleep_mechanic
+loophole_name = lead_sit_sleep_mechanic
+cover_state = idle_target
+on_info = {=talking} smartcover@main_autouse_2
+combat_ignore_cond = true
+meet = meet@autouse_tactic
+;target_path = mar_smart_terrain_csky_base_tactic_look
+;target_enemy = actor
+def_state_moving = walk
+
+[smartcover@main_autouse_2]
+path_walk = mar_smart_terrain_csky_base_tactic_walk
+cover_name = mar_smart_cover_csky_tactic_lead_sit_sleep_mechanic
+loophole_name = lead_sit_sleep_mechanic
+cover_state = idle_target
+on_info = {!talking} smartcover@main_2
+combat_ignore_cond = true
+meet = meet@autouse_tactic
+;target_path = mar_smart_terrain_csky_base_tactic_look
+;target_enemy = actor
+def_state_moving = walk
+
+;-----------------------------------------------------------------------------
+
+[meet@main_tactic]
+use = true
+use_wpn = true
+meet_state = 5 | nil@nil
+meet_state_wpn = 5 | nil@nil
+victim = 0 | actor
+victim_wpn = 0 | actor
+trade_enable = false
+precond = usability
+
+[meet@autouse_tactic]
+use = self
+use_wpn = self
+meet_state = 15 | nil@nil
+meet_state_wpn = 15 | nil@nil
+victim = 0 | actor
+victim_wpn = 0 | actor
+trade_enable = false
+precond = usability

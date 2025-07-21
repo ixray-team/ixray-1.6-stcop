@@ -1,0 +1,41 @@
+[logic@work1]
+active = walker@enter_t_work1
+suitable = {=check_npc_name(sim_default_stalker_)} true
+meet = meet
+
+[walker@enter_t_work1]
+path_walk = grd_2_walk
+path_look = grd_2_look
+on_actor_in_zone = esc_space_restrictor_nasip_tonnel | remark@idle_t
+
+[remark@idle_t]
+anim = hello_wpn
+target = actor
+on_info = {+esc_actor_inside_traders_dung +esc_actor_inside_tonnel -esc_reach_stalker_base_complete} remark@yes_t_work1
+on_info2 = {-esc_actor_inside_traders_dung} remark@no_t_work1 %=play_sound(esc_railroadpost_no:stalker)%
+
+[remark@yes_t_work1]
+anim = guard
+target = actor
+on_info = {+esc_actor_inside_tonnel_1 -esc_reach_stalker_base_complete} walker@last_t_work1 %=play_sound(esc_railroadpost_yes:stalker)%
+
+[walker@last_t_work1]
+path_walk = grd_2_walk
+path_look = grd_2_look
+meet = meet
+
+[remark@no_t_work1]
+target = actor
+anim = backoff
+snd = esc_railroadpost_no
+on_actor_in_zone = esc_space_restrictor_nasip_tonnel_1 | walker@enter_t_work1 %=set_squad_goodwill(esc_smart_terrain_6_8_stalker_patrol:enemy) =set_squad_goodwill(esc_smart_terrain_6_8_stalker_sniper:enemy) =set_squad_goodwill(esc_smart_terrain_6_8_stalker:enemy) =set_squad_goodwill(esc_smart_terrain_4_8_stalker_2_squad:enemy)%
+on_info = {=actor_out_zone(esc_space_restrictor_nasip_tonnel) =actor_out_zone(esc_space_restrictor_nasip_tonnel_1)} walker@enter_t_work1
+
+[meet]
+meet_state = 10| guard@meet_comander_start
+meet_state_wpn = 15| backoff@meet_weapon_wait
+victim = 30| actor| 20| actor
+victim_wpn = 30| actor| 20| actor
+use	= true
+use_wpn = false
+abuse = true

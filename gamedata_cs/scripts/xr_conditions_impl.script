@@ -1,0 +1,8 @@
+
+function dist_less(a1, a2)
+	return a1.dist < a2.dist
+end
+
+function actor_has_object(actor, obj_name)
+	return actor:object(obj_name) ~= nil
+end

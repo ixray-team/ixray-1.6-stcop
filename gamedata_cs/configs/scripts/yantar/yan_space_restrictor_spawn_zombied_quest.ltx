@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+yan_quest_doc} sr_idle@spawn_1
+
+[sr_idle@spawn_1]
+on_info = {!actor_in_zone(yan_space_restrictor_spawn_zombi3_surge) !squad_exist(yan_squad_3_zombi_quest) +yan_quest_doc} sr_idle@spawn_2 %=create_squad(yan_squad_3_zombi_quest:yan_smart_terrain_zombi_in_sci_base3)%, sr_idle@spawn_2  
+
+[sr_idle@spawn_2]
+on_info = sr_idle@stop
+
+[sr_idle@stop]

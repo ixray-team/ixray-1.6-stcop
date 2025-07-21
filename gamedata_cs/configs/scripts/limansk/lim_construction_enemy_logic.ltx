@@ -1,0 +1,257 @@
+;**************** enemy 1 *********************************
+[logic@construction_enemy_work1]
+active = camper@wait_work1
+suitable = {-lim_construction_passed} true
+prior = 100
+
+[camper@wait_work1]
+out_restr = lim_construction_restr
+;combat_ignore_cond = true
+path_walk = wait_1_walk
+path_look = wait_1_walk
+on_info = {=actor_in_zone(lim_construction_enemy_fire_zone_1)} camper@fire_work1
+on_info2 = {=actor_in_zone(lim_construction_enemy_fire_zone_2)} camper@fire_work1
+on_info3 = {=actor_in_zone(lim_construction_enemy_fire_zone_3)} camper@fire_work1
+on_info4 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work1
+
+[camper@fire_work1]
+out_restr = lim_construction_restr
+path_walk = fire_1_walk
+path_look = fire_1_look
+radius = 50
+def_state_moving = sneak_run
+on_info = {=actor_out_zone(lim_construction_enemy_fire_zone_1) =actor_out_zone(lim_construction_enemy_fire_zone_2) =actor_out_zone(lim_construction_enemy_fire_zone_3)} camper@wait_work1
+on_info2 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work1
+
+[camper@fire2_work1]
+out_restr = lim_construction_restr
+path_walk = first_floor_1_walk
+path_look = first_floor_1_walk
+def_state_moving = assault
+
+;**************** enemy 2 *********************************
+
+[logic@construction_enemy_work2]
+active = camper@wait_work2
+suitable = {-lim_construction_passed} true
+prior = 100
+
+[camper@wait_work2]
+out_restr = lim_construction_restr
+;combat_ignore_cond = true
+path_walk = wait_2_walk
+path_look = wait_2_walk
+on_info = {=actor_in_zone(lim_construction_enemy_fire_zone_1)} camper@fire_work2
+on_info2 = {=actor_in_zone(lim_construction_enemy_fire_zone_2)} camper@fire_work2
+on_info3 = {=actor_in_zone(lim_construction_enemy_fire_zone_3)} camper@fire_work2
+on_info4 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work2
+
+[camper@fire_work2]
+out_restr = lim_construction_restr
+path_walk = fire_2_walk
+path_look = fire_2_look
+radius = 50
+def_state_moving = sneak_run
+on_info = {=actor_out_zone(lim_construction_enemy_fire_zone_1) =actor_out_zone(lim_construction_enemy_fire_zone_2) =actor_out_zone(lim_construction_enemy_fire_zone_3)} camper@wait_work2
+on_info2 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work2
+
+[camper@fire2_work2]
+out_restr = lim_construction_restr
+path_walk = first_floor_2_walk
+path_look = first_floor_2_walk
+def_state_moving = assault
+
+;**********************************************************
+;*********************** enemy 3 **************************
+
+[logic@construction_enemy_work3]
+active = camper@wait_work3
+suitable = {-lim_construction_passed} true
+prior = 100
+
+[camper@wait_work3]
+out_restr = lim_construction_restr
+;combat_ignore_cond = true
+path_walk = wait_3_walk
+path_look = wait_3_walk
+on_info = {=actor_in_zone(lim_construction_enemy_fire_zone_2)} camper@fire_work3
+on_info2 = {=actor_in_zone(lim_construction_enemy_fire_zone_3)} camper@fire_work3
+on_info3 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work3
+
+[camper@fire_work3]
+out_restr = lim_construction_restr
+path_walk = fire_3_walk
+path_look = fire_3_look
+radius = 50
+def_state_moving = sneak_run
+on_info = {=actor_out_zone(lim_construction_enemy_fire_zone_1) =actor_out_zone(lim_construction_enemy_fire_zone_2) =actor_out_zone(lim_construction_enemy_fire_zone_3)} camper@wait_work3
+on_info2 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work3
+
+[camper@fire2_work3]
+out_restr = lim_construction_restr
+path_walk = first_floor_3_walk
+path_look = first_floor_3_walk
+def_state_moving = assault
+
+;**********************************************************
+;*********************** enemy 4 **************************
+
+[logic@construction_enemy_work4]
+active = camper@wait_work4
+suitable = {-lim_construction_passed} true
+prior = 100
+
+[camper@wait_work4]
+out_restr = lim_construction_restr
+;combat_ignore_cond = true
+path_walk = wait_4_walk
+path_look = wait_4_walk
+on_info = {=actor_in_zone(lim_construction_enemy_fire_zone_2)} camper@fire_work4
+on_info2 = {=actor_in_zone(lim_construction_enemy_fire_zone_3)} camper@fire_work4
+on_info3 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work4
+
+[camper@fire_work4]
+out_restr = lim_construction_restr
+path_walk = fire_4_walk
+path_look = fire_4_look
+radius = 50
+def_state_moving = sneak_run
+on_info = {=actor_out_zone(lim_construction_enemy_fire_zone_1) =actor_out_zone(lim_construction_enemy_fire_zone_2) =actor_out_zone(lim_construction_enemy_fire_zone_3)} camper@wait_work4
+on_info2 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work4
+
+[camper@fire2_work4]
+out_restr = lim_construction_restr
+path_walk = first_floor_4_walk
+path_look = first_floor_4_walk
+def_state_moving = assault
+
+;**********************************************************
+;*********************** enemy 5 **************************
+
+[logic@construction_enemy_work5]
+active = camper@wait_work5
+suitable = {-lim_construction_passed} true
+prior = 100
+
+[camper@wait_work5]
+out_restr = lim_construction_restr
+;combat_ignore_cond = true
+path_walk = wait_5_walk
+path_look = wait_5_walk
+on_info = {=actor_in_zone(lim_construction_enemy_fire_zone_2)} camper@fire_work5
+on_info2 = {=actor_in_zone(lim_construction_enemy_fire_zone_3)} camper@fire_work5
+on_info3 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work5
+
+[camper@fire_work5]
+out_restr = lim_construction_restr
+path_walk = fire_5_walk
+path_look = fire_5_look
+radius = 50
+def_state_moving = sneak_run
+on_info = {=actor_out_zone(lim_construction_enemy_fire_zone_1) =actor_out_zone(lim_construction_enemy_fire_zone_2) =actor_out_zone(lim_construction_enemy_fire_zone_3)} camper@wait_work5
+on_info2 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work5
+
+[camper@fire2_work5]
+out_restr = lim_construction_restr
+path_walk = first_floor_5_walk
+path_look = first_floor_5_walk
+def_state_moving = assault
+
+;**********************************************************
+;*********************** enemy 6 **************************
+
+[logic@construction_enemy_work6]
+active = camper@wait_work6
+suitable = {-lim_construction_passed} true
+prior = 100
+
+[camper@wait_work6]
+out_restr = lim_construction_restr
+;combat_ignore_cond = true
+path_walk = wait_6_walk
+path_look = wait_6_walk
+on_info = {=actor_in_zone(lim_construction_enemy_fire_zone_2)} camper@fire_work6
+on_info2 = {=actor_in_zone(lim_construction_enemy_fire_zone_3)} camper@fire_work6
+on_info3 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work6
+
+[camper@fire_work6]
+out_restr = lim_construction_restr
+path_walk = fire_6_walk
+path_look = fire_6_look
+radius = 50
+def_state_moving = sneak_run
+on_info = {=actor_out_zone(lim_construction_enemy_fire_zone_1) =actor_out_zone(lim_construction_enemy_fire_zone_2) =actor_out_zone(lim_construction_enemy_fire_zone_3)} camper@wait_work6
+on_info2 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2_work6
+
+[camper@fire2_work6]
+out_restr = lim_construction_restr
+path_walk = first_floor_6_walk
+path_look = first_floor_6_walk
+def_state_moving = assault
+
+;**********************************************************
+;*********************** enemy 7 construction yard **************************
+
+[logic@construction_enemy_work7]
+active = walker@guard_work7
+suitable = {-lim_construction_passed} true
+prior = 20
+
+[walker@guard_work7]
+out_restr = lim_construction_yard_restr
+path_walk = yard_1_walk
+path_look = yard_1_look
+
+;**********************************************************
+;*********************** enemy 8 construction yard **************************
+
+[logic@construction_enemy_work8]
+active = walker@guard_work8
+suitable = {-lim_construction_passed} true
+prior = 20
+
+[walker@guard_work8]
+out_restr = lim_construction_yard_restr
+path_walk = yard_2_walk
+path_look = yard_2_look
+
+;**********************************************************
+;*********************** enemy 9 construction yard **************************
+
+[logic@construction_enemy_work9]
+active = walker@guard_work9
+suitable = {-lim_construction_passed} true
+prior = 20
+
+[walker@guard_work9]
+out_restr = lim_construction_yard_restr
+path_walk = yard_3_walk
+path_look = yard_3_look
+
+
+;**********************************************************
+;*********************** enemy 10 construction yard **************************
+
+[logic@construction_enemy_work10]
+active = walker@guard_work10
+suitable = {-lim_construction_passed} true
+prior = 20
+
+[walker@guard_work10]
+out_restr = lim_construction_yard_restr
+path_walk = yard_4_walk
+path_look = yard_4_look
+
+
+;**********************************************************
+;*********************** enemy 11 construction yard **************************
+
+[logic@construction_enemy_work11]
+active = walker@guard_work11
+suitable = {-lim_construction_passed} true
+prior = 20
+
+[walker@guard_work11]
+out_restr = lim_construction_yard_restr
+path_walk = yard_5_walk
+path_look = yard_5_look

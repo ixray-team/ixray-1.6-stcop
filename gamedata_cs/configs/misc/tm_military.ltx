@@ -1,0 +1,265 @@
+[list_tm_military]
+mil_blockpost
+mil_hires
+mil_kill_bloodsucker
+mil_reach_tower_task
+mil_talk_2_forester2
+mil_talk_2_merc_2_task
+mil_talk_2_fr_com
+mil_destroy_all_military
+mil_transfer_coo
+mil_actor_attack_house
+mil_contact_with_clear_sky_commander
+mil_defend_barrier
+mil_additional_quest_1
+mil_additional_quest_2
+mil_additional_quest_3
+mil_additional_quest_4
+mil_additional_quest_5
+
+[mil_blockpost] ;--поговорить с командиром блокпоста
+type = storyline
+task_type = storyline
+icon = ui_mt_image_defend_tower
+name = mil_blockpost_task
+text = mil_blockpost_text
+target_story_ids = 1218
+condlist_0 = {+mil_actor_bridge} complete
+condlist_1 = {+mil_freedom_speaker_death} fail
+condlist_2 = {+mil_actor_inside_wtower} reversed
+prior = 10
+auto_faction = false
+
+[mil_hires] ;--идти к отряду
+type = storyline
+task_type = storyline
+icon = ui_mt_image_defend_tower
+name = mil_hires
+text = mil_hires_text
+target_story_ids = 1207
+condlist_0 = {+mil_merc_talked} complete
+condlist_1 = {+mil_hog_death} fail
+condlist_2 = {+mil_actor_inside_wtower} reversed
+on_complete = %+mil_reach_merc_done%
+prior = 10
+auto_faction = false
+
+[mil_kill_bloodsucker] ;--убить тварь
+type = eliminate_smart
+task_type = additional
+auto_name = false
+icon = ui_mt_image_defend_tower
+name = mil_kill_bs
+text = mil_kill_bs_text
+prior = 10
+wait_time = -1
+target_cond = {=target_smart_name(mil_smart_terrain_4_3)} true
+condlist_0 = {+mil_bs_dead} complete
+condlist_1 = {+mil_actor_inside_wtower} reversed
+on_complete = %+mil_free_2_tower =play_sound(mil_bs_dead)%
+community_relation_delta_fail=-150
+community_relation_delta_complete=+150
+play_regard = nil
+auto_faction = false
+
+[mil_reach_tower_task] ;--получить все радиосообщения
+type = storyline
+task_type = storyline
+icon = ui_mt_image_defend_tower
+name = mil_reach_tower_task
+text = mil_reach_tower_task_text
+target_story_ids = 1209
+condlist_0 = {+mil_actor_inside_wtower} complete
+auto_faction = false
+
+[mil_talk_2_forester2] ;--поговорить с лесником
+type = storyline
+task_type = storyline
+icon = ui_mt_image_defend_tower
+name = mil_talk_2_forester2
+text = mil_talk_2_forester2_text
+target_story_ids = 515
+condlist_0 = {+forester_talked_2} complete
+;on_complete = %+forester_telled_coordinates%
+auto_faction = false
+
+[mil_talk_2_merc_2_task] ;--узнать у наёмников способ передачи сообщения
+type = storyline
+task_type = storyline
+icon = ui_mt_image_defend_tower
+name = mil_talk_2_merc_2_task
+text = mil_talk_2_merc_2_task_text
+target_story_ids = 1207
+condlist_0 = {+mil_merc_talked_f1_f2_wt1} complete
+auto_faction = false
+
+[mil_talk_2_fr_com] ;--идти к свободовцам на базе
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+name = mil_talk_2_fr_com
+text = mil_talk_2_fr_com_text
+target_story_ids = 1211
+condlist_0 = {+mil_actor_attack_house} complete
+condlist_1 = {=is_squad_enemy_to_actor(mil_freedom_attack_base_1)} reversed
+;on_reversed = %+mil_actor_with_freedom_squad%
+auto_faction = false
+
+[mil_actor_attack_house] ;--очистить здание штаба от военных
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+name = mil_actor_attack_house
+text = mil_actor_attack_house_text
+target_story_ids = 1217
+condlist_0 = {+mil_militarybase_dead_1 +mil_militarybase_dead_2} complete
+on_complete = %+mil_destroy_house_military%
+on_reversed = %+mil_destroy_house_military%
+community_relation_delta_fail=-300
+community_relation_delta_complete=+300
+auto_faction = false
+
+[mil_destroy_all_military] ;--уничтожить всех военных
+type = eliminate_smart
+task_type = storyline
+auto_name = false
+icon = ui_mt_image_attack_tower
+name = mil_elim_military
+text = mil_elim_military_text
+prior = 10
+target_cond = {=target_smart_name(mil_smart_terrain_7_7)} true
+condlist_1 = {=is_squad_enemy_to_actor(mil_freedom_attack_base_1)} reversed
+wait_time = -1
+on_complete = %+mil_mil_eliminated%
+on_reversed = %+mil_mil_eliminated%
+community_relation_delta_fail=-200
+community_relation_delta_complete=+200
+play_regard = nil
+auto_faction = false
+
+[mil_transfer_coo] ;--координаты передатчика
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+name = mil_transfer_coo
+text = mil_transfer_coo_text
+target_story_ids = 1215
+condlist_0 = {+mil_actor_go_to_limansk} complete
+on_complete = %+red_bridge_scene_begin%
+auto_faction = false
+
+[mil_contact_with_clear_sky_commander] ;--поговорить с командиром ЧН
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+prior = 11
+name = mil_contact_with_clear_sky_commander_descr
+text = mil_contact_with_clear_sky_commander_name
+target_story_ids = 501
+condlist_0 = {+red_bridge_actor_talk_with_cs_commander} complete
+condlist_1 = {+red_bridge_actor_in_position} reversed
+auto_faction = false
+
+;Other
+
+[mil_defend_barrier]
+type = defend_smart
+task_type = additional
+auto_name = false
+target_cond = {=target_smart_name(mil_smart_terrain_3_8)} true
+name = mil_defend_barrier_name
+text = mil_defend_barrier_text
+prior = 9
+reward_money = 1000
+wait_time = 0
+community_relation_delta_fail=-200
+community_relation_delta_complete=+200
+auto_faction = false
+
+;Additional quests
+
+[mil_additional_quest_1] ;Вертолет
+type = recover_item
+task_type = additional
+name = mil_additional_quest_1_name
+text = mil_additional_quest_1_text
+target_cond = {+mil_start_after_red_forest -mil_additional_quest_1_info_complete =check_npc_squad(mil_smart_terrain_2_4_stalker_squad_1)} true
+prior = 4
+target_npc_or_box_name = mil_additional_quest_1_box
+wait_time = -1
+immediate_reward = true
+reward_money = 2000
+requested_items = ammo_gauss
+on_complete = %+mil_additional_quest_1_info_complete%
+community_relation_delta_fail=-100
+community_relation_delta_complete=+100
+auto_faction = false
+
+[mil_additional_quest_2] ;Собаки
+type = recover_item
+task_type = additional
+name = mil_additional_quest_2_name
+text = mil_additional_quest_2_text
+target_cond = {-mil_additional_quest_2_info_complete =check_npc_squad(mil_smart_terrain_2_4_stalker_squad_2)} true
+prior = 4
+target_npc_or_box_name = mil_additional_quest_2_commander
+wait_time = -1
+immediate_reward = true
+reward_money = 3000
+requested_items = mil_device_pda_lost_squard
+on_complete = %+mil_additional_quest_2_info_complete%
+community_relation_delta_fail=-100
+community_relation_delta_complete=+100
+auto_faction = false
+
+[mil_additional_quest_3] ;Снайпер
+type = recover_item
+task_type = additional
+name = mil_additional_quest_3_name
+text = mil_additional_quest_3_text
+target_cond = {-mil_additional_quest_3_info_complete =check_npc_squad(mil_smart_terrain_7_4_freedom_base_squad_1)} true
+prior = 4
+target_npc_or_box_name = mil_additional_quest_3_soldier_1, mil_additional_quest_3_soldier_2, mil_additional_quest_3_soldier_3, mil_additional_quest_3_soldier_4
+wait_time = -1
+immediate_reward = true
+reward_money = 2000
+requested_items = ammo_7.62x54_7h14
+on_complete = %+mil_additional_quest_3_info_complete%
+community_relation_delta_fail=-100
+community_relation_delta_complete=+100
+auto_faction = false
+
+[mil_additional_quest_4] ;Болото
+type = recover_item
+task_type = additional
+name = mil_additional_quest_4_name
+text = mil_additional_quest_4_text
+target_cond = {-mil_additional_quest_4_info_complete =check_npc_squad(mil_smart_terrain_2_4_stalker_squad_1)} true
+prior = 4
+target_npc_or_box_name = mil_additional_quest_4_lost_soldier
+wait_time = -1
+immediate_reward = true
+reward_money = 4000
+requested_items = af_mincer_meat
+on_init = %+mil_additional_quest_4_spawn%
+on_complete = %+mil_additional_quest_4_info_complete%
+community_relation_delta_fail=-100
+community_relation_delta_complete=+100
+auto_faction = false
+
+[mil_additional_quest_5] ;Кровосос
+type = recover_item
+task_type = additional
+name = mil_additional_quest_5_name
+text = mil_additional_quest_5_text
+target_cond = {+mil_start_after_red_forest -mil_additional_quest_5_info_complete =check_npc_squad(mil_smart_terrain_5_2_freedom_squad_1)} true
+prior = 4
+target_npc_or_box_name = mil_additional_quest_5_soldier
+wait_time = -1
+immediate_reward = true
+reward_item = wpn_fn2000:ammo_5.56x45_ap:ammo_5.56x45_ap
+requested_items = af_fire
+on_complete = %+mil_additional_quest_5_info_complete%
+community_relation_delta_fail=-100
+community_relation_delta_complete=+100
+auto_faction = false

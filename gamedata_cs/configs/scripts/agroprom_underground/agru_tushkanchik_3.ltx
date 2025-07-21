@@ -1,0 +1,11 @@
+[logic]
+active = mob_walker
+
+[mob_walker]
+path_walk = agru_tushkanchik_3_walk
+combat_ignore_cond = always
+braindead = true
+actor_friendly = true
+npc_friendly = true
+on_info = {=npc_in_zone(agru_dead_zone_for_tuskkanchiki)} %=destroy_object%
+out_restr = agru_tushkano_restr

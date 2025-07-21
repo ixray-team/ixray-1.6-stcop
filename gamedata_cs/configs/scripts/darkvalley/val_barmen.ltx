@@ -1,0 +1,42 @@
+[logic]
+active = smartcover@main_idle
+trade = misc\trade\trade_barmen_all.ltx
+level_spot = quest_npc
+
+[smartcover@main_idle]
+cover_name = val_barman_smart_cover
+loophole_name = lead_stand_lean_on_bar
+cover_state = idle_target
+on_timer = 15000 | {~50 !talking} smartcover@main_lookout, {!talking} smartcover@main_fire_no_lookout
+combat_ignore_cond = true
+meet = meet@main
+def_state_moving = walk
+out_restr = val_space_restrictor_freedom_barmen
+
+[smartcover@main_lookout]
+cover_name = val_barman_smart_cover
+loophole_name = lead_stand_lean_on_bar
+cover_state = lookout_target
+on_timer = 15000 | {~50} smartcover@main_fire_no_lookout, smartcover@main_idle
+on_info = {=talking} smartcover@main_idle
+combat_ignore_cond = true
+meet = meet@main
+def_state_moving = walk
+out_restr = val_space_restrictor_freedom_barmen
+
+[smartcover@main_fire_no_lookout]
+cover_name = val_barman_smart_cover
+loophole_name = lead_stand_lean_on_bar
+cover_state = fire_no_lookout_target
+on_timer = 15000 | {~50} smartcover@main_idle, smartcover@main_lookout
+on_info = {=talking} smartcover@main_idle
+combat_ignore_cond = true
+meet = meet@main
+def_state_moving = walk
+out_restr = val_space_restrictor_freedom_barmen
+
+[meet@main]
+meet_state 	= 3|nil@nil
+sound_start = val_freedom_barmen_meet
+sound_stop 	= val_freedom_barmen_meet_bye
+quest_npc = true

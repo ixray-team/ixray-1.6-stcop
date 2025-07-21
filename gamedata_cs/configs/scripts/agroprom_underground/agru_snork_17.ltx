@@ -1,0 +1,10 @@
+[logic]
+active = mob_walker
+
+[mob_walker]
+path_walk = agru_snork_spawn_10
+on_info = {=npc_in_zone(agru_destroy_snork_3_zone)} %=destroy_object%
+braindead = true
+actor_friendly = true
+npc_friendly = true
+out_restr = agru_snorks_restrictor

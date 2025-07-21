@@ -1,0 +1,204 @@
+----------------------------------------------------------------------------------------------------
+-- Mob Eluder
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Jim
+----------------------------------------------------------------------------------------------------
+
+-- константы
+local DIST_TO_END	=	2.5			-- расстояние до конца пути
+
+class "mob_eluder"
+
+----------------------------------------------------------------------------------------------------
+-- CONSTRUCTION SCHEME
+----------------------------------------------------------------------------------------------------
+function mob_eluder:__init(obj, storage)
+	self.object = obj
+	self.st		= storage
+end
+
+----------------------------------------------------------------------------------------------------
+-- RESET SCHEME
+----------------------------------------------------------------------------------------------------
+function mob_eluder:reset_scheme()
+    printf("Eluder: reset_scheme: %s", self.object:name())
+	
+	xr_logic.mob_capture		(self.object, true)
+
+	self.st.signals				= {}
+	
+	self.self_distances			= {}
+	self.actor_distances		= {}
+	
+	self.prev_point_id			= 0
+	
+	self.time_state_changed		= 0
+end
+
+----------------------------------------------------------------------------------------------------
+-- UPDATE
+----------------------------------------------------------------------------------------------------
+
+function mob_eluder:update(delta)
+	
+	-- Check for alife control 
+	if not self:check_script_control() then	return end
+	
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end
+
+	if not self.object:action() then
+		-- Select point here
+		self:update_distances	()
+		
+		action(self.object, move(move.run_fwd, patrol(self.st.path):level_vertex_id(self.best_point_id), patrol(self.st.path):point(self.best_point_id), DIST_TO_END), cond(cond.move_end))
+	end
+	
+end
+
+----------------------------------------------------------------------------------------------------
+-- SERVICE FUNCTIONS
+----------------------------------------------------------------------------------------------------
+function mob_eluder:update_distances()
+	
+	local max_self_dist		= 0
+	local max_actor_dist	= 0
+	
+	for i = 1, patrol(self.st.path):count() do
+		-- вычислить свое расстояние
+		self.self_distances[i]	= patrol(self.st.path):point(i-1):distance_to(self.object:position())
+		
+		-- запомнить максимальное свое расстояние
+		if self.self_distances[i] > max_self_dist then
+			max_self_dist = self.self_distances[i]
+		end
+		
+		-- вычислить расстояние от актера
+		self.actor_distances[i]	= patrol(self.st.path):point(i-1):distance_to(db.actor:position())
+		
+		-- запомнить максимальное расстояние от актера
+		if self.actor_distances[i] > max_actor_dist then
+			max_actor_dist = self.actor_distances[i]
+		end
+	end
+	
+	local max_value		= 0
+	self.best_point_id	= 0
+	
+	local k_self		= 1
+	local k_actor		= 2
+	
+	-- пересчитать в соответствии с максимальным расстоянием
+	for i = 1, patrol(self.st.path):count() do
+		self.self_distances[i]	= 1 - self.self_distances[i] / max_self_dist
+		self.actor_distances[i]	= self.actor_distances[i] / max_actor_dist
+		
+		-- сохранить результат
+		self.self_distances[i]	= self.actor_distances[i]*k_actor + self.self_distances[i]*k_self
+		
+		-- show
+		
+		if max_value < self.self_distances[i] and self.prev_point_id ~= i-1 then
+			max_value			= self.self_distances[i]
+			self.best_point_id	= i-1
+		end
+		
+	end
+	
+	self.prev_point_id = self.best_point_id
+end
+
+
+----------------------------------------------------------------------------------------------------
+-- Check Script Control
+function mob_eluder:check_script_control()
+	
+	local cur_time		= time_global()
+	local dist_to_actor	= self.object:position():distance_to(db.actor:position())
+	
+	local used_dist_check = (self.st.min_dist ~= 0) and (self.st.max_dist ~= 0)
+	local used_time_check = (self.st.time_capture ~= 0) and (self.st.time_release ~= 0)
+	
+	-- time_check :: if time is zero - keep under control always 
+	if (not used_dist_check) and (not used_time_check) then return true end
+
+	if xr_logic.mob_captured(self.object) then
+		-- check for release conditions	
+
+		-- if near actor
+		-- if far from actor and its time to release for a while
+		if (used_dist_check and (dist_to_actor < self.st.min_dist)) or
+		   (used_time_check and (self.time_state_changed + (self.st.time_capture*1000) < cur_time)) then 
+			
+			xr_logic.mob_release(self.object)
+			self.time_state_changed = cur_time
+		end
+
+	else 
+		-- check for capture conditions
+		-- if far from actor
+		
+		local dist_check_good	= not used_dist_check
+		local time_check_good	= not used_time_check
+		-- check for time 
+		if used_time_check and (self.time_state_changed + (self.st.time_release*1000) < cur_time) then 
+			time_check_good = true
+		end
+		
+		-- check for distance
+		if used_dist_check and (dist_to_actor > self.st.max_dist) then
+			dist_check_good = true
+		end
+		
+		-- check if it can_capture
+		if dist_check_good and time_check_good and self.object:can_script_capture() then 
+			xr_logic.mob_capture(self.object, true)
+			self.time_state_changed = cur_time
+		end
+	end
+	
+	if not xr_logic.mob_captured(self.object) then
+		return false
+	else
+		return true
+	end
+
+end
+
+
+
+----------------------------------------------------------------------------------------------------
+-- ADD_TO_BINDER
+----------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	printf("DEBUG: add_to_binder: npc:name()='%s', scheme='%s', section='%s'", npc:name(), scheme, section)
+
+	local new_action = mob_eluder(npc, storage)
+
+	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+
+----------------------------------------------------------------------------------------------------
+-- SET_SCHEME
+----------------------------------------------------------------------------------------------------
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local storage				= xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
+	storage.logic				= xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	
+	storage.path				= utils.cfg_get_string(ini, section, "path",		 npc, false, "")
+	
+	-- время, которое монстр находится под скриптом
+	storage.time_capture		= utils.cfg_get_number(ini, section, "time_capture", npc, false, 10)
+	-- время, которое монстр находится под унисхемой
+	storage.time_release		= utils.cfg_get_number(ini, section, "time_release", npc, false, 10)
+	-- расстояние до актера, меньше которого, монстр переходит в унисхему
+	storage.min_dist			= utils.cfg_get_number(ini, section, "min_dist",	 npc, false, 5)
+	-- расстояние до актера, больше которого, монстр может перейти под скрипт
+	storage.max_dist			= utils.cfg_get_number(ini, section, "max_dist",	 npc, false, 10)
+	
+end
+

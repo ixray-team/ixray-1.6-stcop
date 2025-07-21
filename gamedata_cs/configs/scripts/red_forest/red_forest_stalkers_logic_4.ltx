@@ -1,0 +1,13 @@
+;**********************************
+;********* stalker 4 ***********
+
+[logic]
+active = walker@open_gate
+
+[walker@open_gate]
+post_combat_time = 0,0
+combat_ignore_cond = {!npc_in_zone(red_forest_pda_map_zone)}
+out_restr = red_forest_pda_map_zone
+path_walk = red_forest_stalkers_gate_4_walk
+path_look = red_forest_stalkers_gate_4_walk
+on_info = %=kill_npc()%

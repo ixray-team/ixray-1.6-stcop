@@ -1,0 +1,25 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+val_deadblockpost_sos} sr_idle@2 %=play_sound(gunfire_1)%
+
+[sr_idle@2]
+on_signal = sound_end | sr_idle@3 %=play_sound(val_freedom_leader_help)%
+
+[sr_idle@3]
+on_game_timer = 30 | sr_idle@4 %+val_deliver_ammo_complete%
+
+[sr_idle@4]
+on_info = {=actor_in_zone(val_space_restrictor_actor_in_zone_killerblockpost)} sr_idle@5 ;%=play_sound(val_freedom_leader_help)%
+
+[sr_idle@5]
+on_game_timer = 20 | sr_idle@6 %+val_check_blockpost_complete%
+
+[sr_idle@6]
+on_info = {=actor_has_item(device_pda_freedom)} sr_idle@7 %+val_find_pda_complete%
+
+[sr_idle@7]
+on_game_timer = 40 | sr_idle@end %=play_sound(val_killer_trep)%
+
+[sr_idle@end]

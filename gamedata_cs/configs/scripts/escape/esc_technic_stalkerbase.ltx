@@ -1,0 +1,56 @@
+[logic]
+active = remark@wait
+level_spot = mechanic
+on_death = death
+
+[remark@wait]
+path_walk = esc_tehnic_stalkerbase_walk
+path_look = esc_tehnic_stalkerbase_look
+anim = wait
+on_info = smartcover@1
+meet = meet
+
+[smartcover@1]
+cover_name = esc_smart_cover_mechanic_1
+loophole_name = lead_sit_sleep_mechanic
+cover_state = lookout_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+on_timer = 4000 | smartcover@2
+meet = meet
+
+[smartcover@2]
+cover_name = esc_smart_cover_mechanic_1
+loophole_name = lead_sit_sleep_mechanic
+cover_state = fire_no_lookout_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+on_timer = 12670 | smartcover@1
+meet = meet
+
+;[smartcover@3]
+;cover_name = esc_smart_cover_mechanic_1
+;loophole_name = lead_sit_sleep_mechanic
+;cover_state = idle_target
+;combat_ignore_cond = true
+;combat_ignore_keep_when_attacked = true
+;invulnerable = true
+;out_restr = esc_space_restrictor_in_restr_1
+;on_timer = 16670 | smartcover@1
+
+
+[death]
+on_info = %+esc_stalker_mechanic_dead%
+
+[meet]
+meet_state		= 3|nil@nil
+victim			= 3|actor
+sound_start 	= esc_stalker_mechanic_meet
+sound_stop 		= esc_stalker_mechanic_meet_bye
+use				= true
+abuse			= false
+quest_npc = true

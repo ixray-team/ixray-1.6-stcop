@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = sr_idle@teleport %+red_actor_find_teleport%
+
+[sr_idle@teleport]
+on_info = %=disable_ui =run_postprocess(red_teleport)%
+;on_game_timer = 6 | sr_idle %=clear_smart_terrain(red_smart_terrain_4_2) =teleport_actor(red_teleport_restr_1_walk:red_teleport_restr_1_look)%
+on_game_timer = 6 | sr_idle@effector %=teleport_actor(red_teleport_restr_1_walk:red_teleport_restr_1_look)%
+
+[sr_idle@effector]
+on_game_timer = 10 | sr_idle %=enable_ui%

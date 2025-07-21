@@ -1,0 +1,19 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_info = {+yan_quest_levsha} sr_idle@check_position
+
+[sr_idle@check_position]
+on_actor_outside = sr_idle@playing_objectives %=play_sound(yan_professor_about_switcher:ecolog:yan_st_sakharov_name)%
+
+[sr_idle@playing_objectives]
+on_signal = sound_end | sr_idle@objectives_reply %=play_sound(yan_levsha_reply_switcher:stalker:yan_st_levsha_name)%
+
+[sr_idle@objectives_reply]
+on_info 	= {+yan_ready_vikl_cut6} 						%=play_sound(yan_squad1_ready:stalker)%
+on_info2 	= {+yan_start_remove} 							%=play_sound(yan_roof_ready:stalker:yan_st_levsha_name)% 
+on_info3 	= {+yan_ready_actor_position_cut6} 				%=play_sound(yan_actor_on_roof:stalker)%
+on_info4 	= {+yan_not_go_to_roof} 						%=play_sound(yan_not_go_to_roof:stalker)%
+on_info5 	= {+yan_group_in_angar}							%=play_sound(yan_group_in_angar:stalker)%
+on_info6 	= {+yan_squad2_ready}							%=play_sound(yan_squad2_ready:stalker:yan_st_levsha_name)%

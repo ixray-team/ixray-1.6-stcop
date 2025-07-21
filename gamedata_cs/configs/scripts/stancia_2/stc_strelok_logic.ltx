@@ -1,0 +1,257 @@
+[logic]
+active = smartcover@way_1
+
+[danger@ignore]
+ignore_distance = 0
+
+[smartcover@way_1]	;ÏÐÎÂÅÐÊÀ ÇÎÍÛ 1
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+loophole_name = first
+;target_enemy = 1401
+target_path = stc_fake_fire_point_1
+on_info = {=in_zone(stc_strelok_loophole_check_1) +stc_strelok_can_run_1} smartcover@way_1_fake_wait
+danger = danger@ignore
+meet = no_meet 
+
+[smartcover@way_1_fake_wait] ;ÆÄÅÌ 7 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+loophole_name = first
+target_path = stc_fake_fire_point_1
+;target_enemy = 1401
+on_info = {=is_dead_all(1401)} smartcover2@way_1_fake_wait
+on_timer = 3000 | smartcover2@way_1_fake_wait %=kill_npc(1401)%
+danger = danger@ignore
+meet = no_meet 
+ 
+[smartcover2@way_1_fake_wait] ;ÆÄÅÌ 7 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+loophole_name = first
+target_path = stc_fake_fire_point_1
+;target_enemy = 1402
+on_info = {=is_dead_all(1402)} smartcover@way_2
+on_timer = 2000 | smartcover@way_2 %=kill_npc(1402)%
+danger = danger@ignore
+meet = no_meet 
+
+[smartcover@way_2]
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+target_path = stc_fake_fire_point_2
+;target_enemy = 1403
+loophole_name = second
+on_timer = 300000 | %+stc_strelok_can_run_2%
+on_info = {=in_zone(stc_strelok_loophole_check_2) +stc_strelok_can_run_2} smartcover@way_2_fake_wait
+danger = danger@ignore
+post_combat_time = 0,0
+meet = no_meet 
+ 
+[smartcover@way_2_fake_wait];ÆÄÅÌ 7 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+loophole_name = second
+target_path = stc_fake_fire_point_2
+;target_enemy = 1403
+;on_info = {=is_dead_all(1403)} smartcover@way_3
+on_timer = 7000 | smartcover@way_3 %=kill_npc(1403)%
+danger = danger@ignore
+meet = no_meet 
+
+[smartcover@way_3]
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+;target_enemy = 1404
+target_path = stc_fake_fire_point_3
+loophole_name = third
+on_info = {=in_zone(stc_strelok_loophole_check_3)} smartcover@way_3_fake_wait
+danger = danger@ignore
+post_combat_time = 0,0
+meet = no_meet 
+
+[smartcover@way_3_fake_wait];ÆÄÅÌ 7 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+loophole_name = third
+target_path = stc_fake_fire_point_3
+;target_enemy = 1404
+on_info = {=is_dead_all(1404)} smartcover@way_3_2
+on_timer = 7000 | {!is_dead_all(1404)} %=kill_npc(1404)%, {=stc_npc_in_zone(1405:stc_strelok_enemy_checker_3)} smartcover@way_3_2 
+danger = danger@ignore
+meet = no_meet 
+
+
+[smartcover@way_3_2]
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+target_path = stc_fake_fire_point_4
+;target_enemy = 1405
+loophole_name = fourth
+danger = danger@ignore
+on_timer = 300000 | %+stc_strelok_can_run_3%
+on_info = {=in_zone(stc_strelok_loophole_check_4) +stc_strelok_can_run_3} smartcover@way_3_2_fake_wait
+danger = danger@ignore
+post_combat_time = 0,0
+meet = no_meet 
+ 
+[smartcover@way_3_2_fake_wait];ÆÄÅÌ 7 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+loophole_name = fourth
+target_path = stc_fake_fire_point_4
+;target_enemy = 1405
+on_info = {=is_dead_all(1405)} smartcover@way_4
+on_timer = 7000 | smartcover@way_4 %=kill_npc(1405)%
+danger = danger@ignore
+meet = no_meet 
+
+[smartcover@way_4]
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+target_path = stc_fake_fire_point_5
+;target_enemy = 1406
+loophole_name = fifth
+on_info = {=in_zone(stc_strelok_loophole_check_5)} smartcover@way_4_fake_wait
+danger = danger@ignore
+post_combat_time = 0,0
+meet = no_meet 
+ 
+[smartcover@way_4_fake_wait];ÆÄÅÌ 7 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+loophole_name = fifth
+target_path = stc_fake_fire_point_5
+;target_enemy = 1406
+on_info = {=is_dead_all(1406)} smartcover@way_4_2_fake_wait
+on_timer = 6000 | smartcover@way_4_2_fake_wait %=kill_npc(1406)%
+danger = danger@ignore
+meet = no_meet
+
+[smartcover@way_4_2_fake_wait];ÆÄÅÌ 7 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_1
+cover_state = fire_target
+loophole_name = fifth
+target_path = stc_fake_fire_point_5
+;target_enemy = 1407
+on_info = {=is_dead_all(1407)} walker@cover_5_to_cover_6
+on_timer = 2000 | walker@cover_5_to_cover_6 %=kill_npc(1407)%
+danger = danger@ignore
+meet = no_meet 
+
+[walker@cover_5_to_cover_6]
+path_walk = stc_strelok_cover_5_to_cover_6_walk
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = path_end | smartcover@way_5
+def_state_moving = assault
+
+[smartcover@way_5]
+use_in_combat = true
+cover_name = stc_strelok_cover_5
+cover_state = fire_target
+target_path = stc_fake_fire_point_6
+;target_enemy = 1408
+loophole_name = second
+danger = danger@ignore
+meet = no_meet 
+on_timer = 300000 | %+stc_strelok_can_run_6%
+on_info = {=in_zone(stc_strelok_loophole_check_6) +stc_strelok_can_run_6} smartcover@way_5_fake_wait
+post_combat_time = 0,0
+
+
+[smartcover@way_5_fake_wait];ÆÄÅÌ 2 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_5
+cover_state = fire_target
+loophole_name = second
+target_path = stc_fake_fire_point_6
+;target_enemy = 1408
+on_info = {=is_dead_all(1408)} smartcover@way_5_1_fake_wait
+on_timer = 2000 | smartcover@way_5_1_fake_wait %=kill_npc(1408)%
+danger = danger@ignore
+meet = no_meet
+
+[smartcover@way_5_1_fake_wait];ÆÄÅÌ 2 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_5
+cover_state = fire_target
+loophole_name = second
+target_path = stc_fake_fire_point_6
+;target_enemy = 1409
+on_info = {=is_dead_all(1409)} walker@cover_6_to_cover_7
+on_timer = 2000 | walker@cover_6_to_cover_7 %=kill_npc(1409)%
+danger = danger@ignore
+meet = no_meet
+
+[walker@cover_6_to_cover_7]
+path_walk = stc_strelok_cover_6_to_cover_7_walk
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = path_end | smartcover@way_6 
+def_state_moving = assault
+
+
+[smartcover@way_6]
+use_in_combat = true
+cover_name = stc_strelok_cover_6
+cover_state = fire_target
+target_path = stc_fake_fire_point_7
+;target_enemy = 1411
+loophole_name = second
+danger = danger@ignore
+meet = no_meet
+on_timer = 30000 | %+stc_strelok_can_run_7% 
+on_info = {=in_zone(stc_strelok_loophole_check_7) +stc_strelok_can_run_7 -stc_strelok_dead} smartcover@way_6_fake_wait %=play_sound(stc_strelok_kill_reminder_4)% ,{=in_zone(stc_strelok_loophole_check_7) +stc_strelok_can_run_7} smartcover@way_6_fake_wait 
+ 
+[smartcover@way_6_fake_wait];ÆÄÅÌ 7 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_6
+cover_state = fire_target
+loophole_name = second
+target_path = stc_fake_fire_point_7
+;target_enemy = 1411
+on_info = {=is_dead_all(1411)} smartcover@way_6_1_fake_wait
+on_timer = 2000 | smartcover@way_6_1_fake_wait %=kill_npc(1411)%
+danger = danger@ignore
+meet = no_meet
+
+[smartcover@way_6_1_fake_wait];ÆÄÅÌ 7 ÑÅÊÓÍÄ
+use_in_combat = true
+cover_name = stc_strelok_cover_6
+cover_state = fire_target
+loophole_name = second
+target_path = stc_fake_fire_point_7
+;target_enemy = 1412
+on_info = {=is_dead_all(1412)} walker@run
+on_timer = 2000 | walker@run %=kill_npc(1412)%
+danger = danger@ignore
+meet = no_meet
+
+
+
+[walker@run]
+path_walk = stc_smartcover_last_way
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = stairway | {-stc_strelok_dead} remark@stairway %=play_sound(stc_strelok_kill_reminder_5)% , remark@stairway
+;on_info = {+} smartcover@way_7_1
+def_state_moving = assault
+
+[remark@stairway]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = stc_scene_7_run_anim
+on_signal = anim_end | nil %=destroy_object%

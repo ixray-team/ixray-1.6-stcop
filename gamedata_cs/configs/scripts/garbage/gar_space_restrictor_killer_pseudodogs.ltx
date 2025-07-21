@@ -1,0 +1,28 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_info = {+gar_quest_killer_pseudodogs_started =is_dark_night} sr_idle@spawn_selection
+
+[sr_idle@spawn_selection]
+on_info = {=dist_to_actor_ge(100)} sr_idle@spawn_on_smart, {+gar_quest_killer_pseudodogs_forest_spawn_point} sr_idle@spawn_in_forest, sr_idle@spawn_by_garbage
+
+[sr_idle@spawn_on_smart]
+on_info = sr_idle@test_death_on_smart %=create_squad(gar_killer_pseudodogs_on_smart:gar_smart_terrain_5_6)%
+
+[sr_idle@spawn_in_forest]
+on_info = sr_idle@test_death_in_forest %=create_squad(gar_killer_pseudodogs_in_forest:gar_smart_terrain_5_6)%
+
+[sr_idle@spawn_by_garbage]
+on_info = sr_idle@test_death_by_garbage %=create_squad(gar_killer_pseudodogs_by_garbage:gar_smart_terrain_5_6)%
+
+[sr_idle@test_death_on_smart]
+on_info = {!squad_exist(gar_killer_pseudodogs_on_smart)} sr_idle@end_section %+gar_quest_killer_pseudodogs_done%
+
+[sr_idle@test_death_in_forest]
+on_info = {!squad_exist(gar_killer_pseudodogs_in_forest)} sr_idle@end_section %+gar_quest_killer_pseudodogs_done%
+
+[sr_idle@test_death_by_garbage]
+on_info = {!squad_exist(gar_killer_pseudodogs_by_garbage)} sr_idle@end_section %+gar_quest_killer_pseudodogs_done%
+
+[sr_idle@end_section]

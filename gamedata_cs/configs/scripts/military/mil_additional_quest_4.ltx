@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle@spawn
+
+[sr_idle@spawn]
+on_info = {=actor_in_zone(mil_addition_quest_4_spawn_zone) +mil_additional_quest_4_spawn} sr_idle@end %=spawn_object(mil_controller_normal_2:mil_additional_quest_4_spawn_way_2) =spawn_object(mil_controller_normal_3:mil_additional_quest_4_spawn_way_3)% 
+
+[sr_idle@end]

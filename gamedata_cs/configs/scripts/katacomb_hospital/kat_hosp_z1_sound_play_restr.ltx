@@ -1,0 +1,30 @@
+[logic]
+active = sr_idle@far_gun_fire
+
+[sr_idle@far_gun_fire]
+on_actor_in_zone = help_request_sound_restr | sr_idle@pause
+
+[sr_idle@pause]
+on_game_timer = 50 | sr_idle@wait %=play_sound(clear_sky_request_help:csky:st_ui_pda_legend_squad)%
+
+[sr_idle@wait]
+on_info = {+rush_2} sr_idle@enemy_see_actor
+
+[sr_idle@enemy_see_actor]
+on_game_timer = 20 | sr_idle@enemy_see_actor2 %=play_sound(hospital_kill_actor:monolith)%
+
+[sr_idle@enemy_see_actor2]
+on_game_timer = 30 | sr_idle@1 %=play_sound(hospital_kill_actor_intercept:monolith)%
+
+
+[sr_idle@1]
+on_npc_in_zone = 204 | safe_restr_5 | sr_idle@2 %+hospital_spawn_enemy_third_wave =play_sound(clear_sky_cover_us:csky:st_ui_pda_legend_squad)%
+
+
+[sr_idle@2]
+on_info = {+minigun_off} sr_idle@timer
+
+[sr_idle@timer]
+on_game_timer = 300 | sr_idle@2 %+hospital_z1_spawn_off%
+
+[sr_idle@3]

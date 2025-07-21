@@ -1,0 +1,28 @@
+[logic@bloodsucker]
+active = mob_walker@sound
+on_death = mob_death
+suitable = {=check_npc_name(mil_bloodsucker)} true
+
+[mob_walker@sound]
+path_walk = mil_bloodsucker_tower_1_walk
+path_look = mil_bloodsucker_tower_1_look
+state = invis
+on_info = {=dist_to_actor_le(10)} mob_walker@vis %=play_sound(red_bloodsucker_growl)%
+npc_friendly = true
+
+[mob_death]
+on_info = %+mil_bs_dead% 
+
+[mob_walker@vis]
+path_walk = mil_bloodsucker_tower_1_walk
+path_look = mil_bloodsucker_tower_1_look
+state = vis
+npc_friendly = true
+on_info = {=dist_to_actor_ge(10)} mob_walker@invis
+
+[mob_walker@invis]
+path_walk = mil_bloodsucker_tower_1_walk
+path_look = mil_bloodsucker_tower_1_look
+state = invis
+npc_friendly = true
+on_info = {=dist_to_actor_le(10)} mob_walker@vis

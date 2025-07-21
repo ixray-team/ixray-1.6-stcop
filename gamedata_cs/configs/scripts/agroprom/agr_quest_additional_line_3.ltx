@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+agr_pda_map_animals_quest_1 -agr_pda_map_animals_quest_story} sr_idle@2 %=give_inited_task(storyline:agr_additional_quest_6a:dolg) +agr_pda_map_animals_quest_story%
+
+[sr_idle@2]
+on_info = {=actor_has_item(agr_map_animals) -agr_pda_map_animals_quest_2} sr_idle@3 %=give_inited_task(storyline:agr_additional_quest_6b:dolg) +agr_pda_map_animals_quest_2%
+
+[sr_idle@3]

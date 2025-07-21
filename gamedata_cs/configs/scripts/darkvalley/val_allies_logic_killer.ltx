@@ -1,0 +1,126 @@
+;----------------------------walker1-------------------
+[logic@work1]
+active = smartcover@kill1
+suitable = {=check_npc_name(val_killer_1)} true
+prior = 200
+
+[smartcover@kill1]
+path_walk = killer_1_combat_1_walk
+cover_name = val_1_3_kill5_smartcover_1
+cover_state = default_behaviour
+combat_ignore_cond = true
+on_info = {=actor_in_zone(val_attack_killer_1_zone)} walker@killer1_combat
+
+[walker@killer1_combat]
+path_walk = killer_1_combat_1_walk
+path_look = killer_1_combat_1_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_smart_1_3_defence
+
+;----------------------------walker2-------------------
+[logic@work2]
+active = smartcover@kill2
+suitable = {=check_npc_name(val_killer_2)} true
+prior = 200
+
+[smartcover@kill2]
+path_walk = killer_2_combat_1_walk
+cover_name = val_1_3_kill2_smartcover
+target_path = val_1_3_kill2_smartcover_target
+cover_state = fire_target
+combat_ignore_cond = true
+on_info = {+val_freedom_attack_2} walker@killer2_combat
+
+[walker@killer2_combat]
+path_walk = killer_2_combat_1_walk
+path_look = killer_2_combat_1_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_smart_1_3_defence
+
+;----------------------------walker3-------------------
+[logic@work3]
+active = smartcover@kill3
+suitable = {=check_npc_name(val_killer_3)} true
+prior = 200
+on_death = death@work_3
+
+[death@work_3]
+on_info = %+val_killer_roof_sniper_3_dead%
+
+[smartcover@kill3]
+path_walk = guard_1_walk
+cover_name = val_1_3_kill3_smartcover
+target_path = val_1_3_kill3_smartcover_target
+cover_state = fire_target
+combat_ignore_cond = true
+;on_info = {+val_freedom_attack_2} walker@killer3_combat
+
+[walker@killer3_combat]
+path_walk = killer_3_combat_1_walk
+path_look = killer_3_combat_1_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_smart_1_3_defence
+
+;----------------------------walker4-------------------
+[logic@work4]
+active = smartcover@kill4
+suitable = {=check_npc_name(val_killer_4)} true
+prior = 200
+on_death = death@work_4
+
+[death@work_4]
+on_info = %+val_killer_roof_sniper_4_dead%
+
+[smartcover@kill4]
+path_walk = guard_1_walk
+cover_name = val_1_3_kill4_smartcover
+target_path = val_1_3_kill4_smartcover_target
+cover_state = fire_target
+combat_ignore_cond = true
+;on_info = {+val_freedom_attack_2} walker@killer4_combat
+
+[walker@killer4_combat]
+path_walk = killer_4_combat_1_walk
+path_look = killer_4_combat_1_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_smart_1_3_defence
+
+;----------------------------walker5-------------------
+[logic@work5]
+active = smartcover@kill5
+suitable = {=check_npc_name(val_killer_5)} true
+prior = 200
+on_death = death@work_5
+
+[death@work_5]
+on_info = %+val_killer_roof_sniper_5_dead%
+
+[smartcover@kill5]
+path_walk = guard_1_walk
+cover_name = val_1_3_kill5_smartcover
+target_path = val_1_3_kill5_smartcover_target
+cover_state = fire_target
+combat_ignore_cond = true
+;on_info = {+val_freedom_attack_2} walker@killer5_combat
+
+
+[walker@killer5_combat]
+path_walk = killer_5_combat_1_walk
+path_look = killer_5_combat_1_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_smart_1_3_defence

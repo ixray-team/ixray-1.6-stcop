@@ -1,0 +1,434 @@
+[list_tm_garbadge]
+gar_story_find_diggers
+gar_story_search_digger_bodies
+gar_story_chase_digger
+gar_story_kill_dogs
+gar_story_go_to_freedom
+gar_story_chase_pda_signal
+gar_story_chase_pda_signal_cellar
+gar_story_get_pda
+
+;gar_quest_killer_pseudodogs
+
+gar_quest_get_old_pda
+gar_quest_get_old_pda_box
+gar_quest_bring_old_pda
+gar_quest_bring_money
+gar_quest_get_weapons
+gar_quest_destroy_ambush
+gar_quest_get_traitor_pda
+gar_quest_speak_with_quester
+gar_quest_meet_with_digger_fighters
+gar_quest_liberate_conc_camp
+gar_quest_captive_reward
+
+gar_quest_kill_digger_traitor
+gar_quest_kill_smuggler
+gar_quest_destroy_flea_market
+gar_quest_bandit_reward
+gar_quest_more_reward
+gar_quest_bandit_secret
+
+;-----------------------------------------------------
+;------------------ Storyline Quests -----------------
+;-----------------------------------------------------
+
+; Прийти в лагерь диггеров
+[gar_story_find_diggers]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = gar_story_find_diggers_name
+text = gar_story_find_diggers_text
+condlist_0 = {+gar_story_reached_dead_diggers_camp} reversed
+;condlist_0 = {+gar_story_got_info_from_digger} complete
+target_story_ids = 702
+auto_name = false
+
+; Обыскать тело диггера
+[gar_story_search_digger_bodies]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 3
+name = gar_story_search_digger_bodies_name
+text = gar_story_search_digger_bodies_text
+condlist_0 = {+gar_story_searched_digger_body} complete
+target_story_ids = 701
+auto_name = false
+
+; Догнать диггера, который пошёл за Клыком
+[gar_story_chase_digger]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 3
+name = gar_story_chase_digger_name
+text = gar_story_chase_digger_text
+condlist_0 = {+gar_story_got_info_from_digger} complete
+target_story_ids = logic@work1, gar_smart_terrain_8_5
+auto_name = false
+
+; Убить собак
+[gar_story_kill_dogs]
+type = defend_smart_delay
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = {-gar_story_messenger_dogs_dead -gar_story_got_info_from_digger =target_smart_name(gar_smart_terrain_8_5)} true
+prior = 4
+name = gar_story_kill_dogs_name
+text = gar_story_kill_dogs_text
+on_complete = %+gar_story_messenger_dogs_dead%
+condlist_0 = {+gar_story_digger_killed_or_hostile} reversed
+play_regard = nil
+wait_time = 0
+auto_name = false
+
+; Догнать Клыка в Тёмной Долине
+[gar_story_go_to_freedom]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = gar_story_go_to_freedom_name
+text = gar_story_go_to_freedom_text
+condlist_0 = {+val_temp_start_quest_complete} complete
+target_story_ids = 1199
+auto_name = false
+
+; Догнать Клыка (до подвала)
+[gar_story_chase_pda_signal]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = gar_story_chase_pda_signal_name
+text = gar_story_chase_pda_signal_text
+condlist_0 = {+gar_story_came_to_ambush_door} reversed
+target_story_ids = 706
+auto_name = false
+
+; Найти Клыка в подвале
+[gar_story_chase_pda_signal_cellar]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = gar_story_chase_pda_signal_cellar_name
+text = gar_story_chase_pda_signal_cellar_text
+condlist_0 = {+gar_story_cannot_find_fang} reversed
+target_story_ids = 703
+auto_name = false
+
+; Взять ПДА Клыка
+[gar_story_get_pda]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+spot = gar_story_get_pda_location
+target_cond = true
+prior = 3
+name = gar_story_get_pda_name
+text = gar_story_get_pda_text
+condlist_0 = {+gar_story_got_fang_pda} complete
+target_story_ids = 703
+auto_name = false
+
+
+;-----------------------------------------------------
+;------------------ Secondary Quests -----------------
+;-----------------------------------------------------
+
+; Убить Ночных Охотников
+;[gar_quest_killer_pseudodogs]
+;type = storyline
+;task_type = additional
+;icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+;target_cond = true
+;name = gar_quest_killer_pseudodogs_name
+;text = gar_quest_killer_pseudodogs_text
+;condlist_0 = {+gar_quest_killer_pseudodogs_done} complete
+;condlist_1 = {+gar_flea_market_stop_quest_line} fail
+;target_story_ids = 708
+
+
+; Взять старый ПДА
+[gar_quest_get_old_pda]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_get_old_pda_name
+text = gar_quest_get_old_pda_text
+condlist_0 = {+gar_quest_get_old_pda_box_started} reversed
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = 702
+auto_name = false
+auto_faction = true
+
+; Взять старый ПДА в ящике
+[gar_quest_get_old_pda_box]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_get_old_pda_box_name
+text = gar_quest_get_old_pda_box_text
+condlist_0 = {+gar_quest_bring_old_pda_started} complete
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = 715
+auto_name = false
+auto_faction = true
+
+; Принести Напру старый ПДА
+[gar_quest_bring_old_pda]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_bring_old_pda_name
+text = gar_quest_bring_old_pda_text
+condlist_0 = {+gar_quest_bring_old_pda_done} complete
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = logic@work5, gar_smart_terrain_6_3
+auto_name = false
+auto_faction = true
+
+; Принести Напру деньги на медкомплект
+[gar_quest_bring_money]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_bring_money_name
+text = gar_quest_bring_money_text
+condlist_0 = {+gar_quest_bring_money_done} complete
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = logic@work5, gar_smart_terrain_6_3
+auto_name = false
+auto_faction = true
+
+; Отнести деньги Авоське
+[gar_quest_get_weapons]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_get_weapons_name
+text = gar_quest_get_weapons_text
+condlist_0 = {+gar_quest_get_weapons_arrived} reversed
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = 709
+auto_name = false
+auto_faction = true
+
+; Убить предателя
+[gar_quest_destroy_ambush]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_destroy_ambush_name
+text = gar_quest_destroy_ambush_text
+condlist_0 = {+gar_quest_get_weapons_destroyed_ambush} complete
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = 709
+auto_name = false
+auto_faction = true
+
+; Взглянуть на ПДА предателя
+[gar_quest_get_traitor_pda]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_get_traitor_pda_name
+text = gar_quest_get_traitor_pda_text
+condlist_0 = {+gar_quest_get_weapons_got_traitor_pda} complete
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = 709
+auto_name = false
+auto_faction = true
+
+; Поговорить с Напром
+[gar_quest_speak_with_quester]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_speak_with_quester_name
+text = gar_quest_speak_with_quester_text
+condlist_0 = {+gar_quest_liberate_conc_camp_told} complete
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = logic@work5, gar_smart_terrain_6_3
+auto_name = false
+auto_faction = true
+
+; Встретится с группой диггеров для атаки
+[gar_quest_meet_with_digger_fighters]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_meet_with_digger_fighters_name
+text = gar_quest_meet_with_digger_fighters_text
+condlist_0 = {+gar_quest_meet_with_digger_fighters_done} complete
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = 710
+auto_name = false
+auto_faction = true
+
+; Освободить пленников из концлагеря
+[gar_quest_liberate_conc_camp]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_liberate_conc_camp_name
+text = gar_quest_liberate_conc_camp_text
+condlist_0 = {+gar_quest_liberate_conc_camp_done} complete
+condlist_1 = {+gar_flea_market_stop_quest_line} reversed
+target_story_ids = 711
+auto_name = false
+auto_faction = true
+
+[gar_quest_captive_reward]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_captive_reward_name
+text = gar_quest_captive_reward_text
+condlist_0 = {+gar_quest_captive_reward_done} complete
+target_story_ids = 717
+auto_name = false
+auto_faction = true
+
+;-----------------------------------------------------
+
+
+[gar_quest_kill_digger_traitor]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+target_cond = true
+name = gar_quest_kill_digger_traitor_name
+text = gar_quest_kill_digger_traitor_text
+condlist_0 = {+gar_quest_kill_digger_traitor_done} complete, {+gar_quest_kill_digger_traitor_gone} reversed
+target_story_ids = logic@work1, gar_smart_terrain_4_5
+auto_name = false
+reward_money = 1000
+auto_faction = true
+
+;type = eliminate_squad
+;task_type = additional
+;prior = 5
+;icon = ui_mt_image_attack_tower
+;target_cond = {-gar_quest_kill_digger_traitor_done -gar_quest_kill_digger_traitor_gone =target_squad_name(gar_digger_traitor)} true
+;prior = 2
+;name = gar_quest_kill_digger_traitor_name
+;text = gar_quest_kill_digger_traitor_text
+;condlist_0 = {+gar_quest_kill_digger_traitor_gone} reversed
+;on_complete = %+gar_quest_kill_digger_traitor_done%
+;play_regard = nil
+
+[gar_quest_kill_smuggler]
+type = eliminate_smart
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+target_cond = {+gar_quest_kill_smuggler_told -gar_quest_kill_smuggler_done =target_smart_name(gar_smart_terrain_4_2)} true
+name = gar_quest_kill_smuggler_name
+text = gar_quest_kill_smuggler_text
+on_complete = %+gar_quest_kill_smuggler_done%
+on_reversed = %+gar_quest_kill_smuggler_done%
+target_story_ids = 709
+auto_name = false
+play_regard = nil
+reward_money = 2000
+auto_faction = true
+
+[gar_quest_destroy_flea_market]
+type = capture_smart
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+target_cond = {+gar_quest_destroy_flea_market_told -gar_quest_destroy_flea_market_done =target_smart_name(gar_smart_terrain_6_3)} true
+name = gar_quest_destroy_flea_market_name
+text = gar_quest_destroy_flea_market_text
+on_complete = %+gar_quest_destroy_flea_market_done%
+on_reversed = %+gar_quest_destroy_flea_market_done%
+auto_name = false
+play_regard = nil
+counter_attack = false
+auto_faction = true
+
+[gar_quest_bandit_reward]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+target_cond = true
+name = gar_quest_bandit_reward_name
+text = gar_quest_bandit_reward_text
+condlist_0 = {+gar_quest_bandit_reward_done} complete
+target_story_ids = 725
+auto_name = false
+auto_faction = true
+
+[gar_quest_more_reward]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+target_cond = true
+name = gar_quest_more_reward_name
+text = gar_quest_more_reward_text
+condlist_0 = {+gar_quest_bandit_secret_started} complete
+target_story_ids = 724
+auto_name = false
+auto_faction = true
+
+[gar_quest_bandit_secret]
+type = storyline
+task_type = additional
+prior = 5
+icon = ui_mt_image_attack_tower
+target_cond = true
+name = gar_quest_bandit_secret_name
+text = gar_quest_bandit_secret_text
+condlist_0 = {+gar_quest_bandit_secret_done} complete
+target_story_ids = 717
+auto_name = false
+auto_faction = true

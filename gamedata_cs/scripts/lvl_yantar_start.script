@@ -1,0 +1,19 @@
+function main ()
+
+	lvl_agroprom_return.main()
+
+	local infos_table = {
+	"agr_take_reward_complete",
+	"agru_go_out_end_task_complete"
+	}
+
+	local actor = db.actor
+
+	for k,v in pairs(infos_table) do
+  		actor:give_info_portion(v)
+	end
+
+	if level.name() == "yantar" and not task_manager.get_task_manager().inited_tasks["stalker_general_yan_actor_go_base_science"] then
+		xr_effects.give_inited_task(nil, nil, {"storyline", "yan_actor_go_base_science", "stalker"})
+	end
+end

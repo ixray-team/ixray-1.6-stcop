@@ -1,0 +1,854 @@
+
+	<!-- Tasks for random quest generator -->
+	<game_task id="eliminate_lager">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+<!--			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>  -->
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- trader -->
+	<game_task id="eliminate_lager_trader">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_trader">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_trader">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_trader">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_trader">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_trader">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- barman -->
+	<game_task id="eliminate_lager_barman">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_barman">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_barman">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_barman">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_barman">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_barman">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- ecolog -->
+	<game_task id="eliminate_lager_ecolog">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_ecolog">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_ecolog">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_ecolog">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_ecolog">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_ecolog">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- dolg -->
+	<game_task id="eliminate_lager_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- freedom -->
+	<game_task id="eliminate_lager_freedom">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_freedom">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_freedom">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_freedom">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_freedom">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_freedom">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- wolf -->
+	<game_task id="eliminate_lager_wolf">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_wolf">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_wolf">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_wolf">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_wolf">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_wolf">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- shustriy -->
+	<game_task id="eliminate_lager_shustriy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_shustriy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_shustriy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_shustriy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_shustriy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_shustriy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- drunk_dolg -->
+	<game_task id="eliminate_lager_drunk_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_drunk_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_drunk_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_drunk_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_drunk_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_drunk_dolg">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- hunter -->
+	<game_task id="eliminate_lager_hunter">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_hunter">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_hunter">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_hunter">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_hunter">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_hunter">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- zastava_commander -->
+	<game_task id="eliminate_lager_zastava_commander">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_zastava_commander">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_zastava_commander">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_zastava_commander">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_zastava_commander">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_zastava_commander">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- petrenko -->
+	<game_task id="eliminate_lager_petrenko">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_petrenko">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_petrenko">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_petrenko">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_petrenko">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_petrenko">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- lisiy -->
+	<game_task id="eliminate_lager_lisiy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_lisiy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_lisiy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_lisiy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_lisiy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_lisiy">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<!-- mercenary -->
+	<game_task id="eliminate_lager_mercenary">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_eliminate_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="defend_lager_mercenary">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_defend_lager</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="artefact_mercenary">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_artefact</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="kill_stalker_mercenary">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_kill_stalker</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="monster_part_mercenary">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_monster_part</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>
+
+	<game_task id="find_item_mercenary">
+		<title>title</title>
+		<objective>
+			<text>objective</text>
+			<icon>ui_iconsTotal_find_item</icon>
+			<function_complete>task_manager.task_complete</function_complete>
+			<function_fail>task_manager.task_fail</function_fail>
+		</objective>
+	</game_task>

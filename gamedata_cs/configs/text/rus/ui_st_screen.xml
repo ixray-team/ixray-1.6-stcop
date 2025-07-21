@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="cant_walk">
+		<text>Вы слишком истощены, чтобы двигаться</text>
+	</string>
+	<string id="cant_walk_weight">
+		<text>Вы слишком перегружены, чтобы двигаться</text>
+	</string>
+	<string id="car_character_use">
+		<text>Открыть дверь ($$ACTION_USE$$)</text>
+	</string>
+	<string id="character_use">
+		<text>Говорить ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use">
+		<text>Обыскать труп ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use_or_drag">
+		<text>Обыскать труп ($$ACTION_USE$$) \n Тащить труп (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+	<string id="general_complete_task">
+		<text>Задание выполнено:</text>
+	</string>
+	<string id="general_fail_task">
+		<text>Задание провалено:</text>
+	</string>
+	<string id="general_in_item">
+		<text>Получен предмет:</text>
+	</string>
+	<string id="general_in_money">
+		<text>Получены деньги:</text>
+	</string>
+	<string id="general_new_task">
+		<text>Новое задание:</text>
+	</string>
+	<string id="general_out_item">
+		<text>Потерян предмет:</text>
+	</string>
+	<string id="general_out_money">
+		<text>Потеряны деньги:</text>
+	</string>
+	<string id="general_reverse_task">
+		<text>Задание отменено:</text>
+	</string>
+	<string id="general_update_task">
+		<text>Задание обновлено:</text>
+	</string>
+	<string id="gun_jammed">
+		<text>Оружие заклинило. Нужно перезарядить.</text>
+	</string>
+	<string id="inventory_box_use">
+		<text>Обыскать ящик ($$ACTION_USE$$)</text>
+	</string>
+	<string id="inventory_item_use">
+		<text>Поднять предмет ($$ACTION_USE$$)</text>
+	</string>
+	<string id="level_changer_invitation">
+		<text>Вы действительно хотите перейти на другую локацию?</text>
+	</string>
+	<string id="physic_shell_use">
+		<text>Двигать объект ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_autosave">
+		<text>Автосохранение...</text>
+	</string>
+	<string id="st_codelock">
+		<text>Кодовый замок ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_demo_play">
+		<text>WORK IN PROGRESS</text>
+	</string>
+	<string id="st_found_new_pda">
+		<text>Найдена информация:</text>
+	</string>
+	<string id="st_game_over">
+		<text>Игра окончена.</text>
+	</string>
+	<string id="st_game_over_press_jump">
+		<text>Нажмите ($$ACTION_JUMP$$) для выхода в главное меню</text>
+	</string>
+	<string id="st_game_paused">
+		<text>Пауза</text>
+	</string>
+	<string id="st_game_saved">
+		<text>Игра сохранена</text>
+	</string>
+	<string id="st_helmet_countdown">
+		<text>Отключение защиты</text>
+	</string>
+	<string id="st_psy_danger">
+		<text>Критический уровень пси-излучения. Немедленно покиньте опасную зону.</text>
+	</string>
+	<string id="st_radiation_danger">
+		<text>Опасный уровень радиации. Для прохода необходима защита.</text>
+	</string>
+	<string id="st_search_treasure">
+		<text>Обыскать тайник ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_tip">
+		<text>Сообщение</text>
+	</string>
+	<string id="tip_car_locked">
+		<text>Заблокировано</text>
+	</string>
+	<string id="tip_car_use">
+		<text>Открыть дверь ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_door_blocked">
+		<text>Дверь заблокирована</text>
+	</string>
+	<string id="tip_door_close">
+		<text>Нажмите ($$ACTION_USE$$), чтобы закрыть дверь</text>
+	</string>
+	<string id="tip_door_coded">
+		<text>Дверь закодирована</text>
+	</string>
+	<string id="tip_door_decode">
+		<text>Нажмите ($$ACTION_USE$$), чтобы декодировать дверь</text>
+	</string>
+	<string id="tip_door_decoding">
+		<text>Идёт процесс декодирования</text>
+	</string>
+	<string id="tip_door_locked">
+		<text>Дверь заперта</text>
+	</string>
+	<string id="tip_door_open">
+		<text>Нажмите ($$ACTION_USE$$), чтобы открыть дверь</text>
+	</string>
+	<string id="tip_gate_close">
+		<text>Нажмите ($$ACTION_USE$$) для того, чтобы закрыть ворота</text>
+	</string>
+	<string id="tip_gate_locked">
+		<text>Ворота заблокированы</text>
+	</string>
+	<string id="tip_gate_open">
+		<text>Нажмите ($$ACTION_USE$$) для того, чтобы открыть ворота</text>
+	</string>
+	<string id="tip_grate_blocked">
+		<text>Решётка заблокирована</text>
+	</string>
+	<string id="tips_agroprom_undeground">
+		<text>Вход в нору без разрешения не допускается</text>
+	</string>
+	<string id="tips_kran_press">
+		<text>Повернуть кран ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_radio_tower">
+		<text>Передать радиосообщение ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_red_dynamit_undeground">
+		<text>Включить взрыватель ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_secret_strelka">
+		<text>Тайник Cтрелка ($$ACTION_USE$$)</text>
+	</string>
+	<string id="mar_disabled_level_changer">
+		<text>Нельзя отправляться через топи без проводника.</text>
+	</string>
+	<string id="shooting_fire">
+		<text>Огонь!</text>
+	</string>
+	<string id="shooting_round_over">
+		<text>Раунд закончен! Вернитесь к мастеру.</text>
+	</string>
+	<string id="shooting_time_left">
+		<text>Осталось времени:</text>
+	</string>
+	<string id="shooting_your_count">
+		<text>Сбито мишеней:</text>
+	</string>
+	<string id="shooting_your_points">
+		<text>Ваши очки:</text>
+	</string>
+	<string id="shooting_your_time">
+		<text>Ваше время:</text>
+	</string>
+	<string id="st_agru_warning_go_out">
+		<text>Покиньте опасную зону!</text>
+	</string>
+	<string id="st_agru_warning_time_left">
+		<text>Время до затопления:</text>
+	</string>
+	<string id="tips_agroprom_undeground2">
+		<text>Подземелье затоплено</text>
+	</string>
+	<string id="level_changer_disabled">
+		<text>Вы не можете найти дорогу</text>
+	</string>
+	<string id="tips_tranformer_off">
+		<text>Отключить генератор ($$ACTION_USE$$)</text>
+	</string>
+	<string id="ui_st_mp_experience_grow">
+		<text> -</text>
+	</string>
+	<string id="renegade">
+		<text>«Ренегаты»</text>
+	</string>
+	 
+</string_table>

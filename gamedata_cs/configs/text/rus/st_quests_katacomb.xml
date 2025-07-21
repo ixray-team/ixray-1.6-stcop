@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hospital_task_general_text">
+		<text>Найти вход в катакомбы</text>
+	</string>
+	<string id="hospital_task_general_title">
+		<text>Найти вход в катакомбы</text>
+	</string>
+	<string id="katacomb_task_3_objective_1">
+		<text>Продержаться до подхода отряда «Чистого неба»</text>
+	</string>
+	<string id="katacomb_task_3_objective_2">
+		<text>Помочь отряду «Чистого неба»</text>
+	</string>
+	<string id="katacomb_task_3_text">
+		<text>Пробиться ко входу в катакомбы</text>
+	</string>
+	<string id="katacomb_task_3_title">
+		<text>Пробиться ко входу в катакомбы</text>
+	</string>
+	<string id="katacomb_task_helicopter_text">
+		<text>Сбить вертолёт</text>
+	</string>
+	<string id="katacomb_task_helicopter_title">
+		<text>Сбить вертолёт</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_text">
+		<text>Уничтожить снайпера</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_title">
+		<text>Уничтожить снайпера</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_1">
+		<text>Двигаться к лестнице на первый этаж</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_2">
+		<text>Пробежать по первому этажу</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_3">
+		<text>Добраться до мостика</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_4">
+		<text>Перейти через мостик</text>
+	</string>
+	<string id="katacomb_task_sniper_back_text">
+		<text>Помочь отряду «Чистого неба» выйти из-под обстрела</text>
+	</string>
+	<string id="katacomb_task_sniper_back_title">
+		<text>Подобраться к вражескому снайперу</text>
+	</string>
+	<string id="katacomb_task_z2_exit_text">
+		<text>Продвигаться в третий зал</text>
+	</string>
+	<string id="katacomb_task_z2_exit_title">
+		<text>Продвигаться в третий зал</text>
+	</string>
+</string_table>

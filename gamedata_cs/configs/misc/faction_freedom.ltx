@@ -1,0 +1,133 @@
+[settings]
+resource_0 = sim_default_freedom_0, 80, sim_default_freedom_1, 20
+resource_1 = sim_default_freedom_0, 50, sim_default_freedom_1, 30, sim_default_freedom_2, 20
+resource_2 = sim_default_freedom_1, 50, sim_default_freedom_2, 30, sim_default_freedom_3, 20
+resource_3 = sim_default_freedom_2, 50, sim_default_freedom_3, 30, sim_default_freedom_4, 20
+
+
+glory_0 = 0
+glory_1 = 1
+glory_2 = 2
+glory_3 = 2
+glory_4 = 3
+glory_5 = 3
+
+
+[expansion_0]                        ;Цели группировки на текущем левеле развития.
+base_squad_number = 20
+precondition_power = 0
+precondition_cond = {+val_strike_antenna_ready} true, false
+
+
+[expansion_1]
+base_squad_number = 20	
+precondition_power = 0
+precondition_target = val_smart_terrain_7_8, val_smart_terrain_4_0
+precondition_cond = {+val_freedom_2_1_dead} true, false
+
+
+[expansion_2]
+base_squad_number = 20
+precondition_power = 0
+precondition_target_eliminate = val_smart_terrain_1_2
+precondition_cond = {+val_destroy_killer_base_done} true, false
+
+
+
+[expansion_3]  ;Контроль над долиной
+base_squad_number = 20
+precondition_power = 0
+precondition_target = val_smart_terrain_5_7, val_smart_terrain_5_8
+
+war_target_title = st_faction_war_freedom_secure_level
+
+war_stage_icon 					= st_stage_icon_freedom_secure_darkvalley_no
+war_stage_icon_complete 		= st_stage_icon_freedom_secure_darkvalley_yes
+war_stage_icon_hint 			= st_stage_icon_freedom_secure_darkvalley_no
+war_stage_icon_hint_complete 	= st_stage_icon_freedom_secure_darkvalley_yes
+
+level_up_snd = val_freedom_expansion_1_up
+
+[expansion_4]	;Захватить плацдарм на свалке
+base_squad_number = 30
+precondition_target = gar_smart_terrain_8_3, gar_smart_terrain_8_7
+
+war_target_title = st_faction_war_freedom_capture_garbage
+
+war_stage_icon 					= st_stage_icon_freedom_capture_garbage_no
+war_stage_icon_complete 		= st_stage_icon_freedom_capture_garbage_yes
+war_stage_icon_hint 			= st_stage_icon_freedom_capture_garbage_no
+war_stage_icon_hint_complete 	= st_stage_icon_freedom_capture_garbage_yes
+
+level_up_snd = val_freedom_expansion_2_up
+level_down_snd = val_freedom_expansion_2_down
+
+[expansion_5]	;Захватить переходы на агропром
+base_squad_number = 40
+precondition_target = gar_smart_terrain_1_5, gar_smart_terrain_1_7
+
+war_target_title = st_faction_war_freedom_secure_garbage
+
+war_stage_icon 					= st_stage_icon_freedom_secure_garbage_no
+war_stage_icon_complete 		= st_stage_icon_freedom_secure_garbage_yes
+war_stage_icon_hint 			= st_stage_icon_freedom_secure_garbage_no
+war_stage_icon_hint_complete 	= st_stage_icon_freedom_secure_garbage_yes
+
+level_up_snd = val_freedom_expansion_3_up
+level_down_snd = val_freedom_expansion_3_down
+
+[expansion_6]	;Захватить плацдарм на агропроме
+base_squad_number = 40
+precondition_target = agr_smart_terrain_7_4, agr_smart_terrain_6_6 
+
+war_target_title = st_faction_war_freedom_capture_agroprom
+
+war_stage_icon 					= st_stage_icon_freedom_capture_agroprom_no
+war_stage_icon_complete 		= st_stage_icon_freedom_capture_agroprom_yes
+war_stage_icon_hint 			= st_stage_icon_freedom_capture_agroprom_no
+war_stage_icon_hint_complete 	= st_stage_icon_freedom_capture_agroprom_yes
+
+level_up_snd = val_freedom_expansion_4_up
+level_down_snd = val_freedom_expansion_4_down
+
+[expansion_7]   ; Уничтожить базу долга
+base_squad_number = 40
+precondition_target_eliminate = agr_smart_terrain_1_6
+
+war_target_title = st_faction_war_freedom_eliminate_base
+
+war_stage_icon 					= st_stage_icon_freedom_eliminate_duty_no
+war_stage_icon_complete 		= st_stage_icon_freedom_eliminate_duty_yes
+war_stage_icon_hint 			= st_stage_icon_freedom_eliminate_duty_no
+war_stage_icon_hint_complete 	= st_stage_icon_freedom_eliminate_duty_yes
+
+level_up_snd = val_freedom_expansion_5_up
+level_down_snd = val_freedom_expansion_5_down
+
+[expansion_8]   ; Расслабить булки.
+base_squad_number = 40
+precondition_power = 0.5
+
+war_target_title = st_faction_war_freedom_relax
+
+level_down_snd = val_freedom_expansion_6_down
+
+
+
+[secondary_targets]
+mil_smart_terrain_3_8 = true
+
+[start_position]
+val_smart_terrain_7_4_freedom = val_smart_terrain_7_4
+val_smart_terrain_7_3_freedom = val_smart_terrain_7_3
+val_smart_terrain_7_5_freedom = val_smart_terrain_7_5
+val_smart_terrain_7_11_freedom = val_smart_terrain_7_11
+val_smart_terrain_5_7_freedom = val_smart_terrain_5_7
+val_smart_terrain_5_8_freedom = val_smart_terrain_5_8
+val_smart_terrain_9_5_freedom = val_smart_terrain_9_5
+mil_smart_terrain_2_2_freedom_squad_1 = mil_smart_terrain_2_2
+mil_smart_terrain_2_2_freedom_squad_2 = mil_smart_terrain_2_2
+mil_smart_terrain_7_4_freedom_base_squad_1 = mil_smart_terrain_7_4
+mil_smart_terrain_7_2_freedom_squad = mil_smart_terrain_7_2
+mil_smart_terrain_5_2_freedom_squad_1 = mil_smart_terrain_5_2
+mil_smart_terrain_5_2_freedom_squad_2 = mil_smart_terrain_5_2

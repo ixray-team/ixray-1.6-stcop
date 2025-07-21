@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {=actor_in_zone(agru_go_out_end_task_zone)} sr_idle@1 %+agru_go_out_end_task_complete%
+
+[sr_idle@1]

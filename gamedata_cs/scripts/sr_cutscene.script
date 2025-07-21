@@ -1,0 +1,232 @@
+----------------------------------------------------------------------------------------------------
+--' Cutscene trigger
+----------------------------------------------------------------------------------------------------
+--' локальные переменные
+local state_nowhere = 0 --' схема только что включилась
+local state_inside = 1  --' актер внутри
+local state_outside = 2 --' актер снаружи
+--' Временные переменные
+local object_cutscene = nil
+local storage_scene = nil
+
+class "cam_effector_set"
+function cam_effector_set:__init(set)
+	self.set = set
+    self.state = "start"
+	self.cur_effect = 0
+	self.playing = false
+	self.looped = false
+end
+
+function cam_effector_set:start_effect(eff)
+	if(eff.local_pos) then
+--	    level.add_cam_effector("camera_effects\\"..eff.anim..".anm", 210408, type(eff.looped)=="string", "sr_cutscene.effector_callback")
+	    level.add_cam_effector("camera_effects\\"..eff.anim..".anm", 210408, false, "sr_cutscene.effector_callback")
+	else
+--    	level.add_cam_effector2("camera_effects\\"..eff.anim..".anm", 210408, type(eff.looped)=="string", "sr_cutscene.effector_callback")
+    	level.add_cam_effector2("camera_effects\\"..eff.anim..".anm", 210408, false, "sr_cutscene.effector_callback")
+	end
+    self.playing = true
+end
+
+function cam_effector_set:stop_effect()
+    level.remove_cam_effector(210408)
+    self.playing = false
+    self.state = "release"
+    self.cur_effect = 0
+--    local eff = self:select_effect()
+--    if(eff) then
+--        self:start_effect(eff)
+--    end
+end
+
+function cam_effector_set:update()
+	if(self.playing) then
+		local eff = self.set[self.state][self.cur_effect]
+		if(eff) and (eff.looped~=false) then
+			local cond = xr_logic.pick_section_from_condlist(db.actor, nil, self.condlist)
+	        if(cond=="false") then
+				self.looped = false
+--	            self:stop_effect()
+	        end
+		end
+	else
+		local eff = self:select_effect()
+		if(eff) then
+			self:start_effect(eff)
+		end
+	end
+end
+
+function cam_effector_set:select_effect()
+	local state = self.state
+	local cur_effect = self.cur_effect
+	if(self.looped) then
+		return self.set[state][cur_effect]
+	end
+	if(state=="start") then
+		cur_effect = cur_effect + 1
+		if(self.set.start[cur_effect]) then
+			self.cur_effect = cur_effect
+			if(type(self.set.start[cur_effect].looped)=="string") then
+				self.looped = true
+				self.condlist = xr_logic.parse_condlist(db.actor, "sr_cutscene", "effect_condlist", self.set.idle[cur_effect].looped)
+			end
+			return self.set.start[cur_effect]
+		else
+			self.state = "idle"
+			self.cur_effect = 0
+			return self:select_effect()
+		end
+	elseif(state=="idle") then
+		cur_effect = cur_effect + 1
+		if(self.set.idle[cur_effect]) then
+			self.cur_effect = cur_effect
+			if(type(self.set.idle[cur_effect].looped)=="string") then
+				self.looped = true
+				self.condlist = xr_logic.parse_condlist(db.actor, "sr_cutscene", "effect_condlist", self.set.idle[cur_effect].looped)
+			end
+			return self.set.idle[cur_effect]
+		else
+			self.state = "finish"
+			self.cur_effect = 0
+			return self:select_effect()
+		end
+	elseif(state=="finish") then
+		cur_effect = cur_effect + 1
+		if(self.set.finish[cur_effect]) then
+			self.cur_effect = cur_effect
+			if(type(self.set.finish[cur_effect].looped)=="string") then
+				self.looped = true
+				self.condlist = xr_logic.parse_condlist(db.actor, "sr_cutscene", "effect_condlist", self.set.idle[cur_effect].looped)
+			end
+			return self.set.finish[cur_effect]
+		else
+			self.state = "release"
+			self.cur_effect = 0
+			sr_cutscene.effector_callback()
+			return nil
+		end
+	end
+end
+--------------------------------------------------------------------------------
+class "action_cutscene"
+--' инициализация объекта класса
+function action_cutscene:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+	self.ui_disabled = false
+	self.motion_id = 1
+end
+--' инициализация схемы поведения
+function action_cutscene:reset_scheme()
+	self.state = state_nowhere --' еще неясно, находится ли персонаж в пределах пространственного ограничителя или нет
+    self.st.signals = {} --' обнуляем сигналы
+	self.motion = nil
+end
+--' функция обновления, вызываемая конвеером
+function action_cutscene:update(delta)
+    local state = self.state
+	if(self.object:inside(db.actor:center())) then
+	    if(state~=state_inside) then
+	        self:zone_enter()
+	    end
+	else
+	    if(state~=state_outside) then
+	        self:zone_leave()
+		end
+    end
+
+	if(self.motion) then
+		self.motion:update()
+	end
+	if(self.st.signals["cam_effector_stop"]~=nil) then
+		self.motion:stop_effect()
+		self.st.signals["cam_effector_stop"] = nil
+	end
+    --' выполняем архитектурное требование
+	if(xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)) then
+		return
+	end
+end
+--' тут нужно запустить сцену
+function action_cutscene:zone_enter()
+	self.state = state_inside
+    --' телепорт в выбранную точку
+    xr_effects.teleport_actor(db.actor, nil, {self.st.point, self.st.look})
+
+	if self.st.pp_effector ~= "nil.ppe" then
+	    level.add_pp_effector(self.st.pp_effector, 234, false)
+	end
+
+	xr_effects.disable_ui(db.actor, nil)
+    self.ui_disabled = true
+
+	self.motion_id = 1
+	self:select_next_motion()
+
+	object_cutscene = self.object
+	storage_scene = self.st
+end
+function action_cutscene:zone_leave()
+    --' по идее больше ничего тут делать не надо
+	self.state = state_outside
+end
+--' Выбор и начало отыгрыша следующего пролета
+function action_cutscene:select_next_motion()
+	local motion = self.st.cam_effector[self.motion_id]
+	if(cam_effector_sets[motion]==nil) then
+		self.motion = cam_effector_set({start={},idle={{anim=motion, looped=false, local_pos=false}},finish={}})
+	else
+		self.motion = cam_effector_set(cam_effector_sets[motion])
+	end
+	local effect = self.motion:select_effect()
+	self.motion:start_effect(effect)
+
+	self.motion_id = self.motion_id + 1
+end
+--' Ивент об окончании пролета
+function action_cutscene:cutscene_callback()
+	if(self.motion.state=="release") then
+		self.motion = nil
+		if(self.motion_id<=#self.st.cam_effector) then
+			self:select_next_motion()
+			printf("SELECTING MOTION %s from %s", tostring(self.motion_id), tostring(#self.st.cam_effector))
+	    else
+	        if(self.ui_disabled) then
+	            if not db.actor:is_talking() then
+	                xr_effects.enable_ui(db.actor, nil)
+	            else
+	                level.enable_input()
+	            end
+		        db.actor:set_actor_direction(-patrol(self.st.look):point(0):sub(patrol(self.st.point):point(0)):getH())
+	            self.ui_disabled = false
+	            self.st.signals["cameff_end"] = true
+	        end
+		end
+	else
+		self.motion.playing = false
+		local eff = self.motion:select_effect()
+		if(eff) then
+			self.motion:start_effect(eff)
+		end
+	end
+end
+--------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	local new_action = action_cutscene(npc, storage)
+	--' Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+function set_scheme(obj, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+
+	st.point = utils.cfg_get_string(ini, section, "point", obj, true, "", "none")
+	st.look = utils.cfg_get_string(ini, section, "look", obj, true, "", "none")
+	st.pp_effector = utils.cfg_get_string(ini, section, "pp_effector", obj, false, "", "nil")..".ppe"
+    st.cam_effector = parse_names(utils.cfg_get_string(ini, section, "cam_effector", obj, true, ""))
+end
+function effector_callback(obj)
+	xr_logic.issue_event(object_scene, storage_scene, "cutscene_callback")
+end

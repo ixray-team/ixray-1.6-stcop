@@ -1,0 +1,203 @@
+;Killers
+
+[mil_killer_invaders]
+faction = killer
+npc = sim_default_killer_3, sim_default_killer_3, sim_default_killer_3, sim_default_killer_3, mil_hog
+target_smart = {+mil_actor_go_to_limansk} nil, mil_smart_terrain_4_2
+sympathy = 0.1
+relationship = friend
+
+
+;Zombied
+
+[mil_zombied_1]
+faction = zombied
+npc = mil_zombied, mil_zombied, mil_zombied, mil_zombied, mil_zombied
+target_smart = mil_smart_terrain_7_9
+relationship=enemy
+sympathy=0.1
+
+[mil_zombied_2]
+faction = zombied
+npc = mil_zombied, mil_zombied, mil_zombied, mil_zombied, mil_zombied
+target_smart = mil_smart_terrain_7_10
+relationship=enemy
+sympathy=0.1
+
+[mil_zombied_3]
+faction = zombied
+npc = mil_zombied, mil_zombied, mil_zombied, mil_zombied, mil_zombied
+target_smart = mil_smart_terrain_7_10
+relationship=enemy
+sympathy=0.1
+
+
+;Army
+
+[mil_squard_with_zombiers]
+faction = army
+npc = sim_default_military_3_sniper, mil_soldier_with_zombier, mil_soldier_with_zombier, mil_soldier_with_zombier, mil_soldier_with_zombier
+target_smart = mil_smart_terrain_7_7
+
+[mil_military_7_7_1_squad]
+faction = army
+npc = sim_default_military_3, sim_default_military_3, sim_default_military_3, sim_default_military_3, sim_default_military_3
+target_smart = mil_smart_terrain_7_7
+on_death = %+mil_militarybase_dead_1%
+
+[mil_military_7_7_2_squad]
+faction = army
+npc = sim_default_military_3, sim_default_military_3, sim_default_military_3, sim_default_military_3, sim_default_military_3
+target_smart = mil_smart_terrain_7_7
+on_death = %+mil_militarybase_dead_2%
+
+[mil_military_7_7_3_squad]
+faction = army
+npc = sim_default_military_4, sim_default_military_4, sim_default_military_4, sim_default_military_4, sim_default_military_4
+target_smart = mil_smart_terrain_7_7
+on_death = %+mil_militarybase_dead_3%
+
+
+;Freedom - Kostiuk squad
+
+[mil_freedom_attack_base_1]
+faction = freedom
+npc = mil_kostiuk, mil_freedom_attacker, mil_freedom_attacker, mil_freedom_attacker, mil_freedom_attacker
+target_smart = {+mil_militarybase_dead_1 +mil_militarybase_dead_2 +mil_militarybase_dead_3} nil, {+mil_actor_attack_house} mil_smart_terrain_7_7, mil_smart_terrain_7_8
+attack_power = 400
+spawn_point = mil_freedom_attack_base_1_spawn_point
+
+
+;Freedom
+
+[mil_smart_terrain_2_2_freedom_squad_1]
+faction = freedom
+npc = sim_default_freedom_4, sim_default_freedom_4, sim_default_freedom_3, sim_default_freedom_3, mil_freedom_speaker
+target_smart = {+mil_actor_inside_wtower} nil, mil_smart_terrain_2_2
+
+[mil_smart_terrain_2_2_freedom_squad_2]
+faction = freedom
+npc = sim_default_freedom_4, sim_default_freedom_4, sim_default_freedom_4, sim_default_freedom_3, sim_default_freedom_3
+target_smart = {+mil_actor_inside_wtower} nil, mil_smart_terrain_2_2
+
+[mil_smart_terrain_7_4_freedom_base_squad_1]
+faction = freedom
+npc = sim_default_freedom_4, sim_default_freedom_3, sim_default_freedom_3, sim_default_freedom_3, sim_default_freedom_3
+target_smart = {+mil_actor_inside_wtower} nil, mil_smart_terrain_7_4
+on_death = %mil_additional_quest_3_info_complete%
+
+[mil_smart_terrain_7_2_freedom_squad]
+faction = freedom
+npc = sim_default_freedom_3, sim_default_freedom_3, sim_default_freedom_3, sim_default_freedom_4, sim_default_freedom_4
+target_smart = {+mil_actor_inside_wtower} nil, mil_smart_terrain_7_2
+
+[mil_smart_terrain_5_2_freedom_squad_1]
+faction = freedom
+npc = mil_questman
+target_smart = mil_smart_terrain_5_2
+
+[mil_smart_terrain_5_2_freedom_squad_2]
+faction = freedom
+npc = sim_default_freedom_3, sim_default_freedom_3, sim_default_freedom_4, sim_default_freedom_4, sim_default_freedom_4
+target_smart = mil_smart_terrain_5_2
+on_death = %+mil_additional_quest_5_info_complete%
+
+
+;Stalkers
+
+[mil_smart_terrain_2_4_stalker_squad_1]
+faction = stalker
+npc = sim_default_stalker_3, sim_default_stalker_2, sim_default_stalker_2, sim_default_stalker_2, sim_default_stalker_2
+target_smart = {+mil_actor_inside_wtower} nil, mil_smart_terrain_2_4
+on_death = %+mil_additional_quest_1_info_complete +mil_additional_quest_4_info_complete%
+
+[mil_smart_terrain_2_4_stalker_squad_2]
+faction = stalker
+npc = sim_default_stalker_2, sim_default_stalker_2, sim_default_stalker_2, sim_default_stalker_2, sim_default_stalker_2
+target_smart = {+mil_actor_inside_wtower} nil, mil_smart_terrain_2_4
+on_death = %+mil_additional_quest_2_info_complete%
+
+
+;Monolith
+
+[mil_smart_terrain_2_6_monolith_squad]
+faction = monolith
+npc = sim_default_monolith_3, sim_default_monolith_3, sim_default_monolith_3, sim_default_monolith_3, sim_default_monolith_3
+target_smart = {+mil_additional_quest_1_info_complete} nil, mil_smart_terrain_2_6
+
+
+;Duty
+
+[mil_smart_terrain_4_5_duty_squad_1]
+faction = bandit
+npc = sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_3
+target_smart = {+mil_actor_inside_wtower} nil, mil_smart_terrain_4_5
+
+[mil_smart_terrain_4_5_duty_squad_2]
+faction = bandit
+npc = sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_4, sim_default_duty_3
+target_smart = {+mil_actor_inside_wtower} nil, mil_smart_terrain_4_5
+
+
+;Dogs
+
+[mil_dogs_lair_1]
+faction = monster
+npc = dog_strong, dog_strong, dog_strong, dog_strong, dog_strong
+target_smart = {+mil_water_tower_radio} mil_smart_terrain_4_3, mil_smart_terrain_3_2
+attack_power = 400
+
+[mil_dogs_lair_3]
+faction = monster
+npc = dog_strong, dog_strong, dog_strong, dog_strong, dog_strong
+target_smart = mil_smart_terrain_7_8
+
+[mil_dogs_lair_4]
+faction = monster
+npc = pseudodog_strong, pseudodog_strong, pseudodog_strong
+target_smart = mil_smart_terrain_2_1
+
+[mil_dogs_lair_5]
+faction = monster
+npc = pseudodog_strong, pseudodog_strong, pseudodog_strong
+target_smart = mil_smart_terrain_2_1
+
+[mil_dogs_lair_6]
+faction = monster
+npc = pseudodog_strong, pseudodog_strong, pseudodog_strong, pseudodog_strong
+target_smart = nil
+
+
+;Bloodsucker
+
+[mil_bloodsucker_lair]
+faction = monster
+npc = mil_bloodsucker
+target_smart = mil_smart_terrain_4_3
+on_death = %+mil_bs_dead%
+show_spot = true
+
+;Barrier squads - stalker vs monolith
+
+[mil_stalker_3_8_squad]
+faction = stalker
+npc = sim_default_stalker_4, sim_default_stalker_2, sim_default_stalker_2, sim_default_stalker_2
+target_smart = mil_smart_terrain_3_8
+attack_power = 400
+
+[mil_monolith_squad]
+faction = monolith
+npc = sim_default_monolith_3, sim_default_monolith_3, sim_default_monolith_3, sim_default_monolith_3, sim_default_monolith_3
+target_smart = mil_smart_terrain_3_8:nil
+attack_power = 400
+
+[mil_monster_squad]
+faction = monster
+npc = dog_strong, dog_strong, dog_strong, dog_strong, dog_strong
+target_smart = mil_smart_terrain_3_8:nil
+attack_power = 400
+
+[mil_stalker_veteran]
+faction = stalker
+npc = sim_default_stalker_4, sim_default_stalker_3, sim_default_stalker_3
+target_smart = mil_smart_terrain_4_8:nil

@@ -1,0 +1,27 @@
+[logic]
+active = remark
+smart_terrain = nil
+on_death = death
+
+[death]
+on_info = nil 
+
+[remark]  
+anim = hide
+target = arena_cover_look_1 , 0
+combat_ignore_cond = true
+on_actor_dist_le_nvis = 15 | walker
+meet = no_meet
+on_timer = 35000 | walker
+
+[remark@2]  
+anim = hide
+target = arena_cover_look_1 , 0
+combat_ignore_cond = true
+meet = no_meet
+
+
+[walker]
+path_walk = arena_first_battle_stalker_1_spawn 
+meet = no_meet
+def_state_moving = assault

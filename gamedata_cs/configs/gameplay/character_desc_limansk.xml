@@ -1,0 +1,281 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+  <specific_character id="lim_cs_commander_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_nebo_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>lim_cs_commander</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>900</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_1</visual>
+		<snd_config>characters_voice\human_02\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      hand_radio \n
+	  wpn_binoc \n
+      wpn_ak74_up2 = 1, scope, launcher \n
+      ammo_5.45x39_ap \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    <mechanic_mode>1</mechanic_mode>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>dm_hello_dialog</start_dialog>
+  	</specific_character>
+
+  <specific_character id="lim_enemy_sniper_stalker" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>lim_enemy_sniper_stalker</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>800</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+
+    <supplies>
+      [spawn] \n
+      wpn_beretta = 1 \n
+      device_torch \n
+      wpn_svd \n
+      ammo_7.62x54_7h1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="lim_stalker_enemy_default_0" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>lim_stalker_enemy</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>500</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_3</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_ak74_up2 = 1, scope, launcher \n
+      ammo_5.45x39_ap = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+  <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="lim_stalker_enemy_default_1" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>lim_stalker_enemy</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>500</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_3</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_ak74 \n
+      ammo_5.45x39_ap = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+  <specific_character id="lim_stalker_enemy_default_2" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>lim_stalker_enemy</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>500</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_ak74 \n
+      ammo_5.45x39_ap = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+  <specific_character id="lim_stalker_enemy_default_3" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>lim_stalker_enemy</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>500</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_ak74 \n
+      ammo_5.45x39_ap = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_f1 = 3 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="lim_bandit_minigunner" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_neutral_4</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>lim_bandit_minigunner</class>
+    <community>bandit</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+
+    <rank>450</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_neutral\stalker_neutral_4</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+	  wpn_pkm \n
+	  ammo_pkm_100 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+  <specific_character id="lim_bridge_minigunner" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_soldier_4</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>lim_bridge_minigunner</class>
+    <community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\military\</snd_config>
+
+    <rank>910</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_soldier\stalker_soldier_4</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+	  wpn_pkm \n
+	  ammo_pkm_100 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+  <specific_character id="test_stalker_dual_weapon" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_soldier_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>test_stalker_dual_weapon</class>
+    <community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\military\</snd_config>
+
+    <rank>910</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_soldier\stalker_soldier_2</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+	  wpn_wincheaster1300 = 1 \n
+	  wpn_ak74u = 1 \n
+	  ammo_12x70_buck = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+</xml>

@@ -1,0 +1,657 @@
+local random_task = nil
+
+local task_type_by_id = {
+	[0] = "storyline",
+	[1] = "eliminate_smart",
+	[2] = "capture_smart",
+	[3] = "defend_smart",
+	[4] = "defend_smart_delay",
+	[5] = "take_reward",
+	[6] = "bring_item",
+	[7] = "recover_item",
+	[8] = "find_upgrade",
+	[9] = "hide_from_surge",
+	[10] = "eliminate_squad"
+}
+
+local task_id_by_type = {
+	storyline				= 0,
+	eliminate_smart			= 1,
+	capture_smart			= 2,
+	defend_smart			= 3,
+	defend_smart_delay		= 4,
+	take_reward				= 5,
+	bring_item				= 6,
+	recover_item			= 7,
+	find_upgrade			= 8,
+	hide_from_surge			= 9,
+	eliminate_squad			= 10
+}
+
+class "CRandomTask"
+function CRandomTask:__init()
+	--' На конструкторе вычитываем LTX и создаем заготовки квестов.
+	self.task_ini = ini_file("misc\\task_manager.ltx")
+	self.task_phrase_id = 100
+
+	--' Генератор айдишников квеста
+	self.id_generator = object_collection.object_collection()
+
+	--' Итерируемся по всем настройкам фраз
+	if not self.task_ini:section_exist("list") then
+		abort("There is no section [list] in task_manager.ltx")
+	end
+	local n = self.task_ini:line_count("list")
+	local id, value = "",""
+	local category = ""
+
+	--' начальная установка
+	self.task_info = {}
+	self.general_tasks = {}
+	self.eliminate_smart_tasks = {}
+	self.capture_smart_tasks = {}
+	self.defend_smart_tasks = {}
+	self.defend_smart_delay_tasks = {}
+	self.reward_tasks = {}
+	self.bring_item_tasks = {}
+	self.recover_item_tasks = {}
+	self.find_upgrade_tasks = {}
+	self.hide_from_surge = {}
+	self.eliminate_squad_tasks = {}
+	self.inited_find_upgrade_tasks = {}
+	for i=0,n-1 do
+		result, id, value	= self.task_ini:r_line("list",i,"","")
+
+		if not self.task_ini:section_exist(id) then
+			abort("There is no section [%s] in task_manager.ltx", id)
+		end
+
+		local type = utils.cfg_get_string(self.task_ini, id, "type", nil, false, "", "general")
+		--' Автоматом добавляем только обычные квесты.
+		if type == "storyline" then
+			self.general_tasks[id] = task_objects.CStorylineTask(self.task_ini, id, "storyline")
+		elseif type == "eliminate_smart" then
+			--' Заносим праобразы тасков в спец таблицу, из нее потом будем выбирать
+			--' наиболее подходящий для конкретного смарта.
+			self.eliminate_smart_tasks[id] = task_objects.CEliminateSmartTask(self.task_ini, id, "eliminate_smart")
+		elseif type == "capture_smart" then
+			--' Заносим праобразы тасков в спец таблицу, из нее потом будем выбирать
+			--' наиболее подходящий для конкретного смарта.
+			self.capture_smart_tasks[id] = task_objects.CCaptureSmartTask(self.task_ini, id, "capture_smart")
+		elseif type == "defend_smart" then
+			--' Заносим праобразы тасков в спец таблицу, из нее потом будем выбирать
+			--' наиболее подходящий для конкретного смарта.
+			self.defend_smart_tasks[id] = task_objects.CDefendSmartTask(self.task_ini, id, "defend_smart")
+		elseif type == "defend_smart_delay" then
+			--' Заносим праобразы тасков в спец таблицу, из нее потом будем выбирать
+			--' наиболее подходящий для конкретного смарта.
+			self.defend_smart_delay_tasks[id] = task_objects.CDefendSmartTaskDelay(self.task_ini, id, "defend_smart_delay")
+		elseif type == "take_reward" then
+			self.reward_tasks[id] = task_objects.CGetRewardTask(self.task_ini, id, "take_reward")
+		elseif type == "bring_item" then
+			self.bring_item_tasks[id] = task_objects.CBringItemTask(self.task_ini, id, "bring_item")
+		elseif type == "recover_item" then
+			self.recover_item_tasks[id] = task_objects.CRecoverItemTask(self.task_ini, id, "recover_item")
+		elseif type == "find_upgrade" then
+			self.find_upgrade_tasks[id] = task_objects.CFindUpgradeTask(self.task_ini, id, "find_upgrade")
+		elseif type == "hide_from_surge" then
+			self.hide_from_surge[id] = task_objects.CHideFromSurgeTask(self.task_ini, id, "hide_from_surge")
+		elseif type == "eliminate_squad" then
+			self.eliminate_squad_tasks[id] = task_objects.CEliminateSquadTask(self.task_ini, id, "eliminate_squad")
+		end
+	end
+
+	--' Таблица проинициализированных квестов.
+	self.inited_tasks = {}
+
+	--' Таблица наград, которые надо вручить игроку
+	self.rewards = {}
+
+	--' Таблица чуваков, могущих выдавать награды
+	self.rewarders = {}
+	--' Таблица чуваков, могущих выдавать квесты от имени всей группировки
+	self.taskers = {}
+
+	--' Таблица, в которой мы будем хранить таски, которые может выдать командир группировки.
+	self.selected_faction_task = {}
+	--' Таблица заданий выданых на смарт
+	self.tasks_by_smarts = {}
+end
+-- Save
+function CRandomTask:save(packet)
+	set_save_marker(packet, "save", false, "CRandomTask")
+	local n = 0
+	for k,v in pairs(self.inited_tasks) do
+		n = n + 1
+	end
+	packet:w_u16(n)
+	for k,v in pairs(self.inited_tasks) do
+		packet:w_stringZ(v.base_id)
+		packet:w_stringZ(k)
+		packet:w_u16(task_id_by_type[v.type])
+		self.inited_tasks[k]:save(packet)
+	end
+	self.id_generator:save(packet)
+
+	-- Сохранение списка наград
+	n = 0
+	for k,v in pairs(self.rewards) do
+		n = n + 1
+	end
+	packet:w_u8(n)
+	for k,v in pairs(self.rewards) do
+		packet:w_stringZ(k)
+		packet:w_u8(#v)
+		for kk,vv in pairs(v) do
+			if vv.money ~= nil then
+				packet:w_bool(true)
+				packet:w_u16(vv.money)
+			else
+				packet:w_bool(false)
+				packet:w_stringZ(vv.item)
+			end
+		end
+	end
+
+	n = 0
+	for k,v in pairs(self.inited_find_upgrade_tasks) do
+		n = n + 1
+	end
+	packet:w_u16(n)
+	for k,v in pairs(self.inited_find_upgrade_tasks) do
+		packet:w_u16(k)
+		local num = 0
+		for kk,vv in pairs(self.inited_find_upgrade_tasks[k]) do
+			num = num + 1
+		end
+		packet:w_u16(num)
+		for kk,vv in pairs(self.inited_find_upgrade_tasks[k]) do
+			packet:w_stringZ(kk)
+			packet:w_u16(vv.entity_id)
+		end
+	end
+
+	set_save_marker(packet, "save", true, "CRandomTask")
+end
+-- Load
+function CRandomTask:load(reader)
+	set_save_marker(reader, "load", false, "CRandomTask")
+	self.task_ini = ini_file("misc\\task_manager.ltx")
+
+	local n = reader:r_u16()
+	self.task_info = {}
+	self.inited_tasks = {}
+    self.inited_find_upgrade_tasks = {}
+	for i=1,n do
+	local base_id = reader:r_stringZ()
+	local id = reader:r_stringZ()
+		local t = task_type_by_id[reader:r_u16()]
+		local obj = nil
+		if t == "storyline" then
+			obj = task_objects.CStorylineTask(self.task_ini, base_id, t)
+		elseif t == "eliminate_smart" then
+			obj = task_objects.CEliminateSmartTask(self.task_ini, base_id, t)
+		elseif t == "capture_smart" then
+			obj = task_objects.CCaptureSmartTask(self.task_ini, base_id, t)
+		elseif t == "defend_smart" then
+			obj = task_objects.CDefendSmartTask(self.task_ini, base_id, t)
+		elseif t == "defend_smart_delay" then
+			obj = task_objects.CDefendSmartTaskDelay(self.task_ini, base_id, t)
+		elseif t == "take_reward" then
+			obj = task_objects.CGetRewardTask(self.task_ini, base_id, t)
+		elseif t == "bring_item" then
+			obj = task_objects.CBringItemTask(self.task_ini, base_id, t)
+		elseif t == "recover_item" then
+			obj = task_objects.CRecoverItemTask(self.task_ini, base_id, t)
+		elseif t == "find_upgrade" then
+			obj = task_objects.CFindUpgradeTask(self.task_ini, base_id, t)
+		elseif t == "hide_from_surge" then
+			obj = task_objects.CHideFromSurgeTask(self.task_ini, base_id, t)
+		elseif t == "eliminate_squad" then
+			obj = task_objects.CEliminateSquadTask(self.task_ini, base_id, t)
+		end
+		if(obj~=nil) then
+			obj:load(reader)
+			self.inited_tasks[id] = obj
+			if(obj.status~="normal") then
+				self.task_info[tostring(obj.entity_id)] = obj
+			end
+			if(t=="eliminate_smart") or (t=="capture_smart") or (t=="defend_smart") or (t=="defend_smart_delay") then
+				self.tasks_by_smarts[obj.target] = obj
+			end
+		end
+	end
+	self.id_generator:load(reader)
+
+	-- Загрузка списка наград
+	n = reader:r_u8()
+	for i=1,n do
+		local community = reader:r_stringZ()
+		local num = reader:r_u8()
+		self.rewards[community] = {}
+		for ii=1,num do
+			local is_money = reader:r_bool()
+			if is_money then
+				local amount = reader:r_u16()
+				table.insert(self.rewards[community], {money = amount})
+			else
+				local item_name = reader:r_stringZ()
+				table.insert(self.rewards[community], {item = item_name})
+			end
+		end
+	end
+
+	self.inited_find_upgrade_tasks = {}
+	local n = reader:r_u16()
+	for i=1,n do
+		local k = reader:r_u16()
+		self.inited_find_upgrade_tasks[k] = {}
+		local num = reader:r_u16()
+		for j=1,num do
+			kk = reader:r_stringZ()
+			ei = reader:r_u16()
+			self.inited_find_upgrade_tasks[k][kk] = self:get_task_by_entity_id(ei)
+		end
+	end
+
+	set_save_marker(reader, "load", true, "CRandomTask")
+end
+--------------------------------------------------------------------------------
+
+--' Выдача квеста игроку
+function CRandomTask:give_task(task_id, community)
+	if self.task_info[task_id] == nil then
+		abort("Wrong task id [%s] in give_task function.", tostring(task_id))
+	end
+	self.task_info[task_id]:give_task(community)
+end
+--' Проверяем, не выполнен ли таск
+function CRandomTask:task_complete(p1)
+	--printf("***tc %s", tostring(p1))
+	if self.task_info[p1] == nil then
+		return false
+	end
+	self.task_info[p1]:check_task(self)
+	if(self.task_info[p1].last_check_task=="complete") then
+		xr_statistic.inc_completed_quests_counter()
+		return true
+	else
+		return false
+	end
+end
+--' Проверяем, не профейлен ли таск
+function CRandomTask:task_fail(p1)
+	--printf("***tf %s", tostring(p1))
+	if self.task_info[p1] == nil then
+		return false
+	end
+	self.task_info[p1]:check_task(self)
+	--printf("   %s", tostring(self.task_info[p1].last_check_task))
+	if(self.task_info[p1].last_check_task=="fail") then
+		xr_statistic.inc_failed_quests_counter()
+	end
+	return self.task_info[p1].last_check_task == "fail" or self.task_info[p1].last_check_task == "reversed"
+end
+--' Коллбек таска
+function CRandomTask:task_callback(task, completed)
+	--' Если задание выполнилось - надо выдать с него награду!
+	local task_id = task:get_id()
+	local delta
+		printf("task_callback2")
+	if completed == true then
+		printf("Task %s completed", tostring(task_id))
+		self.task_info[task_id]:init_reward()
+		delta = self.task_info[task_id].community_relation_delta_complete
+	else
+		printf("Task %s failed", tostring(task_id))
+		delta = self.task_info[task_id].community_relation_delta_fail
+	end
+    local relation = db.actor:community_goodwill(self.task_info[task_id].community) + delta
+	if(relation>1000) then
+		relation = 1000
+	elseif(relation<-3000) then
+		relation = -3000
+	end
+	db.actor:set_community_goodwill(self.task_info[task_id].community, relation)
+
+
+	for k,v in pairs(self.inited_find_upgrade_tasks) do
+		v[self.task_info[task_id].id] = nil
+	end
+
+
+
+	printf("CLEAR TASK %s", tostring(task_id))
+	self.task_info[task_id]:deactivate_task(task)
+	for k,v in pairs(self.inited_tasks) do
+		if(tostring(v.entity_id)==tostring(task_id)) then
+			self.inited_tasks[k] = nil
+			break
+		end
+	end
+	for k,v in pairs(self.tasks_by_smarts) do
+		if(tostring(v.entity_id)==tostring(task_id)) then
+			self.tasks_by_smarts[k] = nil
+			break
+		end
+	end
+	self.task_info[task_id] = nil
+end
+--' Выбор наиболее подходящего таска по условию
+function CRandomTask:select_task(type, obj, faction)
+	local task_table = nil
+	--local key = self.id_generator:get_id()
+	if type == "storyline" then
+		task_table = self.general_tasks
+		key = tostring(faction).."_general_"..obj
+	elseif type == "eliminate_smart" then
+		task_table = self.eliminate_smart_tasks
+		key = tostring(faction).."_eliminate_smart_"..obj.id
+	elseif type == "capture_smart" then
+		task_table = self.capture_smart_tasks
+		key = tostring(faction).."_capture_smart_"..obj.id
+	elseif type == "defend_smart" then
+		task_table = self.defend_smart_tasks
+		key = tostring(faction).."_defend_smart_"..obj.id
+	elseif type == "defend_smart_delay" then
+		task_table = self.defend_smart_delay_tasks
+		key = tostring(faction).."_defend_smart_delay_"..obj.id
+	elseif type == "take_reward" then
+		task_table = self.reward_tasks
+		key = tostring(faction).."_take_reward_"..obj
+	elseif type == "bring_item" then
+		task_table = self.bring_item_tasks
+		key = tostring(faction).."_bring_item_"..obj
+	elseif type == "recover_item" then
+		task_table = self.recover_item_tasks
+		key = "recover_item"
+--		key = tostring(faction).."_recover_item_"..obj
+	elseif type == "find_upgrade" then
+		task_table = self.find_upgrade_tasks
+		key = tostring(faction).."_find_upgrade_"..obj
+    elseif type == "hide_from_surge" then
+		task_table = self.hide_from_surge
+		key = tostring(faction).."_hide_from_surge_"..obj
+	elseif type == "eliminate_squad" then
+		task_table = self.eliminate_squad_tasks
+		key = tostring(faction).."_eliminate_squad_"..obj.squad_id
+	end
+--	printf("!!!Select task for key [%s]", tostring(key))
+
+	if task_table == nil then
+		abort("Wrong type [%s] in select_task.", tostring(type))
+	end
+
+	--' Если для этого объекта уже есть инициализированный таск - нужно выдать его.
+	if self.inited_tasks[key] ~= nil then
+		if type == "recover_item" then
+			if not self.inited_tasks[key]:check_target(obj, faction) then
+				return
+			end
+		end
+		printf("!!!Return inited task type[%s] for %s, key[%s], entity_id[%s]", tostring(type), tostring(faction), tostring(key), self.inited_tasks[key].entity_id)
+		return self.inited_tasks[key]
+	end
+	local new_EId = self.id_generator:get_id()
+
+	local max_prior = -1
+	local selected_task = nil
+
+	--' Итерируемся по всем квестам заданного типа
+	for k,v in pairs(task_table) do
+		--' Проверяем каждый из них может ли он быть выдан
+		if v:check_target(obj, faction) then
+			--' Выбираем наиболее приоритетный из них
+			if v.prior > max_prior then
+				max_prior = v.prior
+				selected_task = v
+			end
+		end
+	end
+	if selected_task == nil then
+		return
+	end
+	printf("!!!Init new task type[%s] for %s, key[%s], entity_id[%s]", tostring(type), tostring(faction), tostring(key), new_EId)
+
+	--' Заносим таск в список уже проинициализированных.
+	self.inited_tasks[key] = selected_task:get_inited_task(obj, faction, new_EId)
+	return self.inited_tasks[key]
+end
+
+function CRandomTask:select_find_upgrade_task(obj, faction)
+	if self.inited_find_upgrade_tasks[obj:id()] == nil then
+		self.inited_find_upgrade_tasks[obj:id()] = {}
+	end
+
+	--' Итерируемся по всем квестам заданного типа
+	for k,v in pairs(self.find_upgrade_tasks) do
+--		local task = self:select_task("find_upgrade", obj, faction)
+		--' Проверяем каждый из них может ли он быть выдан
+		if v:check_target(obj, faction) then
+			--' Заносим таск в список уже проинициализированных.
+			local task = v:get_inited_task(obj, faction, self.id_generator:get_id())
+			if self.inited_find_upgrade_tasks[obj:id()][task.id] == nil then
+				self.inited_find_upgrade_tasks[obj:id()][task.id] = task
+	            self.inited_tasks[tostring(faction).."_find_upgrade_"..task.entity_id] = task
+			end
+		end
+	end
+end
+-- Выдача инициализированного квеста по entity_id
+function CRandomTask:get_task_by_entity_id(entity_id)
+	for k,v in pairs(self.inited_tasks) do
+		if(v.entity_id==entity_id) then
+			return v
+		end
+	end
+	abort("There is no task with entity_id %s", tostring(entity_id))
+end
+function CRandomTask:get_task_by_key(type, obj, faction)
+	if type == "storyline" then
+		key = tostring(faction).."_general_"..obj
+	elseif type == "eliminate_smart" then
+		key = tostring(faction).."_eliminate_smart_"..obj.id
+	elseif type == "capture_smart" then
+		key = tostring(faction).."_capture_smart_"..obj.id
+	elseif type == "defend_smart" then
+		key = tostring(faction).."_defend_smart_"..obj.id
+	elseif type == "defend_smart_delay" then
+		key = tostring(faction).."_defend_smart_delay_"..obj.id
+	elseif type == "take_reward" then
+		key = tostring(faction).."_take_reward_"..obj
+	elseif type == "bring_item" then
+		key = tostring(faction).."_bring_item_"..obj
+	elseif type == "recover_item" then
+		key = "recover_item"
+--		key = tostring(faction).."_recover_item_"..obj
+	elseif type == "find_upgrade" then
+		key = tostring(faction).."_find_upgrade_"..obj
+    elseif type == "hide_from_surge" then
+		key = tostring(faction).."_hide_from_surge_"..obj
+	elseif type == "eliminate_squad" then
+		key = tostring(faction).."_eliminate_squad_"..obj.squad_id
+	end
+	if(self.inited_tasks[key]~=nil) then
+		return self.inited_tasks[key]
+	else
+		abort("There is no %s task with key %s!!!", type, key)
+	end
+end
+function CRandomTask:get_tasks_by_smart(smart_id)
+	--printf("!!!get_tasks_by_smart %s", tostring(smart_id))
+	--print_table(self.tasks_by_smarts)
+	return self.tasks_by_smarts[smart_id]
+end
+--' Реиницаилизация приоритетов выданных квестов
+function CRandomTask:reinit_task_prior(faction)
+	for k,v in pairs(self.inited_tasks) do
+		if v.community == faction then
+			if v.type == "eliminate_smart" then
+				v.prior = v.base_prior + v.target_obj.sim_prior[faction]
+			elseif v.type == "capture_smart" then
+				v.prior = v.base_prior + v.target_obj.sim_prior[faction]
+			elseif v.type == "defend_smart" then
+				v.prior = v.base_prior + v.target_obj.sim_prior[faction]
+			elseif v.type == "defend_smart_delay" then
+				v.prior = v.base_prior + v.target_obj.sim_prior[faction]
+			end
+		end
+	end
+end
+--' Регистрирование квеста, который может выдать группировка
+function CRandomTask:register_faction_task(faction, task_object)
+	if self.selected_faction_task[faction] == nil then
+		self.selected_faction_task[faction] = {}
+	end
+
+	--'printf("*** Registering new task %s", tostring(faction))
+	--'printf("id %s", tostring(task_object.id))
+	--'printf("af %s", tostring(task_object.added_to_faction))
+	if task_object.added_to_faction == true then
+		return
+	end
+	task_object.added_to_faction = true
+
+	table.insert(self.selected_faction_task[faction], task_object)
+	--' Надо отсортировать квесты по повышению приоритета.
+	table.sort(self.selected_faction_task[faction], function(a,b) return a.prior > b.prior end)
+	--'printf("----------- table after insert -------------%s", tostring(faction))
+	--'print_table(self.selected_faction_task[faction])
+	--'printf("----------- table after insert -------------%s", tostring(faction))
+end
+
+--' АНРегистрирование квеста, который может выдать группировка
+function CRandomTask:unregister_faction_task(faction, task_object)
+	--'printf("*** UNRegistering new task %s", tostring(faction))
+	--'printf("id %s", tostring(task_object.id))
+	--'printf("af %s", tostring(task_object.added_to_faction))
+	if task_object.added_to_faction == nil then
+		return
+	end
+	task_object.added_to_faction = nil
+
+	local del_id = nil
+	for k,v in pairs(self.selected_faction_task[faction]) do
+		if v.id == task_object.id then
+			del_id = k
+			break
+		end
+	end
+	table.remove(self.selected_faction_task[faction], del_id)
+	--'printf("----------- table after delete -------------%s", tostring(faction))
+	--'print_table(self.selected_faction_task[faction])
+	--'printf("----------- table after delete -------------%s", tostring(faction))
+end
+
+
+--' Регистрируем нового выдавателя наград
+function CRandomTask:register_rewarder(npc_id, community)
+	printf("register rewarder %s for %s", npc_id, community)
+	self.rewarders[community] = npc_id
+end
+--' Регистрируем нового выдавателя квестов
+function CRandomTask:register_tasker(npc_id, community)
+	self.taskers[community] = npc_id
+end
+
+function CRandomTask:immediate_give_reward(first_speaker, second_speaker, id)
+	local task_ini = self.task_ini
+	local immediate_reward = utils.cfg_get_bool(task_ini, id, "immediate_reward", nil, false, false)
+	if immediate_reward then
+		local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+		local reward_money = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "reward_money", nil, false, "", ""))
+		local reward_item = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "reward_item", nil, false, "", ""))
+		local money = xr_logic.pick_section_from_condlist(db.actor, db.actor, reward_money)
+		if money ~= nil then
+			dialogs.relocate_money(npc, tonumber(money), "in")
+		end
+		local items = xr_logic.pick_section_from_condlist(db.actor, db.actor, reward_item)
+		if items ~= nil then
+			local ancillary_item_table = {}
+			for k,v in pairs(utils.parse_names(items)) do
+				if ancillary_item_table[v] == nil then
+					ancillary_item_table[v] = 1
+				else
+					ancillary_item_table[v] = ancillary_item_table[v] + 1
+				end
+			end
+			for k,v in pairs(ancillary_item_table) do
+				dialogs.relocate_item_section(npc, k, "in", v)
+			end
+		end
+	end
+end
+
+--' Проверяем можем ли мы сейчас выдать какой либо самоинициализующийся таск
+function CRandomTask:update()
+end
+--' Регистрация целей для квестов.
+function CRandomTask:register_target(obj)
+end
+--' ОТРегистрация целей для квестов.
+function CRandomTask:unregister_target(obj)
+end
+
+
+
+
+function get_task_manager()
+	if random_task == nil then
+		random_task = CRandomTask()
+	end
+	return random_task
+end
+
+
+
+function task_complete(p1)
+	return get_task_manager():task_complete(p1)
+end
+function task_fail(p1)
+	return get_task_manager():task_fail(p1)
+end
+function task_callback(_task, state)
+	printf("task_callback")
+	--' В случае есть квест выполнен или провален - надо вызвать обнуление.
+	if state == task.fail or state == task.completed then
+		printf("task_callback1")
+		get_task_manager():task_callback(_task, state == task.completed)
+	end
+end
+function give_task(task_id, community)
+	local task = tm:select_task(task_type, target_obj, faction_name)
+	task:give_task(faction_name)
+
+	local tm = task_manager.get_task_manager()
+
+	tm.selected_faction_task[community][5]:give_task(community)
+
+	get_task_manager():give_task(task_id, community)
+end
+
+
+
+function clear_task_manager()
+--'	random_task	 = nil
+end
+
+
+function is_more_suitable(squad_obj)
+	local squad_smart_descr = squad_obj.board.smarts[squad_obj.smart_id]
+	if squad_smart_descr.stayed_squad_quan <=1 then
+		return true
+	end
+
+	-- Идем по сквадам, высчитываем их степень подходящести.
+	if squad_obj:get_script_target() == nil then
+		return true
+	end
+
+	-- Идем по сквадам, высчитываем их степень подходящести.
+	for k,v in pairs(squad_smart_descr.squads) do
+		if v:get_script_target() == nil then
+			return false
+		end
+	end
+	return true
+end

@@ -1,0 +1,122 @@
+[logic]
+active = remark@wait
+trade = misc\trade\trade_trader_agr_stalker.ltx
+level_spot = trader
+
+[remark@enemy]
+path_walk = agr_stalker_trader_walk
+path_look = agr_stalker_trader_look
+out_restr = agr_in_restr_stalker_trader
+anim = hands_up
+target = actor
+meet = no_meet
+on_info = {!is_smart_in_combat(agr_smart_terrain_4_4)} remark@wait
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[remark@wait]
+path_walk = agr_stalker_trader_walk
+path_look = agr_stalker_trader_look
+out_restr = agr_in_restr_stalker_trader
+anim = wait_trade
+on_info2 = smartcover@near_table
+meet = meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_info = {=is_smart_in_combat(agr_smart_terrain_4_4)} remark@enemy
+
+[smartcover@near_table]
+cover_name = agr_smart_cover_stalker_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = idle_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+out_restr = agr_in_restr_stalker_trader
+on_timer = 13330 | smartcover@near_table2
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_4_4)} remark@enemy
+on_info2 = {=actor_in_zone(agr_stalker_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@near_table2]
+cover_name = agr_smart_cover_stalker_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = lookout_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+out_restr = agr_in_restr_stalker_trader
+on_timer = 15000 | smartcover@near_table3
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_4_4)} remark@enemy
+on_info2 = {=actor_in_zone(agr_stalker_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@near_table3]
+cover_name = agr_smart_cover_stalker_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = fire_no_lookout_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+out_restr = agr_in_restr_stalker_trader
+on_timer = 4500 | smartcover@near_table4
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_4_4)} remark@enemy
+on_info2 = {=actor_in_zone(agr_stalker_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@near_table4]
+cover_name = agr_smart_cover_stalker_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = fire_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+out_restr = agr_in_restr_stalker_trader
+on_timer = 6500 | smartcover@near_table
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_4_4)} remark@enemy
+on_info2 = {=actor_in_zone(agr_stalker_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@look_up]
+cover_name = agr_smart_cover_stalker_trader_2
+loophole_name = lead_stand_look_down_2
+cover_state = lookout_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+out_restr = agr_in_restr_stalker_trader
+on_timer = 15000 | smartcover@look_up2
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_4_4)} remark@enemy
+on_info2 = {=actor_in_zone(agr_stalker_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@look_up2]
+cover_name = agr_smart_cover_stalker_trader_2
+loophole_name = lead_stand_look_down_2
+cover_state = fire_no_lookout_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+out_restr = agr_in_restr_stalker_trader
+on_timer = 15000 | smartcover@near_table
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_4_4)} remark@enemy
+on_info2 = {=actor_in_zone(agr_stalker_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@trade]
+cover_name = agr_smart_cover_stalker_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = idle_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+out_restr = agr_in_restr_stalker_trader
+def_state_moving = walk
+meet = meet
+on_info = {=is_smart_in_combat(agr_smart_terrain_4_4)} remark@enemy
+on_info2 = {!actor_in_zone(agr_stalker_trader_tradezone)} smartcover@near_table
+
+[meet]
+meet_state            = 0| nil@nil
+victim                = 0| nil
+use                   = true
+abuse                 = false

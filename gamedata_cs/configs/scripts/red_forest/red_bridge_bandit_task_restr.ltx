@@ -1,0 +1,20 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+red_bridge_bandits_task -red_bridge_cover_allyes_complete} sr_idle@2 %=give_inited_task(storyline:red_bridge_cover_allyes:csky)%
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@2]
+on_info = {-red_bridge_bandits_task +red_bridge_cover_allyes_complete} sr_idle@3
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@3]
+on_info = {+red_bridge_bandits_task -red_bridge_cover_allyes2_complete} sr_idle@4 %=give_inited_task(storyline:red_bridge_cover_allyes2:csky)%
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@4]
+on_info = {-red_bridge_bandits_task +red_bridge_cover_allyes_complete} sr_idle@3
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@nil]

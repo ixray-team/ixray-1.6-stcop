@@ -1,0 +1,144 @@
+[hit]
+on_info = %+gar_quest_get_weapons_arrived%
+
+;----------------------------------------------
+
+[logic@work1]
+active = walker@main_work1
+suitable = {+gar_quest_get_weapons_started -gar_quest_get_weapons_got_traitor_pda =check_npc_name(sim_default_bandit)}
+prior = 130
+on_hit = hit
+
+[walker@main_work1]
+path_walk = bandit_ambush_1
+path_look = bandit_ambush_1
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+on_info = {+gar_quest_get_weapons_arrived} kamp@war_work1 %=hit_npc_from_actor%
+
+[kamp@war_work1]
+center_point = kamp_1
+path_walk = kamp_1_task
+
+;----------------------------------------------
+
+[logic@work2]
+active = walker@main_work2
+suitable = {+gar_quest_get_weapons_started -gar_quest_get_weapons_got_traitor_pda =check_npc_name(sim_default_bandit)}
+prior = 130
+on_hit = hit
+
+[walker@main_work2]
+path_walk = bandit_ambush_2
+path_look = bandit_ambush_2
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+on_info = {+gar_quest_get_weapons_arrived} kamp@war_work2 %=hit_npc_from_actor%
+
+[kamp@war_work2]
+center_point = kamp_1
+path_walk = kamp_1_task
+
+;----------------------------------------------
+
+[logic@work3]
+active = walker@main_work3
+suitable = {+gar_quest_get_weapons_started -gar_quest_get_weapons_got_traitor_pda =check_npc_name(sim_default_bandit)}
+prior = 130
+on_hit = hit
+
+[walker@main_work3]
+path_walk = bandit_ambush_3
+path_look = bandit_ambush_3
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+on_info = {+gar_quest_get_weapons_arrived} kamp@war_work3 %=hit_npc_from_actor%
+
+[kamp@war_work3]
+center_point = kamp_1
+path_walk = kamp_1_task
+
+;----------------------------------------------
+
+[logic@work4]
+active = walker@main_work4
+suitable = {+gar_quest_get_weapons_started -gar_quest_get_weapons_got_traitor_pda =check_npc_name(sim_default_bandit)}
+prior = 130
+on_hit = hit
+
+[walker@main_work4]
+path_walk = bandit_ambush_4
+path_look = bandit_ambush_4
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+on_info = {+gar_quest_get_weapons_arrived} kamp@war_work4 %=hit_npc_from_actor%
+
+[kamp@war_work4]
+center_point = kamp_1
+path_walk = kamp_1_task
+
+;----------------------------------------------
+
+[logic@work5]
+active = walker@main_work5
+suitable = {+gar_quest_get_weapons_started -gar_quest_get_weapons_got_traitor_pda =check_npc_name(gar_bandit_digger_traitor)}
+prior = 130
+meet = meet
+on_death = death
+on_hit = hit
+job_online = true
+
+[walker@main_work5]
+path_walk = bandit_ambush_bait_walk
+path_look = bandit_ambush_bait_walk
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+on_info = {+gar_quest_get_weapons_arrived} remark@shout_work5
+on_signal = arrived | remark@shout_work5
+out_restr = gar_space_restrictor_meeting_with_smuggler_light_bait
+
+[remark@shout_work5]
+target = actor
+anim = wait
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+on_info = {+gar_quest_get_weapons_arrived} remark@catch_work5 %=play_sound(gar_digger_traitor_attack:stalker:gar_digger_traitor_name)%
+meet = meet
+out_restr = gar_space_restrictor_meeting_with_smuggler_light_bait
+
+[remark@catch_work5]
+target = actor
+anim = hide
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+on_signal = sound_end | remark@war_work5 %=set_squad_goodwill(gar_bandit_get_weapons:enemy) +gar_quest_get_weapons_ambush_start =hit_npc_from_actor%
+out_restr = gar_space_restrictor_meeting_with_smuggler_light_bait
+
+[remark@war_work5]
+target = actor
+anim = hide
+out_restr = gar_space_restrictor_meeting_with_smuggler_light_bait
+
+[meet]
+meet_state 		= 60| hello@nil
+meet_state_wpn 	= 60| hello@nil
+victim 			= 100| actor
+victim_wpn 		= 100| actor
+
+[death]
+on_info = %+gar_quest_get_weapons_ambush_start +gar_quest_get_weapons_destroyed_ambush%

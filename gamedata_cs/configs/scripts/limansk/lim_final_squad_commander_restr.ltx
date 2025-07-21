@@ -1,0 +1,19 @@
+[logic]
+active = sr_idle@wait_order
+
+[sr_idle@wait_order]
+on_info = {+lim_recon_squad_order_1} sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+lim_final_sniper_fire_actor} sr_idle@check_actor
+on_game_timer = 600 | sr_idle@check_actor %+lim_final_sniper_fire_actor%
+
+[sr_idle@check_actor]
+on_actor_outside = sr_idle@check %=give_inited_task(storyline:lim_electro_fence_actor_come_back:csky)%
+on_info = {+lim_shut_transformer_task} sr_idle@nil
+
+[sr_idle@check]
+on_actor_inside = sr_idle@check_actor %+lim_electro_fence_actor_come%
+on_info = {+lim_shut_transformer_task} sr_idle@nil
+
+[sr_idle@nil]

@@ -1,0 +1,90 @@
+
+class "evaluator_combat_enemy" (property_evaluator)
+function evaluator_combat_enemy:__init(storage, name) super(nil, name)
+	self.st = storage
+	
+	--' Таймер ожидания выхода из боя
+	self.st.timer = time_global()
+end
+function evaluator_combat_enemy:evaluate()
+	local best_enemy = self.object:best_enemy()
+	if best_enemy ~= nil and self.st.timer ~= nil then
+		self.st.last_best_enemy_id = best_enemy:id()
+		self.st.last_best_enemy_name = best_enemy:name()
+		self.st.timer = nil
+		return true
+	end
+
+	if best_enemy == nil and self.st.timer == nil then
+		--printf("object name is [%s]", self.object:name())
+		local overrides = db.storage[self.object:id()].overrides
+		local min = (overrides and overrides.min_post_combat_time*1000) or 10000
+		local max = (overrides and overrides.max_post_combat_time*1000) or 15000
+		if self.st.last_best_enemy_id == db.actor:id() then
+			self.st.timer = time_global()
+		else			
+			self.st.timer = time_global() + math.random(min, max)
+		end		
+	end
+
+	if self.st.timer == nil then	
+  		return best_enemy ~= nil
+	end
+	return time_global() < self.st.timer
+end
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_post_combat_wait" (action_base)
+function action_post_combat_wait:__init(npc, storage, action_name) super(nil, action_name)
+	self.st = storage
+end
+function action_post_combat_wait:initialize()
+	action_base.initialize(self)
+	if self.st.last_best_enemy_name ~= nil and string.find( self.st.last_best_enemy_name, "bloodsucker_jumper") ~= nil then
+		state_mgr.set_state(self.object, "bloodsucker_search")
+	else
+		state_mgr.set_state(self.object, "hide")
+	end
+end
+function action_post_combat_wait:execute()
+	action_base.execute(self)
+	if self.st.last_best_enemy_name ~= nil and string.find( self.st.last_best_enemy_name, "bloodsucker_jumper") ~= nil then
+		return 
+	end	
+	
+	xr_sound.set_sound_play(self.object:id(), "post_combat_wait")
+end
+function action_post_combat_wait:finalize()
+	if self.st.last_best_enemy_name ~= nil and string.find( self.st.last_best_enemy_name, "bloodsucker_jumper") ~= nil then
+		return 
+	end		
+	xr_sound.set_sound_play(self.object:id(), "post_combat_relax")
+
+	action_base.finalize(self)
+end
+
+
+function add_post_combat_idle(npc)
+	   	local manager = npc:motivation_action_manager()
+		local combat_action = manager:action(stalker_ids.action_combat_planner)		
+		--combat_action:show("")
+		local combat_action_planner = cast_planner(combat_action)
+
+		db.storage[npc:id()].post_combat_wait = {}
+		local storage = db.storage[npc:id()].post_combat_wait
+		
+		manager:remove_evaluator(stalker_ids.property_enemy)
+		manager:add_evaluator(stalker_ids.property_enemy, evaluator_combat_enemy(storage, "evaluator_combat_enemy"))
+
+		combat_action_planner:remove_evaluator(stalker_ids.property_enemy)
+		combat_action_planner:add_evaluator(stalker_ids.property_enemy, evaluator_combat_enemy(storage, "evaluator_combat_enemy"))
+
+		combat_action_planner:remove_action(stalker_ids.action_post_combat_wait)
+		local new_action = this.action_post_combat_wait(npc, storage, "action_post_combat_wait")
+		new_action:add_precondition(world_property(stalker_ids.property_enemy, true))
+		new_action:add_precondition(world_property(stalker_ids.property_pure_enemy, false))
+		new_action:add_precondition(world_property(stalker_ids.property_critically_wounded, false))
+		new_action:add_precondition(world_property(stalker_ids.property_danger_grenade, false))
+		new_action:add_effect(world_property(stalker_ids.property_enemy, false))
+		combat_action_planner:add_action(stalker_ids.action_post_combat_wait, new_action)
+end

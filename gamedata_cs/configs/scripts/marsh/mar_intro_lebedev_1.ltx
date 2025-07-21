@@ -1,0 +1,31 @@
+[logic]
+active = remark@scene_1_talk_2_wait
+
+[remark@scene_1_talk_2_wait]
+anim = mar_intro_1_lebedev
+on_info = {+mar_intro_scene_1_talked_1} remark@scene_1_talk_2_timer
+meet = no_meet
+
+[remark@scene_1_talk_2_timer]
+anim = mar_intro_1_lebedev
+on_timer = 14000 | remark@scene_1_talk_4_wait %=play_sound(mar_intro_scene_1_lebedev_2:csky:mar_csky_commander_name) +mar_intro_scene_1_talked_2%
+;2nd iteration
+on_info = {+mar_intro_scene_1_talked_2} remark@scene_1_talk_4_wait
+meet = no_meet
+
+[remark@scene_1_talk_4_wait]
+anim = mar_intro_1_lebedev
+on_info = {+mar_intro_scene_1_talked_3} remark@scene_1_talk_4_timer
+meet = no_meet
+
+[remark@scene_1_talk_4_timer]
+anim = mar_intro_1_lebedev
+on_timer = 6000 | remark@scene_1_end %=play_sound(mar_intro_scene_1_lebedev_4:csky:mar_csky_commander_name)%
+;lvl
+on_info = {+mar_lvl_sim} remark@scene_1_end
+meet = no_meet
+
+[remark@scene_1_end]
+anim = mar_intro_1_lebedev
+on_info = {+mar_intro_scene_1_end} nil %=destroy_object%
+meet = no_meet

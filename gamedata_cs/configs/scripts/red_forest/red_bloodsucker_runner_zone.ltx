@@ -1,0 +1,76 @@
+[logic]
+active = sr_idle@check_1
+
+[sr_idle@check_1]
+on_info = {+red_pursuit_task_end} sr_idle@wait
+
+[sr_idle@wait]
+on_info = {=actor_in_zone(red_bloodsucker_runner_zone_4)} sr_idle@wait2 %+red_bloodsucker_first_spawn +red_bloodsucker_spawn =spawn_object(red_bloodsucker_hunter:red_bloodsucker_swarm_4_2)%
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@wait2 %+red_bloodsucker_first_spawn +red_bloodsucker_spawn =spawn_object(red_bloodsucker_hunter:red_bloodsucker_swarm_4_2)%
+on_game_timer = 50 | sr_idle@wait2 %+red_bloodsucker_first_spawn +red_bloodsucker_spawn =spawn_object(red_bloodsucker_hunter:red_bloodsucker_swarm_4_2)%
+
+[sr_idle@wait2]
+on_info = {=actor_in_zone(red_bloodsucker_runner_zone_4)} sr_idle@spawn_wait4
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone_3)} sr_idle@spawn_wait3
+on_info3 = {=actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@spawn_wait
+
+[sr_idle@spawn_wait]
+on_info = {+red_bloodsucker_off} sr_idle@check
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone_2) ~50} sr_idle@spawn_wait2, {=actor_in_zone(red_bloodsucker_runner_zone_2)} sr_idle@spawn_wait21
+on_info3 = {=actor_in_zone(red_bloodsucker_runner_zone_3) ~50} sr_idle@spawn_wait3, {=actor_in_zone(red_bloodsucker_runner_zone_3)} sr_idle@spawn_wait31
+on_info4 = {=actor_in_zone(red_bloodsucker_runner_zone_4) ~50} sr_idle@spawn_wait4, {=actor_in_zone(red_bloodsucker_runner_zone_4)} sr_idle@spawn_wait41
+on_game_timer = 50 | {-red_bloodsucker_spawn =actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@spawn_wait2 %+red_bloodsucker_spawn =spawn_object(red_bloodsucker_runner:red_bloodsucker_swarm_1_1)%
+
+[sr_idle@spawn_wait2]
+on_info = {+red_bloodsucker_off} sr_idle@check
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone) ~50} sr_idle@spawn_wait, {=actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@spawn_wait11
+on_info3 = {=actor_in_zone(red_bloodsucker_runner_zone_3) ~50} sr_idle@spawn_wait3, {=actor_in_zone(red_bloodsucker_runner_zone_3)} sr_idle@spawn_wait31
+on_info4 = {=actor_in_zone(red_bloodsucker_runner_zone_4) ~50} sr_idle@spawn_wait4, {=actor_in_zone(red_bloodsucker_runner_zone_4)} sr_idle@spawn_wait41
+on_game_timer = 150 | {-red_bloodsucker_spawn =actor_in_zone(red_bloodsucker_runner_zone_2) =is_dark_night}  sr_idle@spawn_wait3 %+red_bloodsucker_spawn =spawn_object(red_bloodsucker_runner2:red_bloodsucker_swarm_2_1)% 
+
+[sr_idle@spawn_wait3]
+on_info = {+red_bloodsucker_off} sr_idle@check
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone) ~50} sr_idle@spawn_wait, {=actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@spawn_wait11
+on_info3 = {=actor_in_zone(red_bloodsucker_runner_zone_2) ~50} sr_idle@spawn_wait2, {=actor_in_zone(red_bloodsucker_runner_zone_2)} sr_idle@spawn_wait21
+on_info4 = {=actor_in_zone(red_bloodsucker_runner_zone_4) ~50} sr_idle@spawn_wait4, {=actor_in_zone(red_bloodsucker_runner_zone_4)} sr_idle@spawn_wait41
+on_game_timer = 150 | {-red_bloodsucker_spawn =actor_in_zone(red_bloodsucker_runner_zone_3)} sr_idle@spawn_wait4 %+red_bloodsucker_spawn =spawn_object(red_bloodsucker_runner3:red_bloodsucker_swarm_3_1)% 
+
+[sr_idle@spawn_wait4]
+on_info = {+red_bloodsucker_off} sr_idle@check
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone) ~50} sr_idle@spawn_wait, {=actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@spawn_wait11
+on_info3 = {=actor_in_zone(red_bloodsucker_runner_zone_2) ~50} sr_idle@spawn_wait2, {=actor_in_zone(red_bloodsucker_runner_zone_2)} sr_idle@spawn_wait21
+on_info4 = {=actor_in_zone(red_bloodsucker_runner_zone_3) ~50} sr_idle@spawn_wait3, {=actor_in_zone(red_bloodsucker_runner_zone_3)} sr_idle@spawn_wait31
+on_game_timer = 150 | {-red_bloodsucker_spawn =actor_in_zone(red_bloodsucker_runner_zone_4) =is_dark_night} sr_idle@spawn_wait11 %+red_bloodsucker_spawn =spawn_object(red_bloodsucker_runner:red_bloodsucker_swarm_4_1)%
+
+[sr_idle@spawn_wait11]
+on_info = {+red_bloodsucker_off} sr_idle@check
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone_2) ~50} sr_idle@spawn_wait2, {=actor_in_zone(red_bloodsucker_runner_zone_2)} sr_idle@spawn_wait21
+on_info3 = {=actor_in_zone(red_bloodsucker_runner_zone_3) ~50} sr_idle@spawn_wait3, {=actor_in_zone(red_bloodsucker_runner_zone_3)} sr_idle@spawn_wait31
+on_info4 = {=actor_in_zone(red_bloodsucker_runner_zone_4) ~50} sr_idle@spawn_wait4, {=actor_in_zone(red_bloodsucker_runner_zone_4)} sr_idle@spawn_wait41
+on_game_timer = 50 | {-red_bloodsucker_spawn =actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@spawn_wait21 %+red_bloodsucker_spawn =spawn_object(red_bloodsucker_runner:red_bloodsucker_swarm_1_2)%
+
+[sr_idle@spawn_wait21]
+on_info = {+red_bloodsucker_off} sr_idle@check
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone) ~50} sr_idle@spawn_wait, {=actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@spawn_wait11
+on_info3 = {=actor_in_zone(red_bloodsucker_runner_zone_3) ~50} sr_idle@spawn_wait3, {=actor_in_zone(red_bloodsucker_runner_zone_3)} sr_idle@spawn_wait31
+on_info4 = {=actor_in_zone(red_bloodsucker_runner_zone_4) ~50} sr_idle@spawn_wait4, {=actor_in_zone(red_bloodsucker_runner_zone_4)} sr_idle@spawn_wait41
+on_game_timer = 150 | {-red_bloodsucker_spawn =actor_in_zone(red_bloodsucker_runner_zone_2) =is_dark_night}  sr_idle@spawn_wait31 %+red_bloodsucker_spawn =spawn_object(red_bloodsucker_runner2:red_bloodsucker_swarm_2_2)%
+
+[sr_idle@spawn_wait31]
+on_info = {+red_bloodsucker_off} sr_idle@check
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone) ~50} sr_idle@spawn_wait, {=actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@spawn_wait11
+on_info3 = {=actor_in_zone(red_bloodsucker_runner_zone_2) ~50} sr_idle@spawn_wait2, {=actor_in_zone(red_bloodsucker_runner_zone_2)} sr_idle@spawn_wait21
+on_info4 = {=actor_in_zone(red_bloodsucker_runner_zone_4) ~50} sr_idle@spawn_wait4, {=actor_in_zone(red_bloodsucker_runner_zone_4)} sr_idle@spawn_wait41
+on_game_timer = 150 | {-red_bloodsucker_spawn =actor_in_zone(red_bloodsucker_runner_zone_3)} sr_idle@spawn_wait41 %+red_bloodsucker_spawn =spawn_object(red_bloodsucker_runner3:red_bloodsucker_swarm_3_2)% 
+
+[sr_idle@spawn_wait41]
+on_info = {+red_bloodsucker_off} sr_idle@check
+on_info2 = {=actor_in_zone(red_bloodsucker_runner_zone) ~50} sr_idle@spawn_wait, {=actor_in_zone(red_bloodsucker_runner_zone)} sr_idle@spawn_wait11
+on_info3 = {=actor_in_zone(red_bloodsucker_runner_zone_2) ~50} sr_idle@spawn_wait2, {=actor_in_zone(red_bloodsucker_runner_zone_2)} sr_idle@spawn_wait21
+on_info4 = {=actor_in_zone(red_bloodsucker_runner_zone_3) ~50} sr_idle@spawn_wait3, {=actor_in_zone(red_bloodsucker_runner_zone_3)} sr_idle@spawn_wait31
+on_game_timer = 150 | {-red_bloodsucker_spawn =actor_in_zone(red_bloodsucker_runner_zone_4) =is_dark_night} sr_idle@spawn_wait %+red_bloodsucker_spawn =spawn_object(red_bloodsucker_runner:red_bloodsucker_swarm_4_2)%
+
+[sr_idle@check]
+;on_info = {-red_bloodsucker_off} sr_idle@spawn_wait
+on_game_timer = 9000 | sr_idle@spawn_wait %-red_bloodsucker_off%
+ 
