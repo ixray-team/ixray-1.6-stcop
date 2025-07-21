@@ -282,7 +282,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	if(m_holder)
 		return;
 
-	const float SprintFov = 7.0f * fSprintFactor;
+	const float SprintFov = m_SprintFovFactor * fSprintFactor;
 
 	// HUD FOV Update
 	if (this == Level().CurrentControlEntity())
