@@ -582,6 +582,11 @@ void CScriptGameObject::set_visual_name(LPCSTR visual, bool bForce)
 	}
 }
 
+void CScriptGameObject::set_visual_name_notForce(LPCSTR visual)
+{
+	set_visual_name(visual, false);
+}
+
 LPCSTR CScriptGameObject::get_visual_name() const
 {
 	return object().cNameVisual().c_str();
