@@ -148,7 +148,7 @@ protected:
 	void						DropCurrentItem				(bool b_all);
 	void						EatItem						(PIItem itm);
 	
-	bool						ToSlot						(CUICellItem* itm, bool force_place);
+	bool						ToSlot						(CUICellItem* itm, bool force_place, u16 slot_id);
 	bool						ToBag						(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						ToBelt						(CUICellItem* itm, bool b_use_cursor_pos);
 
