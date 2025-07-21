@@ -67,6 +67,14 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 			if( tp.detail_name.size() &&
 				tp.flags.is_any(STextureParams::flDiffuseDetail|STextureParams::flBumpDetail) )
 			{
+				string_path src_detail_name;
+				FS.update_path(src_detail_name, _game_textures_, tp.detail_name.c_str());
+				xr_strcat(src_detail_name, ".thm");
+				if (!FS.exist(src_detail_name))
+				{
+					Msg(make_string<const char*>("! Not found detail texture: %s.thm", tp.detail_name.c_str()));
+				}
+
 				if(desc.m_assoc)
 					xr_delete				(desc.m_assoc);
 
@@ -91,19 +99,18 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 
 			desc.m_spec					= new texture_spec();
 			desc.m_spec->m_material		= (float)tp.material+tp.material_weight;
-			desc.m_spec->m_use_steep_parallax = false;
+			desc.m_spec->m_use_steep_parallax = tp.bump_mode == STextureParams::tbmUseParallax;
 			desc.m_spec->m_use_pbr = (tp.material == STextureParams::tmPBR_Material);
 			
-			if(tp.bump_mode==STextureParams::tbmUse)
+			if(tp.bump_mode == STextureParams::tbmUse || tp.bump_mode == STextureParams::tbmUseParallax)
 			{
-				desc.m_spec->m_bump_name	= tp.bump_name;
-			}
-			else if (tp.bump_mode==STextureParams::tbmUseParallax)
-			{
-				desc.m_spec->m_bump_name	= tp.bump_name;
-				desc.m_spec->m_use_steep_parallax = true;
-			}
+				if (tp.bump_name == "")
+				{
+					Msg(make_string<const char*>("! Not found bump: %s", (*It).name.c_str()));
+				}
 
+				desc.m_spec->m_bump_name = tp.bump_name;
+			}
 		}
 	}
 }
