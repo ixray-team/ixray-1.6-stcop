@@ -4,10 +4,12 @@
 #include "CustomZone.h"
 #include "Artefact.h"
 #include "../xrSound/ai_sounds.h"
+#include <functional>
 
 #include "CustomDetectorZones.h"
 
 class CUIArtefactDetectorBase;
+typedef std::function<void()> detector_fn_t;
 
 class CCustomDetector :		public CHudItemObject
 {
@@ -18,6 +20,9 @@ protected:
 	bool			m_bNeedActivation;
 	bool			m_bDetectorActive;
 	bool			m_bHideAndRestore;
+
+	detector_fn_t hide_callback;
+
 	u32				m_old_state;
 public:
 					CCustomDetector		();
@@ -45,12 +50,16 @@ public:
 	virtual void	OnStateSwitch		(u32 S);
 	virtual void	OnAnimationEnd		(u32 state);
 	virtual	void	UpdateXForm			();
+	virtual void	SwitchState			(u32 S);
 	virtual void	UpdateHudAdditonal	(Fmatrix& trans);
 	void			ToggleDetector		(bool bFastMode, bool switching = false);
 	void			HideDetector		(bool bFastMode, bool force = false);
 	void			ShowDetector		(bool bFastMode);
 	float			m_fAfDetectRadius;
 	virtual bool	CheckCompatibility	(CHudItem* itm);
+
+	void			ClearCallback() { hide_callback = nullptr; };
+	void			HideAndSetCallback(const detector_fn_t fn);
 
 	virtual u32		ef_detector_type	() const	{return 1;};
 
