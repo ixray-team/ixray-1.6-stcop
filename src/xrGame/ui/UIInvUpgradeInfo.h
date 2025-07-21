@@ -49,6 +49,7 @@ protected:
 	CUITextWnd*			m_cost;
 	CUITextWnd*			m_desc;
 	CUITextWnd*			m_prereq;
+	bool				m_legacy_mode;
 	
 }; // class UIInvUpgradeInfo
 
