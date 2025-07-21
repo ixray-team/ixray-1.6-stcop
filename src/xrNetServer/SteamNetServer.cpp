@@ -323,8 +323,8 @@ void SteamNetServer::OnClientDataReceived(HSteamNetConnection connection, SteamN
 
 	if (identity.IsLocalHost() && data->process_id == GetCurrentProcessId())
 	{ // if server client
-		xr_strcpy(cl_data.name, "ServerAdmin");
-		xr_strcpy(cl_data.pass, "pass");
+		xr_strcpy(cl_data.name, data->name);
+		xr_strcpy(cl_data.pass, data->pass);
 
 		FinishConnection(cl_data);
 		m_bServerClientConnected = true;
