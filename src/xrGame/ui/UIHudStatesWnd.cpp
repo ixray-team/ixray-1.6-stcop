@@ -31,6 +31,7 @@ CUIHudStatesWnd::CUIHudStatesWnd()
 	m_radia_self(0.0f),
 	m_radia_hit(0.0f)
 {
+	LoadCallbackGlobals(m_isZoneTouch, m_onZoneTouch, "OnZoneTouch");
 
 	for ( int i = 0; i < ALife::infl_max_count; ++i )
 	{
@@ -116,23 +117,23 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 
 
 	if (xml.NavigateToNode("resist_back_rad", 0))
-	m_resist_back[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "resist_back_rad", this );
+		m_resist_back[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "resist_back_rad", this );
 	if (xml.NavigateToNode("resist_back_fire", 0))
-	m_resist_back[ALife::infl_fire] = UIHelper::CreateStatic( xml, "resist_back_fire", this );
+		m_resist_back[ALife::infl_fire] = UIHelper::CreateStatic( xml, "resist_back_fire", this );
 	if (xml.NavigateToNode("resist_back_acid", 0))
-	m_resist_back[ALife::infl_acid] = UIHelper::CreateStatic( xml, "resist_back_acid", this );
+		m_resist_back[ALife::infl_acid] = UIHelper::CreateStatic( xml, "resist_back_acid", this );
 	if (xml.NavigateToNode("resist_back_psi", 0))
-	m_resist_back[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "resist_back_psi", this );
+		m_resist_back[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "resist_back_psi", this );
 	// electra = no has CStatic!!
 
 	if (xml.NavigateToNode("indik_rad", 0))
-	m_indik[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "indik_rad", this );
+		m_indik[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "indik_rad", this );
 	if (xml.NavigateToNode("indik_fire", 0))
-	m_indik[ALife::infl_fire] = UIHelper::CreateStatic( xml, "indik_fire", this );
+		m_indik[ALife::infl_fire] = UIHelper::CreateStatic( xml, "indik_fire", this );
 	if (xml.NavigateToNode("indik_acid", 0))
-	m_indik[ALife::infl_acid] = UIHelper::CreateStatic( xml, "indik_acid", this );
+		m_indik[ALife::infl_acid] = UIHelper::CreateStatic( xml, "indik_acid", this );
 	if (xml.NavigateToNode("indik_psi", 0))
-	m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", this );
+		m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", this );
 
 	m_lanim_name				= xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
 	if (xml.NavigateToNode("static_ammo", 0))
@@ -336,22 +337,22 @@ void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 
 void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 {
-	PIItem item = actor->inventory().ActiveItem();
+    PIItem item = actor->inventory().ActiveItem();
     if (item)
-	{
+    {
         if (m_b_force_update)
-		{
+        {
             if (item->cast_weapon())
-				item->cast_weapon()->ForceUpdateAmmo();
-			m_b_force_update		= false;
-		}
+                item->cast_weapon()->ForceUpdateAmmo();
+            m_b_force_update = false;
+        }
 
         item->GetBriefInfo(m_item_info);
 
         //		UIWeaponBack.SetText		( str_name.c_str() );
         m_fire_mode->SetText(m_item_info.fire_mode.c_str());
         SetAmmoIcon(m_item_info.icon.c_str());
-		
+
         if (m_ui_weapon_cur_ammo)
         {
             m_ui_weapon_cur_ammo->Show(true);
@@ -364,7 +365,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
             m_ui_weapon_fmj_ammo->SetText(m_item_info.fmj_ammo.c_str());
             m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_inactive);
         }
-		
+
         if (m_ui_weapon_ap_ammo)
         {
             m_ui_weapon_ap_ammo->Show(true);
@@ -377,7 +378,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			m_ui_weapon_third_ammo->Show(true);
 			m_ui_weapon_third_ammo->SetText(m_item_info.third_ammo.c_str());
 			m_ui_weapon_third_ammo->SetTextColor(m_ui_weapon_ammo_color_inactive);
-        }
+		}
 
 		if (m_ui_weapon_sign_ammo)
 		{
@@ -409,13 +410,13 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
             m_ui_grenade->Show(true);
 
             m_ui_grenade->SetText(m_item_info.grenade.c_str());
-
-		CWeaponMagazinedWGrenade* wpn = smart_cast<CWeaponMagazinedWGrenade*>(item);
+            
+            CWeaponMagazinedWGrenade* wpn = smart_cast<CWeaponMagazinedWGrenade*>(item);
             if (wpn && wpn->m_bGrenadeMode)
                 m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_active);
-		else
+            else
                 m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_inactive);
-		}
+        }
 
         CWeaponMagazined* wpnm = smart_cast<CWeaponMagazined*>(item);
         if (wpnm)
@@ -426,7 +427,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
                 m_ui_weapon_ap_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
 			else if (wpnm->m_ammoType == 2 && m_ui_weapon_third_ammo)
 				m_ui_weapon_third_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
-        }
+		}
     }
     else
     {
@@ -451,7 +452,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
         if (m_ui_grenade)
             m_ui_grenade->Show(false);
-	}
+    }
 }
 
 void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
@@ -618,26 +619,30 @@ void CUIHudStatesWnd::UpdateZones()
 			{
 				fRelPow *= 0.3f;
 				fRelPow *= ( 2.5f - 2.0f * power ); // звук зависит от силы зоны
-			}
+			}	
 		}
 		clamp( fRelPow, 0.0f, 1.0f );
 
 		//определить текущую частоту срабатывания сигнала
 		zone_info.cur_period = zone_type->freq.x + (zone_type->freq.y - zone_type->freq.x) * (fRelPow * fRelPow);
 		
-		//string256	buff_z;
-		//xr_sprintf( buff_z, "zone %2.2f\n", zone_info.cur_period );
-		//xr_strcat( buff, buff_z );
-		if( zone_info.snd_time > zone_info.cur_period )
+		if (zone_info.snd_time > zone_info.cur_period)
 		{
-			zone_info.snd_time = 0.0f;
-			HUD_SOUND_ITEM::PlaySound( zone_type->detect_snds, Fvector().set(0,0,0), nullptr, true, false );
-		} 
+ 			zone_info.snd_time = 0.0f;
+			if (m_isZoneTouch) 
+			{
+				luabind::functor<bool> funct;
+				R_ASSERT2(ai().script_engine().functor(m_onZoneTouch, funct), "Not found callback: OnZoneTouch");
+				funct(pZone->lua_game_object());
+			}
+
+			HUD_SOUND_ITEM::PlaySound(zone_type->detect_snds, Fvector().set(0, 0, 0), nullptr, true, false);
+		}
 		else
 		{
 			zone_info.snd_time += Device.fTimeDelta;
 		}
-	} // for itb
+	}
 }
 
 void CUIHudStatesWnd::UpdateIndicators( CActor* actor )
@@ -710,7 +715,7 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 	m_indik[type]->Show(true);
 
     if (hit_power < EPS)
-	{
+    {
         string256 greenTexture;
         // If we have green texture and white is missing
         // Assume it's CoP and use it's standard scheme
@@ -728,8 +733,8 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
             m_indik[type]->SetTextureColor(c_white);
 
         actor->conditions().SetZoneDanger(0.0f, type);
-		return;
-	}
+        return;
+    }
 
 	m_indik[type]->Show(true);
 	if ( hit_power <= protect )
@@ -739,7 +744,7 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 		texture = str;
 
 		if (CUITextureMaster::ItemExist(texture))
-		m_indik[type]->InitTexture(texture);
+			m_indik[type]->InitTexture(texture);
 		else
 			m_indik[type]->SetTextureColor(c_green);
 
@@ -753,7 +758,7 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 		texture = str;
 
 		if (CUITextureMaster::ItemExist(texture))
-		m_indik[type]->InitTexture(texture);
+			m_indik[type]->InitTexture(texture);
 		else
 			m_indik[type]->SetTextureColor(c_yellow);
 
@@ -765,7 +770,7 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 	texture = str;
 
 	if (CUITextureMaster::ItemExist(texture))
-	m_indik[type]->InitTexture(texture);
+		m_indik[type]->InitTexture(texture);
 	else
 		m_indik[type]->SetTextureColor(c_red);
 
