@@ -19,7 +19,11 @@ struct SAIParams
 };
 
 // chunks
+#ifdef IXRAY_AI_OLD_FORMAT
+#define E_AIMAP_VERSION  			0x0001
+#else
 #define E_AIMAP_VERSION  			0x0002
+#endif
 //----------------------------------------------------
 #define E_AIMAP_CHUNK_VERSION		0x0001
 #define E_AIMAP_CHUNK_BOX			0x0002
