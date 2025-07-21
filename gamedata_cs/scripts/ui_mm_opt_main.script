@@ -1,9 +1,9 @@
 class "options_dialog" (CUIScriptWnd)
 
 function options_dialog:__init() super()
-   self:SetFont(GetFontMedium()) --set base font for dialog.
 
 	self.m_preconditions	= {}
+	self.m_deffer_ex	= {}
     self:InitControls()
     self:InitCallBacks()
 	self.tab:SetActiveTab			("video")
@@ -13,18 +13,18 @@ function options_dialog:__finalize()
 
 end
 
-function options_dialog:InitControls()	
+function options_dialog:InitControls()
 	self:SetWndRect				(Frect():set(0,0,1024,768))
 	self:Enable					(true)
-	
+
 	local xml					= CScriptXmlInit()
 	xml:ParseFile				("ui_mm_opt.xml")
-	
+
 	xml:InitStatic				("background", self)
 	self.dialog					= xml:InitStatic("main_dialog:dialog", self)
-	
+
 	xml:InitStatic				("main_dialog:cap_options", self.dialog)
-		
+
 	self.dlg_video				= ui_mm_opt_video.opt_video()
 	self.dlg_video:InitControls	(0,0, xml, self)
 	self.dlg_video:Show			(false)
@@ -36,13 +36,13 @@ function options_dialog:InitControls()
 	self.dlg_sound:Show			(false)
 	self.dialog:AttachChild		(self.dlg_sound)
 	xml:InitWindow				("tab_size", 0, self.dlg_sound)
-	
+
 	self.dlg_gameplay			= ui_mm_opt_gameplay.opt_gameplay()
 	self.dlg_gameplay:InitControls(0,0, xml, self)
 	self.dlg_gameplay:Show		(false)
 	self.dialog:AttachChild		(self.dlg_gameplay)
 	xml:InitWindow				("tab_size", 0, self.dlg_gameplay)
-	
+
 	self.dlg_controls			= ui_mm_opt_controls.opt_controls()
 	self.dlg_controls:InitControls(0,0, xml, self)
 	self.dlg_controls:Show		(false)
@@ -66,15 +66,17 @@ function options_dialog:InitControls()
 	self:Register				(btn, "btn_accept")
 	btn = xml:Init3tButton		("main_dialog:btn_cancel", self.dialog)
 	self:Register				(btn, "btn_cancel")
-	
+
 	self.tab					= xml:InitTab("main_dialog:tab", self.dialog)
 	self:Register				(self.tab, "tab")
-	
-	
+
+
 	self.message_box			= CUIMessageBoxEx()
-	
+	self:Register				(self.message_box, "mb")
+
 	self.b_restart_system_shown	= false
-	
+	self.timer					= nil
+
 	self.cap_download			= xml:InitStatic		("download_static",self)
 	self.text_download			= xml:InitStatic		("download_text",self)
 	self.download_progress		= xml:InitProgressBar	("progress_download", self)
@@ -83,7 +85,7 @@ function options_dialog:InitControls()
 
 end
 
-function options_dialog:UpdateControls()
+function options_dialog:SetCurrentValues()
 	local opt = COptionsManager()
 
 	opt:SetCurrentValues("mm_opt_video_preset")
@@ -91,7 +93,7 @@ function options_dialog:UpdateControls()
 
 	opt:SetCurrentValues("mm_opt_video")
 	opt:SaveBackupValues("mm_opt_video")
-	
+
 	opt:SetCurrentValues("mm_opt_video_adv")
 	opt:SaveBackupValues("mm_opt_video_adv")
 
@@ -102,50 +104,30 @@ function options_dialog:UpdateControls()
 	opt:SaveBackupValues("mm_opt_sound")
 
 	opt:SetCurrentValues("mm_opt_controls")
+	opt:SaveBackupValues("mm_opt_controls")
 
 	opt:SetCurrentValues("key_binding")
-	
---	opt:SetCurrentValues("mm_opt_con_cmd")
---	opt:SaveBackupValues("mm_opt_con_cmd")
---[[
-	if not xrRender_test_r2_hw() then
-		self.combo_renderer:SetCurrentID		(0)
-		self.combo_renderer:Enable				(false)
-	end
-]]	
+	opt:SaveBackupValues("key_binding")
+
 	self:UpdateDependControls()
 end
 
 function options_dialog:UpdateDependControls()
+	self.scroll_v:Clear()
 	
-	local _current_id		= self.combo_renderer:CurrentID()
-	local _ssample_trb_val	= self.ss_trb:GetIValue()
-	local _ssample_cb_val	= self.ss_cb:CurrentID()
-	
-	for i,j in pairs(self.m_preconditions) do
-		j				(i, _current_id, _ssample_trb_val, _ssample_cb_val)
+	local current_id = self.combo_renderer:CurrentID()
+	local value = self.combo_renderer:GetValueOf(current_id)
+
+	for _, j in pairs(self.m_preconditions) do
+		if j.func(value) then
+			self.scroll_v:AddWindow(j.control, true)
+			j.control:SetAutoDelete(false)
+		end
 	end
 
-	self:UpdateMSAA()
-end
-
-function options_dialog:UpdateMSAA()
-	local _r3_msaa_opt_enabled	= self.chk_r3_msaa_opt:GetCheck()
-	local bNeedResetValue = false
-	local _id = 2
-	if _r3_msaa_opt_enabled then
-		self.r3_msaa_alphatest:enable_id(_id)
-	else
-		bNeedResetValue = (self.r3_msaa_alphatest:CurrentID()==_id)
-		self.r3_msaa_alphatest:disable_id(_id)
-	end
-
-	self.r3_msaa_alphatest:SetCurrentValue()
-
-	if bNeedResetValue then
-		self.r3_msaa_alphatest:SetCurrentID(1)
-	end
-
+    for _, t in pairs(self.m_deffer_ex) do
+        t.func(t.arg)
+    end
 end
 
 function options_dialog:InitCallBacks()
@@ -153,19 +135,16 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("btn_advanced_graphic",ui_events.BUTTON_CLICKED,	self.OnBtnAdvGraphic,		self)
 	self:AddCallback("btn_accept",			ui_events.BUTTON_CLICKED,	self.OnBtnAccept,			self)
 	self:AddCallback("btn_cancel",			ui_events.BUTTON_CLICKED,	self.OnBtnCancel,			self)
-	self:AddCallback("btn_default_graphic",	ui_events.BUTTON_CLICKED,	self.OnBtnDefGraph,			self)	
-	self:AddCallback("btn_default_sound",	ui_events.BUTTON_CLICKED,	self.OnBtnDefSound,			self)	
-	self:AddCallback("combo_preset",		ui_events.LIST_ITEM_SELECT,	self.OnPresetChanged,		self)	
-	self:AddCallback("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic,		self)	
-	self:AddCallback("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnDefault,			self)
-	self:AddCallback("btn_check_updates",	ui_events.BUTTON_CLICKED,	self.OnBtnCheckUpdates,		self)
-	self:AddCallback("combo_renderer",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)	
+	self:AddCallback("btn_default_graphic",	ui_events.BUTTON_CLICKED,	self.OnBtnDefGraph,			self)
+	self:AddCallback("btn_default_sound",	ui_events.BUTTON_CLICKED,	self.OnBtnDefSound,			self)
+	self:AddCallback("combo_preset",		ui_events.LIST_ITEM_SELECT,	self.OnPresetChanged,		self)
+	self:AddCallback("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic,		self)
+	self:AddCallback("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnKeybDefault,		self)
+	self:AddCallback("combo_renderer",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
 	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
-	self:AddCallback("trb_ssample",			ui_events.BUTTON_CLICKED,	self.UpdateDependControls,	self)
-	self:AddCallback("cb_ssample",			ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
-	self:AddCallback("check_r3_msaa_opt",	ui_events.BUTTON_CLICKED,	self.UpdateMSAA,			self)
-	
 
+	self:AddCallback("mb", ui_events.MESSAGE_BOX_YES_CLICKED, self.OnApplyChanges, self)
+	self:AddCallback("mb", ui_events.MESSAGE_BOX_NO_CLICKED, self.OnDiscardChanges,self)
 end
 
 function options_dialog:OnBtnCheckUpdates()
@@ -173,7 +152,7 @@ function options_dialog:OnBtnCheckUpdates()
 	console:execute			("check_for_updates 1")
 end
 
-function options_dialog:OnBtnDefault()
+function options_dialog:OnBtnKeybDefault()
 	local console			= get_console()
 	console:execute			("default_controls")
 
@@ -182,9 +161,8 @@ function options_dialog:OnBtnDefault()
 	opt:SetCurrentValues	("key_binding")
 end
 
-function options_dialog:OnPresetChanged()	
+function options_dialog:OnPresetChanged()
 	local opt					= COptionsManager()
-	opt:SetCurrentValues		("mm_opt_video")
 	opt:SetCurrentValues		("mm_opt_video_adv")
 end
 
@@ -194,41 +172,38 @@ function options_dialog:OnBtnDefGraph()
 	opt:SendMessage2Group("mm_opt_video","set_default_value")
 end
 
-function options_dialog:OnBtnDefSound()	
+function options_dialog:OnBtnDefSound()
 	local opt = COptionsManager()
 	opt:SendMessage2Group("mm_opt_sound","set_default_value")
 end
 
 function options_dialog:OnBtnAccept()
-	
-	local opt = COptionsManager()
-	local console = get_console()
-	
+
+	local opt		= COptionsManager()
+	local console	= get_console()
+
+   	console:execute("cfg_save tmp")
+
 	opt:SaveValues("mm_opt_video_preset")
 	opt:SaveValues("key_binding")
 	opt:SaveValues("mm_opt_video")
 	opt:SaveValues("mm_opt_video_adv")
 	opt:SaveValues("mm_opt_gameplay")
-	opt:SaveValues("mm_opt_sound")	
+	opt:SaveValues("mm_opt_sound")
 	opt:SaveValues("mm_opt_controls")
-	
-	opt:OptionsPostAccept()	
 
---	andy if(true==self.b_restart_system_shown or false==opt:NeedSystemRestart()) then
-		self:GetHolder():start_stop_menu	(self.owner, true)
-		self:GetHolder():start_stop_menu	(self,true)
-		self.owner:Show						(true)
---	andy end	
-	
-	if false==self.b_restart_system_shown then
-		local opt = COptionsManager()
-		if opt:NeedSystemRestart() then
-			self.b_restart_system_shown		 = true
-			self.message_box:InitMessageBox	("message_box_restart_game")
-			self.owner:GetHolder():start_stop_menu(self.message_box,true)
-		end
+	if opt:NeedVidRestart() then
+		_G.b_discard_settings_shown = true
+		self.message_box:InitMessageBox("message_box_yes_no")
+		self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
+		self.message_box:ShowDialog(true)
+	else
+		self:OnApplyChanges()
 	end
-	
+
+	opt:OptionsPostAccept()
+
+	console:execute("cfg_save")
 end
 
 function options_dialog:OnBtnCancel()
@@ -237,12 +212,11 @@ function options_dialog:OnBtnCancel()
 	opt:UndoGroup			("mm_opt_video")
 	opt:UndoGroup			("mm_opt_video_adv")
 	opt:UndoGroup			("mm_opt_sound")
---	opt:UndoGroup			("mm_opt_con_cmd")
 	opt:OptionsPostAccept	()
-	
-	self:GetHolder():start_stop_menu	(self.owner, true)
-	self:GetHolder():start_stop_menu	(self,true)
-	self.owner:Show						(true)
+
+	self.owner:ShowDialog(true)
+	self:HideDialog()
+	self.owner:Show(true)
 end
 
 function options_dialog:OnTabChange()
@@ -251,19 +225,16 @@ function options_dialog:OnTabChange()
 	self.dlg_gameplay:Show	(false)
 	self.dlg_controls:Show	(false)
 	self.dlg_video_adv:Show	(false)
---	self.dlg_con_cmd:Show	(false)
-	
+
 	local ids = self.tab:GetActiveId()
 	if ids == "video" then
-		self.dlg_video:Show(true)		
+		self.dlg_video:Show(true)
 	elseif ids == "sound" then
 		self.dlg_sound:Show(true)
 	elseif ids == "gameplay" then
 		self.dlg_gameplay:Show(true)
 	elseif ids == "controls" then
 		self.dlg_controls:Show(true)
---	elseif ids == "con_cmd" then
---		self.dlg_con_cmd:Show(true)
 	end
 
 end
@@ -280,35 +251,35 @@ end
 
 function options_dialog:OnKeyboard(dik, keyboard_action)
 	local res = CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
-	
+
 	if res==false then
-	
+
 		local bind = dik_to_bind(dik)
-		
+
 		if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 			if dik == DIK_keys.DIK_ESCAPE then
 				if self.dlg_video_adv:IsShown() then
 					self.dlg_video_adv:Show	(false)
 					self.dlg_video:Show		(true)
 				else
-					self:GetHolder():start_stop_menu	(self.owner, true)
-					self:GetHolder():start_stop_menu	(self,true)
-					self.owner:Show						(true)
+					self.owner:ShowDialog(true)
+					self:HideDialog()
+					self.owner:Show(true)
 				end
-			end	
-		
+			end
+
 		end
 	end
-	   
+
 	return res
 end
 
 function options_dialog:Update()
 	CUIScriptWnd.Update(self)
-	
+
 	local mm = main_menu.get_main_menu()
 	local sss = mm:GetPatchProgress()
-	
+
 	if sss:GetInProgress() then
 		self.text_download:Show					(true)
 		self.cap_download:Show					(true)
@@ -316,7 +287,7 @@ function options_dialog:Update()
 		local _progr							= sss:GetProgress()
 		self.download_progress:SetProgressPos	(_progr)
 		local str								= string.format("%.0f%%(%s)",_progr,sss:GetFlieName())
-		self.text_download:SetText				(str)
+		self.text_download:TextControl():SetText				(str)
 		self.btn_cancel_download:Show			(true)
 	else
 		self.text_download:Show					(false)
@@ -324,19 +295,59 @@ function options_dialog:Update()
 		self.download_progress:Show				(false)
 		self.btn_cancel_download:Show			(false)
 	end
-	
-	if false==self.b_restart_system_shown then
-		local opt = COptionsManager()
-		if opt:NeedSystemRestart() then
-			self.b_restart_system_shown		 = true
-			self.message_box:InitMessageBox	("message_box_restart_game")
-			self:GetHolder():start_stop_menu(self.message_box,true)
+	if(_G.b_discard_settings_shown) then
+		local tg = math.floor(time_global_async()/1000)
+		if(self.timer==nil) then
+			self.timer = tg
+		end
+		self.message_box:SetText(string.format("%s %d %s", game.translate_string("ui_mm_confirm_changes"), 15-(tg-self.timer), game.translate_string("mp_si_sec")))
+		if(tg-self.timer>=15) then
+			self.message_box:HideDialog()
+			self:OnDiscardChanges()
 		end
 	end
-	
 end
 
 function options_dialog:OnBtn_CancelDownload()
 	local mm = main_menu.get_main_menu()
 	mm:CancelDownload()
+end
+
+function options_dialog:OnApplyChanges()
+    self.timer = nil
+    _G.b_discard_settings_shown = false
+
+	self.owner:ShowDialog(true)
+	self:HideDialog()
+	self.owner:Show(true)
+
+	if false==self.b_restart_system_shown then
+		local opt = COptionsManager()
+		if opt:NeedSystemRestart() then
+			self.b_restart_system_shown = true
+			self.message_box:InitMessageBox("message_box_restart_game")
+			self.message_box:ShowDialog(true)
+		end
+	end
+end
+
+function options_dialog:OnDiscardChanges()
+    self.timer = nil
+    _G.b_discard_settings_shown = false
+
+	local c = get_console()
+   	c:execute("cfg_load tmp")
+
+	self:SetCurrentValues()
+
+	c:execute("vid_restart")
+   	c:execute("cfg_save")
+end
+
+function options_dialog:OnMenuReloaded()
+	if(_G.b_discard_settings_shown) then
+	    self.message_box:InitMessageBox("message_box_yes_no")
+	    self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
+	    self.message_box:ShowDialog(true)
+	end
 end
