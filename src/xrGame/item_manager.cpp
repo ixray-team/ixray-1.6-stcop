@@ -136,7 +136,7 @@ void CItemManager::remove_links		(CObject *object)
 {
 	// since we use no members in CGameObject during search,
 	// we just use the pinter itself, we can just statically cast object
-	OBJECTS::iterator		I = std::find(m_objects.begin(),m_objects.end(),(CGameObject*)object);
+	OBJECTS::iterator		I = std::find(m_objects.begin(),m_objects.end(), object->cast_game_object());
 	if (I != m_objects.end())
 		m_objects.erase		(I);
 
