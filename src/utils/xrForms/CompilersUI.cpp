@@ -41,49 +41,68 @@ void RenderMainUI()
 	int Size[2] = {};
 
 	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
-	ImGui::SetNextWindowPos({ 0, 0 });
-	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1] });
-	if (ImGui::Begin("MainForm"), nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus)
-	{
-		DrawCompilerConfig();
-		DrawLCConfig();
-		DrawAIConfig();
-		DrawDOConfig();
 
-		ImGui::SetCursorPosY(ImGui::GetWindowSize().y - 355);
-		ImGui::Text("Levels:");
-		ImVec2 ListBoxSize = { 220, 330};
-		if (ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
+	ImGui::SetNextWindowPos({ 0, 0 });
+	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1]});
+	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | 	ImGuiWindowFlags_NoNavFocus /*| ImGuiWindowFlags_NoBackground*/))
+	{
+		if (ImGui::BeginTable("DelovoeTable", 2, ImGuiTableFlags_BordersInnerV))
 		{
-			ImGui::TableSetupColumn("Name");
-			ImGui::TableSetupColumn("Prop");
+			// 
+			ImGui::TableSetupColumn("Levels");
+			ImGui::TableSetupColumn("Settings");
 			ImGui::TableHeadersRow();
 
-			size_t Iter = 1;
-			for (auto& [File, Selected] : Files)
+			// 
+			
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+
+			if (ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY))
 			{
-				ImGui::TableNextColumn();
-				ImGui::Selectable(File.c_str());
+				ImGui::TableSetupColumn("Name");
+				ImGui::TableSetupColumn("Prop");
+				ImGui::TableHeadersRow();
 
-				ImGui::TableNextColumn();
-				ImGui::Checkbox(("##check" + File).c_str(), &Selected);
-				Iter++;
-
-				if (Iter < Files.size())
+				size_t Iter = 1;
+				for (auto& [File, Selected] : Files)
 				{
-					ImGui::TableNextRow();
+					ImGui::TableNextColumn();
+					ImGui::Selectable(File.c_str());
+
+					ImGui::TableNextColumn();
+					ImGui::Checkbox(("##check" + File).c_str(), &Selected);
+					Iter++;
+
+					if (Iter < Files.size())
+					{
+						ImGui::TableNextRow();
+					}
 				}
+				ImGui::EndTable();
 			}
-			ImGui::EndTable();
+			ImGui::TableSetColumnIndex(1);
+			DrawCompilerConfig();
+			DrawLCConfig();
+			DrawAIConfig();
+			DrawDOConfig();
+
+			auto BSize = ImGui::GetContentRegionAvail();
+			
+			if (ImGui::Button("Run Compiler", BSize))
+			{
+				//brrrr
+			}
+
+			ImGui::EndTable(); // 
 		}
 	}
-
 	ImGui::End();
 }
 
 void DrawLCConfig()
 {
-	if (ImGui::BeginChild("LC", { 200, 175 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("LC", { -1, 175 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
 		ImGui::Separator();
@@ -96,15 +115,13 @@ void DrawLCConfig()
 		ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
 		ImGui::Checkbox("Skip invalid faces", &gCompilerMode.LC_SkipInvalidFaces);
 		ImGui::EndDisabled();
-
 	}
 	ImGui::EndChild();
-	ImGui::SameLine();
 }
 
 void DrawDOConfig()
 {
-	if (ImGui::BeginChild("DO", { 200, 60 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("DO", { -1, 60 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
 		ImGui::Separator();
@@ -112,14 +129,13 @@ void DrawDOConfig()
 		ImGui::BeginDisabled(!gCompilerMode.DO);
 		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
 		ImGui::EndDisabled();
-
 	}
 	ImGui::EndChild();
 }
 
 void DrawAIConfig()
 {
-	if (ImGui::BeginChild("AI", { 200, 130 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("AI", { -1, 130 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);
 		ImGui::Separator();
@@ -133,13 +149,12 @@ void DrawAIConfig()
 
 	}
 	ImGui::EndChild();
-	ImGui::SameLine();
 }
 
 
 void DrawCompilerConfig()
 {
-	if (ImGui::BeginChild("Settings", { 200, 80 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("Settings", { -1, 80 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
 		ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
@@ -147,5 +162,4 @@ void DrawCompilerConfig()
 
 	}
 	ImGui::EndChild();
-	ImGui::SameLine();
 }
