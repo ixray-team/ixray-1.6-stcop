@@ -71,6 +71,11 @@ void CImGuiManager::InitPlatform()
 		DrawUIRender = false;
 #endif
 
+#ifdef DEBUG_DRAW
+	if (Core.ParamsData.test(ECoreParams::no_debug_panel))
+		DrawUIRender = false;
+#endif
+
 	PlatformInitCallback();
 }
 
