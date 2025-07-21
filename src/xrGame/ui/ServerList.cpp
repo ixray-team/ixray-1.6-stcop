@@ -464,8 +464,7 @@ void CServerList::ConnectToSelected()
 	gamespy_gp::login_manager const * lmngr = MainMenu()->GetLoginMngr();
 	R_ASSERT(lmngr);
 	gamespy_gp::profile const * tmp_profile = lmngr->get_current_profile(); 
-	R_ASSERT2(tmp_profile, "need first to log in");
-	if (tmp_profile->online())
+	if (tmp_profile && tmp_profile->online())
 	{
 		if (!MainMenu()->ValidateCDKey())
 			return;
