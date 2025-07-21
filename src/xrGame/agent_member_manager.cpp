@@ -45,7 +45,7 @@ void CAgentMemberManager::add					(CEntity *member)
 		return;
 
 	VERIFY2						(
-		sizeof(squad_mask_type)*8 > members().size(),
+		sizeof(u64)*8 > members().size(),
 		make_string<const char*>(
 			"too many stalkers in group ([team:%d][squad:%d][group:%d]!",
 			m_members.front()->object().g_Team(),
@@ -68,7 +68,7 @@ void CAgentMemberManager::remove				(CEntity *member)
 	if (registered_in_combat(stalker))
 		unregister_in_combat	(stalker);
 
-	squad_mask_type							m = mask(stalker);
+	u64							m = mask(stalker);
 	object().memory().update_memory_masks	(m);
 	object().memory().update_memory_mask	(m,m_combat_mask);
 
@@ -127,7 +127,7 @@ void CAgentMemberManager::register_in_combat	(const CAI_Stalker *object)
 	);
 #endif // DEBUG
 
-	squad_mask_type				m = mask(object);
+	u64				m = mask(object);
 	m_actuality					= m_actuality && ((m_combat_mask | m) == m_combat_mask);
 	m_combat_mask				|= m;
 }
@@ -145,13 +145,13 @@ void CAgentMemberManager::unregister_in_combat	(const CAI_Stalker *object)
 		Device.dwTimeGlobal,
 		*object->cName(),
 		m_combat_mask,
-		(m_combat_mask & (squad_mask_type(-1) ^ mask(object)))
+		(m_combat_mask & (u64(-1) ^ mask(object)))
 	);
 #endif // DEBUG
 
-	squad_mask_type				m = mask(object);
-	m_actuality					= m_actuality && ((m_combat_mask & (squad_mask_type(-1) ^ m)) == m_combat_mask);
-	m_combat_mask				&= squad_mask_type(-1) ^ m;
+	u64				m = mask(object);
+	m_actuality					= m_actuality && ((m_combat_mask & (u64(-1) ^ m)) == m_combat_mask);
+	m_combat_mask				&= u64(-1) ^ m;
 }
 
 bool CAgentMemberManager::registered_in_combat	(const CAI_Stalker *object) const
@@ -177,9 +177,9 @@ CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members	()
 	return								(m_combat_members);
 }
 
-CAgentMemberManager::squad_mask_type CAgentMemberManager::non_combat_members_mask	() const
+u64 CAgentMemberManager::non_combat_members_mask	() const
 {
-	squad_mask_type						result = 0;
+	u64						result = 0;
 
 	MEMBER_STORAGE::const_iterator		I = members().begin();
 	MEMBER_STORAGE::const_iterator		E = members().end();
@@ -234,11 +234,11 @@ bool CAgentMemberManager::can_cry_noninfo_phrase() const
 	return								(true);
 }
 
-MemorySpace::squad_mask_type CAgentMemberManager::mask	(const ALife::_OBJECT_ID &object_id) const
+u64 CAgentMemberManager::mask	(const ALife::_OBJECT_ID &object_id) const
 {
 	const_iterator		I = std::find_if(members().begin(),members().end(), CMemberPredicate2(object_id));
 	VERIFY				(I != members().end());
-	return				(MemorySpace::squad_mask_type(1) << (I - members().begin()));
+	return				(u64(1) << (I - members().begin()));
 }
 
 CMemberOrder *CAgentMemberManager::get_member	(const ALife::_OBJECT_ID &object_id)
