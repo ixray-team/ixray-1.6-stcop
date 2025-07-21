@@ -350,7 +350,7 @@ bool EScene::GetBox(Fbox& box, ObjectList& lst)
 	box.invalidate();
 	bool bRes=false;
 
-	for(auto Obj : lst)
+	for(CCustomObject* Obj : lst)
 	{
 		Fbox bb;
 
