@@ -231,21 +231,11 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 		u16 spine_bone = ikv->LL_BoneID( "bip01_spine" );
 
 		float cur = cur_outfit->GetBoneArmor( spine_bone )*cur_outfit->GetCondition();
-		//if(!cur_outfit->bIsHelmetAvaliable)
-		//{
-		//	spine_bone = ikv->LL_BoneID("bip01_head");
-		//	cur += cur_outfit->GetBoneArmor(spine_bone);
-		//}
 		float slot = cur;
 		if(slot_outfit)
 		{
 			spine_bone = ikv->LL_BoneID( "bip01_spine" );
 			slot = slot_outfit->GetBoneArmor( spine_bone )*slot_outfit->GetCondition(); 
-			//if(!slot_outfit->bIsHelmetAvaliable)
-			//{
-			//	spine_bone = ikv->LL_BoneID("bip01_head");
-			//	slot += slot_outfit->GetBoneArmor(spine_bone);
-			//}
 		}
 		float max_power = actor->conditions().GetMaxFireWoundProtection();
 		cur /= max_power;
@@ -307,14 +297,31 @@ void CUIOutfitInfo::SetItem(CCustomOutfit* outfit, u32 hitType, bool force_add)
 
     CUIStatic* _s          = m_items_legacy[hitType];
 
-    _val_outfit            = outfit ? outfit->GetDefHitTypeProtection(ALife::EHitType(hitType)) : 0.f;
+	ALife::EHitType hit_type = (ALife::EHitType)hitType;
+	float max_power		   = Actor()->conditions().GetZoneMaxPower(hit_type);
 
-    _val_af                = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(hitType));
+	if (hitType != ALife::eHitTypeFireWound)
+	{
+		_val_outfit = outfit ? outfit->GetDefHitTypeProtection(hit_type) : 0.f;
+		_val_outfit /= max_power; // = 0..1
+	}
+	else
+	{
+		IKinematics* ikv = smart_cast<IKinematics*>( Actor()->Visual());
+		VERIFY( ikv );
+		u16 spine_bone = ikv->LL_BoneID( "bip01_spine" );
+
+		_val_outfit = outfit ? outfit->GetBoneArmor( spine_bone )*outfit->GetCondition() : 0.f;
+		float max_power = Actor()->conditions().GetMaxFireWoundProtection();
+		_val_outfit /= max_power;
+	}
+
+    _val_af                = Actor()->HitArtefactsOnBeltLegacy(1.0f, hit_type);
 	_val_af                = 1.0f - _val_af;
 
     if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
     {
-        if (_s->GetParent() != nullptr)
+        if (_s->GetParent())
             m_listWnd->RemoveWindow(_s);
         return;
     }
@@ -331,6 +338,6 @@ void CUIOutfitInfo::SetItem(CCustomOutfit* outfit, u32 hitType, bool force_add)
     }
     _s->SetText(_buff);
 
-    if (_s->GetParent() == nullptr)
+    if (!_s->GetParent())
         m_listWnd->AddWindow(_s, false);
 }
