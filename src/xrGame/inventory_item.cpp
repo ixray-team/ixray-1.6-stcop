@@ -300,6 +300,11 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 			P.r_stringZ			(i_name);
 			Detach(i_name, true);
 		}break;	
+
+	case GE_REPAIR_ITEM:
+	{
+		SetCondition(1.0f);
+	}break;
 	case GE_CHANGE_POS:
 		{
 			Fvector p; 

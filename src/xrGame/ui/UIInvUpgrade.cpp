@@ -22,9 +22,10 @@
 #include "inventory_upgrade.h"
 
 #include "UIInventoryUpgradeWnd.h"
+#include "Level.h"
 
-UIUpgrade::UIUpgrade( CUIInventoryUpgradeWnd* parent_wnd, bool cellBorder)
-:m_point(nullptr)
+UIUpgrade::UIUpgrade( CUIInventoryUpgradeWnd* parent_wnd, bool cellBorder) :
+	m_point(nullptr)
 {
 	VERIFY( parent_wnd );
 	m_parent_wnd = parent_wnd;
@@ -67,7 +68,7 @@ void UIUpgrade::init_upgrade( LPCSTR upgrade_id, CInventoryItem& item )
 
 UIUpgrade::Upgrade_type* UIUpgrade::get_upgrade()
 {
-	Upgrade_type* res = ai().alife().inventory_upgrade_manager().get_upgrade( m_upgrade_id );
+	Upgrade_type* res = Level().m_upgrade_manager->get_upgrade( m_upgrade_id );
 	VERIFY( res );
 	return res;
 }

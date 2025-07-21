@@ -281,7 +281,7 @@ bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_up
 		return false;
 	}
 
-	LPCSTR scheme_name = get_manager().get_item_scheme( inv_item );
+	LPCSTR scheme_name = Level().m_upgrade_manager->get_item_scheme( inv_item );
 	if ( !scheme_name )
 	{
 #ifdef DEBUG
@@ -302,17 +302,17 @@ bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_up
 		if (m_back && ui_item->m_point)
 			m_back->AttachChild( ui_item->m_point );
 		
-		LPCSTR upgrade_name = get_manager().get_upgrade_by_index( inv_item, ui_item->get_scheme_index() );
+		LPCSTR upgrade_name = Level().m_upgrade_manager->get_upgrade_by_index( inv_item, ui_item->get_scheme_index() );
 		ui_item->init_upgrade( upgrade_name, inv_item );
 		
-		Upgrade_type* upgrade_p = get_manager().get_upgrade( upgrade_name );
+		Upgrade_type* upgrade_p = Level().m_upgrade_manager->get_upgrade( upgrade_name );
 		VERIFY( upgrade_p );
 		for(u8 i = 0; i < inventory::upgrade::max_properties_count; i++)
 		{
 			shared_str prop_name = upgrade_p->get_property_name(i);
 			if(prop_name.size())
 			{
-				Property_type* prop_p = get_manager().get_property( prop_name );
+				Property_type* prop_p = Level().m_upgrade_manager->get_property( prop_name );
 				VERIFY( prop_p );
 			}
 		}
@@ -384,7 +384,7 @@ void CUIInventoryUpgradeWnd::AskUsing( LPCSTR text, LPCSTR upgrade_name )
 
 void CUIInventoryUpgradeWnd::OnMesBoxYes()
 {
-	if ( get_manager().upgrade_install( *m_inv_item, m_cur_upgrade_id, false ) )
+	if (Level().m_upgrade_manager->upgrade_install( *m_inv_item, m_cur_upgrade_id, false ) )
 	{
 		VERIFY( m_pParentWnd );
 		CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>( m_pParentWnd );
@@ -400,13 +400,13 @@ void CUIInventoryUpgradeWnd::OnMesBoxYes()
 void CUIInventoryUpgradeWnd::HighlightHierarchy( shared_str const& upgrade_id )
 {
 	UpdateAllUpgrades();
-	get_manager().highlight_hierarchy( *m_inv_item, upgrade_id );
+	Level().m_upgrade_manager->highlight_hierarchy( *m_inv_item, upgrade_id );
 }
 
 void CUIInventoryUpgradeWnd::ResetHighlight()
 {
 	UpdateAllUpgrades();
-	get_manager().reset_highlight( *m_inv_item );
+	Level().m_upgrade_manager->reset_highlight( *m_inv_item );
 }
 
 void CUIInventoryUpgradeWnd::set_info_cur_upgrade( Upgrade_type* upgrade )
@@ -432,9 +432,4 @@ void CUIInventoryUpgradeWnd::set_info_cur_upgrade( Upgrade_type* upgrade )
 			UpdateAllUpgrades();
 		}
 	}
-}
-
-CUIInventoryUpgradeWnd::Manager_type& CUIInventoryUpgradeWnd::get_manager()
-{
-	return  ai().alife().inventory_upgrade_manager();
 }
