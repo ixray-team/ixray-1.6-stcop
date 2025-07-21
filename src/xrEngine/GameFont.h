@@ -34,6 +34,7 @@ private:
 		float height;
 		u32 c;
 		EAligment align;
+		bool gradient;
 	};
 
 	struct BaseData
@@ -50,6 +51,7 @@ protected:
 	float fCurrentHeight = 0.0f;
 	float fCurrentX = 0.0f;
 	float fCurrentY = 0.0f;
+	bool fGradientEnabled = false;
 
 	u32 uFlags;
 	u32 dwCurrentColor;
@@ -61,11 +63,10 @@ protected:
 public:
 	enum
 	{
-		fsGradient = (1 << 0),
-		fsDeviceIndependent = (1 << 1), //#DELETE_ME deprecated
-		fsValid = (1 << 2),
+		fsDeviceIndependent = (1 << 0), //#DELETE_ME deprecated
+		fsValid = (1 << 1),
 
-		fsMultibyte = (1 << 3),
+		fsMultibyte = (1 << 2),
 
 		fsForceDWORD = u32(-1)
 	};
@@ -102,7 +103,7 @@ public:
 	u16 SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText);
 	u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 
-	void SetGradient() { uFlags |= fsGradient; }
+	void SetGradient(bool val) { fGradientEnabled = val; }
 	void OutI(float _x, float _y, const char* fmt, ...);
 	void Out(float _x, float _y, const char* fmt, ...);
 	void OutNext(const char* fmt, ...);
