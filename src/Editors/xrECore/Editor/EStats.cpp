@@ -19,7 +19,7 @@ CEStats::CEStats()
     minutes = 0.f;
     seconds = 0.f;
 
-    pFont = g_FontManager->GetFont("sdk_font_statistic", CGameFont::fsDeviceIndependent);// new CGameFont("stat_font", CGameFont::fsDeviceIndependent);
+    pFont = g_FontManager->GetFont("stat_font", CGameFont::fsDeviceIndependent);// new CGameFont("stat_font", CGameFont::fsDeviceIndependent);
 }
 
 CEStats::~CEStats() {}
