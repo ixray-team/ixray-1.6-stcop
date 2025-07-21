@@ -178,10 +178,8 @@ private:
 	virtual void _BCL AddSeqFrame(pureFrame* f, bool mt);
 	virtual void _BCL RemoveSeqFrame(pureFrame* f);
 
-private:
-	HWND hwnd;
 public:
-	HWND GetHWND() { return hwnd; }
+	HWND GetHWND() const;
 	void CreateWindow();
 	void DestryWindow();
 	virtual void Reset(bool precache);
