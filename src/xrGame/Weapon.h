@@ -495,6 +495,11 @@ public:
 	IC int					GetAmmoMagSize		()	const		{ return iMagazineSize; }
 	bool					IsChamber			()  const		{ return m_bAmmoInChamber; }
 	bool					IsChangeAmmoType	()	const		{ return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
+
+	virtual u8				GetTargetAmmoType(bool for_grenade_mode = false) const { return m_set_next_ammoType_on_reload != undefined_ammo_type ? m_set_next_ammoType_on_reload : GetAmmoType(for_grenade_mode); }
+	virtual u8				GetAmmoType(bool for_grenade_mode = false) const { return m_ammoType; }
+	u8						GetSetNextAmmoType() const { return m_set_next_ammoType_on_reload; }
+
 	void SetAmmoMagSize(int size);
 	int						GetSuitableAmmoTotal(bool use_item_to_spawn = false) const;
 
