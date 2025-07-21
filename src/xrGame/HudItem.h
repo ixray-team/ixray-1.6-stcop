@@ -18,8 +18,9 @@ class motion_marks;
 class CHUDState
 {
 public:
-enum EHudStates {
-		eIdle		= 0,
+enum EHudStates
+{
+		eIdle = 0,
 		eShowing,
 		eHiding,
 		eHidden,
@@ -27,7 +28,10 @@ enum EHudStates {
 		eSprintStart,
 		eSprintEnd,
 		eDeviceSwitch,
-		eLastBaseState = eDeviceSwitch,
+		ePrepareDetector,
+		ePrepareDetectorEnd,
+		eFinishDetector,
+		eLastBaseState = eFinishDetector,
 };
 
 private:
@@ -170,6 +174,9 @@ public:
 		af_torch = (1 << 0),
 		af_nvg = (1 << 1),
 		af_clear_mask = (1 << 2),
+		af_prepare_detector = (1 << 3),
+		af_prepare_detector_end = (1 << 4),
+		af_finish_detector = (1 << 5),
 		af_firemode = (1 << 14),
 	};
 
