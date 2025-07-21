@@ -29,16 +29,16 @@ static u32					phase_total_time	= 0;
 
 //static HWND hwPhaseTime	= 0;
 
-std::vector<IterationData> iterationData;
+xr_vector<IterationData> iterationData;
 IterationData* ActiveIteration = nullptr;
 
-std::string make_time	(u32 sec) 
+xr_string make_time(u32 sec)
 {
-	char		buf[64];
-	xr_sprintf		(buf,"%2.0d:%2.0d:%2.0d",sec/3600,(sec%3600)/60,sec%60);
-	int len		= int(xr_strlen(buf));
-	for (int i=0; i<len; i++) if (buf[i]==' ') buf[i]='0';
-	return std::string(buf);
+	char buf[64];
+	xr_sprintf(buf, "%2.0d:%2.0d:%2.0d", sec / 3600, (sec % 3600) / 60, sec % 60);
+	int len = int(xr_strlen(buf));
+	for (int i = 0; i < len; i++) if (buf[i] == ' ') buf[i] = '0';
+	return buf;
 }
 
 void __cdecl Status(const char* format, ...) 
@@ -78,7 +78,7 @@ u32& GetPhaseStartTime()
 	return phase_start_time;
 }
 
-std::vector<IterationData>& GetIterationData()
+xr_vector<IterationData>& GetIterationData()
 {
 	return iterationData;
 }
