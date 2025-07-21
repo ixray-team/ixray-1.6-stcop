@@ -188,6 +188,7 @@ public:
 		af_det_hand_throw_idle = (1 << 9),
 		af_det_hand_throw_end = (1 << 10),
 		af_det_hand_kick = (1 << 11),
+		af_det_hand_lam = (1 << 12),
 		af_firemode = (1 << 14),
 	};
 
