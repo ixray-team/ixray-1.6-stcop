@@ -1,3 +1,5 @@
+;system.ltx
+
 ; This is due to the fact that GSC has prescribed the sound of a gun being pulled out
 ![inventory]
 slot_persistent_4 = false ;grenades
@@ -10,6 +12,22 @@ slot_persistent_4 = false ;grenades
 offset_right = -0.4,0.2,0.0
 offset_left = 0.314,0.2,0.0
 use_inertion = true
+
+;m_controller.ltx
+![m_controller_e]
+icon = ui_npc_monster_kontroler
+
+![m_controller_normal]
+icon				= ui_npc_monster_kontroler
+
+![m_controller_normal_fat]
+icon				= ui_npc_monster_kontroler_3
+
+![m_controller_old]
+icon				= ui_npc_monster_kontroler_4
+
+![m_controller_old_fat]
+icon				= ui_npc_monster_kontroler_5
 
 ;artefacts.ltx
 ![af_base]
@@ -84,7 +102,3 @@ snd_night_vision_broken		= weapons\nv_off
 
 night_vision_disabled_maps						= ai_test,ai_test2, andy_test_
 
-;creatures/monsters.ltx
-![monsters_common]
-corpse_remove_game_time_interval = 24 ; in hours
-stay_after_death_time_interval = 36 ; in hours
