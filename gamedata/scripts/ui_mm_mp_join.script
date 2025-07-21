@@ -9,8 +9,7 @@
 
 class "mp_join" (CUIWindow)
 
-function mp_join:__init(online_mode) super()
-	self.online = online_mode
+function mp_join:__init() super()
 end
 
 function mp_join:__finalize()
@@ -33,6 +32,11 @@ function mp_join:InitControls(x, y, xml, handler)
 --	xml:InitStatic("tab_client:rust_01",self)
 
 
+	local radio = xml:InitTab("tab_client:radio_tab_network_connection", self)
+	handler:Register(radio, "radio_net_conn")	
+	handler.radio_net_connection = radio
+	radio:SetActiveTab("internet")
+	
 	local btn = xml:Init3tButton("tab_client:btn_direct_ip", self)
 	handler:Register(btn, "btn_direct_ip")
 	handler.btn_direct_ip = btn
