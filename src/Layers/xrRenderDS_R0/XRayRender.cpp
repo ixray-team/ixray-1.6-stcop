@@ -1,10 +1,10 @@
 // xrRender_R2.cpp : Defines the entry point for the DLL application.
 //
 #include "stdafx.h" 
-XRayRenderFactory GRenderFactory;
-XRayDUInterface  GDUInterface;
+CDS0_RenderFactory GRenderFactory;
+CDS0_DUInterface  GDUInterface;
 #ifdef DEBUG_DRAW
-XRayDebugRender GDebugRender;
+CDS0_DebugRender GDebugRender;
 #endif
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
@@ -28,7 +28,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 #ifdef DEBUG_DRAW
 		DRender						= &GDebugRender;
 #endif
-	//	XRayRenderConsole::Initialize();
+	//	CDS0_RenderConsole::Initialize();
 //	DEBUG
 		/*FS.SubPath(TEXT("%cur_shaders%"));
 		FS.SubPath(TEXT("%shaders_cache%"));

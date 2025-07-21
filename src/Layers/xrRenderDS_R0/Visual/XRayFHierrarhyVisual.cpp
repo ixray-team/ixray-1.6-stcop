@@ -1,9 +1,7 @@
-
+#include "stdafx.h"
 #include "XRayFHierrarhyVisual.h"
 
-#include "../../xrEngine/Fmesh.h"
-
-void	XRayFHierrarhyVisual::Release()
+void CDS0_FHierrarhyVisual::Release()
 {
 	if (!m_DontDelete) {
 		for (u32 i = 0; i < children.size(); i++)
@@ -11,9 +9,9 @@ void	XRayFHierrarhyVisual::Release()
 	}
 }
 
-void XRayFHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
+void CDS0_FHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
 {
-	XRayRenderVisual::Load(N, data, dwFlags);
+	CDS0_RenderVisual::Load(N, data, dwFlags);
 	if (data->find_chunk(OGF_CHILDREN_L))
 	{
 		// From Link
@@ -25,7 +23,7 @@ void XRayFHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
 			children[i] = nullptr;// GRenderInterface.GetVisual(ID);
 			VERIFY(!"Check Me!");
 		}
-		m_DontDelete = TRUE;
+		m_DontDelete = true;
 	}
 	else
 	{
@@ -43,13 +41,13 @@ void XRayFHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
 					xr_strcpy(name_load, short_name);
 					xr_strcat(name_load, ":");
 					xr_strcat(name_load, itoa(count, num, 10));
-					children.push_back((XRayRenderVisual*)::Render->model_CreateChild(name_load, O));
+					children.push_back((CDS0_RenderVisual*)::Render->model_CreateChild(name_load, O));
 					O->close();
 					O = OBJ->open_chunk(count);
 				}
 				OBJ->close();
 			}
-			m_DontDelete = FALSE;
+			m_DontDelete = false;
 		}
 		else
 		{
@@ -58,26 +56,27 @@ void XRayFHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
 	}
 }
 
-void XRayFHierrarhyVisual::Copy(XRayRenderVisual* from)
+void CDS0_FHierrarhyVisual::Copy(CDS0_RenderVisual* from)
 {
-	XRayRenderVisual::Copy(from);
-
-	XRayFHierrarhyVisual* pFrom = (XRayFHierrarhyVisual*)from;
+	CDS0_RenderVisual::Copy(from);
+	CDS0_FHierrarhyVisual* pFrom = (CDS0_FHierrarhyVisual*)from;
 
 	children.clear();
 	children.reserve(pFrom->children.size());
-	for (u32 i = 0; i < pFrom->children.size(); i++) {
-		XRayRenderVisual* p = (XRayRenderVisual*) ::Render->model_Duplicate(pFrom->children[i]);
+
+	for (u32 i = 0; i < pFrom->children.size(); i++) 
+	{
+		CDS0_RenderVisual* p = (CDS0_RenderVisual*) ::Render->model_Duplicate(pFrom->children[i]);
 		children.push_back(p);
 	}
-	m_DontDelete = FALSE;
+	m_DontDelete = false;
 }
 
-XRayFHierrarhyVisual::XRayFHierrarhyVisual()
+CDS0_FHierrarhyVisual::CDS0_FHierrarhyVisual()
 {
 }
 
-XRayFHierrarhyVisual::~XRayFHierrarhyVisual()
+CDS0_FHierrarhyVisual::~CDS0_FHierrarhyVisual()
 {
 	if (!m_DontDelete) {
 		for (u32 i = 0; i < children.size(); i++)

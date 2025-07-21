@@ -1,27 +1,27 @@
 #include "stdafx.h"
 
-XRayWallMarkArray::XRayWallMarkArray()
+CDS0_WallMarkArray::CDS0_WallMarkArray()
 {
 }
 
-void XRayWallMarkArray::Copy(IWallMarkArray & _in)
+void CDS0_WallMarkArray::Copy(IWallMarkArray & _in)
 {
 }
 
-void XRayWallMarkArray::AppendMark(LPCSTR s_textures)
+void CDS0_WallMarkArray::AppendMark(LPCSTR s_textures)
 {
 }
 
-void XRayWallMarkArray::clear()
+void CDS0_WallMarkArray::clear()
 {
 }
 
-bool XRayWallMarkArray::empty()
+bool CDS0_WallMarkArray::empty()
 {
 	return false;
 }
 
-wm_shader XRayWallMarkArray::GenerateWallmark()
+wm_shader CDS0_WallMarkArray::GenerateWallmark()
 {
 	static wm_shader s_wallmark;
 	return s_wallmark;
