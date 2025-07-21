@@ -111,11 +111,11 @@ float4 main( vf I ) : SV_Target
 	final		= lerp(final, leaves, leaves.a*fLeavesFactor);
 	alpha		= lerp(alpha, leaves.a, leaves.a*fLeavesFactor);
 
+#endif	//	USE_SOFT_WATER
+
 	//	Fogging
 	final 		= lerp(fog_color, final, I.fog);
 	alpha		*= I.fog*I.fog;
-
-#endif	//	USE_SOFT_WATER
 
 	return  float4   (final, alpha )                ;
 

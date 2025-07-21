@@ -93,7 +93,7 @@
 	<iconed_answer_item x="0" y="0" width="527" height="0" min_height="30" bottom_footer="5">
 		<name_caption x="0" y="0" width="0" height="0"/>
 		
-		<content_text x="75" y="0" width="450" height="29" complex_mode="1">
+		<content_text x="75" y="0" width="430" height="29" complex_mode="1">
 			<text font="letterica18" color="ui_1"/>
     </content_text>	
 		<msg_icon x="20" y="3" width="49" height="29">

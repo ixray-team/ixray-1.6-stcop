@@ -69,9 +69,15 @@ static const half angles[5] =
 #endif
 
 float4 ssao_params;
+float4 pos_decompression_params;
 
 uniform sampler2D 	jitter0;
 
+float3 uv_to_eye(float2 uv, float eye_z)
+{
+    uv = (uv * float2(2.0, 2.0) - float2(1.0, 1.0));
+    return float3(uv * pos_decompression_params.xy * eye_z, eye_z);
+}
 //	Screen space ambient occlusion
 //	P	screen space position of the original point
 //	N	screen space normal of the original point
@@ -125,7 +131,12 @@ for (int rad=0; rad < RINGS; rad++)
 		float2	tap = float2( r * c, r * s );
 				tap		*= scale;
 				tap		+= tc;
+#ifndef SSAO_OPT_DATA
 		half3	tap_pos	= tex2D	(s_position,tap);
+#else // SSAO_OPT_DATA
+		float	z	= tex2Dlod(s_half_depth,float4(tap, 0, 0));
+		half3	tap_pos	= uv_to_eye(tap, z);
+#endif // SSAO_OPT_DATA
 		half3 	dir 	= tap_pos-P.xyz;
 		half	dist	= length(dir);
 			dir 	= normalize(dir);
