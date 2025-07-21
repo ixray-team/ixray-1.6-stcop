@@ -229,8 +229,7 @@ void game_cl_TeamDeathmatch::OnTeamMenuBack			()
 {
 	if (local_player->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 	{
-		m_game_ui->ShowServerInfo();
-//.		m_game_ui->StartStopMenu(m_game_ui->m_pMapDesc, true);
+		m_game_ui->StartStopMenu(m_game_ui->m_pMapDesc, true);
 	}
 };
 
@@ -444,7 +443,7 @@ void game_cl_TeamDeathmatch::shedule_Update			(u32 dt)
 				{
 					if (!(pCurBuyMenu && pCurBuyMenu->IsShown()) && 
 						!(pCurSkinMenu && pCurSkinMenu->IsShown()) &&
-						!m_game_ui->IsServerInfoShown() &&
+						!(m_game_ui->m_pMapDesc && m_game_ui->m_pMapDesc->IsShown()) &&
 						(CurrentGameUI() && CurrentGameUI()->GameIndicatorsShown())
 						)
 					{
