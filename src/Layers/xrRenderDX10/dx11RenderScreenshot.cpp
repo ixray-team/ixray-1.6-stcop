@@ -69,7 +69,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         if (ps_screenshot_format == 0) // jpg screenshots - default one
         {
             xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).jpg", Core.UserName, timestamp(t_stemp), lvl_name.c_str());
-            CHK_DX(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, saved));
+            CHK_DX(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_FORCE_SRGB, GUID_ContainerFormatJpeg, saved));
         }
         else if (ps_screenshot_format == 1) // tga screenshots
         {
@@ -79,7 +79,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         else if (ps_screenshot_format == 2) // png screenshots
         {
             xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).png", Core.UserName, timestamp(t_stemp), lvl_name.c_str());
-            CHK_DX(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, GUID_ContainerFormatPng, saved));
+            CHK_DX(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_FORCE_SRGB, GUID_ContainerFormatPng, saved));
         }
 
         auto fs = FS.w_open("$screenshots$", buf); R_ASSERT(fs);
