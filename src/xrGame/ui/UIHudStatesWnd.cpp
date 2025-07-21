@@ -467,6 +467,9 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
 	m_ui_weapon_icon->GetUIStaticItem().SetTextureRect(texture_rect);
 	m_ui_weapon_icon->SetStretchTexture(true);
 
+	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name, "icons_texture", nullptr);
+	m_ui_weapon_icon->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+
 	float h = texture_rect.height() * EngineExternal().GetWeaponIconScaling();
 	float w = texture_rect.width() * EngineExternal().GetWeaponIconScaling();
 
