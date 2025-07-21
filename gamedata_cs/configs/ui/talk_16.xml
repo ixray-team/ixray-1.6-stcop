@@ -64,7 +64,7 @@
       <text font="letterica18" color="ui_2"/>
     </num_text>
 
-    <content_text x="15" y="2" width="410" height="20">
+    <content_text x="15" y="2" width="410" height="20" offset="2">
       <text font="letterica18" color="ui_2"  align="l" complex_mode="1"/>
       <text_color>
         <t r="231" g="168" b="12"/>
