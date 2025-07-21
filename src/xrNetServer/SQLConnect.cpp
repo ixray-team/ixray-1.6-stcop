@@ -1,24 +1,23 @@
 #include "stdafx.h"
 #include "SQLConnect.h"
-#include <mysql/jdbc.h>
 
 #include <json/json.hpp>
 #include <fstream>
 
-XRNETSERVER_API DBService GSQLConnector;
+XRNETSERVER_API DBService* GSQLConnector = nullptr;
 
 void DBService::SQLUpdateThread()
 {
 	PROF_THREAD("SQL Server Updater");
-	while (!GSQLConnector.Exit)
+	while (!GSQLConnector->Exit)
 	{
 		{
-			xrCriticalSectionGuard guard(GSQLConnector.DelayCS);
-			GSQLConnector.TasksActive = GSQLConnector.TasksDelay;
-			GSQLConnector.TasksDelay.clear();
+			xrCriticalSectionGuard guard(GSQLConnector->DelayCS);
+			GSQLConnector->TasksActive = GSQLConnector->TasksDelay;
+			GSQLConnector->TasksDelay.clear();
 		}
 
-		for (const auto& Functor : GSQLConnector.TasksActive)
+		for (const auto& Functor : GSQLConnector->TasksActive)
 		{
 			Functor();
 		}
