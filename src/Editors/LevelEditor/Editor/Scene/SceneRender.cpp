@@ -20,12 +20,6 @@ void  object_StrictB2F_1(EScene::mapObject_Node *N){RENDER_OBJECT(1,true);}
 void  object_StrictB2F_2(EScene::mapObject_Node *N){RENDER_OBJECT(2,true);}
 void  object_StrictB2F_3(EScene::mapObject_Node *N){RENDER_OBJECT(3,true);}
 
-void EScene::RenderSky(const Fmatrix& camera)
-{
-	if( !valid() )	return;
-
-}
-
 struct tools_rp_pred
 {
     IC bool operator()(ESceneToolBase* x, ESceneToolBase* y) const
