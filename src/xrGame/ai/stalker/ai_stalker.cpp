@@ -1341,11 +1341,16 @@ smart_cover::loophole const* CAI_Stalker::get_current_loophole	( )
 bool CAI_Stalker::can_fire_right_now							( )
 {
 	if (!ready_to_kill())
-		return				(false);
+	{
+		return false;
+	}
 
-	VERIFY					(best_weapon());
-	if(CWeapon* weapon = best_weapon() ? best_weapon()->cast_weapon() : NULL)
-		return weapon->GetAmmoElapsed() > 0;
+	VERIFY(best_weapon());
+
+	if (CWeapon* weapon = best_weapon() ? best_weapon()->cast_weapon() : nullptr)
+	{
+		return weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed() > 0;
+	}
 
 	return false;
 }
