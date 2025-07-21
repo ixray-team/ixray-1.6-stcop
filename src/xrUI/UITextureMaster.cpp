@@ -69,8 +69,9 @@ bool CUITextureMaster::IsSh(const shared_str& texture_name){
 	return strstr(texture_name.c_str(),"\\") ? false : true;
 }
 
-bool CUITextureMaster::InitTexture(const shared_str& texture_name, const shared_str& shader_name, ui_shader& out_shader, Frect& out_rect)
+bool CUITextureMaster::InitTexture(const shared_str& texture_name, const shared_str& shader_name, ui_shader& out_shader, Frect& out_rect, bool warn_about_missing_tex)
 {
+	// Step 1 - try to read texture from XML
 	xr_map<shared_str, TEX_INFO>::iterator it	= m_textures.find(texture_name);
 	if (it != m_textures.end())
 	{
@@ -83,12 +84,22 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, const shared_
 		out_rect			= (*it).second.rect;
 		return true;
 	}
-	out_shader->create	(shader_name.c_str(), texture_name.c_str());
+	// Step 2 - if texture is not in XML, try to load existing file
+	bool texExist = FS.TryLoad(xr_string(texture_name.c_str()));
+	if (texExist || warn_about_missing_tex)
+	{
+		out_shader->create(shader_name.c_str(), texture_name.c_str());
+	}
+	else
+	{
+		out_shader->create(shader_name.c_str(), "ed\\ed_not_existing_texture");
+	}
 	return false;
 }
 
-bool CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem* tc, const shared_str& shader_name)
+bool CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem* tc, const shared_str& shader_name, bool warn_about_missing_tex)
 {
+	// Step 1 - try to read texture from XML
 	xr_map<shared_str, TEX_INFO>::iterator it	= m_textures.find(texture_name);
 	if (it != m_textures.end())
 	{
@@ -102,7 +113,16 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem
 		tc->SetSize			(Fvector2().set(it->second.rect.width(),it->second.rect.height()));
 		return true;
 	}
-	tc->CreateShader		(texture_name.c_str(), shader_name.c_str());
+	// Step 2 - if texture is not in XML, try to load existing file
+	bool texExist = FS.TryLoad(xr_string(texture_name.c_str()));
+	if (texExist || warn_about_missing_tex)
+	{
+		tc->CreateShader(texture_name.c_str(), shader_name.c_str());
+	}
+	else
+	{
+		tc->CreateShader("ed\\ed_not_existing_texture", shader_name.c_str());
+	}
 	return false;
 }
 

@@ -150,7 +150,7 @@ void CUI3tButton::SetHeight(float height)
 	else if ( m_back_framewindow )	{	m_back_framewindow->SetHeight(height);	}
 }
 
-bool CUI3tButton::InitTexture(LPCSTR tex_name, bool /*fatal = true*/)
+bool CUI3tButton::InitTexture(LPCSTR tex_name, bool fatal)
 {
 	string_path 		tex_enabled;
 	string_path 		tex_disabled;
@@ -173,35 +173,36 @@ bool CUI3tButton::InitTexture(LPCSTR tex_name, bool /*fatal = true*/)
 	xr_strcpy				(tex_highlighted, tex_name);
 	xr_strcat				(tex_highlighted, "_h");
 
-	this->InitTexture	(tex_enabled, tex_disabled, tex_touched, tex_highlighted);	
+	this->InitTexture	(tex_enabled, tex_disabled, tex_touched, tex_highlighted, fatal);	
 	return true;
 }
 
 void CUI3tButton::InitTexture(LPCSTR tex_enabled, 
 							  LPCSTR tex_disabled, 
 							  LPCSTR tex_touched, 
-							  LPCSTR tex_highlighted)
+							  LPCSTR tex_highlighted,
+							  bool fatal)
 {
 	if ( m_background )
 	{
-		m_background->InitState				(S_Enabled,		tex_enabled);
-		m_background->InitState				(S_Disabled,	tex_disabled);
-		m_background->InitState				(S_Touched,		tex_touched);
-		m_background->InitState				(S_Highlighted, tex_highlighted);
+		m_background->InitState				(S_Enabled,		tex_enabled, fatal);
+		m_background->InitState				(S_Disabled,	tex_disabled, fatal);
+		m_background->InitState				(S_Touched,		tex_touched, fatal);
+		m_background->InitState				(S_Highlighted, tex_highlighted, fatal);
 	}
 	else if ( m_back_frameline )
 	{
-		m_back_frameline->InitState				(S_Enabled,		tex_enabled);
-		m_back_frameline->InitState				(S_Disabled,	tex_disabled);
-		m_back_frameline->InitState				(S_Touched,		tex_touched);
-		m_back_frameline->InitState				(S_Highlighted, tex_highlighted);
+		m_back_frameline->InitState				(S_Enabled,		tex_enabled, fatal);
+		m_back_frameline->InitState				(S_Disabled,	tex_disabled, fatal);
+		m_back_frameline->InitState				(S_Touched,		tex_touched, fatal);
+		m_back_frameline->InitState				(S_Highlighted, tex_highlighted, fatal);
 	}
 	else if (m_back_framewindow)
 	{
-		m_back_framewindow->InitState(S_Enabled, tex_enabled);
-		m_back_framewindow->InitState(S_Disabled, tex_disabled);
-		m_back_framewindow->InitState(S_Touched, tex_touched);
-		m_back_framewindow->InitState(S_Highlighted, tex_highlighted);
+		m_back_framewindow->InitState(S_Enabled, tex_enabled, fatal);
+		m_back_framewindow->InitState(S_Disabled, tex_disabled, fatal);
+		m_back_framewindow->InitState(S_Touched, tex_touched, fatal);
+		m_back_framewindow->InitState(S_Highlighted, tex_highlighted, fatal);
 	}
 
 	this->m_bTextureEnable = true;

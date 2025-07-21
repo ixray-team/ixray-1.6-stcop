@@ -48,7 +48,7 @@ bool CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR prof
 		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_IncButton);
 
 		xr_strconcat(_path, profile, ":box");
-		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_ScrollBox);
+		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_ScrollBox, false);
 
 		xr_strconcat(_path, profile, ":back");
 		if (!CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground, false))
@@ -67,7 +67,7 @@ bool CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR prof
  		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_IncButton);
 
 		xr_strconcat(_path, profile, ":box_v");
-		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_ScrollBox);
+		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_ScrollBox, false);
 
 		xr_strconcat(_path, profile, ":back_v");
 		if (!CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground, false))

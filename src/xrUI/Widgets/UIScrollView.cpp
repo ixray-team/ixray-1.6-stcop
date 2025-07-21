@@ -69,7 +69,6 @@ void CUIScrollView::InitScrollView()
 	{
 		if (!tmp_scroll->InitScrollBar(Fvector2().set(GetWndSize().x, 0.0f), false, *m_scrollbar_profile))
 		{
-			Msg("! Failed to init ScrollView with FixedScrollBar, trying to init with ScrollBar");
 			DetachChild(m_VScrollBar);
 			m_VScrollBar = nullptr;
 		}
