@@ -23,7 +23,9 @@ UIImageEditorForm::UIImageEditorForm()
 
 UIImageEditorForm::~UIImageEditorForm()
 {
-	if (m_Texture)m_Texture->Release();
+	if (m_Texture)
+		IM_TEXTURE_RELEASE(m_Texture);
+
 	xr_delete(m_ItemList);
 	xr_delete(m_ItemProps);
 }
@@ -41,7 +43,7 @@ void UIImageEditorForm::Draw()
 
 	if (m_TextureRemove)
 	{
-		m_TextureRemove->Release();
+		IM_TEXTURE_RELEASE(m_TextureRemove);
 		m_TextureRemove = nullptr;
 	}
 
@@ -411,7 +413,7 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 			B->OnBtnClickEvent.bind(this, &UIImageEditorForm::OnCubeMapBtnClick);
 		}
 
-		thm->Update(m_Texture);
+		thm->Update((ID3DBaseTexture*&)m_Texture);
 	}
 
 	m_ItemProps->AssignItems(props);

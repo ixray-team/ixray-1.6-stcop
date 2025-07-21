@@ -2,7 +2,8 @@ project(xrEUI)
 
 # Files import
 file(GLOB_RECURSE EUI_SOURCE_ALL_FILES CONFIGURE_DEPENDS
-    "*.*"
+    "*.h"
+    "*.cpp"
 )
 file(GLOB_RECURSE EUI_SOURCE_NODE_FILES CONFIGURE_DEPENDS
     "ImNodeEditor/*.*"
@@ -30,12 +31,11 @@ target_compile_definitions(xrEUI PRIVATE _WINDOWS)
 target_compile_definitions(xrEUI PRIVATE _USRDLL)
 target_compile_definitions(xrEUI PUBLIC XR_EDITOR_NEW)
 
-add_compile_options(/fp:fast)
 target_compile_definitions(xrEUI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrEUI PUBLIC xrCore)
-#target_link_libraries(xrEUI PUBLIC imgui)
+target_link_libraries(xrEUI PUBLIC imgui)
 
 # Move precompiled header
 set_target_properties(xrEUI PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
