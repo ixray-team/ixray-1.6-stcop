@@ -115,7 +115,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 							try 
 							{
 								VERIFY(inlc_global_data());
-								VERIFY(inlc_global_data()->RCAST_Model());
+
 								u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable;
 								LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F); 
 
