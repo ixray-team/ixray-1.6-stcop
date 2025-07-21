@@ -47,12 +47,14 @@ public:
 	IC void		inc	()						{ count++; }
 	IC bool		empty()		const			{ return 0==count;	}
 
-	IC void		erase(u32 id)				{
-		VERIFY(id<count);
+	IC void erase(u32 id)
+	{
+		VERIFY2(id < count, make_string<const char*>("ID [%d], Count [%d]", (int)id, (int)count));
 		count--;
-		for (u32 i=id; i<count; i++)
-			array[i] = array[i+1];
+		for (u32 i = id; i < count; i++)
+			array[i] = array[i + 1];
 	}
+
 	IC void		erase(iterator it)				{ erase(u32(it-begin()));	}
 
 	IC void		insert(u32 id, reference V)
