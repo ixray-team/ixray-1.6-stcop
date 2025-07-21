@@ -123,6 +123,7 @@ float GetPlayerSatiety()		            { return GetActor() == nullptr ? 0.f : Get
 float GetPlayerBleedingSpeed()	            { return GetActor() == nullptr ? 0.f : GetActor()->conditions().BleedingSpeed();				}
 float GetPlayerRestoreSpeed()	            { return GetActor() == nullptr ? 0.f : GetActor()->GetRestoreSpeed(ALife::ePowerRestoreSpeed) / GetActor()->conditions().GetMaxPowerRestoreSpeed();}
 float GetOutfiteMaxFireWoundProtection()    { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetMaxFireWoundProtection();	}
+float GetPlayerArmor()                      { return GetActor()->GetOutfit() == nullptr ? 0.f : GetActor()->GetOutfit()->GetCondition(); }
 
 void RegisterExpressionDelegates ()
 {
@@ -186,4 +187,5 @@ void RegisterExpressionDelegates ()
 	g_uiExpressionMgr->RegisterVariable("fltPlayerSatiety",							GetPlayerSatiety);
 	g_uiExpressionMgr->RegisterVariable("fltPlayerRestoreSpeed",						GetPlayerRestoreSpeed);
 	g_uiExpressionMgr->RegisterVariable("fltPlayerBleedingSpeed",		    		GetPlayerBleedingSpeed);
+	g_uiExpressionMgr->RegisterVariable("fltPlayerArmor",							GetPlayerArmor);
 }

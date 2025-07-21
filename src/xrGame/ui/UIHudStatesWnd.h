@@ -24,7 +24,7 @@ private:
 	CUIStatic*			m_back;
 //	CUIStatic*			m_back_v;
 //	CUIStatic*			m_back_over_arrow;
-//	CUIStatic*			m_static_armor;
+	CUIStatic*			m_static_armor;
 
 //	CUIStatic*			m_resist_back[it_max];
 	CUIStatic*			m_indik[it_max];
@@ -40,7 +40,7 @@ private:
 	Frect				m_ui_weapon_icon_rect;
 
 	CUIProgressBar*		m_ui_health_bar;
-//	CUIProgressBar*		m_ui_armor_bar;
+	CUIProgressBar*		m_ui_armor_bar;
 	CUIProgressBar*		m_ui_stamina_bar;
 
 //	CUIProgressShape*	m_progress_self;
