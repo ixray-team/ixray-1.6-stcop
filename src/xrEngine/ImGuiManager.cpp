@@ -136,6 +136,11 @@ void CImGuiManager::InitPlatform()
 
 	io.Fonts->Build();
 
+#ifdef DEBUG_DRAW
+	if (Core.ParamsData.test(ECoreParams::no_debug_panel))
+		DrawUIRender = false;
+#endif
+
 	PlatformInitCallback();
 }
 
