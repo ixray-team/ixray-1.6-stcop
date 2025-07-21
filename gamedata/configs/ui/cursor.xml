@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <w>
-    <cursor x="0" y="0" width="40" height="40" stretch="1">
+    <cursor x="0" y="0" width="40" height="40" stretch="1" native_scale="false">
         <texture x="0" y="0" width="45" height="45" shader="hud\cursor">ui\ui_ani_cursor</texture>
     </cursor>
 </w>
