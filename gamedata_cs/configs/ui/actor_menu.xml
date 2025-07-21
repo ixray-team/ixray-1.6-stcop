@@ -133,9 +133,9 @@
           cell_width="41" cell_height="41" rows_num="14" cols_num="7"
           unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
-  <dragdrop_belt x="363" y="97" width="45" height="320"
-          cell_width="45" cell_height="45" rows_num="5" cols_num="1"
-		  cell_sp_x="0" cell_sp_y="20" a="0"/>
+  <dragdrop_belt x="371" y="105" width="45" height="320"
+          cell_width="32" cell_height="32" rows_num="5" cols_num="1"
+		  cell_sp_x="0" cell_sp_y="33" a="0"/>
 
   <dragdrop_outfit x="450" y="160" width="92" height="127"
           cell_width="41" cell_height="41" rows_num="3" cols_num="2"
