@@ -261,7 +261,7 @@ void CRenderDevice::on_idle		()
 	m_pRender->SetCacheXformOld(mView_old, mProject_old);
 
 	mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, 
-		HUD_VIEWPORT_NEAR, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+		Device.fHUDViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	mView_hud.set(mView);
 	mFullTransform_hud.mul(mProject_hud, mView_hud);
