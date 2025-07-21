@@ -184,6 +184,8 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 	for (u32 i = 0; i < bones->size(); i++)
 		m_motions[bones->at(i)->name].resize(dwCNT);
 
+	m_notifies.resize(dwCNT);
+	
 	// load motions
 	for (u16 m_idx = 0; m_idx < (u16)dwCNT; m_idx++)
 	{
@@ -271,6 +273,32 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 					MS->r_fvector3(M._initT);
 				}
 			}
+		}
+		
+		IReader* notify_data = MS->open_chunk(dwCNT+2+m_idx);
+		if (notify_data)
+		{
+			u32 num = notify_data->r_u32();
+			m_notifies[m_idx].order.reserve(num);
+			for (u32 i = 0; i < num; i++)
+			{
+				float key = notify_data->r_float();
+				m_notifies[m_idx].data[key] = {};
+				auto& data = m_notifies[m_idx].data[key];
+				data.IsExternalTrigger = notify_data->r_u8();
+				if (data.IsExternalTrigger)
+				{
+					notify_data->r_stringZ(data.ExternalRef);
+				}
+				else
+				{
+					notify_data->r_stringZ(data.GiveInfo);
+					notify_data->r_stringZ(data.DisableInfo);
+					notify_data->r_stringZ(data.Functor);
+				}
+				m_notifies[m_idx].order.push_back(key);
+			}
+			std::ranges::sort(m_notifies[m_idx].order);
 		}
 	}
 	//	Msg("Motions %d/%d %4d/%4d/%d, %s",p_cnt,m_cnt, m_load,m_total,m_r,N);
