@@ -24,7 +24,9 @@ enum EHudStates {
 		eHiding,
 		eHidden,
 		eBore,
-		eLastBaseState = eBore,
+		eSprintStart,
+		eSprintEnd,
+		eLastBaseState = eSprintEnd,
 };
 
 private:
@@ -181,6 +183,7 @@ protected:
 	float m_fUD_InertiaFactor; // Фактор вертикальной инерции худа при движении камеры [-1; +1]
 
 	bool						m_bDisableBore;
+	bool						m_bSwitchSprint = false;
 
 	virtual void				SetModelBoneStatus(const char* bone, BOOL show);
 	virtual void				SetMultipleBonesStatus(const char* section, const char* line, BOOL show);
