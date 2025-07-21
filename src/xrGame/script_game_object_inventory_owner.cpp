@@ -2037,3 +2037,31 @@ void CScriptGameObject::SetCharacterIcon(LPCSTR iconName)
 	}
 	return pInventoryOwner->SetIcon(iconName);
 }
+
+
+void CScriptGameObject::StartActorAnimator(LPCSTR section)
+{
+}
+
+void CScriptGameObject::StopActorAnimator()
+{
+}
+
+LPCSTR CScriptGameObject::GetActorAnimatorSection()
+{
+	return "null";
+}
+
+bool CScriptGameObject::IsAnimatorActive()
+{
+	return false;
+}
+
+u8 CScriptGameObject::GetActorAnimatorRestoredSlot()
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (pActor)
+		return 1;
+	else
+		return 0;
+}
