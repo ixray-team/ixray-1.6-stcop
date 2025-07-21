@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_actor_destroy_wave1">
+		<text>El lugar donde aparecen los zombis.</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_name">
+		<text>No dejes que los zombis se acerquen a los stalkers en el tejado.</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_text">
+		<text>Cubre a los stalkers en el tejado mientras trabajan con la vбlvula de la instalaciуn. ЎNo dejes que los zombis se acerquen al pelotуn de reparaciуn en el tejado!</text>
+	</string>
+	<string id="yan_actor_destroy_wave2">
+		<text>El lugar donde aparecen los zombis.</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_name">
+		<text>No dejes que los zombis se acerquen a los stalkers en el hangar.</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_text">
+		<text>Cubre a los stalkers en el hangar mientras trabajan con la vбlvula de la instalaciуn. ЎNo dejes que los zombis se acerquen al pelotуn de reparaciуn en el hangar!</text>
+	</string>
+	<string id="yan_actor_go_base_defence">
+		<text>Defiende la base de los cientнficos.</text>
+	</string>
+	<string id="yan_actor_go_base_defence_name">
+		<text>Defiende la base de los cientнficos.</text>
+	</string>
+	<string id="yan_actor_go_base_defence_text">
+		<text>Defiende la base de los cientнficos.</text>
+	</string>
+	<string id="yan_actor_go_base_science">
+		<text>Mientras los zombis ataquen, las puertas del bъnker de los cientнficos estбn bloqueadas. Rechaza el ataque de los zombis para entrar en el bъnker y ver a los cientнficos.</text>
+	</string>
+	<string id="yan_actor_go_base_science_name">
+		<text>Habla con Sakharov.</text>
+	</string>
+	<string id="yan_actor_go_base_science_text">
+		<text>Strelok ha salido para ver a los cientнficos en Yantar. Ve a Yantar y habla con el profesor Sakharov. Puede que sepa dуnde encontrar a Strelok.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest">
+		<text>El camino al Bosque Rojo estб abierto.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_name">
+		<text>Ve al Bosque Rojo.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_text">
+		<text>Se ha reparado y estabilizado la estaciуn de refrigeraciуn, asн que las emisiones psнquicas estбn al mнnimo. El camino al Bosque Rojo es seguro. Ve al Bosque Rojo. Strelok se dirige allн.</text>
+	</string>
+	<string id="yan_actor_go_to_stalker">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_name">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_text">
+		<text>text in default</text>
+	</string>
+	<string id="yan_main_quest_line">
+		<text>No dejes que el equipo de reparaciуn muera.</text>
+	</string>
+	<string id="yan_main_quest_line_name">
+		<text>ЎMantйn tu posiciуn!</text>
+	</string>
+	<string id="yan_main_quest_line_text">
+		<text>ЎMantйn tu posiciуn!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy">
+		<text>Lleva los documentos a Sakharov. </text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_name">
+		<text>Lleva los documentos a Sakharov.</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_text">
+		<text>Lleva los documentos a Sakharov. Le ayudarбn a comprender por quй Yantar tiene unos niveles de emisiуn psнquica tan fuertes.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke">
+		<text>Lucha y бbrete paso hasta la estaciуn de refrigeraciуn.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_name">
+		<text>Lucha y бbrete paso hasta la fбbrica.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_text">
+		<text>El бrea alrededor de la fбbrica estб llena de zombis. Ъnete a Lefty y a su grupo para luchar y entrar. Date prisa, el nivel del campo psнquico puede volverse crнtico en cualquier momento.</text>
+	</string>
+	<string id="yan_quest_doc">
+		<text>Encuentra los documentos.</text>
+	</string>
+	<string id="yan_quest_doc_name">
+		<text>Encuentra la PDA con los documentos.</text>
+	</string>
+	<string id="yan_quest_doc_text">
+		<text>Un grupo de stalkers ha encontrado documentos importantes en el бrea de la fбbrica. Puede que ayuden a Sakharov a determinar la causa del potente campo psнquico en Yantar. La seсal del grupo desapareciу cerca de la salida de la fбbrica. Encuentra la PDA con los documentos.</text>
+	</string>
+	<string id="yan_quest_levsha">
+		<text>Reъnete con Lefty.</text>
+	</string>
+	<string id="yan_quest_levsha_name">
+		<text>Reъnete con el grupo de Lefty.</text>
+	</string>
+	<string id="yan_quest_levsha_text">
+		<text>Un grupo de stalkers se prepara para luchar y abrirse paso por la fбbrica mientras las emisiones psнquicas estйn al mнnimo. Reъnete con Lefty, el comandante del grupo.</text>
+	</string>
+	<string id="yan_repair_defend">
+		<text>Toma una posiciуn en el tejado del hangar.</text>
+	</string>
+	<string id="yan_repair_defend_name">
+		<text>Sigue al stalker hasta el tejado del hangar.</text>
+	</string>
+	<string id="yan_repair_defend_text">
+		<text>Lefty ha ordenado a todos que vayan a sus posiciones. Sigue al stalker al tejado y ve a la tuya.</text>
+	</string>
+	<string id="yan_recover_item_1_name">
+		<text>Recupera la Flor Escarlata</text>
+	</string>
+	<string id="yan_recover_item_1_text">
+		<text>Ayъdame, mercenario. En la Zona hay un artefacto al que llamamos la Flor Escarlata. A un stalker no le sirve para nada, pero las mujeres se vuelven locas por ella. Se acerca el dнa de mi cita y creo que triunfarй si consigo una. Por eso aъn sigo en la maldita Zona: han detectado una flor por aquн cerca. El artefacto parece una flor mбgica que brilla noche y dнa. Trбemela y te recompensarй generosamente.</text>
+	</string>
+	<string id="yan_recover_item_2_name">
+		<text>Recupera la granada de recuerdo</text>
+	</string>
+	<string id="yan_recover_item_2_text">
+		<text>Mercenario, necesito algo. He perdido un recuerdo, que parece una granada... pero que no es una granada... bueno, sн que es una granada, pero de las de entrenamiento. Es igual, recupйrala... Creo que sй dуnde puedes encontrarla. Estaba en la fбbrica cuando ocurriу... se me fue la cabeza y casi olvidй quiйn soy. Cuando recuperй la conciencia, estaba aquн, asн que imagino que la granada aъn debe de estar en la fбbrica. ЎConsнguemela!</text>
+	</string>
+</string_table>

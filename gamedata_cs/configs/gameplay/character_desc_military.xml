@@ -52,8 +52,8 @@
       wpn_pm \n
       ammo_9x18_pmm = 1 \n
       device_torch \n
-      wpn_sig550 \n
-      ammo_5.45x39_fmj = 10 \n
+      wpn_lr300 \n
+      ammo_5.56x45_ap = 10 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -84,7 +84,7 @@
       ammo_11.43x23_hydro = 1 \n
       device_torch \n
       wpn_sig550 \n
-      ammo_5.45x39_fmj = 10 \n
+      ammo_5.56x45_ap = 10 \n
       hand_radio \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
@@ -118,7 +118,7 @@
       ammo_9x18_pmm = 1 \n
       device_torch \n
       wpn_sig550 \n
-      ammo_5.45x39_fmj = 10 \n
+      ammo_5.56x45_ap = 10 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"

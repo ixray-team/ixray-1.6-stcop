@@ -12,11 +12,19 @@ function is_not_day(first_speaker, second_speaker)
 end
 
 function return_freedom_pda(first_speaker, second_speaker)
-	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_freedom")
+	if db.actor:object("device_pda_freedom") ~= nil then
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_freedom")
+	end
 end
 
 function return_komendant_pda(first_speaker, second_speaker)
-	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_comendant")
+	if db.actor:object("device_pda_comendant") ~= nil then
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_comendant")
+	end
+end
+
+function return_pda_bloodsucker(first_speaker, second_speaker)
+	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_bloodsucker")
 end
 
 function give_reward_for_destroy_killer_base(first_speaker, second_speaker)

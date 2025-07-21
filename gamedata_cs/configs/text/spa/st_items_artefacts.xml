@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_af_medusa_name">
+		<text>"Medusa"</text>
+	</string>
+	<string id="st_af_medusa_descr">
+		<text>Este artefacto gravitatorio absorbe las partнculas radiactivas y reduce los efectos de la radiaciуn en el cuerpo. Muy comъn en la Zona.</text>
+	</string>
+	<string id="st_af_cristall_flowe_name">
+		<text>"Flor de piedra"</text>
+	</string>
+	<string id="st_af_cristall_flowe_descr">
+		<text>Una piedra deformada por una fuerza gravitacional extrema. Este artefacto tiene propiedades parecidas al granito, puede proporcionar una protecciуn moderada contra las emisiones psнquicas y es radiactivo.</text>
+	</string>
+	<string id="st_af_night_star_name">
+		<text>"Estrella nocturna"</text>
+	</string>
+	<string id="st_af_night_star_descr">
+		<text>Este reluciente artefacto puede generar un campo local dirigido con una gravedad baja. Reduce el peso de las mochilas cuando estб cerca de ellas. Se suele usar para aumentar la carga mбxima. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_vyvert_name">
+		<text>"Torcedor"</text>
+	</string>
+	<string id="st_af_vyvert_descr">
+		<text>Este artefacto de forma extraсa aparece en lugares con una actividad gravitatoria aumentada. Actъa como una especie de esponja que absorbe los elementos radiactivos. De ese modo proporciona protecciуn contra la radiaciуn exterior y las partнculas radiactivas que ya hayan llegado al cuerpo.</text>
+	</string>
+	<string id="st_af_gravi_name">
+		<text>"Gravi"</text>
+	</string>
+	<string id="st_af_gravi_descr">
+		<text>El Gravi se forma con sustancias metбlicas expuestas a la gravitaciуn prolongada. Esto lo hace capaz de mantener un campo gravitatorio que ayuda a los stalkers a transportar cargas mayores. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_gold_fish_name">
+		<text>"Pez de colores"</text>
+	</string>
+	<string id="st_af_gold_fish_descr">
+		<text>Pez de colores es el resultado de la superinteracciуn de campos gravitacionales. Produce su propio campo gravitacional dirigido fuerte y aumenta de modo significativo la capacidad de carga de los stalkers, razуn por la que estб muy demandado. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_blood_name">
+		<text>"Sangre petrificada"</text>
+	</string>
+	<string id="st_af_blood_descr">
+		<text>Una formaciуn rojiza de trozos extraсos comprimidos y polimerizados de plantas, tierra y huesos. Puede neutralizar en parte los venenos quнmicos. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_mincer_meat_name">
+		<text>"Bola de carne"</text>
+	</string>
+	<string id="st_af_mincer_meat_descr">
+		<text>Este artefacto orgбnico estб formado de tejidos animales mutados y fosilizados. Rezuma un fluido viscoso que neutraliza parcialmente los efectos quнmicos nocivos en la piel humana. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_soul_name">
+		<text>"Alma"</text>
+	</string>
+	<string id="st_af_soul_descr">
+		<text>Un artefacto orgбnico ъnico con propiedades igualmente ъnicas. Aumenta la velocidad general de recuperaciуn del cuerpo. Gracias a su razonable precio y a su apariencia atractiva, es un objeto valioso para los coleccionistas. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_fuzz_kolobok_name">
+		<text>"Kolobok"</text>
+	</string>
+	<string id="st_af_fuzz_kolobok_descr">
+		<text>Un artefacto raro y caro que se forma en бreas de actividad quнmica. Muy valorado por su habilidad de aumentar el bienestar general del cuerpo. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_baloon_name">
+		<text>"Burbuja"</text>
+	</string>
+	<string id="st_af_baloon_descr">
+		<text>Un compuesto de varias formaciones orgбnicas huecas. Este artefacto emite una sustancia gaseosa que puede neutralizar las partнculas radiactivas dentro del cuerpo. Es extremadamente valioso.</text>
+	</string>
+	<string id="st_af_glass_name">
+		<text>"Luciйrnaga"</text>
+	</string>
+	<string id="st_af_glass_descr">
+		<text>Luciйrnaga emite un tipo desconocido de energнa que aumenta considerablemente la curaciуn de los seres vivos, llegando a veces incluso a resucitar a los muertos en segundos. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_fireball_name">
+		<text>"Bola de fuego"</text>
+	</string>
+	<string id="st_af_fireball_descr">
+		<text>Aunque Bola de fuego es un artefacto tйrmico, puede manejarse sin temor a quemarse. Puede mantener una temperatura de 75 grados dentro de un pequeсo radio, independientemente de la temperatura ambiente. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_cristall_name">
+		<text>"Cristal"</text>
+	</string>
+	<string id="st_af_cristall_descr">
+		<text>Este artefacto se forma en бreas anуmalas con intensa actividad tйrmica. Consume el exceso de calor sin aumentar su temperatura. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_dummy_glassbeads_name">
+		<text>"Abalorios de madre"</text>
+	</string>
+	<string id="st_af_dummy_glassbeads_descr">
+		<text>La naturaleza tйrmica de Abalorios de madre ya no es un secreto, pero su forma todavнa intriga a los cientнficos. Las emisiones producidas por los impulsos en sus secciones mбs densas aumentan el metabolismo de los seres vivos, lo que ayuda a curar las heridas mбs deprisa. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_eye_name">
+		<text>"Ojo"</text>
+	</string>
+	<string id="st_af_eye_descr">
+		<text>Este artefacto se parece a un ojo humano. Aumenta considerablemente el metabolismo del cuerpo y ayuda a curar las heridas mбs deprisa. Los stalkers experimentados dicen que tambiйn trae suerte. Sea cierto o no, lo que estб claro es que trae dinero. Emite radiaciуn. </text>
+	</string>
+	<string id="st_af_fire_name">
+		<text>"Llama"</text>
+	</string>
+	<string id="st_af_fire_descr">
+		<text>Este raro artefacto se forma en бreas de gran actividad tйrmica. Emite potentes emisiones infrarrojas que aumentan el proceso metabуlico. Las heridas se cierran ante tus propios ojos. Es extremadamente valioso, pero emite radiaciуn.</text>
+	</string>
+	<string id="st_af_electra_sparkler_name">
+		<text>"Bengala"</text>
+	</string>
+	<string id="st_af_electra_sparkler_descr">
+		<text>Un brillante representante de la familia electrostбtica de artefactos. Puede suavizar las fluctuaciones en la densidad del campo elйctrico. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_electra_flash_name">
+		<text>"Destello"</text>
+	</string>
+	<string id="st_af_electra_flash_descr">
+		<text>Gracias a sus molйculas fuertemente cristalizadas, este artefacto electrostбtico es un poderoso absorbente de la electricidad y es capaz de proteger al portador de descargas elйctricas de hasta 5.000 voltios. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_electra_moonlight_name">
+		<text>"Claro de luna"</text>
+	</string>
+	<string id="st_af_electra_moonlight_descr">
+		<text>Este artefacto electrostбtico ъnico puede resonar bajo la influencia de las ondas psнquicas. Los stalkers han aprendido a ajustar el artefacto para que resuene en la fase opuesta y absorba las emisiones psнquicas. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_dummy_battery_name">
+		<text>"Baterнa"</text>
+	</string>
+	<string id="st_af_dummy_battery_descr">
+		<text>El origen de este objeto es un enigma cientнfico. Solo se sabe que su composiciуn incluye elementos dielйctricos, pero ningъn investigador ha identificado todavнa las condiciones fнsicas exactas para su formaciуn. Es popular en la Zona y valorado por sus residentes y visitantes por sus cualidades curativas. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_dummy_dummy_name">
+		<text>"Concha"</text>
+	</string>
+	<string id="st_af_dummy_dummy_descr">
+		<text>Antiguamente se creнa que este artefacto era basura y que no servнa para nada. Sin embargo, los cientнficos han descubierto recientemente que, en contacto constante con el cuerpo, tiene un estupendo efecto estimulador en el sistema nervioso y recupera la energнa de su portador. Emite radiaciуn.</text>
+	</string>
+	<string id="st_af_ice_name">
+		<text>"Copo de nieve"</text>
+	</string>
+	<string id="st_af_ice_descr">
+		<text>A primera vista, este artefacto parece un Kolobok. Algunos dicen que de hecho es un Kolobok cuyas propiedades han sido reforzadas por la exposiciуn a un potente campo elйctrico. Tiene propiedades de estimulaciуn elйctrica excelentes y aumenta considerablemente la vitalidad de su portador. Emite radiaciуn.</text>
+	</string>
+</string_table>

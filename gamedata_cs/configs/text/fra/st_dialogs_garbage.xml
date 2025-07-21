@@ -1,0 +1,1020 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_bandit_leader_hello_11">
+		<text>Qu'est-ce que tu veux ?</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1">
+		<text>Hum... Ben, en fait, j'ai bien un truc. Y a un mec qu'a vraiment besoin de disparaоtre, si tu vois ce que je veux dire. Si t'es partant, je m'arrangerai pour qu'il soit au vieil arrкt de bus, de l'autre cфtй du mur est. Qu'est-ce que t'en dis ?</text>
+	</string>
+	<string id="gar_bandit_trader_hello_11">
+		<text>Alors... t'as des trucs а vendre ?</text>
+	</string>
+	<string id="gar_bandit_tech_hello_11">
+		<text>Hй, mon pote... hic... Qu'est-ce que tu veux ?</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_0">
+		<text>Yoga m'a filй les coordonnйes de sa planque, mais il paraоt que l'endroit grouille d'anomalies ou de mutants maintenant.</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_1">
+		<text>Ah ouais ? Ha ha ! Cette planque est la blague prйfйrйe de Yoga, mon pote ! Quoi ? Tu crois que t'es le premier abruti а qui il donne ces coordonnйes ? Un tas d'autres ratйs ont essayй de l'atteindre... le dernier a mкme rйussi а buter le psi-clйbard qui crйchait lа-bas, avant de se prendre une dйcharge de 100000 volts dans le cul...</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_0">
+		<text>Yoga a dйcidй de virer les mineurs du marchй aux puces une fois pour toute.</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_1">
+		<text>Hein ? C'est complиtement con ! C'est le meilleur endroit pour plumer les mineurs ! Зa sera sa perte, crois-moi ! Il est fini s'il fait зa. Les contrebandiers nous йvitent comme la peste et avec le marchй aux puces hors service, il y aura bientфt plus de mineurs ! D'ici quelques mois, les gars auront plus personne а plumer et qu'est-ce qu'il leur dira alors, Yoga, hein ? Bon, je vais aller leur parler... Yoga est en train de creuser sa propre tombe.</text>
+	</string>
+	<string id="gar_bandit_barman_hello_11">
+		<text>Et alors ?</text>
+	</string>
+	<string id="gar_bandit_barman_join_0">
+		<text>Comment je peux vous rejoindre ?</text>
+	</string>
+	<string id="gar_bandit_barman_join_1">
+		<text>Alors comme зa, on veut devenir le mignon de Yoga ? Ben, va lui demander directement ! Il est dans sa caravane, а rien foutre d'autre qu'attendre des idiots comme toi ! Rends-lui donc quelques services et on verra bien si tu changes pas d'avis.</text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_0">
+		<text>Yoga a mis а pris la tкte d'un mec du nom de Stringov. Зa te dit quelque chose ?</text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_1">
+		<text>Non, mais laisse-moi te donner un conseil ! Pense toujours а toi en premier ! Quand un mec se retrouve face au canon d'un flingue, il a tendance а devenir trиs gйnйreux... et зa peut te servir. mais faut toujours faire en sorte qu'il vive pas assez longtemps pour regretter sa gйnйrositй.</text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_0">
+		<text>Yoga veut la peau d'un contrebandier et de certains de ces clients mineurs.</text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_1">
+		<text>Putain, il abuse, ce Yoga ! Mкme si les mineurs arrivent а dйterrer un truc d'intйressant, ils en profitent pas longtemps. On peut les descendre quand on veut, mais pourquoi on se fatiguerait ? C'est plus simple de les plumer ! Quant au contrebandier, mais oщ est-ce qu'il a la tкte, Yoga ? Oщ est-ce qu'il croit que j'achиte ma marchandise, ce con ? Et merde...</text>
+	</string>
+	<string id="gar_bandit_barman_questions_0">
+		<text>J'ai quelques questions.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1">
+		<text>Je t'йcoute !!</text>
+	</string>
+	<string id="gar_bandit_barman_questions_11">
+		<text>Qu'est-ce que tu fais ici ?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_111">
+		<text>Je tourne en rond et je nettoie les verres, voilа ce que je fais. Je perds mon putain de temps ici ! J'ai toujours voulu кtre un meneur d'hommes ! Et je me retrouve lа, а servir de la vodka а de pauvres types pendant que Yoga se la coule douce ! Putain, crois-moi, si j'йtais le chef ici, il y aurait moins de tire-au-flanc ! Je te garantis que j'occuperais tout le monde ! On foutrait autant de bordel dans la Zone qu'une йmission de premiиre catйgorie !</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1111">
+		<text>Je vois... Je voulais aussi te demander...</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1112">
+		<text>Ouais, ben, зa suffit pour le moment.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_12">
+		<text>Quoi de neuf dans la Zone ?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_121">
+		<text>Eh bien, les йmissions sont de plus en plus fortes et frйquentes, et la Zone change aprиs chacune d'elles. On a maintenant accиs а des tas de nouveaux coins et pas mal de monde a envie de s'en payer une tranche. Et franchement, зa me pose pas de problиme. Si t'as la tкte sur les йpaules et un clan tout entier derriиre toi, faudrait кtre con pour rester sur ton cul dans ta base а te branler toute la journйe...</text>
+	</string>
+	<string id="gar_bandit_barman_questions_13">
+		<text>Comment зa se passe avec vos voisins ?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_131">
+		<text>Ben, je vais t'expliquer : on est les seuls dans la Zone а avoir un semblant de code de conduite. On est pas des bandits, on est des loups ! Et les autres ratйs, c'est des moutons. Comme ils ont aucune idйe de quoi foutre de leur vie, on leur sert de bergers. Prends la Dйcharge, par exemple. Chaque fois que les stalkers trouvent un truc qui a de la valeur, зa manque pas, зa dйgйnиre en bataille rangйe ! Et зa, c'est mauvais pour le business. Du coup, on a dйbarquй, on a instaurй quelques rиgles et tout est calme depuis. On a pas rйussi а en arriver lа avec les autres factions, mais зa viendra. J'ai d'autres problиmes pour le moment, de toute faзon.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_14">
+		<text>Pas de problиme, on parlera une autre fois !</text>
+	</string>
+	<string id="gar_bandit_barman_questions_141">
+		<text>Ouais, c'est зa...</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_11">
+		<text>Hй, зa te dirait de descendre quelques corbeaux ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_111">
+		<text>Bien sыr !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1111">
+		<text>Cool ! Tu peux jouer pour le plaisir, pour de l'argent ou essayer d'йtablir un nouveau record. Qu'est-ce qui te tente ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_112">
+		<text>Non, j'ai pas trop envie, lа.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1121">
+		<text>Comme tu voudras ! Reviens si tu changes d'avis.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_21">
+		<text>Voilа ton fric, comme promis ! Tu vois, je suis un gars honnкte. Tu veux recommencer ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_31">
+		<text>Pas de bol. Essaye encore une fois, mec !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_41">
+		<text>Hй, oщ tu vas comme зa ? Tu sais, tirer sur les oiseaux en dehors du terrain, c'est ton affaire, mais si tu veux gagner de l'argent, faut le faire ici et dans les rиgles.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_51">
+		<text>Tu sais que le compteur tourne ? On parlera plus tard !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_511">
+		<text>Compris.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_0">
+		<text>Je veux jouer pour de l'argent.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1">
+		<text>Ah, parfait ! Tu veux que je te rappelle les rиgles ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11">
+		<text>Allons descendre quelques piafs !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111">
+		<text>Bon, assez bavarder ! Donc, tu penses pouvoir descendre combien de corbeaux en une minute ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111111">
+		<text>Зa marche.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111111">
+		<text>Cool. Prйpare ton arme, mon pote !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111111">
+		<text>Ok.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112">
+		<text>J'ai pas assez d'argent.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111121">
+		<text>Alors, pourquoi tu choisirais pas un truc que tu peux te permettre ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111211">
+		<text>Oui, je vais choisir un nombre de corbeaux diffйrent.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111212">
+		<text>Non, je suis pas intйressй.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112121">
+		<text>Eh bien, tu peux jouer pour le plaisir. Ou tu peux essayer d'йtablir un record, mais pour зa, faut payer. Alors, qu'est-ce que t'en dis ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_12">
+		<text>Explique-moi tout !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_121">
+		<text>Jouer de l'argent est la seule vraie faзon de jouer, si tu veux mon avis. Dis-moi combien de corbeaux tu penses descendre en une minute, parie du fric et voilа ! Si tu remplis le contrat, je double ta mise ! Sinon, je la garde. Et rappelle-toi, plus il y a de corbeaux, plus forte est la mise.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_13">
+		<text>J'ai plus envie de jouer finalement.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_0">
+		<text>Quelles sont les rиgles ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_1">
+		<text>Y en a pas vraiment. Je lance le chrono, tu te prйpares et tu commences а tirer sur les corbeaux а mon signal. T'en descends le nombre convenu, tu gagnes. Sinon, tu perds. La faзon dont tu les tues, c'est ton problиme. Mais rappelle-toi que si tu t'йloignes trop, c'est fini. Alors, tu veux jouer pour le plaisir, pour de l'argent ou pour tenter d'йtablir un nouveau record ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_0">
+		<text>J'ai pas envie de jouer, lа.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_1">
+		<text>Comme tu voudras ! Reviens si tu changes d'avis.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_0">
+		<text>Je veux йtablir un nouveau record !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11">
+		<text>Allons-y !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1111">
+		<text>Ok.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11111">
+		<text>Ok, voyons si t'as l'йtoffe des champions !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1112">
+		<text>J'aimerais bien, mais j'ai pas assez de cash...</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11121">
+		<text>Dans ce cas lа, le choix est plus simple : pour le plaisir ou pour l'argent. Alors ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1113">
+		<text>Je... j'ai changй d'avis.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_12">
+		<text>Rappelle-moi les rиgles, dйjа !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_121">
+		<text>C'est l'йpreuve pour les mecs qui en ont. Si tu penses pouvoir battre le record actuel, fais un pari en consйquence. Si tu йtablis un nouveau record, tu gagnes le double, la gloire, le prestige, tout le tintouin... Sinon, je garde le fric.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_13">
+		<text>Je... j'ai changй d'avis.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_0">
+		<text>Pour le plaisir.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_1">
+		<text>Ah, tu t'entraоnes, c'est зa ? Tu te souviens des rиgles, hein ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11">
+		<text>Oui. Allons au pas de tir !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111">
+		<text>Ok, tu penses pouvoir descendre combien de corbeaux ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11111">
+		<text>D'accord, prйpare-toi !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111111">
+		<text>Ok.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_21">
+		<text>Non. Rafraоchis-moi la mйmoire !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_211">
+		<text>Ben, pour le plaisir, c'est juste pour le plaisir... Y a pas d'argent а la clef. C'est bien pour s'entraоner ou se dйfouler un peu. T'as qu'а dйcider combien de corbeaux tu veux descendre et essayer d'atteindre ce chiffre.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_31">
+		<text>J'ai changй d'avis.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_311">
+		<text>Pas de problиme ! Je propose toujours la mкme chose : tu peux jouer pour le plaisir, pour l'argent ou pour йtablir un nouveau record. Alors ?</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_111">
+		<text>Qu'est-ce que t'insinues ? Je sors peut-кtre pas d'une universitй, mais j'йtais le meilleur spйcialiste а la centrale, mйdailles, primes, tout зa ! On allait fкter зa avec les collиgues en buvant une bonne bouteille quand le boss s'en est rendu compte et nous a tous virйs. Le connard ! C'йtait une sacrйe centrale, parce qu'on travaillait pour la dйfense. Ensuite, j'ai eu un boulot au bureau local des HLM, comme technicien. Tout le monde venait me voir quand il se passait un truc, parce que j'йtais le seul pro du coin. On me filait un peu de cash ou d'alcool, tout roulait... Jusqu'а une dispute avec un plombier pour une histoire de bouteille. Зa a dйgйnйrй et j'ai plantй ce connard avec un tournevis. Il a survйcu, mais j'ai fait un sйjour а l'ombre. Quand j'en suis sorti, ma rombiиre s'йtait barrйe... J'ai fait une dйpression, j'ai perdu ma baraque dans des magouilles et j'ai fini а la rue. C'est comme зa que j'ai йchouй ici. Et tu sais quoi ? Ici, on me traite bien parce que je sais ce que je fais. Et je suis toujours le mкme ! De temps en temps, une bouteille fait aussi bien l'affaire que du fric en guise de paiement, tiens-le-toi pour dit !</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_121">
+		<text>C'est pas parce que j'ai les mains qui tremblent que je suis inutile. C'est juste la gueule de bois. Un canon ou deux et зa passera, je serai comme neuf ! T'inquiиte, je peux faire du meilleur travail bourrй que la plupart des mecs а jeun, sans dйconner ! Je peux faire tout ce que tu veux : rйparer ton flingue, ajouter du kevlar а tes protections ou t'amйliorer tout зa. Faut juste que t'oublies pas ton pote Limpide et que tu lui payes un coup а boire de temps en temps.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_131">
+		<text>Franchement, j'en ai rien а cirer de ce qui se passe ici. Tant qu'il y a du boulot et de la bibine, зa me va ! C'est peut-кtre pas la vie de chвteau, mais je peux pas espйrer grand-chose de mieux. Alors, pourquoi je baverais sur les autres, hein ? N'empкche qu'il se passe toujours des trucs ici. T'as rencontrй Kirill ? Le gamin avec des boutons plein la gueule ? On l'a surnommй Pustule. Ben, si tu l'as pas vu, il est probablement а rouler en boule sous une table. Mais bon, donc j'avais repйrй que Pustule sortait rйguliиrement de la base. Je me suis dit qu'il devait avoir une planque pour du butin qu'il avait pas envie de partager. D'autres l'ont aussi remarquй et Yoga a fini par l'apprendre. Il a convoquй Pustule et lui a ordonnй de cracher le butin. Pustule, il a tout niй en bloc, alors Yoga, il lui a dit de le conduire а la planque. Apparemment, il avait recueilli un chiot de Tchernobyl blessй. Il s'en occupait parce que les autres mecs l'aiment pas trop et qu'il avait personne а qui causer. Yoga, du coup, зa l'a enragй, toute cette histoire а la con : il a butй le chiot et Pustule a gagnй une bonne branlйe et la perte de son pourcentage. Des fois, la vie, зa craint...</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_141">
+		<text>Ah lui, c'est mon meilleur pote, Senka ! Tu te noierais dans la quantitй de vodka qu'on a bue ensemble ! On est devenus potes dиs mon arrivйe ici : on a bu ensemble pour fкter зa et puis, on s'est foutu sur la gueule pour une histoire dйbile de sens de la vie... Mais bon, Senka est un type rйglo, mкme si on se bastonne encore de temps en temps quand on est bourrйs. Mais je peux toujours me confier а lui quand j'en ai besoin. C'est mon seul ami, un peu comme Pavlov et son chien.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_151">
+		<text>Y a un principe tout simple auquel chaque homme devrait se tenir : ne jamais mйlanger la vodka et la biиre ! Sans dйconner ! Et c'est pareil pour les armes. Tu choisis une caractйristique et tu l'augmentes au max. On s'en fout de ce que tu choisis : prйcision, cadence de tir, ce que tu veux, au max ! Зa sera beaucoup plus efficace qu'un mйlange de petites amйliorations minables dans tous les sens !</text>
+	</string>
+	<string id="gar_bandit_leader_hello_21">
+		<text>J'espиre que Stringov mange les pissenlits par la racine.</text>
+	</string>
+	<string id="gar_bandit_leader_hello_31">
+		<text>Le contrebandier sortira pas de la Dйcharge vivant, mais si les mineurs se procurent des flingues, j'ai pas l'intention d'кtre le dindon de la farce, tu me suis ?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_41">
+		<text>Les mineurs sont toujours au marchй aux puces, mais toi, t'es ici. Y a que moi qui trouve pas зa normal ?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_61">
+		<text>T'es venu pour parler affaires ou pour me prйsenter tes meilleurs voeux ?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_91">
+		<text>Je t'йcoute.</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_0">
+		<text>Est-ce que je peux me joindre а vous ?</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_1">
+		<text>Du calme, gamin ! D'abord, faut que tu passes le test et j'ai le boulot parfait pour зa !</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_0">
+		<text>Alors, je peux me joindre а vous maintenant ?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_1">
+		<text>T'es con ou quoi ? Je t'ai filй un putain de boulot, va le faire bordel ! On en reparlera quand ce sera fait !</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_2">
+		<text>T'as fait le boulot et tu l'as bien fait, trop bien mкme... Je deviens parano quand les choses se passent trop bien, alors pourquoi tu vas pas explorer un peu la Zone le temps que je me renseigne sur toi ? Si t'es vraiment clean, je te contacterai sur ton PDA.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_3">
+		<text>Ah, on dirait que t'es un ancien de la Libertй. Ben ici, c'est moi le chef et y a pas de contestation qui tienne ! Alors, t'est prкt а oublier tes potes anars ?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_4">
+		<text>Tiens, tiens, tiens, un ancien du Devoir qui veut changer de quotidien ! Ben, y a qu'un chef, moi, et on obйit sans discuter ! Alors, qu'est-ce que tu dis d'un changement de rйgime ?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5">
+		<text>Bon, t'as prouvй que t'avais assez de couilles pour venir bosser dans mon йquipe. T'as qu'а dire oui pour qu'on t'accepte. Alors ?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51">
+		<text>J'ai toujours voulu bosser avec des mecs comme vous.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511">
+		<text>Ben, t'auras plein d'occasions pour зa ! Tu sais comment les choses marchent par ici ?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5111">
+		<text>Non. Je veux bien que tu m'expliques...</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51111">
+		<text>Ben, la Zone est un joyeux bordel, зa, tu le sais. On vit selon nos propres rиgles et on les impose aux autres. Nos leзons coыtent de l'argent, c'est pour зa qu'on taxe les mineurs. On s'est bien occupй de la Dйcharge, alors le prochain arrкt, c'est le Cordon. Et pour зa, il faudra qu'on gicle les stalkers de lа, histoire qu'ils comprennent qu'il y a changement de propriйtaire.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511111">
+		<text>Compris.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5112">
+		<text>Oui, pas besoin d'une confйrence.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51121">
+		<text>OK, ben, c'est tout. Ton PDA est maintenant rйglй sur notre frйquence, donc tu pourras toujours savoir ce que font les autres et comment avancent nos conquкtes. Allez, c'est fini, maintenant dйgage !</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511211">
+		<text>Compris, grand chef ! Je vais rejoindre les autres travailleurs.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_52">
+		<text>Je vais y rйflйchir.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_0">
+		<text>J'aimerais bosser pour toi.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_11">
+		<text>Je m'en chargerai.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_111">
+		<text>Cool ! Le mec en question s'appelle Stringov. Va а l'arrкt de bus. Il devrait s'y trouver quand tu y arriveras.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1111">
+		<text>Compris.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_12">
+		<text>Non, ce genre de boulot, c'est pas pour moi.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_121">
+		<text>Comme tu voudras... Dis-moi si tu changes d'avis ! Ce mec sera peut-кtre toujours en vie.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_0">
+		<text>J'ai dйcidй d'accepter ce boulot finalement.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_1">
+		<text>Bien ! En plus, зa tombe bien, le mec est toujours en vie ! Il sera bientфt а l'arrкt de bus de l'autre cфtй du mur Est. Occupe-toi de lui ! Il s'appelle Stringov, alors tвche de buter le bon gars !</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_11">
+		<text>Compris.</text>
+	</string>
+	<string id="gar_bandit_leader_meet_greet_b_2">
+		<text>Ben зa alors ! C'est toi !</text>
+	</string>
+	<string id="gar_bandit_leader_questions_0">
+		<text>Je voudrais te demander un truc...</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1">
+		<text>Oui ?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_11">
+		<text>Parle-moi de toi !</text>
+	</string>
+	<string id="gar_bandit_leader_questions_111">
+		<text>T'es flic ou quoi ? J'ai autre chose а foutre que rйpondre а tes questions. T'es qu'un ratй comme les centaines d'autres que j'ai dы piйtiner pour en arriver oщ j'en suis ! Et la raison pour laquelle j'y suis arrivй, c'est que j'ai passй plus de temps а rйflйchir qu'а parler pour rien dire. Mais bon, y a aussi une autre raison : quand il fallait bouger, je le faisais plus vite que les autres et зa faisait bien plus mal, tu vois ce que je veux dire ?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1111">
+		<text>Je vois. J'ai autre chose а te demander.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1112">
+		<text>OK. Plus de questions, alors !</text>
+	</string>
+	<string id="gar_bandit_leader_questions_12">
+		<text>Tu crois pas que les stalkers risquent de se rebeller ?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_121">
+		<text>Pas vraiment... Je suis pas du genre а me prendre la tкte pour ces conneries. J'ai les couilles suffisamment grosses pour continuer а plumer les mineurs de la Dйcharge. Et mкme s'ils arrivent а monter un vrai clan et а nous attaquer, on leur fera comprendre que c'йtait une trиs mauvaise idйe. On a de nouvelles recrues tous les jours et une fois qu'on aura amassй assez de fric, on se cassera de ce trou а rat et on se montera une vraie base ! Quant aux occupants actuels de notre nouvelle base... il faudra bien qu'ils trouvent oщ se reloger, mais ce sera leur problиme, pas le nфtre.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_13">
+		<text>Tu t'intйresses а ce qui se passe dans la Zone ?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_131">
+		<text>Y a qu'une chose qui m'intйresse : c'est savoir quand les bidasses ou les rastas vont nous attaquer. Le reste, je m'en tamponne, а part peut-кtre les йmissions et les stalkers qui attaquent les militaires, parce que c'est des trucs dont on peut tirer profit. Laisse-moi te raconter une histoire. Il y avait un ratй avec nous, on l'appelait Chef. C'est pas qu'il йtait cuistot, mais il avait ce don pour dйtecter а distance les hachoirs, la pire espиce d'anomalie qui existe. Toujours est-il que Chef a commencй а prendre la grosse tкte, а dire qu'il nous sauvait la mise а tous et que sa part йtait pas plus grosse pour autant. Il avait besoin d'une piqыre de rappel sur la hiйrarchie, alors je l'ai convoquй, je l'ai assommй et je lui ai brisй tous les doigts... Ensuite, j'ai dit aux gars de lui bander les yeux et de le lвcher dans un champ d'anomalies. Je me suis dit, s'il survit, il pourra passer le reste de sa misйrable existence а me lйcher les bottes. Mais bon, il a fini par croiser un de ses hachoirs et le Chef a fini hachй menu. Moralitй : tu me fais chier, tu finis en pвtйe !</text>
+	</string>
+	<string id="gar_bandit_leader_questions_14">
+		<text>Rien, merci.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_141">
+		<text>Parfait ! Moins t'en sais, mieux tu te portes !</text>
+	</string>
+	<string id="gar_bandit_leader_reward_0">
+		<text>Tu penses pas que la rйcompense pour mon dernier boulot est un peu faiblarde, vu les risques ?</text>
+	</string>
+	<string id="gar_bandit_leader_reward_111">
+		<text>Je le pense pas, je le sais, tu comprends ? OK, ok, t'es pas le tocard que je pensais que t'йtais, alors je vais te filer un petit bonus ! J'ai planquй un flingue spйcial avant la derniиre йmission. Mais maintenant, tout le coin est recouvert d'anomalies... Sauf qu'un mec m'a dit l'autre jour que le problиme, c'йtait plutфt les mutants... Enfin bref, quoi qu'il en soit, c'est pas facile d'accйder а la planque, mais je vais te refiler les coordonnйes si t'as envie de tenter ta chance. Si t'y arrives, le butin est а toi.</text>
+	</string>
+	<string id="gar_bandit_leader_reward_1111">
+		<text>OK, on verra.</text>
+	</string>
+	<string id="gar_bandit_tech_join_0">
+		<text>Tu peux me dire ce que je dois faire pour rejoindre ta faction ?</text>
+	</string>
+	<string id="gar_bandit_tech_join_1">
+		<text>C'est au chef de dйcider. Sa caravane est dans le hangar.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_0">
+		<text>Tu peux rйpondre а quelques questions ?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1">
+		<text>Bien sыr.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_11">
+		<text>Comment quelqu'un comme toi est devenu technicien ?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_111">
+		<text>Qu'est-ce que t'insinues ? Je sors peut-кtre pas d'une universitй, mais j'йtais le meilleur spйcialiste а la centrale, mйdailles, primes, tout зa ! On allait fкter зa avec les collиgues en buvant une bonne bouteille quand le boss s'en est rendu compte et nous a tous virйs. Le connard ! C'йtait une sacrйe centrale, parce qu'on travaillait pour la dйfense. Ensuite, j'ai eu un boulot au bureau local des HLM, comme technicien. Tout le monde venait me voir quand il se passait un truc, parce que j'йtais le seul pro du coin. On me filait un peu de cash ou d'alcool, tout roulait... Jusqu'а une dispute avec un plombier pour une histoire de bouteille. Зa a dйgйnйrй et j'ai plantй ce connard avec un tournevis. Il a survйcu, mais j'ai fait un sйjour а l'ombre. Quand j'en suis sorti, ma rombiиre s'йtait barrйe... J'ai fait une dйpression, j'ai perdu ma baraque dans des magouilles et j'ai fini а la rue. C'est comme зa que j'ai йchouй ici. Et tu sais quoi ? Ici, on me traite bien parce que je sais ce que je fais. Et je suis toujours le mкme ! De temps en temps, une bouteille fait aussi bien l'affaire que du fric en guise de paiement, tiens-le-toi pour dit !</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1111">
+		<text>Je vois. Зa te dйrange si je te demande autre chose ?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1112">
+		<text>Compris. C'est tout pour le moment...</text>
+	</string>
+	<string id="gar_bandit_tech_questions_12">
+		<text>Mais t'arrives а bosser ?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_121">
+		<text>C'est pas parce que j'ai les mains qui tremblent que je suis inutile. C'est juste la gueule de bois. Un canon ou deux et зa passera, je serai comme neuf ! T'inquiиte, je peux faire du meilleur travail bourrй que la plupart des mecs а jeun, sans dйconner ! Je peux faire tout ce que tu veux : rйparer ton flingue, ajouter du kevlar а tes protections ou t'amйliorer tout зa. Faut juste que t'oublies pas ton pote Limpide et que tu lui payes un coup а boire de temps en temps.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_13">
+		<text>Tu sais ce qui se passe autour de toi, au moins ?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_131">
+		<text>Franchement, j'en ai rien а cirer de ce qui se passe ici. Tant qu'il y a du boulot et de la bibine, зa me va ! C'est peut-кtre pas la vie de chвteau, mais je peux pas espйrer grand-chose de mieux. Alors, pourquoi je baverais sur les autres, hein ? N'empкche qu'il se passe toujours des trucs ici. T'as rencontrй Kirill ? Le gamin avec des boutons plein la gueule ? On l'a surnommй Pustule. Ben, si tu l'as pas vu, il est probablement а rouler en boule sous une table. Mais bon, donc j'avais repйrй que Pustule sortait rйguliиrement de la base. Je me suis dit qu'il devait avoir une planque pour du butin qu'il avait pas envie de partager. D'autres l'ont aussi remarquй et Yoga a fini par l'apprendre. Il a convoquй Pustule et lui a ordonnй de cracher le butin. Pustule, il a tout niй en bloc, alors Yoga, il lui a dit de le conduire а la planque. Apparemment, il avait recueilli un chiot de Tchernobyl blessй. Il s'en occupait parce que les autres mecs l'aiment pas trop et qu'il avait personne а qui causer. Yoga, du coup, зa l'a enragй, toute cette histoire а la con : il a butй le chiot et Pustule a gagnй une bonne branlйe et la perte de son pourcentage. Des fois, la vie, зa craint...</text>
+	</string>
+	<string id="gar_bandit_tech_questions_14">
+		<text>C'est qui ce mec qui dort dans le coin ?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_141">
+		<text>Ah lui, c'est mon meilleur pote, Senka ! Tu te noierais dans la quantitй de vodka qu'on a bue ensemble ! On est devenus potes dиs mon arrivйe ici : on a bu ensemble pour fкter зa et puis, on s'est foutu sur la gueule pour une histoire dйbile de sens de la vie... Mais bon, Senka est un type rйglo, mкme si on se bastonne encore de temps en temps quand on est bourrйs. Mais je peux toujours me confier а lui quand j'en ai besoin. C'est mon seul ami, un peu comme Pavlov et son chien.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_15">
+		<text>Quelles caractйristiques de mon arme je devrais amйliorer, а ton avis ?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_151">
+		<text>Y a un principe tout simple auquel chaque homme devrait se tenir : ne jamais mйlanger la vodka et la biиre ! Sans dйconner ! Et c'est pareil pour les armes. Tu choisis une caractйristique et tu l'augmentes au max. On s'en fout de ce que tu choisis : prйcision, cadence de tir, ce que tu veux, au max ! Зa sera beaucoup plus efficace qu'un mйlange de petites amйliorations minables dans tous les sens !</text>
+	</string>
+	<string id="gar_bandit_tech_questions_16">
+		<text>OK. Зa suffit les questions, maintenant.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_161">
+		<text>Je suis toujours partant pour les conversations а coeur ouvert.</text>
+	</string>
+	<string id="gar_bandit_trader_join_0">
+		<text>Comment je peux rejoindre le clan ?</text>
+	</string>
+	<string id="gar_bandit_trader_join_1">
+		<text>Demande а Yoga ! C'est lui qui dйcide ce genre de choses. T'as qu'а suivre les panneaux indicateurs.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_0">
+		<text>Y a pas foule. T'aurais quelques minutes pour bavarder ?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1">
+		<text>Ouais, pas de problиme.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_11">
+		<text>Parle-moi de toi !</text>
+	</string>
+	<string id="gar_bandit_trader_questions_111">
+		<text>Je faisais du business dans les rues а l'йpoque de l'Union Soviйtique, jusqu'а ce que je me fasse choper... J'ai passй quelques mois а l'ombre, ce qui m'a permis de me faire des contacts. А ma sortie, je me suis lancй dans le recel. Je me suis refait choper et cette fois, quand je suis ressorti, l'Union Soviйtique existait plus. Je me suis jamais habituй au changement. J'йtais fauchй, j'avais une vie de merde... C'est а ce moment lа que la Zone est apparue. J'y suis allй direct. Cet endroit me rappelait le bon vieux temps, alors je me suis installй en tant que marchand.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1111">
+		<text>Je vois. Qu'est-ce que tu peux me dire d'autre ?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1112">
+		<text>Bon, зa suffit comme зa, les bavardages.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_12">
+		<text>Qu'est-ce que tu penses de Yoga ?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_121">
+		<text>Ce que j'en pense ? Yoga va pas rester chef longtemps. J'ai l'impression que Borov va tenter un truc d'un moment а l'autre. Yoga est devenu fainйant et voit pas plus loin que le bout de son nez. Il a un serpent dans son clan et il va finir par se faire mordre. Mais je te raconte pas зa pour que t'ailles cafter au premier connard qui passe, ok ? Je te file des infos confidentielles, alors dиs que t'apprends un truc d'intйressant, tu viens me mettre au jus, compris ? De toute faзon, que le chef soit Yoga ou Borov, je serai toujours lа pour faire du business.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_13">
+		<text>Parle-moi de la Dйcharge !</text>
+	</string>
+	<string id="gar_bandit_trader_questions_131">
+		<text>T'es comme moi, tu vois pas pourquoi qui que ce soit vient se fourrer dans ce trou merdeux, hein ? C'йtait pareil avant, personne venait ici а cause des radiations, jusqu'а ce qu'un jour, un stalker dйterre quelques trucs pas trop pourris. Du coup, tous les autres stalkers du coin se sont prйcipitйs а la Dйcharge comme des marins en permission au bordel ! En parlant de bordel, c'en йtait un beau par ici avant que nos gars viennent y mettre de l'ordre ! Faut que quelqu'un fasse rйgner l'ordre dans la Zone, peu importe que ce soit les bidasses ou les bandits. Et t'as pas besoin de sortir d'une grande йcole pour comprendre que l'ordre nйcessite de l'argent, faut bien manger ! Alors, on prend notre part sur les dйcouvertes. Зa marche pas mal, mais je pense quand mкme а aller explorer des endroits plus profitables.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_14">
+		<text>Quelles sont les derniиres nouvelles de la Zone ?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_141">
+		<text>Les derniиres nouvelles, hein ? Ben, en gйnйral, on a moins de problиmes de mutants ici que dans le reste de la Zone, mais l'autre jour... Un stalker est arrivй, tout pвle et tremblotant. Il paraоt que lui et un pote, ils fuyaient des poltergeists quand ils sont tombйs sur un groupe de hamsters. Alors, il a dйcidй que c'йtait chacun pour soi : il a tirй sur son pote et s'est cassй. Comme les hamsters avaient de la bouffe fraоche disponible, ils l'ont pas suivi. Mais pendant qu'il se faisait la malle, notre hйros a eu un cas de conscience... Aprиs la deuxiиme bouteille chez Borov, tu pouvais l'entendre pleurer aprиs son pote, comme quoi il lui avait donnй son dernier mйdikit quand il en avait besoin, tout зa... Enfin bref, il s'est pendu cette nuit-lа... c'est le genre de choses qui arrivent, dans la zone.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_15">
+		<text>Rien, je crois.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_151">
+		<text>Comme tu veux.</text>
+	</string>
+	<string id="gar_digger_leader_attack_0">
+		<text>А propos de l'attaque du le camp de travail...</text>
+	</string>
+	<string id="gar_digger_leader_attack_1">
+		<text>Йcoute, зa fait longtemps que je veux me venger des bandits, leur montrer ce que зa fait de se faire exploiter, mais les mineurs ont la trouille et pensent qu'on y arrivera jamais. Dиs que quelqu'un prononce les mots "camp de travail", ils chient dans leur froc ! Donc le seul moyen d'y arriver, c'est de convaincre les mineurs que la victoire est possible.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11">
+		<text>Et comment tu comptes y arriver ?</text>
+	</string>
+	<string id="gar_digger_leader_attack_111">
+		<text>Je veux libйrer les mineurs du camp. Comme зa, les autres se rendront compte que les bandits sont pas invincibles ! Ils ont juste besoin d'un symbole, comme celui que Che Guevara a donnй au peuple de Cuba ! C'est pour зa que j'ai besoin d'armes. Il faut que mes gars aient une chance contre les bandits. Et franchement, mкme avec des flingues, c'est pas gagnй... C'est pour зa que je te demande de les mener au combat. Зa se voit que t'as de l'expйrience. Avec toi aux commandes, on est sыrs de gagner. Alors, tu nous aides ?</text>
+	</string>
+	<string id="gar_digger_leader_attack_1111">
+		<text>А attaquer le camp de travail ? Avec plaisir !</text>
+	</string>
+	<string id="gar_digger_leader_attack_11111">
+		<text>Je m'йtais pas trompй sur toi ! Voilа les coordonnйes de la position. Mes gars sont dйjа sur place, avec les armes du contrebandier. Je vais les contacter et leur dire que tu arrives. Bon courage !</text>
+	</string>
+	<string id="gar_digger_leader_attack_111111">
+		<text>Je vais faire de mon mieux.</text>
+	</string>
+	<string id="gar_digger_leader_attack_1112">
+		<text>Mouais, ton petit discours m'inspire pas tant que зa. Je vais y rйflйchir.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11121">
+		<text>А quoi tu veux rйflйchir ? Si les mineurs bossent pas ensemble trиs vite, les bandits vont devenir trop puissants ! Qu'est-ce que tu crois qui se passera aprиs ? Je vais te le dire, moi : ils prendront le contrфle de toute la Zone et tout le monde en bavera ! Allez, quoi, t'es notre seule chance de nous en tirer, file-nous un coup de main !</text>
+	</string>
+	<string id="gar_digger_leader_attack_2">
+		<text>On doit attaquer le camp ! C'est le seul moyen de redonner confiance aux mineurs ! Tu veux bien nous aider ?</text>
+	</string>
+	<string id="gar_digger_leader_break_0">
+		<text>Au revoir.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_0">
+		<text>Un mйdikit, tu dis ?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1">
+		<text>Ouais, c'est ce qu'y a йcrit sur la boоte : "Kit de premiers soins pour le champ de bataille". Je l'ai dйterrй dans une vieille planque qui doit dater du dйbut de la Zone. Il a probablement йtй laissй par l'une des premiиres expйditions scientifiques. Il est pas pйrimй, mais personne veut me l'acheter, mкme pour 2000 roubles. C'est trop cher pour un mineur. Pourquoi tu me l'achиtes pas, toi ? J'ai vraiment besoin d'argent...</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11">
+		<text>Un mйdikit pour 2000 roubles ? Donne, зa peut toujours servir !</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111">
+		<text>Merci, tu m'enlиves une sacrйe йpine du pied ! Voilа le mйdikit ! Tu sais, tu m'inspires confiance. La raison pour laquelle j'ai besoin d'argent, c'est pour acheter des armes au contrebandier, histoire de pouvoir armer les mineurs.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111">
+		<text>Je vois, mais que vient faire la confiance dans cette histoire ?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111">
+		<text>Ben, le truc, c'est que Stringov vient de partir а la rencontre du contrebandier. Il a presque tout notre fric, mais s'il avait ce que tu viens de me donner, il pourrait acheter encore plus d'armes. Alors, je me dis que tu pourrais peut-кtre lui apporter. Voilа ses coordonnйes. Je vais lui faire savoir qu'il doit t'attendre, mais dйpкche-toi, ok ?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111111">
+		<text>Ok</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111111">
+		<text>Je savais que j'avais raison а ton sujet. Merci d'avance !</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111111">
+		<text>Remercie-moi quand ce sera fait !</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111112">
+		<text>Qu'est-ce que je dois faire, dйjа ?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111121">
+		<text>Tu dois apporter 2000 roubles а Stringov. Il attend le contrebandier !</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111211">
+		<text>Je vois.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111113">
+		<text>Je vais y rйflйchir.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111131">
+		<text>Hmm... J'espиre que je me suis pas trompй sur ton compte.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111311">
+		<text>L'espoir fait vivre.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_112">
+		<text>J'aimerais bien, mais on a rйcemment dйcidй de plus faire d'affaires qu'а la nuit tombйe... Зa йvite les tйmoins inutiles. Reviens quand il fera noir, je te donnerai le mйdikit.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_12">
+		<text>Je vais l'acheter, j'ai juste besoin de temps pour rassembler l'argent.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_121">
+		<text>Si tu l'achиtes, tu m'enlиveras une sacrйe йpine du pied ! Le seul problиme, c'est qu'on peut faire affaires que pendant la nuit, histoire d'йviter de se faire choper. C'est moi qui ai instaurй cette rиgle, alors je suis bien obligй de la suivre.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_13">
+		<text>Je vais y rйflйchir.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_131">
+		<text>Je vois pas oщ je pourrais trouver cet argent...</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_2">
+		<text>Ouais, seulement 2000. Je le vendrais bien un peu moins cher, mais j'ai besoin d'exactement 2000. Alors, tu le prends ?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_3">
+		<text>Alors, t'as rassemblй 2000 roubles ?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_31">
+		<text>Oui. Donne ce mйdikit !</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_32">
+		<text>Pas encore.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_321">
+		<text>Ben... Le mйdikit t'attend et moi, je t'attendrai encore plus longtemps. C'est pas comme si j'avais beaucoup d'autres moyens de trouver cet argent, de toute faзon.</text>
+	</string>
+	<string id="gar_digger_leader_hello_11">
+		<text>Va te faire foutre ! On a dйjа assez de mal comme зa ! Le temps est pourri, le butin est rare, on est cernйs par les bandits et les mutants... Et mкme si t'as la chance de dйterrer un truc intйressant, impossible de le sortir de la Dйcharge sans te le faire confisquer ! En plus, Freshy et les gars ont disparu.</text>
+	</string>
+	<string id="gar_digger_leader_hello_111">
+		<text>Est-ce que je peux faire quoi que ce soit pour aider ?</text>
+	</string>
+	<string id="gar_digger_leader_hello_1111">
+		<text>De l'aide, tu dis ? Comment je peux savoir si je peux te faire confiance ? D'un autre cфtй, j'ai pas vraiment le choix, hein ? J'ai vraiment besoin d'un objet bien prйcis qu'un mineur du nom de Freshy a en sa possession. Si tu veux vraiment m'aider...</text>
+	</string>
+	<string id="gar_digger_leader_hello_112">
+		<text>C'est ton problиme, pas le mien.</text>
+	</string>
+	<string id="gar_digger_leader_hello_1121">
+		<text>Зa m'йtonne pas... Chacun sa merde ici, pas vrai ? Putain, Freshy, qu'est-ce que tu fous ?</text>
+	</string>
+	<string id="gar_digger_leader_hello_12">
+		<text>Bordel, oщ est cet enfoirй de Freshy ?</text>
+	</string>
+	<string id="gar_digger_leader_hello_13">
+		<text>Alors, ton offre de coup de main pour Freshy, c'est pas du chiquй ?</text>
+	</string>
+	<string id="gar_digger_leader_hello_14">
+		<text>Alors, t'as dйjа trouvй Freshy ?</text>
+	</string>
+	<string id="gar_digger_leader_hello_15">
+		<text>Alors, tu m'as apportй le vieux PDA de Freshy ?</text>
+	</string>
+	<string id="gar_digger_leader_hello_21">
+		<text>Alors, tu veux acheter le mйdikit ? Faut que tu comprennes que si j'avais pas autant besoin de thune, je le vendrais pas а ce prix-lа...</text>
+	</string>
+	<string id="gar_digger_leader_hello_22">
+		<text>Alors, t'as rйussi а rassembler assez de fric pour le mйdikit ?</text>
+	</string>
+	<string id="gar_digger_leader_hello_31">
+		<text>Dйpкche-toi d'apporter l'argent а Stringov, ok ? Je te fais confiance !</text>
+	</string>
+	<string id="gar_digger_leader_hello_311">
+		<text>Cool.</text>
+	</string>
+	<string id="gar_digger_leader_hello_32">
+		<text>Pourquoi tu perds ton temps comme зa ? Stringov va se barrer si tu te bouges pas !</text>
+	</string>
+	<string id="gar_digger_leader_hello_321">
+		<text>J'en doute... Relax !</text>
+	</string>
+	<string id="gar_digger_leader_hello_33">
+		<text>T'as laissй le PDA de Stringov lа-bas ? Merde, c'est notre seule chance de rйcupйrer ces flingues !</text>
+	</string>
+	<string id="gar_digger_leader_hello_331">
+		<text>Je vois. А plus.</text>
+	</string>
+	<string id="gar_digger_leader_hello_34">
+		<text>T'as apportй le PDA du contrebandier ? Merci ! Je parie que c'est Stringov qui a vendu ce pauvre gars aux bandits. Comment je vais pouvoir faire confiance а qui que ce soit aprиs un coup pareil ? Je veux dire, Stringov a passй assez de temps au camp de travail pour savoir а quoi s'en tenir et il se la joue quand mкme solo... Enfin, c'est du passй maintenant, tout comme Stringov. Au fait, mes gars ont rйcupйrй les flingues dans la planque. Je pense que je peux te dire ce qu'on compte faire maintenant... On va attaquer le camp de travail !</text>
+	</string>
+	<string id="gar_digger_leader_hello_342">
+		<text>Bien, mais oublie pas que j'ai dйjа libйrй les mineurs du camp.</text>
+	</string>
+	<string id="gar_digger_leader_hello_51">
+		<text>Bon, on est presque prкts а attaquer... Tu veux que je te donne les dйtails ?</text>
+	</string>
+	<string id="gar_digger_leader_hello_52">
+		<text>Зa servirait а rien d'attaquer sans toi. On est des mineurs, pas des soldats... Mes gars savent pas vraiment se battre et la tactique, c'est pas au programme de l'йcole des mineurs, si tu vois ce que je veux dire ! Le mieux qu'on puisse faire, c'est des tirs de couverture alйatoires. Mais si tu les diriges, зa sera une autre affaire. Je t'en supplie, mиne l'attaque sur le camp !</text>
+	</string>
+	<string id="gar_digger_leader_hello_53">
+		<text>Vas-y ! Mes gars t'attendent !</text>
+	</string>
+	<string id="gar_digger_leader_hello_531">
+		<text>Je vais m'en occuper. Salut !</text>
+	</string>
+	<string id="gar_digger_leader_hello_54">
+		<text>Qu'est-ce que tu fous ? Mes gars sont en train de crever !</text>
+	</string>
+	<string id="gar_digger_leader_hello_55">
+		<text>Merde... Tous mes gars y sont passйs. Y a que toi qui peux venger leur mort ! Tue ces bвtards du camp ! Libиre nos hommes !</text>
+	</string>
+	<string id="gar_digger_leader_hello_61">
+		<text>Tu sais, la vie est pas si dramatique que зa.</text>
+	</string>
+	<string id="gar_digger_leader_hello_71">
+		<text>Ah, la vie... Qu'est-ce que j'ai bien pu faire pour mйriter зa ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_0">
+		<text>А propos de Freshy...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1">
+		<text>Bon, je t'explique... Freshy, un de nos potes mineurs, йtait censй m'apporter un vieux PDA, mais il a disparu sans laisser de traces. Et j'ai vraiment besoin de ce PDA ! J'y irais bien moi-mкme ou j'enverrais bien Stringov, mais il faut qu'on reste ici pour le moment. Tu pourrais me rapporter ce PDA ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11">
+		<text>Je suppose. Oщ est-ce que je peux trouver ce Freshy ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111">
+		<text>Je sais pas trop, il bouge pas mal, mais je peux te dire que son camp est au sud, derriиre les citernes et la pile de merdes. Si Freshy est lа-bas, dis-lui que le Sauvage t'envoie. S'il y est pas, fouille dans sa caisse а outils. Le PDA devrait se trouver dans un compartiment secret sous un fond amovible. Compris ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1111">
+		<text>Compris.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11111">
+		<text>Bien.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112">
+		<text>J'ai visitй le camp et il n'y avait pas вme qui vive. Juste des tas de corps dйchiquetйs.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121">
+		<text>Merde... Eux aussi ! Il y a une saloperie qui rфde la nuit dans la Dйcharge et qui tue tout ce qui n'est pas bien armй, c'est а dire nous, les mineurs ! Pour l'instant, personne a survйcu а une attaque. Quelle merde...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111211">
+		<text>Avec tout ce qui se passe ces derniers temps, c'est pas le meilleur moment pour t'apitoyer sur ton triste sort...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112111">
+		<text>Ouais, t'as raison. Tu te souviens oщ se trouve le PDA ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121111">
+		<text>Oui.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112112">
+		<text>Ouais, t'as raison. Tu m'as apportй le vieux PDA de Freshy ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1113">
+		<text>Tu veux bien me rйexpliquer tout зa ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11131">
+		<text>Le camp de Freshy est au sud, derriиre les citernes et la pile de merdes. Tu dois trouver le vieux PDA et me l'apporter. Il peut кtre qu'а deux endroits : sur Freshy ou dans sa boоte а outils.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11132">
+		<text>Le camp de Freshy est au Sud, derriиre les citernes et la pile de merde. Tu dois me trouver le vieux PDA dans la boоte а outils et me l'apporter.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_12">
+		<text>Tu sais, j'ai pas vraiment envie de jouer les coursiers...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_121">
+		<text>Je te demande de l'aide et tu... Eh !</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_2">
+		<text>Ok, oщ est-ce qu'ils sont ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_21">
+		<text>Aucune idйe... Je les ai pas encore vus !</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_211">
+		<text>Йcoute, mec. Il me faut absolument ce PDA. Alors, rends-moi service et va les voir !</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3">
+		<text>Alors, tu as le PDA ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31">
+		<text>Oui. Le voilа !</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_311">
+		<text>Tu me sauves la vie ! Tiens, prends зa en rйcompense ! Alors, voyons voir... Merde, il y a que 1500 roubles lа-dedans. On dirait qu'il a pas йtй payй pour la derniиre livraison. Hmm... Tu vois, moi et Freshy, paix а son вme, on utilisait ce PDA pour se transfйrer de l'argent. Toujours est-il que j'ai vraiment besoin de fric et que Freshy a pas rйussi а rйcupйrer autant qu'il m'avait promis, alors j'ai toujours besoin de 2000 roubles. Le problиme, c'est que j'ai dйjа vidй toutes les planques.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3111">
+		<text>Ouais, c'est dur la vie...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31111">
+		<text>Attends... J'ai toujours un mйdikit а vendre. Tu me l'achиterais ? Je voulais le vendre pour 3000, mais je te le laisse pour 2000. Une occase en or, non ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_32">
+		<text>Non, je l'ai pas pris.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_321">
+		<text>Йcoute, Freshy et ses mecs dйchiquetйs, c'est malheureux... Mais j'ai vraiment besoin de ce PDA. Apporte-le-moi, s'il te plaоt !</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_11">
+		<text>De la merde ! Pas avec des mutants enragйs qui rфdent !</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_21">
+		<text>Ouais, dure la vie de mineur...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_11">
+		<text>Quoi ? Qu'est-ce que tu veux ? Tu vois pas que je pionce ?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_21">
+		<text>Hrm... Laisse-moi tranquille... Laisse-moi dormir...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_31">
+		<text>C'est Yoga qui t'envoie ? Enfin ! Pourquoi t'as mis si longtemps ?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_41">
+		<text>Ouais, ouais, j'y vais ! Je vais juste m'assurer que je tombe pas sur les mecs de Yoga et ensuite, je me casse.</text>
+	</string>
+	<string id="gar_digger_traitor_hello_411">
+		<text>Allez, allez.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_0">
+		<text>Ok, alors voilа : Yoga m'a demandй de rйgler ses comptes avec toi. Considиre зa comme ton dernier paiement !</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1">
+		<text>Enfin... Hй, attends ! Yoga veut me buter ? Non, fais pas зa ! Tire pas ! Je vais te payer plus que Yoga !</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11">
+		<text>Et зa ferait combien ?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111">
+		<text>Eh ben... Je sais pas combien Yoga t'a promis, mais j'ai les coordonnйes de la planque d'un contrebandier. Il y en a au moins pour 5000 roubles lа-dedans !</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1111">
+		<text>Ok. Donne-moi les coordonnйes et disparais !</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11111">
+		<text>Bien sыr, bien sыr ! La planque est dans le coffre d'une vieille bagnole. Voilа les coordonnйes. Merci ! Je connais un chemin secret, donc personne me reverra, c'est sыr. Je... je m'en vais, ok ?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111111">
+		<text>Ok.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1112">
+		<text>Une planque inconnue avec du matos indйterminй а l'intйrieur ? Tu me prends pour un guignol ? Allez, au revoir !</text>
+	</string>
+	<string id="gar_digger_traitor_kill_12">
+		<text>Зa m'intйresse pas. Mais bien essayй !</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_0">
+		<text>Paraоt que tu peux arranger un rendez-vous avec le contrebandier.</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_1">
+		<text>C'est toi qu'ils envoient pour les flingues ? Ouais, je peux arranger une rencontre. En gйnйral, je rencontre le mec prиs d'un de nos sites а l'ouest d'ici. Voilа les coordonnйes. Le contrebandier devrait dйjа кtre sur place, je vais lui dire que tu arrives. T'as l'argent sur toi ? Parfait !</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_11">
+		<text>Compris. Ciao !</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_0">
+		<text>T'as pas peur des bandits ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_1">
+		<text>Bien sыr que si, mais qu'est-ce que je peux y faire ? Faut bien gagner sa vie ! On a appris а кtre prudent... La journйe, on vend que les gadgets sans valeur, pour pas attirer l'attention. Et mкme comme зa, on fait super gaffe.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_0">
+		<text>Qu'est-ce que tu vends ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_1">
+		<text>Des merdes en tout genre. Je vends ce que je dйterre... Зa et un bon йchange de temps en temps, зa me permet de faire aller. Crois-moi, dans la Zone, c'est le troc qui marche le mieux !</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_1">
+		<text>Hй ! Tu cherches quelque chose de particulier ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_0">
+		<text>Quel est cet endroit ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_1">
+		<text>C'est ce qu'on appelle le marchй aux puces. Nous, on est des marchands, on vend un peu de tout... mais je vais te dire la vйritй : notre marchandise, c'est de la merde, mais зa nous maintient en vie. Alors, tu veux voir ce que j'ai а te proposer ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_0">
+		<text>Tu es le seul marchand du coin ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_1">
+		<text>Bien sыr que non ! Y a plein de gars qui font du business ici, mais on a une rиgle. Les gros trucs se vendent qu'aprиs le coucher du soleil. Dans la journйe, y a que moi et ma verroterie. Mais la nuit, c'est lа que la vraie marchandise fait son apparition.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_0">
+		<text>default text</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_1">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_11">
+		<text>Hein ? Qu'est-ce qui se passe ? Merde, tu m'as foutu les jetons. T'as pas vu que je pionзais ?</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_111">
+		<text>Oh, dйsolй. Dors bien !</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_0">
+		<text>default text</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_1">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_11">
+		<text>Salut ! Approche si tu veux quelque chose, sois pas timide !</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_111">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_11">
+		<text>T'es debout de bonne heure... C'est pas le moment pour faire des affaires sйrieuses, tu me suis ? Reviens... plus tard...</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_111">
+		<text>Compris.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_11">
+		<text>Bien le bonsoir. Tu cherches quelque chose de prйcis ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_111">
+		<text>Oui. Montre-moi !</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_112">
+		<text>Non, je voulais juste discuter un peu. Au revoir !</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21">
+		<text>Qu'est-ce que tu veux ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211">
+		<text>Je veux faire des affaires.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111">
+		<text>Des affaires ? Qui t'es dйjа ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21111">
+		<text>Hй, si tu veux pas de mon argent, pas de problиme ! Je vais voir les marchands d'en haut, ils sont plus conciliants...</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211111">
+		<text>Du calme ! Tu dis que les gars d'en haut t'ont vendu des trucs ? Hum, ils font pas affaire avec n'importe qui, alors... J'ai quelques trucs en stock. Tu veux les voir ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111111">
+		<text>Je prйfиre зa ! Oui, montre-moi !</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21112">
+		<text>C'est pas tes affaires.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212">
+		<text>Un plaisir de faire affaire avec toi. Tu connais les autres marchands du coin ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121">
+		<text>Non.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211">
+		<text>Mкme pas un ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111">
+		<text>Eh non...</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111">
+		<text>T'es sыr ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111">
+		<text>Oui, je suis sыr.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111111">
+		<text>Je suis ni un bandit, ni un bidasse, ni un zombie. T'es un marchand, oui ou merde ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111111">
+		<text>Je suis un marchand. Tu veux voir ma marchandise ou poser des questions ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111111">
+		<text>Je suis ici pour la marchandise.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21212">
+		<text>Au revoir, alors.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_213">
+		<text>Y a rien pour toi ici.</text>
+	</string>
+	<string id="gar_bandit_commentators_11">
+		<text>Regarde, mec ! Une balle de cette merveille et les plumes volent !</text>
+	</string>
+	<string id="gar_bandit_commentators_111">
+		<text>Hum... Je dois y aller.</text>
+	</string>
+	<string id="gar_bandit_commentators_12">
+		<text>T'aimes pas la volaille, c'est зa ? T'inquiиtes, on en a des tonnes ici !</text>
+	</string>
+	<string id="gar_bandit_commentators_13">
+		<text>Qu'est-ce que t'attends ? Allez, bute ces saloperies, fais un massacre, allez !</text>
+	</string>
+	<string id="gar_bandit_leader_break_0">
+		<text>Au revoir.</text>
+	</string>
+	<string id="gar_bandit_robbery_11">
+		<text>Hй, toi. C'est l'heure de passer а la caisse ! Et viens pas te plaindre que tu t'es fait dйpouiller ! C'est ce qu'on demande salaire pour maintenir l'ordre dans la Dйcharge, c'est clair ?</text>
+	</string>
+	<string id="gar_bandit_robbery_111">
+		<text>Oh, je suis un fervent partisan de l'ordre. Tenez !</text>
+	</string>
+	<string id="gar_bandit_robbery_1111">
+		<text>En v'lа un bon garзon ! Donc je vais tout prendre, ok ? Mais tu peux garder ce pistolet... On est pas du genre а laisser un mec en caleзon. Tu nous remercieras la prochaine fois que tu tomberas sur un mutant. А la prochaine et bonne chance !</text>
+	</string>
+	<string id="gar_bandit_robbery_11111">
+		<text>Ouais, а la prochaine...</text>
+	</string>
+	<string id="gar_bandit_trader_reward_0">
+		<text>Je viens pour la rйcompense. J'ai nettoyй le marchй aux puces.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_1">
+		<text>Oh, oui, je me souviens. Voilа !</text>
+	</string>
+	<string id="gar_bandit_trader_reward_11">
+		<text>Hum... c'est pas grand-chose pour un si gros boulot...</text>
+	</string>
+	<string id="gar_bandit_trader_reward_111">
+		<text>C'est pas moi qui dйcide. Le boss m'a dit de te payer зa, je te paye зa. Tu crois que j'ai pris un pourcentage ? Mais je suis d'accord avec toi, Yoga est un peu radin sur ce coup-lа. Tu sais quoi ? Va le voir... Tout le monde sait que tu t'es dйfoncй, alors а moins qu'il ait envie de passer pour un rapiat aux yeux des gars, il devrait faire un effort.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11">
+		<text>Hй ! Tu cherches quelque chose de prйcis ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11111">
+		<text>Quel est cet endroit ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111111">
+		<text>C'est ce qu'on appelle le marchй aux puces. Nous, on est des marchands, on vend un peu de tout... mais je vais te dire la vйritй : notre marchandise, c'est de la merde, mais зa nous maintient en vie. Alors, tu veux voir ce que j'ai а te proposer ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11112">
+		<text>Qu'est-ce que tu vends ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111121">
+		<text>Des merdes en tout genre. Je vends ce que je dйterre... Зa et un bon йchange de temps en temps, зa me permet de faire aller. Crois-moi, dans la Zone, c'est le troc qui marche le mieux !</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11113">
+		<text>Tu es le seul marchand du coin ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111131">
+		<text>Bien sыr que non ! Y a plein de gars qui font du business ici, mais on a une rиgle. Les gros trucs se vendent qu'aprиs le coucher du soleil. Dans la journйe, y a que moi et ma verroterie. Mais la nuit, c'est lа que la vraie marchandise fait son apparition.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11114">
+		<text>T'as pas peur des bandits ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111141">
+		<text>Bien sыr que si, mais qu'est-ce que je peux y faire ? Faut bien gagner sa vie ! On a appris а кtre prudent... La journйe, on vend que les gadgets sans valeur, pour pas attirer l'attention. Et mкme comme зa, on fait super gaffe.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11115">
+		<text>Rien pour l'instant. А la prochaine !</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_61">
+		<text>Tu te dйbrouilles pas mal du tout avec un flingue. Tu devrais jouer pour de l'argent. T'aurais pas envie de tirer quelques balles de plus ?</text>
+	</string>
+	<string id="gar_bandit_robbery_12">
+		<text>Bon, sors ton PDA, il est temps de partager le fric ! Et va surtout pas croire que зa vaut pas le coup ! Tu nous paies pour qu'on maintienne l'ordre dans la Dйcharge, pigй ?</text>
+	</string>
+	<string id="gar_bandit_robbery_121">
+		<text>Eh bien, si c'est pour le maintien de l'ordre... Voilа !</text>
+	</string>
+	<string id="gar_bandit_robbery_1211">
+		<text>Hй, t'es pas con pour un loser ! Bon, je vais prendre tout зa, ok ? Tu peux garder le matos, on est pas des animaux, non plus, hein ! On te laisse tes flingues et tout le reste. Tu nous remercieras quand tu croiseras des mutants, tu verras. Bon, assez bavarder, tire-toi maintenant !</text>
+	</string>
+	<string id="gar_bandit_robbery_12111">
+		<text>Et euh... prends soin de toi !</text>
+	</string>
+</string_table>

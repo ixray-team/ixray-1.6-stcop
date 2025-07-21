@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_additional_quest_1_name">
+		<text>Dokumente in der Militдrbasis</text>
+	</string>
+	<string id="esc_additional_quest_1_text">
+		<text>Dokumente in der Militдrbasis.</text>
+	</string>
+	<string id="esc_additional_quest_2_name">
+		<text>Nahrung</text>
+	</string>
+	<string id="esc_additional_quest_2_text">
+		<text>Nahrung</text>
+	</string>
+	<string id="esc_bring_habar">
+		<text>Bringe die Beute zum Hдndler zurьck</text>
+	</string>
+	<string id="esc_bring_habar_text">
+		<text>Bringe die Kiste mit der Beute zum Hдndler zurьck.</text>
+	</string>
+	<string id="esc_defend_stalkers_base_name">
+		<text>Verteidige die Stalkerbasis</text>
+	</string>
+	<string id="esc_defend_stalkers_base_text">
+		<text>Verteidige die Stalkerbasis gegen den Angriff.</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_name">
+		<text>Verteidige die Patrouille</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_text">
+		<text>Verteidige die Patrouille bei der Bushaltestelle.</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_name">
+		<text>Hilf dabei, den Angriff zurьckzuschlagen</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_text">
+		<text>Hilf dabei, den Angriff zurьckzuschlagen.</text>
+	</string>
+	<string id="esc_dopros">
+		<text>Befrage den Militдrkommandanten</text>
+	</string>
+	<string id="esc_dopros_text">
+		<text>Befrage Chaletskij und finde heraus, wo die Kiste mit der Beute versteckt ist, die der Hдndler sucht.</text>
+	</string>
+	<string id="esc_driver_friend_1_name">
+		<text>Finde den PDA</text>
+	</string>
+	<string id="esc_driver_friend_1_text">
+		<text>Finde den PDA mit wertvollen Informationen ьber den Soldaten, der an Anomalien gestorben ist.</text>
+	</string>
+	<string id="esc_driver_friend_2_name">
+		<text>Bringe den PDA zurьck</text>
+	</string>
+	<string id="esc_driver_friend_2_text">
+		<text>Bringe den PDA zu Feldwebel Lambee zurьck.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9">
+		<text>Schalte die Soldaten des Militдrs beim Fahrstuhl aus</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9_text">
+		<text>Vernichte die Militдreinheit, die von den Spдhern beim Fahrstuhl entdeckt wurde.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_name">
+		<text>Schalte die Banditen aus</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_name">
+		<text>Hol dir deine Belohnung</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_text">
+		<text>Hol dir die Belohnung vom Hдndler. Die Banditen wurden ausgeschaltet und die StraЯe zur Basis ist frei.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_text">
+		<text>Schalte die Banditen bei dem verlassenen Bauernhof aus. Das wird den Raubьberfдllen auf die Stalker ein Ende setzen, die ihre Beute aus der Zone zur Stalkerbasis bringen.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11">
+		<text>Schalte die Soldaten des Militдrs beim Depot aus</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11_text">
+		<text>Vernichte die Militдreinheit, die von den Spдhern beim Depot entdeckt wurde. Die Einheit wurde vom Militдr losgeschickt, um Chaletskij zu retten.</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8">
+		<text>Schalte die Scharfschьtzen aus</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8_text">
+		<text>Schalte die Scharfschьtzen aus.</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7">
+		<text>Nimm die Stalkerbasis ein</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7_text">
+		<text>Nimm die Stalkerbasis ein.</text>
+	</string>
+	<string id="esc_find_upgrade_1_name">
+		<text>Finde die Verbesserung</text>
+	</string>
+	<string id="esc_find_upgrade_1_text">
+		<text>Einer meiner Kumpel, ein Techniker, hat jemanden zu mir geschickt, der mir ein paar wichtige Infos ьber eine AK-Verbesserung auf einem Speicherstick vorbeibringen soll. Aber der arme Teufel ist in ein Nest von Pseudohunden gelaufen und umgekommen. Jeder, den ich darum gebeten habe, den Speicherstick zu holen, hat die Hosen voll. Wie stets mit dir? Ich verspreche dir, bei der Belohnung lohnt es sich.</text>
+	</string>
+	<string id="esc_find_upgrade_2_name">
+		<text>Finde die Verbesserung</text>
+	</string>
+	<string id="esc_find_upgrade_2_text">
+		<text>Einer meiner Kumpel, ein Techniker, hat jemanden zu mir geschickt, der mir ein paar wichtige Infos ьber eine Schrotflinten-Verbesserung auf einem Speicherstick vorbeibringen soll. Aber der arme Teufel ist in ein Nest von Pseudohunden gelaufen und umgekommen. Jeder, den ich darum gebeten habe, den Speicherstick zu holen, hat die Hosen voll. Wie stets mit dir? Ich verspreche dir, bei der Belohnung lohnt es sich.</text>
+	</string>
+	<string id="esc_novice_stalker_1_name">
+		<text>Hilf dem Stalker</text>
+	</string>
+	<string id="esc_novice_stalker_1_text">
+		<text>Hilf dem Stalker im Kampf gegen das Rudel Schattenhunde.</text>
+	</string>
+	<string id="esc_novice_stalker_2_name">
+		<text>Begleite den Stalker</text>
+	</string>
+	<string id="esc_novice_stalker_2_text">
+		<text>Begleite den Stalker ins Dorf der Anfдnger.</text>
+	</string>
+	<string id="esc_novice_stalker_3_name">
+		<text>Hol dir deine Belohnung</text>
+	</string>
+	<string id="esc_novice_stalker_3_text">
+		<text>Hol dir von Wolf deine Belohnung fьr die Rettung des Stalkers vor dem Rudel Schattenhunde.</text>
+	</string>
+	<string id="esc_prapor">
+		<text>Triff den Fдhnrich</text>
+	</string>
+	<string id="esc_prapor_text">
+		<text>Triff den Fдhnrich.</text>
+	</string>
+	<string id="esc_reach_garbage">
+		<text>Triff den Mьllgrдber bei der Mьllhalde</text>
+	</string>
+	<string id="esc_reach_garbage_text">
+		<text>Triff den Mьllgrдber bei der Mьllhalde.</text>
+	</string>
+	<string id="esc_reach_stalker_base">
+		<text>Triff die Stalker hinter dem Bahndamm</text>
+	</string>
+	<string id="esc_reach_stalker_base_text">
+		<text>Rede mit Valerian, dem Anfьhrer der Stalker. Er kцnnte wissen, wo sich die Beute befindet, die Sidorowitsch sucht.</text>
+	</string>
+	<string id="esc_reach_trader">
+		<text>Rede mit dem Hдndler</text>
+	</string>
+	<string id="esc_reach_trader_text">
+		<text>Rede mit dem Hдndler.</text>
+	</string>
+	<string id="esc_rescue_patrol">
+		<text>Hilf den Stalkern</text>
+	</string>
+	<string id="esc_rescue_patrol_text">
+		<text>Hilf den Stalkern.</text>
+	</string>
+	<string id="esc_stalker_enemy_name">
+		<text>Gewinne das Vertrauen der Stalker zurьck</text>
+	</string>
+	<string id="esc_stalker_enemy_text">
+		<text>Dein Verhдltnis zu den Stalkern ist schlecht. Du musst mit Sidorowitschs Hilfe ihr Vertrauen zurьckgewinnen. </text>
+	</string>
+	<string id="esc_take_habar">
+		<text>Sammle die Beute ein</text>
+	</string>
+	<string id="esc_take_habar_text">
+		<text>Sammle die Beute ein.</text>
+	</string>
+	<string id="esc_take_prisoner_secret">
+		<text>Finde Chaletskijs Versteck</text>
+	</string>
+	<string id="esc_take_prisoner_secret_text">
+		<text>Finde Chaletskijs Versteck.</text>
+	</string>
+	<string id="esc_take_weapon_name">
+		<text>Sammle die Waffen ein</text>
+	</string>
+	<string id="esc_take_weapon_text">
+		<text>Sammle die Waffen ein.</text>
+	</string>
+	<string id="esc_talk2_comm">
+		<text>Rede mit Chaletskij</text>
+	</string>
+	<string id="esc_talk2_comm_text">
+		<text>Rede mit Chaletskij</text>
+	</string>
+	<string id="esc_talk2_leader">
+		<text>Triff den Anfьhrer der Stalker</text>
+	</string>
+	<string id="esc_talk2_leader_2">
+		<text>Rede mit dem Anfьhrer der Stalker</text>
+	</string>
+	<string id="esc_talk2_leader_2_text">
+		<text>Rede mit dem Anfьhrer der Stalker.</text>
+	</string>
+	<string id="esc_talk2_leader_text">
+		<text>Triff den Anfьhrer der Stalker.</text>
+	</string>
+	<string id="esc_talk2_trader">
+		<text>Rede mit dem Hдndler.</text>
+	</string>
+	<string id="esc_wolf_brother_1_name">
+		<text>Rette Wolfs Bruder aus der Gefangenschaft</text>
+	</string>
+	<string id="esc_wolf_brother_1_text">
+		<text>Rette Wolfs Bruder aus der Gefangenschaft.</text>
+	</string>
+	<string id="esc_wolf_brother_2_name">
+		<text>Bringe Wolfs Bruder ins Dorf der Anfдnger</text>
+	</string>
+	<string id="esc_wolf_brother_2_text">
+		<text>Bringe Wolfs Bruder ins Dorf der Anfдnger.</text>
+	</string>
+	<string id="esc_wolf_brother_3_name">
+		<text>Hol dir deine Belohnung</text>
+	</string>
+	<string id="esc_wolf_brother_3_text">
+		<text>Hol dir deine Belohnung von Wolf.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_name">
+		<text>Finde Informationen ьber das Ausbalancieren der Automatik von Waffen</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_text">
+		<text>Finde fьr Van, den Techniker der Stalker beim Kordon, Informationen ьber das Ausbalancieren der Automatik von Waffen.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_name">
+		<text>Finde Informationen ьber Repetiermechanismen fьr Schrotflinten</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_text">
+		<text>Mit zusдtzlichen Informationen ьber Repetiermechanismen wдre der Techniker der Stalker in der Lage, die Feuerrate von Schrotflinten deutlich zu steigern.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_name">
+		<text>Finde Informationen ьber elektronische Stabilisierung</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_text">
+		<text>Der Techniker der Stalker kann ein Gerдt zusammenbauen, dass die Zielgenauigkeit von Repetierschrotflinten verbessert, aber ihm fehlen noch einige Informationen.</text>
+	</string>
+	<string id="esc_recover_item_1_name">
+		<text>Liefere den "Zauberwodka" ab</text>
+	</string>
+	<string id="esc_recover_item_1_text">
+		<text>Es gab mal einen Chemiker hier in der Zone. Na ja, er war kein echter Chemiker oder so etwas, aber hat einen "Zauberwodka" hergestellt. Das Zeug war wirklich unglaublich... ein paar Schluck davon und alles war vergessen: die Zone, Mutanten, Anomalien - einfach alles! Die Angst war wie weggeblasen und dir war es total egal, wer du warst und was mit dir geschah. Das Zeug hat zwar ein Vermцgen gekostet, aber das war es wert. Und dann hat jemand eines Tages den Chemiker vergiftet... aus Neid oder Gier oder so, wer weiЯ das schon? Sie haben ihn vergiftet und dadurch den Wodkanachschub abgeschnitten! Aber ich habe gehцrt, dass der Chemiker ein paar geheime Lager in der Zone hatte, und ich weiЯ ganz zufдllig, wo sich eines befindet. Bringe mir eine Flasche von diesem Zauberwodka und ich werde dich fьrstlich belohnen!</text>
+	</string>
+	<string id="esc_recover_item_2_name">
+		<text>Besorge das AKM-47/2-Unikat</text>
+	</string>
+	<string id="esc_recover_item_2_text">
+		<text>Ich sammle alte Waffen, Kumpel - und habe mittlerweile so viele, dass ich ein ganzes Museum damit fьllen kцnnte. Mir fehlt nur noch das AKM-47/2-Unikat. Diese AKM ist nicht nur eine gute Waffe, es handelt sich dabei um ein sehr seltenes Gewehr, mit dem Mutanten abgeknallt wurden, die du noch nie gesehen hast. Der Besitzer war nicht nur ein toller Schьtze... nein, er ist eine Legende in der Zone und schaffte es immer, sich aus brenzligen Situationen zu retten und aus jeder Anomalie zu entkommen. Ich habe lange Zeit nichts mehr ьber diesen Stalker gehцrt, aber kьrzlich habe ich Neuigkeiten ьber die Waffe erhalten: Sie ist an einem geheimen Ort versteckt, der ziemlich schwer zu erreichen ist. Bringe mir dieses Gewehr, Sцldner.</text>
+	</string>
+	<string id="esc_recover_item_3_name">
+		<text>Bringe den "Glьcksdetektor" zurьck</text>
+	</string>
+	<string id="esc_recover_item_3_text">
+		<text>Hilf mir, Sцldner! Vor kurzem habe ich mir einen neuen, besseren Detektor zugelegt und zur Feier den alten in eine Anomalie geworfen. Das Problem ist, dass mir dieser neue Detektor kein Glьck bringt - schon seit Wochen habe ich kein Artefakt mehr gefunden. Das Ding ist schon ganz OK, aber ich mцchte dennoch den alten Detektor wiederhaben. Bringe ihn mir zurьck und du wirst es nicht bereuen, Sцldner.</text>
+	</string>
+	<string id="esc_recover_item_4_name">
+		<text>Besorge ein Spezial-Medkit</text>
+	</string>
+	<string id="esc_recover_item_4_text">
+		<text>Sцldner, ein alter Freund von mir ist erst vor kurzem den Banditen auf der Mьllhalde entkommen. Diese Mistkerle haben ihn nur aus SpaЯ durch Anomalien am Bahndamm gejagt... die Strahlung dort ist fast schon tцdlich! Er kann sich kaum noch bewegen und gewцhnliche Strahlungsmedikamente nьtzen nichts mehr - er braucht etwas Stдrkeres. Es heiЯt, dass die Armeejungs besondere Medkits haben, die helfen sollen. Wenn du mir eines dieser Medkits beschaffen kцnntest, wдre ich dir unglaublich dankbar.</text>
+	</string>
+</string_table>

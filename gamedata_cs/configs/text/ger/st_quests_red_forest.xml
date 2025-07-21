@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_artefact_huntesr_capture_smart_name">
+		<text>Beschьtze die Stalker auf dem Weg durch die anormale Zone</text>
+	</string>
+	<string id="red_artefact_huntesr_capture_smart_text">
+		<text>Beschьtze die Stalker auf dem Weg durch die anormale Zone.</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_name">
+		<text>Verteidige die Stalker in der anormalen Zone</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_text">
+		<text>Verteidige die Stalker in der anormalen Zone.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_name">
+		<text>Gib den Sцldnern Deckung</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_text">
+		<text>Die Sцldner greifen Banditen auf anderen Seite des Flusses an. Gib ihnen Deckungsfeuer und hilf ihnen dabei, in Position zu gelangen.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_name">
+		<text>Schalte die Banditen aus</text>
+	</string>
+	<string id="red_bridge_cover_allyes_text">
+		<text>Es sind zu viele Banditen - sie halten die Sцldner davon ab, die Brьcke herunterzulassen. Tцte so viele Banditen wie mцglich.</text>
+	</string>
+	<string id="red_bridge_cover_bridge_name">
+		<text>Gib den Sцldnern bei der Brьckensteuerung Deckung</text>
+	</string>
+	<string id="red_bridge_cover_bridge_text">
+		<text>Ein Sцldner hat eine Position in der nдhe der Brьckensteuerung gesichert. Gib den Sцldnern Deckungsfeuer, wдhrend sie die Brьcke herunterlassen.</text>
+	</string>
+	<string id="red_bridge_go_to_positon_name">
+		<text>Gehe in Feuerstellung</text>
+	</string>
+	<string id="red_bridge_go_to_positon_text">
+		<text>Gehe im ersten Stock des Torhauses in Feuerstellung. Dies ist der beste Aussichtspunkt, um auf die Banditen zu schieЯen.</text>
+	</string>
+	<string id="red_bridge_kill_sniper_name">
+		<text>Schalte die Scharfschьtzen auf dem Hьgel aus</text>
+	</string>
+	<string id="red_bridge_kill_sniper_text">
+		<text>Die Scharfschьtzen nehmen die Brьckensteuerung unter Feuer - solange sie leben, haben die Sцldner keine Chance, die Brьcke herunterzulassen. Schalte die Scharfschьtzen auf dem Hьgel aus.</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_name">
+		<text>Rede mit Lebedew</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_text">
+		<text>Die Brьcke wurde heruntergelassen und die StraЯe nach Limansk ist frei. Rede mit Lebedew.</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_name">
+		<text>Warte, bist die Einheit der Stalker eintrifft</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_text">
+		<text>Warte, bist die Einheit der Stalker eintrifft.</text>
+	</string>
+	<string id="red_bring_compass_name">
+		<text>Bringe dem Fцrster den Kompass</text>
+	</string>
+	<string id="red_bring_compass_text">
+		<text>Dank des Kompasses ist es dem Fцrster vor ein paar Tagen gelungen, aus einer Raumblase zu entkommen. Das Artefakt dьrfte den Sцldnern dabei helfen, aus ihrer Blase zu gelangen. Bringe dem Fцrster den Kompass.</text>
+	</string>
+	<string id="red_find_compass_name">
+		<text>Finde das Kompass-Artefakt</text>
+	</string>
+	<string id="red_find_compass_text">
+		<text>Der Fцrster hat in einer Raumanomalie ein einzigartiges Artefakt entdeckt. Die Anomalie дhnelte sehr der Blase, in der die Sцldner in der Nдhe der Militдrlager stecken. Auf dem Rьckweg wurde der Fцrster von Banditen ausgeraubt und das Artefakt wurde gestohlen. Finde den Kompass.</text>
+	</string>
+	<string id="red_find_forester_name">
+		<text>Rede mit dem Fцrster</text>
+	</string>
+	<string id="red_find_forester_text">
+		<text>Der Fцrster lebt in einer verlassenen Hьtte. Er kann dir helfen, einen Weg nach Limansk zu finden. Rede mit dem Fцrster.</text>
+	</string>
+	<string id="red_find_teleport_name">
+		<text>Finde die Raumanomalie</text>
+	</string>
+	<string id="red_find_teleport_text">
+		<text>Das PDA der vermissten Gruppe enthielt einige Hinweise zu einem Pfad durch den Roten Wald. Darin befindet sich eine Raumanomalie, die zu der alten Hьtte am Waldrand fьhrt. Dort lebt der Fцrster. Finde die Raumanomalie.</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_name">
+		<text>Ьberbringe den PDA mit der Karte des Roten Waldes</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_text">
+		<text>Ьberbringe den PDA mit der Karte des Roten Waldes.</text>
+	</string>
+	<string id="red_go_to_signal_sos_name">
+		<text>Antworte auf das SOS-Signal</text>
+	</string>
+	<string id="red_go_to_signal_sos_text">
+		<text>Der Pfad zum Fцrster durch den Roten Wald ist unbekannt. Es gibt ein Notrufsignal aus dem Roten Wald. Antworte auf das Signal.</text>
+	</string>
+	<string id="red_help_with_bridge_name">
+		<text>Hilf Clear Sky dabei, die Brьcke einzunehmen</text>
+	</string>
+	<string id="red_help_with_bridge_text">
+		<text>Eine Sцldnereinheit nдhert sich der Brьcke nach Limansk. Sie erscheinen auf der Seite des Flusses, auf der sich die Banditen aufhalten. Es wird also an der Brьcke in Kьrze ziemlich hoch hergehen. Hilf Clear Sky dabei, die Brьcke nach Limansk herunterzulassen.</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_name">
+		<text>Schlage den Hinterhalt zurьck</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_text">
+		<text>Strelok wird von einer Gruppe Stalker gedeckt. Schlage den Hinterhalt zurьck.</text>
+	</string>
+	<string id="red_pursuit_strelok_name">
+		<text>Halte Strelok auf</text>
+	</string>
+	<string id="red_pursuit_strelok_text">
+		<text>Strelok ist im Tunnel verschwunden. Folge ihm und vergewissere dich, dass er nicht ins Zentrum der Zone vordringt.</text>
+	</string>
+	<string id="red_pursuit_talk_csky_name">
+		<text>Halte Strelok auf</text>
+	</string>
+	<string id="red_pursuit_talk_csky_text">
+		<text>Strelok ist ganz in der Nдhe, etwa 100 Meter entfernt. Schnapp ihn dir.</text>
+	</string>
+	<string id="red_stalker_reinforced_name">
+		<text>Nimm die alte Mine ein</text>
+	</string>
+	<string id="red_stalker_reinforced_text">
+		<text>Nimm die alte Mine ein. Hier herrscht hohe anormale Aktivitдt und es gibt hier eine Menge seltener Artefakte.</text>
+	</string>
+	<string id="red_go_to_military_base_name">
+		<text>Gehe zur Militдrbasis</text>
+	</string>
+	<string id="red_go_to_military_base_text">
+		<text>Die Militдrbasis hat einen leistungsfдhigen Sender, mit dem wir ein Signal an die Gruppe senden kцnnen, die bei Limansk in einer Raumblase eingeschlossen ist. Gehe zur Militдrbasis.</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_name">
+		<text>Finde einen Weg in die anormale Zone</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_text">
+		<text>Der PDA der vermissten Gruppe enthielt einige Hinweise zu einem Pfad durch den Roten Wald. Darin befindet sich eine Raumanomalie, die zu der alten Hьtte am Rande des Waldes fьhrt. Dort lebt der Fцrster. Finde die Raumanomalie.</text>
+	</string>
+	<string id="red_find_signals_on_military_name">
+		<text>Empfange die Funknachricht</text>
+	</string>
+	<string id="red_find_signals_on_military_text">
+		<text>Der Fцrster empfдngt unverstдndliche Funkfetzen einer unbekannten Gruppe, die in der Nдhe von Limansk in einer seltsamen Anomalie gefangen ist. Die Gruppe kцnnte einen alternativen Weg nach Limansk kennen. Gehe zu den Militдrlagern und finde einen geeigneten Ort fьr einen besseren Empfang.</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_name">
+		<text>Nimm den PDA</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_text">
+		<text>Der PDA eines toten Stalkers ist immer noch aktiv. Er kцnnte wertvolle Informationen ьber den Roten Wald enthalten. Nimm den PDA.</text>
+	</string>
+	<string id="red_recover_item_1_name">
+		<text>Besorgen den PDA mit einer Karte des Roten Waldes</text>
+	</string>
+	<string id="red_recover_item_1_text">
+		<text>Hey, Sцldner, wir kцnnten deine Hilfe gebrauchen. Wir brauchen eine genaue Karte des Roten Waldes. Ich habe mitbekommen, dass schon mehrere Gruppen von Stalkern ihr Glьck im Roten Wald versucht hдtten, aber die meisten von ihnen seien verschwunden. Finde ihre Aufzeichnungen und bringe sie zu mir.</text>
+	</string>
+	<string id="red_recover_item_2_name">
+		<text>Besorge das Panzermaschinengewehr</text>
+	</string>
+	<string id="red_recover_item_2_text">
+		<text>Ich hдtte eine Auftrag fьr dich: Der Fцrster hat mir verraten, dass sich tief im Wald ein alter sowjetischer Panzer befindet. Niemand hat eine Ahnung, wie er dahin gelangen konnte, aber es heiЯt, dass das Ding nach einer starken Emission aufgetaucht wдre. Das Tolle ist: Der Panzer ist noch intakt. Man kann ihn wohl nicht fahren, aber das Maschinengewehr, das noch vorhanden ist, kann man sicher abmontieren. Wenn du mir das MG bringst, werde ich dich gut dafьr bezahlen.</text>
+	</string>
+	<string id="red_recover_item_3_name">
+		<text>Bringe das experimentelle Gerдt zurьck</text>
+	</string>
+	<string id="red_recover_item_3_text">
+		<text>Es gibt da etwas, was du fьr mich tun kannst. Wir haben mal einen Prototypen fьr die Wissenschaftler getestet - ein kleines Gerдt zum Messen der Stдrke von Anomalien. Das Ding ist heute nicht mehr wirklich von Nutzen... sie haben ganze zwei Tage alleine dafьr gebraucht, uns zu zeigen, wie man damit umgeht. Auf jeden Fall waren wir in der alten Mine und haben Daten gesammelt, als etwas passierte... irgendetwas griff uns an... alle mцglichen Dinge flogen auf einmal auf uns zu. Leider habe ich den Vorfall als Einziger ьberlebt. Das Gerдt blieb dort unten zurьck, bei den anderen Jungs. Das... Ding, das uns angegriffen hat, dьrfte ebenfalls noch dort sein, deswegen wird es nicht einfach werden, das Gerдt in die Hдnde zu bekommen. Aber wenn du es dennoch schaffen solltest, werde ich dich gut dafьr bezahlen.</text>
+	</string>
+</string_table>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_additional_quest_1_name">
+		<text>Finde die Beute des toten Stalkers</text>
+	</string>
+	<string id="agr_additional_quest_1_text">
+		<text>Finde die Beute des toten Stalkers.</text>
+	</string>
+	<string id="agr_additional_quest_3_name">
+		<text>Finde den vermissten Stalker</text>
+	</string>
+	<string id="agr_additional_quest_3_text">
+		<text>Finde den vermissten Stalker.</text>
+	</string>
+	<string id="agr_at_blokpost_name">
+		<text>Rede mit dem Anfьhrer der Wдchter</text>
+	</string>
+	<string id="agr_at_blokpost_text">
+		<text>Rede mit dem Anfьhrer der Wдchter. General Krylow kцnnte wissen, wo der Eingang zum Agroprom-Untergrund liegt. Die Stalker, die ins Zentrum der Zone gelangt sind, haben dort ein Lager.</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_name">
+		<text>Vernichte das Banditenlager</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_text">
+		<text>Das Banditenlager im Tunnel muss vernichtet werden. Die Banditen fьhren von dort Angriffe gegen das Stalkerlager aus.</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_name">
+		<text>Vernichte die Banditeneinheit</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_text">
+		<text>Eine Einheit der Banditen bewacht einen der Ausgдnge des Untergrunds und helfen ihresgleichen immer wieder nach drauЯen an die Oberflдche. Die Einheit muss vernichtet werden.</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_name">
+		<text>Zerstцre den Mutantenunterschlupf</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_text">
+		<text>Die Einцde vor der Stalkerbasis wimmelt von Monstern - die Gegend ist wild und gefдhrlich. Der Mutantenunterschlupf muss vernichtet werden.</text>
+	</string>
+	<string id="agr_defend_duty_base_1_name">
+		<text>Verteidige die Wдchterbasis</text>
+	</string>
+	<string id="agr_defend_duty_base_1_text">
+		<text>Die Wдchterbasis wurde angegriffen. Wenn du dabei hilfst, den Angriff zurьckzuschlagen, erhдltst du eine Belohnung.</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_name">
+		<text>Verteidige die Stalkerbasis</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_text">
+		<text>Die Stalkerbasis ist in Gefahr. Wenn du den Stalkern dabei hilfst, den Angriff abzuwehren, erhдltst du eine Belohnung.</text>
+	</string>
+	<string id="agr_go_in_hole_name">
+		<text>Steige hinab in den Agroprom-Untergrund</text>
+	</string>
+	<string id="agr_go_in_hole_text">
+		<text>Du musst in den Agroprom-Untergrund hinabsteigen. Der einzige Weg in den Untergrund fьhrt durch das Mutantenloch.</text>
+	</string>
+	<string id="agr_go_out_hole_name">
+		<text>Rede mit Sacharow</text>
+	</string>
+	<string id="agr_go_out_hole_text">
+		<text>Die Nachrichten von Streloks Gruppe aus dem Versteck im Untergrund werden Licht ins Dunkel bringen. Strelok ist zu den Wissenschaftlern nach Jantar gegangen. Begib dich nach Jantar und rede mit Professor Sacharow. Vielleicht weiЯ er, wo Strelok zu finden ist.</text>
+	</string>
+	<string id="agr_go_to_hole_name">
+		<text>Erreiche das Loch</text>
+	</string>
+	<string id="agr_go_to_hole_text">
+		<text>Soldaten der Wдchter haben alle Zugдnge zum Untergrund versiegelt und die Ausgдnge verschlossen. Der einzige Weg in den Untergrund fьhrt durch die Lцcher, die den Monstern als Weg an die Oberflдche dienen. Du musst das Loch erreichen.</text>
+	</string>
+	<string id="agr_mechanic_pda_1_name">
+		<text>Finde den PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_1_text">
+		<text>Finde den PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_2_name">
+		<text>Ьberbringe den PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_2_text">
+		<text>Ьberbringe den PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_name">
+		<text>Finde den PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_text">
+		<text>Finde den PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_name">
+		<text>Ьberbringe den PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_text">
+		<text>Ьberbringe den PDA.</text>
+	</string>
+	<string id="agr_no_task_name">
+		<text>Finde das Versteck der Stalkergruppe</text>
+	</string>
+	<string id="agr_no_task_text">
+		<text>Fangs PDA enthielt die Koordinaten des Verstecks der Stalkergruppe, die ins Zentrum der Zone vorgedrungen ist und dadurch eine Katastrophe in der Zone ausgelцst hat. Das ist eine wertvolle Entdeckung, denn vielleicht findest du im Versteck wichtige Informationen. Du musst den PDA im Versteck finden.</text>
+	</string>
+	<string id="agr_pda_map_animals_1_name">
+		<text>Finde die Zugkarte</text>
+	</string>
+	<string id="agr_pda_map_animals_1_text">
+		<text>Finde die Karte, auf der die Migrationsmuster der seltenen Monsterspezies in der Zone eingezeichnet sind.</text>
+	</string>
+	<string id="agr_pda_map_animals_2_name">
+		<text>Ьberbringe die Zugkarte</text>
+	</string>
+	<string id="agr_pda_map_animals_2_text">
+		<text>Ьberbringe dem Inquisitor die Zugkarte.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_name">
+		<text>Hilf den Stalkern</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_text">
+		<text>Eine Gruppe Stalker versucht, durch die Sьmpfe zu den Wissenschaftlern in Jantar zu gelangen. Hilf den Stalkern dabei, lebend durch die Sьmpfe zu kommen.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_name">
+		<text>Hol dir die Belohnung</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_text">
+		<text>Hol dir die Belohnung von Platonow.</text>
+	</string>
+	<string id="agr_start_name">
+		<text>Rede mit dem Kommandanten des AuЯenpostens</text>
+	</string>
+	<string id="agr_start_text">
+		<text>Erkundige dich beim Kommandanten des AuЯenpostens ьber die Lage im Agroprom-Institut.</text>
+	</string>
+	<string id="agr_take_reward_name">
+		<text>Hol dir die Belohnung von Krylow</text>
+	</string>
+	<string id="agr_take_reward_text">
+		<text>Der Untergrund ist geflutet und damit sollten die Angriffe der Mutanten auf die Wдchter fьr eine Weile gestoppt sein. General Krylow wird dich fьr die erfolgreiche Durchfьhrung der Mission groЯzьgig belohnen. Hol dir die Belohnung von Krylow.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_name">
+		<text>Finde Informationen ьber das Ausbalancieren der Automatik von Maschinengewehren</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_text">
+		<text>Techniker Thunderow sucht einen Weg, die Feuerrate eines Maschinengewehrs durch Ausbalancieren der Automatik zu erhцhen. Er bezahlt eine stattliche Summe fьr nьtzliche Informationen.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_name">
+		<text>Finde Informationen ьber die Modifizierung des Gasventils von Maschinengewehren</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_text">
+		<text>Thunderow steht kurz davor, Maschinengewehre zu perfektionieren. Er braucht nur etwas freie Zeit und einige technische Daten ьber Gasventile.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_name">
+		<text>Finde Informationen ьber Mьndungsbremsen fьr Pistolen</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_text">
+		<text>Der Techniker der Stalker im Agroprom-Institut sucht nach genauen Informationen ьber Mьndungsbremsen fьr durchschlagskrдftige, groЯkalibrige Pistolen.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_name">
+		<text>Finde Informationen ьber Repetiermechanismen fьr Gefechtsschrotflinten</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_text">
+		<text>Der Techniker der Stalker im Agroprom-Institut sucht nach Informationen ьber Repetiermechanismen fьr Gefechtsschrotflinten.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_name">
+		<text>Finde Informationen ьber Laufmodifikationen fьr Pistolen</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_text">
+		<text>Dem Techniker der Stalker fehlt das Wissen ьber Laufmodifikationen durchschlagskrдftiger Pistolen. Er bezahlt gut fьr entsprechende Informationen.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_name">
+		<text>Finde Informationen ьber Mьndungsbremsen fьr Maschinengewehre</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_text">
+		<text>Der Techniker der Wдchter arbeitet an verbesserten Mьndungsbremsen fьr Maschinengewehre, aber ihm fehlen noch einige technische Informationen.</text>
+	</string>
+	<string id="agr_attack_monster_group_name">
+		<text>Zerstцre den Mutantenunterschlupf</text>
+	</string>
+	<string id="agr_attack_monster_group_text">
+		<text>Von Zeit zu Zeit greifen kleine Rudel von Mutanten die Stalker an der Fabrik an. Um ihre Angriffe zu stoppen, tцte die Monster in ihrem Unterschlupf nцrdlich der Fabrik.</text>
+	</string>
+	<string id="agr_recover_item_1_name">
+		<text>Bringe dem Wдchter die Schrotflinte zurьck</text>
+	</string>
+	<string id="agr_recover_item_1_text">
+		<text>Als wir vor ein paar Tagen auf einer Mission waren, um ein Gebiet von Mutanten zu sдubern, sind wir an einen besonders GroЯen geraten. Der Kampf hat mindestens eine Stunde gedauert und uns ist langsam die Munition ausgegangen - aber das Monster hat nicht im Traum daran gedacht, den Lцffel abzugeben! Ich habe dann schlieЯlich den Befehl zum Rьckzug gegeben, bin aber noch dageblieben, um die Jungs zu decken. Ich habe meine restliche Munition verschossen und am Ende sogar meine Schrotflinte auf den Mutanten geworfen. Und was denkst du, was dann passiert ist? Dieses ScheiЯding hat mich ignoriert und stattdessen angefangen, meine Flinte zu fressen! Bringe mir die Schrotflinte zurьck, immerhin hat sie mir das Leben gerettet.</text>
+	</string>
+	<string id="agr_recover_item_2_name">
+		<text>Bringe den PDA mit geheimen Informationen zurьck</text>
+	</string>
+	<string id="agr_recover_item_2_text">
+		<text>Sцldner, ich wurde auf der Mьllhalde von Banditen ьberfallen. Sie haben mir alles abgenommen: Geld, Waffen, Munition und meine medizinischen Vorrдte. Und das Schlimmste ist: Sie haben sich auch meinen PDA geschnappt, auf dem Informationen ьber den Standort von Banditen auf der Mьllhalde gespeichert sind. Wenn ich den PDA nicht bei Krylow abliefere, bringt er mich um. Hilf mir bitte, das Ding zurьckzubekommen!</text>
+	</string>
+	<string id="agr_recover_item_3_name">
+		<text>Bringe den Koffer des Wдchters zurьck</text>
+	</string>
+	<string id="agr_recover_item_3_text">
+		<text>Sцldner, als die Mutanten im Untergrund auftauchten, mussten wir unsere Stellungen aufgeben und uns zurьckziehen. Ich war gezwungen, meinen Koffer mit Waffen, Munition, Medikamenten und meinem Detektor dort zurьckzulassen... hatte keine Zeit, daran zu denken - ich musste meinen eigenen Arsch retten. Bringe mir bitte den Koffer zurьck.</text>
+	</string>
+	<string id="agr_recover_item_4_name">
+		<text>Bringe das Sturmgewehr des Wдchters zurьck</text>
+	</string>
+	<string id="agr_recover_item_4_text">
+		<text>Ich habe mich mit einem Ortskundigen ьber ein total unwichtiges Thema gestritten und jetzt will er mich nicht mehr zu den Stalkern fьhren! Er sagt, dass ich ihn in Ruhe lassen soll. Und ich selbst finde es nicht gerade prickelnd, alleine in der Zone herumzuwandern. Das Problem ist: Bei meinem Besuch dort letzte Woche habe ich meine Waffe bei den Stalkern gelassen. Einer unserer Jungs war befцrdert worden und wir feierten das mit reichlich Wodka. Ich war ziemlich betrunken... die Jungs konnten mich gerade noch zur Kaserne zurьcktragen, aber mein Gewehr haben sie vergessen. Kannst du es mir zurьckbringen? Ohne eine Waffe bin ich kein richtiger Soldat.</text>
+	</string>
+</string_table>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_actor_destroy_wave1">
+		<text>Il luogo in cui compaiono gli zombi</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_name">
+		<text>Impedisci agli zombi di avvicinarsi agli stalker sul tetto</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_text">
+		<text>Copri gli stalker sul tetto mentre si occupano della valvola di installazione. Impedisci agli zombi di avvicinarsi alla squadra di riparazione sul tetto!</text>
+	</string>
+	<string id="yan_actor_destroy_wave2">
+		<text>Il luogo in cui compaiono gli zombi</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_name">
+		<text>Impedisci agli zombi di avvicinarsi agli stalker nell'hangar</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_text">
+		<text>Copri gli stalker nell'hangar mentre si occupano della valvola di installazione. Impedisci agli zombi di avvicinarsi alla squadra di riparazione nell'hangar!</text>
+	</string>
+	<string id="yan_actor_go_base_defence">
+		<text>Difendi la base degli scienziati</text>
+	</string>
+	<string id="yan_actor_go_base_defence_name">
+		<text>Difendi la base degli scienziati</text>
+	</string>
+	<string id="yan_actor_go_base_defence_text">
+		<text>Difendi la base degli scienziati.</text>
+	</string>
+	<string id="yan_actor_go_base_science">
+		<text>Finchй gli zombi attaccano, le porte del bunker degli scienziati resteranno bloccate. Respingi l'attacco degli zombi per entrare nel bunker e parlare con gli scienziati.</text>
+	</string>
+	<string id="yan_actor_go_base_science_name">
+		<text>Parla con Sakharov</text>
+	</string>
+	<string id="yan_actor_go_base_science_text">
+		<text>Strelok и andato a parlare con gli scienziati di Yantar. Vai a Yantar e parla con il professor Sakharov. Lui potrebbe sapere dove trovare Strelok.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest">
+		<text>La via per la Foresta rossa и aperta</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_name">
+		<text>Vai nella Foresta rossa</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_text">
+		<text>La stazione di raffreddamento и stata riparata e stabilizzata, e le psico-emissioni si sono ridotte al minimo. Ora и possibile entrare nella Foresta rossa, il luogo verso cui si и diretto Strelok.</text>
+	</string>
+	<string id="yan_actor_go_to_stalker">
+		<text>testo predefinito</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_name">
+		<text>testo predefinito</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_text">
+		<text>testo predefinito</text>
+	</string>
+	<string id="yan_main_quest_line">
+		<text>La squadra di riparazione non deve morire</text>
+	</string>
+	<string id="yan_main_quest_line_name">
+		<text>Mantieni la posizione!</text>
+	</string>
+	<string id="yan_main_quest_line_text">
+		<text>Mantieni la posizione!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy">
+		<text>Porta i documenti a Sakharov</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_name">
+		<text>Porta i documenti a Sakharov</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_text">
+		<text>Porta i documenti a Sakharov. Lo aiuteranno a capire perchй a Yantar i livelli di psico-emissioni sono cosм elevati.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke">
+		<text>Fatti strada fino all'installazione</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_name">
+		<text>Fatti strada fino alla fabbrica</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_text">
+		<text>L'area intorno alla fabbrica и infestata dagli zombi. Unisciti a Lefty e al suo gruppo per entrare all'interno. Fai presto! Lo psico-campo potrebbe destabilizzarsi da un momento all'altro.</text>
+	</string>
+	<string id="yan_quest_doc">
+		<text>Trova i documenti</text>
+	</string>
+	<string id="yan_quest_doc_name">
+		<text>Trova il PDA con i documenti</text>
+	</string>
+	<string id="yan_quest_doc_text">
+		<text>Un gruppo di stalker ha trovato dei documenti importanti nell'area della fabbrica. Potrebbero aiutare Sakharov a determinare la causa del potente psico-campo di Yantar. Il segnale del gruppo и andato perduto vicino all'uscita della fabbrica. Trova il PDA con i documenti.</text>
+	</string>
+	<string id="yan_quest_levsha">
+		<text>Vai da Lefty</text>
+	</string>
+	<string id="yan_quest_levsha_name">
+		<text>Vai dal gruppo di Lefty</text>
+	</string>
+	<string id="yan_quest_levsha_text">
+		<text>Un gruppo di stalker si sta preparando a entrare nella fabbrica mentre i livelli di psico-emissioni sono al minimo. Vai da Lefty, il comandante del gruppo.</text>
+	</string>
+	<string id="yan_repair_defend">
+		<text>Prendi posizione sul tetto dell'hangar</text>
+	</string>
+	<string id="yan_repair_defend_name">
+		<text>Segui lo stalker sul tetto dell'hangar</text>
+	</string>
+	<string id="yan_repair_defend_text">
+		<text>Lefty ha ordinato a tutti di assumere la posizione. Segui lo stalker sul tetto e mettiti in posizione.</text>
+	</string>
+	<string id="yan_recover_item_1_name">
+		<text>Recupera il Fiore scarlatto</text>
+	</string>
+	<string id="yan_recover_item_1_text">
+		<text>Aiutami, mercenario. Nella Zona c'и un manufatto che chiamiamo Fiore scarlatto. Agli stalker non serve a niente, ma le donne ne vanno matte. Tra poco ho un appuntamento, e con quel manufatto farei un figurone. Ecco perchй sono ancora in questa cavolo di Zona. Qui vicino и stato visto un Fiore scarlatto. Ha l'aspetto di un fiore magico che resta illuminato giorno e notte. Portami quel manufatto e sarai ben ricompensato!</text>
+	</string>
+	<string id="yan_recover_item_2_name">
+		<text>Recupera la granata "souvenir"</text>
+	</string>
+	<string id="yan_recover_item_2_text">
+		<text>Devi aiutarmi, mercenario. Ho perso un souvenir che somiglia a una granata, anche se non lo и... Beh, a dire il vero и una granata che usano per l'addestramento. Potresti riportarmela? So che riuscirai a trovarla. Ero alla fabbrica quando и successa quella cosa... Mi si и incasinato il cervello e non ricordavo piщ chi ero! Poi mi sono ritrovato qui, quindi immagino che la granata sia rimasta alla fabbrica. Vai a prenderla!</text>
+	</string>
+</string_table>

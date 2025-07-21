@@ -83,20 +83,20 @@
 		<cap_renderer x="20" y="10" width="143" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_renderer</text>			
 		</cap_renderer>
-		<list_renderer x="194" y="10" width="261" height="21" list_length="3">
-			<options_item entry="renderer" group="mm_opt_video" depend="restart"/>
-			<text_color>
-				<e r="216" g="186" b="140"/>
+		<list_renderer x="194" y="10" width="261" height="21" list_length="5" always_show_scroll="0">
+      <options_item entry="renderer" group="mm_opt_video" depend="restart"/>
+      <text_color>
+        <e r="216" g="186" b="140"/>
         <d color="ui_gray"/>
       </text_color>
-			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
-		</list_renderer>
+      <list_font_s r="240" g="217" b="182"/>
+      <list_font	 r="216" g="186" b="140" font="letterica16"/>
+    </list_renderer>
 
-		<cap_preset x="20" y="40" width="143" height="21">
-			<text font="letterica16" color="ui_6">ui_mm_quality_presets</text>			
-		</cap_preset>
-		<list_presets x="194" y="40" width="261" height="21" list_length="5">
+    <cap_preset x="20" y="40" width="143" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_quality_presets</text>
+    </cap_preset>
+    <list_presets x="194" y="40" width="261" height="21" list_length="5"  always_show_scroll="0">
 			<options_item entry="_preset" group="mm_opt_video_preset" depend="vid"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -109,7 +109,7 @@
 		<cap_resolution x="20" y="70" width="143" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_resolution</text>
 		</cap_resolution>
-		<list_resolution x="194" y="70" width="261" height="21" always_show_scroll="1">
+		<list_resolution x="194" y="70" width="261" height="21" list_length="7" always_show_scroll="1">
 			<options_item entry="vid_mode" group="mm_opt_video" depend="vid"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>

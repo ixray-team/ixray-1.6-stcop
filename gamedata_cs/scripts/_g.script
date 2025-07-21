@@ -41,37 +41,37 @@ end
 dev_debug = false
 ----------------------------------------------------------------------
 local scripts_to_print =	{
-	                            ["stalker_generic"] = true,
-	                            ["xr_smartcover"] = true,
-	                            ["xr_logic"] = true,
-	                            ["xr_conditions"] = true,
-	                            ["xr_cover"] = true,
-	                            ["sim_combat"] = true,
-	                            ["xr_motivator"] = true,
-	                            ["xr_walker"] = true,
-	                            ["xr_camper"] = true,
-	                            ["xr_kamp"] = true,
-	                            ["restrictor_manager"] = true,
-	                            ["sim_board"] = true,
-	                            ["sim_faction"] = true,
-	                            ["post_combat_idle"] = true,
-	                            ["xr_death"] = true,
-	                            ["xr_sound"] = true,
-	                            ["utils"] = true,
-	                            ["treasure_manager"] = true,
-	                            ["object_collection"] = true,
-	                            ["minigames_manager"] = true,
-	                            ["minigame_crowkiller"] = true,
-	                            ["minigame_shooting"] = true,
-	                            ["se_actor"] = true,
-	                            ["smart_terrain"] = true,
-	                            ["bind_physic_object"] = true,
-	                            ["bind_heli"] = true,
-	                            ["bind_anomaly_zone"] = true,
-	                            ["bind_stalker"] = true,
-	                            ["state_mgr_animation"] = true,
-	                            ["se_stalker"] = true,
-	                            ["db"] = true,
+															["stalker_generic"] = true,
+															["xr_smartcover"] = true,
+															["xr_logic"] = true,
+															["xr_conditions"] = true,
+															["xr_cover"] = true,
+															["sim_combat"] = true,
+															["xr_motivator"] = true,
+															["xr_walker"] = true,
+															["xr_camper"] = true,
+															["xr_kamp"] = true,
+															["restrictor_manager"] = true,
+															["sim_board"] = true,
+															["sim_faction"] = true,
+															["post_combat_idle"] = true,
+															["xr_death"] = true,
+															["xr_sound"] = true,
+															["utils"] = true,
+															["treasure_manager"] = true,
+															["object_collection"] = true,
+															["minigames_manager"] = true,
+															["minigame_crowkiller"] = true,
+															["minigame_shooting"] = true,
+															["se_actor"] = true,
+															["smart_terrain"] = true,
+															["bind_physic_object"] = true,
+															["bind_heli"] = true,
+															["bind_anomaly_zone"] = true,
+								["bind_stalker"] = true,
+								["state_mgr_animation"] = true,
+								["se_stalker"] = true,
+								["db"] = true,
 								["sim_squad_generic"] = true,
 								["sim_squad_scripted"] = true,
 								["se_smart_cover"] = true,
@@ -81,7 +81,9 @@ local scripts_to_print =	{
 								["xr_combat_ignore"] = true,
 								["xr_remark"] = true,
 								["cover_manager"] = true,
-							--	["xr_danger"]	 = true
+								["xr_danger"]	 = true,
+								--["task_manager"] = true,
+								--["task_objects"]	 = true
 
 							}
 function printf(fmt,...)
@@ -94,7 +96,7 @@ function printf(fmt,...)
 	local info_table = debug.getinfo(2)
 	local script_name = string.gsub(info_table.short_src, "%.script", "")
 	script_name = string.gsub(script_name, "gamedata\\scripts\\", "")
-	--if scripts_to_print[script_name] == true then return end
+	if scripts_to_print[script_name] == true then return end
 	script_name,is_g = string.gsub(script_name, "_g", "")
 	if is_g == 0 then
 		result = script_name..":("..info_table.currentline.."):"..fmt
@@ -108,103 +110,103 @@ if nil == time_global then
 end
 
 function wait_game(time_to_wait)
-    verify_if_thread_is_running()
-    if (time_to_wait == nil) then
-        coroutine.yield()
-    else
-        local time_to_stop = game.time() + time_to_wait
-        while game.time() <= time_to_stop do
-            coroutine.yield()
-        end
-    end
+		verify_if_thread_is_running()
+		if (time_to_wait == nil) then
+				coroutine.yield()
+		else
+				local time_to_stop = game.time() + time_to_wait
+				while game.time() <= time_to_stop do
+						coroutine.yield()
+				end
+		end
 end
 
 function wait(time_to_wait)
-    verify_if_thread_is_running()
-    if (time_to_wait == nil) then
-        coroutine.yield()
-    else
-        local time_to_stop = time_global() + time_to_wait
-        while time_global() <= time_to_stop do
-            coroutine.yield()
-        end
-    end
+		verify_if_thread_is_running()
+		if (time_to_wait == nil) then
+				coroutine.yield()
+		else
+				local time_to_stop = time_global() + time_to_wait
+				while time_global() <= time_to_stop do
+						coroutine.yield()
+				end
+		end
 end
 
 function action(obj,...)
-    local arg = {...}
-    local act = entity_action()
-    local i = 1
-    while true do
-        if (arg[i] ~= nil) then
-            act:set_action(arg[i])
-        else
-            break
-        end
-        i = i + 1
-    end
-    if (obj ~= nil) then
-        obj:command(act,false)
-    end
-    return  entity_action(act)
+		local arg = {...}
+		local act = entity_action()
+		local i = 1
+		while true do
+				if (arg[i] ~= nil) then
+						act:set_action(arg[i])
+				else
+						break
+				end
+				i = i + 1
+		end
+		if (obj ~= nil) then
+				obj:command(act,false)
+		end
+		return  entity_action(act)
 end
 
 function action_first(obj,...)
-    local arg = {...}
-    local act = entity_action()
-    local i = 1
-    while true do
-        if (arg[i] ~= nil) then
-            act:set_action(arg[i])
-        else
-            break
-        end
-        i = i + 1
-    end
-    if (obj ~= nil) then
-        obj:command(act,true)
-    end
-    return  entity_action(act)
+		local arg = {...}
+		local act = entity_action()
+		local i = 1
+		while true do
+				if (arg[i] ~= nil) then
+						act:set_action(arg[i])
+				else
+						break
+				end
+				i = i + 1
+		end
+		if (obj ~= nil) then
+				obj:command(act,true)
+		end
+		return  entity_action(act)
 end
 
 function round (value)
-    local min = math.floor (value)
-    local max = min + 1
-    if value - min > max - value then return max end
-    return min
+		local min = math.floor (value)
+		local max = min + 1
+		if value - min > max - value then return max end
+		return min
 end
 
 function debug_get_level_object(obj_name)
-    local res = level.debug_object(obj_name)
-    while res == nil do
+		local res = level.debug_object(obj_name)
+		while res == nil do
 
 -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 -- !!!!! =+ │L│+││+=TL│LTLгT+, L=L++ =+ +L-+T TL-=+ ++L++│ ││L │LTTTL=+T│+ ++-+│T+T !!!!!
 -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        printf("get_level_object() is waiting for object \"%s\"", obj_name)
+				printf("get_level_object() is waiting for object \"%s\"", obj_name)
 
-        res         = level.object(obj_name)
-        wait        ()
-    end
-    return          res
+				res         = level.object(obj_name)
+				wait        ()
+		end
+		return          res
 end
 
 function debug_get_actor()
-    local res       = level.debug_actor()
-    while res == nil do
-        res         = level.debug_actor()
-        wait        ()
-    end
-    return          res
+		local res       = level.debug_actor()
+		while res == nil do
+				res         = level.debug_actor()
+				wait        ()
+		end
+		return          res
 end
 
 function distance_between(obj1, obj2)
-    return obj1:position():distance_to(obj2:position())
+		return obj1:position():distance_to(obj2:position())
 end
 
 -- +ёыш юфшэ юс·хъЄ nil, эряЁшьхЁ эхЄ ръЄхЁр, Єю ёўшЄрхь, ўЄю юэ фрыхъю
 function distance_between_safe(obj1, obj2)
-    if(obj1 == nil or obj2 == nil) then return 100000 end
+		if(obj1 == nil or obj2 == nil) then return 100000 end
 	return obj1:position():distance_to(obj2:position())
 end
 
@@ -220,10 +222,10 @@ end
 
 
 function reset_action (npc, script_name)
-    if npc:get_script () then
-       npc:script (false, script_name)
-    end
-    npc:script (true, script_name)
+		if npc:get_script () then
+			 npc:script (false, script_name)
+		end
+		npc:script (true, script_name)
 end
 
 class "script_object"
@@ -236,12 +238,12 @@ function script_object.__init(self,name,script,...)
 end
 
 function script_object:update()
-    local                   obj = self.object
-    self.object             = level.object(self.object_name)
-    if ((obj == nil) and (self.object ~= nil)) then
-        self.object:script  (true,self.script_name)
-        self.object:command (self.action,false)
-    end
+		local                   obj = self.object
+		self.object             = level.object(self.object_name)
+		if ((obj == nil) and (self.object ~= nil)) then
+				self.object:script  (true,self.script_name)
+				self.object:command (self.action,false)
+		end
 end
 
 --
@@ -249,7 +251,7 @@ end
 --
 
 function GiveInfoViaPda(obj_receiver, obj_sender, info_number)
-    obj_receiver:give_info_portion_via_pda(info_number, obj_sender)
+		obj_receiver:give_info_portion_via_pda(info_number, obj_sender)
 end
 
 
@@ -274,80 +276,80 @@ end
 
 -- +ёыш т фрээvщ ьюьхэЄ тvяюыэ хЄё  ъръюх-Єю фхщёЄтшх, яЁхЁvтрхЄ хую ш юЄъы│ўрхЄ ёъЁшяЄютvщ Ёхцшь
 function interrupt_action(who, script_name)
-  if who:get_script() then
-    who:script(false, script_name)
-  end
+	if who:get_script() then
+		who:script(false, script_name)
+	end
 end
 
 function random_choice(...)
-    local arg = {...}
-    local r = math.random(1, #arg)
-    return arg[r]
+		local arg = {...}
+		local r = math.random(1, #arg)
+		return arg[r]
 end
 
 function new_action(...)
-    local arg = {...}
-    local act = entity_action()
-    for i = 1, #arg do
-        act:set_action(arg[i])
-    end
-    return act;
+		local arg = {...}
+		local act = entity_action()
+		for i = 1, #arg do
+				act:set_action(arg[i])
+		end
+		return act;
 end
 
 obj_last_actions = {};
 
 function perform_action(obj, action_name, action)
-  if (obj ~= nil) then
-    obj_last_actions[obj] = action_name
-    obj:command(act, false)
-  end
+	if (obj ~= nil) then
+		obj_last_actions[obj] = action_name
+		obj:command(act, false)
+	end
 end
 
 function last_action(obj)
-  return obj_last_actions[obj]
+	return obj_last_actions[obj]
 end
 
 function if_then_else(cond, if_true, if_false)
-    if cond then
-        return if_true
-    end
-    return if_false
+		if cond then
+				return if_true
+		end
+		return if_false
 end
 
 function update_action (npc, script, ...)
-    local arg = {...}
-    if npc == nil then return end
-    local act = npc:action ()
-    if arg.n == 0 then return end
+		local arg = {...}
+		if npc == nil then return end
+		local act = npc:action ()
+		if arg.n == 0 then return end
 
-    if act == nil then act = entity_action () end
+		if act == nil then act = entity_action () end
 
-    for a = 1, arg.n, 1 do
-        if arg[a] ~= nil then act:set_action (arg[a]) end
-    end
-    reset_action (npc, script)
-    npc:command (act, false)
+		for a = 1, arg.n, 1 do
+				if arg[a] ~= nil then act:set_action (arg[a]) end
+		end
+		reset_action (npc, script)
+		npc:command (act, false)
 
 end
 
 
 function set_current_time (hour, min, sec)
-    local current_time_factor = level.get_time_factor ()
+		local current_time_factor = level.get_time_factor ()
 
-    printf ("Need time : %d:%d:%d", hour, min, sec)
+		printf ("Need time : %d:%d:%d", hour, min, sec)
 
-    local current_time = game.time ()
-    local c_day = math.floor (current_time / 86400000)
-    local c_time = current_time - c_day * 86400000
-    local n_time = (sec + min * 60 + hour * 3600) * 1000
+		local current_time = game.time ()
+		local c_day = math.floor (current_time / 86400000)
+		local c_time = current_time - c_day * 86400000
+		local n_time = (sec + min * 60 + hour * 3600) * 1000
 
-    if c_time > n_time then c_day = c_day + 1 end
-    n_time = n_time + c_day * 86400000
+		if c_time > n_time then c_day = c_day + 1 end
+		n_time = n_time + c_day * 86400000
 
-    level.set_time_factor (10000)
-    while game.time () < n_time do wait () end
+		level.set_time_factor (10000)
+		while game.time () < n_time do wait () end
 
-    level.set_time_factor (current_time_factor)
+		level.set_time_factor (current_time_factor)
 end
 
 
@@ -356,69 +358,69 @@ if (editor() == false) then
 class "pp_effector" (effector)
 
 function pp_effector:__init(effector_type,start_time,dest_power,life_time) super(effector_type,start_time)
-    self.start_time = start_time
-    self.stop_time  = start_time + life_time
-    self.max_power  = dest_power
+		self.start_time = start_time
+		self.stop_time  = start_time + life_time
+		self.max_power  = dest_power
 end
 
 function pp_effector:process(pp)
-    effector.process(self,pp)
+		effector.process(self,pp)
 
-    local curr_time = time_global()
-    local d         = 0.0
+		local curr_time = time_global()
+		local d         = 0.0
 
-    if curr_time < self.start_time then
-        d           = 0.0
-    else
-        if curr_time < self.stop_time then
-            d           = (curr_time - self.start_time) / (self.stop_time - self.start_time)
-        else
-            self.info   = self.max_power
-            return      true
-        end
-    end
+		if curr_time < self.start_time then
+				d           = 0.0
+		else
+				if curr_time < self.stop_time then
+						d           = (curr_time - self.start_time) / (self.stop_time - self.start_time)
+				else
+						self.info   = self.max_power
+						return      true
+				end
+		end
 
-    local dual      = duality()
-    local noise     = noise()
-    local base      = color()
-    local gray      = color()
-    local add       = color()
+		local dual      = duality()
+		local noise     = noise()
+		local base      = color()
+		local gray      = color()
+		local add       = color()
 
-    dual.h          = self.max_power.dual.h         * d
-    dual.v          = self.max_power.dual.v         * d
+		dual.h          = self.max_power.dual.h         * d
+		dual.v          = self.max_power.dual.v         * d
 
-    noise.grain     = self.max_power.noise.grain        * d
-    noise.intensity     = self.max_power.noise.intensity    * d
-    noise.fps       = self.max_power.noise.fps      * d
+		noise.grain     = self.max_power.noise.grain        * d
+		noise.intensity     = self.max_power.noise.intensity    * d
+		noise.fps       = self.max_power.noise.fps      * d
 
-    base.r          = self.max_power.color_base.r       * d
-    base.g          = self.max_power.color_base.g       * d
-    base.b          = self.max_power.color_base.b       * d
+		base.r          = self.max_power.color_base.r       * d
+		base.g          = self.max_power.color_base.g       * d
+		base.b          = self.max_power.color_base.b       * d
 
-    gray.r          = self.max_power.color_gray.r       * d
-    gray.g          = self.max_power.color_gray.g       * d
-    gray.b          = self.max_power.color_gray.b       * d
+		gray.r          = self.max_power.color_gray.r       * d
+		gray.g          = self.max_power.color_gray.g       * d
+		gray.b          = self.max_power.color_gray.b       * d
 
-    add.r           = self.max_power.color_add.r        * d
-    add.g           = self.max_power.color_add.g        * d
-    add.b           = self.max_power.color_add.b        * d
+		add.r           = self.max_power.color_add.r        * d
+		add.g           = self.max_power.color_add.g        * d
+		add.b           = self.max_power.color_add.b        * d
 
-    pp.gray         = self.max_power.gray           * d
-    pp.blur         = self.max_power.blur           * d
+		pp.gray         = self.max_power.gray           * d
+		pp.blur         = self.max_power.blur           * d
 
-    pp.dual         = dual
-    pp.noise        = noise
-    pp.color_base       = base
-    pp.color_gray       = gray
-    pp.color_add        = add
+		pp.dual         = dual
+		pp.noise        = noise
+		pp.color_base       = base
+		pp.color_gray       = gray
+		pp.color_add        = add
 
-    self.info       = pp
+		self.info       = pp
 
-    return              true
+		return              true
 end
 
 function pp_effector:finished()
-    return          self.stop_time < time_global()
+		return          self.stop_time < time_global()
 end
 
 --
@@ -427,70 +429,70 @@ end
 class "pp_linear_lerp" (effector)
 
 function pp_linear_lerp:__init(effector_type,start_time,life_time,start_power,dest_power) super(effector_type,start_time)
-    self.start_time = start_time
-    self.stop_time  = start_time + life_time
-    self.min_power  = start_power
-    self.max_power  = dest_power
+		self.start_time = start_time
+		self.stop_time  = start_time + life_time
+		self.min_power  = start_power
+		self.max_power  = dest_power
 end
 
 function pp_linear_lerp:process(pp)
-    effector.process(self,pp)
+		effector.process(self,pp)
 
-    local curr_time = time_global()
-    local d         = 0.0
+		local curr_time = time_global()
+		local d         = 0.0
 
-    if curr_time < self.start_time then
-        d           = 0.0
-    else
-        if curr_time < self.stop_time then
-            d           = (curr_time - self.start_time) / (self.stop_time - self.start_time)
-        else
-            self.info   = self.max_power
-            return      true
-        end
-    end
+		if curr_time < self.start_time then
+				d           = 0.0
+		else
+				if curr_time < self.stop_time then
+						d           = (curr_time - self.start_time) / (self.stop_time - self.start_time)
+				else
+						self.info   = self.max_power
+						return      true
+				end
+		end
 
-    local dual      = duality()
-    local noise     = noise()
-    local base      = color()
-    local gray      = color()
-    local add       = color()
+		local dual      = duality()
+		local noise     = noise()
+		local base      = color()
+		local gray      = color()
+		local add       = color()
 
-    dual.h          = self.min_power.dual.h         + (self.max_power.dual.h        - self.min_power.dual.h     )   * d
-    dual.v          = self.min_power.dual.v         + (self.max_power.dual.v        - self.min_power.dual.v     )   * d
+		dual.h          = self.min_power.dual.h         + (self.max_power.dual.h        - self.min_power.dual.h     )   * d
+		dual.v          = self.min_power.dual.v         + (self.max_power.dual.v        - self.min_power.dual.v     )   * d
 
-    noise.grain     = self.min_power.noise.grain        + (self.max_power.noise.grain       - self.min_power.noise.grain    )   * d
-    noise.intensity     = self.min_power.noise.intensity    + (self.max_power.noise.intensity   - self.min_power.noise.intensity)   * d
-    noise.fps       = self.min_power.noise.fps      + (self.max_power.noise.fps         - self.min_power.noise.fps  )   * d
+		noise.grain     = self.min_power.noise.grain        + (self.max_power.noise.grain       - self.min_power.noise.grain    )   * d
+		noise.intensity     = self.min_power.noise.intensity    + (self.max_power.noise.intensity   - self.min_power.noise.intensity)   * d
+		noise.fps       = self.min_power.noise.fps      + (self.max_power.noise.fps         - self.min_power.noise.fps  )   * d
 
-    base.r          = self.min_power.color_base.r       + (self.max_power.color_base.r      - self.min_power.color_base.r   )   * d
-    base.g          = self.min_power.color_base.g       + (self.max_power.color_base.g      - self.min_power.color_base.g   )   * d
-    base.b          = self.min_power.color_base.b       + (self.max_power.color_base.b      - self.min_power.color_base.b   )   * d
+		base.r          = self.min_power.color_base.r       + (self.max_power.color_base.r      - self.min_power.color_base.r   )   * d
+		base.g          = self.min_power.color_base.g       + (self.max_power.color_base.g      - self.min_power.color_base.g   )   * d
+		base.b          = self.min_power.color_base.b       + (self.max_power.color_base.b      - self.min_power.color_base.b   )   * d
 
-    gray.r          = self.min_power.color_gray.r       + (self.max_power.color_gray.r      - self.min_power.color_gray.r   )   * d
-    gray.g          = self.min_power.color_gray.g       + (self.max_power.color_gray.g      - self.min_power.color_gray.g   )   * d
-    gray.b          = self.min_power.color_gray.b       + (self.max_power.color_gray.b      - self.min_power.color_gray.b   )   * d
+		gray.r          = self.min_power.color_gray.r       + (self.max_power.color_gray.r      - self.min_power.color_gray.r   )   * d
+		gray.g          = self.min_power.color_gray.g       + (self.max_power.color_gray.g      - self.min_power.color_gray.g   )   * d
+		gray.b          = self.min_power.color_gray.b       + (self.max_power.color_gray.b      - self.min_power.color_gray.b   )   * d
 
-    add.r           = self.min_power.color_add.r        + (self.max_power.color_add.r       - self.min_power.color_add.r    )   * d
-    add.g           = self.min_power.color_add.g        + (self.max_power.color_add.g       - self.min_power.color_add.g    )   * d
-    add.b           = self.min_power.color_add.b        + (self.max_power.color_add.b       - self.min_power.color_add.b    )   * d
+		add.r           = self.min_power.color_add.r        + (self.max_power.color_add.r       - self.min_power.color_add.r    )   * d
+		add.g           = self.min_power.color_add.g        + (self.max_power.color_add.g       - self.min_power.color_add.g    )   * d
+		add.b           = self.min_power.color_add.b        + (self.max_power.color_add.b       - self.min_power.color_add.b    )   * d
 
-    pp.gray         = self.min_power.gray           + (self.max_power.gray          - self.min_power.gray       )   * d
-    pp.blur         = self.min_power.blur           + (self.max_power.blur          - self.min_power.blur       )   * d
+		pp.gray         = self.min_power.gray           + (self.max_power.gray          - self.min_power.gray       )   * d
+		pp.blur         = self.min_power.blur           + (self.max_power.blur          - self.min_power.blur       )   * d
 
-    pp.dual         = dual
-    pp.noise        = noise
-    pp.color_base       = base
-    pp.color_gray       = gray
-    pp.color_add        = add
+		pp.dual         = dual
+		pp.noise        = noise
+		pp.color_base       = base
+		pp.color_gray       = gray
+		pp.color_add        = add
 
-    self.info       = pp
+		self.info       = pp
 
-    return          true
+		return          true
 end
 
 function pp_linear_lerp:finished()
-    return          self.stop_time < time_global()
+		return          self.stop_time < time_global()
 end
 --
 -- end of postprocess for rainbow
@@ -505,42 +507,42 @@ end
 class "const_evaluator" (property_evaluator)
 
 function const_evaluator:__init (name, value) super (nil, name)
-    self.value = value
+		self.value = value
 end
 
 function const_evaluator:evaluate()
-    return          self.value
+		return          self.value
 end
 
 --Wait evaluator
 class "wait_evaluator" (property_evaluator)
 
 function wait_evaluator:__init (wait_time) super ()
-    self.wait_time = wait_time
-    self.first_call = true
-    self.current_time = 0
+		self.wait_time = wait_time
+		self.first_call = true
+		self.current_time = 0
 end
 
 function wait_evaluator:evaluate ()
-    if self.first_call == true then
-       self.first_call = false
-       self.current_time = device ():time_global ()
-       return false
-    end
+		if self.first_call == true then
+			 self.first_call = false
+			 self.current_time = device ():time_global ()
+			 return false
+		end
 
-    local t = device():time_global () - self.current_time;
-    if t > self.wait_time then return true end
-    return false
+		local t = device():time_global () - self.current_time;
+		if t > self.wait_time then return true end
+		return false
 end
 --------------------------------------------------------------------------------
 class "enabled_evaluator" (property_evaluator)
 
 function enabled_evaluator:__init (name, storage) super ()
-    self.a = storage
+		self.a = storage
 end
 
 function enabled_evaluator:evaluate()
-    return  self.a.enabled
+		return  self.a.enabled
 end
 
 end -- end of editor() == false
@@ -548,101 +550,101 @@ end -- end of editor() == false
 
 function str_split (str)
 
-    local strlen = string.len (str)
+		local strlen = string.len (str)
 
-    local parts = {{}, {}, {}, {}}
-    local cpart = 1
+		local parts = {{}, {}, {}, {}}
+		local cpart = 1
 
-    for a = 1, strlen, 1 do
-        local char = string.byte (str, a)
-        if char ~= 95 then
-           table.insert (parts[cpart], char)
-        else
-           cpart = cpart + 1
-           if cpart > 4 then break end
-        end
-    end
+		for a = 1, strlen, 1 do
+				local char = string.byte (str, a)
+				if char ~= 95 then
+					 table.insert (parts[cpart], char)
+				else
+					 cpart = cpart + 1
+					 if cpart > 4 then break end
+				end
+		end
 
-    if cpart ~= 4 then return "unknown", "stalker", 0, 0 end
+		if cpart ~= 4 then return "unknown", "stalker", 0, 0 end
 
-    local str1 = string.char ()
-    local str2 = string.char ()
-    local str3 = string.char ()
-    local str4 = string.char ()
+		local str1 = string.char ()
+		local str2 = string.char ()
+		local str3 = string.char ()
+		local str4 = string.char ()
 
-    local ref = parts[1]
-    for a = 1, #ref, 1 do
-        str1 = string.format ("%s%c", str1, ref[a])
-    end
+		local ref = parts[1]
+		for a = 1, #ref, 1 do
+				str1 = string.format ("%s%c", str1, ref[a])
+		end
 
-    ref = parts[2]
-    for a = 1, #ref, 1 do
-        str2 = string.format ("%s%c", str2, ref[a])
-    end
+		ref = parts[2]
+		for a = 1, #ref, 1 do
+				str2 = string.format ("%s%c", str2, ref[a])
+		end
 
-    ref = parts[3]
-    for a = 1, #ref, 1 do
-        str3 = string.format ("%s%c", str3, ref[a])
-    end
+		ref = parts[3]
+		for a = 1, #ref, 1 do
+				str3 = string.format ("%s%c", str3, ref[a])
+		end
 
-    ref = parts[4]
-    for a = 1, #ref, 1 do
-        str4 = string.format ("%s%c", str4, ref[a])
-    end
+		ref = parts[4]
+		for a = 1, #ref, 1 do
+				str4 = string.format ("%s%c", str4, ref[a])
+		end
 
-    printf ("%s %s %d %d", str1, str2, str3, str4)
-    return str1, str2, (str3 + 1) - 1, (str4 + 1) - 1
+		printf ("%s %s %d %d", str1, str2, str3, str4)
+		return str1, str2, (str3 + 1) - 1, (str4 + 1) - 1
 end
 
 function random_number (min_value, max_value)
-    math.randomseed (device ():time_global ())
-    if min_value == nil and max_value == nil then
-      return math.random ()
-    else
-      return math.random (min_value, max_value)
-    end
+		math.randomseed (device ():time_global ())
+		if min_value == nil and max_value == nil then
+			return math.random ()
+		else
+			return math.random (min_value, max_value)
+		end
 end
 
 -- Время суток в мс
 -- Чугай
 local ms_per_day = 24 * 60 * 60 * 1000
 function day_time()
-    return math.mod( game.time(), ms_per_day )
+		return math.mod( game.time(), ms_per_day )
 end
 
 --Time in hours
 function local_hours()
-    return math.floor( math.mod( game.time()/1000, 86400 )/ 3600 )
+		return math.floor( math.mod( game.time()/1000, 86400 )/ 3600 )
 end
 
 -- парсит строку вида "ааа, ббб, ввв..." в таблицу { "ааа", "ббб", "ввв", ... }
 -- Чугай
 function parse_names( s )
-    local t = {}
-    for name in string.gfind( s, "([%w_\\]+)%p*" ) do
-    --for name in string.gfind( s, "%s*([^%,]+)%s*" ) do
-        table.insert( t, name )
-    end
+		local t = {}
+		for name in string.gfind( s, "([%w_\\]+)%p*" ) do
+		--for name in string.gfind( s, "%s*([^%,]+)%s*" ) do
+				table.insert( t, name )
+		end
 
-    return t
+		return t
 end
 
 
 function parse_key_value( s )
-    local t = {}
+		local t = {}
 	if s == nil then
 		return nil
 	end
-    local key, nam = nil, nil
-    for name in string.gfind( s, "([%w_\\]+)%p*" ) do
+		local key, nam = nil, nil
+		for name in string.gfind( s, "([%w_\\]+)%p*" ) do
 		if key == nil then
 			key = name
 		else
 			t[key] = name
 			key = nil
 		end
-    end
-    return t
+		end
+		return t
 end
 
 function empty (container)
@@ -664,13 +666,13 @@ end
 -- парсит строку вида "n1, n2, n3..." в таблицу { n1, n2, n3, ... } где n1, n2, n3... - целые числа
 -- Чугай
 --[[function parse_nums( s )
-    local t = {}
+		local t = {}
 
-    for entry in string.gfind( s, "([%w_\\]+)%p*" ) do
-        table.insert( t, tonumber( entry ) )
-    end
+		for entry in string.gfind( s, "([%w_\\]+)%p*" ) do
+				table.insert( t, tonumber( entry ) )
+		end
 
-    return t
+		return t
 end]]
 
 -- парсит строку вида "n1, n2, n3..." в таблицу { n1, n2, n3, ... } где n1, n2, n3... - дробные числа
@@ -690,7 +692,7 @@ function is_object_online(obj_id)
 end
 
 function get_clsid(npc)
-    if npc == nil then return nil end
+		if npc == nil then return nil end
 
 	return npc:clsid()
 
@@ -703,51 +705,51 @@ end
 
 --Tvўшёы хЄ yaw т Ёрфшрэрї
 function yaw( v1, v2 )
-    return  math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) )
+		return  math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) )
 end
 
 function yaw_degree( v1, v2 )
-    return  (math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) ) * 57.2957)
+		return  (math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) ) * 57.2957)
 end
 function yaw_degree3d( v1, v2 )
-    return  (math.acos((v1.x*v2.x + v1.y*v2.y + v1.z*v2.z)/(math.sqrt(v1.x*v1.x + v1.y*v1.y + v1.z*v1.z )*math.sqrt(v2.x*v2.x + v2.y*v2.y + v2.z*v2.z)))*57.2957)
+		return  (math.acos((v1.x*v2.x + v1.y*v2.y + v1.z*v2.z)/(math.sqrt(v1.x*v1.x + v1.y*v1.y + v1.z*v1.z )*math.sqrt(v2.x*v2.x + v2.y*v2.y + v2.z*v2.z)))*57.2957)
 end
 
 function vector_cross(v1, v2)
-    return vector():set(v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
+		return vector():set(v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
 end
 
 --TЁр	рхЄ тхъЄюЁ тюъЁєу юёш y яЁюЄшт ўрёютющ ёЄЁхыъш
 
 function vector_rotate_y(v, angle)
-    angle = angle * 0.017453292519943295769236907684886
-    local c = math.cos (angle)
-    local s = math.sin (angle)
-    return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
+		angle = angle * 0.017453292519943295769236907684886
+		local c = math.cos (angle)
+		local s = math.sin (angle)
+		return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
 end
 
 -- юўшёЄър ЄрсышЎv
 function clear_table (t)
-    while #t > 0 do
-          table.remove (t, #t)
-    end
+		while #t > 0 do
+					table.remove (t, #t)
+		end
 end
 
 --Использует для монстров. Выбор точки, куда идти в некотором радиусе и чтоб точка была дальше на расстоянии
 -- min_radius от текущей позиции(если это получится). center_id - центр позиции, вокруг которой живем,
 -- position_id - тукущая позиция, radius - в каком радиусе выбирать точку, min_radius - минимальное расстояние, от текущей позиции до новой точки.
 function new_point(center_id, position_id,radius, min_radius)
-    local dir = vector():set(math.random(-1000, 1000)/1000.0, 0.0001, math.random(-1000, 1000)/1000.0)
-    local pos = level.vertex_in_direction(center_id, dir, radius)
-    local i   = 1
+		local dir = vector():set(math.random(-1000, 1000)/1000.0, 0.0001, math.random(-1000, 1000)/1000.0)
+		local pos = level.vertex_in_direction(center_id, dir, radius)
+		local i   = 1
 	printf("vertex_position")
-    while(level.vertex_position(position_id):distance_to(level.vertex_position(pos) ) < min_radius and i < 20) do
-        dir = vector():set(math.random(-1000, 1000)/1000.0, 0.0001, math.random(-1000, 1000)/1000.0)
-        pos = level.vertex_in_direction(center_id, dir, radius)
-        i   = i + 1
-    end
+		while(level.vertex_position(position_id):distance_to(level.vertex_position(pos) ) < min_radius and i < 20) do
+				dir = vector():set(math.random(-1000, 1000)/1000.0, 0.0001, math.random(-1000, 1000)/1000.0)
+				pos = level.vertex_in_direction(center_id, dir, radius)
+				i   = i + 1
+		end
 
-    return (level.vertex_position(pos))
+		return (level.vertex_position(pos))
 end
 
 function stop_play_sound(obj)
@@ -759,108 +761,108 @@ end
 
 --возвращает произвольную точку пути у которой установлен бит
 function point_with_bit(patrol_path, bit, old_point)      -- old_point - индекс точки, которую не надо выбирать,
-  local points = {}                                       -- параметр не обязательный( например текущей точки )
+	local points = {}                                       -- параметр не обязательный( например текущей точки )
 
-    for i = 0, patrol_path:count()-1 do
-      --Добовляем в таблицу точки с нужным битом
-      if( patrol_path:flag(i, bit)) then
-            --Добавляем точку если old_point == nil или новая точка не совпадает с old_point
-            if(old_point == nil) then
-                table.insert(points, patrol_path:point(i))
-            elseif(old_point ~= i) then
-                table.insert(points, patrol_path:point(i))
-            end
-        end
-    end
+		for i = 0, patrol_path:count()-1 do
+			--Добовляем в таблицу точки с нужным битом
+			if( patrol_path:flag(i, bit)) then
+						--Добавляем точку если old_point == nil или новая точка не совпадает с old_point
+						if(old_point == nil) then
+								table.insert(points, patrol_path:point(i))
+						elseif(old_point ~= i) then
+								table.insert(points, patrol_path:point(i))
+						end
+				end
+		end
 
-    local number_point = #points
+		local number_point = #points
 
-    if(number_point == 0) then
-        return nil
-    elseif(number_point == 1) then
-        return points[1]
-    else
-        return points[math.random(1, number_point)]
-    end
+		if(number_point == 0) then
+				return nil
+		elseif(number_point == 1) then
+				return points[1]
+		else
+				return points[math.random(1, number_point)]
+		end
 end
 
 --возвращает произвольную точку пути у которой установлен бит
 function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - индекс точки, которую не надо выбирать,
-    local points = {}                                          -- параметр не обязательный( например текущей точки )
+		local points = {}                                          -- параметр не обязательный( например текущей точки )
 
-    for i = 0, patrol_path:count()-1 do
-      --Добовляем в таблицу точки с нужным битом
-      if( patrol_path:flag(i, bit)) then
-            --Добавляем точку если old_point == nil или новая точка не совпадает с old_point
-            if(old_point == nil) then
-                table.insert(points, i)
-            elseif(old_point ~= i) then
-                table.insert(points, i)
-            end
-        end
-    end
+		for i = 0, patrol_path:count()-1 do
+			--Добовляем в таблицу точки с нужным битом
+			if( patrol_path:flag(i, bit)) then
+						--Добавляем точку если old_point == nil или новая точка не совпадает с old_point
+						if(old_point == nil) then
+								table.insert(points, i)
+						elseif(old_point ~= i) then
+								table.insert(points, i)
+						end
+				end
+		end
 
-    local number_point = #points
+		local number_point = #points
 
-    if(number_point == 0) then
-        return nil
-    elseif(number_point == 1) then
-        return patrol_path:level_vertex_id(points[1])
-    else
-        return patrol_path:level_vertex_id(points[math.random(1, number_point)])
-    end
+		if(number_point == 0) then
+				return nil
+		elseif(number_point == 1) then
+				return patrol_path:level_vertex_id(points[1])
+		else
+				return patrol_path:level_vertex_id(points[math.random(1, number_point)])
+		end
 end
 
 --Возвращает индекс самой ближней точки пути с заданым битом, от текущей точки
 function near_point_with_bit(point, patrol_path, bit)
-    local new_point = nil
-    local index     = nil
-    local dist      = 1000.0
+		local new_point = nil
+		local index     = nil
+		local dist      = 1000.0
 
-    for i = 0, patrol_path:count()-1 do
-        if( patrol_path:flag(i, bit) ) then
-            if(new_point == nil or patrol_path:point(i):distance_to(point) < dist) then
-                --Если эта точка первая из нашедшихся, либо от нее путь ближе, то запоминаем ее
-                new_point   = patrol_path:point(i)
-                index       = i
-                dist        = new_point:distance_to(point)
-             end
-        end
-    end
+		for i = 0, patrol_path:count()-1 do
+				if( patrol_path:flag(i, bit) ) then
+						if(new_point == nil or patrol_path:point(i):distance_to(point) < dist) then
+								--Если эта точка первая из нашедшихся, либо от нее путь ближе, то запоминаем ее
+								new_point   = patrol_path:point(i)
+								index       = i
+								dist        = new_point:distance_to(point)
+						 end
+				end
+		end
 
-    return index
+		return index
 end
 
 -- Рекурсивная распечатка таблицы
 function print_table(table, subs)
-  local sub
-  if subs ~= nil then
-    sub = subs
-  else
-    sub = ""
-  end
-  for k,v in pairs(table) do
-    if type(v) == "table" then
-      printf(sub.."%s:", tostring(k))
-      print_table(v, sub.."    ")
-    elseif type(v) == "function" then
-      printf(sub.."%s:function", tostring(k))
-    elseif type(v) == "userdata" then
-      printf(sub.."%s:userdata", tostring(k))
-    elseif type(v) == "boolean" then
+	local sub
+	if subs ~= nil then
+		sub = subs
+	else
+		sub = ""
+	end
+	for k,v in pairs(table) do
+		if type(v) == "table" then
+			printf(sub.."%s:", tostring(k))
+			print_table(v, sub.."    ")
+		elseif type(v) == "function" then
+			printf(sub.."%s:function", tostring(k))
+		elseif type(v) == "userdata" then
+			printf(sub.."%s:userdata", tostring(k))
+		elseif type(v) == "boolean" then
 	if v == true then
 		printf(sub.."%s:true", tostring(k))
 	else
 		printf(sub.."%s:false", tostring(k))
 	end
-    else
-      if v ~= nil then
-        printf(sub.."%s:%s", tostring(k),v)
-      else
-        printf(sub.."%s:nil", tostring(k),v)
-      end
-    end
-  end
+		else
+			if v ~= nil then
+				printf(sub.."%s:%s", tostring(k),v)
+			else
+				printf(sub.."%s:nil", tostring(k),v)
+			end
+		end
+	end
 end
 
 
@@ -878,8 +880,8 @@ function store_table(table, subs)
 			store_table(v, sub.."    ")
 		elseif type(v) == "function" then
 			printf(sub.."%s = \"func\",", tostring(k))
-	    elseif type(v) == "userdata" then
-      		printf(sub.."%s = \"userdata\",", tostring(k))
+			elseif type(v) == "userdata" then
+					printf(sub.."%s = \"userdata\",", tostring(k))
 		elseif type(v) == "string" then
 			printf(sub.."%s = \"%s\",", tostring(k), tostring(v))
 		else
@@ -891,21 +893,21 @@ end
 
 -------------------------------------------------------------------------------------------
 function switch_online (id)
-    if id == -1 then return end
-    local sim = alife ()
-    if sim ~= nil then
-       sim:set_switch_online  (id, true)
-       sim:set_switch_offline (id, false)
-    end
+		if id == -1 then return end
+		local sim = alife ()
+		if sim ~= nil then
+			 sim:set_switch_online  (id, true)
+			 sim:set_switch_offline (id, false)
+		end
 end
 -------------------------------------------------------------------------------------------
 function switch_offline (npc)
-    if npc == nil or npc:alive () == false then return end
-    local sim = alife ()
-    if sim ~= nil then
-       sim:set_switch_online  (npc:id (), false)
-       sim:set_switch_offline (npc:id (), true)
-    end
+		if npc == nil or npc:alive () == false then return end
+		local sim = alife ()
+		if sim ~= nil then
+			 sim:set_switch_online  (npc:id (), false)
+			 sim:set_switch_offline (npc:id (), true)
+		end
 end
 -------------------------------------------------------------------------------------------
 function get_actor_id()
@@ -919,21 +921,21 @@ local weapon_classes = {}
 local artefact_classes = {}
 
 function IsMonster (object, class_id)
-    local id = class_id or get_clsid(object)
-    return monster_classes[id] == true
+		local id = class_id or get_clsid(object)
+		return monster_classes[id] == true
 end
 function IsStalker (object, class_id)
-    local id = class_id or get_clsid(object)
-    return stalker_classes[id] == true
+		local id = class_id or get_clsid(object)
+		return stalker_classes[id] == true
 end
 
 function isWeapon(object, class_id)
-    local id = class_id or get_clsid(object)
+		local id = class_id or get_clsid(object)
 	return weapon_classes[id] == true
 end
 
 function isArtefact(object, class_id)
-    local id = class_id or get_clsid(object)
+		local id = class_id or get_clsid(object)
 	return artefact_classes[id] == true
 end
 
@@ -969,7 +971,7 @@ end
 function abort(fmt, ...)
 	local reason = string.format(fmt, ...)
 	assert("ERROR: " .. reason)
-	log("ERROR: " .. reason)
+	error_log("ERROR: " .. reason)
 	log(string.format("%s",nil))
 end
 
@@ -1100,42 +1102,42 @@ stalker_classes = {
 
 weapon_classes = {
 	[clsid.wpn_vintorez_s] 			= true,
-    [clsid.wpn_ak74_s] 				= true,
-    [clsid.wpn_lr300_s] 			= true,
-    [clsid.wpn_hpsa_s] 				= true,
-    [clsid.wpn_pm_s] 				= true,
-    [clsid.wpn_shotgun_s] 			= true,
-    [clsid.wpn_bm16_s] 				= true,
-    [clsid.wpn_svd_s] 				= true,
-    [clsid.wpn_svu_s] 				= true,
-    [clsid.wpn_rpg7_s] 				= true,
-    [clsid.wpn_val_s] 				= true,
-    [clsid.wpn_walther_s] 			= true,
-    [clsid.wpn_usp45_s] 			= true,
-    [clsid.wpn_groza_s] 			= true,
-    [clsid.wpn_knife_s] 			= true,
-    [clsid.wpn_grenade_launcher] 	= true,
-    [clsid.wpn_grenade_f1] 			= true,
-    [clsid.wpn_grenade_rpg7] 		= true,
-    [clsid.wpn_grenade_rgd5] 		= true,
-    [clsid.wpn_grenade_fake] 		= true}
+		[clsid.wpn_ak74_s] 				= true,
+		[clsid.wpn_lr300_s] 			= true,
+		[clsid.wpn_hpsa_s] 				= true,
+		[clsid.wpn_pm_s] 				= true,
+		[clsid.wpn_shotgun_s] 			= true,
+		[clsid.wpn_bm16_s] 				= true,
+		[clsid.wpn_svd_s] 				= true,
+		[clsid.wpn_svu_s] 				= true,
+		[clsid.wpn_rpg7_s] 				= true,
+		[clsid.wpn_val_s] 				= true,
+		[clsid.wpn_walther_s] 			= true,
+		[clsid.wpn_usp45_s] 			= true,
+		[clsid.wpn_groza_s] 			= true,
+		[clsid.wpn_knife_s] 			= true,
+		[clsid.wpn_grenade_launcher] 	= true,
+		[clsid.wpn_grenade_f1] 			= true,
+		[clsid.wpn_grenade_rpg7] 		= true,
+		[clsid.wpn_grenade_rgd5] 		= true,
+		[clsid.wpn_grenade_fake] 		= true}
 
 artefact_classes = {
-    [clsid.art_bast_artefact] 		= true,
-    [clsid.art_black_drops] 		= true,
-    [clsid.art_dummy] 				= true,
-    [clsid.art_electric_ball] 		= true,
-    [clsid.art_faded_ball] 			= true,
-    [clsid.art_galantine] 			= true,
-    [clsid.art_gravi] 				= true,
-    [clsid.art_gravi_black] 		= true,
-    [clsid.art_mercury_ball] 		= true,
-    [clsid.art_needles] 			= true,
-    [clsid.art_rusty_hair] 			= true,
-    [clsid.art_thorn] 				= true,
-    [clsid.art_zuda] 				= true,
-    [clsid.artefact] 				= true,
-    [clsid.artefact_s] 				= true}
+		[clsid.art_bast_artefact] 		= true,
+		[clsid.art_black_drops] 		= true,
+		[clsid.art_dummy] 				= true,
+		[clsid.art_electric_ball] 		= true,
+		[clsid.art_faded_ball] 			= true,
+		[clsid.art_galantine] 			= true,
+		[clsid.art_gravi] 				= true,
+		[clsid.art_gravi_black] 		= true,
+		[clsid.art_mercury_ball] 		= true,
+		[clsid.art_needles] 			= true,
+		[clsid.art_rusty_hair] 			= true,
+		[clsid.art_thorn] 				= true,
+		[clsid.art_zuda] 				= true,
+		[clsid.artefact] 				= true,
+		[clsid.artefact_s] 				= true}
 
 
 	printf	("start_game_callback called")
@@ -1143,15 +1145,15 @@ artefact_classes = {
 	task_manager.clear_task_manager()
 	treasure_manager.load_treasures()
 
-    sound_theme.load_sound()
-    xr_sound.start_game_callback()
+		sound_theme.load_sound()
+		xr_sound.start_game_callback()
 
 	dialog_manager.fill_phrase_table()
 	xr_s.init()                              --' Distemper 03.2008 --
 	sim_objects.clear()
 	sim_board.clear()
 
-    sr_light.clean_up ()
+		sr_light.clean_up ()
 
 
 	-- TхёЄшЁютрэшх юяЄшьшчрЎшш
@@ -1206,7 +1208,7 @@ local save_markers = {}
 
 -- LєэъЎшш фы  яЁютхЁъш ъюЁЁхъЄэюёЄш ёхщт ыюрф
 function set_save_marker(p, mode, check, prefix)
---[[
+
 	-- +яЁхфхы хь ъы│ў ьрЁъхЁр.
 	local result = ""
 --	if debug ~= nil then
@@ -1228,10 +1230,10 @@ function set_save_marker(p, mode, check, prefix)
 		if mode == "save" then
 			local dif = p:w_tell() - save_markers[result]
 			printf(result..": SAVE DIF: %s", dif)
-			if dif >= 4096 then
+			if dif >= 8000 then
 				printf("WARNING! may be this is problem save point")
 			end
-			if dif >= 6144 then
+			if dif >= 10240 then
 				abort("You are saving too much")
 			end
 			p:w_u16(dif)
@@ -1250,14 +1252,14 @@ function set_save_marker(p, mode, check, prefix)
 	if mode == "save" then
 		printf(result..": set save marker: %s", p:w_tell())
 		save_markers[result] = p:w_tell()
-		if p:w_tell() > 8000 then
+		if p:w_tell() > 16000 then
 			abort("You are saving too much")
 		end
 	else
 		printf(result..": set load marker: %s", p:r_tell())
 		save_markers[result] = p:r_tell()
 	end
-]] 
+
 end
 
 function vec_to_str (vector)

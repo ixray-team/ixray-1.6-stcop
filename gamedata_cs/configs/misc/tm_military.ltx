@@ -199,7 +199,7 @@ type = recover_item
 task_type = additional
 name = mil_additional_quest_1_name
 text = mil_additional_quest_1_text
-target_cond = {+mil_start_after_red_forest -mil_additional_quest_1_info_complete =check_npc_squad(mil_smart_terrain_2_4_stalker_squad_1)} true
+target_cond = {-mil_additional_quest_1_info_complete =actor_on_level(military)} true
 prior = 2
 target_npc_or_box_name = mil_additional_quest_1_box
 wait_time = -1
@@ -216,7 +216,7 @@ type = recover_item
 task_type = additional
 name = mil_additional_quest_2_name
 text = mil_additional_quest_2_text
-target_cond = {-mil_additional_quest_2_info_complete =check_npc_squad(mil_smart_terrain_2_4_stalker_squad_2)} true
+target_cond = {-mil_additional_quest_2_info_complete =actor_on_level(military)} true
 prior = 2
 target_npc_or_box_name = mil_additional_quest_2_commander
 wait_time = -1
@@ -233,7 +233,7 @@ type = recover_item
 task_type = additional
 name = mil_additional_quest_3_name
 text = mil_additional_quest_3_text
-target_cond = {-mil_additional_quest_3_info_complete =check_npc_squad(mil_smart_terrain_7_4_freedom_base_squad_1)} true
+target_cond = {-mil_additional_quest_3_info_complete =actor_on_level(military)} true
 prior = 2
 target_npc_or_box_name = mil_additional_quest_3_soldier_1, mil_additional_quest_3_soldier_2, mil_additional_quest_3_soldier_3, mil_additional_quest_3_soldier_4
 wait_time = -1
@@ -244,13 +244,14 @@ on_complete = %+mil_additional_quest_3_info_complete%
 community_relation_delta_fail=-100
 community_relation_delta_complete=+100
 auto_faction = false
+faction = freedom
 
 [mil_additional_quest_4] ;Болото
 type = recover_item
 task_type = additional
 name = mil_additional_quest_4_name
 text = mil_additional_quest_4_text
-target_cond = {-mil_additional_quest_4_info_complete =check_npc_squad(mil_smart_terrain_2_4_stalker_squad_1)} true
+target_cond = {-mil_additional_quest_4_info_complete =actor_on_level(military)} true
 prior = 2
 target_npc_or_box_name = mil_additional_quest_4_lost_soldier
 wait_time = -1
@@ -262,13 +263,14 @@ on_complete = %+mil_additional_quest_4_info_complete%
 community_relation_delta_fail=-100
 community_relation_delta_complete=+100
 auto_faction = false
+faction = stalker
 
 [mil_additional_quest_5] ;Кровосос
 type = recover_item
 task_type = additional
 name = mil_additional_quest_5_name
 text = mil_additional_quest_5_text
-target_cond = {+mil_start_after_red_forest -mil_additional_quest_5_info_complete =check_npc_squad(mil_smart_terrain_5_2_freedom_squad_1)} true
+target_cond = {-mil_additional_quest_5_info_complete =actor_on_level(military)} true
 prior = 2
 target_npc_or_box_name = mil_additional_quest_5_soldier
 wait_time = -1

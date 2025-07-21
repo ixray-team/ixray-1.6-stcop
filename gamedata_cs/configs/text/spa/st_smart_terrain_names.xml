@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_name_agr_smart_terrain_1_11">
+		<text>Afueras del bosque</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_2">
+		<text>Campamento en el pantano</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_3">
+		<text>Viejo campamento</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6">
+		<text>Base de Deber</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_1">
+		<text>Entrada del norte</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_2">
+		<text>Entrada del este</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_near_2">
+		<text>Rincуn rojo</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_2">
+		<text>Campamento cerca de una roca</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_3">
+		<text>Escondite bajo las rocas</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_5">
+		<text>Campamento cerca de la base</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_3_5">
+		<text>Campamento en el precipicio</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_2">
+		<text>Campamento bajo la torre</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4">
+		<text>Campamento stalker</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_1">
+		<text>Бrea cerca del andйn de ferrocarril</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_2">
+		<text>Salida trasera</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_3">
+		<text>Avanzadilla este</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_6">
+		<text>Avanzadilla en una carretera</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_2">
+		<text>Anillo de piedra</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_3">
+		<text>Barricadas cerca de un vagуn de tren</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_4">
+		<text>Bifurcaciуn en el camino</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7">
+		<text>Avanzadilla cerca del agujero</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7u">
+		<text>Entrada al subterrбneo</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_4">
+		<text>Tъnel sin salida</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_6">
+		<text>Campamento improvisado</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_4">
+		<text>Camino al vertedero</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_5">
+		<text>Campamento en la colina</text>
+	</string>
+	<string id="st_name_agru_smart_terrain_1">
+		<text>Subterrбneo de Agroprom</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_11">
+		<text>Campamento secreto</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_12">
+		<text>Colina mбs allб del pueblo</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_16">
+		<text>Montнculo del bosque</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_12">
+		<text>Centro del pueblo</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_14">
+		<text>Fogata bajo un бrbol</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_2">
+		<text>Ladera de la colina</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_4">
+		<text>Afueras del bosque a pie de la colina</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_14">
+		<text>Tienda en el bosque</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_16">
+		<text>Avanzadilla militar</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_4">
+		<text>Campamento en las colinas</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_6">
+		<text>Campamento en la depresiуn</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_7">
+		<text>Fogata en el bosque</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_10">
+		<text>Fogata en la cuenca</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_11">
+		<text>Campamento cerca del vagуn</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_13">
+		<text>Campamento de tiendas</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_8">
+		<text>Campamento bajo el puente</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_9">
+		<text>Fogata bajo el puente</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_10">
+		<text>Parada del autobъs</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_11">
+		<text>Campamento en la colina</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_12">
+		<text>Tienda de stalker</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_2">
+		<text>Avanzadilla lejana</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_4">
+		<text>Fogata a un lado de la carretera</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_6">
+		<text>Campamento temporal en el campo</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_7">
+		<text>Base neutral</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_9">
+		<text>Ascensor</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_3">
+		<text>Escondite bajo las rocas</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_5">
+		<text>Campamento en el bosque de abetos</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_6">
+		<text>Ruinas de granja</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_7">
+		<text>Campamento temporal en la ladera de la colina</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_8">
+		<text>Puesto avanzado bajo el puente</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_10">
+		<text>Campamento improvisado</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_11">
+		<text>Aparcamiento</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_9">
+		<text>Fogata cerca del ferrocarril</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_10">
+		<text>Colina mбs allб del aparcamiento</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_6">
+		<text>Escondite tranquilo</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_8">
+		<text>Campamento cerca del terraplйn</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_9">
+		<text>Campamento en el bosque de pinos</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_10">
+		<text>Fogata en el tъnel</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_7">
+		<text>Campamento lejano</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_5">
+		<text>Barricadas</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_7">
+		<text>Campamento en las colinas</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_3">
+		<text>Escondite cerca del camino</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_4">
+		<text>Escondite detrбs de las tuberнas</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_2">
+		<text>Escondite en la cuenca</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_3">
+		<text>Campamento de excavador</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_5">
+		<text>Depуsito</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_6">
+		<text>Campamento temporal en el depуsito de chatarra</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_7">
+		<text>Cementerio de vehнculos</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_8">
+		<text>Campamento mбs allб del campo de concentraciуn</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_2">
+		<text>Campamento en la depresiуn</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_3">
+		<text>Campamento cerca de la grъa</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_4">
+		<text>Campamento cerca del depуsito</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_5">
+		<text>Punto de ruptura</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_6">
+		<text>Ladera del montнculo del depуsito de chatarra</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_7">
+		<text>Campamento cerca del bulldozer</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_8">
+		<text>Campamento de principio del camino</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_2">
+		<text>Avanzadilla del norte</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_4">
+		<text>Punto de encuentro</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_5">
+		<text>Campamento de los buscadores de tesoros</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_6">
+		<text>Grъa desvencijada </text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_8">
+		<text>Avanzadilla de recepciуn</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_1">
+		<text>Campamento del bosque</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_3">
+		<text>Mercadillo</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_4">
+		<text>Бrea fortificada</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_5">
+		<text>Campamento en el campo</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_6">
+		<text>Escondite en el bosque</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_7">
+		<text>Foso de gravilla</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_2">
+		<text>Guarida de mineros</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_3">
+		<text>Orilla del pantano pequeсo</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_4">
+		<text>Nuevo campamento</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_3">
+		<text>Avanzadilla defensiva</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_5">
+		<text>Laguna</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_7">
+		<text>Campamento en el camino</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_1">
+		<text>Patio</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_10">
+		<text>Camino a la estaciуn de bomberos</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_2">
+		<text>Casa en bifurcaciуn del camino</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_3">
+		<text>Patio trasero con terraza</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_4">
+		<text>Barricada en camino cortado</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_5">
+		<text>Miniparque cerca de los garajes</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_6">
+		<text>Casa en la colina</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_7">
+		<text>Escondite cerca del puente</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_8">
+		<text>Campamento cerca de la sala de mandos</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_9">
+		<text>Campamento en la obra</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_help_smart">
+		<text>Camino cortado</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_10">
+		<text>Fogata en la orilla</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_5">
+		<text>Patio de mбquinas</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_7">
+		<text>Campamento en el pantano</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_11">
+		<text>Granja del sur</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_3">
+		<text>Campamento cerca del camiуn</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_12_2">
+		<text>Granja del norte</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_10">
+		<text>Caminos bifurcados</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_3">
+		<text>Muelle</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_7">
+		<text>Isla de la roca</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_5">
+		<text>Ruinas del pueblo</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_7">
+		<text>Campamento temporal en tronco</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_10">
+		<text>Foso de gravilla</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_12">
+		<text>Aldea pesquera</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_8">
+		<text>Estaciуn de bombeo</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_10">
+		<text>Isla pelada</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_11">
+		<text>Atalaya</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_4">
+		<text>Campamento improvisado</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_7">
+		<text>Barricadas en la orilla</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_8">
+		<text>Campamento temporal de botes</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_3">
+		<text>Campamento bajo el terraplйn</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_7">
+		<text>Campamento en el yermo</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_11">
+		<text>Vieja iglesia</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_4">
+		<text>Campamento en los juncos</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_8">
+		<text>Granja quemada</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_9">
+		<text>Principio del camino</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_9_10">
+		<text>Fogata solitaria</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_base">
+		<text>Base de Cielo Despejado</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_respawn">
+		<text>Campamento oculto</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_terrain_csky_base">
+		<text>Base de Cielo Despejado</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_1">
+		<text>Campamento entre las rocas</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_10">
+		<text>Escondite en maderas secas</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_2">
+		<text>Бrea fortificada lejana</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_3">
+		<text>Campamento en las tierras bajas</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_4">
+		<text>Granja lejana</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_6">
+		<text>Helicуptero caнdo</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_2">
+		<text>Cuartel de guardia</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_5">
+		<text>Puesto blindado</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_8">
+		<text>Barrera</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_2">
+		<text>Campamento temporal mercenario </text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_3">
+		<text>Depуsito de agua</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_5">
+		<text>Viga torcida</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_6">
+		<text>Cruce de caminos</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_7">
+		<text>Campamento temporal en bloques de cemento</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_8">
+		<text>Campamento stalker</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_2">
+		<text>Barricadas en colina</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_4">
+		<text>Entrada al pueblo</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_5">
+		<text>Бrea fortificada en la parada</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_6">
+		<text>Camiуn en cruce</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_8">
+		<text>Cabaсa en pantano</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_6_4">
+		<text>Camino entre las colinas</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_10">
+		<text>Transformador de corriente roto</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_11">
+		<text>Campamento en los pinos</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_12">
+		<text>Campamento entre los barracones</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_2">
+		<text>Entrada a los almacenes militares</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_4">
+		<text>Granja abandonada</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_7">
+		<text>Campo de deportes</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_8">
+		<text>Patio trasero de la base</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_9">
+		<text>Tъnel abandonado</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_8_3">
+		<text>Cobertizo</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base2">
+		<text>Бrea fortificada lejana</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base3">
+		<text>Granja lejana</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base4">
+		<text>Depуsito de agua</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base5">
+		<text>Campamento temporal mercenario </text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base_monster">
+		<text>Бrea fortificada cerca del pueblo</text>
+	</string>
+	<string id="st_name_red_bridge_ally_smart">
+		<text>Alrededores de Limansk </text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_1">
+		<text>Campamento a un lado de la carretera</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_2">
+		<text>Barracones en la mina</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_3">
+		<text>Lugar de descanso de los chupasangres</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_2">
+		<text>Campamento cerca de arbusto</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_3">
+		<text>Campamento de perros</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_5">
+		<text>Cнrculo mбgico</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_5">
+		<text>Lugar de descanso de los stalker</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_6">
+		<text>Campo brumoso</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_3">
+		<text>Campamento diabуlico</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_6">
+		<text>Yar oscuro</text>
+	</string>
+	<string id="st_name_red_smart_terrain_bridge">
+		<text>Puente de Limansk</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters">
+		<text>Camino famoso</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_2">
+		<text>Guarida de mutantes</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_3">
+		<text>Guarida frente al bosque</text>
+	</string>
+	<string id="st_name_red_terrain_ally_smart">
+		<text>Entrada a Limansk</text>
+	</string>
+	<string id="st_name_red_terrain_bandit_smart">
+		<text>Fortificaciones de los bandidos</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_10">
+		<text>Campamento cerca de la gasolinera</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_9">
+		<text>Terraza en el tejado</text>
+	</string>
+	<string id="st_name_val_smart_terrain_1_2">
+		<text>Vestнbulo de la fбbrica</text>
+	</string>
+	<string id="st_name_val_smart_terrain_3_0">
+		<text>Barricada cerca del puente</text>
+	</string>
+	<string id="st_name_val_smart_terrain_4_0">
+		<text>Campamento en la granja</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_10">
+		<text>Campamento abierto</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_7">
+		<text>Avanzadilla del final</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_8">
+		<text>Campamento del campo</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_4">
+		<text>Campamento destartalado</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_5">
+		<text>Campamento al fondo del barranco</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_6">
+		<text>Campamento inferior</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_0">
+		<text>Alrededores lejanos</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_11">
+		<text>Avanzadilla cerca de la granja</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_3">
+		<text>Hangar del tнo Yar</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_4">
+		<text>Base de Libertad</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_5">
+		<text>Bar "Trago de Libertad"</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_6">
+		<text>Avanzadilla cerca del ascensor</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_8">
+		<text>Campamento en el pantano</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_6">
+		<text>Barricadas del norte</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_7">
+		<text>Alto</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_9">
+		<text>Isla</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_10">
+		<text>Campamento entre las rocas</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_2">
+		<text>Бrbol desenraizado</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_4">
+		<text>Gasolinera con expendedor</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_5">
+		<text>Campamento al pie de la colina</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_6">
+		<text>Vagуn pequeсo y viejo</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_1_6">
+		<text>Frontera lejana</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_4">
+		<text>Patio trasero de la fбbrica</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_5">
+		<text>Entrada de la fбbrica</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_4">
+		<text>Hangar</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_6">
+		<text>Tierras bajas con artefactos</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_2">
+		<text>Бrbol desenraizado</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_4">
+		<text>Cima de la colina</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_5">
+		<text>Cabina de transformador de corriente</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_3">
+		<text>Isla en el pantano</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_5">
+		<text>Campamento del camino</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_6">
+		<text>Avanzadilla</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_2">
+		<text>Campamento mбs allб del pantano</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_4">
+		<text>Campamento de los cientнficos</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_for_squad_levsha">
+		<text>Entrada secreta</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_quest_saharov">
+		<text>Salida del complejo</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_saharov">
+		<text>Salida trasera</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base1">
+		<text>Campamento temporal bajo el cobertizo</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base3">
+		<text>Torre en la cima de la colina</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base4">
+		<text>Tuberнa de desagьe</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base5">
+		<text>Esquina de la fбbrica</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base6">
+		<text>Garajes cerca del perнmetro</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_spawn">
+		<text>Salida de la tuberнa</text>
+	</string>
+</string_table>

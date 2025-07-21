@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_additional_quest_1_name">
+		<text>Documents de la base militaire</text>
+	</string>
+	<string id="esc_additional_quest_1_text">
+		<text>Documents de la base militaire.</text>
+	</string>
+	<string id="esc_additional_quest_2_name">
+		<text>Nourriture</text>
+	</string>
+	<string id="esc_additional_quest_2_text">
+		<text>Nourriture.</text>
+	</string>
+	<string id="esc_bring_habar">
+		<text>Rapporter le butin au marchand</text>
+	</string>
+	<string id="esc_bring_habar_text">
+		<text>Rapportez la mallette au marchand.</text>
+	</string>
+	<string id="esc_defend_stalkers_base_name">
+		<text>Dйfendre la base des stalkers</text>
+	</string>
+	<string id="esc_defend_stalkers_base_text">
+		<text>Aidez les stalkers а repousser l'assaut ennemi.</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_name">
+		<text>Dйfendre la patrouille</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_text">
+		<text>Dйfendez la patrouille de stalkers а l'arrкt de bus.</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_name">
+		<text>Aider а repousser l'attaque</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_text">
+		<text>Aidez а repousser l'attaque.</text>
+	</string>
+	<string id="esc_dopros">
+		<text>Interroger le commandant des militaires</text>
+	</string>
+	<string id="esc_dopros_text">
+		<text>Interrogez Khaletskiy et dйcouvrez oщ il a cachй la mallette du marchand.</text>
+	</string>
+	<string id="esc_driver_friend_1_name">
+		<text>Trouver le PDA</text>
+	</string>
+	<string id="esc_driver_friend_1_text">
+		<text>Trouvez le PDA qui contient des informations sur le soldat mort dans une anomalie.</text>
+	</string>
+	<string id="esc_driver_friend_2_name">
+		<text>Rapporter le PDA</text>
+	</string>
+	<string id="esc_driver_friend_2_text">
+		<text>Rapportez le PDA au sergent Lambee.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9">
+		<text>Йliminer les militaires prиs de l'ascenseur</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9_text">
+		<text>Йliminez les soldats repйrйs prиs de l'ascenseur.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_name">
+		<text>Йliminer les bandits</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_name">
+		<text>Rйcupйrer la rйcompense</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_text">
+		<text>Allez rйcupйrer votre rйcompense auprиs du marchand. Les bandits ont йtй йliminйs et la route vers la base est dйgagйe.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_text">
+		<text>Йliminez les bandits dans la ferme dйsaffectйe. Cela les empкchera de dйpouiller les stalkers qui apportent leur butin а la base.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11">
+		<text>Йliminer les militaires du dйpфt</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11_text">
+		<text>Anйantissez l'unitй militaire repйrйe prиs du dйpфt. Il s'agit de la principale force envoyйe pour secourir Khaletskiy.</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8">
+		<text>Йliminer les snipers</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8_text">
+		<text>Йliminez les snipers.</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7">
+		<text>Capturer la base des stalkers</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7_text">
+		<text>Capturez la base des stalkers.</text>
+	</string>
+	<string id="esc_find_upgrade_1_name">
+		<text>Trouver l'amйlioration</text>
+	</string>
+	<string id="esc_find_upgrade_1_text">
+		<text>Un de mes amis techniciens m'a envoyй un gars qui devait m'apporter une clй USB contenant des infos intйressantes sur une amйlioration d'AK. Mais le type est tombй sur une meute de pseudo-chiens en route... Personne ne veut aller me rйcupйrer la clй. Qu'est-ce que t'en penses ? Je saurai te rйcompenser !</text>
+	</string>
+	<string id="esc_find_upgrade_2_name">
+		<text>Trouver l'amйlioration</text>
+	</string>
+	<string id="esc_find_upgrade_2_text">
+		<text>Un de mes amis techniciens m'a envoyй un gars qui devait m'apporter une clй USB contenant des infos intйressantes sur une amйlioration de fusil а pompe. Mais le type est tombй sur une meute de pseudo-chiens en route... Personne ne veut aller me rйcupйrer la clй. Qu'est-ce que t'en penses ? Je saurai te rйcompenser !</text>
+	</string>
+	<string id="esc_novice_stalker_1_name">
+		<text>Aider le stalker</text>
+	</string>
+	<string id="esc_novice_stalker_1_text">
+		<text>Aidez le stalker а combattre la meute de pseudo-chiens.</text>
+	</string>
+	<string id="esc_novice_stalker_2_name">
+		<text>Escorter le stalker</text>
+	</string>
+	<string id="esc_novice_stalker_2_text">
+		<text>Escortez le stalker jusqu'au village des dйbutants.</text>
+	</string>
+	<string id="esc_novice_stalker_3_name">
+		<text>Rйcupйrer la rйcompense</text>
+	</string>
+	<string id="esc_novice_stalker_3_text">
+		<text>Allez demander la rйcompense que le Loup vous avait promise si vous sauviez le stalker des pseudo-chiens.</text>
+	</string>
+	<string id="esc_prapor">
+		<text>Rencontrer l'enseigne</text>
+	</string>
+	<string id="esc_prapor_text">
+		<text>Rencontrez l'enseigne.</text>
+	</string>
+	<string id="esc_reach_garbage">
+		<text>Rencontrer le mineur а la Dйcharge</text>
+	</string>
+	<string id="esc_reach_garbage_text">
+		<text>Rencontrez le mineur а la Dйcharge.</text>
+	</string>
+	<string id="esc_reach_stalker_base">
+		<text>Rencontrer le stalker derriиre le remblai</text>
+	</string>
+	<string id="esc_reach_stalker_base_text">
+		<text>Parlez а Valerian, le chef des stalkers. Il sait peut-кtre quelque chose au sujet de la marchandise de Sidorovich.</text>
+	</string>
+	<string id="esc_reach_trader">
+		<text>Parler au marchand</text>
+	</string>
+	<string id="esc_reach_trader_text">
+		<text>Parlez au marchand.</text>
+	</string>
+	<string id="esc_rescue_patrol">
+		<text>Aider les stalkers</text>
+	</string>
+	<string id="esc_rescue_patrol_text">
+		<text>Aidez les stalkers.</text>
+	</string>
+	<string id="esc_stalker_enemy_name">
+		<text>Regagner la confiance des stalkers</text>
+	</string>
+	<string id="esc_stalker_enemy_text">
+		<text>Vos relations avec les stalkers sont au plus bas. Vous devez regagner leur confiance avec l'aide de Sidorovich.</text>
+	</string>
+	<string id="esc_take_habar">
+		<text>Rйcupйrer la marchandise</text>
+	</string>
+	<string id="esc_take_habar_text">
+		<text>Rйcupйrez la marchandise.</text>
+	</string>
+	<string id="esc_take_prisoner_secret">
+		<text>Trouver la planque de Khaletskiy</text>
+	</string>
+	<string id="esc_take_prisoner_secret_text">
+		<text>Trouvez la planque de Khaletskiy.</text>
+	</string>
+	<string id="esc_take_weapon_name">
+		<text>Rйcupйrer les armes</text>
+	</string>
+	<string id="esc_take_weapon_text">
+		<text>Rйcupйrez les armes.</text>
+	</string>
+	<string id="esc_talk2_comm">
+		<text>Parler а Khaletskiy</text>
+	</string>
+	<string id="esc_talk2_comm_text">
+		<text>Parlez а Khaletskiy.</text>
+	</string>
+	<string id="esc_talk2_leader">
+		<text>Rencontrer le chef de stalkers</text>
+	</string>
+	<string id="esc_talk2_leader_2">
+		<text>Parler au chef des stalkers.</text>
+	</string>
+	<string id="esc_talk2_leader_2_text">
+		<text>Parlez au chef des stalkers.</text>
+	</string>
+	<string id="esc_talk2_leader_text">
+		<text>Rencontrez le chef des stalkers.</text>
+	</string>
+	<string id="esc_talk2_trader">
+		<text>Parler au marchand</text>
+	</string>
+	<string id="esc_wolf_brother_1_name">
+		<text>Libйrer le frиre du Loup</text>
+	</string>
+	<string id="esc_wolf_brother_1_text">
+		<text>Libйrez le frиre du Loup.</text>
+	</string>
+	<string id="esc_wolf_brother_2_name">
+		<text>Escorter le frиre du Loup jusqu'au village des dйbutants</text>
+	</string>
+	<string id="esc_wolf_brother_2_text">
+		<text>Escortez le frиre du Loup jusqu'au village des dйbutants.</text>
+	</string>
+	<string id="esc_wolf_brother_3_name">
+		<text>Rйcupйrer la rйcompense</text>
+	</string>
+	<string id="esc_wolf_brother_3_text">
+		<text>Rйcupйrez la rйcompense que le Loup vous avait promise.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_name">
+		<text>Trouver des infos sur l'йquilibrage des composants mouvants</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_text">
+		<text>Van, le technicien du Cordon, recherche des informations sur l'йquilibrage des piиces mouvantes des fusils d'assaut.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_name">
+		<text>Trouver des infos sur le mйcanisme de rechargement des fusils а pompe</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_text">
+		<text>А l'aide de donnйes plus prйcises sur le rechargement des fusils а pompe, le technicien pourra nettement amйliorer la cadence de tir de ces armes.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_name">
+		<text>Trouver des infos sur les systиmes de stabilisation йlectronique</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_text">
+		<text>Le technicien peut assembler un systиme qui amйliore la prйcision d'un fusil а pompe, mais il lui manque des donnйes essentielles pour зa.</text>
+	</string>
+	<string id="esc_recover_item_1_name">
+		<text>Livrer la vodka "magique"</text>
+	</string>
+	<string id="esc_recover_item_1_text">
+		<text>Y avait un pharmacien avant dans la Zone. Bon d'accord, c'йtait pas un vrai de vrai, mais il savait prйparer de la vodka "magique". C'йtait vraiment quelque chose... Une ou deux lampйes et t'oubliais tout : la Zone, les mutants, les anomalies, tout, je te dis ! T'avais plus peur et t'en avais rien а battre de qui t'йtais et de ce qui allait t'arriver. Mкme au prix que зa coыtait, зa valait le coup ! Enfin bref, un jour, un mec jaloux dйcide d'empoisonner le pharmacien... Et bam ! Adieu la vodka magique ! Mais j'ai appris y a pas longtemps qu'il avait planquй quelques bouteilles avant de passer l'arme а gauche... Apporte-moi l'une d'entre elles et je te dйdommagerai largement !</text>
+	</string>
+	<string id="esc_recover_item_2_name">
+		<text>Rapporter le AKM-47/2 de collection</text>
+	</string>
+	<string id="esc_recover_item_2_text">
+		<text>Je collectionne les armes rares. J'en ai assez pour remplir un musйe, sauf qu'il m'en manque une : un AKM-47/2 bien particulier ! Ce flingue, c'est pas une simple pйtoire, c'est une piиce de collection qu'a tuй des mutants que t'as mкme jamais vus ! Son ancien propriйtaire avait pas vraiment le compas dans l'oeil, mais il йtait devenu une vraie lйgende dans la Zone. Ce mec savait se tirer de n'importe quelle embrouille et йchapper а n'importe quelle anomalie... Ca fait un bail que j'ai plus entendu parler de ce type, mais il paraоt que son flingue est planquй dans un endroit pas facile d'accиs. Rapporte-le-moi, tu veux ?</text>
+	</string>
+	<string id="esc_recover_item_3_name">
+		<text>Rapporter le dйtecteur "porte-bonheur"</text>
+	</string>
+	<string id="esc_recover_item_3_text">
+		<text>Faut que tu m'aides, mec ! Je me suis achetй un nouveau dйtecteur y a pas longtemps et j'ai balancй l'ancien dans une anomalie, histoire de fкter зa. Le problиme, c'est que le nouveau me porte la poisse... Ca fait trois semaines que j'ai plus trouvй un seul artefact ! Il est pas mal, mais je voudrais vraiment rйcupйrer l'ancien. Apporte-le-moi et je te rйcompenserai !</text>
+	</string>
+	<string id="esc_recover_item_4_name">
+		<text>Apporter un mйdikit spйcial</text>
+	</string>
+	<string id="esc_recover_item_4_text">
+		<text>Un de mes potes a essayй d'йchapper aux bandits y a pas longtemps. Ces enfoirйs l'ont fait courir а travers des anomalies sur le remblai, juste pour se marrer... Les radiations dans le coin sont de vraies saletйs. Il peut presque plus bouger et les mйdocs normaux lui font aucun effet. Il lui faut quelque chose de plus fort. Paraоt que les troufions ont des mйdikits spйciaux qui pourraient aider, alors si tu peux en rapporter un, on saura se montrer reconnaissants.</text>
+	</string>
+</string_table>

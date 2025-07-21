@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_bandit_spy_name">
+		<text>Elimina la potenziale minaccia alla stazione di rifornimento</text>
+	</string>
+	<string id="val_bandit_spy_text">
+		<text>Di notte si vedono delle luci fioche presso la stazione di rifornimento abbandonata. Indaga ed elimina qualsiasi potenziale minaccia.</text>
+	</string>
+	<string id="val_bring_to_fang_name">
+		<text>Segui il segnale del PDA di Fang</text>
+	</string>
+	<string id="val_bring_to_fang_text">
+		<text>Il tecnico della Freedom и risalito alla frequenza del PDA di Fang. Ora puoi seguire i movimenti di Fang. Secondo il segnale, Fang si trova alla Discarica. Segui il segnale del suo PDA.</text>
+	</string>
+	<string id="val_check_blockpost_name">
+		<text>Scopri cosa и successo all'avamposto</text>
+	</string>
+	<string id="val_check_blockpost_text">
+		<text>Pare che l'avamposto della Freedom sia stato attaccato di nuovo. Scopri cosa и successo e trova eventuali superstiti all'avamposto.</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_name">
+		<text>Ricevi nuovi ordini dal comandante</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_text">
+		<text>Ricevi nuovi ordini dal comandante.</text>
+	</string>
+	<string id="val_come_to_comendant_name">
+		<text>Parla con il comandante</text>
+	</string>
+	<string id="val_come_to_comendant_text">
+		<text>Chiedi di Fang al comandante.</text>
+	</string>
+	<string id="val_come_to_freedom_base_name">
+		<text>Trova la base della Freedom</text>
+	</string>
+	<string id="val_come_to_freedom_base_text">
+		<text>Secondo le informazioni fornite dagli scavatori, Fang и andato nella Valle Oscura in cerca dei componenti rimasti. Trova la base della Freedom e chiedi informazioni su Fang.</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_name">
+		<text>Parla con il comandante dell'avamposto</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_text">
+		<text>Parla con il comandante dell'avamposto.</text>
+	</string>
+	<string id="val_deliver_ammo_name">
+		<text>Consegna le munizioni all'avamposto</text>
+	</string>
+	<string id="val_deliver_ammo_text">
+		<text>Consegna le munizioni all'avamposto.</text>
+	</string>
+	<string id="val_deliver_pda_name">
+		<text>Consegna il PDA a Chekhov</text>
+	</string>
+	<string id="val_deliver_pda_text">
+		<text>Il PDA del comandante contiene molte informazioni che potrebbero aiutare la Freedom a capire chi li sta attaccando e come fanno gli aggressori a entrare nella Valle Oscura. Consegna il PDA al leader della Freedom.</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_name">
+		<text>Distruggi la tana dei cinghiali</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_text">
+		<text>Distruggi la tana dei cinghiali.</text>
+	</string>
+	<string id="val_destroy_killer_base_name">
+		<text>Elimina i mercenari</text>
+	</string>
+	<string id="val_destroy_killer_base_text">
+		<text>La base principale dei mercenari и stata scoperta. Aiuta la Freedom a distruggerla, cosм potrа fermare gli attacchi e ottenere il controllo assoluto della Valle Oscura.</text>
+	</string>
+	<string id="val_find_pda_name">
+		<text>Trova il PDA attivo</text>
+	</string>
+	<string id="val_find_pda_text">
+		<text>Il PDA di uno dei membri della Freedom deceduti и ancora attivo. Trovalo, poichй potrebbe contenere informazioni preziose.</text>
+	</string>
+	<string id="val_go_to_freedom_leader_name">
+		<text>Porta il PDA a Chekhov</text>
+	</string>
+	<string id="val_go_to_freedom_leader_text">
+		<text>Il PDA di uno dei membri della Freedom uccisi all'avamposto contiene la registrazione di una conversazione tra gli aggressori. Questa registrazione potrа aiutare a identificarli. Porta il PDA a Chekhov.</text>
+	</string>
+	<string id="val_go_to_trader_name">
+		<text>Ottieni munizioni da Bossolo</text>
+	</string>
+	<string id="val_go_to_trader_text">
+		<text>Ottieni delle munizioni per l'avamposto della Freedom da Bossolo.</text>
+	</string>
+	<string id="val_help_freedom_name">
+		<text>Aiuta la Freedom a eliminare i mercenari</text>
+	</string>
+	<string id="val_help_freedom_text">
+		<text>Aiuta la Freedom a eliminare i mercenari.</text>
+	</string>
+	<string id="val_kill_flesh_name">
+		<text>Uccidi lo pseudocane</text>
+	</string>
+	<string id="val_kill_flesh_text">
+		<text>Uccidi lo pseudocane che si и rintanato vicino alla base della Freedom.</text>
+	</string>
+	<string id="val_kill_komendant_name">
+		<text>Uccidi il comandante</text>
+	</string>
+	<string id="val_kill_komendant_text">
+		<text>Il PDA all'avamposto conteneva la registrazione di una conversazione tra gli aggressori. Pare sia stato il comandante a vendere le informazioni che hanno permesso agli aggressori di sferrare attacchi rapidi e inaspettati contro le pattuglie della Freedom. Trova il traditore e consegnalo a Chekhov... vivo o morto.</text>
+	</string>
+	<string id="val_night_bloodsucker_name">
+		<text>Trova l'amico del tecnico</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_name">
+		<text>Porta il componente al tecnico</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_text">
+		<text>Porta il componente al tecnico.</text>
+	</string>
+	<string id="val_night_bloodsucker_text">
+		<text>Trova l'amico del tecnico.</text>
+	</string>
+	<string id="val_pursuit_comendant_name">
+		<text>Trova il comandante</text>
+	</string>
+	<string id="val_pursuit_comendant_text">
+		<text>Trova il comandante.</text>
+	</string>
+	<string id="val_reply_to_sos_name">
+		<text>Rispondi al segnale di SOS</text>
+	</string>
+	<string id="val_reply_to_sos_text">
+		<text>Aiuta a respingere l'attacco.</text>
+	</string>
+	<string id="val_strike_antenna_name">
+		<text>Conquista le antenne</text>
+	</string>
+	<string id="val_strike_antenna_text">
+		<text>Conquista e difendi le antenne per monitorare l'area.</text>
+	</string>
+	<string id="val_strike_antenna_two_name">
+		<text>Conquista le antenne</text>
+	</string>
+	<string id="val_strike_antenna_two_text">
+		<text>Conquista e difendi le antenne per monitorare l'area.</text>
+	</string>
+	<string id="val_take_pda_name">
+		<text>Prendi il PDA del comandante</text>
+	</string>
+	<string id="val_take_pda_text">
+		<text>Il comandante и stato ucciso dai suoi compagni non appena la Freedom ha iniziato a cercarlo. Il suo PDA contiene informazioni importanti sulle persone che ha aiutato.</text>
+	</string>
+	<string id="val_test">
+		<text>Aiuta</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_name">
+		<text>Elimina il gruppo di banditi</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_text">
+		<text>Hai individuato un gruppo di banditi nella stazione di servizio abbandonata. Uccidili.</text>
+	</string>
+	<string id="st_val_bandit_spy_return_name">
+		<text>Torna per ottenere la ricompensa</text>
+	</string>
+	<string id="st_val_bandit_spy_return_text">
+		<text>Hai trovato ed eliminato un gruppo di banditi nella stazione di servizio abbandonata. Informa il barista.</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_name">
+		<text>Trova informazioni sulle canne per i fucili di precisione</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_text">
+		<text>Yar, il tecnico della Freedom, и specializzato nelle armi ad alta precisione. Ora sta cercando informazioni sulle canne per i fucili di precisione.</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_name">
+		<text>Trova informazioni su uno stabilizzatore elettronico per i fucili di precisione</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_text">
+		<text>Yar il tecnico pagherа bene delle informazioni dettagliate su un meccanismo di stabilizzazione elettronica per i fucili di precisione.</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_name">
+		<text>Trova informazioni sui freni di velocitа alla bocca per i fucili di precisione</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_text">
+		<text>A Yar il tecnico servono informazioni sul funzionamento dei freni di velocitа alla bocca per i fucili di precisione piщ potenti. Una volta ottenute, sarа in grado di costruirne uno.</text>
+	</string>
+	<string id="val_recover_item_1_name">
+		<text>Recupera il mirino 8x</text>
+	</string>
+	<string id="val_recover_item_1_text">
+		<text>Da queste parti c'era un tizio con un mirino eccezionale sul suo fucile, di quelli che si vedono raramente nella Zona. Ho provato di tutto, ma non ha voluto vendermelo. Poi и partito verso il Cordon con una delle nostre pattuglie. Non sono mai tornati indietro, quindi immagino che lo stalker riposi in pace da quelle parti. Portami quel mirino, cosм potrт regalarlo a Chekhov. Chissа, potrei ottenere una promozione a comandante!</text>
+	</string>
+	<string id="val_recover_item_2_name">
+		<text>Recupera la memoria USB con i film</text>
+	</string>
+	<string id="val_recover_item_2_text">
+		<text>Aiutami, amico. Ero a casa di Ganja a vedere un film sul suo computer, quando il comandante ci ha beccati e ha iniziato a dire che ero in servizio e cose del genere. Voleva fare a pezzi il computer, ma anche se siamo riusciti a fermarlo in tempo, ha preso la memoria USB con il film e l'ha lanciata oltre il recinto, nella zona radioattiva. Recupera la memoria e Ganja ti ricompenserа.</text>
+	</string>
+	<string id="val_recover_item_3_name">
+		<text>Recupera la chitarra di Serega</text>
+	</string>
+	<string id="val_recover_item_3_text">
+		<text>Qualcuno ha rubato la chitarra di Serega. Pensa te! Qui и l'unico capace di suonare la chitarra. Ed и anche bravo, a differenza di tutti gli altri. Abbiamo capito subito chi и stato a rubarla, ma quel farabutto si и nascosto da qualche parte. Devi recuperare quella chitarra, visto che Serega si rifiuta di suonarne altre, OK?</text>
+	</string>
+</string_table>

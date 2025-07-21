@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mar_capture_plant">
+		<text>Conquista la central.</text>
+	</string>
+	<string id="mar_capture_plant_text">
+		<text>Conquista la central que se usa para extraer sustancias anуmalas del fondo de los pantanos.</text>
+	</string>
+	<string id="mar_capture_tower">
+		<text>Captura la torre de guardia.</text>
+	</string>
+	<string id="mar_capture_tower_text">
+		<text>Ayuda al pelotуn de Cielo Despejado a conquistar la torre de guardia de los bandidos.</text>
+	</string>
+	<string id="mar_defend_tower">
+		<text>Rechaza el ataque bandido contra la torre.</text>
+	</string>
+	<string id="mar_defend_tower_text">
+		<text>Rechaza el contraataque bandido contra la torre de guardia.</text>
+	</string>
+	<string id="mar_story_capture_bandit_base">
+		<text>Conquista la granja del noreste.</text>
+	</string>
+	<string id="mar_story_capture_bandit_base_text">
+		<text>Elimina a los bandidos de la granja del noreste de los pantanos y conquнstala.</text>
+	</string>
+	<string id="mar_story_capture_levelchangers">
+		<text>Conquista los accesos a los caminos al mundo exterior.</text>
+	</string>
+	<string id="mar_story_capture_levelchangers_text">
+		<text>Conquista las posiciones adyacentes de los caminos al Cordуn y Agroprom para asegurarlos.</text>
+	</string>
+	<string id="mar_story_empower_csky">
+		<text>Refuerza la presencia de Cielo Despejado en los pantanos.</text>
+	</string>
+	<string id="mar_story_empower_csky_text">
+		<text>Elimina las fuerzas enemigas para reforzar la presencia de Cielo Despejado en los pantanos.</text>
+	</string>
+	<string id="mar_story_go_to_escape">
+		<text>Ve al cordуn con el guнa.</text>
+	</string>
+	<string id="mar_story_go_to_escape_text">
+		<text>Encuйntrate con el guнa y ve con йl al Cordуn.</text>
+	</string>
+	<string id="mar_story_go_to_marsh">
+		<text>Ve a los grandes pantanos con el guнa.</text>
+	</string>
+	<string id="mar_story_go_to_marsh_text">
+		<text>Pнdele al guнa que te lleve a los grandes pantanos.</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh">
+		<text>Conquista los pantanos.</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh_text">
+		<text>Conquista los pantanos para que los caminos sean seguros para los guнas.</text>
+	</string>
+	<string id="mar_story_talk_with_barman">
+		<text>Habla con el tabernero.</text>
+	</string>
+	<string id="mar_story_talk_with_barman_text">
+		<text>Pregъntale al tabernero sobre la base de Cielo Despejado.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1">
+		<text>Habla con Lebedev.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1_text">
+		<text>Descubre lo que querнa Lebedev.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2">
+		<text>Pregъntale a Lebedev quй pasу.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2_text">
+		<text>Pregъntale a Lebedev quй pasу tras la segunda emisiуn.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3">
+		<text>Llega a un acuerdo de cooperaciуn con Lebedev.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3_text">
+		<text>Llega a un acuerdo con Lebedev para que te ayude a salir de los pantanos.</text>
+	</string>
+	<string id="mar_story_talk_with_guide">
+		<text>Ve a la avanzadilla con el guнa.</text>
+	</string>
+	<string id="mar_story_talk_with_guide_text">
+		<text>Pнdele al guнa que te lleve a la avanzadilla.</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych">
+		<text>Habla con Sidorovich.</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych_text">
+		<text>Pregъntale a Sidorovich por el stalker que estaba interesado en los extraсos componentes. Es la ъnica pista que Cielo Despejado tiene del por quй de las emisiones de la Zona.</text>
+	</string>
+	<string id="mar_story_talk_with_trader">
+		<text>Consigue el equipamiento del comerciante.</text>
+	</string>
+	<string id="mar_story_talk_with_trader_text">
+		<text>Consigue un set de equipamiento del comerciante.</text>
+	</string>
+	<string id="mar_tutorial_help">
+		<text>Ayuda a la avanzadilla.</text>
+	</string>
+	<string id="mar_tutorial_help_text">
+		<text>Responde a la seсal de ayuda de la avanzadilla de Cielo Despejado.</text>
+	</string>
+	<string id="mar_tutorial_kill_boars">
+		<text>Mata a los jabalнs.</text>
+	</string>
+	<string id="mar_tutorial_kill_boars_text">
+		<text>Elimina a los jabalнs que atacan la avanzadilla de Cielo Despejado.</text>
+	</string>
+	<string id="mar_tutorial_return_to_base">
+		<text>Vuelve a la base de Cielo Despejado.</text>
+	</string>
+	<string id="mar_tutorial_return_to_base_text">
+		<text>Ponte a cubierto dentro de la base de Cielo Despejado antes de que llegue la emisiуn.</text>
+	</string>
+	<string id="mar_tutorial_tower_top">
+		<text>Sube a la torre.</text>
+	</string>
+	<string id="mar_tutorial_tower_top_text">
+		<text>Sube a la torre para escapar de los monstruos.</text>
+	</string>
+	<string id="st_bring_item_1_name">
+		<text>Entrega las granadas.</text>
+	</string>
+	<string id="st_bring_item_1_text">
+		<text>El pelotуn de Cielo Despejado ha solicitado unas granadas.</text>
+	</string>
+	<string id="st_bring_item_2_name">
+		<text>Entrega los suministros mйdicos.</text>
+	</string>
+	<string id="st_bring_item_2_text">
+		<text>El pelotуn de Cielo Despejado necesita unos suministros mйdicos desesperadamente.</text>
+	</string>
+	<string id="st_bring_item_3_name">
+		<text>Entrega la municiуn.</text>
+	</string>
+	<string id="st_bring_item_3_text">
+		<text>El pelotуn de Cielo Despejado necesita unos cartuchos de escopeta.</text>
+	</string>
+	<string id="st_bring_item_4_name">
+		<text>Entrega la municiуn.</text>
+	</string>
+	<string id="st_bring_item_4_text">
+		<text>El pelotуn de Cielo Despejado necesita municiуn de pistola.</text>
+	</string>
+	<string id="st_bring_item_5_name">
+		<text>Entrega la municiуn.</text>
+	</string>
+	<string id="st_bring_item_5_text">
+		<text>El pelotуn de Cielo Despejado necesita municiуn de fusil de asalto.</text>
+	</string>
+	<string id="st_recover_item_1_name">
+		<text>Devuelve la PMm.</text>
+	</string>
+	<string id="st_recover_item_1_text">
+		<text>Un pelotуn de Cielo Despejado se metiу en una guarida de jabalнs en una misiуn nocturna. Probablemente sea demasiado tarde para salvar a los hombres, pero el comandante del pelotуn tenнa una PMm modificada. La pistola serб ъtil para la facciуn. Devuйlvela.</text>
+	</string>
+	<string id="st_recover_item_2_name">
+		<text>Devuelve el AK74/2u.</text>
+	</string>
+	<string id="st_recover_item_2_text">
+		<text>Hace unos dнas los renegados atacaron a un pelotуn de Cielo Despejado cuando estaban comprando un envнo de armas a los militares. Los renegados capturaron la mayorнa de las armas, pero el mejor fusil de asalto estaba escondido. Ve a recuperarlo.</text>
+	</string>
+	<string id="st_recover_item_3_name">
+		<text>Consigue el artefacto.</text>
+	</string>
+	<string id="st_recover_item_3_text">
+		<text>Un pelotуn de Cielo Despejado recibiу una seсal de socorro de un stalker que habнa encontrado un raro artefacto, pero que no sabнa cуmo salir de un бrea anуmala. El pelotуn no pudo llegar hasta йl a tiempo y perdiу la seсal. Tienes que conseguir ese artefacto.</text>
+	</string>
+	<string id="st_recover_item_4_name">
+		<text>Devuelve la PDA.</text>
+	</string>
+	<string id="st_recover_item_4_text">
+		<text>Uno de nuestros mejores exploradores ha desaparecido durante una misiуn de reconocimiento nocturno. Tienes que recuperar al menos su PDA para que la informaciуn recogida no se desperdicie.</text>
+	</string>
+	<string id="st_recover_item_5_name">
+		<text>Devuelve el traje.</text>
+	</string>
+	<string id="st_recover_item_5_text">
+		<text>Los renegados acaban de capturar la pequeсa central de los pantanos cuando estaban realizando un experimento. Se estaba tratando un traje con gelatina anуmala. Devuelve el traje para que nuestros cientнficos puedan evaluar el experimento.</text>
+	</string>
+	<string id="st_sim_sos_name">
+		<text>Ayuda</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_name">
+		<text>Encuentra informaciуn sobre el blindaje personal kevlar</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_text">
+		<text>Gray necesita informaciуn sobre el blindaje personal kevlar para mejorar el blindaje.</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_name">
+		<text>Encuentra informaciуn sobre los caсones perforados</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_text">
+		<text>Gray quiere instalar un caсуn perforado especial, pero no sabe lo bastante acerca de su funcionamiento. Encuentra la informaciуn relacionada y llйvasela.</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_name">
+		<text>Encuentra informaciуn sobre la modificaciуn del caсуn</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_text">
+		<text>Gray quiere modificar el caсуn de un arma para mejorar sus caracterнsticas, pero le faltan datos.</text>
+	</string>
+	<string id="st_mar_leader_notify_actor">
+		<text>Mercenario, Ўconcйntrate! Nuestro objetivo es hacernos con los pantanos. Si no sabes quй hacer, mira la lista de tareas activas en tu PDA.</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_desc">
+		<text>PDA con informaciуn sobre los pantanos reunida por un explorador de Cielo Despejado.</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_name">
+		<text>PDA del explorador de CD</text>
+	</string>
+</string_table>

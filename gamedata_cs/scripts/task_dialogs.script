@@ -314,10 +314,6 @@ function transfer_recovered_item(actor, npc)
 		db.storage.remember_target_for_recoveritem[squad.squad_id] = nil
 		sr_recoveritem.target_sr = nil
 	end
-	local board_squads = sim_board.get_sim_board().squads
-	for k,v in pairs(board_squads) do
-		v.random_tasks[3] = nil
-	end
 end
 
 --' Есть ли награда

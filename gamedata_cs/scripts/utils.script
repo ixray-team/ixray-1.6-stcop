@@ -58,34 +58,34 @@ function copy_table(dest, src)
 end
 
 function print_table()
-  local sub
-  if subs ~= nil then
-    sub = subs
-  else
-    sub = ""
-  end
-  for k,v in pairs(table) do
-    if type(v) == "table" then
-      printf(sub.."%s:", tostring(k))
-      print_table(v, sub.."    ")
-    elseif type(v) == "function" then
-      printf(sub.."%s:function", tostring(k))
-    elseif type(v) == "userdata" then
-      printf(sub.."%s:userdata", tostring(k))
-    elseif type(v) == "boolean" then
+	local sub
+	if subs ~= nil then
+		sub = subs
+	else
+		sub = ""
+	end
+	for k,v in pairs(table) do
+		if type(v) == "table" then
+			printf(sub.."%s:", tostring(k))
+			print_table(v, sub.."    ")
+		elseif type(v) == "function" then
+			printf(sub.."%s:function", tostring(k))
+		elseif type(v) == "userdata" then
+			printf(sub.."%s:userdata", tostring(k))
+		elseif type(v) == "boolean" then
 	if v == true then
 		printf(sub.."%s:true", tostring(k))
 	else
 		printf(sub.."%s:false", tostring(k))
 	end
-    else
-      if v ~= nil then
-        printf(sub.."%s:%s", tostring(k),v)
-      else
-        printf(sub.."%s:nil", tostring(k),v)
-      end
-    end
-  end
+		else
+			if v ~= nil then
+				printf(sub.."%s:%s", tostring(k),v)
+			else
+				printf(sub.."%s:nil", tostring(k),v)
+			end
+		end
+	end
 end
 
 --' Возвращает расстояние между двумя точками графа с учетом разности уровней
@@ -100,14 +100,14 @@ end
 
 --' Сравнивает два вектора
 function vector_cmp(a, b)
-    return a.x == b.x and a.y == b.y and a.z == b.z
+		return a.x == b.x and a.y == b.y and a.z == b.z
 end
 
 --' Сравнивает два вектора с заданной погрешностью
 function vector_cmp_prec(a, b, d)
-    return math.abs(a.x - b.x) <= d and
-           math.abs(a.y - b.y) <= d and
-           math.abs(a.z - b.z) <= d
+		return math.abs(a.x - b.x) <= d and
+					 math.abs(a.y - b.y) <= d and
+					 math.abs(a.z - b.z) <= d
 end
 
 
@@ -271,8 +271,8 @@ end
 
 --[[
 function stalker_look_at_stalker_angle(stalker, whom, angle)
-    --stalker - killer
-    --whom - killed :)
+		--stalker - killer
+		--whom - killed :)
 	local look_pt = this.vector_copy_by_val(whom:position()):sub(stalker:position())
 	stalker:set_sight (look.direction, vector_rotate_y (look_pt, angle), 0)
 end
@@ -280,8 +280,8 @@ end
 
 --[[
 function stalker_look_firepoint_angle(stalker, whom, angle)
-    --stalker - killer
-    --whom - killed :)
+		--stalker - killer
+		--whom - killed :)
 	local look_pt = this.vector_copy_by_val(whom:position()):sub(stalker:position())
 	stalker:set_sight (look.fire_point, vector_rotate_y (look_pt, angle), 0)
 end
@@ -499,7 +499,7 @@ function is_day()
 end
 
 function electro_art_enabled ()
-    return level.get_time_hours() >= 0 and level.get_time_hours() < 5
+		return level.get_time_hours() >= 0 and level.get_time_hours() < 5
 end
 
 function no_need_to_rotate(npc, target_pos)
@@ -590,7 +590,7 @@ function w_CTime( p, t )
 		return
 	end
 
-	if not (t == CTime_0) then
+	if (CTime == nil) or (t ~= CTime_0) then
 		local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
 		Y, M, D, h, m, s, ms = t:get( Y, M, D, h, m, s, ms )
 
@@ -661,7 +661,7 @@ end
 function parse_data_1v(npc,s)
 	local t = {}
 
-    if s then
+		if s then
 		for name in string.gfind( s, "(%|*%d+%|[^%|]+)%p*" ) do
 --			printf("[%s]", utils.to_str(name))
 			local dat = {	dist = nil,
@@ -680,18 +680,18 @@ function parse_data_1v(npc,s)
 			t[tonumber(dist)] = dat
 		end
 	end
-    return t
+		return t
 end
 
 
 
 --' Вычитка свойств для спауна объектов.
 function parse_names(s)
-    local t = {}
-    for name in string.gfind( s, "([%w_%-.\\]+)%p*" ) do
-        table.insert( t, name )
-    end
-    return t
+		local t = {}
+		for name in string.gfind( s, "([%w_%-.\\]+)%p*" ) do
+				table.insert( t, name )
+		end
+		return t
 end
 
 function parse_spawns(str)
@@ -747,10 +747,10 @@ end
 
 
 function parse_target(target)
-    local pos = string.find(target, ",")
-    if pos then
-        return string.sub(target, 1, pos - 1), string.sub(target, pos + 1)
-    else
-        return target, nil
-    end
+		local pos = string.find(target, ",")
+		if pos then
+				return string.sub(target, 1, pos - 1), string.sub(target, pos + 1)
+		else
+				return target, nil
+		end
 end

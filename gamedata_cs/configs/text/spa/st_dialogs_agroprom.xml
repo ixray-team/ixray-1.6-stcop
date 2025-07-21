@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_leader_hello_dialog_11">
+		<text>Buenos dнas, mercenario. їQuй necesitas?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_12">
+		<text>Eh, mercenario, te estбn esperando en la guarida.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111">
+		<text>No he visto a mucha gente dispuesta a bajar ahн. їTienes idea de lo que te espera?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111111">
+		<text>"No deberнa ser demasiado peligroso..." ЎJa! Las cosas han cambiado mucho desde que decidimos bloquear ese tъnel auxiliar. Supongo que nos hemos pasado con los explosivos: la detonaciуn derribу algunas paredes y abriу nuevas cavernas. ЎNos inundу un enjambre de mutantes antes de poder decir "chupasangre"! Muchos de nuestros muchachos nunca regresaron a la superficie.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111111">
+		<text>Ordenй que sellaran todas las salidas. Funcionу, pero solo por un rato. Los mutantes empezaron a cavar agujeros y a salir del suelo. Para cuando habнamos tapado un hoyo, ya habнan abierto otro. Parece que tienen una sola meta: acabar con nosotros a toda costa.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111111111">
+		<text>Te ayudarй a bajar ahн, pero a cambio, quiero un favor. Mira, el mapa muestra una estaciуn de bombeo que drena las aguas subterrбneas. Si apagas la bomba y abres la vбlvula del depуsito, el agua inundarб las cuevas rбpidamente y nos libraremos de los mutantes.</text>
+	</string>
+	<string id="agr_leader_about_dolg_1">
+		<text>Nuestra facciуn se llama Deber. їMe preguntas por quй? Bien, es sencillo. Si no lo hacemos nosotros, їquiйn lo harб? Combatir la Zona y a todas sus manifestaciones es nuestra responsabilidad. Muchos de nuestros miembros actuales comenzaron como simples stalkers, para ganar dinero, pero tras ver los horrores de la Zona, se dieron cuenta de que habнa que hacer algo. ЎEs mejor sacrificar la vida, si es necesario, que ver nuestro hogar invadido por los mutantes! Es una vergьenza que muchos stalkers no lo vean asн. Y es una vergьenza aъn mayor que tengamos que luchar contra esos idiotas para impedir que la Zona se extienda.</text>
+	</string>
+	<string id="agr_leader_about_dolg_111">
+		<text>El Instituto Agroprom es una buena ubicaciуn estratйgica, por no mencionar sus tъneles subterrбneos. En cualquier caso, hace tiempo desplegamos allн un programa de investigaciуn para estudiar la Zona. Primero estudiamos la anatomнa y la fisiologнa de los mutantes. En otras palabras, buscбbamos mйtodos mбs fбciles para matarlos. Fue una investigaciуn larga y pesada, hasta que al final encontramos por casualidad unos materiales en la instalaciуn subterrбnea del instituto... Unos materiales muy interesantes.</text>
+	</string>
+	<string id="agr_leader_about_dolg_11111">
+		<text>Experimentos secretos para controlar la conciencia, llevados a cabo en la era soviйtica. їNo es increнble? Esos tipos habнan avanzado mucho en sus investigaciones, incluso habнan logrado implantar уrdenes simples en las mentes de los animales. Por eso sospechamos que algo, o alguien, puede controlar a los mutantes. Por desgracia, todos nuestros datos confirman esta teorнa. Tan pronto como quemamos una guarida de mutantes, contraatacan con chupasangres o con una jaurнa de pseudoperros. Cuanto mбs rбpido los destruimos, mбs rбpido vuelven al ataque. Apuesto a que no es por casualidad. No creo en las casualidades que se repiten. Hay algo detrбs de todo esto. Estoy seguro.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0">
+		<text>Eh... їQuй te crees que estбs haciendo?</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_011">
+		<text>Pues sigue.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_012">
+		<text>їY?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_13">
+		<text>Eh, їquй te trae por aquн?</text>
+	</string>
+	<string id="agr_barman_join_duty_11">
+		<text>Mejor pregъntale a Krylov. Lo encontrarбs en la segunda planta del edificio central. Estarбs de acuerdo conmigo: no es bueno dejar entrar a un forastero en tu casa y sincerarte con йl. Nuestro jefe hablarб contigo y verб si se puede confiar en ti.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_01">
+		<text>Necesito ver a tu jefe.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0111">
+		<text>Gracias.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0122">
+		<text>Entendido.</text>
+	</string>
+	<string id="agr_duty_barman_around_0">
+		<text>їCuбles son las ъltimas noticias?</text>
+	</string>
+	<string id="agr_duty_barman_around_1">
+		<text>їNoticias? Bueno, toda una facciуn ha desaparecido. Y no es que hayan sido eliminados por otra facciуn o por monstruos. Es que simplemente ya no estбn. Eran unos tipos muy extraсos, estaban fascinados por la Zona. Creнan que la Zona estaba viva y que en su centro habнa un Monolito, un Genio. Asн que se declararon protectores de este Monolito. Y un buen dнa, toda la facciуn se fue al centro. Sн, derechos al Genio. Se dirigieron al Cauterizador, cruzaron la Barrera y nadie los ha vuelto a ver desde entonces.</text>
+	</string>
+	<string id="agr_duty_barman_jelanie_0">
+		<text>їY quй opinas tъ del Genio?</text>
+	</string>
+	<string id="agr_duty_barman_jelanie_1">
+		<text>Creo que existe. Y deberнamos despejar un camino hasta йl. Un solo clan quizб no tenga suficiente fuerza para hacerlo. Pero si todos los clanes se unen, puede que logremos cruzar el Cauterizador. Tal y como estбn las cosas, cada facciуn sabe algo, pero morirбn antes de revelarlo a otra. Se aferran a sus secretos. Aсade a eso un imbйcil como Mitay y la cosa ya no hay por donde cogerla. Sidorovich es el ъnico que reъne informaciуn metуdicamente. Anda que no es tozudo, je. Pero por otro lado, tratбndose de Sidorovich, no puedes esperar que nada te salga gratis.</text>
+	</string>
+	<string id="agr_duty_barman_you_0">
+		<text>Hбblame de ti.</text>
+	</string>
+	<string id="agr_duty_barman_you_1">
+		<text>Vengo de una ciudad pequeсa. Completй el instituto y servн en el ejйrcito. Cuando salн no habнa trabajos y no tenнa sentido ir a la universidad. En resumen, pasй por el campamento militar y acabй aquн. De hecho, primero estuve en el Cordуn. Un dнa uno de nuestros coroneles decidiу que necesitaba un raro artefacto para curarse. No le gustaba la idea de contratar stalkers, asн que le asignу el trabajo a nuestro pelotуn. El mapa que nos dieron era de hacнa treinta aсos. Quй cabrones. En pocas horas, la mitad de los nuestros ya habнan muerto por las anomalнas. Luego vinieron los perros y despuйs los chupasangres. Al final del dнa solo quedбbamos el sargento y yo. Gracias a Dios tenнamos botiquines y logramos arrastrarnos hasta la base de Deber. Tenнa la pierna destrozada, fue una suerte que no me la amputasen. En fin, los tipos de Deber nos curaron y nos mostraron el camino de vuelta. Son hombres de verdad que llevan una vida sencilla y decente. Hice muchos amigos durante mi estancia allн. En todo caso, en cuanto terminу mi servicio, cogн mis cosas y volvн a la Zona. Encontrй la base de Deber, pedн unirme a ellos y me aceptaron.</text>
+	</string>
+	<string id="agr_duty_barman_zone_0">
+		<text>їQuй sabes de la Zona?</text>
+	</string>
+	<string id="agr_duty_barman_zone_1">
+		<text>No mucho, para serte sincero. Llevo poco tiempo aquн. Pero una vez hablй con un veterano y fue una conversaciуn muy interesante. Acerca del comienzo de la Zona, los primeros viajes que se hicieron y los primeros hallazgos. La muerte horrible de alguien en una anomalнa servнa de lecciуn para los demбs. Los cientнficos empezaron a fabricar los primeros trajes de protecciуn y detectores de anomalнas. Cada innovaciуn se hacнa a costa de la salud o de la muerte de alguien. A veces los cientнficos encontraban a un stalker agonizante, lo curaban y empezaban a preguntarle: їdуnde te hiciste esta herida, quiйn o quй la causу? Y entonces tomaban notas y aсadнan mбs capas de protecciуn a un traje o ajustaban la escala de algъn sensor. \nEnsayo y error, decнa el veterano. El modo mбs difнcil, pero tambiйn el mбs efectivo. Sн, los primeros stalkers lo tuvieron chungo, no como nosotros. Ahora con un buen traje de protecciуn y un arma tienes todo lo que necesitas.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_2">
+		<text>Asн que eres lo bastante valiente para ir bajo tierra, їeh? Piйnsatelo bien, ya hemos perdido mбs de una docena de nuestros mejores soldados ahн abajo. Ese agujero estб lleno de monstruos y no podemos hacer nada contra ellos. De hecho, el general Krylov ha ordenado soldar todas las entradas y salidas.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_3">
+		<text>Tratarй de bajar e inundar las cuevas. Volver con vida tambiйn estarнa bien.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_4">
+		<text>Ah, bueno, pues si lo consigues, Deber estarб en deuda contigo. Aquн tenemos uno de los agujeros que los monstruos todavнa usan para salir a la superficie. Te llevarб al subterrбneo. Ten cuidado y no pierdas tu municiуn. Buena suerte.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_5">
+		<text>Gracias.</text>
+	</string>
+	<string id="agr_duty_mechanic_about_many_word_0">
+		<text>їSiempre hablas tanto?</text>
+	</string>
+	<string id="agr_duty_mechanic_about_many_word_1">
+		<text>їSiempre eres tan fisgуn? La curiosidad matу al gato, recuйrdalo.</text>
+	</string>
+	<string id="agr_duty_mechanic_about_upgrade_0">
+		<text>їQuй actualizaciones de armas son tu especialidad?</text>
+	</string>
+	<string id="agr_duty_mechanic_about_upgrade_1">
+		<text>Todo tipo. Casi todas. Los tйcnicos de Deber son los mejores de la Zona, їvale? Puedo actualizar tu ametralladora mejor que nadie y hacerte un blindaje mejor que nadie. En resumen, conozco mi oficio.</text>
+	</string>
+	<string id="agr_duty_mechanic_like_parametrs_0">
+		<text>їQuй me sugieres actualizar en esta arma?</text>
+	</string>
+	<string id="agr_duty_mechanic_like_parametrs_1">
+		<text>El cliente siempre tiene la razуn, trabajarй en lo que quieras. Puedo mejorarte un arma de asalto. O un arma de francotirador, aunque йsas no se pueden trastear tanto. O puedes dejarlas tal y como estбn.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1">
+		<text>Eh, їpor quй no? їCuбles son las reglas?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_100">
+		<text>Eh, mercenario. їQuieres comprobar si tienes buena punterнa?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_11">
+		<text>Tienes tres opciones: prбctica, desafнo de puntuaciуn o desafнo de francotirador.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_111">
+		<text>Hбblame de la prбctica.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1111">
+		<text>No puede ser mбs simple. Primero eliges tu arma y luego la distancia del blanco. Tendrбs un nъmero limitado de disparos, el objetivo es anotar tantos puntos como puedas. Naturalmente, en el modo prбctica no puedes ganar nada, pero puedes batir el rйcord.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_11111">
+		<text>Entendido. Hбblame de las otras reglas.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_112">
+		<text>Hбblame del desafнo de puntuaciуn.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1121">
+		<text>Primero eliges tu arma y luego la distancia del blanco. Tendrбs un nъmero limitado de disparos y una puntuaciуn objetivo que alcanzar. Aquн jugamos por dinero. Haces una apuesta. Si llegas a la puntuaciуn objetivo, te pago. Si no, me quedo con la apuesta.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_113">
+		<text>Hбblame del desafнo de francotirador.\n</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1131">
+		<text>Primero, eliges tu arma. Los objetivos aparecerбn al azar. Tendrбs un nъmero limitado de disparos y deberбs dar en la diana de cada blanco. Йste es el desafнo mбs difнcil, asн que trata de no arruinarte. Las apuestas funcionan igual. Si le das a todos los blancos, te pago. Si no, me quedo la apuesta.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2">
+		<text>Basta de charla, vamos a jugar.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_200">
+		<text>їHas acabado? ЎBuen trabajo!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21">
+		<text>Otra cosa. Deja tus cosas conmigo antes de empezar. Todo tiene que ser justo. No puedes usar nada salvo mi arma. No te preocupes, recuperarбs tus cosas cuando acabes.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211">
+		<text>Me gustarнa practicar.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111">
+		<text>Buena elecciуn. Te acuerdas de las reglas, їverdad?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21110">
+		<text>predeterminado</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211101">
+		<text>Sн.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111011">
+		<text>Vale, Ўsuerte!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211102">
+		<text>Por desgracia, no tengo suficiente dinero.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111021">
+		<text>No hay problema. Vuelve cuando estйs listo.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211103">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21111">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21112">
+		<text>Sн, vamos.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121">
+		<text>Elige un arma.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111211">
+		<text>PMm.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21112111">
+		<text>Elige la distancia del blanco.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121111">
+		<text>30 metros.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121112">
+		<text>40 metros.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121113">
+		<text>50 metros.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121114">
+		<text>60 metros.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121115">
+		<text>70 metros.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111212">
+		<text>Martha.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111213">
+		<text>Akm 74/2U.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111214">
+		<text>Viper 5.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111215">
+		<text>Akm 74/2.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111216">
+		<text>TR 301.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_212">
+		<text>Quiero hacer el desafнo de puntuaciуn.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_213">
+		<text>Quiero hacer el desafнo de francotirador.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_3">
+		<text>No tengo tiempo para juegos. Quizб mбs tarde.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_300">
+		<text>ЎDeja de arrastrar los pies! Espabila y vuelve.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_3000">
+		<text>Vale.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_4">
+		<text>їCuбl es mi puntuaciуn?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_41">
+		<text>predeterminado 2</text>
+	</string>
+	<string id="agr_duty_trader_about_fight_0">
+		<text>Y si te doy una paliza, їeso te enseсarнa modales?</text>
+	</string>
+	<string id="agr_duty_trader_about_fight_1">
+		<text>Y si llamo a mis muchachos, їte cagarнas en los pantalones? No, en serio, sigue asн y mis chicos estarбn encantados de darte una lecciуn, їentendido? ЎNo conoces a nadie y nadie te conoce! ЎTe estбs buscando una paliza de las buenas! Quedarбs como un zombi. Mierda, їpor quй tengo que tratar con la escoria todos los dнas? Hay montones de cabrones que tratan de amargarme el dнa, Ўles da igual que estй intentando sacar adelante un negocio! ЎCon clientes como tъ, llegarй a los cien aсos antes de sacar algъn beneficio!</text>
+	</string>
+	<string id="agr_duty_trader_about_freetime_0">
+		<text>їQuй hace la gente por aquн para divertirse?</text>
+	</string>
+	<string id="agr_duty_trader_about_freetime_1">
+		<text>Para que te enteres, estoy ocupado. No tengo tiempo para divertirme, mucho menos para charlar con tipos como tъ. Mi tiempo es limitado, їvale? Y el de los demбs tambiйn. Si lo que quieres es divertirte, piйrdete, prueba suerte en la base de Libertad, lo que sea. Йste no es lugar para emborracharse, їte enteras?</text>
+	</string>
+	<string id="agr_duty_trader_about_original_weapons_0">
+		<text>їTienes algo especial a la venta?</text>
+	</string>
+	<string id="agr_duty_trader_about_original_weapons_1">
+		<text>їQuй pasa, eres ciego? Un consejo para retrasados: todo lo que ves aquн estб a la venta. Esto no es un supermercado, unos grandes almacenes, ni nada parecido. Si quieres algo, pagas tranquilamente, lo coges y te vas. No hace falta mбs. Sigue andando y no me hagas perder el tiempo. Estoy harto de esos tipos que vienen diciendo "ensйсame esto", "explнcame aquello", como si les debiera algo. No me des el rollo, їvale?</text>
+	</string>
+	<string id="agr_duty_trader_quest_0">
+		<text>їHay algo mбs de valor?</text>
+	</string>
+	<string id="agr_duty_trader_quest_1">
+		<text>Puedo venderte informaciуn sobre un buen escondite.</text>
+	</string>
+	<string id="agr_duty_trader_quest_2">
+		<text>Adelante.</text>
+	</string>
+	<string id="agr_duty_trader_quest_22">
+		<text>No hace falta.</text>
+	</string>
+	<string id="agr_duty_trader_quest_3">
+		<text>La ubicaciуn del escondite estб en tu PDA.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_bad_trader_0">
+		<text>їQuiйn es ese idiota que trabaja en tu tienda?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_bad_trader_1">
+		<text>No le hagas caso, es el idiota local, Mitay. Tal y como dirнa un profesor, "Ўno es mбs que un puerco comъn!". No hay jardнn sin cardos y Mitay es nuestro cardo oficial. Serнa perfecto para el zoo del inquisidor. Completarнa la colecciуn como su mejor monstruo de feria. A veces me gustarнa que un pseudoperro lo adoptase... pero la verdad es que es mбs ъtil como comerciante. Cuando va al bar, se pasa mбs tiempo recibiendo palizas que bebiendo. Aunque ese tipo de maltrato puede mandarte a la trena, a la mayorнa no les importa.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_military_0">
+		<text>Oye, їes verdad que eres amigo de los militares?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_military_1">
+		<text>No puedo hablar de eso. Aquн tenemos disciplina, despuйs de todo. Nuestro general Krylov solнa ser un militar. He oнdo algunas historias de cuando se formу la Zona, el gobierno organizу aquн una operaciуn militar. Los enviaron al centro de la Zona con orden de destruirla con explosivos nucleares. їTe imaginas lo que eso significa? Los enviaron sin protecciуn, sin detectores, sin informaciуn de quй esperar de la Zona. La mayorнa muriу en anomalнas o vнctimas de una emisiуn. Los pocos supervivientes fueron abandonados a una muerte lenta. El general Krylov es uno de esos pocos. No sй de quiйn es amigo, pero odia a los militares desde que enviaron a sus compaсeros y a йl a la muerte. Aunque tiene algunas conexiones con la Spetsnaz. La Spetsnaz solo tiene hombres de verdad. A veces su camino se cruza con el de Deber. Eso es todo, considйralo la versiуn resumida.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_story_0">
+		<text>їAlguna historia interesante que contar?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_story_1">
+		<text>Pues sн, y de las buenas. їHas oнdo hablar del Doctor? En teorнa vive en una remota ciйnaga. їNunca has oнdo hablar de йl? Pues es una de las leyendas mбs antiguas de la Zona. Es un doctor capaz de revivir a los muertos, incluso aunque estйn hechos pedazos. ЎNadie sabe cуmo lo hace, pero es un hecho! No he visto a ninguno de esos resucitados, pero conozco a gente que sн lo ha hecho. Ahora la parte mбs interesante. Dicen que el Doctor es uno de los stalkers originales. En teorнa logrу llegar hasta el Genio. їY sabes lo que pidiу? La capacidad de ayudar a todos los seres vivos. Su deseo fue concedido, pero ya no ve la diferencia entre humanos y mutantes. Si yo hiriese a un chupasangre, el Doctor lo curarнa. Y viceversa. Oh, y es casi imposible de encontrar, suele aparecer por su cuenta. Cuando lo hace, lo acompaсa un perro de Chernуbil domesticado. Los que los han visto dicen que son todo un espectбculo.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_0">
+		<text>їCуmo acabaste en la Zona?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_1">
+		<text>Me dieron una orden. їTъ quй crees? Yo era el jefe de un batallуn de las fuerzas especiales. No, no de la Spetsnaz. Nuestra misiуn era... esto... eso no necesitas saberlo. Todo mi batallуn fue abatido cuando la Zona nos recibiу con una emisiуn. Ni siquiera нbamos en vehнculos, saltamos en paracaнdas casi en el centro. Yo fui el ъnico superviviente. їCуmo? Ni idea. Supongo que no me habнa llegado la hora. Pero te aseguro que fue toda una experiencia. Anomalнas, monstruos por todas partes... y apenas suficientes balas para pegarte un tiro. Cuando se me acabaron las provisiones, comн cosas tan asquerosas que casi vomito solo de recordarlo. Me pasй un mes vagando por el бrea, corriendo de un tocуn a otro. Entonces me encontrй con gente. Varias unidades militares, la mayorнa muy tocadas. Asн es como empezу Deber.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_12">
+		<text>їQuiйn es ese idiota que trabaja en tu tienda?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_122">
+		<text>No le hagas caso, es el idiota local, Mitay. Tal y como dirнa un profesor, "Ўno es mбs que un puerco comъn!". No hay jardнn sin cardos y Mitay es nuestro cardo oficial. Serнa perfecto para el zoo del inquisidor. Completarнa la colecciуn como su mejor monstruo de feria. A veces me gustarнa que un pseudoperro lo adoptase... pero la verdad es que es mбs ъtil como comerciante. Cuando va al bar, se pasa mбs tiempo recibiendo palizas que bebiendo. Aunque ese tipo de maltrato puede mandarte a la trena, a la mayorнa no les importa.\n</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_133">
+		<text>La verdad es que la mayorнa de los miembros de Deber son antiguos militares. Creo que ya conoces nuestra historia: casi todos los de la primera oleada murieron y los que sobrevivieron fundaron el clan. Nos hemos mantenido en este lado del perнmetro, pero algunos de nosotros todavнa conocemos a algunas personas que siguen de servicio. Naturalmente, nos llevamos mejor con ellos que con otros clanes. Por eso todos creen que estamos conchabados con el ejйrcito. En fin, йsa es la explicaciуn.</text>
+	</string>
+	<string id="agr_duty_zooman_about_animals_0">
+		<text>їQuiйn coge los animales para ti?</text>
+	</string>
+	<string id="agr_duty_zooman_about_animals_1">
+		<text>Solнa tener que hacerlo yo mismo. ЎEra un jaleo, te lo aseguro! Casi palmo un par de veces. Luego se me unieron algunos tipos, uno a uno. Es una gran experiencia, muy emocionante. Ademбs, imagнnate las historias que puedes contar: eh, tнo, tъ habrбs matado a ese monstruo, Ўpero yo lo he cogido con vida! Un par de jerbos se me murieron hace poco. Dos chicos se ofrecieron voluntarios para cazar uno de reemplazo. Eran valientes, pero ingenuos. Ataron algo de carne con un cordуn y se acercaron al jerbo. Lo hicieron casi todo bien. Uno atrajo a unos pocos mientras el otro mantenнa la manada a raya con disparos. Cazaron la presa, pero en cuanto se dieron la vuelta para irse, Ўtoda la manada empezу a perseguirlos! Corrieron media maratуn hasta llegar a la base, donde nuestros muchachos los ayudaron con sus disparos. Esos dos hйroes se bebieron una botella entera de alcohol para relajarse.</text>
+	</string>
+	<string id="agr_duty_zooman_about_zoo_0">
+		<text>їPara quй es este zoo?</text>
+	</string>
+	<string id="agr_duty_zooman_about_zoo_1">
+		<text>їTe acuerdas de esa vieja pelнcula de las cucarachas gigantes mutantes? "ЎAntes de matar a un insecto, estъdialo bien!". їNo? Je, je. Bueno, este sitio es algo parecido. Antes de que un novato se enfrente a un perro ciego ahн fuera, es mejor que lo vea en una jaula. ЎComo mнnimo se ahorrarб unos pantalones limpios! Observarб a la bestia, estudiarб sus hбbitos y, cuando llegue el momento, cuando su vida dependa de ello, su mano serб firme. Y lo mismo con las otras bestias. Ademбs, la Zona no tiene muchos entretenimientos, asн que mi pequeсa feria de monstruos resulta ъtil.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_0">
+		<text>їTienes algъn trabajo para mн?</text>
+	</string>
+	<string id="agr_duty_zooman_quest_1">
+		<text>Claro. Estamos buscando el mapa de migraciones.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_11">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_2">
+		<text>Sн.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_22">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_0">
+		<text>Vengo por el trabajo.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_1">
+		<text>їHas terminado el trabajo?</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_2">
+		<text>Sн.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_22">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_3">
+		<text>Gracias.</text>
+	</string>
+	<string id="agr_leader_about_dolg_0">
+		<text>Hбblame de tu facciуn.</text>
+	</string>
+	<string id="agr_leader_about_dolg_11">
+		<text>їQuй es lo que hacйis?</text>
+	</string>
+	<string id="agr_leader_about_dolg_1111">
+		<text>їDe quй estбs hablando?</text>
+	</string>
+	<string id="agr_leader_about_zone_0">
+		<text>Hбblame de la Zona.</text>
+	</string>
+	<string id="agr_leader_about_zone_1">
+		<text>La Zona es como una ъlcera en el cuerpo del planeta. Algunos idiotas dicen que es un regalo, que nos trae todas esas cosas divertidas para jugar... ЎMira a tu alrededor! Un mutante nos ataca por la noche. їEso te parece un regalo? Una anomalнa te hace pedazos. їTambiйn es un regalo? No seсor, la Zona es una enfermedad y, si no empezamos a combatirla ahora, Ўnos consumirб a todos!</text>
+	</string>
+	<string id="agr_leader_about_zone_11">
+		<text>Pero vosotros usбis artefactos, їverdad?</text>
+	</string>
+	<string id="agr_leader_about_zone_111">
+		<text>Dicen que en la guerra todo vale. No veo nada de malo en usar los recursos del enemigo contra йl. O sea, no los recogemos para nuestra ganancia personal, їverdad? Un artefacto medio vale dos o tres armas nuevas con su municiуn, y tres armas valen una docena de mutantes muertos al dнa.</text>
+	</string>
+	<string id="agr_leader_about_zone_1111">
+		<text>їPero cуmo se derrota a la Zona?</text>
+	</string>
+	<string id="agr_leader_about_zone_11111">
+		<text>Eso es lo complicado. Pero si abandonamos nuestra lucha, la Zona se lo tragarб todo. ЎNuestro deber es seguir luchando! Tal y como yo lo veo, es una guerra por nuestro derecho a vivir en este planeta. Hemos estudiado la Zona durante meses y te puedo decir algo seguro: estб viva. Y como estб viva, tiene que tener un punto dйbil. Solo tenemos que encontrarlo.</text>
+	</string>
+	<string id="agr_leader_first_join_0">
+		<text>Me quiero unir a tu facciуn.</text>
+	</string>
+	<string id="agr_leader_first_join_1">
+		<text>No te conocemos, asн que no podemos aceptarte. Ayъdanos y hablaremos.</text>
+	</string>
+	<string id="agr_leader_first_join_2">
+		<text>Bien.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111">
+		<text>Tengo que encontrar una entrada al subterrбneo de Agroprom.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111">
+		<text>Es un subterrбneo igual que cualquier otro. No deberнa ser demasiado peligroso bajar allн.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111111">
+		<text>їY ahora quй?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111111111">
+		<text>їY ahora cуmo voy al subterrбneo?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111111111">
+		<text>Estoy de acuerdo.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_12222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_122222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1222222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_14">
+		<text>Mercenario, has cumplido con tu deber. Toma, de mi parte. Te vendrб bien en la Zona.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_144">
+		<text>ЎGracias por esta recompensa! ЎEs un honor servir a Deber!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_145">
+		<text>ЎEsto no lo necesito!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_15">
+		<text>ЎHola! їQuй puedo hacer por ti?</text>
+	</string>
+	<string id="agr_leader_join_duty_0">
+		<text>Me gustarнa unirme a Deber.</text>
+	</string>
+	<string id="agr_leader_join_duty_33">
+		<text>No hay mбs reclutamientos hasta que no neutralicemos la amenaza mutante, їentendido? No quiero reclutar mбs hombres solo para engordar la lista de bajas. Si de verdad quieres ser un soldado de Deber, demuestra lo que vales. Ve a luchar contra los mutantes.</text>
+	</string>
+	<string id="agr_leader_join_duty_44">
+		<text>Eres un stalker libre, їverdad? Je, їasн que ahora estбs de acuerdo en que la Zona es un tumor para este planeta? Bien. Deber siempre acepta a aquellos que son fieles a sus ideales. Uno de nuestros ideales es la disciplina. Tras tu reclutamiento, ya no podrбs hacer el vago. їEstбs listo para unirte a nosotros?</text>
+	</string>
+	<string id="agr_leader_join_duty_444">
+		<text>Estoy listo. ЎEspero sus уrdenes, seсor!</text>
+	</string>
+	<string id="agr_leader_join_duty_4444">
+		<text>Descansa. Usa el lavabo si quieres, pero nada de fumar. Deber necesita soldados saludables. їConoces la cadena de mando de Deber?</text>
+	</string>
+	<string id="agr_leader_join_duty_44444">
+		<text>ЎNo, seсor!</text>
+	</string>
+	<string id="agr_leader_join_duty_444444">
+		<text>Ante todo, seguimos una disciplina rigurosa y una subordinaciуn estricta. Las уrdenes no se discuten, solo se siguen. El objetivo principal del clan es combatir a los engendros de la Zona y a esos anarquistas de Libertad. Lo ideal serнa librar al mundo de monstruos, anomalнas y miembros de Libertad. Si no lo hacemos, maсana la Zona podrнa entrar en nuestros hogares y llevarse a nuestros seres queridos. Nuestro deber es librar al mundo de esta ъlcera. їHa quedado claro, soldado?</text>
+	</string>
+	<string id="agr_leader_join_duty_4444444">
+		<text>ЎSн, seсor! Listo para servir en Deber.</text>
+	</string>
+	<string id="agr_leader_join_duty_44444444">
+		<text>Excelente. Enhorabuena, soldado. ЎYa eres miembro de Deber! Ahora tu PDA tiene una secciуn tбctica que muestra la situaciуn actual contra Libertad. Tambiйn he cargado un cуdec que te permitirб escuchar nuestras comunicaciones de radio internas y recibir mis уrdenes. Bien, creo que eso es todo. ЎA trabajar! </text>
+	</string>
+	<string id="agr_leader_join_duty_444444444">
+		<text>ЎSн, seсor!</text>
+	</string>
+	<string id="agr_leader_join_duty_44445">
+		<text>ЎSн, seсor!</text>
+	</string>
+	<string id="agr_leader_join_duty_55">
+		<text>Eres un bandido, їverdad? No te molestes en decirme nada. Para mн, todos los de tu calaсa sois bandidos. Bien, asн que has decidido salir del agujero y unirte a las fuerzas de йlite. Una decisiуn admirable. He oнdo que Yoga es muy duro con sus hombres. Bien, eso te ayudarб a acostumbrarte a nuestra rutina. Pero recuerda, los miembros de Deber solo obedecen a los comandantes de Deber. Tendrбs que cortar tu relaciуn con Yoga. їEstбs listo para hacer eso?</text>
+	</string>
+	<string id="agr_leader_join_duty_66">
+		<text>Eso estб mejor. Has demostrado ser un autйntico soldado y necesitamos a mбs como tъ. їEstбs listo para unirte a Deber?</text>
+	</string>
+	<string id="agr_leader_join_duty_66666666">
+		<text>Sн, seсor. Listo para servir en Deber.</text>
+	</string>
+	<string id="agr_leader_join_duty_77">
+		<text>Ya eres miembro de Deber.</text>
+	</string>
+	<string id="agr_mechanic_join_duty_11">
+		<text>Para eso tendrбs que ver al comandante.</text>
+	</string>
+	<string id="agr_stalker_about_agroprom_0">
+		<text>Veo que te has adaptado bien a este sitio, їpero para quй es todo esto?</text>
+	</string>
+	<string id="agr_stalker_about_agroprom_1">
+		<text>Mercenario, aquн tenemos un trabajo que hacer. Deber no nos paga por estar de brazos cruzados. No pueden mantener todo el territorio bajo control ellos solos. Los mutantes han estado presionбndolos, asн que nos han pedido apoyo. Ahora los estamos ayudando a defender este sitio. Si nos ayudas, seguro que el comandante te recompensarб por ello.</text>
+	</string>
+	<string id="agr_stalker_commander_1_11">
+		<text>Bueno, te explico. Atacan nuestra base continuamente. Estбbamos acostumbrados a los mutantes, pero los bandidos nos han cogido por sorpresa. Antes nunca se habнan atrevido a entrar en el territorio de Deber, y ahora han montado un campamento en un tъnel del ferrocarril cerca del camino al vertedero. Apenas podemos contener sus ataques, pero si lograses expulsarlos de ese tъnel, la situaciуn mejorarнa mucho. їPuedes ayudarnos?</text>
+	</string>
+	<string id="agr_stalker_commander_1_111">
+		<text>No hay problema, te ayudarй.</text>
+	</string>
+	<string id="agr_stalker_commander_1_1111">
+		<text>Gracias, me alegro de que estйs con nosotros.</text>
+	</string>
+	<string id="agr_stalker_commander_1_112">
+		<text>No tengo tiempo para esto.</text>
+	</string>
+	<string id="agr_stalker_commander_1_1122">
+		<text>Quй mal.</text>
+	</string>
+	<string id="agr_stalker_commander_1_22">
+		<text>їY bien? ЎMis hombres esperan!</text>
+	</string>
+	<string id="agr_stalker_commander_1_222">
+		<text>Voy de camino...</text>
+	</string>
+	<string id="agr_stalker_commander_1_33">
+		<text>Gracias por ayudarnos contra esos capullos. No creo que vuelvan a por mбs.</text>
+	</string>
+	<string id="agr_stalker_commander_1_44">
+		<text>їQuй necesitas?</text>
+	</string>
+	<string id="agr_stalker_commander_2_11">
+		<text>Lo primero de todo, Ўgracias, tнo! Te debemos una, de no ser por ti, habrнan acabado con nosotros tarde o temprano. El ъnico problema que nos queda es que los bandidos se han atrincherado junto a una de las entradas al laberinto subterrбneo. Mis muchachos creen que los bandidos han encontrado un pasadizo secreto que conduce hasta aquн desde el vertedero. Hace tiempo que bajamos por esa escotilla y estoy seguro de que no tiene escalera. Eso significa que los bandidos estбn ayudando a sus amigos a salir a la superficie. Tu misiуn es eliminarlos. їPuedes ayudarnos?</text>
+	</string>
+	<string id="agr_stalker_commander_2_111">
+		<text>No hay problema, te ayudarй.</text>
+	</string>
+	<string id="agr_stalker_commander_2_1111">
+		<text>Gracias, me alegro de que estйs con nosotros.</text>
+	</string>
+	<string id="agr_stalker_commander_2_1112">
+		<text>Quй mal.</text>
+	</string>
+	<string id="agr_stalker_commander_2_112">
+		<text>No tengo tiempo para esto.</text>
+	</string>
+	<string id="agr_stalker_commander_2_22">
+		<text>їY bien? ЎMis hombres esperan!</text>
+	</string>
+	<string id="agr_stalker_commander_2_222">
+		<text>Voy de camino...</text>
+	</string>
+	<string id="agr_stalker_commander_2_33">
+		<text>Gracias por ayudarnos contra esos capullos. No creo que vuelvan por un tiempo.</text>
+	</string>
+	<string id="agr_stalker_commander_2_44">
+		<text>їQuй necesitas?</text>
+	</string>
+	<string id="agr_stalker_commander_3_11">
+		<text>Mercenario, їalguna vez te has ocupado de los mutantes? Tenemos un problema: un gran nъmero de mutantes han aparecido al norte de nuestra base y no paran de atacarnos perros y snorks, como si alguien los estuviese azuzando contra nosotros. No sй si serб una coincidencia o quй, pero ya estamos hartos de esos ataques. Creo que tenemos que contraatacar. Si matamos suficientes mutantes y perseguimos al resto, eso nos darб el respiro que tanto necesitamos. La mayorнa de mis hombres se cagan en los pantalones con solo ver a un snork, pero tъ eres un buen combatiente. їPuedes hacernos este favor y limpiar la guarida de mutantes?</text>
+	</string>
+	<string id="agr_stalker_commander_3_111">
+		<text>No hay problema, te ayudarй.</text>
+	</string>
+	<string id="agr_stalker_commander_3_1111">
+		<text>Gracias, me alegro de que estйs con nosotros.</text>
+	</string>
+	<string id="agr_stalker_commander_3_1112">
+		<text>Quй mal.</text>
+	</string>
+	<string id="agr_stalker_commander_3_112">
+		<text>No tengo tiempo para esto.</text>
+	</string>
+	<string id="agr_stalker_commander_3_22">
+		<text>їY bien? ЎMis hombres esperan!</text>
+	</string>
+	<string id="agr_stalker_commander_3_222">
+		<text>Voy de camino...</text>
+	</string>
+	<string id="agr_stalker_commander_3_33">
+		<text>Gracias por ayudarnos a destruir esa guarida de mutantes. No creo que vuelvan por un tiempo.</text>
+	</string>
+	<string id="agr_stalker_commander_3_44">
+		<text>їQuй necesitas?</text>
+	</string>
+	<string id="agr_stalker_leader_about_contact_0">
+		<text>їQuй tal os llevбis con las otras facciones?</text>
+	</string>
+	<string id="agr_stalker_leader_about_contact_1">
+		<text>Todavнa no tenemos ni amigos fieles ni enemigos enconados. Nos llevamos bien con todo el mundo, salvo con los bandidos, por supuesto. No compartimos los objetivos de las otras facciones, pero йsa no es razуn para pelearse, їverdad? De eso trata la Zona: vivir y dejar vivir. Asн que eso hacemos. Nuestras acciones dependen de cуmo se porten los otros clanes con nosotros.</text>
+	</string>
+	<string id="agr_stalker_leader_about_join_0">
+		<text>їPor quй no te has unido todavнa a ninguna facciуn?</text>
+	</string>
+	<string id="agr_stalker_leader_about_join_1">
+		<text>Supongo que todos tenemos caminos distintos. Deber trata de destruir la Zona, Libertad trata de destruir a Deber y los bandidos aprovechan cualquier oportunidad para ganar mбs dinero. Yo ya me he hartado de todo eso. He viajado por la Zona por mi cuenta e incluso he estado con Libertad algъn tiempo. Pero en cuanto empezaron a hablar de cargarse a Deber, hice las maletas y me larguй. En Deber son todavнa peores. Son buena gente individualmente, pero si los juntas, se convierten en unos fanбticos. Asн que, їquй trato de decir? Que los stalkers no deberнan matarse los unos a los otros segъn el clan al que pertenezcan, deberнan vivir sus vidas pacнficamente. Buscar botнn y sobrevivir. En eso consiste la Zona. Eso es lo que creemos la mayorнa de nuestros muchachos y yo.</text>
+	</string>
+	<string id="agr_stalker_leader_about_you_0">
+		<text>Hбblame de ti.</text>
+	</string>
+	<string id="agr_stalker_leader_about_you_1">
+		<text>Soy un tipo normal y corriente, no soy distinto de los demбs. Aunque siempre he sido un vagabundo. Cuando tenнa diez aсos me fui a China para estudiar las artes marciales Shaolin. Tres dнas mбs tarde me sacaron del tren y mi padre me dio una buena paliza. Cuando me hice mayor no paraba de viajar. Hice autoestop por Europa y pasй el invierno con los chukchas. Luego apareciу la Zona. Por aquel entonces tenнa una amiga llamada Leska, a la que tambiйn le gustaban las emociones fuertes. Bueno, ella pensaba que йramos amigos, mis sentimientos eran otros. El caso es que un dнa estaba buscando a Leska y unos amigos me dijeron que se habнa ido a la Zona. Cogн mis cosas, una pistola con balas de goma y me vine derecho hacia aquн. Conseguн llegar gracias a mi experiencia como viajero. Pasй meses buscбndola y enseсбndole su foto a todo el mundo. Finalmente, un stalker me dijo que tropas internacionales habнan arrestado a Leska cuando viajaba con un guaperas cerca de la frontera de la Zona. Les soltaron un sermуn y los mandaron a casa. Asн que pensй: que Dios te bendiga, Leska. No volvн a casa. Y ahora estoy atascado en la Zona.</text>
+	</string>
+	<string id="agr_stalker_leader_about_zone_0">
+		<text>Hбblame de la Zona.</text>
+	</string>
+	<string id="agr_stalker_leader_about_zone_1">
+		<text>Antes de que la Zona se convirtiese en lo que es ahora, ya era un sitio bastante sombrнo, justo despuйs del desastre original de 1986. Por entonces todo era confidencial, pero poco a poco empezaron a esparcirse los rumores, cada uno mбs espeluznante que el anterior. Algunos vieron mutantes no muy lejos de la central nuclear de Chernуbil, otros se toparon con fantasmas en las aldeas abandonadas. Tras muchos aсos en calma, pasу algo realmente malo. Unos idiotas extranjeros vinieron a hacer turismo a la Zona. La mayorнa eran hombres, pero tambiйn habнa mujeres. Aristуcratas aburridos que venнan a disfrutar de un ambiente apocalнptico. No sй a quiйn sobornaron, pero un autobъs lleno de gente fue directo al interior de la Zona. Y desapareciу junto con sus escoltas policiales. Aquel incidente dio mucho de quй hablar y se prohibiу totalmente el acceso a la Zona. Sin embargo, los primeros stalkers que vinieron aquн dijeron haber visto unos zombis muy extraсos que parecнan murmurar algo en inglйs. Para mн estб claro...</text>
+	</string>
+	<string id="agr_stalker_mechanic_about_gun_and_armor_upgrades_0">
+		<text>Dime lo que sepas sobre actualizar las armas y los blindajes.</text>
+	</string>
+	<string id="agr_stalker_mechanic_about_gun_and_armor_upgrades_1">
+		<text>No soy un experto en blindajes. Pero sй bastante sobre armas. Mira, colega: si estбs pensando en actualizar un arma normal, no te molestes. Йsas son como los zapatos que compras en el mercadillo, los usas hoy y vienes a por otro par maсana. Las armas comunes abundan en la zona y no valen de mucho. Lo que te interesa es actualizar las armas raras y de alta calidad. Da gusto trabajar con ellas. Tienen un montуn de opciones de mejora y un arma asн te durarб mucho. Mi consejo es que solo inviertas en las armas especiales y fiables.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_0">
+		<text>їTienes trabajo para mн?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_1">
+		<text>їNecesitas mбs actualizaciones?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_11">
+		<text>No.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_2">
+		<text>Sн</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_22">
+		<text>No</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_3">
+		<text>Pues trбeme la PDA.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_4">
+		<text>Vale.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_44">
+		<text>Cambiй de idea.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_0">
+		<text>Vengo por el trabajo.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_1">
+		<text>їHa habido suerte? їConseguiste mi PDA?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_2">
+		<text>Aquн tienes tu PDA.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_22">
+		<text>Todavнa no.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_222">
+		<text>Estoy esperando.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_3">
+		<text>Excelente. Ahora puedes tener nuevas actualizaciones.</text>
+	</string>
+	<string id="agr_stalker_mechanic_what_is_you_doing_0">
+		<text>їQuй puedes hacer?</text>
+	</string>
+	<string id="agr_stalker_mechanic_what_is_you_doing_1">
+		<text>No soy un maestro, pero mi trabajo no estб mal. Todos lo dicen. Lo que mejor se me da es mejorar pistolas, pero tambiйn puedo trabajar con fusiles y escopetas. Todo lo que sй es que las armas disparan, los monstruos mueren y los stalkers me lo agradecen.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_3">
+		<text>ЎMercenario! Buen trabajo, ahora tenemos que despejar el camino a Yantar. Coge uno de nuestros trajes blindados, te protegerб de las anomalнas y de otros peligros de la Zona.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_33">
+		<text>Todavнa no hay resultados, mercenario.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_333">
+		<text>Nos vamos a Yantar. No hay tiempo para hablar.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_4">
+		<text>Me alegro de haber ayudado a tu grupo.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_5">
+		<text>Nos vamos a Yantar. Adiуs y buena suerte.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_about_zone_0">
+		<text>їQuй piensas de la Zona?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_about_zone_1">
+		<text>La Zona es una prueba. Lo que opines de ella determina las pruebas a las que serбs sometido. Si crees que es maligna, un sнmbolo de libertad total o una estricta niсera, te darб justo lo que esperas de ella. Personalmente veo varios aspectos de la Zona, pero para mн, por encima de todo, es un lugar de poder. Pero todavнa no he comprendido la esencia de la Zona y del poder que hay en ella.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_0">
+		<text>їTienes trabajo para mн?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_1">
+		<text>Bien, hay una cosa. Reъno informaciуn sobre la Zona. De hecho, me interesan sus secretos, secretos que pueden ayudar a los stalkers a sobrevivir. Cosas como atravesar una anomalнa sin protecciуn, їsabes? En fin, un dнa un stalker vino a verme, Ўdecнa que podнa meterse en una anomalнa quнmica sin protecciуn y sin sufrir daсos! A cambio de este secreto, querнa que le dijese cuбl es el mejor lugar para buscar valiosos artefactos, asн que le dije que fuese al pantano y buscase una casa. La que hay en mitad de una anomalнa. Le dije que si me demostraba que habнa estado allн, intercambiarнamos nuestros secretos. Se fue y en diez minutos estaba pidiendo ayuda. Por desgracia, la gente tiene sus propios problemas de los que ocuparse, asн que nadie fue a socorrerlo. Obviamente, estaba equivocado acerca de su secreto, pero me interesa saber cуmo pensaba que podrнa evitar sufrir daсos en las anomalнas quнmicas. Trбeme su PDA y te recompensarй.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_11">
+		<text>Lo siento, pero ahora no necesito nada.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_2">
+		<text>Vale, estoy de acuerdo.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_22">
+		<text>Quizб en otra ocasiуn.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_3">
+		<text>Genial. Estarй esperando esa PDA. Si de repente te sientes mal dentro de una anomalнa, no te molestes en pedir auxilio, porque nadie te va a ayudar. En vez de andar en cнrculos alrededor de la casa, mйtete en el agua. La anomalнa es mбs dйbil ahн, їvale?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_0">
+		<text>Vengo por el trabajo.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_1">
+		<text>їHa habido suerte? їConseguiste la PDA?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_2">
+		<text>Sн, aquн estб.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_22">
+		<text>Todavнa no.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_3">
+		<text>Buen trabajo, aquн tienes una recompensa por tu valentнa.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_what_is_you_doing_0">
+		<text>їQuй haces aquн?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_what_is_you_doing_1">
+		<text>Aprendo. Acerca del mundo que me rodea y de mн mismo. Dicen que solo hay una verdad, pero que muchos caminos conducen a ella. Asн que pruebo esos caminos. Miro dentro de la Zona, la escucho y observo la fauna local. їY sabes quй? Ya no necesito armas ni blindaje. La Zona no me ve como un enemigo, no intenta destruirme a cada paso. Incluso los monstruos me dejan en paz. Por eso creo que los stalkers se crean sus propios problemas al invadir la Zona armados hasta los dientes. En mi opiniуn, la perdiciуn del hombre es su propio orgullo. Mira todos esos dichos acerca de que el hombre es el rey de la naturaleza. їY si no lo es? їY si los humanos son solo una pequeсa parte de la naturaleza? Nadie parece tener tiempo para pararse a pensar sobre todo esto, pero deberнamos hacerlo.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_who_are_you_0">
+		<text>їQuiйn eres?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_who_are_you_1">
+		<text>Un hombre. Homo Sapiens. Una criatura con libertad de escoger. їEscoger quй? El consumo o el conocimiento. Si te centras solo en consumir algo, lo vas a pagar tarde o temprano. Eso es lo que me pasу a mн. Me pasй varios aсos como stalker. Contaba los dнas por los cargadores gastados y el botнn que encontraba. Un dнa mirй atrбs y no vi nada allн. Solo cargadores vacнos, el botнn obtenido y las botellas de vodka. Me sentн fatal y amargado. Y entonces tuve una revelaciуn. Es como si me hubiese librado de toda esa basura para convertirme en lo que soy ahora. Un ermitaсo. Bueno, algunos tambiйn me llaman chamбn y tampoco se equivocan.</text>
+	</string>
+	<string id="agr_stalker_tir_1">
+		<text>Buenos dнas. їTe gustarнa probar tu habilidad como francotirador?</text>
+	</string>
+	<string id="agr_stalker_tir_2">
+		<text>No estб mal, Ўno estб nada mal! Aquн tienes tu recompensa.</text>
+	</string>
+	<string id="agr_stalker_tir_3">
+		<text>La vida es asн. Un dнa tienes mala suerte y al siguiente todo te sale bien. Vuelve a intentarlo cuando quieras.</text>
+	</string>
+	<string id="agr_stalker_tir_4">
+		<text>Pбsate otra vez si te apetece volver a disparar.</text>
+	</string>
+	<string id="agr_stalker_trader_about_dolg_0">
+		<text>їQuй puedes contarme de Deber?</text>
+	</string>
+	<string id="agr_stalker_trader_about_dolg_1">
+		<text>Sй lo que quieres decir: que Deber estб de parte del ejйrcito, їverdad? Lo dice todo el mundo, pero no es verdad. No, yo solнa pensar eso hasta que vi un enfrentamiento entre ambos. Estaba vagando por ahн, buscando botнn, cuando oн disparos. Me acerquй con cuidado y utilicй mis prismбticos. Los soldados de Deber y los del ejйrcito se disparaban entre sн desde poco mбs de 30 metros. No tengo ni idea de cуmo acabу aquello porque me larguй, pero te aseguro que no era nada fraternal. Aunque hay otro problema. Nuestros chicos han visto a unos stalkers de negro de colegueo con la Spetsnaz. Se piensa uno lo peor, їverdad?</text>
+	</string>
+	<string id="agr_stalker_trader_about_prisoner_0">
+		<text>їQuiйnes son esos tipos del sуtano?</text>
+	</string>
+	<string id="agr_stalker_trader_about_prisoner_1">
+		<text>Algunos de nuestros muchachos estaban trayendo su botнn de vuelta a la base, cruzando el vertedero. Solo pasaban por el borde, ya sabes cуmo es ese sitio. De repente, unos bandidos aparecen a unos 30 metros de ellos y les dicen: "ЎOs hemos pillado, idiotas, tirad vuestras armas y entregadnos el botнn!". El jefe del grupo, Iroquois, les dice: "ЎVenid a quitбrnoslo!". Entonces empieza a disparar y el grupo a correr de бrbol en бrbol, con los bandidos detrбs. Y asн, corriendo en zigzag, llegaron hasta Agroprom, donde nuestros muchachos les dieron una cбlida bienvenida a los bandidos. Ahora tenemos a esos tipos en custodia, pero no sabemos quй hacer con ellos.</text>
+	</string>
+	<string id="agr_stalker_trader_about_select_0">
+		<text>No tienes mucha variedad, їeh?</text>
+	</string>
+	<string id="agr_stalker_trader_about_select_1">
+		<text>Si quieres variedad, vete a un centro comercial. Este sitio estб lleno de gente que ha venido a ayudar a Deber a combatir contra los mutantes por dinero. Vine con ciertas expectativas de demanda. Me traje lo que pude y el resto lo intercambiй aquн. Y eso es todo lo que tengo por ahora.</text>
+	</string>
+	<string id="agr_stalker_trader_about_trader_0">
+		<text>їCуmo te hiciste comerciante?</text>
+	</string>
+	<string id="agr_stalker_trader_about_trader_1">
+		<text>Verбs, la gente necesita armas, municiуn, botiquines y cosas asн, de modo que se las proporciono. Deber paga bien a los stalkers, asн que el negocio marcha. Pero ojalб me trajesen mбs objetos ъnicos, la mayorнa del botнn es de segunda.</text>
+	</string>
+	<string id="agr_trader_join_duty_11">
+		<text>їTe parezco un reclutador del clan? ЎVe a ver al comandante en su oficina y pregъntale a йl!</text>
+	</string>
+	<string id="agr_weaponmaster_join_duty_11">
+		<text>Es fбcil. їVes ese edificio de allн? Ve a la segunda planta para ver a Krylov. Te pondrб a prueba con los clбsicos mйtodos de la Spetsnaz y serбs uno de nosotros.</text>
+	</string>
+	<string id="agr_zooman_join_duty_11">
+		<text>Ve a ver a Krylov en la segunda planta de nuestro cuartel general. Hбblale de ti. Te entrevistarб y te harб una "prueba de lealtad". Si todo sale bien, serбs uno de los nuestros.</text>
+	</string>
+	<string id="agr_stalker_commander_1_0">
+		<text>їCуmo puedo ayudarte?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11">
+		<text>Eh, mercenario. їQuieres comprobar si tienes buena punterнa?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111">
+		<text>Sн.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111">
+		<text>їRecuerdas las reglas?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111">
+		<text>Empecemos a disparar.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111">
+		<text>Otra cosa. Deja tus cosas conmigo antes de empezar. Todo tiene que ser justo. No puedes usar nada salvo mi arma. No te preocupes, recuperarбs tus cosas cuando acabes.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111">
+		<text>Ya veo.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111">
+		<text>Elige el modo de juego.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111111">
+		<text>Quiero practicar.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111">
+		<text>Elige tu arma.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111111111">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111111">
+		<text>De acuerdo.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111111">
+		<text>ЎBuena suerte!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111112">
+		<text>Por desgracia, no tengo suficiente dinero.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111121">
+		<text>No hay problema. їQuieres elegir otro modo?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111112">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111113">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111114">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111115">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111116">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111112">
+		<text>Probarй el desafнo de puntuaciуn.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111113">
+		<text>Probarй el desafнo de precisiуn.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11112">
+		<text>No, dнmelas.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112">
+		<text>їCuбles son las reglas?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121">
+		<text>Tienes tres opciones: prбctica, desafнo de puntuaciуn o desafнo de precisiуn.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111">
+		<text>En todos los modos eliges un arma y tienes 10 segundos para prepararte. Los blancos aparecen al azar.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211111">
+		<text>El modo prбctica es fбcil: el blanco es abatido tras tres disparos. Tu objetivo es anotar tantos puntos como puedas. Como puedes imaginarte, al practicar no ganarбs dinero, pero es un buen modo de probar tus habilidades.\n</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111111">
+		<text>El siguiente modo es el desafнo de puntuaciуn. Cada blanco aparece durante solo dos segundos y debes intentar acertarlo para ganar tantos puntos como puedas. El tiempo es limitado, asн que no lo pierdas apuntando demasiado. Aquн jugamos por dinero. Si alcanzas la puntuaciуn objetivo, te pago. Si no, me pagas.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211111111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111111111">
+		<text>El ъltimo modo es el desafнo de precisiуn. Aquн debes dar en la diana exacta de cada blanco. Tu objetivo es abatir tantos blancos como puedas dentro del lнmite de tiempo. Es el modo mбs difнcil, asн que intenta no arruinarte. Las apuestas son como siempre. Si aciertas el nъmero de blancos estipulado, te pago. Si no, me quedo con tu apuesta.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111111111">
+		<text>De acuerdo. Vamos a jugar.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_113">
+		<text>Ahora no tengo tiempo de juegos. Quizб luego.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1131">
+		<text>De acuerdo, como quieras.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_21">
+		<text>їHas acabado? ЎBuen trabajo!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_211">
+		<text>їCuбl es mi puntuaciуn?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_2111">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_211111">
+		<text>їQuieres volver a intentarlo?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_2111111">
+		<text>Sн.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_31">
+		<text>ЎDeja de perder el tiempo! Vuelve cuando hayas acabado de disparar.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_311">
+		<text>Vale.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_answer_bad">
+		<text>Je, tenнa yo razуn. He ganado esta apuesta, pero no desesperes. Tendrбs mбs suerte la prуxima vez.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_answer_good">
+		<text>ЎMe he equivocado contigo! Toma tu dinero. Te lo has ganado con todas las de la ley.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_cot_phrase_part_1">
+		<text>Tu tiempo es limitado y debes acertar como mнnimo a</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_cot_phrase_part_2">
+		<text>Apuesto es que no lograrбs:</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_answer_bad">
+		<text>Practica un poco mбs, todavнa no estбs preparado para jugar por dinero. Has anotado menos de</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_answer_good">
+		<text>Estбs listo para jugar por dinero. Has anotado mбs de</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_phrase">
+		<text>ЎBuena suerte con tus disparos! Tienes que anotar al menos</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tss_phrase_part_1">
+		<text>Tu tiempo es limitado y debes anotar al menos</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tss_phrase_part_2">
+		<text>Apuesto es que no lograrбs:</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_10">
+		<text>Claro, Orest. Si quieres verlo, lo encontrarбs en la planta superior del edificio central.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_2">
+		<text>Buenos dнas, soldado.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_3">
+		<text>їQuй ocurre aquн?</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_4">
+		<text>Al igual que Deber, estamos intentando contener los ataques de los mutantes y de la escoria como los bandidos.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_5">
+		<text>Es la primera vez que oigo que los stalkers ayudan a Deber.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_6">
+		<text>No solo ayudamos. Cuando los mutantes salieron de sus agujeros e inundaron Agroprom, Deber ya no pudo contener sus constantes ataques. Nos pidieron ayuda y no somos tan orgullosos como para rechazar un trabajo. Asн que hacemos un buen equipo.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_7">
+		<text>Las cosas empiezan a tener sentido. Veo que incluso tenйis una pequeсa base.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_8">
+		<text>Sн, todos los que acuden a la llamada de socorro de Deber se reъnen aquн. Es mбs seguro y, ademбs, asн Krylov nos toma mбs en serio.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_9">
+		<text>їQuiйn es el jefe aquн?</text>
+	</string>
+	<string id="agr_stalker_commander_2_0">
+		<text>їCуmo puedo ayudarte?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_2">
+		<text>Hola.</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_3">
+		<text>їQuй ocurre aquн?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_4">
+		<text>Ni lo sй. Vine recientemente esperando ganar un poco de pasta. No me importa cuбl sea el trabajo mientras estй bien pagado.\n</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_5">
+		<text>їQuiйn es el jefe aquн?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_6">
+		<text>Orest. Bъscalo en la planta superior del edificio central. Nuestro comerciante y nuestro tйcnico tambiйn estбn allн. Como debe ser.</text>
+	</string>
+	<string id="agr_stalker_commander_3_0">
+		<text>їCуmo puedo ayudarte?</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_2">
+		<text>Hola, mercenario.</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_3">
+		<text>їQuй ocurre aquн?</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_4">
+		<text>No tengo tiempo de charla, mercenario. Si tienes preguntas, ve a ver a Orest. Estб en la planta superior del edificio central.</text>
+	</string>
+</string_table>
