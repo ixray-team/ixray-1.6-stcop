@@ -440,7 +440,8 @@ public:
 						ChooseValue			(shared_str* val, u32 cid, LPCSTR path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),OnChooseFillEvent(0),/*OnDrawThumbnailEvent(0),*/m_ChooseFlags(choose_flags){}
 };
 
-typedef CustomValue<BOOL>		BOOLValue;
+using BOOLValue = CustomValue<BOOL>;
+using BoolValue = CustomValue<bool>;
 //------------------------------------------------------------------------------
 
 IC bool operator == (const WaveForm& A, const WaveForm& B){return !!A.Similar(B);}
