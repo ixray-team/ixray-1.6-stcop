@@ -27,6 +27,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "Grenade.h"
 #include "Torch.h"
+#include "../xrScripts/script_callback_ex.h"
 
 // breakpoints
 #include "../xrEngine/xr_input.h"

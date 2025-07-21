@@ -23,6 +23,7 @@
 #include "../../game_object_space.h"
 #include "trader_animation.h"
 #include "../../../xrServerEntities/clsid_game.h"
+#include "../../../xrScripts/script_callback_ex.h"
 
 CAI_Trader::CAI_Trader()
 {
