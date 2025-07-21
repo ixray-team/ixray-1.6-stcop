@@ -26,32 +26,43 @@ public:
 		eFORCEDWORD = u32(-1)
 	};
 public:
-	float			blendAmount;
-	float			timeCurrent;
-	float			timeTotal;
-	MotionID		motionID;
-	u16				bone_or_part;	// startup parameters
-	u8				channel;
-	xr_vector<float> notifyKeys;
-	size_t current_notify_index = 0;
-	bool trigger_notify = false;
+	float			blendAmount = 0.0f;
+	float			timeCurrent = 0.0f;
+	float			timeTotal = 0.0f;
+	MotionID		motionID = {};
+	u16				bone_or_part = 0;	// startup parameters
+	u8				channel = 0;
+
+	struct NotifyKeyframeData
+	{
+		float key;
+		xr_vector<anim_notify*> assigned;
+	};
+	
+	struct NotifyKeyframes
+	{
+		xr_vector<NotifyKeyframeData> keyframes;
+		s64 current_notify_index = 0;
+	};
+	
+	xr_hash_map<u16, NotifyKeyframes> notifies = {}; // per bone notifies
 private:
-	ECurvature		blend;
+	ECurvature		blend = ECurvature::eFREE_SLOT;
 public:
-	float			blendAccrue;	// increasing
-	float			blendFalloff;	// decreasing
-	float			blendPower;			
-	float			speed;
+	float			blendAccrue = 0.0f;	// increasing
+	float			blendFalloff = 0.0f;	// decreasing
+	float			blendPower = 0.0f;			
+	float			speed = 0.0f;
 
-	BOOL			playing;
-	BOOL			stop_at_end_callback;
-	BOOL			update_callback;
-	BOOL			stop_at_end;
-	BOOL			fall_at_end;
-	PlayCallback	Callback;
-	void*			CallbackParam;
+	BOOL			playing = false;
+	BOOL			stop_at_end_callback = false;
+	BOOL			update_callback = false;
+	BOOL			stop_at_end = false;
+	BOOL			fall_at_end = false;
+	PlayCallback	Callback = nullptr;
+	void*			CallbackParam = nullptr;
 
-	u32				dwFrame;
+	u32				dwFrame = 0;
 
 	u32				mem_usage			(){ return sizeof(*this); }
 IC	bool			update_time			( float dt );
@@ -64,27 +75,7 @@ IC	void			set_accrue_state	( ){ blend = eAccrue; }
 IC	void			set_falloff_state	( ){ blend = eFalloff; }
 IC	void			set					( const CBlend &r ){ *this = r; }
 #ifdef	DEBUG
-CBlend(  ):
-
-	blendAmount(0)			,
-	timeCurrent(0)			,
-	timeTotal(0)			,
-	motionID()				,
-	bone_or_part(0)			,	
-	channel(0)				,
-	blend(eFREE_SLOT)		,
-	blendAccrue(0)			,	
-	blendFalloff(0)			,	
-	blendPower(0)			,			
-	speed(0)				,
-	playing(0)				,
-	stop_at_end_callback(0)	,
-	update_callback(0)		,
-	stop_at_end(0)			,
-	fall_at_end(0)			,
-	Callback(0)				,
-	CallbackParam(0)		,
-	dwFrame(0)
+CBlend(  )
 {
 
 }
