@@ -150,7 +150,9 @@ BOOL NEW_ApplyBorders	(lm_layer &lm, u32 ref)
 
 			lm_line &line = *l_0;
 
-			base_color sv_color0; sv_color0._set( -1,-1,-1 );
+			base_color sv_color0; 
+			sv_color0._set( -1,-1,-1 );
+
 			u8		   sv_marker0 = u8(-1);
 			for (int x=0; x<(int)lm.width; x++)
 			{
