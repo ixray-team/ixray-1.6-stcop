@@ -13,71 +13,10 @@ void CWeaponBM16::Load	(LPCSTR section)
 
 void CWeaponBM16::PlayReloadSound()
 {
-	if(m_magazine.size()==1)	
+	if (m_magazine.size() == 1)	
 		PlaySound	("sndReload1",get_LastFP());
 	else						
 		PlaySound	("sndReload",get_LastFP());
-}
-
-void CWeaponBM16::PlayAnimShoot()
-{
-	switch( m_magazine.size() )
-	{
-	case 1:
-		PlayHUDMotion("anm_shot_1",FALSE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_shot_2",FALSE,this,GetState());
-		break;
-	}
-}
-
-void CWeaponBM16::PlayAnimShow()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_show_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_show_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_show_2",TRUE,this,GetState());
-		break;
-	}
-}
-
-void CWeaponBM16::PlayAnimHide()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_hide_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_hide_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_hide_2",TRUE,this,GetState());
-		break;
-	}
-}
-
-void CWeaponBM16::PlayAnimBore()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_bore_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_bore_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_bore_2",TRUE,this,GetState());
-		break;
-	}
 }
 
 void CWeaponBM16::PlayAnimReload()
@@ -86,77 +25,86 @@ void CWeaponBM16::PlayAnimReload()
 
 	VERIFY(GetState()==eReload);
 	
-
-	if((m_magazine.size()==1 || !b_both) && 
-		(m_set_next_ammoType_on_reload == undefined_ammo_type || 
-		 m_ammoType == m_set_next_ammoType_on_reload))
-		PlayHUDMotion("anm_reload_1",TRUE,this,GetState());
+	if ((m_magazine.size() == 1 || !b_both) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
+		PlayHUDMotion("anm_reload_1", TRUE, GetState());
 	else
-		PlayHUDMotion("anm_reload_2",TRUE,this,GetState());
+		PlayHUDMotion("anm_reload_2", TRUE, GetState());
 }
 
-void  CWeaponBM16::PlayAnimIdleMoving()
+shared_str CWeaponBM16::SetCurrentShootAnimation()
 {
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_idle_moving_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_idle_moving_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_idle_moving_2",TRUE,this,GetState());
-		break;
-	}
-}
+	shared_str anim = (HudAnimationExist("anm_shot_2") || HudAnimationExist("anm_shot_1")) ? "anm_shot" : "anm_shoot";
+	string16 new_suffix = {};
 
-void  CWeaponBM16::PlayAnimIdleSprint()
-{
-	switch( m_magazine.size() )
+	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
-	case 0:
-		PlayHUDMotion("anm_idle_sprint_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_idle_sprint_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_idle_sprint_2",TRUE,this,GetState());
-		break;
-	}
-}
+		xr_sprintf(new_suffix, "_%d", iAmmoElapsed);
 
-void CWeaponBM16::PlayAnimIdle()
-{
-	if(TryPlayAnimIdle())	return;
-
-	if(IsZoomed())
-	{
-		switch (m_magazine.size())
+		if (IsZoomed())
 		{
-		case 0:{
-			PlayHUDMotion("anm_idle_aim_0", TRUE, nullptr, GetState());
-		}break;
-		case 1:{
-			PlayHUDMotion("anm_idle_aim_1", TRUE, nullptr, GetState());
-		}break;
-		case 2:{
-			PlayHUDMotion("anm_idle_aim_2", TRUE, nullptr, GetState());
-		}break;
-		};
-	}else{
-		switch (m_magazine.size())
+			AddSuffixName(anim, "_aim", new_suffix);
+		}
+
+		if (IsMisfire())
 		{
-		case 0:{
-			PlayHUDMotion("anm_idle_0", TRUE, nullptr, GetState());
-		}break;
-		case 1:{
-			PlayHUDMotion("anm_idle_1", TRUE, nullptr, GetState());
-		}break;
-		case 2:{
-			PlayHUDMotion("anm_idle_2", TRUE, nullptr, GetState());
-		}break;
-		};
+			AddSuffixName(anim, "_misfire", new_suffix);
+			AddSuffixName(anim, "_jammed", new_suffix);
+		}
+
+		AddSuffixName(anim, new_suffix);
 	}
+	else
+	{
+		xr_sprintf(new_suffix, "%s%s", anim.c_str(), "_2");
+		anim = new_suffix;
+	}
+
+	return anim;
+}
+
+shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
+{
+	shared_str anim = first_name;
+
+	string16 new_suffix = {};
+
+	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
+	{
+		xr_sprintf(new_suffix, "_%d", iAmmoElapsed);
+
+		if (IsZoomed())
+		{
+			AddSuffixName(anim, "_aim", new_suffix);
+		}
+
+		if (IsMisfire())
+		{
+			AddSuffixName(anim, "_misfire", new_suffix);
+			AddSuffixName(anim, "_jammed", new_suffix);
+		}
+
+		AddSuffixName(anim, new_suffix);
+	}
+	else
+	{
+		xr_sprintf(new_suffix, "%s%s", anim.c_str(), "_2");
+		anim = new_suffix;
+	}
+
+	return anim;
+}
+
+bool CWeaponBM16::HudAnimationExist(const shared_str& anim_name)
+{
+	string128 new_name;
+	xr_sprintf(new_name, "%s_%d", *anim_name, iAmmoElapsed);	
+
+	bool has_anim = inherited::HudAnimationExist(new_name);
+
+	if (has_anim)
+	{
+		return has_anim;
+	}
+
+	return inherited::HudAnimationExist(anim_name);
 }
