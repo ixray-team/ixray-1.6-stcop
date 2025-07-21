@@ -591,14 +591,14 @@ void CSE_ALifeItemWeapon::STATE_Read(NET_Packet	&tNetPacket, u16 size)
 	if (m_wVersion > 122)
 		a_elapsed_grenades.unpack_from_byte(tNetPacket.r_u8());
 
-	if (m_wVersion > 128)
-	{
-		tNetPacket.r_u8(misfire);
-		tNetPacket.r_float(rt_zoom_factor);
-		tNetPacket.r_u8(cur_scope);
-		tNetPacket.r_u8(chamber_ammo_type);
-		tNetPacket.r_u16(a_chamber_elapsed);
-	}
+	//if (m_wVersion > 128)
+	//{
+	//	tNetPacket.r_u8(misfire);
+	//	tNetPacket.r_float(rt_zoom_factor);
+	//	tNetPacket.r_u8(cur_scope);
+	//	tNetPacket.r_u8(chamber_ammo_type);
+	//	tNetPacket.r_u16(a_chamber_elapsed);
+	//}
 }
 
 void CSE_ALifeItemWeapon::STATE_Write		(NET_Packet	&tNetPacket)
@@ -610,11 +610,11 @@ void CSE_ALifeItemWeapon::STATE_Write		(NET_Packet	&tNetPacket)
 	tNetPacket.w_u8				(m_addon_flags.get());
 	tNetPacket.w_u8				(ammo_type);
 	tNetPacket.w_u8				(a_elapsed_grenades.pack_to_byte());
-	tNetPacket.w_u8				(misfire);
-	tNetPacket.w_float			(rt_zoom_factor);
-	tNetPacket.w_u8				(cur_scope);
-	tNetPacket.w_u8				(chamber_ammo_type);
-	tNetPacket.w_u16			(a_chamber_elapsed);
+	//tNetPacket.w_u8				(misfire);
+	//tNetPacket.w_float			(rt_zoom_factor);
+	//tNetPacket.w_u8				(cur_scope);
+	//tNetPacket.w_u8				(chamber_ammo_type);
+	//tNetPacket.w_u16			(a_chamber_elapsed);
 }
 
 void CSE_ALifeItemWeapon::OnEvent			(NET_Packet	&tNetPacket, u16 type, u32 time, ClientID sender )
