@@ -15,6 +15,7 @@
 #include "CameraRecoil.h"
 #include "Actor.h"
 #include "script_game_object.h"
+#include "Scope.h"
 
 #include "../xrCore/FixedMap.h"
 
@@ -101,6 +102,7 @@ public:
 	bool IsCollimatorInstalled() const;
 	bool IsHudModelForceUnhide() const;
 	bool IsUIForceUnhiding() const;
+	bool ScopeFit(CScope*) const;
 protected:
 	//время удаления оружия
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
