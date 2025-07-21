@@ -5,6 +5,7 @@
 #include "xrLC_GlobalData.h"
 #include "light_point.h"
 #include "xrFace.h"
+#include "../xrDXT/xrDXT.h"
 
 void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 {
@@ -412,7 +413,7 @@ float rayTraceOriginal(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& 
 
 // Embree
 #include <../xrForms/CompilersUI.h>
-extern CompilersMode gCompilerMode;
+#include "../xrLC_Light/CUDA/CUDARayCast.h"
 
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
 {

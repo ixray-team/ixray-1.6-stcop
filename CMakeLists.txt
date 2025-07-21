@@ -70,6 +70,7 @@ endif()
 
 # Download API from GitHub Releases
 include("cmake/github.cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 # Configure NuGet
 if (WIN32)
