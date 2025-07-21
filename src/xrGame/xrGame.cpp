@@ -60,6 +60,25 @@ void unit_test_stack_string()
 	assert(str.c_str());
 	assert(str.data());
 
+
+	str.append("test");
+
+	for (auto it : str)
+	{
+		char a = it;
+	}
+
+	str.append("123");
+
+	auto substr = str.substr();
+	assert(substr == str);
+	auto substr2 = str.substr(3);
+	assert(substr2 == "t123");
+
+	auto index = substr2.find("12");
+	assert(index == 1);
+	index = substr2.find("3");
+	assert(index == 3);
 }
 #endif
 
