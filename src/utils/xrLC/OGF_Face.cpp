@@ -140,15 +140,22 @@ void OGF::adjacent_select	(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vect
 	}
 }
 
-void OGF::Optimize	()
+void OGF::Optimize()
 {
+	if (data.vertices.size() == 0)
+	{
+		//Msg("* ERROR Optimize OGF: %d Verts: data.vertices.size() == 0");
+		return;
+	}
+
 	// Real optimization
 	//////////////////////////////////////////////////////////////////////////
 	// x-vertices
 	try {
 		if (fast_path_data.vertices.size() && fast_path_data.faces.size())
 		{
-			try {
+			try
+			{
 				VERIFY	(fast_path_data.vertices.size()	<= data.vertices.size()	);
 				VERIFY	(fast_path_data.faces.size()		== data.faces.size()		);
 			} catch(...) {
@@ -183,7 +190,9 @@ void OGF::Optimize	()
 			}
 			*/
 		}
-	} catch(...) {
+	} 
+	catch(...)
+	{
 		Msg	("* ERROR: optimize: x-geom : failed");
 	}
 
