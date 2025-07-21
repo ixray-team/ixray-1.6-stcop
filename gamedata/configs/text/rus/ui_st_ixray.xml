@@ -386,4 +386,10 @@
 	<string id="ui_inv_max_weight">
 		<text>макс.</text>
 	</string>
+	<string id="st_track_opt_off">
+		<text>выкл.</text>
+	</string>
+	<string id="st_track_opt_on">
+		<text>вкл.</text>
+	</string>
 </string_table>
