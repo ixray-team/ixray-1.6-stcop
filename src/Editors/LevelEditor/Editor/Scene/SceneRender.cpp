@@ -8,11 +8,7 @@ doug_lea_area_allocator	g_render_lua_allocator_area(s_fake_array,"render:sdk", s
 
 #define RENDER_OBJECT(P,B)\
 {\
-    try{\
-        (N->val)->RenderRoot(P,B);\
-    }catch(...){\
-        ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B] - Tools: '%s' Object: '%s'",(N->val)->FParentTools->ClassName(),(N->val)->GetName());\
-    }\
+    (N->val)->RenderRoot(P,B);\
 }
     
 void  object_Normal_0(EScene::mapObject_Node *N)	 {RENDER_OBJECT(0,false); }

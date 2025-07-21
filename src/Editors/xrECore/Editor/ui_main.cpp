@@ -380,9 +380,6 @@ void TUI::Redraw()
 {
 	PrepareRedraw();
 
-#ifndef DEBUG
-	try
-#endif
 	{
 		Viewport& View = CurrentView();
 
@@ -496,17 +493,9 @@ void TUI::Redraw()
 					DU_impl.DrawPivot(m_Pivot);
 				}
 
-#ifndef DEBUG
-				try
-#endif
 				{
 					Tools->Render();
 				}
-#ifndef DEBUG
-				catch (...) {
-					ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B]");
-				}
-#endif
 				// draw selection rect
 				if (m_SelectionRect) 	DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
 
@@ -567,13 +556,6 @@ void TUI::Redraw()
 #endif
 		}
 	}
-#ifndef DEBUG
-	catch(...)
-	{
-		ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type A]");
-		EDevice->End();
-	}
-#endif
 
 	for (auto Callback : CommandList[TUI::ECommandListID::CurrentFrame])
 		Callback();

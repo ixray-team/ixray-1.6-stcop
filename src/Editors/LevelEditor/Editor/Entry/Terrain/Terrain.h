@@ -8,6 +8,7 @@ class CTerrain:
 
 private:
 	XRay::Editor::HeightmapUtils::SHeightMap HMap;
+	CEditableObject TerrainObject;
 
 public:
 	CTerrain(LPVOID data, LPCSTR name);
