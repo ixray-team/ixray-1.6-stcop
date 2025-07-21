@@ -609,11 +609,13 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 {
 	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(pIItem);
 
-	if (pGrenadeLauncher &&
-		ALife::eAddonAttachable == m_eGrenadeLauncherStatus &&
-		0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
-		!xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
+	if (pGrenadeLauncher && ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
 	{
+		if (m_bRestGlSil && SilencerAttachable() && IsSilencerAttached())
+		{
+			Detach(*GetSilencerName(), true);
+		}
+
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
 		CRocketLauncher::m_fLaunchSpeed = pGrenadeLauncher->GetGrenadeVel();
