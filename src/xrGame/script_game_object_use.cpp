@@ -117,6 +117,11 @@ void CScriptGameObject::Kill					(CScriptGameObject* who, bool bypass_actor_chec
 
 }
 
+void CScriptGameObject::KillNotBypassActorCheck(CScriptGameObject* who)
+{
+	Kill(who, false);
+}
+
 bool CScriptGameObject::Alive					() const
 {
 	CEntity				*entity	= smart_cast<CEntity*>(&object());
