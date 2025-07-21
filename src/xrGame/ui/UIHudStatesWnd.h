@@ -10,7 +10,7 @@ class CUITextWnd;
 class CUIProgressBar;
 class CUIProgressShape;
 class CUIXml;
-class UI_Arrow;
+class CUIArrow;
 class CActor;
 
 int const it_max = ALife::infl_max_count - 1;
@@ -33,8 +33,8 @@ private:
 	Frect				m_ui_weapon_icon_rect;
 
 	CUIProgressShape*	m_progress_self;
-	UI_Arrow*			m_arrow;
-	UI_Arrow*			m_arrow_shadow;
+	CUIArrow*			m_arrow;
+	CUIArrow*			m_arrow_shadow;
 	
 	float				m_last_health;
 	float				m_health_blink;

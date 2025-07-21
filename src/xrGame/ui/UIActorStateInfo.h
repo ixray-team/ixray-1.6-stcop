@@ -16,7 +16,7 @@ class CUIProgressShape;
 class CUIStatic;
 class CUIFrameWindow;
 class CUIXml;
-class UI_Arrow;
+class CUIArrow;
 class CInventoryOwner;
 class CActor;
 
@@ -75,8 +75,8 @@ protected:
 	CUIStatic*				m_static2;
 	CUIStatic*				m_static3;
 	CUIProgressShape*		m_sensor;
-	UI_Arrow*				m_arrow;
-	UI_Arrow*				m_arrow_shadow;
+	CUIArrow*				m_arrow;
+	CUIArrow*				m_arrow_shadow;
 	float					m_magnitude;
 
 public:

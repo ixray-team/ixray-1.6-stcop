@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "ui_arrow.h"
+#include "UIArrow.h"
 #include "../UIXmlInit.h"
 
-UI_Arrow::UI_Arrow()
+CUIArrow::CUIArrow()
 {
 	m_angle_begin	= 0.0f;
 	m_angle_end		= PI_MUL_2;
@@ -13,13 +13,13 @@ UI_Arrow::UI_Arrow()
 	m_pos			= 0.0f;
 }
 
-UI_Arrow::~UI_Arrow()
+CUIArrow::~CUIArrow()
 {
 }
 
-void UI_Arrow::init_from_xml( CUIXml& xml, LPCSTR path, CUIWindow* parent )
+void CUIArrow::init_from_xml( CUIXml& xml, LPCSTR path, CUIWindow* parent )
 {
-	//m_arrow             = UIHelper::CreateStatic( xml, "arrow", this );
+	//m_arrow = UIHelper::CreateStatic( xml, "arrow", this );
 	parent->AttachChild( this );
 	SetAutoDelete( true );
 	CUIXmlInit::InitStatic( xml, path, 0, this );
@@ -39,7 +39,7 @@ void UI_Arrow::init_from_xml( CUIXml& xml, LPCSTR path, CUIWindow* parent )
 
 }
 
-void UI_Arrow::SetNewValue( float new_value )
+void CUIArrow::SetNewValue( float new_value )
 {
 	clamp( new_value, 0.0f, 1.0f );
 	if ( fsimilar( m_pos, m_temp_pos ) )
@@ -60,7 +60,7 @@ void UI_Arrow::SetNewValue( float new_value )
 	SetPos( m_pos );
 }
 
-void UI_Arrow::SetPos( float pos )
+void CUIArrow::SetPos( float pos )
 {
 	m_pos = pos;
 	inherited::SetHeading( m_angle_begin + m_pos * m_angle_range );
