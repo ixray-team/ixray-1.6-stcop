@@ -72,18 +72,18 @@ virtual	void Execute()
 		 
 			vecVertex			&verts = lc_global_data()->g_vertices();
  			Vertex*		V		= verts[ID];
-			
+
  			V->normalFromAdj	();
-			LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb+LP_dont_sun,0);
+
+			u32 flags = LP_dont_rgb + LP_dont_sun;
+			LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), flags,0);
 			vC.mul				(0.5f);
 			V->C._set			(vC);
 		}
 	}
 };
 
-CThreadManager	precalc_base_hemi;
-#define MAX_THREADS CPU::ID.n_threads - 2
-
+CThreadManager	precalc_base_hemi; 
 void CBuild::xrPhase_AdaptiveHT	()
 {
 	CDB::COLLIDER	DB;
@@ -114,62 +114,17 @@ void CBuild::xrPhase_AdaptiveHT	()
 		Status						("Precalculating : base hemisphere ...");
 		mem_Compact					();
 		Light_prepare				();
-
-		// calc approximate normals for vertices + base lighting
-		//for (u32 vit=0; vit<lc_global_data()->g_vertices().size(); vit++)	
-		//{
-		//	base_color_c		vC;
-		//	Vertex*		V		= lc_global_data()->g_vertices()[vit];
-		//	V->normalFromAdj	();
-		//	LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb+LP_dont_sun,0);
-		//	vC.mul				(0.5f);
-		//	V->C._set			(vC);
-		//}
-
-		/* OLD CODE
-		u32	stride			= u32(-1);
-		
-		u32 threads			= u32(-1);
-		u32 rest			= u32(-1);
-		get_intervals( CPU::ID.n_threads - 2, (u32)lc_global_data()->g_vertices().size(), threads, stride, rest );
-		for (u32 thID=0; thID<threads; thID++)
-			precalc_base_hemi.start	( new CPrecalcBaseHemiThread (thID,thID*stride,thID*stride + stride ) );
-		if(rest > 0)
-			precalc_base_hemi.start	( new CPrecalcBaseHemiThread (threads,threads*stride,threads*stride + rest ) );
-		*/
-
+ 
 		ThreadWorkID_Adaptive = 0;
-		for (u32 thID = 0; thID < MAX_THREADS; thID++)
+		for (u32 thID = 0; thID < CPU::ID.n_threads; thID++)
 			precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
 
 		precalc_base_hemi.wait();
-		//precalc_base_hemi
 	}
-
-	//////////////////////////////////////////////////////////////////////////
-	/*
-	Status				("Adaptive tesselation...");
-	{
-		for (u32 fit=0; fit<g_faces.size(); fit++)	{					// clear split flag from all faces + calculate normals
-			g_faces[fit]->flags.bSplitted	= false;
-			g_faces[fit]->flags.bLocked		= true;
-		}
-		u_Tesselate		(callback_edge_error,0,callback_vertex_hemi);	// tesselate
-	}
-	*/
 
 	//////////////////////////////////////////////////////////////////////////
 	Status				("Gathering lighting information...");
 	u_SmoothVertColors	(5);
-
-	//////////////////////////////////////////////////////////////////////////
-	/*
-	Status				("Exporting to SMF...");
-	{
-		string_path			fn;
-		GSaveAsSMF			(strconcat(fn,pBuild->path,"hemi_source.smf"));
-	}
-	*/
 }
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
 {
@@ -306,12 +261,6 @@ void	tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_
 			// Normals and checkpoint
 			F1->N		= AF->N;		if (cb_F)	cb_F(F1);
 			F2->N		= AF->N;		if (cb_F)	cb_F(F2);
-			//smoth groups
-			//F1->sm_group= AF->sm_group;
-			//F2->sm_group= AF->sm_group;
-			// don't destroy old face	(it can be used as occluder during ray-trace)
-			// if (AF->bLocked)	continue;
-			// FacePool.destroy	(g_faces[I]);
 		}
 		// calc vertex attributes
 		{
@@ -319,6 +268,7 @@ void	tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_
 			if (cb_V)				cb_V	(V);
 		}
 }
+
 void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_vertex* cb_V)
 {
 	// main process
@@ -360,18 +310,18 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 		tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
 	}
 
-		// Cleanup
-		for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
-			if (0!=lc_global_data()->g_faces()[I] && lc_global_data()->g_faces()[I]->flags.bSplitted)	
-				lc_global_data()->destroy_face	(lc_global_data()->g_faces()[I]);
+	// Cleanup
+	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
+		if (0!=lc_global_data()->g_faces()[I] && lc_global_data()->g_faces()[I]->flags.bSplitted)	
+			lc_global_data()->destroy_face	(lc_global_data()->g_faces()[I]);
 
-		for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
-			if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())				
-				lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
+	for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
+		if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())				
+			lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
 
-		lc_global_data()->g_faces().erase		(std::remove(lc_global_data()->g_faces().begin(),lc_global_data()->g_faces().end(),(Face*)0),lc_global_data()->g_faces().end());
-		lc_global_data()->g_vertices().erase	(std::remove(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),(Vertex*)0),lc_global_data()->g_vertices().end());
-		g_bUnregister		= true;
+	lc_global_data()->g_faces().erase		(std::remove(lc_global_data()->g_faces().begin(),lc_global_data()->g_faces().end(),(Face*)0),lc_global_data()->g_faces().end());
+	lc_global_data()->g_vertices().erase	(std::remove(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),(Vertex*)0),lc_global_data()->g_vertices().end());
+	g_bUnregister		= true;
 }
 
 void CBuild::u_SmoothVertColors(int count)

@@ -1,18 +1,15 @@
 #include "stdafx.h"
  
 #include "xrDeflector.h"
-#include "xrIsect.h"
 #include "xrLC_GlobalData.h"
 
 #include "math.h"
 #include "xrFace.h"
- 
-XRLC_LIGHT_API u32 c_LMAP_size = 1024;
-
+  
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
-	R_ASSERT(ds_x>=(ss_x+px));
-	R_ASSERT(ds_y>=(ss_y+py));
+	// R_ASSERT(ds_x>=(ss_x+px));
+	// R_ASSERT(ds_y>=(ss_y+py));
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)
 		{
@@ -29,8 +26,8 @@ void lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF)
 	u32		ds_y	= dst.height;
 	u32		ss_x	= src.width;
 	u32		ss_y	= src.height;
-	R_ASSERT(ds_x>=(ss_x+px));
-	R_ASSERT(ds_y>=(ss_y+py));
+	// R_ASSERT(ds_x>=(ss_x+px));
+	// R_ASSERT(ds_y>=(ss_y+py));
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)
 		{
@@ -47,8 +44,8 @@ void lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF)
 
 void blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
-	R_ASSERT(ds_x>=(ss_x+px));
-	R_ASSERT(ds_y>=(ss_y+py));
+	// R_ASSERT(ds_x>=(ss_x+px));
+	// R_ASSERT(ds_y>=(ss_y+py));
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)
 		{
@@ -65,8 +62,8 @@ void blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_
 
 void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
-	R_ASSERT(ds_x>=(ss_y+px));
-	R_ASSERT(ds_y>=(ss_x+py));
+	// R_ASSERT(ds_x>=(ss_y+px));
+	// R_ASSERT(ds_y>=(ss_x+py));
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)
 		{
@@ -80,8 +77,8 @@ void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px
 
 void blit_r	(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
-	R_ASSERT(ds_x>=(ss_y+px));
-	R_ASSERT(ds_y>=(ss_x+py));
+	// R_ASSERT(ds_x>=(ss_y+px));
+	// R_ASSERT(ds_y>=(ss_x+py));
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)
 		{
@@ -319,8 +316,8 @@ void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, H
 		}
 
 		// Calculate
-		R_ASSERT		(lm.width	<=(c_LMAP_size-2*BORDER));
-		R_ASSERT		(lm.height	<=(c_LMAP_size-2*BORDER));
+		R_ASSERT		(lm.width	<=(getLMSIZE() - 2 * BORDER));
+		R_ASSERT		(lm.height	<=(getLMSIZE() - 2 * BORDER));
 		lm.create		(lm.width,lm.height);
 		L_Direct		(DB,LightsSelected,H);
 	} catch (...)
@@ -402,3 +399,16 @@ void DeflectorsStats ()
 			DumpDeflctor( i ); 
 }
  
+
+extern XRLC_LIGHT_API int global_size_map = 1024;
+
+
+void setLMSIZE(int size)
+{
+	global_size_map = size;
+}
+
+u32 getLMSIZE()
+{
+	return global_size_map;
+}

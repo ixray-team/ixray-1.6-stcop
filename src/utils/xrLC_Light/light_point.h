@@ -8,6 +8,3 @@ enum
 	LP_dont_hemi		= (1<<2),
 	LP_dont_sun			= (1<<3),
 };
-
-
-//XRCL_LIGHT_API void  LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
