@@ -203,7 +203,6 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 
 		if(GetState() == eThrow)
 		{
-			Msg("Throw on reject");
 			Throw				();
 		}
 	}
@@ -436,27 +435,22 @@ void CMissile::UpdateXForm	()
 
 void CMissile::setup_throw_params()
 {
-	CEntity					*entity = smart_cast<CEntity*>(H_Parent());
-	VERIFY					(entity);
-	CInventoryOwner			*inventory_owner = smart_cast<CInventoryOwner*>(H_Parent());
-	VERIFY					(inventory_owner);
+	if (!H_Parent()) return;
+	CGameObject* GO = H_Parent()->cast_game_object();
+	if (!GO || GO->getDestroy()) return;
+	CEntity					*entity = GO->cast_entity();
+	if (!entity) return;
+	CInventoryOwner			*inventory_owner = entity->cast_inventory_owner();
+	if (!inventory_owner || !inventory_owner->m_inventory) return;
 	Fmatrix					trans;
 	trans.identity			();
 	Fvector					FirePos, FireDir;
 	if (this == inventory_owner->inventory().ActiveItem())
 	{
-		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-		if(nullptr == io->inventory().ActiveItem())
-		{
-				Msg("current_state %d", GetState() );
-				Msg("next_state %d", GetNextState());
-				Msg("state_time %d", m_dwStateTime);
-				Msg("item_sect %s", cNameSect().c_str());
-				Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
-		}
-
 		entity->g_fireParams(this, FirePos, FireDir);
-	}else{
+	}
+	else
+	{
 		FirePos				= XFORM().c;
 		FireDir				= XFORM().k;
 	}
@@ -480,9 +474,6 @@ void CMissile::OnMotionMark(u32 state, const motion_marks& M)
 
 void CMissile::Throw() 
 {
-#ifndef MASTER_GOLD
-	Msg("throw [%d]", Device.dwFrame);
-#endif // #ifndef MASTER_GOLD
 	VERIFY								(smart_cast<CEntity*>(H_Parent()));
 	setup_throw_params					();
 	
