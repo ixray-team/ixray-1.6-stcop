@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hello_mil_freedom_11">
+		<text>You managed to pass through the Red Forest. Seems to me you're one hell of a lucky guy. But the situation we got here is even more difficult, merc. The barrier has fallen. The military are no longer able to hold it.</text>
+	</string>
+	<string id="hello_mil_freedom_111">
+		<text>What happened to the military?</text>
+	</string>
+	<string id="hello_mil_freedom_2">
+		<text>They're dead... almost all of 'em. Those who survived the numerous attacks by zombies and mutants are pinned, like rats in a hole, at their base near the helicopter pad. Plus we've lost a lot of people during the big emission.</text>
+	</string>
+	<string id="hello_mil_freedom_22">
+		<text>What do you mean by "lost?" What happened?</text>
+	</string>
+	<string id="hello_mil_freedom_222">
+		<text>Nobody knows for sure, merc, but people are gone. Lone stalkers and even whole groups. Sometimes we catch bits and pieces of radio comms with requests for help. A mercenary squad has spent the entire last week looking for their own at the farmstead.</text>
+	</string>
+	<string id="hello_mil_freedom_3">
+		<text>Let me go there and see what's up.</text>
+	</string>
+	<string id="hello_mil_freedom_333">
+		<text>Let me know if you learn something important.</text>
+	</string>
+	<string id="hello_mil_freedom_44">
+		<text>Will do.</text>
+	</string>
+	<string id="hello_mil_freedom_55">
+		<text>What now?</text>
+	</string>
+	<string id="hello_mil_freedom_555">
+		<text>Never mind, see you.</text>
+	</string>
+	<string id="hello_mil_freedom_66">
+		<text>You managed to pass through the Red Forest. Seems to me you're one hell of a lucky guy. But the situation we got here is even more difficult, merc.</text>
+	</string>
+	<string id="hello_mil_freedom_666">
+		<text>What's going on? I need details.</text>
+	</string>
+	<string id="hello_mil_freedom_6666">
+		<text>Go see the Forester first, he'll fill you in.</text>
+	</string>
+	<string id="hello_mil_freedom_77">
+		<text>What now?</text>
+	</string>
+	<string id="hello_mil_freedom_777">
+		<text>Never mind, see you.</text>
+	</string>
+	<string id="hello_mil_killer_11">
+		<text>Merc, what are you scavenging here for?</text>
+	</string>
+	<string id="hello_mil_killer_111">
+		<text>Looking for you. Freedom guys from the outpost told me that a group of your men has vanished in this vicinity. What happened?</text>
+	</string>
+	<string id="hello_mil_killer_1111">
+		<text>A few weeks ago we got an important order for a unique artifact. The order came from the top - the client is a real big shot. Anyway, everything was going well: our squad found the artifact somewhere near the Barrier and was already on its way back when it got hit by the large Emission. We thought they all copped it, but they got lucky and survived. Trouble is, they went missing somewhere around here. We were ordered to find them, 'cause we have to deliver on our promise. If we screw this up, no client will ever trust the mercenaries with another order again. </text>
+	</string>
+	<string id="hello_mil_killer_11111">
+		<text>Could it be they're dead? It's not easy to survive an emission.</text>
+	</string>
+	<string id="hello_mil_killer_111111">
+		<text>We pick up fragments of our squad's transmissions, but we can't make out anything from them. The only thing that's clear is that they got lost in broad daylight and are now in some sort of trap. It could be an anomaly or some new evil that's appeared in the Zone. We don't know what to do. There's an old water tower by the farmstead - I think we'd be able to receive their transmissions better up there. We've tried climbing up there before, but some real badass monster jumped out of nowhere, grabbed one of our boys and dragged him away. The rest of us barely made it out!</text>
+	</string>
+	<string id="hello_mil_killer_1111111">
+		<text>A fun job you got for me there. But hey, a man's gotta do what a man's gotta do. I need to figure out how to rescue that group just as much as you do.</text>
+	</string>
+	<string id="hello_mil_killer_11111112">
+		<text>I took care of that beast. Now I need to transmit the coordinates from the water tower.</text>
+	</string>
+	<string id="hello_mil_killer_11111113">
+		<text>Nothing to worry about. I've already transmitted the coordinates from the water tower.</text>
+	</string>
+	<string id="hello_mil_killer_22">
+		<text>Glad to see you. Did you find out how to get our guys out?</text>
+	</string>
+	<string id="hello_mil_killer_222">
+		<text>Not yet.</text>
+	</string>
+	<string id="hello_mil_killer_44">
+		<text>What's new, merc?</text>
+	</string>
+	<string id="hello_mil_killer_444">
+		<text>Not a thing.</text>
+	</string>
+	<string id="hello_mil_killer_55">
+		<text>Been a while since we saw you last. Our guys have been stuck in that anomaly for too long. Did you find out how to get them out?</text>
+	</string>
+	<string id="hello_mil_killer_555">
+		<text>Sure did. Forester gave me the coordinates of the exit that will allow the mercenaries to get out of the space bubble. Only thing I need is a powerful transmitter to get in touch with the group and send them the coordinates.</text>
+	</string>
+	<string id="hello_mil_killer_5555">
+		<text>The army base should have a transmitter. The soldiers were hit by the large Emission pretty hard and only a dozen survived in all. They're all sending SOS signals, thinking there'll be a rescue operation. Except I don't think anyone will come - they'll be left to die, same as always.</text>
+	</string>
+	<string id="hello_mil_killer_55555">
+		<text>A dozen military guys are quite a force, even after an emission. Could you lend me some help? I mean, we're working towards a common goal, aren't we?</text>
+	</string>
+	<string id="hello_mil_killer_555555">
+		<text>We positively cannot get into a conflict with the military. Sorry, merc, no can do this time. But I know that Freedom have set their sights on that base. They could use it to facilitate control over the barrier. They can help you, especially since their commander owes me. Let me get in touch with them.</text>
+	</string>
+	<string id="hello_mil_killer_5555555">
+		<text>Thanks for the tip.</text>
+	</string>
+	<string id="hello_mil_killer_55555555">
+		<text>Good luck, merc!</text>
+	</string>
+	<string id="hello_mil_killer_5555556">
+		<text>I'll deal with it myself. I'm no friend of Freedom.</text>
+	</string>
+	<string id="hello_mil_killer_66">
+		<text>How's it shaping up?</text>
+	</string>
+	<string id="hello_mil_killer_666">
+		<text>It's not, yet.</text>
+	</string>
+	<string id="hello_mil_killer_667">
+		<text>We got your fighters out of the bubble. They're moving toward Limansk, and if everything goes smoothly, they'll be here within a couple of hours.</text>
+	</string>
+	<string id="hello_mil_killer_6676">
+		<text>Great news! Thanks a lot, man. I'll owe you for life!</text>
+	</string>
+	<string id="hello_mil_killer_77">
+		<text>We'll settle up some day in the Zone. Good-bye.</text>
+	</string>
+	<string id="mil_killer_about_around_0">
+		<text>Are you abreast of the local news?</text>
+	</string>
+	<string id="mil_killer_about_around_1">
+		<text>Well, we've been here a while, so we keep a pulse on things. Recently the Monolith faction turned up out of the blue. Some time ago I had a contract on a few Monolithians. Those guys are something else, I tell ya. Always going on about the Monolith, a genetic module, whatever it is. So, then they get up and leave on some kind of pilgrimage, beyond the Radar. We thought that was it - rest in peace, you silly bastards. But lo and behold - our pilgrims come right back, even crazier than before. Now I'm wondering as to what they got hold of, there in the center of the Zone. Could they have found the actual Monolith? Or did they find jack right alongside shit, and the frustration of it all made them go completely haywire? Hey, with those psychos - who knows.</text>
+	</string>
+	<string id="mil_killer_about_last_time_0">
+		<text>Any other interesting developments?</text>
+	</string>
+	<string id="mil_killer_about_last_time_1">
+		<text>There are always developments in the Zone, and they're always interesting. I already told you about Monolith - they're on everybody's tongue... Have you heard about a new major expedition into the Zone? Technically, they're environmental researchers from the UN, but that's just on paper. Sure, they got a couple four-eyed scientists, but just one look at all the others tells you they're seasoned fighters. No idea why they're here. Oh, and dig this: they're not using guides. Either they're being guided by satellite, or their mission is so secret that no one else could be let in on it. They seem to be approaching the Radar. I dunno how this will end, but I got a feeling it won't be pretty.</text>
+	</string>
+	<string id="mil_killer_about_what_is_you_doing_0">
+		<text>How do you make your living here?</text>
+	</string>
+	<string id="mil_killer_about_what_is_you_doing_1">
+		<text>Heck, we're still trying to find our guys. We're not big on stalker stuff - we try to focus on specific jobs. You could say we're independent contractors. I haven't been this deep in the Zone before. I considered myself an informed and capable fella, but I underestimated the Zone. We've had to endure so much already that our guys are on the verge of hauling ass back to the Cordon. On top of that, recently we heard a story about some real vicious mutants that can do more than control your mind - those are controllers, right? Well, these shits can even make you see things. Like, you're walking along with your friends and suddenly you see zombies all around ya. So, you start blasting left and right... Or, get this, you think you're walking along a straight road, when in fact you're just about to go off a cliff.</text>
+	</string>
+</string_table>

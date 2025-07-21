@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_forester_hello_dialog_0">
+		<text>To what do I owe this pleasure?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1">
+		<text>The mercenaries provided you with some very interesting information. It seems I was right. The large Emission that shook the Zone was so powerful that it changed space itself, forcing it into a loop.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111">
+		<text>Don't go all scientific on me, professor - it's become looped: whichever way you go you end up at your original spot. As a result, after the emission stalkers got trapped in space bubbles around Limansk, unable to get out. Well, we know quite a bit now - the mercenaries' coordinates, PDA frequency, and now I have a better understanding of these bubbles. </text>
+	</string>
+	<string id="red_forester_has_compas_1">
+		<text>I'd lost all hope of ever seeing the Compass again! Thank you! Give me a bit of time and I'll find the way out of the Bubble. While I do that, you need to find a way of getting information to the mercenaries. You're going to need a powerful transmitter for that. I heard there's one like that at the military warehouses - that's how they communicate with the outside world. It should be powerful enough to contact the mercenaries.</text>
+	</string>
+	<string id="red_forester_has_compas_111">
+		<text>I'll send you the coordinates you need once you find the transmitter. If they do everything right, they'll get out of the Bubble and end up pretty close to the bridge into Limansk. They might even be able to pay the bandits at the bridge a visit.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11111">
+		<text>Well, actually I got stuck in a bubble myself a couple of days ago. At the time I didn't know it was a new anomaly, so I thought I was losing my marbles - the forest clearing seems real familiar, but wherever I go I can't find a way out! And then the Zone itself gave me an artifact, which showed me the way out of the bubble. I called it Compass. On my way home I was mugged by the bandits... they spared me - an old man, but they took the Compass. Get me that artifact and I'll think of a way to get the mercenaries out.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111111">
+		<text>The scum set up camp on the edge of the Red Forest. I've uploaded the coordinates to your PDA.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_1">
+		<text>Limansk was lost for many years and there were many good reasons for that. It would be best for all of us if it stays lost. What do you want with Limansk?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_3">
+		<text>You are not an ordinary man. The Zone has left a curious mark on you, and I don't know whether it's a blessing or a curse. The normal chain of events has been broken. The Zone is becoming increasingly unstable, and you are part of this process. I will help you... though I'm not sure it's the right thing to do.
+Getting into Limansk is not easy. The shortest road to the city is the bridge, but it's been raised. However, and this came as a surprise to me, it's not the only road that leads there. Freedom and Duty raised the bridge right after the large Emission, yet the bandits appeared on the other shore a couple of days ago and captured the bridge. That means there's at least one other way of getting across. </text>
+	</string>
+	<string id="red_forester_need_to_limansk_5">
+		<text>The large Emission changed the Zone a great deal. The safe and familiar paths have been covered by deadly anomalies, but new paths, unreachable for years, have appeared instead. And I doubt all of them have been found... Believe it or not, I occasionally receive fragments of radio transmissions on my PDA from somewhere near Limansk. That can only mean one thing: stalkers have found new paths into Limansk, and they need help. </text>
+	</string>
+	<string id="red_forester_need_to_limansk_7">
+		<text>Unfortunately, the signal is so weak I can't make out much. My understanding is that stalkers have become trapped in looped space - whichever way they go they come back to where they started. If we could get them out we'd find out how to get into Limansk.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_9">
+		<text>Go to the military warehouses. The signal should be better up on those hills. When you find something out, let me know, won't you?</text>
+	</string>
+	<string id="red_artefact_hunters_11">
+		<text>Howdy, merc! We're lucky the Zone has led you to us!</text>
+	</string>
+	<string id="red_artefact_hunters_111">
+		<text>Hi.</text>
+	</string>
+	<string id="red_artefact_hunters_1111">
+		<text>We got a job for you. You see, we didn't exactly come to this forest to pick mushrooms. There's an anomalous zone nearby, with whole mountains of artifacts. I know how to get there, but the road goes through the forest - and you've heard all about the forest, I'm sure. It's a friggin' deathtrap. So, you escort us there, keep guard for a short while, and we'll reward you with a nice and juicy artifact for your troubles. Deal?</text>
+	</string>
+	<string id="red_artefact_hunters_11111">
+		<text>Deal. Let's go.</text>
+	</string>
+	<string id="red_artefact_hunters_11112">
+		<text>I don't like this forest either. I gotta go.</text>
+	</string>
+	<string id="red_artefact_hunters_111121">
+		<text>Suit yourself. Come back if you change your mind.</text>
+	</string>
+	<string id="red_artefact_hunters_21">
+		<text>Yes?</text>
+	</string>
+	<string id="red_artefact_hunters_211">
+		<text>What were you saying about that place with piles of artifacts?</text>
+	</string>
+	<string id="red_artefact_hunters_22">
+		<text>Bye.</text>
+	</string>
+	<string id="red_artefact_hunters_31">
+		<text>We’ll talk later.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11">
+		<text>Just don't shoot!</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_111">
+		<text>Who are you people?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1111">
+		<text>Simple stalkers. Strelok hired us.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11111">
+		<text>Why did you attack me?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_111111">
+		<text>Strelok said that someone was after him and that he needs protection. We thought you were an assassin.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1111111">
+		<text>I see.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_112">
+		<text>Where did Strelok go?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1121">
+		<text>I don't know, he didn't say where he was headed.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11211">
+		<text>He said nothing at all, huh? Would a hole in your head help refresh your memory?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_112111">
+		<text>Please, don't! He really didn't say where he was going. I only know where he stashed his things. Here are the coordinates.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1121111">
+		<text>OK...</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11212">
+		<text>All right...</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_113">
+		<text>Do you know how to find Forester?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1131">
+		<text>Yeah. Look for Forester near the old mine, on the other side of the forest. He sold Strelok a map that guides you through the forest. Without that map the forest is a hopeless maze.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11311">
+		<text>Can you lead me there?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_113111">
+		<text>Yeah, I memorized the map. But it's dangerous, the forest is full of mutants.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1131111">
+		<text>I'll deal with them. Let's go.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_114">
+		<text>I'm going. Sit tight.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_0">
+		<text>Just don't shoot!</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_1">
+		<text>Who are you people?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_11">
+		<text>Simple stalkers. Strelok hired us.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_111">
+		<text>Why did you attack me?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_1111">
+		<text>Strelok said that someone was after him and that he needs protection. We thought you were an assassin.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_11111">
+		<text>I see.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_3">
+		<text>Where did Strelok go?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_31">
+		<text>I don't know, he didn't say where he was headed.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_311">
+		<text>He said nothing at all, huh? Would a hole in your head help refresh your memory?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_3111">
+		<text>Please, don't! He really didn't say where he was going. I only know where he stashed his things. Here are the coordinates.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_31111">
+		<text>OK.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_312">
+		<text>All right...</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_4">
+		<text>Do you know how to find Forester?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_41">
+		<text>Yeah. Look for Forester near the old mine, on the other side of the forest. He sold Strelok a map that guides you through the forest. Without that map the forest is a hopeless maze.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_411">
+		<text>Can you lead me there?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_4111">
+		<text>Yeah, I memorized the map. But it's dangerous, the forest is full of mutants.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_41111">
+		<text>I'll deal with them. Let's go.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_5">
+		<text>I'm going. Sit tight.</text>
+	</string>
+	<string id="red_bounty_hunter_way_11">
+		<text>Let's go faster, it's very dangerous here.</text>
+	</string>
+	<string id="red_bounty_hunter_way_111">
+		<text>What's the danger?</text>
+	</string>
+	<string id="red_bounty_hunter_way_1111">
+		<text>This is the Red Forest! A place where stalkers vanish by the dozen, and there's only the two of us. Let's hurry up before we come to regret it.</text>
+	</string>
+	<string id="red_bounty_hunter_way_12">
+		<text>We're almost there. There's a stalker camp nearby.</text>
+	</string>
+	<string id="red_bounty_hunter_way_13">
+		<text>We're here. That store-room is where Forester lives.</text>
+	</string>
+	<string id="red_bounty_hunter_way_14">
+		<text>Let's go faster.</text>
+	</string>
+	<string id="red_bounty_hunter_way_15">
+		<text>Hi!</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11">
+		<text>Don't come near the gates! They're booby trapped.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_111">
+		<text>What the hell?! I have to get through!</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_1111">
+		<text>Merc, as long as we're here, we won't open those gates. Monsters can jump out of that forest at any moment and have us for breakfast. But we'll open the gates if you help us. We want to get into the old mine - they say it holds a lot of artifacts. It's a safe place, too - safe enough to hide from an emission. Only we can't hold it by ourselves. We had a few more stalkers traveling with us: some went through the Garbage, some through Yantar. So, if any of them got through, we want you to lead them to that mine. Then we'll open the gates for you.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11111">
+		<text>Agreed. I bring you help, you open the gates.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11112">
+		<text>No friggin' way.</text>
+	</string>
+	<string id="red_forest_stalkers_task_11">
+		<text>Hi merc!</text>
+	</string>
+	<string id="red_forest_stalkers_task_111">
+		<text>Hi!</text>
+	</string>
+	<string id="red_forest_stalkers_task_1111">
+		<text>We have a job for you.</text>
+	</string>
+	<string id="red_forest_stalkers_task_11111">
+		<text>Go on.</text>
+	</string>
+	<string id="red_forest_stalkers_task_111111">
+		<text>Get us the map of the Red Forest.</text>
+	</string>
+	<string id="red_forest_stalkers_task_11111111">
+		<text>OK.</text>
+	</string>
+	<string id="red_forest_stalkers_task_2">
+		<text>Here's your map.</text>
+	</string>
+	<string id="red_forest_stalkers_task_21">
+		<text>Thanks for your help.</text>
+	</string>
+	<string id="red_forester_about_forest_0">
+		<text>Tell me about the Red Forest.</text>
+	</string>
+	<string id="red_forester_about_forest_1">
+		<text>This used to be a wildlife reserve, and I was the local forester. I protected the forest and its animals from poachers. Now the Zone itself protects this place, and it does it so well that people are willing to travel a dozen extra miles just to avoid it. If a stranger sets his foot in the forest, he's as good as dead. I may be Forester, but even I don't know exactly what goes on here. A man walks into the mist and just gets sucked off into nowhere. You could be walking right behind him and still not know how he met his end. So that's that, sonny.</text>
+	</string>
+	<string id="red_forester_about_limansk_0">
+		<text>I need to get to Limansk.</text>
+	</string>
+	<string id="red_forester_about_limansk_1">
+		<text>Limansk was lost for many years and there were many good reasons for that. It would be best for all of us if it stays lost. What do you want with Limansk?</text>
+	</string>
+	<string id="red_forester_about_limansk_11">
+		<text>This may sound trite, but it's a question of life and death.</text>
+	</string>
+	<string id="red_forester_about_limansk_111">
+		<text>You're no ordinary man. The Zone has left a strange mark on you. Whether it is a blessing or a curse - I cannot say. The Zone is becoming increasingly unstable. The normal order of events has been disturbed, and something tells me you're the reason for that. I will help you, though I cannot say I feel confident about my decision.</text>
+	</string>
+	<string id="red_forester_about_zone_0">
+		<text>What can you tell me about the Zone?</text>
+	</string>
+	<string id="red_forester_about_zone_1">
+		<text>The Zone, heh... The Zone has a life of its own, and we people just get in its way - some more, some less. The Zone works to neutralize any risk to its existence the same way our bodies fight diseases. We get a fever, and the Zone has its shakes too. Emissions - now those are a way to "barf" us up. The more irritation we cause to it, the stronger the new emissions will be.</text>
+	</string>
+	<string id="red_forester_about_zone_11">
+		<text>How did you survive here all these years - alone and amidst all the dangers?</text>
+	</string>
+	<string id="red_forester_about_zone_111">
+		<text>One foolish action can destroy the Zone... along with everything that belongs to it. Not just mutants and anomalies, but also artifacts and you stalkers... and me. I can feel that the Zone is deeply concerned - something is upsetting it, disturbing its equilibrium. A storm is brewing... and I don't know if the status quo can be preserved. </text>
+	</string>
+	<string id="red_forester_cheet_0">
+		<text>text in default</text>
+	</string>
+	<string id="red_forester_cheet_1">
+		<text>Bring me the unique Compass artifact. Look in your PDA for possible locations.</text>
+	</string>
+	<string id="red_forester_has_compas_0">
+		<text>I've got the artifact.</text>
+	</string>
+	<string id="red_forester_has_compas_11">
+		<text>What will happen when I find it?</text>
+	</string>
+	<string id="red_forester_hello_dialog_1">
+		<text>What's a rookie like you looking for in Forester's estate?</text>
+	</string>
+	<string id="red_forester_hello_dialog_2">
+		<text>Was it chance that brought you to me?</text>
+	</string>
+	<string id="red_forester_hello_dialog_3">
+		<text>Good luck, son!</text>
+	</string>
+	<string id="red_forester_hello_dialog_4">
+		<text>Don't forget me!</text>
+	</string>
+	<string id="red_forester_hello_dialog_5">
+		<text>Remember me well!</text>
+	</string>
+	<string id="red_forester_limansk_0">
+		<text>Tell me about Limansk.</text>
+	</string>
+	<string id="red_forester_limansk_1">
+		<text>For a long time no one heard anything about that town. Many folks don't believe Limansk ever existed. Only they're lying: the town exists - I saw it with my own eyes before the first disaster. You see, there was a closed institute there, a real big one, with houses built specially for scientists and their servants. It was a research institute with some fancy name...something like Radiowave. They put up a huge antenna too, the size of a five-story building! Real intellectuals, those fellas. Only there was never any peace in Limansk. Its residents were always cagey, suspicious of strangers. Always muttering something under their noses and praising the Soviet regime, even when we had provision shortages. We countryfolk used to go 'round Limansk - the people weren't exactly hearty, and the town kinda made your head hurt...must have been the antenna. Then Chernobyl happened, but Limansk was not even evacuated. They might have screwed something up in the documents, or maybe it was all that secrecy, I don't really know. But that was the last I heard of Limansk. I've got no business there...</text>
+	</string>
+	<string id="red_forester_limansk_11">
+		<text>But I saw a road to Limansk, and a bridge across the river.</text>
+	</string>
+	<string id="red_forester_limansk_111">
+		<text>This place used to be full of anomalies, but after the Emission it's become almost safe. It didn't take stalkers long to realize that you can reach the center of the Zone through Limansk without having to go past the Brain Scorcher. Duty and Freedom started a real war as soon as they reached the city, and it could well end up destroying them both. But I bet just about everyone else in the Zone wouldn't be too upset if that happened.</text>
+	</string>
+	<string id="red_forester_limansk_12">
+		<text>This place used to be full of anomalies, but after the Emission it's become almost safe. It didn't take stalkers long to realize that you can reach the center of the Zone through Limansk without having to go past the Brain Scorcher. Duty and Freedom started a real war as soon as they reached the city, and it could well end up destroying them both. But I bet just about everyone else in the Zone wouldn't be too upset if that happened.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_0">
+		<text>I received a message from the mercenaries at the army warehouses. Seems like they got trapped by some weird anomaly during the large emission. They're saying they can't find a way out - always coming back to the same place they start from. They specified their coordinates.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11">
+		<text>Kinda like a Mobius ring?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111">
+		<text>So, how do I get the mercenaries out of the bubble?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111111">
+		<text>Do you know where the bandits have dug in?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111112">
+		<text>Here, I got your rare artifact.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111121">
+		<text>I'd lost all hope of ever seeing the Compass again! Thank you! Give me a bit of time and I'll find the way out of the Bubble. While I do that, you need to find a way of transmitting the coordinates to the lost squad. Find the transmitter at the military warehouses.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11111211">
+		<text>And what's gonna happen when I find the transmitter?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111112111">
+		<text>When you find the transmitter, I'll give you the coordinates the mercenaries need.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_0">
+		<text>I need to get to Limansk.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_2">
+		<text>This may sound trite, but it's a question of life and death.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_4">
+		<text>Do you know how the bandits crossed to the other side?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_6">
+		<text>What happened to the stalkers?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_8">
+		<text>What do I have to do?</text>
+	</string>
+	<string id="red_forester_who_are_you_0">
+		<text>Who are you?</text>
+	</string>
+	<string id="red_forester_who_are_you_1">
+		<text>What can I tell you about myself? I'm Forester. I've been here a long time; I've spent my whole life living next to this forest. I'm old. At my age you grow attached to your place of residence, no matter what it is. I refused to be evacuated after the accident at the power plant; I also survived the appearance of the Zone. I remember a flash on the horizon... many folks died that day, but the Zone spared me, you see? Heck, it didn't just spare me, it gave me a gift! I used to be able to find paths in the forest, and now I can feel a safe way of getting through real deadly anomalies. Stalkers envy me, but I can't say I'm all that happy about my gift. You must understand that everything comes at a price. Some day the Zone will take payment for my gift. That's what I am afraid of, buddy. </text>
+	</string>
+	<string id="red_forester_who_are_you_111">
+		<text>No, this was your typical pine forest. Well, it was also a nature reserve, but that was about as special as it got at the time. It became red after the accident at the Chernobyl NPP in 1986. It was green when I went to bed, and when I woke up it was as you see it now. Then the Zone appeared, and animals and birds abandoned this forest. I was the only living being that stayed behind. Just me, a red forest and this thick mist that never clears.</text>
+	</string>
+	<string id="red_forester_who_are_you_11111">
+		<text>Yes, many stalkers have met their end here. I even heard rumors that an evil spirit lives in the Red Forest. The way I see it, this forest is just like everything else in the Zone. If you treat it right it won't touch you. The trouble is you stalkers don't treat anything right. You seek to own parts of the Zone and in return you get... what you're due.</text>
+	</string>
+	<string id="red_leshiy_reward_11">
+		<text>Heh...All my soldiers are gone. Just imagine getting out of the bubble and running into some bandit scum.</text>
+	</string>
+	<string id="red_leshiy_reward_12">
+		<text>Thank you, merc. We couldn't do it without you. Please take this, it will serve you well.</text>
+	</string>
+	<string id="red_leshiy_reward_13">
+		<text>Thank you, merc. We couldn't do it without you. Please take this, it will serve you well.</text>
+	</string>
+	<string id="red_leshiy_reward_14">
+		<text>Thank you, merc. You really helped us out - no frikkin' way we could have lowered that bridge without you, nor get out of that bubble. Please take this, it will serve you well.</text>
+	</string>
+	<string id="red_leshiy_reward_15">
+		<text>Thank you, merc. You really helped us out - no frikkin' way we could have lowered that bridge without you, nor get out of that bubble. Please take this, it will serve you well.</text>
+	</string>
+	<string id="red_leshiy_reward_16">
+		<text>Hi Scar.</text>
+	</string>
+	<string id="red_leshiy_story_1_0">
+		<text>Tell me about space bubbles.</text>
+	</string>
+	<string id="red_leshiy_story_1_1">
+		<text>A space bubble, brother, is one of the shittiest shits to ever grace the Zone. They are a recent phenomenon. If you pop inside a bubble, boy, you're in for some real trouble. Anywhere you go, any path you take, you always come back where you started. I hadn't even heard of it until I got into one myself. An emission hit us, and our whole group came right into a space bubble. We spent days walking in circles! Some of the guys were ready to shoot themselves. They said, hey, there's no way out of this, so why not just end it right here...Some were seeing things, terrible things. I kicked and cursed trying to make them keep on walking. I can hardly remember all of that...Man, I still can't believe we got out. Thank you so much for helping us.</text>
+	</string>
+	<string id="red_leshiy_story_2_0">
+		<text>What sort of mission were you on?</text>
+	</string>
+	<string id="red_leshiy_story_2_1">
+		<text>Whoa, brother! What kinda question is that? The seal of contract is like the seal of confession, only stricter. No way I can tell you about it. Then again...aww what the hell, you did save our lives, after all. Listen. We agreed to locate a very rare and incredibly valuable artifact for one large corporation. I won't tell you which because of a non-disclosure clause. We found what we were looking for. How we did it is another story, but no amount of money will ever make me accept a job like that again. I value my life more than these watermarked pieces of paper. I had a rotten feeling about the job from the very beginning. But the money was just too much to turn down. As I feared, the whole raid turned into a nightmare. And just as we turned back home, loot in hand, bam! The Emission nearly buried us all, plus that stupid space bubble. Nah, no more orders like that - count me out.</text>
+	</string>
+	<string id="red_artefact_hunters_reward_dialog_11">
+		<text>Thanks for your help, here's your reward.</text>
+	</string>
+</string_table>

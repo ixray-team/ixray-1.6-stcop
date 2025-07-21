@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_antirad">
+		<text>Antiradiation drugs</text>
+	</string>
+	<string id="st_antirad_descr">
+		<text>A pack of pills with active ingredients that help expel radionucleoids from the body. The pills do not protect the body from new radiation, but only reduce the existing radiation dose.</text>
+	</string>
+	<string id="st_bread">
+		<text>Bread</text>
+	</string>
+	<string id="st_bread_descr">
+		<text>No bakers have ever been identified in the Zone, but this bread is not contaminated and is actually quite edible. At least no complaints have been reported thus far.</text>
+	</string>
+	<string id="st_conserva">
+		<text>"Tourist's Breakfast"</text>
+	</string>
+	<string id="st_conserva_descr">
+		<text>Canned goods from an army ration depot looted by stalkers. Should still be good to eat, if you believe the best before date.</text>
+	</string>
+	<string id="st_kolbasa">
+		<text>Diet sausage</text>
+	</string>
+	<string id="st_kolbasa_descr">
+		<text>For better or worse, this sausage - a mix of chicken and soy substitute - is often a stalker's breakfast, lunch and dinner in one.</text>
+	</string>
+	<string id="st_medkit">
+		<text>First-aid kit</text>
+	</string>
+	<string id="st_medkit_descr">
+		<text>Basic medical kit. Handy for treating various injuries - wounds, burns, poisoning and others.</text>
+	</string>
+	<string id="st_medkit_army">
+		<text>Army medkit</text>
+	</string>
+	<string id="st_medkit_army_descr">
+		<text>A specialized medical kit for dealing with physical injuries and bleeding. Packed full of blood coagulants, painkillers, antibiotics and immunostimulants.</text>
+	</string>
+	<string id="st_medkit_science">
+		<text>Scientific medical set</text>
+	</string>
+	<string id="st_medkit_science_descr">
+		<text>A medical kit designed specifically for use in the Zone. The kit contains products for handling wounds, as well as expelling radionucleoids from the body. Prevents the development of radiation sickness and lowers the existing radiation dose.</text>
+	</string>
+	<string id="st_vodka">
+		<text>"Cossacks" vodka</text>
+	</string>
+	<string id="st_vodka_descr">
+		<text>Made by GSC. Goes down easy and considerably lowers radiation effects. Should be enjoyed in moderation.</text>
+	</string>
+	<string id="st_bandage">
+		<text>Bandage</text>
+	</string>
+	<string id="st_bandage_descr">
+		<text>Bandaging material. Helps to stop bleeding.</text>
+	</string>
+	<string id="st_energy_drink">
+		<text>Energy drink</text>
+	</string>
+	<string id="st_energy_drink_descr">
+		<text>Often used by stalkers on long trips when no breaks can be afforded. The drink contains easily digestible carbohydrates, as well as drugs that stimulate the release of adrenaline into the blood.</text>
+	</string>
+	<string id="st_detector1">
+		<text>"Echo" detector</text>
+	</string>
+	<string id="st_detector1_descr">
+		<text>This anomalous activity detector, with a built-in Geiger counter, produces an alarm signal when you approach an anomaly. It can also register the presence of artifacts and measure the distance to the nearest one. When closed, the device registers only radiation and anomalies. To switch to artifact search mode, raise the device's front cover (antennae).</text>
+	</string>
+	<string id="st_detector2">
+		<text>"Bear" detector</text>
+	</string>
+	<string id="st_detector2_descr">
+		<text>This anomalous activity detector, with a built-in Geiger counter, can also be used to locate artifacts. In addition to measuring the distance to an artifact, it can indicate its direction as well. When closed, the device registers only radiation and anomalies. To switch to artifact search mode, raise the device's front cover (antennae).</text>
+	</string>
+	<string id="st_detector3">
+		<text>"Veles" detector</text>
+	</string>
+	<string id="st_detector3_descr">
+		<text>A next generation detection scanner designed specifically for locating artifacts. Artifacts are shown on a special display, which makes them easier to find. The device comes with a Geiger counter and can be used to detect anomalies. When closed, the device registers only radiation and anomalies. To switch to artifact search mode, raise the front LED display.</text>
+	</string>
+	<string id="st_cordon_case">
+		<text>Silver case</text>
+	</string>
+	<string id="st_cordon_case_descr">
+		<text>A small code-locked case. Contains very valuable information about trusted traders to offload artifacts to.</text>
+	</string>
+	<string id="st_fang_pda">
+		<text>Fang's PDA</text>
+	</string>
+	<string id="st_fang_pda_descr">
+		<text>A pocket PC. Used in the Zone as a notebook, a navigation and communication device, and a voice recorder. Each PDA has a unique ID which allows it to be tracked.</text>
+	</string>
+	<string id="st_shukin_pda">
+		<text>Lingov's PDA</text>
+	</string>
+	<string id="st_shukin_pda_descr">
+		<text>A pocket PC. Used in the Zone as a notebook, a navigation and communication device, and as a voice recorder. Each PDA has a unique ID which allows it to be tracked.</text>
+	</string>
+	<string id="st_recorder">
+		<text>Dictation device</text>
+	</string>
+	<string id="st_cooler_docs">
+		<text>Description of the cooling station</text>
+	</string>
+	<string id="st_cooler_docs_descr">
+		<text>The folder contains a detailed description and troubleshooting instructions for a stationary cooling station, located on the factory's premises.</text>
+	</string>
+	<string id="st_compass">
+		<text>"Compass"</text>
+	</string>
+	<string id="st_compass_descr">
+		<text>A rare artifact - it's been several years since one was found. The artifact can locate gaps in anomaly fields, effectively acting as a compass. It is believed that it can help one traverse the most complex anomaly fields completely unharmed. However, very few know how to handle it properly.</text>
+	</string>
+	<string id="st_guitar_descr">
+		<text>Seven-string guitar</text>
+	</string>
+	<string id="st_guitar_name">
+		<text>Guitar</text>
+	</string>
+</string_table>
