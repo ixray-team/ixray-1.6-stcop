@@ -8,7 +8,7 @@
 #include "../xrEngine/string_table.h"
 
 #include <SDL3/SDL.h>
-#include "DynamicSplashScreen.h"
+#include "Splash.h"
 
 #include "../xrCore/git_version.h"
 #include "UIEditorMain.h"
@@ -55,15 +55,15 @@ void EnumerateDisplayModes()
 }
 
 
-void CreateGameWindow()
+void MigrateToGameWindow()
 {
-	if (g_AppInfo.Window == nullptr) {
+	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 		
-		EnumerateDisplayModes();
-
-		SDL_WindowFlags window_flags = SDL_WINDOW_HIDDEN;
-		g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", psCurrentVidMode[0], psCurrentVidMode[1], window_flags);
-	}
+	SDL_SetWindowFocusable(g_AppInfo.Window, TRUE);
+	SDL_SetWindowShape(g_AppInfo.Window, FALSE);
+	SDL_SetWindowBordered(g_AppInfo.Window, true);
+	SDL_RaiseWindow(g_AppInfo.Window);
+	Console->Execute("vid_restart");
 }
 
 int APIENTRY WinMain
@@ -99,12 +99,9 @@ int APIENTRY WinMain
 		return 1;
 	}
 #endif
+	EnumerateDisplayModes();
 
-	//SetThreadAffinityMask(GetCurrentThread(), 1);
-	CreateGameWindow();
-
-	// Title window
-	RegisterWindowClass(hInstance, nCmdShow);
+	splash::show((void*&)g_AppInfo.Window);
 
 	EngineLoadStage1(lpCmdLine);
 
@@ -145,18 +142,15 @@ int APIENTRY WinMain
 
 	EngineLoadStage4();
 
-	// Destroy LOGO
-	DestroyWindow(logoWindow);
-	logoWindow = nullptr;
+	// Splash wnd => Game wnd
+	splash::hide();
+	MigrateToGameWindow();
 	
-	SDL_ShowWindow(g_AppInfo.Window);
-
-	// Show main wnd
-	Console->Execute("vid_restart");
 #ifdef DEBUG_DRAW
 	RenderUI();
 	EditorLuaInit();
 #endif
+
 	EngineLoadStage5();
 
 	xr_delete(g_pStringTable);
