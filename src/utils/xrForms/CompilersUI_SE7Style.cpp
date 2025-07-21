@@ -308,34 +308,61 @@ void RenderCompilerUI()
 	// Level name
 	xr_string Levels;
 
-	for (auto& [Name, _] : gCompilerMode.Files)
+	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
-		Levels += Name;
+		if (Selected)
+			Levels += (!Levels.empty() ? ", " : "") + Name;
 	}
 	ImGui::Text("%s", Levels.c_str());
 	ImGui::Separator();
 	//ImGui::ProgressBar(0.00); надо бы сделать общий прогресс бар
 	//ImGui::Separator();
 
-	auto getTextStatus = [](IterationStatus status)
+	auto getStatusInfo = [](IterationStatus status, xr_string& text, ImVec4& textCol, char& icon)
 		{
 			switch (status)
 			{
-			case Complited:	return "Complited";
-			case InProgress:return "In Progress";
-			case Pending:	return "Pending";
-			case Skip:		return "Skip";
+			case Complited:
+				text = "Complited";
+				textCol = { 0, 0.9, 0, 1 };
+
+				icon = 'C';
+				break;
+			case InProgress:
+				text = "In Progress";
+				textCol = { 0.9, 0.9, 0, 1 };
+
+				icon = 'B';
+				break;
+			case Pending:
+				text = "Pending";
+				textCol = { 0.8, 0.8, 0.8, 0.8 };	
+
+				icon = 'A';
+				break;
+			case Skip:
+				text = "Skip";
+				textCol = { 0.9, 0.9, 0.9, 0.6 };
+
+				icon = 'D';
+				break;
 			default:
+				text = "";
+				textCol = { 1,1,1,1 };
+
+				icon = ' ';
 				break;
 			}
 		};
 
 	static bool autoScroll = true;
 
+	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
+
 		// Table
 	if (ImGui::BeginTable("IterationsTable", 9, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
 		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
-		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 50.f);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
 		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
@@ -349,14 +376,23 @@ void RenderCompilerUI()
 
 		for (auto& row : GetIterationData()) {
 
+			xr_string rowStatus;
+			ImVec4 rowStatusColor;
+
+			char rowIcon;
+
+			getStatusInfo(row.status, rowStatus, rowStatusColor, rowIcon);
+
 			ImGui::TableNextRow();
 
 			// Status icon
-			ImGui::TableSetColumnIndex(0);
-
-			// Это должна быть иконка, но я ещё не подготовил шрифт
-			ImGui::Text(" ");
-
+			if (rowIcon != ' ') 
+			{
+				ImGui::TableSetColumnIndex(0);
+				ImGui::PushFont(gCompilerMode.CompilerIconsFont);
+				ImGui::TextColored(rowStatusColor, "%c", rowIcon);
+				ImGui::PopFont();
+			}
 			// TASK
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Text("%s", row.iterationName.c_str());
@@ -369,13 +405,33 @@ void RenderCompilerUI()
 			ImGui::Text("%d", row.warnings);
 			// Status text
 			ImGui::TableSetColumnIndex(7);
-			ImGui::Text("%s", getTextStatus(row.status));
+
+
+			ImGui::TextColored(rowStatusColor, rowStatus.c_str());
 
 			for (auto& phase : row.phases)
 			{
+				xr_string status;
+				ImVec4 statusColor;
+				char phaseIcon;
+
+				getStatusInfo(phase.status, status, statusColor, phaseIcon);
+
 				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::PushFont(gCompilerMode.CompilerIconsFont);
+
+				float column_width = ImGui::GetColumnWidth();
+				float text_size = ImGui::CalcTextSize("A").x;
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + column_width - text_size);
+
+				ImGui::TextColored(statusColor, "%c", phaseIcon);
+
+				ImGui::PopFont();
+
 				ImGui::TableSetColumnIndex(2);
-				ImGui::Text(phase.PhaseName.c_str());
+				ImGui::TextColored(phaseTextCol, phase.PhaseName.c_str());
 				//PHASE %
 				auto pers = phase.PhasePersent;
 
@@ -396,17 +452,18 @@ void RenderCompilerUI()
 				else if (pers < 0.f)	pers = 0;
 
 				ImGui::TableSetColumnIndex(3);
-				ImGui::Text("%0.f", pers * 100);
+				ImGui::TextColored(phaseTextCol, "%0.f", pers * 100);
 
 				ImGui::TableSetColumnIndex(4);
-				ImGui::Text("%s", make_time(phase.elapsed_time).c_str());
+				ImGui::TextColored(phaseTextCol, "%s", make_time(phase.elapsed_time).c_str());
 
 				ImGui::TableSetColumnIndex(5);
 				if (phase.status != Complited)
-					ImGui::Text("%s", (phase.remain_time == 0 ? "Calculating..." : make_time(phase.remain_time).c_str()));
+					ImGui::TextColored(phaseTextCol, "%s", (phase.remain_time == 0 ? "Calculating..." : make_time(phase.remain_time).c_str()));
 
 				ImGui::TableSetColumnIndex(7);
-				ImGui::Text("%s", getTextStatus(phase.status));
+
+				ImGui::TextColored(statusColor, status.c_str());
 
 				ImGui::TableSetColumnIndex(8);
 				ImGui::Text("%u MB", u32 ( size_t( phase.used_memory/ 1024/ 1024) ) );
