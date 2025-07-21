@@ -30,8 +30,6 @@ void CGrenade::Load(LPCSTR section)
 	inherited::Load(section);
 	CExplosive::Load(section);
 
-	m_sounds.LoadSound(section,"snd_checkout", "sndCheckout", false, m_eSoundCheckout);
-
 	m_bExplosionOnHit = READ_IF_EXISTS(pSettings, r_bool, section, "explosion_on_hit", false);
 	m_bExplosionWhileNotActivated = READ_IF_EXISTS(pSettings, r_bool, section, "explosive_while_not_activated", false);
 
@@ -60,6 +58,13 @@ void CGrenade::Load(LPCSTR section)
 	else
 		m_dwGrenadeRemoveTime = GRENADE_REMOVE_TIME;
 	m_grenade_detonation_threshold_hit=READ_IF_EXISTS(pSettings,r_float,section,"detonation_threshold_hit",default_grenade_detonation_threshold_hit);
+}
+
+void CGrenade::LoadSounds(LPCSTR section)
+{
+	inherited::LoadSounds(section);
+
+	m_sounds.LoadSound(section, "snd_checkout", "sndCheckout", false, m_eSoundCheckout);
 }
 
 bool CGrenade::CheckGrenadeExplosionByHit(SHit* SHit)

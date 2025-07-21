@@ -43,15 +43,41 @@ CWeaponKnife::~CWeaponKnife()
 {
 }
 
-void CWeaponKnife::Load	(LPCSTR section)
+void CWeaponKnife::Load(LPCSTR section)
 {
 	// verify class
-	inherited::Load		(section);
+	inherited::Load(section);
 
-	fWallmarkSize = pSettings->r_float(section,"wm_size");
+	fWallmarkSize = pSettings->r_float(section, "wm_size");
 
-	if (pSettings->line_exist(section, "snd_kick_1") && pSettings->line_exist(section, "snd_kick_2"))
+	m_Hit1SpashDir = pSettings->r_fvector3(section, "splash1_direction");
+	m_Hit2SpashDir = pSettings->r_fvector3(section, "splash2_direction");
+
+	m_Hit1Distance = pSettings->r_float(section, "spash1_dist");
+	m_Hit2Distance = pSettings->r_float(section, "spash2_dist");
+
+	m_Hit1SplashRadius = pSettings->r_float(section, "spash1_radius");
+	m_Hit2SplashRadius = pSettings->r_float(section, "spash2_radius");
+
+	m_Splash1HitsCount = pSettings->r_u32(section, "splash1_hits_count");
+	m_Splash1PerVictimsHCount = pSettings->r_u32(section, "splash1_pervictim_hcount");
+	m_Splash2HitsCount = pSettings->r_u32(section, "splash2_hits_count");
+#ifdef DEBUG
+	m_dbg_data.m_pick_vectors.reserve(std::max(m_Splash1HitsCount, m_Splash2HitsCount));
+#endif
+	m_NextHitDivideFactor = pSettings->r_float(section, "splash_hit_divide_factor");
+
+	knife_material_idx = GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
+	m_bShowKnifeStats = READ_IF_EXISTS(pSettings, r_bool, section, "show_knife_stats", true);
+}
+
+void CWeaponKnife::LoadSounds(LPCSTR section)
+{
+	inherited::LoadSounds(section);
+
+	if (SoundExist(section, "snd_kick_1") && SoundExist(section, "snd_kick_2"))
 	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_kick, TRUE);
 		m_sounds.LoadSound(section, "snd_kick_1", "sndKick1", false, SOUND_TYPE_WEAPON_SHOOTING);
 		m_sounds.LoadSound(section, "snd_kick_2", "sndKick2", false, SOUND_TYPE_WEAPON_SHOOTING);
 	}
@@ -60,31 +86,17 @@ void CWeaponKnife::Load	(LPCSTR section)
 		m_sounds.LoadSound(section, "snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
 	}
 
-	if (pSettings->line_exist(section, "snd_draw"))
+	if (SoundExist(section, "snd_draw"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_draw, TRUE);
 		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
+	}
 
-	if (pSettings->line_exist(section, "snd_holster"))
+	if (SoundExist(section, "snd_holster"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_holster, TRUE);
 		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
-
-	m_Hit1SpashDir		=	pSettings->r_fvector3(section, "splash1_direction");
-	m_Hit2SpashDir		=	pSettings->r_fvector3(section, "splash2_direction");
-
-	m_Hit1Distance		=	pSettings->r_float(section, "spash1_dist");
-	m_Hit2Distance		=	pSettings->r_float(section, "spash2_dist");
-
-	m_Hit1SplashRadius	=	pSettings->r_float(section, "spash1_radius");
-	m_Hit2SplashRadius	=	pSettings->r_float(section, "spash2_radius");
-
-	m_Splash1HitsCount			=	pSettings->r_u32(section, "splash1_hits_count");
-	m_Splash1PerVictimsHCount	=	pSettings->r_u32(section, "splash1_pervictim_hcount");
-	m_Splash2HitsCount			=	pSettings->r_u32(section, "splash2_hits_count");
-#ifdef DEBUG
-	m_dbg_data.m_pick_vectors.reserve(std::max(m_Splash1HitsCount, m_Splash2HitsCount));
-#endif
-	m_NextHitDivideFactor	=	pSettings->r_float(section, "splash_hit_divide_factor");
-
-	knife_material_idx =  GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
-	m_bShowKnifeStats = READ_IF_EXISTS(pSettings, r_bool, section, "show_knife_stats", true);
+	}
 }
 
 void CWeaponKnife::OnStateSwitch	(u32 S)
@@ -212,7 +224,7 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	iAmmoElapsed					= (u32)m_magazine.size();
 	bool SendHit					= SendHitAllowed(H_Parent());
 
-	PlaySoundIfExist("sndShot", pos);
+	//PlaySoundIfExist("sndShot", pos);
 
 	CActor* actor = smart_cast<CActor*>(H_Parent());
 	if (actor->active_cam() != eacFirstEye) {
@@ -281,23 +293,31 @@ void CWeaponKnife::state_Attacking	(float)
 {
 }
 
-void CWeaponKnife::switch2_Attacking	(u32 state)
+void CWeaponKnife::switch2_Attacking(u32 state)
 {
-	if(IsPending())
+	if (IsPending())
 		return;
 
 	if (state == eFire)
 	{
 		PlayHUDMotion("anm_attack", FALSE, state);
-		PlaySoundIfExist("sndKick1", Position());
+
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
+		{
+			PlaySound("sndKick1", Position());
+		}
 	}
 	else
 	{
 		PlayHUDMotion("anm_attack2", FALSE, state);
-		PlaySoundIfExist("sndKick2", Position());
+
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
+		{
+			PlaySound("sndKick2", Position());
+		}
 	}
 
-	SetPending			(TRUE);
+	SetPending(TRUE);
 }
 
 void CWeaponKnife::switch2_Idle	()
@@ -313,7 +333,11 @@ void CWeaponKnife::switch2_Hiding	()
 	FireEnd					();
 	VERIFY(GetState()==eHiding);
 	PlayHUDMotion("anm_hide", TRUE, GetState());
-	PlaySoundIfExist("SndHide", get_LastFP());
+
+	if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
+	{
+		PlaySound("SndHide", get_LastFP());
+	}
 }
 
 void CWeaponKnife::switch2_Hidden()
@@ -326,7 +350,11 @@ void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
 	PlayHUDMotion("anm_show", FALSE, GetState());
-	PlaySoundIfExist("SndShow", get_LastFP());
+
+	if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
+	{
+		PlaySound("SndShow", get_LastFP());
+	}
 }
 
 void CWeaponKnife::UpdateCL()
@@ -340,10 +368,10 @@ void CWeaponKnife::UpdateCL()
 
 	Fvector P = get_LastFP();
 
-	if (m_sounds.FindSoundItem("SndShow", false))
+	if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
 		m_sounds.SetPosition("SndShow", P);
 
-	if (m_sounds.FindSoundItem("SndHide", false))
+	if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
 		m_sounds.SetPosition("SndHide", P);
 }
 

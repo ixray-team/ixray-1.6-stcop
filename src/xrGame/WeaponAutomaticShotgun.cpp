@@ -20,20 +20,24 @@ CWeaponAutomaticShotgun::~CWeaponAutomaticShotgun()
 
 void CWeaponAutomaticShotgun::Load(LPCSTR section)
 {
-	inherited::Load(section);
-
-	if(pSettings->line_exist(section, "tri_state_reload")){
+	if (pSettings->line_exist(section, "tri_state_reload"))
+	{
 		m_bTriStateReload = !!pSettings->r_bool(section, "tri_state_reload");
 	};
-	if(m_bTriStateReload)
+
+	inherited::Load(section);
+}
+
+void CWeaponAutomaticShotgun::LoadSounds(LPCSTR section)
+{
+	inherited::LoadSounds(section);
+
+	if (m_bTriStateReload)
 	{
 		m_sounds.LoadSound(section, "snd_open_weapon", "sndOpen", false, m_eSoundOpen);
-
 		m_sounds.LoadSound(section, "snd_add_cartridge", "sndAddCartridge", false, m_eSoundAddCartridge);
-
 		m_sounds.LoadSound(section, "snd_close_weapon", "sndClose", false, m_eSoundClose);
 	};
-
 }
 
 void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state) 

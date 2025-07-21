@@ -17,7 +17,8 @@ public:
 					CWeaponBinoculars	(); 
 	virtual			~CWeaponBinoculars	();
 
-	void			Load				(LPCSTR section);
+	virtual void	Load				(LPCSTR section) override;
+	virtual void	LoadSounds			(LPCSTR section) override;
 
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
