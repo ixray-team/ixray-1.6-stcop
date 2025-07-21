@@ -5,8 +5,8 @@
     <texture id="ui_actor_overlay"	x="859" y="0" width="165" height="108" />
     <texture id="ui_fraction_overlay"	x="976" y="113" width="48" height="48" />
 
-    <texture id="ui_dlg_top"		x="227" y="0" width="630" height="196" />
-    <texture id="ui_dlg_middle"		x="0" y="456" width="579" height="327" />
+    <texture id="ui_dlg_top"		x="227" y="0" width="630" height="197" />
+    <texture id="ui_dlg_middle"		x="0" y="455" width="580" height="327" />
     <texture id="ui_dlg_answer"		x="0" y="248" width="580" height="193" />
     <texture id="ui_dlg_bottom"		x="0" y="206" width="1024" height="32" />
     <texture id="ui_dlg_left_app"	x="583" y="242" width="33" height="220" />
@@ -88,5 +88,8 @@
     <texture id="ui_scale_one_bottom" x="343" y="42" width="44" height="176" />
     <texture id="ui_scale_one_top" x="723" y="0" width="90" height="76" />
 -->
+   </file>
+    <file name="ui\ui_inv2">
+    <texture id="ui_dlg_top_middle"	x="0" y="0" width="680" height="524" />
    </file>
 </w>
