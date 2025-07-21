@@ -40,6 +40,7 @@ float4 main( v2p I ) : SV_Target
 	t_base.r += noise;
 	t_base.g += noise;
 	t_base.b += noise;	
+	t_base.xyz = detonemap(t_base.xyz);
 	
 	
 	return float4	(t_base.r, t_base.g, t_base.b, 1);

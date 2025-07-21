@@ -53,5 +53,7 @@ float4 loading_main( v2p I )
 
 float4 main( v2p I ) : SV_Target
 {
-	return (m_affects.a > 0 && m_affects.x >= 0.08 ) ? loading_main(I) : problems_main(I);
+	float4 t_base = (m_affects.a > 0 && m_affects.x >= 0.08 ) ? loading_main(I) : problems_main(I);
+	t_base.xyz = detonemap(t_base.xyz);
+	return t_base;
 }
