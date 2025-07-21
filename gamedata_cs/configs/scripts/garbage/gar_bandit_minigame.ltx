@@ -14,18 +14,21 @@ on_info3 = {=check_crowkiller_state(finished) =crowkiller_winned !crowkiller_gam
 on_info4 = {=check_crowkiller_state(finished) !crowkiller_winned} walker@catch_minigame %=play_sound(gar_bandit_minigame_man_lose:bandit:gar_bandit_minigame_name)%
 on_info5 = {=check_crowkiller_state(breaked)} walker@catch_minigame %=play_sound(gar_bandit_minigame_man_gone:bandit:gar_bandit_minigame_name)%
 meet = meet@minigame
+combat_ignore_cond = true
 
 [walker@catch_minigame]
 path_walk = gar_smart_terrain_3_5_bandit_minigame_walk
 path_look = gar_smart_terrain_3_5_bandit_minigame_look
 on_signal = sound_end | walker@wait_minigame %+gar_bandit_base_minigame_talked_at_end%
 meet = meet@minigame
+combat_ignore_cond = true
 
 [walker@wait_minigame]
 path_walk = gar_smart_terrain_3_5_bandit_minigame_walk
 path_look = gar_smart_terrain_3_5_bandit_minigame_look
 on_info = {=check_crowkiller_state(valiable)} walker@main_minigame
 meet = meet@minigame
+combat_ignore_cond = true
 
 [meet@minigame]
 ;meet_state = 2|nil@meet_general_wait
