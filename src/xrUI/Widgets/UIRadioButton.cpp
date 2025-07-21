@@ -17,7 +17,8 @@ void CUIRadioButton::InitButton(Fvector2 pos, Fvector2 size)
 	TextItemControl()->m_wndSize.set(Fvector2().set(size.x,m_background->Get(S_Enabled)->GetStaticItem()->GetSize().y));
 }
 
-void CUIRadioButton::InitTexture(LPCSTR tex_name)
+bool CUIRadioButton::InitTexture(LPCSTR tex_name, bool fatal)
 {
 	// do nothing
+	return true;
 }
