@@ -14,9 +14,7 @@
 struct OMFEditorState
 {
 	bool is_file_loaded;
-
-
-	string_path path;
+	xr_stack_string<sizeof(string_path) * 2> path;
 } g_omf_editor;
 
 OMFEditorState* pEditor = &g_omf_editor;
@@ -27,48 +25,18 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 	{
 		if (xr_EFS)
 		{
-			wstring_path p_fa = { 0 };
-			
-		}
+			xr_stack_wstring<sizeof(string_path)> local_path;
+			bool status = xr_EFS->GetOpenName(local_path, L"OMF file\0*.omf\0");
+			p_state->is_file_loaded = status;
 
-
-#ifdef IXR_WINDOWS
-		OPENFILENAME ofn;       // common dialog box structure
-		TCHAR szFile[1024] = { 0 };       // if using TCHAR macros
-
-		// Initialize OPENFILENAME
-		ZeroMemory(&ofn, sizeof(ofn));
-		ofn.lStructSize = sizeof(ofn);
-		ofn.hwndOwner = nullptr;
-		ofn.lpstrFile = szFile;
-		ofn.nMaxFile = sizeof(szFile);
-		ofn.lpstrFilter = TEXT("OMF file\0*.omf\0");
-		ofn.nFilterIndex = 1;
-		ofn.lpstrFileTitle = NULL;
-		ofn.nMaxFileTitle = 0;
-		ofn.lpstrInitialDir = NULL;
-		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
-		if (GetOpenFileName(&ofn) == TRUE)
-		{
-			int size_needed = WideCharToMultiByte(CP_UTF8, 0, ofn.lpstrFile, sizeof(szFile) / sizeof(szFile[0]), NULL, 0,
-				NULL, NULL);
-
-			_ASSERTE(size_needed > sizeof(p_state->path) / sizeof(p_state->path[0]) && "report to developer please");
-
-			constexpr auto _kFilePathLength = sizeof(p_state->path) / sizeof(p_state->path[0]);
-			if (size_needed <= _kFilePathLength)
+			if (p_state->is_file_loaded)
 			{
-				WideCharToMultiByte(CP_UTF8, 0, ofn.lpstrFile, sizeof(p_state->path) / sizeof(p_state->path[0]), p_state->path, size_needed, NULL, NULL);
+				status = Platform::WCHAR_TO_CHAR(local_path, p_state->path);
+				R_ASSERT2(status, "report to developers! Unable to convert your path to multibyte string");
 
-				g_omf_editor.is_file_loaded = true;
+				p_state->is_file_loaded = status;
 			}
 		}
-#elif defined(IXR_LINUX)
-#error not implemented
-#else
-#error unknown platform
-#endif
 	}
 }
 
@@ -85,7 +53,7 @@ void RenderToolsOMFEditorWindow()
 			for (unsigned char row = 0; row < 1; ++row)
 			{
 				ImGui::TableNextRow();
-				
+
 				ImGui::TableSetColumnIndex(0);
 				if (ImGui::Button("Load##ToolsInGameImGui_OMFEditor"))
 				{
@@ -99,6 +67,7 @@ void RenderToolsOMFEditorWindow()
 					if (ImGui::Button("Close##ToolsInGameImGui_OMFEditor"))
 					{
 						g_omf_editor.is_file_loaded = false;
+						pEditor->path[0] = 0;
 					}
 
 					ImGui::TableSetColumnIndex(2);
