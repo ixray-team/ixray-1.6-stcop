@@ -2,7 +2,15 @@
     <prop_line x="0" y="0" width="260" height="9" stretch="1">
         <texture>ui_inGame2_hint_wnd_Properties</texture>
     </prop_line>
-
+    <condition x="0" y="0" width="257" height="20">
+        <caption x="0" y="0" width="257" height="20" complex_mode="0">
+            <texture>ui_am_condition</texture>
+            <text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+        </caption>
+        <value x="140" y="0" width="30" height="20" magnitude="100">
+            <text font="letterica16" vert_align="c"/>
+        </value>
+    </condition>
 	<health_restore_speed x="0" y="0" width="257" height="20">
 		<caption x="0" y="0" width="257" height="20" complex_mode="0">
 			<texture>ui_am_propery_05</texture>

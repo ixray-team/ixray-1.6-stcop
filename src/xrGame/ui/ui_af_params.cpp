@@ -4,6 +4,8 @@
 
 #include "../Actor.h"
 #include "../ActorCondition.h"
+#include "../inventory_item.h"
+
 #include "object_broker.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
@@ -23,6 +25,7 @@ CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 		m_restore_item[i] = nullptr;
 	}
 
+	m_disp_condition = nullptr;
 	m_additional_weight = nullptr;
 	m_af_slots = nullptr;
 
@@ -33,6 +36,7 @@ CUIArtefactParams::~CUIArtefactParams()
 {
 	delete_data	( m_immunity_item );
 	delete_data	( m_restore_item );
+	xr_delete(m_disp_condition);
 	xr_delete	( m_additional_weight );
 	xr_delete	(m_af_slots);
 	xr_delete	( m_Prop_line );
@@ -92,6 +96,17 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 	m_Prop_line->SetAutoDelete( false );	
 	CUIXmlInit::InitStatic( xml, "prop_line", 0, m_Prop_line );
 
+	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
+	if (enableArtDegradation)
+	{
+		m_disp_condition = new UIArtefactParamItem();
+		m_disp_condition->Init(xml, "condition");
+		m_disp_condition->SetAutoDelete(false);
+		LPCSTR name = g_pStringTable->translate("st_condition").c_str();
+		m_disp_condition->SetCaption(name);
+		xml.SetLocalRoot(base_node);
+	}
+
 	for ( u32 i = 0; i < ALife::infl_max_count; ++i )
 	{
 		m_immunity_item[i] = new UIArtefactParamItem();
@@ -143,7 +158,7 @@ bool CUIArtefactParams::Check(const shared_str& af_section)
 	return !!pSettings->line_exist(af_section, "af_actor_properties");
 }
 
-void CUIArtefactParams::SetInfo( shared_str const& af_section )
+void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 {
 	DetachAll();
 	AttachChild( m_Prop_line );
@@ -157,6 +172,19 @@ void CUIArtefactParams::SetInfo( shared_str const& af_section )
 	float val = 0.0f, max_val = 1.0f;
 	Fvector2 pos {0,0};
 	float h = m_Prop_line->GetWndPos().y+m_Prop_line->GetWndSize().y;
+	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
+
+	if (is_artefact() && enableArtDegradation)
+	{
+		m_disp_condition->SetValue(pInvItem.GetCondition());
+		pos.set(m_disp_condition->GetWndPos());
+		pos.y = h;
+		m_disp_condition->SetWndPos(pos);
+		h += m_disp_condition->GetWndSize().y;
+		AttachChild(m_disp_condition);
+	}
+
+	const shared_str& af_section = pInvItem.m_section_id.c_str();
 
 	if (is_artefact())
 	{
@@ -170,7 +198,7 @@ void CUIArtefactParams::SetInfo( shared_str const& af_section )
 			}
 			max_val = actor->conditions().GetZoneMaxPower((ALife::EInfluenceType)i);
 			val /= max_val;
-			m_immunity_item[i]->SetValue(val);
+			m_immunity_item[i]->SetValue(val * pInvItem.GetCondition());
 
 			pos.set(m_immunity_item[i]->GetWndPos());
 			pos.y = h;
@@ -187,7 +215,7 @@ void CUIArtefactParams::SetInfo( shared_str const& af_section )
 			{
 				continue;
 			}
-			m_restore_item[i]->SetValue(val);
+			m_restore_item[i]->SetValue(val * pInvItem.GetCondition());
 
 			pos.set(m_restore_item[i]->GetWndPos());
 			pos.y = h;
@@ -217,7 +245,7 @@ void CUIArtefactParams::SetInfo( shared_str const& af_section )
 		val	= READ_IF_EXISTS(pSettings, r_float, af_section, "additional_inventory_weight", 0.0f);
 		if ( !fis_zero(val) )
 		{
-			m_additional_weight->SetValue( val );
+			m_additional_weight->SetValue(val * (is_artefact() ? pInvItem.GetCondition() : 1));
 
 			pos.set( m_additional_weight->GetWndPos() );
 			pos.y = h;
