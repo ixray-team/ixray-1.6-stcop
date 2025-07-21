@@ -99,6 +99,7 @@
 	</wpn_params>
 	
 #include "ui\af_params_16.xml"
+#include "ui\booster_params_16.xml"
 	
   <upgrade_info>
     <main_frame x="0" y="0" width="267" height="200"/>
