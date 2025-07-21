@@ -32,6 +32,7 @@ class CUITrackBar;
 class UIHintWindow;
 class CUILines;
 class CUITextWnd;
+class CUILoadingScreenProgress;
 
 class UI_API CUIXmlInit
 {
@@ -53,6 +54,7 @@ public:
 	static bool 	Init3tButton			(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd);
 	static bool 	InitProgressBar			(CUIXml& xml_doc, LPCSTR path, int index, CUIProgressBar* pWnd);
 	static bool 	InitProgressShape		(CUIXml& xml_doc, LPCSTR path, int index, CUIProgressShape* pWnd);
+	static bool 	InitLoadscreenProgress	(CUIXml& xml_doc, LPCSTR path, int index, CUILoadingScreenProgress* pWnd);
 	static bool 	InitFont				(CUIXml& xml_doc, LPCSTR path, int index, u32 &color, CGameFont *&pFnt);
 	static bool 	InitTabButtonMP			(CUIXml& xml_doc, LPCSTR path, int index, CUITabButtonMP *pWnd);
 	static bool 	InitTabControl			(CUIXml& xml_doc, LPCSTR path, int index, CUITabControl *pWnd);

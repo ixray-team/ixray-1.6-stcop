@@ -16,7 +16,7 @@
 #include "Widgets/UIComboBox.h"
 #include "Widgets/UITrackBar.h"
 #include "Widgets/UIHint.h"
-//#include "game_base_space.h"
+#include "Widgets/UILoadingScreenProgress.h"
 
 #include "UITextureMaster.h"
 #include "Widgets/UITabButtonMP.h"
@@ -591,6 +591,19 @@ bool CUIXmlInit::InitProgressShape(CUIXml& xml_doc, LPCSTR path, int index, CUIP
 	pWnd->m_angle_end   = xml_doc.ReadAttribFlt(path, index, "end_angle", PI_MUL_2);
 	
     return true;
+}
+
+bool CUIXmlInit::InitLoadscreenProgress(CUIXml& xml_doc, LPCSTR path, int index, CUILoadingScreenProgress* pWnd)
+{
+	bool ValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
+
+	InitStatic						(xml_doc, path, index, pWnd);
+
+	pWnd->m_sectorCount	= xml_doc.ReadAttribInt(path, index, "sector_count", 40);
+	pWnd->m_double_progress	= xml_doc.ReadAttribInt(path, index, "double_progress") ? true : false;
+	
+	return true;
 }
 
 void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pParentWnd)
