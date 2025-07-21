@@ -42,4 +42,7 @@
 	<string id="st_save_zat_a1_game_start">
 		<text>начало игры</text>
 	</string>
+	<string id="st_can_use_weapon_now">
+		<text>“еперь можно достать оружие.</text>
+	</string>
 </string_table>
