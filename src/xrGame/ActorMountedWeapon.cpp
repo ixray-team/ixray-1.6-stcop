@@ -12,54 +12,61 @@
 
 bool CActor::use_HolderEx(CHolderCustom* object, bool bForce)
 {
-	if (m_holder)
+	if (m_holder != nullptr)
 	{
-		CCar* car = smart_cast<CCar*>(m_holder);
-		if (car)
+		CCar* car = m_holder->cast_car();
+		if (car != nullptr)
 		{
 			detach_Vehicle();
 			return true;
 		}
+
 		if (!m_holder->ExitLocked())
 		{
-			if (!object || (m_holder == object)){
+			if (object == nullptr || (m_holder == object))
+			{
 				m_holder->detach_Actor();
 
-				CGameObject* go = smart_cast<CGameObject*>(m_holder);
-				if (go)
+				if (CGameObject* go = m_holder->cast_game_object())
+				{
 					this->callback(GameObject::eDetachVehicle)(go->lua_game_object());
+				}
 
 				character_physics_support()->movement()->CreateCharacter();
-				m_holder = NULL;
+				m_holder = nullptr;
 			}
 		}
 		return true;
 	} 
-	else
+	else if (object != nullptr)
 	{
-		CCar* car = smart_cast<CCar*>(m_holder);
-		if (car)
+		if (CCar* car = object->cast_car())
 		{
 			attach_Vehicle(object);
 			return true;
 		}
-		if (object && !object->EnterLocked())
+
+		if (!object->EnterLocked())
 		{
 			Fvector center;	Center(center);
-			if (object->Use(Device.vCameraPosition, Device.vCameraDirection, center)){
-				if (object->attach_Actor(this)){
+			if (object->Use(Device.vCameraPosition, Device.vCameraDirection, center))
+			{
+				if (object->attach_Actor(this))
+				{
 					// destroy actor character
 					character_physics_support()->movement()->DestroyCharacter();
 
 					m_holder = object;
-					if (pCamBobbing){
+					if (pCamBobbing != nullptr)
+					{
 						Cameras().RemoveCamEffector(eCEBobbing);
-						pCamBobbing = NULL;
+						pCamBobbing = nullptr;
 					}
 
-					CGameObject* go = smart_cast<CGameObject*>(m_holder);
-					if (go)
+					if (CGameObject* go = m_holder->cast_game_object())
+					{
 						this->callback(GameObject::eAttachVehicle)(go->lua_game_object());
+					}
 					return true;
 				}
 			}
