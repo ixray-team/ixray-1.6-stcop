@@ -20,7 +20,7 @@ enum EEditorState
 	esEditLibrary,
 	esEditLightAnim,
 	esBuildLevel,
-	esEditMesh
+	esEditCustom
 };
 
 struct ECORE_API SPBItem
