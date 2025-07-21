@@ -1970,7 +1970,7 @@ void CWeapon::OnZoomOut()
 
 CUIWindow* CWeapon::ZoomTexture()
 {
-	return nullptr; //UseScopeTexture() ? m_UIScope : nullptr;
+	return UseScopeTexture() ? m_UIScope : nullptr;
 }
 
 void CWeapon::SwitchState(u32 S)
