@@ -21,11 +21,13 @@ game_sv_freemp::game_sv_freemp()
 	:pure_relcase(&game_sv_freemp::net_Relcase)
 {
 	m_type = eGameIDFreeMP;
+	GSQLConnector.Connect();
 	GSQLConnector.Test();
 	map_items.clear();
 	map_items = GSQLConnector.LoadGame("game_items");
 	map_quest.clear();
 	map_quest = GSQLConnector.LoadGame("game_quests");
+
 }
 
 game_sv_freemp::~game_sv_freemp()
@@ -331,7 +333,8 @@ void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 		if (cur_user_id > 0)
 		{
 			GSQLConnector.DeleteInventory(cur_user_id);
-			for (auto _item : actor->inventory().m_all) {
+			for (PIItem _item : actor->inventory().m_all)
+			{
 				auto item = _item->cast_game_object();
 				if (actor->is_alive()) {
 
