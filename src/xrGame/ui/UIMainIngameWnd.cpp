@@ -969,7 +969,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 		float cur_weight = pActor->inventory().TotalWeight();
 		float max_weight = pActor->MaxWalkWeight();
 		m_ind_overweight->Show(false);
-		if (cur_weight >= max_weight - 10.0f && IsGameTypeSingle())
+		if (cur_weight >= max_weight - 10.0f && IsGameTypeSingleCompatible())
 		{
 			m_ind_overweight->Show(true);
 			if (cur_weight > max_weight)
