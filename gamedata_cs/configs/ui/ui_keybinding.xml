@@ -12,7 +12,7 @@
 		<command id="kb_right_strafe"			exe="rstrafe"/>
 		<command id="kb_jump"						  exe="jump"/>
 		<command id="kb_crouch"						exe="crouch"/>
-		<command id="kb_crouch_toggle"		exe="crouch_toggle"/>
+		<!--command id="kb_crouch_toggle"		exe="crouch_toggle"/-->
 		<command id="kb_always_run"				exe="accel"/>
 		<command id="kb_sprint"						exe="sprint_toggle"/>		
 		<command id="kb_left_lookout"			exe="llookout"/>
