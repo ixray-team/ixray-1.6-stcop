@@ -102,9 +102,7 @@ void CStalkerAnimationPair::play			(IKinematicsAnimated *skeleton_animated, Play
 #	endif
 #endif
 
-#ifdef DEBUG
 		m_just_started		= false;
-#endif // DEBUG
 		return;
 	}
 
@@ -113,9 +111,7 @@ void CStalkerAnimationPair::play			(IKinematicsAnimated *skeleton_animated, Play
 		m_array							= 0;
 	}
 
-#ifdef DEBUG
 	m_just_started			= true;
-#endif // DEBUG
 
 	if (!global_animation()) {
 		// here we should know if it is a head

@@ -540,14 +540,18 @@ void	CActor::Hit(SHit* pHDS)
 
 				// установить particles
 				xr_shared_ptr<CParticlesObject> ps_ = nullptr;
-
+#if 0
 				if (eacFirstEye == cam_active && this == Level().CurrentEntity())
 					ps_ = Particles::Details::Create(invincibility_fire_shield_1st,TRUE);
 				else
 					ps_ = Particles::Details::Create(invincibility_fire_shield_3rd,TRUE);
-
-				ps_->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));
-				GamePersistent().ps_needtoplay.push_back(ps_);
+#endif 
+				if (ps_ != nullptr)
+				{
+					ps_->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
+					GamePersistent().ps_needtoplay.push_back(ps_);
+				}
+				
 			};
 		};
 		 

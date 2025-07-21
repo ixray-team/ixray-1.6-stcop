@@ -316,7 +316,7 @@ void CAI_Stalker::ApplyAnimation(StalkerMotionData& anims)
 
 		if ( ALL_UNDEFINED )
 		{
-			Msg("Recvest Sync Packet From NPC: %s", cName().c_str());
+			// Msg("Recvest Sync Packet From NPC: %s", cName().c_str());
 			NET_Packet packet;
 			u_EventGen(packet, GE_STALKER_ANIMATION, this->ID());
 			packet.w_u32(eRecvestIDX);
@@ -413,6 +413,7 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 		return;
 	}
 
+
 	IKinematicsAnimated* ka = smart_cast<IKinematicsAnimated*>(Visual());
 	if (!ka)
 		return;
@@ -432,6 +433,15 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 	
 	if (!data.id.valid())
 		return;
+
+	if (data.id.slot >= 4)
+		return;
+
+	if (data.id.idx > 4096)
+		return;
+
+	Msg("UpdateScriptAnim Type[%u] Motion[%u] Slot[%u] IDX[%u]", TYPE, data.id.idx, data.id.slot, data.IDX);
+
 	 
 	if (TYPE == 1) // TORSO
 	{
