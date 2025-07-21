@@ -169,10 +169,10 @@ void IGame_Persistent::UpdateParticles()
 		ps_active.reserve(ps_active.size() + ps_active_deffer.size());
 
 		for (xr_shared_ptr<CPS_Instance>& Part : ps_active_deffer)
-	{
-		ps_active.push_back(Part);
-	}
-	ps_active_deffer.clear();
+		{
+			ps_active.push_back(Part);
+		}
+		ps_active_deffer.clear();
 	}
 
 	ps_active.erase(std::remove_if
@@ -183,10 +183,6 @@ void IGame_Persistent::UpdateParticles()
 			return Obj->m_NeedDestroy;
 		}
 	), ps_active.end());
-
-#ifdef _DEBUG
-	Msg("Suck my particles counter: %ull", ps_active.size());
-#endif
 }
 
 void IGame_Persistent::destroy_particles		(const bool &all_particles)

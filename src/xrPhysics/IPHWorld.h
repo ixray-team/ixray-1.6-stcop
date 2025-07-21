@@ -30,7 +30,6 @@ class IPHWorld:
 	virtual  void						StepNumIterations				( int num_it )						= 0;
 	virtual  void						set_default_contact_shotmark	(ContactCallbackFun	*f)				= 0;
 	virtual  void						set_default_character_contact_shotmark(ContactCallbackFun	*f)		= 0;
-	virtual  void						set_step_time_callback			(PhysicsStepTimeCallback* cb)		= 0;
 	virtual  void						set_update_callback				( IPHWorldUpdateCallbck* cb)		= 0;
 #ifdef DEBUG
 	virtual  u16						ObjectsNumber					(bool UpdateOnly = false)			= 0;
