@@ -30,7 +30,7 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
 
 	CInventoryItem& iitm			= itm->item();
 	u32 slot						= iitm.BaseSlot();
-	bool bres = (slot==INV_SLOT_2 || slot==KNIFE_SLOT || slot==BOLT_SLOT || slot==BINOCULAR_SLOT || slot==GRENADE_SLOT);
+	bool bres = (slot == INV_SLOT_2 || slot == KNIFE_SLOT || slot == BOLT_SLOT);
 	if(!bres && slot_to_activate)
 	{
 		*slot_to_activate = NO_ACTIVE_SLOT;

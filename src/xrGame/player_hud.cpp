@@ -850,9 +850,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 	}
 
 	{
-		CMissile* pMiss = m_attached_items[0] ? smart_cast<CMissile*>(m_attached_items[0]->m_parent_hud_item) : NULL;
-		bool throwing_missile = pMiss && (pMiss->GetState()>=CMissile::EMissileStates::eThrowStart&&pMiss->GetState()<=CMissile::EMissileStates::eThrow);
-		bool left_hand_active = !throwing_missile && m_attached_items[1];
+		bool left_hand_active = m_attached_items[1];
 
 		Fmatrix attach_offset;
 		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
@@ -886,34 +884,26 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotio
 		part_id = m_model->partitions().part_id((part==0)?"right_hand":"left_hand");
 	}
 
-	CMissile* pMiss = m_attached_items[0] ? smart_cast<CMissile*>(m_attached_items[0]->m_parent_hud_item) : NULL;
-	bool throwing_missile = pMiss && (pMiss->GetState()>=CMissile::EMissileStates::eThrowStart&&pMiss->GetState()<=CMissile::EMissileStates::eThrow) && attached_item(1);
-	if (throwing_missile)//is the only when attached_item 1 is active and we have started throwing the item
+	u16 pc = m_model->partitions().count();
+	for (u16 pid = 0; pid < pc; ++pid)
 	{
-		if(part==0)
+		if (pid == 0 && disable_root_part)
 		{
-			CBlend* B = NULL;
-			B	= m_model->PlayCycle(0, M, bMixIn);
-			B	= m_model->PlayCycle(1, M, bMixIn);
-			B	= m_model->PlayCycle(2, M, bMixIn);
+			continue;
+		}
+
+		if (pid == 0 || pid == part_id || part_id == u16(-1))
+		{
+			if (m_blocked_part_idx == pid)
+			{
+				continue;
+			}
+
+			CBlend* B = m_model->PlayCycle(pid, M, part == 0 && pid == 0 && attached_item(1) ? TRUE : bMixIn);
 			B->speed *= speed;
 		}
 	}
-	else
-	{
-		u16 pc					= m_model->partitions().count();
-		for(u16 pid=0; pid<pc; ++pid)
-		{
-			if(pid==0 && disable_root_part)continue;
 
-			if(pid==0 || pid==part_id || part_id==u16(-1))
-			{
-				if(m_blocked_part_idx==pid) continue;
-				CBlend* B = m_model->PlayCycle(pid, M, part==0&&pid==0&&attached_item(1)?TRUE:bMixIn);
-				B->speed *= speed;
-			}
-		}
-	}
 	m_model->dcast_PKinematics()->CalculateBones_Invalidate	();
 
 	return				motion_length(M, md, speed);
