@@ -1,7 +1,7 @@
 <!-- 16:10 ready -->
 <window>
 	<minimap>
-		<level_frame x="18" y="14" width="136" height="166"/>
+		<level_frame x="17" y="14" width="137" height="166"/>
 		
 		<background x="3" y="3" width="164" height="191" stretch="1"> 
 			<texture>ui_hud_map</texture>
