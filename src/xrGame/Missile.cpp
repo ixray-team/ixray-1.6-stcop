@@ -9,7 +9,6 @@
 #include "Level.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
-#include "../xrPhysics/ExtendedGeom.h"
 #include "../xrPhysics/MathUtils.h"
 #include "CharacterPhysicsSupport.h"
 #include "Inventory.h"
@@ -783,7 +782,7 @@ void CMissile::render_item_ui()
 	g_MissileForceShape->Draw	();
 }
 
-void	 CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
+void CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
 	dxGeomUserData	*gd1=nullptr,	*gd2=nullptr;
 	if(bo1)
@@ -796,8 +795,86 @@ void	 CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMt
 		gd2 =PHRetrieveGeomUserData(c.geom.g1);
 		gd1 =PHRetrieveGeomUserData(c.geom.g2);
 	}
-	if(gd1&&gd2&&(CPhysicsShellHolder*)gd1->callback_data==gd2->ph_ref_object)	
-																				do_colide=false;
+	if (gd1 && gd2 && (CPhysicsShellHolder*)gd1->callback_data == gd2->ph_ref_object)	
+	{
+		do_colide = false;
+	}
+
+	if (do_colide)
+	{
+		ExitContactCallback_Patch(c.geom.g2);
+		ExitContactCallback_Patch(c.geom.g1);
+	}
+}
+
+#include "Grenade.h"
+
+void CMissile::ExitContactCallback_Patch(dGeomID dxGeom)
+{
+	dxGeomUserData* geom_data = PHRetrieveGeomUserData(dxGeom);
+
+	if (geom_data == nullptr)
+	{
+		return;
+	}
+
+	CGrenade* grenade = smart_cast<CGrenade*>(geom_data->ph_ref_object);
+
+	if (grenade == nullptr)
+	{
+		return;
+	}
+
+	auto& contact_params = grenade->ContactParams();
+
+	u32 destroy_time = grenade->destroy_time();
+	u32 now = Device.dwTimeGlobal;
+
+	if (destroy_time == 0xffffffff || destroy_time <= now)
+	{
+		return;
+	}
+
+	u32 time_from_throw = grenade->destroy_time_max() - (destroy_time - now);
+
+	u32 safe_time = contact_params.SafeTime;
+	u32 delay_time = contact_params.DelayTime;
+
+	if (safe_time != 0 && safe_time > time_from_throw)
+	{
+		grenade->set_destroy_time_now(0xffffffff);
+	}
+	else if (delay_time != 0 && delay_time > time_from_throw)
+	{
+		// Просто пропускаем контакт
+	}
+	else if (contact_params.ExplosionOnKick)
+	{
+		u32 new_destroy_time = now;
+		float min_speed = contact_params.MinExplosionSpeed;
+		if (min_speed > 0.0f)
+		{
+			CPhysicsShellHolder* cpsh = smart_cast<CPhysicsShellHolder*>(grenade);
+			if (cpsh)
+			{
+				Fvector linear_vel = zero_vel;
+				cpsh->m_pPhysicsShell->get_LinearVel(linear_vel);
+				float speed = linear_vel.magnitude();
+				if (speed < min_speed)
+				{
+					if (contact_params.DeactivateOnLowSpeedContact)
+					{
+						new_destroy_time = 0xffffffff;
+					}
+					else
+					{
+						new_destroy_time = destroy_time;
+					}
+				}
+			}
+		}
+		grenade->set_destroy_time_now(new_destroy_time);
+	}
 }
 
 bool CMissile::GetBriefInfo( II_BriefInfo& info )
@@ -806,4 +883,3 @@ bool CMissile::GetBriefInfo( II_BriefInfo& info )
 	info.name._set( m_nameShort );
 	return true;
 }
-
