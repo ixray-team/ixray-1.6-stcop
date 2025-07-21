@@ -104,7 +104,7 @@ void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 	const float EditBoxSize = 20.f * UI().get_current_kx();
 
 	CUIXml xml_doc;
-	xml_doc.Load			(CONFIG_PATH, UI_PATH, "trackbar.xml");
+	xml_doc.Load			(CONFIG_PATH, UI_PATH, "backend\\trackbar.xml");
 
 	LPCSTR nodevalue_button = xml_doc.Read("button_texture_name", 0, "ui_inGame2_opt_slider_box");
 	LPCSTR nodevalue_track	= xml_doc.Read("track_texture_name", 0, "ui_inGame2_opt_slider_bar");
