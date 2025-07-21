@@ -48,8 +48,8 @@ void UIHint::set_text( LPCSTR text )
 	m_text->AdjustHeightToText	();
 
 	Fvector2 new_size;
-	new_size.x 					= GetWndSize().x;
-	new_size.y 					= m_text->GetWndSize().y + 20.0f;
+	new_size.x					 = GetWndSize().x;
+	new_size.y					 = (m_text->GetWndPos().y * 2) + m_text->GetWndSize().y;
 
 	m_background->SetWndSize	(new_size);
 	SetWndSize					(m_background->GetWndSize());
