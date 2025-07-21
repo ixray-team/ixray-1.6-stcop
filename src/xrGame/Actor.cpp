@@ -867,8 +867,17 @@ void CActor::FootStepCallback(float power, bool b_play, bool b_on_ground, bool b
 				m_wallmark_l.m_owner = this;
 				m_wallmark_r.Load(RightSect.c_str());
 				m_wallmark_l.Load(LeftSect.c_str());
-				bool inited = true;
+				inited = true;
 			}
+
+			auto GetBonePos = [this](shared_str bone_name)
+			{
+				u16 bone_id = smart_cast<IKinematics*>(Visual())->LL_BoneID(bone_name);
+
+				Fmatrix matrix;
+				matrix.mul_43(XFORM(), smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(bone_id).mTransform);
+				return (matrix.c);
+			};
 
 			const SGameMtl* mtl = GMLib.GetMaterialByIdx(mtl_idx);
 			static auto MaterialsList = EngineExternal().StepWallmarksMaterials();
@@ -878,12 +887,12 @@ void CActor::FootStepCallback(float power, bool b_play, bool b_on_ground, bool b
 				{
 					if (left_step)
 					{
-						m_wallmark_r.PlaceWallmarks(Position(), RightSect);
+						m_wallmark_r.PlaceWallmarks(GetBonePos("bip01_r_toe0"), RightSect);
 						left_step = false;
 					}
 					else
 					{
-						m_wallmark_l.PlaceWallmarks(Position(), LeftSect);
+						m_wallmark_l.PlaceWallmarks(GetBonePos("bip01_l_toe0"), LeftSect);
 						left_step = true;
 					}
 					
