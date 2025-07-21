@@ -20,6 +20,7 @@
 
 void resptrcode_texture::create(LPCSTR _name)
 {
+	PROF_EVENT("resptrcode_texture::create");
 	_set(DEV->_CreateTexture(_name));
 }
 
@@ -347,6 +348,8 @@ void CTexture::Preload	()
 
 void CTexture::Load		()
 {
+	PROF_EVENT("CTexture::Load");
+
 	flags.bLoaded					= true;
 	desc_cache						= 0;
 	if (pSurface)					return;

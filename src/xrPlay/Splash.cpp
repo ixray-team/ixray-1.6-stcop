@@ -103,6 +103,7 @@ namespace splash
 {
 	void show(void* &window)
 	{
+		PROF_EVENT("splash::show");
 		if (isInit) return;
 
 		unsigned char* imageData = nullptr;
@@ -164,6 +165,7 @@ namespace splash
 
 	void hide()
 	{
+		PROF_EVENT("splash::hide");
 		SDL_RenderClear(splashRenderer);
 		SDL_RenderPresent(splashRenderer);
 		Destroy();

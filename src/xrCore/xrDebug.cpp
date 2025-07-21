@@ -623,6 +623,7 @@ void __cdecl debug_on_thread_spawn(void)
 
 void xrDebug::_initialize(const bool& dedicated)
 {
+	PROF_EVENT("xrDebug::_initialize");
 	static bool is_dedicated = dedicated;
 
 	*g_bug_report_file = 0;

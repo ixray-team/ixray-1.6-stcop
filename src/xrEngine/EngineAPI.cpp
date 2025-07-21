@@ -99,6 +99,7 @@ DLL_Pure* __cdecl Null_Factory_Create(CLASS_ID CLS_ID)
 
 void CEngineAPI::Initialize(void)
 {
+	PROF_EVENT("CEngineAPI::Initialize");
 	//////////////////////////////////////////////////////////////////////////
 	// render
 	LPCSTR			r1_name	= "xrRender_R1.dll";
@@ -175,6 +176,7 @@ void CEngineAPI::Destroy(void)
 
 void CEngineAPI::CreateRendererList()
 {
+	PROF_EVENT("CreateRendererList");
 	if (g_dedicated_server)
 	{
 		vid_quality_token = xr_alloc<xr_token>(2);
