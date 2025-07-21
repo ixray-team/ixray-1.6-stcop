@@ -442,6 +442,11 @@ public:
 
 	virtual void Execute(LPCSTR args)
 	{
+		if (Device.IsEditorMode())
+		{
+			Msg("This command cannot be used in Editors.");
+			return;
+		}
 		CCC_Float::Execute		(args);
 		//Device.Gamma.Gamma		(ps_gamma);
 		Device.m_pRender->setGamma(ps_gamma);
