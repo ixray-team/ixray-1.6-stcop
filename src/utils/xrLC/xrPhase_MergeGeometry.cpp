@@ -552,15 +552,16 @@ IC BOOL	ValidateMergeTBB(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, 
 	return TRUE;
 }
 
+#include "tbb/combinable.h"
 void xrPhase_MergeGeometry_Tbb()
 {
 	xr_vector<SplitInfo> info(g_XSplit.size());
 	
-	xr_combinable<SplitMap> tempMappings;
+	tbb::combinable<SplitMap> tempMappings;
 	size_t grain = _max(size_t(1), g_XSplit.size() / xr_max_concurrency() / 10);
 	xr_parallel_for(0ull, g_XSplit.size(), grain, [&](size_t i)
 	{
-		auto& local = tempMappings.Local();
+		auto& local = tempMappings.local();
 		info[i].needMerge = NeedMerge(*g_XSplit[i], info[i].bb);
 		auto& value = local[CalcSplitKey(g_XSplit[i])];
 		value.splits.push_back(i);
@@ -568,7 +569,7 @@ void xrPhase_MergeGeometry_Tbb()
 	});
 
 	SplitMap mappings;
-	tempMappings.CombineEach([&mappings](const SplitMap& x)
+	tempMappings.combine_each([&mappings](const SplitMap& x)
 	{
 		for (const auto& [k, v] : x)
 			mappings[k].merge(v);
@@ -644,8 +645,6 @@ void xrPhase_MergeGeometry_Tbb()
 			Progress((float)progress.load() / g_XSplit.size());
 		}
 	});
- 
-
 	RemoveEmptySplits();
 }
 
