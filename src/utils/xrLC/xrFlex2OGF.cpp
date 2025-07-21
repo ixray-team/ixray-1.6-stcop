@@ -160,13 +160,9 @@ void CBuild::Flex2OGF()
 		{
 			pOGF->Optimize();
 			pOGF->CalcBounds();
-			
-			static xrCriticalSection nvstripcs;
-			xrCriticalSectionGuard guardStrip(nvstripcs);
-			if (!g_build_options.b_noise)
-				pOGF->MakeProgressive(c_PM_MetricLimit_static);
-			pOGF->Stripify();
-		}
+  			pOGF->MakeProgressive(c_PM_MetricLimit_static);
+ 			pOGF->Stripify();
+ 		}
 		catch (...)
 		{
 			Msg("* ERROR: Flex2OGF, 2nd part, model# %d", SV);
