@@ -102,6 +102,7 @@ public:
 	u16 SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText);
 	u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 
+	void SetGradient() { uFlags |= fsGradient; }
 	void OutI(float _x, float _y, const char* fmt, ...);
 	void Out(float _x, float _y, const char* fmt, ...);
 	void OutNext(const char* fmt, ...);
