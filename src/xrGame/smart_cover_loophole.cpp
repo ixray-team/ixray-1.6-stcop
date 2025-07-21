@@ -173,10 +173,10 @@ void loophole::fill_transitions(luabind::object const & transitions_table)
 		float weight = parse_float(table, "weight");
 
 		if (!m_transitions.vertex(action_from))
-			m_transitions.add_vertex(Loki::EmptyType(), action_from);
+			m_transitions.add_vertex(xr_empty(), action_from);
 
 		if (!m_transitions.vertex(action_to))
-			m_transitions.add_vertex(Loki::EmptyType(), action_to);
+			m_transitions.add_vertex(xr_empty(), action_to);
 
 		m_transitions.add_edge(action_from, action_to, weight);
 		TransitionGraph::CEdge* edge = m_transitions.edge(action_from, action_to);

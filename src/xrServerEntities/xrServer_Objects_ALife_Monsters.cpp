@@ -365,7 +365,7 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
 #ifdef XRGAME_EXPORTS
 						int* count = nullptr;
 						if(ai().get_alife())
-							count = ai().alife().registry(specific_characters).object(id, true);
+							count = ai().alife().registry().get<CSpecificCharacterRegistry>().object(id, true);
 						//если индекс еще не был использован
 						if(nullptr == count)
 #endif
@@ -400,7 +400,7 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 	if ( m_SpecificCharacter.size() ) 
 	{
 		if(ai().get_alife())
-			ai().alife().registry(specific_characters).remove(m_SpecificCharacter, true);
+			ai().alife().registry().get<CSpecificCharacterRegistry>().remove(m_SpecificCharacter, true);
 	}
 #endif
 	m_SpecificCharacter = new_spec_char;
@@ -411,7 +411,7 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 	{
 		//запомнить, то что мы использовали индекс
 		int a = 1;
-		ai().alife().registry(specific_characters).add(m_SpecificCharacter, a, true);
+		ai().alife().registry().get<CSpecificCharacterRegistry>().add(m_SpecificCharacter, a, true);
 	}
 #endif
 
