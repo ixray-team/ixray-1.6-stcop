@@ -14,6 +14,7 @@
 #include "script_game_object.h"
 #include "../../xrUI/ui_base.h"
 #include "HUDManager.h"
+#include "../xrScripts/script_callback_ex.h"
 
 ENGINE_API extern float psHUD_FOV_def;
 
