@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+    <string id="st_ixray_title">
+        <text>S.T.A.L.K.E.R.: Clear Sky</text>
+    </string>
+    <string id="st_discord_menu">
+        <text>Main menu</text>
+    </string>
+    <string id="st_discord_level">
+        <text>Level:</text>
+    </string>
+    <string id="quicksave">
+        <text>quick save</text>
+    </string>
+    <string id="autosave">
+        <text>auto save</text>
+    </string>
+    <string id="ui_mm_r_actor_shadow">
+        <text>Protagonist Shadow</text>
+    </string>
+    <string id="ui_mm_r2_details_shadows">
+        <text>Grass Shadows</text>
+    </string>
+    <string id="ui_mm_r4_hud_shadows">
+        <text>Hud Shadows</text>
+    </string>
+    <string id="ui_mm_r2_cloud_shadows">
+        <text>Cloud Shadows</text>
+    </string>
+    <string id="ui_mm_vid_scale">
+        <text>Rendering Scale</text>
+    </string>
+    <string id="fxaa">
+        <text>FXAA</text>
+    </string>
+    <string id="smaa">
+        <text>SMAA</text>
+    </string>
+    <string id="taa">
+        <text>TAA</text>
+    </string>
+    <string id="ui_mm_r_scale_mode">
+        <text>Scaling</text>
+    </string>
+    <string id="st_filter_linear">
+        <text>Standard (Linear)</text>
+    </string>
+    <string id="st_filter_point">
+        <text>Point</text>
+    </string>
+    <string id="st_filter_dlss">
+        <text>DLSS</text>
+    </string>
+    <string id="st_filter_fsr">
+        <text>FSR2</text>
+    </string>
+    <string id="st_freemp">
+        <text>Freeplay</text>
+    </string>
+    <string id="ui_mm_mt_tex_load">
+        <text>Multithreaded Texture Loading</text>
+    </string>
+    <string id="ui_mm_r__smap_size">
+        <text>Shadow Map</text>
+    </string>
+    <string id="1024">
+        <text>1024x1024</text>
+    </string>
+    <string id="2048">
+        <text>2048x2048</text>
+    </string>
+    <string id="3072">
+        <text>3072x3072</text>
+    </string>
+    <string id="4096">
+        <text>4096x4096</text>
+    </string>
+    <string id="ui_rs_device_active">
+        <text>Always Active</text>
+    </string>
+    <string id="car_trunk_use">
+        <text>Open trunk ($$ACTION_USE$$)</text>
+    </string>
+    <string id="car_use">
+        <text>Use ($$ACTION_USE$$)</text>
+    </string>
+    <string id="st_m">
+        <text>m</text>
+    </string>
+    <string id="ui_inv_dist">
+        <text>Hit Distance</text>
+    </string>
+    <string id="ui_mm_dof_reload">
+        <text>DoF on Reload</text>
+    </string>
+    <string id="ui_mm_dof_talk">
+        <text>DoF on Talk</text>
+    </string>
+    <string id="ui_rs_fps_show">
+        <text>FPS Counter</text>
+    </string>
+    <string id="ui_mm_cas_sharpening">
+        <text>Sharpness</text>
+    </string>
+    <string id="ui_mm_hashed_alpha_test">
+        <text>Alpha Testing</text>
+    </string>
+    <string id="ui_mm_gtao">
+        <text>GTAO</text>
+    </string>
+    <string id="ui_mm_vignette">
+        <text>Vignette</text>
+    </string>
+    <string id="ui_mm_aberration">
+        <text>Chromatic aberr.</text>
+    </string>
+    <string id="ui_mm_sslr_water">
+        <text>Water refl.</text>
+    </string>
+    <string id="ui_mm_r_scale_preset">
+        <text>Scaling Quality</text>
+    </string>
+    <string id="st_scale_native">
+        <text>Anti-Aliasing</text>
+    </string>
+    <string id="st_scale_quality">
+        <text>Quality</text>
+    </string>
+    <string id="st_scale_balanced">
+        <text>Balanced</text>
+    </string>
+    <string id="st_scale_performance">
+        <text>Performance</text>
+    </string>
+    <string id="st_scale_ultraperformance">
+        <text>Ultra Performance</text>
+    </string>
+    <string id="st_scale_custom">
+        <text>Custom</text>
+    </string>
+    <string id="st_common_settings">
+        <text>General Settings</text>
+    </string>
+    <string id="st_surface_options">
+        <text>Surface Settings</text>
+    </string>
+    <string id="st_aa_options">
+        <text>Anti-Aliasing and Scaling Settings</text>
+    </string>
+    <string id="st_lights_options">
+        <text>Lighting Settings</text>
+    </string>
+    <string id="st_sunlight_options">
+        <text>Sunlight Settings</text>
+    </string>
+    <string id="st_effects_options">
+        <text>Effects</text>
+    </string>
+    <string id="st_postprocess_options">
+        <text>Postprocessing</text>
+    </string>
+    <string id="ui_mm_saturation">
+        <text>Saturation</text>
+    </string>
+    <string id="st_take_to">
+        <text>take</text>
+    </string>
+    <string id="st_take_all">
+        <text>take all</text>
+    </string>
+    <string id="ui_st_put_all">
+        <text>Stash all</text>
+    </string>
+    <string id="ui_st_put_all_hint">
+        <text>Stash all items</text>
+    </string>
+    <string id="st_move_to">
+        <text>move</text>
+    </string>
+    <string id="st_move_all">
+        <text>move all</text>
+    </string>
+    <string id="renderer_r4_dx10">
+        <text>Enhanced full dyn. lighting (DX10)</text>
+    </string>
+    <string id="Ultra">
+        <text>ultra</text>
+    </string>
+    <string id="st_proc">
+        <text>%</text>
+    </string>
+    <string id="WP_BINOC">
+        <text>Binocular</text>
+    </string>
+    <string id="WP_KNIFE">
+        <text>Knife</text>
+    </string>
+    <string id="WP_BM16">
+        <text>BM16</text>
+    </string>
+    <string id="WP_GROZA">
+        <text>Groza</text>
+    </string>
+    <string id="WP_SVD">
+        <text>SVD</text>
+    </string>
+    <string id="WP_AK74">
+        <text>AK74</text>
+    </string>
+    <string id="WP_LR300">
+        <text>LR300</text>
+    </string>
+    <string id="WP_HPSA">
+        <text>HPSA</text>
+    </string>
+    <string id="WP_PM">
+        <text>PM</text>
+    </string>
+    <string id="WP_RG6">
+        <text>RG6</text>
+    </string>
+    <string id="WP_RPG7">
+        <text>RPG7</text>
+    </string>
+    <string id="WP_SHOTG">
+        <text>Shotgun</text>
+    </string>
+    <string id="WP_ASHTG">
+        <text>AutoShotgun</text>
+    </string>
+    <string id="WP_MAGAZ">
+        <text>Magazine</text>
+    </string>
+    <string id="WP_SVU">
+        <text>SVU</text>
+    </string>
+    <string id="WP_USP45">
+        <text>USP45</text>
+    </string>
+    <string id="WP_VAL">
+        <text>VAL</text>
+    </string>
+    <string id="WP_VINT">
+        <text>Vintorez</text>
+    </string>
+    <string id="WP_WALTH">
+        <text>Walther</text>
+    </string>
+    <string id="W_STMGUN">
+        <text>Stat mgun</text>
+    </string>
+    <string id="SM_BLOOD">
+	    <text>Bloodsucker</text>
+    </string>
+    <string id="SM_BOARW">
+        <text>Boar</text>
+    </string>
+    <string id="SM_DOG_S">
+        <text>Dog</text>
+    </string>
+    <string id="SM_FLESH">
+        <text>Flesh</text>
+    </string>
+    <string id="SM_P_DOG">
+        <text>PseudoDog</text>
+    </string>
+    <string id="SM_BURER">
+        <text>Burer</text>
+    </string>
+    <string id="SM_CAT_S">
+        <text>Cat</text>
+    </string>
+    <string id="SM_CHIMS">
+        <text>Chimera</text>
+    </string>
+    <string id="SM_CONTR">
+        <text>Controller</text>
+    </string>
+    <string id="SM_IZLOM">
+        <text>Izlom</text>
+    </string>
+    <string id="SM_POLTR">
+        <text>Poltergeist</text>
+    </string>
+    <string id="SM_GIANT">
+        <text>PseudoGiant</text>
+    </string>
+    <string id="SM_ZOMBI">
+        <text>Zombie</text>
+    </string>
+    <string id="SM_SNORK">
+        <text>Snork</text>
+    </string>
+    <string id="SM_TUSHK">
+        <text>Tushkano</text>
+    </string>
+    <string id="SM_DOG_P">
+        <text>PsyDog</text>
+    </string>
+    <string id="SM_DOG_F">
+        <text>PsyDog (Phantom)</text>
+    </string>
+    <string id="ui_mm_lights_details">
+        <text>Extended grass shadows</text>
+    </string>
+    <string id="ui_mm_puddles">
+        <text>Volumetric puddles</text>
+    </string>
+    <string id="ui_mm_grass_distance">
+        <text>Grass distance</text>
+    </string>
+    <string id="SCRPTART">
+        <text>Artefact</text>
+    </string>
+    <string id="SCRPTCAR">
+        <text>Car</text>
+    </string>
+    <string id="SMRTTRRN">
+        <text>Smart terrain</text>
+    </string>
+    <string id="LVL_CHNG">
+        <text>Level changer</text>
+    </string>
+    <string id="S_ACTOR">
+        <text>Actor (player)</text>
+    </string>
+    <string id="AI_STL_S">
+        <text>Stalker</text>
+    </string>
+    <string id="C_HLCP_S">
+        <text>Helicopter</text>
+    </string>
+    <string id="SPC_RS_S">
+        <text>Space restrictor</text>
+    </string>
+    <string id="O_PHYS_S">
+        <text>Physics Object</text>
+    </string>
+    <string id="SMRT_C_S">
+        <text>Smart cover</text>
+    </string>
+    <string id="O_DSTR_S">
+        <text>Destroyable object</text>
+    </string>
+    <string id="SO_HLAMP">
+        <text>Hanging lamp</text>
+    </string>
+
+    <string id="ui_mm_screenshot_format">
+        <text>Screenshot format</text>
+    </string>
+    <string id="ss_jpg">
+        <text>.jpg</text>
+    </string>
+    <string id="ss_tga">
+        <text>.tga</text>
+    </string>
+    <string id="ss_png">
+        <text>.png</text>
+    </string>
+	<string id="st_client_connecting_to">
+		<text>CLIENT: Connecting to</text>
+	</string>
+	<string id="st_client_spawning">
+		<text>CLIENT: Spawning</text>
+	</string>
+	<string id="st_client_synchronising">
+		<text>CLIENT: Synchronizing</text>
+	</string>
+	<string id="st_creating_new_game">
+		<text>Creating new game</text>
+	</string>
+	<string id="ui_mm_lang">
+		<text>Language</text>
+	</string>
+    <string id="rus">
+		<text>Russian</text>
+	</string>
+	<string id="eng">
+		<text>English</text>
+	</string>
+	<string id="ui_inv_max_weight">
+		<text>max</text>
+	</string>
+	<string id="st_track_opt_off">
+		<text>off</text>
+	</string>
+	<string id="st_track_opt_on">
+		<text>on</text>
+	</string>
+</string_table>

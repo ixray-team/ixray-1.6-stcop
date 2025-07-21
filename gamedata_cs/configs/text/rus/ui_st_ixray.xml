@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+    <string id="st_ixray_title">
+        <text>S.T.A.L.K.E.R.: Чистое небо</text>
+    </string>
+    <string id="st_discord_menu">
+        <text>Главное меню</text>
+    </string>
+    <string id="st_discord_level">
+        <text>Уровень:</text>
+    </string>
+    <string id="quicksave">
+        <text>быстрое сохранение</text>
+    </string>
+    <string id="autosave">
+        <text>автоматическое сохранение</text>
+    </string>
+
+    <string id="ui_mm_r_actor_shadow">
+        <text>Тень от протагониста</text>
+    </string>
+    <string id="ui_mm_r2_details_shadows">
+        <text>Тень от травы</text>
+    </string>
+    <string id="ui_mm_r4_hud_shadows">
+        <text>Тени на руках</text>
+    </string>
+    <string id="ui_mm_r2_cloud_shadows">
+        <text>Тени от облаков</text>
+    </string>
+    <string id="ui_mm_vid_scale">
+        <text>Масштаб визуализации</text>
+    </string>
+    <string id="fxaa">
+        <text>FXAA</text>
+    </string>
+    <string id="smaa">
+        <text>SMAA</text>
+    </string>
+    <string id="taa">
+        <text>TAA</text>
+    </string>
+    <string id="ui_mm_r_scale_mode">
+        <text>Масштабирование</text>
+    </string>
+    <string id="st_filter_linear">
+        <text>Стандарное (Линейное)</text>
+    </string>
+    <string id="st_filter_point">
+        <text>Целочисленное</text>
+    </string>
+    <string id="st_filter_dlss">
+        <text>DLSS</text>
+    </string>
+    <string id="st_filter_fsr">
+        <text>FSR2</text>
+    </string>
+
+    <string id="st_freemp">
+        <text>Свободный</text>
+    </string>
+    <string id="ui_mm_mt_tex_load">
+        <text>Многопот. загрузка текстур</text>
+    </string>
+    <string id="ui_mm_r__smap_size">
+        <text>Карта теней</text>
+    </string>
+    <string id="1024">
+        <text>1024x1024</text>
+    </string>
+    <string id="2048">
+        <text>2048x2048</text>
+    </string>
+    <string id="3072">
+        <text>3072x3072</text>
+    </string>
+    <string id="4096">
+        <text>4096x4096</text>
+    </string>
+    <string id="ui_rs_device_active">
+        <text>Always Active</text>
+    </string>
+    <string id="car_trunk_use">
+        <text>Открыть багажник ($$ACTION_USE$$)</text>
+    </string>
+    <string id="car_use">
+        <text>Использовать ($$ACTION_USE$$)</text>
+    </string>
+    <string id="st_m">
+        <text>м</text>
+    </string>
+    <string id="ui_inv_dist">
+        <text>Дистанция удара</text>
+    </string>
+    <string id="ui_mm_dof_reload">
+        <text>DoF при перезарядке</text>
+    </string>
+    <string id="ui_mm_dof_talk">
+        <text>DoF при диалоге</text>
+    </string>
+    <string id="ui_rs_fps_show">
+        <text>Счетчик фпс</text>
+    </string>
+    <string id="ui_mm_cas_sharpening">
+        <text>Резкость</text>
+    </string>
+    <string id="ui_mm_hashed_alpha_test">
+        <text>Фильтр. прозрачности</text>
+    </string>
+    <string id="ui_mm_gtao">
+        <text>GTAO</text>
+    </string>
+    <string id="ui_mm_vignette">
+        <text>Виньетка</text>
+    </string>
+    <string id="ui_mm_aberration">
+        <text>Хромат. аберрация</text>
+    </string>
+    <string id="ui_mm_sslr_water">
+        <text>Отражения на воде</text>
+    </string>
+    <string id="ui_mm_r_scale_preset">
+        <text>Качество масштаб.</text>
+    </string>
+    <string id="st_scale_native">
+        <text>Сглаживание</text>
+    </string>
+    <string id="st_scale_quality">
+        <text>Качество</text>
+    </string>
+    <string id="st_scale_balanced">
+        <text>Сбалансированное</text>
+    </string>
+    <string id="st_scale_performance">
+        <text>Производительность</text>
+    </string>
+    <string id="st_scale_ultraperformance">
+        <text>Ультрапроизводительность</text>
+    </string>
+    <string id="st_scale_custom">
+        <text>Пользовательское</text>
+    </string>
+    <string id="st_common_settings">
+        <text>Общие настройки</text>
+    </string>
+    <string id="st_surface_options">
+        <text>Настройки поверхностей</text>
+    </string>
+    <string id="st_aa_options">
+        <text>Настройки сглаживания и масштабирования</text>
+    </string>
+    <string id="st_lights_options">
+        <text>Настройки освещения</text>
+    </string>
+    <string id="st_sunlight_options">
+        <text>Настройки солнечного света</text>
+    </string>
+    <string id="st_effects_options">
+        <text>Эффекты</text>
+    </string>
+    <string id="st_postprocess_options">
+        <text>Постобработка</text>
+    </string>
+    <string id="ui_mm_saturation">
+        <text>Насыщенность</text>
+    </string>
+    <string id="st_take_to">
+        <text>взять</text>
+    </string>
+    <string id="st_take_all">
+        <text>взять все</text>
+    </string>
+    <string id="ui_st_put_all">
+        <text>Сложить все</text>
+    </string>
+    <string id="ui_st_put_all_hint">
+        <text>Переместить все вещи</text>
+    </string>
+    <string id="st_move_to">
+        <text>переместить</text>
+    </string>
+    <string id="st_move_all">
+        <text>переместить всё</text>
+    </string>
+    <string id="renderer_r4_dx10">
+        <text>Ул. полное освещение (DX10)</text>
+    </string>
+    <string id="Ultra">
+        <text>ультра</text>
+    </string>
+    <string id="st_proc">
+        <text>%</text>
+    </string>
+    <string id="st_parse">
+        <text>разобрать</text>
+    </string>
+    <string id="WP_BINOC">
+        <text>Binocular</text>
+    </string>
+    <string id="WP_KNIFE">
+        <text>Knife</text>
+    </string>
+    <string id="WP_BM16">
+        <text>BM16</text>
+    </string>
+    <string id="WP_GROZA">
+        <text>Groza</text>
+    </string>
+    <string id="WP_SVD">
+        <text>SVD</text>
+    </string>
+    <string id="WP_AK74">
+        <text>AK74</text>
+    </string>
+    <string id="WP_LR300">
+        <text>LR300</text>
+    </string>
+    <string id="WP_HPSA">
+        <text>HPSA</text>
+    </string>
+    <string id="WP_PM">
+        <text>PM</text>
+    </string>
+    <string id="WP_RG6">
+        <text>RG6</text>
+    </string>
+    <string id="WP_RPG7">
+        <text>RPG7</text>
+    </string>
+    <string id="WP_SHOTG">
+        <text>Shotgun</text>
+    </string>
+    <string id="WP_ASHTG">
+        <text>AutoShotgun</text>
+    </string>
+    <string id="WP_MAGAZ">
+        <text>Magazine</text>
+    </string>
+    <string id="WP_SVU">
+        <text>SVU</text>
+    </string>
+    <string id="WP_USP45">
+        <text>USP45</text>
+    </string>
+    <string id="WP_VAL">
+        <text>VAL</text>
+    </string>
+    <string id="WP_VINT">
+        <text>Vintorez</text>
+    </string>
+    <string id="WP_WALTH">
+        <text>Walther</text>
+    </string>
+    <string id="W_STMGUN">
+        <text>Stat mgun</text>
+    </string>
+    <string id="SM_BLOOD">
+	    <text>Bloodsucker</text>
+    </string>
+    <string id="SM_BOARW">
+        <text>Boar</text>
+    </string>
+    <string id="SM_DOG_S">
+        <text>Dog</text>
+    </string>
+    <string id="SM_FLESH">
+        <text>Flesh</text>
+    </string>
+    <string id="SM_P_DOG">
+        <text>PseudoDog</text>
+    </string>
+    <string id="SM_BURER">
+        <text>Burer</text>
+    </string>
+    <string id="SM_CAT_S">
+        <text>Cat</text>
+    </string>
+    <string id="SM_CHIMS">
+        <text>Chimera</text>
+    </string>
+    <string id="SM_CONTR">
+        <text>Controller</text>
+    </string>
+    <string id="SM_IZLOM">
+        <text>Izlom</text>
+    </string>
+    <string id="SM_POLTR">
+        <text>Poltergeist</text>
+    </string>
+    <string id="SM_GIANT">
+        <text>PseudoGiant</text>
+    </string>
+    <string id="SM_ZOMBI">
+        <text>Zombie</text>
+    </string>
+    <string id="SM_SNORK">
+        <text>Snork</text>
+    </string>
+    <string id="SM_TUSHK">
+        <text>Tushkano</text>
+    </string>
+    <string id="SM_DOG_P">
+        <text>PsyDog</text>
+    </string>
+    <string id="SM_DOG_F">
+        <text>PsyDog (Phantom)</text>
+    </string>
+    <string id="SCRPTART">
+        <text>Artefact</text>
+    </string>
+    <string id="SCRPTCAR">
+        <text>Car</text>
+    </string>
+    <string id="SMRTTRRN">
+        <text>Smart terrain</text>
+    </string>
+    <string id="LVL_CHNG">
+        <text>Level changer</text>
+    </string>
+    <string id="S_ACTOR">
+        <text>Actor (player)</text>
+    </string>
+    <string id="AI_STL_S">
+        <text>Stalker</text>
+    </string>
+    <string id="C_HLCP_S">
+        <text>Helicopter</text>
+    </string>
+    <string id="SPC_RS_S">
+        <text>Space restrictor</text>
+    </string>
+    <string id="O_PHYS_S">
+        <text>Physics Object</text>
+    </string>
+    <string id="SMRT_C_S">
+        <text>Smart cover</text>
+    </string>
+    <string id="O_DSTR_S">
+        <text>Destroyable object</text>
+    </string>
+    <string id="SO_HLAMP">
+        <text>Hanging lamp</text>
+    </string>
+    <string id="ui_mm_lights_details">
+        <text>Расширенные тени травы</text>
+    </string>
+    <string id="ui_mm_puddles">
+        <text>Объёмные лужи</text>
+    </string>
+    <string id="ui_mm_grass_distance">
+        <text>Дальность видимости травы</text>
+    </string>
+    <string id="ui_mm_screenshot_format">
+        <text>Формат скриншотов</text>
+    </string>
+    <string id="ss_jpg">
+        <text>.jpg</text>
+    </string>
+    <string id="ss_tga">
+        <text>.tga</text>
+    </string>
+    <string id="ss_png">
+        <text>.png</text>
+    </string>
+	<string id="st_client_connecting_to">
+		<text>Клиент: Соединение с</text>
+	</string>
+	<string id="st_client_spawning">
+		<text>Клиент: Создание</text>
+	</string>
+	<string id="st_client_synchronising">
+		<text>Клиент: Синхронизация</text>
+	</string>
+	<string id="st_creating_new_game">
+		<text>Создание новой игры</text>
+	</string>
+	<string id="ui_mm_lang">
+		<text>Язык</text>
+	</string>
+    <string id="rus">
+		<text>Русский</text>
+	</string>
+	<string id="eng">
+		<text>English</text>
+	</string>
+	<string id="ui_inv_max_weight">
+		<text>макс.</text>
+	</string>
+	<string id="st_track_opt_off">
+		<text>выкл.</text>
+	</string>
+	<string id="st_track_opt_on">
+		<text>вкл.</text>
+	</string>
+</string_table>
