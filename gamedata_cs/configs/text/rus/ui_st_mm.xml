@@ -675,4 +675,13 @@
 	<string id="ui_st_invalid_saved_game">
 		<text>Версия сохраненного файла не совпадат с версией игры.</text>
 	</string>
+	<string id="st_opt_atest_msaa_dx10_0">
+		<text>режим DX10.0 [Стандартный]</text>
+	</string>
+	<string id="st_opt_atest_msaa_dx10_1">
+		<text>режим DX10.1 [Улучшенный]</text>
+	</string>
+	<string id="st_opt_ultra">
+		<text>Ультра</text>
+	</string>
 </string_table>

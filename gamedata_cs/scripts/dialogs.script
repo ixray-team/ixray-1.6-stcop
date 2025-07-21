@@ -190,6 +190,9 @@ function allow_guide_dialog(object, victim, id)
 		return false
 	end
 	if string.find(section, "conductor", 1) ~= nil then
+		if this.is_wounded(victim, object, id) then
+			return false
+		end
 		return true
 	end
 	return false

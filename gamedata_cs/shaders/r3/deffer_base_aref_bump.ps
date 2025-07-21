@@ -1,4 +1,4 @@
-#if ( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if ( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1) ) 
 #define EXTEND_F_DEFFER
 #endif
 
@@ -16,16 +16,26 @@ float4 	main	( p_bumped I ) : SV_Target
 
 #else	//	ATOC
 
+#ifdef	MSAA_ALPHATEST_DX10_1_ATOC
+f_deffer 	main	( p_bumped I, float4 pos2d : SV_Position )
+#else	//	MSAA_ALPHATEST_DX10_1_ATOC
 f_deffer 	main	( p_bumped I )
+#endif	//	MSAA_ALPHATEST_DX10_1_ATOC
 {
 	f_deffer		O;
 
-#if !( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if !defined(MSAA_ALPHATEST_DX10_1)
 	surface_bumped 	S 		= sload 	(I);
-#ifndef	MSAA_ALPHATEST_ATOC
+
+#if	!( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_0_ATOC) )
 	clip					(S.base.w-def_aref);
-#endif	//	MSAA_ALPHATEST_ATOC
-#else
+#endif	//	!( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1_ATOC) )
+#ifdef 	MSAA_ALPHATEST_DX10_1_ATOC
+	float alpha = (S.base.w-def_aref*0.5f)/(1-def_aref*0.5f);
+	uint mask = alpha_to_coverage ( alpha, pos2d );
+#endif	//	MSAA_ALPHATEST_DX10_1_ATOC
+
+#else	//	!defined(MSAA_ALPHATEST_DX10_1)
 	uint mask = 0x0;
 	
 	surface_bumped 	S 		= sload 	(I,MSAAOffsets[0]*(1.0/16.0));
@@ -40,7 +50,7 @@ f_deffer 	main	( p_bumped I )
 	
 	if( mask == 0x0 )
 		discard;
-#endif
+#endif	//	!defined(MSAA_ALPHATEST_DX10_1)
 
 	// Sample normal, rotate it by matrix, encode position 
   	float3	Ne  = mul		(float3x3(I.M1, I.M2, I.M3), S.normal);
@@ -64,7 +74,7 @@ f_deffer 	main	( p_bumped I )
 # endif
 #endif
 
-#if !( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#ifndef EXTEND_F_DEFFER
 	O = pack_gbuffer(
 						float4	(Ne,										h),
   						float4 	(I.position.xyz + Ne*S.height*def_virtualh, ms),
