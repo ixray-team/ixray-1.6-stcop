@@ -309,6 +309,11 @@ void xrServer::MakeUpdatePackets()
 			tmpPacket.w_u16					(Test.ID);
 			tmpPacket.w_chunk_open8			(position);
 			Test.UPDATE_Write				(tmpPacket);
+			if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+			{
+				Test.SyncWrite(tmpPacket);
+			}
+
 			u32 ObjectSize					= u32(tmpPacket.w_tell()-position)-sizeof(u8);
 			tmpPacket.w_chunk_close8		(position);
 
