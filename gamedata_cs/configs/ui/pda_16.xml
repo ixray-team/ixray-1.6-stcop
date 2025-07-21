@@ -4,7 +4,7 @@
 		<auto_static x="-86" y="0" width="86" height="768" stretch="1">
 			<texture>ui_inGame2_back_pdaw10_l</texture>
 		</auto_static>
-		<auto_static x="854" y="0" width="86" height="768" stretch="1">
+		<auto_static x="854" y="0" width="87" height="768" stretch="1">
 			<texture>ui_inGame2_back_pdaw10_r</texture>
 		</auto_static>
 	</main>
@@ -34,7 +34,7 @@
 		<background x="0" y="0" width="175" height="100" border="5" stretch="1">
 			<texture a="100">ui_icons_PDA_tooltips</texture>
 		</background>
-		<text x="17" y="20" width="158" height="100">
+		<text x="8" y="8" width="158" height="100">
 			<text font="letterica16" color="ui_6" complex_mode="1" align="l" vert_align="t"/>
 		</text>
 	</hint_wnd>
