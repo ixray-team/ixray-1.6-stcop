@@ -2859,6 +2859,25 @@ float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 	}
 }
 
+float CActor::HitArtefactsOnBeltLegacy(float hit_power, ALife::EHitType hit_type)
+{
+	float res_hit_power_k		= 1.0f;
+	float _af_count				= 0.0f;
+	for(TIItemContainer::iterator it = inventory().m_belt.begin(); 
+		inventory().m_belt.end() != it; ++it) 
+	{
+		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
+		if(artefact)
+		{
+			res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
+			_af_count		+= 1.0f;
+		}
+	}
+	res_hit_power_k			-= _af_count;
+
+	return					res_hit_power_k * hit_power;
+}
+
 float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
 {
 	float sum = 0.0f;
