@@ -176,7 +176,7 @@ public:
 	_DECLARE_FUNCTION10	(Squad		,	int		);
 	_DECLARE_FUNCTION10	(Group		,	int		);
 
-			void				Kill				(CScriptGameObject* who);
+    void				Kill(CScriptGameObject* who, bool bypass_actor_check = false /*AVO: added for actor before death callback*/);
 
 	// CEntityAlive
 	_DECLARE_FUNCTION10	(GetFOV				,			float);
