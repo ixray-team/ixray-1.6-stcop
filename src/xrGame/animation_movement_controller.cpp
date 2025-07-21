@@ -193,6 +193,9 @@ static void get_animation_root_position( Fmatrix &pos, IKinematics* K, IKinemati
 	}
 	VERIFY( key );
 
+	if (key == nullptr)
+		return;
+
 	float sv_amount = control_blend->blendAmount;
 	control_blend->blendAmount = 1.f;
 	keys.blends[0][0] = control_blend;
