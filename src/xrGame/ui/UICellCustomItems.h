@@ -40,6 +40,7 @@ public:
 protected:
 	CUIStatic*					m_addons					[eMaxAddon];
 	Fvector2					m_addon_offset				[eMaxAddon];
+	bool mScopeBack = false;
 	void						CreateIcon					(eAddonType);
 	void						DestroyIcon					(eAddonType);
 	void						RefreshOffset				();
