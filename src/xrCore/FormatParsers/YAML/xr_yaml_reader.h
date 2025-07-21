@@ -17,11 +17,11 @@ public:
 	CYaml(const char* FilePath, const char* FileName);
 	~CYaml() = default;
 
-	//переместиться по дереву 
-	//путь задается в форме PARENT:CHILD:CHIDLS_CHILD
+	//РїРµСЂРµРјРµСЃС‚РёС‚СЊСЃСЏ РїРѕ РґРµСЂРµРІСѓ 
+	//РїСѓС‚СЊ Р·Р°РґР°РµС‚СЃСЏ РІ С„РѕСЂРјРµ PARENT:CHILD:CHIDLS_CHILD
 	YAML::Node			NavigateToNode(const YAML::Node& BaseNode, const char* ChildNodeName) const;
 
-	//чтение элементов
+	//С‡С‚РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ
 	const char* GetString(const YAML::Node& BaseNode, const char* ChildNodeName, const char* DefaultStr);
 	int   				GetInt(const YAML::Node& BaseNode, const char* ChildNodeName, int iDefaultValue);
 	float   			GetFloat(const YAML::Node& BaseNode, const char* ChildNodeName, float fDefaultValue);

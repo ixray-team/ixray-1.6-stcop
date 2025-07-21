@@ -4,7 +4,7 @@
 #include "../../xrServerEntities/object_broker.h"
 #include "../../xrEngine/XR_IOConsole.h"
 #include "../UIFontDefines.h"
-#include "../../xrUI/UITextureMaster.h"
+#include "../UITextureMaster.h"
 
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
 {

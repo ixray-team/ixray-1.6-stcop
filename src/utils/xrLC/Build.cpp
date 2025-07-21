@@ -193,8 +193,8 @@ void GetMemoryUsedStorage()
 	Msg("- GeomTree:	%u mb, cap:%u",		tree, g_tree.capacity());
 	Msg("- Deflectors:	%u mb, cap:%u",		defl, lc_global_data()->g_deflectors().capacity());
 	Msg("- Lightmaps:	%u mb, cap:%u",		lightmaps, lc_global_data()->lightmaps().capacity());
- 	Msg("- vertexes:	%u mb, store: %u, cap:%u",		sV, lc_global_data()->g_vertices().size(),  lc_global_data()->g_vertices().capacity());	// Не учитываю алокацию adjucement при создании и жрет в разы больше
-	Msg("- faces:		%u mb, store: %u, cap:%u",		sF, lc_global_data()->g_faces().size(), lc_global_data()->g_faces().capacity());	// Не учитываю алокацию adjucement при создании и жрет в разы больше
+ 	Msg("- vertexes:	%u mb, store: %u, cap:%u",		sV, lc_global_data()->g_vertices().size(),  lc_global_data()->g_vertices().capacity());	// РќРµ СѓС‡РёС‚С‹РІР°СЋ Р°Р»РѕРєР°С†РёСЋ adjucement РїСЂРё СЃРѕР·РґР°РЅРёРё Рё Р¶СЂРµС‚ РІ СЂР°Р·С‹ Р±РѕР»СЊС€Рµ
+	Msg("- faces:		%u mb, store: %u, cap:%u",		sF, lc_global_data()->g_faces().size(), lc_global_data()->g_faces().capacity());	// РќРµ СѓС‡РёС‚С‹РІР°СЋ Р°Р»РѕРєР°С†РёСЋ adjucement РїСЂРё СЃРѕР·РґР°РЅРёРё Рё Р¶СЂРµС‚ РІ СЂР°Р·С‹ Р±РѕР»СЊС€Рµ
 	Msg("- Textures:	%u mb, cap:%u",		sTex, lc_global_data()->textures().capacity());
 	Msg("- Embree BVH: %umb, Static: %umb, MU: %umb", EmbreeMain.BVH_size / MB, EmbreeMain.Static_size / MB, EmbreeMain.MU_size / MB);
 
@@ -375,7 +375,7 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 
 	SaveTREE		(*fs);
 	SaveSectors		(*fs);
-	// Закрываем запись (а то бывает косяк что процесс закончился но файл не закрыло) 
+	// Р—Р°РєСЂС‹РІР°РµРј Р·Р°РїРёСЃСЊ (Р° С‚Рѕ Р±С‹РІР°РµС‚ РєРѕСЃСЏРє С‡С‚Рѕ РїСЂРѕС†РµСЃСЃ Р·Р°РєРѕРЅС‡РёР»СЃСЏ РЅРѕ С„Р°Р№Р» РЅРµ Р·Р°РєСЂС‹Р»Рѕ) 
 	FS.w_close(fs);
 
 	err_save		();

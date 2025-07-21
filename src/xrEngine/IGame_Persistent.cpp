@@ -8,7 +8,7 @@
 #include "IGame_Level.h"
 #include "XR_IOConsole.h"
 #include "Render.h"
-#include "ps_instance.h"
+#include "PS_instance.h"
 #include "CustomHUD.h"
 
 ENGINE_API	IGame_Persistent* g_pGamePersistent = nullptr;

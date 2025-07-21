@@ -312,7 +312,7 @@ namespace CDB
 			{
 				if (v.vertex.similar(V, EPS_L))
 				{
-					return v.PrimID; // Нашли похожий используем его индекс
+					return v.PrimID; // РЊР°С€Р»Рё РїРѕС…РѕР¶РёР№ РёСЃРїРѕР»СЊР·СѓРµРј РµРіРѕ РёРЅРґРµРєСЃ
 				}
 			}
 		}
