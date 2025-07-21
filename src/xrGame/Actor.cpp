@@ -944,14 +944,30 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 
 	accel.mul					(1.f-m_hit_slowmo);
 
-	
-	
-
 	if(g_Alive())
 	{
 		if(mstate_real&mcClimb&&!cameras[eacFirstEye]->bClampYaw)
 				accel.set(0.f,0.f,0.f);
-		character_physics_support()->movement()->Calculate			(accel,cameras[cam_active]->vDirection,0,jump,dt,false);
+
+		Fvector Pos = Position();
+		Fvector PosTo = Position();
+
+		// Позиция до начала расчёта физики
+		character_physics_support()->movement()->GetPosition(Pos);
+
+		// Позиция после расчёта физики
+		character_physics_support()->movement()->Calculate(accel, cameras[cam_active]->vDirection, 0, jump, dt, false);
+		character_physics_support()->movement()->GetPosition(PosTo);
+
+		if (!IsGameTypeSingle())
+		{
+			// Проверка на телепортацию актёра
+			if (IsFocused() && PosTo.distance_to_sqr(Pos) > 16.0f)
+			{
+				character_physics_support()->movement()->SetPosition(Pos);
+			}
+		}
+
 		bool new_border_state=character_physics_support()->movement()->isOutBorder();
 		if(m_bOutBorder!=new_border_state && Level().CurrentControlEntity() == this)
 		{
