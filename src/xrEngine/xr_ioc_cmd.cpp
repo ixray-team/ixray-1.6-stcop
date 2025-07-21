@@ -15,23 +15,25 @@
 
 #include "xr_object.h"
 
-xr_token*							vid_quality_token = nullptr;
+xr_token* vid_quality_token = nullptr;
 
-ENGINE_API float					devfloat1 = 1.0f;
-ENGINE_API float					devfloat2 = 1.0f;
-ENGINE_API float					devfloat3 = 1.0f;
-ENGINE_API float					devfloat4 = 1.0f;
+ENGINE_API float devfloat1 = 1.0f;
+ENGINE_API float devfloat2 = 1.0f;
+ENGINE_API float devfloat3 = 1.0f;
+ENGINE_API float devfloat4 = 1.0f;
 
 ENGINE_API float ps_render_scale = 1.0f;
 ENGINE_API u32 ps_render_scale_preset = 0;
 
-xr_token							vid_bpp_token							[ ]={
-	{ "16",							16											},
-	{ "32",							32											},
-	{ 0,							0											}
+xr_token vid_bpp_token[] =
+{
+	{ "16", 16 },
+	{ "32", 32 },
+	{ 0,	 0 }
 };
 
-xr_token vid_scale_preset_token[] = {
+xr_token vid_scale_preset_token[] = 
+{
 	{ "st_scale_native", 0 },
 	{ "st_scale_quality", 1 },
 	{ "st_scale_balanced", 2 },
@@ -44,13 +46,15 @@ xr_token vid_scale_preset_token[] = {
 
 ENGINE_API u32 ps_r_scale_mode = 1;
 ENGINE_API u32 ps_proxy_r_scale_mode = 1;
-xr_token qscale_mode_token[] = {
+xr_token qscale_mode_token[] = 
+{
 #ifdef DEBUG_DRAW
 	{ "st_filter_point", 0},
 #endif
 	{ "st_filter_linear", 1},
 	{ "st_filter_dlss", 2},
 	{ "st_filter_fsr", 3},
+	{ "st_filter_xess", 4},
 	{ 0, 0 }
 };
 

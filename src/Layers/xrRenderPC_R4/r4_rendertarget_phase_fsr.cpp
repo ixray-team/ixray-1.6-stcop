@@ -28,7 +28,8 @@ void CRenderTarget::init_fsr()
 	g_Fsr2Wrapper.Create(initParams);
 }
 
-bool CRenderTarget::phase_fsr() {
+bool CRenderTarget::phase_fsr()
+{
 	PIX_EVENT(FSR);
 
 	Fsr2Wrapper::DrawParameters fsr2Params = {};
