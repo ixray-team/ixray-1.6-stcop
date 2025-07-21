@@ -16,8 +16,12 @@ public:
 	xr_string Path;
 	xr_string Desc;
 
+	mutable xr_map<xr_string, xr_string> InputArgsName;
+	xr_map<xr_string, string256> InputArgsValues;
+
 public:
 	virtual void Run() = 0;
+	virtual bool IsSimple() const { return InputArgsName.empty(); }
 
 private:
 	virtual xr_string ReadDesc() const = 0;
