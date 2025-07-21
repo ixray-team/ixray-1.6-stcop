@@ -132,12 +132,16 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 	const u32 ChunkSize = SHeightMapRenderData::CHUNK_SIZE;
 	const float FlatThreshold = SHeightMapRenderData::FLAT_THRESHOLD;
 
-	// Calculate center offset
-	float centerX = (Width * cellSize) * 0.5f;
-	float centerZ = (Height * cellSize) * 0.5f;
+	// Calculate center offset with scale applied
+	float centerX = (Width * cellSize * Size.x) * 0.5f;
+	float centerZ = (Height * cellSize * Size.z) * 0.5f;
 
-	u32 chunkCountX = (Width - 1) / ChunkSize + 1;
-	u32 chunkCountZ = (Height - 1) / ChunkSize + 1;
+	// Calculate scaled dimensions
+	u32 scaledWidth = u32(Width * Size.x);
+	u32 scaledHeight = u32(Height * Size.z);
+
+	u32 chunkCountX = (scaledWidth - 1) / ChunkSize + 1;
+	u32 chunkCountZ = (scaledHeight - 1) / ChunkSize + 1;
 
 	struct ChunkInfo
 	{
@@ -157,14 +161,26 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 
 			u32 x0 = cx * ChunkSize;
 			u32 z0 = cz * ChunkSize;
-			u32 x_end = std::min(x0 + ChunkSize, Width - 1);
-			u32 z_end = std::min(z0 + ChunkSize, Height - 1);
+			u32 x_end = std::min(x0 + ChunkSize, scaledWidth - 1);
+			u32 z_end = std::min(z0 + ChunkSize, scaledHeight - 1);
 
 			for (u32 z = z0; z <= z_end; ++z)
 			{
 				for (u32 x = x0; x <= x_end; ++x)
 				{
-					float h = GetHeight(x, z) * scaleY;
+					// Применяем обратное масштабирование для получения оригинальных координат
+					u32 orig_x = u32((x - Pos.x) / Size.x);
+					u32 orig_z = u32((z - Pos.z) / Size.z);
+
+					// Проверяем границы оригинальной карты высот
+					if (orig_x >= Width || orig_z >= Height)
+					{
+						has_holes = true;
+						continue;
+					}
+
+					// Применяем масштаб по Y и оффсет
+					float h = (GetHeight(orig_x, orig_z) + Pos.y) * scaleY * Size.y;
 					if (h == 0.0f)
 						has_holes = true;
 					minH = std::min(minH, h);
@@ -182,17 +198,23 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 
 	// Height to color conversion
 	auto Height2Color = [&](float h) -> u32
-	{
-		float t = (h - global_min_h) / std::max(global_max_h - global_min_h, EPS_S);
-		t = std::clamp(t, 0.2f, 1.0f);
-		return color_rgba
-		(
-			u8(((baseColor >> 16) & 0xFF) * t),
-			u8(((baseColor >> 8) & 0xFF) * t),
-			u8((baseColor & 0xFF) * t),
-			255
-		);
-	};
+		{
+			float t = (h - global_min_h) / std::max(global_max_h - global_min_h, EPS_S);
+			t = std::clamp(t, 0.0f, 0.9f); // Убрал нижний clamp 0.2f
+
+			// Нелинейное преобразование для лучшего восприятия глубины
+			t = pow(t, 0.7f); // Можно регулировать степень (0.5-0.8)
+
+			// Коррекция яркости для темных участков
+			float brightness = 0.2f + 0.8f * t; // Минимальная яркость 20%
+
+			return color_rgba(
+				u8(((baseColor >> 16) & 0xFF) * brightness),
+				u8(((baseColor >> 8) & 0xFF) * brightness),
+				u8((baseColor & 0xFF) * brightness),
+				255
+			);
+		};
 
 	for (u32 cz = 0; cz < chunkCountZ; ++cz)
 	{
@@ -228,32 +250,47 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 
 			u32 x0 = cx * ChunkSize;
 			u32 z0 = cz * ChunkSize;
-			u32 x_end = std::min(x0 + ChunkSize, Width - 1);
-			u32 z_end = std::min(z0 + ChunkSize, Height - 1);
+			u32 x_end = std::min(x0 + ChunkSize, scaledWidth - 1);
+			u32 z_end = std::min(z0 + ChunkSize, scaledHeight - 1);
 
 			for (u32 z = z0; z < z_end; ++z)
 			{
 				for (u32 x = x0; x < x_end; ++x)
 				{
-					float h0 = GetHeight(x, z) * scaleY;
-					float h1 = GetHeight(x + 1, z) * scaleY;
-					float h2 = GetHeight(x + 1, z + 1) * scaleY;
-					float h3 = GetHeight(x, z + 1) * scaleY;
+					// Получаем оригинальные координаты с учетом масштаба и оффсета
+					u32 orig_x = u32((x - Pos.x) / Size.x);
+					u32 orig_z = u32((z - Pos.z) / Size.z);
+					u32 orig_x1 = u32((x + 1 - Pos.x) / Size.x);
+					u32 orig_z1 = u32((z + 1 - Pos.z) / Size.z);
 
-					bool same_height = std::abs(h0 - h1) < FlatThreshold && std::abs(h1 - h2) < FlatThreshold && std::abs(h2 - h3) < FlatThreshold;
+					// Проверяем границы
+					if (orig_x >= Width || orig_z >= Height ||
+						orig_x1 >= Width || orig_z1 >= Height)
+						continue;
+
+					// Применяем масштаб и оффсет по Y
+					float h0 = (GetHeight(orig_x, orig_z) + Pos.y) * scaleY * Size.y;
+					float h1 = (GetHeight(orig_x1, orig_z) + Pos.y) * scaleY * Size.y;
+					float h2 = (GetHeight(orig_x1, orig_z1) + Pos.y) * scaleY * Size.y;
+					float h3 = (GetHeight(orig_x, orig_z1) + Pos.y) * scaleY * Size.y;
+
+					bool same_height = std::abs(h0 - h1) < FlatThreshold &&
+						std::abs(h1 - h2) < FlatThreshold &&
+						std::abs(h2 - h3) < FlatThreshold;
 
 					if (same_height)
 					{
 						if (h0 == 0.0f)
 							continue;
 
-						// Apply centering here
+						// Применяем масштаб и центрирование по XZ
 						Fvector v0 = { x * cellSize - centerX, h0, z * cellSize - centerZ };
 						Fvector v1 = { (x + 1) * cellSize - centerX, h1, z * cellSize - centerZ };
 						Fvector v2 = { (x + 1) * cellSize - centerX, h2, (z + 1) * cellSize - centerZ };
 						Fvector v3 = { x * cellSize - centerX, h3, (z + 1) * cellSize - centerZ };
 
-						chunk.BBox.modify(v0); chunk.BBox.modify(v2);
+						chunk.BBox.modify(v0);
+						chunk.BBox.modify(v2);
 
 						chunk.Vertices.push_back(v0);
 						chunk.Vertices.push_back(v1);
@@ -268,7 +305,7 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 					}
 					else
 					{
-						// Apply centering here too
+						// Применяем масштаб и центрирование по XZ
 						Fvector v0 = { x * cellSize - centerX, h0, z * cellSize - centerZ };
 						Fvector v1 = { (x + 1) * cellSize - centerX, h1, z * cellSize - centerZ };
 						Fvector v2 = { (x + 1) * cellSize - centerX, h2, (z + 1) * cellSize - centerZ };
@@ -277,7 +314,8 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 						if (h0 == 0.0f && h1 == 0.0f && h2 == 0.0f && h3 == 0.0f)
 							continue;
 
-						chunk.BBox.modify(v0); chunk.BBox.modify(v2);
+						chunk.BBox.modify(v0);
+						chunk.BBox.modify(v2);
 
 						chunk.Vertices.push_back(v0);
 						chunk.Vertices.push_back(v1);
@@ -295,6 +333,7 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 
 			chunk.IsFlat = use_flat;
 			chunk.IsValid = !chunk.Vertices.empty();
+
 			if (chunk.IsValid)
 				RenderData.Chunks.push_back(chunk);
 		}
