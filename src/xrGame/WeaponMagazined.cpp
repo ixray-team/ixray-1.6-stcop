@@ -1579,9 +1579,25 @@ void CWeaponMagazined::PlayAnimIdle()
 		return;
 
 	if (IsZoomed())
+	{
+		if (!m_bIsAimStarted && HudAnimationExist("anm_idle_aim_start"))
+		{
+			m_bIsAimStarted = true;
+			PlayHUDMotion(SetCurrentStateAnimation("anm_idle_aim_start"), true, GetState());
+			return;
+		}
+
 		PlayAnimAim();
+	}
 	else
 	{
+		if (m_bIsAimStarted && HudAnimationExist("anm_idle_aim_end"))
+		{
+			m_bIsAimStarted = false;
+			PlayHUDMotion(SetCurrentStateAnimation("anm_idle_aim_end"), true, GetState());
+			return;
+		}
+
 		if (TryPlayAnimIdle())
 		{
 			return;
