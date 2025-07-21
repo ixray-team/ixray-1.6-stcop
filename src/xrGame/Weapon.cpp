@@ -1626,6 +1626,12 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 			Reload();
 		}
 	}
+	else
+	{
+		bAmmotypeKeyPressed = false;
+		bReloadKeyPressed = false;
+	}
+
 	return true;
 }
 
