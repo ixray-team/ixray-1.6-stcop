@@ -8,6 +8,21 @@ CEngineExternal::CEngineExternal()
 	string_path fname;
 	FS.update_path(fname, "$game_config$", "engine_external.ltx");
 	pOptions = new CInifile(fname);
+
+	if (pOptions->section_exist("shaders_options"))
+	{
+		for (auto& Line : pOptions->r_section("shaders_options").Data)
+		{
+			if (Line.second != "0")
+			{
+				ShadersOptions[*Line.first] = *Line.second;
+			}
+			else
+			{
+				Msg("Disabled shader option: %s", *Line.first);
+			}
+		}
+	}
 }
 
 CEngineExternal::~CEngineExternal() 
