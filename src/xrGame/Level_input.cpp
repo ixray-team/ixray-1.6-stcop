@@ -23,6 +23,12 @@
 
 #include "../Include/xrRender/DebugRender.h"
 
+//Alundaio
+#include "pch_script.h"
+#include "../../xrScripts/script_engine.h" 
+using namespace luabind;
+//-Alundaio
+
 #ifdef DEBUG
 #	include "ai/monsters/BaseMonster/base_monster.h"
 
@@ -188,6 +194,13 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		)	return;
 
 	if ( game && game->OnKeyboardPress(get_binded_action(key)) )	return;
+
+	luabind::functor<bool>	funct;
+	if (ai().script_engine().functor("level_input.on_key_press", funct))
+	{
+		if (funct(key, _curr))
+			return;
+	}
 
 	if(_curr == kQUICK_SAVE && IsGameTypeSingle())
 	{
