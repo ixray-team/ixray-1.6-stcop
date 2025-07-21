@@ -54,15 +54,16 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 			pm						= &m_anims.back();
 			//base and alias name
 			pm->m_alias_name		= _b->first;
-			
-			if(_GetItemCount(anm.c_str())==1)
+
+			auto items_count = _GetItemCount(anm.c_str());
+			if (items_count == 1)
 			{
 				pm->m_base_name			= anm;
 				pm->m_additional_name	= anm;
 				pm->m_anim_speed = 1.f;
 			}else
 			{
-				R_ASSERT2(_GetItemCount(anm.c_str()) <= 3, anm.c_str());
+				//R_ASSERT2(_GetItemCount(anm.c_str()) <= 3, anm.c_str());
 				string512				str_item;
 				_GetItem(anm.c_str(),0,str_item);
 				pm->m_base_name			= str_item;
@@ -76,6 +77,14 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 				pm->m_anim_speed = strlen(str_item) > 0
 					? atof(str_item)
 					: 1.f;
+
+				if (items_count > 3) {
+					for (u32 j = 3; j < items_count; ++j) {
+						string512	str_item;
+						_GetItem(anm.c_str(), j, str_item);
+						pm->m_bone_parts.push_back(str_item);
+					}
+				}
 			}
 
 			//and load all motions for it
@@ -505,7 +514,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
 	u32 ret					= g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, speed);
 	
-	if(m_model->dcast_PKinematicsAnimated())
+	if(auto ka = m_model->dcast_PKinematicsAnimated())
 	{
 		shared_str item_anm_name;
 		if(anm->m_base_name!=anm->m_additional_name)
@@ -514,6 +523,18 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 			item_anm_name = M.name;
 
 		anim_play(item_anm_name, bMixIn, speed);
+
+		for (auto& bpart_anim : anm->m_bone_parts) {
+			MotionID M3 = ka->ID_Cycle_Safe(bpart_anim);
+
+			if (M3.valid()) {
+				CBlend* B = ka->PlayCycle(M3, bMixIn);
+				if (B) 
+				{
+					B->speed *= speed;
+				}
+			}
+		}
 	}
 
 	R_ASSERT2		(m_parent_hud_item, "parent hud item is nullptr");
