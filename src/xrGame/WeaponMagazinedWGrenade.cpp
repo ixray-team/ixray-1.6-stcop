@@ -703,11 +703,9 @@ void CWeaponMagazinedWGrenade::InitAddons()
 	}
 }
 
-bool	CWeaponMagazinedWGrenade::UseScopeTexture()
+bool CWeaponMagazinedWGrenade::UseScopeTexture()
 {
-	if (IsGrenadeLauncherAttached() && m_bGrenadeMode) return false;
-
-	return true;
+	return inherited::UseScopeTexture() && !m_bGrenadeMode;
 };
 
 float	CWeaponMagazinedWGrenade::CurrentZoomFactor()

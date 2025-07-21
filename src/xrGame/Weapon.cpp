@@ -35,6 +35,7 @@ BOOL	b_toggle_weapon_aim		= FALSE;
 extern CUIXml*	pWpnScopeXml;
 
 ENGINE_API extern float psHUD_FOV_def;
+ENGINE_API extern bool g_3d_scopes;
 
 CWeapon::CWeapon()
 {
@@ -2110,6 +2111,11 @@ void CWeapon::OnZoomOut()
 CUIWindow* CWeapon::ZoomTexture()
 {
 	return UseScopeTexture() ? m_UIScope : nullptr;
+}
+
+bool CWeapon::UseScopeTexture()
+{
+	return !g_3d_scopes;
 }
 
 void CWeapon::SwitchState(u32 S)

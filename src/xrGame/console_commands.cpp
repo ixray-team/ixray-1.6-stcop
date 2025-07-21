@@ -69,6 +69,7 @@ extern	u64		g_qwEStartGameTime;
 
 ENGINE_API
 extern	float	psHUD_FOV_def;
+ENGINE_API extern  bool	g_3d_scopes;
 extern	float	psSqueezeVelocity;
 extern	int		psLUA_GCSTEP;
 
@@ -2397,6 +2398,7 @@ void CCC_RegisterCommands()
 	//#ifdef DEBUG
 	CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 5.0f, 180.0f);
 	CMD4(CCC_Float, "fov", &g_fov, 5.0f, 180.0f);
+	CMD2(CCC_Boolean, "g_3d_scopes", &g_3d_scopes);
 	//#endif // DEBUG
 
 		// Demo
