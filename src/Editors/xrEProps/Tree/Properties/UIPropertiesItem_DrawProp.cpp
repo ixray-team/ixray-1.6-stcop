@@ -2,8 +2,31 @@
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
-#define TSTRING_COUNT 	10
+#define TSTRING_COUNT 10
+
 const LPCSTR TEXTUREString[TSTRING_COUNT] = { "Custom...","$null","$base0", "$base1" ,"$base2" ,"$base3" ,"$base4","$base5" ,"$base6" ,"$base7" };
+
+xr_string FloatTimeToStrTime(float time)
+{
+	int hours = static_cast<int>(time / 3600);
+	int minutes = static_cast<int>((time - hours * 3600) / 60);
+	int seconds = static_cast<int>(time - hours * 3600 - minutes * 60);
+
+	char buffer[32];
+	sprintf(buffer, "%02d:%02d:%02d", hours, minutes, seconds);
+	return xr_string(buffer);
+}
+
+float StrTimeToFloatTime(const char* time_str)
+{
+	int hours = 0, minutes = 0, seconds = 0;
+	if (sscanf(time_str, "%d:%d:%d", &hours, &minutes, &seconds) == 3)
+	{
+		return hours * 3600 + minutes * 60 + seconds;
+	}
+	return 0.f;
+}
+
 template<typename T>
 inline bool DrawNumeric(PropItem* item, bool& change, bool read_only)
 {
@@ -533,12 +556,37 @@ void UIPropertiesItem::DrawProp()
 				PropertiesFrom->m_EditTextValue = PItem;
 			}
 			PropertiesFrom->DrawEditText();
-		}
 			break;
-			/*case PROP_TIME:
-			break;*/
-		
-		
+		}
+		case PROP_TIME:
+		{
+			FloatValue* V = dynamic_cast<FloatValue*>(PItem->GetFrontValue()); R_ASSERT(V);
+			float EditValue = V->GetValue();
+			PItem->BeforeEdit<FloatValue, float>(EditValue);
+
+			xr_string TimeStr = FloatTimeToStrTime(EditValue);
+
+			string32 Buffer;
+			strncpy(Buffer, TimeStr.c_str(), sizeof(Buffer));
+			Buffer[sizeof(Buffer) - 1] = 0;
+
+			string128 PropName = {};
+			sprintf(PropName, "##time_value_%p", (void*)V);
+
+			if (ImGui::InputText(PropName, Buffer, sizeof(Buffer), ImGuiInputTextFlags_CharsNoBlank))
+			{
+				// Convert back to float when edited
+				float NewValue = StrTimeToFloatTime(Buffer);
+				if (PItem->AfterEdit<FloatValue, float>(NewValue))
+				{
+					if (PItem->ApplyValue<FloatValue, float>(NewValue))
+					{
+						PropertiesFrom->Modified();
+					}
+				}
+			}
+		}
+		break;
 		case PROP_GAMETYPE:
 		{
 			GameTypeValue* V = dynamic_cast<GameTypeValue*>(PItem->GetFrontValue()); R_ASSERT(V);
