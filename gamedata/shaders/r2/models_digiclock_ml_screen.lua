@@ -1,5 +1,5 @@
 function normal		(shader, t_base, t_second, t_detail)
-	shader:begin	("deffer_model_flat","model_digiclock_ml")
+	shader:begin	("deffer_model","model_digiclock_ml")
 			: fog		(false)
 			: emissive 	(true)
 	shader:sampler	("s_base")      :texture	(t_base)
@@ -7,7 +7,7 @@ function normal		(shader, t_base, t_second, t_detail)
 end
 
 function l_special	(shader, t_base, t_second, t_detail)
-	shader:begin	("shadow_direct_model",	"accum_emissivel")
+    shader:begin("deffer_model", "accum_emissive")
 			: zb 		(true,false)
 			: fog		(false)
 			: emissive 	(true)

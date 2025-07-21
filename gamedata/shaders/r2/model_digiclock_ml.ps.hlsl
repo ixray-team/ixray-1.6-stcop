@@ -16,7 +16,7 @@ f_deffer 	main	( p_flat I )
   I.tcdh.x = digit + (I.tcdh.x * 0.1);
 
   // diffuse
-  float3 D	= tbase		(I.tcdh);	// IN:  rgb.a
+  float3 D = tex2D(s_base, I.tcdh);	// IN:  rgb.a
 
   // hemi,sun,material
   float 	ms	= xmaterial		;
@@ -40,8 +40,8 @@ f_deffer 	main	( p_flat I )
 	D.rgb += t_noise.rgb*noise+0.1;
 
 	// 2. Standart output
-	O.Ne          = float4		(normalize((float3)I.N.xyz), 					h			);
-	O.position    = float4 	(I.position.xyz + O.Ne.xyz*def_virtualh/2.h, 	ms			);
+	O.N          = float4		(normalize((float3)I.N.xyz), 					h			);
+	O.P    = float4 	(I.position.xyz + O.N.xyz*def_virtualh/2.0f, 	ms			);
 	O.C			= float4		(D.rgb,											def_gloss	);	// OUT: rgb.gloss
 
 	return O;
