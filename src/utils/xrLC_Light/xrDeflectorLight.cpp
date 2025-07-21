@@ -392,7 +392,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 
 // Embree
 
-float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, Face* skip);
+float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip);
 
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable)
 {
