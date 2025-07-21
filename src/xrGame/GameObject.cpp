@@ -545,7 +545,7 @@ void CGameObject::setup_parent_ai_locations(bool assign_position)
 {
 //	CGameObject				*l_tpGameObject	= static_cast<CGameObject*>(H_Root());
 	VERIFY					(H_Parent());
-	CGameObject				*l_tpGameObject	= static_cast<CGameObject*>(H_Parent());
+	CGameObject				*l_tpGameObject	= H_Parent()->cast_game_object();
 	VERIFY					(l_tpGameObject);
 
 	// get parent's position
