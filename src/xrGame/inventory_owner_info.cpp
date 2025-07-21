@@ -18,11 +18,25 @@
 #include "alife_registry_wrappers.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "game_object_space.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 void  CInventoryOwner::OnEvent (NET_Packet& P, u16 type)
 {
 	switch (type)
 	{
+	case GE_MONEY:
+	{
+		u32 amount = P.r_u32();
+		if (InfinitiveMoney())
+		{
+			m_money = _max(m_money, amount);
+		}
+		else
+		{
+			m_money = amount;
+		}
+	}
+	break;
 	case GE_INFO_TRANSFER:
 		{
 			u16				id;
