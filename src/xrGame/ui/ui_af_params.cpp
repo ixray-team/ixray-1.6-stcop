@@ -30,6 +30,7 @@ CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 	m_af_slots = nullptr;
 
 	object_type = type;
+	m_Prop_line = nullptr;
 }
 
 CUIArtefactParams::~CUIArtefactParams()
@@ -103,11 +104,11 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 	CUIXmlInit::InitWindow( xml, base, 0, this );
 	xml.SetLocalRoot( base_node );
 	
-	m_Prop_line = new CUIStatic();
-	AttachChild( m_Prop_line );
-	m_Prop_line->SetAutoDelete( false );	
-	CUIXmlInit::InitStatic( xml, "prop_line", 0, m_Prop_line );
-
+	if (xml.NavigateToNode("prop_line"))
+	{
+		m_Prop_line = UIHelper::CreateStatic(xml, "prop_line", this);
+		m_Prop_line->SetAutoDelete(false);
+	}
 	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
 	if (enableArtDegradation)
 	{
@@ -143,6 +144,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		xml.SetLocalRoot( base_node );
 	}
 	
+	if (xml.NavigateToNode("af_slots"))
 	{
 		m_af_slots = new UIArtefactParamItem();
 		m_af_slots->Init(xml, "af_slots");
@@ -158,8 +160,17 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_additional_weight->Init( xml, "additional_weight" );
 		m_additional_weight->SetAutoDelete(false);
 
-		LPCSTR name = g_pStringTable->translate( "ui_inv_weight" ).c_str();
-		m_additional_weight->SetCaption( name );
+		// use either ui_inv_weight or ui_inv_outfit_additional_weight
+		// but set ui_inv_weight if both unavailable
+		LPCSTR name = g_pStringTable->translate("ui_inv_weight").c_str();
+		LPCSTR add_name = g_pStringTable->translate("ui_inv_outfit_additional_weight").c_str();
+		if (0 == xr_strcmp(name, "ui_inv_weight") &&
+			0 != xr_strcmp(add_name, "ui_inv_outfit_additional_weight"))
+		{
+			m_additional_weight->SetCaption(add_name);
+		}
+		else		
+			m_additional_weight->SetCaption( name );
 	}
 
 	xml.SetLocalRoot( stored_root );
@@ -173,7 +184,8 @@ bool CUIArtefactParams::Check(const shared_str& af_section)
 void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 {
 	DetachAll();
-	AttachChild( m_Prop_line );
+	if (m_Prop_line)
+		AttachChild( m_Prop_line );
 
 	CActor* actor = smart_cast<CActor*>( Level().CurrentViewEntity() );
 	if ( !actor )
@@ -181,9 +193,11 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 		return;
 	}
 
-	float val = 0.0f, max_val = 1.0f;
-	Fvector2 pos {0,0};
-	float h = m_Prop_line->GetWndPos().y+m_Prop_line->GetWndSize().y;
+	float val = 0.0f, max_val = 1.0f, h = 0.0f;
+	Fvector2 pos;
+	if (m_Prop_line)
+		h = m_Prop_line->GetWndPos().y + m_Prop_line->GetWndSize().y;
+
 	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
 
 	if (is_artefact() && enableArtDegradation)
@@ -240,7 +254,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 	else
 	{
 		u32 count = READ_IF_EXISTS(pSettings, r_u32, af_section, "artefact_count", 0);
-		if (count > 0)
+		if (count > 0 && m_af_slots)
 		{
 			m_af_slots->SetValue(count);
 
