@@ -286,7 +286,6 @@ public:
 	virtual void					glow_destroy(IRender_Glow* p_);
 
 	// Models
-	virtual void					model_Logging(BOOL bEnable);
 	virtual void					models_Prefetch();
 	virtual void					models_Clear(BOOL b_complete);
 
