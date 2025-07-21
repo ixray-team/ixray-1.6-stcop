@@ -36,4 +36,5 @@ public:
 protected:
 			void						Destroy						()								;
 private:
+	xr_set<shared_str>					hit_object_name;
 };
