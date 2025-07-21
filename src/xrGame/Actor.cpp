@@ -697,6 +697,7 @@ void	CActor::Hit(SHit* pHDS)
 					HDS.boneID
 					);
 			}
+			HitArtefactsCondition(HDS);
 			inherited::Hit(&HDS);
 		}
 
@@ -1585,10 +1586,6 @@ void CActor::UpdatePlayerView()
 }
 void CActor::UpdateConditionArtefacts()
 {
-	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
-	if (!enableArtDegradation)
-		return;
-
 	static u32 _tmr = 0;
 
 	if (_tmr && Device.dwTimeGlobal < _tmr)
@@ -1596,62 +1593,60 @@ void CActor::UpdateConditionArtefacts()
 
 	_tmr = Device.dwTimeGlobal + 2000;
 
-	auto it = inventory().m_belt.begin();
-	auto ite = inventory().m_belt.end();
-	for (; it != ite; ++it)
+	for (PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = smart_cast<CArtefact*>(*it);
-		if (artefact)
+		CArtefact* artefact = smart_cast<CArtefact*>(item);
+		if (artefact && artefact->DegradationRate())
 		{
-			float cond_loss = 0;
-			float val = 0;
+			float cond_loss = 0.0f;
+			float val = 0.0f;
 
 			if (conditions().GetHealth() < 1.0f)
 			{
 				val = artefact->m_fHealthRestoreSpeed;
-				if (val > 0)
+				if (val > 0.0f)
 					cond_loss += val * 0.2f;
 			}
 
-			if (conditions().GetRadiation() > 0)
+			if (conditions().GetRadiation() > 0.0f)
 			{
 				val = artefact->m_fRadiationRestoreSpeed;
-				if (val < 0)
-					cond_loss += std::abs(val) * 0.2f;
+				if (val < 0.0f)
+					cond_loss += abs(val) * 0.2f;
 			}
 
 			if (conditions().GetSatiety() < 1.0f)
 			{
 				val = artefact->m_fSatietyRestoreSpeed;
-				if (val > 0)
+				if (val > 0.0f)
 					cond_loss += val * 0.2f;
 			}
 
 			if (conditions().GetPower() < 1.0f)
 			{
 				val = artefact->m_fPowerRestoreSpeed;
-				if (val > 0)
+				if (val > 0.0f)
 					cond_loss += val * 0.2f;
 			}
 
-			if (conditions().BleedingSpeed() > 0)
+			if (conditions().BleedingSpeed() > 0.0f)
 			{
 				val = artefact->m_fBleedingRestoreSpeed;
-				if (val > 0)
+				if (val > 0.0f)
 					cond_loss += val * 0.2f;
 			}
 
 			val = artefact->AdditionalInventoryWeight();
-			if (val > 0)
+			if (val > 0.0f)
 			{
-				float diff = inventory().TotalWeight() - conditions().MaxWalkWeight() - (GetOutfit() ? GetOutfit()->m_additional_weight2 : 0);
-				if (diff > 0)
-					cond_loss += ((diff * 0.0001) / val);
+				float diff = inventory().TotalWeight() - conditions().MaxWalkWeight() - (GetOutfit() ? GetOutfit()->m_additional_weight2 : 0.0f);
+				if (diff > 0.0f)
+					cond_loss += ((diff * 0.0001f) / val);
 			}
 
-			if (cond_loss > 0)
+			if (cond_loss > 0.0f)
 			{
-				val = artefact->GetCondition() - (cond_loss * 1);
+				val = artefact->GetCondition() - (cond_loss * artefact->DegradationRate());
 				val -= artefact->GetCondition();
 				artefact->ChangeCondition(val);
 			}
@@ -1659,7 +1654,7 @@ void CActor::UpdateConditionArtefacts()
 	}
 }
 
-std::map<shared_str, float> imm_mul =
+xr_map<shared_str, float> imm_mul =
 {
 	{"light_burn_immunity", 1.2f},
 	{"burn_immunity", 1.2f},
@@ -1673,7 +1668,7 @@ std::map<shared_str, float> imm_mul =
 	{"fire_wound_immunity", 1.2f}
 };
 
-std::map<ALife::EHitType, shared_str> hit_to_section =
+xr_map<ALife::EHitType, shared_str> hit_to_section =
 {
 	{ALife::EHitType::eHitTypeLightBurn , "light_burn_immunity"},
 	{ALife::EHitType::eHitTypeBurn, "burn_immunity"},
@@ -1689,31 +1684,25 @@ std::map<ALife::EHitType, shared_str> hit_to_section =
 
 void CActor::HitArtefactsCondition(SHit& hit)
 {
-	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
-	if (!enableArtDegradation)
+	if (hit.power <= 0.0f)
 		return;
 
-	if (hit.power <= 0)
-		return;
-
-	auto it = inventory().m_belt.begin();
-	auto ite = inventory().m_belt.end();
-	for (; it != ite; ++it)
+	for (PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = smart_cast<CArtefact*>(*it);
-		if (artefact)
+		CArtefact* artefact = smart_cast<CArtefact*>(item);
+		if (artefact && artefact->DegradationRate())
 		{
 			shared_str hit_absorbation_sect = READ_IF_EXISTS(pSettings, r_string, artefact->m_section_id.c_str(), "hit_absorbation_sect", "");
 
 			if (hit_absorbation_sect.size() > 0)
 			{
 				shared_str imm_sect = hit_to_section[hit.hit_type];
-				float cond_loss = pSettings->line_exist(hit_absorbation_sect, imm_sect.c_str()) ? pSettings->r_float(hit_absorbation_sect, imm_sect.c_str()) : 0;
-				if (cond_loss > 0)
+				float cond_loss = pSettings->line_exist(hit_absorbation_sect, imm_sect.c_str()) ? pSettings->r_float(hit_absorbation_sect, imm_sect.c_str()) : 0.0f;
+				if (cond_loss > 0.0f)
 				{
 					cond_loss = (hit.power * imm_mul[imm_sect] * cond_loss);
 
-					float val = artefact->GetCondition() - (cond_loss * 1);
+					float val = artefact->GetCondition() - (cond_loss * artefact->DegradationRate());
 					val -= artefact->GetCondition();
 					artefact->ChangeCondition(val);
 				}
