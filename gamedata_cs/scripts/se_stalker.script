@@ -1,8 +1,8 @@
 --[[
-Изменения script_version:
-	3 - сохранение поля job_online
-	5 - сохранение поля was_in_smart_terrain
-	6 - сохранение поля death_droped
+РР·РјРµРЅРµРЅРёСЏ script_version:
+	3 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ job_online
+	5 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ was_in_smart_terrain
+	6 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ death_droped
 ]]
 
 class "se_stalker"	(cse_alife_human_stalker)
@@ -14,17 +14,17 @@ function se_stalker:__init (section) super (section)
 	self.smart_terrain_conditions = nil
 	self.smart_terrain_conditions_initialized = false
 
-	-- этот флаг берётся из работы смарта
-	-- true     = всегда в онлайне
-	-- false    = всегда в офлайне
-	-- condlist = условие, которое отпределяет true или false
-	-- nil      = смарту всё равно
+	-- СЌС‚РѕС‚ С„Р»Р°Рі Р±РµСЂС‘С‚СЃСЏ РёР· СЂР°Р±РѕС‚С‹ СЃРјР°СЂС‚Р°
+	-- true     = РІСЃРµРіРґР° РІ РѕРЅР»Р°Р№РЅРµ
+	-- false    = РІСЃРµРіРґР° РІ РѕС„Р»Р°Р№РЅРµ
+	-- condlist = СѓСЃР»РѕРІРёРµ, РєРѕС‚РѕСЂРѕРµ РѕС‚РїСЂРµРґРµР»СЏРµС‚ true РёР»Рё false
+	-- nil      = СЃРјР°СЂС‚Сѓ РІСЃС‘ СЂР°РІРЅРѕ
 	self.job_online          = nil
 	self.job_online_condlist = nil
 
-	self.death_droped = false --'Генерил ли персонаж выпадаемые предметы или нет.
+	self.death_droped = false --'Р“РµРЅРµСЂРёР» Р»Рё РїРµСЂСЃРѕРЅР°Р¶ РІС‹РїР°РґР°РµРјС‹Рµ РїСЂРµРґРјРµС‚С‹ РёР»Рё РЅРµС‚.
 
-		self.squad_id = nil --' ID Отряда, в котором зареген чувак.
+		self.squad_id = nil --' ID РћС‚СЂСЏРґР°, РІ РєРѕС‚РѕСЂРѕРј Р·Р°СЂРµРіРµРЅ С‡СѓРІР°Рє.
 
 	self.m_registred = false
 	self.sim_forced_online = false
@@ -185,19 +185,19 @@ function se_stalker:on_register()
 	self.tm		= task_manager.get_task_manager()
 		local obj_ini = self:spawn_ini()
 		self.m_registred = true
-	--' Проверяем может ли сталкер быть спец персонажем по заданиям.
+	--' РџСЂРѕРІРµСЂСЏРµРј РјРѕР¶РµС‚ Р»Рё СЃС‚Р°Р»РєРµСЂ Р±С‹С‚СЊ СЃРїРµС† РїРµСЂСЃРѕРЅР°Р¶РµРј РїРѕ Р·Р°РґР°РЅРёСЏРј.
 	if obj_ini:section_exist("task_manager") then
-		--' Проверяем от имени кого он может выдавать награду
+		--' РџСЂРѕРІРµСЂСЏРµРј РѕС‚ РёРјРµРЅРё РєРѕРіРѕ РѕРЅ РјРѕР¶РµС‚ РІС‹РґР°РІР°С‚СЊ РЅР°РіСЂР°РґСѓ
 		local reward = utils.cfg_get_string(obj_ini, "task_manager", "reward", self, false, "", nil)
 		if reward ~= nil then
-			--' Регистрируем себя как выдавателя наград!
+			--' Р РµРіРёСЃС‚СЂРёСЂСѓРµРј СЃРµР±СЏ РєР°Рє РІС‹РґР°РІР°С‚РµР»СЏ РЅР°РіСЂР°Рґ!
 			task_manager.get_task_manager():register_rewarder(self.id, reward)
 		end
 
-		--' Проверяем от имени кого он может выдавать квесты
+		--' РџСЂРѕРІРµСЂСЏРµРј РѕС‚ РёРјРµРЅРё РєРѕРіРѕ РѕРЅ РјРѕР¶РµС‚ РІС‹РґР°РІР°С‚СЊ РєРІРµСЃС‚С‹
 		local task = utils.cfg_get_string(obj_ini, "task_manager", "task", self, false, "", nil)
 		if task ~= nil then
-			--' Регистрируем себя как выдавателя квестов!
+			--' Р РµРіРёСЃС‚СЂРёСЂСѓРµРј СЃРµР±СЏ РєР°Рє РІС‹РґР°РІР°С‚РµР»СЏ РєРІРµСЃС‚РѕРІ!
 			task_manager.get_task_manager():register_tasker(self.id, task)
 		end
 
@@ -205,10 +205,10 @@ function se_stalker:on_register()
 
 
 	printf("registering stalker %s ", self:name())
-	--' Отключаем старый метод выбора смарттеррейнов.
+	--' РћС‚РєР»СЋС‡Р°РµРј СЃС‚Р°СЂС‹Р№ РјРµС‚РѕРґ РІС‹Р±РѕСЂР° СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅРѕРІ.
 	self:brain():can_choose_alife_tasks(false)
 
-		--' Выбор смарта
+		--' Р’С‹Р±РѕСЂ СЃРјР°СЂС‚Р°
 		local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
 		local smart_obj = self.board:get_smart_by_name(smart)
 		if smart_obj == nil then
@@ -262,7 +262,7 @@ end
 function se_stalker:update()
 	cse_alife_human_stalker.update(self)
 
-	-- Тут мы попробуем вызвать апдейт отряда
+	-- РўСѓС‚ РјС‹ РїРѕРїСЂРѕР±СѓРµРј РІС‹Р·РІР°С‚СЊ Р°РїРґРµР№С‚ РѕС‚СЂСЏРґР°
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
 		if squad ~= nil and squad.commander_id == self.id then
@@ -273,7 +273,7 @@ end
 
 
 
---'Торговец
+--'РўРѕСЂРіРѕРІРµС†
 class "se_trader" (cse_alife_trader)
 function se_trader:__init (section) super (section)
 end

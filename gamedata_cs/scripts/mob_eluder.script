@@ -1,11 +1,11 @@
 ----------------------------------------------------------------------------------------------------
 -- Mob Eluder
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Jim
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Jim
 ----------------------------------------------------------------------------------------------------
 
--- константы
-local DIST_TO_END	=	2.5			-- расстояние до конца пути
+-- РєРѕРЅСЃС‚Р°РЅС‚С‹
+local DIST_TO_END	=	2.5			-- СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РєРѕРЅС†Р° РїСѓС‚Рё
 
 class "mob_eluder"
 
@@ -66,18 +66,18 @@ function mob_eluder:update_distances()
 	local max_actor_dist	= 0
 	
 	for i = 1, patrol(self.st.path):count() do
-		-- вычислить свое расстояние
+		-- РІС‹С‡РёСЃР»РёС‚СЊ СЃРІРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ
 		self.self_distances[i]	= patrol(self.st.path):point(i-1):distance_to(self.object:position())
 		
-		-- запомнить максимальное свое расстояние
+		-- Р·Р°РїРѕРјРЅРёС‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЃРІРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ
 		if self.self_distances[i] > max_self_dist then
 			max_self_dist = self.self_distances[i]
 		end
 		
-		-- вычислить расстояние от актера
+		-- РІС‹С‡РёСЃР»РёС‚СЊ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ Р°РєС‚РµСЂР°
 		self.actor_distances[i]	= patrol(self.st.path):point(i-1):distance_to(db.actor:position())
 		
-		-- запомнить максимальное расстояние от актера
+		-- Р·Р°РїРѕРјРЅРёС‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ Р°РєС‚РµСЂР°
 		if self.actor_distances[i] > max_actor_dist then
 			max_actor_dist = self.actor_distances[i]
 		end
@@ -89,12 +89,12 @@ function mob_eluder:update_distances()
 	local k_self		= 1
 	local k_actor		= 2
 	
-	-- пересчитать в соответствии с максимальным расстоянием
+	-- РїРµСЂРµСЃС‡РёС‚Р°С‚СЊ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј СЂР°СЃСЃС‚РѕСЏРЅРёРµРј
 	for i = 1, patrol(self.st.path):count() do
 		self.self_distances[i]	= 1 - self.self_distances[i] / max_self_dist
 		self.actor_distances[i]	= self.actor_distances[i] / max_actor_dist
 		
-		-- сохранить результат
+		-- СЃРѕС…СЂР°РЅРёС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚
 		self.self_distances[i]	= self.actor_distances[i]*k_actor + self.self_distances[i]*k_self
 		
 		-- show
@@ -176,7 +176,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = mob_eluder(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 
@@ -191,13 +191,13 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	
 	storage.path				= utils.cfg_get_string(ini, section, "path",		 npc, false, "")
 	
-	-- время, которое монстр находится под скриптом
+	-- РІСЂРµРјСЏ, РєРѕС‚РѕСЂРѕРµ РјРѕРЅСЃС‚СЂ РЅР°С…РѕРґРёС‚СЃСЏ РїРѕРґ СЃРєСЂРёРїС‚РѕРј
 	storage.time_capture		= utils.cfg_get_number(ini, section, "time_capture", npc, false, 10)
-	-- время, которое монстр находится под унисхемой
+	-- РІСЂРµРјСЏ, РєРѕС‚РѕСЂРѕРµ РјРѕРЅСЃС‚СЂ РЅР°С…РѕРґРёС‚СЃСЏ РїРѕРґ СѓРЅРёСЃС…РµРјРѕР№
 	storage.time_release		= utils.cfg_get_number(ini, section, "time_release", npc, false, 10)
-	-- расстояние до актера, меньше которого, монстр переходит в унисхему
+	-- СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ Р°РєС‚РµСЂР°, РјРµРЅСЊС€Рµ РєРѕС‚РѕСЂРѕРіРѕ, РјРѕРЅСЃС‚СЂ РїРµСЂРµС…РѕРґРёС‚ РІ СѓРЅРёСЃС…РµРјСѓ
 	storage.min_dist			= utils.cfg_get_number(ini, section, "min_dist",	 npc, false, 5)
-	-- расстояние до актера, больше которого, монстр может перейти под скрипт
+	-- СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ Р°РєС‚РµСЂР°, Р±РѕР»СЊС€Рµ РєРѕС‚РѕСЂРѕРіРѕ, РјРѕРЅСЃС‚СЂ РјРѕР¶РµС‚ РїРµСЂРµР№С‚Рё РїРѕРґ СЃРєСЂРёРїС‚
 	storage.max_dist			= utils.cfg_get_number(ini, section, "max_dist",	 npc, false, 10)
 	
 end

@@ -1,7 +1,7 @@
 --[[------------------------------------------------------------------------------------------------------------------
 Smart terrain binder
-Нужен для того, чтобы серверный объект smart terrain получал обновления.
-Чугай Александр
+РќСѓР¶РµРЅ РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ СЃРµСЂРІРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚ smart terrain РїРѕР»СѓС‡Р°Р» РѕР±РЅРѕРІР»РµРЅРёСЏ.
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 --------------------------------------------------------------------------------------------------------------------]]
 
 function bind( obj )
@@ -36,7 +36,7 @@ function smart_terrain_binder:net_spawn( server_object )
 		return false
 	end
 
-	-- получить ссылку на настоящий серверный объект
+	-- РїРѕР»СѓС‡РёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РЅР°СЃС‚РѕСЏС‰РёР№ СЃРµСЂРІРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚
 	self.se_smart_terrain = alife():object( server_object.id )
 
 	db.add_zone( self.object )
@@ -57,7 +57,7 @@ function smart_terrain_binder:net_Relcase( obj )
 
 	if self.se_smart_terrain.npc_info[obj:id()] then
 		--self.se_smart_terrain.gulag:object_setup_offline( obj:id(), true )
-		-- TODO: Заменить на аналог
+		-- TODO: Р—Р°РјРµРЅРёС‚СЊ РЅР° Р°РЅР°Р»РѕРі
 	end
 end
 

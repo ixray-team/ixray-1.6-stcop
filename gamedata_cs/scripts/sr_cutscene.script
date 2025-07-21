@@ -1,11 +1,11 @@
 ----------------------------------------------------------------------------------------------------
 --' Cutscene trigger
 ----------------------------------------------------------------------------------------------------
---' локальные переменные
-local state_nowhere = 0 --' схема только что включилась
-local state_inside = 1  --' актер внутри
-local state_outside = 2 --' актер снаружи
---' Временные переменные
+--' Р»РѕРєР°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
+local state_nowhere = 0 --' СЃС…РµРјР° С‚РѕР»СЊРєРѕ С‡С‚Рѕ РІРєР»СЋС‡РёР»Р°СЃСЊ
+local state_inside = 1  --' Р°РєС‚РµСЂ РІРЅСѓС‚СЂРё
+local state_outside = 2 --' Р°РєС‚РµСЂ СЃРЅР°СЂСѓР¶Рё
+--' Р’СЂРµРјРµРЅРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 local object_cutscene = nil
 local storage_scene = nil
 
@@ -111,20 +111,20 @@ function cam_effector_set:select_effect()
 end
 --------------------------------------------------------------------------------
 class "action_cutscene"
---' инициализация объекта класса
+--' РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р° РєР»Р°СЃСЃР°
 function action_cutscene:__init(obj, storage)
 	self.object = obj
 	self.st = storage
 	self.ui_disabled = false
 	self.motion_id = 1
 end
---' инициализация схемы поведения
+--' РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС…РµРјС‹ РїРѕРІРµРґРµРЅРёСЏ
 function action_cutscene:reset_scheme()
-	self.state = state_nowhere --' еще неясно, находится ли персонаж в пределах пространственного ограничителя или нет
-    self.st.signals = {} --' обнуляем сигналы
+	self.state = state_nowhere --' РµС‰Рµ РЅРµСЏСЃРЅРѕ, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё РїРµСЂСЃРѕРЅР°Р¶ РІ РїСЂРµРґРµР»Р°С… РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµРЅРЅРѕРіРѕ РѕРіСЂР°РЅРёС‡РёС‚РµР»СЏ РёР»Рё РЅРµС‚
+    self.st.signals = {} --' РѕР±РЅСѓР»СЏРµРј СЃРёРіРЅР°Р»С‹
 	self.motion = nil
 end
---' функция обновления, вызываемая конвеером
+--' С„СѓРЅРєС†РёСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ, РІС‹Р·С‹РІР°РµРјР°СЏ РєРѕРЅРІРµРµСЂРѕРј
 function action_cutscene:update(delta)
     local state = self.state
 	if(self.object:inside(db.actor:center())) then
@@ -144,15 +144,15 @@ function action_cutscene:update(delta)
 		self.motion:stop_effect()
 		self.st.signals["cam_effector_stop"] = nil
 	end
-    --' выполняем архитектурное требование
+    --' РІС‹РїРѕР»РЅСЏРµРј Р°СЂС…РёС‚РµРєС‚СѓСЂРЅРѕРµ С‚СЂРµР±РѕРІР°РЅРёРµ
 	if(xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)) then
 		return
 	end
 end
---' тут нужно запустить сцену
+--' С‚СѓС‚ РЅСѓР¶РЅРѕ Р·Р°РїСѓСЃС‚РёС‚СЊ СЃС†РµРЅСѓ
 function action_cutscene:zone_enter()
 	self.state = state_inside
-    --' телепорт в выбранную точку
+    --' С‚РµР»РµРїРѕСЂС‚ РІ РІС‹Р±СЂР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ
     xr_effects.teleport_actor(db.actor, nil, {self.st.point, self.st.look})
 
 	if self.st.pp_effector ~= "nil.ppe" then
@@ -169,10 +169,10 @@ function action_cutscene:zone_enter()
 	storage_scene = self.st
 end
 function action_cutscene:zone_leave()
-    --' по идее больше ничего тут делать не надо
+    --' РїРѕ РёРґРµРµ Р±РѕР»СЊС€Рµ РЅРёС‡РµРіРѕ С‚СѓС‚ РґРµР»Р°С‚СЊ РЅРµ РЅР°РґРѕ
 	self.state = state_outside
 end
---' Выбор и начало отыгрыша следующего пролета
+--' Р’С‹Р±РѕСЂ Рё РЅР°С‡Р°Р»Рѕ РѕС‚С‹РіСЂС‹С€Р° СЃР»РµРґСѓСЋС‰РµРіРѕ РїСЂРѕР»РµС‚Р°
 function action_cutscene:select_next_motion()
 	local motion = self.st.cam_effector[self.motion_id]
 	if(cam_effector_sets[motion]==nil) then
@@ -185,7 +185,7 @@ function action_cutscene:select_next_motion()
 
 	self.motion_id = self.motion_id + 1
 end
---' Ивент об окончании пролета
+--' РРІРµРЅС‚ РѕР± РѕРєРѕРЅС‡Р°РЅРёРё РїСЂРѕР»РµС‚Р°
 function action_cutscene:cutscene_callback()
 	if(self.motion.state=="release") then
 		self.motion = nil
@@ -215,7 +215,7 @@ end
 --------------------------------------------------------------------------------
 function add_to_binder(npc, ini, scheme, section, storage)
 	local new_action = action_cutscene(npc, storage)
-	--' Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	--' Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 function set_scheme(obj, ini, scheme, section, gulag_name)

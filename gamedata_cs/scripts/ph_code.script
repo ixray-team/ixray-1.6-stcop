@@ -2,7 +2,7 @@
 -- Code Pad
 ----------------------------------------------------------------------------------------------------
 -- Author: Jim
--- Доработка: 2006 @ Oleg Kreptul (Haron) okreptul@yahoo.com
+-- Р”РѕСЂР°Р±РѕС‚РєР°: 2006 @ Oleg Kreptul (Haron) okreptul@yahoo.com
 ----------------------------------------------------------------------------------------------------
 function printf() end
 
@@ -51,7 +51,7 @@ end
 function add_to_binder(npc, ini, scheme, section, storage)
     local new_action = codepad(npc, storage)
 
-    -- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+    -- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
     xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 

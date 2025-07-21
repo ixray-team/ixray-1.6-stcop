@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------
---' Для того, что бы мир не был загружен кучей трупов,
---' будем их потихоньку удалять.
+--' Р”Р»СЏ С‚РѕРіРѕ, С‡С‚Рѕ Р±С‹ РјРёСЂ РЅРµ Р±С‹Р» Р·Р°РіСЂСѓР¶РµРЅ РєСѓС‡РµР№ С‚СЂСѓРїРѕРІ,
+--' Р±СѓРґРµРј РёС… РїРѕС‚РёС…РѕРЅСЊРєСѓ СѓРґР°Р»СЏС‚СЊ.
 --' Made by Distemper ----------------------------------------------------------------
 --' 11.02.08 ----------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------
@@ -41,11 +41,11 @@ local RB_manager = nil
 class "Crelease_body"
 
 function Crelease_body:__init()
-	self.release_objects_table = {} -- таблица "СТЕК" трупов
-	self.keep_items_table = {} -- таблица квестовых предметов
- 	self.body_max_count = 15 -- количество тел которое одновременно может находится в игре
-	self.current_object_id = 0 -- id только что убитого npc
-	--' Итерируемся по списку квестовых итемов.
+	self.release_objects_table = {} -- С‚Р°Р±Р»РёС†Р° "РЎРўР•Рљ" С‚СЂСѓРїРѕРІ
+	self.keep_items_table = {} -- С‚Р°Р±Р»РёС†Р° РєРІРµСЃС‚РѕРІС‹С… РїСЂРµРґРјРµС‚РѕРІ
+ 	self.body_max_count = 15 -- РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РµР» РєРѕС‚РѕСЂРѕРµ РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕ РјРѕР¶РµС‚ РЅР°С…РѕРґРёС‚СЃСЏ РІ РёРіСЂРµ
+	self.current_object_id = 0 -- id С‚РѕР»СЊРєРѕ С‡С‚Рѕ СѓР±РёС‚РѕРіРѕ npc
+	--' РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ СЃРїРёСЃРєСѓ РєРІРµСЃС‚РѕРІС‹С… РёС‚РµРјРѕРІ.
 	local snd_ini = ini_file("misc\\death_generic.ltx")
 	if not snd_ini:section_exist("keep_items") then
 		abort("There is no section [keep_items] in death_generic.ltx")
@@ -104,16 +104,16 @@ end
 function Crelease_body:inspection_result(obj)
 	for k,v in pairs(self.keep_items_table) do
 		if obj:object(self.keep_items_table[k]) ~= nil then
-			printf("Object << "..obj:name().." >> presence_in_keep_items_table") -- в инвентаре есть квестовый предмет
+			printf("Object << "..obj:name().." >> presence_in_keep_items_table") -- РІ РёРЅРІРµРЅС‚Р°СЂРµ РµСЃС‚СЊ РєРІРµСЃС‚РѕРІС‹Р№ РїСЂРµРґРјРµС‚
 			return false
 		end
 	end
 	if obj:character_community() == "arena_enemy" then
-		printf("Object << "..obj:name().." >> presence_in_survival_zone") -- надидится в "Арене"
+		printf("Object << "..obj:name().." >> presence_in_survival_zone") -- РЅР°РґРёРґРёС‚СЃСЏ РІ "РђСЂРµРЅРµ"
 		return false
 	end
 	if obj:story_id() < 65535 then
-		printf("Object << "..obj:name().." >> presence_in_story") -- помечен как сюжетный
+		printf("Object << "..obj:name().." >> presence_in_story") -- РїРѕРјРµС‡РµРЅ РєР°Рє СЃСЋР¶РµС‚РЅС‹Р№
 		return false
 	end
 	if self:check_for_known_info(obj) then

@@ -1,10 +1,10 @@
 --'******************************************************
---'*	Боевой отряд группировки.
---'*	Выполняемые функции:
---'*		- Атака смарта
---'*		- Защита смарта
---'*		- Сбор ресурса
---'*		- Перемещение между смартами
+--'*	Р‘РѕРµРІРѕР№ РѕС‚СЂСЏРґ РіСЂСѓРїРїРёСЂРѕРІРєРё.
+--'*	Р’С‹РїРѕР»РЅСЏРµРјС‹Рµ С„СѓРЅРєС†РёРё:
+--'*		- РђС‚Р°РєР° СЃРјР°СЂС‚Р°
+--'*		- Р—Р°С‰РёС‚Р° СЃРјР°СЂС‚Р°
+--'*		- РЎР±РѕСЂ СЂРµСЃСѓСЂСЃР°
+--'*		- РџРµСЂРµРјРµС‰РµРЅРёРµ РјРµР¶РґСѓ СЃРјР°СЂС‚Р°РјРё
 --'******************************************************
 --function printf()
 --end
@@ -40,42 +40,42 @@ function sim_squad_generic:__init(sim_board, player_id, squad_id)
 
 	--printf(" creating squad %s [%s]", self.squad_id, self.entity_id)
 	--callstack()
-	--' смарт, в котором сейчас находится отряд.
+	--' СЃРјР°СЂС‚, РІ РєРѕС‚РѕСЂРѕРј СЃРµР№С‡Р°СЃ РЅР°С…РѕРґРёС‚СЃСЏ РѕС‚СЂСЏРґ.
 	self.smart_id = nil
 
 		self.board = sim_board
 
-		self.squad_npc = {} --' Таблица бойцов отряда
-	self.commander_id = nil --' Коммандир отряда. На него нужно устанавливить мапспот.
-	self.current_spot_id = nil --' ID объекта на который сейчас установлен мапспот.
+		self.squad_npc = {} --' РўР°Р±Р»РёС†Р° Р±РѕР№С†РѕРІ РѕС‚СЂСЏРґР°
+	self.commander_id = nil --' РљРѕРјРјР°РЅРґРёСЂ РѕС‚СЂСЏРґР°. РќР° РЅРµРіРѕ РЅСѓР¶РЅРѕ СѓСЃС‚Р°РЅР°РІР»РёРІРёС‚СЊ РјР°РїСЃРїРѕС‚.
+	self.current_spot_id = nil --' ID РѕР±СЉРµРєС‚Р° РЅР° РєРѕС‚РѕСЂС‹Р№ СЃРµР№С‡Р°СЃ СѓСЃС‚Р°РЅРѕРІР»РµРЅ РјР°РїСЃРїРѕС‚.
 	self.npc_count = 0
 	self.online_object = {}
 	self.online_counter = 0
 
 	self.random_tasks = {}
 
-	--' Жив ли отряд
+	--' Р–РёРІ Р»Рё РѕС‚СЂСЏРґ
 	self.squad_alive = true
 
-	--' Находится ли отряд в онлайне или в оффлайне. Если хоть один НПС в оффлайне, то и весь сквад в оффлайне.
+	--' РќР°С…РѕРґРёС‚СЃСЏ Р»Рё РѕС‚СЂСЏРґ РІ РѕРЅР»Р°Р№РЅРµ РёР»Рё РІ РѕС„С„Р»Р°Р№РЅРµ. Р•СЃР»Рё С…РѕС‚СЊ РѕРґРёРЅ РќРџРЎ РІ РѕС„С„Р»Р°Р№РЅРµ, С‚Рѕ Рё РІРµСЃСЊ СЃРєРІР°Рґ РІ РѕС„С„Р»Р°Р№РЅРµ.
 	self.squad_online = false
 
-	--' Текущее действие
+	--' РўРµРєСѓС‰РµРµ РґРµР№СЃС‚РІРёРµ
 	self.current_action = nil
-	--' Ссылка на сим комбат
+	--' РЎСЃС‹Р»РєР° РЅР° СЃРёРј РєРѕРјР±Р°С‚
 	self.sim_combat_id = nil
-	--' Таймер, как долго мы не предпринимали активных действий
+	--' РўР°Р№РјРµСЂ, РєР°Рє РґРѕР»РіРѕ РјС‹ РЅРµ РїСЂРµРґРїСЂРёРЅРёРјР°Р»Рё Р°РєС‚РёРІРЅС‹С… РґРµР№СЃС‚РІРёР№
 	self.last_action_timer = game.get_game_time()
 
-	--' Сила отряда
+	--' РЎРёР»Р° РѕС‚СЂСЏРґР°
 	self.squad_power = 0
-	--' Дополнительная сила отряда в атаке
+	--' Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ СЃРёР»Р° РѕС‚СЂСЏРґР° РІ Р°С‚Р°РєРµ
 	self.squad_attack_power = 0
 
-	--' Флаг, зарегистрен ли сейчас сквад в каком то смарте.
+	--' Р¤Р»Р°Рі, Р·Р°СЂРµРіРёСЃС‚СЂРµРЅ Р»Рё СЃРµР№С‡Р°СЃ СЃРєРІР°Рґ РІ РєР°РєРѕРј С‚Рѕ СЃРјР°СЂС‚Рµ.
 	self.entered_smart = nil
 
-	--' Саундменеджер отряда
+	--' РЎР°СѓРЅРґРјРµРЅРµРґР¶РµСЂ РѕС‚СЂСЏРґР°
 	self.sound_manager = sound_manager.get_sound_manager("squad_"..squad_id)
 
 		-- Is map spot show disabled
@@ -86,11 +86,11 @@ function sim_squad_generic:__init(sim_board, player_id, squad_id)
 	self.items_spawned = false
 --	self.recover_task_given = false
 end
---' Инициализация
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 function sim_squad_generic:init_squad(smart)
 		self.box_items = self:init_box_items(smart)
 end
---' Инициализация предметов в ящике кампа
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїСЂРµРґРјРµС‚РѕРІ РІ СЏС‰РёРєРµ РєР°РјРїР°
 function sim_squad_generic:init_box_items(smart)
 	local community = self.player_id
 	local item_by_community = {}
@@ -199,11 +199,11 @@ function sim_squad_generic:spawn_box_items(smart_id)
 		self.items_spawned = true
 	end
 end
---' Создание чуваков в отряд
+--' РЎРѕР·РґР°РЅРёРµ С‡СѓРІР°РєРѕРІ РІ РѕС‚СЂСЏРґ
 function sim_squad_generic:create_npc(spawn_smart)
 	self.squad_power = 0
 
-	--' Высчитываем базовую позицию спауна
+	--' Р’С‹СЃС‡РёС‚С‹РІР°РµРј Р±Р°Р·РѕРІСѓСЋ РїРѕР·РёС†РёСЋ СЃРїР°СѓРЅР°
 	local base_spawn_position = spawn_smart.position
 	local base_lvi = spawn_smart.m_level_vertex_id
 	local base_gvi = spawn_smart.m_game_vertex_id
@@ -299,7 +299,7 @@ function sim_squad_generic:set_squad_relation(relation)
 		end
 	end
 end
---' Удаление персонажей отряда
+--' РЈРґР°Р»РµРЅРёРµ РїРµСЂСЃРѕРЅР°Р¶РµР№ РѕС‚СЂСЏРґР°
 function sim_squad_generic:clear_npc()
 	for k,v in pairs(self.squad_npc) do
 		local obj = alife():object(k)
@@ -310,14 +310,14 @@ function sim_squad_generic:clear_npc()
 	self.online_object = {}
 	self.online_counter = 0
 end
---' Удаление конкретного персонажа отряда
+--' РЈРґР°Р»РµРЅРёРµ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РѕС‚СЂСЏРґР°
 function sim_squad_generic:remove_npc(npc_id)
 	local npc = alife():object(npc_id)
 	self:on_npc_death(npc)
 	--printf("releasing object ["..npc:name().."]")
 	alife():release(npc, true)
 end
---' Убийство НПС
+--' РЈР±РёР№СЃС‚РІРѕ РќРџРЎ
 function sim_squad_generic:on_npc_death(npc)
 	self.squad_npc[npc.id] = nil
 	self.npc_count = self.npc_count - 1
@@ -332,7 +332,7 @@ function sim_squad_generic:on_npc_death(npc)
 	end
 
 	if self.commander_id == npc.id then
-		--' Нужно выбрать нового командира
+		--' РќСѓР¶РЅРѕ РІС‹Р±СЂР°С‚СЊ РЅРѕРІРѕРіРѕ РєРѕРјР°РЅРґРёСЂР°
 		for k,v in pairs(self.squad_npc) do
 			self.commander_id = k
 			break
@@ -349,7 +349,7 @@ function sim_squad_generic:on_npc_death(npc)
 	local tm = task_manager.get_task_manager()
 	if self.npc_count == 0 then
 		printf("REMOVING DEAD SQUAD %s", tostring(self.squad_id))
-		--' Если игрок был с квестом от отряда - фейлить его
+		--' Р•СЃР»Рё РёРіСЂРѕРє Р±С‹Р» СЃ РєРІРµСЃС‚РѕРј РѕС‚ РѕС‚СЂСЏРґР° - С„РµР№Р»РёС‚СЊ РµРіРѕ
 		print_table(self.random_tasks)
 		for k,v in pairs(self.random_tasks) do
 			local task = tm:get_task_by_entity_id(v)
@@ -384,7 +384,7 @@ function sim_squad_generic:on_npc_death(npc)
 	end
 	self:refresh()
 end
---' Назначение смарта
+--' РќР°Р·РЅР°С‡РµРЅРёРµ СЃРјР°СЂС‚Р°
 function sim_squad_generic:assign_smart(smart)
 	local old_smart = self.smart_id
 	self.smart_id = smart.id
@@ -416,7 +416,7 @@ function sim_squad_generic:assign_smart(smart)
 		end
 	end
 end
---' Рассчет дополнительной силы отряда в атаке
+--' Р Р°СЃСЃС‡РµС‚ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ СЃРёР»С‹ РѕС‚СЂСЏРґР° РІ Р°С‚Р°РєРµ
 function sim_squad_generic:calculate_attack_power(set_val)
 	if set_val ~= nil then
 		self.squad_attack_power = set_val
@@ -429,7 +429,7 @@ function sim_squad_generic:calculate_attack_power(set_val)
 		abort("Player time activity doesnt exist for [%s]", player.player_name)
 	end
 
-	-- Увеличиваем силу отряда пропорционально времени ожидания. В таблицах забито повышение за 1 час ожидания.
+	-- РЈРІРµР»РёС‡РёРІР°РµРј СЃРёР»Сѓ РѕС‚СЂСЏРґР° РїСЂРѕРїРѕСЂС†РёРѕРЅР°Р»СЊРЅРѕ РІСЂРµРјРµРЅРё РѕР¶РёРґР°РЅРёСЏ. Р’ С‚Р°Р±Р»РёС†Р°С… Р·Р°Р±РёС‚Рѕ РїРѕРІС‹С€РµРЅРёРµ Р·Р° 1 С‡Р°СЃ РѕР¶РёРґР°РЅРёСЏ.
 	local additional_power = player_time_activity[level.get_time_hours()]*game.get_game_time():diffSec(self.last_action_timer)/3600
 
 --	printf("squad[%s], last_time[%s], curr_time[%s], result[%s]", self.squad_id,
@@ -442,10 +442,10 @@ function sim_squad_generic:calculate_attack_power(set_val)
 	end
 	self.last_action_timer = game.get_game_time()
 end
---' Апдейт отряда
+--' РђРїРґРµР№С‚ РѕС‚СЂСЏРґР°
 function sim_squad_generic:update()
 	--printf("Squad[%s] UPDATE", self.squad_id)
-	--' Если у нас есть незавершенное действие - ждем пока оно завершится.
+	--' Р•СЃР»Рё Сѓ РЅР°СЃ РµСЃС‚СЊ РЅРµР·Р°РІРµСЂС€РµРЅРЅРѕРµ РґРµР№СЃС‚РІРёРµ - Р¶РґРµРј РїРѕРєР° РѕРЅРѕ Р·Р°РІРµСЂС€РёС‚СЃСЏ.
 	self.sound_manager:update()
 	if self.current_action ~= nil then
 		--printf("[%s] CURRENT ACTION [%s]", self.squad_id, self.current_action.name)
@@ -457,7 +457,7 @@ function sim_squad_generic:update()
 		self.current_action = nil
 	end
 
-	--' Если у нас нет текущей цели - просим выдать нам задание.
+	--' Р•СЃР»Рё Сѓ РЅР°СЃ РЅРµС‚ С‚РµРєСѓС‰РµР№ С†РµР»Рё - РїСЂРѕСЃРёРј РІС‹РґР°С‚СЊ РЅР°Рј Р·Р°РґР°РЅРёРµ.
 	self:find_target()
 	self:get_next_action()
 	self:refresh()
@@ -466,13 +466,13 @@ function sim_squad_generic:update()
 		self:spawn_box_items(self.smart_id)
 	end
 end
---' Получение следующего экшна на выполнение
+--' РџРѕР»СѓС‡РµРЅРёРµ СЃР»РµРґСѓСЋС‰РµРіРѕ СЌРєС€РЅР° РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ
 function sim_squad_generic:get_next_action()
 	local smart = self.board.smarts[self.smart_id].smrt
 	--printf("[%s] GET NEXT ACTION [%s]", self.squad_id, tostring(smart.combat_manager:point_under_attack()))
 	--callstack()
 
-	--' Если отряд находится в точке, на которую идет атака - то ему нельзя покидать эту точку.
+	--' Р•СЃР»Рё РѕС‚СЂСЏРґ РЅР°С…РѕРґРёС‚СЃСЏ РІ С‚РѕС‡РєРµ, РЅР° РєРѕС‚РѕСЂСѓСЋ РёРґРµС‚ Р°С‚Р°РєР° - С‚Рѕ РµРјСѓ РЅРµР»СЊР·СЏ РїРѕРєРёРґР°С‚СЊ СЌС‚Сѓ С‚РѕС‡РєСѓ.
 	if(db.actor) and not self.board.simulation_started then
 		--printf("[%s] sim not started", self.squad_id)
 		self.current_action = sim_stay_point(self, true)
@@ -497,15 +497,15 @@ function sim_squad_generic:get_next_action()
 
 	local attack_threshold = self.squad_power + self.squad_attack_power
 
-	--' Условие что мы атакуем по квесту.
+	--' РЈСЃР»РѕРІРёРµ С‡С‚Рѕ РјС‹ Р°С‚Р°РєСѓРµРј РїРѕ РєРІРµСЃС‚Сѓ.
 	local tm = task_manager.get_task_manager()
 	local player = self.board.players[self.player_id]
-	--' Если мы выдали игроку задание - то идем атаковать в любом случае
+	--' Р•СЃР»Рё РјС‹ РІС‹РґР°Р»Рё РёРіСЂРѕРєСѓ Р·Р°РґР°РЅРёРµ - С‚Рѕ РёРґРµРј Р°С‚Р°РєРѕРІР°С‚СЊ РІ Р»СЋР±РѕРј СЃР»СѓС‡Р°Рµ
 	for k,task in pairs(tm.inited_tasks) do
 		--printf("Squad [%s] check task %s(%s) [%s]", self.squad_id, task.type, task.name, task.status)
 		if task.status == "selected" then
 			if task.src_obj == self.squad_id  then
-				-- Этот таск выдали мы
+				-- Р­С‚РѕС‚ С‚Р°СЃРє РІС‹РґР°Р»Рё РјС‹
 				local target_obj = self.board.smarts[task.target].smrt
 				--printf("Squad [%s] Found player task. [%s]->[%s]", self.squad_id, task.type, target_obj:name())
 				target_smart = target_obj
@@ -523,14 +523,14 @@ function sim_squad_generic:get_next_action()
 	end
 
 
-	--' Простраиваем путь к цели без учета врага
-	--' Простраиваем путь к цели с учетом врага
-	--' Анализируем - стоим на месте или идем в след точку пути.
-	--' Устанавливаем действие согласно выбранной стратегии.
+	--' РџСЂРѕСЃС‚СЂР°РёРІР°РµРј РїСѓС‚СЊ Рє С†РµР»Рё Р±РµР· СѓС‡РµС‚Р° РІСЂР°РіР°
+	--' РџСЂРѕСЃС‚СЂР°РёРІР°РµРј РїСѓС‚СЊ Рє С†РµР»Рё СЃ СѓС‡РµС‚РѕРј РІСЂР°РіР°
+	--' РђРЅР°Р»РёР·РёСЂСѓРµРј - СЃС‚РѕРёРј РЅР° РјРµСЃС‚Рµ РёР»Рё РёРґРµРј РІ СЃР»РµРґ С‚РѕС‡РєСѓ РїСѓС‚Рё.
+	--' РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РґРµР№СЃС‚РІРёРµ СЃРѕРіР»Р°СЃРЅРѕ РІС‹Р±СЂР°РЅРЅРѕР№ СЃС‚СЂР°С‚РµРіРёРё.
 	local clear_path = self.board:find_path(smart.id, target_smart.id, self)
 	local next_point = clear_path[1]
 
-	-- Если у игрока есть квест на эту точку - повышаем желание атаковать.
+	-- Р•СЃР»Рё Сѓ РёРіСЂРѕРєР° РµСЃС‚СЊ РєРІРµСЃС‚ РЅР° СЌС‚Сѓ С‚РѕС‡РєСѓ - РїРѕРІС‹С€Р°РµРј Р¶РµР»Р°РЅРёРµ Р°С‚Р°РєРѕРІР°С‚СЊ.
 	self.attacking_by_quest = nil
 	local task = task_manager.get_task_manager():get_tasks_by_smart(next_point.id)
 	if task ~= nil then
@@ -539,7 +539,7 @@ function sim_squad_generic:get_next_action()
 			 task.community == self.player_id
 		then
 			if target_smart ~= nil and task.target == next_point.id then
-				-- Если таск выдан на нашу цель
+				-- Р•СЃР»Рё С‚Р°СЃРє РІС‹РґР°РЅ РЅР° РЅР°С€Сѓ С†РµР»СЊ
 				self.attacking_by_quest = task.entity_id
 				attack_threshold = 999
 			end
@@ -553,10 +553,10 @@ function sim_squad_generic:get_next_action()
 
 
 	if next_point.value == 0 then
-		--' Мы уже пришли в точку
+		--' РњС‹ СѓР¶Рµ РїСЂРёС€Р»Рё РІ С‚РѕС‡РєСѓ
 		self.current_action = sim_stay_point(self)
 	elseif next_point.value < attack_threshold then
-		-- Проверяем, если на точку выдана отсроченная атака - мы остаемся и ждем ее завершения.
+		-- РџСЂРѕРІРµСЂСЏРµРј, РµСЃР»Рё РЅР° С‚РѕС‡РєСѓ РІС‹РґР°РЅР° РѕС‚СЃСЂРѕС‡РµРЅРЅР°СЏ Р°С‚Р°РєР° - РјС‹ РѕСЃС‚Р°РµРјСЃСЏ Рё Р¶РґРµРј РµРµ Р·Р°РІРµСЂС€РµРЅРёСЏ.
 		local exist_task_type = nil
 		local exist_task_community = nil
 		local task = task_manager.get_task_manager():get_tasks_by_smart(next_point.id)
@@ -572,7 +572,7 @@ function sim_squad_generic:get_next_action()
 				exist_task_type == "capture_smart" and
 				exist_task_community ~= self.player_id
 		then
-			-- На точку выдано задание capture_smart от чужой группировки
+			-- РќР° С‚РѕС‡РєСѓ РІС‹РґР°РЅРѕ Р·Р°РґР°РЅРёРµ capture_smart РѕС‚ С‡СѓР¶РѕР№ РіСЂСѓРїРїРёСЂРѕРІРєРё
 			self.current_action = sim_stay_point(self)
 		else
 			if player.brain.use_delay_attack == true and
@@ -588,7 +588,7 @@ function sim_squad_generic:get_next_action()
 						break
 					end
 				end
-				-- Если мы нападаем на неврага к игроку и мы можем использовать отстроченную атаку - остаемся в точке.
+				-- Р•СЃР»Рё РјС‹ РЅР°РїР°РґР°РµРј РЅР° РЅРµРІСЂР°РіР° Рє РёРіСЂРѕРєСѓ Рё РјС‹ РјРѕР¶РµРј РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РѕС‚СЃС‚СЂРѕС‡РµРЅРЅСѓСЋ Р°С‚Р°РєСѓ - РѕСЃС‚Р°РµРјСЃСЏ РІ С‚РѕС‡РєРµ.
 				if has_suitable_target then
 					self.current_action = sim_stay_point(self)
 					self.current_action.delay_attack_id = next_point.id
@@ -603,7 +603,7 @@ function sim_squad_generic:get_next_action()
 			end
 		end
 	else
-		--' Иначе стоим на месте
+		--' РРЅР°С‡Рµ СЃС‚РѕРёРј РЅР° РјРµСЃС‚Рµ
 		self.current_action = sim_stay_point(self)
 		self.current_action.next_point_id = next_point.id
 		self:calculate_attack_power()
@@ -612,11 +612,11 @@ function sim_squad_generic:get_next_action()
 	self.current_action:make()
 	--self:refresh()
 end
---' Возвращает скриптовую цель.
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРєСЂРёРїС‚РѕРІСѓСЋ С†РµР»СЊ.
 function sim_squad_generic:get_script_target()
 	return nil
 end
---' Поиск цели
+--' РџРѕРёСЃРє С†РµР»Рё
 function sim_squad_generic:find_target()
 	local player = self.board.players[self.player_id]
 	local tt = player:find_target(self)
@@ -625,22 +625,22 @@ function sim_squad_generic:find_target()
 	end
 end
 
---' Поиск возможностей для различных случайных заданий
+--' РџРѕРёСЃРє РІРѕР·РјРѕР¶РЅРѕСЃС‚РµР№ РґР»СЏ СЂР°Р·Р»РёС‡РЅС‹С… СЃР»СѓС‡Р°Р№РЅС‹С… Р·Р°РґР°РЅРёР№
 function sim_squad_generic:init_squad_task()
 	local tm = task_manager.get_task_manager()
 	local player = self.board.players[self.player_id]
-	--' Перед обнулением анрегистрим таск
+	--' РџРµСЂРµРґ РѕР±РЅСѓР»РµРЅРёРµРј Р°РЅСЂРµРіРёСЃС‚СЂРёРј С‚Р°СЃРє
 	local recover_task = self.random_tasks[3]
 	self.random_tasks = {}
-	--' Проверяем рандом таски
+	--' РџСЂРѕРІРµСЂСЏРµРј СЂР°РЅРґРѕРј С‚Р°СЃРєРё
 	local enemy_quan = 0
 
 	local smart = self.board.smarts[self.smart_id].smrt
-		--' Если мы последний отряд в важной точке - не пытаться захватывать соседние
+		--' Р•СЃР»Рё РјС‹ РїРѕСЃР»РµРґРЅРёР№ РѕС‚СЂСЏРґ РІ РІР°Р¶РЅРѕР№ С‚РѕС‡РєРµ - РЅРµ РїС‹С‚Р°С‚СЊСЃСЏ Р·Р°С…РІР°С‚С‹РІР°С‚СЊ СЃРѕСЃРµРґРЅРёРµ
 		--printf("Init squad task %s = %s", self.squad_id, self.board:get_smart_population(smart))
 	if self.board:get_smart_population(smart) > 1 and self:get_script_target() == nil then
 		for k,v in pairs(self.board:get_nearest_smarts(smart)) do
-			--' Если в соседней точке есть враги - то самый раз выдать на него случайное задание!
+			--' Р•СЃР»Рё РІ СЃРѕСЃРµРґРЅРµР№ С‚РѕС‡РєРµ РµСЃС‚СЊ РІСЂР°РіРё - С‚Рѕ СЃР°РјС‹Р№ СЂР°Р· РІС‹РґР°С‚СЊ РЅР° РЅРµРіРѕ СЃР»СѓС‡Р°Р№РЅРѕРµ Р·Р°РґР°РЅРёРµ!
 			if sim_board.is_point_avail(v, v.player_id) and v.player_name ~= "none" and v.player_name ~= self.player_id then
 				enemy_quan = enemy_quan + 1
 				local task = tm:select_task("capture_smart", v, player.player_name)
@@ -672,18 +672,18 @@ function sim_squad_generic:init_squad_task()
 	end
 
 
-		--' После того как мы сгенерили рандом таски - надо выбрать из них наиболее важный.
+		--' РџРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РјС‹ СЃРіРµРЅРµСЂРёР»Рё СЂР°РЅРґРѕРј С‚Р°СЃРєРё - РЅР°РґРѕ РІС‹Р±СЂР°С‚СЊ РёР· РЅРёС… РЅР°РёР±РѕР»РµРµ РІР°Р¶РЅС‹Р№.
 --    if #self.random_tasks > 0 then
 --        table.sort(self.random_tasks, function (a,b) return a.prior > b.prior end)
 --    end
 
 end
---' Вызыввается при выдаче сквадом таска
+--' Р’С‹Р·С‹РІРІР°РµС‚СЃСЏ РїСЂРё РІС‹РґР°С‡Рµ СЃРєРІР°РґРѕРј С‚Р°СЃРєР°
 function sim_squad_generic:give_squad_task(target_smart)
 	printf("GIVE SQUAD TASK %s", self.squad_id)
 	local tm = task_manager.get_task_manager()
-	-- Смотрим, а есть ли уже какой то таск на эту точку.
-	-- Если есть, отменяем его.
+	-- РЎРјРѕС‚СЂРёРј, Р° РµСЃС‚СЊ Р»Рё СѓР¶Рµ РєР°РєРѕР№ С‚Рѕ С‚Р°СЃРє РЅР° СЌС‚Сѓ С‚РѕС‡РєСѓ.
+	-- Р•СЃР»Рё РµСЃС‚СЊ, РѕС‚РјРµРЅСЏРµРј РµРіРѕ.
 	local ktask = task_manager.get_task_manager():get_tasks_by_smart(target_smart)
 	if ktask ~= nil then
 		if ktask.type ~= "capture_smart" and
@@ -696,16 +696,16 @@ function sim_squad_generic:give_squad_task(target_smart)
 	self.current_action = nil
 end
 
---' Может ли отряд стрелят, находясь в кавере в подготовительной фазе
+--' РњРѕР¶РµС‚ Р»Рё РѕС‚СЂСЏРґ СЃС‚СЂРµР»СЏС‚, РЅР°С…РѕРґСЏСЃСЊ РІ РєР°РІРµСЂРµ РІ РїРѕРґРіРѕС‚РѕРІРёС‚РµР»СЊРЅРѕР№ С„Р°Р·Рµ
 function sim_squad_generic:cover_attack()
 	--printf("squad %s. cover_attack.", self.squad_id)
 	local player = self.board.players[self.player_id]
-	--' Не можем атаковать если нет сим комбата
+	--' РќРµ РјРѕР¶РµРј Р°С‚Р°РєРѕРІР°С‚СЊ РµСЃР»Рё РЅРµС‚ СЃРёРј РєРѕРјР±Р°С‚Р°
 	if self.sim_combat_id == nil then
 		return false
 	end
 
-	-- Если мы монстры или зомби или монолит - нет подготовительной фазы
+	-- Р•СЃР»Рё РјС‹ РјРѕРЅСЃС‚СЂС‹ РёР»Рё Р·РѕРјР±Рё РёР»Рё РјРѕРЅРѕР»РёС‚ - РЅРµС‚ РїРѕРґРіРѕС‚РѕРІРёС‚РµР»СЊРЅРѕР№ С„Р°Р·С‹
 	if player.brain.use_cover_attack ~= true then
 		return false
 	end
@@ -713,7 +713,7 @@ function sim_squad_generic:cover_attack()
 	local sim_combat = self.board.smarts[self.sim_combat_id].smrt.combat_manager
 
 	local my_enemy = sim_combat:get_squad_enemy(self)
-	-- Если мы сражаемся с монстрами или зомбями или монолитом - не стреляем в подготовительной фазе
+	-- Р•СЃР»Рё РјС‹ СЃСЂР°Р¶Р°РµРјСЃСЏ СЃ РјРѕРЅСЃС‚СЂР°РјРё РёР»Рё Р·РѕРјР±СЏРјРё РёР»Рё РјРѕРЅРѕР»РёС‚РѕРј - РЅРµ СЃС‚СЂРµР»СЏРµРј РІ РїРѕРґРіРѕС‚РѕРІРёС‚РµР»СЊРЅРѕР№ С„Р°Р·Рµ
 	if my_enemy == nil then
 		return false
 	end
@@ -724,7 +724,7 @@ function sim_squad_generic:cover_attack()
 
 	local my_squad_stage = sim_combat:get_squad_stage(self)
 	local enemy_squad_stage = sim_combat:get_squad_stage(my_enemy)
-	-- Если мы сражаемся с НПС
+	-- Р•СЃР»Рё РјС‹ СЃСЂР°Р¶Р°РµРјСЃСЏ СЃ РќРџРЎ
 	--printf("  combat quest %s", tostring(sim_combat.combat_quest))
 	if sim_combat.combat_quest == "capture" then
 		--printf("  my_squad_stage %s", tostring(my_squad_stage))
@@ -735,11 +735,11 @@ function sim_squad_generic:cover_attack()
 			if enemy_squad_stage == "defence" then
 				--printf("  spoted_shouted %s", tostring(self.spoted_shouted))
 				self:issue_order("alife_we_spoted")
-				-- Квест от отряда
-				-- Соперник в обороне - стреляем
+				-- РљРІРµСЃС‚ РѕС‚ РѕС‚СЂСЏРґР°
+				-- РЎРѕРїРµСЂРЅРёРє РІ РѕР±РѕСЂРѕРЅРµ - СЃС‚СЂРµР»СЏРµРј
 				return true
 			else
-				-- Соперник нас не видит - не стреляем
+				-- РЎРѕРїРµСЂРЅРёРє РЅР°СЃ РЅРµ РІРёРґРёС‚ - РЅРµ СЃС‚СЂРµР»СЏРµРј
 				return false
 			end
 		end
@@ -749,14 +749,14 @@ function sim_squad_generic:cover_attack()
 		elseif my_squad_stage == "defence" and enemy_squad_stage == "wait" then
 			return true
 		end
-		-- Нет квеста - стреляем
-		-- Квест на оборону - стреляем
-		-- Квест от группировки - стреляем
+		-- РќРµС‚ РєРІРµСЃС‚Р° - СЃС‚СЂРµР»СЏРµРј
+		-- РљРІРµСЃС‚ РЅР° РѕР±РѕСЂРѕРЅСѓ - СЃС‚СЂРµР»СЏРµРј
+		-- РљРІРµСЃС‚ РѕС‚ РіСЂСѓРїРїРёСЂРѕРІРєРё - СЃС‚СЂРµР»СЏРµРј
 		return false
 	end
 end
 
---' Озвучивание приказов
+--' РћР·РІСѓС‡РёРІР°РЅРёРµ РїСЂРёРєР°Р·РѕРІ
 function sim_squad_generic:issue_order(order)
 	--callstack()
 	--printf(" squad %s issue_order [%s]", self.squad_id, tostring(order))
@@ -770,7 +770,7 @@ function sim_squad_generic:issue_order(order)
 	if order == "attack" then
 		xr_sound.set_sound_play(self.commander_id, "alife_start_attack")
 	elseif order == "prepare" then
-		--' Начинаем разыгрывать историю "Приготовиться к атаке"
+		--' РќР°С‡РёРЅР°РµРј СЂР°Р·С‹РіСЂС‹РІР°С‚СЊ РёСЃС‚РѕСЂРёСЋ "РџСЂРёРіРѕС‚РѕРІРёС‚СЊСЃСЏ Рє Р°С‚Р°РєРµ"
 		if self.attacking_by_quest ~= nil then
 			self.sound_manager:set_storyteller(self.commander_id)
 			self.sound_manager:set_story("squad_prepare_attack")
@@ -832,7 +832,7 @@ end
 function sim_squad_generic:save(packet)
 	set_save_marker(packet, "save", false, "sim_squad_generic")
 
-	-- Сохранение позиции отряда
+	-- РЎРѕС…СЂР°РЅРµРЅРёРµ РїРѕР·РёС†РёРё РѕС‚СЂСЏРґР°
 	if self.smart_id == nil then
 		packet:w_u16(-1)
 	else
@@ -867,12 +867,12 @@ function sim_squad_generic:save(packet)
 		packet:w_u16(v)
 	end
 
-	-- Сохранение членов отряда
+	-- РЎРѕС…СЂР°РЅРµРЅРёРµ С‡Р»РµРЅРѕРІ РѕС‚СЂСЏРґР°
 	packet:w_u8(self.npc_count)
-	packet:w_float(self.squad_power)	--Вариант для оптимизации, можно не сохранять, а считат на загрузке
+	packet:w_float(self.squad_power)	--Р’Р°СЂРёР°РЅС‚ РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё, РјРѕР¶РЅРѕ РЅРµ СЃРѕС…СЂР°РЅСЏС‚СЊ, Р° СЃС‡РёС‚Р°С‚ РЅР° Р·Р°РіСЂСѓР·РєРµ
 	packet:w_u16(self.commander_id)
 	n = 0
-	for k,v in pairs(self.squad_npc) do		--Вариант для оптимизации, можно сохранять в НПС ссылку на сквад
+	for k,v in pairs(self.squad_npc) do		--Р’Р°СЂРёР°РЅС‚ РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё, РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ РІ РќРџРЎ СЃСЃС‹Р»РєСѓ РЅР° СЃРєРІР°Рґ
 		n = n + 1
 	end
 	packet:w_u8(n)
@@ -898,11 +898,11 @@ function sim_squad_generic:save(packet)
 		packet:w_bool(false)
 	end
 
-	-- Сохранение таймера действия
+	-- РЎРѕС…СЂР°РЅРµРЅРёРµ С‚Р°Р№РјРµСЂР° РґРµР№СЃС‚РІРёСЏ
 	utils.w_CTime(packet, self.last_action_timer)
 	packet:w_u16(self.squad_attack_power)
 
-	-- Сохранение действия отряда
+	-- РЎРѕС…СЂР°РЅРµРЅРёРµ РґРµР№СЃС‚РІРёСЏ РѕС‚СЂСЏРґР°
 	if self.current_action == nil then
 		packet:w_bool(false)
 	else
@@ -953,7 +953,7 @@ function sim_squad_generic:load(packet, registred)
 		self.random_tasks[k] = v
 	end
 
-	-- Загрузка членов отряда
+	-- Р—Р°РіСЂСѓР·РєР° С‡Р»РµРЅРѕРІ РѕС‚СЂСЏРґР°
 	self.npc_count = packet:r_u8()
 	--printf("load squad %s npc_count %s", self.squad_id, tostring(self.npc_count))
 
@@ -967,7 +967,7 @@ function sim_squad_generic:load(packet, registred)
 	for i = 1,n do
 		local k = packet:r_u16()
 		self.squad_npc[k] = k
-		-- Добавить в саундменеджер.
+		-- Р”РѕР±Р°РІРёС‚СЊ РІ СЃР°СѓРЅРґРјРµРЅРµРґР¶РµСЂ.
 		self.sound_manager:register_npc(k)
 	end
 
@@ -987,11 +987,11 @@ function sim_squad_generic:load(packet, registred)
 
 	self.spoted_shouted = packet:r_bool()
 
-	-- Загрузка таймера действия
+	-- Р—Р°РіСЂСѓР·РєР° С‚Р°Р№РјРµСЂР° РґРµР№СЃС‚РІРёСЏ
 	self.last_action_timer = utils.r_CTime(packet)
 	self.squad_attack_power = packet:r_u16()
 
-	-- Загрузка действия отряда
+	-- Р—Р°РіСЂСѓР·РєР° РґРµР№СЃС‚РІРёСЏ РѕС‚СЂСЏРґР°
 	local flag = packet:r_bool()
 	--printf("  load action %s", tostring(flag))
 	if flag == true then
@@ -1009,9 +1009,9 @@ function sim_squad_generic:load(packet, registred)
 	self.recover_item_inited_time = utils.r_CTime(packet)
 	set_save_marker(packet, "load", true, "sim_squad_generic")
 end
--- Инициализация отряда на загрузке
+-- РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕС‚СЂСЏРґР° РЅР° Р·Р°РіСЂСѓР·РєРµ
 function sim_squad_generic:init_squad_on_load()
-	-- Прописываем сквад в нужные смарты
+	-- РџСЂРѕРїРёСЃС‹РІР°РµРј СЃРєРІР°Рґ РІ РЅСѓР¶РЅС‹Рµ СЃРјР°СЂС‚С‹
 	--printf("Init squad %s on load", self.squad_id)
 	self.board:assign_squad_to_smart(self, self.smart_id)
 
@@ -1019,7 +1019,7 @@ function sim_squad_generic:init_squad_on_load()
 		self.board:enter_smart(self, self.smart_id, true)
 	end
 end
--- Принудительно переводим в онлайн, убираем перевод
+-- РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РїРµСЂРµРІРѕРґРёРј РІ РѕРЅР»Р°Р№РЅ, СѓР±РёСЂР°РµРј РїРµСЂРµРІРѕРґ
 function sim_squad_generic:force_online(to_online)
 	--printf("SQUAD FORCE ONLINE %s -> %s", self.squad_id, tostring(to_online))
 	local sim = alife()
@@ -1030,7 +1030,7 @@ function sim_squad_generic:force_online(to_online)
 		end
 	end
 end
---' Определение, отряд в онлайне или в оффлайне.
+--' РћРїСЂРµРґРµР»РµРЅРёРµ, РѕС‚СЂСЏРґ РІ РѕРЅР»Р°Р№РЅРµ РёР»Рё РІ РѕС„С„Р»Р°Р№РЅРµ.
 function sim_squad_generic:switch_online(is_online, npc_id)
 	--printf("SQUAD SWITCH STATE %s -> %s", self.squad_id, tostring(is_online))
 	if is_online then
@@ -1040,10 +1040,10 @@ function sim_squad_generic:switch_online(is_online, npc_id)
 		end
 
 		if self.squad_online == false then
-			-- Переходим в онлайн
+			-- РџРµСЂРµС…РѕРґРёРј РІ РѕРЅР»Р°Р№РЅ
 			self.squad_online = true
 
-			-- Говорим своему комбат менеджеру, что мы перешли в онлайн
+			-- Р“РѕРІРѕСЂРёРј СЃРІРѕРµРјСѓ РєРѕРјР±Р°С‚ РјРµРЅРµРґР¶РµСЂСѓ, С‡С‚Рѕ РјС‹ РїРµСЂРµС€Р»Рё РІ РѕРЅР»Р°Р№РЅ
 			if self.sim_combat_id ~= nil then
 				local sim_combat = self.board.smarts[self.sim_combat_id].smrt.combat_manager
 				sim_combat:squad_go_online(self)
@@ -1078,10 +1078,10 @@ function sim_squad_generic:switch_online(is_online, npc_id)
 			end
 			--printf("OFFLINE")
 
-			-- Переходим в оффлайн
+			-- РџРµСЂРµС…РѕРґРёРј РІ РѕС„С„Р»Р°Р№РЅ
 			self.squad_online = false
 
-			-- Говорим своему комбат менеджеру, что мы перешли в оффлайн
+			-- Р“РѕРІРѕСЂРёРј СЃРІРѕРµРјСѓ РєРѕРјР±Р°С‚ РјРµРЅРµРґР¶РµСЂСѓ, С‡С‚Рѕ РјС‹ РїРµСЂРµС€Р»Рё РІ РѕС„С„Р»Р°Р№РЅ
 			if self.sim_combat_id ~= nil then
 				local sim_combat = self.board.smarts[self.sim_combat_id].smrt.combat_manager
 				sim_combat:squad_go_offline(self)
@@ -1105,7 +1105,7 @@ function sim_squad_generic:hide()
 	self.current_spot_id = nil
 	self.spot_section = nil
 end
---' Показать отряд на карте
+--' РџРѕРєР°Р·Р°С‚СЊ РѕС‚СЂСЏРґ РЅР° РєР°СЂС‚Рµ
 function sim_squad_generic:show()
 	if self.show_disabled then
 		self:hide()
@@ -1171,7 +1171,7 @@ function sim_squad_generic:show()
 	end
 	self.spot_section = spot
 end
---' Свойства отряда для вывода на мапспот.
+--' РЎРІРѕР№СЃС‚РІР° РѕС‚СЂСЏРґР° РґР»СЏ РІС‹РІРѕРґР° РЅР° РјР°РїСЃРїРѕС‚.
 function sim_squad_generic:get_squad_props()
 	if not _G.dev_debug then
 		local current_action = self.current_action
@@ -1215,7 +1215,7 @@ function sim_squad_generic:get_squad_props()
 	end
 	return t
 end
---' Распечатка свойств отряда
+--' Р Р°СЃРїРµС‡Р°С‚РєР° СЃРІРѕР№СЃС‚РІ РѕС‚СЂСЏРґР°
 function sim_squad_generic:print()
 --	printf("Squad generic [%s]", self.squad_id)
 end
@@ -1227,7 +1227,7 @@ end
 
 
 --'******************************************************
---'*	Действие: Захватить точку
+--'*	Р”РµР№СЃС‚РІРёРµ: Р—Р°С…РІР°С‚РёС‚СЊ С‚РѕС‡РєСѓ
 --'******************************************************
 class "sim_attack_point"
 function sim_attack_point:__init(squad, dest_smrt_id, major)
@@ -1236,15 +1236,15 @@ function sim_attack_point:__init(squad, dest_smrt_id, major)
 	self.player_id = squad.player_id
 	self.squad_id = squad.squad_id
 
-	--' Исходящий смарт атаки
+	--' РСЃС…РѕРґСЏС‰РёР№ СЃРјР°СЂС‚ Р°С‚Р°РєРё
 	self.src_smrt_id = squad.smart_id
-	--' Целевой смарт атаки
+	--' Р¦РµР»РµРІРѕР№ СЃРјР°СЂС‚ Р°С‚Р°РєРё
 	self.dest_smrt_id = dest_smrt_id
 
-	--' Является ли атака мегаважной (нельзя прервать)
+	--' РЇРІР»СЏРµС‚СЃСЏ Р»Рё Р°С‚Р°РєР° РјРµРіР°РІР°Р¶РЅРѕР№ (РЅРµР»СЊР·СЏ РїСЂРµСЂРІР°С‚СЊ)
 	self.major = major
 end
--- Сохранение
+-- РЎРѕС…СЂР°РЅРµРЅРёРµ
 function sim_attack_point:save(packet)
 	set_save_marker(packet, "save", false, "sim_attack_point")
 	packet:w_bool(self.major)
@@ -1256,7 +1256,7 @@ function sim_attack_point:save(packet)
 	end
 	set_save_marker(packet, "save", true, "sim_attack_point")
 end
--- Загрузка
+-- Р—Р°РіСЂСѓР·РєР°
 function sim_attack_point:load(packet)
 	set_save_marker(packet, "load", false, "sim_attack_point")
 	self.major = packet:r_bool()
@@ -1266,28 +1266,28 @@ function sim_attack_point:load(packet)
 	end
 	set_save_marker(packet, "load", true, "sim_attack_point")
 end
---' Апдейт действия
+--' РђРїРґРµР№С‚ РґРµР№СЃС‚РІРёСЏ
 function sim_attack_point:update()
 	local is_finished = true
 
 	--printf("Squad[%s] attack_update", self.squad_id)
 	local squad = self.board.squads[self.squad_id]
 
-	--' Если начали говорить какую то историю саунд-менеджера
+	--' Р•СЃР»Рё РЅР°С‡Р°Р»Рё РіРѕРІРѕСЂРёС‚СЊ РєР°РєСѓСЋ С‚Рѕ РёСЃС‚РѕСЂРёСЋ СЃР°СѓРЅРґ-РјРµРЅРµРґР¶РµСЂР°
 --	if not squad.sound_manager:is_finished() then
 --		return
 --	end
 
 	local dest_smart = self.board.smarts[self.dest_smrt_id].smrt
-	--' Проверяем нужно ли сражаться текущему отряду:
+	--' РџСЂРѕРІРµСЂСЏРµРј РЅСѓР¶РЅРѕ Р»Рё СЃСЂР°Р¶Р°С‚СЊСЃСЏ С‚РµРєСѓС‰РµРјСѓ РѕС‚СЂСЏРґСѓ:
 	local squad_stage = dest_smart.combat_manager:get_squad_stage(squad)
 	if squad_stage ~= "idle" and squad_stage ~= "defence" then
 		--printf("    false combat")
 		return false
 	end
 
-	--' Проверяем что отряд дошел до смарта.
-	--' Будем проверять только по командиру отряда.
+	--' РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ РѕС‚СЂСЏРґ РґРѕС€РµР» РґРѕ СЃРјР°СЂС‚Р°.
+	--' Р‘СѓРґРµРј РїСЂРѕРІРµСЂСЏС‚СЊ С‚РѕР»СЊРєРѕ РїРѕ РєРѕРјР°РЅРґРёСЂСѓ РѕС‚СЂСЏРґР°.
 	local commander = alife():object(squad.commander_id)
 
 	--if commander == nil then
@@ -1299,13 +1299,13 @@ function sim_attack_point:update()
 	local job_gv          = game_graph():vertex(dest_smart.m_game_vertex_id)
 
 	if obj_gv:level_id() ~= job_gv:level_id() then
-		--' Стопудова еще не пришли.
+		--' РЎС‚РѕРїСѓРґРѕРІР° РµС‰Рµ РЅРµ РїСЂРёС€Р»Рё.
 		--printf("    false level")
 		return false
 	end
 
 	if self.squad_online then
-		--' Проверка для онлайна
+		--' РџСЂРѕРІРµСЂРєР° РґР»СЏ РѕРЅР»Р°Р№РЅР°
 		if (dest_smart.def_restr ~= nil and not db.zone_by_name[dest_smart.def_restr]:inside(obj_pos)) or
 			 (dest_smart.def_restr == nil and obj_pos:distance_to_sqr(dest_smart.position) > 900)
 		then
@@ -1313,7 +1313,7 @@ function sim_attack_point:update()
 			return false
 		end
 --	else
-		--' Проверка для оффлайна
+		--' РџСЂРѕРІРµСЂРєР° РґР»СЏ РѕС„С„Р»Р°Р№РЅР°
 		--if obj_pos:distance_to_sqr(dest_smart.position) > 1600 then
 		--if commander.m_game_vertex_id ~= self.dest_smrt.m_game_vertex_id then
 			--printf("    false offline")
@@ -1337,11 +1337,11 @@ function sim_attack_point:update()
 	--printf("    true")
 	return true
 end
---' Произведение действия.
+--' РџСЂРѕРёР·РІРµРґРµРЅРёРµ РґРµР№СЃС‚РІРёСЏ.
 function sim_attack_point:make()
 	local squad = self.board.squads[self.squad_id]
 	local player = self.board.players[self.player_id]
-	-- Увеличиваем на 1 количество атакеров точки
+	-- РЈРІРµР»РёС‡РёРІР°РµРј РЅР° 1 РєРѕР»РёС‡РµСЃС‚РІРѕ Р°С‚Р°РєРµСЂРѕРІ С‚РѕС‡РєРё
 	if player.current_attack_quantity[self.dest_smrt_id] == nil then
 		--printf("creating count for [%s]", self.dest_smrt_id)
 		player.current_attack_quantity[self.dest_smrt_id] = 0
@@ -1357,7 +1357,7 @@ function sim_attack_point:make()
 
 	self.attack_smart_owner = dest_smart.player_name
 
-	--' Начинаем разыгрывать историю "Сбор в атаку"
+	--' РќР°С‡РёРЅР°РµРј СЂР°Р·С‹РіСЂС‹РІР°С‚СЊ РёСЃС‚РѕСЂРёСЋ "РЎР±РѕСЂ РІ Р°С‚Р°РєСѓ"
 	if self.attack_smart_owner ~= "none" and
 		 self.attack_smart_owner ~= squad.player_id
 	then
@@ -1370,16 +1370,16 @@ function sim_attack_point:make()
 	if squad.sim_combat_id ~= nil then
 		src_smart.combat_manager:unregister_squad(squad)
 	end
-	--' Регистрируем отряд в сражение за смарт
+	--' Р РµРіРёСЃС‚СЂРёСЂСѓРµРј РѕС‚СЂСЏРґ РІ СЃСЂР°Р¶РµРЅРёРµ Р·Р° СЃРјР°СЂС‚
 	dest_smart.combat_manager:register_squad(squad)
 
 	self.board:exit_smart(squad, src_smart)
 
-	--' Необходимо направить отряд в атаку целевого смарта
+	--' РќРµРѕР±С…РѕРґРёРјРѕ РЅР°РїСЂР°РІРёС‚СЊ РѕС‚СЂСЏРґ РІ Р°С‚Р°РєСѓ С†РµР»РµРІРѕРіРѕ СЃРјР°СЂС‚Р°
 	squad.current_action = self
 
-	--' Пересчитываем Team, Squad, Group
-	--' Пересчитываем Team, Squad, Group
+	--' РџРµСЂРµСЃС‡РёС‚С‹РІР°РµРј Team, Squad, Group
+	--' РџРµСЂРµСЃС‡РёС‚С‹РІР°РµРј Team, Squad, Group
 	for k,v in pairs(squad.squad_npc) do
 		local obj = alife():object(k)
 		if obj ~= nil then
@@ -1401,15 +1401,15 @@ function sim_attack_point:make()
 	squad:refresh()
 	player:refresh()
 end
--- Вызывается при прикращении работы
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РїСЂРёРєСЂР°С‰РµРЅРёРё СЂР°Р±РѕС‚С‹
 function sim_attack_point:finalize()
 	--printf("FINALIZE attack point for squad[%s]", self.squad_id)
-	-- Уменьшаем на 1 количество атакеров точки
+	-- РЈРјРµРЅСЊС€Р°РµРј РЅР° 1 РєРѕР»РёС‡РµСЃС‚РІРѕ Р°С‚Р°РєРµСЂРѕРІ С‚РѕС‡РєРё
 	local player = self.board.players[self.player_id]
 	--printf("decrementing count for [%s]", self.dest_smrt_id)
 	player.current_attack_quantity[self.dest_smrt_id] = player.current_attack_quantity[self.dest_smrt_id] - 1
 end
---' Дебаговая распечатка текущего действия.
+--' Р”РµР±Р°РіРѕРІР°СЏ СЂР°СЃРїРµС‡Р°С‚РєР° С‚РµРєСѓС‰РµРіРѕ РґРµР№СЃС‚РІРёСЏ.
 function sim_attack_point:print(space)
 	local squad = self.board.squads[self.squad_id]
 	local src_smart = self.board.smarts[self.src_smrt_id].smrt
@@ -1418,11 +1418,11 @@ function sim_attack_point:print(space)
 end
 
 --'******************************************************`
---'*	Действие: Остаться в точке
+--'*	Р”РµР№СЃС‚РІРёРµ: РћСЃС‚Р°С‚СЊСЃСЏ РІ С‚РѕС‡РєРµ
 --'******************************************************
 class "sim_stay_point"
 function sim_stay_point:__init(squad, stay_defended)
-	--' Смарт в котором остаемся
+	--' РЎРјР°СЂС‚ РІ РєРѕС‚РѕСЂРѕРј РѕСЃС‚Р°РµРјСЃСЏ
 	self.src_smrt_id = squad.smart_id
 	self.name = "stay_point"
 	self.board = squad.board
@@ -1430,7 +1430,7 @@ function sim_stay_point:__init(squad, stay_defended)
 	self.squad_id = squad.squad_id
 	self.stay_defended = stay_defended or false
 end
--- Сохранение
+-- РЎРѕС…СЂР°РЅРµРЅРёРµ
 function sim_stay_point:save(packet)
 	set_save_marker(packet, "save", false, "sim_stay_point")
 	packet:w_bool(self.stay_defended)
@@ -1448,7 +1448,7 @@ function sim_stay_point:save(packet)
 	end
 	set_save_marker(packet, "save", true, "sim_stay_point")
 end
--- Загрузка
+-- Р—Р°РіСЂСѓР·РєР°
 function sim_stay_point:load(packet)
 	set_save_marker(packet, "load", false, "sim_stay_point")
 	self.stay_defended = packet:r_bool()
@@ -1463,13 +1463,13 @@ function sim_stay_point:load(packet)
 	end
 	set_save_marker(packet, "load", true, "sim_stay_point")
 end
---' Апдейт действия
+--' РђРїРґРµР№С‚ РґРµР№СЃС‚РІРёСЏ
 function sim_stay_point:update()
 	local squad = self.board.squads[self.squad_id]
 	--printf("Squad[%s] stay_update", self.squad_id)
 
 
-	-- Мы не можем уйти, если ждем от игрока какой то квест на bring_item или return_item
+	-- РњС‹ РЅРµ РјРѕР¶РµРј СѓР№С‚Рё, РµСЃР»Рё Р¶РґРµРј РѕС‚ РёРіСЂРѕРєР° РєР°РєРѕР№ С‚Рѕ РєРІРµСЃС‚ РЅР° bring_item РёР»Рё return_item
 	local task_entity_id = squad.random_tasks[3]
 	local tm = task_manager.get_task_manager()
 	if task_entity_id ~= nil then
@@ -1488,7 +1488,7 @@ function sim_stay_point:update()
 	end
 
 
-	--??? Мы не можем уйти, если мы являемся инициатором задания на отложенную атаку
+	--??? РњС‹ РЅРµ РјРѕР¶РµРј СѓР№С‚Рё, РµСЃР»Рё РјС‹ СЏРІР»СЏРµРјСЃСЏ РёРЅРёС†РёР°С‚РѕСЂРѕРј Р·Р°РґР°РЅРёСЏ РЅР° РѕС‚Р»РѕР¶РµРЅРЅСѓСЋ Р°С‚Р°РєСѓ
 	if squad.delayed_attack_task ~= nil then
 		--printf("  false 1")
 		return false
@@ -1501,13 +1501,13 @@ function sim_stay_point:update()
 		return false
 	end
 
--- Проверка вверху дублирует эту.
+-- РџСЂРѕРІРµСЂРєР° РІРІРµСЂС…Сѓ РґСѓР±Р»РёСЂСѓРµС‚ СЌС‚Сѓ.
 --	if src_smart.combat_manager:point_under_attack() then
 		--printf("  false attack")
 --		return false
 --	end
 
-	--' Если у нас изменилась симцель, то мы готовы закончить.
+	--' Р•СЃР»Рё Сѓ РЅР°СЃ РёР·РјРµРЅРёР»Р°СЃСЊ СЃРёРјС†РµР»СЊ, С‚Рѕ РјС‹ РіРѕС‚РѕРІС‹ Р·Р°РєРѕРЅС‡РёС‚СЊ.
 	local player = self.board.players[self.player_id]
 	local player_target = player.squad_target_cache[self.squad_id]
 	if player_target ~= squad.assigned_target_smart_id then
@@ -1516,7 +1516,7 @@ function sim_stay_point:update()
 	end
 
 	if self.stay_defended == true
--- Это условие лишнее, так как вверху дублируется проверка.
+-- Р­С‚Рѕ СѓСЃР»РѕРІРёРµ Р»РёС€РЅРµРµ, С‚Р°Рє РєР°Рє РІРІРµСЂС…Сѓ РґСѓР±Р»РёСЂСѓРµС‚СЃСЏ РїСЂРѕРІРµСЂРєР°.
 --		and not src_smart.combat_manager:point_under_attack()
 	then
 		--printf("  true 2")
@@ -1537,7 +1537,7 @@ function sim_stay_point:update()
 	--printf("  true 3")
 	return true
 end
---' Произведение действия.
+--' РџСЂРѕРёР·РІРµРґРµРЅРёРµ РґРµР№СЃС‚РІРёСЏ.
 function sim_stay_point:make()
 	local squad = self.board.squads[self.squad_id]
 	if squad ~= nil then
@@ -1553,7 +1553,7 @@ function sim_stay_point:make()
 		squad:refresh()
 	end
 end
--- Выдача квеста на отложенную атаку
+-- Р’С‹РґР°С‡Р° РєРІРµСЃС‚Р° РЅР° РѕС‚Р»РѕР¶РµРЅРЅСѓСЋ Р°С‚Р°РєСѓ
 function sim_stay_point:init_defend_smart_delay(squad)
 	if self.delay_attack_id == nil then
 		return
@@ -1566,25 +1566,25 @@ function sim_stay_point:init_defend_smart_delay(squad)
 		return
 	end
 	--printf("init delay %s, id %s", tostring(squad.squad_id), tostring(self.delay_attack_id))
-	-- Если мы мутанты, то смотрим есть ли рядом нейтральные или дружественные игроку отряды.
-	-- Если есть - выдаем квест на оборону их. И не уходим с точки. пока он активен.
+	-- Р•СЃР»Рё РјС‹ РјСѓС‚Р°РЅС‚С‹, С‚Рѕ СЃРјРѕС‚СЂРёРј РµСЃС‚СЊ Р»Рё СЂСЏРґРѕРј РЅРµР№С‚СЂР°Р»СЊРЅС‹Рµ РёР»Рё РґСЂСѓР¶РµСЃС‚РІРµРЅРЅС‹Рµ РёРіСЂРѕРєСѓ РѕС‚СЂСЏРґС‹.
+	-- Р•СЃР»Рё РµСЃС‚СЊ - РІС‹РґР°РµРј РєРІРµСЃС‚ РЅР° РѕР±РѕСЂРѕРЅСѓ РёС…. Р РЅРµ СѓС…РѕРґРёРј СЃ С‚РѕС‡РєРё. РїРѕРєР° РѕРЅ Р°РєС‚РёРІРµРЅ.
 	local target_smart = self.board.smarts[self.delay_attack_id]
 	for kk,vv in pairs(target_smart.squads) do
-		-- Проверяем дружественность отряда и на то, что на него никто не нападает.
+		-- РџСЂРѕРІРµСЂСЏРµРј РґСЂСѓР¶РµСЃС‚РІРµРЅРЅРѕСЃС‚СЊ РѕС‚СЂСЏРґР° Рё РЅР° С‚Рѕ, С‡С‚Рѕ РЅР° РЅРµРіРѕ РЅРёРєС‚Рѕ РЅРµ РЅР°РїР°РґР°РµС‚.
 		if vv.squad_online == true and
 			 not(game_relations.is_factions_enemies(vv.player_id, alife():actor():community())) and
 			 not target_smart.smrt.combat_manager:point_under_attack()
 		then
 			local tm = task_manager.get_task_manager()
-			-- проверить, что на смарт уже не выдан квест
+			-- РїСЂРѕРІРµСЂРёС‚СЊ, С‡С‚Рѕ РЅР° СЃРјР°СЂС‚ СѓР¶Рµ РЅРµ РІС‹РґР°РЅ РєРІРµСЃС‚
 			if tm:get_tasks_by_smart(self.delay_attack_id) ~= nil then
 				return
 			end
-			-- Проверяем, что мы сильнее обороняющихся
+			-- РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РјС‹ СЃРёР»СЊРЅРµРµ РѕР±РѕСЂРѕРЅСЏСЋС‰РёС…СЃСЏ
 			if squad.squad_power < vv.squad_power then
 				return
 			end
-			-- Тут надо выдать квест на тот смарт и проинициализировать его собой.
+			-- РўСѓС‚ РЅР°РґРѕ РІС‹РґР°С‚СЊ РєРІРµСЃС‚ РЅР° С‚РѕС‚ СЃРјР°СЂС‚ Рё РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ РµРіРѕ СЃРѕР±РѕР№.
 			local task = tm:select_task("defend_smart_delay", target_smart.smrt, vv.player_id)
 			squad.delayed_attack_task = task.entity_id
 			task.src_squad_id = squad.squad_id
@@ -1595,7 +1595,7 @@ function sim_stay_point:init_defend_smart_delay(squad)
 		end
 	end
 end
---' Дебаговая распечатка текущего действия.
+--' Р”РµР±Р°РіРѕРІР°СЏ СЂР°СЃРїРµС‡Р°С‚РєР° С‚РµРєСѓС‰РµРіРѕ РґРµР№СЃС‚РІРёСЏ.
 function sim_stay_point:print(space)
 	local squad = self.board.squads[self.squad_id]
 	local src_smart = self.board.smarts[self.src_smrt_id].smrt

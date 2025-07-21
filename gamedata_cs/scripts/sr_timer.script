@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------------------------
--- Таймер с выводом изображения на экран.
+-- РўР°Р№РјРµСЂ СЃ РІС‹РІРѕРґРѕРј РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° СЌРєСЂР°РЅ.
 ----------------------------------------------------------------------------------------------------
 
 local k,v = 0,0
@@ -14,10 +14,10 @@ function action_timer:update(delta)
 	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
 		return
 	end
-	-- Высчитываем сколько времени уже работает счетчик
+	-- Р’С‹СЃС‡РёС‚С‹РІР°РµРј СЃРєРѕР»СЊРєРѕ РІСЂРµРјРµРЅРё СѓР¶Рµ СЂР°Р±РѕС‚Р°РµС‚ СЃС‡РµС‚С‡РёРє
 	local nn = time_global() - db.storage[self.object:id()].activation_time
 	
-	-- Изменяем значение счетчика
+	-- РР·РјРµРЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ СЃС‡РµС‚С‡РёРєР°
 	local value_time = 0
 	if self.st.type == "inc" then
 		value_time = self.st.start_value + nn
@@ -27,7 +27,7 @@ function action_timer:update(delta)
 	if value_time <= 0 then
 		value_time = 0
 	end
-	-- Формируем строку счетчика
+	-- Р¤РѕСЂРјРёСЂСѓРµРј СЃС‚СЂРѕРєСѓ СЃС‡РµС‚С‡РёРєР°
 	local hours = math.floor(value_time/3600000)
 	local minutes = math.floor(value_time/60000 - hours*60)
 	local seconds = math.floor(value_time/1000 - hours*3600 - minutes*60)
@@ -35,12 +35,12 @@ function action_timer:update(delta)
 
 	self.st.timer:SetTextST(str)
 
-	-- Определяем нужно ли куда то переходить.
+	-- РћРїСЂРµРґРµР»СЏРµРј РЅСѓР¶РЅРѕ Р»Рё РєСѓРґР° С‚Рѕ РїРµСЂРµС…РѕРґРёС‚СЊ.
 	for k,v in pairs(self.st.on_value) do
 		if (self.st.type == "dec" and value_time <= v.dist) or
 		   (self.st.type == "inc" and value_time >= v.dist)
 		then
-			-- Обработка значения.
+			-- РћР±СЂР°Р±РѕС‚РєР° Р·РЅР°С‡РµРЅРёСЏ.
 			xr_logic.switch_to_section(self.object, self.st.ini, xr_logic.pick_section_from_condlist(db.actor, self.object, v.state))
 		end
 	end
@@ -80,7 +80,7 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 	else
 		st.start_value = utils.cfg_get_number(ini, section, "start_value", obj, false, 0)
 	end
-	-- Вычитываем значения перехода.
+	-- Р’С‹С‡РёС‚С‹РІР°РµРј Р·РЅР°С‡РµРЅРёСЏ РїРµСЂРµС…РѕРґР°.
 	st.on_value = parse_data(obj, utils.cfg_get_string(ini, section, "on_value", obj, false, ""))
 	st.timer_id = utils.cfg_get_string( ini, section, "timer_id", obj, false, "", "hud_timer")
 	st.string	= utils.cfg_get_string( ini, section, "string", obj, false, "")

@@ -1,9 +1,9 @@
 --[[----------------------------------------------------------------------------------------------------------
-Боевая схема зомбированных сталкеров
-Чугай Александр
+Р‘РѕРµРІР°СЏ СЃС…РµРјР° Р·РѕРјР±РёСЂРѕРІР°РЅРЅС‹С… СЃС‚Р°Р»РєРµСЂРѕРІ
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 
-Сделать:
-	- анимация поворота
+РЎРґРµР»Р°С‚СЊ:
+	- Р°РЅРёРјР°С†РёСЏ РїРѕРІРѕСЂРѕС‚Р°
 ------------------------------------------------------------------------------------------------------------]]
 
 local act_shoot  = 1
@@ -76,7 +76,7 @@ function action_zombie_shoot:execute()
 	local be  = self.object:best_enemy()
 	local see = self.object:see( be )
 
-	--' Если видим врага - то запоминаем его позицию и ноду
+	--' Р•СЃР»Рё РІРёРґРёРј РІСЂР°РіР° - С‚Рѕ Р·Р°РїРѕРјРёРЅР°РµРј РµРіРѕ РїРѕР·РёС†РёСЋ Рё РЅРѕРґСѓ
 	if see then
 		self.enemy_last_seen_pos = be:position()
 		self.enemy_last_seen_vid = be:level_vertex_id()
@@ -85,7 +85,7 @@ function action_zombie_shoot:execute()
 	if self.last_vid ~= self.enemy_last_seen_vid then
 		self.last_vid = self.enemy_last_seen_vid
 		self.valid_path = false
-		--' Запоминаем позицию, куда нам надо будет идти
+		--' Р—Р°РїРѕРјРёРЅР°РµРј РїРѕР·РёС†РёСЋ, РєСѓРґР° РЅР°Рј РЅР°РґРѕ Р±СѓРґРµС‚ РёРґС‚Рё
 		if not self.object:accessible(self.enemy_last_seen_vid) then
 			self.enemy_last_accessible_vid, self.enemy_last_accessible_position  = self.object:accessible_nearest(level.vertex_position(self.enemy_last_seen_vid), vector())
 		else
@@ -96,7 +96,7 @@ function action_zombie_shoot:execute()
 
 	self.object:set_path_type( game_object.level_path )
 
-	--' Если мы дальше чем в 3 метрах от позиции, идем в нее.
+	--' Р•СЃР»Рё РјС‹ РґР°Р»СЊС€Рµ С‡РµРј РІ 3 РјРµС‚СЂР°С… РѕС‚ РїРѕР·РёС†РёРё, РёРґРµРј РІ РЅРµРµ.
 	if self.object:position():distance_to_sqr( self.enemy_last_accessible_position ) > 9 then
 		if self.valid_path == false then
 			self.valid_path = true
@@ -112,7 +112,7 @@ function action_zombie_shoot:execute()
 			self:set_state( "raid_fire", nil, self.enemy_last_seen_pos )
 
 		elseif self.hit_reaction_end_time > time_global() then
-			--' продолжать идти и стрелять в точку, из которой был нанесён хит
+			--' РїСЂРѕРґРѕР»Р¶Р°С‚СЊ РёРґС‚Рё Рё СЃС‚СЂРµР»СЏС‚СЊ РІ С‚РѕС‡РєСѓ, РёР· РєРѕС‚РѕСЂРѕР№ Р±С‹Р» РЅР°РЅРµСЃС‘РЅ С…РёС‚
 
 		else
 			self:set_state( "raid",      nil, self.enemy_last_seen_pos )
@@ -120,13 +120,13 @@ function action_zombie_shoot:execute()
 
 		self.turn_time = 0
     else
-		--' Стоим в позиции.
+		--' РЎС‚РѕРёРј РІ РїРѕР·РёС†РёРё.
 		if see then
 			self:set_state( "threat_fire",  be )
 
 			self.turn_time = 0
 		else
-			--' Время от времени поворачиваем в случайном направлении, типа осматриваемся.
+			--' Р’СЂРµРјСЏ РѕС‚ РІСЂРµРјРµРЅРё РїРѕРІРѕСЂР°С‡РёРІР°РµРј РІ СЃР»СѓС‡Р°Р№РЅРѕРј РЅР°РїСЂР°РІР»РµРЅРёРё, С‚РёРїР° РѕСЃРјР°С‚СЂРёРІР°РµРјСЃСЏ.
 			if self.was_hit then
 				self.was_hit = false
 
@@ -159,7 +159,7 @@ function action_zombie_shoot:finalize()
 	self.st.cur_act = nil
 end
 
--- вызывается как для action_zombie_shoot, так и для action_zombie_go_to_danger
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ РєР°Рє РґР»СЏ action_zombie_shoot, С‚Р°Рє Рё РґР»СЏ action_zombie_go_to_danger
 function action_zombie_shoot:hit_callback( obj, amount, local_direction, who, bone_index )
 	if who == nil then
 		return
@@ -168,7 +168,7 @@ function action_zombie_shoot:hit_callback( obj, amount, local_direction, who, bo
 	if self.st.cur_act == act_shoot then
 		local be = self.object and self.object:best_enemy()
 
-		-- если получили хит от текущего врага, то мы знаем, где он
+		-- РµСЃР»Рё РїРѕР»СѓС‡РёР»Рё С…РёС‚ РѕС‚ С‚РµРєСѓС‰РµРіРѕ РІСЂР°РіР°, С‚Рѕ РјС‹ Р·РЅР°РµРј, РіРґРµ РѕРЅ
 		if be and who:id() == be:id() then
 			self.enemy_last_seen_pos   = be:position()
 			self.enemy_last_seen_vid   = be:level_vertex_id()
@@ -230,7 +230,7 @@ function action_zombie_go_to_danger:execute()
 		self:set_state( "raid_fire", nil, self.enemy_last_seen_pos )
 
 	elseif self.hit_reaction_end_time > time_global() then
-		-- продолжать идти и стрелять в точку, из которой был нанесён хит
+		-- РїСЂРѕРґРѕР»Р¶Р°С‚СЊ РёРґС‚Рё Рё СЃС‚СЂРµР»СЏС‚СЊ РІ С‚РѕС‡РєСѓ, РёР· РєРѕС‚РѕСЂРѕР№ Р±С‹Р» РЅР°РЅРµСЃС‘РЅ С…РёС‚
 
 	else
 		local bd  = self.object:best_danger()
@@ -261,7 +261,7 @@ function action_zombie_go_to_danger:finalize()
 	self.st.cur_act = nil
 end
 
--- вызывается как для action_zombie_shoot, так и для action_zombie_go_to_danger
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ РєР°Рє РґР»СЏ action_zombie_shoot, С‚Р°Рє Рё РґР»СЏ action_zombie_go_to_danger
 function action_zombie_go_to_danger:hit_callback( obj, amount, local_direction, who, bone_index )
 	if who == nil then
 		return

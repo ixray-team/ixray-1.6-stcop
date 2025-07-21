@@ -150,7 +150,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = mob_remark(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 
@@ -162,12 +162,12 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.state           = mob_state_mgr.get_state(ini, section, npc)
 
 	st.dialog_cond    = xr_logic.cfg_get_condlist(ini, section, "dialog_cond", npc)
-	-- Не работает, т.к. при переключении схем в данный момент монстр всегда
-	-- уходит из под скрипта, соответственно, сбрасывает свою очередь actions.
+	-- РќРµ СЂР°Р±РѕС‚Р°РµС‚, С‚.Рє. РїСЂРё РїРµСЂРµРєР»СЋС‡РµРЅРёРё СЃС…РµРј РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РјРѕРЅСЃС‚СЂ РІСЃРµРіРґР°
+	-- СѓС…РѕРґРёС‚ РёР· РїРѕРґ СЃРєСЂРёРїС‚Р°, СЃРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ, СЃР±СЂР°СЃС‹РІР°РµС‚ СЃРІРѕСЋ РѕС‡РµСЂРµРґСЊ actions.
 	--st.no_reset       = utils.cfg_get_bool(ini, section, "no_reset", npc, false)
 	st.no_reset = true
 	st.anim           = utils.cfg_get_string(ini, section, "anim", npc, false, "")
-	st.anim_movement      = utils.cfg_get_bool(ini, section, "anim_movement", npc, false, false) --' Анимация с перемещением или нет
+	st.anim_movement      = utils.cfg_get_bool(ini, section, "anim_movement", npc, false, false) --' РђРЅРёРјР°С†РёСЏ СЃ РїРµСЂРµРјРµС‰РµРЅРёРµРј РёР»Рё РЅРµС‚
 	st.anim_head      = utils.cfg_get_string(ini, section, "anim_head", npc, false, "")
 	st.tip            = utils.cfg_get_string(ini, section, "tip", npc, false, "")
 	st.snd            = utils.cfg_get_string(ini, section, "snd", npc, false, "")

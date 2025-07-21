@@ -1,11 +1,11 @@
---' Ключем является группировка персонажа. Значением является таблица, содержашая имена секций предметов.
+--' РљР»СЋС‡РµРј СЏРІР»СЏРµС‚СЃСЏ РіСЂСѓРїРїРёСЂРѕРІРєР° РїРµСЂСЃРѕРЅР°Р¶Р°. Р—РЅР°С‡РµРЅРёРµРј СЏРІР»СЏРµС‚СЃСЏ С‚Р°Р±Р»РёС†Р°, СЃРѕРґРµСЂР¶Р°С€Р°СЏ РёРјРµРЅР° СЃРµРєС†РёР№ РїСЂРµРґРјРµС‚РѕРІ.
 local item_by_community = {}
 
---' Множители и минимаксы для выпадения вещей в зависимости от уровня
+--' РњРЅРѕР¶РёС‚РµР»Рё Рё РјРёРЅРёРјР°РєСЃС‹ РґР»СЏ РІС‹РїР°РґРµРЅРёСЏ РІРµС‰РµР№ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СѓСЂРѕРІРЅСЏ
 local mul_by_level = {}
 local count_by_level = {}
 
---' Предметы, относящиеся к патронам. Их надо спаунить другим методом.
+--' РџСЂРµРґРјРµС‚С‹, РѕС‚РЅРѕСЃСЏС‰РёРµСЃСЏ Рє РїР°С‚СЂРѕРЅР°Рј. РС… РЅР°РґРѕ СЃРїР°СѓРЅРёС‚СЊ РґСЂСѓРіРёРј РјРµС‚РѕРґРѕРј.
 local ammo_sections = {}
 
 local death_ini = ini_file("misc\\ph_box_generic.ltx")
@@ -17,7 +17,7 @@ function ph_item_box:__init(obj)
 	local community_list = { "def_box", "small_box_generic", "small_box_ussr", "small_box_nato", "small_box_army", "small_box_science", "big_box_generic", "big_box_dungeons", "big_box_arsenal"}
 
 	for k,v in pairs(community_list) do
-        --' Необходимо заполнить таблицу
+        --' РќРµРѕР±С…РѕРґРёРјРѕ Р·Р°РїРѕР»РЅРёС‚СЊ С‚Р°Р±Р»РёС†Сѓ
 		-- printf("pl: community = %s",v )
         item_by_community[v] = {}
         if death_ini:section_exist(v) then
@@ -31,7 +31,7 @@ function ph_item_box:__init(obj)
         end
     end
 
-	--' Множители и минимаксы для выпадения вещей в зависимости от уровня
+	--' РњРЅРѕР¶РёС‚РµР»Рё Рё РјРёРЅРёРјР°РєСЃС‹ РґР»СЏ РІС‹РїР°РґРµРЅРёСЏ РІРµС‰РµР№ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СѓСЂРѕРІРЅСЏ
     local level_name = level.name()
 
 	if not death_ini:section_exist(level_name) then
@@ -49,7 +49,7 @@ function ph_item_box:__init(obj)
     local n = death_ini:line_count(item_count_section)
 	for i=0,n-1 do
 		result, id, value	= death_ini:r_line(item_count_section,i,"","")
-        --' Нужно распарсить value в два значения
+        --' РќСѓР¶РЅРѕ СЂР°СЃРїР°СЂСЃРёС‚СЊ value РІ РґРІР° Р·РЅР°С‡РµРЅРёСЏ
         local t = parse_nums(value)
 		if t[1] == nil then
             abort("Error on [death_ini] declaration. Section [%s], line [%s]", item_count_section, tostring(id))
@@ -69,7 +69,7 @@ function ph_item_box:__init(obj)
 
         count_by_level[id] = {min = min, max = max}
 	end
-	--' Предметы, относящиеся к патронам. Их надо спаунить другим методом.
+	--' РџСЂРµРґРјРµС‚С‹, РѕС‚РЅРѕСЃСЏС‰РёРµСЃСЏ Рє РїР°С‚СЂРѕРЅР°Рј. РС… РЅР°РґРѕ СЃРїР°СѓРЅРёС‚СЊ РґСЂСѓРіРёРј РјРµС‚РѕРґРѕРј.
    ammo_sections = {}
     local n = death_ini:line_count("ammo_sections")
 	local id, value = "", ""
@@ -94,10 +94,10 @@ function ph_item_box:spawn_items()
 	end
 
 	printf(" community = %s", community)
-	--' Доспавниваем необходимое количество итемов:
-    --' Необходимо составить список объектов которые могут быть заспавнены для персонажа
+	--' Р”РѕСЃРїР°РІРЅРёРІР°РµРј РЅРµРѕР±С…РѕРґРёРјРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РёС‚РµРјРѕРІ:
+    --' РќРµРѕР±С…РѕРґРёРјРѕ СЃРѕСЃС‚Р°РІРёС‚СЊ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ Р·Р°СЃРїР°РІРЅРµРЅС‹ РґР»СЏ РїРµСЂСЃРѕРЅР°Р¶Р°
     local spawn_items = item_by_community[community]
-	--' Если комьюнити задана не верно, то ставим дефолт и срем в лог.
+	--' Р•СЃР»Рё РєРѕРјСЊСЋРЅРёС‚Рё Р·Р°РґР°РЅР° РЅРµ РІРµСЂРЅРѕ, С‚Рѕ СЃС‚Р°РІРёРј РґРµС„РѕР»С‚ Рё СЃСЂРµРј РІ Р»РѕРі.
 	if spawn_items == nil then
 		printf("xr_box: wrong community [%s] for box [%s]", community, self.obj:name())
 		spawn_items = {}
@@ -105,14 +105,14 @@ function ph_item_box:spawn_items()
 	end
 
     for k,v in pairs(spawn_items) do
-		--' По каждому объекту необходимо получить количество
+		--' РџРѕ РєР°Р¶РґРѕРјСѓ РѕР±СЉРµРєС‚Сѓ РЅРµРѕР±С…РѕРґРёРјРѕ РїРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ
 		local number = math.ceil(math.random(count_by_level[k].min, count_by_level[k].max))
-		--' Необходимо заспавнить нужное количество.
+		--' РќРµРѕР±С…РѕРґРёРјРѕ Р·Р°СЃРїР°РІРЅРёС‚СЊ РЅСѓР¶РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ.
 		 create_items(self.obj, k, number, v)
     end
 end
 
---' Функция спавнит необходимое число предметов
+--' Р¤СѓРЅРєС†РёСЏ СЃРїР°РІРЅРёС‚ РЅРµРѕР±С…РѕРґРёРјРѕРµ С‡РёСЃР»Рѕ РїСЂРµРґРјРµС‚РѕРІ
 function create_items(obj, section, number, rnd)
     printf("create %s of %s", tostring(number), tostring(section))
     if ammo_sections[section] == true then
@@ -134,7 +134,7 @@ function create_items(obj, section, number, rnd)
 		end
     else
         for i=1,number do
-			--' Проверяем вероятность появить каждый объект в отдельности
+			--' РџСЂРѕРІРµСЂСЏРµРј РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РїРѕСЏРІРёС‚СЊ РєР°Р¶РґС‹Р№ РѕР±СЉРµРєС‚ РІ РѕС‚РґРµР»СЊРЅРѕСЃС‚Рё
             if math.random(100) <=  rnd then
 				local position = vector():set(0,0,0)
 				position.x = obj:position().x --+ math.random(-30,30)/100
@@ -160,7 +160,7 @@ end
 
 function r_items( spawn_ini, section, line, obj)
 	if spawn_ini:line_exist( section, line ) then
-		--' если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
+		--' РµСЃР»Рё default-РѕРІ Р±РѕР»СЊС€Рµ, С‡РµРј Р·РЅР°С‡РµРЅРёР№ РІ ini, С‚Рѕ Р·Р°Р±РёС‚СЊ РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ РїРѕСЃР»РµРґРЅРёРј Р·РЅР°С‡РµРЅРёРµРј РёР· ini
 		local t = parse_names( spawn_ini:r_string( section, line ) )
 		local n = #t
 
@@ -172,16 +172,16 @@ function r_items( spawn_ini, section, line, obj)
 			if item_by_community["def_box"][item.section] == nil then
 				printf("There is no such item [%s] for box [%s]", tostring(item.section), obj:name())
 			end
-			-- Проверяем что это не последняя запись
+			-- РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ СЌС‚Рѕ РЅРµ РїРѕСЃР»РµРґРЅСЏСЏ Р·Р°РїРёСЃСЊ
 			if t[k+1] ~= nil then
 				local p = tonumber(t[k+1])
-				-- проверяем что вторым числом задана вероятность, а не другая секция спавну
+				-- РїСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ РІС‚РѕСЂС‹Рј С‡РёСЃР»РѕРј Р·Р°РґР°РЅР° РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ, Р° РЅРµ РґСЂСѓРіР°СЏ СЃРµРєС†РёСЏ СЃРїР°РІРЅСѓ
 				if p then
-					-- забиваем число
+					-- Р·Р°Р±РёРІР°РµРј С‡РёСЃР»Рѕ
 					item.count = p
 					k = k + 2
 				else
-					-- забиваем дефолт 1
+					-- Р·Р°Р±РёРІР°РµРј РґРµС„РѕР»С‚ 1
 					item.count = 1
 					k = k + 1
 				end

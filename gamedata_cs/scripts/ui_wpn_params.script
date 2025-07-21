@@ -56,17 +56,17 @@ function read_float(wpn_section, upgr_sections, param)
     return res
 end
 
-function GetRPM(wpn_section, upgr_sections) --' скорострельность
+function GetRPM(wpn_section, upgr_sections) --' СЃРєРѕСЂРѕСЃС‚СЂРµР»СЊРЅРѕСЃС‚СЊ
 	local rpm = read_float(wpn_section, upgr_sections, "rpm")
 	return normalize(rpm, 0, 1300)
 end
 
-function GetDamage(wpn_section, upgr_sections) --' повреждение
+function GetDamage(wpn_section, upgr_sections) --' РїРѕРІСЂРµР¶РґРµРЅРёРµ
 	local hit_power = read_float(wpn_section, upgr_sections, "hit_power")
 	return normalize(hit_power, 0, 1.1)	
 end
 
-function GetDamageMP(wpn_section, upgr_sections) -- ??? (повреждениеMP)
+function GetDamageMP(wpn_section, upgr_sections) -- ??? (РїРѕРІСЂРµР¶РґРµРЅРёРµMP)
 	local hit_power = read_float(wpn_section, upgr_sections, "hit_power")
 	hit_power = hit_power * 100	
 	-- if val < 1.05 then
@@ -77,7 +77,7 @@ function GetDamageMP(wpn_section, upgr_sections) -- ??? (повреждениеMP)
 	return normalizeMP(hit_power)	
 end
 
-function GetHandling(wpn_section, upgr_sections) --' удобность
+function GetHandling(wpn_section, upgr_sections) --' СѓРґРѕР±РЅРѕСЃС‚СЊ
 	local ltx = system_ini()
 	-- local val	
     local control_inertion_factor = 1
@@ -89,7 +89,7 @@ function GetHandling(wpn_section, upgr_sections) --' удобность
 	return normalize(control_inertion_factor, 0, 3) 
 end
 
-function GetAccuracy(wpn_section, upgr_sections) --' точность
+function GetAccuracy(wpn_section, upgr_sections) --' С‚РѕС‡РЅРѕСЃС‚СЊ
     local fire_dispersion_base	= read_float(wpn_section, upgr_sections, "fire_dispersion_base")
 	fire_dispersion_base = 1.5 - fire_dispersion_base
 	return normalize(fire_dispersion_base, 0, 1.5)

@@ -1,32 +1,32 @@
 --'******************************************************
---'*	Реестр боев в симуляции.
---'*	возвращает в какой стадии сейчас находится тот
---'*	или иной бой в симуляции.
---'*	Стадии: подход к цели, ожидание атаки, атака, нет боя
+--'*	Р РµРµСЃС‚СЂ Р±РѕРµРІ РІ СЃРёРјСѓР»СЏС†РёРё.
+--'*	РІРѕР·РІСЂР°С‰Р°РµС‚ РІ РєР°РєРѕР№ СЃС‚Р°РґРёРё СЃРµР№С‡Р°СЃ РЅР°С…РѕРґРёС‚СЃСЏ С‚РѕС‚
+--'*	РёР»Рё РёРЅРѕР№ Р±РѕР№ РІ СЃРёРјСѓР»СЏС†РёРё.
+--'*	РЎС‚Р°РґРёРё: РїРѕРґС…РѕРґ Рє С†РµР»Рё, РѕР¶РёРґР°РЅРёРµ Р°С‚Р°РєРё, Р°С‚Р°РєР°, РЅРµС‚ Р±РѕСЏ
 --'******************************************************
 local ACTOR_COME_DEFENCE_DIST = 30*30
 local ACTOR_COME_ATTACK_DIST = 30*30
 local SQUAD_COME_ATTACK_OFFLINE_DIST = 5*5
 
-local SQUAD_WAIT_ATTACK_ONLINE = 50 -- время указано в  игровых секундах
-local SQUAD_WAIT_ATTACK_OFFLINE = 50 -- время указано в  игровых секундах
+local SQUAD_WAIT_ATTACK_ONLINE = 50 -- РІСЂРµРјСЏ СѓРєР°Р·Р°РЅРѕ РІ  РёРіСЂРѕРІС‹С… СЃРµРєСѓРЅРґР°С…
+local SQUAD_WAIT_ATTACK_OFFLINE = 50 -- РІСЂРµРјСЏ СѓРєР°Р·Р°РЅРѕ РІ  РёРіСЂРѕРІС‹С… СЃРµРєСѓРЅРґР°С…
 
-local SQUAD_IN_ACTOR_ATTACK_TIME = 500 -- время указано в  игровых секундах
+local SQUAD_IN_ACTOR_ATTACK_TIME = 500 -- РІСЂРµРјСЏ СѓРєР°Р·Р°РЅРѕ РІ  РёРіСЂРѕРІС‹С… СЃРµРєСѓРЅРґР°С…
 
 
---' Класс, описывающий отдельно взятый бой.
+--' РљР»Р°СЃСЃ, РѕРїРёСЃС‹РІР°СЋС‰РёР№ РѕС‚РґРµР»СЊРЅРѕ РІР·СЏС‚С‹Р№ Р±РѕР№.
 class "CCombat_manager"
 function CCombat_manager:__init(smart, board)
-	--' Ссылка на игровое поле
+	--' РЎСЃС‹Р»РєР° РЅР° РёРіСЂРѕРІРѕРµ РїРѕР»Рµ
 	self.board = board
 
-	--' Смарт, за который ведется бой.
+	--' РЎРјР°СЂС‚, Р·Р° РєРѕС‚РѕСЂС‹Р№ РІРµРґРµС‚СЃСЏ Р±РѕР№.
 	self.smart = smart
 
-	-- Список отрядов.
+	-- РЎРїРёСЃРѕРє РѕС‚СЂСЏРґРѕРІ.
 	-- {_stage = "idle"}
-	-- Стадии отряда: idle -> defence -> move -> prepare -> wait -> combat -> post_combat -> idle
-	-- Стадии отряда: idle -> defence -> combat -> post_combat -> idle
+	-- РЎС‚Р°РґРёРё РѕС‚СЂСЏРґР°: idle -> defence -> move -> prepare -> wait -> combat -> post_combat -> idle
+	-- РЎС‚Р°РґРёРё РѕС‚СЂСЏРґР°: idle -> defence -> combat -> post_combat -> idle
 	self.squads = {}
 
 	self.combat_quest = "nil"
@@ -35,13 +35,13 @@ function CCombat_manager:__init(smart, board)
 	self.actor_combat = false
 	self.cover_manager = cover_manager.CCover_manager(smart)
 end
---' Регистрируем атакующий отряд
+--' Р РµРіРёСЃС‚СЂРёСЂСѓРµРј Р°С‚Р°РєСѓСЋС‰РёР№ РѕС‚СЂСЏРґ
 function CCombat_manager:register_squad(squad)
 	if self.squads[squad.squad_id] ~= nil then
 		return
 	end
 
-	--' Определяем стадию отряда. Если он регистрится в свой смарт, то он в айдле, иначе он в move
+	--' РћРїСЂРµРґРµР»СЏРµРј СЃС‚Р°РґРёСЋ РѕС‚СЂСЏРґР°. Р•СЃР»Рё РѕРЅ СЂРµРіРёСЃС‚СЂРёС‚СЃСЏ РІ СЃРІРѕР№ СЃРјР°СЂС‚, С‚Рѕ РѕРЅ РІ Р°Р№РґР»Рµ, РёРЅР°С‡Рµ РѕРЅ РІ move
 	if squad.smart_id == self.smart.id then
 		self.squads[squad.squad_id] = {_stage = "idle", _attack_squad = false, _attack_shouted = false, _prepare_shouted = false, _inited_defend = false, _squad_power = squad.squad_power}
 		self.cover_manager:register_squad(squad)
@@ -57,14 +57,14 @@ function CCombat_manager:register_squad(squad)
 
 	end
 
-	-- Также если мы регистрим уже отряд в онлайне, проапдейтить squad_go_online
+	-- РўР°РєР¶Рµ РµСЃР»Рё РјС‹ СЂРµРіРёСЃС‚СЂРёРј СѓР¶Рµ РѕС‚СЂСЏРґ РІ РѕРЅР»Р°Р№РЅРµ, РїСЂРѕР°РїРґРµР№С‚РёС‚СЊ squad_go_online
 	--printf("squad online %s", tostring(squad.squad_online))
 	--printf("force online %s", tostring(self.force_online))
 	if squad.squad_online == true then
 		self:squad_go_online(squad)
 	end
 	if self.force_online == true then
-		-- Принудительно переводим отряд в онлайн
+		-- РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РїРµСЂРµРІРѕРґРёРј РѕС‚СЂСЏРґ РІ РѕРЅР»Р°Р№РЅ
 		squad:force_online(true)
 	end
 
@@ -72,17 +72,17 @@ function CCombat_manager:register_squad(squad)
 	squad.sim_combat_id = self.smart.id
 	--printf("Sim_Combat[%s]: register new squad %s", self.smart:name(), squad.squad_id)
 end
---' АНРегистрируем атакующий отряд
+--' РђРќР РµРіРёСЃС‚СЂРёСЂСѓРµРј Р°С‚Р°РєСѓСЋС‰РёР№ РѕС‚СЂСЏРґ
 function CCombat_manager:unregister_squad(squad)
 	--printf("Sim_Combat[%s]: unregister squad %s", self.smart:name(), squad.squad_id)
 	squad.sim_combat_id = nil
 	self.cover_manager:unregister_squad(squad)
 	if self.squads[squad.squad_id] ~= nil then
-		-- Снять принудительный перевод в онлайн
+		-- РЎРЅСЏС‚СЊ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅС‹Р№ РїРµСЂРµРІРѕРґ РІ РѕРЅР»Р°Р№РЅ
 		if self.force_online == true then
 			squad:force_online(false)
 		end
-		-- Надо проверить. остался ли форсед онлайн после анрегистрации, squad_go_offline
+		-- РќР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ. РѕСЃС‚Р°Р»СЃСЏ Р»Рё С„РѕСЂСЃРµРґ РѕРЅР»Р°Р№РЅ РїРѕСЃР»Рµ Р°РЅСЂРµРіРёСЃС‚СЂР°С†РёРё, squad_go_offline
 		self:squad_go_offline(squad)
 
 		self.squads[squad.squad_id] = nil
@@ -99,13 +99,13 @@ function CCombat_manager:unregister_squad(squad)
 
 	--abort("Unregister not registred squad %s", squad.squad_id)
 end
--- Сквад в онлайн
+-- РЎРєРІР°Рґ РІ РѕРЅР»Р°Р№РЅ
 function CCombat_manager:squad_go_online(squad)
 	--printf("Squad %s go online", squad.squad_id)
 	--callstack()
-	-- Если мы регистрим отряд в онлайне, то необходимо перевести все остальные отряды принудительно в онлайн.
+	-- Р•СЃР»Рё РјС‹ СЂРµРіРёСЃС‚СЂРёРј РѕС‚СЂСЏРґ РІ РѕРЅР»Р°Р№РЅРµ, С‚Рѕ РЅРµРѕР±С…РѕРґРёРјРѕ РїРµСЂРµРІРµСЃС‚Рё РІСЃРµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ РѕС‚СЂСЏРґС‹ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РІ РѕРЅР»Р°Р№РЅ.
 	if self.force_online == false then
-		-- Переводим все отряды принудительно в онлайн
+		-- РџРµСЂРµРІРѕРґРёРј РІСЃРµ РѕС‚СЂСЏРґС‹ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РІ РѕРЅР»Р°Р№РЅ
 		for k,v in pairs(self.squads)do
 			local sq = self.board.squads[k]
 			if sq ~= nil then
@@ -114,21 +114,21 @@ function CCombat_manager:squad_go_online(squad)
 				self.squads[k] = nil
 			end
 		end
-		-- Также необходимо установить глобальный флажок "бой в онлайне", по которому все новые отряды будут принудительно переводится в онлайн.
+		-- РўР°РєР¶Рµ РЅРµРѕР±С…РѕРґРёРјРѕ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РіР»РѕР±Р°Р»СЊРЅС‹Р№ С„Р»Р°Р¶РѕРє "Р±РѕР№ РІ РѕРЅР»Р°Р№РЅРµ", РїРѕ РєРѕС‚РѕСЂРѕРјСѓ РІСЃРµ РЅРѕРІС‹Рµ РѕС‚СЂСЏРґС‹ Р±СѓРґСѓС‚ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РїРµСЂРµРІРѕРґРёС‚СЃСЏ РІ РѕРЅР»Р°Р№РЅ.
 		self.force_online = true
 	end
-	-- Также необходимо занестить отряд в список отрядов, спровоцировавших перевод боя в онлайн.
+	-- РўР°РєР¶Рµ РЅРµРѕР±С…РѕРґРёРјРѕ Р·Р°РЅРµСЃС‚РёС‚СЊ РѕС‚СЂСЏРґ РІ СЃРїРёСЃРѕРє РѕС‚СЂСЏРґРѕРІ, СЃРїСЂРѕРІРѕС†РёСЂРѕРІР°РІС€РёС… РїРµСЂРµРІРѕРґ Р±РѕСЏ РІ РѕРЅР»Р°Р№РЅ.
 	self.force_online_squads[squad.squad_id] = true
 end
--- Сквад в оффлайн
+-- РЎРєРІР°Рґ РІ РѕС„С„Р»Р°Р№РЅ
 function CCombat_manager:squad_go_offline(squad)
 	--printf("Squad %s go offline", squad.squad_id)
 	--callstack()
 
-	-- Если отряд сам был инициатором.
+	-- Р•СЃР»Рё РѕС‚СЂСЏРґ СЃР°Рј Р±С‹Р» РёРЅРёС†РёР°С‚РѕСЂРѕРј.
 	if self.force_online_squads[squad.squad_id] ~= nil then
 		self.force_online_squads[squad.squad_id] = nil
-		-- Проверяем, остался ли хоть один инициатор.
+		-- РџСЂРѕРІРµСЂСЏРµРј, РѕСЃС‚Р°Р»СЃСЏ Р»Рё С…РѕС‚СЊ РѕРґРёРЅ РёРЅРёС†РёР°С‚РѕСЂ.
 		local exist = false
 		for k,v in pairs(self.force_online_squads) do
 			exist = true
@@ -137,7 +137,7 @@ function CCombat_manager:squad_go_offline(squad)
 
 		if exist == false then
 			self.force_online = false
-			-- Инициаторов не осталось, убираем у всех отрядов
+			-- РРЅРёС†РёР°С‚РѕСЂРѕРІ РЅРµ РѕСЃС‚Р°Р»РѕСЃСЊ, СѓР±РёСЂР°РµРј Сѓ РІСЃРµС… РѕС‚СЂСЏРґРѕРІ
 			for k,v in pairs(self.squads)do
 				local sq = self.board.squads[k]
 				sq:force_online(false)
@@ -145,19 +145,19 @@ function CCombat_manager:squad_go_offline(squad)
 		end
 	end
 end
---' Кто-то из участников боя получил хит
+--' РљС‚Рѕ-С‚Рѕ РёР· СѓС‡Р°СЃС‚РЅРёРєРѕРІ Р±РѕСЏ РїРѕР»СѓС‡РёР» С…РёС‚
 function CCombat_manager:hit_callback(squad, attacker_id, is_attack)
 	if attacker_id ~= db.actor:id() then
 		return
 	end
 	self:enemy_actor_callback(squad)
-	-- Тут также нужно определять наличие квеста и если есть - указывать, что игрок помог в квесте.
+	-- РўСѓС‚ С‚Р°РєР¶Рµ РЅСѓР¶РЅРѕ РѕРїСЂРµРґРµР»СЏС‚СЊ РЅР°Р»РёС‡РёРµ РєРІРµСЃС‚Р° Рё РµСЃР»Рё РµСЃС‚СЊ - СѓРєР°Р·С‹РІР°С‚СЊ, С‡С‚Рѕ РёРіСЂРѕРє РїРѕРјРѕРі РІ РєРІРµСЃС‚Рµ.
 	local tm = task_manager.get_task_manager()
-	-- Если есть выданный игроку квест, оповещаем что игрок помог в нем.
+	-- Р•СЃР»Рё РµСЃС‚СЊ РІС‹РґР°РЅРЅС‹Р№ РёРіСЂРѕРєСѓ РєРІРµСЃС‚, РѕРїРѕРІРµС‰Р°РµРј С‡С‚Рѕ РёРіСЂРѕРє РїРѕРјРѕРі РІ РЅРµРј.
 	local task = task_manager.get_task_manager():get_tasks_by_smart(self.smart.id)
 	if task ~= nil then
 		if task.target == self.smart.id then
-			-- Если таск выдан на нашу цель
+			-- Р•СЃР»Рё С‚Р°СЃРє РІС‹РґР°РЅ РЅР° РЅР°С€Сѓ С†РµР»СЊ
 			--printf("ACTOR HELP %s", task.name)
 			task:actor_help(squad.squad_id)
 			--break
@@ -165,8 +165,8 @@ function CCombat_manager:hit_callback(squad, attacker_id, is_attack)
 	end
 
 	if is_attack then
-		-- Стрельнули в атакера
-		-- Смотрим, есть ли у нас квест на защиту
+		-- РЎС‚СЂРµР»СЊРЅСѓР»Рё РІ Р°С‚Р°РєРµСЂР°
+		-- РЎРјРѕС‚СЂРёРј, РµСЃС‚СЊ Р»Рё Сѓ РЅР°СЃ РєРІРµСЃС‚ РЅР° Р·Р°С‰РёС‚Сѓ
 		if self.combat_quest == "defend" and self.task ~= nil and self.actor_defence_come ~= true then
 			local task = tm:get_task_by_entity_id(self.task)
 			task:actor_comed(self)
@@ -186,14 +186,14 @@ function CCombat_manager:hit_callback(squad, attacker_id, is_attack)
 			self.actor_combat = true
 		end
 	else
-		-- Если у нас есть квест на оборону - провалить его
+		-- Р•СЃР»Рё Сѓ РЅР°СЃ РµСЃС‚СЊ РєРІРµСЃС‚ РЅР° РѕР±РѕСЂРѕРЅСѓ - РїСЂРѕРІР°Р»РёС‚СЊ РµРіРѕ
 		if self.combat_quest == "defend" and self.task ~= nil then
 			local task = tm:get_task_by_entity_id(self.task)
 			task:actor_ignored(self)
 			task.last_check_task = "fail"
 		end
 
-		--' Стрельнули в дефендера. Начинаем бой.
+		--' РЎС‚СЂРµР»СЊРЅСѓР»Рё РІ РґРµС„РµРЅРґРµСЂР°. РќР°С‡РёРЅР°РµРј Р±РѕР№.
 		for k,data in pairs(self.squads) do
 			if data._stage ~= "combat" then
 				local sq = self.board.squads[k]
@@ -209,22 +209,22 @@ function CCombat_manager:hit_callback(squad, attacker_id, is_attack)
 		end
 	end
 end
---' Проверка видит ли кто-то врага. По этому условию переключаем стадию обороны
+--' РџСЂРѕРІРµСЂРєР° РІРёРґРёС‚ Р»Рё РєС‚Рѕ-С‚Рѕ РІСЂР°РіР°. РџРѕ СЌС‚РѕРјСѓ СѓСЃР»РѕРІРёСЋ РїРµСЂРµРєР»СЋС‡Р°РµРј СЃС‚Р°РґРёСЋ РѕР±РѕСЂРѕРЅС‹
 function CCombat_manager:enemy_callback(my_squad, enemy_squad)
 	if self.squads[my_squad.squad_id] == nil or self.squads[enemy_squad.squad_id] == nil then
 		return
 	end
 
-	--' Если враг в бою, то и я в бою
+	--' Р•СЃР»Рё РІСЂР°Рі РІ Р±РѕСЋ, С‚Рѕ Рё СЏ РІ Р±РѕСЋ
 	if self.squads[enemy_squad.squad_id]._stage == "combat" then
 		self.squads[my_squad.squad_id]._stage = "combat"
 		return
 	end
 
-	-- Мы сидим в точке
+	-- РњС‹ СЃРёРґРёРј РІ С‚РѕС‡РєРµ
 	local my_stage = self.squads[my_squad.squad_id]._stage
 	if my_stage == "idle" then
-		-- Видим врага -> оборона
+		-- Р’РёРґРёРј РІСЂР°РіР° -> РѕР±РѕСЂРѕРЅР°
 		self.squads[enemy_squad.squad_id]._inited_defend = true
 		for k,data in pairs(self.squads) do
 			if data._stage == "idle" then
@@ -234,13 +234,13 @@ function CCombat_manager:enemy_callback(my_squad, enemy_squad)
 		end
 		self.cover_manager:calculate_covers(alife():object(enemy_squad.commander_id).position)
 	elseif my_stage == "defence" then
-		-- Если мы в обороне и ждем контратаки
+		-- Р•СЃР»Рё РјС‹ РІ РѕР±РѕСЂРѕРЅРµ Рё Р¶РґРµРј РєРѕРЅС‚СЂР°С‚Р°РєРё
 		if self.combat_quest == "capture" then
 			local task = task_manager.get_task_manager():get_tasks_by_smart(self.smart.id)
 			if task ~= nil then
-				-- Если таск выдан на нашу цель
+				-- Р•СЃР»Рё С‚Р°СЃРє РІС‹РґР°РЅ РЅР° РЅР°С€Сѓ С†РµР»СЊ
 				if task.type == "capture_smart" and task.state == "counter_attack" then
-					-- а вот и они  (сорваться в бой)
+					-- Р° РІРѕС‚ Рё РѕРЅРё  (СЃРѕСЂРІР°С‚СЊСЃСЏ РІ Р±РѕР№)
 					my_squad:issue_order("counter_attack_spotted")
 					self.squads[my_squad.squad_id]._stage = "combat"
 				end
@@ -257,7 +257,7 @@ function CCombat_manager:enemy_actor_callback(my_squad)
 --	end
 end
 
---' Запрос на установку состояния боя.
+--' Р—Р°РїСЂРѕСЃ РЅР° СѓСЃС‚Р°РЅРѕРІРєСѓ СЃРѕСЃС‚РѕСЏРЅРёСЏ Р±РѕСЏ.
 function CCombat_manager:request_squad_stage(squad, stage)
 	if stage == "prepare" then
 		if self.squads[squad.squad_id]._stage == "move" then
@@ -279,11 +279,11 @@ function CCombat_manager:request_squad_stage(squad, stage)
 		end
 	end
 end
---' Апдейт
+--' РђРїРґРµР№С‚
 function CCombat_manager:update()
 	self:update_actor()
 
-	-- Итерируемся по всем отрядам.
+	-- РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ РІСЃРµРј РѕС‚СЂСЏРґР°Рј.
 	for k,v in pairs(self.squads) do
 		if self.board.squads[k] ~= nil and not empty(self.board.squads[k].squad_npc) then
 			self:update_squad(k,v)
@@ -292,10 +292,10 @@ function CCombat_manager:update()
 		end
 	end
 
-	-- Пересчитываем squad_power
+	-- РџРµСЂРµСЃС‡РёС‚С‹РІР°РµРј squad_power
 	for k,data in pairs(self.squads) do
 		local squad = self.board.squads[k]
-		-- Если разница больше, чем средняя сила одного члена отряда - грохаем одного НПС.
+		-- Р•СЃР»Рё СЂР°Р·РЅРёС†Р° Р±РѕР»СЊС€Рµ, С‡РµРј СЃСЂРµРґРЅСЏСЏ СЃРёР»Р° РѕРґРЅРѕРіРѕ С‡Р»РµРЅР° РѕС‚СЂСЏРґР° - РіСЂРѕС…Р°РµРј РѕРґРЅРѕРіРѕ РќРџРЎ.
 		--printf("OCS: check power %s > %s", squad.squad_power, data._squad_power)
 		if squad.squad_power > data._squad_power then
 			for kk,vv in pairs(squad.squad_npc) do
@@ -315,19 +315,19 @@ function CCombat_manager:update()
 
 	self.smart:refresh()
 end
---' Проверяем переходы между стадиями одного отряда
+--' РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРµС…РѕРґС‹ РјРµР¶РґСѓ СЃС‚Р°РґРёСЏРјРё РѕРґРЅРѕРіРѕ РѕС‚СЂСЏРґР°
 function CCombat_manager:update_actor()
 	--if self.smart:name() == "gar_smart_terrain_5_2" then
 		--printf("Update_actor[%s]: combat_quest[%s]", self.smart:name(), tostring(self.combat_quest))
 	--end
-	-- Апдейтим бой, в зависимости от наличия и положения игрока
+	-- РђРїРґРµР№С‚РёРј Р±РѕР№, РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РЅР°Р»РёС‡РёСЏ Рё РїРѕР»РѕР¶РµРЅРёСЏ РёРіСЂРѕРєР°
 	if self.see_actor_enemy == nil or self.squads[self.see_actor_enemy] == nil then
-		-- Игрока не видели
+		-- РРіСЂРѕРєР° РЅРµ РІРёРґРµР»Рё
 		self.actor_combat = false
 		return
 	end
 
-	-- Если уничтожен сквад, который видел игрока.
+	-- Р•СЃР»Рё СѓРЅРёС‡С‚РѕР¶РµРЅ СЃРєРІР°Рґ, РєРѕС‚РѕСЂС‹Р№ РІРёРґРµР» РёРіСЂРѕРєР°.
 	if self.squads[self.see_actor_enemy] == nil then
 		self.see_actor_enemy = nil
 		self.see_actor_enemy_time = nil
@@ -345,7 +345,7 @@ function CCombat_manager:update_actor()
 		return
 	end
 
-	-- Проверяем, не сильно ли давно мы его видели
+	-- РџСЂРѕРІРµСЂСЏРµРј, РЅРµ СЃРёР»СЊРЅРѕ Р»Рё РґР°РІРЅРѕ РјС‹ РµРіРѕ РІРёРґРµР»Рё
 	if game.get_game_time():diffSec(self.see_actor_enemy_time) > SQUAD_IN_ACTOR_ATTACK_TIME then
 --		if self.smart:name() == "agr_smart_terrain_4_4_near_3" then
 --			printf("time condition")
@@ -371,12 +371,12 @@ function CCombat_manager:update_actor()
 	if my_squad.current_action ~= nil and
 		 my_squad.current_action.name == "attack_point"
 	then
-		-- ВНИМАНИЕ: Если разремить, то перестают срываться в атаку атакующие враги, при условии что у нас квест оборона лагеря.
-		-- Это не всегда есть хорошо!!!
+		-- Р’РќРРњРђРќРР•: Р•СЃР»Рё СЂР°Р·СЂРµРјРёС‚СЊ, С‚Рѕ РїРµСЂРµСЃС‚Р°СЋС‚ СЃСЂС‹РІР°С‚СЊСЃСЏ РІ Р°С‚Р°РєСѓ Р°С‚Р°РєСѓСЋС‰РёРµ РІСЂР°РіРё, РїСЂРё СѓСЃР»РѕРІРёРё С‡С‚Рѕ Сѓ РЅР°СЃ РєРІРµСЃС‚ РѕР±РѕСЂРѕРЅР° Р»Р°РіРµСЂСЏ.
+		-- Р­С‚Рѕ РЅРµ РІСЃРµРіРґР° РµСЃС‚СЊ С…РѕСЂРѕС€Рѕ!!!
 		--if self.combat_quest == "nil"
-			-- Мы в атаке
+			-- РњС‹ РІ Р°С‚Р°РєРµ
 			if actor_come(my_squad) then
-				-- Игрок ближе Х - бой
+				-- РРіСЂРѕРє Р±Р»РёР¶Рµ РҐ - Р±РѕР№
 				--printf("Sim_Combat[%s]: squad [%s] combat1", self.smart:name(), my_squad.squad_id)
 				my_squad_data._stage = "combat"
 				-- TODO: ACTOR IN BATTLE
@@ -386,14 +386,14 @@ function CCombat_manager:update_actor()
 		if self.combat_quest == "defend" then
 			local task = task_manager.get_task_manager():get_tasks_by_smart(self.smart.id)
 			if task ~= nil then
-				-- Если таск выдан на нашу цель
+				-- Р•СЃР»Рё С‚Р°СЃРє РІС‹РґР°РЅ РЅР° РЅР°С€Сѓ С†РµР»СЊ
 				task:actor_comed(self)
 			end
 		end
 	else
-		-- Мы сидим в точке
+		-- РњС‹ СЃРёРґРёРј РІ С‚РѕС‡РєРµ
 		if actor_come(my_squad) then
-			-- Игрок ближе Х - бой
+			-- РРіСЂРѕРє Р±Р»РёР¶Рµ РҐ - Р±РѕР№
 			--printf("Sim_Combat[%s]: squad [%s] combat2", self.smart:name(), my_squad.squad_id)
 			for k,data in pairs(self.squads) do
 				if data._stage ~= "combat" then
@@ -409,7 +409,7 @@ function CCombat_manager:update_actor()
 			self.actor_combat = true
 		else
 				--printf("Sim_Combat[%s]: squad [%s] combat3", self.smart:name(), my_squad.squad_id)
-			-- Игрок дальше Х - оборона
+			-- РРіСЂРѕРє РґР°Р»СЊС€Рµ РҐ - РѕР±РѕСЂРѕРЅР°
 			for k,data in pairs(self.squads) do
 				if data._stage == "idle" then
 					data._stage = "defence"
@@ -420,7 +420,7 @@ function CCombat_manager:update_actor()
 		end
 	end
 end
---' Проверяем переходы между стадиями одного отряда
+--' РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРµС…РѕРґС‹ РјРµР¶РґСѓ СЃС‚Р°РґРёСЏРјРё РѕРґРЅРѕРіРѕ РѕС‚СЂСЏРґР°
 function CCombat_manager:update_squad(id, data)
 	local squad = self.board.squads[id]
 	if squad == nil then
@@ -475,28 +475,28 @@ function CCombat_manager:update_squad(id, data)
 				if self.combat_quest == "nil" then
 					--printf("attacking by quest %s", tostring(squad.attacking_by_quest))
 					if squad.attacking_by_quest ~= nil then
-						-- Проверяем возможность квеста на захват
+						-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РєРІРµСЃС‚Р° РЅР° Р·Р°С…РІР°С‚
 						self.combat_quest = "capture"
-						--' Если мы с квестом, Выдаем команду приготовиться.
+						--' Р•СЃР»Рё РјС‹ СЃ РєРІРµСЃС‚РѕРј, Р’С‹РґР°РµРј РєРѕРјР°РЅРґСѓ РїСЂРёРіРѕС‚РѕРІРёС‚СЊСЃСЏ.
 						add_wait_attack(self, id)
 						return false
 					else
-						-- Проверяем возможность квеста на оборону наших противников.
+						-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РєРІРµСЃС‚Р° РЅР° РѕР±РѕСЂРѕРЅСѓ РЅР°С€РёС… РїСЂРѕС‚РёРІРЅРёРєРѕРІ.
 						local defender_exist = false
 						local attacker_exist = false
 						local player = self.board.players[squad.player_id]
 						if player.brain.use_prepare_phase and game_relations.is_squad_enemy_to_actor(squad.squad_id) then
-							-- Есть кому атаковать
+							-- Р•СЃС‚СЊ РєРѕРјСѓ Р°С‚Р°РєРѕРІР°С‚СЊ
 							attacker_exist = true
 						end
 
 						for kk,kdata in pairs(self.squads) do
 							local ksquad = self.board.squads[kk]
-							-- Если отряд сидит в точке
+							-- Р•СЃР»Рё РѕС‚СЂСЏРґ СЃРёРґРёС‚ РІ С‚РѕС‡РєРµ
 							if kdata._attack_squad == false then
 								local kplayer = self.board.players[ksquad.player_id]
 								if not game_relations.is_squad_enemy_to_actor(ksquad.squad_id) then
-									-- Есть кому обороняться
+									-- Р•СЃС‚СЊ РєРѕРјСѓ РѕР±РѕСЂРѕРЅСЏС‚СЊСЃСЏ
 									defender_exist = true
 									break
 								end
@@ -510,41 +510,41 @@ function CCombat_manager:update_squad(id, data)
 				end
 			end
 
-			--' Ожидаем пока все атакующие не займут подготовительные места, потом переходим в wait
+			--' РћР¶РёРґР°РµРј РїРѕРєР° РІСЃРµ Р°С‚Р°РєСѓСЋС‰РёРµ РЅРµ Р·Р°Р№РјСѓС‚ РїРѕРґРіРѕС‚РѕРІРёС‚РµР»СЊРЅС‹Рµ РјРµСЃС‚Р°, РїРѕС‚РѕРј РїРµСЂРµС…РѕРґРёРј РІ wait
 			for kk,npc in pairs(squad.squad_npc) do
 				local npc_storage = db.storage[kk]
 				if npc_storage ~= nil and xr_logic.check_action(npc_storage.object, npc_storage[npc_storage.active_scheme], "position_riched") == false then
 					return false
 				end
 			end
-			--' Все достигли точек работы - переходим в вейт
+			--' Р’СЃРµ РґРѕСЃС‚РёРіР»Рё С‚РѕС‡РµРє СЂР°Р±РѕС‚С‹ - РїРµСЂРµС…РѕРґРёРј РІ РІРµР№С‚
 			data._stage = "wait"
 		else
 			data._prepare_shouted = true
 			if self.combat_quest == "nil" then
 				if squad.attacking_by_quest ~= nil then
-					-- Проверяем возможность квеста на захват
+					-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РєРІРµСЃС‚Р° РЅР° Р·Р°С…РІР°С‚
 					self.combat_quest = "capture"
-					--' Если мы с квестом, Выдаем команду приготовиться.
+					--' Р•СЃР»Рё РјС‹ СЃ РєРІРµСЃС‚РѕРј, Р’С‹РґР°РµРј РєРѕРјР°РЅРґСѓ РїСЂРёРіРѕС‚РѕРІРёС‚СЊСЃСЏ.
 					add_wait_attack(self, id)
 					return false
 				else
-					-- Проверяем возможность квеста на оборону наших противников.
+					-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РєРІРµСЃС‚Р° РЅР° РѕР±РѕСЂРѕРЅСѓ РЅР°С€РёС… РїСЂРѕС‚РёРІРЅРёРєРѕРІ.
 					local defender_exist = false
 					local attacker_exist = false
 					local player = self.board.players[squad.player_id]
 					if player.brain.use_prepare_phase and game_relations.is_squad_enemy_to_actor(squad.squad_id) then
-						-- Есть кому атаковать
+						-- Р•СЃС‚СЊ РєРѕРјСѓ Р°С‚Р°РєРѕРІР°С‚СЊ
 						attacker_exist = true
 					end
 
 					for kk,kdata in pairs(self.squads) do
 						local ksquad = self.board.squads[kk]
-						-- Если отряд сидит в точке
+						-- Р•СЃР»Рё РѕС‚СЂСЏРґ СЃРёРґРёС‚ РІ С‚РѕС‡РєРµ
 						if kdata._attack_squad == false then
 							local kplayer = self.board.players[ksquad.player_id]
 							if not game_relations.is_squad_enemy_to_actor(ksquad.squad_id) then
-								-- Есть кому обороняться
+								-- Р•СЃС‚СЊ РєРѕРјСѓ РѕР±РѕСЂРѕРЅСЏС‚СЊСЃСЏ
 								defender_exist = true
 								break
 							end
@@ -586,7 +586,7 @@ function CCombat_manager:update_squad(id, data)
 				end
 			end
 		else
-			--ИДЕЯ: Если у нас квест с таймером и таймер не вышел (либо -1) то ждем, иначе атакуем.
+			--РР”Р•РЇ: Р•СЃР»Рё Сѓ РЅР°СЃ РєРІРµСЃС‚ СЃ С‚Р°Р№РјРµСЂРѕРј Рё С‚Р°Р№РјРµСЂ РЅРµ РІС‹С€РµР» (Р»РёР±Рѕ -1) С‚Рѕ Р¶РґРµРј, РёРЅР°С‡Рµ Р°С‚Р°РєСѓРµРј.
 			if self.combat_quest ~= "defend" then
 				for kk,kdata in pairs(self.squads) do
 					--printf("Sim_Combat[%s]: squad [%s] combat4", self.smart:name(), id)
@@ -601,7 +601,7 @@ function CCombat_manager:update_squad(id, data)
 			if self.combat_quest == "defend" then
 				if self.task == nil then
 					if game.get_game_time():diffSec(data._inited_defend_time) > 120 then
-						--' Выдать квест!!!
+						--' Р’С‹РґР°С‚СЊ РєРІРµСЃС‚!!!
 						local attack_squad = nil
 						for kk,kdata in pairs(self.squads) do
 							if kdata._stage == "wait" or kdata._stage == "prepare" then
@@ -629,15 +629,15 @@ function CCombat_manager:update_squad(id, data)
 		end
 	end
 	if data._stage == "combat" then
-		-- Проверка на окончание боя
+		-- РџСЂРѕРІРµСЂРєР° РЅР° РѕРєРѕРЅС‡Р°РЅРёРµ Р±РѕСЏ
 		if self.actor_combat == false then
 			local under_attack, num_attackers = self:point_under_attack()
 			if not under_attack then
-				--' Убили всех атакующих
+				--' РЈР±РёР»Рё РІСЃРµС… Р°С‚Р°РєСѓСЋС‰РёС…
 				data._stage = "post_combat"
 				return false
 			else
-				--' Убили всех обороняющихся
+				--' РЈР±РёР»Рё РІСЃРµС… РѕР±РѕСЂРѕРЅСЏСЋС‰РёС…СЃСЏ
 				if self.smart.player_name == "none" and num_attackers < 2 then
 					data._stage = "post_combat"
 					return false
@@ -646,13 +646,13 @@ function CCombat_manager:update_squad(id, data)
 		end
 
 		if squad.squad_online then
-			--' Проверка сказали ли мы о том, что всем в атаку :)
+			--' РџСЂРѕРІРµСЂРєР° СЃРєР°Р·Р°Р»Рё Р»Рё РјС‹ Рѕ С‚РѕРј, С‡С‚Рѕ РІСЃРµРј РІ Р°С‚Р°РєСѓ :)
 			if data._attack_shouted ~= true then
 				data._attack_shouted = true
 				squad:issue_order("attack")
 			end
 
-			-- Если мы выдавали квест на оборону и игрок не пришел на помощь
+			-- Р•СЃР»Рё РјС‹ РІС‹РґР°РІР°Р»Рё РєРІРµСЃС‚ РЅР° РѕР±РѕСЂРѕРЅСѓ Рё РёРіСЂРѕРє РЅРµ РїСЂРёС€РµР» РЅР° РїРѕРјРѕС‰СЊ
 --			if self.combat_quest == "defend" and
 --			   self.actor_defence_come ~= true
 --			then
@@ -661,7 +661,7 @@ function CCombat_manager:update_squad(id, data)
 --				end
 --				if game.get_game_time():diffSec(data._last_defence_kill_time) > 100 then
 --					if db.actor:position():distance_to_sqr(self.smart.position) >  ACTOR_COME_ATTACK_DIST then
-						--' Убиваем первого попавшегося оборонщика
+						--' РЈР±РёРІР°РµРј РїРµСЂРІРѕРіРѕ РїРѕРїР°РІС€РµРіРѕСЃСЏ РѕР±РѕСЂРѕРЅС‰РёРєР°
 --						for kk,vv in pairs(squad.squad_npc) do
 --							local npc = alife():object(kk)
 --							local npc_storage = db.storage[npc.id]
@@ -687,10 +687,10 @@ function CCombat_manager:update_squad(id, data)
 				data._start_attack_wait = game.get_game_time()
 			end
 
-			-- бой в оффлайне.
-			-- Вычисляем, сколько урона мы нанесем противнику.
+			-- Р±РѕР№ РІ РѕС„С„Р»Р°Р№РЅРµ.
+			-- Р’С‹С‡РёСЃР»СЏРµРј, СЃРєРѕР»СЊРєРѕ СѓСЂРѕРЅР° РјС‹ РЅР°РЅРµСЃРµРј РїСЂРѕС‚РёРІРЅРёРєСѓ.
 			local casualities = math.random(data._squad_power/5,data._squad_power/3)
-			-- Теперь итерируемся по отрядам и уменьшаем их силу
+			-- РўРµРїРµСЂСЊ РёС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ РѕС‚СЂСЏРґР°Рј Рё СѓРјРµРЅСЊС€Р°РµРј РёС… СЃРёР»Сѓ
 			for kk,vv in pairs(self.squads) do
 				if vv._stage == "combat" then
 					local enemy_squad = self.board.squads[kk]
@@ -714,7 +714,7 @@ function CCombat_manager:update_squad(id, data)
 				end
 			end
 
-			-- Озвучка об окончании боя
+			-- РћР·РІСѓС‡РєР° РѕР± РѕРєРѕРЅС‡Р°РЅРёРё Р±РѕСЏ
 			squad:issue_order("combat_done")
 			for kk,vv in pairs(self.squads) do
 				if vv._stage == "post_combat" then
@@ -735,14 +735,14 @@ function CCombat_manager:update_squad(id, data)
 	return false
 end
 
---' Нужно ли еще указанному отряду сражаться в данном комбате.
+--' РќСѓР¶РЅРѕ Р»Рё РµС‰Рµ СѓРєР°Р·Р°РЅРЅРѕРјСѓ РѕС‚СЂСЏРґСѓ СЃСЂР°Р¶Р°С‚СЊСЃСЏ РІ РґР°РЅРЅРѕРј РєРѕРјР±Р°С‚Рµ.
 function CCombat_manager:get_squad_stage(squad)
 	if self.squads[squad.squad_id] == nil then
 		return nil
 	end
 	return self.squads[squad.squad_id]._stage
 end
---' Проверяет, находится ли точка под атакой.
+--' РџСЂРѕРІРµСЂСЏРµС‚, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё С‚РѕС‡РєР° РїРѕРґ Р°С‚Р°РєРѕР№.
 function CCombat_manager:point_under_attack()
 	local community_list = {}
 	local num_attackers = 0
@@ -755,10 +755,10 @@ function CCombat_manager:point_under_attack()
 				num_attackers = num_attackers + 1
 			end
 			if squad.smart_id == self.smart.id then
-				-- Обороняющийся отряд
+				-- РћР±РѕСЂРѕРЅСЏСЋС‰РёР№СЃСЏ РѕС‚СЂСЏРґ
 				community_list[player_id] = community_list[player_id] - 100
 			else
-				-- Атакующий отряд
+				-- РђС‚Р°РєСѓСЋС‰РёР№ РѕС‚СЂСЏРґ
 				community_list[player_id] = community_list[player_id] + 1
 			end
 		end
@@ -771,7 +771,7 @@ function CCombat_manager:point_under_attack()
 	end
 	return false, num_attackers
 end
--- Получает врага текущему отряду
+-- РџРѕР»СѓС‡Р°РµС‚ РІСЂР°РіР° С‚РµРєСѓС‰РµРјСѓ РѕС‚СЂСЏРґСѓ
 function CCombat_manager:get_squad_enemy(my_squad)
 	for k,data in pairs(self.squads) do
 		local squad = self.board.squads[k]
@@ -781,11 +781,11 @@ function CCombat_manager:get_squad_enemy(my_squad)
 	end
 	return nil
 --	if sim_board.relations[my_squad.player_id] == "enemy" and actor_come(my_squad) then
---		return nil -- Не стреляем по игроку в подготовительной фазе
+--		return nil -- РќРµ СЃС‚СЂРµР»СЏРµРј РїРѕ РёРіСЂРѕРєСѓ РІ РїРѕРґРіРѕС‚РѕРІРёС‚РµР»СЊРЅРѕР№ С„Р°Р·Рµ
 --	end
 --	return nil
 end
--- Сохранение
+-- РЎРѕС…СЂР°РЅРµРЅРёРµ
 function CCombat_manager:save(packet)
 	set_save_marker(packet, "save", false, "CCombat_manager")
 
@@ -814,7 +814,7 @@ function CCombat_manager:save(packet)
 	end
 	packet:w_u8(n)
 	for k,v in pairs(self.squads) do
-		packet:w_stringZ(k) -- ID отряда
+		packet:w_stringZ(k) -- ID РѕС‚СЂСЏРґР°
 		packet:w_stringZ(v._stage)
 
 		packet:w_bool(v._attack_shouted)
@@ -857,7 +857,7 @@ function CCombat_manager:save(packet)
 
 	set_save_marker(packet, "save", true, "CCombat_manager")
 end
--- Загрузка
+-- Р—Р°РіСЂСѓР·РєР°
 function CCombat_manager:load(packet)
 	set_save_marker(packet, "load", false, "CCombat_manager")
 
@@ -923,9 +923,9 @@ function CCombat_manager:load(packet)
 end
 
 
---' Вызывается на хит колбеках сталкеров и монстров. Нужен для начала атаки.
+--' Р’С‹Р·С‹РІР°РµС‚СЃСЏ РЅР° С…РёС‚ РєРѕР»Р±РµРєР°С… СЃС‚Р°Р»РєРµСЂРѕРІ Рё РјРѕРЅСЃС‚СЂРѕРІ. РќСѓР¶РµРЅ РґР»СЏ РЅР°С‡Р°Р»Р° Р°С‚Р°РєРё.
 function hit_callback(victim_id, attacker_id)
-		--' берем комбат менеджер получившего хит
+		--' Р±РµСЂРµРј РєРѕРјР±Р°С‚ РјРµРЅРµРґР¶РµСЂ РїРѕР»СѓС‡РёРІС€РµРіРѕ С…РёС‚
 		local my_squad = db.storage[victim_id].squad_obj
 
 		if my_squad == nil then
@@ -950,7 +950,7 @@ function actor_come_to_point(smart)
 		return false
 	end
 
-	--' Проверяем пришел ли игрок (или игрок в моем дефенс рестрикторе или он начал воевать против атакующих).
+	--' РџСЂРѕРІРµСЂСЏРµРј РїСЂРёС€РµР» Р»Рё РёРіСЂРѕРє (РёР»Рё РёРіСЂРѕРє РІ РјРѕРµРј РґРµС„РµРЅСЃ СЂРµСЃС‚СЂРёРєС‚РѕСЂРµ РёР»Рё РѕРЅ РЅР°С‡Р°Р» РІРѕРµРІР°С‚СЊ РїСЂРѕС‚РёРІ Р°С‚Р°РєСѓСЋС‰РёС…).
 	if smart.def_restr == nil then
 		if db.actor:position():distance_to_sqr(smart.position) < ACTOR_COME_DEFENCE_DIST then
 			return true
@@ -986,15 +986,15 @@ end
 
 
 
---' Таблица комбат менеджеров, ожидающих начало атаки.
+--' РўР°Р±Р»РёС†Р° РєРѕРјР±Р°С‚ РјРµРЅРµРґР¶РµСЂРѕРІ, РѕР¶РёРґР°СЋС‰РёС… РЅР°С‡Р°Р»Рѕ Р°С‚Р°РєРё.
 wait_for_combat = {}
 
---' ДОбавление комбат менеджера в ожидание атаки.
+--' Р”РћР±Р°РІР»РµРЅРёРµ РєРѕРјР±Р°С‚ РјРµРЅРµРґР¶РµСЂР° РІ РѕР¶РёРґР°РЅРёРµ Р°С‚Р°РєРё.
 function add_wait_attack(combat, squad_id)
 	wait_for_combat[combat.smart.id] = squad_id
 end
 
---' Вызывается при отдачи игроком приказа "Атаковать".
+--' Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РѕС‚РґР°С‡Рё РёРіСЂРѕРєРѕРј РїСЂРёРєР°Р·Р° "РђС‚Р°РєРѕРІР°С‚СЊ".
 function start_attack()
 	printf("Attack started")
 	local sim_board = sim_board.get_sim_board()
