@@ -213,6 +213,7 @@ public:
 		sf_grenade_change = (1 << 24),
 		sf_shoot_grenade_actor = (1 << 25),
 		sf_switch_g = (1 << 26),
+		sf_reload_change = (1 << 27),
 	};
 
 	Flags32 m_eDevicesFlags;
