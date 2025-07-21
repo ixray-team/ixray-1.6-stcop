@@ -37,14 +37,15 @@
 	<group name="kb_grp_inventory">
 		<command id="kb_inventory"				exe="inventory"/>
 		<command id="kb_active_jobs"			exe="active_jobs"/>
-		<command id="kb_torch"						exe="torch"/>
-    <command id="kb_detector"					exe="show_detector"/>
-    <command id="kb_night_vision"			exe="night_vision"/>
+		<command id="kb_torch"					exe="torch"/>
+		<command id="kb_clear_gasmask"			exe="clear_gasmask"/>
+		<command id="kb_detector"				exe="show_detector"/>
+		<command id="kb_night_vision"			exe="night_vision"/>
 		<command id="kb_quick_use_1"			exe="quick_use_1"/>
-    <command id="kb_quick_use_2"			exe="quick_use_2"/>
-    <command id="kb_quick_use_3"			exe="quick_use_3"/>
-    <command id="kb_quick_use_4"			exe="quick_use_4"/>
-    <command id="kb_drop"						  exe="drop"/>		
+		<command id="kb_quick_use_2"			exe="quick_use_2"/>
+		<command id="kb_quick_use_3"			exe="quick_use_3"/>
+		<command id="kb_quick_use_4"			exe="quick_use_4"/>
+		<command id="kb_drop"					exe="drop"/>		
 	</group>
 	<group name="kb_grp_common">
 		<command id="kb_pause"						exe="pause"/>

@@ -124,7 +124,11 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			SwitchTorch();
 			break;
 		}
-
+	case kCLEARGASMASK:
+	{
+		ClearMask();
+		break;
+	}
 	case kDETECTOR:
 		{
 			PIItem det_active					= inventory().ItemFromSlot(DETECTOR_SLOT);
@@ -919,6 +923,91 @@ void CActor::SwitchTorch()
 			torch->Switch();
 		}
 	}
+}
+
+void CActor::ClearMask()
+{
+	bool has_glass = GetOutfit() != nullptr && GetOutfit()->GlassPresent || GetHelmet() != nullptr && GetHelmet()->GlassPresent;
+	
+	if (!has_glass)
+	{
+		return;
+	}
+
+	CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
+	CWeapon* wpn = smart_cast<CWeapon*>(itm);
+	CCustomDetector* det = GetDetector();
+
+	if (itm != nullptr && det != nullptr)
+	{
+		if (wpn != nullptr && wpn->IsZoomed())
+		{
+			return;
+		}
+
+		if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_clear_mask) && det->m_eAnimationsFlags.test(CCustomDetector::EAnimationsFlags::af_clear_mask))
+		{
+			if (itm->GetState() != CHUDState::eIdle || det->GetState() != CCustomDetector::eIdle)
+			{
+				return;
+			}
+
+			itm->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_clear_mask, true);
+			itm->SwitchState(CHUDState::eDeviceSwitch);
+			det->m_eDevicesFlags.set(CCustomDetector::EDevicesFlags::df_clear_mask, true);
+			det->SwitchState(CCustomDetector::eDeviceSwitch);
+			return;
+		}
+	}
+
+	if (itm != nullptr)
+	{
+		if (wpn != nullptr && wpn->IsZoomed())
+		{
+			return;
+		}
+
+		if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_clear_mask))
+		{
+			if (itm->GetState() != CHUDState::eIdle)
+			{
+				return;
+			}
+
+			itm->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_clear_mask, true);
+			itm->SwitchState(CHUDState::eDeviceSwitch);
+			return;
+		}
+	}
+
+	if (det != nullptr)
+	{
+		if (det->m_eAnimationsFlags.test(CCustomDetector::EAnimationsFlags::af_clear_mask))
+		{
+			if (det->GetState() != CCustomDetector::eIdle)
+			{
+				return;
+			}
+
+			det->m_eDevicesFlags.set(CCustomDetector::EDevicesFlags::df_clear_mask, true);
+			det->SwitchState(CCustomDetector::eDeviceSwitch);
+			return;
+		}
+	}
+
+	if (m_sClearMaskAnimator.size() > 0)
+	{
+		if (HudAnimator() && !HudAnimator()->IsActive())
+		{
+			HudAnimator()->StartAnimator(m_sClearMaskAnimator);
+			HudAnimator()->SetLeftCallback({ this, &CActor::ClearMaskCB });
+		}
+	}
+}
+
+void CActor::ClearMaskCB()
+{
+	//RAVLIK TO LVUTNER: KOGDA KAPLI NA EBAL'NIKE?
 }
 
 #ifndef MASTER_GOLD

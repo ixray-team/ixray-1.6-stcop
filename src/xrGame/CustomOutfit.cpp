@@ -119,6 +119,11 @@ void CCustomOutfit::Load(LPCSTR section)
 	IsExo = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo", false);
 	IsExoProto = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo_proto", false);
 
+	if (pSettings->line_exist(section, "glass_present"))
+	{
+		GlassPresent = pSettings->r_bool(section, "glass_present");
+	}
+
 	if (pSettings->line_exist(section, "character_portrait"))
 	{
 		m_character_portrait = pSettings->r_string(section, "character_portrait");
