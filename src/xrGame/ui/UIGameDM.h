@@ -13,6 +13,7 @@ class UIVoteStatusWnd;
 class CUIMapDesc;
 class UITeamPanels;
 class CUITextWnd;
+class CUIStatic;
 
 class CUIGameDM: public UIGameMP
 {
@@ -40,7 +41,7 @@ protected:
 
 	CUIMoneyIndicator*				m_pMoneyIndicator;
 	CUIRankIndicator*				m_pRankIndicator;
-	CUITextWnd*						m_pFragLimitIndicator;
+	CUIStatic*						m_pFragLimitIndicator;
 	UIVoteStatusWnd*				m_voteStatusWnd;
 public:
 									CUIGameDM				();
