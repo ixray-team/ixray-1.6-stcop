@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="pda_end_tutorial">
+		<text>To by byіo tyle...</text>
+	</string>
+	<string id="pda_start_tutorial">
+		<text>Samouczek krok po kroku.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_1">
+		<text>W porz№dku. Jak juї wiesz, naszym gіуwnym celem jest przejкcie kontroli nad Bagnami, co oznacza wojnк z agresorami.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_10">
+		<text>Tutaj wreszcie znajdziesz bieї№ce zadanie strategiczne, a takїe zadania taktyczne, ktуrych wykonanie jest konieczne do wykonania zadania strategicznego.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_11">
+		<text>Wykonane zadania strategiczne bкd№ wyњwietlone na dole.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_2">
+		<text>W tej czкњci wyњwietlane bкd№ szczegуіy taktyczne zwi№zane z postкpem walk.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_3">
+		<text>Po lewej stronie znajduj№ siк informacje na temat twojej obecnej frakcji. W tej chwili to my, "Czyste Niebo".</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_4">
+		<text>Po prawej stronie znajduj№ siк informacje na temat gіуwnego wroga.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_5">
+		<text>To jest przybliїony poziom naszej siіy militarnej.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_6">
+		<text>Tutaj wyњwietlona jest liczba naszych bojownikуw.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_7">
+		<text>Tutaj zaњ wyњwietlony jest poziom naszego wsparcia logistycznego.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_8">
+		<text>Symbole znajduj№ce siк na samym dole odpowiadaj№ wyrуїniaj№cym cechom naszego wyposaїenia bojowego.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_9">
+		<text>Podobne wskaџniki wyњwietlane s№ w odniesieniu do naszego wroga.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_1">
+		<text>W ostatniej zakіadce znajdziesz informacje na temat twoich obecnych stosunkуw z kaїd№ z frakcji oraz jej poziom siіy militarnej.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_2">
+		<text>Tutaj wyњwietlane s№ rуwnieї statystyki twoich postкpуw.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_1">
+		<text>Spуjrz tutaj. To zakіadka "zadania" - twуj podstawowy przewodnik.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_10">
+		<text>Oprуcz zadaс na mapie przedstawiona jest lokalizacja sojuszniczych oddziaіуw oraz wspуіrzкdne wykrytych wrogуw.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_2">
+		<text>Tutaj przedstawione jest twoje zadanie podstawowe...</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_3">
+		<text>A takїe wybrane zadanie poboczne.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_4">
+		<text>Jeњli masz kilka zadaс pobocznych, moїesz je przewijaж za pomoc№ tych przyciskуw.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_5">
+		<text>Wiкkszoњж zadaс rуwnieї bкdzie wyњwietlona na mapie, z wyj№tkiem rzadkich przypadkуw, gdy zlokalizowanie celu misji nie jest moїliwe.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_6">
+		<text>Bкdziemy potrzebowaж twojej pomocy nie tylko w walce z wrogiem, lecz takїe w zajmowaniu pozycji strategicznych.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_7">
+		<text>W takie sytuacji nasi bojownicy bкd№ wdziкczni za utrzymywanie ognia osіonowego podczas zdobywania pozycji.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_8">
+		<text>Przy okazji, staraj siк nie ignorowaж wezwaс o pomoc - їycie naszych chіopcуw moїe zaleїeж od twoich dziaіaс.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_9">
+		<text>Najedџ na miejsce na mapie, by uzyskaж bardziej szczegуіowe informacje na temat tego miejsca.</text>
+	</string>
+</string_table>

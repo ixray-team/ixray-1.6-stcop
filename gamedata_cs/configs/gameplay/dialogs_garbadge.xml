@@ -1144,7 +1144,7 @@
                 <next>32</next>
             </phrase>
             <phrase id="32">
-                <text>gar_digger_leader_old_pda_32</text>
+                <text>gar_digger_leader_bring_money_32</text>
                 <precondition>dialogs_garbage.if_actor_hasnt_old_pda</precondition>
                 <next>321</next>
             </phrase>

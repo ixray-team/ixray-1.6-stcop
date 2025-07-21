@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_artefact_huntesr_capture_smart_name">
+		<text>Braт stalkery na cestм k Zуnм anomбliн</text>
+	</string>
+	<string id="red_artefact_huntesr_capture_smart_text">
+		<text>Braт stalkery na cestм k Zуnм anomбliн</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_name">
+		<text>Braт stalkery v Zуnм anomбliн</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_text">
+		<text>Braт stalkery v Zуnм anomбliн</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_name">
+		<text>Kryj ћoldбky</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_text">
+		<text>Ћoldбci ъtoин na bandity na druhй stranм шeky. Poskytni jim krycн palbu a pomoz jim dosбhnout vytyиenэch pozic.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_name">
+		<text>Zniи bandity</text>
+	</string>
+	<string id="red_bridge_cover_allyes_text">
+		<text>Banditщ je pшнliљ mnoho - brбnн ћoldбkщm v pшekroиenн mostu. Zabij tolik banditщ, kolik dokбћeљ.</text>
+	</string>
+	<string id="red_bridge_cover_bridge_name">
+		<text>Kryj ћoldбka u ovlбdacнho panelu</text>
+	</string>
+	<string id="red_bridge_cover_bridge_text">
+		<text>Jeden ћoldбk pronikl aћ k ovlбdacнmu panelu mostu. Kryj ho palbou, aby mohl spustit most.</text>
+	</string>
+	<string id="red_bridge_go_to_positon_name">
+		<text>Zaujmi palebnou pozici</text>
+	</string>
+	<string id="red_bridge_go_to_positon_text">
+		<text>Zaujmi palebnou pozici v prvnнm patшe vrбtnice. To nabнzн nejlepљн mнsto k odstшelovбnн banditщ.</text>
+	</string>
+	<string id="red_bridge_kill_sniper_name">
+		<text>Zlikviduj odstшelovaиe na kopci</text>
+	</string>
+	<string id="red_bridge_kill_sniper_text">
+		<text>Odstшelovaиi majн vэhled na ovlбdacн panel mostu - dokud jsou naћivu, ћoldбkщm se nepodaшн most spustit. Zlikviduj odstшelovaиe na kopci.</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_name">
+		<text>Promluv si s Lebedмvem</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_text">
+		<text>Most je spuљtмnэ a cesta do Limansku je volnб. Promluv si s Lebedмvem.</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_name">
+		<text>Poиkej na pшнchod skupiny stalkerщ</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_text">
+		<text>Poиkej na pшнchod skupiny stalkerщ</text>
+	</string>
+	<string id="red_bring_compass_name">
+		<text>Dones Lesnнkovi kompas</text>
+	</string>
+	<string id="red_bring_compass_text">
+		<text>Dнky kompasu se Lesnнk pшed nмkolika dny vymotal z prostorovй kapsy. Tento artefakt by se mohl opмt hodit, tentokrбt pшi zбchranм ztracenй skupiny ћoldбkщ. Dones kompas Lesnнkovi.</text>
+	</string>
+	<string id="red_find_compass_name">
+		<text>Najdi artefakt kompas</text>
+	</string>
+	<string id="red_find_compass_text">
+		<text>Lesnнk naљel jedineиnэ artefakt v jednй prostorovй anomбlii, kterб se velmi podobб prostorovй kapse poblнћ vojenskэch skladiљќ, v nнћ uvнzli ћoldбci. Na cestм domщ vљak Lesnнka pшepadli banditi a okradli jej. Najdi kompas.</text>
+	</string>
+	<string id="red_find_forester_name">
+		<text>Promluv si s Lesnнkem</text>
+	</string>
+	<string id="red_find_forester_text">
+		<text>Lesnнk ћije v opuљtмnй chatrиi. Snad by ti mohl pomoci najнt cestu do Limansku. Promluv si s nнm.</text>
+	</string>
+	<string id="red_find_teleport_name">
+		<text>Najdi prostorovou anomбlii</text>
+	</string>
+	<string id="red_find_teleport_text">
+		<text>V PDA ztracenй skupiny byly nмjakй poznбmky o cestм skrz Rudэ les. V jeho hlubinбch se nachбzн prostorovб anomбlie vedoucн k chэљi na okraji lesa. Prбvм tam ћije Lesnнk. Najdi prostorovou anomбlii.</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_name">
+		<text>Pшines PDA s mapou Rudйho lesa</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_text">
+		<text>Pшines PDA s mapou Rudйho lesa</text>
+	</string>
+	<string id="red_go_to_signal_sos_name">
+		<text>Odpovмz na nouzovй volбnн</text>
+	</string>
+	<string id="red_go_to_signal_sos_text">
+		<text>Cesta Rudэm lesem k Lesnнkovм domu je neznбmб. Z Rudйho lesa ale vychбzн nouzovй volбnн. Odpovмz na nм.</text>
+	</string>
+	<string id="red_help_with_bridge_name">
+		<text>Pomoz Jasnй obloze dobэt most</text>
+	</string>
+	<string id="red_help_with_bridge_text">
+		<text>Druћstvo ћoldбkщ se blнћн k mostu do Limansku. Budou muset projнt pшes ъzemн banditщ, takћe tam bude zбhy pмknм horko. Pomoz Jasnй obloze spustit most do Limansku.</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_name">
+		<text>Odraz pшepadenн</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_text">
+		<text>Stшelce kryje skupina stalkerщ. Odraz pшepadenн.</text>
+	</string>
+	<string id="red_pursuit_strelok_name">
+		<text>Zastav Stшelce</text>
+	</string>
+	<string id="red_pursuit_strelok_text">
+		<text>Stшelec zabмhl do tunelu. Bмћ za nнm a zabraт mu v proniknutн do stшedu Zуny.</text>
+	</string>
+	<string id="red_pursuit_talk_csky_name">
+		<text>Zastav Stшelce</text>
+	</string>
+	<string id="red_pursuit_talk_csky_text">
+		<text>Stшelec nemщћe bэt daleko, bude tak do 100 metrщ. Doћeт ho.</text>
+	</string>
+	<string id="red_stalker_reinforced_name">
+		<text>Dobuп starэ dщl</text>
+	</string>
+	<string id="red_stalker_reinforced_text">
+		<text>Dobuп starэ dщl. Nachбzн se v nмm spousta anomбliн, ale rovnмћ mnoho vzбcnэch artefaktщ.</text>
+	</string>
+	<string id="red_go_to_military_base_name">
+		<text>Jdi na armбdnн zбkladnu</text>
+	</string>
+	<string id="red_go_to_military_base_text">
+		<text>Na armбdnн zбkladnм je silnэ vysнlaи, kterэ bychom mohli vyuћнt k odvysнlбnн zprбvy druћstvu ztracenйmu v prostorovй kapse u Limansku. Jdi na armбdnн zбkladnu.</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_name">
+		<text>Dostaт se k oblasti anomбliн</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_text">
+		<text>PDA ztracenй skupiny obsahuje nмkolik poznбmek o cestм skrz Rudэ les. V jeho hlubinбch se nachбzн prostorovб anomбlie, kterб vede ke starй chэљi na kraji lesa. Tam ћije Lesnнk. Najdi prostorovou anomбlii.</text>
+	</string>
+	<string id="red_find_signals_on_military_name">
+		<text>Zachyќ rбdiovй vysнlбnн</text>
+	</string>
+	<string id="red_find_signals_on_military_text">
+		<text>Lesnнk zachycuje nesrozumitelnй ъtrћky rбdiovй komunikace od neidentifikovanй skupiny, kterб byla uvмznмna v podivnй anomбlii velmi blнzko Limansku. Tato skupina by mohla znбt alternativnн cestu do Limansku. Bмћ k armбdnнm skladiљtнm a najdi vhodnй mнsto pro zachycenн zшetelnмjљнho signбlu.</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_name">
+		<text>Seber PDA</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_text">
+		<text>PDA jednoho mrtvйho stalkera je stбle aktivnн. Mohlo by obsahovat cennй informace o Rudйm lese. Seber to PDA.</text>
+	</string>
+	<string id="red_recover_item_1_name">
+		<text>Pшines PDA s mapou Rudйho lesa</text>
+	</string>
+	<string id="red_recover_item_1_text">
+		<text>Hele, potшebovali bychom pomoct. Potшebujem pшesnou mapu Rudэho lesa. Prej se pбr skupin stalkerщ pokouљelo les prozkoumat, ale vмtљina z nich zmizela. Najdi jejich poznбmky a pшines mi je.</text>
+	</string>
+	<string id="red_recover_item_2_name">
+		<text>Pшines tankistickэ kulomet</text>
+	</string>
+	<string id="red_recover_item_2_text">
+		<text>Mбm pro tebe kљeft. Od Lesбka jsem slyљel, ћe je hluboko v lese starej sovмtskej tank. Nikdo nevн, jak se tam dostal, objevil se bмhem jednэ mocnэ emise. No a hlavnм je v podstatм v poшбdku. Jasnм, jezdit se s nнm nedб, ale mohl bys odmontovat kulбk, kterej mб na vмћi. Pшines mi ten kulomet a jб se ti dobшe odmмnнm.</text>
+	</string>
+	<string id="red_recover_item_3_name">
+		<text>Pшines experimentбlnн zaшнzenн</text>
+	</string>
+	<string id="red_recover_item_3_text">
+		<text>Mohl bys mi nмco sehnat. Testovali jsme pro vмdбtory jeden prototyp, malэ zaшнzenн na mмшenн sнly anomбliн. Zatнm nenн skoro k niиemu, trvalo jim dva dny, neћ nбs vщbec nauиili, jak s tнm krбmem zachбzet. Sbнrali jsme data u starэho dolu, kdyћ se najednou nмco stalo. Nмco na nбs zaъtoиilo... zaиaly na nбs lнtat vљechny krбmy v okolн, jб byl jedinej, kdo se odtamtud dostal ћivej. To zaшнzenн tam zщstalo u nмkterэho z chlapщ, ty lнtajнcн vмci je strиily do anomбliн. Ta vмc, co na nбs zaъtoиila, tam dole jeљtм asi bude, takћe nebude snadnэ ten pшнstroj zнskat, ale pokud to dokбћeљ, dostaneљ sluљnou odmмnu.</text>
+	</string>
+</string_table>

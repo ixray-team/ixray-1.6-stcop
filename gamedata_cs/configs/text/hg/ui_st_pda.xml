@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Global Map">
+		<text>Vilбgtйrkйp</text>
+	</string>
+	<string id="Local Map">
+		<text>Helyi tйrkйp</text>
+	</string>
+	<string id="Time">
+		<text>Idх</text>
+	</string>
+	<string id="actor">
+		<text>Zsoldos</text>
+	</string>
+	<string id="actor_bandit">
+		<text>Fosztogatу</text>
+	</string>
+	<string id="actor_csky">
+		<text>Tiszta Йgbolt</text>
+	</string>
+	<string id="actor_dolg">
+		<text>Szolgбlat</text>
+	</string>
+	<string id="actor_freedom">
+		<text>Szabadsбg</text>
+	</string>
+	<string id="actor_stalker">
+		<text>Szabadъszу</text>
+	</string>
+	<string id="agroprom">
+		<text>Agropromi kutatуintйzet</text>
+	</string>
+	<string id="arena_enemy">
+		<text>Ellensйg</text>
+	</string>
+	<string id="army">
+		<text>Hadsereg</text>
+	</string>
+	<string id="bandit">
+		<text>Fosztogatу</text>
+	</string>
+	<string id="csky">
+		<text>Tiszta Йgbolt</text>
+	</string>
+	<string id="darkvalley">
+		<text>Sцtйtvцlgy</text>
+	</string>
+	<string id="dolg">
+		<text>Szolgбlat</text>
+	</string>
+	<string id="ecolog">
+		<text>Tudуs</text>
+	</string>
+	<string id="escape">
+		<text>Kordon</text>
+	</string>
+	<string id="freedom">
+		<text>Szabadsбg</text>
+	</string>
+	<string id="garbage">
+		<text>Szemйtdomb</text>
+	</string>
+	<string id="katacomb">
+		<text>Elhagyatott kуrhбz</text>
+	</string>
+	<string id="killer">
+		<text>Zsoldos</text>
+	</string>
+	<string id="limansk">
+		<text>Limanszk</text>
+	</string>
+	<string id="marsh">
+		<text>Ingovбny</text>
+	</string>
+	<string id="military">
+		<text>Katonai raktбrtelep</text>
+	</string>
+	<string id="monolith">
+		<text>Monolit</text>
+	</string>
+	<string id="monster">
+		<text>Mutбns</text>
+	</string>
+	<string id="pda_btn_close">
+		<text>PDA kikapcsolбsa</text>
+	</string>
+	<string id="pda_btn_fractionwar">
+		<text>Frakciуhбborъ</text>
+	</string>
+	<string id="pda_btn_fractionwar_hint">
+		<text>Informбciу a frakciуk kцzцtti hбborъrуl:</text>
+	</string>
+	<string id="pda_btn_logs">
+		<text>Ьzenetnaplу</text>
+	</string>
+	<string id="pda_btn_logs_hint">
+		<text>Ьzenet elхzmйnyek mutatбsa</text>
+	</string>
+	<string id="pda_btn_off_hint">
+		<text>Kikapcsolбs</text>
+	</string>
+	<string id="pda_btn_quests">
+		<text>Tйrkйp</text>
+	</string>
+	<string id="pda_btn_quests_hint">
+		<text>Zуna tйrkйpйnek mutatбsa</text>
+	</string>
+	<string id="pda_btn_ranking">
+		<text>Statisztikбk</text>
+	</string>
+	<string id="pda_btn_ranking_hint">
+		<text>Informбciуk megjelenнtйse a frakciуkrуl:</text>
+	</string>
+	<string id="pda_filter_news">
+		<text>Hнrek megjelenнtйse</text>
+	</string>
+	<string id="pda_filter_talk">
+		<text>Pбrbeszйdek megjelenнtйse</text>
+	</string>
+	<string id="red_forest">
+		<text>Vцrцs-erdх</text>
+	</string>
+	<string id="st_enemy">
+		<text>Ellensйgek</text>
+	</string>
+	<string id="st_faction_war_csky_capture_enemy_base">
+		<text>Foglald el az ellensйges bбzist</text>
+	</string>
+	<string id="st_faction_war_csky_need_more_power">
+		<text>Erхsнtsd meg helyzetьnket az Ingovбnyban</text>
+	</string>
+	<string id="st_faction_war_csky_relax">
+		<text>Ellensйg legyхzve</text>
+	</string>
+	<string id="st_faction_war_csky_secure_level">
+		<text>Biztosнtsd az цsszes Ingovбnyba vezetх utat</text>
+	</string>
+	<string id="st_fraction_state">
+		<text>Frakciуerх</text>
+	</string>
+	<string id="st_friend">
+		<text>Barбtok</text>
+	</string>
+	<string id="st_location">
+		<text>Helyzet:</text>
+	</string>
+	<string id="st_location_bandit">
+		<text>Szemйtdomb</text>
+	</string>
+	<string id="st_location_csky">
+		<text>Ingovбny</text>
+	</string>
+	<string id="st_location_dolg">
+		<text>Agropromi kutatуintйzet</text>
+	</string>
+	<string id="st_location_freedom">
+		<text>Sцtйtvцlgy</text>
+	</string>
+	<string id="st_location_stalker">
+		<text>Kordon</text>
+	</string>
+	<string id="stalker">
+		<text>Szabadъszу</text>
+	</string>
+	<string id="stancia_2">
+		<text>Csernobili Atomerхmы</text>
+	</string>
+	<string id="trader">
+		<text>Kereskedх</text>
+	</string>
+	<string id="ui_fraction_standing">
+		<text>Frakciуlista</text>
+	</string>
+	<string id="ui_no_fraction">
+		<text>Egyetlen frakciуnak sem vagy a tagja</text>
+	</string>
+	<string id="ui_pda_details">
+		<text># /rйszletek</text>
+	</string>
+	<string id="ui_st_capture">
+		<text>Elfoglalni:</text>
+	</string>
+	<string id="ui_st_defend">
+		<text>Megvйdeni:</text>
+	</string>
+	<string id="ui_st_enemy_frac_info">
+		<text>Frakciу informбciу</text>
+	</string>
+	<string id="ui_st_enemy_mem_count">
+		<text>Ellensйges frakciу osztagok</text>
+	</string>
+	<string id="ui_st_enemy_resource">
+		<text>Ellensйges frakciу erхforrбsok</text>
+	</string>
+	<string id="ui_st_name_bandit">
+		<text>Fosztogatуk</text>
+	</string>
+	<string id="ui_st_name_bandit_2">
+		<text>Renegбtok</text>
+	</string>
+	<string id="ui_st_name_csky">
+		<text>Tiszta Йgbolt</text>
+	</string>
+	<string id="ui_st_name_dolg">
+		<text>Szolgбlat</text>
+	</string>
+	<string id="ui_st_name_freedom">
+		<text>Szabadsбg</text>
+	</string>
+	<string id="ui_st_name_stalker">
+		<text>Stalkerek</text>
+	</string>
+	<string id="ui_st_no_faction">
+		<text>Nem vagy tagja egy frakciуnak sem</text>
+	</string>
+	<string id="ui_st_our_frac_info">
+		<text>Frakciу informбciу</text>
+	</string>
+	<string id="ui_st_our_mem_count">
+		<text>A frakciуd osztagai</text>
+	</string>
+	<string id="ui_st_our_resource">
+		<text>A frakciуd erхforrбsai</text>
+	</string>
+	<string id="ui_st_state_confrontation">
+		<text>Frakciуerх</text>
+	</string>
+	<string id="ui_st_target_static">
+		<text>A frakciуd jelenlegi cйlja</text>
+	</string>
+	<string id="yantar">
+		<text>Jantar</text>
+	</string>
+	<string id="zombied">
+		<text>Йlхhalott</text>
+	</string>
+	<string id="zoom_in_btn_hint">
+		<text>kцzelнtйs</text>
+	</string>
+	<string id="zoom_out_btn_hint">
+		<text>tбvolнtбs</text>
+	</string>
+	<string id="month_april">
+		<text>Бprilis</text>
+	</string>
+	<string id="month_august">
+		<text>Augusztus</text>
+	</string>
+	<string id="month_december">
+		<text>December</text>
+	</string>
+	<string id="month_february">
+		<text>Februбr</text>
+	</string>
+	<string id="month_january">
+		<text>Januбr</text>
+	</string>
+	<string id="month_july">
+		<text>Jъlius</text>
+	</string>
+	<string id="month_june">
+		<text>Jъnius</text>
+	</string>
+	<string id="month_march">
+		<text>Mбrcius</text>
+	</string>
+	<string id="month_may">
+		<text>Mбjus</text>
+	</string>
+	<string id="month_november">
+		<text>November</text>
+	</string>
+	<string id="month_october">
+		<text>Oktуber</text>
+	</string>
+	<string id="month_september">
+		<text>Szeptember</text>
+	</string>
+	<string id="pda_cur_time">
+		<text>Jelenlegi idх:</text>
+	</string>
+	<string id="pda_date_filter">
+		<text>Adatszыrх</text>
+	</string>
+	<string id="pda_legend_caption">
+		<text>Jelmagyarбzat</text>
+	</string>
+	<string id="pda_logs_common">
+		<text>Ьzenetek:</text>
+	</string>
+	<string id="pda_logs_frags">
+		<text>Ьzenetek:</text>
+	</string>
+	<string id="pda_logs_list_caption">
+		<text>Ьzenetek:</text>
+	</string>
+	<string id="pda_logs_missions">
+		<text>Ьzenetek:</text>
+	</string>
+	<string id="pda_stat_1">
+		<text>Jбtйkidх:</text>
+	</string>
+	<string id="pda_stat_2">
+		<text>Megtalбlt rejtekhelyek:</text>
+	</string>
+	<string id="pda_stat_3">
+		<text>Megkeresett pйnz:</text>
+	</string>
+	<string id="pda_stat_4">
+		<text>Elkцltцtt pйnz:</text>
+	</string>
+	<string id="pda_stat_5">
+		<text>Fogadott:</text>
+	</string>
+	<string id="pda_stat_6">
+		<text>Sikeres:</text>
+	</string>
+	<string id="pda_stat_7">
+		<text>Sikertelen:</text>
+	</string>
+	<string id="pda_stat_8">
+		<text>Stalkerek:</text>
+	</string>
+	<string id="pda_stat_9">
+		<text>Szцrnyek:</text>
+	</string>
+	<string id="pda_stat_common">
+		<text>Цsszes</text>
+	</string>
+	<string id="pda_stat_frags">
+		<text>Megцlt</text>
+	</string>
+	<string id="pda_stat_missions">
+		<text>Feladatok</text>
+	</string>
+	<string id="st_lchanger_to_aes">
+		<text>A Csernobili Atomerхmыhцz.</text>
+	</string>
+	<string id="st_lchanger_to_agroprom">
+		<text>Az agropromi kutatуintйzethez.</text>
+	</string>
+	<string id="st_lchanger_to_agroprom_und">
+		<text>Az agropromi csatornarendszerhez.</text>
+	</string>
+	<string id="st_lchanger_to_darkvalley">
+		<text>A Sцtйtvцlgybe.</text>
+	</string>
+	<string id="st_lchanger_to_escape">
+		<text>A Kordonba.</text>
+	</string>
+	<string id="st_lchanger_to_garbage">
+		<text>A Szemйtdombra.</text>
+	</string>
+	<string id="st_lchanger_to_hospital">
+		<text>Az elhagyatott kуrhбzhoz.</text>
+	</string>
+	<string id="st_lchanger_to_limansk">
+		<text>Limanszkba.</text>
+	</string>
+	<string id="st_lchanger_to_marsh">
+		<text>Az Ingovбnyba.</text>
+	</string>
+	<string id="st_lchanger_to_military">
+		<text>A katonai raktбrtelepre.</text>
+	</string>
+	<string id="st_lchanger_to_red_forest">
+		<text>Vцrцs-erdхbe.</text>
+	</string>
+	<string id="st_lchanger_to_yantar">
+		<text>Jantarba.</text>
+	</string>
+	<string id="st_ui_pda_legend_additional_task">
+		<text>Mбsodlagos feladatok</text>
+	</string>
+	<string id="st_ui_pda_legend_base">
+		<text>Frakciуbбzisok</text>
+	</string>
+	<string id="st_ui_pda_legend_enemies">
+		<text>Ellensйgek</text>
+	</string>
+	<string id="st_ui_pda_legend_friends">
+		<text>Szцvetsйgesek</text>
+	</string>
+	<string id="st_ui_pda_legend_lchanger">
+		<text>Helyszнnek kцzцtti utak</text>
+	</string>
+	<string id="st_ui_pda_legend_main_task">
+		<text>Fхйpьlet</text>
+	</string>
+	<string id="st_ui_pda_legend_mechanic">
+		<text>Gйpйsz</text>
+	</string>
+	<string id="st_ui_pda_legend_neutrals">
+		<text>Semlegesek</text>
+	</string>
+	<string id="st_ui_pda_legend_scout">
+		<text>Kнsйrх</text>
+	</string>
+	<string id="st_ui_pda_legend_secrets">
+		<text>Rejtekhelyek</text>
+	</string>
+	<string id="st_ui_pda_legend_squad">
+		<text>Osztagparancsnok</text>
+	</string>
+	<string id="st_ui_pda_legend_trader">
+		<text>Kereskedх</text>
+	</string>
+	<string id="st_ui_pda_legend_vip">
+		<text>Fontos szemйly</text>
+	</string>
+	<string id="ui_logs_center_caption">
+		<text>Ьzenet elхzmйnyek</text>
+	</string>
+	<string id="ui_map_btn_center">
+		<text>Jбtйkost kцvet</text>
+	</string>
+	<string id="ui_map_btn_down">
+		<text>Lefelй mozgatбs</text>
+	</string>
+	<string id="ui_map_btn_left">
+		<text>Balra mozgatбs</text>
+	</string>
+	<string id="ui_map_btn_legend">
+		<text>Jelmagyarбzat mutatбsa</text>
+	</string>
+	<string id="ui_map_btn_right">
+		<text>Jobbra mozgatбs</text>
+	</string>
+	<string id="ui_map_btn_up">
+		<text>Felfelй mozgatбs</text>
+	</string>
+	<string id="ui_map_btn_zmreset">
+		<text>Maximбlis tбvolнtбs</text>
+	</string>
+	<string id="ui_map_btn_zoom_in">
+		<text>Kцzelнtйs</text>
+	</string>
+	<string id="ui_map_btn_zoom_out">
+		<text>Tбvolнtбs</text>
+	</string>
+	<string id="ui_pda_secondary_task">
+		<text>Mбsodlagos feladatok</text>
+	</string>
+	<string id="ui_ranking_center_caption">
+		<text>Frakciуk sorrendje</text>
+	</string>
+	<string id="ui_show_second_task_wnd">
+		<text>Mбsodlagos feladatok listбja</text>
+	</string>
+	<string id="ui_task_btn_focus_center">
+		<text>Tйrkйp feladatra rцgzнtйse</text>
+	</string>
+	<string id="ui_task_btn_focus_center2">
+		<text>Tйrkйp feladatra rцgzнtйse</text>
+	</string>
+	<string id="ui_task_btn_visible_map_spot">
+		<text>Tйrkйpjel mutatбsa</text>
+	</string>
+	<string id="ui_st_eliminate">
+		<text>Semmisнtsd meg:</text>
+	</string>
+	<string id="ui_st_capture_or">
+		<text>vagy</text>
+	</string>
+	<string id="ui_st_capture_one_of">
+		<text>Foglald el az alбbbi бllбsok egyikйt:</text>
+	</string>
+	<string id="st_faction_war_stalker_need_more_power">
+		<text>Kerьlj fцlйnybe</text>
+	</string>
+	<string id="st_faction_war_stalker_secure_level">
+		<text>Biztosнtsd a Szemйtdombrуl kivezetх utakat</text>
+	</string>
+	<string id="st_faction_war_stalker_capture_placdarm">
+		<text>Vesd meg a lбbad a Szemйtdombon</text>
+	</string>
+	<string id="st_faction_war_stalker_near_base">
+		<text>Szorнtsd sarokba a fosztogatуkat a bбzisukon</text>
+	</string>
+	<string id="st_faction_war_stalker_eliminate_base">
+		<text>Semmisнtsd meg a fosztogatу bбzist</text>
+	</string>
+	<string id="st_faction_war_stalker_relax">
+		<text>Fosztogatуk megsemmisнtve</text>
+	</string>
+	<string id="st_faction_war_bandit_need_more_power">
+		<text>Kerьlj fцlйnybe</text>
+	</string>
+	<string id="st_faction_war_bandit_secure_level">
+		<text>Vedd бt a Kordonbуl kivezetх цsvйnyek irбnyнtбsбt</text>
+	</string>
+	<string id="st_faction_war_bandit_capture_placdarm">
+		<text>Vesd meg a lбbad a Kordonban</text>
+	</string>
+	<string id="st_faction_war_bandit_near_base">
+		<text>Vesd meg a lбbad a stalker bбzisnбl</text>
+	</string>
+	<string id="st_faction_war_bandit_eliminate_base">
+		<text>Semmisнtsd meg a stalker bбzist</text>
+	</string>
+	<string id="st_faction_war_bandit_relax">
+		<text>Stalkerek megsemmisнtve</text>
+	</string>
+	<string id="st_faction_war_freedom_secure_level">
+		<text>Biztosнtsd a Szemйtdombrуl kivezetх utakat</text>
+	</string>
+	<string id="st_faction_war_freedom_capture_garbage">
+		<text>Vesd meg a lбbad a Szemйtdombon</text>
+	</string>
+	<string id="st_faction_war_freedom_secure_garbage">
+		<text>Йrd el az agropromi kutatуintйzetbe vezetх utat</text>
+	</string>
+	<string id="st_faction_war_freedom_capture_agroprom">
+		<text>Vesd meg a lбbad az agropromi kutatуintйzetnйl</text>
+	</string>
+	<string id="st_faction_war_freedom_eliminate_base">
+		<text>Semmisнtsd meg a Szolgбlat bбzisбt</text>
+	</string>
+	<string id="st_faction_war_freedom_relax">
+		<text>Szolgбlat bбzisa megsemmisнtve</text>
+	</string>
+	<string id="st_faction_war_duty_secure_level">
+		<text>Biztosнtsd a Szemйtdombrуl kivezetх utakat</text>
+	</string>
+	<string id="st_faction_war_duty_capture_garbage">
+		<text>Vesd meg a lбbad a Szemйtdombon</text>
+	</string>
+	<string id="st_faction_war_duty_secure_garbage">
+		<text>Йrd el a Sцtйtvцlgybe vezetх utat</text>
+	</string>
+	<string id="st_faction_war_duty_capture_darkvalley">
+		<text>Vesd meg a lбbad a Sцtйtvцlgyben</text>
+	</string>
+	<string id="st_faction_war_duty_eliminate_base">
+		<text>Semmisнtsd meg a Szabadsбg bбzisбt</text>
+	</string>
+	<string id="st_faction_war_duty_relax">
+		<text>Szabadsбg bбzisa megsemmisнtve</text>
+	</string>
+	<string id="st_stage_icon_csky_power_no">
+		<text>Nem sikerьlt fцlйnybe kerьlnьnk</text>
+	</string>
+	<string id="st_stage_icon_csky_power_yes">
+		<text>Fцlйnybe kerьltьnk</text>
+	</string>
+	<string id="st_stage_icon_csky_capture_base_no">
+		<text>A renegбt bбzis jelenleg sйrtetlen</text>
+	</string>
+	<string id="st_stage_icon_csky_capture_base_yes">
+		<text>A renegбt bбzis megsemmisьlt</text>
+	</string>
+	<string id="st_stage_icon_csky_secure_marsh_no">
+		<text>Nem mi irбnyнtjuk a Kordonba vezetх utat</text>
+	</string>
+	<string id="st_stage_icon_csky_secure_marsh_yes">
+		<text>Mi irбnyнtjuk a Kordonba vezetх utat</text>
+	</string>
+	<string id="st_stage_icon_stalker_power_no">
+		<text>Nem sikerьlt fцlйnybe kerьlnьnk</text>
+	</string>
+	<string id="st_stage_icon_stalker_power_yes">
+		<text>Fцlйnybe kerьltьnk</text>
+	</string>
+	<string id="st_stage_icon_stalker_secure_escape_no">
+		<text>Nem mi irбnyнtjuk a Szemйtdombrуl kivezetх цsvйnyeket</text>
+	</string>
+	<string id="st_stage_icon_stalker_secure_escape_yes">
+		<text>Mi irбnyнtjuk a Szemйtdombrуl kivezetх цsvйnyeket</text>
+	</string>
+	<string id="st_stage_icon_stalker_capture_garbage_no">
+		<text>Nem sikerьlt megvetnьnk a lбbunkat a Szemйtdombon</text>
+	</string>
+	<string id="st_stage_icon_stalker_capture_garbage_yes">
+		<text>Sikeresen megvetettьk a lбbunkat a Szemйtdombon</text>
+	</string>
+	<string id="st_stage_icon_stalker_eliminate_bandit_no">
+		<text>A fosztogatу bбzis jelenleg sйrtetlen</text>
+	</string>
+	<string id="st_stage_icon_stalker_eliminate_bandit_yes">
+		<text>A fosztogatу bбzis megsemmisьlt</text>
+	</string>
+	<string id="st_stage_icon_bandit_power_no">
+		<text>Nem sikerьlt fцlйnybe kerьlnьnk</text>
+	</string>
+	<string id="st_stage_icon_bandit_power_yes">
+		<text>Fцlйnybe kerьltьnk</text>
+	</string>
+	<string id="st_stage_icon_bandit_secure_garbage_no">
+		<text>Nem mi irбnyнtjuk a Kordonba vezetх utakat</text>
+	</string>
+	<string id="st_stage_icon_bandit_secure_garbage_yes">
+		<text>Mi irбnyнtjuk a Kordonba vezetх utakat</text>
+	</string>
+	<string id="st_stage_icon_bandit_capture_escape_no">
+		<text>Nem sikerьlt megvetnьnk a lбbunkat a Kordonban</text>
+	</string>
+	<string id="st_stage_icon_bandit_capture_escape_yes">
+		<text>Sikeresen megvetettьk a lбbunkat a Kordonban</text>
+	</string>
+	<string id="st_stage_icon_bandit_eliminate_stalker_no">
+		<text>A stalker bбzis jelenleg sйrtetlen</text>
+	</string>
+	<string id="st_stage_icon_bandit_eliminate_stalker_yes">
+		<text>A stalker bбzis megsemmisьlt</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_darkvalley_no">
+		<text>Nem mi irбnyнtjuk a Szemйtdombrуl kivezetх цsvйnyeket</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_darkvalley_yes">
+		<text>Mi irбnyнtjuk a Szemйtdombrуl kivezetх цsvйnyeket</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_garbage_no">
+		<text>Nem sikerьlt megvetnьnk a lбbunkat a Szemйtdombon</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_garbage_yes">
+		<text>Sikeresen megvetettьk a lбbunkat a Szemйtdombon</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_garbage_no">
+		<text>Nem mi irбnyнtjuk az Agropromba vezetх utat</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_garbage_yes">
+		<text>Mi irбnyнtjuk az Agropromba vezetх utat</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_agroprom_no">
+		<text>Nem sikerьlt megvetnьnk a lбbunkat Agropromban</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_agroprom_yes">
+		<text>Sikeresen megvetettьk a lбbunkat Agropromban</text>
+	</string>
+	<string id="st_stage_icon_freedom_eliminate_duty_no">
+		<text>A Szolgбlat bбzisa jelenleg sйrtetlen</text>
+	</string>
+	<string id="st_stage_icon_freedom_eliminate_duty_yes">
+		<text>A Szolgбlat bбzisa megsemmisьlt</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_agroprom_no">
+		<text>Nem mi irбnyнtjuk a Szemйtdombrуl kivezetх цsvйnyeket</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_agroprom_yes">
+		<text>Mi irбnyнtjuk a Szemйtdombrуl kivezetх цsvйnyeket</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_garbage_no">
+		<text>Nem sikerьlt megvetnьnk a lбbunkat a Szemйtdombon</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_garbage_yes">
+		<text>Sikeresen megvetettьk a lбbunkat a Szemйtdombon</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_garbage_no">
+		<text>Nem mi irбnyнtjuk a Sцtйtvцlgybe vezetх utat</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_garbage_yes">
+		<text>Mi irбnyнtjuk a Sцtйtvцlgybe vezetх utat</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_darkvalley_no">
+		<text>Nem sikerьlt megvetnьnk a lбbunkat Sцtйtvцlgyben</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_darkvalley_yes">
+		<text>Sikeresen megvetetettьk a lбbunkat Sцtйtvцlgyben</text>
+	</string>
+	<string id="st_stage_icon_duty_eliminate_freedom_no">
+		<text>A Szabadsбg bбzisa sйrtetlen</text>
+	</string>
+	<string id="st_stage_icon_duty_eliminate_freedom_yes">
+		<text>A Szabadsбg bбzisa megsemmisьlt</text>
+	</string>
+	<string id="st_location_renegade">
+		<text>Ingovбny</text>
+	</string>
+	<string id="st_ui_pda_legend_leader">
+		<text>Frakciуvezetх</text>
+	</string>
+	<string id="st_target">
+		<text>Cйlpont</text>
+	</string>
+	<string id="st_technic_specialization">
+		<text>Szakterьlet:</text>
+	</string>
+	<string id="st_technic_specialization_none">
+		<text>nincs</text>
+	</string>
+	<string id="hospital">
+		<text>Elhagyatott kуrhбz</text>
+	</string>
+</string_table>

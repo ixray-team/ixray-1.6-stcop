@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="actor_break_dialog_0">
+		<text>Nashledanou pшнљtм!</text>
+	</string>
+	<string id="actor_help_wounded_0">
+		<text>Jsi v poшбdku?</text>
+	</string>
+	<string id="actor_help_wounded_1">
+		<text>Jak to vypadб? Potшeboval bych lйkбrniиku, nebo to aspoт obvбzat.</text>
+	</string>
+	<string id="actor_help_wounded_11">
+		<text>Na, tumбљ lйkбrniиku.</text>
+	</string>
+	<string id="actor_help_wounded_111">
+		<text>Dнky, brбcho, mбљ to u mм.</text>
+	</string>
+	<string id="actor_help_wounded_12">
+		<text>Na, vezmi si obvaz.</text>
+	</string>
+	<string id="actor_help_wounded_13">
+		<text>Promiт, sбm nic nemбm.</text>
+	</string>
+	<string id="actor_help_wounded_131">
+		<text>Jak se ti vщbec podaшilo pшeћнt v Zуnм? Co kdyby tм nмkdo zranil? Ani by sis to nemмl jak oљetшit!</text>
+	</string>
+	<string id="actor_help_wounded_14">
+		<text>Hmm, no, tak to je smщla. Je mi moc lнto, ale jб ti ћбdnou dбt nemщћu - to uћ by mi nic nezbylo.</text>
+	</string>
+	<string id="actor_help_wounded_141">
+		<text>Tvoje vмc, chlape, ale vмш mi - tohle ti zrovna moc ke cti neslouћн.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_all_targets_phrase_part_1">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_all_targets_phrase_part_2">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_all_targets_phrase_part_3">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_on_time_phrase_part_1">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_on_time_phrase_part_3">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_phrase_part_1">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_phrase_part_2">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_phrase_part_3">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_phrase_part_4">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_p_or_c_answer_bad">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_p_or_c_answer_good">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_points_phrase_part_1">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_points_phrase_part_2">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_points_phrase_part_3">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_answer_bad_part_1">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_answer_bad_part_2">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_answer_good_part_1">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_answer_good_part_2">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_phrase_part_1">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_phrase_part_2">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="bring_item_task_0">
+		<text>Tumбљ, donesl jsem ti, cos chtмl.</text>
+	</string>
+	<string id="bring_item_task_1">
+		<text>Dнkec.</text>
+	</string>
+	<string id="crowkiller_dialog_100">
+		<text>Tak co, jak to jde? Bavн tм stшнlet vrбny? Vsadнm se, ћe mщj rekord nepшekonбљ!</text>
+	</string>
+	<string id="crowkiller_dialog_200">
+		<text>Б, to jseљ zase ty!</text>
+	</string>
+	<string id="crowkiller_dialog_210">
+		<text>Chceљ zase zkusit pшekonat mщj rekord?</text>
+	</string>
+	<string id="crowkiller_dialog_211">
+		<text>Nejdшнv mi vysvмtli pravidla.</text>
+	</string>
+	<string id="crowkiller_dialog_2110">
+		<text>Pravidla jsou jednoduchб: Musнљ bмhem jednй minuty odkrбglovat vlastnнma zbranмma co nejvнc vran. Jenom nelez moc daleko, to se pak zabitэ nepoинtajн.</text>
+	</string>
+	<string id="crowkiller_dialog_212">
+		<text>Jakэ je momentбlnн rekord?</text>
+	</string>
+	<string id="crowkiller_dialog_2120">
+		<text>Teп zrovna je rekord 0.</text>
+	</string>
+	<string id="crowkiller_dialog_213">
+		<text>Tak jo, jdem si zastшнlet.</text>
+	</string>
+	<string id="crowkiller_dialog_214">
+		<text>Ne, dнky. Radљi uћ pщjdu.</text>
+	</string>
+	<string id="crowkiller_dialog_220">
+		<text>Шнkal jsem ti, abys nelezl moc daleko. Tahle se nepoинtб.</text>
+	</string>
+	<string id="crowkiller_dialog_230">
+		<text>Иas vyprљel.</text>
+	</string>
+	<string id="crowkiller_dialog_231">
+		<text>Blahopшeju. Pшekonal jsi rekord.</text>
+	</string>
+	<string id="crowkiller_dialog_232">
+		<text>Smщla. Nepodaшilo se ti to.</text>
+	</string>
+	<string id="crowkiller_dialog_300">
+		<text>Neztrбcej иas.</text>
+	</string>
+	<string id="crowkiller_dialog_crows_per_minute">
+		<text>Pшemэљlнm.</text>
+	</string>
+	<string id="crowkiller_dialog_money_stake">
+		<text>No, sбzka je:</text>
+	</string>
+	<string id="crowkiller_dialog_record_crows">
+		<text>Jo, to je sprбvnй chlapskй rozhodnutн. Musнљ sejmout tolik vran, kolik se ti podaшн za minutu. Momentбlnн rekord je:</text>
+	</string>
+	<string id="crowkiller_dialog_record_stake">
+		<text>No, s ohledem na ten rekord, sбzka je:</text>
+	</string>
+	<string id="crowkiller_game_get_ready">
+		<text>Pшiprav se!</text>
+	</string>
+	<string id="crowkiller_game_runned_out">
+		<text>Opustil jsi oblast!</text>
+	</string>
+	<string id="crowkiller_game_time_is_out">
+		<text>Иas vyprљel!</text>
+	</string>
+	<string id="crowkiller_game_crows_killed">
+		<text>Zabito vran:</text>
+	</string>
+	<string id="default_robbery_dialog_0">
+		<text>Naval prachy, kбmo, nebo odpal.</text>
+	</string>
+	<string id="default_robbery_dialog_1">
+		<text>Nenн problйm, tady jsou prachy na dшevo.</text>
+	</string>
+	<string id="default_robbery_dialog_11">
+		<text>Tak jo, mщћeљ jнt, ale buп zticha, jinak ti vystшelнme mozek ze љkeble!</text>
+	</string>
+	<string id="default_robbery_dialog_111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="dm_hello_general">
+		<text>Hej!</text>
+	</string>
+	<string id="dm_information_general">
+		<text>Co novйho v Zуnм?</text>
+	</string>
+	<string id="dm_information_no_more">
+		<text>Nic novйho nevim.</text>
+	</string>
+	<string id="dm_occupation_general">
+		<text>Co tady dмlбљ?</text>
+	</string>
+	<string id="dm_occupation_no_more">
+		<text>Nemбm k tomu co dalљнho шнct.</text>
+	</string>
+	<string id="dm_place_general">
+		<text>Povмz mi nмco o tomhle fleku.</text>
+	</string>
+	<string id="dm_place_no_more">
+		<text>Nic novйho uћ nevim.</text>
+	</string>
+	<string id="dm_wounded_bandage">
+		<text>Na, vezmi si obvaz.</text>
+	</string>
+	<string id="dm_wounded_general">
+		<text>Pomoc!</text>
+	</string>
+	<string id="dm_wounded_medkit">
+		<text>Vezmi si lйkбrniиku.</text>
+	</string>
+	<string id="dm_wounded_sorry">
+		<text>Promiт, sбm nic nemбm.</text>
+	</string>
+	<string id="dm_wounded_thanks">
+		<text>Dнk moc.</text>
+	</string>
+	<string id="exchange_flash_card_0">
+		<text>Mбm informace o vylepљenнch. Chceљ se kouknout?</text>
+	</string>
+	<string id="exchange_flash_card_1">
+		<text>Jasnм. Koukni, za kolik nabнzнm za informace.</text>
+	</string>
+	<string id="exchange_flash_card_11">
+		<text>Flashdisk 1</text>
+	</string>
+	<string id="exchange_flash_card_12">
+		<text>Flashdisk 2</text>
+	</string>
+	<string id="exchange_flash_card_13">
+		<text>Flashdisk 3</text>
+	</string>
+	<string id="exchange_flash_card_14">
+		<text>Flashdisk 4</text>
+	</string>
+	<string id="exchange_flash_card_15">
+		<text>Иau.</text>
+	</string>
+	<string id="exchange_flash_card_21">
+		<text>Bezva. Tady mбљ prachy. Mщћu si teп dмlat novб vylepљenн.</text>
+	</string>
+	<string id="exchange_flash_card_22">
+		<text>Bezva. Tady mбљ prachy. Mщћu si teп dмlat novб vylepљenн.</text>
+	</string>
+	<string id="exchange_flash_card_23">
+		<text>Bezva. Tady mбљ prachy. Mщћu si teп dмlat novб vylepљenн.</text>
+	</string>
+	<string id="exchange_flash_card_24">
+		<text>Bezva. Tady mбљ prachy. Mщћu si teп dмlat novб vylepљenн.</text>
+	</string>
+	<string id="find_upgrade_task_0">
+		<text>Naљel jsem informace o tмch vylepљenнch, co shбnнљ.</text>
+	</string>
+	<string id="find_upgrade_task_1">
+		<text>Dнk za pomoc. Mщћu si teп dмlat novб vylepљenн.</text>
+	</string>
+	<string id="hello_dialog_2">
+		<text>Hej!</text>
+	</string>
+	<string id="hello_dialog_3">
+		<text>Poslyљ, brбcho, pomoz mi ocaп!</text>
+	</string>
+	<string id="recover_item_task_0">
+		<text>Donesl jsem ti to, o cos mм poћбdal.</text>
+	</string>
+	<string id="recover_item_task_1">
+		<text>Dнkec.</text>
+	</string>
+	<string id="shooting_dialog_0">
+		<text>Co chceљ?</text>
+	</string>
+	<string id="shooting_dialog_1">
+		<text>Chtмl bych trйnovat!</text>
+	</string>
+	<string id="shooting_dialog_2">
+		<text>Tak jo, stшнlej!</text>
+	</string>
+	<string id="shooting_dialog_3">
+		<text>Chtмl bych hrбt na body!</text>
+	</string>
+	<string id="shooting_dialog_31">
+		<text>Na kolik bodщ?</text>
+	</string>
+	<string id="shooting_dialog_311">
+		<text>Na 50.</text>
+	</string>
+	<string id="shooting_dialog_312">
+		<text>Na 75.</text>
+	</string>
+	<string id="shooting_dialog_313">
+		<text>Na 100.</text>
+	</string>
+	<string id="shooting_dialog_4">
+		<text>Chtмl bych hrбt na terиe!</text>
+	</string>
+	<string id="shooting_dialog_41">
+		<text>Na kolik terищ?</text>
+	</string>
+	<string id="shooting_dialog_411">
+		<text>Nejvнc na 5.</text>
+	</string>
+	<string id="shooting_dialog_4111">
+		<text>Na jakou vzdбlenost?</text>
+	</string>
+	<string id="shooting_dialog_41111">
+		<text>5 metrщ.</text>
+	</string>
+	<string id="shooting_dialog_411111">
+		<text>Vyber si zbraт: chceљ pistoli, nebo ъtoиnou puљku?</text>
+	</string>
+	<string id="shooting_dialog_4111111">
+		<text>Pistoli.</text>
+	</string>
+	<string id="shooting_dialog_4111112">
+		<text>Ъtoиnou puљku.</text>
+	</string>
+	<string id="shooting_dialog_41112">
+		<text>7 metrщ.</text>
+	</string>
+	<string id="shooting_dialog_41113">
+		<text>10 metrщ.</text>
+	</string>
+	<string id="shooting_dialog_412">
+		<text>Aћ 7 metrщ.</text>
+	</string>
+	<string id="shooting_dialog_413">
+		<text>Aћ 10 metrщ.</text>
+	</string>
+	<string id="shooting_dialog_5">
+		<text>Tak co?</text>
+	</string>
+	<string id="shooting_dialog_51">
+		<text>Nic.</text>
+	</string>
+	<string id="shooting_dialog_5111">
+		<text>Nic.</text>
+	</string>
+	<string id="shooting_dialog_511111">
+		<text>Znova?</text>
+	</string>
+	<string id="shooting_dialog_52">
+		<text>Nic.</text>
+	</string>
+	<string id="shooting_dialog_5211">
+		<text>Nic.</text>
+	</string>
+	<string id="shooting_dialog_53">
+		<text>Nic.</text>
+	</string>
+	<string id="shooting_dialog_5311">
+		<text>Nic.</text>
+	</string>
+	<string id="shooting_dialog_6">
+		<text>Иaues.</text>
+	</string>
+	<string id="shooting_dialog_71">
+		<text>A co?</text>
+	</string>
+	<string id="test_dialog_0">
+		<text>Hej!</text>
+	</string>
+	<string id="test_dialog_1">
+		<text>Ano.</text>
+	</string>
+	<string id="test_dialog_3">
+		<text>Netuљim.</text>
+	</string>
+	<string id="tm_mechanic_task_0">
+		<text>Jakй zbranм mщћeљ vylepљovat?</text>
+	</string>
+	<string id="tm_random_task_0">
+		<text>Mщћu ti nмjak pomoct?</text>
+	</string>
+	<string id="tm_random_task_1">
+		<text>Nмco potшebuju:</text>
+	</string>
+	<string id="tm_random_task_11">
+		<text>Zajisti objekt:</text>
+	</string>
+	<string id="tm_random_task_12">
+		<text>Zбchyt 2</text>
+	</string>
+	<string id="tm_random_task_13">
+		<text>Vrбtit pшedmмt.</text>
+	</string>
+	<string id="tm_random_task_14">
+		<text>Doruиit pшedmмt.</text>
+	</string>
+	<string id="tm_random_task_15">
+		<text>Dнk, rozmyslel jsem si to.</text>
+	</string>
+	<string id="tm_random_task_2">
+		<text>To nemщћeљ.</text>
+	</string>
+	<string id="tm_random_task_21">
+		<text>Dobшe.</text>
+	</string>
+	<string id="tm_random_task_22">
+		<text>Dobшe.</text>
+	</string>
+	<string id="tm_random_task_23">
+		<text>Vнљ urиitм, ћe to zvlбdneљ?</text>
+	</string>
+	<string id="tm_random_task_24">
+		<text>Dobшe.</text>
+	</string>
+	<string id="tm_random_task_33">
+		<text>Ano.</text>
+	</string>
+	<string id="tm_random_task_34">
+		<text>Ne.</text>
+	</string>
+	<string id="tm_random_task_43">
+		<text>Dobшe.</text>
+	</string>
+	<string id="tm_reward_task_0">
+		<text>Mбљ pro mм nмco?</text>
+	</string>
+	<string id="tm_reward_task_1">
+		<text>Jo, hodnм jsi nбm pomohl, kбmo. Tady mбљ odmмnu.</text>
+	</string>
+	<string id="tm_reward_task_2">
+		<text>Promiт, ale zatнm sis ћбdnou odmмnu nezaslouћil.</text>
+	</string>
+	<string id="tm_upgr_task_0">
+		<text>Nemбљ pro mм nмjakou prбci?</text>
+	</string>
+	<string id="tm_upgr_task_1">
+		<text>Potшebuju informace o vylepљenнch.</text>
+	</string>
+	<string id="tm_upgr_task_11">
+		<text>Zbranм a zbroj.</text>
+	</string>
+	<string id="tm_upgr_task_21">
+		<text>Nмco by tu bylo. Uћ nмjakou dobu se pнdнm po nбkresech nмkolika vylepљenн. Pokud nмjakй seћeneљ, nech si je a pшines mi je. Tady mбљ seznam vљeho, co hledбm:</text>
+	</string>
+	<string id="tm_upgr_task_31">
+		<text>Ъkol 1</text>
+	</string>
+	<string id="tm_upgr_task_32">
+		<text>Ъkol 2</text>
+	</string>
+	<string id="tm_upgr_task_33">
+		<text>Ъkol 3</text>
+	</string>
+	<string id="tm_upgr_task_34">
+		<text>Ъkol 4</text>
+	</string>
+	<string id="tm_upgr_task_35">
+		<text>Ъkol 5</text>
+	</string>
+	<string id="tm_upgr_task_41">
+		<text>Domluveno?</text>
+	</string>
+	<string id="tm_upgr_task_42">
+		<text>Domluveno?</text>
+	</string>
+	<string id="tm_upgr_task_43">
+		<text>Domluveno?</text>
+	</string>
+	<string id="tm_upgr_task_44">
+		<text>Domluveno?</text>
+	</string>
+	<string id="tm_upgr_task_45">
+		<text>Domluveno?</text>
+	</string>
+	<string id="tm_upgr_task_51">
+		<text>Dobшe, pшinesu ti vљechno, co najdu.</text>
+	</string>
+	<string id="tm_upgr_task_52">
+		<text>Ano.</text>
+	</string>
+	<string id="tm_upgr_task_53">
+		<text>Ano.</text>
+	</string>
+	<string id="tm_upgr_task_54">
+		<text>Ano.</text>
+	</string>
+	<string id="tm_upgr_task_55">
+		<text>Ano.</text>
+	</string>
+	<string id="tm_upgr_task_56">
+		<text>Moћnб nмkdy jindy.</text>
+	</string>
+	<string id="tm_upgr_task_61">
+		<text>Hodnм љtмstн.</text>
+	</string>
+	<string id="tm_upgr_task_62">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="tm_upgr_task_63">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="tm_upgr_task_64">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="tm_upgr_task_65">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="tm_weapon_up_task_0">
+		<text>Nemбљ nмjakou zvlбљtnн prбci?</text>
+	</string>
+	<string id="tm_weapon_up_task_1">
+		<text>Nмco bych tu mмl:</text>
+	</string>
+	<string id="tm_weapon_up_task_11">
+		<text>Pistole.</text>
+	</string>
+	<string id="tm_weapon_up_task_111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="tm_weapon_up_task_12">
+		<text>Ъtoиnй puљky.</text>
+	</string>
+	<string id="tm_weapon_up_task_121">
+		<text>Dobшe.</text>
+	</string>
+	<string id="tm_weapon_up_task_13">
+		<text>Puљky.</text>
+	</string>
+	<string id="tm_weapon_up_task_131">
+		<text>Dobшe.</text>
+	</string>
+	<string id="tm_weapon_up_task_14">
+		<text>Brokovnice.</text>
+	</string>
+	<string id="tm_weapon_up_task_141">
+		<text>Dobшe.</text>
+	</string>
+	<string id="tm_weapon_up_task_2">
+		<text>Ani nбhodou.</text>
+	</string>
+	<string id="treasure_dialog_0">
+		<text>Co mi mщћeљ nabнdnout?</text>
+	</string>
+	<string id="treasure_dialog_11">
+		<text>A kolik by mм to stбlo?</text>
+	</string>
+	<string id="treasure_dialog_1111">
+		<text>Tak o co teda jde?</text>
+	</string>
+	<string id="treasure_dialog_11111">
+		<text>Dobшe, tady mбљ souшadnice.</text>
+	</string>
+	<string id="treasure_dialog_1112">
+		<text>Domluveno.</text>
+	</string>
+	<string id="treasure_dialog_11121">
+		<text>Tak jo, vraќ se, aћ budeљ mнt dost.</text>
+	</string>
+	<string id="treasure_dialog_1113">
+		<text>Zblбznil ses? Tolik penмz na dшevo nemбm.</text>
+	</string>
+	<string id="treasure_dialog_11131">
+		<text>Nemбm tuљenн.</text>
+	</string>
+	<string id="treasure_dialog_1114">
+		<text>Nee, nemбm zбjem.</text>
+	</string>
+	<string id="treasure_dialog_12">
+		<text>Ne, dнky.</text>
+	</string>
+	<string id="treasure_dialog_121">
+		<text>To zбleћн na tobм.</text>
+	</string>
+	<string id="treasure_dialog_131">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="treasure_dialog_2">
+		<text>Nee, nic zajнmavэho.</text>
+	</string>
+	<string id="actor_break_dialog_1">
+		<text>Fajn, zatнm.</text>
+	</string>
+	<string id="actor_break_dialog_2">
+		<text>Tak se mмj.</text>
+	</string>
+	<string id="actor_break_dialog_3">
+		<text>Dobrб, sbohem.</text>
+	</string>
+	<string id="st_tm_guide_0">
+		<text>Kam mм mщћeљ zavйst?</text>
+	</string>
+	<string id="st_tm_guide_1">
+		<text>Zatнm nikam.</text>
+	</string>
+	<string id="st_tm_guide_2">
+		<text>Na nмkolik mнst. Ale nezapomeт, ћe tм nмkam mщћu dovйst, jenom jestli tam znбm bezpeиnou cestu. A ъиtuju si za vzdбlenost. Tak a teп mi шekni, kam bys rбd.</text>
+	</string>
+	<string id="st_tm_guide_21">
+		<text>Mщћeme jнt?</text>
+	</string>
+	<string id="st_tm_guide_211">
+		<text>Jo, pojпme.</text>
+	</string>
+	<string id="st_tm_guide_212">
+		<text>Za chvнli.</text>
+	</string>
+	<string id="st_tm_guide_3">
+		<text>Prбzdnй</text>
+	</string>
+</string_table>

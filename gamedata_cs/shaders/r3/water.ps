@@ -103,6 +103,7 @@ float4 main( vf I ) : SV_Target
 
 	//	Leaves
 	half4	leaves	= s_leaves.Sample( smp_base, I.tbase);
+			leaves.rgb *= water_intensity.r;
 	half	calc_cos = dot ( I.M3,  v2point);
 	half	calc_depth = saturate(waterDepth*calc_cos);
 	half	fLeavesFactor = smoothstep(0.025, 0.05, calc_depth );

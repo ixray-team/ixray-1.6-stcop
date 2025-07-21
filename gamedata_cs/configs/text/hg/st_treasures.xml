@@ -1,0 +1,1797 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_val_box_01_2">
+		<text>Lбda az alagsorban</text>
+	</string>
+	<string id="st_val_box_01_2_descr">
+		<text>Lecuccoltam az alagsorban a "Veszйly" tбblбs ajtуk mellй. Most nincs rб idхm, de kйsхbb mindenkйpp lemegyek a dolgaimйrt!</text>
+	</string>
+	<string id="st_val_electric_box_01">
+		<text>Rejtekhely a kapcsolуteremben</text>
+	</string>
+	<string id="st_val_electric_box_01_descr">
+		<text>Az elhagyatott gyбr mбsodik emeletйn, a kapcsolуteremben kialakнtottam egy kis tбrolуt. Цsszegyыjtцk mйg pбr relikviбt, aztбn egyьtt eladom хket jу pйnzйrt!</text>
+	</string>
+	<string id="st_val_pipe_o1_base_free">
+		<text>Rejtekhely a kollektor vйgйben</text>
+	</string>
+	<string id="st_val_pipe_o1_base_free_descr">
+		<text>Vйletlenьl egy zsбkutcбba tйvedtem a bбzis alatti kollektorban. Elйg elhagyatottnak tыnt, ezйrt eldugtam nйhбny йrtйkes dolgot egy keresztcsхben.</text>
+	</string>
+	<string id="st_val_pipe_02">
+		<text>Rejtekhely a csхben</text>
+	</string>
+	<string id="st_val_pipe_02_descr">
+		<text>Az elhagyatott gyбrйpьlet elsх szintjйn, a lйpcsх mellett egy csхbe rejtettem pбr dolgot.</text>
+	</string>
+	<string id="st_val_pipe_02_0000">
+		<text>A ciszterna alatti csх</text>
+	</string>
+	<string id="st_val_pipe_02_0000_descr">
+		<text>Egy falkбnyi kutya volt a nyomomban, amikor a paraszthбz kцzelйben haladtam el. Egy ciszterna alatti csхbe rejtettem pбr dolgot йs kereket oldottam. Amint alkalmam lesz, visszamegyek a cuccokйrt.</text>
+	</string>
+	<string id="st_val_pipe_valve_01_01">
+		<text>Rejtekhely a gyбrban</text>
+	</string>
+	<string id="st_val_pipe_valve_01_01_descr">
+		<text>Talбltam egy remek rejtekhelyet az elhagyatott gyбrйpьletben! A bejбrattal szemben van, egy csap keresztcsцvйben. Kцnnyы eltйveszteni a megfelelхt, mert mindegyik ugyanъgy nйz ki!</text>
+	</string>
+	<string id="st_val_rucksack_01">
+		<text>Hбtizsбk a vezetхfьlkйben</text>
+	</string>
+	<string id="st_val_rucksack_01_descr">
+		<text>Mбr ideje lenne visszamenni a hбtizsбkomйrt, amit a felborult traktor elsх ьlйse alб rejtettem. A minap ott kellett hagynom, nehogy rбm tбmadjanak йrte.</text>
+	</string>
+	<string id="st_val_rucksack_01_free_base">
+		<text>Rejtekhely az erdei fenyхnйl</text>
+	</string>
+	<string id="st_val_rucksack_01_free_base_descr">
+		<text>remйlem, nem fogom elfelejteni azt a bizonyos fenyхt, amelyik alб elrejtettem a zsбkmбnyt. Kцzel van a kollektor bejбratбhoz, de attуl mйg nem tыnik ki az a fa a sok kцzьl.</text>
+	</string>
+	<string id="st_val_rucksack_02">
+		<text>Hбtizsбk a fбn</text>
+	</string>
+	<string id="st_val_rucksack_02_descr">
+		<text>Mindenki a fцld alб rejti a kis drбgasбgait, de nem йn! Йn egy fбra tettem. Ott tutira nem keresi senki!</text>
+	</string>
+	<string id="st_val_rucksack_02_02">
+		<text>Titkolt rejtekhely a tetх alatt</text>
+	</string>
+	<string id="st_val_rucksack_02_02_descr">
+		<text>Йn nem izgulok a rejtekhelyem miatt. Ha keresnй is valaki, mуkuskйnt kellene бtugrбlnia a gerendбkon, hogy megtalбlja!</text>
+	</string>
+	<string id="st_val_rucksack_02_03">
+		<text>Rejtekhely a toronyban</text>
+	</string>
+	<string id="st_val_rucksack_02_03_descr">
+		<text>Azt mondtam a tбrsamnak, hogy elvesztettem a hбtizsбkom, a hьlyйje meg bevette! Valуjбban a vнztбrozу tetejйre rejtettem. Йs mйg ott van, amнg йrte nem megyek!</text>
+	</string>
+	<string id="st_val_rucksack_02_2">
+		<text>Hбtizsбk a liftben</text>
+	</string>
+	<string id="st_val_rucksack_02_2_descr">
+		<text>A lцvцldцzйs kцzepette nem volt idхm, hogy rendesen elrejtsem a cuccaim. A deszkбk alatti "tцmlхbe" rejtettem. A megfelelх idхben majd йrte megyek.</text>
+	</string>
+	<string id="st_val_instrument_case_01">
+		<text>A lakatos lбdбja</text>
+	</string>
+	<string id="st_val_instrument_case_01_descr">
+		<text>Talбltam egy lбdбt, szerintem egy lakatosй volt. Egyelхre abba rejtettem a "kincseimet". Amint lehet, biztosabb helyre kell vinnem хket!</text>
+	</string>
+	<string id="st_val_seif_01">
+		<text>Pбncйlszekrйny a gyбrban</text>
+	</string>
+	<string id="st_val_seif_01_descr">
+		<text>Ha ezt olvassa valaki, йn mбr halott vagyok. Szeretnйk mondani valamit a gyбrban lйvх pбncйlszekrйnyrхl - remйlem, rohadtul nem tudod kinyitni, seggfej!</text>
+	</string>
+	<string id="st_val_seif_02_descr">
+		<text>Nem tudtam, hogy sikerьl-e kimбsznom a csбvбbуl, szуval elrejtettem a cuccaimat egy rozsdбs szйfbe, egy elhagyatott paraszthбzban. Ideje lenne visszamennem.</text>
+	</string>
+	<string id="st_val_trees_log_01">
+		<text>Fatцnk a szigeten</text>
+	</string>
+	<string id="st_val_trees_log_01_descr">
+		<text>Igazбn jу cuccok voltak a barбtomnбl, amikor rajtaьtцttek az ingovбnynбl. Nem ъszta meg, de azt mйg el tudta mondani, hogy a zsбkmбnyok egy rйszйt egy korhadt fatцnkbe rejtette, nem messze az antennбtуl. Jу lenne йrtьk menni.</text>
+	</string>
+	<string id="st_val_trees_log_01_1">
+		<text>Korhadt fatцrzs</text>
+	</string>
+	<string id="st_val_trees_log_01_1_descr">
+		<text>Nem bнzok a tбrsamban. Szerintem meg akar lopni, ezйrt rejtegetem elхle a zsбkmбnyaimat. Kialakнtottam egy rejtekhelyet egy fatцnkben, a sziget hнdja mellett. Remйlem, nem talбlja meg.</text>
+	</string>
+	<string id="st_val_trees_stump_01">
+		<text>Korhadt fatцnk</text>
+	</string>
+	<string id="st_val_trees_stump_01_descr">
+		<text>Vaddisznуk elхl kellett ma menekьlnцm, ezйrt behajнtottam a dolgaimat egy korhadt fatцnk ьregйbe. Nem messze tцrtйnt a paraszthбztуl.</text>
+	</string>
+	<string id="st_val_trees_stump_01_0000">
+		<text>Fatцnk a dombnбl</text>
+	</string>
+	<string id="st_val_trees_stump_01_0000_descr">
+		<text>A domb lбbбnбl, egy цreg fatцnk alatt rejtettem el a dolgaimat. Kivбlу rejtekhely - remйlem, a szerencsйm is tartani fog йs talбlok mйg йrtйkeket!</text>
+	</string>
+	<string id="st_val_trees_stump_01_1">
+		<text>Fatцnk a deszkapadlуnбl</text>
+	</string>
+	<string id="st_val_trees_stump_01_1_descr">
+		<text>Sokszor lбttam Koljбt egy fatцnk mellett, a szigeten. A zsugorija szerintem rejteget ott valamit! Hagyom mйg egy kicsit harбcsolni, mielхtt megnйznйm, hogy mije is van.</text>
+	</string>
+	<string id="st_val_trees_zaz968">
+		<text>Rйgi Zaporozsec</text>
+	</string>
+	<string id="st_val_trees_zaz968_descr">
+		<text>Szegйny szerencsйtlenek, tцrik a fejьket йs prуbбlnak rбjцnni, hogy hovб tыnnek a cuccaik! Ha-ha-ha! Hбt, йn az Ingovбny mellй, abba a rйgi Zaporozsecbe rejtem хket! Lefogadom, hogy ott senki sem fogja keresni!</text>
+	</string>
+	<string id="st_yan_electric_box_01">
+		<text>Biztosнtйkdoboz a gyбrban</text>
+	</string>
+	<string id="st_yan_electric_box_01_descr">
+		<text>Бtnйztem Andrej PDA-jбt, йs azt talбltam, hogy amikor lejцtt az "agydarбlу", akkor kialakнtott magбnak egy kis rejtekhelyet a gyбr egyik rozsdбs biztosнtйkdobozбban.</text>
+	</string>
+	<string id="st_yan_electric_box_02">
+		<text>Vezйrlхpult a trafуknбl</text>
+	</string>
+	<string id="st_yan_electric_box_02_descr">
+		<text>Amikor elment az бram az egйsz gyбrban, minden йrtйkemet a trafуk egyik vezйrlхpultjбba rejtettem. </text>
+	</string>
+	<string id="st_yan_instrument_case_01">
+		<text>Lбda a gyбrban</text>
+	</string>
+	<string id="st_yan_instrument_case_01_descr">
+		<text>A hangбrban voltam, amikor talбltam egy szerszбmoslбdбt. Nagyon izgatott voltam, de nem volt idхm belenйzni - ott kellett hagynom, majd talбn legkцzelebb.</text>
+	</string>
+	<string id="st_yan_instrument_case_01_0000">
+		<text>Kicsi lбda a kamionban</text>
+	</string>
+	<string id="st_yan_instrument_case_01_0000_descr">
+		<text>A legjobb hely egy lбdбnak: pont a vezetхьlйs йs az бgy kцzцtt van. A zombik йs a sugбrzбs pedig ideбlis vйdelmet nyъjtanak.</text>
+	</string>
+	<string id="st_yan_pipe_01">
+		<text>Rejtekhely a kerнtйsnйl</text>
+	</string>
+	<string id="st_yan_pipe_01_descr">
+		<text>Elrejtettem egy aprуsбgot a kerнtйs kцzelйben a markolу mellй, a keresztcsцvekbe.</text>
+	</string>
+	<string id="st_yan_pipe_02">
+		<text>Nйhбny csecsebecse a csхben</text>
+	</string>
+	<string id="st_yan_pipe_02_descr">
+		<text>Az йrtйkesebb cuccokat magammal vittem, a maradйkot pedig egy csхbe rejtettem abban a szobбban, amelyikben egy lyuk van a falon.</text>
+	</string>
+	<string id="st_yan_rucksack_01">
+		<text>Hбtizsбk a bejбratnбl</text>
+	</string>
+	<string id="st_yan_rucksack_01_descr">
+		<text>Kйnytelen voltam a romok bejбratбnбl hagyni egy tцmцtt hбtizsбkot. Talбn mбr meg is talбlta valaki...</text>
+	</string>
+	<string id="st_yan_rucksack_02">
+		<text>Rejtek a szellхzхjбratban</text>
+	</string>
+	<string id="st_yan_rucksack_02_descr">
+		<text>Szia Toha! Remйlem, emlйkszel a koordinбtбkra йs a referenciapontra - a hбtizsбk a szellхzхjбratban van, a tбbor ledхlt fala mellett. Ьdvцzlettel: Bagoly.</text>
+	</string>
+	<string id="st_yan_rucksack_02_0000">
+		<text>Tбska az ьlйs alatt</text>
+	</string>
+	<string id="st_yan_rucksack_02_0000_descr">
+		<text>Nem volt idхm gondolkodni, ezйrt bevбgtam a tбskбm a rozsdбs UAZ vezetхьlйse alб.</text>
+	</string>
+	<string id="st_yan_rucksack_02_0001">
+		<text>Elrejtve a daru fьlkйjйben</text>
+	</string>
+	<string id="st_yan_rucksack_02_0001_descr">
+		<text>Isten tudja, mi ьtцtt belйm, amikor felmбsztam oda, hogy elrejtsem a dolgaim! Most hogy hozzam le onnan?</text>
+	</string>
+	<string id="st_yan_seif_01">
+		<text>Йrtйk a pбncйlszekrйnyben</text>
+	</string>
+	<string id="st_yan_seif_01_descr">
+		<text>Az enyйm a legjobb rejtekhely az egйsz Zуnбban! Egy pбncйlszekrйny az egyik gyбrйpьletben.</text>
+	</string>
+	<string id="st_yan_trees_log_01">
+		<text>Ьreges rцnk</text>
+	</string>
+	<string id="st_yan_trees_log_01_descr">
+		<text>A cuccaimat a "tцvis" mellett egy ьreges rцnkbe rejtettem.</text>
+	</string>
+	<string id="st_yan_trees_log_01_0000">
+		<text>Rцnk a dombnбl</text>
+	</string>
+	<string id="st_yan_trees_log_01_0000_descr">
+		<text>Zombik tбmadtak a gyбrbуl, ъgyhogy nem maradt mбs vбlasztбsom, mint megvбlni a zsбkmбnyomtуl. Egy farцnkben rejtettem el, a domb lбbбnбl.</text>
+	</string>
+	<string id="st_yan_trees_stump_01">
+		<text>Fatцnk a toronynбl</text>
+	</string>
+	<string id="st_yan_trees_stump_01_descr">
+		<text>Kialakнtottam mйg egy rejtekhelyet egy fatцnk odvбban. Ott van a dombon, amelyiken a magasfeszьltsйgы torony бll. A sok hьlye meg azt hiszi, hogy a kilбtбsban megyek gyцnyцrkцdni!</text>
+	</string>
+	<string id="gar_equipment_pipe_01_ss">
+		<text>Csхszбj</text>
+	</string>
+	<string id="gar_equipment_pipe_01_ss_descr">
+		<text>Egy csхszбjba rejtettem a kйszletemet, a radioaktнv szemйthalomban.</text>
+	</string>
+	<string id="gar_equipment_pipe_02_ss">
+		<text>Motor melletti csх</text>
+	</string>
+	<string id="gar_equipment_pipe_02_ss_descr">
+		<text>A tцnkrement motor melletti csхben van a zsбkmбnyom, a szemйttelepen.</text>
+	</string>
+	<string id="st_agr_cross_1">
+		<text>Kereszt alatt</text>
+	</string>
+	<string id="st_agr_cross_1_descr">
+		<text>Agroprom, bozуt, kereszt. Kereszt alatt sнrbolt.</text>
+	</string>
+	<string id="st_agr_electric_box_02">
+		<text>Biztosнtйkdoboz a mыhelyben</text>
+	</string>
+	<string id="st_agr_electric_box_02_descr">
+		<text>Az a rohadйk Szбrнtу elherdбlja minden zsбkmбnyunkat. Kibaszott vйn trotty. El is rejtettem a ronda kйpe elхl a cuccomat a biztosнtйkdobozba, a mбsodik emeleten.</text>
+	</string>
+	<string id="st_agr_instrument_case_01">
+		<text>Traktor</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0000">
+		<text>Kocsi a garбzsban</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0000_descr">
+		<text>Йn a parancsnok 4x4-esйbe raktam az уcskasбgaimat. Amнg a garбzsban marad, a cuccom is biztonsбgban lesz.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0001">
+		<text>Tбska a szerelvйny alatt</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0001_descr">
+		<text>Szerszбmoslбda egy vagon alatt, Agropromban.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0002">
+		<text>Busz a megбllуban</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0002_descr">
+		<text>Szerszбmoslбda egy buszban a megбllуban, a semleges bбzis kцzelйben.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_descr">
+		<text>Miutбn Vaszij megjavнtotta a traktort, leittuk magunkat, elmentьnk йjszaka szбguldozni, йs belefutottunk egy vйrszнvуba. Gyorsan elhъztuk a csнkot, йs kцzben hбtrahagytuk a zsбkmбnyos dobozunkat.</text>
+	</string>
+	<string id="st_agr_pipe_02">
+		<text>Csх a tцrmelйkben</text>
+	</string>
+	<string id="st_agr_pipe_02_descr">
+		<text>Rejtek: eltorlaszolt bejбrat a csatornarendszerbe, egy L-alakъ csхben.</text>
+	</string>
+	<string id="st_agr_rucksack_01">
+		<text>Ismeretlen tulajdonos hбtizsбkja</text>
+	</string>
+	<string id="st_agr_rucksack_01_0000">
+		<text>Stalker bбzis</text>
+	</string>
+	<string id="st_agr_rucksack_01_0000_descr">
+		<text>Feldobtam a hбtizsбkomat arra a faбgra, kьlцnben mйg kiderьlt volna, hogy йn rбngattam bele Vitalijt. A legrцvidebb ъton a semleges bбzis csцvein keresztьl juthatsz oda.</text>
+	</string>
+	<string id="st_agr_rucksack_01_descr">
+		<text>Йszrevettem egyet a Szolgбlat bбzisa kцzelйben levх fбn, de nem volt idхm utбna mбszni.</text>
+	</string>
+	<string id="st_agr_rucksack_02">
+		<text>Csх az Ingovбnyban</text>
+	</string>
+	<string id="st_agr_rucksack_02_0000">
+		<text>Elveszett hбtizsбk</text>
+	</string>
+	<string id="st_agr_rucksack_02_0000_descr">
+		<text>Visszafelй tartottunk a kirбndulбsrуl, megбlltunk pihenni a sziklбknбl, йs valahogy ottfelejtettem a hбtizsбkomat. Ha lesz egy kis idхm, visszamegyek йrte.</text>
+	</string>
+	<string id="st_agr_rucksack_02_0001">
+		<text>Tцki hбtizsбkja</text>
+	</string>
+	<string id="st_agr_rucksack_02_0001_descr">
+		<text>Felmбsztam a torony tetejйre, amнg a srбcok elzavartбk azokat az бtkozott kutyбkat. A hбtizsбkomat kйnytelen voltam a bozуtosba dobni.</text>
+	</string>
+	<string id="st_agr_rucksack_02_descr">
+		<text>A rejtekhelyem egy csхben van, az Ingovбnyban, a zsбkmбnyt pedig egy hбtizsбkba tettem.</text>
+	</string>
+	<string id="st_agr_seif_01">
+		<text>Szйf a bozуtosban</text>
+	</string>
+	<string id="st_agr_seif_01_descr">
+		<text>Megprуbбltuk бtcipelni a szйfet a vнzmosбson, de olyan iszapos volt az esхtхl, hogy folyton megcsъsztunk, йs elestьnk, ъgyhogy vйgьl elhajнtottuk ъtkцzben a francba.</text>
+	</string>
+	<string id="st_agr_trees_log_01">
+		<text>Fatцnk a tбvolban</text>
+	</string>
+	<string id="st_agr_trees_log_01_0000">
+		<text>Hъsvйti tojбsok</text>
+	</string>
+	<string id="st_agr_trees_log_01_0000_descr">
+		<text>A hъsvйt kцzeledtйvel Tyoha azt akarta, hogy kйszнtsьnk rejtekhelyeket a klбnnak. Az egyik ilyen "hъsvйti tojбsunkat" egy fatцnkbe rejtettem.</text>
+	</string>
+	<string id="st_agr_trees_log_01_descr">
+		<text>Senki sem fogja a rejtekhelyemet egy fatцnkben keresni, ami rбadбsul kint van a semmi kцzepйn.</text>
+	</string>
+	<string id="st_agru_treasure_1">
+		<text>Csх a vezйrlхteremben</text>
+	</string>
+	<string id="st_agru_treasure_1_descr">
+		<text>Amikor a szцrnyek megjelentek a terьleten, nйhбny dolgomat elrejtettem egy csхbe, mielхtt lelйptem volna.</text>
+	</string>
+	<string id="st_agru_treasure_2">
+		<text>Hбtizsбk az anomбliбban</text>
+	</string>
+	<string id="st_agru_treasure_2_descr">
+		<text>Йppen бtkeltem ezen a hнdon, amikor vйletlenьl elejtettem a hбtizsбkomat, йs szennyezett terьletre esett. Megprуbбltam visszaszerezni, de nem sikerьlt.</text>
+	</string>
+	<string id="st_agru_treasure_3">
+		<text>Elhagyatott szekrйny</text>
+	</string>
+	<string id="st_agru_treasure_3_descr">
+		<text>Mindig is kincskйnt хriztem azt a szekrйnyt. Szйp tбgas. Amikor a mutбnsok elхmerйszkedtek az odъjukbуl, menekьlnьnk kellett, ezйrt hбtrahagytam.</text>
+	</string>
+	<string id="st_agru_treasure_4">
+		<text>Hбtizsбk a holttest kцzelйben</text>
+	</string>
+	<string id="st_agru_treasure_4_descr">
+		<text>A mocskos kis patkбnyszerы mutбnsok darabokra tйptйk a haveromat. Йn is majdnem ott maradtam. Hбla Istennek, hogy volt a kцzelben lйpcsх!</text>
+	</string>
+	<string id="st_agru_treasure_5">
+		<text>Hбtizsбk a lйpcsх alatt</text>
+	</string>
+	<string id="st_agru_treasure_5_descr">
+		<text>Lбttam egy nagy, fekete hбtizsбkot a lйpcsх alatti vнzben. Mбr rйg fel is vettem volna, ha nem lenne ott az az ijesztх anomбlia.</text>
+	</string>
+	<string id="st_esc_cross_2">
+		<text>Kereszt alatt a dombon</text>
+	</string>
+	<string id="st_esc_cross_2_descr">
+		<text>Egy hamis stalker sнrba rejtettem a zsбkmбnyomat a dombon.</text>
+	</string>
+	<string id="st_esc_instrument_case_01_ramp">
+		<text>Lбda a hнd felett</text>
+	</string>
+	<string id="st_esc_instrument_case_01_ramp_descr">
+		<text>Egy lбdбba pakoltam a zsбkmбnyomat a hнdgerendбk talбlkozбsбnбl. Цregem, vйrt izzadtam, mire felmбsztam oda...</text>
+	</string>
+	<string id="st_esc_pipe_02_in_crater">
+		<text>Csх egy kivбgott fa alatt</text>
+	</string>
+	<string id="st_esc_pipe_02_in_crater_descr">
+		<text>Nem messze Kopaszfalutуl vertьnk tбbort. Egy kivбgott fa alatti csхbe rejtettem a holmimat. Majd kйsхbb visszamegyek йrte.</text>
+	</string>
+	<string id="st_esc_pipe_03_in_crater">
+		<text>Csх az alagъtban</text>
+	</string>
+	<string id="st_esc_pipe_03_in_crater_descr">
+		<text>Megprуbбltuk az anomбliбkat mindenfйle szemйttel megdobбlni, йs vйletlenьl eldobtam a csцvet is, amiben a zsбkmбnyunk volt. Mйg mindig ott porosodhat valahol.</text>
+	</string>
+	<string id="st_esc_rucksack_01_in_chimney">
+		<text>Hбtizsбk egy kбlyhacsхben</text>
+	</string>
+	<string id="st_esc_rucksack_01_in_chimney_descr">
+		<text>Amikor mйg ъjonc voltam, elrejtettem egy pбr cuccot a kбlyhacsхben. Mбr nem is emlйkszem, hogy mi van benne.</text>
+	</string>
+	<string id="st_esc_rucksack_01_natree">
+		<text>Kйszlet a fбn</text>
+	</string>
+	<string id="st_esc_rucksack_01_natree_descr">
+		<text>Egy fбrуl figyeltem a jбrmыraktбrt, йs ъgy dцntцttem, hogy otthagyom rajta a hбtizsбkomat. A legegyszerыbben a domb tъloldalбn lйvх бgrуl lehet felmбszni rб.</text>
+	</string>
+	<string id="st_esc_rucksack_01_pod_train">
+		<text>Mozdony alatt</text>
+	</string>
+	<string id="st_esc_rucksack_01_pod_train_descr">
+		<text>A parancsnokunk kirendelt minket, hogy azonnal segнtsьnk Nikolaj csapatбnak. Ekkor dobtam be a hбtizsбkomat a mozdony alб, az бrokpart mellett.</text>
+	</string>
+	<string id="st_esc_rucksack_02_inbush">
+		<text>Hбtizsбk a bokor mцgцtt</text>
+	</string>
+	<string id="st_esc_rucksack_02_inbush_descr">
+		<text>Egy este tыzharcba keveredtьnk a fosztogatуkkal. Nem sokra rб menekьlхre kellett fognunk a dolgot, ezйrt bedobtam a hбtizsбkomat pбr szikla kцzй egy bokor mцgцtt.</text>
+	</string>
+	<string id="st_esc_rucksack_02_natree">
+		<text>Hбtizsбk a tыzifa alatt</text>
+	</string>
+	<string id="st_esc_rucksack_02_natree_descr">
+		<text>Felhalmoztam egy kis tыzifбt, hogy elrejtsem a kйszletemet, ami egy kйtemeletes йpьletben van, a tanyбval szemben.</text>
+	</string>
+	<string id="st_esc_seif_03">
+		<text>Szйf a csхben</text>
+	</string>
+	<string id="st_esc_seif_03_0000">
+		<text>Szйf a bбzison</text>
+	</string>
+	<string id="st_esc_seif_03_0000_desc">
+		<text>Zil a semleges bбzis szйfjйben tartja az уcskasбgait a Kordonban.</text>
+	</string>
+	<string id="st_esc_seif_03_descr">
+		<text>Koljannal egy szйfbe rejtettьk a holminkat a Kopaszfalu melletti szemйttelepen.</text>
+	</string>
+	<string id="st_esc_trees_log_01">
+		<text>Kйszlet egy fatцnkben</text>
+	</string>
+	<string id="st_esc_trees_log_01_descr">
+		<text>Kutyбk tбmadtak meg, нgy nem volt sok vбlasztбsom. Elrejtettem a zsбkmбnyt egy megrepedt fatцnkbe, a mezх kцzepйn, йs rohanni kezdtem a tбbor felй.</text>
+	</string>
+	<string id="st_esc_trees_log_02">
+		<text>Rejtekhely egy fatцnkben</text>
+	</string>
+	<string id="st_esc_trees_log_02_descr">
+		<text>Megszereztem egy halott stalker rejtekhelyйnek koordinбtбit. Egy fatцnkben van, a tanya mцgцtt.</text>
+	</string>
+	<string id="st_esc_trees_stump_01">
+		<text>Fatцnk a fenyхerdхben</text>
+	</string>
+	<string id="st_esc_trees_stump_01_descr">
+		<text>A haverommal elrejtettьk a kevйske zsбkmбnyunkat egy цreg fatцnkbe, a fenyхk kцzцtt.</text>
+	</string>
+	<string id="st_esc_trees_stump_01_penb_syn_trader">
+		<text>Fatцnk a falu kцzelйben</text>
+	</string>
+	<string id="st_esc_trees_stump_01_penb_syn_trader_descr">
+		<text>Nem sйtбltam tъl messzire rejtekhelyйrt. Kivбlasztottam az elsх fatцnkцt Kopaszfalu mellett, ami lyukas volt, йs elrejtettem, amit eddig sikerьlt megtalбlnom.</text>
+	</string>
+	<string id="st_esc_trees_stump_02">
+		<text>Fatцnk az erdхben</text>
+	</string>
+	<string id="st_esc_trees_stump_02_descr">
+		<text>Szidorovics megkйrt, keressek egy rejtekhelyet a kintre vezetх helyхrsйg mellett, gondolom, valami ъjoncnak. Egy fatцnk alб tettem mindent a domb kцzelйben.</text>
+	</string>
+	<string id="st_esc_trees_stump_03">
+		<text>Fatцnk a Kordonban</text>
+	</string>
+	<string id="st_esc_trees_stump_03_descr">
+		<text>A Szemйtdombba vezetх ъton egy fatцnkbe rejtettem mindenemet, hogy a fosztogatуk ne tudjanak kirabolni.</text>
+	</string>
+	<string id="st_found_new_treasure">
+		<text>Ъj rejtekhely informбciу:</text>
+	</string>
+	<string id="st_gar_electric_box_01">
+		<text>Biztosнtйkdoboz a szemйtben</text>
+	</string>
+	<string id="st_gar_electric_box_01_descr">
+		<text>Eltettem egy kis aprуsбgot, hogy kйsхbb majd eladjam a bolhapiacon. Egy biztosнtйkdobozban van, egy kidхlt daru fьlkйje mellett.</text>
+	</string>
+	<string id="st_gar_electric_box_02">
+		<text>Padlуdeszka, lent a pajtбban</text>
+	</string>
+	<string id="st_gar_electric_box_02_descr">
+		<text>Mбr alig vбrom, hogy eladhassam, amit nem messze innen elrejtettem egy padlуdeszka alб, a pajtбban.</text>
+	</string>
+	<string id="st_gar_electric_box_02_ss">
+		<text>Biztosнtйkdoboz a szemйttelepen</text>
+	</string>
+	<string id="st_gar_electric_box_02_ss_descr">
+		<text>A zsбkmбny egy szemйthalmokkal beborнtott biztosнtйkdobozban van.</text>
+	</string>
+	<string id="st_gar_pipe_02">
+		<text>Csх a Szemйtdombon</text>
+	</string>
+	<string id="st_gar_pipe_02_descr">
+		<text>Az йrtйkeimet egy kivбgott csхbe tettem, hogy senki se tudjon kirabolni.</text>
+	</string>
+	<string id="st_gar_pipe_05">
+		<text>Csх a daru lбbбnбl</text>
+	</string>
+	<string id="st_gar_pipe_05_descr">
+		<text>Egy цsszedхlt daru lбbбnбl van egy csх, oda rejtettem az aprуsбgaimat, tudod, a nehйz idхkre.</text>
+	</string>
+	<string id="st_gar_rucksack_02">
+		<text>Hбtizsбk a fenyхfa alatt</text>
+	</string>
+	<string id="st_gar_rucksack_02_1_ss">
+		<text>Hбtizsбk a darufьlkйben</text>
+	</string>
+	<string id="st_gar_rucksack_02_1_ss_descr">
+		<text>Korбbban elrejtettem a hбtizsбkomat egy daru fьlkйjйbe, ami akkor mйg бllt. Most viszont mбr nem tudok bejutni.</text>
+	</string>
+	<string id="st_gar_rucksack_02_descr">
+		<text>Amнg nem javul a helyzetem, a hбtizsбk йs a tartalma itt maradnak a fenyхfa alatt.</text>
+	</string>
+	<string id="st_gar_rucksack_02_ss">
+		<text>Rejtekhely az ellensйgeim elхl</text>
+	</string>
+	<string id="st_gar_rucksack_02_ss_descr">
+		<text>Egy radioaktнv szemйthalomba dobtam a hбtizsбkomat, hogy az ellensйgeim ne tudjбk megszerezni.</text>
+	</string>
+	<string id="st_gar_rucksack_03">
+		<text>Kйszlet a szemйttelepen</text>
+	</string>
+	<string id="st_gar_rucksack_03_descr">
+		<text>Egy betonlap alб rejtettem a dolgaimat a szennyezett jбrmыtemetх mellett. Jobb is lesz, ha gyorsan visszaszerzem, kьlцnben mйg ellopjбk!</text>
+	</string>
+	<string id="st_gar_rucksack_04">
+		<text>Mozdonytetх</text>
+	</string>
+	<string id="st_gar_rucksack_04_descr">
+		<text>Egy mozdony tetejйn hagytam a hбtizsбkomat. Kцnnyen el lehet oda jutni az бrokpartrуl, de йszrevenni mбr nem olyan egyszerы.</text>
+	</string>
+	<string id="st_gar_seif_01">
+		<text>Szйf a pocsolyбban</text>
+	</string>
+	<string id="st_gar_seif_01_descr">
+		<text>Kцtve hiszem, hogy sokan keresnйnek fйlig elsьllyedt szйfeket egy pocsolyбban. Teljesen frankу бtmeneti rejtekhelynek.</text>
+	</string>
+	<string id="st_gar_seif_03">
+		<text>Szйf a jelzйs alatt</text>
+	</string>
+	<string id="st_gar_seif_03_descr">
+		<text>A zsбkmбnyomat egy szйfbe rejtettem egy sugбrzбsveszйly tбbla kцzelйben. Egyet jelentene az цngyilkossбggal, ha egy kasszafъrу megprуbбlna eljutni odбig.</text>
+	</string>
+	<string id="st_gar_trees_log_01">
+		<text>Lyukas fatцnk</text>
+	</string>
+	<string id="st_gar_trees_log_01_descr">
+		<text>Egy lyukas fatцnkцt vбlasztottam szйfnek nem messze a munkatбbortуl.</text>
+	</string>
+	<string id="st_gar_trees_log_02">
+		<text>Fatцnk a tцlgyfa mцgцtt</text>
+	</string>
+	<string id="st_gar_trees_log_02_descr">
+		<text>Koljan megosztott velem pбr infуt. Azt mondta, hogy Dudva egy lyukas fatцnkben tartja a zsбkmбnyбt, egy tцlgyfa mцgцtt.</text>
+	</string>
+	<string id="st_gar_trees_log_03">
+		<text>Fatцnk a bozуtosban</text>
+	</string>
+	<string id="st_gar_trees_log_03_descr">
+		<text>Betettem a zsбkmбnyomat egy fatцnkbe, utбna pedig elvonszoltam a bozуtosba. Ott legalбbb nem lesz szem elхtt.</text>
+	</string>
+	<string id="st_gar_trees_stump_01">
+		<text>A szцkevйny kйszlete</text>
+	</string>
+	<string id="st_gar_trees_stump_01_descr">
+		<text>Egy бsatу azt hitte, sikerьl elmenekьlnie a zsбkmбnyukkal, de Pбsztor йs az emberei mбs vйlemйnyen voltak. El is kaptбk a fickуt, de a zsбkmбnyt nem talбltбk meg. Csak йn lбttam a fatцnkцt, amit az бsatуk rejtekhelynek hasznбltak.</text>
+	</string>
+	<string id="st_gar_trees_stump_03">
+		<text>Fйlreesх rejtekhely</text>
+	</string>
+	<string id="st_gar_trees_stump_03_descr">
+		<text>Kerestem egy fйlreesх, lyukas fatцnkцt rejtekhelynek. Arra az esetre, ha netalбn az egyik emberьnk ъgy dцntene, hogy kirabol.</text>
+	</string>
+	<string id="st_gar_trees_stump_04">
+		<text>Rejtekhely a bбzis kцzelйben</text>
+	</string>
+	<string id="st_gar_trees_stump_04_descr">
+		<text>Nem tudom, a tцbbiek, hogy vannak vele, de йn kцzvetlenьl Jуga orra elй dugtam a kйszletemet, a kerнtйs mellett, egy цreg fatцnk alб.</text>
+	</string>
+	<string id="st_gar_zaz968">
+		<text>Fehйr Zaporozsec</text>
+	</string>
+	<string id="st_gar_zaz968_descr">
+		<text>Egy nap mбr nem Jуga fogja uralni a Szemйtdombot. Akkor pedig цsszeszedem minden zsбkmбnyomat abbуl a fehйr Zaporozsecbхl, йs bъcsъt intek a Szemйtdombnak.</text>
+	</string>
+	<string id="st_hos_electric_box_02">
+		<text>Biztosнtйkdoboz a kуrhбzban</text>
+	</string>
+	<string id="st_hos_electric_box_02_descr">
+		<text>A csapatunk egy biztosнtйkdobozba rejtette a kйszletйt, a kуrhбz elsх emeletйn.</text>
+	</string>
+	<string id="st_hos_rucksack_01">
+		<text>Hбtizsбk a lйpcsх alatt</text>
+	</string>
+	<string id="st_hos_rucksack_01_descr">
+		<text>Amikor megrohamoztuk a mбsodik emeletet, meg kellett szabadulnunk minden nйlkьlцzhetхtхl.</text>
+	</string>
+	<string id="st_hos_seif_01">
+		<text>Barikбdok a csarnokban</text>
+	</string>
+	<string id="st_hos_seif_01_descr">
+		<text>Egy elйg ronda tыzharcba keveredtem, йs beszorнtottak minket a kуrhбz mбsodik emeletйre. Kйnytelen voltam elrejteni a zsбkmбnyomat egy rйgi szйfbe, a barikбdokban.</text>
+	</string>
+	<string id="st_lim_electric_box_01">
+		<text>Csх a csatornarendszerben</text>
+	</string>
+	<string id="st_lim_electric_box_01_2">
+		<text>Biztosнtйkdoboz a Rбdiуhullбmban</text>
+	</string>
+	<string id="st_lim_electric_box_01_2_descr">
+		<text>Amikor elfoglaltuk az intйzetet, belebotlottam valakinek a kйszletйbe az erkйly biztosнtйkdobozбban, de tъlsбgosan siettьnk ahhoz, hogy felvegyem.</text>
+	</string>
+	<string id="st_lim_electric_box_01_descr">
+		<text>Lбttam egy kйszletet a csatornбban. Ha majd legkцzelebb odamegyьnk, felveszem.</text>
+	</string>
+	<string id="st_lim_instrument_case_01">
+		<text>Ъtitбska a sarokban</text>
+	</string>
+	<string id="st_lim_instrument_case_01_1">
+		<text>Ъtitбska a padlбson</text>
+	</string>
+	<string id="st_lim_instrument_case_01_1_descr">
+		<text>Kйt napon бt csak tбmadбsokat vertьnk vissza. Mire megйrkezett az erхsнtйs, mбr visszaszorнtottak bennьnket a tetхre. A padlбson йszrevettem egy tбskбt, de elfelejtettem magammal vinni.</text>
+	</string>
+	<string id="st_lim_instrument_case_01_descr">
+		<text>Egy udvaron mentьnk keresztьl, amikor megpillantottam egy aprу kis szerszбmoslбdбt a kerнtйsnйl.</text>
+	</string>
+	<string id="st_lim_pipe_02">
+		<text>Csх az UAZ alatt</text>
+	</string>
+	<string id="st_lim_pipe_02_01">
+		<text>Garбzsok mцgцtt</text>
+	</string>
+	<string id="st_lim_pipe_02_01_descr">
+		<text>Lбttam egy kйszletet a garбzsok mцgцtt, de nem volt idхm бtnйzni. Egy nagy csхben van, a fa mцgцtt.</text>
+	</string>
+	<string id="st_lim_pipe_02_2">
+		<text>Csх a kontйnerben</text>
+	</string>
+	<string id="st_lim_pipe_02_2_descr">
+		<text>Egyszer beszorнtottak minket egy udvarra. Volt ott egy szemetes kontйner, йs mintha lбttam volna benne valamit, egy csх belsejйben. Amint egyszer befejezzьk itt a dolgunkat, visszamegyek йs megnйzem.</text>
+	</string>
+	<string id="st_lim_pipe_02_descr">
+		<text>Egy zsбk kandikбlt ki egy UAZ alуl. Nem tudom, hogy mi a szar volt benne, mert nem volt idхm бtnйzni, talбn majd kйsхbb. Ha mйg йletben leszek.</text>
+	</string>
+	<string id="st_lim_rucksack_01">
+		<text>Hбtizsбk a kesztyыtartу alatt</text>
+	</string>
+	<string id="st_lim_rucksack_01_descr">
+		<text>Eldugtam szerencsйtlen Bбdogdoboz hбtizsбkjбt egy rйgi Moszkvics mыszerfala alб.</text>
+	</string>
+	<string id="st_lim_rucksack_02_1">
+		<text>Hбtitбska a kerнtйsnйl</text>
+	</string>
+	<string id="st_lim_rucksack_02_12">
+		<text>A sйrьlt ember holmija</text>
+	</string>
+	<string id="st_lim_rucksack_02_12_descr">
+		<text>Szбnyek bekapott egy lцvйst, amikor бtmбsztunk egy falon. El kellett dobnia a hбtizsбkjбt, hogy mentse a seggйt!</text>
+	</string>
+	<string id="st_lim_rucksack_02_1_descr">
+		<text>Ьldцztek, ezйrt eldobtam a hбtizsбkomat egy kerнtйsnйl, ezeken a koordinбtбkon.</text>
+	</string>
+	<string id="st_lim_rucksack_02_2">
+		<text>Halott ember hбtizsбkja</text>
+	</string>
+	<string id="st_lim_rucksack_02_2_descr">
+		<text>Egy ъjoncot kцzvetlenьl mellettem eltalбlt egy grбnбt, azon nyomban beadta a kulcsot. Danya fogta a hбtizsбkjбt, йs bedobta a hнd alб. Egy halott mбr ъgysem veheti hasznбt, de mi igen.</text>
+	</string>
+	<string id="st_lim_seif_03">
+		<text>Szйf a garбzsban</text>
+	</string>
+	<string id="st_lim_seif_03_descr">
+		<text>Egy szцkevйny utбn kutattuk a garбzsokat, йs talбltunk egy szйfet. Egyszer majd megprуbбljuk feltцrni.</text>
+	</string>
+	<string id="st_lim_trees_log_01">
+		<text>Fйlig eltemetett fatцnk</text>
+	</string>
+	<string id="st_lim_trees_log_01_descr">
+		<text>Mielхtt elfogtuk volna azt a rohadйkot, lбttam, hogy egy fatцnk kцrьl legyeskedik, a veranda mцgцtt.</text>
+	</string>
+	<string id="st_lim_trees_stump_01_1">
+		<text>Batyu a fatцnkben</text>
+	</string>
+	<string id="st_lim_trees_stump_01_1_descr">
+		<text>Mikцzben a tбmadбsra kйszьltьnk, lбttam egy batyut ebben a tцnkben.</text>
+	</string>
+	<string id="st_mar_nichka_0000">
+		<text>Kйszlet a bunker kцzelйben</text>
+	</string>
+	<string id="st_mar_nichka_0000_descr">
+		<text>Bandzsa emberei a nyomomban voltak, ezйrt elsьllyesztettem a zsбkmбnyomat egy bunkerlejбrat mellett, egy mocsбrban, nem messze az elhagyatott jбrmыraktбrtуl.</text>
+	</string>
+	<string id="st_mar_nichka_0001">
+		<text>Kis doboz a torony alatt</text>
+	</string>
+	<string id="st_mar_nichka_0001_descr">
+		<text>Minden zsбkmбnyomat цsszegyыjtцttem egy rejtekhelyre, az egyik magasfeszьltsйgы torony alatt.</text>
+	</string>
+	<string id="st_mar_nichka_0003">
+		<text>Doboz a ZIL fьlkйjйben</text>
+	</string>
+	<string id="st_mar_nichka_0003_descr">
+		<text>Sбnta Szanyok szerzett valahonnan egy lakatos dobozt. Teletцmtьk mindenfйle csecsebecsйvel, йs betettьk egy rozsdбs ZIL fьlkйjйbe.</text>
+	</string>
+	<string id="st_mar_nichka_0004">
+		<text>Csх az бllomбson</text>
+	</string>
+	<string id="st_mar_nichka_0004_descr">
+		<text>Elrejtettem valamit egy csх belsejйbe, egy szelep mellett, a rйgi szivattyъбllomбson, egy mocsбr kцzepйn.</text>
+	</string>
+	<string id="st_mar_nichka_0005">
+		<text>Csх az ingovбnyban</text>
+	</string>
+	<string id="st_mar_nichka_0005_descr">
+		<text>Belefбradtam, hogy folyton magammal cipelem a holmimat a mocsarakban, ezйrt leraktam egy fйlszigeten, egy elsьllyedt szelepes csхbe. Gondoltam, kцnnyнtek a terhemen, йs itt a kйszletem is biztonsбgban lesz.</text>
+	</string>
+	<string id="st_mar_nichka_0006">
+		<text>Hбtizsбk az Ingovбnyban</text>
+	</string>
+	<string id="st_mar_nichka_0006_descr">
+		<text>Йppen csak sikerьlt elmenekьlnцm egy mocsбri szцrny elхl. Futбs kцzben elejtettem a hбtizsбkomat, de mбr nem hiszem, hogy visszamegyek йrte.</text>
+	</string>
+	<string id="st_mar_nichka_0007">
+		<text>Elsьllyedt szйf</text>
+	</string>
+	<string id="st_mar_nichka_0007_descr">
+		<text>A beomlott hнd kцzelйben van a vнzben egy elsьllyedt szйf. Minden holmim йs bizodalmam abban a dobozban van.</text>
+	</string>
+	<string id="st_mar_nichka_0008">
+		<text>Hбtizsбk a nбdasban</text>
+	</string>
+	<string id="st_mar_nichka_0008_descr">
+		<text>Amikor a vadkanokkal harcoltam, beleejtettem a hбtizsбkomat a nбdasba. Pontosan nem tudom, hol lehet, csak a terьlet koordinбtбit ismerem.</text>
+	</string>
+	<string id="st_mar_nichka_0009">
+		<text>Hбtrahagyott relikviбk</text>
+	</string>
+	<string id="st_mar_nichka_0009_descr">
+		<text>Sikerьlt бtvernem egy balekot, йs elvittem a zsбkmбnnyal teli hбtizsбkjбt. Utбna ъgy dцntцttem, hogy meghъzom magam a nбdasban, nehogy elkapjanak.</text>
+	</string>
+	<string id="st_mar_nichka_0010">
+		<text>Fatцnk a fa kцzelйben</text>
+	</string>
+	<string id="st_mar_nichka_0010_descr">
+		<text>Ъgy dцntцttem, hogy elteszem a zsбkmбnyomat egy fatцnkbe, a kiszбradt fa mellett. Majd akkor felveszem, amikor vйgleg bъcsъt intek az Ingovбnynak.</text>
+	</string>
+	<string id="st_mar_nichka_0011">
+		<text>Fatцnk a torony kцzelйben</text>
+	</string>
+	<string id="st_mar_nichka_0011_descr">
+		<text>Egy megrepedt fatцnk, nem messze a magasfeszьltsйgы toronytуl.</text>
+	</string>
+	<string id="st_mar_nichka_0012">
+		<text>Sнrhalom gбzбlarccal</text>
+	</string>
+	<string id="st_mar_nichka_0012_descr">
+		<text>Jobban bнzom a holtakban, mint az йlхkben. A rejtekhelyem a temetхben van, a bal szйlsх sнrban, a gбzбlarccal.</text>
+	</string>
+	<string id="st_mar_nichka_0013">
+		<text>Fakereszt</text>
+	</string>
+	<string id="st_mar_nichka_0013_descr">
+		<text>Eltettem egy kis aprуsбgot a nehйz idхkre. A templom temetхjйnek egyetlen fakeresztes sнrjбban van.</text>
+	</string>
+	<string id="st_mar_nichka_0014">
+		<text>Templom farakбs</text>
+	</string>
+	<string id="st_mar_nichka_0014_descr">
+		<text>Kйrlek, Istenem, vigyбzz a dolgaimra! Egy megrepedt fatцnkbe rejtettem хket a farakбsban.</text>
+	</string>
+	<string id="st_mar_nichka_0015">
+		<text>Rejtekhely a nбdasban</text>
+	</string>
+	<string id="st_mar_nichka_0015_descr">
+		<text>A templomhoz kцzeli nбdasban felejtettem a hбtizsбkomat. Azуta pedig nem talбlom, pedig mйg a pontos koordinбtбk is megvannak a PDA-mon.</text>
+	</string>
+	<string id="st_mar_nichka_0016">
+		<text>Szйf a sбrban</text>
+	</string>
+	<string id="st_mar_nichka_0016_descr">
+		<text>Egy szйfbe tettem minden zsбkmбnyomat, egy mocsбr partjбn, a templom kцzelйben. Bekaphatjбtok, fosztogatуk!</text>
+	</string>
+	<string id="st_mar_nichka_0017">
+		<text>Ъtitбska a kбlyha alatt</text>
+	</string>
+	<string id="st_mar_nichka_0017_descr">
+		<text>Mi a kцzцs egy forrу kбlyhбban йs egy dцgцs macбban? Ha elйg sokбig dolgozol rajtuk, kцnnyen elsьlhetsz! Ha-ha! Egy ilyen kбlyhбba rejtettem el rйgebben a zsбkmбnnyal teli ъtitбskбmat.</text>
+	</string>
+	<string id="st_mar_nichka_0018">
+		<text>Holmi egy Zaporozsecben</text>
+	</string>
+	<string id="st_mar_nichka_0018_descr">
+		<text>A fйl йjszakбt azon az elsьllyedt Zaporozsecen tцltцttьk, amнg a srбcok ki nem mentettek minket. Az elejйn mйg nem tudtam, kik jцnnek, ezйrt elrejtettem a holmimat a kцzelben. Egy szйp, forrу napon majd visszamegyek йs megkeresem.</text>
+	</string>
+	<string id="st_mar_nichka_0019">
+		<text>Fatцnk a vasъt kцzelйben</text>
+	</string>
+	<string id="st_mar_nichka_0019_descr">
+		<text>Йppen vonattal utaztunk, amikor lцvйseket hallottunk. Azйrt biztos, ami biztos, eltettem a dolgaimat egy fatцnkbe, nйhбny szikla mцgцtt.</text>
+	</string>
+	<string id="st_mar_nichka_0020">
+		<text>Csх a ciszternбbуl</text>
+	</string>
+	<string id="st_mar_nichka_0020_descr">
+		<text>A srбcokkal elrejtettьk a holminkat egy szelepes csх vйgйbe, ami a ciszternбtуl az Ingovбnyig vezet.</text>
+	</string>
+	<string id="st_mar_nichka_0021">
+		<text>Hбtizsбk a matrac kцzelйben</text>
+	</string>
+	<string id="st_mar_nichka_0021_descr">
+		<text>Ьtхdцtt Ljoha az elsьllyedt csуnakon aludt egy matracon, sikerьlt is utбna otthagynia a hбtizsбkjбt.</text>
+	</string>
+	<string id="st_mar_nichka_0022">
+		<text>Doboz a konyhбban</text>
+	</string>
+	<string id="st_mar_nichka_0022_descr">
+		<text>Fйlretettem nйhбny dolgot, hogy kйsхbb majd eladjam, egy nagy, kйk dobozban vannak a nyбri konyhбban. </text>
+	</string>
+	<string id="st_mar_nichka_0023">
+		<text>Rejtekhely a fatцnkben</text>
+	</string>
+	<string id="st_mar_nichka_0023_descr">
+		<text>Mielхtt elmentem volna az Ingovбny egy mбsik rйszйbe, ki kellett ьrнtenem a hбtizsбkomat. Egy megrepedt fatцnkbe rejtettem a zsбkmбnyomat.</text>
+	</string>
+	<string id="st_mar_nichka_0024">
+		<text>Rejtekhely a kapcsolуtбblбban</text>
+	</string>
+	<string id="st_mar_nichka_0024_descr">
+		<text>A tanya transzformбtorбnбl levх kapcsolуtбbla veszйlyes! Ne menj a kцzelйbe!</text>
+	</string>
+	<string id="st_mar_nichka_0025">
+		<text>Elektromos vezйrlхegysйg a jбrmыraktбron</text>
+	</string>
+	<string id="st_mar_nichka_0025_descr">
+		<text>Amikor csatlakoztam Хsz bandбjбba, eltettem nйhбny aprуsбgot az elektromos vezйrlхegysйgbe, a raktбrban. Ki tudja, mйg hasznukat vehetem a kйsхbbiekben!</text>
+	</string>
+	<string id="st_mar_nichka_0026">
+		<text>Hбtizsбk a csapбson</text>
+	</string>
+	<string id="st_mar_nichka_0026_descr">
+		<text>Egy csapбson belebotlottam egy szцrnybe, йs csak kйs volt nбlam. Letettem a hбtizsбkomat, йs rбvetettem magam. Kйsхbb nйhбny fickу talбlt rбm, egy mйrfцlddel arrйbb. Egyszer majd visszamegyek йrte.</text>
+	</string>
+	<string id="st_mar_nichka_0027">
+		<text>Fatцnk a fiatal fa kцzelйben</text>
+	</string>
+	<string id="st_mar_nichka_0027_descr">
+		<text>Hadd sanyargassa Kampу az ostobбkat! Йn szйp aprбnkйnt gyыjtцgettem a zsбkmбnyomat, hogy aztбn eltegyem egy fatцnkbe, egy fiatal fa kцzelйben.</text>
+	</string>
+	<string id="st_mar_nichka_0028">
+		<text>Szйf a halott fa mцgцtt</text>
+	</string>
+	<string id="st_mar_nichka_0028_descr">
+		<text>Azйrt gyыjtцgetem a zsбkmбnyomat, hogy a fiamnak vehessek majd gyуgyszert. Addig is egy halott fa mцgцtti szйfbe rakom, de amint elegendх цsszegyыlik, azonnal elmegyek йrte.</text>
+	</string>
+	<string id="st_mar_nichka_0029">
+		<text>Rejtekhely a bozуtosban</text>
+	</string>
+	<string id="st_mar_nichka_0029_descr">
+		<text>Mire kiйrtem az Ingovбnybуl, alig бlltam a lбbamon, ezйrt bedobtam a hбtitбskбmat az ъt melletti bozуtosba.</text>
+	</string>
+	<string id="st_mar_nichka_0030">
+		<text>Rejtekhely a teherautу alatt</text>
+	</string>
+	<string id="st_mar_nichka_0030_descr">
+		<text>Egy szerszбmoslбda egy teherautу alatt, a hнddal szemben.</text>
+	</string>
+	<string id="st_mar_nichka_0031">
+		<text>A mocsбr kцzepйn</text>
+	</string>
+	<string id="st_mar_nichka_0031_descr">
+		<text>Otthagytam egy doboznyi holmimat egy mocsбr kцzepйn, egy betonlapon, amibхl vasrudak бllnak ki. Majd visszamegyek йrtьk, ha egyszer elhagyom ezt a helyet.</text>
+	</string>
+	<string id="st_mar_nichka_0032">
+		<text>Kis doboz a kбlyhбban</text>
+	</string>
+	<string id="st_mar_nichka_0032_descr">
+		<text>A kйszletem lбdбban, a lбda egy kбlyhбban, a kбlyha egy leйgett hбzban, йs a hбz az Ingovбnyban van.</text>
+	</string>
+	<string id="st_mar_nichka_0033">
+		<text>Szйf a nбdasban</text>
+	</string>
+	<string id="st_mar_nichka_0033_descr">
+		<text>Fogalmam sincs, hogy mit keres egy szйf a nбdasban, de nem tudok kihagyni egy ilyen lehetхsйget. Mostantуl benne fogom tartani a holmimat.</text>
+	</string>
+	<string id="st_mar_nichka_0034">
+		<text>Fatцnk az ingovбnyban</text>
+	</string>
+	<string id="st_mar_nichka_0034_descr">
+		<text>A fхnцk azt mondta, hogy ne vigyьnk magunkkal sok cuccot, ъgyhogy az enyйmet elrejtettem egy fatцnk alб, a vнztorony mellett, egy fa alatti bozуtosban.</text>
+	</string>
+	<string id="st_mar_nichka_0035">
+		<text>Farцnk az ingovбnyban</text>
+	</string>
+	<string id="st_mar_nichka_0035_descr">
+		<text>Az Ingovбnyon keresztьl utaztam, amikor йszrevettem ezt a korhadt farцnkцt egy stйg kцzelйben. Gondoltam, jу rejtekhelye lesz a "kincseimnek."</text>
+	</string>
+	<string id="st_mar_nichka_0036">
+		<text>Hбtizsбk a szigeten</text>
+	</string>
+	<string id="st_mar_nichka_0036_descr">
+		<text>Az az бtkozott mocsбri szцrny az istenйrt nem akarta feladni az ьldцzйsemet. Miutбn mбr lassan lefutottam egy maratoni tбvot, annyira elfбradtam, hogy muszбj voltam eldobni a hбtizsбkomat egy szigeten.</text>
+	</string>
+	<string id="st_mar_nichka_0037">
+		<text>Lejбrу az бllomбs kцzelйben</text>
+	</string>
+	<string id="st_mar_nichka_0037_descr">
+		<text>Elrejtettem a dolgaimat az egyik lejбrуba, az бllomбs kцzelйben, nehogy a vйgйn mйg megszerezze хket egy fosztogatу.</text>
+	</string>
+	<string id="st_mar_nichka_0038">
+		<text>Rejtekhely a csхben</text>
+	</string>
+	<string id="st_mar_nichka_0038_descr">
+		<text>Az a fekete hбtizsбk a nagy csхben az egyetlen dolog, ami Mitykбbуl maradt.</text>
+	</string>
+	<string id="st_mar_nichka_0039">
+		<text>Szerszбmoslбda a fьlkйben</text>
+	</string>
+	<string id="st_mar_nichka_0039_descr">
+		<text>Talбltam egy szerszбmoslбdбt a mocsбrban, нgy hбt beletettem minden holmimat, йs elrejtettem egy daru fьlkйjйbe. Megvбrom, amнg jobbra fordulnak a dolgok.</text>
+	</string>
+	<string id="st_mar_nichka_0040">
+		<text>Hбtizsбk a szerelvйny alatt</text>
+	</string>
+	<string id="st_mar_nichka_0040_descr">
+		<text>Menekьlni prуbбltam, йs muszбj voltam kцnnyнteni a terhemen, нgy hбt bedobtam a hбtizsбkomat egy szerelvйny alб, a vasъtnбl.</text>
+	</string>
+	<string id="st_mar_nichka_0041">
+		<text>A kupola peremйn</text>
+	</string>
+	<string id="st_mar_nichka_0041_descr">
+		<text>A templom kupolбjбnak peremйn hagytam a hбtizsбkomat. Ъgy nйzhettem ki, mint egy kecske, ahogy ott ugrбltam azon a tetхn.</text>
+	</string>
+	<string id="st_mar_nichka_0042">
+		<text>Hнd alatt</text>
+	</string>
+	<string id="st_mar_nichka_0042_descr">
+		<text>Elbъjtunk egy hнd alб, amнg az ьldцzхink бtfutottak rajta. Otthagytam a zsбkmбnyos hбtizsбkomat, egy gerenda mellett.</text>
+	</string>
+	<string id="st_mar_nichka_0043">
+		<text>Sziklбk kцzцtt</text>
+	</string>
+	<string id="st_mar_nichka_0043_descr">
+		<text>Egy repedйsbe dobtam a tбskбmat, hбrom szikla kцzцtt, kьlцnben mйg pбr fickу megprуbбlt volna kirabolni.</text>
+	</string>
+	<string id="st_mar_nichka_0044">
+		<text>Farцnk a sziklбk alatt</text>
+	</string>
+	<string id="st_mar_nichka_0044_descr">
+		<text>Mбr rйgуta kerestem egy biztonsбgos rejtekhelyet a kйszletemnek, йs vйgьl talбltam is egy lyukas farцnkцt, a sziklбk alatti nбdasban.</text>
+	</string>
+	<string id="st_mil_cross_1">
+		<text>Rejtekhely a sнrban</text>
+	</string>
+	<string id="st_mil_cross_1_descr">
+		<text>Egy sнrkereszt alб dugtam a holmimat. Hadd nyugodjon bйkйben, amнg vissza nem jцvцk йrte!</text>
+	</string>
+	<string id="st_mil_cross_2">
+		<text>Kereszt a fa kцzelйben</text>
+	</string>
+	<string id="st_mil_cross_2_descr">
+		<text>Egy fa melletti sнrba rejtettem a dolgaimat.</text>
+	</string>
+	<string id="st_mil_instrument_case_01">
+		<text>Tбska a kбlyhбban</text>
+	</string>
+	<string id="st_mil_instrument_case_01_descr">
+		<text>Egy kistбskбt dugtam egy roskadozу hбz kбlyhбjбba. Ott fogom most mбr tбrolni a megszerzett йrtйkeimet.</text>
+	</string>
+	<string id="st_mil_pipe_02">
+		<text>Csх a bбzis bejбratбnбl</text>
+	</string>
+	<string id="st_mil_pipe_02_descr">
+		<text>Pontosan a zбszlуs orra elй rejtettem a holmimat. Egy csх belsejйben van, az хrszem fьlkйje mцgцtt, a bбzis bejбratбnбl.</text>
+	</string>
+	<string id="st_mil_rucksack_01">
+		<text>Hбtizsбk a kйmйny kцzelйben</text>
+	</string>
+	<string id="st_mil_rucksack_01_0000">
+		<text>Rejtekhely a Moszkvicsban</text>
+	</string>
+	<string id="st_mil_rucksack_01_0000_descr">
+		<text>Amikor Max megjцn, visszaadom neki a hбtizsбkjбt. Addig pedig marad abban a vйn Moszkvicsban.</text>
+	</string>
+	<string id="st_mil_rucksack_01_descr">
+		<text>Egy roskadozу hбz kйmйnyйnйl hagytam a hбtizsбkomat. Vissza is mennйk йrte, ha nem lenne az a vйrszнvу a faluban.</text>
+	</string>
+	<string id="st_mil_rucksack_02">
+		<text>Hбtizsбk az utбnfutу alatt</text>
+	</string>
+	<string id="st_mil_rucksack_02_0000">
+		<text>Rejtekhely a hнd alatt</text>
+	</string>
+	<string id="st_mil_rucksack_02_0000_descr">
+		<text>A hбtizsбk egy szerelvйnyen van, a katonai bбzison, a hнd alatt.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0001">
+		<text>Hasadйk az alagъtban</text>
+	</string>
+	<string id="st_mil_rucksack_02_0001_descr">
+		<text>Amikor a "hajsza" megkezdхdцtt, ledobtam a hбtizsбkomat az alagъt feletti hasadйkba, de felakadt egy vasrъdra. Kбr, hogy ott kellett hagynom, jу lenne visszamenni йrte.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0002">
+		<text>Rejtekhely a vйcйn</text>
+	</string>
+	<string id="st_mil_rucksack_02_0002_descr">
+		<text>Kйtlem, hogy bбrki is a falu vйcйjйben kutatna zsбkmбny utбn. Az enyйm ott is van, ъgyhogy nem aggуdom.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0003">
+		<text>Rejtekhely a kerнtйs kцzelйben</text>
+	</string>
+	<string id="st_mil_rucksack_02_0003_descr">
+		<text>Kйnytelen voltam eldobni szegйny Koljan hбtizsбkjбt a hangбr mцgцtt. Mбr az йn dolgaimat is alig bнrtam.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0004">
+		<text>Hбtizsбk a fa mцgцtt</text>
+	</string>
+	<string id="st_mil_rucksack_02_0004_descr">
+		<text>Abban a pillanatban, hogy meglбttam azt a szцrnyet a vнztorony mellett, ъgy dobtam be a hбtizsбkomat egy kidхlt fa alб, mintha tыzforrу lenne. Az ilyen helyzetekben kisebb teherrel futni йletet menthet.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0005">
+		<text>Hбtizsбk az alagsorban</text>
+	</string>
+	<string id="st_mil_rucksack_02_0005_descr">
+		<text>Olyan rosszul voltam a kisugбrzбs utбn, hogy bedobtam a hбtizsбkomat egy alagsorba. Majd visszamegyek йrte, ha mбr jobban leszek.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0006">
+		<text>Elfelejtett hбtizsбk</text>
+	</string>
+	<string id="st_mil_rucksack_02_0006_descr">
+		<text>Egy robbanбs darabokra tцrt egy falat, az egyik darabja pedig maga alб temetett. El kellett dobnom a hбtizsбkomat, hogy kimбsszak, йs szйtrъgjak pбr segget. Annyira belefeledkeztem a dologba, hogy teljesesen kiment a fejembхl a hбtizsбk. Talбn mйg mindig ott van lenn...</text>
+	</string>
+	<string id="st_mil_rucksack_02_0007">
+		<text>Rejtekhely a konyhбban</text>
+	</string>
+	<string id="st_mil_rucksack_02_0007_descr">
+		<text>Egy zцld hбtizsбk a konyha kбlyhбjбban, az elhagyatott falu egyik hбzбban. Feljegyeztem a koordinбtбkat.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0008">
+		<text>Rejtekhely a szikla alatt</text>
+	</string>
+	<string id="st_mil_rucksack_02_0008_descr">
+		<text>Kemйnyen hъztam aznap az igбt, йs otthagytam a minden jуsбggal teletцmцtt hбtizsбkomat a bozуtosban, kйt szikla kцzцtt.</text>
+	</string>
+	<string id="st_mil_rucksack_02_descr">
+		<text>Lбttam egy fickуt, aki kцzvetlenьl egy kisugбrzбs elхtt bedobta a hбtizsбkjбt egy utбnfutу alб. Megyek is majd, йs megnйzem.</text>
+	</string>
+	<string id="st_mil_trees_01_0001">
+		<text>Fatцnk a sziklбk alatt</text>
+	</string>
+	<string id="st_mil_trees_01_0001_descr">
+		<text>A sziklбk leges-legszйlйn van egy fatцnk, abban pedig ott van, a kнvбncsiskodу szemek elхl eldugva, a zsбkmбnyom.</text>
+	</string>
+	<string id="st_mil_trees_log_01">
+		<text>Megrepedt fatцnk</text>
+	</string>
+	<string id="st_mil_trees_log_01_0000">
+		<text>Rejtekhely egy parasztszбnon</text>
+	</string>
+	<string id="st_mil_trees_log_01_0000_descr">
+		<text>Rejtekhely egy hatalmas fatцnkben, a parasztszбn mellett.</text>
+	</string>
+	<string id="st_mil_trees_log_01_0001">
+		<text>Fatцnk a sziklбk alatt</text>
+	</string>
+	<string id="st_mil_trees_log_01_0001_descr">
+		<text>A sziklбk leges-legszйlйn van egy fatцnk, abban pedig ott van, a kнvбncsiskodу szemek elхl eldugva, a zsбkmбnyom.</text>
+	</string>
+	<string id="st_mil_trees_log_01_descr">
+		<text>Egy fenyхfa alatti fatцnkbe rejtettem a holmimat, kцzvetlenьl egy цsszedхlt torony mellett.</text>
+	</string>
+	<string id="st_mil_trees_stump_01">
+		<text>Fatцnk a betonlapok mцgцtt</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0000">
+		<text>Fatцnk a kerнtйs mellett</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0000_descr">
+		<text>Vityek azt mondta, hogy egy fatцnkben hagyta a rйszemet, a katonai bбzis kerнtйse йs a kis mocsбr kцzцtt.</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0001">
+		<text>Fatцnk a kerнtйs mellett</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0001_descr">
+		<text>Vityek azt mondta, hogy egy fatцnkben hagyta a rйszemet, a katonai bбzis kerнtйse йs a kis ingovбny kцzцtt.</text>
+	</string>
+	<string id="st_mil_trees_stump_01_descr">
+		<text>Egy fatцnk kйt szikla kцzцtt, nйhбny betonlap mцgцtt.</text>
+	</string>
+	<string id="st_red_box_01_0000">
+		<text>Kйk lбda</text>
+	</string>
+	<string id="st_red_box_01_0000_descr">
+		<text>A zsбkmбnyom egy kйk lбdбban van, a hegyfok kцzelйben lйvх йpьlet mбsodik emeletйn.</text>
+	</string>
+	<string id="st_red_pipe_02">
+		<text>Csх a talicskбban</text>
+	</string>
+	<string id="st_red_pipe_02_descr">
+		<text>Begyцmцszцltem a holmimat egy csхbe, йs bedobtam egy rozsdбs talicska alб, a rйgi kхfejtхben.</text>
+	</string>
+	<string id="st_red_rucksack_01">
+		<text>Fekete hбtizsбk</text>
+	</string>
+	<string id="st_red_rucksack_01_1_0000">
+		<text>Hбtizsбk a faбgon</text>
+	</string>
+	<string id="st_red_rucksack_01_1_0000_descr">
+		<text>Egy szцrny elхl menekьltem, йs felmбsztam egy fбra. A bestiбt ugyan nem lбttam, de hallottam mindent. Egy бgon hagytam a hбtizsбkomat, leugrottam, йs futottam az йletemйrt.</text>
+	</string>
+	<string id="st_red_rucksack_01_descr">
+		<text>A fenйbe, elhagytam a fekete hбtizsбkomat, mikцzben kirohantam az erdхbхl. Mйg azt is tudom, hol van, de йn vissza nem megyek oda, amнg napalmmal fel nem perzselik az egйsz бtkozott helyet!</text>
+	</string>
+	<string id="st_red_rucksack_01_on_tree">
+		<text>Fa a vйdхfal mellett</text>
+	</string>
+	<string id="st_red_rucksack_01_on_tree_descr">
+		<text>Egy бtkozott vйrszнvу elkergetett egйszen a vйdхfalig, ahol felmбsztam egy fбra. Ha nem hagytam volna a hбtizsбkomat azon a fбn, soha nem sikerьlt volna felugranom a falra.</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_2">
+		<text>Hбtizsбk a barlangban</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_2_descr">
+		<text>Este bemбsztam egy barlangba aludni. Kйsхbb arra йbredtem, hogy egy vйrszнvу kotorбszik a tбskбmban. Ъgy rohantam ki onnan, mint a rakйta, de a hбtizsбkom mйg mindig a vйrszнvуnбl van.</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_3">
+		<text>Szikla a vнzmosбs kцzelйben</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_3_descr">
+		<text>Egy kutyafalka beszorнtott egy vнzmosбshoz, ekkor a hбtizsбkomat bedobtam pбr szikla kцzй, йs megprуbбltam kitцrni kцzьlьk.</text>
+	</string>
+	<string id="st_red_rucksack_02">
+		<text>Hбtizsбk a bozуtosban</text>
+	</string>
+	<string id="st_red_rucksack_02_0000">
+		<text>Hбtizsбk az erdхben</text>
+	</string>
+	<string id="st_red_rucksack_02_0000_descr">
+		<text>Teljesen olyan volt, mintha egy horrorfilmben szerepelnйk. Fogalmam sincs, hogy jutottam ki... Elveszнtettem a hбtizsбkomat, de emlйkszem, hogy csak egyetlen helyen hagyhattam el.</text>
+	</string>
+	<string id="st_red_rucksack_02_0001">
+		<text>Hбtizsбk a sziklбk alatt</text>
+	</string>
+	<string id="st_red_rucksack_02_0001_descr">
+		<text>Kolja hбtizsбkjбt mбr nem bнrtam el, ezйrt betettem a sziklбk alб, a limanszki hнdhoz vezetх kijбratnбl.</text>
+	</string>
+	<string id="st_red_rucksack_02_4">
+		<text>Elбtkozott zsбkmбny</text>
+	</string>
+	<string id="st_red_rucksack_02_4_descr">
+		<text>Nem akбrmilyen tцrtйnete van a hбtizsбknak! Mindenki meghalt, aki a kezйbe vette, ъgyhogy eldobtam, hogy tцbbet ne is lбssam az бtkozottat.</text>
+	</string>
+	<string id="st_red_rucksack_02_5">
+		<text>Furcsa hely</text>
+	</string>
+	<string id="st_red_rucksack_02_5_descr">
+		<text>A hбtizsбkomon fekve elszundнtottam egy szikla mellett. Reggel, amikor felkeltem, mбr teljesen mбs helyen voltam. Megprуbбltam megkeresni azt a sziklбt, de valamitхl folyton csak kцrbe-kцrbe mentem.</text>
+	</string>
+	<string id="st_red_rucksack_02_6">
+		<text>Hбtizsбk a sziklaomlбs alatt</text>
+	</string>
+	<string id="st_red_rucksack_02_6_descr">
+		<text>Sziklбkat sodort magбval a vнzmosбs, amik pontosan rбm estek Vцrцs-erdх kijбratбnбl. Aztбn mцgьlьk valami sцtйt nyъlt felйm. Йppen csak sikerьlt kijutnom, de nem tehettem mбst, hбtra kellett hagynom a holmimat.</text>
+	</string>
+	<string id="st_red_rucksack_02_descr">
+		<text>Бtvбgtunk a bozуtoson, йs valahogy elhagytam a hбtizsбkomat.</text>
+	</string>
+	<string id="st_red_rucksack_02_in_stone">
+		<text>Elveszett hбtizsбk</text>
+	</string>
+	<string id="st_red_rucksack_02_in_stone_descr">
+		<text>Az az idiуta Abrasa elhagyta a hбtizsбkomat valahol a kцrnyйken, nйhбny sziklбknбl. Most pedig mбr nem mer visszamenni йrte. Igaz barбt, a nagy francokat!</text>
+	</string>
+	<string id="st_red_rucksack_02_in_tonnel">
+		<text>Rejtekhely a tбrnбban</text>
+	</string>
+	<string id="st_red_rucksack_02_in_tonnel_descr">
+		<text>A relikviбimat az elhagyatott tбrna legvйgйben rejtettem el.</text>
+	</string>
+	<string id="st_red_sekret_trees_stump_01_0000">
+		<text>Fatцnk a vadonban</text>
+	</string>
+	<string id="st_red_sekret_trees_stump_01_0000_descr">
+		<text>Eltйvedtem a Vцrцs-erdхben, йs beletettem minden vackomat egy lyukas fatцnkbe.</text>
+	</string>
+	<string id="st_red_trees_log_01">
+		<text>Holmik a lyukas fбban</text>
+	</string>
+	<string id="st_red_trees_log_01_descr">
+		<text>A Limanszkba vezetх ъton Ostorral elrejtettьk a holminkat egy lyukas, kidхlt fбba, a rezervбtum kijбratбnбl.</text>
+	</string>
+	<string id="st_red_trees_stump_01">
+		<text>Betцmцtt fatцnk</text>
+	</string>
+	<string id="st_red_trees_stump_01_0000">
+		<text>Fatцnk az erdхvel szemben</text>
+	</string>
+	<string id="st_red_trees_stump_01_0000_descr">
+		<text>Fogalmunk sincs, mi vбr rбnk az erdхben... ezйrt elrejtettьk minden йrtйkьnket egy korhadt fatцnkbe.</text>
+	</string>
+	<string id="st_red_trees_stump_01_2_0000">
+		<text>Fatцnk a vнzmosбs kцzelйben</text>
+	</string>
+	<string id="st_red_trees_stump_01_2_0000_descr">
+		<text>Eldugtuk minden holminkat az anomбlia mellett. Elhatбroztuk, hogy нgy vagy ъgy, de bejutunk. El sem tudom kйpzelni, hogy milyen йrtйkes relikviбk lehetnek benne.</text>
+	</string>
+	<string id="st_red_trees_stump_01_3">
+		<text>Hatalmas fatцnk</text>
+	</string>
+	<string id="st_red_trees_stump_01_3_descr">
+		<text>Szeva beszйlt egy hatalmas, lyukas fatцnkrхl Vцrцs-erdхben. Megkeresem, йs kiderнtem, mi van benne!</text>
+	</string>
+	<string id="st_red_trees_stump_01_4">
+		<text>Rejtekhely a fatцnkben</text>
+	</string>
+	<string id="st_red_trees_stump_01_4_descr">
+		<text>Zsekбval elrejtettьk nйhбny holminkat egy fatцnkbe, Vцrцs-erdхben.</text>
+	</string>
+	<string id="st_red_trees_stump_01_7">
+		<text>Fatцnk a vнzmosбs kцzelйben</text>
+	</string>
+	<string id="st_red_trees_stump_01_7_descr">
+		<text>Ebbe a fatцnkbe kapaszkodtam meg, amikor beleestem a vнzmosбsba, ъgyhogy elrejtettem benne a zsбkmбnyomat.</text>
+	</string>
+	<string id="st_red_trees_stump_01_descr">
+		<text>Sikнtбst йs ьvцltйst hallottam, ъgyhogy elrejtettem a dolgaimat a legkцzelebbi lyukas fatцnkbe, йs elhъztam a csнkot.</text>
+	</string>
+	<string id="st_red_zaz968">
+		<text>Zaporozsec a bбnyabejбratnбl</text>
+	</string>
+	<string id="st_red_zaz968_descr">
+		<text>Elrejtettem a zsбkmбnyomat egy Zaporozsec ьlйse alб, a bбnya bejбratбnak kцzelйben. Majd felveszem, ha megyek Szidorovicshoz.</text>
+	</string>
+	<string id="st_val_seif_02">
+		<text>Szйf a tanyбn</text>
+	</string>
+	<string id="st_yan_trees_log_01_0001">
+		<text>Fatцnk a garбzsok mцgцtt</text>
+	</string>
+	<string id="st_yan_trees_log_01_0001_descr">
+		<text>Elrejtettem a zsбkmбnyomat egy fatцnkbe, a garбzsok kцzelйben, a jantari gyбr mellett.</text>
+	</string>
+	<string id="val_equipment_rucksack_01_02">
+		<text>Rejtekhely a fiatal fenyхfa alatt</text>
+	</string>
+	<string id="val_equipment_rucksack_01_02_descr">
+		<text>Nem messze az ingovбnytуl, begyцmцszцltem a hбtizsбkomat egy csхbe, egy fiatal fenyхfa alatt.</text>
+	</string>
+	<string id="esc_treasure_weapon_prisoner_descr">
+		<text>Egy kis szйf van elrejtve a betoncsхben. Nйhбny holmim van benne, amit eltettem a nehйz idхkre.</text>
+	</string>
+	<string id="esc_treasure_weapon_prisoner_name">
+		<text>Kaletszkij хrnagy kйszlete</text>
+	</string>
+	<string id="gar_treasure_quest_digger_reward">
+		<text>Rйgi rejtekhely</text>
+	</string>
+	<string id="gar_treasure_quest_digger_reward_descr">
+		<text>Бsatуk rejtettйk ide a zsбkmбnyaikat.</text>
+	</string>
+	<string id="gar_treasure_quest_old_pda">
+		<text>Szerszбmoslбda</text>
+	</string>
+	<string id="gar_treasure_quest_old_pda_descr">
+		<text>A rйgi PDA a szerszбmoslбda kettхs feneke alatt van.</text>
+	</string>
+	<string id="gar_treasure_quest_reward_in_anomaly">
+		<text>Rejtekhely az anomбliбban</text>
+	</string>
+	<string id="gar_treasure_quest_reward_in_anomaly_descr">
+		<text>Ha Jуga nem hazudott, az egyik anomбliбban levх rejtekhelyen kьlцnleges fegyver van.</text>
+	</string>
+	<string id="gar_treasure_quest_smuggler_weapons">
+		<text>Kocsi csomagtartу</text>
+	</string>
+	<string id="gar_treasure_quest_smuggler_weapons_descr">
+		<text>Sztringov szerint, egy цreg kocsi csomagtartуjбban йrtйkes csempйszcuccok rejtхznek.</text>
+	</string>
+	<string id="st_esc_seif_03_0000_descr">
+		<text>Zil egy szйfben tartja az уcskasбgait, a semleges bбzison, a Kordonban.</text>
+	</string>
+	<string id="st_mar_q_n_10">
+		<text>Rejtekhely az Ingovбnyban</text>
+	</string>
+	<string id="st_mar_q_n_10_descr">
+		<text>Egy igen йrtйkes rejtekhely van az ъjrahasznosнtу ьzemben, az Ingovбnyban. Bбrmi is van benne, most mбr a tied.</text>
+	</string>
+	<string id="st_mar_q_n_11">
+		<text>Szйf jutalommal</text>
+	</string>
+	<string id="st_mar_q_n_11_descr">
+		<text>Haver, ez egy szйfet nyit, amiben valami nagyon йrtйkes van. Legalбbbis azt mondtбk...</text>
+	</string>
+	<string id="st_mar_q_n_12">
+		<text>Jutalom</text>
+	</string>
+	<string id="st_mar_q_n_12_descr">
+		<text>A rejtekhelyeinket a pйnzedйrt. Csak most, csak neked!</text>
+	</string>
+	<string id="st_mar_q_n_13">
+		<text>Kistбska</text>
+	</string>
+	<string id="st_mar_q_n_13_descr">
+		<text>Ebben az esetben, itt vannak a koordinбtбi egy tбskбnak, tele zsбkmбnnyal. A szemetes mцgцtt, a fal kцzelйben keresd!</text>
+	</string>
+	<string id="st_mar_q_n_14">
+		<text>Szйf a hнd alatt</text>
+	</string>
+	<string id="st_mar_q_n_14_descr">
+		<text>Nem fбrasztalak a tцrtйneteimmel. A kйszletemet egy szйfben talбlod, a hнd alatt.</text>
+	</string>
+	<string id="st_mar_q_n_6">
+		<text>Hбtizsбk, mint fizetsйg</text>
+	</string>
+	<string id="st_mar_q_n_6_descr">
+		<text>A hбtizsбk tartalma, aminek a koordinбtбit feltцltцm a PDA-dra, jуval tцbbet йr annбl, mint amennyivel tartozom neked.</text>
+	</string>
+	<string id="st_mar_q_n_7">
+		<text>Szбmzбras szйf</text>
+	</string>
+	<string id="st_mar_q_n_7_descr">
+		<text>A fizetsйged йr annyit, mint a zsбkmбny, ami a Ingovбnyban van elrejtve egy szйfben.</text>
+	</string>
+	<string id="st_mar_q_n_8">
+		<text>Zsбkmбny, mint fizetsйg</text>
+	</string>
+	<string id="st_mar_q_n_8_descr">
+		<text>A zsбkmбny, amit egy fekete hбtizsбkban talбlsz a sziklбk alatt, most mбr a tied. Vegyьk ъgy, hogy ezzel kvittek vagyunk!</text>
+	</string>
+	<string id="st_mar_q_n_9">
+		<text>Kis lбda a toronyban</text>
+	</string>
+	<string id="st_mar_q_n_9_descr">
+		<text>Egy megbнzhatу forrбsom egyszer mesйlt egy zsбkmбnyrуl, amit egy torony alatt rejtettek el.</text>
+	</string>
+	<string id="st_mar_q_t_a_15">
+		<text>A hхsies katona hбtizsбkja</text>
+	</string>
+	<string id="st_mar_q_t_a_15_descr">
+		<text>Mйg tцbbet is kapsz valamivel a pйnzedйrt. A jutalmad egy hбtizsбkban van, egy katona holtteste mellett.</text>
+	</string>
+	<string id="st_mar_q_t_a_3">
+		<text>Tцbbletfizetйs</text>
+	</string>
+	<string id="st_mar_q_t_a_3_descr">
+		<text>Menj tovбbb egy mйrfцldet, йs keresd meg a halott katona hбtizsбkjбt. Ez majd fedezi a kцltsйgeidet, talбn mйg tцbbet is.</text>
+	</string>
+	<string id="st_mar_q_t_l_16">
+		<text>A nehйz jutalom</text>
+	</string>
+	<string id="st_mar_q_t_l_16_descr">
+		<text>Jutalmul mesйlek neked egy йrtйkes, de "nehйz" zsбkmбnyrуl. Lйgy azonban nagyon уvatos! Az elхzх tulajdonosnak nem sikerьlt megfogadnia a tanбcsomat...</text>
+	</string>
+	<string id="st_mar_q_t_l_1">
+		<text>Hбtizsбk a holttesten</text>
+	</string>
+	<string id="st_mar_q_t_l_1_descr">
+		<text>Adok egy tippet. A zsбkmбnyt egy hбtizsбkban keresd, egy holttest hбtбn.</text>
+	</string>
+	<string id="st_mar_q_t_l_2">
+		<text>Ejtхernyхs</text>
+	</string>
+	<string id="st_mar_q_t_l_2_descr">
+		<text>A zsбkmбnyt ezeken a koordinбtбkon talбlod, a hбtizsбkjбban van a fizetsйged.</text>
+	</string>
+	<string id="st_mar_q_t_l_4">
+		<text>A harcos holtteste</text>
+	</string>
+	<string id="st_mar_q_t_l_4_descr">
+		<text>Itt van az infу! Egy fiatal harcos "pihen" a bozуtosban, йs хrzi neked a hбtizsбkjбt.</text>
+	</string>
+	<string id="st_mar_q_t_l_5">
+		<text>Hбtizsбk a csхvezetйk alatt</text>
+	</string>
+	<string id="st_mar_q_t_l_5_descr">
+		<text>Itt vannak a koordinбtбk! Egy stalker holtteste melletti hбtizsбkra mutatnak, a csхvezetйk alatt.</text>
+	</string>
+	<string id="st_esc_q10_n">
+		<text>Fatцnk a szцgesdrуt kцzelйben</text>
+	</string>
+	<string id="st_esc_q10_n_descr">
+		<text>Rendben, cimbora, a jutalmad megszerzйsйhez menj йs keress meg egy tцnkцt, nem messze a szцgesdrуttуl!</text>
+	</string>
+	<string id="st_esc_q1_n">
+		<text>Zцld lбda</text>
+	</string>
+	<string id="st_esc_q1_n_descr">
+		<text>Kifejezetten neked tartogattam ezt a zsбkmбnyt. Egy katonai lбdбban van, a Kordon szйlйn. Mintha a szнvem egy darabjбt tйpnйk ki!</text>
+	</string>
+	<string id="st_esc_q2_n">
+		<text>Eldugott kishбtizsбk</text>
+	</string>
+	<string id="st_esc_q2_n_descr">
+		<text>Нgy a nemeslelkыsйgedet nagylelkыsйggel jutalmazom! He-he-he! Itt van egy elrejtett kйszletem, tйgy vele йs a tartalmбval belбtбsod szerint!</text>
+	</string>
+	<string id="st_esc_q3_t_l">
+		<text>Ъt az Ingovбnyba</text>
+	</string>
+	<string id="st_esc_q3_t_l_descr">
+		<text>Enyйm a pйnzed, tied a kйszletem! Az Ingovбnyba vezetх ъt mentйn talбlod, egy holttest mellett.</text>
+	</string>
+	<string id="st_esc_q4_t_a">
+		<text>Egy hхs jutalma</text>
+	</string>
+	<string id="st_esc_q4_t_a_descr">
+		<text>A fizetsйged egy hбtizsбkban vбr, kцzvetlenьl egy peches stalker holtteste mellett. A rйgi villamos mozdony kцzelйben keresd... </text>
+	</string>
+	<string id="st_esc_q5_n">
+		<text>Kбrpуtlбs</text>
+	</string>
+	<string id="st_esc_q5_n_descr">
+		<text>Ezeken a koordinбtбkon talбlod a zsбkmбnyt, egy hбtizsбkban, egy fa alatt.</text>
+	</string>
+	<string id="st_esc_q6_n">
+		<text>Szabad az бtjбrбs</text>
+	</string>
+	<string id="st_esc_q6_n_descr">
+		<text>Az ьzlet rбm esх rйszйt egy lift kapcsolуjбban talбlod. Menj, йs keresd meg, nincs бram. Bбr kйtlem, hogy ezt az anomбliбkrуl is elmondhatnбm...</text>
+	</string>
+	<string id="st_esc_q7_n">
+		<text>Tбska a szerelvйny alatt</text>
+	</string>
+	<string id="st_esc_q7_n_descr">
+		<text>A "fogбsod" egy tбska tartalma, egy szerelvйny alatt.</text>
+	</string>
+	<string id="st_esc_q8_n">
+		<text>Бlsнr</text>
+	</string>
+	<string id="st_esc_q8_n_descr">
+		<text>Sнrokat felбsni nem szйp dolog, de a zsбkmбnyomat egy бlsнrba rejtettem, нgy legalбbb nem zavarod a holtakat!</text>
+	</string>
+	<string id="st_esc_q9_t_a">
+		<text>Tбska a szemйttelep mцgцtt</text>
+	</string>
+	<string id="st_esc_q9_t_a_descr">
+		<text>A tбska tartalmбval fizetlek ki, ami egy anomбlia mellett hever, a kordoni szemйttelep mцgцtt. Egy mбsik fickу is meg akarta szerezni, de х mбr eltбvozott kцzьlьnk.</text>
+	</string>
+	<string id="st_gar_q10_n">
+		<text>Fatцnk a Szemйtdomb peremйn</text>
+	</string>
+	<string id="st_gar_q10_n_descr">
+		<text>Adok neked egy tippet. A fizetsйged egy tцnk belsejйben vбr, a Szemйtdomb peremйn.</text>
+	</string>
+	<string id="st_gar_q1_n">
+		<text>Fekete hбtizsбk a roncsban</text>
+	</string>
+	<string id="st_gar_q1_n_descr">
+		<text>A tartozбsom egy fekete hбtizsбkban vбr, az цsszedхlt йpнtхdaru belsejйben.</text>
+	</string>
+	<string id="st_gar_q2_n">
+		<text>Levбgott csх</text>
+	</string>
+	<string id="st_gar_q2_n_descr">
+		<text>Az йn pйnzem megvan, de a tiedhez el kell vonszolnod a valagad ehhez a kйszlethez, ott egy levбgott csх belsejйben megtalбlod!</text>
+	</string>
+	<string id="st_gar_q3_n">
+		<text>Biztosнtйkdoboz egy roncsban</text>
+	</string>
+	<string id="st_gar_q3_n_descr">
+		<text>Rйgebben kerestem magamnak ezt a rejtekhelyet, de most mбr kйnytelen vagyok feladni. У jaj!</text>
+	</string>
+	<string id="st_gar_q4_n">
+		<text>Kis doboz a fertхzцtt szemйt kцzцtt</text>
+	</string>
+	<string id="st_gar_q4_n_descr">
+		<text>Megadom egy kis doboz koordinбtбit, amiben йrtйkes zsбkmбnyt talбlsz. Csak vigyбzz, nehogy megpirulj, az ottani sugбrzбs hihetetlenьl magas!</text>
+	</string>
+	<string id="st_gar_q5_n">
+		<text>Lбda a buldуzer tolуlemezйnek kцzelйben</text>
+	</string>
+	<string id="st_gar_q5_n_descr">
+		<text>A buldуzer tolуlemezйnek aljбnбl majd meglбtod, hogy pontosan mit is vбsбroltбl.</text>
+	</string>
+	<string id="st_gar_q6_t_l">
+		<text>Halott ember hбtizsбkja</text>
+	</string>
+	<string id="st_gar_q6_t_l_descr">
+		<text>Nem fйlsz a szellemektхl, igaz? Akkor keresd meg a kйszletet a hбtizsбkban, egy holttest mellett!</text>
+	</string>
+	<string id="st_gar_q7_t_l">
+		<text>Holttest a kotrу kцzelйben</text>
+	</string>
+	<string id="st_gar_q7_t_l_descr">
+		<text>Az бtfordult kotrу kцzelйben levх йlettelen fickу, szнves цrцmest megosztja veled a hбtizsбkja tartalmбt! </text>
+	</string>
+	<string id="st_gar_q8_t_a">
+		<text>Holttest a Szemйtdombon</text>
+	</string>
+	<string id="st_gar_q8_t_a_descr">
+		<text>Azt hiszem, egy kicsit mйg dolgoznod kell azйrt, hogy megkapd a tartozбsomat. A zsбkmбnyt egy anomбlia бldozat hбtizsбkjбban talбlod.</text>
+	</string>
+	<string id="st_gar_q9_n">
+		<text>Ъton Agropromba</text>
+	</string>
+	<string id="st_gar_q9_n_descr">
+		<text>Keress egy aprу doboz egy UAZ belsejйben, az Agropromba vezetх ъton! Azt hiszem, mйltбnyolni fogod a tartalmбt.</text>
+	</string>
+	<string id="st_val_q10_n">
+		<text>Szйf a hangбrban</text>
+	</string>
+	<string id="st_val_q10_n_descr">
+		<text>Йn mindig megtartom a szavam, az нgйrt kйszlet egy szйfben vбr, a rйgi gyбrban!</text>
+	</string>
+	<string id="st_val_q11_t_l">
+		<text>Holttest a sziklбk kцzelйben</text>
+	</string>
+	<string id="st_val_q11_t_l_descr">
+		<text>Йppen most vetted meg egy hбtizsбk tartalmбt, ami egy holttesten van, a sziklбk kцzelйben.</text>
+	</string>
+	<string id="st_val_q1_n">
+		<text>A ciszterna alatt</text>
+	</string>
+	<string id="st_val_q1_n_descr">
+		<text>A zsбkmбnyom, akarom mondani, a zsбkmбnyod egy hбtizsбkban van, a ciszterna alatt.</text>
+	</string>
+	<string id="st_val_q2_n">
+		<text>Bozуtos a fenyхfa kцzelйben</text>
+	</string>
+	<string id="st_val_q2_n_descr">
+		<text>Egy szerencsйs ъtrуl hazatйrve, elrejtettem a zsбkmбnyomat a bozуtosba. Most mбr a tied.</text>
+	</string>
+	<string id="st_val_q3_t_a">
+		<text>A katona holtteste</text>
+	</string>
+	<string id="st_val_q3_t_a_descr">
+		<text>Jegyzetelj! Nagyon йrtйkes zsбkmбny - hбtizsбk - szerencsйtlen katona - kцzvetlenьl egy anomбlia mellett.</text>
+	</string>
+	<string id="st_val_q4_n">
+		<text>Zsбkmбny a bozуtosban</text>
+	</string>
+	<string id="st_val_q4_n_descr">
+		<text>Mindig rendezem a tartozбsaimat! Most pedig azzal tartozom, hogy elmondjam a zsбkmбnyom koordinбtбit.</text>
+	</string>
+	<string id="st_val_q5_n">
+		<text>Szйf a Szabadsбg bбzisбn</text>
+	</string>
+	<string id="st_val_q5_n_descr">
+		<text>A Szabadsбg bбzisбn, egy hбromemeletes йpьletben talбlsz egy szйfet, amiben valami nagyon йrtйkes van a zsбkmбnykeresхknek.</text>
+	</string>
+	<string id="st_val_q6_n">
+		<text>Lбda a torony tetejйn</text>
+	</string>
+	<string id="st_val_q6_n_descr">
+		<text>Mйltбnyolom a kнvбncsisбgod, sхt, ki is elйgнtem azt egy kйk lбda tartalmбval, ami a torony tetejйn van, kцzvetlenьl a Szabadsбg bбzisa utбn.</text>
+	</string>
+	<string id="st_val_q7_n">
+		<text>A stalker sнrja</text>
+	</string>
+	<string id="st_val_q7_n_descr">
+		<text>Йppen most vetted meg egy stalker sнrjбnak tartalmбt, egy цreg fa kцzelйben.</text>
+	</string>
+	<string id="st_val_q8_n">
+		<text>Lбda az ьlйs alatt</text>
+	</string>
+	<string id="st_val_q8_n_descr">
+		<text>Egy piros LAZ vezetхьlйse alatt talбlsz majd egy lбdбt. Nйzd csak meg nyugodtan! Vagy ne, rajtad mъlik!</text>
+	</string>
+	<string id="st_val_q9_n">
+		<text>Fatцnk a kerнtйs kцzelйben</text>
+	</string>
+	<string id="st_val_q9_n_descr">
+		<text>Az ilyen helyzetekre elrejtettem nйhбny уcskasбgot egy fatцnkbe, egy kerнtйs kцzelйben.</text>
+	</string>
+	<string id="st_agr_q10_t_l">
+		<text>Elkobzott бruk az anomбlia kцzelйben</text>
+	</string>
+	<string id="st_agr_q10_t_l_descr">
+		<text>A katona belebotlott egy anomбliбba, a hбtizsбkja pedig, amiben a stalkerektхl elszedett zsбkmбnya van, mйg mindig ott hever mellette. Ha elйg szerencsйs vagy, talбn mйg meg is szerezheted.</text>
+	</string>
+	<string id="st_agr_q1_n">
+		<text>A kerнtйsnйl, a szцgesdrуt kцzelйben</text>
+	</string>
+	<string id="st_agr_q1_n_descr">
+		<text>Jуl van, akkor egy titkos kйszlettel fizetek! Egy stalker hбtizsбkja van a kerнtйsnйl. Az adуtorony legyen a kiindulбsi pontod.</text>
+	</string>
+	<string id="st_agr_q2_n">
+		<text>A kidхlt fa alatt</text>
+	</string>
+	<string id="st_agr_q2_n_descr">
+		<text>Sajnбlom, nincsenek raktбraink a Zуnбban! Ъgyhogy siess, йs kaparintsd meg a kйszletet a kidхlt fa alatt, mйg mielхtt valaki mбs tennй meg!</text>
+	</string>
+	<string id="st_agr_q3_t_a">
+		<text>Holttest a sugбrzбsi csomуpontban</text>
+	</string>
+	<string id="st_agr_q3_t_a_descr">
+		<text>Nagyszerы zsбkmбnyokat szeretnйl, nekem pedig nagyszerы zsбkmбnyaim vannak! Amik a tieid is lesznek, ha bemerйszkedsz egy sugбrzбsi csomуpontba. A jutalmad egy holttest mellett fekszik.</text>
+	</string>
+	<string id="st_agr_q4_n">
+		<text>Hengerek a sнron</text>
+	</string>
+	<string id="st_agr_q4_n_descr">
+		<text>A tisztelet tцbbet йr, mint a pйnz, ъgyhogy menj csak, йs szedd ki a zsбkmбnyt egy ismeretlen sнron hagyott hengerekbхl!</text>
+	</string>
+	<string id="st_agr_q5_n">
+		<text>A kerнtйs sarkбn</text>
+	</string>
+	<string id="st_agr_q5_n_descr">
+		<text>Az utolsу kisugбrzбs utбn, Bandzsa Kolka, Isten irgalmazzon a lelkйnek, elrejtett valamit ebbe az цreg fatцnkbe, a kerнtйs sarkбn.</text>
+	</string>
+	<string id="st_agr_q6_n">
+		<text>Kapcsolуtбbla</text>
+	</string>
+	<string id="st_agr_q6_n_descr">
+		<text>A kйszletem, sajnбlom, a te kйszleted egy kapcsolуtбblбban van, a Szolgбlat bбzisбn.</text>
+	</string>
+	<string id="st_agr_q7_n">
+		<text>Fatцnk a fa kцzelйben</text>
+	</string>
+	<string id="st_agr_q7_n_descr">
+		<text>A minap nйhбny rendes fickу mesйlt egy kйszletrхl, ami az ellensйgeimй. Ьrнtsd ki, rendben?</text>
+	</string>
+	<string id="st_agr_q8_t_a">
+		<text>Holttest a furgonban</text>
+	</string>
+	<string id="st_agr_q8_t_a_descr">
+		<text>A katonбk olyan gyorsan szбguldoztak a kisbuszukkal, hogy belehajtottak egy anomбlia kellхs kцzepйbe. Mindannyian megleltйk a bйkйjьket, te pedig йppen most lelted meg a zsбkmбnyukat.</text>
+	</string>
+	<string id="st_agr_q9_n">
+		<text>Szйf a fцldcsuszamlбs alatt</text>
+	</string>
+	<string id="st_agr_q9_n_descr">
+		<text>Egy fйlig eltemetett szйf a zsбkmбnyommal, egy hasadйk mйlyйn. Tegyьnk ъgy, mintha vйgig neked szбntuk volna!</text>
+	</string>
+	<string id="st_agru_q1_n">
+		<text>Keresztdarab a lйpcsх alatt</text>
+	</string>
+	<string id="st_agru_q1_n_descr">
+		<text>Van egy kйszlet, amirхl tudok ezen az цrdцgi helyen. Viszont abban biztos lehetsz, hogy soha nem fogjбk kirabolni. Az alagsorban keresd, a lйpcsх alatt! </text>
+	</string>
+	<string id="st_agru_q2_n">
+		<text>Tбska a fцld alatt</text>
+	</string>
+	<string id="st_agru_q2_n_descr">
+		<text>A csigalйpcsх aljбn talбlsz majd egy minden fцldi jуval megpakolt tбskбt. Csak vigyбzz, nehogy megzavard az alagsor lakуit!</text>
+	</string>
+	<string id="st_agru_q3_t_a">
+		<text>A fцld alatt</text>
+	</string>
+	<string id="st_agru_q3_t_a_descr">
+		<text>Ez az a hely, ahol felveheted a katona hбtizsбkjбt! Belefutott egy anomбlia az agropromi csatornarendszerben. Tanulj a hibбjбbуl!</text>
+	</string>
+	<string id="st_agru_q4_n">
+		<text>Csх a kollektorban</text>
+	</string>
+	<string id="st_agru_q4_n_descr">
+		<text>Egy stalker PDA-ja szerint a zsбkmбnya az agropromi csatornarendszerben van elrejtve. Kйrlek, mбsold le a koordinбtбkat!</text>
+	</string>
+	<string id="st_yan_q8_t_l">
+		<text>Holttest a tуban</text>
+	</string>
+	<string id="st_yan_q8_t_l_descr">
+		<text>Keresd a katona hбtizsбkjбt, aki kйnyelmesen ъszkбl a tуban.</text>
+	</string>
+	<string id="st_yan_q1_n">
+		<text>Lбda a kazбnhбz tetejйn</text>
+	</string>
+	<string id="st_yan_q1_n_descr">
+		<text>A kazбnhбz tetejйn levх rejtekhelyen van egy kйk lбda. A terьleten nyьzsцgnek az йlхhalottak, ъgyhogy figyelj oda!</text>
+	</string>
+	<string id="st_yan_q2_n">
+		<text>Lбda a szerelvйnyben</text>
+	</string>
+	<string id="st_yan_q2_n_descr">
+		<text>Nagyszerы, itt vannak a koordinбtбi egy szerelvйnyben levх lбdбnak, a gyбrnбl! Menj oda, йs tudod, hogy mit kell tenned!</text>
+	</string>
+	<string id="st_yan_q3_t_l">
+		<text>Hбtizsбk a szivбrgу csхnйl</text>
+	</string>
+	<string id="st_yan_q3_t_l_descr">
+		<text>Talбld meg a hбtizsбkot a szivбrgу csхnйl, йs kvittek vagyunk! Egy halott semleges fekszik a kцzelben, ъgyhogy kцnnyen kiszъrod majd a helyet!</text>
+	</string>
+	<string id="st_yan_q4_n">
+		<text>Tбska a tudуsok bбzisбn</text>
+	</string>
+	<string id="st_yan_q4_n_descr">
+		<text>Kivбlу! Vйgy magadhoz mindent, amit az UAZ csomagtartуjбban levх tбskбban talбlsz, a tudуsok bбzisбn!</text>
+	</string>
+	<string id="st_yan_q5_n">
+		<text>A kapcsolуtбblбs fьlke</text>
+	</string>
+	<string id="st_yan_q5_n_descr">
+		<text>Kбrpуtollak egy kйszlet koordinбtбival egy gyбr kцzeli fьlkйben.</text>
+	</string>
+	<string id="st_yan_q6_n">
+		<text>Ciszterna kiszйlesedйs</text>
+	</string>
+	<string id="st_yan_q6_n_descr">
+		<text>Valamit elrejtettek a ciszterna kiszйlesedйsйnйl a gyбrban. Soha nem nйztem meg, hogy pontosan micsodбt.</text>
+	</string>
+	<string id="st_yan_q7_n">
+		<text>MAZ teherautу-fьlke</text>
+	</string>
+	<string id="st_yan_q7_n_descr">
+		<text>A MAZ teherautу fьlkйjйben talбlod a cuccot, egy tбskбba pakolva.</text>
+	</string>
+	<string id="st_yan_q9_n">
+		<text>Fatцnk a tudуsok tбborбval szemben</text>
+	</string>
+	<string id="st_yan_q9_n_descr">
+		<text>Keresd a rejtekhelyet a fatцnk alatt, a tudуsok tбborбval szemben!</text>
+	</string>
+	<string id="st_red_q10_n">
+		<text>Csх a bбnyбban</text>
+	</string>
+	<string id="st_red_q10_n_descr">
+		<text>Biztosan tudom, hogy valami йrtйkes lehet ebben a kйszletben, itt Vцrцs-erdхben!</text>
+	</string>
+	<string id="st_red_q1_t_l">
+		<text>Halott stalker</text>
+	</string>
+	<string id="st_red_q1_t_l_descr">
+		<text>Egy halott stalker PDA-jбban lбttam, hogy valami йrtйkes van a hбtizsбkjбban. Itt vannak a koordinбtбk.</text>
+	</string>
+	<string id="st_red_q2_t_a">
+		<text>Veszйlyes kйszlet</text>
+	</string>
+	<string id="st_red_q2_t_a_descr">
+		<text>Egy fajankуnak mбr beszйltem a kйszletrхl, de х mбr biztos nem fogja megszerezni. Feldobta a bocskort egy anomбliбban, a kцzelben.</text>
+	</string>
+	<string id="st_red_q3_n">
+		<text>Piros szelep</text>
+	</string>
+	<string id="st_red_q3_n_descr">
+		<text>A kйszletet a bбnya csхrendszerйnek piros szelepe mцgй rejtettйk. A tartalma hidegen hagy.</text>
+	</string>
+	<string id="st_red_q4_n">
+		<text>Busz</text>
+	</string>
+	<string id="st_red_q4_n_descr">
+		<text>Egy barбtom a busz hбtsу ьlйse alб rejtette a kйszletйt. Х mбr nincs kцzцttьnk, ъgyhogy nem bбnja, ha kifosztod a kis bъvуhelyйt.</text>
+	</string>
+	<string id="st_red_q5_n">
+		<text>Csх a tцrmelйkben</text>
+	</string>
+	<string id="st_red_q5_n_descr">
+		<text>Egy rab beszйlt errхl a rejtekhelyrхl. A csapatszбllнtу jбrmы mцgцtti tцrmelйkben van, egy csхdarabban!</text>
+	</string>
+	<string id="st_red_q6_n">
+		<text>Lбda hбtizsбkkal</text>
+	</string>
+	<string id="st_red_q6_n_descr">
+		<text>A kincsed egyszerыen mesйs! Jуl van, jegyezd fel! Jutalom a hбtizsбkban, hбtizsбk a lбdбban, lбda a hнdon, hнd a Vцrцs-erdх tъloldalбn.</text>
+	</string>
+	<string id="st_red_q7_t_a">
+		<text>Szerencsйtlen flуtбs hбtizsбkja</text>
+	</string>
+	<string id="st_red_q7_t_a_descr">
+		<text>A szerencsйtlen flуtбs egy hбtizsбkot hozott nekem a Vцrцs-erdхn keresztьl, de soha nem йrt ide. Ha megtalбlod, megtarthatod.</text>
+	</string>
+	<string id="st_red_q8_n">
+		<text>Szйf a targonca kцzelйben</text>
+	</string>
+	<string id="st_red_q8_n_descr">
+		<text>Az informбciуm pontosak, nem baromsбgok! Egy csavargу elrejtett valami йrtйkeset egy szйfbe, a felborult targonca kцzelйben.</text>
+	</string>
+	<string id="st_red_q9_n">
+		<text>Kцzцnsйges fatцnk</text>
+	</string>
+	<string id="st_red_q9_n_descr">
+		<text>Egy ьreges fatцnkben van a zsбkmбny. Semmi kьlцnцs, csak egy alig йszrevehetх hely, amit a koordinбtбim nйlkьl soha nem talбlnбl meg! Ezйrt is adom oda neked.</text>
+	</string>
+	<string id="st_mil_q10_n">
+		<text>Rejtekhely az erdхben</text>
+	</string>
+	<string id="st_mil_q10_n_descr">
+		<text>Egy hбtizsбkot rejtettek el a sziklбk alatt, az erdхben, йn pedig odaadom a koordinбtбkat egy rendes fickуnak.</text>
+	</string>
+	<string id="st_mil_q1_t_l">
+		<text>Hбtizsбk a holttest alatt</text>
+	</string>
+	<string id="st_mil_q1_t_l_descr">
+		<text>Lehet nem igazi kйszlet, de lennie kell valami йrtйkesnek abban a hбtizsбkban, a vнztornyon!</text>
+	</string>
+	<string id="st_mil_q2_n">
+		<text>Rejtekhely a kidхlt fa alatt</text>
+	</string>
+	<string id="st_mil_q2_n_descr">
+		<text>Vedd csak el! Egy rejtekhely van a kidхlt fa alatt.</text>
+	</string>
+	<string id="st_mil_q3_n">
+		<text>A nagyi szйfje</text>
+	</string>
+	<string id="st_mil_q3_n_descr">
+		<text>Nem tudom, hogy mit keres az a szйf a kбlyhбn, de a forrбsaim szerint biztosan nem ьres.</text>
+	</string>
+	<string id="st_mil_q4_n">
+		<text>Rejtekhely a sнrnбl</text>
+	</string>
+	<string id="st_mil_q4_n_descr">
+		<text>Azt beszйlik, hogy hamar meggazdagodhatsz, ha benйzel a kereszt alб ezeken a koordinбtбkon!</text>
+	</string>
+	<string id="st_mil_q5_n">
+		<text>Lбda a katonai bбzison</text>
+	</string>
+	<string id="st_mil_q5_n_descr">
+		<text>Ha sikerьl belopуdznod a katonai bбzisra, megtalбlod jutalmad fбradalmaidйrt egy padlбs lбdбjбban.</text>
+	</string>
+	<string id="st_mil_q6_n_a">
+		<text>Szйf a szekrйnyben</text>
+	</string>
+	<string id="st_mil_q6_n_a_descr">
+		<text>A forrбsaim szerint valamit tartanak a katonai kaszбrnyбk szйfjйben.</text>
+	</string>
+	<string id="st_mil_q7_n_a">
+		<text>Kis szйf</text>
+	</string>
+	<string id="st_mil_q7_n_a_descr">
+		<text>Jeltyisev kapitбny mindig magбnбl hordta ezt a szйfet, mielхtt бthelyeztйk volna egy mбsik helyre. Miйrt nem nйzed meg, hogy mi van benne?</text>
+	</string>
+	<string id="st_mil_q8_n_a">
+		<text>Szemйthalom</text>
+	</string>
+	<string id="st_mil_q8_n_a_descr">
+		<text>Jбva szбndйkosan teszi a holmijбt egy szemйthalomba, csak kйsхbb elfelejtkezik rуla. Йn viszont feljegyeztem, amit most бt is nyъjtok neked.</text>
+	</string>
+	<string id="st_mil_q9_n_a">
+		<text>A titkos doboz</text>
+	</string>
+	<string id="st_mil_q9_n_a_descr">
+		<text>A katonai MAZ fьlkйje mцgцtt van egy doboz, benne egy titokkal. Ezt a titkot adom most el neked.</text>
+	</string>
+</string_table>

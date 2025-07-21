@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="lim_bandit_wounded_dialog_1_11">
+		<text>Segнtsetek, emberek! Adjatok egy elsхsegйlycsomagot, a barбtom haldoklik!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_111">
+		<text>Tessйk!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1111">
+		<text>Egy pillanat, elхszцr hadd segнtsek a barбtomon!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_112">
+		<text>Sajnбlom, nincs elsхsegйlycsomagom!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1121">
+		<text>A picsбba, srбcok...</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_113">
+		<text>Cseszd meg, te rohadйk!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_11">
+		<text>Kцszцnцm, hogy kihъztбl a szarbуl! Ъgy lбtom, a vбrosba indulsz. Lйgy rйsen! Vцrцs emberei csapdбt бllнtottak az ъton! Drуtot kцtцttek egy kocsi mellй, azt ajбnlom, ne menj arra! Maradj az ъt jobb oldalбn, akkor sйrtetlenьl бthaladhatsz!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_111">
+		<text>Ki van mйg a vбrosban?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1111">
+		<text>Egy csomу fickу, akik hatalmas felfordulбst okoznak! A Szolgбlat йs a Szabadsбg is bezъdult a vбroskцzpontba. Biztos a Zуna kцzepйbe keresnek utat. Lбttunk pбr helikoptert is, ъgyhogy a hadsereg is beszбll a buliba. Stalkerek is vannak a vбrosban, de хk a tъloldalrуl, a Zуna kцzepйbхl jцnnek.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_112">
+		<text>Mi folyik a vбrosban?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1121">
+		<text>A fхnцkьnk йs az emberei beбstбk magukat egy hбzba az ъt mentйn. Egy tapodtat sem mennek tovбbb. Ha be akarsz jutni a vбrosba, ki kell fьstцlnцd хket abbуl a hбzbуl!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_113">
+		<text>Kцsz a nagy semmit! Hъzz el innen, mielхtt meggondolom magam, йs lelхlek!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_12">
+		<text>Siess mбr, el kell hagynunk ezt a helyet!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_121">
+		<text>Ez az, gyerьnk!</text>
+	</string>
+</string_table>

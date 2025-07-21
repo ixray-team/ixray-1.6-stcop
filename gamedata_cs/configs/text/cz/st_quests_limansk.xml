@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="lim_destroy_ambush_2_name">
+		<text>Zniи nepшбtele na kшiћovatce</text>
+	</string>
+	<string id="lim_destroy_ambush_2_text">
+		<text>Odraz nepшбtelskй pшepadenн na kшiћovatce.</text>
+	</string>
+	<string id="lim_destroy_bandit_minigun_name">
+		<text>Zniи kulometnй hnнzdo</text>
+	</string>
+	<string id="lim_destroy_bandit_minigun_text">
+		<text>Na kшiћovatce probнhб divokб pшestшelka. Budovu po levй stranм drћн banditй. Odsud majн dobrэ vэhled a vэstшel na celou cestu. Zniи kulometnй hnнzdo v budovм.</text>
+	</string>
+	<string id="lim_destroy_military_minigun_name">
+		<text>Pokrop kulometnй hnнzdo palbou</text>
+	</string>
+	<string id="lim_destroy_military_minigun_text">
+		<text>Nepшнtel zaujal obrannй pozice v budovм na druhй stranм mostu. Oblast na druhй stranм mostu je pшitom dobшe pokryta palbou - tak dobшe, ћe druћstvo Jasnй oblohy ani nepшebмhlo most. Musнљ proniknout do tй budovy a pшiљpendlit nepшнtele palbou. Jasnб obloha mezitнm odlбkб jeho pozornost.</text>
+	</string>
+	<string id="lim_electro_fence_name">
+		<text>Vypni generбtor</text>
+	</string>
+	<string id="lim_electro_fence_text">
+		<text>Naљel jsi zdroj elektшiny. Vypni generбtor a odstшihni tak pшнvod elektшiny k plotu.</text>
+	</string>
+	<string id="lim_find_way_through_construction_name">
+		<text>Najdi cestu pшes staveniљtм</text>
+	</string>
+	<string id="lim_find_way_through_construction_text">
+		<text>Pшedmмstн Limansku je uћ za humny. Cesta k nмmu ovљem vede pшed nedostavмnэ komplex. Najdi cestu pшed staveniљtм.</text>
+	</string>
+	<string id="lim_go_into_limansk_name">
+		<text>Prozkoumej silnici pшes Limansk</text>
+	</string>
+	<string id="lim_go_into_limansk_text">
+		<text>Lebedмv vydal rozkaz k prozkoumбnн silnice pшes Limansk a zajiљtмnн bezpeиnйho prщchodu pro hlavnн druћstvo Jasnй oblohy. V ulicнch mмsta vљak vypukla vбlka - postupuj obezшetnм.</text>
+	</string>
+	<string id="lim_go_to_canal_name">
+		<text>Pшesuт se kanбlem k mostu</text>
+	</string>
+	<string id="lim_go_to_canal_text">
+		<text>Nepшбtelskб palba je pшнliљ silnб. Dostaт se k mostu kanбlem.</text>
+	</string>
+	<string id="lim_destroy_ambush_1_name">
+		<text>Zlikviduj pшepadenн</text>
+	</string>
+	<string id="lim_destroy_ambush_1_text">
+		<text>Zlikviduj pшepadenн</text>
+	</string>
+	<string id="lim_electro_fence_actor_come_back_name">
+		<text>Vraќ se k veliteli skupiny</text>
+	</string>
+	<string id="lim_electro_fence_actor_come_back_text">
+		<text>Vraќ se k veliteli skupiny</text>
+	</string>
+	<string id="lim_electro_fence_cs_soldier_cover_name">
+		<text>Pomoz bojovnнkovi pшiplнћit se k odstшelovaиi</text>
+	</string>
+	<string id="lim_electro_fence_cs_soldier_cover_text">
+		<text>Pomoz bojovnнkovi Jasnй oblohy pшiplнћit se k odstшelovaиi</text>
+	</string>
+	<string id="lim_electro_fence_find_transformator_name">
+		<text>Najdi generбtor</text>
+	</string>
+	<string id="lim_electro_fence_find_transformator_text">
+		<text>Cestu ke generбtoru blokuje elektrickэ plot. Mмsto je bez elektшiny uћ dlouho, coћ znamenб, ћe plot musн nмkde mнt vlastnн zdroj. Kabely od plotu vedou k budovм institutu na pravй stranм. Najdi generбtor, kterэ dodбvб energii do plotu.</text>
+	</string>
+	<string id="lim_electro_fence_sniper_name">
+		<text>Zabij odstшelovaиe</text>
+	</string>
+	<string id="lim_electro_fence_sniper_text">
+		<text>Byl odpojen pшнvod elektшiny k plotu. Nynн je moћnй pшijнt blнћ a zabнt odstшelovaиe. Postarej se o nмj.</text>
+	</string>
+	<string id="lim_find_bridge_squad_comander_name">
+		<text>Najdi velitele skupiny</text>
+	</string>
+	<string id="lim_find_bridge_squad_comander_text">
+		<text>Najdi velitele skupiny</text>
+	</string>
+</string_table>

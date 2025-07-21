@@ -108,7 +108,11 @@ function CCombat_manager:squad_go_online(squad)
 		-- Переводим все отряды принудительно в онлайн
 		for k,v in pairs(self.squads)do
 			local sq = self.board.squads[k]
-			sq:force_online(true)
+			if sq ~= nil then
+				sq:force_online(true)
+			else
+				self.squads[k] = nil
+			end
 		end
 		-- Также необходимо установить глобальный флажок "бой в онлайне", по которому все новые отряды будут принудительно переводится в онлайн.
 		self.force_online = true
@@ -281,7 +285,11 @@ function CCombat_manager:update()
 
 	-- Итерируемся по всем отрядам.
 	for k,v in pairs(self.squads) do
-		self:update_squad(k,v)
+		if self.board.squads[k] ~= nil and not empty(self.board.squads[k].squad_npc) then
+			self:update_squad(k,v)
+		else
+			self.squads[k] = nil
+		end
 	end
 
 	-- Пересчитываем squad_power
@@ -417,6 +425,18 @@ function CCombat_manager:update_squad(id, data)
 	local squad = self.board.squads[id]
 	if squad == nil then
 		abort("error. %s", tostring(id))
+	end
+	for k,v in pairs(squad.squad_npc) do
+		--printf("  npc_id %s(%s)", tostring(k), tostring(v))
+		if alife():object(k) == nil then
+			squad.squad_npc[k] = nil
+			if squad.commander_id == k then
+				for kk,vv in pairs(squad.squad_npc) do
+					squad.commander_id = kk
+					break
+				end
+			end
+		end
 	end
 
 	--if self.smart:name() == "esc_smart_terrain_4_10" then
@@ -943,11 +963,15 @@ function actor_come(squad)
 	--printf("ACTOR COME %s", squad.squad_id)
 	for k,v in pairs(squad.squad_npc) do
 		--printf("  npc_id %s(%s)", tostring(k), tostring(v))
-		--if alife():object(v) == nil then
-			--abort("OBJECT IS NIL")
-		--end
-
-		if alife():object(v).position:distance_to_sqr(actor_position) < ACTOR_COME_ATTACK_DIST then
+		if alife():object(v) == nil then
+			squad.squad_npc[v] = nil
+			if squad.commander_id == k then
+				for kk,vv in pairs(squad.squad_npc) do
+					squad.commander_id = kk
+					break
+				end
+			end
+		elseif alife():object(v).position:distance_to_sqr(actor_position) < ACTOR_COME_ATTACK_DIST then
 			return true
 		end
 	end

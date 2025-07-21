@@ -143,7 +143,7 @@ function CGeneralTask:give_task(community)
 	if(type=="eliminate_smart") or (type=="capture_smart") or (type=="defend_smart") or (type=="defend_smart_delay") then
 		task_manager.get_task_manager().tasks_by_smarts[self.target] = self
 	end
-	printf("set_id() called for [%s] e_id[%s]", self.name, tostring(self.entity_id))
+--	printf("set_id() called for [%s] e_id[%s]", self.name, tostring(self.entity_id))
 	t:set_id(tostring(self.entity_id))
 	t:set_type(self.task_type)
 	t:set_priority(self.prior)
@@ -266,7 +266,7 @@ function CGeneralTask:actor_help(squad_id)
 	if self.src_obj ~= nil and self.src_obj == squad_id then
 		return
 	end
-	printf("ACTOR HELP %s", self.name)
+--	printf("ACTOR HELP %s", self.name)
 	self.actor_helped = true
 end
 function CGeneralTask:actor_comed()
@@ -274,9 +274,9 @@ end
 --' Инициализация награды
 function CGeneralTask:init_reward()
 	--' Определяем, какая группировка нам должна
-	printf("task_reward initialized")
+--	printf("task_reward initialized")
 	if self.community == nil then
-		printf("self.community == nil")
+--		printf("self.community == nil")
 		return
 	end
 
@@ -1866,9 +1866,10 @@ end
 -- Initialize quest
 function CRecoverItemTask:init_task(squad_id)
 	self.squad_id = squad_id
-	self.commander_id = nil
+--	self.commander_id = nil
 	self.description = ""
 	self.npc = nil
+	self.target = nil
 	self.target_obj_id = nil
 	self.presence_requested_item = false
 	self.state = "started"
@@ -1886,7 +1887,6 @@ end
 function CRecoverItemTask:give_task(community)
 	self:spawn_recoveritem()
 	task_objects.CGeneralTask.give_task(self, community)
-	printf("squad_id[%s]", tostring(self.squad_id))
 	local squad = sim_board.get_sim_board().squads[self.squad_id]
 	if squad then
 		squad.recover_item_inited_time = self.inited_time
@@ -1957,20 +1957,23 @@ function CRecoverItemTask:check_task(tm)
 			self.last_check_task = "fail"
 			return
 		end
+	else
+        self.last_check_task = "reversed"
+        return
 	end
 
 	if (self:has_requested_item()) then
 		self.state = "have_item"
 		local commander_id = self.squad.commander_id
-		if self.commander_id ~= commander_id then
-			self.commander_id = commander_id
+		if self.target ~= commander_id then
+--			self.commander_id = commander_id
 			self.target = commander_id
 			self.t:change_map_location(self.spot, self.target)
 		end
 	elseif(self.state=="have_item") and not(self:has_requested_item()) then
 		self.state = "started"
 		self.target	= self.target_obj_id
-		self.commander_id = nil
+--		self.commander_id = nil
 		self.t:change_map_location(self.spot, self.target)
 	elseif(self.state=="finished") then
 		self.last_check_task = "complete"
@@ -2011,7 +2014,7 @@ end
 -- Transfer quest items to npc
 function CRecoverItemTask:transfer_items_looking_for(npc)
 	self.npc = npc
-		db.actor:iterate_inventory(transfer_recover_item, self)
+	db.actor:iterate_inventory(transfer_recover_item, self)
 	self.state = "finished"
 end
 
@@ -2078,9 +2081,9 @@ function CRecoverItemTask:load(reader)
 		self.squad_id = str
 	end
 	self.squad = sim_board.get_sim_board().squads[self.squad_id]
-	if not self.squad then
-		self.last_check_task = "reversed"
-	end
+--	if not self.squad then
+--		self.last_check_task = "reversed"
+--	end
 	self.spot = "secondary_task_location_complex_recover_item"
 	str = reader:r_u16()
 	if str~=65535 then
@@ -2163,6 +2166,20 @@ function CHideFromSurgeTask:check_task(tm)
 			nearest_cover_dist = dist
 			target = tbl[i].id
 		end
+	end
+
+	function blowout_hit_with_pp_and_cam_effectors(blowout_hit, cam_effector_id, pp_effector_id)
+		xr_sound.set_sound_play(db.actor:id(), blowout_hit)
+		level.add_cam_effector("camera_effects\\shell_shock.anm", cam_effector_id, false, "")
+		level.add_pp_effector("snd_shock.ppe", pp_effector_id, false)
+		level.set_pp_effector_factor(pp_effector_id, 0, 1.5)
+	end
+	function end_surge(last_check_task)
+		self.last_check_task = last_check_task
+		xr_surge_hide.surge_finished = true
+		xr_surge_hide.start_surge = false
+		xr_surge_hide.phase = 0
+		xr_surge_hide.surge_activated = false
 	end
 
 	if(self.t==nil) then

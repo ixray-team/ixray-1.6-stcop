@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_scientist_hello_dialog_11">
+		<text>Nocsak, nocsak... ritkбn lбtok ъj arcot a kцrnyйken! Szуval mit szeretnйl megtudni?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_12">
+		<text>Szerencsйvel jбrtбl?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_13">
+		<text>Цrьlцk, hogy kцlcsцnцsen segнthettьnk egymбsnak. Van mйg valami, amit tehetek йrted?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_14">
+		<text>Kйrlek, menj el Balgбhoz. Mбr vбr tйged.</text>
+	</string>
+	<string id="yan_scientist_go_diggers_1">
+		<text>Egy csoport elveszett a lйtesнtmйny йszak-nyugati rйszйn. A terьlet hemzseg a zombiktуl. Egyetlen stalkert sem kьldhetek, mind a peremeket vйdi, йs нgy is alig gyхzzьk visszaverni a tбmadбsokat. A bentrхl йrkezх SOS jelzйs mйg mindig aktнv. Kйrlek, prуbбld meg kihozni a stalkereket, ha mйg йletben vannak.</text>
+	</string>
+	<string id="yan_scientist_bring_documents_1">
+		<text>Igazбn kбr azokйrt az emberekйrt. Remйlem, бldozatuk nem volt hiбbavalу. Lбssuk azokat a dokumentumokat... ez nagyon йrdekes!  Nйhбny gyanъm beigazolуdott... Nem, ez kimondottan йrdekes!... Kivбlу! Ez szбmos kйrdйsre vбlaszt ad. De mйg idхre van szьksйgьnk, hogy teljesen megйrtsьk, mi tцrtйnik pontosan...</text>
+	</string>
+	<string id="yan_scientist_bring_documents_111">
+		<text>Jelen esetben ъgy tыnik, hogy egy emberkйz alkotta berendezйssel van dolgunk. Ezek a papнrok a berendezйs hыtхrendszerйnek kйzikцnyve. A hыtхrendszer a lйtesнtmйny fцld alatti rйszйben van. Megdцbbentх az energiafogyasztбsa! Tehбt a kйp kezd цsszeбllni... Ъgy tыnik, hogy a pszichikus tevйkenysйg okozta esemйnyek megjelenйse цsszefьggйsben van a berendezйs hыtхrendszerйnek hibбjбval... Ha sikerьlne megjavнtani, jelentхsen csцkkentenй a pszichikus kisugбrzбs szintjйt. Kell is kis idх, hogy бtgondoljam a dolgokat. Kйrlek, menj a lйtesнtmйnybe, йs csatlakozz Balga csapatбhoz. Mire odaйrsz, biztosan tovбbbi informбciуkkal is tudok szolgбlni.</text>
+	</string>
+	<string id="yan_scientist_about_zombie_1">
+		<text>Azуta problйmбt jelentenek, amiуta a laboratуrium elkйszьlt. A falak erхsek, de a ьvцltцzйs йs a tцbbi kintrхl йrkezх zaj szinte elviselhetetlen. Hidd el, ilyen kцrьlmйnyek kцzцtt mйg aludni sem egyszerы, nemhogy bбrmilyen kutatбst vйgezni. Mindezek tetejйbe, nйha mйg a bunkert is el kell hagynunk, hogy mintбkat gyыjtsьnk.</text>
+	</string>
+	<string id="yan_scientist_about_zombie_111">
+		<text>Mбr nagyon sokszor бtgondoltuk ezeket a dolgokat. Mindegy mekkora erхkkel prуbбlja a hadsereg megtisztнtani a lйtesнtmйnyt, a zombik бllandуan visszatйrnek. Akkor vбlt minden egyйrtelmыvй amikor az egyik korбbbi asszisztensem, aki akkor tыnt el amikor a gyбr mellett vйgzett mйrйseket, feltыnt a zombik kцzцtt... A pszichikus mezх az oka mindennek. Bбrki, aki a hatбsa alб kerьl, elveszti az eszйt, йs zombivб vбlik. Ez annak eredmйnye, hogy az emberi agy magasabb szintы funkciуi visszafordнthatatlanul sйrьlnek. Vagyis ezek a lйnyek megszыnnek embernek lenni: nincsenek kognitнv kйpessйgeik. A viselkedйsьk a megmaradt, tisztбn бllati цsztцneikre йpьl...</text>
+	</string>
+	<string id="yan_scientist_about_strelok_1">
+		<text>Igen, jбrt itt. Sokat tudott, tцbbet, mint bбrki mбs. Azt бllнtotta, hogy jбrt a Zуna kцzpontjбban! Termйszetesen nem hittem neki, annak ellenйre sem, hogy mutatott nйhбny felvйtelt...</text>
+	</string>
+	<string id="yan_scientist_about_strelok_111">
+		<text>Megegyeztьnk vele. Megнgйrte, hogy teszteli az egyik bнztatу kнsйrleti modellьnket: egy pszichikus kisugбrzбs blokkolуt, mi pedig cserйbe megнgйrtьk, hogy бtadjuk neki a vйgleges vбltozatot. Sztrelok ъgy gondolta, hogy a blokkolу segнtsйgйvel sikerьlhet бtjutnia a Perzselхn. Бtadtuk neki a prototнpust, х pedig elment a gyбrba. Ekkor lбttuk utoljбra Sztrelokot йs a prototнpust. Mыholdon keresztьl kaptunk nйmi adatot, de kйsхbb elvesztettьk a jelet. Ъgy tыnik, Sztrelokot elkapta egy nagyobb erejы kisugбrzбs a gyбrban.</text>
+	</string>
+	<string id="yan_scientist_about_strelok_11111">
+		<text>Ha Sztrelok a gyбrban van, szinte lehetetlen lesz bejutni pszichikus vйdelmi szerkezet nйlkьl. Mбr йvek уta tanulmбnyozzuk a gyбrbуl eredх pszichikus kisugбrzбst. Egyйrtelmы pulzбlу jellege van. Amikor a legalacsonyabb mйrtйket mutatja, az emberek viszonylag biztonsбgban vannak a gyбrйpьletben. Sajnos nem tudjuk megjуsolni, hogy mikor vбrhatу a kцvetkezх kisugбrzбs. Bemenni oda tiszta orosz rulett. Ha ъgy dцntesz, hogy kцveted Sztrelokot a gyбrba, nagy esйllyel te is agyatlan zombikйnt vйgzed. De van valami, amit tehetek йrted. Nemrйg kapcsolatba lйpett velem egy csapat stalker, akik йlve kijutottak a gyбrbуl. Az egyik йpьletben talбltak egy archнvumot, mindenfйle technikai dokumentumokkal. Azok a dokumentumok rбvilбgнthatnak a gyбr titkбra, йs felfedhetik ezeknek az erхs pszichikus kisugбrzбsoknak a forrбsбt. Segнts megtalбlni ezeket a feljegyzйseket, йs йn segнtek neked bejutni a gyбrba.</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_1">
+		<text>Ez az elhagyatott gyбrйpьlet! Mбgneskйnt vonzza a stalkereket. Mert ez az egyik olyan йpьlet, amit mйg nem sikerьlt elйrniьk. Azt mondjбk, hogy ritka relikviбk йs йrtйkes felszerelйsek lehetnek bent. Ezйrt бllandуan akad prуbбlkozу, aki abban remйnykedik, hogy megьti a fхnyeremйnyt. A gond csak az, hogy ez kбbй olyan, mintha orosz rulettet jбtszanбl. A pszichikus mezх hihetetlenьl instabil – amikor elйri a csъcsot, a kisugбrzбs mбsodpercek alatt kiйgeti az emberi agyat.</text>
+	</string>
+	<string id="yan_levsha_hello_dialog_11">
+		<text>Zsoldos, informбciуkat kaptam Szaharovtуl! Цregem, micsoda felfordulбs! Lбtod azt a hasadйkot a falon? Arra kell mennьnk, ez a legrцvidebb ъt a gйpig! Kцvess, de szaladj elхre! Az embereimmel csapatot alkotunk, csak ъtban lennйl! Йrtetted?</text>
+	</string>
+	<string id="yan_levsha_hello_dialog_111">
+		<text>Йrtettem!</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_0">
+		<text>Mit keresnek itt stalkerek?</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_11">
+		<text>Йs Balga?</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_111">
+		<text>Balga okosabb a tцbbieknйl. A csapata nekьnk dolgozik, segнt a mйrйsekben йs a mintavйtelben. Cserйben minхsйgi egйszsйgьgyi ellбtбst nyъjtunk. Biztos vagyok benne, ha nem segнtettьnk volna egymбsnak, mбr rйgen halottak lennйnk.</text>
+	</string>
+	<string id="yan_scientist_about_strelok_0">
+		<text>Tudom, hogy Sztrelok itt jбrt. Mit tudsz rуla?</text>
+	</string>
+	<string id="yan_scientist_about_strelok_11">
+		<text>Hol van most Sztrelok?</text>
+	</string>
+	<string id="yan_scientist_about_strelok_1111">
+		<text>Hol talбlom Sztrelokot?</text>
+	</string>
+	<string id="yan_scientist_about_zombie_0">
+		<text>Gyakran megtбmadnak az йlхhalottak?</text>
+	</string>
+	<string id="yan_scientist_about_zombie_11">
+		<text>Kнvбncsi vagyok, vajon honnan jцhetnek az йlхhalottak...</text>
+	</string>
+	<string id="yan_scientist_bring_documents_0">
+		<text>A stalkerek halottak. Elhoztam a dokumentumokat.</text>
+	</string>
+	<string id="yan_scientist_bring_documents_11">
+		<text>Konkrйtabban nem lehetne, professzor?</text>
+	</string>
+	<string id="yan_scientist_go_diggers_0">
+		<text>Megszerzem a dokumentumokat. Mondj el mindent, amit tudsz!</text>
+	</string>
+	<string id="yan_scientist_start_frase_1">
+		<text>Egy perc az egйsz!</text>
+	</string>
+	<string id="yan_scientist_start_frase_2">
+		<text>Csak egy perc!</text>
+	</string>
+</string_table>

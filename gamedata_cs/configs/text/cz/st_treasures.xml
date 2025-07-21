@@ -1,0 +1,1797 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_val_box_01_2">
+		<text>Bedna ve sklepм</text>
+	</string>
+	<string id="st_val_box_01_2_descr">
+		<text>Svoje vмci jsem si uloћil ve sklepм, za dveшe s varovnэm znamenнm. Teп nemбm иas, ale nмkdy si je urиitм vyzvednu.</text>
+	</string>
+	<string id="st_val_electric_box_01">
+		<text>Skrэљ v pojistkovй skшнni</text>
+	</string>
+	<string id="st_val_electric_box_01_descr">
+		<text>Udмlal jsem si љikovnou malou skrэљ v pojistkovй skшнni ve druhйm poschodн opuљtмnй tovбrny. Poиkбm, aћ budu mнt vнc artefaktщ, pak je vљechny vyzvednu a prodбm.</text>
+	</string>
+	<string id="st_val_pipe_o1_base_free">
+		<text>Skrэљ na slepйm konci kolektoru</text>
+	</string>
+	<string id="st_val_pipe_o1_base_free_descr">
+		<text>Nбhodou jsem zjistil, kde je pod zбkladnou slepэ konec kolektoru. Vypadб to jako dobrб skrэљ, tak jsem si v jednom kшнћenн potrubн ulil pбr vмcн.</text>
+	</string>
+	<string id="st_val_pipe_02">
+		<text>Skrэљ v trubce</text>
+	</string>
+	<string id="st_val_pipe_02_descr">
+		<text>Udмlal jsem si skrэљ v jednй trubce v prvnнm poschodн opuљtмnй tovбrny, hned u schodiљtм.</text>
+	</string>
+	<string id="st_val_pipe_02_0000">
+		<text>Potrubн pod cisternou</text>
+	</string>
+	<string id="st_val_pipe_02_0000_descr">
+		<text>Kdyћ jsem љel kolem statku, povмsili se na mм nмjacн иokli, tak jsem strиil zboћн do potrubн pod cisternou a vypadl jsem. Vyzvednu si to, aћ budu moct.</text>
+	</string>
+	<string id="st_val_pipe_valve_01_01">
+		<text>Skrэљ v tovбrnм</text>
+	</string>
+	<string id="st_val_pipe_valve_01_01_descr">
+		<text>Mбm bezva skrэљ v opuљtмnй tovбrnм. Je hned naproti vchodu, v tom kшнћovйm dнlu s ventilem. Snadno se to splete s nмjakэm jinэm, protoћe vypadajн jeden jako druhej.</text>
+	</string>
+	<string id="st_val_rucksack_01">
+		<text>Bбgl v kabinм</text>
+	</string>
+	<string id="st_val_rucksack_01_descr">
+		<text>Mмl bych si zajнt pro ten bбgl, kterэ jsem nechal na pшednнm sedadle v kabinм pшevrбcenйho traktorovйho tahaиe. Musel jsem ho tam tuhle nechat, kdyћ mм honili.</text>
+	</string>
+	<string id="st_val_rucksack_01_free_base">
+		<text>Skrэљ pod jedlн</text>
+	</string>
+	<string id="st_val_rucksack_01_free_base_descr">
+		<text>Mмl bych si dobшe zapamatovat, pod kterou jedli jsem zahrabal koшist. Je to kousek od vchodu do kolektoru, ale jinak ta jedle nenн nijak vэjimeиnб.</text>
+	</string>
+	<string id="st_val_rucksack_02">
+		<text>Bбgl na stromм</text>
+	</string>
+	<string id="st_val_rucksack_02_descr">
+		<text>Vљichni si zahrabбvajн vмci, tak jsem si povмsil bбgl na strom. Vsadнm se, ћe nahoru se nikdo nepodнvб!</text>
+	</string>
+	<string id="st_val_rucksack_02_02">
+		<text>Tajnб skrэљ pod stшechou</text>
+	</string>
+	<string id="st_val_rucksack_02_02_descr">
+		<text>O svou skrэљ se nebojнm. I kdyby se ji nмkdo snaћil najнt, museli by pшeskбkat mezi paprsky jako veverka, aby se k nн dostali.</text>
+	</string>
+	<string id="st_val_rucksack_02_03">
+		<text>Skrэљ ve vмћi</text>
+	</string>
+	<string id="st_val_rucksack_02_03_descr">
+		<text>Шekl jsem parќбkovi, ћe jsem cestou ztratil bбgl, a ten blb mi to seћral i s navijбkem. Mнsto toho jsem si ho schoval nahoшe ve vodбrenskй vмћi. Poшбd tam na mм иekб.</text>
+	</string>
+	<string id="st_val_rucksack_02_2">
+		<text>Bбgl ve vэtahu</text>
+	</string>
+	<string id="st_val_rucksack_02_2_descr">
+		<text>Kolem se poшбd stшнlн, tak jsem nemмl moc иasu, abych si poшбdnм schoval vмci. Љoupl jsem je do dнry pod prknem. Vyzvednu si je, aћ se mi to bude hodit.</text>
+	</string>
+	<string id="st_val_instrument_case_01">
+		<text>Zбmeиnickэ kufшнk</text>
+	</string>
+	<string id="st_val_instrument_case_01_descr">
+		<text>Naљel jsem kufшнk s nбшadнm po nмjakйm zбmeиnнkovi a schoval jsem si do nмj na иas svй "poklady". Aћ budu moct, odnesu si je do bezpeиnмjљн skrэљe.</text>
+	</string>
+	<string id="st_val_seif_01">
+		<text>Sejf v tovбrnм</text>
+	</string>
+	<string id="st_val_seif_01_descr">
+		<text>Pokud tohle nмkdo иte, znamenб to, ћe jsem natбhl baиkory. Takћe, co se tэиe mй skrэљe v sejfu, rбd bych ti шekl tohle - doufбm, ћe se do nн nikdy nedostaneљ, parchante!</text>
+	</string>
+	<string id="st_val_seif_02_descr">
+		<text>Nebyl jsem si jistэ, jestli se z tй mizйrie dostanu se zdravou kщћн, a tak jsem si schoval vмci v rezavйm sejfu na opuљtмnйm statku. Teп je vhodnб doba si je vyzvednout.</text>
+	</string>
+	<string id="st_val_trees_log_01">
+		<text>Paшez na ostrovм</text>
+	</string>
+	<string id="st_val_trees_log_01_descr">
+		<text>Jeden mщj kamarбd mмl spoustu hezkэch vмcн, kdyћ ho na blatech pшepadli. Sice to nepшeћil, ale aspoт mi stihl шнct, ћe si ибst koшisti schoval do vykotlanйho paшezu kousek od antйny. Rбd bych se tam nмkdy stavil a sebral to.</text>
+	</string>
+	<string id="st_val_trees_log_01_1">
+		<text>Ztrouchnivмlэ padlэ kmen</text>
+	</string>
+	<string id="st_val_trees_log_01_1_descr">
+		<text>Nevмшнm svйmu parќбkovi. Myslнm, ћe se ze mм pokusн udмlat vola, a tak si pшed nнm schovбvбm koшist. Udмlal jsem si skrэљ u mostu na ostrov, v jednom shnilйm kusu dшeva. Doufбm, ћe mi ji nenajde.</text>
+	</string>
+	<string id="st_val_trees_stump_01">
+		<text>Ztrouchnivмlэ paшez</text>
+	</string>
+	<string id="st_val_trees_stump_01_descr">
+		<text>Tuhle jsem zdrhal pшed divoибkem a љoupl jsem si vмci do dнry ve vykotlanйm paшezu, kousek od starйho statku.</text>
+	</string>
+	<string id="st_val_trees_stump_01_0000">
+		<text>Paшez pod kopcem</text>
+	</string>
+	<string id="st_val_trees_stump_01_0000_descr">
+		<text>Udмlal jsem si skrэљ na ъpatн kopce, pod starэm paшezem. Je to dobrб schovka - jen doufбm, ћe mi bude poшбd pшбt љtмstн a budu do nн mнt co nosit.</text>
+	</string>
+	<string id="st_val_trees_stump_01_1">
+		<text>Paшez u ploљiny</text>
+	</string>
+	<string id="st_val_trees_stump_01_1_descr">
+		<text>Vљiml jsem si, ћe Kolja obиas chodн k jednomu paшezu na ostrovм. Vsadнm boty, ћe tam mб nмkde skrэљ. Poиkбm, aћ ukoшistн jeљtм nмco hezkйho, a иasem mu ji zajdu vybrat.</text>
+	</string>
+	<string id="st_val_trees_zaz968">
+		<text>Starэ zбporoћec</text>
+	</string>
+	<string id="st_val_trees_zaz968_descr">
+		<text>Jen aќ si ti blbн chudбci pмknм lбmou hlavu, kam se jim podмly vљechny vмci! Ha-ha-ha! Jo jo, schoval jsem je do malйho starйho zбporoћce kousek od baћiny. Vsadнm se, ћe tam je nikdo hledat nebude.</text>
+	</string>
+	<string id="st_yan_electric_box_01">
+		<text>Pojistnб skшнт v tovбrnм</text>
+	</string>
+	<string id="st_yan_electric_box_01_descr">
+		<text>Koukal jsem se, co mб Andrej v PDAиku, a napsal si tam, ћe kdyћ se zaиal hroutit "mozkomlejnek", udмlal si skrэљ v rozdrbanй starй pojistnй skшнni ve fabrice.</text>
+	</string>
+	<string id="st_yan_electric_box_02">
+		<text>Pшнstrojovб deska u transformбtoru</text>
+	</string>
+	<string id="st_yan_electric_box_02_descr">
+		<text>Kdyћ zaиala celб tovбrna vypadбvat, nacpal jsem vљechny svoje vмci za panel pшнstrojovй desky u trafa.</text>
+	</string>
+	<string id="st_yan_instrument_case_01">
+		<text>Kufшнk v tovбrnм</text>
+	</string>
+	<string id="st_yan_instrument_case_01_descr">
+		<text>Zaљel jsem do hangбru a objevil jsem tam takovэ kufшнk na nбstroje.  Nмco v nмm chшestilo, ale zrovna jsem nemмl moc иasu to zkoumat, a tak jsem se nepodнval - nechal jsem si to na pшнљtм.</text>
+	</string>
+	<string id="st_yan_instrument_case_01_0000">
+		<text>Malэ kufшнk v nбklaпбku</text>
+	</string>
+	<string id="st_yan_instrument_case_01_0000_descr">
+		<text>Hezkй mнsto na skrэљ - pшнmo mezi kabinou a postelн v nбklaпбku. Mнstnн zombбlovй a radiace mu poskytujн sluљnou pшirozenou ochranu.</text>
+	</string>
+	<string id="st_yan_pipe_01">
+		<text>Skrэљ u plotu</text>
+	</string>
+	<string id="st_yan_pipe_01_descr">
+		<text>Zahrabal jsem si takovou maliиkost u kшнћenн dvou potrubн u stavaшskйho auta, hned vedle plotu.</text>
+	</string>
+	<string id="st_yan_pipe_02">
+		<text>Pбr maliиkostн v potrubн</text>
+	</string>
+	<string id="st_yan_pipe_02_descr">
+		<text>Nejcennмjљн zboћн jsem si vzal s sebou a zbytek jsem zaљoupl do potrubн v tй mнstnosti s dнrou v podlaze.</text>
+	</string>
+	<string id="st_yan_rucksack_01">
+		<text>Bбgl u vchodu</text>
+	</string>
+	<string id="st_yan_rucksack_01_descr">
+		<text>Musel jsem nechat plnэ bбgl koшisti v rozvalinбch, hned vedle vchodu. Zajнmalo by mм, jestli uћ ho nмkdo naљel…</text>
+	</string>
+	<string id="st_yan_rucksack_02">
+		<text>Skшнт ve ventilaиnн љachtм</text>
+	</string>
+	<string id="st_yan_rucksack_02_descr">
+		<text>Hej, Tony, zapamatuj si koordinбty a vztaћnй body - bбgl je ve ventilaиnн љachtм vedle proraћenй zdi komplexu. Dнkec, Sova.</text>
+	</string>
+	<string id="st_yan_rucksack_02_0000">
+		<text>Bбgl pod sedadlem</text>
+	</string>
+	<string id="st_yan_rucksack_02_0000_descr">
+		<text>Nemмl jsem иas na rozmyљlenou, tak jsem nacpal koшist pod sedadlo шidiиe do takovй zrezivмlй UAZky.</text>
+	</string>
+	<string id="st_yan_rucksack_02_0001">
+		<text>Skrэљ v hnacнm ъstrojн jeшбbu</text>
+	</string>
+	<string id="st_yan_rucksack_02_0001_descr">
+		<text>Bщh vн, co mм to napadlo, udмlat si skrэљ tak blbм vysoko. Teп na ni, sakra, nedoљбhnu!</text>
+	</string>
+	<string id="st_yan_seif_01">
+		<text>Skrэљ v sejfu</text>
+	</string>
+	<string id="st_yan_seif_01_descr">
+		<text>Mбm nejlepљн skrэљ v celй Zуnм. Je to sejf v areбlu fabriky.</text>
+	</string>
+	<string id="st_yan_trees_log_01">
+		<text>Vykotlanэ padlэ strom</text>
+	</string>
+	<string id="st_yan_trees_log_01_descr">
+		<text>Schoval jsem si vмci ve vykotlanйm padlйm stromм vedle "trnu".</text>
+	</string>
+	<string id="st_yan_trees_log_01_0000">
+		<text>Padlэ strom pod kopcem</text>
+	</string>
+	<string id="st_yan_trees_log_01_0000_descr">
+		<text>Jelikoћ z tovбrny furt akorбt lezou zombбlovй, nezbylo mi, neћ se rozlouиit s koшistн. Schoval jsem ji do vykotlanйho padlйho stromu na ъpatн kopce.</text>
+	</string>
+	<string id="st_yan_trees_stump_01">
+		<text>Paшez u vмћe</text>
+	</string>
+	<string id="st_yan_trees_stump_01_descr">
+		<text>Udмlal jsem si novou skrэљ ve vykotlanйm paшezu, na tom kopci, co je sloup vysokйho napмtн. Vљichni si myslн, ћe se tam chodнm kochat vyhlнdkou, pitomeиci!</text>
+	</string>
+	<string id="gar_equipment_pipe_01_ss">
+		<text>Hrdlo trubky</text>
+	</string>
+	<string id="gar_equipment_pipe_01_ss_descr">
+		<text>Udмlal jsem si skrэљ v hrdle trubky. Je v hromadм radioaktivnнho odpadu.</text>
+	</string>
+	<string id="gar_equipment_pipe_02_ss">
+		<text>Trubka u motoru</text>
+	</string>
+	<string id="gar_equipment_pipe_02_ss_descr">
+		<text>Hned vedle nefunkиnнho motoru na Smeќбku mбm trubku se svэma vмcma.</text>
+	</string>
+	<string id="st_agr_cross_1">
+		<text>Pod kшнћem</text>
+	</string>
+	<string id="st_agr_cross_1_descr">
+		<text>Agroprom, kшovн, kшнћ. Hrob pod kшнћem.</text>
+	</string>
+	<string id="st_agr_electric_box_02">
+		<text>Elektrickб skшнтka v dнlnм</text>
+	</string>
+	<string id="st_agr_electric_box_02_descr">
+		<text>Ten vymrdanej dehydrбtor nбs obнrб o naљe vмci. Hajzl jeden starej. Schovбm si pшed nнm svoje vмci do elektrickэ skшнтky ve druhэm patшe.</text>
+	</string>
+	<string id="st_agr_instrument_case_01">
+		<text>Traktor</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0000">
+		<text>Auto v garбћi</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0000_descr">
+		<text>Schovбvбm si vмci do kufru velitelovy kбry. Dokud s tнm nikam neodjede, jsou mэ krбmy v bezpeин.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0001">
+		<text>Schrбnka pod vagуnem</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0001_descr">
+		<text>Schrбnka na nбшadн pod vagуnem v Agropromu.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0002">
+		<text>Autobus na zastбvce</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0002_descr">
+		<text>Schrбnka na nбшadн v autobusu na zastбvce, je to poblнћ zбkladny neutrбlщ.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_descr">
+		<text>Kdyћ Timmy koneиnм opravil traktor, naskбkali jsme do nмj a vyjeli jsme si na noиnн jнzdu. Pak jsme potkali upнra. Museli jsme se urychlenм zdejchout, a tak jsme tam nechali bednu s koшistн.</text>
+	</string>
+	<string id="st_agr_pipe_02">
+		<text>Trubka v haraburdн</text>
+	</string>
+	<string id="st_agr_pipe_02_descr">
+		<text>Skrэљ: zablokovanэ vchod v podzemн, uvnitш zahnutэ trubky.</text>
+	</string>
+	<string id="st_agr_rucksack_01">
+		<text>Batoh nikoho</text>
+	</string>
+	<string id="st_agr_rucksack_01_0000">
+		<text>Zбkladna stalkerщ</text>
+	</string>
+	<string id="st_agr_rucksack_01_0000_descr">
+		<text>Musel jsem svщj batoh vyhodit do vмtvн toho stromu, jinak by vљichni vмdмli, ћe to jб jsem udal Vitaliho. Nejsnбz se k nмmu dб dostat po trubkбch ze zбkladny neutrбlщ.</text>
+	</string>
+	<string id="st_agr_rucksack_01_descr">
+		<text>Zahlнd jsem ho na stromм poblнћ zбkladny Povinnosti, ale nemмl jsem иas pro nмj vylйzt.</text>
+	</string>
+	<string id="st_agr_rucksack_02">
+		<text>Trubka v baћinбch</text>
+	</string>
+	<string id="st_agr_rucksack_02_0000">
+		<text>Ztracenэ batoh</text>
+	</string>
+	<string id="st_agr_rucksack_02_0000_descr">
+		<text>Vraceli jsme se z vэletu, odpoинvali jsme mezi balvanama a jб tam nмjak zapomnмl svщj batoh. Aћ budu mнt иas, vrбtнm se tam pro nмj.</text>
+	</string>
+	<string id="st_agr_rucksack_02_0001">
+		<text>Rigmanщv batoh</text>
+	</string>
+	<string id="st_agr_rucksack_02_0001_descr">
+		<text>Musel jsem vylйzt aћ ъplnм nahoru tэ vмћe a tam poиkat, neћ odeћenete ty zasranэ psy. Batoh jsem musel upustit nмkde v kшovн.</text>
+	</string>
+	<string id="st_agr_rucksack_02_descr">
+		<text>Mбm skrэљ v trubce v baћinбch. Zboћн je v batohu.</text>
+	</string>
+	<string id="st_agr_seif_01">
+		<text>Trezor v kшovн</text>
+	</string>
+	<string id="st_agr_seif_01_descr">
+		<text>Snaћili jsme se ten trezor plnej krбmщ protбhnout korytem. Po deљti tam ale bylo tolik blбta, ћe jsme poшбd podkluzovali a padali. Nakonec jsme ho prostм nechali leћet a odeљli.</text>
+	</string>
+	<string id="st_agr_trees_log_01">
+		<text>Osamмlб klбda</text>
+	</string>
+	<string id="st_agr_trees_log_01_0000">
+		<text>Velikonoиnн vajниka</text>
+	</string>
+	<string id="st_agr_trees_log_01_0000_descr">
+		<text>Blнћej se Velikonoce. Tony chtмl, abysme pro bandu pшipravili pбr pшekvapenн. Schoval jsem jedno z „velikonoиnнch vajниek“ do klбdy.</text>
+	</string>
+	<string id="st_agr_trees_log_01_descr">
+		<text>Tak daleko v houљtн nebude mojн skrэљ v klбdм nikdo hledat.</text>
+	</string>
+	<string id="st_agru_treasure_1">
+		<text>Trubka v шнdicн mнstnosti</text>
+	</string>
+	<string id="st_agru_treasure_1_descr">
+		<text>Kdyћ se odevљad zaиali hrnout mutanci, schoval jsem pбr svэch vмcн do trubky a tu jsem odљќouchnul.</text>
+	</string>
+	<string id="st_agru_treasure_2">
+		<text>Batoh v anomбlii</text>
+	</string>
+	<string id="st_agru_treasure_2_descr">
+		<text>Kdyћ jsem pшechбzel pшes most, jako na potvoru mi spadl batoh dolщ do zamoшenэ oblasti. Snaћil jsem se pro nмj dostat, ale neљlo to.</text>
+	</string>
+	<string id="st_agru_treasure_3">
+		<text>Opuљtмnэ kredenc</text>
+	</string>
+	<string id="st_agru_treasure_3_descr">
+		<text>Ten kredenc jsem mмl vћdycky rбd. Je prostornej. Kdyћ se na nбs vyvalili mutanti, museli jsme utйct a jб ho tam nechal.</text>
+	</string>
+	<string id="st_agru_treasure_4">
+		<text>Batoh u mrtvoly</text>
+	</string>
+	<string id="st_agru_treasure_4_descr">
+		<text>Svinм jedny mutantskэ, co trochu pшipomнnaly krysy nebo tarbнky, mi roztrhali kбmoљe na cucky. Sotva jsem vyvбzl – dнky Bohu, ћe nedaleko byly schody.</text>
+	</string>
+	<string id="st_agru_treasure_5">
+		<text>Batoh pod schody</text>
+	</string>
+	<string id="st_agru_treasure_5_descr">
+		<text>Ve vodм pod schody jsem zahlйdl velikэ иernэ batoh. Byl bych tam pro nмj vlezl, kdyby tam nebyla ta podмlanб anomбlie.</text>
+	</string>
+	<string id="st_esc_cross_2">
+		<text>Pod kшнћem na kopci</text>
+	</string>
+	<string id="st_esc_cross_2_descr">
+		<text>Schoval jsem svэ vмci ve faleљnэm hrobм stalkera na kopci.</text>
+	</string>
+	<string id="st_esc_instrument_case_01_ramp">
+		<text>Truhla nad mostem</text>
+	</string>
+	<string id="st_esc_instrument_case_01_ramp_descr">
+		<text>Nacpal jsem svэ krбmy do truhly nad mнstem, kde se stэkajн mostnн nosnнky. To byl nбpad, pшi љplhбnн jsem vypotil hektolitr vody...</text>
+	</string>
+	<string id="st_esc_pipe_02_in_crater">
+		<text>Trubka pod padlэm stromem</text>
+	</string>
+	<string id="st_esc_pipe_02_in_crater_descr">
+		<text>Svщj tбbor jsme rozbili nedaleko vesnice zelenбищ. Skryl jsem tam svй vмci do trubky pod padlэm stromem. Vyzvednu si je pozdмji.</text>
+	</string>
+	<string id="st_esc_pipe_03_in_crater">
+		<text>Trubka v tunelu</text>
+	</string>
+	<string id="st_esc_pipe_03_in_crater_descr">
+		<text>Hбzeli jsme do anomбliн vљelijakэ haraburdн a omylem jsme tam hodili i trubku napмchovanou naљнm lupem. Furt tam jeљtм leћн a sbнrб prach...</text>
+	</string>
+	<string id="st_esc_rucksack_01_in_chimney">
+		<text>Batoh v rouшe u kamen</text>
+	</string>
+	<string id="st_esc_rucksack_01_in_chimney_descr">
+		<text>Jeљtм kdyћ jsem tu byl novej, udмlal jsem si skrэљ v rouшe od starэch kamen. Uћ si ani nepamatuju, co jsem tam nechal.</text>
+	</string>
+	<string id="st_esc_rucksack_01_natree">
+		<text>Skrэљ na stromм</text>
+	</string>
+	<string id="st_esc_rucksack_01_natree_descr">
+		<text>Z tohodle stromu jsem pozoroval parkoviљtм vozidel, a tak jsem tam rovnou schoval i svщj batoh. Nejsnбz se tam vyleze po vмtvi ze strбnм.</text>
+	</string>
+	<string id="st_esc_rucksack_01_pod_train">
+		<text>Pod lokomotivou</text>
+	</string>
+	<string id="st_esc_rucksack_01_pod_train_descr">
+		<text>Velitel nбm rozkбzal, abychom okamћitм naklusali na pomoc Nikolajevovм skupinм. Takћe jsem narychlo schoval svщj batoh pod lokomotivu, hned u nбspu.</text>
+	</string>
+	<string id="st_esc_rucksack_02_inbush">
+		<text>Batoh za keшem</text>
+	</string>
+	<string id="st_esc_rucksack_02_inbush_descr">
+		<text>Jednou v noci na nбs nabмhli banditi a zaиali se s nбma stшнlet. Netrvalo to dlouho a museli jsme se zdejchnout, takћe jsem nacpal svщj batoh mezi nмjakэ kameny schovanэ za keшem.</text>
+	</string>
+	<string id="st_esc_rucksack_02_natree">
+		<text>Batoh pod dшнvнm</text>
+	</string>
+	<string id="st_esc_rucksack_02_natree_descr">
+		<text>Pшikryl jsem svй vмci nмjakэm tнm dшнvнm. Jsou hned vedle dvoupatrovй budovy naproti statku.</text>
+	</string>
+	<string id="st_esc_seif_03">
+		<text>Trezor v trubce</text>
+	</string>
+	<string id="st_esc_seif_03_0000">
+		<text>Trezor na zбkladnм</text>
+	</string>
+	<string id="st_esc_seif_03_0000_desc">
+		<text>Zil si svэ vмci schovбvб do trezoru na zбkladnм neutrбlщ v Kordonu.</text>
+	</string>
+	<string id="st_esc_seif_03_descr">
+		<text>Zaloћil jsem si s Koljanem takovou malou schovku v trezoru na Smetiљti, kousek od vesnice zelenбищ.</text>
+	</string>
+	<string id="st_esc_trees_log_01">
+		<text>Vэduќ v klбdм</text>
+	</string>
+	<string id="st_esc_trees_log_01_descr">
+		<text>Zaъtoиili na mм psi, takћe jsem nemмl moc na vэbмr – schoval jsem si vмci do prasklэ klбdy uprostшed pole a utekl jsem do tбbora.</text>
+	</string>
+	<string id="st_esc_trees_log_02">
+		<text>Skrэљ v klбdм</text>
+	</string>
+	<string id="st_esc_trees_log_02_descr">
+		<text>Objevil jsem souшadnice skrэљe jednoho mrtvэho stalkera – je to uvnitш klбdy za statkem.</text>
+	</string>
+	<string id="st_esc_trees_stump_01">
+		<text>Paшez v jedlovйm lese</text>
+	</string>
+	<string id="st_esc_trees_stump_01_descr">
+		<text>S kбmoљem jsme si schovali naљн skromnou koшist do starэho paшezu mezi nмkolika jedlema.</text>
+	</string>
+	<string id="st_esc_trees_stump_01_penb_syn_trader">
+		<text>Paшez u vesnice</text>
+	</string>
+	<string id="st_esc_trees_stump_01_penb_syn_trader_descr">
+		<text>Nechtмlo se mi schovбvat vмci moc daleko, tak jsem si prostм vybral prvnн solidnн paшez od vesnice zelenбищ, ve kterэm byla dнra. Takhle to snadno najdu.</text>
+	</string>
+	<string id="st_esc_trees_stump_02">
+		<text>Paшez v lese</text>
+	</string>
+	<string id="st_esc_trees_stump_02_descr">
+		<text>Sidoroviи po nбs chtмl, abysme pшipravili schrбnku vedle stanoviљtм hlнdajнcнho vэchod ven, nejspнљ pro nмjakэho novбиka. Nasoukali jsme to vљechno pod paшez u kopce.</text>
+	</string>
+	<string id="st_esc_trees_stump_03">
+		<text>Paшez v Kordonu</text>
+	</string>
+	<string id="st_esc_trees_stump_03_descr">
+		<text>Cestou na Smetiљtм jsem vљechno schoval do paшezu v lese, aby ze mм banditi nic nevymlбtili.</text>
+	</string>
+	<string id="st_found_new_treasure">
+		<text>Zнskбny informace o skrэљi:</text>
+	</string>
+	<string id="st_gar_electric_box_01">
+		<text>Elektrickб skшнтka v odpadcнch</text>
+	</string>
+	<string id="st_gar_electric_box_01_descr">
+		<text>Odloћil jsem si pбr vмcн stranou, abych je mohl pozdмji prodat na bleљнm trhu. Jsou v elektrickэ skшнтce hned vedle kabiny spadlйho jeшбbu.</text>
+	</string>
+	<string id="st_gar_electric_box_02">
+		<text>Rozvodnб skшнт pod barabiznou</text>
+	</string>
+	<string id="st_gar_electric_box_02_descr">
+		<text>Uћ se nemщћu doиkat, aћ prodбm tu vмciиku, co jsem si schoval do rozvodnэ skшнnм pod nedalekou barabiznou.</text>
+	</string>
+	<string id="st_gar_electric_box_02_ss">
+		<text>Elektrickб skшнтka na sklбdce</text>
+	</string>
+	<string id="st_gar_electric_box_02_ss_descr">
+		<text>Lup je ukrytej pod krytem elektrickэ skшнтky v jednэ hromadм na sklбdce.</text>
+	</string>
+	<string id="st_gar_pipe_02">
+		<text>Trubka na Smetiљti</text>
+	</string>
+	<string id="st_gar_pipe_02_descr">
+		<text>Ukryl jsem si vмci do odшнznutэ trubky, aby mi je nikdo nemohl sebrat.</text>
+	</string>
+	<string id="st_gar_pipe_05">
+		<text>Trubka u paty jeшбbu</text>
+	</string>
+	<string id="st_gar_pipe_05_descr">
+		<text>U paty spadlэho jeшбbu leћн trubka. Schoval jsem si do nн nмkolik cetek na horљн иasy, jen kdyby nмco.</text>
+	</string>
+	<string id="st_gar_rucksack_02">
+		<text>Batoh pod jedlн</text>
+	</string>
+	<string id="st_gar_rucksack_02_1_ss">
+		<text>Batoh v kabinм jeшбbu</text>
+	</string>
+	<string id="st_gar_rucksack_02_1_ss_descr">
+		<text>Schoval jsem si batoh do kabiny jeшбbu, kdyћ jeљtм stбval. Teп spadl a jб se tam nemщћu dostat.</text>
+	</string>
+	<string id="st_gar_rucksack_02_descr">
+		<text>Dokud mi nepшestane hoшet za patama, mщj batoh bude muset zщstat schovanej pod touhle jedlн.</text>
+	</string>
+	<string id="st_gar_rucksack_02_ss">
+		<text>Ъkryt pшed nepшбteli</text>
+	</string>
+	<string id="st_gar_rucksack_02_ss_descr">
+		<text>Nasoukal jsem svщj batoh do haldy radioaktivnнho odpadu, aby nepadl do rukou nepшнteli.</text>
+	</string>
+	<string id="st_gar_rucksack_03">
+		<text>Vмci na sklбdce</text>
+	</string>
+	<string id="st_gar_rucksack_03_descr">
+		<text>Zastrиil jsem svэ vмci pod betonovou desku vedle radioaktivnнho vrakoviљtм. Mмl bych si je co nejdшнv vyzvednout, neћ je najde nмkdo jinej.</text>
+	</string>
+	<string id="st_gar_rucksack_04">
+		<text>Stшecha lokomotivy</text>
+	</string>
+	<string id="st_gar_rucksack_04_descr">
+		<text>Nechal jsem svщj batщћek leћet na stшeљe lokomotivy. Zespodu tam nenн vщbec vidмt, ale pшitom se tam dб z nбspu dobшe vylйzt.</text>
+	</string>
+	<string id="st_gar_seif_01">
+		<text>Trezor v kaluћi</text>
+	</string>
+	<string id="st_gar_seif_01_descr">
+		<text>Pochybuju, ћe by se nмkdo pokouљel vykopat zapadlej trezor z takovэhle kaluћe. Je to dobrэ mнsto pro doиasnэ skladovбnн.</text>
+	</string>
+	<string id="st_gar_seif_03">
+		<text>Trezor pod nosnнkem</text>
+	</string>
+	<string id="st_gar_seif_03_descr">
+		<text>Schoval jsem si koшist do trezoru poblнћ cedule Pozor radioaktivita. Tam by se jн pokouљel ukrбst jenom sebevrah.</text>
+	</string>
+	<string id="st_gar_trees_log_01">
+		<text>Dнra v klбdм</text>
+	</string>
+	<string id="st_gar_trees_log_01_descr">
+		<text>Ukrэvбm si vмci do dнry v klбdм. Je to kousek od koncentraиnнho tбbora.</text>
+	</string>
+	<string id="st_gar_trees_log_02">
+		<text>Klбda za dubem</text>
+	</string>
+	<string id="st_gar_trees_log_02_descr">
+		<text>Koljan mi poslal echo – prej ћe si Koukol schovбvб krбmy do dнry v klбdм za jednнm uschlэm dubem. </text>
+	</string>
+	<string id="st_gar_trees_log_03">
+		<text>Klбda v kшovн</text>
+	</string>
+	<string id="st_gar_trees_log_03_descr">
+		<text>Napмchoval jsem svэ cetky do klбdy a tu jsem odtбhl do kшovн. Tam by mмla bejt v bezpeин pшed cizнmi zraky.</text>
+	</string>
+	<string id="st_gar_trees_stump_01">
+		<text>Trestancova skrэљ</text>
+	</string>
+	<string id="st_gar_trees_stump_01_descr">
+		<text>Jeden z kopбищ se snaћil prchnout i s nakradenэma vмcma, ale Ovибk a pбr chlapщ ho dohonili. Rozsekali ho na madмru, ale ty vмci nenaљli. To akorбt jб vнm o tom paшezu, kterej kopбиi pouћнvajн jako skrэљ.</text>
+	</string>
+	<string id="st_gar_trees_stump_03">
+		<text>Osamмlб skrэљ</text>
+	</string>
+	<string id="st_gar_trees_stump_03_descr">
+		<text>Zшнdil jsem si skrэљ v osamмlйm paшezu – jen pro pшнpad, ћe by se mм nмkdo z vlastnнch rozhodl okrбst.</text>
+	</string>
+	<string id="st_gar_trees_stump_04">
+		<text>Ъkryt u zбkladny</text>
+	</string>
+	<string id="st_gar_trees_stump_04_descr">
+		<text>Teda nevнm co ostatnн, ale jб svэ vмci schovбvбm hezky Jуgovi pod nosem – pod starej paшez hned vedle plotu.</text>
+	</string>
+	<string id="st_gar_zaz968">
+		<text>Bнlэ Zaporoћec</text>
+	</string>
+	<string id="st_gar_zaz968_descr">
+		<text>Jednoho dne pшijde Jуga o nadvlбdu nad Smeќбkem. V ten den vyhrabu svэ vмci z toho bнlэho Zaporoћce a se Smeќбkem se navћdy rozlouинm. </text>
+	</string>
+	<string id="st_hos_electric_box_02">
+		<text>Elektrickб skшнтka v nemocnici</text>
+	</string>
+	<string id="st_hos_electric_box_02_descr">
+		<text>S parќбkama jsme si zшнdili ъkryt v elektrickэ skшнтce na prvnнm patшe nemocnice.</text>
+	</string>
+	<string id="st_hos_rucksack_01">
+		<text>Batoh pod schody</text>
+	</string>
+	<string id="st_hos_rucksack_01_descr">
+		<text>Kdyћ jsme ъtoиili na druhэ patro, potшebovali jsme si odloћit vљechny pшebyteиnosti.</text>
+	</string>
+	<string id="st_hos_seif_01">
+		<text>Barikбdy v hale</text>
+	</string>
+	<string id="st_hos_seif_01_descr">
+		<text>Dostal jsem se do hustэ pшestшelky a uvнzl jsem v hale na druhэm patшe nemocnice. Musel jsem si schovat vмci do starэho trezoru v barikбdм.</text>
+	</string>
+	<string id="st_lim_electric_box_01">
+		<text>Kanalizaиnн trubka</text>
+	</string>
+	<string id="st_lim_electric_box_01_2">
+		<text>Elektrickб skшнтka v Rбdiovй vlnм</text>
+	</string>
+	<string id="st_lim_electric_box_01_2_descr">
+		<text>Kdyћ jsme dobэvali budovu institutu, narazil jsem na nмин schrбnku v elektrickэ skшнтce na balkуnм. Museli jsme ale chvбtat, nestihl jsem to pobrat.</text>
+	</string>
+	<string id="st_lim_electric_box_01_descr">
+		<text>Zahlнdl jsem nмин vмci v trubce od kanбlu. Aћ zase pщjdeme kolem, vyzvednu si je.</text>
+	</string>
+	<string id="st_lim_instrument_case_01">
+		<text>Tlumok ve vэklenku</text>
+	</string>
+	<string id="st_lim_instrument_case_01_1">
+		<text>Tlumok v podkrovн</text>
+	</string>
+	<string id="st_lim_instrument_case_01_1_descr">
+		<text>Dva dny jsme odrбћeli ustaviиnэ ъtoky. Ke konci uћ nбs zahnali aћ na stшechu, ale v tu chvнli koneиnм dorazily posily. V jenom vэklenku jsem zahlнdl tlumok, jenomћe jsem si ho zapomnмl vzнt.</text>
+	</string>
+	<string id="st_lim_instrument_case_01_descr">
+		<text>Zrovna jsme prochбzeli dvorem, kdyћ jsem si vљiml malэ bedny u plotu.</text>
+	</string>
+	<string id="st_lim_pipe_02">
+		<text>Trubka pod UAZem</text>
+	</string>
+	<string id="st_lim_pipe_02_01">
+		<text>Za garбћemi</text>
+	</string>
+	<string id="st_lim_pipe_02_01_descr">
+		<text>Zahlнd jsem nмkoho, jak si schovбvб krбmy za garбћema, ale nemмl jsem иas to oинhnout. Je to ve velkэ trubce za stromem.</text>
+	</string>
+	<string id="st_lim_pipe_02_2">
+		<text>Trubka v kontejneru</text>
+	</string>
+	<string id="st_lim_pipe_02_2_descr">
+		<text>Na jednom dvoшe po nбs zaиali stшнlet. Kousek od nбs stбl kontejner a jб jsem si vљiml, ћe uvnitш je trubka s nмjakэma vмcma. Jen co si tu vyшнdнme svэ povinnosti, vrбtнm se tam a omrknu to.</text>
+	</string>
+	<string id="st_lim_pipe_02_descr">
+		<text>Z pod toho UAZu vyиuhoval pytel s nмjakэm haraburdнm. Nemмl jsem иas si to poшбdnм prohlнdnout, ale tшeba se tam jeљtм vrбtнm - jestli budu naћivu.</text>
+	</string>
+	<string id="st_lim_rucksack_01">
+		<text>Batoh v odklбdacн skшнтce</text>
+	</string>
+	<string id="st_lim_rucksack_01_descr">
+		<text>Nacpal jsem bбgl nebohэho Konzervy do palubnн desky ve starэm Moskviиi.</text>
+	</string>
+	<string id="st_lim_rucksack_02_1">
+		<text>Batoh u plotu</text>
+	</string>
+	<string id="st_lim_rucksack_02_12">
+		<text>Vмci zranмnйho</text>
+	</string>
+	<string id="st_lim_rucksack_02_12_descr">
+		<text>Kdyћ jsme pшelнzali zeп, Sanмk to koupil. Musel tam nechat batoh, aby si zachrбnil prdel.</text>
+	</string>
+	<string id="st_lim_rucksack_02_1_descr">
+		<text>Honili mм, takћe jsem musel zahodil batoh. Bylo to u plotu nмkde na tмhle souшadnicнch.</text>
+	</string>
+	<string id="st_lim_rucksack_02_2">
+		<text>Batoh mrtvйho</text>
+	</string>
+	<string id="st_lim_rucksack_02_2_descr">
+		<text>Stбl jsem tмsnм vedle novбиka, kterej schytal granбt - na mнstм zaшval. Dan vzal jeho batoh a strиil ho pod most. Mrtvэmu je uћ k niиemu a nбm by se ty vмci mohly hodit.</text>
+	</string>
+	<string id="st_lim_seif_03">
+		<text>Trezor v garбћi</text>
+	</string>
+	<string id="st_lim_seif_03_descr">
+		<text>Hledali jsme v garбћнch ъnikovou cestu a naљli jsme trezor. Nмkdy bysme se mмli vrбtit a otevшнt ho.</text>
+	</string>
+	<string id="st_lim_trees_log_01">
+		<text>Napщl zahrabanб klбda</text>
+	</string>
+	<string id="st_lim_trees_log_01_descr">
+		<text>Jeљtм neћ jsem tu svini zabil, vidмl jsem, jak cosi koumб u tэ klбdy za altбnem.</text>
+	</string>
+	<string id="st_lim_trees_stump_01_1">
+		<text>Balниek v paшezu</text>
+	</string>
+	<string id="st_lim_trees_stump_01_1_descr">
+		<text>Kdyћ jsme se pшipravovali na ъtok, vљiml jsem si v dншe v tomhle paшezu nмjakэho balниku.</text>
+	</string>
+	<string id="st_mar_nichka_0000">
+		<text>Ъkryt u bunkru</text>
+	</string>
+	<string id="st_mar_nichka_0000_descr">
+		<text>Љilhounova banda uћ mi byla v patбch, takћe jsem si radљi schoval svщj lup poblнћ poklopu od bunkru. Bylo to v baћinм nedaleko opuљtмnэ zastбvky vozidel.</text>
+	</string>
+	<string id="st_mar_nichka_0001">
+		<text>Malб skшнтka pod stoћбrem</text>
+	</string>
+	<string id="st_mar_nichka_0001_descr">
+		<text>Vљechnu svojн koшist si sklбdбm do skшнтky pod jednнm ze stoћбrщ vysokэho napмtн.</text>
+	</string>
+	<string id="st_mar_nichka_0003">
+		<text>Skшнтka v kabinм ZILu</text>
+	</string>
+	<string id="st_mar_nichka_0003_descr">
+		<text>Mrzkej Saљa odnмkud pшitбh zбmeиnickou skшнтku. Nacpali jsme do nн pбr libщstek a schovali jsme jн v kabinм rezavэho ZILu.</text>
+	</string>
+	<string id="st_mar_nichka_0004">
+		<text>Trubka na benzнnм</text>
+	</string>
+	<string id="st_mar_nichka_0004_descr">
+		<text>Schoval jsem si pбr vмciиek na starэ benzнnce uprostшed moибlu, do ъstн trubky tмsnм vedle ventilu.</text>
+	</string>
+	<string id="st_mar_nichka_0005">
+		<text>Trubka v baћinм</text>
+	</string>
+	<string id="st_mar_nichka_0005_descr">
+		<text>Uћ mм nebavilo tahat s sebou ty krбmy pшi prochбzenн baћin, takћe jsem si je odloћil na poloostrovм do ponoшenэ trubky s ventilem. Hned se mi chodilo lнp, a navнc by v tom rбkosн mмly moje vмci bejt v bezpeин.</text>
+	</string>
+	<string id="st_mar_nichka_0006">
+		<text>Batoh v baћinбch</text>
+	</string>
+	<string id="st_mar_nichka_0006_descr">
+		<text>Sotva jsem vyvбzl pшed jednou z tмch baћinnэch pшнљer. Za bмhu jsem ale odhodil batoh a nмjak se mi pro nмj nechce vracet.</text>
+	</string>
+	<string id="st_mar_nichka_0007">
+		<text>Ponoшenэ trezor</text>
+	</string>
+	<string id="st_mar_nichka_0007_descr">
+		<text>Nedaleko zшнzenэho mostu je ve vodм ponoшenэ trezor. Vloћil jsem do nмj vљechny svй vмci a svou dщvмru.</text>
+	</string>
+	<string id="st_mar_nichka_0008">
+		<text>Batoh v rбkosн</text>
+	</string>
+	<string id="st_mar_nichka_0008_descr">
+		<text>Kdyћ jsem bojoval se skupinkou divoибkщ v rбkosн, radљi jsem si odloћil batoh. Nepamatuju si ћбdnej orientaиnн bod, mбm jenom souшadnice.</text>
+	</string>
+	<string id="st_mar_nichka_0009">
+		<text>Odloћenй artefakty</text>
+	</string>
+	<string id="st_mar_nichka_0009_descr">
+		<text>Ukradl jsem jednomu nэmandovi batoh plnej tretek. Na nмjakej иas ho schovбm do rбkosн, nechci aby mм s nнm pшistihli.</text>
+	</string>
+	<string id="st_mar_nichka_0010">
+		<text>Paшez u stromu</text>
+	</string>
+	<string id="st_mar_nichka_0010_descr">
+		<text>Rozhodl jsem si odloћit svщj lup do paшezu nedaleko od uschlэho stromu. Zase si ho vezmu, aћ se budu louиit s baћinama.</text>
+	</string>
+	<string id="st_mar_nichka_0011">
+		<text>Klбda u stoћбru</text>
+	</string>
+	<string id="st_mar_nichka_0011_descr">
+		<text>Naprasklб klбda kousek od stoћбru vysokэho napмtн.</text>
+	</string>
+	<string id="st_mar_nichka_0012">
+		<text>Hrob s plynovou maskou</text>
+	</string>
+	<string id="st_mar_nichka_0012_descr">
+		<text>Mrtvэm dщvмшuji vнc neћ ћivэm. Schovбvбm si vмci na hшbitovм do toho hrobu nejvнc vlevo. Je na nмm plynovб maska.</text>
+	</string>
+	<string id="st_mar_nichka_0013">
+		<text>Dшevмnэ kшнћ</text>
+	</string>
+	<string id="st_mar_nichka_0013_descr">
+		<text>Mбm nмco mбlo odloћenэho na horљн иasy. Je to v jedinэm hrobм na kostelnнm kшbitovм, kterej mб dшevмnej kшнћ.</text>
+	</string>
+	<string id="st_mar_nichka_0014">
+		<text>Dшнvн u kostela</text>
+	</string>
+	<string id="st_mar_nichka_0014_descr">
+		<text>Pane na nebesнch, opatruj prosнm mй cennosti. Uloћil jsem si je do prasklй klбdy na hromadм dшнvн.</text>
+	</string>
+	<string id="st_mar_nichka_0015">
+		<text>Skrэљ v rбkosн</text>
+	</string>
+	<string id="st_mar_nichka_0015_descr">
+		<text>Nechal jsem svщj batoh v rбkosн nedaleko u kostela. Teп ho nemщћu najнt, a dokonce ani pшesnэ souшadnice na PDA nepomбhajн.</text>
+	</string>
+	<string id="st_mar_nichka_0016">
+		<text>Trezor v hlнnм</text>
+	</string>
+	<string id="st_mar_nichka_0016_descr">
+		<text>Vљechny svэ nakradenэ vмci jsem schoval do trezoru v baћinм, kousek od kostela. Teп aќ je nмkdo zkusн ukrбst mnм!</text>
+	</string>
+	<string id="st_mar_nichka_0017">
+		<text>Vak pod kamny</text>
+	</string>
+	<string id="st_mar_nichka_0017_descr">
+		<text>Co majн spoleиnэho ћhavэ kamna a ћhavб koиka? Chvнli se kolem nich ochomejtej a mohl bys vzplanout! Ha, to je sranda. No... a pod podobnэm sporбkem jsem si schoval vak s koшistн.</text>
+	</string>
+	<string id="st_mar_nichka_0018">
+		<text>Vмci v Zaporoћci</text>
+	</string>
+	<string id="st_mar_nichka_0018_descr">
+		<text>Pщlku noci jsme se schovбvali v tom zaboшenэm Zaporoћci, neћ nбs kluci pшiљli zachrбnit. Zprvu jsem nevмdмl, kdo se to k nбm blнћн, tak jsem pro jistotu ty cennosti nмkde tady schoval. Mмl bych se pro nм vrбtit a zase si je vzнt, dokud jeљtм svнtн slunko.</text>
+	</string>
+	<string id="st_mar_nichka_0019">
+		<text>Paшez u kolejн</text>
+	</string>
+	<string id="st_mar_nichka_0019_descr">
+		<text>Zrovna jsme љli podйl kolejн, kdyћ jsme zaslechli vэstшely. Honem jsem hodil svэ vмci do paшezu za nмjakэma balvanama, jen tak pro jistotu.</text>
+	</string>
+	<string id="st_mar_nichka_0020">
+		<text>Trubka z nбdrћe</text>
+	</string>
+	<string id="st_mar_nichka_0020_descr">
+		<text>S klukama jsme si schovali krбmy do vyъstмnн trubky, takovэ tэ s ventilem, kterб vede z nбdrћe do baћin.</text>
+	</string>
+	<string id="st_mar_nichka_0021">
+		<text>Batoh u matrace</text>
+	</string>
+	<string id="st_mar_nichka_0021_descr">
+		<text>Ten magor Lecha se uloћil ke spбnku na matraci v dмravэ lodi, a kdyћ se odsaп dekoval, zapomnмl tam batoh.</text>
+	</string>
+	<string id="st_mar_nichka_0022">
+		<text>Bedna v kuchyni</text>
+	</string>
+	<string id="st_mar_nichka_0022_descr">
+		<text>Odloћil jsem si nмkolik vмciиek, kterэ pozdмji prodбm. Jsou v modrэ bednм v letnн kuchyni.</text>
+	</string>
+	<string id="st_mar_nichka_0023">
+		<text>Ъkryt v klбdм</text>
+	</string>
+	<string id="st_mar_nichka_0023_descr">
+		<text>Neћ jsem vyrazil na dalљн zбtah do baћin, potшeboval jsem si trochu odlehиit batoh. Vмci jsem si schoval do puklэ klбdy.</text>
+	</string>
+	<string id="st_mar_nichka_0024">
+		<text>Skrэљ v rozvadмиi</text>
+	</string>
+	<string id="st_mar_nichka_0024_descr">
+		<text>Rozvadми u transformбtorovэ mнstnosti na statku. Nebezpeин! Nevstupovat!</text>
+	</string>
+	<string id="st_mar_nichka_0025">
+		<text>Elektrickэ rozvadми u zastбvky</text>
+	</string>
+	<string id="st_mar_nichka_0025_descr">
+		<text>Kdyћ jsem zaинnal u Gregovy tlupy, vћdycky jsem si odklбdal cetky v elektrickэm rozvadмиi na zastбvce. Kdo vн, tшeba se mi jednoho dne budou hodit.</text>
+	</string>
+	<string id="st_mar_nichka_0026">
+		<text>Batoh na pмљinм</text>
+	</string>
+	<string id="st_mar_nichka_0026_descr">
+		<text>Jednou jsem na pмљinм potkal mutanta a nemмl jsem u sebe nic neћ nщћ. Zahodil jsem batoh a skoиil jsem masu na zбda. Nмjakэ typovй mм potom naљli asi kilometr odsaп. Mмl bych se nмkdy vrбtit pro bбgl.</text>
+	</string>
+	<string id="st_mar_nichka_0027">
+		<text>Paшez u mladйho stromku</text>
+	</string>
+	<string id="st_mar_nichka_0027_descr">
+		<text>Neopatrnэ blbeиky voљkube Hбk. Jб si hezky budu syslit svэ poklady po troљkбch a prщbмћnм je uklбdat do paшezu u mladэho stromku.</text>
+	</string>
+	<string id="st_mar_nichka_0028">
+		<text>Trezor za suchэm stromem</text>
+	</string>
+	<string id="st_mar_nichka_0028_descr">
+		<text>Odklбdбm si cennosti, abych je potom mohl vymмnit za lйky pro syna. Jsou v trezoru za suchэm stromem. Jen co jich budu mнt dost, vypadnu odsud.</text>
+	</string>
+	<string id="st_mar_nichka_0029">
+		<text>Skrэљ v kшovн</text>
+	</string>
+	<string id="st_mar_nichka_0029_descr">
+		<text>Vylezl jsem z baћin tak vyиerpanej, ћe jsem se skoro neudrћel na nohou. Vмci jsem odhodil hned vedle pмљiny v kшovн.</text>
+	</string>
+	<string id="st_mar_nichka_0030">
+		<text>Skrэљ pod nбklaпбkem</text>
+	</string>
+	<string id="st_mar_nichka_0030_descr">
+		<text>Je to pod mostem v kufшнku na nбшadн pod nбklaпбkem. </text>
+	</string>
+	<string id="st_mar_nichka_0031">
+		<text>Uprostшed moибlu</text>
+	</string>
+	<string id="st_mar_nichka_0031_descr">
+		<text>Uprostшed moибlu jsem si nechal krabici s vмcma, leћн na kusu betonu, ze kterэho иouhajн kovovэ pruty. Aћ se budu vracet do svмta, dojdu si pro nм.</text>
+	</string>
+	<string id="st_mar_nichka_0032">
+		<text>Krabiиka v kamnech</text>
+	</string>
+	<string id="st_mar_nichka_0032_descr">
+		<text>Vмci jsou v krabiиce, krabiиka je v kamnech, kamna jsou v polorozpadlйm domм a ten dщm je v baћinбch.</text>
+	</string>
+	<string id="st_mar_nichka_0033">
+		<text>Trezor v rбkosн</text>
+	</string>
+	<string id="st_mar_nichka_0033_descr">
+		<text>Nechбpu sice, jak se takovejhle trezor dostal sem do moибlu, ale nedokбzal jsem odolat. Odteп si v nмm budu schovбvat vмci.</text>
+	</string>
+	<string id="st_mar_nichka_0034">
+		<text>Paшez v baћinм</text>
+	</string>
+	<string id="st_mar_nichka_0034_descr">
+		<text>Љйf шekl, aќ si toho s sebou moc nebereme. Schoval jsem si krбmy pod paшez nedaleko vodбrenskэ vмћe, v kшovн za stromem.</text>
+	</string>
+	<string id="st_mar_nichka_0035">
+		<text>Pahэl v baћinм</text>
+	</string>
+	<string id="st_mar_nichka_0035_descr">
+		<text>Kdyћ jsem prochбzel baћinama, vљiml jsem si uhnilэho pahэlu poblнћ dшevмnэ ploљiny. Napadlo mм, ћe by to byla dobrб schovka na mэ "poklady".</text>
+	</string>
+	<string id="st_mar_nichka_0036">
+		<text>Batoh na ostrovм</text>
+	</string>
+	<string id="st_mar_nichka_0036_descr">
+		<text>Ta pшнљera z baћin se mi povмsila na paty. Po nмkolikakilometrovйm maratonu jsem uћ byl tak unavenэ, ћe jsem musel na jednom ostrovм zahodit batoh.</text>
+	</string>
+	<string id="st_mar_nichka_0037">
+		<text>Poklop u stanice</text>
+	</string>
+	<string id="st_mar_nichka_0037_descr">
+		<text>Schoval jsem si svэ serepetiиky pod jeden z poklopщ vedle stanice, kdyby mм nбhodu nмkdo chtмl okrбst.</text>
+	</string>
+	<string id="st_mar_nichka_0038">
+		<text>Batoh v trubce</text>
+	</string>
+	<string id="st_mar_nichka_0038_descr">
+		<text>Ten иernej batoh napмchovanej do velkэ trubky je to poslednн, co zbylo z Mitka.</text>
+	</string>
+	<string id="st_mar_nichka_0039">
+		<text>Bedna v kabinм</text>
+	</string>
+	<string id="st_mar_nichka_0039_descr">
+		<text>V moибle jsem naљel nмин bednu, nandal jsem si do nн svoje vмci a schoval jsem ho v kabinм jeшбbu. Musнm chvнli poиkat, neћ se vмci uklidnн.</text>
+	</string>
+	<string id="st_mar_nichka_0040">
+		<text>Batoh pod vagуnem</text>
+	</string>
+	<string id="st_mar_nichka_0040_descr">
+		<text>Potшeboval jsem zdrhnout, tak jsem odlehиil nбklad a strиil svщj batoh pod vagуn na jednэ z kolejн.</text>
+	</string>
+	<string id="st_mar_nichka_0041">
+		<text>Na ploљinм kopule</text>
+	</string>
+	<string id="st_mar_nichka_0041_descr">
+		<text>Nechal jsem si batoh na ploљinм kostelnн kopule. Musel jsem vypadat jak kamzнk, jak jsem tam skбkal po stшeљe.</text>
+	</string>
+	<string id="st_mar_nichka_0042">
+		<text>Pod mostem</text>
+	</string>
+	<string id="st_mar_nichka_0042_descr">
+		<text>Ukryli jsme se pod mostem a naљi pronбsledovatelй probмhli nad nбma. Svщj batoh jsem tam radљi nechal schovanej pod nosnнkem.</text>
+	</string>
+	<string id="st_mar_nichka_0043">
+		<text>Mezi balvany</text>
+	</string>
+	<string id="st_mar_nichka_0043_descr">
+		<text>Schoval jsem svщj batoh do љtмrbiny mezi tшi balvany, jinak bych mohl nмjakэm chamtivcщm pшipadat jako vhodnб koшist.</text>
+	</string>
+	<string id="st_mar_nichka_0044">
+		<text>Pahэl pod balvany</text>
+	</string>
+	<string id="st_mar_nichka_0044_descr">
+		<text>Poшбd jsem nemohl najнt vhodnou skrэљ pro svэ cennosti a nakonec jsem pod nмjakэma balvanama v rбkosн naљel dшevмnej pahejl s dutinou.</text>
+	</string>
+	<string id="st_mil_cross_1">
+		<text>Vмci v hrobм</text>
+	</string>
+	<string id="st_mil_cross_1_descr">
+		<text>Pohшbil jsem svэ vмci do hrobu pod kшнћem. Nechќ odpoинvajн v pokoji, dokud se pro nм nevrбtнm.</text>
+	</string>
+	<string id="st_mil_cross_2">
+		<text>Kшнћ u stromu</text>
+	</string>
+	<string id="st_mil_cross_2_descr">
+		<text>Vyrobil jsem si skrэљ z jednoho hrobu u stromu.</text>
+	</string>
+	<string id="st_mil_instrument_case_01">
+		<text>Schrбnka v kamnech</text>
+	</string>
+	<string id="st_mil_instrument_case_01_descr">
+		<text>Zastrиil jsem malou schrбnku do kamen v rozvalenэ chatrиi. Budu si tam prщbмћnм schovбvat to nejcennмjљн.</text>
+	</string>
+	<string id="st_mil_pipe_02">
+		<text>Trubka u vchodu do zбkladny</text>
+	</string>
+	<string id="st_mil_pipe_02_descr">
+		<text>Vмci schovбvбm podporuинkovi hezky pod nosem. Jsou v trubce za strбћnou budkou, hned u vchodu do zбkladny.</text>
+	</string>
+	<string id="st_mil_rucksack_01">
+		<text>Batoh u komнna</text>
+	</string>
+	<string id="st_mil_rucksack_01_0000">
+		<text>Skrэљ v Moskviиi</text>
+	</string>
+	<string id="st_mil_rucksack_01_0000_descr">
+		<text>Aћ se Max vrбtн, dбm mu jeho batoh. Do tэ doby ho nechбm schovanej ve starэm Moskviиi.</text>
+	</string>
+	<string id="st_mil_rucksack_01_descr">
+		<text>Nechal jsem si batoh vedle komнna na pщdм rozpadlэho domu. Nebejt tмch upнrщ ve vesnici, byl bych se pro nмj vrбtil.</text>
+	</string>
+	<string id="st_mil_rucksack_02">
+		<text>Batoh pod pшнvмsem</text>
+	</string>
+	<string id="st_mil_rucksack_02_0000">
+		<text>Skrэљ pod mostem</text>
+	</string>
+	<string id="st_mil_rucksack_02_0000_descr">
+		<text>Batoh je ve vagуnu pod mostem poblнћ armбdnн zбkladny.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0001">
+		<text>Puklina v tunelu</text>
+	</string>
+	<string id="st_mil_rucksack_02_0001_descr">
+		<text>Kdyћ zaиalo bejt vedro, chtмl jsem odhodit svщj batoh do pukliny nad tunelem, jenћe on se mi zasekl o ћeleznej prut. Љkoda, ћe jsem musel zdrhnout bez nмj - mмl bych se tam nмkdy vrбtit.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0002">
+		<text>Skrэљ v zбchodм</text>
+	</string>
+	<string id="st_mil_rucksack_02_0002_descr">
+		<text>Pochybuji, ћe by nмkdo hledal cennosti ve vesnickэm zбchodм. A prбvм proto jsem si ty svoje do jednoho zбchodu schoval.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0003">
+		<text>Ъkryt u plotu</text>
+	</string>
+	<string id="st_mil_rucksack_02_0003_descr">
+		<text>Odhodil jsem batoh chudбka Koljana za hangбrem. Mмl jsem co dмlat, abych utбhl vlastnн nбklad.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0004">
+		<text>Batoh pod stromem</text>
+	</string>
+	<string id="st_mil_rucksack_02_0004_descr">
+		<text>Sotva jsem spatшil tu pшнљeru u vodбrenskэ vмћe, zahodil jsem svщj bбgl pod padlej strom jako horkou bramboru. Utнkat nalehko je dost zбsadnн pro zбchranu ћivota.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0005">
+		<text>Batoh ve sklepм</text>
+	</string>
+	<string id="st_mil_rucksack_02_0005_descr">
+		<text>Po tom zбшenн se mi tak motala palice, ћe jsem si radљi ve sklepм odloћil batoh. Vrбtнm se pro nмj, aћ se mi zase udмlб lнp.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0006">
+		<text>Zapomenutэ batoh</text>
+	</string>
+	<string id="st_mil_rucksack_02_0006_descr">
+		<text>Vэbuch roztшнљtil zeп na kousниky a uvмznil mм pod sutinama. Musel jsem si sundat batoh, abych se z toho vysoukal a mohl jim rozkopat drћky. Byla to takovб prиa, ћe jsem pak na bбgl ъplnм zapomnмl. Jeљtм tam nejspнљ bude...</text>
+	</string>
+	<string id="st_mil_rucksack_02_0007">
+		<text>Ъkryt v kuchyni</text>
+	</string>
+	<string id="st_mil_rucksack_02_0007_descr">
+		<text>Zelenej bбgl v kamnech v jednom domм v opuљtмnэ vesnici. Souшadnice zaznamenбny.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0008">
+		<text>Skrэљ pod љutrem</text>
+	</string>
+	<string id="st_mil_rucksack_02_0008_descr">
+		<text>Uћ mм pшestalo bavit dмlat mezka, takћe jsem si bбgl s horkэm zboћнm schoval do kшovн mezi dva љutrбky.</text>
+	</string>
+	<string id="st_mil_rucksack_02_descr">
+		<text>Vidмl jsem toho tэpka, jak tмsnм pшed pшнchodem zбшenн zahazuje svщj batoh pod pшнvмs. Mмl bych to omrknout.</text>
+	</string>
+	<string id="st_mil_trees_01_0001">
+		<text>Klбda pod kameny</text>
+	</string>
+	<string id="st_mil_trees_01_0001_descr">
+		<text>Hned vedle tмch velkэch kamenщ leћн klбda a v nн, hezky skrytэ pшed slнdivэmi zraky, jsou mэ cennosti.</text>
+	</string>
+	<string id="st_mil_trees_log_01">
+		<text>Prasklэ kmen</text>
+	</string>
+	<string id="st_mil_trees_log_01_0000">
+		<text>Skrэљ na sanнch</text>
+	</string>
+	<string id="st_mil_trees_log_01_0000_descr">
+		<text>Skrэљ ve velkйm kmeni hned vedle sanн</text>
+	</string>
+	<string id="st_mil_trees_log_01_0001">
+		<text>Klбda pod kameny</text>
+	</string>
+	<string id="st_mil_trees_log_01_0001_descr">
+		<text>Hned vedle tмch velkэch kamenщ leћн klбda a v nн, hezky skrytэ pшed slнdivэmi zraky, jsou mэ cennosti.</text>
+	</string>
+	<string id="st_mil_trees_log_01_descr">
+		<text>Schoval jsem si zboћн pod borovicн, hned vedle padlэho stoћбru.</text>
+	</string>
+	<string id="st_mil_trees_stump_01">
+		<text>Paшez za betonovэmi panely.</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0000">
+		<text>Paшez u plotu</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0000_descr">
+		<text>Vitjok mi prej nechal mщj podнl z koшisti v dншe jednoho starэho paшezu. Je to mezi plotem vojenskэ zбkladny a malэm moибlem.</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0001">
+		<text>Paшez u plotu</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0001_descr">
+		<text>Vitjok mi prej nechal mщj podнl z koшisti v dншe jednoho starэho paшezu. Je to mezi plotem vojenskэ zбkladny a malэm moибlem.</text>
+	</string>
+	<string id="st_mil_trees_stump_01_descr">
+		<text>Paшez mezi dvмma balvany, hned za hromadou betonovэch panelщ.</text>
+	</string>
+	<string id="st_red_box_01_0000">
+		<text>Modrб bedna</text>
+	</string>
+	<string id="st_red_box_01_0000_descr">
+		<text>Zboћн je v modrэ bednм na druhэm patшe toho barбku vedle kapary.</text>
+	</string>
+	<string id="st_red_pipe_02">
+		<text>Trubka ve vozнku</text>
+	</string>
+	<string id="st_red_pipe_02_descr">
+		<text>Schoval jsem svэ klumpy do trubky a tu jsem poloћil do rezavэho vozнku ve starэm lomu.</text>
+	</string>
+	<string id="st_red_rucksack_01">
+		<text>Иernэ batoh</text>
+	</string>
+	<string id="st_red_rucksack_01_1_0000">
+		<text>Batoh na vмtvi</text>
+	</string>
+	<string id="st_red_rucksack_01_1_0000_descr">
+		<text>Utekl jsem na strom pшed nмjakэm mutantem. Poшбdnм jsem ho nevidмl, ale slyљel jsem ho vнc neћ dost. Batoh jsem nechal na vмtvi, seskoиil jsem a vzal jsem do zajeинch.</text>
+	</string>
+	<string id="st_red_rucksack_01_descr">
+		<text>Sakra prбce! Kdyћ jsem utнkal z lesa, ztratil jsem svщj bбgl. Vнm sice, kde to bylo, ale ani nбhodou se tam nevrбtнm, leda ћe by to mнsto napшed pokropili napalmem.</text>
+	</string>
+	<string id="st_red_rucksack_01_on_tree">
+		<text>Strom u plotu</text>
+	</string>
+	<string id="st_red_rucksack_01_on_tree_descr">
+		<text>Svinм upнr. Honil mм aћ k plotu a potom za mnou lezl na strom. Bбgl jsem musel nechat na stromм, jinak bych plot nepшeskoиil.</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_2">
+		<text>Batoh v jeskyni</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_2_descr">
+		<text>Vplнћil jsem se do jeskynм, abych se pшes noc v klidu vyspal. Ze spбnku mм vytrhl upнr, co mi tahal za batoh. Vysprintoval jsem ven jako olympijskej zбvodnнk, ale batoh zщstal u upнra.</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_3">
+		<text>Balvan u strћe</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_3_descr">
+		<text>Nмkolik psщ mм zahnalo do kouta u strћe, takћe jsem strиil batoh pod nмjakej balvan a zkusil jsem prorazit.</text>
+	</string>
+	<string id="st_red_rucksack_02">
+		<text>Batoh v kшovн</text>
+	</string>
+	<string id="st_red_rucksack_02_0000">
+		<text>Batoh v lese</text>
+	</string>
+	<string id="st_red_rucksack_02_0000_descr">
+		<text>Cнtil jsem se jako v hororovэm filmu. Ani nevнm, jak jsem z toho vyvбzl... Ztratil jsem batoh, ale vнm jen o jedinэm mнstм, kde jsem ho mohl zahodit.</text>
+	</string>
+	<string id="st_red_rucksack_02_0001">
+		<text>Batoh pod kameny</text>
+	</string>
+	<string id="st_red_rucksack_02_0001_descr">
+		<text>Koljщv bбgl byl moc tмћkej a nedal se unйst, tak jsem ho radљi schoval pod nмjakэ kameny u cesty k limanskэmu mostu.</text>
+	</string>
+	<string id="st_red_rucksack_02_4">
+		<text>Prokletэ lup</text>
+	</string>
+	<string id="st_red_rucksack_02_4_descr">
+		<text>Ten batoh uћ toho teda zaћil! Vљichni jeho bэvalн majitelй jsou mrtvн. Zahodil jsem ho, uћ tu prokletou vмc nechci ani vidмt.</text>
+	</string>
+	<string id="st_red_rucksack_02_5">
+		<text>Divnй mнsto</text>
+	</string>
+	<string id="st_red_rucksack_02_5_descr">
+		<text>Zdшнml jsem si vedle љutrбku, pod hlavou bбgl. Rбno jsem se probral na ъplnм jinэm mнstм. Snaћil jsem se ten љutr najнt, ale z nмjakэho dщvodu jsem poшбd chodil v kruzнch.</text>
+	</string>
+	<string id="st_red_rucksack_02_6">
+		<text>Batoh pod lavinou</text>
+	</string>
+	<string id="st_red_rucksack_02_6_descr">
+		<text>Ze strћe u vэchodu z Rudэho lesa se uvolnilo nмkolik kamenщ a sesunuly se pшнmo na mм. Zpoza nich se na mм zaиalo sбpat nмco velkэho иernэho. Urychlenм jsem se zdekoval, ale vмci jsem musel zahodit pшi ъstupu.</text>
+	</string>
+	<string id="st_red_rucksack_02_descr">
+		<text>Prodнrali jsme se kшovнm a mnм se pшi tom nмjak podaшilo pшijнt o batoh.</text>
+	</string>
+	<string id="st_red_rucksack_02_in_stone">
+		<text>Ztracenэ batoh</text>
+	</string>
+	<string id="st_red_rucksack_02_in_stone_descr">
+		<text>Ten kretйn Abe ztratil mщj bбgl mezi nмjakэma kamenama, zhruba v tмhle mнstech. Teп mб strach se pro nмj vracet. Tomu шнkбm kбmoљ!</text>
+	</string>
+	<string id="st_red_rucksack_02_in_tonnel">
+		<text>Skrэљ v dщlnн galerii</text>
+	</string>
+	<string id="st_red_rucksack_02_in_tonnel_descr">
+		<text>Schoval jsem si artefakty na samэm konci opuљtмnэ dщlnн galerie.</text>
+	</string>
+	<string id="st_red_sekret_trees_stump_01_0000">
+		<text>Paшez v divoиinм</text>
+	</string>
+	<string id="st_red_sekret_trees_stump_01_0000_descr">
+		<text>Ztratil jsem se v Rudэm lese a odloћil jsem si tam svэ krбmy do dнry v jednom paшezu.</text>
+	</string>
+	<string id="st_red_trees_log_01">
+		<text>Vмci v dutйm stromм</text>
+	</string>
+	<string id="st_red_trees_log_01_descr">
+		<text>Cestou do Limansku jsme si s Biиem schovali vмci do dutiny v padlэm stromм, hned u vэchodu z rezervace.</text>
+	</string>
+	<string id="st_red_trees_stump_01">
+		<text>Prodмravмlэ paшez</text>
+	</string>
+	<string id="st_red_trees_stump_01_0000">
+		<text>Paшez pшed lesem</text>
+	</string>
+	<string id="st_red_trees_stump_01_0000_descr">
+		<text>Nevнme, co nбs v tomhle lese иekб... tak jsme si radљi odloћili pшebyteиnej nбklad ve shnilэm paшeze.</text>
+	</string>
+	<string id="st_red_trees_stump_01_2_0000">
+		<text>Paшez u strћe</text>
+	</string>
+	<string id="st_red_trees_stump_01_2_0000_descr">
+		<text>Vмci jsme si odloћili kousek od tэ sviтskэ anomбlie. A pak jsme do nн vyrazili. Je tak obrovskб, ћe v nн urиitм najdeme nмkolik vбћnм cennэch artefaktщ.</text>
+	</string>
+	<string id="st_red_trees_stump_01_3">
+		<text>Velkэ paшez</text>
+	</string>
+	<string id="st_red_trees_stump_01_3_descr">
+		<text>Seva mi povмdмl o velkэm dutэm paшezu v Rudэm lese. Zkusнm ho najнt a mrknout se, co je uvnitш.</text>
+	</string>
+	<string id="st_red_trees_stump_01_4">
+		<text>Skrэљ v paшezu</text>
+	</string>
+	<string id="st_red_trees_stump_01_4_descr">
+		<text>S Genem jsme si zastrиili pбr drobnostн do paшezu v Rudэm lese.</text>
+	</string>
+	<string id="st_red_trees_stump_01_7">
+		<text>Paшez u strћe</text>
+	</string>
+	<string id="st_red_trees_stump_01_7_descr">
+		<text>Padal jsem ze strћe, ale zarazil jsem se o paшez. Tak jsem si v nмm u tэ pшнleћitosti schoval vмci.</text>
+	</string>
+	<string id="st_red_trees_stump_01_descr">
+		<text>Zaslechl jsem kшik a vytн, tak jsem si zastrиil vercajk do nejbliћљнho dutэho paшezu a zdekoval jsem se.</text>
+	</string>
+	<string id="st_red_zaz968">
+		<text>Zaporoћec u vchodu do dolu</text>
+	</string>
+	<string id="st_red_zaz968_descr">
+		<text>Napмchoval jsem svэ krбmy pod sedadlo toho Zaporoћce, co stojн u vchodu do dolu. Aћ se budu vracet za Sidoroviиem, vyzvednu si je.</text>
+	</string>
+	<string id="st_val_seif_02">
+		<text>Trezor na statku</text>
+	</string>
+	<string id="st_yan_trees_log_01_0001">
+		<text>Klбda za garбћemi</text>
+	</string>
+	<string id="st_yan_trees_log_01_0001_descr">
+		<text>Ukryl jsem si ибst lupu do klбdy za garбћemi, hned vedle Jantaru. Nic lepљнho jsem v tom spмchu nenaљel.</text>
+	</string>
+	<string id="val_equipment_rucksack_01_02">
+		<text>Skrэљ pod mladou jedlн</text>
+	</string>
+	<string id="val_equipment_rucksack_01_02_descr">
+		<text>Nedaleko od moибlu jsem si zastrиil batoh pod mladou jedli vedle nмjakэ trubky.</text>
+	</string>
+	<string id="esc_treasure_weapon_prisoner_descr">
+		<text>V betonovй trubce je ukrytэ malэ trezor. Schoval jsem si v nмm pбr vмcн na horљн иasy.</text>
+	</string>
+	<string id="esc_treasure_weapon_prisoner_name">
+		<text>Skrэљ majora Chaletskйho</text>
+	</string>
+	<string id="gar_treasure_quest_digger_reward">
+		<text>Starб skrэљ</text>
+	</string>
+	<string id="gar_treasure_quest_digger_reward_descr">
+		<text>V tйhle skrэљi si kopбиi dшнve schovбvali koшist.</text>
+	</string>
+	<string id="gar_treasure_quest_old_pda">
+		<text>Skшнтka na nбшadн</text>
+	</string>
+	<string id="gar_treasure_quest_old_pda_descr">
+		<text>To starэ PDA je pod faleљnэm dnem ve skшнтce na nбшadн.</text>
+	</string>
+	<string id="gar_treasure_quest_reward_in_anomaly">
+		<text>Skrэљ v anomбlii</text>
+	</string>
+	<string id="gar_treasure_quest_reward_in_anomaly_descr">
+		<text>Pokud Jуga nelhal, tak ve skrэљi mezi anomбlii je schovanб speciбlnн zbraт.</text>
+	</string>
+	<string id="gar_treasure_quest_smuggler_weapons">
+		<text>Kufr auta</text>
+	</string>
+	<string id="gar_treasure_quest_smuggler_weapons_descr">
+		<text>Podle Stringova je v kufru auta zбsilka paљerбckйho zboћн.</text>
+	</string>
+	<string id="st_esc_seif_03_0000_descr">
+		<text>Zil schovбvб svэ krбmy v trezoru na neutrбlnн zбkladnм v Kordonu.</text>
+	</string>
+	<string id="st_mar_q_n_10">
+		<text>Skrэљ v baћinбch</text>
+	</string>
+	<string id="st_mar_q_n_10_descr">
+		<text>V recyklaиnнm podniku v baћinбch se nachбzн skrэљ s velmi cennэmi vмcmi. Aќ uћ jde o cokoliv, teп to patшн tobм.</text>
+	</string>
+	<string id="st_mar_q_n_11">
+		<text>Trezor s odmмnou</text>
+	</string>
+	<string id="st_mar_q_n_11_descr">
+		<text>Brбcho, tyhle klниe otevнrajн sejf s nминm vбћnм cennэm. Teda aspoт tak jsem to slyљel...</text>
+	</string>
+	<string id="st_mar_q_n_12">
+		<text>Odmмna</text>
+	</string>
+	<string id="st_mar_q_n_12_descr">
+		<text>Naљe tajnй skrэљe na tvй penнze. Neprodбvбme nikomu jinэmu neћ tobм.</text>
+	</string>
+	<string id="st_mar_q_n_13">
+		<text>Malб skшнтka</text>
+	</string>
+	<string id="st_mar_q_n_13_descr">
+		<text>V tom pшнpadм si vezmi tyhle souшadnice od malэ skшнтky s pбr cennostma. Najdeљ ji u zdi za odpadkovэm koљem.</text>
+	</string>
+	<string id="st_mar_q_n_14">
+		<text>Trezor pod mostem</text>
+	</string>
+	<string id="st_mar_q_n_14_descr">
+		<text>Nebudu tм obtмћovat svэma historkama. Ty vмci najdeљ v trezoru pod mostem.</text>
+	</string>
+	<string id="st_mar_q_n_6">
+		<text>Batoh jako platba</text>
+	</string>
+	<string id="st_mar_q_n_6_descr">
+		<text>Obsah toho batohu, jehoћ souшadnice ti prбvм nahrбvбm do PDAиka, mб pшinejmenљнm takovou cenu jako ty penнze, kterэ mi vydмlбvбљ.</text>
+	</string>
+	<string id="st_mar_q_n_7">
+		<text>Trezor na kуd</text>
+	</string>
+	<string id="st_mar_q_n_7_descr">
+		<text>Jako platbu si mщћeљ klidnм vzнt vмci schovanэ v tomhle trezoru v baћinбch.</text>
+	</string>
+	<string id="st_mar_q_n_8">
+		<text>Lup jako platba</text>
+	</string>
+	<string id="st_mar_q_n_8_descr">
+		<text>Pod balvanama najdeљ иernej batoh a v nмm nмjakej ten lup. Vezmi si ho, aќ mщћem tuhle transakci povaћovat za vyшнzenou.</text>
+	</string>
+	<string id="st_mar_q_n_9">
+		<text>Malб bedna u vмћe</text>
+	</string>
+	<string id="st_mar_q_n_9_descr">
+		<text>Jeden dщvмryhodnej zdroj mi povмdмl o cennэch vмcech schovanэch v niин bednм pod vмћн.</text>
+	</string>
+	<string id="st_mar_q_t_a_15">
+		<text>Batoh mrtvйho vojбka</text>
+	</string>
+	<string id="st_mar_q_t_a_15_descr">
+		<text>Dostaneљ mnohem vнc, neћ kolik jsi zaplatil. Svojн odmмnu najdeљ v batohu vedle mrtvoly vojбka.</text>
+	</string>
+	<string id="st_mar_q_t_a_3">
+		<text>Dalљн pobнhбnн</text>
+	</string>
+	<string id="st_mar_q_t_a_3_descr">
+		<text>Jdi jeљtм o mнli dбl, najdi batoh mrtvэho vojбka a tvэ nбklady se ti vrбtн zpмt i s ъrokama.</text>
+	</string>
+	<string id="st_mar_q_t_l_16">
+		<text>Nesnadnб odmмna</text>
+	</string>
+	<string id="st_mar_q_t_l_16_descr">
+		<text>Odmмnнm se ti informacema o cennэ, ale ponмkud nesnadnэ koшisti. Mмj se ale na pozoru – jejн minulej majitel odmнtl uposlechnout mэ rady...</text>
+	</string>
+	<string id="st_mar_q_t_l_1">
+		<text>Batoh na mrtvole</text>
+	</string>
+	<string id="st_mar_q_t_l_1_descr">
+		<text>Mбm pro tebe tip, jak si trochu pшivydмlat: seber mrtvole ze zad batoh.</text>
+	</string>
+	<string id="st_mar_q_t_l_2">
+		<text>Paragбn</text>
+	</string>
+	<string id="st_mar_q_t_l_2_descr">
+		<text>Tu chcнplotinu najdeљ na tмhle souшadnicнch – tvoje vмci mб v batohu.</text>
+	</string>
+	<string id="st_mar_q_t_l_4">
+		<text>Mrtvola bojovnнka</text>
+	</string>
+	<string id="st_mar_q_t_l_4_descr">
+		<text>No a ty informace: jeden mladej bojovnнk „odpoинvajнcн“ v kшovн ti hlнdб tvщj batoh.</text>
+	</string>
+	<string id="st_mar_q_t_l_5">
+		<text>Batoh pod potrubнm</text>
+	</string>
+	<string id="st_mar_q_t_l_5_descr">
+		<text>Vezmi si tyhle souшadnice – ukazujou na batoh vedle mrtvoly stalkera pod potrubнm.</text>
+	</string>
+	<string id="st_esc_q10_n">
+		<text>Paшez u ostnatйho drбtu</text>
+	</string>
+	<string id="st_esc_q10_n_descr">
+		<text>Dobrб, kбmo, jestli chceљ svojн odmмnu, prohledej paшez nedaleko ostnatэho drбtu.</text>
+	</string>
+	<string id="st_esc_q1_n">
+		<text>Zelenб bedna</text>
+	</string>
+	<string id="st_esc_q1_n_descr">
+		<text>Tyhle vмciиky jsem schoval speciбlnм pro tebe. Jsou v armбdnн bednм na okraji Kordonu. Vloћil jsem do nich svэ srdce!</text>
+	</string>
+	<string id="st_esc_q2_n">
+		<text>Malэ osamмlэ batoh</text>
+	</string>
+	<string id="st_esc_q2_n_descr">
+		<text>Za svou љtмdrost budeљ velkoryse odmмnмn! He he he. Tady najdeљ mojн skrэљ – vypoшбdej se s nн a s jejнm obsahem, jakkoliv uznбљ za vhodnй.</text>
+	</string>
+	<string id="st_esc_q3_t_l">
+		<text>Silnice do baћin</text>
+	</string>
+	<string id="st_esc_q3_t_l_descr">
+		<text>Jб si vezmu tvэ prachy, ty se vezmi mэ vмci. Najdeљ je u silnice do baћin, hned vedle mrtvoly.</text>
+	</string>
+	<string id="st_esc_q4_t_a">
+		<text>Odmмna pro hrdinu</text>
+	</string>
+	<string id="st_esc_q4_t_a_descr">
+		<text>Tvщj nбkup tм иekб v batohu vedle mrtvэho tмla jednoho neљќastnнka. Podнvej se po nмm u starэ elektrickэ lokomotivy.</text>
+	</string>
+	<string id="st_esc_q5_n">
+		<text>Kompenzace</text>
+	</string>
+	<string id="st_esc_q5_n_descr">
+		<text>Ty vмci najdeљ na tмhle souшadnicнch v batohu pod stromem.</text>
+	</string>
+	<string id="st_esc_q6_n">
+		<text>Pшнstup povolen</text>
+	</string>
+	<string id="st_esc_q6_n_descr">
+		<text>Mojн ибst dohody najdeљ uvnitш ovlбdacнho panelu vэtahu. Nemusнљ se niиeho bбt, ћбdnб elektrika tam nenн. I kdyћ to samэ uћ nemщћu шнct o anomбliнch...</text>
+	</string>
+	<string id="st_esc_q7_n">
+		<text>Bedэnka pod vagуnem</text>
+	</string>
+	<string id="st_esc_q7_n_descr">
+		<text>Tvэm cнlem je obsah bedэnky zastrиenэ pod vagуnem.</text>
+	</string>
+	<string id="st_esc_q8_n">
+		<text>Faleљnэ hrob</text>
+	</string>
+	<string id="st_esc_q8_n_descr">
+		<text>Vykopбvat hroby je љpatnй. Ale moje vмci jsou schovanэ ve faleљnэm hrobм, takћe nikoho ze spбnku ruљit nebudeљ.</text>
+	</string>
+	<string id="st_esc_q9_t_a">
+		<text>Bedэnka za sklбdkou</text>
+	</string>
+	<string id="st_esc_q9_t_a_descr">
+		<text>Zaplatнm ti obsahem bedэnky, kterб leћн hned vedle anomбlie za tou sklбdkou v Kordonu. Bude se tam po nн sбpat jeљtм jeden chlap, ale toho si nevљнmej – svэ nejlepљн dny uћ mб za sebou.</text>
+	</string>
+	<string id="st_gar_q10_n">
+		<text>Paшez na okraji Smetiљtм</text>
+	</string>
+	<string id="st_gar_q10_n_descr">
+		<text>Hele, dбm ti tip. Svojн odmмnu si vyzvedni z paшezu na okraji Smetiљtм.</text>
+	</string>
+	<string id="st_gar_q1_n">
+		<text>Иernэ batoh na vrakoviљti</text>
+	</string>
+	<string id="st_gar_q1_n_descr">
+		<text>Svojн platbu jsem ti schoval do иernэho batohu v rozbitэm stavebnнm jeшбbu.</text>
+	</string>
+	<string id="st_gar_q2_n">
+		<text>Odшнznutб trubka</text>
+	</string>
+	<string id="st_gar_q2_n_descr">
+		<text>Jб uћ jsem zaplaceno dostal, ale ty si pro svoje penнze musнљ dojнt do dэhle skrэљe v odшнznutэ trubce.</text>
+	</string>
+	<string id="st_gar_q3_n">
+		<text>Elektrickэ rozvadми na vrakoviљti</text>
+	</string>
+	<string id="st_gar_q3_n_descr">
+		<text>Pшed nмjakou dobou jsem si ukryl pбr vмciиek, ale teп ti je budu muset dбt. Co naplat.</text>
+	</string>
+	<string id="st_gar_q4_n">
+		<text>Malб krabice v zamoшenйm odpadu</text>
+	</string>
+	<string id="st_gar_q4_n_descr">
+		<text>Dбvбm ti souшadnice malй krabice s nмkolika cennostma. Hlavnм si ale neusmaћ koule – radiace na tomhle mнstм vystшeluje aћ do nebe.</text>
+	</string>
+	<string id="st_gar_q5_n">
+		<text>Bedna u radlice buldozeru</text>
+	</string>
+	<string id="st_gar_q5_n_descr">
+		<text>Svщj nбkup najdeљ u radlice starэho buldozeru.</text>
+	</string>
+	<string id="st_gar_q6_t_l">
+		<text>Batoh mrtvэho</text>
+	</string>
+	<string id="st_gar_q6_t_l_descr">
+		<text>Nebojнљ se duchщ, ћe ne? Tak to si mщћeљ najнt vмci v batohu vedle mrtvэho tмla.</text>
+	</string>
+	<string id="st_gar_q7_t_l">
+		<text>Mrtvola u rypadla</text>
+	</string>
+	<string id="st_gar_q7_t_l_descr">
+		<text>Ten ztuhlej chlapнk u pшevrбcenэho rypadla ti s radostн pшedб obsah svэho batohu.</text>
+	</string>
+	<string id="st_gar_q8_t_a">
+		<text>Mrtvola na Smetiљti</text>
+	</string>
+	<string id="st_gar_q8_t_a_descr">
+		<text>Aby sis mohl vybrat svщj dluh, budeљ se muset trochu zapotit. Najdeљ ho uvnitш batohu obмti jednэ anomбlie.</text>
+	</string>
+	<string id="st_gar_q9_n">
+		<text>Po cestм do Agropromu</text>
+	</string>
+	<string id="st_gar_q9_n_descr">
+		<text>Po cestм do Agropromu najdi UAZ a v nмm malou krabici. Obsah se ti snad bude lнbit.</text>
+	</string>
+	<string id="st_val_q10_n">
+		<text>Trezor v hangбru</text>
+	</string>
+	<string id="st_val_q10_n_descr">
+		<text>Jб svэ sliby dodrћuju – slнbenэ vмci na tebe иekajн v trezoru ve starэ tovбrnм.</text>
+	</string>
+	<string id="st_val_q11_t_l">
+		<text>Mrtvola u kamenщ</text>
+	</string>
+	<string id="st_val_q11_t_l_descr">
+		<text>Prбvм sis zakoupil obsah batohu tй mrtvoly, co leћн mezi kameny.</text>
+	</string>
+	<string id="st_val_q1_n">
+		<text>Pod cisternou</text>
+	</string>
+	<string id="st_val_q1_n_descr">
+		<text>Mэ krбmy – oprava, teп uћ tvэ krбmy – jsou v batohu pod cisternou.</text>
+	</string>
+	<string id="st_val_q2_n">
+		<text>Keшe pod jedlн</text>
+	</string>
+	<string id="st_val_q2_n_descr">
+		<text>Kdyћ jsem se vracel z podaшenэho zбtahu, schoval jsem si koшist do kшovн. Ty si ji teп mщћeљ vyzvednout.</text>
+	</string>
+	<string id="st_val_q3_t_a">
+		<text>Mrtvola vojбka</text>
+	</string>
+	<string id="st_val_q3_t_a_descr">
+		<text>Zapiљ si tohle: velmi cennэ vмci – batoh – nebohej pшнsluљnнk armбdy – hned vedle anomбlie.</text>
+	</string>
+	<string id="st_val_q4_n">
+		<text>Koшist v kшovн</text>
+	</string>
+	<string id="st_val_q4_n_descr">
+		<text>Jб svэ dluhy vћdycky vyrovnбvбm. A zrovna teп se ti vyrovnбm tмmahle souшadnicema od mэ koшisti.</text>
+	</string>
+	<string id="st_val_q5_n">
+		<text>Trezor na zбkladnм Svobody</text>
+	</string>
+	<string id="st_val_q5_n_descr">
+		<text>V tэ tшнpatrovэ budovм na zбkladnм Svobody je trezor a v nмm pбr cennэch srandiиek pro dobrodruћnэ stalkery.</text>
+	</string>
+	<string id="st_val_q6_n">
+		<text>Bedna na vrcholu vмћe</text>
+	</string>
+	<string id="st_val_q6_n_descr">
+		<text>Vбћнm si tvэho zбjmu a snad tм uspokojнm obsahem tэ modrэ bedny na vrcholu vмћe hned za zбkladnou Svobody.</text>
+	</string>
+	<string id="st_val_q7_n">
+		<text>Hrob stalkera</text>
+	</string>
+	<string id="st_val_q7_n_descr">
+		<text>Prбvм sis koupil vмci schovanэ pod kшнћem na hrobм stalkera, hned vedle starэho stromu.</text>
+	</string>
+	<string id="st_val_q8_n">
+		<text>Krabice pod sedadlem</text>
+	</string>
+	<string id="st_val_q8_n_descr">
+		<text>Pod sedadlem шidiиe v иervenэm LAZu najdeљ krabici. S radostн si posluћ. A nebo ne – to je na tobм.</text>
+	</string>
+	<string id="st_val_q9_n">
+		<text>Paшez u plotu</text>
+	</string>
+	<string id="st_val_q9_n_descr">
+		<text>Pro podobnэ situace si schovбvбm nмco mбlo vмcн v bezpeиnэ skrэљi uvnitш paшezu, jenom kousниek od plotu.</text>
+	</string>
+	<string id="st_agr_q10_t_l">
+		<text>Zabavenй zboћн u anomбlie</text>
+	</string>
+	<string id="st_agr_q10_t_l_descr">
+		<text>Tenhle vojбk nabмhl do anomбlie a jeho batoh s lupem, kterэ nabral od stalkerщ, tak poшбd jeљtм leћн, hned vedle nмj. Kdyћ budeљ mнt љtмstн, tшeba se k nмmu dostaneљ.</text>
+	</string>
+	<string id="st_agr_q1_n">
+		<text>U plotu za ostnatэm drбtem</text>
+	</string>
+	<string id="st_agr_q1_n_descr">
+		<text>Dobrб, zaplatнm ti tмmahle ukrytэma vмcma – jsou v batohu u plotu. Orientuj se podle stoћбru vysokэho napмtн.</text>
+	</string>
+	<string id="st_agr_q2_n">
+		<text>Pod vyvrбcenэm stromem</text>
+	</string>
+	<string id="st_agr_q2_n_descr">
+		<text>Tady v Zуnм bohuћel nevedeme sklady. Takћe si pospмљ a vyzvedni si svэ vмci z ъkrytu pod vyvrбcenэm stromem, neћ to udмlб nмkdo jinej.</text>
+	</string>
+	<string id="st_agr_q3_t_a">
+		<text>Mrtvola v zamoшenй oblasti</text>
+	</string>
+	<string id="st_agr_q3_t_a_descr">
+		<text>Ty mбљ zбjem o cennosti a jб pro tebe prбvм jedny mбm. Mщћou bejt tvoje, pokud si troufneљ vlнzt do zamoшenэ oblasti. Leћн hned po boku mrtvoly.</text>
+	</string>
+	<string id="st_agr_q4_n">
+		<text>Roury na hrobм</text>
+	</string>
+	<string id="st_agr_q4_n_descr">
+		<text>Иest je k nezaplacenн, takћe si pospмљ a seber ty vмci z rour na hrobм neznбmэho vojнna.</text>
+	</string>
+	<string id="st_agr_q5_n">
+		<text>Roh plotu</text>
+	</string>
+	<string id="st_agr_q5_n_descr">
+		<text>Po poslednнm zбшenн si Љilhavej Valka, Bщh ћehnej jeho duљi, nмco schovбval do starэho paшezu u rohu plotu.</text>
+	</string>
+	<string id="st_agr_q6_n">
+		<text>Rozvadми</text>
+	</string>
+	<string id="st_agr_q6_n_descr">
+		<text>Mэ vмci – eh, sorби, tvэ vмci – jsou uvnitш rozvadмиovй skшнnм na zбkladnм Povinnosti.</text>
+	</string>
+	<string id="st_agr_q7_n">
+		<text>Klбda u stromu</text>
+	</string>
+	<string id="st_agr_q7_n_descr">
+		<text>Jednoho dne mi pбr milэch hochщ povмdмlo o skrэљi, kterб patшн naљim nepшбtelщm. Co kdybys ji vyprбzdnil?</text>
+	</string>
+	<string id="st_agr_q8_t_a">
+		<text>Mrtvola v dodбvce</text>
+	</string>
+	<string id="st_agr_q8_t_a_descr">
+		<text>Jedna parta vojбkщ se vezla autobusem a dupala na plyn tak silnм, ћe najela pшнmo do anomбlie. Vљichni natбhli baиkory a ty sis prбvм koupil jejich vмci.</text>
+	</string>
+	<string id="st_agr_q9_n">
+		<text>Trezor pod zбvalem</text>
+	</string>
+	<string id="st_agr_q9_n_descr">
+		<text>Trezor s mэma vмcma jsem ибsteиnм zahrabal na dnм strћe. Co kdybysme pшedstнrali, ћe uћ od zaибtku byl urиen tobм?</text>
+	</string>
+	<string id="st_agru_q1_n">
+		<text>Trбm pod schodiљtмm</text>
+	</string>
+	<string id="st_agru_q1_n_descr">
+		<text>Vнm o skrэљi na jednom bohapustэm mнstм. Ale aspoт mбљ jistotu, ћe ji nikdo pшed tebou nevybral. Najdeљ ji ve sklepм pod schodiљtмm.</text>
+	</string>
+	<string id="st_agru_q2_n">
+		<text>Bedna pod zemн</text>
+	</string>
+	<string id="st_agru_q2_n_descr">
+		<text>Pod toиitэm schodiљtмm najdeљ ztracenou bednu se zboћнm. Hlavnм se snaћ nevyruљit moc obyvatel podzemн.</text>
+	</string>
+	<string id="st_agru_q3_t_a">
+		<text>Podzemн</text>
+	</string>
+	<string id="st_agru_q3_t_a_descr">
+		<text>Na tomhle mнstм si mщћeљ vyzvednout batoh mrtvэho stalkera. Nabмhl do anomбlie v podzemн Agropromu. Jenom prosнm tм neudмlej stejnou chybu!</text>
+	</string>
+	<string id="st_agru_q4_n">
+		<text>Trubka v podzemн</text>
+	</string>
+	<string id="st_agru_q4_n_descr">
+		<text>V PDA jednoho stalkera jsem se doиetl o tэhle skrэљi v podzemн Agropromu. Zkopнruj si ode mм souшadnice.</text>
+	</string>
+	<string id="st_yan_q8_t_l">
+		<text>Mrtvola v rybnнce</text>
+	</string>
+	<string id="st_yan_q8_t_l_descr">
+		<text>Porozhlнdni se po batohu toho vojбka, kterэ si dopшбvб relaxaиnн koupel v rybnнce.</text>
+	</string>
+	<string id="st_yan_q1_n">
+		<text>Bedna na stшeљe kotelny</text>
+	</string>
+	<string id="st_yan_q1_n_descr">
+		<text>Na stшeљe kotelny je modrб krabice a v nн nмkolik vмciиek. Celб oblast je ale plnб zombнkщ, tak si dбvej pozor.</text>
+	</string>
+	<string id="st_yan_q2_n">
+		<text>Bedna ve vagуnu</text>
+	</string>
+	<string id="st_yan_q2_n_descr">
+		<text>Parбda – teп si zkopнruj tyhle souшadnice bedny ve vagуnu v opuљtмnэ tovбrnм. Zajdi tam a pak uћ budeљ vмdмt, co dмlat.</text>
+	</string>
+	<string id="st_yan_q3_t_l">
+		<text>Batoh pod odtokovou rourou</text>
+	</string>
+	<string id="st_yan_q3_t_l_descr">
+		<text>Vyzvedni si tenhle batoh u odtokovэ roury a jsme si kvit. Poblнћ leћн mrtvej neutrбl, takћe to tam najdeљ snadno.</text>
+	</string>
+	<string id="st_yan_q4_n">
+		<text>Bedna na zбkladnм vмdcщ</text>
+	</string>
+	<string id="st_yan_q4_n_descr">
+		<text>Vэteиnм! Mщћeљ si vzнt vљechno, co najdeљ v bednм v kufru UAZu na zбkladnм vмdcщ.</text>
+	</string>
+	<string id="st_yan_q5_n">
+		<text>Bouda s rozvadмиem</text>
+	</string>
+	<string id="st_yan_q5_n_descr">
+		<text>Odmмnнm se ti souшadnicema skrэљe v boudм na kraji tovбrny.</text>
+	</string>
+	<string id="st_yan_q6_n">
+		<text>Hrdlo cisterny</text>
+	</string>
+	<string id="st_yan_q6_n_descr">
+		<text>V hrdle cisterny v tovбrnм je nмco schovanэho. Nikdy jsem osobnм nezkoumal, o co jde.</text>
+	</string>
+	<string id="st_yan_q7_n">
+		<text>Kabina MAZu</text>
+	</string>
+	<string id="st_yan_q7_n_descr">
+		<text>Svэ zboћн najdeљ v kabinм MAZu, je zabalenэ do krabiиky.</text>
+	</string>
+	<string id="st_yan_q9_n">
+		<text>Paшez naproti vмdeckйmu tбboru</text>
+	</string>
+	<string id="st_yan_q9_n_descr">
+		<text>Hledej ъkryt pod paшezem naproti vмdeckйmu tбboru.</text>
+	</string>
+	<string id="st_red_q10_n">
+		<text>Trubka v dole</text>
+	</string>
+	<string id="st_red_q10_n_descr">
+		<text>Vнm najisto, ћe v tomhle ъkrytu v Rudэm lese bude nмco cennэho.</text>
+	</string>
+	<string id="st_red_q1_t_l">
+		<text>Mrtvэ stalker</text>
+	</string>
+	<string id="st_red_q1_t_l_descr">
+		<text>Podle PDA jednoho mrtvэho stalkera jsem usoudil, ћe v jeho batohu bude nмco zajнmavэho. Tady mбљ jeho souшadnice.</text>
+	</string>
+	<string id="st_red_q2_t_a">
+		<text>Nebezpeиnй zboћн</text>
+	</string>
+	<string id="st_red_q2_t_a_descr">
+		<text>Pro tohle zboћн uћ jsem jednou posнlal nмjakэho nekтubu, ale vнm, ћe si ho nikdy nevyzvedl – zaklepal baиkorama v nedalekэ anomбlii.</text>
+	</string>
+	<string id="st_red_q3_n">
+		<text>Иervenэ ventil</text>
+	</string>
+	<string id="st_red_q3_n_descr">
+		<text>Vмci jsou schovanэ za иervenэm ventilem na dщlnнm potrubnнm systйmu. Osobnм se o nм moc nezajнmбm.</text>
+	</string>
+	<string id="st_red_q4_n">
+		<text>Autobus</text>
+	</string>
+	<string id="st_red_q4_n_descr">
+		<text>Jeden mщj kamarбd si zшнdil schovku pod sedaиkou tohodle autobusu. Teп uћ nenн mezi nбmi, takћe mu nebude vadit, kdyћ si jeho vмci pшivlastnнљ.</text>
+	</string>
+	<string id="st_red_q5_n">
+		<text>Trubka v sutinбch</text>
+	</string>
+	<string id="st_red_q5_n_descr">
+		<text>O tэhle skrэљi mi povмdмl jeden vмzeт – je to v trubce v sutinбch za transportйrem.</text>
+	</string>
+	<string id="st_red_q6_n">
+		<text>Bedna s batohem</text>
+	</string>
+	<string id="st_red_q6_n_descr">
+		<text>Tvщj poklad je doslova pohбdkovej! Fajn, tak si piљ – odmмna je v batohu, batoh je v bednм, bedna je u mostu, most je na druhэ stranм Rudэho lesa.</text>
+	</string>
+	<string id="st_red_q7_t_a">
+		<text>Neboћбkщv batoh</text>
+	</string>
+	<string id="st_red_q7_t_a_descr">
+		<text>Jeden chudбk blbec mi mмl pшes Rudej les pшinйst batoh, ale nepovedlo se mu to. Jestli ten bбgl najdeљ, nechej si ho.</text>
+	</string>
+	<string id="st_red_q8_n">
+		<text>Trezor u trolejbusu</text>
+	</string>
+	<string id="st_red_q8_n_descr">
+		<text>Mэ informace jsou pravda, ћбdnэ blбboly. Nмjakej manнk si schoval cosi cennэho do trezoru za pшevrбcenэm trolejbusem.</text>
+	</string>
+	<string id="st_red_q9_n">
+		<text>Obyиejnэ starэ paшez</text>
+	</string>
+	<string id="st_red_q9_n_descr">
+		<text>V tomhle dмravэm paшezu je skrэљ. Nejde o nic zvlбљtnнho, je to zcela obyиejnэ mнsto, kterэ bys bez mэch souшadnic nenaљel. A prбvм proto ti je dбvбm.</text>
+	</string>
+	<string id="st_mil_q10_n">
+		<text>Ъkryt v lese</text>
+	</string>
+	<string id="st_mil_q10_n_descr">
+		<text>Mezi balvany v lese jsem schoval batoh a teп svмшuji jeho souшadnice do dobrэch rukou.</text>
+	</string>
+	<string id="st_mil_q1_t_l">
+		<text>Batoh pod mrtvolou</text>
+	</string>
+	<string id="st_mil_q1_t_l_descr">
+		<text>Sice se to pшihodilo jen nбhodou, ale kaћdopбdnм ten batoh na vodбrenskэ vмћi obsahuje pбr cennэch vмciиek.</text>
+	</string>
+	<string id="st_mil_q2_n">
+		<text>Ъkryt pod vyvrбcenэm stromem</text>
+	</string>
+	<string id="st_mil_q2_n_descr">
+		<text>Tak poslouchej – pod tнmhle vyvrбcenэm stromem je malб skrэљ.</text>
+	</string>
+	<string id="st_mil_q3_n">
+		<text>Babiииin trezor</text>
+	</string>
+	<string id="st_mil_q3_n_descr">
+		<text>Nevнm sice, jak se ten trezor dostal nahoru na kamna, ale podle mэch zdrojщ prej nebude prбzdnej.</text>
+	</string>
+	<string id="st_mil_q4_n">
+		<text>Skrэљ v hrobм</text>
+	</string>
+	<string id="st_mil_q4_n_descr">
+		<text>Љuљkб se, ћe kdo se podнvб pod kшнћ hrobu na tмhle souшadnicнch, ten rychle zbohatne.</text>
+	</string>
+	<string id="st_mil_q5_n">
+		<text>Bedna na armбdnн zбkladnм</text>
+	</string>
+	<string id="st_mil_q5_n_descr">
+		<text>Jestli se ti podaшн vplнћit se na armбdnн zбkladnu, v jednэ bednм v podkrovн najdeљ odmмnu za svou snahu.</text>
+	</string>
+	<string id="st_mil_q6_n_a">
+		<text>Trezor v komщrce</text>
+	</string>
+	<string id="st_mil_q6_n_a_descr">
+		<text>Podle mэch zdrojщ je cosi ukrytэho v tomhle trezoru na armбdnн zбkladnм.</text>
+	</string>
+	<string id="st_mil_q7_n_a">
+		<text>Malэ trezor</text>
+	</string>
+	<string id="st_mil_q7_n_a_descr">
+		<text>Kapitбn Jeltyљev s sebou neustбle tahal tenhle trezor, dokud ho nepшeveleli na jinэ mнsto. Co takhle se zajнt podнvat, co v nмm ukrэval?</text>
+	</string>
+	<string id="st_mil_q8_n_a">
+		<text>Hromada harampбdн</text>
+	</string>
+	<string id="st_mil_q8_n_a_descr">
+		<text>Jбva si schoval svэ vмci do tэhle hromady harampбdн, jen aby na nм pozdмji zapomnмl. Jб jsem si ale zapsal poznбmku a tu ti teп pшedбvбm.</text>
+	</string>
+	<string id="st_mil_q9_n_a">
+		<text>Bedna s pшekvapenнm</text>
+	</string>
+	<string id="st_mil_q9_n_a_descr">
+		<text>Za kabinou starэho vojenskэho MZA najdeљ malou bedэnku s pшekvapenнm. A to pшekvapenн ti teп prodбvбm.</text>
+	</string>
+</string_table>

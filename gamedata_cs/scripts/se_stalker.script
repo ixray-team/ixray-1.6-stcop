@@ -91,17 +91,21 @@ function se_stalker:can_switch_online()
 end
 function se_stalker:switch_online()
 	cse_alife_human_stalker.switch_online(self)
-		if self.squad_id ~= nil then
-			local squad = self.board.squads[self.squad_id]
-				squad:switch_online(true, self.id)
+	if self.squad_id ~= nil then
+		local squad = self.board.squads[self.squad_id]
+		if squad ~= nil then
+			squad:switch_online(true, self.id)
 		end
+	end
 end
 function se_stalker:switch_offline()
 	cse_alife_human_stalker.switch_offline(self)
-		if self.squad_id ~= nil then
-			local squad = self.board.squads[self.squad_id]
-				squad:switch_online(false, self.id)
+	if self.squad_id ~= nil then
+		local squad = self.board.squads[self.squad_id]
+		if squad ~= nil then
+			squad:switch_online(false, self.id)
 		end
+	end
 end
 --------------------
 function se_stalker:STATE_Write(packet)

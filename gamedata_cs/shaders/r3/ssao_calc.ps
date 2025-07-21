@@ -15,7 +15,11 @@ struct	_input
 	float4	pos2d	: SV_Position;
 };
 
-float4 main ( _input I ) : SV_Target0
+float4 main ( _input I 
+#ifdef	MSAA_OPTIMIZATION	
+	,uint	iSample	: SV_SAMPLEINDEX;
+#endif	//	MSAA_OPTIMIZATION	
+) : SV_Target0
 {
 	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc0, I.pos2d, ISAMPLE) );
 

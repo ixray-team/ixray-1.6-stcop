@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_bandit_spy_name">
+		<text>Zniи potenciбlnн hrozbu u иerpacн stanice.</text>
+	</string>
+	<string id="val_bandit_spy_text">
+		<text>Poblнћ opuљtмnй иerpacн stanice je po nocнch vidмt matnй svмtlo. Prozkoumej to tam a zniи potenciбlnн hrozbu.</text>
+	</string>
+	<string id="val_bring_to_fang_name">
+		<text>Nбsleduj signбl z Tesбkova PDA</text>
+	</string>
+	<string id="val_bring_to_fang_text">
+		<text>Technici Svobody se nabourali na frekvenci Tesбkova PDA. Nynн mщћeљ sledovat Tesбkщv pohyb. Podle signбlu se Tesбk momentбlnм nachбzн nмkde na Smetiљti. Nбsleduj signбl z Tesбkova PDA.</text>
+	</string>
+	<string id="val_check_blockpost_name">
+		<text>Zjisti, co se stalo na stanoviљti</text>
+	</string>
+	<string id="val_check_blockpost_text">
+		<text>Zdб se, ћe stanoviљtм Svobody bylo opмt pшepadeno. Zjisti, co se stalo, a porozhlйdni se po pшeћivљнch.</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_name">
+		<text>Obdrћ rozkazy od velitele</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_text">
+		<text>Obdrћ rozkazy od velitele</text>
+	</string>
+	<string id="val_come_to_comendant_name">
+		<text>Promluv si s velitelem</text>
+	</string>
+	<string id="val_come_to_comendant_text">
+		<text>Zeptej se velitele na Tesбka</text>
+	</string>
+	<string id="val_come_to_freedom_base_name">
+		<text>Najdi zбkladnu Svobody</text>
+	</string>
+	<string id="val_come_to_freedom_base_text">
+		<text>Podle informacн od kopбищ se Tesбk vydal do Temnйho ъdolн hledat zbэvajнcн souибstky. Najdi zбkladnu Svobody a poptej se tam na Tesбka.</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_name">
+		<text>Promluv si s velitelem stanoviљtм</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_text">
+		<text>Promluv si s velitelem stanoviљtм</text>
+	</string>
+	<string id="val_deliver_ammo_name">
+		<text>Dodej munici na stanoviљtм</text>
+	</string>
+	<string id="val_deliver_ammo_text">
+		<text>Dodej munici na stanoviљtм</text>
+	</string>
+	<string id="val_deliver_pda_name">
+		<text>Dones PDA Иechovovi</text>
+	</string>
+	<string id="val_deliver_pda_text">
+		<text>Velitelovo PDA obsahuje spoustu informacн, kterй Svobodм pomohou zjistit, kdo na nм ъtoин a jak se nepшнtel dostбvб do Temnйho ъdolн. Dones PDA vщdci Svobody.</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_name">
+		<text>Zniи doupм divoибkщ</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_text">
+		<text>Zniи doupм divoибkщ</text>
+	</string>
+	<string id="val_destroy_killer_base_name">
+		<text>Vyhlaп ћoldбky</text>
+	</string>
+	<string id="val_destroy_killer_base_text">
+		<text>Lokalizovali jste hlavnн zбkladnu ћoldбkщ. Pomoz Svobodм pшi ъtoku. Zniиenн zбkladny umoћnн Svobodм zastavit boje a zнskat naprostou kontrolu nad Temnэm ъdolнm.</text>
+	</string>
+	<string id="val_find_pda_name">
+		<text>Najdi aktivnн PDA</text>
+	</string>
+	<string id="val_find_pda_text">
+		<text>PDA jednoho z mrtvэch bojovnнkщ Svobody je stбle aktivnн. Najdi je - tшeba obsahuje cennй informace.</text>
+	</string>
+	<string id="val_go_to_freedom_leader_name">
+		<text>Dones PDA Иechovovi</text>
+	</string>
+	<string id="val_go_to_freedom_leader_text">
+		<text>PDA jednoho z bojovnнkщ Svobody zabitэch na stanoviљti obsahuje zбznam rozhovoru mezi ъtoиnнky. Tento zбznam pomщћe odhalit identitu nepшбtel. Dones PDA Иechovovi.</text>
+	</string>
+	<string id="val_go_to_trader_name">
+		<text>Vyzvedni si munici od Aљota</text>
+	</string>
+	<string id="val_go_to_trader_text">
+		<text>Vyzvedni si munici od Aљota na stanoviљti Svobody</text>
+	</string>
+	<string id="val_help_freedom_name">
+		<text>Pomoz Svobodм zlikvidovat ћoldбky</text>
+	</string>
+	<string id="val_help_freedom_text">
+		<text>Pomoz Svobodм zlikvidovat ћoldбky</text>
+	</string>
+	<string id="val_kill_flesh_name">
+		<text>Zabij pseudo-psa</text>
+	</string>
+	<string id="val_kill_flesh_text">
+		<text>Zabij pseudo-psa, kterэ pщsobн potнћe v okolн zбkladny Svobody.</text>
+	</string>
+	<string id="val_kill_komendant_name">
+		<text>Zabij velitele</text>
+	</string>
+	<string id="val_kill_komendant_text">
+		<text>PDA ze stanoviљtм obsahuje zбznam rozhovoru mezi ъtoиnнky. Jeden z ъиastnнkщ rozhovoru se zmiтuje, ћe informace, kterй ъtoиnнkщm umoћnily poшбdat rychlй a neиekanй ъtoky proti hlнdkбm Svobody, jim prodбval samotnэ velitel. Najdi toho zrбdce a pшiveп ho Иechovovi - aќ uћ ћivйho, иi mrtvйho.</text>
+	</string>
+	<string id="val_night_bloodsucker_name">
+		<text>Najdi technikova kamarбda</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_name">
+		<text>Pшines souибstku technikovi</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_text">
+		<text>Pшines souибstku technikovi</text>
+	</string>
+	<string id="val_night_bloodsucker_text">
+		<text>Najdi technikova kamarбda</text>
+	</string>
+	<string id="val_pursuit_comendant_name">
+		<text>Najdi komandanta</text>
+	</string>
+	<string id="val_pursuit_comendant_text">
+		<text>Najdi komandanta</text>
+	</string>
+	<string id="val_reply_to_sos_name">
+		<text>Odpovмz na volбnн o pomoc</text>
+	</string>
+	<string id="val_reply_to_sos_text">
+		<text>Pomoz odrazit ъtok.</text>
+	</string>
+	<string id="val_strike_antenna_name">
+		<text>Dobuп antйny</text>
+	</string>
+	<string id="val_strike_antenna_text">
+		<text>Dobuп a udrћ antйny, abys mohl proskenovat oblast.</text>
+	</string>
+	<string id="val_strike_antenna_two_name">
+		<text>Dobuп antйny</text>
+	</string>
+	<string id="val_strike_antenna_two_text">
+		<text>Dobuп a udrћ antйny, abys mohl proskenovat oblast.</text>
+	</string>
+	<string id="val_take_pda_name">
+		<text>Vezmi velitelovo PDA</text>
+	</string>
+	<string id="val_take_pda_text">
+		<text>Velitele zabili jeho vlastnн spolubojovnнci potй, co se po nмm zaиala shбnмt Svoboda. Jeho PDA obsahuje dщleћitй informace o lidech, kterэm pomбhal.</text>
+	</string>
+	<string id="val_test">
+		<text>Pomoc</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_name">
+		<text>Zniи skupinu banditщ</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_text">
+		<text>Na opuљtмnй иerpacн stanici si naљel skupinu banditщ. Zniи je.</text>
+	</string>
+	<string id="st_val_bandit_spy_return_name">
+		<text>Vraќ se pro odmмnu</text>
+	</string>
+	<string id="st_val_bandit_spy_return_text">
+		<text>Naљel a zlikvidoval jsi skupinu banditщ na opuљtмnй иerpacн stanici. Vraќ se za barmanem a povмz mu o tom.</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_name">
+		<text>Najdi informace o hlavnнch pro odstшelovacн puљky</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_text">
+		<text>Technik Svobody, jistэ Jar, se specializuje na preciznн zbranм. Zrovna shбnн informace o hlavnнch pro odstшelovaиskй puљky.</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_name">
+		<text>Najdi informace o elektronickйm stabilizбtoru pro odstшelovacн puљky</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_text">
+		<text>Technik Jar dobшe zaplatн za podrobnй informace o elektronickйm stabilizaиnнm mechanismu pro odstшelovacн puљky.</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_name">
+		<text>Najdi informace o ъsќovэch brzdбch odstшelovacнch puљek</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_text">
+		<text>Technik Jar potшebuje informace o funkиnнch ъsќovэch brzdбch pro silnй odstшelovacн puљky. Pak ti bude moci nмco podobnйho vyrobit.</text>
+	</string>
+	<string id="val_recover_item_1_name">
+		<text>Pшines optiku 8X</text>
+	</string>
+	<string id="val_recover_item_1_text">
+		<text>Pobнhal tady jeden chlбpek, co mмl na bouchaиce fakt dobrou optiku, takovou v Zуnм normбlnм nenajdeљ. Furt jsem se snaћil ho ukecat, ale nechtмl mi ji prodat. Odeљel s jednou naљн patrolou smмrem ke Kordуnu. Patrola se nevrбtila, takћe tam asi nмkde zakalil. Pшines mi tu optiku, aќ ji mщћu dбt Иechovovi jako dбrek, moћnб mм pak povэљн na komandanta.</text>
+	</string>
+	<string id="val_recover_item_2_name">
+		<text>Pшines USB disk s filmy</text>
+	</string>
+	<string id="val_recover_item_2_text">
+		<text>Pomoz mi, kбmo. Sedнme si takhle s Ganћdou u nмj, иuинme na notebooku na film, kdyћ najednou na nбs vletмl komandant a zaиal jeиet, ћe jsem ve sluћbм a tak podobnм. Chtмl nбm notebook rozmlбtit na kusy, ale v tom jsme mu zabrбnili, tak nбm aspoт sebral USB disk s filmy a hodil ho za plot, do radioaktivnн oblasti. Pшines ten disk a Gandћa se ti odmмnн.</text>
+	</string>
+	<string id="val_recover_item_3_name">
+		<text>Vraќ Seregovu kytaru</text>
+	</string>
+	<string id="val_recover_item_3_text">
+		<text>Seregovi ukradli kytaru, no, dovedeљ si to pшedstavit? Je tady v okolн jedinej, kdo na ni umн hrбt, a hraje fakt dobшe. Rychle jsme zjistili, kdo ji љlohnul, ale ten hajzl ji nмkde schoval. Hele, najdi tu kytaru, jo? Serega odmнtб hrбt na jakoukoli jinou.</text>
+	</string>
+</string_table>

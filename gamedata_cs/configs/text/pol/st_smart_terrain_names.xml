@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_name_agr_smart_terrain_1_11">
+		<text>Skraj lasu</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_2">
+		<text>Obуz na bagnach</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_3">
+		<text>Stare obozowisko</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6">
+		<text>Baza Powinnoњci</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_1">
+		<text>Pуіnocne wejњcie</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_2">
+		<text>Wschodnie wejњcie</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_near_2">
+		<text>Czerwony naroїnik</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_2">
+		<text>Obozowisko w pobliїu gіazu</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_3">
+		<text>Kryjуwka pod skaіami</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_5">
+		<text>Obуz przy bazie</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_3_5">
+		<text>Obozowisko nad przepaњci№</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_2">
+		<text>Obуz pod wieї№</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4">
+		<text>Obуz stalkerуw</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_1">
+		<text>Obszar obok peronu kolejowego</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_2">
+		<text>Wejњcie od tyіu</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_3">
+		<text>Wschodni posterunek</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_6">
+		<text>Posterunek na drodze</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_2">
+		<text>Kamienny kr№g</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_3">
+		<text>Barykady przy wagonie</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_4">
+		<text>Rozwidlenie drogi</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7">
+		<text>Posterunek przy dziurze</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7u">
+		<text>Podziemne wejњcie</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_4">
+		<text>Њlepy zauіek tunelu</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_6">
+		<text>Tymczasowy obуz</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_4">
+		<text>Droga do Wysypiska</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_5">
+		<text>Obozowisko na wzgуrzu</text>
+	</string>
+	<string id="st_name_agru_smart_terrain_1">
+		<text>Podziemia Agropromu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_11">
+		<text>Tajny obуz</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_12">
+		<text>Wzgуrze za wiosk№</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_16">
+		<text>Leњny wzgуrek</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_12">
+		<text>Centrum wioski</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_14">
+		<text>Ognisko po drzewem</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_2">
+		<text>Zbocze wzgуrza</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_4">
+		<text>Skraj lasu na pogуrzu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_14">
+		<text>Namiot w lesie</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_16">
+		<text>Posterunek wojskowy</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_4">
+		<text>Obozowisko na wzgуrzach</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_6">
+		<text>Obozowisko w korycie rzeki</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_7">
+		<text>Ognisko w lesie</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_10">
+		<text>Ognisko w kotlinie</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_11">
+		<text>Obуz w pobliїu furgonu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_13">
+		<text>Obуz namiotowy</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_8">
+		<text>Obozowisko pod mostem</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_9">
+		<text>Ognisko w pobliїu mostu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_10">
+		<text>Przystanek autobusowy</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_11">
+		<text>Obуz na wzgуrzu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_12">
+		<text>Namiot stalkera</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_2">
+		<text>Odlegіy posterunek</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_4">
+		<text>Ognisko na skraju drogi</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_6">
+		<text>Biwak na і№ce</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_7">
+		<text>Neutralna baza</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_9">
+		<text>Winda</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_3">
+		<text>Kryjуwka pod skaіami</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_5">
+		<text>Obуz wњrуd њwierkуw</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_6">
+		<text>Ruiny gospodarstwa</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_7">
+		<text>Biwak na zboczu wzgуrza</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_8">
+		<text>Posterunek pod mostem</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_10">
+		<text>Tymczasowe obozowisko</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_11">
+		<text>Stacja pojazdуw</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_9">
+		<text>Ognisko przy linii kolejowej</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_10">
+		<text>Wzgуrze za stacj№ pojazdуw</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_6">
+		<text>Cicha kryjуwka</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_8">
+		<text>Obozowisko w pobliїu nasypu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_9">
+		<text>Obozowisko wњrуd sosen</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_10">
+		<text>Ognisko przy tunelu</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_7">
+		<text>Odlegіe obozowisko</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_5">
+		<text>Barykady</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_7">
+		<text>Obozowisko na wzgуrzach</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_3">
+		<text>Kryjуwka w pobliїu њcieїki</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_4">
+		<text>Kryjуwka za rurami</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_2">
+		<text>Kryjуwka w kotlinie</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_3">
+		<text>Obozowisko kopaczy</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_5">
+		<text>Skіad</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_6">
+		<text>Biwak na zіomowisku</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_7">
+		<text>Cmentarz pojazdуw</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_8">
+		<text>Obozowisko za obozem koncentracyjnym</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_2">
+		<text>Obуz w korycie rzeki</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_3">
+		<text>Obozowisko w pobliїu їurawia</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_4">
+		<text>Obуz w pobliїu skіadu</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_5">
+		<text>Punkt zіamania</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_6">
+		<text>Zbocze haіdy zіomowiska</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_7">
+		<text>Obozowisko w pobliїu buldoїera</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_8">
+		<text>Obуz czoіa szlaku</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_2">
+		<text>Pуіnocny posterunek</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_4">
+		<text>Punkt spotkaс</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_5">
+		<text>Obуz іowcуw skarbуw</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_6">
+		<text>Zdezelowany їuraw</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_8">
+		<text>Posterunek odbiorczy</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_1">
+		<text>Obуz na prowincji</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_3">
+		<text>Pchli targ</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_4">
+		<text>Obszar ufortyfikowany</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_5">
+		<text>Obozowisko na polu</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_6">
+		<text>Kryjуwka w lesie</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_7">
+		<text>Їwirownia</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_2">
+		<text>Nora gуrnikуw</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_3">
+		<text>Brzeg maіego bagna</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_4">
+		<text>Nowe obozowisko</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_3">
+		<text>Posterunek obronny</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_5">
+		<text>Laguna</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_7">
+		<text>Obozowisko na њcieїce</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_1">
+		<text>Plac</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_10">
+		<text>Droga do remizy</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_2">
+		<text>Dom na rozwidleniu drogi</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_3">
+		<text>Ogrуdek z tarasem</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_4">
+		<text>Barykada przy zauіku</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_5">
+		<text>Minipark przy garaїach</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_6">
+		<text>Dom na wzgуrzu</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_7">
+		<text>Kryjуwka w pobliїu mostu</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_8">
+		<text>Obozowisko w pobliїu centrali</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_9">
+		<text>Obуz na placu budowy</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_help_smart">
+		<text>Њlepy zauіek</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_10">
+		<text>Ognisko na brzegu</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_5">
+		<text>Plac maszynowy</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_7">
+		<text>Obozowisko na bagnie</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_11">
+		<text>Poіudniowe gospodarstwo</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_3">
+		<text>Obozowisko w pobliїu ciкїarуwki</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_12_2">
+		<text>Pуіnocne gospodarstwo</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_10">
+		<text>Rozwidlone њcieїki</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_3">
+		<text>Park іodzi</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_7">
+		<text>Wyspa z gіazem</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_5">
+		<text>Ruiny wioski</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_7">
+		<text>Biwak na kіodzie</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_10">
+		<text>Їwirownia</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_12">
+		<text>Osada rybacka</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_8">
+		<text>Stacja pomp</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_10">
+		<text>Pusta wyspa</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_11">
+		<text>Wieїa obserwacyjna</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_4">
+		<text>Tymczasowy obуz</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_7">
+		<text>Barykady na brzegu</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_8">
+		<text>Biwak іodzi</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_3">
+		<text>Obozowisko pod nasypem</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_7">
+		<text>Obozowisko na pustkowiu</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_11">
+		<text>Stary koњciуі</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_4">
+		<text>Obozowisko wњrуd trzcin</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_8">
+		<text>Spalone gospodarstwo</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_9">
+		<text>Czoіo szlaku</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_9_10">
+		<text>Samotne ognisko</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_base">
+		<text>Baza Czystego Nieba</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_respawn">
+		<text>Ukryty obуz</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_terrain_csky_base">
+		<text>Baza Czystego Nieba</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_1">
+		<text>Obуz wњrуd skaі</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_10">
+		<text>Kryjуwka wњrуd suchych drzew</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_2">
+		<text>Odlegіy obszar ufortyfikowany</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_3">
+		<text>Obozowisko na nizinach</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_4">
+		<text>Odlegіe gospodarstwo</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_6">
+		<text>Zniszczony њmigіowiec</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_2">
+		<text>Strуїуwka</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_5">
+		<text>Stanowisko pancerne</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_8">
+		<text>Bariera</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_2">
+		<text>Biwak najemnikуw</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_3">
+		<text>Wieїa wodna</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_5">
+		<text>Przekrzywiona belka</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_6">
+		<text>Przeprawa rzeczna</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_7">
+		<text>Biwak na betonowych pіytach</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_8">
+		<text>Obуz stalkerуw</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_2">
+		<text>Barykady na wzgуrzu</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_4">
+		<text>Wejњcie do wioski</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_5">
+		<text>Obszar ufortyfikowany na przystanku</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_6">
+		<text>Ciкїarуwka na przeprawie</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_8">
+		<text>Chata na bagnie</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_6_4">
+		<text>Droga miкdzy wzgуrzami</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_10">
+		<text>Zepsuty transformator</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_11">
+		<text>Obуz w sosnach</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_12">
+		<text>Obуz wњrуd koszar</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_2">
+		<text>Wejњcie do magazynуw armijnych</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_4">
+		<text>Opuszczone gospodarstwo</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_7">
+		<text>Boisko sportowe</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_8">
+		<text>Ogrуdek bazy</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_9">
+		<text>Opuszczony tunel</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_8_3">
+		<text>Szopa</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base2">
+		<text>Odlegіy obszar ufortyfikowany</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base3">
+		<text>Odlegіe gospodarstwo</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base4">
+		<text>Wieїa wodna</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base5">
+		<text>Biwak najemnikуw</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base_monster">
+		<text>Obszar ufortyfikowany w pobliїu wioski</text>
+	</string>
+	<string id="st_name_red_bridge_ally_smart">
+		<text>Obrzeїa Limaсska</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_1">
+		<text>Obуz na skraju drogi</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_2">
+		<text>Koszary w kopalni</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_3">
+		<text>Miejsce spoczynku pijawki</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_2">
+		<text>Obуz w pobliїu chaty</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_3">
+		<text>Psie obozowisko</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_5">
+		<text>Wiedџmi kr№g</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_5">
+		<text>Miejsce spoczynku stalkera</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_6">
+		<text>Mglista і№ka</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_3">
+		<text>Diabelskie obozowisko</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_6">
+		<text>Mroczny Jar</text>
+	</string>
+	<string id="st_name_red_smart_terrain_bridge">
+		<text>Most do Limaсska</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters">
+		<text>Niebezpieczna њcieїka</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_2">
+		<text>Nora mutanta</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_3">
+		<text>Nora z widokiem na las</text>
+	</string>
+	<string id="st_name_red_terrain_ally_smart">
+		<text>Wejњcie do Limaсska</text>
+	</string>
+	<string id="st_name_red_terrain_bandit_smart">
+		<text>Bandyckie fortyfikacje</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_10">
+		<text>Obуz w pobliїu stacji benzynowej</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_9">
+		<text>Wejњcie od dachu</text>
+	</string>
+	<string id="st_name_val_smart_terrain_1_2">
+		<text>Sala fabryczna</text>
+	</string>
+	<string id="st_name_val_smart_terrain_3_0">
+		<text>Barykada w pobliїu mostu</text>
+	</string>
+	<string id="st_name_val_smart_terrain_4_0">
+		<text>Obozowisko w gospodarstwie</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_10">
+		<text>Otwarte obozowisko</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_7">
+		<text>Posterunek koсcowy</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_8">
+		<text>Obуz polowy</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_4">
+		<text>Nкdzne obozowisko</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_5">
+		<text>Obуz na dnie rozpadliny</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_6">
+		<text>Obozowisko na dole</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_0">
+		<text>Odlegіe kraсce</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_11">
+		<text>Posterunek w pobliїu gospodarstwa</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_3">
+		<text>Hangar Wujka Jara</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_4">
+		<text>Baza "Wolnoњci"</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_5">
+		<text>Bar "Јyk Wolnoњci"</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_6">
+		<text>Posterunek w pobliїu windy</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_8">
+		<text>Obуz na bagnach</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_6">
+		<text>Pуіnocne barykady</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_7">
+		<text>Przystanek</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_9">
+		<text>Wyspa</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_10">
+		<text>Obуz wњrуd jakichњ skaі</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_2">
+		<text>Wyrwane drzewo</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_4">
+		<text>Dystrybutor na stacji benzynowej</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_5">
+		<text>Obozowisko na pogуrzu</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_6">
+		<text>Maіy, stary wуz</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_1_6">
+		<text>Odlegіa granica</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_4">
+		<text>Ogrуdek fabryczny</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_5">
+		<text>Wejњcie do fabryki</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_4">
+		<text>Hangar</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_6">
+		<text>Niziny z artefaktami</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_2">
+		<text>Wyrwane drzewo</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_4">
+		<text>Szczyt wzgуrza</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_5">
+		<text>Budka transformatora</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_3">
+		<text>Wyspa na bagnie</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_5">
+		<text>Obozowisko przejњcia</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_6">
+		<text>Posterunek</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_2">
+		<text>Obozowisko za bagnem</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_4">
+		<text>Obуz naukowcуw</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_for_squad_levsha">
+		<text>Tajne wejњcie</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_quest_saharov">
+		<text>Wyjњcie z kompleksu</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_saharov">
+		<text>Tylne wyjњcie</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base1">
+		<text>Biwak pod szop№</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base3">
+		<text>Wieїa na wzgуrzu</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base4">
+		<text>Rura odpіywowa</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base5">
+		<text>Naroїnik fabryki</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base6">
+		<text>Garaїe w pobliїu granicy</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_spawn">
+		<text>Ujњcie rury</text>
+	</string>
+</string_table>

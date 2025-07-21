@@ -3,6 +3,7 @@
 -- Made by Peacemaker ----------------------------------------------------------
 -- 05.03.07 --------------------------------------------------------------------
 --------------------------------------------------------------------------------
+
 surge_finished = false
 surge_activated = false
 start_surge = false
@@ -69,27 +70,26 @@ function action_surge_hide_go_position:execute()
 	action_base.execute(self)
 	if(self.update_time<=0) then
 		self.update_time = 200
-			local tmp_pos_vertex, npc_position_num = get_dest_vertex(self.object, self.st.pp, self.st.position, self.st.npc_pos)
-			if(self.st.npc_position_num~=npc_position_num) then
-						self.st.pp = patrol(self.st.path_walk):point(0)
-					local dir = vector():set(math.random(-1,1), 0, math.random(-1,1))
-					local delta_dist = math.random(0,0.5)
-					self.st.pp.x = self.st.pp.x + dir.x * delta_dist
-					self.st.pp.z = self.st.pp.z + dir.z * delta_dist
+		local tmp_pos_vertex, npc_position_num = get_dest_vertex(self.object, self.st.pp, self.st.position, self.st.npc_pos)
+		if(self.st.npc_position_num~=npc_position_num) then
+			self.st.pp = patrol(self.st.path_walk):point(0)
+			local dir = vector():set(math.random(-1,1), 0, math.random(-1,1))
+			local delta_dist = math.random(0,0.5)
+			self.st.pp.x = self.st.pp.x + dir.x * delta_dist
+			self.st.pp.z = self.st.pp.z + dir.z * delta_dist
 
-					self.object:set_dest_level_vertex_id(tmp_pos_vertex)
-					local dd = vector():sub(self.st.pp, level.vertex_position(tmp_pos_vertex))
-					if(dd) and not(utils.vector_cmp(dd, vector():set(0,0,0))) then
-							dd:normalize()
-							self.object:set_desired_direction(dd)
-					end
-
-					self.object:set_path_type(game_object.level_path)
-					state_mgr.set_state(self.object, "walk")
-
-					self.st.npc_position_num = npc_position_num
-					self.st.pos_vertex = tmp_pos_vertex
+			self.object:set_dest_level_vertex_id(tmp_pos_vertex)
+			local dd = vector():sub(self.st.pp, level.vertex_position(tmp_pos_vertex))
+			if(dd) and not(utils.vector_cmp(dd, vector():set(0,0,0))) then
+				dd:normalize()
+				self.object:set_desired_direction(dd)
 			end
+
+			self.object:set_path_type(game_object.level_path)
+			state_mgr.set_state(self.object, "walk")
+        	self.st.npc_position_num = npc_position_num
+			self.st.pos_vertex = tmp_pos_vertex
+		end
 	else
 		self.update_time = self.update_time - 1
 	end
@@ -101,7 +101,7 @@ end
 class "action_surge_hide_wait" (action_base)
 function action_surge_hide_wait:__init(npc, action_name, storage) super (nil, action_name)
 	self.st = storage
-		self.update_time = 0
+	self.update_time = 0
 end
 function action_surge_hide_wait:initialize()
 	action_base.initialize(self)
@@ -170,15 +170,15 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.path_walk = utils.cfg_get_string(ini, section, "path_walk", npc, true,  gulag_name)
 	st.pp = patrol(st.path_walk):point(0)
 	st.position = {
-									{dir = vector():set(1, 0, 0),   used = nil},
-									{dir = vector():set(1, 0, 1),   used = nil},
-									{dir = vector():set(0, 0, 1),   used = nil},
-									{dir = vector():set(-1, 0, 1),  used = nil},
-									{dir = vector():set(-1, 0, 0),  used = nil},
-									{dir = vector():set(-1, 0, -1), used = nil},
-									{dir = vector():set(0, 0, -1),  used = nil},
-									{dir = vector():set(1, 0, -1),  used = nil}
-									}
+                    {dir = vector():set(1, 0, 0),   used = nil},
+                    {dir = vector():set(1, 0, 1),   used = nil},
+                    {dir = vector():set(0, 0, 1),   used = nil},
+                    {dir = vector():set(-1, 0, 1),  used = nil},
+                    {dir = vector():set(-1, 0, 0),  used = nil},
+                    {dir = vector():set(-1, 0, -1), used = nil},
+                    {dir = vector():set(0, 0, -1),  used = nil},
+                    {dir = vector():set(1, 0, -1),  used = nil}
+                  }
 	st.npc_pos = {}
 	local free = {}
 	for k,v in pairs(st.position) do
@@ -208,10 +208,13 @@ function get_dest_vertex(npc, pp, pos_tbl, npc_pos)
  		local tmp_pos = vector():set(0,0,0)
 		tmp_pos.x = pp.x + dir.x * radius
 		tmp_pos.z = pp.z + dir.z * radius
+		tmp_pos.y = pp.y
 	 	dest_vertex = level.vertex_id(tmp_pos)
 	 	if(dest_vertex==4294967295) or (dest_vertex==4294967296) then
-	 		if radius > 1 then
+	 		if radius >= 1 then
 	 			radius = radius - 0.5
+			else
+				abort("Invalid AI map at kamp[surge_hide] point [%s]", self.path_walk)
 	 		end
 	 	end
  	end
@@ -236,12 +239,12 @@ function stalker_can_switch_offline(npc)
 		end
 	end
 		if(npc_squad_id==nil) then
-				return surge_activated
+			return surge_activated
 		else
 			if board and (board.squads) and (board.squads[npc_squad_id]) and (board.squads[npc_squad_id].commander_id==npc.id) then
-			is_commander = true
-		end
-		if(surge_activated) then
+				is_commander = true
+			end
+			if(surge_activated) then
 				local npc_smart_id = board.squads[npc_squad_id].smart_id
 				if(board.smarts[npc_smart_id].smrt.surge_hide_avaliable) then
 				local tm = npc.tm
@@ -254,40 +257,40 @@ function stalker_can_switch_offline(npc)
 				end
 				if(task==nil) then
 					if(is_commander) then
-											board.squads[npc_squad_id].show_disabled = false
+						board.squads[npc_squad_id].show_disabled = false
 					end
-										return false
+					return false
 				end
 				local inside = false
 				for k,v in pairs(task.hide_tbl) do
 					local st = db.storage[v.id]
 					if st and st.object:inside(npc.position) then
-											inside = true
+						inside = true
 						break
 					end
 				end
 				if(inside) then
 					if(is_commander) then
-											board.squads[npc_squad_id].show_disabled = false
+						board.squads[npc_squad_id].show_disabled = false
 					end
-										return false
+					return false
 				else
 					if(is_commander) then
-											board.squads[npc_squad_id].show_disabled = true
+						board.squads[npc_squad_id].show_disabled = true
 					end
-										return true
+					return true
 				end
-					else
-								if(is_commander) then
-								board.squads[npc_squad_id].show_disabled = true
+            else
+				if(is_commander) then
+					board.squads[npc_squad_id].show_disabled = true
 				end
-							return true
-					end
+				return true
+			end
 		else
 			if(is_commander) then
-							board.squads[npc_squad_id].show_disabled = false
+				board.squads[npc_squad_id].show_disabled = false
 			end
-						return false
+			return false
 		end
 	end
 end
@@ -301,7 +304,7 @@ function save(package)
 	package:w_u32(time_before_surge)
 	utils.w_CTime(package, initialization_time)
 	package:w_u8(phase)
-		package:w_u8(cur_prop)
+	package:w_u8(cur_prop)
 	set_save_marker(package, "save", true, "SurgeHide")
 end
 
@@ -316,7 +319,7 @@ function load(reader)
 	time_before_surge = reader:r_u32()
 	initialization_time = utils.r_CTime(reader)
 	phase = reader:r_u8()
-		cur_prop = reader:r_u8()
+	cur_prop = reader:r_u8()
 	set_save_marker(reader, "load", true, "SurgeHide")
 end
 
@@ -330,28 +333,28 @@ function activate_surge(time)
 		else
 			level.set_weather_fx("fx_surge_day_1")
 		end
-			initialization_time = game.get_game_time()
-			time_before_surge = tonumber(time)
-			start_surge = true
-			phase = 1
-		elseif phase == 1 then
-			weather_surge = false
-			xr_sound.set_sound_play(db.actor:id(), "blowout_begin")
-			level.add_cam_effector("camera_effects\\shell_shock.anm", 20080501, false, "")
-			level.add_pp_effector("snd_shock.ppe", 20080401, false)
-			level.set_pp_effector_factor(20080401, 0, 1)
-			phase = 2
+        initialization_time = game.get_game_time()
+        time_before_surge = tonumber(time)
+        start_surge = true
+        phase = 1
+    elseif phase == 1 then
+        weather_surge = false
+        xr_sound.set_sound_play(db.actor:id(), "blowout_begin")
+        level.add_cam_effector("camera_effects\\shell_shock.anm", 20080501, false, "")
+        level.add_pp_effector("snd_shock.ppe", 20080401, false)
+        level.set_pp_effector_factor(20080401, 0, 1)
+        phase = 2
 	elseif phase == 2 then
-			phase = 3
-			local board = sim_board.get_sim_board()
-			local hide_tbl = {}
-			local n = 0
-			for k,v in pairs(board.smarts) do
-					if v.smrt.actor_hides~=nil then
-						for kk,vv in pairs(v.smrt.actor_hides) do
-							local obj = alife():object(vv)
-							if(obj) then
-								n = n + 1
+		phase = 3
+		local board = sim_board.get_sim_board()
+		local hide_tbl = {}
+		local n = 0
+		for k,v in pairs(board.smarts) do
+			if v.smrt.actor_hides~=nil then
+				for kk,vv in pairs(v.smrt.actor_hides) do
+					local obj = alife():object(vv)
+					if(obj) then
+						n = n + 1
 						hide_tbl[n] = obj
 					end
 				end
@@ -367,45 +370,45 @@ function activate_surge(time)
 		else
 			nearest_cover_dist = hide_tbl[1].position:distance_to(db.actor:position())
 		end
-			for i = 2, n do
-				local dist = 0
-				if game_graph():vertex(hide_tbl[i].m_game_vertex_id):level_id()~=alife():level_id() then
-					dist = 10000
-				else
-					dist = hide_tbl[i].position:distance_to(db.actor:position())
-				end
-				if dist<nearest_cover_dist then
-					nearest_cover_dist = dist
-					nearest_cover_id = hide_tbl[i].id
-				end
-			end
+        for i = 2, n do
+            local dist = 0
+            if game_graph():vertex(hide_tbl[i].m_game_vertex_id):level_id()~=alife():level_id() then
+                dist = 10000
+            else
+                dist = hide_tbl[i].position:distance_to(db.actor:position())
+            end
+            if dist<nearest_cover_dist then
+                nearest_cover_dist = dist
+                nearest_cover_id = hide_tbl[i].id
+            end
+        end
 
-			local task = task_manager.get_task_manager():select_task("hide_from_surge", nearest_cover_id, db.actor:character_community())
-			if task and task.status~="selected" then
-					task.wait_time = time*60
-					task:give_task(db.actor:character_community())
-					surge_finished = false
-					surge_activated = true
-					news_manager.send_tip(db.actor, game.translate_string("hide_from_surge_text1").." "..time.." "..game.translate_string("hide_from_surge_text2"))
-			end
-		end
+        local task = task_manager.get_task_manager():select_task("hide_from_surge", nearest_cover_id, db.actor:character_community())
+        if task and task.status~="selected" then
+            task.wait_time = time*60
+            task:give_task(db.actor:character_community())
+            surge_finished = false
+            surge_activated = true
+            news_manager.send_tip(db.actor, game.translate_string("hide_from_surge_text1").." "..time.." "..game.translate_string("hide_from_surge_text2"))
+        end
+    end
 end
 
 function surge_can_be_started(level)
 	if levels_surge_table[level] ~= nil then
 		local condlist = xr_logic.parse_condlist(nil, "xr_surge_hide", "condlist", levels_surge_table[level].condlist)
 		if db.actor then
-					local cond = xr_logic.pick_section_from_condlist(db.actor, db.actor, condlist)
-					if cond == "true" then
-							local surge = math.random(100)
-							if(surge<=cur_prop) and not(xr_surge_hide.surge_activated) then
+			local cond = xr_logic.pick_section_from_condlist(db.actor, db.actor, condlist)
+			if cond == "true" and not surge_activated then
+				local surge = math.random(100)
+				if surge <= cur_prop then
 					cur_prop = base_prop
-									return math.random(levels_surge_table[level].surge_time-10, levels_surge_table[level].surge_time+10)
+					return math.random(levels_surge_table[level].surge_time-10, levels_surge_table[level].surge_time+10)
 				else
 					cur_prop = cur_prop + add_prop
-							end
-					end
+				end
+			end
 		end
 	end
-		return nil
+	return nil
 end

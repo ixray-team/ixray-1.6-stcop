@@ -106,10 +106,10 @@ function set_squad_goodwill(squad_id, new_goodwill)
 	        local obj = db.storage[v] and db.storage[v].object
 	        if obj and db.actor then
 	            obj:set_goodwill(goodwill, db.actor)
-	            if not(db.storage.relations) then
-	                db.storage.relations = {}
+	            if not(db.goodwill.relations) then
+	                db.goodwill.relations = {}
 	            end
-	            db.storage.relations[k] = new_goodwill
+	            db.goodwill.relations[k] = new_goodwill
 	        end
 	    end
 	    board.squads[squad_id].relationship = new_goodwill

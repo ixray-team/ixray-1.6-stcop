@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_name_agr_smart_terrain_1_11">
+		<text>Az erdх szйle</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_2">
+		<text>Ingovбny tбborhely</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_3">
+		<text>Rйgi tбbor</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6">
+		<text>Szolgбlat bбzis</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_1">
+		<text>Йszaki bejбrat</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_2">
+		<text>Keleti bejбrat</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_near_2">
+		<text>Vцrцs sarok</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_2">
+		<text>Tбbor egy szikla mellett</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_3">
+		<text>Rejtekhely a sziklбk alatt</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_5">
+		<text>Tбborhely a bбzis mellett</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_3_5">
+		<text>Tбbor a szakadйkon</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_2">
+		<text>Tбborhely a torony alatt</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4">
+		<text>Stalker tбbor</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_1">
+		<text>A vasъti peron melletti terьlet</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_2">
+		<text>Hбtsу kijбrat</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_3">
+		<text>Keleti helyхrsйg</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_6">
+		<text>Helyхrsйg az ъton</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_2">
+		<text>Kхgyыrы</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_3">
+		<text>Barikбdok egy vagonnбl</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_4">
+		<text>Ъtelбgazбs</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7">
+		<text>Helyхrsйg a lyuknбl</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7u">
+		<text>Csatornarendszer bejбrat</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_4">
+		<text>Alagъt zsбkutca</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_6">
+		<text>Ideiglenes tбbor</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_4">
+		<text>Szemйtdombra vezetх ъt</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_5">
+		<text>Tбbor a dombon</text>
+	</string>
+	<string id="st_name_agru_smart_terrain_1">
+		<text>Agropromi csatornarendszer</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_11">
+		<text>Titkos tбbor</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_12">
+		<text>Domb a falun tъl</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_16">
+		<text>Erdei domb</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_12">
+		<text>Falukцzpont</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_14">
+		<text>Mбglya a fa alatt</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_2">
+		<text>Domboldal</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_4">
+		<text>Az erdх szйle az dombok alatt</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_14">
+		<text>Sбtor az erdхben</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_16">
+		<text>Katonai helyхrsйg</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_4">
+		<text>Tбbor a hegyekben</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_6">
+		<text>Tбbor az бrokban</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_7">
+		<text>Mбglya az erdхben</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_10">
+		<text>Mбglya az ьregben</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_11">
+		<text>Tбborhely a furgon mellett</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_13">
+		<text>Sбtortбbor</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_8">
+		<text>Tбbor a hнd alatt</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_9">
+		<text>Mбglya a hнd kцzelйben</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_10">
+		<text>Buszmegбllу</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_11">
+		<text>Tбborhely a dombon</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_12">
+		<text>Stalker sбtor</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_2">
+		<text>Tбvoli helyхrsйg</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_4">
+		<text>Mбglya az ъt mellett</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_6">
+		<text>Tбborhely a rйten</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_7">
+		<text>Semleges bбzis</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_9">
+		<text>Lift</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_3">
+		<text>Rejtekhely a sziklбk alatt</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_5">
+		<text>Tбborhely a fenyхerdхben</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_6">
+		<text>Tanya romok</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_7">
+		<text>Tбborhely a domboldalon</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_8">
+		<text>Helyхrsйg a hнd alatt</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_10">
+		<text>Hevenyйszett tбbor</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_11">
+		<text>Jбrmыraktбr</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_9">
+		<text>Mбglya a vasъt kцzelйben</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_10">
+		<text>Domb a jбrmыraktбron tъl</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_6">
+		<text>Csendes rejtekhely</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_8">
+		<text>Tбbor az бrokpart kцzelйben</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_9">
+		<text>Tбbor a fenyхerdхben</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_10">
+		<text>Mбglya az alagъtnбl</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_7">
+		<text>Tбvoli tбbor</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_5">
+		<text>Barikбdok</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_7">
+		<text>Tбbor a hegyekben</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_3">
+		<text>Rejtekhely az цsvйny mentйn</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_4">
+		<text>Rejtekhely a csцvek mцgцtt</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_2">
+		<text>Rejtekhely az ьregben</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_3">
+		<text>Бsatу tбbor</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_5">
+		<text>Raktбrйpьlet</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_6">
+		<text>Mбglya a szemйttelepen</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_7">
+		<text>Jбrmы roncstelep</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_8">
+		<text>Tбbor a munkatбboron tъl</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_2">
+		<text>Tбborhely a vцlgyben</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_3">
+		<text>Tбbor a daru mellett</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_4">
+		<text>Tбborhely a raktбrйpьlet kцzelйben</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_5">
+		<text>Tцrйspont</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_6">
+		<text>Szemйthalom szйle</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_7">
+		<text>Tбbor a buldуzer kцzelйben</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_8">
+		<text>Tбborhely az цsvйny elejйn</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_2">
+		<text>Йszaki helyхrsйg</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_4">
+		<text>Talбlkozбsi pont</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_5">
+		<text>Kincsvadбszok tбbora</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_6">
+		<text>Rozoga daru</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_8">
+		<text>Vevхбllomбs helyхrsйg</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_1">
+		<text>Eldugott tбborhely</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_3">
+		<text>Bolhapiac</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_4">
+		<text>Sбncterьlet</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_5">
+		<text>Tбbor a mezхn</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_6">
+		<text>Rejtekhely az erdхben</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_7">
+		<text>Sуderbбnya</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_2">
+		<text>Bбnyбsz-barlang</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_3">
+		<text>Kis ingovбny partja</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_4">
+		<text>Ъj tбbor</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_3">
+		<text>Vйdelmi бllбs</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_5">
+		<text>Lagъna</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_7">
+		<text>Tбbor az цsvйny mentйn</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_1">
+		<text>Telep</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_10">
+		<text>A tыzoltубllomбsra vezetх ъt</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_2">
+		<text>Hбz a keresztezхdйsnйl</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_3">
+		<text>Teraszos hбtsуkert</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_4">
+		<text>Barikбd zsбkutcбban</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_5">
+		<text>Minipark a garбzsok kцzelйben</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_6">
+		<text>Hбz a dombon</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_7">
+		<text>Rejtekhely a hнd kцzelйben</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_8">
+		<text>Tбbor a kapcsolуszoba kцzelйben</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_9">
+		<text>Tбborhely az йpнtkezйsen</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_help_smart">
+		<text>Zsбkutca</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_10">
+		<text>Mбglya a parton</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_5">
+		<text>Gйptelep</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_7">
+		<text>Tбbor az ingovбnyon</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_11">
+		<text>Dйli tanya</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_3">
+		<text>Tбbor a teherautу kцzelйben</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_12_2">
+		<text>Йszaki tanya</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_10">
+		<text>Цsvйny elбgazбsok</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_3">
+		<text>Csуnakkikцtх</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_7">
+		<text>Kхsziget</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_5">
+		<text>Falu romjai</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_7">
+		<text>Tбbor a fatцnknйl</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_10">
+		<text>Sуderbбnya</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_12">
+		<text>Halбszfalu</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_8">
+		<text>Szivattyъбllomбs</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_10">
+		<text>Kopбr sziget</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_11">
+		<text>Magasles</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_4">
+		<text>Hevenyйszett tбbor</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_7">
+		<text>Part barikбdok</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_8">
+		<text>Csуnaktбrolу</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_3">
+		<text>Tбbor az бrokpart alatt</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_7">
+		<text>Tбbor a kietlen terьleten</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_11">
+		<text>Цreg templom</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_4">
+		<text>Tбbor a nбdasban</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_8">
+		<text>Leйgett tanya</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_9">
+		<text>Цsvйny eleje</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_9_10">
+		<text>Fйlreesх mбglya</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_base">
+		<text>Tiszta Йgbolt bбzis</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_respawn">
+		<text>Rejtett tбborhely</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_terrain_csky_base">
+		<text>Tiszta Йgbolt bбzis</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_1">
+		<text>Tбborhely a sziklбk kцzцtt</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_10">
+		<text>Rejtekhely a kiszбradt fбknбl</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_2">
+		<text>Tбvoli sбncterьlet</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_3">
+		<text>Tбbor az alfцldцn</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_4">
+		<text>Tбvoli tanya</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_6">
+		<text>Lezuhant helikopter</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_2">
+		<text>Хrhбz</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_5">
+		<text>Megerхsнtett хrбllбs</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_8">
+		<text>Hatбr</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_2">
+		<text>Zsoldos tбbor</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_3">
+		<text>Vнztorony</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_5">
+		<text>Elhajlott gerenda</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_6">
+		<text>Ъtkeresztezхdйs</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_7">
+		<text>Tбbor a betonъton</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_8">
+		<text>Stalker tбbor</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_2">
+		<text>Barikбdok a dombon</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_4">
+		<text>Falubejбrat</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_5">
+		<text>Sбncterьlet a megбllуban</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_6">
+		<text>Teherautу a keresztezхdйsnйl</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_8">
+		<text>Kunyhу az ingovбnyban</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_6_4">
+		<text>Ъt a dombok kцzцtt</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_10">
+		<text>Lerobbant transzformбtor</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_11">
+		<text>Tбborhely a fenyхerdхben</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_12">
+		<text>Tбborhely a kaszбrnyбk kцzцtt</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_2">
+		<text>Bejбrat a katonai raktбrtelepre</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_4">
+		<text>Elhagyatott tanya</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_7">
+		<text>Sportpбlya</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_8">
+		<text>Bбzis hбtsуudvara</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_9">
+		<text>Elhagyatott alagъt</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_8_3">
+		<text>Viskу</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base2">
+		<text>Tбvoli sбncterьlet</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base3">
+		<text>Tбvoli tanya</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base4">
+		<text>Vнztorony</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base5">
+		<text>Zsoldos tбbor</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base_monster">
+		<text>Sбncterьlet a falu kцzelйben</text>
+	</string>
+	<string id="st_name_red_bridge_ally_smart">
+		<text>Limanszk kьlvбrosa</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_1">
+		<text>Tбborhely az ъt mentйn</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_2">
+		<text>Kaszбrnyбk a bбnyбban</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_3">
+		<text>A vйrszнvуk pihenхhelye</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_2">
+		<text>Tбborhely a hegyfok kцzelйben</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_3">
+		<text>Kutyatбbor</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_5">
+		<text>Boszorkбnykцr</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_5">
+		<text>Stalker pihenхhely</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_6">
+		<text>Kцdцs rйt</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_3">
+		<text>Sбtбni tбbor</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_6">
+		<text>Sцtйt Jar</text>
+	</string>
+	<string id="st_name_red_smart_terrain_bridge">
+		<text>A Limanszkba vezetх hнd</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters">
+		<text>Hнrhedt цsvйny</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_2">
+		<text>Mutбnsodъ</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_3">
+		<text>Erdхszйli barlang</text>
+	</string>
+	<string id="st_name_red_terrain_ally_smart">
+		<text>Limanszki bejбrat</text>
+	</string>
+	<string id="st_name_red_terrain_bandit_smart">
+		<text>Fosztogatу sбncok</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_10">
+		<text>Tбborhely a benzinkъt kцzelйben</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_9">
+		<text>Tetхterasz</text>
+	</string>
+	<string id="st_name_val_smart_terrain_1_2">
+		<text>Gyбrcsarnok</text>
+	</string>
+	<string id="st_name_val_smart_terrain_3_0">
+		<text>Barikбd a hнd kцzelйben</text>
+	</string>
+	<string id="st_name_val_smart_terrain_4_0">
+		<text>Tбbor a tanyбn</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_10">
+		<text>Szabad tбbor</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_7">
+		<text>Hatбr бllomбs</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_8">
+		<text>Sбtortбbor</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_4">
+		<text>Tбkolt tбbor</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_5">
+		<text>Tбborhely a vнzmosбs aljбn</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_6">
+		<text>Tбbor a mйlyben</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_0">
+		<text>Tбvoli kьltelek</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_11">
+		<text>Helyхrsйg a tanya kцzelйben</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_3">
+		<text>Jar apу hangбrja</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_4">
+		<text>Szabadsбg-bбzis</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_5">
+		<text>Egy Korty Szabadsбg bбr</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_6">
+		<text>Helyхrsйg a lift kцzelйben</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_8">
+		<text>Ingovбny tбborhely</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_6">
+		<text>Йszaki barikбdok</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_7">
+		<text>Megбllу</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_9">
+		<text>Sziget</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_10">
+		<text>Tбborhely nйhбny szikla kцzцtt</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_2">
+		<text>Gyцkerestьl kidхlt fa</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_4">
+		<text>Diszpйcser benzinkъt</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_5">
+		<text>Tбbor az dombok alatt</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_6">
+		<text>Kis, rйgi kocsi</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_1_6">
+		<text>Tбvoli hatбr</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_4">
+		<text>Gyбrudvar</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_5">
+		<text>Gyбrbejбrat</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_4">
+		<text>Hangбr</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_6">
+		<text>Alfцld relikviбkkal</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_2">
+		<text>Gyцkerestьl kidхlt fa</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_4">
+		<text>Dombtetх</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_5">
+		<text>Trafуhбz</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_3">
+		<text>Sziget az ingovбnyon</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_5">
+		<text>Бtkelх tбborhely</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_6">
+		<text>Helyхrsйg</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_2">
+		<text>Tбbor az ingovбnyon tъl</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_4">
+		<text>Tudуsok tбborhelye</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_for_squad_levsha">
+		<text>Titkos bejбrat</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_quest_saharov">
+		<text>Йpьletegyьttes kijбrat</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_saharov">
+		<text>Hбtsу kijбrat</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base1">
+		<text>Tбbor egy fйszerben</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base3">
+		<text>Torony a dombtetхn</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base4">
+		<text>Lefolyуcsх</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base5">
+		<text>Gyбrsarok</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base6">
+		<text>Garбzsok a perem kцzelйben</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_spawn">
+		<text>Csхnyнlбs</text>
+	</string>
+</string_table>

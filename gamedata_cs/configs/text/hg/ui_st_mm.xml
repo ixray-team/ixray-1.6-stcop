@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Clear">
+		<text>Tiszta</text>
+	</string>
+	<string id="Cloudy">
+		<text>Borъs</text>
+	</string>
+	<string id="Default">
+		<text>Kцzepes</text>
+	</string>
+	<string id="Extreme">
+		<text>Legnagyobb</text>
+	</string>
+	<string id="High">
+		<text>Magas</text>
+	</string>
+	<string id="Low">
+		<text>Alacsony</text>
+	</string>
+	<string id="Minimum">
+		<text>Legkisebb</text>
+	</string>
+	<string id="Night">
+		<text>Йjszaka</text>
+	</string>
+	<string id="Rain">
+		<text>Esх</text>
+	</string>
+	<string id="game type">
+		<text>TНPUS</text>
+	</string>
+	<string id="gd_master">
+		<text>Mester</text>
+	</string>
+	<string id="gd_novice">
+		<text>Ъjonc</text>
+	</string>
+	<string id="gd_stalker">
+		<text>Stalker</text>
+	</string>
+	<string id="gd_veteran">
+		<text>Veterбn</text>
+	</string>
+	<string id="icon">
+		<text>IKONOK</text>
+	</string>
+	<string id="map">
+		<text>TЙRKЙP</text>
+	</string>
+	<string id="mm_mp_allowvoting">
+		<text>Szavazбs engedйlyezйse</text>
+	</string>
+	<string id="mm_mp_anomalytime">
+		<text>Anomбlia idх (perc)</text>
+	</string>
+	<string id="mm_mp_artefactcapture">
+		<text>Relikviarablбs</text>
+	</string>
+	<string id="mm_mp_artefdelay">
+		<text>Relikvia-haladйk (mp)</text>
+	</string>
+	<string id="mm_mp_artefnum">
+		<text>Relikviбk szбma</text>
+	</string>
+	<string id="mm_mp_artefstay">
+		<text>Relikvia-йlettartam (perc)</text>
+	</string>
+	<string id="mm_mp_autoteambalance">
+		<text>Automatikus csapategyensъly</text>
+	</string>
+	<string id="mm_mp_autoteamswap">
+		<text>Automatikus csapatcsere</text>
+	</string>
+	<string id="mm_mp_avail_maps">
+		<text>ELЙRHETХ TЙRKЙPEK</text>
+	</string>
+	<string id="mm_mp_cancel">
+		<text>Mйgsem</text>
+	</string>
+	<string id="mm_mp_cd_key">
+		<text>CD kulcs</text>
+	</string>
+	<string id="mm_mp_check_cdkey">
+		<text>CD kulcs ellenхrzйse</text>
+	</string>
+	<string id="mm_mp_client">
+		<text>Kliens</text>
+	</string>
+	<string id="mm_mp_create">
+		<text>Lйtrehozбs</text>
+	</string>
+	<string id="mm_mp_damageblock">
+		<text>Sebezhetetlensйg (mp)</text>
+	</string>
+	<string id="mm_mp_damageblockindicator">
+		<text>Sebezhetetlensйg-mutatу</text>
+	</string>
+	<string id="mm_mp_deaths">
+		<text>Halбlok</text>
+	</string>
+	<string id="mm_mp_dedicated">
+		<text>Dedikбlt</text>
+	</string>
+	<string id="mm_mp_empty">
+		<text>Ьres</text>
+	</string>
+	<string id="mm_mp_filters">
+		<text>Szыrхk</text>
+	</string>
+	<string id="mm_mp_forcerespawn">
+		<text>Kйnyszerнtett ъ.й. (mp)</text>
+	</string>
+	<string id="mm_mp_fraglimit">
+		<text>Ponthatбr</text>
+	</string>
+	<string id="mm_mp_frags">
+		<text>Pont</text>
+	</string>
+	<string id="mm_mp_freezetime">
+		<text>Vбrakozбsi idх</text>
+	</string>
+	<string id="mm_mp_friendlyfire">
+		<text>Barбti tыz</text>
+	</string>
+	<string id="mm_mp_friendlyindicators">
+		<text>Barбtmutatу</text>
+	</string>
+	<string id="mm_mp_friendlynames">
+		<text>Barбtnevek</text>
+	</string>
+	<string id="mm_mp_full">
+		<text>Teli</text>
+	</string>
+	<string id="mm_mp_gamemode">
+		<text>Jбtйkmуd</text>
+	</string>
+	<string id="mm_mp_host_port">
+		<text>IP/lйtrehozу:port</text>
+	</string>
+	<string id="mm_mp_internet">
+		<text>Internet</text>
+	</string>
+	<string id="mm_mp_join">
+		<text>Csatlakozбs</text>
+	</string>
+	<string id="mm_mp_lan">
+		<text>Helyi hбlуzat</text>
+	</string>
+	<string id="mm_mp_listenservers">
+		<text>Szerverfigyelйs</text>
+	</string>
+	<string id="mm_mp_mapratation">
+		<text>Tйrkйplista</text>
+	</string>
+	<string id="mm_mp_maxplayers">
+		<text>Maximum jбtйkos</text>
+	</string>
+	<string id="mm_mp_network_connection">
+		<text>Hбlуzati kapcsolat</text>
+	</string>
+	<string id="mm_mp_noanomalies">
+		<text>Anomбliбk tiltбsa</text>
+	</string>
+	<string id="mm_mp_options">
+		<text>Beбllнtбsok</text>
+	</string>
+	<string id="mm_mp_password">
+		<text>Jelszу</text>
+	</string>
+	<string id="mm_mp_player_name">
+		<text>Jбtйkosnйv</text>
+	</string>
+	<string id="mm_mp_players">
+		<text>Jбtйkos</text>
+	</string>
+	<string id="mm_mp_publicserver">
+		<text>Nyilvбnos szerver</text>
+	</string>
+	<string id="mm_mp_quickrefresh">
+		<text>Gyors frissнtйs</text>
+	</string>
+	<string id="mm_mp_rateofchange">
+		<text>Egyьtthatу vбltбsa</text>
+	</string>
+	<string id="mm_mp_refresh">
+		<text>Teljes frissнtйs</text>
+	</string>
+	<string id="mm_mp_reinforcement">
+		<text>Erхsнtйs (mp)</text>
+	</string>
+	<string id="mm_mp_respawnoptions">
+		<text>Ъjraйledйs beбllнtбsok</text>
+	</string>
+	<string id="mm_mp_sel_maps">
+		<text>KIVБLASZTOTT TЙRKЙPEK</text>
+	</string>
+	<string id="mm_mp_server">
+		<text>Szerver</text>
+	</string>
+	<string id="mm_mp_server_list">
+		<text>Szerverlista</text>
+	</string>
+	<string id="mm_mp_server_prop">
+		<text>Szerverjellemzхk</text>
+	</string>
+	<string id="mm_mp_serverinfo">
+		<text>Szerverinformбciу</text>
+	</string>
+	<string id="mm_mp_serverlist">
+		<text>Szerver</text>
+	</string>
+	<string id="mm_mp_servername">
+		<text>Szervernйv</text>
+	</string>
+	<string id="mm_mp_serversettings">
+		<text>Szerverbeбllнtбsok</text>
+	</string>
+	<string id="mm_mp_spectator">
+		<text>Szemlйlх</text>
+	</string>
+	<string id="mm_mp_spectator_firsteye">
+		<text>Elsх szemйlyы</text>
+	</string>
+	<string id="mm_mp_spectator_freefly">
+		<text>Szabad kamera</text>
+	</string>
+	<string id="mm_mp_spectator_freelook">
+		<text>Pontban rцgzнtett</text>
+	</string>
+	<string id="mm_mp_spectator_lookat">
+		<text>Harmadik szemйlyы</text>
+	</string>
+	<string id="mm_mp_spectator_options">
+		<text>Szemlйlх beбllнtбsok</text>
+	</string>
+	<string id="mm_mp_spectator_teamonly">
+		<text>Csak csapat</text>
+	</string>
+	<string id="mm_mp_startweather">
+		<text>Kezdх idхjбrбs</text>
+	</string>
+	<string id="mm_mp_timelimit">
+		<text>Idхkorlбt (perc)</text>
+	</string>
+	<string id="mm_mp_warmuptime">
+		<text>Bemelegнtйs (mp)</text>
+	</string>
+	<string id="mm_mp_weatheroptions">
+		<text>Idхjбrбs beбllнtбsok</text>
+	</string>
+	<string id="mm_mp_withoutfriendlyfire">
+		<text>Barбti tыz tiltбsa</text>
+	</string>
+	<string id="mm_mp_withoutpassword">
+		<text>Jelszу tiltбsa</text>
+	</string>
+	<string id="mm_mp_withoutpunkbuster">
+		<text>PunkBuster tiltбsa</text>
+	</string>
+	<string id="mm_mp_withpassword">
+		<text>Jelszу hasznбlata</text>
+	</string>
+	<string id="mp_agroprom">
+		<text>Agropromi gyбr</text>
+	</string>
+	<string id="mp_atp">
+		<text>Jбrmыraktбr</text>
+	</string>
+	<string id="mp_bath">
+		<text>Kнsйrleti medence</text>
+	</string>
+	<string id="mp_darkvalley">
+		<text>Sцtйtvцlgy</text>
+	</string>
+	<string id="mp_factory">
+		<text>Jantari gyбr</text>
+	</string>
+	<string id="mp_lost_village">
+		<text>Elhagyatott falu</text>
+	</string>
+	<string id="mp_military_1">
+		<text>Katonai raktбrtelep</text>
+	</string>
+	<string id="mp_pool">
+		<text>Medence</text>
+	</string>
+	<string id="mp_railroad">
+		<text>Vasъtбllomбs</text>
+	</string>
+	<string id="mp_rostok">
+		<text>Rosztoki gyбr</text>
+	</string>
+	<string id="mp_workshop">
+		<text>Elhagyatott gyбr</text>
+	</string>
+	<string id="ping">
+		<text>PING</text>
+	</string>
+	<string id="players">
+		<text>JБTЙKOS</text>
+	</string>
+	<string id="renderer_r1">
+		<text>Statikus megvilбgнtбs</text>
+	</string>
+	<string id="renderer_r2">
+		<text>Teljes dinamikus megvilбgнtбs</text>
+	</string>
+	<string id="renderer_r2.5">
+		<text>Tovбbbfejl. teljes din. megvilбgнtбs</text>
+	</string>
+	<string id="renderer_r2a">
+		<text>Tereptбrgyak dinamikus megvilбgнtбsa</text>
+	</string>
+	<string id="renderer_r3">
+		<text>Tovбbbfejl. din. megvilбgнtбs (DX10)</text>
+	</string>
+	<string id="server name">
+		<text>SZERVERNЙV</text>
+	</string>
+	<string id="st_artefacthunt">
+		<text>Relikvia-vadбszat</text>
+	</string>
+	<string id="st_deathmatch">
+		<text>Mindenki mindenki ellen</text>
+	</string>
+	<string id="st_mp_gsfilter">
+		<text>Szыrх</text>
+	</string>
+	<string id="st_rank_experienced">
+		<text>Tapasztalt</text>
+	</string>
+	<string id="st_rank_legend">
+		<text>legendбs stalker</text>
+	</string>
+	<string id="st_rank_novice">
+		<text>ъjonc</text>
+	</string>
+	<string id="st_rank_professional">
+		<text>hivatбsos</text>
+	</string>
+	<string id="st_rank_veteran">
+		<text>veterбn</text>
+	</string>
+	<string id="st_team_deathmatch">
+		<text>Csapatjбtйk</text>
+	</string>
+	<string id="ui_mm_60_hz">
+		<text>Frekvencia: 60 Hz</text>
+	</string>
+	<string id="ui_mm_action">
+		<text>akciу</text>
+	</string>
+	<string id="ui_mm_advanced">
+		<text>Haladу</text>
+	</string>
+	<string id="ui_mm_alternative">
+		<text>Alternatнv</text>
+	</string>
+	<string id="ui_mm_anisotropic">
+		<text>Anizotrуp szыrйs</text>
+	</string>
+	<string id="ui_mm_apply">
+		<text>Elfogad</text>
+	</string>
+	<string id="ui_mm_back">
+		<text>Vissza</text>
+	</string>
+	<string id="ui_mm_blood">
+		<text>Vйr</text>
+	</string>
+	<string id="ui_mm_brightness">
+		<text>Fйnyerх</text>
+	</string>
+	<string id="ui_mm_cancel">
+		<text>Mйgsem</text>
+	</string>
+	<string id="ui_mm_check_updates">
+		<text>Jбtйkfrissнtйsek</text>
+	</string>
+	<string id="ui_mm_contrast">
+		<text>Kontraszt</text>
+	</string>
+	<string id="ui_mm_controls">
+		<text>Irбnyнtбs</text>
+	</string>
+	<string id="ui_mm_credits">
+		<text>Kйszнtхk</text>
+	</string>
+	<string id="ui_mm_crosshair_distance">
+		<text>Cйltбvolsбg kijelzйse</text>
+	</string>
+	<string id="ui_mm_default">
+		<text>Alapйrtelmezett</text>
+	</string>
+	<string id="ui_mm_delete">
+		<text>Tцrlйs</text>
+	</string>
+	<string id="ui_mm_delete_existing_file_q">
+		<text>Biztos, hogy tцrцlni akarod az бllomбnyt?</text>
+	</string>
+	<string id="ui_mm_detail_density">
+		<text>Fы rйszletessйge</text>
+	</string>
+	<string id="ui_mm_difficulty">
+		<text>Nehйzsйg</text>
+	</string>
+	<string id="ui_mm_disconnect">
+		<text>Kapcsolat bontбsa</text>
+	</string>
+	<string id="ui_mm_disconnect_message">
+		<text>Biztos, hogy bontani akarod a kapcsolatot?</text>
+	</string>
+	<string id="ui_mm_dof">
+		<text>Mйlysйgйlessйg</text>
+	</string>
+	<string id="ui_mm_dyn_crosshair">
+		<text>Dinamikus cйlkereszt</text>
+	</string>
+	<string id="ui_mm_dynamic_music">
+		<text>Dinamikus zene</text>
+	</string>
+	<string id="ui_mm_eax">
+		<text>EAX</text>
+	</string>
+	<string id="ui_mm_fullscreen">
+		<text>Teljes kйpernyх</text>
+	</string>
+	<string id="ui_mm_gameplay">
+		<text>Jбtйk</text>
+	</string>
+	<string id="ui_mm_gamma">
+		<text>Gamma</text>
+	</string>
+	<string id="ui_mm_geometry_lod">
+		<text>Tereptбrgyak rйszletessйge</text>
+	</string>
+	<string id="ui_mm_invert_mouse">
+		<text>Egйrmegfordнtбs</text>
+	</string>
+	<string id="ui_mm_key">
+		<text>gomb</text>
+	</string>
+	<string id="ui_mm_keyboard_setup">
+		<text>Billentyыzetkiosztбs</text>
+	</string>
+	<string id="ui_mm_last_save">
+		<text>Utolsу mentйs</text>
+	</string>
+	<string id="ui_mm_light_distance">
+		<text>Megvilбgнtбsi tбvolsбg</text>
+	</string>
+	<string id="ui_mm_load">
+		<text>Betцltйs</text>
+	</string>
+	<string id="ui_mm_load_game">
+		<text>Jбtйk betцltйse</text>
+	</string>
+	<string id="ui_mm_master">
+		<text>Mester</text>
+	</string>
+	<string id="ui_mm_master_volume">
+		<text>Effektek hangereje</text>
+	</string>
+	<string id="ui_mm_mouse_sense">
+		<text>Egйrйrzйkenysйg</text>
+	</string>
+	<string id="ui_mm_multiplayer">
+		<text>HБLУZATI JБTЙK</text>
+	</string>
+	<string id="ui_mm_multiplayer_n">
+		<text>Hбlуzati jбtйk</text>
+	</string>
+	<string id="ui_mm_music_volume">
+		<text>Zenehangerх</text>
+	</string>
+	<string id="ui_mm_need_restart">
+		<text>A vбltoztatбsok csak a jбtйk ъjraindнtбsa utбn lйpnek йletbe.</text>
+	</string>
+	<string id="ui_mm_newgame">
+		<text>Ъj jбtйk</text>
+	</string>
+	<string id="ui_mm_novice">
+		<text>Ъjonc</text>
+	</string>
+	<string id="ui_mm_npc_torch">
+		<text>NJK zseblбmpбk</text>
+	</string>
+	<string id="ui_mm_options">
+		<text>BEБLLНTБSOK</text>
+	</string>
+	<string id="ui_mm_options_n">
+		<text>Beбllнtбsok</text>
+	</string>
+	<string id="ui_mm_particles_distance">
+		<text>Rйszecsketбvolsбg</text>
+	</string>
+	<string id="ui_mm_quality_presets">
+		<text>Minхsйgbeбllнtбs</text>
+	</string>
+	<string id="ui_mm_quit2windows">
+		<text>Kilйpйs a Windowsba</text>
+	</string>
+	<string id="ui_mm_quit_game">
+		<text>Kilйpйs a jбtйkbуl</text>
+	</string>
+	<string id="ui_mm_quit_game_message">
+		<text>Biztos, hogy ki akarsz lйpni a jбtйkbуl?</text>
+	</string>
+	<string id="ui_mm_quit_windows_message">
+		<text>Biztos, hogy ki akarsz lйpni a Windowsba?</text>
+	</string>
+	<string id="ui_mm_r1_no_detail_textures">
+		<text>Rйszteles textъrбk tiltбsa</text>
+	</string>
+	<string id="ui_mm_r2_detail_bump">
+		<text>Felьlet йrdessйg</text>
+	</string>
+	<string id="ui_mm_r2_steep_parallax">
+		<text>Felьleteltolбs</text>
+	</string>
+	<string id="ui_mm_r2_sun">
+		<text>Napбrnyйk</text>
+	</string>
+	<string id="ui_mm_r2_sun_details">
+		<text>Fыбrnyйk</text>
+	</string>
+	<string id="ui_mm_r2_sun_quality">
+		<text>Napminхsйg</text>
+	</string>
+	<string id="ui_mm_r3_dynamic_wet_surfaces">
+		<text>Nedves felьletek</text>
+	</string>
+	<string id="ui_mm_r3_volumetric_smoke">
+		<text>Volumetrikus fьst</text>
+	</string>
+	<string id="ui_mm_render_2">
+		<text>Megjelenнtйs 2</text>
+	</string>
+	<string id="ui_mm_renderer">
+		<text>Megjelenнtйs</text>
+	</string>
+	<string id="ui_mm_resolution">
+		<text>Felbontбs</text>
+	</string>
+	<string id="ui_mm_return_game">
+		<text>Vissza a jбtйkba</text>
+	</string>
+	<string id="ui_mm_save">
+		<text>Mentйs</text>
+	</string>
+	<string id="ui_mm_save_game">
+		<text>Jбtйk mentйse</text>
+	</string>
+	<string id="ui_mm_show_crosshair">
+		<text>Cйlkereszt mutatбsa</text>
+	</string>
+	<string id="ui_mm_show_weapon">
+		<text>Fegyver mutatбsa</text>
+	</string>
+	<string id="ui_mm_simply">
+		<text>Alapvetх</text>
+	</string>
+	<string id="ui_mm_snd_device">
+		<text>Hangeszkцz</text>
+	</string>
+	<string id="ui_mm_soft_particles">
+		<text>Finomrйszecskйk</text>
+	</string>
+	<string id="ui_mm_soft_water">
+		<text>Valуszerы vнz</text>
+	</string>
+	<string id="ui_mm_sound">
+		<text>Hang</text>
+	</string>
+	<string id="ui_mm_sound_quality">
+		<text>Hangminхsйg</text>
+	</string>
+	<string id="ui_mm_ssao">
+		<text>Цnбrnyйk</text>
+	</string>
+	<string id="ui_mm_stalker">
+		<text>Stalker</text>
+	</string>
+	<string id="ui_mm_sun_quality">
+		<text>Бrnyйkminхsйg</text>
+	</string>
+	<string id="ui_mm_sun_shafts">
+		<text>Napsugarak</text>
+	</string>
+	<string id="ui_mm_supersample">
+		<text>Йlsimнtбs</text>
+	</string>
+	<string id="ui_mm_switch_torch">
+		<text>MI hasznбl zseblбmpбt</text>
+	</string>
+	<string id="ui_mm_texture_quality">
+		<text>Textъraminхsйg</text>
+	</string>
+	<string id="ui_mm_tips">
+		<text>NJK azonosнtбs</text>
+	</string>
+	<string id="ui_mm_veteran">
+		<text>Veterбn</text>
+	</string>
+	<string id="ui_mm_video">
+		<text>Megjelenнtйs</text>
+	</string>
+	<string id="ui_mm_vis_distance">
+		<text>Lбtуtбvolsбg</text>
+	</string>
+	<string id="ui_mm_volumetric_light">
+		<text>Volumetrikus fйny</text>
+	</string>
+	<string id="ui_mm_vsync">
+		<text>Fьggхleges szinkronizбciу</text>
+	</string>
+	<string id="ui_st_last_set">
+		<text>Utolsу tйtelek</text>
+	</string>
+	<string id="ui_st_preset1">
+		<text>1-es tйtelek</text>
+	</string>
+	<string id="ui_st_preset2">
+		<text>2-es tйtelek</text>
+	</string>
+	<string id="ui_st_preset3">
+		<text>3-as tйtelek</text>
+	</string>
+	<string id="ui_st_reset">
+		<text>Visszaбllнtбs</text>
+	</string>
+	<string id="ui_st_sell_all">
+		<text>Цsszes eladбsa</text>
+	</string>
+	<string id="version">
+		<text>Verziу</text>
+	</string>
+	<string id="ui_mm_r3_DX10_1">
+		<text>DX10.1 hasznбlata</text>
+	</string>
+	<string id="ui_mm_r3_gbuffer_opt">
+		<text>Puffer geometria optim.</text>
+	</string>
+	<string id="ui_mm_r3_MSAA">
+		<text>Teljes kйpernyхs йlsimнtбs</text>
+	</string>
+	<string id="st_capture_the_artefact">
+		<text>Relikviarablбs</text>
+	</string>
+	<string id="mm_mp_artret_time">
+		<text>Relikvia visszahozva (mp)</text>
+	</string>
+	<string id="mm_mp_actret_time">
+		<text>Juttasd vissza aktivбlбssal</text>
+	</string>
+	<string id="ui_mm_msaa_opt">
+		<text>Йlsimнtбs optimalizбlбsa</text>
+	</string>
+	<string id="ui_mm_msaa_alphatest">
+		<text>Alfatesztelt objektumok йlsimнtбsa</text>
+	</string>
+	<string id="st_opt_off">
+		<text>Kikapcsolva</text>
+	</string>
+	<string id="st_opt_low">
+		<text>Alacsony</text>
+	</string>
+	<string id="st_opt_medium">
+		<text>Kцzepes</text>
+	</string>
+	<string id="st_opt_high">
+		<text>Magas</text>
+	</string>
+	<string id="ui_st_invalid_saved_game">
+		<text>A mentett бllбs verziуja nem egyezik a jбtйk jelenlegi verziуjбval.</text>
+	</string>
+</string_table>

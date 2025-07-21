@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_af_medusa_name">
+		<text>, a „Medъza”</text>
+	</string>
+	<string id="st_af_medusa_descr">
+		<text>Ez a gravitбciуs relikvia magбba szнvja a radioaktнv rйszecskйket, csцkkentve ezбltal a sugбrzбs testre kifejtett hatбsбt. Nagyon elterjedt a Zуna terьletйn.</text>
+	</string>
+	<string id="st_af_cristall_flowe_name">
+		<text>„Kхvirбg”</text>
+	</string>
+	<string id="st_af_cristall_flowe_descr">
+		<text>Egy kх, mely az extrйm gravitбciуs erхk hatбsбra deformбlуdott. A grбnithoz hasonlу tulajdonsбgokat mutat, kцzepes vйdelmet biztosнt a pszi-kisugбrzбssal szemben, йs maga is radioaktнv.</text>
+	</string>
+	<string id="st_af_night_star_name">
+		<text>„Йjszakai csillag”</text>
+	</string>
+	<string id="st_af_night_star_descr">
+		<text>Ez az izzу relikvia irбnyнtott, alacsony gravitбciуjъ mezхt hoz lйtre. Csцkkenti a hбtizsбk sъlyбt, amikor a kцzelйben van. Szйles kцrben alkalmazzбk a maximбlis teher nцvelйse йrdekйben. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_vyvert_name">
+		<text>„Kicsavart”</text>
+	</string>
+	<string id="st_af_vyvert_descr">
+		<text>Ez a bizarr alakъ relikvia olyan helyek kцzelйben jelenik meg, ahol megnхtt a gravitбciуs aktivitбs. Amolyan szivacskйnt viselkedve kйpes magбba szнvni a radioaktнv rйszecskйket. Emiatt vйdelmet biztosнt a kнvьlrхl йrkezх radioaktнv rйszecskйkkel, valamint a korбbban mбr a testbe kerьlt rйszecskйkkel szemben is.</text>
+	</string>
+	<string id="st_af_gravi_name">
+		<text>„Gravi”</text>
+	</string>
+	<string id="st_af_gravi_descr">
+		<text>A gravi olyan fйmtartalmъ anyagokbуl jцn lйtre, melyek hosszabb ideig tartу tцmegvonzбsnak vannak kitйve. Emiatt kйpes fenntartani olyan anti-gravitбciуs teret, melynek kцszцnhetхen a stalkerek nagyobb sъlyokat kйpesek cipelni. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_gold_fish_name">
+		<text>„Aranyhal”</text>
+	</string>
+	<string id="st_af_gold_fish_descr">
+		<text>Az aranyhal gravitбciуs mezхk nagymйrtйkы interakciуja sorбn jцn lйtre. Х maga is irбnyнtott gravitбciуs mezхt gerjeszt, mely segнtsйgйvel a stalkerek nцvelni tudjбk a szбllнthatу tцmeg mennyisйgйt. Ennek kцszцnhetхen hatalmas a kereslet irбnta. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_blood_name">
+		<text>„Vйrkх”</text>
+	</string>
+	<string id="st_af_blood_descr">
+		<text>Polimerizбl nцvйnyi tцrmelйk, talaj йs csontok цsszekeveredйsйvel йs цsszeprйselхdйsйvel lйtrejцtt vцrцses formбciу. Rйszlegesen kйpes semlegesнteni a kйmiai anyagok okozta mйrgezйst. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_mincer_meat_name">
+		<text>„Hъscafat”</text>
+	</string>
+	<string id="st_af_mincer_meat_descr">
+		<text>Ez az organikus eredetы relikvia fosszilizбlt, mutбlуdott бllati szцvetekbхl jцn lйtre. Nyбlkбs vбladйkot termel, ami rйszlegesen kйpes semlegesнteni az emberi bхrre kerьlх veszйlyes kйmiai anyagok hatбsбt. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_soul_name">
+		<text>„Lйlek”</text>
+	</string>
+	<string id="st_af_soul_descr">
+		<text>Egyedi organikus relikvia melynek a tulajdonsбgai is egyediek. Valahogyan nцvelni tudja a test бltalбnos felйpьlйsi ьtemйt. Mйltбnyos бrбnak йs vonzу megjelenйsйnek kцszцnhetхen ez a relikvia minden gyыjtх бlma. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_fuzz_kolobok_name">
+		<text>„Kolobok”</text>
+	</string>
+	<string id="st_af_fuzz_kolobok_descr">
+		<text>Egy meglehetхsen ritka йs drбga relikvia, mely kйmiailag aktнv helyeken jцn lйtre. Nagy йrtйke annak kцszцnhetх, hogy nцveli a test egйszsйgi бllapotбt. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_baloon_name">
+		<text>„Buborйk”</text>
+	</string>
+	<string id="st_af_baloon_descr">
+		<text>Szбmos ьreges organikus forma цsszetйtele. Ez a relikvia egy gбzszerы anyagot bocsбt ki magбbуl, mely kйpes semlegesнteni a testben lйvх radioaktнv rйszecskйket. Ez a relikvia rendkнvьl йrtйkes.</text>
+	</string>
+	<string id="st_af_glass_name">
+		<text>„Szentjбnosbogбr”</text>
+	</string>
+	<string id="st_af_glass_descr">
+		<text>A szentjбnosbogбr ismeretlen energiбt bocsбt ki magбbуl, ami jelentхsen megnцveli az йlх szervezetek felйpьlйsi ьtemйt. Nйha mбsodpercek alatt kйpes szinte a halбlbуl is visszahozni az embert. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_fireball_name">
+		<text>„Tыzgolyу”</text>
+	</string>
+	<string id="st_af_fireball_descr">
+		<text>Bбr a tыzgolyу hх alapъ relikvia, nyugodtan kйzbe lehet fogni anйlkьl, hogy megйgetnй az ember kezйt. Йrtйke azйrt magas, mert egy kisebb sugarъ kцrцn belьl kйpes 24 fokos hхmйrsйkletet tartani, fьggetlenьl a kцrnyezetйtхl. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_cristall_name">
+		<text>„Kristбly”</text>
+	</string>
+	<string id="st_af_cristall_descr">
+		<text>Ez a relikvia olyan anomбliбk terьletйn jцn lйtre, ahol termikus tevйkenysйg folyik. Aktнvan kйpes magбba szнvni a nagy hхt, anйlkьl, hogy a felьlete felmelegedne. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_dummy_glassbeads_name">
+		<text>„Mama gyцngyei”</text>
+	</string>
+	<string id="st_af_dummy_glassbeads_descr">
+		<text>A mama gyцngyeinek nevezett relikvia termikus termйszete mбr nem titok, de a relikvia alakja mйg most is gondolkodуba ejti a tudуsokat. A keskenyebb rйszeken kibocsбtott sugбrzбs nцveli az йlхlйnyek anyagcserйjйt, nцvelve ezzel a sebek begyуgyulбsбnak sebessйgйt. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_eye_name">
+		<text>„Szem”</text>
+	</string>
+	<string id="st_af_eye_descr">
+		<text>Ez a relikvia, mely hasonlнt egy emberi szemre, jelentхsen megnцveli a test anyagcserйjйt, gyorsнtva ezzel a sebek gyуgyulбsбt. Tapasztalt stalkerek szerint a szem szerencsйt hoz. Igaz vagy nem, az biztos, hogy sokat йr. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_fire_name">
+		<text>„Lбng”</text>
+	</string>
+	<string id="st_af_fire_descr">
+		<text>Ez a ritka relikvia olyan helyeken jцn lйtre, ahol nagymйrtйkы a termikus aktivitбs. Erхs infravцrцs sugбrzбst bocsбt ki magбbуl, mely felerхsнti az anyagcsere folyamatokat. A sebek a szemьnk lбttбra gyуgyulnak be. Ez a relikvia rendkнvьl йrtйkes, de sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_electra_sparkler_name">
+		<text>„Csillagszуrу”</text>
+	</string>
+	<string id="st_af_electra_sparkler_descr">
+		<text>Az elektrosztatikus relikviбk csoportjбnak egyik fйnyes kйpviselхje. Kiegyenlнti az elektromos mezхben lйtrejцvх ingadozбsokat. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_electra_flash_name">
+		<text>„Villanбs”</text>
+	</string>
+	<string id="st_af_electra_flash_descr">
+		<text>Nagymйrtйkben kristбlyosodott molekulбinak kцszцnhetхen, ez az elektrosztatikus relikvia kйpes magбba szнvni az elektromos tцltйseket, нgy kйpes megvйdeni hordozуjбt akбr 5000 voltos бramьtйstхl is. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_electra_moonlight_name">
+		<text>„Holdfйny”</text>
+	</string>
+	<string id="st_af_electra_moonlight_descr">
+		<text>Ez a kьlцnleges elektrosztatikus relikvia kйpes a pszi-hullбmok befolyбsa alatt rezonбlni. A stalkereknek sikerьlt бtalakнtani ъgy, hogy pont ellentйtes fбzisban rezonбljon, kioltva ezzel a pszi-sugбrzбst. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_dummy_battery_name">
+		<text>„Elem”</text>
+	</string>
+	<string id="st_af_dummy_battery_descr">
+		<text>A relikvia lйtrejцtte tudomбnyos rejtйly. Csak annyit lehet tudni az цsszetйtelйrхl, hogy vannak benne dielektromos elemek, ennek ellenйre a tudуsok mйg nem tudtбk pontosan meghatбrozni azokat a feltйteleket, melyek a relikvia lйtrejцttйhez szьksйgesek. Szнverхsнtх kйpessйge miatt ez a relikvia nagyon nйpszerы a Zуnбba lбtogatуk, йs az ott йlхk kцrйben egyarбnt. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_dummy_dummy_name">
+		<text>„Hйj”</text>
+	</string>
+	<string id="st_af_dummy_dummy_descr">
+		<text>Ezt a relikviбt korбbban szemйtnek hittйk, mely nem rendelkezik semmilyen kьlцnleges kйpessйggel. A tudуsok nemrйg felfedeztйk, hogy ha huzamosabb ideig йrintkezik a testtel, erхteljesen stimulбlja a hordozу idegrendszerйt, ъgymond feltцltve energiбval. Sugбrzбst bocsбt ki.</text>
+	</string>
+	<string id="st_af_ice_name">
+		<text>„Hуpihe”</text>
+	</string>
+	<string id="st_af_ice_descr">
+		<text>Elsх lбtбsra ъgy nйz ki, mint a Kolobok nevы relikvia. Sokak szerint ez nem mбs, mint a Kolobok, бm tulajdonsбgai az erхteljes elektromos mezхnek kitйve  megerхsцdtek. A relikvia kivбlу stimulбlу kйpessйgekkel rendelkezik. jelentхsen nцveli hordozуja йleterejйt. Sugбrzбst bocsбt ki.</text>
+	</string>
+</string_table>
