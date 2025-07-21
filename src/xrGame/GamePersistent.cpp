@@ -866,6 +866,9 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 
 void CGamePersistent::SetLoadStageTitle(pcstr ls_title)
 {
+	if (Device.IsEditorMode()) // idk why, but SDK keeps crashing here for some reason, so I decided to just turn off load stages for SDK
+		return;
+
 	string256 buff;
 	if (ls_title)
 	{
