@@ -219,7 +219,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 		switch(UIPropertiesBox.GetClickedItem()->GetTAG())
 		{
 		case INVENTORY_TO_SLOT_ACTION:	
-			ToSlot(CurrentItem(), true);
+			ToSlot(CurrentItem(), true, CurrentIItem()->BaseSlot());
 			break;
 		case INVENTORY_TO_BELT_ACTION:	
 			ToBelt(CurrentItem(),false);
