@@ -61,15 +61,15 @@ float CActor::GetWeaponAccuracy() const
 }
 
 
-void CActor::g_fireParams	(const CHudItem* pHudItem, Fvector &fire_pos, Fvector &fire_dir)
+void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& fire_dir)
 {
 	CWeapon* pWeap = smart_cast<CWeapon*>(pHudItem);
-	if(HUDview() || (pWeap && pWeap->render_item_ui_query()))
+	if (!IsGameTypeSingle() || HUDview() || (pWeap && pWeap->render_item_ui_query()))
 	{
-		fire_pos		= Cameras().Position();
-		fire_dir		= Cameras().Direction();
+		fire_pos = Cameras().Position();
+		fire_dir = Cameras().Direction();
 
-		const CMissile	*pMissile = smart_cast <const CMissile*> (pHudItem);
+		const CMissile* pMissile = smart_cast <const CMissile*> (pHudItem);
 		if (pMissile)
 		{
 			Fvector offset;
@@ -79,7 +79,7 @@ void CActor::g_fireParams	(const CHudItem* pHudItem, Fvector &fire_pos, Fvector 
 	}
 	else
 	{
-		const CMissile	*pMissile = smart_cast <const CMissile*> (pHudItem);
+		const CMissile* pMissile = smart_cast <const CMissile*> (pHudItem);
 		if (pMissile)
 		{
 			fire_pos = pMissile->Position();
@@ -87,15 +87,15 @@ void CActor::g_fireParams	(const CHudItem* pHudItem, Fvector &fire_pos, Fvector 
 		}
 		if (pWeap)
 		{
-			fire_pos		= pWeap->get_LastFP();
-			fire_dir		= Cameras().Direction();
+			fire_pos = pWeap->get_LastFP();
+			fire_dir = Cameras().Direction();
 
-			if(pWeap->get_LastFD().dotproduct(Cameras().Direction()) >= 0.7f)
+			if (pWeap->get_LastFD().dotproduct(Cameras().Direction()) >= 0.7f)
 			{
 				float pick_dist = HUD().GetCurrentRayQuery().range;
 				clamp(pick_dist, 10.f, 1000.f);
 				Fvector picked_pos = Fvector(Cameras().Position()).mad(Cameras().Direction(), pick_dist);
-				fire_dir		= Fvector().sub(picked_pos, fire_pos).normalize_safe();
+				fire_dir = Fvector().sub(picked_pos, fire_pos).normalize_safe();
 			}
 		}
 	}

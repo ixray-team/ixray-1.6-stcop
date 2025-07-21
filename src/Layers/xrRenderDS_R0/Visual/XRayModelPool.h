@@ -22,6 +22,7 @@ class CDS0_ModelPool
 	typedef POOL::iterator										POOL_IT;
 	typedef xr_map<CDS0_RenderVisual*, shared_str>					REGISTRY;
 	typedef REGISTRY::iterator									REGISTRY_IT;
+
 private:
 	xr_vector<ModelDef>			Models;				// Reference / Base
 	xr_vector<CDS0_RenderVisual*>	ModelsToDelete;		// 
@@ -32,6 +33,7 @@ private:
 	BOOL						bAllowChildrenDuplicate;
 
 	void						Destroy();
+
 public:
 	CDS0_ModelPool();
 	virtual 				~CDS0_ModelPool();
