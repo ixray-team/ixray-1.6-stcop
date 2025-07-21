@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "actor_mp_server.h"
+#include "Level.h"
 
 CSE_ActorMP::CSE_ActorMP		(LPCSTR section) : 
 	inherited				(section)
@@ -29,16 +30,16 @@ void CSE_ActorMP::STATE_Write	(NET_Packet &packet)
 BOOL CSE_ActorMP::Net_Relevant	()
 {
 	if (get_health() <= 0) return (false);
-	return (inherited::Net_Relevant());
+	return !IsGameTypeSingle();
 }
 
 #ifdef XRGAME_EXPORTS
-void	CSE_ActorMP::on_death				(CSE_Abstract *killer)
+void CSE_ActorMP::on_death(CSE_Abstract* killer)
 {
 	inherited::on_death(killer);
-	
+
 	actor_mp_state				state;
-	fill_state					(state);
-	m_state_holder.relevant		(state);
+	fill_state(state);
+	m_state_holder.relevant(state);
 }
 #endif
