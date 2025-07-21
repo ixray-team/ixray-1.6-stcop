@@ -74,7 +74,7 @@ void CHUDTarget::Load		()
 
 	CUIXml xml;
 	u32 color;
-	xml.Load(CONFIG_PATH, UI_PATH, "hud_target.xml");
+	xml.Load(CONFIG_PATH, UI_PATH, "backend\\hud_target.xml");
 
 	LPCSTR texture = xml.Read("texture", 0, "ui\\cursor");
 	LPCSTR shader = xml.Read("shader", 0, "hud\\cursor");
