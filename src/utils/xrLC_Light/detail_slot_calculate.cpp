@@ -7,10 +7,10 @@
 #include "stdafx.h"
 #include "detail_slot_calculate.h"
 
-#include "cl_intersect.h"
 #include "base_lighting.h"
 #include "global_calculation_data.h"
 #include "../Shader_xrLC.h"
+#include "../../xrCore/Collision/cl_intersect.h"
 
 #undef LP_DEFAULT
 enum
