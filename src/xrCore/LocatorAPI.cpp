@@ -1383,8 +1383,7 @@ void CLocatorAPI::get_all_files_in_dir(xr_set<xr_string>& out, LPCSTR dir)
 {
 	for (auto& elem : m_files)
 	{
-		char LastChar = elem.name[xr_strlen(elem.name)-1];
-		if (std::isalpha(LastChar) && xr_strlen(elem.name) > xr_strlen(dir) && !xr_strncmp(elem.name, dir, xr_strlen(dir)-1))
+		if (xr_strlen(elem.name) > xr_strlen(dir) && std::isalpha(elem.name[xr_strlen(elem.name)-1]) &&  !xr_strncmp(elem.name, dir, xr_strlen(dir)-1))
 		{
 			out.emplace(elem.name);
 		}
