@@ -72,7 +72,7 @@
 
     <class>mil_hog</class>
     <community>killer</community> <terrain_sect>stalker_terrain</terrain_sect>
-    <snd_config>characters_voice\human_01\stalker\</snd_config>
+    <snd_config>characters_voice\human_03\killer\</snd_config>
 
     <rank>300</rank>
     <reputation>0</reputation>
