@@ -441,6 +441,19 @@ CRenderTarget::CRenderTarget()
 
 #undef DisplayRT
 
+		static int stack_levels = 3;
+		ImGui::SliderInt("Stack Levels", &stack_levels, 0, 8);
+
+		auto& perf = GPUEvents_Statistics();
+		for (size_t i = 0; i < perf.count; i++) {
+			auto& event = perf.events[i];
+			if (event.stack < stack_levels) {
+				u64 time_micros = (event.end - event.begin) / (event.freq / 1000000);
+				float time_milliseconds = (float)time_micros * 0.001f;
+				ImGui::Text("%*s%s: %.3fms", event.stack * 2, " ", event.name.c_str(), time_milliseconds);
+			}
+		}
+
 		ImGui::End();
 	});
 

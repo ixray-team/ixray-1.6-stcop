@@ -64,6 +64,7 @@ void	light::vis_prepare			()
 
 void	light::vis_update			()
 {
+	PROF_EVENT("vis_update");
 	//	. not pending	->>> return (early out)
 	//	. test-result:	visible:
 	//		. shedule for 'large' interval

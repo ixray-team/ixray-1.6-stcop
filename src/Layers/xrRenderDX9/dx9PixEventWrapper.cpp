@@ -1,15 +1,15 @@
 #include "stdafx.h"
 
-#include "../xrRender/Debug/dxPixEventWrapper.h"
+#include "../xrRender/Debug/dxGPUEventWrapper.h"
 
 #ifdef DEBUG_DRAW
 
-PixEventWrapper::PixEventWrapper(LPCWSTR wszName)
+GPUEventWrapper::GPUEventWrapper(const char* name, const wchar_t* wname)
 {
-    D3DPERF_BeginEvent(color_rgba(127, 0, 0, 255), wszName);
+    D3DPERF_BeginEvent(color_rgba(127, 0, 0, 255), wname);
 }
 
-PixEventWrapper::~PixEventWrapper()
+GPUEventWrapper::~GPUEventWrapper()
 {
     D3DPERF_EndEvent();
 }
