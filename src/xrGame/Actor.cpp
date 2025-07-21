@@ -591,6 +591,24 @@ void	CActor::Hit(SHit* pHDS)
 	//slow actor, only when he gets hit
 	m_hit_slowmo = conditions().HitSlowmo(pHDS);
 
+#if 0
+	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+	{
+		IsWaunded = conditions().GetHealth() < 0.5f;
+
+		if (IsWaunded)
+		{
+			cam_Set(eacFreeLook);
+
+			IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
+			if (K)
+			{
+				K->PlayCycle("waunded_1_idle_0");
+			}
+		}
+	}
+#endif
+
 	//---------------------------------------------------------------
 	if(		(Level().CurrentViewEntity()==this) && 
 			!g_dedicated_server && 
@@ -1679,23 +1697,32 @@ void CActor::shedule_Update	(u32 DT)
 
 	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 6.0f)
 	{
-		m_pObjectWeLookingAt			= smart_cast<CGameObject*>(RQ.O);
-		
-		CGameObject						*game_object = smart_cast<CGameObject*>(RQ.O);
-		m_pUsableObject					= smart_cast<CUsableScriptObject*>(game_object);
-		m_pInvBoxWeLookingAt			= smart_cast<CInventoryBox*>(game_object);
-		m_pPersonWeLookingAt			= smart_cast<CInventoryOwner*>(game_object);
-		m_pVehicleWeLookingAt			= smart_cast<CHolderCustom*>(game_object);
-		CEntityAlive* pEntityAlive		= smart_cast<CEntityAlive*>(game_object);
+		m_pObjectWeLookingAt = smart_cast<CGameObject*>(RQ.O);
+
+		CGameObject* game_object = smart_cast<CGameObject*>(RQ.O);
+		m_pUsableObject = smart_cast<CUsableScriptObject*>(game_object);
+		m_pInvBoxWeLookingAt = smart_cast<CInventoryBox*>(game_object);
+		m_pPersonWeLookingAt = smart_cast<CInventoryOwner*>(game_object);
+		m_pVehicleWeLookingAt = smart_cast<CHolderCustom*>(game_object);
+		CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(game_object);
+
+		CActor* IsPlayerPtr = smart_cast<CActor*>(pEntityAlive);
 		
 		if (m_pVehicleWeLookingAt != nullptr)
 		{
 			m_pPersonWeLookingAt = nullptr;
 		}
 
-		if (IsGameTypeSingle())
+		if (IsGameTypeSingleCompatible())
 		{
-			if (m_pUsableObject && m_pUsableObject->tip_text())
+			if (IsPlayerPtr != nullptr)
+			{
+				if (!IsPlayerPtr->IsWaunded)
+				{
+					m_pPersonWeLookingAt = nullptr;
+				}
+			}
+			else if (m_pUsableObject && m_pUsableObject->tip_text())
 			{
 				m_sDefaultObjAction = g_pStringTable->translate( m_pUsableObject->tip_text() );
 			}
