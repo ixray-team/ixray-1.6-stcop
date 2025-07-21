@@ -100,6 +100,7 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 		last_sound_exist[0] = true;
 	}
+
 	if (WeaponSoundExist(section, "snd_silencer_shot_last"))
 	{
 		m_layered_sounds.LoadSound(section, "snd_silencer_shot_last", "sndSilencerShotLast", false, m_eSoundShot);
@@ -125,10 +126,45 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	m_sounds.LoadSound(section,"snd_reload", "sndReload"	, true, m_eSoundReload		);
 
 	if (WeaponSoundExist(section, "snd_reload_empty"))
-		m_sounds.LoadSound(section,"snd_reload_empty", "sndReloadEmpty"	, true, m_eSoundReload);
+	{
+		m_sounds.LoadSound(section, "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReload);
+	}
 	
 	if (WeaponSoundExist(section, "snd_reload_misfire"))
+	{
 		m_sounds.LoadSound(section, "snd_reload_misfire", "sndReloadMis", true, m_eSoundReload);
+	}
+	else if (WeaponSoundExist(section, "snd_reload_jammed"))
+	{
+		m_sounds.LoadSound(section, "snd_reload_jammed", "sndReloadMis", true, m_eSoundReload);
+	}
+
+	if (WeaponSoundExist(section, "snd_reload_misfire_last"))
+	{
+		m_sounds.LoadSound(section, "snd_reload_misfire_last", "sndReloadMisLast", true, m_eSoundReload);
+	}
+	else if (WeaponSoundExist(section, "snd_reload_jammed_last"))
+	{
+		m_sounds.LoadSound(section, "snd_reload_jammed_last", "sndReloadMisLast", true, m_eSoundReload);
+	}
+
+	if (WeaponSoundExist(section, "snd_reload_misfire_detector"))
+	{
+		m_sounds.LoadSound(section, "snd_reload_misfire_detector", "sndReloadMisDet", true, m_eSoundReload);
+	}
+	else if (WeaponSoundExist(section, "snd_reload_jammed_detector"))
+	{
+		m_sounds.LoadSound(section, "snd_reload_jammed_detector", "sndReloadMisDet", true, m_eSoundReload);
+	}
+
+	if (WeaponSoundExist(section, "snd_reload_misfire_last_detector"))
+	{
+		m_sounds.LoadSound(section, "snd_reload_misfire_last_detector", "sndReloadMisLastDet", true, m_eSoundReload);
+	}
+	else if (WeaponSoundExist(section, "snd_reload_jammed_last_detector"))
+	{
+		m_sounds.LoadSound(section, "snd_reload_jammed_last_detector", "sndReloadMisLastDet", true, m_eSoundReload);
+	}
 
 	if (WeaponSoundExist(section, "snd_aim"))
 		m_sounds.LoadSound(section, "snd_aim", "sndAim", true, m_eSoundAim);
@@ -1146,14 +1182,40 @@ void CWeaponMagazined::PlayReloadSound()
 	if(!m_sounds_enabled)
 		return;
 
-	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
-
-	if (m_sounds.FindSoundItem("sndReloadMis", false) && IsMisfire() && bMisfireReload)
-		PlaySound("sndReloadMis", get_LastFP());
-	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && empty)
-		PlaySound("sndReloadEmpty", get_LastFP());
-	else
+	if (!ParentIsActor())
+	{
 		PlaySound("sndReload", get_LastFP());
+		return;
+	}
+
+	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+	CActor* actor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr;
+	bool detector = actor != nullptr && actor->GetDetector() != nullptr;
+
+	if (m_sounds.FindSoundItem("sndReloadMisLastDet", false) && IsMisfire() && bMisfireReload && empty && detector)
+	{
+		PlaySound("sndReloadMisLastDet", get_LastFP());
+	}
+	else if (m_sounds.FindSoundItem("sndReloadMisDet", false) && IsMisfire() && bMisfireReload && detector)
+	{
+		PlaySound("sndReloadMisDet", get_LastFP());
+	}
+	else if (m_sounds.FindSoundItem("sndReloadMisLast", false) && IsMisfire() && bMisfireReload && empty)
+	{
+		PlaySound("sndReloadMisLast", get_LastFP());
+	}
+	else if (m_sounds.FindSoundItem("sndReloadMis", false) && IsMisfire() && bMisfireReload)
+	{
+		PlaySound("sndReloadMis", get_LastFP());
+	}
+	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && empty)
+	{
+		PlaySound("sndReloadEmpty", get_LastFP());
+	}
+	else
+	{
+		PlaySound("sndReload", get_LastFP());
+	}
 }
 
 void CWeaponMagazined::switch2_Reload()
