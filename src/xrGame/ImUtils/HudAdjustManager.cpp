@@ -13,6 +13,9 @@
 #include "ImUtils.h"
 
 extern bool hud_adj_crosshair;
+extern bool forceFPDraw;
+extern bool forceFP2Draw;
+extern bool forceSPDraw;
 
 void ImGui_Render2DWidget(float grid_step=24.0f)
 {
@@ -150,10 +153,14 @@ void RenderHUDAdjustManager()
 
 						ImGui::Checkbox("Show crosshair", &hud_adj_crosshair);
 
+						ImGui::Checkbox("Show fire point box", &forceFPDraw);
+						ImGui::Checkbox("Show fire point 2 box", &forceFP2Draw);
+						ImGui::Checkbox("Show shell point box", &forceSPDraw);
+
 						auto p_draw_info_hud_item = [](attachable_hud_item* p_item, u8 index) -> void {
 							if (p_item)
 							{
-								char name[16] = "";
+								string16 name = "";
 								sprintf_s(name, sizeof(name), "attached_item#%d", index);
 								ImGui::SeparatorText(name);
 
@@ -161,72 +168,164 @@ void RenderHUDAdjustManager()
 							//	ImGui::Text("Item hud: %s", p_item->m_sect_name.c_str());
 								R_ASSERT2(p_item->m_parent, "must be valid!");
 
-								char item_header_name[32] = "";
-								char hud_header_name[64] = "";
+								string32 item_header_name = "";
+								string64 hud_header_name = "";
 								snprintf(hud_header_name, sizeof(hud_header_name), "Hud = %s##hh%d", p_item->m_parent->section_name().c_str(), index);
 
 								std::sprintf(item_header_name, "Item = %s##hh%d", p_item->m_sect_name.c_str(), index);
 
-								if (ImGui::CollapsingHeader(hud_header_name))
+								firedeps fd;
+								p_item->setup_firedeps(fd);
+								if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_fire_point))
 								{
-
-
-									ImGui::SeparatorText("Position##HUD");
-
-									if (ImGui::Button("Reset##HPosition"))
+									if (ImGui::CollapsingHeader("Fire point"))
 									{
-										// todo: implement
+										ImGui::SeparatorText("Offset##FP");
+
+										if (ImGui::Button("Reset##FPOffset"))
+										{
+											// todo: implement
+										}
+
+										if (ImGui::BeginTable("Data##FPP", 1))
+										{
+											ImGui::TableNextRow();
+
+											ImGui::TableNextColumn();
+
+
+											Fvector& position = p_item->m_measures.m_fire_point_offset;
+
+											ImGui::SliderFloat("X##FPP", &position.x, -1.0f, 1.0f);
+
+											ImGui::SliderFloat("Y##FPP", &position.y, -1.0f, 1.0f);
+
+											ImGui::SliderFloat("Z##FPP", &position.z, -1.0f, 1.0f);
+
+											ImGui::EndTable();
+										}
 									}
+								}
 
-									if (ImGui::BeginTable("Data##HUDP", 2))
+								if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_fire_point2))
+								{
+									if (ImGui::CollapsingHeader("Fire point 2"))
 									{
-										ImGui::TableNextRow();
+										ImGui::SeparatorText("Offset##FP2");
 
-										ImGui::TableNextColumn();
+										if (ImGui::Button("Reset##FP2Offset"))
+										{
+											// todo: implement
+										}
 
-										Fvector& position = p_item->hands_offset_pos();
+										if (ImGui::BeginTable("Data##FP2P", 1))
+										{
+											ImGui::TableNextRow();
 
-										ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f);
+											ImGui::TableNextColumn();
 
-										ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f);
 
-										ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f);
-										
-										
-										auto test = ImGui::GetContentRegionAvail();
-										ImGui::TableNextColumn();
-										ImGui_Render2DWidget(16.0f);
+											Fvector& position = p_item->m_measures.m_fire_point2_offset;
 
-										ImGui::EndTable();
+											ImGui::SliderFloat("X##FP2P", &position.x, -1.0f, 1.0f);
+
+											ImGui::SliderFloat("Y##FP2P", &position.y, -1.0f, 1.0f);
+
+											ImGui::SliderFloat("Z##FP2P", &position.z, -1.0f, 1.0f);
+
+											ImGui::EndTable();
+										}
 									}
+								}
 
-
-
-
-									ImGui::SeparatorText("Rotation##HUD");
-
-									if (ImGui::Button("Reset##HRotation"))
+								if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_shell_point))
+								{
+									if (ImGui::CollapsingHeader("Shell point"))
 									{
-										// todo: implement
+										ImGui::SeparatorText("Offset##SP");
+
+										if (ImGui::Button("Reset##SPOffset"))
+										{
+											// todo: implement
+										}
+
+										if (ImGui::BeginTable("Data##SPP", 1))
+										{
+											ImGui::TableNextRow();
+
+											ImGui::TableNextColumn();
+
+
+											Fvector& position = p_item->m_measures.m_shell_point_offset;
+
+											ImGui::SliderFloat("X##SPP", &position.x, -1.0f, 1.0f);
+
+											ImGui::SliderFloat("Y##SPP", &position.y, -1.0f, 1.0f);
+
+											ImGui::SliderFloat("Z##SPP", &position.z, -1.0f, 1.0f);
+
+											ImGui::EndTable();
+										}
 									}
-
-									if (ImGui::BeginTable("Data##HUDR", 2))
+								}
+								//if (!(p_item->m_monolithic && p_item->m_parent_hud_item->GetCurrentHudOffsetIdx() == 0))
+								{
+									if (ImGui::CollapsingHeader(hud_header_name))
 									{
-										ImGui::TableNextRow();
 
-										ImGui::TableNextColumn();
 
-										Fvector& rotation = p_item->hands_offset_rot();
+										ImGui::SeparatorText("Position##HUD");
 
-										ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f);
+										if (ImGui::Button("Reset##HPosition"))
+										{
+											// todo: implement
+										}
 
-										ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f);
+										if (ImGui::BeginTable("Data##HUDP", 1))
+										{
+											ImGui::TableNextRow();
 
-										ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f);
+											ImGui::TableNextColumn();
 
-										ImGui::TableNextColumn();
+											Fvector& position = p_item->hands_offset_pos();
 
-										ImGui::EndTable();
+											ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f);
+
+											ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f);
+
+											ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f);
+
+											ImGui::EndTable();
+										}
+
+
+
+
+										ImGui::SeparatorText("Rotation##HUD");
+
+										if (ImGui::Button("Reset##HRotation"))
+										{
+											// todo: implement
+										}
+
+										if (ImGui::BeginTable("Data##HUDR", 1))
+										{
+											ImGui::TableNextRow();
+
+											ImGui::TableNextColumn();
+
+											Fvector& rotation = p_item->hands_offset_rot();
+
+											ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f);
+
+											ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f);
+
+											ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f);
+
+											ImGui::TableNextColumn();
+
+											ImGui::EndTable();
+										}
 									}
 								}
 
@@ -234,7 +333,7 @@ void RenderHUDAdjustManager()
 								{
 									ImGui::SeparatorText("Position##Item");
 
-									if (ImGui::BeginTable("Data##HUDPI", 2))
+									if (ImGui::BeginTable("Data##HUDPI", 1))
 									{
 										ImGui::TableNextRow();
 
@@ -248,17 +347,12 @@ void RenderHUDAdjustManager()
 
 										ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f);
 
-
-										auto test = ImGui::GetContentRegionAvail();
-										ImGui::TableNextColumn();
-										ImGui_Render2DWidget(16.0f);
-
 										ImGui::EndTable();
 									}
 
 									ImGui::SeparatorText("Rotation##Item");
 
-									if (ImGui::BeginTable("Data##HUDR", 2))
+									if (ImGui::BeginTable("Data##HUDR", 1))
 									{
 										ImGui::TableNextRow();
 
