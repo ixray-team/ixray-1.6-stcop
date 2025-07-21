@@ -37,7 +37,7 @@
 #include "device.h"
 #include "../xrCore/FS.h"
 
-#include "../xrCDB/xrXRC.h"
+#include "../xrCore/Collision/xrXRC.h"
 
 #include "../xrSound/Sound.h"
 #include "bone.h"

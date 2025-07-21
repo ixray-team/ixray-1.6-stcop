@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 
 #ifndef ETOOLS_API
 #	ifdef ETOOLS_EXPORTS

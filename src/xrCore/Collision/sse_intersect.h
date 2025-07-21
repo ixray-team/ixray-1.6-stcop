@@ -1,5 +1,5 @@
 #pragma once
-#include "StdAfx.h"
+#include "stdafx.h"
 
 // can you say "barebone"?
 #ifndef _MM_ALIGN16

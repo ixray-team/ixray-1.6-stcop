@@ -2,19 +2,16 @@
 
 
 #include "EmbreeRayTrace.h"
-#include "../../xrcdb/xrcdb.h"
+#include "../../xrCore/Collision/xrCDB.h"
 
 #include "xrLC_GlobalData.h"
-#include "xrface.h"
-#include "xrdeflector.h"
+#include "xrFace.h"
+#include "xrDeflector.h"
 #include "light_point.h"
 #include "R_light.h"
 
 #include <../xrForms/CompilersUI.h>
 extern CompilersMode gCompilerMode;
-
-//Intel Code Start
-#include <atomic>
 
 // Важные параметры
 // INTIALIZE GEOMETRY, SCENE QUALITY TYPE

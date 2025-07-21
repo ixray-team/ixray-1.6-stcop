@@ -31,8 +31,8 @@
 #include "../FreeMagic/MgcLinearSystem.h"
 #include "../FreeMagic/MgcConvexHull2D.h"
 
-#include "../XrCore/doug_lea_allocator.h"
-#include "../XrCore/FixedMap.h"
+#include "../xrCore/doug_lea_allocator.h"
+#include "../xrCore/FixedMap.h"
 
 #include "../../xrEngine/LightAnimLibrary.h"
 #include "../../xrEngine/motion.h"
@@ -52,15 +52,15 @@
 #include "../../xrEngine/CameraManager.h"
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/x_ray.h"
-#include "../../xrCDB/xrCDB.h"
-#include "../../xrCDB/ISpatial.h"
+#include "../../xrCore/Collision/xrCDB.h"
+#include "../../xrCore/Collision/ISpatial.h"
 #include "../../Include/xrRender/ParticleCustom.h"
 #include "../../Layers/xrRender/DetailManager.h"
 #include "../../Layers/xrRender/ParticleEffect.h"
 #include "../../Layers/xrRender/ParticleEffectDef.h"
 #include "../../Layers/xrRender/ParticleGroup.h"
 #include "../../xrEngine/EngineAPI.h"
-#include "../../xrEngine/cl_intersect.h"
+#include "../../xrCore/Collision/cl_intersect.h"
 
 #include "../../xrServerEntities/xrMessages.h"
 

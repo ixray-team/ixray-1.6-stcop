@@ -23,7 +23,7 @@
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 
-#include "../xrCDB/xrCDB.h"
+#include "../xrCore/Collision/xrCDB.h"
 #include "Sound.h"
 
 #define ENGINE_API

@@ -6,7 +6,7 @@
 #include "xr_object.h"
 #include "xr_collide_form.h"
 #include "IGame_Level.h"
-#include "cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 
 using Feel::Vision;
 
