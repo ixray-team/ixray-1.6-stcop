@@ -64,6 +64,8 @@ void MigrateToGameWindow()
 	SDL_SetWindowBordered(g_AppInfo.Window, true);
 	SDL_RaiseWindow(g_AppInfo.Window);
 	Console->Execute("vid_restart");
+	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Device.Width, &Device.Height);
+	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
 }
 
 int APIENTRY WinMain
