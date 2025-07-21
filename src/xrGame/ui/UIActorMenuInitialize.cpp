@@ -19,7 +19,7 @@
 #include "alife_simulator.h"
 #include "object_broker.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
-#include "../UIHelperGame.h"
+#include "UIHelperGame.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/ui_base.h"
 #include "../../xrEngine/string_table.h"

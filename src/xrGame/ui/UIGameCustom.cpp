@@ -1,0 +1,743 @@
+#include "StdAfx.h"
+#include "pch_script.h"
+#include "UIGameCustom.h"
+#include "Level.h"
+#include "UIHelperGame.h"
+#include "../xrUI/Widgets/UIStatic.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
+
+#include "object_broker.h"
+#include "../xrEngine/string_table.h"
+
+#include "InventoryOwner.h"
+#include "ui/UIActorMenu.h"
+#include "ui/UIPdaWnd.h"
+#include "ui/UIMainIngameWnd.h"
+#include "ui/UIMessagesWindow.h"
+#include "ui/UIHudStatesWnd.h"
+#include "ui/UITalkWnd.h"
+#include "Actor.h"
+#include "Inventory.h"
+#include "game_cl_base.h"
+
+#include "../xrEngine/x_ray.h"
+#include "ui/UICellItem.h"
+
+EGameIDs ParseStringToGameType(LPCSTR str);
+
+bool predicate_sort_stat(const SDrawStaticStruct* s1, const SDrawStaticStruct* s2) 
+{
+	return ( s1->IsActual() > s2->IsActual() );
+}
+
+struct predicate_find_stat 
+{
+	LPCSTR	m_id;
+	predicate_find_stat(LPCSTR id):m_id(id)	{}
+	bool	operator() (SDrawStaticStruct* s) 
+	{
+		return ( s->m_name==m_id );
+	}
+};
+
+CUIGameCustom::CUIGameCustom()
+	: m_msgs_xml(nullptr),		m_ActorMenu(nullptr), 
+	  m_PdaMenu(nullptr),		m_window(nullptr), 
+	  UIMainIngameWnd(nullptr), m_pMessagesWnd(nullptr), TalkMenu(nullptr)
+{
+	ShowGameIndicators		(true);
+	ShowCrosshair			(true);
+
+	g_pGameCustom = this;
+}
+
+bool g_b_ClearGameCaptions = false;
+
+CUIGameCustom::~CUIGameCustom()
+{
+	delete_data(m_custom_statics);
+	g_b_ClearGameCaptions	= false;
+	delete_data(TalkMenu);
+	g_pGameCustom = nullptr;
+}
+
+bool CUIGameCustom::HasShownDialogs() const
+{
+	return ActorMenu().IsShown() || PdaMenu().IsShown();
+}
+
+void CUIGameCustom::OnFrame() 
+{
+	PROF_EVENT("CUIGameCustom::OnFrame");
+	CDialogHolder::OnFrame();
+	st_vec_it it = m_custom_statics.begin();
+	st_vec_it it_e = m_custom_statics.end();
+	for(;it!=it_e;++it)
+		(*it)->Update();
+
+	std::sort(	it, it_e, predicate_sort_stat );
+
+	
+	while(!m_custom_statics.empty() && !m_custom_statics.back()->IsActual())
+	{
+		delete_data					(m_custom_statics.back());
+		m_custom_statics.pop_back	();
+	}
+	
+	if(g_b_ClearGameCaptions)
+	{
+		delete_data				(m_custom_statics);
+		g_b_ClearGameCaptions	= false;
+	}
+	m_window->Update();
+
+	//update windows
+	UIMainIngameWnd->Update();
+	m_pMessagesWnd->Update();
+}
+
+void CUIGameCustom::Render()
+{
+	PROF_EVENT("CUIGameCustom::Render");
+	st_vec_it it = m_custom_statics.begin();
+	st_vec_it it_e = m_custom_statics.end();
+	for(;it!=it_e;++it)
+		(*it)->Draw();
+
+	m_window->Draw();
+
+	CEntity* pEntity = smart_cast<CEntity*>(Level().CurrentEntity());
+	if (pEntity)
+	{
+		CActor* pActor			=	smart_cast<CActor*>(pEntity);
+		if(pActor && pActor->g_Alive() && psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2))
+		{
+			u16 ISlot = pActor->inventory().FirstSlot();
+			u16 ESlot = pActor->inventory().LastSlot();
+
+			for( ; ISlot<=ESlot; ++ISlot)
+			{
+				PIItem itm			= pActor->inventory().ItemFromSlot(ISlot);
+				if(itm && itm->render_item_ui_query())
+					itm->render_item_ui();
+			}
+		}
+
+		if( GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT) )
+			UIMainIngameWnd->Draw();
+	}
+
+	m_pMessagesWnd->Draw();
+
+	DoRenderDialogs();
+}
+
+SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstance)
+{
+	if(bSingleInstance)
+	{
+		st_vec::iterator it = std::find_if(m_custom_statics.begin(),m_custom_statics.end(), predicate_find_stat(id) );
+		if(it!=m_custom_statics.end())
+			return (*it);
+	}
+	
+	CUIXmlInit xml_init;
+	m_custom_statics.push_back		( new SDrawStaticStruct() );
+	SDrawStaticStruct* sss			= m_custom_statics.back();
+
+	sss->m_static					= new CUIStatic();
+	sss->m_name						= id;
+	xml_init.InitStatic				(*m_msgs_xml, id, 0, sss->m_static);
+	float ttl						= m_msgs_xml->ReadAttribFlt(id, 0, "ttl", -1);
+	if(ttl>0.0f)
+		sss->m_endTime				= Device.fTimeGlobal + ttl;
+
+	return sss;
+}
+
+SDrawStaticStruct * CUIGameCustom::AddHudMessage(LPCSTR text, LPCSTR text2, LPCSTR id, bool trnslate_second_text, float time, bool bSingleInstance) {
+	VERIFY(text);
+
+	SDrawStaticStruct* HudMessage = AddCustomStatic(id ? id : "hud_message", bSingleInstance);
+	HudMessage->m_endTime = Device.fTimeGlobal + time;
+
+	string1024 str;
+
+	if (text2) {
+		xr_sprintf(str, "%s : %s", *g_pStringTable->translate(text), trnslate_second_text ? *g_pStringTable->translate(text2) : text2);
+	} else {
+		xr_sprintf(str, "%s", *g_pStringTable->translate(text));
+	}
+
+	HudMessage->wnd()->TextItemControl()->SetText(str);
+	return HudMessage;
+}
+
+SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
+{
+	st_vec::iterator it = std::find_if(m_custom_statics.begin(),m_custom_statics.end(), predicate_find_stat(id));
+	if(it!=m_custom_statics.end())
+		return (*it);
+
+	return nullptr;
+}
+
+void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
+{
+	st_vec::iterator it = std::find_if(m_custom_statics.begin(),m_custom_statics.end(), predicate_find_stat(id) );
+	if(it!=m_custom_statics.end())
+	{
+			delete_data				(*it);
+		m_custom_statics.erase	(it);
+	}
+}
+
+void CUIGameCustom::OnInventoryAction(PIItem item, u16 action_type)
+{
+	if ( m_ActorMenu->IsShown() )
+		m_ActorMenu->OnInventoryAction( item, action_type );
+}
+
+#include "ui/UIGameTutorial.h"
+
+extern CUISequencer* g_tutorial;
+extern CUISequencer* g_tutorial2;
+
+bool CUIGameCustom::ShowActorMenu()
+{
+	if ( m_ActorMenu->IsShown() )
+	{
+		m_ActorMenu->HideDialog();
+	}else
+	{
+		HidePdaMenu();
+		CInventoryOwner* pIOActor	= smart_cast<CInventoryOwner*>( Level().CurrentViewEntity() );
+		VERIFY						(pIOActor);
+		m_ActorMenu->SetActor		(pIOActor);
+		m_ActorMenu->SetMenuMode	(mmInventory);
+		m_ActorMenu->ShowDialog		(true);
+	}
+	return true;
+}
+
+void CUIGameCustom::HideActorMenu()
+{
+	if ( m_ActorMenu->IsShown() )
+	{
+		m_ActorMenu->HideDialog();
+	}
+}
+
+//Alundaio:
+void CUIGameCustom::UpdateActorMenu()
+{
+	if (m_ActorMenu->IsShown())
+	{
+		m_ActorMenu->UpdateActor();
+		m_ActorMenu->RefreshCurrentItemCell();
+	}
+}
+
+CScriptGameObject* CUIGameCustom::CurrentItemAtCell()
+{
+	CUICellItem* itm = m_ActorMenu->CurrentItem();
+	if (!itm->m_pData)
+		return (0);
+
+	PIItem IItm = (PIItem)itm->m_pData;
+	if (!IItm)
+		return (0);
+
+	CGameObject* GO = smart_cast<CGameObject*>(IItm);
+
+	if (GO)
+		return GO->lua_game_object();
+
+	return (0);
+}
+//-Alundaio
+
+void CUIGameCustom::HideMessagesWindow()
+{
+	if ( m_pMessagesWnd->IsShown() )
+		m_pMessagesWnd->Show(false);
+}
+
+void CUIGameCustom::ShowMessagesWindow()
+{
+	if ( !m_pMessagesWnd->IsShown() )
+		m_pMessagesWnd->Show(true);
+}
+
+bool CUIGameCustom::ShowPdaMenu()
+{
+	HideActorMenu();
+	m_PdaMenu->ShowDialog(true);
+	return true;
+}
+
+void CUIGameCustom::HidePdaMenu()
+{
+	if ( m_PdaMenu->IsShown() )
+	{
+		m_PdaMenu->HideDialog();
+	}
+}
+
+void  CUIGameCustom::StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner)
+{
+	//.	if( MainInputReceiver() )	return;
+
+	m_ActorMenu->SetActor(pActorInv);
+	m_ActorMenu->SetPartner(pOtherOwner);
+
+	m_ActorMenu->SetMenuMode(mmTrade);
+	m_ActorMenu->ShowDialog(true);
+}
+
+void  CUIGameCustom::StartUpgrade(CInventoryOwner* pActorInv, CInventoryOwner* pMech)
+{
+	//.	if( MainInputReceiver() )	return;
+
+	m_ActorMenu->SetActor(pActorInv);
+	m_ActorMenu->SetPartner(pMech);
+
+	m_ActorMenu->SetMenuMode(mmUpgrade);
+	m_ActorMenu->ShowDialog(true);
+}
+
+void CUIGameCustom::StartTalk(bool disable_break)
+{
+	RemoveCustomStatic("main_task");
+	RemoveCustomStatic("secondary_task");
+
+	TalkMenu->b_disable_break = disable_break;
+	TalkMenu->ShowDialog(true);
+}
+
+void CUIGameCustom::HideShownDialogs()
+{
+	HideActorMenu();
+	HidePdaMenu();
+	CUIDialogWnd* mir = TopInputReceiver();
+	if (mir && mir == TalkMenu)
+	{
+		mir->HideDialog();
+	}
+}
+
+void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner) //Deadbody search
+{
+	if (TopInputReceiver())		return;
+
+	m_ActorMenu->SetActor(pActorInv);
+	m_ActorMenu->SetPartner(pOtherOwner);
+
+	m_ActorMenu->SetMenuMode(mmDeadBodySearch);
+	m_ActorMenu->ShowDialog(true);
+}
+
+void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox) //Deadbody search
+{
+	if (TopInputReceiver())		return;
+
+	m_ActorMenu->SetActor(pActorInv);
+	m_ActorMenu->SetInvBox(pBox);
+	VERIFY(pBox);
+
+	m_ActorMenu->SetMenuMode(mmDeadBodySearch);
+	m_ActorMenu->ShowDialog(true);
+}
+
+void CUIGameCustom::SetClGame(game_cl_GameState* g)
+{
+	g->SetGameUI(this);
+}
+
+void CUIGameCustom::UnLoad()
+{
+	xr_delete					(m_msgs_xml);
+	xr_delete					(m_ActorMenu);
+	xr_delete					(m_PdaMenu);
+	xr_delete					(m_window);
+	xr_delete					(UIMainIngameWnd);
+	xr_delete					(m_pMessagesWnd);
+	xr_delete					(TalkMenu);
+}
+
+void CUIGameCustom::Load()
+{
+	if(g_pGameLevel)
+	{
+		R_ASSERT				(nullptr==m_msgs_xml);
+		m_msgs_xml				= new CUIXml();
+		m_msgs_xml->Load		(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+
+		R_ASSERT				(nullptr==TalkMenu);
+		TalkMenu				= new CUITalkWnd();
+
+		R_ASSERT				(nullptr==m_ActorMenu);
+		m_ActorMenu				= new CUIActorMenu		();
+
+		R_ASSERT				(nullptr==m_PdaMenu);
+		m_PdaMenu				= new CUIPdaWnd			();
+		
+		R_ASSERT				(nullptr==m_window);
+		m_window				= new CUIWindow			();
+
+		R_ASSERT				(nullptr==UIMainIngameWnd);
+		UIMainIngameWnd			= new CUIMainIngameWnd	();
+		UIMainIngameWnd->Init	();
+
+		R_ASSERT				(nullptr==m_pMessagesWnd);
+		m_pMessagesWnd			= new CUIMessagesWindow();
+
+		
+		Init					(0);
+		Init					(1);
+		Init					(2);
+	}
+}
+
+void CUIGameCustom::OnConnected()
+{
+	if(g_pGameLevel)
+	{
+		if(!UIMainIngameWnd)
+			Load();
+
+		UIMainIngameWnd->OnConnected();
+	}
+}
+
+void CUIGameCustom::CommonMessageOut(LPCSTR text)
+{
+	m_pMessagesWnd->AddLogMessage(text);
+}
+void CUIGameCustom::UpdatePda()
+{
+	PdaMenu().UpdatePda();
+}
+
+void CUIGameCustom::update_fake_indicators(u8 type, float power)
+{
+	UIMainIngameWnd->get_hud_states()->FakeUpdateIndicatorType(type, power);
+}
+
+void CUIGameCustom::enable_fake_indicators(bool enable)
+{
+	UIMainIngameWnd->get_hud_states()->EnableFakeIndicators(enable);
+}
+
+SDrawStaticStruct::SDrawStaticStruct	()
+{
+	m_static	= nullptr;
+	m_endTime	= -1.0f;	
+}
+
+void SDrawStaticStruct::destroy()
+{
+	delete_data(m_static);
+}
+
+bool SDrawStaticStruct::IsActual() const
+{
+	if(m_endTime<0)			return true;
+	return (Device.fTimeGlobal < m_endTime);
+}
+
+void SDrawStaticStruct::SetText(LPCSTR text)
+{
+	m_static->Show(text!=nullptr);
+	if(text)
+	{
+		m_static->TextItemControl()->SetTextST(text);
+		m_static->ResetColorAnimation();
+	}
+}
+
+void SDrawStaticStruct::Draw()
+{
+	if(m_static->IsShown())
+		m_static->Draw();
+}
+
+void SDrawStaticStruct::Update()
+{
+	if(IsActual() && m_static->IsShown())	
+		m_static->Update();
+}
+
+CMapListHelper	gMapListHelper;
+xr_token		game_types[];
+
+void CMapListHelper::LoadMapInfo(LPCSTR map_cfg_fn, const xr_string& map_name, LPCSTR map_ver)
+{
+	CInifile	ini				(map_cfg_fn);
+
+	shared_str _map_name		= map_name.substr(0,map_name.find('\\')).c_str();
+	shared_str _map_ver			= map_ver;
+
+	if(ini.section_exist("map_usage"))
+	{
+		if(ini.line_exist("map_usage","ver") && !map_ver)
+			_map_ver				= ini.r_string("map_usage", "ver");
+
+		CInifile::Sect S			= ini.r_section("map_usage");
+		CInifile::SectCIt si		= S.Data.begin();
+		CInifile::SectCIt si_e		= S.Data.end();
+		for( ;si!=si_e; ++si)
+		{
+			const shared_str& game_type = (*si).first;
+			
+			if(game_type=="ver")		continue;
+
+			SGameTypeMaps* M			= GetMapListInt(game_type);
+			if(!M)
+			{
+				Msg						("--unknown game type-%s",game_type.c_str());
+				m_storage.resize		(m_storage.size()+1);
+				SGameTypeMaps&	Itm		= m_storage.back();
+				Itm.m_game_type_name	= game_type;
+				Itm.m_game_type_id		= ParseStringToGameType(game_type.c_str());
+				M						= &m_storage.back();
+			}
+			
+			SGameTypeMaps::SMapItm	Itm;
+			Itm.map_name				= _map_name;
+			Itm.map_ver					= _map_ver;
+			
+			if(M->m_map_names.end()!=std::find(M->m_map_names.begin(),M->m_map_names.end(),Itm))
+			{
+				Msg("! duplicate map found [%s] [%s]", _map_name.c_str(), _map_ver.c_str());
+			}else
+			{
+#ifndef MASTER_GOLD
+				Msg("added map [%s] [%s]", _map_name.c_str(), _map_ver.c_str());
+#endif // #ifndef MASTER_GOLD
+				M->m_map_names.push_back	(Itm);
+			}
+		}			
+	}
+
+}
+
+void CMapListHelper::Load()
+{
+	string_path					fn;
+	FS.update_path				(fn, "$game_config$", "mp\\map_list.ltx");
+	CInifile map_list_cfg		(fn);
+
+	//read weathers set
+	CInifile::Sect w			= map_list_cfg.r_section("weather");
+	CInifile::SectCIt wi		= w.Data.begin();
+	CInifile::SectCIt wi_e		= w.Data.end();
+	for( ;wi!=wi_e; ++wi)
+	{
+		m_weathers.resize		(m_weathers.size()+1);
+		SGameWeathers& gw		= m_weathers.back();
+		gw.m_weather_name		= (*wi).first;
+		gw.m_start_time			= (*wi).second;
+	}
+
+	// scan for additional maps
+	FS_FileSet			fset;
+	FS.file_list		(fset,"$game_levels$",FS_ListFiles,"*level.ltx");
+
+	FS_FileSetIt fit	= fset.begin();
+	FS_FileSetIt fit_e	= fset.end();
+
+	for( ;fit!=fit_e; ++fit)
+	{
+		string_path					map_cfg_fn;
+		FS.update_path				(map_cfg_fn, "$game_levels$", (*fit).name.c_str());
+		LoadMapInfo					(map_cfg_fn, (*fit).name);
+	}
+	//scan all not laoded archieves
+	LPCSTR tmp_entrypoint			= "temporary_gamedata\\";
+	FS_Path* game_levels			= FS.get_path("$game_levels$");
+	xr_string prev_root				= game_levels->m_Root;
+	game_levels->_set_root			(tmp_entrypoint);
+
+	CLocatorAPI::archives_it it		= FS.m_archives.begin();
+	CLocatorAPI::archives_it it_e	= FS.m_archives.end();
+
+	for(;it!=it_e;++it)
+	{
+		CLocatorAPI::archive& A		= *it;
+		if(A.hSrcFile)				continue;
+
+		LPCSTR ln					= A.header->r_string("header", "level_name");
+		LPCSTR lv					= A.header->r_string("header", "level_ver");
+		FS.LoadArchive				(A, tmp_entrypoint);
+
+		string_path					map_cfg_fn;
+		FS.update_path				(map_cfg_fn, "$game_levels$", ln);
+
+		
+		xr_strcat					(map_cfg_fn,"\\level.ltx");
+		LoadMapInfo					(map_cfg_fn, ln, lv);
+		FS.unload_archive			(A);
+	}
+	game_levels->_set_root			(prev_root.c_str());
+
+
+	R_ASSERT2	(m_storage.size(), "unable to fill map list");
+	R_ASSERT2	(m_weathers.size(), "unable to fill weathers list");
+}
+
+
+const SGameTypeMaps& CMapListHelper::GetMapListFor(const shared_str& game_type)
+{
+	if( !m_storage.size() )
+		Load		();
+
+	return *GetMapListInt(game_type);
+}
+
+SGameTypeMaps* CMapListHelper::GetMapListInt(const shared_str& game_type)
+{
+
+	TSTORAGE_CIT it		= m_storage.begin();
+	TSTORAGE_CIT it_e	= m_storage.end();
+	for( ;it!=it_e; ++it)
+	{
+		if(game_type==(*it).m_game_type_name )
+			return &(*it);
+	}
+	return nullptr;
+}
+
+const SGameTypeMaps& CMapListHelper::GetMapListFor(const EGameIDs game_id)
+{
+	if( !m_storage.size() )
+	{
+		Load		();
+		R_ASSERT2	(m_storage.size(), "unable to fill map list");
+	}
+	TSTORAGE_CIT it		= m_storage.begin();
+	TSTORAGE_CIT it_e	= m_storage.end();
+	for( ;it!=it_e; ++it)
+	{
+		if(game_id==(*it).m_game_type_id )
+			return (*it);
+	}
+	return m_storage[0];
+}
+
+const GAME_WEATHERS& CMapListHelper::GetGameWeathers() 
+{
+	if(!m_weathers.size())
+		Load();
+
+	return m_weathers;
+}
+
+// Change Level Wnd
+
+extern ENGINE_API BOOL bShowPauseString;
+void CUIGameCustom::ChangeLevel(GameGraph::_GRAPH_ID game_vert_id,
+	u32 level_vert_id,
+	Fvector pos,
+	Fvector ang,
+	Fvector pos2,
+	Fvector ang2,
+	bool b_use_position_cancel,
+	const shared_str& message_str,
+	bool b_allow_change_level)
+{
+	if (TopInputReceiver() != UIChangeLevelWnd)
+	{
+		UIChangeLevelWnd->m_game_vertex_id = game_vert_id;
+		UIChangeLevelWnd->m_level_vertex_id = level_vert_id;
+		UIChangeLevelWnd->m_position = pos;
+		UIChangeLevelWnd->m_angles = ang;
+		UIChangeLevelWnd->m_position_cancel = pos2;
+		UIChangeLevelWnd->m_angles_cancel = ang2;
+		UIChangeLevelWnd->m_b_position_cancel = b_use_position_cancel;
+		UIChangeLevelWnd->m_b_allow_change_level = b_allow_change_level;
+		UIChangeLevelWnd->m_message_str = message_str;
+
+		UIChangeLevelWnd->ShowDialog(true);
+	}
+}
+
+#include "ui/UIMessageBox.h"
+
+CChangeLevelWnd::CChangeLevelWnd()
+{
+	m_messageBox = new CUIMessageBox();
+	m_messageBox->SetAutoDelete(true);
+	AttachChild(m_messageBox);
+}
+
+void CChangeLevelWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
+{
+	if (pWnd == m_messageBox) {
+		if (msg == MESSAGE_BOX_YES_CLICKED) {
+			OnOk();
+		}
+		else
+			if (msg == MESSAGE_BOX_NO_CLICKED || msg == MESSAGE_BOX_OK_CLICKED)
+			{
+				OnCancel();
+			}
+	}
+	else
+		inherited::SendMessage(pWnd, msg, pData);
+}
+
+void CChangeLevelWnd::OnOk()
+{
+	HideDialog();
+	NET_Packet								p;
+	p.w_begin(M_CHANGE_LEVEL);
+	p.w(&m_game_vertex_id, sizeof(m_game_vertex_id));
+	p.w(&m_level_vertex_id, sizeof(m_level_vertex_id));
+	p.w_vec3(m_position);
+	p.w_vec3(m_angles);
+
+	Level().Send(p, net_flags(TRUE));
+}
+
+void CChangeLevelWnd::OnCancel()
+{
+	HideDialog();
+	if (m_b_position_cancel)
+		Actor()->MoveActor(m_position_cancel, m_angles_cancel);
+}
+
+bool CChangeLevelWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
+{
+	if (keyboard_action == WINDOW_KEY_PRESSED)
+	{
+		if (is_binded(kQUIT, dik))
+			OnCancel();
+		return true;
+	}
+	return inherited::OnKeyboardAction(dik, keyboard_action);
+}
+
+bool g_block_pause = false;
+void CChangeLevelWnd::Show(bool status)
+{
+	inherited::Show(status);
+
+	if (status)
+	{
+		m_messageBox->InitMessageBox(m_b_allow_change_level ? "message_box_change_level" : "message_box_change_level_disabled");
+		SetWndPos(m_messageBox->GetWndPos());
+		m_messageBox->SetWndPos(Fvector2().set(0.0f, 0.0f));
+		SetWndSize(m_messageBox->GetWndSize());
+
+		m_messageBox->SetText(m_message_str.c_str());
+
+		g_block_pause = true;
+		Device.Pause(TRUE, TRUE, TRUE, "CChangeLevelWnd_show");
+		bShowPauseString = FALSE;
+	}
+	else {
+		g_block_pause = false;
+		Device.Pause(FALSE, TRUE, TRUE, "CChangeLevelWnd_hide");
+	}
+}

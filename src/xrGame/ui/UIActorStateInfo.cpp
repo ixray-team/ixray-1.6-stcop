@@ -23,7 +23,7 @@
 #include "../location_manager.h"
 #include "../player_hud.h"
 #include "UIMainIngameWnd.h"
-#include "../UIGameCustom.h"
+#include "UIGameCustom.h"
 
 #include "../Actor.h"
 #include "../ActorCondition.h"
