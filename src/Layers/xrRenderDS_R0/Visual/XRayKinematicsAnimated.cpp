@@ -708,7 +708,7 @@ void	CDS0_KinematicsAnimated::LL_SetChannelFactor(u16	channel, float factor)
 void CDS0_KinematicsAnimated::IBlend_Startup()
 {
 	;
-	CBlend B; ZeroMemory(&B, sizeof(B));
+	CBlend B;// ZeroMemory(&B, sizeof(B));
 	//B.blend				= CBlend::eFREE_SLOT;
 
 	B.set_free_state();

@@ -584,6 +584,8 @@ void CHudItem::PlayAnimIdle()
 shared_str CHudItem::SetCurrentIdleAnimation()
 {
 	shared_str new_name = "anm_idle";
+	if (Level().CurrentControlEntity() == nullptr)
+		return new_name;
 
 	CActor* pActor = Level().CurrentControlEntity()->cast_actor();
 
