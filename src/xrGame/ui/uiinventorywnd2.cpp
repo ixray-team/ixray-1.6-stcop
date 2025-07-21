@@ -11,6 +11,7 @@
 #include "UICellItemFactory.h"
 #include "UIDragDropListEx.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/UICursor.h"
 
 #include "../WeaponBinoculars.h"
 #include "../WeaponKnife.h"
@@ -149,42 +150,52 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 
 //------------------------------------------
 
-bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
+bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 {
 	CUIDragDropListEx*	old_owner			= itm->OwnerList();
 	PIItem	iitem							= (PIItem)itm->m_pData;
-	u32 _slot								= iitem->BaseSlot();
+	CInventoryOwner* pInvOwner				= smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	bool b_own_item							= (iitem->parent_id() == pInvOwner->object_id());
 
-	if(GetInventory()->CanPutInSlot(iitem, iitem->BaseSlot()))
+	if(GetInventory()->CanPutInSlot(iitem, slot_id))
 	{
-		CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
-		CUIDragDropListEx* new_owner		= GetSlotList(_slot);
+		CUIDragDropListEx* new_owner		= GetSlotList(slot_id);
 		
-		if(_slot==GRENADE_SLOT && !new_owner )
+		if(slot_id == GRENADE_SLOT)
 			return true; //fake, sorry (((
 
-		bool result							= GetInventory()->Slot(_slot, iitem);
+		if (!new_owner)
+			return false;
+
+		bool result							= (!b_own_item) || GetInventory()->Slot(slot_id, iitem);
 		VERIFY								(result);
 
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
 		
 		new_owner->SetItem					(i);
 	
-		SendEvent_Item2Slot					(iitem, pInvOwner->object_id(), _slot);
+		SendEvent_Item2Slot					(iitem, pInvOwner->object_id(), slot_id);
 
-		SendEvent_ActivateSlot				(_slot, pInvOwner->object_id());
+		SendEvent_ActivateSlot				(slot_id, pInvOwner->object_id());
 		
 		return								true;
 	}else
 	{ // in case slot is busy
-		if (!force_place || _slot == NO_ACTIVE_SLOT)
+		if (!force_place || slot_id == NO_ACTIVE_SLOT)
 			return false;
 
-		if (GetInventory()->SlotIsPersistent(_slot) && _slot != DEVICE_SLOT)
+		if (GetInventory()->SlotIsPersistent(slot_id) && slot_id != DEVICE_SLOT)
 			return false;
 
-		PIItem	_iitem						= GetInventory()->ItemFromSlot(_slot);
-		CUIDragDropListEx* slot_list		= GetSlotList(_slot);
+		const static bool pistolsOnly = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot];
+		if (slot_id == INV_SLOT_2 && GetInventory()->CanPutInSlot(iitem, INV_SLOT_3) && !pistolsOnly)
+			return ToSlot(itm, force_place, INV_SLOT_3);
+
+		if (slot_id == INV_SLOT_3 && GetInventory()->CanPutInSlot(iitem, INV_SLOT_2) && !pistolsOnly)
+			return ToSlot(itm, force_place, INV_SLOT_2);
+
+		PIItem	_iitem						= GetInventory()->ItemFromSlot(slot_id);
+		CUIDragDropListEx* slot_list		= GetSlotList(slot_id);
 		VERIFY								(slot_list->ItemsCount()==1);
 
 		CUICellItem* slot_cell				= slot_list->GetItemIdx(0);
@@ -193,7 +204,7 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 		bool result							= ToBag(slot_cell, false);
 		VERIFY								(result);
 
-		return ToSlot						(itm, false);
+		return ToSlot						(itm, false, slot_id);
 	}
 }
 
@@ -234,6 +245,7 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 {
 	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
 	PIItem	iitem						= (PIItem)itm->m_pData;
+	bool b_own_item = (iitem->parent_id() == pInvOwner->object_id());
 
 	if(GetInventory()->CanPutInBelt(iitem))
 	{
@@ -245,7 +257,7 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 		}else
 				new_owner					= m_pUIBeltList;
 
-		bool result							= GetInventory()->Belt(iitem);
+		bool result							= (!b_own_item) || GetInventory()->Belt(iitem);
 		VERIFY								(result);
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
 		
@@ -254,10 +266,34 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 		else
 			new_owner->SetItem				(i);
 
-		SendEvent_Item2Belt					(iitem, pInvOwner->object_id());
+		if (!b_own_item)
+			SendEvent_Item2Belt				(iitem, pInvOwner->object_id());
+
 		return								true;
 	}
-	return									false;
+	else
+	{ // in case belt slot is busy
+		if(!iitem->Belt() || GetInventory()->BeltWidth()==0)
+			return false;
+
+		CUIDragDropListEx* belt_list		= nullptr;
+		if(b_use_cursor_pos)
+			belt_list						= CUIDragDropListEx::m_drag_item->BackList();
+		else
+			return false;
+
+		Ivector2 belt_cell_pos				= belt_list->PickCell(GetUICursor().GetCursorPosition());
+		if(belt_cell_pos.x==-1 && belt_cell_pos.y==-1)
+			return false;
+
+		CUICellItem* slot_cell				= belt_list->GetCellAt(belt_cell_pos).m_item;
+
+		bool result							= ToBag(slot_cell, false);
+		VERIFY								(result);
+
+		result								= ToBelt(itm, b_use_cursor_pos);
+		return result;
+	}
 }
 
 void CUIInventoryWnd::AddItemToBag(PIItem pItem)
@@ -291,7 +327,7 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
 	switch(t_new){
 		case iwSlot:{
 			if(GetSlotList(CurrentIItem()->BaseSlot())==new_owner)
-				ToSlot	(itm, true);
+				ToSlot	(itm, true, CurrentIItem()->BaseSlot());
 		}break;
 		case iwBag:{
 			ToBag	(itm, true);
@@ -319,10 +355,19 @@ bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 			ToBag	(itm, false);
 		}break;
 
-		case iwBag:{
-			if(!ToSlot(itm, false)){
-				if( !ToBelt(itm, false) )
-					ToSlot	(itm, true);
+		case iwBag:
+		{
+			PIItem iitem_to_place = (PIItem)itm->m_pData;
+			if (TryUseItem(iitem_to_place))
+			{
+				break;
+			}
+			if(!ToSlot(itm, false, iitem_to_place->BaseSlot()))
+			{
+				if (!ToBelt(itm, false))
+				{
+					ToSlot(itm, true, iitem_to_place->BaseSlot());
+				}
 			}
 		}break;
 
@@ -377,7 +422,9 @@ bool CUIInventoryWnd::OnItemFocusedUpdate(CUICellItem* itm)
 
 CUIDragDropListEx* CUIInventoryWnd::GetSlotList(u32 slot_idx)
 {
-	if(slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[slot_idx].m_bPersistent)	return nullptr;
+	if(slot_idx == NO_ACTIVE_SLOT || GetInventory()->SlotIsPersistent(slot_idx))	
+		return nullptr;
+
 	switch (slot_idx)
 	{
 		case INV_SLOT_2:
@@ -393,7 +440,7 @@ CUIDragDropListEx* CUIInventoryWnd::GetSlotList(u32 slot_idx)
 			break;
 
 	};
-	return nullptr;
+	return m_pUIBagList;
 }
 
 void CUIInventoryWnd::set_highlight_item(CUICellItem* cell_item)
