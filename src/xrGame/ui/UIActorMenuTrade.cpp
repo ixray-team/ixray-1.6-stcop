@@ -331,9 +331,11 @@ bool CUIActorMenu::CanMoveToPartner(PIItem pItem)
 		return false;
 	}
 
-	luabind::functor<bool> funct;
-	if (ai().script_engine().functor("actor_menu_inventory.CUIActorMenu_CanMoveToPartner", funct))
+	if (m_isCanMoveToPartner)
 	{
+		luabind::functor<bool> funct;
+		R_ASSERT2(ai().script_engine().functor(m_onCanMoveToPartner, funct), "failed to get OnCanMoveToPartner functor");
+		
 		if (funct(m_pPartnerInvOwner->cast_game_object()->lua_game_object(), pItem->object().lua_game_object(), r1, r2, itmWeight, partner_inv_weight, partner_max_weight) == false)
 			return false;
 	}

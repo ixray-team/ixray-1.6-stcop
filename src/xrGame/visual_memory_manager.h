@@ -56,6 +56,8 @@ private:
 	u32					m_max_object_count;
 	bool				m_enabled;
 	u32					m_last_update_time;
+	const char* m_onGetVisibleValue = {};
+	bool m_isGetVisibleValue = {};
 
 public:
 			void	add_visible_object		(const CObject *object, float time_delta, bool fictitious = false);
