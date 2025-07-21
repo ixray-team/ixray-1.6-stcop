@@ -1135,10 +1135,6 @@ float CActor::currentFOV()
 			return pWeapon->GetZoomFactor() * (0.75f) + SprintFov;
 		}
 	}
-	else if (IsTalking())
-	{
-		return g_fov * 0.75f;
-	}
 	else
 	{
 		return g_fov + SprintFov;
