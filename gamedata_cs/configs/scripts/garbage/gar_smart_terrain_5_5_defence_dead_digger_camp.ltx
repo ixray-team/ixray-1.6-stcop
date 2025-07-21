@@ -15,7 +15,7 @@ on_info = {+gar_story_spawn_messenger_dogs} sr_idle@messenger_dead %=destroy_obj
 ; ToDo decide if we need it %=destroy_object(701)%
 
 [sr_idle@messenger_dead]
-on_info = {+gar_story_searched_messenger_body} %=play_sound(gar_digger_messenger_pda_rec:stalker:gar_digger_quester_name)%, {+gar_story_got_info_from_digger} sr_idle@end_section
+on_info = {+gar_story_searched_messenger_body} %=play_sound(gar_digger_messenger_pda_rec:stalker:gar_digger_messenger_man_name)%, {+gar_story_got_info_from_digger} sr_idle@end_section
 on_signal = theme_end | sr_idle@end_section %+gar_story_got_info_from_digger%
 
 [sr_idle@end_section]
