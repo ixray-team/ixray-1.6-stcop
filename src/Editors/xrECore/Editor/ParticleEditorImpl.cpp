@@ -2,14 +2,16 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#ifdef _PARTICLE_EDITOR
-
+#include "../../Layers/xrRender/PSLibrary.h"
 #include "../../Layers/xrRender/ParticleEffect.h"
-#include "../xrECore/Editor/ParticleEffectActions.h"
-#include "../Public/PropertiesListHelper.h"
-#include "UI_ParticleTools.h"
+#include "../../Layers/xrRender/ParticleGroup.h"
+
+#include "ParticleEffectActions.h"
 #include "../xrEProps/FolderLib.h"
-             
+#include "UI_ToolsCustom.h"
+
+ECORE_API xr_token2* actions_token = nullptr;
+
 BOOL PS::CPEDef::Equal(const CPEDef* pe)
 {
     if (!m_Flags.equal(pe->m_Flags)) 						return FALSE;
@@ -50,16 +52,6 @@ void PS::CPEDef::Copy(const CPEDef& src)
 	Compile				(m_EActionList);
 }
 
-void  PS::CPEDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
-{
-    switch (B->btn_num){
-    case 0: 			PTools->PlayCurrent();		break;
-    case 1: 			PTools->StopCurrent(false);	break;
-    case 2: 			PTools->StopCurrent(true);	break;
-    }
-    bDataModified		= false;
-}
-
 void  PS::CPEDef::FindActionByName(LPCSTR new_name, bool& res)
 {
 	res 				= false;
@@ -73,7 +65,7 @@ void PS::CPEDef::FillActionList(ChooseItemVec& items, void* param)
         items.push_back(SChooseItem(actions_token[i].name,actions_token[i].info));
 }
 
-bool m_EditChoose = false;
+ECORE_API bool m_EditChoose = false;
 
 void  PS::CPEDef::OnDrawUI()
 {
@@ -177,41 +169,6 @@ void PS::CPEDef::CollisionCutoffOnDraw(PropValue* sender, xr_string& draw_val)
 	draw_sprintf(draw_val,_sqrt(V->GetValue()),V->dec);
 }
 
-
-void  PS::CPEDef::OnActionEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
-{
-    bDataModified	= false;
-    int idx			= B->tag;
-    switch (B->btn_num){
-    case 0:		    // up
-    	if (idx>0){
-        	EParticleAction* E	= m_EActionList[idx-1];
-            m_EActionList[idx-1]= m_EActionList[idx];
-            m_EActionList[idx]	= E;
-            ExecCommand			(COMMAND_UPDATE_PROPERTIES);
-	        bDataModified		= true;
-        }
-    break;
-    case 1:		    // down
-    	if (idx<(int(m_EActionList.size())-1)){
-        	EParticleAction* E	= m_EActionList[idx+1];
-            m_EActionList[idx+1]= m_EActionList[idx];
-            m_EActionList[idx]	= E;
-            ExecCommand			(COMMAND_UPDATE_PROPERTIES);
-	        bDataModified		= true;
-        }
-        bDataModified	= true;
-    break;
-    case 2:        
-        if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo,"Remove action?") == mrYes){
-            PTools->RemoveAction(idx);
-            ExecCommand		(COMMAND_UPDATE_PROPERTIES);
-            bDataModified	= true;
-        }
-    break;
-    }
-}
-
 bool PS::CPEDef::OnAfterActionNameEdit(PropValue* sender, shared_str& edit_val)
 {
 	bool found				= false;
@@ -220,36 +177,6 @@ bool PS::CPEDef::OnAfterActionNameEdit(PropValue* sender, shared_str& edit_val)
 	edit_val				= tmp.c_str();
     FindActionByName		(edit_val.c_str(),found); 
     return 					!found;
-}
-
-xr_string _item_to_select_after_edit;
-
-bool  PS::CPEDef::NameOnAfterEdit(PropValue* sender, shared_str& edit_val)
-{
-    for (PS::PGDIt g_it= RImplementation.PSLibrary.FirstPGD(); g_it!=RImplementation.PSLibrary.LastPGD(); ++g_it)
-    {
-    	PS::CPGDef*	pg 	= (*g_it);
-        xr_vector<PS::CPGDef::SEffect*>::const_iterator pe_it 		= pg->m_Effects.begin();
-        xr_vector<PS::CPGDef::SEffect*>::const_iterator pe_it_e 	= pg->m_Effects.end();
-
-        for(;pe_it!=pe_it_e;++pe_it)
-        {
-        	PS::CPGDef::SEffect* Eff		= (*pe_it);
-			if(Eff->m_EffectName == this->m_Name)
-               Eff->m_EffectName = edit_val;
-
-			if(Eff->m_OnPlayChildName == this->m_Name)
-            	Eff->m_OnPlayChildName = edit_val;
-
-			if(Eff->m_OnBirthChildName == this->m_Name)
-            	Eff->m_OnBirthChildName = edit_val;
-
-			if(Eff->m_OnDeadChildName == this->m_Name)
-            	Eff->m_OnDeadChildName = edit_val;
-        }
-    }
-    _item_to_select_after_edit = edit_val.c_str();
-    return true;
 }
 
 void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
@@ -372,5 +299,384 @@ bool PS::CPEDef::Validate(bool bMsg)
     	Msg			("!.'%s': dosn't contains 'Kill Old' action.",*m_Name);
     return have_kill_old;
 }
-#endif
+
+void  PS::CPEDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+{
+	switch (B->btn_num)
+	{
+	case 0: Tools->PlayCurrent();		break;
+	case 1: Tools->StopCurrent(false);	break;
+	case 2: Tools->StopCurrent(true);	break;
+	}
+	bDataModified = false;
+}
+
+void  PS::CPEDef::OnActionEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+{
+	bDataModified = false;
+	int idx = B->tag;
+	switch (B->btn_num) {
+	case 0:		    // up
+		if (idx > 0) {
+			EParticleAction* E = m_EActionList[idx - 1];
+			m_EActionList[idx - 1] = m_EActionList[idx];
+			m_EActionList[idx] = E;
+			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			bDataModified = true;
+		}
+		break;
+	case 1:		    // down
+		if (idx < (int(m_EActionList.size()) - 1)) {
+			EParticleAction* E = m_EActionList[idx + 1];
+			m_EActionList[idx + 1] = m_EActionList[idx];
+			m_EActionList[idx] = E;
+			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			bDataModified = true;
+		}
+		bDataModified = true;
+		break;
+	case 2:
+		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Remove action?") == mrYes) {
+			Tools->RemoveAction(idx);
+			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			bDataModified = true;
+		}
+		break;
+	}
+}
+
+ECORE_API xr_string _item_to_select_after_edit;
+
+bool PS::CPEDef::NameOnAfterEdit(PropValue* sender, shared_str& edit_val)
+{
+	for (PS::PGDIt g_it = RImplementation.PSLibrary.FirstPGD(); g_it != RImplementation.PSLibrary.LastPGD(); ++g_it)
+	{
+		PS::CPGDef* pg = (*g_it);
+		xr_vector<PS::CPGDef::SEffect*>::const_iterator pe_it = pg->m_Effects.begin();
+		xr_vector<PS::CPGDef::SEffect*>::const_iterator pe_it_e = pg->m_Effects.end();
+
+		for (; pe_it != pe_it_e; ++pe_it)
+		{
+			PS::CPGDef::SEffect* Eff = (*pe_it);
+			if (Eff->m_EffectName == this->m_Name)
+				Eff->m_EffectName = edit_val;
+
+			if (Eff->m_OnPlayChildName == this->m_Name)
+				Eff->m_OnPlayChildName = edit_val;
+
+			if (Eff->m_OnBirthChildName == this->m_Name)
+				Eff->m_OnBirthChildName = edit_val;
+
+			if (Eff->m_OnDeadChildName == this->m_Name)
+				Eff->m_OnDeadChildName = edit_val;
+		}
+	}
+	_item_to_select_after_edit = edit_val.c_str();
+	return true;
+}
+
+
+BOOL PS::CPGDef::SEffect::Equal(const SEffect& src)
+{
+	if (!m_Flags.equal(src.m_Flags))	return FALSE;
+    if (!m_EffectName.equal(src.m_EffectName)) return FALSE;
+	if (!fsimilar(m_Time0,src.m_Time0))	return FALSE;
+	if (!fsimilar(m_Time1,src.m_Time1))	return FALSE;
+	return TRUE;
+}
+
+BOOL PS::CPGDef::Equal(const CPGDef* pg)
+{
+	if (!m_Flags.equal(pg->m_Flags))				return FALSE;
+	if (!fsimilar(m_fTimeLimit,pg->m_fTimeLimit))	return FALSE;
+    if (m_Effects.size()!=pg->m_Effects.size())		return FALSE;
+    EffectIt s_it=m_Effects.begin(); 
+    for (EffectIt d_it=m_Effects.begin(); d_it!=m_Effects.end(); s_it++,d_it++)
+    	if (!(*s_it)->Equal(**d_it)) return FALSE;
+	return TRUE;
+}
+
+bool PS::CPGDef::Validate(bool bMsg)
+{
+	bool failed = false;
+
+    xr_vector<SEffect*>::const_iterator pe_it 		= m_Effects.begin();
+    xr_vector<SEffect*>::const_iterator pe_it_e 	= m_Effects.end();
+
+    for(;pe_it!=pe_it_e;++pe_it)
+    {	
+        PS::CPGDef::SEffect* Eff		= (*pe_it);
+        PS::CPEDef* ped				= RImplementation.PSLibrary.FindPED(Eff->m_EffectName.c_str());
+        if(!ped)
+        {
+            failed = failed||true;
+            Msg("Validation FAILED (non-existent effect used) group[%s] effect[%s]", m_Name.c_str(), Eff->m_EffectName.c_str());
+			break;
+        }
+    
+        if(Eff->m_Flags.test(SEffect::flOnPlayChild) && Eff->m_OnPlayChildName.size()==0)
+            failed = failed||true;
+        if(Eff->m_Flags.test(SEffect::flOnBirthChild) && Eff->m_OnBirthChildName.size()==0)
+            failed = failed||true;
+        if(Eff->m_Flags.test(SEffect::flOnDeadChild) && Eff->m_OnDeadChildName.size()==0)
+            failed = failed||true;
+
+        if(failed && bMsg) 
+            Msg("Validation FAILED (incorrect child event settings) group[%s] effect[%s]", m_Name.c_str(), Eff->m_EffectName.c_str());
+        if(failed)
+        	break;
+    }
+    return !failed;
+}
+
+void  PS::CPGDef::OnEffectsEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+{
+    switch (B->btn_num){
+    case 0:
+        m_Effects.push_back(new SEffect());
+        m_Effects.back()->m_Flags.set(CPGDef::SEffect::flEnabled,FALSE);
+        ExecCommand		(COMMAND_UPDATE_PROPERTIES);
+        OnParamsChange	(B);
+        bDataModified	= true;
+    break;
+    }
+}
+
+void  PS::CPGDef::OnEffectTypeChange(PropValue* sender)
+{
+    ExecCommand			(COMMAND_UPDATE_PROPERTIES);
+    OnParamsChange		(sender);
+}
+
+void  PS::CPGDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+{
+    switch (B->btn_num){
+    case 0: Tools->PlayCurrent();		break;
+    case 1: Tools->StopCurrent(false);	break;
+    case 2: Tools->StopCurrent(true);	break;
+    }
+    bDataModified		= false;
+}
+
+void  PS::CPGDef::OnEffectEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+{
+    switch (B->btn_num){
+    case 0:		    	
+    	Tools->PlayCurrent	(B->tag);    
+		bDataModified	= false;
+    break;
+    case 1:{
+    	CPGDef::SEffect* eff = *(m_Effects.begin()+B->tag); VERIFY(eff);
+		Tools->SelectEffect(*eff->m_EffectName);
+		bDataModified	= false;
+        bSafe			= true;
+    }break;
+    case 2:        
+        if (ELog.DlgMsg(mtConfirmation, mbYes| mbNo,"Remove effect?") == mrYes){
+        	SEffect* eff	= *(m_Effects.begin()+B->tag);
+        	xr_delete		(eff);
+            m_Effects.erase	(m_Effects.begin()+B->tag);
+            ExecCommand		(COMMAND_UPDATE_PROPERTIES);
+            OnParamsChange	(B);
+            bDataModified	= true;
+            bSafe			= true;
+        }else{
+			bDataModified	= false;
+        }
+    break;
+    }
+}
+
+void PS::CPGDef::OnParamsChange(PropValue* sender)
+{
+    Tools->SetCurrentPG(0);
+    Tools->SetCurrentPG(this);
+}
+
+void PS::CPGDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
+{                                   
+    ButtonValue* B;
+	B=PHelper().CreateButton	(items,PrepareKey(pref,"Control"),"Play,Stop,Stop...",ButtonValue::flFirstOnly);
+    B->OnBtnClickEvent.bind		(this,&PS::CPGDef::OnControlClick);
+    B=PHelper().CreateButton	(items,PrepareKey(pref,"Edit"),"Append Effect",ButtonValue::flFirstOnly);
+    B->OnBtnClickEvent.bind		(this,&PS::CPGDef::OnEffectsEditClick);
+    PropValue* V;
+	PHelper().CreateName		(items,PrepareKey(pref,"Name"),&m_Name,(::ListItem*)owner);
+    V=PHelper().CreateFloat		(items,PrepareKey(pref,"Time Limit (s)"),	&m_fTimeLimit,	-1.f,1000.f);
+    V->OnChangeEvent.bind		(this,&PS::CPGDef::OnParamsChange);
+
+    u32 i = 0;
+    for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); ++it,++i)
+    {
+    	u32 clr					= (*it)->m_Flags.is(CPGDef::SEffect::flEnabled)? 0xFF000000 :0xFFC0C0C0;
+        xr_string nm;
+        nm.resize(64);
+        sprintf(nm.data(), "Effect #%d", i + 1);
+        
+        B=PHelper().CreateButton(items,PrepareKey(pref,nm.c_str()),"Preview,Select,Remove",ButtonValue::flFirstOnly); B->tag = it-m_Effects.begin();
+        B->OnBtnClickEvent.bind	(this,&PS::CPGDef::OnEffectEditClick);
+        B->Owner()->prop_color	= clr;
+        V=PHelper().CreateChoose(items,PrepareKey(pref,nm.c_str(),"Name"),&(*it)->m_EffectName,smPE);
+        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
+        V->Owner()->prop_color	= clr;
+        V=PHelper().CreateFloat	(items,PrepareKey(pref,nm.c_str(),"Start Time (s)"),&(*it)->m_Time0,		0.f,1000.f);
+        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
+        V->Owner()->prop_color	= clr;
+        V=PHelper().CreateFloat	(items,PrepareKey(pref,nm.c_str(),"End Time (s)"),	&(*it)->m_Time1,		0.f,1000.f);
+        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
+        V->Owner()->prop_color	= clr;
+        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Deferred Stop"),&(*it)->m_Flags,	SEffect::flDefferedStop);
+        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
+        V->Owner()->prop_color	= clr;
+        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Enabled"),									&(*it)->m_Flags, 	SEffect::flEnabled);
+        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
+        V->Owner()->prop_color	= clr;
+        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Children\\On Birth"),						&(*it)->m_Flags,	SEffect::flOnBirthChild);
+        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
+        V->Owner()->prop_color	= clr;
+        if ((*it)->m_Flags.is(SEffect::flOnBirthChild)){
+	        V=PHelper().CreateChoose(items,PrepareKey(pref,nm.c_str(),"Children\\On Birth\\Effect Name"),			&(*it)->m_OnBirthChildName,smPE);
+    	    V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
+	        V->Owner()->prop_color	= clr;
+        }
+        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Children\\On Play"),						&(*it)->m_Flags,	SEffect::flOnPlayChild);
+        V->OnChangeEvent.bind		(this,&PS::CPGDef::OnParamsChange);
+        V->Owner()->prop_color		= clr;
+        if ((*it)->m_Flags.is(SEffect::flOnPlayChild)){
+	        V=PHelper().CreateChoose	(items,PrepareKey(pref,nm.c_str(),"Children\\On Play\\Effect Name"),			&(*it)->m_OnPlayChildName,smPE);
+    	    V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
+	        V->Owner()->prop_color	= clr;
+            V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Children\\On Play\\Play After Stop"),		&(*it)->m_Flags,	SEffect::flOnPlayChildRewind);
+            V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
+            V->Owner()->prop_color	= clr;
+        }
+        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Children\\On Dead"),						&(*it)->m_Flags,	SEffect::flOnDeadChild);
+        V->OnChangeEvent.bind		(this,&PS::CPGDef::OnParamsChange);
+        V->Owner()->prop_color	= clr;
+        if ((*it)->m_Flags.is(SEffect::flOnDeadChild)){
+	        V=PHelper().CreateChoose	(items,PrepareKey(pref,nm.c_str(),"Children\\On Dead\\Effect Name"),			&(*it)->m_OnDeadChildName,smPE);
+    	    V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);    
+	        V->Owner()->prop_color	= clr;
+        }
+    }
+}
+
+void PS::CPEDef::Render(const Fmatrix& parent)
+{
+    Fmatrix trans; trans.translate(parent.c);
+    for (EPAVecIt it = m_EActionList.begin(); it != m_EActionList.end(); it++)
+    {
+        if ((*it)->flags.is(EParticleAction::flDraw | EParticleAction::flEnabled))
+        {
+            PBool* ar = (*it)->_bool_safe("Allow Rotate");
+            (*it)->Render((ar && ar->val) ? parent : trans);
+        }
+    }
+}
+
+PS::CPEDef* CPSLibrary::AppendPED(PS::CPEDef* src)
+{
+    m_PEDs.push_back(new PS::CPEDef());
+    if (src) 
+        m_PEDs.back()->Copy(*src);
+
+    return m_PEDs.back();
+}
+
+PS::CPGDef* CPSLibrary::AppendPGD(PS::CPGDef* src)
+{
+    m_PGDs.push_back(new PS::CPGDef());
+    if (src) m_PGDs.back()->Clone(src);
+    return m_PGDs.back();
+}
+
+
+//------------------------------------------------------------------------------
+bool CPSLibrary::Save()
+{
+    xr_string temp_fn;
+    if (EFS.GetSaveName("$game_data$", temp_fn))
+    {
+        return Save(temp_fn.c_str());
+    }
+
+    return false;
+}
+//------------------------------------------------------------------------------
+bool CPSLibrary::Save2()
+{
+    string_path fn;
+    SPBItem* pb = UI->ProgressStart(m_PEDs.size() + m_PGDs.size(), "Saving particles...");
+
+    for (PS::PEDIt it = m_PEDs.begin(); it != m_PEDs.end(); ++it)
+    {
+        pb->Inc();
+        PS::CPEDef* pe = (*it);
+
+        if (!pe->Validate(false))
+            continue;
+
+        FS.update_path(fn, "$game_particles$", pe->m_Name.c_str());
+        strcat(fn, ".pe");
+
+        FS.file_delete(fn);
+
+        CInifile ini(fn, FALSE, FALSE, FALSE);
+        pe->Save2(ini);
+        ini.save_as(fn);
+    }
+
+    for (PS::PGDIt g_it = m_PGDs.begin(); g_it != m_PGDs.end(); ++g_it)
+    {
+        pb->Inc();
+        PS::CPGDef* pg = (*g_it);
+
+        if (!pg->Validate(false))
+            continue;
+
+        FS.update_path(fn, "$game_particles$", pg->m_Name.c_str());
+        strcat(fn, ".pg");
+
+        FS.file_delete(fn);
+
+        CInifile ini(fn, FALSE, FALSE, FALSE);
+        pg->Save2(ini);
+        ini.save_as(fn);
+    }
+    UI->ProgressEnd(pb);
+    return true;
+}
+
+bool CPSLibrary::Save(const char* nm)
+{
+    CMemoryWriter F;
+
+    F.open_chunk(PS_CHUNK_VERSION);
+    F.w_u16(PS_VERSION);
+    F.close_chunk();
+
+    F.open_chunk(PS_CHUNK_SECONDGEN);
+    u32 chunk_id = 0;
+    for (PS::PEDIt it = m_PEDs.begin(); it != m_PEDs.end(); ++it, ++chunk_id)
+    {
+        F.open_chunk(chunk_id);
+        (*it)->Save(F);
+        F.close_chunk();
+    }
+    F.close_chunk();
+
+
+    F.open_chunk(PS_CHUNK_THIRDGEN);
+    chunk_id = 0;
+    for (PS::PGDIt g_it = m_PGDs.begin(); g_it != m_PGDs.end(); ++g_it, ++chunk_id)
+    {
+        F.open_chunk(chunk_id);
+        (*g_it)->Save(F);
+        F.close_chunk();
+    }
+    F.close_chunk();
+
+    return F.save_to(nm);
+}
+//------------------------------------------------------------------------------
 
