@@ -355,23 +355,31 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	//(последние в списке имеют высший приоритет)
 	xrCriticalSectionGuard guard(csUi);
 	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
+	WINDOW_LIST::reverse_iterator first = m_ChildWndList.rend();
 
-	for(; it!=m_ChildWndList.rend(); ++it)
+	for(u32 i = 0; it!=first; ++it, i++)
 	{
 		CUIWindow* w	= (*it);
-		Frect wndRect_	= w->GetWndRect();
-		if (wndRect_.in(cursor_pos) )
+		if (!w)
 		{
-			if(w->IsEnabled())
-			{
-				if( w->OnMouseAction(cursor_pos.x -w->GetWndRect().left, 
-							   cursor_pos.y -w->GetWndRect().top, mouse_action))return true;
-			}
+			Msg("! Founded incorrect child window in [%s] childlist(%d)", *m_windowName, i);
 		}
-		else if (w->IsEnabled() && w->CursorOverWindow())
+		else
 		{
-			if( w->OnMouseAction(cursor_pos.x -w->GetWndRect().left, 
-						   cursor_pos.y -w->GetWndRect().top, mouse_action))return true;
+			Frect wndRect_ = w->GetWndRect();
+			if (wndRect_.in(cursor_pos))
+			{
+				if (w->IsEnabled())
+				{
+					if (w->OnMouseAction(cursor_pos.x - w->GetWndRect().left,
+						cursor_pos.y - w->GetWndRect().top, mouse_action))return true;
+				}
+			}
+			else if (w->IsEnabled() && w->CursorOverWindow())
+			{
+				if (w->OnMouseAction(cursor_pos.x - w->GetWndRect().left,
+					cursor_pos.y - w->GetWndRect().top, mouse_action))return true;
+			}
 		}
 	}
 
@@ -521,11 +529,11 @@ void CUIWindow::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
 	xrCriticalSectionGuard guard(csUi);
 	//оповестить дочерние окна
-	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it)
-	{
-		if((*it)->IsEnabled())
-			(*it)->SendMessage(pWnd,msg,pData);
-	}
+    for(int i = 0; i < m_ChildWndList.size(); ++i)
+    {
+        if(m_ChildWndList[i]->IsEnabled())
+            m_ChildWndList[i]->SendMessage(pWnd,msg,pData);
+    }
 }
 
 CUIWindow* CUIWindow::GetCurrentMouseHandler(){
