@@ -396,6 +396,7 @@ extern float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float ran
 
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable)
 {
+
 	if (MDL)
 	{
 		//R_ASSERT(DB);
@@ -739,33 +740,49 @@ BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
 {
 	// *** Try to bilinearly filter lightmap down and up
 	w=0, h=0;
-	if (lm.width>=2)	{
+	if (lm.width>=2)
+	{
 		w = lm.width/2;
-		if (!rms_test(lm,w,lm.height,rms))	{
+		if (!rms_test(lm,w,lm.height,rms))	
+		{
 			// 3/4
 			w = (lm.width*3)/4;
-			if (!rms_test(lm,w,lm.height,rms))	w = 0;
-		} else {
+			if (!rms_test(lm,w,lm.height,rms))
+				w = 0;
+		}
+		else
+		{
 			// 1/4
 			u32 nw = (lm.width*1)/4;
-			if (rms_test(lm,nw,lm.height,rms))	w = nw;
+			if (rms_test(lm,nw,lm.height,rms))
+				w = nw;
 		}
 	}
-	if (lm.height>=2)	{
+
+	if (lm.height>=2)
+	{
 		h = lm.height/2;
-		if (!rms_test(lm,lm.width,h,rms))		{
+		if (!rms_test(lm,lm.width,h,rms))	
+		{
 			// 3/4
 			h = (lm.height*3)/4;
-			if (!rms_test(lm,lm.width,h,rms))		h = 0;
-		} else {
+			if (!rms_test(lm,lm.width,h,rms))	
+				h = 0;
+		} 
+		else 
+		{
 			// 1/4
 			u32 nh = (lm.height*1)/4;
-			if (rms_test(lm,lm.width,nh,rms))		h = nh;
+			if (rms_test(lm,lm.width,nh,rms))
+				h = nh;
 		}
 	}
-	if (w || h)	{
-		if (0==w)	w = lm.width;
-		if (0==h)	h = lm.height;
+	if (w || h)	
+	{
+		if (0==w)	
+			w = lm.width;
+		if (0==h)
+			h = lm.height;
 		//		clMsg	("* RMS: [%d,%d] => [%d,%d]",lm.width,lm.height,w,h);
 		return TRUE;
 	}
@@ -801,22 +818,28 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 		break;
 
 	// Compression
-	try {
-		u32	w,h;
-		if (compress_Zero(layer,rms_zero))	return;		// already with borders
-		else if (compress_RMS(layer,rms_shrink,w,h))	
-		{
-			// Reacalculate lightmap at lower resolution
-			layer.create	(w,h);
-			L_Calculate		(DB,LightsSelected,H);
- 		}
-	} catch (...)
+	try
+	{
+		// u32	w,h;
+		//	if (compress_Zero(layer,rms_zero))
+		//		return;		// already with borders
+		// 
+		// 
+		// else if (compress_RMS(layer,rms_shrink,w,h))	
+		// {
+		// 		// Reacalculate lightmap at lower resolution
+		// 		layer.create	(w,h);
+		// 		L_Calculate		(DB,LightsSelected,H);
+ 		// }
+	} 
+	catch (...)
 	{
 		clMsg("* ERROR: CDeflector::Light - Compression");
 	}
 
 	// Expand with borders
-	try {
+	try
+	{
 		if (layer.width==1)	
 		{
 			// Horizontal ZERO - vertical line
@@ -839,7 +862,8 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 			T.width			= 0;
 			T.height		= layer.height;
 			layer			= T;
-		} else if (layer.height==1) 
+		}
+		else if (layer.height==1) 
 		{
 			// Vertical ZERO - horizontal line
 			lm_layer		T;
@@ -861,22 +885,29 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 			T.width			= layer.width;
 			T.height		= 0;
 			layer			= T;
-		} else {
+		} 
+		else
+		{
 			// Generic blit
 			lm_layer		lm_old	= layer;
 			lm_layer		lm_new;
 			lm_new.create			(lm_old.width+2*BORDER,lm_old.height+2*BORDER);
 			lblit					(lm_new,lm_old,BORDER,BORDER,255-BORDER);
 			layer					= lm_new;
+			
 			ApplyBorders			(layer,254);
 			ApplyBorders			(layer,253);
 			ApplyBorders			(layer,252);
 			ApplyBorders			(layer,251);
-			for	(u32 ref=250; ref>0; ref--) if (!ApplyBorders(layer,ref)) break;
+			for	(u32 ref=250; ref>0; ref--)
+			if (!ApplyBorders(layer,ref))
+				break;
+
 			layer.width				= lm_old.width;
 			layer.height			= lm_old.height;
 		}
-	} catch (...)
+	} 
+	catch (...)
 	{
 		
 		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
