@@ -166,15 +166,8 @@ public:
 
 	//для отоброажения иконок апгрейдов в интерфейсе
 
-	int	GetScopeX()
-	{ 
-		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * (1 + isHQIcons);
-	}
-
-	int	GetScopeY()
-	{
-		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + isHQIcons);
-	}
+	int	GetScopeX();
+	int	GetScopeY();
 
 	int	GetSilencerX() {return m_iSilencerX;}
 	int	GetSilencerY() {return m_iSilencerY;}
@@ -184,7 +177,13 @@ public:
 	int	GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
 
 	const shared_str& GetGrenadeLauncherName	() const{return m_sGrenadeLauncherName;}
-	const shared_str GetScopeName				() const{return pSettings->r_string(m_scopes[m_cur_scope], "scope_name");}
+	const shared_str GetScopeName() const;
+	void UpdateAltScope();
+	shared_str GetNameWithAttachmentScope();
+	bool bReloadSectionScope(LPCSTR section);
+	bool bLoadAltScopesParams(LPCSTR section);
+	void LoadOriginalScopesParams(LPCSTR section);
+	void LoadCurrentScopeParams(LPCSTR section);
 	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
@@ -587,4 +586,9 @@ public:
 	
 	virtual void				DumpActiveParams			(shared_str const & section_name, CInifile & dst_ini) const;
 	virtual shared_str const	GetAnticheatSectionName		() const { return cNameSect(); };
+
+public:
+	bool bUseAltScope{};
+
+	bool bScopeIsHasTexture{};
 };
