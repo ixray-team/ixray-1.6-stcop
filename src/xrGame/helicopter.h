@@ -304,9 +304,10 @@ public:
 	virtual const Fmatrix&			get_ParticlesXFORM			();
 	virtual const Fvector&			get_CurrentFirePoint		();
 
-	virtual CGameObject				*cast_game_object			()	{return this;}
-	virtual CExplosive				*cast_explosive				()	{return this;}
-	virtual CPHSkeleton				*PHSkeleton					()	{return this;}
+	virtual CGameObject* cast_game_object() { return this; }
+	virtual CExplosive* cast_explosive() { return this; }
+	virtual CHelicopter* cast_helicopter() { return this; }
+	virtual CPHSkeleton* PHSkeleton() { return this; }
 
 public:
 	//for scripting
