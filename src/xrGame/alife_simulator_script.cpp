@@ -281,26 +281,30 @@ ALife::_SPAWN_ID CALifeSimulator__spawn_id		(CALifeSimulator *self_, ALife::_SPA
 	return								(((const CALifeSimulator *)self_)->spawns().spawn_id(spawn_story_id));
 }
 
-void CALifeSimulator__release					(CALifeSimulator *self_, CSE_Abstract *object, bool)
+void CALifeSimulator__release(CALifeSimulator* self_, CSE_Abstract* object, bool)
 {
-	VERIFY								(self_);
-//	self->release						(object,true);
+	VERIFY(self_);
 
-	THROW								(object);
-	CSE_ALifeObject						*alife_object = smart_cast<CSE_ALifeObject*>(object);
-	THROW								(alife_object);
-	if (alife_object != nullptr && !alife_object->m_bOnline) {
-		self_->release					(object,true);
+	if (object == nullptr)
+	{
+		return;
+	}
+
+	CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(object);
+
+	if (alife_object != nullptr && !alife_object->m_bOnline)
+	{
+		self_->release(object, true);
 		return;
 	}
 
 	// awful hack, for stohe only
 	NET_Packet							packet;
-	packet.w_begin						(M_EVENT);
-	packet.w_u32						(Level().timeServer());
-	packet.w_u16						(GE_DESTROY);
-	packet.w_u16						(object->ID);
-	Level().Send						(packet,net_flags(TRUE,TRUE));
+	packet.w_begin(M_EVENT);
+	packet.w_u32(Level().timeServer());
+	packet.w_u16(GE_DESTROY);
+	packet.w_u16(object->ID);
+	Level().Send(packet, net_flags(TRUE, TRUE));
 }
 
 void CALifeSimulator__release2(CALifeSimulator *self, CSE_Abstract *object)
