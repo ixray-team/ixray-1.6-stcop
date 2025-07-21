@@ -27,32 +27,57 @@ void RunSQLRequest(bool Quest, bool Items, const char* SubDB)
 			(
 				"CREATE TABLE IF NOT EXISTS game_items ("
 				"id INT AUTO_INCREMENT PRIMARY KEY, "
-				"name VARCHAR(100) NOT NULL"
+				"name VARCHAR(100) NOT NULL UNIQUE"
 				")"
 			);
 
-			Msg("Clear 'game_items' table");
-			stmt->execute("TRUNCATE TABLE game_items");
-
-			pstmt = con->prepareStatement("INSERT INTO game_items (name) VALUES (?)");
+			xr_vector<shared_str> dbItems;
+			auto result = stmt->executeQuery("SELECT name FROM game_items");
+			GLoginInfo.SubProgressStatus = 0;
+			while (result->next())
+			{
+				dbItems.push_back(result->getString("name").c_str());
+				GLoginInfo.SubProgressStatus += 0.02;
+			}
 
 			auto ItemsList = ParseGameItems(File);
 			GLoginInfo.ProgressStatus = 0.15f;
 
+			pstmt = con->prepareStatement("DELETE FROM game_items WHERE name = ?");
 			size_t Iter = 0;
-			for (shared_str Name : ItemsList)
+			for (const shared_str& dbItem : dbItems)
 			{
+				if (std::find(ItemsList.begin(), ItemsList.end(), dbItem) == ItemsList.end())
+				{
+					pstmt->setString(1, *dbItem);
+					pstmt->execute();
+				}
+
+				GLoginInfo.SubProgressStatus = float(dbItem.size()) / 100.f * float(Iter);
+				GLoginInfo.SubProgressStatus /= 100;
+			}
+
+			pstmt = con->prepareStatement("INSERT IGNORE INTO game_items (name) VALUES (?)");
+			GLoginInfo.ProgressStatus = 0.35f;
+			Iter = 0;
+			for (const shared_str& Name : ItemsList)
+			{
+				if (std::find(dbItems.begin(), dbItems.end(), Name) != dbItems.end())
+				{
+					continue;
+				}
 				pstmt->setString(1, *Name);
 				pstmt->execute();
+
 				GLoginInfo.SubProgressStatus = float(ItemsList.size()) / 100.f * float(Iter);
 				GLoginInfo.SubProgressStatus /= 100;
 				Iter++;
 			}
 		}
 
+		// 2. Создаем таблицу `game_quests` (если её нет)
 		if (Quest)
 		{
-			// 2. Создаем таблицу `game_quests` (если её нет)
 			stmt->execute
 			(
 				"CREATE TABLE IF NOT EXISTS game_quests ("
