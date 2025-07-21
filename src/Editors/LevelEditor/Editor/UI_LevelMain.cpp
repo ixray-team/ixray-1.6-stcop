@@ -1254,46 +1254,37 @@ bool EditLibPickObjectGeometry(  Fvector& hitpoint,  const Fvector& start, const
 	return false;
 }
 
-bool ScenePickObjectGeometry( Fvector& hitpoint,  const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal )
+bool ScenePickObjectGeometry(Fvector& hitpoint, const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal)
 {
-
-	SRayPickInfo pinf;
-
-   
-	SRayPickInfo l_pinf;
-	bool bResult = false;
-
+	constexpr std::array ObjClasses = 
 	{
-	  SRayPickInfo l_pinf;
-	  bool l_bres = Scene->RayPickObject( l_pinf.inf.range, start,direction, OBJCLASS_SPAWNPOINT , &l_pinf, Scene->GetSnapList(false) );
-	  
-	  if( l_bres )
-	  {
-		  pinf = l_pinf;
-		  bResult = true;
-	  }
-	  
-	}
-	{
-	
-	 SRayPickInfo l_pinf;
-	 bool l_bres = Scene->RayPickObject( l_pinf.inf.range, start, direction, OBJCLASS_SCENEOBJECT , &l_pinf, Scene->GetSnapList(false) );
+	   OBJCLASS_SPAWNPOINT,
+	   OBJCLASS_SCENEOBJECT,
+	   OBJCLASS_TERRAIN
+	};
 
-	 if( !bResult||(l_bres && l_pinf.inf.range < pinf.inf.range) )
-		  pinf = l_pinf;
-	 if( l_bres )
-		   bResult = true;
-		   
+	xr_optional<SRayPickInfo> Hits;
+
+	for (ESceneItemsGuids objClass : ObjClasses)
+	{
+		SRayPickInfo currentInfo;
+		if (Scene->RayPickObject(currentInfo.inf.range, start, direction, objClass, &currentInfo, Scene->GetSnapList(false)))
+		{
+			if (!Hits || currentInfo.inf.range < Hits->inf.range)
+			{
+				Hits = currentInfo;
+			}
+		}
 	}
 
+	if (Hits)
+	{
+		RetrieveSceneObjPointAndNormal(hitpoint, hitnormal, *Hits, bSnap);
+		return true;
+	}
 
-	 if( bResult )
-			RetrieveSceneObjPointAndNormal( hitpoint,  hitnormal, pinf, bSnap );
-			
-	 return  bResult;
-
+	return false;
 }
-
 
 bool PickObjectGeometry( EEditorState est, Fvector& hitpoint,  const Fvector& start, const Fvector& direction, int bSnap, Fvector* hitnormal )
 {

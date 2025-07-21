@@ -58,6 +58,7 @@ namespace XRay::Editor::HeightmapUtils
 		}
 
 		bool LoadRAW(const char* filename);
+		bool SaveSteam(IWriter* Writer);
 		bool LoadSteam(IReader* Reader);
 		void PrecacheRenderData(float scaleY, float cellSize, u32 baseColor, bool geometryOnly);
 		void Draw(float scaleY = 100.f, float cellSize = 1.f);

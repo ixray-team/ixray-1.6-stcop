@@ -78,6 +78,7 @@
 #include <bitset>
 #include <chrono>
 #include <string>
+#include <optional>
 
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
@@ -152,6 +153,9 @@ using RStringSetIt = RStringSet::iterator;
 
 using RTokenVec = xr_vector<xr_rtoken>;
 using RTokenVecIt = RTokenVec::iterator;
+
+template<typename T>
+using xr_optional = std::optional<T>;
 
 #include "TimeUtils.h"
 #include "xr_delegate.h"
