@@ -25,8 +25,8 @@ file(GLOB CORE_SOURCE_LZ_FILES
 )
 
 file(GLOB CORE_SOURCE_XML_FILES
-    "XmlParser/*.cpp"
-    "XmlParser/*.h"
+    "FormatParsers/XML/*.cpp"
+    "FormatParsers/XML/*.h"
 )
 
 file(GLOB CORE_SOURCE_STACK_FILES
@@ -39,11 +39,7 @@ file(GLOB CORE_SOURCE_CRYPTO_FILES
 )
 
 file(GLOB CORE_SOURCE_MEMORY_FILES
-    "xrMemory*.*"
-    "memory_*.*"
-    "xrPool.*"
-    "*malloc*.*"
-    "doug_lea_allocator.*"
+    "memory/*.*"
 )
 
 file(GLOB CORE_SOURCE_DEBUG_FILES

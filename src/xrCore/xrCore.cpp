@@ -1,7 +1,7 @@
 // xrCore.cpp : Defines the entry point for the DLL application.
 //
 #include "stdafx.h"
-#include "XmlParser/Expression.h"
+#include "FormatParsers/XML/Expression.h"
 #pragma hdrstop
 
 #ifdef IXR_WINDOWS
