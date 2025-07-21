@@ -4,13 +4,15 @@
 #include "itterate_adjacents_static.h"
 #include "itterate_adjacents.h"
 
+
 template	<typename typeVertex>
 class calculate_normals
 {
 
 	typedef	typeVertex											type_vertex;
-	typedef	calculate_normals<typeVertex>						type_self;
-	typedef	typename typeVertex::type_face						type_face;
+ 	typedef	typename typeVertex::type_face						type_face;
+	
+	
 	//these typedefs to hide global typedefs!!!
 	typedef xr_vector<type_vertex*>								vecVertex;
 	typedef typename vecVertex::iterator						vecVertexIt;
@@ -24,15 +26,15 @@ private:
 typedef  itterate_adjacents< itterate_adjacents_params_static<type_vertex> > itterate_adjacents_type;
 
 public:
+	
 static void	calc_normals( vecVertex &vertices, vecFace &faces )
 {
-	
-	u32		Vcount	= (u32)vertices.size();
+ 	u32		Vcount	= (u32)vertices.size();
 	float	p_total = 0;
 	float	p_cost  = 1.f/(Vcount);
 
 	// Clear temporary flag
-	Status			("Processing...");
+	// Status			("Processing...");
 	float sm_cos	= _cos(deg2rad(g_params().m_sm_angle));
 
 	for (vecFaceIt it = faces.begin(); it!=faces.end(); it++)
@@ -41,44 +43,51 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 		(*it)->CalcNormal		();
 	}
 
+
 	// remark:
 	//	we use Face's bSplitted value to indicate that face is processed
 	//  so bSplitted means bUsed
-	for (u32 I=0; I<Vcount; I++)
+	u64 VCountAllocated = 0;
+
+ 	for (u32 I=0; I<Vcount; I++)
 	{
 		type_vertex* pTestVertex = vertices[I];
+ 
 		for (vecAdjIt AFit = pTestVertex->m_adjacents.begin(); AFit!=pTestVertex->m_adjacents.end(); ++AFit)
 		{
 			type_face*	F					= *AFit;
 			F->flags.bSplitted			= false;
 		}
+
 		std::sort( pTestVertex->m_adjacents.begin(), pTestVertex->m_adjacents.end() );
 
 		while ( pTestVertex->m_adjacents.size() )	
 		{
-			vecFace new_adj;
+ 			vecFace new_adj;
 			typename itterate_adjacents_type::recurse_tri_params p( pTestVertex, new_adj, sm_cos );
-			typename itterate_adjacents_type::RecurseTri( 0, p );// pTestVertex, new_adj, sm_cos );
-			VERIFY( !new_adj.empty() );
-
+			typename itterate_adjacents_type::RecurseTri( 0, p );
+ 
 			type_vertex*	pNewVertex			= pTestVertex->CreateCopy_NOADJ( vertices );
+			VCountAllocated++;
 
-			for (u32 a=0; a<new_adj.size(); ++a)
+
+ 			for (u32 a=0; a<new_adj.size(); ++a)
 			{
 				type_face* test		= new_adj[a];
 				test->VReplace	( pTestVertex, pNewVertex );
 			}
-
-			pNewVertex->normalFromAdj	();
+			new_adj.clear();
+  			pNewVertex->normalFromAdj	();
 		}
 		Progress( p_total+=p_cost );
 	}
 	Progress		( 1.f );
 
+	Status("vCountSize: %u", VCountAllocated);
+
 	// Destroy unused vertices
-
-	isolate_vertices<type_vertex>( FALSE, vertices );
-
+ 	isolate_vertices<type_vertex>( FALSE, vertices);
+	  
 	// Recalculate normals
 	for ( vecVertexIt it=vertices.begin(); it!=vertices.end(); it++ )
 		(*it)->normalFromAdj	();

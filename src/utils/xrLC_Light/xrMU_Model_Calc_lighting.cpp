@@ -71,13 +71,6 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 	CDB::COLLIDER				DB;
 	DB.ray_options				(0);
 
-	// Disable faces if needed
-	/*
-	BOOL bDisableFaces			= flags&LP_UseFaceDisable;
-	if	(bDisableFaces)
-		for (I=0; I<m_faces.size(); I++)	m_faces[I]->flags.bDisableShadowCast	= true;
-	*/
-
 	// MT-Safe 
 	xr_vector<_vertex> SafeVertices(m_vertices.size());
 
@@ -124,10 +117,24 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 			P.mad				(vP,N,a);
  			LightPoint			(&DB, MDL, vC, P, N, lights, flags, 0);
 		}
-		vC.scale				(n_samples);
-		vC._tmp_				=	v_trans;
-		if (flags&LP_dont_hemi) ;
-		else					vC.hemi	+=	v_amb;
+ 
+		if (n_samples > 0)
+		{
+			vC.scale(n_samples);
+			vC._tmp_ = v_trans;
+
+			if (flags & LP_dont_hemi)
+			{
+
+			}
+			else
+				vC.hemi += v_amb;
+		}
+		else
+		{
+			vC.hemi = 0.75f;
+		}
+
 		V.C._set				(vC);
 
 		// Search
