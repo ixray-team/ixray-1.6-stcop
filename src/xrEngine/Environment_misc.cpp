@@ -359,9 +359,11 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	if (config.line_exist(m_identifier.c_str(), "tree_amplitude_intensity"))
 		trees_amplitude = config.r_float(m_identifier.c_str(), "tree_amplitude_intensity");
 //	if (config.line_exist(m_identifier.c_str(),"sun_altitude"))
+		float sun_altitude = config.r_float(m_identifier.c_str(), "sun_altitude");
+		float sun_longitude = config.r_float(m_identifier.c_str(), "sun_longitude");
 		sun_dir.setHP			(
-			deg2rad(config.r_float(m_identifier.c_str(),"sun_altitude")),
-			deg2rad(config.r_float(m_identifier.c_str(),"sun_longitude"))
+			deg2rad(sun_altitude),
+			deg2rad(sun_longitude)
 		);
 	R_ASSERT				( _valid(sun_dir) );
 //	else
@@ -369,8 +371,25 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 //			deg2rad(config.r_fvector2(m_identifier.c_str(),"sun_dir").y),
 //			deg2rad(config.r_fvector2(m_identifier.c_str(),"sun_dir").x)
 //		);
-	VERIFY2					(sun_dir.y < 0, "Invalid sun direction settings while loading");
 
+	if (sun_dir.y >= 0)
+	{
+		// Автофикс: если y >= 0, делаем его немного отрицательным
+		sun_dir.y = -fabs(sun_dir.y) - FLT_EPSILON;
+		sun_dir.normalize();
+	}
+
+	VERIFY2(sun_dir.y < 0,
+		make_string<const char*>("Invalid sun direction settings while loading\n"
+			"Config: %s\n"
+			"Time: %s\n"
+			"sun_altitude = %.6f (deg), sun_longitude = %.6f (deg)\n"
+			"Computed sun_dir = (%.6f, %.6f, %.6f)",
+			config.fname(),
+			m_identifier.c_str(),  // Текущее время, зависит от движка
+			sun_altitude, sun_longitude,
+			sun_dir.x, sun_dir.y, sun_dir.z));
+	
 	lens_flare_id			= environment.eff_LensFlare->AppendDef(environment, environment.m_suns_config, config.r_string(m_identifier.c_str(),"sun"));
 	tb_id					= environment.eff_Thunderbolt->AppendDef(environment, environment.m_thunderbolt_collections_config, environment.m_thunderbolts_config, config.r_string(m_identifier.c_str(),"thunderbolt_collection"));
 	bolt_period				= (tb_id.size())?config.r_float	(m_identifier.c_str(),"thunderbolt_period"):0.f;
