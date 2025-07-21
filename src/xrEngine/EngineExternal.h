@@ -22,7 +22,8 @@ enum class EEngineExternalGame
 	EnableMonstersInventory,
 	EnableWeaponInertion,
 	EnableWeaponCollision,
-	EnableArtefactDegradation
+	EnableArtefactDegradation,
+	DisableSprintWhileOverweight
 };
 
 enum class EEngineExternalRender 
