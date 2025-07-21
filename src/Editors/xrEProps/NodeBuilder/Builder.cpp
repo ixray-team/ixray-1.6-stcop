@@ -121,12 +121,12 @@ void CNodeViewport::Draw()
 			if (Left != nullptr && Right != nullptr)
 			{
 				Right->MakeOutNode(Left);
+				Left->MakeInNode(Right);
 			}
 
 			Links.emplace_back(start_attr, end_attr);
 		}
 	}
-
 }
 
 void CNodeViewport::DrawEnd()

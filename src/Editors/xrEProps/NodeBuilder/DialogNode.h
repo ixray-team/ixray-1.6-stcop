@@ -11,7 +11,8 @@ public:
 
 	virtual void Draw() override;
 	virtual void AddContactLink(const xr_string& Name, bool IsOut = false) override;
-	virtual void MakeOutNode(INodeUnknown* Node) override;
+	virtual void MakeOutNode(INodeUnknown* Node, bool Silent) override;
+			void DestroyContacts();
 
 	void ValidateNodes(shared_str& Data, const char* RawName);
 
