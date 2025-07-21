@@ -35,9 +35,7 @@
 #	include "custommonster.h"
 #endif // MASTER_GOLD
 
-#ifndef _EDITOR
-#	include "ai_debug.h"
-#endif // _EDITOR
+#include "ai_debug.h"
 #include "../../xrUI/ui_base.h"
 #include "../xrCore/discord/discord.h"
 #include "../xrEngine/string_table.h"
@@ -756,12 +754,6 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 
 void CGamePersistent::Statistics	(CGameFont* F)
 {
-#if 0
-#	ifndef _EDITOR
-		m_last_stats_frame		= m_frame_counter;
-		profiler().show_stats	(F,!!psAI_Flags.test(aiStats));
-#	endif
-#endif
 }
 
 float CGamePersistent::MtlTransparent(u32 mtl_idx)

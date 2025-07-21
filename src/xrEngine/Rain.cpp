@@ -6,14 +6,10 @@
 #include "Environment.h"
 #include "Editor/XrEditorSceneInterface.h"
 
-#ifdef _EDITOR
-    #include "ui_toolscustom.h"
-#else
-    #include "Render.h"
-    #include "IGame_Level.h"
-    #include "../xrCore/Collision/xr_area.h"
-    #include "xr_object.h"
-#endif
+#include "Render.h"
+#include "IGame_Level.h"
+#include "../xrCore/Collision/xr_area.h"
+#include "xr_object.h"
 
 ENGINE_API extern BOOL bIsRaindropCollision = false;
 ENGINE_API extern BOOL bIsSndOnRoof = false;
@@ -146,33 +142,33 @@ BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, col
 {
 	if (Device.IsEditorMode())
 	{
-        if (bIsRaindropCollision)
-        {
-            EditorScene->SetPlayInEditorRayPickCall(true);
-            bool value = EditorScene->RayPick(s, d, range);
-            EditorScene->SetPlayInEditorRayPickCall(false);
-            return value;
-        }
-        else
-            return false;
-    }
-    else
-    {
-        if (!g_pGameLevel || !g_pGameLevel->bReady)
-            return false;
-    }
-    BOOL bRes;
-    collide::rq_result	RQ;
+		if (bIsRaindropCollision)
+		{
+			EditorScene->SetPlayInEditorRayPickCall(true);
+			bool value = EditorScene->RayPick(s, d, range);
+			EditorScene->SetPlayInEditorRayPickCall(false);
+			return value;
+		}
+		else
+			return false;
+	}
+	else
+	{
+		if (!g_pGameLevel || !g_pGameLevel->bReady)
+			return false;
+	}
+	BOOL bRes;
+	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel->CurrentViewEntity();
 	bRes 				= g_pGameLevel->ObjectSpace.RayPick( s,d,range,tgt,RQ,E);	
-    if (bRes) range 	= RQ.range;
-    return bRes;
+	if (bRes) range 	= RQ.range;
+	return bRes;
 }
 
 void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 {
 	dest.uv_set			= Random.randI(2);
-    if (bHit){
+	if (bHit){
 		dest.dwTime_Life= Device.dwTimeGlobal + iFloor(1000.f*height/dest.fSpeed) - Device.dwTimeDelta;
 		dest.dwTime_Hit	= Device.dwTimeGlobal + iFloor(1000.f*height/dest.fSpeed) - Device.dwTimeDelta;
 		dest.Phit.mad	(dest.P,dest.D,height);
@@ -186,22 +182,21 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 void CEffect_Rain::OnFrame()
 {
 	PROF_EVENT("CEffect_Rain::OnFrame");
-#ifndef _EDITOR
-    if (!g_pGameLevel && !Device.IsEditorMode())
-        return;
-#endif
 
-    if (g_dedicated_server)
-    {
-        return;
-    }
+	if (!g_pGameLevel && !Device.IsEditorMode())
+		return;
 
-    // Parse states
-    float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
-    static float hemi_factor = 0.f;
-    CObject *E = g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
-    if (E && E->renderable_ROS() && !Device.IsEditorMode())
-    {
+	if (g_dedicated_server)
+	{
+		return;
+	}
+
+	// Parse states
+	float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+	static float hemi_factor = 0.f;
+	CObject *E = g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
+	if (E && E->renderable_ROS() && !Device.IsEditorMode())
+	{
 		float* hemi_cube = E->renderable_ROS()->get_luminocity_hemi_cube();
 		float hemi_val = _max(hemi_cube[0], hemi_cube[1]);
 		hemi_val = _max(hemi_val, hemi_cube[2]);
@@ -239,10 +234,10 @@ void CEffect_Rain::OnFrame()
 
 		state = stWorking;
 		snd_Ambient.play(nullptr, sm_Looped);
-        if (!Device.IsEditorMode() || (Device.IsEditorMode() && bIsSndOnRoof))
-            CurDropSnd.play(nullptr, sm_Looped);
-        else
-            CurDropSnd.stop();
+		if (!Device.IsEditorMode() || (Device.IsEditorMode() && bIsSndOnRoof))
+			CurDropSnd.play(nullptr, sm_Looped);
+		else
+			CurDropSnd.stop();
 		snd_Ambient.set_position(Fvector().set(0, 0, 0));
 		snd_Ambient.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
 		break;
@@ -396,12 +391,11 @@ void CEffect_Rain::InvalidateState()
 void CEffect_Rain::Render()
 {
 	PROF_EVENT("CEffect_Rain::Render")
-#ifndef _EDITOR
-    if (!g_pGameLevel && !Device.IsEditorMode())
-        return;
-#endif
+	if (!g_pGameLevel && !Device.IsEditorMode())
+		return;
+
 	xrCriticalSectionGuard guard(&rainCS);
-    m_pRender->Render(*this);
+	m_pRender->Render(*this);
 }
 
 // startup _new_ particle system

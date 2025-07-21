@@ -1,5 +1,3 @@
-#ifndef xrTheora_StreamH
-#define xrTheora_StreamH
 #pragma once
 
 #include <theora/theora.h>
@@ -14,12 +12,8 @@ class ENGINE_API CTheoraStream{
 	theora_info			t_info;
 	theora_comment		t_comment;
 	theora_state		t_state;
-
-#ifdef _EDITOR
-	IReader		        *source;
-#else
 	CStreamReader		*source;
-#endif
+
 	yuv_buffer			t_yuv_buffer;
 
 	ogg_int64_t			d_frame;
@@ -41,5 +35,3 @@ public:
 
 	yuv_buffer*			CurrentFrame		()					{return &t_yuv_buffer;}
 };
-
-#endif //xrTheora_StreamH
