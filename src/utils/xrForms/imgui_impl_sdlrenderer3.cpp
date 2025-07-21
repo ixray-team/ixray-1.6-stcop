@@ -46,6 +46,7 @@ struct ImGui_ImplSDLRenderer3_Data
 {
     SDL_Renderer* SDLRenderer;
     SDL_Texture* FontTexture;
+    ImVector<SDL_FColor>    ColorBuffer;
     ImGui_ImplSDLRenderer3_Data() { memset((void*)this, 0, sizeof(*this)); }
 };
 
@@ -107,6 +108,24 @@ void ImGui_ImplSDLRenderer3_NewFrame()
         ImGui_ImplSDLRenderer3_CreateDeviceObjects();
 }
 
+// https://github.com/libsdl-org/SDL/issues/9009
+static int SDL_RenderGeometryRaw8BitColor(SDL_Renderer* renderer, ImVector<SDL_FColor>& colors_out, SDL_Texture* texture, const float* xy, int xy_stride, const SDL_Color* color, int color_stride, const float* uv, int uv_stride, int num_vertices, const void* indices, int num_indices, int size_indices)
+{
+    const Uint8* color2 = (const Uint8*)color;
+    colors_out.resize(num_vertices);
+    SDL_FColor* color3 = colors_out.Data;
+    for (int i = 0; i < num_vertices; i++)
+    {
+        color3[i].r = color->r / 255.0f;
+        color3[i].g = color->g / 255.0f;
+        color3[i].b = color->b / 255.0f;
+        color3[i].a = color->a / 255.0f;
+        color2 += color_stride;
+        color = (const SDL_Color*)color2;
+    }
+    return SDL_RenderGeometryRaw(renderer, texture, xy, xy_stride, color3, sizeof(*color3), uv, uv_stride, num_vertices, indices, num_indices, size_indices);
+}
+
 void ImGui_ImplSDLRenderer3_RenderDrawData(ImDrawData* draw_data)
 {
     ImGui_ImplSDLRenderer3_Data* bd = ImGui_ImplSDLRenderer3_GetBackendData();
@@ -135,7 +154,7 @@ void ImGui_ImplSDLRenderer3_RenderDrawData(ImDrawData* draw_data)
         SDL_Rect    ClipRect;
     };
     BackupSDLRendererState old = {};
-    old.ClipEnabled = SDL_RenderClipEnabled(bd->SDLRenderer) == SDL_TRUE;
+    old.ClipEnabled = SDL_RenderClipEnabled(bd->SDLRenderer);
     SDL_GetRenderViewport(bd->SDLRenderer, &old.Viewport);
     SDL_GetRenderClipRect(bd->SDLRenderer, &old.ClipRect);
 
@@ -188,7 +207,7 @@ void ImGui_ImplSDLRenderer3_RenderDrawData(ImDrawData* draw_data)
 
                 // Bind texture, Draw
                 SDL_Texture* tex = (SDL_Texture*)pcmd->GetTexID();
-                SDL_RenderGeometryRaw(bd->SDLRenderer, tex,
+                SDL_RenderGeometryRaw8BitColor(bd->SDLRenderer, bd->ColorBuffer, tex,
                     xy, (int)sizeof(ImDrawVert),
                     color, (int)sizeof(ImDrawVert),
                     uv, (int)sizeof(ImDrawVert),
