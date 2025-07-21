@@ -44,6 +44,7 @@ public:
 	//dialogs
 	void					OnExternalHideIndicators		();
 	CUIDialogWnd*			TopInputReceiver				();
+	void					StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
 	void					AddDialogToRender				(CUIWindow* pDialog);
 	void					RemoveDialogToRender			(CUIWindow* pDialog);
 	virtual void	_BCL	OnFrame							();
