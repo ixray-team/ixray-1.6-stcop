@@ -69,12 +69,12 @@ anim = wait
 combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
 on_info = remark@end %=play_sound(agr_base_leader_sergant_5:dolg:agr_duty_base_commander_name)%
-meet = meet
+meet = no_meet
 invulnerable = true
 
 [remark@end]
 target = actor
-anim = guard_rac
+anim = wait
 combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
 on_signal = sound_end | walker@2 %+agr_duty_leader_raciya_end%
