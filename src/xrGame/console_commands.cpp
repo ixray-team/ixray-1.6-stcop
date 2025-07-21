@@ -97,6 +97,8 @@ extern	BOOL	g_ai_use_old_vision;
 float			g_aim_predict_time = 0;
 int				g_keypress_on_start = 1;
 
+extern	BOOL	g_fight_fast_respawn;
+
 extern ENGINE_API int m_look_cam_fp_zoom;
 
 ENGINE_API extern float	g_console_sensitive;
@@ -2653,6 +2655,8 @@ void CCC_RegisterCommands()
 #endif
 	CMD4(CCC_Float, "con_sensitive", &g_console_sensitive, 0.01f, 1.0f);
 	CMD4(CCC_Integer, "wpn_aim_toggle", &b_toggle_weapon_aim, 0, 1);
+
+	CMD4(CCC_Integer, "g_fight_fast_respawn", &g_fight_fast_respawn, 0, 1);
 
 	//	CMD4(CCC_Integer,	"hud_old_style",			&g_old_style_ui_hud, 0, 1);
 

@@ -1631,7 +1631,7 @@ void CPHMovementControl::BlockDamageSet(u64 steps_num)
 
 void CPHMovementControl::NetRelcase(CObject* O)
 {
-	CPhysicsShellHolder* sh = smart_cast<CPhysicsShellHolder*>(O);
+	CPhysicsShellHolder* sh = O->cast_physics_shell_holder();
 	if (!sh)
 		return;
 
