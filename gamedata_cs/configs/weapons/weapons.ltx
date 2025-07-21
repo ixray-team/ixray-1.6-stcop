@@ -2077,7 +2077,6 @@ inv_grid_y			= 2
 scope_texture		= wpn_crosshair
 scope_zoom_factor	= 15		;ПСО-1 2X
 
-
 [wpn_addon_scope_susat]:identity_immunities
 GroupControlSection	= spawn_group
 discovery_dependency =
@@ -2105,6 +2104,193 @@ inv_grid_y			= 1
 scope_texture		= wpn_crosshair_l85
 scope_zoom_factor	= 30		;SUSAT 2X
 
+[wpn_addon_scope_x2.7]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn			= "weapons\addons\scope_x2.7" ; option for Level Editor
+class			= WP_SCOPE
+cform           = skeleton
+visual          = dynamics\weapons\wpn_upgrade\wpn_scope.ogf
+$prefetch 		= 32
+description		= st_addon_scope_x2.7_descr
+cost			= 2000
+
+holder_range_modifier	= 1.2
+holder_fov_modifier		= 1.0
+
+inv_name		= st_addon_scope_x2.7
+inv_name_short	= st_addon_scope_x2.7
+inv_weight		= .2
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 10
+inv_grid_y			= 16
+scope_texture		= wpn_crosshair
+scope_zoom_factor	= 40		;ПСО-1 2X
+
+[wpn_addon_scope_detector]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn			= "weapons\addons\scope_detector" ; option for Level Editor
+class			= WP_SCOPE
+cform           = skeleton
+visual          = dynamics\weapons\wpn_upgrade\wpn_scope.ogf
+$prefetch 		= 32
+description		= st_addon_scope_detector_descr
+cost			= 10000
+
+holder_range_modifier	= 1.2
+holder_fov_modifier		= 1.0
+
+inv_name		= st_addon_scope_detector
+inv_name_short	= st_addon_scope_detector
+inv_weight		= .2
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 4
+inv_grid_y			= 16
+scope_texture		= wpn_crosshair
+scope_alive_detector = scope_detector
+scope_zoom_factor	= 30		;ПСО-1 2X
+
+[wpn_addon_scope_night]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn			= "weapons\addons\scope_night" ; option for Level Editor
+class			= WP_SCOPE
+cform           = skeleton
+visual          = dynamics\weapons\wpn_upgrade\wpn_scope.ogf
+$prefetch 		= 32
+description		= st_addon_scope_night_vision_descr
+cost			= 3000
+
+holder_range_modifier	= 1.2
+holder_fov_modifier		= 1.0
+
+inv_name		= st_addon_scope_night_vision
+inv_name_short	= st_addon_scope_night_vision
+inv_weight		= .2
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 4
+inv_grid_y			= 17
+scope_texture		= wpn_crosshair
+scope_nightvision = scope_nightvision
+scope_zoom_factor	= 30		;ПСО-1 2X
+
+[wpn_addon_scope_susat_x1.6]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn			= "weapons\addons\scope_susat_x1.6" ; option for Level Editor
+class			= WP_SCOPE
+cform           = skeleton
+visual          = dynamics\weapons\wpn_upgrade\wpn_scope_susat.ogf
+description		= st_addon_scope_susat_x1.6_descr
+slot = -1
+;$prefetch 		= 64
+
+cost			= 900
+
+holder_range_modifier	= 1.3
+holder_fov_modifier		= 1.0
+
+inv_name		= st_addon_scope_susat_x1.6
+inv_name_short	= st_addon_scope_susat_x1.6
+inv_weight		= .2
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 10
+inv_grid_y			= 18
+scope_texture		= wpn_crosshair_l85
+scope_zoom_factor	= 50		;SUSAT 1.6X
+
+[wpn_addon_scope_susat_custom]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn			= "weapons\addons\scope_susat_custom" ; option for Level Editor
+class			= WP_SCOPE
+cform           = skeleton
+visual          = dynamics\weapons\wpn_upgrade\wpn_scope_susat.ogf
+description		= st_addon_scope_susat_custom_descr
+slot = -1
+;$prefetch 		= 64
+
+cost			= 5500
+
+holder_range_modifier	= 1.3
+holder_fov_modifier		= 1.0
+
+inv_name		= st_addon_scope_susat_custom
+inv_name_short	= st_addon_scope_susat_custom
+inv_weight		= .2
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 15
+inv_grid_y			= 22
+scope_texture		= wpn_crosshair_l85
+scope_dynamic_zoom = on
+scope_zoom_factor	= 30		;SUSAT 2X
+
+[wpn_addon_scope_susat_dusk]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn			= "weapons\addons\scope_susat_dusk" ; option for Level Editor
+class			= WP_SCOPE
+cform           = skeleton
+visual          = dynamics\weapons\wpn_upgrade\wpn_scope_susat.ogf
+description		= st_addon_scope_susat_dusk_descr
+slot = -1
+;$prefetch 		= 64
+
+cost			= 2500
+
+holder_range_modifier	= 1.3
+holder_fov_modifier		= 1.0
+
+inv_name		= st_addon_scope_susat_dusk
+inv_name_short	= st_addon_scope_susat_dusk
+inv_weight		= .2
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 5
+inv_grid_y			= 15
+scope_texture		= wpn_crosshair_l85
+scope_nightvision = scope_contrast
+scope_zoom_factor	= 50		;SUSAT 2X
+
+[wpn_addon_scope_susat_night]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn			= "weapons\addons\scope_susat_night" ; option for Level Editor
+class			= WP_SCOPE
+cform           = skeleton
+visual          = dynamics\weapons\wpn_upgrade\wpn_scope_susat.ogf
+description		= st_addon_scope_susat_night_vision_descr
+slot = -1
+;$prefetch 		= 64
+
+cost			= 3500
+
+holder_range_modifier	= 1.3
+holder_fov_modifier		= 1.0
+
+inv_name		= st_addon_scope_susat_night_vision
+inv_name_short	= st_addon_scope_susat_night_vision
+inv_weight		= .2
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 14
+inv_grid_y			= 22
+scope_texture		= wpn_crosshair_l85
+scope_nightvision = scope_nightvision
+scope_zoom_factor	= 30		;SUSAT 2X
 
 [wpn_addon_silencer]:identity_immunities
 GroupControlSection	= spawn_group
@@ -2200,3 +2386,26 @@ inv_grid_height		= 1
 inv_grid_x			= 17
 inv_grid_y			= 3
 grenade_vel 		= 30 ;76
+
+;;;;;;;;;;;;;Advanced scope settings;;;;;;;;;;;;;;;;
+
+[scope_detector]
+vis_frame_speed				= 4				; скорость, с которой наводится рамка на цель
+vis_frame_color				= 0.7,0.7,0.7,1.0	; цвет рамки RGBA (A) Не учитывается
+found_snd					= detectors\DA-2_beep1
+catch_snd					= detectors\DA-2_beep1
+
+[scope_nightvision]
+snd_night_vision_on			= weapons\nv_start
+snd_night_vision_off		= weapons\nv_off
+snd_night_vision_idle		= weapons\nv_loop
+snd_night_vision_broken		= weapons\nv_off
+
+pp_eff_name = nightvision_good.ppe
+pp_eff_cyclic = 1
+pp_eff_overlap = false
+
+[scope_contrast]
+pp_eff_name = contrast.ppe
+pp_eff_cyclic = 1
+pp_eff_overlap = false
