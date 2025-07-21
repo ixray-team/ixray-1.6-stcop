@@ -525,6 +525,19 @@ void CWeapon::Load		(LPCSTR section)
 	m_zoom_params.m_sUseZoomPostprocess			= 0;
 	m_zoom_params.m_sUseBinocularVision			= 0;
 
+	m_bUseSilHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_silencer_is_attached", false);
+	m_bUseScopeHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_scope_is_attached", false);
+	m_bUseGLHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_gl_is_attached", false);
+
+	if (m_bUseSilHud)
+		hud_silencer = pSettings->r_string(section, "hud_silencer");
+
+	if (m_bUseScopeHud)
+		hud_scope = pSettings->r_string(section, "hud_scope");
+
+	if (m_bUseGLHud)
+		hud_gl = pSettings->r_string(section, "hud_gl");
+
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 
@@ -2927,6 +2940,8 @@ void CWeapon::UpdateAltScope()
 	{
 		hud_sect = new_hud;
 	}
+
+	hud_sect_cache = hud_sect;
 }
 
 shared_str CWeapon::GetNameWithAttachmentScope()
