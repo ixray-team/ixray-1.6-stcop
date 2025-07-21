@@ -265,52 +265,286 @@ bool EDetailManager::LoadColorIndices(IReader& F)
 
 bool EDetailManager::LoadLTX(CInifile& ini)
 {
-	R_ASSERT2			(0, "not_implemented");
+    inherited::LoadLTX(ini);
+
+    // version
+    u32 version = ini.r_u32("main", "version");
+
+    if (version != DETMGR_VERSION) {
+        ELog.Msg(mtError, "EDetailManager: unsupported version.");
+        return false;
+    }
+
+    // flags
+    m_Flags.assign(ini.r_u32("main", "flags"));
+
+    // header
+    dtH.version = ini.r_u32("detail_header", "version");
+    dtH.object_count = ini.r_u32("detail_header", "object_count");
+    dtH.offs_x = ini.r_s64("detail_header", "offset_x");
+    dtH.offs_z = ini.r_s64("detail_header", "offset_z");
+    dtH.size_x = ini.r_u32("detail_header", "size_x");
+    dtH.size_z = ini.r_u32("detail_header", "size_z");
+
+    // slots
+    u32 cnt_detail_slots = ini.r_u32("main", "detail_slots_count");
+    if (cnt_detail_slots)dtSlots = xr_alloc<DetailSlot>(cnt_detail_slots);
+    m_Selected.resize(cnt_detail_slots);
+
+    if (cnt_detail_slots)
+    {
+        for (u32 i = 0; i < cnt_detail_slots; i++)
+        {
+            string128 sect_name;
+            sprintf(sect_name, "detail_slot_%d", i);
+            dtSlots[i].y_base = ini.r_u32(sect_name, "y_base");
+            dtSlots[i].y_height = ini.r_u32(sect_name, "y_height");
+            dtSlots[i].id0 = ini.r_u32(sect_name, "id0");
+            dtSlots[i].id1 = ini.r_u32(sect_name, "id1");
+            dtSlots[i].id2 = ini.r_u32(sect_name, "id2");
+            dtSlots[i].id3 = ini.r_u32(sect_name, "id3");
+            dtSlots[i].c_dir = ini.r_u32(sect_name, "c_dir");
+            dtSlots[i].c_hemi = ini.r_u32(sect_name, "c_hemi");
+            dtSlots[i].c_r = ini.r_u32(sect_name, "c_r");
+            dtSlots[i].c_g = ini.r_u32(sect_name, "c_g");
+            dtSlots[i].c_b = ini.r_u32(sect_name, "c_b");
+
+            Ivector4 v;
+            v.set(ini.r_ivector4(sect_name, "palette_0"));
+            dtSlots[i].palette[0].a0 = v.x;
+            dtSlots[i].palette[0].a1 = v.y;
+            dtSlots[i].palette[0].a2 = v.z;
+            dtSlots[i].palette[0].a3 = v.w;
+
+            v.set(ini.r_ivector4(sect_name, "palette_1"));
+            dtSlots[i].palette[1].a0 = v.x;
+            dtSlots[i].palette[1].a1 = v.y;
+            dtSlots[i].palette[1].a2 = v.z;
+            dtSlots[i].palette[1].a3 = v.w;
+
+            v.set(ini.r_ivector4(sect_name, "palette_2"));
+            dtSlots[i].palette[2].a0 = v.x;
+            dtSlots[i].palette[2].a1 = v.y;
+            dtSlots[i].palette[2].a2 = v.z;
+            dtSlots[i].palette[2].a3 = v.w;
+
+            v.set(ini.r_ivector4(sect_name, "palette_3"));
+            dtSlots[i].palette[3].a0 = v.x;
+            dtSlots[i].palette[3].a1 = v.y;
+            dtSlots[i].palette[3].a2 = v.z;
+            dtSlots[i].palette[3].a3 = v.w;
+        }
+    }
+
+    // objects
+
+    VERIFY(objects.empty());
+    VERIFY(m_ColorIndices.empty());
+
+    bool bRes = true;
+
+    u32 cnt_detail_objects = ini.r_u32("main", "detail_objects_count");
+
+    for (u32 i = 0; i < cnt_detail_objects; i++)
+    {
+        EDetail* DO = new EDetail();
+        string128 sect_name;
+        sprintf(sect_name, "detail_object_%d", i);
+        if (DO->LoadLTX(ini, sect_name)) objects.push_back(DO);
+        else bRes = false;
+    }
+
+    // color index map
+    u32 cnt_color_indices = ini.r_u32("main", "color_indices_count");
+    for (u32 i = 0; i < cnt_color_indices; i++)
+    {
+        string128 sect_name;
+        sprintf(sect_name, "color_index_%d", i);
+        u32 index = ini.r_u32(sect_name, "index");
+        u32 ref_cnt = ini.r_u32(sect_name, "reference_count");
+        for (u32 j = 0; j < ref_cnt; j++)
+        {
+            string128 key;
+            sprintf(key, "reference_%d", j);
+            EDetail* DO = FindDOByName(ini.r_string(sect_name, key));
+            if (DO) m_ColorIndices[index].push_back(DO);
+            else bRes = false;
+        }
+    }
+
+    InvalidateCache();
+
+    if (!objects.empty())
+        hw_Load();
+
+    if (!bRes)
+    {
+        ELog.DlgMsg(mtError, "EDetailManager: Some objects removed. Reinitialize objects.");
+        InvalidateSlots();
+    }
+
+    // internal
+    // bbox
+    m_BBox.min = ini.r_fvector3("main", "bbox_min");
+    m_BBox.max = ini.r_fvector3("main", "bbox_max");
+
+    // snap objects
+    u32 cnt_snap_objects = ini.r_u32("main", "snap_objects_count");
+
+    for (u32 i = 0; i < cnt_snap_objects; i++)
+    {
+        string128 sect_name;
+        sprintf(sect_name, "snap_object_%d", i);
+        LPCSTR s = ini.r_string(sect_name, "name");
+        CCustomObject* O = Scene->FindObjectByName(s, OBJCLASS_SCENEOBJECT);
+        if (!O) ELog.Msg(mtError, "EDetailManager: Can't find snap object '%s'.", s);
+        else m_SnapObjects.push_back(O);
+    }
+
+    // detail density
+    ps_r__Detail_density = ini.r_float("main", "detail_density");
+
+    // base texture
+    LPCSTR s = ini.r_string("main", "base_texture");
+    if (s)
+    {
+        string256 image_name;
+        sprintf(image_name, "%s", s);
+
+        if (m_Base.LoadImage(image_name))
+        {
+            m_Base.CreateShader();
+            m_RTFlags.set(flRTGenerateBaseMesh, TRUE);
+        }
+        else
+        {
+            ELog.Msg(mtError, "EDetailManager: Can't find base texture '%s'.", image_name);
+            ClearSlots();
+            ClearBase();
+        }
+    }
+    else
+    {
+        ELog.Msg(mtError, "EDetailManager: Can't find base texture.");
+        ClearSlots();
+        ClearBase();
+    }
+
+    InvalidateCache();
+
+    IsLoaded = true;
+
     return true;
 }
 
 void EDetailManager::SaveLTX(CInifile& ini, int id)
 {
-	R_ASSERT2			(0, "not_implemented");
-/*
-	inherited::SaveLTX	(ini);
+    inherited::SaveLTX(ini, id);
 
-    ini.w_u32			("main", "version", DETMGR_VERSION);
+    // version
+    ini.w_u32("main", "version", DETMGR_VERSION);
 
-    ini.w_u32			("main", "flags", m_Flags.get());
+    // flags
+    ini.w_u32("main", "flags", m_Flags.get());
 
-	// header
-
-    ini.w_u32			("detail_header", "version", dtH.version);
-    ini.w_u32			("detail_header", "object_count", dtH.object_count);
-    ini.w_ivector2		("detail_header", "offset", Ivector2().set(dtH.offs_x, dtH.offs_z) );
-    ini.w_ivector2		("detail_header", "size", Ivector2().set(dtH.size_x, dtH.size_z) );
+    // header
+    ini.w_u32("detail_header", "version", dtH.version);
+    ini.w_u32("detail_header", "object_count", dtH.object_count);
+    ini.w_s64("detail_header", "offset_x", dtH.offs_x);
+    ini.w_s64("detail_header", "offset_z", dtH.offs_z);
+    ini.w_u32("detail_header", "size_x", dtH.size_x);
+    ini.w_u32("detail_header", "size_z", dtH.size_z);
 
     // objects
-    SaveColorIndicesLTX	(F);
+    u32 cnt_detail_objects = objects.size();
+    ini.w_u32("main", "detail_objects_count", cnt_detail_objects);
+    if (cnt_detail_objects)
+    {
+        u32 i = 0;
+        for (DetailIt it = objects.begin(); it != objects.end(); it++, i++)
+        {
+            string128 sect_name;
+            sprintf(sect_name, "detail_object_%d", i);
+            ((EDetail*)(*it))->SaveLTX(ini, sect_name);
+        }
+    }
+
+    // color index map
+    u32 cnt_color_indices = m_ColorIndices.size();
+    ini.w_u32("main", "color_indices_count", cnt_color_indices);
+    if (cnt_color_indices)
+    {
+        u32 i = 0;
+        for (ColorIndexPairIt i_it = m_ColorIndices.begin(); i_it != m_ColorIndices.end(); i_it++, i++)
+        {
+            string128 sect_name;
+            sprintf(sect_name, "color_index_%d", i);
+            ini.w_u32(sect_name, "index", i_it->first);
+            ini.w_u32(sect_name, "reference_count", static_cast<u8>(i_it->second.size()));
+
+            u32 j = 0;
+            for (const auto& item : i_it->second)
+            {
+                string128 key;
+                sprintf(key, "reference_%d", j);
+                ini.w_string(sect_name, key, item->GetName());
+                j++;
+            }
+        }
+    }
 
     // slots
-	F.open_chunk		(DETMGR_CHUNK_SLOTS);
-    F.w_u32				(dtH.size_x*dtH.size_z);
-	F.w					(dtSlots,dtH.size_x*dtH.size_z*sizeof(DetailSlot));
-    F.close_chunk		();
+    u32 cnt_detail_slots = dtH.size_x * dtH.size_z;
+    ini.w_u32("main", "detail_slots_count", cnt_detail_slots);
+    if (cnt_detail_slots)
+    {
+        for (u32 i = 0; i < cnt_detail_slots; i++)
+        {
+            string128 sect_name;
+            sprintf(sect_name, "detail_slot_%d", i);
+            ini.w_u32(sect_name, "y_base", dtSlots[i].y_base);
+            ini.w_u32(sect_name, "y_height", dtSlots[i].y_height);
+            ini.w_u32(sect_name, "id0", dtSlots[i].id0);
+            ini.w_u32(sect_name, "id1", dtSlots[i].id1);
+            ini.w_u32(sect_name, "id2", dtSlots[i].id2);
+            ini.w_u32(sect_name, "id3", dtSlots[i].id3);
+            ini.w_u32(sect_name, "c_dir", dtSlots[i].c_dir);
+            ini.w_u32(sect_name, "c_hemi", dtSlots[i].c_hemi);
+            ini.w_u32(sect_name, "c_r", dtSlots[i].c_r);
+            ini.w_u32(sect_name, "c_g", dtSlots[i].c_g);
+            ini.w_u32(sect_name, "c_b", dtSlots[i].c_b);
+
+            ini.w_ivector4(sect_name, "palette_0", Ivector4().set(dtSlots[i].palette[0].a0, dtSlots[i].palette[0].a1, dtSlots[i].palette[0].a2, dtSlots[i].palette[0].a3));
+            ini.w_ivector4(sect_name, "palette_1", Ivector4().set(dtSlots[i].palette[1].a0, dtSlots[i].palette[1].a1, dtSlots[i].palette[1].a2, dtSlots[i].palette[1].a3));
+            ini.w_ivector4(sect_name, "palette_2", Ivector4().set(dtSlots[i].palette[2].a0, dtSlots[i].palette[2].a1, dtSlots[i].palette[2].a2, dtSlots[i].palette[2].a3));
+            ini.w_ivector4(sect_name, "palette_3", Ivector4().set(dtSlots[i].palette[3].a0, dtSlots[i].palette[3].a1, dtSlots[i].palette[3].a2, dtSlots[i].palette[3].a3));
+        }
+    }
 
     // internal
     // bbox
-    ini.w_fvector3		("main", "bbox_min", m_BBox.min);
-    ini.w_fvector3		("main", "bbox_max", m_BBox.max);
+    ini.w_fvector3("main", "bbox_min", m_BBox.min);
+    ini.w_fvector3("main", "bbox_max", m_BBox.max);
 
-	// base texture
-    if (m_Base.Valid())
+    // base texture
+    ini.w_string("main", "base_texture", m_Base.Valid() ? m_Base.GetName() : NULL);
+
+    // detail density
+    ini.w_float("main", "detail_density", ps_r__Detail_density);
+
+    u32 cnt_snap_objects = m_SnapObjects.size();
+    ini.w_u32("main", "snap_objects_count", cnt_snap_objects);
+
+    if (cnt_snap_objects)
     {
-    	ini.w_string	("main", "base_texture", m_Base.GetName());
+        u32 i = 0;
+        for (ObjectIt o_it = m_SnapObjects.begin(); o_it != m_SnapObjects.end(); o_it++, i++)
+        {
+            string128 sect_name;
+            sprintf(sect_name, "snap_object_%d", i);
+            ini.w_string(sect_name, "name", (*o_it)->GetName());
+        }
     }
-    ini.w_float			("main", "detail_density", ps_r__Detail_density);
-
-	// snap objects
-    for (ObjectIt o_it=m_SnapObjects.begin(); o_it!=m_SnapObjects.end(); ++o_it)
-    	ini.w_string	("snap_objects", (*o_it)->Name, NULL);
-*/        
 }
 
 bool EDetailManager::LoadStream(IReader& F)
