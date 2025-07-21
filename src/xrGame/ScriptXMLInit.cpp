@@ -15,6 +15,7 @@
 #include "../../xrUI/Widgets/UIEditBox.h"
 #include "../../xrUI/Widgets/UIAnimatedStatic.h"
 #include "../../xrUI/Widgets/UITrackBar.h"
+#include "../../xrUI/Widgets/UIArrowStepper.h"
 #include "ui/UICDkey.h"
 #include "ui/UIMapInfo.h"
 #include "ui/UIMMShniaga.h"
@@ -279,7 +280,8 @@ CUIMMShniaga* CScriptXmlInit::InitMMShniaga(LPCSTR path, CUIWindow* parent)
 	return pWnd;
 }
 
-CUIMapInfo* CScriptXmlInit::InitMapInfo(LPCSTR path, CUIWindow* parent){
+CUIMapInfo* CScriptXmlInit::InitMapInfo(LPCSTR path, CUIWindow* parent)
+{
 	CUIMapInfo* pWnd	= new CUIMapInfo();
 	CUIXmlInit::InitWindow(m_xml,path,0,pWnd);
 	pWnd->InitMapInfo(pWnd->GetWndPos(),pWnd->GetWndSize());
@@ -287,18 +289,28 @@ CUIMapInfo* CScriptXmlInit::InitMapInfo(LPCSTR path, CUIWindow* parent){
 	return pWnd;	
 }
 
-CUIWindow* CScriptXmlInit::InitKeyBinding(LPCSTR path, CUIWindow* parent){
+CUIWindow* CScriptXmlInit::InitKeyBinding(LPCSTR path, CUIWindow* parent)
+{
 	CUIKeyBinding* pWnd				= new CUIKeyBinding();
 	pWnd->InitFromXml				(m_xml, path);	
 	_attach_child					(pWnd, parent);
 	return							pWnd;
 }
 
-CUITrackBar* CScriptXmlInit::InitTrackBar(LPCSTR path, CUIWindow* parent){
+CUITrackBar* CScriptXmlInit::InitTrackBar(LPCSTR path, CUIWindow* parent)
+{
 	CUITrackBar* pWnd				= new CUITrackBar();
 	CUIXmlInit::InitTrackBar		(m_xml, path, 0, pWnd);
 	_attach_child					(pWnd, parent);
 	return							pWnd;	
+}
+
+CUIArrowStepper* CScriptXmlInit::InitArrowStepper(LPCSTR path, CUIWindow* parent)
+{
+	CUIArrowStepper* pWnd = new CUIArrowStepper();
+	CUIXmlInit::InitArrowStepper(m_xml, path, 0, pWnd);
+	_attach_child(pWnd, parent);
+	return							pWnd;
 }
 
 CUIProgressBar* CScriptXmlInit::InitProgressBar(LPCSTR path, CUIWindow* parent)
@@ -348,22 +360,23 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitWindow",				&CScriptXmlInit::InitWindow)
 		.def("InitFrame",				&CScriptXmlInit::InitFrame)
 		.def("InitFrameLine",			&CScriptXmlInit::InitFrameLine)
-		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)		
+		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
 		.def("InitTextWnd",				&CScriptXmlInit::InitTextWnd)
-		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)		
-		.def("InitSleepStatic",			&CScriptXmlInit::InitSleepStatic)		
+		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)
+		.def("InitSleepStatic",			&CScriptXmlInit::InitSleepStatic)
 		.def("Init3tButton",			&CScriptXmlInit::Init3tButton)
 		.def("InitCheck",				&CScriptXmlInit::InitCheck)
 		.def("InitSpinNum",				&CScriptXmlInit::InitSpinNum)
 		.def("InitSpinFlt",				&CScriptXmlInit::InitSpinFlt)
 		.def("InitSpinText",			&CScriptXmlInit::InitSpinText)
-		.def("InitComboBox",			&CScriptXmlInit::InitComboBox)		
+		.def("InitComboBox",			&CScriptXmlInit::InitComboBox)
 		.def("InitTab",					&CScriptXmlInit::InitTab)
 		.def("InitServerList",			&CScriptXmlInit::InitServerList)
 		.def("InitMapList",				&CScriptXmlInit::InitMapList)
 		.def("InitMapInfo",				&CScriptXmlInit::InitMapInfo)
 		.def("InitTrackBar",			&CScriptXmlInit::InitTrackBar)
+		.def("InitArrowStepper",		&CScriptXmlInit::InitArrowStepper)
 		.def("InitCDkey",				&CScriptXmlInit::InitCDkey)
 		.def("InitMPPlayerName",		&CScriptXmlInit::InitMPPlayerName)
 		.def("InitKeyBinding",			&CScriptXmlInit::InitKeyBinding)

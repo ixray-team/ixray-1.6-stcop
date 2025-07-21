@@ -24,6 +24,7 @@ class CUISleepStatic;
 class CServerList;
 class CUIMapList;
 class CUITrackBar;
+class CUIArrowStepper;
 class CUIMapInfo;
 class CUIMMShniaga;
 class CUIScrollView;
@@ -67,6 +68,7 @@ public:
 	CUIMapList*			InitMapList(LPCSTR path, CUIWindow* parent);
 	CUIMapInfo*			InitMapInfo(LPCSTR path, CUIWindow* parent);
 	CUITrackBar*		InitTrackBar(LPCSTR path, CUIWindow* parent);
+	CUIArrowStepper*	InitArrowStepper(LPCSTR path, CUIWindow* parent);
 	CUIEditBox*			InitCDkey(LPCSTR path, CUIWindow* parent);
 	CUIEditBox*			InitMPPlayerName(LPCSTR path, CUIWindow* parent);
 	CUIMMShniaga*		InitMMShniaga(LPCSTR path, CUIWindow* parent);
