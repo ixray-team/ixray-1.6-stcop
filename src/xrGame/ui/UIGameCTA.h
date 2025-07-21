@@ -30,14 +30,15 @@ private:
 	CUISpawnWnd			*m_pUITeamSelectWnd;
 	CUIStatic*			m_team1_icon;
 	CUIStatic*			m_team2_icon;
-	CUITextWnd*			m_team1_score;
-	CUITextWnd*			m_team2_score;
+	CUIStatic*			m_team1_score;
+	CUIStatic*			m_team2_score;
 	CUIStatic*			m_pFragLimitIndicator;
 	game_cl_CaptureTheArtefact*			m_game;
 
 	CUIMoneyIndicator*				m_pMoneyIndicator;
 	CUIRankIndicator*				m_pRankIndicator;
 	CUITextWnd*						m_pReinforcementInidcator;
+	CUIProgressShape*				m_pReinforcementInidcator_old;
 	CUIMessageBoxEx*				m_pBuySpawnMsgBox;
 	UIVoteStatusWnd*				m_voteStatusWnd;
 	
