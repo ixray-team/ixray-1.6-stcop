@@ -248,6 +248,7 @@ enum EGameMessages {  //game_cl <----> game_sv messages
 	GAME_EVENT_MP_REPAIR,
 	GAME_EVENT_MP_REPAIR_SUCCESS,
 	GAME_EVENT_TRANSFER_MONEY,
+	GAME_EVENT_MP_ACTOR_SPAWN,
 
 	//-----------------------------------------
 	GAME_EVENT_SCRIPT_BEGINS_FROM,		// don't add messages after this
