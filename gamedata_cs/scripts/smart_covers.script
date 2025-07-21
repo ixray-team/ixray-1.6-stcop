@@ -5,11 +5,14 @@ end
 local jump_time = nil
 
 function script_functor_jump()
-	if (jump_time ~= nil and jump_time + 10000 <= time_global()) or jump_time == nil then		
+	--[[
+	if (jump_time ~= nil and jump_time + 10000 <= time_global()) or jump_time == nil then
 		jump_time = time_global()
-		return true	
+		return true
 	end
 	return false
+	]]--
+	return true
 end
 
 function script_functor_true()
@@ -547,7 +550,7 @@ descriptions = {
 			},
 		},
 	},
-	
+
 	cover_loophole_1 = smart_covers_cover_loophole_1.get_smart_cover_cover_loophole_1(),
 	cover_loophole_2 = smart_covers_cover_loophole_2.get_smart_cover_cover_loophole_2(),
 	cover_loophole_3 = smart_covers_cover_loophole_3.get_smart_cover_cover_loophole_3(),
@@ -569,7 +572,8 @@ descriptions = {
 	cover_loophole_10_8 = smart_covers_cover_loophole_10_8.get_smart_cover_cover_loophole_10_8(),
 	cover_loophole_8_11 = smart_covers_cover_loophole_8_11.get_smart_cover_cover_loophole_8_11(),
 	cover_loophole_10_8_11 = smart_covers_cover_loophole_10_8_11.get_smart_cover_cover_loophole_10_8_11(),
-	
+
+
 	cover_loophole_1_jump = smart_covers_cover_loophole_1_jump.get_smart_cover_cover_loophole_1_jump(),
 	cover_loophole_2_jump = smart_covers_cover_loophole_2_jump.get_smart_cover_cover_loophole_2_jump(),
 	cover_loophole_3_jump = smart_covers_cover_loophole_3_jump.get_smart_cover_cover_loophole_3_jump(),
@@ -577,8 +581,8 @@ descriptions = {
 	cover_loophole_2_3_jump = smart_covers_cover_loophole_2_3_jump.get_smart_cover_cover_loophole_2_3_jump(),
 	cover_loophole_1_3_jump = smart_covers_cover_loophole_1_3_jump.get_smart_cover_cover_loophole_1_3_jump(),
 	cover_loophole_1_2_3_jump = smart_covers_cover_loophole_1_2_3_jump.get_smart_cover_cover_loophole_1_2_3_jump(),
-	
-	
+
+
 	cover_loophole_lead_sit_sleep_mechanic = smart_covers_cover_loophole_lead_sit_sleep_mechanic.get_smart_cover_cover_loophole_lead_sit_sleep_mechanic(),
 	cover_loophole_lead_sit_sleep_write = smart_covers_cover_loophole_lead_sit_sleep_write.get_smart_cover_cover_loophole_lead_sit_sleep_write(),
 	cover_loophole_lead_sit_sleep_write_temp = smart_covers_cover_loophole_lead_sit_sleep_write_temp.get_smart_cover_cover_loophole_lead_sit_sleep_write(),
@@ -594,7 +598,7 @@ descriptions = {
 	cover_loophole_stc_cover_2 = smart_covers_stc_cover_2.get_smart_cover_stc_2(),
 	cover_loophole_stc_cover_3 = smart_covers_stc_cover_3.get_smart_cover_stc_3(),
 	cover_loophole_lead_forester_idle_talk = smart_covers_cover_loophole_lead_forester_idle_talk.get_smart_cover_cover_loophole_lead_forester_idle_talk(),
-	
+
 	cover_loophole_1_3_test = smart_covers_cover_loophole_1_3_test.get_smart_cover_cover_loophole_1_3_test(),
 	cover_barricade_0 = smart_covers_cover_barricade_0.get_smart_cover_cover_barricade_0(),
 	cover_barricade_1 = smart_covers_cover_barricade_1.get_smart_cover_cover_barricade_1(),

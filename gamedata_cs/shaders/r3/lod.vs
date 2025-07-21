@@ -14,10 +14,10 @@ struct vv
 };
 struct vf
 {
-	half3	Pe	: TEXCOORD0	;
+	float3	Pe	: TEXCOORD0	;
  	float2 	tc0	: TEXCOORD1	;	// base0
  	float2 	tc1	: TEXCOORD2	;	// base1
-	half4 	af	: COLOR1	;	// alpha&factor
+	float4 	af	: COLOR1	;	// alpha&factor
 	float4 	hpos: SV_Position;
 };
 

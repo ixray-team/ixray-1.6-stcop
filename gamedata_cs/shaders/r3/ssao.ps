@@ -2,101 +2,97 @@
 
 #ifndef	SSAO_QUALITY
 
-half	calc_ssao( half3 P, half3 N, half2 tc, half2 tcJ)
-{
-	return 1.0h;
-}
 
+#ifdef USE_MSAA
+#ifdef GBUFFER_OPTIMIZATION
+
+float	calc_ssao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d, uint iSample )
+{
+	return 1.0;
+}
+#else
+float	calc_ssao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample )
+{
+	return 1.0;
+}
+#endif
+#else
+#ifdef GBUFFER_OPTIMIZATION
+
+float	calc_ssao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d )
+{
+	return 1.0;
+}
+#else
+float	calc_ssao( float3 P, float3 N, float2 tc, float2 tcJ )
+{
+	return 1.0;
+}
+#endif
+#endif
 #else	//	SSAO_QUALITY
 
-#if SSAO_QUALITY==1
-//	#define NUM_RINGS	1
-//	#define NUM_TAPS	6
-	#define ITERATE_RINGS	for (int a=2; a<3; ++a)
-	#define	ITERATE_TAPS	for (int i=a%2; i<12; i+=2)
-#elif SSAO_QUALITY==2
-//	#define NUM_RINGS	2
-//	#define NUM_TAPS	6
-	#define ITERATE_RINGS	for (int a=1; a<3; ++a)
-	#define	ITERATE_TAPS	for (int i=a%2; i<12; i+=2)
-#elif SSAO_QUALITY==3
-//	#define NUM_RINGS	2
-//	#define NUM_TAPS	12
-	#define ITERATE_RINGS	for (int a=1; a<3; ++a)
-	#define	ITERATE_TAPS	for (int i=0; i<12; i++)
+#if SSAO_QUALITY == 3
+#define RINGS 3
+#define DIRS 8
+static const float rads[4] =
+{ //I know it will be more focused in the cener, but that's OK
+    0.20000f,
+	0.57735f,
+	0.81650f,
+	1.00000f
+};
+static const float angles[9] =
+{
+	0.0000f,
+	0.7854f,
+	1.5708f,
+	2.3562f,
+	3.1416f,
+	3.9267f,
+	4.7124f,
+	5.4978f,
+	6.2832f
+};
+#elif SSAO_QUALITY == 2
+#define RINGS  3
+#define DIRS 4
+static const float rads[4] =
+{ //I know it will be more focused in the cener, but that's OK
+    0.20000f,
+	0.57735f,
+	0.81650f,
+	1.00000f
+};
+static const float angles[5] =
+{
+	0.0000f,
+	1.5708f,
+	3.1416f,
+	4.7124f,
+	6.2832f
+};
+#elif SSAO_QUALITY == 1
+#define RINGS 2
+#define DIRS 4
+static const float rads[3] =
+{ //I know it will be more focused in the cener, but that's OK
+    0.2000f,
+    0.7071f,
+	1.0000f,
+};
+static const float angles[5] =
+{
+	0.0000f,
+	1.5708f,
+	3.1416f,
+	4.7124f,
+	6.2832f
+};
 #endif
 
 float ssao_noise_tile_factor;
 float ssao_kernel_size;
-
-/*
-static const half2 poisson_disc12[12] = 
-{
-	half2(-0.326212f , -0.405810f),
-	half2(-0.840144f , -0.073580f),
-	half2(-0.695914f ,  0.457137f),
-	half2(-0.203345f ,  0.620716f),
-	half2( 0.962340f , -0.194983f),
-	half2( 0.473434f , -0.480026f),
-	half2( 0.519456f ,  0.767022f),
-	half2( 0.185461f , -0.893124f),
-	half2( 0.507431f ,  0.064425f),
-	half2( 0.896420f ,  0.412458f),
-	half2(-0.321940f , -0.932615f),
-	half2(-0.791559f , -0.597710f)
-}
-*/
-
-/*
-static const half2 poisson_disc12[12] = 
-{
-	half2(-0.326212f , -0.405810f),
-	half2(-0.840144f , -0.073580f),
-	half2(-0.695914f ,  0.457137f)*0.7,
-	half2(-0.203345f ,  0.620716f),
-	half2( 0.962340f , -0.194983f),
-	half2( 0.473434f , -0.480026f)*0.7,
-	half2( 0.519456f ,  0.767022f),
-	half2( 0.185461f , -0.893124f),
-	half2( 0.507431f ,  0.064425f)*0.7,
-	half2( 0.896420f ,  0.412458f),
-	half2(-0.321940f , -0.932615f),
-	half2(-0.791559f , -0.597710f)*0.7
-};
-*/
-/*
-static const half2 poisson_disc12[12] = 
-{
-	half2(-0.326212f , -0.405810f)*0.8,
-	half2(-0.840144f , -0.073580f)*0.58,
-	half2(-0.695914f ,  0.457137f)*0.7,
-	half2(-0.203345f ,  0.620716f)*0.84,
-	half2( 0.962340f , -0.194983f)*0.6,
-	half2( 0.473434f , -0.480026f)*0.73,
-	half2( 0.519456f ,  0.767022f)*0.8,
-	half2( 0.185461f , -0.893124f)*0.62,
-	half2( 0.507431f ,  0.064425f)*0.7,
-	half2( 0.896420f ,  0.412458f)*0.79,
-	half2(-0.321940f , -0.932615f)*0.6,
-	half2(-0.791559f , -0.597710f)*0.69
-};
-*/
-
-static const half2 poisson_disc12[12] = 
-{
-	half2(-0.326212f , -0.405810f)*0.68,
-	half2(-0.840144f , -0.073580f)*0.92,
-	half2(-0.695914f ,  0.457137f)*0.75,
-	half2(-0.203345f ,  0.620716f)*0.95,
-	half2( 0.962340f , -0.194983f)*0.63,
-	half2( 0.473434f , -0.480026f)*0.93,
-	half2( 0.519456f ,  0.767022f)*0.73,
-	half2( 0.185461f , -0.893124f)*0.98,
-	half2( 0.507431f ,  0.064425f)*0.65,
-	half2( 0.896420f ,  0.412458f)*0.9,
-	half2(-0.321940f , -0.932615f)*0.70,
-	half2(-0.791559f , -0.597710f)
-};
 
 Texture2D	jitter0;
 sampler		smp_jitter;
@@ -106,62 +102,92 @@ Texture2D	jitterMipped;
 //	P	screen space position of the original point
 //	N	screen space normal of the original point
 //	tc	G-buffer coordinates of the original point
-half	calc_ssao( half3 P, half3 N, half2 tc, half2 tcJ)
+#ifndef USE_MSAA
+#ifdef GBUFFER_OPTIMIZATION
+float	calc_ssao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d )
+#else
+float	calc_ssao( float3 P, float3 N, float2 tc, float2 tcJ )
+#endif
+#else
+#ifdef GBUFFER_OPTIMIZATION
+float	calc_ssao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d, uint iSample )
+#else
+float	calc_ssao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
+#endif
+#endif
 {
-	half point_depth = P.z;
+	//return 1.0h;
+	float point_depth = P.z;
 	if (point_depth<0.01) point_depth = 100000.0h;	//	filter for the sky
-//	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*150/max(point_depth,1.3);
+//	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h)*150/max(point_depth,1.3);
 //	Looks better but triggers some strange hardware(?) bug.
-	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*ssao_kernel_size/max(point_depth,1.3);
-//	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*min( ssao_kernel_size/point_depth , ssao_kernel_size/1.3 );
+	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h)*ssao_kernel_size/max(point_depth,1.3);
+//	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h)*min( ssao_kernel_size/point_depth , ssao_kernel_size/1.3 );
 
 	// sample 
-	half 	occ	= 0.0h;	
-	half num_dir	= 0.0h;
-//	half 	occ	= 0.1h;	
-//	half num_dir	= 0.1h;
-//	half 	occ	= 1.0h;
-//	half num_dir	= 1.0h;
+	float 	occ	= 0.0h;	
+	float num_dir	= 0.0h;
+//	float 	occ	= 0.1h;	
+//	float num_dir	= 0.1h;
+//	float 	occ	= 1.0h;
+//	float num_dir	= 1.0h;
 
 ////////////////////////////////
 //	jittering
-//	half2	Mirror = jitter0.Sample( smp_jitter, tcJ );
+//	float2	Mirror = jitter0.Sample( smp_jitter, tcJ );
 	float3 tc1	= mul( m_v2w, float4(P,1) );
 	tc1 *= ssao_noise_tile_factor;
 //	tc1 *= 2;
 //	tc1 *= 4;
 	tc1.xz += tc1.y;
-	half2	Mirror = jitter0.Sample( smp_jitter, tc1.xz );
-//	half2	Mirror = jitterMipped.Sample( smp_base, tc1.xz );
-//	half2	Mirror = jitterMipped.Sample( smp_jitter, tc1.xz );
-//	half2	Mirror = half2(1,1);
-	Mirror	= normalize(Mirror);
+	float2	SmallTap = jitter0.Sample( smp_jitter, tc1.xz );
+//	float2	Mirror = jitter0.Sample( smp_jitter, tc1.xz );
+//	float2	Mirror = jitterMipped.Sample( smp_base, tc1.xz );
+//	float2	Mirror = jitterMipped.Sample( smp_jitter, tc1.xz );
+//	float2	Mirror = float2(1,1);
+//	Mirror	= normalize(Mirror);
 
-//[unroll] for (int a=1; a<3; ++a)
-//[unroll] for (int a=2; a<3; ++a)
-//[unroll] for (int a=1; a<2; ++a)
-[unroll] ITERATE_RINGS
+[unroll] for (int rad=0; rad < RINGS; rad++)
 {
-	half2	scale_tmp = scale*a;
-//	[unroll] for (int i=0; i<12; i++)
-//	[unroll] for (int i=a%2; i<12; i+=2)
-	[unroll] ITERATE_TAPS
+	[unroll] for (int dir=0; dir < DIRS; dir++)
 	{
-//		float2 	tap 	= tc + poisson_disc12[i]*scale_tmp;
-		float2 	tap 	= poisson_disc12[i];
-				tap		-= 2*dot(Mirror,tap)*Mirror;
-				tap		*= scale_tmp;
+//		SmallTap.x += 0.31337f;
+//		SmallTap.y += 0.73313f;
+		SmallTap.x *= 31337.0f;
+		SmallTap.y *= 73313.0f;
+		SmallTap = frac(SmallTap);
+		float	r		= lerp(rads[rad]*1.3, rads[rad+1]*1.3, SmallTap.x);
+		float   a		= lerp(angles[dir], angles[dir+1], SmallTap.y);
+		float s, c;
+		sincos( a, s, c );
+		float2	tap = float2( r * c, r * s );
+				tap		*= scale;
 				tap		+= tc;
-		half3	tap_pos	= s_position.Sample(smp_nofilter,tap);
-		half3 	dir 	= tap_pos-P.xyz;
-		half	dist	= length(dir);
+#ifdef USE_MSAA
+#ifdef GBUFFER_OPTIMIZATION
+		gbuffer_data gbd = gbuffer_load_data_offset( tc, tap, pos2d, iSample ); // this is wrong - need to correct this
+#else
+		gbuffer_data gbd = gbuffer_load_data( tap, iSample );
+#endif
+#else
+#ifdef GBUFFER_OPTIMIZATION
+		gbuffer_data gbd = gbuffer_load_data_offset( tc, tap, pos2d ); // this is wrong - need to correct this
+#else
+		gbuffer_data gbd = gbuffer_load_data( tap );
+#endif
+#endif
+
+		//float3	tap_pos	= s_position.Sample(smp_nofilter,tap);
+		float3	tap_pos	= gbd.P;
+		float3 	dir 	= tap_pos-P.xyz;
+		float	dist	= length(dir);
 				dir 	= normalize(dir);
 
 
-		half 	infl 	= saturate(dot( dir, N.xyz));
-		half 	occ_factor = saturate(dist);
-//		half	range_att = 1/(occ_factor+0.1);
-		half	range_att = saturate(1-dist*0.5);
+		float 	infl 	= saturate(dot( dir, N.xyz));
+		float 	occ_factor = saturate(dist);
+//		float	range_att = 1/(occ_factor+0.1);
+		float	range_att = saturate(1-dist*0.5);
 		{
 //			occ += lerp( 1, occ_factor, infl);
 //			num_dir += 1;		

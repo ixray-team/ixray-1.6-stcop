@@ -189,5 +189,6 @@
   <info_portion id="yan_not_go_to_roof"/>
   <info_portion id="yan_squad2_ready"/>
   
-
+  <info_portion id="yan_recover_item_1_done"/>
+  <info_portion id="yan_recover_item_2_done"/>
 </game_information_portions>

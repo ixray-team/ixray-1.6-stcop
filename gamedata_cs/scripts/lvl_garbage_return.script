@@ -21,7 +21,9 @@ local infos_table = {
 "val_find_pda_complete",
 "val_bandit_spy_die",
 "val_night_bloodsucker_complete",
-"val_night_bloodsucker_reward_complete"
+"val_night_bloodsucker_reward_complete",
+"val_destroy_killer_base_done",
+"val_killer_base_is_no_more"
 }
 local actor = db.actor
 
@@ -32,5 +34,5 @@ end
 if level.name() == "garbage" and not task_manager.get_task_manager().inited_tasks["freedom_general_gar_story_chase_pda_signal"] then
 	xr_effects.give_inited_task(nil, nil, {"storyline", "gar_story_chase_pda_signal", "freedom"})
 end
-	
+
 end

@@ -116,170 +116,173 @@ end
 
 
 function add_lchanger_location()
---[[
 	local sim = alife()
 	if sim then
-		-- escape
-		local obj = sim:story_object(91)
-		if obj then
-	        if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
-			end
-		end
+------------------------------ MARSH -------------------------------------------
+		local obj = sim:story_object(311)
+		set_lchanger_mapspot(obj, "level_changer_up_right", "st_lchanger_to_escape")
 
-		-- garbage
-		obj = sim:story_object(191)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_agroprom")
-			end
-		end
-		obj = sim:story_object(192)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_agroprom")
-			end
-		end
-		obj = sim:story_object(193)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_escape")
-			end
-		end
-		obj = sim:story_object(194)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_bar")
-			end
-		end
-		obj = sim:story_object(195)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_darkvalley")
-			end
-		end
-		obj = sim:story_object(196)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_darkvalley")
-			end
-		end
+		obj = sim:story_object(312)
+		set_lchanger_mapspot(obj, "level_changer_right", "st_lchanger_to_escape")
 
-		-- agroprom
-		obj = sim:story_object(391)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
-			end
-		end
-		obj = sim:story_object(392)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
-			end
-		end
+		obj = sim:story_object(313)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_agroprom")
+------------------------------ ESCAPE ------------------------------------------
+		obj = sim:story_object(445)
+		set_lchanger_mapspot(obj, "level_changer_left", "st_lchanger_to_marsh")
 
-		-- darkvalley
-		obj = sim:story_object(415)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
-			end
-		end
-		obj = sim:story_object(416)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
-			end
-		end
-		obj = sim:story_object(417)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_escape")
-			end
-		end
+		obj = sim:story_object(446)
+		set_lchanger_mapspot(obj, "level_changer_down_left", "st_lchanger_to_marsh")
 
-		-- rostok
-		obj = sim:story_object(608)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_yantar")
-			end
-		end
+		obj = sim:story_object(443)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_garbage")
 
-		-- bar
-		obj = sim:story_object(592)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_military")
-			end
-		end
-		obj = sim:story_object(593)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
-			end
-		end
-		obj = sim:story_object(594)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "bar_rostok")
-			end
-		end
+		obj = sim:story_object(444)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_garbage")
 
-		-- military
-		obj = sim:story_object(771)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_bar")
-			end
-		end
-		obj = sim:story_object(773)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_radar")
-			end
-		end
+		obj = sim:story_object(447)
+		set_lchanger_mapspot(obj, "level_changer_up_right", "st_lchanger_to_darkvalley")
+------------------------------ GARBAGE -----------------------------------------
+		obj = sim:story_object(713)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_escape")
 
-		-- yantar
-		obj = sim:story_object(925)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_rostok")
-			end
-		end
+		obj = sim:story_object(714)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_escape")
 
-		-- radar
-		obj = sim:story_object(1007)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_pripyat")
-			end
-		end
-		obj = sim:story_object(1008)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_military")
-			end
-		end
+		obj = sim:story_object(726)
+		set_lchanger_mapspot(obj, "level_changer_right", "st_lchanger_to_darkvalley")
 
-		-- pripyat
-		obj = sim:story_object(833)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_radar")
-			end
-		end
-		obj = sim:story_object(832)
-		if obj then
-            if(_G.dev_debug) then
-				level.map_add_object_spot(obj.id, "level_changer", "to_aes")
-			end
-		end
-	end
+		obj = sim:story_object(716)
+		set_lchanger_mapspot(obj, "level_changer_right", "st_lchanger_to_darkvalley")
+
+		obj = sim:story_object(712)
+		set_lchanger_mapspot(obj, "level_changer_down_left", "st_lchanger_to_agroprom")
+
+		obj = sim:story_object(707)
+		set_lchanger_mapspot(obj, "level_changer_down_left", "st_lchanger_to_agroprom")
+
+		obj = sim:story_object(704)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_red_forest")
+
+		obj = sim:story_object(705)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_military")
+------------------------------ DARKVALLEY --------------------------------------
+		obj = sim:story_object(1127)
+		set_lchanger_mapspot(obj, "level_changer_left", "st_lchanger_to_garbage")
+
+		obj = sim:story_object(1128)
+		set_lchanger_mapspot(obj, "level_changer_left", "st_lchanger_to_garbage")
+
+		obj = sim:story_object(1126)
+		set_lchanger_mapspot(obj, "level_changer_down_left", "st_lchanger_to_escape")
+------------------------------ AGROPROM ----------------------------------------
+		obj = sim:story_object(1028)
+		set_lchanger_mapspot(obj, "level_changer_up_right", "st_lchanger_to_garbage")
+
+		obj = sim:story_object(1029)
+		set_lchanger_mapspot(obj, "level_changer_up_right", "st_lchanger_to_garbage")
+
+		obj = sim:story_object(1032)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_marsh")
+
+		obj = sim:story_object(1030)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_yantar")
+
+		obj = sim:story_object(1031)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_yantar")
+--[[
+		obj = sim:story_object(1025)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_agroprom_und")
+
+		obj = sim:story_object(1026)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_agroprom_und")
 ]]
+------------------------------ AGROPROM UND ------------------------------------
+		obj = sim:story_object(1371)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_agroprom")
+------------------------------ YANTAR ------------------------------------------
+		obj = sim:story_object(811)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_agroprom")
+
+		obj = sim:story_object(812)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_agroprom")
+
+		obj = sim:story_object(813)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_red_forest")
+------------------------------ RED FOREST --------------------------------------
+		obj = sim:story_object(526)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_garbage")
+
+		obj = sim:story_object(527)
+		set_lchanger_mapspot(obj, "level_changer_left_up", "st_lchanger_to_limansk")
+
+		obj = sim:story_object(528)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_military")
+
+		obj = sim:story_object(529)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_yantar")
+------------------------------ MILITARY ----------------------------------------
+		obj = sim:story_object(1266)
+		set_lchanger_mapspot(obj, "level_changer_left_up", "st_lchanger_to_red_forest")
+
+		obj = sim:story_object(1265)
+		set_lchanger_mapspot(obj, "level_changer_down", "st_lchanger_to_garbage")
+------------------------------ LIMANSK -----------------------------------------
+		obj = sim:story_object(620)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_hospital")
+------------------------------ HOSPITAL ----------------------------------------
+		obj = sim:story_object(234)
+		set_lchanger_mapspot(obj, "level_changer_up", "st_lchanger_to_aes")
+	end
 end
 
+function set_lchanger_mapspot(obj, spot, hint)
+    if obj then
+		local obj_id = obj.id
+        local ce_obj = level.object_by_id(obj_id)
+        if ce_obj then
+            if ce_obj:is_level_changer_enabled() then
+	            if level.map_has_object_spot(obj_id, spot) == 0 then
+	                level.map_add_object_spot(obj_id, spot, hint)
+	            end
+            end
+        else
+            if level.map_has_object_spot(obj_id, spot) == 0 then
+                level.map_add_object_spot(obj_id, spot, hint)
+            end
+        end
+    end
+end
+
+function del_lchanger_mapspot(sid)
+    local ce_obj = level_object_by_sid(sid)
+    if ce_obj then
+		local spot = ""
+		if sid == 313 or sid == 443 or sid == 444 or sid == 704 or sid == 705
+		or sid == 1030 or sid == 1031 or sid == 1371 or sid == 813 or sid == 528
+		or sid == 620 or sid == 234 then
+			spot = "level_changer_up"
+		elseif sid == 311 or sid == 447 or sid == 1028 or sid == 1029 then
+			spot = "level_changer_up_right"
+		elseif sid == 312 or sid == 726 or sid == 716 then
+			spot = "level_changer_right"
+--		elseif sid == then
+--			spot = "level_changer_right_down"
+		elseif sid == 713 or sid == 714 or sid == 1032 --or sid == 1025 or sid == 1026
+		or sid == 811 or sid == 812 or sid == 526 or sid == 529 or sid == 1265 then
+			spot = "level_changer_down"
+		elseif sid == 446 or sid == 712 or sid == 707 or sid == 1126 then
+			spot = "level_changer_down_left"
+		elseif sid == 445 or sid == 1127 or sid == 1128 then
+			spot = "level_changer_left"
+		elseif sid == 527 or sid == 1266 then
+			spot = "level_changer_left_up"
+		end
+		if level.map_has_object_spot(ce_obj:id(), spot) ~= 0 then
+            level.map_remove_object_spot(ce_obj:id(), spot)
+        end
+    end
+end
 
 function set_task_state(id_state, id_task, id_subtask)
 	if db.actor then

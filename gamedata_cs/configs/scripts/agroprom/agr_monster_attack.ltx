@@ -8,18 +8,20 @@ on_game_timer = 100 | sr_idle@check_attack_present
 on_info = {!squad_exist(agr_smart_terrain_6_4_bandits_1_squad_attack) !squad_exist(agr_smart_terrain_2_3_bandits_1_squad_attack) !squad_exist(agr_smart_terrain_4_2_snorks_1_lair) !squad_exist(agr_smart_terrain_4_2_snorks_2_lair) !squad_exist(agr_smart_terrain_4_2_snorks_3_lair)} sr_idle@check_spawn
 
 [sr_idle@check_spawn]
-on_actor_dist_ge_nvis = 100 | {-agr_smart_terrain_4_2_simulation_task -agr_smart_terrain_4_2_simulation_task_complete !smart_captured_by_faction(agr_smart_terrain_4_4_near_1:monster) !smart_captured_by_faction(agr_smart_terrain_4_2:monster) =smart_squad_population(monster:agr_smart_terrain_4_2:2)} sr_idle@line_2
+on_actor_dist_ge_nvis = 100 | {-agr_smart_terrain_4_2_simulation_task -agr_smart_terrain_4_2_simulation_task_complete !smart_captured_by_faction(agr_smart_terrain_4_4_near_1:monster)} sr_idle@try_spawn
 
 [sr_idle@wait_idle]
 on_game_timer = 5000 | sr_idle@check_attack_present
 
 
+[sr_idle@try_spawn]
+on_info = {=smart_captured_by_faction(agr_smart_terrain_4_2:none)} sr_idle@line_2, {=smart_captured_by_faction(agr_smart_terrain_4_2:monster) =smart_squad_population(monster:agr_smart_terrain_4_2:2)} sr_idle@line_2
+
 [sr_idle@line_2]
-on_info = {~33 =smart_squad_population(monster:agr_smart_terrain_4_2:2)} sr_idle@wait_idle %=create_squad(agr_smart_terrain_4_2_snorks_1_lair:agr_smart_terrain_4_2)%, sr_idle@line_3 
+on_info = {~33} sr_idle@wait_idle %=create_squad(agr_smart_terrain_4_2_snorks_1_lair:agr_smart_terrain_4_2)%, sr_idle@line_3 
 
 [sr_idle@line_3]
-on_info = {~50 =smart_squad_population(monster:agr_smart_terrain_4_2:2)} sr_idle@wait_idle %=create_squad(agr_smart_terrain_4_2_snorks_2_lair:agr_smart_terrain_4_2)%, sr_idle@line_4
+on_info = {~50} sr_idle@wait_idle %=create_squad(agr_smart_terrain_4_2_snorks_2_lair:agr_smart_terrain_4_2)%, sr_idle@line_4
 
 [sr_idle@line_4]
-on_info = {=smart_squad_population(monster:agr_smart_terrain_4_2:2)} sr_idle@wait_idle %=create_squad(agr_smart_terrain_4_2_snorks_3_lair:agr_smart_terrain_4_2)%
-
+on_info = sr_idle@wait_idle %=create_squad(agr_smart_terrain_4_2_snorks_3_lair:agr_smart_terrain_4_2)%

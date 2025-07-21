@@ -51,7 +51,7 @@ function load_job(smart)
 			"sound_start_wpn	   = meet_weapon_start\n"..
 			"sound_stop			   = meet_comander_stop\n"..
 			"use                   = true\n"..
-			"use_wpn               = false\n"..
+			"use_wpn               = true\n"..
 			"precond               = visibility\n"..
 			"meet_only_at_path	   = true\n"..
 
@@ -64,7 +64,7 @@ function load_job(smart)
 			"sound_start_wpn	   = meet_weapon_start\n"..
 			"sound_stop			   = meet_general_stop\n"..
 			"use                   = true\n"..
-			"use_wpn               = false\n"..
+			"use_wpn               = true\n"..
 			"precond               = visibility\n"..
 			"meet_only_at_path	   = true\n"..
 
@@ -592,8 +592,8 @@ function load_job(smart)
 									end
 
 									if se_smart_cover.registered_smartcovers[gname.."_to_"..target_smart.."_patrol_"..it.."_wait_"..i.."_smartcover"] ~= nil then
-										job_ltx = job_ltx.."on_info2 = {=current_squad_stage(prepare:wait)} smartcover@"..sect_name.."\n"
-
+										job_ltx = job_ltx.."on_info2 = {=current_squad_stage(prepare:wait) =smart_cover_suitable("..gname.."_to_"..target_smart.."_patrol_"..it.."_wait_"..i.."_smartcover)} smartcover@"..sect_name.."\n"..
+														   "on_info3 = {=current_squad_stage(prepare:wait)} remark@"..sect_name.."\n"
 
 										job_ltx = job_ltx.."[smartcover@"..sect_name.."]\n"..
 										"meet = no_meet\n"..danger_ltx..
@@ -601,7 +601,15 @@ function load_job(smart)
 										"cover_state = default_behaviour\n"..
 										"def_state_moving = sneak_run\n"..
 										"cover_name = "..gname.."_to_"..target_smart.."_patrol_"..it.."_wait_"..i.."_smartcover\n"..
-										"target_path = {=cover_attack} "..target_smart.."_kamp_1\n"
+										"target_path = {=cover_attack} "..target_smart.."_kamp_1\n"..
+
+
+										"[remark@"..sect_name.."]\n"..
+										"meet = no_meet\n"..
+										"on_info = {=current_squad_stage(combat:post_combat:idle)} cover@"..sect_name.."_attack\n"..
+										"target = "..target_smart.."_kamp_1\n"..
+										"anim = hide\n"..danger_ltx																			
+										--"anim = {=cover_attack} hide_fire, hide\n"..danger_ltx
 									else
 										job_ltx = job_ltx.."on_info2 = {=current_squad_stage(prepare:wait)} remark@"..sect_name.."\n"..
 
@@ -609,7 +617,8 @@ function load_job(smart)
 										"meet = no_meet\n"..
 										"on_info = {=current_squad_stage(combat:post_combat:idle)} cover@"..sect_name.."_attack\n"..
 										"target = "..target_smart.."_kamp_1\n"..
-										"anim = {=cover_attack} hide_fire, hide\n"..danger_ltx
+										"anim = hide\n"..danger_ltx
+										--"anim = {=cover_attack} hide_fire, hide\n"..danger_ltx
 									end
 
 									job_ltx = job_ltx.."[cover@"..sect_name.."_attack]\n"..

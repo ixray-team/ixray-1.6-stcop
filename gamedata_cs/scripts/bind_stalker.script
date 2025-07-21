@@ -138,10 +138,10 @@ function actor_binder:take_item_from_box(box, item)
     local box_name = box:name()
     treasure_manager.take_item_from_box(box, box_name, item)
 
-    local smart_name = string.sub(box_name, 1, string.len(box_name)-4)
-	if(sim_board.get_sim_board().smarts_by_names[smart_name]~=nil) then
-	    game_relations.set_gulag_relation_actor(smart_name, "enemy")
-	end
+    --local smart_name = string.sub(box_name, 1, string.len(box_name)-4)
+	--if(sim_board.get_sim_board().smarts_by_names[smart_name]~=nil) then
+	  --  game_relations.set_gulag_relation_actor(smart_name, "enemy")
+	--end
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:level_border_enter(npc, info_id)

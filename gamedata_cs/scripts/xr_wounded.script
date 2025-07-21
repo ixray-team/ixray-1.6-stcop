@@ -491,7 +491,7 @@ function is_wounded(npc)
 	return false
 end
 
-function hit_callback(npc_id)
+function hit_callback(npc_id) -- Тут может не быть стораджа.
 	if db.storage[npc_id].wounded ~= nil then
 		db.storage[npc_id].wounded.wound_manager:hit_callback()
 	end

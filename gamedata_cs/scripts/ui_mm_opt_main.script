@@ -119,9 +119,10 @@ end
 function options_dialog:UpdateDependControls()
 	
 	local _current_id	= self.combo_renderer:CurrentID()
-
+	local _ssample_val	= self.ss_trb:GetIValue()
+	
 	for i,j in pairs(self.m_preconditions) do
-		j				(i, _current_id)
+		j				(i, _current_id, _ssample_val)
 	end
 end
 
@@ -136,8 +137,9 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic,		self)	
 	self:AddCallback("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnDefault,			self)
 	self:AddCallback("btn_check_updates",	ui_events.BUTTON_CLICKED,	self.OnBtnCheckUpdates,		self)
-	self:AddCallback("combo_renderer",			ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)	
+	self:AddCallback("combo_renderer",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)	
 	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
+	self:AddCallback("trb_ssample",			ui_events.BUTTON_CLICKED,	self.UpdateDependControls,	self)
 	
 end
 
@@ -148,7 +150,7 @@ end
 
 function options_dialog:OnBtnDefault()
 	local console			= get_console()
-	console:execute			("unbindall")
+	console:execute			("default_controls")
 
 	local opt				= COptionsManager()
 	opt:SetCurrentValues	("mm_opt_controls")
@@ -184,15 +186,24 @@ function options_dialog:OnBtnAccept()
 	opt:SaveValues("mm_opt_gameplay")
 	opt:SaveValues("mm_opt_sound")	
 	opt:SaveValues("mm_opt_controls")
---	opt:SaveValues("mm_opt_con_cmd")
 	
 	opt:OptionsPostAccept()	
 
-	if(true==self.b_restart_system_shown or false==opt:NeedSystemRestart()) then
+--	andy if(true==self.b_restart_system_shown or false==opt:NeedSystemRestart()) then
 		self:GetHolder():start_stop_menu	(self.owner, true)
 		self:GetHolder():start_stop_menu	(self,true)
 		self.owner:Show						(true)
-	end	
+--	andy end	
+	
+	if false==self.b_restart_system_shown then
+		local opt = COptionsManager()
+		if opt:NeedSystemRestart() then
+			self.b_restart_system_shown		 = true
+			self.message_box:InitMessageBox	("message_box_restart_game")
+			self.owner:GetHolder():start_stop_menu(self.message_box,true)
+		end
+	end
+	
 end
 
 function options_dialog:OnBtnCancel()

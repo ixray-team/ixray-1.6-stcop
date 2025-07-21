@@ -10,7 +10,7 @@ v2p_filter main ( v_filter I )
 
 //	O.HPos = I.P;
 	{
-		I.P.xy += 0.5f;	//	Bugs with rasterizer??? Possible half-pixel shift.
+		I.P.xy += 0.5f;	//	Bugs with rasterizer??? Possible float-pixel shift.
 //		O.HPos.x = I.P.x/1024 * 2 - 1;
 //		O.HPos.y = (I.P.y/768 * 2 - 1)*-1;
 		O.HPos.x = I.P.x * screen_res.z * 2 - 1;

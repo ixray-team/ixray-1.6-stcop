@@ -22,15 +22,18 @@ end
 
 function disable_ui()
     get_console():execute("hud_crosshair 0")
-    get_console():execute("hud_weapon 0")	
+    get_console():execute("hud_weapon 0")
 	level.disable_input()
 	level.hide_indicators_safe()
+	local hud = get_hud()
+	hud:HideActorMenu()
+	hud:HidePdaMenu()
 	--printf("marsh_dialogs <disable_ui>")
 end
 
 function enable_ui()
 	get_console():execute("hud_crosshair 1")
-	get_console():execute("hud_weapon 1")	
+	get_console():execute("hud_weapon 1")
 	level.show_indicators()
 	level.enable_input()
 	--printf("marsh_dialogs <enable_ui>")

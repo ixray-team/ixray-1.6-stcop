@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------------------------------------
 -- smartcovers
 ---------------------------------------------------------------------------------------------------------------------
---function printf()
---end
+function printf()
+end
 local cover_substate_table = {}
 cover_substate_table["fire_target"]				= "fire"
 cover_substate_table["fire_no_lookout_target"]	= "fire"
@@ -11,10 +11,10 @@ cover_substate_table["lookout_target"]			= "idle"
 
 class "evaluator_use_smartcover_in_combat" (property_evaluator)
 function evaluator_use_smartcover_in_combat:__init(storage, name) super(nil, name)
-  	self.st = storage
+		self.st = storage
 end
 function evaluator_use_smartcover_in_combat:evaluate()
-	if xr_logic.is_active(self.object, self.st) then 
+	if xr_logic.is_active(self.object, self.st) then
 		return	self.st.use_in_combat
 	end
 	return false
@@ -22,7 +22,7 @@ end
 
 class "evaluator_need_smartcover" (property_evaluator)
 function evaluator_need_smartcover:__init(storage, name) super(nil, name)
-  	self.st = storage
+		self.st = storage
 end
 function evaluator_need_smartcover:evaluate()
 	return xr_logic.is_active(self.object, self.st)
@@ -30,7 +30,7 @@ end
 
 
 class "evaluator_in_smart_cover" (property_evaluator)
-function evaluator_in_smart_cover:__init(storage, name) super(nil, name)  	
+function evaluator_in_smart_cover:__init(storage, name) super(nil, name)
 end
 function evaluator_in_smart_cover:evaluate()
 	return self.object:in_smart_cover()
@@ -49,7 +49,7 @@ function evaluator_in_combat_planner:evaluate()
 	if not self.mgr:initialized() then
 		return false
 	end
-	
+
 	if self.mgr:current_action_id() == stalker_ids.action_combat_planner then
 		return true
 	end
@@ -63,7 +63,7 @@ function action_exit_from_smart_cover:__init (npc, action_name) super(nil, actio
 end
 function action_exit_from_smart_cover:initialize()
 	action_base.initialize(self)
-	--printf("exit_executed = true")		
+	--printf("exit_executed = true")
 	--object:set_dest_smart_cover()
 	--object:set_dest_loophole()
 	local object = self.object
@@ -77,11 +77,11 @@ function action_exit_from_smart_cover:initialize()
 		vertex 			= object:accessible_nearest(npc_position, ttp)
 		npc_position 	= level.vertex_position(vertex)
 		printf("accesible position is %s", vec_to_str(npc_position))
-	end		
+	end
 	object:set_dest_level_vertex_id(vertex)
 	printf("accesible position2 is %s", vec_to_str(level.vertex_position(vertex)))
---	object:set_desired_position( level.vertex_position(vertex))		
-	db.storage[object:id()].exit_from_smartcover_initialized = true	
+--	object:set_desired_position( level.vertex_position(vertex))
+	db.storage[object:id()].exit_from_smartcover_initialized = true
 end
 function action_exit_from_smart_cover:execute()
 	action_base.execute(self)
@@ -95,9 +95,9 @@ function action_exit_from_smart_cover:finalize()
 		vertex 			= object:accessible_nearest(npc_position, ttp)
 		npc_position 	= level.vertex_position(vertex)
 		printf("finalize():accesible position is %s", vec_to_str(npc_position))
-	end		
-	object:set_dest_level_vertex_id(vertex)	
-	action_base.finalize(self)	
+	end
+	object:set_dest_level_vertex_id(vertex)
+	action_base.finalize(self)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -110,26 +110,28 @@ function action_smartcover_activity:initialize()
 	action_base.initialize(self)
 	self.move_mgr:finalize()
 	self:reset_scheme(nil, npc)
-	self.initialized = true	
+	self.initialized = true
 end
 function action_smartcover_activity:target_selector(obj)
 	if not obj:alive() then return end
-	--printf("target_selector:using state [%s] for npc[%s]!!!", self.cover_state, obj:name())		
-	if self.cover_state == "idle_target" then		
-		obj:set_smart_cover_target_idle()	
+	printf("target_selector:using state [%s] for npc[%s]!!!", self.cover_state, obj:name())
+	if self.cover_state == "idle_target" then
+		obj:set_smart_cover_target_idle()
 	elseif self.cover_state == "lookout_target" then
-		obj:set_smart_cover_target_lookout()	
+		self:check_target()
+		obj:set_smart_cover_target_lookout()
 	elseif self.cover_state == "fire_target" then
-		obj:set_smart_cover_target_fire()	
+		obj:set_smart_cover_target_fire()
 	elseif self.cover_state == "fire_no_lookout_target" then
+		self:check_target()
 		obj:set_smart_cover_target_fire_no_lookout()
 	else
 		self:check_target()
 		obj:set_smart_cover_target_default(true)
-	end	
+	end
 
 end
-function action_smartcover_activity:activate_scheme(loading, npc, switching_scheme)	
+function action_smartcover_activity:activate_scheme(loading, npc, switching_scheme)
 	self.st.signals = {}
 	if self.initialized == nil then return end
 	self:reset_scheme(loading, npc)
@@ -138,7 +140,7 @@ function action_smartcover_activity:reset_scheme(loading, npc)
 	local used
 	local object = self.object
 	object:set_smart_cover_target()
-	object:set_smart_cover_target_selector()
+	--object:set_smart_cover_target_selector()
 	self.target_enemy = nil
 	self.cover_name, used = get_param_string(self.st.cover_name, object)
 	printf("setting smartcover [gps] [%s] used [%s] for npc[%s]", self.cover_name , tostring(used), object:name())
@@ -147,59 +149,65 @@ function action_smartcover_activity:reset_scheme(loading, npc)
 		if se_smart_cover.registered_smartcovers[self.cover_name] == nil then
 			abort("There is no smart_cover with name [%s]", self.cover_name)
 		end
-		printf("setting smartcover [%s] for stalker [%s] ", self.cover_name , object:name())		
-		object:use_smart_covers_only(true)		
-		
-		
-		
-	--	state_mgr.set_state(object, self.st.moving)	
-		
-		
+		printf("setting smartcover [%s] for stalker [%s] ", self.cover_name , object:name())
+		object:use_smart_covers_only(true)
+
+
+
+	--	state_mgr.set_state(object, self.st.moving)
+
+
 		object:set_movement_type(move.run)
 		object:set_dest_smart_cover(self.cover_name)
 		if self.st.loophole_name ~= nil then
 			printf("setting smartcover1 [%s] loophole [%s] for stalker [%s] ", self.cover_name ,self.st.loophole_name, object:name())
 			object:set_dest_loophole(self.st.loophole_name)
 		end
-		
+
 		self.target_path_condlist = xr_logic.parse_condlist(object, self.st.active_section, "target_path", self.st.target_path)
 		self:check_target()
-		
+
 		--' ¬ычитываем кондлист который вернет поведение чувака в смарткавере.
 		self.cover_condlist = xr_logic.parse_condlist(object, self.st.active_section, "cover_state", self.st.cover_state)
 		self.cover_state = xr_logic.pick_section_from_condlist(db.actor, object ,self.cover_condlist)
-				
+		self:target_selector(self.object)
+		printf("first1")
 		self:check_target_selector()
-		
+		printf("first2")
 		-- Ќазначим минимальные и максимальные значени€ времени сидени€ в айдле и выгл€дывани€.
 		printf("idle_min[%s]  idle_max[%s]  lookout_min[%s]  lookout_max[%s]", self.st.idle_min_time, self.st.idle_max_time, self.st.lookout_min_time, self.st.lookout_max_time )
 		object:idle_min_time(self.st.idle_min_time)
 		object:idle_max_time(self.st.idle_max_time)
 		object:lookout_min_time(self.st.lookout_min_time)
-		object:lookout_max_time(self.st.lookout_max_time)			
-	end		
+		object:lookout_max_time(self.st.lookout_max_time)
+	end
 end
 
 function action_smartcover_activity:check_target_selector()
 	local object = self.object
-	if object:in_smart_cover() == false then return end
-	if self.cover_state == "nil" then 
+	--if object:in_smart_cover() == false then
+	--	printf("DEFAULT_BEHAVIOUR")
+	--	return
+	--end
+	if self.cover_state == "nil" then
 		object:set_smart_cover_target_selector()
-	else	
+		printf("first3")
+	else
 		object:set_smart_cover_target_selector(self.target_selector, self)
+		printf("first4")
 	end
 end
 
 
 function action_smartcover_activity:check_target()
 	local object = self.object
-	
-	local target_path = xr_logic.pick_section_from_condlist(db.actor, self.object ,self.target_path_condlist)	
-		
-	if target_path ~= nil then
+
+	local target_path = xr_logic.pick_section_from_condlist(db.actor, self.object, self.target_path_condlist)
+
+	if target_path ~= "nil" and target_path ~= nil then
 		self.target_path, used = get_param_string(target_path, object)
 		if self.target_path ~= "nil" then
-			if level.patrol_path_exists(self.target_path) then		
+			if level.patrol_path_exists(self.target_path) then
 				--printf("target_selector:using fire_point[%s] for npc[%s]!!!", self.target_path, self.object:name())
 				object:set_smart_cover_target (patrol(self.target_path):point(0))
 				self.fire_pos = patrol(self.target_path):point(0)
@@ -208,13 +216,13 @@ function action_smartcover_activity:check_target()
 				abort("There is no patrol path [%s] for npc [%s]", self.target_path, object:name())
 			end
 		end
-	elseif self.st.target_enemy ~= nil then	
+	elseif self.st.target_enemy ~= nil then
 		local n = tonumber(self.st.target_enemy)
 		if self.st.target_enemy == "actor" then
 			--printf("setting target_enemy [actor] for npc[%s]", object:name())
 			self.target_enemy 	= db.actor
 		elseif n ~= nil then
-			self.target_enemy = level_object_by_sid(n)			
+			self.target_enemy = level_object_by_sid(n)
 		end
 		if self.target_enemy ~= nil and self.target_enemy:alive() then
 			--printf("setting target_enemy [%s] for npc[%s]", self.target_enemy:name(), object:name())
@@ -225,21 +233,21 @@ function action_smartcover_activity:check_target()
 	elseif self.st.target_position ~= nil then
 		object:set_smart_cover_target(self.st.target_position)
 		self.fire_pos = self.st.target_position
-		return true		
-	end	
+		return true
+	end
 	return false
 end
 function action_smartcover_activity:execute()
 	action_base.execute(self)
 	local storage = db.storage[self.object:id()]
 	if storage.exit_from_smartcover_initialized == true then return end
-	local need_cover_state = xr_logic.pick_section_from_condlist(db.actor, self.object ,self.cover_condlist)	
+	local need_cover_state = xr_logic.pick_section_from_condlist(db.actor, self.object ,self.cover_condlist)
 	if need_cover_state == "default_behaviour" or cover_substate_table[self.cover_state] ~= cover_substate_table[need_cover_state] then
 		self.cover_state = need_cover_state
-		
+
 	end
 	self:check_target_selector()
-	
+
 	if self.target_enemy ~= nil and self.object:in_smart_cover() then
 		if self.object:in_current_loophole_fov(self.target_enemy:position()) == true then
 			self.st.signals["enemy_in_fov"] = true
@@ -259,8 +267,8 @@ function action_smartcover_activity:finalize()
 	self.move_mgr:finalize()
 --	self.object:set_sight(look.path_dir, nil, 0)
 	self.st.exit_from_smartcover_initialized = nil
-	self.initialized = nil	
-	action_base.finalize(self)	
+	self.initialized = nil
+	action_base.finalize(self)
 end
 --' ¬озвращает достиг ли персонаж точки начала работы схемы
 function action_smartcover_activity:position_riched()
@@ -274,33 +282,33 @@ end
 function add_to_binder(npc, ini, scheme, section, storage)
 	printf("DEBUG: add_to_binder: scheme='%s', section='%s'", scheme, section)
 	local operators	= {}
-  	local properties  = {}
+		local properties  = {}
 
-   	local manager = npc:motivation_action_manager()
+		 local manager = npc:motivation_action_manager()
 
 	properties["need_smartcover"] 			= xr_evaluators_id.smartcover_action + 1
 	properties["use_smartcover_in_combat"] 	= xr_evaluators_id.smartcover_action + 2
 	properties["in_smart_cover"] 			= xr_evaluators_id.smartcover_action + 3
-	
+
 	properties["state_mgr_idle_smartcover"]	= xr_evaluators_id.state_mgr + 3
-		
+
  	operators["action_smartcover"] 			= xr_actions_id.smartcover_action
 	operators["action_combat_smartcover"] 	= xr_actions_id.smartcover_action + 2
 	operators["exit_in_smart_cover"] 		= xr_actions_id.smartcover_action + 3
- 	
- 	
+
+
  	-- -- evaluators
 	manager:add_evaluator(properties["need_smartcover"], this.evaluator_need_smartcover(storage, "smartcover_need"))
-	manager:add_evaluator(properties["use_smartcover_in_combat"], this.evaluator_use_smartcover_in_combat(storage, "use_smartcover_in_combat"))		
-	
-	
+	manager:add_evaluator(properties["use_smartcover_in_combat"], this.evaluator_use_smartcover_in_combat(storage, "use_smartcover_in_combat"))
+
+
 	local new_action = this.action_smartcover_activity(npc, "action_smartcover_activity", storage)
 	new_action:add_precondition(world_property(stalker_ids.property_alive, true))
 	new_action:add_precondition(world_property(stalker_ids.property_anomaly,false))
 	new_action:add_precondition(world_property(properties["need_smartcover"], true))
 	new_action:add_precondition(world_property(properties["state_mgr_idle_smartcover"], true))
 	new_action:add_precondition(world_property(properties["use_smartcover_in_combat"], false))
-	new_action:add_precondition(world_property(stalker_ids.property_enemy,false))	
+	new_action:add_precondition(world_property(stalker_ids.property_enemy,false))
 	xr_motivator.addCommonPrecondition(new_action)
 	new_action:add_effect (world_property(properties["need_smartcover"], false))
 	--new_action:add_effect (world_property(stalker_ids.property_danger,false))
@@ -308,16 +316,16 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	-- «арегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
-			
+
 	new_action = this.action_smartcover_activity(npc, "action_combat_smartcover", storage)
 	new_action:add_precondition(world_property(stalker_ids.property_alive, true))
 	new_action:add_precondition(world_property(stalker_ids.property_anomaly,false))
 	new_action:add_precondition(world_property(properties["need_smartcover"], true))
 	new_action:add_precondition(world_property(properties["use_smartcover_in_combat"], true))
-	new_action:add_precondition(world_property(properties["state_mgr_idle_smartcover"], true))	
+	new_action:add_precondition(world_property(properties["state_mgr_idle_smartcover"], true))
 	xr_motivator.addCommonPrecondition(new_action)
 	new_action:add_effect (world_property(properties["need_smartcover"], false))
-   	new_action:add_effect (world_property(stalker_ids.property_enemy,false))
+		 new_action:add_effect (world_property(stalker_ids.property_enemy,false))
 	new_action:add_effect (world_property(stalker_ids.property_danger,false))
 --	new_action:add_effect (world_property(properties["state_mgr_idle_smartcover"], false))
 	manager:add_action(operators["action_combat_smartcover"], new_action)
@@ -329,7 +337,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	new_action:add_precondition(world_property(properties["need_smartcover"], false))
 
 	new_action = manager:action (stalker_ids.action_combat_planner)
-	new_action:add_precondition (world_property(properties["use_smartcover_in_combat"],	false))				
+	new_action:add_precondition (world_property(properties["use_smartcover_in_combat"],	false))
 end
 
 
@@ -339,9 +347,9 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	--printf("DEBUG: set_scheme: storage assigned")
 
 	st.logic				= xr_logic.cfg_get_switch_conditions(ini, section, npc)
-	
-	st.cover_name			= utils.cfg_get_string	(ini, section, "cover_name", 		npc, false, "", "$script_id$_cover" )	
-	st.loophole_name		= utils.cfg_get_string	(ini, section, "loophole_name", 	npc, false, "", nil)	
+
+	st.cover_name			= utils.cfg_get_string	(ini, section, "cover_name", 		npc, false, "", "$script_id$_cover" )
+	st.loophole_name		= utils.cfg_get_string	(ini, section, "loophole_name", 	npc, false, "", nil)
 	st.cover_state			= utils.cfg_get_string	(ini, section, "cover_state", 		npc, false, "", "default_behaviour")
 	st.target_enemy			= utils.cfg_get_string	(ini, section, "target_enemy", 		npc, false, "", nil)
 	st.target_path			= utils.cfg_get_string	(ini, section, "target_path", 		npc, false, "", "nil")
@@ -351,45 +359,45 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.lookout_max_time		= utils.cfg_get_number	(ini, section, "lookout_max_time",	npc, false, 10)
 	st.exit_body_state		= utils.cfg_get_string	(ini, section, "exit_body_state", 	npc ,false, "", "stand")
 	st.use_precalc_cover 	= utils.cfg_get_bool	(ini, section, "use_precalc_cover", npc, false, false)
-	st.use_in_combat	 	= utils.cfg_get_bool	(ini, section, "use_in_combat", 	npc, false, false)	
+	st.use_in_combat	 	= utils.cfg_get_bool	(ini, section, "use_in_combat", 	npc, false, false)
 	st.moving  				= utils.cfg_get_string	(ini, section, "def_state_moving", npc, false, "", "sneak")
 	st.sound_idle			= utils.cfg_get_string	(ini, section, "sound_idle",npc, false, "")
-	
+
 	if st.use_precalc_cover == true then
 		local smart = sim_board.get_sim_board():get_smart_by_name(gulag_name)
 		local tcover = cover_manager.get_cover(npc, smart)
-		if tcover ~= nil and tcover.is_smart_cover then		
+		if tcover ~= nil and tcover.is_smart_cover then
 			local level_id = game_graph():vertex(smart.m_game_vertex_id):level_id()
 			printf("precalc cover:lvl_id[%s] vertex_id[%s]", tostring(level_id), tostring(tcover.cover_vertex_id))
 			cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][tcover.cover_vertex_id]
 			printf("precalc cover_name [%s]", cover:name())
-			st.cover_name = cover:name()			
+			st.cover_name = cover:name()
 			st.target_position = tcover.look_pos
-		end   	
+		end
 	end
-			
+
 end
 
 
 function init_global_evaluators(npc)
-	local manager = npc:motivation_action_manager()	
+	local manager = npc:motivation_action_manager()
 	local operators	= {}
-  	local properties  = {}
-  		
+		local properties  = {}
+
 	properties["in_smart_cover"] 			= xr_evaluators_id.smartcover_action + 3
 	properties["in_combat_planner"] 		= xr_evaluators_id.smartcover_action + 4
 	operators["exit_in_smart_cover"] 		= xr_actions_id.smartcover_action + 3
-	
+
 	manager:add_evaluator(properties["in_smart_cover"], this.evaluator_in_smart_cover(nil, "in_smart_cover"))
 	manager:add_evaluator(properties["in_combat_planner"], this.evaluator_in_combat_planner(nil, "in_combat_planner"))
 
 	local new_action = this.action_exit_from_smart_cover(npc, "action_exit_from_smart_cover")
 	new_action:add_precondition(world_property(properties["in_smart_cover"], true))
 	--new_action:add_precondition(world_property(properties["in_combat_planner"], false))
-	
+
 	new_action:add_effect(world_property(properties["in_smart_cover"], false))
 	manager:add_action(operators["exit_in_smart_cover"], new_action)
-	
-	new_action = manager:action (stalker_ids.action_combat_planner) 
-	new_action:add_effect (world_property(properties["in_smart_cover"], false))	
+
+	new_action = manager:action (stalker_ids.action_combat_planner)
+	new_action:add_effect (world_property(properties["in_smart_cover"], false))
 end

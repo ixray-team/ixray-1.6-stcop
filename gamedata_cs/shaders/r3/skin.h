@@ -211,9 +211,11 @@ v_model skinning_4 	(v_model_skinned_4	v)
 	// matrices
 	float	id[4];
 	float4	m[4][3];	//	[bone index][matrix row or column???]
+	[unroll]
 	for (int i=0; i<4; ++i)
 	{		
 		id[i] = v.ind[i]*255+0.3;
+		[unroll]
 		for (int j=0; j<3; ++j)
 			m[i][j] = sbones_array[id[i]+j];
 	}
@@ -229,6 +231,7 @@ v_model skinning_4 	(v_model_skinned_4	v)
 	float4  m1 	= m[0][1]*w[0];
 	float4  m2 	= m[0][2]*w[0];
 
+	[unroll]
 	for (int i=1; i<4; ++i)
 	{
 		m0 	+= m[i][0]*w[i];

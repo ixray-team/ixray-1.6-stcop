@@ -8,7 +8,7 @@ snd_open_start = trader_door_open_start
 snd_close_start = trader_door_close_start
 snd_close_stop = trader_door_close_stop
 slider = true
-on_info = {=is_smart_in_combat(gar_smart_terrain_3_5) !get_task_by_smart(gar_smart_terrain_3_5)} ph_door@locked
+on_info = {=is_smart_captured(gar_smart_terrain_3_5) =is_smart_in_combat(gar_smart_terrain_3_5) !get_task_by_smart(gar_smart_terrain_3_5)} ph_door@locked
 show_tips = false
 
 [ph_door@locked]
@@ -18,5 +18,5 @@ snd_open_start = trader_door_open_start
 snd_close_start = trader_door_close_start
 snd_close_stop = trader_door_close_stop
 slider = true
-on_info = {!is_smart_in_combat(gar_smart_terrain_3_5)} ph_door@open
+on_info = {!is_smart_in_combat(gar_smart_terrain_3_5)} ph_door@open, {!is_smart_captured(gar_smart_terrain_3_5)} ph_door@open
 

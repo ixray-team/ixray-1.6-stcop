@@ -640,7 +640,7 @@
 		<text>Использовать DX10.1</text>
 	</string>
 	<string id="ui_mm_r3_gbuffer_opt">
-		<text>Оптимизировать геометр. Буфера</text>
+		<text>Оптимизировать геометр. Буфер</text>
 	</string>
 	<string id="ui_mm_r3_MSAA">
 		<text>Полноэкранное сглаживание</text>
@@ -653,5 +653,26 @@
 	</string>
 	<string id="mm_mp_actret_time">
 		<text>Возвращение активацией</text>
+	</string>
+	<string id="ui_mm_msaa_opt">
+		<text>Оптимизировать сглаживание</text>
+	</string>
+	<string id="ui_mm_msaa_alphatest">
+		<text>Сглаживать А-тестовые объекты</text>
+	</string>
+	<string id="st_opt_off">
+		<text>отключено</text>
+	</string>
+	<string id="st_opt_low">
+		<text>низко</text>
+	</string>
+	<string id="st_opt_medium">
+		<text>средне</text>
+	</string>
+	<string id="st_opt_high">
+		<text>высоко</text>
+	</string>
+	<string id="ui_st_invalid_saved_game">
+		<text>Версия сохраненного файла не совпадат с версией игры.</text>
 	</string>
 </string_table>

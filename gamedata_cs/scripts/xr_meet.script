@@ -179,7 +179,11 @@ function Cmeet_manager:update()
 		end
 		return
 	end
-	if self.a.precond == "visibility" and not (self.npc:see(db.actor) and npc_in_actor_frustrum(self.npc)) and not self.npc:is_talking() then
+	if (self.a.precond == "visibility" and 
+	   not (self.npc:see(db.actor) and npc_in_actor_frustrum(self.npc)) 
+	   and not self.npc:is_talking()) 
+	   or (db.actor:is_talking() and not self.npc:is_talking())
+	then
 		--printf("NIL %s %s", tostring(self.npc:see(db.actor)), tostring(npc_in_actor_frustrum(self.npc)))
 		self.state = "nil"
 		self.sound = "nil"
@@ -238,9 +242,9 @@ function Cmeet_manager:update()
         end
     end
 	-- Если актер говорит, и говорит не с нами, то мы не должны говорить звуков.
-	if db.actor:is_talking() then
-		self.sound = "nil"
-	end
+	--if db.actor:is_talking() then
+	--	self.sound = "nil"
+	--end
 	--printf("MEET [%s], state: [%s], sound: [%s]", self.npc:name(), tostring(self.state), tostring(self.sound))
 end
 function Cmeet_manager:process_zone()

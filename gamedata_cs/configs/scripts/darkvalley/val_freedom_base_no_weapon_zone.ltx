@@ -2,7 +2,10 @@
 active = sr_no_weapon
 
 [sr_no_weapon]
-on_info = {=is_smart_in_combat(val_smart_terrain_7_3:val_smart_terrain_7_4:val_smart_terrain_7_5)} sr_idle %+val_freedom_base_under_attack%
+on_info = {=is_smart_in_combat(val_smart_terrain_7_3:val_smart_terrain_7_4:val_smart_terrain_7_5)} sr_idle@1 %+val_freedom_base_under_attack%, {!is_smart_captured(val_smart_terrain_7_3) !is_smart_captured(val_smart_terrain_7_4) !is_smart_captured(val_smart_terrain_7_5)} sr_idle@2
 
-[sr_idle]
+[sr_idle@1]
 on_info = {!is_smart_in_combat(val_smart_terrain_7_3:val_smart_terrain_7_4:val_smart_terrain_7_5)} sr_no_weapon %-val_freedom_base_under_attack%
+
+[sr_idle@2]
+on_info = {=is_smart_captured(val_smart_terrain_7_3)} sr_idle@1, {=is_smart_captured(val_smart_terrain_7_4)} sr_idle@1, {=is_smart_captured(val_smart_terrain_7_5)} sr_idle@1

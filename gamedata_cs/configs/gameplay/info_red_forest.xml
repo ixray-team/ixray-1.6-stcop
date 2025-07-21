@@ -172,5 +172,8 @@
   <info_portion id="red_forest_stalker_sos" />
   <info_portion id="red_bloodsucker_first_spawn" />
   <info_portion id="red_capture_undeground_camp_done" />
-    
+
+  <info_portion id="red_recover_item_1_done" />
+  <info_portion id="red_recover_item_2_done" />
+  <info_portion id="red_recover_item_3_done" />
 </game_information_portions>

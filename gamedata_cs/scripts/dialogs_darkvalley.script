@@ -1,6 +1,6 @@
 function transfer_ammo(first_speaker, second_speaker)
-		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_5.56x45_ap", 4) 
-		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "grenade_rgd5", 3)		
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_5.56x45_ap", 4)
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "grenade_rgd5", 3)
 end
 
 function is_day(first_speaker, second_speaker)
@@ -20,5 +20,13 @@ function return_komendant_pda(first_speaker, second_speaker)
 end
 
 function give_reward_for_destroy_killer_base(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "flesh_up_abcd_svu")	
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "flesh_up_abcd_svu")
+end
+
+function freedom_join_reward(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "svoboda_heavy_outfit")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_sig550_up2")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_addon_scope_susat")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_5.56x45_ap", 3)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "medkit_scientic", 3)
 end

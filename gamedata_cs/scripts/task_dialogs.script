@@ -31,6 +31,17 @@ function squad_has_tasks(npc, actor, p1, p2)
 	if(squad.current_action) and (squad.current_action.name=="attack_point") then
 		return false
 	end
+
+	-- Нужно взять sim_combat сквада
+	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager	
+	-- У него взять текущее состояние
+	local combat_stage = combat.squads[squad.squad_id]._stage	
+	-- Таск выдавать только если оно равно idle
+	if combat_stage ~= "idle" then
+		return false
+	end
+
+	
 	for k,v in pairs(squad.random_tasks) do
 		if(task_manager.get_task_manager():get_task_by_entity_id(v).status~="selected") then
 			return true
@@ -49,6 +60,17 @@ function squad_hasnt_tasks(npc, actor, p1, p2)
 	if(squad.current_action) and (squad.current_action.name=="attack_point") then
 		return true
 	end
+
+	-- Нужно взять sim_combat сквада
+	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager	
+	-- У него взять текущее состояние
+	local combat_stage = combat.squads[squad.squad_id]._stage	
+	-- Таск выдавать только если оно равно idle
+	if combat_stage ~= "idle" then
+		return true
+	end
+	
+	
 	for k,v in pairs(squad.random_tasks) do
 		if(task_manager.get_task_manager():get_task_by_entity_id(v).status~="selected") then
 			return false
@@ -270,9 +292,10 @@ function is_recover_item_task(actor, npc)
 	if squad == nil then
 		return false
 	end
-	if(squad.random_tasks[3]~=nil) and (npc:id() == squad.commander_id) then
+	local npc_id = npc:id()
+	if squad.random_tasks[3] ~= nil and npc_id == squad.commander_id then
 		local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[3])
-		if task.commander_id == npc:id() then
+		if task.commander_id == npc_id then
 		   	return task.state=="have_item"
 		end
 	end

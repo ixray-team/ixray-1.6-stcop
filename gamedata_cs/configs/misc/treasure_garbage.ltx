@@ -6,7 +6,7 @@ gar_treasure_quest_digger_reward
 gar_treasure_1
 gar_treasure_2
 gar_treasure_3
-gar_treasure_4
+;gar_treasure_4
 gar_treasure_5
 gar_treasure_6
 gar_treasure_7
@@ -38,7 +38,7 @@ gar_quest_treasure_10
 target = gar_treasure_quest_old_pda
 name = gar_treasure_quest_old_pda
 description = gar_treasure_quest_old_pda_descr
-items = device_pda_old
+items = device_pda_old, 1
 community = stalker
 condlist = false
 
@@ -46,7 +46,7 @@ condlist = false
 target = gar_treasure_quest_smuggler_weapons
 name = gar_treasure_quest_smuggler_weapons
 description = gar_treasure_quest_smuggler_weapons_descr
-items = wpn_ak74u, wpn_ak74, wpn_l85, wpn_wincheaster1300, wpn_mp5
+items = wpn_ak74u, 1, wpn_ak74, 1, wpn_l85, 1, wpn_wincheaster1300, 1, wpn_mp5, 1
 community = bandit
 condlist = false
 
@@ -54,7 +54,7 @@ condlist = false
 target = gar_treasure_quest_reward_in_anomaly
 name = gar_treasure_quest_reward_in_anomaly
 description = gar_treasure_quest_reward_in_anomaly_descr
-items = wpn_colt1911_up2
+items = wpn_colt1911_up2, 1
 community = bandit
 condlist = false
 on_empty = %+gar_quest_bandit_secret_done%
@@ -63,7 +63,7 @@ on_empty = %+gar_quest_bandit_secret_done%
 target = gar_treasure_quest_reward_in_anomaly
 name = gar_treasure_quest_digger_reward
 description = gar_treasure_quest_digger_reward_descr
-items = wpn_colt1911_up2
+items = wpn_colt1911_up2, 1
 community = stalker
 condlist = false
 on_empty = %+gar_quest_captive_reward_done%
@@ -89,12 +89,12 @@ description = st_gar_pipe_02_descr
 items = wpn_hpsa, 1, medkit, 1
 condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
 
-[gar_treasure_4] ;Труба у основания крана
-target = gar_treasure_4
-name = st_gar_pipe_05
-description = st_gar_pipe_05_descr
-items = wpn_beretta, 1, vodka, 1
-condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
+;[gar_treasure_4] ;Труба у основания крана
+;target = gar_treasure_4
+;name = st_gar_pipe_05
+;description = st_gar_pipe_05_descr
+;items = wpn_beretta, 1, vodka, 1
+;condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
 
 [gar_treasure_5] ;Рюкзак под елкой
 target = gar_treasure_5
@@ -149,7 +149,7 @@ condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
 target = gar_treasure_12
 name = st_gar_trees_log_03
 description = st_gar_trees_log_03_descr
-items = vodka, 5, antirad, 1
+items = wpn_beretta, 1, vodka, 1
 condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
 
 [gar_treasure_13] ;Тайник беглецов
@@ -212,7 +212,7 @@ condlist = {=actor_on_level(garbage:escape:darkvalley)} true, false
 target = gar_q1_n
 name = st_gar_q1_n
 description = st_gar_q1_n_descr
-items = flesh_up_bd_desert_eagle
+items = flesh_up_bd_desert_eagle, 1
 condlist = {=actor_on_level(garbage)} true, false
 treasure_cost = 500
 say_item_name = true
@@ -221,7 +221,7 @@ say_item_name = true
 target = gar_q2_n
 name = st_gar_q2_n
 description = st_gar_q2_n_descr
-items = flesh_up_ac_desert_eagle
+items = flesh_up_ac_desert_eagle, 1
 condlist = {=actor_on_level(garbage)} true, false
 treasure_cost = 500
 say_item_name = true
@@ -257,7 +257,7 @@ say_item_name = false
 target = gar_q6_t_l
 name = st_gar_q6_t_l
 description = st_gar_q6_t_l_descr
-items = flesh_up_fh_scientific_outfit
+items = flesh_up_fh_scientific_outfit, 1
 condlist = {=actor_on_level(garbage)} true, false
 treasure_cost = 1500
 say_item_name = true
@@ -275,7 +275,7 @@ say_item_name = false
 target = gar_q8_t_a
 name = st_gar_q8_t_a
 description = st_gar_q8_t_a_descr
-items = flesh_up_bdfh_scientific_outfit
+items = flesh_up_bdfh_scientific_outfit, 1
 condlist = {=actor_on_level(garbage)} true, false
 treasure_cost = 1500
 say_item_name = true
