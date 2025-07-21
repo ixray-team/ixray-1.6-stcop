@@ -65,8 +65,7 @@ CActor* Actor()
 		VERIFY(g_actor);
 		return g_actor;
 	}
-
-	CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	CActor* pActor = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_actor() : nullptr;
 	if(pActor) {
 		return pActor;
 	}

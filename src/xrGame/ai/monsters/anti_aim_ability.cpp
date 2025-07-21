@@ -70,6 +70,10 @@ bool   anti_aim_ability::can_detect ()
 	Fvector	const	self_dir		=	m_object->Direction();
 	float			angle			=	angle_between_vectors(self2enemy, self_dir);
 
+	if (m_object->Position().distance_to(enemy->Position()) > 20) {
+		return false;
+	}
+
 	return								angle < deg2rad(70.f);
 }
 
@@ -259,15 +263,15 @@ float   anti_aim_ability::calculate_angle () const
 #include "../../level_debug.h"
 #include "../../debug_text_tree.h"
 
-extern CActor* g_actor;
 
 bool   anti_aim_ability::check_update_condition () const
 {
-	if ( !m_object->g_Alive() || !g_actor || !Actor()->g_Alive() )
+	if ( !m_object->g_Alive() || !Actor || !Actor()->g_Alive() )
 		return							false;
+	
+	const CActor* actor = smart_cast<const CActor*>(m_object->EnemyMan.get_enemy());
 
-	CEntityAlive const* enemy		=	m_object->EnemyMan.get_enemy();
-	if ( enemy != Actor() )
+	if ( !actor )
 		return							false;
 
 	if ( !smart_cast<CWeapon*>(Actor()->inventory().ActiveItem()) )
