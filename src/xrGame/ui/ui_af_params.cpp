@@ -315,7 +315,7 @@ UIArtefactParamItem::InitResult UIArtefactParamItem::Init(CUIXml& xml, pcstr sec
 UIArtefactParamItem::InitResult UIArtefactParamItem::InitPlain(CUIXml& xml, pcstr section)
 {
     string256 buf;
-    xr_strconcat(buf, /*af_params, */"static_", section);
+    xr_strconcat(buf, "static_", section);
 	if (!CUIXmlInit::InitStatic(xml, buf, 0, this, false))
 	{
 		return InitResult::Failed;
