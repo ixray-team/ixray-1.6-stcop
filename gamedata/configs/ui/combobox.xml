@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w>
+	<frameline_default>ui_inGame2_combobox_linetext</frameline_default>
+	<frameline_highlighted>ui_inGame2_combobox_linetext</frameline_highlighted>
+	<list_box>ui_inGame2_combobox_line</list_box>
+	<list_frame>ui_inGame2_combobox</list_frame>
+	<height>20</height>
+</w>
