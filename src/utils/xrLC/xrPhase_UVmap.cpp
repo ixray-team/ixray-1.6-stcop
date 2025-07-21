@@ -57,7 +57,7 @@ bool sort_faces(Face* face, Face* face2)
 }
 
 #include <atomic>
-std::atomic<int> integer_mt;
+xr_atomic_s32 integer_mt;
 
 void MT_FindAttached(CDeflector* defl, vecFace& affected, int SP, int start, int end)
 {
