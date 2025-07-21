@@ -93,6 +93,7 @@ CWeapon::CWeapon()
 	bReloadKeyPressed		= false;
 	bAmmotypeKeyPressed		= false;
 	m_HudFovZoom = 0.0f;
+	_last_update_time = Device.dwTimeGlobal;
 }
 
 CWeapon::~CWeapon		()
@@ -1073,6 +1074,8 @@ void CWeapon::UpdateCL		()
 
 	if(m_zoom_params.m_pVision)
 		m_zoom_params.m_pVision->Update();
+
+	_last_update_time = Device.dwTimeGlobal;
 }
 
 void CWeapon::ForceUpdateHUD()
