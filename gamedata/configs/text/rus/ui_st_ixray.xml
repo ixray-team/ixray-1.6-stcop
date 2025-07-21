@@ -392,4 +392,13 @@
 	<string id="st_track_opt_on">
 		<text>вкл.</text>
 	</string>
+	<string id="Contacts">
+		<text>Контакты</text>
+	</string>
+	<string id="pda_btn_contacts">
+		<text>Контакты</text>
+	</string>
+	<string id="pda_btn_contacts_hint">
+		<text>Показать список контактов сталкеров</text>
+	</string>
 </string_table>
