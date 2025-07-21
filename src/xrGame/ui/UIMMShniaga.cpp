@@ -86,7 +86,7 @@ void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, LPCSTR path)
 		else
 			CreateList		(m_buttons, xml_doc, "menu_main_mm");
 	}
-	CreateList			(m_buttons_new_network, xml_doc, "menu_network_game");
+	CreateList			(m_buttons_new_network, xml_doc, "menu_network_game", false);
 
     ShowMain				();
 
@@ -98,7 +98,7 @@ void CUIMMShniaga::OnDeviceReset()
 {
 }
 
-void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCSTR path)
+void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCSTR path, bool required)
 {
 	CGameFont* pF;
 	u32	color;
@@ -106,7 +106,11 @@ void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCS
 	R_ASSERT						(button_height);
 
 	CUIXmlInit::InitFont			(xml_doc, path, 0, color, pF);
-	R_ASSERT						(pF);
+	if (!pF)
+	{
+		R_ASSERT(!required);
+		return;
+	}
 
 	int nodes_num					= xml_doc.GetNodesNum(path, 0, "btn");
 
