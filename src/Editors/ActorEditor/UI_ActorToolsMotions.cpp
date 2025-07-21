@@ -356,35 +356,64 @@ void CActorTools::MakePreview()
 
 void CActorTools::PlayMotion()
 {
-	if (m_pEditObject){
-//.	    m_ClipMaker->Stop();
-		if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor) m_pEditObject->SkeletonPlay();
-		else if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine) {
-			if (m_Flags.is(flUpdateMotionKeys))	{ OnMotionKeysModified();	}
-			if (m_Flags.is(flUpdateMotionDefs))	{ OnMotionDefsModified(); 	}
-			if (m_Flags.is(flUpdateGeometry))	{ OnGeometryModified(); 	}
-			m_RenderObject.PlayMotion(m_CurrentMotion.c_str(),m_CurrentSlot);
+	if (m_pEditObject)
+	{
+		if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor)
+		{
+			m_pEditObject->SkeletonPlay();
+			if (m_PreviewObject.m_pObject != nullptr)
+			{
+				m_PreviewObject.m_pObject->SkeletonPlay();
+			}
+		}
+		else if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine) 
+		{
+			if (m_Flags.is(flUpdateMotionKeys)) { OnMotionKeysModified(); }
+			if (m_Flags.is(flUpdateMotionDefs)) { OnMotionDefsModified(); }
+			if (m_Flags.is(flUpdateGeometry)) { OnGeometryModified(); }
+			m_RenderObject.PlayMotion(m_CurrentMotion.c_str(), m_CurrentSlot);
 		}
 	}
 }
 
 void CActorTools::StopMotion()
 {
-	if (m_pEditObject)
-		if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor) m_pEditObject->SkeletonStop();
-		else if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine&&m_RenderObject.m_pBlend) {
-			m_RenderObject.m_pBlend->playing	 = false;
-			m_RenderObject.m_pBlend->timeCurrent = 0;
+	if (m_pEditObject == nullptr)
+		return;
+
+	if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor)
+	{
+		m_pEditObject->SkeletonStop();
+
+		if (m_PreviewObject.m_pObject != nullptr)
+		{
+			m_PreviewObject.m_pObject->SkeletonStop();
 		}
+	}
+	else if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine && m_RenderObject.m_pBlend) {
+		m_RenderObject.m_pBlend->playing = false;
+		m_RenderObject.m_pBlend->timeCurrent = 0;
+	}
 }
 
 void CActorTools::PauseMotion()
 {
-	if (m_pEditObject)
-		if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor) m_pEditObject->SkeletonPause(true);
-		else if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine&&m_RenderObject.m_pBlend) {
-			m_RenderObject.m_pBlend->playing=!m_RenderObject.m_pBlend->playing;
+	if (m_pEditObject == nullptr)
+		return;
+
+	if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor)
+	{
+		m_pEditObject->SkeletonPause(true);
+
+		if (m_PreviewObject.m_pObject != nullptr)
+		{
+			m_PreviewObject.m_pObject->SkeletonPause(true);
 		}
+	}
+	else if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine && m_RenderObject.m_pBlend) 
+	{
+		m_RenderObject.m_pBlend->playing = !m_RenderObject.m_pBlend->playing;
+	}
 }
 
 bool CActorTools::RenameMotion(LPCSTR old_name, LPCSTR new_name)
