@@ -104,7 +104,10 @@ function actor_binder:net_destroy()
 				self.object:set_callback(callback.level_border_enter, nil)
 				self.object:set_callback(callback.level_border_exit, nil)
 				self.object:set_callback(callback.take_item_from_box, nil)
-
+				-- IX-Ray 
+				self.object:set_callback(callback.actor_before_death, nil)
+				-- END IX-Ray
+	
 				if sr_psy_antenna.psy_antenna then
 								sr_psy_antenna.psy_antenna:destroy()
 								sr_psy_antenna.psy_antenna = false
@@ -138,7 +141,21 @@ function actor_binder:reinit()
 				self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
 				self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
 				self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
+
+	            -- IX-Ray 
+	            self.object:set_callback(callback.actor_before_death, self.on_actor_before_death, self)
+                -- END IX-Ray 
 end
+
+-- IX-Ray 
+-- actor before death callback
+-- IMPORTANT: if you wish to kill actor you need to call db.actor:kill(level.object_by_id(whoID), true) in actor_before_death callback, to ensure all objects are properly destroyed.
+function actor_binder:on_actor_before_death(whoID)
+	local killer = level.object_by_id(whoID) or db.actor
+	db.actor:kill(killer, true)
+end
+-- END IX-Ray 
+
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
 		local box_name = box:name()
@@ -449,6 +466,8 @@ function actor_binder:update(delta)
 	if guiders.teleported_to_another_level and not guiders.level_changed then
 		guiders.action_teleport_to_point()
 	end
+
+	SendScriptCallback("update") -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
@@ -511,7 +530,9 @@ function actor_binder:save(packet)
 			packet:w_stringZ(v)
 		end
 --		minigames_manager.get_minigames_manager():save(packet)
-				set_save_marker(packet, "save", true, "actor_binder")
+		set_save_marker(packet, "save", true, "actor_binder")
+
+		SendScriptCallback("save", packet) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:load(reader)
@@ -565,6 +586,7 @@ function actor_binder:load(reader)
 		end
 --		minigames_manager.get_minigames_manager():load(reader)
 				set_save_marker(reader, "load", true, "actor_binder")
+	SendScriptCallback("load", reader) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 
