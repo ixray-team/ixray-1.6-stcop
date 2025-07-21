@@ -320,11 +320,11 @@
             </phrase>
             <phrase id="112111">
                 <text>red_bounty_hunter_dialog_112111</text>
-                <action>dialogs_red_forest.give_strelok_treasure</action>
                 <next>1121111</next>
             </phrase>
             <phrase id="1121111">
                 <text>red_bounty_hunter_dialog_1121111</text>
+                <action>dialogs_red_forest.give_strelok_treasure</action>				
                 <action>dialog_manager.action_disable_phrase</action>
                 <give_info>red_bounty_hunters_give_treasure</give_info>
                 <next>11</next>
@@ -720,7 +720,6 @@
                 <text>red_forester_has_compas_1</text>
                 <action>dialogs_red_forest.give_compass</action>
                 <action>dialogs_red_forest.forester_reward_for_compass</action>
-                <give_info>red_forester_take_compas</give_info>
                 <next>11</next>
             </phrase>
             <phrase id="11">
