@@ -115,6 +115,7 @@ public:
 		eReload,
 		eMisfire,
 		eSwitch,
+		eSwitchMode,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,
@@ -280,6 +281,8 @@ protected:
 		m_bHideBonesGLAttached {}, m_bHideBonesSilAttached {}, m_bHideBonesScopeAttached {},
 		m_bHideBonesUpgrade {}, m_bScopeShowBones{}, m_bScopeHideBones{}, m_bShowBonesUpgToHide{}, m_bShowBonesUpgToShow{},
 		m_sCollimatorSightsBones{};
+
+	bool m_bDisableFireModeAim = false;
 
 	void HideOneUpgradeLevel(const char* section);
 	void LoadUpgradeBonesToHide(const char* section, const char* line);
