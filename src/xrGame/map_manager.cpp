@@ -12,7 +12,8 @@
 #include "xrServer.h"
 #include "game_object_space.h"
 
-struct FindLocationBySpotID{
+struct FindLocationBySpotID
+{
 	shared_str	spot_id;
 	u16			object_id;
 	FindLocationBySpotID(const shared_str& s, u16 id):spot_id(s),object_id(id){}
@@ -20,7 +21,9 @@ struct FindLocationBySpotID{
 		return (spot_id==key.spot_type)&&(object_id==key.object_id);
 	}
 };
-struct FindLocationByID{
+
+struct FindLocationByID
+{
 	u16			object_id;
 	FindLocationByID(u16 id):object_id(id){}
 	bool operator () (const SLocationKey& key){
@@ -28,7 +31,8 @@ struct FindLocationByID{
 	}
 };
 
-struct FindLocation{
+struct FindLocation
+{
 	CMapLocation*			ml;
 	FindLocation(CMapLocation* m):ml(m){}
 	bool operator () (const SLocationKey& key){
@@ -265,6 +269,8 @@ void CMapManager::Update()
 	{
 		return;
 	}
+
+	xrCriticalSectionGuard guard(UpdateCS);
 	delete_data(m_deffered_destroy_queue); //from prev frame
 
 	Locations_it it			= Locations().begin();
@@ -278,9 +284,10 @@ void CMapManager::Update()
 		if((*it).actual && bForce)
 			(*it).location->CalcPosition();
 	}
-	std::sort( Locations().begin(),Locations().end() );
 
-	while( (!Locations().empty())&&(!Locations().back().actual) )
+	std::sort(Locations().begin(), Locations().end());
+
+	while ((!Locations().empty()) && (!Locations().back().actual))
 	{
 		Level().GameTaskManager().MapLocationRelcase(Locations().back().location);
 
