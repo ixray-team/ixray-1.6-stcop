@@ -39,7 +39,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 
 	if(C.bDetail_Bump) {
 		LPCSTR detail_bump_texture = DEV->m_textures_description.GetBumpName(dt).c_str();
-		if(detail_bump_texture) {
+		if(detail_bump_texture != nullptr && detail_bump_texture[0] != '\0') {
 			bHasDetailBump = true;
 			xr_strcpy(texDetailBump, sizeof(texDetailBump), detail_bump_texture);
 			xr_strcpy(texDetailBumpX, sizeof(texDetailBumpX), detail_bump_texture);
@@ -169,10 +169,18 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	C.r_Pass(vs, ps, FALSE);
 
 	C.r_Sampler_waf("s_base", C.L_textures[0].c_str(), false);
-	C.r_Sampler_waf("s_bumpX", fnameB, false);
-	C.r_Sampler_waf("s_bump", fnameA, false);
-	C.r_Sampler_waf("s_bumpD", dt, false);
-	C.r_Sampler_waf("s_detail", dt, false);
+
+	if (bump)
+	{
+		C.r_Sampler_waf("s_bumpX", fnameB, false);
+		C.r_Sampler_waf("s_bump", fnameA, false);
+		C.r_Sampler_waf("s_bumpD", dt, false);
+	}
+
+	if (dt && dt[0])
+	{
+		C.r_Sampler_waf("s_detail", dt, false);
+	}
 
 	if(bHasDetailBump) {
 		C.r_Sampler_waf("s_detailBump", texDetailBump, false);
