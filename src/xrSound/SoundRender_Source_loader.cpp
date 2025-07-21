@@ -97,6 +97,12 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 		Msg("~ Missing ogg-comment, file: %s", pname.c_str());
 	}
 	R_ASSERT3((m_fMaxAIDist>=0.1f)&&(m_fMaxDist>=0.1f),"Invalid max distance.", pname.c_str());
+
+	if (m_wave)
+	{
+		FS.r_close(m_wave);
+		ov_clear(&m_ovf);
+	}
 }
 
 void CSoundRender_Source::load(LPCSTR name)
@@ -125,10 +131,5 @@ void CSoundRender_Source::unload()
 	SoundRender->cache.cat_destroy	(CAT);
     fTimeTotal						= 0.0f;
     dwBytesTotal					= 0;
-
-	if (m_wave) {
-		ov_clear(&m_ovf);
-		FS.r_close(m_wave);
-	}
 }
 
