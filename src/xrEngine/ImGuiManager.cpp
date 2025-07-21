@@ -234,13 +234,16 @@ void CImGuiManager::UpdateCapture()
         keyProcessed = false;
     }
 
+	ImGuiIO& IO = ImGui::GetIO();
     if (CaptureInputs || g_dedicated_server)
-    {
-        SDL_ShowCursor();
+	{
+		IO.ConfigFlags &= ~ImGuiConfigFlags_NoMouseCursorChange;
+		SDL_ShowCursor();
     }
     else if (!g_dedicated_server)
     {
-        SDL_HideCursor();
+		IO.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+		SDL_HideCursor();
     }
 }
 
