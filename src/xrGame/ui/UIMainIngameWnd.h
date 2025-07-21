@@ -29,24 +29,8 @@ public:
 
 protected:
 	
-	CUIStatic*			UIStaticDiskIO;
-	CUITextWnd*			UIStaticQuickHelp;
-	CUIMotionIcon*		UIMotionIcon;
-	CUIZoneMap*			UIZoneMap;
-
-	CUIHudStatesWnd*	m_ui_hud_states;
-
-	CUIStatic*			m_ind_bleeding;
-	CUIStatic*			m_ind_radiation;
-	CUIStatic*			m_ind_starvation;
-
 	CUIStatic*			m_ind_sleepiness = nullptr;
 	CUIStatic*			m_ind_thirst = nullptr;
-
-	CUIStatic*			m_ind_weapon_broken;
-	CUIStatic*			m_ind_helmet_broken;
-	CUIStatic*			m_ind_outfit_broken;
-	CUIStatic*			m_ind_overweight;
 	
 	CUIStatic*			m_icon_microphone = nullptr;
 	CUITextWnd*			m_voice_distance = nullptr;
@@ -59,6 +43,22 @@ public:
 	CUIStatic*			m_ind_boost_health;
 	CUIStatic*			m_ind_boost_power;
 	CUIStatic*			m_ind_boost_rad;
+
+	CUIStatic*			m_ind_weapon_broken;
+	CUIStatic*			m_ind_helmet_broken;
+	CUIStatic*			m_ind_outfit_broken;
+	CUIStatic*			m_ind_overweight;
+
+	CUIStatic*			m_ind_bleeding;
+	CUIStatic*			m_ind_radiation;
+	CUIStatic*			m_ind_starvation;
+
+	CUIStatic*			UIStaticDiskIO;
+	CUITextWnd*			UIStaticQuickHelp;
+	CUIMotionIcon*		UIMotionIcon;
+	CUIZoneMap*			UIZoneMap;
+
+	CUIHudStatesWnd*	m_ui_hud_states;
 
 public:
 		void			ShowZoneMap(bool status);
