@@ -414,6 +414,7 @@ void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
 }
 
 #include "CharacterPhysicsSupport.h"
+#include <RadioactiveZone.h>
 float CActorCondition::GetInjuriousMaterialDamage()
 {
 	u16 mat_injurios = m_object->character_physics_support()->movement()->injurious_material_idx();
@@ -447,6 +448,23 @@ float CActorCondition::GetZoneDanger() const
 
 void CActorCondition::UpdateRadiation()
 {
+	if (m_object)
+	{
+		m_fRadiationZonePower = 0;
+		for (CObject* pFeelObject : m_object->q_nearest)
+		{
+			if (!pFeelObject || pFeelObject->getDestroy()) 
+				continue;									// Don't touch candidates for destroy
+
+			CRadioactiveZone* pRadZone = smart_cast<CRadioactiveZone*>(pFeelObject);
+
+			if (pRadZone)
+			{
+				m_fRadiationZonePower = std::max(m_fRadiationZonePower, pRadZone->fHitPower * 10);
+			}
+		}
+	}
+
 	inherited::UpdateRadiation();
 }
 
