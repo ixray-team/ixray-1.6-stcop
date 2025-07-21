@@ -3,6 +3,7 @@
 
 #include "../../Nodes/UIDialogsView.h"
 #include "../../../../utils/xrDXT/xrDXT.h"
+#include "../../../xrECore/Editor/ParticleEffectActions.h"
 
 #include "Viewports/ViewportMesh.h"
 
@@ -33,7 +34,7 @@ void CContentView::Draw()
 	{
 		DrawHeader();
 
-		if ((NeedRescan || Files.empty()) && !IsFindResult && !IsSpawnElement)
+		if ((NeedRescan || Files.empty()) && !IsFindResult && !IsSpawnElement && !IsParticles)
 		{
 			RescanDirectory();
 			NeedRescan = false;
@@ -65,6 +66,10 @@ void CContentView::Draw()
 			if ((!RootDir.Contains(CurrentDir) && !IsSpawnElement) || IsFindResult)
 			{
 				DrawOtherDir(HorBtnIter, IterCount, NextDir);
+			}
+			else if (IsParticles)
+			{
+				DrawParticlesDir(HorBtnIter, IterCount);
 			}
 			else if (IsSpawnElement)
 			{
@@ -103,7 +108,7 @@ void CContentView::DrawHeader()
 		IsSpawnElement = false;
 		IsFindResult = false;
 		std::memset(FindStr, 0, sizeof(FindStr));
-		ISEPath.clear();
+		VirtualPath.clear();
 	}
 
 	TextHeight = ImGui::CalcTextSize("1").y;
@@ -133,8 +138,13 @@ void CContentView::DrawHeader()
 
 				if (IsSpawnElement)
 				{
-					ISEPath = NewPath;
-					RescanISEDirectory(ISEPath);
+					VirtualPath = NewPath;
+					RescanISEDirectory(VirtualPath);
+				}
+				else if (IsParticles)
+				{
+					VirtualPath = NewPath;
+					RescanParticlesDirectory(VirtualPath);
 				}
 				else
 				{
@@ -148,20 +158,30 @@ void CContentView::DrawHeader()
 		}
 	};
 
-	if (IsSpawnElement)
+	if (IsSpawnElement || IsParticles)
 	{
 		ImGui::SameLine();
-		if (ImGui::Button("Spawn Element"))
+		shared_str DirPartialName = IsSpawnElement ? "Spawn Element" : "Particles";
+
+		if (ImGui::Button(*DirPartialName))
 		{
-			ISEPath.clear();
-			RescanISEDirectory(ISEPath);
+			VirtualPath.clear();
+
+			if (IsSpawnElement)
+			{
+				RescanISEDirectory(VirtualPath);
+			}
+			else
+			{
+				RescanParticlesDirectory(VirtualPath);
+			}
 		}
 		ImGui::SameLine();
 		ImGui::Text("/");
 
-		if (!ISEPath.empty())
+		if (!VirtualPath.empty())
 		{
-			DrawByPathLambda(ISEPath);
+			DrawByPathLambda(VirtualPath);
 		}
 	}
 	else if (CurrentDir != RootDir)
@@ -316,7 +336,7 @@ void CContentView::FindFile()
 
 		if (IsSpawnElement)
 		{
-			RescanISEDirectory(ISEPath);
+			RescanISEDirectory(VirtualPath);
 		}
 		else
 		{
@@ -346,15 +366,15 @@ void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
 {
 	if (DrawItem({ "..", true }, HorBtnIter, IterCount))
 	{
-		if (ISEPath.empty())
+		if (VirtualPath.empty())
 		{
 			IsSpawnElement = false;
-			ISEPath = "";
+			VirtualPath = "";
 			ClearFileList();
 		}
 		else
 		{
-			xr_string Validate = ISEPath;
+			xr_string Validate = VirtualPath;
 			if (Validate.ends_with('\\'))
 			{
 				Validate = Validate.erase(Validate.length() - 1);
@@ -364,11 +384,11 @@ void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
 			if (ISEFS.has_parent_path())
 			{
 				RescanISEDirectory(ISEFS.parent_path().string().data());
-				ISEPath = ISEFS.parent_path().string().data();
+				VirtualPath = ISEFS.parent_path().string().data();
 			}
 			else
 			{
-				ISEPath = "";
+				VirtualPath = "";
 				RescanISEDirectory("");
 			}
 		}
@@ -385,6 +405,54 @@ void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
 			}
 
 			break;
+		}
+	}
+}
+
+void CContentView::DrawParticlesDir(size_t& HorBtnIter, const size_t IterCount)
+{
+	// Draw ".." button to go up one level
+	if (DrawItem({ "..", true }, HorBtnIter, IterCount))
+	{
+		xr_path TryVirtualPath = VirtualPath;
+		if (VirtualPath.empty())
+		{
+			IsParticles = false;
+		}
+		else if (TryVirtualPath.has_parent_path())
+		{
+			VirtualPath = TryVirtualPath.parent_path().string().c_str();
+		}
+		else
+		{
+			VirtualPath = "";
+		}
+
+		ClearFileList();
+
+		if (IsParticles)
+		{
+			RescanParticlesDirectory(VirtualPath);
+		}
+	}
+
+	// Draw particle items
+	for (const FileOptData& Data : Files)
+	{
+		if (DrawItem(Data, HorBtnIter, IterCount))
+		{
+			// Handle particle item double-click
+			if (!Data.IsDir) // Particles are files, not directories
+			{
+				// You might want to implement particle editing functionality here
+				// For example:
+				// ExecCommand(COMMAND_EDIT_PARTICLE, Data.File.xstring());
+			}
+			else
+			{
+				VirtualPath = Data.File;
+				RescanParticlesDirectory(Data.File);
+			}
 		}
 	}
 }
@@ -426,6 +494,11 @@ void CContentView::DrawRootDir(size_t& HorBtnIter, const size_t& IterCount, xr_s
 	FS.update_path(FSEntry, "$game_data$", "");
 	PathClickLambda();
 
+	if (DrawItem({ "Particles", true }, HorBtnIter, IterCount))
+	{
+		RescanParticlesDirectory("");
+	}
+
 	if (DrawItem({ "Spawn Elements", true }, HorBtnIter, IterCount))
 	{
 		RescanISEDirectory("");
@@ -436,12 +509,12 @@ void CContentView::RescanISEDirectory(const xr_string& StartPath)
 {
 	ClearFileList();
 
-	if (!StartPath.empty() && StartPath != ISEPath)
+	if (!StartPath.empty() && StartPath != VirtualPath)
 	{
-		if (!ISEPath.empty() && !ISEPath.ends_with('\\'))
-			ISEPath += "\\";
+		if (!VirtualPath.empty() && !VirtualPath.ends_with('\\'))
+			VirtualPath += "\\";
 
-		ISEPath += StartPath + '\\';
+		VirtualPath += StartPath + '\\';
 	}
 
 	auto TempPath = ScanConfigs(StartPath);
@@ -462,13 +535,138 @@ void CContentView::RescanISEDirectory(const xr_string& StartPath)
 		}
 	}
 
-	if (ISEPath.empty())
+	if (VirtualPath.empty())
 	{
 		Files.push_back({ xr_string(xr_string(ENVMOD_CHOOSE_NAME) + ".ise") , false, ENVMOD_CHOOSE_NAME });
 		Files.push_back({ xr_string(xr_string(RPOINT_CHOOSE_NAME) + ".ise") , false, RPOINT_CHOOSE_NAME });
 	}
 
 	IsSpawnElement = true;
+}
+
+void CContentView::RescanParticlesDirectory(const xr_string& path)
+{
+	ClearFileList();
+
+	xr_vector<xr_string> Directories;
+
+	{
+		PS::PEDIt Pe = RImplementation.PSLibrary.FirstPED();
+		PS::PEDIt Ee = RImplementation.PSLibrary.LastPED();
+		for (; Pe != Ee; Pe++)
+		{
+			xr_path PEPath = *(*Pe)->m_Name;
+			if (PEPath.has_parent_path() && !path.empty())
+			{
+				xr_string ParentPath = PEPath.parent_path().string().c_str();
+				if (ParentPath == path)
+				{
+					FileOptData FileInfo;
+					FileInfo.File = *(*Pe)->m_Name;
+					FileInfo.File.replace_extension("pe");
+
+					Files.push_back(FileInfo);
+				}
+				else if (!path.empty() && ParentPath.contains(path))
+				{
+					auto Iter = std::find(Directories.begin(), Directories.end(), ParentPath);
+					if (Iter == Directories.end())
+					{
+						FileOptData FileInfo;
+						FileInfo.File = ParentPath;
+						FileInfo.IsDir = true;
+						Directories.push_back(ParentPath);
+
+						Files.push_back(FileInfo);
+					}
+				}
+			}
+			else if (path.empty() && !PEPath.has_parent_path())
+			{
+				FileOptData FileInfo;
+				FileInfo.File = *(*Pe)->m_Name;
+				Files.push_back(FileInfo);
+			}
+			else if (path.empty() && PEPath.has_parent_path())
+			{
+				xr_path TestDir = PEPath.parent_path();
+				while (TestDir.has_parent_path())
+				{
+					TestDir = TestDir.parent_path();
+				}
+
+				auto Iter = std::find(Directories.begin(), Directories.end(), TestDir.xfilename());
+				if (Iter == Directories.end())
+				{
+					FileOptData FileInfo;
+					FileInfo.File = TestDir;
+					FileInfo.IsDir = true;
+					Directories.push_back(TestDir.xfilename());
+
+					Files.push_back(FileInfo);
+				}
+			}
+		}
+	}
+	{
+		PS::PGDIt Pg = RImplementation.PSLibrary.FirstPGD();
+		PS::PGDIt Eg = RImplementation.PSLibrary.LastPGD();
+		for (; Pg != Eg; Pg++)
+		{
+			xr_path PEPath = *(*Pg)->m_Name;
+			if (PEPath.has_parent_path() && !path.empty())
+			{
+				xr_string ParentPath = PEPath.parent_path().string().c_str();
+				if (ParentPath == path)
+				{
+					FileOptData FileInfo;
+					FileInfo.File = *(*Pg)->m_Name;
+					FileInfo.File.replace_extension("pg");
+					Files.push_back(FileInfo);
+				}
+				else if (!path.empty() && ParentPath.contains(path))
+				{
+					auto Iter = std::find(Directories.begin(), Directories.end(), ParentPath);
+					if (Iter == Directories.end())
+					{
+						FileOptData FileInfo;
+						FileInfo.File = ParentPath;
+						FileInfo.IsDir = true;
+						Directories.push_back(ParentPath);
+
+						Files.push_back(FileInfo);
+					}
+				}
+			}
+			else if (path.empty() && !PEPath.has_parent_path())
+			{
+				FileOptData FileInfo;
+				FileInfo.File = *(*Pg)->m_Name;
+				Files.push_back(FileInfo);
+			}
+			else if (path.empty() && PEPath.has_parent_path())
+			{
+				xr_path TestDir = PEPath.parent_path();
+				while (TestDir.has_parent_path())
+				{
+					TestDir = TestDir.parent_path();
+				}
+
+				auto Iter = std::find(Directories.begin(), Directories.end(), TestDir.xfilename());
+				if (Iter == Directories.end())
+				{
+					FileOptData FileInfo;
+					FileInfo.File = TestDir;
+					FileInfo.IsDir = true;
+					Directories.push_back(TestDir.xfilename());
+
+					Files.push_back(FileInfo);
+				}
+			}
+		}
+	}
+
+	IsParticles = true;
 }
 
 void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_string& NextDir)
@@ -1212,7 +1410,6 @@ bool CContentView::DrawContext(const xr_path& Path)
 	{
 		return false;
 	}
-
 
 	if (Path.has_extension() && Path.extension().string() == ".object")
 	{
