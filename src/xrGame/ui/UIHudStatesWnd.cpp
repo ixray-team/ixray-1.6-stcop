@@ -124,6 +124,8 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		m_resist_back[ALife::infl_acid] = UIHelper::CreateStatic( xml, "resist_back_acid", this );
 	if (xml.NavigateToNode("resist_back_psi", 0))
 		m_resist_back[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "resist_back_psi", this );
+	if (xml.NavigateToNode("resist_back_starvation", 0))
+		m_resist_back_starvation = UIHelper::CreateStatic(xml, "resist_back_starvation", this);
 	// electra = no has CStatic!!
 
 	if (xml.NavigateToNode("indik_rad", 0))
@@ -134,6 +136,8 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		m_indik[ALife::infl_acid] = UIHelper::CreateStatic( xml, "indik_acid", this );
 	if (xml.NavigateToNode("indik_psi", 0))
 		m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", this );
+	if (xml.NavigateToNode("indicator_starvation", 0))
+		m_ind_starvation = UIHelper::CreateStatic(xml, "indicator_starvation", this);
 
 	m_lanim_name				= xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
 	if (xml.NavigateToNode("static_ammo", 0))
@@ -650,9 +654,35 @@ void CUIHudStatesWnd::UpdateIndicators( CActor* actor )
 	if(m_fake_indicators_update)
 		return;
 
+	UpdateSatiety(actor);
+
 	for ( int i = 0; i < it_max ; ++i ) // it_max = ALife::infl_max_count-1
 	{
 		UpdateIndicatorType( actor, (ALife::EInfluenceType)i );
+	}
+}
+
+void CUIHudStatesWnd::UpdateSatiety(CActor* actor) {
+	float satiety = actor->conditions().GetSatiety();
+	float satiety_critical = actor->conditions().SatietyCritical();
+	float satiety_koef = (satiety - satiety_critical) / (satiety >= satiety_critical ? 1 - satiety_critical : satiety_critical);
+
+	if (m_ind_starvation && satiety_koef > 0.5) 
+	{
+		m_ind_starvation->SetTextureColor(color_rgba(255, 255, 255, 255));
+	}
+	else if (m_ind_starvation)
+	{
+		if (satiety_koef > 0.0f) 
+		{
+			m_ind_starvation->SetTextureColor(color_rgba(0, 255, 0, 255));
+		}
+		else if (satiety_koef > -0.5f) {
+			m_ind_starvation->SetTextureColor(color_rgba(255, 255, 0, 255));
+		}
+		else {
+			m_ind_starvation->SetTextureColor(color_rgba(255, 0, 0, 255));
+		}
 	}
 }
 
