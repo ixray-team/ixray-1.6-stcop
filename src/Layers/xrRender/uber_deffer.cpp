@@ -94,13 +94,23 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	}
 
 	if(bump) {
-		R_ASSERT2(fnameB[0] && xr_strlen(fnameB), C.L_textures[0].c_str());
-		R_ASSERT2(fnameA[0] && xr_strlen(fnameA), C.L_textures[0].c_str());
+
+		string512 errorMsg;
+		xr_sprintf(errorMsg, "Missing bump texture: %s\n"
+			"                         Loading texture: %s", dt, C.L_textures[0].c_str());
+
+		R_ASSERT3(fnameB[0] && xr_strlen(fnameB), errorMsg,  "Missing bump texture\n");
+		R_ASSERT3(fnameA[0] && xr_strlen(fnameA), errorMsg,  "Missing bump texture\n");
 	}
 
-	if(bHasDetailBump) {
-		R_ASSERT2(texDetailBump[0] && xr_strlen(texDetailBump), C.L_textures[0].c_str());
-		R_ASSERT2(texDetailBumpX[0] && xr_strlen(texDetailBumpX), C.L_textures[0].c_str());
+	if(bHasDetailBump)
+	{
+		string512 errorMsg;
+		xr_sprintf(errorMsg, "Missing detail texture: %s\n"
+			"                         Loading texture: %s", dt, C.L_textures[0].c_str());
+
+		R_ASSERT3(texDetailBump[0] && xr_strlen(texDetailBump), errorMsg, "Missing detail texture");
+		R_ASSERT3(texDetailBumpX[0] && xr_strlen(texDetailBumpX), errorMsg, "Missing detail texture");
 	}
 
 #ifdef USE_DX11
