@@ -187,9 +187,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 void CWeaponMagazined::FireStart()
 {
+	u32 CurrentState = GetState();
 	if (!IsMisfire())
 	{
-		u32 CurrentState = GetState();
 
 		bool is_empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
 
@@ -205,12 +205,12 @@ void CWeaponMagazined::FireStart()
 				SwitchState(eFire);
 			}
 		}
-		else if (CurrentState == eIdle)
+		else if (CurrentState == eIdle || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
 		{
-			switch2_Empty();
+			SwitchState(eEmptyClick);
 		}
 	}
-	else
+	else if (CurrentState == eIdle || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
 	{
 		if (H_Parent())
 		{
@@ -223,7 +223,7 @@ void CWeaponMagazined::FireStart()
 				CurrentGameUI()->AddCustomStatic("gun_jammed", true);
 		}
 
-		OnEmptyClick();
+		SwitchState(eEmptyClick);
 	}
 }
 
@@ -555,6 +555,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_FireMode();
 		break;
 	}
+	case eEmptyClick:
+	{
+		switch2_Empty();
+		break;
+	}
 	}
 }
 
@@ -575,6 +580,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eReload:
 		case eIdle:
 		case eSwitchMode:
+		case eEmptyClick:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
@@ -966,6 +972,12 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eIdle:
 			switch2_Idle();
 		break;
+		case eEmptyClick:
+		{
+			m_bBlockEmptyClick = false;
+			SwitchState(eIdle);
+			break;
+		}
 		case eFire:
 		case eFire2:
 		case eShowing:
@@ -1039,24 +1051,67 @@ void CWeaponMagazined::switch2_Fire	()
 
 void CWeaponMagazined::switch2_Empty()
 {
+	auto play_motion_if_exists = [&](const shared_str& motion_name)
+	{
+		if (HudAnimationExist(motion_name))
+		{
+			SetPending(TRUE);
+			m_bBlockEmptyClick = true;
+			PlayHUDMotion(SetCurrentStateAnimation(motion_name), true, eEmptyClick);
+		}
+		else
+		{
+			SwitchState(eIdle);
+		}
+	};
+
+	shared_str name = "anm_fakeshoot";
+
+	if (ParentIsActor())
+	{
+		if (IsZoomed())
+		{
+			name.printf("%s%s", *name, "_aim");
+		}
+
+		if (IsMisfire())
+		{
+			name.printf("%s%s", *name, "_jammed");
+		}
+		else
+		{
+			name.printf("%s%s", *name, "_empty");
+		}
+	}
+
 	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
+
 	if (!isAutoreload)
 	{
 		OnEmptyClick();
+		play_motion_if_exists(name);
 	}
 	else
 	{
 		if (!IsTriStateReload())
 		{
 			if (!TryReload())
+			{
 				OnEmptyClick();
+				play_motion_if_exists(name);
+			}
 			else
+			{
 				inherited::FireEnd();
+			}
 		}
 		else
 		{
 			if (!HaveCartridgeInInventory(1))
+			{
 				OnEmptyClick();
+				play_motion_if_exists(name);
+			}
 			else
 			{
 				inherited::FireEnd();
