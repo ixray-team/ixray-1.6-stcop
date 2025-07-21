@@ -58,16 +58,20 @@ CTorch::~CTorch()
 	glow_render.destroy		();
 }
 
-inline bool CTorch::can_use_dynamic_lights	()
+inline bool CTorch::can_use_dynamic_lights()
 {
 	if (!H_Parent())
-		return				(true);
+	{
+		return true;
+	}
 
-	CInventoryOwner			*owner = smart_cast<CInventoryOwner*>(H_Parent());
+	CInventoryOwner* owner = H_Parent()->cast_inventory_owner();
 	if (!owner)
-		return				(true);
+	{
+		return true;
+	}
 
-	return					(owner->can_use_dynamic_lights());
+	return owner->can_use_dynamic_lights();
 }
 
 void CTorch::Load(LPCSTR section) 
@@ -97,12 +101,12 @@ void CTorch::Switch()
 		if (!m_switched_on)
 		{
 			if (m_sounds.FindSoundItem("soundActivate", false))
-				m_sounds.PlaySound("soundActivate", pA->Position(), NULL, !!pA->HUDview());
+				m_sounds.PlaySound("soundActivate", pA->Position(), nullptr, !!pA->HUDview());
 		}
 		else if (m_switched_on)
 		{
 			if (m_sounds.FindSoundItem("soundDeactivate", false))
-				m_sounds.PlaySound("soundDeactivate", pA->Position(), NULL, !!pA->HUDview());
+				m_sounds.PlaySound("soundDeactivate", pA->Position(), nullptr, !!pA->HUDview());
 		}
 	}
 }
@@ -124,7 +128,8 @@ void CTorch::Switch(bool light_on)
 
 	if (*light_trace_bone) 
 	{
-		IKinematics* pVisual				= smart_cast<IKinematics*>(Visual()); VERIFY(pVisual);
+		IKinematics* pVisual				= PKinematics(Visual());
+		VERIFY(pVisual);
 		u16 bi								= pVisual->LL_BoneID(light_trace_bone);
 
 		pVisual->LL_SetBoneVisible			(bi,	light_on,	TRUE);
@@ -144,7 +149,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	cNameVisual_set			(torch->get_visual());
 
 	R_ASSERT				(!CFORM());
-	R_ASSERT				(smart_cast<IKinematics*>(Visual()));
+	R_ASSERT				(PKinematics(Visual()));
 	collidable.model		= new CCF_Skeleton	(this);
 
 	if (!inherited::net_Spawn(DC))
@@ -153,7 +158,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	bool b_r2				= !!psDeviceFlags.test(rsR2);
 	b_r2					|= !!psDeviceFlags.test(rsR4);
 
-	IKinematics* K			= smart_cast<IKinematics*>(Visual());
+	IKinematics* K			= PKinematics(Visual());
 	CInifile* pUserData		= K->LL_UserData(); 
 
 	if (pUserData != nullptr)
@@ -378,11 +383,13 @@ void CTorch::net_Export(NET_Packet& P)
 
 	BYTE F = 0;
 	F |= (m_switched_on ? eTorchActive : 0);
-	const CActor *pA = smart_cast<const CActor *>(H_Parent());
+	const CActor* pA = H_Parent() ? H_Parent()->cast_actor() : nullptr;
 	if (pA)
 	{
 		if (pA->attached(this))
+		{
 			F |= eAttached;
+		}
 	}
 
 	P.w_u8(F);
@@ -402,9 +409,13 @@ bool  CTorch::can_be_attached		() const
 {
 	const CActor *pA = smart_cast<const CActor *>(H_Parent());
 	if (pA)
+	{
 		return pA->inventory().InSlot(this);
+	}
 	else
+	{
 		return true;
+	}
 }
 
 void CTorch::afterDetach()
@@ -421,7 +432,8 @@ void CTorch::renderable_Render()
 	}
 	else
 	{
-		if (m_switched_on && smart_cast<CActor*>(H_Parent()))
+		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+		if (m_switched_on && pActor)
 			inherited::renderable_Render();
 	}
 }

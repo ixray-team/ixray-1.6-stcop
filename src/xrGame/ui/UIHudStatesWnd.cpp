@@ -415,14 +415,14 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 			m_ui_grenade->SetText(m_item_info.grenade.c_str());
 			
-			CWeaponMagazinedWGrenade* wpn = smart_cast<CWeaponMagazinedWGrenade*>(item);
+			CWeaponMagazinedWGrenade* wpn = item->cast_weapon_magazined_w_grenade();
 			if (wpn && wpn->m_bGrenadeMode)
 				m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_active);
 			else
 				m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_inactive);
 		}
 
-		CWeaponMagazined* wpnm = smart_cast<CWeaponMagazined*>(item);
+		CWeaponMagazined* wpnm = item->cast_weapon_magazined();
 		if (wpnm)
 		{
 			if (wpnm->m_ammoType == 0 && m_ui_weapon_fmj_ammo)
@@ -720,7 +720,7 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 	ALife::EHitType hit_type  = m_zone_hit_type[type];
 	
 	CCustomOutfit* outfit = actor->GetOutfit();
-	CHelmet* helmet = smart_cast<CHelmet*>(actor->inventory().ItemFromSlot(HELMET_SLOT));
+	CHelmet* helmet = actor->GetHelmet();
 	float protect = (outfit) ? outfit->GetDefHitTypeProtection( hit_type ) : 0.0f;
 	protect += (helmet) ? helmet->GetDefHitTypeProtection(hit_type) : 0.0f;
 	protect += actor->GetProtection_ArtefactsOnBelt( hit_type );
@@ -891,7 +891,7 @@ void CUIHudStatesWnd::FakeUpdateIndicatorType(u8 t, float power)
 	ALife::EHitType hit_type  = m_zone_hit_type[type];
 	
 	CCustomOutfit* outfit = actor->GetOutfit();
-	CHelmet* helmet = smart_cast<CHelmet*>(actor->inventory().ItemFromSlot(HELMET_SLOT));
+	CHelmet* helmet = actor->GetHelmet();
 	float protect = (outfit) ? outfit->GetDefHitTypeProtection( hit_type ) : 0.0f;
 	protect += (helmet) ? helmet->GetDefHitTypeProtection(hit_type) : 0.0f;
 	protect += actor->GetProtection_ArtefactsOnBelt( hit_type );

@@ -829,8 +829,10 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 			pParticles->Play		(false);
 		}
 	}
-	if(m_zone_flags.test(eBoltEntranceParticles) && pObject->cast_missile() && smart_cast<CBolt*>(pObject->cast_missile()))
+	if (m_zone_flags.test(eBoltEntranceParticles) && pObject->cast_bolt())
+	{
 		PlayBoltEntranceParticles();
+	}
 }
 
 void CCustomZone::PlayBoltEntranceParticles()
@@ -844,12 +846,8 @@ void CCustomZone::PlayBoltEntranceParticles()
 
 	CParticlesObject* pParticles = nullptr;
 
-	xr_vector<CCF_Shape::shape_def>::iterator it = Shapes.begin();
-	xr_vector<CCF_Shape::shape_def>::iterator it_e = Shapes.end();
-	
-	for(;it!=it_e;++it)
+	for (auto& s : Shapes)
 	{
-		CCF_Shape::shape_def& s = *it;
 		switch (s.type)
 		{
 		case 0: // sphere

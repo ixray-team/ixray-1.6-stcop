@@ -229,64 +229,68 @@ bool CScriptGameObject::critically_wounded		()
 
 bool CScriptGameObject::IsInvBoxEmpty()
 {
-	CInventoryBox* ib = smart_cast<CInventoryBox*>(&object());
-	if(!ib) 
-		return			(false);
-	else
-		return			ib->IsEmpty		();
-}
-
-bool CScriptGameObject::inv_box_closed( bool status, LPCSTR reason )
-{
-	CInventoryBox* ib = smart_cast<CInventoryBox*>(&object());
-	if ( !ib )
+	CInventoryBox* ib = object().cast_inventory_box();
+	if (!ib) 
 	{
-		return			false;
+		return false;
 	}
 	else
 	{
-		ib->set_closed( status, reason );
-		return			true;
+		return ib->IsEmpty();
+	}
+}
+
+bool CScriptGameObject::inv_box_closed(bool status, LPCSTR reason)
+{
+	CInventoryBox* ib = object().cast_inventory_box();
+	if (!ib)
+	{
+		return false;
+	}
+	else
+	{
+		ib->set_closed(status, reason);
+		return true;
 	}
 }
 
 bool CScriptGameObject::inv_box_closed_status()
 {
-	CInventoryBox* ib = smart_cast<CInventoryBox*>(&object());
-	if ( !ib )
+	CInventoryBox* ib = object().cast_inventory_box();
+	if (!ib)
 	{
-		return			false;
+		return false;
 	}
 	else
 	{
-		return			ib->closed();
+		return ib->closed();
 	}
 }
 
-bool CScriptGameObject::inv_box_can_take( bool status )
+bool CScriptGameObject::inv_box_can_take(bool status)
 {
-	CInventoryBox* ib = smart_cast<CInventoryBox*>(&object());
-	if ( !ib )
+	CInventoryBox* ib = object().cast_inventory_box();
+	if (!ib)
 	{
-		return			false;
+		return false;
 	}
 	else
 	{
-		ib->set_can_take( status );
-		return			true;
+		ib->set_can_take(status);
+		return true;
 	}
 }
 
 bool CScriptGameObject::inv_box_can_take_status()
 {
-	CInventoryBox* ib = smart_cast<CInventoryBox*>(&object());
-	if ( !ib )
+	CInventoryBox* ib = object().cast_inventory_box();
+	if (!ib)
 	{
-		return			false;
+		return false;
 	}
 	else
 	{
-		return			ib->can_take();
+		return ib->can_take();
 	}
 }
 

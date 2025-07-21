@@ -1769,23 +1769,19 @@ int CWeapon::GetAmmoCount_forType( shared_str const& ammo_type ) const
 {
 	int res = 0;
 
-	TIItemContainer::iterator itb = m_pInventory->m_belt.begin();
-	TIItemContainer::iterator ite = m_pInventory->m_belt.end();
-	for ( ; itb != ite; ++itb ) 
+	for (PIItem item : m_pInventory->m_belt)
 	{
-		CWeaponAmmo*	pAmmo = smart_cast<CWeaponAmmo*>( *itb );
-		if ( pAmmo && (pAmmo->cNameSect() == ammo_type) )
+		CWeaponAmmo* pAmmo = item->cast_weapon_ammo();
+		if (pAmmo && pAmmo->cNameSect() == ammo_type)
 		{
 			res += pAmmo->m_boxCurr;
 		}
 	}
 
-	itb = m_pInventory->m_ruck.begin();
-	ite = m_pInventory->m_ruck.end();
-	for ( ; itb != ite; ++itb ) 
+	for (PIItem item : m_pInventory->m_ruck)
 	{
-		CWeaponAmmo*	pAmmo = smart_cast<CWeaponAmmo*>( *itb );
-		if ( pAmmo && (pAmmo->cNameSect() == ammo_type) )
+		CWeaponAmmo* pAmmo = item->cast_weapon_ammo();
+		if (pAmmo && pAmmo->cNameSect() == ammo_type)
 		{
 			res += pAmmo->m_boxCurr;
 		}
@@ -2885,9 +2881,9 @@ const CameraRecoil& CWeapon::getCameraZoomRecoil(void) const
 	return zoom_cam_recoil;
 }
 
-bool CWeapon::IsUIForceHiding() const
+bool CWeapon::IsUIForceHiding()
 {
-	auto bino = smart_cast<CWeaponBinoculars*>(this);
+	CWeaponBinoculars* bino = cast_weapon_binoculars();
 
 	if (bino && IsZoomed())
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);

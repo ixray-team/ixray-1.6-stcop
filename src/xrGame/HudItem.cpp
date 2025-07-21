@@ -641,7 +641,7 @@ bool CHudItem::TryPlayAnimIdle()
 {
 	if (MovingAnimAllowedNow())
 	{
-		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
+		CActor* pActor = object().H_Parent()->cast_actor();
 		if (pActor)
 		{
 			u32 state = pActor->GetMovementState(eReal);

@@ -530,10 +530,12 @@ LPCSTR InventoryUtilities::GetGoodwillAsText(CHARACTER_GOODWILL goodwill)
 // (для tutorial)
 void InventoryUtilities::SendInfoToActor(LPCSTR info_id)
 {
-	if (!IsGameTypeSingle()) return;
+	if (!IsGameTypeSingle())
+	{
+		return;
+	}
 	
-	CActor* actor = smart_cast<CActor*>(Level().CurrentEntity());
-	if(actor)
+	if (CActor* actor = Level().CurrentEntity() ? Level().CurrentEntity()->cast_actor() : nullptr)
 	{
 		actor->TransferInfo(info_id, true);
 	}

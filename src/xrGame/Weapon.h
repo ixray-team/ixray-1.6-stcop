@@ -110,7 +110,7 @@ public:
 
 	const CameraRecoil& getCameraRecoil(void) const;
 	const CameraRecoil& getCameraZoomRecoil(void) const;
-	bool IsUIForceHiding() const;
+	bool IsUIForceHiding();
 	bool IsCollimatorInstalled() const;
 	bool IsHudModelForceUnhide() const;
 	bool IsUIForceUnhiding() const;
