@@ -1,60 +1,61 @@
 <?xml version='1.0' encoding="windows-1251"?>
 
 <xml>
-	<specific_character id="actor" no_random = "1">
-		<name>st_actor_name</name>
-		<icon>ui_npc_u_actor</icon>
-		<map_icon x="2" y="5"></map_icon>
+  <specific_character id="actor" no_random = "1">
+    <name>st_actor_name</name>
+    <icon>ui_npc_u_actor</icon>
+    <map_icon x="2" y="5"></map_icon>
 
-		<team>Actor</team>
-		<supplies>
-			[spawn] \n
-			novice_outfit \n
-			device_torch \n
-			wpn_binoc \n
+    <team>Actor</team>
+    <supplies>
+      [spawn] \n
+      wpn_ak74 \n
+      novice_outfit \n
+      device_torch \n
+      wpn_binoc \n
     </supplies>
 
     <money min="200"  max="200"  infinitive="0"/>
 
-		<class>actor</class>
-		<community>actor</community>
+    <class>actor</class>
+    <community>actor</community>
 
-		<rank>0</rank>
-		<reputation>0</reputation>
-		<visual>actors\stalker_neutral\stalker_neutral_1</visual>
-	</specific_character>
+    <rank>0</rank>
+    <reputation>0</reputation>
+    <visual>actors\stalker_neutral\stalker_neutral_1</visual>
+  </specific_character>
 
-	<specific_character id="mp_actor" no_random = "1">
-		<name>actor_name</name>
-		<icon>ui_npc_u_actor</icon>
-		<map_icon x="2" y="5"></map_icon>
+  <specific_character id="mp_actor" no_random = "1">
+    <name>actor_name</name>
+    <icon>ui_npc_u_actor</icon>
+    <map_icon x="2" y="5"></map_icon>
 
-		<team>mp_actor</team>
-		<supplies/>
+    <team>mp_actor</team>
+    <supplies/>
 
-		<class>mp_actor</class>
-		<community>actor</community>
+    <class>mp_actor</class>
+    <community>actor</community>
 
-		<rank>00</rank>
-		<reputation>0</reputation>
-		<visual>actors\stalker_hero\stalker_hero_1</visual>
-	</specific_character>
+    <rank>00</rank>
+    <reputation>0</reputation>
+    <visual>actors\stalker_hero\stalker_hero_1</visual>
+  </specific_character>
 
-	<specific_character id="stalker_general_default" team_default = "1">
-		<name>GENERATE_NAME_stalker</name>
-		<icon>ui_npc_u_neutral_2_face_1</icon>
-		<map_icon x="1" y="0"></map_icon>
-		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+  <specific_character id="stalker_general_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_neutral_2_face_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
 
-		<class>Stalker_general</class>
-		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <class>Stalker_general</class>
+    <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
     <snd_config>characters_voice\human_01\stalker\</snd_config>
 
     <rank>200</rank>
-		<reputation>0</reputation>
+    <reputation>0</reputation>
 
-		<visual>actors\stalker_hero\stalker_hero_1</visual>
-		<supplies>
+    <visual>actors\stalker_hero\stalker_hero_1</visual>
+    <supplies>
       [spawn] \n
       wpn_beretta = 1 \n
       device_torch \n
@@ -70,23 +71,23 @@
 #include "gameplay\character_criticals_4.xml"
 
 #include "gameplay\character_dialogs.xml"
-	</specific_character>
+  </specific_character>
 
-	<specific_character id="stalker_dolg_default" team_default = "1">
-		<name>GENERATE_NAME_stalker</name>
-		<icon>ui_npc_u_dolg_2_face_1</icon>
-		<map_icon x="1" y="0"></map_icon>
-		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+  <specific_character id="stalker_dolg_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_dolg_2_face_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
 
-		<class>Stalker_dolg</class>
-		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <class>Stalker_dolg</class>
+    <community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
     <snd_config>characters_voice\human_01\dolg\</snd_config>
 
-		<rank>450</rank>
-		<reputation>0</reputation>
+    <rank>450</rank>
+    <reputation>0</reputation>
 
-		<visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
-		<supplies>
+    <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+    <supplies>
       [spawn] \n
       wpn_beretta = 1 \n
       device_torch \n
@@ -103,23 +104,23 @@
 #include "gameplay\character_criticals_4.xml"
 
 #include "gameplay\character_dialogs.xml"
-	</specific_character>
+  </specific_character>
 
-	<specific_character id="stalker_freedom_default" team_default = "1">
-		<name>GENERATE_NAME_stalker</name>
-		<icon>ui_npc_u_freedom_2_face_1</icon>
-		<map_icon x="1" y="0"></map_icon>
-		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+  <specific_character id="stalker_freedom_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_2_face_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
 
-		<class>Stalker_freedom</class>
-		<community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <class>Stalker_freedom</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
     <snd_config>characters_voice\human_01\freedom\</snd_config>
 
-		<rank>300</rank>
-		<reputation>0</reputation>
+    <rank>300</rank>
+    <reputation>0</reputation>
 
-		<visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
-		<supplies>
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
+    <supplies>
       [spawn] \n
       wpn_beretta = 1 \n
       device_torch \n
@@ -135,23 +136,23 @@
 #include "gameplay\character_criticals_4.xml"
 
 #include "gameplay\character_dialogs.xml"
-	</specific_character>
+  </specific_character>
 
-	<specific_character id="stalker_bandit_default" team_default = "1">
-		<name>GENERATE_NAME_stalker</name>
-		<icon>ui_npc_u_bandit_3_face_1</icon>
-		<map_icon x="1" y="0"></map_icon>
-		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+  <specific_character id="stalker_bandit_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_bandit_3_face_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
 
-		<class>Stalker_bandit</class>
-		<community>bandit</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <class>Stalker_bandit</class>
+    <community>bandit</community> <terrain_sect>stalker_terrain</terrain_sect>
     <snd_config>characters_voice\human_01\bandit\</snd_config>
 
-		<rank>150</rank>
-		<reputation>0</reputation>
+    <rank>150</rank>
+    <reputation>0</reputation>
 
-		<visual>actors\stalker_bandit\stalker_bandit_1</visual>
-		<supplies>
+    <visual>actors\stalker_bandit\stalker_bandit_1</visual>
+    <supplies>
       [spawn] \n
       wpn_beretta = 1 \n
       device_torch \n
@@ -199,7 +200,7 @@
 #include "gameplay\character_criticals_4.xml"
 
 #include "gameplay\character_dialogs.xml"
-	</specific_character>
+  </specific_character>
 
   <specific_character id="sim_duty_rewarder" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
@@ -231,12 +232,12 @@
 #include "gameplay\character_criticals_4.xml"
 
 #include "gameplay\character_dialogs.xml"
-	  <actor_dialog>tm_faction_task</actor_dialog>
+    <actor_dialog>tm_faction_task</actor_dialog>
     <actor_dialog>tm_reward_task</actor_dialog>
   </specific_character>
 
-			<!-- Duty -->
-			<!-- duty novice -->
+      <!-- Duty -->
+      <!-- duty novice -->
   <specific_character id="sim_default_duty_0_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_dolg_1</icon>
@@ -249,7 +250,7 @@
 
     <rank>300</rank>
     <reputation>0</reputation>
-	<money min="500" max="1500" infinitive="0"/>
+  <money min="500" max="1500" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_1</visual>
     <supplies>
       [spawn] \n
@@ -276,7 +277,7 @@
 
     <rank>300</rank>
     <reputation>0</reputation>
-	<money min="500" max="1500" infinitive="0"/>
+  <money min="500" max="1500" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_1</visual>
     <supplies>
       [spawn] \n
@@ -291,7 +292,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- duty expirienced -->
+    <!-- duty expirienced -->
   <specific_character id="sim_default_duty_1_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_dolg_2_mask</icon>
@@ -304,7 +305,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="3000" infinitive="0"/>
+  <money min="1000" max="3000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
     <supplies>
       [spawn] \n
@@ -334,7 +335,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="3000" infinitive="0"/>
+  <money min="1000" max="3000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
     <supplies>
       [spawn] \n
@@ -364,7 +365,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="3000" infinitive="0"/>
+  <money min="1000" max="3000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_2</visual>
     <supplies>
       [spawn] \n
@@ -394,7 +395,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="3000" infinitive="0"/>
+  <money min="1000" max="3000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_2</visual>
     <supplies>
       [spawn] \n
@@ -425,7 +426,7 @@
 
     <rank>600</rank>
     <reputation>0</reputation>
-	<money min="1500" max="3500" infinitive="0"/>
+  <money min="1500" max="3500" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
     <supplies>
       [spawn] \n
@@ -455,7 +456,7 @@
 
     <rank>600</rank>
     <reputation>0</reputation>
-	<money min="1500" max="3500" infinitive="0"/>
+  <money min="1500" max="3500" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
     <supplies>
       [spawn] \n
@@ -485,7 +486,7 @@
 
     <rank>600</rank>
     <reputation>0</reputation>
-	<money min="1500" max="3500" infinitive="0"/>
+  <money min="1500" max="3500" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_2</visual>
     <supplies>
       [spawn] \n
@@ -515,7 +516,7 @@
 
     <rank>600</rank>
     <reputation>0</reputation>
-	<money min="1500" max="3500" infinitive="0"/>
+  <money min="1500" max="3500" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_2</visual>
     <supplies>
       [spawn] \n
@@ -533,7 +534,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-			<!-- duty veteran -->
+      <!-- duty veteran -->
   <specific_character id="sim_default_duty_3_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_dolg_3</icon>
@@ -546,7 +547,7 @@
 
     <rank>750</rank>
     <reputation>0</reputation>
-	<money min="2500" max="5000" infinitive="0"/>
+  <money min="2500" max="5000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_3</visual>
     <supplies>
       [spawn] \n
@@ -576,7 +577,7 @@
 
     <rank>750</rank>
     <reputation>0</reputation>
-	<money min="2500" max="5000" infinitive="0"/>
+  <money min="2500" max="5000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_3</visual>
     <supplies>
       [spawn] \n
@@ -594,7 +595,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- duty master -->
+    <!-- duty master -->
   <specific_character id="sim_default_duty_4_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_dolg_4</icon>
@@ -607,7 +608,7 @@
 
     <rank>900</rank>
     <reputation>0</reputation>
-	<money min="5000" max="10000" infinitive="0"/>
+  <money min="5000" max="10000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_4</visual>
     <supplies>
       [spawn] \n
@@ -637,7 +638,7 @@
 
     <rank>900</rank>
     <reputation>0</reputation>
-	<money min="5000" max="10000" infinitive="0"/>
+  <money min="5000" max="10000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_4</visual>
     <supplies>
       [spawn] \n
@@ -667,7 +668,7 @@
 
     <rank>900</rank>
     <reputation>0</reputation>
-	<money min="5000" max="10000" infinitive="0"/>
+  <money min="5000" max="10000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_4</visual>
     <supplies>
       [spawn] \n
@@ -697,7 +698,7 @@
 
     <rank>900</rank>
     <reputation>0</reputation>
-	<money min="5000" max="10000" infinitive="0"/>
+  <money min="5000" max="10000" infinitive="0"/>
     <visual>actors\stalker_dolg\stalker_dolg_4</visual>
     <supplies>
       [spawn] \n
@@ -714,7 +715,7 @@
 #include "gameplay\character_criticals_4.xml"
 #include "gameplay\character_dialogs.xml"
   </specific_character>
-			<!-- freedom novice -->
+      <!-- freedom novice -->
   <specific_character id="sim_default_freedom_0_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_freedom_1</icon>
@@ -727,7 +728,7 @@
 
     <rank>300</rank>
     <reputation>0</reputation>
-	<money min="500" max="1000" infinitive="0"/>
+  <money min="500" max="1000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_1</visual>
     <supplies>
       [spawn] \n
@@ -754,7 +755,7 @@
 
     <rank>300</rank>
     <reputation>0</reputation>
-	<money min="500" max="1000" infinitive="0"/>
+  <money min="500" max="1000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_1</visual>
     <supplies>
       [spawn] \n
@@ -781,7 +782,7 @@
 
     <rank>300</rank>
     <reputation>0</reputation>
-	<money min="500" max="1000" infinitive="0"/>
+  <money min="500" max="1000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <supplies>
       [spawn] \n
@@ -808,11 +809,11 @@
 
     <rank>300</rank>
     <reputation>0</reputation>
-	<money min="500" max="1000" infinitive="0"/>
+  <money min="500" max="1000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <supplies>
       [spawn] \n
-	  device_torch \n
+    device_torch \n
       wpn_mp5 \n
       wpn_beretta = 1 \n
       ammo_9x19_fmj = 1 \n
@@ -824,7 +825,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-			<!-- freedom expirienced -->
+      <!-- freedom expirienced -->
   <specific_character id="sim_default_freedom_1_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_freedom_2_mask</icon>
@@ -837,7 +838,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="2000" infinitive="0"/>
+  <money min="1000" max="2000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <supplies>
       [spawn] \n
@@ -867,7 +868,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="2000" infinitive="0"/>
+  <money min="1000" max="2000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <supplies>
       [spawn] \n
@@ -897,7 +898,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="2000" infinitive="0"/>
+  <money min="1000" max="2000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2</visual>
     <supplies>
       [spawn] \n
@@ -927,7 +928,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="2000" infinitive="0"/>
+  <money min="1000" max="2000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2</visual>
     <supplies>
       [spawn] \n
@@ -945,7 +946,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-			<!-- freedom expirienced 2 -->
+      <!-- freedom expirienced 2 -->
   <specific_character id="sim_default_freedom_2_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_freedom_2_mask</icon>
@@ -958,7 +959,7 @@
 
     <rank>600</rank>
     <reputation>0</reputation>
-	<money min="1500" max="2500" infinitive="0"/>
+  <money min="1500" max="2500" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <supplies>
       [spawn] \n
@@ -988,7 +989,7 @@
 
     <rank>600</rank>
     <reputation>0</reputation>
-	<money min="1500" max="2500" infinitive="0"/>
+  <money min="1500" max="2500" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <supplies>
       [spawn] \n
@@ -1018,7 +1019,7 @@
 
     <rank>600</rank>
     <reputation>0</reputation>
-	<money min="1500" max="2500" infinitive="0"/>
+  <money min="1500" max="2500" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2</visual>
     <supplies>
       [spawn] \n
@@ -1048,7 +1049,7 @@
 
     <rank>600</rank>
     <reputation>0</reputation>
-	<money min="1500" max="2500" infinitive="0"/>
+  <money min="1500" max="2500" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_2</visual>
     <supplies>
       [spawn] \n
@@ -1066,7 +1067,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- freedom veteran -->
+    <!-- freedom veteran -->
   <specific_character id="sim_default_freedom_3_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_freedom_3</icon>
@@ -1079,7 +1080,7 @@
 
     <rank>750</rank>
     <reputation>0</reputation>
-	<money min="2500" max="5000" infinitive="0"/>
+  <money min="2500" max="5000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_3</visual>
     <supplies>
       [spawn] \n
@@ -1109,7 +1110,7 @@
 
     <rank>750</rank>
     <reputation>0</reputation>
-	<money min="2500" max="5000" infinitive="0"/>
+  <money min="2500" max="5000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_3</visual>
     <supplies>
       [spawn] \n
@@ -1139,7 +1140,7 @@
 
     <rank>750</rank>
     <reputation>0</reputation>
-	<money min="2500" max="5000" infinitive="0"/>
+  <money min="2500" max="5000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_3</visual>
     <supplies>
       [spawn] \n
@@ -1169,7 +1170,7 @@
 
     <rank>750</rank>
     <reputation>0</reputation>
-	<money min="2500" max="5000" infinitive="0"/>
+  <money min="2500" max="5000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_3</visual>
     <supplies>
       [spawn] \n
@@ -1187,7 +1188,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- freedom master -->
+    <!-- freedom master -->
   <specific_character id="sim_default_freedom_4_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_freedom_3</icon>
@@ -1200,7 +1201,7 @@
 
     <rank>900</rank>
     <reputation>0</reputation>
-	<money min="5000" max="10000" infinitive="0"/>
+  <money min="5000" max="10000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_3</visual>
     <supplies>
       [spawn] \n
@@ -1230,7 +1231,7 @@
 
     <rank>900</rank>
     <reputation>0</reputation>
-	<money min="5000" max="10000" infinitive="0"/>
+  <money min="5000" max="10000" infinitive="0"/>
     <visual>actors\stalker_freedom\stalker_freedom_4</visual>
     <supplies>
       [spawn] \n
@@ -1248,7 +1249,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- bandit novice -->
+    <!-- bandit novice -->
   <specific_character id="sim_default_bandit_0_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_bandit_1</icon>
@@ -1261,7 +1262,7 @@
 
     <rank>150</rank>
     <reputation>0</reputation>
-	<money min="250" max="1750" infinitive="0"/>
+  <money min="250" max="1750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_1</visual>
     <supplies>
       [spawn] \n
@@ -1288,7 +1289,7 @@
 
     <rank>150</rank>
     <reputation>0</reputation>
-	<money min="250" max="1750" infinitive="0"/>
+  <money min="250" max="1750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_1</visual>
     <supplies>
       [spawn] \n
@@ -1314,7 +1315,7 @@
 
     <rank>150</rank>
     <reputation>0</reputation>
-	<money min="250" max="1750" infinitive="0"/>
+  <money min="250" max="1750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_1</visual>
     <supplies>
       [spawn] \n
@@ -1329,7 +1330,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-	<!-- bandit expirienced -->
+  <!-- bandit expirienced -->
   <specific_character id="sim_default_bandit_1_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_bandit_3</icon>
@@ -1342,7 +1343,7 @@
 
     <rank>200</rank>
     <reputation>0</reputation>
-	<money min="250" max="1750" infinitive="0"/>
+  <money min="250" max="1750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_3</visual>
     <supplies>
       [spawn] \n
@@ -1370,7 +1371,7 @@
 
     <rank>200</rank>
     <reputation>0</reputation>
-	<money min="250" max="1750" infinitive="0"/>
+  <money min="250" max="1750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_3</visual>
     <supplies>
       [spawn] \n
@@ -1400,7 +1401,7 @@
 
     <rank>200</rank>
     <reputation>0</reputation>
-	<money min="250" max="1750" infinitive="0"/>
+  <money min="250" max="1750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_3_mask</visual>
     <supplies>
       [spawn] \n
@@ -1418,7 +1419,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- bandit expirienced 2 -->
+    <!-- bandit expirienced 2 -->
   <specific_character id="sim_default_bandit_2_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_bandit_3</icon>
@@ -1431,7 +1432,7 @@
 
     <rank>250</rank>
     <reputation>0</reputation>
-	<money min="500" max="1750" infinitive="0"/>
+  <money min="500" max="1750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_3</visual>
     <supplies>
       [spawn] \n
@@ -1461,7 +1462,7 @@
 
     <rank>250</rank>
     <reputation>0</reputation>
-	<money min="500" max="1750" infinitive="0"/>
+  <money min="500" max="1750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_3_mask</visual>
     <supplies>
       [spawn] \n
@@ -1490,7 +1491,7 @@
 
     <rank>250</rank>
     <reputation>0</reputation>
-	<money min="500" max="1750" infinitive="0"/>
+  <money min="500" max="1750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_4</visual>
     <supplies>
       [spawn] \n
@@ -1508,7 +1509,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
   
-		<!-- bandit veteran -->
+    <!-- bandit veteran -->
   <specific_character id="sim_default_bandit_3_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_bandit_2</icon>
@@ -1521,7 +1522,7 @@
 
     <rank>350</rank>
     <reputation>0</reputation>
-	<money min="1000" max="2750" infinitive="0"/>
+  <money min="1000" max="2750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_2</visual>
     <supplies>
       [spawn] \n
@@ -1551,7 +1552,7 @@
 
     <rank>350</rank>
     <reputation>0</reputation>
-	<money min="1000" max="2750" infinitive="0"/>
+  <money min="1000" max="2750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_2</visual>
     <supplies>
       [spawn] \n
@@ -1569,7 +1570,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- bandit master -->
+    <!-- bandit master -->
   <specific_character id="sim_default_bandit_4_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_bandit_2</icon>
@@ -1582,7 +1583,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="2750" infinitive="0"/>
+  <money min="1000" max="2750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_2</visual>
     <supplies>
       [spawn] \n
@@ -1612,7 +1613,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="1000" max="2750" infinitive="0"/>
+  <money min="1000" max="2750" infinitive="0"/>
     <visual>actors\stalker_bandit\stalker_bandit_2</visual>
     <supplies>
       [spawn] \n
@@ -1630,7 +1631,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-	<!-- renegade novice -->
+  <!-- renegade novice -->
   <specific_character id="sim_default_renegade_0_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_bandit_1</icon>
@@ -1684,7 +1685,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- renegade expirienced -->
+    <!-- renegade expirienced -->
   <specific_character id="sim_default_renegade_1_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_bandit_1</icon>
@@ -1800,7 +1801,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- bandit expirienced 2 -->
+    <!-- bandit expirienced 2 -->
   <specific_character id="sim_default_renegade_2_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_bandit_3</icon>
@@ -1919,7 +1920,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- merc novice -->
+    <!-- merc novice -->
   <specific_character id="sim_default_killer_0_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_merc_2</icon>
@@ -1976,7 +1977,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- merc expirienced -->
+    <!-- merc expirienced -->
   <specific_character id="sim_default_killer_1_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_merc_2</icon>
@@ -2037,7 +2038,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- merc expirienced 2 -->
+    <!-- merc expirienced 2 -->
   <specific_character id="sim_default_killer_2_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_merc_2</icon>
@@ -2098,7 +2099,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- merc veteran -->
+    <!-- merc veteran -->
   <specific_character id="sim_default_killer_3_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_merc_2</icon>
@@ -2159,7 +2160,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- merc master -->
+    <!-- merc master -->
   <specific_character id="sim_default_killer_4_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_merc_4</icon>
@@ -2220,7 +2221,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- csky novice -->
+    <!-- csky novice -->
   <specific_character id="sim_default_csky_0_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_nebo_1</icon>
@@ -2335,7 +2336,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- csky expirienced -->
+    <!-- csky expirienced -->
   <specific_character id="sim_default_csky_1_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_nebo_1</icon>
@@ -2457,7 +2458,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- csky expirienced 2 -->
+    <!-- csky expirienced 2 -->
   <specific_character id="sim_default_csky_2_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_nebo_1</icon>
@@ -2562,7 +2563,7 @@
     <rank>500</rank>
     <reputation>0</reputation>
 
-	<visual>actors\stalker_nebo\stalker_nebo_2</visual>
+  <visual>actors\stalker_nebo\stalker_nebo_2</visual>
     <supplies>
       [spawn] \n
       device_torch \n
@@ -2579,7 +2580,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- csky veteran -->
+    <!-- csky veteran -->
   <specific_character id="sim_default_csky_3_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_nebo_2</icon>
@@ -2640,7 +2641,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- csky master -->
+    <!-- csky master -->
   <specific_character id="sim_default_csky_4_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_4</icon>
@@ -2701,7 +2702,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-			<!-- stalker novice -->
+      <!-- stalker novice -->
   <specific_character id="sim_default_stalker_0_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_1</icon>
@@ -2811,7 +2812,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- stalker expirienced -->
+    <!-- stalker expirienced -->
   <specific_character id="sim_default_stalker_1_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_1</icon>
@@ -2931,7 +2932,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- stalker expirienced 2 -->
+    <!-- stalker expirienced 2 -->
   <specific_character id="sim_default_stalker_2_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_2_mask</icon>
@@ -3051,7 +3052,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- stalker veteran -->
+    <!-- stalker veteran -->
   <specific_character id="sim_default_stalker_3_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_2</icon>
@@ -3112,7 +3113,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- stalker master -->
+    <!-- stalker master -->
   <specific_character id="sim_default_stalker_4_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_4</icon>
@@ -3129,7 +3130,7 @@
     <visual>actors\stalker_neutral\stalker_neutral_4</visual>
     <supplies>
       [spawn] \n
- 	  device_torch \n
+    device_torch \n
       wpn_vintorez = 1 \n
       ammo_9x39_ap = 1 \n
       wpn_colt1911_up2 \n
@@ -3159,7 +3160,7 @@
     <visual>actors\stalker_neutral\stalker_neutral_4</visual>
     <supplies>
       [spawn] \n
- 	  device_torch \n
+    device_torch \n
       wpn_spas12 = 1 \n
       ammo_12x76_dart = 1 \n
       wpn_fort \n
@@ -3173,7 +3174,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
   
-		<!-- military novice -->
+    <!-- military novice -->
   <specific_character id="sim_default_military_0_default" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_soldier_1</icon>
@@ -3190,7 +3191,7 @@
     <visual>actors\stalker_soldier\stalker_soldier_1</visual>
     <supplies>
       [spawn] \n
-	  device_torch \n
+    device_torch \n
       wpn_ak74u \n
       ammo_5.45x39_fmj = 1 \n
       wpn_pm \n
@@ -3203,7 +3204,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- military expirienced -->
+    <!-- military expirienced -->
   <specific_character id="sim_default_military_1_default" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_soldier_1</icon>
@@ -3220,10 +3221,10 @@
     <visual>actors\stalker_soldier\stalker_soldier_1</visual>
     <supplies>
       [spawn] \n
-	  device_torch \n
+    device_torch \n
       wpn_ak74u \n
       ammo_5.45x39_fmj = 1 \n
-	  wpn_pm \n
+    wpn_pm \n
       ammo_9x18_fmj = 1 \n
       grenade_rgd5 = 1 \n
 #include "gameplay\character_items.xml"
@@ -3235,7 +3236,7 @@
   </specific_character>
 
 
-	<!-- military expirienced 2 -->
+  <!-- military expirienced 2 -->
   <specific_character id="sim_default_military_2_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_soldier_2</icon>
@@ -3252,7 +3253,7 @@
     <visual>actors\stalker_soldier\stalker_soldier_2</visual>
     <supplies>
       [spawn] \n
-	  device_torch \n
+    device_torch \n
       wpn_ak74 \n
       ammo_5.45x39_ap = 1 \n
       wpn_fort \n
@@ -3282,7 +3283,7 @@
     <visual>actors\stalker_soldier\stalker_soldier_2</visual>
     <supplies>
       [spawn] \n
-	  device_torch \n
+    device_torch \n
       wpn_abakan \n
       ammo_5.45x39_fmj = 1 \n
       wpn_fort \n
@@ -3296,7 +3297,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- military veteran -->
+    <!-- military veteran -->
   <specific_character id="sim_default_military_3_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_soldier_3</icon>
@@ -3313,7 +3314,7 @@
     <visual>actors\stalker_soldier\stalker_soldier_3</visual>
     <supplies>
       [spawn] \n
-	  device_torch \n
+    device_torch \n
       wpn_abakan \n
       ammo_5.45x39_ap = 1 \n
       wpn_fort \n
@@ -3327,7 +3328,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- military master -->
+    <!-- military master -->
   <specific_character id="sim_default_military_4_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_soldier_4</icon>
@@ -3344,7 +3345,7 @@
     <visual>actors\stalker_soldier\stalker_soldier_4</visual>
     <supplies>
       [spawn] \n
-	  device_torch \n
+    device_torch \n
       wpn_groza \n
       ammo_9x39_ap = 1 \n
       wpn_fort \n
@@ -3374,7 +3375,7 @@
     <visual>actors\stalker_soldier\stalker_soldier_4</visual>
     <supplies>
       [spawn] \n
-	  device_torch \n
+    device_torch \n
       wpn_val \n
       ammo_9x39_ap = 1 \n
       wpn_fort \n
@@ -3404,7 +3405,7 @@
     <visual>actors\stalker_soldier\stalker_soldier_4</visual>
     <supplies>
       [spawn] \n
-	  device_torch \n
+    device_torch \n
       wpn_abakan \n
       ammo_5.45x39_ap = 1 \n
       wpn_fort \n
@@ -3418,7 +3419,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
   
-		<!-- military sniper -->
+    <!-- military sniper -->
   <specific_character id="sim_default_military_3_default_sniper" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_soldier_3</icon>
@@ -3449,7 +3450,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- monolith novice -->
+    <!-- monolith novice -->
  <specific_character id="sim_default_monolith_0_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_monolith_1</icon>
@@ -3506,7 +3507,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- monolith expirienced -->
+    <!-- monolith expirienced -->
   <specific_character id="sim_default_monolith_1_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_monolith_2</icon>
@@ -3565,7 +3566,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- monolith expirienced 2 -->
+    <!-- monolith expirienced 2 -->
   <specific_character id="sim_default_monolith_2_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_monolith_2</icon>
@@ -3594,7 +3595,7 @@
     </supplies>
 #include "gameplay\character_criticals_4.xml"
 #include "gameplay\character_dialogs.xml"
-	</specific_character>
+  </specific_character>
 
   <specific_character id="sim_default_monolith_2_default_1" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
@@ -3624,9 +3625,9 @@
     </supplies>
 #include "gameplay\character_criticals_4.xml"
 #include "gameplay\character_dialogs.xml"
-	</specific_character>
+  </specific_character>
 
-		<!-- monolith veteran -->
+    <!-- monolith veteran -->
   <specific_character id="sim_default_monolith_3_default" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_monolith_3</icon>
@@ -3657,7 +3658,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- monolith master -->
+    <!-- monolith master -->
   <specific_character id="sim_default_monolith_4_default" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_monolith_4</icon>
@@ -3689,7 +3690,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- digger novice -->
+    <!-- digger novice -->
   <specific_character id="sim_default_digger_0_default" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_1</icon>
@@ -3718,7 +3719,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- digger expirienced -->
+    <!-- digger expirienced -->
   <specific_character id="sim_default_digger_1_default" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_2_mask</icon>
@@ -3747,7 +3748,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- digger expirienced 2 -->
+    <!-- digger expirienced 2 -->
   <specific_character id="sim_default_digger_2_default" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_2</icon>
@@ -3775,7 +3776,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- digger veteran -->
+    <!-- digger veteran -->
   <specific_character id="sim_default_digger_3_default" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_2</icon>
@@ -3803,7 +3804,7 @@
 #include "gameplay\character_dialogs.xml"
   </specific_character>
 
-		<!-- digger master -->
+    <!-- digger master -->
   <specific_character id="sim_default_digger_4_default" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_neutral_2</icon>
@@ -3832,27 +3833,27 @@
   </specific_character>
   
 <specific_character id="sim_default_zombied_1_default_0" team_default = "1">
-		<name>GENERATE_NAME_stalker</name>
-		<icon>ui_npc_u_zombied_1</icon>
-		<map_icon x="1" y="0"></map_icon>
-		<bio></bio>
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_zombied_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
 
-		<class>sim_default_zombied_1</class>
-		<community>zombied</community> 
-		<snd_config>characters_voice\human_02\zombied\</snd_config>
+    <class>sim_default_zombied_1</class>
+    <community>zombied</community> 
+    <snd_config>characters_voice\human_02\zombied\</snd_config>
 
-		<rank>400</rank>
-		<reputation>0</reputation>
+    <rank>400</rank>
+    <reputation>0</reputation>
 
-		<visual>actors\stalker_zombied\stalker_zombied_1</visual>
-		<crouch_type>0</crouch_type>
-		<supplies>
-			[spawn]\n
-			 device_torch \n
-      		wpn_toz34 \n
-      		ammo_12x76_zhekan = 1 \n
-      		wpn_pm \n
-      		ammo_9x18_fmj = 1 \n
+    <visual>actors\stalker_zombied\stalker_zombied_1</visual>
+    <crouch_type>0</crouch_type>
+    <supplies>
+      [spawn]\n
+       device_torch \n
+          wpn_toz34 \n
+          ammo_12x76_zhekan = 1 \n
+          wpn_pm \n
+          ammo_9x18_fmj = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -3861,25 +3862,25 @@
 #include "gameplay\character_dialogs.xml"
 </specific_character>
 <specific_character id="sim_default_zombied_1_default_1" team_default = "1">
-		<name>GENERATE_NAME_stalker</name>
-		<icon>ui_npc_u_zombied_1</icon>
-		<map_icon x="1" y="0"></map_icon>
-		<bio></bio>
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_zombied_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
 
-		<class>sim_default_zombied_1</class>
-		<community>zombied</community> 
-		<snd_config>characters_voice\human_02\zombied\</snd_config>
+    <class>sim_default_zombied_1</class>
+    <community>zombied</community> 
+    <snd_config>characters_voice\human_02\zombied\</snd_config>
 
-		<rank>400</rank>
-		<reputation>0</reputation>
+    <rank>400</rank>
+    <reputation>0</reputation>
 
-		<visual>actors\stalker_zombied\stalker_zombied_1</visual>
-		<crouch_type>0</crouch_type>
-		<supplies>
-			[spawn]\n
-			device_torch \n
-      		wpn_bm16 \n
-      		ammo_12x70_buck = 1 \n
+    <visual>actors\stalker_zombied\stalker_zombied_1</visual>
+    <crouch_type>0</crouch_type>
+    <supplies>
+      [spawn]\n
+      device_torch \n
+          wpn_bm16 \n
+          ammo_12x70_buck = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -3889,27 +3890,27 @@
 </specific_character>
   
 <specific_character id="sim_default_zombied_2_default_0" team_default = "1">
-		<name>GENERATE_NAME_stalker</name>
-		<icon>ui_npc_u_zombied_2</icon>
-		<map_icon x="1" y="0"></map_icon>
-		<bio></bio>
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_zombied_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
 
-		<class>sim_default_zombied_2</class>
-		<community>zombied</community> 
-		<snd_config>characters_voice\human_02\zombied\</snd_config>
+    <class>sim_default_zombied_2</class>
+    <community>zombied</community> 
+    <snd_config>characters_voice\human_02\zombied\</snd_config>
 
-		<rank>400</rank>
-		<reputation>0</reputation>
+    <rank>400</rank>
+    <reputation>0</reputation>
 
-		<visual>actors\stalker_zombied\stalker_zombied_2</visual>
-		<crouch_type>0</crouch_type>
-		<supplies>
-			[spawn]\n
-			device_torch \n
-      		wpn_mp5 \n
-      		ammo_9x19_fmj = 1 \n
-      		wpn_pm \n
-      		ammo_9x18_fmj = 1 \n
+    <visual>actors\stalker_zombied\stalker_zombied_2</visual>
+    <crouch_type>0</crouch_type>
+    <supplies>
+      [spawn]\n
+      device_torch \n
+          wpn_mp5 \n
+          ammo_9x19_fmj = 1 \n
+          wpn_pm \n
+          ammo_9x18_fmj = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -3919,27 +3920,27 @@
 </specific_character>
 
 <specific_character id="sim_default_zombied_2_default_1" team_default = "1">
-		<name>GENERATE_NAME_stalker</name>
-		<icon>ui_npc_u_zombied_2</icon>
-		<map_icon x="1" y="0"></map_icon>
-		<bio></bio>
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_zombied_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
 
-		<class>sim_default_zombied_2</class>
-		<community>zombied</community> 
-		<snd_config>characters_voice\human_02\zombied\</snd_config>
+    <class>sim_default_zombied_2</class>
+    <community>zombied</community> 
+    <snd_config>characters_voice\human_02\zombied\</snd_config>
 
-		<rank>400</rank>
-		<reputation>0</reputation>
+    <rank>400</rank>
+    <reputation>0</reputation>
 
-		<visual>actors\stalker_zombied\stalker_zombied_2</visual>
-		<crouch_type>0</crouch_type>
-		<supplies>
-			[spawn]\n
-			device_torch \n
-			wpn_fort = 1 \n
-			wpn_ak74u \n
-      		ammo_5.45x39_fmj = 1 \n
-      		ammo_9x18_fmj = 1 \n
+    <visual>actors\stalker_zombied\stalker_zombied_2</visual>
+    <crouch_type>0</crouch_type>
+    <supplies>
+      [spawn]\n
+      device_torch \n
+      wpn_fort = 1 \n
+      wpn_ak74u \n
+          ammo_5.45x39_fmj = 1 \n
+          ammo_9x18_fmj = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -3947,7 +3948,7 @@
 #include "gameplay\character_criticals_1.xml"
 #include "gameplay\character_dialogs.xml"
 </specific_character>
-	
+  
 <specific_character id="sim_default_zombied_3_default_0" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
     <icon>ui_npc_u_zombied_3</icon>
@@ -3994,12 +3995,12 @@
     <visual>actors\stalker_zombied\stalker_zombied_3</visual>
     <crouch_type>0</crouch_type>
     <supplies>
-      	[spawn]\n
-		device_torch \n
-		wpn_pm = 1 \n
-		wpn_wincheaster1300 = 1 \n
-      	ammo_12x70_buck = 1 \n
-      	ammo_9x18_fmj = 1 \n
+        [spawn]\n
+    device_torch \n
+    wpn_pm = 1 \n
+    wpn_wincheaster1300 = 1 \n
+        ammo_12x70_buck = 1 \n
+        ammo_9x18_fmj = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
