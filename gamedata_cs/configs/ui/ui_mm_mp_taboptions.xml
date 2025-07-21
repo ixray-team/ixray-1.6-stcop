@@ -104,13 +104,13 @@
 	<radio_tab_respawn_options x="10" y="185" width="142" height="76" radio="1">
 		<options_item entry="mm_net_srv_reinforcement_type" group="mm_mp_server"/>
 		<button x="0" y="0" width="32" height="21" id="forcerespawn">
-			<text font="letterica16" r="115" g="114" b="112" vert_align="c">mm_mp_forcerespawn</text>
+			<text font="letterica16" r="115" g="114" b="112" vert_align="c" align="l" x="40">mm_mp_forcerespawn</text>
 		</button>		
 		<button x="0" y="25" width="32" height="21" id="reinforcement">
-			<text font="letterica16" r="115" g="114" b="112" vert_align="c">mm_mp_reinforcement</text>
+			<text font="letterica16" r="115" g="114" b="112" vert_align="c" align="l" x="40">mm_mp_reinforcement</text>
 		</button>		
 		<button x="0" y="50" width="32" height="21" id="artefactcapture">
-			<text font="letterica16" r="115" g="114" b="112" vert_align="c">mm_mp_artefactcapture</text>
+			<text font="letterica16" r="115" g="114" b="112" vert_align="c" align="l" x="40">mm_mp_artefactcapture</text>
 		</button>		
 	</radio_tab_respawn_options>		
 	
