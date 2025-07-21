@@ -114,42 +114,42 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 	m_sounds.LoadSound(section, "snd_draw", "sndShow", false, m_eSoundShow);
 	m_sounds.LoadSound(section, "snd_holster", "sndHide", false, m_eSoundHide);
 
-	m_sounds.LoadSound(section, "snd_shoot", "sndShot", false, m_eSoundShot);
+	m_layered_sounds.LoadSound(section, "snd_shoot", "sndShot", false, m_eSoundShot);
 	if (SoundExist(section, "snd_shoot_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor, TRUE);
-		m_sounds.LoadSound(section, "snd_shoot_actor", "sndShotActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shoot_actor", "sndShotActor", false, m_eSoundShot);
 	}
 
-	m_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot);
+	m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot);
 	if (SoundExist(section, "snd_silncer_shot_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_sil, TRUE);
-		m_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot);
 	}
 
 	if (SoundExist(section, "snd_shot_last"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_last, TRUE);
-		m_sounds.LoadSound(section, "snd_shot_last", "sndShotLast", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shot_last", "sndShotLast", false, m_eSoundShot);
 	}
 
 	if (SoundExist(section, "snd_shot_last_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_last, TRUE);
-		m_sounds.LoadSound(section, "snd_shot_last_actor", "sndShotLastActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shot_last_actor", "sndShotLastActor", false, m_eSoundShot);
 	}
 
 	if (SoundExist(section, "snd_silencer_shot_last"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_last_sil, TRUE);
-		m_sounds.LoadSound(section, "snd_silencer_shot_last", "sndSilencerShotLast", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_silencer_shot_last", "sndSilencerShotLast", false, m_eSoundShot);
 	}
 
 	if (SoundExist(section, "snd_silencer_shot_last_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_last_sil, TRUE);
-		m_sounds.LoadSound(section, "snd_silencer_shot_last_actor", "sndSilencerShotLastActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_silencer_shot_last_actor", "sndSilencerShotLastActor", false, m_eSoundShot);
 	}
 
 	m_sounds.LoadSound(section, "snd_empty", "sndEmptyClick", false, m_eSoundEmptyClick);
@@ -979,7 +979,7 @@ void CWeaponMagazined::SelectShotSound()
 		}
 	}
 
-	m_sounds.PlaySound(*m_sSndShotCurrent, get_LastFP(), H_Parent(), !!GetHUDmode(), false, true);
+	m_layered_sounds.PlaySound(*m_sSndShotCurrent, get_LastFP(), H_Parent(), !!GetHUDmode(), false, true);
 
 	float fAmmoElapsed = (float)get_elapsed;
 	float fmaxMagazineSize_ = iMagazineSize + iChamberSize;
