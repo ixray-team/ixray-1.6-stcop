@@ -68,6 +68,19 @@ void MigrateToGameWindow()
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
 }
 
+static void LoadCustomSettings()
+{
+	FS_FileSet settingsFiles = {};
+	FS.file_list(settingsFiles, "$game_config$", FS_ListFiles, "ixray_settings\\default_settings*.ltx");
+
+	for (auto& fsFile : settingsFiles)
+	{
+		string_path defaultSettings = {};
+		FS.update_path(defaultSettings, "$game_config$", fsFile.name.c_str());
+		Console->ExecuteScript(defaultSettings);
+	}
+}
+
 int APIENTRY WinMain
 (
 	HINSTANCE hInstance,
@@ -137,6 +150,8 @@ int APIENTRY WinMain
 		// В любом случае надо вызывать команду CCC_R2
 		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
 	}
+
+	LoadCustomSettings();
 	Engine.External.Initialize();
 
 	//Console->Execute("stat_memory");
