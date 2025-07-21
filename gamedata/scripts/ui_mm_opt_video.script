@@ -67,6 +67,11 @@ function opt_video:InitControls(x, y, xml, handler)
 	xml:InitCheck("tab_video:check_vsync", _st)
 	addControl(_st)
 
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("tab_video:cap_screenshot_format", _st)
+	xml:InitComboBox("tab_video:list_screenshot_format", _st)
+	addControl(_st)
+
 	btn = xml:Init3tButton("tab_video:btn_advanced", self)
 	handler:Register(btn, "btn_advanced_graphic")
 end
