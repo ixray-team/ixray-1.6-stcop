@@ -972,11 +972,9 @@ void CWeapon::UpdateCL		()
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
 
-	auto i1 = g_player_hud->attached_item(1);
-	if (i1 && HudItemData())
+	if (ParentIsActor())
 	{
-		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
-		if (det && (det->GetState() == CCustomDetector::eIdle || !det->NeedActivation()))
+		if (Actor()->GetDetector() && (Actor()->GetDetector()->GetState() == CCustomDetector::eIdle || !Actor()->GetDetector()->NeedActivation()))
 		{
 			if (bAmmotypeKeyPressed || bReloadKeyPressed)
 			{
@@ -1355,13 +1353,8 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 	
 	bAmmotypeKeyPressed = true;
 
-	auto i1 = g_player_hud->attached_item(1);
-	if (i1 && HudItemData())
-	{
-		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
-		if (det && det->GetState() != CCustomDetector::eIdle)
-			return false;
-	}
+	if (ParentIsActor() && Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+		return false;
 
 	u8 l_newType = m_ammoType;
 	bool b1, b2;
