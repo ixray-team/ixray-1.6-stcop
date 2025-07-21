@@ -23,8 +23,6 @@ struct LinkData
 class XREPROPS_API INodeUnknown
 {
 protected:
-	xr_string NodeName;
-
 	xr_vector<LinkData> OutLinks;
 	xr_vector<LinkData> InLinks;
 
@@ -36,9 +34,10 @@ protected:
 	bool WeStarted = false;
 	bool IsHovered = false;
 
-	ImVec2 StartPostion = { 0, 0 };
 
 public:
+	xr_string NodeName;
+
 	xr_vector<INodeUnknown*> Childs;
 	xr_vector<INodeUnknown*> OutNodes;
 
@@ -46,6 +45,7 @@ public:
 	LinkData ContactLinkOut;
 
 	size_t NodeID = 0;
+	ImVec2 StartPostion = { 0, 0 };
 
 public:
 	INodeUnknown() = delete;
