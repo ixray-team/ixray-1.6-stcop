@@ -15,7 +15,7 @@ IC void BoxQuery(Fbox& BB, bool exact)
 	else			IXRC.box_options	(0);
 	Fvector			C,D;
 	BB.get_CD		(C,D);
-	IXRC.box_query	(&Level,C,D);
+	IXRC.box_query	(LevelPtr.get(), C, D);
 }
 
 struct tri {
@@ -45,7 +45,7 @@ BOOL	ValidNode(vertex& N)
 	{
 		tri&		D = tris.last();
 		CDB::RESULT&rp = IXRC.r_begin()[i];
-		*(Level.get_tris()+ IXRC.r_begin()[i].id);
+		*(LevelPtr->get_tris()+ IXRC.r_begin()[i].id);
 
 		D.v[0].set	(rp.verts[0]);
 		D.v[1].set	(rp.verts[1]);
