@@ -3,9 +3,6 @@
 
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 
-const u32			SKIN_TEX_HEIGHT			= 232;
-const u32			SKIN_TEX_WIDTH			= 111;
-
 class CUIStatic;
 class CUIStatix;
 class CUI3tButton;
@@ -60,6 +57,7 @@ protected:
 	xr_vector<xr_string> m_skins;
 	xr_vector<int>	m_skinsEnabled;
 	int				m_firstSkin;
+	int				m_SkinCount;
 	s16				m_team;
 };
 
