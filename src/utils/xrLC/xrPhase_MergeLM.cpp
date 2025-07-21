@@ -322,30 +322,35 @@ bool rectPlaceY(u32 y, L_rect& r, lm_layer* D, bool& rotated);
 
 bool rectPlaceTbb(L_rect& tr, lm_layer* D, bool& rotated)
 {
-	tbb::combinable<PlaceResult> temp;
-	tbb::parallel_for(tbb::blocked_range<u32>(0, getLMSIZE()), [&temp, tr, D](const tbb::blocked_range<u32>& r) {
+	xr_combinable<PlaceResult> temp;
+	xr_parallel_for<u32>(0, getLMSIZE(), [&temp, tr, D](u32 y)
+	{
 		L_rect rect = tr;
-		for (u32 y = r.begin(); y != r.end(); ++y) {
-			bool rotated;
-			if (rectPlaceY(y, rect, D, rotated)) {
-				merge(temp.local(), Place{ rect, rotated });
-				break;
-			}
+		bool rotated_local;
+		if (rectPlaceY(y, rect, D, rotated_local))
+		{
+			merge(temp.Local(), Place{ rect, rotated_local });
 		}
-		});
+	});
 
 	PlaceResult result;
-	temp.combine_each([&result](const PlaceResult& x) { merge(result, x); });
-	if (result) {
+	temp.CombineEach
+	(
+		[&result](const PlaceResult& x)
+		{
+			merge(result, x); 
+		}
+	);
+
+	if (result)
+	{
 		tr = result.value().rect;
 		rotated = result.value().rotated;
 	}
+
 	return result.has_value();
 }
-
 #endif
- 
-
 
 void CBuild::xrPhase_SaveLmaps()
 {
