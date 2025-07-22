@@ -34,6 +34,65 @@ u16	INV_STATE_BLOCK_ALL		= 0xffff;
 u16	INV_STATE_INV_WND		= INV_STATE_BLOCK_ALL;
 u16	INV_STATE_BUY_MENU		= INV_STATE_BLOCK_ALL;
 
+// REMINDER: Update these arrays after adding new slots to inventory_space.h
+bool defaultSlotActive[] =
+{
+	true,		// knife
+	true,		// pistol
+	true,		// automatic
+	true,		// grenades
+	true,		// binocular
+	true,		// bolt
+	false,		// outfit
+	false,		// pda
+	false,		// detector
+	false,		// torch
+	true,		// artefact
+	false,		// helmet
+	false,		// backpack
+	false,		// pistol (new)
+	false,		// custom 1
+	false,		// custom 2
+	false,		// custom 3
+	false,		// custom 3
+	false,		// custom 4
+	false,		// custom 5
+	false,		// custom 6
+	false,		// custom 7
+	false,		// custom 8
+	false,		// custom 9
+	false,		// custom 10
+};
+
+bool defaultSlotPersistent[] =
+{
+	true,		// knife
+	false,		// pistol
+	false,		// automatic
+	true,		// grenades
+	true,		// binocular
+	true,		// bolt
+	false,		// outfit
+	true,		// pda
+	true,		// detector
+	true,		// torch
+	false,		// artefact
+	false,		// helmet
+	true,		// backpack
+	true,		// pistol (new)
+	true,		// custom 1
+	true,		// custom 2
+	true,		// custom 3
+	true,		// custom 3
+	true,		// custom 4
+	true,		// custom 5
+	true,		// custom 6
+	true,		// custom 7
+	true,		// custom 8
+	true,		// custom 9
+	true,		// custom 10
+};
+
 CInventorySlot::CInventorySlot() 
 {
 	m_pIItem				= nullptr;
@@ -58,23 +117,18 @@ CInventory::CInventory()
 	m_iNextActiveSlot							= NO_ACTIVE_SLOT;
 	m_iPrevActiveSlot							= NO_ACTIVE_SLOT;
 
-	string256	slot_persistent;
-	string256	slot_active;
-	xr_strcpy(slot_persistent, "slot_persistent_1");
-	xr_strcpy(slot_active, "slot_active_1");
-
-	u16 k = 1;
-	while (pSettings->line_exist("inventory", slot_persistent) && pSettings->line_exist("inventory", slot_active)) 
+	u16 k = KNIFE_SLOT;
+	for (; k <= LAST_SLOT; k++)
 	{
-		m_last_slot = k;
-
-		m_slots[k].m_bPersistent = !!pSettings->r_bool("inventory", slot_persistent);
-		m_slots[k].m_bAct = !!pSettings->r_bool("inventory", slot_active);
-
-		k++;
-
+		string256	slot_persistent;
+		string256	slot_active;
 		xr_sprintf(slot_persistent, "%s%d", "slot_persistent_", k);
 		xr_sprintf(slot_active, "%s%d", "slot_active_", k);
+		m_last_slot = k;
+
+		m_slots[k].m_bPersistent = !!READ_IF_EXISTS(pSettings, r_bool, "inventory", slot_persistent, defaultSlotPersistent[k-1]);
+		m_slots[k].m_bAct = !!READ_IF_EXISTS(pSettings, r_bool, "inventory", slot_active, defaultSlotActive[k-1]);
+
 	}
 
 	m_blocked_slots.resize(k + 1);
@@ -91,7 +145,7 @@ CInventory::CInventory()
 	m_dwModifyFrame								= 0;
 	m_drop_last_frame							= false;
 	m_iMaxBelt									= 0;
-	if (EngineExternal().ShadowOfChernobylMode())
+	if (!pSettings->line_exist("inventory", "slot_active_1"))
 		m_iMaxBelt								= pSettings->r_s32		("inventory","max_belt");
 
 	

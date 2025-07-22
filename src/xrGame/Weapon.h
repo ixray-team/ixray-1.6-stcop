@@ -29,7 +29,7 @@ class CWeaponBM16;
 class CWeaponRPG7;
 class CWeaponRG6;
 class CParticlesObject;
-class CUIWindow;
+class CUIStatic;
 class CBinocularsVision;
 class CWeaponNightVision;
 
@@ -469,7 +469,7 @@ protected:
 	} m_zoom_params;
 	
 		float			m_fRTZoomFactor; //run-time zoom factor
-		CUIWindow*		m_UIScope;
+		CUIStatic*		m_UIScope;
 
 	InertionData	m_base_inertion;
 	InertionData	m_zoom_inertion;
@@ -506,7 +506,7 @@ public:
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
 	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;};
-	CUIWindow*				ZoomTexture			();	
+	CUIStatic*				ZoomTexture			();	
 
 	CWeaponNightVision*		GetNightVision()	{ return m_zoom_params.m_pNight_vision; }
 
