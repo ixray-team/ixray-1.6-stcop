@@ -19,7 +19,7 @@
 #include "debug_renderer.h"
 #include "clsid_game.h"
 #include "WeaponBinocularsVision.h"
-#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "Torch.h"
 #include "CustomDevice.h"
@@ -2981,7 +2981,7 @@ void CWeapon::OnZoomOut()
 	}
 }
 
-CUIWindow* CWeapon::ZoomTexture()
+CUIStatic* CWeapon::ZoomTexture()
 {
 	return UseScopeTexture() ? m_UIScope : nullptr;
 }
@@ -3967,13 +3967,13 @@ void CWeapon::LoadOriginalScopesParams(LPCSTR section)
 	}
 }
 
-void createWpnScopeXML()
+bool createWpnScopeXML()
 {
 	if (!pWpnScopeXml)
 	{
 		pWpnScopeXml = new CUIXml();
-		pWpnScopeXml->Load(CONFIG_PATH, UI_PATH, "scopes.xml");
 	}
+	return pWpnScopeXml->Load(CONFIG_PATH, UI_PATH, "scopes.xml");
 }
 
 void CWeapon::LoadCurrentScopeParams(LPCSTR section)
@@ -4006,9 +4006,17 @@ void CWeapon::LoadCurrentScopeParams(LPCSTR section)
 	{
 		if (bScopeIsHasTexture)
 		{
-			m_UIScope = new CUIWindow();
-			createWpnScopeXML();
-			CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
+			m_UIScope = new CUIStatic();
+			bool result = createWpnScopeXML();
+			if (result)
+				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
+			else
+			{
+				m_UIScope->InitTexture(scope_tex_name.c_str());
+				m_UIScope->SetStretchTexture(true);
+				m_UIScope->SetWndPos(Fvector2().set(0, 0));
+				m_UIScope->SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
+			}
 		}
 	}
 }
