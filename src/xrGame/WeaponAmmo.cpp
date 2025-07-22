@@ -228,22 +228,27 @@ void CWeaponAmmo::net_Import(NET_Packet& P)
 	P.r_u16					(m_boxCurr);
 }
 
-CInventoryItem *CWeaponAmmo::can_make_killing	(const CInventory *inventory) const
+CInventoryItem* CWeaponAmmo::can_make_killing(const CInventory* inventory) const
 {
-	VERIFY					(inventory);
+	VERIFY(inventory);
 
-	TIItemContainer::const_iterator	I = inventory->m_all.begin();
-	TIItemContainer::const_iterator	E = inventory->m_all.end();
-	for ( ; I != E; ++I) {
-		CWeapon		*weapon = smart_cast<CWeapon*>(*I);
+	for (const PIItem item : inventory->m_all)
+	{
+		CWeapon* weapon = item->cast_weapon();
+
 		if (!weapon)
+		{
 			continue;
-		xr_vector<shared_str>::const_iterator	i = std::find(weapon->m_ammoTypes.begin(),weapon->m_ammoTypes.end(),cNameSect());
+		}
+
+		xr_vector<shared_str>::const_iterator i = std::find(weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end(), cNameSect());
 		if (i != weapon->m_ammoTypes.end())
-			return			(weapon);
+		{
+			return weapon;
+		}
 	}
 
-	return					(0);
+	return 0;
 }
 
 float CWeaponAmmo::Weight() const

@@ -80,7 +80,9 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	CActor* tmp_actor = nullptr;
 	if (!IsGameTypeSingle())
 	{
-		tmp_actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+		CObject* obj = Level().CurrentControlEntity();
+
+		tmp_actor = obj != nullptr ? obj->cast_actor() : nullptr;
 		if (tmp_actor)
 		{
 			CEntity::SEntityState state;
@@ -92,19 +94,19 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 			}
 		}
 	}
+
 	if (fsimilar(fire_disp, 0.f))
 	{
-		//CActor* tmp_actor = smart_cast<CActor*>(Level().CurrentControlEntity());
 		if (H_Parent() && (H_Parent() == tmp_actor))
 		{
 			fire_disp = tmp_actor->GetFireDispertion();
-		} else
+		}
+		else
 		{
 			fire_disp = GetFireDispersion(true);
 		}
 	}
 	
-
 	bool SendHit = SendHitAllowed(H_Parent());
 	//выстерлить пулю (с учетом возможной стрельбы дробью)
 	for(int i = 0; i < l_cartridge.param_s.buckShot; ++i) 
@@ -160,7 +162,9 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 	CActor* tmp_actor = nullptr;
 	if (!IsGameTypeSingle())
 	{
-		tmp_actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+		CObject* obj = Level().CurrentControlEntity();
+
+		tmp_actor = obj != nullptr ? obj->cast_actor() : nullptr;
 		if (tmp_actor)
 		{
 			CEntity::SEntityState state;
@@ -172,6 +176,7 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 			}
 		}
 	}
+
 	if (fsimilar(fire_disp, 0.f))
 	{
 		if (H_Parent() && (H_Parent() == tmp_actor))
