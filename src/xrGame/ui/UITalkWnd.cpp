@@ -80,8 +80,6 @@ void CUITalkWnd::InitTalkDialog()
 	m_pOthersDialogManager = m_pOthersInvOwner->cast_phrase_dialog_manager();
 
 	//имена собеседников
-	UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOurInvOwner);
-	UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
 
 	if (useCharacterNames)
 	{
@@ -94,6 +92,14 @@ void CUITalkWnd::InitTalkDialog()
 			UITalkDialogWnd->UIDialogFrameBottom->SetText(m_pOurInvOwner->Name());
 		else
 			UITalkDialogWnd->UIOurPhrasesFrame->UITitleText.SetText(m_pOurInvOwner->Name());
+
+		UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOurInvOwner);
+		UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOthersInvOwner);
+	}
+	else
+	{
+		UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOurInvOwner);
+		UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
 	}
 
 	//очистить лог сообщений
