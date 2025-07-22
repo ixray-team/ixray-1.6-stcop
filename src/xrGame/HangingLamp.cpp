@@ -95,8 +95,8 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	if (Visual()){
 		IKinematics* K		= PKinematics(Visual());
 		R_ASSERT			(Visual()&& PKinematics(Visual()));
-		light_bone			= K->LL_BoneID	(*lamp->light_main_bone);	VERIFY(light_bone!=BI_NONE);
-		ambient_bone		= K->LL_BoneID	(*lamp->light_ambient_bone);VERIFY(ambient_bone!=BI_NONE);
+		light_bone			= K->LL_BoneID	(*lamp->light_main_bone);	VERIFY2(light_bone!=BI_NONE, lamp->get_visual());
+		ambient_bone		= K->LL_BoneID	(*lamp->light_ambient_bone);VERIFY2(ambient_bone!=BI_NONE, lamp->get_visual());
 		collidable.model	= new CCF_Skeleton				(this);
 	}
 	fBrightness				= lamp->brightness;
