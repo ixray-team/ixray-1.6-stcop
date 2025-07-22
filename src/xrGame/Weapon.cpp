@@ -1816,9 +1816,17 @@ float CWeapon::GetConditionMisfireProbability() const
 	return mis;
 }
 
-BOOL CWeapon::CheckForMisfire	()
+BOOL CWeapon::CheckForMisfire()
 {
-	if (OnClient()) return FALSE;
+	if (OnClient())
+	{
+		return FALSE;
+	}
+
+	if (!ParentIsActor())
+	{
+		return FALSE;
+	}
 
 	float rnd = ::Random.randF(0.f,1.f);
 	float mp = GetConditionMisfireProbability();
