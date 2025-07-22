@@ -31,8 +31,6 @@
 
 CUIXml* pWpnScopeXml = nullptr;
 
-extern void createWpnScopeXML();
-
 CWeaponMagazined::CWeaponMagazined()
 {
 	m_eSoundShow				= ESoundTypes(SOUND_TYPE_ITEM_TAKING);
