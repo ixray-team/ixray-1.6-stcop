@@ -135,7 +135,7 @@ void CScriptGameObject::AttachVehicle(CScriptGameObject* veh, bool bForce)
 {
 	if (CActor* actor = object().cast_actor())
 	{
-		CHolderCustom* vehicle = smart_cast<CHolderCustom*>(&veh->object());
+		CHolderCustom* vehicle = veh->object().cast_holder_custom();
 		if (vehicle != nullptr)
 		{
 			actor->use_HolderEx(vehicle, bForce);
@@ -169,7 +169,7 @@ CScriptGameObject* CScriptGameObject::GetAttachedVehicle()
 		return 0;
 	}
 
-	CGameObject* GO = smart_cast<CGameObject*>(H);
+	CGameObject* GO = H->cast_game_object();
 	if (GO == nullptr)
 	{
 		return 0;
@@ -1753,20 +1753,26 @@ void CScriptGameObject::SetRestrictionType(u8 typ)
 
 void CScriptGameObject::setMechanic(bool cond)
 {
-	CInventoryOwner* invOwn = smart_cast<CInventoryOwner*>(&this->object());
+	CInventoryOwner* invOwn = this->object().cast_inventory_owner();
 
-	if (!invOwn)
+	if (invOwn == nullptr)
+	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member is_weapon_going_to_be_strapped!");
+		return;
+	}
 
 	invOwn->SpecificCharacter().updateMechanic(cond);
 }
 
 const bool CScriptGameObject::getMechanic() const
 {
-	CInventoryOwner const* invOwn = smart_cast<CInventoryOwner const*>(&this->object());
+	const CInventoryOwner* invOwn = this->object().cast_inventory_owner();
 
-	if (!invOwn)
+	if (invOwn == nullptr)
+	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member is_weapon_going_to_be_strapped!");
+		return false;
+	}
 
 	return invOwn->SpecificCharacter().upgrade_mechanic();
 }

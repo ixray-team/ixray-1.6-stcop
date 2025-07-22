@@ -73,7 +73,7 @@ bool CScriptGameObject::active_zone_contact(u16 id)
 
 CScriptGameObject* CScriptGameObject::best_weapon()
 {
-	if (CObjectHandler* object_handler = smart_cast<CAI_Stalker*>(&object()))
+	if (CObjectHandler* object_handler = object().cast_stalker())
 	{
 		CGameObject* game_object = object_handler->best_weapon() != nullptr ? &object_handler->best_weapon()->object() : 0;
 		return game_object != nullptr ? game_object->lua_game_object() : 0;
@@ -85,7 +85,7 @@ CScriptGameObject* CScriptGameObject::best_weapon()
 
 void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action)
 {
-	if (CObjectHandler* object_handler = smart_cast<CAI_Stalker*>(&object()))
+	if (CObjectHandler* object_handler = object().cast_stalker())
 	{
 		object_handler->set_goal(object_action);
 	}
@@ -97,7 +97,7 @@ void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action)
 
 void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScriptGameObject* lua_game_object)
 {
-	if (CObjectHandler* object_handler = smart_cast<CAI_Stalker*>(&object()))
+	if (CObjectHandler* object_handler = object().cast_stalker())
 	{
 		object_handler->set_goal(object_action, lua_game_object ? &lua_game_object->object() : 0);
 	}
@@ -109,7 +109,7 @@ void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScr
 
 void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScriptGameObject* lua_game_object, u32 queue_size)
 {
-	if (CObjectHandler* object_handler = smart_cast<CAI_Stalker*>(&object()))
+	if (CObjectHandler* object_handler = object().cast_stalker())
 	{
 		object_handler->set_goal(object_action, lua_game_object ? &lua_game_object->object() : 0, queue_size, queue_size);
 	}
@@ -121,7 +121,7 @@ void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScr
 
 void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScriptGameObject* lua_game_object, u32 queue_size, u32 queue_interval)
 {
-	if (CObjectHandler* object_handler = smart_cast<CAI_Stalker*>(&object()))
+	if (CObjectHandler* object_handler = object().cast_stalker())
 	{
 		object_handler->set_goal(object_action, lua_game_object ? &lua_game_object->object() : 0, queue_size, queue_size, queue_interval, queue_interval);
 	}

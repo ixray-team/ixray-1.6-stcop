@@ -106,10 +106,10 @@ void CUIGameCustom::Render()
 
 	m_window->Draw();
 
-	CEntity* pEntity = smart_cast<CEntity*>(Level().CurrentEntity());
-	if (pEntity)
+	CEntity* pEntity = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_entity() : nullptr;
+	if (pEntity != nullptr)
 	{
-		CActor* pActor			=	smart_cast<CActor*>(pEntity);
+		CActor* pActor = pEntity->cast_actor();
 		if(pActor && pActor->g_Alive() && psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2))
 		{
 			u16 ISlot = pActor->inventory().FirstSlot();
@@ -211,7 +211,7 @@ bool CUIGameCustom::ShowActorMenu()
 	}else
 	{
 		HidePdaMenu();
-		CInventoryOwner* pIOActor	= smart_cast<CInventoryOwner*>( Level().CurrentViewEntity() );
+		CInventoryOwner* pIOActor	= Level().CurrentViewEntity() != nullptr ? Level().CurrentViewEntity()->cast_inventory_owner() : nullptr;
 		VERIFY						(pIOActor);
 		m_ActorMenu->SetActor		(pIOActor);
 		m_ActorMenu->SetMenuMode	(mmInventory);
@@ -242,18 +242,24 @@ CScriptGameObject* CUIGameCustom::CurrentItemAtCell()
 {
 	CUICellItem* itm = m_ActorMenu->CurrentItem();
 	if (!itm->m_pData)
-		return (0);
+	{
+		return 0;
+	}
 
 	PIItem IItm = (PIItem)itm->m_pData;
 	if (!IItm)
-		return (0);
+	{
+		return 0;
+	}
 
-	CGameObject* GO = smart_cast<CGameObject*>(IItm);
+	CGameObject* GO = IItm->cast_game_object();
 
-	if (GO)
+	if (GO != nullptr)
+	{
 		return GO->lua_game_object();
+	}
 
-	return (0);
+	return 0;
 }
 //-Alundaio
 
