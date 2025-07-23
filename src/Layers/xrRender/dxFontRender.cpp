@@ -23,7 +23,8 @@ void dxFontRender::Initialize(const char* cShader, const char* cTexture) {
 	pGeom.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
 }
 
-void dxFontRender::OnRender(CGameFont& owner) {
+void dxFontRender::OnRender(CGameFont& owner)
+{
 	VERIFY(g_bRendering);
 
 	if(pShader != nullptr) {
@@ -34,9 +35,11 @@ void dxFontRender::OnRender(CGameFont& owner) {
 	auto fHeight = (float)std::max(pTexture->get_Height(), 4u);
 
 	//#TODO mb need use optimization for minimize vertexes allocations?
-	for(CGameFont::String& str : owner.strings) {
+	for(CGameFont::String& str : owner.strings)
+	{
 		int length = xr_strlen(str.string);
-		if(length) {
+		if(length)
+		{
 			// lock AGP memory
 			u32	vOffset;
 			FVF::TL* vertexes = (FVF::TL*)RCache.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
@@ -46,7 +49,8 @@ void dxFontRender::OnRender(CGameFont& owner) {
 			float Y = float(iFloor(str.y));
 			float Y2 = Y + str.height;
 
-			if(str.align) {
+			if(str.align)
+			{
 				float width = (float)owner.WidthOf(str.string);
 
 				switch(str.align) {
