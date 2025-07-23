@@ -7,6 +7,7 @@
 #include <optix_stubs.h>
 #include <cuda_runtime.h>
 
+struct RayRequest;
 
 namespace XRay::RayTrace::CUDA
 {
@@ -43,6 +44,8 @@ namespace XRay::RayTrace::CUDA
         int surfidx; // Индекс текстуры
     };
 
+
+
 	bool BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene);
     void InitializeRayTracing();
     float RayTraceWrapper
@@ -53,4 +56,6 @@ namespace XRay::RayTrace::CUDA
     );
     void InitializeTextures(xr_vector<TextureData>& gpuTextures, cudaTextureObject_t*& d_texObjects);
     float RayTrace(Fvector& P, Fvector& D, float R, Face* skip);
+
+    void RayTracePack(xr_vector<RayRequest>& data);
 }

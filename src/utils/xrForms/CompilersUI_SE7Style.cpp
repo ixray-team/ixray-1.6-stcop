@@ -519,69 +519,122 @@ void RenderCompilerUI(int X, int Y)
 
 	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
 
+	// if (ResizeMaximal)
+	// {
+	// 	if (X != 1400 || Y != 925)
+	// 	{
+	// 		SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
+	// 	}
+	// }
+	// else
+	// {
+	// 	if (X != 1000 || Y != 560)
+	// 	{
+	// 		SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
+	// 	}
+	// }
 
-	if (ResizeMaximal)
-	{
-		if (X != 1400 || Y != 925)
-		{
-			SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
-		}
-	}
-	else
-	{
-		if (X != 1000 || Y != 560)
-		{
-			SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
-		}
-	}
-	
 	int MAX_TRABS = 9;
 	if (ResizeMaximal)
-		MAX_TRABS = 10;
+		MAX_TRABS = 7;
 
-	// Table
-	if (ImGui::BeginTable("IterationsTable", MAX_TRABS, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedSame))
+	auto RenderRowIcon = [](IterationStatus& status, int Index)
 	{
- 		if (ResizeMaximal)
+ 		xr_string rowStatus;
+		ImVec4 rowStatusColor;
+		char rowIcon;
+		getStatusInfo(status, rowStatus, rowStatusColor, rowIcon);
+ 		ImGui::TableSetColumnIndex(Index);
+		ImGui::PushFont(gCompilerMode.CompilerIconsFont);
+		ImGui::TextColored(rowStatusColor, "%c", rowIcon);
+		ImGui::PopFont();
+	};
+
+	auto GetPhaseTime = [](IterationPhase& phase)
+	{
+ 		if (phase.status != Complete)
 		{
-			ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
-			ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
-			ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthFixed, 250.0f);
-			ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 40.f);
-			ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-			ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-			ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 25.0f);
-			ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 50.f);
-			ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 50.f);
- 
-			ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthStretch);
-		}
-		else
-		{
-			ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
-			ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 50.f);
-			ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
-			ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
-			ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-			ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-			ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-			ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
-			ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
-		}
+			u32 dwCurrentTime = timeGetTime();
+			u32 dwTimeDiff = dwCurrentTime - GetPhaseStartTime();
+			u32 secElapsed = dwTimeDiff / 1000;
+ 			phase.elapsed_time = secElapsed;
+ 		}
+	};
+
+	int Flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedSame;
+
+ 	if (ResizeMaximal && ImGui::BeginTable("DebugTable", MAX_TRABS, Flags))
+	{
+		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.f);
+		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
+		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthFixed, 250.0f);
+		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 40.f);
+		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);		
+		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
+		ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthStretch);
 
 		ImGui::TableHeadersRow();
 
 		for (auto& row : GetIterationData())
 		{
-
-			xr_string rowStatus;
-			ImVec4 rowStatusColor;
-
-			char rowIcon;
-
-			getStatusInfo(row.status, rowStatus, rowStatusColor, rowIcon);
-
 			ImGui::TableNextRow();
+ 			RenderRowIcon(row.status, 0);
+
+			// TASK
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%s", row.iterationName.c_str());
+
+			ImGui::TableSetColumnIndex(3);
+			ImGui::Text("%0.f", row.Persent * 100);
+
+			for (auto& phase : row.phases)
+			{
+				GetPhaseTime(phase);
+
+  				ImGui::TableNextRow();
+				RenderRowIcon(phase.status, 1);
+				 
+ 				ImGui::TableSetColumnIndex(2);
+				ImGui::TextColored(phaseTextCol, phase.PhaseName.c_str());
+
+				ImGui::TableSetColumnIndex(4);
+				ImGui::TextColored(phaseTextCol, "%s", make_time(phase.elapsed_time).c_str());
+
+				ImGui::TableSetColumnIndex(5);
+				ImGui::Text("%u MB", u32(size_t(phase.used_memory / 1024 / 1024)));
+
+				ImGui::TableSetColumnIndex(6);
+				ImGui::Text("%s", phase.AdditionalData.c_str());
+			}
+		}
+
+		if (autoScroll)
+			ImGui::SetScrollY(ImGui::GetScrollMaxY());
+		ImGui::EndTable();
+	}
+
+	// Table
+ 	if (!ResizeMaximal && ImGui::BeginTable("IterationsTable", MAX_TRABS, Flags))
+	{
+ 		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
+		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 50.f);
+		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
+		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+		ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+		ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
+		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
+
+		ImGui::TableHeadersRow();
+
+		for (auto& row : GetIterationData())
+		{
+ 			xr_string rowStatus;
+			ImVec4 rowStatusColor;
+ 			char rowIcon;
+ 			getStatusInfo(row.status, rowStatus, rowStatusColor, rowIcon);
+ 			ImGui::TableNextRow();
 
 			// Status icon
 
@@ -594,7 +647,6 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Text("%s", row.iterationName.c_str());
 
-			// 
 			ImGui::TableSetColumnIndex(3);
 			ImGui::Text("%0.f", row.Persent * 100);
 
@@ -602,30 +654,23 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::Text("%d", row.warnings);
 			// Status text
 			ImGui::TableSetColumnIndex(7);
-
-
 			ImGui::TextColored(rowStatusColor, rowStatus.c_str());
-
+ 
 			for (auto& phase : row.phases)
 			{
 				xr_string status;
 				ImVec4 statusColor;
 				char phaseIcon;
-
-				getStatusInfo(phase.status, status, statusColor, phaseIcon);
-
-				ImGui::TableNextRow();
+ 				getStatusInfo(phase.status, status, statusColor, phaseIcon);
+ 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::PushFont(gCompilerMode.CompilerIconsFont);
-
-				float column_width = ImGui::GetColumnWidth();
+ 				float column_width = ImGui::GetColumnWidth();
 				float text_size = ImGui::CalcTextSize("A").x;
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + column_width - text_size);
-
-				ImGui::TextColored(statusColor, "%c", phaseIcon);
-
-				ImGui::PopFont();
+ 				ImGui::TextColored(statusColor, "%c", phaseIcon);
+ 				ImGui::PopFont();
 
 				ImGui::TableSetColumnIndex(2);
 				ImGui::TextColored(phaseTextCol, phase.PhaseName.c_str());
@@ -648,7 +693,7 @@ void RenderCompilerUI(int X, int Y)
 				if (phase.status == Complete) pers = 1;
 				else if (pers > 1.f)	pers = 1;
 				else if (pers < 0.f)	pers = 0;
-
+			 
 				ImGui::TableSetColumnIndex(3);
 				ImGui::TextColored(phaseTextCol, "%0.f", pers * 100);
 
@@ -658,19 +703,14 @@ void RenderCompilerUI(int X, int Y)
 				ImGui::TableSetColumnIndex(5);
 				if (phase.status != Complete)
 					ImGui::TextColored(phaseTextCol, "%s", (phase.remain_time == 0 ? "Calculating..." : make_time(phase.remain_time).c_str()));
-
+ 
+				 
 				ImGui::TableSetColumnIndex(7);
 
 				ImGui::TextColored(statusColor, status.c_str());
 
 				ImGui::TableSetColumnIndex(8);
-				ImGui::Text("%u MB", u32 ( size_t( phase.used_memory/ 1024/ 1024) ) );
-
-				if (ResizeMaximal)
-				{
-					ImGui::TableSetColumnIndex(9);
-					ImGui::Text("%s", phase.AdditionalData.c_str());
-				}
+				ImGui::Text("%u MB", u32(size_t(phase.used_memory / 1024 / 1024)));
 			}
 		}
 
