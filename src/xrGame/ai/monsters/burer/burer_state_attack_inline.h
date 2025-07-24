@@ -82,6 +82,9 @@ void   CStateBurerAttack<Object>::execute ()
 		if (this->get_state_current()->check_completion() )
 		{
 			m_wait_state_end				=	false;
+			// Set a dummy state to workaround getting stuck in a state
+			// if the cooldown is set to small enough value.
+			this->select_state(eStateBurerAttack_FaceEnemy);
 		}
 		else
 		{
