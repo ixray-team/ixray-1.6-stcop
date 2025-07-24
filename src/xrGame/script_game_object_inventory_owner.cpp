@@ -783,6 +783,11 @@ void CScriptGameObject::SetCharacterReputation(int char_rep)
 
 LPCSTR CScriptGameObject::CharacterCommunity()
 {
+	if (object().cast_base_monster())
+	{
+		g_pScriptEngine->print_stack();
+		return 0;
+	}
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
 		return *pInventoryOwner->CharacterInfo().Community().id();
