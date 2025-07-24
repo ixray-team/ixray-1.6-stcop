@@ -45,6 +45,10 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 			xr_strcpy(texDetailBumpX, sizeof(texDetailBumpX), detail_bump_texture);
 			xr_strcat(texDetailBumpX, "#");
 		}
+		else
+		{
+			Msg("! Texture [%s] has no detail bump", C.L_textures[0].c_str());
+		}
 	}
 
 	if(lmap) {
@@ -83,6 +87,14 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 
 	if(dt && dt[0] && C.bDetail_Diffuse) {
 		RImplementation.addShaderOption("USE_TDETAIL", "1");
+	}
+
+	if (C.bDetail_Diffuse)
+	{
+		if (!dt || !dt[0])
+		{
+			Msg("! Texture [%s] has no detail texture", C.L_textures[0].c_str());
+		}
 	}
 
 	if(bHasDetailBump && dt && dt[0] && C.bDetail_Diffuse) {
