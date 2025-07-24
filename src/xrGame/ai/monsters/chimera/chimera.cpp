@@ -47,28 +47,36 @@ void   CChimera::Load (LPCSTR section)
 	SVelocityParam &velocity_run_dmg	= 	move().get_velocity(MonsterMovement::eVelocityParameterRunDamaged);
 	SVelocityParam &velocity_steal		= 	move().get_velocity(MonsterMovement::eVelocityParameterSteal);
 
-	m_velocity_rotate.Load					(section, "Velocity_Rotate");
-	m_velocity_jump_start.Load				(section, "Velocity_JumpStart");
+	bool rotateVelocityExist = m_velocity_rotate.Load(section, "Velocity_Rotate");
+	bool jumpVelocityExist = m_velocity_jump_start.Load				(section, "Velocity_JumpStart");
 	
 	anim().AddAnim	(eAnimStandIdle,		"stand_idle_",			-1, &velocity_none,		PS_STAND);
+	anim().AddAnim	(eAnimStandTurnLeft,	"stand_turn_ls_",		-1, &velocity_turn,		PS_STAND);
+	anim().AddAnim	(eAnimStandTurnRight,	"stand_turn_rs_",		-1, &velocity_turn,		PS_STAND);
+	
+	if (Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe("stand_run_turn_90_ls_0"))
+		anim().AddAnim(eAnimFastStandTurnLeft, "stand_run_turn_90_ls_", -1, rotateVelocityExist ? &m_velocity_rotate : &velocity_turn, PS_STAND);
+	else
+		anim().AddAnim(eAnimFastStandTurnLeft, "stand_turn_ls_", -1, rotateVelocityExist ? &m_velocity_rotate : &velocity_turn, PS_STAND);
 
-	//@
-
-	IKinematicsAnimated*	KA			= Visual()->dcast_PKinematicsAnimated();
-	MotionID idle_motion_id1			=	KA->LL_MotionID("stand_idle_0");
-	MotionID idle_motion_id2			=	KA->LL_MotionID("stand_idle_1");
+	if (Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe("stand_run_turn_90_rs_0"))
+		anim().AddAnim(eAnimFastStandTurnRight, "stand_run_turn_90_rs_", -1, rotateVelocityExist ? &m_velocity_rotate : &velocity_turn, PS_STAND);
+	else
+		anim().AddAnim(eAnimFastStandTurnRight, "stand_turn_rs_", -1, rotateVelocityExist ? &m_velocity_rotate : &velocity_turn, PS_STAND);
 
 	anim().AddAnim	(eAnimLieIdle,			"stand_idle_",			-1, &velocity_none,		PS_LIE);
 	anim().AddAnim	(eAnimSleep,			"stand_idle_",			-1, &velocity_none,		PS_LIE);
 
-	anim().AddAnim	(eAnimWalkFwd,			"stand_walk_",			-1, &velocity_walk,		PS_STAND);
-	anim().AddAnim	(eAnimStandTurnLeft,	"stand_turn_ls_",		-1, &velocity_turn,		PS_STAND);
-	anim().AddAnim	(eAnimStandTurnRight,	"stand_turn_rs_",		-1, &velocity_turn,		PS_STAND);
-	
-	anim().AddAnim	(eAnimFastStandTurnLeft, "stand_run_turn_90_ls_", -1, &m_velocity_rotate,	PS_STAND);
-	anim().AddAnim	(eAnimFastStandTurnRight, "stand_run_turn_90_rs_", -1, &m_velocity_rotate,	PS_STAND);
+	if (Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe("stand_walk_0"))
+		anim().AddAnim(eAnimWalkFwd, "stand_walk_", -1, &velocity_walk, PS_STAND);
+	else
+		anim().AddAnim(eAnimWalkFwd, "stand_walk_fwd_", -1, &velocity_walk, PS_STAND);
 
-	anim().AddAnim	(eAnimWalkDamaged,		"stand_walk_dmg_",		-1, &velocity_walk_dmg,	PS_STAND);
+	if (Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe("stand_walk_dmg_0"))
+		anim().AddAnim(eAnimWalkDamaged, "stand_walk_dmg_", -1, &velocity_walk_dmg, PS_STAND);
+	else
+		anim().AddAnim(eAnimWalkDamaged, "stand_walk_fwd_dmg_", -1, &velocity_walk_dmg, PS_STAND);
+
 	anim().AddAnim	(eAnimRun,				"stand_run_fwd_",		-1,	&velocity_run,		PS_STAND);
 	anim().AddAnim	(eAnimRunDamaged,		"stand_run_dmg_",		-1,	&velocity_run_dmg,	PS_STAND);
 	anim().AddAnim	(eAnimCheckCorpse,		"stand_check_corpse_",	-1,	&velocity_none,		PS_STAND);
@@ -76,16 +84,30 @@ void   CChimera::Load (LPCSTR section)
 	anim().AddAnim	(eAnimAttack,			"stand_idle_",			-1, &velocity_turn,		PS_STAND);
 
 	anim().AddAnim	(eAnimLookAround,		"stand_idle_",			-1, &velocity_none,		PS_STAND);
-	anim().AddAnim	(eAnimSteal,			"stand_walk_",			-1, &velocity_steal,	PS_STAND);
-	anim().AddAnim	(eAnimPrepareAttack,	"stand_agressive_idle_",-1, &velocity_none,		PS_STAND);
-	anim().AddAnim	(eAnimSteal,			"stand_walk_",			-1, &velocity_steal,	PS_STAND);
+	if (Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe("stand_walk_0"))
+		anim().AddAnim(eAnimSteal, "stand_walk_", -1, &velocity_steal, PS_STAND);
+	else
+		anim().AddAnim(eAnimSteal, "stand_steal_", -1, &velocity_steal, PS_STAND);
+
+	if (Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe("stand_agressive_idle_0"))
+		anim().AddAnim(eAnimPrepareAttack,	"stand_agressive_idle_", -1, &velocity_none, PS_STAND);
+	else
+		anim().AddAnim(eAnimPrepareAttack,  "stand_idle_", -1, &velocity_none, PS_STAND);
+
 	anim().AddAnim	(eAnimDie,				"stand_idle_",			-1, &velocity_none,		PS_STAND);
 	anim().AddAnim	(eAnimThreaten,			"stand_idle_",			-1, &velocity_none,		PS_STAND);
 
-	anim().AddAnim	(eAnimRunTurnLeft,		"stand_run_turn_ls_",	-1, &velocity_run,	PS_STAND);
-	anim().AddAnim	(eAnimRunTurnRight,		"stand_run_turn_rs_",	-1, &velocity_run,	PS_STAND);
+	if (Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe("stand_run_turn_ls_0"))
+		anim().AddAnim	(eAnimRunTurnLeft,		"stand_turn_ls_",	-1, &velocity_run,	PS_STAND);
+	else
+		anim().AddAnim	(eAnimRunTurnLeft,		"stand_turn_ls_",	-1, &velocity_run,	PS_STAND);
 
-	anim().AddAnim	(eAnimUpperAttack,		"jump_attack_",			-1, &m_velocity_jump_start,	PS_STAND);
+	if (Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe("stand_run_turn_rs_0"))
+		anim().AddAnim	(eAnimRunTurnRight,		"stand_run_turn_rs_", -1, &velocity_run, PS_STAND);
+	else
+		anim().AddAnim	(eAnimRunTurnRight,		"stand_turn_rs_", -1, &velocity_run, PS_STAND);
+
+	anim().AddAnim	(eAnimUpperAttack,		"jump_attack_", -1, jumpVelocityExist ? &m_velocity_jump_start : &velocity_turn, PS_STAND);
 
 	// link action
 	anim().LinkAction						(ACT_STAND_IDLE,	eAnimStandIdle);
