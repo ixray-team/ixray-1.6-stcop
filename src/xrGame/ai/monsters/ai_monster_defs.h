@@ -103,13 +103,18 @@ struct SVelocityParam {
 		max_factor				= 1.0f;
 	}
 
-	void	Load (LPCSTR section, LPCSTR line) {
+	bool	Load (LPCSTR section, LPCSTR line) 
+	{
+		if (!pSettings->line_exist(section, line))
+			return false;
+
 		string32 buffer;
 		velocity.linear			= float(atof(_GetItem(pSettings->r_string(section,line),0,buffer)));
 		velocity.angular_real	= float(atof(_GetItem(pSettings->r_string(section,line),1,buffer)));
 		velocity.angular_path	= float(atof(_GetItem(pSettings->r_string(section,line),2,buffer)));
 		min_factor				= float(atof(_GetItem(pSettings->r_string(section,line),3,buffer)));
 		max_factor				= float(atof(_GetItem(pSettings->r_string(section,line),4,buffer)));
+		return true;
 	}
 };
 
@@ -274,7 +279,7 @@ typedef		shared_str			anim_string;
 struct SAnimItem {
 
 	anim_string		target_name;	// "stand_idle_"
-    bool			target_may_not_exist;
+	bool			target_may_not_exist;
 	int				spec_id;		// (-1) - any,  (0 - ...) - идентификатор 3
 	u8				count;			// количество анимаций : "idle_0", "idle_1", "idle_2" 
 	

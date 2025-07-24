@@ -22,6 +22,8 @@ void CStateBurerAttackGravi<Object>::initialize()
 template <typename Object>
 void CStateBurerAttackGravi<Object>::execute()
 {
+	this->object->face_enemy();
+
 	switch ( m_action )
 	{
 		case ACTION_GRAVI_STARTED:
@@ -99,48 +101,64 @@ bool CStateBurerAttackGravi<Object>::check_completion()
 template <typename Object>
 void CStateBurerAttackGravi<Object>::ExecuteGraviStart()
 {
-	float const time				=	this->object->anim().get_animation_length (eAnimGraviFire, 0);
-	m_anim_end_tick					=	current_time() + TTime(time*1000);
-	m_action						=	ACTION_GRAVI_CONTINUE;
-	m_time_gravi_started			=	Device.dwTimeGlobal;
-	this->object->StartGraviPrepare			();
+	this->object->anim().set_override_animation(eAnimGraviFire, 0);
+
+	if (!m_time_gravi_started)
+	{
+		float const time = this->object->anim().get_animation_length(eAnimGraviFire, 0);
+		m_anim_end_tick = current_time() + TTime(time * 1000);
+		m_time_gravi_started = Device.dwTimeGlobal;
+		this->object->StartGraviPrepare();
+	}
+	if (this->object->m_use_three_gravi_anims && current_time() <= m_anim_end_tick)
+		return;
+
+	m_action = ACTION_GRAVI_CONTINUE;
 }
 
 template <typename Object>
 void CStateBurerAttackGravi<Object>::ExecuteGraviContinue()
 {
+	const u32 anim_idx = this->object->m_use_three_gravi_anims ? 1 : 0;
+	this->object->anim().set_override_animation(eAnimGraviFire, anim_idx);
+
 	// проверить на грави удар
-	float dist						=	this->object->Position().distance_to
-										(this->object->EnemyMan.get_enemy()->Position());
+	const float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
 
-	float time_to_hold				=	(abs(dist - this->object->m_gravi.min_dist) / this->object->m_gravi.min_dist);
-	clamp								(time_to_hold, 0.f, 1.f);
-	time_to_hold					*=	float(this->object->m_gravi.time_to_hold);
+	float time_to_hold = (abs(dist - this->object->m_gravi.min_dist) / this->object->m_gravi.min_dist);
+	clamp(time_to_hold, 0.f, 1.f);
+	time_to_hold *= float(this->object->m_gravi.time_to_hold);
 
-	if ( m_time_gravi_started + u32(time_to_hold) < Device.dwTimeGlobal )
+	if (m_time_gravi_started + u32(time_to_hold) >= Device.dwTimeGlobal)
+		return;
+
+	m_action = ACTION_GRAVI_FIRE;
+
+	if (this->object->m_use_three_gravi_anims)
 	{
-		m_action					=	ACTION_GRAVI_FIRE;
+		this->object->anim().clear_override_animation();
+		this->object->anim().set_override_animation(eAnimGraviFire, 2);
+		float const time = this->object->anim().get_animation_length(eAnimGraviFire, 2);
+		m_anim_end_tick = current_time() + TTime(time * 1000);
 	}
 }
 
 template <typename Object>
 void CStateBurerAttackGravi<Object>::ExecuteGraviFire()
 {
-	if (IsGameTypeSingle()) {
-	Fvector from_pos;
-	Fvector target_pos;
-	from_pos						=	this->object->Position();
-	from_pos.y						+=	0.5f;
-	target_pos						=	this->object->EnemyMan.get_enemy()->Position();
-	target_pos.y					+=	0.5f;
+	const u32 anim_idx = this->object->m_use_three_gravi_anims ? 2 : 0;
+	this->object->anim().set_override_animation(eAnimGraviFire, anim_idx);
 
-	this->object->m_gravi_object.activate		(this->object->EnemyMan.get_enemy(), from_pos, target_pos);
+	Fvector from_pos = this->object->Position();
+	from_pos.y += 0.5f;
 
-	}
-	else
-	{
-		this->object->StartGraviMP();
-	}
-	this->object->StopGraviPrepare			();
-	this->object->sound().play				(CBurer::eMonsterSoundGraviAttack);
+	Fvector target_pos = this->object->EnemyMan.get_enemy()->Position();
+	target_pos.y += 0.5f;
+
+	this->object->m_gravi_object.activate(this->object->EnemyMan.get_enemy(), from_pos, target_pos);
+
+	this->object->StopGraviPrepare();
+	this->object->sound().play(CBurer::eMonsterSoundGraviAttack);
+
+	m_action = ACTION_WAIT_ANIM_END;
 }
