@@ -153,8 +153,8 @@ bool CControlAnimationBase::get_animation_info (EMotionAnim anim, u32 index, Mot
 	else {
 		xr_strconcat(animation_name_buffer, anim_it->target_name.c_str());
 	}
-		
-	IKinematicsAnimated*	animated	=	smart_cast<IKinematicsAnimated*>(m_object->Visual());
+
+	IKinematicsAnimated*	animated	= m_object->Visual()->dcast_PKinematicsAnimated();
 	if ( !animated )
 	{
 		return								false;
