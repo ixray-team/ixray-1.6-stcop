@@ -41,7 +41,7 @@ void   CStateBurerAntiAim<Object>::critical_finalize()
 template <class Object>
 bool   CStateBurerAntiAim<Object>::check_start_conditions()
 {
-	return									this->object->get_anti_aim()->check_start_condition();
+	return									this->object->get_anti_aim() ? this->object->get_anti_aim()->check_start_condition() : false;
 }
 
 template <class Object>
