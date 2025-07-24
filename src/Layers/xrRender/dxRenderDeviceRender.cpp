@@ -387,7 +387,7 @@ void dxRenderDeviceRender::Begin()
 	RCache.set_Z			(TRUE);
 #endif
 
-#ifdef USE_DX11
+#if defined(USE_DX11) && defined(DEBUG_DRAW)
 	GPUEvents_BeginRendering();
 #endif
 }
@@ -446,7 +446,7 @@ void dxRenderDeviceRender::End()
 		MyImGui.AfterRender();
 
 		DebugRenderImpl.m_lines.resize(0);
-#ifdef USE_DX11
+#if defined(USE_DX11) && defined(DEBUG_DRAW)
 		GPUEvents_EndRendering();
 #endif
 	}
