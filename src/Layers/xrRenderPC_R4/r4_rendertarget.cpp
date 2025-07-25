@@ -19,6 +19,7 @@
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
 #include "../xrRender/blender_smaa.h"
+#include "../xrRender/BlenderGamma.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "magic_enum/magic_enum.hpp"
 
@@ -427,6 +428,7 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_Color);
 		DisplayRT(rt_Back_Buffer_AA);
 		DisplayRT(rt_Back_Buffer);
+		DisplayRT(rt_BackbufferLUT);
 		DisplayRT(rt_Bloom_1);
 		DisplayRT(rt_Generic);
 		DisplayRT(rt_Generic_0);
@@ -438,6 +440,7 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_sslr_temp);
 		DisplayRT(rt_ssao_temp);
 		DisplayRT(rt_Velocity);
+		DisplayRT(rt_GammaLUT);
 
 #undef DisplayRT
 
@@ -508,8 +511,9 @@ CRenderTarget::CRenderTarget()
 
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
-
 		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+
+		rt_BackbufferLUT.create(r2_RT_backbuffer_lut, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R10G10B10A2_UNORM);
 
 		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT);
 
@@ -593,6 +597,12 @@ CRenderTarget::CRenderTarget()
 
 		rt_Generic_0_prev.create(r2_RT_generic0_prev, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);	
 	}
+
+	// Gamma
+	b_gamma = new CBlender_gamma();
+	s_gamma.create(b_gamma);
+
+	rt_GammaLUT.create(r2_RT_gamma_lut, 1024, 1, DxgiFormat::DXGI_FORMAT_R10G10B10A2_UNORM);
 
 	// OCCLUSION
 	s_occq.create(b_occq, "r2\\occq");
@@ -687,7 +697,7 @@ CRenderTarget::CRenderTarget()
 			RContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
 		}
 
-		u_setrt(Device.TargetWidth, Device.TargetHeight, RTarget, nullptr, nullptr, nullptr);
+		u_setrt(Device.TargetWidth, Device.TargetHeight, rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 	}
 
 	// HBAO
@@ -946,6 +956,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_ssao);
 	xr_delete(b_fxaa);
 	xr_delete(b_smaa);
+	xr_delete(b_gamma);
 	xr_delete(b_spp);
 	xr_delete(b_accum_mask);
 	xr_delete(b_occq);
