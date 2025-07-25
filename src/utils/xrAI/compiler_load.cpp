@@ -5,31 +5,27 @@
 #include "level_graph.h"
 #include "AIMapExport.h"
 
-IC	const Fvector vertex_position(const CLevelGraph::CPosition &Psrc, const Fbox &bb, const SAIParams &params)
+IC	const Fvector vertex_position(const NodePosition& Psrc, const Fbox& bb, const SAIParams& params)
 {
-	Fvector				Pdest;
-	int	x,z, row_length;
-	row_length			= iFloor((bb.max.z - bb.min.z)/params.fPatchSize + EPS_L + 1.5f);
-	x					= Psrc.xz() / row_length;
-	z					= Psrc.xz() % row_length;
-	Pdest.x =			float(x)*params.fPatchSize + bb.min.x;
-	Pdest.y =			(float(Psrc.y())/65535)*(bb.max.y-bb.min.y) + bb.min.y;
-	Pdest.z =			float(z)*params.fPatchSize + bb.min.z;
+	Fvector Pdest;
+	int	x, z, row_length;
+	row_length = iFloor((bb.max.z - bb.min.z) / params.fPatchSize + EPS_L + 1.5f);
+	x = Psrc.xz() / row_length;
+	z = Psrc.xz() % row_length;
+	Pdest.x = float(x) * params.fPatchSize + bb.min.x;
+	Pdest.y = (float(Psrc.y()) / 65535) * (bb.max.y - bb.min.y) + bb.min.y;
+	Pdest.z = float(z) * params.fPatchSize + bb.min.z;
 	return				(Pdest);
 }
 
-struct CNodePositionConverter {
-	IC		CNodePositionConverter(const SNodePositionOld &Psrc, hdrNODES &m_header, NodePosition &np);
-};
-
-IC CNodePositionConverter::CNodePositionConverter(const SNodePositionOld &Psrc, hdrNODES &m_header, NodePosition &np)
+IC void CNodePositionConverter(const SNodePositionOld& Psrc, hdrNODES& m_header, NodePosition& np)
 {
 	Fvector		Pdest;
-	Pdest.x		= float(Psrc.x)*m_header.size;
-	Pdest.y		= (float(Psrc.y)/65535)*m_header.size_y + m_header.aabb.min.y;
-	Pdest.z		= float(Psrc.z)*m_header.size;
-	CNodePositionCompressor(np,Pdest,m_header);
-	np.y		(Psrc.y);
+	Pdest.x = float(Psrc.x) * m_header.size;
+	Pdest.y = (float(Psrc.y) / 65535) * m_header.size_y + m_header.aabb.min.y;
+	Pdest.z = float(Psrc.z) * m_header.size;
+	CNodePositionCompressor(np, Pdest, m_header);
+	np.y(Psrc.y);
 }
 
 //-----------------------------------------------------------------

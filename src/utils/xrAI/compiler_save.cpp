@@ -17,9 +17,8 @@ struct CNodeCompressed
 
 IC void	CNodeCompressed::compress_node(NodeCompressed& Dest, vertex& Src)
 {
-	Dest.light	(15);
-	for	(u8 L=0; L<4; ++L)
-		Dest.link(L,Src.n[L]);
+	for (u8 L = 0; L < 4; ++L)
+		Dest.link(L, Src.n[L]);
 }
 
 void Compress(NodeCompressed& Dest, vertex& Src, hdrNODES& H)

@@ -354,7 +354,7 @@ IC void ILevelGraph::contour(ILevelGraph::SContour &_contour, u32 vertex_id) con
 
 IC void ILevelGraph::contour(ILevelGraph::SContour &_contour, const ILevelGraph::CVertex *vertex) const
 {
-	Fvector					vertex_position = this->vertex_position	(vertex->p);
+	Fvector					vertex_position = this->vertex_position	(vertex->UncompressedNode.p);
 
 	// decompress plane
 	Fplane					plane;	
