@@ -19,7 +19,7 @@
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
 #include "../xrRender/blender_smaa.h"
-#include "../xrRender/BlenderGamma.h"
+#include "../xrRenderPC_R4/BlenderGamma.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "magic_enum/magic_enum.hpp"
 
