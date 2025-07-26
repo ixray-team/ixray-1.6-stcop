@@ -337,6 +337,11 @@ bool CUIActorMenu::OnItemRButtonClick(CUICellItem* itm)
 
 bool CUIActorMenu::OnItemFocusReceive(CUICellItem* itm)
 {
+	if (CurrentGameUI()->TopInputReceiver() != this)
+	{
+		return OnItemFocusLost(itm);
+	}
+
 	InfoCurItem( nullptr );
 	m_item_info_view = true;
 
