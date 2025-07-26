@@ -39,6 +39,7 @@
 
 #include "../game_sv_single.h"
 #include "ai_object_location.h"
+#include "ui_drop_amount.h"
 
 using namespace luabind; //Alundaio
 
@@ -154,12 +155,11 @@ void CUIActorMenu::SendEvent_Item_Drop(PIItem pItem, u16 recipient)
 	clear_highlight_lists			();
 }
 
-void CUIActorMenu::DropAllCurrentItem()
+void CUIActorMenu::DropAllCurrentItem(u32 item_amount)
 {
 	if ( CurrentIItem() && !CurrentIItem()->IsQuestItem() )
 	{
-		u32 const cnt = CurrentItem()->ChildsCount();
-		for( u32 i = 0; i < cnt; ++i )
+		for( u32 i = 0; i < item_amount; ++i )
 		{
 			CUICellItem*	itm  = CurrentItem()->PopChild(nullptr);
 			PIItem			iitm = (PIItem)itm->m_pData;
@@ -169,6 +169,35 @@ void CUIActorMenu::DropAllCurrentItem()
 		SendEvent_Item_Drop( CurrentIItem(), m_pActorInvOwner->object_id() );
 	}
 	SetCurrentItem								(nullptr);
+}
+
+void CUIActorMenu::TakeAllCurrentItem(u32 item_amount)
+{
+	for( u32 i = 0; i < item_amount; ++i )
+	{
+		CUICellItem*	child_itm  = CurrentItem()->PopChild(nullptr);
+		PIItem			child_iitm = (PIItem)child_itm->m_pData;
+		move_item_from_to(child_iitm->parent_id(), m_pActorInvOwner->object_id(), child_iitm->object_id());
+	}
+	move_item_from_to(CurrentIItem()->parent_id(), m_pActorInvOwner->object_id(), CurrentIItem()->object_id());
+
+	// St4lker0k765: мега уёбищный костыль, но я хз почему по дефолту предмет остаётся в исходном инвентаре
+	if (!CurrentItem()->ChildsCount())
+		GetListByType(iDeadBodyBag)->RemoveItem(CurrentItem(), true);
+	else
+		CurrentItem()->PopChild(nullptr);
+}
+
+void CUIActorMenu::MoveAllCurrentItem(u32 item_amount)
+{
+	auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
+	for (u32 i = 0; i < item_amount; ++i)
+	{
+		CUICellItem* child_itm = CurrentItem()->Child(i);
+		PIItem child_iitm = (PIItem)child_itm->m_pData;
+		move_item_from_to(CurrentIItem()->parent_id(), ownerID, child_iitm->object_id());
+	};
+	move_item_from_to(CurrentIItem()->parent_id(), ownerID, CurrentIItem()->object_id());
 }
 
 bool CUIActorMenu::DropAllItemsFromRuck( bool quest_force )
@@ -1295,30 +1324,39 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 {
 	if(!item->IsQuestItem())
 	{
-		if(m_currMenuMode != mmDeadBodySearch) {
+		if(m_currMenuMode != mmDeadBodySearch) 
+		{
 			m_UIPropertiesBox->AddItem("st_drop", nullptr, INVENTORY_DROP_ACTION);
 			b_show = true;
 
-			if(cell_item->ChildsCount()) {
+			if(cell_item->ChildsCount()) 
+			{
+				m_UIPropertiesBox->AddItem("st_drop_amount", (void*)77, INVENTORY_DROP_ACTION);
 				m_UIPropertiesBox->AddItem("st_drop_all", (void*)33, INVENTORY_DROP_ACTION);
 			}
 		}
 		else {
-			if(item->parent_id() == m_pActorInvOwner->object_id()) {
+			if(item->parent_id() == m_pActorInvOwner->object_id()) 
+			{
 				m_UIPropertiesBox->AddItem("st_move_to", nullptr, INVENTORY_DROP_ACTION);
 				b_show = true;
 
-				if(cell_item->ChildsCount()) {
+				if(cell_item->ChildsCount()) 
+				{
+					m_UIPropertiesBox->AddItem("st_move_amount", (void*)77, INVENTORY_DROP_ACTION);
 					m_UIPropertiesBox->AddItem("st_move_all", (void*)33, INVENTORY_DROP_ACTION);
 				}
 			}
 		}
 	}
-	if(item->parent_id() != m_pActorInvOwner->object_id()) {
+	if(item->parent_id() != m_pActorInvOwner->object_id()) 
+	{
 		m_UIPropertiesBox->AddItem("st_take_to", nullptr, INVENTORY_DROP_ACTION);
 		b_show = true;
 
-		if(cell_item->ChildsCount()) {
+		if(cell_item->ChildsCount()) 
+		{
+			m_UIPropertiesBox->AddItem("st_take_amount", (void*)77, INVENTORY_DROP_ACTION);
 			m_UIPropertiesBox->AddItem("st_take_all", (void*)33, INVENTORY_DROP_ACTION);
 		}
 	}
@@ -1440,46 +1478,55 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	case INVENTORY_DROP_ACTION:
 		{
 			void* d_ = m_UIPropertiesBox->GetClickedItem()->GetData();
-			if(m_currMenuMode != mmDeadBodySearch) {
-				if(d_ == (void*)33) {
-					DropAllCurrentItem();
+			if(m_currMenuMode != mmDeadBodySearch) 
+			{
+				if(d_ == (void*)33) 
+				{
+					DropAllCurrentItem(cell_item->ChildsCount());
 				}
-				else {
+				else if (d_ == (void*)77)
+				{
+					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop);
+				}
+				else
+				{
 					SendEvent_Item_Drop(item, m_pActorInvOwner->object_id());
 				}
 			}
-			else {
-				if(item->parent_id() == m_pActorInvOwner->object_id()) {
+			else 
+			{
+				if(item->parent_id() == m_pActorInvOwner->object_id()) 
+				{
 					auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
 					bool isAllowPlace = IsAllowPlaceToInvBox(cell_item);
 
-					if(d_ == (void*)33 && isAllowPlace) {
-						for(u32 i = 0; i < cell_item->ChildsCount(); ++i) {
-							CUICellItem* child_itm = cell_item->Child(i);
-							PIItem child_iitm = (PIItem)(child_itm->m_pData);
-
-							move_item_from_to(item->parent_id(), ownerID, child_iitm->object_id());
-						}
+					if(d_ == (void*)33 && isAllowPlace) 
+					{
+						MoveAllCurrentItem(cell_item->ChildsCount());
 					}
-
-					if (isAllowPlace) {
+					else if (d_ == (void*)77 && isAllowPlace)
+					{
+						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove);
+					}
+					else if (isAllowPlace) 
+					{
 						move_item_from_to(item->parent_id(), ownerID, item->object_id());
 					}
 				}
-				else {
-					auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
-
-					if(d_ == (void*)33) {
-						u32 Iter = 0;
-						while(Iter < cell_item->ChildsCount()) {
-							CUICellItem* child_itm = cell_item->Child(Iter);
-							if(!ToBag(child_itm, false)) {
-								++Iter;
-							}
-						}
+				else 
+				{
+					if(d_ == (void*)33) 
+					{
+						TakeAllCurrentItem(cell_item->ChildsCount());
 					}
-
-					ToBag(cell_item, false);
+					else if (d_ == (void*)77)
+					{
+						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake);
+					}
+					else
+					{
+						ToBag(cell_item, false);
+					}
 				}
 			}
 			break;
