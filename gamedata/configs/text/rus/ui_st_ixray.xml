@@ -427,4 +427,23 @@
 	<string id="ui_mm_r2_use_rain_drops">
 		<text>Капли на стекле</text>
 	</string>
+	
+	<string id="st_drop_amount">
+		<text>выбросить кол-во</text>
+	</string>
+	<string id="st_move_amount">
+		<text>переместить кол-во</text>
+	</string>
+	<string id="st_take_amount">
+		<text>взять кол-во</text>
+	</string>
+	<string id="st_custom_drop_hint_0">
+		<text>Укажите количество предметов на выброс</text>
+	</string>
+	<string id="st_custom_drop_hint_1">
+		<text>Укажите количество предметов для перемещения</text>
+	</string>
+	<string id="st_custom_drop_hint_2">
+		<text>Укажите количество предметов для взятия</text>
+	</string>
 </string_table>
