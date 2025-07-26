@@ -427,4 +427,22 @@
 	<string id="ui_mm_mouse_sense_ui">
 		<text>Mouse sensitivity in UI</text>
 	</string>
+	<string id="st_drop_amount">
+		<text>drop amount</text>
+	</string>
+	<string id="st_move_amount">
+		<text>move amount</text>
+	</string>
+	<string id="st_take_amount">
+		<text>take amount</text>
+	</string>
+	<string id="st_custom_drop_hint_0">
+		<text>Specify amount of items to drop</text>
+	</string>
+	<string id="st_custom_drop_hint_1">
+		<text>Specify amount of items to move</text>
+	</string>
+	<string id="st_custom_drop_hint_2">
+		<text>Specify amount of items to take</text>
+	</string>
 </string_table>
