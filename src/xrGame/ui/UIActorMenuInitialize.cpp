@@ -23,6 +23,7 @@
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/ui_base.h"
 #include "../../xrEngine/string_table.h"
+#include "ui_drop_amount.h"
 
 CUIActorMenu::CUIActorMenu()
 {
@@ -360,6 +361,10 @@ void CUIActorMenu::Construct()
 		AttachChild							(m_upgrade_info);
 		m_upgrade_info->init_from_xml		("actor_menu_item.xml");
 	}
+
+	m_pItemDropAmountWnd				= new CUIItemDropAmountWnd();
+	m_pItemDropAmountWnd->SetAutoDelete	(true);
+	m_pItemDropAmountWnd->InitDropAmount();
 
 	m_message_box_yes_no				= new CUIMessageBoxEx();	
 	m_message_box_yes_no->InitMessageBox( "message_box_yes_no" );
