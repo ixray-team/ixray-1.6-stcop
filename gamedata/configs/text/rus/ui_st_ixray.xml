@@ -433,4 +433,22 @@
 	<string id="ui_mm_mouse_sense_ui">
 		<text>„увствительность мыши в UI</text>
 	</string>
+	<string id="st_drop_amount">
+		<text>выбросить кол-во</text>
+	</string>
+	<string id="st_move_amount">
+		<text>переместить кол-во</text>
+	</string>
+	<string id="st_take_amount">
+		<text>вз€ть кол-во</text>
+	</string>
+	<string id="st_custom_drop_hint_0">
+		<text>”кажите количество предметов на выброс</text>
+	</string>
+	<string id="st_custom_drop_hint_1">
+		<text>”кажите количество предметов дл€ перемещени€</text>
+	</string>
+	<string id="st_custom_drop_hint_2">
+		<text>”кажите количество предметов дл€ вз€ти€</text>
+	</string>
 </string_table>

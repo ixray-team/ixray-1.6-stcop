@@ -20,6 +20,7 @@ class UIHint;
 class CUIDragDropListEx;
 class CUIDragDropReferenceList;
 class CUIEditBox;
+class CUITrackBar;
 
 #include "Widgets/UIStackPanel.h"
 
@@ -39,6 +40,7 @@ public:
 	static	CUI3tButton*		Create3tButton		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUICheckButton*		CreateCheck			( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUIEditBox*			CreateEditBox		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
+	static	CUITrackBar*		CreateTrackBar		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 
 	static	UIHint*				CreateHint			( CUIXml& xml, LPCSTR ui_path /*, CUIWindow* parent*/ );
 
