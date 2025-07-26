@@ -17,6 +17,7 @@
 #include "Widgets/UICheckButton.h"
 #include "Widgets/UIHint.h"
 #include "Widgets/UIEditBox.h"
+#include "Widgets/UITrackBar.h"
 
 CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
@@ -147,5 +148,17 @@ UIHint* UIHelper::CreateHint( CUIXml& xml, LPCSTR ui_path)
 	UIHint* ui					= new UIHint();
 	ui->SetAutoDelete			( true );
 	ui->init_from_xml			( xml, ui_path );
+	return ui;
+}
+
+CUITrackBar* UIHelper::CreateTrackBar( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
+{
+	CUITrackBar* ui			= new CUITrackBar();
+	if(parent)
+	{
+		parent->AttachChild	( ui );
+		ui->SetAutoDelete	( true );
+	}
+	CUIXmlInit::InitTrackBar( xml, ui_path, 0, ui );
 	return ui;
 }
