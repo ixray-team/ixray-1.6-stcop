@@ -44,26 +44,19 @@ struct RayRequest
 
 
 // Initialize TASKS
-#define MAX_RAYS_PER_TASK   1024 * 1024 * 100 // Нужно еще учесть что там будут лампочек может быть по 256 за 1 таск
-// #define MAX_LIGTINGS 256
-
+#define MAX_RAYS_PER_TASK   1024 * 1024 * 40 // Нужно еще учесть что там будут лампочек может быть по 256 за 1 таск
+ 
 // Recvest Class
 struct RayRecvestIndex
 {
 	base_color_c C;
-	u32 INDEX_TASK;
+	std::pair<u32, u32> INDEX_TASK;
 	u32 SampleID;
 
 	Fvector P;
 	Fvector N;
 	Face* skip;
 	u32 flags;
-	
-
-//	u32 begin;
-//	u32 end;
-//	RayRequest		 reqRays[MAX_LIGTINGS];
-//	u32				 LightsUsed = 0;
 };
 
 class PackedLighting
@@ -87,12 +80,10 @@ public:
 
 public:
 	RayRecvestIndex& GetRays(int Index) { return task_pools[Index]; }
-	void ProcessReadyRays();
-
-	void LightPointPacked(u32 task_id, u32 SampleID, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
+ 
+	void LightPointPacked(u32 U, u32 V, u32 SampleID, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
 	void LightPointPackedRun();
-	// void LightPointPackedApply();
-  	
+   	
 	void ClearPool()
 	{ 
 		TotalRaysProcessed += AllocatedRays;
@@ -100,12 +91,9 @@ public:
 		IndexTask.store(0, std::memory_order_acquire);
 	}
 
-	xr_hash_map<u32, base_color_c> Colors;	// Task Index, Color.
-// 	xr_vector<RayRequest> rays_reqvested;
-
-	xr_atomic_u32 AllocatedRays = 0;
-	// size_t getAllocatedRays() { return AllocatedRays.load(std::memory_order_relaxed); }
-
+	xr_map<std::pair<u32, u32>, base_color_c> Colors;	// Task Index, Color.
+ 	xr_atomic_u32 AllocatedRays = 0;
+ 
 	// Stats 
 	CTimer tStats;
 	u64 StatsTotalGPUCopy = 0;
