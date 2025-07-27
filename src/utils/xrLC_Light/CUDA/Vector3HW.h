@@ -9,7 +9,7 @@ struct HardwareVector
 	float x;
 	float y;
 	float z;
-
+ 
 	// Cuda Convert
 	__device__ HardwareVector(float3 value)
 	{
@@ -197,8 +197,7 @@ public:
 		sun = A.sun * is + B.sun * s;
 	}
 };
-
-
+ 
 struct hardware_lighting
 {
 	unsigned	short		type;				// Type of light source		
@@ -214,3 +213,18 @@ struct hardware_lighting
 	float					attenuation2;		// Quadratic attenuation	
 	float					energy;				// For radiosity ONLY
 };
+
+struct hardware_income 
+{
+	float3		   Position;
+	float3		   Direction;
+};
+
+struct ColorsRessult
+{
+	hardware_color Color;
+	int		       Configured;
+	int			   RealProcessed;
+	int			   ResultIndex;
+};
+
