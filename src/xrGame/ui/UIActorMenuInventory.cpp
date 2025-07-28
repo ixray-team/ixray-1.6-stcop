@@ -1199,7 +1199,17 @@ void CUIActorMenu::PropertiesBoxForAddon(PIItem item, bool& b_show)
 		}
 		if (item_in_slot_3 && item_in_slot_3->CanAttach(pScope))
 		{
-			shared_str str = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot] ? g_pStringTable->translate("st_attach_scope_to_rifle") : g_pStringTable->translate("st_attach_scope_to_pistol");
+			shared_str name = g_pStringTable->translate("st_attach_scope_to_rifle");
+			shared_str add_name = g_pStringTable->translate("st_attach_scope_to_pistol");
+			shared_str str;
+			if (!xr_strcmp(name, "st_attach_scope_to_rifle") &&
+				xr_strcmp(add_name, "st_attach_scope_to_pistol"))
+			{
+				str = add_name;
+			}
+			else
+				str = name;
+
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
 			m_UIPropertiesBox->AddItem(str.c_str(), (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON);
 			b_show = true;
@@ -1226,7 +1236,17 @@ void CUIActorMenu::PropertiesBoxForAddon(PIItem item, bool& b_show)
 
 		if (item_in_slot_3 && item_in_slot_3->CanAttach(pSilencer))
 		{
-			shared_str str = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot] ? g_pStringTable->translate("st_attach_silencer_to_rifle") : g_pStringTable->translate("st_attach_silencer_to_pistol");
+			shared_str name = g_pStringTable->translate("st_attach_silencer_to_rifle");
+			shared_str add_name = g_pStringTable->translate("st_attach_silencer_to_pistol");
+			shared_str str;
+			if (!xr_strcmp(name, "st_attach_silencer_to_rifle") &&
+				xr_strcmp(add_name, "st_attach_silencer_to_pistol"))
+			{
+				str = add_name;
+			}
+			else
+				str = name;
+
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
 			m_UIPropertiesBox->AddItem(str.c_str(), (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON);
 			b_show = true;
