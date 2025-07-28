@@ -56,9 +56,9 @@ void RenderMainUI()
 		return;
 	}
 
-	if ( Size[0] != 1000 || Size[1] != 650)
+	if ( Size[0] != 1000 || Size[1] != 675)
 	{
-		SDL_SetWindowSize(g_AppInfo.Window, 1000, 650);
+		SDL_SetWindowSize(g_AppInfo.Window, 1000, 675);
 	}
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
@@ -522,21 +522,21 @@ void RenderCompilerUI(int X, int Y)
 
 	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
 
-	if (ResizeMaximal)
-	{
-		if (X != 1400 || Y != 640)
-		{
-			//SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
-			SDL_SetWindowSize(g_AppInfo.Window, 1400, 700);
-		}
-	}
-	else
-	{
-		if (X != 1000 || Y != 560)
-		{
-			SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
-		}
-	}
+	// if (ResizeMaximal)
+	// {
+	// 	if (X != 1400 || Y != 640)
+	// 	{
+	// 		//SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
+	// 		SDL_SetWindowSize(g_AppInfo.Window, 1400, 700);
+	// 	}
+	// }
+	// else
+	// {
+	// 	if (X != 1000 || Y != 560)
+	// 	{
+	// 		SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
+	// 	}
+	// }
 
 	int MAX_TRABS = 9;
 	if (ResizeMaximal)
