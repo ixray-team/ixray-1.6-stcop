@@ -52,7 +52,7 @@ public:
 	void LightPointPackedRun();
 
 	// Deflectors Processing
-	void LightPointPackedDeflector(u32 U, u32 V, CDeflector* D, Fvector& P, Fvector& N, u32 flags, Face* skip);
+	void LightPointPackedDeflector(CDeflector* D, u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip);
 	void LightPointPackedDeflectorsRun();
  
  	void RestartALL()
@@ -66,8 +66,7 @@ public:
 		FCountMap.clear();
 
 		// Deflectors
- 		DEF_FCountMap.clear();
-		DEF_Colors.clear();
+ 		DEF_Colors.clear();
 
 		// task pool memory clear
 		task_pools.shrink_to_fit();
@@ -81,8 +80,7 @@ public:
 
 	// Task Index, Color. 
 	// ñëîæíûå çàä÷è ÑDeflector
-	xr_map<CDeflector*, FCountsMap>			DEF_FCountMap;
-	xr_map<CDeflector*, color_map>			DEF_Colors;
+ 	xr_map<CDeflector*, color_map>			DEF_Colors;
   
 	// Stats 
 	bool	isInitializedGPU = false;
@@ -92,8 +90,6 @@ public:
 	size_t StatsTotalGPU = 0;
 	size_t StatsTraverseGPU = 0;
  	size_t StatsRaysAdd = 0;
-
-	xrCriticalSection csRayLaunched;
 
 	// tasks	
 	concurrency::concurrent_vector<RayRecvestIndex>							 task_pools;			// BASIC UV

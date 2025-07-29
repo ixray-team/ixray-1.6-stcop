@@ -109,6 +109,10 @@ void	CBuild::LMaps					()
 	tStats.Start();
 	
 	// GPU PROCESS
+	
+	/*** PART 1 ***/
+
+	// Stage 1
 	GPUTaskinSystem.RestartALL();
   	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
 	{
@@ -116,33 +120,29 @@ void	CBuild::LMaps					()
 		D->LightGPU(H);
 		AditionalData("*** [LMAPS] Rays collecting [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
 	});
-
 	AditionalData("*** [LMAPS]  RunProcessing Rays: %u", GPUTaskinSystem.task_pools.size());
-	
 	clMsg("*** [1]Garbage Rays Time: %u ms", tStats.GetElapsed_ms()) ;  tStats.Start();
 
+	// Stage 2
    	GPUTaskinSystem.LightPointPackedDeflectorsRun();
-   	for (auto& D : lc_global_data()->g_deflectors())
- 		D->ApplyGPU();
-
-	clMsg("*** [2]GPU Rays Time: %u ms", tStats.GetElapsed_ms()); tStats.Start();
-
- 	// CPU Edges Processing (On embree4)
+ 	clMsg("*** [2]GPU Rays Time: %u ms", tStats.GetElapsed_ms()); tStats.Start();
+  
+ 	// Stage 3 CPU Edges Processing (On embree4)
  	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
 	{
 		CDeflector* D = lc_global_data()->g_deflectors()[INDEX];
-		D->ApplyEdges(true);
- 		AditionalData("*** [LMAPS] Processing Edges [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
+		D->ApplyGPU(H, true);
+  		AditionalData("*** [LMAPS] Processing Edges [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
 	});
 
-	clMsg("*** [3]CPU Apply Edges Time: %u ms", tStats.GetElapsed_ms()); tStats.Start();
-
+	clMsg("*** [3]CPU Apply Edges Time: %u ms", tStats.GetElapsed_ms()); 
 	
-	// GPU Recalculate
+	
+	/*** PART 2 ***/
  	// Restart Process (Calculate Lower Resolution)
-	GPUTaskinSystem.RestartALL();
+	GPUTaskinSystem.RestartALL(); tStats.Start();
   
-	tStats.Start();
+ 	// Stage 1 : Garbege 
 	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
 	{
 		CDeflector* D = lc_global_data()->g_deflectors()[INDEX];
@@ -151,19 +151,16 @@ void	CBuild::LMaps					()
 	});
 	clMsg("*** [1][Lower] Garbage Rays Time: %u ms", tStats.GetElapsed_ms());  tStats.Start();
 
-	tStats.Start();
-	// Start GPU Processing
+	// Stage 2 : Start GPU Processing
  	GPUTaskinSystem.LightPointPackedDeflectorsRun();
-  	for (auto& D : lc_global_data()->g_deflectors())
-		D->ApplyGPU();
- 	clMsg("*** [2][Lower] GPU Rays (Lower) Time: %u ms", tStats.GetElapsed_ms());
-
-	// CPU Edges Processing (On embree4)
+	clMsg("*** [2][Lower] GPU Rays (Lower) Time: %u ms", tStats.GetElapsed_ms()); tStats.Start();
+  
+	// Stage 3 : CPU Edges Processing (On embree4)
  	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
 	{
 		CDeflector* D = lc_global_data()->g_deflectors()[INDEX];
-		D->ApplyEdges(false);
-		D->ApplyExpadBordersGPU();
+		D->ApplyGPU(H, false);
+ 		D->ApplyExpadBordersGPU();
 		AditionalData("*** [LMAPS] FinalyResolution [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
 	});
 	clMsg("*** [3][Lower] CPU Apply Edges, ExpandBorders Time: %u ms", tStats.GetElapsed_ms());

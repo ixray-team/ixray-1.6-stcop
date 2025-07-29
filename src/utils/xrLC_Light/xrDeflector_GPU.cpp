@@ -92,8 +92,8 @@ void CDeflector::L_DirectGPU(   HASH& H)
  		for (u32 U = 0; U < lm.width; U++)
 		{
  			u32				Fcount = 0;
-			base_color_c	C;
- 			for (u32 J = 0; J < Jcount; J++)
+ 
+			for (u32 J = 0; J < Jcount; J++)
 			{
  				Fvector2 P;
 				P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
@@ -108,47 +108,22 @@ void CDeflector::L_DirectGPU(   HASH& H)
 					{
 						Face* F = (*it)->owner;
 						FromBarry(F, wP, wN, B);
- 						GPUTaskinSystem.LightPointPackedDeflector(U, V, this, wP, wN, flags, F);
+ 						GPUTaskinSystem.LightPointPackedDeflector(this, U, V, wP, wN, flags, F);
   						Fcount += 1;
  						break;
 					}
 				}
 			}
 
-			GPUTaskinSystem.DEF_FCountMap[this][{U, V}] = Fcount;
+			FacesCount[{U, V}] = Fcount;
 		}
 	}
+
+	NeedGarbageRays = true;
 }
 
-void CDeflector::ApplyGPU()
+void CDeflector::ApplyGPU(HASH& H, bool isFirst)
 {
-	lm_layer& lm = layer;
-	auto UVColors = GPUTaskinSystem.DEF_Colors[this];
-
-	for (auto& [key, C] : UVColors)
-	{
-		u32 U = key.first;
-		u32 V = key.second;
-	
-		u32 Fcount = GPUTaskinSystem.DEF_FCountMap[this][key];
-		if (Fcount)
-		{
-			C.scale(Fcount);
-			C.mul(.5f);
-			lm.surface[V * lm.width + U]._set(C);
-			lm.marker[V * lm.width + U] = 255;
-		}
-		else {
-			lm.surface[V * lm.width + U]._set(C);
-			lm.marker[V * lm.width + U] = 0;
-		}
-	} 
-}
-
-void CDeflector::ApplyEdges(bool isFirst)
-{
-	lm_layer& lm = layer;
-
 	auto EdgeProcessing = [&](Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 		{
 			Fvector		vdir;
@@ -189,27 +164,68 @@ void CDeflector::ApplyEdges(bool isFirst)
 				lm.marker[_y * lm.width + _x] = 255;
 			}
 		};
-	 
-	// *** Render Edges (Embree Process)
-	float texel_size = (1.f / float(_max(lm.width, lm.height))) / 8.f;
-	for (u32 t = 0; t < UVpolys.size(); t++)
+
+	if (NeedGarbageRays)
 	{
-		UVtri& T = UVpolys[t];
-		Face* F = T.owner;
-		EdgeProcessing(T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size, F);
-		EdgeProcessing(T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F);
-		EdgeProcessing(T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);
-	}
+		NeedGarbageRays = false;
+
+		lm_layer& lm = layer;
+		auto UVColors = GPUTaskinSystem.DEF_Colors[this];
+
+		for (auto& [key, count] : FacesCount)
+		{
+			u32 U = key.first;
+			u32 V = key.second;
+
+			if (count)
+			{
+				base_color_c& C = UVColors[key];
+				C.scale(count);
+				C.mul(.5f);
+				lm.surface[V * lm.width + U]._set(C);
+				lm.marker[V * lm.width + U] = 255;
+			}
+			else
+			{
+				base_color_c C;
+				lm.surface[V * lm.width + U]._set(C);
+				lm.marker[V * lm.width + U] = 0;
+			}
+		}
+
+		FacesCount.clear();
 
 
-	if (isFirst)
-	{
-		for (u32 ref = 254; ref > 0; ref--)
-		if (!ApplyBorders(layer, ref))
-			break;
-	}
+		Fbox2			bounds;
+		Bounds_Summary(bounds);
+		H.initialize(bounds, (u32)UVpolys.size());
+		for (u32 fid = 0; fid < UVpolys.size(); fid++) {
+			UVtri* T = &(UVpolys[fid]);
+			Bounds(fid, bounds);
+			H.add(bounds, T);
+		}
 
+		// *** Render Edges (Embree Process)
+		float texel_size = (1.f / float(_max(lm.width, lm.height))) / 8.f;
+		for (u32 t = 0; t < UVpolys.size(); t++)
+		{
+			UVtri& T = UVpolys[t];
+			Face* F = T.owner;
+			EdgeProcessing(T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size, F);
+			EdgeProcessing(T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F);
+			EdgeProcessing(T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);
+		}
+ 
+		if (isFirst)
+		{
+			for (u32 ref = 254; ref > 0; ref--)
+				if (!ApplyBorders(layer, ref))
+					break;
+		}
+	}	
 }
+
+// Перерасчет в более сжатый формат
 
 BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
 BOOL	compress_Zero(lm_layer& lm, u32 rms);
@@ -228,6 +244,16 @@ void CDeflector::LowerResolutionGPU(HASH& H)
 		}
 		else if (compress_RMS(layer, rms_shrink, w, h))
 		{
+			
+			Fbox2			bounds;
+			Bounds_Summary(bounds);
+			H.initialize(bounds, (u32)UVpolys.size());
+			for (u32 fid = 0; fid < UVpolys.size(); fid++) {
+				UVtri* T = &(UVpolys[fid]);
+				Bounds(fid, bounds);
+				H.add(bounds, T);
+			}
+
 			// Reacalculate lightmap at lower resolution
 			layer.create(w, h);
 			L_DirectGPU(H);

@@ -48,7 +48,7 @@ static	CDeflector*		read_create					();
 	void	L_Direct_Edge		(CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip);
 	void	L_Calculate			(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H  );
 	u32		weight				() { return layer.Area(); }	
-	u16	GetBaseMaterial		() ;
+	u16		GetBaseMaterial		() ;
 
 	void	Bounds				(u32 ID, Fbox2& dest)
 	{
@@ -83,13 +83,18 @@ static	CDeflector*		read_create					();
 	}
 
 	// se7kills Освещение на GPU
-	bool ApplyResolution = false;
-	void ApplyGPU();
+	xr_map<std::pair<u32, u32>, u32> FacesCount; 
+	bool ApplyResolution	 = false;
+	bool NeedGarbageRays	 = false;
 
+	// Stage 1
 	void LightGPU( HASH& H);
 	void L_DirectGPU( HASH& H);
-	void ApplyEdges(bool isFirst);
-	
+
+	// Stage 2
+	void ApplyGPU(HASH& H, bool isFirst);
+ 	
+	// Stage 3
 	void LowerResolutionGPU(HASH& H);
 	void ApplyExpadBordersGPU();
 };

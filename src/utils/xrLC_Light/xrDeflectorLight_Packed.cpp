@@ -55,16 +55,16 @@ auto Light = [&](R_Light& L, int type)
 
 // Embree
 
-float RaytraceEmbreeNew(hardware_lighting& Lnew, HardwareVector& Pnew, HardwareVector& Dnew, float R)
+float RaytraceEmbreeNew(hardware_lighting& Lnew, HardwareVector& Pnew, HardwareVector& Dnew, float R, Face* Skip)
 {
 	auto V = LightHW(Lnew);
 	auto P = Fvector().set(Pnew.x, Pnew.y, Pnew.z);
 	auto D = Fvector().set(Dnew.x, Dnew.y, Dnew.z);
- 	return EmbreeMain.RaytraceEmbreeProcess(V, P, D, R, 0);
+ 	return EmbreeMain.RaytraceEmbreeProcess(V, P, D, R, Skip);
 
 }
 
-void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, hardware_color& C, int& RealProcessed)
+void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, hardware_color& C, Face* Skip)
 {
 	HardwareVector Ldir;
 	HardwareVector Pnew = P;
@@ -85,7 +85,7 @@ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, 
 			if (D <= 0)
 				return;
 
-			float trace = RaytraceEmbreeNew(L, Pnew, Ldir, 1000.f);
+			float trace = RaytraceEmbreeNew(L, Pnew, Ldir, 1000.f, Skip);
  			att = isSunOrHemi ? L.energy * trace : D * L.energy * trace;
 		}
 		break;
@@ -101,8 +101,10 @@ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, 
 			if (D <= 0)
 				return;
 
+			
+
 			float R = sqrt(sqD); // from api
-			float trace = RaytraceEmbreeNew(L, Pnew, Ldir, R);
+			float trace = RaytraceEmbreeNew(L, Pnew, Ldir, R, Skip);
  			float scale = D * L.energy * trace;
  
 			if (isSunOrHemi)
@@ -132,7 +134,7 @@ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, 
 				return;
 
 			float R = sqrt(sqD);
-			float trace = RaytraceEmbreeNew(L, Pnew, Ldir, R);
+			float trace = RaytraceEmbreeNew(L, Pnew, Ldir, R, Skip);
  			att = powf(D, 0.125f) * L.energy * trace * (1 - R / L.range);
 
 		}break;
@@ -154,32 +156,30 @@ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, 
 	}
 };
 
-void ProcessRays(Fvector& P, Fvector& D, base_lighting& LS, hardware_color& Cnew)
+void ProcessRays(Fvector& P, Fvector& D, base_lighting& LS, hardware_color& Cnew, u8 flags, Face* Skip)
 {
-	int LightsProcessed = 0;
-	 
-	HardwareVector Pos(P.x, P.y, P.z);
+ 	HardwareVector Pos(P.x, P.y, P.z);
 	HardwareVector Dir(D.x, D.y, D.z);
+	if (!(flags & LP_dont_sun))
 	for (auto& L : LS.sun)
 	{
 		hardware_lighting Lnew = Light(L, LGroup::eSun);
-		CalculatePoint(Lnew, Pos, Dir, Cnew, LightsProcessed);
+		CalculatePoint(Lnew, Pos, Dir, Cnew,  Skip);
 	}
 
+	if (!(flags & LP_dont_hemi))
 	for (auto& L : LS.hemi)
 	{
 		hardware_lighting Lnew = Light(L, LGroup::eHemi);
-		CalculatePoint(Lnew, Pos, Dir, Cnew, LightsProcessed);
+		CalculatePoint(Lnew, Pos, Dir, Cnew, Skip);
 	}
 
+	if (!(flags & LP_dont_rgb))
 	for (auto& L : LS.rgb)
 	{
 		hardware_lighting Lnew = Light(L, LGroup::eRGB);
-		CalculatePoint(Lnew, Pos, Dir, Cnew, LightsProcessed);
+		CalculatePoint(Lnew, Pos, Dir, Cnew, Skip);
 	}
-
-//	Msg("Lights Processed: %u", LightsProcessed);
-
 }
 
 // Cannot Now use in MT
@@ -215,7 +215,7 @@ void PackedLighting::LightPointPackedRun()
 	}
 	
 	tStats.Start();
-
+ 
 	clMsg("*** Start Tracing Rays: %u", task_pools.size());
 	XRay::RayTrace::CUDA::RayTraceInitialize(lc_global_data()->L_static(), current_flags);
 
@@ -236,17 +236,42 @@ void PackedLighting::LightPointPackedRun()
 		auto& INFO = task_pools[it];
 		Colors[INFO.INDEX_TASK].add(colors[it]);
 	}
- 
+	 
 	// Очистка
    	task_pools.clear();
 	colors.clear();
+ 
+	/*
+	// Тест на Embree
+	xr_vector<base_color_c> colors;
+	colors.resize(task_pools.size());
+	
+	xr_atomic_u32 INDEXs = 0;
+	xr_parallel_for(size_t(0), size_t(task_pools.size()), [&](size_t INDEX)
+	{
+		auto& TASK = task_pools[INDEX];
+		hardware_color color;
+		ProcessRays(TASK.P, TASK.N, lc_global_data()->L_static(), color, current_flags, TASK.skip);
+		copy_color(color, colors[INDEX]);
+
+		AditionalData("Processing: %u / %u", INDEXs.load(), task_pools.size());
+
+		INDEXs.fetch_add(1);
+	});
+
+	for (auto it = 0; it < task_pools.size(); it++) // Последний таск ID (Тоесть size)
+	{
+		auto& INFO = task_pools[it];
+		Colors[INFO.INDEX_TASK].add(colors[it]);
+	}
+	*/
 
 	StatsTotalGPU += tStats.GetElapsed_mcs();
 }
 
 // Deflectors
 
-void PackedLighting::LightPointPackedDeflector(u32 U, u32 V, CDeflector* D, Fvector& P, Fvector& N, u32 flags, Face* skip)
+void PackedLighting::LightPointPackedDeflector(CDeflector* D, u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip)
 {
    	// if (task_pools.size() >= MAX_RAYS_PER_TASK - 1)
 	// 	LightPointPackedRun();
@@ -258,6 +283,7 @@ void PackedLighting::LightPointPackedDeflector(u32 U, u32 V, CDeflector* D, Fvec
 	task_data.P = P;
 	task_data.N = N;
 	task_data.Owner = D;
+	task_data.skip = skip;
  	task_pools.push_back( std::move(task_data) );
 
 	StatsRaysAdd += tStats.GetElapsed_mcs();
@@ -265,10 +291,9 @@ void PackedLighting::LightPointPackedDeflector(u32 U, u32 V, CDeflector* D, Fvec
 
 void PackedLighting::LightPointPackedDeflectorsRun()
 {	
-	csRayLaunched.Enter();
-
 	tStats.Start();
- 	// Initialize
+ 	
+	// Initialize
 	if (!isInitializedGPU)
 	{
 		InitializeGPU();
@@ -276,8 +301,9 @@ void PackedLighting::LightPointPackedDeflectorsRun()
 	}
 
 	clMsg("*** Start Tracing Rays: %u", task_pools.size());
- 	XRay::RayTrace::CUDA::RayTraceInitialize(lc_global_data()->L_static(), current_flags);
- 	 
+ 	
+	XRay::RayTrace::CUDA::RayTraceInitialize(lc_global_data()->L_static(), current_flags);
+	  
 	// Устанавливаем параметры 
 	int CurrentRays = 0;
 	for (auto& task : task_pools)
@@ -290,7 +316,7 @@ void PackedLighting::LightPointPackedDeflectorsRun()
 		XRay::RayTrace::CUDA::RayTraceAddRay(task);
 		CurrentRays++;
 	}
-
+	
 	// Запускаем трейсинг
 	 
 	XRay::RayTrace::CUDA::RayTraceRun();
@@ -298,7 +324,7 @@ void PackedLighting::LightPointPackedDeflectorsRun()
 	 
 	// Получаем результаты
 	auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
-
+	
 	// Заполняем в дефолекторы
 	int it = 0;
 	for (auto RAY_INFO : task_pools)
@@ -306,13 +332,38 @@ void PackedLighting::LightPointPackedDeflectorsRun()
 		DEF_Colors[RAY_INFO.Owner][RAY_INFO.INDEX_TASK].add(colors[it]);
 		it++;
 	}
- 
+	 
 	// Очистка
 	task_pools.clear();
 	colors.clear();
-
+	
 	StatsTotalGPU += tStats.GetElapsed_mcs();
-
-	csRayLaunched.Leave();
+		
+	// Тест на Embree
+	// xr_vector<base_color_c> colors;
+	// colors.resize(task_pools.size());
+	// 
+	// xr_atomic_u32 INDEXs = 0; 
+	// xr_parallel_for(size_t(0), size_t(task_pools.size()), [&](size_t INDEX)
+	// {
+	// 	auto& TASK = task_pools[INDEX];
+	// 	hardware_color color;
+	// 	ProcessRays(TASK.P, TASK.N, lc_global_data()->L_static(), color, current_flags, TASK.skip);
+	// 	copy_color(color, colors[INDEX]);
+	// 
+	// 	AditionalData("Processing: %u / %u", INDEXs.load(), task_pools.size());
+	// 
+	// 	INDEXs.fetch_add(1);
+	// });
+ 	// 
+	// for (auto it = 0; it < task_pools.size(); it++) // Последний таск ID (Тоесть size)
+	// {
+	// 	auto& INFO = task_pools[it];
+	// 	DEF_Colors[INFO.Owner][INFO.INDEX_TASK].add(colors[it]);
+	// }
+ 	// 
+	// task_pools.clear();
+	// colors.clear();
+	// StatsTotalGPU += tStats.GetElapsed_mcs();
 }
 
