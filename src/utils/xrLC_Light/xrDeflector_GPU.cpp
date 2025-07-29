@@ -115,7 +115,8 @@ void CDeflector::L_DirectGPU(   HASH& H)
 				}
 			}
 
-			FacesCount[{U, V}] = Fcount;
+			// FacesCount[{U, V}] = Fcount;
+			FacesCount[GPUTaskinSystem.MakeKey(U, V)] = Fcount;
 		}
 	}
 
@@ -171,13 +172,11 @@ void CDeflector::ApplyGPU(HASH& H, bool isFirst)
 
 		lm_layer& lm = layer;
 		auto UVColors = GPUTaskinSystem.DEF_Colors[this];
-
 		for (auto& [key, count] : FacesCount)
 		{
-			u32 U = key.first;
-			u32 V = key.second;
-
-			if (count)
+			u32 U = GPUTaskinSystem.GetU(key);
+			u32 V = GPUTaskinSystem.GetV(key);
+ 			if (count)
 			{
 				base_color_c& C = UVColors[key];
 				C.scale(count);
@@ -192,18 +191,17 @@ void CDeflector::ApplyGPU(HASH& H, bool isFirst)
 				lm.marker[V * lm.width + U] = 0;
 			}
 		}
+ 		FacesCount.clear();
 
-		FacesCount.clear();
 
-
-		Fbox2			bounds;
-		Bounds_Summary(bounds);
-		H.initialize(bounds, (u32)UVpolys.size());
-		for (u32 fid = 0; fid < UVpolys.size(); fid++) {
-			UVtri* T = &(UVpolys[fid]);
-			Bounds(fid, bounds);
-			H.add(bounds, T);
-		}
+		// Fbox2			bounds;
+		// Bounds_Summary(bounds);
+		// H.initialize(bounds, (u32)UVpolys.size());
+		// for (u32 fid = 0; fid < UVpolys.size(); fid++) {
+		// 	UVtri* T = &(UVpolys[fid]);
+		// 	Bounds(fid, bounds);
+		// 	H.add(bounds, T);
+		// }
 
 		// *** Render Edges (Embree Process)
 		float texel_size = (1.f / float(_max(lm.width, lm.height))) / 8.f;
@@ -245,14 +243,14 @@ void CDeflector::LowerResolutionGPU(HASH& H)
 		else if (compress_RMS(layer, rms_shrink, w, h))
 		{
 			
-			Fbox2			bounds;
-			Bounds_Summary(bounds);
-			H.initialize(bounds, (u32)UVpolys.size());
-			for (u32 fid = 0; fid < UVpolys.size(); fid++) {
-				UVtri* T = &(UVpolys[fid]);
-				Bounds(fid, bounds);
-				H.add(bounds, T);
-			}
+			///Fbox2			bounds;
+			///Bounds_Summary(bounds);
+			///H.initialize(bounds, (u32)UVpolys.size());
+			///for (u32 fid = 0; fid < UVpolys.size(); fid++) {
+			///	UVtri* T = &(UVpolys[fid]);
+			///	Bounds(fid, bounds);
+			///	H.add(bounds, T);
+			///}
 
 			// Reacalculate lightmap at lower resolution
 			layer.create(w, h);

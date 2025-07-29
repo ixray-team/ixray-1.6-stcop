@@ -291,10 +291,13 @@ void CBuild::xrPhase_MergeLM()
 			CDeflector* D = Layer[it];
 			materials()[D->GetBaseMaterial()].internal_max_area = _max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
 		}
-		std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
 
 		if (gCompilerMode.LC_LmapsAlternative)
 		{
+			std::sort(Layer.begin(), Layer.end(), [&](CDeflector* D1, CDeflector* D2) {
+  				return D1->layer.height < D2->layer.height;
+ 			});
+
 			// Startup
 			Status("Processing...");
  			CLightmap* lmap = new CLightmap();
@@ -303,6 +306,8 @@ void CBuild::xrPhase_MergeLM()
 		}
 		else
 		{
+			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
+
 			// Startup
 			Status("Processing...");
 			placer_perpixel._InitSurface_tbb();
