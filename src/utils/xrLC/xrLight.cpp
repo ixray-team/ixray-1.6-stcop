@@ -136,6 +136,16 @@ void	CBuild::LMaps					()
 	});
 
 	clMsg("*** [3]CPU Apply Edges Time: %u ms", tStats.GetElapsed_ms()); 
+
+
+	clMsg("@ CPU Code: %llu | CPU CopyToGPU : %u | GPU(%u) | CPU copy result(%u) | Clear(%u)",
+		GPUTaskinSystem.StatsRaysAdd / 1000,
+		GPUTaskinSystem.StatsCopyRaysGPU / 1000,
+		GPUTaskinSystem.StatsTraverseGPU / 1000,
+		GPUTaskinSystem.StatsCopyResultGPU / 1000,
+		GPUTaskinSystem.StatsClearingListGPU / 1000
+	);
+
 	
 	
 	/*** PART 2 ***/
@@ -165,13 +175,16 @@ void	CBuild::LMaps					()
 	});
 	clMsg("*** [3][Lower] CPU Apply Edges, ExpandBorders Time: %u ms", tStats.GetElapsed_ms());
 
-  
- 	clMsg("CPU Code: %llu | GPU Code : %u/RayTracing(%u)",
+	clMsg("@ CPU Code: %llu | CPU CopyToGPU : %u | GPU(%u) | CPU copy result(%u) | Clear(%u)",
 		GPUTaskinSystem.StatsRaysAdd / 1000,
-		GPUTaskinSystem.StatsTotalGPU / 1000,
-		GPUTaskinSystem.StatsTraverseGPU / 1000
+		GPUTaskinSystem.StatsCopyRaysGPU / 1000,
+		GPUTaskinSystem.StatsTraverseGPU / 1000,
+		GPUTaskinSystem.StatsCopyResultGPU / 1000,
+		GPUTaskinSystem.StatsClearingListGPU / 1000
 	);
 
+
+	GPUTaskinSystem.RestartALL();
 }
   
 void CBuild::BuildAdaptiveHT()

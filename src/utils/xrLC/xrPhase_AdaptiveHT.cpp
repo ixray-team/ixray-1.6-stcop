@@ -109,19 +109,19 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 	// Tesselate + calculate
 	Status			("Building RayTrace Model...");
- 
+	
+	
+	Light_prepare();
+	// Build model
+	BuildRapid(FALSE);
+	EmbreeMain.AttachGeometrys(false);
+
 	if (!gCompilerMode.CUDA)
 	{
- 		Light_prepare();
-		// Build model
-		BuildRapid(FALSE);
-		EmbreeMain.AttachGeometrys(false);
- 
 		// Prepare
 		Status("AdaptiveHT : base hemisphere ...");
 		ThreadWorkID_Adaptive = 0;
-
-		for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
+ 		for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
 			precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
 		precalc_base_hemi.wait();
 
@@ -148,10 +148,10 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 		for (auto& TASK : GPUTaskinSystem.Colors)
 		{
-			auto& INDEX = TASK.first.first;
+			u32 U   = GPUTaskinSystem.GetU(TASK.first);
 			auto& C = TASK.second;
 			C.mul(0.5f);
-			lc_global_data()->g_vertices()[INDEX]->C._set(C);
+			lc_global_data()->g_vertices()[U]->C._set(C);
 		}
 
 		GPUTaskinSystem.RestartALL();
