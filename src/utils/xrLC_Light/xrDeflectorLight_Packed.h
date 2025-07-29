@@ -14,12 +14,12 @@ enum LGroup : u8
 };
 
 // Initialize TASKS
-#define MAX_RAYS_PER_TASK   1024 * 1024 * 10 // Нужно еще учесть что там будут лампочек может быть по 256 за 1 таск
+#define MAX_RAYS_PER_TASK   1024 * 512 // Нужно еще учесть что там будут лампочек может быть по 256 за 1 таск
  
 // Recvest Class
 struct RayRecvestIndex
 {
-  	std::pair<u32, u32> INDEX_TASK;
+  	size_t INDEX_TASK;
 	CDeflector* Owner;
 
 	// Task Pos, Dir, Skip
@@ -28,10 +28,11 @@ struct RayRecvestIndex
 	Face* skip;
 };
 
+
 class PackedLighting
 {
-	typedef xr_map<std::pair<u32, u32>, u32>		  FCountsMap;
-	typedef xr_map<std::pair<u32, u32>, base_color_c> color_map;
+	// new hash
+	typedef xr_hash_map<size_t, base_color_c>		color_map;
 
 public:
 	// Result Vector
@@ -44,13 +45,28 @@ public:
  	};
 
 public:
- 
+	size_t MakeKey(u32 U, u32 V)
+	{
+		return (static_cast<u64>(U) << 32) | static_cast<u64>(V);
+	}
+
+	inline u32 GetU(u64 key)
+	{
+		return static_cast<u32>(key >> 32);
+	}
+
+	inline u32 GetV(u64 key)
+	{
+		return static_cast<u32>(key & 0xFFFFFFFFull);
+	}
+
 	void InitializeGPU();
 	
 	// Implicit (or AdaptiveHT) (No Has Deflector)
 	void LightPointPacked(u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip);
 	void LightPointPackedRun();
 
+	xrCriticalSection csAdd;
 	// Deflectors Processing
 	void LightPointPackedDeflector(CDeflector* D, u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip);
 	void LightPointPackedDeflectorsRun();
@@ -63,33 +79,38 @@ public:
 	 	// Basic Tasks
 		task_pools.clear();
   		Colors.clear();
-		FCountMap.clear();
-
+ 
 		// Deflectors
  		DEF_Colors.clear();
 
 		// task pool memory clear
 		task_pools.shrink_to_fit();
+
+		tStats2.Start();
 	}
 
  
 	// Task Index, Color. 
 	// простые задчи
-	FCountsMap			FCountMap;
-	color_map			Colors;	
+ 	color_map			Colors;	
 
 	// Task Index, Color. 
 	// сложные задчи СDeflector
- 	xr_map<CDeflector*, color_map>			DEF_Colors;
+ 	xr_hash_map<CDeflector*, color_map>			DEF_Colors;		// 30% прирост от обычной xr_map
   
 	// Stats 
 	bool	isInitializedGPU = false;
 	u8	    current_flags = 0;
 
-	CTimer tStats;
-	size_t StatsTotalGPU = 0;
-	size_t StatsTraverseGPU = 0;
+	CTimer tStats, tStats2;
  	size_t StatsRaysAdd = 0;
+
+	size_t StatsCopyRaysGPU = 0;
+	size_t StatsCopyResultGPU = 0;
+	size_t StatsTraverseGPU = 0;
+
+	size_t StatsClearingListGPU = 0;
+
 
 	// tasks	
 	concurrency::concurrent_vector<RayRecvestIndex>							 task_pools;			// BASIC UV
