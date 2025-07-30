@@ -154,6 +154,8 @@ void xrMU_Reference::calc_lighting()
 			o_test(4, index, (u32)color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
 	}
 }
+
+// **** CUDA CODE  **** // 
  
  
 #include "xrDeflectorLight_Packed.h"
