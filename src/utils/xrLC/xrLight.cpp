@@ -96,6 +96,29 @@ void	CBuild::LMapsLocal				()
 
 #include "../xrLC_Light/xrDeflectorLight_Packed.h"
 
+void StageGPU(int Stage, bool isFirst)
+{
+	thread_local HASH			H;
+
+ 	//1
+	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
+	{
+		CDeflector* D = lc_global_data()->g_deflectors()[INDEX];
+		if (Stage == 1)
+			isFirst ? D->LightGPU(H) : D->LowerResolutionGPU(H);
+		if (Stage == 2)
+			D->ApplyGPU(H);
+		if (Stage == 3)
+			D->ApplyGPU_Edges(isFirst);
+		if (Stage == 4)
+			D->ApplyExpadBordersGPU();
+		AditionalData("*** [LMAPS] Rays collecting [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
+	});
+
+	if (Stage == 1 || Stage == 2)
+		GPUTaskinSystem.LightPointPackedDeflectorsRun();
+}
+
 void	CBuild::LMaps					()
 {
 	// LMapsLocal();
@@ -103,70 +126,21 @@ void	CBuild::LMaps					()
 
 	Status("Lighting Precalculate for GPU...");
 	 
-	thread_local HASH			H;
-	
-	CTimer tStats; 
-	tStats.Start();
-	
-	// GPU PROCESS
-	
-	/*** PART 1 ***/
 
-	// Stage 1
+	// Stage 1 (Original Resolution)
 	GPUTaskinSystem.RestartALL();
 
-  	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
-	{
-		CDeflector* D = lc_global_data()->g_deflectors()[INDEX];
-		D->LightGPU(H);
-		AditionalData("*** [LMAPS] Rays collecting [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
-	});
-	AditionalData("*** [LMAPS]  RunProcessing Rays: %u", GPUTaskinSystem.task_pools.size());
-	clMsg("*** [1]Garbage Rays Time: %u ms", tStats.GetElapsed_ms()) ;  tStats.Start();
+	StageGPU(1, true);
+	StageGPU(2, true);
+	StageGPU(3, true);
 
-	// Stage 2
-   	GPUTaskinSystem.LightPointPackedDeflectorsRun();
- 	clMsg("*** [2]GPU Rays Time: %u ms", tStats.GetElapsed_ms()); tStats.Start();
-  
- 	// Stage 3 CPU Edges Processing (On embree4)
- 	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
-	{
-		CDeflector* D = lc_global_data()->g_deflectors()[INDEX];
-		D->ApplyGPU(H, true);
-  		AditionalData("*** [LMAPS] Processing Edges [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
-	});
-
-	clMsg("*** [3]CPU Apply Edges Time: %u ms", tStats.GetElapsed_ms()); 
-	
-	
-	/*** PART 2 ***/
- 	// Restart Process (Calculate Lower Resolution)
-	GPUTaskinSystem.RestartALL(); tStats.Start();
-  
- 	// Stage 1 : Garbege 
-	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
-	{
-		CDeflector* D = lc_global_data()->g_deflectors()[INDEX];
-		D->LowerResolutionGPU(H);
-		AditionalData("*** [LMAPS] Rays collecting [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
-	});
-	clMsg("*** [1][Lower] Garbage Rays Time: %u ms", tStats.GetElapsed_ms());  tStats.Start();
-
-	// Stage 2 : Start GPU Processing
- 	GPUTaskinSystem.LightPointPackedDeflectorsRun();
-	clMsg("*** [2][Lower] GPU Rays (Lower) Time: %u ms", tStats.GetElapsed_ms()); tStats.Start();
-  
-	// Stage 3 : CPU Edges Processing (On embree4)
- 	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
-	{
-		CDeflector* D = lc_global_data()->g_deflectors()[INDEX];
-		D->ApplyGPU(H, false);
- 		D->ApplyExpadBordersGPU();
-		AditionalData("*** [LMAPS] FinalyResolution [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
-	});
-	clMsg("*** [3][Lower] CPU Apply Edges, ExpandBorders Time: %u ms", tStats.GetElapsed_ms());
-
+	// Stage 2 Compacted
 	GPUTaskinSystem.RestartALL();
+	StageGPU(1, false);
+	StageGPU(2, false);
+	StageGPU(3, false);
+	StageGPU(4, false);
+
 }
   
 void CBuild::BuildAdaptiveHT()
@@ -197,55 +171,45 @@ void CBuild::Light()
 	lc_global_data()->vertices_isolate_and_pool_reload();
 	IsolateVertices(TRUE);
 
-	if (!gCompilerMode.LC_BackingDisabled)
+ 
+	// se7kills fixed All stage then Disable
+	if (!gCompilerMode.CUDA)
 	{
-		// se7kills fixed All stage then Disable
-		//if (!gCompilerMode.CUDA)
-		{
-			//****************************************** GLOBAL-RayCast model
-			Phase("Building rcast-CFORM model...");
-			Light_prepare();
-			BuildRapid(TRUE);
-		}
- 
-		//****************************************** Implicit
-		Phase("LIGHT: Implicit...");
-		if (gCompilerMode.Embree_SplitBVH)
-			EmbreeMain.AttachGeometrys(true);
-		ImplicitLighting();
-
-		//****************************************** LMAPS
-		Phase("LIGHT: LMaps...");
-		if (gCompilerMode.Embree_SplitBVH)
-			EmbreeMain.AttachGeometrys(false);
-		LMaps();
-
-		//****************************************** Vertex
-		Phase("LIGHT: Vertex...");
-		LightVertex();
- 
-		//****************************************** Merge LMAPS
-		Phase("LIGHT: Merging lightmaps...");
-		xrPhase_MergeLM();
-
-		// Save Lmaps
-		Phase("LIGHT: Save lightmaps...");
-		xrPhase_SaveLmaps();
+		//****************************************** GLOBAL-RayCast model
+		Phase("Building rcast-CFORM model...");
+		Light_prepare();
+		BuildRapid(TRUE);
 	}
+ 
+	//****************************************** Implicit
+	Phase("LIGHT: Implicit...");
+ 	ImplicitLighting();
 
+	//****************************************** LMAPS
+	Phase("LIGHT: LMaps...");
+ 	LMaps();
+
+	//****************************************** Vertex
+	Phase("LIGHT: Vertex...");
+	LightVertex();
+ 
+	//****************************************** Merge LMAPS
+	Phase("LIGHT: Merging lightmaps...");
+	xrPhase_MergeLM();
+
+	// Save Lmaps
+	Phase("LIGHT: Save lightmaps...");
+	xrPhase_SaveLmaps();
+ 
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
 
-	if (!gCompilerMode.LC_BackingDisabled)
-	{
-		//****************************************** Starting MU
-		Phase("LIGHT: Starting MU...");
-		Light_prepare();
-		if (gCompilerMode.Embree_SplitBVH)
-			EmbreeMain.AttachGeometrys(true);
-		StartMu();
-	}
+
+	//****************************************** Starting MU
+	Phase("LIGHT: Starting MU...");
+	Light_prepare();
+ 	StartMu();
 	
 	//****************************************** Destroy RCast-model
  	Phase("Destroying ray-trace model...");

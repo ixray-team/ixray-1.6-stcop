@@ -6,6 +6,7 @@
 #include "light_point.h"
 
 #include "../../xrCore/Collision/xrCDB.h"
+#include <xrDeflectorLight_Packed.h>
 //-----------------------------------------------------------------------
 typedef	xr_multimap<float,vecVertex>	mapVert;
 typedef	mapVert::iterator				mapVertIt;
@@ -49,6 +50,7 @@ void	g_trans_register_internal		(Vertex* V)
 	ins->second.reserve		(32);
 	ins->second.push_back	(V);
 }
+
 void	g_trans_register	(Vertex* V)
 {
 	g_trans_CS.Enter			();
@@ -81,6 +83,7 @@ public:
 		return			_res;
 	}
 };
+
 CVertexLightTasker		VLT;
 
 bool GetTranslucency(const Vertex* V,float &v_trans )
@@ -120,8 +123,7 @@ public:
 			R_ASSERT		(V);
 
 			float		v_trans		= 0.f;
-
-			if (GetTranslucency( V, v_trans ))	
+ 			if (GetTranslucency( V, v_trans ))	
 			{
 				base_color_c		vC, old;
 				V->C._get			(old);
@@ -145,6 +147,9 @@ public:
 	}
 };
 
+#include "../xrForms/CompilersUI.h"
+extern CompilersMode gCompilerMode;
+
 void LightVertex()
 {
 	g_trans = new mapVert();
@@ -152,22 +157,61 @@ void LightVertex()
 	// Start threads, wait, continue --- perform all the work
 	Status("Calculating...");
 
-	CThreadManager Threads;
-	VLT.init();
-	CTimer start_time;	
-	start_time.Start();
-
-	const u32 NUM_THREADS = CPU::ID.n_threads - 2;
-
-	for (u32 thID = 0; thID < NUM_THREADS; thID++)
+	if (gCompilerMode.CUDA)
 	{
-		Threads.start(new CVertexLightThread(thID));
+		int INDEX = 0;
+		xr_vector<float> v_transparency;
+		v_transparency.resize(lc_global_data()->g_vertices().size());
+		for (auto V : lc_global_data()->g_vertices())
+		{
+			float		v_trans = 0.f;
+
+			if (GetTranslucency(V, v_trans))
+			{
+ 				u32 flags = (lc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_dont_hemi;
+ 				GPUTaskinSystem.LightPointPacked(INDEX, 0, V->P, V->N, flags, 0);
+			}
+
+			v_transparency[INDEX] = v_trans;
+			INDEX++;
+		}
+
+		GPUTaskinSystem.LightPointPackedRun();
+
+		for (auto& C : GPUTaskinSystem.Colors)
+		{
+			int INDEX = GPUTaskinSystem.GetU(C.first);
+			auto& V = lc_global_data()->g_vertices()[INDEX];
+			auto& vC = C.second;
+			float Transparency = v_transparency[INDEX];
+
+			base_color_c old;
+			V->C._get(old);
+ 
+			vC._tmp_ = Transparency;
+			vC.mul(.5f);
+			vC.hemi = old.hemi;		 
+			V->C._set(vC);
+
+			g_trans_register(V);
+		}
+
 	}
-	
-	Threads.wait();
-	clMsg("%f seconds", start_time.GetElapsed_sec());
-
-
+	else
+	{
+ 		CThreadManager Threads;
+		VLT.init();
+		CTimer start_time;
+		start_time.Start();
+		const u32 NUM_THREADS = CPU::ID.n_threads - 2;
+		for (u32 thID = 0; thID < NUM_THREADS; thID++)
+		{
+			Threads.start(new CVertexLightThread(thID));
+		}
+		Threads.wait();
+		clMsg("%f seconds", start_time.GetElapsed_sec());
+	}
+ 
 	// Process all groups
 	Status("Transluenting...");
 	for (mapVertIt it = g_trans->begin(); it != g_trans->end(); it++)
