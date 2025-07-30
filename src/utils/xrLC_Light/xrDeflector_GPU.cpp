@@ -57,8 +57,6 @@ void CDeflector::LightGPU( HASH& H )
 
 }
 
-
-
 extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
  
 void CDeflector::L_DirectGPU(   HASH& H)
@@ -120,10 +118,12 @@ void CDeflector::L_DirectGPU(   HASH& H)
 		}
 	}
 
+
+
 	NeedGarbageRays = true;
 }
 
-void CDeflector::ApplyGPU(HASH& H, bool isFirst)
+void CDeflector::ApplyGPU(HASH& H)
 {
 	auto EdgeProcessing = [&](Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 		{
@@ -156,16 +156,20 @@ void CDeflector::ApplyGPU(HASH& H, bool isFirst)
 
 				// ok - perform lighting
 				base_color_c	C;
-				Fvector			P;	P.mad(v1, vdir, time);
+ 				
+				Fvector			P;	
+				P.mad(v1, vdir, time);
+				// LightPoint(nullptr, nullptr, C, P, N, lc_global_data()->L_static(), (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
+				
+				u32 flags = 0;
+				GPUTaskinSystem.LightPointPackedDeflector(this, _x, _y, P, N, flags, skip);
 
-				LightPoint(nullptr, nullptr, C, P, N, lc_global_data()->L_static(), (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
-
-				C.mul(.5f);
-				lm.surface[_y * lm.width + _x]._set(C);
-				lm.marker[_y * lm.width + _x] = 255;
+				// C.mul(.5f);
+				// lm.surface[_y * lm.width + _x]._set(C);
+				// lm.marker[_y * lm.width + _x] = 255;
 			}
 		};
-
+ 
 	if (NeedGarbageRays)
 	{
 		NeedGarbageRays = false;
@@ -190,18 +194,21 @@ void CDeflector::ApplyGPU(HASH& H, bool isFirst)
 				lm.marker[V * lm.width + U] = 0;
 			}
 		}
+
  		FacesCount.clear();
 		color_map.clear();
-
+  
 		Fbox2			bounds;
 		Bounds_Summary(bounds);
 		H.initialize(bounds, (u32)UVpolys.size());
-		for (u32 fid = 0; fid < UVpolys.size(); fid++) {
+		for (u32 fid = 0; fid < UVpolys.size(); fid++)
+		{
 			UVtri* T = &(UVpolys[fid]);
 			Bounds(fid, bounds);
 			H.add(bounds, T);
 		}
 
+		NeedApplyEdges = true;
 		// *** Render Edges (Embree Process)
 		float texel_size = (1.f / float(_max(lm.width, lm.height))) / 8.f;
 		for (u32 t = 0; t < UVpolys.size(); t++)
@@ -212,15 +219,38 @@ void CDeflector::ApplyGPU(HASH& H, bool isFirst)
 			EdgeProcessing(T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F);
 			EdgeProcessing(T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);
 		}
- 
-		if (isFirst)
-		{
-			for (u32 ref = 254; ref > 0; ref--)
-				if (!ApplyBorders(layer, ref))
-					break;
-		}
 	}	
 }
+
+void CDeflector::ApplyGPU_Edges(bool isFirst)
+{
+	if (NeedApplyEdges)
+	{
+		NeedApplyEdges = false;
+
+		lm_layer& lm = layer;
+		for (auto& [key, C] : color_map)
+		{
+			u32 _x = GPUTaskinSystem.GetU(key);
+			u32 _y = GPUTaskinSystem.GetV(key);
+			
+ 			C.mul(.5f);
+			lm.surface[_y * lm.width + _x]._set(C);
+			lm.marker[_y * lm.width + _x] = 255;
+		}
+
+ 		color_map.clear();
+	}
+
+	if (isFirst)
+	{
+		for (u32 ref = 254; ref > 0; ref--)
+			if (!ApplyBorders(layer, ref))
+				break;
+	}
+}
+
+
 
 // Перерасчет в более сжатый формат
 
