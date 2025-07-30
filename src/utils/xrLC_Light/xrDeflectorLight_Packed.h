@@ -75,43 +75,24 @@ public:
 	{
 		// start
 		current_flags = 0;
- 
-	 	// Basic Tasks
+
+		// Basic Tasks
 		task_pools.clear();
-  		Colors.clear();
- 
-		// Deflectors
- 		DEF_Colors.clear();
+		Colors.clear();
 
 		// task pool memory clear
 		task_pools.shrink_to_fit();
-
-		tStats2.Start();
 	}
 
  
 	// Task Index, Color. 
 	// простые задчи
  	color_map			Colors;	
-
-	// Task Index, Color. 
-	// сложные задчи СDeflector
- 	xr_hash_map<CDeflector*, color_map>			DEF_Colors;		// 30% прирост от обычной xr_map
   
 	// Stats 
 	bool	isInitializedGPU = false;
 	u8	    current_flags = 0;
-
-	CTimer tStats, tStats2;
- 	size_t StatsRaysAdd = 0;
-
-	size_t StatsCopyRaysGPU = 0;
-	size_t StatsCopyResultGPU = 0;
-	size_t StatsTraverseGPU = 0;
-
-	size_t StatsClearingListGPU = 0;
-
-
+ 
 	// tasks	
 	concurrency::concurrent_vector<RayRecvestIndex>							 task_pools;			// BASIC UV
  };
