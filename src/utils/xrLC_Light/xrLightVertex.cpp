@@ -160,6 +160,8 @@ void LightVertex()
 	if (gCompilerMode.CUDA)
 	{
 		int INDEX = 0;
+		GPUTaskinSystem.RestartALL();
+
 		xr_vector<float> v_transparency;
 		v_transparency.resize(lc_global_data()->g_vertices().size());
 		for (auto V : lc_global_data()->g_vertices())

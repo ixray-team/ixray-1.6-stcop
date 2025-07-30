@@ -15,8 +15,8 @@ enum LGroup : u8
 };
 
 // Initialize TASKS
-#define MAX_RAYS_PER_TASK   1024 * 1024 * 10 // Нужно еще учесть что там будут лампочек может быть по 256 за 1 таск
-#define MAX_RAYS_PER_GPU	1024 * 128
+#define MAX_RAYS_PER_TASK   1024 * 1024 * 100		// Общее кол-во Задач (на запуск GPU)
+#define MAX_RAYS_PER_GPU	1024 * 1024				// Кол-во задач которое может обработать GPU за 1 заход
 
 // Recvest Class
 struct RayRecvestIndex
@@ -90,12 +90,11 @@ public:
 		current_flags = 0;
 
 		// Basic Tasks
-		task_pools.clear();
-		// task_pools_index.clear();
-		Colors.clear();
+  		Colors.clear();
 
 		// task pool memory clear
-		// task_pools.shrink_to_fit();
+		task_pools.clear();
+		task_pools.shrink_to_fit();
 	}
 
  
@@ -109,7 +108,6 @@ public:
  
 	// tasks	
 	concurrency::concurrent_vector<RayRecvestIndex>							 task_pools;			// BASIC UV
-//	concurrency::concurrent_vector<RayIndex>							 task_pools_index;			// BASIC UV
 };
 
 extern PackedLighting GPUTaskinSystem;

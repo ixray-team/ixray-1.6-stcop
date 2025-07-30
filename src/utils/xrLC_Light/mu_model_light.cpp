@@ -110,6 +110,7 @@ void run_mu_light()
  	mu_materials.wait(100); 
 
 	// Light references
+	GPUTaskinSystem.RestartALL();
 	if (gCompilerMode.CUDA)
 	{
 		// Gathering
