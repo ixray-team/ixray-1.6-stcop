@@ -19,8 +19,7 @@ static int ThreadTaskID = 0;
 
 // mu-light
  
-class CMULight :
-	public CThread
+class CMULight : public CThread
 {
 public:
 	CMULight(u32 ID) : CThread(ID)
@@ -58,8 +57,7 @@ public:
 	}
 };
 
-class CMULightCalculation :
-	public CThread
+class CMULightCalculation : public CThread
 {
 public:
 	CMULightCalculation(u32 ID) : CThread(ID)
@@ -97,6 +95,9 @@ public:
 	}
 };
 
+
+#include "xrDeflectorLight_Packed.h"
+
 void run_mu_light()
 {
 	// Priority
@@ -109,8 +110,26 @@ void run_mu_light()
  	mu_materials.wait(100); 
 
 	// Light references
-	ThreadTaskID = 0;
-	for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
-		mu_secondary.start(new CMULight(thID));
- 	mu_secondary.wait(100);
+	if (gCompilerMode.CUDA)
+	{
+		// Gathering
+		for (auto& REF : inlc_global_data()->mu_refs())
+			REF->calc_lighting_cuda_1();
+ 		GPUTaskinSystem.LightPointPacked_MODELRun();
+		
+		// APPLY
+		for (auto& REF : inlc_global_data()->mu_refs())
+		{
+			REF->calc_lighting_cuda_2();
+			REF->calc_lighting_cuda_3();
+		}
+	}
+	else
+	{
+		ThreadTaskID = 0;
+		for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
+			mu_secondary.start(new CMULight(thID));
+		mu_secondary.wait(100);
+	}
+
 }
