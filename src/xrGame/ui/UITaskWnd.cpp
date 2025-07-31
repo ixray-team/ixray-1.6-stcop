@@ -418,7 +418,7 @@ void CUITaskItem::Update()
 	inherited::Update();
 	if ( m_owner && m_bCursorOverWindow && show_hint_can )
 	{
-		if ( Device.dwTimeGlobal > ( m_dwFocusReceiveTime + m_hint_wt ) )
+		if ( Device.dwTimeContinual > ( m_dwFocusReceiveTime + m_hint_wt ) )
 		{
 			show_hint = true;
 			return;
