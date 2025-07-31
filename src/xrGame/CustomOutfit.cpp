@@ -210,8 +210,7 @@ BOOL	CCustomOutfit::BonePassBullet					(int boneID)
 	return m_boneProtection->getBonePassBullet(s16(boneID));
 }
 
-#include "Torch.h"
-void	CCustomOutfit::OnMoveToSlot		(const SInvItemPlace& prev)
+void CCustomOutfit::OnMoveToSlot(const SInvItemPlace& prev)
 {
 	if ( m_pInventory )
 	{
@@ -219,12 +218,6 @@ void	CCustomOutfit::OnMoveToSlot		(const SInvItemPlace& prev)
 		if ( pActor )
 		{
 			ApplySkinModel(pActor, true, false);
-			if (prev.type==eItemPlaceSlot && !bIsHelmetAvaliable)
-			{
-				CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
-				if(pTorch && pTorch->GetNightVisionStatus())
-					pTorch->SwitchNightVision(true, false);
-			}
 			PIItem pHelmet = pActor->inventory().ItemFromSlot(HELMET_SLOT);
 			if(pHelmet && !bIsHelmetAvaliable)
 				pActor->inventory().Ruck(pHelmet, false);
@@ -290,17 +283,18 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 
 }
 
-void	CCustomOutfit::OnMoveToRuck		(const SInvItemPlace& prev)
+void CCustomOutfit::OnMoveToRuck(const SInvItemPlace& prev)
 {
-	if(m_pInventory && prev.type==eItemPlaceSlot)
+	if (m_pInventory && prev.type==eItemPlaceSlot)
 	{
-		CActor* pActor = smart_cast<CActor*> (H_Parent());
+		CActor* pActor = smart_cast<CActor*>(H_Parent());
 		if (pActor)
 		{
 			ApplySkinModel(pActor, false, false);
-			CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
-			if(pTorch && !bIsHelmetAvaliable)
-				pTorch->SwitchNightVision(false);
+			if (pActor->GetNightVisionEffector() && !bIsHelmetAvaliable)
+			{
+				pActor->GetNightVisionEffector()->SwitchNightVision(false);
+			}
 		}
 	}
 };
