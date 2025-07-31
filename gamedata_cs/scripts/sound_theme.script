@@ -1,6 +1,6 @@
 --'-------------------------------------------------------------------------------------------------------------------
---' Схема озвучки
---' автор:  Диденко Руслан  (Stohe)
+--' РЎС…РµРјР° РѕР·РІСѓС‡РєРё
+--' Р°РІС‚РѕСЂ:  Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ  (Stohe)
 --'--------------------------------------------------------------------------------------------------------------------
 nstl = 64
 theme = {}
@@ -13,22 +13,22 @@ end
 --function printf()
 --end
 --'--------------------------------------------------------------------------------------------------------------------
---' Класс "звуковая коллекция сталкера"
+--' РљР»Р°СЃСЃ "Р·РІСѓРєРѕРІР°СЏ РєРѕР»Р»РµРєС†РёСЏ СЃС‚Р°Р»РєРµСЂР°"
 --'--------------------------------------------------------------------------------------------------------------------
 class "npc_sound"
 function npc_sound:__init(snd_ini, section)
 	self.class_id = "npc_sound"
-    --' Параметры вычитывания звука
+    --' РџР°СЂР°РјРµС‚СЂС‹ РІС‹С‡РёС‚С‹РІР°РЅРёСЏ Р·РІСѓРєР°
 	self.prefix = utils.cfg_get_bool(snd_ini, section, "npc_prefix", nil, false, false)
 	self.path = utils.cfg_get_string(snd_ini, section, "path", nil, true, "")
 	self.shuffle = utils.cfg_get_string(snd_ini, section, "shuffle", nil, false, "", "rnd")
 	self.group_snd = utils.cfg_get_bool(snd_ini, section, "group_snd", nil, false, false)
 	self.play_always = utils.cfg_get_bool(snd_ini, section, "play_always", nil, false, false)
 	self.section = section
-	--' Хранит параметры звука для каждого NPC
+	--' РҐСЂР°РЅРёС‚ РїР°СЂР°РјРµС‚СЂС‹ Р·РІСѓРєР° РґР»СЏ РєР°Р¶РґРѕРіРѕ NPC
 	self.npc = {}
 	self.played_id = nil
-	--' Интервал проигрывания звука
+	--' РРЅС‚РµСЂРІР°Р» РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р·РІСѓРєР°
 	local interval = parse_names(utils.cfg_get_string(snd_ini, section, "idle", nil, false, "", "3,5,100"))
 	self.min_idle = tonumber(interval[1])
 	self.max_idle = tonumber(interval[2])
@@ -65,7 +65,7 @@ function npc_sound:reset(npc_id)
 	end
 end
 function npc_sound:is_playing(npc_id)
---  Проверка играется ли сейчас звук у нпс
+--  РџСЂРѕРІРµСЂРєР° РёРіСЂР°РµС‚СЃСЏ Р»Рё СЃРµР№С‡Р°СЃ Р·РІСѓРє Сѓ РЅРїСЃ
 	local obj = db.storage[npc_id] and db.storage[npc_id].object
 	if obj == nil then
 		return false
@@ -139,7 +139,7 @@ function npc_sound:callback(npc_id)
 		return
 	end
 
-	-- Затычка против возможного вылета, когда приходит колбек от звука, который данный НПС не играет.
+	-- Р—Р°С‚С‹С‡РєР° РїСЂРѕС‚РёРІ РІРѕР·РјРѕР¶РЅРѕРіРѕ РІС‹Р»РµС‚Р°, РєРѕРіРґР° РїСЂРёС…РѕРґРёС‚ РєРѕР»Р±РµРє РѕС‚ Р·РІСѓРєР°, РєРѕС‚РѕСЂС‹Р№ РґР°РЅРЅС‹Р№ РќРџРЎ РЅРµ РёРіСЂР°РµС‚.
 	if self.npc[npc_id] == nil then
 		return
 	end
@@ -188,12 +188,12 @@ function npc_sound:play(npc_id, faction, point, msg)
     	--printf("coudnt play nodata!!!")
 		return false
 	end
-	--' Выбор звука, который играть.
+	--' Р’С‹Р±РѕСЂ Р·РІСѓРєР°, РєРѕС‚РѕСЂС‹Р№ РёРіСЂР°С‚СЊ.
 	self.played_id = self:select_next_sound(npc_id)
 
 	if self.played_id == -1 then
 		--printf("coudnt play snd3!!!")
-		--' Пропускаем.
+		--' РџСЂРѕРїСѓСЃРєР°РµРј.
 		return false
 	end
 	--printf("playing sound "..self.played_id)
@@ -202,7 +202,7 @@ function npc_sound:play(npc_id, faction, point, msg)
 	end
 	local table_id = self.played_id + 1
 	local snd = self.sound_path[npc_id][table_id]
-	-- проверка на существование звука дублирующего основной по ПДА. Если он есть то играть его.
+	-- РїСЂРѕРІРµСЂРєР° РЅР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ Р·РІСѓРєР° РґСѓР±Р»РёСЂСѓСЋС‰РµРіРѕ РѕСЃРЅРѕРІРЅРѕР№ РїРѕ РџР”Рђ. Р•СЃР»Рё РѕРЅ РµСЃС‚СЊ С‚Рѕ РёРіСЂР°С‚СЊ РµРіРѕ.
 	local f = getFS()
 	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
 		self.pda_snd_obj = sound_object(snd.."_pda")
@@ -320,12 +320,12 @@ function npc_sound:load_npc(thread, npc_id)
 --	set_save_marker(thread, "load", true, "npc_sound_save_npc")
 end
 --'--------------------------------------------------------------------------------------------------------------------
---' Класс "звуковая коллекция игрока"
+--' РљР»Р°СЃСЃ "Р·РІСѓРєРѕРІР°СЏ РєРѕР»Р»РµРєС†РёСЏ РёРіСЂРѕРєР°"
 --'--------------------------------------------------------------------------------------------------------------------
 class "actor_sound"
 function actor_sound:__init(snd_ini, section)
 	self.class_id = "actor_sound"
-    --' Параметры вычитывания звука
+    --' РџР°СЂР°РјРµС‚СЂС‹ РІС‹С‡РёС‚С‹РІР°РЅРёСЏ Р·РІСѓРєР°
 	self.stereo = utils.cfg_get_bool(snd_ini, section, "actor_stereo", nil, false, false)
 	self.prefix = utils.cfg_get_bool(snd_ini, section, "npc_prefix", nil, false, false)
 	self.path = utils.cfg_get_string(snd_ini, section, "path", nil, true, "")
@@ -337,7 +337,7 @@ function actor_sound:__init(snd_ini, section)
 		self.path = "characters_voice\\"..self.path
 	end
 
-	--' Интервал проигрывания звука
+	--' РРЅС‚РµСЂРІР°Р» РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р·РІСѓРєР°
 	local interval = parse_names(utils.cfg_get_string(snd_ini, section, "idle", nil, false, "", "3,5,100"))
 	self.min_idle = tonumber(interval[1])
 	self.max_idle = tonumber(interval[2])
@@ -412,10 +412,10 @@ function actor_sound:play(npc, faction, point, msg)
 	end
 
 	self.played_time = nil
-	--' Выбор звука, который играть.
+	--' Р’С‹Р±РѕСЂ Р·РІСѓРєР°, РєРѕС‚РѕСЂС‹Р№ РёРіСЂР°С‚СЊ.
 	self.played_id = self:select_next_sound()
 	if self.played_id == -1 then
-		--' Пропускаем.
+		--' РџСЂРѕРїСѓСЃРєР°РµРј.
 		return false
 	end
 	local snd = self.sound[self.played_id]
@@ -506,16 +506,16 @@ end
 
 
 --'--------------------------------------------------------------------------------------------------------------------
---' Класс "звуковая коллекция объекта"
+--' РљР»Р°СЃСЃ "Р·РІСѓРєРѕРІР°СЏ РєРѕР»Р»РµРєС†РёСЏ РѕР±СЉРµРєС‚Р°"
 --'--------------------------------------------------------------------------------------------------------------------
 class "object_sound"
 function object_sound:__init(snd_ini, section)
 	self.class_id = "object_sound"
-	--' Параметры вычитывания звука
+	--' РџР°СЂР°РјРµС‚СЂС‹ РІС‹С‡РёС‚С‹РІР°РЅРёСЏ Р·РІСѓРєР°
 	self.path = utils.cfg_get_string(snd_ini, section, "path", nil, true, "")
 	self.shuffle = utils.cfg_get_string(snd_ini, section, "shuffle", nil, false, "", "rnd")
 
-	--' Интервал проигрывания звука
+	--' РРЅС‚РµСЂРІР°Р» РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р·РІСѓРєР°
 	local interval = parse_names(utils.cfg_get_string(snd_ini, section, "idle", nil, false, "", "3,5,100"))
 	self.min_idle = tonumber(interval[1])
 	self.max_idle = tonumber(interval[2])
@@ -587,10 +587,10 @@ function object_sound:play(obj_id, faction, point, msg)
 		return false
 	end
 	self.played_time = nil
-	  --' Выбор звука, который играть.
+	  --' Р’С‹Р±РѕСЂ Р·РІСѓРєР°, РєРѕС‚РѕСЂС‹Р№ РёРіСЂР°С‚СЊ.
 	self.played_id = self:select_next_sound()
 	if self.played_id == -1 then
-		--' Пропускаем.
+		--' РџСЂРѕРїСѓСЃРєР°РµРј.
 		return false
 	end
 --	printf("object played_id = %s", self.played_id)
@@ -688,12 +688,12 @@ end
 function object_sound:load_npc(thread)
 end
 --'--------------------------------------------------------------------------------------------------------------------
---' Класс "зацикленный звук"
+--' РљР»Р°СЃСЃ "Р·Р°С†РёРєР»РµРЅРЅС‹Р№ Р·РІСѓРє"
 --'--------------------------------------------------------------------------------------------------------------------
 class "looped_sound"
 function looped_sound:__init(snd_ini, section)
 	self.class_id = "looped_sound"
-	--' Параметры вычитывания звука
+	--' РџР°СЂР°РјРµС‚СЂС‹ РІС‹С‡РёС‚С‹РІР°РЅРёСЏ Р·РІСѓРєР°
 	self.path = utils.cfg_get_string(snd_ini, section, "path", nil, true, "")
 	self.sound = nil
 	self.snd_obj = nil
@@ -746,12 +746,12 @@ end
 function looped_sound:load_npc(thread)
 end
 --'--------------------------------------------------------------------------------------------------------------------
---' Загрузка звуков
+--' Р—Р°РіСЂСѓР·РєР° Р·РІСѓРєРѕРІ
 --'--------------------------------------------------------------------------------------------------------------------
 function load_sound()
 	local snd_ini = ini_file("misc\\script_sound.ltx")
 
-	--' Итерируемся по списку тем.
+	--' РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ СЃРїРёСЃРєСѓ С‚РµРј.
 	if not snd_ini:section_exist("list") then
 		abort("There is no section [list] in script_sound.ltx")
 	end
@@ -759,7 +759,7 @@ function load_sound()
 	local id, value = "",""
 	local category = ""
 
-	--' начальная установка
+	--' РЅР°С‡Р°Р»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР°
 	theme = {}
 
 	for i=0,n-1 do
@@ -767,7 +767,7 @@ function load_sound()
 
 		local type = utils.cfg_get_string(snd_ini, section, "type", db.actor, true, "")
 
-		--' Определяем тип звука.
+		--' РћРїСЂРµРґРµР»СЏРµРј С‚РёРї Р·РІСѓРєР°.
 		if type == "npc" then
 			theme[section] = npc_sound(snd_ini, section)
 		elseif type == "actor" then
@@ -779,7 +779,7 @@ function load_sound()
 		end
 	end
 end
---' Загрузка звуков НПС
+--' Р—Р°РіСЂСѓР·РєР° Р·РІСѓРєРѕРІ РќРџРЎ
 function init_npc_sound(npc)
 	for k,v in pairs(theme) do
 		if v.init_npc then

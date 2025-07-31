@@ -26,7 +26,7 @@ end
 function se_actor:STATE_Read(packet, size)
 	cse_alife_creature_actor.STATE_Read (self, packet, size)
 
-	-- под LevelEditor не пытаться читать из пакета ничего
+	-- РїРѕРґ LevelEditor РЅРµ РїС‹С‚Р°С‚СЊСЃСЏ С‡РёС‚Р°С‚СЊ РёР· РїР°РєРµС‚Р° РЅРёС‡РµРіРѕ
 	if editor() then
 		return
 	end

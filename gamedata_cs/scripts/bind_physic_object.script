@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------------------------------------
 -- Physic objects binding
 ----------------------------------------------------------------------------------------------------
--- Ðàçðàáîò÷èê: Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
--- Äîðàáîòêè: Andrey Fidrya (Zmey) af@svitonline.com
+-- Ð Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚Ñ‡Ð¸Ðº: Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+-- Ð”Ð¾Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ¸: Andrey Fidrya (Zmey) af@svitonline.com
 ----------------------------------------------------------------------------------------------------
 
 hanging_lamp_on = true
@@ -10,7 +10,7 @@ function init(obj)
 	printf("_bp: init(): name='%s'", obj:name())
 
 	----------------------------------------------------------------------------------------
-	-- Ñòàðûå ñõåìû
+	-- Ð¡Ñ‚Ð°Ñ€Ñ‹Ðµ ÑÑ…ÐµÐ¼Ñ‹
 	----------------------------------------------------------------------------------------
 
 	local ini = obj:spawn_ini()
@@ -22,12 +22,12 @@ function init(obj)
 	end
 
 	----------------------------------------------------------------------------------------
-	-- Íîâûå ñõåìû
+	-- ÐÐ¾Ð²Ñ‹Ðµ ÑÑ…ÐµÐ¼Ñ‹
 	----------------------------------------------------------------------------------------
 
-	-- Áèíäèòü ïðåäìåò íåò ñìûñëà, åñëè ó íåãî íåò ñåêöèè logic
+	-- Ð‘Ð¸Ð½Ð´Ð¸Ñ‚ÑŒ Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚ Ð½ÐµÑ‚ ÑÐ¼Ñ‹ÑÐ»Ð°, ÐµÑÐ»Ð¸ Ñƒ Ð½ÐµÐ³Ð¾ Ð½ÐµÑ‚ ÑÐµÐºÑ†Ð¸Ð¸ logic
 	if not (ini and ini:section_exist("logic")) then
-		-- Ïðîæåêòîð íóæíî áèíäèòü äàæå áåç logic
+		-- ÐŸÑ€Ð¾Ð¶ÐµÐºÑ‚Ð¾Ñ€ Ð½ÑƒÐ¶Ð½Ð¾ Ð±Ð¸Ð½Ð´Ð¸Ñ‚ÑŒ Ð´Ð°Ð¶Ðµ Ð±ÐµÐ· logic
 		if obj:clsid() ~= clsid.inventory_box then
 			return
 		end
@@ -65,14 +65,14 @@ function generic_physics_binder:update(delta)
 		self.initialized = true
 		xr_logic.initialize_obj(self.object, self.st, self.loaded, db.actor, modules.stype_item)
 
-        --' Çàïóñêàåì àññîöèèðîâàííûé ñ îáúåêòîì ïàðòèêë.
+        --' Ð—Ð°Ð¿ÑƒÑÐºÐ°ÐµÐ¼ Ð°ÑÑÐ¾Ñ†Ð¸Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹ Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð¼ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ».
         local particle = utils.cfg_get_string(self.st.ini, self.st.section_logic, "particle", self.object, false, "", nil)
         if particle ~= nil then
             self.particle = particles_object(particle)
             self.particle:play_at_pos(self.object:position())
         end
 
-        --' Äèçàáëèì àññîöèèðîâàííûé ñ îáúåêòîì ãðàô
+        --' Ð”Ð¸Ð·Ð°Ð±Ð»Ð¸Ð¼ Ð°ÑÑÐ¾Ñ†Ð¸Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹ Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð¼ Ð³Ñ€Ð°Ñ„
 --        local graph_point_marker = utils.cfg_get_string(self.st.ini, self.st.section_logic, "graph_point_marker", self.object, false, "", nil)
 --        if graph_point_marker ~= nil then
 --            self.disable_graph_point = patrol(graph_point_marker):game_vertex_id(0)
@@ -97,7 +97,7 @@ function generic_physics_binder:update(delta)
 	if self.object:clsid() == clsid.inventory_box then
 		self.object:set_callback(callback.use_object, generic_physics_binder.use_callback, self)
 	end
-	-- Êîíòðîëü âêëþ÷åíèÿ âûêëþ÷åíèÿ ïðîæåêòîðà
+	-- ÐšÐ¾Ð½Ñ‚Ñ€Ð¾Ð»ÑŒ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ Ð²Ñ‹ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ Ð¿Ñ€Ð¾Ð¶ÐµÐºÑ‚Ð¾Ñ€Ð°
 --[[
 	if hanging_lamp_on then
 		if (level.get_time_hours() >= 5 and level.get_time_hours() < 21) then
@@ -129,7 +129,7 @@ function generic_physics_binder:net_spawn(data)
 		self.box_items = xr_box.ph_item_box(self.object)
 	end
 	db.add_obj(self.object)
-	--[[ Êîíòðîëü âêëþ÷åíèÿ âûêëþ÷åíèÿ ïðîæåêòîðîâ
+	--[[ ÐšÐ¾Ð½Ñ‚Ñ€Ð¾Ð»ÑŒ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ Ð²Ñ‹ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ Ð¿Ñ€Ð¾Ð¶ÐµÐºÑ‚Ð¾Ñ€Ð¾Ð²
 	if self.object:get_hanging_lamp() ~= nil then
 		hanging_lamp_table[self.object:id()] = self.object:get_hanging_lamp()
 	end]]

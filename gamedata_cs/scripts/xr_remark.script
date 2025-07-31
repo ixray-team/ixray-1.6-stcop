@@ -36,10 +36,10 @@ function action_remark_activity:activate_scheme()
 		self.action_end_signalled = false
 		self.anim_end_signalled = false
 
-	-- Определим нужно ли нам отыгрывать анимацию/поворачиваться на объект.
+	-- РћРїСЂРµРґРµР»РёРј РЅСѓР¶РЅРѕ Р»Рё РЅР°Рј РѕС‚С‹РіСЂС‹РІР°С‚СЊ Р°РЅРёРјР°С†РёСЋ/РїРѕРІРѕСЂР°С‡РёРІР°С‚СЊСЃСЏ РЅР° РѕР±СЉРµРєС‚.
 	self.anim_scheduled = true
 
-	-- Определим нужно ли нам отыгрывать отдельно звук после поворота.
+	-- РћРїСЂРµРґРµР»РёРј РЅСѓР¶РЅРѕ Р»Рё РЅР°Рј РѕС‚С‹РіСЂС‹РІР°С‚СЊ РѕС‚РґРµР»СЊРЅРѕ Р·РІСѓРє РїРѕСЃР»Рµ РїРѕРІРѕСЂРѕС‚Р°.
 	if self.st.snd_anim_sync == false and
 		 self.st.snd ~= nil
 	then
@@ -50,14 +50,14 @@ function action_remark_activity:activate_scheme()
 
 	self.snd_started = false
 
-	-- Задаем стартовое состояние
+	-- Р—Р°РґР°РµРј СЃС‚Р°СЂС‚РѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	self.state = state_initial
 	self.tips_sound = nil
 end
 function action_remark_activity:get_target()
 	local look_tbl = {}
 
-	--' Если таргет не проинициализирован, то запускаем инициализатор.
+	--' Р•СЃР»Рё С‚Р°СЂРіРµС‚ РЅРµ РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅ, С‚Рѕ Р·Р°РїСѓСЃРєР°РµРј РёРЅРёС†РёР°Р»РёР·Р°С‚РѕСЂ.
 	if self.st.target_init == false then
 		self.st.target_position, self.st.target_id, self.st.target_init = initialize_gulag_target(self.object, self.st.target)
 		if st.target_init == false then
@@ -92,7 +92,7 @@ function action_remark_activity:time_callback()
 	self:update()
 end
 function action_remark_activity:update()
-	--' 1. Мы должны повернуться на объект.
+	--' 1. РњС‹ РґРѕР»Р¶РЅС‹ РїРѕРІРµСЂРЅСѓС‚СЊСЃСЏ РЅР° РѕР±СЉРµРєС‚.
 	--printf("REMARK: [%s] state[%s]", self.object:name(), self.state)
 
 	if self.state == state_initial then
@@ -113,16 +113,16 @@ function action_remark_activity:update()
 		state_mgr.set_state(self.object, anim, cb, 0, target, { animation = self.st.anim_reset }, synsound)
 		self.state = state_animation
 
-	--' Ожидание колбека от стейтменеджера
+	--' РћР¶РёРґР°РЅРёРµ РєРѕР»Р±РµРєР° РѕС‚ СЃС‚РµР№С‚РјРµРЅРµРґР¶РµСЂР°
 	elseif self.state == state_animation then
 
-	--' 2. Мы должны отыграть фразу.
+	--' 2. РњС‹ РґРѕР»Р¶РЅС‹ РѕС‚С‹РіСЂР°С‚СЊ С„СЂР°Р·Сѓ.
 	elseif self.state == state_sound then
 		if self.snd_scheduled == true then
 			self.snd_started = true
 			xr_sound.set_sound_play(self.object:id(), self.st.snd)
 		end
-		--' Должны выдать сигнал anim_end
+		--' Р”РѕР»Р¶РЅС‹ РІС‹РґР°С‚СЊ СЃРёРіРЅР°Р» anim_end
 		if self.anim_end_signalled == false then
 			self.anim_end_signalled = true
 			self.st.signals["anim_end"] = true
@@ -146,11 +146,11 @@ function action_remark_activity:update()
 		end
 
 
-		--' Нужно выдать связанный типс.
+		--' РќСѓР¶РЅРѕ РІС‹РґР°С‚СЊ СЃРІСЏР·Р°РЅРЅС‹Р№ С‚РёРїСЃ.
 		if self.st.tips_id ~= nil then
 			self.tips_sound = news_manager.send_tip_nosound(db.actor, self.st.tips_id, self.st.sender)
 			if self.tips_sound ~= nil then
-				--' Играем звук забитый
+				--' РРіСЂР°РµРј Р·РІСѓРє Р·Р°Р±РёС‚С‹Р№
 				self.tips_sound:play(db.actor, 0, sound_object.s2d)
 			end
 		end
@@ -197,7 +197,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 			 new_action:add_effect(world_property(properties["need_remark"], false))
 		manager:add_action(operators["action_remark"], new_action)
 
-		-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+		-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 		xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
 			new_action = manager:action(xr_actions_id.alife)
@@ -217,13 +217,13 @@ function initialize_gulag_target(npc, target)
 		local gulag = nil
 		local param1, param2 = parse_target(target)
 	--printf("r1")
-	-- Возможные варианты:
-	-- Передана работа в гулаге чувака
-	-- Передана работа и идентификатор гулага
-	-- Передан патрульный путь и номер вейпоинта.
-	-- На выход нужно дать: либо target_id либо target_position
+	-- Р’РѕР·РјРѕР¶РЅС‹Рµ РІР°СЂРёР°РЅС‚С‹:
+	-- РџРµСЂРµРґР°РЅР° СЂР°Р±РѕС‚Р° РІ РіСѓР»Р°РіРµ С‡СѓРІР°РєР°
+	-- РџРµСЂРµРґР°РЅР° СЂР°Р±РѕС‚Р° Рё РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РіСѓР»Р°РіР°
+	-- РџРµСЂРµРґР°РЅ РїР°С‚СЂСѓР»СЊРЅС‹Р№ РїСѓС‚СЊ Рё РЅРѕРјРµСЂ РІРµР№РїРѕРёРЅС‚Р°.
+	-- РќР° РІС‹С…РѕРґ РЅСѓР¶РЅРѕ РґР°С‚СЊ: Р»РёР±Рѕ target_id Р»РёР±Рѕ target_position
 
-	-- Если вторым параметром передано число, то это однозначно патрульный путь.
+	-- Р•СЃР»Рё РІС‚РѕСЂС‹Рј РїР°СЂР°РјРµС‚СЂРѕРј РїРµСЂРµРґР°РЅРѕ С‡РёСЃР»Рѕ, С‚Рѕ СЌС‚Рѕ РѕРґРЅРѕР·РЅР°С‡РЅРѕ РїР°С‚СЂСѓР»СЊРЅС‹Р№ РїСѓС‚СЊ.
 	local wp_id = tonumber(param2)
 	if wp_id then
 		--printf("r2")
@@ -245,7 +245,7 @@ function initialize_gulag_target(npc, target)
 end
 
 
--- Включение схемы
+-- Р’РєР»СЋС‡РµРЅРёРµ СЃС…РµРјС‹
 function set_scheme(npc, ini, scheme, section, gulag_name)
 	printf("DEBUG: set_scheme: scheme='%s', section='%s'", scheme, section)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)

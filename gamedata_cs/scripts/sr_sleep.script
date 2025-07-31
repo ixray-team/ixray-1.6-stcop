@@ -4,9 +4,9 @@
 -- Author: Oleg Kreptul (Haron) haronk@ukr.net
 ----------------------------------------------------------------------------------------------------
 
-local state_nowhere = 0 -- схема только что включилась
-local state_inside = 1 -- актер внутри
-local state_outside = 2 -- актер снаружи
+local state_nowhere = 0 -- СЃС…РµРјР° С‚РѕР»СЊРєРѕ С‡С‚Рѕ РІРєР»СЋС‡РёР»Р°СЃСЊ
+local state_inside = 1 -- Р°РєС‚РµСЂ РІРЅСѓС‚СЂРё
+local state_outside = 2 -- Р°РєС‚РµСЂ СЃРЅР°СЂСѓР¶Рё
 
 class "action_sleep"
 
@@ -80,7 +80,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = action_sleep(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 

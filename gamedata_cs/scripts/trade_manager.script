@@ -16,21 +16,21 @@ function trade_init(npc, cfg)
 	trade_manager[npc:id()].cfg_ltx = cfg
 	trade_manager[npc:id()].config = ini_file(cfg)
 
-	-- коэфициенты покупки
+	-- РєРѕСЌС„РёС†РёРµРЅС‚С‹ РїРѕРєСѓРїРєРё
 	local str = utils.cfg_get_string(trade_manager[npc:id()].config, "trader", "buy_condition", npc, true, "")
 	if str == nil then
 		abort("Incorrect trader settings. Cannot find buy_condition. [%s]->[%s]", npc:name(), cfg)
 	end
 	trade_manager[npc:id()].buy_condition = xr_logic.parse_condlist(npc, "trade_manager", "buy_condition", str)
 
-	-- коэфициенты продажи
+	-- РєРѕСЌС„РёС†РёРµРЅС‚С‹ РїСЂРѕРґР°Р¶Рё
 	str = utils.cfg_get_string(trade_manager[npc:id()].config, "trader", "sell_condition", npc, true, "")
 	if str == nil then
 		abort("Incorrect trader settings. Cannot find sell_condition. [%s]->[%s]", npc:name(), cfg)
 	end
 	trade_manager[npc:id()].sell_condition = xr_logic.parse_condlist(npc, "trade_manager", "sell_condition", str)
 
-	-- список закупки
+	-- СЃРїРёСЃРѕРє Р·Р°РєСѓРїРєРё
 	str = utils.cfg_get_string(trade_manager[npc:id()].config, "trader", "buy_supplies", npc, false, "")
 	if str ~= nil then
 		trade_manager[npc:id()].buy_supplies = xr_logic.parse_condlist(npc, "trade_manager", "buy_supplies", str)
@@ -84,7 +84,7 @@ end
 function save(obj, packet)
 	local tt = trade_manager[obj:id()]
 	set_save_marker(packet, "save", false, "trade_manager")
-	--' Сохраняем присутствует ли инициализированная торговля в принципе.
+	--' РЎРѕС…СЂР°РЅСЏРµРј РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚ Р»Рё РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅР°СЏ С‚РѕСЂРіРѕРІР»СЏ РІ РїСЂРёРЅС†РёРїРµ.
 	if tt == nil then
 		printf("TRADE SAVE [%s]: ignored", obj:name())
 		packet:w_bool(false)

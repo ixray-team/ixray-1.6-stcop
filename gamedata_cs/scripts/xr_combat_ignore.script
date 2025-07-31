@@ -1,6 +1,6 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Игнорирование врагов
-Чугай Александр
+РРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµ РІСЂР°РіРѕРІ
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 --------------------------------------------------------------------------------------------------------------------]]
 function printf()
 end	
@@ -26,7 +26,7 @@ function is_enemy(obj, enemy, st, not_check_sim)
 	end
 	storage.enemy_id = enemy:id()
 
-	--' Отсеиваем по зоне
+	--' РћС‚СЃРµРёРІР°РµРј РїРѕ Р·РѕРЅРµ
 	local active_sector = storage.active_sector
 	if active_sector ~= nil then
 		if sr_danger.check_danger_position(enemy:position(), active_sector) == false then
@@ -34,7 +34,7 @@ function is_enemy(obj, enemy, st, not_check_sim)
 		end
 	end	
 	printf("checking combat_ignore for stalker[%s] enemy name [%s] in section[%s]",obj:name(), enemy:name(),storage.active_section)
-	--' Если есть оверрайды, то работаем по ним. 
+	--' Р•СЃР»Рё РµСЃС‚СЊ РѕРІРµСЂСЂР°Р№РґС‹, С‚Рѕ СЂР°Р±РѕС‚Р°РµРј РїРѕ РЅРёРј. 
 	if overrides and
 	   overrides.combat_ignore
 	then
@@ -53,13 +53,13 @@ function is_enemy(obj, enemy, st, not_check_sim)
 		end
 		
 		local board = se_obj.board
-		--' Запрещаем врагов из других смартов.
-		--' Кроме случая когда мы нападаем на них или они нападают на нас.	
+		--' Р—Р°РїСЂРµС‰Р°РµРј РІСЂР°РіРѕРІ РёР· РґСЂСѓРіРёС… СЃРјР°СЂС‚РѕРІ.
+		--' РљСЂРѕРјРµ СЃР»СѓС‡Р°СЏ РєРѕРіРґР° РјС‹ РЅР°РїР°РґР°РµРј РЅР° РЅРёС… РёР»Рё РѕРЅРё РЅР°РїР°РґР°СЋС‚ РЅР° РЅР°СЃ.	
 		local my_squad = board.squads[se_obj.squad_id]
 		if my_squad == nil then
 			return true
 		end
-		--' Вычисляем исходные и целевые смарты.
+		--' Р’С‹С‡РёСЃР»СЏРµРј РёСЃС…РѕРґРЅС‹Рµ Рё С†РµР»РµРІС‹Рµ СЃРјР°СЂС‚С‹.
 		local my_squad_src_smart = nil
 		if my_squad.smart_id ~= nil then
 			my_squad_src_smart = my_squad.smart_id
@@ -91,7 +91,7 @@ function is_enemy(obj, enemy, st, not_check_sim)
 			return false
 		end
 
-		--' Для НПС и для ИГРОКА разные логики.
+		--' Р”Р»СЏ РќРџРЎ Рё РґР»СЏ РР“Р РћРљРђ СЂР°Р·РЅС‹Рµ Р»РѕРіРёРєРё.
 		if enemy:id() == db.actor:id() then			
 			local combat_smart_manager = board.smarts[my_squad_dest_smart or my_squad_src_smart].smrt.combat_manager
 			printf("pl:1")
@@ -128,23 +128,23 @@ function is_enemy(obj, enemy, st, not_check_sim)
 --		printf("COMBAT MY src [%s] dest [%s]", tostring(my_squad_src_smart), tostring(my_squad_dest_smart))
 --		printf("COMBAT ENEMY src [%s] dest [%s]", tostring(enemy_squad_src_smart), tostring(enemy_squad_dest_smart))
 
-		--' Надо определить в комбате какого смарта происходит бой!
+		--' РќР°РґРѕ РѕРїСЂРµРґРµР»РёС‚СЊ РІ РєРѕРјР±Р°С‚Рµ РєР°РєРѕРіРѕ СЃРјР°СЂС‚Р° РїСЂРѕРёСЃС…РѕРґРёС‚ Р±РѕР№!
 		local combat_smart = nil
 		if my_squad_dest_smart ~= nil and my_squad_dest_smart == enemy_squad_dest_smart then
-			--' Мы с противником атакуем один и тот же смарт
+			--' РњС‹ СЃ РїСЂРѕС‚РёРІРЅРёРєРѕРј Р°С‚Р°РєСѓРµРј РѕРґРёРЅ Рё С‚РѕС‚ Р¶Рµ СЃРјР°СЂС‚
 			combat_smart = my_squad_dest_smart
 		elseif my_squad_dest_smart ~= nil and enemy_squad_dest_smart == nil and my_squad_dest_smart == enemy_squad_src_smart then
-			--' Я атакую его смарт
+			--' РЇ Р°С‚Р°РєСѓСЋ РµРіРѕ СЃРјР°СЂС‚
 			combat_smart = my_squad_dest_smart
 		elseif enemy_squad_dest_smart ~= nil and my_squad_dest_smart == nil and enemy_squad_dest_smart == my_squad_src_smart then
-			--' Он атакует мой смарт
+			--' РћРЅ Р°С‚Р°РєСѓРµС‚ РјРѕР№ СЃРјР°СЂС‚
 			combat_smart = my_squad_src_smart	
 		elseif my_squad_dest_smart ~= nil and my_squad_dest_smart == enemy_squad_src_smart and enemy_squad_dest_smart ~= nil and enemy_squad_dest_smart == my_squad_src_smart then
-			--' Мы атакуем смарты друг друга
+			--' РњС‹ Р°С‚Р°РєСѓРµРј СЃРјР°СЂС‚С‹ РґСЂСѓРі РґСЂСѓРіР°
 --			printf("COMBAT %s -> %s CROSSATTACK", obj:name(), enemy:name())
 			return true
 		elseif my_squad_src_smart == enemy_squad_src_smart then
-			--' Мы каким то образом оказались в одном и том же смарте
+			--' РњС‹ РєР°РєРёРј С‚Рѕ РѕР±СЂР°Р·РѕРј РѕРєР°Р·Р°Р»РёСЃСЊ РІ РѕРґРЅРѕРј Рё С‚РѕРј Р¶Рµ СЃРјР°СЂС‚Рµ
 --			printf("COMBAT %s -> %s BOTH STAY", obj:name(), enemy:name())
 			return true
 		end			
@@ -194,7 +194,7 @@ function action_process_enemy:hit_callback(obj, amount, local_direction, who, bo
 
 --	printf("_bp: action_process_enemy: hit_callback(): obj='%s'", obj:name())
 	if amount == 0 then
-		-- Кто-то стрельнул в воздух
+		-- РљС‚Рѕ-С‚Рѕ СЃС‚СЂРµР»СЊРЅСѓР» РІ РІРѕР·РґСѓС…
 		return
 	end
 
@@ -224,7 +224,7 @@ function reset_combat_ignore_checker(npc, scheme, st, section)
 
 	npc:set_enemy_callback( storage.action.enemy_callback, storage.action )
 
-	-- Подписываемся на hit callback-и:
+	-- РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° hit callback-Рё:
 	xr_logic.subscribe_action_for_events( npc, storage, storage.action )
 
 	storage.overrides = xr_logic.generic_scheme_overrides(npc)
@@ -237,8 +237,8 @@ end
 function disable_scheme( npc, scheme )
 	npc:set_enemy_callback()
 
-	-- Отписываемся от hit callback. Это делать обязательно, потому что иначе при переключении на другой набор
-	-- схем, в котором нет перехвата боя, продолжится вызываться callback в старом подписанном action-е.
+	-- РћС‚РїРёСЃС‹РІР°РµРјСЃСЏ РѕС‚ hit callback. Р­С‚Рѕ РґРµР»Р°С‚СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РёРЅР°С‡Рµ РїСЂРё РїРµСЂРµРєР»СЋС‡РµРЅРёРё РЅР° РґСЂСѓРіРѕР№ РЅР°Р±РѕСЂ
+	-- СЃС…РµРј, РІ РєРѕС‚РѕСЂРѕРј РЅРµС‚ РїРµСЂРµС…РІР°С‚Р° Р±РѕСЏ, РїСЂРѕРґРѕР»Р¶РёС‚СЃСЏ РІС‹Р·С‹РІР°С‚СЊСЃСЏ callback РІ СЃС‚Р°СЂРѕРј РїРѕРґРїРёСЃР°РЅРЅРѕРј action-Рµ.
 	local st = db.storage[npc:id()][scheme]
 	if st then
 		xr_logic.unsubscribe_action_from_events(npc, st, st.action)

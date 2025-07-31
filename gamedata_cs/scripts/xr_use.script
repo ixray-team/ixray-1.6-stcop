@@ -17,12 +17,12 @@ function notify_on_use(victim, who)
 --'		get_console():execute("dump_infos")
 --'	end
 
-	-- Если мы мертвы - на юзание не реагировать
+	-- Р•СЃР»Рё РјС‹ РјРµСЂС‚РІС‹ - РЅР° СЋР·Р°РЅРёРµ РЅРµ СЂРµР°РіРёСЂРѕРІР°С‚СЊ
 	if not victim:alive() then
 		return
 	end
 
-	-- Согласны ли мы говорить при этом юзании или нет.
+	-- РЎРѕРіР»Р°СЃРЅС‹ Р»Рё РјС‹ РіРѕРІРѕСЂРёС‚СЊ РїСЂРё СЌС‚РѕРј СЋР·Р°РЅРёРё РёР»Рё РЅРµС‚.
 	if victim:is_talk_enabled() == true then
 --		dialog_manager.restore_npc_disabled_phrases(victim:id())
 		if xr_wounded.is_wounded(victim) then
@@ -36,21 +36,21 @@ function notify_on_use(victim, who)
 		if victim:active_sound_count() ~= 0 then
 			return
 		end
-		-- Мы согласны говорить
+		-- РњС‹ СЃРѕРіР»Р°СЃРЅС‹ РіРѕРІРѕСЂРёС‚СЊ
 		if victim:best_enemy() ~= nil then
-			-- Во время боя
+			-- Р’Рѕ РІСЂРµРјСЏ Р±РѕСЏ
 			xr_sound.set_sound_play(victim:id(), "use_yes_fight")
 		elseif xr_wounded.is_wounded(victim) then
-			-- Юзание раненого
+			-- Р®Р·Р°РЅРёРµ СЂР°РЅРµРЅРѕРіРѕ
 			return
 		elseif db.storage[victim:id()].state_mgr.animstate:state() == "sleep" then
-			-- Юзание спящего
+			-- Р®Р·Р°РЅРёРµ СЃРїСЏС‰РµРіРѕ
 			xr_sound.set_sound_play(victim:id(), "use_yes_sleep")
 		elseif db.storage[victim:id()].active_scheme == "kamp" then
-			-- Юзание чувака в лагере
+			-- Р®Р·Р°РЅРёРµ С‡СѓРІР°РєР° РІ Р»Р°РіРµСЂРµ
 			xr_sound.set_sound_play(victim:id(), "use_yes_kamp")
 		else
-			-- Дефолт
+			-- Р”РµС„РѕР»С‚
 			xr_sound.set_sound_play(victim:id(), "use_yes_default")
 		end
 ]]
@@ -62,25 +62,25 @@ function notify_on_use(victim, who)
 			return
 		end
 
-		-- Мы не согласны говорить
+		-- РњС‹ РЅРµ СЃРѕРіР»Р°СЃРЅС‹ РіРѕРІРѕСЂРёС‚СЊ
 		if victim:best_enemy() ~= nil then
 			if victim:relation(db.actor) ~= game_object.enemy then
-				-- Во время боя
+				-- Р’Рѕ РІСЂРµРјСЏ Р±РѕСЏ
 				--xr_sound.set_sound_play(victim:id(), "use_no_fight")
 			end
 		elseif xr_wounded.is_wounded(victim) then
-			-- Юзание раненого
+			-- Р®Р·Р°РЅРёРµ СЂР°РЅРµРЅРѕРіРѕ
 		elseif xr_sleeper.is_npc_asleep(victim) then
-			-- Юзание спящего
+			-- Р®Р·Р°РЅРёРµ СЃРїСЏС‰РµРіРѕ
 			--xr_sound.set_sound_play(victim:id(), "use_no_sleep")
 		elseif xr_meet.cannot_talk_by_weapon(victim) then
-			-- Необходимо спрятать оружие
+			-- РќРµРѕР±С…РѕРґРёРјРѕ СЃРїСЂСЏС‚Р°С‚СЊ РѕСЂСѓР¶РёРµ
 			--xr_sound.set_sound_play(victim:id(), "use_no_weapon")
 			xr_abuse.add_abuse(victim, 1)
 		elseif db.storage[victim:id()].active_scheme == "kamp" then
-			-- Юзание чувака в лагере
+			-- Р®Р·Р°РЅРёРµ С‡СѓРІР°РєР° РІ Р»Р°РіРµСЂРµ
 		else
-			-- Дефолт
+			-- Р”РµС„РѕР»С‚
 			--xr_sound.set_sound_play(victim:id(), "use_no_default")
 			xr_abuse.add_abuse(victim, 1)
 		end

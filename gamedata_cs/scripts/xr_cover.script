@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------
---    Схема: прячемся в кавере
+--    РЎС…РµРјР°: РїСЂСЏС‡РµРјСЃСЏ РІ РєР°РІРµСЂРµ
 ------------------------------------------------------------------------------------
 class "evaluator_need_cover" (property_evaluator)
 function evaluator_need_cover:__init(storage, name) super(nil, name)
@@ -21,7 +21,7 @@ end
 function action_cover:activate_scheme()
     self.st.signals = {}
     self.board = sim_board.get_sim_board()
-    --' Высчитываем кавер.
+    --' Р’С‹СЃС‡РёС‚С‹РІР°РµРј РєР°РІРµСЂ.
     local base_point
     if self.st.smart ~= nil then
 		base_point = sim_board.get_sim_board():get_smart_by_name(self.st.smart).m_level_vertex_id
@@ -33,8 +33,8 @@ function action_cover:activate_scheme()
     local base_vertex_id = level.vertex_in_direction(base_point, direction_vector, math.random(self.st.radius_min,self.st.radius_max))
     local self_random_position = level.vertex_position(base_vertex_id)
 
-	--' Получаем врага, относительно которого надо искать кавер
-	self.enemy_random_position = self_random_position --' дефолтовая позиция
+	--' РџРѕР»СѓС‡Р°РµРј РІСЂР°РіР°, РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РєРѕС‚РѕСЂРѕРіРѕ РЅР°РґРѕ РёСЃРєР°С‚СЊ РєР°РІРµСЂ
+	self.enemy_random_position = self_random_position --' РґРµС„РѕР»С‚РѕРІР°СЏ РїРѕР·РёС†РёСЏ
 	if self.st.use_attack_direction then
 		printf("use_attack_direction [true]")
 		local squad = db.storage[self.object:id()].squad_obj
@@ -109,7 +109,7 @@ function action_cover:activate_scheme()
 	printf("[%s]Setting cover %s", self.object:name(), self.cover_vertex_id)
 end
 function action_cover:execute()
-	--' Проверяем пришли ли в точку.
+	--' РџСЂРѕРІРµСЂСЏРµРј РїСЂРёС€Р»Рё Р»Рё РІ С‚РѕС‡РєСѓ.
 	if self.cover_position:distance_to_sqr(self.object:position()) <= 0.4 then
 		local anim = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.anim)
 		state_mgr.set_state(self.object, anim, nil, nil, {look_position = self.enemy_random_position}, nil, nil)
@@ -124,7 +124,7 @@ end
 function action_cover:finalize()
 	action_base.finalize(self)
 end
---' Возвращает достиг ли персонаж точки начала работы схемы
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРѕСЃС‚РёРі Р»Рё РїРµСЂСЃРѕРЅР°Р¶ С‚РѕС‡РєРё РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ СЃС…РµРјС‹
 function action_cover:position_riched()
 	return self.cover_position:distance_to_sqr(self.object:position()) <= 0.4
 end
@@ -157,14 +157,14 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	   	new_action:add_effect(world_property(properties["need_cover"],false))
 		manager:add_action(operators["action_cover"], new_action)
 
-		-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+		-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 		xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
 	  	new_action = manager:action(xr_actions_id.alife)
 	  	new_action:add_precondition(world_property(properties["need_cover"], false))
 end
 
--- Включение схемы
+-- Р’РєР»СЋС‡РµРЅРёРµ СЃС…РµРјС‹
 function set_scheme(npc, ini, scheme, section, gulag_name)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 

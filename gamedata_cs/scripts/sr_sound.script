@@ -1,11 +1,11 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Проигровка звуков при входе актёра в рестриктор.
-Чугай Александр
+РџСЂРѕРёРіСЂРѕРІРєР° Р·РІСѓРєРѕРІ РїСЂРё РІС…РѕРґРµ Р°РєС‚С‘СЂР° РІ СЂРµСЃС‚СЂРёРєС‚РѕСЂ.
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 
 Sliding sound support: Jim
 --------------------------------------------------------------------------------------------------------------------]]
 
--- типы звуков для зон
+-- С‚РёРїС‹ Р·РІСѓРєРѕРІ РґР»СЏ Р·РѕРЅ
 local sound_types = {
 	floor_wooden = {
 		"ambient\\floor_creak1",
@@ -70,7 +70,7 @@ local pos_path   = 0
 local pos_random = 1
 local pos_obj    = 2
 
--- включить в dest все элементы из src. Таблицы индексированы
+-- РІРєР»СЋС‡РёС‚СЊ РІ dest РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РёР· src. РўР°Р±Р»РёС†С‹ РёРЅРґРµРєСЃРёСЂРѕРІР°РЅС‹
 function table_include( dest, src )
 	if dest and src then
 		for i, v in pairs(src) do
@@ -133,7 +133,7 @@ function action_sound:update( delta )
 	---------------------------------------
 	
 	local actor = db.actor
-	-- если мы ещё нигде, то не считать ни входа, ни выхода
+	-- РµСЃР»Рё РјС‹ РµС‰С‘ РЅРёРіРґРµ, С‚Рѕ РЅРµ СЃС‡РёС‚Р°С‚СЊ РЅРё РІС…РѕРґР°, РЅРё РІС‹С…РѕРґР°
 	if self.is_actor_inside == nil then
 		self.is_actor_inside = self.object:inside( actor:position() )
 		return
@@ -233,7 +233,7 @@ function add_to_binder( npc, ini, scheme, section, storage )
 
 	local new_action = action_sound(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events( npc, storage, new_action )
 end
 
@@ -260,7 +260,7 @@ function set_scheme( obj, ini, scheme, section, gulag_name )
 	end
 
 	st.delay   = utils.cfg_get_number( ini, section, "delay",    obj, false, 0 )
-	st.idle    = utils.cfg_get_number( ini, section, "idle",     obj, false, 0 ) * 1000 -- секунды->мс
+	st.idle    = utils.cfg_get_number( ini, section, "idle",     obj, false, 0 ) * 1000 -- СЃРµРєСѓРЅРґС‹->РјСЃ
 	st.rnd     = utils.cfg_get_number( ini, section, "rnd",      obj, false, 100 )
 	local path = utils.cfg_get_string( ini, section, "position", obj, false, "", nil )
 

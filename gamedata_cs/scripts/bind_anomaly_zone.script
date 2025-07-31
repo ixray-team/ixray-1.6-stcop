@@ -1,5 +1,5 @@
 --'******************************************************
---'*  Биндер объекта зоны аномалий .
+--'*  Р‘РёРЅРґРµСЂ РѕР±СЉРµРєС‚Р° Р·РѕРЅС‹ Р°РЅРѕРјР°Р»РёР№ .
 --'******************************************************
 function printf()
 end
@@ -51,7 +51,7 @@ function anomaly_zone_binder:net_spawn(server_object)
 	if not object_binder.net_spawn(self, server_object) then
 		return false
 	end
-	-- пускаем цикл по количеству артефактов artefact_count.
+	-- РїСѓСЃРєР°РµРј С†РёРєР» РїРѕ РєРѕР»РёС‡РµСЃС‚РІСѓ Р°СЂС‚РµС„Р°РєС‚РѕРІ artefact_count.
 	if(self.spawned_count<self.artefact_count) and (self.idle_time_end<time_global()) then
 		for i=1,self.artefact_count-self.spawned_count do 
 			self:spawn_artefact_randomly()

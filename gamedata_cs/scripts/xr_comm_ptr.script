@@ -478,8 +478,8 @@ function set_scheme (npc, ini, scheme, section, gulag_name)
 	st.raid_look    = utils.cfg_get_string (ini, section, "raid_look",   npc, false, gulag_name)
 	st.team         = utils.cfg_get_string (ini, section, "team",        npc, false, gulag_name)
 
-	st.path_walk_info = nil -- Будут инициализированы в reset(), сейчас пути могут еще
-	st.path_look_info = nil -- быть не загружены.
+	st.path_walk_info = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ РµС‰Рµ
+	st.path_look_info = nil -- Р±С‹С‚СЊ РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
 	st.raid_walk_info = nil
 	st.raid_look_info = nil
 	st.raid_process = false

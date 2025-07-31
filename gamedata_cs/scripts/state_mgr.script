@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Менеджер изменения состояния тела
---	автор: Диденко Руслан (Stohe)
+--	РњРµРЅРµРґР¶РµСЂ РёР·РјРµРЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ С‚РµР»Р°
+--	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --	TODO: 
 ----------------------------------------------------------------------------------------------------------------------
 function printf()
@@ -9,8 +9,8 @@ end
 aim_ratio = 1000/50
 min_ratio = 1500
 
---' Эвалуатор, который синхронизирует менеджер.
---' Мы уже в безраличном состоянии idle или нет
+--' Р­РІР°Р»СѓР°С‚РѕСЂ, РєРѕС‚РѕСЂС‹Р№ СЃРёРЅС…СЂРѕРЅРёР·РёСЂСѓРµС‚ РјРµРЅРµРґР¶РµСЂ.
+--' РњС‹ СѓР¶Рµ РІ Р±РµР·СЂР°Р»РёС‡РЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё idle РёР»Рё РЅРµС‚
 class "evaluator_state_mgr_idle" (property_evaluator)
 function evaluator_state_mgr_idle:__init(name, state_manager) super (nil, name)
 	self.st = state_manager
@@ -39,7 +39,7 @@ function evaluator_state_mgr_idle:evaluate()
 	
 	if self.st.combat == true then return true end
 	
-	--' Если у нас пост комбат вейт - вернуть ТРУ.
+	--' Р•СЃР»Рё Сѓ РЅР°СЃ РїРѕСЃС‚ РєРѕРјР±Р°С‚ РІРµР№С‚ - РІРµСЂРЅСѓС‚СЊ РўР РЈ.
 	if self.combat_planner == nil then
 		self.combat_planner = cast_planner(self.mgr:action(stalker_ids.action_combat_planner))
 	end
@@ -53,7 +53,7 @@ function evaluator_state_mgr_idle:evaluate()
 	return false
 end
 
---' Мы уже в безраличном состоянии idle или нет ()учет с проверкой alife
+--' РњС‹ СѓР¶Рµ РІ Р±РµР·СЂР°Р»РёС‡РЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё idle РёР»Рё РЅРµС‚ ()СѓС‡РµС‚ СЃ РїСЂРѕРІРµСЂРєРѕР№ alife
 class "evaluator_state_mgr_idle_alife" (property_evaluator)
 function evaluator_state_mgr_idle_alife:__init(name, state_manager) super (nil, name)
 	self.st = state_manager
@@ -63,8 +63,8 @@ function evaluator_state_mgr_idle_alife:evaluate()
 	if not self.object:alive() then
 		return true
 	end
-	-- апдейт менеджера анимаций
-	-- раньше он был тут, сейчас он вынесен из эвалуатора
+	-- Р°РїРґРµР№С‚ РјРµРЅРµРґР¶РµСЂР° Р°РЅРёРјР°С†РёР№
+	-- СЂР°РЅСЊС€Рµ РѕРЅ Р±С‹Р» С‚СѓС‚, СЃРµР№С‡Р°СЃ РѕРЅ РІС‹РЅРµСЃРµРЅ РёР· СЌРІР°Р»СѓР°С‚РѕСЂР°
 
 --	printf("SECTION %s", utils.to_str(db.storage[self.st.npc:id()].active_section))
 	mgr = self.object:motivation_action_manager()
@@ -119,7 +119,7 @@ function evaluator_state_mgr_idle_smartcover:evaluate()
 end
 
 
---' Переход в idle
+--' РџРµСЂРµС…РѕРґ РІ idle
 class "act_state_mgr_to_idle" (action_base)
 function act_state_mgr_to_idle:__init(name,state_manager) super (nil, name)	
 	self.st = state_manager
@@ -150,8 +150,8 @@ function act_state_mgr_to_idle:execute()
 	self.st:set_state("idle")	
 end
 function act_state_mgr_to_idle:finalize()
-	-- По завершению перехода нужно записать -1 в указатель "на кого смотреть", 
-	-- чтобы при возврате было понятно что его нужно переинициализировать.
+	-- РџРѕ Р·Р°РІРµСЂС€РµРЅРёСЋ РїРµСЂРµС…РѕРґР° РЅСѓР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ -1 РІ СѓРєР°Р·Р°С‚РµР»СЊ "РЅР° РєРѕРіРѕ СЃРјРѕС‚СЂРµС‚СЊ", 
+	-- С‡С‚РѕР±С‹ РїСЂРё РІРѕР·РІСЂР°С‚Рµ Р±С‹Р»Рѕ РїРѕРЅСЏС‚РЅРѕ С‡С‚Рѕ РµРіРѕ РЅСѓР¶РЅРѕ РїРµСЂРµРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ.
 	
 	self.st.current_object = -1
 	
@@ -160,9 +160,9 @@ end
 
 
 --'-------------------------------------------------------------------------------------
---' Эвалуаторы и экшены менеджера
+--' Р­РІР°Р»СѓР°С‚РѕСЂС‹ Рё СЌРєС€РµРЅС‹ РјРµРЅРµРґР¶РµСЂР°
 --'-------------------------------------------------------------------------------------
---' Закончил ли менеджер свою работу
+--' Р—Р°РєРѕРЅС‡РёР» Р»Рё РјРµРЅРµРґР¶РµСЂ СЃРІРѕСЋ СЂР°Р±РѕС‚Сѓ
 class "eva_state_mgr_end" (property_evaluator)
 function eva_state_mgr_end:__init(name, st) super (nil, name)
 	self.st = st
@@ -200,7 +200,7 @@ function eva_state_mgr_end:evaluate()
 	return false
 end
 
---' Залочен ли менеджер
+--' Р—Р°Р»РѕС‡РµРЅ Р»Рё РјРµРЅРµРґР¶РµСЂ
 class "eva_state_mgr_locked" (property_evaluator)
 function eva_state_mgr_locked:__init(name, st) super (nil, name)
 	self.st = st
@@ -233,7 +233,7 @@ end
 
 
 
---' Идловый экшн менеджера
+--' РРґР»РѕРІС‹Р№ СЌРєС€РЅ РјРµРЅРµРґР¶РµСЂР°
 class "act_state_mgr_end" (action_base)
 function act_state_mgr_end:__init(name, st) super (nil, name)
 	self.st = st
@@ -305,7 +305,7 @@ function act_state_mgr_end:finalize()
 	action_base.finalize(self)
 end
 
---' Лок менеджера
+--' Р›РѕРє РјРµРЅРµРґР¶РµСЂР°
 class "act_state_mgr_locked" (action_base)
 function act_state_mgr_locked:__init(name, st) super (nil, name)
 	self.st = st
@@ -329,7 +329,7 @@ animation_reset_denied = {
 	wounded_zombie = true
 	}
 
---' Сам менеджер
+--' РЎР°Рј РјРµРЅРµРґР¶РµСЂ
 class "state_manager"
 function state_manager:__init(npc)
 	state_mgr_goap.goap_graph(self, npc)
@@ -369,7 +369,7 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 		printf("look target NIL")
 	end
 
-	--сперва устанавливаем цели
+	--СЃРїРµСЂРІР° СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С†РµР»Рё
 	if target ~= nil then
 		self.look_position = target.look_position
 		if target.look_object ~= nil then 
@@ -381,13 +381,13 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 		self.look_position = nil
 		self.look_object = nil
 	end
-	-- меняем угол точности.
+	-- РјРµРЅСЏРµРј СѓРіРѕР» С‚РѕС‡РЅРѕСЃС‚Рё.
 	if extrakeys and extrakeys.yaw_delta ~= nil then
 		self.yaw_delta = extrakeys.yaw_delta
 	else
 		self.yaw_delta = 5
 	end
-	-- меняем глубину рекурсивности анимации.
+	-- РјРµРЅСЏРµРј РіР»СѓР±РёРЅСѓ СЂРµРєСѓСЂСЃРёРІРЅРѕСЃС‚Рё Р°РЅРёРјР°С†РёРё.
 	if extrakeys and extrakeys.subanim ~= nil then
 		self.subanim = extrakeys.subanim
 	else
@@ -398,7 +398,7 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 	local last_state = self.target_state
 	if self.target_state ~= state_name then
 
-		--' Если мы переключаемся из стреляющего состояния в нестреляющее - необходимо сразу же прекратить стрельбу
+		--' Р•СЃР»Рё РјС‹ РїРµСЂРµРєР»СЋС‡Р°РµРјСЃСЏ РёР· СЃС‚СЂРµР»СЏСЋС‰РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РІ РЅРµСЃС‚СЂРµР»СЏСЋС‰РµРµ - РЅРµРѕР±С…РѕРґРёРјРѕ СЃСЂР°Р·Сѓ Р¶Рµ РїСЂРµРєСЂР°С‚РёС‚СЊ СЃС‚СЂРµР»СЊР±Сѓ
 		if (state_lib.states[self.target_state].weapon == "fire" or
 		   state_lib.states[self.target_state].weapon == "sniper_fire" or self.target_state == "idle") and 
 		   (state_lib.states[state_name].weapon ~= "fire" and
@@ -409,7 +409,7 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 		end
 
 
-		--' Если мы переключаемся из идущего положения в стоящее - надо задизаблить перемещение
+		--' Р•СЃР»Рё РјС‹ РїРµСЂРµРєР»СЋС‡Р°РµРјСЃСЏ РёР· РёРґСѓС‰РµРіРѕ РїРѕР»РѕР¶РµРЅРёСЏ РІ СЃС‚РѕСЏС‰РµРµ - РЅР°РґРѕ Р·Р°РґРёР·Р°Р±Р»РёС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёРµ
 		--if state_lib.states[state_name].movement ~= move.stand and
 		--   state_lib.states[self.target_state].movement == move.stand
 		--then
@@ -418,7 +418,7 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 		--end
 
 	
-		--' Проверка на необходимость special_danger_move
+		--' РџСЂРѕРІРµСЂРєР° РЅР° РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚СЊ special_danger_move
 		if state_lib.states[state_name].special_danger_move == true then
 			--printf("SPECIAL DANGER MOVE %s for stalker [%s]", tostring(self.npc:special_danger_move()), self.npc:name())
 			if self.npc:special_danger_move() ~= true then

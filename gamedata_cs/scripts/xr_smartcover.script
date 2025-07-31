@@ -144,7 +144,7 @@ function action_smartcover_activity:reset_scheme(loading, npc)
 	self.target_enemy = nil
 	self.cover_name, used = get_param_string(self.st.cover_name, object)
 	printf("setting smartcover [gps] [%s] used [%s] for npc[%s]", self.cover_name , tostring(used), object:name())
-	--' Проверяем cover_name , если get_param_string вернул не такое же значение или вообще не использовался, то идем дальше.
+	--' РџСЂРѕРІРµСЂСЏРµРј cover_name , РµСЃР»Рё get_param_string РІРµСЂРЅСѓР» РЅРµ С‚Р°РєРѕРµ Р¶Рµ Р·РЅР°С‡РµРЅРёРµ РёР»Рё РІРѕРѕР±С‰Рµ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°Р»СЃСЏ, С‚Рѕ РёРґРµРј РґР°Р»СЊС€Рµ.
 	if self.cover_name ~= self.st.cover_name or used == false then
 		if se_smart_cover.registered_smartcovers[self.cover_name] == nil then
 			abort("There is no smart_cover with name [%s]", self.cover_name)
@@ -162,14 +162,14 @@ function action_smartcover_activity:reset_scheme(loading, npc)
 		self.target_path_condlist = xr_logic.parse_condlist(object, self.st.active_section, "target_path", self.st.target_path)
 		self:check_target()
 
-		--' Вычитываем кондлист который вернет поведение чувака в смарткавере.
+		--' Р’С‹С‡РёС‚С‹РІР°РµРј РєРѕРЅРґР»РёСЃС‚ РєРѕС‚РѕСЂС‹Р№ РІРµСЂРЅРµС‚ РїРѕРІРµРґРµРЅРёРµ С‡СѓРІР°РєР° РІ СЃРјР°СЂС‚РєР°РІРµСЂРµ.
 		self.cover_condlist = xr_logic.parse_condlist(object, self.st.active_section, "cover_state", self.st.cover_state)
 		self.cover_state = xr_logic.pick_section_from_condlist(db.actor, object ,self.cover_condlist)
 		self:target_selector(self.object)
 		printf("first1")
 		self:check_target_selector()
 		printf("first2")
-		-- Назначим минимальные и максимальные значения времени сидения в айдле и выглядывания.
+		-- РќР°Р·РЅР°С‡РёРј РјРёРЅРёРјР°Р»СЊРЅС‹Рµ Рё РјР°РєСЃРёРјР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РІСЂРµРјРµРЅРё СЃРёРґРµРЅРёСЏ РІ Р°Р№РґР»Рµ Рё РІС‹РіР»СЏРґС‹РІР°РЅРёСЏ.
 		printf("idle_min[%s]  idle_max[%s]  lookout_min[%s]  lookout_max[%s]", self.st.idle_min_time, self.st.idle_max_time, self.st.lookout_min_time, self.st.lookout_max_time )
 		object:idle_min_time(self.st.idle_min_time)
 		object:idle_max_time(self.st.idle_max_time)
@@ -265,7 +265,7 @@ function action_smartcover_activity:finalize()
 	self.initialized = nil
 	action_base.finalize(self)
 end
---' Возвращает достиг ли персонаж точки начала работы схемы
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРѕСЃС‚РёРі Р»Рё РїРµСЂСЃРѕРЅР°Р¶ С‚РѕС‡РєРё РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ СЃС…РµРјС‹
 function action_smartcover_activity:position_riched()
 	return self.object:in_smart_cover()
 end
@@ -309,7 +309,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	--new_action:add_effect (world_property(stalker_ids.property_danger,false))
 	manager:add_action(operators["action_smartcover"], new_action)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
 	new_action = this.action_smartcover_activity(npc, "action_combat_smartcover", storage)
@@ -325,7 +325,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 --	new_action:add_effect (world_property(properties["state_mgr_idle_smartcover"], false))
 	manager:add_action(operators["action_combat_smartcover"], new_action)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
 	new_action = manager:action(xr_actions_id.alife)

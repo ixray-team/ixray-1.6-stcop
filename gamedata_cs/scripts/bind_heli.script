@@ -1,14 +1,14 @@
 --[[------------------------------------------------------------------------------------------------
 Helicoter binding
-Чугай Александр
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 
-Сделать:
-	- настройки в ltx
+РЎРґРµР»Р°С‚СЊ:
+	- РЅР°СЃС‚СЂРѕР№РєРё РІ ltx
 --------------------------------------------------------------------------------------------------]]
 
 
 ---------------------------------------------------------------------------------------------
--- Функция для бинда
+-- Р¤СѓРЅРєС†РёСЏ РґР»СЏ Р±РёРЅРґР°
 ---------------------------------------------------------------------------------------------
 
 function bind( obj )
@@ -21,7 +21,7 @@ function bind( obj )
 end
 
 ---------------------------------------------------------------------------------------------
--- Биндер вертолётов
+-- Р‘РёРЅРґРµСЂ РІРµСЂС‚РѕР»С‘С‚РѕРІ
 ---------------------------------------------------------------------------------------------
 class "heli_binder" ( object_binder )
 
@@ -62,7 +62,7 @@ function heli_binder:reinit()
 	self.snd_damage = utils.cfg_get_string( object_ini, "helicopter", "snd_damage", self.object, false, "", "heli_damaged")
 	self.snd_down	= utils.cfg_get_string( object_ini, "helicopter", "snd_down", self.object, false, "", "heli_down")
 
-	-- на случай загрузки
+	-- РЅР° СЃР»СѓС‡Р°Р№ Р·Р°РіСЂСѓР·РєРё
 	self.st.last_alt       = self.heliObject:GetRealAltitude()
 	self.st.alt_check_time = time_global() + 1000
 end
@@ -168,7 +168,7 @@ function heli_binder:on_hit( power, impulse, hit_type, enemy_id )
 	local enemy_cls_id = get_clsid( enemy )
     self.heli_fire.enemy = enemy
     self.heli_fire:update_hit()
-	-- если обидчик актёр или сталкер, то сделать его своим врагом
+	-- РµСЃР»Рё РѕР±РёРґС‡РёРє Р°РєС‚С‘СЂ РёР»Рё СЃС‚Р°Р»РєРµСЂ, С‚Рѕ СЃРґРµР»Р°С‚СЊ РµРіРѕ СЃРІРѕРёРј РІСЂР°РіРѕРј
 	if enemy_cls_id == clsid.actor or enemy_cls_id == clsid.script_stalker then
 --		if not self.st.combat.enemy_id then
 --			self.st.combat.enemy_id = enemy_id
@@ -179,7 +179,7 @@ function heli_binder:on_hit( power, impulse, hit_type, enemy_id )
 		end
 	end
 
-	-- пилоты ругаются по рации
+	-- РїРёР»РѕС‚С‹ СЂСѓРіР°СЋС‚СЃСЏ РїРѕ СЂР°С†РёРё
 	if self.last_hit_snd_timeout < time_global() then
 		xr_sound.set_sound_play(self.object:id(), self.snd_hit)
 		self.last_hit_snd_timeout = time_global() + math.random( 4000, 8000 )
