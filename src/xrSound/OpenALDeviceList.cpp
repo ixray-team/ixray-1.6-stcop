@@ -25,10 +25,12 @@
 
 #include "OpenALDeviceList.h"
 
+#ifdef IXR_WINDOWS
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <objbase.h>
 #pragma warning(pop)
+#endif
 
 ALDeviceList::ALDeviceList()
 {
@@ -57,9 +59,9 @@ void ALDeviceList::Enumerate()
 	// have a set of vectors storing the device list, selection status, spec version #, and XRAM support status
 	// -- empty all the lists and reserve space for 10 devices
 	m_devices.clear				();
-	
+#ifdef IXR_WINDOWS
 	CoUninitialize();
-
+#endif
 	xr_vector<xr_string> DeviceNameList;
 	xr_vector<const char*> DeviceOALNameList;
 	auto list_audio_devices = [&DeviceNameList, &DeviceOALNameList](const ALCchar* devices)
