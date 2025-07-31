@@ -307,7 +307,7 @@ xr_vector<xr_string> CActor::GetKnowedPortions() const
 		return {};
 	}
 
-	for (auto Info : *KnownInfos)
+	for (const shared_str& Info : *KnownInfos)
 	{
 		SafeVector.push_back(Info.c_str());
 	}
@@ -954,16 +954,20 @@ void CActor::Die	(CObject* who)
 			PIItem item_in_slot = inventory().ItemFromSlot(I);
 			if (I == inventory().GetActiveSlot()) 
 			{
-				if(item_in_slot)
+				if (item_in_slot != nullptr)
 				{
 					if (IsGameTypeSingle())
 					{
-						CGrenade* grenade = smart_cast<CGrenade*>(item_in_slot);
-						if (grenade)
+						if (CGrenade* grenade = item_in_slot->cast_grenade())
+						{
 							grenade->DropGrenade();
+						}
 						else
+						{
 							item_in_slot->SetDropManual(TRUE);
-					}else
+						}
+					}
+					else
 					{
 						//This logic we do on a server site
 						/*
@@ -978,10 +982,15 @@ void CActor::Die	(CObject* who)
 			else
 			{
 				CCustomOutfit *pOutfit = item_in_slot ? item_in_slot->cast_outfit() : nullptr;
-				if (pOutfit) continue;
+				if (pOutfit)
+				{
+					continue;
+				}
 			};
-			if(item_in_slot) 
+			if (item_in_slot) 
+			{
 				inventory().Ruck(item_in_slot);
+			}
 		};
 
 
@@ -997,8 +1006,7 @@ void CActor::Die	(CObject* who)
 			{
 				if (GameID() & eGameIDArtefactHunt)
 				{
-					CArtefact* pArtefact = item->cast_artefact();
-					if (pArtefact)
+					if (CArtefact* pArtefact = item->cast_artefact())
 					{
 						item->SetDropManual(TRUE);
 						continue;
@@ -1392,14 +1400,14 @@ void CActor::UpdateCL()
 		}
 	}
 
-	UpdateInventoryOwner			(Device.dwTimeDelta);
+	UpdateInventoryOwner(Device.dwTimeDelta);
 
-	if(m_feel_touch_characters>0)
+	if (m_feel_touch_characters > 0)
 	{
-		for(xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
+		for (CObject* object : feel_touch)
 		{
-			CPhysicsShellHolder	*sh = smart_cast<CPhysicsShellHolder*>(*it);
-			if(sh&&sh->character_physics_support())
+			CPhysicsShellHolder* sh = object->cast_physics_shell_holder();
+			if (sh != nullptr && sh->character_physics_support())
 			{
 				sh->character_physics_support()->movement()->UpdateObjectBox(character_physics_support()->movement()->PHCharacter());
 			}
@@ -2155,21 +2163,24 @@ BOOL CActor::renderable_ShadowGenerate	()
 	return inherited::renderable_ShadowGenerate();
 }
 
-
-
-void CActor::g_PerformDrop	( )
+void CActor::g_PerformDrop()
 {
-	b_DropActivated			= FALSE;
+	b_DropActivated	= FALSE;
 
-	PIItem pItem			= inventory().ActiveItem();
-	if (0==pItem)			return;
+	if (PIItem pItem = inventory().ActiveItem())
+	{
+		if (pItem->IsQuestItem())
+		{
+			return;
+		}
 
-	if(pItem->IsQuestItem()) return;
+		if (inventory().SlotIsPersistent(inventory().GetActiveSlot()))
+		{
+			return;
+		}
 
-	u16 s					= inventory().GetActiveSlot();
-	if(inventory().SlotIsPersistent(s))	return;
-
-	pItem->SetDropManual	(TRUE);
+		pItem->SetDropManual(TRUE);
+	}
 }
 
 bool CActor::use_default_throw_force()
@@ -2455,16 +2466,17 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 }
 
 
-void CActor::OnItemDropUpdate ()
+void CActor::OnItemDropUpdate()
 {
-	CInventoryOwner::OnItemDropUpdate		();
+	CInventoryOwner::OnItemDropUpdate();
 
-	TIItemContainer::iterator				I = inventory().m_all.begin();
-	TIItemContainer::iterator				E = inventory().m_all.end();
-	
-	for ( ; I != E; ++I)
-		if( !(*I)->IsInvalid() && !attached(*I))
-			attach(*I);
+	for (const PIItem item : inventory().m_all)
+	{
+		if (!item->IsInvalid() && !attached(item))
+		{
+			attach(item);
+		}
+	}
 }
 
 
@@ -2497,10 +2509,9 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 		update_time		= 0.0f;
 	}
 
-	for (PIItem item : inventory().m_belt)
+	for (const PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = item->cast_artefact();
-		if (artefact)
+		if (CArtefact* artefact = item->cast_artefact())
 		{
 			float art_cond = artefact->GetCondition();
 			conditions().ChangeBleeding((artefact->m_fBleedingRestoreSpeed * art_cond) * f_update_time);
@@ -2515,12 +2526,13 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 				conditions().ChangeRadiation(val * f_update_time);
 			}
 			else
+			{
 				conditions().ChangeRadiation((artefact->m_fRadiationRestoreSpeed * art_cond) * f_update_time);
+			}
 		}
 	}
 
-	CCustomOutfit* outfit = GetOutfit();
-	if (outfit)
+	if (CCustomOutfit* outfit = GetOutfit())
 	{
 		conditions().ChangeBleeding		(outfit->m_fBleedingRestoreSpeed  * f_update_time);
 		conditions().ChangeHealth		(outfit->m_fHealthRestoreSpeed    * f_update_time);
@@ -2534,10 +2546,9 @@ float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 {
 	float sum = 0.0f;
 
-	for (PIItem item : inventory().m_belt)
+	for (const PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = item->cast_artefact();
-		if (artefact)
+		if (CArtefact* artefact = item->cast_artefact())
 		{
 			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
 		}
@@ -2566,10 +2577,9 @@ float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
 {
 	float sum = 0.0f;
 
-	for (PIItem item : inventory().m_belt)
+	for (const PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = item->cast_artefact();
-		if (artefact)
+		if (CArtefact* artefact = item->cast_artefact())
 		{
 			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
 		}
@@ -2731,17 +2741,15 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 		res = conditions().change_v().m_fV_HealthRestore;
 		res += conditions().V_SatietyHealth() * ( (conditions().GetSatiety() > 0.0f) ? 1.0f : -1.0f );
 
-		for (PIItem item : inventory().m_belt)
+		for (const PIItem item : inventory().m_belt)
 		{
-			CArtefact* artefact = item->cast_artefact();
-			if (artefact)
-			if ( artefact )
+			if (CArtefact* artefact = item->cast_artefact())
 			{
 				res += (artefact->m_fHealthRestoreSpeed * artefact->GetCondition());
 			}
 		}
-		CCustomOutfit* outfit = GetOutfit();
-		if ( outfit )
+
+		if (CCustomOutfit* outfit = GetOutfit())
 		{
 			res += outfit->m_fHealthRestoreSpeed;
 		}
@@ -2749,17 +2757,15 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 	}
 	case ALife::eRadiationRestoreSpeed:
 	{	
-		for (PIItem item : inventory().m_belt)
+		for (const PIItem item : inventory().m_belt)
 		{
-			CArtefact* artefact = item->cast_artefact();
-			if (artefact)
-			if ( artefact )
+			if (CArtefact* artefact = item->cast_artefact())
 			{
 				res += (artefact->m_fRadiationRestoreSpeed * artefact->GetCondition());
 			}
 		}
-		CCustomOutfit* outfit = GetOutfit();
-		if ( outfit )
+
+		if (CCustomOutfit* outfit = GetOutfit())
 		{
 			res += outfit->m_fRadiationRestoreSpeed;
 		}
@@ -2769,16 +2775,15 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 	{
 		res = conditions().V_Satiety();
 
-		for (PIItem item : inventory().m_belt)
+		for (const PIItem item : inventory().m_belt)
 		{
-			CArtefact* artefact = item->cast_artefact();
-			if (artefact)
+			if (CArtefact* artefact = item->cast_artefact())
 			{
 				res += (artefact->m_fSatietyRestoreSpeed * artefact->GetCondition());
 			}
 		}
-		CCustomOutfit* outfit = GetOutfit();
-		if ( outfit )
+
+		if (CCustomOutfit* outfit = GetOutfit())
 		{
 			res += outfit->m_fSatietyRestoreSpeed;
 		}
@@ -2788,39 +2793,39 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 	{
 		res = conditions().GetSatietyPower();
 
-		for (PIItem item : inventory().m_belt)
+		for (const PIItem item : inventory().m_belt)
 		{
-			CArtefact* artefact = item->cast_artefact();
-			if (artefact)
+			if (CArtefact* artefact = item->cast_artefact())
 			{
 				res += (artefact->m_fPowerRestoreSpeed * artefact->GetCondition());
 			}
 		}
-		CCustomOutfit* outfit = GetOutfit();
-		if ( outfit )
+
+		if (CCustomOutfit* outfit = GetOutfit())
 		{
 			res += outfit->m_fPowerRestoreSpeed;
 			VERIFY(outfit->m_fPowerLoss!=0.0f);
 			res /= outfit->m_fPowerLoss;
 		}
 		else
+		{
 			res /= 0.5f;
+		}
 		break;
 	}
 	case ALife::eBleedingRestoreSpeed:
 	{
 		res = conditions().change_v().m_fV_WoundIncarnation;
 	
-		for (PIItem item : inventory().m_belt) 
+		for (const PIItem item : inventory().m_belt) 
 		{
-			CArtefact* artefact = item->cast_artefact();
-			if (artefact)
+			if (CArtefact* artefact = item->cast_artefact())
 			{
 				res += (artefact->m_fBleedingRestoreSpeed * artefact->GetCondition());
 			}
 		}
-		CCustomOutfit* outfit = GetOutfit();
-		if ( outfit )
+
+		if (CCustomOutfit* outfit = GetOutfit())
 		{
 			res += outfit->m_fBleedingRestoreSpeed;
 		}
