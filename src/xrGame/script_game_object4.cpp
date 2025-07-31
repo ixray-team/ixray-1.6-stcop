@@ -354,3 +354,12 @@ void CScriptGameObject::stop_particles(LPCSTR pname, LPCSTR bone)
 	else
 		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"Cant stop particles, bone [%s] is not visible now", bone);
 }
+
+// Directly set entity health instead of going throuhg normal health property which operates on delta
+void CScriptGameObject::SetHealthEx(float hp)
+{
+	CEntity* obj = smart_cast<CEntity*>(&object());
+	if (!obj) return;
+	clamp(hp, -0.01f, 1.0f);
+	obj->SetfHealth(hp);
+}
