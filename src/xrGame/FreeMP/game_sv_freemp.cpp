@@ -9,12 +9,23 @@
 
 #include "restriction_space.h"
 #include "../xrServerEntities/clsid_game.h"
+#include "../../xrNetServer/SQLConnect.h"
+#include "../Actor.h"
+#include "../ActorCondition.h"
+#include <actor_mp_client.h>
+#include <Inventory.h>
+#include <Weapon.h>
+#include <WeaponMagazined.h>
 
 game_sv_freemp::game_sv_freemp()
 	:pure_relcase(&game_sv_freemp::net_Relcase)
 {
 	m_type = eGameIDFreeMP;
-
+	GSQLConnector.Test();
+	map_items.clear();
+	map_items = GSQLConnector.LoadGame("game_items");
+	map_quest.clear();
+	map_quest = GSQLConnector.LoadGame("game_quests");
 }
 
 game_sv_freemp::~game_sv_freemp()
@@ -239,7 +250,6 @@ void game_sv_freemp::OnPlayerReady(ClientID id_who)
 		xrClientData* xrSCData = (xrClientData*)m_server->GetServerClient();
 
 		CSE_Abstract* pOwner = xrCData->owner;
-
 		RespawnPlayer(id_who, false);
 		pOwner = xrCData->owner;
 
@@ -311,6 +321,62 @@ void game_sv_freemp::OnDetach(u16 eid_who, u16 eid_what)
 // player disconnect
 void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 {
+	CActorMP* actor = smart_cast<CActorMP*>(Level().Objects.net_Find(GameID));
+	if (!actor) return;
+
+	if (actor)
+	{
+
+		int cur_user_id = GSQLConnector.GetUserIdByName(actor->Name());
+		if (cur_user_id > 0)
+		{
+			GSQLConnector.DeleteInventory(cur_user_id);
+			for (auto _item : actor->inventory().m_all) {
+				auto item = _item->cast_game_object();
+				if (actor->is_alive()) {
+
+					u64 state = 0;
+
+					if (item->cNameSect() == "device_pda")
+						continue;
+					if (item->cNameSect() == "bolt")
+						continue;
+					if (item->cNameSect() == "mp_players_rukzak")
+						continue;
+					if (item->cNameSect() == "mp_wpn_binoc")
+						continue;
+					if (item->cNameSect() == "wpn_binoc")
+						continue;
+
+					CWeaponMagazined* wpn = smart_cast<CWeaponMagazined*>(item);
+
+					if (wpn != nullptr && wpn->WpnCanShoot())
+					{
+						DBService::ItemDBState dbState = {};
+						dbState.Condition = wpn->GetCondition() * 100;
+						dbState.AmmoType = wpn->GetAmmoType();
+						dbState.AmmoCount = wpn->GetAmmoElapsed();
+						if (wpn->IsScopeAttached() && wpn->get_ScopeStatus() != ALife::eAddonPermanent && wpn->get_ScopeStatus() != ALife::eAddonDisabled)
+							dbState.AddonScopeID = map_items[wpn->GetScopeName().c_str()];
+						if (wpn->IsSilencerAttached() && wpn->get_SilencerStatus() != ALife::eAddonPermanent && wpn->get_SilencerStatus() != ALife::eAddonDisabled)
+							dbState.AddonSilenceID = map_items[wpn->GetSilencerName().c_str()];
+						if(wpn->IsGrenadeLauncherAttached() && wpn->get_GrenadeLauncherStatus() != ALife::eAddonPermanent && wpn->get_GrenadeLauncherStatus() != ALife::eAddonDisabled)
+							dbState.AddonLauncherID = map_items[wpn->GetGrenadeLauncherName().c_str()];
+						state = dbState.dummy;
+					}
+
+					GSQLConnector.SaveInventory(cur_user_id, map_items[item->cNameSect().c_str()], state);
+				}
+			}
+			actor->inventory().Clear();
+			DBService::UserDBProperty g = { cur_user_id, actor->conditions().GetHealth(), actor->conditions().GetPower(), actor->conditions().GetRadiation(), actor->conditions().GetPsy(), actor->conditions().GetSleepiness(), actor->conditions().GetSatiety(), actor->conditions().GetThirst(), actor->conditions().BleedingSpeed(), actor->get_money(), actor->Community()};
+			GSQLConnector.UpdateInsertProperty(g);
+		}
+		else
+		{
+			Msg("! SOSI DJOPU - %s", actor->Name());
+		}
+	}
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
 }
 
@@ -368,6 +434,48 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 	case GAME_EVENT_MP_REPAIR:
 	{
 		OnPlayerRepairItem(P, sender);
+	}
+	break;
+	case GAME_EVENT_MP_ACTOR_SPAWN:
+	{
+
+		xrClientData* xrCData = (xrClientData*)m_server->ID_to_client(sender);
+		if (!xrCData) return;
+
+		game_PlayerState* ps = xrCData->ps;
+		if (!ps) return;
+
+		CActorMP* actor = smart_cast<CActorMP*>(Level().Objects.net_Find(ps->GameID));
+		if (!actor) return;
+
+		int cur_user_id = GSQLConnector.GetUserIdByName(ps->getName());
+		if (cur_user_id > 0)
+		{
+			DBService::UserDBProperty res_data = GSQLConnector.SelectProperty(cur_user_id);
+			actor->conditions().ChangeHealth(res_data.health);
+			actor->conditions().ChangePower(res_data.stamina);
+			actor->conditions().ChangeRadiation(res_data.radiation);
+			actor->conditions().ChangePsyHealth(res_data.psy);
+			actor->conditions().ChangeSleepiness(res_data.sleepiness);
+			actor->conditions().ChangeSatiety(res_data.hunger);
+			actor->conditions().ChangeThirst(res_data.thirst);
+			actor->conditions().ChangeBleeding(res_data.wounds);
+			ps->money_for_round = res_data.money;
+			ps->team = res_data.community;
+
+			xr_vector<int> items = GSQLConnector.LoadInventory(cur_user_id);
+			for (int itm : items)
+			{
+				auto it = std::find_if(map_items.begin(), map_items.end(), [itm](const auto& pair) {
+					return pair.second == itm;
+					});
+				SpawnItemToActor(actor->ID(), (*it).first.c_str());
+			}
+		}
+		else
+		{
+			Msg("! SOSI DJOPU");
+		}
 	}
 	break;
 	default:
