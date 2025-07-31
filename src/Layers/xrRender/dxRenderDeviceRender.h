@@ -58,6 +58,5 @@ public:
 	ref_shader			m_WireShader;
 	ref_shader			m_SelectionShader;
 
-private:
 	CGammaControl		m_Gamma;
 };
