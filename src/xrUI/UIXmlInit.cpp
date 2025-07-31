@@ -1321,21 +1321,80 @@ bool CUIXmlInit::InitTrackBar(CUIXml& xml_doc, LPCSTR path, int index, CUITrackB
 {
 	InitWindow			(xml_doc, path, 0, pWnd);
 
-	bool bUseEditBox = !!xml_doc.ReadAttribInt(path, index, "show_value", false);
-	pWnd->SetupEditBox(bUseEditBox);
-
-	pWnd->InitTrackBar	(pWnd->GetWndPos(),pWnd->GetWndSize());
-	int is_integer		= xml_doc.ReadAttribInt(path, index, "is_integer", 0);
-	pWnd->SetType		(!is_integer);
-	InitOptionsItem		(xml_doc, path, 0, pWnd);
-
-	int invert			= xml_doc.ReadAttribInt(path, index, "invert", 0);
-	pWnd->SetInvert		(!!invert);
-	float step			= xml_doc.ReadAttribFlt(path, index, "step", 0.1f);
-	pWnd->SetStep		(step);
+	bool bDrawValue = !!xml_doc.ReadAttribInt(path, index, "show_value", false);
+	pWnd->SetDrawingValue(bDrawValue);
 	
+	bool is_integer = (xml_doc.ReadAttribInt(path, index, "is_integer", 0) == 1);
+	InitOptionsItem(xml_doc, path, 0, pWnd);
+	pWnd->SetInvert(xml_doc.ReadAttribInt(path, index, "invert", 0) == 1);
+	shared_str mode = xml_doc.ReadAttrib(path, index, "mode", "float");// we have 2 or 3 not-float track bars
+	if (0 == xr_strcmp(mode, "flag"))
+		pWnd->SetTrackBarMode(eTrackBarModeBool);
+	else if (0 == xr_strcmp(mode, "integer") || is_integer)
+		pWnd->SetTrackBarMode(eTrackBarModeInt);
+	else if (0 == xr_strcmp(mode, "float"))
+		pWnd->SetTrackBarMode(eTrackBarModeFloat);
+	else if (0 == xr_strcmp(mode, "token"))
+		pWnd->SetTrackBarMode(eTrackBarModeToken);
 
-	return				true;
+	switch (pWnd->GetTrackBarMode())
+	{
+		case eTrackBarModeInt:
+		case eTrackBarModeFloat:
+		{
+			if (pWnd->IsFltMode())
+			{
+				pWnd->SetNumOfSigns(xml_doc.ReadAttribInt(path, index, "out_num_of_signs", 1));
+			}
+			pWnd->SetStep(xml_doc.ReadAttribFlt(path, index, "step", 0.1f)); // for bool and token it will be 1 always
+		}break;
+		case eTrackBarModeToken:
+		{
+			pWnd->SetTokenValues(pWnd->GetOptToken());
+			pWnd->SetDrawingValue(true); //draw always
+		}break;
+		case eTrackBarModeBool:
+		{
+			pWnd->SetDrawingValue(true);
+		}break;
+	}
+	pWnd->InitTrackBar(pWnd->GetWndPos(), pWnd->GetWndSize()); // moved because it should apply some params before track bar init
+
+	if (pWnd->GetSlider() && pWnd->GetSlider()->GetBtnStatic())
+	{
+		CUI3tButton* pUIButton = pWnd->GetSlider();
+
+		string512 _path;
+		u32 def_clr = color_rgba(255, 255, 255, 255);
+		xr_strconcat(_path, path, ":slider_text_color:e");
+		if (xml_doc.NavigateToNode(_path, index))
+		{
+			u32 color = GetColor(xml_doc, _path, index, def_clr);
+			pUIButton->SetBtnStaticClrE(color);
+		}
+
+		xr_strconcat(_path, path, ":slider_text_color:d");
+		if (xml_doc.NavigateToNode(_path, index))
+		{
+			u32 color = GetColor(xml_doc, _path, index, def_clr);
+			pUIButton->SetBtnStaticClrD(color);
+		}
+
+		xr_strconcat(_path, path, ":slider_text_color:t");
+		if (xml_doc.NavigateToNode(_path, index))
+		{
+			u32 color = GetColor(xml_doc, _path, index, def_clr);
+			pUIButton->SetBtnStaticClrT(color);
+		}
+
+		xr_strconcat(_path, path, ":slider_text_color:h");
+		if (xml_doc.NavigateToNode(_path, index))
+		{
+			u32 color = GetColor(xml_doc, _path, index, def_clr);
+			pUIButton->SetBtnStaticClrH(color);
+		}
+	}
+	return true;
 }
 
 bool CUIXmlInit::InitComboBox(CUIXml& xml_doc, LPCSTR path, int index, CUIComboBox* pWnd)
