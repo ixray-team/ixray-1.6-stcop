@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include "../../xrEngine/string_table.h"
 #include <memory>
 #include <wincodec.h>
 #include <DirectXTex.h>
@@ -60,20 +60,25 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     {
         string64 t_stemp = {};
         string_path buf = {};
+        xr_string lvl_name = "mainmenu";
+        if (g_pGameLevel)
+        {
+            lvl_name = g_pStringTable->translate(g_pGameLevel->name().c_str()).c_str();
+        }
 
         if (ps_screenshot_format == 0) // jpg screenshots - default one
         {
-            xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).jpg", Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
+            xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).jpg", Core.UserName, timestamp(t_stemp), lvl_name.c_str());
             CHK_DX(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, saved));
         }
         else if (ps_screenshot_format == 1) // tga screenshots
         {
-            xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).tga", Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
+            xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).tga", Core.UserName, timestamp(t_stemp), lvl_name.c_str());
             CHK_DX(SaveToTGAMemory(*scratchImage.GetImage(0, 0, 0), TGA_FLAGS::TGA_FLAGS_NONE, saved));
         }
         else if (ps_screenshot_format == 2) // png screenshots
         {
-            xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).png", Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
+            xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).png", Core.UserName, timestamp(t_stemp), lvl_name.c_str());
             CHK_DX(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, GUID_ContainerFormatPng, saved));
         }
 
