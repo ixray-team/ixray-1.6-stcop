@@ -172,14 +172,23 @@ bool CUIActorMenu::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 	}
 	else // box
 	{
-		if ( !m_pInvBox->can_take() )
+		if (!m_pInvBox->can_take())
 		{
 			return false;
 		}
+
+		luabind::functor<bool> funct;
+		if (ai().script_engine().functor("_G.CInventoryBox_CanTake", funct))
+		{
+			if (funct(m_pInvBox->cast_game_object()->lua_game_object(), quest_item->cast_game_object()->lua_game_object()) == false)
+			{
+				return false;
+			}
+		}
 	}
 
-	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	CUIDragDropListEx*	new_owner		= nullptr;
+	CUIDragDropListEx* old_owner = itm->OwnerList();
+	CUIDragDropListEx* new_owner = nullptr;
 
 	if(b_use_cursor_pos)
 	{
