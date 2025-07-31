@@ -20,10 +20,10 @@
 
 extern LPCSTR alife_section;
 
-LPCSTR CSavedGameWrapper::saved_game_full_name	(LPCSTR saved_game_name, string_path& result)
+LPCSTR CSavedGameWrapper::saved_game_full_name	(LPCSTR saved_game_name, string_path& result, pcstr extension)
 {
 	string_path					temp;
-	xr_strconcat(temp,saved_game_name,SAVE_EXTENSION);
+	xr_strconcat(temp,saved_game_name,extension);
 	FS.update_path				(result,"$game_saves$",temp);
 	return						(result);
 }
@@ -31,7 +31,7 @@ LPCSTR CSavedGameWrapper::saved_game_full_name	(LPCSTR saved_game_name, string_p
 bool CSavedGameWrapper::saved_game_exist		(LPCSTR saved_game_name)
 {
 	string_path					file_name;
-	return						(!!FS.exist(saved_game_full_name(saved_game_name,file_name)));
+	return FS.exist(saved_game_full_name(saved_game_name, file_name, IXRAY_DEF_SAVE_EXTENSION));
 }
 
 bool CSavedGameWrapper::valid_saved_game		(IReader &stream)
@@ -51,8 +51,8 @@ bool CSavedGameWrapper::valid_saved_game		(IReader &stream)
 bool CSavedGameWrapper::valid_saved_game		(LPCSTR saved_game_name)
 {
 	string_path					file_name;
-	if (!FS.exist(saved_game_full_name(saved_game_name,file_name)))
-		return					(false);
+	if (!FS.exist(saved_game_full_name(saved_game_name, file_name, IXRAY_DEF_SAVE_EXTENSION)))
+		return false;
 
 	IReader						*stream = FS.r_open(file_name);
 	bool						result = valid_saved_game(*stream);
@@ -63,9 +63,10 @@ bool CSavedGameWrapper::valid_saved_game		(LPCSTR saved_game_name)
 CSavedGameWrapper::CSavedGameWrapper			(LPCSTR saved_game_name)
 {
 	string_path					file_name;
-	saved_game_full_name		(saved_game_name,file_name);
-	R_ASSERT3					(FS.exist(file_name),"There is no saved game ",file_name);
-	
+    saved_game_full_name(saved_game_name, file_name, IXRAY_DEF_SAVE_EXTENSION);
+
+    R_ASSERT3(FS.exist(file_name), "There is no saved game ", saved_game_name);
+
 	IReader						*stream = FS.r_open(file_name);
 	if (!valid_saved_game(*stream)) {
 		FS.r_close				(stream);
