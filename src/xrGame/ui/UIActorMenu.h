@@ -82,7 +82,6 @@ protected:
 	CUICellItem*				m_InfoCellItem;
 	u32							m_InfoCellItem_timer;
 	CUICellItem*				m_pCurrentCellItem;
-	CUICellItem*				m_pCurrentConsumable;
 	CUICellItem*				m_upgrade_selected;
 	CUIPropertiesBox*			m_UIPropertiesBox;
 
@@ -358,7 +357,5 @@ public:
 	void HighlightSectionInSlot(LPCSTR section, u8 type, u16 slot_id = 0);
 	CScriptGameObject* GetCurrentItemAsGameObject();
 	void HighlightForEachInSlot(const luabind::functor<bool>& functor, u8 type, u16 slot_id);
-	CUICellItem* GetCurrentConsumable() { return m_pCurrentConsumable; };
-	void SetCurrentConsumable(CUICellItem* ci) { m_pCurrentConsumable = ci; };
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; // class CUIActorMenu
