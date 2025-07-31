@@ -2240,6 +2240,62 @@ public:
 		xr_strcpy(I, "Set new time");
 	}
 };
+#ifndef MASTER_GOLD
+class CCC_ChZLoggerTest : public IConsole_Command {
+public:
+	CCC_ChZLoggerTest(LPCSTR N) : IConsole_Command(N) {
+		bEmptyArgsHandled = TRUE;
+	};
+	virtual void Execute(LPCSTR args) {
+
+		Msg("======= types =======");
+		
+		LOG_INFO << "test info" << std::endl;
+		LOG_ERROR << "test error" << std::endl;
+		LOG_WARN << "test warn" << std::endl;
+		LOG_DEBUG << "test dbg" << std::endl;
+
+		Msg("======= data types =======");
+
+		const char* cstr = "OK +_)(*&^%$#@!";
+		LOG_INFO << "c_str: " << cstr << std::endl;
+
+		xr_string xstr = "OK +_)(*&^%$#@!";
+		LOG_INFO << "xr_str: " << xstr << std::endl;
+
+		Msg("======= format =======");
+
+		LOG_INFO << "IX" << "-" << "RAY" << " ENGINE" << std::endl << "\tHello!!!" << std::endl;
+		LOG_INFO << "- HELLO";
+		LOG_INFO << " WORLD";
+
+	}
+};
+class CCC_ConsoleColors : public IConsole_Command {
+public:
+	CCC_ConsoleColors(LPCSTR N) : IConsole_Command(N) {
+		bEmptyArgsHandled = TRUE;
+	};
+	virtual void Execute(LPCSTR args) {
+
+		LOG_INFO << "Colors:\n";
+
+		LOG_INFO << '~' << " - Example Text";
+		LOG_INFO << '!' << " - Example Text";
+		LOG_INFO << '@' << " - Example Text";
+		LOG_INFO << '#' << " - Example Text";
+		LOG_INFO << '$' << " - Example Text";
+		LOG_INFO << '%' << " - Example Text";
+		LOG_INFO << '^' << " - Example Text";
+		LOG_INFO << '&' << " - Example Text";
+		LOG_INFO << '*' << " - Example Text";
+		LOG_INFO << '-' << " - Example Text";
+		LOG_INFO << '+' << " - Example Text";
+		LOG_INFO << '=' << " - Example Text";
+		LOG_INFO << '/' << " - Example Text";
+	}
+};
+#endif
 
 extern void RefreshNamesNPC();
 extern void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
@@ -2348,6 +2404,9 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "g_infinite_fire", &psActorFlags, AF_INFINITEFIRE);
 	CMD3(CCC_Mask, "g_infinite_durability", &psActorFlags, AF_INFINITEDURABILITY);
+
+	CMD1(CCC_ChZLoggerTest, "chZLoggerTest");
+	CMD1(CCC_ConsoleColors, "get_console_colors");
 #endif
 
 	CMD1(CCC_MemStats, "stat_memory");
