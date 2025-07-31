@@ -26,6 +26,8 @@ float4 main(PSInput I) : SV_Target
 	float4 base = s_base.Sample(smp_base, tcdh);
 	float3 normal = s_nmap.Sample(smp_base, tcdh).xyz * 2.0 - 1.0;
 
+    float3 WaterPoint = mul(m_V, float4(I.world_position, 1.0)).xyz;
+
 	//Build cotangent frame and transform our normal to world space
 	float3x3 TBN = {float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), float3(0.0, 1.0, 0.0)};
 	
@@ -45,7 +47,7 @@ float4 main(PSInput I) : SV_Target
 	float fresnel = saturate(dot(vreflect, v2point));
 
 #ifdef USE_SSLR_ON_WATER
-	float4 sslr = calc_reflections(I.world_position.xyz, I.hpos.xy, vreflect);
+	float4 sslr = calc_reflections(I.hpos.xy, WaterPoint.z, vreflect);
 #endif
 
 	float2 rotation = 0.0f;
@@ -79,7 +81,7 @@ float4 main(PSInput I) : SV_Target
 	// Igor: additional depth test
 #ifdef USE_SOFT_WATER
     float4 Point = GbufferGetPoint(I.hpos.xy);
-	float waterDepth = length(mul(m_V, float4(I.world_position, 1.0)).xyz - Point.xyz) * 0.75f;
+	float waterDepth = length(WaterPoint.xyz - Point.xyz) * 0.75f;
 
 	alpha = min(alpha, saturate(waterDepth));
 	alpha = max(1.0f - exp(-4.0f * waterDepth), alpha);
