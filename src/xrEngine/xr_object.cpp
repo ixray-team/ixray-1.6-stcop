@@ -350,6 +350,9 @@ void CObject::UpdateCL			()
 		if( (Visual() && Visual()->getVisData().hom_frame+2 > Device.dwFrame) && (dist < CROW_RADIUS2*CROW_RADIUS2) )
 			MakeMeCrow	();
 	}
+		
+	if (register_schedule())
+		f_optimize_dist = H_Parent() ? 200.0f : shedule_Scale_Base();
 }
 
 void CObject::shedule_Update	( u32 T )
@@ -400,14 +403,6 @@ void CObject::renderable_Render	()
 }
 
 #include "IGame_Persistent.h"
-extern float SheduleScaleDedicated = 1;
-float CObject::shedule_Scale()
-{
-	if (g_dedicated_server)
-		return SheduleScaleDedicated;
-
-	return Device.vCameraPosition.distance_to(Position()) / 200.f;
-}
 
 CObject* CObject::H_SetParent	(CObject* new_parent, bool just_before_destroy)
 {
@@ -495,4 +490,20 @@ Fvector CObject::get_last_local_point_on_mesh	( Fvector const& local_point, u16 
 	mE.transform_tiny	(result,local_point);
 
 	return				result;
+}
+
+float CObject::shedule_Scale()
+{
+	return f_optimize_dist / 200.f;
+}
+
+float CObject::shedule_Scale_Base()
+{
+	if (Device.dwTimeGlobal > u_optimize_time)
+	{
+		u_optimize_time = Device.dwTimeGlobal + Random.randI(66, 120);
+		return _max(0.0f, Position().distance_to(Device.vCameraPosition) - Radius());
+	}
+
+	return f_optimize_dist;
 }

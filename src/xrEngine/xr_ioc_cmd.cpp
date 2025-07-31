@@ -21,7 +21,7 @@ ENGINE_API float devfloat1 = 1.0f;
 ENGINE_API float devfloat2 = 1.0f;
 ENGINE_API float devfloat3 = 1.0f;
 ENGINE_API float devfloat4 = 1.0f;
-
+float SheduleScaleDedicated = 0;
 ENGINE_API float ps_render_scale = 1.0f;
 ENGINE_API u32 ps_render_scale_preset = 0;
 
@@ -800,7 +800,7 @@ void CCC_Register()
 	extern int g_svDedicateServerUpdateReate;
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
 	
-	extern float SheduleScaleDedicated;
+	
 	CMD4(CCC_Float, "sv_shedule_scale", &SheduleScaleDedicated, 0, 5);
 
 	CMD1(CCC_HideConsole,		"hide");

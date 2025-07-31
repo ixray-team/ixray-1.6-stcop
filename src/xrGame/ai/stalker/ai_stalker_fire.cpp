@@ -69,9 +69,14 @@ static u32	 const FIRE_MAKE_SENSE_INTERVAL	= 10000;
 
 static float const min_throw_distance		= 10.f;
 
-float CAI_Stalker::GetWeaponAccuracy	() const
+float CAI_Stalker::GetWeaponAccuracy() const
 {
-	float				base = PI/180.f;
+	float base = PI/180.f;
+
+	if (OnClient())
+	{
+		return base * m_disp_stand_stand;
+	}
 	
 	//влияние ранга на меткость
 	base				*= m_fRankDisperison;
