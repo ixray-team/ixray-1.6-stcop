@@ -243,11 +243,8 @@ void CBuild::xrPhase_MergeLM()
 		std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
 
   		// Слишком много возьмет для помещения 
- 	 	
- 
-#define SCALE 2
-
-		u32 maxarea = getLMSIZE() * getLMSIZE() * SCALE;	// Max up to 8 lm selected
+		#define MAXIMAL_MAPS_PLACED 4
+ 		u32 maxarea = getLMSIZE() * getLMSIZE() * MAXIMAL_MAPS_PLACED;	// Max up to 8 lm selected
 		u32 curarea = 0;
 		u32 merge_count = 0;
 
@@ -275,12 +272,24 @@ void CBuild::xrPhase_MergeLM()
 		u32 MergedSize = 0;
 		tMerge.Start();
 
+		u32 ErrorsPlace = 0;
 		for (u32 it = 0; it < merge_count; it++)
 		{
 			lm_layer& L = Layer[it]->layer;
 			
-			if (it % 4096 == 0)
+ 			if (it % 512 == 0)
+			{
 				placer_perpixel.RecalcY();
+				AditionalData("IT: %u/%u/Merged:%u | Filled: %u | NoPlaced: %u",
+					it,
+					merge_count,
+					MergedSize,
+					// placer_perpixel.StartYPos,
+					// placer_perpixel.FilledSize,
+					placer_perpixel.FilledPercent,
+					ErrorsPlace
+					);
+			}
 
 			L_rect		rT, rS;
 			rS.a.set(0, 0);
@@ -288,17 +297,22 @@ void CBuild::xrPhase_MergeLM()
 			rS.iArea = L.Area();
 			rT = rS;
 			bool rotated = false;
+		
 			if (placer_perpixel.rect_place_full(rT, &L))
 			{
-				if (it % 256 == 0)
-					AditionalData("IT: %u/%u | merged: %u | Y: %u", it, merge_count, MergedSize, placer_perpixel.StartYPos);
-
 				MergedSize++;
 
- 				lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), rotated);
+				lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), rotated);
 				Layer[it]->bMerged = TRUE;
 			}
- 
+			else
+				if (L.Area() < 128)
+					ErrorsPlace++;
+
+			// Раний выход
+			if (ErrorsPlace > 4096) // && placer_perpixel.FilledPercent > 400
+			 	break;
+
 			Progress( float(it) / float(merge_count) );
 		}
 

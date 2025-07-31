@@ -3,7 +3,7 @@
 #include <immintrin.h>
 #include <intrin.h>
 
-#define MAX_GRID_SPACE_WRITE 0.85f	// 80% НАПОЛНЕНИЯ LMAP
+#define MAX_GRID_SPACE_WRITE 0.9f	// 90% НАПОЛНЕНИЯ LMAP
 // Surfaces
 
 void SurfacePlacePerpixel::RecalcY()
@@ -13,7 +13,16 @@ void SurfacePlacePerpixel::RecalcY()
 	{
 		_Y++;
 	}
- 	StartYPos = _Y;
+	StartYPos = _Y;
+
+	u32 total_occupied = 0;
+	for (u32 y = 0; y < SurfaceGrid ; ++y)
+	{
+		total_occupied += occupied_y[y];
+	}
+
+	FilledSize = total_occupied;
+ 	FilledPercent = u32 ( float( float(total_occupied) / float(SurfaceGrid * SurfaceGrid) ) * 100.0f);
 }
 
 void SurfacePlacePerpixel::_InitSurface_tbb()
@@ -66,6 +75,7 @@ bool SurfacePlacePerpixel::Place_Perpixel_tbb(L_rect& R, lm_layer* D)
 
 	for (u32 y = 0; y < s_y; y++)
 	{
+		/* ForserX Почини плз.
 		if (s_x >= 32 && CPU::ID.hasFeature(CPUFeature::AVX) )
 		{
 			u8* P = surface_tbb + (y + R.a.y) * SurfaceGrid + R.a.x;	// destination scan-line
@@ -94,7 +104,7 @@ bool SurfacePlacePerpixel::Place_Perpixel_tbb(L_rect& R, lm_layer* D)
 					return false;
 			}
 		}
-		else if (s_x >= 16 && CPU::ID.hasFeature(CPUFeature::SSE))
+		else if (s_x >= 16 && CPU::ID.hasFeature(CPUFeature::SSE2))
 		{
 			u8* P = surface_tbb + (y + R.a.y) * SurfaceGrid + R.a.x;	// destination scan-line
 			u8* S = lm + y * s_x;
@@ -122,6 +132,7 @@ bool SurfacePlacePerpixel::Place_Perpixel_tbb(L_rect& R, lm_layer* D)
 			}
 		}
 		else
+		*/
 		{
 			BYTE* P = surface_tbb + (y + R.a.y) * SurfaceGrid + R.a.x;	// destination scan-line
 			u8* S = lm + y * s_x;

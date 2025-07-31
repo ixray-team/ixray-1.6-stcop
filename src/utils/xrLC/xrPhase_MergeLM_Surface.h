@@ -18,8 +18,9 @@ class SurfacePlacePerpixel
 	u32 SurfaceGrid = 0;
  	// Rendering of rect
 public:
-	u32 StartYPos = 0;
-
+	u32 StartYPos  = 0;
+	u32 FilledSize = 0;
+	u32 FilledPercent = 0;
 
 	void RecalcY();
 	void _InitSurface_tbb();
