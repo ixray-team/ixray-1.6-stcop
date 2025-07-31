@@ -35,16 +35,20 @@ void DrawLCConfig();
 void RenderMainUI()
 {
 	int Size[2] = {};
-
-	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
+ 	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
 
 	ImGui::SetNextWindowPos({ 0, 0 });
 	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1] });
 
 	if (!ShowMainUI) 
 	{
-		RenderCompilerUI();
+		RenderCompilerUI(Size[0], Size[1]);
 		return;
+	}
+
+	if ( Size[0] != 1000 || Size[1] != 560 )
+	{
+		SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
 	}
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
@@ -166,7 +170,7 @@ const char* itemsJitterMU[] = { "1", "2", "3", "4", "5", "6"};
 
 void DrawLCConfig()
 {
-	if (ImGui::BeginChild("LC", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("LC", { 200, 390 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
 		ImGui::Separator();
@@ -192,18 +196,20 @@ void DrawLCConfig()
 		ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
 
 		ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
-		ImGui::SetNextItemWidth(100);
-		ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 6);
-		ImGui::SetNextItemWidth(100);
-		ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
+		
+			ImGui::SetNextItemWidth(100);
+			ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 6);
+			ImGui::SetNextItemWidth(100);
+			ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
+ 			ImGui::SetNextItemWidth(100);
+			ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
+ 			ImGui::SetNextItemWidth(100);
+			ImGui::InputFloat("Dist Weld", &gCompilerMode.MergeDistance);
 
-		ImGui::SetNextItemWidth(100);
-		ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
-
-		gCompilerMode.LC_JSample   = atoi(itemsJitter[item_current_jitter]);
-		gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
- 
-		ImGui::EndDisabled();
+			gCompilerMode.LC_JSample   = atoi(itemsJitter[item_current_jitter]);
+			gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
+	 
+			ImGui::EndDisabled();
 		ImGui::EndDisabled();
 		
 		
@@ -285,22 +291,27 @@ void DrawCompilerConfig()
 
 
 
-void RenderCompilerUI()
+void RenderCompilerUI(int X, int Y)
 {
-	//static const char* levelName = "LevelTextName";
-
-	static xr_vector<xr_string> logMessages =
+ 	static xr_vector<xr_string> logMessages =
 	{
 		"[INFO] log",
 		"[WARNING] log",
 	};
 
 	// Set up the window
-	ImGui::Begin("Split Screen Example", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus);
+	ImGui::Begin("Split Screen Example", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus); // ImGuiWindowFlags_NoResize |
+	 
+	if (X != 1300 || Y != 800)
+	{
+		SDL_SetWindowSize(g_AppInfo.Window, 1300, 800);
+	}
+
+	static bool EnableLog = true;
 
 	// Calculate sizes for the top and bottom parts
 	ImVec2 windowSize = ImGui::GetContentRegionAvail();
-	float topHeight = windowSize.y * 0.5f;
+	float topHeight = EnableLog ? windowSize.y * 0.7f : windowSize.y - 35;
 
 	// Top section
 	ImGui::BeginChild("TopSection", ImVec2(windowSize.x, topHeight), true);
@@ -315,8 +326,6 @@ void RenderCompilerUI()
 	}
 	ImGui::Text("%s", Levels.c_str());
 	ImGui::Separator();
-	//ImGui::ProgressBar(0.00); надо бы сделать общий прогресс бар
-	//ImGui::Separator();
 
 	auto getStatusInfo = [](IterationStatus status, xr_string& text, ImVec4& textCol, char& icon)
 		{
@@ -360,9 +369,9 @@ void RenderCompilerUI()
 	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
 
 		// Table
-	if (ImGui::BeginTable("IterationsTable", 9, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
+	if (ImGui::BeginTable("IterationsTable", 10, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
 		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
-		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 50.f);
+		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 120.f);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
 		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
@@ -370,6 +379,7 @@ void RenderCompilerUI()
 		ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
 		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
+		ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthFixed, 300.f);
 
 		ImGui::TableHeadersRow();
 
@@ -467,6 +477,9 @@ void RenderCompilerUI()
 
 				ImGui::TableSetColumnIndex(8);
 				ImGui::Text("%u MB", u32 ( size_t( phase.used_memory/ 1024/ 1024) ) );
+
+				ImGui::TableSetColumnIndex(9);
+				ImGui::Text("%s", phase.AdditionalData.c_str() );
 			}
 		}
 
@@ -476,30 +489,43 @@ void RenderCompilerUI()
 	}
 
 	ImGui::EndChild();
+	 
 
-	// Bottom section (log)
 	ImGui::Separator();
-	if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight-35), true))
+	 
+	if (EnableLog)
 	{
-		ImGuiListClipper clipper;
-
-		xrCriticalSectionGuard LogGuard(&csLog);
-
-		clipper.Begin(GetLogVector().size());
-
-		while (clipper.Step())
+		// Bottom section (log)
+		if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - 35), true))
 		{
-			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+			ImGuiListClipper clipper;
+
+			xrCriticalSectionGuard LogGuard(&csLog);
+
+			clipper.Begin(GetLogVector().size());
+
+			while (clipper.Step())
 			{
-				ImGui::TextWrapped("%s", GetLogVector()[i].c_str());
+				for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+				{
+					ImGui::TextWrapped("%s", GetLogVector()[i].c_str());
+				}
 			}
+
+			if (autoScroll)
+				ImGui::SetScrollY(ImGui::GetScrollMaxY());
+
+			ImGui::EndChild();
 		}
-
-		if (autoScroll)
-			ImGui::SetScrollY(ImGui::GetScrollMaxY());
-
-		ImGui::EndChild();
 	}
+	
+	if (ImGui::Button(EnableLog ? "Disable Log" : "Enable Log"))
+	{
+		EnableLog = !EnableLog;
+	}
+
+	ImGui::SameLine();
+
 	if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
 	{
 		autoScroll = !autoScroll;

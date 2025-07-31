@@ -107,18 +107,10 @@ void CBuild::Light_prepare()
 	for (u32 m=0; m<mu_models().size(); m++)	mu_models()[m]->calc_faceopacity();
 }
 
-
-//.#define CFORM_ONLY
-#ifdef LOAD_GL_DATA
-void net_light ();
-#endif
 void CBuild::Run	(LPCSTR P)
 {
 	lc_global_data()->initialize();
-#ifdef LOAD_GL_DATA
-	net_light ();
-	return;
-#endif
+ 
 	//****************************************** Open Level
 	xr_strconcat(path,P,"\\")	;
 	string_path					lfn				;
@@ -154,17 +146,14 @@ void CBuild::Run	(LPCSTR P)
 	FPU::m64r					();
 	Phase						("Adaptive HT...");
 	mem_Compact					();
-#ifndef CFORM_ONLY
 	xrPhase_AdaptiveHT			();
-#endif
 
 	//****************************************** Building normals
 	FPU::m64r					();
 	Phase						("Building normals...");
 	mem_Compact					();
 	CalcNormals					();
-	//SmoothVertColors			(5);
-
+ 
 	//****************************************** Collision DB
 	//should be after normals, so that double-sided faces gets separated
 	FPU::m64r					();
@@ -172,26 +161,7 @@ void CBuild::Run	(LPCSTR P)
 	mem_Compact					();
 	BuildCForm					();
 
-#ifdef CFORM_ONLY
-	return;
-#endif
-
 	BuildPortals				(*fs);
-
-	//****************************************** T-Basis
-	{
-		FPU::m64r					();
-		Phase						("Building tangent-basis...");
-		xrPhase_TangentBasis		();
-		mem_Compact					();
-	}
-
-	//****************************************** GLOBAL-RayCast model
-	FPU::m64r					();
-	Phase						("Building rcast-CFORM model...");
-	mem_Compact					();
-	Light_prepare				();
-	BuildRapid					(TRUE);
 
 	//****************************************** GLOBAL-ILLUMINATION
 	if (g_build_options.b_radiosity)			
@@ -234,23 +204,23 @@ void CBuild::Run	(LPCSTR P)
 	 
 
 	Light						();
-
 	RunAfterLight				( fs );
 }
 
 void	CBuild::StartMu	()
 {
-  //mu_base.start				(new CMUThread (0));
-  run_mu_light(  );
+   run_mu_light(  );
 }
 
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
- 	//****************************************** Merge geometry
-	FPU::m64r					();
-	Phase						("Merging geometry...");
-	mem_Compact					();
-	xrPhase_MergeGeometry		();
+	//****************************************** T-Basis
+	{
+		FPU::m64r();
+		Phase("Building tangent-basis...");
+		xrPhase_TangentBasis();
+		mem_Compact();
+	}
 
 	//****************************************** Convert to OGF
 	FPU::m64r					();
@@ -262,26 +232,18 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	FPU::m64r					();
 	Phase						("Converting MU-models to OGFs...");
 	mem_Compact					();
+	
+  	Status			("MU : Models...");
+	for (u32 mID=0; mID <mu_models().size(); mID++)
 	{
-		u32 m;
-		Status			("MU : Models...");
-		for (m=0; m<mu_models().size(); m++)	{
-			calc_ogf			(*mu_models()[m]);
-			export_geometry		(*mu_models()[m]);
-		}
-
-		Status			("MU : References...");
-		for (m=0; m<mu_refs().size(); m++)
-			export_ogf(*mu_refs()[m]);
-
-//		lc_global_data()->clear_mu_models();
+		calc_ogf			(*mu_models()[mID]);
+		export_geometry		(*mu_models()[mID]);
 	}
 
-	//****************************************** Destroy RCast-model
-	FPU::m64r		();
-	Phase			("Destroying ray-trace model...");
-	mem_Compact		();
-	lc_global_data()->destroy_rcmodel();
+	Status			("MU : References...");
+	for (u32 mRID=0; mRID <mu_refs().size(); mRID++)
+		export_ogf(*mu_refs()[mRID]);
+ 
 
 	//****************************************** Build sectors
 	FPU::m64r		();

@@ -54,11 +54,9 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 	CDB::CollectorPacked	CL(scene_bb, (int)lc_global_data()->g_vertices().size(), (int)lc_global_data()->g_faces().size());
 
-
 	xr_vector<Face*>			adjacent_vec;
 	adjacent_vec.reserve		(6*2*3);
-
-	
+	 
 	std::for_each(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
 		{
 			const Shader_xrLC& SH = F->Shader();
@@ -114,6 +112,8 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 			ref->export_cform_rcast(CL);
 		});
  
+
+
 	// "Building tree..
 	Status					("Building search tree...");
 	

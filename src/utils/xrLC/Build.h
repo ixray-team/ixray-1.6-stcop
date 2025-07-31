@@ -25,7 +25,7 @@ typedef void	tesscb_vertex		(Vertex*	V);	// new vertex
 class  base_lighting;
 
 
-
+extern size_t GetMemoryUsed();
 extern bool CheckInfinity_FBOX(Fbox& box);
 extern void Validate_gXsplit();
 

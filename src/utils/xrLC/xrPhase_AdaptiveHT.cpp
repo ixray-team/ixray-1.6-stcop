@@ -120,6 +120,11 @@ void CBuild::xrPhase_AdaptiveHT	()
 			precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
 
 		precalc_base_hemi.wait();
+
+		if (lc_global_data()->GetIsIntelUse())
+		{
+			IntelEmbereUNLOAD();
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -161,6 +166,7 @@ bool check_and_destroy_splited( u32 face_it )
 	}
 	return true;
 }
+
 bool do_tesselate_face( const Face &F, tesscb_estimator* cb_E, int &max_id )
 {
 	if (F.CalcArea()<EPS_L)	
@@ -171,102 +177,105 @@ bool do_tesselate_face( const Face &F, tesscb_estimator* cb_E, int &max_id )
 	return true;
 }
 
-void	tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_face* cb_F, tesscb_vertex* cb_V  )
+void tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_face* cb_F, tesscb_vertex* cb_V  )
 {
-		xr_vector<Face*> & adjacent_vec = faces;
-		// create new vertex (lerp)
-		Vertex*		V		= lc_global_data()->create_vertex();
-		V->P.lerp			(V1->P, V2->P, .5f);
+	xr_vector<Face*> & adjacent_vec = faces;
+	// create new vertex (lerp)
+	Vertex*		V		= lc_global_data()->create_vertex();
+	V->P.lerp			(V1->P, V2->P, .5f);
 
-		// iterate on faces which share this 'problematic' edge
-		for (u32 af_it=0; af_it<adjacent_vec.size(); ++af_it)
+	// iterate on faces which share this 'problematic' edge
+	for (u32 af_it=0; af_it<adjacent_vec.size(); ++af_it)
+	{
+		Face*	AF			= adjacent_vec[af_it];
+		VERIFY				(false==AF->flags.bSplitted);
+		AF->flags.bSplitted	= true;
+		_TCF&	atc			= AF->tc.front();
+
+		// indices & tc
+		int id1				= AF->VIndex(V1);
+		VERIFY				( id1>=0 && id1<=2 );
+		int id2				= AF->VIndex(V2);
+		VERIFY				( id2>=0 && id2<=2 );
+		int idB				= 3-(id1+id2);
+		VERIFY				( idB>=0 && idB<=2 );
+
+		Fvector2			UV;
+		UV.averageA			(atc.uv[id1],atc.uv[id2]);
+
+		// Create F1 & F2
+		Face* F1			= lc_global_data()->create_face();
+		F1->flags.bSplitted	= false;
+		F1->flags.bLocked	= false;
+		F1->dwMaterial		= AF->dwMaterial;
+		F1->dwMaterialGame	= AF->dwMaterialGame;
+		Face* F2			= lc_global_data()->create_face();
+		F2->flags.bSplitted	= false;
+		F2->flags.bLocked	= false;
+		F2->dwMaterial		= AF->dwMaterial;
+		F2->dwMaterialGame	= AF->dwMaterialGame;
+
+
+		set_backface( F1->sm_group, is_backface( AF->sm_group ) );
+		set_backface( F2->sm_group, is_backface( AF->sm_group ) );
+
+		if (is_CCW(id1,id2))	
 		{
-			Face*	AF			= adjacent_vec[af_it];
-			VERIFY				(false==AF->flags.bSplitted);
-			AF->flags.bSplitted	= true;
-			_TCF&	atc			= AF->tc.front();
+			bool id1_id2_soft = is_soft_edge( AF->sm_group, id1 );
+			bool id2_idB_soft = is_soft_edge( AF->sm_group, id2 );
+			bool idB_id1_soft = is_soft_edge( AF->sm_group, idB );
+			
+			// F1
+			F1->SetVertices		( AF->v[idB],	AF->v[id1],		V );
+			F1->AddChannel		( atc.uv[idB],	atc.uv[id1],	UV );
 
-			// indices & tc
-			int id1				= AF->VIndex(V1);
-			VERIFY				( id1>=0 && id1<=2 );
-			int id2				= AF->VIndex(V2);
-			VERIFY				( id2>=0 && id2<=2 );
-			int idB				= 3-(id1+id2);
-			VERIFY				( idB>=0 && idB<=2 );
+			set_soft_edge		( F1->sm_group, 0, idB_id1_soft );
+			set_soft_edge		( F1->sm_group, 1, id1_id2_soft );
+			set_soft_edge		( F1->sm_group, 2, true );
 
-			Fvector2			UV;
-			UV.averageA			(atc.uv[id1],atc.uv[id2]);
+			// F2
+			F2->SetVertices		(AF->v[idB],	V,				AF->v[id2]);
+			F2->AddChannel		(atc.uv[idB],	UV,				atc.uv[id2]);
 
-			// Create F1 & F2
-			Face* F1			= lc_global_data()->create_face();
-			F1->flags.bSplitted	= false;
-			F1->flags.bLocked	= false;
-			F1->dwMaterial		= AF->dwMaterial;
-			F1->dwMaterialGame	= AF->dwMaterialGame;
-			Face* F2			= lc_global_data()->create_face();
-			F2->flags.bSplitted	= false;
-			F2->flags.bLocked	= false;
-			F2->dwMaterial		= AF->dwMaterial;
-			F2->dwMaterialGame	= AF->dwMaterialGame;
+			set_soft_edge		( F2->sm_group, 0, true );
+			set_soft_edge		( F2->sm_group, 1, id1_id2_soft );
+			set_soft_edge		( F2->sm_group, 2, id2_idB_soft );
 
-
-			set_backface( F1->sm_group, is_backface( AF->sm_group ) );
-			set_backface( F2->sm_group, is_backface( AF->sm_group ) );
-
-			if (is_CCW(id1,id2))	
-			{
-				bool id1_id2_soft = is_soft_edge( AF->sm_group, id1 );
-				bool id2_idB_soft = is_soft_edge( AF->sm_group, id2 );
-				bool idB_id1_soft = is_soft_edge( AF->sm_group, idB );
-				
-				// F1
-				F1->SetVertices		( AF->v[idB],	AF->v[id1],		V );
-				F1->AddChannel		( atc.uv[idB],	atc.uv[id1],	UV );
-
-				set_soft_edge		( F1->sm_group, 0, idB_id1_soft );
-				set_soft_edge		( F1->sm_group, 1, id1_id2_soft );
-				set_soft_edge		( F1->sm_group, 2, true );
-
-				// F2
-				F2->SetVertices		(AF->v[idB],	V,				AF->v[id2]);
-				F2->AddChannel		(atc.uv[idB],	UV,				atc.uv[id2]);
-
-				set_soft_edge		( F2->sm_group, 0, true );
-				set_soft_edge		( F2->sm_group, 1, id1_id2_soft );
-				set_soft_edge		( F2->sm_group, 2, id2_idB_soft );
-
-			} else {
-
-				bool id1_id2_soft = is_soft_edge( AF->sm_group, id2 );
-				bool id2_idB_soft = is_soft_edge( AF->sm_group, idB );
-				bool idB_id1_soft = is_soft_edge( AF->sm_group, id1 );
-
-				// F1
-				F1->SetVertices		(AF->v[idB],	V,				AF->v[id1]);
-				F1->AddChannel		(atc.uv[idB],	UV,				atc.uv[id1]);
-
-				set_soft_edge		( F1->sm_group, 0, true );
-				set_soft_edge		( F1->sm_group, 1, id1_id2_soft );
-				set_soft_edge		( F1->sm_group, 2, idB_id1_soft );
-
-				// F2
-				F2->SetVertices		(AF->v[idB],	AF->v[id2],		V);
-				F2->AddChannel		(atc.uv[idB],	atc.uv[id2],	UV);
-
-				set_soft_edge		( F2->sm_group, 0, id2_idB_soft );
-				set_soft_edge		( F2->sm_group, 1, id1_id2_soft );
-				set_soft_edge		( F2->sm_group, 2, true );
-			}
-
-			// Normals and checkpoint
-			F1->N		= AF->N;		if (cb_F)	cb_F(F1);
-			F2->N		= AF->N;		if (cb_F)	cb_F(F2);
-		}
-		// calc vertex attributes
+		} 
+		else
 		{
-			V->normalFromAdj		();
-			if (cb_V)				cb_V	(V);
+
+			bool id1_id2_soft = is_soft_edge( AF->sm_group, id2 );
+			bool id2_idB_soft = is_soft_edge( AF->sm_group, idB );
+			bool idB_id1_soft = is_soft_edge( AF->sm_group, id1 );
+
+			// F1
+			F1->SetVertices		(AF->v[idB],	V,				AF->v[id1]);
+			F1->AddChannel		(atc.uv[idB],	UV,				atc.uv[id1]);
+
+			set_soft_edge		( F1->sm_group, 0, true );
+			set_soft_edge		( F1->sm_group, 1, id1_id2_soft );
+			set_soft_edge		( F1->sm_group, 2, idB_id1_soft );
+
+			// F2
+			F2->SetVertices		(AF->v[idB],	AF->v[id2],		V);
+			F2->AddChannel		(atc.uv[idB],	atc.uv[id2],	UV);
+
+			set_soft_edge		( F2->sm_group, 0, id2_idB_soft );
+			set_soft_edge		( F2->sm_group, 1, id1_id2_soft );
+			set_soft_edge		( F2->sm_group, 2, true );
 		}
+
+		// Normals and checkpoint
+		F1->N		= AF->N;		if (cb_F)	cb_F(F1);
+		F2->N		= AF->N;		if (cb_F)	cb_F(F2);
+	}
+
+	// calc vertex attributes
+	{
+		V->normalFromAdj		();
+		if (cb_V)				cb_V	(V);
+	}
 }
 
 void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_vertex* cb_V)
@@ -278,8 +287,7 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 
 	u32		counter_create		= 0;
 	u32 cnt_verts = (u32)lc_global_data()->g_vertices().size();
-	//u32		cnt_faces			= g_faces.size();
-	
+ 	
 	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)
 	{
 		Face* F					= lc_global_data()->g_faces()[I];

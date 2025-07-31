@@ -10,6 +10,8 @@
 
 void CBuild::validate_splits			()
 {
+	Validate_gXsplit();
+
 	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
 	{
 		u32 MODEL_ID		= u32(it-g_XSplit.begin())	;

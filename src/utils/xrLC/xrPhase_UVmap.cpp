@@ -211,8 +211,7 @@ void CBuild::xrPhase_UVmap()
 			if (!Fvl->Shader().flags.bRendering) 	continue;	// do-not touch (skip)
 			if (Fvl->hasImplicitLighting())			continue;	// do-not touch (skip)
 
-			// , Deflectors Allocated[%llu] MB
-			Status("SP[%d/%d], all[%d]", SP, StartPoint, g_XSplit.size()); //AllocatedDeflectors
+ 			// Status("SP[%d/%d], all[%d]", SP, StartPoint, g_XSplit.size()); 
 
 			vecFace* faces_selected = g_XSplit[SP];
 			while (TRUE)
@@ -288,18 +287,9 @@ void CBuild::xrPhase_UVmap()
 
 		AllocatedDeflectors /= (1024 * 1024); // MB
 		clMsg("UV Map is Ended generation[%d], Deflectors Allocated[%llu] MB", g_XSplit.size(), AllocatedDeflectors);
-
-		// clMsg("NEW (CLEAR NEED == 0) AFFECTED: %d, (FOR DEFLECTORS LMAP) XSplit: %d", temp_faces.size(), g_XSplit.size());
-		clMsg("%d subdivisions...", g_XSplit.size());
+  		clMsg("%d subdivisions...", g_XSplit.size());
 		err_save();
-
-		// VALIDATION
-		for (int SP = 0; SP < StartPoint; SP++)
-		{
-			if (g_XSplit[SP]->size() != 0)
-				Msg("Checking SP[%u]: size (%u)", SP, g_XSplit[SP]->size());
-		}
-
+ 
 		// VALIDATION
 		for (auto SP = 0; SP < g_XSplit[SP]->size(); SP++)
 		{
@@ -312,9 +302,10 @@ void CBuild::xrPhase_UVmap()
 
 		vminfo(&free, &rel, &used);
 		clMsg("xrPhase_UVmap: Ended %u used", size_t(used / 1024 / 1024));
-	}
 
-	
+		AditionalData("Splits: %u | DeflectorsAlloc: %u mb", g_XSplit.size(), AllocatedDeflectors);
+	}
+	 
 	Validate_gXsplit();
 }
 
