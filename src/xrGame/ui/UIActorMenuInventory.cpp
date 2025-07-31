@@ -584,7 +584,6 @@ bool CUIActorMenu::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 		{
 			return true; //fake, sorry (((
 		}
-
 		if(slot_id==OUTFIT_SLOT)
 		{
 			CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>(iitem);
@@ -912,12 +911,14 @@ void CUIActorMenu::ActivatePropertiesBox()
 {
 	TryHidePropertiesBox();
 
-	if(!(m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch || m_currMenuMode == mmUpgrade)) {
+	if(!(m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch || m_currMenuMode == mmUpgrade || m_currMenuMode == mmTrade)) 
+	{
 		return;
 	}
 
 	PIItem item = CurrentIItem();
-	if(!item) {
+	if(!item) 
+	{
 		return;
 	}
 
@@ -925,7 +926,8 @@ void CUIActorMenu::ActivatePropertiesBox()
 	m_UIPropertiesBox->RemoveAll();
 	bool b_show = false;
 
-	if(m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch) {
+	if(m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch) 
+	{
 		PropertiesBoxForSlots(item, b_show);
 		PropertiesBoxForWeapon(cell_item, item, b_show);
 		PropertiesBoxForAddon(item, b_show);
@@ -934,11 +936,21 @@ void CUIActorMenu::ActivatePropertiesBox()
 		PropertiesBoxForParse(item, b_show);
 		PropertiesBoxForDrop(cell_item, item, b_show);
 	}
-	else if(m_currMenuMode == mmUpgrade) {
+	else if(m_currMenuMode == mmUpgrade) 
+	{
 		PropertiesBoxForRepair(item, b_show);
 	}
+	//Alundaio: Ability to donate item to npc during trade
+	else if (m_isDonateCurrentItem && m_currMenuMode == mmTrade)
+	{
+		CUIDragDropListEx* invlist = GetListByType(iActorBag);
+		if (invlist->IsOwner(cell_item))
+			PropertiesBoxForDonate(item, b_show);
+	}
+	//-Alundaio
 
-	if(b_show) {
+	if(b_show) 
+	{
 		m_UIPropertiesBox->AutoUpdateSize();
 
 		Fvector2 cursor_pos_;
@@ -1208,6 +1220,22 @@ void CUIActorMenu::PropertiesBoxForUsing( PIItem item, bool& b_show )
 		m_UIPropertiesBox->AddItem(act_str, NULL, INVENTORY_EAT3_ACTION);
 		b_show = true;
 	}
+	
+	//3rd Custom Use action
+	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use3_text", 0);
+	if (act_str)
+	{
+		m_UIPropertiesBox->AddItem(act_str, NULL, INVENTORY_EAT4_ACTION);
+		b_show = true;
+	}
+
+	//4th Custom Use action
+	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use4_text", 0);
+	if (act_str)
+	{
+		m_UIPropertiesBox->AddItem(act_str, NULL, INVENTORY_EAT5_ACTION);
+		b_show = true;
+	}
 }
 
 void CUIActorMenu::PropertiesBoxForPlaying(PIItem item, bool& b_show)
@@ -1267,6 +1295,14 @@ void CUIActorMenu::PropertiesBoxForRepair( PIItem item, bool& b_show )
 	}
 }
 
+//Alundaio: Ability to donate item during trade
+void CUIActorMenu::PropertiesBoxForDonate(PIItem item, bool& b_show)
+{
+	m_UIPropertiesBox->AddItem("st_donate", NULL, INVENTORY_DONATE_ACTION);
+	b_show = true;
+}
+//-Alundaio
+
 void CUIActorMenu::PropertiesBoxForParse(PIItem item, bool& b_show)
 {
 	if (!item->m_parse_params.m_items.empty() && !item->m_parse_params.m_chances.empty())
@@ -1291,6 +1327,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, item->BaseSlot() );		break;
 	case INVENTORY_TO_BELT_ACTION:	ToBelt( cell_item, false );		break;
 	case INVENTORY_TO_BAG_ACTION:	ToBag ( cell_item, false );		break;
+	case INVENTORY_DONATE_ACTION:
+	{
+		DonateCurrentItem(cell_item);
+		break;
+	}
 	case INVENTORY_EAT_ACTION:
 		TryUseItem( cell_item );
 		break;	
@@ -1319,6 +1360,36 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			if (ai().script_engine().functor(functor_name, funct2))
 			{
 				if (funct2(GO->lua_game_object()))
+					TryUseItem(cell_item);
+			}
+		}
+		break;
+	}
+	case INVENTORY_EAT4_ACTION:
+	{
+		CGameObject* GO = smart_cast<CGameObject*>(item);
+		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use3_functor", 0);
+		if (functor_name)
+		{
+			luabind::functor<bool>	funct3;
+			if (ai().script_engine().functor(functor_name, funct3))
+			{
+				if (funct3(GO->lua_game_object()))
+					TryUseItem(cell_item);
+			}
+		}
+		break;
+	}
+	case INVENTORY_EAT5_ACTION:
+	{
+		CGameObject* GO = smart_cast<CGameObject*>(item);
+		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use4_functor", 0);
+		if (functor_name)
+		{
+			luabind::functor<bool>	funct4;
+			if (ai().script_engine().functor(functor_name, funct4))
+			{
+				if (funct4(GO->lua_game_object()))
 					TryUseItem(cell_item);
 			}
 		}

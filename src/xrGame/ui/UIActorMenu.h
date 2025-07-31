@@ -201,6 +201,9 @@ private:
 
 	const char* m_onEffectDisassemble = {};
 	bool m_isEffectDisassemble = false;
+
+	const char* m_onDonateCurrentItem = {};
+	bool m_isDonateCurrentItem = false;
 public:
 	CUIDragDropReferenceList*	m_pQuickSlot;
 
@@ -223,6 +226,7 @@ private:
 	void						PropertiesBoxForDrop		(CUICellItem* cell_item, PIItem item, bool& b_show);
 	void						PropertiesBoxForRepair		(PIItem item, bool& b_show);
 	void						PropertiesBoxForParse		(PIItem item, bool& b_show);
+	void						PropertiesBoxForDonate		(PIItem item, bool& b_show); //Alundaio
 
 private:
 	void						clear_highlight_lists		();
@@ -368,13 +372,14 @@ public:
 	void						UpdatePartnerBag			();
 	void						UpdateDeadBodyBag			();
 	void						RefreshCurrentItemCell		();
+	void						DonateCurrentItem			(CUICellItem* cell_item); //Alundaio: Donate item via context menu while in trade menu
 
-    void				OnBtnPerformTrade			(CUIWindow* w, void* d);
-	void				OnBtnPerformTradeBuy		(CUIWindow* w, void* d);
-	void				OnBtnPerformTradeSell		(CUIWindow* w, void* d);
-	void				OnBtnExitClicked			(CUIWindow* w, void* d);
-	void				TakeAllFromPartner			(CUIWindow* w, void* d);
-	void				PutAllToPartner			(CUIWindow* w, void* d);
+    void						OnBtnPerformTrade			(CUIWindow* w, void* d);
+	void						OnBtnPerformTradeBuy		(CUIWindow* w, void* d);
+	void						OnBtnPerformTradeSell		(CUIWindow* w, void* d);
+	void						OnBtnExitClicked			(CUIWindow* w, void* d);
+	void						TakeAllFromPartner			(CUIWindow* w, void* d);
+	void						PutAllToPartner				(CUIWindow* w, void* d);
 	void						TakeAllFromInventoryBox		();
 	void						UpdateConditionProgressBars	();
 
