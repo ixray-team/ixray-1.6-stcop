@@ -123,7 +123,8 @@ void Destroy()
 {
 	SDL_DestroyRenderer(splashRenderer);
 	SDL_DestroyWindow(splashWindow);
-	SDL_DestroyTexture(texture);
+	if (texture)
+		SDL_DestroyTexture(texture);
 	SDL_DestroyTexture(fontTexture);
 
 	splashRenderer = nullptr;
