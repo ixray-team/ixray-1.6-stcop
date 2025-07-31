@@ -3,6 +3,8 @@ buy_condition = trade_generic_buy
 sell_condition = {=actor_in_stalker} trade_friend_sell, trade_generic_sell
 buy_supplies = {=is_faction_resource_greater(stalker:5) =is_stalker_at_expansion_3_or_higher} supplies_exp_4, {=is_stalker_at_expansion_3_or_higher} supplies_exp_3, {=is_stalker_at_expansion_2 +gar_story_got_info_from_digger} supplies_exp_2, {=is_stalker_at_expansion_1} supplies_exp_1, supplies_generic
 
+buy_item_condition_factor = 0.01
+
 
 [trade_generic_buy]
 ;Артефакты

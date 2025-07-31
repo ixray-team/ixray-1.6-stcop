@@ -35,6 +35,12 @@ function trade_init(npc, cfg)
 	if str ~= nil then
 		trade_manager[npc:id()].buy_supplies = xr_logic.parse_condlist(npc, "trade_manager", "buy_supplies", str)
 	end
+
+-- buy_item_condition_factor
+	str = utils.cfg_get_string(trade_manager[npc:id()].config, "trader", "buy_item_condition_factor", npc, false, "", "0.01")
+	if str ~= nil then
+		trade_manager[npc:id()].buy_item_condition_factor = xr_logic.parse_condlist(npc, "trade_manager", "buy_item_condition_factor", str)
+	end
 end
 
 
@@ -70,6 +76,12 @@ function update(npc)
 		tt.current_sell_condition = str
 	else
 		printf("TRADE [%s]: current = %s   sell = %s", npc:name(), tostring(tt.current_sell_condition), tostring(str))
+	end
+
+	str = tonumber(xr_logic.pick_section_from_condlist(db.actor, npc, tt.buy_item_condition_factor))
+	if tt.current_buy_item_condition_factor ~= str then
+		npc:buy_item_condition_factor(str)
+		tt.current_buy_item_condition_factor = str
 	end
 
 	if tt.buy_supplies == nil then
