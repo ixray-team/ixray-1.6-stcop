@@ -476,7 +476,7 @@ bool ImGui_ImplSDL3_ProcessEvent(const SDL_Event* event)
     case SDL_EVENT_WINDOW_RESIZED:
     {
         ImGuiViewport* viewport = ImGui_ImplSDL3_GetViewportForWindowID(event->window.windowID);
-        if (viewport == NULL)
+        if (viewport == nullptr)
             return false;
         if (event->type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
             viewport->PlatformRequestClose = true;
@@ -689,7 +689,7 @@ static void ImGui_ImplSDL3_UpdateMouseData()
     }
 
     SDL_Window* focused_window = SDL_GetKeyboardFocus();
-    const bool is_app_focused = (focused_window && (bd->Window == focused_window || ImGui_ImplSDL3_GetViewportForWindowID(SDL_GetWindowID(focused_window)) != NULL));
+    const bool is_app_focused = (focused_window && (bd->Window == focused_window || ImGui_ImplSDL3_GetViewportForWindowID(SDL_GetWindowID(focused_window)) != nullptr));
 #else
     SDL_Window* focused_window = bd->Window;
     const bool is_app_focused = (SDL_GetWindowFlags(bd->Window) & SDL_WINDOW_INPUT_FOCUS) != 0; // SDL 2.0.3 and non-windowed systems: single-viewport only
