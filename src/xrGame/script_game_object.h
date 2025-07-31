@@ -203,6 +203,8 @@ public:
 
     void				Kill(CScriptGameObject* who, bool bypass_actor_check = false /*AVO: added for actor before death callback*/);
 
+	void KillNotBypassActorCheck(CScriptGameObject* who);
+
 	// CEntityAlive
 	_DECLARE_FUNCTION10	(GetFOV				,			float);
 	_DECLARE_FUNCTION10	(GetRange			,			float);
