@@ -46,7 +46,20 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot);
 	}
 
-	m_sounds.LoadSound(section, "snd_reload_grenade", "sndReloadG", true, m_eSoundReload);
+	if (WeaponSoundExist(section, "snd_load_grenade"))
+	{
+		m_sounds.LoadSound(section, "snd_load_grenade", "sndReloadG", true, m_eSoundReload);
+	}
+	else
+	{
+		m_sounds.LoadSound(section, "snd_reload_grenade", "sndReloadG", true, m_eSoundReload);
+	}
+
+	if (WeaponSoundExist(section, "snd_change_grenade"))
+	{
+		m_sounds.LoadSound(section, "snd_change_grenade", "sndChangeGrenade", true, m_eSoundReload);
+	}
+
 	m_sounds.LoadSound(section, "snd_switch", "sndSwitch", true, m_eSoundReload);
 	m_sounds.LoadSound(section, "snd_switch_g", "sndSwitchG", true, m_eSoundReload);
 
@@ -207,7 +220,14 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 	{
 		m_bIsReloaded = false;
 		UpdateAmmoBones(m_ammo_bones_gl, iAmmoElapsed, GetAmmoType(true));
-		PlaySound("sndReloadG", get_LastFP2());
+		if (IsChangeAmmoType() && iAmmoElapsed && m_sounds.FindSoundItem("sndChangeGrenade", false))
+		{
+			PlaySound("sndChangeGrenade", get_LastFP2());
+		}
+		else
+		{
+			PlaySound("sndReloadG", get_LastFP2());
+		}
 		PlayHUDMotion(SetCurrentReloadAnimation(), true, eReload);
 	}
 	else
@@ -881,7 +901,21 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
 	result |= result2;
 
 	result2 = process_if_exists_set(section, "snd_reload_grenade", &CInifile::r_string, str, test);
-	if (result2 && !test) { m_sounds.LoadSound(section, "snd_reload_grenade", "sndReloadG", true, m_eSoundReload); }
+	if (result2 && !test)
+	{
+		if (WeaponSoundExist(section, "snd_load_grenade"))
+		{
+			m_sounds.LoadSound(section, "snd_load_grenade", "sndReloadG", true, m_eSoundReload);
+		}
+		else
+		{
+			m_sounds.LoadSound(section, "snd_reload_grenade", "sndReloadG", true, m_eSoundReload);
+		}
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "snd_change_grenade", &CInifile::r_string, str, test);
+	if (result2 && !test) { m_sounds.LoadSound(section, "snd_change_grenade", "sndChangeGrenade", true, m_eSoundReload); }
 	result |= result2;
 
 	result2 = process_if_exists_set(section, "snd_switch", &CInifile::r_string, str, test);
