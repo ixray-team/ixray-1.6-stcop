@@ -289,12 +289,12 @@ void CWeaponKnife::switch2_Attacking	(u32 state)
 
 	if (state == eFire)
 	{
-		PlayHUDMotion("anm_attack", FALSE, this, state);
+		PlayHUDMotion("anm_attack", FALSE, state);
 		PlaySoundIfExist("sndKick1", Position());
 	}
 	else
 	{
-		PlayHUDMotion("anm_attack2", FALSE, this, state);
+		PlayHUDMotion("anm_attack2", FALSE, state);
 		PlaySoundIfExist("sndKick2", Position());
 	}
 
@@ -313,7 +313,7 @@ void CWeaponKnife::switch2_Hiding	()
 {
 	FireEnd					();
 	VERIFY(GetState()==eHiding);
-	PlayHUDMotion("anm_hide", TRUE, this, GetState());
+	PlayHUDMotion("anm_hide", TRUE, GetState());
 	PlaySoundIfExist("SndHide", get_LastFP());
 }
 
@@ -326,7 +326,7 @@ void CWeaponKnife::switch2_Hidden()
 void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion("anm_show", FALSE, this, GetState());
+	PlayHUDMotion("anm_show", FALSE, GetState());
 	PlaySoundIfExist("SndShow", get_LastFP());
 }
 
