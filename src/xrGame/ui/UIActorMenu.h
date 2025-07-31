@@ -109,68 +109,68 @@ protected:
 	CUIProgressBar*				m_pInvSlotProgress[LAST_SLOT + 1];
 	CUIDragDropListEx*			m_pInvList[LAST_SLOT + 1];
 
-	CUIStatic*					m_InvSlot2Highlight;
-	CUIStatic*					m_InvSlot3Highlight;
-	CUIStatic*					m_HelmetSlotHighlight;
-	CUIStatic*					m_OutfitSlotHighlight;
-	CUIStatic*					m_DetectorSlotHighlight;
+	CUIStatic*					m_InvSlot2Highlight = nullptr;
+	CUIStatic*					m_InvSlot3Highlight = nullptr;
+	CUIStatic*					m_HelmetSlotHighlight= nullptr;
+	CUIStatic*					m_OutfitSlotHighlight= nullptr;
+	CUIStatic*					m_DetectorSlotHighlight = nullptr;
 	CUIStatic*					m_QuickSlotsHighlight[4];
 	xr_vector<CUIStatic*>		m_ArtefactSlotsHighlight;
 
-	CUIInventoryUpgradeWnd*		m_pUpgradeWnd;
+	CUIInventoryUpgradeWnd*		m_pUpgradeWnd = nullptr;
 	
-	CUIStatic*					m_LeftBackground;
+	CUIStatic*					m_LeftBackground = nullptr;
 
-	UIInvUpgradeInfo*			m_upgrade_info;
-	CUIMessageBoxEx*			m_message_box_yes_no;
-	CUIMessageBoxEx*			m_message_box_ok;
+	UIInvUpgradeInfo*			m_upgrade_info = nullptr;
+	CUIMessageBoxEx*			m_message_box_yes_no = nullptr;
+	CUIMessageBoxEx*			m_message_box_ok = nullptr;
 
-	CInventoryOwner*			m_pActorInvOwner;
-	CInventoryOwner*			m_pPartnerInvOwner;
-	CInventoryBox*				m_pInvBox;
+	CInventoryOwner*			m_pActorInvOwner = nullptr;
+	CInventoryOwner*			m_pPartnerInvOwner = nullptr;
+	CInventoryBox*				m_pInvBox = nullptr;
 
-	CUITextWnd*					m_ActorMoney;
-	CUITextWnd*					m_PartnerMoney;
-	CUITextWnd*					m_QuickSlot1;
-	CUITextWnd*					m_QuickSlot2;
-	CUITextWnd*					m_QuickSlot3;
-	CUITextWnd*					m_QuickSlot4;
+	CUITextWnd*					m_ActorMoney = nullptr;
+	CUITextWnd*					m_PartnerMoney = nullptr;
+	CUITextWnd*					m_QuickSlot1= nullptr;
+	CUITextWnd*					m_QuickSlot2= nullptr;
+	CUITextWnd*					m_QuickSlot3= nullptr;
+	CUITextWnd*					m_QuickSlot4= nullptr;
 	
-	CUIProgressBar*				m_WeaponSlot1_progress;
-	CUIProgressBar*				m_WeaponSlot2_progress;
-	CUIProgressBar*				m_Helmet_progress;
-	CUIProgressBar*				m_Outfit_progress;
+	CUIProgressBar*				m_WeaponSlot1_progress = nullptr;
+	CUIProgressBar*				m_WeaponSlot2_progress = nullptr;
+	CUIProgressBar*				m_Helmet_progress = nullptr;
+	CUIProgressBar*				m_Outfit_progress = nullptr;
 	// bottom ---------------------------------
-	CUIStatic*					m_ActorBottomInfo;
-	CUITextWnd*					m_ActorWeight;
-	CUITextWnd*					m_ActorWeightMax;
+	CUIStatic*					m_ActorBottomInfo = nullptr;
+	CUITextWnd*					m_ActorWeight = nullptr;
+	CUITextWnd*					m_ActorWeightMax = nullptr;
 	
-	CUIStatic*					m_PartnerBottomInfo;
-	CUITextWnd*					m_PartnerWeight;
+	CUIStatic*					m_PartnerBottomInfo = nullptr;
+	CUITextWnd*					m_PartnerWeight = nullptr;
 	float						m_PartnerWeight_end_x;
 //*	CUIStatic*					m_PartnerWeightMax;
 
 	// delimiter ------------------------------
-	CUIStatic*					m_LeftDelimiter;
-	CUITextWnd*					m_PartnerTradeCaption;
-	CUITextWnd*					m_PartnerTradePrice;
-	CUITextWnd*					m_PartnerTradeWeightMax;
+	CUIStatic*					m_LeftDelimiter = nullptr;
+	CUITextWnd*					m_PartnerTradeCaption = nullptr;
+	CUITextWnd*					m_PartnerTradePrice = nullptr;
+	CUITextWnd*					m_PartnerTradeWeightMax = nullptr;
 
-	CUIStatic*					m_RightDelimiter;
-	CUITextWnd*					m_ActorTradeCaption;
-	CUITextWnd*					m_ActorTradePrice;
-	CUITextWnd*					m_ActorTradeWeightMax;
+	CUIStatic*					m_RightDelimiter = nullptr;
+	CUITextWnd*					m_ActorTradeCaption = nullptr;
+	CUITextWnd*					m_ActorTradePrice = nullptr;
+	CUITextWnd*					m_ActorTradeWeightMax = nullptr;
 
-	CTrade*						m_actor_trade;
-	CTrade*						m_partner_trade;
+	CTrade*						m_actor_trade = nullptr;
+	CTrade*						m_partner_trade = nullptr;
 
-	CUI3tButton*				m_trade_button;
-	CUI3tButton*				m_trade_buy_button;
-	CUI3tButton*				m_trade_sell_button;
-	CUI3tButton*				m_takeall_button;
-	CUI3tButton*				m_putall_button;
-	CUI3tButton*				m_exit_button;
-	CUIStatic*					m_clock_value;
+	CUI3tButton*				m_trade_button = nullptr;
+	CUI3tButton*				m_trade_buy_button = nullptr;
+	CUI3tButton*				m_trade_sell_button = nullptr;
+	CUI3tButton*				m_takeall_button = nullptr;
+	CUI3tButton*				m_putall_button = nullptr;
+	CUI3tButton*				m_exit_button = nullptr;
+	CUIStatic*					m_clock_value = nullptr;
 
 	u32							m_last_time;
 	u8							m_repair_mode;

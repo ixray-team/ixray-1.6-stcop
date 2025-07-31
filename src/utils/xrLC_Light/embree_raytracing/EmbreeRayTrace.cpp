@@ -209,7 +209,7 @@ size_t EmbreeData::AttachGeometrys(bool addMU)
 	BVH_size = GetMemory() - start;
 	 
 	AditionalData("ST: %umb | MU: %umb | BVH: %u mb", Static_size / 1024 / 1024, MU_size / 1024 / 1024, BVH_size / 1024 / 1024);
- 
+
 	Status("[Embree] Attach Geoms : [%u ms]",t.GetElapsed_ms());
 
 	return (GetMemory() - start);
@@ -297,8 +297,7 @@ void EmbreeData::IntelEmbereLOAD()
 	// LOADING NORMAL GEOM
 	// size_t geom_memory, refs_memory;
  	InitializeGeometry(Static_size, MU_size);
- 	
-	
+	AttachGeometrys(true);
 
 	//size_t BVH = AttachGeometrys(true);
  	//AditionalData("ST: %umb | MU: %umb | BVH: %u mb", geom_memory / 1024 / 1024, refs_memory / 1024 / 1024, BVH / 1024 / 1024);
