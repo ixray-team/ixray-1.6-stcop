@@ -384,7 +384,8 @@ void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 				actor->conditions().GetThirst(), 
 				actor->conditions().BleedingSpeed(), 
 				(int)actor->get_money(),
-				actor->Community()
+				actor->Community(),
+				actor->Position()
 			};
 
 			GSQLConnector.UpdateInsertProperty(g);
@@ -505,6 +506,8 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 						xrCriticalSectionGuard guard(SpawnGuard);
 						DoSpawnList[actor->ID()].push_back((*it).first.c_str());
 					}
+					actor->SetActorPosition(res_data.position);
+					signal_Syncronize();
 				}
 			}
 		);
