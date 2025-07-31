@@ -167,20 +167,15 @@ void CBuild::Flex2OGF()
 		{
 			Msg("* ERROR: Flex2OGF, 2nd part, model# %d", SV);
 		}
+ 
+		cs.Enter();
+		g_tree.push_back(pOGF);
+		ProgressID++;
+		Progress(float(ProgressID) / float(g_XSplit.size()));
 
-		if (!CheckInfinity_FBOX(pOGF->bbox))
-		{
-			cs.Enter();
-			g_tree.push_back(pOGF);
-			ProgressID++;
-			Progress(float(ProgressID) / float(g_XSplit.size()));
-
-			if (ProgressID % 256 == 0)
-				clMsg("Progress: %u/%u", ProgressID, g_XSplit.size() );
-			cs.Leave();
-		}
-		else
-			Msg("pOGF is Errors: %u, FBOX min{%.2f,%.2f,%.2f}, max{%.2f,%.2f,%.2f}", SV, VPUSH(pOGF->bbox.min), VPUSH(pOGF->bbox.max) );
+		if (ProgressID % 256 == 0)
+			clMsg("Progress: %u/%u", ProgressID, g_XSplit.size());
+		cs.Leave();
 	}
 	);
 
