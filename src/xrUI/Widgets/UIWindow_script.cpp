@@ -85,6 +85,7 @@ CGameFont* ui_font_letter_25()
 	return UI().Font().GetFont(FontName);
 }
 
+int SetARGB(u32 rgba, u32 a) { return subst_alpha(rgba, a); }
 
 int GetARGB(u16 a, u16 r, u16 g, u16 b)
 {return color_argb(a,r,g,b);}
@@ -124,6 +125,7 @@ void CUIWindow::script_register(lua_State *L)
 		def("GetCursorPosition",			&GetCursorPosition_script),
 		def("SetCursorPosition",			&SetCursorPosition_script),
 		def("FitInRect",					&fit_in_rect),
+		def("SetARGB", &SetARGB),
 
 		class_<CUIWindow>("CUIWindow")
 		.def(							constructor<>())
