@@ -126,25 +126,25 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	if (pSettings->line_exist(section, "fire_modes"))
 	{
-		m_bHasDifferentFireModes = true;
 		shared_str FireModesList = pSettings->r_string(section, "fire_modes");
-		int ModesCount = _GetItemCount(FireModesList.c_str());
+		s8 ModesCount = _GetItemCount(FireModesList.c_str());
 		m_aFireModes.clear();
 		
-		for (int i=0; i<ModesCount; i++)
+		for (s8 i = 0; i < ModesCount; i++)
 		{
-			string16 sItem;
+			string16 sItem = {};
 			_GetItem(FireModesList.c_str(), i, sItem);
-			m_aFireModes.push_back	((s8)atoi(sItem));
+			m_aFireModes.push_back(static_cast<s8>(atoi(sItem)));
 		}
 		
 		m_iCurFireMode = ModesCount - 1;
-		m_iPrefferedFireMode = READ_IF_EXISTS(pSettings, r_s16,section,"preffered_fire_mode",-1);
 	}
 	else
 	{
-		m_bHasDifferentFireModes = false;
+		m_aFireModes.push_back(1);
+		m_iCurFireMode = 1;
 	}
+
 	LoadSilencerKoeffs();
 }
 
@@ -1062,18 +1062,11 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		} 
 		return true;
 	case kWPN_FIREMODE_PREV:
-		{
-			if(flags&CMD_START) 
-			{
-				OnPrevFireMode();
-				return true;
-			};
-		}break;
 	case kWPN_FIREMODE_NEXT:
 		{
-			if(flags&CMD_START) 
+			if (flags & CMD_START) 
 			{
-				OnNextFireMode();
+				ChangeFireMode(cmd);
 				return true;
 			};
 		}break;
@@ -1516,58 +1509,47 @@ void CWeaponMagazined::OnZoomOut()
 }
 
 //переключение режимов стрельбы одиночными и очередями
-bool CWeaponMagazined::SwitchMode			()
+bool CWeaponMagazined::SwitchMode()
 {
-	if(eIdle != GetState() || IsPending()) return false;
+	if (GetState() != eIdle || IsPending())
+	{
+		return false;
+	}
 
-	if(SingleShotMode())
-		m_iQueueSize = WEAPON_ININITE_QUEUE;
-	else
-		m_iQueueSize = 1;
-	
-	PlaySound	("sndEmptyClick", get_LastFP());
+	m_iQueueSize = SingleShotMode() ? WEAPON_ININITE_QUEUE : 1;
 
 	return true;
 }
  
-void	CWeaponMagazined::OnNextFireMode		()
+void CWeaponMagazined::ChangeFireMode(u16 cmd)
 {
-	if (!m_bHasDifferentFireModes) return;
-	if (GetState() != eIdle) return;
-	m_iCurFireMode = (m_iCurFireMode+1+m_aFireModes.size()) % (int)m_aFireModes.size();
+	if (!HasFireModes() || GetState() != eIdle)
+	{
+		return;
+	}
+
+	if (cmd == kWPN_FIREMODE_NEXT)
+	{
+		m_iCurFireMode = (m_iCurFireMode + 1 + m_aFireModes.size()) % (s8)m_aFireModes.size();
+	}
+	else
+	{
+		m_iCurFireMode = (m_iCurFireMode - 1 + m_aFireModes.size()) % (s8)m_aFireModes.size();
+	}
+
 	SetQueueSize(GetCurrentFireMode());
 };
 
-void	CWeaponMagazined::OnPrevFireMode		()
+void CWeaponMagazined::OnH_A_Chield()
 {
-	if (!m_bHasDifferentFireModes) return;
-	if (GetState() != eIdle) return;
-	m_iCurFireMode = (m_iCurFireMode-1+m_aFireModes.size()) % (int)m_aFireModes.size();
-	SetQueueSize(GetCurrentFireMode());	
-};
+	SetQueueSize(H_Parent() && H_Parent()->cast_actor() ? GetCurrentFireMode() : -1);
 
-void	CWeaponMagazined::OnH_A_Chield		()
-{
-	if (m_bHasDifferentFireModes)
-	{
-		if (H_Parent() && !H_Parent()->cast_actor()) SetQueueSize(-1);
-		else SetQueueSize(GetCurrentFireMode());
-	};	
 	inherited::OnH_A_Chield();
 };
 
-void	CWeaponMagazined::SetQueueSize			(int size)  
+float CWeaponMagazined::GetWeaponDeterioration()
 {
-	m_iQueueSize = size; 
-};
-
-float	CWeaponMagazined::GetWeaponDeterioration	()
-{
-// modified by Peacemaker [17.10.08]
-//	if (!m_bHasDifferentFireModes || m_iPrefferedFireMode == -1 || u32(GetCurrentFireMode()) <= u32(m_iPrefferedFireMode)) 
-//		return inherited::GetWeaponDeterioration();
-//	return m_iShotNum*conditionDecreasePerShot;
-	return (m_iShotNum==1) ? conditionDecreasePerShot : conditionDecreasePerQueueShot;
+	return (m_iShotNum == 1) ? conditionDecreasePerShot : conditionDecreasePerQueueShot;
 };
 
 void CWeaponMagazined::save(NET_Packet &output_packet)
@@ -1617,18 +1599,15 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 		info.cur_ammo = "∞";
 	}
 
-	if ( HasFireModes() )
+	if (m_iQueueSize == WEAPON_ININITE_QUEUE)
 	{
-		if (m_iQueueSize == WEAPON_ININITE_QUEUE)
-		{
-			info.fire_mode		= "A" ;
-		}else
-		{
-			xr_sprintf			( int_str, "%d", m_iQueueSize );
-			info.fire_mode		= int_str;
-		}
-	}else
-		info.fire_mode			= "";
+		info.fire_mode = "A";
+	}
+	else
+	{
+		xr_sprintf(int_str, "%d", m_iQueueSize);
+		info.fire_mode = int_str;
+	}
 	
 	if ( m_pInventory->ModifyFrame() <= m_BriefInfo_CalcFrame )
 	{
