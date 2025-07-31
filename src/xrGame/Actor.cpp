@@ -215,6 +215,9 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 		m_rainOnHelmetSnd.create(R"(ambient\rain_on_helmet)", st_Effect, sg_Undefined);
 	}
 
+	const static float fovFactor = EngineExternal().GetSprintFovFactor();
+	m_SprintFovFactor = fovFactor;
+
 	_last_update_time = Device.dwTimeGlobal;
 }
 
@@ -1114,7 +1117,7 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 float g_fov = 67.5f;
 float CActor::currentFOV()
 {
-	const float SprintFov = 7.0f * fSprintFactor;
+	const float SprintFov = m_SprintFovFactor * fSprintFactor;
 
 	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT | HUD_WEAPON_RT2))
 	{
