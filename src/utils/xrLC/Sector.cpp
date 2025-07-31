@@ -45,14 +45,19 @@ void CSector::BuildHierrarhy	()
 	// calc scene BB
 	Fbox&		scene_bb		= pBuild->scene_bb;
 	scene_bb.invalidate			();
-	for (int I=0; I<s32(g_tree.size()); I++)
-		scene_bb.merge			(g_tree[I]->bbox);
-	scene_bb.grow	(EPS_L);
+
+	for (OGF_Base* Tree : g_tree)
+	{
+		Fbox& BoxBB = Tree->bbox;
+		scene_bb.merge(BoxBB);
+	}
+
+	scene_bb.grow(EPS_L);
 
 	// 
 	scene_bb.getsize(scene_size);
-	delimiter		=	_max(scene_size.x,_max(scene_size.y,scene_size.z));
-	delimiter		*=	2;
+	delimiter = _max(scene_size.x, _max(scene_size.y, scene_size.z));
+	delimiter *= 2;
 
 	int		iLevel					= 2;
 	float	SizeLimit				= c_SS_maxsize/4.f;
@@ -85,7 +90,7 @@ void CSector::BuildHierrarhy	()
 
 		StatusNoMsg("Sector (%d/%d) noconn[%d]", (u32) SizeLimit, (u32) delimiter, data.size());
 		  
-		for (auto Ogf : data)
+		for (auto& Ogf : data)
 		{
 			int I = Ogf.ID;
 			if (g_tree[I]->bConnected)		 continue;
@@ -102,7 +107,7 @@ void CSector::BuildHierrarhy	()
 				float	best_volume	= flt_max;
 				 
 				// Fast Finding By No Connected
-				for (auto O : data)
+				for (auto& O : data)
 				{
 					int J = O.ID;
 					OGF_Base* candidate = g_tree[J];
