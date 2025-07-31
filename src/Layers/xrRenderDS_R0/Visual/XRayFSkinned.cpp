@@ -75,7 +75,7 @@ struct vertHW_1W
 
 	u16 get_bone() const
 	{
-		return (u16)color_get_A(_N_I) / 3;
+		return (u16)color_get_A(_N_I);
 	}
 
 	void get_pos_bones(Fvector& p, CDS0_Kinematics* Parent) const
@@ -130,7 +130,7 @@ struct vertHW_2W
 
 	u16 get_bone(u16 w) const
 	{
-		return (u16)_tc_i[w + 2] / 3;
+		return (u16)_tc_i[w + 2];
 	}
 
 	void get_pos(Fvector& p) const
@@ -201,10 +201,10 @@ struct vertHW_3W
 		switch (w)
 		{
 		case 0:
-		case 1:
-			return (u16)_tc_i[w + 2] / 3;
+		case 1: 
+			return (u16)_tc_i[w + 2];
 		case 2:
-			return (u16)color_get_A(_B_i) / 3;
+			return (u16)color_get_A(_B_i);
 		}
 
 		R_ASSERT(0);
@@ -299,13 +299,13 @@ struct vertHW_4W
 		switch (w)
 		{
 		case 0:
-			return (u16)color_get_R(_i) / 3;
+			return (u16)color_get_R(_i);
 		case 1:
-			return (u16)color_get_G(_i) / 3;
+			return (u16)color_get_G(_i);
 		case 2:
-			return (u16)color_get_B(_i) / 3;
+			return (u16)color_get_B(_i);
 		case 3:
-			return (u16)color_get_A(_i) / 3;
+			return (u16)color_get_A(_i);
 		}
 
 		R_ASSERT(0);
