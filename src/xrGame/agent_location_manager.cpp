@@ -173,7 +173,7 @@ void CAgentLocationManager::remove_old_danger_covers	()
 float CAgentLocationManager::danger		(const CCoverPoint *cover, CAI_Stalker *member) const
 {
 	float						result = 1;
-	squad_mask_type				mask = object().member().mask(member);
+	u64				mask = object().member().mask(member);
 	LOCATIONS::const_iterator	I = m_danger_locations.begin();
 	LOCATIONS::const_iterator	E = m_danger_locations.end();
 	for ( ; I != E; ++I) {

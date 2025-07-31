@@ -130,12 +130,7 @@ public:
 	IC		const RAW_VISIBLES		&raw_objects				() const;
 	IC		const NOT_YET_VISIBLES	&not_yet_visible_objects	() const;
 			const CVisionParameters &current_state				() const;
-			squad_mask_type			mask						() const;
-
-public:
-#ifdef DEBUG
-			void					check_visibles				() const;
-#endif
+			u64			mask						() const;
 
 public:
 			void					save						(NET_Packet &packet) const;

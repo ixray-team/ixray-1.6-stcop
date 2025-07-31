@@ -55,9 +55,9 @@ IC	u32 population(const u64 &b) {
 struct CEnemyFiller {
 	typedef CAgentEnemyManager::ENEMIES ENEMIES;
 	ENEMIES			*m_enemies;
-	squad_mask_type	m_mask;
+	u64	m_mask;
 	
-	IC			CEnemyFiller					(ENEMIES *enemies, squad_mask_type mask)
+	IC			CEnemyFiller					(ENEMIES *enemies, u64 mask)
 	{
 		m_enemies					= enemies;
 		m_mask						= mask;
@@ -178,8 +178,8 @@ void CAgentEnemyManager::exchange_enemies		(CMemberOrder &member0, CMemberOrder 
 {
 	u32								enemy0 = member0.selected_enemy();
 	u32								enemy1 = member1.selected_enemy();
-	squad_mask_type					mask0 = object().member().mask(&member0.object());
-	squad_mask_type					mask1 = object().member().mask(&member1.object());
+	u64					mask0 = object().member().mask(&member0.object());
+	u64					mask1 = object().member().mask(&member1.object());
 	m_enemies[enemy0].m_distribute_mask.set(mask0,FALSE);
 	m_enemies[enemy1].m_distribute_mask.set(mask1,FALSE);
 	m_enemies[enemy0].m_distribute_mask.set(mask1,TRUE);
@@ -210,7 +210,7 @@ void CAgentEnemyManager::compute_enemy_danger	()
 void CAgentEnemyManager::assign_enemies			()
 {
 	for (;;) {
-		squad_mask_type					J, K, N = 0;
+		u64					J, K, N = 0;
 		float							best = flt_max;
 		
 		ENEMIES::iterator				I = m_enemies.begin();
@@ -262,7 +262,7 @@ void CAgentEnemyManager::permutate_enemies		()
 		// setup procesed flag
 		(*I)->processed			(false);
 		// get member squad mask
-		squad_mask_type			member_mask = object().member().mask(&(*I)->object());
+		u64			member_mask = object().member().mask(&(*I)->object());
 		// setup if player has enemy
 		bool					enemy_selected = false;
 		// iterate on enemies
@@ -306,7 +306,7 @@ void CAgentEnemyManager::permutate_enemies		()
 				float			my_distance = (*I_)->object().Position().distance_to(m_enemies[*i].m_object->Position());
 				if (my_distance < best) {
 					// check if we can exchange enemies
-					squad_mask_type	J = m_enemies[*i].m_distribute_mask.get(), K;
+					u64	J = m_enemies[*i].m_distribute_mask.get(), K;
 					// iterating on members, whose current enemy is the new one
 					for ( ; J; J &= J - 1) {
 						K			= (J & (J - 1)) ^ J;
@@ -374,7 +374,7 @@ void CAgentEnemyManager::permutate_enemies		()
 }
 
 template <typename T>
-IC	void CAgentEnemyManager::setup_mask			(xr_vector<T> &objects, CMemberEnemy &enemy, const squad_mask_type &non_combat_members)
+IC	void CAgentEnemyManager::setup_mask			(xr_vector<T> &objects, CMemberEnemy &enemy, const u64 &non_combat_members)
 {
 	auto I = std::find(objects.begin(),objects.end(),enemy.m_object->ID());
 	if (I != objects.end()) {
@@ -385,7 +385,7 @@ IC	void CAgentEnemyManager::setup_mask			(xr_vector<T> &objects, CMemberEnemy &e
 	}
 }
 
-IC	void CAgentEnemyManager::setup_mask			(CMemberEnemy &enemy, const squad_mask_type &non_combat_members)
+IC	void CAgentEnemyManager::setup_mask			(CMemberEnemy &enemy, const u64 &non_combat_members)
 {
 	setup_mask				(object().memory().visibles(),enemy,non_combat_members);
 	setup_mask				(object().memory().sounds(),enemy,non_combat_members);
@@ -405,7 +405,7 @@ void CAgentEnemyManager::assign_enemy_masks		()
 		}
 	}
 
-	squad_mask_type			non_combat_members = object().member().non_combat_members_mask();
+	u64			non_combat_members = object().member().non_combat_members_mask();
 
 	ENEMIES::iterator		I = m_enemies.begin();
 	ENEMIES::iterator		E = m_enemies.end();
@@ -433,7 +433,7 @@ void CAgentEnemyManager::assign_wounded			()
 	}
 #endif // DEBUG
 
-	squad_mask_type			assigned = 0;
+	u64			assigned = 0;
 	{
 		WOUNDED_ENEMY		*I = previous_wounded;
 		WOUNDED_ENEMY		*E = previous_wounded + previous_wounded_count;
@@ -446,7 +446,7 @@ void CAgentEnemyManager::assign_wounded			()
 			if (!member_order)
 				continue;
 
-			squad_mask_type				mask = object().member().mask((*I).second.first);
+			u64				mask = object().member().mask((*I).second.first);
 			if (!(object().member().combat_mask() & mask))
 				continue;
 
@@ -480,10 +480,10 @@ void CAgentEnemyManager::assign_wounded			()
 				if (population((*I).m_distribute_mask.get()) > population_level)
 					continue;
 
-				squad_mask_type						J = (*I).m_mask.get();
-				J									&= (assigned ^ squad_mask_type(-1));
+				u64						J = (*I).m_mask.get();
+				J									&= (assigned ^ u64(-1));
 				for ( ; J; J &= J - 1) {
-					squad_mask_type					K = (J & (J - 1)) ^ J;
+					u64					K = (J & (J - 1)) ^ J;
 					CAgentMemberManager::iterator	i_ = object().member().member(K);
 					float							distance_sqr = (*i_)->object().Position().distance_to_sqr((*I).m_object->Position());
 					if (distance_sqr < best_distance_sqr) {
@@ -563,7 +563,7 @@ void CAgentEnemyManager::assign_wounded			()
 		if (wounded_processor(enemy->m_object) == ALife::_OBJECT_ID(-1))
 			wounded_processor		(enemy->m_object,processor->ID());
 
-		squad_mask_type				mask = object().member().mask(processor);
+		u64				mask = object().member().mask(processor);
 		enemy->m_distribute_mask.set(mask,TRUE);
 		VERIFY						((assigned | mask) != assigned);
 		assigned					|= mask;

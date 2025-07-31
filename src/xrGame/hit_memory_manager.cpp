@@ -27,23 +27,24 @@
 #	include "ai_debug.h"
 #endif // MASTER_GOLD
 
-struct CHitObjectPredicate {
+struct CHitObjectPredicate 
+{
 	const CObject *m_object;
 
-				CHitObjectPredicate			(const CObject *object) :
-					m_object				(object)
+	CHitObjectPredicate(const CObject *object) :
+		m_object(object)
 	{
 	}
 
-	bool		operator()					(const MemorySpace::CHitObject &hit_object) const
+	bool operator()(const MemorySpace::CHitObject &hit_object) const
 	{
 		if (!m_object)
-			return			(!hit_object.m_object);
+			return (!hit_object.m_object);
 
 		if (!hit_object.m_object)
-			return			(false);
+			return (false);
 
-		return				(m_object->ID() == hit_object.m_object->ID());
+		return (m_object->ID() == hit_object.m_object->ID());
 	}
 };
 
@@ -126,22 +127,16 @@ void CHitMemoryManager::add					(float amount, const Fvector &vLocalDir, const C
 	if (!entity_alive || (m_object->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))
 		return;
 
-	HITS::iterator				J = std::find(m_hits->begin(),m_hits->end(),object_id(who));
-	if (m_hits->end() == J) {
-		CHitObject						hit_object;
+	HITS::iterator J = std::find(m_hits->begin(),m_hits->end(), CMemoryObject::object_id(who));
+	if (m_hits->end() == J)
+	{
+		CHitObject hit_object;
 
-		hit_object.fill					(entity_alive,m_object,!m_stalker ? squad_mask_type(-1) : m_stalker->agent_manager().member().mask(m_stalker));
-		
-#ifdef USE_FIRST_GAME_TIME
-		hit_object.m_first_game_time	= Level().GetGameTime();
-#endif
-#ifdef USE_FIRST_LEVEL_TIME
-		hit_object.m_first_level_time	= Device.dwTimeGlobal;
-#endif
+		hit_object.fill(entity_alive,m_object,!m_stalker ? u64(-1) : m_stalker->agent_manager().member().mask(m_stalker));
 		hit_object.m_amount				= amount;
 
 		if (m_max_hit_count <= m_hits->size()) {
-			HITS::iterator		I = std::min_element(m_hits->begin(),m_hits->end(),SLevelTimePredicate<CEntityAlive>());
+			HITS::iterator		I = std::min_element(m_hits->begin(),m_hits->end(),SLevelTimePredicate());
 			VERIFY				(m_hits->end() != I);
 			*I					= hit_object;
 		}
@@ -154,34 +149,37 @@ void CHitMemoryManager::add					(float amount, const Fvector &vLocalDir, const C
 	}
 }
 
-void CHitMemoryManager::add					(const CHitObject &_hit_object)
+void CHitMemoryManager::add(const CHitObject& _hit_object)
 {
 #ifndef MASTER_GOLD
-	if (_hit_object.m_object && const_cast<CEntityAlive*>(_hit_object.m_object)->cast_actor() && psAI_Flags.test(aiIgnoreActor))
+	if (_hit_object.m_object && const_cast<CGameObject*>(_hit_object.m_object)->cast_actor() && psAI_Flags.test(aiIgnoreActor))
 		return;
 #endif // MASTER_GOLD
 
-	VERIFY						(m_hits);
+	VERIFY(m_hits);
 	if (!object().g_Alive())
 		return;
 
-	CHitObject					hit_object = _hit_object;
-	hit_object.m_squad_mask.set(!m_stalker ? squad_mask_type(-1) : m_stalker->agent_manager().member().mask(m_stalker), TRUE);
+	CHitObject hit_object = _hit_object;
+	hit_object.m_squad_mask.set(!m_stalker ? u64(-1) : m_stalker->agent_manager().member().mask(m_stalker), TRUE);
 
-	const CEntityAlive			*entity_alive = hit_object.m_object;
-	HITS::iterator	J = std::find(m_hits->begin(),m_hits->end(),object_id(entity_alive));
-	if (m_hits->end() == J) {
-		if (m_max_hit_count <= m_hits->size()) {
-			HITS::iterator	I = std::min_element(m_hits->begin(),m_hits->end(),SLevelTimePredicate<CEntityAlive>());
-			VERIFY				(m_hits->end() != I);
-			*I					= hit_object;
+	const CGameObject* entity_alive = hit_object.m_object;
+	HITS::iterator J = std::find(m_hits->begin(), m_hits->end(), CMemoryObject::object_id(entity_alive));
+	if (m_hits->end() == J)
+	{
+		if (m_max_hit_count <= m_hits->size())
+		{
+			HITS::iterator	I = std::min_element(m_hits->begin(), m_hits->end(), SLevelTimePredicate());
+			VERIFY(m_hits->end() != I);
+			*I = hit_object;
 		}
 		else
-			m_hits->push_back	(hit_object);
+			m_hits->push_back(hit_object);
 	}
-	else {
-		hit_object.m_squad_mask.assign	(hit_object.m_squad_mask.get() | (*J).m_squad_mask.get());
-		*J						= hit_object;
+	else 
+	{
+		hit_object.m_squad_mask.assign(hit_object.m_squad_mask.get() | (*J).m_squad_mask.get());
+		*J = hit_object;
 	}
 }
 
@@ -227,7 +225,7 @@ void CHitMemoryManager::update()
 
 void CHitMemoryManager::enable			(const CObject *object, bool enable)
 {
-	HITS::iterator				J = std::find(m_hits->begin(),m_hits->end(),object_id(object));
+	HITS::iterator				J = std::find(m_hits->begin(),m_hits->end(), CMemoryObject::object_id(object));
 	if (J == m_hits->end())
 		return;
 
@@ -293,28 +291,13 @@ void CHitMemoryManager::save	(NET_Packet &packet) const
 		// object params
 		packet.w_u32			((*I).m_object_params.m_level_vertex_id);
 		packet.w_vec3			((*I).m_object_params.m_position);
-#ifdef USE_ORIENTATION
-		packet.w_float			((*I).m_object_params.m_orientation.yaw);
-		packet.w_float			((*I).m_object_params.m_orientation.pitch);
-		packet.w_float			((*I).m_object_params.m_orientation.roll);
-#endif // USE_ORIENTATION
 		// self params
 		packet.w_u32			((*I).m_self_params.m_level_vertex_id);
 		packet.w_vec3			((*I).m_self_params.m_position);
-#ifdef USE_ORIENTATION
-		packet.w_float			((*I).m_self_params.m_orientation.yaw);
-		packet.w_float			((*I).m_self_params.m_orientation.pitch);
-		packet.w_float			((*I).m_self_params.m_orientation.roll);
-#endif // USE_ORIENTATION
-#ifdef USE_LEVEL_TIME
+
 		packet.w_u32			((Device.dwTimeGlobal >= (*I).m_level_time) ? (Device.dwTimeGlobal - (*I).m_level_time) : 0);
-#endif // USE_LAST_LEVEL_TIME
-#ifdef USE_LEVEL_TIME
 		packet.w_u32			((Device.dwTimeGlobal >= (*I).m_level_time) ? (Device.dwTimeGlobal - (*I).m_last_level_time) : 0);
-#endif // USE_LAST_LEVEL_TIME
-#ifdef USE_FIRST_LEVEL_TIME
-		packet.w_u32			((Device.dwTimeGlobal >= (*I).m_level_time) ? (Device.dwTimeGlobal - (*I).m_first_level_time) : 0);
-#endif // USE_FIRST_LEVEL_TIME
+
 		packet.w_vec3			((*I).m_direction);
 		packet.w_u16			((*I).m_bone_index);
 		packet.w_float			((*I).m_amount);
@@ -341,34 +324,19 @@ void CHitMemoryManager::load	(IReader &packet)
 		// object params
 		object.m_object_params.m_level_vertex_id	= packet.r_u32();
 		packet.r_fvector3			(object.m_object_params.m_position);
-#ifdef USE_ORIENTATION
-		packet.r_float				(object.m_object_params.m_orientation.yaw);
-		packet.r_float				(object.m_object_params.m_orientation.pitch);
-		packet.r_float				(object.m_object_params.m_orientation.roll);
-#endif
+
 		// self params
 		object.m_self_params.m_level_vertex_id	= packet.r_u32();
 		packet.r_fvector3			(object.m_self_params.m_position);
-#ifdef USE_ORIENTATION
-		packet.r_float				(object.m_self_params.m_orientation.yaw);
-		packet.r_float				(object.m_self_params.m_orientation.pitch);
-		packet.r_float				(object.m_self_params.m_orientation.roll);
-#endif
-#ifdef USE_LEVEL_TIME
+
 		VERIFY						(Device.dwTimeGlobal >= object.m_level_time);
 		object.m_level_time			= packet.r_u32();
 		object.m_level_time			= Device.dwTimeGlobal - object.m_level_time;
-#endif // USE_LEVEL_TIME
-#ifdef USE_LAST_LEVEL_TIME
+
 		VERIFY						(Device.dwTimeGlobal >= object.m_last_level_time);
 		object.m_last_level_time	= packet.r_u32();
 		object.m_last_level_time	= Device.dwTimeGlobal - object.m_last_level_time;
-#endif // USE_LAST_LEVEL_TIME
-#ifdef USE_FIRST_LEVEL_TIME
-		VERIFY						(Device.dwTimeGlobal >= (*I).m_first_level_time);
-		object.m_first_level_time	= packet.r_u32();
-		object.m_first_level_time	= Device.dwTimeGlobal - object.m_first_level_time;
-#endif // USE_FIRST_LEVEL_TIME
+
 		packet.r_fvector3			(object.m_direction);
 		object.m_bone_index			= packet.r_u16();
 		object.m_amount				= packet.r_float();
