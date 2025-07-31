@@ -21,11 +21,12 @@
 #include "../xrRender/blender_smaa.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "magic_enum/magic_enum.hpp"
-#include "FSR2Wrapper.h"
-#include "DLSSWrapper.h"
-#include "XESSWrapper.h"
 
-void	CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
+#include "OverlayAPI\FSR2Wrapper.h"
+#include "OverlayAPI\DLSSWrapper.h"
+#include "OverlayAPI\XESSWrapper.h"
+
+void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
 {
 	VERIFY(_1 || zb);
 	if (_1)	{
