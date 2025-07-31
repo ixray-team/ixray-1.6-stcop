@@ -120,12 +120,7 @@ void CBuild::BuildAdaptiveHT()
 #include "../xrLC_Light/xrFaceDefs.h"
 #include "../xrLC_Light/xrFace.h"
 void CBuild::Light()
-{
-	//****************************************** GLOBAL-RayCast model
- 	Phase("Building rcast-CFORM model...");
- 	Light_prepare();
-	BuildRapid(TRUE);
-	 	 
+{ 
 	//****************************************** Resolve materials
  	Phase("Resolving materials...");
  	xrPhase_ResolveMaterials();
@@ -143,12 +138,16 @@ void CBuild::Light()
 	IsolateVertices(TRUE);
 
 #ifdef BUILDING_LIGHING
+	//****************************************** GLOBAL-RayCast model
+	Phase("Building rcast-CFORM model...");
+	Light_prepare();
+	BuildRapid(TRUE);
+
  	//****************************************** Implicit
 	Phase("LIGHT: Implicit...");
 	EmbreeMain.AttachGeometrys(true);
  	ImplicitLighting();
-
-
+ 
 	//****************************************** LMAPS
  	Phase("LIGHT: LMaps...");
 	EmbreeMain.AttachGeometrys(false);
