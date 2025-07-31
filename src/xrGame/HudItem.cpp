@@ -183,6 +183,36 @@ void CHudItem::OnStateSwitch(u32 S)
 
 	switch (S)
 	{
+	case eShowing:
+	{
+		if (object().H_Parent() != nullptr && object().H_Parent() == Level().CurrentControlEntity())
+		{
+			if (g_player_hud->attached_item(1) != nullptr && g_player_hud->attached_item(1) != HudItemData())
+			{
+				CCustomDetector* det = smart_cast<CCustomDetector*>(g_player_hud->attached_item(1)->m_parent_hud_item);
+				if (det != nullptr && det->CanDrawHand())
+				{
+					det->SwitchState(CCustomDetector::eHandDraw);
+				}
+			}
+		}
+		break;
+	}
+	case eHiding:
+	{
+		if (object().H_Parent() != nullptr && object().H_Parent() == Level().CurrentControlEntity())
+		{
+			if (g_player_hud->attached_item(1) != nullptr && g_player_hud->attached_item(1) != HudItemData())
+			{
+				CCustomDetector* det = smart_cast<CCustomDetector*>(g_player_hud->attached_item(1)->m_parent_hud_item);
+				if (det != nullptr && det->CanHideHand())
+				{
+					det->SwitchState(CCustomDetector::eHandHide);
+				}
+			}
+		}
+		break;
+	}
 	case eBore:
 	{
 		SetPending		(FALSE);
@@ -429,6 +459,8 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_prepare_detector, HudAnimationExist("anm_prepare_detector"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_prepare_detector_end, HudAnimationExist("anm_draw_detector"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_finish_detector, HudAnimationExist("anm_finish_detector"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_draw, HudAnimationExist("anm_hand_draw"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_hide, HudAnimationExist("anm_hand_hide"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_firemode, (HudAnimationExist("anm_firemode") || HudAnimationExist("anm_changefiremode_from_1_to_a") || HudAnimationExist("anm_changefiremode_from_a_to_1")));
 }
 

@@ -64,6 +64,15 @@ public:
 	void 	TurnDetectorInternal(bool b);
 
 	bool NeedBlockSprint() const;
+	bool CanDrawHand() const;
+	bool CanHideHand() const;
+
+	enum EDetectorStates
+	{
+		eHandHide = eLastBaseState + 1,
+		eHandDraw,
+	};
+
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
 	void 			UpdateNightVisionMode		(bool b_off);
