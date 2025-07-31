@@ -964,6 +964,8 @@ void CSE_ALifeLevelChanger::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	if (m_wVersion > 116)
 		m_bSilentMode			= !!tNetPacket.r_u8();
 
+	destLeveName = (LPSTR) m_caLevelPointToChange.c_str();
+
 }
 
 void CSE_ALifeLevelChanger::STATE_Write	(NET_Packet	&tNetPacket)
