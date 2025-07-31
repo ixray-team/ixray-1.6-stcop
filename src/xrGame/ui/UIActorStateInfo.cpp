@@ -159,6 +159,7 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 		else 
 			m_state[stt_radiation]->show_static(true, 3);
 	}
+	m_state[stt_main]->set_progress_shape(value);
 
 	CCustomOutfit* outfit = actor->GetOutfit();
 	PIItem itm = actor->inventory().ItemFromSlot(HELMET_SLOT);
