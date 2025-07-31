@@ -69,7 +69,7 @@ static	CDeflector*		read_create					();
  	
 	bool	similar				( const CDeflector &D, float eps =EPS ) const;
 
-	// se7kills Подсчитать Размер
+	// se7kills РџРѕРґСЃС‡РёС‚Р°С‚СЊ Р Р°Р·РјРµСЂ
 	size_t		size_deflector()
 	{
 		size_t STri = UVpolys.capacity() * sizeof(UVtri);

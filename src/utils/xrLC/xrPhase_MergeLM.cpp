@@ -10,7 +10,7 @@
 void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 {
 	// Process 	
-	// Немного отступ делаем
+	// РќРµРјРЅРѕРіРѕ РѕС‚СЃС‚СѓРї РґРµР»Р°РµРј
 	int _X = (2 * BORDER), _Y = (2 * BORDER);
  	int _Max_y = 0;
 
@@ -45,7 +45,7 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 		// rS.calc_area();
 		rT = rS;
 
-		// Нужен только в оригенальной LMerge
+		// РќСѓР¶РµРЅ С‚РѕР»СЊРєРѕ РІ РѕСЂРёРіРµРЅР°Р»СЊРЅРѕР№ LMerge
 		BOOL		bRotated = false;  
 
 		if (_Y < getLMSIZE() - HEIGHT)

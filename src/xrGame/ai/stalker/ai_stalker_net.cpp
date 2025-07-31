@@ -134,10 +134,10 @@ void CAI_Stalker::SyncWrite(NET_Packet& Packet)
 ((a)._31), ((a)._32), ((a)._33), ((a)._34), \
 ((a)._41), ((a)._42), ((a)._43), ((a)._44)
 
-// ANIMATION CALLBACKS (ДЛЯ СИНХРОНИЗАЦИИ)
+// ANIMATION CALLBACKS (Р”Р›РЇ РЎРРќРҐР РћРќРР—РђР¦РР)
 void SetDataMotion(Motions_NUM& data, const MotionID& motionID, u8 boneID = 0)
 {
-	if (data.IDX >= 255)	// 16 Изза Квантования
+	if (data.IDX >= 255)	// 16 РР·Р·Р° РљРІР°РЅС‚РѕРІР°РЅРёСЏ
 		data.IDX = 0;
 	data.IDX++;
 	data.id = motionID;
@@ -250,7 +250,7 @@ void CAI_Stalker::OnAnimationChangeGlobal(u8 boneID, const MotionID& motionID, b
 	data.AnimationCtrl = use_controller;	
 	state_manager.motions_data.SetGlobal(data);
 
-	// TODO SYNC FOR GLOBAL (НО Нужно ли ) в Аномалии нужно для Зомби некоторых  
+	// TODO SYNC FOR GLOBAL (РќРћ РќСѓР¶РЅРѕ Р»Рё ) РІ РђРЅРѕРјР°Р»РёРё РЅСѓР¶РЅРѕ РґР»СЏ Р—РѕРјР±Рё РЅРµРєРѕС‚РѕСЂС‹С…  
 }
 
 // APPLY
@@ -342,7 +342,7 @@ void CAI_Stalker::ApplyAnimation(StalkerMotionData& anims)
 	if (!ka)
 		return;
 
-	// Если нет установки анимы в течении 2х сек то ставим	
+	// Р•СЃР»Рё РЅРµС‚ СѓСЃС‚Р°РЅРѕРІРєРё Р°РЅРёРјС‹ РІ С‚РµС‡РµРЅРёРё 2С… СЃРµРє С‚Рѕ СЃС‚Р°РІРёРј	
 
 	if (LastUpdateAnims < Device.dwTimeGlobal)
 	{
