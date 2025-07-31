@@ -26,6 +26,10 @@ void CUIGameCustom::script_register(lua_State *L)
 			.def("SetMainInputReceiver",	&CUIGameCustom::SetMainInputReceiver)
 			.def("AddDialogToRender",		&CUIGameCustom::AddDialogToRender)
 			.def("RemoveDialogToRender",	&CUIGameCustom::RemoveDialogToRender)
+			.def("AddCustomStatic",			+[](CUIGameCustom* self, pcstr id, bool singleInstance)
+            {
+                return self->AddCustomStatic(id, singleInstance);
+            })
 			.def("AddCustomStatic",			&CUIGameCustom::AddCustomStatic)
 			.def("AddHudMessage",			&CUIGameCustom::AddHudMessage)
 			.def("RemoveCustomStatic",		&CUIGameCustom::RemoveCustomStatic)
