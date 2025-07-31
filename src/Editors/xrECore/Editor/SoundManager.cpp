@@ -8,9 +8,6 @@
 #include "ui_main.h"
 
 CSoundManager* SndLib=0;
-//---------------------------------------------------------------------------
-
-
 //------------------------------------------------------------------------------
 xr_string CSoundManager::UpdateFileName(xr_string& fn)
 {
@@ -45,10 +42,8 @@ int	CSoundManager::GetSoundEnvs(AStringVec& items)
 
 bool CSoundManager::OnCreate()
 {
-//.	psSoundFreq			= sf_44K;
-//	psSoundFlags.set	(ssHardware,FALSE);
-    CSound_manager_interface::_create		(0);
-    CSound_manager_interface::_create		(1);
+    CSound_manager_interface::_create(0);
+    CSound_manager_interface::_create(1);
     return true;
 }
 
@@ -59,8 +54,7 @@ void CSoundManager::OnDestroy()
 
 void CSoundManager::OnFrame()
 {
-	::psSoundVEffects		= psDeviceFlags.is(rsMuteSounds)?0.f: psSoundVEffects;
-	//Sound->update			(UI->CurrentView().m_Camera.GetPosition(), UI->CurrentView().m_Camera.GetDirection(), UI->CurrentView().m_Camera.GetNormal());
+    ::psSoundVEffects = psDeviceFlags.is(rsMuteSounds) ? 0.f : psSoundVEffects;
 }
 
 void CSoundManager::MuteSounds(BOOL bVal)
@@ -129,44 +123,6 @@ int CSoundManager::GetLocalNewSounds(FS_FileSet& files)
 {
     return FS.file_list	(files,_import_,FS_ListFiles|FS_RootOnly|FS_ClampExt,"*.wav");
 }
-
-//------------------------------------------------------------------------------
-// копирует обновленные звуки с Import'a в Sounds
-// files - список файлов для копирование
-//------------------------------------------------------------------------------
-/*
-void CSoundManager::SafeCopyLocalToServer(FS_FileSet& files)
-{
-    xr_string p_import,p_sounds;
-    xr_string src_name,dest_name;
-    FS.update_path	  	(p_import,_import_,"");
-    FS.update_path	  	(p_sounds,_sounds_,"");
-
-    FS_FileSetIt it	= files.begin();
-	FS_FileSetIt _E 	= files.end();
-	for (; it!=_E; it++){
-        // copy thm
-		xr_string fn 	= EFS.ChangeFileExt(it->first,".thm");
-		src_name 		= p_import	+ fn;
-		UpdateFileName	(fn);
-		dest_name 		= p_sounds	+ fn;
-		FS.file_rename	(src_name.c_str(),dest_name.c_str(),true);
-    	// copy sources
-		fn 				= EFS.ChangeFileExt(it->first,".wav");
-		src_name 		= p_import	+ fn;
-		UpdateFileName	(fn);
-		dest_name 		= p_sounds	+ fn;
-        if (FS.exist(dest_name.c_str())){
-	        EFS.BackupFile	(_sounds_,EFS.ChangeFileExt(fn,".wav").c_str());
-	        EFS.BackupFile	(_sounds_,EFS.ChangeFileExt(fn,".thm").c_str());
-        }
-        FS.file_copy		(src_name.c_str(),dest_name.c_str());
-        FS.set_file_age		(dest_name.c_str(),FS.get_file_age(src_name.c_str()));
-        EFS.WriteAccessLog	(dest_name.c_str(),"Replace");
-        EFS.MarkFile		(src_name.c_str(),true);
-    }
-}    
-*/
 //------------------------------------------------------------------------------
 // создает тхм
 //------------------------------------------------------------------------------
@@ -389,35 +345,6 @@ void CSoundManager::CleanupSounds(bool IsSoft)
     UI->ProgressEnd				(pb);
 }
 
-/*
-void CSoundManager::ChangeFileAgeTo(FS_FileSet* tgt_map, int age)
-{
-	VERIFY(tgt_map);
-	FS_FileSet* 	M_BASE 		= tgt_map;
-    
-    // lock rescanning
-    FS.lock_rescan	();
-    // change
-	SPBItem* pb=0;
-    if (M_BASE->size()>1) pb	= UI->ProgressStart(M_BASE->size(),"Change sounds age...");
-    FS_FileSetIt it			= M_BASE->begin();
-	FS_FileSetIt _E 			= M_BASE->end();
-	for (; it!=_E; it++){
-        xr_string base_name	= EFS.ChangeFileExt(it->first,""); xr_strlwr(base_name);
-        xr_string	wav_fn,thm_fn,ogg_fn;
-        FS.update_path			(wav_fn,_sounds_,		EFS.ChangeFileExt(base_name,".wav").c_str());
-        FS.update_path			(thm_fn,_sounds_,		EFS.ChangeFileExt(base_name,".thm").c_str());
-        FS.update_path			(ogg_fn,_game_sounds_,	EFS.ChangeFileExt(base_name,".ogg").c_str());
-        FS.set_file_age			(wav_fn.c_str(),age);
-        FS.set_file_age			(thm_fn.c_str(),age);
-        FS.set_file_age			(ogg_fn.c_str(),age);
-        if (pb) 			    pb->Inc();
-    }
-    if (pb) 					UI->ProgressEnd(pb);
-    // lock rescanning
-    FS.unlock_rescan			();
-}
-*/
 //------------------------------------------------------------------------------
 // если передан параметр modif - обновляем DX-Surface only и только из списка
 // иначе полная синхронизация
