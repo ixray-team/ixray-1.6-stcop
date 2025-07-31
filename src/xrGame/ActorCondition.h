@@ -162,6 +162,8 @@ public:
 	float m_fLimpingHealthBegin;
 	float m_fLimpingHealthEnd;
 
+	float m_fRadiationZonePower;
+
 	//typedef xr_vector<SMedicineInfluenceValues> BOOSTS_VECTOR;
 	//typedef xr_vector<SMedicineInfluenceValues>::iterator BOOSTS_VECTOR_ITER;
 	//BOOSTS_VECTOR m_vecBoosts;

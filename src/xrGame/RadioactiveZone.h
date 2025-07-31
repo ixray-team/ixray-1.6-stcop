@@ -17,6 +17,7 @@ public:
 	virtual	BOOL feel_touch_contact		(CObject* O	);
 			float nearest_shape_radius	(SZoneObjectInfo* O);
 
+			float fHitPower = 0;
 protected:
 	virtual bool BlowoutState			();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
