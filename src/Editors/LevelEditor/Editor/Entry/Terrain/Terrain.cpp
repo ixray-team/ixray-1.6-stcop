@@ -2,10 +2,10 @@
 #include "Terrain.h"
 
 CTerrain::CTerrain(LPVOID data, LPCSTR name):
-	inherited(data,name)
+	inherited(data,name), TerrainObject("terrain")
 {
 	Construct(data);
-	FScale.set(1, 0.3f, 1);
+	FScale.set(1, 1, 1);
 	m_RT_Flags.set(flRT_Visible, true);
 }
 
@@ -25,7 +25,10 @@ void CTerrain::OnUpdateTransform()
 
 bool CTerrain::LoadStream(IReader& F)
 {
-	return HMap.LoadSteam(&F);
+	HMap.LoadSteam(&F);
+
+	//XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, &TerrainObject);
+	return true;
 }
 
 void CTerrain::SaveStream(IWriter& F)
@@ -61,6 +64,7 @@ void CTerrain::Render(int priority, bool strictB2F)
 	{
 		HMap.Draw(100, 1, 0xffffff);
 	}
+	//	TerrainObject.Render(_Transform(), priority, strictB2F);
 }
 
 void CTerrain::Move(Fvector& amount)
