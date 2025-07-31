@@ -187,6 +187,7 @@ public:
 
 	virtual	void			on_before_sell					(CInventoryItem *item);
 	virtual bool			unlimited_ammo					() override { return false; }
+	virtual bool infinite_fire() override { return false; }
 
 			float			GetSatiety						()							{return 0.5f;}
 			void			ChangeSatiety					(float v)					{}
