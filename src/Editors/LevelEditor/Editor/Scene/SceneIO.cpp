@@ -207,8 +207,8 @@ BOOL EScene::LoadLevelPartLTX(ESceneToolBase* M, LPCSTR mn)
 	string_path map_name;
 	strcpy(map_name, mn);
 	
-	if(!M->can_use_inifile())
-		return LoadLevelPartStream(M, map_name);
+	//if(!M->can_use_inifile())
+	//	return LoadLevelPartStream(M, map_name);
 
 	int fnidx=0;
 	
