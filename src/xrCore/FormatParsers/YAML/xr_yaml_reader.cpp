@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #include "xr_yaml_reader.h"
 
-//инициализация и загрузка YAML файла
+//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Рё Р·Р°РіСЂСѓР·РєР° YAML С„Р°Р№Р»Р°
 CYaml::CYaml(const char* path, const char* FileName)
 {
 	string_path m2SharedFileName;

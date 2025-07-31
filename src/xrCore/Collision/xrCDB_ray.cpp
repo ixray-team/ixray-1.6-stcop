@@ -16,7 +16,7 @@ public:
 	bool			continue_work = true;
 	OpcodeContext*	ctxt = 0;
 
-	// Старый код
+	// РЎС‚Р°СЂС‹Р№ РєРѕРґ
 
 	COLLIDER*		dest;
 	TRI*			tris;

@@ -2,7 +2,7 @@
 #include "string_table.h"
 #include "xr_level_controller.h"
 #include "../xrCore/FormatParsers/XML/xrXMLParser.h"
-#include "../xrEngine/XR_IOConsole.h"
+#include "XR_IOConsole.h"
 
 ENGINE_API CStringTable* g_pStringTable = nullptr;
 

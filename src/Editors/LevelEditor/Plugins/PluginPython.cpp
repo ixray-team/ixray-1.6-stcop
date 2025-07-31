@@ -18,7 +18,7 @@ xr_string CPluginPython::RunCommand(const xr_string& command)
 	HANDLE hRead, hWrite;
 	SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), nullptr, TRUE };
 
-	// Создаем анонимный канал (pipe)
+	// РЎРѕР·РґР°РµРј Р°РЅРѕРЅРёРјРЅС‹Р№ РєР°РЅР°Р» (pipe)
 	if (!CreatePipe(&hRead, &hWrite, &sa, 0))
 	{
 		Msg("! Error creating pipe...");
@@ -33,11 +33,11 @@ xr_string CPluginPython::RunCommand(const xr_string& command)
 	PROCESS_INFORMATION pi;
 	xr_string cmd = "cmd /C " + command;
 
-	// Указываем рабочий каталог
+	// РЈРєР°Р·С‹РІР°РµРј СЂР°Р±РѕС‡РёР№ РєР°С‚Р°Р»РѕРі
 	string_path Root;
 	FS.update_path(Root, "$fs_root$", "");
 
-	// Создаем процесс
+	// РЎРѕР·РґР°РµРј РїСЂРѕС†РµСЃСЃ
 	if (!CreateProcessA(nullptr, const_cast<char*>(cmd.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW, nullptr, Root, &si, &pi))
 	{
 		CloseHandle(hRead);
@@ -48,7 +48,7 @@ xr_string CPluginPython::RunCommand(const xr_string& command)
 
 	CloseHandle(hWrite);
 
-	// Читаем вывод
+	// Р§РёС‚Р°РµРј РІС‹РІРѕРґ
 	string128 buffer;
 	DWORD bytesRead;
 	xr_string output;

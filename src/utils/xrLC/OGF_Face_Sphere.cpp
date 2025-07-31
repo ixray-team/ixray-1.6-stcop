@@ -81,7 +81,7 @@ void OGF_Base::CalcBounds(bool useProgressBar)
 
 	//BOOL B1 = SphereValid(V, S1);
 	BOOL B2 = SphereValid(V, S2);
-	BOOL B3 = SphereValid(V, S3); // Куда быстрее чем Miniball 
+	BOOL B3 = SphereValid(V, S3); // РљСѓРґР° Р±С‹СЃС‚СЂРµРµ С‡РµРј Miniball 
 
 	
 	//if (useProgressBar)

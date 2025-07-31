@@ -1,4 +1,4 @@
-﻿#include <imgui.h>
+#include <imgui.h>
 
 #include "../../xrCore/xrCore.h"
 #include "CompilersUI.h"

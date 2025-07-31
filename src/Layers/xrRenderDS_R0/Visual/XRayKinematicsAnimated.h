@@ -1,5 +1,5 @@
 #pragma once
-#include "animation.h"
+#include "Animation.h"
 #include "XRayKinematics.h"
 
 //*** Bone Instance *******************************************************************************
