@@ -154,7 +154,8 @@ BOOL CInventoryOwner::net_Spawn		(CSE_Abstract* DC)
 		CharacterInfo().m_SpecificCharacter.data()->m_sGameName = (E->name_replace()[0]) ? E->name_replace() : *pThis->cName();
 		m_game_name												= (E->name_replace()[0]) ? E->name_replace() : *pThis->cName();
 	}
-	
+
+	CharacterInfo().m_SpecificCharacter.updateMechanic(READ_IF_EXISTS(pSettings, r_bool, cast_game_object()->cNameSect(), "mechanic", SpecificCharacter().upgrade_mechanic()));
 
 	if(!pThis->Local())  return TRUE;
 
