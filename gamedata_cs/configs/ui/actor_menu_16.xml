@@ -145,21 +145,24 @@
           cell_width="38" cell_height="45" rows_num="5" cols_num="1"
 		  cell_sp_x="0" cell_sp_y="20" a="0"/>
 
-  <dragdrop_outfit x="464" y="160" width="68" height="123"
+  <dragdrop_outfit x="459" y="160" width="78" height="127"
           cell_width="34" cell_height="41" rows_num="3" cols_num="2"
-          custom_placement="0" a="0"/>
+          custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
+		vc_horiz_align="c"/>
   
-  <dragdrop_detector x="473" y="100" width="34" height="41"
+  <dragdrop_detector x="480" y="100" width="34" height="41"
           cell_width="34" cell_height="41" rows_num="1" cols_num="1"
           custom_placement="0" a="0"/>
 
-  <dragdrop_pistol x="464" y="305" width="68" height="41"
+  <dragdrop_pistol x="459" y="305" width="78" height="45"
           cell_width="34" cell_height="41" rows_num="1" cols_num="2"
-          custom_placement="0" a="0"/>
+          custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
+		vc_horiz_align="c"/>
 
-  <dragdrop_automatic x="552" y="100" width="68" height="246"
+  <dragdrop_automatic x="548" y="100" width="76" height="250"
           cell_width="34" cell_height="41" rows_num="6" cols_num="2"
-          custom_placement="0" vertical_placement="1" a="0"/>
+          custom_placement="0" vertical_placement="1" a="0" virtual_cells="1" vc_vert_align="c"
+		vc_horiz_align="c"/>
   
   <dragdrop_actor_trade x="673" y="144" width="257" height="180"
           cell_width="34" cell_height="41" rows_num="4" cols_num="7"
