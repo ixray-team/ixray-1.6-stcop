@@ -529,6 +529,17 @@ void CCustomDetector::UpdateCL()
 		UpdateVisibility		();
 	}
 
+	if (m_HudLight.GetTorchInstalled())
+	{
+		if (attachable_hud_item* item = HudItemData())
+		{
+			for (const shared_str& bone : m_HudLight.ConeBones)
+			{
+				item->set_bone_visible(bone, m_HudLight.GetTorchActive(), TRUE);
+			}
+		}
+	}
+
 	if( !IsWorking() )		return;
 	UpfateWork				();
 }
@@ -551,6 +562,8 @@ void CCustomDetector::OnH_B_Independent(bool just_before_destroy)
 	inherited::OnH_B_Independent(just_before_destroy);
 	m_bDetectorActive			= false;
 	SwitchState					(eHidden);
+	m_HudLight.SwitchTorchlight(false);
+	m_HudLight.UpdateTorchFromObject(this);
 	m_artefacts.clear			();
 }
 
@@ -590,4 +603,14 @@ void CCustomDetector::TurnDetectorInternal(bool b)
 #include "game_base_space.h"
 void CCustomDetector::UpdateNightVisionMode(bool b_on)
 {
+}
+
+void CCustomDetector::OnMotionMark(u32 state, const motion_marks& mark)
+{
+	inherited::OnMotionMark(state, mark);
+
+	if ((state == eShowing || state == eHiding) && mark.name == "Left")
+	{
+		m_HudLight.SwitchTorchlight(!m_HudLight.GetTorchActive());
+	}
 }
