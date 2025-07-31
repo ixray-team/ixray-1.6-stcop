@@ -83,7 +83,7 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 	{
 		case eSubstateReloadBegin:
 		{
-			if (m_bAddCartridgeInOpen && !m_bIsReloaded)
+			if (ParentIsActor() && m_bAddCartridgeInOpen && !m_bIsReloaded)
 			{
 				AddCartridge(1);
 			}
@@ -100,7 +100,7 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 		}break;
 		case eSubstateReloadInProcess:
 		{
-			if (!m_bIsReloaded && 0 != AddCartridge(1) || bStopReloadSignal)
+			if ((!ParentIsActor() && 0 != AddCartridge(1)) || (!m_bIsReloaded && 0 != AddCartridge(1) || bStopReloadSignal))
 			{
 				m_bIsReloaded = true;
 				m_sub_state = eSubstateReloadEnd;
@@ -191,7 +191,7 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 	PlayAnimOpenWeapon();
 	SetPending(TRUE);
 
-	if (m_sounds.FindSoundItem("sndOpenEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	if (ParentIsActor() && m_sounds.FindSoundItem("sndOpenEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
 		PlaySound("sndOpenEmpty", get_LastFP());
 	}
@@ -207,11 +207,11 @@ void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 	PlayAnimAddOneCartridgeWeapon();
 	SetPending(TRUE);
 
-	if (m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	if (ParentIsActor() && m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
 		PlaySound("sndAddCartridgeEmpty", get_LastFP());
 	}
-	else if (m_sounds.FindSoundItem("sndAddCartridgePreloaded", false) && m_bIsPreloaded)
+	else if (ParentIsActor() && m_sounds.FindSoundItem("sndAddCartridgePreloaded", false) && m_bIsPreloaded)
 	{
 		PlaySound("sndAddCartridgePreloaded", get_LastFP());
 	}
@@ -228,11 +228,11 @@ void CWeaponAutomaticShotgun::switch2_EndReload()
 
 	PlayAnimCloseWeapon();
 
-	if (m_sounds.FindSoundItem("sndCloseEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	if (ParentIsActor() && m_sounds.FindSoundItem("sndCloseEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
 		PlaySound("sndCloseEmpty", get_LastFP());
 	}
-	else if (m_sounds.FindSoundItem("sndClosePreloaded", false) && m_bIsPreloaded)
+	else if (ParentIsActor() && m_sounds.FindSoundItem("sndClosePreloaded", false) && m_bIsPreloaded)
 	{
 		PlaySound("sndClosePreloaded", get_LastFP());
 	}
