@@ -2692,7 +2692,7 @@ float CWeapon::Weight() const
 extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
-	return !IsPending() && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_mode != 0 && hud_adj_crosshair);
+	return (!IsPending() || GetState() == eSprintStart || GetState() == eSprintEnd) && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_mode != 0 && hud_adj_crosshair);
 }
 
 bool CWeapon::show_indicators()
@@ -2777,7 +2777,7 @@ bool CWeapon::NeedBlockSprint() const
 {
 	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 
-	return GetState() == eFire || isBlockSprintInReload && GetState() == eReload;
+	return GetState() == eFire || GetState() == eSprintEnd || isBlockSprintInReload && GetState() == eReload;
 }
 
 u8 CWeapon::GetCurrentHudOffsetIdx()
