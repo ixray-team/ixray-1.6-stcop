@@ -787,11 +787,11 @@
   </tab_sound>
 
   <tab_gameplay>
-		<cap_difficulty x="17" y="0" width="203" height="21">
+		<cap_difficulty x="17" y="10" width="203" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_difficulty</text>			
 		</cap_difficulty>
 
-		<list_difficulty x="162" y="0" width="217" height="21">	
+		<list_difficulty x="162" y="10" width="217" height="21">	
 			<options_item entry="g_game_difficulty" group="mm_opt_gameplay"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -800,11 +800,11 @@
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
 		</list_difficulty>
 		
-		<cap_lang x="17" y="0" width="203" height="21">
+		<cap_lang x="17" y="10" width="203" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_lang</text>			
 		</cap_lang>
 
-		<list_lang x="162" y="0" width="217" height="21">	
+		<list_lang x="162" y="10" width="217" height="21">	
 			<options_item entry="language" group="mm_opt_gameplay"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -813,42 +813,42 @@
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
 		</list_lang>
 		
-		<check_tips x="17" y="0" width="27" height="21" stretch="1">
+		<check_tips x="17" y="10" width="27" height="21" stretch="1">
 			<options_item entry="hud_info" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_tips</text>
 		</check_tips>
 
-		<check_crosshair x="17" y="0" width="27" height="21" stretch="1">
+		<check_crosshair x="17" y="10" width="27" height="21" stretch="1">
 			<options_item entry="hud_crosshair" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_show_crosshair</text>
 		</check_crosshair>
 
-		<check_dyn_crosshair x="17" y="0" width="27" height="21" stretch="1">
+		<check_dyn_crosshair x="17" y="10" width="27" height="21" stretch="1">
 			<options_item entry="cl_dynamiccrosshair" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_dyn_crosshair</text>
 		</check_dyn_crosshair>
 
-		<check_show_weapon x="17" y="0" width="27" height="21" stretch="1">
+		<check_show_weapon x="17" y="10" width="27" height="21" stretch="1">
 			<options_item entry="hud_weapon" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_show_weapon</text>
 		</check_show_weapon>
 
-		<check_dist x="17" y="0" width="27" height="21" stretch="1">
+		<check_dist x="17" y="10" width="27" height="21" stretch="1">
 			<options_item entry="hud_crosshair_dist" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_crosshair_distance</text>
 		</check_dist>
 
-		<check_crouch_toggle x="17" y="0" width="27" height="21" stretch="1">
+		<check_crouch_toggle x="17" y="10" width="27" height="21" stretch="1">
 			<options_item entry="g_crouch_toggle" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_crouch_toggle</text>
 		</check_crouch_toggle>
 
-		<check_hud_draw x="17" y="0" width="27" height="21" stretch="1">
+		<check_hud_draw x="17" y="10" width="27" height="21" stretch="1">
 			<options_item entry="hud_draw" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_st_disable_hud</text>
 		</check_hud_draw>
 
-		<check_rs_fps_show x="17" y="0" width="27" height="21" stretch="1">
+		<check_rs_fps_show x="17" y="10" width="27" height="21" stretch="1">
 			<options_item entry="rs_fps_show" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_rs_fps_show</text>
 		</check_rs_fps_show>
