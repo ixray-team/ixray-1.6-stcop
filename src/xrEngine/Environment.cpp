@@ -191,7 +191,7 @@ void CEnvironment::ChangeGameTime(float game_time)
 
 void CEnvironment::SetGameTime(float game_time, float time_factor)
 {
-    if (m_paused)
+    if (m_paused && g_pGameLevel != nullptr)
     {
         g_pGameLevel->SetEnvironmentGameTimeFactor(iFloor(fGameTime * 1000.f), fTimeFactor);
         return;
