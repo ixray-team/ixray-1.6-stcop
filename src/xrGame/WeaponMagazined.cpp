@@ -1096,7 +1096,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 						m_bJustAfterReload = true;
 					}
 
-					if (m_pCurrentAmmo->m_boxCurr!=NULL)
+					if (g_pGamePersistent->GameType() == eGameIDFreeMP && m_pCurrentAmmo != nullptr)
 					{
 						xr_map<u16, u16> ammos_to_sync;
 						ammos_to_sync[m_pCurrentAmmo->ID()] = m_pCurrentAmmo->m_boxCurr;
