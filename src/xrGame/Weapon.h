@@ -287,6 +287,7 @@ protected:
 
 	bool m_bDisableFireModeAim = false;
 	bool m_bBlockEmptyClick = false;
+	bool m_bIsReloaded = false;
 
 	void HideOneUpgradeLevel(const char* section);
 	void LoadUpgradeBonesToHide(const char* section, const char* line);
