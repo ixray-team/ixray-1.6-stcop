@@ -33,7 +33,6 @@ public:
 	virtual LPCSTR GetGameScore(string32& score_dest);
 	virtual void OnRender() override;
 	virtual void OnVoiceMessage(NET_Packet* P) override;
-	virtual bool Is_Rewarding_Allowed()  const { return false; };
 };
 
 bool IsGameTypeSingleCompatible();

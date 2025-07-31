@@ -20,14 +20,15 @@
 #include "ui/UIMapInfo.h"
 #include "map_manager.h"
 #include "ScriptXMLInit.h"
-
-#include "login_manager.h"
-#include "account_manager.h"
-#include "profile_store.h"
-
 using namespace luabind;
 
 CMainMenu*	MainMenu();
+
+int placeholder_func() // to keep game from crashing during menu init
+{
+	return 0;
+}
+
 
 #pragma optimize("s",on)
 void UIRegistrator::script_register(lua_State *L)
@@ -77,9 +78,9 @@ void UIRegistrator::script_register(lua_State *L)
 			.def("GetCDKey",				&CMainMenu::GetCDKeyFromRegistry)
 			.def("GetPlayerName",			&CMainMenu::GetPlayerName)
 			.def("GetDemoInfo",				&CMainMenu::GetDemoInfo)
-			.def("GetLoginMngr",			&CMainMenu::GetLoginMngr)
-			.def("GetAccountMngr",			&CMainMenu::GetAccountMngr)
-			.def("GetProfileStore",			&CMainMenu::GetProfileStore)
+			.def("GetLoginMngr",			&placeholder_func)
+			.def("GetAccountMngr",			&placeholder_func)
+			.def("GetProfileStore",			&placeholder_func)
 	];
 
 	module(L,"main_menu")

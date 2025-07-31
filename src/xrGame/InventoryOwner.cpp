@@ -28,6 +28,7 @@
 #include "Bolt.h"
 #include "actor_mp_server.h"
 #include "ActorHelmet.h"
+#include "../xrScripts/script_callback_ex.h"
 
 CInventoryOwner::CInventoryOwner			()
 {

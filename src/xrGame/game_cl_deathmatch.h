@@ -37,9 +37,7 @@ public :
 	virtual		void				Init					();
 
 	virtual		void				LoadSndMessages			();
-	
-	virtual		bool				Is_Rewarding_Allowed	()  const { return m_cl_dwWarmUp_Time == 0; };
-protected:
+	protected:
 	struct PresetItem
 	{
 		u8	SlotID;

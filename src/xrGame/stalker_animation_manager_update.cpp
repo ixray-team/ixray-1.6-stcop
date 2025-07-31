@@ -13,6 +13,7 @@
 #include "game_object_space.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "Inventory.h"
+#include "../xrScripts/script_callback_ex.h"
 
 void CStalkerAnimationManager::play_delayed_callbacks	()
 {
