@@ -115,13 +115,24 @@ CEditableObject* ELibrary::LoadEditObject(LPCSTR name)
 {
 	VERIFY(m_bReady);
     CEditableObject* m_EditObject = new CEditableObject(name);
-    string_path fn;
-    FS.update_path(fn,_objects_,EFS.ChangeFileExt(name,".object").c_str());
-    if (FS.TryLoad(fn))
+    if (FS.TryLoad(name))
     {
-        if (m_EditObject->Load(fn))	return m_EditObject;
-    }else{
-		ELog.Msg(mtError,"Can't find file '%s'",fn);
+        if (m_EditObject->Load(name))
+            return m_EditObject;
+    }
+    else
+    {
+        string_path fn;
+        FS.update_path(fn, _objects_, EFS.ChangeFileExt(name, ".object").c_str());
+        if (FS.TryLoad(fn))
+        {
+            if (m_EditObject->Load(fn))
+                return m_EditObject;
+        }
+        else
+        {
+            ELog.Msg(mtError, "Can't find file '%s'", fn);
+        }
     }
     xr_delete(m_EditObject);
 	return 0;
@@ -138,9 +149,12 @@ CEditableObject* ELibrary::CreateEditObject(LPCSTR nm)
     // file exist - find in already loaded
     CEditableObject* m_EditObject = 0;
 	EditObjPairIt it 	= m_EditObjects.find(name);
-    if (it!=m_EditObjects.end())	m_EditObject = it->second;
+
+    if (it!=m_EditObjects.end())
+        m_EditObject = it->second;
     else if (0!=(m_EditObject=LoadEditObject(name.c_str())))
 		m_EditObjects[name]	= m_EditObject;
+
     if (m_EditObject)	m_EditObject->m_RefCount++;
 	return m_EditObject;
 }
