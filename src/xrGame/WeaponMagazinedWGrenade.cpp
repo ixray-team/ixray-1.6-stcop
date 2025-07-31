@@ -874,13 +874,16 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo( II_BriefInfo& info )
 	if(m_pInventory->ModifyFrame() <= m_BriefInfo_CalcFrame)
 		return false;
 
-	GetSuitableAmmoTotal();
+	const int at = GetSuitableAmmoTotal() - GetAmmoElapsed(); // update m_BriefInfo_CalcFrame
+	xr_sprintf(int_str, "%d", at);
+	info.total_ammo = int_str;
 
 	u32 at_size = m_bGrenadeMode ? (u32)m_ammoTypes2.size() : (u32)m_ammoTypes.size();
 	if(unlimited_ammo() || at_size == 0)
 	{
 		info.fmj_ammo._set("∞");
 		info.ap_ammo._set("∞");
+		info.total_ammo._set("∞");
 	}
 	else
 	{
