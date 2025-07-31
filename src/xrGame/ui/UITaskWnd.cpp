@@ -137,6 +137,8 @@ void CUITaskWnd::Init()
 	m_task_wnd->SetAutoDelete	(true);
 	m_task_wnd->hint_wnd		= hint_wnd;
 	m_task_wnd->init_from_xml	(xml, "second_task_wnd");
+	m_task_wnd->ShowOnlySecondaryTasks(m_pSecondaryTaskItem != nullptr);
+
 	m_pMapWnd->AttachChild		(m_task_wnd);
 	m_task_wnd->SetMessageTarget(this);
 	m_task_wnd->Show			(false);
