@@ -17,6 +17,7 @@ class cl_xform_##xf	: public R_constant_setup {	virtual void setup (R_constant* 
 	static cl_xform_##xf	binder_##xf
 
 BIND_DECLARE(invw);
+BIND_DECLARE(invv);
 
 BIND_DECLARE(w);
 BIND_DECLARE(v);
@@ -111,17 +112,6 @@ class cl_texgen : public R_constant_setup
 };
 static cl_texgen		binder_texgen;
 
-class cl_invV : public R_constant_setup
-{
-	virtual void setup(R_constant* C)
-	{
-		Fmatrix mInvV = Fmatrix().invert(RCache.xforms.m_v);
-
-		RCache.set_c(C, mInvV);
-	}
-};
-static cl_invV binder_invv;
-
 class cl_VPtexgen : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
@@ -210,7 +200,7 @@ class cl_fog_params	: public R_constant_setup {
 			float	n		= g_pGamePersistent->Environment().CurrentEnv->fog_near;
 			float	f		= g_pGamePersistent->Environment().CurrentEnv->fog_far;
 			float	r		= 1/(f-n);
-			result.set		(-n*r, r, r, r);
+			result.set		(-n*r, n, f, r);
 		}
 		RCache.set_c	(C,result);
 	}
@@ -519,7 +509,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_WV", &binder_wv);
 	r_Constant("m_VP", &binder_vp);
 	r_Constant("m_WVP", &binder_wvp);
-	r_Constant("m_inv_V", &binder_inv_v);
+	r_Constant("m_invV", &binder_invv);
 
 	r_Constant("m_P_hud", &binder_hud_project);
 
@@ -555,7 +545,6 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("hemi_cube_neg_faces", &binder_hemi_cube_neg_faces);
 
 	//	Igor	temp solution for the texgen functionality in the shader
-	r_Constant("m_invV", &binder_invv);
 	r_Constant("m_texgen", &binder_texgen);
 	r_Constant("mVPTexgen", &binder_VPtexgen);
 
