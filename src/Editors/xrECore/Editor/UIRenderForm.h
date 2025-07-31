@@ -23,6 +23,9 @@ public:
 	xr_delegate<void()> OnClickCallback;
 	int ViewportID = 0;
 	string32 ViewportName;
+
+	bool UseHint = false;
+
 private:
 	void DrawStatistics();
 	void HandleDragDrop(const ImVec2&);
