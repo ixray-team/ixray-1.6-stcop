@@ -436,6 +436,9 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 	net_physics_state* physics_state = nullptr;
 	bool phSyncFlag = false;
 
+	Flags8 m_flags;
+	u8 m_custom_flags = 0;
+
 	enum class eMonsterSound : u8
 	{
 		monster_sound_no = 0u,
@@ -443,6 +446,9 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 		monster_sound_play,
 		monster_sound_play_with_delay,
 		monster_sound_dummy
+	};
+	enum sync_flags {
+		fHasCustomSyncFlag = (1 << 5)
 	};
 
 	eMonsterSound m_snd_sync_flag = eMonsterSound::monster_sound_no;
