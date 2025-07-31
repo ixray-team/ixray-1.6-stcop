@@ -126,6 +126,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	// Ammo
 	if (!infinite_fire() || m_bIAmWeaponRPG7)
 	{
+		m_bJustAfterReload = false;
 		m_LastShotAmmoType = m_magazine.back().m_LocalAmmoType;
 		m_magazine.pop_back();
 		--iAmmoElapsed;
@@ -207,6 +208,7 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 
 	if (!infinite_fire() || m_bIAmWeaponRPG7)
 	{
+		m_bJustAfterReload = false;
 		m_LastShotAmmoType = m_chamber.back().m_LocalAmmoType;
 		DeleteAmmoInChamber();
 		GiveAmmoFromMagToChamber();
