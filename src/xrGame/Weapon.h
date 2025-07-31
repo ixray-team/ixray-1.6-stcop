@@ -154,8 +154,9 @@ public:
 	virtual bool UseScopeTexture() {return true;};
 
 	//обновление видимости для косточек аддонов
-			void UpdateAddonsVisibility();
-			void UpdateHUDAddonsVisibility();
+	void UpdateAddonsVisibility();
+	void UpdateHUDAddonsVisibility();
+	void ProcessScope();
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
 
@@ -244,6 +245,22 @@ protected:
 
 	InertionData	m_base_inertion;
 	InertionData	m_zoom_inertion;
+
+	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
+	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
+
+private:
+
+	RStringVec m_bDefHideBones {}, m_bDefShowBones {}, m_bHideBonesOverride {}, m_bDefHideBonesGLAttached {},
+		m_bHideBonesGLAttached {}, m_bHideBonesSilAttached {}, m_bHideBonesScopeAttached {},
+		m_bHideBonesUpgrade {}, m_bScopeShowBones{}, m_bScopeHideBones{}, m_bShowBonesUpgToHide{}, m_bShowBonesUpgToShow{};
+
+	bool bUpdateHUDBonesVisibility = false;
+
+	void HideOneUpgradeLevel(const char* section);
+	void LoadUpgradeBonesToHide(const char* section, const char* line);
+	virtual void ForceUpdateHUD();
+
 public:
 
 	IC bool					IsZoomEnabled		()	const		{return m_zoom_params.m_bZoomEnabled;}
@@ -541,6 +558,7 @@ private:
 			bool			install_upgrade_disp		( LPCSTR section, bool test );
 			bool			install_upgrade_hit			( LPCSTR section, bool test );
 			bool			install_upgrade_addon		( LPCSTR section, bool test );
+			bool			install_upgrade_bones		( LPCSTR section, bool test );
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 
