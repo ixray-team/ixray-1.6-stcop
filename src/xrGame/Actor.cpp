@@ -639,8 +639,33 @@ void	CActor::Hit(SHit* pHDS)
 
 	if(IsGameTypeSingle())	
 	{
-		float hit_power				= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+		if (GodMode())
+		{
+			HDS.power = 0.0f;
+			inherited::Hit(&HDS);
+			return;
+		}
+		else
+		{
+			float hit_power				= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+			HDS.power = hit_power;
+			HDS.add_wound = true;
+			if (g_Alive())
+			{
+				/* AVO: send script callback*/
+				callback(GameObject::eHit)(
+					this->lua_game_object(),
+					HDS.damage(),
+					HDS.direction(),
+					smart_cast<const CGameObject*>(HDS.who)->lua_game_object(),
+					HDS.boneID
+					);
+			}
+			inherited::Hit(&HDS);
+		}
 
+		/* AVO: rewritten above and added hit callback*/
+		/*float hit_power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 		if(GodMode())
 		{
 			HDS.power				= 0.0f;
@@ -652,7 +677,7 @@ void	CActor::Hit(SHit* pHDS)
 			HDS.add_wound			= true;
 			HitArtefactsCondition	(HDS);
 			inherited::Hit			(&HDS);
-		}
+		}*/
 	}else
 	{
 		m_bWasBackStabbed			= false;
