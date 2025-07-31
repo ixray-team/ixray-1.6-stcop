@@ -25,6 +25,16 @@
 #   include <x86intrin.h>
 #endif
 
+#if __has_include(<stacktrace>)
+#	include <stacktrace>
+#	define USE_CXX_STACKTRACE 1
+#elif __has_include(<experimental/stacktrace>)
+#	include <experimental/stacktrace>
+#	define USE_CXX_STACKTRACE 1
+#else
+#	define USE_CXX_STACKTRACE 0
+#endif
+
 #define __declspec(t)
 #define __forceinline inline
 #define _cdecl /* __attribute__((__cdecl__)) */
