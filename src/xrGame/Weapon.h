@@ -245,7 +245,7 @@ protected:
 
 	InertionData	m_base_inertion;
 	InertionData	m_zoom_inertion;
-
+	bool m_bIAmWeaponRPG7;
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
 
@@ -527,6 +527,7 @@ public:
 	float					m_fCurrentCartirdgeDisp;
 
 		bool				unlimited_ammo				();
+		bool				infinite_fire();
 	IC	bool				can_be_strapped				() const {return m_can_be_strapped;};
 
 	float GetMagazineWeight(const decltype(m_magazine)& mag) const;

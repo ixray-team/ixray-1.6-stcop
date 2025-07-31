@@ -206,6 +206,7 @@ public:
 
 public:
 	virtual bool				unlimited_ammo			()	= 0;
+	virtual bool				infinite_fire() = 0;
 	virtual	void				on_weapon_shot_start	(CWeapon *weapon);
 	virtual	void				on_weapon_shot_update	();
 	virtual	void				on_weapon_shot_stop		();

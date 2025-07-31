@@ -23,7 +23,7 @@
 #include "Actor_Flags.h"
 #include "player_hud.h"
 #include "CustomDetector.h"
-
+#include "WeaponRPG7.h"
 #if USE_OLD_OBJECT_PLANNER
 #include "Legacy/object_handler_planner.h"
 #endif
@@ -660,7 +660,8 @@ void CWeaponMagazined::state_Fire(float dt)
 
 			fShotTimeCounter		+=	fOneShotTime;
 			
-			++m_iShotNum;
+			if (!infinite_fire() || m_bIAmWeaponRPG7)
+				++m_iShotNum;
 			
 			OnShot					();
 
@@ -1480,7 +1481,14 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 
 	const int	ae				= GetAmmoElapsed();
 	xr_sprintf			( int_str, "%d", ae );
-	info.cur_ammo		= int_str;
+
+
+	info.cur_ammo = int_str;
+
+	if (infinite_fire())
+	{
+		info.cur_ammo = "--";
+	}
 
 	if ( HasFireModes() )
 	{

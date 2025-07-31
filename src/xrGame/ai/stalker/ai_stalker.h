@@ -278,6 +278,7 @@ public:
 			void						update_best_item_info_impl();
 	virtual float						GetWeaponAccuracy		() const;
 	virtual bool						unlimited_ammo			();
+	virtual bool						infinite_fire() override;
 	virtual	void						spawn_supplies			();
 	IC		CAgentManager				&agent_manager			() const;
 	
