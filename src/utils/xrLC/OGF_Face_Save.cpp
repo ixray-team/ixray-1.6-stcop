@@ -303,51 +303,18 @@ void	write_ogf_container( IWriter &fs, const ogf_data_type& ogf_cnt )
 	fs.w_u32		( (u32)ogf_cnt.faces.size()*3 );
 	fs.close_chunk	( );
 }
-
-template<typename ogf_data_type>
-void	read_ogf_container( IReader &fs_, const ogf_data_type& ogf_cnt )
-{
-	IReader &fs =	*fs_.open_chunk	( OGF_GCONTAINER );
-
-	ogf_cnt.vb_id		= fs.r_u32		( );
-	ogf_cnt.vb_start	= fs.r_u32		( );
-
-	u32	vertises_size	= fs.r_u32		( );
-	//ogf_cnt.vertices.resize( vertises_size );
-
-	ogf_cnt.ib_id		= fs.r_u32		( );
-	ogf_cnt.ib_start	= fs.r_u32		( );
-	u32	faces_size		= fs.r_u32		( );//(u32)ogf_cnt.faces.size()*3
-	//ogf_cnt.faces.resize( vertises_size );
-	//fs.close_chunk	( );
-}
-
+ 
 void	write_ogf_swidata( IWriter &fs, const FSlideWindowItem& swi )
 {
-		fs.open_chunk		( OGF_SWIDATA		);
-		fs.w_u32			( swi.reserved[0]	);
-		fs.w_u32			( swi.reserved[1]	);
-		fs.w_u32			( swi.reserved[2]	);
-		fs.w_u32			( swi.reserved[3]	);
-		fs.w_u32			( swi.count		);
-		fs.w				( swi.sw, swi.count*sizeof(FSlideWindow) );
-		fs.close_chunk		();
-}
-
-void	read_ogf_swidata( IReader &fs_, FSlideWindowItem& swi )
-{
-		IReader	&fs		=	*fs_.open_chunk		( OGF_SWIDATA		);
-
-	swi.reserved[0]		=fs.r_u32			( );
-	swi.reserved[1]		=fs.r_u32			( );
-	swi.reserved[2]		=fs.r_u32			( );
-	swi.reserved[3]		=fs.r_u32			( );
-	swi.count			=fs.r_u32			( );
-	VERIFY( !swi.sw );
-	//swi.sw				=
-	fs.r				( swi.sw, swi.count*sizeof(FSlideWindow) );
-	//fs.close_chunk		();
-}
+	fs.open_chunk		( OGF_SWIDATA		);
+	fs.w_u32			( swi.reserved[0]	);
+	fs.w_u32			( swi.reserved[1]	);
+	fs.w_u32			( swi.reserved[2]	);
+	fs.w_u32			( swi.reserved[3]	);
+	fs.w_u32			( swi.count		);
+	fs.w				( swi.sw, swi.count*sizeof(FSlideWindow) );
+	fs.close_chunk		();
+} 
 
 void	write_ogf_fastpath( IWriter &fs, const OGF& ogf, BOOL progresive )
 {
@@ -380,10 +347,334 @@ void	OGF::Save_Normal_PM		(IWriter &fs, ogf_header& H, BOOL bVertexColored)
 	
 }
 
-
-
-
-void	OGF::Load_Normal_PM		(IReader &fs, ogf_header& H, BOOL bVertexColored)
+enum OGF_FILE_SAVE
 {
+	eSaveHeaderData = 1,
+	eSaveHeaderSWIData = 2,
+	eSaveHeaderOGF = 3,
+	eSaveHeaderRef = 4,
+	eSaveHeaderBase = 5
+};
 
+// se7kills Saving OGF Files pre sectors build
+
+// OGF BASE Save
+void OGF_Base::SaveForCompile(IWriter* W)
+{
+	W->open_chunk(eSaveHeaderBase);
+
+	W->w_s32(iLevel);
+	W->w_u16(Sector);
+	W->w_u8(bConnected);
+	W->w(&bbox, sizeof(Fbox));
+	W->w_fvector3(C);
+	W->w_float(R);
+
+	W->close_chunk();
 }
+
+void OGF_Base::LoadForCompile(IReader* Reader)
+{
+	if (Reader->open_chunk(eSaveHeaderBase))
+	{
+		iLevel = Reader->r_s32();
+		Sector = Reader->r_u16();
+		bConnected = Reader->r_u8();
+		Reader->r(&bbox, sizeof(Fbox));
+		Reader->r_fvector3(C);
+		R = Reader->r_float();
+	}
+}
+
+
+// OGF MAIN
+void OGF::SaveForCompile(IWriter* W)
+{
+	OGF_Base::SaveForCompile(W);
+
+	{
+		W->open_chunk(eSaveHeaderData);
+
+		// Save Data
+		W->w_u32(data.vb_id);
+		W->w_u32(data.vb_start);
+		W->w_u32(data.ib_id);
+		W->w_u32(data.ib_start);
+		W->w_u32(data.sw_id);
+
+
+		W->w_u32(data.m_SWI.count);
+		W->w_u32(data.m_SWI.reserved[0]);
+		W->w_u32(data.m_SWI.reserved[1]);
+		W->w_u32(data.m_SWI.reserved[2]);
+		W->w_u32(data.m_SWI.reserved[3]);
+
+		if (data.m_SWI.sw != nullptr)
+		{
+			W->w_u8(1);
+			W->w_u32(data.m_SWI.sw->num_tris);
+			W->w(data.m_SWI.sw, data.m_SWI.count * sizeof(FSlideWindow));
+		}
+		else
+		{
+			W->w_u8(0);
+		}
+		
+
+		// Saving Faces
+
+		W->w_u32(data.vertices.size());
+		for (auto& V : data.vertices)
+		{
+			W->w(&V, sizeof(OGF_Vertex));
+		}
+
+		W->w_u32(data.faces.size());
+		for (auto& F : data.faces)
+		{
+			W->w(&F, sizeof(OGF_Face));
+		}
+
+		W->close_chunk();
+	}
+
+	{
+		W->open_chunk(eSaveHeaderSWIData);
+
+		// Saving FastPath
+		W->w_u32(fast_path_data.vb_id);
+		W->w_u32(fast_path_data.vb_start);
+		W->w_u32(fast_path_data.ib_id);
+		W->w_u32(fast_path_data.ib_start);
+		W->w_u32(fast_path_data.sw_id);
+		W->w_u32(fast_path_data.m_SWI.count);
+		W->w_u32(fast_path_data.m_SWI.reserved[0]);
+		W->w_u32(fast_path_data.m_SWI.reserved[1]);
+		W->w_u32(fast_path_data.m_SWI.reserved[2]);
+		W->w_u32(fast_path_data.m_SWI.reserved[3]);
+
+		if (fast_path_data.m_SWI.sw)
+		{
+			W->w_u8(1);
+			W->w_u32(fast_path_data.m_SWI.sw->num_tris);
+			W->w(fast_path_data.m_SWI.sw, fast_path_data.m_SWI.count * sizeof(FSlideWindow));
+		}
+		else 
+			W->w_u8(0);
+
+		// Saving Faces
+
+		W->w_u32(fast_path_data.vertices.size());
+		for (auto& V : fast_path_data.vertices)
+		{
+			W->w(&V.P, sizeof(V.P));
+		}
+
+		W->w_u32(fast_path_data.faces.size());
+		for (auto& F : fast_path_data.faces)
+		{
+			W->w(&F, sizeof(OGF_Face));
+		}
+		W->close_chunk();
+	}
+
+	// Save Other OGF INFO
+	{
+		W->open_chunk(eSaveHeaderOGF);
+
+		W->w_u32(material);
+		W->w_u32(dwRelevantUV);
+		W->w_u32(dwRelevantUVMASK);
+
+		// Textures
+		W->w_u32(textures.size());
+		for (auto& T : textures)
+		{
+ 			W->w_stringZ(T.name);
+			W->w(&T.pBuildSurface, sizeof(b_vertex));
+		}
+
+		W->close_chunk();
+	}
+}
+
+void OGF::LoadForCompile(IReader* R)
+{
+	OGF_Base::LoadForCompile(R);
+
+ 	if (R->open_chunk(eSaveHeaderData))
+	{
+ 		// Save Data
+		data.vb_id						= R->r_u32();
+		data.vb_start					= R->r_u32();
+		data.ib_id						= R->r_u32();
+		data.ib_start					= R->r_u32();
+		data.sw_id						= R->r_u32();
+		data.m_SWI.count				= R->r_u32();
+		data.m_SWI.reserved[0]			= R->r_u32();
+		data.m_SWI.reserved[1]			= R->r_u32();
+		data.m_SWI.reserved[2]			= R->r_u32();
+		data.m_SWI.reserved[3]			= R->r_u32();
+
+		bool isExistSW = R->r_u8();
+		if (isExistSW)
+		{
+			u32 cnt = R->r_u32();
+ 			FSlideWindow* fslide = xr_alloc<FSlideWindow>(cnt * sizeof(FSlideWindow));
+			R->r(fslide, cnt * sizeof(FSlideWindow));
+
+			data.m_SWI.sw = fslide;
+			data.m_SWI.sw->num_tris = cnt;
+		}
+		
+
+		// Saving Faces
+
+		int cntV = R->r_u32();
+		data.vertices.resize(cntV);
+		data.vertices.clear();
+		for (int V = 0; V< cntV; V++)
+		{
+ 			R->r(&data.vertices[V], sizeof(OGF_Vertex));
+		}
+
+		int cntF = R->r_u32();
+		data.faces.clear();
+		data.faces.resize(cntF);
+		for (int F = 0; F < cntF; F++)
+		{
+			R->r(&data.faces[F], sizeof(OGF_Face));
+		}
+ 	}
+
+  
+	if (R->open_chunk(eSaveHeaderSWIData) )
+	{
+ 		// Saving FastPath
+		fast_path_data.vb_id				= R->r_u32();
+		fast_path_data.vb_start				= R->r_u32();
+		fast_path_data.ib_id				= R->r_u32();
+		fast_path_data.ib_start				= R->r_u32();
+		fast_path_data.sw_id				= R->r_u32();
+		fast_path_data.m_SWI.count			= R->r_u32();
+		fast_path_data.m_SWI.reserved[0]	= R->r_u32();
+		fast_path_data.m_SWI.reserved[1]	= R->r_u32();
+		fast_path_data.m_SWI.reserved[2]	= R->r_u32();
+		fast_path_data.m_SWI.reserved[3]	= R->r_u32();
+		 
+		bool Load = R->r_u8();
+		if (Load)
+		{
+			u32 cnt = R->r_u32();
+
+			FSlideWindow* fslide = xr_alloc<FSlideWindow>( cnt * sizeof(FSlideWindow) );
+			R->r(fslide, cnt * sizeof(FSlideWindow));
+			
+			fast_path_data.m_SWI.sw = fslide;
+			fast_path_data.m_SWI.sw->num_tris = cnt;
+		}
+ 
+		// Saving Faces
+ 		int cntV = R->r_u32();
+		fast_path_data.vertices.clear();
+		for (int V = 0; V< cntV; V++)
+		{
+			x_vertex vert;
+			R->r(&vert, sizeof(x_vertex));
+			fast_path_data.vertices.push_back(vert);
+		}
+
+		int cntF = R->r_u32();
+		fast_path_data.faces.clear();
+		fast_path_data.faces.resize(cntF);
+		for (int F = 0; F < cntF; F++)
+		{
+			R->r(&fast_path_data.faces[F], sizeof(OGF_Face));
+		}
+ 	}
+
+	// Save Other OGF INFO
+	if (R->open_chunk(eSaveHeaderOGF))
+	{
+ 		material		 = R->r_u32();
+		dwRelevantUV	 = R->r_u32();
+		dwRelevantUVMASK = R->r_u32();
+
+		// Textures
+		int cntT = R->r_u32();
+		textures.clear();
+		textures.resize(cntT);
+		for (int T = 0; T< cntT; T++)
+		{
+			R->r_stringZ(textures[T].name);
+
+			b_texture* tex = new b_texture();
+ 			R->r(&tex , sizeof(b_vertex));
+			textures[T].pBuildSurface = tex;
+			
+		}
+	}
+}
+
+
+// Save Reference
+
+
+void OGF_Reference::SaveForCompile(IWriter* W)
+{
+	model->SaveForCompile(W);
+	
+	W->open_chunk(eSaveHeaderRef);
+
+	W->w_u32(material);	
+	W->w_u32(vb_id);
+	W->w_u32(vb_start);
+	W->w_u32(ib_id);
+	W->w_u32(ib_start);
+	W->w_u32(sw_id);
+	W->w(&xform, sizeof(Fmatrix));
+	W->w(&c_scale, sizeof(base_color_c));
+	W->w(&c_bias, sizeof(base_color_c));
+
+	W->w_u32(textures.size());
+	for (auto& T : textures)
+	{
+		W->w_stringZ(T.name);
+		
+		
+		W->w(T.pBuildSurface, sizeof(b_texture));
+	}
+
+	W->close_chunk();
+}
+
+void OGF_Reference::LoadForCompile(IReader* R)
+{
+	model->LoadForCompile(R);
+
+	if (R->open_chunk(eSaveHeaderRef))
+	{
+		material = R->r_u32();
+		vb_id = R->r_u32();
+		vb_start = R->r_u32();
+		ib_id = R->r_u32();
+		ib_start = R->r_u32();
+		sw_id = R->r_u32();
+		R->r(&xform, sizeof(Fmatrix));
+		R->r(&c_scale, sizeof(base_color_c));
+		R->r(&c_bias, sizeof(base_color_c));
+
+		int cntT = R->r_u32();
+		textures.clear();
+		textures.resize(cntT);
+		for (auto T = 0; T < cntT; T++)
+		{
+			R->r_stringZ(textures[T].name);
+			
+			b_texture* tex = new b_texture();
+			R->r(tex, sizeof(b_texture));
+			textures[T].pBuildSurface = tex;
+		}
+	}
+}
+

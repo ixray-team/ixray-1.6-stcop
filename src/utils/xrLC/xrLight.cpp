@@ -19,7 +19,7 @@ xrCriticalSection	task_CS
 
 static thread_local std::mt19937 rng = std::mt19937(std::random_device()());
 xr_vector<int>		task_pool;
-
+xr_atomic_u32		ProgressData;
 class CLMThread		: public CThread
 {
 private:
@@ -41,26 +41,27 @@ public:
 		{
 			// Get task
 			task_CS.Enter		();
-			thProgress			= 1.f - float(task_pool.size()) / float(lc_global_data()->g_deflectors().size());
-			if (task_pool.empty())	
+			Progress(float(ProgressData.load()) / float (lc_global_data()->g_deflectors().size()) );
+
+ 			if (task_pool.empty())	
 			{
 				task_CS.Leave		();
 				return;
 			}
-			int ID = task_pool.back();
 
-			StatusNoMsg("Deflectors %u|%u", ID, lc_global_data()->g_deflectors().size());
-
+			u32 ID = task_pool.back();
 			D					= lc_global_data()->g_deflectors()[ID];
 			task_pool.pop_back	();
 			task_CS.Leave		();
 
+			ProgressData.fetch_add(1);
+
+			
+
 			// Perform operation
-			try 
-			{
+			try {
 				D->Light	(&DB,&LightsSelected,H);
-			} 
-			catch (...)
+			} catch (...)
 			{
 				clMsg("* ERROR: CLMThread::Execute - light");
 			}
@@ -94,111 +95,92 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		const	u32	thNUM	= CPU::ID.n_threads - 2;
 
 		CTimer	start_time;	start_time.Start();				
-		for				(int L=0; L<thNUM; L++)	
-			threads.start(new CLMThread (L));
+		for				(int L=0; L<thNUM; L++)	threads.start(new CLMThread (L));
 		threads.wait	(500);
 		clMsg			("%f seconds",start_time.GetElapsed_sec());
 }
 
 void	CBuild::LMaps					()
 {
-		//****************************************** Lmaps
-	Phase			("LIGHT: LMaps...");
 	LMapsLocal();
 }
  
+#define BUILDING_LIGHING
+ 
+void CBuild::BuildAdaptiveHT()
+{
+#ifdef BUILDING_LIGHING
+	//****************************************** HEMI-Tesselate
+	FPU::m64r();
+	Phase("Adaptive HT...");
+ 	xrPhase_AdaptiveHT();
+#endif 
+}
+
+#include "../xrLC_Light/xrFaceDefs.h"
+#include "../xrLC_Light/xrFace.h"
 void CBuild::Light()
 {
 	//****************************************** GLOBAL-RayCast model
-	FPU::m64r();
-	Phase("Building rcast-CFORM model...");
-	mem_Compact();
-	Light_prepare();
+ 	Phase("Building rcast-CFORM model...");
+ 	Light_prepare();
 	BuildRapid(TRUE);
-
- 	//****************************************** Implicit
-	{
-		FPU::m64r		();
-		Phase			("LIGHT: Implicit...");
-		mem_Compact		();
-		ImplicitLighting();
-	}
-
+	 	 
 	//****************************************** Resolve materials
-	FPU::m64r();
-	Phase("Resolving materials...");
-	mem_Compact();
-	xrPhase_ResolveMaterials();
+ 	Phase("Resolving materials...");
+ 	xrPhase_ResolveMaterials();
 	IsolateVertices(TRUE);
-	 
-
-	// Se7kills !!!! Важно для очень больших локаций
-	// Нужндается в переносе в LMAPS Стадию чтобы много памяти не кушало
-	// (соеденить с LMAPS стадией (UV->LMAPS->BUILD LAMPS) 
-	// через while гонять с выборкой g_XSplits на 1 CLightmap (1k, 2k, 4k, 8k) dds файл )
 
 	//****************************************** UV mapping
-	{
-		FPU::m64r();
-		Phase("Build UV mapping...");
-		mem_Compact();
-		xrPhase_UVmap();
-		IsolateVertices(TRUE);
-	}
-
+ 	Phase("Build UV mapping...");
+ 	xrPhase_UVmap();
+	IsolateVertices(TRUE);
+	 
 	//****************************************** Subdivide geometry
-	if (!lc_global_data()->GetSkipSubdivide())
-	{
-		FPU::m64r();
-		Phase("Subdividing geometry...");
-		mem_Compact();
-		xrPhase_Subdivide();
- 		lc_global_data()->vertices_isolate_and_pool_reload();
-	}
+	Phase("Subdividing geometry...");
+	xrPhase_Subdivide();
+	lc_global_data()->vertices_isolate_and_pool_reload();
+	IsolateVertices(TRUE);
 
-	
+#ifdef BUILDING_LIGHING
+ 	//****************************************** Implicit
+	Phase("LIGHT: Implicit...");
+	EmbreeMain.AttachGeometrys(true);
+ 	ImplicitLighting();
+#endif
+
+	//****************************************** LMAPS
+ 	Phase("LIGHT: LMaps...");
+	EmbreeMain.AttachGeometrys(false);
 	LMaps		();
 
-
-	//****************************************** Vertex
-	FPU::m64r		();
-	Phase			("LIGHT: Vertex...");
-	mem_Compact		();
-
-	LightVertex		();
-
-
+ 	//****************************************** Vertex
+	Phase("LIGHT: Vertex...");
+  	LightVertex		();
+	
 	//****************************************** Merge LMAPS
-	{
-		FPU::m64r		();
-		Phase			("LIGHT: Merging lightmaps...");
-		mem_Compact		();
-
-		xrPhase_MergeLM	();
-	}
-
-
+	Phase("LIGHT: Merging lightmaps...");
+  	xrPhase_MergeLM();
+	
+	// Save Lmaps
+	Phase("LIGHT: Save lightmaps...");
+	xrPhase_SaveLmaps();
+ 	 
 	//****************************************** Merge geometry
-	FPU::m64r();
 	Phase("Merging geometry...");
-	mem_Compact();
-	xrPhase_MergeGeometry();
+ 	xrPhase_MergeGeometry();
 
 	//****************************************** Starting MU
-	FPU::m64r();
 	Phase("LIGHT: Starting MU...");
-	mem_Compact();
-	Light_prepare();
+  	Light_prepare();
+ 	EmbreeMain.AttachGeometrys(true);
 	StartMu();
 	 
 	//****************************************** Destroy RCast-model
  	Phase("Destroying ray-trace model...");
-	mem_Compact();
-	lc_global_data()->destroy_rcmodel();
-
+ 	lc_global_data()->destroy_rcmodel();
 	if (lc_global_data()->GetIsIntelUse())
-		IntelEmbereUNLOAD();
-
+		EmbreeMain.IntelEmbereUNLOAD();
 }
 
 void CBuild::LightVertex	()
