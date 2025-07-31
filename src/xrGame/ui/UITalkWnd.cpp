@@ -127,11 +127,18 @@ void CUITalkWnd::UpdateQuestions()
 		for(u32 i=0; i< m_pOurDialogManager->AvailableDialogs().size(); ++i)
 		{
 			const DIALOG_SHARED_PTR& phrase_dialog	= m_pOurDialogManager->AvailableDialogs()[i];
-			bool bfinalizer = (phrase_dialog->GetPhrase("0"))->IsFinalizer();
+			//if (phrase_dialog->GetPhraseCount() > 0)
+			{
+				SPhraseInfo phInfo;
+				phInfo.sIconName = (phrase_dialog->GetPhrase("0"))->GetIconName();
+				phInfo.bUseIconLtx = (phrase_dialog->GetPhrase("0"))->GetIconUsingLTX();
+				phInfo.bFinalizer = (phrase_dialog->GetPhrase("0"))->IsFinalizer();
 
-			AddQuestion(phrase_dialog->DialogCaption(), phrase_dialog->GetDialogID(), i, bfinalizer);
+				AddQuestion(phrase_dialog->DialogCaption(), phrase_dialog->GetDialogID(), i, phInfo);
+			}
 		}
-	}else
+	}
+	else
 	{
 		if(m_pCurrentDialog->IsWeSpeaking(m_pOurDialogManager))
 		{
@@ -150,8 +157,12 @@ void CUITalkWnd::UpdateQuestions()
 					it != m_pCurrentDialog->PhraseList().end();
 					++it, ++number)
 				{
+					SPhraseInfo phInfo;
 					CPhrase* phrase = *it;
-					AddQuestion(m_pCurrentDialog->GetPhraseText(phrase->GetID() ), phrase->GetID(), number, phrase->IsFinalizer());
+					phInfo.bFinalizer = phrase->IsFinalizer();
+					phInfo.sIconName = phrase->GetIconName();
+					phInfo.bUseIconLtx = phrase->GetIconUsingLTX();
+					AddQuestion(m_pCurrentDialog->GetPhraseText(phrase->GetID() ), phrase->GetID(), number, phInfo);
 				}
 			}
 			else
@@ -357,12 +368,12 @@ void CUITalkWnd::SayPhrase(const shared_str& phrase_id)
 	if(m_pCurrentDialog->IsFinished()) ToTopicMode();
 }
 
-void CUITalkWnd::AddQuestion(const shared_str& text, const shared_str& value, int number, bool b_finalizer)
+void CUITalkWnd::AddQuestion(const shared_str& text, const shared_str& value, int number, SPhraseInfo phInfo)
 {
 	if(text.size() == 0)
 		return;
 
-	UITalkDialogWnd->AddQuestion(g_pStringTable->translate(text).c_str(), value.c_str(), number, b_finalizer);
+	UITalkDialogWnd->AddQuestion(g_pStringTable->translate(text).c_str(), value.c_str(), number, phInfo);
 }
 
 void CUITalkWnd::AddAnswer(const shared_str& text, LPCSTR SpeakerName)
@@ -382,7 +393,7 @@ void CUITalkWnd::SwitchToTrade()
 {
 	if ( m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled() )
 	{
- 		if (CurrentGameUI())
+		if (CurrentGameUI())
 		{
 			CurrentGameUI()->StartTrade	(m_pOurInvOwner, m_pOthersInvOwner);
 		}
