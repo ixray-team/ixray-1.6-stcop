@@ -419,30 +419,43 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButt
 	InitText			(xml_doc, xr_strconcat(buf,path,":text"), index, pWnd);
 	u32					color;
 
+	bool single_color = true;
 	xr_strconcat(buf,path,":text_color:e");
 	if (xml_doc.NavigateToNode(buf,index)){
 		color			= GetColor(xml_doc, buf, index, 0x00);
 		pWnd->SetStateTextColor(color, S_Enabled);
+		single_color = false;
 	}
 
 	xr_strconcat(buf,path,":text_color:d");
 	if (xml_doc.NavigateToNode(buf,index)){
 		color			= GetColor(xml_doc, buf, index, 0x00);
 		pWnd->SetStateTextColor(color,S_Disabled);
+		single_color = false;
 	}
 
 	xr_strconcat(buf,path,":text_color:t");
 	if (xml_doc.NavigateToNode(buf, index)){
 		color			= GetColor(xml_doc, buf, index, 0x00);
 		pWnd->SetStateTextColor(color,S_Touched);
+		single_color = false;
 	}
 
 	xr_strconcat(buf,path,":text_color:h");
 	if (xml_doc.NavigateToNode(buf,index)){
 		color			= GetColor(xml_doc, buf, index, 0x00);
 		pWnd->SetStateTextColor(color,S_Highlighted);
+		single_color = false;
 	}
 
+	if (single_color)
+	{
+		color = GetColor(xml_doc, xr_strconcat(buf, path, ":text"), 0, 0xFFFFFFFF);
+		for (int i = 0; i < S_Current; ++i)
+		{
+			pWnd->SetStateTextColor(color, (IBState)i);
+		}
+	}
 
 	InitMultiTexture	(xml_doc, path, index, pWnd);
 	InitTextureOffset	(xml_doc, path, index, pWnd);
