@@ -1,6 +1,5 @@
 #include "stdafx.h"
-
-
+ 
 #include "EmbreeRayTrace.h"
 #include "../../xrCore/Collision/xrCDB.h"
 
@@ -54,23 +53,13 @@ bool CalculateEnergy(Face* F, Fvector& B, float& energy, float u, float v)
 	// Перемещаем начало луча немного дальше пересечения
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
-	// se7kills Fix if no has texture
- 	if (!T.bHasAlpha)
-		return false;
-
-	if (T.pSurface == nullptr)
-	{
-		T.bHasAlpha = false;
-		return false;
-	}
-
+	 
 	// barycentric coords
 	// note: W,U,V order
 	B.set(1.0f - u - v, u, v);
 
 	//// calc UV
-	Fvector2*	cuv = F->getTC0();
+	Fvector2* cuv = F->getTC0();
 	Fvector2	uv;
 	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
 	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
@@ -78,10 +67,11 @@ bool CalculateEnergy(Face* F, Fvector& B, float& energy, float u, float v)
 	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
 	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
 	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
- 
+
 	u32* raw = static_cast<u32*>(T.pSurface);
 	u32 pixel = raw[V * T.dwWidth + U];
 	u32 pixel_a = color_get_A(pixel);
+
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
 
 	// Дополнение Контекста
@@ -100,8 +90,7 @@ void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
 	Face* F = hit->geomID == 0 ? EmbreeMain.static_geom.dummy[hit->primID] : hit->geomID == 1 ? EmbreeMain.murefs_geom.dummy[hit->primID] : nullptr;
 	if (F == ctxt->skip)
 	{
-		args->valid[0] = 0;
-		return;
+		args->valid[0] = 0; return;
 	}
 	ctxt->energy = 0;
 	args->valid[0] = -1; // Приехали
@@ -114,27 +103,22 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 
 	// Собрать все
 	Face* F = nullptr; 
-	
+
 	if (hit->geomID == 2)
 		F = EmbreeMain.static_geom_transp.dummy[hit->primID]; 
 	else 
 		F = EmbreeMain.murefs_geom_transp.dummy[hit->primID];
 	 
- 	if (!CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v) && F != ctxt->skip)
+ 	if (F != ctxt->skip && !CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v))
 	{
  		ctxt->energy = 0;
-		args->valid[0] = -1;
  		return;
 	}
-	
-	// ctxt->Hits++;
- 	// if (ctxt->Hits > 16)
-	// 	return;
 
-	args->valid[0] = 0;
+ 	args->valid[0] = 0;
 }
 
-float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip)
+float EmbreeData::RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip)
 {
 	// Структура для RayTracing
 	RayQueryContext data_hits;
@@ -144,7 +128,7 @@ float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, voi
 	data_hits.Hits = 0;
  
 	RTCRay ray;
-	SetRay1(ray, P, N, 0.001f, range);
+	SetRay1(ray, P, N, 0.1f, range);
 
 	RTCOccludedArguments args;
 	rtcInitOccludedArguments(&args);
@@ -154,7 +138,7 @@ float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, voi
 	 
 	// SET CONTEXT
 	data_hits.context = context;
-	args.context = &data_hits.context; 
+	args.context = &data_hits.context; 			 
 	rtcOccluded1(IntelScene, &ray, &args);
  
 	return data_hits.energy;
@@ -175,8 +159,7 @@ size_t GetMemory()
 
 void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTransp, TriangleContainer& geom_buffer)
 {
-
-	geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
+ 	geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 	rtcSetGeometryBuildQuality(geom, quality);
 
 	if (FilterTransp)
@@ -194,16 +177,14 @@ void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTran
 void EmbreeData::InitializeGeometry(size_t& geom_static_mem, size_t& geom_murefs_mem)
 {
  	// Конструктор модели
-	Phase("EmbreeData Loading");
+	Phase("Embree Loading (Convert Faces to RayTrace)");
 	EmbreeData::GetGlobalData(geom_static_mem, geom_murefs_mem);
 	 
-	Phase("EmbreeData Loading Geometry Buffers");
+	Phase("Embree Loading (Move Geometry Buffers to Embree Memory)");
  	LoadGeomBuffer(IntelGeometryNormal, scene_quality, false, static_geom);
 	LoadGeomBuffer(IntelGeometryMuModels, scene_quality, false, murefs_geom);
-	
- 	LoadGeomBuffer(IntelGeometryTransp, scene_quality, true, static_geom_transp);
+  	LoadGeomBuffer(IntelGeometryTransp, scene_quality, true, static_geom_transp);
 	LoadGeomBuffer(IntelGeometryMuModelsTransp, scene_quality, true, murefs_geom_transp);
-
 }
 
 size_t EmbreeData::AttachGeometrys(bool addMU)
