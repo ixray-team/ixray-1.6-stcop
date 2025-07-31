@@ -74,7 +74,7 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 		return inherited::OnAnimationEnd(state);
 	}
 
-	if (CActor* pActor = smart_cast<CActor*>(H_Parent()))
+	if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 	{
 		pActor->callback(GameObject::eActorHudAnimationEnd)(lua_game_object(), hud_sect.c_str(), m_current_motion.c_str(), state, animation_slot());
 	}

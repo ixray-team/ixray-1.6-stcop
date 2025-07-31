@@ -41,7 +41,7 @@ bool activating_character_delay::do_position_correct()
 	
 	CObject *obj =	m->ParentObject();
 #ifdef	DEBUG 
-	CEntityAlive* e_alife =smart_cast<CEntityAlive*>(obj);
+	CEntityAlive* e_alife = obj->cast_entity_alive();
 	VERIFY(e_alife);
 	VERIFY(!e_alife->PPhysicsShell());
 	VERIFY(e_alife->g_Alive());

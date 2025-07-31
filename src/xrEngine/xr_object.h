@@ -59,6 +59,8 @@ class CHangingLamp;
 class CHolderCustom;
 class CCar;
 class CBaseMonster;
+class CGrenade;
+class CCustomMonster;
 
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
@@ -226,6 +228,8 @@ public:
 	virtual CHolderCustom* cast_holder_custom() { return nullptr; }
 	virtual CCar* cast_car() { return nullptr; }
 	virtual CBaseMonster* cast_base_monster() { return nullptr; }
+	virtual CGrenade* cast_grenade() { return nullptr; }
+	virtual CCustomMonster* cast_custom_monster() { return nullptr; }
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }

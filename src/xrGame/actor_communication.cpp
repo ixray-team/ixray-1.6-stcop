@@ -180,20 +180,24 @@ void CActor::UpdateDefferedMessages()
 
 bool CActor::OnDialogSoundHandlerStart(CInventoryOwner *inv_owner, LPCSTR phrase)
 {
-	CAI_Trader *trader = smart_cast<CAI_Trader*>(inv_owner);
-	if (!trader) return false;
+	if (CAI_Trader* trader = inv_owner->cast_trader())
+	{
+		trader->dialog_sound_start(phrase);
+		return true;
+	}
 
-	trader->dialog_sound_start(phrase);
-	return true;
+	return false;
 }
 
 bool CActor::OnDialogSoundHandlerStop(CInventoryOwner *inv_owner)
 {
-	CAI_Trader *trader = smart_cast<CAI_Trader*>(inv_owner);
-	if (!trader) return false;
+	if (CAI_Trader* trader = inv_owner->cast_trader())
+	{
+		trader->dialog_sound_stop();
+		return true;
+	}
 
-	trader->dialog_sound_stop();
-	return true;
+	return false;
 }
 
 #ifdef DEBUG

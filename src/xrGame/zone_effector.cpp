@@ -35,24 +35,33 @@ void CZoneEffector::Load(LPCSTR section)
 
 void CZoneEffector::Activate()
 {
-	m_pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if(!m_pActor) return;
-	m_pp_effector						= new CPostprocessAnimatorLerp();
-	m_pp_effector->SetType				(EEffectorPPType( u32(u64(this) & u32(-1)) ));
-	m_pp_effector->SetCyclic			(true);
-	m_pp_effector->SetFactorFunc		(xr_make_delegate(this, &CZoneEffector::GetFactor));
-	m_pp_effector->Load					(*m_pp_fname);
-	m_pActor->Cameras().AddPPEffector	(m_pp_effector);
+	CObject* obj = Level().CurrentEntity();
+	m_pActor = obj != nullptr ? obj->cast_actor() : nullptr;
+
+	if (m_pActor == nullptr)
+	{
+		return;
+	}
+
+	m_pp_effector = new CPostprocessAnimatorLerp();
+	m_pp_effector->SetType(EEffectorPPType(u32(u64(this) & u32(-1))));
+	m_pp_effector->SetCyclic(true);
+	m_pp_effector->SetFactorFunc(xr_make_delegate(this, &CZoneEffector::GetFactor));
+	m_pp_effector->Load(*m_pp_fname);
+	m_pActor->Cameras().AddPPEffector(m_pp_effector);
 
 }
 
 void CZoneEffector::Stop()
 {
-	if (!m_pp_effector) return;
-	 
-	m_pActor->Cameras().RemovePPEffector(EEffectorPPType( u32(u64(this) & u32(-1)) ));
-	m_pp_effector			= nullptr;
-	m_pActor				= nullptr;
+	if (m_pp_effector == nullptr)
+	{
+		return;
+	}
+
+	m_pActor->Cameras().RemovePPEffector(EEffectorPPType(u32(u64(this) & u32(-1))));
+	m_pp_effector = nullptr;
+	m_pActor = nullptr;
 };
 
 void CZoneEffector::Update(float dist, float r, ALife::EHitType hit_type)
@@ -60,24 +69,38 @@ void CZoneEffector::Update(float dist, float r, ALife::EHitType hit_type)
 	float min_r = r * r_min_perc;
 	float max_r = r * r_max_perc;
 
-	bool camera_on_actor = (Level().CurrentEntity() && smart_cast<CActor*>(Level().CurrentEntity()));
-	
-	if (m_pp_effector) {
-		if ((dist > max_r) || !camera_on_actor || (m_pActor&&!m_pActor->g_Alive()))	Stop();
-	} else {
-		if ((dist < max_r) && camera_on_actor)	Activate();
+	CObject* obj = Level().CurrentEntity();
+	bool camera_on_actor = obj != nullptr && obj->cast_actor() != nullptr;
+
+	if (m_pp_effector)
+	{
+		if ((dist > max_r) || !camera_on_actor || (m_pActor && !m_pActor->g_Alive()))
+		{
+			Stop();
+		}
 	}
-	
+	else
+	{
+		if ((dist < max_r) && camera_on_actor)
+		{
+			Activate();
+		}
+	}
+
 	float protection = 0.f;
-	if(m_pActor)
+	if (m_pActor)
 	{
 		CCustomOutfit* outfit = m_pActor->GetOutfit();
-		if(outfit)
+		if (outfit)
+		{
 			protection = outfit->GetDefHitTypeProtection(hit_type);
+		}
 	}
-	if (m_pp_effector) {
+
+	if (m_pp_effector)
+	{
 		m_factor = ((max_r - dist) / (max_r - min_r)) - protection;
-		clamp(m_factor,0.01f,1.0f);
+		clamp(m_factor, 0.01f, 1.0f);
 	}
 }
 
