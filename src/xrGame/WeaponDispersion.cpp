@@ -13,27 +13,32 @@
 #include "EffectorShot.h"
 #include "EffectorShotX.h"
 
-
 //возвращает 1, если оружие в отличном состоянии и >1 если повреждено
 float CWeapon::GetConditionDispersionFactor() const
 {
 	return (1.f + fireDispersionConditionFactor*(1.f-GetCondition()));
 }
 
-float CWeapon::GetFireDispersion	(bool with_cartridge, bool for_crosshair) 
+float CWeapon::GetFireDispersion(bool with_cartridge, bool for_crosshair)
 {
 	if (!with_cartridge)
+	{
 		return GetFireDispersion(1.0f, for_crosshair);
+	}
 
 	if (m_bAmmoInChamber)
 	{
 		if (!m_chamber.empty())
+		{
 			m_fCurrentCartirdgeDisp = m_chamber.back().param_s.kDisp;
+		}
 	}
 	else
 	{
 		if (!m_magazine.empty())
+		{
 			m_fCurrentCartirdgeDisp = m_magazine.back().param_s.kDisp;
+		}
 	}
 
 	return GetFireDispersion(m_fCurrentCartirdgeDisp, for_crosshair);
@@ -55,47 +60,49 @@ float CWeapon::GetBaseDispersion(float cartridge_k)
 }
 
 //текущая дисперсия (в радианах) оружия с учетом используемого патрона
-float CWeapon::GetFireDispersion	(float cartridge_k, bool for_crosshair) 
+float CWeapon::GetFireDispersion(float cartridge_k, bool for_crosshair)
 {
 	//учет базовой дисперсии, состояние оружия и влияение патрона
 	float fire_disp = GetBaseDispersion(cartridge_k);
-	
+
 	//вычислить дисперсию, вносимую самим стрелком
-	if(H_Parent())
+	if (CObject* obj = H_Parent())
 	{
-		const CInventoryOwner* pOwner	=	smart_cast<const CInventoryOwner*>(H_Parent());
-		float parent_disp				= pOwner->GetWeaponAccuracy();
-		fire_disp						+= parent_disp;
+		const CInventoryOwner* pOwner = obj->cast_inventory_owner();
+		float parent_disp = pOwner->GetWeaponAccuracy();
+		fire_disp += parent_disp;
 	}
 
 	return fire_disp;
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // Для эффекта отдачи оружия
-void CWeapon::AddShotEffector		()
+void CWeapon::AddShotEffector()
 {
-	inventory_owner().on_weapon_shot_start	(this);
+	inventory_owner().on_weapon_shot_start(this);
 }
 
-void  CWeapon::RemoveShotEffector	()
+void CWeapon::RemoveShotEffector()
 {
-	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(H_Parent());
-	if (pInventoryOwner)
-		pInventoryOwner->on_weapon_shot_remove	(this);
+	if (CInventoryOwner* pInventoryOwner = H_Parent() != nullptr ? H_Parent()->cast_inventory_owner() : nullptr)
+	{
+		pInventoryOwner->on_weapon_shot_remove(this);
+	}
 }
 
-void	CWeapon::ClearShotEffector	()
+void CWeapon::ClearShotEffector()
 {
-	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(H_Parent());
-	if (pInventoryOwner)
-		pInventoryOwner->on_weapon_hide	(this);
+	if (CInventoryOwner* pInventoryOwner = H_Parent() != nullptr ? H_Parent()->cast_inventory_owner() : nullptr)
+	{
+		pInventoryOwner->on_weapon_hide(this);
+	}
 }
 
-void	CWeapon::StopShotEffector	()
+void CWeapon::StopShotEffector()
 {
-	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(H_Parent());
-	if (pInventoryOwner)
+	if (CInventoryOwner* pInventoryOwner = H_Parent() != nullptr ? H_Parent()->cast_inventory_owner() : nullptr)
+	{
 		pInventoryOwner->on_weapon_shot_stop();
+	}
 }

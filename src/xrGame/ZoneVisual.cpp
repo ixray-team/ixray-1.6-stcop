@@ -19,9 +19,9 @@ BOOL CVisualZone::	net_Spawn						(CSE_Abstract* DC)
 	if (!inherited::net_Spawn(DC))
 		return					(FALSE);
 
-	CSE_Abstract				*e  = (CSE_Abstract*)(DC);
-	CSE_ALifeZoneVisual			*Z  = smart_cast<CSE_ALifeZoneVisual*>(e);
-	IKinematicsAnimated			*SA = smart_cast<IKinematicsAnimated*>(Visual());
+	CSE_Abstract* e = (CSE_Abstract*)(DC);
+	CSE_ALifeZoneVisual* Z = smart_cast<CSE_ALifeZoneVisual*>(e);
+	IKinematicsAnimated* SA = Visual()->dcast_PKinematicsAnimated();
 	m_attack_animation			= SA->ID_Cycle_Safe(Z->attack_animation);
 	R_ASSERT2				(
 		m_attack_animation.valid(),
@@ -55,8 +55,7 @@ void CVisualZone::SwitchZoneState(EZoneState new_state)
 {
 	if(m_eZoneState==eZoneStateBlowout && new_state != eZoneStateBlowout)
 	{
-	//	IKinematicsAnimated*	SA=smart_cast<IKinematicsAnimated*>(Visual());
-		smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
+		Visual()->dcast_PKinematicsAnimated()->PlayCycle(m_idle_animation);
 	}
 
 	inherited::SwitchZoneState(new_state);
@@ -73,11 +72,16 @@ void CVisualZone::Load(LPCSTR section)
 void CVisualZone::UpdateBlowout()
 {
 	inherited::UpdateBlowout();
-	if(m_dwAttackAnimaionStart >=(u32)m_iPreviousStateTime && 
-		m_dwAttackAnimaionStart	<(u32)m_iStateTime)
-				smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_attack_animation);
-		
-	if(m_dwAttackAnimaionEnd >=(u32)m_iPreviousStateTime && 
-		m_dwAttackAnimaionEnd	<(u32)m_iStateTime)
-				smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
+
+	IKinematicsAnimated* pKA = Visual()->dcast_PKinematicsAnimated();
+
+	if (m_dwAttackAnimaionStart >= (u32)m_iPreviousStateTime && m_dwAttackAnimaionStart < (u32)m_iStateTime)
+	{
+		pKA->PlayCycle(m_attack_animation);
+	}
+
+	if (m_dwAttackAnimaionEnd >= (u32)m_iPreviousStateTime && m_dwAttackAnimaionEnd < (u32)m_iStateTime)
+	{
+		pKA->PlayCycle(m_idle_animation);
+	}
 }

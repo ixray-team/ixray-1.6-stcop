@@ -116,48 +116,55 @@ void CWeaponStatMgun::OnShot()
 {
 	VERIFY(Owner());
 
-	FireBullet				(	m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, 
-								Owner()->ID(),ID(), SendHitAllowed(Owner()));
+	FireBullet(m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, Owner()->ID(), ID(), SendHitAllowed(Owner()));
 
-	StartShotParticles		();
-	
-	if(m_bLightShotEnabled) 
-		Light_Start			();
+	StartShotParticles();
 
-	StartFlameParticles		();
-	StartSmokeParticles		(m_fire_pos, zero_vel);
-	OnShellDrop				(m_fire_pos, zero_vel);
+	if (m_bLightShotEnabled)
+	{
+		Light_Start();
+	}
 
-	bool b_hud_mode =		(Level().CurrentEntity() == smart_cast<CObject*>(Owner()));
-	m_sounds_layered.PlaySound		("sndShot", m_fire_pos, Owner(), b_hud_mode);
+	StartFlameParticles();
+	StartSmokeParticles(m_fire_pos, zero_vel);
+	OnShellDrop(m_fire_pos, zero_vel);
 
-	AddShotEffector			();
-	m_dAngle.set			(	::Random.randF(-fireDispersionBase,fireDispersionBase),
-								::Random.randF(-fireDispersionBase,fireDispersionBase));
+	bool b_hud_mode = (Level().CurrentEntity() == Owner()->dcast_CObject());
+	m_sounds_layered.PlaySound("sndShot", m_fire_pos, Owner(), b_hud_mode);
+
+	AddShotEffector();
+	m_dAngle.set(::Random.randF(-fireDispersionBase, fireDispersionBase),
+		::Random.randF(-fireDispersionBase, fireDispersionBase));
 }
 
-void CWeaponStatMgun::AddShotEffector				()
+void CWeaponStatMgun::AddShotEffector()
 {
-	if(OwnerActor())
+	if (OwnerActor())
 	{
-		CCameraShotEffector* S	= smart_cast<CCameraShotEffector*>(OwnerActor()->Cameras().GetCamEffector(eCEShot)); 
-		CameraRecoil		camera_recoil;
+		CCameraShotEffector* S = smart_cast<CCameraShotEffector*>(OwnerActor()->Cameras().GetCamEffector(eCEShot));
+		CameraRecoil camera_recoil;
 		//( camMaxAngle,camRelaxSpeed, 0.25f, 0.01f, 0.7f )
-		camera_recoil.MaxAngleVert		= camMaxAngle;
-		camera_recoil.RelaxSpeed		= camRelaxSpeed;
-		camera_recoil.MaxAngleHorz		= 0.25f;
-		camera_recoil.StepAngleHorz		= ::Random.randF(-1.0f, 1.0f) * 0.01f;
-		camera_recoil.DispersionFrac	= 0.7f;
+		camera_recoil.MaxAngleVert = camMaxAngle;
+		camera_recoil.RelaxSpeed = camRelaxSpeed;
+		camera_recoil.MaxAngleHorz = 0.25f;
+		camera_recoil.StepAngleHorz = ::Random.randF(-1.0f, 1.0f) * 0.01f;
+		camera_recoil.DispersionFrac = 0.7f;
 
-		if (!S)	S			= (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(new CCameraShotEffector(camera_recoil) );
-		R_ASSERT			(S);
-		S->Initialize		(camera_recoil);
-		S->Shot2			(0.01f);
+		if (S == nullptr)
+		{
+			S = (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(new CCameraShotEffector(camera_recoil));
+		}
+
+		R_ASSERT(S);
+		S->Initialize(camera_recoil);
+		S->Shot2(0.01f);
 	}
 }
 
-void  CWeaponStatMgun::RemoveShotEffector	()
+void  CWeaponStatMgun::RemoveShotEffector()
 {
-	if(OwnerActor())
-		OwnerActor()->Cameras().RemoveCamEffector	(eCEShot);
+	if (OwnerActor())
+	{
+		OwnerActor()->Cameras().RemoveCamEffector(eCEShot);
+	}
 }

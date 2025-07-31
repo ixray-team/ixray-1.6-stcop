@@ -8,13 +8,13 @@ void CActorInputHandler::reinit()
 	m_actor = 0;
 }
 
-
 void CActorInputHandler::install()
 {
-	m_actor = smart_cast<CActor*>	(Level().CurrentEntity());
-	if ( !m_actor )
+	m_actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
+
+	if (!m_actor)
 	{
-		m_actor					=	Actor();
+		m_actor = Actor();
 	}
 	VERIFY(m_actor);
 

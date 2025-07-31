@@ -158,15 +158,18 @@ void CWeaponRG6::ReloadMagazine()
 		if (!tmp_sect_name)
 			return;
 
-		//попытаться найти в инвентаре патроны текущего типа 
-		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(tmp_sect_name));
+		//попытаться найти в инвентаре патроны текущего типа
+		PIItem get_any = m_pInventory->GetAny(tmp_sect_name);
+		m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 
 		if (!m_pCurrentAmmo && !m_bLockType)
 		{
 			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 			{
 				//проверить патроны всех подходящих типов
-				m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[i].c_str()));
+				get_any = m_pInventory->GetAny(m_ammoTypes[i].c_str());
+				m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
+
 				if (m_pCurrentAmmo)
 				{
 					m_ammoType = i;

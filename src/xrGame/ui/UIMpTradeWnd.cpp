@@ -219,26 +219,29 @@ void CUIMpTradeWnd::FillUpSubLevelItems()
 #include "../Actor.h"
 void CUIMpTradeWnd::Show(bool status)
 {
-	inherited::Show				(status);
+	inherited::Show(status);
 
-	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
-	if(pActor) 
-		pActor->SetWeaponHideState(INV_STATE_BUY_MENU, status);
-
-	if(status)
+	CObject* obj = Level().CurrentEntity();
+	if (CActor* pActor = obj != nullptr ? obj->cast_actor() : nullptr)
 	{
-		m_pMouseCapturer		= nullptr;
+		pActor->SetWeaponHideState(INV_STATE_BUY_MENU, status);
+	}
+
+	if (status)
+	{
+		m_pMouseCapturer = nullptr;
 
 		m_static_information->SetText("");
 		m_static_money_change->SetText("");
-	}else
+	}
+	else
 	{
-		CheckDragItemToDestroy	();
-		CleanUserItems			();
+		CheckDragItemToDestroy();
+		CleanUserItems();
 	}
 }
 
-bool	CUIMpTradeWnd::IsIgnoreMoneyAndRank			()
+bool CUIMpTradeWnd::IsIgnoreMoneyAndRank()
 {
 	return m_bIgnoreMoneyAndRank;
 }

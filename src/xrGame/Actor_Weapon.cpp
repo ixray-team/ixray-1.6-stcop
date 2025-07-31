@@ -26,7 +26,8 @@ static const float VEL_A_MAX	= 10.f;
 //возвращает текуший разброс стрельбы (в радианах)с учетом движения
 float CActor::GetWeaponAccuracy() const
 {
-	CWeapon* W	= smart_cast<CWeapon*>(inventory().ActiveItem());
+	PIItem active_item = inventory().ActiveItem();
+	CWeapon* W = active_item != nullptr ? active_item->cast_weapon() : nullptr;
 	
 	if ( IsZoomAimingMode() && W && !GetWeaponParam(W, IsRotatingToZoom(), false) )
 	{
@@ -140,46 +141,63 @@ void CActor::SetWeaponHideState (u16 State, bool bSet)
 		u_EventSend	(P);
 	};
 }
+
 static	u16 BestWeaponSlots [] = {
 	INV_SLOT_3		,		// 2
 	INV_SLOT_2		,		// 1
 	GRENADE_SLOT	,		// 3
 	KNIFE_SLOT		,		// 0
 };
-void CActor::SelectBestWeapon	(CObject* O)
+
+void CActor::SelectBestWeapon(CObject* O)
 {
-	if (!O) return;
-	if ( IsGameTypeSingle() ) return;
-	//if (Level().CurrentControlEntity() != this) return;
-	//if (OnClient()) return;
+	if (O == nullptr)
+	{
+		return;
+	}
+
+	if (IsGameTypeSingle())
+	{
+		return;
+	}
+
 	//-------------------------------------------------
-	CWeapon* pWeapon			= smart_cast<CWeapon*>(O);
-	CGrenade* pGrenade			= smart_cast<CGrenade*>(O);
-	CArtefact* pArtefact		= smart_cast<CArtefact*>(O);
-	CInventoryItem*	pIItem		= smart_cast<CInventoryItem*> (O);
+	CWeapon* pWeapon = O->cast_weapon();
+	CGrenade* pGrenade = O->cast_grenade();
+	CArtefact* pArtefact = O->cast_artefact();
+	CInventoryItem* pIItem = O->cast_inventory_item();
 	bool NeedToSelectBestWeapon = false;
 
-	if (pArtefact && pArtefact->H_Parent()) //just take an artefact
+	if (pArtefact != nullptr && pArtefact->H_Parent()) //just take an artefact
+	{
 		return;
-	
-	if ((pWeapon || pGrenade || pArtefact) && pIItem)
+	}
+
+	if ((pWeapon != nullptr || pGrenade != nullptr || pArtefact != nullptr) && pIItem != nullptr)
 	{
 		NeedToSelectBestWeapon = true;
-		if ((GameID() == eGameIDArtefactHunt) || (GameID() == eGameIDCaptureTheArtefact)) //only for test...
+		if ((GameID() & eGameIDArtefactHunt) || (GameID() & eGameIDCaptureTheArtefact)) //only for test...
 		{
 			if (pIItem->BaseSlot() == INV_SLOT_2 || pIItem->BaseSlot() == INV_SLOT_3)
 			{
 				CInventoryItem* pIItemInSlot = inventory().ItemFromSlot(pIItem->BaseSlot());
-				if (pIItemInSlot != nullptr && pIItemInSlot != pIItem)				
+				if (pIItemInSlot != nullptr && pIItemInSlot != pIItem)
+				{
 					NeedToSelectBestWeapon = false;
+				}
 			}
 		}
 	}
-	if (!NeedToSelectBestWeapon) return;
-	//-------------------------------------------------
-	for (int i=0; i<4; i++)
+
+	if (!NeedToSelectBestWeapon)
 	{
-		if (inventory().ItemFromSlot(BestWeaponSlots[i]) )
+		return;
+	}
+
+	//-------------------------------------------------
+	for (int i = 0; i < 4; i++)
+	{
+		if (inventory().ItemFromSlot(BestWeaponSlots[i]))
 		{
 			if (inventory().GetActiveSlot() != BestWeaponSlots[i])
 			{
@@ -190,7 +208,8 @@ void CActor::SelectBestWeapon	(CObject* O)
 					Msg("--- Selecting best weapon [%d], Frame[%d]", BestWeaponSlots[i], Device.dwFrame);
 #endif // #ifdef DEBUG
 					inventory().Activate(BestWeaponSlots[i]);
-				} else
+				}
+				else
 				{
 #ifdef DEBUG
 					Msg("--- Weapon is not best...");
@@ -202,8 +221,8 @@ void CActor::SelectBestWeapon	(CObject* O)
 	};
 }
 
-#define ENEMY_HIT_SPOT	"mp_hit_sector_location"
-BOOL	g_bShowHitSectors	= TRUE;
+#define ENEMY_HIT_SPOT "mp_hit_sector_location"
+BOOL g_bShowHitSectors = TRUE;
 
 void	CActor::HitSector(CObject* who, CObject* weapon)
 {
