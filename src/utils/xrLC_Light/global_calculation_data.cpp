@@ -152,26 +152,30 @@ void global_claculation_data::xrLoad()
 				if (strchr(N,'.')) *(strchr(N,'.')) = 0;
 				_strlwr			(N);
 
-				if (0==xr_strcmp(N,"level_lods"))	{
+				if (0==xr_strcmp(N,"level_lods"))
+				{
 					// HACK for merged lod textures
 					BT.dwWidth	= 1024;
 					BT.dwHeight	= 1024;
 					BT.bHasAlpha= TRUE;
 					BT.pSurface	= 0;
-					BT.THM.SetHasSurface(FALSE);
-				} else {
-					xr_strcat				(N,sizeof(BT.name),".thm");
-					IReader* THM			= FS.r_open("$game_textures$",N);
+					BT.SetHasSurface(FALSE);
+				}
+				else
+				{
+					xr_strcat(N,sizeof(BT.name),".thm");
+					IReader* THM = FS.r_open("$game_textures$",N);
 
-					if (!THM) {
+					if (!THM)
+					{
 						clMsg("cannot find thm: %s", N);
 						is_thm_missing = true;
 						continue;
 					}
 
 					// version
-					u32 version				= 0;
-					R_ASSERT				(THM->r_chunk(THM_CHUNK_VERSION,&version));
+					u32 version = 0;
+					R_ASSERT(THM->r_chunk(THM_CHUNK_VERSION,&version));
 					// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
 
 					// analyze thumbnail information
@@ -192,17 +196,19 @@ void global_claculation_data::xrLoad()
 					BT.dwHeight				= BT.THM.height;
 					BT.bHasAlpha			= BT.THM.HasAlphaChannel();
 					BT.pSurface				= 0;
-					BT.THM.SetHasSurface(FALSE);
+					BT.SetHasSurface(FALSE);
+
 					if (!bLOD) 
 					{
 						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
 						{
-							clMsg		("- loading: %s",N);
-							u32			w=0, h=0;
-							BT.pSurface		= Surface_Load(N,w,h);
-							BT.THM.SetHasSurface(TRUE);
+							clMsg("- loading: %s",N);
+							u32 w=0, h=0;
+							BT.pSurface = Surface_Load(N,w,h);
+							BT.SetHasSurface(TRUE);
 
-							if (!BT.pSurface) {
+							if (!BT.pSurface)
+							{
 								clMsg("cannot find tga texture: %s", N);
 								is_tga_missing = true;
 								continue;
@@ -211,8 +217,6 @@ void global_claculation_data::xrLoad()
 							if ((w != BT.dwWidth) || (h != BT.dwHeight))
 								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
 							BT.Vflip	();
-						} else {
-							// Free surface memory
 						}
 					}
 				}
