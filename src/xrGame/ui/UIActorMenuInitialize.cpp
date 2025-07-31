@@ -412,7 +412,7 @@ void CUIActorMenu::Construct()
 
 	m_actor_trade					= nullptr;
 	m_partner_trade					= nullptr;
-	m_repair_mode					= false;
+	m_repair_mode					= 0;
 	m_item_info_view				= false;
 	m_highlight_clear				= true;
 
@@ -456,6 +456,10 @@ void CUIActorMenu::InitCallbacks()
 	Register						(m_UIPropertiesBox);
 	VERIFY							(m_pUpgradeWnd);
 	Register						(m_pUpgradeWnd->m_btn_repair);
+	if (m_pUpgradeWnd->m_btn_disassemble != nullptr)
+	{
+		Register(m_pUpgradeWnd->m_btn_disassemble);
+	}
 
 	if (m_trade_button)
 	{
@@ -476,6 +480,11 @@ void CUIActorMenu::InitCallbacks()
 	AddCallback(m_exit_button,     BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnExitClicked));
 	AddCallback(m_UIPropertiesBox, PROPERTY_CLICKED, CUIWndCallback::void_function(this, &CUIActorMenu::ProcessPropertiesBoxClicked));
 	AddCallback(m_pUpgradeWnd->m_btn_repair, BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TryRepairItem));
+	if (m_pUpgradeWnd->m_btn_disassemble != nullptr)
+	{
+		AddCallback(m_pUpgradeWnd->m_btn_disassemble, BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TryDisassembleItem));
+
+	}
 }
 
 void CUIActorMenu::UpdateButtonsLayout()
