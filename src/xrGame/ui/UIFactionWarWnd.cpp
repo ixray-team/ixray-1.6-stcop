@@ -279,6 +279,11 @@ void CUIFactionWarWnd::UpdateInfo()
 	{
 		if ( !InitFactions() )
 		{
+			if (Device.IsEditorMode())
+			{
+				return;
+			}
+			else
 			R_ASSERT2( 0, "Actor`s faction is unknown!" );
 		}
 	}
