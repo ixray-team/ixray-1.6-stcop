@@ -22,6 +22,13 @@ CTerrain::~CTerrain()
 void CTerrain::OnUpdateTransform()
 {
 	inherited::OnUpdateTransform();
+
+	// update bounding volume
+	if (TerrainObject) 
+	{
+		m_TBBox.set(TerrainObject->GetBox());
+		m_TBBox.xform(_Transform());
+	}
 }
 
 bool CTerrain::LoadStream(IReader& F)
@@ -171,6 +178,45 @@ bool CTerrain::OnChangeHMData(PropValue* sender, int& NewValue)
 	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, NewValue);
 
 	LTools->UpdateProperties(false);
+
+	return true;
+}
+
+void CTerrain::BoxQuery(SPickQuery& pinf)
+{
+	if (!TerrainObject) 
+		return;
+
+	TerrainObject->BoxQuery(_Transform(), _ITransform(), pinf);
+}
+
+void CTerrain::RayQuery(SPickQuery& pinf)
+{
+	if (!TerrainObject) 
+		return;
+
+	TerrainObject->RayQuery(_Transform(), _ITransform(), pinf);
+}
+
+bool CTerrain::GetBox(Fbox& box)
+{
+	if (!TerrainObject) return false;
+	box.set(m_TBBox);
+	return true;
+}
+
+bool CTerrain::BoxPick(const Fbox& box, SBoxPickInfoVec& pinf)
+{
+	if (!TerrainObject)
+		return false;
+
+	return TerrainObject->BoxPick(this, box, _ITransform(), pinf);
+}
+
+bool CTerrain::GetUTBox(Fbox& box)
+{
+	if (!TerrainObject) return false;
+	box.set(TerrainObject->GetBox());
 
 	return true;
 }
