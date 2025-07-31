@@ -11,6 +11,7 @@ public:
 private:
 	void SetMark(int id, int action);
 	void DrawMark(int id);
+	void DrawNotify();
 	xr_vector<float> m_TempForPlotHistogram;
 	float m_Position;
 	bool m_AutoChange;
