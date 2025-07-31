@@ -5,8 +5,6 @@
 
 #include "../xrRender/R_sun_support.h"
 
-using namespace DirectX;
-
 const	float	tweak_rain_COP_initial_offs = 1200.f;
 const	float	tweak_rain_ortho_xform_initial_offs = 1000.f;	//. ?
 

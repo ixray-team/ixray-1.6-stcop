@@ -1,6 +1,5 @@
-#ifndef	dx103DFluidRenderer_included
-#define	dx103DFluidRenderer_included
 #pragma once
+#include <DirectXMath.h>
 
 class dx103DFluidData;
 
@@ -110,5 +109,3 @@ private:
 	//	TODO: DX10: Reserve memory on object creation
 	xr_vector<ISpatialShared>		m_lstRenderables;
 };
-
-#endif	//	dx103DFluidRenderer_included

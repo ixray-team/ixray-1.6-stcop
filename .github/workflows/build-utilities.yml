@@ -113,7 +113,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - ubuntu-22.04
+          - ubuntu-24.04
         preset:
           - Targets
         platform:
@@ -135,8 +135,49 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Ninja
-        uses: imesense/gha-setup-ninja@v0.2
+      - name: Install LLVM/Clang 18 and libc++
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 18
+          sudo apt-get update
+          sudo apt-get install -y clang-18 lldb-18 lld-18 libc++-18-dev libc++abi-18-dev
+
+      - name: Set Clang 18 as default
+        run: |
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100
+          sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang-18 100
+          sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-18 100
+          
+      - name: Verify versions
+        run: |
+          clang++-18 --version
+          ls -l /usr/include/c++/v1  # Проверка наличия libc++18
+        
+      - name: Install SDL3 Linux build dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+          libx11-dev \
+          libxext-dev \
+          libxrandr-dev \
+          libxcursor-dev \
+          libxfixes-dev \
+          libxi-dev \
+          libxinerama-dev \
+          libxss-dev \
+          libwayland-dev \
+          libdrm-dev \
+          libgbm-dev \
+          libudev-dev \
+          libpipewire-0.3-dev \
+          libibus-1.0-dev \
+          libdbus-1-dev \
+          libtbb-dev \
+          liblzo2-2 \
+          liblzo2-dev \
+          libyaml-cpp-dev
 
       - name: Configure targets
         run: |
@@ -144,8 +185,8 @@ jobs:
             -S . \
             -B build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
             -G "Ninja Multi-Config" \
-            -DCMAKE_C_COMPILER=clang-14 \
-            -DCMAKE_CXX_COMPILER=clang++-14 \
+            -DCMAKE_C_COMPILER=clang-18 \
+            -DCMAKE_CXX_COMPILER=clang++-18 \
             -DIXRAY_UTILS=ON \
             -DIXRAY_CI=ON
 
