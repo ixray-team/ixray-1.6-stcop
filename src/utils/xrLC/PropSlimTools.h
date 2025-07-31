@@ -1,12 +1,17 @@
-#ifndef PropSlimToolsH
-#define PropSlimToolsH
+#pragma once
+
+#ifndef _MAYA_EXPORT
 
 #ifdef ETOOLS_EXPORTS
 #define ETOOLS_API __declspec( dllexport )
 #else
 #define ETOOLS_API __declspec( dllimport )
 #endif
+#else
+#define ETOOLS_API
+#endif
 
+#include "object.h"
 #include "ArbitraryList.h"
 
 #pragma pack(push,1)
@@ -18,7 +23,7 @@ struct VIPM_SWR
 };
 #pragma pack(pop)
 
-struct VIPM_Result
+struct ETOOLS_API VIPM_Result
 {
 	ArbitraryList<u16>		permute_verts;
 	ArbitraryList<VIPM_SWR>	swr_records;// The records of the collapses.
@@ -26,17 +31,24 @@ struct VIPM_Result
 	~VIPM_Result()
 	{
 		permute_verts.resize(0);
-		swr_records.resize	(0);
-		indices.resize		(0);
+		swr_records.resize(0);
+		indices.resize(0);
 	}
 };
 
-extern "C" {
-	ETOOLS_API void			 __stdcall VIPM_Init			();
-	ETOOLS_API void			 __stdcall VIPM_AppendVertex	(const Fvector3& pt, const Fvector2& uv);
-	ETOOLS_API void			 __stdcall VIPM_AppendFace		(u16 v0, u16 v1, u16 v2);
-	ETOOLS_API VIPM_Result*	 __stdcall VIPM_Convert			(u32 max_sliding_window=u32(-1), float error_tolerance=0.1f, u32 optimize_vertex_order=1);
-	ETOOLS_API void			 __stdcall VIPM_Destroy			();
-};
+class ETOOLS_API VIMP_Processor
+{
+	Object* g_pObject = 0;
+	ArbitraryList<MeshPt*>	g_ppTempPts = 0;
+	VIPM_Result* g_pResult = 0;
 
-#endif // PropSlimToolsH
+public:
+	void				VIPM_Init();
+	void				VIPM_AppendVertex(const Fvector3& pt, const Fvector2& uv);
+	void				VIPM_AppendFace(u16 v0, u16 v1, u16 v2);
+	VIPM_Result* VIPM_Convert(u32 max_sliding_window = u32(-1), float error_tolerance = 0.1f, u32 optimize_vertex_order = 1);
+	void				VIPM_Destroy();
+
+	void				CalculateAllCollapses(Object* m_pObject, u32 max_sliding_window = u32(-1), float m_fSlidingWindowErrorTolerance = 1);
+
+};
