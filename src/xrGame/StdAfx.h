@@ -37,6 +37,8 @@
 #ifndef _EDITOR
 #	include "pch_script.h"
 extern CInifile* pGameGlobals;
+
+void LoadCallbackGlobals(bool& flag, const char*& value, const char* section);
 #endif
 
 extern void DestroyImGuiInGame();
