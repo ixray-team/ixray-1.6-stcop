@@ -835,11 +835,14 @@ void CParticleTool::RealCompileEffect()
 
 void CParticleTool::RealRemoveAction()
 {
-	if (m_LibPED){
-        xr_delete	(m_LibPED->m_EActionList[remove_action_num]);
-        m_LibPED->m_EActionList.erase	(m_LibPED->m_EActionList.begin()+remove_action_num);
+    if (m_LibPED)
+    {
+        xr_delete(m_LibPED->m_EActionList[remove_action_num]);
+        m_LibPED->m_EActionList.erase(m_LibPED->m_EActionList.begin() + remove_action_num);
+
+        RealCompileEffect();
     }
-	m_Flags.set		(flRemoveAction,FALSE);
+	m_Flags.set(flRemoveAction,FALSE);
 }
 
 LPCSTR CParticleTool::GetInfo()
