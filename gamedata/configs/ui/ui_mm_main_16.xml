@@ -106,7 +106,15 @@
 	<menu_sound random="0" >
 		<menu_music>music\menu</menu_music>
     </menu_sound>
-
+	
+	<english_lang x="14" y="700" width="27" height="32" stretch="1">
+		<texture>ui_flag_usa</texture>
+	</english_lang>
+	
+	<russian_lang x="50" y="700" width="27" height="32" stretch="1">
+		<texture>ui_flag_russia</texture>
+	</russian_lang>
+	
 	<static_version x="14" y="740" width="80" height="30">
 		<text align="l" font="graffiti19" r="135" g="123" b="116" complex_mode="0"/>
 	</static_version>

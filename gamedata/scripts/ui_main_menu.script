@@ -33,6 +33,19 @@ function main_menu:InitControls()
 	local _ver = xml:InitStatic		("static_version",self)
 	local mm						= _G.main_menu.get_main_menu()
 	_ver:TextControl():SetText		("ver. " .. mm:GetGSVer())
+	
+	-- IX-Ray start
+	local btn
+	if xml:NodeExist("english_lang", 0) then
+		btn = xml:Init3tButton("english_lang", self)
+		self:Register(btn, "english_lang")
+	end
+	
+	if xml:NodeExist("russian_lang", 0) then
+		btn = xml:Init3tButton("russian_lang", self)
+		self:Register(btn, "russian_lang")
+	end
+	-- IX-Ray end
 
     self.l_mgr = mm:GetLoginMngr()
     self.acc_mgr = mm:GetAccountMngr()
@@ -81,6 +94,12 @@ function main_menu:InitCallBacks()
 	self:AddCallback("btn_ret",			ui_events.BUTTON_CLICKED,				self.OnButton_return_game,			self)
 	self:AddCallback("btn_lastsave",	ui_events.BUTTON_CLICKED,				self.OnButton_last_save,			self)
 	self:AddCallback("btn_credits",		ui_events.BUTTON_CLICKED,				self.OnButton_credits_clicked,		self)
+	
+	-- IX-Ray start
+	self:AddCallback("english_lang",	ui_events.BUTTON_CLICKED,				self.OnBtnEnglish,			self)
+	self:AddCallback("russian_lang",	ui_events.BUTTON_CLICKED,				self.OnBtnRussian,			self)
+	-- IX-Ray end
+	
 	-- message box
 	self:AddCallback("msg_box",     ui_events.MESSAGE_BOX_OK_CLICKED,		self.OnMsgOk,						self)
 	self:AddCallback("msg_box",     ui_events.MESSAGE_BOX_CANCEL_CLICKED,	self.OnMsgCancel,					self)
@@ -243,6 +262,18 @@ function main_menu:OnButton_options_clicked()
 	self:HideDialog()
 	self:Show(false)
 end
+
+-- IX-Ray start
+function main_menu:OnBtnEnglish()
+	local console = get_console()
+	console:execute("language eng")
+end
+
+function main_menu:OnBtnRussian()
+	local console = get_console()
+	console:execute("language rus")
+end
+-- IX-Ray end
 
 function main_menu:OnButton_load_clicked()
 	if self.load_dlg ==nil then
