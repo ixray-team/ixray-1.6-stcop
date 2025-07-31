@@ -1,5 +1,5 @@
 <w>
-  <main x="0" y="0" width="854" height="768">
+  <main x="0" y="0" width="1024" height="768">
     <auto_static x="334" y="0" width="604" height="768" stretch="1">
       <texture>ui_inGame2_inventory_back</texture>
     </auto_static>
@@ -84,7 +84,7 @@
     <text align="l" font="letterica16" color="ui_7"/>
   </partner_weight>
 
-  <left_delimiter_frl  x="80" y="326" width="280" height="39" stretch="1">
+  <left_delimiter_frl  x="-5" y="326" width="280" height="39" stretch="1">
     <texture>ui_inv_delimiter</texture>
   </left_delimiter_frl>
   <!-- partner  ---------------------------------------------------------------- -->
