@@ -552,28 +552,32 @@ IC BOOL	ValidateMergeTBB(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, 
 	return TRUE;
 }
 
-#include "tbb/combinable.h"
+#include <tbb/combinable.h>
+#include <tbb/parallel_for.h>
+ 
+
+/* ForeserX чет сломал !!!!
 void xrPhase_MergeGeometry_Tbb()
 {
 	xr_vector<SplitInfo> info(g_XSplit.size());
-	
+
 	tbb::combinable<SplitMap> tempMappings;
 	size_t grain = _max(size_t(1), g_XSplit.size() / xr_max_concurrency() / 10);
 	xr_parallel_for(0ull, g_XSplit.size(), grain, [&](size_t i)
-	{
-		auto& local = tempMappings.local();
-		info[i].needMerge = NeedMerge(*g_XSplit[i], info[i].bb);
-		auto& value = local[CalcSplitKey(g_XSplit[i])];
-		value.splits.push_back(i);
-		value.hash[Cell::FromVector(Center(info[i].bb))].push_back(i);
-	});
+		{
+			auto& local = tempMappings.local();
+			info[i].needMerge = NeedMerge(*g_XSplit[i], info[i].bb);
+			auto& value = local[CalcSplitKey(g_XSplit[i])];
+			value.splits.push_back(i);
+			value.hash[Cell::FromVector(Center(info[i].bb))].push_back(i);
+		});
 
 	SplitMap mappings;
 	tempMappings.combine_each([&mappings](const SplitMap& x)
-	{
-		for (const auto& [k, v] : x)
-			mappings[k].merge(v);
-	});
+		{
+			for (const auto& [k, v] : x)
+				mappings[k].merge(v);
+		});
 
 	xr_atomic_u32 progress = 0;
 	xr_vector<SplitKey> keys;
@@ -586,65 +590,160 @@ void xrPhase_MergeGeometry_Tbb()
 		if (V.needMerge)
 			need_merge++;
 	}
-	
+
 	clMsg("* Need merge size: %u", need_merge);
 	xr_parallel_for(0ull, keys.size(), [&](size_t i)
-	{
-		const auto& key = keys[i];
-		auto& value = mappings[key];
-		std::sort(value.splits.begin(), value.splits.end());
-
-		for (u32 split : value.splits)
 		{
-			if (info[split].needMerge)
+			const auto& key = keys[i];
+			auto& value = mappings[key];
+			std::sort(value.splits.begin(), value.splits.end());
+
+			for (u32 split : value.splits)
 			{
-				auto& subdiv = *g_XSplit[split];
-				Fbox bb_base_orig = info[split].bb;
-				auto candidates = value.GetCandidates(Center(info[split].bb), split);
-
-				while (info[split].needMerge)
+				if (info[split].needMerge)
 				{
-					u32 selected = split;
-					float selected_volume = flt_max;
-					xr_vector<u32> next;
-					next.reserve(candidates.size());
+					auto& subdiv = *g_XSplit[split];
+					Fbox bb_base_orig = info[split].bb;
+					auto candidates = value.GetCandidates(Center(info[split].bb), split);
 
-					for (auto& test : candidates) {
-						auto& TEST = *g_XSplit[test];
-						float volume = 0.0f;
+					while (info[split].needMerge)
+					{
+						u32 selected = split;
+						float selected_volume = flt_max;
+						xr_vector<u32> next;
+						next.reserve(candidates.size());
 
-						if (!info[test].needMerge)
-							continue;
+						for (auto& test : candidates) {
+							auto& TEST = *g_XSplit[test];
+							float volume = 0.0f;
 
-						if (!ValidateMergeTBB(subdiv.size(), info[split].bb, bb_base_orig,
-							TEST.size(), info[test].bb, volume))
-							continue;
+							if (!info[test].needMerge)
+								continue;
 
-						next.push_back(test);
-						if (volume < selected_volume)
+							if (!ValidateMergeTBB(subdiv.size(), info[split].bb, bb_base_orig,
+								TEST.size(), info[test].bb, volume))
+								continue;
+
+							next.push_back(test);
+							if (volume < selected_volume)
+							{
+								selected = test;
+								selected_volume = volume;
+							}
+						}
+
+						// No candidates for merge
+						if (selected == split)
+							break;
+
+						// Perform merge
+						vecFace& SELECTED = *g_XSplit[selected];
+						subdiv.insert(subdiv.end(), SELECTED.begin(), SELECTED.end());
+						SELECTED.clear();
+						info[selected].needMerge = false;
+						info[split].needMerge = NeedMerge(subdiv, info[split].bb);
+						candidates = std::move(next);
+					}
+				}
+				progress.fetch_add(1);
+				Progress((float)progress.load() / g_XSplit.size());
+			}
+		});
+	RemoveEmptySplits();
+}
+*/
+
+
+void xrPhase_MergeGeometry_Tbb()
+{
+	xr_vector<SplitInfo> info(g_XSplit.size());
+
+	tbb::combinable<SplitMap> tempMappings;
+	auto grain = _max(size_t(1), g_XSplit.size() / tbb::task_arena().max_concurrency() / 10);
+	tbb::parallel_for(tbb::blocked_range<u32>(0, g_XSplit.size(), grain), [&](const auto& r) {
+		auto& local = tempMappings.local();
+		for (auto i = r.begin(); i != r.end(); i++)
+		{
+			info[i].needMerge = NeedMerge(*g_XSplit[i], info[i].bb);
+			auto& value = local[CalcSplitKey(g_XSplit[i])];
+			value.splits.push_back(i);
+			value.hash[Cell::FromVector(Center(info[i].bb))].push_back(i);
+		}
+		});
+
+	SplitMap mappings;
+	tempMappings.combine_each([&mappings](const SplitMap& x)
+		{
+			for (const auto& [k, v] : x)
+				mappings[k].merge(v);
+		});
+
+	std::atomic<u32> progress{ 0 };
+	xr_vector<SplitKey> keys;
+	keys.reserve(mappings.size());
+	std::transform(mappings.begin(), mappings.end(), std::back_inserter(keys), [](const auto& x) { return x.first; });
+
+	size_t need_merge = 0;
+	for (auto V : info)
+	{
+		if (V.needMerge)
+			need_merge++;
+	}
+
+	clMsg("* Need merge size: %u", need_merge);
+	tbb::parallel_for(tbb::blocked_range<u32>(0, keys.size()), [&](const auto& r)
+		{
+			for (auto i = r.begin(); i != r.end(); i++) {
+				const auto& key = keys[i];
+				auto& value = mappings[key];
+				std::sort(value.splits.begin(), value.splits.end());
+
+				for (u32 split : value.splits)
+				{
+					if (info[split].needMerge)
+					{
+						auto& subdiv = *g_XSplit[split];
+						Fbox bb_base_orig = info[split].bb;
+						auto candidates = value.GetCandidates(Center(info[split].bb), split);
+						while (info[split].needMerge)
 						{
-							selected = test;
-							selected_volume = volume;
+							u32 selected = split;
+							float selected_volume = flt_max;
+							xr_vector<u32> next;
+							next.reserve(candidates.size());
+							for (auto& test : candidates)
+							{
+								auto& TEST = *g_XSplit[test];
+								float volume = 0.0f;
+								if (!info[test].needMerge)
+									continue;
+								if (!ValidateMergeTBB(subdiv.size(), info[split].bb, bb_base_orig, TEST.size(), info[test].bb, volume))
+									continue;
+								next.push_back(test);
+								if (volume < selected_volume) {
+									selected = test;
+									selected_volume = volume;
+								}
+							}
+							if (selected == split)
+								break; // No candidates for merge
+
+							// **OK**. Perform merge
+							auto& SELECTED = *g_XSplit[selected];
+							subdiv.insert(subdiv.end(), SELECTED.begin(), SELECTED.end());
+							SELECTED.clear();
+							info[selected].needMerge = false;
+							info[split].needMerge = NeedMerge(subdiv, info[split].bb);
+							candidates = std::move(next);
 						}
 					}
-
-					// No candidates for merge
-					if (selected == split)
-						break;
-
-					// Perform merge
-					vecFace& SELECTED = *g_XSplit[selected];
-					subdiv.insert(subdiv.end(), SELECTED.begin(), SELECTED.end());
-					SELECTED.clear();
-					info[selected].needMerge = false;
-					info[split].needMerge = NeedMerge(subdiv, info[split].bb);
-					candidates = std::move(next);
+					progress.fetch_add(1);
+					Progress((float)progress.load() / g_XSplit.size());
 				}
 			}
-			progress.fetch_add(1);
-			Progress((float)progress.load() / g_XSplit.size());
-		}
-	});
+		});
+
+
 	RemoveEmptySplits();
 }
 

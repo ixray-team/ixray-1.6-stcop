@@ -107,7 +107,9 @@ void CSector::BuildHierrarhy	()
 
 		u32 IDx = 0;
 
-		u32 ChunkSize = 512;
+		#define GRIDING_SIZE 64
+
+		u32 ChunkSize = GRIDING_SIZE;
 		for (auto O : g_tree)
 		{
 			if (!O->bConnected && O->Sector == SelfID )
@@ -122,7 +124,8 @@ void CSector::BuildHierrarhy	()
 			IDx++;
 		}
 		
-		bool use_grid = SizeLimit <= 512 ? true : false;
+		bool use_grid  = SizeLimit <= GRIDING_SIZE ? true : false;
+	 
  		AditionalData("Delimiter: %f, use grid: %u", SizeLimit, use_grid);
 
    		for (auto& Ogf : data)
@@ -141,7 +144,7 @@ void CSector::BuildHierrarhy	()
 				 
  			for (;;)
 			{
-				auto Validate = [&](Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
+				auto ValidateMerging = [&](Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 				{
 					// Size
 					Fbox	merge;
@@ -158,47 +161,48 @@ void CSector::BuildHierrarhy	()
 					volume = merge.getvolume();
 					return TRUE;
 				};
-				  
- 				std::atomic<int>	best_id = -1;
-				std::atomic<float>	best_volume = flt_max;
- 				if (use_grid)
+				 
+				int	best_id = -1;
+				if (use_grid)
 				{
+ 					float best_volume = flt_max;
+
 					for (auto& FOgf : grid_map[selected_grid])
 					{
 						OGF_Base* candidate = g_tree[FOgf.ID];
 						if (candidate->bConnected || candidate->Sector != SelfID)
 							continue;
 						float V;
-						if (Validate(pNode->bbox, candidate->bbox, V, SizeLimit))
+						if (ValidateMerging(pNode->bbox, candidate->bbox, V, SizeLimit))
 						{
-							if (V < best_volume.load())
+							if (V < best_volume)
 							{
-								best_volume.store(V);
-								best_id.store(FOgf.ID);
+								best_volume = V;
+								best_id = FOgf.ID;
  							}
 						}
 					}
 				}
 				else
 				{
-					xr_parallel_for(
-					size_t(0), size_t(data.size()), [&](size_t dID)
+ 					float	best_volume = flt_max;
+
+					for (auto& Ogf : data)
 					{
-						OGF_Base* candidate = data[dID].node;
-						if (candidate->bConnected || candidate->Sector != SelfID)
-							return;
+						OGF_Base* candidate = Ogf.node;
+						if (candidate->bConnected)			continue;
+						if (candidate->Sector != SelfID)	continue;
+
 						float V;
-						if (Validate(pNode->bbox, candidate->bbox, V, SizeLimit))
+						if (ValidateMerging(pNode->bbox, candidate->bbox, V, SizeLimit))
 						{
-							if (V < best_volume.load())
-							{
-								best_volume.store(V);
-								best_id.store(data[dID].ID);
+							if (V < best_volume) {
+								best_volume = V;
+								best_id = Ogf.ID;
 							}
 						}
 					}
-					);
-				}
+ 				}
 
 				// Analyze
 				if (best_id < 0)
