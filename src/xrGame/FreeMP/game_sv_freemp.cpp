@@ -455,24 +455,27 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 		if (cur_user_id > 0)
 		{
 			DBService::UserDBProperty res_data = GSQLConnector.SelectProperty(cur_user_id);
-			actor->conditions().ChangeHealth(res_data.health);
-			actor->conditions().ChangePower(res_data.stamina);
-			actor->conditions().ChangeRadiation(res_data.radiation);
-			actor->conditions().ChangePsyHealth(res_data.psy);
-			actor->conditions().ChangeSleepiness(res_data.sleepiness);
-			actor->conditions().ChangeSatiety(res_data.hunger);
-			actor->conditions().ChangeThirst(res_data.thirst);
-			actor->conditions().ChangeBleeding(res_data.wounds);
-			ps->money_for_round = res_data.money;
-			ps->team = res_data.community;
-
-			xr_vector<int> items = GSQLConnector.LoadInventory(cur_user_id);
-			for (int itm : items)
+			if (res_data.health > 0)
 			{
-				auto it = std::find_if(map_items.begin(), map_items.end(), [itm](const auto& pair) {
-					return pair.second == itm;
-					});
-				SpawnItemToActor(actor->ID(), (*it).first.c_str());
+				actor->conditions().ChangeHealth(res_data.health);
+				actor->conditions().ChangePower(res_data.stamina);
+				actor->conditions().ChangeRadiation(res_data.radiation);
+				actor->conditions().ChangePsyHealth(res_data.psy);
+				actor->conditions().ChangeSleepiness(res_data.sleepiness);
+				actor->conditions().ChangeSatiety(res_data.hunger);
+				actor->conditions().ChangeThirst(res_data.thirst);
+				actor->conditions().ChangeBleeding(res_data.wounds);
+				ps->money_for_round = res_data.money;
+				ps->team = res_data.community;
+
+				xr_vector<int> items = GSQLConnector.LoadInventory(cur_user_id);
+				for (int itm : items)
+				{
+					auto it = std::find_if(map_items.begin(), map_items.end(), [itm](const auto& pair) {
+						return pair.second == itm;
+						});
+					SpawnItemToActor(actor->ID(), (*it).first.c_str());
+				}
 			}
 		}
 		else

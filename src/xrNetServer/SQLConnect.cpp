@@ -252,7 +252,7 @@ void DBService::UpdateInsertPropertyInternal(UserDBProperty data)
 			{
 				pstmt = con->prepareStatement
 				(
-					"INSERT INTO users_property (user_id, health, stamina, radiation, psy, sleepiness, hunger, thirst, wounds, money, community, ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+					"INSERT INTO users_property (user_id, health, stamina, radiation, psy, sleepiness, hunger, thirst, wounds, money, community ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 				);
 
 				pstmt->setInt		(1, data.id);
@@ -353,7 +353,7 @@ xr_hash_map<xr_string, int> DBService::LoadGame(shared_str need_field)
 
 DBService::UserDBProperty DBService::SelectProperty(int id)
 {
-	DBService::UserDBProperty res;
+	DBService::UserDBProperty res = {};
 	try
 	{
 		if (!con->isClosed())
@@ -363,20 +363,21 @@ DBService::UserDBProperty DBService::SelectProperty(int id)
 			pstmt->execute();
 			sql::ResultSet* set = pstmt->getResultSet();
 
-			set->next();
-			Msg("health: %f, stamina: %f", set->getDouble("health"), set->getDouble("stamina"));
-			res.id				= id;
-			res.health			= set->getDouble("health");
-			res.stamina			= set->getDouble("stamina");
-			res.radiation		= set->getDouble("radiation");
-			res.psy				= set->getDouble("psy");
-			res.sleepiness		= set->getDouble("sleepiness");
-			res.hunger			= set->getDouble("hunger");
-			res.thirst			= set->getDouble("thirst");
-			res.wounds			= set->getDouble("wounds");
-			res.money			= set->getInt("money");
-			res.community		= set->getInt("community");
-
+			if (set->next())
+			{
+				Msg("health: %f, stamina: %f", set->getDouble("health"), set->getDouble("stamina"));
+				res.id			= id;
+				res.health		= set->getDouble("health");
+				res.stamina		= set->getDouble("stamina");
+				res.radiation	= set->getDouble("radiation");
+				res.psy			= set->getDouble("psy");
+				res.sleepiness	= set->getDouble("sleepiness");
+				res.hunger		= set->getDouble("hunger");
+				res.thirst		= set->getDouble("thirst");
+				res.wounds		= set->getDouble("wounds");
+				res.money		= set->getInt("money");
+				res.community	= set->getInt("community");
+			}
 
 			delete set;
 			delete pstmt;
