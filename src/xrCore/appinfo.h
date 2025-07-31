@@ -7,6 +7,7 @@ public:
 
 	ThreadID MainThread = 0;
 	ThreadID SecondaryThread = 0;
+ 
 
 public:
 	bool IsSecondaryThread() const noexcept;

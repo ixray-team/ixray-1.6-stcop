@@ -23,6 +23,8 @@ xr_vector<xr_string>& GetLogVector()
 volatile BOOL				bClose				= FALSE;
 
 static char					status[1024] = "";
+static char					additional_data[1024] = "";
+
 static float				progress			= 0.0f;
 static u32					phase_start_time	= 0;
 static u32					phase_total_time	= 0;
@@ -119,6 +121,23 @@ void Phase(const char* phase_name)
 	Progress(0);
 
 	Msg("\n* New phase started: %s", phase_name);
+	csLog.Leave();
+}
+
+void AditionalData(const char* format, ...)
+{
+	csLog.Enter();
+
+	va_list		mark;
+	va_start(mark, format);
+	vsprintf(additional_data, format, mark);
+
+
+	if(ActiveIteration->phases.size() > 0)
+	{
+  		ActiveIteration->phases[ActiveIteration->phases.size() - 1].AdditionalData = additional_data;
+	}
+ 
 	csLog.Leave();
 }
 
