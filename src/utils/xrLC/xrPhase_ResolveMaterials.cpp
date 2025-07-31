@@ -18,22 +18,17 @@ void	CBuild::xrPhase_ResolveMaterials()
 	CTimer t;
 	t.Start();
  	// Calculating materials
-	xr_vector<_counter>	counts;
+	concurrency::concurrent_vector<_counter> counts_mt_safe;
 	{
-		counts.reserve		(256);
-		
-		xr_parallel_foreach( lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
+  		counts_mt_safe.reserve(256);
+		xr_parallel_foreach(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
 		{
-			// Face* F = *F_it;
 			BOOL	bCreate = TRUE;
-
-			for (u32 I = 0; I < counts.size(); I++)
+ 			for (u32 I = 0; I < counts_mt_safe.size(); I++)
 			{
-				if (F->dwMaterial == counts[I].dwMaterial)
+				if (F->dwMaterial == counts_mt_safe[I].dwMaterial)
 				{
-					csResolveMat.Enter();
- 					counts[I].dwCount += 1;
-					csResolveMat.Leave();
+					counts_mt_safe[I].dwCount += 1;
 					bCreate = FALSE;
 					return;
 				}
@@ -44,11 +39,9 @@ void	CBuild::xrPhase_ResolveMaterials()
 				_counter	C;
 				C.dwMaterial = F->dwMaterial;
 				C.dwCount = 1;
-				csResolveMat.Enter();
- 				counts.push_back(C);
-				csResolveMat.Leave();
+				counts_mt_safe.push_back(C);
 			}
- 		});
+		});
 	}
 	clMsg("Calculating materials/subdivs (MT)... Memory: [%umb] [%ums]", GetMemoryUsed() / 1024 / 1024, t.GetElapsed_ms());
 	
@@ -58,17 +51,19 @@ void	CBuild::xrPhase_ResolveMaterials()
 	u32 msCalc = 0;
 	{		
 		//x6 Áûסענוו םא Ryzen 7 3700x קול SC
+		xr_vector<_counter> count(counts_mt_safe.begin(), counts_mt_safe.end());
+
 		concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> g_Xsplits_def;
 		g_Xsplits_def.reserve(64*1024);
-		g_Xsplits_def.resize(counts.size());
+		g_Xsplits_def.resize(count.size());
 
  		xr_parallel_foreach ( lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
 		{
 			if (!F->Shader().flags.bRendering) return;					
 			
-			for (u32 I=0; I<counts.size(); I++)
+			for (u32 I=0; I< count.size(); I++)
 			{
-				if (F->dwMaterial == counts[I].dwMaterial)
+				if (F->dwMaterial == count[I].dwMaterial)
 				{
 					g_Xsplits_def[I].push_back(F);
 				}
@@ -78,7 +73,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 
 		  
 		g_XSplit.reserve(64 * 1024);
-		g_XSplit.resize(counts.size());
+		g_XSplit.resize(counts_mt_safe.size());
 		for (auto i = 0; i < g_XSplit.size(); i++)
 		{
   			g_XSplit[i] = new vecFace( g_Xsplits_def[i].begin(), g_Xsplits_def[i].end() );
