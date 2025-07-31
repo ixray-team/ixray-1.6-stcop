@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mar_csky_leader_intro_dialog_0">
+		<text>Welcome back to the world of the living, stalker. How are you feeling?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_2">
+		<text>Do you remember what happened to you?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_4">
+		<text>In a joking mood, eh? That bodes well for your recovery. I'm Lebedev, the group leader, and I'm responsible for everyone here... that includes you, for as long as you're here. We call ourselves Clear Sky, and you are in our base right now. We picked you up in the Swamps after the emission...</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_6">
+		<text>Lucky? Hmm... I doubt it. The facts are these: you survived the emission. That's the first thing I still can't explain. The second thing is that our patrol found you in the Swamps, which are essentially endless quicksand. And thirdly, you nearly got torn into shreds by a pack of pseudodogs, but our boys got you out just in time. Such a chain of events tells me it's more than just luck... Anyway, I need to finish what I'm doing, so let's continue this conversation later.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_0">
+		<text>Hello, merc! You became quite a legend while you were out of it - even you wouldn't believe some of the rumors I've heard... Hah! Anyways, here's a drink on the house for a lucky son of a gun! It should help you relax and tell me all about your adventures, 'cause I'm just dying of curiosity!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_2">
+		<text>Well then, you drink and I'll tell you about this place. It used to be pretty quiet here - we had the paths worked out, the right places explored and the approach covered. Of course, the Swamps ain't exactly Spring Break material, but it wasn't too bad either. Yeah... it wasn't too bad, until the last emission - the biggest we've ever seen. These days our boys pray to both God and the Devil before going out of the base, 'cause getting back alive is a miracle in its own right! But we're managing to hold it together, because our guys ain't here for loot. They're fighting for a cause...</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_4">
+		<text>I was collecting bottles, one after another, and they led me here... Ha-ha! I'm kidding, man! Truth is, there was no place for me in that other world, it didn't want me. In the end, I came here... first to the Zone and then to Clear Sky. The guys here are alright, and I'm needed here. They come back after a mission, I pour them a drink, tell a few dirty jokes and my job is done - simple, but effective. By the way, they call me Cold around here. </text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_6">
+		<text>In our base. As you can see it's a small, sinking farmstead in the middle of romantic, endless Swamps. I couldn't tell you where it is exactly, but it's the last place in the Zone where you can meet real people: guys who won't screw you, stab you in the back or let you bleed to death to save a medkit!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_8">
+		<text>You know why you've never heard of it? Because too many people want to know about it, and the fewer that do the better! \nLebedev is our leader - the man is a rock if I've ever seen one. He's the glue that holds our whole group together. \nThen there's Beanpolev, professor Beanpolev. He's like a walking encyclopedia and a calculator in one - knows more about the Zone than... well, anyway... \nOur technician's called Gray, and he can make you a rifle out of an empty can, with ammo to boot. He could use some spares, but apart from that... \nAnd finally we have Suslov. He's a trader, but he ain't like others of his trade. He won't try to rip you off or screw you - he knows what stalkers go through to get their loot, and he respects that.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_1">
+		<text>You already have a basic understanding of some things, while others will necessitate a more detailed explanation. The inexplicable fact is that twice you were affected by emissions and survived. Clearly, you were not subjected to the peak of these emissions, because you would have certainly would have been killed; however, it does appear that you are able to survive emission levels that are lethal for others. That is the general outline of what took place.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_3">
+		<text>It's true - some of your abilities, such as motor skills, reaction and endurance, improved rapidly after the emission. It seems that the emission supplied your body with energy... Conversely, this brief period of strength is followed by a sharp decline in your well-being, the effects of which you are currently experiencing. \nFinally, I am going to tell you something you already know: the emissions are destroying your nervous system. If they keep reoccurring - you will die... or, what's worse, lose your intelligence and your very "self."</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_5">
+		<text>Regrettably, no. The best I can do for you is to reduce the negative impact of emissions on your body. I am currently concluding a series of tests, and after Lebedev confirms the results I will be in a position to carry out the necessary procedures. However, I would like to stress once again the fact that this is not a panacea and it will not solve the problem. All you are getting now is a little more time until the point when your nervous system begins to break down.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_7">
+		<text>Alas, that is all. The only other thing I can do for you is answer any questions you may have.</text>
+	</string>
+	<string id="mar_csky_doctor_about_people_1">
+		<text>People are mistaken in their belief that they understand the essence of what the Zone truly is. Some consider it to be a universal evil, others - a wonder sent down to humanity, and others still consider it no more than a source of riches... They are all wrong. The Zone is impossible to understand when viewed through the prism of human perception; moreover, it is far too early for humans to even try. Ergo, the actions of both the government and stalkers with respect to the Zone are misguided, and I fear that the potential consequences may be... or, indeed, are completely unpredictable. Naturally, this represents a terrible danger...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_1">
+		<text>Young man, if only I had the answer to that question... We are studying the Zone meticulously in hopes of finding it! \nThe Zone appeared as a result of the actions... let's call them "misguided" human actions, and we are unable to return to the status quo. The Zone cannot be destroyed, nor will it disappear of its own accord. We, Clear Sky, believe that there is only one way to reconcile man with the Zone: coexistence. </text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_3">
+		<text>How can I best explain? Let's put it like this: any complicated system in nature, and that includes the Zone, automatically seeks equilibrium in the absence of destabilizing external factors. That was the case here in recent years - the Zone was stable and there were no significant deviations from the norm... And now? Now we've seen a gigantic emission that has changed the face of the Zone. The system became unstable, distorted... a glitch, of sorts. The Zone is spewing out emission after emission and pumping itself full of energy with each one, so much so that the readings on my sensors oscillate with unbelievable speed! And unless we find a way of reversing the trend, the result will be a disaster of far greater proportions than the 1986 catastrophe. \nThe most important lesson in all this is that this "glitch" is not a product of natural causes. This is human handiwork...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_5">
+		<text>That's what we are attempting to find out. Perhaps knowing who disrupted the Zone's equilibrium will give us a chance to prevent a disaster.</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_7">
+		<text>Since man caused this mess in the first place, man may well be the only one able to set it right. In any event, I very much hope that is the case...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_9">
+		<text>I fear that question is not one I can answer. I suggest you address it to Lebedev. </text>
+	</string>
+	<string id="mar_csky_doctor_hello_dialog_0">
+		<text>I am glad to see you, young man. You look considerably better.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_1">
+		<text>Unfortunately - yes. So, will you help us?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_0">
+		<text>Got some fresh air? You look better, that's for sure. \nLet me fill you in on the situation. \nYou're in the Clear Sky base. Don't try to remember who we are - you've never heard of us, and there's a very good reason for that. Our mission is to research the Zone. \nWe believe that the Zone must be studied and understood so that humanity knows what it is facing here. Understanding is the key to coexisting with the Zone, because if you think about it, the Zone is the most wondrous phenomenon humanity has been confronted with in its entire history! </text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_10">
+		<text>We're having a very tough time here recently. The emission reduced the number of anomalies in the Swamps, which made the area easily accessible for bandits and other vermin. There's so many of them they'll be setting up camp in our base soon if we don't do something about it! The problem is that we're not really the fighting type, so we've been steadily losing ground, but you... one look at you tells me you're a pro in that sort of thing! Your experience can save the lives of many of my boys.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_2">
+		<text>As I said: we're researchers. We're trying to figure out the nature of the Zone, determine the reasons which caused it to appear, and formulate the rules that govern its existence. We are not consumed by a quest for money, we don't seek fields of artifacts, and we're not interested in turf wars with other factions. That is why we're hiding here in the Swamps and concentrating on our research. \nOur forte is not combat, but knowledge - knowledge of the Zone, accumulated over years of research. We know more about it than stalkers and the government combined, and our research was finally shaping up into a sound, coherent picture... until the massive emission a few days ago...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_4">
+		<text>No, that emission was incredibly powerful - it was on a level of its own. It was like a hurricane that swept the whole Zone, changing it... Everything is different; the well-known and relatively safe areas have become highly radioactive and full of anomalies, but now you can access parts of the Zone that have been unreachable for years. Even the most hardened stalkers don't know what awaits them on their favorite path. \nThe other thing that changed is people, and that became evident right away. The emission destroyed the fragile balance between factions, and they're now warring for territory... \nIn other words, many strange things have happened, and I don't yet fully understand the scale of these changes... it's only been a few days since the emission. If you ask me, the strangest thing of all is that you managed to survive it. </text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_6">
+		<text>I see. How can I help you?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_8">
+		<text>Getting out of here isn't easy, not by a long shot. The Swamps are a real maze of reeds and radioactive quicksand swarming with terrible monsters and human scum... and I don't know which is worse. Only a guide can lead you safely out of here - we only have a handful of them, guys I would trust with my life without a second thought. Unfortunately, it's not that simple, because if I let you go, our presence here might not stay a secret for long.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_0">
+		<text>You survived the emission - again! I'm not even that surprised! Our boys picked you up not far from the tower when things calmed down a bit. \nYou know, Beanpolev was right: you defy scientific explanation. He believes that you acquired some... let's say "unusual" abilities, which help you survive anomalous activity that would literally tear anyone else down to atoms. Also, it looks like something is increasing your body's performance in several areas, to the point where our monitoring equipment goes off the scale. Wait, wait, don't get too excited. There's always a fly in the ointment: every emission harms your nervous system, and if this continues - you will die.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_10">
+		<text>You're right, but we do know how to prevent a disaster and stop the emissions. And that means something...</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_12">
+		<text>We have to find out who was in the center of the Zone and stop them at ANY price.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_14">
+		<text>There's a strange connection between you and the Zone. On the one hand, every new emission gradually kills you. On the other hand, you survive in situations where others don't stand a chance. My gut feeling tells me that your abilities—your gift, your curse, call it what you will—they mean you can get through places that others wouldn't even dream of. And at the moment we need to act very quickly.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_16">
+		<text>I knew you'd ask that. The answer is simple: if the emissions aren't stopped, your nervous system will burn out and you'll die. Help us and you'll save yourself. Now, this may sound like a line from a corny movie, but you really don't have a choice.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_2">
+		<text>A normal emission is the release of energy accumulated in the Zone, a discharge if you like. But what's happening now is completely different! \nIn my opinion, the increasing regularity of these emissions is the Zone's response to some sort of serious threat, akin to the response provided by a human immune system. It is difficult to rationally explain coexistence between humans and the Zone. The Zone tolerates us in some areas and forbids us from going to others. Whatever is beyond the Scorcher and further towards the center of the Zone is taboo - a place where stalkers are not supposed to set foot. I think that recent events in the Zone are related to the fact that someone broke that taboo and made it past the Brain Scorcher.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_4">
+		<text>It's hard to say. To answer that question I would need to know what's in the center of the Zone. Some say the Monolith, others say the Wish Granter... the more unpretentious ones dream about fields of rare artifacts... I was at the power plant myself, a young specialist at the time, but I don't know what's there now. What I can say is that the Scorcher appeared for a reason. It prevents the center of the Zone from being reached. People cannot go beyond the Brain Scorcher.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_6">
+		<text>I didn't think so until the large emission. Hell, nobody thought so. However, if you consider the emissions to be a defensive reaction, then the answer is obvious: someone made it through the Scorcher and the emission was the Zone's response. And since the emissions haven't stopped, whoever it was must still be alive. The Zone is trying to get them and it's killing everything that's alive in the process.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_8">
+		<text>I know a lot about the Zone, but I can't share everything with you. You'll just have to trust me on some things. \nA system, any system, needs to be in equilibrium. The Zone is unstable right now, and this instability is increasing. If the constant emissions aren't stopped, the Zone will become so unstable that a new disaster will occur. Which brings us to what Clear Sky is doing - we're trying to prevent that disaster.</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_0">
+		<text>That's enough chitchat! There's been another attack on our outpost... Help us fight it off! \nIf it makes any difference, some of the boys who saved you are there right now. \nYou still remember how to survive in the Zone?</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_21">
+		<text>Great! Get over to the trader and he'll fit you out with some basic equipment. After that, head straight to the outpost. Once you're outside the base listen to my advice - I'll try to guide you along.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_1">
+		<text>See for yourself. There's hardly any equipment - it's like life after a nuclear war! If we do get a hold of something it's about to fail anyway and there ain't shit around to use for spare parts. That's why I'm having to adapt whatever I find and use it as best I can... Only last week I needed to make a radio receiver. What do you think I used for parts? That's right, a goddamn fridge! Hah. I'm not sure whether to laugh or cry...</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_3">
+		<text>Yeah, there ain't much to get excited about around here. Not like the Garbage... I heard they dug up old Soviet caches! After the accident at the Chernobyl NPP, they sent convoys there with contaminated vehicles and equipment and all sorts of other crap... They thought it was all waste 'cause it was radioactive! That was then! Nowadays nobody would even call that radiation, so there's a real gold rush going on there. Stalkers are flocking over there from all over the Zone to dig for loot. It's a pity not much of it filters through down here, unless Lebedev sends the boys to pick up specific components...</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_5">
+		<text>Nothing special. I repair and upgrade weapons and suits... Basically, I do whatever needs getting done. If you need something fixed - I'm your man. \nEh, if I could get a few spare parts I would make the guys some real nice toys! Weapons, armor, equipment - I'd take 'em all to a whole new level! \nRemember, if you bump into something useful, bring it here and I'll do it up real nice - that's a promise.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_0">
+		<text>O welcome, guest from foreign lands! What come you with? A bursting purse or prized exotic wonders? </text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_10">
+		<text>Yeah, I know. Anyway, listen, I've told you too much as it is. Time is money, so if you want to trade, go ahead, if not - I'll see you around.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_2">
+		<text>Yeah, I heard your story. I reckon the main thing is that you're still alive... stuff is easy enough to replace, s'long as the Zone is kind to ya... So, we gonna trade or you got some questions for me?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_4">
+		<text>That's the sort of people we are! You can't buy an extra fifteen minutes of life or a spare store from death, but us traders are needed everywhere. Even in the Zone, even in the Swamps and even underground. \nIt's an illusion that the Zone is under lock and key and the army has all the ways in and out sealed. Think about it, nowadays artifacts and rare specimens from the Zone can be found all over the world, and your fellow stalkers never have a shortage of canned meat, vodka, ammo or equipment - somebody's gotta be responsible for all that, right? Well, that's where we come in. In this place it ain't like selling bootleg CDs on the outside with the cops up your ass every damn day! \nAround here the situation is very simple: the outside world has an interest in the Zone and vice versa, but it's officially forbidden, prohibited and all that bullshit! That's what we're here for... we make sure those interests are satisfied, and everybody's happy. There's a joke among traders that if someone points a gun at you, your best bet is to try to buy it off them! </text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_6">
+		<text>Let's not talk about it! You have no idea how tired I am of peddling these trinkets! There's a ton of ordinary artifacts out there, but the best tidbits pass this place by. I haven't had a unique item in my store for ages.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_8">
+		<text>Who knows? Maybe stalkers have already found everything there is to find. Man, getting beyond the Scorcher would be a dream. I heard you can get enough artifacts there to last you a lifetime... provided your life doesn't end there and then. It's about time us traders joined forces and used our connections to find a way of getting past that thing.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_0">
+		<text>At last! Here, take this basic equipment kit - it's designed specifically for patrol missions.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_2">
+		<text>I've been ordered to issue you some equipment. There's no time for questions, the boys need you now!</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_111">
+		<text>Then listen carefully. We have made use of all our contacts and connections in the Zone. As a result, we know that a certain stalker at the Cordon was asking Sidorovich about some very strange components. That's all we have for the moment, but it's a lead.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_11111">
+		<text>Through the Swamps, of course. How else? But remember what I said - after the Emission, a whole army of all kinds of scum turned up in the area. Now they control almost everything. We are under siege and I'm not exaggerating one bit. So before we can help you get to the Cordon, we have to regain control of the Swamps, and with your help I think we should be able to do it.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_211">
+		<text>Well, you still have time to think about it, but not much. Come back when you're ready. </text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_11">
+		<text>You head over to pay the barman a visit. Have a good drink and come back then. No use talking to you now - you look like a controller has rearranged your brain. </text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_21">
+		<text>What are you still doing here? Go collect your equipment from Suslov right now!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_31">
+		<text>Got the equipment? Well quit wasting time, then - head over to the outpost, double time!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_41">
+		<text>Helping us is in your interests. Unless you want to spend the rest of your life as a brainless shell, of course.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_91">
+		<text>Start talking, buddy.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_11">
+		<text>I suggest you go see Lebedev - he doesn't call for people for nothing.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_21">
+		<text>Not a good time to talk, buddy. Haven't you heard? The second outpost is being attacked. How about you go help them out, huh?</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_31">
+		<text>Hello Mr. Two-Emissions-And-I'm-Still-Standing! I think Lebedev wanted to talk to you. Why don't you go and see him before a third Emission hits you? Ha-ha! </text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_41">
+		<text>What's new, bro?</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_11">
+		<text>Heck, buddy, you look like Death! You need to get some fresh air or something. On that note, we've got an open-air bar around here. </text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_21">
+		<text>I think Lebedev was looking for you. I reckon you ought to go speak to him. While you do that, I'm gonna fix up a couple of shooters...using frigging scrap, as usual.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_31">
+		<text>You heard the "Help!" signal from the second outpost, right? Go help them out!</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_41">
+		<text>Hello, O, Wonder of the Zone! I heard Lebedev wanted to get a piece of your invincible aura! Go see him.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_91">
+		<text>What's up?</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_11">
+		<text>Holy cow! You're as pale as a vampire! You need to visit the bar, that's what you need!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_21">
+		<text>You look pretty good...for someone who survived the Emission anyhow. What you really want is to sit by the fireplace at Lebedev's...</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_31">
+		<text>We can talk later. You're needed at the outpost now - go!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_41">
+		<text>Oh my! You should go see Lebedev...one drink won't do it. </text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_91">
+		<text>Want to trade?</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_111">
+		<text>Gotcha.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_211">
+		<text>That's exactly what I'm doing.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_311">
+		<text>That's a hell of a joke... NOT!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_1">
+		<text>There's not much to tell. I was leading a group of scientists through the swamps when an emission hit. I remember nothing after that...I regained my consciousness here. So, now you tell me what happened.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_3">
+		<text>How did you end up here?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_5">
+		<text>Umm, about this place... Would you give me a clue as to where we are?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_7">
+		<text>I'm no stranger to the Zone, yet I've never heard about Clear Sky. How do things work here?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_9">
+		<text>...</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_0">
+		<text>What happened to me?</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_2">
+		<text>Yeah, I ain't feeling too good...</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_4">
+		<text>Can you stop the destruction of my nervous system?</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_6">
+		<text>Can you do anything else for me?</text>
+	</string>
+	<string id="mar_csky_doctor_about_people_0">
+		<text>I've seen all types of folks in the Zone. Some come here chasing their dreams, some in search of the Zone's wonders, and some are just looking for loot. Why does Clear Sky study the Zone?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_0">
+		<text>So, what is the Zone?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_2">
+		<text>Why is the Zone having the shakes? Know anything about that?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_4">
+		<text>I wish I knew whose it is...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_6">
+		<text>Is it really within man's power?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_8">
+		<text>In what way exactly? What is the point of the "rescue plan"?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_11">
+		<text>You need to stop hanging around here, man. Got business with Lebedev? Then do as he says, period.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_111">
+		<text>I will talk to him, thanks.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21">
+		<text>So, are you ready to go to the outpost?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_211">
+		<text>I'm ready.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_2111">
+		<text>Alrighty. I'll blindfold you until we get there. You understand, I'm sure - we must keep the routes secret.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21111">
+		<text>Right.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_212">
+		<text>Not yet.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_2121">
+		<text>Then hurry up.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21211">
+		<text>Okie-doke.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_31">
+		<text>I won't guide you through the swamps. Lebedev's orders.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_311">
+		<text>I see.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_41">
+		<text>So, want me to lead you to the Great Swamps?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_411">
+		<text>Yes.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_4111">
+		<text>You know the rules - you'll go blindfolded. Just don't let go of my shoulder and you'll be fine.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_41111">
+		<text>OK.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_412">
+		<text>Not yet.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_11">
+		<text>Great. Do you want me to guide you to our base?</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_111">
+		<text>Yes.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_1111">
+		<text>Fine, then put this patch over your eyes and don't let go of my shoulder until I say so.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_11111">
+		<text>Let's go.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_112">
+		<text>Not yet.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_0">
+		<text>Looks like my options are pretty limited.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_11">
+		<text>Yes.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_1111">
+		<text>That'll be fine. How do I reach the Cordon?</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_111111">
+		<text>Understood.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_21">
+		<text>No, I need some time to think it over.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_2111">
+		<text>That's a deal.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_111">
+		<text>I see your point.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_211">
+		<text>OK.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_311">
+		<text>Yup.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_911">
+		<text>I just dropped in for a sec. I should be getting on my way.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_1">
+		<text>Why are you hiding?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_11">
+		<text>...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_3">
+		<text>What was so peculiar about it? We've had emissions before...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_5">
+		<text>If I knew how I survived, I'd tell you in a second. But I don't remember anything...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_7">
+		<text>I'd better leave. I'm pretty beat up, but I can still walk and hold a gun. How do I get out of here?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_9">
+		<text>What are you trying to say?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_1">
+		<text>Why do emissions occur this often?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_11">
+		<text>Lots of confidence you got there. So, what's the plan?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_13">
+		<text>And why are you telling me this, of all people?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_15">
+		<text>Hrm... Not sure I wanna jump right in the thick of things. Why do I have to take part in this?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_3">
+		<text>Someone got past the Scorcher? What risks does this pose for the Zone?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_5">
+		<text>Is there a real way to pass the Scorcher? Even a theoretical chance?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_7">
+		<text>What is the danger of such frequent emissions?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_9">
+		<text>Prevent the disaster? You're not even strong enough to fight off bandits.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_1">
+		<text>My head's splitting... and spinning too... Basically, I'm in real good shape.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_3">
+		<text>OK... I remember leading an expedition through the swamps. Bunch of scientists. Then... the emission... That's it. Where am I, is this heaven? Then why does it look so much like the Zone?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_5">
+		<text>Oh. I guess I got lucky then...</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_111">
+		<text>OK.</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_2">
+		<text>I remember bits and pieces.</text>
+	</string>
+	<string id="mar_csky_tactic_about_me_dialog_0">
+		<text>What are you doing here?</text>
+	</string>
+	<string id="mar_csky_tactic_about_me_dialog_1">
+		<text>Trying to get some rest. Assembling pieces of information the guys bring me. Consulting our valiant leader. You see, we guides are Clear Sky's eyes and ears at the Swamps.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_11">
+		<text>Dude, I haven't slept for three days... or is it four? Lemme catch some z's, aight?</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_111">
+		<text>Aight.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_21">
+		<text>Dude, please...</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_211">
+		<text>Alright, alright, get some rest.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_31">
+		<text>Wait a minute. Reaching the Great Swamps is easy - our guides will lead you out. But if you want to actually survive there, you need to learn about the current tactical situation and your PDA's new features. So, if you're curious about any of that, just ask.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_41">
+		<text>Almost all of the Swamps are swamped with either bandits or monsters. We're under siege, basically.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_51">
+		<text>Sure, we've secured a footing on the Great Swamps, but it really is just one foot. Not the most comfortable of positions, believe you me.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_61">
+		<text>The Swamps are safe, or at least as safe as a swamp can be. The same cannot be said, however, of the paths that lead outside them.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_71">
+		<text>You're a persistent little number, aren't ya? We're all impressed, even the guides. If you want to leave for the Cordon, one of us will be waiting for you in the village, on the southeast side of the Swamps.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_81">
+		<text>Everything all right? I'll get back to my nap, then...</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_0">
+		<text>What's the tactical situation like?</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_1">
+		<text>In a word: shit. In two: deep shit. Our fighters can hardly hold the Great Swamps - they're being constantly pushed back by bandits and monsters. The enemy simply outnumbers us.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_2">
+		<text>We’ve managed to make our presence felt here at the Swamps, but the bandits are still pestering us. Their continuous raids, coming from the farm northeast of here, are quite... bothersome, to put it mildly.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_3">
+		<text>The Swamps are ours, save a handful of areas. Unfortunately, these areas include the paths that connect us to the outside world. These approaches are still under enemy control.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_4">
+		<text>In a word, kickass. Bandits and monsters still annoy us from time to time, but compared to how it used to be just recently the Swamps is like heaven on earth.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_0">
+		<text>What must be done to gain control over the Swamps?</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_1">
+		<text>Reduce the enemy's numbers. Or, to put it simply, shoot down as many as possible of those who are shooting at us. If we don't, our fighters will have no chance of securing the Swamps.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_2">
+		<text>Capture the northeastern farm. Bandits are having too easy a time over there.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_3">
+		<text>Take control over the vantage point overseeing the paths that lead to the Cordon and Agroprom. Without it we're basically cut off from the outside world.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_4">
+		<text>Get some rest? Wake up, the Swamps are ours.</text>
+	</string>
+	<string id="mar_csky_tactic_tutorial_dialog_0">
+		<text>Tell me about my PDA's new features.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_0">
+		<text>Hey! How's it going, Mr. Fix-it?</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_2">
+		<text>Heh, this ain't no walk in the park.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_4">
+		<text>Well, how are things going for you personally?</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_111">
+		<text>I see what you're getting at.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_211">
+		<text>I see.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_311">
+		<text>Yep.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_411">
+		<text>Fine.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_111">
+		<text>Good thinking.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_211">
+		<text>Good idea.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_311">
+		<text>I see.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_411">
+		<text>Yep, thanks for your advice.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_1">
+		<text>Neither, unfortunately. I got hit by an emission and barely survived. Totally empty now. The Emission seems to have scattered all my goodies all over the Swamps...</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_101">
+		<text>See ya.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_3">
+		<text>Yeah, yeah... Even at the Swamps, in a hush-hush joint like this one, there's a place for a trader. Whaddaya know?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_5">
+		<text>I see. Except it seems to me that your business isn't doing too well.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_7">
+		<text>Why the limited selection?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_9">
+		<text>You aren't the only ones looking in that direction.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_1">
+		<text>Thanks. Hey, is it always this stressful here? </text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_3">
+		<text>Yeah. I'm gone.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51">
+		<text>Hey! Where do you want me to lead you?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_511">
+		<text>To the Cordon.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5111">
+		<text>Yeah, man, my props to you for helping out our boys. I even forgot what it feels like to walk the Swamps in safety...or at least as safely as marshes on the fringes of the Zone would allow. Anyway, let's get back to business. Shall we go?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51111">
+		<text>Yup.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_511111">
+		<text>We can do away with blindfolds this time. If you step into some quicksand, dying is ever so much more fun with your eyes open...I'm just kidding! Keep your eyes peeled and remember the way across the Swamps - next time you'll have to make it on your own.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5111111">
+		<text>Gotcha.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51112">
+		<text>No, I've got some business to finish here.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5112">
+		<text>Mmm, that's a long ways from here...oh well. Time for some chop-chop?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_512">
+		<text>To your base.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5121">
+		<text>OK. Put your blindfold on and don't let go of my shoulder.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51211">
+		<text>Let's go.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_513">
+		<text>To the fishing hamlet.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_514">
+		<text>To the village ruins.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_515">
+		<text>To the burnt farmstead.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_516">
+		<text>To the southern farmstead.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_517">
+		<text>Nowhere. See you later.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_7">
+		<text>...</text>
+	</string>
+</string_table>
