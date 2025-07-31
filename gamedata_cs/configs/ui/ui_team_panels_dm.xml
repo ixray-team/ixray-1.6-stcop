@@ -2,7 +2,7 @@
   <team_panels_wnd x="300" y="65" width="447" height="600">
 
     <!--This nodes will process by UITeamPanels::InitAllFrames(...)-->
-    <frame class="frame_line" x="0" y="0" with="447" height="670" vertical="1">
+    <frame class="frame_line" x="0" y="0" width="447" height="670" vertical="1">
       <texture>ui_statSingle</texture>
     </frame>
 
