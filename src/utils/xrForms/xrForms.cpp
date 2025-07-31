@@ -56,6 +56,7 @@ void Help(const char* h_str) {
 
 CompilersMode gCompilerMode;
 
+extern bool ShowMainUI;
 void Startup(LPSTR lpCmdLine) 
 {
 	GetIterationData().push_back({ "xrLC" });
@@ -124,7 +125,7 @@ void Startup(LPSTR lpCmdLine)
 
 	// Show statistic
 	string256 stats;
-	extern std::string make_time(u32 sec);
+	extern xr_string make_time(u32 sec);
 	u32 dwEndTime = timeGetTime();
 
 	xr_sprintf(
@@ -136,7 +137,8 @@ void Startup(LPSTR lpCmdLine)
 		make_time(dwTimeDO).c_str()
 	);
 
-	if (!gCompilerMode.Silent) {
+	if (!gCompilerMode.Silent)
+	{
 		MessageBoxA(logWindow, stats, "Congratulation!", MB_OK | MB_ICONINFORMATION);
 	}
 
@@ -145,6 +147,8 @@ void Startup(LPSTR lpCmdLine)
 	// Close log
 	bClose = TRUE;
 	xrLogger::FlushLog();
+
+	ShowMainUI = true;
 	Sleep(200);
 }
 
