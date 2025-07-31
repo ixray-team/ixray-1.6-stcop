@@ -62,7 +62,7 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
 		local cond = xr_logic.pick_section_from_condlist(db.actor, db.actor, condlist)
 		if smart and cond == "true" then
 	        local npc_smart_id = alife():object(npc:id()).m_smart_terrain_id
-			if(npc_smart_id ~= 65535 and npc_smart_id ~= smart.id) or (npc:story_id() ~= 4294967296) then
+			if(npc_smart_id ~= 65535 and npc_smart_id ~= smart.id) or (npc:story_id() ~= 4294967295) then
                 local path = nil
                 local cost = 0
 		        local marsh_base_zone = db.zone_by_name["mar_space_restrictor_csky_base_noweapon"]
