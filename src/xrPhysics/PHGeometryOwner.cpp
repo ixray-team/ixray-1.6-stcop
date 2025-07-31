@@ -7,77 +7,73 @@
 
 CPHGeometryOwner::CPHGeometryOwner()
 {
-	b_builded=false;
-	m_mass_center.set(0,0,0);
-	VERIFY( ph_world );
-	//contact_callback=ContactShotMark;//ph_world->default_contact_shotmark();
-	contact_callback=ph_world->default_contact_shotmark();
-	object_contact_callback=nullptr;
-	ul_material=GMLibrary().GetMaterialIdx("objects\\small_box");
-	m_group=nullptr;
-	m_phys_ref_object=nullptr;
+	b_builded = false;
+	m_mass_center.set(0, 0, 0);
+	VERIFY(ph_world);
+
+	contact_callback = ph_world->default_contact_shotmark();
+	object_contact_callback = nullptr;
+	ul_material = GMLibrary().GetMaterialIdx("objects\\small_box");
+	m_group = nullptr;
+	m_phys_ref_object = nullptr;
 }
 
 CPHGeometryOwner::~CPHGeometryOwner()
 {
-	GEOM_I i_geom=m_geoms.begin(),e=m_geoms.end();
-	for(;i_geom!=e;++i_geom)xr_delete(*i_geom);
+	GEOM_I i_geom = m_geoms.begin(), e = m_geoms.end();
+	for (; i_geom != e; ++i_geom)xr_delete(*i_geom);
 	m_geoms.clear();
 	DestroyGroupSpace();
-	//if( b_builded )
-	//{
-		//VERIFY( m_group );
-		//if( m_group )
-		//	dSpaceDestroy( m_group );
-
-	//}
 }
-void	CPHGeometryOwner::group_add( CODEGeom& g )
+
+void CPHGeometryOwner::group_add(CODEGeom& g)
 {
-	if(!m_group)
+	if (!m_group)
 	{
 		CreateGroupSpace();
 	}
-	VERIFY( m_group );
-	{
-		g.add_to_space((dSpaceID)m_group);
-	}
+	VERIFY(m_group);
+
+	g.add_to_space((dSpaceID)m_group);
 }
 
-void	CPHGeometryOwner::group_remove( CODEGeom& g )
+void CPHGeometryOwner::group_remove(CODEGeom& g)
 {
-	VERIFY( m_group );
-	g.remove_from_space( m_group );
-	if( dSpaceGetNumGeoms( m_group ) ==0 )
+	VERIFY(m_group);
+	g.remove_from_space(m_group);
+
+	if (dSpaceGetNumGeoms(m_group) == 0)
 		DestroyGroupSpace();
 }
 
-void CPHGeometryOwner::			build_Geom	(CODEGeom& geom)
+void CPHGeometryOwner::build_Geom(CODEGeom& geom)
 {
-
 	geom.build(m_mass_center);
-	//geom.set_body(m_body);
 	geom.set_material(ul_material);
-	if(contact_callback)geom.set_contact_cb(contact_callback);
-	if(object_contact_callback)geom.set_obj_contact_cb(object_contact_callback);
-	if(m_phys_ref_object) geom.set_ref_object(m_phys_ref_object);
-	//VERIFY( m_group );
-	group_add( geom );
 
+	if (contact_callback)
+		geom.set_contact_cb(contact_callback);
+
+	if (object_contact_callback)
+		geom.set_obj_contact_cb(object_contact_callback);
+
+	if (m_phys_ref_object)
+		geom.set_ref_object(m_phys_ref_object);
+
+	group_add(geom);
 }
 
 void CPHGeometryOwner::build_Geom(u16 i)
 {
-	CODEGeom& geom=*m_geoms[i];
+	CODEGeom& geom = *m_geoms[i];
 	build_Geom(geom);
-	geom.element_position()=i;
+	geom.element_position() = i;
 }
 
 void CPHGeometryOwner::build()
 {
-	if(b_builded) return;
-	//if(m_geoms.size()>1)//add/remove geom issues
-	//VERIFY(!m_group);
+	if(b_builded)
+		return;
 
 	u16 geoms_size=u16(m_geoms.size());
 	for(u16 i=0;i<geoms_size;++i) build_Geom(i);
@@ -173,11 +169,11 @@ void CPHGeometryOwner::SetPhObjectInGeomData(CPHObject* O)
 
 dGeomID CPHGeometryOwner::dSpacedGeometry()
 {
-	if(!b_builded) return 0;
-	VERIFY( m_group );
-	//if(m_group) 
-	return (dGeomID) group_space();//(dGeomID)m_group;
-	//else return (*m_geoms.begin())->geometry_transform();
+	if (!b_builded)
+		return 0;
+	VERIFY(m_group);
+
+	return (dGeomID)group_space();
 }
 
 void CPHGeometryOwner::			add_Box		(const Fobb&		V)
@@ -210,12 +206,6 @@ void CPHGeometryOwner::add_Shape(const SBoneShape& shape,const Fmatrix& offset)
 			Fobb box=shape.box;
 			Fmatrix m;
 			m.set(offset);
-			//Fmatrix position;
-			//position.set(box.m_rotate);
-			//position.c.set(box.m_translate);
-			//position.mulA(offset);
-			//box.m_rotate.set(position);
-			//box.m_translate.set(position.c);
 			box.transform(box,m);
 			add_Box(box);
 			break;
@@ -349,17 +339,6 @@ u16	CPHGeometryOwner::numberOfGeoms() const
 void CPHGeometryOwner::get_Extensions(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) const
 {
 	t_get_extensions( m_geoms,axis, center_prg, lo_ext, hi_ext );
-	/*
-	lo_ext=dInfinity;hi_ext=-dInfinity;
-	GEOM_CI i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i)
-	{
-		float temp_lo_ext,temp_hi_ext;
-		(*i)->get_Extensions(axis,center_prg,temp_lo_ext,temp_hi_ext);
-		if(lo_ext>temp_lo_ext)lo_ext=temp_lo_ext;
-		if(hi_ext<temp_hi_ext)hi_ext=temp_hi_ext;
-	}
-	*/
 }
 
 void CPHGeometryOwner::get_MaxAreaDir(Fvector& dir)
@@ -462,7 +441,6 @@ void	CPHGeometryOwner::add_geom( CODEGeom* g )
 	VERIFY( m_group );
 	m_geoms.push_back( g );
 	group_add( *g );
-	//g->add_to_space( m_group );
 }
 
 void	CPHGeometryOwner::remove_geom( CODEGeom* g )
@@ -471,7 +449,6 @@ void	CPHGeometryOwner::remove_geom( CODEGeom* g )
 	VERIFY( m_group );
 	GEOM_I gi = std::find( m_geoms.begin(), m_geoms.end(), g );
 	VERIFY( gi != m_geoms.end());
-	//(*gi)->remove_from_space( m_group );
 	group_remove( *g );
 	m_geoms.erase( gi );
 }

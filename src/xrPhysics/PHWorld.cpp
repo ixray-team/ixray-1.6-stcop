@@ -81,10 +81,6 @@ void CPHMesh::Destroy()
 }
 
 ///////////CPHWorld/////////////////////////////////////////////////////////
-//#define PH_PLAIN
-#ifdef PH_PLAIN
-dGeomID plane;
-#endif
 
 #ifdef DEBUG_DRAW
 void CPHWorld::OnRender()
@@ -157,10 +153,6 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 	dWorldSetGravity(phWorld, 0, -Gravity(), 0);
 	Mesh.Create(0, phWorld);
 
-#ifdef PH_PLAIN
-	plane = dCreatePlane(Space, 0, 1, 0, 0.3f);
-#endif
-
 	dWorldSetERP(phWorld, Erp(world_spring, world_damping));
 	dWorldSetCFM(phWorld, Cfm(world_spring, world_damping));
 
@@ -182,9 +174,7 @@ void CPHWorld::Destroy()
 	r_spatial.clear();
 
 	Mesh.Destroy();
-#ifdef PH_PLAIN
-	dGeomDestroy(plane);
-#endif
+
 #ifdef DEBUG
 	debug_output().PH_DBG_Clear();
 #endif
