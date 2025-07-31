@@ -261,6 +261,13 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 					PROF_SAVE_CAPTURE("ixr.opt");
 				}
 				
+				if (ImGui::BeginMenu("Editors##ToolsInGameImGui"))
+				{
+					ImGui::MenuItem("OMF##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
+					ImGui::EndMenu();
+				}
+
+
 				ImGui::EndMenu();
 			}
 
