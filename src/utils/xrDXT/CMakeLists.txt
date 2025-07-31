@@ -48,8 +48,8 @@ add_custom_command(TARGET ${PROJECT_NAME}
 )
 
 # RedImage
-target_link_libraries(xrDXT PRIVATE ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.lib)
-target_include_directories(xrDXT PRIVATE "${REDIMAGE_PATH}/build/native/include/")
+target_link_libraries(xrDXT PUBLIC ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.lib)
+target_include_directories(xrDXT PUBLIC "${REDIMAGE_PATH}/build/native/include/")
 
 ## Copy binaries
 add_custom_command(TARGET ${PROJECT_NAME}
