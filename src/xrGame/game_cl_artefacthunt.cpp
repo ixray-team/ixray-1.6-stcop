@@ -35,8 +35,6 @@
 #include "game_cl_artefacthunt_snd_msg.h"
 #include "../xrEngine/IGame_Persistent.h"
 
-#include "reward_event_generator.h"
-
 game_cl_ArtefactHunt::game_cl_ArtefactHunt()
 {
 	m_game_ui = nullptr;
@@ -182,9 +180,6 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			game_PlayerState* pPlayer = GetPlayerByGameID(PlayerID);
 			if (!pPlayer) break;
 
-			if (m_reward_generator)
-				m_reward_generator->OnPlayerTakeArtefact(pPlayer);
-
 			xr_sprintf(tmp, "%s%s", "%s%s %s", *g_pStringTable->translate("mp_has_tak_art"));
 
 			xr_sprintf(Text, tmp, 
@@ -213,9 +208,6 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			game_PlayerState* pPlayer = GetPlayerByGameID(PlayerID);
 			if (!pPlayer) break;
 			
-			if (m_reward_generator)
-				m_reward_generator->OnPlayerDropArtefact(pPlayer);
-
             xr_sprintf(tmp, "%s%s", "%s%s %s", *g_pStringTable->translate("mp_has_drop_art"));
 
 			xr_sprintf(Text, tmp, 
@@ -236,9 +228,6 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 
 			game_PlayerState* pPlayer = GetPlayerByGameID(PlayerID);
 			if (!pPlayer) break;
-
-			if (m_reward_generator)
-				m_reward_generator->OnPlayerBringArtefact(pPlayer);
 
 			xr_sprintf(tmp, "%s%s", "%s%s %s", *g_pStringTable->translate("mp_scores"));
 
@@ -262,8 +251,6 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			xr_sprintf(Text, "%s%s", 
 				Color_Main, *g_pStringTable->translate("mp_art_spowned"));
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
-			if (m_reward_generator)
-				m_reward_generator->OnArtefactSpawned();
 
 			PlaySndMessage(ID_NEW_AF);
 		}break;

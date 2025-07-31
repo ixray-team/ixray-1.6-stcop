@@ -19,7 +19,6 @@
 #include "../xrEngine/string_table.h"
 #include "../xrGameSpy/xrGameSpy_MainDefs.h"
 #include "DemoPlay_Control.h"
-#include "account_manager_console.h"
 #include "gamespy/GameSpy_GP.h"
 #include "HUDManager.h"
 
@@ -2328,15 +2327,6 @@ void register_mp_console_commands()
 #endif
 
 	//GameSpy Presence and Messaging
-	CMD1(CCC_CreateGameSpyAccount,			"gs_create_account");
-	CMD1(CCC_GapySpyListProfiles,			"gs_list_profiles");
-	CMD1(CCC_GameSpyLogin,					"gs_login");
-	CMD1(CCC_GameSpyLogout,					"gs_logout");
-	CMD1(CCC_GameSpyDeleteProfile,			"gs_delete_profile");
-	CMD1(CCC_GameSpyPrintProfile,			"gs_print_profile");
-	CMD1(CCC_GameSpySuggestUNicks,			"gs_suggest_unicks");
-	CMD1(CCC_GameSpyRegisterUniqueNick,		"gs_register_unique_nick");
-	CMD1(CCC_GameSpyProfile,				"gs_profile");
 	CMD4(CCC_Integer,						"sv_write_update_bin",				&g_sv_write_updates_bin, 0, 1);
 	CMD4(CCC_Integer,						"sv_traffic_optimization_level",	(int*)&g_sv_traffic_optimization_level, 0, 7);
 
