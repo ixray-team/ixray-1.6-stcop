@@ -34,6 +34,7 @@ int APIENTRY WinMain
 
 	EngineLoadStage1(lpCmdLine);
 
+	SDL_ShowCursor();
 	EngineLoadStage2();
 
 	Console = new CTextConsole();

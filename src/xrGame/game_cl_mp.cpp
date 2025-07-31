@@ -1854,9 +1854,11 @@ void game_cl_mp::extract_server_info(u8* data_ptr, u32 data_size)
 
 void game_cl_mp::AddRewardTask(u32 const award_id)
 {
+	if (m_reward_manager == nullptr)
+		return;
+
 	CObject* tmp_view_entity = Level().CurrentViewEntity();
-	if ((tmp_view_entity && local_player) &&
-		(tmp_view_entity->ID() == local_player->GameID))
+	if (tmp_view_entity && local_player && (tmp_view_entity->ID() == local_player->GameID))
 	{
 		m_reward_manager->add_task(award_id);
 	}	
