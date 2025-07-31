@@ -28,15 +28,15 @@ CHudItem::CHudItem()
 	m_eDevicesFlags.zero();
 }
 
-DLL_Pure *CHudItem::_construct	()
+DLL_Pure *CHudItem::_construct()
 {
-	m_object			= smart_cast<CPhysicItem*>(this);
-	VERIFY				(m_object);
+	m_object = smart_cast<CPhysicItem*>(this);
+	VERIFY(m_object);
 
-	m_item				= smart_cast<CInventoryItem*>(this);
-	VERIFY				(m_item);
+	m_item = smart_cast<CInventoryItem*>(this);
+	VERIFY(m_item);
 
-	return				(m_object);
+	return m_object;
 }
 
 CHudItem::~CHudItem()
