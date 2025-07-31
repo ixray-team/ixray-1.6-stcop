@@ -41,22 +41,47 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 	string_path				fn;
 	for(;It!=It_e;++It)
 	{
-#ifdef _DEBUG
-		// Alundaio: Print list of *.thm to find bad .thms!
-		Msg("%s", (*It).name.c_str());
-#endif
-		FS.update_path		(fn, initial, (*It).name.c_str());
-		IReader* F			= FS.r_open(fn);
-		xr_strcpy			(fn,(*It).name.c_str());
+		FS.update_path(fn, initial, (*It).name.c_str());
+		IReader* F = FS.r_open(fn);
+
+		shared_str InitialPath = fn;
+
+		xr_strcpy(fn, (*It).name.c_str());
 		fix_texture_thm_name(fn);
 
 		bool FoundedChunk = !!F->find_chunk(THM_CHUNK_TYPE);
 		R_ASSERT2(FoundedChunk, "Not found chunk THM_CHUNK_TYPE");
 
-		F->r_u32			();
-		tp.Clear			();
-		tp.Load				(*F);
-		FS.r_close			(F);
+		[[maybe_unused]] u32 ThmType = F->r_u32();
+		tp.Clear();
+		[[maybe_unused]] bool NeedSave = tp.Load(*F);
+		FS.r_close(F);
+
+//#ifdef _EDITOR
+		if (NeedSave)
+		{
+			string_path		query;
+			FS.update_path	(query,"$app_data_root$","fix_texture_thm\\");
+
+			xr_string path(query);
+			path.append(fn);
+			path.append(".thm");
+
+			IWriter* W = FS.w_open(path.c_str());
+
+			W->open_chunk(THM_CHUNK_VERSION);
+			W->w_u16(0x0012);
+			W->close_chunk();
+
+			W->open_chunk(THM_CHUNK_TYPE);
+			W->w_u32(ThmType);
+			W->close_chunk();
+
+			tp.Save(*W);
+			FS.w_close(W);
+		}
+//#endif
+
 		if (STextureParams::ttImage		== tp.type ||
 			STextureParams::ttTerrain	== tp.type ||
 			STextureParams::ttNormalMap	== tp.type	)
