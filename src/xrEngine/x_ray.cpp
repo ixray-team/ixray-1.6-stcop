@@ -428,7 +428,13 @@ ENGINE_API void EngineLoadStage3()
 {
 	Console->Initialize();
 
-	xr_strcpy(Console->ConfigFile, "user.ltx");
+	shared_str UserName = "user.ltx";
+	if (g_dedicated_server)
+	{
+		UserName = "user_dedicated.ltx";
+	}
+
+	xr_strcpy(Console->ConfigFile, *UserName);
 
 	if (strstr(Core.Params, "-ltx ")) {
 		string64 c_name;

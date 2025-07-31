@@ -93,7 +93,8 @@ private:
 	AnimationModifier				m_global_modifier;
 
 public:
-	struct callback_params {
+	struct callback_params 
+	{
 		Fmatrix const*				m_rotation;
 		CAI_Stalker const*			m_object;
 		CBlend const* const*		m_blend;
@@ -113,6 +114,7 @@ public:
 		}
 	}; // struct callback_params
 
+	bool IsGlobalOrScriptPlaying = false;
 private:
 	callback_params					m_spine_params;
 	callback_params					m_shoulder_params;

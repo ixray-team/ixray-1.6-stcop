@@ -743,107 +743,6 @@ void CAI_Stalker::net_Destroy()
 	xr_delete(m_boneHitProtection);
 }
 
-void CAI_Stalker::net_Save			(NET_Packet& P)
-{
-	inherited::net_Save(P);
-	m_pPhysics_support->in_NetSave(P);
-}
-
-BOOL CAI_Stalker::net_SaveRelevant	()
-{
-	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=nullptr));
-}
-
-void CAI_Stalker::net_Export		(NET_Packet& P)
-{
-	R_ASSERT						(Local());
-
-	// export last known packet
-	R_ASSERT						(!NET.empty());
-	net_update& N					= NET.back();
-//	P.w_float						(inventory().TotalWeight());
-//	P.w_u32							(m_dwMoney);
-
-	P.w_float						(GetfHealth());
-
-	P.w_u32							(N.dwTimeStamp);
-	P.w_u8							(0);
-	P.w_vec3						(N.p_pos);
-	P.w_float /*w_angle8*/						(N.o_model);
-	P.w_float /*w_angle8*/						(N.o_torso.yaw);
-	P.w_float /*w_angle8*/						(N.o_torso.pitch);
-	P.w_float /*w_angle8*/						(N.o_torso.roll);
-	P.w_u8							(u8(g_Team()));
-	P.w_u8							(u8(g_Squad()));
-	P.w_u8							(u8(g_Group()));
-	
-
-	float					f1 = 0;
-	GameGraph::_GRAPH_ID		l_game_vertex_id = ai_location().game_vertex_id();
-	P.w						(&l_game_vertex_id,			sizeof(l_game_vertex_id));
-	P.w						(&l_game_vertex_id,			sizeof(l_game_vertex_id));
-//	P.w						(&f1,						sizeof(f1));
-//	P.w						(&f1,						sizeof(f1));
-	if (ai().game_graph().valid_vertex_id(l_game_vertex_id)) {
-		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w					(&f1,						sizeof(f1));
-		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w					(&f1,						sizeof(f1));
-	}
-	else {
-		P.w					(&f1,						sizeof(f1));
-		P.w					(&f1,						sizeof(f1));
-	}
-
-	P.w_stringZ						(m_sStartDialog);
-}
-
-void CAI_Stalker::net_Import		(NET_Packet& P)
-{
-	R_ASSERT						(Remote());
-	net_update						N;
-
-	u8 flags;
-
-	P.r_float						();
-	set_money						( P.r_u32(), false );
-
-	float health;
-	P.r_float			(health);
-	SetfHealth			(health);
-//	fEntityHealth = health;
-
-	P.r_u32							(N.dwTimeStamp);
-	P.r_u8							(flags);
-	P.r_vec3						(N.p_pos);
-	P.r_float /*r_angle8*/						(N.o_model);
-	P.r_float /*r_angle8*/						(N.o_torso.yaw);
-	P.r_float /*r_angle8*/						(N.o_torso.pitch);
-	P.r_float /*r_angle8*/						(N.o_torso.roll	);
-	id_Team							= P.r_u8();
-	id_Squad						= P.r_u8();
-	id_Group						= P.r_u8();
-
-
-	GameGraph::_GRAPH_ID				graph_vertex_id = movement().game_dest_vertex_id();
-	P.r								(&graph_vertex_id,		sizeof(GameGraph::_GRAPH_ID));
-	graph_vertex_id					= ai_location().game_vertex_id();
-	P.r								(&graph_vertex_id,		sizeof(GameGraph::_GRAPH_ID));
-
-	if (NET.empty() || (NET.back().dwTimeStamp<N.dwTimeStamp))	{
-		NET.push_back				(N);
-		NET_WasInterpolating		= TRUE;
-	}
-
-	P.r_float						();
-	P.r_float						();
-
-	P.r_stringZ						(m_sStartDialog);
-
-	setVisible						(TRUE);
-	setEnabled						(TRUE);
-}
-
 void CAI_Stalker::update_object_handler	()
 {
 	if (!g_Alive())
@@ -901,86 +800,107 @@ void CAI_Stalker::destroy_anim_mov_ctrl	()
 
 void CAI_Stalker::UpdateCL()
 {
+	START_PROFILE("stalker")
 	START_PROFILE("client_update")
-	VERIFY2						(PPhysicsShell()||getEnabled(), *cName());
+	VERIFY2(PPhysicsShell() || getEnabled(), *cName());
+
 
 	if (g_Alive())
 	{
-
-#if USE_OLD_OBJECT_PLANNER
-		if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized()) 
-#else
-		if (g_mt_config.test(mtObjectHandler) &&m_planner->GoapPlanner.GetCurrentAction())
-#endif
+		if (Remote() && !IsGameTypeSingle())
 		{
-			auto f = xr_make_delegate(this,&CAI_Stalker::update_object_handler);
+			make_Interpolation();
+		}
+
+		if (OnServer())
+		{
+#if USE_OLD_OBJECT_PLANNER
+			if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
+#else
+			if (g_mt_config.test(mtObjectHandler) && m_planner->GoapPlanner.GetCurrentAction())
+#endif
+			{
+				auto f = xr_make_delegate(this, &CAI_Stalker::update_object_handler);
 
 #ifdef DEBUG
-			xr_vector<xr_delegate<void()> >::const_iterator I = std::find(Device.seqParallel.begin(),Device.seqParallel.end(),f);
-			VERIFY							(I == Device.seqParallel.end());
+				xr_vector<xr_delegate<void()> >::const_iterator I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
+				VERIFY(I == Device.seqParallel.end());
 #endif
-			Device.seqParallel.push_back	(xr_make_delegate(this,&CAI_Stalker::update_object_handler));
-		}
-		else 
-		{
-			START_PROFILE("object_handler")
-			update_object_handler			();
-			STOP_PROFILE
+				Device.seqParallel.push_back(xr_make_delegate(this, &CAI_Stalker::update_object_handler));
+			}
+			else
+			{
+				START_PROFILE("object_handler")
+				update_object_handler();
+				STOP_PROFILE
+			}
 		}
 
-		if	(
-				(movement().speed(character_physics_support()->movement()) > EPS_L)
-				&& 
-				(eMovementTypeStand != movement().movement_type())
+
+		if ((movement().speed(character_physics_support()->movement()) > EPS_L) && (eMovementTypeStand != movement().movement_type()) && (eMentalStateDanger == movement().mental_state()))
+		{
+			if (
+				(eBodyStateStand == movement().body_state())
 				&&
-				(eMentalStateDanger == movement().mental_state())
-			) {
-			if	(
-					(eBodyStateStand == movement().body_state())
-					&&
-					(eMovementTypeRun == movement().movement_type())
+				(eMovementTypeRun == movement().movement_type())
 				) {
-				sound().play	(eStalkerSoundRunningInDanger);
+				sound().play(eStalkerSoundRunningInDanger);
 			}
-			else {
-//				sound().play	(eStalkerSoundWalkingInDanger);
+			else
+			{
+				//sound().play(eStalkerSoundWalkingInDanger);
 			}
 		}
 	}
 
+
 	START_PROFILE("inherited")
-	inherited::UpdateCL				();
+	inherited::UpdateCL();
 	STOP_PROFILE
-	
+
 	START_PROFILE("physics")
-	m_pPhysics_support->in_UpdateCL	();
+	m_pPhysics_support->in_UpdateCL();
 	STOP_PROFILE
 
-	if (g_Alive()) {
-		START_PROFILE("sight_manager")
-		VERIFY						(!m_pPhysicsShell);
-		try {
-			sight().update			();
-		}
-		catch(...) {
-			sight().setup			(CSightAction(SightManager::eSightTypeCurrentDirection));
-			sight().update			();
-		}
 
-		Exec_Look					(client_update_fdelta());
+	if (g_Alive())
+	{
+		START_PROFILE("sight_manager")
+		VERIFY(!m_pPhysicsShell);
+
+		if (OnServer())
+		{
+			try
+			{
+				sight().update();
+			}
+			catch (...)
+			{
+				sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
+				sight().update();
+			}
+
+			Exec_Look(Device.fTimeDelta); //Device.fTimeDelta
+		}
+		else
+		{
+			Exec_Look(Device.fTimeDelta); //
+		}
 		STOP_PROFILE
 
 		START_PROFILE("step_manager")
-		CStepManager::update		(false);
+		CStepManager::update(false);
 		STOP_PROFILE
 
 		START_PROFILE("weapon_shot_effector")
 		if (weapon_shot_effector().IsActive())
-			weapon_shot_effector().Update	();
+			weapon_shot_effector().Update();
 		STOP_PROFILE
 	}
+
+	STOP_PROFILE
 #ifdef DEBUG
-	debug_text	();
+	debug_text();
 #endif
 	STOP_PROFILE
 }
