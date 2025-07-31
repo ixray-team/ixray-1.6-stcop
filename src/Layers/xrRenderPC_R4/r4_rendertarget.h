@@ -45,6 +45,7 @@ public:
 	IBlender*					b_cas;
 	IBlender*					b_gtao;
 	IBlender*					b_taa;
+	IBlender*					b_gamma;
 
 #ifdef DEBUG
 	struct		dbg_line_t		{
@@ -78,6 +79,7 @@ public:
 	ref_rt						rt_Generic_1;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	//	Igor: for volumetric lights
 	ref_rt						rt_Generic_2;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
+	ref_rt						rt_BackbufferLUT;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	ref_rt						rt_Bloom_1;			// 32bit, dim/4	(r,g,b,?)
 	ref_rt						rt_Bloom_2;			// 32bit, dim/4	(r,g,b,?)
 	ref_rt						rt_LUM_64;			// 64bit, 64x64,	log-average in all components
@@ -121,6 +123,10 @@ private:
 	ref_shader					s_gtao;
 	ref_shader					s_puddles;
 	ref_shader					s_taa;
+
+	// For gamma correction in windowed mode
+	ref_rt						rt_GammaLUT;		// 24bit, 256x1 (r,g,b)
+	ref_shader					s_gamma;
 
 	// OCCq
 	ref_shader					s_occq;
@@ -341,6 +347,8 @@ public:
 	void						increment_light_marker();
 
 	void						DoAsyncScreenshot		();
+	void PhaseGammaApply();
+	void PhaseGammaGenerateLUT();
 
 #ifdef DEBUG
 	IC void						dbg_addline				(Fvector& P0, Fvector& P1, u32 c)					{
