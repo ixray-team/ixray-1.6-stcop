@@ -1,9 +1,9 @@
 #pragma once
 
+class CEditableObject;
+
 namespace XRay::Editor::HeightmapUtils
 {
-	void GenerateHeightmapByMesh(CEditableObject* Mesh, const xr_string& OutputFile);
-
 	struct SHeightMapChunk
 	{
 		xr_vector<Fvector> Vertices;    // Вершины чанка (уже оптимизированные)
@@ -63,4 +63,8 @@ namespace XRay::Editor::HeightmapUtils
 		void Draw(float scaleY = 100.f, float cellSize = 1.f, u32 color = 0xFF00FF00);
 		void MarkDirty();
 	};
+
+	void GenerateMeshByHeightmap(const SHeightMap& heightmap, CEditableObject* OutMesh);
+	void GenerateHeightmapByMesh(CEditableObject* Mesh, const xr_string& OutputFile);
+
 };

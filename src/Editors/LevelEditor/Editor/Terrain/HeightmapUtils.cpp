@@ -1,6 +1,154 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "HeightmapUtils.h"
 #include <RedImage.hpp>
+
+void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Heightmap, CEditableObject* OutMesh)
+{
+	if (!Heightmap.Data || Heightmap.Width < 2 || Heightmap.Height < 2 || !OutMesh)
+	{
+		Msg("! Invalid heightmap data or output mesh");
+		return;
+	}
+
+	CEditableMesh* Mesh = new CEditableMesh(OutMesh);
+	OutMesh->AppendMesh(Mesh);
+
+	const u32 Width = Heightmap.Width;
+	const u32 Height = Heightmap.Height;
+	constexpr float SizeHM = 1024;
+
+	xr_vector<Fvector> Vertices;
+	Vertices.reserve(Width * Height);
+
+	const float StepHM = SizeHM / (Width - 1);
+	constexpr float HalfHM = SizeHM / 2.0f;
+
+	for (u32 z = 0; z < Height; z++) 
+	{
+		for (u32 x = 0; x < Width; x++) 
+		{
+			Fvector V;
+			V.x = -(x * StepHM - HalfHM);
+			V.z = (z * StepHM - HalfHM);
+			V.y = Heightmap.GetHeight(x, z);
+			Vertices.push_back(V);
+		}
+	}
+
+	xr_vector<st_Face> Faces;
+	const u32 QuadsX = Width - 1;
+	const u32 QuadsZ = Height - 1;
+	Faces.reserve(QuadsX * QuadsZ * 2);
+
+	for (u32 z = 0; z < QuadsZ; z++)
+	{
+		for (u32 x = 0; x < QuadsX; x++)
+		{
+			const u32 V0 = z * Width + x;
+			const u32 V1 = z * Width + x + 1;
+			const u32 V2 = (z + 1) * Width + x;
+			const u32 V3 = (z + 1) * Width + x + 1;
+
+			if (Heightmap.GetHeight(x, z) <= 0.0f &&
+				Heightmap.GetHeight(x + 1, z) <= 0.0f &&
+				Heightmap.GetHeight(x, z + 1) <= 0.0f &&
+				Heightmap.GetHeight(x + 1, z + 1) <= 0.0f)
+			{
+				continue;
+			}
+
+			// Первый треугольник
+			st_Face Face1;
+			Face1.pv[0].pindex = V0;
+			Face1.pv[1].pindex = V1;
+			Face1.pv[2].pindex = V2;
+			Faces.push_back(Face1);
+
+			// Второй треугольник
+			st_Face Face2;
+			Face2.pv[0].pindex = V1;
+			Face2.pv[1].pindex = V3;
+			Face2.pv[2].pindex = V2;
+			Faces.push_back(Face2);
+		}
+	}
+
+	Mesh->Create
+	(
+		Faces.data(),
+		static_cast<u32>(Faces.size()),
+		Vertices.data(),
+		static_cast<u32>(Vertices.size()),
+		nullptr,
+		0
+	);
+
+	st_VMap* mainUvMap = new st_VMap("Texture", vmtUV, false);
+	const float uvStepX = 1.0f / (Width - 1);
+	const float uvStepZ = 1.0f / (Height - 1);
+
+	for (u32 z = 0; z < Height; z++) 
+	{
+		for (u32 x = 0; x < Width; x++) 
+		{
+			u32 idx = z * Width + x;
+			Fvector2 uv;
+			uv.x = 1.f - x * uvStepX;
+			uv.y = 1.f - z * uvStepZ;
+
+			mainUvMap->appendUV(uv);
+			mainUvMap->appendVI(idx);
+		}
+	}
+	Mesh->m_VMaps.push_back(mainUvMap);
+
+	Mesh->m_VMRefs.resize(Faces.size());
+	for (u32 faceIdx = 0; faceIdx < Faces.size(); ++faceIdx)
+	{
+		st_VMapPtLst& vmref = Mesh->m_VMRefs[faceIdx];
+		vmref.count = 3;
+		vmref.pts = xr_alloc<st_VMapPt>(3);
+
+		for (u32 j = 0; j < 3; ++j) 
+		{
+			vmref.pts[j].vmap_index = 0; // Индекс UV-карты
+			vmref.pts[j].index = Faces[faceIdx].pv[j].pindex; // Индекс UV
+		}
+	}
+
+	for (u32 faceIdx = 0; faceIdx < Faces.size(); ++faceIdx) 
+	{
+		for (u32 j = 0; j < 3; ++j)
+		{
+			Mesh->m_Faces[faceIdx].pv[j].vmref = faceIdx;
+		}
+	}
+
+	CSurface* Surface = Mesh->GetSurfaceByFaceID(0);
+	Surface->SetName("terrain");
+	Surface->SetShader("levels\\zaton_earth");
+	Surface->SetShaderXRLC("default");
+	Surface->SetGameMtl("materials\\earth");
+	Surface->SetTexture("terrain\\terrain_mp_atp");
+	Surface->SetVMap("Texture");
+
+	Surface->SetFVF(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1);
+	Surface->OnDeviceCreate();
+	OutMesh->Surfaces().push_back(Surface);
+
+	IntVec FaceIndices(Faces.size());
+	for (u32 i = 0; i < Faces.size(); ++i)
+		FaceIndices[i] = i;
+	Mesh->Surfaces()[Surface] = FaceIndices;
+
+	Mesh->GenerateFNormals();
+	Mesh->GenerateVNormals(nullptr, true);
+	Mesh->GenerateAdjacency();
+
+	OutMesh->UpdateBox();
+
+	Msg("Terrain mesh created successfully: %d vertices, %d faces", Vertices.size(), Faces.size());
+}
 
 void XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(CEditableObject* Mesh, const xr_string& OutputFile)
 {
