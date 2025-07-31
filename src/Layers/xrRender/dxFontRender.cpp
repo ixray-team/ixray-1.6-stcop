@@ -65,12 +65,8 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 			u32	clr, clr2;
 			clr2 = clr = str.c;
-			if(str.gradient) {
-				u32	_R = color_get_R(clr) / 2;
-				u32	_G = color_get_G(clr) / 2;
-				u32	_B = color_get_B(clr) / 2;
-				u32	_A = color_get_A(clr);
-				clr2 = color_rgba(_R, _G, _B, _A);
+			if(str.gradient) {;
+				clr2 = str.gradientColor;
 			}
 
 			X -= 0.5f;
