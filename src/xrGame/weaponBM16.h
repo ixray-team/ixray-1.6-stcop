@@ -19,5 +19,8 @@ protected:
 	virtual void	PlayReloadSound					();
 	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
 	virtual shared_str SetCurrentShootAnimation();
+
+	virtual CWeaponBM16* cast_weapon_bm16() { return this; }
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

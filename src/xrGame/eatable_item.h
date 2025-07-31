@@ -29,6 +29,7 @@ public:
 	virtual	DLL_Pure* _construct();
 
 	virtual CEatableItem* cast_eatable_item() { return this; }
+	virtual CInventoryItem* cast_inventory_item() { return this; }
 
 	virtual void			Load(LPCSTR section);
 	virtual void			load(IReader& packet);

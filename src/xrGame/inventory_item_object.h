@@ -11,6 +11,25 @@
 #include "physic_item.h"
 #include "inventory_item.h"
 
+class CCustomDetector;
+class CWeaponBinoculars;
+class CWeaponKnife;
+class CWeaponMagazined;
+class CWeaponMagazinedWGrenade;
+class CWeaponBM16;
+class CWeapon;
+class CWeaponRPG7;
+class CWeaponRG6;
+class CHudItem;
+class CTorch;
+class CBolt;
+class CPda;
+class CGrenade;
+class CMissile;
+class CSilencer;
+class CScope;
+class CGrenadeLauncher;
+
 class CInventoryItemObject : 
 			public CInventoryItem, 
 			public CPhysicItem
@@ -24,12 +43,25 @@ public:
 	virtual CPhysicsShellHolder*cast_physics_shell_holder	()	{return this;}
 	virtual CInventoryItem	*cast_inventory_item			()	{return this;}
 	virtual CAttachableItem	*cast_attachable_item			()	{return this;}
-	virtual CWeapon			*cast_weapon					()	{return 0;}
-	virtual CFoodItem		*cast_food_item					()	{return 0;}
-	virtual CMissile		*cast_missile					()	{return 0;}
-	virtual CHudItem		*cast_hud_item					()	{return 0;}
-	virtual CWeaponAmmo		*cast_weapon_ammo				()	{return 0;}
-	virtual CGameObject		*cast_game_object				()  {return this;};
+	virtual CGameObject		*cast_game_object				()  {return this;}
+	virtual CHudItem		*cast_hud_item					()	{return nullptr;}
+	virtual CCustomDetector	*cast_custom_detector			()	{return nullptr;}
+	virtual CWeaponBinoculars*cast_weapon_binoculars		()  {return nullptr;}
+	virtual CWeaponKnife	*cast_weapon_knife				()  {return nullptr;}
+	virtual CWeaponMagazined*cast_weapon_magazined			()  {return nullptr;}
+	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() {return nullptr;}
+	virtual CWeaponBM16		*cast_weapon_bm16				()  {return nullptr;}
+	virtual CWeapon			*cast_weapon					()  {return nullptr;}
+	virtual CTorch			*cast_torch						()  {return nullptr;}
+	virtual CWeaponRPG7* cast_weapon_rpg7() { return nullptr; }
+	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
+	virtual CBolt* cast_bolt() { return nullptr; }
+	virtual CPda* cast_pda() { return nullptr; }
+	virtual CGrenade* cast_grenade() { return nullptr; }
+	virtual CMissile* cast_missile() { return nullptr; }
+	virtual CSilencer* cast_addon_silencer() {return nullptr;}
+	virtual CScope* cast_addon_scope() {return nullptr;}
+	virtual CGrenadeLauncher* cast_addon_grenade_launcher() {return nullptr;}
 
 public:
 	virtual void	Load					(LPCSTR section);

@@ -36,6 +36,9 @@ public:
 				void	set_closed						(bool status, LPCSTR reason);
 	IC			bool	closed							() const { return m_closed; }
 
+	virtual CInventoryBox* cast_inventory_box() { return this; }
+	virtual CGameObject* cast_game_object() { return this; }
+
 protected:
 				void	SE_update_status				();
 				DECLARE_SCRIPT_REGISTER_FUNCTION

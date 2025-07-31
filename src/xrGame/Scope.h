@@ -16,5 +16,8 @@ private:
 public:
 			CScope ();
 	virtual ~CScope();
+	
+	virtual CScope* cast_addon_scope() {return this;}
+	
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

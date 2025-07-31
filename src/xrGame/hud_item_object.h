@@ -3,6 +3,19 @@
 #include "inventory_item_object.h"
 #include "HudItem.h"
 
+class CCustomDetector;
+class CWeaponBinoculars;
+class CWeaponKnife;
+class CWeaponMagazined;
+class CWeaponMagazinedWGrenade;
+class CWeaponBM16;
+class CWeapon;
+class CWeaponRPG7;
+class CWeaponRG6;
+class CMissile;
+class CBolt;
+class CGrenade;
+
 class CHudItemObject : 
 		public CInventoryItemObject,
 		public CHudItem
@@ -15,7 +28,20 @@ public:
 	virtual	DLL_Pure	*_construct			();
 
 public:
-	virtual CHudItem	*cast_hud_item		()	{return this;}
+	virtual CInventoryItem* cast_inventory_item	() { return this; }
+	virtual CCustomDetector* cast_custom_detector() { return nullptr; }
+	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }
+	virtual CWeaponKnife* cast_weapon_knife() { return nullptr; }
+	virtual CWeaponMagazined* cast_weapon_magazined() { return nullptr; }
+	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() { return nullptr; }
+	virtual CWeaponBM16* cast_weapon_bm16() { return nullptr; }
+	virtual CWeapon* cast_weapon() {return nullptr;}
+	virtual CWeaponRPG7* cast_weapon_rpg7() { return nullptr; }
+	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
+	virtual CHudItem* cast_hud_item() { return this; }
+	virtual CGrenade* cast_grenade() { return nullptr; }
+	virtual CMissile* cast_missile() { return nullptr; }
+	virtual CBolt* cast_bolt() { return nullptr; }
 
 public:
 	virtual void		Load				(LPCSTR section);

@@ -24,7 +24,9 @@ public:
 	virtual void renderable_Render	();
 
 	float	GetGrenadeVel() {return m_fGrenadeVel;}
-
+	
+	virtual CGrenadeLauncher* cast_addon_grenade_launcher() {return this;}
+	
 protected:
 	//стартовая скорость вылета подствольной гранаты
 	float m_fGrenadeVel;
