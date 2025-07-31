@@ -95,3 +95,18 @@ float CEngineExternal::GetWeaponIconScaling() const
 {
 	return READ_IF_EXISTS(pOptions, r_float, "ui", "WeaponIconScale", 0.8f);
 }
+
+const char* CEngineExternal::PlatformMode() const
+{
+	return READ_IF_EXISTS(pOptions, r_string_wb, "general", "Platform", "cop").c_str();
+}
+
+bool CEngineExternal::ClearSkyMode() const
+{
+	return !xr_strcmp(PlatformMode(), "cs");
+}
+
+bool CEngineExternal::CallOfPripyatMode() const
+{
+	return !xr_strcmp(PlatformMode(), "cop");
+}
