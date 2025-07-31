@@ -287,63 +287,235 @@ void xrServer::SendGameUpdateTo(IClient* client)
 
 void xrServer::MakeUpdatePackets()
 {
-	NET_Packet						tmpPacket;			
-	u32								position;
+	NET_Packet tmpPacket;
+	u32 position;
 
-	m_updator.begin_updates			();
-	
-	xrS_entities::iterator I	= entities.begin();
-	xrS_entities::iterator E	= entities.end();
-	for (; I!=E; ++I)
-	{//all entities
-		CSE_Abstract&	Test			= *(I->second);
+	m_update_packets.clear();
+	m_updator.begin_updates();
 
-		if (0==Test.owner)								continue;
-		if (!Test.net_Ready)							continue;
-		if (Test.s_flags.is(M_SPAWN_OBJECT_PHANTOM))	continue;	// Surely: phantom
-		if (!Test.Net_Relevant() )						continue;
+	xrS_entities::iterator I = entities.begin();
+	xrS_entities::iterator E = entities.end();
+	for (; I != E; ++I)
+	{
+		CSE_Abstract& Test = *(I->second);
 
-		tmpPacket.B.count				= 0;
+		if (0 == Test.owner || !Test.net_Ready)								
+			continue;
+
+		if (Test.s_flags.is(M_SPAWN_OBJECT_PHANTOM) || !Test.Net_Relevant())	
+			continue;
+
+		tmpPacket.B.count = 0;
+
 		// write specific data
 		{
-			tmpPacket.w_u16					(Test.ID);
-			tmpPacket.w_chunk_open8			(position);
-			Test.UPDATE_Write				(tmpPacket);
+			tmpPacket.w_u16(Test.ID);
+			tmpPacket.w_chunk_open8(position);
+			Test.UPDATE_Write(tmpPacket);
 			if (g_pGamePersistent->GameType() == eGameIDFreeMP)
 			{
 				Test.SyncWrite(tmpPacket);
 			}
 
-			u32 ObjectSize					= u32(tmpPacket.w_tell()-position)-sizeof(u8);
-			tmpPacket.w_chunk_close8		(position);
+			u32 ObjectSize = u32(tmpPacket.w_tell() - position) - sizeof(u8);
+			tmpPacket.w_chunk_close8(position);
 
-			if (ObjectSize == 0)			continue;					
+			if (ObjectSize == 0)
+				continue;
 #ifdef DEBUG
 			if (g_Dump_Update_Write) Msg("* %s : %d", Test.name(), ObjectSize);
 #endif
-			m_updator.write_update_for		(Test.ID, tmpPacket);
+			UpdatePacket* NewPacket = &m_update_packets.emplace_back(UpdatePacket());
+			NewPacket->Entity = I->second;
+			std::memcpy(&(NewPacket->Packet), &tmpPacket, sizeof(NET_Packet));
 		}
-	}//all entities
+	}
 
-	m_updator.end_updates			(m_update_begin, m_update_end);
+	m_updator.end_updates(m_update_begin, m_update_end);
 }
 
 void xrServer::SendUpdatePacketsToAll()
 {
-	m_last_updates_size = 0;
-	for (update_iterator_t i = m_update_begin; i != m_update_end; ++i)
+	struct ClientExcluderPredicate
 	{
-		NET_Packet& to_send = **i;
-		if (to_send.B.count > 2)
+		ClientID id_to_exclude;
+		ClientExcluderPredicate(ClientID exclude) :
+			id_to_exclude(exclude)
 		{
-			m_last_updates_size += to_send.B.count;
-			SendBroadcast	(GetServerClient()->ID, to_send, net_flags(FALSE,TRUE));
-			if (Level().IsDemoSave())
+		}
+		bool operator()(IClient* client)
+		{
+			xrClientData* tmp_client = static_cast<xrClientData*>(client);
+			if (client->ID == id_to_exclude)
+				return false;
+			if (!client->flags.bConnected)
+				return false;
+			if (!tmp_client->net_Accepted)
+				return false;
+			return true;
+		}
+	};
+
+	struct SenderFunctor
+	{
+		xrServer* m_owner;
+		u32 m_dwFlags;
+		xr_vector<UpdatePacket>& m_packets;
+
+		server_updates_compressor* m_updator;
+		update_iterator_t			m_update_begin;
+		update_iterator_t			m_update_end;
+
+		SenderFunctor(xrServer* owner, xr_vector<UpdatePacket>& packets, server_updates_compressor* updator, u32 dwFlags) :
+			m_owner(owner), m_packets(packets), m_updator(updator), m_dwFlags(dwFlags)
+		{
+		}
+		void operator()(IClient* client)
+		{
+			auto I = m_packets.begin();
+			auto E = m_packets.end();
+
+			xrClientData* CL = static_cast<xrClientData*>(client);
+
+			bool need_to_update_15 = Device.dwTimeGlobal - CL->m_last_update_time_15 >= u32(1000 / 15); // 15 per sec
+			bool need_to_update_10 = Device.dwTimeGlobal - CL->m_last_update_time_10 >= u32(1000 / 10); // 10 per sec
+			bool need_to_update_5 = Device.dwTimeGlobal - CL->m_last_update_time_5 >= u32(1000 / 5);    // 5 per sec
+			bool need_to_update_1 = Device.dwTimeGlobal - CL->m_last_update_time_1 >= u32(1000);        // 1 per sec
+			bool need_to_update_05 = Device.dwTimeGlobal - CL->m_last_update_time_05 >= u32(2000);       // 1 per 2 sec
+
+			constexpr float distance_30 = 30.f * 30.f;
+			constexpr float distance_50 = 50.f * 50.f;
+			constexpr float distance_60 = 60.f * 60.f;
+			constexpr float distance_100 = 100.f * 100.f;
+			constexpr float distance_200 = 200.f * 200.f;
+			constexpr float distance_300 = 300.f * 300.f;
+
+			// create big net packets & compress (if enabled)
+			m_updator->begin_updates();
+			for (; I != E; ++I)
 			{
-				Level().SavePacket(to_send);
+				CSE_Abstract* owner = CL->owner;
+				if (!owner) continue;
+
+				CSE_Abstract* entity = I->Entity;
+				NET_Packet& packet = I->Packet;
+
+				float distance = 0.f;
+
+				CSE_Abstract* parent = m_owner->ID_to_entity(entity->ID_Parent);
+
+				bool has_parent = !!parent;
+				if (!has_parent)
+				{
+					distance = owner->Position().distance_to_sqr(entity->Position());
+				}
+				else
+				{
+					distance = owner->Position().distance_to_sqr(parent->Position());
+				}
+
+				if (entity->cast_human_abstract() || entity->cast_monster_abstract())
+				{
+					// MONSTERS AND HUMANS
+					// 0 - 50 : 30 per sec
+					// 50 - 100 : 15 per sec
+					// 100 - 200 : 10 per sec
+					// 200 - 300 : 5 per sec
+					// 300 and more : 1 per 2 sec
+
+					bool NeedUpdate = distance <= distance_50;
+					NeedUpdate = NeedUpdate || (need_to_update_15 && distance <= distance_100);
+					NeedUpdate = NeedUpdate || (need_to_update_10 && distance <= distance_200);
+					NeedUpdate = NeedUpdate || (need_to_update_5 && distance <= distance_300);
+					NeedUpdate = NeedUpdate || need_to_update_05;
+
+					if (NeedUpdate)
+					{
+						m_updator->write_update_for(entity->ID, packet);
+					}
+				}
+				else if (smart_cast<CSE_ActorMP*>(entity))
+				{
+					// ACTORS
+					// 0 - 200 : 30 per second
+					// 200 - 300 : 10 per second
+					// 300 and more : 1 per sec
+
+					bool NeedUpdate = distance <= distance_200;
+					NeedUpdate = NeedUpdate || (need_to_update_10 && distance <= distance_300);
+					NeedUpdate = NeedUpdate || need_to_update_1;
+
+					if (NeedUpdate)
+					{
+						m_updator->write_update_for(entity->ID, packet);
+					}
+				}
+				else if (smart_cast<CSE_ALifeItemArtefact*>(entity))
+				{
+					// ARTEFACTS
+					// 0 - 30 : 10 per second
+					// 30 - 60 : 5 per second
+					// 60 and more : 1 per 2 sec
+					bool NeedUpdate = need_to_update_10 && distance <= distance_30;
+					NeedUpdate = NeedUpdate || (need_to_update_5 && distance <= distance_60);
+					NeedUpdate = NeedUpdate || need_to_update_05;
+					
+					if (NeedUpdate)
+					{
+						m_updator->write_update_for(entity->ID, packet);
+					}
+				}
+				else if (entity->cast_inventory_item())
+				{
+					if (has_parent)
+					{
+						// Inventory items with parent
+						// 0 - 200 : 30 per second
+						// 200 - 300 : 10 per second
+						// 300 and more : 1 per sec
+
+						bool NeedUpdate = distance <= distance_200;
+						NeedUpdate = NeedUpdate || (need_to_update_10 && distance <= distance_300);
+						NeedUpdate = NeedUpdate || need_to_update_1;
+
+						if (NeedUpdate)
+						{
+							m_updator->write_update_for(entity->ID, packet);
+						}
+					}
+					else
+					{
+						m_updator->write_update_for(entity->ID, packet);
+					}
+				}
+				else
+				{
+					m_updator->write_update_for(entity->ID, packet);
+				}
+			}
+
+			CL->m_last_update_time_15 = need_to_update_15 ? Device.dwTimeGlobal : CL->m_last_update_time_15;
+			CL->m_last_update_time_10 = need_to_update_10 ? Device.dwTimeGlobal : CL->m_last_update_time_10;
+			CL->m_last_update_time_5 = need_to_update_5 ? Device.dwTimeGlobal : CL->m_last_update_time_5;
+			CL->m_last_update_time_1 = need_to_update_1 ? Device.dwTimeGlobal : CL->m_last_update_time_1;
+			CL->m_last_update_time_05 = need_to_update_05 ? Device.dwTimeGlobal : CL->m_last_update_time_05;
+
+			m_updator->end_updates(m_update_begin, m_update_end);
+
+			// send packets to client
+			for (update_iterator_t i = m_update_begin; i != m_update_end; ++i)
+			{
+				NET_Packet& P = **i;
+				if (P.B.count > 2)
+				{
+					m_owner->SendTo_LL(client->ID, P.B.data, P.B.count, m_dwFlags);
+				}
 			}
 		}
-	}
+	};
+
+	SenderFunctor temp_functor(this, m_update_packets, &m_updator, net_flags(FALSE, TRUE));
+	net_players.ForFoundClientsDo(ClientExcluderPredicate(GetServerClient()->ID), temp_functor);
 }
 
 void xrServer::SendUpdatesToAll()
