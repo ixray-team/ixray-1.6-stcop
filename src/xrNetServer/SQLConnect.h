@@ -6,6 +6,7 @@ class XRNETSERVER_API DBService
 private:
 	sql::mysql::MySQL_Driver*	driver;
 	sql::Connection*			con;
+
 public:
 
 	struct UserDBProperty
@@ -50,6 +51,7 @@ public:
 	};
 
 	~DBService();
+	void							Connect();
 	void							Test();
 	void							ErrorMsg(LPCSTR function_name, int code, LPCSTR what);
 
@@ -60,10 +62,23 @@ public:
 	UserDBProperty					SelectProperty(int id);
 
 	void							DeleteInventory(int user_id);
-	void							SaveInventory(int user_id, int item_id, u64 state);
 	xr_vector<int>					LoadInventory(int user_id);
+	void							SaveInventory(int user_id, int item_id, u64 state);
 
 	xr_hash_map<xr_string, int>		LoadGame(shared_str need_field);
+
+private:
+	void							UpdateInsertPropertyInternal(UserDBProperty data);
+	void							SaveInventoryInternal(int user_id, int item_id, u64 state);
+
+private:
+	// Tasks
+	static void SQLUpdateThread();
+	xr_task_group SQLTask;
+	xr_vector<std::function<void()>> TasksActive;
+	xr_vector<std::function<void()>> TasksDelay;
+	volatile bool Exit = false;
+	xrCriticalSection DelayCS;
 };
 
 extern XRNETSERVER_API DBService GSQLConnector;
