@@ -1,4 +1,4 @@
-#include "../xrEngine/stdafx.h"
+﻿#include "../xrEngine/stdafx.h"
 #include "../xrEngine/Environment.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/IGame_Level.h"
@@ -187,9 +187,52 @@ int compare_naturally(const void* a_ptr, const void* b_ptr)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+struct FileNode {
+	std::map<xr_string, FileNode> children;
+	bool isFile = false;
+};
+void AddPathToTree(FileNode& root, const xr_path& path) {
+	auto* node = &root;
+	for (const xr_path& part : path) {
+		node = &node->children[part.xstring()];
+	}
+	node->isFile = true;
+}
+
+void DrawFileTree(FileNode& node, bool&changed, const xr_string& label, shared_str& selectedPath, const shared_str& currentPath = "") {
+	string_path fullPath;// = currentPath + "\\" + label;
+	sprintf(fullPath, "%s\\%s", currentPath.c_str(), label.c_str());
+
+	if (node.isFile) {
+		if (ImGui::Selectable(label.c_str(), selectedPath == fullPath, ImGuiSelectableFlags_DontClosePopups)) {
+			selectedPath = fullPath;
+
+			//if (selectedPath.size()>0 && selectedPath[0] == '\\')
+			if (selectedPath.size()>0 && selectedPath.c_str()[0] == '\\') {
+				selectedPath = selectedPath.c_str() + 1;
+			}
+
+			changed = true;
+		}
+	}
+	else {
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+		bool open = ImGui::TreeNodeEx(label.c_str(), flags);
+		if (open) {
+			for (auto& [name, child] : node.children) {
+				DrawFileTree(child, changed, name, selectedPath, fullPath);
+			}
+			ImGui::TreePop();
+		}
+	}
+}
+
 
 bool editTexture(const char* label, shared_str& texName)
 {
+	static FileNode root;
+	static bool initialized = false;
+
 	char tex[100];
 	strncpy(tex, texName.c_str(), 100);
 	bool changed = false;
@@ -208,53 +251,47 @@ bool editTexture(const char* label, shared_str& texName)
 	ImGui::Text(label);
 	ImGui::SetNextWindowSize(ImVec2(250, 400), ImGuiCond_FirstUseEver);
 	if (ImGui::BeginPopupModal("Choose texture", nullptr, 0)) {
-		string_path dir, fn;
-		_splitpath(tex, nullptr, dir, fn, nullptr);
-		xr_strconcat(fn, fn, ".dds");
-		static xr_map<xr_string, xr_vector<xr_string>> dirs;
-		auto filtered = dirs[dir];
-		if (filtered.empty()) {
-			xr_vector<LPSTR>* files = FS.file_list_open("$game_textures$", dir, FS_ListFiles);
-			if (files) {
+
+		if (!initialized) {
+
+			xr_vector<LPSTR>* files = FS.file_list_open("$game_textures$", FS_ListFiles);
+			xr_vector<xr_string> filtered;
+
+			if (files)
+			{
 				filtered.resize(files->size());
 				auto e = std::copy_if(files->begin(), files->end(), filtered.begin(),
-					[](auto x) { return strstr(x, "#small") == nullptr && strstr(x, ".thm") == nullptr; });
+					[](auto x) { return strstr(x, "#small") == nullptr && strstr(x, ".dds") != nullptr; });
 				filtered.resize(e - filtered.begin());
 				std::sort(filtered.begin(), filtered.end(),
 					[](auto a, auto b) { return compare_naturally(a.c_str(), b.c_str()) < 0; });
-				dirs[dir] = filtered;
 			}
-			FS.file_list_close(files);
-		}
-		int cur = -1;
-		for (size_t i = 0; i != filtered.size(); i++)
-			if (filtered[i] == fn) {
-				cur = (int)i;
-				break;
+			for (const auto& file : filtered) {
+				AddPathToTree(root, xr_path(file));
 			}
-		if (ImGui_ListBox("##listbox", &cur,
-			[](void* data, int idx, const char** out_text) -> bool {
-				xr_vector<xr_string>* textures = (xr_vector<xr_string>*)data;
-				*out_text = (*textures)[idx].c_str();
-				return true;
-			},
-			&filtered, (int)filtered.size(), ImVec2(-1.0f, -20.0f))) {
-			string_path newFn;
-			_splitpath(filtered[cur].c_str(), nullptr, nullptr, newFn, nullptr);
-			xr_strconcat(tex, dir, newFn);
-			texName = tex;
-			changed = true;
+			initialized = true;
 		}
+
+		if (ImGui::BeginChild("##files", { -1,ImGui::GetContentRegionAvail().y - 55 }))
+		{
+			for (auto& [name, child] : root.children) {
+				DrawFileTree(child, changed, name, texName);
+			}
+			ImGui::EndChild();
+		}
+		ImGui::Separator();
+		ImGui::Text("Selected: %s", texName.c_str());
 		if (ImGui::Button("OK", ImVec2(120, 0))) {
 			ImGui::CloseCurrentPopup();
+			//changed = true;
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Cancel", ImVec2(120, 0))) {
 			ImGui::CloseCurrentPopup();
-			string_path newFn;
-			_splitpath(prevValue.c_str(), nullptr, nullptr, newFn, nullptr);
-			xr_strconcat(tex, dir, newFn);
-			texName = tex;
+			//string_path newFn;
+			//_splitpath(prevValue.c_str(), nullptr, nullptr, newFn, nullptr);
+			//xr_strconcat(tex, dir, newFn);
+			texName = prevValue;
 			changed = true;
 		}
 		ImGui::EndPopup();
@@ -517,6 +554,9 @@ void RenderUIWeather() {
 
 	if (editTexture("sky_texture", cur->sky_texture_name))
 	{
+		cur->sky_texture_name = xr_string(cur->sky_texture_name.c_str(), 
+			cur->sky_texture_name.size() - 4).c_str(); // .dds
+
 		xr_strconcat(buf, cur->sky_texture_name.c_str(), "#small");
 		cur->sky_texture_env_name = buf;
 		cur->on_device_create();
