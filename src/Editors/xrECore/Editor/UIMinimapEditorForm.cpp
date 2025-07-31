@@ -22,9 +22,14 @@ UIMinimapEditorForm::UIMinimapEditorForm()
 UIMinimapEditorForm::~UIMinimapEditorForm()
 {
 	for (auto& element : elements)
-		if (element.Texture) element.Texture->Release();
+	{
+		if (element.Texture)
+			IM_TEXTURE_RELEASE(element.Texture);
+	}
 
-	if (m_BackgroundTexture)m_BackgroundTexture->Release();
+	if (m_BackgroundTexture)
+		IM_TEXTURE_RELEASE(m_BackgroundTexture);
+
 	selectedElement = nullptr;
 
 	elements.clear();
@@ -34,7 +39,9 @@ void UIMinimapEditorForm::ReloadLevelsList()
 {
 	levels.clear();
 	FS_FileSet lst;
-	if (FS.file_list(lst, _game_levels_, FS_ListFolders | FS_RootOnly)) {
+
+	if (FS.file_list(lst, _game_levels_, FS_ListFolders | FS_RootOnly))
+	{
 		FS_FileSetIt	it = lst.begin();
 		FS_FileSetIt	_E = lst.end();
 		for (; it != _E; it++) 
@@ -733,7 +740,8 @@ void UIMinimapEditorForm::CreateElementPopup()
 			CreatingData.TexturePath.clear();
 			CreatingData.name.clear();
 			if (CreatingData.Texture)
-				CreatingData.Texture->Release();
+				IM_TEXTURE_RELEASE(CreatingData.Texture);
+
 			CreatingData.Texture = nullptr;
 		}
 
@@ -898,10 +906,13 @@ void UIMinimapEditorForm::ShowMenu()
 		if (ImGui::Button("Delete"))
 		{
 			auto it = elements.begin();
-			for (; it != elements.end(); ++it) {
-				if (&(*it) == selectedElement) {
+			for (; it != elements.end(); ++it)
+			{
+				if (&(*it) == selectedElement)
+				{
 					if (it->Texture)
-						it->Texture->Release();
+						IM_TEXTURE_RELEASE(it->Texture);
+
 					it->Texture = nullptr;
 
 					elements.erase(it);
@@ -1139,7 +1150,7 @@ void UIMinimapEditorForm::Draw()
 {
 	if (m_TextureRemove)
 	{
-		m_TextureRemove->Release();
+		IM_TEXTURE_RELEASE(m_TextureRemove);
 		m_TextureRemove = nullptr;
 	}
 	if (m_BackgroundTexture == nullptr)
@@ -1249,7 +1260,8 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	}
 
 	if (el.Texture)
-		el.Texture->Release();
+		IM_TEXTURE_RELEASE(el.Texture);
+
 	el.Texture = nullptr;
 
 	if (texture == "")
