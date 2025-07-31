@@ -189,6 +189,8 @@ virtual			void		UnFreeze						()			=0;//{ UnFreeze();	}
 virtual			void		step							(float dt)	=0;//{ step( dt ); }
 virtual			void		collision_disable				()			=0;//{ collision_disable(); }
 virtual			void		collision_enable				()			=0;//{ collision_enable(); }
+virtual			void		collision_dynamic_disable() {}
+virtual			void		collision_dynamic_enable() {}
 protected:
 virtual	const	Fmatrix			&XFORM				()							const			;
 virtual			void			get_LinearVel		( Fvector& velocity )		const			;
