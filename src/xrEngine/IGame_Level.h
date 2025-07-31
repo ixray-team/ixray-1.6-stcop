@@ -5,7 +5,7 @@
 
 #include "IInputReceiver.h"
 #include "xr_object_list.h"
-#include "../xrCDB/xr_area.h"
+#include "../xrCore/Collision/xr_area.h"
 #include "IGame_Patrol.h"
 
 // refs

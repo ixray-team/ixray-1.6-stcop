@@ -176,7 +176,6 @@ void CDS0_ModelPool::Destroy()
 
 CDS0_ModelPool::CDS0_ModelPool()
 {
-	bLogging = TRUE;
 	bForceDiscard = FALSE;
 	bAllowChildrenDuplicate = TRUE;
 	g_pMotionsContainer = new motions_container;
@@ -365,7 +364,6 @@ void CDS0_ModelPool::Discard(CDS0_RenderVisual*& V, BOOL b_complete)
 
 void CDS0_ModelPool::Prefetch()
 {
-	Logging(FALSE);
 	// prefetch visuals
 	string256 section; 
 	xr_strcpy(section, "prefetch_visuals_");
@@ -376,8 +374,6 @@ void CDS0_ModelPool::Prefetch()
 	{
 		CDS0_RenderVisual* pVis = Create(it.first.c_str());
 	}
-
-	Logging(TRUE);
 }
 
 void CDS0_ModelPool::ClearPool(BOOL b_complete)

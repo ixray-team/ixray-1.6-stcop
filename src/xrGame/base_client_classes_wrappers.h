@@ -11,7 +11,7 @@
 #include "../xrScripts/script_export_space.h"
 #include "base_client_classes.h"
 #include "../xrEngine/EngineAPI.h"
-#include "../xrCDB/ISpatial.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include "../xrEngine/ISheduled.h"
 #include "../xrEngine/IRenderable.h"
 #include "../xrEngine/ICollidable.h"

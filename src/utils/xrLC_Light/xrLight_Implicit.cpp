@@ -11,7 +11,7 @@
 #include "xrFace.h"
 #include "xrLight_ImplicitCalcGlobs.h"
 
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 
 using Implicit = xr_map<u32, ImplicitDeflector>;
 using Implicit_it = Implicit::iterator;

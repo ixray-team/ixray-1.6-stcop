@@ -7,7 +7,7 @@
 #define ETOOLS_API __declspec( dllimport )
 #endif
 
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 class IKinematics;
 namespace ETOOLS {
 extern "C" {

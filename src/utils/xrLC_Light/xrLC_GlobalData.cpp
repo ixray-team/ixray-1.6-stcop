@@ -7,7 +7,7 @@
 #include "mu_model_face.h"
 #include "xrMU_Model.h"
 #include "xrMU_Model_Reference.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 
 bool g_using_smooth_groups = true;
 bool g_smooth_groups_by_faces = false;

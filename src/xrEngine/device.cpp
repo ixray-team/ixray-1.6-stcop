@@ -2,7 +2,7 @@
 
 using namespace DirectX;
 
-#include "../xrCDB/Frustum.h"
+#include "../xrCore/Collision/Frustum.h"
 
 #pragma warning(disable:4995)
 // mmsystem.h

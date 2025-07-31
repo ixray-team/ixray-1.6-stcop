@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "LEPhysics.h"
 #include "mesh_data.h"
-#include "../../xrphysics/iphworld.h"
-#include "../../xrcdb/xr_area.h"
+#include "../../xrPhysics/iphworld.h"
+#include "../../xrCore/Collision/xr_area.h"
 
 CScenePhysics	g_scene_physics;
 

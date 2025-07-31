@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 #include "EngineAPI.h"
-#include "../xrCDB/xrXRC.h"
+#include "../xrCore/Collision/xrXRC.h"
 
 #include <filesystem>
 

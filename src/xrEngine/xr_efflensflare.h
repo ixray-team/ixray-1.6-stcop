@@ -1,7 +1,7 @@
 #ifndef xr_efflensflareH
 #define xr_efflensflareH
 
-#include "../xrCDB/xr_collide_defs.h"
+#include "../xrCore/Collision/xr_collide_defs.h"
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/LensFlareRender.h"

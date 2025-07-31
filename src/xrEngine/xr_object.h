@@ -1,7 +1,7 @@
 #ifndef __XR_OBJECT_H__
 #define __XR_OBJECT_H__
 
-#include "../xrCDB/ISpatial.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include "ISheduled.h"
 #include "IRenderable.h"
 #include "ICollidable.h"

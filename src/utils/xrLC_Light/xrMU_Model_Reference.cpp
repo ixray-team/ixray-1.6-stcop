@@ -4,7 +4,7 @@
 #include "xrLC_GlobalData.h"
 #include "xrMU_Model.h"
 
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "../Shader_xrLC.h"
 #include "xrFace.h"
  

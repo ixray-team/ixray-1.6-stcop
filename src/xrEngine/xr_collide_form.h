@@ -1,7 +1,7 @@
 #ifndef __XR_COLLIDE_FORM_H__
 #define __XR_COLLIDE_FORM_H__
 
-#include "../xrCDB/xr_collide_defs.h"
+#include "../xrCore/Collision/xr_collide_defs.h"
 #include "VisMask.h"
 
 // refs

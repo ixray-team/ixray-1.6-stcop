@@ -3,7 +3,7 @@
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
-#include "../xrEngine/cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 #include "tri-colliderknoopc/__aabb_tri.h"
 
 #include "PHAICharacter.h"

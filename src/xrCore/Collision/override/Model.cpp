@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Model.h"
 #include <OPC_TreeBuilders.h>
 #include <Opcode.h>

@@ -14,7 +14,7 @@
 #include "x_ray.h"
 #include "GameFont.h"
 #include "LightAnimLibrary.h"
-#include "../xrCDB/ISpatial.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include <luabind/luabind.hpp>
 #include <luabind/luabind_memory.h>
 #include "string_table.h"
