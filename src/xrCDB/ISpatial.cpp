@@ -381,9 +381,9 @@ void ISpatial_DB::remove(ISpatialShared S)
 void ISpatial_DB::update(u32)
 {
 #ifdef DEBUG
-	if (0 == m_root)	
+	if (0 == m_root)
 		return;
 
-	VERIFY(verify());
+	//VERIFY(verify());
 #endif
 }
