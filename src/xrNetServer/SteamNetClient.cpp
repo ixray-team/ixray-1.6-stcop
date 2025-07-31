@@ -86,11 +86,11 @@ bool SteamNetClient::CreateConnection(ClientConnectionOptions & connectOpt)
 	serverAddr.Clear();
 
 	int sv_port = connectOpt.sv_port;
-	if (stricmp(connectOpt.server_name, "localhost") == 0) // 127.0.0.1 ?!
-	{
-		serverAddr.SetIPv6LocalHost((uint16)sv_port);
-	}
-	else
+	//if (stricmp(connectOpt.server_name, "localhost") == 0) // 127.0.0.1 ?!
+	//{
+	//	serverAddr.SetIPv6LocalHost((uint16)sv_port);
+	//}
+	//else
 	{
 		serverAddr.ParseString(connectOpt.server_name);
 		serverAddr.m_port = (uint16)sv_port;
@@ -247,6 +247,9 @@ void SteamNetClient::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusC
 		else if (pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
 		{
 			Msg("[SteamNetClient] ProblemDetectedLocally");
+			SteamNetConnectionInfo_t info;
+			SteamNetworkingSockets()->GetConnectionInfo(m_hConnection, &info);
+			Msg("Connection closed locally. Reason: %d (%s)\n", info.m_eEndReason, info.m_szEndDebug);
 		}
 
 		net_Connected = EnmConnectionFails;
