@@ -54,6 +54,9 @@ public:
 	const xr_string WallmarkLeft() const;
 	const xr_string WallmarkRight() const;
 	float GetWeaponIconScaling() const;
+	const char* PlatformMode() const;
+	bool ClearSkyMode() const;
+	bool CallOfPripyatMode() const;
 
 	u32 GetFontAltasSize() const;
 
