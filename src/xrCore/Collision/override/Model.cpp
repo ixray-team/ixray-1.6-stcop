@@ -3,6 +3,8 @@
 #include <OPC_TreeBuilders.h>
 #include <Opcode.h>
 
+#include "../../stream_reader.h"
+
 CDB_Model::CDB_Model()
 {
 	pTree = new CDB_OptimizeTree();
@@ -19,7 +21,7 @@ void CDB_Model::Store(IWriter* writer)
 	pTree->Store(writer);
 }
 
-bool CDB_Model::Restore(IReader* reader)
+bool CDB_Model::Restore(CStreamReader* reader)
 {
 	if (reader->elapsed() < sizeof(u64))
 	{

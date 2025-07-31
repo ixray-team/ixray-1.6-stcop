@@ -401,7 +401,7 @@ void CRender::LoadSectors(IReader* fs)
 		// Make cache
 		string_path LevelName;
 		xr_strconcat(LevelName, "level_cache\\", FS.get_path("$level$")->m_Add, "Portals.cache");
-		IReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
+		CStreamReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
 
 		// build portal model
 		rmPortals = new CDB::MODEL();
