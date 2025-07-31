@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "script_reader.h"
+#include <script_engine.h>
 
 using namespace luabind;
 
@@ -32,6 +33,35 @@ static bool r_bool_semi(IReader *self_)
 static void r_fvector3_semi(IReader *self_, Fvector *arg0)
 {
 	self_->r_fvector3(*arg0);
+}
+
+static luabind::internal_string r_file_as_string(const char* path)
+{
+	IReader* reader = FS.r_open(path);
+
+	luabind::internal_string result;
+	result.resize(reader->length());
+	std::memcpy(result.data(), reader->pointer(), sizeof(char) * reader->length());
+	FS.r_close(reader);
+
+	return std::move(result);
+}
+
+static void w_file_from_string(const char* path, const char* buffer)
+{
+	auto fileIter = FS.exist(path);
+	if (fileIter == nullptr)
+	{
+		lua_pushfstring(g_pScriptEngine->lua(), "Not found file: %s", path);
+		lua_error(g_pScriptEngine->lua());
+
+		return;
+	}
+
+	shared_str newPath = fileIter->wrap ? fileIter->wrap : fileIter->name;
+	IWriter* writer = FS.w_open(*newPath);
+	writer->w(buffer, xr_strlen(buffer));
+	FS.w_close(writer);
 }
 
 #pragma optimize("s",on)
@@ -64,6 +94,9 @@ void CScriptReader::script_register(lua_State *L)
 			.def("r_stringZ",		&r_stringZ_semi			)
 			.def("r_elapsed",		&IReader::elapsed		)
 			.def("r_advance",		&IReader::advance		)
-			.def("r_eof",			&r_eof_semi				)
+			.def("r_eof",			&r_eof_semi				),
+
+		def("r_file_as_string",			&r_file_as_string)
+		//def("w_file_from_string",		&w_file_from_string)
 	];
 }
