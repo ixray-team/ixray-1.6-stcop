@@ -9,19 +9,11 @@
 
 struct XRLC_LIGHT_API  lm_layer
 {
-/*
-	enum LMODE
-	{
-		LMODE_RGBS			= 0,
-		LMODE_HS			= 1,
-	};
-*/
 	u32						width;
 	u32						height;
 	xr_vector<base_color>	surface;
 	xr_vector<u8>			marker;
-private:
-//	LMODE					mode;	
+ 
 public:
 	void					create			(u32 w, u32 h)
 	{
@@ -45,4 +37,11 @@ public:
 	bool					similar			( const lm_layer &D, float eps =EPS ) const;
 							lm_layer()				{ width=height=0; }
 
+	// se7kills Подсчитать Размер
+	size_t					memory_lmap()
+	{
+		size_t lm_surface = surface.capacity() * sizeof(base_color);
+		size_t lm_marker = marker.capacity() * sizeof(u8);
+ 		return lm_surface + lm_marker + sizeof(*this); // + Собственный размер
+	}
 };

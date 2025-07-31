@@ -333,7 +333,7 @@ void RenderCompilerUI()
 	static bool autoScroll = true;
 
 		// Table
-	if (ImGui::BeginTable("IterationsTable", 8, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
+	if (ImGui::BeginTable("IterationsTable", 9, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
 		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
 		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
@@ -342,6 +342,8 @@ void RenderCompilerUI()
 		ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 		ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
+		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
+
 		ImGui::TableHeadersRow();
 
 
@@ -405,6 +407,9 @@ void RenderCompilerUI()
 
 				ImGui::TableSetColumnIndex(7);
 				ImGui::Text("%s", getTextStatus(phase.status));
+
+				ImGui::TableSetColumnIndex(8);
+				ImGui::Text("%u MB", u32 ( size_t( phase.used_memory/ 1024/ 1024) ) );
 			}
 		}
 
