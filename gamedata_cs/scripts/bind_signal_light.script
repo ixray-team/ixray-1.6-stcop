@@ -135,7 +135,7 @@ function signal_light_binder:load(reader)
 	set_save_marker(reader, "load", false, "signal_light_binder")
 	object_binder.load(self, reader)
 	local time = reader:r_u32()
-	if time ~= 4294967296 then
+	if time ~= 4294967295 then
 		self.start_time = time_global() - time
 	end
     self.slow_fly_started = reader:r_bool()
