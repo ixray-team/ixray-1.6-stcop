@@ -139,51 +139,6 @@ void CBuild::xrPhase_UVmap()
 	clMsg("xrPhase_UVmap: Start %u used", size_t(used / 1024 / 1024));
 
 	{
-		/***
-
-			Face *	msF		= NULL;
-			float	msA		= 0;
-			for (vecFaceIt it = g_XSplit[SP]->begin(); it!=g_XSplit[SP]->end(); it++)
-			{
-				if ( (*it)->pDeflector == NULL ) {
-					float a = (*it)->CalcArea();
-					if (a>msA) {
-						msF = (*it);
-						msA = a;
-					}
-				}
-			}
-			if (msF) {
-
-				CDeflector *D = xr_new<CDeflector>();
-				lc_global_data()->g_deflectors().push_back	(D);
-				// Start recursion from this face
-				start_unwarp_recursion();
-				D->OA_SetNormal	(msF->N);
-
-				msF->OA_Unwarp			(D);
-				//Deflector  = D;
-				// break the cycle to startup again
-				D->OA_Export	();
-
-				// Detach affected faces
-				faces_affected.clear	();
-				for (int i=0; i<int(g_XSplit[SP]->size()); i++) {
-					Face *F = (*g_XSplit[SP])[i];
-					if ( F->pDeflector == D ) {
-						faces_affected.push_back(F);
-						g_XSplit[SP]->erase		(g_XSplit[SP]->begin()+i);
-						i--;
-					}
-				}
-
-				// detaching itself
-				Detach				(&faces_affected);
-				g_XSplit.push_back	(xr_new<vecFace> (faces_affected));
-			}
-
-		***/
-
 		// Main loop
 		Status("Processing...");
 		lc_global_data()->g_deflectors().reserve(64 * 1024);
@@ -201,27 +156,18 @@ void CBuild::xrPhase_UVmap()
 			TotalMerged = 0;
 
 			// Detect vertex-lighting and avoid this subdivision
-			if (g_XSplit[SP]->empty())
-			{
- 				continue;
-			}
-
+			if (g_XSplit[SP]->empty())				continue; 
  			Face* Fvl = g_XSplit[SP]->front();
 			if (Fvl->Shader().flags.bLIGHT_Vertex) 	continue;	// do-not touch (skip)
 			if (!Fvl->Shader().flags.bRendering) 	continue;	// do-not touch (skip)
 			if (Fvl->hasImplicitLighting())			continue;	// do-not touch (skip)
-
- 			// Status("SP[%d/%d], all[%d]", SP, StartPoint, g_XSplit.size()); 
-
+ 
 			vecFace* faces_selected = g_XSplit[SP];
 			while (TRUE)
 			{
 				// Сортировка списка в перед с больщими зонами.
 				std::sort(faces_selected->begin(), faces_selected->end(), sort_faces);
-
-				if (faces_selected == nullptr)
-					break;
-
+				if (faces_selected == nullptr) break;
 				// Select maximal sized poly
 				Face* msF = NULL;
 				for (auto FACEIT = faces_selected->begin(); FACEIT < faces_selected->end(); FACEIT++)
