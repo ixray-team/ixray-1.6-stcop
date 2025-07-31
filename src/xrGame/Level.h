@@ -52,12 +52,19 @@ class CFogOfWarMngr;
 class CBulletManager;
 class CMapManager;
 
+namespace inventory::upgrade
+{
+	class Manager;
+}
+
 namespace file_transfer
 {
 	class client_site;
-}; //namespace file_transfer
+};
 
-class CLevel					: public IGame_Level, public IPureClient
+class CLevel: 
+	public IGame_Level, 
+	public IPureClient
 {
 	#include "Level_network_Demo.h"
 	void						ClearAllObjects			();
@@ -79,6 +86,8 @@ protected:
 	CClientSpawnManager			*m_client_spawn_manager;
 	// autosave manager
 	CAutosaveManager			*m_autosave_manager;
+
+
 #ifdef DEBUG_DRAW
 	// debug renderer
 	CDebugRenderer				*m_debug_renderer;
@@ -109,6 +118,7 @@ public:
 	// level debugger
 	CLevelDebug					*m_level_debug;
 #endif
+	inventory::upgrade::Manager* m_upgrade_manager = nullptr;
 
 public:
 	////////////// network ////////////////////////
