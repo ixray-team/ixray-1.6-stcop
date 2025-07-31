@@ -12,11 +12,13 @@ class XREPROPS_API CNodeViewport:
 protected:
 	xr_vector<INodeUnknown*> Nodes;
 	xr_vector<std::pair<int, int>> Links;
+	xr_delegate<void(INodeUnknown* Node)> NodeSelectCallback;
 
 public:
 	int LinkDrawCounter = 0;
 
 protected:
+	mutable int LastSelectedNodeID = -1;
 	bool CanCreateLink(size_t LeftID, size_t RightID);
 	int GetHoveredMode() const;
 
