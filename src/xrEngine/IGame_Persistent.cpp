@@ -192,10 +192,6 @@ void IGame_Persistent::UpdateParticles()
 			return Obj->m_NeedDestroy;
 		}
 	), ps_active.end());
-
-#ifdef _DEBUG
-	Msg("Suck my particles counter: %ull", ps_active.size());
-#endif
 }
 
 void IGame_Persistent::destroy_particles		(const bool &all_particles)

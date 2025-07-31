@@ -81,10 +81,6 @@ void CPHMesh::Destroy()
 }
 
 ///////////CPHWorld/////////////////////////////////////////////////////////
-//#define PH_PLAIN
-#ifdef PH_PLAIN
-dGeomID plane;
-#endif
 
 #ifdef DEBUG_DRAW
 void CPHWorld::OnRender()
@@ -104,7 +100,6 @@ CPHWorld::CPHWorld() :
 	m_update_callback(&empty_update_callback),
 	m_default_contact_shotmark(0),
 	m_default_character_contact_shotmark(0),
-	physics_step_time_callback(0),
 	m_object_space(0),
 	m_level_objects(0)
 {
@@ -158,10 +153,6 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 	dWorldSetGravity(phWorld, 0, -Gravity(), 0);
 	Mesh.Create(0, phWorld);
 
-#ifdef PH_PLAIN
-	plane = dCreatePlane(Space, 0, 1, 0, 0.3f);
-#endif
-
 	dWorldSetERP(phWorld, Erp(world_spring, world_damping));
 	dWorldSetCFM(phWorld, Cfm(world_spring, world_damping));
 
@@ -183,9 +174,7 @@ void CPHWorld::Destroy()
 	r_spatial.clear();
 
 	Mesh.Destroy();
-#ifdef PH_PLAIN
-	dGeomDestroy(plane);
-#endif
+
 #ifdef DEBUG
 	debug_output().PH_DBG_Clear();
 #endif
@@ -219,8 +208,6 @@ void CPHWorld::OnFrame()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-static u32 start_time=0;
-
 void CPHWorld::Step()
 {
 	PROF_EVENT("CPHWorld::Step");
@@ -376,12 +363,6 @@ void CPHWorld::Step()
 	dJointGroupEmpty(ContactGroup);//this is to be called after PhDataUpdate!!!-the order is critical!!!
 	ContactFeedBacks.empty();
 	ContactEffectors.empty();
-
-	if(physics_step_time_callback) 
-	{
-		physics_step_time_callback(start_time,start_time+u32(fixed_step*1000));	
-		start_time += u32(fixed_step*1000);
-	};
 }
 
 void CPHWorld::StepTouch()
@@ -471,7 +452,6 @@ void CPHWorld::FrameStep(dReal step)
 
 	b_processing = true;
 
-	start_time = Device.dwTimeGlobal;
 	if (ph_console::g_bDebugDumpPhysicsStep && it_number > 20)
 		Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = %d !!!", it_number);
 

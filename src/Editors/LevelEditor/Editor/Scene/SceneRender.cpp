@@ -39,24 +39,6 @@ void  object_StrictB2F_3(EScene::mapObject_Node *N){RENDER_OBJECT(3,true);}
         }\
     }
 
-void EScene::RenderSky(const Fmatrix& camera)
-{
-	if( !valid() )	return;
-
-//	draw sky
-/*
-//.
-	if (m_SkyDome&&fraBottomBar->miDrawSky->Checked){
-        st_Environment& E = m_LevelOp.m_Envs[m_LevelOp.m_CurEnv];
-        m_SkyDome->GetPosition() = camera.c;
-        m_SkyDome->UpdateTransform(true);
-		EDevice->SetRS(D3DRS_TEXTUREFACTOR, E.m_SkyColor.get());
-    	m_SkyDome->RenderSingle();
-	    EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
-    }
-*/
-}
-
 struct tools_rp_pred
 {
     IC bool operator()(ESceneToolBase* x, ESceneToolBase* y) const
