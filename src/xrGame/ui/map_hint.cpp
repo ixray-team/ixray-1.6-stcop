@@ -146,7 +146,7 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 	m_info["t_hint_text"]->SetWndPos(pos);
 		
 	
-	if ( task->GetTaskType() == eTaskTypeStoryline )
+	if ( task->GetTaskType() == eTaskTypeStoryline || !Level().GameTaskManager()->IsMultipleTask())
 	{
 		m_info["t_icon"]->Show( true );
 		float w = m_info["t_time"]->GetWidth();
@@ -172,7 +172,7 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 		pos_.y = _max( pos_.y, m_info["t_icon"]->GetWndPos().y + m_info["t_icon"]->GetWndSize().y + 7 );
 		m_info["t_hint_text"]->SetWndPos( pos_ );
 	}
-	else if ( task->GetTaskType() == eTaskTypeAdditional )
+	else if ( task->GetTaskType() == eTaskTypeAdditional && Level().GameTaskManager()->IsMultipleTask() )
 	{
 		m_info["t_icon"]->Show( false );
 		float w = m_info["t_hint_text"]->GetWidth();
