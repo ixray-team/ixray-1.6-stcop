@@ -950,3 +950,14 @@ void CUIActorMenu::UpdateConditionProgressBars()
 			m_pInvSlotProgress[i]->SetProgressPos(itm ? iCeil(itm->GetCondition() * 10.f) / 10.f : 0);
 	}
 }
+
+void CUIActorMenu::OnSuccessRepairMP(PIItem item)
+{
+	UpdateItemsPlace();
+	UpdateConditionProgressBars();
+
+	if (CurrentItem() && ((PIItem)m_upgrade_selected->m_pData)->object_id() == item->object_id())
+	{
+		SeparateUpgradeItem();
+	}
+}

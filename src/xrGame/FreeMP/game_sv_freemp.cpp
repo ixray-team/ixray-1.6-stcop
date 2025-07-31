@@ -296,6 +296,25 @@ void game_sv_freemp::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_Player
 	signal_Syncronize();
 }
 
+void game_sv_freemp::OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID)
+{
+	game_PlayerState* ps = get_id(clientID);
+	if (!ps) return;
+	u16 itemId = P.r_u16();
+	s32 cost = P.r_s32();
+	PIItem item = smart_cast<CInventoryItem*>(Level().Objects.net_Find(itemId));
+	if (!item) return;
+	if (ps->money_for_round < cost) return;
+	AddMoneyToPlayer(ps, -cost);
+	NET_Packet NP;
+	CGameObject::u_EventGen(NP, GE_REPAIR_ITEM, itemId);
+	CGameObject::u_EventSend(NP);
+	GenerateGameMessage(NP);
+	NP.w_u32(GAME_EVENT_MP_REPAIR_SUCCESS);
+	NP.w_u16(itemId);
+	m_server->SendTo(clientID, NP);
+}
+
 void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 {
 	switch (type)
@@ -316,6 +335,11 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 	case GAME_EVENT_MP_TRADE:
 	{
 		OnPlayerTrade(P, sender);
+	}
+	break;
+	case GAME_EVENT_MP_REPAIR:
+	{
+		OnPlayerRepairItem(P, sender);
 	}
 	break;
 	default:

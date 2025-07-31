@@ -205,7 +205,7 @@ bool CScriptGameObject::InstallUpgrade(LPCSTR upgrade)
 	item->pre_install_upgrade();
 
 	shared_str upgrade_id(upgrade);
-	return ai().alife().inventory_upgrade_manager().upgrade_install(*item, upgrade_id, true);
+	return Level().m_upgrade_manager->upgrade_install(*item, upgrade_id, true);
 }
 
 bool CScriptGameObject::HasUpgrade(LPCSTR upgrade)
