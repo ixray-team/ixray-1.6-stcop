@@ -42,6 +42,7 @@ public:
     virtual U32Value* 	  			CreateU32		    (PropItemVec& items, shared_str key, u32* val, u32 mn=0, u32 mx=100, u32 inc=1);
     virtual FloatValue* 			CreateFloat		    (PropItemVec& items, shared_str key, float* val, float mn=0.f, float mx=1.f, float inc=0.01f, int decim=2);
     virtual BOOLValue* 	  			CreateBOOL		    (PropItemVec& items, shared_str key, BOOL* val);
+    virtual BoolValue* 	  			CreateBool		    (PropItemVec& items, shared_str key, bool* val);
     virtual VectorValue*  	 		CreateVector	    (PropItemVec& items, shared_str key, Fvector* val, float mn=0.f, float mx=1.f, float inc=0.01f, int decim=2);
     virtual Flag8Value*				CreateFlag8		    (PropItemVec& items, shared_str key, Flags8* val, u8 mask, LPCSTR c0=0, LPCSTR c1=0, u32 flags=0);
     virtual Flag16Value*			CreateFlag16	    (PropItemVec& items, shared_str key, Flags16* val, u16 mask, LPCSTR c0=0, LPCSTR c1=0, u32 flags=0);
