@@ -1312,14 +1312,14 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
 
 u32 player_hud::motion_length(const MotionID& M, const CMotionDef*& md, float speed)
 {
-	md					= m_model->LL_GetMotionDef(M);
-	VERIFY				(md);
-	if (md->flags & esmStopAtEnd) 
+	md = m_model->LL_GetMotionDef(M);
+	VERIFY(md);
+	if (md != nullptr && md->flags & esmStopAtEnd)
 	{
-		CMotion*			motion		= m_model->LL_GetRootMotion(M);
-		return				iFloor( 0.5f + 1000.f*motion->GetLength() / (md->Dequantize(md->speed) * speed) );
+		CMotion* motion = m_model->LL_GetRootMotion(M);
+		return iFloor(0.5f + 1000.f * motion->GetLength() / (md->Dequantize(md->speed) * speed));
 	}
-	return					0;
+	return 0;
 }
 
 const Fvector& player_hud::attach_rot() const
@@ -1451,8 +1451,10 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotio
 				continue;
 			}
 
-			CBlend* B = m_model->PlayCycle(pid, M, part == 0 && pid == 0 && attached_item(1) ? TRUE : bMixIn);
-			B->speed *= speed;
+			if (CBlend* B = m_model->PlayCycle(pid, M, part == 0 && pid == 0 && attached_item(1) ? TRUE : bMixIn))
+			{
+				B->speed *= speed;
+			}
 		}
 	}
 
