@@ -70,6 +70,7 @@ public:
 	bool operator[](const EEngineExternalEnvironment& ID) const;
 
 	xr_string_map<xr_string, xr_string> ShadersOptions;
+	Ivector2 gamesaveSize;
 };
 
 ENGINE_API CEngineExternal& EngineExternal();
