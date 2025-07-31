@@ -946,7 +946,7 @@ gpiProcessSearch(
 
 					// Start a new operation if they want more matches.
 					///////////////////////////////////////////////////
-					if((more == GP_MORE) && (arg.more == GP_MORE))
+					if(((GPEnum)more == GP_MORE) && (arg.more == GP_MORE))
 						CHECK_RESULT(gpiProfileSearch(connection, data->nick, data->uniquenick, data->email, data->firstname, data->lastname, data->icquin, arg.numMatches + data->skip, (GPEnum)operation->blocking, operation->callback.callback, operation->callback.param));
 
 					// We're done.
