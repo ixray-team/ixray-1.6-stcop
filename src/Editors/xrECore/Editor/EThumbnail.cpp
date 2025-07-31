@@ -47,12 +47,12 @@ void EImageThumbnail::CreatePixels(u32* p, u32 w, u32 h)
     DXTUtils::Filter::Process(m_Pixels.data(), THUMB_WIDTH, THUMB_HEIGHT, p, w, h, DXTUtils::Filter::imf_mitchell);
 }
 
-void EImageThumbnail::Update(ImTextureID& Texture)
+void EImageThumbnail::Update(ID3DBaseTexture*& Texture)
 {
     if (m_Pixels.size() == 0)
     {
         if (Texture)
-            Texture->Release();
+            IM_TEXTURE_RELEASE(Texture);
 
         Texture = nullptr;
 
@@ -62,7 +62,7 @@ void EImageThumbnail::Update(ImTextureID& Texture)
     ID3DTexture2D* pTexture = nullptr;
     if (Texture != nullptr)
     {
-        R_CHK(Texture->QueryInterface(__uuidof(ID3DTexture2D), (void**)&pTexture));
+        R_CHK(((IDirect3DBaseTexture9*)(Texture))->QueryInterface(__uuidof(ID3DTexture2D), (void**)&pTexture));
     }
     else
     {

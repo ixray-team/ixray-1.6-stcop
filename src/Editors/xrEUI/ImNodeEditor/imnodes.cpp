@@ -1999,7 +1999,7 @@ ImNodesStyle::ImNodesStyle()
 
 namespace IMNODES_NAMESPACE
 {
-    IMGUI_API ImNodesContext* CreateContext()
+    XREUI_API ImNodesContext* CreateContext()
     {
         ImNodesContext* ctx = IM_NEW(ImNodesContext)();
         if (GImNodes == NULL)
@@ -2008,7 +2008,7 @@ namespace IMNODES_NAMESPACE
         return ctx;
     }
 
-    IMGUI_API void DestroyContext(ImNodesContext* ctx)
+    XREUI_API void DestroyContext(ImNodesContext* ctx)
     {
         if (ctx == NULL)
             ctx = GImNodes;
@@ -2195,7 +2195,7 @@ namespace IMNODES_NAMESPACE
         dest->Colors[ImNodesCol_MiniMapCanvasOutline] = IM_COL32(200, 200, 200, 200);
     }
 
-    IMGUI_API void BeginNodeEditor()
+    XREUI_API void BeginNodeEditor()
     {
         IM_ASSERT(GImNodes->CurrentScope == ImNodesScope_None);
         GImNodes->CurrentScope = ImNodesScope_Editor;
@@ -2271,7 +2271,7 @@ namespace IMNODES_NAMESPACE
         }
     }
 
-    IMGUI_API void EndNodeEditor()
+    XREUI_API void EndNodeEditor()
     {
         IM_ASSERT(GImNodes->CurrentScope == ImNodesScope_Editor);
         GImNodes->CurrentScope = ImNodesScope_None;
@@ -2421,7 +2421,7 @@ namespace IMNODES_NAMESPACE
         ImGui::EndGroup();
     }
 
-    IMGUI_API void MiniMap(
+    XREUI_API void MiniMap(
         const float                                      minimap_size_fraction,
         const ImNodesMiniMapLocation                     location,
         const ImNodesMiniMapNodeHoveringCallback         node_hovering_callback,
@@ -2449,7 +2449,7 @@ namespace IMNODES_NAMESPACE
         // of the state for the mini map in GImNodes for the actual drawing/updating
     }
 
-    IMGUI_API void BeginNode(const int node_id)
+    XREUI_API void BeginNode(const int node_id)
     {
         // Remember to call BeginNodeEditor before calling BeginNode
         IM_ASSERT(GImNodes->CurrentScope == ImNodesScope_Editor);
@@ -2484,7 +2484,7 @@ namespace IMNODES_NAMESPACE
         ImGui::BeginGroup();
     }
 
-    IMGUI_API void EndNode()
+    XREUI_API void EndNode()
     {
         IM_ASSERT(GImNodes->CurrentScope == ImNodesScope_Node);
         GImNodes->CurrentScope = ImNodesScope_Editor;
@@ -2517,13 +2517,13 @@ namespace IMNODES_NAMESPACE
         return node.Rect.GetSize();
     }
 
-    IMGUI_API void BeginNodeTitleBar()
+    XREUI_API void BeginNodeTitleBar()
     {
         IM_ASSERT(GImNodes->CurrentScope == ImNodesScope_Node);
         ImGui::BeginGroup();
     }
 
-    IMGUI_API void EndNodeTitleBar()
+    XREUI_API void EndNodeTitleBar()
     {
         IM_ASSERT(GImNodes->CurrentScope == ImNodesScope_Node);
         ImGui::EndGroup();
@@ -2537,19 +2537,19 @@ namespace IMNODES_NAMESPACE
         ImGui::SetCursorPos(GridSpaceToEditorSpace(editor, GetNodeContentOrigin(node)));
     }
 
-    IMGUI_API  void BeginInputAttribute(const int id, const ImNodesPinShape shape)
+    XREUI_API  void BeginInputAttribute(const int id, const ImNodesPinShape shape)
     {
         BeginPinAttribute(id, ImNodesAttributeType_Input, shape, GImNodes->CurrentNodeIdx);
     }
 
-    IMGUI_API void EndInputAttribute() { EndPinAttribute(); }
+    XREUI_API void EndInputAttribute() { EndPinAttribute(); }
 
-    IMGUI_API  void BeginOutputAttribute(const int id, const ImNodesPinShape shape)
+    XREUI_API  void BeginOutputAttribute(const int id, const ImNodesPinShape shape)
     {
         BeginPinAttribute(id, ImNodesAttributeType_Output, shape, GImNodes->CurrentNodeIdx);
     }
 
-    IMGUI_API  void EndOutputAttribute() { EndPinAttribute(); }
+    XREUI_API  void EndOutputAttribute() { EndPinAttribute(); }
 
     void BeginStaticAttribute(const int id)
     {
@@ -2595,7 +2595,7 @@ namespace IMNODES_NAMESPACE
         GImNodes->CurrentAttributeFlags = GImNodes->AttributeFlagStack.back();
     }
 
-    IMGUI_API void Link(const int id, const int start_attr_id, const int end_attr_id)
+    XREUI_API void Link(const int id, const int start_attr_id, const int end_attr_id)
     {
         IM_ASSERT(GImNodes->CurrentScope == ImNodesScope_Editor);
 
@@ -2620,13 +2620,13 @@ namespace IMNODES_NAMESPACE
         }
     }
 
-    IMGUI_API void PushColorStyle(const ImNodesCol item, unsigned int color)
+    XREUI_API void PushColorStyle(const ImNodesCol item, unsigned int color)
     {
         GImNodes->ColorModifierStack.push_back(ImNodesColElement(GImNodes->Style.Colors[item], item));
         GImNodes->Style.Colors[item] = color;
     }
 
-    IMGUI_API void PopColorStyle()
+    XREUI_API void PopColorStyle()
     {
         IM_ASSERT(GImNodes->ColorModifierStack.size() > 0);
         const ImNodesColElement elem = GImNodes->ColorModifierStack.back();
@@ -2730,7 +2730,7 @@ namespace IMNODES_NAMESPACE
         }
     }
 
-    IMGUI_API void SetNodeScreenSpacePos(const int node_id, const ImVec2& screen_space_pos)
+    XREUI_API void SetNodeScreenSpacePos(const int node_id, const ImVec2& screen_space_pos)
     {
         ImNodesEditorContext& editor = EditorContextGet();
         ImNodeData& node = ObjectPoolFindOrCreateObject(editor.Nodes, node_id);
@@ -2794,7 +2794,7 @@ namespace IMNODES_NAMESPACE
 
     bool IsEditorHovered() { return MouseInCanvas(); }
 
-    IMGUI_API bool IsNodeHovered(int* const node_id)
+    XREUI_API bool IsNodeHovered(int* const node_id)
     {
         IM_ASSERT(GImNodes->CurrentScope == ImNodesScope_None);
         IM_ASSERT(node_id != NULL);
@@ -2910,7 +2910,7 @@ namespace IMNODES_NAMESPACE
         SelectObject(editor.Links, editor.SelectedLinkIndices, link_id);
     }
 
-    IMGUI_API bool IsNodeSelected(int node_id)
+    XREUI_API bool IsNodeSelected(int node_id)
     {
         ImNodesEditorContext& editor = EditorContextGet();
         return IsObjectSelected(editor.Nodes, editor.SelectedNodeIndices, node_id);
@@ -2968,7 +2968,7 @@ namespace IMNODES_NAMESPACE
         return is_started;
     }
 
-    IMGUI_API bool IsLinkDropped(int* const started_at_id, const bool including_detached_links)
+    XREUI_API bool IsLinkDropped(int* const started_at_id, const bool including_detached_links)
     {
         // Call this function after EndNodeEditor()!
         IM_ASSERT(GImNodes->CurrentScope == ImNodesScope_None);
@@ -2989,7 +2989,7 @@ namespace IMNODES_NAMESPACE
         return link_dropped;
     }
 
-    IMGUI_API bool IsLinkCreated(
+    XREUI_API bool IsLinkCreated(
         int* const  started_at_pin_id,
         int* const  ended_at_pin_id,
         bool* const created_from_snap)
@@ -3029,7 +3029,7 @@ namespace IMNODES_NAMESPACE
         return is_created;
     }
 
-    IMGUI_API bool IsLinkCreated(
+    XREUI_API bool IsLinkCreated(
         int* started_at_node_id,
         int* started_at_pin_id,
         int* ended_at_node_id,
