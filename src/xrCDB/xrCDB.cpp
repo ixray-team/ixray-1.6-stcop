@@ -66,10 +66,7 @@ XRCDB_API IReader* CDB::GetModelCache(string_path LevelName, u32 crc)
 }
 
 // Model building
-MODEL::MODEL	()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:cs(MUTEX_PROFILE_ID(MODEL))
-#endif // PROFILE_CRITICAL_SECTIONS
+MODEL::MODEL()
 {
 	tree		= 0;
 	tris		= 0;

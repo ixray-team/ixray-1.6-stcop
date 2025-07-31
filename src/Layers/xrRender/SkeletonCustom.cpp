@@ -9,11 +9,7 @@
 #include	"../../xrEngine/Render.h"
 #endif
 int			psSkeletonUpdate	= 32;
-xrCriticalSection	UCalc_Mutex
-#ifdef PROFILE_CRITICAL_SECTIONS
-	(MUTEX_PROFILE_ID(UCalc_Mutex))
-#endif // PROFILE_CRITICAL_SECTIONS
-;
+xrCriticalSection UCalc_Mutex;
 
 #ifndef _EDITOR
 #include "../../xrServerEntities/smart_cast.h"

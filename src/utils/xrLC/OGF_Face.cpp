@@ -263,14 +263,8 @@ void OGF::Optimize()
 	}
 }
 
-
-
 // Make Progressive
-xrCriticalSection			progressive_cs
-#ifdef PROFILE_CRITICAL_SECTIONS
-	(MUTEX_PROFILE_ID(progressive_cs))
-#endif // PROFILE_CRITICAL_SECTIONS
-;
+xrCriticalSection progressive_cs;
 void OGF::MakeProgressive	(float metric_limit)
 {
 	// test

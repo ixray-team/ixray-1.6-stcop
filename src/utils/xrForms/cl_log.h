@@ -41,11 +41,7 @@ struct IterationData
 	float Persent = 0;
 };
 
-static xrCriticalSection	csLog
-#ifdef PROFILE_CRITICAL_SECTIONS
-(MUTEX_PROFILE_ID(csLog))
-#endif // PROFILE_CRITICAL_SECTIONS
-;
+static xrCriticalSection csLog;
 
 void clMsg(const char* format, ...);
 void Status(const char* format, ...);
