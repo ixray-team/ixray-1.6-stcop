@@ -35,27 +35,35 @@
 
     <indicator_booster_psy x="16" y="660" width="24" height="41" stretch="1">
 		<texture>ui_inGame2_shield_Psy</texture>
+		<text font="letterica16" x="0" y="-43" width="18" height="27" align="c" vert_align="b"/>
 	</indicator_booster_psy>
     <indicator_booster_radia x="49" y="660" width="24" height="41" stretch="1">
 		<texture>ui_inGame2_shield_Radiation</texture>
+		<text font="letterica16" x="0" y="-43" width="18" height="27" align="c" vert_align="b"/>
 	</indicator_booster_radia>
     <indicator_booster_chem x="83" y="660" width="24" height="41" stretch="1">
 		<texture>ui_inGame2_shield_biological</texture>
+		<text font="letterica16" x="0" y="-43" width="18" height="27" align="c" vert_align="b"/>
 	</indicator_booster_chem>
     <indicator_booster_wound x="116" y="660" width="24" height="41" stretch="1">
 		<texture>ui_inGame2_shield_blood</texture>
+		<text font="letterica16" x="0" y="-43" width="18" height="27" align="c" vert_align="b"/>
 	</indicator_booster_wound>
     <indicator_booster_weight x="150" y="660" width="24" height="41" stretch="1">
 		<texture>ui_inGame2_shield_force</texture>
+		<text font="letterica16" x="0" y="-43" width="18" height="27" align="c" vert_align="b"/>
 	</indicator_booster_weight>
     <indicator_booster_health x="184" y="660" width="24" height="41" stretch="1">
 		<texture>ui_inGame2_shield_health</texture>
+		<text font="letterica16" x="0" y="-43" width="18" height="27" align="c" vert_align="b"/>
 	</indicator_booster_health>
     <indicator_booster_power x="217" y="660" width="24" height="41" stretch="1">
 		<texture>ui_inGame2_shield_stamina</texture>
+		<text font="letterica16" x="0" y="-43" width="18" height="27" align="c" vert_align="b"/>
 	</indicator_booster_power>
     <indicator_booster_rad x="251" y="660" width="24" height="41" stretch="1">
 		<texture>ui_inGame2_shield_radiation_cleanup</texture>
+		<text font="letterica16" x="0" y="-43" width="18" height="27" align="c" vert_align="b"/>
 	</indicator_booster_rad>
 <!--
 	<radiation_static x="0" y="0" width="53" height="64" stretch="1">
