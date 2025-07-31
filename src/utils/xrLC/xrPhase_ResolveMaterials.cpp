@@ -43,7 +43,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 			}
 		});
 	}
-	clMsg("Calculating materials/subdivs (MT)... Memory: [%umb] [%ums]", GetMemoryUsed() / 1024 / 1024, t.GetElapsed_ms());
+	clMsg("Calculating materials/subdivs (MT)... Memory: [%umb] [%ums]", GetHeapMemory() / 1024 / 1024, t.GetElapsed_ms());
 	
 	
 	// Performing Subdivs
@@ -79,7 +79,7 @@ void	CBuild::xrPhase_ResolveMaterials()
   			g_XSplit[i] = new vecFace( g_Xsplits_def[i].begin(), g_Xsplits_def[i].end() );
  		}
 	}	
-	clMsg("Perfroming subdivisions (MT)... Memory: [%umb] [%ums] copy[%ums]", GetMemoryUsed() / 1024 / 1024, msCalc,  t.GetElapsed_ms() - msCalc);
+	clMsg("Perfroming subdivisions (MT)... Memory: [%umb] [%ums] copy[%ums]", GetHeapMemory() / 1024 / 1024, msCalc,  t.GetElapsed_ms() - msCalc);
 
 	t.Start();
 	{
@@ -90,12 +90,12 @@ void	CBuild::xrPhase_ResolveMaterials()
 		}
 		g_XSplit.erase(std::remove(g_XSplit.begin(),g_XSplit.end(),(vecFace*) NULL),g_XSplit.end());
 	}
-	clMsg("Removing empty subdivs (SC) ... Memory: [%umb] [%ums]", GetMemoryUsed() / 1024 / 1024, t.GetElapsed_ms());
+	clMsg("Removing empty subdivs (SC) ... Memory: [%umb] [%ums]", GetHeapMemory() / 1024 / 1024, t.GetElapsed_ms());
   
 	t.Start();
 	for (auto F : g_XSplit)
  		Detach(F);
-   	clMsg("Detaching subdivs (MT)... Memory: [%umb] [%ums]", GetMemoryUsed() / 1024 / 1024, t.GetElapsed_ms());
+   	clMsg("Detaching subdivs (MT)... Memory: [%umb] [%ums]", GetHeapMemory() / 1024 / 1024, t.GetElapsed_ms());
 
 	clMsg				("%d subdivisions.",g_XSplit.size());
 }

@@ -66,7 +66,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 	Status("Vertices...");
  
-	size_t pre = GetMemoryUsed();
+	size_t pre = GetHeapMemory();
 	{
 		F = fs.open_chunk(EB_Vertices);
 		u32 v_count = F->length() / sizeof(b_vertex);
