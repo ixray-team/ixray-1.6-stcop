@@ -29,12 +29,12 @@ private:
 
 	enum EStateType
 	{
-//		stt_stamina = 0,
-		stt_health = 0,
+		stt_stamina = 0,
+		stt_health,
 		stt_bleeding,
 		stt_radiation,
-//		stt_armor,
-//		stt_main,
+		stt_armor,
+		stt_main,
 		stt_fire,
 		stt_radia,
 		stt_acid,
@@ -59,7 +59,7 @@ public:
 	virtual void			Show					( bool status );
 
 private:
-			void			update_round_states		( CActor* actor, ALife::EHitType hit_type, EStateType stt_type );
+			void			update_round_states		(EStateType stt_type, float initial, float max_power);
 
 };
 
@@ -83,7 +83,7 @@ public:
 			void	init_from_xml			( CUIXml& xml, LPCSTR path );
 	
 			void	set_text				( float value ); // 0..1
-			void	set_progress			( float value ); // 0..1
+			bool	set_progress			( float value ); // 0..1
 			void	set_progress_shape		( float value ); // 0..1
 			void	set_arrow				( float value ); // 0..1
 			void	show_static				( bool status, u8 number=1 );

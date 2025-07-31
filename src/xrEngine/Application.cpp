@@ -236,7 +236,6 @@ void CApplication::SetLoadStageTitle(pcstr _ls_title)
 	if (loadingScreen && isLoadingStagesEnabled)
 		loadingScreen->SetStageTitle(_ls_title);
 	Log(_ls_title);
-	// для корректной работы лоадскрина в ЧН и ТЧ
 }
 
 void CApplication::LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3)

@@ -12,6 +12,7 @@
 #include "WeaponBinoculars.h"
 #include "WeaponKnife.h"
 #include "Silencer.h"
+#include "../../xrUI/UIHelper.h"
 
 struct SLuaWpnParams
 {
@@ -51,13 +52,6 @@ void destroy_lua_wpn_params()
 
 CUIWpnParams::CUIWpnParams()
 {
-	AttachChild(&m_Prop_line);
-
-	AttachChild(&m_icon_acc);
-	AttachChild(&m_icon_dam);
-	AttachChild(&m_icon_han);
-	AttachChild(&m_icon_rpm);
-
 	AttachChild(&m_textAccuracy);
 	AttachChild(&m_textDamage);
 	AttachChild(&m_textHandling);
@@ -67,14 +61,6 @@ CUIWpnParams::CUIWpnParams()
 	AttachChild(&m_progressDamage);
 	AttachChild(&m_progressHandling);
 	AttachChild(&m_progressRPM);
-
-	AttachChild(&m_stAmmo);
-	AttachChild(&m_textAmmoCount);
-	AttachChild(&m_textAmmoCount2);
-	AttachChild(&m_textAmmoTypes);
-	AttachChild(&m_textAmmoUsedType);
-	AttachChild(&m_stAmmoType1);
-	AttachChild(&m_stAmmoType2);
 }
 
 CUIWpnParams::~CUIWpnParams()
@@ -85,12 +71,17 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 {
 	if (!xml_doc.NavigateToNode("wpn_params", 0))	return;
 	CUIXmlInit::InitWindow			(xml_doc, "wpn_params", 0, this);
-	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:prop_line",			0, &m_Prop_line);
+	if (xml_doc.NavigateToNode("wpn_params:prop_line"))
+		m_Prop_line = UIHelper::CreateStatic(xml_doc, "wpn_params:prop_line", this);
 
-	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:static_accuracy",		0, &m_icon_acc);
-	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:static_damage",		0, &m_icon_dam);
-	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:static_handling",		0, &m_icon_han);
-	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:static_rpm",			0, &m_icon_rpm);
+	if (xml_doc.NavigateToNode("wpn_params:static_accuracy"))
+		m_icon_acc = UIHelper::CreateStatic(xml_doc, "wpn_params:static_accuracy", this);
+	if (xml_doc.NavigateToNode("wpn_params:static_damage"))
+		m_icon_dam = UIHelper::CreateStatic(xml_doc, "wpn_params:static_damage", this);
+	if (xml_doc.NavigateToNode("wpn_params:static_handling"))
+		m_icon_han = UIHelper::CreateStatic(xml_doc, "wpn_params:static_handling", this);
+	if (xml_doc.NavigateToNode("wpn_params:static_rpm"))
+		m_icon_rpm = UIHelper::CreateStatic(xml_doc, "wpn_params:static_rpm", this);
 
 	CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_accuracy",		0, &m_textAccuracy);
 	CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_damage",			0, &m_textDamage);
@@ -104,136 +95,158 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 
 	if(IsGameTypeSingle())
 	{
-		CUIXmlInit::InitStatic			(xml_doc, "wpn_params:static_ammo",			0, &m_stAmmo);
-		CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_ammo_count",		0, &m_textAmmoCount);
-		CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_ammo_count2",		0, &m_textAmmoCount2);
-		CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_ammo_types",		0, &m_textAmmoTypes);
-		CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_ammo_used_type",	0, &m_textAmmoUsedType);
-		CUIXmlInit::InitStatic			(xml_doc, "wpn_params:static_ammo_type1",	0, &m_stAmmoType1);
-		CUIXmlInit::InitStatic			(xml_doc, "wpn_params:static_ammo_type2",	0, &m_stAmmoType2);
+		if (xml_doc.NavigateToNode("wpn_params:static_ammo"))
+			m_stAmmo = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo", this);
+		if (xml_doc.NavigateToNode("wpn_params:cap_ammo_count"))
+			m_textAmmoCount = UIHelper::CreateTextWnd(xml_doc, "wpn_params:cap_ammo_count", this);
+		if (xml_doc.NavigateToNode("wpn_params:cap_ammo_count2"))
+			m_textAmmoCount2 = UIHelper::CreateTextWnd(xml_doc, "wpn_params:cap_ammo_count2", this);
+		if (xml_doc.NavigateToNode("wpn_params:cap_ammo_types"))
+			m_textAmmoTypes = UIHelper::CreateTextWnd(xml_doc, "wpn_params:cap_ammo_types", this);
+		if (xml_doc.NavigateToNode("wpn_params:cap_ammo_used_type"))
+			m_textAmmoUsedType = UIHelper::CreateTextWnd(xml_doc, "wpn_params:cap_ammo_used_type", this);
+		if (xml_doc.NavigateToNode("wpn_params:static_ammo_type1"))
+			m_stAmmoType1 = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo_type1", this);
+		if (xml_doc.NavigateToNode("wpn_params:static_ammo_type2"))
+			m_stAmmoType2 = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo_type2", this);
 	}
 
 }
 
-void CUIWpnParams::SetInfo( CInventoryItem* slot_wpn, CInventoryItem& cur_wpn )
+void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 {
-	if ( !g_lua_wpn_params )
+	if (!g_lua_wpn_params)
 	{
 		g_lua_wpn_params = new SLuaWpnParams();
 	}
-	
-	LPCSTR cur_section  = cur_wpn.object().cNameSect().c_str();
+
+	LPCSTR cur_section = cur_wpn.object().cNameSect().c_str();
 	string2048 str_upgrades;
 	str_upgrades[0] = 0;
-	cur_wpn.get_upgrades_str( str_upgrades );
+	cur_wpn.get_upgrades_str(str_upgrades);
 
-	float cur_rpm    = iFloor(g_lua_wpn_params->m_functorRPM( cur_section, str_upgrades )*53.0f)/53.0f;
-	float cur_accur  = iFloor(g_lua_wpn_params->m_functorAccuracy( cur_section, str_upgrades )*53.0f)/53.0f;
-	float cur_hand   = iFloor(g_lua_wpn_params->m_functorHandling( cur_section, str_upgrades )*53.0f)/53.0f;
+	float cur_rpm = iFloor(g_lua_wpn_params->m_functorRPM(cur_section, str_upgrades) * 53.0f) / 53.0f;
+	float cur_accur = iFloor(g_lua_wpn_params->m_functorAccuracy(cur_section, str_upgrades) * 53.0f) / 53.0f;
+	float cur_hand = iFloor(g_lua_wpn_params->m_functorHandling(cur_section, str_upgrades) * 53.0f) / 53.0f;
 	float cur_damage = (IsGameTypeSingle()) ?
-		iFloor(g_lua_wpn_params->m_functorDamage( cur_section, str_upgrades )*53.0f)/53.0f
-		: iFloor(g_lua_wpn_params->m_functorDamageMP( cur_section, str_upgrades )*53.0f)/53.0f;
+		iFloor(g_lua_wpn_params->m_functorDamage(cur_section, str_upgrades) * 53.0f) / 53.0f
+		: iFloor(g_lua_wpn_params->m_functorDamageMP(cur_section, str_upgrades) * 53.0f) / 53.0f;
 
-	float slot_rpm    = cur_rpm;
-	float slot_accur  = cur_accur;
-	float slot_hand   = cur_hand;
+	float slot_rpm = cur_rpm;
+	float slot_accur = cur_accur;
+	float slot_hand = cur_hand;
 	float slot_damage = cur_damage;
 
-	if ( slot_wpn && (slot_wpn != &cur_wpn) )
+	if (slot_wpn && (slot_wpn != &cur_wpn))
 	{
-		LPCSTR slot_section  = slot_wpn->object().cNameSect().c_str();
+		LPCSTR slot_section = slot_wpn->object().cNameSect().c_str();
 		str_upgrades[0] = 0;
-		slot_wpn->get_upgrades_str( str_upgrades );
+		slot_wpn->get_upgrades_str(str_upgrades);
 
-		slot_rpm    = iFloor(g_lua_wpn_params->m_functorRPM( slot_section, str_upgrades )*53.0f)/53.0f;
-		slot_accur  = iFloor(g_lua_wpn_params->m_functorAccuracy( slot_section, str_upgrades )*53.0f)/53.0f;
-		slot_hand   = iFloor(g_lua_wpn_params->m_functorHandling( slot_section, str_upgrades )*53.0f)/53.0f;
+		slot_rpm = iFloor(g_lua_wpn_params->m_functorRPM(slot_section, str_upgrades) * 53.0f) / 53.0f;
+		slot_accur = iFloor(g_lua_wpn_params->m_functorAccuracy(slot_section, str_upgrades) * 53.0f) / 53.0f;
+		slot_hand = iFloor(g_lua_wpn_params->m_functorHandling(slot_section, str_upgrades) * 53.0f) / 53.0f;
 		slot_damage = (IsGameTypeSingle()) ?
-			iFloor(g_lua_wpn_params->m_functorDamage( slot_section, str_upgrades )*53.0f)/53.0f
-			: iFloor(g_lua_wpn_params->m_functorDamageMP( slot_section, str_upgrades )*53.0f)/53.0f;
+			iFloor(g_lua_wpn_params->m_functorDamage(slot_section, str_upgrades) * 53.0f) / 53.0f
+			: iFloor(g_lua_wpn_params->m_functorDamageMP(slot_section, str_upgrades) * 53.0f) / 53.0f;
 	}
-	
-	m_progressAccuracy.SetTwoPos( cur_accur,  slot_accur );
-	m_progressDamage.SetTwoPos(   cur_damage, slot_damage );
-	m_progressHandling.SetTwoPos( cur_hand,   slot_hand );
-	m_progressRPM.SetTwoPos(      cur_rpm,    slot_rpm );
 
-	if(IsGameTypeSingle())
+	m_progressAccuracy.SetTwoPos(cur_accur, slot_accur);
+	m_progressDamage.SetTwoPos(cur_damage, slot_damage);
+	m_progressHandling.SetTwoPos(cur_hand, slot_hand);
+	m_progressRPM.SetTwoPos(cur_rpm, slot_rpm);
+
+	if (IsGameTypeSingle())
 	{
 		CWeapon* weapon = cur_wpn.cast_weapon();
-		if(!weapon)
+		if (!weapon)
 			return;
 
 		int ammo_count = weapon->GetAmmoMagSize();
 		int ammo_count2 = ammo_count;
 
-		if(slot_wpn)
+		if (slot_wpn)
 		{
 			CWeapon* slot_weapon = slot_wpn->cast_weapon();
-			if(slot_weapon)
-				ammo_count2 = slot_weapon->GetAmmoMagSize(); 
+			if (slot_weapon)
+				ammo_count2 = slot_weapon->GetAmmoMagSize();
 		}
 
-		if(ammo_count==ammo_count2)
-			m_textAmmoCount2.SetTextColor(color_rgba(170,170,170,255));
-		else if(ammo_count<ammo_count2)
-			m_textAmmoCount2.SetTextColor(color_rgba(255,0,0,255));
-		else
-			m_textAmmoCount2.SetTextColor(color_rgba(0,255,0,255));
+		if (m_textAmmoCount2)
+		{
+			if (ammo_count == ammo_count2)
+				m_textAmmoCount2->SetTextColor(color_rgba(170, 170, 170, 255));
+			else if (ammo_count < ammo_count2)
+				m_textAmmoCount2->SetTextColor(color_rgba(255, 0, 0, 255));
+			else
+				m_textAmmoCount2->SetTextColor(color_rgba(0, 255, 0, 255));
 
-		string128 str;
-		xr_sprintf(str, sizeof(str), "%d", ammo_count);
-		m_textAmmoCount2.SetText(str);
+			string128 str;
+			xr_sprintf(str, sizeof(str), "%d", ammo_count);
+			m_textAmmoCount2->SetText(str);
+		}
 
 		xr_vector<shared_str>& ammo_types = weapon->m_ammoTypes;
-		if(!ammo_types.empty())
+		if (!ammo_types.empty())
 		{
-			xr_sprintf(str, sizeof(str), "%s", pSettings->r_string(ammo_types[0].c_str(), "inv_name_short"));
-			m_textAmmoUsedType.SetTextST(str);
 
-			const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, ammo_types[0].c_str(), "icons_texture", nullptr);
-			m_stAmmoType1.SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
-			Frect tex_rect;
-			tex_rect.x1 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_x") * INV_GRID_WIDTH(isHQIcons);
-			tex_rect.y1 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons);
-			tex_rect.x2 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_width") * INV_GRID_WIDTH(isHQIcons);
-			tex_rect.y2 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
-			tex_rect.rb.add(tex_rect.lt);
-			m_stAmmoType1.SetTextureRect(tex_rect);
-			m_stAmmoType1.TextureOn();
-			m_stAmmoType1.SetStretchTexture(true);
+			if (m_textAmmoUsedType)
+			{
+				string128 str;
+				xr_sprintf(str, sizeof(str), "%s", pSettings->r_string(ammo_types[0].c_str(), "inv_name_short"));
+				m_textAmmoUsedType->SetTextST(str);
+			}
 
-			if (isHQIcons)
-				m_stAmmoType1.SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() / 2, (tex_rect.y2 - tex_rect.y1) / 2));
-			else
-				m_stAmmoType1.SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx(), tex_rect.y2 - tex_rect.y1));
+			if (m_stAmmoType1)
+			{
+				const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, ammo_types[0].c_str(), "icons_texture", nullptr);
+				m_stAmmoType1->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+				Frect tex_rect = {};
+				tex_rect.x1 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_x") * INV_GRID_WIDTH(isHQIcons);
+				tex_rect.y1 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons);
+				tex_rect.x2 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_width") * INV_GRID_WIDTH(isHQIcons);
+				tex_rect.y2 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
+				tex_rect.rb.add(tex_rect.lt);
+				m_stAmmoType1->SetTextureRect(tex_rect);
+				m_stAmmoType1->TextureOn();
+				m_stAmmoType1->SetStretchTexture(true);
+				if (isHQIcons)
+					m_stAmmoType1->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() / 2, (tex_rect.y2 - tex_rect.y1) / 2));
+				else
+					m_stAmmoType1->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx(), tex_rect.y2 - tex_rect.y1));
+			}
 
 			bool enable_ammo_type_2 = ammo_types.size() > 1;
-			m_stAmmoType2.Show(enable_ammo_type_2);
+			if (m_stAmmoType2)
+				m_stAmmoType2->Show(enable_ammo_type_2);
 
-			if (enable_ammo_type_2)
+			if (enable_ammo_type_2 && m_stAmmoType2)
 			{
-				const char* icons_texture1 = READ_IF_EXISTS(pSettings, r_string, ammo_types[1].c_str(), "icons_texture", nullptr);
-				m_stAmmoType2.SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture1));
+				Frect tex_rect = {};
 
+				const char* icons_texture1 = nullptr; // St4lker0k765: small hack for weapons with only 1 ammo type (like BM-16 in vanilla CoP)
+				if (ammo_types.size() >= 2)
+					icons_texture1 = READ_IF_EXISTS(pSettings, r_string, ammo_types[1].c_str(), "icons_texture", nullptr);
+
+				m_stAmmoType2->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture1));
 				tex_rect.x1 = pSettings->r_float(ammo_types[1].c_str(), "inv_grid_x") * INV_GRID_WIDTH(isHQIcons);
 				tex_rect.y1 = pSettings->r_float(ammo_types[1].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons);
 				tex_rect.x2 = pSettings->r_float(ammo_types[1].c_str(), "inv_grid_width") * INV_GRID_WIDTH(isHQIcons);
 				tex_rect.y2 = pSettings->r_float(ammo_types[1].c_str(), "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
 				tex_rect.rb.add(tex_rect.lt);
-
-				m_stAmmoType2.SetTextureRect(tex_rect);
-				m_stAmmoType2.TextureOn();
-				m_stAmmoType2.SetStretchTexture(true);
+				m_stAmmoType2->SetTextureRect(tex_rect);
+				m_stAmmoType2->TextureOn();
+				m_stAmmoType2->SetStretchTexture(true);
 
 				if (isHQIcons)
-					m_stAmmoType2.SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() / 2, (tex_rect.y2 - tex_rect.y1) / 2));
+					m_stAmmoType2->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() / 2, (tex_rect.y2 - tex_rect.y1) / 2));
 				else
-					m_stAmmoType2.SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx(), tex_rect.y2 - tex_rect.y1));
+					m_stAmmoType2->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx(), tex_rect.y2 - tex_rect.y1));
 			}
 		}
 	}
 }
+
 
 bool CUIWpnParams::Check(CInventoryItem& wpn_section)
 {
