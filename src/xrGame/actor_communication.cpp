@@ -91,19 +91,24 @@ void  CActor::ReceivePhrase		(DIALOG_SHARED_PTR& phrase_dialog)
 	CPhraseDialogManager::ReceivePhrase(phrase_dialog);
 }
 
-void   CActor::UpdateAvailableDialogs	(CPhraseDialogManager* partner)
+void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
 {
 	m_AvailableDialogs.clear();
 	m_CheckedDialogs.clear();
 
 	//добавить актерский диалог собеседника
-	CInventoryOwner* pInvOwnerPartner = smart_cast<CInventoryOwner*>(partner); VERIFY(pInvOwnerPartner);
-	
-	for(u32 i = 0; i<pInvOwnerPartner->CharacterInfo().ActorDialogs().size(); i++)
+	CInventoryOwner* pInvOwnerPartner = partner->cast_inventory_owner();
+	VERIFY(pInvOwnerPartner);
+
+	for (u32 i = 0; i < pInvOwnerPartner->CharacterInfo().ActorDialogs().size(); i++)
+	{
 		AddAvailableDialog(pInvOwnerPartner->CharacterInfo().ActorDialogs()[i], partner);
+	}
 
 	if (EngineExternal().ClearSkyMode())
+	{
 		AddAvailableDialog("actor_break_dialog", partner);
+	}
 
 	CPhraseDialogManager::UpdateAvailableDialogs(partner);
 }

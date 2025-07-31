@@ -72,20 +72,22 @@ void FractionState::script_register( lua_State* L )
 
 void FractionState::update_info()
 {
-	if ( m_id.size() == 0 )
+	if (m_id.size() == 0)
 	{
 		return;
 	}
+
 	m_actor_goodwill = 0;
-	CActor* pActor = smart_cast<CActor*>( Level().CurrentEntity() );
-	if ( pActor )
+	CObject* current_entity = Level().CurrentEntity();
+
+	if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
 	{
 		CHARACTER_COMMUNITY char_cmm;
-		char_cmm.set( m_id );
-		m_actor_goodwill = RELATION_REGISTRY().GetCommunityGoodwill(char_cmm.index(), pActor->object_id() );
+		char_cmm.set(m_id);
+		m_actor_goodwill = RELATION_REGISTRY().GetCommunityGoodwill(char_cmm.index(), pActor->object_id());
 	}
 
-	luabind::functor<void>	m_functor;
-	R_ASSERT( ai().script_engine().functor( "pda.fill_fraction_state", m_functor ) );
-	m_functor( this );
+	luabind::functor<void> m_functor;
+	R_ASSERT(ai().script_engine().functor("pda.fill_fraction_state", m_functor));
+	m_functor(this);
 }

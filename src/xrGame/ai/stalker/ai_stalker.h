@@ -221,6 +221,7 @@ public:
 	virtual CAI_Stalker*				cast_stalker				()						{return this;}
 	virtual CCustomMonster*				cast_custom_monster			()						{return this;}
 	virtual CScriptEntity*				cast_script_entity			()						{return this;}
+	virtual CPhraseDialogManager*		cast_phrase_dialog_manager	()						{return this;}
 
 public:
 			void						init								();

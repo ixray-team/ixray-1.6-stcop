@@ -83,4 +83,6 @@ public:
 
 	static	bool		get_actor_community		(shared_str* our, shared_str* enemy);
 	static	bool		ignore_community		(shared_str const& check_community);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };

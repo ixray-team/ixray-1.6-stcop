@@ -75,8 +75,8 @@ void CUITalkWnd::InitTalkDialog()
 	m_pOurInvOwner = m_pActor->cast_inventory_owner();
 	m_pOthersInvOwner = m_pActor->GetTalkPartner();
 
-	m_pOurDialogManager = smart_cast<CPhraseDialogManager*>(m_pOurInvOwner);
-	m_pOthersDialogManager = smart_cast<CPhraseDialogManager*>(m_pOthersInvOwner);
+	m_pOurDialogManager = m_pOurInvOwner->cast_phrase_dialog_manager();
+	m_pOthersDialogManager = m_pOthersInvOwner->cast_phrase_dialog_manager();
 
 	//имена собеседников
 	UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOurInvOwner);

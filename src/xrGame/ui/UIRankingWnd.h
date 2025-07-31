@@ -101,6 +101,8 @@ public:
 			void		Init					();
 			void		update_info				();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 			void		add_faction				(CUIXml& xml, shared_str const& faction_id);
 			void		clear_all_factions		();

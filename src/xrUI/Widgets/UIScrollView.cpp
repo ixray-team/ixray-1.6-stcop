@@ -64,8 +64,9 @@ void CUIScrollView::InitScrollView()
 	}
 	m_pad->SetWndPos				(Fvector2().set(0,0));
 
-	CUIFixedScrollBar* tmp_scroll = smart_cast<CUIFixedScrollBar*>(m_VScrollBar);
-	if (tmp_scroll)
+	CUIFixedScrollBar* tmp_scroll = m_VScrollBar != nullptr ? m_VScrollBar->ui_cast_fixed_scroll_bar() : nullptr;
+
+	if (tmp_scroll != nullptr)
 	{
 		if (!tmp_scroll->InitScrollBar(Fvector2().set(GetWndSize().x, 0.0f), false, *m_scrollbar_profile))
 		{
@@ -211,63 +212,76 @@ float CUIScrollView::Scroll2ViewV	(){
 	return (h + GetVertIndent())/h;
 }
 
-void CUIScrollView::SetFixedScrollBar	(bool b)
+void CUIScrollView::SetFixedScrollBar(bool b)
 {
-	m_flags.set(eFixedScrollBar,b);
+	m_flags.set(eFixedScrollBar, b);
 }
 
-void CUIScrollView::Draw				()
+void CUIScrollView::Draw()
 {
-	if(m_flags.test	(eNeedRecalc) )
-		RecalcSize			();
+	if (m_flags.test(eNeedRecalc))
+	{
+		RecalcSize();
+	}
 
-	Frect								visible_rect;
-	GetAbsoluteRect						(visible_rect);
-	visible_rect.top					+= m_upIndent;
-	visible_rect.bottom					-= m_downIndent;
-	UI().PushScissor					(visible_rect);
+	Frect visible_rect;
+	GetAbsoluteRect(visible_rect);
+	visible_rect.top += m_upIndent;
+	visible_rect.bottom -= m_downIndent;
+	UI().PushScissor(visible_rect);
 
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	WINDOW_LIST_it it					= m_pad->GetChildWndList().begin();
-//	WINDOW_LIST_it it_e					= m_pad->GetChildWndList().end();
-	
-	if(!Empty() && m_visible_rgn.x!=-1)
+	WINDOW_LIST_it it = m_pad->GetChildWndList().begin();
+
+	if (!Empty() && m_visible_rgn.x != -1)
 	{
-		std::advance					(it,m_visible_rgn.x);
-		for(int idx=m_visible_rgn.x; idx<=m_visible_rgn.y; ++it,++idx)
+		std::advance(it, m_visible_rgn.x);
+		for (int idx = m_visible_rgn.x; idx <= m_visible_rgn.y; ++it, ++idx)
 		{
-			CUIScrollView* sw			= smart_cast<CUIScrollView*>(*it);
-			VERIFY						(sw==nullptr);
+			CUIScrollView* sw = (*it)->ui_cast_scroll_view();
+			VERIFY(sw == nullptr);
 
 			if ((*it)->GetVisible())
-                (*it)->Draw();
+			{
+				(*it)->Draw();
+			}
 		}
-	}else
-	for(int idx=0; it!=m_pad->GetChildWndList().end(); ++it,++idx)
+	}
+	else for (int idx = 0; it != m_pad->GetChildWndList().end(); ++it, ++idx)
 	{
-		Frect							item_rect;
-		(*it)->GetAbsoluteRect			(item_rect);
-		if(visible_rect.intersected(item_rect))
+		Frect item_rect;
+		(*it)->GetAbsoluteRect(item_rect);
+		if (visible_rect.intersected(item_rect))
 		{
-			if(m_visible_rgn.x == -1) //first visible
-				m_visible_rgn.x			= idx;
+			if (m_visible_rgn.x == -1) //first visible
+			{
+				m_visible_rgn.x = idx;
+			}
 
-			m_visible_rgn.y				= idx;
+			m_visible_rgn.y = idx;
 
 			if ((*it)->GetVisible())
-                (*it)->Draw();
-		}else
-			if(m_visible_rgn.x != -1)
-				break;
+			{
+				(*it)->Draw();
+			}
+		}
+		else if (m_visible_rgn.x != -1)
+		{
+			break;
+		}
 	}
-	UI().PopScissor					();
 
-	if(NeedShowScrollBar())
-		m_VScrollBar->Draw				();
+	UI().PopScissor();
+
+	if (NeedShowScrollBar())
+	{
+		m_VScrollBar->Draw();
+	}
 }
 
-bool CUIScrollView::NeedShowScrollBar(){
-	return m_flags.test(eFixedScrollBar) || GetHeight()<m_pad->GetHeight();
+bool CUIScrollView::NeedShowScrollBar()
+{
+	return m_flags.test(eFixedScrollBar) || GetHeight() < m_pad->GetHeight();
 }
 
 void CUIScrollView::OnScrollV			(CUIWindow*, void*)
@@ -407,38 +421,47 @@ float CUIScrollView::GetVertIndent(){
 	return m_upIndent + m_downIndent;
 }
 
-void CUIScrollView::SetSelected			(CUIWindow* w)
+void CUIScrollView::SetSelected(CUIWindow* w)
 {
-	if(!m_flags.test(eItemsSelectabe)) 
+	if (!m_flags.test(eItemsSelectabe))
+	{
 		return;
+	}
 
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		smart_cast<CUISelectable*>(*it)->SetSelected(*it==w);
+		child->ui_cast_selectable()->SetSelected(child == w);
 	}
 }
 
-CUIWindow* CUIScrollView::GetSelected(){
-	if(!m_flags.test(eItemsSelectabe))
+CUIWindow* CUIScrollView::GetSelected()
+{
+	if (!m_flags.test(eItemsSelectabe))
+	{
 		return nullptr;
+	}
 
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		if (smart_cast<CUISelectable*>(*it)->GetSelected())
-			return *it;
+		if (child->ui_cast_selectable()->GetSelected())
+		{
+			return child;
+		}
 	}
 
 	return nullptr;
 }
 
-void CUIScrollView::UpdateChildrenLenght(){
+void CUIScrollView::UpdateChildrenLenght()
+{
 	float len = GetDesiredChildWidth();
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+
+	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		(*it)->SetWidth(len);
+		child->SetWidth(len);
 	}
 }
 

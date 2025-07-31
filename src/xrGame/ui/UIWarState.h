@@ -31,6 +31,8 @@ public:
 			bool	UpdateInfo		( LPCSTR icon, LPCSTR hint_text );
 	virtual	void	Draw			();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 
 }; // class UIWarState

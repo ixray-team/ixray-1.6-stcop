@@ -26,4 +26,6 @@ public:
 
 	virtual void 	OnItemDBClick		(CUIWindow* w, void* pData);
 	virtual void 	OnItemDrop			(CUIWindow* w, void* pData);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };

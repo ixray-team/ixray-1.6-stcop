@@ -22,4 +22,5 @@ public:
 			void	Init				(CUIXml& uiXml, LPCSTR start_from);
 			void	Setup				(GAME_NEWS_DATA& news_data);
 	virtual	void	Update				(){};
+	virtual CUIWindow* ui_cast_window() { return this; }
 };

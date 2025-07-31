@@ -61,6 +61,7 @@ class CCar;
 class CBaseMonster;
 class CGrenade;
 class CCustomMonster;
+class CPhraseDialogManager;
 
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
@@ -230,6 +231,7 @@ public:
 	virtual CBaseMonster* cast_base_monster() { return nullptr; }
 	virtual CGrenade* cast_grenade() { return nullptr; }
 	virtual CCustomMonster* cast_custom_monster() { return nullptr; }
+	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return nullptr; }
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }

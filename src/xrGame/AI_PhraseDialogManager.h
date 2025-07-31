@@ -27,6 +27,9 @@ public:
 	virtual void				SetDefaultStartDialog		(shared_str phrase_dialog);
 	virtual shared_str	GetStartDialog						()								{return m_sStartDialog;}
 	virtual void				RestoreDefaultStartDialog	();
+
+	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return this; }
+
 protected:
 	//диалог, если не NULL, то его персонаж запустит
 	//при встрече с актером

@@ -105,6 +105,9 @@ public:
 			void	DrawZoneIndicators	();
 			void	FakeUpdateIndicatorType(u8 t, float power);
 			void	EnableFakeIndicators(bool enable);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	static	ALife::EInfluenceType	get_indik_type( ALife::EHitType hit_type );
 
