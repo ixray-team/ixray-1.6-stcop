@@ -99,6 +99,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 		flags |= CLocatorAPI::flScanAppRoot;
 
 		FS._initialize		(flags,0,fs_fname);
+		BuildId             = build_id;
 		Msg					("'%s' build %d, %s\n","xrCore",build_id, build_date);
 		EFS._initialize		();
 #if defined(DEBUG) && defined(IXR_WINDOWS)
