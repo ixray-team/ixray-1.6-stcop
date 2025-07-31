@@ -6,13 +6,14 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-/*
-#include "UIWindow.h"
-#include "UIWndCallback.h"
+
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
 #include "FactionState.h"
 #include "UIWarState.h"
 
 class CUIStatic;
+class CUITextWnd;
 class CGameTask;
 class CUIXml;
 class CUIProgressBar;
@@ -22,14 +23,19 @@ class CUIFactionWarWnd : public CUIWindow, public CUIWndCallback
 {
 private:
 	typedef CUIWindow	inherited;
-	
-	CUIFrameLineWnd*	m_background;
-	CUIStatic*			m_center_background;
+
+	bool m_initialized;
+
+	CUIFrameWindow*		m_background;
+	CUIFrameWindow*		m_center_background;
+
+	CUIFrameLineWnd*	m_background2;
+	CUIStatic*			m_center_background2;
 
 	CUIStatic*			m_target_static;
-	CUIStatic*			m_target_caption;       // our
+	CUITextWnd*			m_target_caption;       // our
 	Fvector2			m_tc_pos;
-	CUIStatic*			m_target_desc;
+	CUITextWnd*			m_target_desc;
 	Fvector2			m_td_pos;
 	CUIStatic*			m_state_static;
 
@@ -42,7 +48,7 @@ private:
 
 	CUIStatic*			m_our_icon;
 	CUIStatic*			m_our_icon_over;
-	CUIStatic*			m_our_name;
+	CUITextWnd*			m_our_name;
 	CUIStatic*			m_st_our_frac_info;
 	CUIStatic*			m_st_our_mem_count;
 	CUIStatic*			m_st_our_resource;
@@ -53,7 +59,7 @@ private:
 
 	CUIStatic*			m_enemy_icon;
 	CUIStatic*			m_enemy_icon_over;
-	CUIStatic*			m_enemy_name;
+	CUITextWnd*			m_enemy_name;
 	CUIStatic*			m_st_enemy_frac_info;
 	CUIStatic*			m_st_enemy_mem_count;
 	CUIStatic*			m_st_enemy_resource;
@@ -112,4 +118,4 @@ protected:
 			float		get_max_power			();
 
 }; // class CUIFactionWarWnd
-*/
+

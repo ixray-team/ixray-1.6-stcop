@@ -4,11 +4,11 @@
 //	Author		: Evgeniy Sokolov
 //	Description : UI war state (PDA) window class
 ////////////////////////////////////////////////////////////////////////////
-/*
+
 #ifndef UI_WAR_STATE_H_INCLUDED
 #define UI_WAR_STATE_H_INCLUDED
 
-#include "UIHint.h"
+#include "../../xrUI/Widgets/UIHint.h"
 
 class CUIXml;
 class CUIStatic;
@@ -36,4 +36,4 @@ protected:
 }; // class UIWarState
 
 #endif // UI_WAR_STATE_H_INCLUDED
-*/
+
