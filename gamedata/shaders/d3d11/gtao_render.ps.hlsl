@@ -156,8 +156,7 @@ uint main(PSInput I) : SV_Target
     float3 Normal, Point; float Depth;
     {
         Normal = s_normal.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).xyz;
-        Normal = normalize(Normal.xyz - 0.5f);
-        Normal.z = -Normal.z;
+        Normal = NormalDecode(Normal.xy);
 		
         Depth = s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x;
         Point = GbufferGetPointRealUnjitter(I.texcoord.xy, Depth);
