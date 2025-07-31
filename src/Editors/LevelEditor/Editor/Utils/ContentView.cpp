@@ -681,6 +681,7 @@ void CContentView::LoadExtDest()
 	ExtDesc["_script_ltx"] = "Logic Preference";
 	ExtDesc[".ltx"] = "Config";
 	ExtDesc[".script"] = "Lua Script";
+	ExtDesc["dialogs"] = "Dialog Description";
 }
 
 bool CContentView::DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount)
@@ -1013,8 +1014,21 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 			if (ViewMode == EViewMode::List)
 			{
 				if (InitFileName.IsDir)
+				{
 					ExtDescription = ExtDesc["_dir"];
-				else if (FilePath.extension().string().c_str() == ".ltx")
+				}
+				else if (InitFileName.File.xstring().ends_with(".xml"))
+				{
+					xr_string FileName = InitFileName.File.xfilename();
+					FileName = FileName.substr(0, FileName.size() - 4);
+
+					auto Iter = std::find(GameDialogs.begin(), GameDialogs.end(), FileName);
+					if (Iter != GameDialogs.end())
+					{
+						ExtDescription = ExtDesc["dialogs"];
+					}
+				}
+				else if (FilePath.extension().string() == ".ltx")
 				{
 					xr_string PathName = FilePath;
 					ExtDescription = (PathName.Contains("scripts\\") ? ExtDesc["_script_ltx"] : ExtDesc[".ltx"]) ;
