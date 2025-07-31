@@ -37,12 +37,45 @@ void UIWeatherPropForm::Draw()
     float  time_factor = g_pGameLevel ? g_pGameLevel->GetEnvironmentTimeFactor() : env.fTimeFactor;
     ImVec2 sizeImage   = ImVec2(454.0f, 250.0f);   // Размер изображения, которое мы хотим сделать видимым
     ImVec2 sizeButton  = ImVec2(100.0f, 22.0f);    // Размер кнопки, которое мы хотим сделать видимым
+
     // --------------------------------------------------------------------------------------------
     // Картинка
-    {
+	{
+		ImVec2 image_pos = ImGui::GetCursorScreenPos();
         m_weather_properties->Load();
         ImGui::SameLine(0, 0);
-        ImGui::Image(m_weather_properties->surface_get(), ImVec2(sizeImage));
+        ImGui::Image(m_weather_properties->pSurface, ImVec2(sizeImage));
+
+		// Переводим секунды в часы (0-24)
+		float hours = std::fmod(time / 3600.0f, 24.0f);
+
+		// Диапазон ночи
+		float alpha = 0.0f;
+		if (hours >= 18.0f)
+		{
+			alpha = (hours - 18.0f) / 4.0f;
+		}
+		else if (hours <= 6.0f)
+		{
+			alpha = 1.0f - (hours / 6.0f);
+		}
+
+		// Корректируем диапазон (0 - 1)
+		alpha = std::clamp(alpha, 0.0f, 0.85f);
+
+		// Конвертируем в диапазон 0 - 255
+		int alpha_int = static_cast<int>(alpha * 255.0f);
+
+		// Накладываем затемнение (если есть)
+		if (alpha_int > 0)
+		{
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+			draw_list->AddRectFilled(
+				image_pos,
+				ImVec2(image_pos.x + sizeImage.x, image_pos.y + sizeImage.y),
+				ImColor(0, 0, 0, alpha_int)
+			);
+		}
     }
     // --------------------------------------------------------------------------------------------
     ImGui::BeginChild("Center", ImVec2(455, 575), true);
@@ -54,9 +87,9 @@ void UIWeatherPropForm::Draw()
         ImGui::TextColored(ImVec4(0, 1, 1, 0.7), titleTime);
         // --------------------------------------------------------------------------------------------
         if (ImGui::CollapsingHeader("Environment time", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            u32 hours, minutes, seconds;
-            env.SplitTime(time, hours, minutes, seconds);
+		{
+			u32 hours, minutes, seconds;
+			env.SplitTime(time, hours, minutes, seconds);
 
             string128 temp;
             xr_sprintf(temp, "Current time: %02d:%02d:%02d###environment_time", hours, minutes, seconds);
