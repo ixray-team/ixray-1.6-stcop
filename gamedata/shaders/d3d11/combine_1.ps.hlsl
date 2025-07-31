@@ -27,7 +27,7 @@ float4 main(_input I) : SV_Target
     Light += O.SSS * DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
 #endif
 
-    float Occ = O.AO * s_occ.SampleLevel(smp_rtlinear, I.tc0.xy, 0.0f).x;
+    float Occ = min(O.AO, s_occ.SampleLevel(smp_rtlinear, I.tc0.xy, 0.0f).x);
 
 #ifndef USE_LEGACY_LIGHT
 	#ifdef USE_SSLR_REFLECTIONS
