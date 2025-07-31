@@ -12,7 +12,7 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#include "d3dx9.h"
+#include <DirectXMesh.h>
 #pragma warning(pop)
 
 #include "object.h"
@@ -25,22 +25,27 @@
 //void OptimiseVertexCoherencyTriList ( WORD *pwList, int iHowManyTris, u32 mode);
 void OptimiseVertexCoherencyTriList (WORD* pwList, int iHowManyTris, u32 optimize_mode)
 {
-	if (iHowManyTris){
-		DWORD* remap	= xr_alloc<DWORD>		(iHowManyTris);
-		WORD max_idx	= 0;
-		for (int k=0; k<iHowManyTris*3; k++)
-			max_idx		= _max(max_idx,pwList[k]);
-		HRESULT	rhr		= D3DXOptimizeFaces		(pwList,iHowManyTris,max_idx+1,FALSE,remap);
-		R_CHK			(rhr);
-		WORD* tmp		= xr_alloc<WORD>		(iHowManyTris*3);
-		memcpy			(tmp,pwList,sizeof(WORD) * 3 * iHowManyTris);
-		for (int it=0; it<iHowManyTris; it++){	
-			pwList[it*3+0]= tmp[remap[it]*3+0];
-			pwList[it*3+1]= tmp[remap[it]*3+1];
-			pwList[it*3+2]= tmp[remap[it]*3+2];
+	if (iHowManyTris > 0)
+	{
+		xr_vector<u32> remap(iHowManyTris);
+
+		HRESULT rhr = DirectX::OptimizeFacesLRU(
+			pwList,
+			iHowManyTris,
+			remap.data()
+		);
+
+		R_CHK(rhr);
+
+		xr_vector<u16> tmp(iHowManyTris * 3);
+		memcpy(tmp.data(), pwList, sizeof(u16) * iHowManyTris * 3);
+
+		for (int it = 0; it < iHowManyTris; ++it)
+		{
+			pwList[it * 3 + 0] = tmp[remap[it] * 3 + 0];
+			pwList[it * 3 + 1] = tmp[remap[it] * 3 + 1];
+			pwList[it * 3 + 2] = tmp[remap[it] * 3 + 2];
 		}
-		xr_free			(remap);
-		xr_free			(tmp);
 	}
 }
 
