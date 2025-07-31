@@ -1,13 +1,13 @@
-//---------------------------------------------------------------------------
-#ifndef ParticleEffectActionsH
-#define ParticleEffectActionsH
+#pragma once
 
-struct PBool{
+struct PBool
+{
 	BOOL		val;
     PBool		():val(FALSE){}
     PBool		(BOOL _val):val(_val){}
     void 		set(BOOL v){val=v;}
 };
+
 struct PFloat{
     float		val;
     float		mn;
@@ -353,19 +353,10 @@ extern ECORE_API xr_token2* actions_token;
 
 typedef EParticleAction* (*_CreateEAction)(PAPI::PActionEnum type);
 extern ECORE_API _CreateEAction 	pCreateEAction;
-//---------------------------------------------------------------------------
-#endif
 
-/*
-
-	 void pTargetVelocityD(float scale, PDomainEnum dtype,
-		float a0 = 0.0f, float a1 = 0.0f, float a2 = 0.0f,
-		float a3 = 0.0f, float a4 = 0.0f, float a5 = 0.0f,
-		float a6 = 0.0f, float a7 = 0.0f, float a8 = 0.0f, BOOL allow_translate=TRUE, BOOL allow_rotate=TRUE);
-
-	 void pVertex(float x, float y, float z);
-
-}
-*/
-
-
+enum EEditMode
+{
+    emNone,
+    emEffect,
+    emGroup
+};

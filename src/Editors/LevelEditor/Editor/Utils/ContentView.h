@@ -44,6 +44,12 @@ private:
 		bool SetText{ false };
 	};
 
+	struct ParticleCache
+	{
+		shared_str Name;
+		void* Ptr;
+	};
+
 	enum class EViewMode
 	{
 		Tile,
@@ -56,12 +62,14 @@ public:
 	void DrawHeader();
 	void FindFile();
 	void DrawISEDir(size_t& HorBtnIter, const size_t IterCount);
+	void DrawParticlesDir(size_t& HorBtnIter, const size_t IterCount);
 	void DrawRootDir(size_t& HorBtnIter, const size_t& IterCount, xr_string& NextDir);
 	void DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_string& NextDir);
 
 	void ClearFileList();
 
 	void RescanISEDirectory(const xr_string& path);
+	void RescanParticlesDirectory(const xr_string& path);
 	void RescanDirectory();
 
 	virtual void Init();
@@ -127,16 +135,18 @@ private:
 
 	xr_hash_map<xr_string, IconData> Icons;
 
+	xr_hash_map<xr_string, xr_vector<ParticleCache>> ParticlesChace;
 	xr_hash_map<xr_string, xr_string> ExtDesc;
 
 	bool IsDelWatcher = false;
 	bool IsSpawnElement = false;
+	bool IsParticles = false;
 	bool IsFindResult = false;
 
 	bool IsThmMode = false;
 
 	bool IsWndDestroyed = false;
-	xr_string ISEPath;
+	xr_string VirtualPath;
 	string32 FindStr = {};
 
 	volatile xr_atomic_bool NeedRescan = false;
