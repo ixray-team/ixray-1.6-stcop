@@ -197,7 +197,7 @@ void game_cl_Deathmatch::OnMapInfoAccept			()
 
 void game_cl_Deathmatch::OnSkinMenuBack			()
 {
-	m_game_ui->ShowServerInfo();
+	m_game_ui->m_pMapDesc->ShowDialog(true);
 };
 
 void game_cl_Deathmatch::OnSkinMenu_Ok			()
@@ -510,11 +510,8 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 				if (m_bFirstRun)
 				{
 					m_bFirstRun = FALSE;
-					if (!Level().IsDemoPlayStarted() && Level().CurrentEntity())
-					{
-						VERIFY( m_game_ui );
-						m_bFirstRun = m_game_ui->ShowServerInfo() ? FALSE : TRUE;
-					}
+					if (m_game_ui->m_pMapDesc && !Level().IsDemoPlayStarted())
+						m_game_ui->m_pMapDesc->ShowDialog(true);
 
 					GetActiveVoting();
 				};
@@ -563,7 +560,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 				{
 					if (!(pCurBuyMenu && pCurBuyMenu->IsShown()) && 
 						!(pCurSkinMenu && pCurSkinMenu->IsShown()) &&
-						!m_game_ui->IsServerInfoShown() &&
+						!(m_game_ui->m_pMapDesc && m_game_ui->m_pMapDesc->IsShown()) &&
 						(CurrentGameUI() && CurrentGameUI()->GameIndicatorsShown())
 						)
 					{
@@ -680,10 +677,10 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 	//-----------------------------------------
 
 	u32 cur_game_state = Phase();
-	//if(m_game_ui->m_pMapDesc && m_game_ui->m_pMapDesc->IsShown() && cur_game_state!=GAME_PHASE_INPROGRESS)
-	//{
-	//	m_game_ui->m_pMapDesc->HideDialog();
-	//}
+	if(m_game_ui->m_pMapDesc && m_game_ui->m_pMapDesc->IsShown() && cur_game_state!=GAME_PHASE_INPROGRESS)
+	{
+		m_game_ui->m_pMapDesc->HideDialog();
+	}
 
 	if(pCurSkinMenu && pCurSkinMenu->IsShown() && cur_game_state!=GAME_PHASE_INPROGRESS)
 	{
@@ -1208,8 +1205,8 @@ void game_cl_Deathmatch::OnGameMenuRespond_ChangeSkin(NET_Packet& P)
 	if (pCurSkinMenu && pCurSkinMenu->IsShown())
 		pCurSkinMenu->HideDialog();
 
-	//if (m_game_ui->m_pMapDesc && m_game_ui->m_pMapDesc->IsShown())
-	//	m_game_ui->m_pMapDesc->HideDialog();
+	if (m_game_ui->m_pMapDesc && m_game_ui->m_pMapDesc->IsShown())
+		m_game_ui->m_pMapDesc->HideDialog();
 	
 
 	SetCurrentSkinMenu				();
