@@ -334,7 +334,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				BT.dwWidth		= 1024;
 				BT.dwHeight		= 1024;
 				BT.bHasAlpha	= TRUE;
-				BT.THM.SetHasSurface(FALSE);
+				BT.SetHasSurface(FALSE);
 				BT.pSurface		= 0;
 
 			} 
@@ -351,7 +351,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.dwWidth = 1024;
 					BT.dwHeight = 1024;
 					BT.bHasAlpha = FALSE;
-					BT.THM.SetHasSurface(FALSE);
+					BT.SetHasSurface(FALSE);
 					BT.pSurface = 0;
  				}
 				else
@@ -385,7 +385,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							clMsg("- loading: %s W[%u] H[%u]", N, BT.dwWidth, BT.dwHeight);
 							u32			w = 0, h = 0;
 							BT.pSurface = Surface_Load(N, w, h);
-							BT.THM.SetHasSurface(TRUE);
+							BT.SetHasSurface(TRUE);
 
 							if (!BT.pSurface) {
 								clMsg("! cannot find dds texture: %s", N);
