@@ -147,6 +147,7 @@ public:
 };
 
 struct NodeCompressed
+#ifndef IXRAY_AI_OLD_FORMAT
 {
 public:
 	u8 data[13];
@@ -242,6 +243,7 @@ public:
 };
 
 struct NodeCompressed10
+#endif
 {
 public:
 	u8 data[12];
@@ -433,8 +435,15 @@ struct SNodePositionOld
 constexpr u32 XRCL_CURRENT_VERSION = 18; //17;	// input
 constexpr u32 XRCL_PRODUCTION_VERSION = 14; // output 
 constexpr u32 CFORM_CURRENT_VERSION = 4;
+
+#ifdef IXRAY_AI_OLD_FORMAT
+const u32 MAX_NODE_BIT_COUNT = 23;
+constexpr u32 MAX_AI_NODES = (1 << MAX_NODE_BIT_COUNT) - 1;
+#else
 constexpr u32 MAX_AI_NODES = NodeCompressed::LINK_MASK_0;
+constexpr u32 MAX_NODE_XZ = NodePosition::MAX_XZ;
+#endif
+
 constexpr u32 XRAI_MINIMAL_VERSION = 10;
 constexpr u32 XRAI_CURRENT_VERSION = 11;
-constexpr u32 MAX_NODE_XZ = NodePosition::MAX_XZ;
 #pragma warning(pop)

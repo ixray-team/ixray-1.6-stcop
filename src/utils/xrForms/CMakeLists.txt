@@ -40,6 +40,10 @@ target_compile_definitions(xrLevelBuilder PRIVATE ENGINE_API=)
 target_compile_definitions(xrLevelBuilder PRIVATE XRLC_LIGHT_API=)
 target_compile_definitions(xrLevelBuilder PRIVATE AI_COMPILER)
 
+if (IXRAY_OLD_AI_FORMAT)
+    target_compile_definitions(xrLevelBuilder PRIVATE IXRAY_AI_OLD_FORMAT)
+endif()
+
 # Linker list
 target_link_libraries(xrLevelBuilder PUBLIC xrCore)
 target_link_libraries(xrLevelBuilder PUBLIC xrAI)
