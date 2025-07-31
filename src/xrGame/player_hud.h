@@ -121,7 +121,13 @@ struct hud_item_measures
 
 	Fvector							m_item_attach[2];//pos,rot
 
-	Fvector							m_hands_offset[2][3];//pos,rot/ normal,aim,GL
+	struct hud_hands_positions
+	{
+		void Load(const shared_str& section, bool is_16x9);
+		Fvector hands_offsets[2][3]; //pos,rot //normal, aim, gl
+		bool bIs16x9 = false;
+		shared_str sSection;
+	} m_hands_positions;
 
 	struct inertion_params
 	{
@@ -141,7 +147,7 @@ struct hud_item_measures
 	u16								m_shell_bone;
 	Fvector							m_shell_point_offset;
 
-	Fvector							m_hands_attach[2], m_hands_attach_real[2];//pos,rot
+	Fvector							m_hands_attach_real[2];//pos,rot
 
 	void load						(const shared_str& sect_name, IKinematics* K);
 };
