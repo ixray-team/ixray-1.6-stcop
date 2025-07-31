@@ -101,6 +101,13 @@ endif()
 set(LZO ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Lzo.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.10.0)
 set(LZO_LIB ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.lib)
 
+# Intel XeSS
+set(INTEL_XESS ${CMAKE_BINARY_DIR}/packages/IXRay.IntelXESS.2.0.1.1/include/)
+set(INTEL_XESS_LIB ${CMAKE_BINARY_DIR}/packages/IXRay.IntelXESS.2.0.1.1/lib/libxess.lib)
+set(INTEL_XESS_DX11_LIB ${CMAKE_BINARY_DIR}/packages/IXRay.IntelXESS.2.0.1.1/lib/libxess_dx11.lib)
+set(INTEL_XESS_BIN ${CMAKE_BINARY_DIR}/packages/IXRay.IntelXESS.2.0.1.1/bin/libxess.dll)
+set(INTEL_XESS_DX11_BIN ${CMAKE_BINARY_DIR}/packages/IXRay.IntelXESS.2.0.1.1/bin/libxess_dx11.dll)
+
 # YAML
 set(YAML_CORE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.YamlCpp.Runtimes.win-x64.0.8.0)
 set(YAML_INCL ${YAML_CORE}/build/native/include)
