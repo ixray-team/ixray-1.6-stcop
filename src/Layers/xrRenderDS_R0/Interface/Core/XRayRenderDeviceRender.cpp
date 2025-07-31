@@ -1,163 +1,163 @@
 #include "stdafx.h"
 
-XRayRenderDeviceRender::XRayRenderDeviceRender()
+CDS0_RenderDeviceRender::CDS0_RenderDeviceRender()
 {
 }
 
-XRayRenderDeviceRender::~XRayRenderDeviceRender()
+CDS0_RenderDeviceRender::~CDS0_RenderDeviceRender()
 {
 
 }
 
-void XRayRenderDeviceRender::Copy(IRenderDeviceRender & _in)
+void CDS0_RenderDeviceRender::Copy(IRenderDeviceRender & _in)
 {
 	R_ASSERT(0);
 }
 
-void XRayRenderDeviceRender::setGamma(float fGamma)
+void CDS0_RenderDeviceRender::setGamma(float fGamma)
 {
 }
 
-void XRayRenderDeviceRender::setBrightness(float fGamma)
+void CDS0_RenderDeviceRender::setBrightness(float fGamma)
 {
 }
 
-void XRayRenderDeviceRender::setContrast(float fGamma)
-{
-}
-
-
-void XRayRenderDeviceRender::updateGamma()
+void CDS0_RenderDeviceRender::setContrast(float fGamma)
 {
 }
 
 
+void CDS0_RenderDeviceRender::updateGamma()
+{
+}
 
 
-void XRayRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
+
+
+void CDS0_RenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
 {
 	GRenderInterface.destroy();
 
 }
 
-void XRayRenderDeviceRender::ValidateHW()
+void CDS0_RenderDeviceRender::ValidateHW()
 {
 }
 
-void XRayRenderDeviceRender::DestroyHW()
+void CDS0_RenderDeviceRender::DestroyHW()
 {
 
 	
 }
 
-void XRayRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)
+void CDS0_RenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)
 {
 
 }
 
-void XRayRenderDeviceRender::SetupStates()
+void CDS0_RenderDeviceRender::SetupStates()
 {
 }
 
-void XRayRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
+void CDS0_RenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 {
 	GRenderInterface.create();
 
 }
 
-void XRayRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2, bool)
+void CDS0_RenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2, bool)
 {
 }
 
 
 
 
-void XRayRenderDeviceRender::SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)
+void CDS0_RenderDeviceRender::SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)
 {
 }
 
-void XRayRenderDeviceRender::overdrawBegin()
+void CDS0_RenderDeviceRender::overdrawBegin()
 {
 }
 
-void XRayRenderDeviceRender::overdrawEnd()
+void CDS0_RenderDeviceRender::overdrawEnd()
 {
 }
 
-void XRayRenderDeviceRender::DeferredLoad(BOOL E)
+void CDS0_RenderDeviceRender::DeferredLoad(BOOL E)
 {
 }
 
-void XRayRenderDeviceRender::ResourcesDeferredUpload()
+void CDS0_RenderDeviceRender::ResourcesDeferredUpload()
 {
 }
 
-void XRayRenderDeviceRender::ResourcesDestroyNecessaryTextures()
+void CDS0_RenderDeviceRender::ResourcesDestroyNecessaryTextures()
 {
 }
 
-void XRayRenderDeviceRender::ResourcesStoreNecessaryTextures()
+void CDS0_RenderDeviceRender::ResourcesStoreNecessaryTextures()
 {
 }
 
 
-bool XRayRenderDeviceRender::HWSupportsShaderYUV2RGB()
+bool CDS0_RenderDeviceRender::HWSupportsShaderYUV2RGB()
 {
 	return true;
 }
 
 
-IRenderDeviceRender::DeviceState XRayRenderDeviceRender::GetDeviceState()
+IRenderDeviceRender::DeviceState CDS0_RenderDeviceRender::GetDeviceState()
 {
 	return DeviceState();
 }
 
-BOOL XRayRenderDeviceRender::GetForceGPU_REF()
+BOOL CDS0_RenderDeviceRender::GetForceGPU_REF()
 {
 	return 0;
 }
 
-u32 XRayRenderDeviceRender::GetCacheStatPolys()
+u32 CDS0_RenderDeviceRender::GetCacheStatPolys()
 {
 	return 0;
 }
 
-void XRayRenderDeviceRender::Begin()
+void CDS0_RenderDeviceRender::Begin()
 {
 }
 
-void XRayRenderDeviceRender::Clear()
-{
-	
-}
-
-void XRayRenderDeviceRender::End()
+void CDS0_RenderDeviceRender::Clear()
 {
 	
 }
 
-void XRayRenderDeviceRender::ClearTarget()
+void CDS0_RenderDeviceRender::End()
+{
+	
+}
+
+void CDS0_RenderDeviceRender::ClearTarget()
 {
 }
 
-void XRayRenderDeviceRender::SetCacheXform( Fmatrix& mView,  Fmatrix& mProject)
+void CDS0_RenderDeviceRender::SetCacheXform( Fmatrix& mView,  Fmatrix& mProject)
 {
 }
 
 
-void XRayRenderDeviceRender::OnAssetsChanged()
+void CDS0_RenderDeviceRender::OnAssetsChanged()
 {
 }
 
-void XRayRenderDeviceRender::ResourcesDumpMemoryUsage()
+void CDS0_RenderDeviceRender::ResourcesDumpMemoryUsage()
 {
 }
 
-void XRayRenderDeviceRender::ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps)
+void CDS0_RenderDeviceRender::ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps)
 {
 }
 
-void XRayRenderDeviceRender::Reset(SDL_Window* window, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)
+void CDS0_RenderDeviceRender::Reset(SDL_Window* window, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)
 {
 	SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
 	SDL_SetWindowSize(window, psCurrentVidMode[0], psCurrentVidMode[0]);
@@ -170,18 +170,18 @@ void XRayRenderDeviceRender::Reset(SDL_Window* window, u32& dwWidth, u32& dwHeig
 	}
 }
 
-void XRayRenderDeviceRender::Create(SDL_Window* window, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2, bool)
+void CDS0_RenderDeviceRender::Create(SDL_Window* window, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2, bool)
 {
 }
 
-void XRayRenderDeviceRender::ResourcesDeferredUnload()
+void CDS0_RenderDeviceRender::ResourcesDeferredUnload()
 {
 }
 
-void XRayRenderDeviceRender::SetupDefaultTarget()
+void CDS0_RenderDeviceRender::SetupDefaultTarget()
 {
 }
 
-void XRayRenderDeviceRender::SetCacheXformOld(Fmatrix& mView, Fmatrix& mProject)
+void CDS0_RenderDeviceRender::SetCacheXformOld(Fmatrix& mView, Fmatrix& mProject)
 {
 }

@@ -1,8 +1,8 @@
 #pragma once
-class XRayDUInterface :public CDUInterface
+class CDS0_DUInterface :public CDUInterface
 {
 public:
-	XRayDUInterface();
+	CDS0_DUInterface();
 	//----------------------------------------------------
 	virtual void  DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, BOOL bRot45 = false);
 	virtual void  DrawCross(const Fvector& p, float sz, u32 clr, BOOL bRot45 = false);

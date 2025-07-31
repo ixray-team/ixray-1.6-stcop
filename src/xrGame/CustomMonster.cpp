@@ -809,7 +809,10 @@ void CCustomMonster::net_Destroy()
 	);
 	
 #ifdef DEBUG
-	DBG().on_destroy_object(this);
+	if (Level().m_level_debug != nullptr)
+	{
+		DBG().on_destroy_object(this);
+	}
 #endif
 
 	xr_delete				(m_moving_object);
