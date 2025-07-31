@@ -949,6 +949,22 @@ void CUIActorMenu::UpdateConditionProgressBars()
 		if (m_pInvSlotProgress[i])
 			m_pInvSlotProgress[i]->SetProgressPos(itm ? iCeil(itm->GetCondition() * 10.f) / 10.f : 0);
 	}
+
+	//Highlight 'equipped' items in actor bag
+	CUIDragDropListEx* slot_list = m_pInventoryBagList;
+	u32 const cnt = slot_list->ItemsCount();
+	for (u32 i = 0; i < cnt; ++i)
+	{
+		CUICellItem* ci = slot_list->GetItemIdx(i);
+		PIItem item = (PIItem)ci->m_pData;
+		if (!item)
+			continue;
+
+		if (item->m_highlight_equipped && item->m_pInventory && item->m_pInventory->ItemFromSlot(item->BaseSlot()) == item)
+			ci->m_select_equipped = true;
+		else
+			ci->m_select_equipped = false;
+	}
 }
 
 void CUIActorMenu::OnSuccessRepairMP(PIItem item)

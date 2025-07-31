@@ -150,6 +150,7 @@ public:
 	shared_str					m_name;
 	shared_str					m_nameShort;
 	shared_str					m_nameComplex;
+	bool						m_highlight_equipped;
 	shared_str					m_custom_text;
 	Fvector2					m_custom_text_offset;
 	CGameFont*					m_custom_text_font;
