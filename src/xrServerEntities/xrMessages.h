@@ -271,7 +271,6 @@ enum
 enum enum_connection_results
 {
 	ecr_data_verification_failed		=	0x00,
-	ecr_cdkey_validation_failed,
 	ecr_password_verification_failed,
 	ecr_have_been_banned,
 	ecr_profile_error,
