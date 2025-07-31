@@ -282,7 +282,8 @@ void DrawLCConfig()
 		ImGui::Separator();
 
 		ImGui::BeginDisabled(!gCompilerMode.LC);
-		ImGui::Checkbox("GI (Radiosity)", &gCompilerMode.LC_GI);
+
+		// ImGui::Checkbox("GI (Radiosity)", &gCompilerMode.LC_GI);
 		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
 		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
 		ImGui::Checkbox("Noise", &gCompilerMode.LC_Noise);
@@ -292,13 +293,13 @@ void DrawLCConfig()
 		ImGui::Checkbox("Skip Subdivide", &gCompilerMode.LC_NoSubdivide);
 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
  
+		ImGui::Separator();
 
 		ImGui::SetNextItemWidth(100);
 		if (ImGui::Combo("lmaps", &item_current_selected, items, 4))
-		{
-			gCompilerMode.LC_sizeLmaps = atoi(items[item_current_selected]);
-		}
-
+ 			gCompilerMode.LC_sizeLmaps = atoi(items[item_current_selected]);
+		ImGui::Checkbox("LMAP places by se7kills", &gCompilerMode.LC_LmapsAlternative);
+ 
 		ImGui::Separator();
 		ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
 
