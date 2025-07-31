@@ -81,6 +81,27 @@ struct hdrNODES
 
 #pragma pack(push,1)
 #pragma pack(1)
+
+struct SNodeCover
+{
+	u16 cover0 : 4;
+	u16 cover1 : 4;
+	u16 cover2 : 4;
+	u16 cover3 : 4;
+
+	ICF	u16	cover(u8 index) const
+	{
+		switch (index)
+		{
+		case 0: return(cover0);
+		case 1: return(cover1);
+		case 2: return(cover2);
+		case 3: return(cover3);
+		default: NODEFAULT;
+		}
+	}
+};
+
 class NodePosition
 {
 public:
@@ -119,7 +140,6 @@ public:
 struct NodeCompressed
 #ifndef IXRAY_AI_OLD_FORMAT
 {
-public:
 	u8 data[13];
 	static constexpr u32 NODE_BIT_COUNT = 25;
 	static constexpr u32 LINK_MASK_0 = (1 << NODE_BIT_COUNT) - 1;
@@ -127,7 +147,6 @@ public:
 	static constexpr u32 LINK_MASK_2 = LINK_MASK_0 << 2;
 	static constexpr u32 LINK_MASK_3 = LINK_MASK_0 << 3;
 
-public:
 	ICF	void link(u8 link_index, u32 value)
 	{
 		value &= LINK_MASK_0;
@@ -163,35 +182,10 @@ public:
 		}
 	}
 
-	ICF	void light(u8 value)
-	{
-		data[12] = (data[12] & 0x0f) | (value << 4);
-	}
-
-	struct SCover
-	{
-		u16 cover0 : 4;
-		u16 cover1 : 4;
-		u16 cover2 : 4;
-		u16 cover3 : 4;
-
-		ICF	u16	cover(u8 index) const
-		{
-			switch (index)
-			{
-			case 0: return(cover0);
-			case 1: return(cover1);
-			case 2: return(cover2);
-			case 3: return(cover3);
-			default: NODEFAULT;
-			}
-		}
-	};
-
-	SCover			high;
-	SCover			low;
-	u16				plane;
-	NodePosition	p;
+	SNodeCover high;
+	SNodeCover low;
+	u16 plane;
+	NodePosition p;
 	// 13 + 2 + 2 + 2 + 5 = 24 bytes
 
 	ICF	u32	link(u8 index) const
@@ -205,18 +199,12 @@ public:
 		default: NODEFAULT;
 		}
 	}
-
-	friend class	CLevelGraph;
-	friend struct	CNodeCompressed;
-	friend class	CNodeRenumberer;
-	friend class	CRenumbererConverter;
 };
 
 struct NodeCompressed10
 #endif
 {
-public:
-	u8 data[12];
+	u8 data[12]; // 0-10 - aimap; 11 - light (unused)
 
 	ICF void link(u8 link_index, u32 value)
 	{
@@ -253,35 +241,8 @@ public:
 		}
 	}
 
-	ICF void light(u8 value)
-	{
-		data[10] |= value << 4;
-	}
-
-	u8 light() const { return data[11] >> 4; }
-public:
-	struct SCover
-	{
-		u16 cover0 : 4;
-		u16 cover1 : 4;
-		u16 cover2 : 4;
-		u16 cover3 : 4;
-
-		ICF u16 cover(u8 index) const
-		{
-			switch (index)
-			{
-			case 0: return (cover0);
-			case 1: return (cover1);
-			case 2: return (cover2);
-			case 3: return (cover3);
-			default: NODEFAULT;
-			}
-		}
-	};
-
-	SCover high;
-	SCover low;
+	SNodeCover high;
+	SNodeCover low;
 	u16 plane;
 	NodePosition p;
 	// 32 + 16 + 40 + 92 = 180 bits = 24.5 bytes => 25 bytes
@@ -297,11 +258,6 @@ public:
 		default: NODEFAULT;
 		}
 	}
-
-	friend class CLevelGraph;
-	friend struct CNodeCompressed;
-	friend class CNodeRenumberer;
-	friend class CRenumbererConverter;
 };
 
 #ifdef AI_COMPILER
@@ -418,4 +374,9 @@ constexpr u32 XRAI_CURRENT_VERSION = 11;
 
 constexpr u32 XRAI_SOC_VERSION = 8;
 constexpr u32 XRAI_MINIMAL_VERSION = 10;
+constexpr u32 XRAI_LARGE_VERSION = 13;
 #pragma warning(pop)
+
+#define CHECK_SPAWN_VERSION(m_version) \
+	(m_version >= XRAI_SOC_VERSION && m_version <= XRAI_CURRENT_VERSION) || \
+	m_version == XRAI_LARGE_VERSION

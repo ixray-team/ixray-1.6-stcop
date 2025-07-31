@@ -241,7 +241,10 @@ void ai_obstacle::compute_impl		()
 	for (u32 x=x_min; x<=x_max; ++x) {
 		for (u32 z=z_min; z<=z_max; ++z) {
 			u32					xz = x*row_length + z;
-			const_iterator		I = std::lower_bound(B,E,xz);
+			const_iterator		I = std::lower_bound(B,E,xz, [](const CLevelGraph::CVertex& vertex, u32 xz_value)
+			{
+				return vertex.position().xz() < xz_value;
+			});
 			if ((I == E) || ((*I).position().xz() != xz))
 				continue;
 

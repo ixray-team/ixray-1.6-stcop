@@ -18,7 +18,7 @@ CALifeSpawnHeader::~CALifeSpawnHeader	()
 void CALifeSpawnHeader::load(IReader& file_stream)
 {
 	m_version = file_stream.r_u32();
-	R_ASSERT2(m_version >= XRAI_SOC_VERSION && m_version <= XRAI_CURRENT_VERSION, "'game.spawn' version mismatch!");
+	R_ASSERT2(CHECK_SPAWN_VERSION(m_version), "'game.spawn' version mismatch!");
 
 	file_stream.r(&m_guid, sizeof(m_guid));
 	file_stream.r(&m_graph_guid, sizeof(m_graph_guid));
