@@ -42,7 +42,7 @@ public:
 protected:
 	enum				{ max_count = ALife::eHitTypeMax-4 };
 	
-//	CUIStatic*			m_caption;
+	CUIStatic*			m_caption;
 	CUIStatic*			m_Prop_line;
 	CUIOutfitImmunity*	m_items[max_count];
 
