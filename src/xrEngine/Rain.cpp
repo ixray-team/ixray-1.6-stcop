@@ -15,6 +15,8 @@
     #include "xr_object.h"
 #endif
 
+ENGINE_API extern BOOL bIsRaindropCollision = false;
+ENGINE_API extern BOOL bIsSndOnRoof = false;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -142,21 +144,25 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
-	BOOL bRes = TRUE;
 	if (Device.IsEditorMode())
 	{
-		EditorScene->SetPlayInEditorRayPickCall(true);
-		bool value = EditorScene->RayPick(s, d, range);
-		EditorScene->SetPlayInEditorRayPickCall(false);
-
-		return value;
-	}
-	else
-	{
-		if (!g_pGameLevel || !g_pGameLevel->bReady)
-			return false;
-	}
-	collide::rq_result	RQ;
+        if (bIsRaindropCollision)
+        {
+            EditorScene->SetPlayInEditorRayPickCall(true);
+            bool value = EditorScene->RayPick(s, d, range);
+            EditorScene->SetPlayInEditorRayPickCall(false);
+            return value;
+        }
+        else
+            return false;
+    }
+    else
+    {
+        if (!g_pGameLevel || !g_pGameLevel->bReady)
+            return false;
+    }
+    BOOL bRes;
+    collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel->CurrentViewEntity();
 	bRes 				= g_pGameLevel->ObjectSpace.RayPick( s,d,range,tgt,RQ,E);	
     if (bRes) range 	= RQ.range;
@@ -233,7 +239,10 @@ void CEffect_Rain::OnFrame()
 
 		state = stWorking;
 		snd_Ambient.play(nullptr, sm_Looped);
-		CurDropSnd.play(nullptr, sm_Looped);
+        if (!Device.IsEditorMode() || (Device.IsEditorMode() && bIsSndOnRoof))
+            CurDropSnd.play(nullptr, sm_Looped);
+        else
+            CurDropSnd.stop();
 		snd_Ambient.set_position(Fvector().set(0, 0, 0));
 		snd_Ambient.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
 		break;
