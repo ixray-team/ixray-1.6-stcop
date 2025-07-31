@@ -10,7 +10,7 @@ class ECORE_API CSoundManager
 {
 public:
 	void 		MakeGameSound		(ESoundThumbnail* THM, LPCSTR src_name, LPCSTR game_name);
-				CSoundManager		(){}
+				CSoundManager		();
 	virtual		~CSoundManager		(){;}
                     
     BOOL  RemoveSound		(LPCSTR fname, EItemType type);
