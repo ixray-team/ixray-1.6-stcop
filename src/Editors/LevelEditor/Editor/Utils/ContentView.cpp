@@ -6,6 +6,7 @@
 #include "../../../xrECore/Editor/ParticleEffectActions.h"
 
 #include "Viewports/ViewportMesh.h"
+#include "Viewports/ViewportParticle.h"
 
 CContentView* GContentView = nullptr;
 
@@ -550,120 +551,75 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 
 	xr_vector<xr_string> Directories;
 
+	auto ApplyParticleLambda = [&](const char* Name, const char* ext, void* Ptr)
 	{
-		PS::PEDIt Pe = RImplementation.PSLibrary.FirstPED();
-		PS::PEDIt Ee = RImplementation.PSLibrary.LastPED();
-		for (; Pe != Ee; Pe++)
+		xr_path PEPath = Name;
+		if (PEPath.has_parent_path() && !path.empty())
 		{
-			xr_path PEPath = *(*Pe)->m_Name;
-			if (PEPath.has_parent_path() && !path.empty())
-			{
-				xr_string ParentPath = PEPath.parent_path().string().c_str();
-				if (ParentPath == path)
-				{
-					FileOptData FileInfo;
-					FileInfo.File = *(*Pe)->m_Name;
-					FileInfo.File.replace_extension("pe");
-
-					Files.push_back(FileInfo);
-				}
-				else if (!path.empty() && ParentPath.contains(path))
-				{
-					auto Iter = std::find(Directories.begin(), Directories.end(), ParentPath);
-					if (Iter == Directories.end())
-					{
-						FileOptData FileInfo;
-						FileInfo.File = ParentPath;
-						FileInfo.IsDir = true;
-						Directories.push_back(ParentPath);
-
-						Files.push_back(FileInfo);
-					}
-				}
-			}
-			else if (path.empty() && !PEPath.has_parent_path())
+			xr_string ParentPath = PEPath.parent_path().string().c_str();
+			if (ParentPath == path)
 			{
 				FileOptData FileInfo;
-				FileInfo.File = *(*Pe)->m_Name;
-				Files.push_back(FileInfo);
-			}
-			else if (path.empty() && PEPath.has_parent_path())
-			{
-				xr_path TestDir = PEPath.parent_path();
-				while (TestDir.has_parent_path())
-				{
-					TestDir = TestDir.parent_path();
-				}
+				FileInfo.File = Name;
+				FileInfo.File.replace_extension(ext);
 
-				auto Iter = std::find(Directories.begin(), Directories.end(), TestDir.xfilename());
+				Files.push_back(FileInfo);
+				ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
+			}
+			else if (!path.empty() && ParentPath.contains(path))
+			{
+				auto Iter = std::find(Directories.begin(), Directories.end(), ParentPath);
 				if (Iter == Directories.end())
 				{
 					FileOptData FileInfo;
-					FileInfo.File = TestDir;
+					FileInfo.File = ParentPath;
 					FileInfo.IsDir = true;
-					Directories.push_back(TestDir.xfilename());
+					Directories.push_back(ParentPath);
 
 					Files.push_back(FileInfo);
 				}
 			}
 		}
+		else if (path.empty() && !PEPath.has_parent_path())
+		{
+			FileOptData FileInfo;
+			FileInfo.File = Name;
+			Files.push_back(FileInfo);
+			ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
+		}
+		else if (path.empty() && PEPath.has_parent_path())
+		{
+			xr_path TestDir = PEPath.parent_path();
+			while (TestDir.has_parent_path())
+			{
+				TestDir = TestDir.parent_path();
+			}
+
+			auto Iter = std::find(Directories.begin(), Directories.end(), TestDir.xfilename());
+			if (Iter == Directories.end())
+			{
+				FileOptData FileInfo;
+				FileInfo.File = TestDir;
+				FileInfo.IsDir = true;
+				Directories.push_back(TestDir.xfilename());
+
+				Files.push_back(FileInfo);
+			}
+		}
+	};
+
+	PS::PEDIt Pe = RImplementation.PSLibrary.FirstPED();
+	PS::PEDIt Ee = RImplementation.PSLibrary.LastPED();
+	for (; Pe != Ee; Pe++)
+	{
+		ApplyParticleLambda(*(*Pe)->m_Name, "pe", (*Pe));
 	}
+
+	PS::PGDIt Pg = RImplementation.PSLibrary.FirstPGD();
+	PS::PGDIt Eg = RImplementation.PSLibrary.LastPGD();
+	for (; Pg != Eg; Pg++)
 	{
-		PS::PGDIt Pg = RImplementation.PSLibrary.FirstPGD();
-		PS::PGDIt Eg = RImplementation.PSLibrary.LastPGD();
-		for (; Pg != Eg; Pg++)
-		{
-			xr_path PEPath = *(*Pg)->m_Name;
-			if (PEPath.has_parent_path() && !path.empty())
-			{
-				xr_string ParentPath = PEPath.parent_path().string().c_str();
-				if (ParentPath == path)
-				{
-					FileOptData FileInfo;
-					FileInfo.File = *(*Pg)->m_Name;
-					FileInfo.File.replace_extension("pg");
-					Files.push_back(FileInfo);
-				}
-				else if (!path.empty() && ParentPath.contains(path))
-				{
-					auto Iter = std::find(Directories.begin(), Directories.end(), ParentPath);
-					if (Iter == Directories.end())
-					{
-						FileOptData FileInfo;
-						FileInfo.File = ParentPath;
-						FileInfo.IsDir = true;
-						Directories.push_back(ParentPath);
-
-						Files.push_back(FileInfo);
-					}
-				}
-			}
-			else if (path.empty() && !PEPath.has_parent_path())
-			{
-				FileOptData FileInfo;
-				FileInfo.File = *(*Pg)->m_Name;
-				Files.push_back(FileInfo);
-			}
-			else if (path.empty() && PEPath.has_parent_path())
-			{
-				xr_path TestDir = PEPath.parent_path();
-				while (TestDir.has_parent_path())
-				{
-					TestDir = TestDir.parent_path();
-				}
-
-				auto Iter = std::find(Directories.begin(), Directories.end(), TestDir.xfilename());
-				if (Iter == Directories.end())
-				{
-					FileOptData FileInfo;
-					FileInfo.File = TestDir;
-					FileInfo.IsDir = true;
-					Directories.push_back(TestDir.xfilename());
-
-					Files.push_back(FileInfo);
-				}
-			}
-		}
+		ApplyParticleLambda(*(*Pg)->m_Name, "pg", (*Pg));
 	}
 
 	IsParticles = true;
@@ -1291,7 +1247,6 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 			}
 			else
 			{
-				//ImGui::SetItemAllowOverlap();
 				ImGui::Text("%s", LabelText.c_str());
 
 				if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered())
@@ -1301,7 +1256,8 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 				}
 			}
 
-			if (ViewMode == EViewMode::List) {
+			if (ViewMode == EViewMode::List)
+			{
 
 				ImVec4 TooltipTextColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
 				TooltipTextColor.w *= 0.5f;
@@ -1411,42 +1367,64 @@ bool CContentView::DrawContext(const xr_path& Path)
 		return false;
 	}
 
-	if (Path.has_extension() && Path.extension().string() == ".object")
+	if (Path.has_extension())
 	{
-		if (ImGui::MenuItem("Open"))
+		if (Path.extension().string() == ".object")
 		{
-			CViewportMesh* MeshView = new CViewportMesh;
-			MeshView->OpenModel(Path);
-
-			UI->Push(MeshView);
-		}
-	}
-	if (Path.has_extension() && Path.extension().string() == ".level")
-	{
-		if (ImGui::MenuItem("Open"))
-		{
-			UI->SetStatus("Level loading...");
-			ExecCommand(COMMAND_CLEAR);
-			FS.TryLoad(Path.xstring());
-			IReader* R = FS.r_open(Path.xstring().c_str());
-			if (!R)
+			if (ImGui::MenuItem("Open"))
 			{
-				ImGui::EndPopup();
-				return false;
-			}
-			char ch;
-			R->r(&ch, sizeof(ch));
-			bool is_ltx = (ch == '[');
-			FS.r_close(R);
-			bool res;
-			LTools->m_LastFileName = Path.xstring();
+				CViewportMesh* MeshView = new CViewportMesh;
+				MeshView->OpenModel(Path);
 
-			if (is_ltx)
-				Scene->LoadLTX(Path.xstring().c_str(), false);
-			else
-				Scene->Load(Path.xstring().c_str(), false);
+				UI->Push(MeshView);
+			}
 		}
-		ImGui::Separator();
+		else if (Path.extension().string() == ".pg" || Path.extension().string() == ".pe")
+		{
+			if (ImGui::MenuItem("Open"))
+			{
+				CViewportParticle* MeshView = new CViewportParticle;
+				void* Ptr = ParticlesCache[Path.xstring()];
+
+				if (Path.extension().string() == ".pg")
+				{
+					MeshView->OpenModel((PS::CPGDef*)Ptr);
+				}
+				else
+				{
+					MeshView->OpenModel((PS::CPEDef*)Ptr);
+				}
+
+				UI->Push(MeshView);
+			}
+		}
+		else if (Path.extension().string() == ".level")
+		{
+			if (ImGui::MenuItem("Open"))
+			{
+				UI->SetStatus("Level loading...");
+				ExecCommand(COMMAND_CLEAR);
+				FS.TryLoad(Path.xstring());
+				IReader* R = FS.r_open(Path.xstring().c_str());
+				if (!R)
+				{
+					ImGui::EndPopup();
+					return false;
+				}
+				char ch;
+				R->r(&ch, sizeof(ch));
+				bool is_ltx = (ch == '[');
+				FS.r_close(R);
+				bool res;
+				LTools->m_LastFileName = Path.xstring();
+
+				if (is_ltx)
+					Scene->LoadLTX(Path.xstring().c_str(), false);
+				else
+					Scene->Load(Path.xstring().c_str(), false);
+			}
+			ImGui::Separator();
+		}
 	}
 
 	if (Path.has_extension() && Path.extension().string() == ".wav")
