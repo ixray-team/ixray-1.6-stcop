@@ -48,6 +48,9 @@ class CSpectator;
 class CSilencer;
 class CScope;
 class CGrenadeLauncher;
+class CAttachmentOwner;
+class CProjector;
+class CLevelChanger;
 
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
@@ -204,6 +207,9 @@ public:
 	virtual CSilencer* cast_addon_silencer() {return nullptr;}
 	virtual CScope* cast_addon_scope() {return nullptr;}
 	virtual CGrenadeLauncher* cast_addon_grenade_launcher() {return nullptr;}
+	virtual CAttachmentOwner* cast_attachment_owner() { return nullptr; }
+	virtual CProjector* cast_projector() { return nullptr; }
+	virtual CLevelChanger* cast_level_changer() { return nullptr; }
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }
