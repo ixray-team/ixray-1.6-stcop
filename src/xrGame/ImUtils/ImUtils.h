@@ -286,6 +286,8 @@ void RenderSpawnManagerWindow();
 void RenderWeaponManagerWindow();
 void RenderSearchManagerWindow();
 
+void RenderToolsOMFEditorWindow();
+
 void DestroySpawnManagerWindow();
 
 void RegisterImGuiInGame();
