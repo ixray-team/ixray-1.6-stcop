@@ -103,7 +103,7 @@
 
 		<rank>400</rank>
 		<reputation>0</reputation>
- 		<money min="20000" max="50000" infinitive="1"/>
+ 		<money min="100000" max="100000" infinitive="1"/>
 		<visual>actors\stalker_ucheniy\stalker_ucheniy_1</visual>
 		<crouch_type>0</crouch_type>
 		<supplies>
