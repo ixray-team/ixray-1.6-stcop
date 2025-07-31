@@ -44,7 +44,7 @@ struct SSpecificCharacterData : CSharedResource
 	float		m_fPanic_threshold;
 	float		m_fHitProbabilityFactor;
 	int			m_crouch_type;
-	bool		m_upgrade_mechanic;
+	mutable bool m_upgrade_mechanic;
 
 	xr_string	m_critical_wound_weights;
 #endif
@@ -143,6 +143,7 @@ public:
 	SSpecificCharacterData::SReputationDef& ReputationDef() 	{return data()->reputationDef;}
 	SSpecificCharacterData::SRankDef& RankDef			() 	{return data()->rankDef;}
 	SSpecificCharacterData::SMoneyDef& MoneyDef			() 	{return data()->money_def;}
+	void						updateMechanic			(bool cond) const { data()->m_upgrade_mechanic = cond; };
 #endif
 
 	CHARACTER_RANK_VALUE		Rank					() const ;
