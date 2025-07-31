@@ -5,7 +5,7 @@
 #include "IGame_Persistent.h"
 #include "XR_IOConsole.h"
 #include "std_classes.h"
-#include "../xrCDB/ISpatial.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include "ILoadingScreen.h"
 
 //---------------------------------------------------------------------

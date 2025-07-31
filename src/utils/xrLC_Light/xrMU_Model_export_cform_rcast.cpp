@@ -2,7 +2,7 @@
 #include "xrMU_Model.h"
 #include "xrMU_Model_Reference.h"
 
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "../Shader_xrLC.h"
 
 u32 convert_nax(base_Face* F);

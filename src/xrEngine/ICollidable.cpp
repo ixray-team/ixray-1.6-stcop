@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrCDB/ISpatial.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include "ICollidable.h"
 #include "xr_collide_form.h"
 

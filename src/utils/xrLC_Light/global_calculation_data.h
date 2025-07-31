@@ -6,7 +6,7 @@
 #include "global_slots_data.h"
 #include "b_build_texture.h"
 #include "global_slots_data.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 
 class Shader_xrLC_LIB;
 //-----------------------------------------------------------------

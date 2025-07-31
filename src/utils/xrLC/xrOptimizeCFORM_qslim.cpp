@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Build.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "../xrLC_Light/face_smoth_flags.h"
 #include <meshoptimizer/meshoptimizer.h>
 

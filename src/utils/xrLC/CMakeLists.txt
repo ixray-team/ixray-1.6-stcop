@@ -79,7 +79,6 @@ target_precompile_headers(xrLC PRIVATE "stdafx.h")
 
 # Linker list
 target_link_libraries(xrLC PUBLIC xrCore)
-target_link_libraries(xrLC PUBLIC xrCDB)
 target_link_libraries(xrLC PUBLIC xrLC_Light)
 target_link_libraries(xrLC PUBLIC ETools)
 target_link_libraries(xrLC PUBLIC MagicFM)
