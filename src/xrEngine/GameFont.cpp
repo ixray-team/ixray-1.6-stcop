@@ -405,6 +405,7 @@ void CGameFont::MasterOut(
 	rs.c = dwCurrentColor;
 	rs.height = fCurrentHeight;
 	rs.align = eCurrentAlignment;
+	rs.gradient = fGradientEnabled;
 	int vs_sz = vsprintf(rs.string, fmt, p);
 
 	if (!IsUTF8(rs.string))
