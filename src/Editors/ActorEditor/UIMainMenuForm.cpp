@@ -134,21 +134,21 @@ void UIMainMenuForm::Draw()
 					}
 					ImGui::EndMenu();
 				}
-				if (ImGui::BeginMenu("Shader Mode"))
-				{
-					bool selected[2] = { EDevice->dwShadeMode == D3DSHADE_FLAT,EDevice->dwShadeMode == D3DSHADE_GOURAUD };
-					if (ImGui::MenuItem("Flat", "", &selected[0]))
-					{
-						EDevice->dwShadeMode = D3DSHADE_FLAT;
-						UI->RedrawScene();
-					}
-					if (ImGui::MenuItem("Gouraud", "", &selected[1]))
-					{
-						EDevice->dwShadeMode = D3DSHADE_GOURAUD;
-						UI->RedrawScene();
-					}
-					ImGui::EndMenu();
-				}
+				//if (ImGui::BeginMenu("Shader Mode"))
+				//{
+				//	bool selected[2] = { EDevice->dwShadeMode == D3DSHADE_FLAT,EDevice->dwShadeMode == D3DSHADE_GOURAUD };
+				//	if (ImGui::MenuItem("Flat", "", &selected[0]))
+				//	{
+				//		EDevice->dwShadeMode = D3DSHADE_FLAT;
+				//		UI->RedrawScene();
+				//	}
+				//	if (ImGui::MenuItem("Gouraud", "", &selected[1]))
+				//	{
+				//		EDevice->dwShadeMode = D3DSHADE_GOURAUD;
+				//		UI->RedrawScene();
+				//	}
+				//	ImGui::EndMenu();
+				//}
 				{
 					bool selected = psDeviceFlags.test(rsEdgedFaces);
 					if (ImGui::MenuItem("Edged Faces", "", &selected))
@@ -166,23 +166,23 @@ void UIMainMenuForm::Draw()
 						UI->Resize();
 					}
 				}
-				ImGui::Separator();
-				{
-					bool selected = psDeviceFlags.test(rsFilterLinear);
-					if (ImGui::MenuItem("Filter Linear", "", &selected))
-					{
-						psDeviceFlags.set(rsFilterLinear, selected);
-						UI->RedrawScene();
-					}
-				}
-				{
-					bool selected = psDeviceFlags.test(rsRenderTextures);
-					if (ImGui::MenuItem("Textures", "", &selected))
-					{
-						psDeviceFlags.set(rsRenderTextures, selected);
-						UI->RedrawScene();
-					}
-				}
+				//ImGui::Separator();
+				//{
+				//	bool selected = psDeviceFlags.test(rsFilterLinear);
+				//	if (ImGui::MenuItem("Filter Linear", "", &selected))
+				//	{
+				//		psDeviceFlags.set(rsFilterLinear, selected);
+				//		UI->RedrawScene();
+				//	}
+				//}
+				//{
+				//	bool selected = psDeviceFlags.test(rsRenderTextures);
+				//	if (ImGui::MenuItem("Textures", "", &selected))
+				//	{
+				//		psDeviceFlags.set(rsRenderTextures, selected);
+				//		UI->RedrawScene();
+				//	}
+				//}
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
