@@ -117,10 +117,10 @@ void UIMainForm::LoadWindowsStates()
 		m_WorldProperties->Close();
 	}
 
-	if (LPrefs->OpenLightAnim)
-	{
-		UIEditLightAnim::Show();
-	}
+	//if (LPrefs->OpenLightAnim)
+	//{
+	//	UIEditLightAnim::Show();
+	//}
 }
 
 UIMainForm::~UIMainForm()

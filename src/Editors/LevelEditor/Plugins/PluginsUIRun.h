@@ -11,4 +11,7 @@ public:
 	CPluginUIRun(IPluginBase* Plug);
 
 	virtual void Draw() override;
+
+private:
+	ref_texture OpenImage;
 };
