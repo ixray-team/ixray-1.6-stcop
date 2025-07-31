@@ -51,6 +51,9 @@ class CGrenadeLauncher;
 class CAttachmentOwner;
 class CProjector;
 class CLevelChanger;
+class CPhysicItem;
+class CEatableItem;
+class CScriptZone;
 
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
@@ -210,6 +213,9 @@ public:
 	virtual CAttachmentOwner* cast_attachment_owner() { return nullptr; }
 	virtual CProjector* cast_projector() { return nullptr; }
 	virtual CLevelChanger* cast_level_changer() { return nullptr; }
+	virtual CPhysicItem* cast_physics_item() { return nullptr; }
+	virtual CEatableItem* cast_eatable_item() { return nullptr; }
+	virtual CScriptZone* cast_script_zone() { return nullptr; }
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }

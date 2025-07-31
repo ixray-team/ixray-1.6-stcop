@@ -36,6 +36,8 @@ public:
 	virtual void	create_box_physic_shell			();
 	virtual void	create_box2sphere_physic_shell	();
 	virtual void	create_physic_shell				();
+	virtual CPhysicItem* cast_physics_item() { return this; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
 };
 
 #include "physic_item_inline.h"
