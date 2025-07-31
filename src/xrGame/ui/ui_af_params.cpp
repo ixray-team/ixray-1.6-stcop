@@ -30,6 +30,7 @@ CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 	m_af_slots = nullptr;
 
 	object_type = type;
+	m_Prop_line = nullptr;
 }
 
 CUIArtefactParams::~CUIArtefactParams()
@@ -140,6 +141,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		xml.SetLocalRoot( base_node );
 	}
 	
+	if (xml.NavigateToNode("af_slots"))
 	{
 		m_af_slots = new UIArtefactParamItem();
 		m_af_slots->Init(xml, "af_slots");
@@ -155,8 +157,17 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_additional_weight->Init( xml, "additional_weight" );
 		m_additional_weight->SetAutoDelete(false);
 
-		name = g_pStringTable->translate( "ui_inv_weight" ).c_str();
-		m_additional_weight->SetCaption( name );
+		// use either ui_inv_weight or ui_inv_outfit_additional_weight
+		// but set ui_inv_weight if both unavailable
+		name = g_pStringTable->translate("ui_inv_weight").c_str();
+		LPCSTR add_name = g_pStringTable->translate("ui_inv_outfit_additional_weight").c_str();
+		if (0 == xr_strcmp(name, "ui_inv_weight") &&
+			0 != xr_strcmp(add_name, "ui_inv_outfit_additional_weight"))
+		{
+			m_additional_weight->SetCaption(add_name);
+		}
+		else		
+			m_additional_weight->SetCaption( name );
 	}
 
 	xml.SetLocalRoot( stored_root );
@@ -170,7 +181,8 @@ bool CUIArtefactParams::Check(const shared_str& af_section)
 void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 {
 	DetachAll();
-	AttachChild( m_Prop_line );
+	if (m_Prop_line)
+		AttachChild( m_Prop_line );
 
 	CActor* actor = smart_cast<CActor*>( Level().CurrentViewEntity() );
 	if ( !actor )
@@ -237,7 +249,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 	else
 	{
 		u32 count = READ_IF_EXISTS(pSettings, r_u32, af_section, "artefact_count", 0);
-		if (count > 0)
+		if (count > 0 && m_af_slots)
 		{
 			m_af_slots->SetValue(count);
 
