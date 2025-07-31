@@ -28,67 +28,56 @@ void Help(const char*);
 typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 extern bool g_using_smooth_groups;
 
-void StartupLC(LPSTR lpCmdLine) 
+#include "CompilersUI.h"
+
+extern CompilersMode gCompilerMode;;
+
+void StartupLC() 
 {
 	create_global_data();
-	char cmd[512], name[256];
+// 	xr_strcpy(cmd, lpCmdLine);
+//	_strlwr(cmd);
+	
+	
 
-	xr_strcpy(cmd, lpCmdLine);
-	_strlwr(cmd);
-	if (strstr(cmd, "-?") || strstr(cmd, "-h")) { Help(h_str); return; }
-	if (strstr(cmd, "-f") == 0) { Help(h_str); return; }
-	if (strstr(cmd, "-gi"))								g_build_options.b_radiosity = TRUE;
-	if (strstr(cmd, "-noise"))							g_build_options.b_noise = TRUE;
- 	if (strstr(Core.Params, "-nosmg"))					g_using_smooth_groups = false;
+ 	g_build_options.b_radiosity = gCompilerMode.LC_GI;
+	g_build_options.b_noise		= gCompilerMode.LC_Noise;
+ 	g_using_smooth_groups		= !gCompilerMode.LC_NoSMG;
 
 	VERIFY(lc_global_data());
-	lc_global_data()->b_nosun_set(!!strstr(cmd, "-nosun"));
-	lc_global_data()->SetSkipInvalid(strstr(cmd, "-skipinvalid") != nullptr);
-	lc_global_data()->SetSkipTesselate(strstr(cmd, "-notess") != nullptr);
-	lc_global_data()->SetLmapRGBA(strstr(cmd, "-tex_rgba") != nullptr);
-	lc_global_data()->SetSkipSubdivide(strstr(cmd, "-nosubd") != nullptr);
+	lc_global_data()->b_nosun_set(gCompilerMode.LC_NoSun);
+	lc_global_data()->SetSkipInvalid(gCompilerMode.LC_SkipInvalidFaces);
+	lc_global_data()->SetSkipTesselate(!gCompilerMode.LC_Tess);
+	lc_global_data()->SetLmapRGBA(gCompilerMode.LC_tex_rgba);
+	lc_global_data()->SetSkipSubdivide(gCompilerMode.LC_NoSubdivide);
 	
 	// Se7kills
-	lc_global_data()->SetIsIntelUse(strstr(cmd, "-use_intel") != nullptr);
-	lc_global_data()->SetSkipWeld(strstr(cmd, "-skip_weld") != nullptr);
-	
-	if (strstr(cmd, "-lmaps_1k") != nullptr)
-		lc_global_data()->SetLmapsSize(1024);
-	else 
-	if (strstr(cmd, "-lmaps_2k") != nullptr)
-		lc_global_data()->SetLmapsSize(1024 * 2);
-	else 
-	if (strstr(cmd, "-lmaps_4k") != nullptr)
-		lc_global_data()->SetLmapsSize(1024 * 4);
-	else
-	if (strstr(cmd, "-lmaps_8k") != nullptr)
-		lc_global_data()->SetLmapsSize(1024 * 8);
-	else
-		lc_global_data()->SetLmapsSize(1024 * 4); // 4k Default
-
-
+	lc_global_data()->SetIsIntelUse(gCompilerMode.Embree);
+	lc_global_data()->SetSkipWeld(gCompilerMode.LC_skipWeld);
+	lc_global_data()->SetLmapsSize(gCompilerMode.LC_sizeLmaps);
+	  
 	// Faster FPU 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 
 	// Load project
-	name[0] = 0;
-	sscanf(strstr(cmd, "-f") + 2, "%s", name);
+	  
+	 
 
 	extern  HWND logWindow;
 	string256				temp;
-	xr_sprintf(temp, "%s - Levels Compiler", name);
+	xr_sprintf(temp, "%s - Levels Compiler", gCompilerMode.level_name);
 	SetWindowTextA(logWindow, temp);
 
 	string_path prjName;
-	FS.update_path(prjName, "$game_levels$", xr_strconcat(prjName, name, "\\build.prj"));
+	FS.update_path(prjName, "$game_levels$", xr_strconcat(prjName, gCompilerMode.level_name, "\\build.prj"));
 
 	string256 phaseName;
-	Phase(xr_strconcat(phaseName, "Reading project [", name, "]..."));
+	Phase(xr_strconcat(phaseName, "Reading project [", gCompilerMode.level_name, "]..."));
 
 	string256 inf;
 	IReader* F = FS.r_open(prjName);
 	if (NULL == F) {
-		xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", name);
+		xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", gCompilerMode.level_name);
 		clMsg(inf);
 		MessageBoxA(logWindow, inf, "Error!", MB_OK | MB_ICONERROR);
 		return;
@@ -107,11 +96,16 @@ void StartupLC(LPSTR lpCmdLine)
 	Phase("Converting data structures...");
 	pBuild = new CBuild();
 	pBuild->Load(Params, *F);
+
+	g_params().m_lm_jitter_samples   = gCompilerMode.LC_JSample;
+	g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
+  
+
 	FS.r_close(F);
 
 	// Call for builder
 	string_path lfn;
-	FS.update_path(lfn, _game_levels_, name);
+	FS.update_path(lfn, _game_levels_, gCompilerMode.level_name);
 	pBuild->Run(lfn);
 	xr_delete(pBuild);
 }

@@ -181,6 +181,7 @@ struct b_params
             ini.w_float	(section, buff, f_reserved[i]);
         }
     }
+
     void LoadLTX(CInifile& ini)
     {
     	LPCSTR section 			= "build_params";
