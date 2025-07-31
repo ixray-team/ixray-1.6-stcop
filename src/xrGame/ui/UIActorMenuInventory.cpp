@@ -1057,22 +1057,22 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 		{
 		}
 	}
-	if ( smart_cast<CWeaponMagazined*>(pWeapon) && IsGameTypeSingle() )
+	if (pWeapon->cast_weapon_magazined() != nullptr && IsGameTypeSingle())
 	{
-		bool b = ( pWeapon->GetAmmoElapsed() !=0 );
-		if ( !b )
+		bool b = (pWeapon->GetAmmoElapsed() || pWeapon->IsChamber() && pWeapon->GetAmmoChamberElapsed());
+		if (!b)
 		{
-			for ( u32 i = 0; i < cell_item->ChildsCount(); ++i )
+			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
-				CWeaponMagazined* weap_mag = smart_cast<CWeaponMagazined*>( (CWeapon*)cell_item->Child(i)->m_pData );
-				if ( weap_mag && weap_mag->GetAmmoElapsed() )
+				CWeaponMagazined* weap_mag = smart_cast<CWeaponMagazined*>((CWeapon*)cell_item->Child(i)->m_pData);
+				if (weap_mag != nullptr && (weap_mag->GetAmmoElapsed() || weap_mag->IsChamber() && weap_mag->GetAmmoChamberElapsed()))
 				{
 					b = true;
 					break; // for
 				}
 			}
 		}
-		if ( b )
+		if (b)
 		{
 			m_UIPropertiesBox->AddItem("st_unload_magazine", nullptr, INVENTORY_UNLOAD_MAGAZINE);
 			b_show = true;
@@ -1432,19 +1432,22 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 		break;
 	case INVENTORY_UNLOAD_MAGAZINE:
 		{
-			CWeaponMagazined* weap_mag = smart_cast<CWeaponMagazined*>( (CWeapon*)cell_item->m_pData );
-			if ( !weap_mag )
+			CWeaponMagazined* weap_mag = smart_cast<CWeaponMagazined*>((CWeapon*)cell_item->m_pData);
+			if (weap_mag == nullptr)
 			{
 				break;
 			}
+
 			weap_mag->UnloadMagazine();
-			for ( u32 i = 0; i < cell_item->ChildsCount(); ++i )
+			weap_mag->UnloadChamber();
+			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
-				CUICellItem*		child_itm		= cell_item->Child(i);
-				CWeaponMagazined*	child_weap_mag	= smart_cast<CWeaponMagazined*>( (CWeapon*)child_itm->m_pData );
-				if ( child_weap_mag )
+				CUICellItem* child_itm = cell_item->Child(i);
+				CWeaponMagazined* child_weap_mag = smart_cast<CWeaponMagazined*>((CWeapon*)child_itm->m_pData);
+				if (child_weap_mag != nullptr)
 				{
 					child_weap_mag->UnloadMagazine();
+					child_weap_mag->UnloadChamber();
 				}
 			}
 			break;
@@ -1482,7 +1485,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 		int Count2 = _GetItemCount(ChanceList.c_str());
 
 		extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
-
+		
 		string128 sItem;
 		string16 sItem2;
 
