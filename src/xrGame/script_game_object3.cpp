@@ -1620,7 +1620,7 @@ void CScriptGameObject::SetBoneVisible(LPCSTR bone_name, bool bVisibility, bool 
 	if (IKinematics* k = PKinematics(object().Visual()))
 	{
 		u16 bone_id = k->LL_BoneID(bone_name);
-		if (bone_id != BI_NONE && k->LL_GetBoneVisible(bone_id) != bVisibility)
+		if (bone_id != BI_NONE && k->LL_GetBoneVisible(bone_id) != (BOOL)bVisibility)
 		{
 			k->LL_SetBoneVisible(bone_id, bVisibility, bRecursive);
 		}
