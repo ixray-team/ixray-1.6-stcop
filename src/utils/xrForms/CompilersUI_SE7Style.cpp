@@ -354,6 +354,7 @@ void RenderCompilerUI(int X, int Y)
 	//static const char* levelName = "LevelTextName";
 	static bool autoScroll = true;
 	static bool hideLogSection = false;
+	static bool ResizeMaximal = false;
 
 	// Set up the window
 	ImGui::Begin("Compile Split Screen", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus);
@@ -378,10 +379,28 @@ void RenderCompilerUI(int X, int Y)
 
 	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
 
+
+	if (ResizeMaximal)
+	{
+		if (X != 1250 || Y != 800)
+		{
+			SDL_SetWindowSize(g_AppInfo.Window, 1250, 800);
+		}
+	}
+	else
+	{
+		if (X != 1000 || Y != 560)
+		{
+			SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
+		}
+	}
+	
+
+
 		// Table
 	if (ImGui::BeginTable("IterationsTable", 10, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
 		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
-		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 120.f);
+		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
 		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
@@ -548,6 +567,13 @@ void RenderCompilerUI(int X, int Y)
 	if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
 	{
 		autoScroll = !autoScroll;
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button(!ResizeMaximal ? "Maximal resize" : "Minimal resize"))
+	{
+		ResizeMaximal = !ResizeMaximal;
 	}
 
 	ImGui::SameLine();
