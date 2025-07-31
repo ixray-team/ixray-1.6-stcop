@@ -378,12 +378,17 @@ void dxRenderDeviceRender::Begin()
 #ifndef _EDITOR
 #ifndef USE_DX11
 	CHK_DX					(RDevice->BeginScene());
+#else
 #endif //USE_DX11
 	
 	RCache.OnFrameBegin		();
 	RCache.set_CullMode		(CULL_CW);
 	RCache.set_CullMode		(CULL_CCW);
 	RCache.set_Z			(TRUE);
+#endif
+
+#if defined(USE_DX11) && defined(DEBUG_DRAW)
+	GPUEvents_BeginRendering();
 #endif
 }
 
@@ -408,6 +413,8 @@ void dxRenderDeviceRender::Clear()
 		));
 #endif
 #endif
+
+
 }
 
 void DoAsyncScreenshot();
@@ -439,6 +446,9 @@ void dxRenderDeviceRender::End()
 		MyImGui.AfterRender();
 
 		DebugRenderImpl.m_lines.resize(0);
+#if defined(USE_DX11) && defined(DEBUG_DRAW)
+		GPUEvents_EndRendering();
+#endif
 	}
 #else
 
