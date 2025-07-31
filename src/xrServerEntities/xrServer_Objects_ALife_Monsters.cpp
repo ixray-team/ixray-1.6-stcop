@@ -38,6 +38,7 @@
 #	include "custommonster.h"
 #	include "movement_manager.h"
 #	include "location_manager.h"
+#	include "../xrGame/Level.h"
 #include "../xrGame/InventoryOwner.h"
 #endif
 
@@ -1470,7 +1471,11 @@ void CSE_ALifeCreatureActor::load(NET_Packet &tNetPacket)
 
 BOOL CSE_ALifeCreatureActor::Net_Relevant()
 {
-	return TRUE; // this is a big question ;)
+#ifdef XRGAME_EXPORTS
+	return IsGameTypeSingle(); // this is a big question ;)
+#else
+	return true;
+#endif
 }
 
 void CSE_ALifeCreatureActor::UPDATE_Read	(NET_Packet	&tNetPacket)
