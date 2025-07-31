@@ -117,7 +117,7 @@ float CEngineExternal::GetWeaponIconScaling() const
 
 const char* CEngineExternal::PlatformMode() const
 {
-	return READ_IF_EXISTS(pOptions, r_string_wb, "general", "Platform", "cop").c_str();
+	return READ_IF_EXISTS(pOptions, r_string, "general", "Platform", "cop");
 }
 
 bool CEngineExternal::ClearSkyMode() const
