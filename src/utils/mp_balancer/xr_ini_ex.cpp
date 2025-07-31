@@ -490,11 +490,7 @@ u32 CInifileEx::r_u32(LPCSTR S, LPCSTR L)
 u64 CInifileEx::r_u64(LPCSTR S, LPCSTR L)
 {
 	LPCSTR		C = r_string(S,L);
-#ifndef _EDITOR
 	return		_strtoui64(C,NULL,10);
-#else
-	return		(u64)_atoi64(C);
-#endif
 }
 
 s64 CInifileEx::r_s64(LPCSTR S, LPCSTR L)
@@ -700,22 +696,14 @@ void	CInifileEx::w_u32			( LPCSTR S, LPCSTR L, u32				V, LPCSTR comment )
 void	CInifileEx::w_u64			( LPCSTR S, LPCSTR L, u64				V, LPCSTR comment )
 {
 	string128 temp; 
-#ifndef _EDITOR
 	_ui64toa_s			(V, temp, sizeof(temp), 10);
-#else
-    _ui64toa			(V, temp, 10);
-#endif
 	w_string			(S,L,temp,comment);
 }
 
 void	CInifileEx::w_s64			( LPCSTR S, LPCSTR L, s64				V, LPCSTR comment )
 {
 	string128			temp;
-#ifndef _EDITOR
 	_i64toa_s			(V, temp, sizeof(temp), 10);
-#else
-    _i64toa				(V, temp, 10);
-#endif
 	w_string			(S,L,temp,comment);
 }
 

@@ -278,6 +278,7 @@ void CDetailManager::Render()
 #ifndef _EDITOR
 	if (0 == dtFS)						return;
 	if (!psDeviceFlags.is(rsDetails))	return;
+	if (!hw_BatchSize)	return;
 #endif
 
 	Device.details_task.wait();

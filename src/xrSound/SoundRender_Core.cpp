@@ -163,11 +163,8 @@ void CSoundRender_Core::set_geometry_occ(CDB::MODEL* M)
 
 void CSoundRender_Core::set_geometry_som(IReader* I)
 {
-#ifdef _EDITOR
-	ETOOLS::destroy_model	(geom_SOM);
-#else
 	xr_delete				(geom_SOM);
-#endif
+
 	if (0==I)		return;
 
 	// check version
@@ -202,11 +199,8 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 
 void CSoundRender_Core::set_geometry_env(IReader* I)
 {
-#ifdef _EDITOR
-	ETOOLS::destroy_model	(geom_ENV);
-#else
 	xr_delete				(geom_ENV);
-#endif
+
 	if (0==I)				return;
 	if (0==s_environment)	return;
 
