@@ -297,23 +297,24 @@ function CKampManager:getDestVertex(npc, radius)
 	radius = radius + math.random(-0.3,0.3)
 
  	local dest_vertex = 4294967295
-
+	 local isValid = true
  	while dest_vertex == 4294967295 do
  		local tmp_pos = vector():set(0,0,0)
 		tmp_pos.x = pp.x + dir.x * radius
 		tmp_pos.z = pp.z + dir.z * radius
 		tmp_pos.y = pp.y
 	 	dest_vertex = level.vertex_id(tmp_pos)
-	 	if dest_vertex == 4294967295 then
-	 		if radius < 1 then
-	 			abort("Invalid AI map at kamp point [%s]", self.kamp_name)
-	 		else
-	 			radius = radius - 0.5
-	 		end
-	 	end
+		if dest_vertex == 4294967295 then
+			if radius < 1 then
+				printf("Invalid AI map at kamp point [%s]", self.kamp_name)
+				isValid = false
+			else
+				radius = radius - 0.5
+			end
+		end
  	end
 
-	if not npc:accessible(dest_vertex) then
+	 if not npc:accessible(dest_vertex) or not isValid then
 		--printf("vertex_position %s", tostring(dest_vertex))
 		local vp = level.vertex_position(dest_vertex)
 		--printf("Nearest for npc[%s] kamp [%s] position [%s:%s:%s]", npc:name(), tostring(self.kamp_name),tostring(vp.x), tostring(vp.y), tostring(vp.z))
