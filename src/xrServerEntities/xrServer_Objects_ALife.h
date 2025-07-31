@@ -499,11 +499,12 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeHelicopter,CSE_ALifeDynamicObjectVisual,CS
 	virtual CSE_Motion*		motion						();
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
 	virtual BOOL					Net_Relevant() override;
-#if defined(XRGAME_EXPORTS)
-	Fvector Pos;
-	Fvector Rotate;
-	Fvector BodyHPB;
-#endif
+
+	// For new sync system
+	Fvector PointPos;
+
+	virtual void SyncRead(NET_Packet& Packet);
+	virtual void SyncWrite(NET_Packet& Packet);
 
 SERVER_ENTITY_DECLARE_END
 
