@@ -110,7 +110,7 @@ void EScene::Render( const Fmatrix& camera )
 				ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B] - Tools: '%s'", (*s_it)->ClassName()); \
 			}
 		}
-	};
+	};;
 
 // priority #0
     // normal
