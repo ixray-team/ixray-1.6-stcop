@@ -23,6 +23,7 @@ UITopBarForm::UITopBarForm()
     m_tReloadConfigs         = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
     m_tOpenGameData          = EDevice->Resources->_CreateTexture("ed\\bar\\open_gamedata");
     m_VerifySpaceRestrictors = false;
+    m_Simulate               = false;
 
 	m_PreferencesIcon = EDevice->Resources->_CreateTexture("ed\\bar\\win_preferences");
 }
@@ -80,7 +81,7 @@ void UITopBarForm::Draw()
 	{
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 6);
 
-		if (ImGui::BeginTable("##ToolbarTable", 9, ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
+		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
 		{
 			ImGui::TableSetupColumn("Actions");
 			ImGui::TableSetupColumn("File");
@@ -90,6 +91,7 @@ void UITopBarForm::Draw()
 			ImGui::TableSetupColumn("Engine");
 			ImGui::TableSetupColumn("Directory Actions");
 			ImGui::TableSetupColumn("Sound Preferences");
+			ImGui::TableSetupColumn("Physics");
 			ImGui::TableSetupColumn("Preferences");
 
 			if (ImGui::TableNextColumn())
@@ -181,10 +183,37 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				IMGUI_HINT_BUTTON("Preferences", m_PreferencesIcon, "Preferences", ClickPreferences);
+				ImGui::SetCursorPosY(3);
+				if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
+				{
+					ExecCommand(COMMAND_SIMULATE, true);
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+					ImGui::SetTooltip("Activates the physics simulation of the selected object(s).");
+				}
+				ImGui::SameLine(0, 10);
+
+				ImGui::SetCursorPosY(3);
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.15f));
+				if (ImGui::Button("Use Pos"))
+				{
+					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+					ImGui::SetTooltip("Use the position of the selected object when physics simulation is active. The position of the object will be applied when simulating physics.");
+				}
+				ImGui::PopStyleColor();
 			}
 
-		}
+			if (ImGui::TableNextColumn())
+			{
+				IMGUI_HINT_BUTTON("Preferences", m_PreferencesIcon, "Preferences", ClickPreferences);
+			}
+        }
 		ImGui::EndTable();
 	}
 

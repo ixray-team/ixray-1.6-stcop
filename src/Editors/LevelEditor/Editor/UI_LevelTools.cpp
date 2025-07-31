@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Utils/Cursor3D.h"
 #include "UI/UIEditLibrary.h"
+#include "Scene/LEPhysics.h"
 
 #define DETACH_FRAME(a) 	if (a){ a=0; }
 #define ATTACH_FRAME(a,b)	if (a){b=a;}
@@ -599,18 +600,20 @@ bool CLevelTool::GetSelectionPosition(Fmatrix& result)
 	}else
 		return 			false;
 }
-void   CLevelTool::Simulate()
+
+void CLevelTool::Simulate()
 {
-/*	if (!g_scene_physics.Simulating())
-		g_scene_physics.CreateShellsSelected();
-	else
-		g_scene_physics.DestroyAll();
-	UI->RedrawScene();
-	ExecCommand(COMMAND_REFRESH_UI_BAR);*/
+    if (!g_scene_physics.Simulating())
+        g_scene_physics.CreateShellsSelected();
+    else
+        g_scene_physics.DestroyAll();
+    UI->RedrawScene();
+    ExecCommand(COMMAND_REFRESH_UI_BAR);
 }
-void   CLevelTool::UseSimulatePositions()
+
+void CLevelTool::UseSimulatePositions()
 {
-	/*g_scene_physics.UseSimulatePoses();*/
+    g_scene_physics.UseSimulatePoses();
 }
 
 void CLevelTool::RunGame(const char* Params)
