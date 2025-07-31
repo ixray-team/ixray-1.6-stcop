@@ -22,19 +22,30 @@ class XRLC_LIGHT_API CDeflector
 {
 
 public:
- 	xr_vector<UVtri>			UVpolys;
-	Fvector						normal;
-	lm_layer					layer;
-	Fsphere						Sphere;
-	
-	BOOL						bMerged;
+	bool ApplyLmap = false;
+	bool ApplyEdge = false;
+	bool ApplyResolution = false;
+ 	bool bMerged = false;
+
+	u32  ColorsRecvested = 0;
+	u32  ColorsApply = 0;
+ 
+	Fvector				normal;
+ 	xr_vector<UVtri>	UVpolys;
+
+	lm_layer			layer;
+	Fsphere				Sphere;
+
+	// se7kills Освещение на GPU
+	xr_hash_map<size_t, base_color_c>		def_color_map;
+	xr_hash_map<size_t, u8>					def_FacesCount;
+	 
+
 public:
 
-						CDeflector					();
+	CDeflector					();
+  	~CDeflector					();
  
- 						~CDeflector					();
-static	CDeflector*		read_create					();	
-
 	void	OA_SetNormal		(Fvector &_N )	{ normal.set(_N); normal.normalize(); VERIFY(_valid(normal)); }
 	BOOL	OA_Place			(Face *owner);
 	void	OA_Place			(vecFace& lst);
@@ -58,6 +69,7 @@ static	CDeflector*		read_create					();
 		dest.modify		(TC.uv[1]);
 		dest.modify		(TC.uv[2]);
 	}
+	
 	void	Bounds_Summary		(Fbox2& bounds)
 	{
 		bounds.invalidate();
@@ -68,6 +80,7 @@ static	CDeflector*		read_create					();
 			bounds.merge(B);
 		}
 	}
+
 	void	RemapUV				(xr_vector<UVtri>& dest, u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, BOOL bRotate);
 	void	RemapUV				(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, BOOL bRotate);
  	
@@ -82,22 +95,36 @@ static	CDeflector*		read_create					();
 		return sizeof(*this) + STri + SLMLayer;
 	}
 
-	// se7kills Освещение на GPU
-	xr_concurrent_unordered_map<size_t, base_color_c>		color_map;
-	xr_concurrent_unordered_map<size_t, u32>				FacesCount;
-	
-	bool ApplyResolution	 = false;
-	bool NeedGarbageRays	 = false;
-	bool NeedApplyEdges		 = false;
+	size_t size_of_lm()
+	{
+		size_t SLMLayer = layer.memory_lmap();
+		return SLMLayer;
+	}
+
+	size_t size_of_tris()
+	{
+		size_t STri = UVpolys.capacity() * sizeof(UVtri);
+		return STri;
+	}
+
+
+	size_t size_of_colors() const
+	{
+ 		return 0;
+	}
+
 
 	// Stage 1
 	void LightGPU( HASH& H);
 	void L_DirectGPU( HASH& H);
 
-	// Stage 2
-	void ApplyGPU(HASH& H);
-	void ApplyGPU_Edges(bool isFirst);
+	// cuda recvest color reciver
+	void ApplyColors();
+	void ApplyColor(size_t INDEX, base_color_c& C);
 
+	// Stage 2
+	void EdgesLighting(HASH& H);
+ 
 	// Stage 3
 	void LowerResolutionGPU(HASH& H);
 	void ApplyExpadBordersGPU();
