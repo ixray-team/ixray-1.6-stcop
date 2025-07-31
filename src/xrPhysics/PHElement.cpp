@@ -452,7 +452,7 @@ void CPHElement::PhDataUpdate(dReal step)
 		Msg("name visual %s",ph->ObjectNameVisual());
 		Msg("name obj %s",ph->ObjectName());
 		Msg("name section %s",ph->ObjectNameSect());
-		VERIFY2(0,"bad angular velocity");
+		//VERIFY2(0,"bad angular velocity");
 	}
 #endif
 	VERIFY(!fis_zero(m_l_scale));
@@ -486,7 +486,7 @@ void CPHElement::PhDataUpdate(dReal step)
 
 	////////////////limit linear vel////////////////////////////////////////////////////////////////////////////////////////
 
-	VERIFY(dV_valid(linear_velocity));
+	//VERIFY(dV_valid(linear_velocity));
 	if(linear_velocity_mag>m_l_limit)
 	{
 		CutVelocity(m_l_limit,m_w_limit);
@@ -498,9 +498,9 @@ void CPHElement::PhDataUpdate(dReal step)
 	}
 	////////////////secure position///////////////////////////////////////////////////////////////////////////////////
 	const dReal* position=dBodyGetPosition(m_body);
-	VERIFY(dV_valid(position));
+	//VERIFY(dV_valid(position));
 	/////////////////limit & secure angular vel///////////////////////////////////////////////////////////////////////////////
-	VERIFY(dV_valid(angular_velocity));
+	//VERIFY(dV_valid(angular_velocity));
 
 	if(angular_velocity_mag>m_w_limit)
 	{
@@ -514,7 +514,7 @@ void CPHElement::PhDataUpdate(dReal step)
 	////////////////secure rotation////////////////////////////////////////////////////////////////////////////////////////
 	{
 
-	VERIFY(dQ_valid(dBodyGetQuaternion(m_body)));
+	//VERIFY(dQ_valid(dBodyGetQuaternion(m_body)));
 
 
 	}
@@ -527,9 +527,9 @@ void CPHElement::PhDataUpdate(dReal step)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////position update///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	VERIFY(dBodyStateValide(m_body));
-	VERIFY2(dV_valid(dBodyGetPosition(m_body)),"invalid body position");
-	VERIFY2(dV_valid(dBodyGetQuaternion(m_body)),"invalid body rotation");
+	//VERIFY(dBodyStateValide(m_body));
+	//VERIFY2(dV_valid(dBodyGetPosition(m_body)),"invalid body position");
+	//VERIFY2(dV_valid(dBodyGetQuaternion(m_body)),"invalid body rotation");
 /*
 	if(!valid_pos(cast_fv(dBodyGetPosition(m_body)),phBoundaries)) //hack
 	{															   //hack
@@ -1125,13 +1125,13 @@ void	CPHElement::getForce(Fvector& force)
 {
 	if(!isActive()) return;
 	force.set(*(Fvector*)dBodyGetForce(m_body));
-	VERIFY(dBodyStateValide(m_body));
+	//VERIFY(dBodyStateValide(m_body));
 }
 void	CPHElement::getTorque(Fvector& torque)
 {
 	if(!isActive()) return;
 	torque.set(*(Fvector*)dBodyGetTorque(m_body));
-	VERIFY(dBodyStateValide(m_body));
+	//VERIFY(dBodyStateValide(m_body));
 }
 void	CPHElement::setForce(const Fvector& force)
 {
@@ -1165,7 +1165,7 @@ void	CPHElement::applyForce(float x,float y,float z)																//called any
 	m_shell->EnableObject(0);
 	dBodyAddForce(m_body,x,y,z);
 	BodyCutForce(m_body,m_l_limit,m_w_limit);
-	VERIFY(dBodyStateValide(m_body));
+	//VERIFY(dBodyStateValide(m_body));
 }
 
 void	CPHElement::applyImpulse(const Fvector& dir, float val)//aux

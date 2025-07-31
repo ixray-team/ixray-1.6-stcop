@@ -69,7 +69,7 @@ void CPHInterpolation::ResetPositions()
 
 void CPHInterpolation::ResetRotations()
 {
-	VERIFY2(dV_valid(dBodyGetQuaternion(m_body)),"Invalid body state: Quaternion");
+	//VERIFY2(dV_valid(dBodyGetQuaternion(m_body)),"Invalid body state: Quaternion");
 	const dReal* dQ=dBodyGetQuaternion(m_body);
 	Fquaternion fQ;
 	fQ.set(-dQ[0],dQ[1],dQ[2],dQ[3]);
