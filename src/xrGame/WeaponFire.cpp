@@ -126,8 +126,15 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	// Ammo
 	if (!infinite_fire() || m_bIAmWeaponRPG7)
 	{
+		m_LastShotAmmoType = m_magazine.back().m_LocalAmmoType;
 		m_magazine.pop_back();
 		--iAmmoElapsed;
+
+		if (!m_bBlockUpdateAmmoBonesShooting)
+		{
+			u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+			UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
+		}
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
@@ -201,8 +208,15 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 
 	if (!infinite_fire() || m_bIAmWeaponRPG7)
 	{
+		m_LastShotAmmoType = m_chamber.back().m_LocalAmmoType;
 		DeleteAmmoInChamber();
 		GiveAmmoFromMagToChamber();
+
+		if (!m_bBlockUpdateAmmoBonesShooting)
+		{
+			u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+			UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
+		}
 	}
 
 	VERIFY((u32)iAmmoChamberElapsed == m_chamber.size());
@@ -217,6 +231,9 @@ void CWeapon::StopShooting()
 		StopFlameParticles	();	
 
 	SwitchState(eIdle);
+
+	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 	
 	bWorking = false;
 }
