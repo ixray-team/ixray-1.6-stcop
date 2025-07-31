@@ -13,7 +13,7 @@ f_deffer main( p_flat I )
   f_deffer	O;
 
   // diffuse
-  float3 D	= tbase		(I.tcdh);	// IN:  rgb.a
+  float3 D	= s_base.Sample(smp_base, I.tcdh);	// IN:  rgb.a
 
 #ifdef	USE_TDETAIL
 //	D.rgb	= 2*D.rgb*tex2D	(s_detail, I.tcdbump).rgb;
@@ -38,7 +38,7 @@ f_deffer main( p_flat I )
 # endif
 #endif
 
-	// Шум при выбросе
+	// пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	float noise	= get_noise(I.tcdh*timers.z) * m_affects.x * m_affects.x * 30;		
 	D.r += noise+0.1;
 	D.g += noise+0.1;
