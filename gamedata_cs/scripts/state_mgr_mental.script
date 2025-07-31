@@ -1,7 +1,7 @@
 
 
---' Ментальное состояние тела
---' мы уже находимся в необходимом состоянии?
+--' РњРµРЅС‚Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ С‚РµР»Р°
+--' РјС‹ СѓР¶Рµ РЅР°С…РѕРґРёРјСЃСЏ РІ РЅРµРѕР±С…РѕРґРёРјРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё?
 class "eva_state_mgr_mental" (property_evaluator)
 function eva_state_mgr_mental:__init(name, st) super (nil, name)
 	self.st = st
@@ -10,7 +10,7 @@ function eva_state_mgr_mental:evaluate()
 	return (state_lib.states[self.st.target_state].mental == nil) or
 		   (state_lib.states[self.st.target_state].mental == self.object:target_mental_state())
 end
---' нужно ли нам быть в состоянии FREE
+--' РЅСѓР¶РЅРѕ Р»Рё РЅР°Рј Р±С‹С‚СЊ РІ СЃРѕСЃС‚РѕСЏРЅРёРё FREE
 class "eva_state_mgr_mental_free" (property_evaluator)
 function eva_state_mgr_mental_free:__init(name, st) super (nil, name)
 	self.st = st
@@ -18,7 +18,7 @@ end
 function eva_state_mgr_mental_free:evaluate()
 	return state_lib.states[self.st.target_state].mental == anim.free
 end
---' находимся ли мы сейчас во FREE
+--' РЅР°С…РѕРґРёРјСЃСЏ Р»Рё РјС‹ СЃРµР№С‡Р°СЃ РІРѕ FREE
 class "eva_state_mgr_mental_free_now" (property_evaluator)
 function eva_state_mgr_mental_free_now:__init(name, st) super (nil, name)
 	self.st = st
@@ -28,7 +28,7 @@ function eva_state_mgr_mental_free_now:evaluate()
 end
 
 
---' нужно ли нам быть в состоянии DANGER
+--' РЅСѓР¶РЅРѕ Р»Рё РЅР°Рј Р±С‹С‚СЊ РІ СЃРѕСЃС‚РѕСЏРЅРёРё DANGER
 class "eva_state_mgr_mental_danger" (property_evaluator)
 function eva_state_mgr_mental_danger:__init(name, st) super (nil, name)
 	self.st = st
@@ -36,7 +36,7 @@ end
 function eva_state_mgr_mental_danger:evaluate()
 	return state_lib.states[self.st.target_state].mental == anim.danger
 end
---' находимся ли мы сейчас в 
+--' РЅР°С…РѕРґРёРјСЃСЏ Р»Рё РјС‹ СЃРµР№С‡Р°СЃ РІ 
 class "eva_state_mgr_mental_danger_now" (property_evaluator)
 function eva_state_mgr_mental_danger_now:__init(name, st) super (nil, name)
 	self.st = st
@@ -45,7 +45,7 @@ function eva_state_mgr_mental_danger_now:evaluate()
 	return self.object:target_mental_state() == anim.danger
 end
 
---' нужно ли нам быть в состоянии PANIC
+--' РЅСѓР¶РЅРѕ Р»Рё РЅР°Рј Р±С‹С‚СЊ РІ СЃРѕСЃС‚РѕСЏРЅРёРё PANIC
 class "eva_state_mgr_mental_panic" (property_evaluator)
 function eva_state_mgr_mental_panic:__init(name, st) super (nil, name)
 	self.st = st
@@ -53,7 +53,7 @@ end
 function eva_state_mgr_mental_panic:evaluate()
 	return state_lib.states[self.st.target_state].mental == anim.panic
 end
---' находимся ли мы сейчас в PANIC
+--' РЅР°С…РѕРґРёРјСЃСЏ Р»Рё РјС‹ СЃРµР№С‡Р°СЃ РІ PANIC
 class "eva_state_mgr_mental_panic_now" (property_evaluator)
 function eva_state_mgr_mental_panic_now:__init(name, st) super (nil, name)
 	self.st = st
@@ -63,7 +63,7 @@ function eva_state_mgr_mental_panic_now:evaluate()
 end
 
 
---' Включаем свободное состояние
+--' Р’РєР»СЋС‡Р°РµРј СЃРІРѕР±РѕРґРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 class "act_state_mgr_mental_free" (action_base)
 function act_state_mgr_mental_free:__init(name) super (nil, name)
 end
@@ -93,7 +93,7 @@ function act_state_mgr_mental_free:finalize()
 	action_base.finalize(self)
 end
 
---' Включаем возбужденное состояние
+--' Р’РєР»СЋС‡Р°РµРј РІРѕР·Р±СѓР¶РґРµРЅРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 class "act_state_mgr_mental_danger" (action_base)
 function act_state_mgr_mental_danger:__init(name) super (nil, name)
 end
@@ -109,7 +109,7 @@ function act_state_mgr_mental_danger:finalize()
 	action_base.finalize(self)
 end
 
---' Включаем паническое состояние
+--' Р’РєР»СЋС‡Р°РµРј РїР°РЅРёС‡РµСЃРєРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 class "act_state_mgr_mental_panic" (action_base)
 function act_state_mgr_mental_panic:__init(name) super (nil, name)
 end

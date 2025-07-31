@@ -86,7 +86,7 @@ function stats()
 			squads[squad_level][squad.squad_id] = {num = squad.npc_count, pow = squad.squad_power}
 			squads[squad_level]._total_power = squads[squad_level]._total_power + squad.squad_power
 
-			-- Собираем распределение силы отделььных персонажей
+			-- РЎРѕР±РёСЂР°РµРј СЂР°СЃРїСЂРµРґРµР»РµРЅРёРµ СЃРёР»С‹ РѕС‚РґРµР»СЊСЊРЅС‹С… РїРµСЂСЃРѕРЅР°Р¶РµР№
 			for kk,npc_id in pairs(squad.squad_npc) do
 				local obj = alife():object(npc_id)
 				local obj_power = 5*obj:rank()/1000

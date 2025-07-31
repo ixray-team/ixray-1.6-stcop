@@ -5,10 +5,10 @@ function se_outfit:__init (section) super (section)
 end
 function se_outfit:on_register()
 	cse_alife_item_custom_outfit.on_register( self )
-	-- Регистрация в таскменеджере
+	-- Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():register_target(self)
 
-	-- Собираем статистику по предметам.
+	-- РЎРѕР±РёСЂР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РїРѕ РїСЂРµРґРјРµС‚Р°Рј.
 	if registred_items[self:section_name()] == nil then
 		registred_items[self:section_name()] = 1
 	else
@@ -17,7 +17,7 @@ function se_outfit:on_register()
 end
 function se_outfit:on_unregister()
 	cse_alife_item_custom_outfit.on_unregister( self )
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():unregister_target(self)
 end
 
@@ -26,10 +26,10 @@ function se_weapon:__init (section) super (section)
 end
 function se_weapon:on_register()
 	cse_alife_item_weapon.on_register( self )
-	-- Регистрация в таскменеджере
+	-- Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():register_target(self)
 
-	-- Собираем статистику по предметам.
+	-- РЎРѕР±РёСЂР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РїРѕ РїСЂРµРґРјРµС‚Р°Рј.
 	if registred_items[self:section_name()] == nil then
 		registred_items[self:section_name()] = 1
 	else
@@ -38,7 +38,7 @@ function se_weapon:on_register()
 end
 function se_weapon:on_unregister()
 	cse_alife_item_weapon.on_unregister( self )
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():unregister_target(self)
 end
 
@@ -47,10 +47,10 @@ function se_weapon_shotgun:__init (section) super (section)
 end
 function se_weapon_shotgun:on_register()
 	cse_alife_item_weapon_shotgun.on_register( self )
-	-- Регистрация в таскменеджере
+	-- Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():register_target(self)
 
-	-- Собираем статистику по предметам.
+	-- РЎРѕР±РёСЂР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РїРѕ РїСЂРµРґРјРµС‚Р°Рј.
 	if registred_items[self:section_name()] == nil then
 		registred_items[self:section_name()] = 1
 	else
@@ -59,7 +59,7 @@ function se_weapon_shotgun:on_register()
 end
 function se_weapon_shotgun:on_unregister()
 	cse_alife_item_weapon_shotgun.on_unregister( self )
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():unregister_target(self)
 end
 
@@ -69,10 +69,10 @@ function se_weapon_magazined:__init (section) super (section)
 end
 function se_weapon_magazined:on_register()
 	cse_alife_item_weapon_magazined.on_register( self )
-	-- Регистрация в таскменеджере
+	-- Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():register_target(self)
 
-	-- Собираем статистику по предметам.
+	-- РЎРѕР±РёСЂР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РїРѕ РїСЂРµРґРјРµС‚Р°Рј.
 	if registred_items[self:section_name()] == nil then
 		registred_items[self:section_name()] = 1
 	else
@@ -81,7 +81,7 @@ function se_weapon_magazined:on_register()
 end
 function se_weapon_magazined:on_unregister()
 	cse_alife_item_weapon_magazined.on_unregister( self )
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():unregister_target(self)
 end
 
@@ -90,10 +90,10 @@ function se_weapon_magazined_w_gl:__init (section) super (section)
 end
 function se_weapon_magazined_w_gl:on_register()
 	cse_alife_item_weapon_magazined_w_gl.on_register( self )
-	-- Регистрация в таскменеджере
+	-- Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():register_target(self)
 
-	-- Собираем статистику по предметам.
+	-- РЎРѕР±РёСЂР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РїРѕ РїСЂРµРґРјРµС‚Р°Рј.
 	if registred_items[self:section_name()] == nil then
 		registred_items[self:section_name()] = 1
 	else
@@ -102,7 +102,7 @@ function se_weapon_magazined_w_gl:on_register()
 end
 function se_weapon_magazined_w_gl:on_unregister()
 	cse_alife_item_weapon_magazined_w_gl.on_unregister( self )
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():unregister_target(self)
 end
 
@@ -111,10 +111,10 @@ function se_item:__init (section) super (section)
 end
 function se_item:on_register()
 	cse_alife_item.on_register( self )
-	-- Регистрация в таскменеджере
+	-- Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():register_target(self)
 
-	-- Собираем статистику по предметам.
+	-- РЎРѕР±РёСЂР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РїРѕ РїСЂРµРґРјРµС‚Р°Рј.
 	if registred_items[self:section_name()] == nil then
 		registred_items[self:section_name()] = 1
 	else
@@ -123,7 +123,7 @@ function se_item:on_register()
 end
 function se_item:on_unregister()
 	cse_alife_item.on_unregister( self )
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():unregister_target(self)
 end
 
@@ -132,10 +132,10 @@ function se_item_torch:__init (section) super (section)
 end
 function se_item_torch:on_register()
 	cse_alife_item_torch.on_register( self )
-	-- Регистрация в таскменеджере
+	-- Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():register_target(self)
 
-	-- Собираем статистику по предметам.
+	-- РЎРѕР±РёСЂР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РїРѕ РїСЂРµРґРјРµС‚Р°Рј.
 	if registred_items[self:section_name()] == nil then
 		registred_items[self:section_name()] = 1
 	else
@@ -144,12 +144,12 @@ function se_item_torch:on_register()
 end
 function se_item_torch:on_unregister()
 	cse_alife_item_torch.on_unregister( self )
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_task_manager():unregister_target(self)
 end
 
 
---' ФИзобъекты
+--' Р¤РР·РѕР±СЉРµРєС‚С‹
 class "se_physic" (cse_alife_object_physic)
 function se_physic:__init (section) super (section)
 end

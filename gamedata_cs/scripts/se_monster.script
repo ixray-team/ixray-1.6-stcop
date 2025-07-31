@@ -1,7 +1,7 @@
 --[[
-Изменения script_version:
-	4 - сохранение поля job_online
-	5 - сохранение поля was_in_smart_terrain
+РР·РјРµРЅРµРЅРёСЏ script_version:
+	4 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ job_online
+	5 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ was_in_smart_terrain
 ]]
 
 class "se_monster" (cse_alife_monster_base)
@@ -18,15 +18,15 @@ function se_monster:__init (section) super (section)
 	self.check_distance = false
 	self.min_distance   = 150
 
-	-- этот флаг берётся из работы смарта
-	-- true     = всегда в онлайне
-	-- false    = всегда в офлайне
-	-- condlist = условие, которое отпределяет true или false
-	-- nil      = смарту всё равно
+	-- СЌС‚РѕС‚ С„Р»Р°Рі Р±РµСЂС‘С‚СЃСЏ РёР· СЂР°Р±РѕС‚С‹ СЃРјР°СЂС‚Р°
+	-- true     = РІСЃРµРіРґР° РІ РѕРЅР»Р°Р№РЅРµ
+	-- false    = РІСЃРµРіРґР° РІ РѕС„Р»Р°Р№РЅРµ
+	-- condlist = СѓСЃР»РѕРІРёРµ, РєРѕС‚РѕСЂРѕРµ РѕС‚РїСЂРµРґРµР»СЏРµС‚ true РёР»Рё false
+	-- nil      = СЃРјР°СЂС‚Сѓ РІСЃС‘ СЂР°РІРЅРѕ
 	self.job_online          = nil
 	self.job_online_condlist = nil
 
-	self.squad_id = nil --' Указатель на отряд в котором прописан чувак.
+	self.squad_id = nil --' РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РѕС‚СЂСЏРґ РІ РєРѕС‚РѕСЂРѕРј РїСЂРѕРїРёСЃР°РЅ С‡СѓРІР°Рє.
 
 	self.m_registred = false
 	self.sim_forced_online = false
@@ -169,10 +169,10 @@ function se_monster:on_register()
 	self.board 	= sim_board.get_sim_board()
 	self.tm		= task_manager.get_task_manager()
 
-	--' Отключаем старый метод выбора смарттеррейнов.
+	--' РћС‚РєР»СЋС‡Р°РµРј СЃС‚Р°СЂС‹Р№ РјРµС‚РѕРґ РІС‹Р±РѕСЂР° СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅРѕРІ.
 	self:brain():can_choose_alife_tasks(false)
 
-		--' Выбор смарта
+		--' Р’С‹Р±РѕСЂ СЃРјР°СЂС‚Р°
 		local obj_ini = self:spawn_ini()
 		local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
 		local smart_obj = self.board:get_smart_by_name(smart)
@@ -218,7 +218,7 @@ end
 function se_monster:update()
 	cse_alife_monster_base.update(self)
 
-	-- Тут мы попробуем вызвать апдейт отряда
+	-- РўСѓС‚ РјС‹ РїРѕРїСЂРѕР±СѓРµРј РІС‹Р·РІР°С‚СЊ Р°РїРґРµР№С‚ РѕС‚СЂСЏРґР°
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
 		if squad ~= nil and squad.commander_id == self.id then

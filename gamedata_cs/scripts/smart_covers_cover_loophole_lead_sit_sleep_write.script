@@ -12,7 +12,7 @@ function get_smart_cover_cover_loophole_lead_sit_sleep_write()
 
 	
 			transitions = {
-			--' Анимации входа в бойницы
+			--' РђРЅРёРјР°С†РёРё РІС…РѕРґР° РІ Р±РѕР№РЅРёС†С‹
 			{
 				vertex0 = "",
 				vertex1 = "lead_sit_sleep_write",
@@ -33,7 +33,7 @@ function get_smart_cover_cover_loophole_lead_sit_sleep_write()
 			},
 
 
-			--' Анимации выхода из бойниц.
+			--' РђРЅРёРјР°С†РёРё РІС‹С…РѕРґР° РёР· Р±РѕР№РЅРёС†.
 			{
 				vertex0 = "lead_sit_sleep_write",
 				vertex1 = "",

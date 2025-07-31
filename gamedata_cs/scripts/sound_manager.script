@@ -1,39 +1,39 @@
 ---------------------------------------------------------------------------------------------------------------------
---	Схема отыгрывания связных звуковых последовательностей.
---	автор:  Диденко Руслан  (Stohe)
+--	РЎС…РµРјР° РѕС‚С‹РіСЂС‹РІР°РЅРёСЏ СЃРІСЏР·РЅС‹С… Р·РІСѓРєРѕРІС‹С… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№.
+--	Р°РІС‚РѕСЂ:  Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ  (Stohe)
 ----------------------------------------------------------------------------------------------------------------------
 
---' Таблица содержит менеджеры историй
+--' РўР°Р±Р»РёС†Р° СЃРѕРґРµСЂР¶РёС‚ РјРµРЅРµРґР¶РµСЂС‹ РёСЃС‚РѕСЂРёР№
 local sound_managers = {}
 
 local story_ltx = ini_file("misc\\sound_stories.ltx")
 
 
---' Звуковой менеджер содержит в себе список персонажей, которые могут рассказать историю по ролям.
+--' Р—РІСѓРєРѕРІРѕР№ РјРµРЅРµРґР¶РµСЂ СЃРѕРґРµСЂР¶РёС‚ РІ СЃРµР±Рµ СЃРїРёСЃРѕРє РїРµСЂСЃРѕРЅР°Р¶РµР№, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ СЂР°СЃСЃРєР°Р·Р°С‚СЊ РёСЃС‚РѕСЂРёСЋ РїРѕ СЂРѕР»СЏРј.
 class "sound_manager"
 function sound_manager:__init(id)
 	self.id = tostring(id)
-	self.npc = {}			--'Таблица персонажей, зарегистрированных в саундменеджер
-	self.storyteller = nil	--'Кто является рассказчиком
-	self.story = nil		--'Какую историю будет отыгрывать данный менеджер. Один менеджер умеет отыгрывать только одну историю.
+	self.npc = {}			--'РўР°Р±Р»РёС†Р° РїРµСЂСЃРѕРЅР°Р¶РµР№, Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹С… РІ СЃР°СѓРЅРґРјРµРЅРµРґР¶РµСЂ
+	self.storyteller = nil	--'РљС‚Рѕ СЏРІР»СЏРµС‚СЃСЏ СЂР°СЃСЃРєР°Р·С‡РёРєРѕРј
+	self.story = nil		--'РљР°РєСѓСЋ РёСЃС‚РѕСЂРёСЋ Р±СѓРґРµС‚ РѕС‚С‹РіСЂС‹РІР°С‚СЊ РґР°РЅРЅС‹Р№ РјРµРЅРµРґР¶РµСЂ. РћРґРёРЅ РјРµРЅРµРґР¶РµСЂ СѓРјРµРµС‚ РѕС‚С‹РіСЂС‹РІР°С‚СЊ С‚РѕР»СЊРєРѕ РѕРґРЅСѓ РёСЃС‚РѕСЂРёСЋ.
 	self.last_playing_npc = nil
-	self.phrase_timeout = nil	--' Хранит время начала паузы между фразами.
-	self.phrase_idle = 0	--' Хранит длину паузы между фразами.
+	self.phrase_timeout = nil	--' РҐСЂР°РЅРёС‚ РІСЂРµРјСЏ РЅР°С‡Р°Р»Р° РїР°СѓР·С‹ РјРµР¶РґСѓ С„СЂР°Р·Р°РјРё.
+	self.phrase_idle = 0	--' РҐСЂР°РЅРёС‚ РґР»РёРЅСѓ РїР°СѓР·С‹ РјРµР¶РґСѓ С„СЂР°Р·Р°РјРё.
 end
---' Зарегистрировать НПС.
+--' Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РќРџРЎ.
 function sound_manager:register_npc(npc_id)
 	--printf("Register sm npc [%s]:[%s]", self.id, npc_id)
 	table.insert(self.npc, {npc_id = npc_id})
 	--print_table(self.npc)
 end
---' Отрегистрировать нпс
+--' РћС‚СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РЅРїСЃ
 function sound_manager:unregister_npc(npc_id)
 	--printf("UnRegister sm npc [%s]:[%s]", self.id, npc_id)
 
 	if self.last_playing_npc == npc_id and
 	   xr_sound.sound_table[self.last_playing_npc]
 	then
-		-- Удаляется чувак, который щас говорит фразу. Нужно обрубить историю
+		-- РЈРґР°Р»СЏРµС‚СЃСЏ С‡СѓРІР°Рє, РєРѕС‚РѕСЂС‹Р№ С‰Р°СЃ РіРѕРІРѕСЂРёС‚ С„СЂР°Р·Сѓ. РќСѓР¶РЅРѕ РѕР±СЂСѓР±РёС‚СЊ РёСЃС‚РѕСЂРёСЋ
 		self.story = nil
 	end
 
@@ -53,13 +53,13 @@ function sound_manager:unregister_npc(npc_id)
 	end
 	--print_table(self.npc)
 end
---' Установить нпс, как разказчика.
+--' РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРїСЃ, РєР°Рє СЂР°Р·РєР°Р·С‡РёРєР°.
 function sound_manager:set_storyteller(npc_id)
 	self.storyteller = npc_id
 	--printf("Set storyteller sm [%s] = [%s]", self.id, npc_id)
 end
 
---' Обновление
+--' РћР±РЅРѕРІР»РµРЅРёРµ
 function sound_manager:update()
 	--printf("Updating sm [%s]", self.id)
 	if self.story == nil then
@@ -67,12 +67,12 @@ function sound_manager:update()
 		return
 	end
 
-	--' Ждем пока не закончится уже начатый звук
+	--' Р–РґРµРј РїРѕРєР° РЅРµ Р·Р°РєРѕРЅС‡РёС‚СЃСЏ СѓР¶Рµ РЅР°С‡Р°С‚С‹Р№ Р·РІСѓРє
 	if xr_sound.sound_table[self.last_playing_npc] ~= nil then
 		--printf("wait sound")
 		return
 	end
-	--' Устанавливаем таймаут ожидания между фразами.
+	--' РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚Р°Р№РјР°СѓС‚ РѕР¶РёРґР°РЅРёСЏ РјРµР¶РґСѓ С„СЂР°Р·Р°РјРё.
 	local t_global = time_global()
 	if self.phrase_timeout == nil then
 		self.phrase_timeout = t_global
@@ -84,10 +84,10 @@ function sound_manager:update()
 	end
 
 
-	--' Выбираем следующую фразу.
+	--' Р’С‹Р±РёСЂР°РµРј СЃР»РµРґСѓСЋС‰СѓСЋ С„СЂР°Р·Сѓ.
 	local next_phrase = self.story:get_next_phrase()
 
-	--' В теме закончились фразы
+	--' Р’ С‚РµРјРµ Р·Р°РєРѕРЅС‡РёР»РёСЃСЊ С„СЂР°Р·С‹
 	if next_phrase == nil then
 		--printf("no phrase")
 		return
@@ -100,16 +100,16 @@ function sound_manager:update()
 		return
 	end
 
-	--' Выбираем персонажа, который скажет фразу
+	--' Р’С‹Р±РёСЂР°РµРј РїРµСЂСЃРѕРЅР°Р¶Р°, РєРѕС‚РѕСЂС‹Р№ СЃРєР°Р¶РµС‚ С„СЂР°Р·Сѓ
 	if next_phrase.who == "teller" then
-		--' фраза рассказчика
+		--' С„СЂР°Р·Р° СЂР°СЃСЃРєР°Р·С‡РёРєР°
 		if self.storyteller == nil then
 			self:choose_random_storyteller()
 		end
 		npc = self.storyteller
 
 	elseif next_phrase.who == "reaction" then
-		--' Фраза кого угодно, кроме рассказчика
+		--' Р¤СЂР°Р·Р° РєРѕРіРѕ СѓРіРѕРґРЅРѕ, РєСЂРѕРјРµ СЂР°СЃСЃРєР°Р·С‡РёРєР°
 		local teller_id = 0
 		for k,v in pairs(self.npc) do
 			if v.npc_id == self.storyteller then
@@ -141,16 +141,16 @@ function sound_manager:update()
 		self.phrase_idle = next_phrase.timeout * 1000		
 		return
 	else
-		--' Фраза кого угодно.
+		--' Р¤СЂР°Р·Р° РєРѕРіРѕ СѓРіРѕРґРЅРѕ.
 		npc = self.npc[math.random(1,#self.npc)].npc_id
 	end
 
 	--printf("Speaking sm [%s] npc[%s] phrase[%s]", self.id, npc, next_phrase.theme)
 
-	--' Кешируем кто произносит фразу, чтобы отлавливать когда он закончит
+	--' РљРµС€РёСЂСѓРµРј РєС‚Рѕ РїСЂРѕРёР·РЅРѕСЃРёС‚ С„СЂР°Р·Сѓ, С‡С‚РѕР±С‹ РѕС‚Р»Р°РІР»РёРІР°С‚СЊ РєРѕРіРґР° РѕРЅ Р·Р°РєРѕРЅС‡РёС‚
 	self.last_playing_npc = npc
 
-	--' Произносим фразу
+	--' РџСЂРѕРёР·РЅРѕСЃРёРј С„СЂР°Р·Сѓ
 	if next_phrase.theme ~= "nil" then
 		if(self.story.id=="squad_counter_attack") then
 			local npc = alife():object(npc)
@@ -180,18 +180,18 @@ function sound_manager:update()
 	self.phrase_timeout = nil
 	self.phrase_idle = next_phrase.timeout * 1000
 end
---' Рандомный выбор разказчика (вызывается если на момент рассказа рассказчика нет)
+--' Р Р°РЅРґРѕРјРЅС‹Р№ РІС‹Р±РѕСЂ СЂР°Р·РєР°Р·С‡РёРєР° (РІС‹Р·С‹РІР°РµС‚СЃСЏ РµСЃР»Рё РЅР° РјРѕРјРµРЅС‚ СЂР°СЃСЃРєР°Р·Р° СЂР°СЃСЃРєР°Р·С‡РёРєР° РЅРµС‚)
 function sound_manager:choose_random_storyteller()
 	self.storyteller = self.npc[math.random(1,#self.npc)].npc_id
 end
---' Закончил ли саунд менеджер играть свою историю
+--' Р—Р°РєРѕРЅС‡РёР» Р»Рё СЃР°СѓРЅРґ РјРµРЅРµРґР¶РµСЂ РёРіСЂР°С‚СЊ СЃРІРѕСЋ РёСЃС‚РѕСЂРёСЋ
 function sound_manager:is_finished()
 	if self.story == nil then
 		return true
 	end
 	return self.story:is_finished()
 end
---' Установить какую историю менеджер должен отыграть
+--' РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєР°РєСѓСЋ РёСЃС‚РѕСЂРёСЋ РјРµРЅРµРґР¶РµСЂ РґРѕР»Р¶РµРЅ РѕС‚С‹РіСЂР°С‚СЊ
 function sound_manager:set_story(story_id)
 	self.story = CStory(story_id)
 	--printf("Set story sm [%s] = [%s]", self.id, story_id)
@@ -199,7 +199,7 @@ end
 
 
 
---' Создать новый саунд-менеджер. Нужно передать уникальный айдишник
+--' РЎРѕР·РґР°С‚СЊ РЅРѕРІС‹Р№ СЃР°СѓРЅРґ-РјРµРЅРµРґР¶РµСЂ. РќСѓР¶РЅРѕ РїРµСЂРµРґР°С‚СЊ СѓРЅРёРєР°Р»СЊРЅС‹Р№ Р°Р№РґРёС€РЅРёРє
 function get_sound_manager(id)
 	if sound_managers[id] == nil then
 		sound_managers[id] = sound_manager(id)
@@ -213,7 +213,7 @@ end
 
 
 
---' Класс "история". Содержит дерево фраз. У каждой фразы указано должен ли ее говорить рассказчик или слушатели.
+--' РљР»Р°СЃСЃ "РёСЃС‚РѕСЂРёСЏ". РЎРѕРґРµСЂР¶РёС‚ РґРµСЂРµРІРѕ С„СЂР°Р·. РЈ РєР°Р¶РґРѕР№ С„СЂР°Р·С‹ СѓРєР°Р·Р°РЅРѕ РґРѕР»Р¶РµРЅ Р»Рё РµРµ РіРѕРІРѕСЂРёС‚СЊ СЂР°СЃСЃРєР°Р·С‡РёРє РёР»Рё СЃР»СѓС€Р°С‚РµР»Рё.
 class "CStory"
 function CStory:__init(story_id)
 	--printf("Creating story [%s]", tostring(story_id))
@@ -223,7 +223,7 @@ function CStory:__init(story_id)
 	end
 
 	self.replics = {}
-	--' Вычитываем шаблон истории из ini файла
+	--' Р’С‹С‡РёС‚С‹РІР°РµРј С€Р°Р±Р»РѕРЅ РёСЃС‚РѕСЂРёРё РёР· ini С„Р°Р№Р»Р°
 
 	local n = story_ltx:line_count(story_id)
 	local id, value = "",""
@@ -244,15 +244,15 @@ function CStory:__init(story_id)
 	self.next_phrase = 0
 	--print_table(self.replics)
 end
---' Закончена ли история
+--' Р—Р°РєРѕРЅС‡РµРЅР° Р»Рё РёСЃС‚РѕСЂРёСЏ
 function CStory:is_finished()
 	return self.next_phrase > self.max_phrase_count
 end
---' Ресет истории
+--' Р РµСЃРµС‚ РёСЃС‚РѕСЂРёРё
 function CStory:reset_story()
 	self.next_phrase = 0
 end
---' Возвращает следующую фразу
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РµРґСѓСЋС‰СѓСЋ С„СЂР°Р·Сѓ
 function CStory:get_next_phrase()
 	local phrase = self.replics[self.next_phrase]
 	self.next_phrase = self.next_phrase + 1

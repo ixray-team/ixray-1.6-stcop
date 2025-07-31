@@ -351,15 +351,15 @@ function get_shooting_bet_phrase()
 	local win = m:get_minigame_param(shooting, "win")
 	if(gt=="training") or (gt=="three_hit_training") then
 		string = game.translate_string("agr_duty_tir_dialog_hello_tht_phrase").." "..win.."."
---		string = "Удачной стрельбы! Тебе надо набрать очков не меньше, чем "..win.."."
+--		string = "РЈРґР°С‡РЅРѕР№ СЃС‚СЂРµР»СЊР±С‹! РўРµР±Рµ РЅР°РґРѕ РЅР°Р±СЂР°С‚СЊ РѕС‡РєРѕРІ РЅРµ РјРµРЅСЊС€Рµ, С‡РµРј "..win.."."
 	elseif(gt=="points") or (gt=="two_seconds_standing") then
 		local mult = shooting_money_table[gt][wt].multiplier[dist]
 		string = game.translate_string("agr_duty_tir_dialog_hello_tss_phrase_part_1").." "..win..". "..game.translate_string("agr_duty_tir_dialog_hello_tss_phrase_part_2").." "..win*mult.." "..game.translate_string("st_rubles")
---		string = "Тебе нужно набить за отведённое время очков не меньше, чем "..win..". Моя ставка на то, что ты не справишься: "..win*mult.."."
+--		string = "РўРµР±Рµ РЅСѓР¶РЅРѕ РЅР°Р±РёС‚СЊ Р·Р° РѕС‚РІРµРґС‘РЅРЅРѕРµ РІСЂРµРјСЏ РѕС‡РєРѕРІ РЅРµ РјРµРЅСЊС€Рµ, С‡РµРј "..win..". РњРѕСЏ СЃС‚Р°РІРєР° РЅР° С‚Рѕ, С‡С‚Рѕ С‚С‹ РЅРµ СЃРїСЂР°РІРёС€СЊСЃСЏ: "..win*mult.."."
 	elseif(gt=="count") or (gt=="all_targets") or (gt=="count_on_time") or (gt=="ten_targets") then
 		local mult = shooting_money_table[gt][wt].multiplier[dist]
 		string = game.translate_string("agr_duty_tir_dialog_hello_cot_phrase_part_1").." "..win..". "..game.translate_string("agr_duty_tir_dialog_hello_cot_phrase_part_2").." "..win*mult.." "..game.translate_string("st_rubles")
---		string = "Тебе нужно сбить за отведённое время мишеней не меньше, чем "..win..". Моя ставка на то, что ты не справишься: "..win*mult.."."
+--		string = "РўРµР±Рµ РЅСѓР¶РЅРѕ СЃР±РёС‚СЊ Р·Р° РѕС‚РІРµРґС‘РЅРЅРѕРµ РІСЂРµРјСЏ РјРёС€РµРЅРµР№ РЅРµ РјРµРЅСЊС€Рµ, С‡РµРј "..win..". РњРѕСЏ СЃС‚Р°РІРєР° РЅР° С‚Рѕ, С‡С‚Рѕ С‚С‹ РЅРµ СЃРїСЂР°РІРёС€СЊСЃСЏ: "..win*mult.."."
 	end
 	return string
 end
@@ -399,19 +399,19 @@ function get_shooting_win_phrase(fs, ss)
 	if(gt=="training") or (gt=="three_hit_training") then
 		if(win==true) then
 			string = game.translate_string("agr_duty_tir_dialog_hello_tht_answer_good").." "..shooting_money_table[gt][wt].distance[dist].."."
---			string = "Можешь смело переходить к игре на деньги. Ты набил больше "..shooting_money_table[gt][wt].distance[dist].."."
+--			string = "РњРѕР¶РµС€СЊ СЃРјРµР»Рѕ РїРµСЂРµС…РѕРґРёС‚СЊ Рє РёРіСЂРµ РЅР° РґРµРЅСЊРіРё. РўС‹ РЅР°Р±РёР» Р±РѕР»СЊС€Рµ "..shooting_money_table[gt][wt].distance[dist].."."
 		else
 			string = game.translate_string("agr_duty_tir_dialog_hello_tht_answer_bad").." "..shooting_money_table[gt][wt].distance[dist].."."
---			string = "Попробуй еще потренироваться, тебе рановато играть на деньги. Ты набрал меньше "..shooting_money_table[gt][wt].distance[dist].."."
+--			string = "РџРѕРїСЂРѕР±СѓР№ РµС‰Рµ РїРѕС‚СЂРµРЅРёСЂРѕРІР°С‚СЊСЃСЏ, С‚РµР±Рµ СЂР°РЅРѕРІР°С‚Рѕ РёРіСЂР°С‚СЊ РЅР° РґРµРЅСЊРіРё. РўС‹ РЅР°Р±СЂР°Р» РјРµРЅСЊС€Рµ "..shooting_money_table[gt][wt].distance[dist].."."
 		end
 	elseif(gt=="points") or (gt=="count") or (gt=="all_targets") or (gt=="count_on_time") or (gt=="ten_targets") or (gt=="two_seconds_standing") then
 		if(win==true) then
 			string = game.translate_string("agr_duty_tir_dialog_hello_answer_good")
---			string = "Недооценил я тебя! Держи свои деньги - честно заработал."
+--			string = "РќРµРґРѕРѕС†РµРЅРёР» СЏ С‚РµР±СЏ! Р”РµСЂР¶Рё СЃРІРѕРё РґРµРЅСЊРіРё - С‡РµСЃС‚РЅРѕ Р·Р°СЂР°Р±РѕС‚Р°Р»."
 			dialogs.relocate_money(fs, shooting_money_table[gt][wt].distance[dist]*shooting_money_table[gt][wt].multiplier[dist], "in")
 		else
 			string = game.translate_string("agr_duty_tir_dialog_hello_answer_bad")
---			string = "Ха, я опять не ошибся и выиграл. Ну, не расстраивайся — повезет в другой раз."
+--			string = "РҐР°, СЏ РѕРїСЏС‚СЊ РЅРµ РѕС€РёР±СЃСЏ Рё РІС‹РёРіСЂР°Р». РќСѓ, РЅРµ СЂР°СЃСЃС‚СЂР°РёРІР°Р№СЃСЏ вЂ” РїРѕРІРµР·РµС‚ РІ РґСЂСѓРіРѕР№ СЂР°Р·."
 			dialogs.relocate_money(fs, shooting_money_table[gt][wt].distance[dist]*shooting_money_table[gt][wt].multiplier[dist], "out")
 		end
 	end

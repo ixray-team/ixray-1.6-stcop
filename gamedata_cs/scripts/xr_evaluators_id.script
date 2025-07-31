@@ -1,10 +1,10 @@
 ----------------------------------------------------------------------------------------------------------------------
---  Айдишники эвалуаторов
+--  РђР№РґРёС€РЅРёРєРё СЌРІР°Р»СѓР°С‚РѕСЂРѕРІ
 ----------------------------------------------------------------------------------------------------------------------
 
 local id_start = stalker_ids.property_script
 log("PROPERTY_BASE "..tostring(id_start))
--- эвалуаторы Глобальные
+-- СЌРІР°Р»СѓР°С‚РѕСЂС‹ Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ
 global_evaluators          = id_start
 script_evaluator           = id_start + 1
 final_trade_init           = id_start + 2
@@ -97,7 +97,7 @@ jon_sniper_see_monster  = id_start + 5011           --5030
 jon_sniper_see_enemy    = id_start + 5012           --5031
 jon_sniper_enemy_near   = id_start + 5013           --5034
 jon_sniper_enemy_is  = id_start + 5014           --5035
---+5 занято
+--+5 Р·Р°РЅСЏС‚Рѕ
 
 jon_outcast    = id_start + 5020
 jon_outcast_replics     = id_start + 5021
