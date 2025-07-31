@@ -40,16 +40,16 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 	XFORM().transform_tiny	(pos,CFORM()->getSphere().P);
 
 	Fvector dir				={0,0,0}; 
-	float power				= Power(O->object->Position().distance_to(pos),nearest_shape_radius(O));
+	fHitPower = Power(O->object->Position().distance_to(pos),nearest_shape_radius(O));
 
 	float impulse			= 0.0f;
-	if(power < EPS)			
+	if(fHitPower < EPS)
 	{
 		O->f_time_affected	= tg;
 		return;
 	}
 	
-	float send_power		= power*one;
+	float send_power		= fHitPower *one;
 
 	while(O->f_time_affected+one < tg)
 	{
