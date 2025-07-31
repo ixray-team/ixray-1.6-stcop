@@ -1,5 +1,5 @@
-saved_game_extension	= ".scop"
-saved_game_extension_ex	= ".scop_marshal"
+saved_game_extension	= save_extension()
+saved_game_extension_ex	= alife_storage_manager.saved_game_extension_ex
 
 class "load_item" (CUIListBoxItem)
 

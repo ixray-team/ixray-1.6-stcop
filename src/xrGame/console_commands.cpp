@@ -556,7 +556,7 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
-		get_files_list(tips, "$game_saves$", SAVE_EXTENSION);
+			get_files_list(tips, "$game_saves$", IXRAY_DEF_SAVE_EXTENSION);
 	}
 
 };//CCC_ALifeSave
@@ -627,7 +627,7 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
-		get_files_list(tips, "$game_saves$", SAVE_EXTENSION);
+			get_files_list(tips, "$game_saves$", IXRAY_DEF_SAVE_EXTENSION);
 	}
 
 };//CCC_ALifeLoadFrom

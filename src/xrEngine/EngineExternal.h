@@ -50,7 +50,7 @@ enum class EEngineExternalPlatform : unsigned char
 	ClearSky,
 	CallOfPripyat,
 	EnumSize,
-	Unknown = -1
+	Unknown = static_cast<unsigned char>(-1)
 };
 
 constexpr const char* kPlatformNameCOP = "cop";
