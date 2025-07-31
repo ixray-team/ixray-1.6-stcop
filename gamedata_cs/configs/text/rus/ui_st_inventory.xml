@@ -60,6 +60,12 @@
 	<string id="st_move_to_slot">
 		<text>переместить в слот</text>
 	</string>
+	<string id="st_no_trade_tip_1">
+		<text>Торговец не интересуется подобными предметами.</text>
+	</string>
+	<string id="st_no_trade_tip_2">
+		<text>Предмет в слишком плохом состоянии для продажи.</text>
+	</string>
 	<string id="st_sell_item">
 		<text>продать предмет</text>
 	</string>
