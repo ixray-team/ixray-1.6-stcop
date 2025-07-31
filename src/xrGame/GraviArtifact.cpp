@@ -71,7 +71,7 @@ void CGraviArtefact::UpdateCLChild()
 			
 			if (GameID() == eGameIDArtefactHunt && m_CarringBoneID != u16(-1))
 			{
-				IKinematics* K	= smart_cast<IKinematics*>(H_Parent()->Visual());
+			IKinematics* K	= PKinematics(H_Parent()->Visual());
 				if (K)
 				{
 					K->CalculateBones	();
