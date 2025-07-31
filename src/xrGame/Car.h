@@ -322,7 +322,9 @@ private:
 	CCameraBase*			camera[3];
 	CCameraBase*			active_camera;
 
-	Fvector					m_camera_position;
+	Fvector3				m_camera_position;
+	Fvector3				*m_camera_current_position;
+	Fvector3				m_camera_position_2;
 
 	xr_map   <u16,SWheel>	m_wheels_map;
 	xr_vector <SWheelDrive> m_driving_wheels;
