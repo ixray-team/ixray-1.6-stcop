@@ -51,7 +51,7 @@ void CViewportMesh::Render()
 	if (ViewMesh != nullptr)
 	{
 		ViewMesh->OnFrame();
-		ViewMesh->RenderSingle();
+		ViewMesh->RenderSingle(Fidentity);
 	}
 }
 
@@ -63,9 +63,9 @@ void CViewportMesh::OpenModel(const xr_path& File)
 	}
 
 	xr_string Str = File.xstring();
-	ViewMesh = new CSceneObject(nullptr, Str.c_str());
+	ViewMesh = new CEditableObject(Str.c_str());
 
 	xr_strlwr(Str);
 	ViewName = Str.c_str();
-	ViewMesh->SetReference(Str.c_str());
+	ViewMesh->Load(Str.c_str());
 }
