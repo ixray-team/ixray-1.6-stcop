@@ -75,7 +75,6 @@ void StartupAI()
 		{
 			R_ASSERT3(can_use_name, "Too big level name", name);
 			verify_level_graph(prjName, gCompilerMode.AI_Verbose);
-			return;
 		}
 	}
 

@@ -3,16 +3,16 @@
 
 #include "cl_intersect.h"
 
-CDB::MODEL			Level;
-CDB::COLLIDER		IXRC;
+xr_unique_ptr<CDB::MODEL> LevelPtr;
 
-Nodes				g_nodes;
-xr_vector<SCover>	g_covers_palette;
+CDB::COLLIDER IXRC;
 
-Lights				g_lights;
-SAIParams			g_params;
-Fbox				LevelBB;
-//Vectors				Emitters;
+Nodes g_nodes;
+xr_vector<SCover> g_covers_palette;
+
+Lights g_lights;
+SAIParams g_params;
+Fbox LevelBB;
 
 void vertex::PointLF(Fvector& D)
 {
@@ -54,35 +54,38 @@ void vertex::PointBL(Fvector& D)
 	Plane.intersectRayPoint(v,d,D);
 }
 
-void	mem_Optimize	()
+void mem_Optimize()
 {
-	Memory.mem_compact	();
-	Msg("* Memory usage: %d M",Memory.mem_usage()/(1024*1024));
+	Memory.mem_compact();
+	Msg("* Memory usage: %d M", Memory.mem_usage() / (1024 * 1024));
 }
 
-void xrCompiler	(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name)
+void xrCompiler(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name)
 {
-	Phase		("Loading level...");
-	xrLoad		(name,draft_mode);
+	Phase("Loading level...");
+	LevelPtr = xr_make_unique<CDB::MODEL>();
+
+	xrLoad(name, draft_mode);
 	mem_Optimize();
 
-//	Phase("Building nodes...");
-//	xrBuildNodes();
-//	Msg("%d nodes created",int(g_nodes.size()));
-//	mem_Optimize();
-//	
-//	Phase("Smoothing nodes...");
-//	xrSmoothNodes();
-//	mem_Optimize();
-	
-	if (!draft_mode) {
+	//	Phase("Building nodes...");
+	//	xrBuildNodes();
+	//	Msg("%d nodes created",int(g_nodes.size()));
+	//	mem_Optimize();
+	//	
+	//	Phase("Smoothing nodes...");
+	//	xrSmoothNodes();
+	//	mem_Optimize();
+
+	if (!draft_mode) 
+	{
 		Phase("Lighting nodes...");
-		xrLight		();
+		xrLight();
 		//	xrDisplay	();
 		mem_Optimize();
 
 		Phase("Calculating coverage...");
-		xrCover		(pure_covers);
+		xrCover(pure_covers);
 		mem_Optimize();
 	}
 	/////////////////////////////////////
@@ -95,6 +98,6 @@ void xrCompiler	(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name
 //	xrDisplay	();
 
 	Phase("Saving nodes...");
-	xrSaveNodes	(name,out_name);
+	xrSaveNodes(name, out_name);
 	mem_Optimize();
 }
