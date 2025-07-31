@@ -2,7 +2,7 @@
 active = sr_idle@1
 
 [sr_idle@1]
-on_info = sr_idle@2 %=disable_level_changer(704) =disable_level_changer(705) +gar_visited_level%
+on_info = sr_idle@2 %=disable_level_changer(704) =disable_level_changer(705) =disable_level_changer(716) =disable_level_changer(726) +gar_visited_level%
 
 [sr_idle@2]
 ; Зашёл в лагерь - новое перекрывающее задание
@@ -14,7 +14,7 @@ on_info = {+gar_story_got_info_from_digger} sr_idle@5, {+esc_bring_habar_complet
 on_info = {+gar_story_digger_pda_played} sr_idle@4 %=give_inited_task(storyline:gar_story_chase_digger:csky)%
 
 [sr_idle@4]
-on_info = {+gar_story_got_info_from_digger} sr_idle@5 %=give_inited_task(storyline:gar_story_go_to_freedom:csky)%
+on_info = {+gar_story_got_info_from_digger} sr_idle@5 %=give_inited_task(storyline:gar_story_go_to_freedom:csky) =enable_level_changer(716) =enable_level_changer(726)%
 
 [sr_idle@5]
 on_info = {+val_temp_start_quest_complete +gar_story_came_to_ambush_door} sr_idle@6 %=give_inited_task(storyline:gar_story_chase_pda_signal_cellar:csky)%
