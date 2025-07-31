@@ -579,7 +579,10 @@ void CUILevelMap::OnFocusLost()
 
 CUIMiniMap::CUIMiniMap()
 {
-	SetRounded(true);
+	if (EngineExternal().CallOfPripyatMode())
+		SetRounded(true);
+	else
+		SetRounded(false); // чтобы в МП ЧН по дефолту не было круглой карты
 }
 
 CUIMiniMap::~CUIMiniMap()

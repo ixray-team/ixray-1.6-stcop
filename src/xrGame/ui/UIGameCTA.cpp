@@ -103,9 +103,9 @@ void CUIGameCTA::Init(int stage)
 		CUIXmlInit::InitTextWnd			(uiXml, "team1_score",		0,	m_team1_score);
 		CUIXmlInit::InitTextWnd			(uiXml, "team2_score",		0,	m_team2_score);
 
-		m_pFragLimitIndicator			= new CUITextWnd();
+		m_pFragLimitIndicator			= new CUIStatic();
 		m_pFragLimitIndicator->SetAutoDelete(true);
-		CUIXmlInit::InitTextWnd			(uiXml, "fraglimit",		0,  m_pFragLimitIndicator);
+		CUIXmlInit::InitStatic			(uiXml, "fraglimit",		0,  m_pFragLimitIndicator);
 	}
 	
 	if(stage==2)
