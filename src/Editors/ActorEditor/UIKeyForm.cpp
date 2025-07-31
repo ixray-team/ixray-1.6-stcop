@@ -41,7 +41,7 @@ void UIKeyForm::Draw()
 		ATools->GetStatTime(a, b, c);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-		ImGui::BeginChild("Left", ImVec2(60, 0));
+		ImGui::BeginChild("Left", ImVec2(90, 140));
 		{
 		
 			ImGui::Checkbox("Auto", &m_AutoChange);
@@ -53,7 +53,7 @@ void UIKeyForm::Draw()
 			ImGui::Separator();
 			ImGui::EndChild();
 		}ImGui::SameLine();
-		ImGui::BeginChild("Midle", ImVec2(-120, 0));
+		ImGui::BeginChild("Midle", ImVec2(-120, 140));
 		{
 			ImGui::SetNextItemWidth(-1);
 			if (AutoChange())m_Position = c ;
@@ -92,51 +92,68 @@ void UIKeyForm::Draw()
 			DrawNotify();
 			ImGui::PlotHistogram("##animnotify", m_TempForPlotHistogram.data(), m_TempForPlotHistogram.size(), 0, NULL, 0.0f, 1.0f, size);
 
-			if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+			if (m_currentEditMotion)
 			{
-				float a, b, c;
-				ATools->GetStatTime(a, b, c);
-				float motion_length = b - a;
-
-				ImVec2 MousePos = ImGui::GetMousePos();
-				ImVec2 ItemPos = ImGui::GetItemRectMin();
-				ImVec2 ItemSize = ImGui::GetItemRectSize();
-				float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
-
-				float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
-
-				m_currentEditMotion->notify[TimeOffset] = {};
-			}
-			else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
-			{
-				float a, b, c;
-				ATools->GetStatTime(a, b, c);
-				float motion_length = b - a;
-
-				ImVec2 MousePos = ImGui::GetMousePos();
-				ImVec2 ItemPos = ImGui::GetItemRectMin();
-				ImVec2 ItemSize = ImGui::GetItemRectSize();
-				float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
-
-				float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
-				float Step = detail::RoundToTwoDecimals(motion_length / 100);
-
-
-				for (auto& [Time, _] : m_currentEditMotion->notify)
+				while (!m_currentEditMotion->notifies_to_remove.empty())
 				{
-					for (float StartKey = TimeOffset - Step; StartKey < (TimeOffset + Step * 2); StartKey += Step)
+					auto removed = m_currentEditMotion->notifies_to_remove.top();
+					m_currentEditMotion->notifies_to_remove.pop();
+					VERIFY(m_currentEditMotion->notify.contains(removed));
+					m_currentEditMotion->notify.erase(removed);
+				}
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					float a, b, c;
+					ATools->GetStatTime(a, b, c);
+					float motion_length = b - a;
+
+					ImVec2 MousePos = ImGui::GetMousePos();
+					ImVec2 ItemPos = ImGui::GetItemRectMin();
+					ImVec2 ItemSize = ImGui::GetItemRectSize();
+					float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
+
+					float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
+
+					if (!m_currentEditMotion->notify.contains(TimeOffset))
 					{
-						if (detail::compareFloat(Time, StartKey))
+						m_currentEditMotion->notify[TimeOffset] = {};
+					}
+					m_currentNotify = &m_currentEditMotion->notify[TimeOffset];
+				}
+				else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+				{
+					float a, b, c;
+					ATools->GetStatTime(a, b, c);
+					float motion_length = b - a;
+
+					ImVec2 MousePos = ImGui::GetMousePos();
+					ImVec2 ItemPos = ImGui::GetItemRectMin();
+					ImVec2 ItemSize = ImGui::GetItemRectSize();
+					float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
+
+					float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
+					float Step = detail::RoundToTwoDecimals(motion_length / 100);
+
+
+					for (auto& [Time, _] : m_currentEditMotion->notify)
+					{
+						for (float StartKey = TimeOffset - Step; StartKey < (TimeOffset + Step * 2); StartKey += Step)
 						{
-							m_currentEditMotion->notify.erase(Time);
+							if (detail::compareFloat(Time, StartKey))
+							{
+								m_currentEditMotion->notify.erase(Time);
+							}
 						}
 					}
+					m_currentNotify = nullptr;
 				}
 			}
+			
+			ImGui::Separator();
 
 			ImGui::EndChild();
 		}ImGui::SameLine();
-		ImGui::BeginChild("Back", ImVec2(120, 0));
+		ImGui::BeginChild("Back", ImVec2(120, 140));
 		{
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 0));
@@ -180,8 +197,117 @@ void UIKeyForm::Draw()
 			ImGui::PopID();
 			if (!Mark4) ImGui::EndDisabled();
 
+			ImGui::Text("");
+
+			ImGui::Separator();
+			
 			ImGui::PopStyleVar();
 			ImGui::EndChild();
+		}
+
+		if (m_currentEditMotion)
+		{
+			auto InputText = [&](LPCSTR Label, shared_str& str)
+			{
+				string256 buffer = {};
+				if (str.size())
+				{
+					std::copy(str.c_str(), str.c_str() + str.size(), buffer);
+				} else
+				{
+					buffer[0] = '\0';
+				}
+				ImGui::SetNextItemWidth(-1);
+				ImGui::InputText(Label, buffer, sizeof(buffer));
+				str = buffer;
+			};
+			xr_vector<float> keys;
+			keys.reserve(m_currentEditMotion->notify.size());
+			for (auto& elem : m_currentEditMotion->notify)
+			{
+				keys.push_back(elem.first);
+			}
+			std::ranges::sort(keys);
+			for (auto key : keys)
+			{
+				ImGui::PushID(std::to_string(key).c_str());
+				auto& elem = m_currentEditMotion->notify[key];
+				ImGui::BeginChild("Notify", ImVec2(0, 110));
+				{
+					{
+						ImGui::SetNextItemWidth(90);
+						ImGui::Text("%f", key);
+						ImGui::SameLine(90);
+						if (ImGui::Button("Del")){
+							m_currentEditMotion->notifies_to_remove.push(key);
+						}
+						ImGui::SameLine();
+						if (ImGui::Button(elem.IsExternalTrigger ? "Switch to raw data" : "Switch to external data"))
+						{
+							elem.IsExternalTrigger = !elem.IsExternalTrigger;
+						}
+					}
+					{
+						if (!elem.IsExternalTrigger)
+						{
+							ImGui::BeginDisabled();
+						}
+						ImGui::SetNextItemWidth(90);
+						ImGui::Text("Notify Name");
+						ImGui::SameLine(90);
+						InputText("Notify Name", elem.ExternalRef);
+						if (!elem.IsExternalTrigger)
+						{
+							ImGui::EndDisabled();
+						}
+					}
+					{
+						if (elem.IsExternalTrigger)
+						{
+							ImGui::BeginDisabled();
+						}
+						ImGui::SetNextItemWidth(90);
+						ImGui::Text("Give Info");
+						ImGui::SameLine(90);
+						InputText("Give Info", elem.GiveInfo);
+						if (elem.IsExternalTrigger)
+						{
+							ImGui::EndDisabled();
+						}
+					}
+					{
+						if (elem.IsExternalTrigger)
+						{
+							ImGui::BeginDisabled();
+						}
+						ImGui::SetNextItemWidth(90);
+						ImGui::Text("Disable Info");
+						ImGui::SameLine(90);
+						InputText("Disable Info", elem.DisableInfo);
+						if (elem.IsExternalTrigger)
+						{
+							ImGui::EndDisabled();
+						}
+					}
+					{
+						if (elem.IsExternalTrigger)
+						{
+							ImGui::BeginDisabled();
+						}
+						ImGui::SetNextItemWidth(90);
+						ImGui::Text("Functor");
+						ImGui::SameLine(90);
+						InputText("Functor", elem.Functor);
+						if (elem.IsExternalTrigger)
+						{
+							ImGui::EndDisabled();
+						}
+					}
+					ImGui::EndChild();
+				}
+				ImGui::Separator();
+				ImGui::PopID();
+			}
 		}
 		ImGui::PopStyleVar();
 	}

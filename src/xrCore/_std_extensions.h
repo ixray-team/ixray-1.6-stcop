@@ -147,6 +147,9 @@ IC char*						xr_strlwr				(char* S)
 IC int							xr_strcmp				( const char* S1, const char* S2 )
 {	return (int)strcmp(S1,S2);  }
 
+IC int							xr_strncmp				( const char* S1, const char* S2, int n )
+{	return (int)strncmp(S1,S2,n);	}
+
 inline errno_t xr_strcpy	( LPSTR destination, size_t const destination_size, LPCSTR source )
 {
 	return						strncpy_s( destination, destination_size, source, destination_size );
