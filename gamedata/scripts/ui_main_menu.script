@@ -295,13 +295,9 @@ function main_menu:OnButton_multiplayer_clicked()
 	-- assert(self.gs_profile)
 
 	if not(self.mp_dlg) then
-        self.mp_dlg = ui_mp_main.mp_main(self.gs_profile:online())
+        self.mp_dlg = ui_mp_main.mp_main()
         self.mp_dlg.owner = self
 		self.mp_dlg:OnRadio_NetChanged()
-		if (self.mp_dlg.online) then
-			self.mp_dlg.dlg_profile:InitBestScores()
-			self.mp_dlg.dlg_profile:FillRewardsTable()
-		end
     end
     self.mp_dlg:UpdateControls()
     self.mp_dlg:ShowDialog(true)
