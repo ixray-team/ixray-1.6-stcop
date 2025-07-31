@@ -71,13 +71,32 @@ ENGINE_API extern float psHUD_FOV;
 
 void CHUDManager::Render_First()
 {
-	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2|HUD_DRAW_RT2))return;
-	if (0==pUIGame)					return;
-	CObject*	O					= g_pGameLevel->CurrentViewEntity();
-	if (0==O)						return;
-	CActor*		A					= smart_cast<CActor*> (O);
-	if (!A)							return;
-	if (A && !A->HUDview())			return;
+	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2|HUD_DRAW_RT2))
+	{
+		return;
+	}
+
+	if (pUIGame == nullptr)
+	{
+		return;
+	}
+
+	CObject* O = g_pGameLevel->CurrentViewEntity();
+	if (O == nullptr)
+	{
+		return;
+	}
+
+	CActor* A = O->cast_actor();
+	if (A == nullptr)
+	{
+		return;
+	}
+
+	if (!A->HUDview())
+	{
+		return;
+	}
 
 	// only shadow 
 	::Render->set_Invisible			(TRUE);
@@ -88,16 +107,22 @@ void CHUDManager::Render_First()
 
 bool need_render_hud()
 {
-	CObject*	O					= g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
-	if (0==O)						
+	CObject* O = g_pGameLevel != nullptr ? g_pGameLevel->CurrentViewEntity() : nullptr;
+	if (O == nullptr)
 		return false;
 
-	CActor*		A					= smart_cast<CActor*> (O);
-	if (A && (!A->HUDview() || !A->g_Alive()) ) 
-		return false;
+	if (CActor* A = O->cast_actor())
+	{
+		if (!A->HUDview() || !A->g_Alive())
+		{
+			return false;
+		}
+	}
 
-	if( smart_cast<CCar*>(O) || smart_cast<CSpectator*>(O) )
+	if (O->cast_car() || O->cast_spectator())
+	{
 		return false;
+	}
 
 	return true;
 }
