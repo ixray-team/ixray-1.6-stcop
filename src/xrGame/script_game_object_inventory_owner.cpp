@@ -802,9 +802,18 @@ void  CScriptGameObject::SwitchToTalk		()
 
 void CScriptGameObject::AllowBreakTalkDialog(bool b)
 {
-	CInventoryOwner* inv_owner = smart_cast<CInventoryOwner*>(&object());	
-	VERIFY(inv_owner);
-	inv_owner->bDisableBreakDialog = !b;
+	if (EngineExternal().CallOfPripyatMode())
+	{
+		CInventoryOwner* inv_owner = smart_cast<CInventoryOwner*>(&object());
+		VERIFY(inv_owner);
+		inv_owner->bDisableBreakDialog = !b;
+	}
+	else
+	{
+		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+		if (!pGameSP) return;
+		pGameSP->TalkMenu->b_disable_break = !b;
+	}
 }
 
 void  CScriptGameObject::RunTalkDialog(CScriptGameObject* pToWho, bool disable_break)
