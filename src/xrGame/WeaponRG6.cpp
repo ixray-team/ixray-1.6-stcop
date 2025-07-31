@@ -169,8 +169,11 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 	//	dropCurrentRocket();
 	//}
 
-	shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
-	inheritedRL::SpawnRocket(*fake_grenade_name, this);
+	if (infinite_fire())
+	{
+		shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
+		inheritedRL::SpawnRocket(*fake_grenade_name, this);
+	}
 }
 
 void CWeaponRG6::ReloadMagazine()

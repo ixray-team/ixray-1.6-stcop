@@ -2269,6 +2269,7 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "dbg_draw_lchangers", &dbg_net_Draw_Flags, dbg_draw_lchangers);
 
+	CMD3(CCC_Mask, "g_infinite_fire", &psActorFlags, AF_INFINITEFIRE);
 #endif
 
 	CMD1(CCC_MemStats, "stat_memory");

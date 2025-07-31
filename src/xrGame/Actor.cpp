@@ -2518,3 +2518,8 @@ CCustomDetector* CActor::GetDetector(bool in_slot)
 
 	return nullptr;
 }
+
+bool CActor::infinite_fire()
+{
+	return !!psActorFlags.test(AF_INFINITEFIRE);
+}
