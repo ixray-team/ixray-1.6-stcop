@@ -99,7 +99,9 @@ void SetActiveIteration(IterationData* i)
 	ActiveIteration = i;
 }
 
-extern void GetMemoryUsedStorage();
+extern size_t GetHeapMemory();
+// extern void GetMemoryUsedStorage();
+
 void Phase(const char* phase_name)
 {
 	csLog.Enter();
@@ -109,13 +111,10 @@ void Phase(const char* phase_name)
 	// Start _new phase
 	if (ActiveIteration->phases.size() > 0)
 	{
-		size_t  w_free, w_reserved, w_committed;
-		vminfo(&w_free, &w_reserved, &w_committed);
+ 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = GetHeapMemory();
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status		= Complete;
 
-		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = w_committed;
-		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complete;
-
-		GetMemoryUsedStorage();
+		// GetMemoryUsedStorage();
 	}
 
 	ActiveIteration->phases.push_back({ phase_name });
