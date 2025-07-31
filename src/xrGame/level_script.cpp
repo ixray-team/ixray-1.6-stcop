@@ -1129,7 +1129,7 @@ bool ElectronicsBreak()
 {
 	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
-		return false; // TODO: IMPL actor->ElectronicsProblemsInc();
+		return actor->ElectronicsProblemsInc();
 
 	return false;
 }
@@ -1152,17 +1152,18 @@ bool IsElectronicsRestore()
 {
 	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
-		return false; //actor->ElectronicsProblemsDec();
-
+	{
+		return actor->ElectronicsProblemsDec();
+	}
 	return false;
 }
 
-bool electronics_reset()
+bool ElectronicsReset()
 {
 	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
 	{
-		// IMPL: actor->ResetElectronicsProblems();
+		actor->ResetElectronicsProblems();
 		return true;
 	}
 
@@ -1173,7 +1174,7 @@ bool IsElectronicsApply()
 {
 	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
-		return false; // IMPL: actor->ElectronicsProblemsImmediateApply();
+		return actor->ElectronicsProblemsImmediateApply();
 
 	return false;
 }
@@ -1479,7 +1480,7 @@ void CLevel::script_register(lua_State *L)
 		// TODO Guns: Drombeys to all: not impl
 		def("electronics_break", &ElectronicsBreak),
 		def("electronics_restore", &IsElectronicsRestore),
-		def("electronics_reset", &electronics_reset),
+		def("electronics_reset", &ElectronicsReset),
 		def("electronics_apply", &IsElectronicsApply),
 		def("get_parameter_upgraded_int", &GetParameterUpgradedInt),
 		def("valid_saved_game_int", &ValidSavedGameInt),
