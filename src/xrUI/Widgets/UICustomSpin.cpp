@@ -51,9 +51,9 @@ void CUICustomSpin::InitSpin(Fvector2 pos, Fvector2 size, bool horizontal)
 {
 	bHorizontal = horizontal;
 
-	LPCSTR file_name = "custom_spin.xml";
+	LPCSTR file_name = "backend\\custom_spin.xml";
 	if (bHorizontal)
-		file_name = "custom_spin_horz.xml";
+		file_name = "backend\\custom_spin_horz.xml";
 
 	CUIXml xml_doc;
 	xml_doc.Load(CONFIG_PATH, UI_PATH, file_name);
