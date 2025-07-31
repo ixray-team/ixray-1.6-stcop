@@ -34,7 +34,10 @@ public:
 
 public:
 	static CPluginsManagers& Instance();
+	void Reinit();
 
 private:
 	void Init();
+	~CPluginsManagers();
+	CPluginsManagers();
 };

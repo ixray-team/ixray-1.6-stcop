@@ -17,6 +17,36 @@ CPluginsManagers& CPluginsManagers::Instance()
 	return *GPluginManager;
 }
 
+CPluginsManagers::~CPluginsManagers()
+{
+	for (IPluginBase* Plug : Plugins)
+	{
+		xr_delete(Plug);
+	}
+}
+
+CPluginsManagers::CPluginsManagers()
+{
+	string_path Root;
+	FS.update_path(Root, "$fs_root$", "plugins");
+
+	if (!std::filesystem::exists(Root))
+	{
+		std::filesystem::create_directory(Root);
+	}
+}
+
+void CPluginsManagers::Reinit()
+{
+	for (IPluginBase* Plug : Plugins)
+	{
+		xr_delete(Plug);
+	}
+	Plugins.clear();
+
+	Init();
+}
+
 void CPluginsManagers::Init()
 {
 	string_path Root;
@@ -42,6 +72,6 @@ void CPluginsManagers::Init()
 
 		Plug->Path = FileIter.xstring();
 		Plug->Desc = Plug->ReadDesc();
-		Plug->Name = FileIter.xfilename();
+		Plug->Name = FileIter.xfilename().substr(0, FileIter.xfilename().find('.'));
 	}
 }
