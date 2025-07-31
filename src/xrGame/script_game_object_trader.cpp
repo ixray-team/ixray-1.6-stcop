@@ -10,51 +10,61 @@
 
 void CScriptGameObject::set_trader_global_anim(LPCSTR anim)
 {
-	CAI_Trader *trader = smart_cast<CAI_Trader *>(&object());
-	if (!trader) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"Cannot cast sctipt game object to trader!");
-		return;
+	if (CAI_Trader* trader = object().cast_trader())
+	{
+		trader->animation().set_animation(anim);
 	}
-	trader->animation().set_animation(anim);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot cast script game object to trader!");
+	}
 
 }
 void CScriptGameObject::set_trader_head_anim(LPCSTR anim)
 {
-	CAI_Trader *trader = smart_cast<CAI_Trader *>(&object());
-	if (!trader) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"Cannot cast sctipt game object to trader!");
-		return;
+	if (CAI_Trader* trader = object().cast_trader())
+	{
+		trader->animation().set_head_animation(anim);
 	}
-	trader->animation().set_head_animation(anim);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot cast script game object to trader!");
+	}
 }
 
 void CScriptGameObject::set_trader_sound(LPCSTR sound, LPCSTR anim)
 {
-	CAI_Trader *trader = smart_cast<CAI_Trader *>(&object());
-	if (!trader) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"Cannot cast sctipt game object to trader!");
-		return;
+	if (CAI_Trader* trader = object().cast_trader())
+	{
+		trader->animation().set_sound(sound, anim);
 	}
-	trader->animation().set_sound(sound, anim);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot cast script game object to trader!");
+	}
 }
 
 void CScriptGameObject::external_sound_start(LPCSTR sound)
 {
-	CAI_Trader *trader = smart_cast<CAI_Trader *>(&object());
-	if (!trader) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"Cannot cast sctipt game object to trader!");
-		return;
+	if (CAI_Trader* trader = object().cast_trader())
+	{
+		trader->animation().external_sound_start(sound);
 	}
-	trader->animation().external_sound_start(sound);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot cast script game object to trader!");
+	}
 }
 
 void CScriptGameObject::external_sound_stop()
 {
-	CAI_Trader *trader = smart_cast<CAI_Trader *>(&object());
-	if (!trader) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"Cannot cast sctipt game object to trader!");
-		return;
+	if (CAI_Trader* trader = object().cast_trader())
+	{
+		trader->animation().external_sound_stop();
 	}
-	trader->animation().external_sound_stop();
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot cast script game object to trader!");
+	}
 }
 
