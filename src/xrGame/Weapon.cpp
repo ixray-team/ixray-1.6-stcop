@@ -2389,55 +2389,62 @@ ALife::_TIME_ID	 CWeapon::TimePassedAfterIndependant()	const
 		return 0;
 }
 
-bool CWeapon::can_kill	() const
+bool CWeapon::can_kill() const
 {
 	if (GetSuitableAmmoTotal(true) || m_ammoTypes.empty())
-		return				(true);
+	{
+		return true;
+	}
 
-	return					(false);
+	return false;
 }
 
-CInventoryItem *CWeapon::can_kill	(CInventory *inventory) const
+CInventoryItem* CWeapon::can_kill(CInventory* inventory) const
 {
 	if ((GetAmmoChamberElapsed() + GetAmmoElapsed()) > 0 || m_ammoTypes.empty())
-		return				(const_cast<CWeapon*>(this));
-
-	TIItemContainer::iterator I = inventory->m_all.begin();
-	TIItemContainer::iterator E = inventory->m_all.end();
-	for ( ; I != E; ++I) {
-		CInventoryItem	*inventory_item = smart_cast<CInventoryItem*>(*I);
-		if (!inventory_item)
-			continue;
-		
-		xr_vector<shared_str>::const_iterator	i = std::find(m_ammoTypes.begin(),m_ammoTypes.end(),inventory_item->object().cNameSect());
-		if (i != m_ammoTypes.end())
-			return			(inventory_item);
+	{
+		return const_cast<CWeapon*>(this);
 	}
 
-	return					(0);
+	for (const PIItem inventory_item : inventory->m_all)
+	{
+		xr_vector<shared_str>::const_iterator i = std::find(m_ammoTypes.begin(), m_ammoTypes.end(), inventory_item->object().cNameSect());
+		if (i != m_ammoTypes.end())
+		{
+			return inventory_item;
+		}
+	}
+
+	return 0;
 }
 
-const CInventoryItem *CWeapon::can_kill	(const xr_vector<const CGameObject*> &items) const
+const CInventoryItem* CWeapon::can_kill(const xr_vector<const CGameObject*>& items) const
 {
 	if (m_ammoTypes.empty())
-		return				(this);
-
-	xr_vector<const CGameObject*>::const_iterator I = items.begin();
-	xr_vector<const CGameObject*>::const_iterator E = items.end();
-	for ( ; I != E; ++I) {
-		const CInventoryItem	*inventory_item = smart_cast<const CInventoryItem*>(*I);
-		if (!inventory_item)
-			continue;
-
-		xr_vector<shared_str>::const_iterator	i = std::find(m_ammoTypes.begin(),m_ammoTypes.end(),inventory_item->object().cNameSect());
-		if (i != m_ammoTypes.end())
-			return			(inventory_item);
+	{
+		return this;
 	}
 
-	return					(0);
+	for (const CGameObject* game_obj : items)
+	{
+		const CInventoryItem* inventory_item = smart_cast<const CInventoryItem*>(game_obj);
+
+		if (inventory_item == nullptr)
+		{
+			continue;
+		}
+
+		xr_vector<shared_str>::const_iterator i = std::find(m_ammoTypes.begin(), m_ammoTypes.end(), inventory_item->object().cNameSect());
+		if (i != m_ammoTypes.end())
+		{
+			return inventory_item;
+		}
+	}
+
+	return 0;
 }
 
-bool CWeapon::ready_to_kill	() const
+bool CWeapon::ready_to_kill() const
 {
 	return (!IsMisfire() && ((GetState() == eIdle) || (GetState() == eFire) || (GetState() == eFire2)) && (GetAmmoElapsed() + GetAmmoChamberElapsed()) > 0);
 }
@@ -3227,7 +3234,8 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 	{
 		if (m_pInventory)
 		{
-			CWeaponAmmo* l_pA = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(l_it->first));
+			PIItem get_any = m_pInventory->GetAny(l_it->first);
+			CWeaponAmmo* l_pA = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 			if (l_pA)
 			{
 				u16 l_free = l_pA->m_boxSize - l_pA->m_boxCurr;

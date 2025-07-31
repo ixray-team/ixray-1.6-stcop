@@ -87,17 +87,30 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	attach_adjust_mode_keyb	(dik);
 #endif
 
-	CInventoryOwner* pInvOwner  = smart_cast<CInventoryOwner*>( Level().CurrentEntity() );
-	if ( !pInvOwner )			return false;
-	CEntityAlive* EA			= smart_cast<CEntityAlive*>(Level().CurrentEntity());
-	if (!EA || !EA->g_Alive() )	return false;
+	CObject* current_entity = Level().CurrentEntity();
 
-	CActor *pActor = smart_cast<CActor*>(pInvOwner);
-	if( !pActor ) 
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
+	if (pInvOwner == nullptr)
+	{
 		return false;
+	}
 
-	if( !pActor->g_Alive() )	
+	CEntityAlive* EA = current_entity->cast_entity_alive();
+	if (EA == nullptr || !EA->g_Alive())
+	{
 		return false;
+	}
+
+	CActor* pActor = pInvOwner->cast_actor();
+	if (pActor == nullptr)
+	{
+		return false;
+	}
+
+	if (!pActor->g_Alive())
+	{
+		return false;
+	}
 
 	switch ( get_binded_action(dik) )
 	{

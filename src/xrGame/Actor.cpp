@@ -659,8 +659,7 @@ void	CActor::Hit(SHit* pHDS)
 		{
 			cam_Set(eacFreeLook);
 
-			IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
-			if (K)
+			if (IKinematicsAnimated* K = Visual()->dcast_PKinematicsAnimated())
 			{
 				K->PlayCycle("waunded_1_idle_0");
 			}
@@ -720,7 +719,7 @@ void	CActor::Hit(SHit* pHDS)
 					tLuaHit.m_fImpulse = HDS.impulse;
 					tLuaHit.m_tDirection = HDS.direction();
 					tLuaHit.m_tHitType = HDS.hit_type;
-					tLuaHit.m_tpDraftsman = smart_cast<const CGameObject*>(HDS.who)->lua_game_object();
+					tLuaHit.m_tpDraftsman = HDS.who != nullptr ? HDS.who->cast_game_object()->lua_game_object() : nullptr;
 
 					luabind::functor<bool>	funct;
 					R_ASSERT2(ai().script_engine().functor(m_onBeforeHitCallback, funct), "failed to get OnBeforeHitCallback functor");
@@ -878,10 +877,10 @@ void CActor::FootStepCallback(float power, bool b_play, bool b_on_ground, bool b
 
 			auto GetBonePos = [this](shared_str bone_name)
 			{
-				u16 bone_id = smart_cast<IKinematics*>(Visual())->LL_BoneID(bone_name);
+				u16 bone_id = PKinematics(Visual())->LL_BoneID(bone_name);
 
 				Fmatrix matrix;
-				matrix.mul_43(XFORM(), smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(bone_id).mTransform);
+				matrix.mul_43(XFORM(), PKinematics(Visual())->LL_GetBoneInstance(bone_id).mTransform);
 				return (matrix.c);
 			};
 
@@ -920,9 +919,9 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 
 		float	yaw, pitch;
 		D.getHP(yaw,pitch);
-		IRenderVisual *pV = Visual();
-		IKinematicsAnimated *tpKinematics = smart_cast<IKinematicsAnimated*>(pV);
-		IKinematics *pK = smart_cast<IKinematics*>(pV);
+		IRenderVisual* pV = Visual();
+		IKinematicsAnimated* tpKinematics = pV->dcast_PKinematicsAnimated();
+		IKinematics* pK = PKinematics(pV);
 		VERIFY(tpKinematics);
 #pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
 		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(pK->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta,yaw) <= PI_DIV_2 ? 0 : 1))];
@@ -1350,7 +1349,6 @@ void CActor::UpdateCL()
 		else if (item == nullptr && det == nullptr)
 		{
 			g_player_hud->m_need_reload = true;
-			CCustomOutfit* outfit = GetOutfit();
 			if (g_player_hud->NextHUDSect.size() > 0)
 			{
 				g_player_hud->load(g_player_hud->NextHUDSect);
@@ -1527,8 +1525,8 @@ void CActor::UpdateCL()
 			}
 		}
 	}
-	auto pHelmet = smart_cast<CHelmet*>(inventory().ItemFromSlot(HELMET_SLOT));
-	auto pOutfit = smart_cast<CCustomOutfit*>(inventory().ItemFromSlot(OUTFIT_SLOT));
+	CHelmet* pHelmet = GetHelmet();
+	CCustomOutfit* pOutfit = GetOutfit();
 	bool shouldPlayHelmetSound = pHelmet != nullptr || (pOutfit != nullptr && !pOutfit->bIsHelmetAvaliable);
 
 	if (shouldPlayHelmetSound)
@@ -1667,7 +1665,7 @@ void CActor::UpdatePlayerView()
 			CInventoryItem* pInvItem = inventory().ActiveItem();
 			if (pInvItem)
 			{
-				CHudItem* pHudItem = smart_cast<CHudItem*>(pInvItem);
+				CHudItem* pHudItem = pInvItem->cast_hud_item();
 				if (pHudItem)
 				{
 					if (pHudItem->IsHidden())
@@ -1685,8 +1683,8 @@ void CActor::UpdatePlayerView()
 				g_player_hud->detach_item_idx(0);
 			}
 
-			CHudItem* pDetector = smart_cast<CHudItem*>(inventory().ItemFromSlot(DETECTOR_SLOT));
-			if (pDetector)
+			CCustomDetector* pDetector = GetDetector(true);
+			if (pDetector != nullptr)
 			{
 				if (pDetector->IsHidden())
 				{
@@ -2030,7 +2028,7 @@ void CActor::shedule_Update	(u32 DT)
 		m_pUsableObject = game_object ? game_object->cast_usable_script_object() : nullptr;
 		m_pInvBoxWeLookingAt = game_object ? game_object->cast_inventory_box() : nullptr;
 		m_pPersonWeLookingAt = game_object ? game_object->cast_inventory_owner() : nullptr;
-		m_pVehicleWeLookingAt = smart_cast<CHolderCustom*>(game_object);
+		m_pVehicleWeLookingAt = game_object ? game_object->cast_holder_custom() : nullptr;
 		CEntityAlive* pEntityAlive = game_object ? game_object->cast_entity_alive() : nullptr;
 
 		CActor* IsPlayerPtr = pEntityAlive ? pEntityAlive->cast_actor() : nullptr;
@@ -2067,7 +2065,7 @@ void CActor::shedule_Update	(u32 DT)
 					}
 					else
 					{
-						if (CBaseMonster* pMonster = smart_cast<CBaseMonster*>(m_pPersonWeLookingAt))
+						if (CBaseMonster* pMonster = m_pPersonWeLookingAt != nullptr ? m_pPersonWeLookingAt->cast_base_monster() : nullptr)
 						{
 							if (isMonstersInventory)
 							{
@@ -2195,14 +2193,15 @@ extern	BOOL	g_ShowAnimationInfo		;
 #endif // DEBUG
 // HUD
 
-void CActor::OnHUDDraw	(CCustomHUD* Z)
+void CActor::OnHUDDraw(CCustomHUD* Z)
 {
 	R_ASSERT(IsFocused());
 
 	if (!((mstate_real & mcLookout) && !IsGameTypeSingleCompatible()))
 		g_player_hud->render_hud();
 
-	if(auto pGameObject = smart_cast<CGameObject*>(Holder())) {
+	if (CGameObject* pGameObject = Holder() != nullptr ? Holder()->cast_game_object() : nullptr)
+	{
 		pGameObject->OnHUDDraw(Z);
 	}
 #if 0//ndef NDEBUG
@@ -2236,16 +2235,18 @@ void CActor::OnHUDDraw	(CCustomHUD* Z)
 #endif
 }
 
-void CActor::RenderIndicator			(Fvector dpos, float r1, float r2, const ui_shader &IndShader)
+void CActor::RenderIndicator(Fvector dpos, float r1, float r2, const ui_shader &IndShader)
 {
-	if (!g_Alive()) return;
-
+	if (!g_Alive())
+	{
+		return;
+	}
 
 	UIRender->StartPrimitive(4, IUIRender::ptTriStrip, IUIRender::pttLIT);
 
-	CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
+	CBoneInstance& BI = PKinematics(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
-	smart_cast<IKinematics*>(Visual())->CalculateBones	();
+	PKinematics(Visual())->CalculateBones();
 	M.mul						(XFORM(),BI.mTransform);
 
 	Fvector pos = M.c; pos.add(dpos);
@@ -2289,13 +2290,16 @@ void CActor::RenderIndicator			(Fvector dpos, float r1, float r2, const ui_shade
 static float mid_size = 0.097f;
 static float fontsize = 15.0f;
 static float upsize	= 0.33f;
-void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
+void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 {
-	if (!g_Alive()) return;
+	if (!g_Alive())
+	{
+		return;
+	}
 	
-	CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
+	CBoneInstance& BI = PKinematics(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
-	smart_cast<IKinematics*>(Visual())->CalculateBones	();
+	PKinematics(Visual())->CalculateBones	();
 	M.mul						(XFORM(),BI.mTransform);
 	//------------------------------------------------
 	Fvector v0, v1;
@@ -2639,21 +2643,23 @@ void CActor::UpdateMotionIcon(u32 mstate_rl)
 	}
 }
 
-
-
-CPHDestroyable*	CActor::ph_destroyable	()
+CPHDestroyable*	CActor::ph_destroyable()
 {
 	return smart_cast<CPHDestroyable*>(character_physics_support());
 }
 
-CEntityConditionSimple *CActor::create_entity_condition	(CEntityConditionSimple* ec)
+CEntityConditionSimple *CActor::create_entity_condition(CEntityConditionSimple* ec)
 {
 	if(!ec)
-		m_entity_condition		= new CActorCondition(this);
+	{
+		m_entity_condition = new CActorCondition(this);
+	}
 	else
-		m_entity_condition		= smart_cast<CActorCondition*>(ec);
+	{
+		m_entity_condition = smart_cast<CActorCondition*>(ec);
+	}
 	
-	return		(inherited::create_entity_condition(m_entity_condition));
+	return inherited::create_entity_condition(m_entity_condition);
 }
 
 DLL_Pure *CActor::_construct			()
@@ -2671,19 +2677,23 @@ bool CActor::use_center_to_aim			() const
 	return							(!!(mstate_real&mcCrouch));
 }
 
-bool CActor::can_attach			(const CInventoryItem *inventory_item) const
+bool CActor::can_attach(const CInventoryItem* inventory_item) const
 {
-	const CAttachableItem	*item = smart_cast<const CAttachableItem*>(inventory_item);
-	if (!item || /*!item->enabled() ||*/ !item->can_be_attached())
-		return			(false);
+	const CAttachableItem* item = smart_cast<const CAttachableItem*>(inventory_item);
+	if (!item || !item->can_be_attached())
+		return false;
 
 	//можно ли присоединять объекты такого типа
-	if( m_attach_item_sections.end() == std::find(m_attach_item_sections.begin(),m_attach_item_sections.end(),inventory_item->object().cNameSect()) )
+	if (m_attach_item_sections.end() == std::find(m_attach_item_sections.begin(), m_attach_item_sections.end(), inventory_item->object().cNameSect()))
+	{
 		return false;
+	}
 
 	//если уже есть присоединненый объет такого типа 
-	if(attached(inventory_item->object().cNameSect()))
+	if (attached(inventory_item->object().cNameSect()))
+	{
 		return false;
+	}
 
 	return true;
 }

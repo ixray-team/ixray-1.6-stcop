@@ -36,109 +36,131 @@ extern float gCheckHitK;
 //return TRUE-тестировать объект / FALSE-пропустить объект
 BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params)
 {
-	bullet_test_callback_data* pData	= (bullet_test_callback_data*)params;
+	bullet_test_callback_data* pData = (bullet_test_callback_data*)params;
 	SBullet* bullet = pData->pBullet;
 
-	if( (object->ID() == bullet->parent_id)		&&  
-		(bullet->fly_dist<parent_ignore_distance)	&&
-		(!bullet->flags.ricochet_was))			return FALSE;
+	if ((object->ID() == bullet->parent_id) && (bullet->fly_dist < parent_ignore_distance) && (!bullet->flags.ricochet_was))
+	{
+		return FALSE;
+	}
 
-	BOOL bRes						= TRUE;
-	if (object){
-		CEntity*	entity			= smart_cast<CEntity*>(object);
-		if (entity&&entity->g_Alive()&&(entity->ID()!=bullet->parent_id)){
-			ICollisionForm*	cform	= entity->collidable.model;
-			if ((nullptr!=cform) && (cftObject==cform->Type())){
-				CActor* actor		= smart_cast<CActor*>(entity);
-				CAI_Stalker* stalker= smart_cast<CAI_Stalker*>(entity);
+	BOOL bRes = TRUE;
+	if (object != nullptr)
+	{
+		CEntity* entity = object->cast_entity();
+		if (entity != nullptr && entity->g_Alive() && (entity->ID() != bullet->parent_id))
+		{
+			ICollisionForm* cform = entity->collidable.model;
+			if ((nullptr != cform) && (cftObject == cform->Type()))
+			{
+				CActor* actor = entity->cast_actor();
+				CAI_Stalker* stalker = entity->cast_stalker();
 				// в кого попали?
-				if (actor && IsGameTypeSingle()/**/||stalker/**/){
+				if (actor != nullptr && IsGameTypeSingle() || stalker != nullptr)
+				{
 					// попали в актера или сталкера
-					Fsphere S		= cform->getSphere();
-					entity->XFORM().transform_tiny	(S.P)	;
-					float dist		= rd.range;
+					Fsphere S = cform->getSphere();
+					entity->XFORM().transform_tiny(S.P);
+					float dist = rd.range;
 					// проверим попали ли мы в описывающую сферу 
-					if (Fsphere::rpNone!=S.intersect_full(bullet->bullet_pos, bullet->dir, dist))
+					if (Fsphere::rpNone != S.intersect_full(bullet->bullet_pos, bullet->dir, dist))
 					{
 						// да попали, найдем кто стрелял
-						bool play_whine				= true;
-						CObject* initiator			= Level().Objects.net_Find	(bullet->parent_id);
-						if (actor){
+						bool play_whine = true;
+						CObject* initiator = Level().Objects.net_Find(bullet->parent_id);
+						if (actor != nullptr)
+						{
 							// попали в актера
-							float hpf				= 1.f;
-							float ahp				= actor->HitProbability();
+							float hpf = 1.f;
+							float ahp = actor->HitProbability();
 #if 1
 #	if 0
-							CObject					*weapon_object = Level().Objects.net_Find	(bullet->weapon_id);
-							if (weapon_object) {
-								CWeapon				*weapon = smart_cast<CWeapon*>(weapon_object);
-								if (weapon) {
-									float fly_dist		= bullet->fly_dist+dist;
-									float dist_factor	= _min(1.f,fly_dist/Level().BulletManager().m_fHPMaxDist);
-									ahp					= dist_factor*weapon->hit_probability() + (1.f-dist_factor)*1.f;
+							CObject* weapon_object = Level().Objects.net_Find(bullet->weapon_id);
+							if (weapon_object != nullptr)
+							{
+								CWeapon* weapon = weapon_object->cast_weapon();
+								if (weapon != nullptr)
+								{
+									float fly_dist = bullet->fly_dist + dist;
+									float dist_factor = _min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
+									ahp = dist_factor * weapon->hit_probability() + (1.f - dist_factor) * 1.f;
 								}
 							}
 #	else
-							float					game_difficulty_hit_probability = actor->HitProbability();
-							CAI_Stalker				*stalker_ = smart_cast<CAI_Stalker*>(initiator);
-							if (stalker_)
-								hpf					= stalker_->SpecificCharacter().hit_probability_factor();
+							float game_difficulty_hit_probability = actor->HitProbability();
+							CAI_Stalker* stalker_ = initiator != nullptr ? initiator->cast_stalker() : nullptr;
+							if (stalker_ != nullptr)
+							{
+								hpf = stalker_->SpecificCharacter().hit_probability_factor();
+							}
 
-							float					dist_factor = 1.f;
-							CObject					*weapon_object = Level().Objects.net_Find	(bullet->weapon_id);
-							if (weapon_object) {
-								CWeapon				*weapon = smart_cast<CWeapon*>(weapon_object);
-								if (weapon) {
+							float dist_factor = 1.f;
+							CObject* weapon_object = Level().Objects.net_Find(bullet->weapon_id);
+							if (weapon_object != nullptr)
+							{
+								CWeapon* weapon = weapon_object->cast_weapon();
+								if (weapon != nullptr)
+								{
 									game_difficulty_hit_probability = weapon->hit_probability();
-									float fly_dist	= bullet->fly_dist+dist;
-									dist_factor		= _min(1.f,fly_dist/Level().BulletManager().m_fHPMaxDist);
+									float fly_dist = bullet->fly_dist + dist;
+									dist_factor = _min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
 								}
 							}
 
-							ahp						= dist_factor*game_difficulty_hit_probability + (1.f-dist_factor)*1.f;
+							ahp = dist_factor * game_difficulty_hit_probability + (1.f - dist_factor) * 1.f;
 #	endif
 #else
-							CAI_Stalker* i_stalker	= smart_cast<CAI_Stalker*>(initiator);
+							CAI_Stalker* i_stalker = initiator != nullptr ? initiator->cast_stalker() : nullptr;
 							// если стрелял сталкер, учитываем - hit_probability_factor сталкерa иначе - 1.0
-							if (i_stalker) {
-								hpf					= i_stalker->SpecificCharacter().hit_probability_factor();
-								float fly_dist		= bullet->fly_dist+dist;
-								float dist_factor	= _min(1.f,fly_dist/Level().BulletManager().m_fHPMaxDist);
-								ahp					= dist_factor*actor->HitProbability() + (1.f-dist_factor)*1.f;
+							if (i_stalker != nullptr)
+							{
+								hpf = i_stalker->SpecificCharacter().hit_probability_factor();
+								float fly_dist = bullet->fly_dist + dist;
+								float dist_factor = _min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
+								ahp = dist_factor * actor->HitProbability() + (1.f - dist_factor) * 1.f;
 							}
 #endif
-							if (Random.randF(0.f,1.f)>(ahp*hpf)){ 
-								bRes				= FALSE;	// don't hit actor
-								play_whine			= true;		// play whine sound
-							}else{
+							if (Random.randF(0.f, 1.f) > (ahp * hpf))
+							{
+								bRes = FALSE;	// don't hit actor
+								play_whine = true;		// play whine sound
+							}
+							else
+							{
 								// real test actor CFORM
 								Level().BulletManager().m_rq_results.r_clear();
 
-								if (cform->_RayQuery(rd,Level().BulletManager().m_rq_results)){
-									bRes			= TRUE;		// hit actor
-									play_whine		= false;	// don't play whine sound
-								}else{
-									bRes			= FALSE;	// don't hit actor
-									play_whine		= true;		// play whine sound
+								if (cform->_RayQuery(rd, Level().BulletManager().m_rq_results))
+								{
+									bRes = TRUE;		// hit actor
+									play_whine = false;	// don't play whine sound
+								}
+								else
+								{
+									bRes = FALSE;	// don't hit actor
+									play_whine = true;		// play whine sound
 								}
 							}
 						}
 						// play whine sound
-						if (play_whine){
-							Fvector					pt;
-							pt.mad					(bullet->bullet_pos, bullet->dir, dist);
-							Level().BulletManager().PlayWhineSound				(bullet,initiator,pt);
+						if (play_whine)
+						{
+							Fvector pt;
+							pt.mad(bullet->bullet_pos, bullet->dir, dist);
+							Level().BulletManager().PlayWhineSound(bullet, initiator, pt);
 						}
-					}else{
+					}
+					else
+					{
 						// don't test this object again (return FALSE)
-						bRes		= FALSE;
+						bRes = FALSE;
 					}
 
 				}
 			}
 		}
 	}
-	
+
 	return bRes;
 }
 
@@ -243,58 +265,63 @@ void CBulletManager::StaticObjectHit	(CBulletManager::_event& E)
 }
 
 static bool g_clear = false;
-void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
+void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 {
 	//только для динамических объектов
-	VERIFY(E.R.O);
+	CObject* ERO = E.R.O;
+	VERIFY(ERO);
 
-	if ( CEntity* entity = smart_cast<CEntity*>(E.R.O) )
+	if (CEntity* entity = ERO->cast_entity())
 	{
-		if ( !entity->in_solid_state() )
+		if (!entity->in_solid_state())
 		{
 			return;
 		}
 	}
 
-	if (g_clear) E.Repeated = false;
-	if (IsGameTypeSingle()) E.Repeated = false;
-	bool NeedShootmark = true;//!E.Repeated;
-	
-	if (smart_cast<CActor*>(E.R.O))
+	if (g_clear)
 	{
-		game_PlayerState* ps = Game().GetPlayerByGameID(E.R.O->ID());
+		E.Repeated = false;
+	}
+
+	if (IsGameTypeSingle())
+	{
+		E.Repeated = false;
+	}
+
+	bool NeedShootmark = true;
+
+	if (ERO->cast_actor() != nullptr)
+	{
+		game_PlayerState* ps = Game().GetPlayerByGameID(ERO->ID());
 		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 		{
 			NeedShootmark = false;
 		};
 	}
-	else if ( CBaseMonster * monster = smart_cast<CBaseMonster *>(E.R.O) )
+	else if (CBaseMonster* monster = ERO->cast_base_monster())
 	{
-		NeedShootmark	=	monster->need_shotmark();
+		NeedShootmark = monster->need_shotmark();
 	}
-	
+
 	//визуальное обозначение попадание на объекте
-//	Fvector			hit_normal;
-	FireShotmark	(&E.bullet, E.bullet.dir, E.point, E.R, E.tgt_material, E.normal, NeedShootmark);
-	
+	FireShotmark(&E.bullet, E.bullet.dir, E.point, E.R, E.tgt_material, E.normal, NeedShootmark);
+
 	Fvector original_dir = E.bullet.dir;
-	//ObjectHit(&E.bullet, E.end_point, E.R, E.tgt_material, hit_normal);
 
 	SBullet_Hit hit_param = E.hit_result;
 
 	// object-space
 	//вычислить координаты попадания
-	Fvector				p_in_object_space,position_in_bone_space;
-	Fmatrix				m_inv;
-	m_inv.invert		(E.R.O->XFORM());
+	Fvector p_in_object_space, position_in_bone_space;
+	Fmatrix m_inv;
+	m_inv.invert(ERO->XFORM());
 	m_inv.transform_tiny(p_in_object_space, E.point);
 
 	// bone-space
-	IKinematics* V = smart_cast<IKinematics*>(E.R.O->Visual());
-
-	if(V)
+	if (IKinematics* V = PKinematics(ERO->Visual()))
 	{
-		VERIFY3(V->LL_GetBoneVisible(u16(E.R.element)),*E.R.O->cNameVisual(),V->LL_BoneName_dbg(u16(E.R.element)));
+		VERIFY3(V->LL_GetBoneVisible(u16(E.R.element)), *ERO->cNameVisual(), V->LL_BoneName_dbg(u16(E.R.element)));
 		Fmatrix& m_bone = (V->LL_GetBoneInstance(u16(E.R.element))).mTransform;
 		Fmatrix  m_inv_bone;
 		m_inv_bone.invert(m_bone);
@@ -310,36 +337,27 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 	{
 		//-------------------------------------------------
 		bool AddStatistic = false;
-		if (!IsGameTypeSingle() && E.bullet.flags.allow_sendhit && smart_cast<CActor*>(E.R.O)
-			&& Game().m_WeaponUsageStatistic->CollectData())
+		if (!IsGameTypeSingle() && E.bullet.flags.allow_sendhit && Game().m_WeaponUsageStatistic->CollectData())
 		{
-			CActor* pActor = smart_cast<CActor*>(E.R.O);
-			if (pActor)// && pActor->g_Alive())
+			if (ERO->cast_actor() != nullptr)
 			{
-				Game().m_WeaponUsageStatistic->OnBullet_Hit(&E.bullet, E.R.O->ID(), (s16)E.R.element, E.point);
+				Game().m_WeaponUsageStatistic->OnBullet_Hit(&E.bullet, ERO->ID(), (s16)E.R.element, E.point);
 				AddStatistic = true;
 			};
 		};
 
-		SHit	Hit = SHit(	hit_param.power,
-							original_dir,
-							nullptr,
-							u16(E.R.element),
-							position_in_bone_space,
-							hit_param.impulse,
-							E.bullet.hit_type,
-							E.bullet.armor_piercing,
-							E.bullet.flags.aim_bullet);
+		SHit Hit = SHit(hit_param.power, original_dir, nullptr,
+		u16(E.R.element), position_in_bone_space, hit_param.impulse,
+		E.bullet.hit_type, E.bullet.armor_piercing, E.bullet.flags.aim_bullet);
 
-		Hit.GenHeader(u16((AddStatistic)? GE_HIT_STATISTIC : GE_HIT)&0xffff, E.R.O->ID());
-		Hit.whoID			= E.bullet.parent_id;
-		Hit.weaponID		= E.bullet.weapon_id;
-		Hit.BulletID		= E.bullet.m_dwID;
+		Hit.GenHeader(u16((AddStatistic) ? GE_HIT_STATISTIC : GE_HIT) & 0xffff, ERO->ID());
+		Hit.whoID = E.bullet.parent_id;
+		Hit.weaponID = E.bullet.weapon_id;
+		Hit.BulletID = E.bullet.m_dwID;
 
-		NET_Packet			np;
-		Hit.Write_Packet	(np);
-		
-//		Msg("Hit sended: %d[%d,%d]", Hit.whoID, Hit.weaponID, Hit.BulletID);
+		NET_Packet np;
+		Hit.Write_Packet(np);
+
 		CGameObject::u_EventSend(np);
 	}
 }

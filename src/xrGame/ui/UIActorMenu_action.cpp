@@ -189,7 +189,7 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 		R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
 
 		//If list only has 1 item, get it, otherwise try to get item at current drag position
-		CUICellItem* _citem = (new_owner->ItemsCount() == 1) ? new_owner->GetItemIdx(0) : NULL;
+		CUICellItem* _citem = (new_owner->ItemsCount() == 1) ? new_owner->GetItemIdx(0) : nullptr;
 		if (!_citem)
 		{
 			CUICellContainer* c = old_owner->GetContainer();
@@ -202,11 +202,11 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 			}
 		}
 
-		PIItem _iitem = _citem ? (PIItem)_citem->m_pData : NULL;
+		PIItem _iitem = _citem ? (PIItem)_citem->m_pData : nullptr;
 
-		CGameObject* GO1 = smart_cast<CGameObject*>(CurrentIItem());
-		CGameObject* GO2 = _iitem ? smart_cast<CGameObject*>(_iitem) : NULL;
-		if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
+		CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
+		CGameObject* GO2 = _iitem != nullptr ? _iitem->cast_game_object() : nullptr;
+		if (funct1(GO1 ? GO1->lua_game_object() : 0, GO2 ? GO2->lua_game_object() : 0, (int)t_old, (int)t_new) == false)
 			return false;
 
 		//-Alundaio
@@ -365,9 +365,10 @@ bool CUIActorMenu::OnItemFocusLost(CUICellItem* itm)
 		{
 			PIItem _iitem = (PIItem)itm->m_pData;
 
-			CGameObject* GO = _iitem ? smart_cast<CGameObject*>(_iitem) : NULL;
-			if (GO)
+			if (CGameObject* GO = _iitem ? _iitem->cast_game_object() : nullptr)
+			{
 				funct1(GO->lua_game_object());
+			}
 		}
 	}
 

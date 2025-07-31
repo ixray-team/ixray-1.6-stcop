@@ -617,30 +617,33 @@ void CWeaponMagazinedWGrenade::OnH_B_Independent(bool just_before_destroy)
 
 bool CWeaponMagazinedWGrenade::CanAttach(PIItem pIItem)
 {
-	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(pIItem);
+	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
 
-	if (pGrenadeLauncher &&
-		ALife::eAddonAttachable == m_eGrenadeLauncherStatus &&
-		0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
-		!xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
+	if (pGrenadeLauncher && ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
+	{
 		return true;
+	}
 	else
+	{
 		return inherited::CanAttach(pIItem);
+	}
 }
 
 bool CWeaponMagazinedWGrenade::CanDetach(LPCSTR item_section_name)
 {
-	if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus &&
-		0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
-		!xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
+	if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
+	{
 		return true;
+	}
 	else
+	{
 		return inherited::CanDetach(item_section_name);
+	}
 }
 
 bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 {
-	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(pIItem);
+	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
 
 	if (pGrenadeLauncher && ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
 	{
@@ -657,33 +660,40 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 		if (b_send_event)
 		{
 			if (OnServer())
+			{
 				pIItem->object().DestroyObject();
+			}
 		}
+
 		InitAddons();
 		UpdateAddonsVisibility();
 		UpdateHUDAddonsVisibility();
 		ProcessScope();
 
 		if (GetState() == eIdle)
+		{
 			PlayAnimIdle();
+		}
 
-		return					true;
+		return true;
 	}
 	else
+	{
 		return inherited::Attach(pIItem, b_send_event);
+	}
 }
 
 bool CWeaponMagazinedWGrenade::Detach(LPCSTR item_section_name, bool b_spawn_item)
 {
-	if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus &&
-		0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
-		!xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
+	if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
 	{
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
 		// Now we need to unload GL's magazine
 		if (!m_bGrenadeMode)
+		{
 			PerformSwitchGL();
+		}
 
 		UnloadMagazine();
 		PerformSwitchGL();
@@ -693,16 +703,17 @@ bool CWeaponMagazinedWGrenade::Detach(LPCSTR item_section_name, bool b_spawn_ite
 		ProcessScope();
 
 		if (GetState() == eIdle)
+		{
 			PlayAnimIdle();
+		}
 
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 	else
+	{
 		return inherited::Detach(item_section_name, b_spawn_item);
+	}
 }
-
-
-
 
 void CWeaponMagazinedWGrenade::InitAddons()
 {
