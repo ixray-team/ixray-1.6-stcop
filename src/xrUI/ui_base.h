@@ -57,6 +57,7 @@ public:
 
 	virtual void	OnDeviceReset					();
 	static	bool	is_widescreen					();
+	static	bool	is_ultrawide					();
 	static	float	get_current_kx					();
 	shared_str		get_xml_name					(LPCSTR fn);
 	
