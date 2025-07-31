@@ -1,37 +1,7 @@
 #pragma once
 #pragma warning(push)
 #pragma warning(disable: 4715)
-
-struct xrGUID
-{
-	u64 g[2];
-
-	ICF bool operator==(const xrGUID& o) const
-	{
-		return ((g[0] == o.g[0]) && (g[1] == o.g[1]));
-	}
-
-	ICF bool operator!=(const xrGUID& o) const
-	{
-		return !(*this == o);
-	}
-
-	ICF void LoadLTX(CInifile& ini, LPCSTR section, LPCSTR name)
-	{
-		string128 buff;
-
-		g[0] = ini.r_u64(section, xr_strconcat(buff, name, "_g0"));
-		g[1] = ini.r_u64(section, xr_strconcat(buff, name, "_g1"));
-	}
-
-	ICF void SaveLTX(CInifile& ini, LPCSTR section, LPCSTR name)
-	{
-		string128 buff;
-
-		ini.w_u64(section, xr_strconcat(buff, name, "_g0"), g[0]);
-		ini.w_u64(section, xr_strconcat(buff, name, "_g1"), g[1]);
-	}
-};
+#include "../xrCore/guid.h"
 
 enum fsL_Chunks
 {

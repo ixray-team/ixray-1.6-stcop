@@ -5,7 +5,7 @@
 #include "AIMapExport.h"
 #include "Shader_xrLC.h"
 #include "../../Include/Editors/communicate.h"
-#include "ETextureParams.h"
+#include "../../Layers/xrRender/ETextureParams.h"
 
 // base patch used all the time up to merging
 
