@@ -24,7 +24,7 @@ void LoadImGuiFont(const char* Font)
 	LazyFonts.push_back(Font);
 }
 
-void LoadImGuiFontBase(const char* Font)
+void LoadImGuiFontBase(const char* Font, float scale)
 {
 	string_path FullPath;
 	xr_string FixFontName = "editors\\" + xr_string(Font);
@@ -36,7 +36,7 @@ void LoadImGuiFontBase(const char* Font)
 	{
 		if (!FontsStorage.contains(Font))
 		{
-			FontsStorage[Font] = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), 14.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+			FontsStorage[Font] = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), scale * 14.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		}
 
 		ImCurrentFont = Font;
@@ -63,11 +63,15 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	FS.update_path(Fonts, _game_fonts_, "editors\\");
 	FS.file_list(Files, Fonts, 1, "*.ttf");
 
+	const HDC screen = GetDC(nullptr);
+	m_ScaleDpi = GetDeviceCaps(screen, LOGPIXELSX) / 96.f;
+	ReleaseDC(nullptr, screen);
+
 	auto OldFont = ImCurrentFont;
 	for (auto& File : Files)
 	{
 		xr_string FileName = xr_path(File.name).xfilename();
-		LoadImGuiFontBase(FileName.c_str());
+		LoadImGuiFontBase(FileName.c_str(), m_ScaleDpi);
 	}
 
 	if (!OldFont.empty())
@@ -101,7 +105,7 @@ void XrUIManager::BeginFrame()
 {
 	for (auto str : LazyFonts)
 	{
-		LoadImGuiFontBase(str.c_str());
+		LoadImGuiFontBase(str.c_str(), m_ScaleDpi);
 	}
 
 	LazyFonts.clear();

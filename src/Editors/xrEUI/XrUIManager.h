@@ -49,6 +49,7 @@ private:
 	TShiftState m_ShiftState;
 	xr_vector<IEditorWnd*> m_UIArray;
 	string_path m_name_ini;
+	float m_ScaleDpi;
 
 public: 
 	template<typename T> 
