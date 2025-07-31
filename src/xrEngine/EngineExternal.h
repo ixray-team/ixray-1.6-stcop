@@ -26,6 +26,7 @@ enum class EEngineExternalGame
 	EnableWeaponCollision,
 	EnableActorStepWallmarks,
 	DisableSprintWhileOverweight,
+	EnableAlternateZoomFovCalc,
 };
 
 enum class EEngineExternalRender 
