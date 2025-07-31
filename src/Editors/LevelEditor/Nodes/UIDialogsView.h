@@ -13,16 +13,40 @@ private:
 
 	virtual void Draw() override;
 	void Show(bool State);
+	void SaveDialog();
 	void OpenDialog(const shared_str& Str, XML_NODE* Node);
 
-	float IterateChild(Fvector2 Offset);
 	void SelectNodeEvent(INodeUnknown* Node);
 public:
 	static void OpenFile(const xr_path& Path);
 
 private:
-	bool IsOpen = false;
+	void ChangeHasInfo(PropValue*);
+	void ChangeDontHasInfo(PropValue*);
+	void ChangePrecondition(PropValue*);
+
+	void ChangeNodeHasInfo(PropValue*);
+	void ChangeNodeDontHasInfo(PropValue*);
+	void ChangeNodeGiveInfo(PropValue*);
+
+private:
 	bool IsOpenList = true;
-	xr_map<shared_str, XML_NODE*> Dialogs;
+	bool IsAutoHide = true;
+
 	CXml File;
+
+	shared_str HasInfo;
+	shared_str DontHasInfo;
+	shared_str Precondition;
+
+	XML_NODE* NodeHasInfo;
+	XML_NODE* NodeDontHasInfo;
+	XML_NODE* NodePrecondition;
+
+	CDialogNode* LastClickedDialogNode = nullptr;
+
+	shared_str LastOpenDialog;
+
+	xr_vector<std::pair<shared_str, shared_str>> Phrases;
+	xr_vector<std::pair<shared_str, XML_NODE*>> Dialogs;
 };
