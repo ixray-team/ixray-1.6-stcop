@@ -73,9 +73,9 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 			Fvector*	verts	= (Fvector*)fs->pointer();
 			CDB::TRI*	tris	= (CDB::TRI*)(verts+H.vertcount);
-			Level.build			( verts, H.vertcount, tris, H.facecount );
-			Level.syncronize	();
-			Msg("* Level CFORM: %dK",Level.memory()/1024);
+			LevelPtr->build( verts, H.vertcount, tris, H.facecount );
+			LevelPtr->syncronize();
+			Msg("* Level CFORM: %dK", LevelPtr->memory()/1024);
 
 			g_rc_faces.resize	(H.facecount);
 			R_ASSERT(fs->find_chunk(1));

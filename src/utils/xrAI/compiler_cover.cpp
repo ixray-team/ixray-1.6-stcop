@@ -65,7 +65,7 @@ IC float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 			CDB::RESULT& rpinf = DB->r_begin()[I];
 			// Access to texture
 //			CDB::TRI& clT								= 
-				Level.get_tris()	[rpinf.id];
+			LevelPtr->get_tris()	[rpinf.id];
 			b_rc_face& F								= g_rc_faces		[rpinf.id];
 
 			if (F.dwMaterial >= g_materials.size())
@@ -128,7 +128,7 @@ IC float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R, RayCache&
 	}
 
 	// 2. Polygon doesn't pick - real database query
-	DB->ray_query	(&Level,P,D,R);
+	DB->ray_query	(LevelPtr.get(),P,D,R);
 
 	// 3. Analyze polygons and cache nearest if possible
 	if (0==DB->r_count()) {
