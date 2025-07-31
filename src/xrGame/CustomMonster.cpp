@@ -323,18 +323,6 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	VERIFY				(_valid(Position()));
 	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
 
-	if (!IsGameTypeSingle() && OnClient())
-	{
-		// Âûçûâàåì àïäåéò áèíäåðà íà êëèåíòàõ
-		inherited::shedule_Update(DT);
-
-		float dt = float(DT) / 1000.f;
-		if (dt > 3) return;
-
-		m_dwCurrentTime = Device.dwTimeGlobal;
-		return;
-	}
-
 	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();
 
 	float dt			= float(DT)/1000.f;

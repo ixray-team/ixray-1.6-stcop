@@ -768,7 +768,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 		return;
 
 	UpdateQuickSlots();
-	if (IsGameTypeSingle())
+	if (IsGameTypeSingleCompatible())
 		CurrentGameUI()->PdaMenu().UpdateRankingWnd();
 
 	u8 flags = 0;
