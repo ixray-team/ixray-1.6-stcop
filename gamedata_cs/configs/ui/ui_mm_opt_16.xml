@@ -23,6 +23,10 @@
   </background>
 
   <main_dialog>
+      <scroll_v	x="0" y="10" width="385" height="313"
+					right_ident="0" left_ident="0" top_indent="0" bottom_indent="0"
+					vert_interval="0" always_show_scroll="0"/>
+
 		<dialog x="431" y="168" width="457" height="461" stretch="1">
 			<texture>ui_menu_options_dlg</texture>
 		</dialog>
@@ -64,7 +68,7 @@
 				</text_color>
 			</button>
       
-			<button x="193" y="20" width="95" height="44" id="gameplay" stretch="1">
+			<button x="194" y="20" width="95" height="44" id="gameplay" stretch="1">
         <texture>ui_button_tablist</texture>
         <text font="graffiti19" align="c">ui_mm_gameplay</text>
         <text_color>
@@ -74,7 +78,7 @@
         </text_color>
       </button>
 
-      <button x="280" y="20" width="95" height="44" id="controls" stretch="1">
+      <button x="291" y="20" width="95" height="44" id="controls" stretch="1">
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">ui_mm_controls</text>
 				<text_color>
@@ -105,10 +109,10 @@
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
 		</list_renderer>
 
-		<cap_preset x="17" y="40" width="119" height="21">
+		<cap_preset x="17" y="10" width="119" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_quality_presets</text>			
 		</cap_preset>
-		<list_presets x="162" y="40" width="218" height="21" list_length="5"  always_show_scroll="0">
+		<list_presets x="162" y="10" width="218" height="21" list_length="6"  always_show_scroll="0">
 			<options_item entry="_preset" group="mm_opt_video_preset" depend="vid"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -118,10 +122,10 @@
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
 		</list_presets>
 
-		<cap_resolution x="17" y="70" width="119" height="21">
+		<cap_resolution x="17" y="10" width="119" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_resolution</text>
 		</cap_resolution>
-		<list_resolution x="162" y="70" width="218" height="21" list_length="7" always_show_scroll="1">
+		<list_resolution x="162" y="10" width="218" height="21" list_length="7" always_show_scroll="1">
 			<options_item entry="vid_mode" group="mm_opt_video" depend="vid"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -131,34 +135,66 @@
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
 		</list_resolution>
 
-		<cap_gamma x="17" y="100" width="119" height="21">
+		<cap_gamma x="17" y="10" width="119" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_gamma</text>
 		</cap_gamma>
-		<track_gamma x="162" y="100" width="218" height="21">
+		<track_gamma x="162" y="10" width="218" height="21">
 			<options_item entry="rs_c_gamma" group="mm_opt_video"/>
 		</track_gamma>
 
-		<cap_contrast x="17" y="130" width="119" height="21">
+		<cap_contrast x="17" y="10" width="119" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_contrast</text>
 		</cap_contrast>
-		<track_contrast x="162" y="130" width="218" height="21">
+		<track_contrast x="162" y="10" width="218" height="21">
 			<options_item entry="rs_c_contrast" group="mm_opt_video"/>
 		</track_contrast>
 
-		<cap_brightness x="17" y="160" width="119" height="21">
+		<cap_brightness x="17" y="10" width="119" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_brightness</text>
 		</cap_brightness>
-		<track_brightness x="162" y="160" width="218" height="21">
+		<track_brightness x="162" y="10" width="218" height="21">
 			<options_item entry="rs_c_brightness" group="mm_opt_video"/>
 		</track_brightness>
 
-		<cap_fullscreen x="17" y="190" width="119" height="21">
+		<cap_fullscreen x="17" y="10" width="119" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_fullscreen</text>
 		</cap_fullscreen>
-		<check_fullscreen x="162" y="190" width="27" height="21" stretch="1">
+		<check_fullscreen x="162" y="10" width="27" height="21" stretch="1">
 			<options_item entry="rs_fullscreen" group="mm_opt_video" depend="vid"/>	
 		</check_fullscreen>
-		
+
+		<cap_vsync x="17" y="10" width="119" height="21">
+			<text font="letterica16" color="ui_6">ui_mm_vsync</text>
+		</cap_vsync>
+		<check_vsync x="162" y="10" width="27" height="21" stretch="1">
+			<options_item entry="rs_v_sync" group="mm_opt_video" depend="vid"/>	
+		</check_vsync>
+		<cap_fps_limit x="17" y="10" width="119" height="21">
+			<text font="letterica16" color="ui_6">ui_mm_fps_limit</text>
+		</cap_fps_limit>
+		<track_fps_limit x="162" y="10" width="218" height="21" step="1" show_value="1" is_integer="1">
+			<options_item entry="rs_fps_limit" group="mm_opt_video" depend="runtime"/>	
+		</track_fps_limit>
+
+		<cap_rs_device_active x="17" y="10" width="119" height="21">
+			<text font="letterica16" color="ui_6">ui_rs_device_active</text>
+		</cap_rs_device_active>
+		<check_rs_device_active x="162" y="10" width="27" height="21" stretch="1">
+			<options_item entry="rs_device_active" group="mm_opt_video" depend="vid"/>	
+		</check_rs_device_active>		
+
+		<cap_screenshot_format x="17" y="10" width="119" height="21">
+			<text font="letterica16" color="ui_6">ui_mm_screenshot_format</text>			
+		</cap_screenshot_format>
+		<list_screenshot_format x="162" y="10" width="218" height="21" list_length="3"  always_show_scroll="0">
+			<options_item entry="r__screenshot_format" group="mm_opt_video_preset" depend="runtime"/>
+			<text_color>
+				<e r="216" g="186" b="140"/>
+				<d color="ui_gray"/>
+			</text_color>
+			<list_font_s r="240" g="217" b="182"/>
+			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+		</list_screenshot_format>
 
 		<btn_advanced x="265" y="325" width="111" height="29">
 			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_advanced</text>	
@@ -384,7 +420,7 @@
       <options_item entry="r__detail_density" group="mm_opt_video_adv"/>
     </track_detail_density>
 
-    <cap_texture_lod x="17" y="0" width="119" height="21" >
+    <cap_texture_lod x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_texture_quality</text>
     </cap_texture_lod>
     <track_texture_lod x="162" y="0" width="200" height="21" invert="1" step="1" is_integer="1">
@@ -420,16 +456,75 @@
       <text font="letterica16" color="ui_6">ui_mm_r2_sun</text>
     </cap_r2_sun>
     <check_r2_sun x="162" y="0" width="27" height="21" stretch="1">
-      <options_item entry="r2_sun" group="mm_opt_video"/>
+      <options_item entry="r2_sun" depend="restart" group="mm_opt_video"/>
     </check_r2_sun>
 
-//
-    <cap_r1_no_detail_textures x="17" y="0" width="119" height="21">
-      <text font="letterica16" color="ui_6">ui_mm_r1_no_detail_textures</text>
-    </cap_r1_no_detail_textures>
-    <check_r1_no_detail_textures x="162" y="0" width="27" height="21" stretch="1">
-      <options_item entry="r1_no_detail_textures" group="mm_opt_video"/>
-    </check_r1_no_detail_textures>
+    <cap_r_scale_mode x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r_scale_mode</text>
+    </cap_r_scale_mode>
+      <list_r_scale_mode x="162" y="0" width="200" height="21" list_length="4" always_show_scroll="0">
+      <options_item entry="vid_scale_mode" group="mm_opt_video" depend="vid"/>
+      <text_color>
+        <e r="216" g="186" b="140"/>
+        <d color="ui_gray"/>
+      </text_color>
+      <list_font_s r="240" g="217" b="182"/>
+      <list_font	 r="216" g="186" b="140" font="letterica16"/>
+    </list_r_scale_mode>
+
+    <cap_r_scale_preset x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r_scale_preset</text>
+    </cap_r_scale_preset>
+      <list_r_scale_preset x="162" y="0" width="200" height="21" list_length="7" always_show_scroll="0">
+      <options_item entry="vid_scale_preset" group="mm_opt_video" depend="vid"/>
+      <text_color>
+        <e r="216" g="186" b="140"/>
+        <d color="ui_gray"/>
+      </text_color>
+      <list_font_s r="240" g="217" b="182"/>
+      <list_font	 r="216" g="186" b="140" font="letterica16"/>
+    </list_r_scale_preset>
+
+    <cap_vid_scale x="17" y="0" width="119" height="21" >
+      <text font="letterica16" color="ui_6">ui_mm_vid_scale</text>
+    </cap_vid_scale>
+    <track_vid_scale x="162" y="0" width="200" height="21" step="0.01" show_value="1">
+      <options_item entry="vid_scale" group="mm_opt_video_adv" depend="vid"/>
+    </track_vid_scale>
+
+    <cap_cas_sharpening x="17" y="0" width="119" height="21" >
+      <text font="letterica16" color="ui_6">ui_mm_cas_sharpening</text>
+    </cap_cas_sharpening>
+    <track_cas_sharpening x="162" y="0" width="200" height="21" show_value="1">
+      <options_item entry="r4_cas_sharpening" group="mm_opt_video_adv"/>
+    </track_cas_sharpening>
+
+    <cap_r_type_aa x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_supersample</text>
+    </cap_r_type_aa>
+      <list_r_type_aa x="162" y="0" width="200" height="21" list_length="4" always_show_scroll="0">
+      <options_item entry="r_aa" group="mm_opt_video"/>
+      <text_color>
+        <e r="216" g="186" b="140"/>
+        <d color="ui_gray"/>
+      </text_color>
+      <list_font_s r="240" g="217" b="182"/>
+      <list_font	 r="216" g="186" b="140" font="letterica16"/>
+    </list_r_type_aa>
+
+        <cap_header_setup x="17" y="0" width="119" height="15">
+			<text font="letterica16" color="ui_6"/>
+        </cap_header_setup>
+        <header_setup x="0" y="7" width="380" height="17">
+            <texture a="150">ui_table_button_e</texture>
+        </header_setup>
+
+    <cap_r1_detail_textures x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r1_detail_textures</text>
+    </cap_r1_detail_textures>
+    <check_r1_detail_textures x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r1_detail_textures" group="mm_opt_video"/>
+    </check_r1_detail_textures>
 
     <cap_r2_detail_bump x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_r2_detail_bump</text>
@@ -458,6 +553,41 @@
       <list_font	 r="216" g="186" b="140" font="letterica16"/>
     </list_r2_sun_quality>
 
+    <cap_r2_sun_details x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r2_details_shadows</text>
+    </cap_r2_sun_details>
+    <check_r2_sun_details x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r2_sun_details" group="mm_opt_video"/>
+    </check_r2_sun_details>
+
+    <cap_r_actor_shadow x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r_actor_shadow</text>
+    </cap_r_actor_shadow>
+    <check_r_actor_shadow x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r_actor_shadow" group="mm_opt_video"/>
+    </check_r_actor_shadow>
+
+    <cap_r4_hud_shadows x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r4_hud_shadows</text>
+    </cap_r4_hud_shadows>
+    <check_r4_hud_shadows x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r4_hud_shadows" group="mm_opt_video" depend="vid"/>
+    </check_r4_hud_shadows>
+
+    <cap_r4_hashed_aref x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_hashed_alpha_test</text>
+    </cap_r4_hashed_aref>
+    <check_r4_hashed_aref x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r4_hashed_alpha_test" group="mm_opt_video" depend="restart"/>
+    </check_r4_hashed_aref>
+
+    <cap_r2_cloud_shadows x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r2_cloud_shadows</text>
+    </cap_r2_cloud_shadows>
+    <check_r2_cloud_shadows x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r2_cloud_shadows" group="mm_opt_video" depend="vid"/>
+    </check_r2_cloud_shadows>
+
     <cap_r3_dynamic_wet_surfaces x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_r3_dynamic_wet_surfaces</text>
     </cap_r3_dynamic_wet_surfaces>
@@ -479,6 +609,19 @@
       <options_item entry="r2_slight_fade" group="mm_opt_video_adv"/>
     </track_light_distance>
 
+    <cap_smap_size x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r__smap_size</text>
+    </cap_smap_size>
+    <combo_smap_size x="162" y="0" width="200" height="21" always_show_scroll="1">
+      <options_item entry="r2_smap_size" group="mm_opt_video" depend="restart"/>
+      <text_color>
+        <e r="216" g="186" b="140"/>
+        <d color="ui_gray"/>
+      </text_color>
+      <list_font_s r="240" g="217" b="182"/>
+      <list_font	 r="216" g="186" b="140" font="letterica16"/>
+    </combo_smap_size>
+
     <cap_npc_torch x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_npc_torch</text>
     </cap_npc_torch>
@@ -493,20 +636,12 @@
       <options_item entry="r2_ls_squality" group="mm_opt_video_adv"/>
     </track_particles_distance>
 
-    <cap_vsync x="17" y="0" width="119" height="21">
-      <text font="letterica16" color="ui_6">ui_mm_vsync</text>
-    </cap_vsync>
-    <check_vsync x="162" y="0" width="27" height="21" stretch="1">
-      <options_item entry="rs_v_sync" group="mm_opt_video_adv" depend="vid"/>
-    </check_vsync>
-
-    <cap_60hz x="17" y="0" width="119" height="21">
-      <text font="letterica16" color="ui_6">ui_mm_60_hz</text>
-    </cap_60hz>
-    <check_60hz x="162" y="0" width="27" height="21" stretch="1">
-      <options_item entry="rs_refresh_60hz" group="mm_opt_video_adv" depend="vid"/>
-    </check_60hz>
-
+    <cap_mt_tex_load x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_mt_tex_load</text>
+    </cap_mt_tex_load>
+    <check_mt_tex_load x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r__mt_texture_load" group="mm_opt_video_adv" depend="vid"/>
+    </check_mt_tex_load>
 
     <cap_sun_shafts x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_sun_shafts</text>
@@ -521,66 +656,95 @@
       <list_font	 r="216" g="186" b="140" font="letterica16"/>
     </combo_sun_shafts>
 
-    <cap_ssao x="17" y="0" width="119" height="21">
-      <text font="letterica16" color="ui_6">ui_mm_ssao</text>
-    </cap_ssao>
-    <combo_ssao x="162" y="0" width="200" height="21" always_show_scroll="1">
-      <options_item entry="r2_ssao" group="mm_opt_video" depend="restart"/>
+    <cap_ao x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_ssao_text</text>
+    </cap_ao>
+    <combo_ao_options x="162" y="0" width="200" height="21" always_show_scroll="1">
+      <options_item entry="r2_ssao_mode" group="mm_opt_video" depend="restart"/>
       <text_color>
         <e r="216" g="186" b="140"/>
         <d color="ui_gray"/>
       </text_color>
       <list_font_s r="240" g="217" b="182"/>
       <list_font	 r="216" g="186" b="140" font="letterica16"/>
-    </combo_ssao>
+    </combo_ao_options>
+
+    <cap_vignette x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_vignette</text>
+    </cap_vignette>
+    <check_vignette x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r2_vignette" group="mm_opt_video_adv"/>
+    </check_vignette>
+
+    <cap_aberration x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_aberration</text>
+    </cap_aberration>
+    <check_aberration x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r2_aberration" group="mm_opt_video_adv"/>
+    </check_aberration>
+
+    <cap_saturation x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_saturation</text>
+    </cap_saturation>
+    <check_saturation x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r2_saturation" group="mm_opt_video_adv"/>
+    </check_saturation>
+
+    <cap_sslr_water x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_sslr_water</text>
+    </cap_sslr_water>
+    <check_sslr_water x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r4_sslr_water" group="mm_opt_video_adv" depend="restart"/>
+    </check_sslr_water>
 
     <cap_soft_water x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_soft_water</text>
     </cap_soft_water>
     <check_soft_water x="162" y="0" width="27" height="21" stretch="1">
-      <options_item entry="r2_soft_water" group="mm_opt_video_adv" depend="restart"/>
+      <options_item entry="r2_soft_water" group="mm_opt_video_adv" depend="vid"/>
     </check_soft_water>
 
     <cap_soft_particles x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_soft_particles</text>
     </cap_soft_particles>
     <check_soft_particles x="162" y="0" width="27" height="21" stretch="1">
-      <options_item entry="r2_soft_particles" group="mm_opt_video_adv" depend="restart"/>
+      <options_item entry="r2_soft_particles" group="mm_opt_video_adv" depend="vid"/>
     </check_soft_particles>
 
     <cap_dof x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_dof</text>
     </cap_dof>
     <check_dof x="162" y="0" width="27" height="21" stretch="1">
-      <options_item entry="r2_dof_enable" group="mm_opt_video_adv" depend="restart"/>
+      <options_item entry="r2_dof_enable" group="mm_opt_video_adv" depend="vid"/>
     </check_dof>
+
+    <cap_dof_reload x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_dof_reload</text>
+    </cap_dof_reload>
+    <check_dof_reload x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="enable_dof_reload" group="mm_opt_video_adv" depend="vid"/>
+    </check_dof_reload>
+
+    <cap_dof_talk x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_dof_talk</text>
+    </cap_dof_talk>
+    <check_dof_talk x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="enable_dof_talk" group="mm_opt_video_adv" depend="vid"/>
+    </check_dof_talk>
 
     <cap_volumetric_light x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_volumetric_light</text>
     </cap_volumetric_light>
     <check_volumetric_light x="162" y="0" width="27" height="21" stretch="1">
-      <options_item entry="r2_volumetric_lights" group="mm_opt_video_adv" depend="restart"/>
+      <options_item entry="r2_volumetric_lights" group="mm_opt_video_adv" depend="vid"/>
     </check_volumetric_light>
 
-    <cap_r3_msaa_alphatest x="17" y="0" width="119" height="21">
-      <text font="letterica16" color="ui_6">ui_mm_msaa_alphatest</text>
-    </cap_r3_msaa_alphatest>
-    <combo_r3_msaa_alphatest x="162" y="0" width="200" height="21" always_show_scroll="1">
-      <options_item entry="r3_msaa_alphatest" group="mm_opt_video" depend="restart"/>
-      <text_color>
-        <e r="216" g="186" b="140"/>
-        <d color="ui_gray"/>
-      </text_color>
-      <list_font_s r="240" g="217" b="182"/>
-      <list_font	 r="216" g="186" b="140" font="letterica16"/>
-    </combo_r3_msaa_alphatest>
-
-    <cap_r3_msaa_opt x="17" y="0" width="119" height="21">
-      <text font="letterica16" color="ui_6">ui_mm_r3_DX10_1</text>
-    </cap_r3_msaa_opt>
-    <check_r3_msaa_opt x="162" y="0" width="27" height="21" stretch="1">
-      <options_item entry="r3_use_dx10_1" group="mm_opt_video_adv" depend="vid"/>
-    </check_r3_msaa_opt>
+    <cap_r4_tessellation x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r4_enable_tessellation</text>
+    </cap_r4_tessellation>
+    <check_r4_tessellation x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r4_enable_tessellation" group="mm_opt_video_adv" depend="vid"/>
+    </check_r4_tessellation>
 
     <btn_to_simply x="265" y="325" width="111" height="29">
       <text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_simply</text>
@@ -607,10 +771,10 @@
       <text font="letterica16" color="ui_6">ui_mm_dynamic_music</text>
     </check_dynamic_music>
 
-    <track_mastervolume x="162" y="20" width="217" height="21">
+    <track_mastervolume x="162" y="20" width="217" height="21" step="0.01" show_value="1">
 			<options_item entry="snd_volume_eff" group="mm_opt_sound"/>
 		</track_mastervolume>
-		<track_musicvolume x="162" y="50" width="217" height="21">
+		<track_musicvolume x="162" y="50" width="217" height="21" step="0.01" show_value="1">
 			<options_item entry="snd_volume_music" group="mm_opt_sound"/>
 		</track_musicvolume>
 
@@ -629,11 +793,11 @@
   </tab_sound>
 
   <tab_gameplay>
-		<cap_difficulty x="17" y="20" width="203" height="21">
+		<cap_difficulty x="17" y="0" width="203" height="21">
 			<text font="letterica16" color="ui_6">ui_mm_difficulty</text>			
 		</cap_difficulty>
 
-		<list_difficulty x="162" y="20" width="217" height="21">	
+		<list_difficulty x="162" y="0" width="217" height="21">	
 			<options_item entry="g_game_difficulty" group="mm_opt_gameplay"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -642,30 +806,58 @@
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
 		</list_difficulty>
 		
-		<check_tips x="17" y="180" width="27" height="21" stretch="1">
+		<cap_lang x="17" y="0" width="203" height="21">
+			<text font="letterica16" color="ui_6">ui_mm_lang</text>			
+		</cap_lang>
+
+		<list_lang x="162" y="0" width="217" height="21">	
+			<options_item entry="language" group="mm_opt_gameplay"/>
+			<text_color>
+				<e r="216" g="186" b="140"/>
+			</text_color>
+			<list_font_s r="240" g="217" b="182"/>
+			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+		</list_lang>
+		
+		<check_tips x="17" y="0" width="27" height="21" stretch="1">
 			<options_item entry="hud_info" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_tips</text>
 		</check_tips>
 
-		<check_crosshair x="17" y="80" width="27" height="21" stretch="1">
+		<check_crosshair x="17" y="0" width="27" height="21" stretch="1">
 			<options_item entry="hud_crosshair" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_show_crosshair</text>
 		</check_crosshair>
 
-		<check_dyn_crosshair x="17" y="105" width="27" height="21" stretch="1">
+		<check_dyn_crosshair x="17" y="0" width="27" height="21" stretch="1">
 			<options_item entry="cl_dynamiccrosshair" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_dyn_crosshair</text>
 		</check_dyn_crosshair>
 
-		<check_show_weapon x="17" y="130" width="27" height="21" stretch="1">
+		<check_show_weapon x="17" y="0" width="27" height="21" stretch="1">
 			<options_item entry="hud_weapon" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_show_weapon</text>
 		</check_show_weapon>
 
-		<check_dist x="17" y="155" width="27" height="21" stretch="1">
+		<check_dist x="17" y="0" width="27" height="21" stretch="1">
 			<options_item entry="hud_crosshair_dist" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_crosshair_distance</text>
 		</check_dist>
+
+		<check_crouch_toggle x="17" y="0" width="27" height="21" stretch="1">
+			<options_item entry="g_crouch_toggle" group="mm_opt_gameplay"/>
+			<text font="letterica16" color="ui_6">ui_mm_crouch_toggle</text>
+		</check_crouch_toggle>
+
+		<check_hud_draw x="17" y="0" width="27" height="21" stretch="1">
+			<options_item entry="hud_draw" group="mm_opt_gameplay"/>
+			<text font="letterica16" color="ui_6">ui_st_disable_hud</text>
+		</check_hud_draw>
+
+		<check_rs_fps_show x="17" y="0" width="27" height="21" stretch="1">
+			<options_item entry="rs_fps_show" group="mm_opt_gameplay"/>
+			<text font="letterica16" color="ui_6">ui_rs_fps_show</text>
+		</check_rs_fps_show>
 
 		<btn_check_updates x="270" y="290" width="111" height="29">
 			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_check_updates</text>	
