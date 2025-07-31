@@ -27,11 +27,12 @@ CLightmap::~CLightmap()
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
 {
 	// Allocate 512x512 texture if needed
-	if (lm.surface.empty())	lm.create(getLMSIZE(),getLMSIZE());
+	if (lm.surface.empty())
+		lm.create(getLMSIZE(),getLMSIZE());
 	
 	// Addressing
 	xr_vector<UVtri>	tris;
-	D->RemapUV			(tris,b_u+BORDER,b_v+BORDER,s_u-2*BORDER,s_v-2*BORDER,getLMSIZE(),getLMSIZE(),bRotated);
+	D->RemapUV			(tris,b_u+BORDER,b_v+BORDER,s_u-2*BORDER,s_v-2*BORDER, getLMSIZE(), getLMSIZE(), bRotated);
 	
 	// Capture faces and setup their coords
 	for (UVIt T=tris.begin(); T!=tris.end(); T++)
@@ -135,8 +136,9 @@ void CLightmap::Save( LPCSTR path )
 	
 	lm.destroy					();
 	
-	// Saving			(DXT5.dds)
-	// Status			("Compression base...");
+	CTimer t;
+	t.Start();
+	Status			("Compression base...");
 	{
 
 
@@ -156,6 +158,10 @@ void CLightmap::Save( LPCSTR path )
 		DXTUtils::Compress(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
 	lm_packed.clear();
+	
+	clMsg("[Lightmap] Save Base: %u ms",t.GetElapsed_ms());
+
+	t.Start();
 	Status			("Compression hemi..."); //.
 	{
 
@@ -177,6 +183,6 @@ void CLightmap::Save( LPCSTR path )
 		DXTUtils::Compress(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
 
-
+	clMsg("[Lightmap] Save Hemi: %u ms", t.GetElapsed_ms());
 }
  

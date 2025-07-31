@@ -135,14 +135,17 @@ resplit:
 					goto		resplit;
 				}
 			}
-		} else {
+		} 
+		else
+		{
 			// split deflector into TWO
 			if (defl_base)	
 			{
 				// _delete old deflector
 				for (u32 it=0; it<lc_global_data()->g_deflectors().size(); it++)
 				{
-					if (lc_global_data()->g_deflectors()[it]==defl_base)	{
+					if (lc_global_data()->g_deflectors()[it]==defl_base)	
+					{
 						lc_global_data()->g_deflectors().erase	(lc_global_data()->g_deflectors().begin()+it);
 						xr_delete			(defl_base);
 						break;
@@ -175,4 +178,17 @@ resplit:
 	}
 	clMsg("%d subdivisions.",g_XSplit.size());
 	validate_splits	();
+
+
+	// Checking Deflectors Size
+
+	size_t AllocatedDeflectors = 0;
+
+	for (auto D : lc_global_data()->g_deflectors())
+	{
+		AllocatedDeflectors += D->size_deflector();
+	}
+
+	AllocatedDeflectors /= (1024 * 1024); // MB
+	AditionalData("Splits: %u | DeflectorsAlloc: %u mb", g_XSplit.size(), AllocatedDeflectors);
 }
