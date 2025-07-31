@@ -57,11 +57,12 @@ xr_token							qsun_quality_token							[ ]={
 
 u32			ps_r2_aa_type			= 0;			//	=	0;
 xr_token							aa_type_token[] = {
-	{ "st_opt_off",						0												},
+	{ "st_opt_off",						0											},
 	{ "fxaa",						1												},
 #if RENDER != R_R1
 	{ "smaa",						2												},
-#endif // DEBUG
+	{ "taa",						3												},
+#endif // DEBUG	
 	{ 0,							0												}
 };
 
