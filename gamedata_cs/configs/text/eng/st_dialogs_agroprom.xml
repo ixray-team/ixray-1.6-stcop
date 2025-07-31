@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_leader_hello_dialog_11">
+		<text>Good day, merc. Whaddaya need here?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_12">
+		<text>Hey merc, they're waiting for you at the lair.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111">
+		<text>I haven't seen many folks who'd be willing to go down there. Do you have any idea what you'll be up against in there?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111111">
+		<text>"Shouldn't be too dangerous..." - hah! Things have really changed ever since we decided to block that one side tunnel. I guess we went overboard with the explosives: the blow took down some of the walls and opened up ways to new caverns. A swarm of mutants came flooding out faster than you can say "bloodsucker!" Many of our boys never made it back to the surface...</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111111">
+		<text>I ordered to have all exits welded shut. That helped, but only for a while. The mutants started digging holes and coming up from underground. By the time we'd block one hole they'd already dig up another. It seems like they are driven by a single goal: to finish us off at all costs.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111111111">
+		<text>I'll help you get underground, but in return I want a favor. Alright, the underground map shows a pump station, which drains the ground waters. If you turn off the pump and open the tank valve, the water will quickly flood the caves and the mutants should simmer down.</text>
+	</string>
+	<string id="agr_leader_about_dolg_1">
+		<text>Our faction is called Duty. Why, you ask? Well, it's simple. If we don't do it, who will? Our responsibility is to fight the Zone and all its manifestations. Many of our present members started out as ordinary stalkers, trying to make a buck, but after seeing enough of the Zone's horrors, they realized it's time to do something about it. Better to sacrifice your own life, if need be, than let mutants into your home! It's a shame that not all stalkers feel this way. It's an even bigger shame we actually have to fight such idiots to prevent the Zone from spreading...</text>
+	</string>
+	<string id="agr_leader_about_dolg_111">
+		<text>The Agroprom Research Institute is in a good strategic location, not to mention its underground tunnels... Anyhow, some time ago we deployed a research program there to study the Zone. First we researched the anatomy and physiology of mutants. In other words, we looked for easier ways to kill them. It was a long, slow search until we accidentally stumbled on some materials in Agroprom's underground facility... some very interesting materials, I must say.</text>
+	</string>
+	<string id="agr_leader_about_dolg_11111">
+		<text>Secret experiments for controlling consciousness carried out in Soviet times, can you believe that? Those guys made a lot of headway in their research - they even managed to instill simple commands into the minds of animals. That's what led us to suspect that someone, or something, can control mutants. Unfortunately, all of our data confirms this theory. As soon as we burn down a mutant den, they retaliate with a bloodsucker attack or a pack of pseudodogs. The faster we destroy them, the faster they come at us. I bet this is no simple coincidence... I don't believe in repeated coincidences. There's something behind all this - I'm certain of it.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0">
+		<text>Hey... Where do you think you're going?</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_011">
+		<text>Go on then.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_012">
+		<text>And?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_13">
+		<text>Hey, what brings you here?</text>
+	</string>
+	<string id="agr_barman_join_duty_11">
+		<text>Better ask Krylov. You'll find him on the second floor of the central building. You'll agree though - it's just no good letting a stranger in your home and opening your heart to him. Our leader's gonna feel you out and see if you can be trusted.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_01">
+		<text>I need to see your leader.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0111">
+		<text>Thanks.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0122">
+		<text>I gotcha.</text>
+	</string>
+	<string id="agr_duty_barman_around_0">
+		<text>What's the latest buzz?</text>
+	</string>
+	<string id="agr_duty_barman_around_1">
+		<text>Buzz? Well, a whole faction has gone missing. And it's not like they were taken out by people or wiped out by monsters. They just vanished, warts and all. These guys were weird too, with a real hard-on for the Zone. They believed that the Zone was alive, and in its center was a Monolith - a Wish Granter. So they declared themselves the protectors of this Monolith. And then one fine day their whole faction just got up and took off for the center. Yep, right to the Wish Granter. They headed for the Scorcher, crossed the Barrier, and no one has seen them since.</text>
+	</string>
+	<string id="agr_duty_barman_jelanie_0">
+		<text>And what do you think about the Wish Granter?</text>
+	</string>
+	<string id="agr_duty_barman_jelanie_1">
+		<text>Well, for one thing, it does exist. And given that, we definitely ought to clear a path to it. A single clan should have enough muscle to get it done. But if all the clans joined forces, we might even be able to get through the Scorcher. The way things are now, each faction knows something, but they'll die before they share it with one another. Each faction is holding on to their secret. Add to that an imbecile as bad as our Mitay and you've got real dead heat. Sidorovich is the only one collecting intelligence, piece by piece. Hard-headed as they come, heh. But then again, it's Sidorovich: don't expect something for nothing.</text>
+	</string>
+	<string id="agr_duty_barman_you_0">
+		<text>Tell me about yourself</text>
+	</string>
+	<string id="agr_duty_barman_you_1">
+		<text>Me, I'm from a small town. Finished high school, served in the army. Got out - no jobs, no use going to college... Make a long story short, I got through the boot camp and landed right here. Actually, I served at the Cordon at first. Once a colonel of ours decided he needed a rare artifact to heal him up. Didn't like the idea of hiring stalkers, so our squad got the "job." The map they gave us was thirty friggin' years old. Those bastards... Less than a few hours in half our guys were already gone from anomalies. Then the dogs, then the bloodsuckers. Before the day was done it was just sarge and myself. Thank God we had our medkits, so we managed to crawl over to Duty's base. My leg got all hacked up - I was lucky to keep it after all that. Anyway, Duty folks put us back on our feet and showed us the way back. They're real men who live a good, simple life, and I've made a lot of friends during my stay. Anyway, soon as service was over, I grabbed my things and came right back into the Zone. I found Duty's base and asked to join, and hey, they took me in.</text>
+	</string>
+	<string id="agr_duty_barman_zone_0">
+		<text>What can you tell me about the Zone?</text>
+	</string>
+	<string id="agr_duty_barman_zone_1">
+		<text>Not much, to be honest - I'm no old-timer. But I did have a talk with a true veteran once - now that was a real interesting conversation. About the Zone's very beginnings, the first trips people dared make into it, their first findings. One guy's horrible death in an anomaly served as a lesson to another. That was when scientists started making their first experimental protection suits and anomaly detectors. Every new innovation was built on someone's health, and sometimes their death. Sometimes the scientists would get a stalker who's barely alive, they'd heal him and then start asking: where did you get this wound, who or what did it? And they'd make their notes and add more layers of protection to some suit, or tune the scale on some sensor. \nTrial and error, that veteran would say - it's the most difficult way, but also the most effective. Yeah, those first stalkers had it bad for sure, not like us. Now you just grab an all-out suit, fire away and you're cruising.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_2">
+		<text>So you're the soul brave enough to go underground, huh? Think twice before you do - we've lost more than a dozen of our best fighters down there. That hole's full of monsters and we can't do jack shit against them. In fact, General Krylov ordered all exists and entrances welded.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_3">
+		<text>I'll try to go down there and flood the caves. Getting back alive would be nice too.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_4">
+		<text>Alright, well, if you manage to pull it off, Duty will owe you one. Right here we got one of the holes the monsters are still using to crawl up onto the surface. It'll lead you straight under ground. Watch out and hold on to you ammo. Good luck.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_5">
+		<text>Thanks.</text>
+	</string>
+	<string id="agr_duty_mechanic_about_many_word_0">
+		<text>Are you always this verbal?</text>
+	</string>
+	<string id="agr_duty_mechanic_about_many_word_1">
+		<text>Are you always this nosy? Curiosity killed the cat, remember that.</text>
+	</string>
+	<string id="agr_duty_mechanic_about_upgrade_0">
+		<text>What weapon upgrades are your specialty?</text>
+	</string>
+	<string id="agr_duty_mechanic_about_upgrade_1">
+		<text>All kinds. Almost all of 'em. A Duty technician is the best in the whole Zone, got that? I can upgrade your machine gun like no one else. I can make you bulletproof like no one else. Point is, I know my stuff.</text>
+	</string>
+	<string id="agr_duty_mechanic_like_parametrs_0">
+		<text>What do you suggest I upgrade on this shooter?</text>
+	</string>
+	<string id="agr_duty_mechanic_like_parametrs_1">
+		<text>The client is always right, I'll work on whatever you like. I can make it a better assault weapon for you. Or a better sniper's weapon, though there I can't do as much. Or you can just keep it the way it is.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1">
+		<text>Hey, why not. What are the rules?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_100">
+		<text>Hey, merc. Wanna find out how good a shooter you are?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_11">
+		<text>You got three options: practice, scoring challenge or the accuracy challenge.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_111">
+		<text>Tell me about practice.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1111">
+		<text>Nothing could be simpler. First, choose your weapon, then your target distance. You will have a limited number of rounds and your goal is to score as many points as you can. Naturally, in practice mode you can't earn anything, but you can still record a top score.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_11111">
+		<text>That's clear. Tell me about other rules.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_112">
+		<text>Tell me about scoring challenge.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1121">
+		<text>First, choose your weapon, then your target distance. You will have a limited number of rounds and a specific target score you must reach. Here we play for money. You make a bet. Then, if you reach your target score, I pay; if not - I keep the bet.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_113">
+		<text>Tell me about the accuracy challenge.\n</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1131">
+		<text>First, choose your weapon. The targets will pop up randomly. You will have a limited number of rounds and you must hit the bull's eye on each target. This is the most difficult challenge, so try and don't go broke. Wagering is the same. You get all targets - I pay you; you don't - I keep the bet.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2">
+		<text>Enough talk, let's play.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_200">
+		<text>Finished? Good job!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21">
+		<text>Another thing. Leave your stuff with me before you go. Everything's gotta be fair - you can't use anything but my shooter. Don't fret though - you'll get your stuff back safe and sound once you're done.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211">
+		<text>I'd like to practice.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111">
+		<text>Great choice. You remember the rules, right?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21110">
+		<text>default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211101">
+		<text>Yeah.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111011">
+		<text>OK, break a leg!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211102">
+		<text>Unfortunately, I don't have enough money.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111021">
+		<text>No problem. Come back when you're ready.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211103">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21111">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21112">
+		<text>Yeah, let's go.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121">
+		<text>Choose a weapon.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111211">
+		<text>PMm.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21112111">
+		<text>Choose your target distance.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121111">
+		<text>30 meters.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121112">
+		<text>40 meters.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121113">
+		<text>50 meters.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121114">
+		<text>60 meters.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121115">
+		<text>70 meters.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111212">
+		<text>Martha.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111213">
+		<text>Akm 74/2U.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111214">
+		<text>Viper 5.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111215">
+		<text>Akm 74/2.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111216">
+		<text>TRs 301.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_212">
+		<text>I want to take the scoring challenge.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_213">
+		<text>I want to take the accuracy challenge.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_3">
+		<text>No time for games. I might try it later.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_300">
+		<text>Stop dragging your feet! Come back when you're done shooting.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_3000">
+		<text>OK.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_4">
+		<text>So what's my score?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_41">
+		<text>default2</text>
+	</string>
+	<string id="agr_duty_trader_about_fight_0">
+		<text>How about I kick your ass - will that teach you some manners?</text>
+	</string>
+	<string id="agr_duty_trader_about_fight_1">
+		<text>How about I call my guys over here - will that make you shit your pants? No, I mean it, keep this up and my boys will be more than happy to show you what's what, got that? You know nobody and nobody knows you! I mean, you're gonna get it so bad you won't know your ass from your elbow! You'll be as good as a zombie, you hear me? Shit, is it just my luck to be running into scum like you every day? So many assholes trying to ruin my day - never freakin' mind that I'm trying to run a freakin' business here! With half-assed customers like you I'll turn a hundred before I break even!!</text>
+	</string>
+	<string id="agr_duty_trader_about_freetime_0">
+		<text>What do people do for fun around here?</text>
+	</string>
+	<string id="agr_duty_trader_about_freetime_1">
+		<text>Just for your information, I'm busy here. I ain't got time for fun, much less for idle chat with shmoes like you. I'm on the clock, can't you see? And all the other guys too. If you're looking for some special entertainment, get lost, go try Freedom's base, I don't know. This is no place for clubbing and boozing, you hear me?</text>
+	</string>
+	<string id="agr_duty_trader_about_original_weapons_0">
+		<text>You got anything special for sale?</text>
+	</string>
+	<string id="agr_duty_trader_about_original_weapons_1">
+		<text>What are you, legally blind? A tip for the intellectually challenged: everything you see here is for sale. This is no department store, no supermarket, not even a convenience store. You want something - you pay quietly, take it and go. You don't need nothing - just keep walking and don't waste my time. Shit man, just look at all these fat cats coming around, saying "show me this," "explain me that"... like I owe 'em something. Just keep it simple, ya hear?!</text>
+	</string>
+	<string id="agr_duty_trader_quest_0">
+		<text>Anything else of value?</text>
+	</string>
+	<string id="agr_duty_trader_quest_1">
+		<text>I can sell you some information about a nice stash. It'll cost you 5,000 roubles.</text>
+	</string>
+	<string id="agr_duty_trader_quest_2">
+		<text>Go ahead.</text>
+	</string>
+	<string id="agr_duty_trader_quest_22">
+		<text>No need.</text>
+	</string>
+	<string id="agr_duty_trader_quest_3">
+		<text>The stash location is in your PDA.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_bad_trader_0">
+		<text>Who's that shithead presiding over your store?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_bad_trader_1">
+		<text>Don't mind him, that's our local dumbass Mitay. As one professor would put it, he's "nothing but a vulgar swine!" No garden is without its weeds, and Mitay is the designated weed in ours. He'd be a perfect fit for the Inquisitor's zoo - would complete the collection as the top show freak. Sometimes I wish a pseudodog would adopt him... But really he's much better off as a trader. If he spent his days in the bar he'd spend more time getting his ass beat than actually drinking - or worse. Even considering that manhandling is a sure way to wind up in the cooler, that wouldn't stop most.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_military_0">
+		<text>Listen, is it really true that you're pals with the army guys?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_military_1">
+		<text>I can't really get into that - we've got some discipline in this place, after all. Our general Krylov certainly used to be a military man. I heard a few stories about how, just as the Zone formed, the government organized a military operation in here. They were sent to the very center of the Zone with an order to blow it all to hell with nuclear explosives. Can you imagine what that means? These guys were sent with no protection, no detectors, no information about what to expect in the Zone. Many perished in anomalies right off, and most of those who didn't were done in by an emission. The few survivors were left behind to die a slow death. General Krylov is one of those few. I don't know who he's pals with, but he hates the military ever since he and his buddies were sent straight to their deaths. He's got some connections in Spetsnaz though. Spetsnaz only got real men. Sometimes Duty crosses paths with them. That's pretty much it - consider it the abridged version.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_story_0">
+		<text>Any interesting stories to tell?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_story_1">
+		<text>Sure, and a bit of devilry too. Have you heard about Doctor? Supposedly he lives in the most remote of marshes. Never heard of him? Well, brother, let me tell you one of the Zone's oldest legends. So, there's this Doctor. He can bring anyone back from the dead, even if they were hacked up into pieces. No one knows how he does this, but it is a known fact! I haven't seen any of these resurrected people, but I know people who have. Now for the most interesting part. They say that Doctor is one of the original stalkers. Supposedly he managed to reach the Wish Granter. And you know what he asked for? The ability to help every living creature. He was granted this gift all right, but he can no longer see the difference between humans and mutants. If I - a living creature - were to wound another living creature - a bloodsucker - Doctor would go and heal him. And vice versa. Oh, and Doctor is almost impossible to find, most of the time he shows up by himself. When he doesn't, he comes with a tame Chernobyl dog. Those who have seen them say it's quite a sight.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_0">
+		<text>How did you end up in the Zone?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_1">
+		<text>I was given an order - what did you think? I was the leader of a special forces battalion. No, it wasn't Spetsnaz. Our mission was to... ah, you don't need to know that. My whole battalion went down at once when the Zone lovingly met its first visitors with an emission. We weren't even moving in vehicles - they parachuted us in real deep, almost at the center. I was the sole survivor. How? Who the hell knows. I guess my time hadn't come yet. But let me tell you, man, the experience was something else... Anomalies, monsters everywhere - and bullets just enough to shoot yourself. When my ration ran out I ate things so gross even the memories make me puke. I spent a month roaming the area, darting from one stump to another. Then I came across some people. Various military units, mostly very battered. That's how Duty got its start.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_12">
+		<text>Who's that shithead presiding over your store?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_122">
+		<text>Don't mind him, that's our local dumbass Mitay. As one professor would put it, he's "nothing but a vulgar swine!" No garden is without its weeds, and Mitay is the designated weed in ours. He'd be a perfect fit for the Inquisitor's zoo - would complete the collection as the top show freak. Sometimes I wish a pseudodog would adopt him... But really he's much better off as a trader. If he spent his days in the bar he'd spend more time getting his ass beat than actually drinking - or worse. Even considering that manhandling is a sure way to wind up in the cooler, that wouldn't stop most.\n</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_133">
+		<text>The truth is that most Duty members are former military. I reckon you're familiar with our general history: most of the first wave perished, and those who survived founded the clan. We remained on this side of the perimeter, but some of us still know some of the people currently in service. Naturally, we get along with those better than with other clans. That's why everyone thinks we're in cahoots with the army. That's the gist of it anyway.</text>
+	</string>
+	<string id="agr_duty_zooman_about_animals_0">
+		<text>Who catches your animals for you?</text>
+	</string>
+	<string id="agr_duty_zooman_about_animals_1">
+		<text>I used to have to do it myself. That was some hassle, I tell you! I nearly kicked the bucket a couple of times. Then a few more guys joined me, one by one. It's great experience, and exciting too. Besides, imagine the bragging rights when hanging out in a bar: hey, man, you may have killed this monster, but I caught him alive! I had a couple of jerboas die recently. Two kids volunteered to go hunting for a replacement. Ballsy, but so damn naive. They tied some meat to a string and approached the jerboa. They did everything right - almost. One lured in a few while the other kept the pack at bay with gunfire. They did catch their prey, but as soon as they turned to leave the whole pack went after them! They ran half a marathon before reaching the base, and then our guys helped them out with fire. Each of the heroes then gulped down a whole bottle of liquor just to relax.</text>
+	</string>
+	<string id="agr_duty_zooman_about_zoo_0">
+		<text>What's this zoo for?</text>
+	</string>
+	<string id="agr_duty_zooman_about_zoo_1">
+		<text>Remember that old movie with huge mutant cockroaches? "Before you kill an insect, study it well!" No? He-he. Well, this place is kind of like that. Before a newbie faces even a blind dog out in the open, he'd better see one in a cage. He'll save a clean pair of pants that way, if not more! He'll observe the beast, study its habits, and when the time comes, when his life depends on it, his hand will be firm. Other beasts are the same. Besides, the Zone isn't big on entertainment, so my little freak show comes in handy.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_0">
+		<text>Got any sort of job for me?</text>
+	</string>
+	<string id="agr_duty_zooman_quest_1">
+		<text>Sure thing. We're looking for the migration map.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_11">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_2">
+		<text>Yes.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_22">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_0">
+		<text>I'm here about that job.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_1">
+		<text>Have you completed the job?</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_2">
+		<text>Yes.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_22">
+		<text>No.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_3">
+		<text>Thank you.</text>
+	</string>
+	<string id="agr_leader_about_dolg_0">
+		<text>Tell me about your faction.</text>
+	</string>
+	<string id="agr_leader_about_dolg_11">
+		<text>What do you guys do?</text>
+	</string>
+	<string id="agr_leader_about_dolg_1111">
+		<text>What are you talking about?</text>
+	</string>
+	<string id="agr_leader_about_zone_0">
+		<text>Tell me about the Zone.</text>
+	</string>
+	<string id="agr_leader_about_zone_1">
+		<text>The Zone is like an ulcer on the planet's body. Some idiots think it's a gift; they say the Zone brings us all these fun things to play with... You just look around! A mutant attacking you at night - does that sound like a gift to you? An anomaly that blows you to pieces - is that a gift, too?... No sir, the Zone is a disease, and unless we start fighting it now, it will consume us all!</text>
+	</string>
+	<string id="agr_leader_about_zone_11">
+		<text>But you use artifacts yourselves, don't you?</text>
+	</string>
+	<string id="agr_leader_about_zone_111">
+		<text>They say war is a no-holds-barred kind of deal. I don't see anything wrong with using the enemy's resources against him. I mean, we don't collect these for our personal gain, do we? An average artifact is worth two or three new guns and some ammo to boot, and three guns are worth a dozen dead mutants a day...</text>
+	</string>
+	<string id="agr_leader_about_zone_1111">
+		<text>But how does one defeat the Zone?</text>
+	</string>
+	<string id="agr_leader_about_zone_11111">
+		<text>That's the real brain twister. But if we quit our struggle, the Zone will swallow up everything. It is our duty to keep fighting! The way I see it, this war is for our very right to live on this Earth. We've been studying the Zone for months, and I can tell you one thing for sure - the Zone is alive. It's alive, and that is why it must have a weakness. All we have to do is find it.</text>
+	</string>
+	<string id="agr_leader_first_join_0">
+		<text>I'd like to join your faction.</text>
+	</string>
+	<string id="agr_leader_first_join_1">
+		<text>We don't know you, so we're not ready to take you in. Help us and then we'll talk.</text>
+	</string>
+	<string id="agr_leader_first_join_2">
+		<text>Fine.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111">
+		<text>I need to find an entrance to the Agroprom underground.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111">
+		<text>It's the underground, same as any other. I heard it shouldn't be too dangerous down there.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111111">
+		<text>And what now?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111111111">
+		<text>And how do I get into the underground now?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111111111">
+		<text>I agree.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_12222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_122222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1222222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_14">
+		<text>Mercenary, you did your duty well. Here, this is from me...Will come in useful in the Zone.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_144">
+		<text>Thank you for this reward! Proud to serve Duty!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_145">
+		<text>I don't need this!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_15">
+		<text>Howdy! What can I do you for?</text>
+	</string>
+	<string id="agr_leader_join_duty_0">
+		<text>I would like to be a part of Duty.</text>
+	</string>
+	<string id="agr_leader_join_duty_33">
+		<text>There's no recruiting going on until we neutralize the mutant threat, got it? I don't want to draft any new men just to add to the casualty list. If you really want to become a Duty soldier, prove yourself in action - go and lead the mutant fight.</text>
+	</string>
+	<string id="agr_leader_join_duty_44">
+		<text>You're a free Stalker, right? Heh, so now you agree that the Zone is a tumor on the planet's body? Good... Duty is always ready to accept those who are faithful to its ideals. One of our ideals is discipline. After you join our ranks, loafing around won't be an option anymore. So, are you ready to become one of us?</text>
+	</string>
+	<string id="agr_leader_join_duty_444">
+		<text>I'm ready. Awaiting your orders, sir!</text>
+	</string>
+	<string id="agr_leader_join_duty_4444">
+		<text>At ease. Feel free to use the john, but no smoking. Duty needs healthy soldiers. Are you familiar with Duty's charter?</text>
+	</string>
+	<string id="agr_leader_join_duty_44444">
+		<text>No, sir!</text>
+	</string>
+	<string id="agr_leader_join_duty_444444">
+		<text>Above all we value rigorous discipline and strict subordination. You don't discuss orders, you follow them. The clan's main goal is to fight the Zone's spawns and those anarchists from Freedom. Ideally we must rid the world of monsters, anomalies and Freedom members. If we don't, tomorrow the Zone may enter our homes and take away our loved ones. Our duty is to rid the world of this ulcer. Is that clear, soldier?</text>
+	</string>
+	<string id="agr_leader_join_duty_4444444">
+		<text>Yes, sir! Ready to serve Duty.</text>
+	</string>
+	<string id="agr_leader_join_duty_44444444">
+		<text>Excellent. Congratulations, soldier - you're now a member of Duty! Your PDA now has an activated tactical section which displays our current situation against Freedom. Also, I've uploaded a codec to your PDA that will let you listen to our internal radio communications and receive my orders. OK... seems to be all. Assume your duties! </text>
+	</string>
+	<string id="agr_leader_join_duty_444444444">
+		<text>Yessir!</text>
+	</string>
+	<string id="agr_leader_join_duty_44445">
+		<text>Yes, sir!</text>
+	</string>
+	<string id="agr_leader_join_duty_55">
+		<text>You're a bandit, right? Don't bother telling me anything. Your kind are all bandits to me... OK, so you've decided to move out of the pits and join the elite forces. A commendable decision. I heard Yoga is pretty tough on his men - good, that'll help you get used to our routine. But remember, Duty members obey only Duty commanders. You'll have to sever all ties with Yoga. Are you ready to do that?</text>
+	</string>
+	<string id="agr_leader_join_duty_66">
+		<text>Now we're talking. You proved yourself a real fighter, and we need more lads like you. Are you ready to join Duty?</text>
+	</string>
+	<string id="agr_leader_join_duty_66666666">
+		<text>Yes, sir. Ready to serve Duty.</text>
+	</string>
+	<string id="agr_leader_join_duty_77">
+		<text>You're already a member of Duty.</text>
+	</string>
+	<string id="agr_mechanic_join_duty_11">
+		<text>For that you'll have to see the commander.</text>
+	</string>
+	<string id="agr_stalker_about_agroprom_0">
+		<text>I see you've settled down nicely here, but what's all this for?</text>
+	</string>
+	<string id="agr_stalker_about_agroprom_1">
+		<text>Merc, we've got a job to do here - Duty isn't paying us to sit on our asses. They can't keep the entire territory under control by themselves. Mutants have been putting pressure on them, so they asked us for support. Now we're helping them hold this plant. If you help us, I'm sure the commander will find a way to repay you.</text>
+	</string>
+	<string id="agr_stalker_commander_1_11">
+		<text>Well, here's the thing. Our base keeps getting attacked. We've got used to mutants doing it, but the bandits really caught us with our pants down - they haven't dared enter Duty territory before, and now they've set up camp in a deserted railway tunnel not far from the road to the Garbage. We're barely able to contain their attacks, but if you could drive them out of that tunnel, that would improve out situation a hell of a lot. Can you help us?</text>
+	</string>
+	<string id="agr_stalker_commander_1_111">
+		<text>No problem, I'll help you.</text>
+	</string>
+	<string id="agr_stalker_commander_1_1111">
+		<text>Thanks, I'm glad you're with us.</text>
+	</string>
+	<string id="agr_stalker_commander_1_112">
+		<text>I have no time for this.</text>
+	</string>
+	<string id="agr_stalker_commander_1_1122">
+		<text>Too bad...</text>
+	</string>
+	<string id="agr_stalker_commander_1_22">
+		<text>Well? My men are waiting!</text>
+	</string>
+	<string id="agr_stalker_commander_1_222">
+		<text>I'm on my way...</text>
+	</string>
+	<string id="agr_stalker_commander_1_33">
+		<text>Thanks for helping us cope with those turds. I don't think they'll be coming back for more any time soon.</text>
+	</string>
+	<string id="agr_stalker_commander_1_44">
+		<text>What do you need?</text>
+	</string>
+	<string id="agr_stalker_commander_2_11">
+		<text>First of all, thanks a lot, man! I really owe you, I mean if it weren't for you we'd be toast sooner or later. Our only remaining problem is the fact that the bandits have settled down right next to one of the entrances to the underground labyrinth. My boys are sure that bandits have found some secret underground passage that leads here from the Garbage. We went down that hatch a long time ago and I am positive there's no ladder there. That means these bandits are helping their friends get out onto the surface. Your mission is to eliminate them. Can you help us?</text>
+	</string>
+	<string id="agr_stalker_commander_2_111">
+		<text>No problem, I'll help you.</text>
+	</string>
+	<string id="agr_stalker_commander_2_1111">
+		<text>Thanks, I'm glad you're with us.</text>
+	</string>
+	<string id="agr_stalker_commander_2_1112">
+		<text>Too bad...</text>
+	</string>
+	<string id="agr_stalker_commander_2_112">
+		<text>I have no time for this.</text>
+	</string>
+	<string id="agr_stalker_commander_2_22">
+		<text>Well? My men are waiting!</text>
+	</string>
+	<string id="agr_stalker_commander_2_222">
+		<text>I'm on my way...</text>
+	</string>
+	<string id="agr_stalker_commander_2_33">
+		<text>Thanks for helping us cope with those turds. I don't think they'll be coming back any time soon.</text>
+	</string>
+	<string id="agr_stalker_commander_2_44">
+		<text>What do you need?</text>
+	</string>
+	<string id="agr_stalker_commander_3_11">
+		<text>Merc, have you ever had to deal with mutants? We got this problem: a large group of mutants has turned up to the north of our base, and loads of snorks and dogs keep flocking to that area, as if someone's ordering them to go there. I don't know whether that's just a coincidence or what, but we're really tired of these attacks. I think we have to strike back ourselves - if we kill enough mutants and chase off the rest, that should give us the breather we desperately need. Most of my boys shit their pants just seeing a snork, but you're a good fighter. Can you do us this favor and clear the mutant lair out?</text>
+	</string>
+	<string id="agr_stalker_commander_3_111">
+		<text>No problem, I'll help you.</text>
+	</string>
+	<string id="agr_stalker_commander_3_1111">
+		<text>Thanks, I'm glad you're with us.</text>
+	</string>
+	<string id="agr_stalker_commander_3_1112">
+		<text>Too bad...</text>
+	</string>
+	<string id="agr_stalker_commander_3_112">
+		<text>I have no time for this.</text>
+	</string>
+	<string id="agr_stalker_commander_3_22">
+		<text>Well? My men are waiting!</text>
+	</string>
+	<string id="agr_stalker_commander_3_222">
+		<text>I'm on my way...</text>
+	</string>
+	<string id="agr_stalker_commander_3_33">
+		<text>Thanks for helping us clear out that mutant lair. I don't think they'll be coming back any time soon.</text>
+	</string>
+	<string id="agr_stalker_commander_3_44">
+		<text>What do you need?</text>
+	</string>
+	<string id="agr_stalker_leader_about_contact_0">
+		<text>Do you manage to get along with other factions?</text>
+	</string>
+	<string id="agr_stalker_leader_about_contact_1">
+		<text>We have yet to make any fast friends or bitter enemies. We're getting along just fine with everybody, except the bandits, of course. We don't share the goals of other factions, but that's no reason to kill them, right? That's what the Zone is for - live and let live... So let's live and see. Our actions will depend on how other clans behave towards us.</text>
+	</string>
+	<string id="agr_stalker_leader_about_join_0">
+		<text>Why haven't you joined with another faction yet?</text>
+	</string>
+	<string id="agr_stalker_leader_about_join_1">
+		<text>I guess we all have our different paths. Duty is trying to destroy the Zone, Freedom is trying to destroy Duty, and the bandits are using any chance they get to shovel some more money in. I've had enough and I won't take it any more. I've travelled the Zone on my own and even stood with Freedom for a while. But as soon as they started talking about whacking Duty, I put my skates on and sailed. Duty is even worse - they're good people individually, but get them together and they're bonafide fanatics. So, what was I trying to say? Oh yeah, stalkers shouldn't be killing each other based on clan membership, they should just live their lives. Search for loot, stay alive - all the good things the Zone is really about. That's what I live by and so do most of our folks.</text>
+	</string>
+	<string id="agr_stalker_leader_about_you_0">
+		<text>Tell me about yourself.</text>
+	</string>
+	<string id="agr_stalker_leader_about_you_1">
+		<text>I'm just your average Joe, no different from anyone else. I've always been a rolling stone though. When I was ten I took off for China to study Shaolin martial arts. They took us off the freightliner three days later, and my dad gave me a real good thrashing. When I got older I spent all my time travelling - hitchhiked across Europe, spent a winter with chukchas. Then the Zone emerged. At the time I was friends with one girl Leska - also a thrill-seeker, like me. Well, she thought we were friends, though I felt a little different... Anyway, one day I was looking for Leska and some friends told me she'd gone to the Zone. Right away I get my things, grab a pistol with some rubber bullets and head straight here. I made it thanks to all my travelling experience. I spent months searching for her, carrying her photo and showing it to everybody. Finally a stalker told me some international troops apprehended Leska with some pretty boy near the Zone's border. Gave the two a lecture and sent them home. So, I thought, God bless you, Leska, God bless. I didn't go back home then. And now I'm just kind of stuck to the Zone.</text>
+	</string>
+	<string id="agr_stalker_leader_about_zone_0">
+		<text>Please tell me about the Zone.</text>
+	</string>
+	<string id="agr_stalker_leader_about_zone_1">
+		<text>You know, even before the Zone became what it is now, it was still a real shady place. That was right after the original 1986 disaster. It was all secret back then, but the information slowly leaked out and all sorts of rumors started to spread, one scarier than the next. Some saw mutants not far from the Chernobyl NPP, some came across ghosts in the deserted villages. A good number of years passed rather quietly, but then a real nasty story went down. Some foreign morons came over to tour the Zone. Mostly men, but some women too - bored aristocrats looking for some extreme apocalyptic exotics. I don't know who they tipped off, but a bus full of people went right into the Zone. So it went, and so it vanished - along with all the police escorts. That story raised such hell that the Zone became totally off limits. However, the first stalkers who came here told of very strange zombies whose muttered speech resembled English. So there you go...</text>
+	</string>
+	<string id="agr_stalker_mechanic_about_gun_and_armor_upgrades_0">
+		<text>Tell me what you know about upgrading weapons and armor.</text>
+	</string>
+	<string id="agr_stalker_mechanic_about_gun_and_armor_upgrades_1">
+		<text>I'm no expert in armor. Shooters - that’s my cup of coffee, that's up my alley. Listen here, bud: if you're thinking about upgrading a regular weapon, don't bother. They're like shoes from the nickel-and-dime store - wear them today and come back for a new pair tomorrow. This commodity is too plentiful in the Zone and all too useless. What you want to upgrade are high-quality, rare shooters. They're a joy to work on. With them you get a whole number of options to boost, and a gun like that will serve you well and long. My advice is: invest only in special and reliable weapons.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_0">
+		<text>Got a of job for me?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_1">
+		<text>You need some more upgrades?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_11">
+		<text>No.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_2">
+		<text>Yes</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_22">
+		<text>No</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_3">
+		<text>Then bring me the PDA.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_4">
+		<text>OK.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_44">
+		<text>I changed my mind.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_0">
+		<text>I'm here about the job.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_1">
+		<text>Any luck? Got my PDA?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_2">
+		<text>Here's your PDA.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_22">
+		<text>Not yet.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_222">
+		<text>I'm waiting.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_3">
+		<text>Excellent. Now you can have new upgrades.</text>
+	</string>
+	<string id="agr_stalker_mechanic_what_is_you_doing_0">
+		<text>What can you do?</text>
+	</string>
+	<string id="agr_stalker_mechanic_what_is_you_doing_1">
+		<text>I'm no master, but my work ain't so bad - everyone says so. I'm most qualified to tune up your pistol, but I also work with shotguns and rifles. All I know is - guns do the firing, monsters do the dying, and stalkers come thanking me.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_3">
+		<text>Merc! Great job, now we have a clear path to Yantar. Go grab one of our armored suits, it'll protect you from anomalies and other adversities of the Zone.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_33">
+		<text>No results yet, merc.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_333">
+		<text>We're due to leave for Yantar. No time to talk.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_4">
+		<text>I'm glad I could help your group.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_5">
+		<text>We're leaving for Yantar. Goodbye and good luck.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_about_zone_0">
+		<text>What do you think about the Zone?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_about_zone_1">
+		<text>The Zone is a test. The way you feel about the Zone determines what tests you'll be given. If you think it's evil, or a symbol of total freedom, or a stern "wet nurse" - it'll give you exactly what you expect from it. Personally, I see several of the Zone's guises, but for me, above all else it is a place of Power. But I haven't yet fully understood the essence of the Zone and of the Power that's in it.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_0">
+		<text>Got a job for me?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_1">
+		<text>Well, there is something. I collect information about the Zone. Actually, I am mostly interested in its secrets, secrets that can help stalkers survive. Stuff like walking through an anomaly without protection, you know? Well, one day this stalker comes to see me, claiming he can stand right in the middle of a chemical anomaly without protection and not get hurt one bit! In return for this secret, he wanted me to tell him the best place to search for valuable artifacts, so I told him to go to the swamp and find a house - there's one right in the middle of an anomaly. I told him if he could bring me proof that he was there, we could exchange our secrets. He left and within ten minutes he was requesting help. Unfortunately, people here have their own problems to deal with, so nobody went to help him. Anyway, obviously he was wrong about his secret, but I'm still interested in how he thought he could avoid getting hurt in chemical anomalies. Get me his PDA and I'll make it worth your while.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_11">
+		<text>Sorry, but I don't need anything right now.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_2">
+		<text>All right, I agree.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_22">
+		<text>Maybe another time.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_3">
+		<text>Great. I'll be waiting for you with the PDA. If you suddenly feel bad inside an anomaly, don't bother sending out an SOS, 'cause nobody is gonna help you anyway. Instead of walking in circles around the house, get under the railing and into the water; the anomaly is weaker by the water, got it?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_0">
+		<text>I'm here about the job.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_1">
+		<text>Any luck? Got the PDA?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_2">
+		<text>Yes, here it is.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_22">
+		<text>Not yet.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_3">
+		<text>Good job, here's a reward for your bravery.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_what_is_you_doing_0">
+		<text>What do you do here?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_what_is_you_doing_1">
+		<text>I learn. About the surrounding world and myself. They say there's only one truth, but many paths lead to it. So I'm trying these different paths - I look inside myself, listen to the Zone, observe the local wildlife. And you know what - I no longer have any use for weapons or armor. The Zone doesn't see me as an enemy, it doesn't try to tear me to pieces at every step. Even monsters have left me alone. This leads me to believe that stalkers create their own problems when they invade the Zone, armed to the teeth. If you ask me, it's pride that'll be man's downfall - just look at all those sayings about man being the king of nature. What if he isn't? What if humans are just a tiny part of nature? No one seems to have the time to stop and think for a minute about all this, but we really should.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_who_are_you_0">
+		<text>Who are you?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_who_are_you_1">
+		<text>A man. Homo Sapiens. A creature with freedom of choice. What choice? One between consumption and cognition. You know, if you focus only on consuming something, it's bound to come back up, one way or another. That's what happened to me. I too spent a few years being a stalker. I counted my days by the spent magazines and the loot I was able to earn. One day I looked back and saw nothing there. Only spent magazines, the loot I earned and the vodka I drank. I felt really sick and bitter. And right then I had a revelation. It was like I shed all that trash and finally became who I am. A hermit. Well, some also call me a shaman, and they're not wrong either.</text>
+	</string>
+	<string id="agr_stalker_tir_1">
+		<text>Good day. Would you like to test your sniper skills?</text>
+	</string>
+	<string id="agr_stalker_tir_2">
+		<text>Not bad, not bad at all! Here's your reward.</text>
+	</string>
+	<string id="agr_stalker_tir_3">
+		<text>Life is like that - bad luck today, good luck tomorrow. Feel free to try again any time.</text>
+	</string>
+	<string id="agr_stalker_tir_4">
+		<text>If you feel like shooting again, do come by.</text>
+	</string>
+	<string id="agr_stalker_trader_about_dolg_0">
+		<text>What can you tell me about Duty?</text>
+	</string>
+	<string id="agr_stalker_trader_about_dolg_1">
+		<text>I know what you're trying to say: Duty is in league with the army, right? I hear it all the time, but it just ain't true. No, I used to think that myself, until I witnessed a showdown between them. I was walking along, searching for loot, when I heard shots. I approached silently and used my optics. There it was: Duty fighters and the army boys shooting each other from a little over 100 feet. I have no idea how it ended, 'cause I sneaked out of there, but it sure wasn't a display of brotherly love. There's another problem though. Our guys saw some stalkers in black palling it up with Spetsnaz. Makes you think bad things, don't it?</text>
+	</string>
+	<string id="agr_stalker_trader_about_prisoner_0">
+		<text>Who are those guys sitting in your basement?</text>
+	</string>
+	<string id="agr_stalker_trader_about_prisoner_1">
+		<text>A few of our guys were bringing their loot back to base, passing through the Garbage. Just walking on the fringes - you know how that place is. And all of a sudden some bandits jump out a hundred feet from them and go, "We got you, shitheads, now put your guns down and turn over your loot!" The group leader, Iroquois, says, "Why don't you come and take it from us!" Then he starts blasting and the group starts rushing from tree to tree, with the bandits after them. And so they zigzagged their way to Agroprom, where our guys gave the bandits a warm welcome. Now we're keeping these gents in custody, but don't really know what to do with them.</text>
+	</string>
+	<string id="agr_stalker_trader_about_select_0">
+		<text>You're not big on variety, are you?</text>
+	</string>
+	<string id="agr_stalker_trader_about_select_1">
+		<text>If you want variety, go to a mall. This place is mostly full of people who've come to help Duty fight off mutants for some coin. I came here expecting some demand. Whatever I could I took with me, then traded some here - and that's all I've got for now.</text>
+	</string>
+	<string id="agr_stalker_trader_about_trader_0">
+		<text>How did you become a trader?</text>
+	</string>
+	<string id="agr_stalker_trader_about_trader_1">
+		<text>Well, fellas need weapons, ammo, medkits, stuff like that, so I supply them with it. Duty pays stalkers good money, so business is going well. I only wish they'd bring me more unique items, most of the loot I see from them is second-rate.</text>
+	</string>
+	<string id="agr_trader_join_duty_11">
+		<text>Do I look like a clan recruiter to you? Go see the commander in his office and ask him!</text>
+	</string>
+	<string id="agr_weaponmaster_join_duty_11">
+		<text>That's easy. See that building right there? Go up to the second floor, see Krylov; he checks you out according to our tested Spetsnaz practices, and that’s it - you're one of us.</text>
+	</string>
+	<string id="agr_zooman_join_duty_11">
+		<text>Go see Krylov on the second floor of our headquarters. Tell him about yourself. He interviews you and gives you a "loyalty test." If all goes smoothly, you'll become one of us.</text>
+	</string>
+	<string id="agr_stalker_commander_1_0">
+		<text>How can I help you?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11">
+		<text>Hey, merc. Wanna find out how good a shooter you are?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111">
+		<text>Yes.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111">
+		<text>Remember the rules?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111">
+		<text>Let's get shooting.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111">
+		<text>Another thing. Leave your stuff with me before you go. Everything's gotta be fair - you can't use anything but my shooter. Don't fret though - you'll get your stuff back safe and sound once you're done.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111">
+		<text>I see.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111">
+		<text>Choose what to play for.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111111">
+		<text>I want to practice.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111">
+		<text>Choose your weapon.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111111111">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111111">
+		<text>Agreed.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111111">
+		<text>Well, good luck to you!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111112">
+		<text>Unfortunately, I don't have that much money.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111121">
+		<text>No problem. Wanna choose another mode?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111112">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111113">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111114">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111115">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111116">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111112">
+		<text>Let's do the scoring challenge.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111113">
+		<text>Let's do the accuracy challenge.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11112">
+		<text>No, tell me.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112">
+		<text>What are the rules?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121">
+		<text>You got three options: practice, scoring challenge or the accuracy challenge.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111">
+		<text>In all three modes you choose a shooter and have 10 seconds to get ready. The targets will pop up randomly.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211111">
+		<text>Practice mode is easy: a target will go down after three  hits. Your goal is to score as many points as possible. As you can guess, practicing won't earn you any money, but it's a good way to test your abilities.\n</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111111">
+		<text>The next mode is the scoring challenge. Each target pops up for only two seconds, and you must try to hit it for as many points as possible. Your time is limited, so don't aim too long. Here we play for money. If you reach your target score - I pay you; if not - you pay me.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211111111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111111111">
+		<text>And the last mode is the accuracy challenge. Here you must hit the bull's eye on each target. Your goal is to take down as many targets as you can in a given time. This is the toughest mode, so don't go all broke in a day. Betting is same as always. If you hit the required number of targets, I pay you; if not - I keep your bet.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111111111">
+		<text>All clear. Let's play.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_113">
+		<text>No time for games right now. Maybe later.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1131">
+		<text>Alright, suit yourself.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_21">
+		<text>Finished? Good job!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_211">
+		<text>So, what's my final score?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_2111">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_211111">
+		<text>Wanna have another go?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_2111111">
+		<text>Yeah.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_31">
+		<text>Stop dragging your feet! Come back when you're done shooting.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_311">
+		<text>OK.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_answer_bad">
+		<text>Heh, I was right again. I won this bet, but don't despair - you'll have better luck next time.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_answer_good">
+		<text>I was wrong about you! Take your money - you earned it fair and square.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_cot_phrase_part_1">
+		<text>Your time is limited, and your number of targets hit must be at least</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_cot_phrase_part_2">
+		<text>My bet is that you won't manage:</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_answer_bad">
+		<text>Try practicing some more - you're not ready to play for money. You scored less than</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_answer_good">
+		<text>You're all ready to play for money. You scored over</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_phrase">
+		<text>Good luck with your shooting! You have to score at least</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tss_phrase_part_1">
+		<text>Your time is limited, and you have to score at least</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tss_phrase_part_2">
+		<text>My bet is that you won't manage:</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_10">
+		<text>That's Orest. Look for him on the top floor of the central building. Our trader and technician are there too - just as it should be.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_2">
+		<text>Good morning, soldier.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_3">
+		<text>What's going on here?</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_4">
+		<text>Like Duty, we're trying to contain mutant attacks and other scum - bandits and the like.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_5">
+		<text>I've never heard of stalkers helping Duty.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_6">
+		<text>We're not just helping. When mutants rushed from their holes and started flooding Agroprom, Duty could no longer contain their constant attacks. They came to us for help, and we're never too proud to turn down work. So, we made a pretty good team.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_7">
+		<text>Now things are starting to make sense. I see you even set up a small base.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_8">
+		<text>Yeah, everybody who rose to Duty's call for help gathers here. It's safer, and besides, this way Krylov takes us more seriously.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_9">
+		<text>Who's the boss here?</text>
+	</string>
+	<string id="agr_stalker_commander_2_0">
+		<text>How can I help you?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_2">
+		<text>Hello.</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_3">
+		<text>What's going on here?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_4">
+		<text>I haven't made sense of it yet. I came here recently hoping to earn some dough. I don't care what I do, as long as the jobs pay cash.\n</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_5">
+		<text>Who's the boss here?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_6">
+		<text>That's Orest. Look for him on the top floor of the central building. Our trader and technician are there too - just as it should be.</text>
+	</string>
+	<string id="agr_stalker_commander_3_0">
+		<text>How can I help you?</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_2">
+		<text>Hi, merc.</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_3">
+		<text>What's going on here?</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_4">
+		<text>I've no time for chit-chat, merc. If you got questions, go to Orest. He's on the top floor of the central building.</text>
+	</string>
+</string_table>
