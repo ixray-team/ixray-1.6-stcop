@@ -589,7 +589,6 @@ player_hud::player_hud(bool invert)
 	m_legs_model = nullptr;
 }
 
-
 player_hud::~player_hud()
 {
 	IRenderVisual* v			= m_model->dcast_RenderVisual();
@@ -604,6 +603,8 @@ player_hud::~player_hud()
 		xr_delete				(a);
 	}
 	m_pool.clear				();
+
+	xr_delete(m_animator_item);
 }
 
 void player_hud::load(const shared_str& player_hud_sect)
@@ -729,7 +730,8 @@ void player_hud::render_hud()
 	bool b_r0 = (m_attached_items[0] && m_attached_items[0]->need_renderable());
 	bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
 
-	if(b_r0 || b_r1 || m_bhands_visible) {
+	if(b_r0 || b_r1 || m_animator_item && m_animator_item->IsPlaying || m_bhands_visible)
+	{
 		::Render->set_Transform(&m_transform);
 		::Render->add_Visual(m_model->dcast_RenderVisual());
 	}
@@ -741,6 +743,9 @@ void player_hud::render_hud()
 	if(b_r1) {
 		m_attached_items[1]->render();
 	}
+
+	if (m_animator_item && m_animator_item->IsPlaying)
+		m_animator_item->render();
 
 	if(m_show_legs && Actor() && m_legs_model)
 	{
@@ -826,6 +831,12 @@ u32 player_hud::motion_length(const MotionID& M, const CMotionDef*& md, float sp
 const Fvector& player_hud::attach_rot() const
 {
 	static Fvector m_last_rot = zero_vel;
+
+	if (m_animator_item)
+	{
+		return m_last_rot = m_animator_item->m_hands_attach[1];
+	}
+
 	if (m_attached_items[0])
 		return m_last_rot=m_attached_items[0]->hands_attach_rot();
 	else
@@ -839,6 +850,12 @@ const Fvector& player_hud::attach_rot() const
 const Fvector& player_hud::attach_pos() const
 {
 	static Fvector m_last_pos = zero_vel;
+
+	if (m_animator_item)
+	{
+		return m_last_pos = m_animator_item->m_hands_attach[0];
+	}
+
 	if (m_attached_items[0])
 		return m_last_pos=m_attached_items[0]->hands_attach_pos();
 	else
@@ -869,7 +886,7 @@ void angle_inertion(Fvector& c_hpb, const Fvector& t_hpb, float speed)
 
 void player_hud::update(const Fmatrix& cam_trans)
 {
-	if(!m_attached_items[0] && !m_attached_items[1])
+	if(!m_attached_items[0] && !m_attached_items[1] && !m_animator_item)
 	{
 		m_transform.set(cam_trans);
 		m_transformL.set(cam_trans);
@@ -893,7 +910,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		Fmatrix attach_offset;
 		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
 		attach_offset.c.set(left_hand_active ? m_attached_items[1]->hands_attach_pos() : attach_pos());
-		m_transformL.mul(trans, left_hand_active ? m_attach_offsetl.set(attach_offset) : m_attach_offsetl.inertion(attach_offset, 1-Device.fTimeDelta*10.f));
+		m_transformL.mul(trans, left_hand_active ? m_attach_offsetl.set(attach_offset) : m_attach_offsetl.inertion(attach_offset, 1 - Device.fTimeDelta * 10.f));
 	}
 
 	m_model->UpdateTracks();
@@ -905,6 +922,9 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 	if(m_attached_items[1])
 		m_attached_items[1]->update(true);
+
+	if (m_animator_item && m_animator_item->IsPlaying)
+		m_animator_item->update(true);
 }
 
 u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed)
@@ -1036,6 +1056,9 @@ void player_hud::RemoveHudItem(const shared_str& sect)
 
 bool player_hud::allow_activation(CHudItem* item)
 {
+	if (m_animator_item)
+		return false;
+
 	if(m_attached_items[1])
 		return m_attached_items[1]->m_parent_hud_item->CheckCompatibility(item);
 	else
@@ -1473,4 +1496,189 @@ void player_hud::load_default()
 	static auto actorHudDefault = READ_IF_EXISTS(pSettings, r_string, 
 		"actor", "player_hud_default", "actor_hud");
 	load(actorHudDefault);
+}
+
+animator_item* player_hud::create_animator_item(const shared_str& section)
+{
+	if (m_animator_item && m_animator_item->m_section != section)
+	{
+		xr_delete(m_animator_item);
+	}
+
+	if (!m_animator_item)
+	{
+		m_animator_item = new animator_item(this, section);
+	}
+
+	return m_animator_item;
+}
+
+void player_hud::delete_animator_item()
+{
+	if (m_animator_item)
+	{
+		xr_delete(m_animator_item);
+	}
+}
+
+animator_item::animator_item(player_hud* pParent, const shared_str& section)
+{
+	m_section = section;
+	m_parent = pParent;
+
+	if (pSettings->line_exist(section, "item_visual"))
+	{
+		const shared_str& visual_name = pSettings->r_string(section, "item_visual");
+		m_item = PKinematics(::Render->model_Create(visual_name.c_str()));
+		
+		m_item_attach[0] = READ_IF_EXISTS(pSettings, r_fvector3, section.c_str(), "item_position", zero_vel);
+		m_item_attach[1] = READ_IF_EXISTS(pSettings, r_fvector3, section.c_str(), "item_orientation", zero_vel);
+	}
+
+	bool is_16x9 = UI().is_widescreen();
+	string64 _prefix;
+	xr_sprintf(_prefix, "%s", is_16x9 ? "_16x9" : "");
+	string128 val_name;
+
+	xr_strconcat(val_name, "hands_position", _prefix);
+	m_hands_attach[0] = pSettings->r_fvector3(section, val_name);
+	xr_strconcat(val_name, "hands_orientation", _prefix);
+	m_hands_attach[1] = pSettings->r_fvector3(section, val_name);
+
+	m_hand_motions.load(pParent->GetModel(), section);
+}
+
+animator_item::~animator_item()
+{
+	IsPlaying = false;
+	if (m_item)
+	{
+		IRenderVisual* v = m_item->dcast_RenderVisual();
+		::Render->model_Delete(v);
+		m_item = nullptr;
+	}
+}
+
+void animator_item::update(bool bForce)
+{
+	if (!m_item)
+		return;
+
+	if (!bForce && m_upd_firedeps_frame == Device.dwFrame)
+		return;
+
+	Fvector ypr = m_item_attach[1];
+	ypr.mul(PI / 180.f);
+	m_attach_offset.setHPB(ypr.x, ypr.y, ypr.z);
+	m_attach_offset.translate_over(m_item_attach[0]);
+
+	m_parent->calc_transform(0, m_attach_offset, m_item_transform);
+	m_upd_firedeps_frame = Device.dwFrame;
+
+	IKinematicsAnimated* ka = m_item->dcast_PKinematicsAnimated();
+	if (ka)
+	{
+		ka->UpdateTracks();
+		ka->dcast_PKinematics()->CalculateBones_Invalidate();
+		ka->dcast_PKinematics()->CalculateBones(TRUE);
+	}
+}
+
+void animator_item::render()
+{
+	if (!m_item)
+		return;
+
+	::Render->set_Transform(&m_item_transform);
+	::Render->add_Visual(m_item->dcast_RenderVisual());
+}
+
+void animator_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed)
+{
+	if (m_item->dcast_PKinematicsAnimated())
+	{
+		IKinematicsAnimated* ka = m_item->dcast_PKinematicsAnimated();
+
+		MotionID M2 = ka->ID_Cycle_Safe(item_anm_name);
+		if (!M2.valid())
+			M2 = ka->ID_Cycle_Safe("idle");
+		else
+			if (bDebug)
+				Msg("playing item animation [%s]", item_anm_name.c_str());
+
+		u16 root_id = m_item->LL_GetBoneRoot();
+		CBoneInstance& root_binst = m_item->LL_GetBoneInstance(root_id);
+		root_binst.set_callback_overwrite(TRUE);
+		root_binst.mTransform.identity();
+
+		u16 pc = ka->partitions().count();
+		for (u16 pid = 0; pid < pc; ++pid)
+		{
+			CBlend* B = ka->PlayCycle(pid, M2, bMixIn);
+			R_ASSERT(B);
+			B->speed *= speed;
+		}
+
+		m_item->CalculateBones_Invalidate();
+	}
+}
+
+u32 animator_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md)
+{
+	player_hud_motion* anm = m_hand_motions.find_motion(anm_name_b);
+
+	u8 rnd_idx = (u8)Random.randI(anm->m_animations.size());
+	const motion_descr& M = anm->m_animations[rnd_idx];
+	float speed = anm->m_anim_speed;
+
+	u32 ret = m_parent->anim_play(0, M.mid, bMixIn, md, speed);
+	
+	if (m_item)
+	{
+		if (auto ka = m_item->dcast_PKinematicsAnimated())
+		{
+			shared_str item_anm_name;
+			if (anm->m_base_name != anm->m_additional_name)
+				item_anm_name = anm->m_additional_name;
+			else
+				item_anm_name = M.name;
+
+			anim_play(item_anm_name, bMixIn, speed);
+
+			for (auto& bpart_anim : anm->m_bone_parts) {
+				MotionID M3 = ka->ID_Cycle_Safe(bpart_anim);
+
+				if (M3.valid()) {
+					CBlend* B = ka->PlayCycle(M3, bMixIn);
+					if (B)
+					{
+						B->speed *= speed;
+					}
+				}
+			}
+		}
+	}
+
+	IsPlaying = true;
+
+	if (Level().CurrentControlEntity())
+	{
+		CActor* current_actor = static_cast<CActor*>(Level().CurrentControlEntity());
+		VERIFY(current_actor);
+		string_path ce_path;
+		string_path anm_name;
+		xr_strconcat(anm_name, "camera_effects\\weapon\\", M.name.c_str(), ".anm");
+		if (FS.exist(ce_path, "$game_anims$", anm_name)) {
+			CEffectorCam* ec = current_actor->Cameras().GetCamEffector(eCEWeaponAction);
+			if (ec)
+				current_actor->Cameras().RemoveCamEffector(eCEWeaponAction);
+			CAnimatorCamEffector* e = new CAnimatorCamEffector();
+			e->SetType(eCEWeaponAction);
+			e->SetHudAffect(false);
+			e->SetCyclic(false);
+			e->Start(anm_name);
+			current_actor->Cameras().AddCamEffector(e);
+		}
+	}
+	return ret;
 }

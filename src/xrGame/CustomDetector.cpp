@@ -159,6 +159,12 @@ void  CCustomDetector::ShowingCallback(CBlend*B)
 }
 void CCustomDetector::switch_detector()
 {
+	CActor* actor = Level().CurrentControlEntity()->cast_actor();
+	if (actor && actor->HudAnimator() && actor->HudAnimator()->IsActive())
+	{
+		return;
+	}
+
 	if (!m_bDetectorActive&&GetState()==eHidden && g_player_hud->attached_item(0)&&m_pInventory->ActiveItem()&&m_pInventory->ActiveItem()->BaseSlot()==INV_SLOT_2)
 	{
 		if(g_player_hud->animator_play(g_player_hud->check_anim("anm_hide", 0)?"anm_hide":"anm_hide_0", 0, 1, TRUE, 1.5f, 0, false, true, [](CBlend*B){static_cast<CCustomDetector*>(B->CallbackParam)->ShowingCallback(B);}, this, 0))
@@ -316,6 +322,16 @@ void CCustomDetector::UpdateVisibility()
 
 	if (!m_pInventory)
 		return;
+
+	if (m_bNeedActivation)
+	{
+		CActor* actor = Level().CurrentControlEntity()->cast_actor();
+		if (actor && actor->HudAnimator() && actor->HudAnimator()->IsActive())
+		{
+			m_bNeedActivation = false;
+			return;
+		}
+	}
 
 	PIItem pItem = m_pInventory->ActiveItem();
 

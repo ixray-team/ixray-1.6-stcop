@@ -12,6 +12,7 @@
 #include "../UIGameCustom.h"
 #include "UIActorMenu.h"
 #include "UIPdaWnd.h"
+#include "Actor.h"
 
 extern ENGINE_API BOOL bShowPauseString;
 
@@ -405,6 +406,15 @@ void CUISequencer::IR_OnMouseWheel		(int direction)
 
 void CUISequencer::IR_OnKeyboardPress	(int dik)
 {
+	if (g_pGameLevel)
+	{
+		CActor* actor = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_actor() : nullptr;
+		if (actor && actor->HudAnimator() && actor->HudAnimator()->IsActive())
+		{
+			return;
+		}
+	}
+
 	if(m_sequencer_items.size())	
 		m_sequencer_items.front()->OnKeyboardPress			(dik);
 	
