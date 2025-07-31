@@ -2,6 +2,7 @@
 #include "Utils/Cursor3D.h"
 #include "UI/UIEditLibrary.h"
 #include "Scene/LEPhysics.h"
+#include "../Viewports/ViewportMesh.h"
 
 #define DETACH_FRAME(a) 	if (a){ a=0; }
 #define ATTACH_FRAME(a,b)	if (a){b=a;}
@@ -9,6 +10,21 @@
 CLevelTool*	LTools=(CLevelTool*)Tools;
 
 TShiftState ssRBOnly;
+
+int CLevelTool::AddViewport(IViewport* VP)
+{
+	Viewlist.push_back(VP);
+	return Viewlist.size() - 1;
+}
+
+void CLevelTool::RemoveViewport(IViewport* VP)
+{
+	auto Iter = std::find(Viewlist.begin(), Viewlist.end(), VP);
+	if (Iter != Viewlist.end())
+	{
+		Viewlist.erase(Iter);
+	}
+}
 
 CLevelTool::CLevelTool()
 {
@@ -505,6 +521,13 @@ void  CLevelTool::Render()
         }
 	break;
 	case esBuildLevel: Builder.OnRender(); break;
+	case esEditMesh:
+	{
+		for (IViewport* VP : Viewlist)
+		{
+			VP->Render();
+		}
+	}
 	}
 
 	// draw cursor
