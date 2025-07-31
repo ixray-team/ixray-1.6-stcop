@@ -372,24 +372,6 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 				m_ui_weapon_sign_ammo->Show(true);
 				m_ui_weapon_sign_ammo->SetText(temp);
-
-				// hack ^ begin
-				CGameFont* pFont32 = UI().Font().GetFont(GRAFFITI32_FONT_NAME);
-				CGameFont* pFont22 = UI().Font().GetFont(GRAFFITI22_FONT_NAME);
-				CGameFont* pFont = pFont32;
-
-				if (UI().is_widescreen())
-				{
-					pFont = pFont22;
-				}
-				else
-				{
-					if (xr_strlen(temp) > 5)
-					{
-						pFont = pFont22;
-					}
-				}
-				m_ui_weapon_sign_ammo->SetFont(pFont);
 			}
 			else
 			{
