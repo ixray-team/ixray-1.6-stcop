@@ -613,6 +613,14 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, u32 state)
 		return 0;
 	}
 
+	shared_str snd;
+	snd.printf("snd_%s", *M);
+	if (m_object->H_Parent() != nullptr && pSettings->line_exist(HudSection(), snd))
+	{
+		m_sounds.LoadSound(*HudSection(), *snd.printf("snd_%s", *M), "sndByMotion", false);
+		PlaySoundIfExist("sndByMotion", m_object->Position());
+	}
+
 	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn);
 	if (anim_time>0)
 	{
