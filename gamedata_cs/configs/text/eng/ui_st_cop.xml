@@ -39,4 +39,7 @@
 	<string id="ui_ammo_types">
 		<text>Ammo</text>
 	</string>
+	<string id="st_save_zat_a1_game_start">
+		<text>beginning of the game</text>
+	</string>
 </string_table>

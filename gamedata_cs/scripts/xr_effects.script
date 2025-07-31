@@ -1864,5 +1864,5 @@ function del_cs_text(actor, npc, p)
 end
 
 function autosave_game()
-	get_console():execute("save "..user_name().."_autosave")
+	get_console():execute("save "..user_name().." - "..game.translate_string("st_save_zat_a1_game_start"))
 end
