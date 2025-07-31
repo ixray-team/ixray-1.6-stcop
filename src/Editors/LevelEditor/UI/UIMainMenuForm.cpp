@@ -231,6 +231,7 @@ void UIMainMenuForm::Draw()
 			DrawMenuItem("Library Editor", COMMAND_LIBRARY_EDITOR);
 			ImGui::Separator();
 
+			DrawMenuItem("Clip Editor", COMMAND_SHOW_CLIP_EDITOR);
 			DrawMenuItem("Multi Rename", COMMAND_MULTI_RENAME_OBJECTS);
 
 			if (ImGui::MenuItem("Multi Replace")) 
