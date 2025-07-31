@@ -223,7 +223,7 @@ void CConsole::OutFont( LPCSTR text, float& pos_y )
 			{
 				OutFont		( text + sz + 1, pos_y );
 				pos_y		-= m_line_height;
-				pFont->OutI	( -1.0f, pos_y, "%s", one_line + ln );
+				pFont->OutI	( -0.99f, pos_y, "%s", one_line + ln );
 				ln			= sz + 1;
 				f			= 0.0f;
 			}
@@ -237,7 +237,7 @@ void CConsole::OutFont( LPCSTR text, float& pos_y )
 	}
 	else
 	{
-		pFont->OutI( -1.0f, pos_y, "%s", text );
+		pFont->OutI(-0.99f, pos_y, "%s", text );
 	}
 }
 
@@ -269,17 +269,7 @@ void CConsole::OnRender()
 
 	m_line_height = pFont->CurrentHeight_() / Device.HalfTargetHeight;
 
-	bool bGame = false;	
-	if ( ( g_pGameLevel && g_pGameLevel->bReady ) ||
-		 ( g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() ) )
-	{
-		 bGame = true;
-	}
-	if ( g_dedicated_server )
-	{
-		bGame = false;
-	}
-	
+	bool bGame = g_dedicated_server ? false : ((g_pGameLevel && g_pGameLevel->bReady) || (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()));
 	DrawBackgrounds( bGame );
 	
 	float fMaxY = bGame ? 0.0f : 1.0f;
