@@ -1049,8 +1049,12 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 			{
 				if (E.bullet.flags.allow_sendhit && !IsGameTypeSingle())
 					Game().m_WeaponUsageStatistic->OnBullet_Remove(&E.bullet);
-				m_Bullets[E.tgt_material] = m_Bullets.back();
-				m_Bullets.pop_back();
+
+				if (E.tgt_material < m_Bullets.size())
+				{
+					m_Bullets[E.tgt_material] = m_Bullets.back();
+					m_Bullets.pop_back();
+				}
 			}break;
 		}		
 	}
