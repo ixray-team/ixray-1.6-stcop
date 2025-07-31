@@ -468,3 +468,24 @@ void CUIInventoryUpgradeWnd::set_info_cur_upgrade( Upgrade_type* upgrade )
 		}
 	}
 }
+
+void CUIInventoryUpgradeWnd::DeInitInventory()
+{
+	set_info_cur_upgrade(nullptr);
+	m_back->DetachAll();
+	m_back->Show(false);
+	m_item->DetachAll();
+	m_item->Show(false);
+	m_btn_repair->Enable(false);
+	m_scheme_wnd->DetachAll();
+	m_scheme_wnd->Show(false);
+	m_item_info->DetachAll();
+	m_item_info->Show(false);
+
+	if (m_btn_disassemble != nullptr)
+	{
+		m_btn_disassemble->Enable(false);
+	}
+
+	m_inv_item = nullptr;
+}
