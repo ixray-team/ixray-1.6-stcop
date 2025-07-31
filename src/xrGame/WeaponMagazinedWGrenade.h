@@ -15,6 +15,7 @@ public:
 	virtual			~CWeaponMagazinedWGrenade	();
 
 	virtual void	Load				(LPCSTR section);
+	virtual void	LoadSounds			(LPCSTR section) override;
 	
 	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
 	virtual void	net_Destroy			();

@@ -75,18 +75,6 @@ void CMissile::Load(LPCSTR section)
 
 	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
 
-	if (pSettings->line_exist(section, "snd_draw"))
-		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
-
-	if (pSettings->line_exist(section, "snd_holster"))
-		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
-
-	if (pSettings->line_exist(section, "snd_throw_begin"))
-		m_sounds.LoadSound(section, "snd_throw_begin", "sndThrowBegin", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
-
-	if (pSettings->line_exist(section, "snd_throw"))
-		m_sounds.LoadSound(section, "snd_throw", "sndThrow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
-
 	if (pSettings->line_exist(section, "checkout_bones"))
 	{
 		m_sCheckoutBones.clear();
@@ -97,6 +85,35 @@ void CMissile::Load(LPCSTR section)
 			_GetItem(lineStr, j, bone_name);
 			m_sCheckoutBones.push_back(bone_name);
 		}
+	}
+}
+
+void CMissile::LoadSounds(LPCSTR section)
+{
+	inherited::LoadSounds(section);
+
+	if (pSettings->line_exist(section, "snd_draw"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_draw, TRUE);
+		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
+	}
+
+	if (pSettings->line_exist(section, "snd_holster"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_holster, TRUE);
+		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+	}
+
+	if (pSettings->line_exist(section, "snd_throw_begin"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_throw_begin, TRUE);
+		m_sounds.LoadSound(section, "snd_throw_begin", "sndThrowBegin", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
+	}
+
+	if (pSettings->line_exist(section, "snd_throw"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_throw, TRUE);
+		m_sounds.LoadSound(section, "snd_throw", "sndThrow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
 }
 
@@ -308,7 +325,11 @@ void CMissile::State(u32 state)
         {
 			SetPending			(TRUE);
 			PlayHUDMotion("anm_show", FALSE, GetState());
-			PlaySoundIfExist("SndShow", Position());
+
+			if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
+			{
+				PlaySound("SndShow", Position());
+			}
 		} break;
 	case eIdle:
 		{
@@ -321,7 +342,10 @@ void CMissile::State(u32 state)
 			{
 				SetPending			(TRUE);
 				PlayHUDMotion		("anm_hide", TRUE, GetState());
-				PlaySoundIfExist("SndHide", Position());
+				if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
+				{
+					PlaySound("SndHide", Position());
+				}
 			}
 		} break;
 	case eHidden:
@@ -343,7 +367,10 @@ void CMissile::State(u32 state)
 		{
 			SetPending			(TRUE);
 			m_fThrowForce		= m_fMinForce;
-			PlaySoundIfExist("sndThrowBegin", Position());
+			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw_begin))
+			{
+				PlaySound("sndThrowBegin", Position());
+			}
 			PlayHUDMotion		("anm_throw_begin", TRUE, GetState());
 
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
@@ -375,7 +402,10 @@ void CMissile::State(u32 state)
 		{
 			SetPending			(TRUE);
 			m_throw				= false;
-			PlaySoundIfExist("sndThrow", Position());
+			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw))
+			{
+				PlaySound("sndThrow", Position());
+			}
 			PlayHUDMotion		("anm_throw", TRUE, GetState());
 
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
