@@ -1,47 +1,47 @@
 <window>
 	<map_desc x="144" y="115" width="749" height="543">
-		<background x="0" y="0" width="749" height="543">
-			<texture>ui_frame_mainDes</texture>
+		<background x="0" y="0" width="724" height="526">
+			<texture>ui_inGame2_Mp_screen_main_window</texture>
 		</background>
-		<caption x="42" y="4" width="220" height="32">
-			<text font="graffiti22" r="192" g="168" b="144" vert_align="c">mp_map_desc</text>
+		<caption x="200" y="4" width="330" height="32">
+			<text font="letterica18" r="200" g="200" b="200" align="c" vert_align="c">mp_map_desc</text>
 		</caption>
-		<image_frames_1 x="53" y="44" width="220" height="277">
-			<texture>ui_TV_descr_b</texture>
+		<image_frames_1 x="33" y="42" width="324" height="234">
+			<texture>ui_inGame2_Mp_screen_map_window</texture>
 		</image_frames_1>
-		<image_frames_2 x="273" y="44" width="224" height="277">
-			<texture>ui_TV_descr_back</texture>
+		<image_frames_2 x="365" y="42" width="324" height="234">
+			<texture>ui_inGame2_Mp_screen_mapinfo_window</texture>
 		</image_frames_2>
-		<image_frames_3 x="497" y="44" width="220" height="277">
+		<image_frames_3 x="4970" y="44" width="220" height="277">
 			<texture>ui_TV_descr_e</texture>
 		</image_frames_3>
 
-    <image x="80" y="61" width="287" height="215" stretch="1">
+    <image x="33" y="42" width="324" height="234" stretch="1">
       <texture width="256" height="175">ui\ui_noise</texture>
     </image>
 		
-		<map_info x="470" y="100" width="250" height="215" />
+		<map_info x="377" y="50" width="310" height="226" />
 		
-		<text_desc x="72" y="331" width="620" height="160" always_show_scroll="0" complex_mode="1"/>			
+		<text_desc x="33" y="303" width="657" height="144" always_show_scroll="0" complex_mode="1"/>			
 		
-		<btn_next x="394" y="504" width="157" height="48">
-			<texture>ui_button_main02</texture>
-			<text font="graffiti19" align="c">mp_next</text>
+		<btn_next x="155" y="482" width="137" height="28" stretch="1">
+			<texture>ui_inGame2_Mp_bigbuttone</texture>
+			<text font="graffiti19" align="c" a="170">mp_next</text>
 			<text_color>
-				<e r="227" g="199" b="178"/>				
-				<t r="180" g="153" b="155"/>				
-				<d r="106" g="95" b="91"/>							
+				<e r="227" g="199" b="178"/>
+				<t r="180" g="153" b="155"/>
+				<d r="106" g="95" b="91"/>
 				<h r="0" g="0" b="0"/>
 			</text_color>
 		</btn_next>
 
-    <btn_spectator x="551" y="504" width="157" height="48">
-			<texture>ui_button_main02</texture>
-			<text font="graffiti19" align="c">mp_spectator</text>
+		<btn_spectator x="433" y="482" width="137" height="28" stretch="1">
+			<texture>ui_inGame2_Mp_bigbuttone</texture>
+			<text font="graffiti19" align="c" a="170">mp_spectator</text>
 			<text_color>
-				<e r="227" g="199" b="178"/>				
-				<t r="180" g="153" b="155"/>				
-				<d r="106" g="95" b="91"/>							
+				<e r="227" g="199" b="178"/>
+				<t r="180" g="153" b="155"/>
+				<d r="106" g="95" b="91"/>
 				<h r="0" g="0" b="0"/>
 			</text_color>
 		</btn_spectator>
