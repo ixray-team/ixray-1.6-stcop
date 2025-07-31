@@ -6,11 +6,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-/*
+
 #include "UIWarState.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
-#include "UIHelper.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
 
 UIWarState::UIWarState()
 {
@@ -27,7 +27,7 @@ void UIWarState::InitXML( CUIXml& xml, LPCSTR att_name, CUIWindow* parent )
 
 	CUIXmlInit::InitWindow( xml, att_name, 0, this );
 
-	strconcat( sizeof(buf), buf, att_name, ":img" );
+	xr_strconcat(buf, att_name, ":img" );
 	m_static = UIHelper::CreateStatic( xml, buf, this );
 	
 //	strconcat( sizeof(buf), buf, att_name, ":img:texture" );
@@ -85,4 +85,4 @@ void  UIWarState::Draw()
 //		m_static->Draw();
 //	}
 }
-*/
+
