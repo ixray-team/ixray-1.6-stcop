@@ -1,0 +1,47 @@
+[actor_item]
+bolt_item = bolt
+pda_item  = device_pda
+
+[night_vision]
+night_vision_section = night_vision_base
+night_vision_animator = nvs_animator
+
+[headlamp]
+headlamp_animator = nvs_animator
+
+[render]
+default_wallmark = explosion_marks
+
+[callbacks]
+; IX-Ray
+OnSkipKillActor = xr_effects.enable_ui
+
+; IX-Ray Clear Sky
+OnStartAttack = sim_combat.start_attack
+
+; Call of Chernobyl
+;OnCanTake = _G.CInventoryBox_CanTake
+;OnBeforeHit = _G.CActor__BeforeHitCallback
+;OnUnregister = _G.CSE_ALifeDynamicObject_on_unregister
+;OnInventoryEat = _G.CInventory__eat
+;OnBeforeChangeLevel = _G.CALifeUpdateManager__on_before_change_level
+;OnItemDropped = actor_menu_inventory.CUIActorMenu_OnItemDropped
+;OnItemFocusReceive = actor_menu_inventory.CUIActorMenu_OnItemFocusReceive
+;OnItemFocusLost = actor_menu_inventory.CUIActorMenu_OnItemFocusLost
+;OnCanMoveToPartner = actor_menu_inventory.CUIActorMenu_CanMoveToPartner
+;OnItemAvailableToTrade = actor_menu_inventory.CInventory_ItemAvailableToTrade
+;OnPropertyBoxClicked = pda.property_box_clicked
+;OnPropertyBoxAddProperties = pda.property_box_add_properties
+;OnSetActiveSubdialog = pda.set_active_subdialog
+;OnGetRankingsArraySize = pda.get_rankings_array_size
+;OnKeyPress = level_input.on_key_press
+;OnGetVisibleValue = visual_memory_manager.get_visible_value
+;OnUpdateBestWeapon = ai_stalker.update_best_weapon
+
+; Improved Weapon Pack
+;OnZoneTouch = _G.CZone_Touch
+
+; GUNSLINGER Mod
+;OnCanDisassembleItem = inventory_upgrades.gunsl_can_disassemble_item
+;OnQuestionDisassembleItem = inventory_upgrades.gunsl_question_disassemble_item
+;OnEffectDisassemble = inventory_upgrades.gunsl_effect_disassemble
