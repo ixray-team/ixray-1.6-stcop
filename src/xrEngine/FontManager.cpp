@@ -11,6 +11,7 @@ xr_vector<u32> FontBitmap;
 
 CFontManager::CFontManager()
 {
+	PROF_EVENT("CFontManager::CFontManager");
 	g_FontManager = this;
 	Device.seqDeviceReset.Add(this, REG_PRIORITY_HIGH);
 	pFontDI = nullptr;
@@ -39,6 +40,7 @@ CFontManager::~CFontManager()
 
 void CFontManager::InitializeFonts()
 {
+	PROF_EVENT("InitializeFonts");
 	pFontDI = GetFont(FontConsoleName); //hud_font_di
 	pFontMedium = GetFont(FontMediumName);
 	pFontSystem = GetFont(FontSystemName);
