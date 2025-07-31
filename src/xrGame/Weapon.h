@@ -163,6 +163,7 @@ public:
 	void UpdateAddonsVisibility();
 	void UpdateHUDAddonsVisibility();
 	void ProcessScope();
+	void UpdateScopePosition();
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
 
