@@ -616,6 +616,19 @@
 		    </text_color>
         </list_difficulty>
 
+        <cap_lang x="26" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_lang</text>
+        </cap_lang>
+
+        <list_lang x="154" y="0.5" width="188" height="20" list_length = "4" always_show_scroll = "0">
+            <options_item entry="language" group="mm_opt_gameplay" />
+            <list_font r="170" g="170" b="170" font="letterica16"/>
+		    <text_color>
+	            <e r="170" g="170" b="170"/>
+	            <d r="70" g="70" b="70"/>
+		    </text_color>
+        </list_lang>
+
         <cap_check_crosshair x="26" y="3" width="108" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_show_crosshair</text>
         </cap_check_crosshair>
