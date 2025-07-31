@@ -303,6 +303,17 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 
 	if (state == eFire)
 	{
+		if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+		{
+			if (CCustomDetector* pDet = pActor->GetDetector())
+			{
+				if (pDet->CanKick())
+				{
+					pDet->SwitchState(CCustomDetector::EDetectorStates::eHandKick1);
+				}
+			}
+		}
+
 		PlayHUDMotion("anm_attack", FALSE, state);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
@@ -312,6 +323,17 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 	}
 	else
 	{
+		if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+		{
+			if (CCustomDetector* pDet = pActor->GetDetector())
+			{
+				if (pDet->CanKick())
+				{
+					pDet->SwitchState(CCustomDetector::EDetectorStates::eHandKick2);
+				}
+			}
+		}
+
 		PlayHUDMotion("anm_attack2", FALSE, state);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
