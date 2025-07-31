@@ -12,7 +12,9 @@
 #define THM_CHUNK_SOUNDPARAM2			0x1001
 #define THM_CHUNK_SOUND_AI_DIST			0x1002
 //------------------------------------------------------------------------------
-ESoundThumbnail::ESoundThumbnail(LPCSTR src_name, bool bLoad):ECustomThumbnail(src_name,ETSound)
+ESoundThumbnail::ESoundThumbnail(LPCSTR src_name, bool bLoad, bool bFullPath) :
+    ECustomThumbnail(src_name,ETSound),
+    IsFullPath(bFullPath)
 {
     m_fQuality 		= 0.f;
     m_fMinDist 		= 1.f;
@@ -31,11 +33,21 @@ ESoundThumbnail::~ESoundThumbnail()
 
 bool ESoundThumbnail::Load(LPCSTR src_name, LPCSTR path)
 {
-	string_path 	fn;
+    string_path fn;
     strcpy(fn,EFS.ChangeFileExt(src_name?src_name:m_Name.c_str(),".thm").c_str());
-    if (path) 		FS.update_path(fn,path,fn);
-    else			FS.update_path(fn,_sounds_,fn);
-    if (!FS.exist(fn)) return false;
+
+    if (!IsFullPath)
+    {
+        if (path)
+            FS.update_path(fn, path, fn);
+        else
+            FS.update_path(fn, _sounds_, fn);
+    }
+
+    if (!FS.exist(fn))
+    {
+        return false;
+    }
 
     IReader* F 		= FS.r_open(fn);
     u16 version 	= 0;
