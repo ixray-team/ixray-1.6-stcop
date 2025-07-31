@@ -96,5 +96,6 @@
 	</wpn_params>
 	
 #include "ui\af_params.xml"
+#include "ui\booster_params.xml"
 	
 </w>
