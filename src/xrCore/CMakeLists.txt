@@ -50,8 +50,9 @@ file(GLOB CORE_SOURCE_COLLSION_OPCODE_FILES
 )
 
 file(GLOB CORE_SOURCE_DEBUG_FILES
-	"xrDebug*.*"
-	"log.*"
+    "xrDebug*.*"
+    "log.*"
+    "ChZ*.*"
 )
 
 file(GLOB CORE_SOURCE_STR_FILES

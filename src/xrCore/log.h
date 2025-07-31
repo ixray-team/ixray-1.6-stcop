@@ -9,6 +9,8 @@ void 	XRCORE_API		Log			(const char* msg);
 void 	XRCORE_API		Log			(const char* msg, const Fvector& dop);
 void 	XRCORE_API		Log			(const char* msg, const Fmatrix& dop);
 
+#include "ChZGlobalLogger.h"
+
 class XRCORE_API xrLogger
 {
 public:
