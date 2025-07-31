@@ -47,6 +47,7 @@ if(IXRAY_UTILS AND NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(TextureCloner PROPERTIES ${IXRAY_FOLDER_UTILS})
 
     if(IXRAY_MP)
+        set_target_properties(SQL_Gen PROPERTIES ${IXRAY_FOLDER_UTILS})
         set_target_properties(mp_balancer PROPERTIES ${IXRAY_FOLDER_UTILS})
         set_target_properties(mp_configs_verifyer PROPERTIES ${IXRAY_FOLDER_UTILS})
         set_target_properties(mp_screenshots_info PROPERTIES ${IXRAY_FOLDER_UTILS})
