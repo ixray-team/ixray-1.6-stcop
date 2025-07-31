@@ -1224,10 +1224,11 @@ void CActor::UpdateCL()
 	else
 		_jitter_time_remains = 0;
 
+	CCustomDetector* det = GetDetector();
+
 	if (!g_player_hud->m_need_reload && !HudAnimator()->IsActive())
 	{
 		CHudItemObject* item = smart_cast<CHudItemObject*>(inventory().ActiveItem());
-		CCustomDetector* det = GetDetector();
 
 		if (item != nullptr || det != nullptr)
 		{
@@ -1345,9 +1346,10 @@ void CActor::UpdateCL()
 	Device.hudViewportData.ActorHealth = GetfHealth();
 	Device.hudViewportData.ActorOutfitCondition = GetOutfit() != nullptr ? GetOutfit()->GetCondition() : -1.0f;
 
+	bBlockSprint = pWeapon != nullptr && pWeapon->NeedBlockSprint() || det != nullptr && det->NeedBlockSprint();
+
 	if (pWeapon)
 	{
-		bBlockSprint = pWeapon->NeedBlockSprint();
 
 		if(pWeapon->IsZoomed())
 		{
@@ -1403,7 +1405,6 @@ void CActor::UpdateCL()
 	{
 		if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
 		{
-			bBlockSprint = false;
 			HUD().SetCrosshairDisp(0.f);
 			HUD().ShowCrosshair(false);
 
