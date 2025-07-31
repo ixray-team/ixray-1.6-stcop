@@ -151,8 +151,8 @@ public:
 
 	IC void 				SetCanBeHarmedState		(bool CanBeHarmed) 			{m_bCanBeHarmed = CanBeHarmed;}
 	IC bool					CanBeHarmed				() const					{return OnServer() && m_bCanBeHarmed;};
-	virtual bool			ApplyInfluence			(const SMedicineInfluenceValues& V, const shared_str& sect);
-	virtual bool			ApplyBooster			(const SBooster& B, const shared_str& sect);
+	virtual bool			ApplyInfluence			(const SMedicineInfluenceValues& V, const shared_str& sect, bool use_sound = true);
+	virtual bool			ApplyBooster			(const SBooster& B, const shared_str& sect, bool use_sound = true);
 	void					ClearWounds();
 
 	IC float				GetBoostRadiationImmunity() const {return m_fBoostRadiationImmunity;};

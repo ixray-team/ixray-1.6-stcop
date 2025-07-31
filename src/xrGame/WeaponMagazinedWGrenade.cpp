@@ -153,7 +153,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 		}
 		else if (empty)
 		{
-			AddSuffixName(anim, "_empty");
+			AddSuffixName(anim, "_empty", end_suffix);
 		}
 
 		if (IsChangeAmmoType() && (!m_bGrenadeMode || iAmmoElapsed))
