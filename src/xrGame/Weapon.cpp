@@ -3395,7 +3395,14 @@ bool CWeapon::ScopeFit(CScope* pIItem) const
 {
 	for (const shared_str& scope : m_scopes)
 	{
-		if (pSettings->r_string(scope, "scope_name") == pIItem->cNameSect())
+		if (bUseAltScope)
+		{
+			if (scope == pIItem->cNameSect())
+			{
+				return true;
+			}
+		}
+		else if (pSettings->r_string(scope, "scope_name") == pIItem->cNameSect())
 		{
 			return true;
 		}
