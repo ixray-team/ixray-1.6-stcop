@@ -1255,29 +1255,39 @@ bool CContentView::DrawContext(const xr_path& Path)
 
 	if (ImGui::MenuItem("Cut"))
 	{
-		if (SelectedObjects.size() == 0)
+		if (SelectedObjects.empty())
 			SelectedObjects.push_back(Path);
 
 		CutAction();
 	}
+
 	if (ImGui::MenuItem("Copy"))
 	{
-		if (SelectedObjects.size() == 0)
+		if (SelectedObjects.empty())
 			SelectedObjects.push_back(Path);
 
 		CopyAction();
 	}
+
 	if (ImGui::MenuItem("Rename"))
 	{
 		RenameActionActivate(Path);
 	}
+
 	if (ImGui::MenuItem("Delete"))
 	{
-		for (auto obj : SelectedObjects)
+		if (SelectedObjects.empty())
 		{
-			DeleteAction(obj);
+			DeleteAction(Path);
 		}
-		SelectedObjects.clear();
+		else
+		{
+			for (const xr_path& obj : SelectedObjects)
+			{
+				DeleteAction(obj);
+			}
+			SelectedObjects.clear();
+		}
 	}
 
 	ImGui::Separator();
