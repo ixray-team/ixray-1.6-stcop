@@ -48,9 +48,6 @@ static FILE*    CompressionDump         = nullptr;
 //////////////////////////////////////////////////////////////////////
 
 NET_Compressor::NET_Compressor()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:CS(MUTEX_PROFILE_ID(NET_Compressor))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 }
 
