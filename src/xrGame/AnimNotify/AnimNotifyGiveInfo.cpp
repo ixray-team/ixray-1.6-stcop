@@ -20,6 +20,6 @@ void CAnimNotifyGiveInfo::Execute(IRenderVisual* visual, u16 bone_id)
     VERIFY(known_info);
     if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(Info)) == known_info->end())
     {
-        known_info->push_back(INFO_DATA(Info, Level().GetGameTime()));
+        known_info->push_back(Info);
     }
 }
