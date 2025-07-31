@@ -22,6 +22,7 @@
 #include "SoundManager.h"
 #include "../Layers/xrRender/ResourceManager.h"
 #include "engine\XrGamePersistentEditors.h"
+#include "../../../xrEngine/string_table.h"
 
 
 ECommandVec 		ECommands;
@@ -264,6 +265,9 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 		string_path 			si_name;
 		FS.update_path(si_name, "$game_config$", "system.ltx");
 		pSettings = new CInifile(si_name, TRUE);// FALSE,TRUE,TRUE);
+
+		g_pStringTable = new CStringTable();
+
 		string_path					fname;
 		FS.update_path(fname, "$game_config$", "game.ltx");
 		pGameIni = new CInifile(fname, TRUE);

@@ -18,6 +18,9 @@ struct STRING_TABLE_DATA
 class ENGINE_API CStringTable 
 {
 public:
+	static xr_vector<xr_token> languages_token;
+
+public:
 								CStringTable			();
 
 	static void					Destroy					();
@@ -28,6 +31,7 @@ public:
 	static	BOOL				m_bWriteErrorsToLog;
 	static	void				ReparseKeyBindings		();
 	static	xr_string			LangName				();
+			void				ReloadLanguage(const char* lang);
 private:
 			void				Init					();
 			void				Load					(LPCSTR xml_file);
