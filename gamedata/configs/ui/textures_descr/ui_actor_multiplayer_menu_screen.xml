@@ -82,7 +82,10 @@
 
 	    <texture id="ui_inGame2_combobox_linetext_b" 	x="209" y="671" width="3" height="20" />
 	    <texture id="ui_inGame2_combobox_linetext_back" x="212" y="671" width="72" height="20" />
-	    <texture id="ui_inGame2_combobox_linetext_e" 	x="284" y="671" width="17" height="20" />
+	    <texture id="ui_inGame2_combobox_linetext_e" 	x="222" y="671" width="17" height="20" />
+		
+		<texture id="ui_inGame2_combobox_arrow_e" 	x="284" y="671" width="17" height="20" />
+	    <texture id="ui_inGame2_combobox_arrow_h" 	x="284" y="671" width="17" height="20" />
 
 	    <texture id="ui_inGame2_demo_player_stats" x="543" y="502" width="437" height="148" />
 

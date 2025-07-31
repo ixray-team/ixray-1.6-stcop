@@ -10,7 +10,7 @@ CUIComboBox::CUIComboBox()
 {
 	AttachChild			(&m_frameLine);
 	AttachChild			(&m_text);
-
+	AttachChild			(&m_arrow);
 	AttachChild			(&m_list_frame);
 	m_list_frame.AttachChild(&m_list_box);
 
@@ -38,22 +38,36 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 	float comboBoxHeight = xml_doc.ReadFlt("height", 0, 20.0f);
 	LPCSTR frameLineDefault = xml_doc.Read("frameline_default", 0, "ui_inGame2_combobox_linetext");
 	LPCSTR frameLineHighlighted = xml_doc.Read("frameline_highlighted", 0, "ui_inGame2_combobox_linetext");
+	LPCSTR arrow = xml_doc.Read("arrow", 0, "ui_inGame2_combobox_arrow");
 	LPCSTR listBoxTexture = xml_doc.Read("list_box", 0, "ui_inGame2_combobox_line");
 	LPCSTR listFrameTexture = xml_doc.Read("list_frame", 0, "ui_inGame2_combobox");
-	string_path listBoxTextureHeight;
+
+	string256 listBoxTextureHeight;
 	xr_strconcat(listBoxTextureHeight, listBoxTexture, "_b");
+
+	string128 arrow_e;
+	xr_strconcat(arrow_e, arrow, "_e");
+
+	string128 arrow_h;
+	xr_strconcat(arrow_h, arrow, "_h");
+
+	float arrowWidth = CUITextureMaster::GetTextureWidth(arrow_e) * UI().get_current_kx();
 
 	m_bInited = true;
 	if (0 == m_iListHeight)
 		m_iListHeight = 4;
 
-	CUIWindow::SetWndPos				(pos);
-	CUIWindow::SetWndSize				(Fvector2().set(width, comboBoxHeight));
+	CUIWindow::SetWndPos(pos);
+	CUIWindow::SetWndSize(Fvector2().set(width, comboBoxHeight));
 
-	m_frameLine.InitIB					(Fvector2().set(0,0), Fvector2().set(width, comboBoxHeight));
-
+	m_frameLine.InitIB(Fvector2().set(0,0), Fvector2().set(width - arrowWidth / 2, comboBoxHeight));
 	m_frameLine.InitState(S_Highlighted, frameLineHighlighted);
 	m_frameLine.InitState(S_Enabled, frameLineDefault);
+
+	m_arrow.InitIB(Fvector2().set(width - arrowWidth, 0.0f), Fvector2().set(arrowWidth, comboBoxHeight));
+	m_arrow.InitState(S_Highlighted, arrow_h);
+	m_arrow.InitState(S_Enabled, arrow_e);
+	m_arrow.SetStretchTexture(true);
 
 	// Edit Box on left side of frame line
 	m_text.SetWndPos					(Fvector2().set(lb_text_offset,0.0f));
@@ -262,6 +276,7 @@ void CUIComboBox::Update()
 	if (!m_bIsEnabled)
 	{
 		m_frameLine.SetCurrentState	(S_Disabled);
+		m_arrow.SetCurrentState	(S_Disabled);
 		m_text.SetTextColor(m_textColor[1]);
 	}
 	else
@@ -285,15 +300,19 @@ void CUIComboBox::Update()
 void CUIComboBox::OnFocusLost()
 {
 	CUIWindow::OnFocusLost();
-	if (m_bIsEnabled)
-		m_frameLine.SetCurrentState	(S_Enabled);
+	if (m_bIsEnabled) {
+		m_frameLine.SetCurrentState(S_Enabled);
+		m_arrow.SetCurrentState(S_Enabled);
+	}
 }
 
 void CUIComboBox::OnFocusReceive()
 {
 	CUIWindow::OnFocusReceive();
-	if (m_bIsEnabled)
-		m_frameLine.SetCurrentState	(S_Highlighted);
+	if (m_bIsEnabled) {
+		m_frameLine.SetCurrentState(S_Highlighted);
+		m_arrow.SetCurrentState(S_Highlighted);
+	}
 }
 
 bool CUIComboBox::OnMouseAction(float x, float y, EUIMessages mouse_action){

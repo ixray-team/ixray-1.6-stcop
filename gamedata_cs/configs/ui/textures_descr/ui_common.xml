@@ -407,8 +407,10 @@
     <texture id="ui_cb_linetext_h_back" x="974" y="23" width="25" height="23" />
     <texture id="ui_cb_linetext_e_b" x="954" y="0" width="25" height="23" />
     <texture id="ui_cb_linetext_h_b" x="954" y="23" width="25" height="23" />
-    <texture id="ui_cb_linetext_e_e" x="186" y="180" width="25" height="23" />
-    <texture id="ui_cb_linetext_h_e" x="277" y="206" width="25" height="23" />
+    <texture id="ui_cb_linetext_e_e" x="974" y="0" width="25" height="23" />
+    <texture id="ui_cb_linetext_h_e" x="974" y="23" width="25" height="23" />
+    <texture id="ui_cb_arrow_e" x="186" y="180" width="25" height="23" />
+    <texture id="ui_cb_arrow_h" x="277" y="206" width="25" height="23" />
     <texture id="ui_cb_button_e" x="186" y="180" width="25" height="23" />
     <texture id="ui_cb_button_d" x="999" y="0" width="25" height="23" />
     <texture id="ui_cb_button_t" x="999" y="23" width="25" height="23" />
