@@ -67,6 +67,7 @@ void CSE_ALifeItemWeapon::script_register(lua_State *L)
 			CSE_ALifeItem
 		)
 		.def("clone_addons",						&CSE_ALifeItemWeapon::clone_addons)
+		.def("clone_upgrades",						&CSE_ALifeItemWeapon::clone_upgrades)
 	];
 }
 
