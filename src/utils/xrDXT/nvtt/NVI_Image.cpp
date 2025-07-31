@@ -16,7 +16,7 @@ class NVI_ImageBordered
 
 ******************************************************************************/
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #include "NVI_Image.h"
 #include <limits.h> // for UINT_MAX

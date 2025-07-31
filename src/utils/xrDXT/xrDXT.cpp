@@ -1,7 +1,9 @@
 #include "StdAfx.h"
 #include "xrDXT.h"
 
+#ifdef IXR_WINDOWS
 #include <RedImage/RedImage.hpp>
+#endif
 
 #include "../../Layers/xrRender/ETextureParams.h"
 
@@ -9,6 +11,7 @@ extern int DXTCompressImageRI(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 p
 extern int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 extern int DXTCompressBump(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
+#ifdef IXR_WINDOWS
 void DXTUtils::Converter::MakeTGA(xr_path From, xr_path To)
 {
 	RedImageTool::RedImage Surface;
@@ -46,6 +49,7 @@ void DXTUtils::Converter::MakePNG(xr_path From, xr_path To)
 		Surface.SaveToPng(To.xstring().data());
 	}
 }
+#endif
 
 int DXT_API DXTUtils::Compress(const char* out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
@@ -63,6 +67,7 @@ int DXT_API DXTUtils::Compress(const char* out_name, u8* raw_data, u8* normal_ma
 			case STextureParams::kMIPFilterTriangle:
 			case STextureParams::kMIPFilterKaiser:
 			{
+#ifdef IXR_WINDOWS
 				if (fmt->fmt == STextureParams::tfBC7)
 				{
 					// FX: Dirty hack for nvtt
@@ -77,6 +82,7 @@ int DXT_API DXTUtils::Compress(const char* out_name, u8* raw_data, u8* normal_ma
 
 					return RetCode;
 				}
+#endif
 
 				return DXTCompressImageNVTT(out_name, raw_data, w, h, pitch, fmt, depth);
 			}
@@ -110,6 +116,7 @@ int DXT_API DXTUtils::Compress(const char* out_name, u8* raw_data, u8* normal_ma
 	return -1;
 }
 
+#ifdef IXR_WINDOWS
 U8Vec DXT_API DXTUtils::GitPixels(const char* FileName, u32 NewW, u32 NewH)
 {
 	U8Vec Pixels;
@@ -164,3 +171,4 @@ void DXTUtils::Filter::Resize(u32* dst, u32 dstW, u32 dstH, u32* out, u32 outW, 
 	size_t PixelCount = Surface.GetWidth() * Surface.GetHeight() * 4;
 	memcpy(out, *Surface, PixelCount);
 }
+#endif

@@ -25,3 +25,14 @@ find_library(LZO_LIBRARY
 if (NOT LZO_INCLUDE_DIR)
   message(FATAL_ERROR "Could not find lzo/lzo1x.h")
 endif()
+
+# NVTT
+include(FetchContent)
+
+FetchContent_Declare(
+    nvtt
+    GIT_REPOSITORY https://github.com/imesense-forks/castano-nvidia-texture-tools.git
+    GIT_TAG        default
+)
+
+FetchContent_MakeAvailable(nvtt)
