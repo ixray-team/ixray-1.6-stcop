@@ -47,6 +47,7 @@ public:
 	virtual pcstr GetText() { return TextItemControl()->GetText(); }
 	virtual void SetText(pcstr txt) { TextItemControl()->SetText(txt); }
 	virtual void SetTextST(pcstr txt) { TextItemControl()->SetTextST(txt); }
+	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
 
 	void SetTextColor_script(int a, int r, int g, int b)
 	{
