@@ -104,6 +104,8 @@ function mp_main:UpdateControls()
 	opt:SetCurrentValues("mm_mp_server")
 	opt:SetCurrentValues("mm_mp_srv_filter")
 
+	self.map_list:ClearList()
+	self.map_list:OnModeChange()
 	self.dlg_options:SetGameMode(self.map_list:GetCurGameType(), self)
 
 	local mm					= main_menu.get_main_menu()
@@ -209,8 +211,7 @@ function mp_main:OnFilterChange()
 	sf.with_pass		= self.filters.btn_check_with_pass:GetCheck()
 	sf.without_pass		= self.filters.btn_check_without_pass:GetCheck()
 	sf.without_ff		= self.filters.btn_check_without_ff:GetCheck()
---	sf.with_battleye	= self.filters.btn_check_with_battleye:GetCheck()
-	sf.with_battleye	= false
+	sf.with_battleye	= self.filters.btn_check_with_battleye:GetCheck()
 	sf.listen_servers	= self.filters.btn_check_listen_servers:GetCheck()
 	
 	self.server_list:SetFilters(sf)

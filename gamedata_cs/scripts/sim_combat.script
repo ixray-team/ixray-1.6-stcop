@@ -365,7 +365,7 @@ function CCombat_manager:update_actor()
 	then
 		-- ВНИМАНИЕ: Если разремить, то перестают срываться в атаку атакующие враги, при условии что у нас квест оборона лагеря. 
 		-- Это не всегда есть хорошо!!!
-		--if self.combat_quest == "none"
+		--if self.combat_quest == "nil"
 			-- Мы в атаке
 			if actor_come(my_squad) then
 				-- Игрок ближе Х - бой
@@ -419,8 +419,8 @@ function CCombat_manager:update_squad(id, data)
 		abort("error. %s", tostring(id))
 	end
 
-	--if self.smart:name() == "gar_smart_terrain_5_2" then
-		--printf("Sim_Combat[%s]: squad [%s] quest [%s] stage [%s] squad_online [%s]", self.smart:name(), id, tostring(self.combat_quest), data._stage, tostring(squad.squad_online))
+	--if self.smart:name() == "esc_smart_terrain_4_10" then
+	--	printf("Sim_Combat[%s]: squad [%s] quest [%s] stage [%s] squad_online [%s]", self.smart:name(), id, tostring(self.combat_quest), data._stage, tostring(squad.squad_online))
 	--end
 	
 	if data._stage == "move" then
@@ -576,8 +576,6 @@ function CCombat_manager:update_squad(id, data)
 				if self.task == nil then
 					if game.get_game_time():diffSec(data._inited_defend_time) > 120 then
 						--' Выдать квест!!!
-						local player = self.board.players[squad.player_id]
-						local task = task_manager.get_task_manager():select_task("defend_smart", self.smart, player.player_name)
 						local attack_squad = nil
 						for kk,kdata in pairs(self.squads) do
 							if kdata._stage == "wait" or kdata._stage == "prepare" then
@@ -585,11 +583,20 @@ function CCombat_manager:update_squad(id, data)
 								break
 							end
 						end
-						task.src_squad_id = attack_squad
-						self.task = task.entity_id
-						self.actor_defence_come = false
-						task:give_task(player.player_name)
-						data._last_defence_kill_time = nil
+						
+						local attack_squad_obj = self.board.squads[attack_squad]
+						if attack_squad_obj.squad_power >= squad.squad_power then						
+							local player = self.board.players[squad.player_id]
+							local task = task_manager.get_task_manager():select_task("defend_smart", self.smart, player.player_name)
+
+							task.src_squad_id = attack_squad
+							self.task = task.entity_id
+							self.actor_defence_come = false
+							task:give_task(player.player_name)
+							data._last_defence_kill_time = nil
+						else
+							self.combat_quest = "nil"
+						end
 					end
 				end
 			end
@@ -869,6 +876,10 @@ function CCombat_manager:load(packet)
 			self.squads[k]._last_defence_kill_time = utils.r_CTime(packet)
 		end
         self.squads[k]._squad_power = packet:r_float()
+        
+        --if self.smart:name() == "esc_smart_terrain_4_10" then
+        --	printf("squad[%s] stage[%s]", k, self.squads[k]._stage)
+        --end
 	end
 
 	self.force_online = packet:r_bool()
@@ -907,6 +918,10 @@ function hit_callback(victim_id, attacker_id)
 end
 
 function actor_come_to_point(smart)
+	if db.actor == nil then	
+		return false
+	end
+
 	--' Проверяем пришел ли игрок (или игрок в моем дефенс рестрикторе или он начал воевать против атакующих).
 	if smart.def_restr == nil then
 		if db.actor:position():distance_to_sqr(smart.position) < ACTOR_COME_DEFENCE_DIST then

@@ -26,9 +26,9 @@ loophole_name = lead_sit_sleep_mechanic
 cover_name = red_smart_terrain_3_2_mechanic_smartcover
 cover_state = idle_target
 on_game_timer = 300 | {=dist_to_actor_ge(5)} smartcover@mechanic3
- 
+
 [smartcover@mechanic3]
-out_restr = red_smart_terrain_3_2_mechanic_restr	
+out_restr = red_smart_terrain_3_2_mechanic_restr
 meet = no_meet
 loophole_name = lead_sit_sleep_mechanic
 cover_name = red_smart_terrain_3_2_mechanic_smartcover
@@ -42,7 +42,8 @@ path_look = mechanic_1_walk
 on_game_timer = 5000 | smartcover@mechanic
 
 [meet@mechanic]
-
+meet_state = 2|nil@nil
+meet_state_wpn = 2|nil@nil
 
 [logic@artefact_search]
 active = walker@artefact_search

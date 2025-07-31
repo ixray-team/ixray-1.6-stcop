@@ -8,16 +8,16 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 struct	surface_bumped
 {
-	half4	base;
-	half3	normal;
-	half	gloss;
-	half	height;
+	float4	base;
+	float3	normal;
+	float	gloss;
+	float	height;
 
 };
 
 float4 tbase( float2 tc )
 {
-	return	s_base.Sample( smp_base, tc);
+   return	s_base.Sample( smp_base, tc);
 }
 
 #if defined(ALLOW_STEEPPARALLAX) && defined(USE_STEEPPARALLAX)
@@ -89,7 +89,7 @@ void UpdateTC( inout p_bumped I)
 
 void UpdateTC( inout p_bumped I)
 {
-	half	height	= s_bumpX.Sample( smp_base, I.tcdh).w;	//
+	float	height	= s_bumpX.Sample( smp_base, I.tcdh).w;	//
 			//height  /= 2;
 			//height  *= 0.8;
 			height	= height*(parallax.x) + (parallax.y);	//
@@ -111,11 +111,11 @@ void UpdateTC( inout p_bumped I)
 surface_bumped sload_i( p_bumped I)
 {
 	surface_bumped	S;
-
+   
 	UpdateTC(I);	//	All kinds of parallax are applied here.
 
-	half4 	Nu	= s_bump.Sample( smp_base, I.tcdh);		// IN:	normal.gloss
-	half4 	NuE	= s_bumpX.Sample( smp_base, I.tcdh);	// IN:	normal_error.height
+	float4 	Nu	= s_bump.Sample( smp_base, I.tcdh );		// IN:	normal.gloss
+	float4 	NuE	= s_bumpX.Sample( smp_base, I.tcdh);	// IN:	normal_error.height
 
 	S.base		= tbase(I.tcdh);				//	IN:  rgb.a
 	S.normal	= Nu.wzyx + (NuE.xyz - 1.0h);	//	(Nu.wzyx - .5h) + (E-.5)
@@ -125,18 +125,56 @@ surface_bumped sload_i( p_bumped I)
 
 #ifdef        USE_TDETAIL
 #ifdef        USE_TDETAIL_BUMP
-	half4 NDetail		= s_detailBump.Sample( smp_base, I.tcdbump);
-	half4 NDetailX		= s_detailBumpX.Sample( smp_base, I.tcdbump);
+	float4 NDetail		= s_detailBump.Sample( smp_base, I.tcdbump);
+	float4 NDetailX		= s_detailBumpX.Sample( smp_base, I.tcdbump);
 	S.gloss				= S.gloss * NDetail.x * 2;
 	//S.normal			+= NDetail.wzy-.5;
 	S.normal			+= NDetail.wzy + NDetailX.xyz - 1.0h; //	(Nu.wzyx - .5h) + (E-.5)
 
-	half4 detail		= s_detail.Sample( smp_base, I.tcdbump);
+	float4 detail		= s_detail.Sample( smp_base, I.tcdbump);
 	S.base.rgb			= S.base.rgb * detail.rgb * 2;
 
 //	S.base.rgb			= float3(1,0,0);
 #else        //	USE_TDETAIL_BUMP
-	half4 detail		= s_detail.Sample( smp_base, I.tcdbump);
+	float4 detail		= s_detail.Sample( smp_base, I.tcdbump);
+	S.base.rgb			= S.base.rgb * detail.rgb * 2;
+	S.gloss				= S.gloss * detail.w * 2;
+#endif        //	USE_TDETAIL_BUMP
+#endif
+
+	return S;
+}
+
+surface_bumped sload_i( p_bumped I, float2 pixeloffset )
+{
+	surface_bumped	S;
+
+	UpdateTC(I);	//	All kinds of parallax are applied here.
+
+	float4 	Nu	= s_bump.Sample( smp_base, I.tcdh );		// IN:	normal.gloss
+	float4 	NuE	= s_bumpX.Sample( smp_base, I.tcdh);	// IN:	normal_error.height
+
+	S.base		= tbase(I.tcdh);				//	IN:  rgb.a
+	S.normal	= Nu.wzyx + (NuE.xyz - 1.0h);	//	(Nu.wzyx - .5h) + (E-.5)
+	S.gloss		= Nu.x*Nu.x;					//	S.gloss = Nu.x*Nu.x;
+	S.height	= NuE.z;
+	//S.height	= 0;
+
+#ifdef        USE_TDETAIL
+#ifdef        USE_TDETAIL_BUMP
+
+	float4 NDetail		= s_detailBump.Sample( smp_base, I.tcdbump);
+	float4 NDetailX		= s_detailBumpX.Sample( smp_base, I.tcdbump);
+	S.gloss				= S.gloss * NDetail.x * 2;
+	//S.normal			+= NDetail.wzy-.5;
+	S.normal			+= NDetail.wzy + NDetailX.xyz - 1.0h; //	(Nu.wzyx - .5h) + (E-.5)
+
+	float4 detail		= s_detail.Sample( smp_base, I.tcdbump);
+	S.base.rgb			= S.base.rgb * detail.rgb * 2;
+
+//	S.base.rgb			= float3(1,0,0);
+#else        //	USE_TDETAIL_BUMP
+	float4 detail		= s_detail.Sample( smp_base, I.tcdbump);
 	S.base.rgb			= S.base.rgb * detail.rgb * 2;
 	S.gloss				= S.gloss * detail.w * 2;
 #endif        //	USE_TDETAIL_BUMP
@@ -147,9 +185,23 @@ surface_bumped sload_i( p_bumped I)
 
 surface_bumped sload ( p_bumped I)
 {
-        surface_bumped      S   = sload_i	(I);
+      surface_bumped      S   = sload_i	(I);
 		S.normal.z			*=	0.5;		//. make bump twice as contrast (fake, remove me if possible)
-        return              S;
+
+#ifdef	GBUFFER_OPTIMIZATION
+	   S.height = 0;
+#endif	//	GBUFFER_OPTIMIZATION
+      return              S;
+}
+
+surface_bumped sload ( p_bumped I, float2 pixeloffset )
+{
+      surface_bumped      S   = sload_i	(I, pixeloffset );
+		S.normal.z			*=	0.5;		//. make bump twice as contrast (fake, remove me if possible)
+#ifdef	GBUFFER_OPTIMIZATION
+	   S.height = 0;
+#endif	//	GBUFFER_OPTIMIZATION
+      return              S;
 }
 
 #endif

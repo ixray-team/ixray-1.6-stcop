@@ -74,11 +74,12 @@ task_type = additional
 name = test_recover_item_name2
 text = test_recover_item_text2
 reward_money = {~50} 1000, 2000
-reward_item = wpn_ak74:wpn_groza:ammo_9x18_fmj:ammo_9x18_fmj:ammo_5.45x39_fmj:ammo_5.45x39_fmj
+;reward_item = wpn_ak74:wpn_groza:ammo_9x18_fmj:ammo_9x18_fmj:ammo_5.45x39_fmj:ammo_5.45x39_fmj
 immediate_reward = true
-target_npc_or_box_name = jes
-target_cond = {=check_npc_squad(test_duty2) =actor_on_level(distemper_selo)} true
-requested_items = wpn_gauss
+;target_npc_or_box_name = jes
+target_zone_name = hide_1
+target_cond = {=actor_on_level(peacemaker_selo)} true
+requested_items = yan_quest_granade
 
 [test_find_upgrade]
 type = find_upgrade

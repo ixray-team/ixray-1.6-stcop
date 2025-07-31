@@ -14,6 +14,8 @@
 		--' function property_functor_a( param1, name )
 		--' function property_functor_b( param1, name )
 		--' function property_functor_c( param1, name )
+    --' функция для отображения специализации техника
+		--' function get_technic_specialization( section )
 --------------------------------------------------------------------------------------------
 local issue_condlist = true
 local mechanic_name = ""
@@ -87,7 +89,7 @@ function property_functor_a( param1, name )
 	local section = section_table[1]
 	if section_table_n == 0 then
 		return ""
-	elseif section_table_n == 1 then		
+	elseif section_table_n == 1 then
 		if not char_ini:line_exist(section, "value") or not char_ini:r_string(section, "value") then
 			if name ~= "prop_armor" then
 				return t_prorerty_name
@@ -109,7 +111,7 @@ function property_functor_a( param1, name )
 		else
 			return t_prorerty_name.." "..value.."%, "..game.translate_string(value2)
 		end
-	elseif section_table_n > 1 then		
+	elseif section_table_n > 1 then
 		local sum = 0
 		local comma = ", "
 		local complementary = ""
@@ -124,17 +126,17 @@ function property_functor_a( param1, name )
 			elseif name ~= "prop_armor" then
 				local value = char_ini:r_s32(section_table[i], "value")
 				sum = sum + value
-			end			
+			end
 			if char_ini:line_exist(section_table[i], "value2") then
 				local value2 = char_ini:r_string(section_table[i], "value2")
 				if value2 then
 					if name == "prop_armor" then
 						sum = sum + 1
-					else	
+					else
 						if not string.find(complementary, value2) then
 							complementary = complementary..comma..game.translate_string(value2)
 						end
-					end	
+					end
 				end
 			end
 			if i == section_table_n then
@@ -145,7 +147,7 @@ function property_functor_a( param1, name )
 					local value2 = char_ini:r_string(section_table[i], "value2")
 					if value2 then
 						return t_prorerty_name.." "..game.translate_string(value2).." x"..sum
-					end	
+					end
 				end
 				if sum > 0 then
 					if name == "prop_ammo_size" then
@@ -205,32 +207,32 @@ local function how_much_repair( item_name, item_condition )
 end
 
 function can_repair_item( item_name, item_condition, mechanic ) --( string, float, string )
-	-- if not param_ini:line_exist(mechanic, item_name) then		
+	-- if not param_ini:line_exist(mechanic, item_name) then
 		-- return false
 	-- end
 	-- if param_ini:line_exist(mechanic, "he_upgrade_nothing") then
-		-- if not (param_ini:r_string(mechanic, item_name) == "repair") then			
+		-- if not (param_ini:r_string(mechanic, item_name) == "repair") then
 			-- return false
 		-- end
 	-- end
 	local price = how_much_repair( item_name, item_condition )
-	if db.actor:money() < price then		
+	if db.actor:money() < price then
 		return false
 	end
 	return true
 end
 
 function question_repair_item( item_name, item_condition, can, mechanic ) --( string, float, bool, string )
-	-- if not param_ini:line_exist(mechanic, item_name) then		
+	-- if not param_ini:line_exist(mechanic, item_name) then
 		-- return "st_upgr_inability_repair"
 	-- end
 	-- if param_ini:line_exist(mechanic, "he_upgrade_nothing") then
-		-- if not (param_ini:r_string(mechanic, item_name) == "repair") then			
+		-- if not (param_ini:r_string(mechanic, item_name) == "repair") then
 			-- return "st_upgr_inability_repair"
 		-- end
 	-- end
 	local price = how_much_repair( item_name, item_condition )
-	if db.actor:money() < price then		
+	if db.actor:money() < price then
 		return game.translate_string("st_upgr_cost")..": "..price.." RU\\n"..game.translate_string("ui_inv_not_enought_money")..": "..price-db.actor:money().." RU"
 	end
 	return game.translate_string("st_upgr_cost").." "..price.." RU. "..game.translate_string("ui_inv_repair").."?"
@@ -241,7 +243,7 @@ function effect_repair_item( item_name, item_condition ) --( string, float )
 		local price = how_much_repair( item_name, item_condition )
 	    xr_statistic.inc_spent_money_counter(price)
 		db.actor:give_money(price*-1)
-	end	
+	end
 end
 
 function can_upgrade_item( item_name, mechanic ) --( string, string )
@@ -256,4 +258,24 @@ function can_upgrade_item( item_name, mechanic ) --( string, string )
 	-- end
 	mechanic_name = mechanic
 	return true
+end
+
+function get_technic_specialization(section)
+	local ini = ini_file("misc\\technics_specialization.ltx")
+	local sys_ini = system_ini()
+	if ini:section_exist(section) then
+        local str = game.translate_string("st_technic_specialization")
+		local n = ini:line_count(section)
+		if n == 0 then
+            str = str.."\\n"..game.translate_string("st_technic_specialization_none")
+		else
+	        for i = 0,n-1 do
+	            local temp1, id, temp2 = ini:r_line(section, i, "", "")
+	            str = str.."\\n"..game.translate_string(sys_ini:r_string(id, "inv_name"))
+	        end
+		end
+        return str
+	else
+		return game.translate_string("st_technic_specialization").."\\n"..game.translate_string("st_technic_specialization_none")
+	end
 end
