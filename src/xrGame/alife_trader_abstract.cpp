@@ -122,19 +122,21 @@ void add_online_impl						(CSE_ALifeDynamicObject *object, const bool &update_re
 	ALife::OBJECT_IT			I = object->children.begin();
 	ALife::OBJECT_IT			E = object->children.end();
 	for ( ; I != E; ++I) {
-//	this was for the car only
-//		if (*I == ai().alife().graph().actor()->ID)
-//			continue;
-//
+		//Alundaio:
+		if (*I == ai().alife().graph().actor()->ID)
+			continue;
+		//-Alundaio
+
 		CSE_ALifeDynamicObject	*l_tpALifeDynamicObject = ai().alife().objects().object(*I);
 		if (!l_tpALifeDynamicObject)
 			continue;
 
-		CSE_ALifeInventoryItem	*l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
+		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
 		if (!l_tpALifeInventoryItem)
 			continue;
 
 		//R_ASSERT2				(l_tpALifeInventoryItem,"Non inventory item object has parent?!");
+
 		l_tpALifeInventoryItem->base()->s_flags.bor(M_SPAWN_UPDATE);
 		CSE_Abstract			*l_tpAbstract = smart_cast<CSE_Abstract*>(l_tpALifeInventoryItem);
 		object->alife().server().entity_Destroy(l_tpAbstract);
