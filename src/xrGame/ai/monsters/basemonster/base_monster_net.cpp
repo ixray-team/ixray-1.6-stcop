@@ -15,6 +15,7 @@
 #include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../sound_player.h"
 
+using sync_flags = CSE_ALifeMonsterBase::sync_flags;
 extern int g_cl_InterpolationType;
 
 void CBaseMonster::net_Save(NET_Packet& P)
@@ -102,9 +103,19 @@ void CBaseMonster::SyncRead(NET_Packet& Packet)
 			);
 		}
 	}
-
+	
 	setVisible(TRUE);
 	setEnabled(TRUE);
+
+	Flags8 flags;
+	flags.zero();
+	u8 custom_flag;
+	Packet >> flags.flags;
+	if (flags.test(sync_flags::fHasCustomSyncFlag))
+	{
+		Packet.r_u8(custom_flag);
+		ProcessCustomSyncFlag_CL(custom_flag);
+	}
 }
 
 void CBaseMonster::SyncWrite(NET_Packet& Packet)
@@ -140,6 +151,20 @@ void CBaseMonster::SyncWrite(NET_Packet& Packet)
 	clamp(whealth, 0.f, 1.f);
 
 	Packet.w_float_q8(whealth, 0, 1);
+	
+
+	Flags8 flags;
+	flags.zero();
+	flags.set(sync_flags::fHasCustomSyncFlag, HasCustomSyncFlag());
+
+	// write flag
+	Packet << flags.get(); // <--
+
+	if (flags.test(sync_flags::fHasCustomSyncFlag))
+	{
+		Packet << GetCustomSyncFlag(); // <--
+	}
+	
 }
 
 void CBaseMonster::net_Export(NET_Packet& P) 
