@@ -134,7 +134,13 @@ void CSightManager::Exec_Look(float time_delta)
 
 	vfValidateAngleDependency(body.current.yaw, body.target.yaw, head.current.yaw);
 
-	
+	if (!g_dedicated_server && !IsGameTypeSingle())
+	{
+		g_ai_aim_min_speed = 0;
+		g_ai_aim_min_angle = 31;
+		g_ai_aim_max_angle = 31;
+	}
+
 	m_object->angle_lerp_bounds(body.current.yaw, body.target.yaw, select_speed(angle_difference(body.current.yaw, body.target.yaw), body_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
 	m_object->angle_lerp_bounds(body.current.pitch, body.target.pitch, select_speed(angle_difference(body.current.pitch, body.target.pitch), body_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
 
