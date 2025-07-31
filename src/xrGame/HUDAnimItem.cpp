@@ -124,7 +124,11 @@ void CHUDAnimItem::PlayHudAnim(const char* Section, const char* Anim, bool disab
 	ThisItem->CurrentMotion = Anim;
 	if (disable_inventory)
 	{
-		CurrentGameUI()->HideActorMenu();
+		if (CurrentGameUI())
+		{
+			CurrentGameUI()->HideActorMenu();
+		}
+
 		Actor()->set_inventory_disabled(true);
 		ThisItem->NeedRestoreInventory = true;
 	}
