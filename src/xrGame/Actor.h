@@ -286,6 +286,7 @@ public:
 	u32 _last_update_time;
 	shared_str				m_sNVGAnimator;
 	shared_str				m_sHeadlampAnimator;
+	shared_str				m_sClearMaskAnimator;
 
 	void SetHandsJitterTime(u32 time) { _jitter_time_remains = time; }
 	bool IsHandJitter() const { return _jitter_time_remains > 0; }
@@ -749,6 +750,8 @@ public:
 	virtual void				OnPrevWeaponSlot				();
 			void				SwitchNightVision				();
 			void				SwitchTorch						();
+			void				ClearMask						();
+			void				ClearMaskCB						();
 	CNightVisionEffector*		GetNightVisionEffector			() { return m_night_vision;}
 
 	CCustomDetector*			GetDetector						(bool in_slot = false);
