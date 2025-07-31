@@ -75,6 +75,8 @@
 #include "../../xrUI/UIFontDefines.h"
 #include "PickupManager.h"
 
+#include "../xrEngine/Rain.h"
+
 const u32		patch_frames	= 50;
 const float		respawn_delay	= 1.f;
 const float		respawn_auto	= 7.f;
@@ -204,6 +206,13 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	// Alex ADD: for smooth crouch
 	CurrentHeight = -1.f;
 	bBlockSprint = false;
+
+	string_path rainOnHelmet = {};
+	FS.update_path(rainOnHelmet, "$game_sounds$", R"(ambient\rain_on_helmet.ogg)");
+	if (FS.exist(rainOnHelmet))
+	{
+		m_rainOnHelmetSnd.create(R"(ambient\rain_on_helmet)", st_Effect, sg_Undefined);
+	}
 }
 
 
@@ -231,6 +240,7 @@ CActor::~CActor()
 	xr_delete				(m_vehicle_anims);
 	xr_delete				(m_night_vision);
 	xr_delete				(m_hud_animator);
+	m_rainOnHelmetSnd.destroy();
 }
 
 void CActor::reinit	()
@@ -1109,7 +1119,57 @@ static bool bLook_cam_fp_zoom = false;
 extern ENGINE_API int m_look_cam_fp_zoom;
 u16 old_slot = 0;
 bool need_restore_detector = false;
-void CActor::UpdateCL	()
+
+void CActor::PlayRainOnHelmetSound()
+{
+	const float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+	if (factor < EPS_L)
+	{
+		m_rainOnHelmetSnd.stop();
+		return;
+	}
+
+	if (!m_rainOnHelmetSnd._handle())
+	{
+		return;
+	}
+
+	float distance = 5.f;
+	constexpr Fvector direction(0, 1, 0);
+	const Fvector position = Device.vCameraPosition;
+
+	if (g_pGamePersistent->Environment().eff_Rain->RayPick(position, direction, distance, collide::rqtBoth))
+	{
+		m_rainOnHelmetSnd.stop();
+		return;
+	}
+
+	if (factor > EPS_L && g_Alive())
+	{
+		const float* hemiCube = renderable_ROS()->get_luminocity_hemi_cube();
+		float hemiValue = _max(hemiCube[0], hemiCube[1]);
+		hemiValue = _max(hemiValue, hemiCube[2]);
+		hemiValue = _max(hemiValue, hemiCube[3]);
+		hemiValue = _max(hemiValue, hemiCube[5]);
+
+		if (m_rainOnHelmetSnd._feedback())
+		{
+			m_rainOnHelmetSnd.set_volume(hemiValue <= 0.3f ? 0.0f : 1.0f);
+		}
+		else
+		{
+			m_rainOnHelmetSnd.play(nullptr, sm_Looped | sm_2D);
+			m_rainOnHelmetSnd.set_position(Fvector().set(0, 0, 0));
+			m_rainOnHelmetSnd.set_volume(0.f);
+		}
+	}
+	else
+	{
+		m_rainOnHelmetSnd.stop();
+	}
+}
+
+void CActor::UpdateCL()
 {
 	PROF_EVENT("CActor UpdateCL");
 
@@ -1297,6 +1357,18 @@ void CActor::UpdateCL	()
 				bLook_cam_fp_zoom = false;
 			}
 		}
+	}
+	auto pHelmet = smart_cast<CHelmet*>(inventory().ItemFromSlot(HELMET_SLOT));
+	auto pOutfit = smart_cast<CCustomOutfit*>(inventory().ItemFromSlot(OUTFIT_SLOT));
+	bool shouldPlayHelmetSound = pHelmet != nullptr || (pOutfit != nullptr && !pOutfit->bIsHelmetAvaliable);
+
+	if (shouldPlayHelmetSound)
+	{
+		PlayRainOnHelmetSound();
+	}
+	else
+	{
+		m_rainOnHelmetSnd.stop();
 	}
 
 	UpdateDefferedMessages();
