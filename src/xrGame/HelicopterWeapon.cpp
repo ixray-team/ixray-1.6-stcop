@@ -144,7 +144,7 @@ void CHelicopter::OnShot		()
 	StartSmokeParticles		(fire_pos, zero_vel);
 	OnShellDrop				(fire_pos, zero_vel);
 
-    m_sounds_layered.PlaySound("m_sndShot", fire_pos, this, false);
+    m_sounds_layered.PlaySound("m_sndShot", fire_pos, this, false, false, true);
 }
 
 void CHelicopter::MGunFireStart()
@@ -312,7 +312,7 @@ void CHelicopter::startRocket(u16 idx)
 		dropCurrentRocket();
 
 		m_last_launched_rocket = idx;
-        m_sounds_layered.PlaySound("m_sndShotRocket", xform.c, this, false);
+        m_sounds_layered.PlaySound("m_sndShotRocket", xform.c, this, false, false, true);
 	}
 }
 
