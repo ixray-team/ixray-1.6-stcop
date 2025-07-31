@@ -170,6 +170,7 @@ public:
 		af_torch = (1 << 0),
 		af_nvg = (1 << 1),
 		af_clear_mask = (1 << 2),
+		af_firemode = (1 << 14),
 	};
 
 	Flags32 m_eDevicesFlags;

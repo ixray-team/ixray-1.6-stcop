@@ -45,6 +45,7 @@ protected:
 	virtual void	switch2_Hiding	();
 	virtual void	switch2_Hidden	();
 	virtual void	switch2_Showing	();
+	virtual void	switch2_FireMode();
 	
 	virtual void	OnShot			();	
 	
@@ -137,6 +138,7 @@ protected:
 	//режимы стрельбы
 	xr_vector<s8>	m_aFireModes;
 	s8				m_iCurFireMode;
+	s8				m_iPrevFireMode;
 
 	//переменная блокирует использование
 	//только разных типов патронов
