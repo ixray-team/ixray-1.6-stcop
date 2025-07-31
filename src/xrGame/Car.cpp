@@ -1590,8 +1590,7 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 							continue;
 					}
 
-					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-					pGameSP->StartCarBody(Actor(), this);
+					CurrentGameUI()->StartCarBody(Actor(), this);
 				}
 				else if (IsDoorBone)
 				{
