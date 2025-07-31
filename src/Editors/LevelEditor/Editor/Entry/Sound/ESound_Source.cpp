@@ -358,45 +358,56 @@ void ESoundSource::OnFrame()
     break;
     case stSimulate:
     {
-/*    
-		m_Flags.set			(flSimulating,TRUE);
-    	if ((fis_zero(m_ActiveTime.x)&&fis_zero(m_ActiveTime.y))||
-        	((g_pGamePersistent->Environment().GetGameTime()>m_ActiveTime.x)&&(g_pGamePersistent->Environment().GetGameTime()<m_ActiveTime.y)))
+        /*
+        m_Flags.set(flSimulating, TRUE);
+        if ((fis_zero(m_ActiveTime.x) && fis_zero(m_ActiveTime.y)) ||
+            ((g_pGamePersistent->Environment().GetGameTime() > m_ActiveTime.x) &&
+             (g_pGamePersistent->Environment().GetGameTime() < m_ActiveTime.y)))
+        {
+            if (0 == m_Source._feedback())
             {
-            if (0==m_Source._feedback())
-            {
-            	if (fis_zero(m_RandomPause.x)&&fis_zero(m_RandomPause.y))
+                if (fis_zero(m_RandomPause.x) && fis_zero(m_RandomPause.y))
                 {
-                    m_Source.play			(0,sm_Looped);
-                    m_Source.set_params		(&m_Params);
-                    m_StopTime				= 0xFFFFFFFF;
-				}else{
-                    if (EDevice->dwTimeGlobal>=m_NextTime)
+                    m_Source.play(0, sm_Looped);
+                    m_Source.set_params(&m_Params);
+                    m_StopTime = 0xFFFFFFFF;
+                }
+                else
+                {
+                    if (EDevice->dwTimeGlobal >= m_NextTime)
                     {
-                    	bool bFullPlay		= fis_zero(m_PlayTime.x)&&fis_zero(m_PlayTime.y);
-                        m_Source.play		(0,bFullPlay?0:sm_Looped);
-                        m_Source.set_params	(&m_Params);
+                        bool bFullPlay = fis_zero(m_PlayTime.x) && fis_zero(m_PlayTime.y);
+                        m_Source.play(0, bFullPlay ? 0 : sm_Looped);
+                        m_Source.set_params(&m_Params);
                         if (bFullPlay)
                         {
-                            m_StopTime		= 0xFFFFFFFF;
-                            m_NextTime		= EDevice->dwTimeGlobal+iFloor(m_Source.get_length_sec()/1000.0f)+Random.randF(m_RandomPause.x,m_RandomPause.y)*1000;
-                        }else{
-                            m_StopTime		= bFullPlay?0:EDevice->dwTimeGlobal+Random.randF(m_PlayTime.x,m_PlayTime.y)*1000;
-                            m_NextTime		= m_StopTime+Random.randF(m_RandomPause.x,m_RandomPause.y)*1000;
+                            m_StopTime = 0xFFFFFFFF;
+                            m_NextTime = EDevice->dwTimeGlobal + iFloor(m_Source.get_length_sec() / 1000.0f) +
+                                         Random.randF(m_RandomPause.x, m_RandomPause.y) * 1000;
+                        }
+                        else
+                        {
+                            m_StopTime =
+                                bFullPlay ? 0 : EDevice->dwTimeGlobal + Random.randF(m_PlayTime.x, m_PlayTime.y) * 1000;
+                            m_NextTime = m_StopTime + Random.randF(m_RandomPause.x, m_RandomPause.y) * 1000;
                         }
                     }
                 }
-            }else{
-                if (EDevice->dwTimeGlobal>=m_StopTime)
-	            	m_Source.stop_deffered();
             }
-            
-        }else{
-            if (0!=m_Source._feedback())
-            	m_Source.stop_deffered();
+            else
+            {
+                if (EDevice->dwTimeGlobal >= m_StopTime)
+                    m_Source.stop_deffered();
+            }
         }
-*/        
-    }break;
+        else
+        {
+            if (0 != m_Source._feedback())
+                m_Source.stop_deffered();
+        }
+        */
+    }
+    break;
     case stNothing:    		break;
     default: THROW;
     }
