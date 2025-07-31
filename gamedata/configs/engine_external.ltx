@@ -1,6 +1,8 @@
 [general]
 title = st_ixray_title ; Mod name
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Engine features
 [ui]
 HQIcons = false
 DisableCharacterInfo = false
@@ -20,9 +22,7 @@ EnableMonstersInventory = true
 EnableWeaponInertion = false ;Shoker Mod Style
 EnableWeaponCollision = false ;Shoker Mod Style
 DisableSprintWhileOverweight = false
-
-[player_hud]
-PlayerHudOmfAdditional = dynamics\weapons\hud_hands_animation\*.omf
+EnableActorStepWallmarks = false        ; AIW Style
 
 [render]
 DisableLoadScreenTips = false
@@ -30,3 +30,15 @@ FontAtlasSize = 4096
 
 [environment]
 ReadSunConfig = false
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Extended sections
+
+[player_hud]
+PlayerHudOmfAdditional = dynamics\weapons\hud_hands_animation\*.omf ; Place your omf file pathes 
+
+; Need [gameplay]:EnableActorStepWallmarks
+[step_wallmark] 
+materials = earth, test1    ; Material names
+left_mark = l_foot          ; left foot wallmark section
+right_mark = r_foot         ; right foot wallmark section

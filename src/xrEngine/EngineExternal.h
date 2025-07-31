@@ -23,6 +23,7 @@ enum class EEngineExternalGame
 	EnableMonstersInventory,
 	EnableWeaponInertion,
 	EnableWeaponCollision,
+	EnableActorStepWallmarks,
 	DisableSprintWhileOverweight,
 };
 
@@ -49,6 +50,9 @@ public:
 
 	xr_string GetTitle() const;
 	const char* GetPlayerHudOmfAdditional() const;
+	const xr_vector<shared_str> StepWallmarksMaterials() const;
+	const xr_string WallmarkLeft() const;
+	const xr_string WallmarkRight() const;
 
 	u32 GetFontAltasSize() const;
 
