@@ -132,22 +132,13 @@ BOOL CTheoraSurface::Load(const char* fname)
 		xr_delete		(m_rgb);
 		xr_delete		(m_alpha);
 	}
-	if(res){
-		//	TODO: get shader version here for theora surface
-		//VERIFY(0);
-		
-		//u32		v_dev	= CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
-		//u32		v_need	= CAP_VERSION(2,0);
-		//bShaderYUV2RGB = (v_dev>=v_need);
-#ifndef _EDITOR
+	if(res)
+	{
 		R_ASSERT(Device.m_pRender);
 		bShaderYUV2RGB = Device.m_pRender->HWSupportsShaderYUV2RGB();
-#else	//	_EDITOR
-		bShaderYUV2RGB = false;
-#endif	//	_EDITOR
-
 	}
-	return				res;
+
+	return res;
 }
 
 u32	CTheoraSurface::Width(bool bRealSize)
