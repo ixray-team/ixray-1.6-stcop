@@ -58,9 +58,12 @@ public:
 	HUD_SOUND_ITEM* FindSoundItem(LPCSTR alias, bool b_assert);
 	HUD_SOUND_COLLECTION();
 	~HUD_SOUND_COLLECTION();
-	shared_str		m_alias; //Alundaio: For use when it's part of a layered Collection
-								void PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, 
-									bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
+	shared_str		m_alias; 
+	
+	void PlaySound(HUD_SOUND_ITEM* Iter, const Fvector& position, const CObject* parent, bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
+
+	//Alundaio: For use when it's part of a layered Collection
+	void PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
 
 	void						StopSound		(	LPCSTR alias);
 
