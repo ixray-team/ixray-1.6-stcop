@@ -15,6 +15,8 @@ class CWeaponRG6;
 class CMissile;
 class CBolt;
 class CGrenade;
+class CPhysicItem;
+class CPhysicsShellHolder;
 
 class CHudItemObject : 
 		public CInventoryItemObject,
@@ -42,6 +44,8 @@ public:
 	virtual CGrenade* cast_grenade() { return nullptr; }
 	virtual CMissile* cast_missile() { return nullptr; }
 	virtual CBolt* cast_bolt() { return nullptr; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
+	virtual CPhysicItem* cast_physics_item() { return this; }
 
 public:
 	virtual void		Load				(LPCSTR section);
