@@ -282,11 +282,11 @@ void CImGuiManager::UpdateCapture()
 {
     static bool keyProcessed = false;
 
-    if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+    if (ImGui::IsKeyDown(ImGuiMod_Alt))
     {
         if (!keyProcessed)
         {
-            if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
+            if (ImGui::IsKeyDown(ImGuiMod_Ctrl))
             {
                 DrawUIRender = !DrawUIRender;
 

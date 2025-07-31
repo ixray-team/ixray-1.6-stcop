@@ -19,6 +19,11 @@ option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
 option(IXRAY_CI "GitHub Actions build" OFF)
 set(IXR_TEST_CI NOT IXRAY_UTILS OR NOT IXRAY_CI)
 
+# SDL stuff
+set(SDL_STATIC OFF)
+set(SDL_TEST_LIBRARY OFF)
+set(SDL_SHARED ON)
+
 # CMake Dev options
 option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
 option(DEVIXRAY_ENABLE_OGL_RENDER "Enable OGL Render" OFF)
