@@ -144,6 +144,7 @@ BOOL CInventoryOwner::net_Spawn		(CSE_Abstract* DC)
 			dialog_manager->SetStartDialog(CharacterInfo().StartDialog());
 			dialog_manager->SetDefaultStartDialog(CharacterInfo().StartDialog());
 		}
+		m_game_name_str		= pTrader->m_character_name_raw;
 		m_game_name			= pTrader->m_character_name;
 		
 		m_deadbody_can_take = pTrader->m_deadbody_can_take;
@@ -183,7 +184,7 @@ void	CInventoryOwner::save	(NET_Packet &output_packet)
 		output_packet.w_u8((u8)inventory().GetActiveSlot());
 
 	CharacterInfo().save(output_packet);
-	save_data	(m_game_name, output_packet);
+	save_data	(m_game_name_str, output_packet);
 	save_data	(m_money,	output_packet);
 }
 void	CInventoryOwner::load	(IReader &input_packet)
@@ -197,8 +198,10 @@ void	CInventoryOwner::load	(IReader &input_packet)
 	m_tmp_active_slot_num		 = active_slot;
 
 	CharacterInfo().load(input_packet);
-	load_data		(m_game_name, input_packet);
+	load_data		(m_game_name_str, input_packet);
 	load_data		(m_money,	input_packet);
+	if (g_actor != nullptr && this->object_id() != Actor()->object_id())
+		m_game_name = TranslateName(m_game_name_str.c_str());
 }
 
 
@@ -236,8 +239,12 @@ void CInventoryOwner::UpdateInventoryOwner(u32 deltaT)
 	}
 }
 
+void CInventoryOwner::RefreshNamesNPC()
+{
+	m_game_name = TranslateName(m_game_name_str.c_str());
+}
 
-//достать PDA из специального слота инвентар€
+//достать PDA из специального слота инвентаря
 CPda* CInventoryOwner::GetPDA() const
 {
 	return (CPda*)(m_inventory->ItemFromSlot(PDA_SLOT));
@@ -250,10 +257,10 @@ CTrade* CInventoryOwner::GetTrade()
 }
 
 
-//состо€ние диалога
+//состояние диалога
 
 //нам предлагают поговорить,
-//провер€ем наше отношение 
+//проверяем наше отношение 
 //и если не враг начинаем разговор
 bool CInventoryOwner::OfferTalk(CInventoryOwner* talk_partner)
 {
@@ -360,7 +367,7 @@ void CInventoryOwner::OnItemTake			(CInventoryItem *inventory_item)
 	}
 }
 
-//возвращает текуший разброс стрельбы с учетом движени€ (в радианах)
+//возвращает текуший разброс стрельбы с учетом движения (в радианах)
 float CInventoryOwner::GetWeaponAccuracy	() const
 {
 	return 0.f;
@@ -403,7 +410,7 @@ void CInventoryOwner::spawn_supplies()
 	}
 }
 
-//игровое им€ 
+//игровое имя 
 LPCSTR	CInventoryOwner::Name () const
 {
 //	return CharacterInfo().Name();
@@ -429,10 +436,11 @@ void CInventoryOwner::LostPdaContact	(CInventoryOwner* pInvOwner)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//дл€ работы с relation system
+//для работы с relation system
 u16 CInventoryOwner::object_id	()  const
 {
-	return smart_cast<const CGameObject*>(this)->ID();
+	CInventoryOwner* This = const_cast<CInventoryOwner*>(this);
+	return This->cast_game_object()->ID();
 }
 
 
@@ -700,3 +708,4 @@ void CInventoryOwner::deadbody_closed( bool status )
 	P.w_u8( (m_deadbody_closed)? 1 : 0 );
 	CGameObject::u_EventSend( P );
 }
+
