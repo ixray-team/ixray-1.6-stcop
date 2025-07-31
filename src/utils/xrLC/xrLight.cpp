@@ -91,7 +91,7 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		// Main process (4 threads)
 		Status			("Lighting...");
 		CThreadManager	threads;
-		const	u32	thNUM	= CPU::ID.n_threads;
+		const	u32	thNUM	= CPU::ID.n_threads - 2;
 
 		CTimer	start_time;	start_time.Start();				
 		for				(int L=0; L<thNUM; L++)	
@@ -123,6 +123,39 @@ void CBuild::Light()
 		mem_Compact		();
 		ImplicitLighting();
 	}
+
+	//****************************************** Resolve materials
+	FPU::m64r();
+	Phase("Resolving materials...");
+	mem_Compact();
+	xrPhase_ResolveMaterials();
+	IsolateVertices(TRUE);
+	 
+
+	// Se7kills !!!! Важно для очень больших локаций
+	// Нужндается в переносе в LMAPS Стадию чтобы много памяти не кушало
+	// (соеденить с LMAPS стадией (UV->LMAPS->BUILD LAMPS) 
+	// через while гонять с выборкой g_XSplits на 1 CLightmap (1k, 2k, 4k, 8k) dds файл )
+
+	//****************************************** UV mapping
+	{
+		FPU::m64r();
+		Phase("Build UV mapping...");
+		mem_Compact();
+		xrPhase_UVmap();
+		IsolateVertices(TRUE);
+	}
+
+	//****************************************** Subdivide geometry
+	if (!lc_global_data()->GetSkipSubdivide())
+	{
+		FPU::m64r();
+		Phase("Subdividing geometry...");
+		mem_Compact();
+		xrPhase_Subdivide();
+ 		lc_global_data()->vertices_isolate_and_pool_reload();
+	}
+
 	
 	LMaps		();
 

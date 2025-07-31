@@ -65,10 +65,9 @@ void StartupLC()
 
 		lc_global_data()->SetLevelName(Name.data());
 
-		extern HWND logWindow;
 		string256 temp;
 		xr_sprintf(temp, "%s - Levels Compiler", Name.data());
-		SetWindowTextA(logWindow, temp);
+		SDL_SetWindowTitle(g_AppInfo.Window, temp);
 
 		string_path prjName;
 		FS.update_path(prjName, "$game_levels$", xr_strconcat(prjName, Name.data(), "\\build.prj"));
@@ -82,7 +81,7 @@ void StartupLC()
 		{
 			xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", Name.data());
 			clMsg(inf);
-			MessageBoxA(logWindow, inf, "Error!", MB_OK | MB_ICONERROR);
+			MessageBoxA(nullptr, inf, "Error!", MB_OK | MB_ICONERROR);
 			return;
 		}
 

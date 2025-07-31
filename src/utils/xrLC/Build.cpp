@@ -173,32 +173,6 @@ void CBuild::Run	(LPCSTR P)
 		xrPhase_Radiosity			();
 	}
 
-	//****************************************** Resolve materials
-	FPU::m64r					();
-	Phase						("Resolving materials...");
-	mem_Compact					();
-	xrPhase_ResolveMaterials	();
-	IsolateVertices				(TRUE);
-
-	//****************************************** UV mapping
-	{
-		FPU::m64r					();
-		Phase						("Build UV mapping...");
-		mem_Compact					();
-		xrPhase_UVmap				();
-		IsolateVertices				(TRUE);
-	}
-	
-	//****************************************** Subdivide geometry
-	if (!lc_global_data()->GetSkipSubdivide())
-	{
-		FPU::m64r();
-		Phase("Subdividing geometry...");
-		mem_Compact();
-		xrPhase_Subdivide();
-		//IsolateVertices(TRUE);
-		lc_global_data()->vertices_isolate_and_pool_reload();
-	}
 
 	//****************************************** All lighting + lmaps building and saving
 	 

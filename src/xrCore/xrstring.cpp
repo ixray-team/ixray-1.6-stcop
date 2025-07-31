@@ -116,7 +116,7 @@ xr_string xr_string::RemoveWhitespaces() const
 
 	for (size_t i = 0; i < Size; ++i)
 	{
-		if (*OrigStr != ' ')
+		if (OrigStr[i] != ' ')
 		{
 			Result.push_back(OrigStr[i]);
 		}

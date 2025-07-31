@@ -66,6 +66,8 @@ virtual	void Execute()
 				break;
 			}
 			ThreadWorkID_Adaptive++;
+
+			Progress( float(ID) / float(lc_global_data()->g_vertices().size()) );
 			csA.Leave();
 
 			base_color_c		vC;
@@ -116,7 +118,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		Light_prepare				();
  
 		ThreadWorkID_Adaptive = 0;
-		for (u32 thID = 0; thID < CPU::ID.n_threads; thID++)
+		for (u32 thID = 0; thID < CPU::ID.n_threads - 2; thID++)
 			precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
 
 		precalc_base_hemi.wait();
@@ -288,34 +290,42 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 	u32		counter_create		= 0;
 	u32 cnt_verts = (u32)lc_global_data()->g_vertices().size();
  	
-	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)
+	for (u32 I = 0; I < lc_global_data()->g_faces().size(); ++I)
 	{
-		Face* F					= lc_global_data()->g_faces()[I];
-		if (0==F)				
+		Face* F = lc_global_data()->g_faces()[I];
+		if (0 == F)
 			continue;
-		if( !check_and_destroy_splited( I ) )
+		if (!check_and_destroy_splited(I))
 			continue;
 
-		Progress				(float(I)/float(lc_global_data()->g_faces().size()));
+		Progress(float(I) / float(lc_global_data()->g_faces().size()));
 		int max_id = -1;
-		if( !do_tesselate_face( *F, cb_E, max_id ) )
+		if (!do_tesselate_face(*F, cb_E, max_id))
 			continue;
 
 		xr_vector<Face*>		adjacent_vec;
-		Vertex					*V1,*V2;
-		CollectProblematicFaces( *F, max_id, adjacent_vec, &V1, &V2 );
+		Vertex* V1, * V2;
+		CollectProblematicFaces(*F, max_id, adjacent_vec, &V1, &V2);
 		++counter_create;
-		if (0==(counter_create%10000))	
+		if (0 == (counter_create % 10000))
 		{
-			for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
-				if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())	
-					lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
-
-			Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create,lc_global_data()->g_vertices().size(),cnt_verts);
-			xrLogger::FlushLog			();
+			for (u32 I = 0; I < lc_global_data()->g_vertices().size(); ++I)
+			{
+				u32 MAX_SIZE = lc_global_data()->g_vertices().size();
+				if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())
+				{
+					if (lc_global_data()->g_vertices().size() > I)
+						lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[I]);
+				}
+			}
 		}
 
-		tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
+		if ((counter_create % 100000) == 0)
+		{
+			Status("Working: %d verts created, %u(now) / %u(was) ...", counter_create, lc_global_data()->g_vertices().size(), cnt_verts);
+			xrLogger::FlushLog();
+		}
+  		tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
 	}
 
 	// Cleanup

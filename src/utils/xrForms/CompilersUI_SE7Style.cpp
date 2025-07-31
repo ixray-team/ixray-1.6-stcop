@@ -284,7 +284,8 @@ void DrawCompilerConfig()
 	{
 		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
 		ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
-		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
+		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
+ 		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
 		ImGui::EndChild();
 	}
@@ -328,6 +329,43 @@ void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, cha
 	}
 }
 
+const ImVec4 getLogColor_new(char* text)
+{
+	if (text == nullptr || xr_strlen(text) == 0)
+		return ImVec4(RGBAColor(230, 230, 230, 255));
+
+	xr_string TextEx = text;
+	TextEx = TextEx.RemoveWhitespaces();
+	size_t Pos = TextEx.find('|');
+
+	while (Pos != xr_string::npos)
+	{
+		TextEx.erase(Pos, 1);
+		Pos = TextEx.find('|');
+	}
+
+	char Word = TextEx[0];
+
+	switch (Word)
+	{
+	case '~': return ImVec4(RGBAColor(248, 248, 49, 255));
+	case '!': return ImVec4(RGBAColor(204, 102, 102, 255));
+	case '@': return ImVec4(RGBAColor(125, 125, 241, 255));
+	case '#': return ImVec4(RGBAColor(0, 222, 205, 155));
+	case '%': return ImVec4(RGBAColor(202, 85, 219, 155));
+	case '$': return ImVec4(RGBAColor(172, 172, 255, 255));
+	case '*': return ImVec4(RGBAColor(248, 248, 49, 255));
+	case '^': return ImVec4(RGBAColor(100, 246, 121, 255));
+	case '&': return ImVec4(RGBAColor(255, 255, 0, 255));
+	case '-': return ImVec4(RGBAColor(0, 255, 0, 255));
+	case '+': return ImVec4(RGBAColor(84, 255, 255, 255));
+	case '=': return ImVec4(RGBAColor(205, 205, 105, 255));
+	case '/': return ImVec4(RGBAColor(146, 146, 252, 255));
+	}
+
+	return ImVec4(RGBAColor(230, 230, 230, 255));
+}
+
 const ImVec4 getLogColor(const char& c)
 {
 	switch (c)
@@ -354,6 +392,7 @@ void RenderCompilerUI(int X, int Y)
 	//static const char* levelName = "LevelTextName";
 	static bool autoScroll = true;
 	static bool hideLogSection = false;
+	static bool ResizeMaximal = false;
 
 	// Set up the window
 	ImGui::Begin("Compile Split Screen", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus);
@@ -378,10 +417,28 @@ void RenderCompilerUI(int X, int Y)
 
 	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
 
+
+	if (ResizeMaximal)
+	{
+		if (X != 1250 || Y != 800)
+		{
+			SDL_SetWindowSize(g_AppInfo.Window, 1250, 800);
+		}
+	}
+	else
+	{
+		if (X != 1000 || Y != 560)
+		{
+			SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
+		}
+	}
+	
+
+
 		// Table
 	if (ImGui::BeginTable("IterationsTable", 10, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
 		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
-		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 120.f);
+		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
 		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
@@ -518,8 +575,7 @@ void RenderCompilerUI(int X, int Y)
 	if (ImGui::Button(buttonText))
 		hideLogSection = !hideLogSection;
 
-	if (!hideLogSection && ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - 
-		topHeight - (buttonSize.y * 2)-30), true))
+	if (!hideLogSection && ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2)-30), true))
 	{
 		ImGuiListClipper clipper;
 
@@ -532,8 +588,7 @@ void RenderCompilerUI(int X, int Y)
 			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
 			{
 				auto& line = GetLogVector()[i];
-				char cLine = (line.size() > 0 ? line[0] : ' ');
-				ImGui::TextColored(getLogColor(cLine), "%s", line.c_str());
+				ImGui::TextColored(getLogColor_new((char*)line.c_str()), "%s", line.c_str());
 			}
 		}
 
@@ -551,6 +606,19 @@ void RenderCompilerUI(int X, int Y)
 		autoScroll = !autoScroll;
 	}
 
+	ImGui::SameLine();
+
+	if (ImGui::Button(!ResizeMaximal ? "Maximal resize" : "Minimal resize"))
+	{
+		ResizeMaximal = !ResizeMaximal;
+	}
+
+	ImGui::SameLine();
+
+	size_t  w_free, w_reserved, w_committed;
+	vminfo(&w_free, &w_reserved, &w_committed);
+ 
+	ImGui::TextColored( ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", w_committed / 1024 / 1024);
 
 	ImGui::End();
 }
