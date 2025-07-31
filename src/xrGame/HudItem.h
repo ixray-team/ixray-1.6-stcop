@@ -17,6 +17,7 @@ class CWeapon;
 class CMissile;
 class CBolt;
 class CGrenade;
+class CPhysicsShellHolder;
 
 #include "actor_defs.h"
 #include "inventory_space.h"
@@ -313,6 +314,9 @@ public:
 	virtual CGrenade* cast_grenade() { return nullptr; }
 	virtual CMissile* cast_missile() { return nullptr; }
 	virtual CBolt* cast_bolt() { return nullptr; }
+	virtual CInventoryItem* cast_inventory_item() { return nullptr; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
+	virtual CPhysicItem* cast_physics_item() { return nullptr; }
 
 protected:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
