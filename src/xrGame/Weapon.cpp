@@ -1102,6 +1102,7 @@ void CWeapon::UpdateCL		()
 
 void CWeapon::ForceUpdateHUD()
 {
+	UpdateScopePosition();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
 }
@@ -1649,6 +1650,32 @@ bool CWeapon::ScopeAttachable()
 bool CWeapon::SilencerAttachable()
 {
 	return (ALife::eAddonAttachable == m_eSilencerStatus);
+}
+
+void CWeapon::UpdateScopePosition()
+{
+	auto HID = HudItemData();
+
+	if (HID != nullptr && ScopeAttachable())
+	{
+		shared_str hands_section = HID->m_measures.m_hands_positions.sSection;
+		shared_str scope_section = GetCurrentScopeSection();
+		shared_str hud_section = HudSection();
+
+		bool is_16x9 = UI().is_widescreen();
+
+		if (IsScopeAttached())
+		{
+			if (hands_section != scope_section)
+			{
+				HID->m_measures.m_hands_positions.Load(scope_section, is_16x9);
+			}
+		}
+		else if (hands_section != hud_section)
+		{
+			HID->m_measures.m_hands_positions.Load(hud_section, is_16x9);
+		}
+	}
 }
 
 static const char* wpn_scope = "wpn_scope";
@@ -2228,8 +2255,8 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor>0.f))
 	{
 		Fvector						curr_offs, curr_rot;
-		curr_offs					= hi->m_measures.m_hands_offset[0][idx];//pos,aim
-		curr_rot					= hi->m_measures.m_hands_offset[1][idx];//rot,aim
+		curr_offs					= hi->m_measures.m_hands_positions.hands_offsets[0][idx];//pos,aim
+		curr_rot					= hi->m_measures.m_hands_positions.hands_offsets[1][idx];//rot,aim
 		curr_offs.mul				(m_zoom_params.m_fZoomRotationFactor);
 		curr_rot.mul				(m_zoom_params.m_fZoomRotationFactor);
 
