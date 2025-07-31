@@ -44,6 +44,7 @@ bool CSoundManager::OnCreate()
 {
     CSound_manager_interface::_create(0);
     CSound_manager_interface::_create(1);
+    ::Sound->set_master_volume(1.f);
     return true;
 }
 
@@ -159,6 +160,10 @@ void CSoundManager::MakeGameSound(ESoundThumbnail* THM, LPCSTR src_name, LPCSTR 
     	FS.file_delete(game_name);
     	ELog.DlgMsg(mtError,"Can't make game sound '%s'.",game_name);
     }
+}
+
+CSoundManager::CSoundManager()
+{
 }
 
 //------------------------------------------------------------------------------
