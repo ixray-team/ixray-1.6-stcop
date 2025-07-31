@@ -69,7 +69,7 @@ void RenderActorInfos()
 
 		if (is_need_to_show)
 		{
-			if (ImGui::Button(Str.c_str(), { 200, 30 })) {
+			if (ImGui::Button(Str.c_str())) {
 				g_pIGameActor->DisableInfoPortion(Str.c_str());
 			}
 		}
@@ -179,7 +179,7 @@ void RenderScenesViewer() {
 		scenesIni.r_line(levelName, i, &key, &value);
 		scenesTable[key] = parse_params(value, '|');
 
-		if (ImGui::Button(g_pStringTable->translate(key).c_str(), {200, 30})) {
+		if (ImGui::Button(g_pStringTable->translate(key).c_str())) {
 			OnOpenSceneClicked(scenesTable, key, value);
 		}
 	}
