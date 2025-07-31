@@ -1,6 +1,7 @@
 ﻿#pragma	once
 
-extern class i_lc_log {
+extern class i_lc_log 
+{
 public:
 	virtual void clMsg(LPCSTR msg) = 0;
 	virtual void clLog(LPCSTR msg) = 0;
@@ -24,6 +25,7 @@ struct IterationPhase
 	u32 remain_time = 0;
 	IterationStatus status = InProgress;
 	float PhasePersent = 0;
+	size_t used_memory = 0;
 };
 
 struct IterationData 

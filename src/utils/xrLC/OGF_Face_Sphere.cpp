@@ -25,7 +25,6 @@ BOOL SphereValid(xr_vector<Fvector>& geom, Fsphere& test)
 Fsphere CalculateSphere(xr_vector<Fvector>& V, Fbox &bbox)
 {
 	Fsphere S2;
-
 	bbox.invalidate();
 	for (auto& I : V)
 		bbox.modify(I);
