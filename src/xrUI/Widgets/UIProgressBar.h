@@ -38,6 +38,8 @@ public:
 	Fcolor				m_middleColor;
 	Fcolor				m_maxColor;
 	float				m_inertion;	//
+
+	bool				IsExpressionSystem = false;
 public:
 	CUIStatic			m_UIProgressItem;
 	CUIStatic			m_UIBackgroundItem;

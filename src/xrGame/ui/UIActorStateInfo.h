@@ -71,13 +71,13 @@ protected:
 	CUIStatic*				m_static;
 	CUIStatic*				m_static2;
 	CUIStatic*				m_static3;
-	CUIProgressBar*			m_progress;
 	CUIProgressShape*		m_sensor;
 	UI_Arrow*				m_arrow;
 	UI_Arrow*				m_arrow_shadow;
 	float					m_magnitude;
 
 public:
+	CUIProgressBar*			m_progress;
 					ui_actor_state_item		();
 	virtual			~ui_actor_state_item	();
 			void	init_from_xml			( CUIXml& xml, LPCSTR path );
