@@ -111,8 +111,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				for (u32 it=0; it<3; ++it)
 				{
 					int id			= B.v[it];
-				//	Msg("ID: %d : Loaded: %d", id, lc_global_data()->g_vertices().size());
-					R_ASSERT		(id<(int)lc_global_data()->g_vertices().size());
+ 					R_ASSERT		(id<(int)lc_global_data()->g_vertices().size());
 					_F->SetVertex	(it,lc_global_data()->g_vertices()[id]);
 				}
 
@@ -347,7 +346,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  				// se7kills Не трогать Можно нормально скипать отсуцтвие THM
 				if (!THM)
 				{
-					Msg("cannot find thm: %s", th_name);
+					Msg("! cannot find thm: %s", th_name);
  					is_thm_missing = true;
 					BT.dwWidth = 1024;
 					BT.dwHeight = 1024;
@@ -389,20 +388,21 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							BT.THM.SetHasSurface(TRUE);
 
 							if (!BT.pSurface) {
-								clMsg("cannot find tga texture: %s", N);
+								clMsg("! cannot find dds texture: %s", N);
 								is_tga_missing = true;
 								continue;
 							}
 
 							if ((w != BT.dwWidth) || (h != BT.dwHeight))
 							{
-								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+								Msg("- THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
 								BT.dwWidth = BT.THM.width = w;
 								BT.dwHeight = BT.THM.height = h;
 							}
 							BT.Vflip();
 						}
-						else {
+						else 
+						{
 							// Free surface memory
 						}
 					}
