@@ -10,7 +10,7 @@
 
 #include "dxRenderDeviceRender.h"
 #include "../../xrEngine/IGame_Level.h"
-
+#include "../../xrEngine/date_time.h"
 // matrices
 #define	BIND_DECLARE(xf)	\
 class cl_xform_##xf	: public R_constant_setup {	virtual void setup (R_constant* C) { RCache.xforms.set_c_##xf (C); } }; \
@@ -526,6 +526,43 @@ static class cl_actor_params : public R_constant_setup
 	}
 } binder_actor_states;
 
+static class cl_m_timearrow : public R_constant_setup
+{
+	virtual void setup(R_constant* C)
+	{
+		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
+		split_time(g_pGameLevel->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+
+		float s_f = secs / 60.f;
+		float s_angle = PI_MUL_2 * s_f;
+
+		float m_f = (s_f + float(mins)) / 60.f;
+		float m_angle = PI_MUL_2 * m_f;
+
+		float h_f = (m_f + float(hours)) / 12.f;
+		float h_angle = PI_MUL_2 * h_f;
+
+		RCache.set_c(C, sin(h_angle), cos(h_angle), sin(m_angle), cos(m_angle));
+	}
+} binder_m_timearrow;
+
+static class cl_m_timearrow2 : public R_constant_setup
+{
+	virtual void setup(R_constant* C)
+	{
+		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
+		split_time(g_pGameLevel->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+
+		float s_f = secs / 60.f;
+		float s_angle = PI_MUL_2 * s_f;
+
+		float h, p;
+		RDEVICE.vCameraDirection.getHP(h, p);
+
+		RCache.set_c(C, sin(s_angle), cos(s_angle), sin(h), cos(h));
+	}
+} binder_m_timearrow2;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
 {
@@ -613,6 +650,10 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_hud_params", &binder_m_hud_params);
 	r_Constant("m_affects", &binder_affects);
 	r_Constant("m_actor_params", &binder_actor_states);
+
+	//LVutner: Gunslinger...
+	r_Constant("m_timearrow", &binder_m_timearrow);
+	r_Constant("m_timearrow2", &binder_m_timearrow2);
 
 	// detail
 	//if (bDetail	&& detail_scaler)
