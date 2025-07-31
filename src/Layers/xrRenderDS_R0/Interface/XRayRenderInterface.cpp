@@ -4,275 +4,275 @@
 #include "Light/XRayRenderGlow.h"
 #include "Light/XRayObjectSpecific.h"
 
-XRayRenderInterface GRenderInterface;
+CDS0_RenderInterface GRenderInterface;
 
-XRayRenderInterface::XRayRenderInterface()
+CDS0_RenderInterface::CDS0_RenderInterface()
 {
 
 }
 
-bool XRayRenderInterface::is_sun_static()
+bool CDS0_RenderInterface::is_sun_static()
 {
 	return false;
 }
 
-DWORD XRayRenderInterface::get_dx_level()
+DWORD CDS0_RenderInterface::get_dx_level()
 {
 	return 0;
 }
 
-void XRayRenderInterface::create()
+void CDS0_RenderInterface::create()
 {
 	Device.seqFrame.Add(this);
-	GModelPool = new XRayModelPool;
+	GModelPool = new CDS0_ModelPool;
 }
 
-void XRayRenderInterface::destroy()
+void CDS0_RenderInterface::destroy()
 {
 	Device.seqFrame.Remove(this);
 	xr_delete(GModelPool);
 }
 
-void XRayRenderInterface::reset_begin()
+void CDS0_RenderInterface::reset_begin()
 {
 }
 
-void XRayRenderInterface::reset_end()
+void CDS0_RenderInterface::reset_end()
 {
 }
 
-void XRayRenderInterface::level_Load(IReader*)
+void CDS0_RenderInterface::level_Load(IReader*)
 {
 }
 
-void XRayRenderInterface::level_Unload()
+void CDS0_RenderInterface::level_Unload()
 {
 }
 
-HRESULT XRayRenderInterface::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result)
+HRESULT CDS0_RenderInterface::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result)
 {
 	return E_NOTIMPL;
 }
 
-LPCSTR XRayRenderInterface::getShaderPath()
+LPCSTR CDS0_RenderInterface::getShaderPath()
 {
 	return LPCSTR();
 }
 
-IRender_Sector* XRayRenderInterface::getSector(int id)
+IRender_Sector* CDS0_RenderInterface::getSector(int id)
 {
 	return nullptr;
 }
 
-IRenderVisual* XRayRenderInterface::getVisual(int id)
+IRenderVisual* CDS0_RenderInterface::getVisual(int id)
 {
 	return nullptr;
 }
 
-IRender_Sector* XRayRenderInterface::detectSector(const Fvector& P)
+IRender_Sector* CDS0_RenderInterface::detectSector(const Fvector& P)
 {
 	return nullptr;
 }
 
-IRender_Target* XRayRenderInterface::getTarget()
+IRender_Target* CDS0_RenderInterface::getTarget()
 {
 	return &Target;
 }
 
-void XRayRenderInterface::set_Transform(Fmatrix* M)
+void CDS0_RenderInterface::set_Transform(Fmatrix* M)
 {
 }
 
-void XRayRenderInterface::set_HUD(BOOL V)
+void CDS0_RenderInterface::set_HUD(BOOL V)
 {
 }
 
-BOOL XRayRenderInterface::get_HUD()
+BOOL CDS0_RenderInterface::get_HUD()
 {
 	return 0;
 }
 
-void XRayRenderInterface::set_Invisible(BOOL V)
+void CDS0_RenderInterface::set_Invisible(BOOL V)
 {
 }
 
-void XRayRenderInterface::set_Object(IRenderable* O)
+void CDS0_RenderInterface::set_Object(IRenderable* O)
 {
 }
 
-void XRayRenderInterface::add_Occluder(Fbox2& bb_screenspace)
+void CDS0_RenderInterface::add_Occluder(Fbox2& bb_screenspace)
 {
 }
 
-void XRayRenderInterface::add_Visual(IRenderVisual* V)
+void CDS0_RenderInterface::add_Visual(IRenderVisual* V)
 {
 }
 
-void XRayRenderInterface::add_Geometry(IRenderVisual* V)
+void CDS0_RenderInterface::add_Geometry(IRenderVisual* V)
 {
 }
 
-void XRayRenderInterface::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
+void CDS0_RenderInterface::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
 {
 }
 
-void XRayRenderInterface::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
+void CDS0_RenderInterface::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
 {
 }
 
-void XRayRenderInterface::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
+void CDS0_RenderInterface::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
 {
 }
 
-void XRayRenderInterface::clear_static_wallmarks()
+void CDS0_RenderInterface::clear_static_wallmarks()
 {
 }
 
-void XRayRenderInterface::flush()
+void CDS0_RenderInterface::flush()
 {
 }
 
-IRender_ObjectSpecific* XRayRenderInterface::ros_create(IRenderable* parent)
+IRender_ObjectSpecific* CDS0_RenderInterface::ros_create(IRenderable* parent)
 {
-	static XRayRenderObjectSpecific Fake;
+	static CDS0_RenderObjectSpecific Fake;
 	return &Fake;
 }
 
-void XRayRenderInterface::ros_destroy(IRender_ObjectSpecific*&)
+void CDS0_RenderInterface::ros_destroy(IRender_ObjectSpecific*&)
 {
 }
 
-IRender_Light* XRayRenderInterface::light_create()
+IRender_Light* CDS0_RenderInterface::light_create()
 {
-	static XRayRenderLight Fake;
+	static CDS0_RenderLight Fake;
 	return &Fake;
 }
 
-IRender_Glow* XRayRenderInterface::glow_create()
+IRender_Glow* CDS0_RenderInterface::glow_create()
 {
-	static XRayRenderGlow Fake;
+	static CDS0_RenderGlow Fake;
 	return &Fake;
 }
 
-IRenderVisual* XRayRenderInterface::model_CreateParticles(LPCSTR name)
+IRenderVisual* CDS0_RenderInterface::model_CreateParticles(LPCSTR name)
 {
 	return nullptr;
 }
-IRenderVisual* XRayRenderInterface::model_Create(LPCSTR name, IReader* data)
+IRenderVisual* CDS0_RenderInterface::model_Create(LPCSTR name, IReader* data)
 {
 	return GModelPool->Create(name, data);
 }
 
-IRenderVisual* XRayRenderInterface::model_CreateChild(LPCSTR name, IReader* data)
+IRenderVisual* CDS0_RenderInterface::model_CreateChild(LPCSTR name, IReader* data)
 {
 	return  GModelPool->CreateChild(name, data);
 }
 
-IRenderVisual* XRayRenderInterface::model_Duplicate(IRenderVisual* V)
+IRenderVisual* CDS0_RenderInterface::model_Duplicate(IRenderVisual* V)
 {
-	return GModelPool->Instance_Duplicate((XRayRenderVisual*)V);
+	return GModelPool->Instance_Duplicate((CDS0_RenderVisual*)V);
 }
 
-void XRayRenderInterface::model_Delete(IRenderVisual*& V, BOOL bDiscard)
+void CDS0_RenderInterface::model_Delete(IRenderVisual*& V, BOOL bDiscard)
 {
-	XRayRenderVisual* pVisual = (XRayRenderVisual*)V;
+	CDS0_RenderVisual* pVisual = (CDS0_RenderVisual*)V;
 	GModelPool->Delete(pVisual, bDiscard);
 	V = 0;
 }
 
-void XRayRenderInterface::model_Logging(BOOL bEnable)
+void CDS0_RenderInterface::model_Logging(BOOL bEnable)
 {
 	GModelPool->Logging(bEnable);
 }
 
-void XRayRenderInterface::models_Prefetch()
+void CDS0_RenderInterface::models_Prefetch()
 {
 	GModelPool->Prefetch();
 }
 
-void XRayRenderInterface::models_Clear(BOOL b_complete)
+void CDS0_RenderInterface::models_Clear(BOOL b_complete)
 {
 }
 
-BOOL XRayRenderInterface::occ_visible(vis_data& V)
-{
-	return 0;
-}
-
-BOOL XRayRenderInterface::occ_visible(Fbox& B)
+BOOL CDS0_RenderInterface::occ_visible(vis_data& V)
 {
 	return 0;
 }
 
-BOOL XRayRenderInterface::occ_visible(sPoly& P)
+BOOL CDS0_RenderInterface::occ_visible(Fbox& B)
 {
 	return 0;
 }
 
-void XRayRenderInterface::Screenshot(ScreenshotMode mode, LPCSTR name)
+BOOL CDS0_RenderInterface::occ_visible(sPoly& P)
+{
+	return 0;
+}
+
+void CDS0_RenderInterface::Screenshot(ScreenshotMode mode, LPCSTR name)
 {
 }
 
-void XRayRenderInterface::Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer)
+void CDS0_RenderInterface::Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer)
 {
 }
 
-void XRayRenderInterface::ScreenshotAsyncBegin()
+void CDS0_RenderInterface::ScreenshotAsyncBegin()
 {
 }
 
-void XRayRenderInterface::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
+void CDS0_RenderInterface::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
 {
 }
 
-void XRayRenderInterface::rmNear()
+void CDS0_RenderInterface::rmNear()
 {
 }
 
-void XRayRenderInterface::rmFar()
+void CDS0_RenderInterface::rmFar()
 {
 }
 
-void XRayRenderInterface::rmNormal()
+void CDS0_RenderInterface::rmNormal()
 {
 }
 
-u32 XRayRenderInterface::memory_usage()
+u32 CDS0_RenderInterface::memory_usage()
 {
 	return u32();
 }
 
-void XRayRenderInterface::BeforeWorldRender()
+void CDS0_RenderInterface::BeforeWorldRender()
 {
 }
 
-void XRayRenderInterface::AfterWorldRender()
+void CDS0_RenderInterface::AfterWorldRender()
 {
 }
 
-void XRayRenderInterface::ChangeMark(LPCSTR mark)
+void CDS0_RenderInterface::ChangeMark(LPCSTR mark)
 {
 }
 
-u32 XRayRenderInterface::active_phase()
+u32 CDS0_RenderInterface::active_phase()
 {
 	return u32();
 }
 
-void XRayRenderInterface::Render()
+void CDS0_RenderInterface::Render()
 {
 	GModelPool->Render();
 }
 
-void XRayRenderInterface::OnFrame()
+void CDS0_RenderInterface::OnFrame()
 {
 	Render();
 }
 
-void XRayRenderInterface::Calculate()
+void CDS0_RenderInterface::Calculate()
 {
 }
 
-void XRayRenderInterface::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
+void CDS0_RenderInterface::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
 {
 }

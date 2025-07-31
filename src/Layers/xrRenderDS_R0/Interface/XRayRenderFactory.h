@@ -7,7 +7,7 @@ virtual I ## Class* Create ## Class(); \
 virtual void Destroy##Class(I ## Class *pObject);
 
 
-class XRayRenderFactory:public IRenderFactory
+class CDS0_RenderFactory:public IRenderFactory
 {
 public:
 #ifndef _EDITOR

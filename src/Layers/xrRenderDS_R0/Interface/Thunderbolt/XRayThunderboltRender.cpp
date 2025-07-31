@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
-XRayThunderboltRender::XRayThunderboltRender()
+CDS0_ThunderboltRender::CDS0_ThunderboltRender()
 {
 }
 
-void XRayThunderboltRender::Copy(IThunderboltRender & _in)
+void CDS0_ThunderboltRender::Copy(IThunderboltRender & _in)
 {
 }
 
-void XRayThunderboltRender::Render(CEffect_Thunderbolt & owner)
+void CDS0_ThunderboltRender::Render(CEffect_Thunderbolt & owner)
 {
 }
