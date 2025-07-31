@@ -123,7 +123,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
             CGameTask* t1 = Level().GameTaskManager().ActiveTask(eTaskTypeStoryline);
             CGameTask* t2 = Level().GameTaskManager().ActiveTask(eTaskTypeAdditional);
 
-            if (t1 && t2)
+            if (Level().GameTaskManager().IsMultipleTask() && t1 && t2)
             {
                 m_game_objective->m_static->TextItemControl()->SetTextST(t1->m_Title.c_str());
                 SDrawStaticStruct* sm2 = AddCustomStatic("secondary_task", true);
