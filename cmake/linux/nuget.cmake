@@ -26,6 +26,7 @@ set(NUGET_PACKAGE_PLATFORM_EX x86_64)
 # SDL3
 set(CORE_SDL3_PLATFORM linux-${NUGET_PACKAGE_PLATFORM})
 set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL3_PLATFORM}.2024.3.16-open/)
+set(CORE_SDL3_LIBRARY libSDL3.so.0.0.0)
 
 # Optick
 set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
@@ -67,6 +68,8 @@ set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
 # TBB
 set(IXR_TBB_SDK ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.linux-x64.2024.3.26-open/)
 set(IXR_TBB_INC ${IXR_TBB_SDK}build/native/include/)
+set(IXR_TBB_LIBDIR linux-${NUGET_PACKAGE_PLATFORM})
+set(IXR_TBB_LIB  ${IXR_TBB_SDK}/runtimes/${IXR_TBB_LIBDIR}/native/Release/libtbb.so.12.13)
 set(IXR_TBB_BIN ${IXR_TBB_LIB})
 
 # Mimalloc
@@ -74,3 +77,11 @@ set(MIMALLOC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Mimalloc.Runtimes.li
 
 # LZO
 set(LZO ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Lzo.Runtimes.linux-x64.2.10.0)
+set(LZO_LIB ${LZO}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/liblzo2.so.2.0.0)
+
+# YAML
+set(YAML_CORE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.YamlCpp.Runtimes.linux-x64.0.8.0)
+set(YAML_INCL ${YAML_CORE}/build/native/include)
+set(YAML_LIB  ${YAML_CORE}/runtimes/linux-x64/native/Release/libyaml-cpp.so.0.8.0)
+set(YAML_BIN  ${YAML_LIB})
+set(YAML_LIB_NAME libyaml-cpp.so.0.8.0)
