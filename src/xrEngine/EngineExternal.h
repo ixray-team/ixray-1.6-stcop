@@ -54,6 +54,7 @@ public:
 	const xr_vector<shared_str> StepWallmarksMaterials() const;
 	const xr_string WallmarkLeft() const;
 	const xr_string WallmarkRight() const;
+	float GetWeaponIconScaling() const;
 
 	u32 GetFontAltasSize() const;
 
