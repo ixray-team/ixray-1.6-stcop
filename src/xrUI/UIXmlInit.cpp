@@ -403,7 +403,7 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, LPCSTR path, int index, CUILines* pLi
 	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd)
+bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd, bool fatal)
 {
 	bool ValidNode = xml_doc.NavigateToNode(path, index);
 	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
@@ -457,7 +457,7 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButt
 		}
 	}
 
-	InitMultiTexture	(xml_doc, path, index, pWnd);
+	InitMultiTexture	(xml_doc, path, index, pWnd, fatal);
 	InitTextureOffset	(xml_doc, path, index, pWnd);
 	InitSound			(xml_doc, path, index, pWnd);
 
@@ -1024,7 +1024,7 @@ bool CUIXmlInit::InitTextureOffset(CUIXml &xml_doc, LPCSTR path, int index, CUIS
 	return true;
 }
 
-bool CUIXmlInit::InitMultiTexture(CUIXml &xml_doc, LPCSTR path, int index, CUI3tButton* pWnd){
+bool CUIXmlInit::InitMultiTexture(CUIXml &xml_doc, LPCSTR path, int index, CUI3tButton* pWnd, bool fatal){
 	string256 buff;
 	bool success = false;
 
@@ -1033,7 +1033,7 @@ bool CUIXmlInit::InitMultiTexture(CUIXml &xml_doc, LPCSTR path, int index, CUI3t
 
 	if (texture.size() > 0)
 	{
-		pWnd->InitTexture(*texture);
+		pWnd->InitTexture(*texture, fatal);
 		return true;
 	}
 
