@@ -433,7 +433,7 @@ void SplittedMerge()
 void CBuild::xrPhase_MergeGeometry()
 {
 	string128 tmp;
-	sprintf(tmp, "Merge Started... [%u]", g_XSplit.size());
+	sprintf(tmp, "Merge Started... [%u]", (u32)g_XSplit.size());
 	Phase(tmp);
 	
 	// SPLIT FOR FASTER MERGING
