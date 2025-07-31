@@ -150,11 +150,25 @@ end
 
 function teleport_actor(actor, npc, p)
 	local point = patrol(p[1])
-	local look = patrol(p[2])
+	local dir
+	if p[2] ~= nil then
+		local look = patrol(p[2])
+		dir = -look:point(0):sub(point:point(0)):getH()
+		db.actor:set_actor_direction(dir)
+	end
+
+	for k,v in pairs(db.no_weap_zones) do
+		local zone = db.zone_by_name[k]
+		if utils.npc_in_zone(db.actor, zone) then
+			db.no_weap_zones[k] = true
+		end
+	end
+
+	if npc and npc:name() ~= nil then
+		printf("teleporting actor from [%s]", tostring(npc:name()))
+	end
 
 	db.actor:set_actor_position(point:point(0))
-	local dir = look:point(0):sub(point:point(0))
-	db.actor:set_actor_direction(-dir:getH())
 end
 -----------------------------------------------------------------------------
 local drop_point, drop_object = 0, 0

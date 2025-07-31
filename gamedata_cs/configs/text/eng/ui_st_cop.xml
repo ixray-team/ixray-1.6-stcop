@@ -42,4 +42,7 @@
 	<string id="st_save_zat_a1_game_start">
 		<text>beginning of the game</text>
 	</string>
+	<string id="st_can_use_weapon_now">
+		<text>You can now take your weapon out.</text>
+	</string>
 </string_table>

@@ -215,5 +215,7 @@
   <mp_tdm_buy x="100" y="729" width="824" height="30">
     <text font="graffiti19" r="255" g="255" b="0"    align="c"/>
   </mp_tdm_buy>
-
+  <can_use_weapon_now x="200" y="70" width="600" height="50" ttl="3">
+          <text font="graffiti32"  r="240" g="217" b="182" a="255" align="c">can_use_weapon_now</text>
+  </can_use_weapon_now>
 </header>
