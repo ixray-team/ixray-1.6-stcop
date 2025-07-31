@@ -64,7 +64,9 @@ void StatusNoMsg(const char* format, ...)
 
 void Progress(const float F) {
 	progress = F;
-	ActiveIteration->PhasePersent = F;
+
+	if (ActiveIteration->phases.size() > 0)
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].PhasePersent = F;
 }
 float GetProgress()
 {
@@ -87,15 +89,23 @@ IterationData* GetActiveIteration()
 }
 void SetActiveIteration(IterationData* i)
 {
+	if (auto* p = (ActiveIteration ? &ActiveIteration->phases : nullptr); 
+		p && p->size() > 0 && (*p)[p->size() - 1].status != Complited)
+		(*p)[p->size() - 1].status = Complited;
+
 	 ActiveIteration = i;
 }
+
 void Phase(const char* phase_name) {
 	csLog.Enter();
 
 	phase_total_time = timeGetTime() - phase_start_time;
 
 	// Start _new phase
-	ActiveIteration->PhaseName = phase_name;
+	if (ActiveIteration->phases.size() > 0)
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
+
+	ActiveIteration->phases.push_back({ phase_name });
 
 	phase_start_time = timeGetTime();
 	Progress(0);

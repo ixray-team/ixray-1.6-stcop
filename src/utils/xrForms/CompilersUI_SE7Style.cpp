@@ -338,7 +338,7 @@ void RenderCompilerUI()
 
 	// Calculate sizes for the top and bottom parts
 	ImVec2 windowSize = ImGui::GetContentRegionAvail();
-	float topHeight = windowSize.y * 0.35f;
+	float topHeight = windowSize.y * 0.5f;
 
 	// Top section
 	ImGui::BeginChild("TopSection", ImVec2(windowSize.x, topHeight), true);
@@ -349,8 +349,26 @@ void RenderCompilerUI()
 	//ImGui::ProgressBar(0.00); надо бы сделать общий прогресс бар
 	//ImGui::Separator();
 
-	// Table
-	if (ImGui::BeginTable("IterationsTable", 8, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
+	auto getTextStatus = [](IterationStatus status)
+		{
+			switch (status)
+			{
+			case Complited:	return "Complited";
+			case InProgress:return "In Progress";
+			case Pending:	return "Pending";
+			case Skip:		return "Skip";
+			default:
+				break;
+			}
+		};
+
+	static bool autoScroll = true;
+
+
+
+
+		// Table
+	if (ImGui::BeginTable("IterationsTable", 8, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
 		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
 		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
@@ -359,10 +377,11 @@ void RenderCompilerUI()
 		ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 		ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
-		//ImGui::TableSetupColumn("Status1", ImGuiTableColumnFlags_WidthFixed, 100.f);
 		ImGui::TableHeadersRow();
 
-		for ( auto& row : GetIterationData()) {
+
+		for (auto& row : GetIterationData()) {
+
 			ImGui::TableNextRow();
 
 			// Status icon
@@ -375,81 +394,57 @@ void RenderCompilerUI()
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Text("%s", row.iterationName.c_str());
 
-			// PHASE
-			ImGui::TableSetColumnIndex(2);
-			if (row.status == Complited)
-				ImGui::Text(" ");
-			else
-				ImGui::Text("%s", row.PhaseName.c_str());
-
-			//PHASE %
-			auto pers = row.PhasePersent;
-
-			if (row.status != Complited) {
-				u32 dwCurrentTime = timeGetTime();
-				u32 dwTimeDiff = dwCurrentTime - GetPhaseStartTime();
-				u32 secElapsed = dwTimeDiff / 1000;
-				u32 secRemain = u32(float(secElapsed) / pers) - secElapsed;
-
-				row.elapsed_time = secElapsed;
-				if (pers>0.005f)
-					row.remain_time = secRemain;
-			}
-
-			//
-			if (pers > 1.f)			pers = 1;
-			else if (pers < 0.f)	pers = 0;
-
-			ImGui::TableSetColumnIndex(3);
-			ImGui::Text("%0.f", pers * 100);
-
 			// 
-			ImGui::TableSetColumnIndex(4);
+			ImGui::TableSetColumnIndex(3);
+			ImGui::Text("%0.f", row.Persent * 100);
 
-			if (row.PhaseName.empty() && row.status != Complited) 
-			{
-				ImGui::Text(" ");
-			}
-			else if (row.status == Complited) 
-			{
-				ImGui::Text("%s", row.remain_time);
-			}
-			else 
-			{
-				ImGui::Text("%s", make_time(row.elapsed_time).c_str());
-			}
-			//
-			ImGui::TableSetColumnIndex(5);
-
-			if (row.PhaseName.empty()) 
-			{
-				ImGui::Text(" ");
-			}
-			else 
-			{
-				ImGui::Text("%s", (row.remain_time == 0 ? "Calculating..." : make_time(row.remain_time).c_str()));
-			}
-				//
 			ImGui::TableSetColumnIndex(6);
 			ImGui::Text("%d", row.warnings);
 			// Status text
 			ImGui::TableSetColumnIndex(7);
+			ImGui::Text("%s", getTextStatus(row.status));
 
-			xr_string statusText = "";
-
-			switch (row.status)
+			for (auto& phase : row.phases)
 			{
-			case Complited:	statusText = "Complited"; break;
-			case InProgress:statusText = "In Progress"; break;
-			case Pending:	statusText = "Pending"; break;
-			case Skip:		statusText = "Skip"; break;
-			default:
-				break;
-			}
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(2);
+				ImGui::Text(phase.PhaseName.c_str());
+				//PHASE %
+				auto pers = phase.PhasePersent;
 
-			ImGui::Text("%s", statusText);
+				if (phase.status != Complited) {
+					u32 dwCurrentTime = timeGetTime();
+					u32 dwTimeDiff = dwCurrentTime - GetPhaseStartTime();
+					u32 secElapsed = dwTimeDiff / 1000;
+					u32 secRemain = u32(float(secElapsed) / pers) - secElapsed;
+
+					phase.elapsed_time = secElapsed;
+					if (pers > 0.005f)
+						phase.remain_time = secRemain;
+				}
+
+				//
+				if (phase.status == Complited) pers = 1;
+				else if (pers > 1.f)	pers = 1;
+				else if (pers < 0.f)	pers = 0;
+
+				ImGui::TableSetColumnIndex(3);
+				ImGui::Text("%0.f", pers * 100);
+
+				ImGui::TableSetColumnIndex(4);
+				ImGui::Text("%s", make_time(phase.elapsed_time).c_str());
+
+				ImGui::TableSetColumnIndex(5);
+				if (phase.status != Complited)
+					ImGui::Text("%s", (phase.remain_time == 0 ? "Calculating..." : make_time(phase.remain_time).c_str()));
+
+				ImGui::TableSetColumnIndex(7);
+				ImGui::Text("%s", getTextStatus(phase.status));
+			}
 		}
 
+		if (autoScroll)
+			ImGui::SetScrollY(ImGui::GetScrollMaxY());
 		ImGui::EndTable();
 	}
 
@@ -457,7 +452,6 @@ void RenderCompilerUI()
 
 	// Bottom section (log)
 	ImGui::Separator();
-	static bool autoScroll = true;
 	if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight-35), true))
 	{
 		ImGuiListClipper clipper;
