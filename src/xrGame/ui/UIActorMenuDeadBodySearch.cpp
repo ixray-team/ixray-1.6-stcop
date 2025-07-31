@@ -97,11 +97,11 @@ void CUIActorMenu::InitDeadBodySearchMode()
 		m_pDeadBodyBagList->SetItem	(itm);
 	}
 
-	CBaseMonster* monster = smart_cast<CBaseMonster*>( m_pPartnerInvOwner );
-	CCar* pCar = smart_cast<CCar*>( m_pPartnerInvOwner );
+	CBaseMonster* monster = m_pPartnerInvOwner != nullptr ? m_pPartnerInvOwner->cast_base_monster() : nullptr;
+	CCar* pCar = m_pPartnerInvOwner != nullptr ? m_pPartnerInvOwner->cast_car() : nullptr;
 	
 	//only for partner, box = no, monster = no
-	if (m_pPartnerInvOwner && !monster && !pCar)
+	if (m_pPartnerInvOwner != nullptr && monster == nullptr && pCar == nullptr)
 	{
 		CInfoPortionWrapper						known_info_registry;
 		known_info_registry.registry().init		(m_pPartnerInvOwner->object_id());

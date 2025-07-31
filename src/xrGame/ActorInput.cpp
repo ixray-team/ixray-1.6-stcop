@@ -479,18 +479,21 @@ void CActor::IR_GamepadKeyPress(int id)
 }
 
 #include "HudItem.h"
-bool CActor::use_Holder				(CHolderCustom* holder)
+bool CActor::use_Holder(CHolderCustom* holder)
 {
-
-	if(m_holder){
+	if (CHolderCustom* get_holder = m_holder)
+	{
 		bool b = false;
-		CGameObject* holderGO			= smart_cast<CGameObject*>(m_holder);
+		CGameObject* holderGO = get_holder->cast_game_object();
 		
-		if(smart_cast<CCar*>(holderGO))
+		if (holderGO->cast_car())
+		{
 			b = use_Vehicle(0);
-		else
-			if (holderGO->CLS_ID==CLSID_OBJECT_W_STATMGUN || holderGO->CLS_ID==CLSID_OBJECT_HOLDER_ENT)
-				b = use_HolderEx(0,false);
+		}
+		else if (holderGO->CLS_ID == CLSID_OBJECT_W_STATMGUN || holderGO->CLS_ID == CLSID_OBJECT_HOLDER_ENT)
+		{
+			b = use_HolderEx(0, false);
+		}
 
 		if (inventory().ActiveItem())
 		{
@@ -501,21 +504,32 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 		}
 
 		return b;
-	}else{
+	}
+	else
+	{
 		bool b = false;
-		CGameObject* holderGO			= smart_cast<CGameObject*>(holder);
-		if(smart_cast<CCar*>(holder))
+		CGameObject* holderGO = holder->cast_game_object();
+		if (holder->cast_car())
+		{
 			b = use_Vehicle(holder);
+		}
 
-		if (holderGO->CLS_ID==CLSID_OBJECT_W_STATMGUN || holderGO->CLS_ID==CLSID_OBJECT_HOLDER_ENT)
-			b = use_HolderEx(holder,false);
+		if (holderGO->CLS_ID == CLSID_OBJECT_W_STATMGUN || holderGO->CLS_ID == CLSID_OBJECT_HOLDER_ENT)
+		{
+			b = use_HolderEx(holder, false);
+		}
 		
-		if(b){//used succesfully
+		if (b)
+		{
+			//used succesfully
 			// switch off torch...
 			CAttachableItem *I = CAttachmentOwner::attachedItem(CLSID_DEVICE_TORCH);
-			if (I){
-				CTorch* torch = smart_cast<CTorch*>(I);
-				if (torch) torch->Switch(false);
+			if (I != nullptr)
+			{
+				if (CTorch* torch = I->cast_torch())
+				{
+					torch->Switch(false);
+				}
 			}
 		}
 
