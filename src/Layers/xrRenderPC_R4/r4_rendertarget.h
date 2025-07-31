@@ -44,6 +44,7 @@ public:
 	IBlender*					b_scale;
 	IBlender*					b_cas;
 	IBlender*					b_gtao;
+	IBlender*					b_taa;
 
 #ifdef DEBUG
 	struct		dbg_line_t		{
@@ -93,6 +94,9 @@ public:
 	//GTAO
 	ref_rt						rt_gtao_0;
 
+	//TAA
+	ref_rt					rt_Generic_0_prev; //previous frame for taa
+
 	// smap
 	ref_rt						rt_smap_surf;	// 32bit,		color
 	ref_rt						rt_smap_depth;	// 24(32) bit,	depth 
@@ -116,6 +120,7 @@ private:
 	ref_shader					s_cas;
 	ref_shader					s_gtao;
 	ref_shader					s_puddles;
+	ref_shader					s_taa;
 
 	// OCCq
 	ref_shader					s_occq;
@@ -251,6 +256,7 @@ public:
 
 	void						phase_fxaa				();
 	void						phase_smaa				();
+	void						phase_taa				();
 
 	void						phase_cas				();
 	void						phase_gtao				();

@@ -253,7 +253,6 @@ void CRenderTarget::phase_combine()
 			RCache.set_Geometry(g_combine);
 
 			RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-
 			RContext->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 		}
 	}
@@ -268,6 +267,10 @@ void CRenderTarget::phase_combine()
 			PIX_EVENT(phase_smaa);
 			phase_smaa();
 			RCache.set_Stencil(FALSE);
+		}
+		else if(ps_r2_aa_type == 3) {
+			PIX_EVENT(phase_taa);
+			phase_taa();
 		}
 	}
 
