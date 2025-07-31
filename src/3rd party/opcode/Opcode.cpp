@@ -34,6 +34,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Precompiled Header
 #include "Stdafx.h"
+
+#if 0
 #include <fstream>
 #include <iostream>
 std::ofstream gFile;
@@ -65,7 +67,11 @@ bool Opcode_Err (const char* msg, ...)
 	va_end (args);
 	return false;
 }
+#else
 
+void Opcode_Log(const char* msg, ...) {}
+bool Opcode_Err(const char* msg, ...) { return false; }
+#endif
 using namespace Opcode;
 
 
