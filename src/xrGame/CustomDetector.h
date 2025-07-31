@@ -71,6 +71,7 @@ public:
 	bool CanHideHand() const;
 	bool CanThrowHand() const;
 	bool CanKick() const;
+	bool CanLam() const;
 
 	enum EDetectorStates
 	{
@@ -81,6 +82,7 @@ public:
 		eHandThrowEnd,
 		eHandKick1,
 		eHandKick2,
+		eHandLam,
 	};
 
 protected:
