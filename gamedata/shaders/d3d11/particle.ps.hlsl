@@ -27,6 +27,6 @@ float4 main(v2p I) : SV_Target
 #endif //	USE_SOFT_PARTICLES
 
     clip(result.a - (0.01f / 255.0f));
-    return lerp(fog_color, result, I.fog);
+    return PushGamma(lerp(fog_color, result, I.fog));
 }
 
