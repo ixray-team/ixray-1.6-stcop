@@ -5,8 +5,8 @@ class CCustomObject;
 
 typedef u32	ObjClassID;
 
-
-enum{
+enum ESceneItemsGuids
+{
     OBJCLASS_DUMMY     	= -1,
     OBJCLASS_FIRST_CLASS= 0,
     OBJCLASS_GROUP		= 0,

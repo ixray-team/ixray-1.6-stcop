@@ -39,6 +39,7 @@ public:
 	virtual void		BeforeRender			();
 	virtual void		OnRender				(int priority, bool strictB2F);
 	virtual void		AfterRender				();
+	virtual bool		can_use_inifile			() override { return false; }
 
 	virtual void 		FillProp				(LPCSTR pref, PropItemVec& items);
 
