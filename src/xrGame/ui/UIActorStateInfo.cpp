@@ -86,13 +86,21 @@ void ui_actor_state_wnd::init_from_xml( CUIXml& xml, LPCSTR path )
 void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 {
 	CActor* actor = smart_cast<CActor*>( owner );
-	if ( !actor )
+	if (actor == nullptr)
 	{
 		return;
 	}
 
+	float value = 0.0f;
 
-    float value = 0.0f;
+	if (!m_state[stt_health]->m_progress->IsExpressionSystem)
+	{
+		value = actor->conditions().GetHealth();
+		value = floor(value * 55) / 55; // number of sticks in progress bar
+		// show bleeding icon
+		m_state[stt_health]->set_progress(value);
+	}
+
 
     value = actor->GetRestoreSpeed(ALife::ePowerRestoreSpeed);
     m_state[stt_stamina]->set_text(value); // 0..0.99
@@ -132,13 +140,23 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 	PIItem itm = actor->inventory().ItemFromSlot(HELMET_SLOT);
 	CHelmet* helmet = smart_cast<CHelmet*>(itm);
 
+	// Перепроверить все сеты, сбросы, проверки, можно сократить
+	m_state[stt_fire_wound]->set_progress(0.0f);
+	m_state[stt_fire]->set_progress(0.0f);
+	m_state[stt_radia]->set_progress(0.0f);
+	m_state[stt_acid]->set_progress(0.0f);
+	m_state[stt_psi]->set_progress(0.0f);
 	m_state[stt_wound]->set_progress(0.0f);
-	float fwou_value = 0.0f;
+	m_state[stt_shock]->set_progress(0.0f);
+	m_state[stt_power]->set_progress(0.0f);
 
+	float fwou_value = 0.0f;
 	float burn_value = 0.0f;
 	float radi_value = 0.0f;
 	float cmbn_value = 0.0f;
 	float tele_value = 0.0f;
+	float woun_value = 0.0f;
+	float shoc_value = 0.0f;
 
 	const auto& cur_booster_influences = actor->conditions().GetCurBoosterInfluences();
 	CEntityCondition::BOOSTER_MAP::const_iterator it;
@@ -160,6 +178,8 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 		radi_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeRadiation);
 		cmbn_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeChemicalBurn);
 		tele_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeTelepatic);
+		woun_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeWound);
+		shoc_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeShock);
 
 		IKinematics* ikv = smart_cast<IKinematics*>(actor->Visual());
 		VERIFY(ikv);
@@ -186,6 +206,8 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 		radi_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeRadiation);
 		cmbn_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeChemicalBurn);
 		tele_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeTelepatic);
+		woun_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeWound);
+		shoc_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeShock);
 
 		IKinematics* ikv = smart_cast<IKinematics*>(actor->Visual());
 		VERIFY(ikv);
@@ -218,12 +240,30 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 		const float max_power = getProtection(tele_value, ALife::eHitTypeTelepatic);
 		update_round_states(stt_psi, tele_value, max_power);
 	}
-//fire wound protection progress bar
+	// wound protection progress bar
 	{
-		float max_power = actor->conditions().GetMaxFireWoundProtection();
-		fwou_value = floor(fwou_value / max_power * 31) / 31; // number of sticks in progress bar
-		if (m_state[stt_fire_wound])
-			m_state[stt_fire_wound]->set_progress(fwou_value);
+		const float max_power = getProtection(woun_value, ALife::eHitTypeWound);
+		update_round_states(stt_wound, woun_value, max_power);
+	}
+	// shock protection progress bar
+	{
+		const float max_power = getProtection(shoc_value, ALife::eHitTypeShock);
+		update_round_states(stt_shock, shoc_value, max_power);
+	}
+	//fire wound protection progress bar
+	{
+		const float max_power = getProtection(fwou_value, ALife::eHitTypeFireWound);
+		update_round_states(stt_fire_wound, shoc_value, max_power);
+	}
+	//power restore speed progress bar
+	{
+		if (!m_state[stt_power]->m_progress->IsExpressionSystem)
+		{
+			value = actor->GetRestoreSpeed(ALife::ePowerRestoreSpeed) / actor->conditions().GetMaxPowerRestoreSpeed();
+			value = floor(value * 31) / 31; // number of sticks in progress bar
+
+			m_state[stt_power]->set_progress(value);
+		}
 	}
 // -----------------------------------------------------------------------------------
 
@@ -242,7 +282,7 @@ void ui_actor_state_wnd::update_round_states(EStateType stt_type, float initial,
         //state->set_progress_shape(arrow);
         state->set_arrow(arrow); // 0..1
         state->set_text(arrow); // 0..1
-    }
+	}
 }
 
 void ui_actor_state_wnd::UpdateHitZone()
@@ -310,6 +350,7 @@ void ui_actor_state_item::init_from_xml( CUIXml& xml, LPCSTR path )
 	if ( xml.NavigateToNode( "state_progress", 0 ) )	
 	{
 		m_progress = UIHelper::CreateProgressBar( xml, "state_progress", this );
+		m_progress->IsExpressionSystem = xml.ReadAttrib(path, 0, "expression", nullptr) != nullptr;
 	}
 	if ( xml.NavigateToNode( "progress_shape", 0 ) )	
 	{
