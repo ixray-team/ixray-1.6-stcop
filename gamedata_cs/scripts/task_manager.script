@@ -126,7 +126,7 @@ function CRandomTask:save(packet)
 	end
 	packet:w_u16(n)
 	for k,v in pairs(self.inited_tasks) do
-		printf("saving TASK [%s] E_id [%s]", v.base_id, k)
+		printf("saving TASK [%s] base_id[%s] E_id [%s]", k, v.base_id, v.entity_id)
 		packet:w_stringZ(v.base_id)
 		packet:w_stringZ(k)
 		packet:w_u16(task_id_by_type[v.type])
@@ -397,7 +397,7 @@ function CRandomTask:select_task(type, obj, faction)
 	--' Если для этого объекта уже есть инициализированный таск - нужно выдать его.
 	if self.inited_tasks[key] ~= nil then
 		if type == "recover_item" then
-			if not self.inited_tasks[key]:check_target(obj, faction) then
+			if not self.inited_tasks[key]:check_target(obj, faction) or self.inited_tasks[key].status ~= "normal" then
 				return
 			end
 		end

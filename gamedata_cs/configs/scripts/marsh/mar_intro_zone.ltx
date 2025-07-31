@@ -28,11 +28,14 @@ on_info = {+mar_lvl_sim} sr_idle@test, {+mar_intro_scene_2_end} sr_idle@scene_2_
 
 [sr_idle@scene_2_end]
 ;lvl
-on_info = {+mar_lvl_sim} sr_idle@test, {+mar_intro_scene_2_cameff_end} sr_idle@scene_3_barman_wait %=enable_ui =give_inited_task(storyline:mar_story_talk_with_barman:csky)%
+on_info = {+mar_lvl_sim} sr_idle@test, {+mar_intro_scene_2_cameff_end} sr_idle@scene_3_barman_wait_1 %=enable_ui =give_inited_task(storyline:mar_story_talk_with_barman:csky)%
 
 ;-----------------------------------------------------------------------
 
-[sr_idle@scene_3_barman_wait]
+[sr_idle@scene_3_barman_wait_1]
+on_info = {-mar_autosave} sr_idle@scene_3_barman_wait_2 %+mar_autosave =autosave_game%, sr_idle@scene_3_barman_wait_2
+
+[sr_idle@scene_3_barman_wait_2]
 on_info = {+mar_intro_talk_with_barman_radio_timer} sr_idle@scene_3_barman_time
 
 [sr_idle@scene_3_barman_time]
@@ -157,4 +160,4 @@ on_info = {+agr_actor_on_agroprom} sr_idle@end_section %=enable_level_changer(31
 ;-----------------------------------------------------------------------
 
 [sr_idle@test]
-on_info = sr_idle@scene_3_barman_wait %=stop_cam_effector(1) =stop_cam_effector(2) =stop_cam_effector(3) =stop_cam_effector(4) =update_weather(true) =enable_ui =give_inited_task(storyline:mar_story_talk_with_barman:csky)%
+on_info = sr_idle@scene_3_barman_wait_1 %=stop_cam_effector(1) =stop_cam_effector(2) =stop_cam_effector(3) =stop_cam_effector(4) =update_weather(true) =enable_ui =give_inited_task(storyline:mar_story_talk_with_barman:csky)%

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="ui_map_desc_mp_agroprom_large">
+		<text>Un endroit trиs bizarre. Ce bвtiment silencieux abrite son lot de secrets, mais les stalkers y sont attirйs pour une autre raison : la quantitй gйnйreuse d'artefacts gйnйralement trouvйs dans les secteurs а haut risque. Avec un esprit vif et des rйflexes aiguisйs, la chance ne peut qu'кtre au rendez-vous.</text>
+	</string>
+	<string id="ui_map_desc_mp_agroprom_short">
+		<text>Un endroit trиs bizarre. Ce bвtiment silencieux abrite son lot de secrets, mais les stalkers y sont attirйs pour une autre raison : la quantitй gйnйreuse d'artefacts gйnйralement trouvйs dans les secteurs а haut risque.</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_large">
+		<text>Dйpфt de bus а l'entrйe de la Zone. Ses tracteurs, bus et camions ont cessй d'кtre utilisйs il y a bien longtemps... Aucun artefact n'y a encore йtй trouvй, mais l'endroit est apprйciй des stalkers expйrimentйs, qui y pourchassent les dйbutants et les volent de leurs possessions. Restez а couvert dans les bвtiments et les vйhicules et prenez garde aux ennemis sur les toits.</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_short">
+		<text>Dйpфt de bus а l'entrйe de la Zone. Ses tracteurs, bus et camions ont cessй d'кtre utilisйs il y a bien longtemps...</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_large">
+		<text>Un endroit йnigmatique. Ce rйservoir a йtй construit pour y mener des recherches sur quelqu'un ou quelque chose, mais l'objectif exact reste un mystиre. Comme il ne contient aucun artefact, les stalkers n'y sont attirйs que par les йtranges appareils qui s'y trouvent encore. Surveillez les toits et attention aux secteurs les plus radioactifs.</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_short">
+		<text>Un endroit йnigmatique. Ce rйservoir a йtй construit pour y mener des recherches sur quelqu'un ou quelque chose, mais l'objectif exact reste un mystиre.</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_large">
+		<text>Cette usine dйsaffectйe est la tombe d'un nombre incalculable de stalkers. Des dizaines d'anomalies attendent les visiteurs qui y viennent en nombre, attirйs par ses vastes rйserves d'artefacts. Attention aux radiations !</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_short">
+		<text>Cette usine dйsaffectйe est la tombe d'un nombre incalculable de stalkers.</text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_large">
+		<text>Йnorme dйcharge malodorante, avec de gigantesques tas de matйriel radioactif, des grues et d'autres йquipements dйfectueux abandonnйs aprиs la catastrophe de 1986. Les attractions locales incluent des bвtiments dйsaffectйs et un йnorme hangar. La proximitй de l'entrйe de la Zone et une relative abondance d'artefacts attire les stalkers qui cherchent un travail facile.</text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_short">
+		<text>Йnorme dйcharge malodorante, avec de gigantesques tas de matйriel radioactif, des grues et d'autres йquipements dйfectueux abandonnйs aprиs la catastrophe de 1986.</text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_large">
+		<text>Village abandonnй au milieu de la Zone. Il comprend quelques bвtiments dйsertйs, un petit lac d'eau huileuse et de nombreux vйhicules rouillйs. Attention aux snipers, mais n'oubliez pas que la Zone rйcompense les stalkers tйmйraires !</text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_short">
+		<text>Village abandonnй au milieu de la Zone. Il comprend quelques bвtiments dйsertйs, un petit lac d'eau huileuse et de nombreux vйhicules rouillйs.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_large">
+		<text>Base militaire abandonnйe, avec camions et blindйs rouillйs, quartier-gйnйral dйsaffectй et casernes dйsertйes. Mais les apparences sont trompeuses : les artefacts y abondent ainsi que les ennemis. Montrez-leur que vous кtes le meilleur !</text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_short">
+		<text>Base militaire abandonnйe, avec camions et blindйs rouillйs, quartier-gйnйral dйsaffectй et casernes dйsertйes.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_large">
+		<text>Ce vieux village est vraiment sinistre. Si vous кtes assez courageux pour y entrer, attendez-vous а devoir esquiver les balles ! Il n'y a nulle part oщ se cacher et vous devrez compter sur votre lunette et votre silencieux !</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_short">
+		<text>Ce vieux village est vraiment sinistre. Si vous кtes assez courageux pour y entrer, attendez-vous а devoir esquiver les balles !</text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_large">
+		<text>La ville de Pripyat est l'ancienne ville-dortoir du personnel de la centrale de Tchernobyl, ou plutфt ce qu'il en reste. Des dangers bien rйels rфdent dans les ruines, alors restez sur vos gardes !</text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_short">
+		<text>La ville de Pripyat est l'ancienne ville-dortoir du personnel de la centrale de Tchernobyl, ou plutфt ce qu'il en reste. Des dangers bien rйels rфdent dans les ruines, alors restez sur vos gardes !</text>
+	</string>
+	<string id="ui_map_desc_mp_railraod_short">
+		<text>Petite gare prиs de l'usine de Rostock.</text>
+	</string>
+	<string id="ui_map_desc_mp_railroad_large">
+		<text>Petite gare prиs de l'usine de Rostock, aux rails rouillйs et aux locomotives а jamais en retard sur l'horaire. Les nombreux artefacts qu'on y trouve attirent des stalkers venus de tous les coins de la Zone.</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_large">
+		<text>Cette usine enfouie sous des tonnes d'acier et de bйton est aussi silencieuse qu'une tombe. Il y a quelques dйcennies а peine, ses murs rйsonnaient encore de l'activitй d'innombrables camarades ouvriers et des slogans soviйtiques diffusйs par des haut-parleurs...</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_short">
+		<text>Cette usine enfouie sous des tonnes d'acier et de bйton est aussi silencieuse qu'une tombe.</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_large">
+		<text>Cette zone constituait les abords de l'usine de Rostock avant que le Devoir s'y installe. Un endroit йtrange, mкme s'il regorge d'artefacts. Chaque hangar ou entrepфt vide est rempli de dangers mortels. Soyez trиs prudent et gardez un oeil sur la tour blanche...</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_short">
+		<text>Cette zone constituait les abords de l'usine de Rostock avant que le Devoir s'y installe. Un endroit йtrange, mкme s'il regorge d'artefacts.</text>
+	</string>
+	<string id="ui_map_desc_mp_autostation_large">
+		<text>Dйpфt dйsert et territoire adjacent. En cherchant bien, il est possible de trouver de l'йquipement et des provisions, mais attention aux anomalies mortelles et aux tireurs en hauteur ! Le toit du dйpфt offre une vue imprenable sur les alentours.</text>
+	</string>
+	<string id="ui_map_desc_mp_autostation_short">
+		<text>Dйpфt dйsert et territoires adjacents. Attention aux anomalies mortelles et aux tireurs.</text>
+	</string>
+	<string id="ui_map_desc_mp_firestation_large">
+		<text>La caserne de pompiers dont les membres sont intervenus а la centrale de Tchernobyl en 1986. La tour offre un excellent point de vue et surplombe les alentours. Peu de gens osent s'aventurer dans les йtages supйrieurs et le sous-sol du bвtiment. Depuis quelque temps, c'est un lieu que convoitent les diffйrentes factions de la zone, qui s'affrontent pour obtenir la meilleure position stratйgique.</text>
+	</string>
+	<string id="ui_map_desc_mp_firestation_short">
+		<text>La caserne de pompiers dont les membres sont intervenus sur la centrale de Tchernobyl en 1986. La tour offre un excellent point de vue.</text>
+	</string>
+	<string id="ui_map_desc_mp_limansk_large">
+		<text>Petit quartier de l'йnigmatique ville de Limansk. Des blocs d'appartements sйparйs par un bвtiment inachevй. Quand plusieurs artefacts de grande valeur ont йtй trouvйs ici, la nouvelle s'est rйpandue а la vitesse d'un feu de paille. Les quelques voies d'accиs а Limansk ont йtй prises d'assaut et les combats n'ont pas cessй depuis.</text>
+	</string>
+	<string id="ui_map_desc_mp_limansk_short">
+		<text>Petit quartier de l'йnigmatique ville de Limansk. Des blocs d'appartements sйparйs par un bвtiment inachevй.</text>
+	</string>
+	<string id="ui_map_desc_mp_pool_large">
+		<text>Cela ressemble plus а un bain de sang qu'а une piscine. Les йchos des balles, des explosions et les cris des mourants hantent ces couloirs carrelйs... Peu de stalkers savent comment venir ici et encore moins savent comment en repartir en vie.</text>
+	</string>
+	<string id="ui_map_desc_mp_pool_short">
+		<text>Cela ressemble plus а un bain de sang qu'а une piscine. Les йchos des balles, des explosions et les cris des mourants hantent ces couloirs carrelйs.</text>
+	</string>
+	<string id="ui_map_desc_mp_rembasa_large">
+		<text>Une base de rйparation а proximitй d'un petit village. Tous les vйhicules en йtat de marche ont йtй rйquisitionnйs а l'йpoque de la catastrophe de Tchernobyl. Ceux qui restaient ont йtй dйsossйs pour leurs piиces. Marйcages et roseaux contaminйs font de cet endroit un lieu dangereux qui recиle nйanmoins des trйsors pour le stalker chanceux.</text>
+	</string>
+	<string id="ui_map_desc_mp_rembasa_short">
+		<text>Une base de rйparation а proximitй d'un petit village. Marйcages et roseaux contaminйs font de cet endroit un lieu dangereux.</text>
+	</string>
+	<string id="ui_map_desc_mp_sport_center_large">
+		<text>Le centre sportif de Pripyat, non loin de l'йcole abandonnйe. Les types de sports pratiquйs ont beaucoup changй depuis 1986, ainsi que le nombre de participants. Les stalkers qui viennent ici sont attirйs par la gloire, le butin et les artefacts... et quelquefois dйcident d'y rester pour l'йternitй.</text>
+	</string>
+	<string id="ui_map_desc_mp_sport_center_short">
+		<text>Le centre sportif de Pripyat, non loin de l'йcole abandonnйe.</text>
+	</string>
+	<string id="ui_map_desc_mp_darkvalley_large">
+		<text>Les seuls vestiges de la dangereuse Vallйe obscure sont une rue dйserte et un collиge abandonnй. Nul ne sait ce qui y йtait enseignй, mais aujourd'hui, il est possible d'y apprendre comment survivre... Et surtout, faites trиs attention sur les toits !</text>
+	</string>
+	<string id="ui_map_desc_mp_darkvalley_short">
+		<text>Les seuls vestiges de la dangereuse Vallйe obscure sont une rue dйserte et un collиge abandonnй.</text>
+	</string>
+	<string id="mp_autostation">
+		<text>Dйpфt abandonnй</text>
+	</string>
+	<string id="ui_map_desc_mp_training_camp_short">
+		<text>Un йtrange trиs endroit. Des anomalies gravitationnelles sont dйchirй le sol et crйй un paysage aux allures surnaturelles.</text>
+	</string>
+	<string id="ui_map_desc_mp_training_camp_large">
+		<text>Un йtrange trиs endroit. Les stalkers qui prйtendent l'avoir vu font l'objet de toutes les moqueries, mais il existe nйanmoins. Des anomalies gravitationnelles sont dйchirй le sol et crйй un paysage aux allures surnaturelles. Trois immenses tours, des vestiges de matйriel militaire et des оlots de terre flottants arrachйs au sol, surplombent le secteur.</text>
+	</string>
+</string_table>

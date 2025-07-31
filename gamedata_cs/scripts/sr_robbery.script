@@ -1,16 +1,16 @@
 class "action_robbery"
 
 function action_robbery:__init( obj , storage)
-    self.object = obj
-    self.st = storage
-    if db.zone_by_name[self.object:name().."_reaction"] == nil then
+		self.object = obj
+		self.st = storage
+		if db.zone_by_name[self.object:name().."_reaction"] == nil then
 		abort("there is no zone with name "..self.object:name().."_reaction")
-    end
-    if db.zone_by_name[self.object:name().."_attack"] == nil then
+		end
+		if db.zone_by_name[self.object:name().."_attack"] == nil then
 		abort("there is no zone with name "..self.object:name().."_attack")
-    end
-    self.reaction_zone = db.zone_by_name[self.object:name().."_reaction"]
-    self.attack_zone = db.zone_by_name[self.object:name().."_attack"]
+		end
+		self.reaction_zone = db.zone_by_name[self.object:name().."_reaction"]
+		self.attack_zone = db.zone_by_name[self.object:name().."_attack"]
 end
 
 function action_robbery:reset_scheme()
@@ -79,7 +79,7 @@ function action_robbery:abuse_gulag ()
 					h.impulse = 0
 					h.type = hit.wound
 					object:hit(h)
-				end 
+				end
 			end
 			-- self:disable_reaction_final()
 			-- db.storage[self.object:id()].robbery_manager:set_danger_dist_check(false)
@@ -261,12 +261,22 @@ function action_robbery:update( delta )
 
 end
 
+local function is_squad_in_idle_state(se_obj)
+	local sim_board = sim_board.get_sim_board()
+	local squad = sim_board.squads[se_obj.squad_id]
+	local smart = sim_board.smarts[squad.sim_combat_id].smrt
+	local sim_combat = smart.combat_manager
+	local stage = sim_combat:get_squad_stage(squad)
+	return stage == "idle"
+end
+
 function action_robbery:find_nearest_npc_for_commander_job()
 	local nearest_npc = nil
 	local min_dist = 100000000
+
 	for k,v in pairs(self.gulag.npc_info) do
 		local dist = db.actor:position():distance_to_sqr(v.se_obj.position)
-		if dist < min_dist then
+		if dist < min_dist and is_squad_in_idle_state(v.se_obj) then
 			min_dist = dist
 			nearest_npc = v.se_obj
 		end
@@ -339,21 +349,21 @@ end
 function set_scheme( obj, ini, scheme, section, gulag_name )
 	local st = xr_logic.assign_storage_and_bind( obj, ini, scheme, section )
 	st.logic = xr_logic.cfg_get_switch_conditions( ini, section, obj )
-    st.gulag = utils.cfg_get_string( ini, section, "smart_name", obj, false, "", nil )
-    st.money = utils.cfg_get_string( ini, section, "money", obj, false, "", "all" )
-    st.dialog = utils.cfg_get_string( ini, section, "dialog", obj, false, "", "default_robbery_dialog" )
-    st.pda_snd = utils.cfg_get_string( ini, section, "pda_sound", obj, false, "", "gar_robbery_scene_see_actor" )
-    st.pda_return_snd = utils.cfg_get_string( ini, section, "pda_return_sound", obj, false, "", "gar_robbery_scene_return" )
-    st.after_pay_snd = utils.cfg_get_string( ini, section, "after_pay_snd", obj, false, "", "gar_robbery_scene_after_pay" )
-    st.stop_snd = utils.cfg_get_string( ini, section, "stop_snd", obj, false, "", "gar_robbery_scene_stop" )
-    st.stand_still_snd = utils.cfg_get_string( ini, section, "stand_still_snd", obj, false, "", "gar_robbery_scene_stand_still" )
-    st.after_reject_snd = utils.cfg_get_string( ini, section, "after_reject_snd", obj, false, "", "gar_robbery_scene_after_reject" )
-    st.kill_actor_snd = utils.cfg_get_string( ini, section, "kill_actor_snd", obj, false, "", "gar_robbery_scene_kill_actor" )
-    st.commander_job = utils.cfg_get_string( ini, section, "commander_job", obj, false, "", nil )
-    if st.commander_job ~= nil then
+		st.gulag = utils.cfg_get_string( ini, section, "smart_name", obj, false, "", nil )
+		st.money = utils.cfg_get_string( ini, section, "money", obj, false, "", "all" )
+		st.dialog = utils.cfg_get_string( ini, section, "dialog", obj, false, "", "default_robbery_dialog" )
+		st.pda_snd = utils.cfg_get_string( ini, section, "pda_sound", obj, false, "", "gar_robbery_scene_see_actor" )
+		st.pda_return_snd = utils.cfg_get_string( ini, section, "pda_return_sound", obj, false, "", "gar_robbery_scene_return" )
+		st.after_pay_snd = utils.cfg_get_string( ini, section, "after_pay_snd", obj, false, "", "gar_robbery_scene_after_pay" )
+		st.stop_snd = utils.cfg_get_string( ini, section, "stop_snd", obj, false, "", "gar_robbery_scene_stop" )
+		st.stand_still_snd = utils.cfg_get_string( ini, section, "stand_still_snd", obj, false, "", "gar_robbery_scene_stand_still" )
+		st.after_reject_snd = utils.cfg_get_string( ini, section, "after_reject_snd", obj, false, "", "gar_robbery_scene_after_reject" )
+		st.kill_actor_snd = utils.cfg_get_string( ini, section, "kill_actor_snd", obj, false, "", "gar_robbery_scene_kill_actor" )
+		st.commander_job = utils.cfg_get_string( ini, section, "commander_job", obj, false, "", nil )
+		if st.commander_job ~= nil then
 		st.commanders_table    = parse_names(st.commander_job)
-    end
-    st.inv_box = utils.cfg_get_string( ini, section, "inv_box", obj, false, "", "100" )
+		end
+		st.inv_box = utils.cfg_get_string( ini, section, "inv_box", obj, false, "", "100" )
 end
 
 
@@ -375,15 +385,12 @@ function robbery_manager:__init ( obj, sr_robbery)
 	self.npc_position = {}
 	self.actor_direction = vector():sub(self.commander_npc:position(),db.actor:position())
 
-	--db.actor:set_actor_direction(-self.actor_direction:getH())
-	 --level.disable_input()
-	 --db.actor:hide_weapon()
+	--db.actor:set_actor_direction(-self.actor_direction:getH())	 --level.disable_input())	 --db.actor:hide_weapon())
 	-- считаем отклонение направления командира от оси Х
 	self.yaw = yaw_degree( self.actor_direction,vector():set(0, 0, 1))
 	local vvv = vector_cross(self.actor_direction, vector():set(0, 0, 1))
-    if vvv.y < 0 then
-       self.yaw = -self.yaw
-    end
+		if vvv.y < 0 then			 self.yaw = -self.yaw
+		end
 	-- поворачиваем направления для поиска доступных точек на угол yaw
 	self.position = {
 	{dir = vector_rotate_y(vector():set(1, 0, 1),self.yaw),used = nil, vertex = nil, position = nil},
@@ -530,8 +537,7 @@ function actor_give_money(first_speaker, second_speaker)
 		end
 	end
 	db.actor:give_money(-money)
-	news_manager.relocate_money(db.actor, "out", money)
-   --[[  db.actor:inventory_for_each(get_actor_inv)
+	news_manager.relocate_money(db.actor, "out", money)	 --[[  db.actor:inventory_for_each(get_actor_inv))
 	local cost = 0
 	local most_expensive_pistol_id = nil
 	local most_expensive_pistol_section = nil

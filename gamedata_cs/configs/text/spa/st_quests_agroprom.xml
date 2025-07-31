@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_additional_quest_1_name">
+		<text>Encuentra el botнn del stalker muerto.</text>
+	</string>
+	<string id="agr_additional_quest_1_text">
+		<text>Encuentra el botнn del stalker muerto.</text>
+	</string>
+	<string id="agr_additional_quest_3_name">
+		<text>Encuentra al stalker desaparecido.</text>
+	</string>
+	<string id="agr_additional_quest_3_text">
+		<text>Encuentra al stalker desaparecido.</text>
+	</string>
+	<string id="agr_at_blokpost_name">
+		<text>Habla con el jefe de Deber.</text>
+	</string>
+	<string id="agr_at_blokpost_text">
+		<text>Habla con el jefe de Deber. Puede que el general Krylov sepa dуnde estб la entrada al subterrбneo de Agroprom. Los stalkers que llegaron al centro de la Zona tienen ahн un escondite.</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_name">
+		<text>Destruye el campamento de bandidos.</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_text">
+		<text>Hay que destruir el campamento de bandidos en el tъnel. Los bandidos lo estбn usando para organizar ataques contra el campamento de los stalkers.</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_name">
+		<text>Acaba con el pelotуn de bandidos.</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_text">
+		<text>Un pelotуn de bandidos vigila una de las salidas del subterrбneo y ayuda a los suyos a salir a la superficie de vez en cuando. Hay que destruir a ese pelotуn.</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_name">
+		<text>Destruye la guarida de mutantes.</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_text">
+		<text>El yermo que hay delante de la base de los stalkers estб lleno de monstruos, es un бrea salvaje y peligrosa. Hay que destruir la guarida de mutantes.</text>
+	</string>
+	<string id="agr_defend_duty_base_1_name">
+		<text>Defiende la base de Deber.</text>
+	</string>
+	<string id="agr_defend_duty_base_1_text">
+		<text>Han atacado la base de Deber. Ayuda a rechazar el ataque y serбs recompensado.</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_name">
+		<text>Defiende la base de los stalkers.</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_text">
+		<text>La base de los stalkers estб en peligro. Ayuda a los stalkers a rechazar el ataque y serбs recompensado.</text>
+	</string>
+	<string id="agr_go_in_hole_name">
+		<text>Desciende al subterrбneo de Agroprom.</text>
+	</string>
+	<string id="agr_go_in_hole_text">
+		<text>Tienes que bajar al subterrбneo de Agroprom. El ъnico camino es cruzando el agujero de mutantes.</text>
+	</string>
+	<string id="agr_go_out_hole_name">
+		<text>Habla con Sakharov.</text>
+	</string>
+	<string id="agr_go_out_hole_text">
+		<text>Las comunicaciones del grupo de Strelok que encontraste en el escondite del subterrбneo aclaran las cosas. Strelok fue a ver a los cientнficos de Yantar. Ve a Yantar y habla con el profesor Sakharov. Puede que sepa dуnde buscar a Strelok</text>
+	</string>
+	<string id="agr_go_to_hole_name">
+		<text>Llega al agujero.</text>
+	</string>
+	<string id="agr_go_to_hole_text">
+		<text>Los soldados de Deber han sellado las entradas y las salidas del subterrбneo. El ъnico modo de entrar en el subterrбneo es mediante los agujeros que los monstruos usan para salir a la superficie. Tienes que llegar al agujero.</text>
+	</string>
+	<string id="agr_mechanic_pda_1_name">
+		<text>Encuentra la PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_1_text">
+		<text>Encuentra la PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_2_name">
+		<text>Entrega la PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_2_text">
+		<text>Entrega la PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_name">
+		<text>Encuentra la PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_text">
+		<text>Encuentra la PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_name">
+		<text>Entrega la PDA.</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_text">
+		<text>Entrega la PDA.</text>
+	</string>
+	<string id="agr_no_task_name">
+		<text>Encuentra el escondite del grupo de stalkers.</text>
+	</string>
+	<string id="agr_no_task_text">
+		<text>La PDA de Fang contenнa las coordenadas del escondite de un grupo de stalkers que llegу al centro de la Zona, lo que provocу un desastre. Es un descubrimiento muy importante porque podrнa haber informaciуn muy valiosa en ese escondite. Tienes que encontrar la PDA en el escondite. </text>
+	</string>
+	<string id="agr_pda_map_animals_1_name">
+		<text>Encuentra el mapa de migraciones.</text>
+	</string>
+	<string id="agr_pda_map_animals_1_text">
+		<text>Encuentra el mapa que muestra las rutas migratorias de las especies de monstruos raras de la Zona.</text>
+	</string>
+	<string id="agr_pda_map_animals_2_name">
+		<text>Entrega el mapa de migraciones.</text>
+	</string>
+	<string id="agr_pda_map_animals_2_text">
+		<text>Entrega el mapa de migraciones al Inquisidor.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_name">
+		<text>Ayuda a los stalkers.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_text">
+		<text>Un grupo de stalkers estб intentando llegar hasta los cientнficos de Yantar cruzando el cenagal. Ayъdalos a sobrevivir.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_name">
+		<text>Cobra la recompensa.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_text">
+		<text>Cobra la recompensa de Platonov.</text>
+	</string>
+	<string id="agr_start_name">
+		<text>Habla con el comandante de la avanzadilla.</text>
+	</string>
+	<string id="agr_start_text">
+		<text>Obtйn informaciуn del comandante de la avanzadilla sobre la situaciуn en Agroprom.</text>
+	</string>
+	<string id="agr_take_reward_name">
+		<text>Recibe la recompensa de Krylov.</text>
+	</string>
+	<string id="agr_take_reward_text">
+		<text>Has inundado el subterrбneo y los ataques de los mutantes contra Deber cesarбn durante algъn tiempo. El general Krylov te recompensarб generosamente por completar la misiуn con йxito. Recibe la recompensa de Krylov.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_name">
+		<text>Encuentra informaciуn acerca del equilibrado de las piezas automбticas de una ametralladora</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_text">
+		<text>El tйcnico Thunderov busca un modo de aumentar la cadencia de disparo de una ametralladora equilibrando sus partes automбticas. Pagarб bien por la informaciуn relacionada.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_name">
+		<text>Encuentra informaciуn acerca de la modificaciуn de la salida de aire de una ametralladora</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_text">
+		<text>Thunderov estб a punto de perfeccionar las caracterнsticas de una ametralladora. Solo necesita tiempo libre y cierta informaciуn tйcnica sobre la salida de aire.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_name">
+		<text>Encuentra informaciуn sobre el caсуn perforado de una pistola</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_text">
+		<text>El tйcnico stalker en Agroprom estб buscando informaciуn detallada sobre los caсones perforados de las pistolas de alto calibre.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_name">
+		<text>Encuentra informaciуn sobre los mecanismos de recarga de las escopetas de combate</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_text">
+		<text>El tйcnico stalker en Agroprom estб buscando informaciуn detallada sobre los mecanismos de recarga de las escopetas de combate.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_name">
+		<text>Encuentra informaciуn sobre la modificaciуn del caсуn de una pistola</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_text">
+		<text>El tйcnico stalker carece de la experiencia necesaria para modificar el caсуn de una pistola potente. Pagarб por la informaciуn relacionada.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_name">
+		<text>Encuentra informaciуn sobre los caсones perforados de las ametralladoras</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_text">
+		<text>El tйcnico de Deber estб trabajando en un caсуn perforado mejorado para ametralladoras, pero le falta informaciуn tйcnica.</text>
+	</string>
+	<string id="agr_attack_monster_group_name">
+		<text>Acaba con la guarida mutante</text>
+	</string>
+	<string id="agr_attack_monster_group_text">
+		<text>De vez en cuando pequeсas manadas de mutantes atacan a los stalkers de la fбbrica. Para acabar con estos ataques, puedes eliminar a estos monstruos en su guarida al norte de la fбbrica.</text>
+	</string>
+	<string id="agr_recover_item_1_name">
+		<text>Recupera la escopeta del miembro de Deber</text>
+	</string>
+	<string id="agr_recover_item_1_text">
+		<text>El otro dнa tenнamos la misiуn de limpiar un бrea de mutantes, y dimos con uno realmente grande. El combate durу al menos una hora, y no parecнa que el bicho fuera a morir, aunque casi ya no tenнamos municiуn. Di la orden de retirada y me quedй rezagado mientras los chicos se replegaban. Disparй toda la municiуn y luego le tirй la escopeta al muy hijo de puta. їY sabes quй pasу? Que ese pedazo de mierda empezу a comerse el arma y a pasar de mн. Trбeme la escopeta, Ўal fin y al cabo me salvу la vida!</text>
+	</string>
+	<string id="agr_recover_item_2_name">
+		<text>Recupera la PDA con informaciуn secreta</text>
+	</string>
+	<string id="agr_recover_item_2_text">
+		<text>Mercenario, los bandidos me han asaltado en el vertedero. Se lo han llevado todo: dinero, armas, municiуn y pertrechos mйdicos. Y lo peor de todo es que me han cogido la PDA, que contenнa informaciуn sobre los emplazamientos de los bandidos en el vertedero. Si no le llevo esa informaciуn a Krylov, me enterrarб vivo. ЎAyъdame a recuperarla!</text>
+	</string>
+	<string id="agr_recover_item_3_name">
+		<text>Recupera el maletнn del miembro de Deber</text>
+	</string>
+	<string id="agr_recover_item_3_text">
+		<text>Mercenario, cuando los mutantes empezaron a aparecer en el subterrбneo tuvimos que abandonar las posiciones y retroceder. Me vi obligado a dejar allн mi maletнn con las armas, la municiуn, las medicinas y el detector. No tuve tiempo de pensar en йl, tenнa que salvarme. Ayъdame a recuperarlo.</text>
+	</string>
+	<string id="agr_recover_item_4_name">
+		<text>Recupera el fusil de asalto del miembro de Deber</text>
+	</string>
+	<string id="agr_recover_item_4_text">
+		<text>Tuve una discusiуn con un guнa por una tonterнa y ya no me llevarб a ver a los stalkers. Dice que ni tan siquiera quiere volver a verme, y no me apetece rondar por la Zona por mi cuenta. Me dejй mi arma con los stalkers cuando fui a visitarlos la semana pasada. Habнan ascendido a uno de nuestros colegas y lo celebramos con un montуn de priba. Pillй una buena: los chicos consiguieron llevarme hasta el barracуn, pero se olvidaron de mi fusil. їPodrнas traйrmelo? Un soldado no es nada sin un arma.</text>
+	</string>
+</string_table>

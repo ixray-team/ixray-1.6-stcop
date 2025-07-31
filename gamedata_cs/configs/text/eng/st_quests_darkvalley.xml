@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_bandit_spy_name">
+		<text>Eliminate the potential threat at the gas station</text>
+	</string>
+	<string id="val_bandit_spy_text">
+		<text>Some dim lights have been spotted at the deserted gas station at night. Investigate the situation and eliminate any potential threat.</text>
+	</string>
+	<string id="val_bring_to_fang_name">
+		<text>Follow the signal of Fang's PDA</text>
+	</string>
+	<string id="val_bring_to_fang_text">
+		<text>Freedom's technician has cracked Fang's PDA frequency. You can now track Fang's movements. According to the signal Fang is currently at the Garbage. Follow the signal from Fang's PDA</text>
+	</string>
+	<string id="val_check_blockpost_name">
+		<text>Find out what happened at the outpost</text>
+	</string>
+	<string id="val_check_blockpost_text">
+		<text>It seems a Freedom outpost has been attacked yet again. Find out what happened and check for survivors at the outpost</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_name">
+		<text>Get orders from the commandant</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_text">
+		<text>Get orders from the commandant</text>
+	</string>
+	<string id="val_come_to_comendant_name">
+		<text>Talk to the commandant</text>
+	</string>
+	<string id="val_come_to_comendant_text">
+		<text>Ask the commandant about Fang</text>
+	</string>
+	<string id="val_come_to_freedom_base_name">
+		<text>Find Freedom's base</text>
+	</string>
+	<string id="val_come_to_freedom_base_text">
+		<text>According to information provided by the diggers, Fang went to the Dark Valley in search of the remaining components. Find Freedom's base and ask about Fang there</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_name">
+		<text>Talk to the outpost commander</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_text">
+		<text>Talk to the outpost commander</text>
+	</string>
+	<string id="val_deliver_ammo_name">
+		<text>Deliver ammo to the outpost</text>
+	</string>
+	<string id="val_deliver_ammo_text">
+		<text>Deliver ammo to the outpost</text>
+	</string>
+	<string id="val_deliver_pda_name">
+		<text>Deliver the PDA to Chekhov</text>
+	</string>
+	<string id="val_deliver_pda_text">
+		<text>The commandant's PDA contains a lot of information, which can help Freedom work out who is attacking them and how they're getting into the Dark Valley. Deliver the PDA to the leader of Freedom</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_name">
+		<text>Destroy the boar lair</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_text">
+		<text>Destroy the boar lair</text>
+	</string>
+	<string id="val_destroy_killer_base_name">
+		<text>Eliminate the mercenaries</text>
+	</string>
+	<string id="val_destroy_killer_base_text">
+		<text>The mercenaries' main base has been discovered. Help Freedom destroy it. This will allow Freedom to stop the attacks and establish complete control over the Dark Valley</text>
+	</string>
+	<string id="val_find_pda_name">
+		<text>Find the active PDA</text>
+	</string>
+	<string id="val_find_pda_text">
+		<text>The PDA of one of the dead Freedom fighters is still active. Find the PDA - it may contain valuable information</text>
+	</string>
+	<string id="val_go_to_freedom_leader_name">
+		<text>Bring the PDA to Chekhov</text>
+	</string>
+	<string id="val_go_to_freedom_leader_text">
+		<text>The PDA of one of the Freedom fighters killed at the outpost contains a recording of a conversation between the attackers. The recording will help to identify the attackers. Take the PDA to Chekhov</text>
+	</string>
+	<string id="val_go_to_trader_name">
+		<text>Get ammo from Ashot</text>
+	</string>
+	<string id="val_go_to_trader_text">
+		<text>Get ammo for the Freedom outpost from Ashot</text>
+	</string>
+	<string id="val_help_freedom_name">
+		<text>Help Freedom eliminate the mercenaries</text>
+	</string>
+	<string id="val_help_freedom_text">
+		<text>Help Freedom eliminate the mercenaries</text>
+	</string>
+	<string id="val_kill_flesh_name">
+		<text>Kill the pseudo-dog</text>
+	</string>
+	<string id="val_kill_flesh_text">
+		<text>Kill the pseudo-dog, which is making a nuisance of itself near the Freedom base.</text>
+	</string>
+	<string id="val_kill_komendant_name">
+		<text>Kill the commandant</text>
+	</string>
+	<string id="val_kill_komendant_text">
+		<text>The PDA at the outpost contained a recording of a conversation between the attackers. The conversation mentioned that it was the commandant who sold the information that allowed the attackers to carry out swift and unexpected strikes against Freedom patrols. Find the traitor and deliver him to Chekhov - dead or alive.</text>
+	</string>
+	<string id="val_night_bloodsucker_name">
+		<text>Find the technician's friend</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_name">
+		<text>Bring the component to the technician</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_text">
+		<text>Bring the component to the technician</text>
+	</string>
+	<string id="val_night_bloodsucker_text">
+		<text>Find the technician's friend</text>
+	</string>
+	<string id="val_pursuit_comendant_name">
+		<text>Find the commandant</text>
+	</string>
+	<string id="val_pursuit_comendant_text">
+		<text>Find the commandant</text>
+	</string>
+	<string id="val_reply_to_sos_name">
+		<text>Respond to the SOS signal</text>
+	</string>
+	<string id="val_reply_to_sos_text">
+		<text>Help repel the attack.</text>
+	</string>
+	<string id="val_strike_antenna_name">
+		<text>Capture the antennas</text>
+	</string>
+	<string id="val_strike_antenna_text">
+		<text>Capture and hold antennas to scan the area</text>
+	</string>
+	<string id="val_strike_antenna_two_name">
+		<text>Capture the antennas</text>
+	</string>
+	<string id="val_strike_antenna_two_text">
+		<text>Capture and hold antennas to scan the area</text>
+	</string>
+	<string id="val_take_pda_name">
+		<text>Take the commandant's PDA</text>
+	</string>
+	<string id="val_take_pda_text">
+		<text>The commandant's buddies killed him after Freedom started looking for him. His PDA contains important information about the people he helped</text>
+	</string>
+	<string id="val_test">
+		<text>Help</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_name">
+		<text>Destroy bandit group</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_text">
+		<text>You located a group of bandits inside the deserted gas station. Destroy them.</text>
+	</string>
+	<string id="st_val_bandit_spy_return_name">
+		<text>Return to collect reward</text>
+	</string>
+	<string id="st_val_bandit_spy_return_text">
+		<text>You located and destroyed a group of bandits inside the deserted gas station. Go see the barman and tell him about it.</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_name">
+		<text>Find information about barrels for sniper rifles</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_text">
+		<text>Freedom's technician, Yar, specializes in high-precision weapons. He's looking for information about barrels for sniper rifles.</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_name">
+		<text>Find information about an electronic stabilizer for sniper rifles</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_text">
+		<text>Yar the technician will pay well for detailed information about the electronic stabilization mechanism for sniper rifles.</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_name">
+		<text>Find information about muzzle breaks for sniper rifles</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_text">
+		<text>Yar the technician needs information on the workings of muzzle breaks for powerful sniper rifles. Then he'll be able to make a similar one.</text>
+	</string>
+	<string id="val_recover_item_1_name">
+		<text>Return the 8x scope</text>
+	</string>
+	<string id="val_recover_item_1_text">
+		<text>There was a guy around here with a real good scope on his shooter, the kind you won't find anywhere in the Zone. I tried and tried but he didn't want to sell it to me. He left with one of our patrols headed towards the Cordon. The patrol didn't make it back, so I figure that stalker found his resting place somewhere around there. Bring me that scope, so I can give it to Chekhov as a gift - maybe he'll promote me to commandant.</text>
+	</string>
+	<string id="val_recover_item_2_name">
+		<text>Return the USB drive with movies</text>
+	</string>
+	<string id="val_recover_item_2_text">
+		<text>Help me out, bud. Me and Ganja were sitting at his place, watching a movie on his laptop when the commandant caught us and started going on about how I'm on duty and all that. He wanted to smash the laptop into pieces but we stopped him, so he took the USB drive with the movie on it and threw it over the fence, into the radioactive area. Get that drive back and Ganja will reward you. </text>
+	</string>
+	<string id="val_recover_item_3_name">
+		<text>Return Serega's guitar</text>
+	</string>
+	<string id="val_recover_item_3_text">
+		<text>Someone stole Serega's guitar, can you imagine that? He's the only one who can play the guitar around here, and he does it well too, unlike the rest of them. We figured out who the thief is real quick but the cocksucker hid it someplace. Bring that guitar back 'cause Serega refuses to play any other, OK?</text>
+	</string>
+</string_table>

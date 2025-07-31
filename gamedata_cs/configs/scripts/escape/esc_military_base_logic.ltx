@@ -3,23 +3,30 @@
 [logic@work1]
 active = walker@gun
 suitable = {=check_npc_name(sim_default_military_)} true
-prior = 43
+prior = 100
 on_death = death@work1
 
-[death@work_1]
+[death@work1]
 on_info = %-esc_minigunner%
 
 [walker@gun]
 path_walk = wlkr_walk
 path_look = wlkr_look
 on_info = {=actor_in_zone(esc_minigunner_actor)} walker@stop_gun %-esc_minigunner%
-on_info2 = {!in_zone(esc_space_restrictor_minigun)} %-esc_minigunner%
-on_info3 = {=in_zone(esc_space_restrictor_minigun)} %+esc_minigunner%
+on_info2 = {=in_zone(esc_space_restrictor_minigun)} walker@gun_fire %+esc_minigunner%
 combat_ignore_cond = true
 out_restr = esc_space_restrictor_minigun
-def_state_moving1 = sprint
-def_state_moving2 = sprint
-def_state_moving3 = sprint
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[walker@gun_fire]
+combat_ignore_cond = true
+out_restr = esc_space_restrictor_minigun
+path_walk = wlkr_walk
+path_look = wlkr_look
+on_info = {=actor_in_zone(esc_minigunner_actor)} walker@stop_gun %-esc_minigunner%
+on_info2 = {!in_zone(esc_space_restrictor_minigun)} walker@gun %-esc_minigunner%
 
 [walker@stop_gun]
 path_walk = wlkr_walk_1

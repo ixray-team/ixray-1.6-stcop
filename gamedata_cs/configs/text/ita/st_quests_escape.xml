@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_additional_quest_1_name">
+		<text>Documenti alla base militare</text>
+	</string>
+	<string id="esc_additional_quest_1_text">
+		<text>Documenti alla base militare.</text>
+	</string>
+	<string id="esc_additional_quest_2_name">
+		<text>Cibo</text>
+	</string>
+	<string id="esc_additional_quest_2_text">
+		<text>Cibo.</text>
+	</string>
+	<string id="esc_bring_habar">
+		<text>Riporta il bottino al trafficante</text>
+	</string>
+	<string id="esc_bring_habar_text">
+		<text>Riporta la valigetta con il bottino al trafficante.</text>
+	</string>
+	<string id="esc_defend_stalkers_base_name">
+		<text>Difendi la base degli stalker</text>
+	</string>
+	<string id="esc_defend_stalkers_base_text">
+		<text>Difendi la base degli stalker dall'attacco.</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_name">
+		<text>Difendi la pattuglia</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_text">
+		<text>Difendi la pattuglia degli stalker vicino alla fermata dell'autobus.</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_name">
+		<text>Aiuta a respingere l'attacco</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_text">
+		<text>Aiuta a respingere l'attacco.</text>
+	</string>
+	<string id="esc_dopros">
+		<text>Interroga il comandante dei militari</text>
+	</string>
+	<string id="esc_dopros_text">
+		<text>Interroga Khaletskiy e scopri dov'и nascosta la valigetta con il bottino che serve al trafficante.</text>
+	</string>
+	<string id="esc_driver_friend_1_name">
+		<text>Trova il PDA</text>
+	</string>
+	<string id="esc_driver_friend_1_text">
+		<text>Trova il PDA che contiene informazioni importanti sul soldato che и morto nelle anomalie.</text>
+	</string>
+	<string id="esc_driver_friend_2_name">
+		<text>Riporta il PDA</text>
+	</string>
+	<string id="esc_driver_friend_2_text">
+		<text>Riporta il PDA al sergente Lambee.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9">
+		<text>Elimina i militari all'ascensore</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9_text">
+		<text>Elimina la squadra di militari avvistata dai ricognitori presso l'ascensore.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_name">
+		<text>Elimina i banditi</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_name">
+		<text>Ottieni la tua ricompensa</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_text">
+		<text>Ottieni la tua ricompensa dal trafficante. I banditi sono stati eliminati e la strada per la base и libera.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_text">
+		<text>Elimina i banditi alla fattoria abbandonata. In questo modo non potranno piщ derubare gli stalker che trasportano i bottini dalla Zona alla loro base.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11">
+		<text>Elimina i militari al deposito</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11_text">
+		<text>Elimina la squadra di militari avvistata dai ricognitori presso il deposito. La squadra и la principale forza armata schierata per salvare Khaletskiy.</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8">
+		<text>Elimina i cecchini</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8_text">
+		<text>Elimina i cecchini.</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7">
+		<text>Conquista la base degli stalker</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7_text">
+		<text>Conquista la base degli stalker.</text>
+	</string>
+	<string id="esc_find_upgrade_1_name">
+		<text>Trova il potenziamento</text>
+	</string>
+	<string id="esc_find_upgrade_1_text">
+		<text>Uno dei miei amici tecnici mi aveva inviato un'unitа di memoria con informazioni preziose su un potenziamento per l'AK. Purtroppo il corriere и finito in una tana di pseudo cani mentre veniva qui, e finora nessuno ha accettato di recuperare quell'unitа di memoria. Tu che ne dici? Avrai una bella ricompensa.</text>
+	</string>
+	<string id="esc_find_upgrade_2_name">
+		<text>Trova il potenziamento</text>
+	</string>
+	<string id="esc_find_upgrade_2_text">
+		<text>Uno dei miei amici tecnici mi aveva inviato un'unitа di memoria con informazioni preziose su un potenziamento per la doppietta. Purtroppo il corriere и finito in una tana di pseudo cani mentre veniva qui, e finora nessuno ha accettato di recuperare quell'unitа di memoria. Tu che ne dici? Avrai una bella ricompensa.</text>
+	</string>
+	<string id="esc_novice_stalker_1_name">
+		<text>Aiuta lo stalker</text>
+	</string>
+	<string id="esc_novice_stalker_1_text">
+		<text>Aiuta lo stalker a combattere il branco di cani ciechi.</text>
+	</string>
+	<string id="esc_novice_stalker_2_name">
+		<text>Scorta lo stalker</text>
+	</string>
+	<string id="esc_novice_stalker_2_text">
+		<text>Scorta lo stalker fino al Villaggio dei Novellini.</text>
+	</string>
+	<string id="esc_novice_stalker_3_name">
+		<text>Ottieni la tua ricompensa</text>
+	</string>
+	<string id="esc_novice_stalker_3_text">
+		<text>Ottieni la tua ricompensa per aver salvato lo stalker dal branco di cani ciechi di Lupo.</text>
+	</string>
+	<string id="esc_prapor">
+		<text>Vai dal sottufficiale</text>
+	</string>
+	<string id="esc_prapor_text">
+		<text>Vai dal sottufficiale.</text>
+	</string>
+	<string id="esc_reach_garbage">
+		<text>Vai dallo scavatore alla Discarica</text>
+	</string>
+	<string id="esc_reach_garbage_text">
+		<text>Vai dallo scavatore alla Discarica.</text>
+	</string>
+	<string id="esc_reach_stalker_base">
+		<text>Vai dagli stalker oltre la massicciata</text>
+	</string>
+	<string id="esc_reach_stalker_base_text">
+		<text>Parla con Valerian, il leader degli stalker. Potrebbe sapere qualcosa sul bottino che cerca Sidorovich.</text>
+	</string>
+	<string id="esc_reach_trader">
+		<text>Parla con il trafficante</text>
+	</string>
+	<string id="esc_reach_trader_text">
+		<text>Parla con il trafficante.</text>
+	</string>
+	<string id="esc_rescue_patrol">
+		<text>Aiuta gli stalker</text>
+	</string>
+	<string id="esc_rescue_patrol_text">
+		<text>Aiuta gli stalker.</text>
+	</string>
+	<string id="esc_stalker_enemy_name">
+		<text>Riconquista la fiducia degli stalker</text>
+	</string>
+	<string id="esc_stalker_enemy_text">
+		<text>Sei in pessimi rapporti con gli stalker. Devi riconquistare la loro fiducia con l'aiuto di Sidorovich.</text>
+	</string>
+	<string id="esc_take_habar">
+		<text>Ottieni il bottino</text>
+	</string>
+	<string id="esc_take_habar_text">
+		<text>Ottieni il bottino.</text>
+	</string>
+	<string id="esc_take_prisoner_secret">
+		<text>Trova il nascondiglio di Khaletskiy</text>
+	</string>
+	<string id="esc_take_prisoner_secret_text">
+		<text>Trova il nascondiglio di Khaletskiy.</text>
+	</string>
+	<string id="esc_take_weapon_name">
+		<text>Ottieni le armi</text>
+	</string>
+	<string id="esc_take_weapon_text">
+		<text>Ottieni le armi.</text>
+	</string>
+	<string id="esc_talk2_comm">
+		<text>Parla con Khaletskiy</text>
+	</string>
+	<string id="esc_talk2_comm_text">
+		<text>Parla con Khaletskiy.</text>
+	</string>
+	<string id="esc_talk2_leader">
+		<text>Vai dal leader degli stalker</text>
+	</string>
+	<string id="esc_talk2_leader_2">
+		<text>Parla con il leader degli stalker</text>
+	</string>
+	<string id="esc_talk2_leader_2_text">
+		<text>Parla con il leader degli stalker.</text>
+	</string>
+	<string id="esc_talk2_leader_text">
+		<text>Vai dal leader degli stalker.</text>
+	</string>
+	<string id="esc_talk2_trader">
+		<text>Parla con il trafficante</text>
+	</string>
+	<string id="esc_wolf_brother_1_name">
+		<text>Libera il fratello di Lupo dalla prigionia</text>
+	</string>
+	<string id="esc_wolf_brother_1_text">
+		<text>Libera il fratello di Lupo dalla prigionia.</text>
+	</string>
+	<string id="esc_wolf_brother_2_name">
+		<text>Scorta il fratello di Lupo al Villaggio dei Novellini</text>
+	</string>
+	<string id="esc_wolf_brother_2_text">
+		<text>Scorta il fratello di Lupo al Villaggio dei Novellini.</text>
+	</string>
+	<string id="esc_wolf_brother_3_name">
+		<text>Ottieni la tua ricompensa</text>
+	</string>
+	<string id="esc_wolf_brother_3_text">
+		<text>Ottieni la tua ricompensa da Lupo.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_name">
+		<text>Trova informazioni sul bilanciamento delle parti automatiche</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_text">
+		<text>Trova informazioni sul bilanciamento delle parti automatiche per Van, il tecnico degli stalker vicino al Cordon.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_name">
+		<text>Trova informazioni sui meccanismi a pompa per le doppiette</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_text">
+		<text>Con le necessarie informazioni sui meccanismi a pompa, il tecnico degli stalker potrа aumentare notevolmente la velocitа di fuoco delle doppiette.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_name">
+		<text>Trova informazioni sulla stabilizzazione elettronica</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_text">
+		<text>Il tecnico degli stalker puт costruire un dispositivo in grado di aumentare la precisione delle doppiette a pompa, ma gli mancano delle informazioni.</text>
+	</string>
+	<string id="esc_recover_item_1_name">
+		<text>Consegna la vodka "magica"</text>
+	</string>
+	<string id="esc_recover_item_1_text">
+		<text>C'era un chimico qui nella Zona. Certo, non era un chimico vero e proprio, ma faceva una vodka "magica" davvero speciale... Bastavano due sorsi per dimenticare la Zona, i mutanti, le anomalie e tutto il resto! Non avevi piщ paura di nulla, non te ne fregava piщ di niente e di nessuno. Costava parecchio, ma ne valeva la pena. Comunque, un giorno qualcuno ha deciso di avvelenare il chimico, forse spinto da aviditа o semplice invidia. Chi puт dirlo? E con lui sono sparite anche tutte le scorte di vodka... Tuttavia ho sentito dire che il chimico aveva qualche nascondiglio nella Zona, e ho scoperto le coordinate di uno di essi. Portami una bottiglia di quella vodka "magica" e avrai una magnifica ricompensa!</text>
+	</string>
+	<string id="esc_recover_item_2_name">
+		<text>Recupera l'AKM-47/2</text>
+	</string>
+	<string id="esc_recover_item_2_text">
+		<text>Io colleziono armi rare, amico. Ormai ne ho abbastanza da riempire un museo, ma non sono ancora riuscito a trovare l'AKM-47/2. Quell'AK non и solo un ottimo fucile, ma un'arma rarissima che и stata usata per uccidere mutanti mai visti prima. Ho sentito dire che il suo proprietario era una leggenda della Zona, un tiratore eccezionale che riusciva a sfuggire a qualsiasi anomalia. И da un po' che non sento parlare di quello stalker, ma ho saputo qualcosa di nuovo sul fucile. Pare sia nascosto in un luogo segreto e difficile da raggiungere. Portami quella bellezza, mercenario.</text>
+	</string>
+	<string id="esc_recover_item_3_name">
+		<text>Recupera il rilevatore "fortunato"</text>
+	</string>
+	<string id="esc_recover_item_3_text">
+		<text>Aiutami, mercenario. Poco tempo fa ho comprato un nuovo rilevatore e ho buttato quello vecchio in un'anomalia per festeggiare l'evento. Il problema и che questo nuovo rilevatore non mi sta portando molta fortuna. Non trovo un manufatto da tre settimane. Rivoglio quello vecchio! Se riuscirai a portarmelo, saprт come ricompensarti.</text>
+	</string>
+	<string id="esc_recover_item_4_name">
+		<text>Consegna un kit di pronto soccorso speciale</text>
+	</string>
+	<string id="esc_recover_item_4_text">
+		<text>Ehi, mercenario. Di recente un mio vecchio amico и sfuggito ai banditi della Discarica. Quei bastardi l'hanno fatto correre tra le anomalie della massicciata per farsi quattro risate, e sai bene che laggiщ i livelli di radiazioni sono letali. Ora si muove a malapena e gli servono medicinali antiradiazioni ancora piщ forti. Ho sentito che i militari hanno dei kit speciali che potrebbero fare al caso nostro. Portamene uno e avrai la nostra gratitudine.</text>
+	</string>
+</string_table>

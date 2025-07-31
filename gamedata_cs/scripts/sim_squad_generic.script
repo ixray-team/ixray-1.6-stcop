@@ -84,7 +84,7 @@ function sim_squad_generic:__init(sim_board, player_id, squad_id)
 	self.box_items = {}
 --	self.box_is_empty = true
 	self.items_spawned = false
-	self.recover_task_given = false
+--	self.recover_task_given = false
 end
 --' Инициализация
 function sim_squad_generic:init_squad(smart)
@@ -104,16 +104,11 @@ function sim_squad_generic:init_box_items(smart)
 	else
 		return {}
 	end
-
 	local mul_by_level = {}
-	local level_name = level.name()
-	if level_name == nil then
+	local level_name = "default"
 		if smart ~= nil then
-			level_name = alife():level_name(game_graph():vertex(smart.m_game_vertex_id):level_id())
-		else
-			level_name = "default"
+				level_name = alife():level_name(game_graph():vertex(smart.m_game_vertex_id):level_id())
 		end
-	end
 	if not death_ini:section_exist(level_name) then
 		level_name = "default"
 	end
@@ -184,12 +179,16 @@ function sim_squad_generic:spawn_box_items(smart_id)
 			return
 		end
 		local dbbox = db.storage[box.id] and db.storage[box.id].object
-		if dbbox and not dbbox:is_inv_box_empty() then
+		if not dbbox then
 			return
 		end
 		if self.box_items.ammo then
 			for k,v in pairs(self.box_items.ammo) do
-				local t = se_respawn.create_ammo(k, box.position, box.m_level_vertex_id, box.m_game_vertex_id, box.id, v)
+				if db.storage[self.commander_id] and death_manager.check_item_dependence(db.storage[self.commander_id].object, k) then
+					local t = se_respawn.create_ammo(k, box.position, box.m_level_vertex_id, box.m_game_vertex_id, box.id, v)
+				else
+					self.box_items.ammo[k] = nil
+				end
 			end
 		end
 		if self.box_items.not_ammo then
@@ -355,7 +354,9 @@ function sim_squad_generic:on_npc_death(npc)
 			local task = tm:get_task_by_entity_id(v)
 			--printf("failing task %s status %s", tostring(task.id), tostring(task.status) )
 			if task.status == "selected" then
-				task.last_check_task = "fail"
+				if task.type ~= "recover_item" then
+					task.last_check_task = "fail"
+				end	
 			end
 		end
 
@@ -625,19 +626,24 @@ function sim_squad_generic:init_squad_task()
 				enemy_quan = enemy_quan + 1
 				local task = tm:select_task("capture_smart", v, player.player_name)
 				task.src_obj = self.squad_id
-				table.insert(self.random_tasks, task.entity_id)
+				if self.random_tasks[1] == nil then
+					self.random_tasks[1] = task.entity_id
+				elseif self.random_tasks[2] == nil then
+					self.random_tasks[2] = task.entity_id
+				end
+--				table.insert(self.random_tasks, task.entity_id)
 			end
 		end
 	end
 
-	if not self.recover_task_given then
-	    local task = tm:select_task("recover_item", self.squad_id, player.player_name)
-	    if(task~=nil) then
-	        self.random_tasks[3] = task.entity_id
-			self.recover_task_given = true
-	    end
+--	if not self.recover_task_given then
+	local task = tm:select_task("recover_item", self.squad_id, player.player_name)
+	if(task~=nil) then
+        self.random_tasks[3] = task.entity_id
+-- 		self.recover_task_given = true
+--	end
 	elseif recover_task ~= nil then
-        self.random_tasks[3] = recover_task
+		self.random_tasks[3] = recover_task
 	end
 
 	local task = tm:select_task("bring_item", self.commander_id, player.player_name)
@@ -990,7 +996,7 @@ function sim_squad_generic:init_squad_on_load()
 	--printf("Init squad %s on load", self.squad_id)
 	self.board:assign_squad_to_smart(self, self.smart_id)
 
-	if self.current_action == nil or self.current_action.name == "stay_point" then	
+	if self.current_action == nil or self.current_action.name == "stay_point" then
 		self.board:enter_smart(self, self.smart_id, true)
 	end
 end
@@ -1506,16 +1512,18 @@ end
 --' Произведение действия.
 function sim_stay_point:make()
 	local squad = self.board.squads[self.squad_id]
-	squad.current_action = self
+	if squad ~= nil then
+		squad.current_action = self
 
-	local src_smart = self.board.smarts[self.src_smrt_id].smrt
-	src_smart.combat_manager:register_squad(squad)
+		local src_smart = self.board.smarts[self.src_smrt_id].smrt
+		src_smart.combat_manager:register_squad(squad)
 
-	self.begin_time = game.get_game_time()
+		self.begin_time = game.get_game_time()
 
-	self:init_defend_smart_delay(squad)
+		self:init_defend_smart_delay(squad)
 
-	squad:refresh()
+		squad:refresh()
+	end
 end
 -- Выдача квеста на отложенную атаку
 function sim_stay_point:init_defend_smart_delay(squad)

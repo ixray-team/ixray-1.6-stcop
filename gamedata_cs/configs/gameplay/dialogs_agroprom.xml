@@ -407,19 +407,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="agr_duty_weaponmaster_about_bad_trader">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>agr_duty_weaponmaster_about_bad_trader_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>agr_duty_weaponmaster_about_bad_trader_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="agr_duty_weaponmaster_about_military">
         <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
@@ -635,7 +622,7 @@
     <dialog id="agr_leader_first_join">
         <dont_has_info>agr_duty_first_join</dont_has_info>
         <dont_has_info>agru_open_story_door</dont_has_info>
-		<precondition>dialogs.actor_not_in_dolg</precondition>
+        <precondition>dialogs.actor_not_in_dolg</precondition>
         <phrase_list>
             <phrase id="2">
                 <text>agr_leader_first_join_2</text>
@@ -1235,44 +1222,14 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="agr_dialog_go_to_leader">
-        <phrase_list>
-            <phrase id="01">
-                <text></text>
-                <next>011</next>
-                <next>012</next>
-            </phrase>
-            <phrase id="011">
-                <text></text>
-                <has_info>agr_duty_open</has_info>
-                <next>0111</next>
-            </phrase>
-            <phrase id="0111">
-                <text></text>
-                <give_info>on_leader</give_info>
-            </phrase>
-            <phrase id="012">
-                <text></text>
-                <dont_has_info>agr_duty_open</dont_has_info>
-                <next>0122</next>
-            </phrase>
-            <phrase id="0122">
-                <text></text>
-            </phrase>
-            <phrase id="0">
-                <text></text>
-                <next>01</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="agr_duty_trader_about_freetime">
         <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
             <phrase id="133">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="122">
-                <text></text>
+                <text />
             </phrase>
             <phrase id="1">
                 <text>agr_duty_trader_about_freetime_1</text>
@@ -1284,117 +1241,10 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="agr_leader_hello_dialog">
-        <phrase_list>
-            <phrase id="1222">
-                <text>agr_leader_hello_dialog_1222</text>
-                <next>12222</next>
-            </phrase>
-            <phrase id="12222">
-                <text>agr_leader_hello_dialog_12222</text>
-                <next>122222</next>
-            </phrase>
-            <phrase id="122222">
-                <text>agr_leader_hello_dialog_122222</text>
-                <next>1222222</next>
-            </phrase>
-            <phrase id="1222222">
-                <text>agr_leader_hello_dialog_1222222</text>
-            </phrase>
-            <phrase id="111111111">
-                <text>agr_leader_hello_dialog_111111111</text>
-                <next>1111111111</next>
-            </phrase>
-            <phrase id="1111111">
-                <text>agr_leader_hello_dialog_1111111</text>
-                <next>11111111</next>
-            </phrase>
-            <phrase id="11111111111">
-                <text>agr_leader_hello_dialog_11111111111</text>
-                <action>dialogs.break_dialog</action>
-                <give_info>agr_actor_inside_4</give_info>
-                <give_info>agr_actor_inside_1</give_info>
-                <give_info>agr_actor_inside_2</give_info>
-                <give_info>agr_actor_inside_3</give_info>
-            </phrase>
-            <phrase id="145">
-                <text>agr_leader_hello_dialog_145</text>
-                <give_info>agr_take_reward_complete</give_info>
-            </phrase>
-            <phrase id="111111">
-                <text>agr_leader_hello_dialog_111111</text>
-                <next>1111111</next>
-            </phrase>
-            <phrase id="11111111">
-                <text>agr_leader_hello_dialog_11111111</text>
-                <next>111111111</next>
-            </phrase>
-            <phrase id="1111111111">
-                <text>agr_leader_hello_dialog_1111111111</text>
-                <next>11111111111</next>
-            </phrase>
-            <phrase id="13">
-                <text>agr_leader_hello_dialog_13</text>
-                <dont_has_info>agr_actor_inside_11</dont_has_info>
-                <has_info>agr_actor_inside_7</has_info>
-            </phrase>
-            <phrase id="15">
-                <text>agr_leader_hello_dialog_15</text>
-                <has_info>agr_actor_inside_11</has_info>
-                <has_info>agr_take_reward_complete</has_info>
-            </phrase>
-            <phrase id="1">
-                <text></text>
-                <next>12</next>
-                <next>11</next>
-                <next>13</next>
-                <next>14</next>
-                <next>15</next>
-            </phrase>
-            <phrase id="12">
-                <text>agr_leader_hello_dialog_12</text>
-                <dont_has_info>agr_actor_inside_7</dont_has_info>
-                <has_info>agr_actor_inside_4</has_info>
-            </phrase>
-            <phrase id="11">
-                <text>agr_leader_hello_dialog_11</text>
-                <dont_has_info>agr_actor_inside_4</dont_has_info>
-                <has_info>agr_actor_inside_3</has_info>
-                <next>111</next>
-            </phrase>
-            <phrase id="144">
-                <text>agr_leader_hello_dialog_144</text>
-            </phrase>
-            <phrase id="14">
-                <text>agr_leader_hello_dialog_14</text>
-                <dont_has_info>agr_take_reward_complete</dont_has_info>
-                <give_info>agr_take_reward_complete</give_info>
-                <has_info>agr_actor_inside_11</has_info>
-                <next>144</next>
-                <next>145</next>
-            </phrase>
-            <phrase id="111">
-                <text>agr_leader_hello_dialog_111</text>
-                <next>1111</next>
-            </phrase>
-            <phrase id="11111">
-                <text>agr_leader_hello_dialog_11111</text>
-                <next>111111</next>
-            </phrase>
-            <phrase id="1111">
-                <text>agr_leader_hello_dialog_1111</text>
-                <next>11111</next>
-            </phrase>
-            <phrase id="0">
-                <text></text>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="agr_leader_join_duty">
         <has_info>agr_duty_first_join</has_info>
         <has_info>agru_open_story_door</has_info>
-		<precondition>dialogs.actor_not_in_dolg</precondition>
+        <precondition>dialogs.actor_not_in_dolg</precondition>
         <phrase_list>
             <phrase id="66666666">
                 <text>agr_leader_join_duty_66666666</text>
@@ -1473,6 +1323,155 @@
             </phrase>
             <phrase id="444444444">
                 <text>agr_leader_join_duty_444444444</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_dialog_go_to_leader">
+        <phrase_list>
+            <phrase id="01">
+                <text></text>
+                <next>011</next>
+                <next>012</next>
+            </phrase>
+            <phrase id="011">
+                <text></text>
+                <has_info>agr_duty_open</has_info>
+                <next>0111</next>
+            </phrase>
+            <phrase id="0111">
+                <text></text>
+                <give_info>on_leader</give_info>
+            </phrase>
+            <phrase id="012">
+                <text></text>
+                <dont_has_info>agr_duty_open</dont_has_info>
+                <next>0122</next>
+            </phrase>
+            <phrase id="0122">
+                <text></text>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>01</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_duty_weaponmaster_about_bad_trader">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>agr_duty_weaponmaster_about_bad_trader_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>agr_duty_weaponmaster_about_bad_trader_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="agr_leader_hello_dialog">
+        <phrase_list>
+            <phrase id="1222">
+                <text>agr_leader_hello_dialog_1222</text>
+                <next>12222</next>
+            </phrase>
+            <phrase id="12222">
+                <text>agr_leader_hello_dialog_12222</text>
+                <next>122222</next>
+            </phrase>
+            <phrase id="122222">
+                <text>agr_leader_hello_dialog_122222</text>
+                <next>1222222</next>
+            </phrase>
+            <phrase id="1222222">
+                <text>agr_leader_hello_dialog_1222222</text>
+            </phrase>
+            <phrase id="111111111">
+                <text>agr_leader_hello_dialog_111111111</text>
+                <next>1111111111</next>
+            </phrase>
+            <phrase id="11111111111">
+                <text>agr_leader_hello_dialog_11111111111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>agr_actor_inside_4</give_info>
+                <give_info>agr_actor_inside_1</give_info>
+                <give_info>agr_actor_inside_2</give_info>
+                <give_info>agr_actor_inside_3</give_info>
+            </phrase>
+            <phrase id="111111">
+                <text>agr_leader_hello_dialog_111111</text>
+                <next>1111111</next>
+            </phrase>
+            <phrase id="11111111">
+                <text>agr_leader_hello_dialog_11111111</text>
+                <next>111111111</next>
+            </phrase>
+            <phrase id="1111111111">
+                <text>agr_leader_hello_dialog_1111111111</text>
+                <next>11111111111</next>
+            </phrase>
+            <phrase id="13">
+                <text>agr_leader_hello_dialog_13</text>
+                <dont_has_info>agr_actor_inside_11</dont_has_info>
+                <has_info>agr_actor_inside_7</has_info>
+            </phrase>
+            <phrase id="15">
+                <text>agr_leader_hello_dialog_15</text>
+                <has_info>agr_actor_inside_11</has_info>
+                <has_info>agr_take_reward_complete</has_info>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <next>12</next>
+                <next>11</next>
+                <next>13</next>
+                <next>14</next>
+                <next>15</next>
+            </phrase>
+            <phrase id="12">
+                <text>agr_leader_hello_dialog_12</text>
+                <dont_has_info>agr_actor_inside_7</dont_has_info>
+                <has_info>agr_actor_inside_4</has_info>
+            </phrase>
+            <phrase id="11">
+                <text>agr_leader_hello_dialog_11</text>
+                <dont_has_info>agr_actor_inside_4</dont_has_info>
+                <has_info>agr_actor_inside_3</has_info>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>agr_leader_hello_dialog_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>agr_leader_hello_dialog_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="11111">
+                <text>agr_leader_hello_dialog_11111</text>
+                <next>111111</next>
+            </phrase>
+            <phrase id="1111111">
+                <text>agr_leader_hello_dialog_1111111</text>
+                <next>11111111</next>
+            </phrase>
+            <phrase id="145">
+                <text>agr_leader_hello_dialog_145</text>
+                <give_info>agr_take_reward_complete</give_info>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+            </phrase>
+            <phrase id="144">
+                <text>agr_leader_hello_dialog_144</text>
+            </phrase>
+            <phrase id="14">
+                <text>agr_leader_hello_dialog_14</text>
+                <dont_has_info>agr_take_reward_complete</dont_has_info>
+                <give_info>agr_take_reward_complete</give_info>
+                <has_info>agr_actor_inside_11</has_info>
+                <next>144</next>
             </phrase>
         </phrase_list>
     </dialog>

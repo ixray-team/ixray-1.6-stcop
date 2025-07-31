@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_additional_quest_1_name">
+		<text>Find the dead stalker's loot</text>
+	</string>
+	<string id="agr_additional_quest_1_text">
+		<text>Find the dead stalker's loot</text>
+	</string>
+	<string id="agr_additional_quest_3_name">
+		<text>Find the missing stalker</text>
+	</string>
+	<string id="agr_additional_quest_3_text">
+		<text>Find the missing stalker</text>
+	</string>
+	<string id="agr_at_blokpost_name">
+		<text>Talk to the leader of Duty</text>
+	</string>
+	<string id="agr_at_blokpost_text">
+		<text>Talk to the leader of Duty. General Krylov may know where the entrance to the Agroprom underground is located. That's where the stalkers who reached the center of the Zone kept a stash</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_name">
+		<text>Destroy the bandit camp</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_text">
+		<text>The bandit camp in the tunnel must be destroyed. Bandits are using it to mount attacks on the stalker camp.</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_name">
+		<text>Destroy the bandit squad</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_text">
+		<text>A squad of bandits is guarding one of the underground exits and helping some of their own get out onto the surface from time to time. The squad must be destroyed.</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_name">
+		<text>Destroy the mutant lair</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_text">
+		<text>The wasteland in front of the stalker base is teeming with monsters - the area is wild and dangerous. The mutant lair must be destroyed.</text>
+	</string>
+	<string id="agr_defend_duty_base_1_name">
+		<text>Defend the Duty base</text>
+	</string>
+	<string id="agr_defend_duty_base_1_text">
+		<text>The Duty base has been attacked. Help repel the attack and you will be rewarded.</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_name">
+		<text>Defend the stalker base.</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_text">
+		<text>The stalker base is in danger. Help stalkers fight off the attack for a reward.</text>
+	</string>
+	<string id="agr_go_in_hole_name">
+		<text>Descend into the Agroprom underground</text>
+	</string>
+	<string id="agr_go_in_hole_text">
+		<text>You need to descend into the Agroprom underground. The only road to the underground leads through the mutant hole</text>
+	</string>
+	<string id="agr_go_out_hole_name">
+		<text>Talk to Sakharov</text>
+	</string>
+	<string id="agr_go_out_hole_text">
+		<text>The communications of Strelok's group found in the underground stash clarify things. Strelok went to see the scientists at Yantar. Reach Yantar and talk to professor Sakharov. He may know where to look for Strelok</text>
+	</string>
+	<string id="agr_go_to_hole_name">
+		<text>Reach the hole</text>
+	</string>
+	<string id="agr_go_to_hole_text">
+		<text>Duty soldiers have sealed all the underground entrances and exits shut. The only way to get into the underground is via the holes monsters use to get to the surface. You must reach the hole</text>
+	</string>
+	<string id="agr_mechanic_pda_1_name">
+		<text>Find the PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_1_text">
+		<text>Find the PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_2_name">
+		<text>Deliver the PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_2_text">
+		<text>Deliver the PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_name">
+		<text>Find the PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_text">
+		<text>Find the PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_name">
+		<text>Deliver the PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_text">
+		<text>Deliver the PDA</text>
+	</string>
+	<string id="agr_no_task_name">
+		<text>Find the stalker group's stash</text>
+	</string>
+	<string id="agr_no_task_text">
+		<text>Fang's PDA contained the coordinates of a stash belonging to a group of stalkers which reached the center of the Zone, prompting a disaster in the Zone. This is an important discovery because the stash may contain valuable information. You need to find the PDA in the stash </text>
+	</string>
+	<string id="agr_pda_map_animals_1_name">
+		<text>Find the migration map</text>
+	</string>
+	<string id="agr_pda_map_animals_1_text">
+		<text>Find the map depicting the migration patterns of rare species of monsters in the Zone</text>
+	</string>
+	<string id="agr_pda_map_animals_2_name">
+		<text>Deliver the migration map</text>
+	</string>
+	<string id="agr_pda_map_animals_2_text">
+		<text>Deliver the migration map to the Inquisitor</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_name">
+		<text>Help the stalkers</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_text">
+		<text>A group of stalkers is trying to reach the scientists at Yantar through the bog. Help the stalkers traverse the bog alive</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_name">
+		<text>Collect the reward</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_text">
+		<text>Collect the reward from Platonov</text>
+	</string>
+	<string id="agr_start_name">
+		<text>Talk to the outpost commander</text>
+	</string>
+	<string id="agr_start_text">
+		<text>Get information about the situation at Agroprom from the outpost commander</text>
+	</string>
+	<string id="agr_take_reward_name">
+		<text>Receive the reward from Krylov</text>
+	</string>
+	<string id="agr_take_reward_text">
+		<text>The underground is flooded and mutant attacks against Duty should stop for a while. General Krylov will reward you handsomely for successfully completing the mission. Receive your reward from Krylov</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_name">
+		<text>Find information about balancing the automated parts of a machine gun</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_text">
+		<text>Technician Thunderov is looking for a way to increase the rate of fire of a machine gun by balancing its automated parts. He'll pay a handsome fee for related information.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_name">
+		<text>Find information about modifying the gas exhaust of a machine gun</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_text">
+		<text>Thunderov is very close to perfecting the machine gun's characteristics. All he needs is spare time and certain technical data on gas exhausts.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_name">
+		<text>Find information about pistol muzzle break</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_text">
+		<text>The stalker technician at Agroprom is looking for detailed information about muzzle breaks for powerful high-caliber pistols.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_name">
+		<text>Find information about pump mechanisms for combat shotguns</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_text">
+		<text>The stalker technician at Agroprom is looking for information about pump mechanisms for combat shotguns.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_name">
+		<text>Find information about barrel modifications for pistols</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_text">
+		<text>The stalker technician lacks the experience needed to modify the barrel of a powerful pistol. He'll pay for related information.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_name">
+		<text>Find information about machine gun muzzle break</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_text">
+		<text>The Duty technician is working on an improved muzzle break for a machine gun, but he's missing some technical information.</text>
+	</string>
+	<string id="agr_attack_monster_group_name">
+		<text>Destroy the mutant lair</text>
+	</string>
+	<string id="agr_attack_monster_group_text">
+		<text>Time to time small packs of mutants attack stalkers at the factory. Killing the monsters at their lair to the north of the factory could stop the attacks.</text>
+	</string>
+	<string id="agr_recover_item_1_name">
+		<text>Return the shotgun to the Duty member</text>
+	</string>
+	<string id="agr_recover_item_1_text">
+		<text>We were on a mission to clear an area of mutants the other day when we ran into a huge one. The fight lasted at least an hour and we were low on ammo but that beast wasn't even close to dying. I gave the order to retreat but stayed behind to hold the mutant back while the boys were getting clear. I fired off all my ammo and then threw my shotgun straight at the bastard. Guess what happened next? That piece of crap started eating away at the shooter and ignoring me. Bring back my shotgun, it saved my life after all!</text>
+	</string>
+	<string id="agr_recover_item_2_name">
+		<text>Return the PDA with secret information</text>
+	</string>
+	<string id="agr_recover_item_2_text">
+		<text>Merc, I was mugged by the bandits at the Garbage. They took everything: cash, weapons, ammo and my medical supplies. Worst of all, they took my PDA, which contained information about bandit locations at the Garbage. If I don't deliver that info to Krylov he'll bury me alive. Help me get it back!</text>
+	</string>
+	<string id="agr_recover_item_3_name">
+		<text>Return Duty member's case</text>
+	</string>
+	<string id="agr_recover_item_3_text">
+		<text>Merc, when the mutants started appearing in the underground we had to abandon our positions and fall back. I was forced to leave my case back there with weapons, ammo, meds and my detector. I didn't have time to think about it - I had to save myself. Help me get that case back.</text>
+	</string>
+	<string id="agr_recover_item_4_name">
+		<text>Return Duty member's assault rifle.</text>
+	</string>
+	<string id="agr_recover_item_4_text">
+		<text>I had an argument with a guide over nothing much and he won't take me to see the stalkers now! He says he doesn't even want to see me again, and I don't fancy wandering around the Zone on my own. I left my shooter with the stalkers when I went to visit them last week. One of our fellas got promoted and we were celebrating that with a good dose of booze. I got pretty wasted: the boys barely managed to get me back to the barracks, but they forgot my rifle. Could you bring it back for me? I'm not much of a soldier without a weapon.</text>
+	</string>
+</string_table>

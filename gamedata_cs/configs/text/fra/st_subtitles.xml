@@ -1,0 +1,3081 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_agr_stalker_leader_tip">
+		<text>Mercenaire, ici Orest, le chef des stalkers locaux. Si tu veux me parler, viens me voir au premier йtage du bвtiment principal.</text>
+	</string>
+	<string id="st_gar_bandit_lager_warning">
+		<text>Hй, toi ! On accepte pas les йtrangers ici ! Y aura pas de tirs de sommation !</text>
+	</string>
+	<string id="stalker_alife_defence_actor_come_1">
+		<text>Hй ! Alors lа, on va les exploser !</text>
+	</string>
+	<string id="stalker_alife_defence_actor_come_2">
+		<text>Cool ! Зa devrait кtre plus facile maintenant !</text>
+	</string>
+	<string id="stalker_alife_defence_actor_come_3">
+		<text>Merci ! Maintenant, on va pouvoir leur mettre la pвtйe !</text>
+	</string>
+	<string id="stalker_alife_defence_actor_help_1">
+		<text>Tu nous as tirйs d'un sacrй pйtrin. Passe а la base un de ces quatre, on te filera une rйcompense !</text>
+	</string>
+	<string id="stalker_alife_defence_actor_help_2">
+		<text>Merci ! On te revaudra зa la prochaine fois que tu passeras а la base.</text>
+	</string>
+	<string id="stalker_alife_defence_actor_help_3">
+		<text>Merci beaucoup ! La prochaine fois que t'es dans les environs, passe а la base ! T'auras droit а un petit bonus.</text>
+	</string>
+	<string id="stalker_alife_defence_end_defence_1">
+		<text>Зa leur apprendra а fourrer leur nez lа oщ il faut pas !</text>
+	</string>
+	<string id="stalker_alife_defence_end_defence_2">
+		<text>On les a repoussйs ! Ouf !</text>
+	</string>
+	<string id="stalker_alife_defence_end_defence_3">
+		<text>Tout ce qu'ils auront pris, c'est du plomb dans le cul !</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_bandit_1">
+		<text>Ces salauds de bandits nous allument ! File-nous un coup de main !</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_csky_1">
+		<text>Ces bвtards du Firmament nous cherchent des emmerdes ! Viens nous aider !</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_dolg_1">
+		<text>Le Devoir nous colle au cul ! On a besoin d'aide ou on va tous y passer !</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_freedom_1">
+		<text>Hй, stalker ! La Libertй nous botte le cul, tu veux pas nous aider а leur mettre une bonne correction ?</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_military_1">
+		<text>Aide-nous ! Les bidasses sont en train de massacrer des stalkers !</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_mutant_1">
+		<text>On est dans les mutants jusqu'au cou, on a besoin d'aide !</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_zombied_1">
+		<text>Viens nous aider а descendre ces zombies !</text>
+	</string>
+	<string id="stalker_alife_defence_wait_help_1">
+		<text>Nos gars se font tuer ! T'es oщ ?</text>
+	</string>
+	<string id="stalker_alife_defence_wait_help_2">
+		<text>On pourra pas tenir longtemps ! Dйpкche !</text>
+	</string>
+	<string id="stalker_alife_defence_wait_help_3">
+		<text>Зa va bientфt кtre trop tard ! On a besoin d'aide !</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_1">
+		<text>... Qu'est-ce qui s'est passй ? Rйpondez... Vous me recevez ?...</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_2">
+		<text>... Hй, les gars ! Зa va ?...</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_3">
+		<text>... Hй, vous кtes encore en vie ? Rйpondez !...</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_4">
+		<text>... Vous m'entendez ? Ici...</text>
+	</string>
+	<string id="stalker_alife_counter_attack_counter_attack_begin_1">
+		<text>Nos hommes ne rйpondent plus. Allez les retrouver ! Ils ont peut-кtre besoin d'aide !</text>
+	</string>
+	<string id="stalker_alife_counter_attack_counter_attack_begin_2">
+		<text>Impossible de contacter nos gars... Allez voir ce qui se passe !</text>
+	</string>
+	<string id="stalker_alife_counter_attack_counter_attack_begin_3">
+		<text>Nos mecs ont dы se perdre. Qu'un groupe aille les chercher !</text>
+	</string>
+	<string id="stalker_alife_counter_attack_reply_1">
+		<text>Allons voir ce qui se passe !</text>
+	</string>
+	<string id="stalker_alife_counter_attack_reply_2">
+		<text>Bien reзu ! On est dйjа en route !</text>
+	</string>
+	<string id="stalker_alife_counter_attack_reply_3">
+		<text>C'est sыrement pas grave, mais on va aller voir quand mкme.</text>
+	</string>
+	<string id="stalker_alife_attack_actor_in_battle_1">
+		<text>C'est fini pour vous, bande de connards !</text>
+	</string>
+	<string id="stalker_alife_attack_actor_in_battle_2">
+		<text>Couvrez-moi, les gars ! J'y vais !</text>
+	</string>
+	<string id="stalker_alife_attack_actor_in_battle_3">
+		<text>Y quelqu'un qui va morfler !</text>
+	</string>
+	<string id="stalker_alife_attack_attack_begin_1">
+		<text>Tout le monde est prкt ? On y va !</text>
+	</string>
+	<string id="stalker_alife_attack_attack_begin_2">
+		<text>Allez, on va devenir des hйros !</text>
+	</string>
+	<string id="stalker_alife_attack_attack_begin_3">
+		<text>On se bouge, les gars ! Allez !</text>
+	</string>
+	<string id="stalker_alife_attack_attack_ready_1">
+		<text>Tenez-vous prкts ! Dйployez-vous !</text>
+	</string>
+	<string id="stalker_alife_attack_attack_ready_2">
+		<text>Dispersez-vous, les gars ! On avance !</text>
+	</string>
+	<string id="stalker_alife_attack_attack_ready_3">
+		<text>On se dйploie ! Mettez-vous en position !</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_1">
+		<text>Ah merde, j'allais faire une sieste...</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_2">
+		<text>Quoi ? Encore ? C'est pas vrai !</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_3">
+		<text>Ils auraient mieux fait de me tuer а la naissance...</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_4">
+		<text>On a jamais le temps de bouffer tranquillement par ici...</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_5">
+		<text>On m'avait bien dit de pas aller dans la Zone...</text>
+	</string>
+	<string id="stalker_alife_attack_end_fight_1">
+		<text>Quoi, c'est dйjа fini ? Je commenзais а peine а m'йchauffer !</text>
+	</string>
+	<string id="stalker_alife_attack_end_fight_2">
+		<text>Bon, vous pouvez desserrer les miches ! C'est torchй !</text>
+	</string>
+	<string id="stalker_alife_attack_end_fight_3">
+		<text>On est les meilleurs ! Ils ont pris une sacrйe rouste !</text>
+	</string>
+	<string id="stalker_alife_attack_found_enemy_1">
+		<text>On a repйrй des touristes ! Qui veut faire partie du comitй d'accueil ?</text>
+	</string>
+	<string id="stalker_alife_attack_found_enemy_2">
+		<text>Ennemi repйrй ! Зa va chauffer !</text>
+	</string>
+	<string id="stalker_alife_attack_found_enemy_3">
+		<text>Ennemi en vue ! Tenez-vous prкts !</text>
+	</string>
+	<string id="stalker_alife_attack_prepare_attack_1">
+		<text>Encore une fois, attendez mon ordre pour tirer !</text>
+	</string>
+	<string id="stalker_alife_attack_prepare_attack_2">
+		<text>Tenez-vous prкts ! Tirez а mon signal !</text>
+	</string>
+	<string id="stalker_alife_attack_prepare_attack_3">
+		<text>Je ne veux pas d'initiative ! Attendez mon signal !</text>
+	</string>
+	<string id="stalker_alife_attack_see_counter_1">
+		<text>Manquait plus que зa, tiens... Ennemis en vue !</text>
+	</string>
+	<string id="stalker_alife_attack_see_counter_2">
+		<text>Des ennemis juste а cфtй de nous !</text>
+	</string>
+	<string id="stalker_alife_attack_see_counter_3">
+		<text>Je les vois !</text>
+	</string>
+	<string id="stalker_alife_attack_smart_captured_1">
+		<text>On a pris la position !</text>
+	</string>
+	<string id="stalker_alife_attack_smart_captured_2">
+		<text>La position est capturйe !</text>
+	</string>
+	<string id="stalker_alife_attack_smart_captured_3">
+		<text>Tout est sous contrфle. La position est а nous !</text>
+	</string>
+	<string id="stalker_alife_attack_start_fight_1">
+		<text>Allez, les stalkers ! On va se les faire !</text>
+	</string>
+	<string id="stalker_alife_attack_start_fight_2">
+		<text>Tuez-les tous !</text>
+	</string>
+	<string id="stalker_alife_attack_start_fight_3">
+		<text>Feu ! Feu !</text>
+	</string>
+	<string id="stalker_alife_attack_wait_again_1">
+		<text>Hй, tu nous as oubliйs, ou quoi ?</text>
+	</string>
+	<string id="stalker_alife_attack_wait_again_2">
+		<text>Mais t'es oщ, bordel ? On t'attend !</text>
+	</string>
+	<string id="stalker_alife_attack_wait_again_3">
+		<text>On est encore ici, si зa intйresse quelqu'un...</text>
+	</string>
+	<string id="stalker_alife_attack_wait_counter_1">
+		<text>On s'en sortira pas aussi facilement, je le sais...</text>
+	</string>
+	<string id="stalker_alife_attack_wait_counter_2">
+		<text>Surtout gardez l'oeil ouvert ! L'ennemi peut se pointer n'importe quand !</text>
+	</string>
+	<string id="stalker_alife_attack_wait_counter_3">
+		<text>C'est peut-кtre rien, mais vйrifiez vos armes au cas oщ..</text>
+	</string>
+	<string id="stalker_alife_attack_wait_signal_1">
+		<text>On est prкt а attaquer au signal !</text>
+	</string>
+	<string id="stalker_alife_attack_wait_signal_2">
+		<text>On attend plus que le signal pour y aller !</text>
+	</string>
+	<string id="stalker_alife_attack_wait_signal_3">
+		<text>Tout le monde est en position, on attend les ordres !</text>
+	</string>
+	<string id="stalker_alife_attack_we_spotted_1">
+		<text>On dirait qu'ils nous ont vus !</text>
+	</string>
+	<string id="stalker_alife_attack_we_spotted_2">
+		<text>Ouaip, plus besoin de se cacher !</text>
+	</string>
+	<string id="stalker_alife_attack_we_spotted_3">
+		<text>Oubliez la discrйtion ! Зa sert plus а rien !</text>
+	</string>
+	<string id="military_alife_patrol_run_1">
+		<text>Au pas de course !</text>
+	</string>
+	<string id="military_alife_patrol_sneak_1">
+		<text>Silence !</text>
+	</string>
+	<string id="military_alife_patrol_walk_1">
+		<text>On ne se replie pas !</text>
+	</string>
+	<string id="military_alife_counter_attack_check_1">
+		<text>... Au rapport ! А vous !...</text>
+	</string>
+	<string id="military_alife_counter_attack_check_2">
+		<text>... Y a quelqu'un ? Rйpondez ! А vous !...</text>
+	</string>
+	<string id="military_alife_counter_attack_check_3">
+		<text>... Qu'est-ce que... ?... Rйpondez, bordel !</text>
+	</string>
+	<string id="military_alife_counter_attack_check_4">
+		<text>... Mais vous кtes tous devenus sourds ou quoi ?</text>
+	</string>
+	<string id="military_alife_counter_attack_counter_attack_begin_1">
+		<text>Йcoutez ! On a perdu le contact avec notre unitй. Il faut qu'on sache ce qui s'est passй.</text>
+	</string>
+	<string id="military_alife_counter_attack_counter_attack_begin_2">
+		<text>Allez voir ce qui se passe ! Notre unitй ne rйpond plus !</text>
+	</string>
+	<string id="military_alife_counter_attack_counter_attack_begin_3">
+		<text>Vite, rassemblez quelques hommes et allez voir ce qui se passe. On a perdu le contact ! Restez sur vos gardes !</text>
+	</string>
+	<string id="military_alife_counter_attack_reply_1">
+		<text>А vos ordres ! On ratisse le secteur et on essaye d'йtablir le contact.</text>
+	</string>
+	<string id="military_alife_counter_attack_reply_2">
+		<text>А vos ordres ! On y va tout de suite !</text>
+	</string>
+	<string id="military_alife_counter_attack_reply_3">
+		<text>Compris ! Rassemblez quelques hommes !</text>
+	</string>
+	<string id="military_alife_attack_attack_begin_1">
+		<text>Allez, on se rйveille ! On bouge !</text>
+	</string>
+	<string id="military_alife_attack_attack_begin_2">
+		<text>Reprenez-vous ! On s'en va !</text>
+	</string>
+	<string id="military_alife_attack_attack_begin_3">
+		<text>En rang !</text>
+	</string>
+	<string id="military_alife_attack_attack_ready_1">
+		<text>Attention ! Dispersez-vous !</text>
+	</string>
+	<string id="military_alife_attack_attack_ready_2">
+		<text>Unitй ! Prenez vos positions de dйpart !</text>
+	</string>
+	<string id="military_alife_attack_attack_ready_3">
+		<text>Dispersez-vous !</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_1">
+		<text>C'est pas vrai ! Encore ? J'ai toujours pas rйussi а faire partir les taches de sang du combat prйcйdent.</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_2">
+		<text>J'en ai ma claque de ces amateurs...</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_3">
+		<text>Alors lа, je suis en pйtard !</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_4">
+		<text>Et зa continue... Gйnial...</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_5">
+		<text>Зa commence vraiment а me saouler...</text>
+	</string>
+	<string id="military_alife_attack_start_fight_1">
+		<text>Tirez !</text>
+	</string>
+	<string id="military_alife_attack_start_fight_2">
+		<text>А l'attaque !</text>
+	</string>
+	<string id="military_alife_attack_start_fight_3">
+		<text>Allez, bande de mauviettes !</text>
+	</string>
+	<string id="freedom_alife_defence_actor_come_1">
+		<text>Cool ! C'est vraiment sympa de ta part, tu sais ?</text>
+	</string>
+	<string id="freedom_alife_defence_actor_come_2">
+		<text>Je suis sacrйment content de te voir !</text>
+	</string>
+	<string id="freedom_alife_defence_actor_come_3">
+		<text>Merci d'кtre venu ! La fкte va enfin pouvoir commencer !</text>
+	</string>
+	<string id="freedom_alife_defence_actor_help_1">
+		<text>Hй, mon pote ! Tu nous as filй un sacrй coup de main ! Passe а la base ! On pourra te filer ta rйcompense et passer un peu de bon temps !</text>
+	</string>
+	<string id="freedom_alife_defence_actor_help_2">
+		<text>Sans toi, on y passait tous ! Passe nous voir а la base, on pourra te refiler un petit quelque chose !</text>
+	</string>
+	<string id="freedom_alife_defence_actor_help_3">
+		<text>Un peu plus, et c'йtait la libertй ultime... dans la tombe ! Passe prendre ta rйcompense а la base а l'occasion !</text>
+	</string>
+	<string id="freedom_alife_defence_end_defence_1">
+		<text>Quand tu vis pour le combat, tu finis par en crever... Compris, Devoir ?</text>
+	</string>
+	<string id="freedom_alife_defence_end_defence_2">
+		<text>J'ai pas vraiment compris ce qu'ils voulaient nous dire...</text>
+	</string>
+	<string id="freedom_alife_defence_end_defence_3">
+		<text>Ces pauvres nazes n'avaient aucune chance, on est bien trop forts pour eux !</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_bandit_1">
+		<text>Hй ! Les bandits nous harcиlent ! On a besoin d'un coup de main !</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_csky_1">
+		<text>Faut que tu nous aides ! Ces allumйs sont en train de nous massacrer !</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_dolg_1">
+		<text>Aide-nous ! Les fachos du Devoir nous font des misиres !</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_military_1">
+		<text>Aide-nous а mettre un peu de plomb dans la tкte de ces bidasses !</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_mutant_1">
+		<text>Hй stalker ! Y a assez de mutants par ici pour ouvrir un zoo ! Viens nous filer un coup de main !</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_stalker_1">
+		<text>Hй, mon pote ! Ces stalkers essayent de rйprimer notre libertй !</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_zombied_1">
+		<text>Aide-nous contre ces zombies, c'est un vrai film de sйrie Z ici !</text>
+	</string>
+	<string id="freedom_alife_defence_wait_help_1">
+		<text>On est tous en train de crever ! А l'aide !</text>
+	</string>
+	<string id="freedom_alife_defence_wait_help_2">
+		<text>А l'aide ! On va tous y passer !</text>
+	</string>
+	<string id="freedom_alife_defence_wait_help_3">
+		<text>Nous oubliez pas, ou on va y rester !</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_1">
+		<text>... Mais qu'est-ce qui se passe ?...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_2">
+		<text>... Зa me fait vraiment plus rire ! Allez, rйpondez, quoi !...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_3">
+		<text>... Qu'est-ce qui se passe, les mecs ?...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_4">
+		<text>... Unitй, rйpondez... Merde !...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_counter_attack_begin_1">
+		<text>Nos gars rйpondent plus ! Ratissez le secteur et restez sur vos gardes !</text>
+	</string>
+	<string id="freedom_alife_counter_attack_counter_attack_begin_2">
+		<text>J'ai pas la moindre idйe de ce qui se passe, faut aller vйrifier que nos gars sont pas dans la merde..</text>
+	</string>
+	<string id="freedom_alife_counter_attack_counter_attack_begin_3">
+		<text>Je le sens vraiment pas... Qu'un groupe se prйpare et vйrifie ce qui se passe !</text>
+	</string>
+	<string id="freedom_alife_counter_attack_reply_1">
+		<text>Ouais, faut qu'on sache comment vont nos gars !</text>
+	</string>
+	<string id="freedom_alife_counter_attack_reply_2">
+		<text>On y va, y a pas le feu...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_reply_3">
+		<text>Merde ! J'espиre qu'ils ont pas d'ennuis !</text>
+	</string>
+	<string id="freedom_alife_attack_actor_in_battle_1">
+		<text>Tiens, зa te mettra un peu de plomb dans la tкte !</text>
+	</string>
+	<string id="freedom_alife_attack_actor_in_battle_2">
+		<text>Alors, зa te plaоt ?</text>
+	</string>
+	<string id="freedom_alife_attack_actor_in_battle_3">
+		<text>J'en ai marre de ta sale gueule !</text>
+	</string>
+	<string id="freedom_alife_attack_attack_begin_1">
+		<text>Que tout le monde se prйpare ! On a un boulot а faire !</text>
+	</string>
+	<string id="freedom_alife_attack_attack_begin_2">
+		<text>C'est fini, la pause clope ! Allez ! Au boulot !</text>
+	</string>
+	<string id="freedom_alife_attack_attack_begin_3">
+		<text>Fini de bronzer, les gonzesses ! On y va !</text>
+	</string>
+	<string id="freedom_alife_attack_attack_ready_1">
+		<text>Dйployez-vous ! Gardez vos distances pendant l'attaque !</text>
+	</string>
+	<string id="freedom_alife_attack_attack_ready_2">
+		<text>On se disperse, allez, plus vite que зa !</text>
+	</string>
+	<string id="freedom_alife_attack_attack_ready_3">
+		<text>En position, et que зa saute !</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_1">
+		<text>Merde, j'ai plus de munitions !</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_2">
+		<text>Oщ зa ?</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_3">
+		<text>C'est toujours la mкme merde...</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_4">
+		<text>Ha ha ha, trиs drфle... C'est une blague, pas vrai ?</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_5">
+		<text>On peut pas attendre une heure ou deux ?</text>
+	</string>
+	<string id="freedom_alife_attack_end_fight_1">
+		<text>Eh ouais, c'est ce qui arrive а ceux qui nous cherchent !</text>
+	</string>
+	<string id="freedom_alife_attack_end_fight_2">
+		<text>Зa y est ? T'as pigй qui on est ? Ben, oublie pas de le dire а tes potes !</text>
+	</string>
+	<string id="freedom_alife_attack_end_fight_3">
+		<text>Emballez, c'est pesй !</text>
+	</string>
+	<string id="freedom_alife_attack_found_enemy_1">
+		<text>Voilа l'ennemi ! А l'assaut !</text>
+	</string>
+	<string id="freedom_alife_attack_found_enemy_2">
+		<text>L'ennemi est lа ! Rejoins-nous si tu te sens de taille !</text>
+	</string>
+	<string id="freedom_alife_attack_found_enemy_3">
+		<text>Je vois l'ennemi ! On va se faire un joli carton !</text>
+	</string>
+	<string id="freedom_alife_attack_prepare_attack_1">
+		<text>C'est qui l'excitй de la gвchette ? On attend mon ordre pour tirer !</text>
+	</string>
+	<string id="freedom_alife_attack_prepare_attack_2">
+		<text>Restez en position ! Tirez а mon signal !</text>
+	</string>
+	<string id="freedom_alife_attack_prepare_attack_3">
+		<text>Attendez mon ordre ! Visez !</text>
+	</string>
+	<string id="freedom_alife_attack_see_counter_1">
+		<text>Les voilа !</text>
+	</string>
+	<string id="freedom_alife_attack_see_counter_2">
+		<text>Contact ! Tenez-vous prкts !</text>
+	</string>
+	<string id="freedom_alife_attack_see_counter_3">
+		<text>Des ennemis !</text>
+	</string>
+	<string id="freedom_alife_attack_smart_captured_1">
+		<text>On les a tous eus ! La position est а nous !</text>
+	</string>
+	<string id="freedom_alife_attack_smart_captured_2">
+		<text>Ils sont tous morts ! On contrфle la position !</text>
+	</string>
+	<string id="freedom_alife_attack_smart_captured_3">
+		<text>Notre groupe a capturй la position !</text>
+	</string>
+	<string id="freedom_alife_attack_start_fight_1">
+		<text>Allez ! Allez !</text>
+	</string>
+	<string id="freedom_alife_attack_start_fight_2">
+		<text>Tuez-les tous ! Allez !</text>
+	</string>
+	<string id="freedom_alife_attack_start_fight_3">
+		<text>A l'attaque ! Tirez !</text>
+	</string>
+	<string id="freedom_alife_attack_wait_again_1">
+		<text>Ohй ! T'es avec nous ou quoi ?</text>
+	</string>
+	<string id="freedom_alife_attack_wait_again_2">
+		<text>T'es en train de t'amuser tout seul ? On attend quoi, au juste ?</text>
+	</string>
+	<string id="freedom_alife_attack_wait_again_3">
+		<text>Bon, on peut y aller ou t'as besoin de plus de temps ?</text>
+	</string>
+	<string id="freedom_alife_attack_wait_counter_1">
+		<text>J'ai comme l'impression qu'on va avoir de la visite...</text>
+	</string>
+	<string id="freedom_alife_attack_wait_counter_2">
+		<text>On s'endort pas ! Ils vont revenir, j'en suis sыr !</text>
+	</string>
+	<string id="freedom_alife_attack_wait_counter_3">
+		<text>Attention ! L'ennemi est peut-кtre en train de nous contourner en ce moment mкme !</text>
+	</string>
+	<string id="freedom_alife_attack_wait_signal_1">
+		<text>Le groupe est prкt. On attend plus que le signal !</text>
+	</string>
+	<string id="freedom_alife_attack_wait_signal_2">
+		<text>Tout est prкt. On attend plus que les ordres pour attaquer !</text>
+	</string>
+	<string id="freedom_alife_attack_wait_signal_3">
+		<text>On est en position ! On n'attend plus que l'ordre d'attaquer !</text>
+	</string>
+	<string id="freedom_alife_attack_we_spotted_1">
+		<text>Oubliez l'йlйment de surprise, on a merdй...</text>
+	</string>
+	<string id="freedom_alife_attack_we_spotted_2">
+		<text>J'aimais bien le plan "discret", mais bon... Tant pis !</text>
+	</string>
+	<string id="freedom_alife_attack_we_spotted_3">
+		<text>Oh oh, plus besoin de se planquer, on s'est fait repйrer !</text>
+	</string>
+	<string id="dolg_alife_defence_actor_come_1">
+		<text>Enfin ! Si seulement il y avait plus de gars comme toi !</text>
+	</string>
+	<string id="dolg_alife_defence_actor_come_2">
+		<text>V'lа la cavalerie ! On va pouvoir leur montrer ce qu'on sait faire !</text>
+	</string>
+	<string id="dolg_alife_defence_actor_come_3">
+		<text>Hй, si on bossait ensemble sur ce coup-lа ?</text>
+	</string>
+	<string id="dolg_alife_defence_actor_help_1">
+		<text>Oh, c'йtait moins une ! Merci ! Passe dans notre base а l'occasion, le Devoir sait rйcompenser ses alliйs !</text>
+	</string>
+	<string id="dolg_alife_defence_actor_help_2">
+		<text>On serait dйjа six pieds sous terre si t'йtais pas intervenu. Passe а la base, le Devoir trouvera un moyen de te remercier.</text>
+	</string>
+	<string id="dolg_alife_defence_actor_help_3">
+		<text>Sans toi, on y passait tous ! Une rйcompense bien mйritйe t'attendra а notre base.</text>
+	</string>
+	<string id="dolg_alife_defence_end_defence_1">
+		<text>On les a repoussйs ! Bien jouй, tout le monde !</text>
+	</string>
+	<string id="dolg_alife_defence_end_defence_2">
+		<text>On a rйussi а garder nos positions !</text>
+	</string>
+	<string id="dolg_alife_defence_end_defence_3">
+		<text>Vous йtiez pas а la hauteur, bande de minables !</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_stalker_1">
+		<text>Hй toi ! Aide le Devoir а йliminer ces sales stalkers !</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_bandit_1">
+		<text>Aide-nous ! Les bandits sont tes ennemis aussi !</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_csky_1">
+		<text>Viens nous filer un coup de main contre ces binoclards du Marais !</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_freedom_1">
+		<text>Aide-nous а massacrer ces anarchistes de la Libertй !</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_military_1">
+		<text>Les militaires nous allument ! Viens nous aider ou on va tous y passer !</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_mutant_1">
+		<text>Hй stalker ! Viens nous aider contre ces sales bestioles de la Zone !</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_zombied_1">
+		<text>Les zombies sont en train de nous bouffer, viens nous aider !</text>
+	</string>
+	<string id="dolg_alife_defence_wait_help_1">
+		<text>Oщ vous кtes ? On a besoin d'aide !</text>
+	</string>
+	<string id="dolg_alife_defence_wait_help_2">
+		<text>Mercenaire, t'es oщ ?</text>
+	</string>
+	<string id="dolg_alife_defence_wait_help_3">
+		<text>On pourra pas attendre indйfiniment ! Il nous faut de l'aide, et tout de suite !</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_1">
+		<text>... Qu'est-ce qui se passe ? Au rapport !...</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_2">
+		<text>... Ici la base ! Rйpondez !...</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_3">
+		<text>... Rйpondez ! Qu'est-ce que vous faites ?...</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_4">
+		<text>... Allф ? Vous avez besoin d'aide ?...</text>
+	</string>
+	<string id="dolg_alife_counter_attack_counter_attack_begin_1">
+		<text>Bon, impossible de contacter notre unitй. Faut qu'on comprenne ce qui se passe !</text>
+	</string>
+	<string id="dolg_alife_counter_attack_counter_attack_begin_2">
+		<text>C'est peut-кtre un simple problиme technique, mais j'ai un mauvais pressentiment. Il faut vйrifier зa !</text>
+	</string>
+	<string id="dolg_alife_counter_attack_counter_attack_begin_3">
+		<text>Ok, qu'une unitй parte sur-le-champ ! Nos gars ne rйpondent plus !</text>
+	</string>
+	<string id="dolg_alife_counter_attack_reply_1">
+		<text>Qu'est-ce qui s'est passй ici ? On va aller voir !</text>
+	</string>
+	<string id="dolg_alife_counter_attack_reply_2">
+		<text>Soldats ! Debout ! Et au pas de course !</text>
+	</string>
+	<string id="dolg_alife_counter_attack_reply_3">
+		<text>Ouais, il a pu se passer n'importe quoi... On y va !</text>
+	</string>
+	<string id="dolg_alife_attack_actor_in_battle_1">
+		<text>Devoir, а l'attaque !</text>
+	</string>
+	<string id="dolg_alife_attack_actor_in_battle_2">
+		<text>Voilа tout ce que je te dois, avec les intйrкts !</text>
+	</string>
+	<string id="dolg_alife_attack_actor_in_battle_3">
+		<text>Abattez-les !</text>
+	</string>
+	<string id="dolg_alife_attack_attack_begin_1">
+		<text>Attention ! Зa va barder !</text>
+	</string>
+	<string id="dolg_alife_attack_attack_begin_2">
+		<text>Montrez-leur ce qu'on a dans le ventre ! Allez !</text>
+	</string>
+	<string id="dolg_alife_attack_attack_begin_3">
+		<text>Vйrifiez vos armes et suivez votre chef !</text>
+	</string>
+	<string id="dolg_alife_attack_attack_ready_1">
+		<text>Dispersez-vous !</text>
+	</string>
+	<string id="dolg_alife_attack_attack_ready_2">
+		<text>Attention ! Tout le monde en position !</text>
+	</string>
+	<string id="dolg_alife_attack_attack_ready_3">
+		<text>Dйployez-vous et tenez-vous prкts !</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_1">
+		<text>Зa finira donc jamais ?</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_2">
+		<text>Ouaip, rien ne remplace l'appel du Devoir, hй hй !</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_3">
+		<text>L'ennemi est partout... Зa n'arrкte pas... Encore et encore...</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_4">
+		<text>Ouais, je fais зa pour le bien de tous... pour la planиte...</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_5">
+		<text>Laissez-moi au moins le temps de mettre mes bottes !</text>
+	</string>
+	<string id="dolg_alife_attack_end_fight_1">
+		<text>Le secteur est sous contrфle !</text>
+	</string>
+	<string id="dolg_alife_attack_end_fight_2">
+		<text>On les a exterminйs !</text>
+	</string>
+	<string id="dolg_alife_attack_end_fight_3">
+		<text>On les a massacrйs ! Hourra !</text>
+	</string>
+	<string id="dolg_alife_attack_found_enemy_1">
+		<text>Ennemi en vue ! Toute aide sera acceptйe avec joie !</text>
+	</string>
+	<string id="dolg_alife_attack_found_enemy_2">
+		<text>Ennemi en visuel ! On passe а l'attaque !</text>
+	</string>
+	<string id="dolg_alife_attack_found_enemy_3">
+		<text>Contact visuel avec l'ennemi ! Prйparez-vous а l'attaque !</text>
+	</string>
+	<string id="dolg_alife_attack_prepare_attack_1">
+		<text>Attendez... N'ouvrez le feu que sur mon ordre !</text>
+	</string>
+	<string id="dolg_alife_attack_prepare_attack_2">
+		<text>Tirez avant mon signal et je vous fais empaler !</text>
+	</string>
+	<string id="dolg_alife_attack_prepare_attack_3">
+		<text>Restez vigilants ! Attaquez а mon signal !</text>
+	</string>
+	<string id="dolg_alife_attack_see_counter_1">
+		<text>Contact visuel ! Tout le monde se prйpare !</text>
+	</string>
+	<string id="dolg_alife_attack_see_counter_2">
+		<text>J'ai l'ennemi en visuel !</text>
+	</string>
+	<string id="dolg_alife_attack_see_counter_3">
+		<text>Ennemi repйrй !</text>
+	</string>
+	<string id="dolg_alife_attack_smart_captured_1">
+		<text>Unitй au rapport : ennemi repoussй !</text>
+	</string>
+	<string id="dolg_alife_attack_smart_captured_2">
+		<text>Bien reзu ! Position sous contrфle !</text>
+	</string>
+	<string id="dolg_alife_attack_smart_captured_3">
+		<text>Position capturйe, on attend les instructions suivantes !</text>
+	</string>
+	<string id="dolg_alife_attack_start_fight_1">
+		<text>Feu а volontй !</text>
+	</string>
+	<string id="dolg_alife_attack_start_fight_2">
+		<text>Ouvrez le feu !</text>
+	</string>
+	<string id="dolg_alife_attack_start_fight_3">
+		<text>Feu !</text>
+	</string>
+	<string id="dolg_alife_attack_wait_again_1">
+		<text>On attend le signal, mercenaire ! Terminй.</text>
+	</string>
+	<string id="dolg_alife_attack_wait_again_2">
+		<text>Hй, tout va bien ?</text>
+	</string>
+	<string id="dolg_alife_attack_wait_again_3">
+		<text>Ohй, y a quelqu'un ? On a des gars qui attendent ici !</text>
+	</string>
+	<string id="dolg_alife_attack_wait_counter_1">
+		<text>Vйrifiez vos rйserves de munitions ! On attend des invitйs !</text>
+	</string>
+	<string id="dolg_alife_attack_wait_counter_2">
+		<text>Restez sur vos gardes ! Ils pourraient contre-attaquer !</text>
+	</string>
+	<string id="dolg_alife_attack_wait_counter_3">
+		<text>Gardez l'oeil ouvert ! L'ennemi peut passer а l'attaque а tout moment !</text>
+	</string>
+	<string id="dolg_alife_attack_wait_signal_1">
+		<text>Unitй prкte а l'action ! On attend plus que le signal !</text>
+	</string>
+	<string id="dolg_alife_attack_wait_signal_2">
+		<text>Combattants en position ! Il suffit de nous dire quand passer а l'attaque !</text>
+	</string>
+	<string id="dolg_alife_attack_wait_signal_3">
+		<text>Tout est prкt ! On y va au signal !</text>
+	</string>
+	<string id="dolg_alife_attack_we_spotted_1">
+		<text>Attention ! Ils savent qu'on est lа !</text>
+	</string>
+	<string id="dolg_alife_attack_we_spotted_2">
+		<text>L'ennemi nous a repйrйs !</text>
+	</string>
+	<string id="dolg_alife_attack_we_spotted_3">
+		<text>On s'est fait repйrer !</text>
+	</string>
+	<string id="csky_alife_defence_actor_come_1">
+		<text>Ouais, on va leur donner une bonne leзon !</text>
+	</string>
+	<string id="csky_alife_defence_actor_come_2">
+		<text>C'est sympa d'кtre venu ! On va pouvoir les accueillir dignement !</text>
+	</string>
+	<string id="csky_alife_defence_actor_come_3">
+		<text>Merci d'кtre venu nous aider ! On va leur montrer qui fait la loi ici !</text>
+	</string>
+	<string id="csky_alife_defence_actor_help_1">
+		<text>Merci pour le coup de main ! Passe а la base un de ces quatre, on trouvera un moyen de te remercier !</text>
+	</string>
+	<string id="csky_alife_defence_actor_help_2">
+		<text>C'est sympa de nous avoir aidйs ! On te revaudra зa la prochaine fois que tu passeras par la base !</text>
+	</string>
+	<string id="csky_alife_defence_actor_help_3">
+		<text>Merci, mercenaire ! Tu as vraiment changй la donne ! Ta rйcompense t'attend а la base !</text>
+	</string>
+	<string id="csky_alife_defence_end_defence_1">
+		<text>On a eu du mal а les repousser !</text>
+	</string>
+	<string id="csky_alife_defence_end_defence_2">
+		<text>Ah, on a vraiment assurй, sur ce coup-lа !</text>
+	</string>
+	<string id="csky_alife_defence_end_defence_3">
+		<text>Et une autre attaque de repoussйe !</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_bandit_1">
+		<text>Aide-nous а combattre ces bandits !</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_dolg_1">
+		<text>Aide-nous а nous dйpкtrer de ces gars du Devoir !</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_freedom_1">
+		<text>Hй, les gars de la Libertй nous canardent, fais quelque chose !</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_military_1">
+		<text>Aide-nous а nous dйbarrasser de ces militaires !</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_mutant_1">
+		<text>Faut que tu nous aides ! Y a des mutants partout !</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_stalker_1">
+		<text>Hй ! File-nous un coup de main contre ces stalkers !</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_zombied_1">
+		<text>Viens nous aider ! Ces zombies veulent nous faire la peau !</text>
+	</string>
+	<string id="csky_alife_defence_wait_help_1">
+		<text>Vite ! On se fait massacrer !</text>
+	</string>
+	<string id="csky_alife_defence_wait_help_2">
+		<text>On tiendra pas beaucoup plus longtemps ! On a besoin d'aide !</text>
+	</string>
+	<string id="csky_alife_defence_wait_help_3">
+		<text>C'est pas vrai ! Mais vous кtes oщ ?</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_1">
+		<text>... Allф... Ici la base... Rйpondez !...</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_2">
+		<text>... Qu'est-ce qui se passe lа-bas ?...</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_3">
+		<text>... Vous allez rйpondre, oui ? А vous !...</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_4">
+		<text>... Merde !...</text>
+	</string>
+	<string id="csky_alife_counter_attack_counter_attack_begin_1">
+		<text>Faut qu'on sache vite fait ce qui est arrivй а nos gars... Ils ne rйpondent plus !</text>
+	</string>
+	<string id="csky_alife_counter_attack_counter_attack_begin_2">
+		<text>On a perdu le contact avec nos hommes. Faut aller voir ce qui s'est passй !</text>
+	</string>
+	<string id="csky_alife_counter_attack_counter_attack_begin_3">
+		<text>Nos gars rйpondent plus ! Il a dы leur arrivй quelque chose !</text>
+	</string>
+	<string id="csky_alife_counter_attack_reply_1">
+		<text>Зa marche ! On s'en charge !</text>
+	</string>
+	<string id="csky_alife_counter_attack_reply_2">
+		<text>On s'en occupe !</text>
+	</string>
+	<string id="csky_alife_counter_attack_reply_3">
+		<text>Sur qui ils ont bien pu tomber ? On y va tout de suite !</text>
+	</string>
+	<string id="csky_alife_attack_actor_in_battle_1">
+		<text>Pour la cause !</text>
+	</string>
+	<string id="csky_alife_attack_actor_in_battle_2">
+		<text>Je vais te truffer de plomb !</text>
+	</string>
+	<string id="csky_alife_attack_actor_in_battle_3">
+		<text>Mange зa, enfoirй !</text>
+	</string>
+	<string id="csky_alife_attack_attack_begin_1">
+		<text>Allez, les gars ! En avant toute !</text>
+	</string>
+	<string id="csky_alife_attack_attack_begin_2">
+		<text>L'ennemi ne dort jamais et nous non plus ! Tenez-vous prкts !</text>
+	</string>
+	<string id="csky_alife_attack_attack_begin_3">
+		<text>Tous avec moi !</text>
+	</string>
+	<string id="csky_alife_attack_attack_ready_1">
+		<text>Allez, on se dйploie ! Restez sur vos gardes !</text>
+	</string>
+	<string id="csky_alife_attack_attack_ready_2">
+		<text>Dйployez-vous !</text>
+	</string>
+	<string id="csky_alife_attack_attack_ready_3">
+		<text>En position de combat !</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_1">
+		<text>Et c'est reparti...</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_2">
+		<text>Зa s'arrкtera donc jamais ?</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_3">
+		<text>Pff, je commence а en avoir ma claque !</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_4">
+		<text>Jamais le temps de bouffer tranquillement ici !</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_5">
+		<text>Oh, j'en ai vraiment plus qu'assez !</text>
+	</string>
+	<string id="csky_alife_attack_end_fight_1">
+		<text>On les a vraiment massacrйs...</text>
+	</string>
+	<string id="csky_alife_attack_end_fight_2">
+		<text>On les a rйduits en bouillie !</text>
+	</string>
+	<string id="csky_alife_attack_end_fight_3">
+		<text>C'йtait une belle bagarre, pas vrai ?</text>
+	</string>
+	<string id="csky_alife_attack_found_enemy_1">
+		<text>Ennemi repйrй. Tenez-vous prкts а attaquer !</text>
+	</string>
+	<string id="csky_alife_attack_found_enemy_2">
+		<text>Ennemi repйrй... Soyez prкts а passer а l'action !</text>
+	</string>
+	<string id="csky_alife_attack_found_enemy_3">
+		<text>On se prйpare au combat. Viens avec nous si tu veux !</text>
+	</string>
+	<string id="csky_alife_attack_prepare_attack_1">
+		<text>Attaquez а mon signal, ok ?</text>
+	</string>
+	<string id="csky_alife_attack_prepare_attack_2">
+		<text>N'attaquez pas sans mon ordre !</text>
+	</string>
+	<string id="csky_alife_attack_prepare_attack_3">
+		<text>Ne tirez pas avant mon signal !</text>
+	</string>
+	<string id="csky_alife_attack_see_counter_1">
+		<text>Les voilа ! Prйparez-vous а passer а l'action !</text>
+	</string>
+	<string id="csky_alife_attack_see_counter_2">
+		<text>Ennemi repйrй !</text>
+	</string>
+	<string id="csky_alife_attack_see_counter_3">
+		<text>Je vois la cible !</text>
+	</string>
+	<string id="csky_alife_attack_smart_captured_1">
+		<text>Base, la cible est sous notre contrфle !</text>
+	</string>
+	<string id="csky_alife_attack_smart_captured_2">
+		<text>Position capturйe. Terminй !</text>
+	</string>
+	<string id="csky_alife_attack_smart_captured_3">
+		<text>Base, nous avons dйlogй l'ennemi.</text>
+	</string>
+	<string id="csky_alife_attack_start_fight_1">
+		<text>А l'assaut !</text>
+	</string>
+	<string id="csky_alife_attack_start_fight_2">
+		<text>Feu а volontй ! А l'attaque !</text>
+	</string>
+	<string id="csky_alife_attack_start_fight_3">
+		<text>Tirez ! Tuez-les tous !</text>
+	</string>
+	<string id="csky_alife_attack_wait_again_1">
+		<text>Ohй, rйveille-toi ! On n'attend plus que toi !</text>
+	</string>
+	<string id="csky_alife_attack_wait_again_2">
+		<text>Allez, c'est pas drфle ! Bouge-toi !</text>
+	</string>
+	<string id="csky_alife_attack_wait_again_3">
+		<text>Hй, t'es mort ou quoi ?</text>
+	</string>
+	<string id="csky_alife_attack_wait_counter_1">
+		<text>C'est pas l'heure de dormir. On va avoir de la visite, on dirait !</text>
+	</string>
+	<string id="csky_alife_attack_wait_counter_2">
+		<text>Soyez attentifs, l'ennemi est peut-кtre dйjа en position !</text>
+	</string>
+	<string id="csky_alife_attack_wait_counter_3">
+		<text>Restez sur vos gardes ! On s'attend а une attaque !</text>
+	</string>
+	<string id="csky_alife_attack_wait_signal_1">
+		<text>Mercenaire, on est prкt а l'action а ton signal !</text>
+	</string>
+	<string id="csky_alife_attack_wait_signal_2">
+		<text>Mercenaire, on attaque а ton signal !</text>
+	</string>
+	<string id="csky_alife_attack_wait_signal_3">
+		<text>Mercenaire, on attend ton signal !</text>
+	</string>
+	<string id="csky_alife_attack_we_spotted_1">
+		<text>Merde ! On s'est fait repйrer !</text>
+	</string>
+	<string id="csky_alife_attack_we_spotted_2">
+		<text>Il va falloir qu'on sorte se battre а dйcouvert…</text>
+	</string>
+	<string id="csky_alife_attack_we_spotted_3">
+		<text>Ils nous ont vus ! Je rйpиte : ils nous ont repйrйs !</text>
+	</string>
+	<string id="bandit_alife_defence_actor_come_1">
+		<text>On, euh... T'es arrivй au bon moment, tu sais !</text>
+	</string>
+	<string id="bandit_alife_defence_actor_come_2">
+		<text>Bon alors, on va botter le cul de ces enfoirйs, ou pas ?</text>
+	</string>
+	<string id="bandit_alife_defence_actor_come_3">
+		<text>Ouh ! Зa va кtre coton pour eux maintenant !</text>
+	</string>
+	<string id="bandit_alife_defence_actor_help_1">
+		<text>Hй bй, зa faisait un bail que зa avait pas bardй comme зa... Passe nous voir а l'occasion, on a une petite rйcompense pour toi.</text>
+	</string>
+	<string id="bandit_alife_defence_actor_help_2">
+		<text>Merci ! J'ai bien cru qu'on allait tous y passer ! Passe а la base un de ces quatre, qu'on puisse te remercier !</text>
+	</string>
+	<string id="bandit_alife_defence_actor_help_3">
+		<text>J'йtais sыr que j'allais crever, mais non ! Passe а la base, qu'on puisse te rйcompenser !</text>
+	</string>
+	<string id="bandit_alife_defence_end_defence_1">
+		<text>Il est venu, il a vu et il s'est fait botter le cul ! Ha ha !</text>
+	</string>
+	<string id="bandit_alife_defence_end_defence_2">
+		<text>On leur a mis une sacrйe branlйe, а ces enfoirйs !</text>
+	</string>
+	<string id="bandit_alife_defence_end_defence_3">
+		<text>Ca, c'йtait l'entrйe. Qu'ils y reviennent, et on leur servira le plat de rйsistance et le dessert en mкme temps !</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_csky_1">
+		<text>Hй mec, aide-nous а exploser ces allumйs de Firmament !</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_dolg_1">
+		<text>Faut que tu nous aides ! Ces coincйs du cul nous emmerdent sйvиre !</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_freedom_1">
+		<text>Ces salauds de rastas anarchistes sont en train de nous plomber !</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_military_1">
+		<text>File-nous un coup de main ! Faut qu'on se fasse ces troufions !</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_mutant_1">
+		<text>Hй, mon pote ! On a besoin de toi pour mettre une branlйe а ces mochetйs !</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_stalker_1">
+		<text>Aide-nous, mec ! Des bвtards veulent nous faire la peau !</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_zombied_1">
+		<text>Viens vite ! C'est un remake de la nuit des mort-vivants ici !</text>
+	</string>
+	<string id="bandit_alife_defence_wait_help_1">
+		<text>On se fait mйchamment allumer ! Tu vas nous aider, oui ou merde ?</text>
+	</string>
+	<string id="bandit_alife_defence_wait_help_2">
+		<text>On va tous y passer ! Ramиne-toi !</text>
+	</string>
+	<string id="bandit_alife_defence_wait_help_3">
+		<text>Mais t'es oщ, merde ? On se fait dйchirer ici !</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_1">
+		<text>... Hй, les gars, йcoutez !...</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_2">
+		<text>... Vous кtes quand mкme pas tous morts, si ?</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_3">
+		<text>... Allez, rйpondez quoi !...</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_4">
+		<text>... Hй, on aimerait savoir ce qui se passe !...</text>
+	</string>
+	<string id="bandit_alife_counter_attack_counter_attack_begin_1">
+		<text>Nos gars se sont perdus, on dirait. Faut aller voir ce qui se passe !</text>
+	</string>
+	<string id="bandit_alife_counter_attack_counter_attack_begin_2">
+		<text>Nos gars ont des emmerdes ! Bougez-vous le cul et allez voir зa !</text>
+	</string>
+	<string id="bandit_alife_counter_attack_counter_attack_begin_3">
+		<text>Nos hommes rйpondent plus, faut aller voir ce qu'ils foutent !</text>
+	</string>
+	<string id="bandit_alife_counter_attack_reply_1">
+		<text>Зa marche ! On s'en occupe tout de suite !</text>
+	</string>
+	<string id="bandit_alife_counter_attack_reply_2">
+		<text>Pas de souci, boss, on s'y met !</text>
+	</string>
+	<string id="bandit_alife_counter_attack_reply_3">
+		<text>Ouais, ouais, on y va !</text>
+	</string>
+	<string id="bandit_alife_attack_actor_in_battle_1">
+		<text>Hй, attrape зa !</text>
+	</string>
+	<string id="bandit_alife_attack_actor_in_battle_2">
+		<text>Et au suivant !</text>
+	</string>
+	<string id="bandit_alife_attack_actor_in_battle_3">
+		<text>Butez tous ces tocards, les gars !</text>
+	</string>
+	<string id="bandit_alife_attack_attack_begin_1">
+		<text>Bougez-vous le cul et suivez-moi !</text>
+	</string>
+	<string id="bandit_alife_attack_attack_begin_2">
+		<text>Allez, debout ! On y va !</text>
+	</string>
+	<string id="bandit_alife_attack_attack_begin_3">
+		<text>Faut s'y mettre, alors, en avant !</text>
+	</string>
+	<string id="bandit_alife_attack_attack_ready_1">
+		<text>Allez, faites pas vos gonzesses ! On y va !</text>
+	</string>
+	<string id="bandit_alife_attack_attack_ready_2">
+		<text>Il est temps de buter ces bвtards ! On se disperse, allez !</text>
+	</string>
+	<string id="bandit_alife_attack_attack_ready_3">
+		<text>Arrкtez de faire vos mijaurйes ! On va tous se les faire !</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_1">
+		<text>Ils commencent а me saouler !</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_2">
+		<text>Quoi, encore ? Juste au moment oщ j'allais bouffer !</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_3">
+		<text>Oh merde, qu'est-ce qui se passe encore ?</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_4">
+		<text>Je vais tous les envoyer en enfer !</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_5">
+		<text>C'est juste un exercice, pas vrai ?</text>
+	</string>
+	<string id="bandit_alife_attack_end_fight_1">
+		<text>On les a eus, ces enfoirйs, ouais !</text>
+	</string>
+	<string id="bandit_alife_attack_end_fight_2">
+		<text>Ces bвtards sont tous morts ! Faites-leur les poches !</text>
+	</string>
+	<string id="bandit_alife_attack_end_fight_3">
+		<text>Зa fait un sacrй tas de bidoche, pas vrai ?</text>
+	</string>
+	<string id="bandit_alife_attack_found_enemy_1">
+		<text>Ben зa alors, ces lopettes se sont pointйes ! Qui veut se prendre une raclйe ?</text>
+	</string>
+	<string id="bandit_alife_attack_found_enemy_2">
+		<text>Hй les mecs, on a des tocards а truffer de plombs ! Vous voulez en кtre ?</text>
+	</string>
+	<string id="bandit_alife_attack_found_enemy_3">
+		<text>Hй, venez avec nous, on va se faire ces enflures !</text>
+	</string>
+	<string id="bandit_alife_attack_prepare_attack_1">
+		<text>Vous sautez quand je dis "sautez", vous tirez quand je dis "tirez", pigй ?</text>
+	</string>
+	<string id="bandit_alife_attack_prepare_attack_2">
+		<text>On flingue ces enfoirйs quand je le dis ! C'est compris ?</text>
+	</string>
+	<string id="bandit_alife_attack_prepare_attack_3">
+		<text>On ne tire pas avant mon ordre, pigй ?</text>
+	</string>
+	<string id="bandit_alife_attack_see_counter_1">
+		<text>Oh ! On a encore un petit minet а plomber par ici !</text>
+	</string>
+	<string id="bandit_alife_attack_see_counter_2">
+		<text>Rйveillez-vous, les mecs ! On a des invitйs !</text>
+	</string>
+	<string id="bandit_alife_attack_see_counter_3">
+		<text>Ben, зa alors, c'est fou ! J'y crois pas !</text>
+	</string>
+	<string id="bandit_alife_attack_smart_captured_1">
+		<text>Ces enfoirйs ont leur compte ! L'endroit est а nous !</text>
+	</string>
+	<string id="bandit_alife_attack_smart_captured_2">
+		<text>On les a laminйs, ces enfoirйs ! Le secteur est а nous !</text>
+	</string>
+	<string id="bandit_alife_attack_smart_captured_3">
+		<text>C'est fini ! Y a plus que des cadavres ici !</text>
+	</string>
+	<string id="bandit_alife_attack_start_fight_1">
+		<text>Allez, faut leur en mettre plein la gueule !</text>
+	</string>
+	<string id="bandit_alife_attack_start_fight_2">
+		<text>Bougez-vous le cul ! On y va, allez !</text>
+	</string>
+	<string id="bandit_alife_attack_start_fight_3">
+		<text>Bouffe зa, connard !</text>
+	</string>
+	<string id="bandit_alife_attack_wait_again_1">
+		<text>Traоne pas, allez ! Tout se passe au poil, mais on fait que t'attendre !</text>
+	</string>
+	<string id="bandit_alife_attack_wait_again_2">
+		<text>Qu'est-ce qu'on fout ici ? C'est l'heure d'y aller, bordel !</text>
+	</string>
+	<string id="bandit_alife_attack_wait_again_3">
+		<text>Hй, qu'est-ce que tu fous ? On va pas se battre ?</text>
+	</string>
+	<string id="bandit_alife_attack_wait_counter_1">
+		<text>Serrez les fesses et gardez l'oeil ouvert !</text>
+	</string>
+	<string id="bandit_alife_attack_wait_counter_2">
+		<text>Sortez pas le champ' tout de suite ! Ils peuvent revenir !</text>
+	</string>
+	<string id="bandit_alife_attack_wait_counter_3">
+		<text>Arrкte de sourire comme un con ! Reste sur tes gardes !</text>
+	</string>
+	<string id="bandit_alife_attack_wait_signal_1">
+		<text>C'est tout bon. J'attends le signal !</text>
+	</string>
+	<string id="bandit_alife_attack_wait_signal_2">
+		<text>On est en position. Y a plus qu'а dire quand faut y aller !</text>
+	</string>
+	<string id="bandit_alife_attack_wait_signal_3">
+		<text>On y est. Et on y va au signal !</text>
+	</string>
+	<string id="bandit_alife_attack_we_spotted_1">
+		<text>Merde ! On s'est fait avoir comme des bleus !</text>
+	</string>
+	<string id="bandit_alife_attack_we_spotted_2">
+		<text>On est grillйs ! Merde !</text>
+	</string>
+	<string id="bandit_alife_attack_we_spotted_3">
+		<text>Fait chier, on s'est fait repйrer !</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_comander_to_squad_1">
+		<text>Du calme, tenez vos positions !</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_comander_to_squad_2">
+		<text>Surtout pas de panique !</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_1">
+		<text>Merde ! C'est quoi, зa ?</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_2">
+		<text>Vous avez entendu зa ?</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_3">
+		<text>C'est quoi, ce bruit ?</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_1">
+		<text>Merde ! Une sangsue !</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_2">
+		<text>Enfoirй de mutant...</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_3">
+		<text>Saloperie...</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_4">
+		<text>Oh merde ! C'est quoi, ce truc ?</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_5">
+		<text>Gardez les yeux grand ouverts !</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_6">
+		<text>Soyez attentifs, les gars...</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_fire_1">
+		<text>Tu vas crever, sangsue de merde !</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_fire_2">
+		<text>Зa t'apprendra !</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_squad_fear_1">
+		<text>Oh, c'est pas vrai !</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_squad_fear_2">
+		<text>Croisez les doigts !</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_squad_fear_3">
+		<text>А croire que j'entends des voix...</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_comander_to_squad_1">
+		<text>Maintenez vos positions !</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_comander_to_squad_2">
+		<text>Surtout, restez calme !</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_1">
+		<text>Merde ! C'йtait quoi, зa ?</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_2">
+		<text>Vous avez entendu зa ?</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_3">
+		<text>C'йtait quoi ?</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_1">
+		<text>Saletй de sangsue !</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_2">
+		<text>Enfoirй de mutant...</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_3">
+		<text>Saloperie !</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_4">
+		<text>Oh merde, c'est quoi, ce truc ?</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_5">
+		<text>Gardez l'oeil ouvert !</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_6">
+		<text>Restez sur vos gardes, les gars...</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_fire_1">
+		<text>Crиve, saloperie !</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_fire_2">
+		<text>Зa y est !</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_squad_fear_1">
+		<text>Encore ?!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_squad_fear_2">
+		<text>J'espиre qu'on va y arriver !</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_squad_fear_3">
+		<text>C'йtait peut-кtre rien...</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_give_orders_2">
+		<text>Il faut deux d'entre vous а la valve et deux autres avec moi. Mercenaire, monte sur le toit du hangar et couvre les deux groupes !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad1_ready">
+		<text>On a atteint la valve ! On attend vos ordres !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad2_ready">
+		<text>Valve en position. Activez !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_building_wave">
+		<text>Attention, zombies а gauche du bвtiment !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_truck_wave">
+		<text>Attention, zombies prиs du camion !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_alarm_roof">
+		<text>Ils sont sur le toit !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_alarm_hangar">
+		<text>Des zombies dans le hangar !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_repealed_1">
+		<text>On s'en sort pas mal ! Continuez comme зa !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_repealed_2">
+		<text>Continuez !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_repealed_3">
+		<text>Et un de moins !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_freezer_fixed">
+		<text>Parfait ! La station de refroidissement tourne а nouveau. Le champ psi est stable. Il est temps de mettre les voiles !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_psy_reduced">
+		<text>Vous avez rйussi ! Mes capteurs indiquent que les йmissions psi baissent. Cela signifie que la station de refroidissement est stable. J'espиre que la situation а Yantar va s'amйliorer !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_psy_reduced_reply">
+		<text>Bonne nouvelle, professeur ! On est en route vers le bunker !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_go_red_forest">
+		<text>Merci, mercenaire ! Au fait, je reзois un bon signal de Strelok. Il ne semble pas loin de vous et se dirige droit vers la Forкt rouge.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad_assemble">
+		<text>On y va !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_go_to_roof">
+		<text>Mercenaire, tu dois aller sur le toit. Suis le stalker !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_not_go_to_roof">
+		<text>Arrкte de perdre du temps ! Suis-moi !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_actor_on_roof">
+		<text>Bien, t'es en position ! Maintenant, reste lа !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_prikritie">
+		<text>Je vais te couvrir !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_ready">
+		<text>On est en position ! R.A.S. sur le toit ! On s'occupe de la valve !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave1_go">
+		<text>Merde, des zombies ! Ils arrivent de tous les cфtйs !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_naval">
+		<text>Mais combien ils sont, au juste ? Ils viennent de partout ! Aaargh !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_nores_stalker3">
+		<text>Aaaah ! Ils sont trop nombreux ! А l'aide !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_nores_stalker4">
+		<text>On a besoin d'aide ! Que quelqu'un nous couvre !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_nores_stalker5">
+		<text>Aaah ! Ils sont partout ! On va y passer !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_clear_roof">
+		<text>Des zombies essayent d'entrer dans le hangar ! Ils sont trop nombreux !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_naval_roof2">
+		<text>On se fait massacrer !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_naval_roof1">
+		<text>Ouf, on les a repoussйs... On devrait кtre plus tranquilles maintenant...</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_group_in_angar">
+		<text>On est dans le hangar ! On place la valve !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_1">
+		<text>Prenez зa, zombies de mes deux !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_2">
+		<text>Tiens ! T'aime зa, hein ?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_3">
+		<text>T'en veux encore ?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_4">
+		<text>Je vais te truffer de plomb !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_5">
+		<text>Je les retiens !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_angar_begin">
+		<text>Merde ! Ils viennent droit sur nous !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_angar_1">
+		<text>C'est pas vrai ! Зa va jamais finir ?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_angar_2">
+		<text>Approchez, bande d'enfoirйs !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_help_base_sci">
+		<text>Le bunker des scientifiques est attaquй ! Si vous nous entendez, venez nous aider !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levwa_perimetr_before_attack">
+		<text>Merci pour ton aide, mercenaire ! Mets-toi en position et feu а volontй !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levwa_perimetr_after_attack">
+		<text>Merci pour le coup de main ! Les zombies attaquent de plus en plus souvent ces derniers temps. Si tu veux parler aux scientifiques, ils sont dans le bunker !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_hello_actor">
+		<text>Comment va, mercenaire ? Pendant l'opйration, tu suis mes instructions а la lettre, ok ?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_right_1">
+		<text>Ennemi а droite !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_left_1">
+		<text>Un autre а gauche !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_right_2">
+		<text>Ennemi а droite neutralisй !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_left_2">
+		<text>On a eu celui de gauche !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_take_position">
+		<text>En position et surveillez vos arriиres ! Vous deux, explosez ces enfoirйs !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_clear">
+		<text>C'est dйgagй, en avant !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professor_about_actor">
+		<text>Cher Gaucher. J'ai des nouvelles donnйes. Il semble possible de stabiliser les йmissions psi. Je vous envoie un jeune homme. Veuillez l'attendre. Je vous transmettrai de nouvelles instructions.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professr_reply_actor">
+		<text>Ok, professeur. On va attendre.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professor_about_switcher">
+		<text>Gaucher, d'aprиs mes donnйes, les йmissions psi sont gйnйrйes par un systиme non identifiй qui se trouve sous l'usine. C'est un problиme avec la station de refroidissement qui dйstabilise le champ psi. J'ai envoyй toutes les informations nйcessaires sur votre PDA. Le diagramme indique les deux valves а utiliser pour relancer le dispositif. Prenez position et je vous dirai quand le champ psi sera descendu а un niveau acceptable.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_reply_switcher">
+		<text>On n'attend plus que votre signal pour commencer, professeur !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professor_start_operation">
+		<text>Gaucher, le champ d'йmission psi est а son plus bas niveau. Vous pouvez y aller ! Tous nos voeux vous accompagnent. Bonne chance !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad_diary">
+		<text>Aaaaa, ma tкte... J'ai mal au crвne, j'arrive plus а penser ! ... Ivan... s'est mis а nous attaquer... Aaaa... les voix dans ma tкte, saletй d'йmission psi...... Au moins, on a rйussi а choper les documents... On a plus qu'а les rapporter а Sakharov... Merde, les clйbards sont а nos trousses ... Je veux pas m... noooooooon... oh nooon !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_give_orders_1">
+		<text>On y est presque ! Je rйpиte : nous devons placer les deux valves et relancer la station de refroidissement.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_scientist_start_frase_1">
+		<text>J'arrive !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_scientist_start_frase_2">
+		<text>Une minute !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_check_actor_position_1">
+		<text>Mercenaire, reprends position ! On tombe comme des mouches, ici !</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_check_actor_position_2">
+		<text>On a perdu l'unitй ! Le dispositif est devenu incontrфlable ! Йmission imminente ! Aaaaarghhhh !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_talk_1">
+		<text>Ravi de te revoir, mercenaire ! Nous avons rйussi l'impossible : nous avons atteint le centre mкme de la Zone, la centrale, en grande partie grвce а toi !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_talk_2">
+		<text>Petrenko, scanne la frйquence du PDA de Strelok !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_petrenko_talk_1">
+		<text>Commandant, Strelok est tout prиs d'ici.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_scout_talk_1">
+		<text>Lebedev, ici l'unitй de reconnaissance. On a Strelok en visuel !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_objective_talk_1">
+		<text>Grimpe sur ce pipeline et intercepte Strelok, mercenaire ! On te couvre d'en bas !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_objective_talk_2">
+		<text>Tiens, c'est un prototype de fusil йlectromagnйtique. Il t'aidera а neutraliser la protection antipsi de Strelok. Sans elle, il ne tiendra pas longtemps. Mкme nos propres combinaisons ont du mal а rйsister. Alors approche-toi de Strelok et dйtruis sa protection !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_1">
+		<text>Tire sur Strelok avec le fusil gauss pour rйduire sa protection antipsi !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_2">
+		<text>Ne perds pas de temps ! Tire-lui dessus !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_3">
+		<text>Hй, ta cible, c'est Strelok ! Ne lui fais pas de cadeaux !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_4">
+		<text>Allez, bouge-toi un peu ! Retrouve Strelok ou il va nous йchapper !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_5">
+		<text>Strelok est en train de s'enfuir ! Fais quelque chose !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_6">
+		<text>La protection antipsi de Strelok est presque а zйro ! Encore un peu et elle sera complиtement inefficace !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_1">
+		<text>Attention ! Dйtournez l'attention des Monolithes !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_2">
+		<text>Allez, les gars ! Couvrez-moi !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_3">
+		<text>Йclatez les crвnes de ces enfoirйs de zombies !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_4">
+		<text>Enfoirйs ! Descendez-les tous !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_5">
+		<text>Les laissez pas nous contourner !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_6">
+		<text>Ennemi sur le flanc gauche !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_7">
+		<text>А toutes les unitйs, feu а volontй !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_8">
+		<text>Prenez зa, enfoirйs !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_9">
+		<text>Malbrough s'en va-t-en guerre, mironton, mironton, mirontaine !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_10">
+		<text>Petrovich, couvre nos arriиres, tu veux ?</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_11">
+		<text>Allez, soyez des mecs, des vrais ! Tenez bon !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_12">
+		<text>On vit qu'une fois, les gars !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_13">
+		<text>Ils arrivent de la droite ! S'il y a quelqu'un lа-bas, couvrez-nous !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_14">
+		<text>J'ai plus beaucoup de munitions ! On se replie vers les anomalies !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_15">
+		<text>Faut qu'on avance, les gars ! Empкchez-les de lever la tкte !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_16">
+		<text>Merde, je crois que je vais y passer !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_17">
+		<text>Je vous dйteste !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_18">
+		<text>Tu vas morfler !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_19">
+		<text>Cette fois, c'est foutu pour moi, les gars... Adieu !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_20">
+		<text>Butez ces enfoirйs de Monolithes !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_21">
+		<text>Que quelqu'un descende ce sniper !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_22">
+		<text>А gauche, attention !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_23">
+		<text>En avant ! Allez ! Allez !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_24">
+		<text>Je vais essayer de les contourner !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_25">
+		<text>Je suis touchй ! Merde ! Je suis touchй !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_26">
+		<text>Je suis en train de crever !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_27">
+		<text>Moustique est cuit ! Je prends le commandement !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_28">
+		<text>Allez, les gars ! Butez-les tous !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_29">
+		<text>Crevez-les ! А l'attaque !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_30">
+		<text>C'est foutu pour moi, les gars... Je suis dйsolй...</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_31">
+		<text>Y a encore quelqu'un de vivant par ici ? Ne f... Aargh !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_32">
+		<text>Alex, t'es lа ? Rйponds, bordel !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_33">
+		<text>Empкche-les de bouger, Igor !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_34">
+		<text>Fais-lui bouffer une grenade, Paulie !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_35">
+		<text>Lа-haut ! Cet enfoirй est sur le toit !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_36">
+		<text>Mais d'oщ est-ce qu'ils sortent tous ?</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_1">
+		<text>La protection antipsi de Strelok est HS. Il ne devrait plus aller bien loin ! Attendons de voir ce qui va se passer...</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_2">
+		<text>Que disent les capteurs ? Aucune baisse de l'activitй ?</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_3">
+		<text>Bon sang, je ne m'attendais pas а зa ! L'activitй est au plus haut !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_4">
+		<text>Mais la Zone йtait censйe se calmer !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_5">
+		<text>Aaahhh... qu'est-ce qui se passe ?... Ma tкte va exploser !... aaahhh...</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_lost_strelok_1">
+		<text>On a laissй Strelok s'enfuir ! Il est dйjа dans la centrale !</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_lost_strelok_2">
+		<text>Il va y avoir une nouvelle йmission... Tous les niveaux sont au max... Tout le monde а couvert... Aaaahhhh !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_locate_strelok">
+		<text>Dйpкche-toi ! Tu es tout prиs de Strelok !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_bounty_hunters_attack">
+		<text>C'est lui ! Descendez-le !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_defend_tunel_1">
+		<text>Le laissez pas atteindre le tunnel !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_defend_tunel_2">
+		<text>Retenez-le jusqu'а ce que Strelok sorte du tunnel !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_strelok_spich">
+		<text>J'ai fait sauter le tunnel, mercenaire. Tu ne m'arrкteras pas ! J'irai au centre de la Zone, quoi qu'il arrive !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_1">
+		<text>Le signal de Strelok a disparu. On l'a perdu !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_2">
+		<text>Il est parti en direction du Lobotomisateur ! Il n'est plus loin du centre de la Zone. Pour nous, en revanche, ce serait de la folie d'avancer sans le prototype des scientifiques !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_3">
+		<text>Notre seule chance de capturer Strelok est de passer par Limansk. Je connais un tunnel qui y mиne. L'entrйe est juste aprиs le pont.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_4">
+		<text>C'est le seul moyen que je connaisse pour atteindre la ville. Le pont ne peut кtre abaissй que depuis l'autre cфtй, mais c'est le territoire des bandits.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_5">
+		<text>Bon sang... Il doit bien y avoir un moyen de traverser ! Peut-кtre qu'il y a un accиs а l'autre rive... De toute faзon, si quelqu'un peut nous aider а atteindre Limansk, c'est bien le Forestier. On dit que ce vieil homme arrive а trouver des voies sыres а travers des zones qu'il ne connaоt pas. Sa cabane se trouve а l'orйe de la Forкt rouge. Il faut que tu trouves le Forestier, mercenaire.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_forester_greet_1">
+		<text>Salut, petit ! Qu'est-ce qui t'amиne ?</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_hail">
+		<text>Viens vite par ici ! L'unitй de Leshiy est presque lа !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_come">
+		<text>L'unitй de Leshiy approche. Nous devons les couvrir pour qu'ils puissent traverser le pont. Prends position au deuxiиme niveau de la tour et prйpare-toi !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_leshiy_start">
+		<text>... Ici Leshiy. Nous approchons du pont.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_leshiy_reply">
+		<text>Leshiy, ici Lebedev. Nous vous attendons avec impatience !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_clear_path">
+		<text>А tous les combattants ! Dйgagez le chemin pour Leshiy ! Feu а volontй !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_assault_start">
+		<text>Ici Leshiy. On a sйcurisй une position prиs du pont.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_start_lower">
+		<text>On va essayer d'abaisser le pont. Couvrez-nous, commandant !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_go_lever_1">
+		<text>Soldat, au panneau de contrфle, vite !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_go_lever_2">
+		<text>Soldat, fonce vers le panneau de contrфle du pont !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_go_lever_3">
+		<text>Soldat, cours au panneau de contrфle du pont !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_attention_control">
+		<text>Lebedev, couvrez mon gars prиs du panneau de contrфle. Les bandits essayent de l'allumer !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lever_killed_first">
+		<text>Merde ! Des snipers couvrent le panneau de contrфle ! On n'arrivera pas а abaisser le pont tant qu'ils seront lа !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lever_killed_1">
+		<text>C'est pas vrai ! Un sniper sur la colline ! Abattez-le !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lever_killed_2">
+		<text>Qu'est-ce que vous foutez ? Abattez ce sniper !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_sniper_1">
+		<text>Un sniper sur la colline !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_sniper_2">
+		<text>Йliminez ce sniper !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_sniper_3">
+		<text>Tuez ce sniper !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_bandits_1">
+		<text>Les bandits sont trop nombreux ! On est coincйs !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_bandits_2">
+		<text>On est clouйs au sol par les bandits ! On a besoin d'un tir de couverture !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_bandits_3">
+		<text>Lebedev, occupez-vous de ces bandits, sinon on pourra pas bouger !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_flee">
+		<text>Mercenaire, reprends position ! Il faut qu'on abaisse ce pont !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_fail">
+		<text>А toutes les unitйs ! Йmission massive dйtectйe ! On dirait que Strelok a atteint le centre de la Zone, malgrй tous nos efforts ! Tout le monde а couvert ! ALLEZ ! DЙPКCHEZ-VOUS !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lowered">
+		<text>Le pont a йtй abaissй ! А l'attaque !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy">
+		<text>Merci, Leshiy ! On vous doit une fiиre chandelle !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply1">
+		<text>Remerciez le mercenaire ! Sans lui, on serait toujours dans cette maudite bulle !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply2">
+		<text>Qu'importe, je vous suis redevable а tous !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply3">
+		<text>Je ne l'oublierai pas ! Bonne chance pour la suite !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply4">
+		<text>Зa marche !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_finished">
+		<text>Combattants de Firmament, c'йtait une opйration brillamment menйe ! Le pont est abaissй et la route vers Limansk nous est maintenant ouverte ! Avant-garde : avancez vers Limansk et trouvez un itinйraire sыr а travers la ville ! Tous les autres : tenez le pont et attendez les renforts.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_last_call">
+		<text>Retourne immйdiatement а ton poste, mercenaire ! Le groupe de Leshiy ne tiendra pas longtemps ! Si on n'abaisse pas ce pont, nous sommes tous fichus !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_task_for_player">
+		<text>Suis l'avant-garde dans la ville ! Il va falloir trouver un chemin sыr а travers Limansk pour le gros des troupes. Mais attention, la ville entiиre est а feu et а sang !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_strelok_threat">
+		<text>Arrкte de me suivre, mercenaire... ou tu mourras !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_lebedev_about_red_forest">
+		<text>Mercenaire, autant que je sache, il n'y a pas de chemin а travers la Forкt rouge. On raconte pas mal de choses sur ces bois, mais nous n'avons pas le choix. Il faut traverser la Forкt rouge et trouver le Forestier.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_lebedev_about_red_forest_2">
+		<text>Bien jouй ! Tu as traversй la Forкt rouge ! La cabane du Forestier est toute proche !</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_stalker_greeting">
+		<text>Зa fait un bail que j'ai pas vu autre chose que des monstres sortir de la Forкt rouge. Eh bien, approche ! Faut qu'on cause !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_1">
+		<text>...А l'aide. S.O.S... Quelqu'un nous entend ?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_2">
+		<text>...Impossible de sortir du quadrant quatre-vingt quatre... On tourne en rond... Revient sans cesse !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_3">
+		<text>...Base, rйpondez... Base... rйpondez...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_6">
+		<text>...Sortez-nous de lа...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_7">
+		<text>... survйcu а l'accident... impossible de s'orienter !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_8">
+		<text>...C'est un vrai labyrinthe...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_enter_first_1">
+		<text>Зa fait un bail qu'on n'a pas vu quelqu'un sortir de la Forкt rouge ! Viens par ici qu'on bavarde un peu !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_bs_dead">
+		<text>Incroyable ! J'aurais jamais cru que tu serais capable de te dйbarrasser de cette sangsue !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_stalker_radio_1">
+		<text>Si vous m'entendez... on est bloquй dans une anomalie... Impossible de sortir... Comme si l'espace йtait dйformй... Oщ qu'on aille... on revient sur nos pas... йquipement HS... on peut voir une ville au loin... nos coordonnйes... 51... 10... 3... 1... 2... Est-ce que quelqu'un nous entend ?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_1">
+		<text>Ici le Forestier. Je t'ai fait un schйma expliquant comment sortir de la Bulle. Je t'envoie les coordonnйes. Une fois que l'unitй les aura, ils pourront en sortir sans problиme.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_greetings">
+		<text>Si tu veux causer, baisse cette arme et avance gentiment !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_2">
+		<text>Kostyan, ici le Sanglier. Tu te souviens de moi ? T'as intйrкt, parce que je t'ai sauvй la mise y a pas si longtemps que зa !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_3">
+		<text>Bien sыr ! Qu'est-ce que je peux faire pour toi ?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_4">
+		<text>Kostyan, j'ai besoin que t'aides ce mec а atteindre les antennes de la base militaire. T'es bien dans ce coin-lа, non ?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_5">
+		<text>Ouais... On essaye de capturer les entrepфts. Viens nous rejoindre ! On va botter quelques culs de bidasses !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_6">
+		<text>Pas cette fois, Kostyan, dйsolй. On peut pas se permettre d'кtre vu en train de combattre des militaires. Je peux t'envoyer qu'un seul homme !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_7">
+		<text>Un tireur de plus peut pas faire de mal... On va attendre ton gars !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_actor">
+		<text>Va voir Kostyan, il t'aidera а atteindre le transmetteur.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_freedom_com_task">
+		<text>On est bloquйs а cфtй du Q.G. ! Les troufions s'y sont terrйs et ils couvrent tout le secteur de lа-bas. Impossible d'avancer ! Aide-nous а capturer le Q.G. !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_freedom_com_finish_task">
+		<text>А l'attaque ! On va se les faire, ces bвtards de militaires !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_freedom_com_radio">
+		<text>La base est а nous ! La Libertй va s'installer ici et fermer le passage une bonne fois pour toutes. Merci pour le coup de main ! Vas-y, le transmetteur est tout а toi !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hires_in_bubble_thanks_1">
+		<text>On a reзu les coordonnйes, on va tenter de sortir de la Bulle... OK, ici, а gauche... soixante pas en avant... Bingo ! On est libre ! T'entends зa ! On est sorti de l'anomalie ! On se dirige vers Limansk !</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_meet_4n_com_task">
+		<text>Ici Lebedev. Nous sommes au pont. Des mercenaires devraient arriver du camp des bandits d'un instant а l'autre. Rejoins-nous ! Nous avons besoin de toi ! Зa ne va pas tarder а s'envenimer par ici !</text>
+	</string>
+	<string id="characters_voice_scenario_military_esc_forester_pda_talk">
+		<text>Les communications interceptйes expliquent beaucoup de choses ! Reviens а ma cabane. Je crois que je sais comment faire sortir les mercenaires de leur bulle.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tower_captured">
+		<text>Objectif accompli ! La tour est sous contrфle. Maintenant, il suffit de la garder !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tower_captured_to_actor">
+		<text>Va а la tour et reste sur tes gardes, mercenaire !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_defend_tower">
+		<text>L'ennemi avance depuis l'йglise en ruines. Tiens-toi prкt !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_capture_plant">
+		<text>La tour est а nous ! On peut commencer а sйcuriser un passage vers l'usine. Йcoute les instructions sur ton PDA !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_scan">
+		<text>Base, ici zйro-deux-un. Je vois un mercenaire dans le Marais. Demande instructions, terminй.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_base_attack">
+		<text>Zйro-deux-un, ici base. Йliminez-le !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_attack_confirm">
+		<text>Reзu cinq sur cinq, base.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_lost">
+		<text>Merde, ce con s'est planquй dans les roseaux ! Maintenant, а moins de cramer tout ce bordel, impossible de le dйbusquer !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_base_moveout">
+		<text>Zйro-deux-un, ici base. Йliminez-le !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_moveout_confirm">
+		<text>Reзu cinq sur cinq !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_boars_killed">
+		<text>Excellent. La route vers l'usine est dйgagйe. En avant !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_plant_captured">
+		<text>Bien jouй, les gars ! La pompe du Marais est sous notre contrфle.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_to_barman_0">
+		<text>Kholod, laisse le mercenaire tranquille avec tes sales blagues ! Il faut que je lui parle !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_barman_reply_0">
+		<text>Йcoute, si Lebedev dit qu'il veut te voir, y a pas а discuter. Vas-y... On causera plus tard !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_to_trader_0">
+		<text>Marchand, un combattant va passer te voir. Donne-lui l'йquipement dont il aura besoin pour sa mission !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_trader_reply_0">
+		<text>Trиs bien !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_hurry_player_0">
+		<text>Fais vite, mercenaire !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_hide_in_tower_0">
+		<text>Fonce vers la tour ! Les monstres pourront plus t'atteindre !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_player_in_tower_0">
+		<text>Ouf, t'arrives pile au bon moment ! J'ai presque plus de munitions, alors faut que chaque balle compte !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_starting_surge_0">
+		<text>А tous les combattants ! Йmission imminente ! А couvert, VITE !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_forpost_sos">
+		<text>Ici le deuxiиme avant-poste, on est attaquйs ! Je rйpиte, on est attaquйs ! А l'aide !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_commander_tutorial_anomalies">
+		<text>Attention ! Il y a des anomalies droit devant toi ! N'avance pas avant d'avoir jetй un boulon devant toi !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_commander_tutorial_artefacts">
+		<text>Oh, au fait, on trouve souvent des artefacts dans les anomalies. On ne peut pas les voir а l'oeil nu, mais les dйtecteurs les trouvent aisйment. Si tu es assez proche, ton dйtecteur t'indiquera oщ il se trouve et tu n'auras plus qu'а le ramasser. C'est simple comme bonjour ! Mais n'oublie pas que ton dйtecteur n'est pas de premiиre jeunesse, il n'indique que la distance...</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_0_up">
+		<text>Bravo ! Nous avons suffisamment renforcй notre position dans le Marais pour mettre une bonne raclйe а ces renйgats ! Prochain objectif : leur base principale !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_1_up">
+		<text>Nous avons capturй la base des renйgats ! Il ne nous reste plus qu'а prendre le contrфle des accиs au Marais.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_1_down">
+		<text>Merde, ces renйgats sont plus forts que nous ! Il faut qu'on fasse quelque chose ou on perdra cette guerre !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_2_up">
+		<text>Les Marais sont sous notre contrфle ! Bravo, les gars ! Vous avez rйussi ! А toutes les unitйs, renforcez vos positions et attendez les ordres !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_2_down">
+		<text>Les renйgats ont repris leur base ! On ne peut pas permettre а ces vermines de vivre а nos portes ! Il faut les chasser de lа, coыte que coыte !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_3_down">
+		<text>Attention, nous avons perdu les accиs au Marais ! Si nous ne les reprenons pas rapidement, зa va а nouveau pulluler de vermine en un rien de temps !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_00">
+		<text>Votre principale source d'information est la section Objectifs.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_01">
+		<text>C'est ici que s'affiche votre objectif principal...</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_02">
+		<text>Ainsi que l'objectif secondaire sйlectionnй.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_03">
+		<text>Il se peut que vous ayez plusieurs objectifs secondaires, que vous pouvez parcourir avec ces boutons.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_04">
+		<text>La plupart des objectifs s'affichent йgalement sur la carte, а l'exception des rares cas oщ votre objectif ne peut кtre localisй.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_05">
+		<text>Nous aurons besoin de vous non seulement pour anйantir l'ennemi, mais aussi pour capturer des positions clefs. Si cela devait кtre le cas, pensez а couvrir nos hommes pendant qu'ils capturent leur objectif. Ils vous en remercieront ! Au fait, n'ignorez pas leurs appels а l'aide, chaque vie compte !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_06">
+		<text>Des informations supplйmentaires apparaissent quand vous passez le curseur sur un repиre de la carte</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_07">
+		<text>Outre vos objectifs, les unitйs alliйes et les ennemis identifiйs s'affichent sur la carte</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_08">
+		<text>Bon, je suis sыr que vous avez compris que notre objectif principal est de reprendre le contrфle du Marais, et que cela signifie que nous devrons partir en guerre...</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_09">
+		<text>Cette section vous permet d'accйder а tout moment а des informations tactiques sur l'opйration en cours.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_10">
+		<text>Les informations concernant votre faction du moment s'affichent а gauche. Pour l'instant, c'est nous, Firmament.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_11">
+		<text>Les informations concernant l'ennemi principal s'affichent а droite.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_12">
+		<text>Cet indicateur reprйsente notre capacitй de combat opйrationnel.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_13">
+		<text>Le nombre de combattants dont nous disposons s'affiche ici.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_14">
+		<text>Et voici nos rйserves d'йquipement.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_15">
+		<text>Tout en bas se trouvent des symboles indiquant les caractйristiques spйciales de notre йquipement.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_16">
+		<text>Des indicateurs similaires sont йgalement affichйs pour l'ennemi.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_17">
+		<text>Enfin, ce champ vous permet de consulter la mission stratйgique en cours, ainsi que les objectifs tactiques а accomplir pour mener а bien la mission.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_18">
+		<text>Les missions stratйgiques achevйes s'affichent en bas.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_19">
+		<text>Le dernier onglet rйcapitule vos relations avec les diffйrentes factions, ainsi que la force de combat de chacune d'entre elles.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_20">
+		<text>Vos statistiques personnelles s'affichent ici.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_21">
+		<text>Et c'est а peu prиs tout !</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_pathfinder_go_out_1">
+		<text>On y est ! Tu peux enlever ton bandeau. Essaye pas de me suivre, зa servirait а rien. Si tu veux retourner а la base, va voir un des guides dans le village de pкcheurs.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_pathfinder_go_in_1">
+		<text>On est arrivйs ! Vas-y, tu peux enlever ton bandeau. Tu pourras me retrouver ici  quand tu voudras retourner dans le Marais.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_arrive_on_open_marsh_1">
+		<text>Mercenaire, on dirait que tu es dans le Grand Marais. Sois trиs prudent et ne joue pas les hйros ! Vйrifie ton PDA. Il t'indiquera oщ se trouvent nos unitйs dans le coin. Je te conseille d'aller au village de pкcheurs, c'est lа qu'ils sont.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_limansk_intro">
+		<text>Parfait ! Tu es а Limansk. C'est un vrai champ de bataille par ici, alors fais trиs attention а toi ! Aide les unitйs de tкte а avancer dans la ville !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_request_help">
+		<text>Merde ! On nous tire dessus ! On a des blessйs ! Envoyez-nous de l'aide et vite !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_spich">
+		<text>Viens par ici, mercenaire ! Je vais te mettre au parfum. Et baisse la tкte !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_hint">
+		<text>On est vraiment dans la merde ! C'est une vraie guerre urbaine par ici. Y a un nid de mitrailleuse sur le balcon du bвtiment а gauche. Ces mecs s'en donnent а coeur joie ! On restera coincйs ici tant qu'on leur aura pas rйglй leur compte. Je vais dйtourner leur attention pendant que tu passes par le bвtiment pour t'occuper d'eux. On y va а mon signal !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_oreder_1">
+		<text>Allez, vas-y !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_oreder_2">
+		<text>Allez, bouge ton cul !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_oreder_3">
+		<text>Qu'est-ce que t'attends, merde ? Allez ! Fonce !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_clear_street">
+		<text>Ici le capitaine Serov, chef de l'unitй Firmament. On approche de l'intersection. Tiens bon, on arrive а la rescousse !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_to_actor1">
+		<text>Ennemi а terre ! Mercenaire, viens par ici que je te mette au courant !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_to_actor2">
+		<text>Il faut qu'on avance dans la ville. Nos gars sont bloquйs prиs du canal derriиre le parc et on va leur filer un coup de main. T'as l'air de savoir te dйbrouiller... Pourquoi tu restes pas avec nous ? Tout le monde y serait gagnant !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_order1">
+		<text>Zone dйgagйe. On avance !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_order2">
+		<text>Ils attaquent de tous les cфtйs ! Positions de dйfense !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_nerves">
+		<text>Mais combien ils sont, au juste ?</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_stay1">
+		<text>Bordel, зa vient de partout ! Mercenaire, continue а avancer vers le canal, on va les retenir ici !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_stay2">
+		<text>Hй mercenaire ! Tire-toi de lа ! Gaspille pas tes munitions ici !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_parley1">
+		<text>Alpha, tenez la position !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_parley2">
+		<text>Commandant, l'ennemi nous attaque. Demandons des renforts !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_order1">
+		<text>Tenez bon, les gars ! On va se les faire !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor1">
+		<text>Tu tombes а pic, mercenaire ! On est dans un sale pйtrin ! L'ennemi est terrй dans le bвtiment en face du canal et il nous tire comme des pigeons ! Lebedev nous a ordonnй de prendre le pont. Il faut qu'on sйcurise ce bвtiment coыte que coыte !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor2">
+		<text>L'ennemi est dans le bвtiment en face. On fait des cibles faciles ici. C'est pas la peine de tenter un assaut, on y passerait tous !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor3">
+		<text>On va les occuper pour que tu puisses avancer а couvert et atteindre le bвtiment. Une fois а l'intйrieur, bousille cette mitrailleuse de merde et descends cet enfoirй ! Ces salauds nous ont fait assez de misиres comme зa !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor4">
+		<text>Oh, et surtout, sois discret ! Reste bien а couvert et n'avance que sur mon ordre !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_order2">
+		<text>Tir de couverture, les gars ! Feu а volontй !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_military_1">
+		<text>Merde, il est dans le bвtiment !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_order3">
+		<text>Nid de mitrailleuse hors service. En avant !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor5">
+		<text>Prenez position dans le bвtiment. On pouvait pas rкver mieux !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor6">
+		<text>Merci pour le coup de main ! On reste ici pour couvrir le pont jusqu'а l'arrivйe du gros des troupes. D'aprиs la carte, on est tout prиs des limites de Limansk. Les coordonnйes sont sur ton PDA.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_alert">
+		<text>Hй, mercenaire !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_clear">
+		<text>Ravi de te revoir !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_to_actor">
+		<text>La sortie de Limansk est tout prиs, mais il faut qu'on reste sur nos gardes et qu'on y aille prudemment.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_sniper_alert">
+		<text>Un sniper dans la tour ! А couvert !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_order1">
+		<text>Vasilenko, avance et dйbusque-moi ce sniper ! Allez !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_electro_fence">
+		<text>Merde, ces salauds ont mis des barbelйs йlectrifiйs !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_confused">
+		<text>La ville n'a plus d'йlectricitй, donc il doit y avoir un gйnйrateur dans le coin qui alimente les barbelйs.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_destroy_generator">
+		<text>Les cвbles vont vers le bвtiment de droite. On va occuper le sniper pendant que tu entres dans le bвtiment de l'Institut et que t'йteins ce gйnйrateur, ok ?</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_electricity_off">
+		<text>Gйnial, les barbelйs n'ont plus de jus. En avant !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_report1">
+		<text>Lebedev, opposition йliminйe ! En attente de nouveaux ordres !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_report2">
+		<text>Lebedev, on tient le pont ! Espйrons qu'il n'y aura pas de contre-attaque !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_report3">
+		<text>Capitaine Serov au rapport ! Attaque repoussйe. La route est libre !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_leader_next_task">
+		<text>Bon travail ! L'unitй principale est prкte а avancer dans Limansk. Unitй avancйe, trouvez l'entrйe des tunnels de Pripyat. Elle devrait кtre au niveau du vieil hфpital а la limite de Limansk. Les coordonnйes sont sur vos PDA.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_attention">
+		<text>En avant ! Et restez sur vos gardes !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_see_target">
+		<text>Cible а 11 h !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_check">
+		<text>Allons voir зa !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_help">
+		<text>А l'aide ! Au secours !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_fire1">
+		<text>Je m'attendais pas а voir des bandits par ici. Abattez-les tous !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_dont_shoot">
+		<text>Tirez pas ! Je peux vous parler de l'embuscade tendue par les bandits !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_threat1">
+		<text>Crache le morceau et on t'йpargnera peut-кtre...</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_medkit1">
+		<text>Donnez-moi un mйdikit pour mon pote !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_threat2">
+		<text>Tu vas devoir faire sans... Tu as une minute. Dis-moi oщ est cette embuscade ou je t'abas comme un chien !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_medkit2">
+		<text>Donnez-moi un mйdikit !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_fire2">
+		<text>Exйcutez-le !</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_senks">
+		<text>Merci pour le mйdikit, mercenaire.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_about_ambush">
+		<text>Ils ont tendu l'embuscade tout prиs d'ici. Je vais indiquer l'endroit sur votre PDA.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_bandit_free">
+		<text>Je te laisse la vie sauve, mais que je ne te revoie plus dans le coin !</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_1">
+		<text>... sans entrer dans les dйtails, je dois avouer que je n'ai jamais vu un tel phйnomиne auparavant. L'encйphalogramme semble indiquй de nombreuses lйsions du systиme nerveux, mais tous les autres indicateurs sont au vert. C'est incroyable !</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_2">
+		<text>Зa a peut-кtre un rapport avec l'йmission ?</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_3">
+		<text>... Trиs certainement ! Mкme si je suis bien incapable de formuler la moindre explication rationnelle pour cette anormalitй.</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_4">
+		<text>Regardez, il se rйveille !</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_5">
+		<text>Alors, t'es rйveillй ? Bien !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_about_hall">
+		<text>Enfin, quelqu'un rйpond а nos appels ! Il y a un sniper et une mitrailleuse de l'autre cфtй du hall ! Impossible de bouger d'ici !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_about_sniper">
+		<text>Merde, encore un qui a pйtй les plombs ! Aide-nous а descendre ce sniper avant qu'on y passe tous ! On va dйtourner l'attention du servant de la mitrailleuse pour que tu puisses avancer !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_arrived">
+		<text>Bravo, t'as assurй ! On va se les faire maintenant !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_1">
+		<text>Qu'est-ce que t'attends ? Bon, on va assurer un autre tir de couverture !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_2">
+		<text>Rйveille-toi ! On va pas le bloquer longtemps !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_3">
+		<text>Hй... Arrкte de te tourner les pouces !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_pda_1">
+		<text>Qu'est-ce que t'attends, bordel ?! On va assurer un autre tir de couverture. Tiens-toi prкt !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_pda_2">
+		<text>Bouge-toi ! On va pas le tenir clouй au sol longtemps !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_pda_3">
+		<text>Hй... Bouge ton cul !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_block_1">
+		<text>Зa y est ! Occupe-toi de l'autre maintenant !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_block_2">
+		<text>Et de deux ! Les deux voies d'accиs sont coupйes maintenant !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_cover_us">
+		<text>Stalker, couvre-nous !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_danger">
+		<text>Une mitrailleuse couvre le rez-de-chaussйe. On ne bouge que sur mon ordre !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_go">
+		<text>Allez !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_go_pda">
+		<text>Allez !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_gunner_killed">
+		<text>Mitrailleuse neutralisйe. La voie est libre !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_hold_on">
+		<text>Tenez bon ! On arrive !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_dot">
+		<text>Petro, occupe-toi du bunker en bas !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_gunner">
+		<text>Bouffe une grenade, enfoirй !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_sniper">
+		<text>Ouais, t'as rйussi ! Maintenant, tu peux contourner ce sniper ! Fais-lui sa fкte !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_sniper_now_1">
+		<text>Bute-le ou on va tous y passer !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_sniper_now_2">
+		<text>Descends le sniper ! Vite !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_request_help">
+		<text>А l'aide ! On est coincйs а l'entrйe !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_runner_killed">
+		<text>Aaaah...</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_start_block">
+		<text>Bloque les points d'accиs, pour qu'ils puissent pas appeler de renforts !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_start_raid">
+		<text>Ok, le sniper est mort ! La voie est libre, on avance pour s'occuper du bunker !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_suicide">
+		<text>Couvrez-moi ! Je vais m'en occuper !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_thanks_actor">
+		<text>Vas-y, on s'occupe de l'ennemi !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_victory">
+		<text>Base, on est а l'entrйe des tunnels. Qu'est-ce qu'on fait maintenant ?</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_victory_reply">
+		<text>Parfait ! Mettez-vous en position et tenez l'entrйe des tunnels ! L'unitй principale est en route.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_wait">
+		<text>А mon commandement !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_wait_pda">
+		<text>А mon commandement !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_well">
+		<text>Parfait, continuez comme зa !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_enemy_see_helicopter">
+		<text>Merde... un hйlico de combat ! Descendez-le ! Visez le cockpit !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_kill_order">
+		<text>Zйro-deux-un, engagez l'ennemi !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_killed">
+		<text>Merde ! On est touchй, on est touchй ! On se tire !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_see_enemy">
+		<text>Base, ici zйro-deux-un. Contact visuel avec une escouade unitй et un stalker non identifiй. J'attends vos ordres !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_start_attack">
+		<text>Compris, base. Je passe а l'attaque !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_kill_actor">
+		<text>Il essaye de passer !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_kill_actor_intercept">
+		<text>Arrкtez-le !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_z3_csky_com_apply">
+		<text>Bien reзu ! On s'en occupe !</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_z3_csky_com_order">
+		<text>Mercenaire, on va retenir les Monolithes pendant que tu descends dans les tunnels !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_dead_digger_leader_rec">
+		<text>Je lui ai refilй les composants qu'on a trouvйs dans la cache. Les Crocs arrкtait pas de rвler et disait qu'il nous payerait que quand on lui en aurait trouvй d'autres. On en a discutй entre nous et on a dйcidй d'envoyer Vasya lui parler. Vasya, c'est un beau parleur, alors on s'est dit qu'il arriverait peut-кtre а convaincre Les Crocs de nous payer au moins une partie du fric. J'espиre qu'il a pas eu d'emmerdes en chemin... </text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_warning">
+		<text>Hй, fais gaffe ! Y'a un paquet de clйbards dans le coin ! Monte sur les rochers, vite !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_shout_1">
+		<text>Allez, tirez-vous !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_shout_2">
+		<text>Lвchez-moi, bordel !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_shout_3">
+		<text>Tirez-vous, bande de sacs а puces !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_thanks">
+		<text>Merci, tu m'as sauvй la mise... Je m'appelle Vasya. Imagine un peu : je marche plein ouest pour essayer de rattraper ce stalker, je fais chier personne et tout d'un coup, ces saloperies aveugles sortent de nulle part. Je vide trois chargeurs, mais plus j'en bute, plus y en a d'autres qui se pointent. Du coup, je me rйfugie ici ! Y a plus moyen que je rattrape ce stalker maintenant, il doit dйjа кtre dans la Vallйe obscure...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_pda_rec">
+		<text>J'ai йtй sйparй des Crocs par une meute de chiens. Il se dirigeait vers la Vallйe obscure.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_1">
+		<text>C'est vraiment le bon plan ici. Vise un peu tous les stalkers qui se pointent ! Je me demande ce qu'ils cherchent...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_2">
+		<text>Ouais, c'est trop con que ce connard se soit barrй !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_3">
+		<text>On s'en fout ! Il a laissй son matos, c'est tout ce qui compte !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_4">
+		<text>Ouais, on rйcupиre ce qui a de la valeur et on se casse !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_fang_pda_rec">
+		<text>Hй, Les Crocs, changement de plan ! Quelqu'un sait qu'on a atteint le centre de la Zone. Ils sont а notre recherche. Faut qu'on se tire, et vite ! Tu trouveras les nouvelles instructions dans la planque. J'ai changй le code.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_find_fang_pda">
+		<text>T'es toujours avec nous, mercenaire ? Tant mieux ! Bon, le PDA des Crocs est pas loin de toi. Trouve-le !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_csky_leader_goto_agroprom">
+		<text>Ici Lebedev. Les infos du PDA des Crocs confirment mes soupзons. Un groupe de stalkers non identifiй a atteint le centre de la zone... Je ne sais pas comment ils ont fait, mais ils ont rйussi а survivre а la grande йmission... J'aurais prйfйrй qu'ils y restent, parce que la Zone ne retrouvera pas son calme tant qu'il y aura un passage vers le centre. Du coup, on a deux solutions : soit on arrкte ce groupe de stalkers, soit la Zone lвche d'autres йmissions et dйtruit tout ce qu'elle contient, et peut-кtre plus ! Il vaudrait mieux qu'on s'en charge nous-mкme, mais il faut faire vite si on veut avoir une chance d'y arriver. Le PDA des Crocs contient les coordonnйes de leur planque. Je suis sыr qu'on y trouvera plus d'infos...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_return_1">
+		<text>Hй, c'est а toi de voir... T'as eu de la chance jusqu'а maintenant.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_return_2">
+		<text>Fais pas ta mijaurйe, ramиne ton cul par ici !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_return_3">
+		<text>Hй, t'es pas en train de me lвcher, lа ?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_come_here_1">
+		<text>Hй toi... Range ce flingue et approche un peu ! Faut qu'on parle !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_come_here_2">
+		<text>Pourquoi tu rengaines pas ce flingue... qu'on discute tranquillement ?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_come_here_3">
+		<text>Faut qu'on cause ! Mais range ce flingue d'abord !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stop_1">
+		<text>On bouge plus, mon gars ! Et garde tes mains bien en vue !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stop_2">
+		<text>Plus un geste ! Et pense mкme pas а effleurer cette pйtoire !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stop_3">
+		<text>On bouge plus ! Garde ton arme pointйe vers le sol et reste tranquille !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stand_still_1">
+		<text>Voilа, c'est bien. Reste tranquille !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stand_still_2">
+		<text>Bien, bien... Et pas de gestes brusques !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stand_still_3">
+		<text>Bouge pas de lа, surtout !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_see_actor_1">
+		<text>Йcoute, si tu veux passer, va falloir raquer. Approche un peu, qu'on parle affaires !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_see_actor_2">
+		<text>Reste pas lа comme un con ! Approche !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_1">
+		<text>Viens par ici, bordel !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_2">
+		<text>T'es con ou quoi ? Casse-toi !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_3">
+		<text>Tire-toi d'ici avant que je te botte le cul !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_4">
+		<text>Ouais, ben, tu l'as bien cherchй ! Butez-le, les gars !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_reject_1">
+		<text>Casse-toi, ok ?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_reject_2">
+		<text>T'es un peu lent au dйmarrage, toi alors ! Dйgage !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_reject_3">
+		<text>Comme tu voudras... Butez-le !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_kill_actor_1">
+		<text>Tuez-le !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_kill_actor_2">
+		<text>Butez-moi ce connard !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_move_1">
+		<text>Essaye mкme pas de bouger !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_move_2">
+		<text>Bouge plus, connard !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_weap_1">
+		<text>Range ce flingue, dugland !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_weap_2">
+		<text>А ta place, je rengainerais ce flingue, mon pote !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_traitor_attack">
+		<text>Butez ce conard, les gars ! Il a de la thune !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_leader_traitor">
+		<text>Le PDA du contrebandier ? Envoie-moi les derniиres infos ! Ah ah ! Voilа les coordonnйes de la cache d'armes ! Je vais mettre mes gars sur le coup... Toi, viens me voir, faut qu'on cause face а face !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_captive_leader_reward">
+		<text>Merde, j'йtais sыr que j'allais y passer... Je... je sais pas comment te remercier ! Attends ! Si ! Je sais ! Je vais t'envoyer les coordonnйes d'une planque oщ moi et mes gars, on a planquй notre matos avant d'кtre capturйs et envoyйs ici. Mes potes en ont plus besoin lа oщ ils sont et moi, je me casse de cette putain de Zone ! J'en ai ma claque de ce trou а rats ! N'importe oщ ailleurs, ce sera mille fois mieux qu'ici !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_attack">
+		<text>Mes gars se font attaquer pas loin de toi. Ils vont y passer si tu les aides pas !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_gone">
+		<text>Merde ! Les gars sont morts et ce qui les a tuйs s'est barrй, зa, tu peux en кtre sыr... Putain, зa craint !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_killed">
+		<text>Mec, je t'en dois une bonne ! T'as vengй mes gars... Mais bon, de belles paroles, зa vaut pas tripette, alors passe au marchй aux puces, j'ai un truc pour toi !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_conc_camp_go_away">
+		<text>Casse-toi de lа, toi ! On a la gвchette facile par ici, tu voudrais pas te prendre une balle perdue...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_conc_camp_blockpost">
+		<text>Йcoute, dugland ! Ca, c'est notre territoire et notre camp. Alors, pourquoi tu te trouves pas une route qui ne mиne pas au cimetiиre ?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_win_1">
+		<text>Ca, c'est un mec qu'en a dans le futal ! C'йtait trop fort !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_win_2">
+		<text>Waouh ! T'es un vrai tireur d'йlite, toi alors !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_win_3">
+		<text>Merde, vous avez vu зa ? Il a assurй !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_lose_1">
+		<text>Apprends а tirer, tкte de noeud !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_lose_2">
+		<text>T'es trop nul ! Tu sais quoi ? La prochaine fois, gagne du temps et tire-toi tout de suite une balle dans la tкte...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_lose_3">
+		<text>Pour tirer aussi mal, faut vraiment en tenir une carabinйe !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_1">
+		<text>Allez, vas-y !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_2">
+		<text>Bute-les tous !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_3">
+		<text>Tu sais te servir de ce truc ?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_4">
+		<text>Allez, je sais que tu peux le faire !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_5">
+		<text>Les ailes, vise les ailes !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_1">
+		<text>Allez, je tente le coup. Cinquante sur ce mec !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_2">
+		<text>Aucune chance que je parie du fric sur ce minable !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_3">
+		<text>Зa va кtre marrant а regarder !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_response_1">
+		<text>On va voir s'il sait se servir d'un flingue !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_response_2">
+		<text>Ha ha ! Ce tocard a aucune chance !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_response_3">
+		<text>Il pourrait peut-кtre s'en sortir, tu sais...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_win_first">
+		<text>Waouh, t'as battu mon record ! Je suis trиs impressionnй... Voilа pour toi !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_win_player">
+		<text>T'as battu ton record personnel ! Prends зa !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_win_npc">
+		<text>T'es le nouveau champion ! Et la rйcompense est pour toi !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_lose_1">
+		<text>Pas de bol... Зa ira mieux la prochaine fois !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_lose_2">
+		<text>Essaye encore ! Tu vas y arriver !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_lose_3">
+		<text>Y a des jours avec et des jours sans... Rйessaye !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_gone_1">
+		<text>Hй, oщ tu vas ? Tu veux pas continuer а jouer ?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_gone_2">
+		<text>Hй, reviens ! Tu te dйbrouillais bien !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_gone_3">
+		<text>Reviens, зa va s'amйliorer, je te dis !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_leader_ambush">
+		<text>Quoi ? Stringov t'a attirй dans une embuscade ? Hum... Cet enfoirй brыlera en enfer pour зa !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_leader_traitor_dead">
+		<text>Son compte est rйglй, hein ? Regarde si cette ordure a pas des trucs de valeur sur lui, tant que tu y es.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_join_message">
+		<text>Hй mec, ici Yoga ! T'as pas l'air d'un tocard, alors la prochaine fois que t'es dans le coin, viens me voir ! Je te prendrai dans mon йquipe !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_destroy_flea_market_done">
+		<text>Alors, tu t'es occupй des types du marchй aux puces ? T'en as dans le futal, toi, et venant de Yoga, c'est un sacrй compliment ! Comme d'habitude, Dent creuse a ta rйcompense !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_done_a">
+		<text>А en croire le signal de son PDA, Stringov est mort. Parfait ! Va chercher ta rйcompense chez Dent creuse. Bon, on va pouvoir passer aux choses sйrieuses...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_done_b">
+		<text>Йcoute, mercenaire, mes gars viennent de buter Stringov alors qu'il essayait de sortir de la Dйcharge. Il a dы avoir la trouille et a tentй le tout pour le tout. C'est pas ta faute. Qu'est-ce que tu dirais d'un autre boulot ?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_done">
+		<text>Йcoute, Stringov me refilait des infos sur les mineurs. Ils ont dы piger le truc, alors il est plus trиs utile ces derniers temps. mкme si ses derniиres infos йtaient intйressantes. Apparemment, les mineurs ont rendez-vous avec un mec au nord de la Dйcharge pour acheter des flingues. Assure-toi que personne, mineur ou marchand, n'en revienne vivant ! J'ai envoyй les coordonnйes du rendez-vous sur ton PDA.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_call">
+		<text>Stringov ? Arrкte de tirer au flanc ! Pourquoi tu vas pas l'arrкt ? J'y ai envoyй un gars pour rйgler cette affaire avec toi.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_smuggler_done">
+		<text>Alors, ils bouffent tous les pissenlits par la racine ? Bien, pense а chercher ta rйcompense chez Dent creuse. Au fait, tu montes en grade ! T'es maintenant en charge de cinq de mes gars. Je veux mкme pas que ces mineurs pensent а nous rйsister. Donc faut qu'on leur donne une bonne leзon ! Ta cible, c'est le marchй aux puces. Une fois que t'auras rйglй leur compte aux mineurs, fais verrouiller le marchй par les gars. Ton йquipe est dйjа en position, mais ils feront que dalle si tu leur dis pas quoi faire !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_0_up">
+		<text>Pas mal, les gars ! On va avoir la belle vie, maintenant ! Il est temps de prendre le contrфle de tous les points d'accиs а la Dйcharge ! Ces tocards vont devoir raquer s'ils veulent rйcupйrer des artefacts ici !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_1_up">
+		<text>Ha ha, la Dйcharge est а Yoga ! On va leur pomper tout leur fric ! Mais les stalkers ont une base dans le Cordon... On devrait leur rendre une petite visite qu'ils se souviennent bien de leur place dans la chaоne alimentaire.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_1_down">
+		<text>On se fait mйchamment allumer par ici ! Sortez-vous les doigts du cul et montrez-leur ce que vous avez dans le ventre !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_2_up">
+		<text>Зa, c'est ce que j'appelle des couilles en bйton armй ! Le Cordon est а nous ! Les stalkers vont devoir "partager" leurs richesses avec nous, rien que pour avoir le droit d'кtre ici ! Allez, mettez-leur la pression, histoire qu'ils ne sortent pas le nez de leur base !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_2_down">
+		<text>Bande d'abrutis, qu'est-ce que vous foutez ? Les stalkers ont repris le contrфle de la route du Cordon ! Vous voulez qu'ils passent leurs artefacts sans raquer ? Je veux que vous alliez lа-bas et que vous repreniez cette putain de route !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_3_up">
+		<text>Alors lа, je suis vraiment fier de vous ! On les tient, ces cafards ! Y a plus qu'а les йcraser ! Prйparez-vous а passer а l'attaque !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_3_down">
+		<text>Merde ! Nos mecs se font fait virer du Cordon ! Paraоt qu'un groupe de stalkers s'йtait rassemblй. Faut qu'on leur montre qui c'est le patron dans le coin !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_4_up">
+		<text>Зa va кtre la belle vie, les gars ! On va prendre tout le fric de ces stalkers et ils peuvent plus rien nous faire ! On n'a plus qu'а mettre un peu de fric de cфtй et d'ici pas longtemps, adieu la Zone et bonjour Rio !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_4_down">
+		<text>Mais pour qui ils se prennent, ces stalkers de merde ? Ils ont butй nos gars prиs de leur base ! Si vous кtes dans le coin, montrez-leur qu'il faut pas nous chercher !</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_5_down">
+		<text>Les gars, ces stalkers sont en train de nous mettre une rouste carabinйe ! Ils ont virй nos gars du Cordon et ils se prennent pour les rois du monde ! Sortez vos couilles du placard et allez leur expliquer qui fait la loi ici !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_start_pda">
+		<text>Зa faisait un bail que j'avais pas vu quelqu'un sortir des Marais en un seul morceau. Manque de bol, t'as fini juste а cфtй d'un avant-poste de l'armйe... Et l'armйe, elle te fera pas de cadeau, а part une balle entre les deux yeux. Alors, je serais prudent а ta place.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_mil_target_detected">
+		<text>Alerte ! Stalker en vue ! Feu а volontй !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_mil_target_lost">
+		<text>On l'a perdu ! Officier, prenez vos hommes et passez le secteur au peigne fin !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_wolf_call">
+		<text>Qu'est-ce qui t'amиne ici, mercenaire ? Approche, qu'on cause un peu !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_call">
+		<text>T'as йchappй а l'armйe ? Petit veinard ! J'ai comme l'impression que t'es pas ici par hasard, alors passe me voir si t'es dans le coin !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_greet_first">
+		<text>Hй, зa fait plaisir de te voir. Alors... on parle affaires ?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_greet_habar">
+		<text>Ah, tu y es finalement arrivй ! Je savais que je pouvais compter sur toi !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_greet_1">
+		<text>T'as des infos sur le dernier truc dont on avait parlй ?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_greet_2">
+		<text>Tu as rйcupйrй la mallette ?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_greet_3">
+		<text>Comment зa avance, cette histoire de mallette ?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_habar_1">
+		<text>Magne-toi avec cette mallette, ok ?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_habar_2">
+		<text>Apporte-moi la mallette dиs que tu l'auras trouvйe !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_habar_3">
+		<text>Oublie pas, j'ai besoin de cette mallette !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_1">
+		<text>Bonne chance !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_driver_treat">
+		<text>Tire pas, pitiй, tire pas !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_patrol_help_1">
+		<text>On a besoin d'aide ! L'armйe nous a tendu une embuscade !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_patrol_help_2">
+		<text>Aidez-nous ! On tiendra pas longtemps !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_yes_1">
+		<text>Allez, vas-y ! Le Marchand nous a parlй de toi !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_yes_2">
+		<text>Magne-toi ! Ils t'attendent а la base !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_yes_3">
+		<text>Reste pas plantй lа ! Va а la base !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_no_1">
+		<text>Dйgage de lа, mercenaire ! T'es sur le territoire des stalkers ici !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_no_2">
+		<text>Approche pas ou on ouvre le feu !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_no_3">
+		<text>T'es pas le bienvenu ici, mercenaire !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_1_1">
+		<text>Loucheur, ici Valerian ! Oщ t'йtais passй ces deux derniers jours ? On a un putain de problиme ici et on a besoin de tout le matos dispo !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_1_2">
+		<text>On peut pas passer. Des anomalies bloquent le passage, alors on essaye de les contourner.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_1">
+		<text>Vasiliy, tu te souviens que tu m'avais promis des flingues ?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_2">
+		<text>Je sais bien, Valerian ! Mais l'armйe va se demander pourquoi j'ai vendu des armes aux stalkers...</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_3">
+		<text>Faut que tu piges un truc, Vasiliy : si on calme pas ces troufions tout de suite, c'est eux qui vont nous exterminer !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_4">
+		<text>Ok, ok ! Mon gars t'apportera tout ce que j'ai dиs demain.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_1">
+		<text>Valerian, ici Gras-du-bide ! C'est vrai que tu rassembles les stalkers ?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_2">
+		<text>Absolument ! Les militaires ont pйtй un cвble... Ils ont mкme lancй les bandits а nos trousses ! Pas question qu'on se laisse faire !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_3">
+		<text>Tu peux compter sur moi ! J'ai un compte а rйgler avec eux... Je viendrai demain et j'amиnerai trois mecs avec moi.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_4">
+		<text>Gйnial, merci beaucoup ! On se voit demain !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_4_1">
+		<text>Hй, Gobelin ! Quoi de neuf par chez toi ?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_4_2">
+		<text>Les militaires viennent de descendre un type а l'instant. Mais ils sortent pas trop loin de leur base, ces trouillards.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_4_3">
+		<text>Ok, tiens-moi au courant !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalkerbase_guard_redirect">
+		<text>On t'attend depuis un bail ! Va voir le chef, et fissa !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_mill_complete_reply">
+		<text>Excellent travail ! Cette unitй de bidasses ne nous emmerdera plus... On en a repйrй une autre prиs du dйpфt. Tu sais ce qu'il te reste а faire...</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_dead_military_pda_request">
+		<text>Excellent, l'armйe ne nous mettra plus de bвtons dans les roues ! Maintenant que les potes de Khaletskiy sont morts, il sait qu'il en a plus pour longtemps. Il va pas tarder а se mettre а table, fais-moi confiance ! Reviens а la base !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_jail_monologue">
+		<text>Tu vois ce que зa te rapporte de faire ta mauvaise tкte ? Tes petits copains sont morts et t'es toujours coincй ici... Personne viendra te sauver. Dis-moi oщ t'as planquй la mallette !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_location_1">
+		<text>...OK, je vais parler... Bande de salauds... Dans le vieux moulin, sous le toit...</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_location_2">
+		<text>...OK, je vais te le dire... Bande de salauds... Dans le tunnel, sous la voiture renversйe.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_location_3">
+		<text>...OK, je vais parler... Bande de salauds... Dans une maison pas loin d'ici, sous les combles.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_founded">
+		<text>C'est dingue, non ? Ce connard s'est mis а baver tout d'un coup ! Les coordonnйes de la planque sont sur ton PDA. Pense а rapporter ce que tu trouveras а Sidorovich !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_request">
+		<text>Ok... J'attends ton retour avec la mallette.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_2">
+		<text>А bientфt... j'espиre.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_3">
+		<text>Prends soin de toi !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_give_habar">
+		<text>Hй ! Qu'est-ce que tu fous ? Donne-moi cette mallette !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_can_join_stalker_1">
+		<text>Mercenaire, ici Valerian. La porte du clan des stalkers t'est ouverte ! Si tu veux devenir l'un des nфtres, viens me voir dans notre base !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_0_up">
+		<text>Parfait ! On est assez forts pour se dйfendre maintenant ! Bon, il va falloir qu'on prenne le contrфle des chemins d'accиs au Cordon pour empкcher les bandits d'accйder а notre base.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_1_up">
+		<text>Ha ! Ces bandits vont avoir du mal а traverser le Cordon maintenant ! Mais ce n'est pas encore fini ! Nous devons prйparer notre attaque de la Dйcharge. On va donner а ces salauds une leзon qu'ils ne sont pas prкts d'oublier !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_1_down">
+		<text>Merde, ces bandits sont plus forts que nous ! Si on renverse pas la vapeur, on va tous finir esclaves а la Dйcharge !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_2_up">
+		<text>Continuez comme зa ! On contrфle l'accиs а la Dйcharge ! Je rйpиte : la route vers la Dйcharge est dйgagйe, plus besoin de payer pour entrer ! Il reste plus qu'а faire un saut dans leur base pour leur montrer qui c'est le patron ! </text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_2_down">
+		<text>Attention ! Les bandits ont йtabli un avant-poste dans le Cordon ! Si on en reprend pas rapidement le contrфle, le secteur va pulluler de bandits en un rien de temps !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_3_up">
+		<text>Bonne nouvelle ! On a bloquй la seule sortie de la base des bandits ! Prйparez-vous а donner l'assaut !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_3_down">
+		<text>Merde, on a perdu la Dйcharge ! Vous inquiйtez pas, les gars ! On va se reprendre et retenter le coup !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_4_up">
+		<text>Toute la Zone se souviendra de ce jour comme celui de la victoire des stalkers sur les bandits ! Finis les dessous de table et les droits de passage ! Stalkers, la Zone est а vous !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_4_down">
+		<text>Attention ! Les bandits ont fait une sortie et attaquй nos gars prиs de leur base ! Nous devons sйcuriser la sortie de la base des bandits avant qu'ils ne prennent la grosse tкte !</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_5_down">
+		<text>Stalkers, ici Valerian ! Les bandits ont encore envahi la Dйcharge ! Dieu seul sait d'oщ ils sortent, mais il y en a partout. Restez sur vos gardes !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_enter">
+		<text>Halte ! La Vallйe obscure est en quarantaine ! Baisse ton arme et approche trиs lentement ! Pas de gestes brusques ! Faut qu'on cause...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_wait_1">
+		<text>Viens par ici ! Relax, on va pas te tirer dessus !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_wait_2">
+		<text>Hй toi, viens par ici ! Allez, faut qu'on t'examine !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_wait_3">
+		<text>Qu'est-ce que t'attends ? Approche !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_stop">
+		<text>Stop ! Range ton arme et bouge plus ! Fais pas le malin et tout ira bien !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_return">
+		<text>Allez, approche ! On te veut pas de mal, t'inquiиte !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_stand_still">
+		<text>Bouge pas ! Зa fera pas mal...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_kill_actor">
+		<text>Butez-moi ce connard !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_after_pay">
+		<text>Rompez !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_reply_sos_done">
+		<text>Tout a l'air calme...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_reply_sos_1">
+		<text>Delta, ici Alpha. C'est quoi, tous ces coups de feu ? Qu'est-ce qui se passe ?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_reply_sos">
+		<text>Merde, une nouvelle attaque ! Toi, lа ! Va voir s'il y a des survivants а l'avant-poste !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_dead_squad_1">
+		<text>Hй ! Qu'est-ce qu'il se passe ? Rйpondez-moi !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_dead_squad_2">
+		<text>Patrouille Delta, rйpondez !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_dead_squad_3">
+		<text>Rйpondez, bon sang !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_base_enter">
+		<text>T'es sur le territoire de la Libertй, stalker, alors t'as intйrкt а te tenir а carreau... Viens me voir si t'as des questions !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_comendant_come_back">
+		<text>Pas mal ! Tu leur as mis une sacrйe raclйe, а ces mutants ! Reviens me voir !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_leader_help">
+		<text>Ici Chekhov. L'avant-poste a йtй attaquй... J'ignore s'il y a des survivants, mais un des PDA est toujours actif et contient sыrement des infos intйressantes. Trouve-le et rapporte-le-moi !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_attack_help">
+		<text>А toutes les unitйs de la Libertй ! On vient de tomber sur des mercenaires prиs de la vieille ferme. Forte rйsistance, besoin d'aide ! Je rйpиte, envoyez-nous des renforts !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_leader_pda_come_back">
+		<text>Notre cher commandant est pas allй bien loin. Ses nouveaux potes lui ont trouvй un coin bien douillet, dans un arbre ! Ok, rйcupиre le PDA de cet enfoirй et rapporte-le-moi !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_antenna_control">
+		<text>Ok, on contrфle les deux premiиres antennes. Il reste plus qu'а capturer la troisiиme !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_antenna_finish">
+		<text>C'est du bon boulot ! Toutes les antennes sont sous notre contrфle ! Scan enclenchй !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_antenna_good">
+		<text>On a les coordonnйes du tunnel : il se trouve prиs de l'usine dйsaffectйe. C'est par lа que les mercenaires entrent dans la Vallйe obscure ! А toutes les unitйs, trouvez le tunnel et dйtruisez-le !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_zavod_help">
+		<text>On a atteint l'usine ! Merde, зa grouille de mercenaires par ici ! Il nous faut de l'aide !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_zavod_task">
+		<text>Merci pour le coup de main ! On est bloquйs dans la cour, pas moyen de bouger ! Descends les mercenaires sur le toit !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_quest_finish">
+		<text>On a йliminй les enfoirйs qui avaient butй tant de nos gars ! La Libertй a de nouveau dйmontrй qu'il faut pas se frotter а nous ! Le jour de la libйration de la Zone approche ! Passe me voir ! J'ai une rйcompense pour toi !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_1">
+		<text>Hй vous, tous les mecs а la coule et les tueurs-nйs ! Si vous cherchez une ambiance dйtendue et familiale, alors c'est la faction de la Libertй qu'il vous faut ! Pas de corvйes ni de clairon le matin ! Si vous кtes un vrai stalker qui apprйcie la libertй et la franche camaraderie, rejoignez-nous ! Il y a toujours un pot d'arrivйe pour les nouveaux venus !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_2">
+		<text>Stalker ! Y a que dans la faction de la Libertй que tu te trouveras de vrais potes, а la vie, а la mort ! Nous, on se couvre les uns les autres et on partage tout !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_3">
+		<text>Vйtйrans et bleus ! Si vous tenez а votre indйpendance et voulez trouver d'autres gars comme vous, rejoignez-nous ! La faction de la Libertй est ouverte а tous ceux qui parcourent la Zone !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_4">
+		<text>Vous voulez gagner le respect des autres stalkers ? Vous voulez trouver un groupe de potes qui se serrent les coudes quand tout part en couille ? Vous voulez botter le cul du Devoir ? Alors, rejoignez la faction de la Libertй !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_5">
+		<text>C'est l'occasion ou jamais de rejoindre la meilleure organisation de stalkers de la Zone ! Y a qu'ici qu'on vous acceptera pour ce que vous кtes ! Ne renoncez pas а votre libertй, rejoignez-nous !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_6">
+		<text>Le Zone est faite pour les stalkers, et les stalkers sont faits pour la Libertй ! Soyez un stalker jusqu'au bout : rejoignez la faction de la Libertй !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_7">
+		<text>Devenez membre de la faction de la Libertй ! Ensemble, on sauvera la Zone ! Dйcouvrez le vrai sens du mot Libertй !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_1">
+		<text>Hй, les gars ! Vous tirez sur quoi ? Rйpondez-moi !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_2">
+		<text>Qu'est-ce qui se passe, les gars ? А vous !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_3">
+		<text>А quoi vous jouez lа-bas ?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_4">
+		<text>Vous avez besoin d'aide, les gars ? А vous !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_1">
+		<text>... Rйpondez, bordel, rйpondez !...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_2">
+		<text>... Rйpondez, а la fin !...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_3">
+		<text>... Pourquoi vous rйpondez pas, bordel ?...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_4">
+		<text>... Qu'est-ce qui se passe, merde ?... Rйpondez !...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_1">
+		<text>... Merde, on a йtй coupйs... Qu'est-ce qui s'est passй ?...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_2">
+		<text>... Ils rйpondent plus. Qu'est-ce qu'on va faire ?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_3">
+		<text>... Rйpondez, bordel ! Allez !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_4">
+		<text>... Mais oщ est-ce qu'ils sont passйs ?...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_1">
+		<text>А toutes les unitйs : on vient de perdre une autre section. Restez sur vos gardes !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_2">
+		<text>Une autre unitй ne rйpond plus. Mais, qu'est-ce qui se passe ici ?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_3">
+		<text>On a perdu le contact avec la patrouille. А toutes les unitйs : passez en alerte maximale ! Restez sur vos gardes !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_4">
+		<text>Attention, les gars ! On vient de perdre le contact avec une autre unitй et on dirait que ces gars-lа ne reviendront pas vivants. Alors, faites gaffe а vos fesses si vous voulez pas crever, vous aussi ! N'oubliez pas que l'ennemi peut кtre n'importe oщ !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_ambush_in_yard">
+		<text>Ils arrivent de tous les cфtйs ! Mercenaire, on va essayer de les retenir dans la cour pendant que tu avances dans le bвtiment.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_leader_join_freedom">
+		<text>Ici Chekhov. Si tu veux toujours te joindre а nous, passe me voir а la base. La faction de la Libertй sera heureuse de t'avoir dans ses rangs.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_0_up">
+		<text>Bonne nouvelle, les gars ! On contrфle toutes les voies d'accиs а la Vallйe ! On prйvoit mкme de rendre une petite visite au Devoir. Donc, si vous voulez nous rejoindre, on est en route pour la Dйcharge !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_1_up">
+		<text>Bien jouй, les gars ! On a sйcurisй la Dйcharge ! Maintenant, faut qu'on avance vers l'Agroprom ! Faites gaffe а pas tirer sur les stalkers neutres !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_1_down">
+		<text>L'ennemi tente d'entrer dans la Vallйe obscure ! Allez, les gars, c'est pour la Libertй qu'on se bat !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_2_up">
+		<text>Vous avez assurй ! Notre escouade a pris position sur la route vers l'Agroprom ! Reste plus qu'а frapper а la porte du Devoir !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_2_down">
+		<text>On a perdu notre groupe а la Dйcharge ! La route de la Vallйe obscure est sans dйfense !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_3_up">
+		<text>L'Agroprom a retrouvй sa Libertй, si vous voyez ce que je veux dire ! Excellent boulot, les gars ! Il est grand temps qu'on coince ces enfoirйs du Devoir dans leur base !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_3_down">
+		<text>Mauvaise nouvelle... Les gars qui gardaient la route de l'Agroprom sont morts. Nous devons la reprendre, coыte que coыte !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_4_up">
+		<text>Bravo ! On a dйtruit la base du Devoir ! C'est un sacrй coup dur pour eux, ils s'en remettront pas de sitфt ! On va enfin pouvoir profiter tranquillement de notre Libertй, ah ah !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_4_down">
+		<text>On dirait que la faction du Devoir a organisй une contre-attaque et repris l'Agroprom ! Зa sent le roussi, les gars ! Si зa continue comme зa, on en sortira jamais !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_5_down">
+		<text>Ok, qui veut encore se battre ? Paraоt que la faction du Devoir est de retour dans le coin ! Ils sont revenus avec leurs hйlicos, ont repris leur base et йliminй tout ce qui bouge dans l'Agroprom !</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_zavod_task_sniper_dead">
+		<text>Toit dйgagй, on avance !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_underground_agru_leader_dolg_pda">
+		<text>Ici le gйnйral Krylov. Surtout, reste sur tes gardes dans ces tunnels... Зa grouille de mutants lа-dessous ! D'aprиs la carte, la station de pompage est un niveau au-dessus de toi. Je t'ai envoyй les coordonnйes. Fais attention... et bonne chance !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_underground_agru_leader_clear_sky_pda">
+		<text>Ici Lebedev. Les lettres trouvйes dans la planque nous ont fourni des informations intйressantes. On sait maintenant que le groupe de Strelok a rйussi а atteindre le centre une fois et compte bien y retourner. S'ils y parviennent, ces inconscients dйclencheront un second cataclysme ! Une йmission radioactive si puissante que toutes les crйatures vivantes du coin seront incinйrйes, alors que la Zone elle-mкme deviendra irrйmйdiablement instable ! Nous devons intervenir ! Strelok est allй au lac de Yantar. Essaye de l'intercepter lа-bas, on s'occupera du Spectre et Les Crocs !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_blokpost_shout_1">
+		<text>Hй toi ! Qu'est-ce que tu fous lа ? Tire-toi vite ! Les mutants vont pas tarder а rappliquer !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_blokpost_dialog">
+		<text>Ben, зa alors... T'as oubliй ton cartable, petit ? C'est dangereux par ici, t'iras pas loin sans une bonne combinaison et une arme digne de ce nom ! Les bestioles du coin ont mйchamment les crocs ces derniers temps, alors toute aide pour combattre la Zone est la bienvenue ! Si tu veux te faire du fric, passe voir le gйnйral dans la base. Une de nos unitйs y va, justement ! Reste coller а leurs basques et t'auras moins d'ennuis...</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_squad_snorks_attack_1">
+		<text>Prenez зa, saloperies de mutants !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_squad_snorks_attack_2">
+		<text>Des snorks ! Allumez-les !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_squad_snorks_attack_3">
+		<text>Restez calmes et tirez en rafales courtes !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_1">
+		<text>Vйtйrans de Tchernobyl, йcoutez l'appel du Devoir ! Une lourde responsabilitй pиse sur nos йpaules. Nous seul pouvons empкcher la Zone de progresser !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_2">
+		<text>Stalkers indйpendants, vйtйrans, chasseurs ! Rejoignez la faction du Devoir ! Protйgeons le monde contre la contagion de la Zone !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_3">
+		<text>Stalkers, rejoignez la faction du Devoir ! Aidez-nous а empкcher la Zone de contaminer le monde !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_4">
+		<text>Le monde frйmit de terreur en contemplant les atrocitйs de la Zone ! Rejoignez la faction du Devoir et protйgez les innocents !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_5">
+		<text>Anomalies mortelles, mutants assoiffйs de sang, anarchistes et bandits n'empкcheront pas la faction du Devoir de sauver la planиte et ses habitants !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_6">
+		<text>Chaque nouveau membre de la faction du Devoir reзoit un paquetage de premiиre qualitй ! Venez combattre les mutants et trouver honneur et gloire йternelle !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_7">
+		<text>Nous vaincrons ! La vermine de la Zone sera exterminйe !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_dolg_1">
+		<text>Salut, soldat !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_dolg_2">
+		<text>Alors, toujours en vie ?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_dolg_3">
+		<text>Ravi de te revoir !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_nodolg_1">
+		<text>Alors, bleusaille, pourquoi tu rejoins pas la faction du Devoir ?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_nodolg_2">
+		<text>Hй, stalker, pas d'embrouilles sur le territoire du Devoir, ok ?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_nodolg_3">
+		<text>Cherche pas les emmerdes et tout se passera bien...</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_1">
+		<text>Bonjour ! Ne sois pas timide ! Approche un peu...</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_2">
+		<text>Ne reste pas plantй lа ! Viens par ici !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_3">
+		<text>Approche immйdiatement, soldat !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_1">
+		<text>Sergent Cheersov, je vous envoie un mercenaire ! Il va descendre dans les souterrains. Assurez-vous qu'il atteigne le trou sans encombres !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_2">
+		<text>Vous avez vraiment trouvй un tarй pour descendre lа-dessous, gйnйral ?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_3">
+		<text>Affirmatif ! Et ravitaillez-le aussi en munitions !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_4">
+		<text>А vos ordres !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_5">
+		<text>Eh bien... Bonne chance ! Le sergent te donnera l'йquipement nйcessaire et quelques conseils de son crы. Je t'ai dйjа envoyй les coordonnйes du repaire.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_wait_1">
+		<text>Restez sur vos gardes ! Ils risquent d'attaquer а tout moment !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_wait_2">
+		<text>Vous endormez pas ! Et gardez un oeil sur le repaire...</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_wait_3">
+		<text>Faites attention, les gars !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_attack_1">
+		<text>Les voilа ! Feu а volontй !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_reward_pda">
+		<text>Excellent travail, stalker ! Maintenant que ces tunnels sont inondйs, on devrait кtre tranquille ! On te doit une fiиre chandelle. Passe me voir, je te donnerai ta rйcompense !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_hello_1">
+		<text>Salut ! Voyons comment tu te dйbrouilles avec une arme !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_win_1">
+		<text>Pas mal ! Viens me voir ! J'ai une rйcompense pour toi !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_lose_1">
+		<text>T'auras plus de chance la prochaine fois ! Viens me voir, qu'on cause un peu !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_bye_1">
+		<text>Passe me voir quand t'auras envie de descendre quelques cibles !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_0_up">
+		<text>А toutes les unitйs ! L'Agroprom est sйcurisйe. Un groupe de volontaires pour attaquer la Libertй se forme en ce moment mкme. Objectif immйdiat : crйer une tкte de pont dans la Dйcharge !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_1_up">
+		<text>On a йtabli une tкte de pont dans la Dйcharge ! Prochaine йtape : sйcuriser la route de la Vallйe obscure. N'attaquez pas les stalkers neutres !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_1_down">
+		<text>Forces ennemies dans l'Agroprom ! Impossible de combattre la Libertй tant que notre base n'est pas sйcurisйe ! Йliminez-les et reprenez le contrфle de tous les accиs а l'Agroprom !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_2_up">
+		<text>Nous sommes prкts а donner l'assaut sur la Vallйe obscure ! А toutes les unitйs, alerte maximale !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_2_down">
+		<text>А toutes les unitйs ! Nous avons perdu la tкte de pont de la Dйcharge ! Contre-attaque immйdiate contre la base de Libertй !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_3_up">
+		<text>Bonne nouvelle ! Notre avant-garde a capturй un avant-poste dans la Vallйe obscure. Plus rien ne nous empкche d'attaquer la base de la Libertй !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_3_down">
+		<text>А toutes les unitйs ! L'ennemi attaque nos forces dans la Dйcharge ! Nous ne contrфlons plus la route de la Vallйe obscure !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_4_up">
+		<text>А toutes les unitйs ! Nous avons capturй la base de la Libertй ! Les anarchistes ont йtй vaincus et ne nous empкcheront plus de lutter contre la Zone ! Fйlicitations а tous ceux qui ont contribuй а cette victoire йclatante !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_4_down">
+		<text>Nos forces dans la Vallйe obscure sont dйbordйes et repoussйes vers la Dйcharge ! Il nous faut une tкte de pont dans la Vallйe pour attaquer la base de la Libertй !</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_5_down">
+		<text>А toutes les unitйs ! Nos йclaireurs signalent qu'un groupe d'assaut de la Libertй a capturй notre base de la Vallйe obscure et contrфle dйsormais le secteur. Il est temps de les remettre а leur place !</text>
+	</string>
+</string_table>

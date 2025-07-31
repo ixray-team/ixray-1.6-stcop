@@ -16,6 +16,7 @@ cover_name = red_bridge_east_smartcover_1
 ;target_path = red_bridge_csky_smart_soldier_1_f1_fire_look
 on_info = {+red_bridge_clear_path -red_bridge_bandit_time_out} smartcover@soldier1_clear_path_fire
 on_info2 = {+red_bridge_allyes_skirmish2} camper@go_to_cover2
+on_info3 = {+red_bridge_down_done} camper@real_fire_work_1
 on_game_timer = 200 | {-red_bridge_bandit_time_out} smartcover@soldier1_wait_fire
 
 [smartcover@soldier1_wait_fire]
@@ -28,6 +29,7 @@ cover_name = red_bridge_east_smartcover_1
 target_path = red_bridge_csky_smart_soldier_1_f1_fire_look
 on_info = {+red_bridge_clear_path -red_bridge_bandit_time_out} smartcover@soldier1_clear_path_fire
 on_info2 = {+red_bridge_allyes_skirmish2} camper@go_to_cover2
+on_info3 = {+red_bridge_down_done} camper@real_fire_work_1
 on_game_timer = 50 | smartcover@soldier1_wait
 
 [smartcover@soldier1_clear_path_fire]
@@ -62,6 +64,7 @@ path_walk = red_bridge_csky_smart_soldier_1_f2_walk
 path_look = red_bridge_csky_smart_soldier_1_f2_hide_look
 def_state_moving = sneak_run
 on_signal = action | smartcover@soldier_1_cover2
+on_info = {+red_bridge_down_done} camper@real_fire_work_1
 
 [smartcover@soldier_1_cover2]
 use_in_combat = true
@@ -102,7 +105,8 @@ path_walk = red_bridge_csky_smart_bridge_walk
 def_state_moving1 = rush
 def_state_moving2 = rush
 def_state_moving3 = rush
-on_signal = action | camper@talk_work_1
+on_signal = action | camper@talk_work_1 %+red_bridge_cs_soldier_1_wait_1%
+on_info = {+red_bridge_cs_soldier_1_wait_1} camper@talk_work_1
 meet = no_meet
 
 [camper@talk_work_1]
@@ -111,6 +115,7 @@ out_restr = red_bridge_bandit_restr
 path_walk = red_bridge_csky_smart_soldier_1_talk_walk
 path_look = red_bridge_csky_smart_soldier_talk_look
 on_signal = action | camper@wait_talk_work_1 %+red_bridge_cs1%
+on_info = {+red_bridge_cs1} camper@wait_talk_work_1
 
 [camper@wait_talk_work_1]
 invulnerable = true
@@ -125,7 +130,7 @@ out_restr = red_bridge_bandit_restr
 path_walk = red_bridge_csky_smart_soldier_1_talk_walk
 path_look = red_bridge_csky_smart_soldier_talk_look
 on_game_timer = 40 | walker@wait_commander_work_1
-on_info = {+red_bridge_csky_go_limansk} patrol@go_limansk_work_1
+on_info = {+red_bridge_csky_go_limansk_1} patrol@go_limansk_work_1
 
 [remark@talk_work_1]
 invulnerable = true
@@ -133,7 +138,7 @@ out_restr = red_bridge_bandit_restr
 target = red_bridge_csky_smart_soldier_talk_look, 0
 anim = salut
 on_game_timer = 30 | walker@wait_commander_work_1
-on_info = {+red_bridge_csky_go_limansk} patrol@go_limansk_work_1
+on_info = {+red_bridge_csky_go_limansk_1} patrol@go_limansk_work_1
 meet = no_meet
 
 [walker@wait_commander_work_1]
@@ -141,7 +146,7 @@ invulnerable = true
 out_restr = red_bridge_bandit_restr
 path_walk = red_bridge_csky_smart_soldier_1_talk_walk
 path_look = red_bridge_csky_smart_soldier_talk_look
-on_info = {+red_bridge_csky_go_limansk} patrol@go_limansk_work_1
+on_info = {+red_bridge_csky_go_limansk_1} patrol@go_limansk_work_1
 
 [patrol@go_limansk_work_1]
 invulnerable = true
