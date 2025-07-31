@@ -73,54 +73,6 @@ struct str_container_impl
 		}
 	}
 
-	void verify()
-	{
-		Msg("strings verify started");
-		for (u32 i = 0; i < buffer_size; ++i)
-		{
-			str_value* value = buffer[i];
-			while (value)
-			{
-				u32			crc = crc32(value->value, value->dwLength);
-				string32	crc_str;
-				_itoa(value->dwCRC, crc_str, 16);
-
-				R_ASSERT3(crc == value->dwCRC, "CorePanic: read-only memory corruption (shared_strings)", crc_str);
-				R_ASSERT3(value->dwLength == xr_strlen(value->value), "CorePanic: read-only memory corruption (shared_strings, internal structures)", value->value);
-				value = value->next;
-			}
-		}
-		Msg("strings verify completed");
-	}
-
-	void dump(FILE* f) const
-	{
-		for (u32 i = 0; i < buffer_size; ++i)
-		{
-			str_value* value = buffer[i];
-			while (value)
-			{
-				fprintf(f, "ref[%4d]-len[%3d]-crc[%8X] : %s\n", value->dwReference.load(), value->dwLength, value->dwCRC, value->value);
-				value = value->next;
-			}
-		}
-	}
-
-	void dump(IWriter* f) const
-	{
-		for (u32 i = 0; i < buffer_size; ++i)
-		{
-			str_value* value = buffer[i];
-			string4096		temp;
-			while (value)
-			{
-				xr_sprintf(temp, sizeof(temp), "ref[%4d]-len[%3d]-crc[%8X] : %s\n", value->dwReference.load(), value->dwLength, value->dwCRC, value->value);
-				f->w_string(temp);
-				value = value->next;
-			}
-		}
-	}
-
 	int stat_economy()
 	{
 		int				counter = 0;
@@ -208,32 +160,6 @@ void str_container::clean()
 	cs.Leave();
 }
 
-void str_container::verify()
-{
-	cs.Enter();
-	impl->verify();
-	cs.Leave();
-}
-
-void str_container::dump()
-{
-	cs.Enter();
-
-	FILE* F;
-	fopen_s(&F, "d:\\$str_dump$.txt", "w");
-
-	impl->dump(F);
-	fclose(F);
-	cs.Leave();
-}
-
-void str_container::dump(IWriter* W)
-{
-	cs.Enter();
-	impl->dump(W);
-	cs.Leave();
-}
-
 u32 str_container::stat_economy()
 {
 	cs.Enter();
@@ -247,7 +173,6 @@ u32 str_container::stat_economy()
 str_container::~str_container()
 {
 	clean();
-	//dump ();
 	xr_delete(impl);
 }
 
