@@ -75,9 +75,6 @@ CInventory::CInventory()
 		xr_sprintf(slot_active, "%s%d", "slot_active_", k);
 	}
 
-	m_slots[ANIM_SLOT].m_bAct = true;
-	m_slots[ANIM_SLOT].m_bPersistent = true;
-
 	m_blocked_slots.resize(k + 1);
 
 	for (u16 i = 0; i <= k; ++i)
@@ -529,6 +526,21 @@ void CInventory::Activate(u16 slot, bool bForce)
 	if(!OnServer())
 	{
 		return;
+	}
+
+	if (CActor* actor = smart_cast<CActor*>(m_pOwner))
+	{
+		if (actor->HudAnimator() && actor->HudAnimator()->IsActive())
+		{
+			if (CHudItem* hud_item = smart_cast<CHudItem*>(ActiveItem()))
+			{
+				if (hud_item->SendDeactivateItem())
+				{
+					m_iNextActiveSlot = NO_ACTIVE_SLOT;
+				}
+			}
+			return;
+		}
 	}
 
 	PIItem tmp_item = nullptr;

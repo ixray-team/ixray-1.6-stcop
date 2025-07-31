@@ -20,6 +20,7 @@
 #include "../xrScripts/script_export_space.h"
 #include "CustomDetector.h"
 #include "EffectorNightVision.h"
+#include "HudAnimatorManager.h"
 
 using namespace ACTOR_DEFS;
 
@@ -66,6 +67,7 @@ class CPickUpManager;
 class CCustomDetector;
 
 class CNightVisionEffector;
+class CHudAnimatorManager;
 
 class CActor: 
 	public IGame_Actor, 
@@ -253,6 +255,8 @@ protected:
 	u32						m_feel_touch_characters;
 private:
 	void					SwitchOutBorder(bool new_border_state);
+
+	CHudAnimatorManager*	m_hud_animator = nullptr;
 public:
 	bool					m_bAllowDeathRemove;
 	float					m_fLegs_shift;
@@ -261,6 +265,8 @@ public:
 	s32						GetZoomRndSeed			()	{ return m_ZoomRndSeed;	};
 	void					SetShotRndSeed			(s32 Seed = 0);
 	s32						GetShotRndSeed			()	{ return m_ShotRndSeed;	};
+
+	CHudAnimatorManager*	HudAnimator()			{ return m_hud_animator; }
 
 public:
 	void					detach_Vehicle			();
