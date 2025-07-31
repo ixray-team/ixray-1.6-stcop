@@ -28,6 +28,7 @@
 #include "UILogsWnd.h"
 #include "UIFactionWarWnd.h"
 #include "UIScriptWnd.h"
+#include "UIPdaContactsWnd.h"
 
 #define PDA_XML		"pda.xml"
 
@@ -43,6 +44,7 @@ CUIPdaWnd::CUIPdaWnd()
 	pUIFactionWarWnd = nullptr;
 	pUIRankingWnd    = nullptr;
 	pUILogsWnd       = nullptr;
+	UIPdaContactsWnd = nullptr;
 	m_hint_wnd       = nullptr;
 
 	LoadCallbackGlobals(m_isSetActiveSubdialog, m_onSetActiveSubdialog, "OnSetActiveSubdialog");
@@ -53,6 +55,7 @@ CUIPdaWnd::~CUIPdaWnd()
 {
 	delete_data( pUITaskWnd );
 	delete_data( pUIFactionWarWnd );
+	delete_data( UIPdaContactsWnd );
 	delete_data( pUIRankingWnd );
 	delete_data( pUILogsWnd );
 	delete_data( m_hint_wnd );
@@ -100,6 +103,12 @@ void CUIPdaWnd::Init()
 		pUIFactionWarWnd = new CUIFactionWarWnd();
 		pUIFactionWarWnd->hint_wnd = m_hint_wnd;
 		pUIFactionWarWnd->Init();
+	}
+
+	if (UITabControl->GetButtonById("eptContacts"))
+	{
+		UIPdaContactsWnd = new CUIPdaContactsWnd();
+		UIPdaContactsWnd->Init();
 	}
 	pUIRankingWnd					= new CUIRankingWnd();
 	pUIRankingWnd->Init				();
@@ -200,6 +209,10 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	else if ( section == "eptFractionWar" )
 	{
 		m_pActiveDialog = pUIFactionWarWnd;
+	}
+	else if (section == "eptContacts")
+	{
+		m_pActiveDialog = UIPdaContactsWnd;
 	}
 	else if (section == "eptRanking")
 	{
@@ -310,6 +323,10 @@ void CUIPdaWnd::DrawHint()
 	{
 
 	}
+	else if (m_sActiveSection == "eptContacts")
+	{
+
+	}
 	m_hint_wnd->Draw();
 }
 
@@ -334,6 +351,7 @@ void CUIPdaWnd::Reset()
 
 	if ( pUITaskWnd )		pUITaskWnd->ResetAll();
 	if ( pUIFactionWarWnd )	pUIFactionWarWnd->ResetAll();
+	if ( UIPdaContactsWnd )	UIPdaContactsWnd->ResetAll();
 	if ( pUIRankingWnd )	pUIRankingWnd->ResetAll();
 	if ( pUILogsWnd )		pUILogsWnd->ResetAll();
 }
