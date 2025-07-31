@@ -27,6 +27,7 @@ CEngineExternal::CEngineExternal()
 	{
 		R_ASSERT2(false, "Unknown platform mode specified. Please check your engine_external.ltx.");
 	}
+	gamesaveSize = READ_IF_EXISTS(pOptions, r_ivector2, "general", "SaveImageSize", Ivector2().set(128, 128));
 }
 
 CEngineExternal::~CEngineExternal() 
