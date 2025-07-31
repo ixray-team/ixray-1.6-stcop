@@ -122,13 +122,13 @@ void RenderHUDAdjustManager()
 		{
 			if (ImGui::BeginTabItem("General"))
 			{
-				const char* p_active_weapon_name = "NO ACTIVE WEAPON";
+				xr_string p_active_weapon_name = "NO ACTIVE WEAPON";
 
 				if (p_item)
 				{
-					p_active_weapon_name = p_item->NameShort();
+					p_active_weapon_name = Platform::ANSI_TO_UTF8(p_item->NameShort());
 				}
-				ImGui::Text("Active weapon: %s", p_active_weapon_name);
+				ImGui::Text("Active weapon: %s", p_active_weapon_name.c_str());
 
 				if (p_item)
 				{
