@@ -261,23 +261,35 @@ void CUIActorMenu::TryDisassembleItem(CUIWindow* w, void* d)
 void CUIActorMenu::RepairEffect_CurItem()
 {
 	PIItem item = CurrentIItem();
-	if ( !item )
+	if (!item)
 	{
-		return;	
+		return;
 	}
+
 	LPCSTR item_name = item->m_section_id.c_str();
 
-	luabind::functor<void>	funct;
-	R_ASSERT( ai().script_engine().functor( "inventory_upgrades.effect_repair_item", funct ) );
-	funct( item_name, item->GetCondition() );
+	luabind::functor<void> funct;
+	R_ASSERT(ai().script_engine().functor("inventory_upgrades.effect_repair_item", funct));
+	funct(item_name, item->GetCondition());
 
-	item->SetCondition( 1.0f );
+	item->SetCondition(1.0f);
 	UpdateConditionProgressBars();
 	SeparateUpgradeItem();
 	CUICellItem* itm = CurrentItem();
-	if(itm)
-		itm->UpdateConditionProgressBar();
 
+	if (itm)
+	{
+		itm->UpdateConditionProgressBar();
+	}
+
+	if (CWeapon* wpn = item->cast_weapon())
+	{
+		wpn->SetMisfireStatus(false);
+		if (wpn->GetState() == CWeapon::eIdle)
+		{
+			wpn->SwitchState(CWeapon::eIdle);
+		}
+	}
 }
 
 void CUIActorMenu::PerformDisassemble()
