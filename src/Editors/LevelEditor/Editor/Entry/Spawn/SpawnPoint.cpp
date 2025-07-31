@@ -251,6 +251,17 @@ void CSpawnPoint::SSpawnData::Create(LPCSTR _entity_ref)
 			m_Motion = new CLE_Motion(m_Data->motion());
 			m_Data->set_editor_flag(CSE_Abstract::flMotionChange);
 		}
+		
+		if (pSettings->line_exist(_entity_ref, "idle_particles"))
+		{
+			shared_str m_sIdleParticles = pSettings->r_string(_entity_ref, "idle_particles");
+			if (IdleParticle = ::Render->model_CreateParticles(*m_sIdleParticles))
+			{
+				IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
+				Particles->Play();
+			}
+		}
+
 		if (pSettings->line_exist(_entity_ref, "$player"))
 		{
 			if (pSettings->r_bool(_entity_ref, "$player"))
@@ -270,10 +281,12 @@ void CSpawnPoint::SSpawnData::Create(LPCSTR _entity_ref)
 
 void CSpawnPoint::SSpawnData::Destroy()
 {
-	g_SEFactoryManager->destroy_entity		(m_Data);
-	xr_delete			(m_Visual);
-	xr_delete			(m_Motion);
+	g_SEFactoryManager->destroy_entity(m_Data);
+	xr_delete(m_Visual);
+	xr_delete(m_Motion);
+	xr_delete(IdleParticle);
 }
+
 void CSpawnPoint::SSpawnData::get_bone_xform	(LPCSTR name, Fmatrix& xform)
 {
 	xform.identity		();
@@ -488,6 +501,16 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 	RCache.set_xform_world		(Fidentity);
 	EDevice->SetShader			(EDevice->m_WireShader);
 	m_Data->on_render			(&DU_impl,this,bSelected,parent,priority,strictB2F);
+
+	if (IdleParticle)
+	{
+		IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
+		static Fvector v = { 0.f, 0.f, 0.f };
+		Particles->UpdateParent(parent, v, FALSE);
+		Particles->OnFrame(1);
+
+		::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
+	}
 
 	if(bSelected)
 	{
