@@ -122,13 +122,23 @@ void IGame_Persistent::OnGameStart()
 
 void IGame_Persistent::Prefetch()
 {
-	// prefetch game objects & models
-	Log("Loading objects...");
-	ObjectPool.prefetch();
-	Log("Loading models...");
-	Render->models_Prefetch();
-	Log("Loading textures...");
-	Device.m_pRender->ResourcesDeferredUpload();
+	PROF_EVENT("Prefetch");
+	{
+		// prefetch game objects & models
+		PROF_EVENT("Loading objects");
+		Log("Loading objects...");
+		ObjectPool.prefetch();
+	}
+	{
+		PROF_EVENT("Prefetch Loading models");
+		Log("Loading models...");
+		Render->models_Prefetch();
+	}
+	{
+		PROF_EVENT("Loading textures");
+		Log("Loading textures...");
+		Device.m_pRender->ResourcesDeferredUpload();
+	}
 }
 
 void IGame_Persistent::OnGameEnd()

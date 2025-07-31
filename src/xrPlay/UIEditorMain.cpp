@@ -189,6 +189,7 @@ void RenderScenesViewer() {
 
 void RenderUI()
 {
+	PROF_EVENT("Render ImGui");
 	CImGuiManager::Instance().Subscribe("Editor Weather Draw", CImGuiManager::ERenderPriority::eMedium, RenderUIWeather);
 	CImGuiManager::Instance().Subscribe("Actor InfoPortions", CImGuiManager::ERenderPriority::eMedium, RenderActorInfos);
 	CImGuiManager::Instance().Subscribe("Scenes Viewer", CImGuiManager::ERenderPriority::eMedium, RenderScenesViewer);

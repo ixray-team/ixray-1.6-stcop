@@ -22,6 +22,7 @@
 
 void EnumerateDisplayModes()
 {
+	PROF_EVENT("EnumerateDisplayModes");
 	SDL_DisplayID primaryDisplay = SDL_GetPrimaryDisplay();
 	if (!primaryDisplay)
 	{
@@ -57,6 +58,7 @@ void EnumerateDisplayModes()
 
 void MigrateToGameWindow()
 {
+	PROF_EVENT("MigrateToGameWindow");
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 		
 	SDL_SetWindowFocusable(g_AppInfo.Window, TRUE);
@@ -70,6 +72,7 @@ void MigrateToGameWindow()
 
 static void LoadCustomSettings()
 {
+	PROF_EVENT("LoadCustomSettings");
 	FS_FileSet settingsFiles = {};
 	FS.file_list(settingsFiles, "$game_config$", FS_ListFiles, "ixray_settings\\default_settings*.ltx");
 
@@ -89,6 +92,9 @@ int APIENTRY WinMain
 	int nCmdShow
 )
 {
+	//PROF_START_CAPTURE();
+	{
+		PROF_EVENT("START_ENGINE");
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) != 0) {
 		return -1;
 	}
@@ -120,6 +126,8 @@ int APIENTRY WinMain
 
 	EngineLoadStage1(lpCmdLine);
 
+		{
+			PROF_EVENT("g_pGPU");
 	g_pGPU = new CNvReader();
 	g_pGPU->Initialize();
 	if (!((CNvReader*)(g_pGPU))->bSupport)
@@ -128,6 +136,7 @@ int APIENTRY WinMain
 		g_pGPU = new CAMDReader;
 		g_pGPU->Initialize();
 	}
+		}
 #ifdef DEBUG
 	xrLogger::EnableFastDebugLog();
 #endif
@@ -135,21 +144,28 @@ int APIENTRY WinMain
 
 	Engine.External.CreateRendererList();
 
+		{
+			PROF_EVENT("Console::Create");
 	Console = new CConsole();
+		}
 	EngineLoadStage3();
 
+		{
+			PROF_EVENT("Select Render");
 	if (Core.ParamsData.test(ECoreParams::r4)) {
 		Console->Execute("renderer renderer_r4");
 	}
 	else if (Core.ParamsData.test(ECoreParams::r2)) {
 		Console->Execute("renderer renderer_r2");
-	} else {
+			}
+			else {
 		CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
 		pTmp->Execute(Console->ConfigFile);
 		xr_delete(pTmp);
 		// В любом случае надо вызывать команду CCC_R2
 		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
 	}
+		}
 
 	Engine.External.Initialize();
 
@@ -180,6 +196,7 @@ int APIENTRY WinMain
 	// Delete application presence mutex
 	CloseHandle(hCheckPresenceMutex);
 #endif
+	}
 
 	return (0);
 }

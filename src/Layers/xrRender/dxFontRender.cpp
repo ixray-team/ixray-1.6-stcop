@@ -178,7 +178,7 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) {
 	ID3DTexture2D* pSurface = nullptr;
-
+	PROF_EVENT("dxFontRender::CreateFontAtlas");
 #ifdef USE_DX11
 	D3D_TEXTURE2D_DESC descFontAtlas;
 	ZeroMemory(&descFontAtlas, sizeof(D3D_TEXTURE2D_DESC));

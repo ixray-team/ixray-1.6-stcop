@@ -712,6 +712,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 {
 	if (E == eQuickLoad)
 	{
+		PROF_EVENT("eQuickLoad");
 		loading_save_timer.Start();
 		loading_save_timer_started = true;
 		Msg("* Game Loading Timer: Started from Save Reloading");

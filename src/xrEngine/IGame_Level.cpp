@@ -20,6 +20,7 @@ extern	BOOL g_bLoaded;
 
 IGame_Level::IGame_Level	()
 {
+	PROF_EVENT("IGame_Level::IGame_Level");
 	m_pCameras					= new CCameraManager(true);
 	g_pGameLevel				= this;
 	pLevel						= nullptr;
@@ -92,6 +93,7 @@ static void 	build_callback	(Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* 
 
 BOOL IGame_Level::Load			(u32 dwNum) 
 {
+	PROF_EVENT("IGame_Level::Load");
 	// Initialize level data
 	pApp->Level_Set				( dwNum );
 	string_path					temp;

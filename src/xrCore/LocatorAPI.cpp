@@ -1318,6 +1318,7 @@ bool CLocatorAPI::check_for_file	(LPCSTR path, LPCSTR _fname, string_path& fname
 template <typename T>
 T *CLocatorAPI::r_open_impl	(LPCSTR path, LPCSTR _fname)
 {
+	PROF_EVENT("r_open_impl");
 	T						*R = 0;
 	string_path				fname;
 	const file				*desc = 0;
