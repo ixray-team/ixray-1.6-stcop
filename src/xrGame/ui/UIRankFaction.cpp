@@ -24,13 +24,62 @@ u32 const color_green = 0xff00FF00;
 u32 const color_red   = 0xffFF0000;
 u32 const color_clear = 0xffEEEEFF;
 
-CUIRankFaction::CUIRankFaction() : m_prev_sn(0xff)
+CUIRankFaction::CUIRankFaction()
 {
+	m_sn = nullptr;
+	m_name = nullptr;
+	m_icon = nullptr;
+	m_icon_over = nullptr;
+	m_location_static = nullptr;
+	m_location_value = nullptr;
+	m_power_static = nullptr;
+	m_power_value = nullptr;
+
+	m_relation_minus = nullptr;
+	m_relation_center_minus = nullptr;
+	m_relation_center_plus = nullptr;
+	m_relation_plus = nullptr;
+
+	m_origin_static = nullptr;
+	m_border_minus = nullptr;
+	m_border_plus = nullptr;
+	m_enemy_static = nullptr;
+	m_frined_static = nullptr;
+
+	m_rating_up = nullptr;
+	m_rating_down = nullptr;
+
+	m_prev_sn = 0xff;
 }
 
-CUIRankFaction::CUIRankFaction( shared_str const& faction_id )
-	: m_faction_state( faction_id ), m_prev_sn(0xff)
+CUIRankFaction::CUIRankFaction(shared_str const& faction_id)
 {
+	m_faction_state = faction_id;
+
+	m_sn = nullptr;
+	m_name = nullptr;
+	m_icon = nullptr;
+	m_icon_over = nullptr;
+	m_location_static = nullptr;
+	m_location_value = nullptr;
+	m_power_static = nullptr;
+	m_power_value = nullptr;
+
+	m_relation_minus = nullptr;
+	m_relation_center_minus = nullptr;
+	m_relation_center_plus = nullptr;
+	m_relation_plus = nullptr;
+
+	m_origin_static = nullptr;
+	m_border_minus = nullptr;
+	m_border_plus = nullptr;
+	m_enemy_static = nullptr;
+	m_frined_static = nullptr;
+
+	m_rating_up = nullptr;
+	m_rating_down = nullptr;
+
+	m_prev_sn = 0xff;
 }
 
 CUIRankFaction::~CUIRankFaction()
