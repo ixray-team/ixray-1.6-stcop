@@ -162,8 +162,6 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 			{
 				static_geom_transp.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
 			}
-
-			//static_geom.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
 		}
 	}
 
@@ -175,20 +173,130 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 	{
 		xr_vector<FaceDataIntel> temp_buffer;
   		ref->export_cform_rcast_new(temp_buffer);
-		for (auto F : temp_buffer)
+		for (auto pF : temp_buffer)
 		{
-			Face* FFF = (Face*) F.ptr;
-			if (FFF->flags.bOpaque)
-				murefs_geom.AddFace(F.ptr, F.v1, F.v2, F.v3);
+			Face* F = (Face*) pF.ptr;
+			if (F->flags.bOpaque)
+				murefs_geom.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
 			else
-				murefs_geom_transp.AddFace(F.ptr, F.v1, F.v2, F.v3);
-		
-			//static_geom.AddFace(F.ptr, F.v1, F.v2, F.v3);
+				murefs_geom_transp.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
 		}
 			
  	}
 	murefs_mem = GetMemory() - s;
 	MU_size = murefs_mem;
+}
+#include "../xrLC/Build.h"
+void EmbreeData::BuildRcast()
+{
+	Phase("Export Build.cform");
+	//TriangleContainer container;
+	 
+	CDB::CollectorPacked CPacked(pBuild->scene_bb, (int)lc_global_data()->g_vertices().size(), (int)lc_global_data()->g_faces().size());
+
+	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
+  	for (auto F : lc_global_data()->g_faces())
+	{
+		const Shader_xrLC& SH = F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow)
+			continue;
+
+		b_material& M = lc_global_data()->materials()[F->dwMaterial];
+		// Collect
+		adjacent_vec.clear();
+		for (int vit = 0; vit < 3; ++vit)
+		{
+			Vertex* V = F->v[vit];
+			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
+			{
+				adjacent_vec.push_back(V->m_adjacents[adj]);
+			}
+		}
+
+		std::sort(adjacent_vec.begin(), adjacent_vec.end());
+		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
+
+		// Unique
+		BOOL			bAlready = FALSE;
+
+		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		{
+			Face* Test = adjacent_vec[ait];
+			if (Test == F)
+				continue;
+			if (!Test->flags.bProcessed)
+				continue;
+			if (FaceEqual__(*F, *Test))
+			{
+				bAlready = TRUE;
+				break;
+			}
+		}
+
+		if (!bAlready)
+		{
+			F->flags.bProcessed = true;
+			CPacked.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, convert_nax(F), 0);
+			//container.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+ 		}
+	}
+  
+	for (auto ref : lc_global_data()->mu_refs())
+	{
+		xr_vector<FaceDataIntel> temp_buffer;
+		ref->export_cform_rcast_new(temp_buffer);
+		for (auto pF : temp_buffer)
+		{
+			Face* F = (Face*) pF.ptr;
+			CPacked.add_face_D(pF.v1, pF.v2, pF.v3, convert_nax(F), 0);
+  			//container.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
+		}
+ 	}
+   
+ 	{
+		string_path				fn;
+
+		IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "build.cform"));
+		xr_vector<b_rc_face>	rc_faces;
+		rc_faces.resize(CPacked.getTS());
+	
+		// Prepare faces
+		for (u32 k = 0; k < CPacked.getTS(); k++)
+		{
+ 			base_Face* F		= convert_nax(k); //container.dummy[k];
+		
+			b_rc_face& cf		= rc_faces[k];
+			cf.dwMaterial		= F->dwMaterial;
+			cf.dwMaterialGame	= F->dwMaterialGame;
+
+			Fvector2* cuv		= F->getTC0();
+			cf.t[0].set(cuv[0]);
+			cf.t[1].set(cuv[1]);
+			cf.t[2].set(cuv[2]);
+		}
+ 		MFS->open_chunk(0);
+
+		// Header
+		hdrCFORM hdr;
+		hdr.version		= CFORM_CURRENT_VERSION;
+		hdr.vertcount	= (u32) CPacked.getVS();
+		hdr.facecount	= (u32) CPacked.getTS();
+		hdr.aabb		= pBuild->scene_bb;
+		
+		MFS->w(&hdr, sizeof(hdr));
+
+		// Data
+ 		MFS->w(CPacked.getV(), (u32)CPacked.getVS() * sizeof(Fvector));
+		MFS->w(CPacked.getT(), (u32)CPacked.getTS() * sizeof(CDB::TRI));
+
+		MFS->close_chunk();
+
+		MFS->open_chunk(1);
+		MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
+		MFS->close_chunk();
+
+		FS.w_close(MFS);
+	}
 }
 
 
@@ -197,7 +305,7 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 
 extern CBuild* pBuild;
  
-u32 EmbreeData::TriangleContainer::find_or_add(Fvector& V)
+u32 TriangleContainer::find_or_add(Fvector& V)
 {
 	VertexEmbree new_vertex;
 	new_vertex.Set(V);
@@ -229,11 +337,11 @@ u32 EmbreeData::TriangleContainer::find_or_add(Fvector& V)
 	hashTable[hashKey].push_back(data);
 	return VertexID;
 }
-
-// #define CompactingVertexes
-void EmbreeData::TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
+ 
+#define CompactingVertexes
+void TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
 {
-	int IDX = vertex().size();
+ 	int IDX = vertex().size();
 	
 	VertexEmbree vert1, vert2, vert3;
 	vert1.Set(v1), vert2.Set(v2), vert3.Set(v3);
@@ -256,8 +364,15 @@ void EmbreeData::TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, F
 	faces().push_back(triangle);
 	dummy.push_back((Face*)F);
 }
+ 
+// void EmbreeData::TriangleContainer::GetFace(int ID)
+// {
+// 	v1 = vertex()[faces()[ID].point1].Get();
+// 	v2 = vertex()[faces()[ID].point2].Get();
+// 	v3 = vertex()[faces()[ID].point3].Get();
+// }
 
-void EmbreeData::TriangleContainer::ClearAll()
+void TriangleContainer::ClearAll()
 {
  	hashTable.clear();
 	dummy.clear();
