@@ -436,7 +436,7 @@ CClientSpawnManager	&get_client_spawn_manager()
 {
 	return		(Level().client_spawn_manager());
 }
-/*
+
 void start_stop_menu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
 	if(pDialog->IsShown())
@@ -444,7 +444,7 @@ void start_stop_menu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 	else
 		pDialog->ShowDialog(bDoHideIndicators);
 }
-*/
+
 
 void add_dialog_to_render(CUIDialogWnd* pDialog)
 {
@@ -1062,6 +1062,7 @@ void CLevel::script_register(lua_State *L)
 		def("map_has_object_spot",				map_has_object_spot),
 		def("map_change_spot_hint",				map_change_spot_hint),
 
+		def("start_stop_menu", start_stop_menu),
 		def("add_dialog_to_render",				add_dialog_to_render),
 		def("remove_dialog_to_render",			remove_dialog_to_render),
 		def("hide_indicators",					hide_indicators),
