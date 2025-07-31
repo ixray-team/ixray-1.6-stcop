@@ -43,6 +43,10 @@ public:
 	virtual	bool	bfAssignWatch(CScriptEntityAction	*tpEntityAction);
 	virtual	bool	bfAssignObject(CScriptEntityAction *tpEntityAction);
 
+	virtual CScriptEntity* cast_script_entity() { return this; }
+	virtual CGameObject* cast_game_object() { return this; }
+	virtual CProjector* cast_projector() { return this; }
+
 			Fvector GetCurrentDirection	();
 private:
 			void	TurnOn			();
