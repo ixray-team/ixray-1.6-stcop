@@ -4,7 +4,7 @@
  *		  by Dale Schumacher
  */
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
 typedef	u32	Pixel;
 struct Image

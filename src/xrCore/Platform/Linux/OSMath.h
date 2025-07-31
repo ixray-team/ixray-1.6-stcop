@@ -1,6 +1,14 @@
 #pragma once
 #include <cmath>
 
+struct RECT
+{
+    int left;
+    int top;
+    int right;
+    int bottom;
+};
+
 inline
 unsigned char _bittest64(std::int64_t *a, std::int64_t b)
 {

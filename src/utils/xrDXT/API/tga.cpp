@@ -1,5 +1,5 @@
 // file: targasaver.cpp
-#include "stdafx.h"
+#include "StdAfx.h"
 #pragma hdrstop
 
 #include "tga.h"
@@ -44,7 +44,7 @@ void TGAdesc::maketga(IWriter& fs)
         int  ab_size = real_sl ? 4 - real_sl : 0;
         for (int j = 0; j<height; j++)
         {
-            BYTE *p = (LPBYTE)data + scanlength*j;
+            u8 *p = (u8*)data + scanlength*j;
             for (int i = 0; i < width; i++)
             {
                 BYTE buffer[3] = { p[0], p[1], p[2] };
@@ -68,7 +68,7 @@ void TGAdesc::maketga(IWriter& fs)
             // bad pitch, it seems :(
             for (int j = 0; j < height; j++)
             {
-                BYTE *p = (LPBYTE)data + scanlength*j;
+                u8 *p = (u8*)data + scanlength*j;
                 for (int i = 0; i < width; i++)
                 {
                     BYTE buffer[4] = { p[0], p[1], p[2], p[3] };
@@ -107,7 +107,7 @@ void TGAdesc::maketga(int hf)
         int ab_size = real_sl ? 4 - real_sl : 0;
         for (int j = 0; j < height; j++)
         {
-            BYTE* p = (LPBYTE)data + scanlength*j;
+            BYTE* p = (u8*)data + scanlength*j;
             for (int i = 0; i < width; i++)
             {
                 BYTE buffer[3] = { p[0], p[1], p[2] };

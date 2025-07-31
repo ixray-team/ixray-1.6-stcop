@@ -64,7 +64,7 @@ using UINT = unsigned int;
 using xr_special_char = char;
 using LPSTR = char*;
 using LPCSTR = const char*;
-using BYTE = char;
+using BYTE = unsigned char;
 using UINT_PTR = uint64_t;
 
 using DWORD = uint32_t;
@@ -72,6 +72,8 @@ using BOOL = int32_t;
 using HRESULT = long;
 using LRESULT = long;
 using HMODULE = void*;
+using DWORD_PTR = uintptr_t;
+using HFILE = int;
 
 #define SUCCEEDED(hr) (((HRESULT)(hr)) >= 0)
 #define FAILED(hr) (((HRESULT)(hr)) < 0)

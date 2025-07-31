@@ -9,13 +9,10 @@
     "settings": {
         "files.associations": {
             "*.ltx": "ini",
-
             "**/gamedata/configs/**/*.ltx": "ini",
-
             "**/gamedata/scripts/*.script": "lua",
             "**/gamedata/shaders/**/*.s": "lua",
             "**/gamedata/shaders/**/*.s_": "lua",
-
             "**/gamedata/shaders/**/*.hlsli": "hlsl",
             "**/gamedata/shaders/**/*.hlsl": "hlsl",
             "**/gamedata/shaders/**/*.h": "hlsl",
@@ -25,7 +22,6 @@
             "**/gamedata/shaders/**/*.hs": "hlsl",
             "**/gamedata/shaders/**/*.gs": "hlsl",
             "**/gamedata/shaders/**/*.cs": "hlsl",
-
             "**/rawdata/levels/**/fog_volume.part": "ini",
             "**/rawdata/levels/**/glow.part": "ini",
             "**/rawdata/levels/**/group.part": "ini",
@@ -40,7 +36,6 @@
             "**/rawdata/levels/**/sound_src.part": "ini",
             "**/rawdata/levels/**/spawn.part": "ini",
             "**/rawdata/levels/**/way.part": "ini",
-
             "array": "cpp",
             "atomic": "cpp",
             "hash_map": "cpp",
@@ -105,7 +100,10 @@
             "stdexcept": "cpp",
             "streambuf": "cpp",
             "cinttypes": "cpp",
-            "typeinfo": "cpp"
+            "typeinfo": "cpp",
+            "ranges": "cpp",
+            "span": "cpp",
+            "locale": "cpp"
         },
 
         "dotnet.defaultSolution": "disable",

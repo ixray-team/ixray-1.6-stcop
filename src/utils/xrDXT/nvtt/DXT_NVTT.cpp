@@ -1,7 +1,7 @@
 // DXT.cpp : Defines the entry point for the DLL application.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #pragma warning(push)
 #pragma warning(disable:4244)
 #pragma warning(disable:4018)
@@ -9,7 +9,6 @@
 #pragma warning(pop)
 
 #include "../../Layers/xrRender/ETextureParams.h"
-#include <ddraw.h>
 extern u32* Build32MipLevel(u32& _w, u32& _h, u32& _p, u32* pdwPixelSrc, STextureParams* fmt, float blend);
 
 void GenerateAdvancedFilterMipMaps(u32& w, u32& h, nvtt::InputOptions& inOpt, u32 pitch, u8* raw_data, STextureParams* fmt, bool& result, nvtt::CompressionOptions& compOpt, nvtt::OutputOptions& outOpt)
