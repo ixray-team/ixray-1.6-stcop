@@ -216,18 +216,20 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	VERIFY								(pIItem->CurrPlace() != eItemPlaceUndefined);
 
 
-	if( CurrentGameUI() )
+	if (CUIGameCustom* current_ui = CurrentGameUI())
 	{
-		CObject* pActor_owner = smart_cast<CObject*>(m_pOwner);
+		CObject* pActor_owner = m_pOwner != nullptr ? m_pOwner->cast_game_object()->dcast_CObject() : nullptr;
 
 		if (Level().CurrentViewEntity() == pActor_owner)
 		{
-			CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
+			current_ui->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
 		}
-		else if(CurrentGameUI()->ActorMenu().GetMenuMode()==mmDeadBodySearch)
+		else if (current_ui->ActorMenu().GetMenuMode() == mmDeadBodySearch)
 		{
-			if(m_pOwner==CurrentGameUI()->ActorMenu().GetPartner())
-				CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
+			if (m_pOwner == current_ui->ActorMenu().GetPartner())
+			{
+				current_ui->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
+			}
 		}
 	};
 }
@@ -312,7 +314,7 @@ bool CInventory::DropItem(CGameObject *pObj, bool just_before_destroy, bool dont
 
 		if (CurrentGameUI())
 		{
-			CObject* pActor_owner = smart_cast<CObject*>(m_pOwner);
+			CObject* pActor_owner = m_pOwner != nullptr ? m_pOwner->cast_game_object()->dcast_CObject() : nullptr;
 
 			if (Level().CurrentViewEntity() == pActor_owner)
 				CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_REJECT);
@@ -832,11 +834,11 @@ void CInventory::ActiveWeapon( u16 slot )
 
 void CInventory::Update() 
 {
-	if( OnServer() )
+	if (OnServer())
 	{
-		if(m_iActiveSlot!=m_iNextActiveSlot)
+		if (m_iActiveSlot != m_iNextActiveSlot)
 		{
-			CObject* pActor_owner = smart_cast<CObject*>(m_pOwner);
+			CObject* pActor_owner = m_pOwner != nullptr ? m_pOwner->cast_game_object()->dcast_CObject() : nullptr;
 			if (Level().CurrentViewEntity() == pActor_owner)
 			{
 				if(	(m_iNextActiveSlot!=NO_ACTIVE_SLOT) && 
@@ -1160,10 +1162,15 @@ bool CInventory::Eat(PIItem pIItem)
 
 	if (m_isInventoryEat)
 	{
-		luabind::functor<bool>	funct;
+		luabind::functor<bool> funct;
 		R_ASSERT2(ai().script_engine().functor(m_onInventoryEat, funct), "failed to get OnInventoryEat functor");
-		if (!funct(smart_cast<CGameObject*>(pItemToEat->object().H_Parent())->lua_game_object(), (pIItem->cast_game_object()->lua_game_object())))
+
+		CObject* object_parent = pItemToEat->object().H_Parent();
+		CGameObject* object_parent_go = object_parent != nullptr ? object_parent->cast_game_object() : nullptr;
+		if (!funct(object_parent_go != nullptr ? object_parent_go->lua_game_object() : 0, (pIItem->cast_game_object()->lua_game_object())))
+		{
 			return false;
+		}
 		
 		if (Actor()->m_inventory == this)
 		{
@@ -1176,12 +1183,11 @@ bool CInventory::Eat(PIItem pIItem)
 			CurrentGameUI()->ActorMenu().SetCurrentItem(NULL);
 		}
 	}
-	else
+	else if (IsGameTypeSingle() && Actor()->m_inventory == this)
 	{
-		if (IsGameTypeSingle() && Actor()->m_inventory == this)
-			Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
+		CGameObject* item_game_object = pIItem->cast_game_object();
+		Actor()->callback(GameObject::eUseObject)(item_game_object->lua_game_object());
 	}
-
 
 	if (pItemToEat->Empty())
 	{
@@ -1191,7 +1197,7 @@ bool CInventory::Eat(PIItem pIItem)
 		pIItem->SetDropManual(TRUE);
 	}
 
-	return			true;
+	return true;
 }
 
 bool CInventory::ClientEat(PIItem pIItem)
@@ -1351,7 +1357,7 @@ bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 	VERIFY3(it == m_all.end(), "item already exists in inventory",*inventory_item->object().cName());
 
 	CActor* pActor = m_pOwner->cast_actor();
-	CCar* pCar = smart_cast<CCar*>(m_pOwner);
+	CCar* pCar = m_pOwner->cast_car();
 	//актер всегда может взять вещь
 	if((!pCar && !pActor) && (TotalWeight() + inventory_item->Weight() > m_pOwner->MaxCarryWeight()))
 		return false;
@@ -1412,7 +1418,7 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 		}
 	}
 
-	CAI_Stalker* pOwner = smart_cast<CAI_Stalker*>(m_pOwner);
+	CAI_Stalker* pOwner = m_pOwner->cast_stalker();
 	if (pOwner && !pOwner->g_Alive()) {
 		std::uint16_t I = FirstSlot();
 		std::uint16_t E = LastSlot();
