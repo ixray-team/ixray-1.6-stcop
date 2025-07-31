@@ -142,6 +142,8 @@ public:
 	virtual		void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
 				void		OnDragEvent			(CUIDragItem* drag_item, bool b_receive);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
 class CUICellContainer :public CUIWindow
@@ -172,6 +174,9 @@ public:
 				CUICell&		GetCellAt			(const Ivector2& pos);
 				Ivector2		PickCell			(const Fvector2& abs_pos);
 				bool			ValidCell			(const Ivector2& pos) const;
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	virtual		void			Draw				();
 

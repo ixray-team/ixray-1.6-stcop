@@ -151,7 +151,7 @@ void CUIDragDropReferenceList::ReloadReferences(CInventoryOwner* pActor)
 
 void CUIDragDropReferenceList::OnItemDBClick(CUIWindow* w, void* pData)
 {
-	CUIStatic* ref = smart_cast<CUIStatic*>(w);
+	CUIStatic* ref = w->ui_cast_static();
 	ITEMS_REFERENCES_VEC_IT it = std::find(m_references.begin(), m_references.end(), ref);
 	if (it != m_references.end())
 	{
@@ -174,7 +174,7 @@ void CUIDragDropReferenceList::OnItemDBClick(CUIWindow* w, void* pData)
 void CUIDragDropReferenceList::OnItemDrop(CUIWindow* w, void* pData)
 {
 	OnItemSelected(w, pData);
-	CUICellItem* itm = smart_cast<CUICellItem*>(w);
+	CUICellItem* itm = w->ui_cast_cell_item();
 	VERIFY(itm->OwnerList() == itm->OwnerList());
 
 	if (m_f_item_drop && m_f_item_drop(itm))

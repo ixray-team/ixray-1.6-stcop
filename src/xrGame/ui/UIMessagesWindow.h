@@ -31,6 +31,7 @@ public:
 	CUIChatWnd*			GetChatWnd						() {return m_pChatWnd;}
 	virtual void		Show							(bool show);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
 	virtual void		Init(float x, float y, float width, float height);

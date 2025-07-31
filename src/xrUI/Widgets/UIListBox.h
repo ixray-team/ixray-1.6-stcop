@@ -43,6 +43,9 @@ virtual void		SendMessage						(CUIWindow* pWnd, s16 msg, void* pData = 0);
 			void			SetFont					(CGameFont* pFont);
 			CGameFont*		GetFont					();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIScrollView* ui_cast_scroll_view() { return this; }
+
 protected:
 	CGameFont*		m_pFont;
 	float			m_def_item_height;

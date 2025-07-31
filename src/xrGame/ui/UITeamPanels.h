@@ -38,6 +38,8 @@ public:
 	void NeedUpdatePanels();
 
 	void SetArtefactsCount(s32 greenTeamArtC, s32 blueTeamArtC);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
 #endif

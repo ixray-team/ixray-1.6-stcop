@@ -25,6 +25,9 @@ public:
 	virtual void 		SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = 0);
 			void 		SetVisibleMagnifier		(bool f);
 	virtual void		OnDeviceReset			();
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 	enum	enum_page_id
 	{
 		epi_main		= 0x00,

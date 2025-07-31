@@ -117,6 +117,8 @@ public:
 	void						MoveScrollH		( float dx );
 	void 						ActivatePropertiesBox(CUIWindow* w);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 public:
 	CUICustomMap*				m_tgtMap;
 	Fvector2					m_tgtCenter;

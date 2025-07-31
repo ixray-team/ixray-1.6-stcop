@@ -125,6 +125,8 @@ public:
 CUIInventoryUpgradeWnd* get_upgrade_window() {return m_parent_wnd;}
 			void		attach_point(CUIUpgradePoint* point);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 public:			
 	CUIUpgradePoint*	m_point;
     CUIStatic*			m_border;
@@ -144,6 +146,9 @@ public:
 	virtual bool		OnMouseAction( float x, float y, EUIMessages mouse_action );
 	virtual void		OnFocusReceive();
 	virtual void		OnFocusLost();
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
 };
 
 #endif // UI_INVENTORY_UPGRADE_H_INCLUDED

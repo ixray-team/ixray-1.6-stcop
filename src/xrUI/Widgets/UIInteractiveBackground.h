@@ -44,6 +44,8 @@ public:
 	virtual void SetWidth			(float width);
 	virtual void SetHeight			(float heigth);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	T*			m_states [S_Total];
 };

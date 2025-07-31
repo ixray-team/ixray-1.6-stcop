@@ -21,6 +21,8 @@ public:
 	virtual void	OnBtn				(int i);
 	void			OnBtnCancel			();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	void			ParseWeather		();
 	void			AddWeather			(const shared_str& name, const shared_str& time);
@@ -44,4 +46,6 @@ class CUIChangeGameType :public CUIChangeWeather
 public:
 	void			InitChangeGameType	(CUIXml& xml_doc);
 	virtual void	OnBtn				(int i);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };

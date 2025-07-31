@@ -109,75 +109,86 @@ void CUIListBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 CUIListBoxItem* CUIListBox::GetSelectedItem()
 {
-	CUIWindow* w	=	GetSelected();
+	if (CUIWindow* w = GetSelected())
+	{
+		return w->ui_cast_list_box_item();
+	}
 
-	if(w)
-		return smart_cast<CUIListBoxItem*>(w);
-	else
-		return nullptr;
-
+	return nullptr;
 }
 
 LPCSTR CUIListBox::GetSelectedText()
 {
-	CUIWindow* w	=	GetSelected();
-
-	if(w)
+	if (CUIWindow* w = GetSelected())
 	{
-		CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(w);
+		CUIListBoxItem* item = w->ui_cast_list_box_item();
 		return item->GetText();
-	}else
-		return nullptr;
+	}
+
+	return nullptr;
 }
 
 u32 CUIListBox::GetSelectedIDX()
 {
-	u32			_idx	= 0;
-	CUIWindow*	w		= GetSelected();
+	u32 _idx = 0;
+	CUIWindow* w = GetSelected();
 
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+
+	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(*it);
-		if (item)
+		if (CUIListBoxItem* item = child->ui_cast_list_box_item())
 		{
-			if(*it==w)
+			if (child == w)
+			{
 				return _idx;
+			}
 
 			++_idx;
 		}
 	}
+
 	return u32(-1);
 }
 
 LPCSTR CUIListBox::GetText(int idx)
 {
-	if(idx==-1) return nullptr;
+	if (idx == -1)
+	{
+		return nullptr;
+	}
 
-	CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(GetItem(idx));
+	CUIListBoxItem* item = GetItem(idx)->ui_cast_list_box_item();
 	return item->GetText();
 }
 
 void CUIListBox::MoveSelectedUp()
 {
-	CUIWindow* w			= GetSelected();
-	if(!w)					return;
+	CUIWindow* w = GetSelected();
+	if (w == nullptr)
+	{
+		return;
+	}
 
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	WINDOW_LIST::reverse_iterator it		= m_pad->GetChildWndList().rbegin();
-	WINDOW_LIST::reverse_iterator it_e		= m_pad->GetChildWndList().rend();
-	WINDOW_LIST::reverse_iterator it_prev	= it;
+	WINDOW_LIST::reverse_iterator it = m_pad->GetChildWndList().rbegin();
+	WINDOW_LIST::reverse_iterator it_e = m_pad->GetChildWndList().rend();
+	WINDOW_LIST::reverse_iterator it_prev = it;
 
-	for(; it!=it_e; ++it)
+	for (; it != it_e; ++it)
 	{
-		if(*it==w)
+		if (*it == w)
 		{
-			it_prev				= it;
+			it_prev = it;
 			++it_prev;
-			if(it_prev==it_e)	break;
 
-			std::swap			(*it, *it_prev);
-			ForceUpdate			();
+			if (it_prev == it_e)
+			{
+				break;
+			}
+
+			std::swap(*it, *it_prev);
+			ForceUpdate();
 			break;
 		}
 
@@ -186,25 +197,33 @@ void CUIListBox::MoveSelectedUp()
 
 void CUIListBox::MoveSelectedDown()
 {
-	CUIWindow* w			= GetSelected();
-	if(!w)					return;
-//.	R_ASSERT(!m_flags.test(CUIScrollView::eMultiSelect));
+	CUIWindow* w = GetSelected();
+	if (w == nullptr)
+	{
+		return;
+	}
+	//.	R_ASSERT(!m_flags.test(CUIScrollView::eMultiSelect));
 
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	WINDOW_LIST_it it		= m_pad->GetChildWndList().begin();
-	WINDOW_LIST_it it_e		= m_pad->GetChildWndList().end();
+	WINDOW_LIST_it it = m_pad->GetChildWndList().begin();
+	WINDOW_LIST_it it_e = m_pad->GetChildWndList().end();
 	WINDOW_LIST_it it_next;
 
-	for(; it!=it_e; ++it)
+	for (; it != it_e; ++it)
 	{
-		if(*it==w){
-		it_next				= it;
-		++it_next;
-		if(it_next==it_e)	break;
+		if (*it == w)
+		{
+			it_next = it;
+			++it_next;
 
-		std::swap			(*it, *it_next);
-		ForceUpdate			();
-		break;
+			if (it_next == it_e)
+			{
+				break;
+			}
+
+			std::swap(*it, *it_next);
+			ForceUpdate();
+			break;
 		}
 	}
 }
@@ -229,34 +248,46 @@ int CUIListBox::GetIdxByTAG(u32 tag_val)
 	int result = -1;
 
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+
+	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(*it);
-		if (item)
+		if (CUIListBoxItem* item = child->ui_cast_list_box_item())
 		{
-			if(result==-1)	result=0;
-			else			++result;
+			if (result == -1)
+			{
+				result = 0;
+			}
+			else
+			{
+				++result;
+			}
 
 			if (item->GetTAG() == tag_val)
+			{
 				break;
+			}
 		}
 	}
+
 	return result;
 }
 
 CUIListBoxItem* CUIListBox::GetItemByTAG(u32 tag_val)
 {
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+
+	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(*it);
-		if (item)
+		if (CUIListBoxItem* item = child->ui_cast_list_box_item())
 		{
 			if (item->GetTAG() == tag_val)
+			{
 				return item;
+			}
 		}
-		
+
 	}
+
 	return nullptr;
 }
 
@@ -264,35 +295,41 @@ CUIListBoxItem* CUIListBox::GetItemByIDX(int idx)
 {
 	int _idx = 0;
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+
+	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(*it);
-		if (item)
+		if (CUIListBoxItem* item = child->ui_cast_list_box_item())
 		{
-			if(_idx == idx)
+			if (_idx == idx)
+			{
 				return item;
+			}
+
 			++_idx;
 		}
 	}
+
 	return nullptr;
 }
 
 CUIListBoxItem* CUIListBox::GetItemByText(LPCSTR txt)
 {
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+
+	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(*it);
-		if (item)
+		if (CUIListBoxItem* item = child->ui_cast_list_box_item())
 		{
 			if (0 == xr_strcmp(item->GetText(), txt))
+			{
 				return item;
+			}
 		}
-		
+
 	}
+
 	return nullptr;
 }
-
 
 void CUIListBox::SetItemHeight(float h)
 {
@@ -324,21 +361,22 @@ CGameFont* CUIListBox::GetFont()
 	return m_pFont;
 }
 
-
 float CUIListBox::GetLongestLength()
 {
-	float len = 0;
+	float len = 0.0f;
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+
+	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(*it);
-		if (item)
+		if (CUIListBoxItem* item = child->ui_cast_list_box_item())
 		{
 			float tmp_len = item->GetFont()->SizeOf_(item->GetText()); //all ok
 			UI().ClientToScreenScaledWidth(tmp_len);
 
 			if (tmp_len > len)
+			{
 				len = tmp_len;
+			}
 		}
 	}
 	return len;

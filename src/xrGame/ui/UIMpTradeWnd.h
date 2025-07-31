@@ -124,6 +124,8 @@ public:
 			bool				HasItemInGroup				(shared_str const & section_name);
 			CItemMgr const *	GetItemMngr					() const { return m_item_mngr; };
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 private:
 	//data
 	shared_str			m_sectionName;

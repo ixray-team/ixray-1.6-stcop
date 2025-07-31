@@ -41,6 +41,8 @@ public:
 
 	void SetDependControl(CUIWindow* pWnd);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 private:
 	bool							m_opt_backup_value;
 	void InitTexture2				(LPCSTR texture_name);

@@ -50,6 +50,10 @@ public:
 	// Смещение подсветки текста относительно самого текста. Может для при дания эффекта тени
 	void				SetShadowOffset			(float offsetX, float offsetY) { m_iShadowOffsetX = offsetX; m_iShadowOffsetY = offsetY; }
 	shared_str			m_hint_text;
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
+
 protected:
 	
 	E_BUTTON_STATE		m_eButtonState;

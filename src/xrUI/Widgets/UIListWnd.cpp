@@ -283,22 +283,27 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
         if (IsChild(pWnd))
         {
-            CUIListItem* pListItem2;
-            CUIListItem* pListItem = smart_cast<CUIListItem*>(pWnd);
+            CUIListItem* pListItem2 = nullptr;
+            CUIListItem* pListItem = pWnd->ui_cast_list_item();
             R_ASSERT(pListItem);
 
             if (BUTTON_CLICKED == msg)
             {
                 xrCriticalSectionGuard guard(csUi);
-                for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
+                for (CUIWindow* child : m_ChildWndList)
                 {
-                    pListItem2 = smart_cast<CUIListItem*>(*it);
-                    if (!pListItem2)
+                    pListItem2 = child->ui_cast_list_item();
+                    if (pListItem2 == nullptr)
+                    {
                         continue;
+                    }
+
                     if (pListItem2->GetGroupID() == -1)
+                    {
                         continue;
-                    if (pListItem2->GetGroupID() ==
-                        pListItem->GetGroupID())
+                    }
+
+                    if (pListItem2->GetGroupID() == pListItem->GetGroupID())
                     {
                         pListItem2->SetHighlightText(true);
                         pListItem2->SendMessage(this, LIST_ITEM_SELECT, pData);
@@ -311,6 +316,7 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
                         pListItem2->SendMessage(this, LIST_ITEM_UNSELECT, pData);
                     }
                 }
+
                 GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, pListItem);
             }
 
@@ -322,16 +328,26 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
                     m_iFocusedItemGroupID = pListItem->GetGroupID();
                 }
                 else if (m_iFocusedItem >= 0)
+                {
                     m_iFocusedItemGroupID = GetItem(m_iFocusedItem)->GetGroupID();
+                }
 
 
                 // prototype code
                 xrCriticalSectionGuard guard(csUi);
-                for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
+                for (CUIWindow* child : m_ChildWndList)
                 {
-                    pListItem2 = smart_cast<CUIListItem*>(*it);
-                    if (!pListItem2) continue;
-                    if (pListItem2->GetGroupID() == -1) continue;
+                    pListItem2 = child->ui_cast_list_item();
+                    if (pListItem2 == nullptr)
+                    {
+                        continue;
+                    }
+
+                    if (pListItem2->GetGroupID() == -1)
+                    {
+                        continue;
+                    }
+
                     if (pListItem2->GetGroupID() == pListItem->GetGroupID())
                     {
                         pListItem2->SetHighlightText(true);
@@ -347,15 +363,24 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
             }
             else if (WINDOW_FOCUS_LOST == msg)
             {
-                if (pListItem->GetIndex() == m_iFocusedItem && !m_bForceFocusedItem) m_iFocusedItem = -1;
-                xrCriticalSectionGuard guard(csUi);
-                for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
+                if (pListItem->GetIndex() == m_iFocusedItem && !m_bForceFocusedItem)
                 {
-                    pListItem2 = smart_cast<CUIListItem*>(*it);
-                    if (!pListItem2) continue;
+                    m_iFocusedItem = -1;
+                }
+
+                xrCriticalSectionGuard guard(csUi);
+                for (CUIWindow* child : m_ChildWndList)
+                {
+                    pListItem2 = child->ui_cast_list_item();
+                    if (pListItem2 == nullptr)
+                    {
+                        continue;
+                    }
+
                     pListItem2->SetHighlightText(false);
                     pListItem2->SendMessage(this, WINDOW_FOCUS_LOST, pData);
                 }
+
                 m_bUpdateMouseMove = true;
             }
         }
@@ -389,14 +414,20 @@ void CUIListWnd::Draw()
         Frect rect;
         GetAbsoluteRect(rect);
         xrCriticalSectionGuard guard(csUi);
-        for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
+        for (CUIWindow* child : m_ChildWndList)
         {
-            CUIListItem* pListItem2 = smart_cast<CUIListItem*>(*it);
-            if (!pListItem2) continue;
-            if (pListItem2->GetGroupID() == -1) continue;
-            if ((pListItem2->GetGroupID() == m_iFocusedItemGroupID) &&
-                ((pListItem2->GetIndex() >= m_iFirstShownIndex) &&
-                    (pListItem2->GetIndex() <= m_iRowNum + m_iFirstShownIndex - 1)))
+            CUIListItem* pListItem2 = child->ui_cast_list_item();
+            if (pListItem2 == nullptr)
+            {
+                continue;
+            }
+
+            if (pListItem2->GetGroupID() == -1)
+            {
+                continue;
+            }
+
+            if ((pListItem2->GetGroupID() == m_iFocusedItemGroupID) && ((pListItem2->GetIndex() >= m_iFirstShownIndex) && (pListItem2->GetIndex() <= m_iRowNum + m_iFirstShownIndex - 1)))
             {
                 DrawActiveBackFrame(rect, pListItem2);
             }
@@ -408,17 +439,23 @@ void CUIListWnd::Draw()
         Frect rect;
         GetAbsoluteRect(rect);
         xrCriticalSectionGuard guard(csUi);
-        for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
+        for (CUIWindow* child : m_ChildWndList)
         {
-            CUIListItem* pListItem2 = smart_cast<CUIListItem*>(*it);
-            if (!pListItem2) continue;
-            if (pListItem2->GetGroupID() == -1) continue;
+            CUIListItem* pListItem2 = child->ui_cast_list_item();
+            if (pListItem2 == nullptr)
+            {
+                continue;
+            }
+
+            if (pListItem2->GetGroupID() == -1)
+            {
+                continue;
+            }
+
             if (pListItem2->GetIndex() == m_iSelectedItem)
             {
                 UI().PushScissor(rect);
-
                 DrawActiveBackFrame(rect, pListItem2);
-
                 UI().PopScissor();
             }
         }
@@ -426,7 +463,6 @@ void CUIListWnd::Draw()
 
     CUIWindow::Draw();
 }
-
 
 void CUIListWnd::SetItemWidth(float iItemWidth)
 {

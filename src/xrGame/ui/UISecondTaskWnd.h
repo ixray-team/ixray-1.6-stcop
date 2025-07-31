@@ -45,6 +45,8 @@ public:
 
 			void	UpdateList			();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	void 	OnBtnClose			( CUIWindow* w, void* d);
 	bool 	SortingLessFunction	( CUIWindow* left, CUIWindow* right );
@@ -86,6 +88,8 @@ public:
 	virtual void	Update				();
 	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData );
 	virtual bool	OnMouseAction				( float x, float y, EUIMessages mouse_action );
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 
 private:
 			void	hide_hint			();

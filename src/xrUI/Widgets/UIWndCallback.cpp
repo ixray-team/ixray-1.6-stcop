@@ -19,9 +19,9 @@ CUIWndCallback::~CUIWndCallback()
 	delete_data(m_callbacks);
 }
 
-void CUIWndCallback::Register			(CUIWindow* pChild)
+void CUIWndCallback::Register(CUIWindow* pChild)
 {
-	pChild->SetMessageTarget( smart_cast<CUIWindow*>(this) );
+	pChild->SetMessageTarget(ui_cast_window());
 }
 
 void CUIWndCallback::OnEvent(CUIWindow* pWnd, s16 msg, void* pData)

@@ -419,17 +419,19 @@ void CUIMapList::UpdateMapList(EGameIDs GameType)
 	}
 }
 
-CUIListBoxItem* CUIMapList::GetMapItem_fromList1( shared_str const& map_name )
+CUIListBoxItem* CUIMapList::GetMapItem_fromList1(shared_str const& map_name)
 {
 	shared_str map_name1;
-	for ( u32 i = 0; i < m_pList1->GetSize(); ++i )
+	for (u32 i = 0; i < m_pList1->GetSize(); ++i)
 	{
-		map_name1._set( m_pList1->GetText( i ) );
-		if ( map_name1 == map_name )
+		map_name1._set(m_pList1->GetText(i));
+		if (map_name1 == map_name)
 		{
-			return smart_cast<CUIListBoxItem*>( m_pList1->GetItem(i) );
+			CUIWindow* get_item = m_pList1->GetItem(i);
+			return get_item != nullptr ? get_item->ui_cast_list_box_item() : nullptr;
 		}
 	}
+	
 	return nullptr;
 }
 

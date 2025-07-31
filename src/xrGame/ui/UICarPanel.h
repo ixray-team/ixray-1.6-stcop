@@ -32,4 +32,6 @@ public:
     void SetEngineLamp(bool On);
     void SetLightLamp(bool On);
     virtual void Draw() override;
+
+    virtual CUIWindow* ui_cast_window() { return this; }
 };

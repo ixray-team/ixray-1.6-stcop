@@ -26,6 +26,8 @@ public:
 	virtual void	Draw			();
 	virtual void	OnFocusLost		();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 private:
 	void 	paste_from_clipboard();
 
@@ -50,6 +52,8 @@ public:
 //	virtual bool	IsChanged();
 
 	virtual void	OnFocusLost		();
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 
 }; // class CUIMPPlayerName
 

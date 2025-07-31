@@ -55,6 +55,9 @@ public:
 	CUITabButton*		GetButtonById_script		(LPCSTR s)						{ return GetButtonById(s);}
 
 	void		ResetTab					();
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	// Список кнопок - переключателей закладок
 	TABS_VECTOR			m_TabsArr;

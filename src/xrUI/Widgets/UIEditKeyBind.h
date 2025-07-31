@@ -41,6 +41,10 @@ public:
 
 	virtual void	SetText					(LPCSTR text);
 			void	SetEditMode				(bool b);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
+
 protected:
 	void			BindAction2Key			();
 

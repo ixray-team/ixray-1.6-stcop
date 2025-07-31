@@ -77,6 +77,10 @@ public:
 	virtual		bool		IsHelper				() { return false; }
 	virtual		void		SetIsHelper				(bool is_helper) { ; }
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUICellItem* ui_cast_cell_item() { return this; }
+
 public:
 	static CUICellItem*		m_mouse_selected_item;
 				void*		m_pData;

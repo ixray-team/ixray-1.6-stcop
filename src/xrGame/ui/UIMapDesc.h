@@ -16,6 +16,8 @@ public:
 	virtual void	SendMessage(CUIWindow* pWnd, s16 msg, void *pData = 0);
 	virtual bool	OnKeyboardAction(int dik, EUIMessages keyboard_action);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 private:
 	void	Init();
 	

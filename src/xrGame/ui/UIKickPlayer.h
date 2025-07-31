@@ -25,6 +25,8 @@ public:
 	void			OnBtnOk			();
 	void			OnBtnCancel		();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	typedef enum{MODE_KICK, MODE_BAN } E_MODE;
 
