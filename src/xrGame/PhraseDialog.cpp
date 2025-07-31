@@ -306,21 +306,23 @@ CPhrase* CPhraseDialog::AddPhrase	(LPCSTR text, const shared_str& phrase_id, con
 
 void CPhraseDialog::AddPhrase	(CUIXml* pXml, XML_NODE* phrase_node, const shared_str& phrase_id, const shared_str& prev_phrase_id)
 {
+	LPCSTR sText			= pXml->Read(phrase_node, "text", 0, "");
+	int		gw				= pXml->ReadInt(phrase_node, "goodwill", 0, -10000);
+	CPhrase* ph				= AddPhrase(sText, phrase_id, prev_phrase_id, gw);
+	if (!ph)
+		return;
+	
+	ph->SetFinalizer		(pXml->ReadInt(phrase_node, "is_final", 0, 0) == 1);
+	ph->m_script_text_id	= pXml->Read(phrase_node, "script_text", 0, "");
+	ph->SetIconName			(pXml->Read(phrase_node, "icon_name", 0, ""));
+	ph->SetIconUsingLTX		(pXml->ReadAttribInt(phrase_node, "icon_name", 0, "ltx", 0) == 1);
 
-	LPCSTR sText		= pXml->Read		(phrase_node, "text", 0, "");
-	int		gw			= pXml->ReadInt		(phrase_node, "goodwill", 0, -10000);
-	CPhrase* ph			= AddPhrase			(sText, phrase_id, prev_phrase_id, gw);
-	if(!ph)				return;
 	
-	int fin					= pXml->ReadInt		(phrase_node, "is_final", 0, 0);
-	ph->SetFinalizer		(fin==1);
-	ph->m_script_text_id	= pXml->Read		(phrase_node, "script_text", 0, "");
-	
-	ph->GetScriptHelper()->Load				(pXml, phrase_node);
+	ph->GetScriptHelper()->Load(pXml, phrase_node);
 
 	//фразы которые собеседник может говорить после этой
 	int next_num = pXml->GetNodesNum(phrase_node, "next");
-	for(int i=0; i<next_num; ++i)
+	for (int i = 0; i < next_num; ++i)
 	{
 		LPCSTR next_phrase_id_str		= pXml->Read(phrase_node, "next", i, "");
 		XML_NODE* next_phrase_node		= pXml->NavigateToNodeWithAttribute("phrase", "id", next_phrase_id_str);
