@@ -90,3 +90,8 @@ u32 CEngineExternal::GetFontAltasSize() const
 {
 	return READ_IF_EXISTS(pOptions, r_u32, "render", "FontAtlasSize", 4096);
 }
+
+float CEngineExternal::GetWeaponIconScaling() const
+{
+	return READ_IF_EXISTS(pOptions, r_float, "ui", "WeaponIconScale", 0.8f);
+}
