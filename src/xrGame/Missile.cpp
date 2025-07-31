@@ -214,9 +214,6 @@ void CMissile::spawn_fake_missile()
 void CMissile::OnH_A_Chield() 
 {
 	inherited::OnH_A_Chield();
-
-//	if(!m_fake_missile && !smart_cast<CMissile*>(H_Parent())) 
-//		spawn_fake_missile	();
 }
 
 
@@ -579,31 +576,36 @@ void CMissile::Throw()
 	if (!H_Parent()) 
 		return;
 
-	CActor* pActor = smart_cast<CActor*>(H_Parent());
+	CActor* pActor = H_Parent()->cast_actor();
 
 	if (pActor && pActor == Level().CurrentControlEntity() || Local())
 	{
-		VERIFY(smart_cast<CEntity*>(H_Parent()));
+		VERIFY(H_Parent()->cast_entity());
 		setup_throw_params();
 
 		m_fake_missile->m_throw_direction = m_throw_direction;
 		m_fake_missile->m_throw_matrix = m_throw_matrix;
 
-		CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(H_Parent());
+		CInventoryOwner* inventory_owner = H_Parent()->cast_inventory_owner();
 		VERIFY(inventory_owner);
 		if (inventory_owner->use_default_throw_force())
+		{
 			m_fake_missile->m_fThrowForce = m_constpower ? m_fConstForce : m_fThrowForce;
+		}
 		else
+		{
 			m_fake_missile->m_fThrowForce = inventory_owner->missile_throw_force();
+		}
 
 		m_fThrowForce = m_fMinForce;
 	}
 
-	if (Local() && H_Parent()) {
-		NET_Packet						P;
-		u_EventGen						(P,GE_OWNERSHIP_REJECT,ID());
-		P.w_u16							(u16(m_fake_missile->ID()));
-		u_EventSend						(P);
+	if (Local() && H_Parent())
+	{
+		NET_Packet P;
+		u_EventGen(P,GE_OWNERSHIP_REJECT,ID());
+		P.w_u16(u16(m_fake_missile->ID()));
+		u_EventSend(P);
 	}
 }
 
@@ -830,8 +832,9 @@ u32	CMissile::ef_weapon_type		() const
 
 bool CMissile::render_item_ui_query()
 {
-	bool b_is_active_item = m_pInventory->ActiveItem()==this;
-	return b_is_active_item && (GetState()==eReady) && !m_throw && smart_cast<CActor*>(H_Parent());
+	bool b_is_active_item = m_pInventory && m_pInventory->ActiveItem() && m_pInventory->ActiveItem() == this;
+	bool parent_actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+	return b_is_active_item && (GetState() == eReady) && !m_throw && parent_actor;
 }
 
 void CMissile::render_item_ui()
