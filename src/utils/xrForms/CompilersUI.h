@@ -23,6 +23,7 @@ struct CompilersMode
 	bool DO = false;
 	bool LC = false;
 
+	bool LC_LmapsAlternative = false;
 	bool LC_BackingDisabled = false;
 	bool LC_SaveOFG = false;
 	bool LC_GI = false;
