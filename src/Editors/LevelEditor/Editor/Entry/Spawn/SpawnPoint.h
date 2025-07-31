@@ -56,6 +56,9 @@ public:
         IRenderVisual*  IdleParticle = nullptr;
         CLE_Motion*		m_Motion;
         CSpawnPoint*	m_owner;
+
+        xrCriticalSection FrameMutex;
+
         enum{ eSDTypeRespawn = (1<<0),};
         SSpawnData	(CSpawnPoint* o)
         {

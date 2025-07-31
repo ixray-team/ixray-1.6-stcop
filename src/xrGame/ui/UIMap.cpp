@@ -38,7 +38,7 @@ void CUICustomMap::Initialize(shared_str name, LPCSTR sh_name)
 	{
 		Init_internal	(name, *levelIni, "level_map", sh_name);
 	}
-	else if (pGameIni->section_exist(name)) // Step 2: If level_map not exists in level.ltx, try to read from game.ltx instead (SoC)
+	else if (pGameIni->section_exist(name) && !Device.IsEditorMode()) // Step 2: If level_map not exists in level.ltx, try to read from game.ltx instead (SoC)
 	{
 		Msg("Using SoC-style level map for level %s", name.c_str());
 		Init_internal(name, *pGameIni, name.c_str(), sh_name);
