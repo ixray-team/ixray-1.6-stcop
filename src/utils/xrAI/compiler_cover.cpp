@@ -561,7 +561,7 @@ void compute_non_covers		()
 	}
 }
 
-#define NUM_THREADS	3
+#define NUM_THREADS	CPU::ID.n_threads
 extern	void mem_Optimize();
 void	xrCover	(bool pure_covers)
 {
