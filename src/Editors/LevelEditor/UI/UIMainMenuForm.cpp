@@ -658,6 +658,12 @@ void UIMainMenuForm::DrawLevelName()
 		return;
 
 	ImVec4 CheckMarkColor = ImGui::GetStyle().Colors[ImGuiCol_CheckMark];
+
+	if (Scene->IsUnsaved())
+	{
+		CheckMarkColor = ImColor(255, 22, 22);
+	}
+
 	shared_str LevelPath = xr_path(Scene->full_name).stem().string().c_str();
 	
 
