@@ -219,7 +219,7 @@ function load_dialog:OnListItemClicked()
 	else
 		self.picture:InitTexture("ui\\ui_noise")
 	end
-	self.picture:SetTextureRect(Frect():set(r.x1,r.y1,r.x2,r.y2))
+--	self.picture:SetTextureRect(Frect():set(r.x1,r.y1,r.x2,r.y2))
 end
 
 function load_dialog:OnListItemDbClicked()

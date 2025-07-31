@@ -14,7 +14,6 @@ using namespace DirectX;
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
-extern int GAMESAVE_SIZE;
 extern int SM_FOR_SEND_WIDTH;
 extern int SM_FOR_SEND_HEIGHT;
 
@@ -84,7 +83,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     switch (mode) {
     case IRender_interface::SM_FOR_GAMESAVE:
     {
-        R_CHK(Resize(*scratchImage.GetImage(0, 0, 0), GAMESAVE_SIZE, GAMESAVE_SIZE,
+        R_CHK(Resize(*scratchImage.GetImage(0, 0, 0), EngineExternal().gamesaveSize.x, EngineExternal().gamesaveSize.y,
             TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, smallScratchImage));
 
         R_CHK(SaveToDDSMemory(*smallScratchImage.GetImage(0, 0, 0), DirectX::DDS_FLAGS_NONE, saved));

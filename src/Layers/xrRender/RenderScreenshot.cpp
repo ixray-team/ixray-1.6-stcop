@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-int GAMESAVE_SIZE = 128;
 int SM_FOR_SEND_WIDTH = 640;
 int SM_FOR_SEND_HEIGHT = 480;
 
