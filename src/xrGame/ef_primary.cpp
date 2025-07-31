@@ -148,7 +148,7 @@ float CPersonalWeaponTypeFunction::ffGetTheBestWeapon()
 			for ( ; I <= E; ++I) {
 				PIItem iitem = tpInventoryOwner->inventory().ItemFromSlot(I);
 				if (iitem) {
-					CWeapon *tpCustomWeapon = smart_cast<CWeapon*>(iitem);
+					CWeapon *tpCustomWeapon = iitem->cast_weapon();
 					if (tpCustomWeapon && (tpCustomWeapon->GetSuitableAmmoTotal(true) > tpCustomWeapon->GetAmmoMagSize()/10)) {
 						ef_storage().non_alife().member_item()	= tpCustomWeapon;
 						u32 dwCurrentBestWeapon = dwfGetWeaponType();

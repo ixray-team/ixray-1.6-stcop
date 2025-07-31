@@ -119,7 +119,7 @@ public:
                     return TResult(m_functor(std::forward<Args>(args)...));
                 }
             }
-            process_error catch (std::exception&)
+            process_error catch (...)
             {
                 g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
             }
@@ -149,7 +149,7 @@ public:
                     return TResult(m_functor(std::forward<Args>(args)...));
                 }
             }
-            process_error catch (std::exception&)
+            process_error catch (...)
             {
                 g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
             }
@@ -182,7 +182,7 @@ void CScriptCallbackEx<void>::operator()(Args &&...args) const
                     m_functor(std::forward<Args>(args)...);
             }
         }
-        process_error catch (std::exception&)
+        process_error catch (...)
         {
             g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
         }
@@ -213,7 +213,7 @@ void CScriptCallbackEx<void>::operator()(Args &&...args)
                     m_functor(std::forward<Args>(args)...);
             }
         }
-        process_error catch (std::exception&)
+        process_error catch (...)
         {
             g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
         }

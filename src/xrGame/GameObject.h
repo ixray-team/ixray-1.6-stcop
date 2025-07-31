@@ -41,6 +41,10 @@ class CAttachableItem;
 class animation_movement_controller;
 class CBlend;
 class ai_obstacle;
+class CMissile;
+class CExplosiveRocket;
+class CGrenade;
+class CUsableScriptObject;
 
 class IKinematics;
 class CAI_Trader;
@@ -67,6 +71,7 @@ public:
 	virtual ~CGameObject();
 public:
 	//functions used for avoiding most of the smart_cast
+	virtual CGameObject*				cast_game_object			()						{return this;}
 	virtual CAttachmentOwner*			cast_attachment_owner		()						{return nullptr;}
 	virtual CInventoryOwner*			cast_inventory_owner		()						{return nullptr;}
 	virtual CInventoryItem*				cast_inventory_item			()						{return nullptr;}
@@ -74,7 +79,6 @@ public:
 	virtual CEntityAlive*				cast_entity_alive			()						{return nullptr;}
 	virtual CActor*						cast_actor					()						{return nullptr;}
 	virtual CAI_Trader*					cast_trader					()						{return nullptr;}
-	virtual CGameObject*				cast_game_object			()						{return this;}
 	virtual CCustomZone*				cast_custom_zone			()						{return nullptr;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()						{return nullptr;}
 	virtual IInputReceiver*				cast_input_receiver			()						{return nullptr;}
@@ -90,7 +94,10 @@ public:
 	virtual CHolderCustom*				cast_holder_custom			()						{return nullptr;}
 	virtual CBaseMonster*				cast_base_monster			()						{return nullptr;}
 	virtual CCar*						cast_car					()						{return nullptr;}
-
+	virtual CMissile					*cast_missile				()						{return nullptr;}
+	virtual CExplosiveRocket			*cast_explosive_rocket		()						{return nullptr;}
+	virtual CGrenade					*cast_grenade				()						{return nullptr;}
+	virtual CUsableScriptObject			*cast_usable_script_object	()						{return nullptr;}
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}
 	virtual bool						use						(CGameObject* who_use)		{return CUsableScriptObject::use(who_use);};
