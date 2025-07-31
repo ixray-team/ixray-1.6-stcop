@@ -60,11 +60,11 @@
 			</auto_static>
 		</public_server_d>
 
-		<!--<check_public_server x="20" y="17" width="44" height="29">
+		<check_public_server x="20" y="17" width="44" height="29">
 	        <texture>ui_inGame2_checkbox</texture>
 			<options_item entry="mm_net_con_publicserver" group="mm_mp_server"/>
 			<text x="-5" font="arial_14" vert_align="c">mm_mp_publicserver</text>
-		</check_public_server>-->
+		</check_public_server>
 
 		<cap_max_ping x="32" y="64" width="120" height="24">
 			<text font="arial_14" vert_align="c">mm_mp_max_ping</text>
