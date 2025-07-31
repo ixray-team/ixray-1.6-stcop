@@ -24,6 +24,7 @@
 #include "CustomOutfit.h"
 #include "clsid_game.h"
 #include "ui/UIActorMenu.h"
+#include "../../xrUI/Widgets/UIProgressShape.h"
 
 #define TEAM0_MENU		"artefacthunt_team0"
 #define	TEAM1_MENU		"artefacthunt_team1"
@@ -448,11 +449,23 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 					if (s32(CurTime) > dReinforcementTime) dTime = 0;
 					else dTime = iCeil(float(dReinforcementTime - CurTime) / 1000);
 							
+					if (m_game_ui->m_pReinforcementInidcator)
+					{
 					string128 _buff;
 					m_game_ui->m_pReinforcementInidcator->SetText(_itoa(dTime,_buff,10));
-				}else
+					}
+					else
+					{
+						m_game_ui->m_pReinforcementInidcator_old->SetPos(dTime, iReinforcementTime);
+					}
+				}
+				else
+				{
+					if (m_game_ui->m_pReinforcementInidcator)
 					m_game_ui->m_pReinforcementInidcator->SetText("0");
-
+					else
+						m_game_ui->m_pReinforcementInidcator_old->SetPos(0, 1);
+				}
 				s16 lt = local_player->team;
 				if (lt>=0)
 				{
