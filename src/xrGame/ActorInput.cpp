@@ -552,13 +552,13 @@ void CActor::ActorUse()
 		return;
 	}
 
-	if (m_holder)
+	if (m_holder != nullptr)
 	{
-		CGameObject*	GO			= smart_cast<CGameObject*>(m_holder);
-		NET_Packet		P;
-		CGameObject::u_EventGen		(P, GEG_PLAYER_DETACH_HOLDER, ID());
-		P.w_u16						(GO->ID());
-		CGameObject::u_EventSend	(P);
+		CGameObject* GO = m_holder->cast_game_object();
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GEG_PLAYER_DETACH_HOLDER, ID());
+		P.w_u16(GO->ID());
+		CGameObject::u_EventSend(P);
 		return;
 	}
 				
@@ -582,23 +582,21 @@ void CActor::ActorUse()
 		return;
 	}
 
-	if(!m_pUsableObject||m_pUsableObject->nonscript_usable())
+	if (!m_pUsableObject || m_pUsableObject->nonscript_usable())
 	{
-		if(m_pPersonWeLookingAt)
+		if (m_pPersonWeLookingAt != nullptr)
 		{
-			CEntityAlive* pEntityAliveWeLookingAt = 
-				smart_cast<CEntityAlive*>(m_pPersonWeLookingAt);
+			CEntityAlive* pEntityAliveWeLookingAt = m_pPersonWeLookingAt->cast_entity_alive();
 
 			VERIFY(pEntityAliveWeLookingAt);
 
 			if (IsGameTypeSingleCompatible())
 			{			
-				CBaseMonster* pMonster = smart_cast<CBaseMonster*>(pEntityAliveWeLookingAt);
+				CBaseMonster* pMonster = pEntityAliveWeLookingAt != nullptr ? pEntityAliveWeLookingAt->cast_base_monster() : nullptr;
 				const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
-				bool TestMonster =	(pMonster == nullptr) ||
-									(pMonster != nullptr && isMonstersInventory);
+				bool TestMonster = (pMonster == nullptr) || (pMonster != nullptr && isMonstersInventory);
 
-				if(pEntityAliveWeLookingAt->g_Alive())
+				if (pEntityAliveWeLookingAt->g_Alive())
 				{
 					TryToTalk();
 				}
@@ -610,11 +608,10 @@ void CActor::ActorUse()
 					{
 						if (!m_pPersonWeLookingAt->deadbody_closed_status())
 						{
-							if (pEntityAliveWeLookingAt->AlreadyDie() &&
-								pEntityAliveWeLookingAt->GetLevelDeathTime() + 3000 < Device.dwTimeGlobal
-								&& !Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
-								// 99.9% dead
+							if (pEntityAliveWeLookingAt->AlreadyDie() && pEntityAliveWeLookingAt->GetLevelDeathTime() + 3000 < Device.dwTimeGlobal && !Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
+							{
 								pGameSP->StartCarBody(this, m_pPersonWeLookingAt);
+							}
 						}
 					}
 				}
@@ -622,40 +619,40 @@ void CActor::ActorUse()
 		}
 
 		collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-		CPhysicsShellHolder* object = smart_cast<CPhysicsShellHolder*>(RQ.O);
+		CPhysicsShellHolder* object = RQ.O != nullptr ? RQ.O->cast_physics_shell_holder() : nullptr;
 		u16 element = BI_NONE;
-		if(object) 
-			element = (u16)RQ.element;
-
-		if(object && Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
+		if (object) 
 		{
-			bool b_allow = !!pSettings->line_exist("ph_capture_visuals",object->cNameVisual());
-			if(b_allow && !character_physics_support()->movement()->PHCapture())
+			element = (u16)RQ.element;
+		}
+
+		if (object && Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
+		{
+			bool b_allow = !!pSettings->line_exist("ph_capture_visuals", object->cNameVisual());
+			if (b_allow && !character_physics_support()->movement()->PHCapture())
 			{
-				character_physics_support()->movement()->PHCaptureObject( object, element );
+				character_physics_support()->movement()->PHCaptureObject(object, element);
 
 			}
-
 		}
 		else
 		{
-			if (object && smart_cast<CHolderCustom*>(object))
+			if (object != nullptr && object->cast_holder_custom() != nullptr)
 			{
-					NET_Packet		P;
-					CGameObject::u_EventGen		(P, GEG_PLAYER_ATTACH_HOLDER, ID());
-					P.w_u16						(object->ID());
-					CGameObject::u_EventSend	(P);
-					return;
+				NET_Packet P;
+				CGameObject::u_EventGen(P, GEG_PLAYER_ATTACH_HOLDER, ID());
+				P.w_u16(object->ID());
+				CGameObject::u_EventSend(P);
+				return;
 			}
 
 		}
 	}
 }
 
-BOOL CActor::HUDview				( )const 
-{ 
-	return IsFocused() && (cam_active==eacFirstEye)&&
-		((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView() ) ); 
+BOOL CActor::HUDview()const
+{
+	return IsFocused() && (cam_active == eacFirstEye) && ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView()));
 }
 
 static	u16 SlotsToCheck [] = {
@@ -782,8 +779,9 @@ void CActor::SwitchNightVision()
 		return;
 	}
 
-	CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
-	CWeapon* wpn = smart_cast<CWeapon*>(itm);
+	PIItem active_item = inventory().ActiveItem();
+	CHudItem* itm = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
+	CWeapon* wpn = itm != nullptr ? itm->cast_weapon() : nullptr;
 	CCustomDetector* det = GetDetector();
 
 	if (itm != nullptr && det != nullptr)
@@ -871,8 +869,9 @@ void CActor::SwitchTorch()
 
 	if (CTorch* torch = item_from_slot ? item_from_slot->cast_torch() : nullptr)
 	{
-		CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
-		CWeapon* wpn = smart_cast<CWeapon*>(itm);
+		PIItem active_item = inventory().ActiveItem();
+		CHudItem* itm = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
+		CWeapon* wpn = itm != nullptr ? itm->cast_weapon() : nullptr;
 		CCustomDetector* det = GetDetector();
 
 		if (itm != nullptr && det != nullptr)
@@ -956,8 +955,9 @@ void CActor::ClearMask()
 		return;
 	}
 
-	CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
-	CWeapon* wpn = smart_cast<CWeapon*>(itm);
+	PIItem active_item = inventory().ActiveItem();
+	CHudItem* itm = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
+	CWeapon* wpn = itm != nullptr ? itm->cast_weapon() : nullptr;
 	CCustomDetector* det = GetDetector();
 
 	if (itm != nullptr && det != nullptr)

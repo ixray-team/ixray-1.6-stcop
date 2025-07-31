@@ -289,8 +289,9 @@ void CActor::cam_Update(float dt, float fFOV)
 	{
 		if (eacFirstEye == cam_active)
 		{
-			CHudItem* pItem = smart_cast<CHudItem*>(inventory().ActiveItem());
-			CHudItem* pDevice = smart_cast<CHudItem*>(inventory().ItemFromSlot(DETECTOR_SLOT));
+			PIItem active_item = inventory().ActiveItem();
+			CHudItem* pItem = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
+			CCustomDetector* pDevice = GetDetector(true);
 
 			if (pItem && pItem->HudItemData() && pDevice && pDevice->HudItemData())
 				psHUD_FOV = fminf(pItem->GetHudFov(), pDevice->GetHudFov());

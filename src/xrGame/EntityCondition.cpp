@@ -327,43 +327,57 @@ void CEntityCondition::UpdateCondition()
 	clamp						(m_fPsyHealth,		0.0f,		m_fPsyHealthMax);
 }
 
-
-
 float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_type, s16 element, float ap, bool& add_wound)
 {
-    CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(m_object);
-	if(!pInvOwner)
+	CInventoryOwner* pInvOwner = m_object->cast_inventory_owner();
+	if (pInvOwner == nullptr)
+	{
 		return hit_power;
+	}
 
-	CCustomOutfit* pOutfit = (CCustomOutfit*)pInvOwner->inventory().ItemFromSlot(OUTFIT_SLOT);
-	CHelmet* pHelmet = (CHelmet*)pInvOwner->inventory().ItemFromSlot(HELMET_SLOT);
-	if(!pOutfit && !pHelmet)
+	CCustomOutfit* pOutfit = pInvOwner->GetOutfit();
+	CHelmet* pHelmet = pInvOwner->GetHelmet();
+	if (pOutfit == nullptr && pHelmet == nullptr)
+	{
 		return hit_power;
+	}
 
 	float new_hit_power = hit_power;
-	if(pOutfit)
+	if (pOutfit)
+	{
 		new_hit_power = pOutfit->HitThroughArmor(hit_power, element, ap, add_wound, hit_type);
+	}
 
-	if(pHelmet)
+	if (pHelmet)
+	{
 		new_hit_power = pHelmet->HitThroughArmor(new_hit_power, element, ap, add_wound, hit_type);
+	}
 
-	if(bDebug)	
+	if (bDebug)
+	{
 		Msg("new_hit_power = %.3f  hit_type = %s  ap = %.3f", new_hit_power, ALife::g_cafHitType2String(hit_type), ap);
+	}
 
 	return new_hit_power;
 }
 
 float CEntityCondition::HitPowerEffect(float power_loss)
 {
-	CInventoryOwner* pInvOwner		 = smart_cast<CInventoryOwner*>(m_object);
-	if(!pInvOwner)					 return power_loss;
+	CInventoryOwner* pInvOwner = m_object->cast_inventory_owner();
+	if (pInvOwner == nullptr)
+	{
+		return power_loss;
+	}
 
-	CCustomOutfit* pOutfit			= pInvOwner->GetOutfit();
-	if(!pOutfit)					return power_loss*0.5f;
+	CCustomOutfit* pOutfit = pInvOwner->GetOutfit();
+	if (pOutfit == nullptr)
+	{
+		return power_loss * 0.5f;
+	}
 
-	float new_power_loss			= power_loss*pOutfit->m_fPowerLoss;
+	float new_power_loss = power_loss * pOutfit->m_fPowerLoss;
 
-	return							new_power_loss;
+	return new_power_loss;
 }
 
 CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u16 element)
@@ -495,8 +509,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 
 	if (bDebug && !is_special_hit_2_self ) 
 	{
-		Msg("%s hitted in %s with %f[%f]", m_object->Name(), 
-			smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost*100.0f, hit_power_org);
+		Msg("%s hitted in %s with %f[%f]", m_object->Name(), PKinematics(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost*100.0f, hit_power_org);
 	}
 	//раны добавляются только живому
 	if( bAddWound && GetHealth()>0 )
