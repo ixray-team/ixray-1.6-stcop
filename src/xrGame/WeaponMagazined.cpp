@@ -961,7 +961,11 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			}
 			else
 			{
-				ReloadMagazine();
+				if (!m_bIsReloaded)
+				{
+					m_bIsReloaded = true;
+					ReloadMagazine();
+				}
 				GiveAmmoFromMagToChamber();
 			}
 			SwitchState(eIdle);
@@ -1139,7 +1143,7 @@ void CWeaponMagazined::PlayReloadSound()
 void CWeaponMagazined::switch2_Reload()
 {
 	CWeapon::FireEnd	();
-
+	m_bIsReloaded = false;
 	PlayAnimReload		();
 	PlayReloadSound		();
 	SetPending			(TRUE);
@@ -2142,4 +2146,24 @@ void CWeaponMagazined::FireBullet(	const Fvector& pos,
 		}
 	}
 	inherited::FireBullet(pos, shot_dir, fire_disp, cartridge, parent_id, weapon_id, send_hit);
+}
+
+void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& mark)
+{
+	inherited::OnMotionMark(state, mark);
+
+	if (state == eReload && mark.name == "Right" && !m_bIsReloaded)
+	{
+		m_bIsReloaded = true;
+		if (bMisfireReload && !IsGrenadeMode())
+		{
+			bMisfire = false;
+			bMisfireReload = false;
+		}
+		else
+		{
+			ReloadMagazine();
+			GiveAmmoFromMagToChamber();
+		}
+	}
 }
