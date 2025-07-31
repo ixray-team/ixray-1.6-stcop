@@ -110,9 +110,9 @@ void CExplosive::Load(CInifile const *ini,LPCSTR section)
 
 	m_sExplodeParticles = ini->r_string(section,"explode_particles");
 
-	sscanf				(ini->r_string(section,"light_color"), "%f,%f,%f", &m_LightColor.r, &m_LightColor.g, &m_LightColor.b);
-	m_fLightRange		= ini->r_float(section,"light_range");
-	m_fLightTime		= ini->r_float(section,"light_time");
+	m_LightColor = ini->r_fcolor(section, "light_color");
+	m_fLightRange = ini->r_float(section,"light_range");
+	m_fLightTime = ini->r_float(section,"light_time");
 
 	//трассы для разлета осколков
 	m_fFragmentSpeed			= ini->r_float	(section,"fragment_speed"				);
