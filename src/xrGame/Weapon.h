@@ -191,12 +191,19 @@ public:
 	u8		GetAddonsState						()		const		{return m_flagsAddOnState;};
 	void	SetAddonsState						(u8 st)	{m_flagsAddOnState=st;}//dont use!!! for buy menu only!!!
 
-	bool	NeedBlockSprint						() const; 
+	bool	NeedBlockSprint						() const;
 
+	bool bUpdateHUDBonesVisibility = false;
 	bool bReloadKeyPressed;
 	bool bAmmotypeKeyPressed;
 	bool bStopReloadSignal;
+	bool m_bUseSilHud = false;
+	bool m_bUseScopeHud = false;
+	bool m_bUseGLHud = false;
 
+	shared_str hud_silencer;
+	shared_str hud_scope;
+	shared_str hud_gl;
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;
@@ -257,8 +264,6 @@ private:
 	RStringVec m_bDefHideBones {}, m_bDefShowBones {}, m_bHideBonesOverride {}, m_bDefHideBonesGLAttached {},
 		m_bHideBonesGLAttached {}, m_bHideBonesSilAttached {}, m_bHideBonesScopeAttached {},
 		m_bHideBonesUpgrade {}, m_bScopeShowBones{}, m_bScopeHideBones{}, m_bShowBonesUpgToHide{}, m_bShowBonesUpgToShow{};
-
-	bool bUpdateHUDBonesVisibility = false;
 
 	void HideOneUpgradeLevel(const char* section);
 	void LoadUpgradeBonesToHide(const char* section, const char* line);
@@ -563,6 +568,12 @@ private:
 			bool			install_upgrade_disp		( LPCSTR section, bool test );
 			bool			install_upgrade_hit			( LPCSTR section, bool test );
 			bool			install_upgrade_addon		( LPCSTR section, bool test );
+			
+			bool			install_upgrade_hud_sect(LPCSTR section, bool test);
+			bool			install_upgrade_hud_sect_silencer(LPCSTR section, bool test);
+			bool			install_upgrade_hud_sect_scope(LPCSTR section, bool test);
+			bool			install_upgrade_hud_sect_gl(LPCSTR section, bool test);
+
 			bool			install_upgrade_bones		( LPCSTR section, bool test );
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );

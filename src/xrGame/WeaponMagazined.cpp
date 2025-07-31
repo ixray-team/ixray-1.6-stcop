@@ -1243,7 +1243,22 @@ void CWeaponMagazined::InitAddons()
 		ResetSilencerKoeffs();
 	}
 
+	HudSelector();
 	inherited::InitAddons();
+}
+
+void CWeaponMagazined::HudSelector()
+{
+	if (m_bUseSilHud && SilencerAttachable() && IsSilencerAttached())
+		hud_sect = hud_silencer;
+	else if (m_bUseScopeHud && ScopeAttachable() && IsScopeAttached())
+		hud_sect = hud_scope;
+	else if (m_bUseGLHud && GrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
+		hud_sect = hud_gl;
+	else
+		hud_sect = hud_sect_cache;
+
+	bUpdateHUDBonesVisibility = false;
 }
 
 void CWeaponMagazined::LoadSilencerKoeffs()
