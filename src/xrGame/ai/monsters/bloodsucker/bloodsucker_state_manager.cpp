@@ -23,6 +23,7 @@
 
 CStateManagerBloodsucker::CStateManagerBloodsucker(CAI_Bloodsucker *monster) : inherited(monster)
 {
+    add_state(eStateCustom,				new CStateCaptureJumpBloodsucker<CAI_Bloodsucker>		(monster));
 	add_state(eStateRest,				new CStateMonsterRest<CAI_Bloodsucker>					(monster));
 	add_state(eStatePanic,				new CStateMonsterPanic<CAI_Bloodsucker> 				(monster));
 	
@@ -92,7 +93,8 @@ void CStateManagerBloodsucker::execute ()
 	u32 state_id = u32(-1);
 
 	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
-	
+	if (!object->is_drag_anim_jump() && !object->is_animated())
+	{
 	if ( enemy ) 
 	{
 		 if ( check_vampire() ) 
@@ -144,5 +146,22 @@ void CStateManagerBloodsucker::execute ()
 	get_state_current()->execute();
 
 	prev_substate = current_substate;
+	}
+	else
+	{
+		state_id = eStateCustom;
+
+		if (object->is_drag_anim_jump())
+		{
+			select_state(state_id);
+
+			// выполнить текущее состояние
+			get_state_current()->execute();
+
+			prev_substate = current_substate;
+
+			drag_object();
+		}
+	}
 }
 
