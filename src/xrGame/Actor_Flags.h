@@ -13,7 +13,8 @@ enum
 	AF_CROUCH_TOGGLE			= (1 << 10),
 	AF_RIGHT_SHOULDER			= (1 << 11),
 	AF_DISPLAY_VOICE_ICON		= (1 << 12),
-	AF_INFINITEFIRE				= (1 << 13)
+	AF_INFINITEFIRE				= (1 << 13),
+	AF_INFINITEDURABILITY		= (1 << 14)
 };
 
 extern Flags32	psActorFlags;
