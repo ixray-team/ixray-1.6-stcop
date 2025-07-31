@@ -177,6 +177,8 @@ public:
 		af_prepare_detector = (1 << 3),
 		af_prepare_detector_end = (1 << 4),
 		af_finish_detector = (1 << 5),
+		af_det_hand_draw = (1 << 6),
+		af_det_hand_hide = (1 << 7),
 		af_firemode = (1 << 14),
 	};
 
