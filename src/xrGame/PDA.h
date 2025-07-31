@@ -50,9 +50,10 @@ public:
 			bool 							IsOff					() {return m_bTurnedOff;}
 
 
-			void							ActivePDAContacts		(xr_vector<CPda*>& res);
-			CPda*							GetPdaFromOwner			(CObject* owner);
+			void							ActivePDAContacts		(xr_vector<CInventoryOwner*>& res);
+			CInventoryOwner*				GetOwner				(CObject* owner);
 			u32								ActiveContactsNum		()							{return (u32)m_active_contacts.size();}
+			xr_vector<CObject*>				ActiveContacts			()							{return m_active_contacts;}
 			void							PlayScriptFunction		();
 			bool							CanPlayScriptFunction	() {if(!xr_strcmp(m_functor_str, "")) return false; return true;};
 

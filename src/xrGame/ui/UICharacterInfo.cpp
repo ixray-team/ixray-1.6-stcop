@@ -50,6 +50,7 @@ void CUICharacterInfo::InitCharacterInfo(Fvector2 pos, Fvector2 size, CUIXml* xm
 	inherited::SetWndPos(pos);
 	inherited::SetWndSize(size);
 
+	Init_IconInfoItem( *xml_doc, "icon_static",         eIcon         ); // SoC compatibility
 	Init_IconInfoItem( *xml_doc, "icon",                eIcon         );
 	Init_IconInfoItem( *xml_doc, "icon_over",           eIconOver     );
 
