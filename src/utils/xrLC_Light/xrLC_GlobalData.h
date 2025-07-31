@@ -177,11 +177,3 @@ static LPCSTR gl_data_net_file_name = "tmp_global_data";
 
 XRLC_LIGHT_API base_Face* convert_nax(u32 dummy);
 XRLC_LIGHT_API u32 convert_nax(base_Face* F);
-
-#ifdef _DEBUG
-static LPCSTR libraries = "XRLC_LightStab.dll,XRLC_Light.dll,xrCore.dll,xrCDB.dll,xrAPI.dll,DXT.dll,BugTrap.dll,BugTrapD.dll,FreeImage.dll,msvcr80.dll,Microsoft.VC80.CRT.manifest";
-#else
-static LPCSTR libraries = "XRLC_LightStab.dll,XRLC_Light.dll,xrCore.dll,xrCDB.dll,xrAPI.dll,DXT.dll,BugTrap.dll,FreeImage.dll,msvcr80.dll,Microsoft.VC80.CRT.manifest";
-#endif
-//#define NET_CMP
-//#define LOAD_GL_DATA
