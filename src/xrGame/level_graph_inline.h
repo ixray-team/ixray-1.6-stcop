@@ -48,7 +48,7 @@ ICF	u32	CLevelGraph::vertex	(const CVertex &vertex_r) const
 
 IC	void CLevelGraph::unpack_xz(const CLevelGraph::CPosition &vertex_position, u32 &x, u32 &z) const
 {
-	VERIFY				(vertex_position.xz() < MAX_NODE_XZ);
+	VERIFY				(vertex_position.xz() < LevelGraph::NodeUncompressed::UncompressedNodePosition::MAX_XZ);
 	x					= vertex_position.xz() / m_row_length;
 	z					= vertex_position.xz() % m_row_length;
 }
@@ -99,7 +99,7 @@ IC	const CLevelGraph::CPosition &CLevelGraph::vertex_position	(CLevelGraph::CPos
 	VERIFY				(iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f) < (int)m_row_length);
 	int					pxz	= iFloor(((source_position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f);
 	int					py	= iFloor(65535.f*(source_position.y - header().box().min.y)/header().factor_y() + EPS_S);
-	VERIFY				(pxz < MAX_NODE_XZ);
+	VERIFY				(pxz < LevelGraph::NodeUncompressed::UncompressedNodePosition::MAX_XZ);
 	dest_position.xz	(u32(pxz));
 	clamp				(py,0,65535);
 	dest_position.y		(u16(py));
@@ -198,7 +198,7 @@ IC bool CLevelGraph::inside				(const u32 vertex_id, const Fvector &position, co
 IC bool	CLevelGraph::inside				(const u32 vertex_id,	const Fvector2 &position) const
 {
 	int					pxz	= iFloor(((position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((position.y - header().box().min.z)/header().cell_size() + .5f);
-	VERIFY				(pxz < MAX_NODE_XZ);
+	VERIFY				(pxz < LevelGraph::NodeUncompressed::UncompressedNodePosition::MAX_XZ));
 	bool				b = vertex(vertex_id)->position().xz() == u32(pxz);
 	return				(b);
 }
@@ -574,7 +574,7 @@ IC	bool CLevelGraph::valid_vertex_position	(const Fvector &position) const
 	if (!(iFloor((position.x - header().box().min.x)/header().cell_size() + .5f) < (int)m_column_length))
 		return			(false);
 
-	return				((vertex_position(position).xz() < MAX_NODE_XZ));
+	return vertex_position(position).xz() < LevelGraph::NodeUncompressed::UncompressedNodePosition::MAX_XZ;
 }
 
 

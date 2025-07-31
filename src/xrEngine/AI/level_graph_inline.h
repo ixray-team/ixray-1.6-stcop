@@ -101,7 +101,7 @@ IC	const ILevelGraph::CPosition &ILevelGraph::vertex_position	(ILevelGraph::CPos
 	VERIFY				(iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f) < (int)m_row_length);
 	int					pxz	= iFloor(((source_position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f);
 	int					py	= iFloor(65535.f*(source_position.y - header().box().min.y)/header().factor_y() + EPS_S);
-	VERIFY				(pxz < MAX_NODE_XZ);
+	VERIFY				(pxz < LevelGraph::NodeUncompressed::UncompressedNodePosition::MAX_XZ);
 	dest_position.xz	(u32(pxz));
 	clamp				(py,0,65535);
 	dest_position.y		(u16(py));
@@ -278,27 +278,27 @@ ICF const xrGUID &ILevelGraph::CHeader::guid() const
 
 ICF u32	ILevelGraph::CVertex::link(int index) const
 {
-	return				(NodeCompressed::link(u8(index)));
+	return				(UncompressedNode.link(u8(index)));
 }
 
 ICF u16	ILevelGraph::CVertex::high_cover(u8 index) const
 {
-	return				(high.cover(index));
+	return				(UncompressedNode.high.cover(index));
 }
 
 ICF u16	ILevelGraph::CVertex::low_cover(u8 index) const
 {
-	return				(low.cover(index));
+	return				(UncompressedNode.low.cover(index));
 }
 
 ICF u16	ILevelGraph::CVertex::plane() const
 {
-	return				(NodeCompressed::plane);
+	return				(UncompressedNode.plane);
 }
 
 ICF const ILevelGraph::CPosition &ILevelGraph::CVertex::position() const
 {
-	return				(p);
+	return (UncompressedNode.p);
 }
 
 ICF bool ILevelGraph::CVertex::operator<	(const ILevelGraph::CVertex &vertex) const
