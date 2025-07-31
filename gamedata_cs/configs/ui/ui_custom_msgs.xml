@@ -181,4 +181,39 @@
 	<text_on_screen_center x="212" y="300" width="600" height="68" complex_mode="1" light_anim="ui_slow_blinking_alpha">
 		<text font="graffiti32"  r="240" g="217" b="182" a="255" align="c"/>
 	</text_on_screen_center>
+	
+  <mp_timelimit x="100" y="77" width="824" height="30">
+    <text font="graffiti19" color="ui_red" align="c"/>
+  </mp_timelimit>
+  <mp_spetatormode x="100" y="115" width="824" height="30">
+    <text font="graffiti19" color="ui_red" align="c"/>
+  </mp_spetatormode>
+  <mp_spectator x="100" y="115" width="824" height="30">
+    <text font="graffiti19" color="ui_white" align="c"/>
+  </mp_spectator>
+  <mp_pressjump x="100" y="729" width="824" height="30">
+    <text font="graffiti19" color="ui_white" align="c"/>
+  </mp_pressjump>
+  <mp_pressbuy x="100" y="749" width="824" height="30">
+    <text font="graffiti19" color="ui_white" align="c"/>
+  </mp_pressbuy>
+  <mp_round_result x="100" y="345" width="824" height="30">
+    <text font="graffiti19" r="240" g="255" b="240"    align="c"/>
+  </mp_round_result>
+  <mp_force_respawn_time x="100" y="38" width="824" height="30">
+    <text font="graffiti19" color="ui_white" align="c"/>
+  </mp_force_respawn_time>
+  <mp_demo_play x="0" y="195" width="824" height="30">
+    <text font="graffiti19" color="ui_green"/>
+  </mp_demo_play>
+  <mp_warm_up x="100" y="75" width="824" height="30">
+    <text font="graffiti19" color="ui_green" align="c"/>
+  </mp_warm_up>
+  <mp_ah_buy x="100" y="729" width="824" height="30">
+    <text font="graffiti19" r="255" g="255" b="0"    align="c"/>
+  </mp_ah_buy>
+  <mp_tdm_buy x="100" y="729" width="824" height="30">
+    <text font="graffiti19" r="255" g="255" b="0"    align="c"/>
+  </mp_tdm_buy>
+
 </header>
