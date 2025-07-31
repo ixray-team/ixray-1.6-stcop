@@ -12,6 +12,8 @@
 //---------------------------------------------------------------------------
 CCustomPreferences* EPrefs=0;
 //---------------------------------------------------------------------------
+// extern ENGINE_API BOOL bIsRaindropCollision;
+// extern ENGINE_API BOOL bIsSndOnRoof;
 
 CCustomPreferences::CCustomPreferences()
 {
