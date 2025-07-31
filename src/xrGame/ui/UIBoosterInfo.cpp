@@ -114,8 +114,8 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 	if (m_Prop_line)
 		AttachChild( m_Prop_line );
 
-	CActor* actor = smart_cast<CActor*>( Level().CurrentViewEntity() );
-	if ( !actor )
+	CActor* actor = Level().CurrentViewEntity()->cast_actor();
+	if (!actor)
 	{
 		return;
 	}

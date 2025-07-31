@@ -69,7 +69,7 @@ BOOL CSpaceRestrictor::net_Spawn	(CSE_Abstract* data)
 	if (!result)
 		return						(FALSE);
 
-	CCustomZone* zone = smart_cast<CCustomZone*>(this);
+	CCustomZone* zone = cast_custom_zone();
 	const static bool isAiDieInAnomaly = EngineExternal()[EEngineExternalGame::EnableAiDieInAnomaly];
 	if (!isAiDieInAnomaly || !zone || smart_cast<CRadioactiveZone*>(zone))
 		SpatialComponent->spatial.type &= ~STYPE_VISIBLEFORAI;
@@ -231,7 +231,7 @@ void CSpaceRestrictor::OnRender	()
 	xr_vector<CCF_Shape::shape_def>::iterator l_pShape;
 	
 	u32 Color = 0;
-	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(this);
+	CCustomZone	*custom_zone = cast_custom_zone();
 	if (custom_zone && custom_zone->IsEnabled())
 		Color = color_xrgb(0, 255, 255);
 	else
@@ -293,7 +293,7 @@ void CSpaceRestrictor::OnRender	()
 		UI().Font().pFontMedium->SetColor	(0xffff0000);
 		UI().Font().pFontMedium->OutSet	(x, y-=delta_height);
 		UI().Font().pFontMedium->OutNext	( Name() );
-		CCustomZone* z = smart_cast<CCustomZone*>(this);
+		CCustomZone* z = cast_custom_zone();
 		if(z){
 			string64 str;
 			switch (z->ZoneState()){
