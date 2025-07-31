@@ -67,6 +67,9 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 				}
 			}
 		}
+
+		PlayRainStep(!!HUDview());
+
 		m_bJumpKeyPressed	=	TRUE;
 		m_fJumpTime			=	s_fJumpTime;
 		mstate_real			&=~	(mcFall|mcJump);
@@ -201,12 +204,14 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		// jump
 		m_fJumpTime				-=	dt;
 
-		if( CanJump() && (mstate_wf&mcJump) )
+		if (CanJump() && (mstate_wf & mcJump))
 		{
 			mstate_real			|=	mcJump;
 			m_bJumpKeyPressed	=	TRUE;
 			Jump				= m_fJumpSpeed;
 			m_fJumpTime			= s_fJumpTime;
+
+			PlayRainStep(!!HUDview());
 
 			//уменьшить силу игрока из-за выполненого прыжка
 			if (!GodMode())
