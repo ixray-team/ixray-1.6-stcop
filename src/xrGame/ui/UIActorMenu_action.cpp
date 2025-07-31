@@ -17,6 +17,8 @@
 #include "UIInventoryUtilities.h"
 #include "game_cl_base.h"
 
+#include "UITalkWnd.h"
+#include "UITalkDialogWnd.h"
 #include "../../xrUI/UICursor.h"
 #include "UICellItem.h"
 #include "UICharacterInfo.h"
