@@ -13,7 +13,7 @@ private:
 	CVirtualFileRW					*dtFS;
 	recalculation					recalculation_data;
 public:
-	global_slots_data(): dtS( 0 ), dtFS( 0 ), recalculation_data( dtH )	{}
+	global_slots_data() : dtS( 0 ), dtFS( 0 ), recalculation_data( dtH )	{}
 
 	void				Load			();
 	void				Free			();
