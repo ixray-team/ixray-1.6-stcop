@@ -144,6 +144,10 @@ if(IXRAY_ASAN)
 	target_compile_definitions(xrCore PRIVATE PURE_ONLY)
 endif()
 
+if (IXRAY_DISCORD_RPC)
+	target_compile_definitions(xrCore PRIVATE IXR_ENABLE_DISCORD)
+endif()
+
 # Includes 
 target_include_directories(xrCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd party/lzo/include")
