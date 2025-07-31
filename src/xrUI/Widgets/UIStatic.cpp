@@ -57,7 +57,7 @@ void CUIStatic::SetXformLightAnim(LPCSTR lanim, bool bCyclic)
 	m_lanim_xform.m_origSize			= GetWndSize();
 }
 
-bool CUIStatic::InitTexture(pcstr texture, bool fatal /*= true*/)
+bool CUIStatic::InitTexture(pcstr texture, bool fatal)
 {
     return InitTextureEx(texture, "hud\\default", fatal);
 }
@@ -67,10 +67,10 @@ void CUIStatic::CreateShader(const char* tex, const char* sh)
     m_UIStaticItem.CreateShader(tex, sh);
 }
 
-bool CUIStatic::InitTextureEx(pcstr texture, pcstr shader, bool /*fatal = true*/)
+bool CUIStatic::InitTextureEx(pcstr texture, pcstr shader, bool fatal)
 {
     LPCSTR res_shname = UIRender->UpdateShaderName(texture, shader);
-    bool result = CUITextureMaster::InitTexture(texture, &m_UIStaticItem, res_shname);
+    bool result = CUITextureMaster::InitTexture(texture, &m_UIStaticItem, res_shname, fatal);
 
     Fvector2 p = GetWndPos();
     m_UIStaticItem.SetPos(p.x, p.y);

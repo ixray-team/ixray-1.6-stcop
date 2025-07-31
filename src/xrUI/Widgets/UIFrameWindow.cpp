@@ -43,16 +43,16 @@ bool CUIFrameWindow::InitTextureEx(pcstr texture, pcstr shader, bool fatal /*= t
     dbg_tex_name = texture;
     string256 buf;
 
-    const bool back_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_back"));
-    const bool left_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_l"));
-    const bool right_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_r"));
-    const bool top_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_t"));
-    const bool bottom_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_b"));
+    const bool back_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_back"), shader, m_shader, m_tex_rect[fmBK], fatal);
+    const bool left_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_l"), shader, m_shader, m_tex_rect[fmL], fatal);
+    const bool right_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_r"), shader, m_shader, m_tex_rect[fmR], fatal);
+    const bool top_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_t"), shader, m_shader, m_tex_rect[fmT], fatal);
+    const bool bottom_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_b"), shader, m_shader, m_tex_rect[fmB], fatal);
 
-    const bool leftTop_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_lt"));
-    const bool rightBottom_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_rb"));
-    const bool rightTop_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_rt"));
-    const bool leftBottom_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_lb"));
+    const bool leftTop_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_lt"), shader, m_shader, m_tex_rect[fmLT], fatal);
+    const bool rightBottom_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_rb"), shader, m_shader, m_tex_rect[fmRB], fatal);
+    const bool rightTop_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_rt"), shader, m_shader, m_tex_rect[fmRT], fatal);
+    const bool leftBottom_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_lb"), shader, m_shader, m_tex_rect[fmLB], fatal);
 
     bool failed = false;
 
@@ -82,33 +82,6 @@ bool CUIFrameWindow::InitTextureEx(pcstr texture, pcstr shader, bool fatal /*= t
         failed |= !rightTop_exist;
         failed |= !leftBottom_exist;
     }
-
-	if (back_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_back"), shader, m_shader, m_tex_rect[fmBK]);
-
-	if (left_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_l"), shader, m_shader, m_tex_rect[fmL]);
-
-	if (right_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_r"), shader, m_shader, m_tex_rect[fmR]);
-
-	if (top_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_t"), shader, m_shader, m_tex_rect[fmT]);
-
-	if (bottom_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_b"), shader, m_shader, m_tex_rect[fmB]);
-
-	if (leftTop_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_lt"), shader, m_shader, m_tex_rect[fmLT]);
-
-	if (rightBottom_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_rb"), shader, m_shader, m_tex_rect[fmRB]);
-
-	if (rightTop_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_rt"), shader, m_shader, m_tex_rect[fmRT]);
-
-	if (leftBottom_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_lb"), shader, m_shader, m_tex_rect[fmLB]);
 
     const bool LT_and_T_are_similar_by_height = fsimilar(m_tex_rect[fmLT].height(), m_tex_rect[fmT].height());
     const bool LT_and_RT_are_similar_by_height = fsimilar(m_tex_rect[fmLT].height(), m_tex_rect[fmRT].height());
