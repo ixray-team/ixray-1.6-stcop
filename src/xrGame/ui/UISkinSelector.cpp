@@ -28,19 +28,6 @@ CUISkinSelectorWnd::CUISkinSelectorWnd(const char* strSectionName, s16 team)
 		m_pImage[i] = new CUIStatix();
 		AttachChild(m_pImage[i]);
 	}
-	if (EngineExternal().ClearSkyMode())
-	{
-		m_pAnims[0] = new CUIAnimatedStatic();
-		m_pFrames->AttachChild(m_pAnims[0]);
-		m_pAnims[1] = new CUIAnimatedStatic();
-		m_pFrames->AttachChild(m_pAnims[1]);
-		m_pButtons[0] = new CUI3tButton();
-		m_pFrames->AttachChild(m_pButtons[0]);
-		m_pButtons[0]->SetMessageTarget(this);
-		m_pButtons[1] = new CUI3tButton();
-		m_pFrames->AttachChild(m_pButtons[1]);
-		m_pButtons[1]->SetMessageTarget(this);
-	}
 
 	m_pBtnAutoSelect= new CUI3tButton();	AttachChild(m_pBtnAutoSelect);
 	m_pBtnSpectator	= new CUI3tButton();	AttachChild(m_pBtnSpectator);
@@ -136,22 +123,39 @@ void CUISkinSelectorWnd::Init(const char* strSectionName)
 	CUIXmlInit::InitStatic(xml_doc,"skin_selector:image_frames",0,	m_pFrames);
 
 	if (xml_doc.NavigateToNode("skin_selector:image_frames:btn_left"))
-		CUIXmlInit::Init3tButton(xml_doc,"skin_selector:image_frames:btn_left",	0,	m_pButtons[0]);
+	{
+		m_pButtons[0] = new CUI3tButton();
+		m_pFrames->AttachChild(m_pButtons[0]);
+		m_pButtons[0]->SetMessageTarget(this);
+		CUIXmlInit::Init3tButton(xml_doc, "skin_selector:image_frames:btn_left", 0, m_pButtons[0]);
+	}
+
 	if (xml_doc.NavigateToNode("skin_selector:image_frames:btn_right"))
-		CUIXmlInit::Init3tButton(xml_doc,"skin_selector:image_frames:btn_right",0,	m_pButtons[1]);
+	{
+		m_pButtons[1] = new CUI3tButton();
+		m_pFrames->AttachChild(m_pButtons[1]);
+		m_pButtons[1]->SetMessageTarget(this);
+		CUIXmlInit::Init3tButton(xml_doc, "skin_selector:image_frames:btn_right", 0, m_pButtons[1]);
+	}
 
 	if (xml_doc.NavigateToNode("skin_selector:image_frames:a_static_1"))
-		CUIXmlInit::InitAnimatedStatic(xml_doc,"skin_selector:image_frames:a_static_1",	0,	m_pAnims[0]);
+	{
+		m_pAnims[0] = new CUIAnimatedStatic();
+		m_pFrames->AttachChild(m_pAnims[0]);
+		CUIXmlInit::InitAnimatedStatic(xml_doc, "skin_selector:image_frames:a_static_1", 0, m_pAnims[0]);
+	}
 
 	if (xml_doc.NavigateToNode("skin_selector:image_frames:a_static_2"))
-		CUIXmlInit::InitAnimatedStatic(xml_doc,"skin_selector:image_frames:a_static_2",	0,	m_pAnims[1]);
-
+	{
+		m_pAnims[1] = new CUIAnimatedStatic();
+		m_pFrames->AttachChild(m_pAnims[1]);
+		CUIXmlInit::InitAnimatedStatic(xml_doc, "skin_selector:image_frames:a_static_2", 0, m_pAnims[1]);
+	}
 	CUIXmlInit::Init3tButton(xml_doc,"skin_selector:btn_spectator",	0,m_pBtnSpectator);
 	CUIXmlInit::Init3tButton(xml_doc,"skin_selector:btn_autoselect",0,m_pBtnAutoSelect);
 	CUIXmlInit::Init3tButton(xml_doc,"skin_selector:btn_back",		0,m_pBtnBack);
 
-	if (xml_doc.NavigateToNode("skin_selector:skin_shader",0))
-		m_shader = xml_doc.Read("skin_selector:skin_shader",0,"");
+	m_shader = xml_doc.Read("skin_selector:skin_shader",0,"");
 
 	InitSkins();
 	string64 buff;
