@@ -431,6 +431,8 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_Generic_2);
 		DisplayRT(rt_Normal);
 		DisplayRT(rt_Position);
+		DisplayRT(rt_sslr);
+		DisplayRT(rt_sslr_temp);
 		DisplayRT(rt_ssao_temp);
 		DisplayRT(rt_Velocity);
 
@@ -488,6 +490,7 @@ CRenderTarget::CRenderTarget()
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 
+
 		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 
 		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT);
@@ -496,6 +499,23 @@ CRenderTarget::CRenderTarget()
 		rt_Back_Buffer.create(r2_RT_backbuffer_final, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 
 		rt_Generic.create(r2_RT_generic, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1, isUAV);
+	}
+
+	if(RImplementation.o.deffered_reflecitons) {
+		rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+	}
+
+	if(RImplementation.o.offscreen_reflecitons) {
+		u32 RefSize = 256;
+		auto flags = CRT::CRTCreationFlags::MIPPED_RT_FLAG;
+
+		// TODO: Optimize memory using
+		rt_Reflection.create(r2_RT_env, RefSize, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, flags);
+		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, flags);
+
+		rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
 	}
 
 	init_fsr();

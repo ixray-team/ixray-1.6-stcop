@@ -63,11 +63,10 @@ float calc_ssao(float depth, float3 normal, float2 tc0)
 		float3( 1.0,  1.0, -1.0) * fScale * (n += step),
 	};
 	
-	float2 jit_offset = 0.0f;
-	sincos(m_taa_jitter.z * 6.283, jit_offset.x, jit_offset.y);
-	
-	float2 tc1 = (tc0 * scaled_screen_res.xy) * 0.015625f + jit_offset;
+	float2 tc1 = (tc0 * scaled_screen_res.xy) * 0.015625f;
 	float3 rotSample = jitter0.Sample(smp_jitter, tc1).xyz;
+	
+	rotSample = frac(m_taa_jitter.z + rotSample);
 	rotSample = normalize(rotSample - 0.5f);
 
 	float3 pos = GbufferGetPointRealUnjitter(tc0, depth) * 0.99f;
@@ -94,7 +93,7 @@ float calc_ssao(float depth, float3 normal, float2 tc0)
 	}
 
 	ao = 1.0f - (ao * contrast + selfOcc);
-	return ao * ao * ao;
+	return ao * ao;
 }
 #endif
 
