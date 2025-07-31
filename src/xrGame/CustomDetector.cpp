@@ -22,45 +22,55 @@ ITEM_INFO::~ITEM_INFO()
 	if(pParticle)
 		Particles::Details::Destroy(pParticle);
 }
-#include "WeaponBinoculars.h"
+
 bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate)
 {
-	if(itm==nullptr)
+	if (itm == nullptr)
+	{
 		return true;
+	}
 
-	CInventoryItem& iitm			= itm->item();
-	u32 slot						= iitm.BaseSlot();
+	CInventoryItem& iitm = itm->item();
+	u32 slot = iitm.BaseSlot();
 	bool bres = (slot == INV_SLOT_2 || slot == KNIFE_SLOT || slot == BOLT_SLOT);
-	if(!bres && slot_to_activate)
+	if (!bres && slot_to_activate)
 	{
 		*slot_to_activate = NO_ACTIVE_SLOT;
 
-		if(m_pInventory->ItemFromSlot(BOLT_SLOT))
+		if (m_pInventory->ItemFromSlot(BOLT_SLOT))
+		{
 			*slot_to_activate = BOLT_SLOT;
-		else if(m_pInventory->ItemFromSlot(INV_SLOT_3) && m_pInventory->ItemFromSlot(INV_SLOT_3)->BaseSlot()!=INV_SLOT_3)
+		}
+		else if (m_pInventory->ItemFromSlot(INV_SLOT_3) && m_pInventory->ItemFromSlot(INV_SLOT_3)->BaseSlot() != INV_SLOT_3)
+		{
 			*slot_to_activate = INV_SLOT_3;
-		else if(m_pInventory->ItemFromSlot(INV_SLOT_2) && m_pInventory->ItemFromSlot(INV_SLOT_2)->BaseSlot()!=INV_SLOT_3)
+		}
+		else if (m_pInventory->ItemFromSlot(INV_SLOT_2) && m_pInventory->ItemFromSlot(INV_SLOT_2)->BaseSlot() != INV_SLOT_3)
+		{
 			*slot_to_activate = INV_SLOT_2;
-		else if(m_pInventory->ItemFromSlot(KNIFE_SLOT))
+		}
+		else if (m_pInventory->ItemFromSlot(KNIFE_SLOT))
+		{
 			*slot_to_activate = KNIFE_SLOT;
+		}
 
-		if(*slot_to_activate != NO_ACTIVE_SLOT)
+		if (*slot_to_activate != NO_ACTIVE_SLOT)
+		{
 			bres = true;
+		}
 	}
 
-	if(!bres && itm->GetState()!=CHUDState::eShowing)
-		bres = bres && !itm->IsPending();
-
-	if(bres)
+	if (!bres && itm->GetState() != CHUDState::eShowing)
 	{
-		CWeapon* W = smart_cast<CWeapon*>(itm);
-		if(W && !smart_cast<CWeaponBinoculars*>(W))
-			bres =	bres							  &&
-					!m_bHideAndRestore				  &&
-					(W->GetState()!=CHUDState::eBore) &&
-					(W->GetState()!=CWeapon::eReload) &&
-					(W->GetState()!=CWeapon::eSwitch) &&
-					!W->IsZoomed();
+		bres = bres && !itm->IsPending();
+	}
+
+	if (bres)
+	{
+		if (CWeapon* W = itm->cast_weapon())
+		{
+			bres = bres && !m_bHideAndRestore && (W->GetState() != CHUDState::eBore) && (W->GetState() != CWeapon::eReload) && (W->GetState() != CWeapon::eSwitch) && !W->IsZoomed();
+		}
 	}
 	return bres;
 }
@@ -149,8 +159,8 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 			{
 				if (OnServer())
 				{
-					// Ïûòàåìñÿ äîñòàòü äîïóñòèìûé ïðåäìåò: íîæ, îðóæèå èëè òï
-					// ïðè ýòîì áóäåò ñïðÿòàíî òåêóùåå îðóæèå
+					// ÐŸÑ‹Ñ‚Ð°ÐµÐ¼ÑÑ Ð´Ð¾ÑÑ‚Ð°Ñ‚ÑŒ Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚: Ð½Ð¾Ð¶, Ð¾Ñ€ÑƒÐ¶Ð¸Ðµ Ð¸Ð»Ð¸ Ñ‚Ð¿
+					// Ð¿Ñ€Ð¸ ÑÑ‚Ð¾Ð¼ Ð±ÑƒÐ´ÐµÑ‚ ÑÐ¿Ñ€ÑÑ‚Ð°Ð½Ð¾ Ñ‚ÐµÐºÑƒÑ‰ÐµÐµ Ð¾Ñ€ÑƒÐ¶Ð¸Ðµ
 					m_pInventory->Activate(slot_to_activate);
 				}
 				else
@@ -503,11 +513,13 @@ void CCustomDetector::UpdateHudAdditonal(Fmatrix& trans)
 {
 	if (m_pInventory)
 	{
-		CWeapon* pWeap = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
-		if(pWeap)
+		PIItem active_item = m_pInventory->ActiveItem();
+		if (CWeapon* pWeap = active_item != nullptr ? active_item->cast_weapon() : nullptr)
 		{
-			if(pWeap->IsZoomed())
+			if (pWeap->IsZoomed())
+			{
 				return;
+			}
 		}
 	}
 
@@ -549,8 +561,8 @@ void CCustomDetector::UpdateVisibility()
 	}
 	else
 	{
-		CWeapon* wpn = smart_cast<CWeapon*>(pItem);
-		if (wpn && !smart_cast<CWeaponBinoculars*>(wpn) && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch))
+		CWeapon* wpn = pItem != nullptr ? pItem->cast_weapon() : nullptr;
+		if (wpn != nullptr && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch))
 		{
 			HideDetector(true);
 			m_bNeedActivation = true;
@@ -617,10 +629,12 @@ void CCustomDetector::UpdateCL()
 	UpfateWork				();
 }
 
-bool CCustomDetector::can_be_attached		() const
+bool CCustomDetector::can_be_attached() const
 {
 	if (smart_cast<CActor*>(H_Parent()) && m_pInventory)
+	{
 		return m_pInventory->InSlot(this) && !IsHidden();
+	}
 
 	return inherited::can_be_attached();
 }

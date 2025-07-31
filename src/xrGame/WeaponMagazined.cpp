@@ -321,7 +321,9 @@ bool CWeaponMagazined::TryReload()
 			Actor()->callback(GameObject::eWeaponNoAmmoAvailable)(lua_game_object(), AC);
 		}
 
-		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str()));
+		PIItem get_any = m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str());
+
+		m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 
 		if (IsMisfire() && iAmmoElapsed)
 		{
@@ -340,7 +342,8 @@ bool CWeaponMagazined::TryReload()
 		{
 			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 			{
-				m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[i].c_str()));
+				get_any = m_pInventory->GetAny(m_ammoTypes[i].c_str());
+				m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 				if (m_pCurrentAmmo)
 				{
 					m_set_next_ammoType_on_reload = i;
@@ -370,13 +373,22 @@ bool CWeaponMagazined::TryReload()
 
 bool CWeaponMagazined::IsAmmoAvailable()
 {
-	if (smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() )))
-		return	(true);
-	else
-		for(u32 i = 0; i < m_ammoTypes.size(); ++i)
-			if (smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[i].c_str() )))
-				return	(true);
-	return		(false);
+	PIItem get_any = m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str());
+
+	if (get_any != nullptr && get_any->cast_weapon_ammo())
+	{
+		return true;
+	}
+	else for (const shared_str& ammotype : m_ammoTypes)
+	{
+		get_any = m_pInventory->GetAny(ammotype.c_str());
+		if (get_any != nullptr && get_any->cast_weapon_ammo())
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
@@ -417,7 +429,8 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	{
 		if(m_pInventory)
 		{
-			CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(l_it->first));
+			PIItem get_any = m_pInventory->GetAny(l_it->first);
+			CWeaponAmmo *l_pA = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 			if(l_pA) 
 			{
 				u16 l_free = l_pA->m_boxSize - l_pA->m_boxCurr;
@@ -474,29 +487,35 @@ void CWeaponMagazined::ReloadMagazine()
 		m_set_next_ammoType_on_reload	= undefined_ammo_type;
 	}
 	
-	if(!unlimited_ammo()) 
+	if (!unlimited_ammo())
 	{
 		if (m_ammoTypes.size() <= m_ammoType)
-			return;
-		
-		LPCSTR tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
-		
-		if (!tmp_sect_name)
-			return;
-
-		//попытаться найти в инвентаре патроны текущего типа 
-		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(tmp_sect_name));
-		
-		if(!m_pCurrentAmmo && !m_bLockType) 
 		{
-			for(u8 i = 0; i < u8(m_ammoTypes.size()); ++i) 
+			return;
+		}
+
+		LPCSTR tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
+
+		if (!tmp_sect_name)
+		{
+			return;
+		}
+
+		//попытаться найти в инвентаре патроны текущего типа
+		PIItem get_any = m_pInventory->GetAny(tmp_sect_name);
+		m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
+
+		if (!m_pCurrentAmmo && !m_bLockType)
+		{
+			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 			{
 				//проверить патроны всех подходящих типов
-				m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[i].c_str() ));
-				if(m_pCurrentAmmo) 
-				{ 
+				get_any = m_pInventory->GetAny(m_ammoTypes[i].c_str());
+				m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
+				if (m_pCurrentAmmo)
+				{
 					m_ammoType = i;
-					break; 
+					break;
 				}
 			}
 		}
@@ -594,7 +613,10 @@ bool CWeaponMagazined::HaveCartridgeInInventory(u8 cnt)
 
 u8 CWeaponMagazined::AddCartridge(u8 cnt)
 {
-	if (IsMisfire())	bMisfire = false;
+	if (IsMisfire())
+	{
+		bMisfire = false;
+	}
 
 	if (m_set_next_ammoType_on_reload != undefined_ammo_type)
 	{
@@ -603,33 +625,44 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 	}
 
 	if (!HaveCartridgeInInventory(1))
+	{
 		return 0;
+	}
 
-	m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str()));
+	PIItem get_any = m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str());
+	m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
+
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-
 	if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
+	{
 		m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
+	}
+
 	CCartridge l_cartridge = m_DefaultCartridge;
 	while (cnt)
 	{
 		if (!unlimited_ammo())
 		{
-			if (!m_pCurrentAmmo->Get(l_cartridge)) break;
+			if (!m_pCurrentAmmo->Get(l_cartridge))
+			{
+				break;
+			}
 		}
+
 		--cnt;
 		++iAmmoElapsed;
 		l_cartridge.m_LocalAmmoType = m_ammoType;
 		m_magazine.push_back(l_cartridge);
-		//		m_fCurrentCartirdgeDisp = l_cartridge.m_kDisp;
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
 	//�������� ������� ��������, ���� ��� ������
 	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
+	{
 		m_pCurrentAmmo->SetDropManual(TRUE);
+	}
 
 	GiveAmmoFromMagToChamber();
 
@@ -1201,11 +1234,12 @@ void CWeaponMagazined::switch2_Fire	()
 #if USE_OLD_OBJECT_PLANNER
 	if ( !(io && (ii == io->inventory().ActiveItem())) ) 
 	{
-		CAI_Stalker			*stalker = smart_cast<CAI_Stalker*>(H_Parent());
-		if (stalker) {
-			stalker->planner().show						();
-			stalker->planner().show_current_world_state	();
-			stalker->planner().show_target_world_state	();
+		CAI_Stalker* stalker = H_Parent() != nullptr ? H_Parent()->cast_stalker() : nullptr;
+		if (stalker)
+		{
+			stalker->planner().show();
+			stalker->planner().show_current_world_state();
+			stalker->planner().show_target_world_state();
 		}
 	}
 #endif
@@ -1500,9 +1534,9 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 
 bool CWeaponMagazined::CanAttach(PIItem pIItem)
 {
-	CScope* pScope = smart_cast<CScope*>(pIItem);
-	CSilencer* pSilencer = smart_cast<CSilencer*>(pIItem);
-	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(pIItem);
+	CScope* pScope = pIItem->cast_addon_scope();
+	CSilencer* pSilencer = pIItem->cast_addon_silencer();
+	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
 
 	if (pScope && m_eScopeStatus == ALife::eAddonAttachable)
 	{
@@ -1513,28 +1547,26 @@ bool CWeaponMagazined::CanAttach(PIItem pIItem)
 
 		return ScopeFit(pScope);
 	}
-	else if (pSilencer &&
-		m_eSilencerStatus == ALife::eAddonAttachable &&
-		(m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0 &&
-		(m_sSilencerName == pIItem->object().cNameSect()))
+	else if (pSilencer && m_eSilencerStatus == ALife::eAddonAttachable && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0 && (m_sSilencerName == pIItem->object().cNameSect()))
+	{
 		return true;
-	else if (pGrenadeLauncher &&
-		m_eGrenadeLauncherStatus == ALife::eAddonAttachable &&
-		(m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0 &&
-		(m_sGrenadeLauncherName == pIItem->object().cNameSect()))
+	}
+	else if (pGrenadeLauncher && m_eGrenadeLauncherStatus == ALife::eAddonAttachable && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0 && (m_sGrenadeLauncherName == pIItem->object().cNameSect()))
+	{
 		return true;
+	}
 	else
+	{
 		return inherited::CanAttach(pIItem);
+	}
 }
 
 bool CWeaponMagazined::CanDetach(const char* item_section_name)
 {
-	if( m_eScopeStatus == ALife::eAddonAttachable &&
-	   0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope))/* &&
-	   (m_scopes[cur_scope]->m_sScopeName	== item_section_name))*/
+	if (m_eScopeStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope))
 	{
 		SCOPES_VECTOR_IT it = m_scopes.begin();
-		for(; it!=m_scopes.end(); it++)
+		for (; it != m_scopes.end(); it++)
 		{
 			if (bUseAltScope)
 			{
@@ -1549,26 +1581,27 @@ bool CWeaponMagazined::CanDetach(const char* item_section_name)
 		}
 		return false;
 	}
-//	   return true;
-	else if(m_eSilencerStatus == ALife::eAddonAttachable &&
-	   0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonSilencer) &&
-	   (m_sSilencerName == item_section_name))
-       return true;
-	else if(m_eGrenadeLauncherStatus == ALife::eAddonAttachable &&
-	   0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
-	   (m_sGrenadeLauncherName == item_section_name))
-       return true;
+	else if (m_eSilencerStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) && (m_sSilencerName == item_section_name))
+	{
+		return true;
+	}
+	else if (m_eGrenadeLauncherStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && (m_sGrenadeLauncherName == item_section_name))
+	{
+		return true;
+	}
 	else
+	{
 		return inherited::CanDetach(item_section_name);
+	}
 }
 
 bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 {
 	bool result = false;
 
-	CScope*				pScope					= smart_cast<CScope*>(pIItem);
-	CSilencer*			pSilencer				= smart_cast<CSilencer*>(pIItem);
-	CGrenadeLauncher*	pGrenadeLauncher		= smart_cast<CGrenadeLauncher*>(pIItem);
+	CScope* pScope = pIItem->cast_addon_scope();
+	CSilencer* pSilencer = pIItem->cast_addon_silencer();
+	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
 	
 	if (pScope && m_eScopeStatus == ALife::eAddonAttachable)
 	{
@@ -2250,8 +2283,12 @@ void CWeaponMagazined::OnEvent(NET_Packet& P, u16 type)
 		{
 			u16 id = P.r_u16();
 			u16 boxSize = P.r_u16();
-			CWeaponAmmo* pA = smart_cast<CWeaponAmmo*>(Level().Objects.net_Find(id));
-			if(pA != nullptr) pA->m_boxCurr = boxSize;
+			CObject* obj = Level().Objects.net_Find(id);
+
+			if (CWeaponAmmo* pA = obj != nullptr ? obj->cast_weapon_ammo() : nullptr)
+			{
+				pA->m_boxCurr = boxSize;
+			}
 		}
 	}break;
 	default:
