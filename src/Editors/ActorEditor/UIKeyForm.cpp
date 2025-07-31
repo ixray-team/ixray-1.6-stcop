@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+constexpr u8 NotifyWidth = 2;
+
 namespace detail
 {
 	float RoundToTwoDecimals(float value)
@@ -14,7 +16,7 @@ namespace detail
 	}
 }
 
-UIKeyForm::UIKeyForm():m_AutoChange(true), m_TimeFactor(1), m_Position(0), m_currentEditMotion(nullptr)
+UIKeyForm::UIKeyForm():m_AutoChange(true), m_TimeFactor(1), m_Position(0), m_currentEditMotion(nullptr), m_currentNotify(nullptr)
 {
 }
 
@@ -24,7 +26,12 @@ UIKeyForm::~UIKeyForm()
 
 void UIKeyForm::Draw()
 {
+	static auto PrevCurrentMotion = m_currentEditMotion;
 	m_currentEditMotion = ATools->GetCurrentMotion();
+	if (!m_currentEditMotion || PrevCurrentMotion != m_currentEditMotion)
+	{
+		m_currentNotify = nullptr;
+	}
 
 	bool bMarksPresent12 = (m_currentEditMotion && m_currentEditMotion->marks.size() >= 2);
 	bool bMarksPresent34 = (m_currentEditMotion && m_currentEditMotion->marks.size() == 4);
@@ -36,12 +43,11 @@ void UIKeyForm::Draw()
 
 	ImGui::Begin("KeyForm");
 	{
-
 		float a, b, c;
 		ATools->GetStatTime(a, b, c);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-		ImGui::BeginChild("Left", ImVec2(90, 140));
+		ImGui::BeginChild("Left", ImVec2(130, 100));
 		{
 		
 			ImGui::Checkbox("Auto", &m_AutoChange);
@@ -49,17 +55,17 @@ void UIKeyForm::Draw()
 			ImGui::Text("Right1");
 			ImGui::Text("Left2");
 			ImGui::Text("Right2");
-			ImGui::Text("Notify");
 			ImGui::Separator();
 			ImGui::EndChild();
 		}ImGui::SameLine();
-		ImGui::BeginChild("Midle", ImVec2(-120, 140));
+		ImVec2 size;
+		ImGui::BeginChild("Midle", ImVec2(-120, 100));
 		{
 			ImGui::SetNextItemWidth(-1);
 			if (AutoChange())m_Position = c ;
 			ImGui::SliderFloat("##key1", &m_Position, a , b , "%.4f");
 			ImGui::SetNextItemWidth(-1);
-			ImVec2 size = ImGui::GetItemRectSize();
+			size = ImGui::GetItemRectSize();
 			static float Zero = 0;
 			if (size.x!= m_TempForPlotHistogram.size())
 			{
@@ -89,71 +95,11 @@ void UIKeyForm::Draw()
 			ImGui::PlotHistogram("##right2", Mark4 ? m_TempForPlotHistogram.data() : &Zero, Mark4 ? m_TempForPlotHistogram.size() : 1, 0, NULL, 0.0f, 1.0f, size);
 			if (!Mark4) ImGui::EndDisabled();
 
-			DrawNotify();
-			ImGui::PlotHistogram("##animnotify", m_TempForPlotHistogram.data(), m_TempForPlotHistogram.size(), 0, NULL, 0.0f, 1.0f, size);
-
-			if (m_currentEditMotion)
-			{
-				while (!m_currentEditMotion->notifies_to_remove.empty())
-				{
-					auto removed = m_currentEditMotion->notifies_to_remove.top();
-					m_currentEditMotion->notifies_to_remove.pop();
-					VERIFY(m_currentEditMotion->notify.contains(removed));
-					m_currentEditMotion->notify.erase(removed);
-				}
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					float a, b, c;
-					ATools->GetStatTime(a, b, c);
-					float motion_length = b - a;
-
-					ImVec2 MousePos = ImGui::GetMousePos();
-					ImVec2 ItemPos = ImGui::GetItemRectMin();
-					ImVec2 ItemSize = ImGui::GetItemRectSize();
-					float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
-
-					float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
-
-					if (!m_currentEditMotion->notify.contains(TimeOffset))
-					{
-						m_currentEditMotion->notify[TimeOffset] = {};
-					}
-					m_currentNotify = &m_currentEditMotion->notify[TimeOffset];
-				}
-				else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
-				{
-					float a, b, c;
-					ATools->GetStatTime(a, b, c);
-					float motion_length = b - a;
-
-					ImVec2 MousePos = ImGui::GetMousePos();
-					ImVec2 ItemPos = ImGui::GetItemRectMin();
-					ImVec2 ItemSize = ImGui::GetItemRectSize();
-					float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
-
-					float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
-					float Step = detail::RoundToTwoDecimals(motion_length / 100);
-
-
-					for (auto& [Time, _] : m_currentEditMotion->notify)
-					{
-						for (float StartKey = TimeOffset - Step; StartKey < (TimeOffset + Step * 2); StartKey += Step)
-						{
-							if (detail::compareFloat(Time, StartKey))
-							{
-								m_currentEditMotion->notify.erase(Time);
-							}
-						}
-					}
-					m_currentNotify = nullptr;
-				}
-			}
-			
 			ImGui::Separator();
 
 			ImGui::EndChild();
 		}ImGui::SameLine();
-		ImGui::BeginChild("Back", ImVec2(120, 140));
+		ImGui::BeginChild("Back", ImVec2(120, 100));
 		{
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 0));
@@ -197,67 +143,196 @@ void UIKeyForm::Draw()
 			ImGui::PopID();
 			if (!Mark4) ImGui::EndDisabled();
 
-			ImGui::Text("");
-
 			ImGui::Separator();
 			
 			ImGui::PopStyleVar();
 			ImGui::EndChild();
 		}
 
-		if (m_currentEditMotion)
-		{
-			auto InputText = [&](LPCSTR Label, shared_str& str)
-			{
-				string256 buffer = {};
-				if (str.size())
-				{
-					std::copy(str.c_str(), str.c_str() + str.size(), buffer);
-				} else
-				{
-					buffer[0] = '\0';
-				}
-				ImGui::SetNextItemWidth(-1);
-				ImGui::InputText(Label, buffer, sizeof(buffer));
-				str = buffer;
-			};
-			xr_vector<float> keys;
-			keys.reserve(m_currentEditMotion->notify.size());
-			for (auto& elem : m_currentEditMotion->notify)
-			{
-				keys.push_back(elem.first);
+		if (m_currentEditMotion){
+		
+			bool NotifiesOpened = ImGui::TreeNode("Notifies");
+			ImGui::SameLine(146);
+			DrawNotify();
+			ImGui::PlotHistogram("##animnotify", m_TempForPlotHistogram.data(), m_TempForPlotHistogram.size(), 0, NULL, 0.0f, 1.0f, size);
+
+			auto& NotifyData = m_currentEditMotion->notify;
+		
+			if (NotifyData.NotifyToRemove) {
+				NotifyData.NotifyTracks[std::get<0>(*NotifyData.NotifyToRemove)][std::get<2>(*NotifyData.NotifyToRemove)].Notifies.erase(std::get<1>(*NotifyData.NotifyToRemove));
+				NotifyData.NotifyToRemove = nullptr;
 			}
-			std::ranges::sort(keys);
-			for (auto key : keys)
-			{
-				ImGui::PushID(std::to_string(key).c_str());
-				auto& elem = m_currentEditMotion->notify[key];
-				ImGui::BeginChild("Notify", ImVec2(0, 110));
-				{
-					{
-						ImGui::SetNextItemWidth(90);
-						ImGui::Text("%f", key);
-						ImGui::SameLine(90);
-						if (ImGui::Button("Del")){
-							m_currentEditMotion->notifies_to_remove.push(key);
-						}
-					}
-					{
-						ImGui::SetNextItemWidth(90);
-						ImGui::Text("Notify Name");
-						ImGui::SameLine(90);
-						InputText("Notify Name", elem.ExternalRef);
-					}
-					ImGui::EndChild();
+
+			if (NotifiesOpened) {
+
+				if (ImGui::Button("Add")) {
+					ImGui::OpenPopup("add_notify_bone");
 				}
-				ImGui::Separator();
-				ImGui::PopID();
+
+				if (ImGui::BeginPopup("add_notify_bone")) {
+					int id = 0;
+					auto bones = ATools->CurrentObject()->Bones();
+					for (auto& bone : bones) {
+						ImGui::PushID(id);
+						if (ImGui::Button(bone->name.c_str()) && !NotifyData.NotifyTracks.contains(bone->name)) {
+							NotifyData.NotifyTracks[bone->name] = {};
+							m_currentNotify = nullptr;
+						}
+						ImGui::PopID();
+					}
+					ImGui::EndPopup();
+				}
+
+				int id = 0;
+
+				shared_str ToRemove = "";
+				int ToRemove2 = -1;
+				for (auto& Track : NotifyData.NotifyTracks) {
+					ImGui::PushID(id++);
+					bool NotifyBoneOpened = ImGui::TreeNode(Track.first.c_str());
+					ImGui::SameLine(146);
+					DrawNotify(Track);
+					ImGui::PlotHistogram("##animnotifytrack", m_TempForPlotHistogram.data(), m_TempForPlotHistogram.size(), 0, NULL, 0.0f, 1.0f, size);
+					if (NotifyBoneOpened) {
+						if (ImGui::Button("Add")) {
+							Track.second.push_back({});
+							m_currentNotify = nullptr;
+						}
+						ImGui::SameLine(146);
+						if (ImGui::Button("Remove Bone")) {
+							ToRemove = Track.first;
+							m_currentNotify = nullptr;
+						}
+						for (int i = 0; i < Track.second.size(); ++i) {
+							ImGui::PushID(id++);
+							ImGui::Text(std::to_string(i).c_str());
+							ImGui::SameLine(116);
+							if (ImGui::Button("Del")) {
+								ToRemove = Track.first;
+								ToRemove2 = i;
+								m_currentNotify = nullptr;
+							}
+							ImGui::SameLine(146);
+							DrawNotify(Track.second[i]);
+							ImGui::PlotHistogram("##animnotifytrackkeys", m_TempForPlotHistogram.data(), m_TempForPlotHistogram.size(), 0, NULL, 0.0f, 1.0f, size);
+							ImVec2 ItemSize = ImGui::GetItemRectSize();
+							if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+							{
+								float a, b, c; // motion start and end time 
+								ATools->GetStatTime(a, b, c);
+								float motion_length = b - a;
+
+								ImVec2 MousePos = ImGui::GetMousePos();
+								ImVec2 ItemPos = ImGui::GetItemRectMin();
+								float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
+								float LocalPosA = (MousePos.x - ItemPos.x - NotifyWidth) / ItemSize.x;
+								float LocalPosB = (MousePos.x - ItemPos.x + NotifyWidth) / ItemSize.x;
+
+								float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
+								float TimeOffsetA = detail::RoundToTwoDecimals(LocalPosA * b);
+								float TimeOffsetB = detail::RoundToTwoDecimals(LocalPosB * b);
+
+								auto& data = Track.second[i].Notifies;
+
+								m_currentNotify = nullptr;
+								for (auto& elem : data) {
+									if (elem.first >= TimeOffsetA && elem.first <= TimeOffsetB) {
+										m_currentNotify = &data[elem.first];
+									}
+								}
+								if (!m_currentNotify) {
+									data[TimeOffset] = {};
+									m_currentNotify = &data[TimeOffset];
+								}
+							}
+							else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+							{
+								float a, b, c;
+								ATools->GetStatTime(a, b, c);
+								float motion_length = b - a;
+
+								ImVec2 MousePos = ImGui::GetMousePos();
+								ImVec2 ItemPos = ImGui::GetItemRectMin();
+								float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
+
+								float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
+								float Step = detail::RoundToTwoDecimals(motion_length / 100);
+
+								auto& data = Track.second[i].Notifies;
+
+								float ToErase;
+
+								for (auto [Time, _] : data)
+								{
+									if (Time > TimeOffset - Step && Time < TimeOffset + Step)
+									{
+										ToErase = Time;
+										break;
+									}
+								}
+								data.erase(ToErase);
+								m_currentNotify = nullptr;
+							}
+							ImGui::SameLine();
+							if (ImGui::Button("Current keyframe")) {
+								float LocalPosA = m_Position - NotifyWidth/ ItemSize.x;
+								float LocalPosB = m_Position + NotifyWidth / ItemSize.x;
+								float TimeOffsetA = detail::RoundToTwoDecimals(LocalPosA);
+								float TimeOffsetB = detail::RoundToTwoDecimals(LocalPosB);
+								auto& data = Track.second[i].Notifies;
+								m_currentNotify = nullptr;
+								float ToRemoveTime = -1;
+								for (auto& elem : data) {
+									if (elem.first >= TimeOffsetA && elem.first <= TimeOffsetB) {
+										m_currentNotify = &data[elem.first];
+										ToRemoveTime = elem.first;
+									}
+								}
+								data[m_Position] = {};
+								if (m_currentNotify) {
+									data[m_Position] = *m_currentNotify;
+									data.erase(ToRemoveTime);
+								}
+								m_currentNotify = &data[m_Position];
+							}
+							ImGui::PopID();
+						}
+						ImGui::Separator();
+						ImGui::TreePop();
+					}
+					ImGui::PopID();
+				}
+				if (NotifyData.NotifyTracks.contains(ToRemove)) {
+					if (ToRemove2 < 0) {
+						NotifyData.NotifyTracks.erase(ToRemove);
+					}
+					else {
+						NotifyData.NotifyTracks[ToRemove].erase(NotifyData.NotifyTracks[ToRemove].begin() + ToRemove2);
+					}
+				}
+				ImGui::TreePop();
 			}
 		}
 		ImGui::PopStyleVar();
+	
+		if (m_currentNotify) {
+			ImGui::Text("External ref");
+			ImGui::SameLine(150);
+			auto InputTextLambda = [&](const char* label, shared_str& str)
+			{
+				char buff[64] = {};
+				if (str.size()) {
+					std::strcpy(buff, str.c_str());
+				}
+				ImGui::InputText(label, buff, 64);
+				str = buff;
+			};
+			InputTextLambda("ExternalRef", m_currentNotify->ExternalRef);
+		}
 	}
 	ImGui::End();
 }
+
 inline bool interval_comparer(const motion_marks::interval& i1, const motion_marks::interval& i2)
 {
 	return (i1.first < i2.first);
@@ -338,16 +413,74 @@ void UIKeyForm::DrawNotify()
 		return;
 
 	float k_len = m_TempForPlotHistogram.size() / motion_length;
-	for (auto [Time, Notify] : m_currentEditMotion->notify)
+	for (auto& bone : m_currentEditMotion->notify.NotifyTracks)
+	{
+        for (auto& pair : bone.second)
+        {
+            for (auto [Time, Notify] : pair.Notifies)
+            {
+	            float Key = Time * k_len;
+
+            	for (int KeyStart = std::max(int(Key) - NotifyWidth, 0);
+            		KeyStart <= std::min(int(Key) + NotifyWidth + 1, (int)m_TempForPlotHistogram.size());
+            		KeyStart++)
+            	{
+            		if (KeyStart < 0)
+            			continue;
+
+            		m_TempForPlotHistogram[KeyStart] = 1;
+            	}
+            }
+        }
+	}
+}
+
+void UIKeyForm::DrawNotify(const NotifyTracksType::value_type& elem) {
+
+	std::memset(m_TempForPlotHistogram.data(), 0, sizeof(float) * m_TempForPlotHistogram.size());
+
+	float a, b, c;
+	ATools->GetStatTime(a, b, c);
+	float motion_length = b - a;
+
+	if (motion_length == 0)
+		return;
+
+	float k_len = m_TempForPlotHistogram.size() / motion_length;
+	for (auto& pair : elem.second) {
+		for (auto [Time, Notify] : pair.Notifies)
+		{
+			float Key = Time * k_len;
+
+			for (int i = std::max(int(Key) - NotifyWidth, 0);
+				i < std::min(int(Key) + NotifyWidth + 1, (int)m_TempForPlotHistogram.size());
+				++i) {
+				m_TempForPlotHistogram[i] = 1;
+			}
+
+		}
+	}
+}
+
+void UIKeyForm::DrawNotify(const NotifyTrack& elem) {
+	std::memset(m_TempForPlotHistogram.data(), 0, sizeof(float) * m_TempForPlotHistogram.size());
+
+	float a, b, c;
+	ATools->GetStatTime(a, b, c);
+	float motion_length = b - a;
+
+	if (motion_length == 0)
+		return;
+
+	float k_len = m_TempForPlotHistogram.size() / motion_length;
+	for (auto [Time, Notify] : elem.Notifies)
 	{
 		float Key = Time * k_len;
 
-		for (int KeyStart = int(Key) - 5; KeyStart < int(Key + 5); KeyStart++)
-		{
-			if (KeyStart < 0)
-				continue;
-
-			m_TempForPlotHistogram[KeyStart] = 1;
+		for (int i = std::max(int(Key) - NotifyWidth, 0);
+			i < std::min(int(Key) + NotifyWidth + 1, (int)m_TempForPlotHistogram.size());
+			++i) {
+			m_TempForPlotHistogram[i] = 1;
 		}
 	}
 }

@@ -18,9 +18,6 @@
 
 void CAnimNotifyHandler::TriggerNotify(IAnimNotifyMessage* notify)
 {
-    //xr_string buffer = Name.c_str();
-    //std::ranges::transform(buffer, buffer.begin(), tolower);
-    //Name = buffer.c_str();
     xrCriticalSectionGuard guard(NotifyQueue.Lock);
     NotifyQueue.Queue.push(notify);
 }
@@ -61,13 +58,14 @@ void CAnimNotifyHandler::Update()
             auto Name = NotifyQueue.Queue.front();
             NotifyQueue.Queue.pop();
             ProcessNotify(Name);
+            xr_delete(Name);
         }
     }
 }
 
 void CAnimNotifyHandler::ProcessNotify(IAnimNotifyMessage* Message)
 {
-    Message->notify->Execute(Message->render_visual, Message->bone_id);
+    CAnimNotifyRegistry::GetInstance().get(Message->notify)->Execute(Message->render_visual, Message->bone_id);
 }
 
 IAnimNotify* CAnimNotifyHandler::ConstructNotify(const EAnimNotifyType type)
