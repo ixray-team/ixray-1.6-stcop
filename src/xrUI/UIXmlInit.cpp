@@ -321,7 +321,7 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, LPCSTR path, int index, CUILines* pLi
 	CGameFont *pTmpFont		= nullptr;
 	InitFont				(xml_doc, path, index, color, pTmpFont);
 	pLines->SetTextColor	(color);
-	R_ASSERT				(pTmpFont);
+	R_ASSERT4				(pTmpFont, "Cannot initialize text without font", xml_doc.m_xml_file_name, path);
 	pLines->SetFont			(pTmpFont);	
 
 	// Load font alignment
