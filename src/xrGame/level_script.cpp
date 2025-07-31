@@ -1326,6 +1326,17 @@ Fvector2 World2Ui(Fvector pos, bool hud)
 	return { x, y };
 }
 
+void jump_level(const Fvector& m_position, u32 m_level_vertex_id, GameGraph::_GRAPH_ID m_game_vertex_id, const Fvector& m_angles)
+{
+	NET_Packet p;
+	p.w_begin(M_CHANGE_LEVEL);
+	p.w(&m_game_vertex_id, sizeof(m_game_vertex_id));
+	p.w(&m_level_vertex_id, sizeof(m_level_vertex_id));
+	p.w_vec3(m_position);
+	p.w_vec3(m_angles);
+	Level().Send(p, net_flags(TRUE));
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1633,6 +1644,7 @@ void CLevel::script_register(lua_State *L)
 			def("active_tutorial_name", &tutorial_name),
 			def("translate_string",		&translate_string),
 			def("reload_language", &ReloadLanguage),
-			def("world2ui", &World2Ui)
+			def("world2ui", &World2Ui),
+			def("jump_level", &jump_level)
 	];
 }
