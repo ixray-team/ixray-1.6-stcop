@@ -221,12 +221,18 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, LPCSTR sect
 	return								(self_->server().Process_spawn(packet,clientID));
 }
 
-//Alundaio: Allows to call alife():register(se_obj) manually afterward so that packet editing can be done safely when spawning object with a parent
+// Allows to call alife():register(se_obj) manually afterward so that packet editing can be done safely when spawning object with a parent
 CSE_Abstract *CALifeSimulator__spawn_item3(CALifeSimulator *self, LPCSTR section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent, bool reg = true)
 {
 	if (reg == true)
 		return CALifeSimulator__spawn_item2(self, section, position, level_vertex_id, game_vertex_id, id_parent);
-		
+	
+	if (!pSettings->section_exist(section))
+	{
+		Msg("! Section [%s] not found in game configs!", section);
+		g_pScriptEngine->print_stack();
+	}
+
 	if (id_parent == ALife::_OBJECT_ID(-1))
 		return							(self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent));
 
