@@ -182,7 +182,7 @@ void RenderHUDAdjustManager()
 
 										ImGui::TableNextColumn();
 
-										Fvector& position = p_item->hands_attach_pos();
+										Fvector& position = p_item->m_measures.m_hands_attach[0];
 
 										ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f);
 
@@ -214,7 +214,7 @@ void RenderHUDAdjustManager()
 
 										ImGui::TableNextColumn();
 
-										Fvector& rotation = p_item->hands_attach_rot();
+										Fvector& rotation = p_item->m_measures.m_hands_attach[1];
 
 										ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f);
 

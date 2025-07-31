@@ -275,12 +275,18 @@ private:
 	void					SwitchOutBorder(bool new_border_state);
 
 	CHudAnimatorManager*	m_hud_animator = nullptr;
+	u32 _jitter_time_remains = 0;
+
 public:
 	bool					m_bAllowDeathRemove;
 	float					m_fLegs_shift;
 	u32 _last_update_time;
 	shared_str				m_sNVGAnimator;
 	shared_str				m_sHeadlampAnimator;
+
+	void SetHandsJitterTime(u32 time) { _jitter_time_remains = time; }
+	bool IsHandJitter() const { return _jitter_time_remains > 0; }
+	float GetHandJitterScale(CHudItem* itm) const;
 
 	void					SetZoomRndSeed			(s32 Seed = 0);
 	s32						GetZoomRndSeed			()	{ return m_ZoomRndSeed;	};
