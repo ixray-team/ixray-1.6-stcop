@@ -30,6 +30,11 @@ Texture2D s_dn_g; //
 Texture2D s_dn_b; //
 Texture2D s_dn_a; //
 
+Texture2D s_dn_rX;
+Texture2D s_dn_gX;
+Texture2D s_dn_bX;
+Texture2D s_dn_aX;
+
 Texture2D s_refl;
 TextureCube s_env;
 
