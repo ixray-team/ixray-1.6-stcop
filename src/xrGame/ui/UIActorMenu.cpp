@@ -48,10 +48,10 @@ void CUIActorMenu::SetActor(CInventoryOwner* io)
 	m_last_time			= Device.dwTimeGlobal;
 	m_pActorInvOwner	= io;
 	
-	if ( IsGameTypeSingle() )
+	if (IsGameTypeSingle())
 	{
-		if ( io )
-			m_ActorCharacterInfo->InitCharacter	(m_pActorInvOwner->object_id());
+		if (io)
+			m_ActorCharacterInfo->InitCharacter(m_pActorInvOwner);
 		else
 			m_ActorCharacterInfo->ClearInfo();
 	}
@@ -84,7 +84,7 @@ void CUIActorMenu::SetPartner(CInventoryOwner* io)
 					icon = pSettings->r_string(pMonster->cNameSect(), "icon");
 				}
 
-				m_PartnerCharacterInfo->InitCharacterMP("", icon);
+				m_PartnerCharacterInfo->InitCharacter("", icon);
 			}
 		}
 		else if (pCar != nullptr)
@@ -99,7 +99,7 @@ void CUIActorMenu::SetPartner(CInventoryOwner* io)
 					Name = g_pStringTable->translate(Name);
 				}
 
-				m_PartnerCharacterInfo->InitCharacterMP
+				m_PartnerCharacterInfo->InitCharacter
 				(
 					Name.c_str(),
 					pSettings->r_string(pCar->cNameSect(), "icon")
@@ -108,7 +108,7 @@ void CUIActorMenu::SetPartner(CInventoryOwner* io)
 		}
 		else
 		{
-			m_PartnerCharacterInfo->InitCharacter(m_pPartnerInvOwner->object_id());
+			m_PartnerCharacterInfo->InitCharacter(m_pPartnerInvOwner);
 		}
 
 		SetInvBox(nullptr);
@@ -909,11 +909,11 @@ void CUIActorMenu::SetActorInfoMP()
 
 	if (IsGameTypeSingleCompatible())
 	{
-		m_ActorCharacterInfo->InitCharacterMP(m_pActorInvOwner);
+		m_ActorCharacterInfo->InitCharacter(m_pActorInvOwner);
 	}
 	else
 	{
-		m_ActorCharacterInfo->InitCharacterMP(Game().local_player->getName(), "ui_npc_u_nebo_1");
+		m_ActorCharacterInfo->InitCharacter(Game().local_player->getName(), "ui_npc_u_nebo_1");
 	}
 
 	UpdateActorMoneyMP();
