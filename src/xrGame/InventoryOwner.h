@@ -21,7 +21,6 @@ class CTrade;
 class CPda;
 class CGameObject;
 class CEntityAlive;
-class CCustomZone;
 class CInfoPortionWrapper;
 class NET_Packet;
 class CCharacterInfo;
@@ -31,6 +30,10 @@ class CPurchaseList;
 class CWeapon;
 class CCustomOutfit;
 class CHelmet;
+class CActor;
+class CAI_Stalker;
+class CEntity;
+class CBaseMonster;
 
 class CInventoryOwner : public CAttachmentOwner {							
 public:
@@ -38,7 +41,14 @@ public:
 	virtual			~CInventoryOwner			();
 
 public:
-	virtual CInventoryOwner*	cast_inventory_owner	()						{return this;}
+	virtual CInventoryOwner*	cast_inventory_owner	()	{return this;}
+	virtual CAttachmentOwner*	cast_attachment_owner	()  {return this;}
+	virtual CActor*				cast_actor				()	{return nullptr;}
+	virtual CEntityAlive*		cast_entity_alive		()	{return nullptr;}
+	virtual CEntity*			cast_entity				()	{return nullptr;}
+	virtual CAI_Stalker*		cast_stalker			()	{return nullptr;}
+	virtual CGameObject*		cast_game_object		()	{return nullptr;}
+	virtual CBaseMonster*		cast_base_monster		()	{return nullptr;}
 public:
 
 	virtual DLL_Pure	*_construct				();
