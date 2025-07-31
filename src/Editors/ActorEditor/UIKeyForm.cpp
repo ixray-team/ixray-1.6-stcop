@@ -241,67 +241,12 @@ void UIKeyForm::Draw()
 						if (ImGui::Button("Del")){
 							m_currentEditMotion->notifies_to_remove.push(key);
 						}
-						ImGui::SameLine();
-						if (ImGui::Button(elem.IsExternalTrigger ? "Switch to raw data" : "Switch to external data"))
-						{
-							elem.IsExternalTrigger = !elem.IsExternalTrigger;
-						}
 					}
 					{
-						if (!elem.IsExternalTrigger)
-						{
-							ImGui::BeginDisabled();
-						}
 						ImGui::SetNextItemWidth(90);
 						ImGui::Text("Notify Name");
 						ImGui::SameLine(90);
 						InputText("Notify Name", elem.ExternalRef);
-						if (!elem.IsExternalTrigger)
-						{
-							ImGui::EndDisabled();
-						}
-					}
-					{
-						if (elem.IsExternalTrigger)
-						{
-							ImGui::BeginDisabled();
-						}
-						ImGui::SetNextItemWidth(90);
-						ImGui::Text("Give Info");
-						ImGui::SameLine(90);
-						InputText("Give Info", elem.GiveInfo);
-						if (elem.IsExternalTrigger)
-						{
-							ImGui::EndDisabled();
-						}
-					}
-					{
-						if (elem.IsExternalTrigger)
-						{
-							ImGui::BeginDisabled();
-						}
-						ImGui::SetNextItemWidth(90);
-						ImGui::Text("Disable Info");
-						ImGui::SameLine(90);
-						InputText("Disable Info", elem.DisableInfo);
-						if (elem.IsExternalTrigger)
-						{
-							ImGui::EndDisabled();
-						}
-					}
-					{
-						if (elem.IsExternalTrigger)
-						{
-							ImGui::BeginDisabled();
-						}
-						ImGui::SetNextItemWidth(90);
-						ImGui::Text("Functor");
-						ImGui::SameLine(90);
-						InputText("Functor", elem.Functor);
-						if (elem.IsExternalTrigger)
-						{
-							ImGui::EndDisabled();
-						}
 					}
 					ImGui::EndChild();
 				}

@@ -21,6 +21,7 @@
 #include "doors_manager.h"
 #include "../../xrCore/AnimNotify/AnimNotify.h"
 #include "AnimNotify/AnimNotifyGame.h"
+#include "AnimNotify/AnimNotifyRegistry.h"
 
 ENGINE_API	bool g_dedicated_server;
 
@@ -61,6 +62,7 @@ void CAI_Space::init				()
 	script_engine().init	();
 
 	IAnimNotifyHandler::SetHandler(new CAnimNotifyHandler());
+	CAnimNotifyRegistry::GetInstance();
 
 #ifndef NO_SINGLE
 	extern SCRIPTS_API string4096 g_ca_stdout;
