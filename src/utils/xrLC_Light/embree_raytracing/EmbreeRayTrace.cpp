@@ -223,7 +223,7 @@ void InitializeGeometryAttach(bool isTransp, Fvector* CDB_verts, CDB::TRI* CDB_t
 
 	// FIX
 	dummy.clear();
-	dummy.reserve(TRIS.size());
+	dummy.resize(TRIS.size());
 
 	size_t VertexIndexer = 0;
 	for (auto i = 0; i < TRIS.size(); i++)
