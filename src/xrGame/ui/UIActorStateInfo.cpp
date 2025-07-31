@@ -79,6 +79,13 @@ void ui_actor_state_wnd::init_from_xml( CUIXml& xml, LPCSTR path )
 		m_state[stt_shock]->init_from_xml( xml, "shock_sensor");
 	if (xml.NavigateToNode("power_sensor"))
 		m_state[stt_power]->init_from_xml( xml, "power_sensor");
+	
+	if (xml.NavigateToNode("starvation_state"))
+		m_state[stt_satiety]->init_from_xml(xml, "starvation_state");
+	if (xml.NavigateToNode("thirst_state"))
+		m_state[stt_thirst]->init_from_xml(xml, "thirst_state");
+	if (xml.NavigateToNode("sleeping_state"))
+		m_state[stt_sleep]->init_from_xml(xml, "sleeping_state");
 
 	xml.SetLocalRoot( stored_root );
 }
@@ -101,6 +108,23 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 		m_state[stt_health]->set_progress(value);
 	}
 
+	if (m_state[stt_thirst]->m_progress != nullptr && !m_state[stt_thirst]->m_progress->IsExpressionSystem)
+	{
+		value = actor->conditions().GetThirst();
+		m_state[stt_thirst]->set_progress(value);
+	}
+	
+	if (m_state[stt_satiety]->m_progress != nullptr && !m_state[stt_satiety]->m_progress->IsExpressionSystem)
+	{
+		value = actor->conditions().GetSatiety();
+		m_state[stt_satiety]->set_progress(value);
+	}
+	
+	if (m_state[stt_sleep]->m_progress != nullptr && !m_state[stt_sleep]->m_progress->IsExpressionSystem)
+	{
+		value = actor->conditions().GetSleepiness();
+		m_state[stt_sleep]->set_progress(value);
+	}
 
     value = actor->GetRestoreSpeed(ALife::ePowerRestoreSpeed);
     m_state[stt_stamina]->set_text(value); // 0..0.99
