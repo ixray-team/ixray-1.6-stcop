@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+
+ 	<main_wnd x="0" y="0" width="1024" height="768"/>
+	
+	<background x="35" y="41" width="955" height="667">
+        <texture>ui_inGame2_pda_buttons_background</texture>
+	</background>
+
+    <left_frame_window x="7" y="50" width="633" height="600" a="80">
+		<texture>ui_inGame2_pda_ranking_icon_over</texture>        
+    </left_frame_window>
+
+    <left_frame_line x="8" y="17" width="606" height="21">
+        <title x="10" y="1" width="435" height="18">
+            <text font="letterica16" r="100" g="100" b="100">Contacts</text>
+        </title>
+        <texture>ui_inGame2_pda_ranking_center_caption</texture>        
+    </left_frame_line>
+
+    <right_frame_window x="650" y="50" width="298" height="600" a="80">
+		<texture>ui_inGame2_pda_ranking_icon_over</texture>
+    </right_frame_window>
+
+    <right_frame_line x="8" y="17" width="284" height="21">
+        <texture>ui_inGame2_pda_ranking_center_caption</texture>        
+    </right_frame_line>
+
+	<list x="15" y="48" width="616" height="550" always_show_scroll="1" can_select="1"/>
+	<detail_list x="20" y="48" width="272" height="550" always_show_scroll="1" left_ident="5"/>
+
+    <a_static x="395" y="-3" width="32" height="32" frames="16" duration="1000" columns="8" frame_width="32" frame_height="32" cyclic="1" autoplay="1">
+        <texture></texture>
+    </a_static>
+</window>
