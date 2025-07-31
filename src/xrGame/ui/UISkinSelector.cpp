@@ -22,13 +22,6 @@ CUISkinSelectorWnd::CUISkinSelectorWnd(const char* strSectionName, s16 team)
 
 	m_pFrames		= new CUIStatic();	AttachChild(m_pFrames);
 
-	m_SkinCount = EngineExternal().ClearSkyMode() ? 4 : 6;
-	for (int i = 0; i < m_SkinCount; i++)
-	{
-		m_pImage[i] = new CUIStatix();
-		AttachChild(m_pImage[i]);
-	}
-
 	m_pBtnAutoSelect= new CUI3tButton();	AttachChild(m_pBtnAutoSelect);
 	m_pBtnSpectator	= new CUI3tButton();	AttachChild(m_pBtnSpectator);
 	m_pBtnBack		= new CUI3tButton();	AttachChild(m_pBtnBack);
@@ -159,9 +152,13 @@ void CUISkinSelectorWnd::Init(const char* strSectionName)
 
 	InitSkins();
 	string64 buff;
+	// St4lker0k765: да, метод костыльный, но по крайней мере не дурацкая проверка на платформу
+	m_SkinCount = xml_doc.NavigateToNode("skin_selector:image_4") && xml_doc.NavigateToNode("skin_selector:image_5") ? 6 : 4;
 	for (int i = 0; i < m_SkinCount; i++)
 	{
 		xr_sprintf(buff,"skin_selector:image_%d",i);
+		m_pImage[i] = new CUIStatix();
+		AttachChild(m_pImage[i]);
 		CUIXmlInit::InitStatic(xml_doc,buff,0,m_pImage[i]);
 	}
 	UpdateSkins();
