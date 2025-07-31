@@ -440,9 +440,25 @@ void CEditorRenderDevice::ResoreWindow(bool moving)
 		}
 	}
 	{
+		// Получаем текущий стиль окна
 		LONG style = GetWindowLong(GetHWND(), GWL_STYLE);
-		style |= WS_THICKFRAME;
+
+		// Оставляем WS_THICKFRAME (для докинга), но убираем заголовок и ненужные элементы
+		style &= ~WS_CAPTION;         // Убираем заголовок (крестик, свернуть и т. д.)
+		style &= ~WS_SYSMENU;         // Убираем системное меню (Alt+Space)
+		style |= WS_THICKFRAME;       // Оставляем для докинга и изменения размера
+		style |= WS_BORDER;           // Тонкая рамка (опционально)
+
+		// Применяем новый стиль
 		SetWindowLong(GetHWND(), GWL_STYLE, style);
+
+		// Принудительно обновляем окно, чтобы изменения вступили в силу
+		SetWindowPos(
+			GetHWND(),
+			nullptr,
+			0, 0, 0, 0,
+			SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED
+		);
 	}
 	EDevice->isZoomed = false;
 
