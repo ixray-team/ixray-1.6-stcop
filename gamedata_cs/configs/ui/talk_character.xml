@@ -18,7 +18,7 @@
 		<text align="l" font="letterica16" color="ui_9">ui_st_community</text>
 	</community_caption>
 	<community_static x="100" y="161" width="110" height="15">
-		<text align="l" font="letterica16" color="ui_9"/>
+		<text align="r" font="letterica16" color="ui_9"/>
 	</community_static>
 
 </w>
