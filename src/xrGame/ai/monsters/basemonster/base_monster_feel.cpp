@@ -24,6 +24,7 @@
 #include "../../../ai_object_location.h"
 #include "../../../ActorEffector.h"
 #include "../../../../xrEngine/CameraBase.h"
+#include "../../../../xrScripts/script_callback_ex.h"
 
 void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power)
 {
