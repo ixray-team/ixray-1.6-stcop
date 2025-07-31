@@ -1491,7 +1491,7 @@ public:
 	{
 		if (ai().get_alife())
 		{
-			ai().alife().inventory_upgrade_manager().log_hierarchy();
+			Level().m_upgrade_manager->log_hierarchy();
 		}
 	}
 

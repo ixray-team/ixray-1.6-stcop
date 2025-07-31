@@ -53,6 +53,14 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 			P.r_u16(game_event_type);
 			game->AddDelayedEvent(P,game_event_type,timestamp,sender);
 		}break;
+	case GE_REPAIR_ITEM:
+	{
+		CSE_ALifeInventoryItem* iitem = smart_cast<CSE_ALifeInventoryItem*>(receiver);
+		if (!iitem)
+			break;
+		iitem->m_fCondition = 1.0f;
+		SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+	}break;
 	case GE_INFO_TRANSFER:
 	case GE_WPN_STATE_CHANGE:
 	case GE_ZONE_STATE_CHANGE:
