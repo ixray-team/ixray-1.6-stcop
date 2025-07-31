@@ -5,6 +5,7 @@ class CTerrain :
 	public CCustomObject
 {
 	typedef CCustomObject inherited;
+	friend class ESceneTerrainTool;
 
 private:
 	XRay::Editor::HeightmapUtils::SHeightMap HMap;
@@ -34,4 +35,9 @@ public:
 	void OnChangeSurface(PropValue* sender);
 
 	virtual void OnUpdateTransform() override;
+	
+	IC CEditableObject* GetReference()
+	{
+		return &TerrainObject;
+	}
 };
