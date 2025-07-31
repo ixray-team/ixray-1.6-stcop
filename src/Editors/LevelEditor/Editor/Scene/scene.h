@@ -370,6 +370,7 @@ private:
 	bool IsAppliedPos = false;
 	Fvector ActorNewPos = {};
 	Fvector ActorNewDir = {};
+	xrSRWLock PickUpLock;
 };
 
 
