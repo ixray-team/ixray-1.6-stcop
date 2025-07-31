@@ -128,11 +128,7 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 
 void CHUDTarget::CursorOnFrame ()
 {
-	Fvector				p1,dir;
-
-	p1					= Device.vCameraPosition;
-	dir					= Device.vCameraDirection;
-	
+	PROF_EVENT("CHUDTarget::CursorOnFrame");
 	// Render cursor
 	if(Level().CurrentEntity())
 	{
@@ -140,7 +136,7 @@ void CHUDTarget::CursorOnFrame ()
 		PP.RQ.range		= g_pGamePersistent->Environment().CurrentEnv->far_plane*0.99f;
 		PP.RQ.element		= -1;
 		
-		collide::ray_defs	RD(p1, dir, PP.RQ.range, CDB::OPT_CULL, collide::rqtBoth);
+		collide::ray_defs	RD(Device.vCameraPosition, Device.vCameraDirection, PP.RQ.range, CDB::OPT_CULL, collide::rqtBoth);
 		RQR.r_clear			();
 		VERIFY				(!fis_zero(RD.dir.square_magnitude()));
 		

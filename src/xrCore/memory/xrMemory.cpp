@@ -79,6 +79,7 @@ void xrMemory::_destroy()
 
 void xrMemory::mem_compact()
 {
+	PROF_EVENT("mem_compact");
 #ifdef IXR_WINDOWS
 	RegFlushKey(HKEY_CLASSES_ROOT);
 	RegFlushKey(HKEY_CURRENT_USER);

@@ -24,6 +24,7 @@ XRCORE_API void vminfo(size_t* _free, size_t* reserved, size_t* committed) {
 
 XRCORE_API void log_vminfo()
 {
+	PROF_EVENT("log_vminfo");
 	size_t  w_free, w_reserved, w_committed;
 	vminfo(&w_free, &w_reserved, &w_committed);
 	Msg(
@@ -109,6 +110,7 @@ int heap_walk(
 
 u32	mem_usage_impl(void* heap_handle, u32* pBlocksUsed, u32* pBlocksFree)
 {
+	PROF_EVENT("mem_usage_impl");
 	static bool no_memory_usage = !!strstr(GetCommandLineA(), "-no_memory_usage");
 	if (no_memory_usage)
 		return		0;

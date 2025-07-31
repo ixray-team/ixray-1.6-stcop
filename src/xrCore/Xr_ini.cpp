@@ -94,6 +94,7 @@ BOOL	CInifile::Sect::line_exist( LPCSTR L, LPCSTR* val )
 
 CInifile::CInifile(IReader* F ,LPCSTR path ,allow_include_func_t allow_include_func)
 {
+	PROF_EVENT("CInifile::CInifile IReader");
 	m_file_name[0]	= 0;
 	m_flags.zero	();
 	m_flags.set		(eSaveAtEnd,		FALSE);
@@ -104,6 +105,7 @@ CInifile::CInifile(IReader* F ,LPCSTR path ,allow_include_func_t allow_include_f
 
 CInifile::CInifile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd, u32 sect_count, allow_include_func_t allow_include_func)
 {
+	PROF_EVENT("CInifile::CInifile FileName");
 	if(szFileName && strstr(szFileName,"system"))
 		Msg("-----loading %s",szFileName);
 

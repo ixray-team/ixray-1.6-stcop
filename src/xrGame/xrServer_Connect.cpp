@@ -42,7 +42,7 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name, GameDescriptionDa
 #ifdef DEBUG
 	Msg						("* sv_Connect: %s",	*session_name);
 #endif
-
+	PROF_EVENT("xrServer::Connect");
 	// Parse options and create game
 	if (0==strchr(*session_name,'/'))
 		return				ErrConnect;
