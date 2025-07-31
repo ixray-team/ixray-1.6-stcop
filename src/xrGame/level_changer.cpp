@@ -107,16 +107,25 @@ void CLevelChanger::shedule_Update(u32 dt)
 
 	update_actor_invitation		();
 }
+
 #include "patrol_path.h"
 #include "patrol_path_storage.h"
 void CLevelChanger::feel_touch_new	(CObject *tpObject)
 {
-	CActor*			l_tpActor = smart_cast<CActor*>(tpObject);
-	VERIFY			(l_tpActor);
+	if (Device.IsEditorMode())
+	{
+		// FX: Отключаем переходы для PIE
+		Msg("~ Actor into Level Changer! Unsupported in PIE!");
+		return;
+	}
+
+	CActor* l_tpActor = smart_cast<CActor*>(tpObject);
+	VERIFY(l_tpActor);
 	if (!l_tpActor->g_Alive())
 		return;
 
-	if (m_bSilentMode) {
+	if (m_bSilentMode)
+	{
 		NET_Packet	p;
 		p.w_begin	(M_CHANGE_LEVEL);
 		p.w			(&m_game_vertex_id,sizeof(m_game_vertex_id));
