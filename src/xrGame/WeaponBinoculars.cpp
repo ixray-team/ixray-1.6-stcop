@@ -20,16 +20,13 @@ CWeaponBinoculars::~CWeaponBinoculars()
 	xr_delete				(m_binoc_vision);
 }
 
-void CWeaponBinoculars::Load	(LPCSTR section)
+void CWeaponBinoculars::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
 	// Sounds
-	m_sounds.LoadSound(section, "snd_zoomin",  "sndZoomIn",		false, SOUND_TYPE_ITEM_USING);
-	m_sounds.LoadSound(section, "snd_zoomout", "sndZoomOut",	false, SOUND_TYPE_ITEM_USING);
-	m_bVision = !!pSettings->r_bool(section,"vision_present");
+	m_bVision = !!pSettings->r_bool(section, "vision_present");
 }
-
 
 bool CWeaponBinoculars::Action(u16 cmd, u32 flags) 
 {
@@ -40,6 +37,14 @@ bool CWeaponBinoculars::Action(u16 cmd, u32 flags)
 	}
 
 	return inherited::Action(cmd, flags);
+}
+
+void CWeaponBinoculars::LoadSounds(LPCSTR section)
+{
+	inherited::LoadSounds(section);
+
+	m_sounds.LoadSound(section, "snd_zoomin", "sndZoomIn", false, SOUND_TYPE_ITEM_USING);
+	m_sounds.LoadSound(section, "snd_zoomout", "sndZoomOut", false, SOUND_TYPE_ITEM_USING);
 }
 
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)

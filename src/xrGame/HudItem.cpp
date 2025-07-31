@@ -73,44 +73,54 @@ void CHudItem::Load(LPCSTR section)
 
 	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
 
-	if (!m_bDisableBore)
+	LoadSounds(section);
+}
+
+void CHudItem::LoadSounds(LPCSTR section)
+{
+	m_eSoundsFlags.zero();
+
+	if (!m_bDisableBore && SoundExist(section, "snd_bore"))
 	{
 		m_sounds.LoadSound(section, "snd_bore", "sndBore", true);
 	}
 
-	if (pSettings->line_exist(section, "snd_switch_device"))
+	if (SoundExist(section, "snd_switch_device"))
 	{
 		m_sounds.LoadSound(section, "snd_switch_device", "sndSwitchDevice", false);
 	}
 
-	if (pSettings->line_exist(section, "snd_headlamp_on"))
+	if (SoundExist(section, "snd_headlamp_on"))
 	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_headlamp, TRUE);
 		m_sounds.LoadSound(section, "snd_headlamp_on", "sndHeadlampOn", false);
 		m_sounds.LoadSound(section, "snd_headlamp_off", "sndHeadlampOff", false);
 	}
 
-	if (pSettings->line_exist(section, "snd_nv_on"))
+	if (SoundExist(section, "snd_nv_on"))
 	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_nv, TRUE);
 		m_sounds.LoadSound(section, "snd_nv_on", "sndNVOn", false);
 		m_sounds.LoadSound(section, "snd_nv_off", "sndNVOff", false);
 	}
 
-	if (pSettings->line_exist(section, "snd_gasmask"))
+	if (SoundExist(section, "snd_gasmask"))
 	{
 		m_sounds.LoadSound(section, "snd_gasmask", "sndGasmask", false);
 	}
 
-	if (pSettings->line_exist(section, "snd_prepare_detector"))
+	if (SoundExist(section, "snd_prepare_detector"))
 	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_prepare_detector, TRUE);
 		m_sounds.LoadSound(section, "snd_prepare_detector", "sndPrepareDet", false);
 	}
 
-	if (pSettings->line_exist(section, "snd_finish_detector"))
+	if (SoundExist(section, "snd_finish_detector"))
 	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_finish_detector, TRUE);
 		m_sounds.LoadSound(section, "snd_finish_detector", "sndFinishDet", false);
 	}
 }
-
 
 void CHudItem::PlaySound(LPCSTR alias, const Fvector& position, bool allowOverlap)
 {
@@ -250,7 +260,11 @@ void CHudItem::OnStateSwitch(u32 S)
 	{
 		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_prepare_detector"), true, ePrepareDetector);
-		PlaySoundIfExist("sndPrepareDet", m_object->Position());
+
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_prepare_detector))
+		{
+			PlaySound("sndPrepareDet", m_object->Position());
+		}
 		break;
 	}
 	case ePrepareDetectorEnd:
@@ -271,7 +285,11 @@ void CHudItem::OnStateSwitch(u32 S)
 	{
 		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_finish_detector"), true, eFinishDetector);
-		PlaySoundIfExist("sndFinishDet", m_object->Position());
+
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_finish_detector))
+		{
+			PlaySound("sndFinishDet", m_object->Position());
+		}
 		break;
 	}
 	};
@@ -501,7 +519,7 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, u32 state)
 	if (m_object->H_Parent() != nullptr && pSettings->line_exist(HudSection(), snd))
 	{
 		m_sounds.LoadSound(*HudSection(), *snd.printf("snd_%s", *M), "sndByMotion", false);
-		PlaySoundIfExist("sndByMotion", m_object->Position());
+		PlaySound("sndByMotion", m_object->Position());
 	}
 
 	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn);
@@ -699,7 +717,7 @@ void CHudItem::PlayAnimDeviceSwitch()
 	{
 		anim_name = SetCurrentStateAnimation("anm_switch_device");
 
-		if (m_sounds.FindSoundItem("sndHeadlampOn", false))
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_headlamp))
 		{
 			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
 			{
@@ -718,7 +736,7 @@ void CHudItem::PlayAnimDeviceSwitch()
 	{
 		anim_name = SetCurrentStateAnimation("anm_switch_device");
 
-		if (m_sounds.FindSoundItem("sndNVOn", false))
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_nv))
 		{
 			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
 			{
@@ -741,7 +759,7 @@ void CHudItem::PlayAnimDeviceSwitch()
 
 	if (g_player_hud->attached_item(0) == nullptr && g_player_hud->attached_item(1) != nullptr || g_player_hud->attached_item(0) != nullptr && g_player_hud->attached_item(0) == HudItemData())
 	{
-		PlaySoundIfExist(*sound_name, m_object->Position());
+		PlaySound(*sound_name, m_object->Position());
 	}
 
 	PlayHUDMotion(anim_name, true, eDeviceSwitch);
@@ -799,15 +817,6 @@ float CHudItem::GetHudFov()
 	}
 
 	return m_nearwall_last_hud_fov;
-}
-
-void CHudItem::PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allowOverlap)
-{
-	HUD_SOUND_ITEM* SndIter = m_sounds.FindSoundItem(alias, false);
-	if (SndIter != nullptr)
-	{
-		m_sounds.PlaySound(SndIter, position, object().H_Root(), !!GetHUDmode(), false, allowOverlap, u8(-1));
-	}
 }
 
 void CHudItem::SetModelBoneStatus(const char* bone, BOOL show)
@@ -885,4 +894,20 @@ void CHudItem::OnMotionMark(u32 state, const motion_marks& mark)
 
 		m_eDevicesFlags.zero();
 	}
+}
+
+bool CHudItem::SoundExist(LPCSTR section, LPCSTR sound_name)
+{
+	if (!pSettings->line_exist(section, sound_name))
+	{
+		return false;
+	}
+
+	LPCSTR str = pSettings->r_string(section, sound_name);
+	if (str == nullptr || xr_strlen(str) == 0)
+	{
+		return false;
+	}
+
+	return true;
 }
