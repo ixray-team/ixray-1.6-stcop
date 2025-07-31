@@ -55,6 +55,10 @@ void CLevelPreferences::Load()
 	if (JSONData["ContentBrowser"].contains("CurPath"))
 	{
 		GContentView->CurrentDir = JSONData["ContentBrowser"]["CurPath"];
+		if (!std::filesystem::exists(GContentView->CurrentDir.c_str()))
+		{
+			GContentView->CurrentDir = GContentView->RootDir;
+		}
 	}
 
 	if (JSONData["ContentBrowser"].contains("ViewMode"))
