@@ -713,7 +713,17 @@ CCommandVar CommandMakeAIMap(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
 		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to export ai-map?"))
-			return 				Builder.MakeAIMap( );
+			return 				Builder.MakeAIMap(false);
+	}else{
+		ELog.DlgMsg( mtError, "Scene sharing violation" );
+	}
+	return 						FALSE;
+}
+CCommandVar CommandMakeAIMapLegacy(CCommandVar p1, CCommandVar p2)
+{
+	if( !Scene->locked() ){
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to export ai-map?"))
+			return 				Builder.MakeAIMap(true);
 	}else{
 		ELog.DlgMsg( mtError, "Scene sharing violation" );
 	}
@@ -1154,6 +1164,7 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_MAKE_GAME,              	"Compile\\Make Game",	        CommandMakeGame,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_PUDDLES,             	"Compile\\Make Puddles",	    CommandMakePuddles,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP,              	"Compile\\Make AI Map",	        CommandMakeAIMap,false);
+	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP_LEGACY,        	"Compile\\Make AI Map Legacy",  CommandMakeAIMapLegacy,false);
 	REGISTER_CMD_SE	    (COMMAND_MOVE_GIZMO,              	"Gizmo\\Set at camera",	        CommandMakeGizmo,false);
 	REGISTER_CMD_SE	    (COMMAND_UPDATE_GIZMO,             	"Gizmo\\Update at camera",	    CommandUpdateGizmo,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_DETAILS,              "Compile\\Make Details",        CommandMakeDetails,false);
