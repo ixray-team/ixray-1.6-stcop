@@ -37,7 +37,7 @@ ICF void	MakeCube(Fbox& BB_dest, const Fbox& BB_src)
 	BB_dest.grow(max);
 }
 
-ICF void	CreateBox(vecFace& subdiv, Fbox& bb_base, u32 id)
+ICF void	CreateBox(vecFace& subdiv, Fbox& bb_base)
 { 
 	for (u32 it = 0; it < subdiv.size(); it++)
 	{
@@ -56,7 +56,7 @@ ICF BOOL	FaceEqual(Face* F1, Face* F2)
 	return TRUE;
 }
 
-ICF BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base, u32 id)
+ICF BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base)
 {
 	// 1. Amount of polygons
 	if (subdiv.size() >= u32(3 * c_SS_HighVertLimit / 4))
@@ -66,7 +66,7 @@ ICF BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base, u32 id)
 
 	// 2. Bounding box
 	bb_base.invalidate();
-	CreateBox(subdiv, bb_base, id);
+	CreateBox(subdiv, bb_base);
 
 	bb_base.grow(EPS_S);	// Enshure non-zero volume
 	bb_base.getsize(sz_base);
@@ -140,8 +140,8 @@ ICF BOOL	ValidateMerge(u32 f1, u32 f2, float& volume, const Fbox& bb_subdiv, con
 	float	v2 = bb1.getvolume();
 
 	volume = merge.getvolume();
-	if (volume > 8 * (v1 + v2))
-		return FALSE;	// Don't merge too distant groups (8 vol)
+	//if (volume > 8 * (v1 + v2))
+	//	return FALSE;	// Don't merge too distant groups (8 vol)
 
 	// OK
 	return TRUE;
@@ -151,7 +151,7 @@ auto Validate = [](u32& CurrentProcessedID, u32& VecIndex, data_material& cmater
 {
 	u32 SelectedStart = CurrentProcessedID;
 	float SelectedVolume = flt_max;
-	
+ 
 	if (data_vector.size() > 256)
 	{
   		xr_parallel_for(size_t(0), size_t(data_vector.size()), [&](size_t I)
@@ -159,20 +159,21 @@ auto Validate = [](u32& CurrentProcessedID, u32& VecIndex, data_material& cmater
  			data_material test = data_vector[I];
 			if (SelectedStart == test.face_id || test.merged) return;
 	
-			float V;
+			float Volume = flt_max;
 			vecFace& TEST = *(g_XSplit[test.face_id]);
 			vecFace* subdiv = (g_XSplit[SelectedStart]);
-		
+			Fbox fbox;
+	
 			if (!FaceEqual(subdiv->front(), TEST.front())) return;
-			if (!NeedMerge_for(TEST, test.bbox)) return;
-			if (!ValidateMerge(subdiv->size(), TEST.size(), V, test.bbox, bb_base, bb_base_orig)) return;
+			if (!NeedMerge(TEST, fbox)) return;
+			if (!ValidateMerge(subdiv->size(), TEST.size(), Volume, fbox, bb_base, bb_base_orig)) return;
 	
 			csMerge.Enter();
-			if (V < SelectedVolume)
+			if (Volume < SelectedVolume)
 			{
  				CurrentProcessedID = test.face_id;
 				VecIndex = I;
-				SelectedVolume = V;
+				SelectedVolume = Volume;
  			}
 			csMerge.Leave();
   		});
@@ -183,23 +184,24 @@ auto Validate = [](u32& CurrentProcessedID, u32& VecIndex, data_material& cmater
 		{
 			auto& test = data_vector[Index];
 
-			if (SelectedStart == test.face_id || test.merged) continue;
+			if (SelectedStart == test.face_id || test.merged) 
+				continue;
 
-			float V;
+			float Volume = flt_max;
 			vecFace& TEST = *(g_XSplit[test.face_id]);
 			vecFace* subdiv = (g_XSplit[SelectedStart]);
-		 
+			Fbox box;
 			if (!FaceEqual(subdiv->front(), TEST.front())) continue;
-			if (!NeedMerge_for(TEST, test.bbox)) continue;
-			if (!ValidateMerge(subdiv->size(), TEST.size(), V, test.bbox, bb_base, bb_base_orig)) continue;
+			
+			if ( !NeedMerge(TEST, box) ) continue;
+			if ( !ValidateMerge(subdiv->size(), TEST.size(), Volume, box, bb_base, bb_base_orig)) continue;
 
-			if (V < SelectedVolume)
+			if (Volume < SelectedVolume)
 			{
 				CurrentProcessedID = test.face_id;
 				VecIndex = Index;
-				SelectedVolume = V;
-				// break;
-			}
+				SelectedVolume = Volume;
+ 			}
  		}
 	}
 };
@@ -219,7 +221,7 @@ struct GridKey
 };
 
   
-void MergeCandidate()
+void MergeCandidate(u32 GridMAX)
 {
  	xr_concurrent_unordered_map<int, xr_vector<data_material>> thread_faces;
 	
@@ -237,45 +239,39 @@ void MergeCandidate()
 
 		thread_faces[g_XSplit[split]->front()->dwMaterial].push_back(data_material{ split, bbox, g_XSplit[split] });
 	}
-	 
-	u32 MATERIAL_IDX = 0;
-	for (auto MAP : thread_faces)
-	{
-		MATERIAL_IDX++;
-
-		Progress( float (MATERIAL_IDX) / float(thread_faces.size()) );
+ 	
+	int IndexMap = 0;
+	for (auto& MAP : thread_faces)
+  	{
+ 		Progress( float (IndexMap) / float(thread_faces.size()) );
+		IndexMap++;
 		// Строим Хэш мапу для ускорения поиска похожих сабдивов
 		std::unordered_map<GridKey, xr_vector<data_material>, GridKey::Hash> grid_map;
 
 		for (auto& data : MAP.second)
 		{
- 			// Получаем Fbox и вычисляем ключ сетки
- 			int cell_x = static_cast<int>(std::floor(data.bbox.min.x / 96.0f));
-			int cell_y = static_cast<int>(std::floor(data.bbox.min.z / 96.0f));
-
+			// Получаем Fbox и вычисляем ключ сетки
+			int cell_x = static_cast<int>(std::floor(data.bbox.min.x / GridMAX));
+			int cell_y = static_cast<int>(std::floor(data.bbox.min.z / GridMAX));
+		
 			grid_map[{cell_x, cell_y}].push_back(data);
 		}
-
-		// Msg("MaterialID [%u]/[%u] Cells Size[%u]", MATERIAL_IDX, thread_faces.size(), grid_map.size());
-
-		int IDX_GRID = 0;
-		for (auto& grid : grid_map)
+ 
+ 		for (auto& grid : grid_map)
 		{
- 			// AditionalData("GRID [%u]/[%u] Process[%U]", IDX_GRID, grid.second.size());
- 			IDX_GRID++;
-			for (auto& Face : grid.second)
+ 			for (auto& Face : grid.second)
 			{
- 				auto faceID = Face.face_id;
+				auto faceID = Face.face_id;
 				if (g_XSplit[faceID]->empty() || Face.merged)
 					continue;
 
 				vecFace& subdiv = *(g_XSplit[faceID]);
- 								
+
 				bool		bb_base_orig_inited = false;
 				Fbox		bb_base_orig;
 				Fbox		bb_base;
 
-				while (NeedMerge(subdiv, bb_base, faceID))
+				while (NeedMerge(subdiv, bb_base))
 				{
 					//	Save original AABB for later tests
 					if (!bb_base_orig_inited)
@@ -283,18 +279,18 @@ void MergeCandidate()
 						bb_base_orig_inited = true;
 						bb_base_orig = bb_base;
 					}
-				 	
+
 					//	Save original AABB for later tests
-  					u32	CurrentProcessedID = faceID;
-					u32 MatrialIDX = 0;
-					
+					u32	CurrentProcessedID = faceID;
+					u32 VDataIndex = 0;
+
 					// Merge-validate
 					Validate(
 						CurrentProcessedID,
-						MatrialIDX,
+						VDataIndex,
 						Face,
-						grid.second,
-						bb_base, 
+ 						grid.second,
+						bb_base,
 						bb_base_orig
 					);
 
@@ -306,11 +302,12 @@ void MergeCandidate()
 					{
 						subdiv.insert(subdiv.begin(), g_XSplit[CurrentProcessedID]->begin(), g_XSplit[CurrentProcessedID]->end());
 						g_XSplit[CurrentProcessedID]->clear();
-					}
- 					grid.second[MatrialIDX].merged = true;
+						grid.second[VDataIndex].merged = true;
+ 						R_ASSERT(grid.second.size() > VDataIndex);
+ 					}
 				}
 
-				grid.second.erase(
+  				grid.second.erase(
 					std::remove_if(
 						grid.second.begin(),
 						grid.second.end(),
@@ -322,6 +319,74 @@ void MergeCandidate()
 			}
 		}
 	}
+	 
+	// Первичный без чанков метод 
+	/*
+	xr_parallel_for(size_t(0), size_t(thread_faces.size()), [&](size_t mIDX)
+	{
+		for (auto& Face : thread_faces[mIDX])
+		{
+			auto faceID = Face.face_id;
+			if (g_XSplit[faceID]->empty() || Face.merged)
+				continue;
+
+			vecFace& subdiv = *(g_XSplit[faceID]);
+
+			bool		bb_base_orig_inited = false;
+			Fbox		bb_base_orig;
+			Fbox		bb_base;
+
+			while (NeedMerge(subdiv, bb_base))
+			{
+				//	Save original AABB for later tests
+				if (!bb_base_orig_inited)
+				{
+					bb_base_orig_inited = true;
+					bb_base_orig = bb_base;
+				}
+
+				//	Save original AABB for later tests
+				u32	CurrentProcessedID = faceID;
+				u32 VDataIndex = 0;
+
+				// Merge-validate
+				Validate(
+					CurrentProcessedID,
+					VDataIndex,
+					Face,
+					thread_faces[mIDX],
+					//grid.second,
+					bb_base,
+					bb_base_orig
+				);
+
+				if (CurrentProcessedID == faceID)
+					break;
+
+				// **OK**. Perform merge					 
+				if (g_XSplit[CurrentProcessedID])
+				{
+					subdiv.insert(subdiv.begin(), g_XSplit[CurrentProcessedID]->begin(), g_XSplit[CurrentProcessedID]->end());
+					g_XSplit[CurrentProcessedID]->clear();
+					thread_faces[mIDX][VDataIndex].merged = true;
+
+					R_ASSERT(thread_faces[mIDX].size() > VDataIndex);
+				}
+				//grid.second[VDataIndex].merged = true;
+			}
+
+			thread_faces[mIDX].erase(
+				std::remove_if(thread_faces[mIDX].begin(), thread_faces[mIDX].end(),
+					[&](data_material& F)
+					{
+						return F.merged;
+					}
+				),
+				thread_faces[mIDX].end()
+			);
+		}
+	});
+	*/
 
 	g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(),
 	[](vecFace* ptr)
@@ -339,7 +404,8 @@ void CBuild::xrPhase_MergeGeometry()
 	sprintf(tmp, "Merge Started... [%u]", g_XSplit.size());
 	clMsg(tmp);
  
-	MergeCandidate();
+//	MergeCandidate(512);
+ 	MergeCandidate(8192);
 
 	// Проверяем на INFINITY
 	validate_splits();
