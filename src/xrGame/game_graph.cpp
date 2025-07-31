@@ -7,7 +7,7 @@ CGameGraph::CGameGraph(const IReader& _stream)
 	m_header.load(&stream);
 
 	const u32 AIVersion = header().version();
-	R_ASSERT2(AIVersion >= XRAI_SOC_VERSION && AIVersion <= XRAI_CURRENT_VERSION, "Graph version mismatch!");
+	R_ASSERT2(CHECK_SPAWN_VERSION(AIVersion), "Graph version mismatch!");
 	m_edges = (BYTE*)_stream.pointer();
 	m_nodes = (CVertex*)_stream.pointer();
 	m_current_level_some_vertex_id = _GRAPH_ID(-1);

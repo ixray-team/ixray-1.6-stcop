@@ -47,19 +47,13 @@ private:
 		}
 	}
 
-	ICF	void light(u8 value)
-	{
-		data[11] &= 0x0f;
-		data[11] |= value << 4;
-	}
-
 public:
-	u16				cover0 : 4;
-	u16				cover1 : 4;
-	u16				cover2 : 4;
-	u16				cover3 : 4;
-	u16				plane;
-	NodePosition	p;
+	u16 cover0 : 4;
+	u16 cover1 : 4;
+	u16 cover2 : 4;
+	u16 cover3 : 4;
+	u16 plane;
+	NodePosition p;
 	// 4 + 4 + 4 + 4 + 16 + 40 + 96 = 168 bits = 21 byte
 
 	ICF	u32	link(u8 index) const
@@ -69,16 +63,8 @@ public:
 		case 1:	return	(((*(u32*)(data + 2)) >> 7) & 0x007fffff);
 		case 2:	return	(((*(u32*)(data + 5)) >> 6) & 0x007fffff);
 		case 3:	return	(((*(u32*)(data + 8)) >> 5) & 0x007fffff);
-		default:	NODEFAULT;
+		default:	NODEFAULT; return 0;
 		}
-#ifdef DEBUG
-		return			(0);
-#endif
-	}
-
-	ICF	u8	light() const
-	{
-		return			(data[11] >> 4);
 	}
 
 	ICF	u16	cover(u8 index) const
@@ -88,17 +74,9 @@ public:
 		case 1: return(cover1);
 		case 2: return(cover2);
 		case 3: return(cover3);
-		default: NODEFAULT;
+		default:	NODEFAULT; return 0;
 		}
-#ifdef DEBUG
-		return				(u8(-1));
-#endif
 	}
-
-	friend class	CLevelGraph;
-	friend struct	CNodeCompressed;
-	friend class	CNodeRenumberer;
-	friend class	CRenumbererConverter;
 };
 #pragma pack(pop)
 
@@ -119,61 +97,89 @@ CLevelGraph::CLevelGraph()
 	// m_header & data
 	m_header = (CHeader*)m_reader->pointer();
 	const u32 AIVersion = header().version();
-	R_ASSERT(AIVersion >= XRAI_SOC_VERSION && AIVersion <= XRAI_CURRENT_VERSION);
+
+	R_ASSERT2(CHECK_SPAWN_VERSION(AIVersion), "Unsupported AI-Map version!");
 	m_reader->advance(sizeof(CHeader));
 
 	switch (AIVersion)
 	{
 		case XRAI_SOC_VERSION: // ver 8 - SoC format
 		{
-			CVertex* temp_nodes = new CVertex[m_header->vertex_count()];
-			NodeCompressed10* Dst = (NodeCompressed10*)temp_nodes;
 			SOCNodeCompressed* Src = (SOCNodeCompressed*)m_reader->pointer();
-			NodeCompressed10 Temp;
 			m_nodes = new CVertex[m_header->vertex_count()];
+
 			for (size_t i = 0; i < m_header->vertex_count(); i++)
 			{
-				memcpy(Temp.data, Src[i].data, 12);
-				Temp.high.cover0 = Src[i].cover0;
-				Temp.high.cover1 = Src[i].cover1;
-				Temp.high.cover2 = Src[i].cover2;
-				Temp.high.cover3 = Src[i].cover3;
-				Temp.low = Temp.high;
-				Temp.p = Src[i].p;
-				Temp.plane = Src[i].plane;
-				Dst[i] = Temp;
-
-				std::memcpy(&m_nodes[i].high, &Dst[i].high, sizeof(Dst[i].high) + sizeof(Dst[i].low) + sizeof(Dst[i].plane) + sizeof(Dst[i].p));
-
+				// Конвертация линков через правильный метод
 				for (u8 j = 0; j < 4; ++j)
 				{
-					m_nodes[i].link(j, Dst[i].link(j));
+					u32 link_value = Src[i].link(j); // 23-битный линк
+					m_nodes[i].UncompressedNode.link(j, link_value); // упаковываем в 26-битное поле
 				}
-				m_nodes[i].light(Dst[i].light());
+
+				// Каверы: SOC хранит только "high", копируем в оба
+				m_nodes[i].UncompressedNode.high.cover0 = Src[i].cover0;
+				m_nodes[i].UncompressedNode.high.cover1 = Src[i].cover1;
+				m_nodes[i].UncompressedNode.high.cover2 = Src[i].cover2;
+				m_nodes[i].UncompressedNode.high.cover3 = Src[i].cover3;
+				m_nodes[i].UncompressedNode.low = m_nodes[i].UncompressedNode.high;
+
+				// Плоскость
+				m_nodes[i].UncompressedNode.plane = Src[i].plane;
+
+				// Позиция
+				m_nodes[i].UncompressedNode.p.xz(Src[i].p.xz());
+				m_nodes[i].UncompressedNode.p.y(Src[i].p.y());
 			}
+			break;
 		}
 		case XRAI_MINIMAL_VERSION: // ver 10 - CS/CoP format
 		{
-			NodeCompressed10* temp = (NodeCompressed10*)m_reader->pointer();
+			NodeCompressed10* Src = (NodeCompressed10*)m_reader->pointer();
 			m_nodes = new CVertex[header().vertex_count()];
 
 			for (u32 i = 0; i < header().vertex_count(); ++i)
 			{
-				std::memcpy(&m_nodes[i].high, &temp[i].high, sizeof(temp[i].high) + sizeof(temp[i].low) + sizeof(temp[i].plane) + sizeof(temp[i].p));
-
 				for (u8 j = 0; j < 4; ++j)
 				{
-					m_nodes[i].link(j, temp[i].link(j));
+					u32 link_value = Src[i].link(j);
+					m_nodes[i].UncompressedNode.link(j, link_value);
 				}
-				m_nodes[i].light(temp[i].light());
+
+				// Остальные поля
+				m_nodes[i].UncompressedNode.high = Src[i].high;
+				m_nodes[i].UncompressedNode.low = Src[i].low;
+				m_nodes[i].UncompressedNode.plane = Src[i].plane;
+
+				m_nodes[i].UncompressedNode.p.xz(Src[i].p.xz());
+				m_nodes[i].UncompressedNode.p.y(Src[i].p.y());
 			}
 			break;
 		}
-		case XRAI_CURRENT_VERSION: // ver 11 - 25 bit format
+		case XRAI_CURRENT_VERSION: // ver 11 - 25-bit format
 		{
-			m_nodes = (CVertex*)m_reader->pointer();
+			NodeCompressed* compressed_nodes = (NodeCompressed*)m_reader->pointer();
+			m_nodes = new CVertex[header().vertex_count()];
+
+			for (size_t i = 0; i < header().vertex_count(); ++i)
+			{
+				for (u8 link_idx = 0; link_idx < 4; ++link_idx)
+				{
+					u32 old_link = compressed_nodes[i].link(link_idx);
+					m_nodes[i].UncompressedNode.link(link_idx, old_link);
+				}
+
+				m_nodes[i].UncompressedNode.high = compressed_nodes[i].high;
+				m_nodes[i].UncompressedNode.low = compressed_nodes[i].low;
+				m_nodes[i].UncompressedNode.plane = compressed_nodes[i].plane;
+
+				m_nodes[i].UncompressedNode.p.xz(compressed_nodes[i].p.xz());
+				m_nodes[i].UncompressedNode.p.y(compressed_nodes[i].p.y());
+			}
 			break;
 		}
+		case XRAI_LARGE_VERSION: // ver 13 - 26 bit (слишком огромная, двиг не расчитан на такую геометрию)
+			m_nodes = (CVertex*)m_reader->pointer();
 	}
 
 	m_row_length				= iFloor((header().box().max.z - header().box().min.z)/header().cell_size() + EPS_L + 1.5f);
