@@ -405,27 +405,32 @@ void CStalkerActionKillEnemy::finalize			()
 void CStalkerActionKillEnemy::execute			()
 {
 #ifdef TEST_MENTAL_STATE
-	VERIFY					((start_level_time() == Device.dwTimeGlobal) || (object().movement().mental_state() == eMentalStateDanger));
+	VERIFY((start_level_time() == Device.dwTimeGlobal) || (object().movement().mental_state() == eMentalStateDanger));
 #endif // TEST_MENTAL_STATE
 
-	inherited::execute					();
+	inherited::execute();
 
-	if (object().memory().enemy().selected() && object().memory().enemy().selected()->g_Alive()) 
+	//Alundaio: Prevent Stalkers from shooting at walls for prolonged periods due to kill if not visible
+	const CEntityAlive *enemy = object().memory().enemy().selected();
+
+	if (enemy && enemy->g_Alive())
 	{
-		object().sight().setup(CSightAction(object().memory().enemy().selected(), true, true));
-
-		fire();
-
-		CMemoryInfo	mem_object = object().memory().memory(object().memory().enemy().selected());
-
+		CMemoryInfo	mem_object = object().memory().memory(enemy);
 		if (mem_object.m_object) {
 			object().best_cover(mem_object.m_object_params.m_position);
 		}
+		if (object().memory().visual().visible_now(enemy)) {
+			object().sight().setup(CSightAction(enemy, true, true));
+			fire();
+		}
+		else {
+			if (mem_object.m_object)
+				object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
+		}
 	}
-	else 
-	{
+	else
 		object().sight().setup(CSightAction(SightManager::eSightTypePathDirection, true, true));
-	}
+	//Alundaio: END
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -509,29 +514,22 @@ void CStalkerActionTakeCover::execute()
 		object().brain().affect_cover(true);
 	}
 
-	if (object().movement().path_completed()) 
-	{
+	if (object().movement().path_completed()) {// && (object().memory().enemy().selected()->Position().distance_to_sqr(object().Position()) >= 10.f))
 		object().best_cover_can_try_advance();
 		m_storage->set_property(eWorldPropertyInCover, true);
 	}
 
-	//Fix CAIStalker shooting at walls or aiming at ceiling or floor during this action
-	u32	last_time_seen = object().memory().visual().visible_object_time_last_seen(enemy);
-	if (last_time_seen != u32(-1) && Device.dwTimeGlobal - last_time_seen <= 2000 && fire_make_sense()) {
+	if (object().memory().visual().visible_now(enemy)) 
+	{
+		object().sight().setup(CSightAction(enemy, true, true));
 		fire();
-	}
-	else 
-	{
+	} else {
 		aim_ready();
-	}
-
-	if (object().memory().visual().visible_now(enemy))
-		object().sight().setup(CSightAction(object().memory().enemy().selected(), true, true));
-	else 
-	{
-
-		if (_abs(object().Position().y - enemy->Position().y) > 3.f)
-			object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
+		if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.f)
+		{
+			Fvector3 Vpos = { mem_object.m_object_params.m_position.x, object().Position().y + 1.f, mem_object.m_object_params.m_position.z };
+			object().sight().setup(CSightAction(SightManager::eSightTypePosition, Vpos, true));
+		}
 		else
 			object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
 	}
@@ -611,19 +609,25 @@ void CStalkerActionLookOut::execute		()
 
 	inherited::execute					();
 	
-	if (!object().memory().enemy().selected())
+	const CEntityAlive* enemy = object().memory().enemy().selected();
+	if (!enemy)
 		return;
 
-	CMemoryInfo							mem_object = object().memory().memory(object().memory().enemy().selected());
+	CMemoryInfo	mem_object = object().memory().memory(enemy);
 
 	if (!mem_object.m_object)
 		return;
 
-	//Prevent stalkers from staring at ceiling or floor for this action
-	if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.f)
-		object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
+	//Alundaio: Prevent stalkers from staring at floor or ceiling for this action
+	if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.5f)
+	{
+		Fvector3 Vpos = { mem_object.m_object_params.m_position.x, object().Position().y + 1.f, mem_object.m_object_params.m_position.z };
+		object().sight().setup(CSightAction(SightManager::eSightTypePosition, Vpos, true));
+	}
 	else
 		object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
+
+	object().best_cover(mem_object.m_object_params.m_position);
 	//-
 
 	if (current_cover(m_object) >= 3.f) {
@@ -651,14 +655,6 @@ void CStalkerActionLookOut::execute		()
 //		m_storage->set_property			(eWorldPropertyLookedOut,true);
 //		object().movement().set_nearest_accessible_position	();
 //	}
-
-	if (object().memory().enemy().selected()) {
-		CMemoryInfo					mem_object_ = object().memory().memory(object().memory().enemy().selected());
-
-		if (mem_object_.m_object) {
-			object().best_cover		(mem_object_.m_object_params.m_position);
-		}
-	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -700,20 +696,26 @@ void CStalkerActionHoldPosition::execute		()
 
 	inherited::execute					();
 	
-	if (!object().memory().enemy().selected())
+	const CEntityAlive* enemy = object().memory().enemy().selected();
+	if (!enemy)
 		return;
 
-	CMemoryInfo							mem_object = object().memory().memory(object().memory().enemy().selected());
+	CMemoryInfo	mem_object = object().memory().memory(enemy);
 
 	if (!mem_object.m_object)
 		return;
+
+	object().best_cover(mem_object.m_object_params.m_position);
 
 	if (current_cover(m_object) < 3.f)
 		m_storage->set_property			(eWorldPropertyLookedOut,false);
 
 	//Prevent stalkers from staring at floor or ceiling for this action
-	if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.f)
-		object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
+	if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.5f)
+	{
+		Fvector3 Vpos = { mem_object.m_object_params.m_position.x, object().Position().y + 1.f, mem_object.m_object_params.m_position.z };
+		object().sight().setup(CSightAction(SightManager::eSightTypePosition, Vpos, true));
+	}
 	else
 		object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
 	//-
@@ -736,14 +738,6 @@ void CStalkerActionHoldPosition::execute		()
 	}
 	else {
 		aim_ready					();
-	}
-
-	if (object().memory().enemy().selected()) {
-		CMemoryInfo					mem_object_ = object().memory().memory(object().memory().enemy().selected());
-
-		if (mem_object_.m_object) {
-			object().best_cover		(mem_object_.m_object_params.m_position);
-		}
 	}
 }
 
@@ -807,10 +801,11 @@ void CStalkerActionDetourEnemy::execute			()
 
 	inherited::execute					();
 
-	if (!object().memory().enemy().selected())
+	const CEntityAlive* enemy = object().memory().enemy().selected();
+	if (!enemy)
 		return;
 
-	CMemoryInfo							mem_object = object().memory().memory(object().memory().enemy().selected());
+	CMemoryInfo	mem_object = object().memory().memory(enemy);
 
 	if (!mem_object.m_object)
 		return;
@@ -836,9 +831,12 @@ void CStalkerActionDetourEnemy::execute			()
 			m_storage->set_property			(eWorldPropertyEnemyDetoured,true);
 	}
 
-	//Prevent stalkers from looking at ceiling or floor during action
-	if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) >= 3.f)
-		object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
+	//Alundaio: Prevent stalkers from staring at floor or ceiling for this action
+	if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.5f)
+	{
+		Fvector3 Vpos = { mem_object.m_object_params.m_position.x, object().Position().y + 1.f, mem_object.m_object_params.m_position.z };
+		object().sight().setup(CSightAction(SightManager::eSightTypePosition, Vpos, true));
+	}
 	else
 		object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
 	//-
@@ -1019,24 +1017,28 @@ void CStalkerActionSuddenAttack::execute					()
 	//if (object().agent_manager().member().combat_members().size() > 1)
 	//	m_storage->set_property	(eWorldPropertyUseSuddenness,false);
 
-	const CEntityAlive* enemy = object().memory().enemy().selected();
-
-	if (!enemy)
+	if (!object().memory().enemy().selected())
 		return;
 
-	CMemoryInfo							mem_object = object().memory().memory(enemy);
+	CMemoryInfo							mem_object = object().memory().memory(object().memory().enemy().selected());
 
 	if (!mem_object.m_object)
 		return;
 
-	bool visible_now = object().memory().visual().visible_now(enemy);
+	bool								visible_now = object().memory().visual().visible_now(object().memory().enemy().selected());
 	if (visible_now)
-		object().sight().setup(CSightAction(enemy, true));
-	else {
-		if (_abs(object().Position().y - enemy->Position().y) >= 3.f)
-			object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
+		object().sight().setup(CSightAction(object().memory().enemy().selected(), true));
+	else 
+	{
+		//Alundaio: Prevent stalkers from staring at floor or ceiling for this action
+		if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.5f)
+		{
+			Fvector3 Vpos = { mem_object.m_object_params.m_position.x, object().Position().y + 1.f, mem_object.m_object_params.m_position.z };
+			object().sight().setup(CSightAction(SightManager::eSightTypePosition, Vpos, true));
+		}
 		else
 			object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
+		//-Alundaio
 	}
 
 	if (object().movement().accessible(mem_object.m_object_params.m_level_vertex_id))
@@ -1082,9 +1084,9 @@ void CStalkerActionSuddenAttack::execute					()
 		}
 	}
 
-	CVisualMemoryManager* visual_memory_manager = enemy->visual_memory();
+	CVisualMemoryManager	*visual_memory_manager = object().memory().enemy().selected()->visual_memory();
 	VERIFY					(visual_memory_manager);
-	if (enemy->g_Alive() && !visual_memory_manager->visible_now(&object()))
+	if (object().memory().enemy().selected()->g_Alive() && !visual_memory_manager->visible_now(&object()))
 		return;
 
 	m_storage->set_property	(eWorldPropertyUseSuddenness,	false);
