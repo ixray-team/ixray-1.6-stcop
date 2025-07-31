@@ -35,6 +35,7 @@ private:
 	CUIStatic*			m_pFragLimitIndicator;
 	game_cl_CaptureTheArtefact*			m_game;
 
+	CUIMapDesc*						m_pMapDesc;
 	CUIMoneyIndicator*				m_pMoneyIndicator;
 	CUIRankIndicator*				m_pRankIndicator;
 	CUITextWnd*						m_pReinforcementInidcator;
@@ -119,6 +120,9 @@ public:
 			
 			bool		IsTeamSelectShown		();
 			void		ShowTeamSelectMenu		();
+
+			bool		IsMapDescShown			();
+			void		ShowMapDesc				();
 
 			void		UpdateBuyMenu			(shared_str const & teamSection, shared_str const & costSection);
 			bool		CanBuyItem				(shared_str const & sect_name);
