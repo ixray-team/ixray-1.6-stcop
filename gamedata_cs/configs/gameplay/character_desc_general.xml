@@ -3133,6 +3133,8 @@
 	  device_torch \n
       wpn_ak74u \n
       ammo_5.45x39_fmj = 1 \n
+      wpn_pm \n
+      ammo_9x18_fmj = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -3161,6 +3163,8 @@
 	  device_torch \n
       wpn_ak74u \n
       ammo_5.45x39_fmj = 1 \n
+	  wpn_pm \n
+      ammo_9x18_fmj = 1 \n
       grenade_rgd5 = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"

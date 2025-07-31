@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_artefact_huntesr_capture_smart_name">
+		<text>Protйger les stalkers en route pour la zone anormale</text>
+	</string>
+	<string id="red_artefact_huntesr_capture_smart_text">
+		<text>Protйgez les stalkers en route pour la zone anormale.</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_name">
+		<text>Dйfendre les stalkers dans la zone anormale</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_text">
+		<text>Dйfendez les stalkers dans la zone anormale.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_name">
+		<text>Couvrir les mercenaires</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_text">
+		<text>Les mercenaires vont attaquer les bandits sur l'autre rive. Couvrez-les et aidez-les а prendre position.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_name">
+		<text>Йliminer les bandits</text>
+	</string>
+	<string id="red_bridge_cover_allyes_text">
+		<text>Les bandits sont trop nombreux et empкchent les mercenaires d'abaisser le pont. Tuez autant de bandits que possible !</text>
+	</string>
+	<string id="red_bridge_cover_bridge_name">
+		<text>Couvrir le mercenaire prиs du panneau de contrфle</text>
+	</string>
+	<string id="red_bridge_cover_bridge_text">
+		<text>Un mercenaire est parvenu au panneau de contrфle du pont. Couvrez-le pendant qu'il abaisse le pont !</text>
+	</string>
+	<string id="red_bridge_go_to_positon_name">
+		<text>Prendre position</text>
+	</string>
+	<string id="red_bridge_go_to_positon_text">
+		<text>Prenez position au premier йtage du bвtiment. C'est le meilleur endroit pour tirer sur les bandits.</text>
+	</string>
+	<string id="red_bridge_kill_sniper_name">
+		<text>Йliminer les snipers sur la colline</text>
+	</string>
+	<string id="red_bridge_kill_sniper_text">
+		<text>Les snipers ont le panneau de contrфle dans leur ligne de mire. Йliminez les snipers sur la colline afin que le mercenaire puisse abaisser le pont.</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_name">
+		<text>Parler а Lebedev</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_text">
+		<text>Le pont est abaissй et la route vers Limansk dйgagйe. Parlez а Lebedev.</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_name">
+		<text>Attendre l'arrivйe du groupe de stalkers</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_text">
+		<text>Attendez jusqu'а ce que le groupe de stalkers arrive.</text>
+	</string>
+	<string id="red_bring_compass_name">
+		<text>Rapporter la Boussole au Forestier</text>
+	</string>
+	<string id="red_bring_compass_text">
+		<text>Grвce а la Boussole, le Forestier a rйussi а sortir d'une bulle il y a quelques jours. Cet artefact pourrait aider les mercenaires йgarйs а retrouver leur chemin. Apportez la Boussole au Forestier.</text>
+	</string>
+	<string id="red_find_compass_name">
+		<text>Trouver la Boussole</text>
+	</string>
+	<string id="red_find_compass_text">
+		<text>Le Forestier a trouvй un artefact exceptionnel dans une anomalie spatiale trиs similaire au phйnomиne rencontrй par les mercenaires йgarйs prиs des entrepфts militaires. Malheureusement, le Forestier se l'est fait voler par des bandits. Retrouvez la Boussole.</text>
+	</string>
+	<string id="red_find_forester_name">
+		<text>Parler au Forestier</text>
+	</string>
+	<string id="red_find_forester_text">
+		<text>Le Forestier vit dans une vieille cabane. Il pourra vous aider а trouver la route vers Limansk. Allez lui parler.</text>
+	</string>
+	<string id="red_find_teleport_name">
+		<text>Trouver l'anomalie spatiale</text>
+	</string>
+	<string id="red_find_teleport_text">
+		<text>Le PDA du groupe йgarй contient des notes sur leur itinйraire а travers la Forкt rouge. Dans ces bois se trouve une anomalie spatiale qui mиne а une vieille cabane а l'orйe de la forкt. C'est lа que vit le Forestier. Trouvez l'anomalie spatiale.</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_name">
+		<text>Livrer le PDA contenant la carte de la Forкt rouge</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_text">
+		<text>Livrez le PDA contenant la carte de la Forкt rouge.</text>
+	</string>
+	<string id="red_go_to_signal_sos_name">
+		<text>Rйpondre au signal de dйtresse</text>
+	</string>
+	<string id="red_go_to_signal_sos_text">
+		<text>Vous ne savez pas oщ trouver la cabane du Forestier. Un signal de dйtresse provient de la Forкt rouge. Rйpondez-y.</text>
+	</string>
+	<string id="red_help_with_bridge_name">
+		<text>Aider Firmament а capturer le pont</text>
+	</string>
+	<string id="red_help_with_bridge_text">
+		<text>Une unitй de mercenaires approche du pont de Limansk. Elle arrive du cфtй de la rive tenu par les bandits et recevra certainement un accueil trиs dйplaisant. Aidez Firmament а abaisser le pont.</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_name">
+		<text>Йliminer l'embuscade</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_text">
+		<text>Strelok est protйgй par un groupe de stalkers. Йliminez-les !</text>
+	</string>
+	<string id="red_pursuit_strelok_name">
+		<text>Arrкter Strelok</text>
+	</string>
+	<string id="red_pursuit_strelok_text">
+		<text>Strelok est parti dans le tunnel. Suivez-le et assurez-vous qu'il n'atteigne pas le centre de la Zone.</text>
+	</string>
+	<string id="red_pursuit_talk_csky_name">
+		<text>Arrкter Strelok</text>
+	</string>
+	<string id="red_pursuit_talk_csky_text">
+		<text>Strelok est а moins de 100 mиtres de vous. Pourchassez-le !</text>
+	</string>
+	<string id="red_stalker_reinforced_name">
+		<text>Capturer la vieille mine</text>
+	</string>
+	<string id="red_stalker_reinforced_text">
+		<text>La vieille mine est une zone d'activitй anormale intense, mais est remplie d'artefacts. Prenez-en le contrфle !</text>
+	</string>
+	<string id="red_go_to_military_base_name">
+		<text>Aller а la base militaire</text>
+	</string>
+	<string id="red_go_to_military_base_text">
+		<text>La base de l'armйe comprend un puissant transmetteur que nous pourrons utiliser pour envoyer un message au groupe de mercenaires йgarйs prиs de Limansk. Allez aux entrepфts militaires.</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_name">
+		<text>Trouver un chemin vers l'anomalie</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_text">
+		<text>Le PDA du groupe йgarй contient des notes sur un chemin qui traverse la Forкt rouge. Dans les profondeurs des bois se trouve une anomalie spatiale qui mиne а une vieille cabane, oщ vit le Forestier. Trouvez l'anomalie.</text>
+	</string>
+	<string id="red_find_signals_on_military_name">
+		<text>Intercepter le message radio</text>
+	</string>
+	<string id="red_find_signals_on_military_text">
+		<text>Le Forestier a interceptй des bribes inintelligibles de communication radio provenant d'un groupe inconnu pris au piиge dans une anomalie prиs de Limansk. Ce groupe connaоt peut-кtre un autre moyen d'atteindre la ville. Allez aux entrepфts militaires et trouvez un endroit appropriй oщ capter un meilleur signal.</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_name">
+		<text>Retrouver le PDA</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_text">
+		<text>Le PDA d'un stalker mort est toujours actif. Il contient peut-кtre des informations intйressantes sur la Forкt rouge.</text>
+	</string>
+	<string id="red_recover_item_1_name">
+		<text>Rapporter le PDA contenant une carte de la Forкt rouge</text>
+	</string>
+	<string id="red_recover_item_1_text">
+		<text>On aurait bien besoin de ton aide... Faut qu'on rйcupиre une carte dйtaillйe de la Forкt rouge. Paraоt qu'y a plusieurs groupes de stalkers qu'ont essayй de l'explorer, mais la plupart ont disparu. Alors, trouve leur notes et rapporte-les-moi !</text>
+	</string>
+	<string id="red_recover_item_2_name">
+		<text>Rapporter la mitrailleuse du char</text>
+	</string>
+	<string id="red_recover_item_2_text">
+		<text>J'ai du boulot pour toi ! Le Forestier m'a dit qu'y avait un vieux char soviйtique au fond de la forкt. Personne sait comment il est arrivй lа, si ce n'est qu'il est apparu aprиs l'йmission qu'a tout chamboulй. Apparemment, il est presque intact, en plus ! Bon, bien sыr, il roule plus, mais si tu pouvais dйmonter sa mitrailleuse et me la rapporter, je saurais te rйcompenser.</text>
+	</string>
+	<string id="red_recover_item_3_name">
+		<text>Rapporter l'appareil expйrimental</text>
+	</string>
+	<string id="red_recover_item_3_text">
+		<text>J'aimerais que tu me rapportes un truc... En fait, on testait un prototype pour les scientifiques, un petit appareil qui mesure la force des anomalies... Il sert pas encore а grand-chose et il leur a fallu deux jours pour nous apprendre а l'utiliser. Bref... donc, on rйcupйrait des donnйes dans la vieille mine quand un truc nous a attaquйs... Des merdes en tout genre ont commencй а voler dans tous les sens... Je suis le seul а m'en кtre sorti, mais j'ai dы laisser l'appareil lа-bas avec les autres gars, qui ont йtй pris dans des anomalies, je crois. Le truc qui nous a attaquйs doit toujours y кtre, lui aussi, alors ce sera pas facile de rйcupйrer le bidule. Mais si tu y arrives, y aura une rйcompense а la clй.</text>
+	</string>
+</string_table>

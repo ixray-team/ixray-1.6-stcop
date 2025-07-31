@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_activate_artefact">
+		<text>activate artifact</text>
+	</string>
+	<string id="st_attach_gl_to_rifle">
+		<text>attach grenade launcher to rifle</text>
+	</string>
+	<string id="st_attach_scope_to_pistol">
+		<text>attach scope to pistol</text>
+	</string>
+	<string id="st_attach_scope_to_rifle">
+		<text>attach scope to rifle</text>
+	</string>
+	<string id="st_attach_silencer_to_pistol">
+		<text>attach silencer to pistol</text>
+	</string>
+	<string id="st_attach_silencer_to_rifle">
+		<text>attach silencer to rifle</text>
+	</string>
+	<string id="st_base_cost">
+		<text>price</text>
+	</string>
+	<string id="st_community">
+		<text>Group:</text>
+	</string>
+	<string id="st_condition">
+		<text>Condition</text>
+	</string>
+	<string id="st_detach_gl">
+		<text>detach grenade launcher</text>
+	</string>
+	<string id="st_detach_scope">
+		<text>detach scope</text>
+	</string>
+	<string id="st_detach_silencer">
+		<text>detach silencer</text>
+	</string>
+	<string id="st_dress_outfit">
+		<text>wear suit</text>
+	</string>
+	<string id="st_drop">
+		<text>drop</text>
+	</string>
+	<string id="st_drop_all">
+		<text>drop all</text>
+	</string>
+	<string id="st_eat">
+		<text>eat</text>
+	</string>
+	<string id="st_kg">
+		<text>kg</text>
+	</string>
+	<string id="st_move_on_belt">
+		<text>attach to belt</text>
+	</string>
+	<string id="st_move_to_bag">
+		<text>move to backpack</text>
+	</string>
+	<string id="st_move_to_slot">
+		<text>move to slot</text>
+	</string>
+	<string id="st_sell_item">
+		<text>sell item</text>
+	</string>
+	<string id="st_ui_acid_sensor">
+		<text>Acid protection</text>
+	</string>
+	<string id="st_ui_armor_static">
+		<text>Armor condition</text>
+	</string>
+	<string id="st_ui_fire_sensor">
+		<text>Fire protection</text>
+	</string>
+	<string id="st_ui_health_static">
+		<text>Health</text>
+	</string>
+	<string id="st_ui_main_sensor">
+		<text>Radioactive\ncontamination</text>
+	</string>
+	<string id="st_ui_psi_sensor">
+		<text>Psy-protection</text>
+	</string>
+	<string id="st_ui_radia_sensor">
+		<text>Radiation protection</text>
+	</string>
+	<string id="st_ui_stamina_state">
+		<text>Stamina</text>
+	</string>
+	<string id="st_undress_outfit">
+		<text>remove suit</text>
+	</string>
+	<string id="st_unload_magazine">
+		<text>unload</text>
+	</string>
+	<string id="st_use">
+		<text>use</text>
+	</string>
+	<string id="st_weight">
+		<text>weight</text>
+	</string>
+	<string id="ui_inv_accuracy">
+		<text>Accuracy</text>
+	</string>
+	<string id="ui_inv_ammo_pistol">
+		<text>Buy basic pistol ammo (Q)</text>
+	</string>
+	<string id="ui_inv_ammo_rifle">
+		<text>Buy rifle ammo (W)</text>
+	</string>
+	<string id="ui_inv_bag">
+		<text>Backpack</text>
+	</string>
+	<string id="ui_inv_belt">
+		<text>Belt</text>
+	</string>
+	<string id="ui_inv_bleeding">
+		<text>Bleeding</text>
+	</string>
+	<string id="ui_inv_cancel">
+		<text>Cancel</text>
+	</string>
+	<string id="ui_inv_cant_buy_item">
+		<text>Can't buy item</text>
+	</string>
+	<string id="ui_inv_clear">
+		<text>Clear</text>
+	</string>
+	<string id="ui_inv_count_restr">
+		<text>Amount restrictions</text>
+	</string>
+	<string id="ui_inv_damage">
+		<text>Damage</text>
+	</string>
+	<string id="ui_inv_default(F5)">
+		<text>Default (F5)</text>
+	</string>
+	<string id="ui_inv_description">
+		<text>Description</text>
+	</string>
+	<string id="ui_inv_drop">
+		<text>Take out</text>
+	</string>
+	<string id="ui_inv_equipment">
+		<text>Equipment</text>
+	</string>
+	<string id="ui_inv_exit">
+		<text>Exit</text>
+	</string>
+	<string id="ui_inv_granadelauncher_rifle">
+		<text>Buy grenade launcher attachment for rifle (D)</text>
+	</string>
+	<string id="ui_inv_granades">
+		<text>Grenades</text>
+	</string>
+	<string id="ui_inv_granades_rifle">
+		<text>Buy grenades for the launcher (E)</text>
+	</string>
+	<string id="ui_inv_handling">
+		<text>Handling</text>
+	</string>
+	<string id="ui_inv_has">
+		<text>is now</text>
+	</string>
+	<string id="ui_inv_health">
+		<text>Health</text>
+	</string>
+	<string id="ui_inv_heavy_weapons">
+		<text>Heavy</text>
+	</string>
+	<string id="ui_inv_items_list">
+		<text>List of items</text>
+	</string>
+	<string id="ui_inv_last_buy">
+		<text>Buy last loadout</text>
+	</string>
+	<string id="ui_inv_last_buy(F4)">
+		<text>Previous (F4)</text>
+	</string>
+	<string id="ui_inv_money">
+		<text>Money</text>
+	</string>
+	<string id="ui_inv_need">
+		<text>required</text>
+	</string>
+	<string id="ui_inv_not_enought_money">
+		<text>Not enough money</text>
+	</string>
+	<string id="ui_inv_ok">
+		<text>OK</text>
+	</string>
+	<string id="ui_inv_outfit_burn_protection">
+		<text>Burn</text>
+	</string>
+	<string id="ui_inv_outfit_chemical_burn_protection">
+		<text>Chemical</text>
+	</string>
+	<string id="ui_inv_outfit_explosion_protection">
+		<text>Explosion</text>
+	</string>
+	<string id="ui_inv_outfit_fire_wound_protection">
+		<text>Bulletproof</text>
+	</string>
+	<string id="ui_inv_outfit_params">
+		<text>Parameters</text>
+	</string>
+	<string id="ui_inv_outfit_radiation_protection">
+		<text>Radiation</text>
+	</string>
+	<string id="ui_inv_outfit_shock_protection">
+		<text>Electric</text>
+	</string>
+	<string id="ui_inv_outfit_strike_protection">
+		<text>Impact</text>
+	</string>
+	<string id="ui_inv_outfit_telepatic_protection">
+		<text>Telepathy</text>
+	</string>
+	<string id="ui_inv_outfit_wound_protection">
+		<text>Rupture</text>
+	</string>
+	<string id="ui_inv_outfits">
+		<text>Suits</text>
+	</string>
+	<string id="ui_inv_personal">
+		<text>Suit</text>
+	</string>
+	<string id="ui_inv_pistols">
+		<text>Pistols</text>
+	</string>
+	<string id="ui_inv_power">
+		<text>Endurance</text>
+	</string>
+	<string id="ui_inv_preset1(F1)">
+		<text>Loadout 1 (F1)</text>
+	</string>
+	<string id="ui_inv_preset2(F2)">
+		<text>Loadout 2 (F2)</text>
+	</string>
+	<string id="ui_inv_preset3(F3)">
+		<text>Loadout 3 (F3)</text>
+	</string>
+	<string id="ui_inv_primary_weapons">
+		<text>Primary</text>
+	</string>
+	<string id="ui_inv_radiation">
+		<text>Radiation</text>
+	</string>
+	<string id="ui_inv_rank_restr">
+		<text>Rank restriction</text>
+	</string>
+	<string id="ui_inv_rate_of_fire">
+		<text>Rate of fire</text>
+	</string>
+	<string id="ui_inv_reset_items(C)">
+		<text>Reset (C)</text>
+	</string>
+	<string id="ui_inv_rest">
+		<text>Rest</text>
+	</string>
+	<string id="ui_inv_rifles">
+		<text>Assault</text>
+	</string>
+	<string id="ui_inv_satiety">
+		<text>Hunger</text>
+	</string>
+	<string id="ui_inv_scope_rifle">
+		<text>Buy optic scope for rifle (S)</text>
+	</string>
+	<string id="ui_inv_sell_items(X)">
+		<text>Sell all items in backpack (X)</text>
+	</string>
+	<string id="ui_inv_shop">
+		<text>Shop</text>
+	</string>
+	<string id="ui_inv_shotguns">
+		<text>Shotguns</text>
+	</string>
+	<string id="ui_inv_silencer_pistol">
+		<text>Buy silencer for pistol (A)</text>
+	</string>
+	<string id="ui_inv_silencer_rifle">
+		<text>Buy silencer for rifle (F)</text>
+	</string>
+	<string id="ui_inv_sniper_rifles">
+		<text>Sniper</text>
+	</string>
+	<string id="ui_inv_time">
+		<text>Time</text>
+	</string>
+	<string id="ui_inv_total_money">
+		<text>Total money</text>
+	</string>
+	<string id="ui_inv_weight">
+		<text>Weight</text>
+	</string>
+	<string id="ui_inv_you_already_have">
+		<text>You already have</text>
+	</string>
+	<string id="ui_st_err_gs_not_available">
+		<text>Online Services for S.T.A.L.K.E.R. are not available.</text>
+	</string>
+	<string id="ui_st_err_sb_master_server_conn_fail">
+		<text>Unable to connect to master server</text>
+	</string>
+	<string id="ui_st_outfit_protect">
+		<text>Protection:</text>
+	</string>
+	<string id="ui_st_preset_def">
+		<text>Preset loadout</text>
+	</string>
+	<string id="ui_st_preset_stored_to">
+		<text>Purchased loadout saved as</text>
+	</string>
+	<string id="ui_total_weight">
+		<text>Total weight:</text>
+	</string>
+	<string id="not_enough_money_partner">
+		<text>The character doesn't have enough money.</text>
+	</string>
+	<string id="not_enough_money_actor">
+		<text>You don't have enough money.</text>
+	</string>
+	<string id="ui_inv_outfit_additional_weight">
+		<text>Max weight</text>
+	</string>
+</string_table>

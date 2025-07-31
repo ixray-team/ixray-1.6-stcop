@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------------------------
 --	Библиотека состояний тела
 --	автор: Диденко Руслан (Stohe)
---	TODO: 
+--	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
 states = {
@@ -78,28 +78,28 @@ states = {
 				bodystate = move.crouch,
 				animstate = "stand",
 				animation = nil
-			},			
+			},
 	sneak_run = {	weapon = "unstrapped",
 				movement = move.run,
 				mental = anim.danger,
 				bodystate = move.crouch,
 				animstate = "stand",
 				animation = nil
-			},			
+			},
 	sneak_no_wpn = {	weapon = "strapped",
 				movement = move.walk,
 				mental = anim.danger,
 				bodystate = move.crouch,
 				animstate = "stand",
 				animation = nil
-			},			
+			},
 	sneak_fire = {	weapon = "fire",
 				movement = move.walk,
 				mental = anim.danger,
 				bodystate = move.crouch,
 				animstate = "stand",
 				animation = nil
-			},			
+			},
 	assault = {	weapon = "unstrapped",
 				movement = move.run,
 				mental = anim.danger,
@@ -329,7 +329,21 @@ states = {
 				animstate = "sit_ass",
 				animation = "sit_ass"
 			},
+	sit_ass_noweap = {	weapon = "none",
+				movement = move.stand,
+				mental = anim.free,
+				bodystate = move.standing,
+				animstate = "sit_ass",
+				animation = "sit_ass"
+			},
 	sleep = {	weapon = "strapped",
+				movement = move.stand,
+				mental = anim.free,
+				bodystate = move.standing,
+				animstate = "sleep",
+				animation = "sleeping"
+			},
+	sleep_noweap = {	weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
@@ -403,7 +417,7 @@ states = {
 				animation = "hello",
 				reset = true
 			},
-			
+
 	refuse = {	weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -501,10 +515,10 @@ rac_sakharov = {weapon = "none",
 				animstate = "stand",
 				animation = "raciya"
 			},
-			
 
 
-			
+
+
 	probe_stand	= {weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -527,7 +541,7 @@ rac_sakharov = {weapon = "none",
 				animation = "probe_crouch"
 			},
 
-		
+
 	hands_up	= {weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -535,8 +549,8 @@ rac_sakharov = {weapon = "none",
 				animstate = "stand",
 				animation = "hands_up"
 			},
-			
-			
+
+
 
 	-- Раненый
 	wounded = {	weapon = "strapped",
@@ -720,7 +734,7 @@ rac_sakharov = {weapon = "none",
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "barricade_comm_idle"
-			},			
+			},
 	barricade_comm_look = {	weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
@@ -735,172 +749,172 @@ rac_sakharov = {weapon = "none",
 				animstate = "stand",
 				animation = "barricade_comm_talk"},
 
-    barricade_1_run = {weapon = "unstrapped",
+		barricade_1_run = {weapon = "unstrapped",
 				movement = move.run,
 				mental = anim.danger,
 				bodystate = move.crouch,
 				animstate = "stand",
 				animation = "barricade_1_run"
-            },
+						},
 
-    bloodsucker_fear = {weapon = "unstrapped",
+		bloodsucker_fear = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "bloodsucker_fear"
-            },
+						},
 
-			
-    jump_down_0 = {weapon = "unstrapped",
+
+		jump_down_0 = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "jump_down_0",
 				direction = CSightParams.eSightTypeAnimationDirection
-            },
+						},
 
-    jump_down_1 = {weapon = "unstrapped",
+		jump_down_1 = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "jump_down_1",
 				direction = CSightParams.eSightTypeAnimationDirection
-            },
+						},
 
-    jump_down_2 = {weapon = "unstrapped",
+		jump_down_2 = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "jump_down_2",
 				direction = CSightParams.eSightTypeAnimationDirection
-            },
+						},
 	jump_down_arena_0 = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "jump_down_arena_0"
-            },
-     jump_down_arena_1 = {weapon = "unstrapped",
+						},
+		 jump_down_arena_1 = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "jump_down_arena_1"
-            },
-     jump_down_arena_2 = {weapon = "unstrapped",
+						},
+		 jump_down_arena_2 = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "jump_down_arena_2"
-            },
-     jump_down_arena_1_crop = {weapon = "unstrapped",
+						},
+		 jump_down_arena_1_crop = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "jump_down_arena_1_crop",
 				direction = CSightParams.eSightTypeAnimationDirection
-            },
-      stc_scene_1_stairs_down = {weapon = "unstrapped",
+						},
+			stc_scene_1_stairs_down = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.crouch,
 				animstate = "stand",
 				animation = "stc_scene_1_stairs_down"
-            },
-      stc_scene_1_run_anim = {weapon = "unstrapped",
+						},
+			stc_scene_1_run_anim = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "stc_scene_1_run_anim"
-            },
-      stc_scene_2_run_anim = {weapon = "unstrapped",
+						},
+			stc_scene_2_run_anim = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "stc_scene_2_run_anim"
-            },
-     stc_scene_3_run_anim = {weapon = "unstrapped",
+						},
+		 stc_scene_3_run_anim = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "stc_scene_3_run_anim"
-            },
-     stc_scene_4_run_anim = {weapon = "unstrapped",
+						},
+		 stc_scene_4_run_anim = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "stc_scene_4_run_anim"
-            },
-     stc_scene_5_run_anim = {weapon = "unstrapped",
+						},
+		 stc_scene_5_run_anim = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "stc_scene_5_run_anim"
-            },
-     stc_scene_6_run_anim = {weapon = "unstrapped",
+						},
+		 stc_scene_6_run_anim = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "stc_scene_6_run_anim"
-            },
-     stc_scene_7_run_anim = {weapon = "unstrapped",
+						},
+		 stc_scene_7_run_anim = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "stc_scene_7_run_anim",
-				direction = CSightParams.eSightTypeAnimationDirection				
-            },
-     bloodsucker_search = {	weapon = "unstrapped",
+				direction = CSightParams.eSightTypeAnimationDirection
+						},
+		 bloodsucker_search = {	weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "bloodsucker_search",
 				reset = true},
-     bloodsucker_panic = {	weapon = "fire",
+		 bloodsucker_panic = {	weapon = "fire",
 				movement = move.stand,
 				mental = anim.danger,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "bloodsucker_panic",
 				reset = true},
-				
+
 	 -- Интро на Болотах
-     mar_intro_2_window_idle = {weapon = "none",
+		 mar_intro_2_window_idle = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "mar_intro_2_window_idle",
 				direction = CSightParams.eSightTypeAnimationDirection},
-     mar_intro_2_window_walk = {weapon = "none",
+		 mar_intro_2_window_walk = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "mar_intro_2_window_walk"},
-     mar_intro_2_talk_idle = {weapon = "none",
+		 mar_intro_2_talk_idle = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "mar_intro_2_talk_idle",
 				direction = CSightParams.eSightTypeAnimationDirection},
-     mar_intro_2_talk_in_circle = {weapon = "none",
+		 mar_intro_2_talk_in_circle = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
@@ -912,38 +926,38 @@ rac_sakharov = {weapon = "none",
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "mar_intro_2_talk_out_circle"},
- 	 mar_intro_2_talk_full_circle = {weapon = "none",
+		mar_intro_2_talk_full_circle = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "mar_intro_2_talk_full_circle"},
- 	 mar_intro_2_walk_out = {weapon = "none",
+		mar_intro_2_walk_out = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "mar_intro_2_walk_out",
 				direction = CSightParams.eSightTypeAnimationDirection},
-     mar_intro_1_actor = {weapon = "none",
+		 mar_intro_1_actor = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "mar_intro_1_actor"},
-     mar_intro_1_lebedev = {weapon = "none",
+		 mar_intro_1_lebedev = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "mar_intro_1_lebedev"},
-     mar_intro_1_kalancha = {weapon = "none",
+		 mar_intro_1_kalancha = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "mar_intro_1_kalancha"},
-				
+
 	--  Диггер на Свалке
 	gar_digger_messenger_jump = {weapon = "none",
 				movement = move.stand,
@@ -968,16 +982,16 @@ rac_sakharov = {weapon = "none",
 				animstate = "stand",
 				animation = "idle"
 			},
-							
-     yan_zabor_0 = {weapon = "unstrapped",
+
+		 yan_zabor_0 = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "yan_zabor_0",
 				direction = CSightParams.eSightTypeAnimationDirection},
-				
-     yan_zabor_1 = {weapon = "unstrapped",
+
+		 yan_zabor_1 = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.free,
 				bodystate = move.standing,
@@ -986,20 +1000,20 @@ rac_sakharov = {weapon = "none",
 				direction = CSightParams.eSightTypeAnimationDirection},
 
 	yan_zabor_2 = {weapon = "unstrapped",
-				   movement = move.stand,
-				   mental = anim.free,
-				   bodystate = move.standing,
-				   animstate = "stand",
-				   animation = "yan_zabor_2",
-				   direction = CSightParams.eSightTypeAnimationDirection},
-						   
+					 movement = move.stand,
+					 mental = anim.free,
+					 bodystate = move.standing,
+					 animstate = "stand",
+					 animation = "yan_zabor_2",
+					 direction = CSightParams.eSightTypeAnimationDirection},
+
 	yan_zabor_3 = {weapon = "unstrapped",
-				   movement = move.stand,
-				   mental = anim.free,
-				   bodystate = move.standing,
-				   animstate = "stand",
-				   animation = "yan_zabor_3",
-				   direction = CSightParams.eSightTypeAnimationDirection},
+					 movement = move.stand,
+					 mental = anim.free,
+					 bodystate = move.standing,
+					 animstate = "stand",
+					 animation = "yan_zabor_3",
+					 direction = CSightParams.eSightTypeAnimationDirection},
 
 	red_forest_bridge = {weapon = "unstrapped",
 				movement = move.stand,
@@ -1007,7 +1021,7 @@ rac_sakharov = {weapon = "none",
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "red_forest_bridge"},
-				
+
 	electra_damage = {weapon = "unstrapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -1036,6 +1050,6 @@ rac_sakharov = {weapon = "none",
 				bodystate = move.standing,
 				animstate = "stand",
 				animation = "psy_shoot"
-			}											
-												
+			}
+
 }

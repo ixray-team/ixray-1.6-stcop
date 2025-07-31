@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_actor_destroy_wave1">
+		<text>Der Ort, an dem die Zombies auftauchen</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_name">
+		<text>Lass die Zombies nicht an die Stalker auf dem Dach heran</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_text">
+		<text>Gib den Stalkern auf dem Dach Deckung, wдhrend sie das Ventil reparieren. Lass die Zombies nicht an die Stalker auf dem Dach heran!</text>
+	</string>
+	<string id="yan_actor_destroy_wave2">
+		<text>Der Ort, an dem die Zombies auftauchen</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_name">
+		<text>Lass die Zombies nicht an die Stalker im Hangar heran</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_text">
+		<text>Gib den Stalkern im Hangar Deckung, wдhrend sie das Ventil reparieren. Lass die Zombies nicht an die Stalker im Hangar heran!</text>
+	</string>
+	<string id="yan_actor_go_base_defence">
+		<text>Verteidige die Forschungsbasis</text>
+	</string>
+	<string id="yan_actor_go_base_defence_name">
+		<text>Verteidige die Forschungsbasis</text>
+	</string>
+	<string id="yan_actor_go_base_defence_text">
+		<text>Verteidige die Forschungsbasis.</text>
+	</string>
+	<string id="yan_actor_go_base_science">
+		<text>So lange die Zombies angreifen, sind die Tьren zum Bunker der Wissenschaftler blockiert. Schlage die Zombies zurьck, um in den Bunker zu gelangen und die Wissenschaftler zu treffen.</text>
+	</string>
+	<string id="yan_actor_go_base_science_name">
+		<text>Rede mit Sacharow</text>
+	</string>
+	<string id="yan_actor_go_base_science_text">
+		<text>Strelok ist zu den Wissenschaftlern in Jantar gegangen. Begib dich nach Jantar und rede mit Professor Sacharow. Vielleicht weiЯ er, wo du Strelok finden kannst.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest">
+		<text>Der Pfad zum Roten Wald ist frei</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_name">
+		<text>Gehe zum Roten Wald</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_text">
+		<text>Die Kьhlanlage wurde repariert und stabilisiert, sodass Psi-Emissionen dort minimal sind. Der Weg zum Roten Wald ist sicher. Gehe zum Roten Wald - dort hдlt sich Strelok versteckt.</text>
+	</string>
+	<string id="yan_actor_go_to_stalker">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_name">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_text">
+		<text>text in default</text>
+	</string>
+	<string id="yan_main_quest_line">
+		<text>Bewahre das Reparaturteam vor dem Tod</text>
+	</string>
+	<string id="yan_main_quest_line_name">
+		<text>Halte deine Position!</text>
+	</string>
+	<string id="yan_main_quest_line_text">
+		<text>Halte deine Position!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy">
+		<text>Bringe die Dokumente zu Sacharow</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_name">
+		<text>Bringe die Dokumente zu Sacharow</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_text">
+		<text>Bringe die Dokumente zu Sacharow. Sie werden ihm dabei helfen, zu verstehen, warum die Psi-Emissionen in Jantar so stark sind.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke">
+		<text>Kдmpfe dich durch bis zur Anlage</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_name">
+		<text>Kдmpfe dich durch bis zur Fabrik</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_text">
+		<text>Die Gegend um die Fabrik wimmelt von Zombies. SchlieЯe dich mit Lefty und seiner Gruppe zusammen und erkдmpfe dir einen Weg hinein. Beeil dich - die Stдrke des Psi-Feldes kann jederzeit kritisch werden.</text>
+	</string>
+	<string id="yan_quest_doc">
+		<text>Finde die Dokumente</text>
+	</string>
+	<string id="yan_quest_doc_name">
+		<text>Finde den PDA mit den Dokumenten</text>
+	</string>
+	<string id="yan_quest_doc_text">
+		<text>Eine Gruppe Stalker hat in der Fabrik einige wichtige Dokumente gefunden. Sie kцnnten Sacharow dabei helfen, die Ursache fьr das starke Psi-Feld in Jantar herauszufinden. Das letzte Lebenszeichen der Gruppe kam vom Ausgang der Fabrik. Finde den PDA mit den Dokumenten.</text>
+	</string>
+	<string id="yan_quest_levsha">
+		<text>Triff Lefty</text>
+	</string>
+	<string id="yan_quest_levsha_name">
+		<text>Triff Leftys Gruppe</text>
+	</string>
+	<string id="yan_quest_levsha_text">
+		<text>Eine Gruppe Stalker macht sich bereit, einen Weg durch die Fabrik freizukдmpfen, wдhrend die Psi-Emissionen am schwдchsten sind. Triff Lefty, den Kommandanten der Gruppe.</text>
+	</string>
+	<string id="yan_repair_defend">
+		<text>Nimm eine Position auf dem Dach des Hangars ein</text>
+	</string>
+	<string id="yan_repair_defend_name">
+		<text>Folge dem Stalker auf das Dach des Hangars</text>
+	</string>
+	<string id="yan_repair_defend_text">
+		<text>Lefty hat befohlen, die Positionen einzunehmen. Folge dem Stalker aufs Dach und nimm deine Position ein.</text>
+	</string>
+	<string id="yan_recover_item_1_name">
+		<text>Besorge die Scharlachrote Blume</text>
+	</string>
+	<string id="yan_recover_item_1_text">
+		<text>Du musst mir helfen, Sцldner. In der Zone gibt es ein Artefakt, das scharlachrote Blume genannt wird. Es ist nutzlos fьr einen Stalker, aber die Frauen sind immer begeistert davon. Ich habe bald eine Verabredung und wenn ich so eine Blume auftreiben kцnnte, wьrde ich sicher zum Schuss kommen - wenn du weiЯt, was ich meine! Deswegen bin ich immer noch in der verdammten Zone - jemand hat hier in der Gegend eine Blume gesehen. Das Artefakt sieht aus wie eine Zauberblume, die Tag und Nacht leuchtet. Wenn du mir das Ding besorgen kannst, werde ich dich entsprechend belohnen!</text>
+	</string>
+	<string id="yan_recover_item_2_name">
+		<text>Bringe die Granatenattrappe zurьck</text>
+	</string>
+	<string id="yan_recover_item_2_text">
+		<text>Sцldner, ich brauche mal deine Hilfe. Ich habe etwas verloren... eine Granate... aber nicht wirklich eine Granate... na ja, es ist eine Granate, aber halt nur eine Attrappe, die im Training eingesetzt wird. Wie auch immer, finde sie fьr mich... ich glaube, ich weiЯ, wo du am besten mit der Suche anfдngst: Ich war bei der Fabrik, als irgendetwas geschehen ist... mein Gehirn hat auf einmal verrьckt gespielt und ich wusste nicht mehr, wie mir geschah! Als ich dann wieder zu mir gekommen bin, war ich hier. Deswegen denke ich, dass du die Granate irgendwo bei der Fabrik finden kannst. Bringe sie zurьck zu mir!</text>
+	</string>
+</string_table>

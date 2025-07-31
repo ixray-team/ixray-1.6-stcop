@@ -477,7 +477,7 @@
     </supplies>
 #include "gameplay\character_criticals_1.xml"
 
-    <start_dialog>val_freedom_attack_commander_hello_dialog</start_dialog>
+    <start_dialog>hello_dialog</start_dialog>
 #include "gameplay\character_dialogs.xml"    
   </specific_character>
   

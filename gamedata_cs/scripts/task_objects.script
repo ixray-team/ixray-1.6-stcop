@@ -500,7 +500,12 @@ function CEliminateSmartTask:deactivate_task(task)
 	if self.src_obj ~= nil then
 		local squad_obj = sim_board.get_sim_board().squads[self.src_obj]
 		if squad_obj ~= nil then
-			squad_obj.random_tasks = {}
+			for k,v in pairs(squad_obj.random_tasks) do
+				if v==self.entity_id then
+					squad_obj.random_tasks[k] = nil
+				end
+			end
+--			squad_obj.random_tasks = {}
 		end
 	end
 	if self.faction ~= nil then
@@ -732,7 +737,12 @@ function CCaptureSmartTask:deactivate_task(task)
 	if self.src_obj ~= nil then
 		local squad_obj = sim_board.get_sim_board().squads[self.src_obj]
 		if squad_obj ~= nil then
-			squad_obj.random_tasks = {}
+			for k,v in pairs(squad_obj.random_tasks) do
+				if v==self.entity_id then
+					squad_obj.random_tasks[k] = nil
+				end
+			end
+--			squad_obj.random_tasks = {}
 		end
 	end
 	if self.faction ~= nil then
@@ -1503,7 +1513,7 @@ function CBringItemTask:init_task(commander_id)
 	self.npc = nil
 	self.tmp_counter = 0
 	self.state = "started"
-	db.actor:iterate_inventory(get_inventory_item_count, self)
+--	db.actor:iterate_inventory(get_inventory_item_count, self) -- iterate on give task
 --	db.actor:iterate_inventory(set_task_text_for_bring_item, self)
 	self:set_task_text_for_bring_item()
 end
@@ -1797,20 +1807,20 @@ function CRecoverItemTask:check_target(obj, faction)
 	end
 	local t = xr_logic.pick_section_from_condlist(db.actor, db.storage[sim_board.get_sim_board().squads[obj].commander_id].object, self.target_cond)
 	if t == "true" then
-			printf("squad_id[%s]", tostring(obj))
+--			printf("squad_id[%s]", tostring(obj))
 		local squad = sim_board.get_sim_board().squads[obj]
 		if squad and squad.recover_item_inited_time then
 			local inited_time = squad.recover_item_inited_time
 			if inited_time then
 				local time = game.get_game_time()
 				if math.floor(time:diffSec(inited_time)) < 86400 then --60*60*24 = seconds in one day
-					printf("pl:rec_task2")
+--					printf("pl:rec_task2")
 					return false
 				end
 			end
 		end
 	else
-		printf("pl:rec_task3")
+--		printf("pl:rec_task3")
 		return false
 	end
 	if self.target_npc_or_box_table or self.target_zone_table then
@@ -1940,13 +1950,11 @@ function CRecoverItemTask:check_task(tm)
 		local obj = alife():object(self.squad.commander_id)
 		if not obj or not obj:alive() then
 			self.last_check_task = "fail"
-			self.squad.random_tasks[3] = nil
 			return
 		end
 		obj = db.storage[self.squad.commander_id] and db.storage[self.squad.commander_id].object
 		if obj and db.actor and obj:general_goodwill(db.actor)<-1000 then
 			self.last_check_task = "fail"
-			self.squad.random_tasks[3] = nil
 			return
 		end
 	end
@@ -2018,11 +2026,12 @@ end
 function CRecoverItemTask:deactivate_task(task)
 	task_objects.CGeneralTask.deactivate_task(self,task)
 	task_manager.get_task_manager():unregister_faction_task(self.community, self)
-	if self.squad_id ~= nil then
-		local squad_obj = sim_board.get_sim_board().squads[self.squad_id]
-		if squad_obj ~= nil then
-			squad_obj.random_tasks[3] = nil
+	local board_squads = sim_board.get_sim_board().squads
+	for k,v in pairs(board_squads) do
+		if v.random_tasks[3] then
+			printf("task with id "..v.random_tasks[3].." deactivated")
 		end
+		v.random_tasks[3] = nil
 	end
 end
 
@@ -2069,6 +2078,9 @@ function CRecoverItemTask:load(reader)
 		self.squad_id = str
 	end
 	self.squad = sim_board.get_sim_board().squads[self.squad_id]
+	if not self.squad then
+		self.last_check_task = "reversed"
+	end
 	self.spot = "secondary_task_location_complex_recover_item"
 	str = reader:r_u16()
 	if str~=65535 then
@@ -2130,10 +2142,8 @@ function CHideFromSurgeTask:check_task(tm)
 	if(self.check_time~=nil) and (time_global()-self.check_time<=250) then
 		return
 	end
-	log("-->check_task")
 	self.check_time = time_global()
 	local diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
-	log("-->diff_sec="..tostring(diff_sec))
 	local tbl = self.hide_tbl
 		local nearest_cover_dist = 0
 		if game_graph():vertex(tbl[1].m_game_vertex_id):level_id()~=alife():level_id() then
@@ -2154,15 +2164,12 @@ function CHideFromSurgeTask:check_task(tm)
 			target = tbl[i].id
 		end
 	end
-	log("-->target="..tostring(target))
 
 	if(self.t==nil) then
 		self.t = db.actor and db.actor:get_task(tostring(self.entity_id), false) -- "true" used to search only for not finished tasks
-		log("-->return")
 		return
 	end
 	if(target~=self.target) then
-		log("-->target~=self.target")
 		self.target = target
 		self.t:change_map_location(self.spot, self.target)
 	end
@@ -2184,16 +2191,18 @@ function CHideFromSurgeTask:check_task(tm)
 			level.set_weather("[default]", false)
 			xr_surge_hide.weather_surge = true
 			xr_surge_hide.start_surge = false
-			xr_effects.disable_ui(nil, nil)
+			local sr = db.storage[self.target]
+			if not(sr and sr.object:inside(db.actor:position())) then
+				xr_effects.disable_ui(nil, nil)
+				level.add_pp_effector("mar_surge.ppe", 200211, false)
+			end
 			self:kill_unhided_npc()
 			self.disable_ui = true
-			level.add_pp_effector("mar_surge.ppe", 200211, false)
 		elseif not(self.kill_em_all) and (_delta>=20000) then
 			self.kill_em_all = true
 			local sr = db.storage[self.target]
 			if not(sr and sr.object:inside(db.actor:position())) then
 				if level.name()=="marsh" or level.name()=="marsh_nvidia" then
-					--xr_effects.enable_ui(nil, nil)
 					level.remove_pp_effector(200208)
 					level.remove_cam_effector(200209)
 					xr_sound.stop_sound_looped(db.actor:id())
@@ -2214,7 +2223,7 @@ function CHideFromSurgeTask:check_task(tm)
 			level.set_pp_effector_factor(200208, 0.001, 0.8)
 		end
 	elseif(diff_sec==7) and (surge_time>13) then
-			blowout_hit_with_pp_and_cam_effectors("blowout_wave_1", 20080502, 20080402)
+        blowout_hit_with_pp_and_cam_effectors("blowout_wave_1", 20080502, 20080402)
 	elseif(diff_sec==13) and (surge_time>19) then
 		blowout_hit_with_pp_and_cam_effectors("blowout_wave_2", 20080503, 20080403)
 	elseif(diff_sec==19) and (surge_time>31) then
@@ -2253,7 +2262,6 @@ function CHideFromSurgeTask:check_task(tm)
 		xr_surge_hide.surge_activated = false
 	end
 	if (self.blowout_rumble_level < 1) and  (xr_surge_hide.phase > 1) and (xr_surge_hide.phase < 4 or xr_surge_hide.phase == 5) then
-	-- if (self.blowout_rumble_level < 1) and (xr_surge_hide.phase < 4 or xr_surge_hide.phase == 5) then
 		self.blowout_rumble_level = self.blowout_rumble_level + 0.015
 		xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", self.blowout_rumble_level)
 	elseif self.blowout_rumble_level > 0 and xr_surge_hide.phase == 4 then
@@ -2290,14 +2298,16 @@ function CHideFromSurgeTask:kill_unhided_npc()
 			crow:hit(h)
 		end
 	end
-	-- for k,v in pairs(db.storage) do
-				-- local npc = v.object
-		-- if(npc) and (npc:clsid()==clsid.script_stalker) and (npc:alive()) then
-			-- if not(db.storage[k].active_scheme=="surge_hide") then--and not(npc:story_id()) then
-							-- xr_effects.kill_npc(db.actor, npc)
-			-- end
-		-- end
-	-- end
+--[[
+	for k,v in pairs(db.storage) do
+		local npc = v.object
+		if npc and npc:clsid()==clsid.script_stalker and npc:alive() then
+--			if not(db.storage[k].active_scheme=="surge_hide") then--and not(npc:story_id()) then
+				npc:kill(npc)
+--			end
+		end
+	end
+]]
 end
 -- Save quest
 function CHideFromSurgeTask:save(package)
@@ -2313,9 +2323,11 @@ function CHideFromSurgeTask:save(package)
 	else
 		package:w_u16(-1)
 	end
-	package:w_s16(time_global()-self.effector_started_time)
---	package:w_bool(xr_surge_hide.surge_finished)
---	package:w_bool(xr_surge_hide.surge_activated)
+	if self.effector_started_time == -1 or self.effector_started_time == 0 then
+		package:w_s16(self.effector_started_time)
+	else
+		package:w_s16(time_global()-self.effector_started_time)
+	end
 	set_save_marker(package, "save", true, "CHideFromSurgeTask")
 end
 -- Load quest
@@ -2341,9 +2353,12 @@ function CHideFromSurgeTask:load(reader)
 			end
 		end
 	end
-	self.effector_started_time = time_global()+reader:r_s16()
---	xr_surge_hide.surge_finished = reader:r_bool()
---	xr_surge_hide.surge_activated = reader:r_bool()
+	local t = reader:r_s16()
+	if t == 0 or t == -1 then
+		self.effector_started_time = t
+	else
+		self.effector_started_time = time_global()+t
+	end
 	self.blowout_rumble_level = 0
 	set_save_marker(reader, "load", true, "CHideFromSurgeTask")
 end
@@ -2410,7 +2425,12 @@ function CEliminateSquadTask:deactivate_task(task)
 	if self.src_obj ~= nil then
 		local squad_obj = sim_board.get_sim_board().squads[self.src_obj]
 		if squad_obj ~= nil then
-			squad_obj.random_tasks = {}
+			for k,v in pairs(squad_obj.random_tasks) do
+				if v==self.entity_id then
+					squad_obj.random_tasks[k] = nil
+				end
+			end
+--			squad_obj.random_tasks = {}
 		end
 	end
 end

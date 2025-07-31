@@ -27,8 +27,9 @@
 			<texture>ui_hud_shk_armour</texture>
 		</progress>
 	</progress_bar_armor>
-	
-	<quick_info x="1" y="700" width="1022" height="50" complex_mode="1" light_anim="ui_btn_hint"  la_cyclic="0" la_texture="0" la_text="1" la_alpha="1">
+
+
+  <quick_info x="1" y="700" width="1022" height="50" complex_mode="1" light_anim="ui_btn_hint"  la_cyclic="0" la_texture="0" la_text="1" la_alpha="1">
 		<text align="c" font="graffiti22" r="225" g="225" b="250" a="255" />
 	</quick_info>
 
@@ -92,7 +93,11 @@
 		</back_v>
 		<back_over_arrow x="180" y="70" width="66" height="51">
 			<texture>ui_hud2_rad01_over</texture>
-		</back_over_arrow>
+
+      <auto_static x="-17" y="14"  width="103" height="37">
+        <texture>ui_hud2_stamina_bk</texture>
+      </auto_static>
+    </back_over_arrow>
 
 		<arrow x="209" y="48" width="9" height="97" heading="1" clockwise="1" begin_angle="0.75" end_angle="-0.75" ang_velocity="0.75">
 			<texture a="255">ui_hud2_rad01_arrow</texture>
@@ -154,8 +159,14 @@
 				<texture>ui_hud_icon_armour</texture>
 			</__auto_static>
 		</static_armor>
+    
+    <progress_bar_stamina x="180" y="85" width="68" height="14" horz="1" min="0" max="100" pos="0">
+      <progress>
+        <texture>ui_hud_shk_stamina_new</texture>
+      </progress>
+    </progress_bar_stamina>
 
-		<static_ammo x="78" y="78" width="72" height="28">
+    <static_ammo x="78" y="78" width="72" height="28">
 			<text align="r" complex_mode="0" font="graffiti32" color="ui_7">Ammo</text>
 		</static_ammo>
 

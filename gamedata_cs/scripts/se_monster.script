@@ -65,34 +65,34 @@ function se_monster:can_switch_online()
 	if self.ini == nil or self.spawner == nil then
 		return cse_alife_monster_base.can_switch_online(self)
 	end
-    
-    if db.actor ~= nil and db.actor:alive () == false then
+
+		if db.actor ~= nil and db.actor:alive () == false then
 		return self.online
-    end    
+		end
 
 	if self.online == false then
-	    return (xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil) and 
-	    		cse_alife_monster_base.can_switch_online(self)
-    else
-        if xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil then 
+			return (xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil) and
+					cse_alife_monster_base.can_switch_online(self)
+		else
+				if xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil then
 			return true
-        end
-        return false
-    end
+				end
+				return false
+		end
 end
 function se_monster:switch_online()
 	cse_alife_monster_base.switch_online(self)
-    if self.squad_id ~= nil then
-    	local squad = self.board.squads[self.squad_id]
-        squad:switch_online(true, self.id)
-    end
+		if self.squad_id ~= nil then
+			local squad = self.board.squads[self.squad_id]
+				squad:switch_online(true, self.id)
+		end
 end
 function se_monster:switch_offline()
 	cse_alife_monster_base.switch_offline(self)
-    if self.squad_id ~= nil then
-    	local squad = self.board.squads[self.squad_id]
-        squad:switch_online(false, self.id)
-    end
+		if self.squad_id ~= nil then
+			local squad = self.board.squads[self.squad_id]
+				squad:switch_online(false, self.id)
+		end
 end
 -----------------------
 function se_monster:STATE_Write(packet)
@@ -118,7 +118,7 @@ function se_monster:STATE_Write(packet)
 		packet:w_stringZ(tostring(self.squad_id))
 	end
 
-	packet:w_bool(self.sim_forced_online)		
+	packet:w_bool(self.sim_forced_online)
 end
 --------------------
 function se_monster:STATE_Read(packet, size)
@@ -151,8 +151,8 @@ function se_monster:STATE_Read(packet, size)
 	if self.script_version >= 8 then
 		self.sim_forced_online = packet:r_bool()
 	end
-	
-	
+
+
 	local pos = self.position
 	--printf(" mpos[%s][%s][%s]", tostring(pos.x), tostring(pos.y), tostring(pos.z))
 end
@@ -168,18 +168,18 @@ function se_monster:on_register()
 	self.m_registred = true
 	self.board 	= sim_board.get_sim_board()
 	self.tm		= task_manager.get_task_manager()
-		
+
 	--' Отключаем старый метод выбора смарттеррейнов.
 	self:brain():can_choose_alife_tasks(false)
 
-    --' Выбор смарта
-    local obj_ini = self:spawn_ini()
-    local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
-    local smart_obj = self.board:get_smart_by_name(smart)
-    if smart_obj == nil then
-        return
-    end
-    alife():object(smart_obj.id):register_npc(self)
+		--' Выбор смарта
+		local obj_ini = self:spawn_ini()
+		local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
+		local smart_obj = self.board:get_smart_by_name(smart)
+		if smart_obj == nil then
+				return
+		end
+		alife():object(smart_obj.id):register_npc(self)
 end
 --------------------
 function se_monster:on_unregister()
@@ -189,8 +189,8 @@ function se_monster:on_unregister()
 		if smart ~= nil then
 			smart:unregister_npc(self)
 		end
-	end	
-	
+	end
+
 	cse_alife_monster_base.on_unregister(self)
 end
 --------------------
@@ -198,11 +198,11 @@ function se_monster:on_death(killer)
 	cse_alife_monster_base.on_death(self, killer)
 
 	smart_terrain.on_death(self)
-    
+
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
-        squad:on_npc_death(self)
-    end	
+				squad:on_npc_death(self)
+		end
 end
 --------------------
 function se_monster:fill_exclusives()
@@ -217,11 +217,11 @@ function se_monster:fill_exclusives()
 end
 function se_monster:update()
 	cse_alife_monster_base.update(self)
-	
+
 	-- Тут мы попробуем вызвать апдейт отряда
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
-		if squad.commander_id == self.id then
+		if squad ~= nil and squad.commander_id == self.id then
 			squad:update()
 		end
 	end

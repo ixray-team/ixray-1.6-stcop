@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_additional_quest_1_name">
+		<text>Documents at the military base.</text>
+	</string>
+	<string id="esc_additional_quest_1_text">
+		<text>Documents at the military base.</text>
+	</string>
+	<string id="esc_additional_quest_2_name">
+		<text>Food.</text>
+	</string>
+	<string id="esc_additional_quest_2_text">
+		<text>Food.</text>
+	</string>
+	<string id="esc_bring_habar">
+		<text>Return the loot to the trader</text>
+	</string>
+	<string id="esc_bring_habar_text">
+		<text>Return the case with the loot to the trader</text>
+	</string>
+	<string id="esc_defend_stalkers_base_name">
+		<text>Defend the stalker base</text>
+	</string>
+	<string id="esc_defend_stalkers_base_text">
+		<text>Defend the stalker base against the attack</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_name">
+		<text>Defend the patrol</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_text">
+		<text>Defend the stalker patrol near the bus stop</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_name">
+		<text>Help repel the attack</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_text">
+		<text>Help repel the attack</text>
+	</string>
+	<string id="esc_dopros">
+		<text>Interrogate the military commander</text>
+	</string>
+	<string id="esc_dopros_text">
+		<text>Interrogate Khaletskiy and find out where the case with the loot the trader needs is hidden</text>
+	</string>
+	<string id="esc_driver_friend_1_name">
+		<text>Find the PDA</text>
+	</string>
+	<string id="esc_driver_friend_1_text">
+		<text>Find the PDA with valuable information on the soldier who died in anomalies</text>
+	</string>
+	<string id="esc_driver_friend_2_name">
+		<text>Return the PDA</text>
+	</string>
+	<string id="esc_driver_friend_2_text">
+		<text>Return the PDA to Sgt. Lambee</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9">
+		<text>Eliminate the military at the elevator</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9_text">
+		<text>Destroy the military unit spotted by scouts at the elevator</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_name">
+		<text>Eliminate the bandits</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_name">
+		<text>Get your reward</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_text">
+		<text>Collect the reward from the trader. The bandits have been eliminated and the road to the base is clear</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_text">
+		<text>Eliminate the bandits at the deserted farmstead. This will stop them from robbing stalkers as they bring loot from the Zone to the stalker base</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11">
+		<text>Eliminate the military at the depot</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11_text">
+		<text>Destroy the military squad spotted by scouts around the depot. The squad is the main military force deployed to rescue Khaletskiy</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8">
+		<text>Eliminate the snipers</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8_text">
+		<text>Eliminate the snipers</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7">
+		<text>Capture the stalker base</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7_text">
+		<text>Capture the stalker base</text>
+	</string>
+	<string id="esc_find_upgrade_1_name">
+		<text>Find the upgrade.</text>
+	</string>
+	<string id="esc_find_upgrade_1_text">
+		<text>One of my technician friends sent a fella my way with some valuable information concerning an AK upgrade on a flash drive. But the courier walked into a pseudodog lair on his way here and died. Everyone I've asked to get me that flash drive has chickened out. What about you? I promise the reward'll be worth it.</text>
+	</string>
+	<string id="esc_find_upgrade_2_name">
+		<text>Find the upgrade.</text>
+	</string>
+	<string id="esc_find_upgrade_2_text">
+		<text>One of my technician friends sent a fella my way with some valuable information concerning a shotgun upgrade on a flash drive. But the courier walked into a pseudodog lair on his way here and died. Everyone I've asked to get me that flash drive has chickened out. What about you? I promise the reward'll be worth it.</text>
+	</string>
+	<string id="esc_novice_stalker_1_name">
+		<text>Help the stalker</text>
+	</string>
+	<string id="esc_novice_stalker_1_text">
+		<text>Help the stalker fight off the pack of blind dogs</text>
+	</string>
+	<string id="esc_novice_stalker_2_name">
+		<text>Escort the stalker</text>
+	</string>
+	<string id="esc_novice_stalker_2_text">
+		<text>Escort the stalker to the rookie village</text>
+	</string>
+	<string id="esc_novice_stalker_3_name">
+		<text>Receive your reward</text>
+	</string>
+	<string id="esc_novice_stalker_3_text">
+		<text>Receive your reward for saving the stalker from the pack of blind dogs from Wolf</text>
+	</string>
+	<string id="esc_prapor">
+		<text>Meet the ensign</text>
+	</string>
+	<string id="esc_prapor_text">
+		<text>Meet the ensign</text>
+	</string>
+	<string id="esc_reach_garbage">
+		<text>Meet the digger at the Garbage</text>
+	</string>
+	<string id="esc_reach_garbage_text">
+		<text>Meet the digger at the Garbage</text>
+	</string>
+	<string id="esc_reach_stalker_base">
+		<text>Meet the stalkers beyond the embankment</text>
+	</string>
+	<string id="esc_reach_stalker_base_text">
+		<text>Talk to Valerian, the stalker leader. He might know about the loot Sidorovich is after.</text>
+	</string>
+	<string id="esc_reach_trader">
+		<text>Talk to the trader</text>
+	</string>
+	<string id="esc_reach_trader_text">
+		<text>Talk to the trader</text>
+	</string>
+	<string id="esc_rescue_patrol">
+		<text>Help the stalkers</text>
+	</string>
+	<string id="esc_rescue_patrol_text">
+		<text>Help the stalkers</text>
+	</string>
+	<string id="esc_stalker_enemy_name">
+		<text>Regain the stalkers' trust</text>
+	</string>
+	<string id="esc_stalker_enemy_text">
+		<text>Your relations with the stalkers are ruined. You must regain their trust with the help of Sidorovich. </text>
+	</string>
+	<string id="esc_take_habar">
+		<text>Collect the loot</text>
+	</string>
+	<string id="esc_take_habar_text">
+		<text>Collect the loot</text>
+	</string>
+	<string id="esc_take_prisoner_secret">
+		<text>Find Khaletskiy's stash</text>
+	</string>
+	<string id="esc_take_prisoner_secret_text">
+		<text>Find Khaletskiy's stash</text>
+	</string>
+	<string id="esc_take_weapon_name">
+		<text>Collect the weapons</text>
+	</string>
+	<string id="esc_take_weapon_text">
+		<text>Collect the weapons</text>
+	</string>
+	<string id="esc_talk2_comm">
+		<text>Talk to Khaletskiy</text>
+	</string>
+	<string id="esc_talk2_comm_text">
+		<text>Talk to Khaletskiy</text>
+	</string>
+	<string id="esc_talk2_leader">
+		<text>Meet the stalker leader</text>
+	</string>
+	<string id="esc_talk2_leader_2">
+		<text>Talk to the stalker leader</text>
+	</string>
+	<string id="esc_talk2_leader_2_text">
+		<text>Talk to the stalker leader</text>
+	</string>
+	<string id="esc_talk2_leader_text">
+		<text>Meet the stalker leader</text>
+	</string>
+	<string id="esc_talk2_trader">
+		<text>Talk to the trader</text>
+	</string>
+	<string id="esc_wolf_brother_1_name">
+		<text>Rescue Wolf's brother from captivity</text>
+	</string>
+	<string id="esc_wolf_brother_1_text">
+		<text>Rescue Wolf's brother from captivity</text>
+	</string>
+	<string id="esc_wolf_brother_2_name">
+		<text>Escort Wolf's brother to the rookie village</text>
+	</string>
+	<string id="esc_wolf_brother_2_text">
+		<text>Escort Wolf's brother to the rookie village</text>
+	</string>
+	<string id="esc_wolf_brother_3_name">
+		<text>Collect your reward</text>
+	</string>
+	<string id="esc_wolf_brother_3_text">
+		<text>Collect your reward from Wolf</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_name">
+		<text>Find information about balancing of automated parts</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_text">
+		<text>Find information about balancing of automated parts for Van, the stalker technician near the Cordon.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_name">
+		<text>Find information about pump mechanisms for shotguns</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_text">
+		<text>Using information about pump mechanisms, the stalker technician will be able to significantly increase a shotgun's rate of fire.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_name">
+		<text>Find information about electronic stabilization</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_text">
+		<text>The stalker technician can assemble a device which would increase the accuracy of a pump-action shotgun, but he's missing some information.</text>
+	</string>
+	<string id="esc_recover_item_1_name">
+		<text>Deliver the "magic" vodka</text>
+	</string>
+	<string id="esc_recover_item_1_text">
+		<text>There used to be a chemist here in the Zone. He wasn't a real chemist or anything but he made a "magic" vodka. It really was something... A couple of swigs and you'd forget everything: the Zone, mutants, anomalies - everything! Your fears left you and you didn't give a shit about who you were or what was happening to you. Even at the price they used to charge for that stuff, it was still worth it. Anyway, one day someone decided to poison the chemist out of jealousy or greed, who knows? They poisoned him and that put an end to the vodka supplies... But, I heard the chemist had a few stashes around the Zone and I know where one is. Bring me a bottle of that magic stuff and I'll pay you handsomely for it!</text>
+	</string>
+	<string id="esc_recover_item_2_name">
+		<text>Bring back the trophy AKM-47/2</text>
+	</string>
+	<string id="esc_recover_item_2_text">
+		<text>I collect rare weapons, buddy - I've got enough of them to fill a museum, but if there's one thing I'm missing that's a trophy AKM-47/2. That AK is not just a good shooter, it's a real rare piece that was used to kill mutants you ain't never seen. I heard its owner was not only a great shot, he was a legend in the Zone who could get out of any trouble and escape any anomaly... I haven't heard anything about that stalker for a while but I recently got some info about the shooter: it's hidden in a secret place that's pretty tough to get to. Bring me that shooter, merc.</text>
+	</string>
+	<string id="esc_recover_item_3_name">
+		<text>Return the "lucky" detector</text>
+	</string>
+	<string id="esc_recover_item_3_text">
+		<text>Help me out, merc. I recently bought me a new, more powerful detector and threw the old one into an anomaly to celebrate. The thing is, this new detector is not bringing me much luck - it's been three weeks without an artifact. I guess this new detector is OK but I want my old one back. Bring it to me and I'll make it worth it.</text>
+	</string>
+	<string id="esc_recover_item_4_name">
+		<text>Deliver a special medkit</text>
+	</string>
+	<string id="esc_recover_item_4_text">
+		<text>Merc, an old friend of mine recently escaped the bandits at the Garbage. Those bastards made him run between anomalies at the embankment just for their amusement and the radiation levels around there are close to lethal. He can barely move now and normal rad meds are no use - he needs something stronger. I heard the army boys have special medkits that can help, so if you can get me one of those, we'd be tangibly grateful.</text>
+	</string>
+</string_table>

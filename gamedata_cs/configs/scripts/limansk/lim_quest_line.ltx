@@ -1,5 +1,8 @@
 [logic]
-active = sr_idle@ambush_2_task
+active = sr_idle@first_task
+
+[sr_idle@first_task]
+on_info = {-red_bridge_finished} sr_idle@ambush_2_task %=give_inited_task(storyline:lim_go_into_limansk:csky)%, sr_idle@ambush_2_task
 
 [sr_idle@ambush_2_task]
 on_info = {+lim_ambush2} sr_idle@go_to_canal %=give_inited_task(storyline:lim_destroy_ambush_2:csky)%
