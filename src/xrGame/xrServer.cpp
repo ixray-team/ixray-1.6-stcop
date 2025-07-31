@@ -693,6 +693,10 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		{
 			OnSecureMessage(P, CL);
 		}break;
+	case M_SCRIPT_EVENT:
+	{
+		OnScriptEvent(P, sender);
+	}break;
 	}
 
 	VERIFY							(verify_entities());
@@ -1278,4 +1282,29 @@ void xrServer::SendPlayersInfo(ClientID const & to_client)
 	tmp_functor.dest	= &tmp_packet;
 	ForEachClientDo		(tmp_functor);
 	SendTo				(to_client, tmp_packet, net_flags(TRUE, TRUE));
+}
+
+void xrServer::OnScriptEvent(NET_Packet& P, ClientID sender)
+{
+	script_server_events.push_back(ScriptEvent());
+	ScriptEvent* pEvent = &(script_server_events.back());
+
+	pEvent->SenderID = sender.value();
+	CopyMemory(&(pEvent->Packet), &P, sizeof(NET_Packet));
+}
+
+ScriptEvent* xrServer::GetLastServerScriptEvent()
+{
+	R_ASSERT2(script_server_events.size() > 0, "empty script server events");
+	return &(script_server_events.back());
+}
+
+void xrServer::PopLastServerScriptEvent()
+{
+	script_server_events.pop_back();
+}
+
+u32 xrServer::GetSizeServerScriptEvent()
+{
+	return script_server_events.size();
 }

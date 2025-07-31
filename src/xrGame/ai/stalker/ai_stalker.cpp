@@ -920,7 +920,14 @@ CPHDestroyable*		CAI_Stalker::		ph_destroyable	()
 void CAI_Stalker::shedule_Update		( u32 DT )
 {
 	PROF_EVENT("CAI_Stalker::shedule_Update")
-	VERIFY2				(getEnabled()||PPhysicsShell(), *cName());
+	VERIFY2(getEnabled()||PPhysicsShell(), *cName());
+
+	if (!IsGameTypeSingle() && OnClient())
+	{
+		// Âûçûâàåì àïäåéò áèíäåðà íà êëèåíòàõ
+		inherited::shedule_Update(DT);
+		return;
+	}
 
 #if USE_OLD_OBJECT_PLANNER
 	if (!CObjectHandler::planner().initialized()) 

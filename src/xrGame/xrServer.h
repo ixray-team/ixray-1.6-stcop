@@ -14,6 +14,7 @@
 #include "secure_messaging.h"
 #include "xrServer_updates_compressor.h"
 #include "xrClientsPool.h"
+#include "FreeMP/ScriptEvents.h"
 
 #ifdef DEBUG
 //. #define SLOW_VERIFY_ENTITIES
@@ -114,6 +115,8 @@ private:
 	info_uploaders_t			m_info_uploaders;
 	IReader*					m_server_logo;
 	IReader*					m_server_rules;
+
+	xr_deque<ScriptEvent>		script_server_events;
 
 	struct DelayedPacket
 	{
@@ -278,6 +281,10 @@ public:
 
 	virtual void			GetServerInfo		( CServerInfo* si );
 			void			SendPlayersInfo		(ClientID const & to_client);
+			void OnScriptEvent(NET_Packet& P, ClientID sender);
+			ScriptEvent* GetLastServerScriptEvent();
+			void PopLastServerScriptEvent();
+			u32 GetSizeServerScriptEvent();
 public:
 	xr_string				ent_name_safe		(u16 eid);
 #ifdef DEBUG
