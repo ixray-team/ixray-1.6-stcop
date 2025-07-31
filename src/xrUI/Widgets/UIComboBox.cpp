@@ -34,7 +34,7 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 	float lb_text_offset				= 5.0f;
 
 	CUIXml xml_doc;
-	xml_doc.Load(CONFIG_PATH, UI_PATH, "combobox.xml");
+	xml_doc.Load(CONFIG_PATH, UI_PATH, "backend\\combobox.xml");
 	float comboBoxHeight = xml_doc.ReadFlt("height", 0, 20.0f);
 	LPCSTR frameLineDefault = xml_doc.Read("frameline_default", 0, "ui_inGame2_combobox_linetext");
 	LPCSTR frameLineHighlighted = xml_doc.Read("frameline_highlighted", 0, "ui_inGame2_combobox_linetext");
@@ -52,7 +52,7 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 
 	m_frameLine.InitIB					(Fvector2().set(0,0), Fvector2().set(width, comboBoxHeight));
 
-    m_frameLine.InitState(S_Highlighted, frameLineHighlighted);
+	m_frameLine.InitState(S_Highlighted, frameLineHighlighted);
 	m_frameLine.InitState(S_Enabled, frameLineDefault);
 
 	// Edit Box on left side of frame line
@@ -64,7 +64,7 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 	m_text.Enable						(false);
 
 	// height of list equal to height of ONE element
-    float item_height = CUITextureMaster::GetTextureHeight(listBoxTextureHeight);
+	float item_height = CUITextureMaster::GetTextureHeight(listBoxTextureHeight);
 
 	m_list_box.SetWndPos				(Fvector2().set(lb_text_offset,0.0f));
 	m_list_box.SetWndSize				(Fvector2().set(width-lb_text_offset, item_height*m_iListHeight));
@@ -87,7 +87,7 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 
 CUIListBoxItem* CUIComboBox::AddItem_(LPCSTR str, int _data)
 {
-    R_ASSERT2			(m_bInited, "Can't add item to ComboBox before Initialization");
+	R_ASSERT2			(m_bInited, "Can't add item to ComboBox before Initialization");
 	CUIListBoxItem* itm = m_list_box.AddTextItem(str);
 	itm->SetData		((void*)(__int64)_data);
 	return				itm;
@@ -240,7 +240,7 @@ void CUIComboBox::OnBtnClicked()
 
 void CUIComboBox::ShowList(bool bShow)
 {
-    if (bShow)
+	if (bShow)
 	{
 		SetHeight				(m_text.GetHeight() + m_list_box.GetHeight());
 		m_list_frame.Show		(true);
@@ -292,7 +292,7 @@ void CUIComboBox::OnFocusLost()
 void CUIComboBox::OnFocusReceive()
 {
 	CUIWindow::OnFocusReceive();
-    if (m_bIsEnabled)
+	if (m_bIsEnabled)
 		m_frameLine.SetCurrentState	(S_Highlighted);
 }
 
@@ -320,7 +320,7 @@ bool CUIComboBox::OnMouseAction(float x, float y, EUIMessages mouse_action){
 	}
 	 
 
-        return false;
+		return false;
 }
 
 void CUIComboBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
