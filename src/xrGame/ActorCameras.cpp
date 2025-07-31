@@ -14,7 +14,7 @@
 #include "SleepEffector.h"
 #include "ActorEffector.h"
 #include "Level.h"
-#include "../xrEngine/cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 
 //#include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"

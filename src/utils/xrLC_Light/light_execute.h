@@ -2,7 +2,7 @@
  
 #include "xrDeflectorDefs.h"
 #include "base_lighting.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 
 
 

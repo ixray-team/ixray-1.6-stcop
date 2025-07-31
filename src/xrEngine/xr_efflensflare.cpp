@@ -9,7 +9,7 @@
 //	Instead of SkeletonCustom:
 #include "bone.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 
 #include "../xrServerEntities/object_broker.h"
 

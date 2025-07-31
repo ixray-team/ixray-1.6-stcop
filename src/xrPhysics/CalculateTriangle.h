@@ -5,7 +5,7 @@
 #include "tri-colliderknoopc/dTriColliderMath.h"
 //#include "../xrengine/IGame_Level.h"
 #include "ode_redefine.h"
-#include "../xrCDB/xr_area.h"
+#include "../xrCore/Collision/xr_area.h"
 //#include "phworld.h"
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)

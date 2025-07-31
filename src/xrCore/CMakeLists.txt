@@ -3,68 +3,76 @@ set(CORE_SRC_FILES)
 
 # Files import
 file(GLOB CORE_SOURCE_STL_FILES
-    "*_std*.*"
-    "*_stl*.*"
-    "buffer_vector*.*"
-    "RingBuffer.*"
-    "fastdelegate.*"
-    "intrusive_ptr*.*"
-    "associative_vector*.*"
-    "Fixed*.*"
+	"*_std*.*"
+	"*_stl*.*"
+	"buffer_vector*.*"
+	"RingBuffer.*"
+	"fastdelegate.*"
+	"intrusive_ptr*.*"
+	"associative_vector*.*"
+	"Fixed*.*"
 )
 
 file(GLOB CORE_SOURCE_MATH_FILES
-    "vector.h"
-    "_*.cpp"
-    "_*.h"
+	"vector.h"
+	"_*.cpp"
+	"_*.h"
 )
 
 file(GLOB CORE_SOURCE_LZ_FILES
-    "LzHuf*.cpp"
-    "lzhuf.h"
+	"LzHuf*.cpp"
+	"lzhuf.h"
 )
 
 file(GLOB CORE_SOURCE_XML_FILES
-    "FormatParsers/XML/*.cpp"
-    "FormatParsers/XML/*.h"
+	"FormatParsers/XML/*.cpp"
+	"FormatParsers/XML/*.h"
 )
 
 file(GLOB CORE_SOURCE_STACK_FILES
-    "StackTrace/*.h"
+	"StackTrace/*.h"
 )
 
 file(GLOB CORE_SOURCE_CRYPTO_FILES
-    "Crypto/*.cpp"
-    "Crypto/*.h"
+	"Crypto/*.cpp"
+	"Crypto/*.h"
 )
 
 file(GLOB CORE_SOURCE_MEMORY_FILES
-    "memory/*.*"
+	"memory/*.*"
+)
+
+file(GLOB CORE_SOURCE_COLLSION_FILES
+	"Collision/*.*"
+)
+
+file(GLOB CORE_SOURCE_COLLSION_OPCODE_FILES
+	"Collision/override/*.*"
 )
 
 file(GLOB CORE_SOURCE_DEBUG_FILES
-    "xrDebug*.*"
-    "log.*"
+	"xrDebug*.*"
+	"log.*"
 )
 
 file(GLOB CORE_SOURCE_STR_FILES
-    "xrstring*.*"
-    "shared_string.*"
-    "xr_trims.*"
-    "stack_string.h"
+	"xrstring*.*"
+	"shared_string.*"
+	"xr_trims.*"
+	"stack_string.h"
 )
 
 file(GLOB CORE_SOURCE_FS_FILES
-    "FS*.*"
-    "File*.*"
-    "file*.*"
-    "Locator*.*"
+	"FS*.*"
+	"File*.*"
+	"file*.*"
+	"Locator*.*"
 )
 
 file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
-    "*.cpp"
-    "*.c"
-    "*.h"
+	"*.cpp"
+	"*.c"
+	"*.h"
 )
 
 file(GLOB CORE_SOURCE_RT_FILES "rt_c*.*")
@@ -90,6 +98,8 @@ source_group("platform/linux" FILES ${CORE_SOURCE_XR_API_LIN_FILES})
 source_group("memory" FILES ${CORE_SOURCE_MEMORY_FILES})
 source_group("memory/p3malloc" FILES ${CORE_SOURCE_MEMORY_P3_FILES})
 source_group("debug" FILES ${CORE_SOURCE_DEBUG_FILES})
+source_group("collision/engine" FILES ${CORE_SOURCE_COLLSION_FILES})
+source_group("collision/opcode" FILES ${CORE_SOURCE_COLLSION_OPCODE_FILES})
 source_group("compressors/rt" FILES ${CORE_SOURCE_RT_FILES})
 source_group("compressors/lz" FILES ${CORE_SOURCE_LZ_FILES})
 source_group("compressors/ppmd" FILES ${CORE_SOURCE_PPMD_FILES})
@@ -120,10 +130,10 @@ list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/ptmalloc3.c")
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/tst-independent-alloc.c")
 
 if (MSVC)
-    list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
+	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
 else()
-    list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Windows/")
-    list(FILTER CORE_SRC_FILES EXCLUDE REGEX "discord/api/")
+	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Windows/")
+	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "discord/api/")
 endif()
 
 # xrCore project
@@ -131,7 +141,7 @@ add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_link_directories(xrCore PUBLIC ${IXRAY_SDK_LIB})
 
 if(IXRAY_ASAN)
-    target_compile_definitions(xrCore PRIVATE PURE_ONLY)
+	target_compile_definitions(xrCore PRIVATE PURE_ONLY)
 endif()
 
 # Includes 
@@ -146,7 +156,7 @@ target_include_directories(xrCore PUBLIC ${YAML_INCL})
 target_include_directories(xrCore PUBLIC ${LZO}/build/native/include/)
 
 if (NOT WIN32)
-    target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC}/linux)
+	target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC}/linux)
 endif()
 
 # Move precompiled header
@@ -158,13 +168,13 @@ target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 # Profiler
 if (IXRAY_PROFILER)
-    target_include_directories(xrCore PUBLIC "${CORE_OPT}build/native/include/")
-    target_link_directories(xrCore PUBLIC "${CORE_OPT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/")
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_OPT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/OptickCore.dll ${IXRAY_OUTPUT}
-    )
-    target_compile_definitions(xrCore PUBLIC "IXRAY_PROFILER")
-    target_link_libraries(xrCore PUBLIC "OptickCore")
+	target_include_directories(xrCore PUBLIC "${CORE_OPT}build/native/include/")
+	target_link_directories(xrCore PUBLIC "${CORE_OPT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/")
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_OPT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/OptickCore.dll ${IXRAY_OUTPUT}
+	)
+	target_compile_definitions(xrCore PUBLIC "IXRAY_PROFILER")
+	target_link_libraries(xrCore PUBLIC "OptickCore")
 endif()
 
 # Linker list
@@ -172,18 +182,19 @@ target_link_libraries(xrCore PUBLIC ${CORE_SDL3}/runtimes/${CORE_SDL3_PLATFORM}/
 target_link_libraries(xrCore PUBLIC ${IXR_TBB_LIB})
 target_link_libraries(xrCore PUBLIC ${LZO_LIB})
 target_link_libraries(xrCore PUBLIC ${YAML_LIB})
+target_link_libraries(xrCore PRIVATE opcode-prosectors)
 
 if(WIN32)
-    if (NOT IXR_ARM_ENABLE)
-        target_link_libraries(xrCore PRIVATE dxerr)
-    endif()
+	if (NOT IXR_ARM_ENABLE)
+		target_link_libraries(xrCore PRIVATE dxerr)
+	endif()
 
-    target_link_libraries(xrCore PRIVATE "dbghelp.lib")
-    target_link_libraries(xrCore PRIVATE "winmm.lib")
-    target_link_libraries(xrCore PRIVATE "faultrep.lib")
+	target_link_libraries(xrCore PRIVATE "dbghelp.lib")
+	target_link_libraries(xrCore PRIVATE "winmm.lib")
+	target_link_libraries(xrCore PRIVATE "faultrep.lib")
 
-    target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll.lib)
-    target_link_libraries(xrCore PUBLIC ${MIMALLOC}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/mimalloc.lib)
+	target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll.lib)
+	target_link_libraries(xrCore PUBLIC ${MIMALLOC}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/mimalloc.lib)
 endif()
 
 # Git Info
@@ -191,32 +202,32 @@ include(gitver.cmake)
 
 # Copy SDK binaries
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${YAML_BIN} ${IXRAY_OUTPUT}/${YAML_LIB_NAME}
+	 COMMAND ${CMAKE_COMMAND} -E copy_if_different ${YAML_BIN} ${IXRAY_OUTPUT}/${YAML_LIB_NAME}
 )
 
 ## Platform specific (NEED REWORK!!!)
 if(WIN32)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL3.dll ${IXRAY_OUTPUT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.dll ${IXRAY_OUTPUT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${IXRAY_OUTPUT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.dll ${IXRAY_OUTPUT}
-    )
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL3.dll ${IXRAY_OUTPUT}
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.dll ${IXRAY_OUTPUT}
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${IXRAY_OUTPUT}
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.dll ${IXRAY_OUTPUT}
+	)
 elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL3.so.0.0.0 ${IXRAY_OUTPUT}/libSDL3.so.0
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libtbb.so.12.13 ${IXRAY_OUTPUT}/libtbb.so.12
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/liblzo2.so.2.0.0 ${IXRAY_OUTPUT}/liblzo2.so.2
-    )
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL3.so.0.0.0 ${IXRAY_OUTPUT}/libSDL3.so.0
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libtbb.so.12.13 ${IXRAY_OUTPUT}/libtbb.so.12
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/liblzo2.so.2.0.0 ${IXRAY_OUTPUT}/liblzo2.so.2
+	)
 endif()
 
 # Set relative runpath
 if(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        BUILD_RPATH ""
-        BUILD_RPATH_USE_ORIGIN ON
-    )
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        BUILD_RPATH "$ORIGIN"
-    )
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		BUILD_RPATH ""
+		BUILD_RPATH_USE_ORIGIN ON
+	)
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		BUILD_RPATH "$ORIGIN"
+	)
 endif()

@@ -12,7 +12,7 @@
 #include "../xrCore/API/xrAPI.h"
 #include "../xrServerEntities/smart_cast.h"
 
-#include "../xrCDB/xrCDB.h"
+#include "../xrCore/Collision/xrCDB.h"
 #include "../xrSound/Sound.h"
 
 #include "xrPhysics.h"
