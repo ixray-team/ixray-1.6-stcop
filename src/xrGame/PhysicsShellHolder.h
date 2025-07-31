@@ -5,6 +5,7 @@
 #include "ParticlesPlayer.h"
 #include "../xrEngine/IObjectPhysicsCollision.h"
 #include "../xrPhysics/IPhysicsShellHolder.h"
+#include "../xrScripts/script_export_space.h"
 
 class CPHDestroyable;
 class CPHCollisionDamageReceiver;
@@ -141,6 +142,7 @@ private://IPhysicsShellHolder
 #ifdef	DEBUG
 	virtual	xr_string				_BCL					dump								(EDumpType type) const  ;
 #endif
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 #endif
