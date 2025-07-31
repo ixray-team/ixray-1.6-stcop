@@ -373,57 +373,58 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	}
 }
 
-void CUIItemInfo::TryAddConditionInfo( CInventoryItem& pInvItem, CInventoryItem* pCompareItem )
+void CUIItemInfo::TryAddConditionInfo(CInventoryItem& pInvItem, CInventoryItem* pCompareItem)
 {
-	if ( pInvItem.IsUsingCondition() )
+	if (pInvItem.IsUsingCondition())
 	{
-		UIConditionWnd->SetInfo( pCompareItem, pInvItem );
-		UIDesc->AddWindow( UIConditionWnd, false );
+		UIConditionWnd->SetInfo(pCompareItem, pInvItem);
+		UIDesc->AddWindow(UIConditionWnd, false);
 	}
 }
 
-void CUIItemInfo::TryAddWpnInfo( CInventoryItem& pInvItem, CInventoryItem* pCompareItem )
+void CUIItemInfo::TryAddWpnInfo(CInventoryItem& pInvItem, CInventoryItem* pCompareItem)
 {
-	if ( UIWpnParams->Check( pInvItem ) )
+	if (UIWpnParams->Check(pInvItem))
 	{
-		UIWpnParams->SetInfo( pCompareItem, pInvItem );
-		UIDesc->AddWindow( UIWpnParams, false );
+		UIWpnParams->SetInfo(pCompareItem, pInvItem);
+		UIDesc->AddWindow(UIWpnParams, false);
 	}
 }
 
-void CUIItemInfo::TryAddKnifeInfo( CInventoryItem& pInvItem, CInventoryItem* pCompareItem )
+void CUIItemInfo::TryAddKnifeInfo(CInventoryItem& pInvItem, CInventoryItem* pCompareItem)
 {
-	if ( UIKnifeParams->Check( pInvItem ) )
+	if (UIKnifeParams->Check(pInvItem))
 	{
-		UIKnifeParams->SetInfo( pCompareItem, pInvItem );
-		UIDesc->AddWindow( UIKnifeParams, false );
+		UIKnifeParams->SetInfo(pCompareItem, pInvItem);
+		UIDesc->AddWindow(UIKnifeParams, false);
 	}
 }
 
-void CUIItemInfo::TryAddArtefactInfo	(CInventoryItem& pInvItem)
+void CUIItemInfo::TryAddArtefactInfo(CInventoryItem& pInvItem)
 {
 	if (UIArtefactParams->Check(pInvItem.object().cNameSect()))
 	{
 		UIArtefactParams->SetInfo(pInvItem);
-		UIDesc->AddWindow( UIArtefactParams, false );
+		UIDesc->AddWindow(UIArtefactParams, false);
 	}
 }
 
-void CUIItemInfo::TryAddOutfitInfo( CInventoryItem& pInvItem, CInventoryItem* pCompareItem )
+void CUIItemInfo::TryAddOutfitInfo(CInventoryItem& pInvItem, CInventoryItem* pCompareItem)
 {
-	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(&pInvItem);
-	CHelmet* helmet = smart_cast<CHelmet*>(&pInvItem);
-	if ( outfit && UIOutfitInfo )
+	CCustomOutfit* outfit = pInvItem.cast_outfit();
+	CHelmet* helmet = pInvItem.cast_helmet();
+	if (outfit && UIOutfitInfo)
 	{
-		CCustomOutfit* comp_outfit = smart_cast<CCustomOutfit*>(pCompareItem);
-		UIOutfitInfo->UpdateInfo( outfit, comp_outfit );
-		UIDesc->AddWindow( UIOutfitInfo, false );
+		CCustomOutfit* comp_outfit = pCompareItem ? pCompareItem->cast_outfit() : nullptr;
+		UIOutfitInfo->UpdateInfo(outfit, comp_outfit);
+		UIDesc->AddWindow(UIOutfitInfo, false);
 	}
-	if ( helmet && UIOutfitInfo )
+
+	if (helmet && UIOutfitInfo)
 	{
-		CHelmet* comp_helmet = smart_cast<CHelmet*>(pCompareItem);
-		UIOutfitInfo->UpdateInfo( helmet, comp_helmet );
-		UIDesc->AddWindow( UIOutfitInfo, false );
+		CHelmet* comp_helmet = pCompareItem ? pCompareItem->cast_helmet() : nullptr;
+		UIOutfitInfo->UpdateInfo(helmet, comp_helmet);
+		UIDesc->AddWindow(UIOutfitInfo, false);
 	}
 
 	if (UIOutfitParams && outfit)
@@ -433,22 +434,22 @@ void CUIItemInfo::TryAddOutfitInfo( CInventoryItem& pInvItem, CInventoryItem* pC
 	}
 }
 
-void CUIItemInfo::TryAddUpgradeInfo( CInventoryItem& pInvItem )
+void CUIItemInfo::TryAddUpgradeInfo(CInventoryItem& pInvItem)
 {
-	if ( pInvItem.upgardes().size() && UIProperties )
+	if (pInvItem.upgardes().size() && UIProperties)
 	{
-		UIProperties->set_item_info( pInvItem );
-		UIDesc->AddWindow( UIProperties, false );
+		UIProperties->set_item_info(pInvItem);
+		UIDesc->AddWindow(UIProperties, false);
 	}
 }
 
 void CUIItemInfo::TryAddBoosterInfo(CInventoryItem& pInvItem)
 {
-	CEatableItem* food = smart_cast<CEatableItem*>(&pInvItem);
-	if ( food && UIBoosterInfo )
+	CEatableItem* food = pInvItem.cast_eatable_item();
+	if (food && UIBoosterInfo)
 	{
 		UIBoosterInfo->SetInfo(pInvItem.object().cNameSect());
-		UIDesc->AddWindow( UIBoosterInfo, false );
+		UIDesc->AddWindow(UIBoosterInfo, false);
 	}
 }
 

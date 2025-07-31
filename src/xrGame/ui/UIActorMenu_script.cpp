@@ -64,9 +64,11 @@ void ActorMenuSetPartner_script(CUIActorMenu* menu, CScriptGameObject* GO)
 
 void ActorMenuSetInvbox_script(CUIActorMenu* menu, CScriptGameObject* GO)
 {
-	CInventoryBox* inv_box = smart_cast<CInventoryBox*>(&GO->object());
+	CInventoryBox* inv_box = GO->object().cast_inventory_box();
 	if (inv_box)
+	{
 		menu->SetInvBox(inv_box);
+	}
 }
 
 void ActorMenuSetActor_script(CUIActorMenu* menu, CScriptGameObject* GO)
@@ -90,7 +92,7 @@ CScriptGameObject* ActorMenuGetInvbox_script(CUIActorMenu* menu)
 	CInventoryBox* inv_box = menu->GetInvBox();
 	if (inv_box)
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(inv_box);
+		CGameObject* GO = inv_box->cast_game_object();
 		return GO->lua_game_object();
 	}
 	return (0);

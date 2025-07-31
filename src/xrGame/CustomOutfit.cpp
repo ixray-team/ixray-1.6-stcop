@@ -134,7 +134,7 @@ void CCustomOutfit::ReloadBonesProtection()
 {
 	CObject* parent = H_Parent();
 	if(IsGameTypeSingle())
-		parent = smart_cast<CObject*>(Level().CurrentViewEntity());
+		parent = Level().CurrentViewEntity();
 
 	if(parent && parent->Visual() && m_BonesProtectionSect.size())
 		m_boneProtection->reload( m_BonesProtectionSect, smart_cast<IKinematics*>(parent->Visual()));
@@ -227,10 +227,10 @@ BOOL	CCustomOutfit::BonePassBullet					(int boneID)
 
 void CCustomOutfit::OnMoveToSlot(const SInvItemPlace& prev)
 {
-	if ( m_pInventory )
+	if (m_pInventory)
 	{
-		CActor* pActor = smart_cast<CActor*>( H_Parent() );
-		if ( pActor )
+		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+		if (pActor)
 		{
 			ApplySkinModel(pActor, true, false);
 			PIItem pHelmet = pActor->inventory().ItemFromSlot(HELMET_SLOT);
@@ -323,7 +323,7 @@ void CCustomOutfit::OnMoveToRuck(const SInvItemPlace& prev)
 {
 	if (m_pInventory && prev.type==eItemPlaceSlot)
 	{
-		CActor* pActor = smart_cast<CActor*>(H_Parent());
+		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
 		if (pActor)
 		{
 			ApplySkinModel(pActor, false, false);
@@ -397,7 +397,7 @@ void CCustomOutfit::AddBonesProtection(LPCSTR bones_section)
 {
 	CObject* parent = H_Parent();
 	if(IsGameTypeSingle())
-		parent = smart_cast<CObject*>(Level().CurrentViewEntity());
+		parent = Level().CurrentViewEntity();
 
 	if ( parent && parent->Visual() && m_BonesProtectionSect.size() )
 		m_boneProtection->add(bones_section, smart_cast<IKinematics*>( parent->Visual() ) );

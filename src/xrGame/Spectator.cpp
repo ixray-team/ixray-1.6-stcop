@@ -135,17 +135,23 @@ void CSpectator::UpdateCL()
 			//-------------------------------------
 			int idx			= 0;
 			game_PlayerState* P = Game().local_player;
-			if (P&&(P->team>=0)&&(P->team<(int)Level().seniority_holder().teams().size())){
-				const CTeamHierarchyHolder& T		= Level().seniority_holder().team(P->team);
-				for (u32 i=0; i<T.squads().size(); ++i){
+			if (P&&(P->team>=0)&&(P->team<(int)Level().seniority_holder().teams().size()))
+			{
+				const CTeamHierarchyHolder& T = Level().seniority_holder().team(P->team);
+				for (u32 i=0; i<T.squads().size(); ++i)
+				{
 					const CSquadHierarchyHolder& S = T.squad(i);
-					for (u32 j=0; j<S.groups().size(); ++j){
+					for (u32 j=0; j<S.groups().size(); ++j)
+					{
 						const CGroupHierarchyHolder& G = S.group(j);
-						for (u32 k=0; k<G.members().size(); ++k){
-							CActor* A = smart_cast<CActor*>(G.members()[k]);
-							if (A/*&&A->g_Alive()*/){
-								if(idx==look_idx){
-									cam_Update	(A);
+						for (u32 k=0; k<G.members().size(); ++k)
+						{
+							CActor* A = G.members()[k] ? G.members()[k]->cast_actor() : nullptr;
+							if (A)
+							{
+								if (idx==look_idx)
+								{
+									cam_Update(A);
 									return;
 								}
 								++idx;
@@ -261,7 +267,7 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 	if (Remote())
 		return;
 
-	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+	if (g_pGamePersistent->GameType() & eGameIDFreeMP)
 		return;
 
 	game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
@@ -306,7 +312,7 @@ void CSpectator::IR_OnMouseMove(int dx, int dy)
 	if (Remote())
 		return;
 
-	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+	if (g_pGamePersistent->GameType() & eGameIDFreeMP)
 		return;
 
 	CCameraBase* C	= cameras	[cam_active];
@@ -542,9 +548,17 @@ bool			CSpectator::SelectNextPlayerToLook	(bool const search_next)
 		};
 		u16 id = ps->GameID;
 		CObject* pObject = Level().Objects.net_Find(id);
-		if (!pObject) continue;
-		CActor* A = smart_cast<CActor*>(pObject);
-		if (!A) continue;
+		if (!pObject)
+		{
+			continue;
+		}
+
+		CActor* A = pObject->cast_actor();
+		if (!A)
+		{
+			continue;
+		}
+
 		if (m_last_player_name.size() && (m_last_player_name == ps->getName()))
 		{
 			last_player_idx		= PPCount;
