@@ -131,13 +131,13 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	}
 	case kDETECTOR:
 		{
-			PIItem det_active					= inventory().ItemFromSlot(DETECTOR_SLOT);
-			if(det_active)
+			PIItem det_active = inventory().ItemFromSlot(DETECTOR_SLOT);
+			if (det_active)
 			{
-				CCustomDetector* det			= smart_cast<CCustomDetector*>(det_active);
-				if(det)
+				if (CCustomDetector* det = det_active->cast_custom_detector())
+				{
 					det->switch_detector();
-				return;
+				}
 			}
 		}break;
 	case kUSE:
@@ -492,9 +492,12 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 			if (holderGO->CLS_ID==CLSID_OBJECT_W_STATMGUN || holderGO->CLS_ID==CLSID_OBJECT_HOLDER_ENT)
 				b = use_HolderEx(0,false);
 
-		if(inventory().ActiveItem()){
-			CHudItem* hi = smart_cast<CHudItem*>(inventory().ActiveItem());
-			if(hi) hi->OnAnimationEnd(hi->GetState());
+		if (inventory().ActiveItem())
+		{
+			if (CHudItem* hi = inventory().ActiveItem()->cast_hud_item())
+			{
+				hi->OnAnimationEnd(hi->GetState());
+			}
 		}
 
 		return b;
@@ -516,9 +519,12 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 			}
 		}
 
-		if(inventory().ActiveItem()){
-			CHudItem* hi = smart_cast<CHudItem*>(inventory().ActiveItem());
-			if(hi) hi->OnAnimationEnd(hi->GetState());
+		if (inventory().ActiveItem())
+		{
+			if (CHudItem* hi = inventory().ActiveItem()->cast_hud_item())
+			{
+				hi->OnAnimationEnd(hi->GetState());
+			}
 		}
 
 		return b;
@@ -847,7 +853,9 @@ void CActor::SwitchTorch()
 		return;
 	}
 
-	if (CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT)))
+	PIItem item_from_slot = inventory().ItemFromSlot(TORCH_SLOT);
+
+	if (CTorch* torch = item_from_slot ? item_from_slot->cast_torch() : nullptr)
 	{
 		CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
 		CWeapon* wpn = smart_cast<CWeapon*>(itm);
@@ -1087,14 +1095,18 @@ void CActor::NoClipFly(int cmd)
 			break;
 		case kDETECTOR:
 		{
-			if ((mstate_real&mcClimb)) break;
-			PIItem det_active = inventory().ItemFromSlot(DETECTOR_SLOT);
-			if(det_active)
+			if ((mstate_real&mcClimb))
 			{
-				CCustomDetector* det = smart_cast<CCustomDetector*>(det_active);
-				if (det)
+				break;
+			}
+
+			PIItem det_active = inventory().ItemFromSlot(DETECTOR_SLOT);
+			if (det_active)
+			{
+				if (CCustomDetector* det = det_active->cast_custom_detector())
+				{
 					det->switch_detector();
-				return;
+				}
 			}
 		}break;
 	}

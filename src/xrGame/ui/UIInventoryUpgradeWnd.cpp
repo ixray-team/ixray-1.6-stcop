@@ -158,42 +158,43 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 	if (m_item && m_inv_item)
 	{
 		bool is_shader = false;
-		if (smart_cast<CWeapon*>(m_inv_item))
-	{
-		is_shader = true;
-		m_item->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
-		if(smart_cast<CWeaponRPG7*>(m_inv_item))
+		if (m_inv_item->cast_weapon())
+		{
+			is_shader = true;
+			m_item->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
+			if (m_inv_item->cast_weapon_rpg7())
+			{
+				m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
+			}
+		}
+		else if (m_inv_item->cast_outfit() || m_inv_item->cast_helmet())
+		{
+			is_shader = true;
 			m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
-	}
-	else if (smart_cast<CCustomOutfit*>(m_inv_item) || smart_cast<CHelmet*>(m_inv_item))
-	{
-		is_shader = true;
-		m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
-	}
+		}
 
-	if (m_item && is_shader)
-	{
+		if (m_item && is_shader)
+		{
+			Irect item_upgrade_grid_rect = m_inv_item->GetUpgrIconRect();
+			Frect texture_rect;
+			texture_rect.lt.set(item_upgrade_grid_rect.x1, item_upgrade_grid_rect.y1);
+			texture_rect.rb.set(item_upgrade_grid_rect.x2, item_upgrade_grid_rect.y2);
+			texture_rect.rb.add(texture_rect.lt);
+			m_item->GetUIStaticItem().SetTextureRect(texture_rect);
+			m_item->TextureOn();
+			m_item->SetStretchTexture(true);
+			Fvector2 v_r = Fvector2().set(item_upgrade_grid_rect.x2, item_upgrade_grid_rect.y2);
+			if (UI().is_widescreen())
+				v_r.x *= 0.8f;
 
-		Irect item_upgrade_grid_rect = m_inv_item->GetUpgrIconRect();
-		Frect texture_rect;
-		texture_rect.lt.set(item_upgrade_grid_rect.x1, item_upgrade_grid_rect.y1);
-		texture_rect.rb.set(item_upgrade_grid_rect.x2, item_upgrade_grid_rect.y2);
-		texture_rect.rb.add(texture_rect.lt);
-		m_item->GetUIStaticItem().SetTextureRect(texture_rect);
-		m_item->TextureOn();
-		m_item->SetStretchTexture(true);
-		Fvector2 v_r = Fvector2().set(item_upgrade_grid_rect.x2, item_upgrade_grid_rect.y2);
-		if (UI().is_widescreen())
-			v_r.x *= 0.8f;
-
-		m_item->GetUIStaticItem().SetSize(v_r);
-		m_item->SetWidth(v_r.x);
-		m_item->SetHeight(v_r.y);
-		m_item->Show(true);
+			m_item->GetUIStaticItem().SetSize(v_r);
+			m_item->SetWidth(v_r.x);
+			m_item->SetHeight(v_r.y);
+			m_item->Show(true);
+		}
+		else
+			m_item->Show(false);
 	}
-	else
-		m_item->Show(false);
-}
 
 	m_scheme_wnd->DetachAll();
 	m_scheme_wnd->Show( false );
@@ -300,7 +301,7 @@ bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_up
 	if (m_back)
 		m_back->DetachAll();
 
-	bool CanBeRepared = inv_item.cast_weapon() != nullptr || smart_cast<CCustomOutfit*>(&inv_item) != nullptr || smart_cast<CHelmet*>(&inv_item) != nullptr;
+	bool CanBeRepared = inv_item.cast_weapon() != nullptr || inv_item.cast_outfit() != nullptr || inv_item.cast_helmet() != nullptr;
 	m_btn_repair->Enable(CanBeRepared && inv_item.GetCondition() < 0.99f);
 
 	if (m_btn_disassemble != nullptr)

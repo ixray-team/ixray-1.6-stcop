@@ -335,7 +335,7 @@ void CUIMainIngameWnd::Init()
 float UIStaticDiskIO_start_time = 0.0f;
 void CUIMainIngameWnd::Draw()
 {
-	CActor* pActor		= smart_cast<CActor*>(Level().CurrentViewEntity());
+	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
 
 	// show IO icon
 	bool IOActive	= (FS.dwOpenCounter>0);
@@ -349,17 +349,20 @@ void CUIMainIngameWnd::Draw()
 	}
 	FS.dwOpenCounter = 0;
 
-	if(!IsGameTypeSingle())
+	if (!IsGameTypeSingle())
 	{
-		float		luminocity = smart_cast<CGameObject*>(Level().CurrentEntity())->ROS()->get_luminocity();
-		float		power = log(luminocity > .001f ? luminocity : .001f)*(1.f/*luminocity_factor*/);
-		luminocity	= exp(power);
+		float luminocity = Level().CurrentEntity()->cast_game_object()->ROS()->get_luminocity();
+		float power = log(luminocity > .001f ? luminocity : .001f) * (1.f);
+		luminocity = exp(power);
 
 		static float cur_lum = luminocity;
 		cur_lum = luminocity*0.01f + cur_lum*0.99f;
 		UIMotionIcon->SetLuminosity((s16)iFloor(cur_lum*100.0f));
 	}
-	if ( !pActor || !pActor->g_Alive() ) return;
+	if (!pActor || !pActor->g_Alive())
+	{
+		return;
+	}
 
 	UIMotionIcon->SetNoise((s16)(0xffff&iFloor(pActor->m_snd_noise*100)));
 
@@ -410,16 +413,22 @@ void CUIMainIngameWnd::SetMPChatLog(CUIWindow* pChat, CUIWindow* pLog){
 void CUIMainIngameWnd::Update()
 {
 	CUIWindow::Update();
-	CActor* pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
+	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
 
-	if ( m_pMPChatWnd )
+	if (m_pMPChatWnd)
+	{
 		m_pMPChatWnd->Update();
+	}
 
-	if ( m_pMPLogWnd )
+	if (m_pMPLogWnd)
+	{
 		m_pMPLogWnd->Update();
+	}
 
-	if ( !pActor )
+	if (!pActor)
+	{
 		return;
+	}
 
 	UIZoneMap->Update();
 	
@@ -491,25 +500,29 @@ void CUIMainIngameWnd::Update()
 
 void CUIMainIngameWnd::RenderQuickInfos()
 {
-	CActor* pActor		= smart_cast<CActor*>(Level().CurrentViewEntity());
+	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
 	if (!pActor)
-		return;
-
-	static CGameObject *pObject			= nullptr;
-	LPCSTR actor_action					= pActor->GetDefaultActionForObject();
-	UIStaticQuickHelp->Show				(nullptr!=actor_action);
-
-	if(nullptr!=actor_action)
 	{
-		if(_stricmp(actor_action,UIStaticQuickHelp->GetText()))
-			UIStaticQuickHelp->SetTextST				(actor_action);
+		return;
 	}
 
-	if(pObject!=pActor->ObjectWeLookingAt())
+	static CGameObject *pObject = nullptr;
+	LPCSTR actor_action	= pActor->GetDefaultActionForObject();
+	UIStaticQuickHelp->Show(nullptr!=actor_action);
+
+	if (nullptr != actor_action)
 	{
-		UIStaticQuickHelp->SetTextST				(actor_action?actor_action:" ");
-		UIStaticQuickHelp->ResetColorAnimation	();
-		pObject	= pActor->ObjectWeLookingAt	();
+		if (_stricmp(actor_action,UIStaticQuickHelp->GetText()))
+		{
+			UIStaticQuickHelp->SetTextST(actor_action);
+		}
+	}
+
+	if (pObject != pActor->ObjectWeLookingAt())
+	{
+		UIStaticQuickHelp->SetTextST(actor_action ? actor_action : " ");
+		UIStaticQuickHelp->ResetColorAnimation();
+		pObject	= pActor->ObjectWeLookingAt();
 	}
 }
 
@@ -664,7 +677,7 @@ void CUIMainIngameWnd::SetPickUpItem	(CInventoryItem* PickUpItem)
 
 void CUIMainIngameWnd::UpdatePickUpItem	()
 {
-	if (!m_pPickUpItem || !Level().CurrentViewEntity() || !smart_cast<CActor*>(Level().CurrentViewEntity())) 
+	if (!m_pPickUpItem || !Level().CurrentViewEntity() || !Level().CurrentViewEntity()->cast_actor()) 
 	{
 		UIPickUpItemIcon->Show(false);
 		return;
@@ -763,9 +776,11 @@ void CUIMainIngameWnd::UpdateZoneMap()
 
 void CUIMainIngameWnd::UpdateMainIndicators()
 {
-	CActor* pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-	if(!pActor)
+	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
+	if (!pActor)
+	{
 		return;
+	}
 
 	UpdateQuickSlots();
 	if (IsGameTypeSingleCompatible())
@@ -898,7 +913,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 	}
 
 // Armor broken icon
-	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(pActor->inventory().ItemFromSlot(OUTFIT_SLOT));
+	CCustomOutfit* outfit = pActor->GetOutfit();
 	if (m_ind_outfit_broken)
 	{
 		m_ind_outfit_broken->Show(false);
@@ -920,7 +935,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 // Helmet broken icon
 	if (m_ind_helmet_broken)
 	{
-		CHelmet* helmet = smart_cast<CHelmet*>(pActor->inventory().ItemFromSlot(HELMET_SLOT));
+		CHelmet* helmet = pActor->GetHelmet();
 		m_ind_helmet_broken->Show(false);
 		if (helmet)
 		{
@@ -944,7 +959,8 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 		m_ind_weapon_broken->Show(false);
 		if (slot == INV_SLOT_2 || slot == INV_SLOT_3)
 		{
-			CWeapon* weapon = smart_cast<CWeapon*>(pActor->inventory().ItemFromSlot(slot));
+			PIItem item_from_slot = pActor->inventory().ItemFromSlot(slot);
+			CWeapon* weapon = item_from_slot ? item_from_slot->cast_weapon() : nullptr;
 			if (weapon)
 			{
 				float condition = weapon->GetCondition();
@@ -1014,9 +1030,11 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 		m_QuickSlotText4->SetTextST(tmp);
 
 
-	CActor* pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-	if(!pActor)
+	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
+	if (!pActor)
+	{
 		return;
+	}
 
 	int i = -1;
 	for (const auto& slot : m_quick_slots_icons)
@@ -1071,9 +1089,11 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 
 void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
 {
-	CActor* pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-	if(!pActor)
+	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
+	if (!pActor)
+	{
 		return;
+	}
 
 	UpdateQuickSlots();
 	UpdateBoosterIndicators(pActor->conditions().GetCurBoosterInfluences());
