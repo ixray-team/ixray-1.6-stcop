@@ -93,6 +93,7 @@ struct ECORE_API STextureParams
 		flImplicitLighted	= (1<<24),
 		flHasAlpha			= (1<<25),
 		flBumpDetail		= (1<<26),
+		flHasSurface		= (1<<27),
 
 		flForceU32			= u32(-1)
 	};
