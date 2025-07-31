@@ -10,7 +10,7 @@ void	CRender::render_lights	(light_Package& LP)
 	// 1. calculate area + sort in descending order
 	// const	u16		smap_unassigned		= u16(-1);
 	{
-		PIX_EVENT(vis_update);
+		PROF_EVENT("vis_update");
 		xr_vector<light*>&	source			= LP.v_shadowed;
 		for (u32 it=0; it<source.size(); it++)
 		{
@@ -38,7 +38,7 @@ void	CRender::render_lights	(light_Package& LP)
 
 	// 2. refactor - infact we could go from the backside and sort in ascending order
 	{
-		PIX_EVENT(PHASE_SORT);
+		PROF_EVENT("PHASE_SORT");
 		xr_vector<light*>&		source		= LP.v_shadowed;
 		xr_vector<light*>		refactored	;
 		refactored.reserve		(source.size());
@@ -69,7 +69,7 @@ void	CRender::render_lights	(light_Package& LP)
 		LP.v_shadowed	= refactored;
 	}
 	{
-		PIX_EVENT(SHADOWED_LIGHTS);
+		PROF_EVENT("SHADOWED_LIGHTS");
 		//////////////////////////////////////////////////////////////////////////
 		// sort lights by importance???
 		// while (has_any_lights_that_cast_shadows) {
@@ -112,7 +112,7 @@ void	CRender::render_lights	(light_Package& LP)
 				if (RImplementation.o.Tshadows)	r_pmask(true, true);
 				else							r_pmask(true, false);
 #endif
-				PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
+				PROF_EVENT("SHADOWED_LIGHTS_RENDER_SUBSPACE");
 				bool decorative_light = false;
 				if (L->flags.bHudMode)
 				{
@@ -168,9 +168,9 @@ void	CRender::render_lights	(light_Package& LP)
 						L->X.S.transluent = TRUE;
 						Target->phase_smap_spot_tsh(L);
 
-						PIX_EVENT(SHADOWED_LIGHTS_RENDER_GRAPH);
+						PROF_EVENT("SHADOWED_LIGHTS_RENDER_GRAPH");
 						r_dsgraph_render_graph(1);			// normal level, secondary priority
-						PIX_EVENT(SHADOWED_LIGHTS_RENDER_SORTED);
+						PROF_EVENT("SHADOWED_LIGHTS_RENDER_SORTED");
 						r_dsgraph_render_sorted();			// strict-sorted geoms
 					}
 				}
@@ -183,10 +183,10 @@ void	CRender::render_lights	(light_Package& LP)
 				r_pmask(true, false);
 			}
 			{
-				PIX_EVENT(UNSHADOWED_LIGHTS);
+				PROF_EVENT("UNSHADOWED_LIGHTS");
 				//		switch-to-accumulator
 				Target->phase_accumulator();
-				PIX_EVENT(POINT_LIGHTS);
+				PROF_EVENT("POINT_LIGHTS");
 				//		if (has_point_unshadowed)	-> 	accum point unshadowed
 				if (!LP.v_point.empty()) {
 					light* L_ = LP.v_point.back();		LP.v_point.pop_back();
@@ -199,7 +199,7 @@ void	CRender::render_lights	(light_Package& LP)
 					else
 						Target->accum_point(L_);
 				}
-				PIX_EVENT(SPOT_LIGHTS);
+				PROF_EVENT("SPOT_LIGHTS");
 				//		if (has_spot_unshadowed)	-> 	accum spot unshadowed
 				if (!LP.v_spot.empty()) {
 					light* L_ = LP.v_spot.back();		LP.v_spot.pop_back();
@@ -217,7 +217,7 @@ void	CRender::render_lights	(light_Package& LP)
 			//		if (was_spot_shadowed)		->	accum spot shadowed
 			if (!L_spot_s.empty())
 			{
-				PIX_EVENT(ACCUM_SPOT);
+				PROF_EVENT("ACCUM_SPOT");
 				for (u32 it = 0; it < L_spot_s.size(); it++)
 				{
 					Target->accum_spot(L_spot_s[it]);
@@ -230,7 +230,7 @@ void	CRender::render_lights	(light_Package& LP)
 		}
 	}
 	{
-		PIX_EVENT(POINT_LIGHTS_ACCUM);
+		PROF_EVENT("POINT_LIGHTS_ACCUM");
 		// Point lighting (unshadowed, if left)
 		if (!LP.v_point.empty()) {
 			xr_vector<light*>& Lvec = LP.v_point;
@@ -248,7 +248,7 @@ void	CRender::render_lights	(light_Package& LP)
 		}
 	}
 	{
-		PIX_EVENT(SPOT_LIGHTS_ACCUM);
+		PROF_EVENT("SPOT_LIGHTS_ACCUM");
 		// Spot lighting (unshadowed, if left)
 		if (!LP.v_spot.empty()) {
 			xr_vector<light*>& Lvec = LP.v_spot;
