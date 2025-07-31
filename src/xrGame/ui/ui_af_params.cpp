@@ -12,7 +12,7 @@
 u32 const red_clr   = color_argb(255,210,50,50);
 u32 const green_clr = color_argb(255,170,170,170);
 
-CUIArtefactParams::CUIArtefactParams()
+CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 {
 	for ( u32 i = 0; i < ALife::infl_max_count; ++i )
 	{
@@ -23,6 +23,8 @@ CUIArtefactParams::CUIArtefactParams()
 		m_restore_item[i] = nullptr;
 	}
 	m_additional_weight = nullptr;
+
+	object_type = type;
 }
 
 CUIArtefactParams::~CUIArtefactParams()
@@ -40,11 +42,6 @@ LPCSTR af_immunity_section_names[] = // ALife::EInfluenceType
 	"chemical_burn_immunity",	// infl_acid=2
 	"telepatic_immunity",		// infl_psi=3
 	"shock_immunity",			// infl_electra=4
-
-//	"strike_immunity",
-//	"wound_immunity",		
-//	"explosion_immunity",
-//	"fire_wound_immunity",
 };
 
 LPCSTR af_restore_section_names[] = // ALife::EConditionRestoreType
@@ -63,11 +60,6 @@ LPCSTR af_immunity_caption[] =  // ALife::EInfluenceType
 	"ui_inv_outfit_chemical_burn_protection",	// "(chemical_burn_imm)",
 	"ui_inv_outfit_telepatic_protection",		// "(telepatic_imm)",
 	"ui_inv_outfit_shock_protection",			// "(shock_imm)",
-
-//	"ui_inv_outfit_strike_protection",			// "(strike_imm)",
-//	"ui_inv_outfit_wound_protection",			// "(wound_imm)",
-//	"ui_inv_outfit_explosion_protection",		// "(explosion_imm)",
-//	"ui_inv_outfit_fire_wound_protection",		// "(fire_wound_imm)",
 };
 
 LPCSTR af_restore_caption[] =  // ALife::EConditionRestoreType
@@ -78,17 +70,6 @@ LPCSTR af_restore_caption[] =  // ALife::EConditionRestoreType
 	"ui_inv_bleeding",
 	"ui_inv_radiation",
 };
-
-/*
-LPCSTR af_actor_param_names[]=
-{
-	"satiety_health_v",
-	"radiation_v",
-	"satiety_v",
-	"satiety_power_v",
-	"wound_incarnation_v",
-};
-*/
 
 void CUIArtefactParams::InitFromXml( CUIXml& xml )
 {
@@ -139,8 +120,6 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 
 		LPCSTR name = g_pStringTable->translate( "ui_inv_weight" ).c_str();
 		m_additional_weight->SetCaption( name );
-
-		//xml.SetLocalRoot( base_node );
 	}
 
 	xml.SetLocalRoot( stored_root );
@@ -163,27 +142,47 @@ void CUIArtefactParams::SetInfo( shared_str const& af_section )
 	}
 
 	float val = 0.0f, max_val = 1.0f;
-	Fvector2 pos;
+	Fvector2 pos {0,0};
 	float h = m_Prop_line->GetWndPos().y+m_Prop_line->GetWndSize().y;
 
-	for ( u32 i = 0; i < ALife::infl_max_count; ++i )
+	if (is_artefact())
 	{
-		shared_str const& sect = pSettings->r_string( af_section, "hit_absorbation_sect" );
-		val	= pSettings->r_float( sect, af_immunity_section_names[i] );
-		if ( fis_zero(val) )
+		for (u32 i = 0; i < ALife::infl_max_count; ++i)
 		{
-			continue;
+			shared_str const& sect = pSettings->r_string(af_section, "hit_absorbation_sect");
+			val = pSettings->r_float(sect, af_immunity_section_names[i]);
+			if (fis_zero(val))
+			{
+				continue;
+			}
+			max_val = actor->conditions().GetZoneMaxPower((ALife::EInfluenceType)i);
+			val /= max_val;
+			m_immunity_item[i]->SetValue(val);
+
+			pos.set(m_immunity_item[i]->GetWndPos());
+			pos.y = h;
+			m_immunity_item[i]->SetWndPos(pos);
+
+			h += m_immunity_item[i]->GetWndSize().y;
+			AttachChild(m_immunity_item[i]);
 		}
-		max_val = actor->conditions().GetZoneMaxPower( (ALife::EInfluenceType)i );
-		val /= max_val;
-		m_immunity_item[i]->SetValue( val );
 
-		pos.set( m_immunity_item[i]->GetWndPos() );
-		pos.y = h;
-		m_immunity_item[i]->SetWndPos( pos );
+		for (u32 i = 0; i < ALife::eRestoreTypeMax; ++i)
+		{
+			val = pSettings->r_float(af_section, af_restore_section_names[i]);
+			if (fis_zero(val))
+			{
+				continue;
+			}
+			m_restore_item[i]->SetValue(val);
 
-		h += m_immunity_item[i]->GetWndSize().y;
-		AttachChild( m_immunity_item[i] );
+			pos.set(m_restore_item[i]->GetWndPos());
+			pos.y = h;
+			m_restore_item[i]->SetWndPos(pos);
+
+			h += m_restore_item[i]->GetWndSize().y;
+			AttachChild(m_restore_item[i]);
+		}
 	}
 
 	{
@@ -199,23 +198,6 @@ void CUIArtefactParams::SetInfo( shared_str const& af_section )
 			h += m_additional_weight->GetWndSize().y;
 			AttachChild( m_additional_weight );
 		}
-	}
-
-	for ( u32 i = 0; i < ALife::eRestoreTypeMax; ++i )
-	{
-		val	= pSettings->r_float( af_section, af_restore_section_names[i] );
-		if ( fis_zero(val) )
-		{
-			continue;
-		}
-		m_restore_item[i]->SetValue( val );
-
-		pos.set( m_restore_item[i]->GetWndPos() );
-		pos.y = h;
-		m_restore_item[i]->SetWndPos( pos );
-
-		h += m_restore_item[i]->GetWndSize().y;
-		AttachChild( m_restore_item[i] );
 	}
 	
 	SetHeight( h );
@@ -279,7 +261,7 @@ void UIArtefactParamItem::SetValue( float value )
 	{
 		xr_strconcat( str, buf, " ", m_unit_str.c_str() );
 	}
-	else // = ""
+	else
 	{
 		xr_strconcat( str, buf );
 	}
