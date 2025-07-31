@@ -1,10 +1,13 @@
 #pragma once
 
+struct LevelFileData
+{
+	xr_string Name;
+	bool Select = false;
+};
+
 struct CompilersMode
 {
-	char level_name[256];
-	
-
 	bool Silent = false;
 	bool Embree = true;
 	bool ClearTemp = false;
@@ -44,6 +47,8 @@ struct CompilersMode
 	bool AI_Draft = false;
 	bool AI_Verify = false; 
 	bool AI_Verbose = false;
+
+	xr_vector<LevelFileData> Files;
 };
 
 void RenderMainUI();

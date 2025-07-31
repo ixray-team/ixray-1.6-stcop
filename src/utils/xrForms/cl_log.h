@@ -17,22 +17,24 @@ enum IterationStatus
 	Complited,
 };
 
-struct IterationPhase {
-	std::string PhaseName = "";
+struct IterationPhase 
+{
+	xr_string PhaseName = "";
 	u32 elapsed_time = 0;
 	u32 remain_time = 0;
 	IterationStatus status = InProgress;
 	float PhasePersent = 0;
 };
 
-struct IterationData {
-	std::string iterationName;
+struct IterationData 
+{
+	xr_string iterationName;
 	
 	u32 elapsed_time = 0; // Общее время работы итерации
 
 	int warnings = 0;
 	IterationStatus status = Pending;
-	std::vector<IterationPhase> phases;
+	xr_vector<IterationPhase> phases;
 	float Persent = 0;
 };
 
@@ -51,9 +53,9 @@ void logThread	    (void *dummy);
 void logCallback	(LPCSTR c);
 
 float GetProgress();
-std::vector<IterationData>& GetIterationData();
+xr_vector<IterationData>& GetIterationData();
 IterationData* GetActiveIteration();
 void SetActiveIteration(IterationData* i);
 xr_vector<xr_string>& GetLogVector();
 u32& GetPhaseStartTime();
-std::string make_time(u32 sec);
+xr_string make_time(u32 sec);
