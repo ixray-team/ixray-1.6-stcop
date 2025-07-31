@@ -774,7 +774,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			CL->ps->m_online_time	= Level().timeServer();
 			CL->ps->DeathTime		= Device.dwTimeGlobal;
 			
-			if (psNET_direct_connect) //IsGameTypeSingle())
+			if (psNET_direct_connect)
 				break;
 
 			if (Level().IsDemoPlay())
