@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_additional_quest_1_name">
+		<text>Dokumenty w bazie wojskowej.</text>
+	</string>
+	<string id="esc_additional_quest_1_text">
+		<text>Dokumenty w bazie wojskowej.</text>
+	</string>
+	<string id="esc_additional_quest_2_name">
+		<text>Їywnoњж.</text>
+	</string>
+	<string id="esc_additional_quest_2_text">
+		<text>Їywnoњж.</text>
+	</string>
+	<string id="esc_bring_habar">
+		<text>Zwrуж іup handlarzowi</text>
+	</string>
+	<string id="esc_bring_habar_text">
+		<text>Zwrуж skrzyniк z іupem handlarzowi</text>
+	</string>
+	<string id="esc_defend_stalkers_base_name">
+		<text>Broс bazy stalkerуw</text>
+	</string>
+	<string id="esc_defend_stalkers_base_text">
+		<text>Broс bazy stalkerуw przed atakiem</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_name">
+		<text>Broс patrolu</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_text">
+		<text>Broс patrolu stalkerуw w pobliїu przystanku autobusowego</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_name">
+		<text>Pomуї w odparciu ataku</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_text">
+		<text>Pomуї w odparciu ataku</text>
+	</string>
+	<string id="esc_dopros">
+		<text>Przesіuchaj dowуdcк wojskowego</text>
+	</string>
+	<string id="esc_dopros_text">
+		<text>Przesіuchaj Chaleckija, aby dowiedzieж siк, gdzie ukryto skrzyniк z potrzebnym handlarzowi іupem.</text>
+	</string>
+	<string id="esc_driver_friend_1_name">
+		<text>Odszukaj PDA</text>
+	</string>
+	<string id="esc_driver_friend_1_text">
+		<text>Odszukaj PDA z cennymi informacjami o їoіnierzu, ktуry zgin№і przez anomalie.</text>
+	</string>
+	<string id="esc_driver_friend_2_name">
+		<text>Zwrуж PDA</text>
+	</string>
+	<string id="esc_driver_friend_2_text">
+		<text>Zwrуж PDA sierїantowi Trusi.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9">
+		<text>Zlikwiduj wojskowych przy windzie</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9_text">
+		<text>Zlikwiduj oddziaі wojska wykryty przez zwiadowcуw przy windzie.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_name">
+		<text>Wyeliminuj bandytуw</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_name">
+		<text>Odbierz nagrodк</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_text">
+		<text>Odbierz nagrodк od handlarza. Bandyci zostali wyeliminowani, a droga do bazy stoi otworem.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_text">
+		<text>Zlikwiduj bandytуw w opuszczonym gospodarstwie. Dziкki temu przestan№ okradaж stalkerуw znosz№cych іupy z Zony do swej bazy.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11">
+		<text>Zlikwiduj wojskowych w skіadzie</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11_text">
+		<text>Zlikwiduj oddziaі wojska wykryty przez zwiadowcуw w okolicach skіadu. To gіуwna jednostka wysіana celem uratowania Chaleckija.</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8">
+		<text>Wyeliminuj snajperуw</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8_text">
+		<text>Wyeliminuj snajperуw</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7">
+		<text>Zdob№dџ bazк stalkerуw</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7_text">
+		<text>Zdob№dџ bazк stalkerуw</text>
+	</string>
+	<string id="esc_find_upgrade_1_name">
+		<text>Odszukaj ulepszenie.</text>
+	</string>
+	<string id="esc_find_upgrade_1_text">
+		<text>Jeden z moich kumpli-technikуw podesіaі mi goњcia z cennymi informacjami o ulepszeniu AK na pendrivie. Kurier zgin№і jednak po drodze w norze nibypsуw, a nikt nie odwaїy siк pуjњж tam po ten pendrive. Moїe ty? Obiecujк, їe nagroda bкdzie godna.</text>
+	</string>
+	<string id="esc_find_upgrade_2_name">
+		<text>Odszukaj ulepszenie.</text>
+	</string>
+	<string id="esc_find_upgrade_2_text">
+		<text>Jeden z moich kumpli-technikуw podesіaі mi goњcia z cennymi informacjami o ulepszeniu strzelby na pendrivie. Kurier zgin№і jednak po drodze w norze nibypsуw, a nikt nie odwaїy siк pуjњж tam po ten pendrive. Moїe ty? Obiecujк, їe nagroda bкdzie godna.</text>
+	</string>
+	<string id="esc_novice_stalker_1_name">
+		<text>Pomуї stalkerowi</text>
+	</string>
+	<string id="esc_novice_stalker_1_text">
+		<text>Pomуї stalkerowi odeprzeж atak watahy њlepych psуw</text>
+	</string>
+	<string id="esc_novice_stalker_2_name">
+		<text>Eskortuj stalkera</text>
+	</string>
+	<string id="esc_novice_stalker_2_text">
+		<text>Eskortuj stalkera do wioski nowicjuszy</text>
+	</string>
+	<string id="esc_novice_stalker_3_name">
+		<text>Odbierz nagrodк</text>
+	</string>
+	<string id="esc_novice_stalker_3_text">
+		<text>Odbierz u Wilka nagrodк za uratowanie stalkera przez watah№ њlepych psуw</text>
+	</string>
+	<string id="esc_prapor">
+		<text>Spotkaj siк z chor№їym</text>
+	</string>
+	<string id="esc_prapor_text">
+		<text>Spotkaj siк z chor№їym</text>
+	</string>
+	<string id="esc_reach_garbage">
+		<text>Spotkaj siк z kopaczem na Wysypisku</text>
+	</string>
+	<string id="esc_reach_garbage_text">
+		<text>Spotkaj siк z kopaczem na Wysypisku</text>
+	</string>
+	<string id="esc_reach_stalker_base">
+		<text>Spotkaj siк ze stalkerami za nasypem</text>
+	</string>
+	<string id="esc_reach_stalker_base_text">
+		<text>Pomуw z Walerianem, przywуdc№ stalkerуw. Moїe on coњ wie o poszukiwanym przez Sidorowicza іupie.</text>
+	</string>
+	<string id="esc_reach_trader">
+		<text>Pomуw z handlarzem</text>
+	</string>
+	<string id="esc_reach_trader_text">
+		<text>Pomуw z handlarzem</text>
+	</string>
+	<string id="esc_rescue_patrol">
+		<text>Pomуї stalkerom</text>
+	</string>
+	<string id="esc_rescue_patrol_text">
+		<text>Pomуї stalkerom</text>
+	</string>
+	<string id="esc_stalker_enemy_name">
+		<text>Odzyskaj zaufanie stalkerуw</text>
+	</string>
+	<string id="esc_stalker_enemy_text">
+		<text>Twoje stosunki ze stalkerami uіoїyіy siк fatalnie. Musisz z pomoc№ Sidorowicza odzyskaж ich zaufanie.</text>
+	</string>
+	<string id="esc_take_habar">
+		<text>Zbierz іup</text>
+	</string>
+	<string id="esc_take_habar_text">
+		<text>Zbierz іup</text>
+	</string>
+	<string id="esc_take_prisoner_secret">
+		<text>Odszukaj schowek Chaleckija</text>
+	</string>
+	<string id="esc_take_prisoner_secret_text">
+		<text>Odszukaj schowek Chaleckija</text>
+	</string>
+	<string id="esc_take_weapon_name">
+		<text>Zbierz broс</text>
+	</string>
+	<string id="esc_take_weapon_text">
+		<text>Zbierz broс</text>
+	</string>
+	<string id="esc_talk2_comm">
+		<text>Pomуw z Chaleckijem</text>
+	</string>
+	<string id="esc_talk2_comm_text">
+		<text>Pomуw z Chaleckijem</text>
+	</string>
+	<string id="esc_talk2_leader">
+		<text>Spotkaj siк przywуdc№ stalkerуw</text>
+	</string>
+	<string id="esc_talk2_leader_2">
+		<text>Pomуw z przywуdc№ stalkerуw</text>
+	</string>
+	<string id="esc_talk2_leader_2_text">
+		<text>Pomуw z przywуdc№ stalkerуw</text>
+	</string>
+	<string id="esc_talk2_leader_text">
+		<text>Spotkaj siк przywуdc№ stalkerуw</text>
+	</string>
+	<string id="esc_talk2_trader">
+		<text>Pomуw z handlarzem</text>
+	</string>
+	<string id="esc_wolf_brother_1_name">
+		<text>Uratuj brata Wilka z niewoli</text>
+	</string>
+	<string id="esc_wolf_brother_1_text">
+		<text>Uratuj brata Wilka z niewoli</text>
+	</string>
+	<string id="esc_wolf_brother_2_name">
+		<text>Eskortuj brata Wilka do wioski nowicjuszy</text>
+	</string>
+	<string id="esc_wolf_brother_2_text">
+		<text>Eskortuj brata Wilka do wioski nowicjuszy</text>
+	</string>
+	<string id="esc_wolf_brother_3_name">
+		<text>Odbierz sw№ nagrodк</text>
+	</string>
+	<string id="esc_wolf_brother_3_text">
+		<text>Odbierz od Wilka sw№ nagrodк</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_name">
+		<text>Odszukaj informacje o wywaїeniu mechanizmu</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_text">
+		<text>Odszukaj informacje o zrуwnowaїeniu mechanizmu karabinu maszynowego dla Wana, technika stalkerуw z okolic Kordonu.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_name">
+		<text>Odszukaj informacje o mechanizmach pneumatycznych dla strzelb</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_text">
+		<text>Technik stalkerуw wykorzysta informacje o mechanizmach pneumatycznych do znacznego zwiкkszenia szybkostrzelnoњci strzelb.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_name">
+		<text>Odszukaj informacje o elektronicznej stabilizacji</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_text">
+		<text>Technik stalkerуw moїe przygotowaж urz№dzenie, ktуre zwiкkszy celnoњж strzelb pneumatycznych, ale brakuje mu pewnych informacji.</text>
+	</string>
+	<string id="esc_recover_item_1_name">
+		<text>Dostarcz "magiczn№" wуdkк</text>
+	</string>
+	<string id="esc_recover_item_1_text">
+		<text>W Zonie byі kiedyњ chemik. Znaczy nie byі tak naprawdк chemikiem, ale potrafiі przyrz№dziж "magiczn№" wуdkк. To byіo coњ wyj№tkowego - parк іykуw i zapominaіo siк o wszystkim: o Zonie, mutantach, anomaliach... Niczego juї siк nie baіeњ i nie obchodziіo ciк, kim jesteњ ani co siк z tob№ dzieje. Kosztowaіa cholernie drogo, ale i tak byіa tego warta. Niestety, pewnego dnia ktoњ otruі chemika - kto wie, czy z zazdroњci, czy z chciwoњci. Otruli go i to byі koniec tej wspaniaіej wуdy... Podobno jednak miaі w Zonie kilka schowkуw - wiem, gdzie szukaж jednego z nich. Dobrze ci zapіacк za flaszkк tego magicznego trunku!</text>
+	</string>
+	<string id="esc_recover_item_2_name">
+		<text>Przynieњ trofiejny AKM-47/2</text>
+	</string>
+	<string id="esc_recover_item_2_text">
+		<text>Zbieram rzadk№ broс; mam ich doњж, aby wypeіniж muzeum, ale wci№ї brakuje mi jednej - trofiejnego AKM-47/2. To nie tylko dobra spluwa, ale i rzadki orкї uїywany do mordowania mutantуw, ktуrych siк juї nie widuje. Podobno jego wіaњciciel byі wybitnym strzelcem - prawdziw№ legend№ Zony. Potrafiі siк wykaraskaж z kaїdej kabaіy i uciec z kaїdej anomalii... Od dіuїszego czasu nic o nim nie sіyszaіem, ale mam cynk co do jego spluwy: ukryto j№ w tajnym miejscu, do ktуrego nieіatwo siк dostaж. Przynieњ mi tк spluwк, najemniku.</text>
+	</string>
+	<string id="esc_recover_item_3_name">
+		<text>Zwrуж "fartowny" detektor</text>
+	</string>
+	<string id="esc_recover_item_3_text">
+		<text>Pomуї mi, najemniku. Kupiіem sobie niedawno nowy, potкїniejszy detektor, a stary wrzuciіem do anomalii. Problem w tym, їe nowy nie przynosi mi farta - od trzech tygodni nie znalazіem їadnego artefaktu. Ten nowy jest w porz№dku, ale wolк stary. Przynieњ mi go, a nie poїaіujesz.</text>
+	</string>
+	<string id="esc_recover_item_4_name">
+		<text>Dostarcz specjaln№ apteczkк</text>
+	</string>
+	<string id="esc_recover_item_4_text">
+		<text>Mуj stary kumpel zwiaі ostatnio bandytom na Wysypisku. Dranie kazali mu biec dla zabawy nasypem miкdzy anomaliami; dostaі dawkк promieniowania blisk№ њmiertelnej. Ledwie siк rusza, a normalne leki na niego nie dziaіaj№ - potrzebuje czegoњ mocniejszego. Podobno wojskowi maj№ specjalne apteczki na takie okazje, byіbym wymownie wdziкczny za dostarczenie mi czegoњ takiego.</text>
+	</string>
+</string_table>

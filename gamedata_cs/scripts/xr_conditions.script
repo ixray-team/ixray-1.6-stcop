@@ -433,7 +433,7 @@ end
 function is_alive_one(actor, npc, p)
 	local npc1
 	for i, v in pairs(p) do
-		npc1 = level_object_by_sid(v)
+		npc1 = alife():story_object(v)
 		if npc1 and IsStalker(npc1) and npc1:alive() then
 			return true
 		end
@@ -861,26 +861,26 @@ time_period(60:10) - возвращает true каждый час на протяжении первых 10 минут
 --]]
 function time_period(actor, npc, p)
 		local tshift, period = p[1], p[2]
-		if tshift ~= nil and period ~= nil and device().precache_frame > 1 then
+		if tshift ~= nil and period ~= nil and db.actor ~= nil then
 				return tshift > period and level.get_time_minutes() % tshift <= period
 		end
 		return false
 end
 
 function is_day (actor, npc)
-	return device().precache_frame > 1 and level.get_time_hours() >= 6 and level.get_time_hours() < 21
+	return db.actor ~= nil and level.get_time_hours() >= 6 and level.get_time_hours() < 21
 end
 
 function is_dark_night (actor, npc)
-	return device().precache_frame > 1 and (level.get_time_hours() < 3 or level.get_time_hours() > 22)
+	return db.actor ~= nil and (level.get_time_hours() < 3 or level.get_time_hours() > 22)
 end
 
 function is_arsenal_guard_rest_time (actor, npc)
-	return device().precache_frame > 1 and level.get_time_hours() > 3 and level.get_time_hours() < 5
+	return db.actor ~= nil and level.get_time_hours() > 3 and level.get_time_hours() < 5
 end
 
 function bar_no_sniper_time (actor, npc)
-	return device().precache_frame > 1 and level.get_time_hours() >= 5
+	return db.actor ~= nil and level.get_time_hours() >= 5
 end
 
 function mob_has_enemy(actor, npc)
@@ -1619,4 +1619,29 @@ function npc_stay_offline(actor, npc, p)
 				end
 		end
 	return false
+end
+
+
+function distance_to_obj_ge(actor, npc, p)
+	if p[1] and p[2] then
+		local obj = level_object_by_sid(p[1])
+		if obj and db.actor then
+			if type(p[2])~="number" then
+				return
+			end
+			return distance_between(obj, db.actor) >= p[2]
+		end
+	end
+end
+
+function distance_to_obj_le(actor, npc, p)
+	if p[1] and p[2] then
+		local obj = level_object_by_sid(p[1])
+		if obj and db.actor then
+			if type(p[2])~="number" then
+				return
+			end
+			return distance_between(obj, db.actor) <= p[2]
+		end
+	end
 end

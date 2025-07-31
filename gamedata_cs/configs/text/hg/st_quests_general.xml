@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hide_from_surge_name">
+		<text>Rejtхzz el, hogy elkerьld a kisugбrzбst!</text>
+	</string>
+	<string id="hide_from_surge_name2">
+		<text>Vбrj a kisugбrzбs vйgйig!</text>
+	</string>
+	<string id="hide_from_surge_text">
+		<text>Fuss a legkцzelebbi fedezйkhez, hogy elkerьld a kisugбrzбst!</text>
+	</string>
+	<string id="hide_from_surge_text1">
+		<text>Figyelem! Kisugбrzбs veszйly!!! Vбrhatу idх a kisugбrzбsig:</text>
+	</string>
+	<string id="hide_from_surge_text2">
+		<text>mбsodperc.</text>
+	</string>
+	<string id="sim_bring_item">
+		<text>Tбrgyak elvitele:</text>
+	</string>
+	<string id="sim_bring_item_text">
+		<text>Vidd el a felvett tбrgyakat az osztagparancsnoknak!</text>
+	</string>
+	<string id="sim_capture_smart">
+		<text>Foglald el!</text>
+	</string>
+	<string id="sim_capture_smart_text">
+		<text>Foglald el йs tartsd meg az adott objektumot!</text>
+	</string>
+	<string id="sim_capture_wait_smart">
+		<text>Tartsd a pozнciуt, amнg megйrkezik a segнtsйg!</text>
+	</string>
+	<string id="sim_defend_smart">
+		<text>Vйdd meg a tбbort!</text>
+	</string>
+	<string id="sim_defend_smart_delay">
+		<text>Segнts!</text>
+	</string>
+	<string id="sim_defend_smart_delay_text">
+		<text>Ellensйget йszleltek a tйrsйgben. Tбmadбs kцzeleg!</text>
+	</string>
+	<string id="sim_defend_smart_text">
+		<text>Az osztagot megtбmadta az ellensйg. Segнts az osztagnak visszaverni a tбmadбst!</text>
+	</string>
+	<string id="sim_eliminate_smart">
+		<text>Semmisнtsd meg az ellensйget!</text>
+	</string>
+	<string id="sim_eliminate_smart_text">
+		<text>Semmisнtsd meg az ellensйget a kontrollбllomбson!</text>
+	</string>
+	<string id="sim_find_upgrade">
+		<text>Talбld meg a fejlesztйst!</text>
+	</string>
+	<string id="sim_find_upgrade_consent">
+		<text>Megegyeztьnk?</text>
+	</string>
+	<string id="sim_recover_item">
+		<text>Tбrgy visszajuttatбsa:</text>
+	</string>
+	<string id="sim_repeal_counterattack">
+		<text>Verd vissza az ellensйg ellentбmadбsбt!</text>
+	</string>
+	<string id="sim_take_reward">
+		<text>Vedd fel a jutalmad!</text>
+	</string>
+	<string id="sim_take_reward_text">
+		<text>Felveheted a jutalmad a frakciу kereskedхjйnйl.</text>
+	</string>
+	<string id="st_sim_eliminate_path_smart">
+		<text>Tisztнtsd meg az utat!</text>
+	</string>
+	<string id="st_sim_eliminate_path_text">
+		<text>Segнts a szцvetsйges osztagnak az бtjutбsban!</text>
+	</string>
+	<string id="st_sim_eliminate_resource_smart">
+		<text>Semmisнtsd meg az ellensйget!</text>
+	</string>
+	<string id="st_sim_eliminate_resource_text">
+		<text>Ьldцzd el az ellensйget a terьletrхl! Az majd meggyengнti.</text>
+	</string>
+	<string id="test_storyline_task_text">
+		<text>Kцzelнtsd meg a csцvet!</text>
+	</string>
+	<string id="tm_random_task_bring_item">
+		<text>text in default</text>
+	</string>
+	<string id="stc_kill_gunslinger_name">
+		<text>Semmisнtsd meg Sztrelok pszichikus vйdelmйt!</text>
+	</string>
+	<string id="stc_kill_gunslinger_text">
+		<text>A pszichikus mezх erхssйge elviselhetetlenьl magas az бllomбson, de a prototнpus megvйdi Sztrelokot a pszichikus kisugбrzбsoktуl. A megsemmisнtйsйvel megбllнthatod Sztrelokot. Egy elektromбgneses puska elintйzheti a prototнpus elektronikбjбt. Hasznбld Sztrelokon, йs semmisнtsd meg a prototнpusбt!</text>
+	</string>
+	<string id="stc_kill_monolith_name">
+		<text>Keresd meg a teleportot, ami a hхvezetйkhez vezet!</text>
+	</string>
+	<string id="stc_kill_monolith_text">
+		<text>Az бllomбs kцrьlцtti terьleten elterjedtek a teleportok. Ahhoz, hogy tovбbb tьzelhess Sztrelokra, vissza kell tйrned a hхvezetйkhez! Keresd meg a teleportot, ami odavezet!</text>
+	</string>
+</string_table>

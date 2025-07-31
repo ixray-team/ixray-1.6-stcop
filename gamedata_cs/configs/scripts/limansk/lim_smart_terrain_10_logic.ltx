@@ -41,7 +41,8 @@ invulnerable = true
 combat_ignore_cond = true
 anim = threat
 target = actor
-on_game_timer = 10 | remark@greet_actor_work1 %=play_sound(lim_cs_reconnaissance_squad_alert:csky:st_ui_pda_legend_squad)%
+on_game_timer = 10 | remark@greet_actor_work1 %+lim_cs_recon_squad_alert =play_sound(lim_cs_reconnaissance_squad_alert:csky:st_ui_pda_legend_squad)%
+on_info = {+lim_cs_recon_squad_alert} remark@greet_actor_work1
 
 [remark@greet_actor_work1]
 danger = danger_condition
@@ -51,6 +52,7 @@ combat_ignore_cond = true
 anim = hello_wpn
 target = actor
 on_signal = sound_end | remark@greet_actor2_work1 %+lim_recon_squad_wait =play_sound(lim_cs_reconnaissance_squad_clear:csky:st_ui_pda_legend_squad)%
+on_info = {+lim_recon_squad_wait} remark@greet_actor2_work1
 
 [remark@greet_actor2_work1]
 danger = danger_condition
@@ -60,6 +62,7 @@ combat_ignore_cond = true
 anim = talk_default
 target = lim_smart_terrain_10_fire_target, 0
 on_signal = sound_end | patrol@enter_work1 %+lim_recon_squad_go_1%
+on_info = {+lim_recon_squad_go_1} patrol@enter_work1
 
 [patrol@enter_work1]
 danger = danger_condition
@@ -79,6 +82,7 @@ path_walk = hide_1_walk
 path_look = hide_1_walk
 def_state_moving = assault
 on_signal = action | smartcover@hide_work1 %=play_sound(lim_cs_reconnaissance_squad_order1:csky:st_ui_pda_legend_squad) +lim_recon_squad_order_1%
+on_info = {+lim_recon_squad_order_1} smartcover@hide_work1
 meet = no_meet
 
 [smartcover@order_work1]
@@ -92,10 +96,10 @@ meet = no_meet
 
 [smartcover@hide_work1]
 invulnerable = true
-combat_ignore_cond = true
+combat_ignore_cond = {=enemy_in_zone(lim_final_sniper_restr)}
 cover_name = lim_final_allyes_cover_2
-cover_state = idle_target
-on_info = {+lim_final_allyes_cover_fire} smartcover@fire_work1
+;cover_state = idle_target
+on_info = {+lim_final_allyes_cover_fire -lim_final_sniper_off} smartcover@fire_work1
 on_info2 = {+lim_final_sniper_fire_actor} smartcover@wait2_work1
 meet = no_meet
 
@@ -105,8 +109,8 @@ invulnerable = true
 cover_name = lim_final_allyes_cover_2
 cover_state = fire_target
 target_path = lim_smart_terrain_10_fire_target
-on_info = {-lim_final_allyes_cover_fire} smartcover@hide_work1
-on_info2 = {+lim_final_sniper_fire_actor} smartcover@wait2_work1 
+on_info = {-lim_final_allyes_cover_fire} smartcover@hide_work1, {+lim_final_sniper_off} smartcover@hide_work1
+on_info2 = {+lim_final_sniper_fire_actor} smartcover@wait2_work1
 meet = no_meet
 
 [smartcover@wait2_work1]

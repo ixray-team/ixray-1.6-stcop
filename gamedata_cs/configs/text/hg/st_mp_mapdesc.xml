@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="ui_map_desc_mp_agroprom_large">
+		<text>Furcsa egy hely. A nйma йpьlet szбmos titkot rejt magбban, de a stalkerek mйgsem emiatt, hanem a bхsйges szбmъ relikvia miatt jцnnek ide, amik ezen a nagyon kockбzatos, de nagyon jуl jцvedelmezх terьleten talбlhatуk. Gondolkodj, йs cselekedj gyorsan, akkor a szerencse biztosan a te oldaladra бll!</text>
+	</string>
+	<string id="ui_map_desc_mp_agroprom_short">
+		<text>Furcsa egy hely. A nйma йpьlet szбmos titkot rejt magбban, de a stalkerek mйgsem emiatt, hanem a bхsйges szбmъ relikvia miatt jцnnek ide, amik ezen a nagyon kockбzatos, de nagyon jуl jцvedelmezх terьleten talбlhatуk...</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_large">
+		<text>Egy buszбllomбs a Zуna bejбratбnбl, ahol a traktorok, buszok йs teherautуk egyszer s mindenkorra befejeztйk tevйkenysйgьket... Eddig mйg ugyan nem talбltak relikviбkat, de нgy is nйpszerы helynek szбmнt a tapasztalt stalkerek kцrйben, akik levadбsszбk, йs kiraboljбk az erre tйvedх ъjoncokat. Keress fedezйket az йpьletekben йs a jбrmыvek mцgцtt, йs vigyбzz a hбztetхkцn megbъvу ellensйggel!</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_short">
+		<text>Egy buszбllomбs a Zуna bejбratбnбl, ahol a traktorok, buszok йs teherautуk egyszer s mindenkorra befejeztйk tevйkenysйgьket...</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_large">
+		<text>Titokzatos, de egyben lebilincselх hely is. A medencйt valуszнnыleg azйrt йpнtettйk, hogy kнsйrletezzenek valakin vagy valamin, de pontos rendeltetйse mindцrцkkй rejtйly marad. Nincsenek relikviбk, ezйrt a stalkereket a fennmaradt bizarr szerkezetek йs eszkцzцk vonzzбk ide. Gondosan figyelj a hбztetхkre, йs ne feledkezz el a terьlet rendkнvьl magas sugбrzбsi szintjйrхl!</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_short">
+		<text>Titokzatos, de egyben lebilincselх hely is. A medencйt valуszнnыleg azйrt йpнtettйk, hogy kнsйrletezzenek valakin vagy valamin, de pontos rendeltetйse mindцrцkkй rejtйly marad.</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_large">
+		<text>A kietlen, elhagyatott gyбr szбmtalan stalker nyughelyйьl szolgбl. A lбtogatуkat minden lйpйsnйl anomбliбk valуsбgos hada fogadja, хk mйgis egyre csak jцnnek, hiszen mбgneskйnt vonzzбk хket a hely йrtйkes relikviбi. Vigyбzz a sugбrzбssal!</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_short">
+		<text>A kietlen, elhagyott gyбr szбmtalan stalker nyughelyйьl szolgбl.</text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_large">
+		<text>Egy hatalmas йs bыzlх szemйttelep rйsze, ahova a radioaktнv hulladйkot цntцttйk az 1986-os katasztrуfa utбn. Tцmve van rozoga darukkal йs kьlцnbцzх felszerelйsekkel. Helyi lбtvбnyossбgai kцzй tartoznak mйg rйgi, dьledezх йpьletek йs egy hatalmas hangбr. Kцzelsйge a Zуna bejбratбhoz йs bхsйgesnek mondhatу relikviбi idevonzzбk a kцnnyы zsбkmбnyokat kedvelх stalkereket.</text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_short">
+		<text>Egy hatalmas йs bыzlх szemйttelep rйsze, ahova a radioaktнv hulladйkot цntцttйk az 1986-os katasztrуfa utбn. Tцmve van rozoga darukkal йs kьlцnbцzх felszerelйsekkel.</text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_large">
+		<text>A Zуna mйlyйn fekvх, lakatlan, istentхl elhagyatott falu, йs a szбmtalan jбrmыroncsnak otthont adу aprу, sekйlyes, vцrцses szнnы tу tudatalatti fйlelmet йbreszt az emberben a Zуna valуsбgбval szemben. Vigyбzz az orvlцvйszekkel, de ne feledd, a Zуna a bбtraknak kedvez!</text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_short">
+		<text>A Zуna mйlyйn fekvх, lakatlan, istentхl elhagyatott falu, йs a szбmtalan jбrmыroncsnak otthont adу aprу, sekйlyes, vцrцses szнnы tу tudatalatti fйlelmet йbreszt az emberben a Zуna valуsбgбval szemben.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_large">
+		<text>Egy elhagyatott katonai bбzis lerobbant teherautуkkal йs csapatszбllнtу jбrmыvekkel, dьledezх fхhadiszбllбssal йs kaszбrnyбkkal. A kietlensйg azonban megtйvesztх. A hely egy igazi relikvia aranybбnya, ami azt jelenti, hogy az ellensйg ott leselkedhet bбrmelyik sarokban. Mutasd meg nekik, hogy te vagy a legjobb!</text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_short">
+		<text>Egy elhagyatott katonai bбzis lerobbant teherautуkkal йs csapatszбllнtу jбrmыvekkel, dьledezх fхhadiszбllбssal йs kaszбrnyбkkal.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_large">
+		<text>Az цreg falucska igazбn vйszjуslу hely. Ha elйg bбtor vagy hozzб, hogy ide gyere, kйszьlj fel, hogy ьdvцzlйskйnt megprуbбlnak majd golyуt repнteni a fejedbe! Itt nincsenek biztonsбgos helyek, ъgyhogy tartsd magadnбl a tбvcsцved йs a hangtompнtуd!</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_short">
+		<text>Az цreg falucska igazбn vйszjуslу hely. Ha elйg bбtor vagy hozzб, hogy ide gyere, kйszьlj fel, hogy ьdvцzlйskйnt megprуbбlnak majd golyуt repнteni a fejedbe!</text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_large">
+		<text>Pripjat, a vбros, amely valaha az atomerхmы dolgozуinak otthonбul szolgбlt, illetve, ami maradt belхle. Elmondhatatlan veszйlyek leselkednek az ipari telep romjai kцzцtt, ъgyhogy mindig lйgy rйsen!</text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_short">
+		<text>Pripjat vбrosбt, amely az atomerхmыtхl nem messze fekszik, Csernobil цrцksйgйnek tartjбk.</text>
+	</string>
+	<string id="ui_map_desc_mp_railraod_short">
+		<text>Egy aprу vasъtбllomбs a rosztoki gyбr kцzelйben.</text>
+	</string>
+	<string id="ui_map_desc_mp_railroad_large">
+		<text>Egy aprу vasъtбllomбs a rosztoki gyбr kцzelйben, amely tцmve van forgalombуl kivont, rozsdбs sнnautуkkal йs mozdonyokkal. Relikviбinak sokasбga a Zуna minden szegletйbхl idecsalogatja a vakmerх stalkereket.</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_large">
+		<text>A fйmmel йs betonnal elбrasztott gyбrban kьlцnцs csend uralkodik. Bezzeg a mъlt szбzadban бllandу nyьzsgйs volt, a munkбsok siettek a kцvetkezх mыszakukra, mikцzben a hangszуrуkbуl szovjet jelmondatok visszhangzottak... De ez mбr a mъltй, a gyбr pedig kihalt.</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_short">
+		<text>A fйmmel йs betonnal elбrasztott, elhagyatott gyбrban kьlцnцs csend uralkodik.</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_large">
+		<text>A rosztoki gyбr pereme volt, mielхtt a Szolgбlat letelepedett volna. Titokzatos йs relikviбkban gazdag hely, ahol minden ьres hangбrban йs raktбrban halбlos veszedelmek rejtхznek. Lйgy nagyon уvatos, йs egy pillanatra se veszнtsd szem elхl a fehйr tornyot...</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_short">
+		<text>A rosztoki gyбr pereme volt, mielхtt a Szolgбlat letelepedett volna. Titokzatos йs relikviбkban gazdag hely.</text>
+	</string>
+	<string id="ui_map_desc_mp_autostation_large">
+		<text>Elhagyatott raktбrйpьlet, йs hatбrvidйk. Ha elйggй figyelsz, mйg felszerelйseket йs kйszleteket is talбlhatsz. Vigyбzz az erхs anomбliбkkal йs a lцvйszekkel a raktбrйpьlet tetejйn, ahonnan kivбlу rбlбtбs nyнlik majdnem minden odavezetх ъtra!</text>
+	</string>
+	<string id="ui_map_desc_mp_autostation_short">
+		<text>Elhagyatott raktбrйpьlet, йs hatбrvidйk. Vigyбzz az erхs anomбliбkkal йs a lцvйszekkel!</text>
+	</string>
+	<string id="ui_map_desc_mp_firestation_large">
+		<text>A tыzoltубllomбs, amelynek a teljes бllomбnyбt kivezйnyeltйk az 1986-os Csernobili Atomerхmы incidensekor. A torony kivбlу pozнciу, ahonnan rбlбtni az egйsz kцrnyйkre. Csak nagyon kevesek merйszkednek az йpьletek felsхbb emeleteire йs az alagsoraiba, de ez talбn нgy is a legjobb. A Zуna frakciуi az utуbbi idхben egymбs torkбnak estek. A legfontosabb stratйgiai pozнciуkйrt folyik a harc.</text>
+	</string>
+	<string id="ui_map_desc_mp_firestation_short">
+		<text>A tыzoltубllomбs, amelynek a teljes бllomбnyбt kivezйnyeltйk az 1986-os Csernobili Atomerхmы incidensekor. A torony kivбlу pozнciу...</text>
+	</string>
+	<string id="ui_map_desc_mp_limansk_large">
+		<text>Limanszk titokzatos vбrosбnak aprу kis kerьlete. Elhagyatott lakуhбzak, йs kцzцttьk egy fйlig felйpнtett lйtesнtmйny. Amikor egymбs utбn tцbb йrtйkes relikviбt is talбltak itt, a hнre tъl gyorsan szйtterjedt az egйsz Zуnбban. Megnyitottak nйhбny Limanszkba vezetх utat, azуta pedig egy percre sem maradnak abba a harcok.</text>
+	</string>
+	<string id="ui_map_desc_mp_limansk_short">
+		<text>Limanszk titokzatos vбrosбnak aprу kis kerьlete. Elhagyatott lakуhбzak, йs kцzцttьk egy fйlig felйpнtett lйtesнtmйny.</text>
+	</string>
+	<string id="ui_map_desc_mp_pool_large">
+		<text>Ez nem medence, sokkal inkбbb egy vйrfьrdх! Golyуk visszhangja, robbanбsok йs a haldoklуk ьvцltйse tцltik be csempйzett folyosуit... Kevйs stalker ismeri az ide vezetх utat, de mйg kevesebb tudja, hogy kell kijutni innen!</text>
+	</string>
+	<string id="ui_map_desc_mp_pool_short">
+		<text>Ez nem medence, sokkal inkбbb egy vйrfьrdх! Golyуk visszhangja, robbanбsok йs a haldoklуk ьvцltйse tцltik be csempйzett folyosуit...</text>
+	</string>
+	<string id="ui_map_desc_mp_rembasa_large">
+		<text>Egy javнtуbбzis egy aprу falu szomszйdsбgбban. Annak idejйn minden mozgathatу jбrmыvet elvittek, hogy megbirkуzzanak Csernobil utуhatбsaival. Idхvel aztбn a hбtramaradt felszerelйseket is бtkutattбk pуtalkatrйszek utбn. A terьleten szбmtalan veszйly leselkedik, ъgymint a mocsarak vagy a szennyezett nбdasok, ahol, ha szerencsйs vagy, valami igazбn йrtйkeset is talбlhatsz.</text>
+	</string>
+	<string id="ui_map_desc_mp_rembasa_short">
+		<text>Egy javнtуbбzis egy aprу falu szomszйdsбgбban. A terьleten szбmtalan veszйly leselkedik, ъgymint a mocsarak vagy a szennyezett nбdasok йs mйg hasonlуk.</text>
+	</string>
+	<string id="ui_map_desc_mp_sport_center_large">
+		<text>Egy sportkцzpont Pripjatban, nem messze az elhagyatott iskolбtуl. 1986 уta alaposan megvбltoztak az itt gyakorolt sportбgak, a gyakorlбsra hajlandу nebulуk szбmбrуl mбr nem is beszйlve. A bizonytalan hнrnйv, a zsбkmбny йs a relikviбk vonzzбk ide a stalkereket... akik olykor itt is maradnak, цrцkre.</text>
+	</string>
+	<string id="ui_map_desc_mp_sport_center_short">
+		<text>Egy sportkцzpont Pripjatban, nem messze az elhagyatott iskolбtуl.</text>
+	</string>
+	<string id="ui_map_desc_mp_darkvalley_large">
+		<text>Az egyetlen lбtvбnyossбg, ami megmaradt Sцtйtvцlgy veszйlyekkel teli, baljуs terьletйn, egy hosszъ utca йs egy elhagyatott iskola. Pontosan mйg mindig nem lehet tudni, hogy mit is tanнtottak ott, de most az egyetlen, amit elsajбtнthatsz, az a tъlйlйs. У igen!.. Lйgy nagyon уvatos a tetхkцn!</text>
+	</string>
+	<string id="ui_map_desc_mp_darkvalley_short">
+		<text>Az egyetlen lбtvбnyossбg, ami megmaradt Sцtйtvцlgy veszйlyekkel teli, baljуs terьletйn, egy hosszъ utca йs egy elhagyatott iskola...</text>
+	</string>
+	<string id="mp_autostation">
+		<text>Elhagyatott raktбrйpьlet</text>
+	</string>
+	<string id="ui_map_desc_mp_training_camp_short">
+		<text>Kьlцnцs hely. A gravitбciуs anomбliбk teljesen szйtszaggattбk a fцldet, holdbйlivй varбzsolva a tбjat...</text>
+	</string>
+	<string id="ui_map_desc_mp_training_camp_large">
+		<text>Kьlцnцs hely. Sok stalker бllнtja, hogy lбtta mбr, йs mindьkцn nevetnek csupбn - a hely mйgis lйtezik. A gravitбciуs anomбliбk teljesen szйtszaggattбk a fцldet, holdbbйlivй varбzsolva a tбjat. A terьletet hбrom hatalmas torony uralja; a rйgi idхk hadviselйsйnek hбrom lebegх, fцldbхl kitйpett maradvбnya.</text>
+	</string>
+</string_table>

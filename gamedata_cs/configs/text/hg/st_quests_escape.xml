@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_additional_quest_1_name">
+		<text>Dokumentumok a katonai bбzison.</text>
+	</string>
+	<string id="esc_additional_quest_1_text">
+		<text>Dokumentumok a katonai bбzison.</text>
+	</string>
+	<string id="esc_additional_quest_2_name">
+		<text>Йtel.</text>
+	</string>
+	<string id="esc_additional_quest_2_text">
+		<text>Йtel.</text>
+	</string>
+	<string id="esc_bring_habar">
+		<text>Vidd vissza a kereskedхnek a zsбkmбnyt!</text>
+	</string>
+	<string id="esc_bring_habar_text">
+		<text>Vidd vissza a kereskedхnek a tбskбt a zsбkmбnnyal!</text>
+	</string>
+	<string id="esc_defend_stalkers_base_name">
+		<text>Vйdd meg a stalker bбzist!</text>
+	</string>
+	<string id="esc_defend_stalkers_base_text">
+		<text>Vйdd meg a stalker bбzist a tбmadбs ellen!</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_name">
+		<text>Vйdd meg az хrjбratot!</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_text">
+		<text>Vйdd meg az хrjбratot a buszmegбllу kцzelйben!</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_name">
+		<text>Segнts visszaverni a tбmadбst!</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_text">
+		<text>Segнts visszaverni a tбmadбst!</text>
+	</string>
+	<string id="esc_dopros">
+		<text>Hallgasd ki a hadsereg parancsnokбt!</text>
+	</string>
+	<string id="esc_dopros_text">
+		<text>Hallgasd ki Kaletszkijt, йs derнtsd ki, hogy hova rejtette el a tбskбt a zsбkmбnnyal, amit a kereskedх kйrt!</text>
+	</string>
+	<string id="esc_driver_friend_1_name">
+		<text>Keresd meg a PDA-t!</text>
+	</string>
+	<string id="esc_driver_friend_1_text">
+		<text>Keresd meg a PDA-t, ami az anomбliбban meghalt katonбrуl tartalmaz йrtйkes informбciуkat!</text>
+	</string>
+	<string id="esc_driver_friend_2_name">
+		<text>Vidd vissza a PDA-t!</text>
+	</string>
+	<string id="esc_driver_friend_2_text">
+		<text>Vidd vissza a PDA-t Avicskin хrnagynak!</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9">
+		<text>Intйzd el a katonбkat a liftnйl!</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9_text">
+		<text>Intйzd el a felderнtхk бltal jelentett katonai egysйget a liftnйl!</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_name">
+		<text>Vйgezz a fosztogatуkkal!</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_name">
+		<text>Vedd fel a jutalmad!</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_text">
+		<text>Vedd fel a jutalmad a kereskedхnйl! A fosztogatуk meghaltak, a bбzishoz vezetх ъt tiszta.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_text">
+		<text>Intйzd el a fosztogatуkat az elhagyatott tanyбn! Ez majd megakadбlyozza, hogy meglopjбk a stalkereket, akik a Zуnбbуl szerzett zsбkmбnyukat viszik a stalker bбzisra.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11">
+		<text>Intйzd el a katonбkat a raktбrйpьletben!</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11_text">
+		<text>Intйzd el a felderнtхk бltal jelentett katonai egysйget a raktбrйpьletben! Хket kьldtйk, hogy kiszabadнtsбk Kaletszkijt.</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8">
+		<text>Цld meg a mesterlцvйszeket!</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8_text">
+		<text>Цld meg a mesterlцvйszeket!</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7">
+		<text>Foglald el a stalker bбzist!</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7_text">
+		<text>Foglald el a stalker bбzist!</text>
+	</string>
+	<string id="esc_find_upgrade_1_name">
+		<text>Keresd meg a fejlesztйst!</text>
+	</string>
+	<string id="esc_find_upgrade_1_text">
+		<text>Az egyik technikus barбtom elkьldцtt hozzбm egy fickуt, aki flash meghajtуn йrtйkes informбciуkat hozott volna egy AK fejlesztйsrхl. Бm a kьldцnc ъtkцzben pszeudokutyбk odъjбba sйtбlt, йs meghalt. Bбrkit is kйrtem, hogy hozza el a flash meghajtуt, mindenki kibъjt alуla. Йs mi van veled? Нgйrem, a jutalom megйri a fбradtsбgot!</text>
+	</string>
+	<string id="esc_find_upgrade_2_name">
+		<text>Keresd meg a fejlesztйst!</text>
+	</string>
+	<string id="esc_find_upgrade_2_text">
+		<text>Az egyik technikus barбtom elkьldцtt hozzбm egy fickуt, aki flash meghajtуn йrtйkes informбciуkat hozott volna egy sцrйtes puska fejlesztйsrхl. Бm a kьldцnc ъtkцzben pszeudokutyбk odъjбba sйtбlt, йs meghalt. Bбrkit is kйrtem, hogy hozza el a flash meghajtуt, mindenki kibъjt alуla. Йs mi van veled? Нgйrem, a jutalom megйri a fбradtsбgot!</text>
+	</string>
+	<string id="esc_novice_stalker_1_name">
+		<text>Segнts a stalkernek!</text>
+	</string>
+	<string id="esc_novice_stalker_1_text">
+		<text>Segнts a stalkernek megцlni a vak kutyбkat!</text>
+	</string>
+	<string id="esc_novice_stalker_2_name">
+		<text>Kнsйrd el a stalkert!</text>
+	</string>
+	<string id="esc_novice_stalker_2_text">
+		<text>Kнsйrd el a stalkert Kopaszfaluba!</text>
+	</string>
+	<string id="esc_novice_stalker_3_name">
+		<text>Vedd fel a jutalmad!</text>
+	</string>
+	<string id="esc_novice_stalker_3_text">
+		<text>Vedd fel a jutalmad Farkastуl, amiйrt megmentetted a stalkert a vak kutyбktуl!</text>
+	</string>
+	<string id="esc_prapor">
+		<text>Talбlkozz a zбszlуssal!</text>
+	</string>
+	<string id="esc_prapor_text">
+		<text>Talбlkozz a zбszlуssal!</text>
+	</string>
+	<string id="esc_reach_garbage">
+		<text>Talбlkozz az бsatуval a Szemйtdombon!</text>
+	</string>
+	<string id="esc_reach_garbage_text">
+		<text>Talбlkozz az бsatуval a Szemйtdombon!</text>
+	</string>
+	<string id="esc_reach_stalker_base">
+		<text>Talбlkozz a stalkerekkel a parton tъl!</text>
+	</string>
+	<string id="esc_reach_stalker_base_text">
+		<text>Beszйlj Valerjannal, a stalker vezetхvel! Х talбn tudja, milyen zsбkmбny utбn kutat Szidorovics!</text>
+	</string>
+	<string id="esc_reach_trader">
+		<text>Beszйlj a kereskedхvel!</text>
+	</string>
+	<string id="esc_reach_trader_text">
+		<text>Beszйlj a kereskedхvel!</text>
+	</string>
+	<string id="esc_rescue_patrol">
+		<text>Segнts a stalkereknek!</text>
+	</string>
+	<string id="esc_rescue_patrol_text">
+		<text>Segнts a stalkereknek!</text>
+	</string>
+	<string id="esc_stalker_enemy_name">
+		<text>Nyerd vissza a stalkerek bizalmбt!</text>
+	</string>
+	<string id="esc_stalker_enemy_text">
+		<text>A viszonyod teljesen megromlott a stalkerekkel. Vissza kell nyerned a bizalmukat Szidorovics segнtsйgйvel!</text>
+	</string>
+	<string id="esc_take_habar">
+		<text>Szerezd meg a zsбkmбnyt!</text>
+	</string>
+	<string id="esc_take_habar_text">
+		<text>Szerezd meg a zsбkmбnyt!</text>
+	</string>
+	<string id="esc_take_prisoner_secret">
+		<text>Keresd meg Kaletszkij kйszletйt!</text>
+	</string>
+	<string id="esc_take_prisoner_secret_text">
+		<text>Keresd meg Kaletszkij kйszletйt!</text>
+	</string>
+	<string id="esc_take_weapon_name">
+		<text>Szerezd meg a fegyvereket!</text>
+	</string>
+	<string id="esc_take_weapon_text">
+		<text>Szerezd meg a fegyvereket!</text>
+	</string>
+	<string id="esc_talk2_comm">
+		<text>Beszйlj Kaletszkijjel!</text>
+	</string>
+	<string id="esc_talk2_comm_text">
+		<text>Beszйlj Kaletszkijjel!</text>
+	</string>
+	<string id="esc_talk2_leader">
+		<text>Talбlkozz a stalker vezetхvel!</text>
+	</string>
+	<string id="esc_talk2_leader_2">
+		<text>Beszйlj a stalker vezetхvel!</text>
+	</string>
+	<string id="esc_talk2_leader_2_text">
+		<text>Beszйlj a stalker vezetхvel!</text>
+	</string>
+	<string id="esc_talk2_leader_text">
+		<text>Talбlkozz a stalker vezetхvel!</text>
+	</string>
+	<string id="esc_talk2_trader">
+		<text>Beszйlj a kereskedхvel!</text>
+	</string>
+	<string id="esc_wolf_brother_1_name">
+		<text>Szabadнtsd ki Farkas testvйrйt a fogsбgbуl!</text>
+	</string>
+	<string id="esc_wolf_brother_1_text">
+		<text>Szabadнtsd ki Farkas testvйrйt a fogsбgbуl!</text>
+	</string>
+	<string id="esc_wolf_brother_2_name">
+		<text>Kнsйrd el Farkas testvйrйt Kopaszfaluba!</text>
+	</string>
+	<string id="esc_wolf_brother_2_text">
+		<text>Kнsйrd el Farkas testvйrйt Kopaszfaluba!</text>
+	</string>
+	<string id="esc_wolf_brother_3_name">
+		<text>Vedd fel a jutalmad!</text>
+	</string>
+	<string id="esc_wolf_brother_3_text">
+		<text>Vedd fel a jutalmad Farkasnбl!</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_name">
+		<text>Keress informбciуkat az automatizбlt alkatrйszek kiegyensъlyozбsбrуl!</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_text">
+		<text>Keress informбciуkat az automatizбlt alkatrйszek kiegyensъlyozбsбrуl Furgonnak, a Kordon kцzelйben levх stalker technikusnak!</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_name">
+		<text>Keress informбciуkat a sцrйtes puskбk pumpбlу mechanizmusбrуl!</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_text">
+		<text>A pumpбlу mechanizmusrуl szerzett informбciуkkal, a stalker technikus kйpes lenne jelentхsen megnцvelni a sцrйtes puskбk tыzgyorsasбgбt.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_name">
+		<text>Keress informбciуkat az elektronikus stabilizбciуrуl!</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_text">
+		<text>A stalker technikus цssze tudna бllнtani egy eszkцzt, ami megnцvelnй a pumpбs sцrйtes puska pontossбgбt, de hiбnyoznak mйg hozzб bizonyos informбciуk.</text>
+	</string>
+	<string id="esc_recover_item_1_name">
+		<text>Szerezd meg a "mбgikus" vodkбt!</text>
+	</string>
+	<string id="esc_recover_item_1_text">
+		<text>Volt egyszer egy vegyйsz itt a Zуnбban. Igazбbуl nem is volt kйmikus, de kйszнtett egy "mбgikus" vodkбt. Azt nevezem йn piбnak... Nйhбny hцrpintйs utбn mindent elfelejtettйl: a Zуnбt, a mutбnsokat, az anomбliбkat, mindent! Eltыnnek a fйlelmeid, йs le se szarod, hogy ki vagy йs mi tцrtйnik veled. Mйg a borsos бra mellett is, amiйrt mйrtйk, bхven megйrte. Szуval, egy nap valakik ъgy dцntцtt, hogy irigysйgbхl vagy kapzsisбgbуl, ki tudja, megmйrgezi a vegyйszt. Sikerьlt is neki, ezzel pedig megszыnt a vodka utбnpуtlбs... Viszont a kйmikusnak vannak kйszletei a Zуnбban, йs egyet tudok is hol van. Hozz egy ьveggel abbуl a mбgikus piбbуl, йs nem marad el a jutalmad!</text>
+	</string>
+	<string id="esc_recover_item_2_name">
+		<text>Vidd vissza az AKM-47/2-es trуfeбt!</text>
+	</string>
+	<string id="esc_recover_item_2_text">
+		<text>Ritka fegyvereket gyыjtцk, pajtбs. Lassan annyi van, hogy megtцlthetnйk velьk egy mъzeumot, de mйg hiбnyzik valami, egy AKM-47/2-es trуfea. Az az AK kivбlу fegyver, йs igazi kuriуzum, amivel soha nem lбtott mуdon lehetett irtani a mutбnsokat. Ъgy hallottam, hogy a tulajdonosa nemcsak kivбlу lцvйsz, de igazi legenda is volt a Zуnбban, aki bбrmilyen bajbуl йs anomбliбbуl kikecmergett... Magбrуl a stalkerrхl mбr jу ideje nem hallottam semmit, de a fegyverrхl annбl inkбbb. Elrejtettйk valahova, йs nem egyszerы eljutni oda. Hozd el nekem azt a fegyvert, zsoldos!</text>
+	</string>
+	<string id="esc_recover_item_3_name">
+		<text>Vidd vissza a "mбzlis" detektort!</text>
+	</string>
+	<string id="esc_recover_item_3_text">
+		<text>Segнts ki, zsoldos! Nemrйg vettem egy ъj, mйg erхsebb detektort, a rйgit pedig цrцmцmben behajнtottam egy anomбliбba. A helyzet az, hogy egyszerыen nincs szerencsйm ezzel az ъj detektorral. Mбr hбrom hete nem talбltam egy relikviбt sem. Gondolom, nincs semmi az ъjjal sem, de vissza szeretnйm kapni a rйgit. Hozd el nekem, йs нgйrem, nem bбnod meg!</text>
+	</string>
+	<string id="esc_recover_item_4_name">
+		<text>Hozz el egy speciбlis elsхsegйlycsomagot!</text>
+	</string>
+	<string id="esc_recover_item_4_text">
+		<text>Zsoldos, egy rйgi cimborбm nemrйg meglйpett a fosztogatуk elхl a Szemйtdombban. Azok az бtkozottak szуrakozбsbуl бtkergettйk az anomбliбkon az бrokparton. A sugбrzбs kцzel halбlos azon a kцrnyйken. Mostanra alig tud mozogni, a normбlis gyуgyszerek pedig nem segнtenek. Valami erхsebbre van szьksйge. Ъgy hallottam, hogy a hadsereg speciбlis elsхsegйlycsomagjai megfelelnйnek, szуval, ha tudnбl szerezni egyet, vйgtelenьl hбlбsak lennйnk!</text>
+	</string>
+</string_table>

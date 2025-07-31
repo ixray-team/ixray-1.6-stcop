@@ -15,6 +15,8 @@
 	<info_portion id="val_freedom_join_enemy_wait"></info_portion>
 
     <info_portion id="val_test"></info_portion>
+
+	<info_portion id="val_joined_freedom"></info_portion>
   
     <info_portion id="val_freedom_leader_ded"></info_portion>
   

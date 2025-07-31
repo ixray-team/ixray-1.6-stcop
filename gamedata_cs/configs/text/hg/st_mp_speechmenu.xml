@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="speech_attack">
+		<text>Mindenki, tбmadбs!</text>
+	</string>
+	<string id="speech_covermeartifact">
+		<text>Megszerzem a relikviбt! Fedezzetek!</text>
+	</string>
+	<string id="speech_followme">
+		<text>Kцvessetek!</text>
+	</string>
+	<string id="speech_guardartifact">
+		<text>Хrzцm a relikviбt! Senki se tбmadjon!</text>
+	</string>
+	<string id="speech_holdingpos">
+		<text>Nem mozdulok!</text>
+	</string>
+	<string id="speech_holdpos">
+		<text>Maradjatok a helyeteken!</text>
+	</string>
+	<string id="speech_icoverartifact">
+		<text>Szerezzйtek meg a relikviбt! Fedezlek titeket!</text>
+	</string>
+	<string id="speech_needhelp">
+		<text>Segнtsйgre van szьksйgem!</text>
+	</string>
+	<string id="speech_needmoney">
+		<text>Elfogyott a pйnz, vegyetek tцbb felszerelйst!</text>
+	</string>
+	<string id="speech_no">
+		<text>Nem</text>
+	</string>
+	<string id="speech_noenemy">
+		<text>Senkit sem lбtni!</text>
+	</string>
+	<string id="speech_report">
+		<text>Jelentйst, most!</text>
+	</string>
+	<string id="speech_retreat">
+		<text>Visszavonulбs!</text>
+	</string>
+	<string id="speech_returntheartefact">
+		<text>Vigyйtek a relikviбt!</text>
+	</string>
+	<string id="speech_roger">
+		<text>Vettem!</text>
+	</string>
+	<string id="speech_silence">
+		<text>Pofa be!</text>
+	</string>
+	<string id="speech_sticktogether">
+		<text>Maradjatok egyьtt!</text>
+	</string>
+	<string id="speech_takeartifact">
+		<text>Szerezzйtek meg a relikviбt!</text>
+	</string>
+</string_table>

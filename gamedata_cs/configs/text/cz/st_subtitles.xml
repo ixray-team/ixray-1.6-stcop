@@ -1,0 +1,3081 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_agr_stalker_leader_tip">
+		<text>Ћoldбku, tohle je Orest, vщdce mнstnнch stalkerщ. Kdyby sis chtмl promluvil, zajdi za mnou do prvnнho patra hlavnн budovy.</text>
+	</string>
+	<string id="st_gar_bandit_lager_warning">
+		<text>Hej, ty tam! Nepovolanэm vstup zakбzбn, tohle je naљe ъzemн. Stшнlнme bez varovбnн!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_come_1">
+		<text>Heh! Teп jim nakopeme prdel!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_come_2">
+		<text>Uf! Teп uћ by to mмlo bэt lehин!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_come_3">
+		<text>Dнky, kбmo! Teп je sundбme!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_help_1">
+		<text>Sakra, tys nбs vytбhl z pмknэho prщseru. Stav se nмkdy na zбkladnм, dostaneљ odmмnu!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_help_2">
+		<text>Dнky, kбmo! Stav se nмkdy na naљн zбkladnм, odvdминme se ti!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_help_3">
+		<text>Tisнcerй dнky! Aћ budeљ pшнљtм poblнћ, stav se v naљн zбkladnм, dostaneљ odmмnu!</text>
+	</string>
+	<string id="stalker_alife_defence_end_defence_1">
+		<text>To je nauин nestrkat rypбk na mнsta, kam nejsou zvanэ!</text>
+	</string>
+	<string id="stalker_alife_defence_end_defence_2">
+		<text>Dнky bohu, odrazili jsme je!</text>
+	</string>
+	<string id="stalker_alife_defence_end_defence_3">
+		<text>Dнky bohu, odrazili jsme je!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_bandit_1">
+		<text>Banditi nбm jdou po krku, pomoћ nбm, chlape!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_csky_1">
+		<text>Bojujeme s tмma hajzlama z Jasnэ oblohy! Pomoz nбm a my se ti odvмdинme!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_dolg_1">
+		<text>Povinnost zmagoшila a jde po nбs! Pomoz nбm, nebo je po nбs!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_freedom_1">
+		<text>Hej, stalkere! Svoboda se nбs snaћн osvobodit! Co kdybys nбm pomohl dбt jim lekci?</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_military_1">
+		<text>Pomoc! Armбda se snaћн vyhubit stalkery!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_mutant_1">
+		<text>Jsme tady aћ po krk v pшнљerбch, vole! Pomoc!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_zombied_1">
+		<text>Vole, musнљ nбm pomoct pozabнjet ty zombбky!</text>
+	</string>
+	<string id="stalker_alife_defence_wait_help_1">
+		<text>Zabнjejн naљe chlapy! Kde seљ?!</text>
+	</string>
+	<string id="stalker_alife_defence_wait_help_2">
+		<text>Neudrћнme je! Pohni sebou!</text>
+	</string>
+	<string id="stalker_alife_defence_wait_help_3">
+		<text>Brzo bude pozdм! Pomoz nбm!</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_1">
+		<text>...Co se stalo? Ozvi se. Slyљнљ mм?...</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_2">
+		<text>...Chlapi, co se tam dмje?...</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_3">
+		<text>...Je tam nмkdo ћivej? Ozvмte se!...</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_4">
+		<text>...Slyљнљ mм?... tady....</text>
+	</string>
+	<string id="stalker_alife_counter_attack_counter_attack_begin_1">
+		<text>Naљe jednotka neodpovнdб. Jdмte k nim, moћnб budou potшebovat pomoc.</text>
+	</string>
+	<string id="stalker_alife_counter_attack_counter_attack_begin_2">
+		<text>Nemщћeme navбzat spojenн s naљн partou. Bмћte se podнvat, jak to s nima vypadб.</text>
+	</string>
+	<string id="stalker_alife_counter_attack_counter_attack_begin_3">
+		<text>Naљi chlapi se nмkde ztratili. Dejte dohromady partu a jdмte se po nich podнvat.</text>
+	</string>
+	<string id="stalker_alife_counter_attack_reply_1">
+		<text>Pщjdeme se podнvat, co se dмje.</text>
+	</string>
+	<string id="stalker_alife_counter_attack_reply_2">
+		<text>Rozumнm! </text>
+	</string>
+	<string id="stalker_alife_counter_attack_reply_3">
+		<text>Vsadнm se, ћe jsou v pohodм. Ale jo, zkontrolujem to.</text>
+	</string>
+	<string id="stalker_alife_attack_actor_in_battle_1">
+		<text>Konec hry, srбиi!</text>
+	</string>
+	<string id="stalker_alife_attack_actor_in_battle_2">
+		<text>Krejte mм, chlapi, jdu na to!</text>
+	</string>
+	<string id="stalker_alife_attack_actor_in_battle_3">
+		<text>Teп to bude nмkoho bolet!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_begin_1">
+		<text>Vљichni pшipravenэ? Pohyb!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_begin_2">
+		<text>No tak, je иas vyrazit a zahrбt si na hrdiny!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_begin_3">
+		<text>Pшipravte se! Pohyb lidi!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_ready_1">
+		<text>Pшipravte se na akci! Rozptylte se!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_ready_2">
+		<text>Rozptylte se, chlapi! Vyrazнme!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_ready_3">
+		<text>Rozptylte se a zaujmмte pozice!</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_1">
+		<text>Sakra, zrovna jsem si chtмl zdшнmnout...</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_2">
+		<text>Co? Ale ne, uћ zase!...</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_3">
+		<text>Ћe mм matka vщbec porodila...</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_4">
+		<text>Copak mм sakra ani nenechбte naћrat?!</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_5">
+		<text>Dobшe mi radili, kdyћ mi шнkali, ћe nemбm do Zуny strkat rypбk...</text>
+	</string>
+	<string id="stalker_alife_attack_end_fight_1">
+		<text>Copak? Jб se prбvм rozehшнval.</text>
+	</string>
+	<string id="stalker_alife_attack_end_fight_2">
+		<text>Uf, mщћete povolit svмraиe! Uћ je konec!</text>
+	</string>
+	<string id="stalker_alife_attack_end_fight_3">
+		<text>Jsme nejlepљн, chlapi! Nandali jsme jim to!</text>
+	</string>
+	<string id="stalker_alife_attack_found_enemy_1">
+		<text>Mмli bychom si udмlat poшбdnou oslavu. Kdo mб chuќ?</text>
+	</string>
+	<string id="stalker_alife_attack_found_enemy_2">
+		<text>Nepшнtel. Za chvнli zaиneme!</text>
+	</string>
+	<string id="stalker_alife_attack_found_enemy_3">
+		<text>Vidнme nepшнtele. Pшipravte se na akci...</text>
+	</string>
+	<string id="stalker_alife_attack_prepare_attack_1">
+		<text>Pamatujte: stшнlet jen na mщj rozkaz!</text>
+	</string>
+	<string id="stalker_alife_attack_prepare_attack_2">
+		<text>Pшipravit. Stшнlet na mщj signбl!</text>
+	</string>
+	<string id="stalker_alife_attack_prepare_attack_3">
+		<text>Mнт iniciativy! Иekejte na rozkaz!</text>
+	</string>
+	<string id="stalker_alife_attack_see_counter_1">
+		<text>Uћ mi zaинnali chybмt... Vidнm nepшнtele!</text>
+	</string>
+	<string id="stalker_alife_attack_see_counter_2">
+		<text>Nepшнtel pшнmo u nбs!</text>
+	</string>
+	<string id="stalker_alife_attack_see_counter_3">
+		<text>Vidнm je!</text>
+	</string>
+	<string id="stalker_alife_attack_smart_captured_1">
+		<text>Zabrali jsme pozici!</text>
+	</string>
+	<string id="stalker_alife_attack_smart_captured_2">
+		<text>Pozice obsazena.</text>
+	</string>
+	<string id="stalker_alife_attack_smart_captured_3">
+		<text>Vљechno je pod kontrolou. Lokace obsazena.</text>
+	</string>
+	<string id="stalker_alife_attack_start_fight_1">
+		<text>Kupшedu, stalkeшi! Postшнlejte je!</text>
+	</string>
+	<string id="stalker_alife_attack_start_fight_2">
+		<text>Postшнlejte je!</text>
+	</string>
+	<string id="stalker_alife_attack_start_fight_3">
+		<text>Pal! PAL!!!</text>
+	</string>
+	<string id="stalker_alife_attack_wait_again_1">
+		<text>Hej, kбmo, pamatujeљ na nбs?</text>
+	</string>
+	<string id="stalker_alife_attack_wait_again_2">
+		<text>Hej, kde seљ? Иekбme...</text>
+	</string>
+	<string id="stalker_alife_attack_wait_again_3">
+		<text>Poшбd jsme tady, pokud ti na tom zбleћн.</text>
+	</string>
+	<string id="stalker_alife_attack_wait_counter_1">
+		<text>Tak snadno to neskonин! To ti povнdбm!</text>
+	</string>
+	<string id="stalker_alife_attack_wait_counter_2">
+		<text>Oиi otevшenэ, nepшнtel tu mщћe bэt kaћdou chvнli!</text>
+	</string>
+	<string id="stalker_alife_attack_wait_counter_3">
+		<text>Moћnб to nic nenн... ale radљi si zkontrolujte bouchaиky.</text>
+	</string>
+	<string id="stalker_alife_attack_wait_signal_1">
+		<text>Jsme pшipravenэ, zaъtoинme na rozkaz!</text>
+	</string>
+	<string id="stalker_alife_attack_wait_signal_2">
+		<text>Jsme pшipravenэ. Jen иekбme na rozkaz!</text>
+	</string>
+	<string id="stalker_alife_attack_wait_signal_3">
+		<text>Pozice pшipravenэ, иekбme na tvщj rozkaz!</text>
+	</string>
+	<string id="stalker_alife_attack_we_spotted_1">
+		<text>Vypadб to, ћe nбs vidмli!</text>
+	</string>
+	<string id="stalker_alife_attack_we_spotted_2">
+		<text>Tak, schovбvat uћ se nemб smysl.</text>
+	</string>
+	<string id="stalker_alife_attack_we_spotted_3">
+		<text>Ъtok ze zбlohy uћ nбm asi nevyjde.</text>
+	</string>
+	<string id="military_alife_patrol_run_1">
+		<text>Okamћitм!</text>
+	</string>
+	<string id="military_alife_patrol_sneak_1">
+		<text>Mlиet!</text>
+	</string>
+	<string id="military_alife_patrol_walk_1">
+		<text>Nikdo neustoupн!</text>
+	</string>
+	<string id="military_alife_counter_attack_check_1">
+		<text>...Hlбљenн! Pшнjem...</text>
+	</string>
+	<string id="military_alife_counter_attack_check_2">
+		<text>...Je tam nмkdo? Ohlaste se, pшнjem!</text>
+	</string>
+	<string id="military_alife_counter_attack_check_3">
+		<text>...Co to... ozvi se, sakra!...</text>
+	</string>
+	<string id="military_alife_counter_attack_check_4">
+		<text>...Sakra, copak jste vљichni ohluchli?</text>
+	</string>
+	<string id="military_alife_counter_attack_counter_attack_begin_1">
+		<text>Hej! Ztratili jsme kontakt s jednнm druћstvem, musнme zjistit, co se stalo.</text>
+	</string>
+	<string id="military_alife_counter_attack_counter_attack_begin_2">
+		<text>Jdмte tam a zkontrolujte to. Jednotka neodpovнdб.</text>
+	</string>
+	<string id="military_alife_counter_attack_counter_attack_begin_3">
+		<text>Rychle, dejte dohromady tэm a bмћte to zkontrolovat! Ztratili jsme kontakt, tak buпte ve stшehu!</text>
+	</string>
+	<string id="military_alife_counter_attack_reply_1">
+		<text>Ano, pane! Prohledat oblast a navбzat kontakt!</text>
+	</string>
+	<string id="military_alife_counter_attack_reply_2">
+		<text>Ano, pane! Okamћitм se pшesouvбme!</text>
+	</string>
+	<string id="military_alife_counter_attack_reply_3">
+		<text>Rozumнm! Sestavte jednotku!</text>
+	</string>
+	<string id="military_alife_attack_attack_begin_1">
+		<text>Dost odpoиinku! Vyrazнme!</text>
+	</string>
+	<string id="military_alife_attack_attack_begin_2">
+		<text>Dejte se dohromady! Vyrazнme!</text>
+	</string>
+	<string id="military_alife_attack_attack_begin_3">
+		<text>Jednotko, rozptylte se!</text>
+	</string>
+	<string id="military_alife_attack_attack_ready_1">
+		<text>Pozor! Rozptylte se!</text>
+	</string>
+	<string id="military_alife_attack_attack_ready_2">
+		<text>Jednotko! Zaujmмte pozice!</text>
+	</string>
+	<string id="military_alife_attack_attack_ready_3">
+		<text>Rozptylte se!</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_1">
+		<text>Sakra, uћ zase... Jeљtм jsem poшбd od krve od poslednнho ъtoku...</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_2">
+		<text>Uћ je mi z tмch hovad na blitн.</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_3">
+		<text>Tak a teп jsem se fakt nasral!</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_4">
+		<text>A boj pokraиuje... fakt zasranм super!</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_5">
+		<text>Zaинnб mм to srбt vнc a vнc...</text>
+	</string>
+	<string id="military_alife_attack_start_fight_1">
+		<text>Pal!</text>
+	</string>
+	<string id="military_alife_attack_start_fight_2">
+		<text>Do ъtoku!</text>
+	</string>
+	<string id="military_alife_attack_start_fight_3">
+		<text>Jdмte, vy hovada lenivб!</text>
+	</string>
+	<string id="freedom_alife_defence_actor_come_1">
+		<text>Fajn! To je od tebe vбћnм hezkэ, vнљ?</text>
+	</string>
+	<string id="freedom_alife_defence_actor_come_2">
+		<text>Sakra, rбd tм vidнm! </text>
+	</string>
+	<string id="freedom_alife_defence_actor_come_3">
+		<text>Rбd tм vidнm! Teп jim ukбћeme, kdyћ seљ tady!</text>
+	</string>
+	<string id="freedom_alife_defence_actor_help_1">
+		<text>Fajn, brбcho! Fakt jsi nбm pнchnul! Stav se na naљн zбkladnu, poшбdnм ti podмkujem a moћnб trochu zachlastбme.</text>
+	</string>
+	<string id="freedom_alife_defence_actor_help_2">
+		<text>Nebejt tebe, ћrali by nбs teп иervi. Stav se na naљн zбkladnм, dбme ti nмco za odmмnu.</text>
+	</string>
+	<string id="freedom_alife_defence_actor_help_3">
+		<text>Uћ jsme mмli jen malej kousниek od absolutnн svobody. Stav se u nбs na zбkladnм, mбљ to u nбs.</text>
+	</string>
+	<string id="freedom_alife_defence_end_defence_1">
+		<text>Ti, co ћijou s kalachem, kalachem taky chcнpnou. Je vбm to jasnэ, povinnosќбci?</text>
+	</string>
+	<string id="freedom_alife_defence_end_defence_2">
+		<text>Fakt jsem nмjak nepochopil, co se nбm snaћili шнct.</text>
+	</string>
+	<string id="freedom_alife_defence_end_defence_3">
+		<text>Ty zasranн chudбci nemмli љanci, naљe taktika je prostм totбlnм pшevezla.</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_bandit_1">
+		<text>Brбcho! Jdou po nбs banditi - potшebujem pomoct!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_csky_1">
+		<text>Potшebujem pomoct, kбmo! Ti zatracenэ pitomci nбs za chvнli sundaj.</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_dolg_1">
+		<text>Pomoc! Povinnost pшiљla vybнrat danм!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_military_1">
+		<text>Hej, pomoz nбm odprбsknout pбr vocjlщ!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_mutant_1">
+		<text>Hej, stalkere! Mбme tady ъtмk ze zoo! Bez tebe to nezvlбdnem!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_stalker_1">
+		<text>Hej, brбcho, nмjacн stalkeшi se nбm snaћej sebrat svobodu! Pomoc!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_zombied_1">
+		<text>Vole, pomoz nбm zastavit ty zombбky!</text>
+	</string>
+	<string id="freedom_alife_defence_wait_help_1">
+		<text>Moji kбmoљi umнraj! Rychle, pomoc!</text>
+	</string>
+	<string id="freedom_alife_defence_wait_help_2">
+		<text>Pomoc! Prohrбvбme!</text>
+	</string>
+	<string id="freedom_alife_defence_wait_help_3">
+		<text>Tys na nбs zapomnмl?! Chcнpбme tady!</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_1">
+		<text>...Co to sakra? Co se to tam dмje?...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_2">
+		<text>...Tohle uћ fakt nenн sranda... jб si rozhodnм prdel nedмlбm...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_3">
+		<text>...Chlapi, co se dмje?...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_4">
+		<text>...Jednotko, ozvмte se... do prdele!...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_counter_attack_begin_1">
+		<text>Naљi chlapi se nehlбsн! Proиesejte to tam a dбvejte si bacha!</text>
+	</string>
+	<string id="freedom_alife_counter_attack_counter_attack_begin_2">
+		<text>No fakt netuљнm, co se dмje. Budeme se muset jнt podнvat, jestli jsou naљi v pohodм.</text>
+	</string>
+	<string id="freedom_alife_counter_attack_counter_attack_begin_3">
+		<text>Mбm strach o naљe chlapy. Dejte dohromady jednotku a prohledejte oblast!</text>
+	</string>
+	<string id="freedom_alife_counter_attack_reply_1">
+		<text>Jo, musнme se podнvat, jak to jde naљim.</text>
+	</string>
+	<string id="freedom_alife_counter_attack_reply_2">
+		<text>Uћ jdeme, uћ jdeme!</text>
+	</string>
+	<string id="freedom_alife_counter_attack_reply_3">
+		<text>Sakra! Doufбm, ћe nemaj vбћnэ problйmy!</text>
+	</string>
+	<string id="freedom_alife_attack_actor_in_battle_1">
+		<text>Pojп si dбt olovмnej nбљup!</text>
+	</string>
+	<string id="freedom_alife_attack_actor_in_battle_2">
+		<text>Posнlбm ti lбsku, kretйne!</text>
+	</string>
+	<string id="freedom_alife_attack_actor_in_battle_3">
+		<text>Uћ tм mбm plnэ zuby!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_begin_1">
+		<text>Vљichni se pшipravte! Иekб nбs prбciиka!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_begin_2">
+		<text>Kouшovб skonиila! Pohnмte prdelн!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_begin_3">
+		<text>Tak dost opalovбnн! Vyrazнme do akce!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_ready_1">
+		<text>Rozptylte se, udrћujte si od sebe vмtљн vzdбlenost.</text>
+	</string>
+	<string id="freedom_alife_attack_attack_ready_2">
+		<text>Rozptylte se! Vљichni pшipravit!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_ready_3">
+		<text>Vљichni na pozice!</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_1">
+		<text>Do шiti! Vypadб to, ћe mi dochбzн munice...</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_2">
+		<text>Kam ћe to zas?</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_3">
+		<text>Stejnэ sraиky, akorбt jinэ datum.</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_4">
+		<text>Ha-ha-ha!! Ty si... hej, ty si nedмlбљ prdel?</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_5">
+		<text>Nemщћem poиkat jeљtм hodinku nebo dvм?</text>
+	</string>
+	<string id="freedom_alife_attack_end_fight_1">
+		<text>A to se stбvб tмm, co nemaj rбdi Svobodu.</text>
+	</string>
+	<string id="freedom_alife_attack_end_fight_2">
+		<text>Uћ jste pochopili, s kэm mбte tu иest, co? A nezapomeтte to шнct kбmoљщm!</text>
+	</string>
+	<string id="freedom_alife_attack_end_fight_3">
+		<text>Hotovo!</text>
+	</string>
+	<string id="freedom_alife_attack_found_enemy_1">
+		<text>Tбmhle je nepшнtel! Pшipravit na ъtok!</text>
+	</string>
+	<string id="freedom_alife_attack_found_enemy_2">
+		<text>Nepшнtel je tady! Pokud na to mбљ, pшidej se k ъtoku.</text>
+	</string>
+	<string id="freedom_alife_attack_found_enemy_3">
+		<text>Vidнm nepшнtele! Dбme si malou vбleиnou hru...</text>
+	</string>
+	<string id="freedom_alife_attack_prepare_attack_1">
+		<text>Kterэ idiot?! Stшнlejte jen na mщj rozkaz!</text>
+	</string>
+	<string id="freedom_alife_attack_prepare_attack_2">
+		<text>Ani hnout! Stшнlet na rozkaz!</text>
+	</string>
+	<string id="freedom_alife_attack_prepare_attack_3">
+		<text>Poиkejte na rozkaz! Zamншit!</text>
+	</string>
+	<string id="freedom_alife_attack_see_counter_1">
+		<text>Tady jsou!</text>
+	</string>
+	<string id="freedom_alife_attack_see_counter_2">
+		<text>Kontakt! Pшipravte se!</text>
+	</string>
+	<string id="freedom_alife_attack_see_counter_3">
+		<text>Objevili jsme nepшнtele!</text>
+	</string>
+	<string id="freedom_alife_attack_smart_captured_1">
+		<text>Sundali jsme je vљechny. Je to naљe.</text>
+	</string>
+	<string id="freedom_alife_attack_smart_captured_2">
+		<text>Nepшнtel je zniиen, oblast zabezpeиnб.</text>
+	</string>
+	<string id="freedom_alife_attack_smart_captured_3">
+		<text>Naљe jednotka obsadila pozici.</text>
+	</string>
+	<string id="freedom_alife_attack_start_fight_1">
+		<text>Kupшedu!</text>
+	</string>
+	<string id="freedom_alife_attack_start_fight_2">
+		<text>Zabte je vљechny! Na nм!</text>
+	</string>
+	<string id="freedom_alife_attack_start_fight_3">
+		<text>Do ъtoku! Palte, palte!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_again_1">
+		<text>Ty, vole, jdeљ s nбma, nebo ne?</text>
+	</string>
+	<string id="freedom_alife_attack_wait_again_2">
+		<text>Bavнљ se sбm dobшe? Na co иekбme?</text>
+	</string>
+	<string id="freedom_alife_attack_wait_again_3">
+		<text>Шekni mi jednu vмc - mщћem jнt, nebo seљ prostм pomalejљн?</text>
+	</string>
+	<string id="freedom_alife_attack_wait_counter_1">
+		<text>Instinkty mi шнkaj, ћe na nбs za chvilku vybмhnou!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_counter_2">
+		<text>Nespat! Za chvнli se vrбtн, tнm jsem si jistej!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_counter_3">
+		<text>Pozor! Nepшнtel se na nбs mщћe plнћit zrovna teп!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_signal_1">
+		<text>Moji chlapi jsou pшipravenн. Pustнme se do toho na tvщj signбl!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_signal_2">
+		<text>Vљechno uћ je pшipravenэ, teп uћ jenom иekбme na tvщj rozkaz k ъtoku.</text>
+	</string>
+	<string id="freedom_alife_attack_wait_signal_3">
+		<text>Zabrali jsme pozici. Иekбme na tvщj rozkaz!</text>
+	</string>
+	<string id="freedom_alife_attack_we_spotted_1">
+		<text>Zapomeтte na pшekvapenн, podмlali jsme to!</text>
+	</string>
+	<string id="freedom_alife_attack_we_spotted_2">
+		<text>Byl to dobrej plбn, ale naљli nбs!</text>
+	</string>
+	<string id="freedom_alife_attack_we_spotted_3">
+		<text>Nemб smysl se schovбvat, naљli nбs!</text>
+	</string>
+	<string id="dolg_alife_defence_actor_come_1">
+		<text>Koneиnм! Svмt potшebuje vнc chlapщ, jako seљ ty!</text>
+	</string>
+	<string id="dolg_alife_defence_actor_come_2">
+		<text>Posily dorazily! Teп jim ukбћeme!</text>
+	</string>
+	<string id="dolg_alife_defence_actor_come_3">
+		<text>Hej! Co kdybychom na tomhle spolupracovali?</text>
+	</string>
+	<string id="dolg_alife_defence_actor_help_1">
+		<text>Ugh... to bylo tмsnэ! Dнky. Stav se u naљн zбkladny, Povinnost na svoje dluhy nezapomнnб.</text>
+	</string>
+	<string id="dolg_alife_defence_actor_help_2">
+		<text>Nebэt tebe, иuchбme ke kytkбm od spodu. Stav se na naљн zбkladnм, Povinnost se ti odvdмин.</text>
+	</string>
+	<string id="dolg_alife_defence_actor_help_3">
+		<text>Mмli jsme jen kousek k tomu, abychom padli! Stav se na naљн zбkladnм, aќ ti mщћem poшбdnм podмkovat!</text>
+	</string>
+	<string id="dolg_alife_defence_end_defence_1">
+		<text>Odrazili jsme je! Dнky vљem!</text>
+	</string>
+	<string id="dolg_alife_defence_end_defence_2">
+		<text>Podaшilo se nбm udrћet pozice.</text>
+	</string>
+	<string id="dolg_alife_defence_end_defence_3">
+		<text>Do pшestшelky nechoп s noћem, kretйne.</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_stalker_1">
+		<text>Hej, ћoldбku! Pomoz Povinnosti odrazit pбr stalkerskэch љmejdщ!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_bandit_1">
+		<text>Pomoz nбm, pшнteli! Banditi jsou i tvщj nepшнtel!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_csky_1">
+		<text>Hej, vole! Potшebujem pomoct s tмma namyљlenejma kretйnama z baћin!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_freedom_1">
+		<text>Pomoz nбm zahnat ty svoboпбckй љmejdy.</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_military_1">
+		<text>Armбda nбs zahnala do kleљtн! Potшebujem podporu, jinak skonинme!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_mutant_1">
+		<text>Hej, stalkere! Potшebujem pomoc s niиenнm monster Zуny!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_zombied_1">
+		<text>Jdou po nбs mrtvбci, potшebujem pomoct!</text>
+	</string>
+	<string id="dolg_alife_defence_wait_help_1">
+		<text>Kde seљ? Potшebujem pomoct!</text>
+	</string>
+	<string id="dolg_alife_defence_wait_help_2">
+		<text>Ћoldбku, kde seљ?!</text>
+	</string>
+	<string id="dolg_alife_defence_wait_help_3">
+		<text>Nemщћeme na tebe иekat vмиnм! Pojп sem!</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_1">
+		<text>...Co se stalo? Podejte hlбљenн!..</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_2">
+		<text>...Tady zбkladna, okamћitм odpovмzte...</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_3">
+		<text>...Jednotko! Co je s vбmi?...</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_4">
+		<text>...Hej! Potшebujete pomoct?</text>
+	</string>
+	<string id="dolg_alife_counter_attack_counter_attack_begin_1">
+		<text>Pozor! Nemщћeme se dovolat jednomu druћstvu - musнme zjistit, co se stalo. Jdмte.</text>
+	</string>
+	<string id="dolg_alife_counter_attack_counter_attack_begin_2">
+		<text>Mohl by to bэt technickэ problйm, ale instinkt mi шнkб, ћe ne. Musнme to zkontrolovat.</text>
+	</string>
+	<string id="dolg_alife_counter_attack_counter_attack_begin_3">
+		<text>Fajn, dejte jednotku dohromady a vyraћte. Naљi chlapi neodpovнdajн.</text>
+	</string>
+	<string id="dolg_alife_counter_attack_reply_1">
+		<text>Co se tam sakra stalo? Pщjdeme to zkontrolovat.</text>
+	</string>
+	<string id="dolg_alife_counter_attack_reply_2">
+		<text>Lidi! Vstбvat, pohyb!</text>
+	</string>
+	<string id="dolg_alife_counter_attack_reply_3">
+		<text>Jo, mohlo se stбt cokoli. Vyrazнme.</text>
+	</string>
+	<string id="dolg_alife_attack_actor_in_battle_1">
+		<text>Povinnost, do ъtoku!</text>
+	</string>
+	<string id="dolg_alife_attack_actor_in_battle_2">
+		<text>Tohle ti dluћнm, mбљ to i s ъrokama!</text>
+	</string>
+	<string id="dolg_alife_attack_actor_in_battle_3">
+		<text>Postшнlejte je, chlapi!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_begin_1">
+		<text>Pozor! Pшipravte se k akci!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_begin_2">
+		<text>Ukбћem ji, co dokбћe Povinnost! Pшipravte se!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_begin_3">
+		<text>Zkontrolujte si zbranм a nбsledujte velitele!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_ready_1">
+		<text>Rozptylte se!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_ready_2">
+		<text>Pozor! Vљichni na pozice!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_ready_3">
+		<text>Rozptylte se a pшipravte se na akci!</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_1">
+		<text>Skonин tohle nмkdy?...</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_2">
+		<text>Je иas splnit volбnн Povinnosti, co?</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_3">
+		<text>Nepшбtelй jsou vљude... poшбd jdou.. a jdou... a dalљн...</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_4">
+		<text>Dмlбm to pro dobro nбs vљech... pro vyљљн dobro...</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_5">
+		<text>Chci se aspoт obout...</text>
+	</string>
+	<string id="dolg_alife_attack_end_fight_1">
+		<text>Ъzemн je naљe!</text>
+	</string>
+	<string id="dolg_alife_attack_end_fight_2">
+		<text>Vyhnali jsme ty mizery!</text>
+	</string>
+	<string id="dolg_alife_attack_end_fight_3">
+		<text>Nepшнtel zniиen! Hurб!</text>
+	</string>
+	<string id="dolg_alife_attack_found_enemy_1">
+		<text>Vidнm nepшнtele! Kaћdэ, kdo chce bojovat za dobrou vмc, aќ se pшidб!</text>
+	</string>
+	<string id="dolg_alife_attack_found_enemy_2">
+		<text>Nepшнtel odhalen! Zaъtoинme!</text>
+	</string>
+	<string id="dolg_alife_attack_found_enemy_3">
+		<text>Nepшбtelskэ kontakt. Pшipravuju se na ъtok.</text>
+	</string>
+	<string id="dolg_alife_attack_prepare_attack_1">
+		<text>Poиkejte... nestшнlet, dokud neшeknu!</text>
+	</string>
+	<string id="dolg_alife_attack_prepare_attack_2">
+		<text>Pokud nмkdo vystшelн bez mэho rozkazu, dбm ho narazit na kщl!</text>
+	</string>
+	<string id="dolg_alife_attack_prepare_attack_3">
+		<text>Dбvejte si pozor! Zaъtoинte na mщj rozkaz!</text>
+	</string>
+	<string id="dolg_alife_attack_see_counter_1">
+		<text>Vizuбlnн kontakt! Vљichni se pшipravte!</text>
+	</string>
+	<string id="dolg_alife_attack_see_counter_2">
+		<text>Vidнm nepшнtele!</text>
+	</string>
+	<string id="dolg_alife_attack_see_counter_3">
+		<text>Nepшнtel objeven!</text>
+	</string>
+	<string id="dolg_alife_attack_smart_captured_1">
+		<text>Hlбљenн: nepшнtel odraћen.</text>
+	</string>
+	<string id="dolg_alife_attack_smart_captured_2">
+		<text>Rozumнm. Pozice je pod naљн kontrolou.</text>
+	</string>
+	<string id="dolg_alife_attack_smart_captured_3">
+		<text>Lokace obsazena, иekбme na dalљн instrukce.</text>
+	</string>
+	<string id="dolg_alife_attack_start_fight_1">
+		<text>Pal! Pal!</text>
+	</string>
+	<string id="dolg_alife_attack_start_fight_2">
+		<text>Palte!</text>
+	</string>
+	<string id="dolg_alife_attack_start_fight_3">
+		<text>PAL!!!</text>
+	</string>
+	<string id="dolg_alife_attack_wait_again_1">
+		<text>Ћoldбku, иekбme na tvщj signбl! Pшнjem.</text>
+	</string>
+	<string id="dolg_alife_attack_wait_again_2">
+		<text>Hej, seљ v poшбdku?</text>
+	</string>
+	<string id="dolg_alife_attack_wait_again_3">
+		<text>Nech si zkontrolovat hlavu, jo? Иekб se na tebe.</text>
+	</string>
+	<string id="dolg_alife_attack_wait_counter_1">
+		<text>Kolik munice nбm zbэvб? Brzo pшijde nбvљtмva.</text>
+	</string>
+	<string id="dolg_alife_attack_wait_counter_2">
+		<text>Dбvejte si pozor! Moћnб zkusн protiъtok!</text>
+	</string>
+	<string id="dolg_alife_attack_wait_counter_3">
+		<text>Zщstaтte v pozoru, nepшнtel mщћe kaћdou chvнli zaъtoиit!</text>
+	</string>
+	<string id="dolg_alife_attack_wait_signal_1">
+		<text>Jednotka pшipravenб na akci. Иekбme na tvщj signбl!</text>
+	</string>
+	<string id="dolg_alife_attack_wait_signal_2">
+		<text>Vљichni jsou na pozici. Staин vydat signбl!</text>
+	</string>
+	<string id="dolg_alife_attack_wait_signal_3">
+		<text>Vљechno pшipraveno! Dej signбl, kdy mбme zaинt!</text>
+	</string>
+	<string id="dolg_alife_attack_we_spotted_1">
+		<text>Pozor! Odhalili nбs!</text>
+	</string>
+	<string id="dolg_alife_attack_we_spotted_2">
+		<text>Nepшнtel nбs odhalil!</text>
+	</string>
+	<string id="dolg_alife_attack_we_spotted_3">
+		<text>Prozradili jsme se!</text>
+	</string>
+	<string id="csky_alife_defence_actor_come_1">
+		<text>Tak, teп jim dбme lekci!</text>
+	</string>
+	<string id="csky_alife_defence_actor_come_2">
+		<text>Fajn, ћe ses stavil! Teп je hezky pшivнtбme!</text>
+	</string>
+	<string id="csky_alife_defence_actor_come_3">
+		<text>Dнk, ћe ses stavil na pomoc! Teп jim ukбћeme, kdo je tady љйf!</text>
+	</string>
+	<string id="csky_alife_defence_actor_help_1">
+		<text>Dнky za pomoc! Nмkdy se stav na naљн zбkladnм, nмjak se ti odvdминme, slibuju!</text>
+	</string>
+	<string id="csky_alife_defence_actor_help_2">
+		<text>Dнky za pomoc! Aћ budeљ mнt иas, stav se na zбkladnu, odvdминme se ti.</text>
+	</string>
+	<string id="csky_alife_defence_actor_help_3">
+		<text>Dнky, ћoldбku! S tebou to fakt љlo lнp! Odmмna tм иekб na naљн zбkladnм.</text>
+	</string>
+	<string id="csky_alife_defence_end_defence_1">
+		<text>Sotva jsme je odrazili!</text>
+	</string>
+	<string id="csky_alife_defence_end_defence_2">
+		<text>Sakra, to byla hezkб obrana!</text>
+	</string>
+	<string id="csky_alife_defence_end_defence_3">
+		<text>Dalљн ъtok odraћenэ!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_bandit_1">
+		<text>Ћoldбku, pomoz nбm odrazit ty bandity!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_dolg_1">
+		<text>Povinnost nбm jde po krku! Pomoz nбm s nima!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_freedom_1">
+		<text>Hej, kбmo, ti svoboпбci nбm dбvajн zabrat! Pomoc!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_military_1">
+		<text>Hej, pomoz nбm zlikvidovat ty vojcly!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_mutant_1">
+		<text>Pomoz nбm, ћoldбku! Mutanti jsou vљude!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_stalker_1">
+		<text>Hej! Pomoz nбm odrazit pбr stalkerщ!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_zombied_1">
+		<text>Pojп sem! Ъtoин na nбs zombie!</text>
+	</string>
+	<string id="csky_alife_defence_wait_help_1">
+		<text>Rychle! Dostбvбme tady na prdel!</text>
+	</string>
+	<string id="csky_alife_defence_wait_help_2">
+		<text>Uћ to dlouho nevydrћнme! Honem, pomoz nбm!</text>
+	</string>
+	<string id="csky_alife_defence_wait_help_3">
+		<text>Zatracenм! Kde sakra jsi?</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_1">
+		<text>...Pozor... tady zбkladna... ozvi se...</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_2">
+		<text>...Co se to tam dмje?...</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_3">
+		<text>...Tak sakra! Ozvi se!...</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_4">
+		<text>...Zatracenм...</text>
+	</string>
+	<string id="csky_alife_counter_attack_counter_attack_begin_1">
+		<text>Pohnмte sebou, bмћte se podнvat, co se stalo s naљima. Neodpovнdajн.</text>
+	</string>
+	<string id="csky_alife_counter_attack_counter_attack_begin_2">
+		<text>Ztratili jsme kontakt s naљima chlapama. Musнme se jнt podнvat, co se stalo.</text>
+	</string>
+	<string id="csky_alife_counter_attack_counter_attack_begin_3">
+		<text>Naљi neodpovнdajн. Nмco se jim muselo stбt.</text>
+	</string>
+	<string id="csky_alife_counter_attack_reply_1">
+		<text>Je to jasnэ! Jdeme na to!</text>
+	</string>
+	<string id="csky_alife_counter_attack_reply_2">
+		<text>Jdeme na to.</text>
+	</string>
+	<string id="csky_alife_counter_attack_reply_3">
+		<text>Do иeho asi narazili... vyrazнme.</text>
+	</string>
+	<string id="csky_alife_attack_actor_in_battle_1">
+		<text>Za pшбtele!</text>
+	</string>
+	<string id="csky_alife_attack_actor_in_battle_2">
+		<text>Dej si kuliиku, za maminku, za tatнnka!</text>
+	</string>
+	<string id="csky_alife_attack_actor_in_battle_3">
+		<text>Dej si horkэho olova, kretйne!</text>
+	</string>
+	<string id="csky_alife_attack_attack_begin_1">
+		<text>Jednotko, vyrazit!</text>
+	</string>
+	<string id="csky_alife_attack_attack_begin_2">
+		<text>Nepшнtel nikdy nespн! Pшipravit!</text>
+	</string>
+	<string id="csky_alife_attack_attack_begin_3">
+		<text>Jednotko, za mnou!</text>
+	</string>
+	<string id="csky_alife_attack_attack_ready_1">
+		<text>Rozptylte se! Buпte pшipravenн!</text>
+	</string>
+	<string id="csky_alife_attack_attack_ready_2">
+		<text>Rozptylte se.</text>
+	</string>
+	<string id="csky_alife_attack_attack_ready_3">
+		<text>Jednotko, zaujmout pozice!</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_1">
+		<text>A jdeme na to...</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_2">
+		<text>Copak to nikdy neskonин?</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_3">
+		<text>Sakra, uћ mм to zaинnб unavovat.</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_4">
+		<text>Paneboћe! To uћ se nemщћu ani v klidu najнst?!</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_5">
+		<text>Jб uћ tohle nevydrћнm!</text>
+	</string>
+	<string id="csky_alife_attack_end_fight_1">
+		<text>Pмknм jsme jim to natшeli...</text>
+	</string>
+	<string id="csky_alife_attack_end_fight_2">
+		<text>Rozdrtili jsme je na kusy!</text>
+	</string>
+	<string id="csky_alife_attack_end_fight_3">
+		<text>Hej! No to byl ale hezkej boj!</text>
+	</string>
+	<string id="csky_alife_attack_found_enemy_1">
+		<text>Nepшнtel odhalen. Pшipravte se na ъtok.</text>
+	</string>
+	<string id="csky_alife_attack_found_enemy_2">
+		<text>Vidнm nepшнtele, chystбm se na ъtok.</text>
+	</string>
+	<string id="csky_alife_attack_found_enemy_3">
+		<text>Chystбme se na ъtok. Jestli chceљ, pшidej se.</text>
+	</string>
+	<string id="csky_alife_attack_prepare_attack_1">
+		<text>Zaъtoиte na mщj povel!</text>
+	</string>
+	<string id="csky_alife_attack_prepare_attack_2">
+		<text>Bez rozkazu neъtoиte!</text>
+	</string>
+	<string id="csky_alife_attack_prepare_attack_3">
+		<text>Stшнlejte jen na mщj rozkaz!</text>
+	</string>
+	<string id="csky_alife_attack_see_counter_1">
+		<text>Tady jsou. Pшipravte se na akci!</text>
+	</string>
+	<string id="csky_alife_attack_see_counter_2">
+		<text>Nepшнtel odhalen!</text>
+	</string>
+	<string id="csky_alife_attack_see_counter_3">
+		<text>Vidнm cнl!</text>
+	</string>
+	<string id="csky_alife_attack_smart_captured_1">
+		<text>Zбkladno, obsadili jsme cнlovou lokaci.</text>
+	</string>
+	<string id="csky_alife_attack_smart_captured_2">
+		<text>Pozice obsazena. Pшнjem.</text>
+	</string>
+	<string id="csky_alife_attack_smart_captured_3">
+		<text>Zбkladno, vyhnali jsme nepшнtele.</text>
+	</string>
+	<string id="csky_alife_attack_start_fight_1">
+		<text>Do ъtoku! Na nм!</text>
+	</string>
+	<string id="csky_alife_attack_start_fight_2">
+		<text>Pal! Do ъtoku!</text>
+	</string>
+	<string id="csky_alife_attack_start_fight_3">
+		<text>Postшнlejte je! Pal!</text>
+	</string>
+	<string id="csky_alife_attack_wait_again_1">
+		<text>Seљ vzhщru? Иekбme na tebe.</text>
+	</string>
+	<string id="csky_alife_attack_wait_again_2">
+		<text>No tak, tohle nenн sranda. Pojп.</text>
+	</string>
+	<string id="csky_alife_attack_wait_again_3">
+		<text>Hej, seљ ћivej, nebo co?</text>
+	</string>
+	<string id="csky_alife_attack_wait_counter_1">
+		<text>Ћбdnэ odpoинvбnн! Vypadб to, ћe budeme mнt brzy nбvљtмvu.</text>
+	</string>
+	<string id="csky_alife_attack_wait_counter_2">
+		<text>Dбvejte pozor. Nepшнtel by mohl bэt pшнmo u nбs!</text>
+	</string>
+	<string id="csky_alife_attack_wait_counter_3">
+		<text>Zщstaт ve stшehu! Oиekбvбme ъtok.</text>
+	</string>
+	<string id="csky_alife_attack_wait_signal_1">
+		<text>Ћoldбku, jsme pшipravenн vyrazit na tvщj rozkaz!</text>
+	</string>
+	<string id="csky_alife_attack_wait_signal_2">
+		<text>Ћoldбku, zaъtoинme na tvщj signбl!</text>
+	</string>
+	<string id="csky_alife_attack_wait_signal_3">
+		<text>Ћoldбku, иekбme na tvщj signбl!</text>
+	</string>
+	<string id="csky_alife_attack_we_spotted_1">
+		<text>Sakra! Objevili nбs!</text>
+	</string>
+	<string id="csky_alife_attack_we_spotted_2">
+		<text>Budeme muset bojovat na otevшenэm place!</text>
+	</string>
+	<string id="csky_alife_attack_we_spotted_3">
+		<text>Vidмj nбs! Opakuju, vidмj nбs!</text>
+	</string>
+	<string id="bandit_alife_defence_actor_come_1">
+		<text>My, ehm... no je fajn, ћe ses ukбzal!</text>
+	</string>
+	<string id="bandit_alife_defence_actor_come_2">
+		<text>Hej! Tak co? Nakopem ty hajzly poшбdnм do prdele?</text>
+	</string>
+	<string id="bandit_alife_defence_actor_come_3">
+		<text>Hej! Tak co? Nakopem ty hajzly poшбdnм do prdele?</text>
+	</string>
+	<string id="bandit_alife_defence_actor_help_1">
+		<text>Hej, nмco tak tvrdэho uћ jsem nмjakou dobu nevidмl... nмkdy se stav, dбme ti nмco za nбmahu.</text>
+	</string>
+	<string id="bandit_alife_defence_actor_help_2">
+		<text>Dнky! Uћ jsem si chvнli myslel, ћe se vљichni setkбme se stvoшitelem... stav se nмkdy na zбkladnм, aќ ti to mщћeme oplatit.</text>
+	</string>
+	<string id="bandit_alife_defence_actor_help_3">
+		<text>Uћ jsem to mбlem vzdal, ale hej, zvlбdli jsme to. Nмkdy se stav u nбs na zбkladnм, dostaneљ odmмnu.</text>
+	</string>
+	<string id="bandit_alife_defence_end_defence_1">
+		<text>Pшiљel, vidмl, a dostal pшes drћku! Mua-ha-ha!</text>
+	</string>
+	<string id="bandit_alife_defence_end_defence_2">
+		<text>Pмknм jsme jim nakopali prdel!</text>
+	</string>
+	<string id="bandit_alife_defence_end_defence_3">
+		<text>Tohle byla snнdanм! Pokud si to zkusн jeљtм nмkdo, bude z nмj svaиina!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_csky_1">
+		<text>Hej, vole! Pojп nбm pomoct dбt Jasnэ obloze pшes drћku!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_dolg_1">
+		<text>Musнљ nбm pomoct, brбcho! Ti namyљlenн kretйni nбm dбvajн kurva zabrat!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_freedom_1">
+		<text>Ti anarchistiиtн srбиi nбm dбvej na prdel, pomoc!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_military_1">
+		<text>Pomoz nбm, brбcho! Potшebujem postшнlet pбr vojclщ!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_mutant_1">
+		<text>Hej, brбcho! Potшebujem pomoct s pбr fakt hnusnejma bestiema!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_stalker_1">
+		<text>Potшebujem tм, brбcho! Jdou po nбs nмjacн kretйni!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_zombied_1">
+		<text>Pojп rychle sem! Mrtvбci tady zabнjej ћivэ!</text>
+	</string>
+	<string id="bandit_alife_defence_wait_help_1">
+		<text>Dostбvбme na hubu! Seљ chlap, nebo ne?</text>
+	</string>
+	<string id="bandit_alife_defence_wait_help_2">
+		<text>Za chvнli tady chcнpneme! Pohni sebou!</text>
+	</string>
+	<string id="bandit_alife_defence_wait_help_3">
+		<text>Kde sakra jste?! Dostбvбme na prdel!</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_1">
+		<text>...Hej, chlapi, poslouchejte...</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_2">
+		<text>...Jeљtм tam nejste vљichni mrtvн, ћe ne?</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_3">
+		<text>...No tak, ozvмte se koneиnм...</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_4">
+		<text>...Hej, brбcho... nenн nбm jasnэ, co se dмje...</text>
+	</string>
+	<string id="bandit_alife_counter_attack_counter_attack_begin_1">
+		<text>Vypadб to, ћe se naљi ztratili. Musнme to jнt zkontrolovat.</text>
+	</string>
+	<string id="bandit_alife_counter_attack_counter_attack_begin_2">
+		<text>Naљi se asi dostali do prщseru. Padejte tam a podнvejte se, co se stalo.</text>
+	</string>
+	<string id="bandit_alife_counter_attack_counter_attack_begin_3">
+		<text>Naљi chlapi jsou nмjak ticho. Musнme se kouknout, co se dмje.</text>
+	</string>
+	<string id="bandit_alife_counter_attack_reply_1">
+		<text>Jasnм! Pustнme se do toho!</text>
+	</string>
+	<string id="bandit_alife_counter_attack_reply_2">
+		<text>Neboj, љйfe, zvlбdnem to.</text>
+	</string>
+	<string id="bandit_alife_counter_attack_reply_3">
+		<text>Jo, jo, jdem na to.</text>
+	</string>
+	<string id="bandit_alife_attack_actor_in_battle_1">
+		<text>Na, chytej!</text>
+	</string>
+	<string id="bandit_alife_attack_actor_in_battle_2">
+		<text>Hezky do шady, kretйni!</text>
+	</string>
+	<string id="bandit_alife_attack_actor_in_battle_3">
+		<text>Sundejte ty svinм, chlapi!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_begin_1">
+		<text>Zvedejte se a za mnou!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_begin_2">
+		<text>Vstбvat, vyrazнme, kupшedu!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_begin_3">
+		<text>Teп to bude tvrdэ, takћe do toho!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_ready_1">
+		<text>Pшestaтte se drћet za ruиiиky! Rozptylte se!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_ready_2">
+		<text>Teп ty hajzlнky usmaћнme! Rychle se rozptylte!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_ready_3">
+		<text>Pшestaтte se tбhnout jako stбdo! Nabмhneme na nм!</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_1">
+		<text>Uћ mi fakt zaинnaj lнzt na nervy!</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_2">
+		<text>Co to?! Zrovna jsem si chtмl dбt nмco k jнdlu!</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_3">
+		<text>Ale sakra, co teп?</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_4">
+		<text>Hezky je uspнm!</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_5">
+		<text>Je to jen cviиenн, ћe jo?</text>
+	</string>
+	<string id="bandit_alife_attack_end_fight_1">
+		<text>Jo, nandali jsme jim to!</text>
+	</string>
+	<string id="bandit_alife_attack_end_fight_2">
+		<text>Je po nich, po srбинch! Podнvejte se jim po kapsбch, chlapi!</text>
+	</string>
+	<string id="bandit_alife_attack_end_fight_3">
+		<text>Pмknб sekanб, co?</text>
+	</string>
+	<string id="bandit_alife_attack_found_enemy_1">
+		<text>No hele, oni se ti hajzlнci fakt ukбzali! Tak co, kdo mб chuќ nakopat jim prdel?!</text>
+	</string>
+	<string id="bandit_alife_attack_found_enemy_2">
+		<text>Hej, naљli jsme pбr srбищ, kterэ mщћem provrtat! Bude sranda!</text>
+	</string>
+	<string id="bandit_alife_attack_found_enemy_3">
+		<text>Hej, pшidej se k nбm, postшнlнme ty dмvky!</text>
+	</string>
+	<string id="bandit_alife_attack_prepare_attack_1">
+		<text>Budeљ skбkat, kdyћ ti шeknu hop, a stшнlet kdyћ ti шeknu pal. Jasnэ?</text>
+	</string>
+	<string id="bandit_alife_attack_prepare_attack_2">
+		<text>Aћ шeknu, tak je postшнlнme! Jasnэ?!</text>
+	</string>
+	<string id="bandit_alife_attack_prepare_attack_3">
+		<text>Palte jenom na rozkaz!</text>
+	</string>
+	<string id="bandit_alife_attack_see_counter_1">
+		<text>Ha! Mбme dalљн oveиku na stшнhбnн!</text>
+	</string>
+	<string id="bandit_alife_attack_see_counter_2">
+		<text>Pozdravte, chlapi, mбme hosty!</text>
+	</string>
+	<string id="bandit_alife_attack_see_counter_3">
+		<text>No plбcni mм po prdeli a шнkej mi Lнzinko! To je ale setkбnн!</text>
+	</string>
+	<string id="bandit_alife_attack_smart_captured_1">
+		<text>Postшнleli jsme je. Teп je to naљe.</text>
+	</string>
+	<string id="bandit_alife_attack_smart_captured_2">
+		<text>Sundali jsme ty svinм. Teп to patшн nбm.</text>
+	</string>
+	<string id="bandit_alife_attack_smart_captured_3">
+		<text>No do prdele, hotovo! Uћ zbejvaj jen mrtvoly.</text>
+	</string>
+	<string id="bandit_alife_attack_start_fight_1">
+		<text>Ukaћte jim! Poшбdnм jim to nandejte!</text>
+	</string>
+	<string id="bandit_alife_attack_start_fight_2">
+		<text>Kupшedu!</text>
+	</string>
+	<string id="bandit_alife_attack_start_fight_3">
+		<text>Naћer se, dмvko!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_again_1">
+		<text>Nebuп brzda, brбcho. Vљechno je super, иekб se jen na tebe.</text>
+	</string>
+	<string id="bandit_alife_attack_wait_again_2">
+		<text>Co tady sakra dмlбme? Je иas vyrazit na masakr!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_again_3">
+		<text>Hej, co zalejzбљ? Jdem do vбlky, ne?</text>
+	</string>
+	<string id="bandit_alife_attack_wait_counter_1">
+		<text>Hej, co zalejzбљ? Jdem do vбlky, ne?</text>
+	</string>
+	<string id="bandit_alife_attack_wait_counter_2">
+		<text>Jeљtм nenн иas na oslavy, oni to zkusej znovu!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_counter_3">
+		<text>Setшi si ten љkleb z huby! Hlнdej!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_signal_1">
+		<text>Je to v pohodм. Staин шнct, kdy!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_signal_2">
+		<text>Jsme na pozici. Staин zaшvat, aћ budeљ chtнt zaинt.</text>
+	</string>
+	<string id="bandit_alife_attack_wait_signal_3">
+		<text>Jsme tady. Tak dej vмdмt, jo?</text>
+	</string>
+	<string id="bandit_alife_attack_we_spotted_1">
+		<text>Do prdele! To jsme to dostali!</text>
+	</string>
+	<string id="bandit_alife_attack_we_spotted_2">
+		<text>Sakra, pмknм nбs nakopali!</text>
+	</string>
+	<string id="bandit_alife_attack_we_spotted_3">
+		<text>Do шiti! Dostali nбs...</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_comander_to_squad_1">
+		<text>Nepanikaшte, drћte pozice!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_comander_to_squad_2">
+		<text>Nepanikaшte!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_1">
+		<text>Sakra! Co to je?</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_2">
+		<text>Slyљels to?! </text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_3">
+		<text>Co to bylo?</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_1">
+		<text>Zatracenej upнr!!!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_2">
+		<text>Zatracenej mutant...</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_3">
+		<text>Svinм mizernб!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_4">
+		<text>Do prdele, co to sakra je??</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_5">
+		<text>Dбvej si bacha!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_6">
+		<text>Chlapi, zщstaтte na pozoru...</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_fire_1">
+		<text>Chcнpni, ty upнrskej љmejde!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_fire_2">
+		<text>Tбmhle je!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_squad_fear_1">
+		<text>Uћ zase!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_squad_fear_2">
+		<text>Drћte mi palce.</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_squad_fear_3">
+		<text>Moћnб se mi to jenom zdбlo...</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_comander_to_squad_1">
+		<text>Zщstaтte na mнstм, drћte pozice.</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_comander_to_squad_2">
+		<text>Nepanikaшte!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_1">
+		<text>Sakra! Co to je?</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_2">
+		<text>Slyљels to?!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_3">
+		<text>Co to bylo?</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_1">
+		<text>Zatracenej upнr!!!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_2">
+		<text>Zatracenej mutant...</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_3">
+		<text>Svinм mizernб!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_4">
+		<text>Do prdele, co to sakra je??</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_5">
+		<text>Dбvejte si bacha!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_6">
+		<text>Chlapi, zщstaтte na pozoru...</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_fire_1">
+		<text>Chcнpni, ty upнrskej љmejde!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_fire_2">
+		<text>Tбmhle je!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_squad_fear_1">
+		<text>Uћ zase!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_squad_fear_2">
+		<text>Doufejme, ћe to zvlбdnem!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_squad_fear_3">
+		<text>Moћnб to nic nenн?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_give_orders_2">
+		<text>Vбs dva potшebuju u ventilu, vy dva se mnou! Ћoldбku, ty jdi na stшechu hangбru a kryj obм druћstva.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad1_ready">
+		<text>Jsme u ventilu a pшipraveni zaинt plnit rozkaz.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad2_ready">
+		<text>Ventil nastavenэ. Aktivujte to!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_building_wave">
+		<text>Pozor, zombбci nalevo od budovy!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_truck_wave">
+		<text>Pozor, zombбci u nбklaпбku!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_alarm_roof">
+		<text>Jsou na stшeљe!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_alarm_hangar">
+		<text>Zombбci v hangбru!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_repealed_1">
+		<text>Jde nбm to dobшe! Nevzdбvejte to!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_repealed_2">
+		<text>Jen tak dбl! </text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_repealed_3">
+		<text>Dalљн dole!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_freezer_fixed">
+		<text>Skvмlй! Chlazenн zase funguje. Psionickй pole je stabilnн. Je иas, abychom odsud vypadli...</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_psy_reduced">
+		<text>Dokбzals to! Podle mэch senzorщ se ъroveт psionickэch emisн sniћuje! To znamenб, ћe je chlazenн stabilnн. Opravdu doufбm, ћe teп bude Jantar klidnмjљн mнsto.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_psy_reduced_reply">
+		<text>Dobrй zprбvy, profesore! Jsme na cestм zpбtky do bunkru.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_go_red_forest">
+		<text>Dмkuju ti. Mimochodem, mбm celkem sluљnэ signбl od Stшelce. Vypadб to, ћe nenн daleko od tebe a mншн pшнmo k Rudйmu lesu.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad_assemble">
+		<text>Vyrazнme!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_go_to_roof">
+		<text>Hej, mбљ zaujmout pozici na stшeљe! Jdi za tнm stalkerem!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_not_go_to_roof">
+		<text>Neplэtvej иasem! Pojп za mnou!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_actor_on_roof">
+		<text>Fajn, seљ na pozici. Tak ji drћ.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_prikritie">
+		<text>Budu tм krejt!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_ready">
+		<text>Jsme na pozici. Stшecha je иistб. Nastavuju ventil.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave1_go">
+		<text>Do prdele! zombбci, lezou ze vљech stran!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_naval">
+		<text>Kolik jich sakra je? Jsou vљude! Aaaaa!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_nores_stalker3">
+		<text>Aaaa! Je jich moc! Pomoc!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_nores_stalker4">
+		<text>Potшebujem pomoc, palebnou podporu!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_nores_stalker5">
+		<text>Aaaa! Jsou vљude! Chcнpneme tady!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_clear_roof">
+		<text>Zombбci se snaћн prorazit do hangбru! Je jich moc!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_naval_roof2">
+		<text>Zabнjejн nбs!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_naval_roof1">
+		<text>Uf, odrazili jsme je... teп uћ by to mмlo bэt snazљн...</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_group_in_angar">
+		<text>Jsme v hangбru! Nastavujem ventil!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_1">
+		<text>Tumбte, zombбci!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_2">
+		<text>Jak se vбm to lнbн?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_3">
+		<text>Co, svinм, lнbн se ti to?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_4">
+		<text>Tady mбte trochu olovмnэho salбtu!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_5">
+		<text>Drћнm je!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_angar_begin">
+		<text>Sakra! Jdou pшнmo na nбs!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_angar_1">
+		<text>Copak to nikdy neskonин?!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_angar_2">
+		<text>Tak se ukaћte, svinм!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_help_base_sci">
+		<text>Bunkr vмdcщ je pod ъtokem! Pokud nбs slyљнte - prosнm, pomozte!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levwa_perimetr_before_attack">
+		<text>Dнky za pomoc, ћoldбku! Najdi si pozici a pal!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levwa_perimetr_after_attack">
+		<text>Dмkuju ti pomoc. Ъtoky zombie jsou v poslednн dobм инm dбl tнm vнc иastмjљн. Pokud si chceљ promluvit s vмdбtory, jsou uvnitш bunkru.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_hello_actor">
+		<text>Nazdбrek. Bмhem akce dмlбљ co шнkбm, je ti to jasnэ?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_right_1">
+		<text>Nepшнtel napravo!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_left_1">
+		<text>Dalљн nalevo!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_right_2">
+		<text>Nepшнtel napravo dole!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_left_2">
+		<text>Nepшнtel nalevo dole!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_take_position">
+		<text>Jdi na pozici a hlнdejl! Vy dva, poшбdnм jim zatopte!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_clear">
+		<text>Иistэ, vyrazнme!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professor_about_actor">
+		<text>Drahэ Levбku. Mбm novб data. Vypadб to, ћe bychom mмli bэt schopnн stabilizovat psi-emise. Na cestм je jeden mladнk, poиkej prosнm na nмj a dalљн instrukce.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professr_reply_actor">
+		<text>Ano, profesore. Иekбm na dalљн instrukce.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professor_about_switcher">
+		<text>Levбku, podle mэch dat jsou psi-emise generovбny neidentifikovatelnэm zaшнzenнm umнstмnэm pod tovбrnou. Psi-pole je nestabilnн, protoћe v chlazenн toho zaшнzenн doљlo k poruљe. Tvэm ъkolem je restartovat chladicн systйm. Poslal jsem ti vљechna potшebnб data do PDA. Nбиrtek zobrazuje dva ventily, kterэmi je moћnй zahбjit restartovбnн. Musнљ aktivovat oba ventily. Vyraz na pozici, dбm ti vмdмt, aћ psi-emise poklesnou na bezpeиnou ъroveт.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_reply_switcher">
+		<text>Profesore, jsme pшipraveni zahбjit na vбљ signбl.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professor_start_operation">
+		<text>Levбku, ъroveт emisн psi-pole je teп na nejniћљн ъrovni. Zahajte prosнm operaci! Modlнm se za tebe! Hodnм љtмstн!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad_diary">
+		<text>Aaaaa, moje hlava... ta bolest mм zabije, ani nedokбћu myslet! Ivan... najednou na nбs zaъtoиil... aaa.. hlasy v hlavм, zatracenй emise... aspoт jsme zнskali dokumenty... teп je musнme donйst Sacharovi... Sakra, po naљн stopм jdou psi... nechci... neeeeee... boћe!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_give_orders_1">
+		<text>Uћ jsme skoro tam. Opakuju: naљнm cнlem je nastavit sprбvnм dva ventily a restartovat chladicн systйm.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_scientist_start_frase_1">
+		<text>Hned tam budu!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_scientist_start_frase_2">
+		<text>Za minutku!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_check_actor_position_1">
+		<text>Vraќ se na pozici! Padбme tady jako mouchy!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_check_actor_position_2">
+		<text>Ztratili jsme druћstvo. Zaшнzenн je neovladatelnй! Blнћн se emise! Aaaaaaagrhhhhhhhhhh!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_talk_1">
+		<text>Rбd tм vidнm. Dokбzali jsme nemoћnй. Probojovali jsme se do stшedu Zуnu, k elektrбrnм, a to pшedevљнm dнky tobм. Zatнm je to celkem klidnй. Vypadб to, ћe se sem Stшelec jeљtм nedostal.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_talk_2">
+		<text>Petrenko, zkus najнt frekvenci Stшelcova PDA.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_petrenko_talk_1">
+		<text>Veliteli, Stшelec je poblнћ.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_scout_talk_1">
+		<text>Lebedмve, tady jsou prщzkumnнci. Mбme vizuбlnн kontakt se Stшelcem.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_objective_talk_1">
+		<text>Hej, vyљplhej na ten teplovod a odchytni Stшelce. Budeme tм krэt ze zemм.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_objective_talk_2">
+		<text>Tady mбљ prototyp elektromagnetickй puљky. Pomщћe ti deaktivovat psi-ochranu a zastavit ho. Bez ochrany Stшelec v emisi dlouho nevydrћн. I naљe obleky to pole sotva dokбћн zneutralizovat. Dostaт se k Stшelci a zlikviduj jeho psi-ochranu.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_1">
+		<text>Stшнlej na Stшelce gauss puљkou, oslabнљ jeho psi-ochranu.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_2">
+		<text>Mнт se flбkat, vнc stшнlet na Stшelce.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_3">
+		<text>Ћoldбku, tvэm cнlem je Stшelec. Pohni sebou a postarej se o nмj.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_4">
+		<text>Hej, odbrzdi se koneиnм! Utнkej za Stшelcem, nebo nбm uteиe.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_5">
+		<text>Stшelec utнkб! Udмlej nмco!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_6">
+		<text>Stшelcova psi-ochrana je skoro na nule. Jeљtм kousek, a bude ъplnм vypnutб.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_1">
+		<text>Pozor! Odklбkejte pozornost monoliќбkщ!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_2">
+		<text>No tak, chlapi, krejte mм!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_3">
+		<text>Rozstшнlejte ty zatracenэ zombice!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_4">
+		<text>Svinм! Pozabнjejte je!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_5">
+		<text>Aќ nбs neobejdou!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_6">
+		<text>Nepшнtel na levym kшнdle!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_7">
+		<text>Vљechny jednotky, rychlou palbu!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_8">
+		<text>Tumбte, svinм!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_9">
+		<text>Mami, neиekej na mм, mщj novej domov je na dnм moшe!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_10">
+		<text>Petroviиi, krej nбm zбda!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_11">
+		<text>Chovejte se jako chlapi! Nepovolte!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_12">
+		<text>Mщћem zemшнt jen jednou, chlapi!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_13">
+		<text>Pшichбzej z prava! Pokud tam nмkdo je, potшebujem krycн palbu!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_14">
+		<text>Dochбzн mi munice! Stбhnмte se k anomбliнm!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_15">
+		<text>Chlapi, pohneme se, tak nбs krejte!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_16">
+		<text>Do шiti! Chlapi, dostal jsem to!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_17">
+		<text>Nenбvidнm tм!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_18">
+		<text>Jб ti ukбћu!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_19">
+		<text>A je to, chlapi, konинm! Sbohem!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_20">
+		<text>Postшнlejte ty zatracenэ monoliќбky!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_21">
+		<text>Sundejte nмkdo toho zatracenэho snajpra!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_22">
+		<text>Nalevo, dбvej bacha!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_23">
+		<text>Kupшedu, bмћ, bмћ!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_24">
+		<text>Zkusнm je obejнt!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_25">
+		<text>Dostal jsem to, sakra, dostal jsem to!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_26">
+		<text>Jб tady chcнpбm!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_27">
+		<text>Moskyt padnul! Pшebнrбm velenн!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_28">
+		<text>Seberte se, chlapi! Pozabнjнme je!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_29">
+		<text>Zlikvidujte je do poslednнho! Do ъtoku!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_30">
+		<text>Vypadб to, ћe jб konинm... odpusќte, brбchovй!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_31">
+		<text>Ћije nмkdo v mэm sektoru? Ne......agrh!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_32">
+		<text>Alexi, jsi tam? Ozvi se, sakra!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_33">
+		<text>Stшнlej po nich, Igore!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_34">
+		<text>Nakrm ho granбtem, Paulie!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_35">
+		<text>Tam nahoшe! Ten hajzl se schovбvб nahoшe!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_36">
+		<text>Vodkud sakra vљichni lezou?</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_1">
+		<text>Stшelcova psi-ochrana je vyшazenб, to by ho mмlo zastavit. Teп si musнme poиkat...</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_2">
+		<text>Jak to vypadб s ъdaji? Poklesla anomбlnн aktivita?</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_3">
+		<text>Sakra, tohle jsem neиekal! Anomбlnн aktivita prudce narostla!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_4">
+		<text>Ale Zуna se teп mмla uklidnit!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_5">
+		<text>Aaahhh... co se to dмje... asi mi vybuchne hlava... aaahhh...</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_lost_strelok_1">
+		<text>Nechali jsme Stшelce uniknout! Uћ je uvnitш elektrбrny.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_lost_strelok_2">
+		<text>Blнћн se emise... stupnice nestaин... najdмte si vљichni kryt.... aaaahhhh!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_locate_strelok">
+		<text>Pohni sebou! Uћ jsi jen kousek od Stшelce!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_bounty_hunters_attack">
+		<text>To je on! Sundej ho!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_defend_tunel_1">
+		<text>Nedovol mu vlнzt do tunelu!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_defend_tunel_2">
+		<text>Drћ ho, dokud Stшelec nevyleze z tunelu!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_strelok_spich">
+		<text>Vyhodil jsem tunel do vzduchu. Nezastavнљ mм. Dostanu se do stшedu Zуny, aќ to stojн co to stojн.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_1">
+		<text>Stшelcщv signбl... Ztratili jsme ho.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_2">
+		<text>Zamншil k Vypalovaиi a odtamtud je to jen kousek do stшedu Zуny. Ale pro nбs by byla cesta pшes Vypalovaи, bez toho prototypu vмdcщ, jasnб sebevraћda!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_3">
+		<text>Jedinou љanci na chycenн Stшelce mбme, kdyћ pщjdeme pшes Limansk. Vнm o tunelu, kterэ tam vede - je za mostem...</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_4">
+		<text>Je to jedinб znбmб cesta do mмsta. Most je moћnй spustit jen z druhэ strany, ale to je ъzemн banditщ.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_5">
+		<text>Do prdele... musнme se nмjak dostat na druhou stranu! Moћnб vede na druhej bшeh jinб cesta... No, pokud nбm nмkdo mщћe pomoct dostat se do Limansku, je to Lesбk. Ten dмdek prej dokбћe najнt bezpeиnэ cesty i na mнsta, kde nikdy nebyl. Dмdkova chajda je na okraji Rudэho lesa. Ћoldбku, musнљ Lesбka najнt.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_forester_greet_1">
+		<text>Nazdбrek, ћoldбku. Co tм sem pшivбdн?</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_hail">
+		<text>Pojп sem, rychle! Leљijovo druћstvo uћ je skoro tam!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_come">
+		<text>Leљijovo druћstvo se blнћн. Naљнm ъkolem je krэt je, aќ se mщћou dostat k mostu. Najdi si pozici ve druhйm patшe vмћe a pшiprav se!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_leshiy_start">
+		<text>...Tady Leљij. Naљe druћstvo se blнћн k mostu.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_leshiy_reply">
+		<text>Leљiji, tady Lebedмv. Uћ se tм nemщћeme doиkat!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_clear_path">
+		<text>Pozor vљem bojovnнkщm! Musнme Leљijovi vyиistit cestu! Pal!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_assault_start">
+		<text>Tady Leљij, podaшilo se nбm zabezpeиit pozici u mostu.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_start_lower">
+		<text>Zkusнme spustit most. Veliteli, krejte nбs.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_go_lever_1">
+		<text>Vojнne, ke kontrolnнmu panelu mostu, hned teп!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_go_lever_2">
+		<text>Vojбku, utнkej ke kontrolnнmu panelu mostu!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_go_lever_3">
+		<text>Vojнne, utнkej ke kontrolnнmu panelu mostu!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_attention_control">
+		<text>Lebedмve, krejte mэho chlapa u kontrolnнho panelu! Banditi se ho snaћн dostat!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lever_killed_first">
+		<text>Zatracenм! Шнdicн panel kryje snajpr. Dokud ho nмkdo nesundб, nemщћeme spustit most.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lever_killed_1">
+		<text>Sakra! Snajpr na kopci! Sundej ho!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lever_killed_2">
+		<text>Co to sakra dмlбљ? Sundej toho snajpra!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_sniper_1">
+		<text>Snajpr na kopci!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_sniper_2">
+		<text>Sundej toho snajpra!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_sniper_3">
+		<text>Zabij toho snajpra!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_bandits_1">
+		<text>Je tady aћ moc banditщ! Nemщћeme se hnout!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_bandits_2">
+		<text>Banditi nбs pшiskшнpli! Zkuste nбm trochu pomoct, potшebujeme krycн palbu!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_bandits_3">
+		<text>Lebedмve, pokropte trochu ty bandity, nechtмjн nбs pustit!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_flee">
+		<text>Ћoldбku, vraќ se na pozici! Musнme spustit ten most!!!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_fail">
+		<text>Pozor vљem jednotkбm. Blнћн se dalљн masivnн emise. Vypadб to, ћe se Stшelci podaшilo dostat do stшedu Zуny. Nedokбzali jsme ho zastavit. Mazejte do krytu, rychle! Padejte!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lowered">
+		<text>Most je dole! Do ъtoku!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy">
+		<text>Dмkuju ti! Fakt to mбљ u nбs!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply1">
+		<text>Dнky. Nebэt ho, byl bych v bublinм na vмky.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply2">
+		<text>Tak иi tak, mбљ to u mм.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply3">
+		<text>Budu na to pamatovat! Hodnм љtмstн!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply4">
+		<text>Dohodnuto!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_finished">
+		<text>Bojovnнci Jasnй oblohy, dokonиili jsme vynikajнcн operaci! Most je spuљtмnэ a cesta do Limansku otevшenб. Pшedsunutй druћstvo: pшesuтte se do Limansku a najdмte bezpeиnou cestu mмstem. Vљichni ostatnн: drћte most a poиkejte na hlavnн voj. A ty, ћoldбku, pojп sem na chviliиku.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_last_call">
+		<text>Hned se vraќ na pozici. Leљijova skupina se sotva drћн. Pokud ten most nespustнme, tak prohrajeme.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_task_for_player">
+		<text>Nбsleduj pшedsunutй jednotky do mмsta - vaљнm ъkolem je najнt bezpeиnou cestu pшes Limansk pro hlavnн voj. Dбvejte si pozor: ve mмstм vypukla opravdovб vбlka.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_strelok_threat">
+		<text>Ukonиi svй pronбsledovбnн... nebo zemшeљ.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_lebedev_about_red_forest">
+		<text>O cestм pшes Иervenэ les nemбm ћбdnй informace. O tom lese se povнdб spousta vмcн, ale nemбme na vэbмr, musнme najнt cestu pшes Иervenэ les a najнt Lesбka.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_lebedev_about_red_forest_2">
+		<text>Dobrб prбce, dostal ses pшes Иervenэ les. Lesбkova chэљe je blнzko.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_stalker_greeting">
+		<text>Uћ je to nмjakб doba, co jsem vidмl z Иervenйho lesa vylнzat nмco jinэho neћ pшнљery. No, tak pojп sem, chlapиe, pokecбme. </text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_1">
+		<text>Pomoc... Mayday... slyљн nбs nмkdo...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_2">
+		<text>...Nemщћeme se dostat z kvadrantu osmdesбt иtyшi... pokroucenэ... vracн se...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_3">
+		<text>...Zбkladno, ozvмte se... ...Zбkladno, ozvмte se...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_6">
+		<text>...Dostaт nбs odsud...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_7">
+		<text>...pшeћili emisi... ztratili jsme se...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_8">
+		<text>...Je to jako bludiљtм...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_enter_first_1">
+		<text>Uћ je to fakt nмjakб doba, co nмkdo proљel Rudэm lesem! Pojп sem, mбm pro tebe nмjakэ informace.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_bs_dead">
+		<text>No teda! Nikdy bych neиekal, ћe se dokбћeљ postarat o upнra!</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_stalker_radio_1">
+		<text>Pokud mм slyљнte... uvнzli jsme v anomбlii... nemщћeme ven... prostor je jakoby pokroucenэ... aќ jdeme kam jdeme... nemщћeme se hnout... vybavenн zmizelo... na horizontu vidнme mмsto... naљe souшadnice... 51... 10... 3... 1... 2... Je tam nмkdo?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_1">
+		<text>Tady Lesбk. Udмlal jsem plбnek, kterэ by mмl ukazovat, jak se dostat z bubliny. Posнlбm ti souшadnice. Aћ je druћstvo dostane, mмli by se bez problйmщ dostat ven. </text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_greetings">
+		<text>Pokud si chceљ pokecat, tak odloћ zbraт a pojп sem, hezky pomalu.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_2">
+		<text>Kosќane, tady Kaтour. Pamatujeљ si na mм? Radљi bys mмl, protoћe pшed pбr tejdny jsem ti zachrбnil prdel.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_3">
+		<text>Jasnм, Kaтoure, co pro tebe mщћu udмlat?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_4">
+		<text>Kosќane, potшebuju, abys pomohl tadytomu chlapovi dostat se k antйnбm ve vojenskэ zбkladnм. Prej seљ nмkde v oblasti, je to pravda?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_5">
+		<text>Sprбvnм, snaћнme se obsadit skladiљtм. Pшijп sem a spoleиnм armбdм nakopeme prdel.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_6">
+		<text>Teп ne, Kosќane, sorry. Nemщћou nбs vidмt, jak bojujeme s armбdou. Mщћu ti poslat jen jednoho chlapa.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_7">
+		<text>Jeden stшelec navнc nemщћe љkodit... poиkбme na nмj.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_actor">
+		<text>Zamiш ke Kosќanovi, pomщћe ti dostat se k vysнlaиi. </text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_freedom_com_task">
+		<text>Uvнzli jsme u velitelstvн! Vojбci jsou tam zalezlн a majн pokrytou celou oblast, nemщћem se hnout ani o centimetr! Pomoz nбm obsadit velitelstvн!</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_freedom_com_finish_task">
+		<text>Do ъtoku! Dorazte ty vojcly!</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_freedom_com_radio">
+		<text>Skvмlэ, vojenskб zбkladna je naљe! Svoboda tady zшнdн zбkladnu a zase jednou a provћdy uzavшe bariйru. Dнk za pomoc. Jen bмћ, vysнlaи je tvщj.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hires_in_bubble_thanks_1">
+		<text>Dostali jsme souшadnice a zkusнme proniknout z bubliny.... fajn, tady doleva... dvacet metrщ tudy... no do prdele! Jsme volnн! Slyљнљ mм? Dokбzali jsme se dostat ven z anomбlie! Zamншнme do Limansku!</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_meet_4n_com_task">
+		<text>Tady Lebedмv. Jsme u mostu, иekбme, aћ dorazн ћoldбci ze smмru od tбbora banditщ, mмli by tu bэt kaћdou chvнli. Vraќ se k mostu, potшebujeme tм tady - za chvнli to tady bude pмknм hustэ.</text>
+	</string>
+	<string id="characters_voice_scenario_military_esc_forester_pda_talk">
+		<text>Ta zachycenб komunikace toho hodnм vysvмtluje. Stav se u mnм v chэљi, mбm pбr nбpadщ, jak bychom ty ћoldбky mohli dostat z bubliny ven.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tower_captured">
+		<text>Ъkol splnмn! Vмћ je pod naљн kontrolou. Teп uћ ji jen musнme udrћet!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tower_captured_to_actor">
+		<text>Jdi do vмћe a dбvej pozor!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_defend_tower">
+		<text>Nepшнtel objeven, pшibliћujou se od zniиenйho kostela. Pшiprav se!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_capture_plant">
+		<text>Mбme vмћ, teп mщћeme zaинt иistit cestu do tovбrny. Podнvej se do svэho PDA a jdi na to podle sebe.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_scan">
+		<text>Zбkladno, tady jedna jedna dvм. V mokшinбch vidнme ћoldбka. Jakй jsou rozkazy, pшнjem?</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_base_attack">
+		<text>Jedna jedna dva, tady zбkladna. Zlikvidovat!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_attack_confirm">
+		<text>Potvrzuju, zбkladno. Jdeme na to.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_lost">
+		<text>Do prdele! Ta svinм se schovala v rбkosн! Pokud to tam vљechno nevypбlнme, nemбme vщbec љanci najнt ho!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_base_moveout">
+		<text>Jedna jedna dva, tady zбkladna, pokraиujte v hlнdkovбnн.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_moveout_confirm">
+		<text>Rozumнm, zбkladno.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_boars_killed">
+		<text>Vэbornм! Cesta k tovбrnм je иistб. Vyrazнme.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_plant_captured">
+		<text>Dobrб prбce, chlapi! Pumpa je zase pod naљн kontrolou.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_to_barman_0">
+		<text>Mrбzi, dej ћoldбkovi s tмmi svэmi vtнpky pokoj. Potшebuju ho tady.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_barman_reply_0">
+		<text>No, brбcho, kdyћ Lebedмv шнkб, ћe tм chce vidмt, tak nenн иas na diskuze. Bмћ... pokecбme pozdмjc.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_to_trader_0">
+		<text>Pшekupnнku, jde k tobм bojovnнk. Dej mu vљechno vybavenн, kterэ bude potшebovat na misi venku.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_trader_reply_0">
+		<text>Rozumнm.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_hurry_player_0">
+		<text>Pohni sebou.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_hide_in_tower_0">
+		<text>Utнkej k vмћi, tam se za tebou potvory nedostanou!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_player_in_tower_0">
+		<text>Uf, jdeљ prбvм vиas, brбcho! Dochбzн mi munice, ale spoleиnм to snad dбme.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_starting_surge_0">
+		<text>Pozor vљem bojovnнkщm! Blнћн se emise! Vљichni do krytu!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_forpost_sos">
+		<text>Tady je druhй postavenн, jsme pod ъtokem, opakuju, jsme pod ъtokem, pomoc...</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_commander_tutorial_anomalies">
+		<text>Pшed tebou jsou anomбlie, dбvej si bacha! Pamatuj, vћdycky pшed sebe zkus hodit љroub.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_commander_tutorial_artefacts">
+		<text>Jo, mimochodem, v anomбliнch se dajн obиas najнt artefakty. Ty je neuvidнљ, ale detektor je poznб, kdyћ se dostaneљ dost blнzko, detektor ti ukбћe lokaci artefaktu. Pak ho staин sebrat, pohodiиka. Jen nezapomeт, ћe tvщj detektor nenн zrovna super maљina, ukazuje jen vzdбlenost k artefaktu.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_0_up">
+		<text>Dobrб prбce, chlapi! Posнlili jsme svou pozici v baћinбch dost na to, abychom renegбtщm mohli pмknм nakopat! Naљнm dalљнm cнlem bude jejich hlavnн zбkladna!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_1_up">
+		<text>Obsadili jsme hnнzdo renegбtщ. Teп uћ jen musнme ovlбdnout cestu do baћin.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_1_down">
+		<text>Do prdele! Renegбti jsou silnмjљн neћ my! Musнme s tнm rychle nмco udмlat, jinak vбlku prohrajeme!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_2_up">
+		<text>Baћiny jsou teп naљe! Dobrб prбce, chlapi, dokбzali jsme to! Vљem jednotkбm: zakopejte se na klниovэch pozicнch a иekejte na dalљн instrukce!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_2_down">
+		<text>Renegбtщm se podaшilo zнskat zpмt svй hnнzdo! Nemщћeme dovolit, aby se ty svinм usadili hned vedle nбs. Musнme je z jejich zбkladny vykouшit, aќ to stojн co to stojн!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_3_down">
+		<text>Pozor, ztratili jsme kontrolu nad cestami do baћin. Pokud je neobsadнme, tak se baћiny zase stanou hnнzdiљtмm mizerщ!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_00">
+		<text>Tvэm hlavnнm prщvodcem je sekce ъkolщ.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_01">
+		<text>Tvщj hlavnн ъkol se zobrazuje zde...</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_02">
+		<text>Spoleиnм s vybranэmi dalљнmi ъkoly</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_03">
+		<text>Dalљнch ъkolщ mщћe bэt nмkolik, mezi nimi mщћeљ prochбzet pomocн tмchto tlaинtek.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_04">
+		<text>Vмtљina cнlщ se takй zobrazuje na mapм, se vzбcnou vэjimkou pшнpadщ, kdy nenн moћnй ъkol lokalizovat.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_05">
+		<text>Budeme potшebovat tvou pomoc nejen s niиenнm nepшбtel, ale taky v obsazovбnн klниovэch pozic. V takovэch pшнpadech ti naљi chlapi budou fakt vdмиnн, kdyћ je budeљ krejt, zatнmco oni budou obsazovat pozici. A mimochodem, vљнmej si volбnн o pomoc - naљim chlapщm mщћe jнt o ћivot.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_06">
+		<text>Kdyћ ukбћeљ kurzorem na znaиku na mapм, zobrazн se dalљн informace.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_07">
+		<text>Kromм tvэch cнlщ se na mapм zobrazujн takй pшбtelskй jednotky a identifikovanн nepшбtelй.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_08">
+		<text>Fajn, jak asi chбpeљ, naљнm hlavnнm cнlem je ovlбdnout baћiny, a to znamenб vбlku proti agresorщm. </text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_09">
+		<text>V tйhle sekci mщћeљ kdykoli zobrazovat taktickй informace o bojovэch operacнch. </text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_10">
+		<text>Informace o frakci, ke kterй patшнљ, se zobrazuje nalevo. Prбvм teп jsme to my, Jasnб obloha. </text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_11">
+		<text>Informace o hlavnнm nepшнteli se zobrazuje napravo.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_12">
+		<text>Tohle ukazuje naљi pшibliћnou bojovou sнlu.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_13">
+		<text>Tady se zobrazuje, kolik mбme bojovnнkщ.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_14">
+		<text>A tohle jsou naљe zбsoby a vybavenн.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_15">
+		<text>Pшнmo dole najdeљ symboly indikujнcн zvlбљtnн funkce naљeho bojovйho vybavenн.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_16">
+		<text>Podobnй indikбtory se ukazujн i pro nepшнtele.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_17">
+		<text>No a na tomhle mнstм si mщћeљ prohlйdnout aktuбlnн strategickou misi a takй taktickй cнle, kterй je potшeba splnit, aby byla dokonиena i strategickб mise.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_18">
+		<text>Dokonиenй strategickй mise se zobrazujн ve spodnн ибsti.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_19">
+		<text>Na poslednн zбloћce si mщћeљ prohlнdnout aktuбlnн vztahy se vљemi frakcemi, a takй bojovй sнly jednotlivэch frakcн.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_20">
+		<text>Jsou tady zobrazeny i tvoje osobnн statistiky.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_21">
+		<text>To je v podstatм vљechno.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_pathfinder_go_out_1">
+		<text>Jsme tam, mщћeљ si sundat pбsku z oин. Nezkouљej mм sledovat, stejnм by to nefungovalo! Pokud se chceљ vrбtit na zбkladnu, stav se v rybбшskй vesniиce a najdi tam nмkterйho z prщvodcщ.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_pathfinder_go_in_1">
+		<text>Domov, sladkej domov! Klidnм si sundej pбsku z oин. Pokud se budeљ chtнt vrбtit do baћin, najdeљ mм tady. </text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_arrive_on_open_marsh_1">
+		<text>Vypadб to, ћe ses dostal do Velkэch baћin. Dбvej si zatracenм velkэ pozor a nezkouљej bэt hrdina. Podнvej se do svэho PDA, mмl bys tam najнt lokace naљich jednotek. Mмl by ses pшesunout k rybбшskэ vesniиce, tam je najdeљ.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_limansk_intro">
+		<text>Vэbornм - jsi v Limansku. Probнhб tam poшбdnб vбlka, tak si dбvej pozor. Pomoz pшedsunutэm druћstvщm najнt cestu skrz mмsto.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_request_help">
+		<text>Sakra! Jsme pod palbou, mбme ztrбty! Okamћitм potшebujem pomoc!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_spich">
+		<text>Pojп sem, шeknu ti, co je tшeba. A drћ hlavu u zemм!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_hint">
+		<text>Ty vole, jsme v pмknэm prщseru. Opravdovб pouliиnн vбlka. Na balkonм barбku nalevo je kulometnэ hnнzdo. A municн neљetшej, pмknм nбs pшiskшнpli. Pokud dokбћem sundat toho kulometинka, budem moct pokraиovat. Jб pшilбkбm jeho pozornost a ty vpadni do toho barбku a postarej se o nмj. Vyrazнme na mщj signбl.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_oreder_1">
+		<text>Bмћ, bмћ!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_oreder_2">
+		<text>No tak, pohni prdelн!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_oreder_3">
+		<text>Na co sakra иekбљ? Bмћ, bмћ!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_clear_street">
+		<text>Tady kapitбn Serov, velitel druћstva Jasnб obloha. Blнћнme se ke kшiћovatce. Poиkej, jdeme ti na pomoc.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_to_actor1">
+		<text>Nepшнtel zniиen! Hej, pojп sem, шeknu ti, co je tшeba.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_to_actor2">
+		<text>Musнme se dostat hloubмji do mмsta. Naљi chlapi uvнzli u kanбlu za nбmмstнm a my jim jdeme na pomoc. Vypadб to, ћe se o sebe dokбћeљ postarat - tak co kdyby ses nбs drћel a pomщћem si navzбjem?</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_order1">
+		<text>Иistэ. Vyrazнme!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_order2">
+		<text>Ъtoиej ze vљech stran! Obrannэ pozice!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_nerves">
+		<text>Sakra, kolik jich je?!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_stay1">
+		<text>Sakra, kolik jich tam je? Lezou sem ze vљech smмrщ! Ћoldбku, pokraиuj ke kanбlu, my nepшнtele zdrћнme!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_stay2">
+		<text>Ћoldбku, padej odsud! Neplэtvej municн.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_parley1">
+		<text>Alfo, drћte pozici!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_parley2">
+		<text>Veliteli, jsme pod palbou! Ћбdбme o pomoc!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_order1">
+		<text>Drћte se! Poшбdnм jim zatopte!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor1">
+		<text>Nemohl sis vybrat vhodnмjљн dobu. Uvнzli jsme na hroznэm mнstм. Nepшнtel je zalezlej v budovм za kanбlem a my tady sedнme jako terиe na stшelnici! Lebedмv nбm pшikбzal zabrat most. Musнme ten barбk vyиistit a zabezpeиit, aќ to stojн co to stojн.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor2">
+		<text>Nepшнtel je zalezlej v budovм za kanбlem a my tady sedнme jako terиe na stшelnici. Nemб smysl ъtoиit, jen bychom zbyteиnм chcнpli.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor3">
+		<text>Trochu je zabavнme, aќ mщћeљ probмhnout k tэ budovм. Aћ tam budeљ, vнљ co je tшeba - sundej toho zasranэho kulometинka! Pмknм nбm zatopil, hajzl!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor4">
+		<text>Jo a hele - buп v klidu. Pшesouvej se z krytu do krytu, a jen kdyћ ti шeknu!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_order2">
+		<text>Druћstvo, krejt ћoldбka! Pal!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_military_1">
+		<text>Do prdele, je v barбku!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_order3">
+		<text>Hnнzdo vyшazenэ! Pшesunem se!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor5">
+		<text>Obsaпte pozice v barбku. Lepљн strategickэ mнsto bychom nenaљli.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor6">
+		<text>Dнk za pomoc! Zщstaneme tady a budem hlнdat most, dokud nedorazн hlavnн voj. Ty musнљ pokraиovat. Podle mapy jsme hodnм blнzko okraje Limansku. Souшadnice mбљ nahranэ do PDA.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_alert">
+		<text>Hej, ћoldбku!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_clear">
+		<text>Rбd tм vidнm.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_to_actor">
+		<text>Vэchod z Limansku je hodnм blнzko, ale musнme zщstat v pozoru a pokraиovat opatrnм.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_sniper_alert">
+		<text>Snajpr ve vмћi! Krejte se!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_order1">
+		<text>Vasilenko, vykuш toho snajpra! Bмћ!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_electro_fence">
+		<text>Sakra, ty svinм tam majн plot, dokonce je do nмj puљtмnб elektrika!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_confused">
+		<text>V mмstм rozvod elektшiny nejede. Takћe musн mнt nмkde poblнћ generбtor, kterэ cpe љќбvu do toho plotu.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_destroy_generator">
+		<text>Kabely vedou do barбku napravo. My zabavнme toho snajpra, ty vrazнљ do barбku Institutu a vypneљ ten generбtor!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_electricity_off">
+		<text>Skvмlэ, plot je bez љќбvy. Kupшedu.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_report1">
+		<text>Lebedмve, nepшнtel zniиen! Иekбme dalљн rozkazy!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_report2">
+		<text>Lebedмve, mбme most. Doufбm, ћe se ho nepokusн zнskat zpбtky.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_report3">
+		<text>Hlбsн se kapitбn Serov! Odrazili jsme ъtok. Cesta je иistб.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_leader_next_task">
+		<text>Skvмlб prбce! Hlavnн voj je pшipravenэ vyrazit do Limansku. Pшedsunutб druћstva, vaљнm ъkolem je najнt vstup do podzemн Pripjatм. Vstup by mмl bэt ve starй nemocnici na okraji Limansku. Souшadnice mбte na svэch PDA.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_attention">
+		<text>Postupujeme. Dбvejte si pozor, lidi.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_see_target">
+		<text>Cнl na jedenбcti hodinбch.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_check">
+		<text>Pщjdeme to zkontrolovat.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_help">
+		<text>Pomoc! Pomoc!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_fire1">
+		<text>Bandity jsem tady neиekal. Sundбme je.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_dont_shoot">
+		<text>Nestшнlet! Шeknu vбm o pasti banditщ!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_threat1">
+		<text>Tak povнdej a moћnб tм uљetшнme.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_medkit1">
+		<text>Dej mi lйkбrniиku pro mэho parќбka.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_threat2">
+		<text>Budeљ se muset obejнt bez nн. Mбљ jednu minutu. Шekni mi, kde je ta past, nebo tм odprбsknu jako psa.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_medkit2">
+		<text>Dej mi tu lйkбrniиku!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_fire2">
+		<text>Popravte ho.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_senks">
+		<text>Dнk za lйkбrniиku.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_about_ambush">
+		<text>Past je blнzko. Oznaинm ti to na PDA.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_bandit_free">
+		<text>Mщћeљ ћнt, ale ne abych tм jeљtм nмkdy vidмl.</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_1">
+		<text>Nebudu zachбzet do detailщ, ale musнm шнct, ћe nмco takovйho jsem nikdy pшedtнm nevidмl. Podle encefalogramu to vypadб na znaиnй poљkozenн nervovйho systйmu, ale jinб mмшenн ukazujн, ћe je vљechno v naprostйm poшбdku. Ъћasnй!</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_2">
+		<text>Moћnб to mб nмco spoleиnйho s emisн?</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_3">
+		<text>... to rozhodnм! Aиkoli zatнm jsem nebyl vщbec schopen vymyslet racionбlnн vysvмtlenн nмиeho tak abnormбlnнho.</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_4">
+		<text>Hele, probral se!</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_5">
+		<text>Jsi vzhщru? Dobшe.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_about_hall">
+		<text>Dнky bohu, ћe nмkdo odpovмdмl! Hele, na druhэ stranм chodby je kulometинk a snajpr. Nemщћem se ani hnout!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_about_sniper">
+		<text>Do prdele, dalљн ztratil nervy... Hele, musнљ nбm pomoct sundat toho snajpra, jinak tady vљichni zdechneme! My odlбkбme kulometинka a ty tam nabмhni!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_arrived">
+		<text>Dobrб prбce, zvlбdnuls to! Teп je postшнlнme!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_1">
+		<text>Na co иekбљ?! Zkusme je odlбkat znova!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_2">
+		<text>Probuп se! Nemщћeme tady иekat vмиnм!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_3">
+		<text>HEJ! Pшestaт plэtvat иasem!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_pda_1">
+		<text>Na co sakra иekбљ?! Zkusнme je odlбkat znova!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_pda_2">
+		<text>Probuп se! Nemщћeme tady иekat vмиnм!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_pda_3">
+		<text>HEJ! Pшestaт plэtvat иasem!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_block_1">
+		<text>To byl jeden! Zbejvб druhej, na nмj!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_block_2">
+		<text>A druhej je kaput! Oba pшнstupy odшнznutэ!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_cover_us">
+		<text>Stalkere, krej nбs!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_danger">
+		<text>Pшнzemн pokrejvб kulomet. Stщj, dokud nedбm rozkaz!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_go">
+		<text>Kupшedu!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_go_pda">
+		<text>Kupшedu!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_gunner_killed">
+		<text>Kulomet vyшazenej! Cesta je volnб!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_hold_on">
+		<text>Vydrћ! Jsme na cestм!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_dot">
+		<text>Petro, sundej ten bunkr dole!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_gunner">
+		<text>Tady mбљ granбt, svinм!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_sniper">
+		<text>Dokбzals to! Teп mщћeme toho snajpra obejнt. Postarej se o nмj!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_sniper_now_1">
+		<text>Zabij ho, jinak jsme vљichni mrtvэ!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_sniper_now_2">
+		<text>Sundej toho snajpra! Rychle!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_request_help">
+		<text>Pomoc, uvмznili nбs u vstupu!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_runner_killed">
+		<text>Aaaaa....</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_start_block">
+		<text>Zablokujte prщchod, aќ nemщћou pшivolat posily.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_start_raid">
+		<text>Vэbornм, snajpr kaput. Cesta je volnб. Pшesuneme se a zkusнme vyhodit do luftu ten bunkr.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_suicide">
+		<text>Krejte mм! Zkusнm ho sundat!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_thanks_actor">
+		<text>Jdi! My nepшнtele zdrћнme!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_victory">
+		<text>Zбkladno, jsme u vstupu do katakomb! Co teп?</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_victory_reply">
+		<text>Skvмlэ! Na pozice a drћte vstup do katakomb. Hlavnн voj je na cestм. </text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_wait">
+		<text>Na mщj povel! </text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_wait_pda">
+		<text>Na mщj povel! </text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_well">
+		<text>Dobrб prбce! Jen tak dбl! </text>
+	</string>
+	<string id="characters_voice_scenario_hospital_enemy_see_helicopter">
+		<text>Do шiti... to je vojenskej vrtulnнk! Sundej ho! Miш na kokpit!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_kill_order">
+		<text>Jedna, dva jedna, sundejte je vљechny!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_killed">
+		<text>Do prdele! Dostali jsme to, dostali jsme to! Vyskoиte, vyskoиte!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_see_enemy">
+		<text>Zбkladno, tady jedna dva jedna. Vidнm nepшбtelskй druћstvo a neidentifikovanэho stalkera. Иekбm rozkazy.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_start_attack">
+		<text>Rozumнm, zбkladno. Zahajujem ъtok!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_kill_actor">
+		<text>Snaћн se dostat skrz!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_kill_actor_intercept">
+		<text>Zastavte ho!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_z3_csky_com_apply">
+		<text>Rozumнm. Jdeme na to.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_z3_csky_com_order">
+		<text>My zdrћнme monoliќбky a ty jdi dolщ do katakomb.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_dead_digger_leader_rec">
+		<text>Dal jsem Tesбkovi souибstku, kterou jsme naљli ve skrэљi. Furt nadбval a шнkal, ћe nбm nezaplatн, dokud nenajdem i dalљн souибstky. Probrali jsme to mezi sebou a rozhodli se, ћe za nнm poљlem Vasju, aќ si s nнm pokecб. Vasja je pмknм vэmluvnej mizera, tak jsme si шнkali, ћe by tшeba dokбzal z Tesбka vytбhnout aspoт nмjakэ prachy. Jen doufбm, ћe po cestм nenarazil na nмjakэ problйmy...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_warning">
+		<text>Hej, kбmo, bacha! Je tady sakra velkб smeиka иoklщ! Rychle se vyљplhej na skбlu!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_shout_1">
+		<text>Hej, vypadni!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_shout_2">
+		<text>Dej mi sakra pokoj!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_shout_3">
+		<text>Tбhnмte ode mм, zableљenэ bestie. </text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_thanks">
+		<text>Dнk, kбmo, zachrбnils mi prdel! Jmenuju se Vasjan. No pшedstav si to. Mншim na zбpad, dohnat jednoho stalkera, starбm se jen o svэ, a najednou na mм ty slepэ bestie vyskбиou! Vysypal jsem na ty svinм tшi zбsobnнky, ale nedaly si pokoj, honily mм aћ sem! Teп uћ toho stalkera nechytнm, ten uћ bude v Temnэm ъdolн!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_pda_rec">
+		<text>Od Tesбka mм odшнzla smeиka psщ. Vypadб to, ћe љel na vэchod, do Temnэho ъdolн. </text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_1">
+		<text>Je to tady sakra dobrэ. Jen se podнvej, jak sem lezou vљichni stalkeшi jak љvбbi na pivo. Po иem asi jdou...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_2">
+		<text>Sakra, љkoda, ћe ten mizera utekl!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_3">
+		<text>Ser na nмj! Odhodil svэ vмci, na niиem jinэm nezбleћн.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_4">
+		<text>Jo, sebereme ty nejlepљн kousky a vypadnem...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_fang_pda_rec">
+		<text>No, Tesбku, situace se zmмnila. Nмkdo vн, ћe jsme se dostali do stшedu Zуny, a hledб nбs. Musнme se pohnout, a to rychle. Detailnн plбn akce najdeљ v naљн skrэљi. Zmмnil jsem kуd.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_find_fang_pda">
+		<text>Seљ furt s nбma, ћoldбku? Fajn, fajn. Tesбkovo PDA je nмkde poblнћ tebe. Najdi ho!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_csky_leader_goto_agroprom">
+		<text>Ћoldбku, tady Lebedмv. Informace z Tesбkova PDA potvrzuje moje podezшenн. Neidentifikovanб skupina stalkerщ se dostala do stшedu Zуny... nevнm jak, ale dokonce se jim podaшilo pшeћнt velkou emisi. Bylo by lepљн, kdyby to nedokбzali, protoћe Zуnu nikdy nezpacifikujeme, pokud nezщstane cesta do centra utajenб. To se mщћe stбt jen dvмma zpщsoby: buп tu skupinu stalkerщ zastavнme, nebo Zуna vyvolб dalљн emise a zniин vљechno uvnitш... a moћnб i venku! Rozhodnм by bylo lepљн, kdybychom se o to postarali sami, ale musнme jednat rychle, pokud mбme mнt aspoт nмjakou љanci na ъspмch. V Tesбkovм PDA jsou souшadnice jejich skrэљe - jsem si jistэ, ћe tam najdeme informace o jejich plбnu...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_return_1">
+		<text>Hej, je to na tobм... klidnм se na svэ љtмstн vyser!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_return_2">
+		<text>Zaиni bejt aspoт trochu chlap a padej sem zpбtky!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_return_3">
+		<text>Hej, vole, snad mi nechceљ utэct, ћe ne?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_come_here_1">
+		<text>Hej, kбmo... schovej tu bouchaиku a pojп sem, potшebujem si pokecat.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_come_here_2">
+		<text>Schovej tu bouchaиku a pocem, dмdku!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_come_here_3">
+		<text>Hele, musнme si promluvit. Ale nejdшнv schovej tu bouchaиku.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stop_1">
+		<text>Zщstaт stбt, kбmo! A ruce drћ tak, aќ na nм vidнm!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stop_2">
+		<text>Ani hnout! Aќ tм ani nenapadne sahat na bouchaиku.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stop_3">
+		<text>Ani hnout, dмdku! Miш na zem a ani se nehejbej.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stand_still_1">
+		<text>Hej, zщstaт stбt.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stand_still_2">
+		<text>Fajn... ћбdnэ rychlэ pohyby!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stand_still_3">
+		<text>Zщstaт stбt, dмdku!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_see_actor_1">
+		<text>Hele, vole, pokud chceљ tudma projнt, musнљ zaplatit. Pojп sem a domluvнme se.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_see_actor_2">
+		<text>Nestщj tam tak a pocem!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_1">
+		<text>Pohni se sakra!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_2">
+		<text>Seљ blbej, nebo co? Vypadni!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_3">
+		<text>Hele, pohni sebou, nebo to schytбљ!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_4">
+		<text>No, jak chceљ... sundejte ho, chlapi!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_reject_1">
+		<text>Hele, tбhni mi z oин!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_reject_2">
+		<text>Seљ nмjakej pomalejљн, ne? Vypadni!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_reject_3">
+		<text>Jak chceљ... zabte ho!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_kill_actor_1">
+		<text>Sundejte ho!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_kill_actor_2">
+		<text>Zabte tu svini!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_move_1">
+		<text>Ani se nehni!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_move_2">
+		<text>Ani hnout, hajzle!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_weap_1">
+		<text>Schovej tu bouchaиku, debile!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_weap_2">
+		<text>Hej, kбmo, tu bouchaиku radљi schovej!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_traitor_attack">
+		<text>Sundejte tu svini, chlapi, mб prachy!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_leader_traitor">
+		<text>Paљerбkovo PDA? Poљli mi poslednн poznбmky. Ha! Mбme souшadnice zбsobбrny zbranн. Hned tam poљlu svэ chlapy! Stav se za mnou... musнme si probrat nмjakэ obchodnн vмci, z oин do oин.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_captive_leader_reward">
+		<text>Ty vole, byl jsem si jistej, ћe zdechnu jako pes. Jб... ani nevim jak ti podмkovat. Poиkej! Uћ vнm. Nahraju ti souшadnice mнsta, kam jsme s kбmoљema schovali nмjakэ vмci, neћ nбs chytli a poslali sem. Kбmoљi uћ to potшebovat nebudou, aќ odpoинvaj v pokoji, a jб teп ze Zуny vypadnu. Nмkde bude urиitм nмjakэ lepљн mнsto k ћivotu...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_attack">
+		<text>Nмkdo ъtoин na naљe chlapy, kousek od tebe. Jsou v hajzlu, pokud jim rychle nмkdo nepomщћe!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_gone">
+		<text>Sakra! Chlapi jsou mrtvн a to, co je zabilo, je uћ taky pryи, na to vsaп svэ boty... sakra, ћivot fakt nмkdy stojн za houby...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_killed">
+		<text>Ty vole, ty seљ hrdina! Pмknм jsi naљe chlapy pomstil, aќ odpoинvaj v pokoji... ale "dмkuju" nemб moc velkou cenu, takћe se za mnou stav na bleљнm trhu - nмco pro tebe mбm.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_conc_camp_go_away">
+		<text>Vypadni ocaп, dмdku. Jsme tady pмknм nervуznн, tak si dej bacha, aќ tм netrefн "nбhodnб" kulka...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_conc_camp_blockpost">
+		<text>Hele, debile. Todleto je nбљ flek a nбљ tбbor, tak si najdi nмjakou cestu vocaп, kterб nepovede pшнmo do hrobu, jasnэ?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_win_1">
+		<text>Tak takhle mб podle mм vypadat poшбdnej chlap! To bylo ъћasnэ!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_win_2">
+		<text>No ty vole... ty seљ fakt echt snajpr.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_win_3">
+		<text>No sakra, vidмls to? Ty vole, to bylo nмco!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_lose_1">
+		<text>Nauи se stшнlet, kretйne!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_lose_2">
+		<text>No ty vole! Pшнљtм љetшi sнly a vodprбskni rovnou sebe.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_lose_3">
+		<text>Musel mнt kocovinu, kdyћ stшнlel tak mizernм...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_1">
+		<text>Tбmhle je, do toho!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_2">
+		<text>Sundejte je!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_3">
+		<text>Vнљ vщbec, jak se to pouћнvб?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_4">
+		<text>No tak, jб ti vмшнm!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_5">
+		<text>Ber kшнdla, kшнdla!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_1">
+		<text>Ale sakra, risknu to. Tady je pade na tamtoho chlapa.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_2">
+		<text>Na toho srбиe nic nevsadнm!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_3">
+		<text>Tohle bude zбbava!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_response_1">
+		<text>Uvidнme, jestli vщbec dokбћe zamншit.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_response_2">
+		<text>Ha-ha! Ten srби nemб љanci!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_response_3">
+		<text>Vypadб to, ћe by to mohl dбt, co vнљ...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_win_first">
+		<text>Ty vole, porazil jsi mщj rekord! To je fakt dobrэ, na, vem si tohle.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_win_player">
+		<text>Ty vole, porazil jsi svщj rekord. Tady mбљ odmмnu.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_win_npc">
+		<text>Vole, seљ novej љampion! A vнtмz dostane odmмnu!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_lose_1">
+		<text>Nemмls moc љtмstн, tak to zkus znova.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_lose_2">
+		<text>Zkus to znova, kбmo. Tentokrбt to zvlбdneљ.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_lose_3">
+		<text>Holt se to obиas nepovede, no. Zkus to znova.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_gone_1">
+		<text>Hej, vole, kam jdeљ? Nechceљ zkusit dalљн?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_gone_2">
+		<text>No tak vole, vraќ se! Љlo ti to dobшe!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_gone_3">
+		<text>Vraќ se, teп budeљ mнt љtмstн, to ti povнdбm!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_leader_ambush">
+		<text>Co? Stringov tм nalбkal do pasti? Hmm... ten hajzl se za to bude smaћit v pekle!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_leader_traitor_dead">
+		<text>Tak je po nмm, po hajzlovi? Podнvej se, jestli u sebe nemб nмco cennэho.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_join_message">
+		<text>Nazdar brбcho, jб jsem Joga! Vidнm, ћe nejsi ћбdnej srби. Aћ budeљ pшнљtм v okolн, stav se! Udмlбm z tebe souибst tэmu.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_destroy_flea_market_done">
+		<text>Tak co, postaral ses o ty chlapy na bleљнm trhu? Ty seљ poшбdnej chlap, kбmo, a kdyћ to шнkб Joga, to je nмco! Poшбdnej nбшez! Tvщj podнl mб Zub, jako vћdycky.  </text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_done_a">
+		<text>Podle signбlu PDA je Stringov kaput. Fajn. Odmмnu si vyber od pшekupnнka Zuba. Шekl bych, ћe teп ti mщћu zaинt dohazovat sloћitмjљн fuљky.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_done_b">
+		<text>Hele, moji chlapi sundali Stringova, kdyћ se snaћil utэct ze Smeќбku. Asi ho nмco vystraљilo a rozhodl se zdrhnout, takћe to nenн tvoje vina. Co kdybych ti mнsto toho dal jinej kљeft?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_done">
+		<text>Hele, Stringov mi dodбval informace o kopбинch. Vypadб to, ћe na nмj pшiљli, takћe v poslednн dobм je k niиemu, i kdyћ poslednн zprбvy byly celkem zajнmavэ. Kopбиi majн schщzku s nмjakэm hajzlнkem severnм od Smeќбku, chtмj koupit bouchaиky. Postarej se, aby se odtamtud nedostal nikdo ћivej, ani ten debil, ani kopбиi. Nahrбl jsem ti souшadnice do PDA. </text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_call">
+		<text>Stringov? Pшestaт se flбkat! Radљi vyraz k tэ zastбvce, jasnэ? Poslal jsem tam chlapa, aby to s tebou vyrovnal.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_smuggler_done">
+		<text>Vљichni kaput? Dobrб prбce! Odmмnu si vyzvedni u Zuba. Mimochodem, postupujeљ na vyљљн ъroveт. Dбm ti velenн nad pмti mejma chlapama. Chci, aby kopбиi navћdycky zapomnмli na nмjakej ozbrojenej odpor, takћe s chlapama vyrazнљ a ukбћeљ jim, kdo je љйf. Cнlem je bleљн trh. Aћ doшeљнљ kopбиe, postarej se, aby naљi zabezpeиili oblast a nikoho tam nepustili. Tvщj tэm uћ je na pozici, ale bez tvэho rozkazu si ani neuprdnou.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_0_up">
+		<text>Pмknм, chlapi! Teп nбs иekб pohodlnмjљн ћivot! Je na иase ovlбdnout vљechny vstupy na Smetiљtм - jen aќ mizerovй zaplatн, pokud odtud chtмjн pшenбљet artefakty.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_1_up">
+		<text>Ha-ha, Smetiљtм teп patшн Jogovi! Vysajem ty stalkery do sucha! Ale ti hajzlнci majн zбkladnu v Kordonu. Asi bychom je mмli navљtнvit a ujasnit jim, kde je jejich mнsto.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_1_down">
+		<text>Chlapi, dostбvбme na prdel. Dejte se dohromady a ukaћte jim, co umнte!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_2_up">
+		<text>Chlapi, my na to mбme! Kordon je nбљ, takћe se teп stalkeшi budou muset podмlit, pokud tudy budou chtнt projнt! Poшбdnм je zmбиknмte, aќ se ani neodvбћн vystrиit nos ze svэ zбkladny.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_2_down">
+		<text>Vy kretйni, co to dмlбte? Stalkeшi ovlбdli cestu do Kordonu. Copak chcete, aby nбm pronбљeli artefakty pшнmo pod nosem? Padejte tam a obsaпte tu zatracenou cestu!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_3_up">
+		<text>No to je nмco, jsem na vбs fakt pyљnej, chlapi! Zahnali jsme ty љvбby do rohu, teп je staин rozmбиknout. Pшipravte se na ъtok!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_3_down">
+		<text>Do шiti! Naљi chlapi byli vyhnanн z Kordonu. Prej se tam dбvб dohromady kupa stalkerщ. Musнme jim ukбzat, kdo je tady љйf.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_4_up">
+		<text>Teп si to uћijeme, chlapi! Mщћeme ze stalkerщ vysбt vљechny prachy, kterэ majн, a oni si nemщћou ani uprdnout! Шekl bych, ћe za chvнli dбme dohromady poшбdnej balнk a s celou blbou Zуnou se rozlouинme! Pak jim poљlem pohled z Ria!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_4_down">
+		<text>Sakra! Ti stalkeшi zaинnaj bэt nмjak moc namyљlenн! Sundali naљe chlapy poblнћ svэ zбkladny! Pokud jste nмkdo poblнћ, ukaћte tмm kretйnщm, ћe se do nбs nemajн srбt!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_5_down">
+		<text>Brбchovй, stalkeшi nбm tady nakopali prdel! Zlikvidovali naљe v Kordonu a teп tam tomu vlбdnou. Zaиnмte se sakra trochu snaћit, mazejte tam a pшipomeтte jim, kdo tomu tady љйfuje!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_start_pda">
+		<text>Uћ dlouho jsem nevidмl nмkoho, kdo by se vrбtil z baћin. Vylezl jsi pшнmo vedle armбdnнho stanoviљtм. A od armбdy mщћe stalker иekat jen jednu vмc - kulku. Na tvэm mнstм bych si dal pozor.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_mil_target_detected">
+		<text>Poplach! Odhalen stalker! Pal!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_mil_target_lost">
+		<text>Cнl ztracen! Dщstojnнku, vezmмte si chlapy a vyиistмte sektor.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_wolf_call">
+		<text>Hej, ћoldбku, co tм sem pшivбdн? Pojп sem, pokecбme.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_call">
+		<text>Tys utekl armбdм? Ty mбљ ale kliku! Mбm pocit, ћe mбљ nмjakэ dщvod k tomu, abys tu byl. Aћ budeљ v oblasti, stav se za mnou.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_greet_first">
+		<text>Hej, rбd tм vidнm! Takћe... pokecбme obchodnм?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_greet_habar">
+		<text>Takћe jsi to nakonec sehnal! Vмdмl jsem, ћe se na tebe mщћu spolehnout!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_greet_1">
+		<text>Nмco novэho ohlednм tэ vмci, o kterэ jsme se bavili?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_greet_2">
+		<text>Mбљ pro mм tu skшнnku?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_greet_3">
+		<text>Jak to jde s tou skшнnkou?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_habar_1">
+		<text>Pohni s tou skшнnkou, jo?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_habar_2">
+		<text>Pшines mi tu skшнnku, jakmile ji najdeљ.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_habar_3">
+		<text>Nezapomeт, furt potшebuju tu skшнnku.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_1">
+		<text>Hodnм љtмstн.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_driver_treat">
+		<text>Nestшнlej, prosнm, nestшнlej!...</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_patrol_help_1">
+		<text>Zбkladno, potшebujem pomoct! Pшepadla nбs armбda!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_patrol_help_2">
+		<text>Brбchovй, pomozte nбm! Uћ dlouho nevydrћнme!...</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_yes_1">
+		<text>Jdi, rychle! Pшekupnнk se za tebe pшimluvil.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_yes_2">
+		<text>No tak, pohyb! Иekajн na tebe na zбkladnм.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_yes_3">
+		<text>Nestщj tam a neљkrбbej se na zadku. Jdi na zбkladnu.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_no_1">
+		<text>Zmiz, ћoldбku! Tohle je ъzemн stalkerщ!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_no_2">
+		<text>Jestli se pшiblнћнљ, budeme stшнlet!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_no_3">
+		<text>Tady nejseљ vнtanej!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_1_1">
+		<text>Hej, tady je Valeriбn! Kde jsi sakra byl poslednн dva dny? Mбme tady celkem problйm a kaћdб bouchaиka se poинtб!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_1_2">
+		<text>No, pшes to se nedostaneme! Cestu blokujou anomбlie a my se snaћнme najнt cestu nмjak kolem nich!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_1">
+		<text>Vasiliji, pamatujeљ, jak jsi mi slнbil dalљн stшelce?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_2">
+		<text>Mnм to nevadн, Valeriбne! Ale uvмdom si tohle: armбda se bude divit, proи prodбvбme zbranм stalkerщm...</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_3">
+		<text>A ty si uvмdom tohle, Vasiliji: pokud vojclщm teп trochu nenakopeme prdel, tak nбs nakonec utahajн a zlikvidujou vљechny!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_4">
+		<text>Fajn, Valeriбne. Zнtra ti mщj chlap pшinese vљechno, co mбm.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_1">
+		<text>Valeriбne, tady je Bachor! Je pravda, ћe dбvбљ stalkery dohromady?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_2">
+		<text>Takћe je to pravda. Armбda se ъplnм zblбznila. Dokonce si troufli na nбs poslat bandity. Rozhodli jsme se bojovat.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_3">
+		<text>Tak jб se taky hlбsнm! Mбm s nima nevyшнzenэ ъиty... Budu tam zнtra, a pшivedu s sebou dalљн tшi chlapy.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_4">
+		<text>Super, dнky. Tak zнtra.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_4_1">
+		<text>Hej, Gobline! Co je tam novэho?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_4_2">
+		<text>Armбda prбvм stшнlн na vљechno, co se hejbe. Akorбt nechodн moc daleko od svэ zбkladny, na to si netroufaj.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_4_3">
+		<text>Fajn, tak mi dej vмdмt, kdyby nмco.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalkerbase_guard_redirect">
+		<text>Ty vole, иekбme na tebe celou vмиnost. Hned bмћ za љйfem!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_mill_complete_reply">
+		<text>Dobrб prбce! Armбdnн jednotka je vyшeљenб. Druhou jsme objevili u depa. Zamiш tam a postarej se o to.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_dead_military_pda_request">
+		<text>Skvмlэ! O armбdu je postarбno. Teп jsou jeho kбmoљi kaput, takћe Chaletskij vн, ћe uћ nemб ћбdnej trumf. Teп ta armбdnн krysa zaиne zpнvat jinou pнsniиku, to se vsadнm! Ћoldбku, vraќ se na zбkladnu.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_jail_monologue">
+		<text>Vidнљ, jak se nevyplatн bejt tvrdohlavej? Tvн kбmoљi jsou kaput a ty seљ furt tady. Nikdo tм nepшijde zachrбnit. Шekni mi, kam jsi tu skшнnku schoval!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_location_1">
+		<text>....Fajn, шeknu vбm to... svinм... je u starэho mlэna, pod stшechou.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_location_2">
+		<text>....Fajn, шeknu vбm to... svinм... je v tunelu, u pшevrбcenэho auta.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_location_3">
+		<text>....Fajn, шeknu vбm to... svinм... je v barбku kousek ocaп, na pщdм.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_founded">
+		<text>No vidнљ to? Ten malej srби se ъplnм rozsypal! Souшadnice skrэљe mбљ v PDA. Co tam najdeљ, rovnou odnes Sidoroviиovi, uћ se nemщћe doиkat. </text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_request">
+		<text>Fajn, ћoldбku, budu иekat na tebe i na skшнnku.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_2">
+		<text>Jeљtм se uvidнme... moћnб.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_3">
+		<text>No, dej na sebe bacha.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_give_habar">
+		<text>Hej!!! Kam to jdeљ? Dej mi tu skшнnku!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_can_join_stalker_1">
+		<text>Ћoldбku, tady Valerian. Dveшe klanu stalkerщ jsou pro tebe otevшenэ. Pokud se chceљ stбt jednнm z nбs, budu иekat na naљн zбkladnм.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_0_up">
+		<text>Vэbornм! Teп jsme dost silnн, abychom se dokбzali ubrбnit. Poslouchejte, musнme obsadit cesty vedoucн do Kordonu. Pokud to udмlбme, tak uћ se ti zatracenн banditi nebudou k naљн zбkladnм moct dostat.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_1_up">
+		<text>Hah, teп se banditi do Kordonu jen tak nedostanou. Ale jeљtм jsme neskonиili. Musнme se pшipravit na ъder smмrem ke Smetiљti. Dбme tмm debilщm lekci, na jakou jen tak nezapomenou!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_1_down">
+		<text>Do prdele, banditi jsou silnмjљн neћ my! Pokud to rychle nesrovnбme, tak skonинme jako otroci na Smetiљti.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_2_up">
+		<text>Jen tak dбl, podaшilo se nбm zabezpeиit Smetiљtм! Opakuju: cesta na Smetiљtм je иistб, uћ nebudete muset platit za pшechod. Teп nбm jen zbэvб vyrazit na jejich hnнzdo a ukбzat jim, kdo je tady љйf!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_2_down">
+		<text>Pozor! Banditi si zшнdili pozici v Kordonu! Pokud rychle neovlбdneme Kordon, bude to tam za chvнli samej bandita!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_3_up">
+		<text>Dobrэ zprбvy! Zablokovali jsme jedinej vэchod ze zбkladny banditщ. Pшipravte se na finбlnн ъtok!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_3_down">
+		<text>Do prdele, ztratili jsme Smetiљtм, ale nebojte se, chlapi! Dбme se dohromady a zkusнme to znovu!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_4_up">
+		<text>Tenhle den se zapнљe do historie Zуny jako den vнtмzstvн stalkerщ nad bandity! Uћ ћбdnй podfuky a placenн za pшechod! Stalkeшi, salutuju vбm!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_4_down">
+		<text>Pozor! Banditй vyrazili a sundali naљe chlapy poblнћ svй zбkladny. Musнme zabezpeиit vэchod ze zбkladny banditщ dшнv, neћ se nбm zase vљude rozlezou!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_5_down">
+		<text>Pozor, stalkeшi, tady Valeriбn! Banditi zase obsadili Smetiљtм. Иert vн, odkud lezou, ale je jich to tam plnэ, љmejdщ. Dбvejte si pozor!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_enter">
+		<text>Ani hnout! Temnй ъdolн je v karantйnм! Odloћ zbraт a pojп sem hooodnм pomalu. Ћбdnй prudkй pohyby! Chci s tebou jen pokecat...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_wait_1">
+		<text>Pojп sem. Klid, nebudeme stшнlet!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_wait_2">
+		<text>Hej ty, pojп sem. No tak! Musнme tм zkontrolovat.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_wait_3">
+		<text>Co tam tak stojнљ, pojп sem, no tak!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_stop">
+		<text>Ani hnout! Schovej zbraт a zщstaт na mнstм. Pokud se zkusнљ pohnout, seљ mrtvej na mнstм!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_return">
+		<text>Pojп sem. Klid, nebudeme stшнlet!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_stand_still">
+		<text>Nehэbej se, brбcho, nebude to bolet.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_kill_actor">
+		<text>Sundejte toho srбиe!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_after_pay">
+		<text>Rozchod.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_reply_sos_done">
+		<text>Vypadб to, ћe je vљude klid.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_reply_sos_1">
+		<text>Delto, tady Alfa. Co to bylo za stшнlenн? Co se to tam dмje?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_reply_sos">
+		<text>Sakra, dalљн ъtok! Ћoldбku, podнvej se po zranмnэch u pшedsunutэho bodu!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_dead_squad_1">
+		<text>...Ozvi se, ozvi se! Tak odpovмz mi!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_dead_squad_2">
+		<text>...Ohlas se, ohlas se!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_dead_squad_3">
+		<text>...Proи neodpovнdбte? No tak, ozvмte se chlapi!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_base_enter">
+		<text>Stalkere, jsi na ъzemн Svobody a to znamenб, ћe pokud si nмco zkusнљ, tak si to odskбиeљ. Pokud se chceљ na nмco zeptat, stav se za mnou.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_comendant_come_back">
+		<text>No ty vole, tys tмm mutantщm ukбzal! Vraќ se pro dalљн instrukce.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_leader_help">
+		<text>Ћoldбku, tady Иechov. Zaъtoиili na opevnмnн... nevнm, jestli nмkdo pшeћil, ale jedno PDA je poшбd aktivnн. Mohly by v nмm bэt uћiteиnэ informace. Najdi ho a pшines mi ho.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_attack_help">
+		<text>Pozor vљem druћstvщm Svobody: prбvм jsme narazili na ћoldбky u starэ farmy. Stojнme proti tvrdэmu odporu a potшebujeme pomoc! Opakuju: okamћitм potшebujem posily!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_leader_pda_come_back">
+		<text>Chudбk nбљ komandant se teda daleko nedostal! Pбr jeho novejch kбmoљщ mu naљlo pмknэ mнsteиko - na stromм. Fajn, seber PDA toho debila a hned se vraќ ke mnм.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_antenna_control">
+		<text>Fajn! Prvnн a druhou antйnu mбme pod kontrolou! Teп musнme obsadit tu tшetн!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_antenna_finish">
+		<text>Skvмlб prбce, antйny mбme pod kontrolou. Zahajujem skenovбnн. </text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_antenna_good">
+		<text>Mбme souшadnice tunelu - je kousek od opuљtмnэ tovбrny. Takћe takhle se ћoldбci dostбvajн do ъdolн. Pozor vљem druћstvщm! Najdмte ten tunel a zniиte ho!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_zavod_help">
+		<text>Jsme u starэ tovбrny. Do prdele, je to tady samej ћoldбk! Pomoc!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_zavod_task">
+		<text>Dнk, ћes pшiљel! Uvнzli jsme na nбdvoшн, maj nбs pмknм na muљce. Pomoz nбm sundat ћoldбky na stшeљe!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_quest_finish">
+		<text>Ten hajzl zodpovмdnэ za smrt naљich chlapщ je kaput. Svoboda zas jednou pшedvedla, ћe kdyћ se sereљ do nejlepљнch, skonинљ jako hromada sraиek! Brzo pшijde den, kdy bude celб Zуna svobodnб! A ty se nмkdy stav pro odmмnu.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_1">
+		<text>Hej, drsnн chlapi i pohodovн kluci! Pokud chcete, aby se k vбm ostatnн chovali jako ke иlenщm rodiny a byli v pohodм, tak to najdete ve Svobodм! Ћбdnб prбce, ћбdnэ vymazбvбnн mozku, ћбdnэ rannн rozcviиky! Pokud jseљ pravej stalker, kterej miluje svobodnej ћivot a dobrej drink ve spoleиnosti sobм podobnejch, pшidej se k nбm! Pro novou krev mбme vћdycky dost chlastu na uvнtanou!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_2">
+		<text>Stalkere! Dostal jsi skvмlou pшнleћitost najнt si ve Svobodм pravэ kamarбdy! Jenom mezi nбma vћdycky najdeљ nмkoho, kdo ti bude krejt zбda a podмlн se s tebou o poslednн kousek chleba!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_3">
+		<text>Veterбni i novбиci! Pokud si cenнte svojн svobody a chcete bэt mezi vбmi podobnэma, pшidejte se k nбm! Svoboda pшivнtб kaћdэho, kdo projde Zуnou aћ k naљim dveшнm.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_4">
+		<text>Chceљ si zaslouћit respekt ostatnнch stalkerщ? Chceљ si vytvoшit tэm vмrnэch kamarбdщ, kteшн tм v prщseru neopustн? Snнљ o tom, ћe nakopeљ prdel nмjakйmu debilovi z Povinnosti? Tohle vљechno a spousta dalљнch moћnostн tм иekб, pokud se pшidбљ ke Svobodм!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_5">
+		<text>Teп mбљ љanci pшidat se k nejlepљнmu stalkerskэmu klanu, jakej v Zуnм je! Kdo jinej by tм bral takovэho, jakej seљ? Neztrбcej svoji svobodu - pшidej se k nбm!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_6">
+		<text>Zуna, to jsou stalkeшi, a stalker, to je svoboda. Buп stalker aћ do konce: pшidej se ke Svobodм!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_7">
+		<text>Staт se иlenem Svobody! Spoleиnм zachrбnнme Zуnu - jedinou skupinu opravdu svobodnejch lidн na Zemi!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_1">
+		<text>Hej, chlapi, na co to stшнlнte? Odpovмzte mi!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_2">
+		<text>Co se to tam dмje, lidi? Pшнjem!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_3">
+		<text>Na co si to tam hrajete?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_4">
+		<text>Potшebujete pomoc, chlapi? Pшнjem.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_1">
+		<text>...Ozvi se, ozvi se! Tak odpovмz mi!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_2">
+		<text>...Ohlas se, ohlas se!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_3">
+		<text>...Proи neodpovнdбte? No tak, ozvмte se chlapi!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_4">
+		<text>...Co se to tam sakra dмje? Ozvмte se!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_1">
+		<text>...Sakra, nemбm signбl... Co se stalo?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_2">
+		<text>...Neodpovнdajн. Co budeme dмlat?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_3">
+		<text>...Ozvi se, sakra! Ozvi se!...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_4">
+		<text>...Kde by sakra mohli bэt?...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_1">
+		<text>Pozor vљem jednotkбm: prбvм jsme ztratili dalљн druћstvo. Dбvejte si pozor!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_2">
+		<text>Dalљн druћstvo neodpovнdб. Co se sakra dмje?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_3">
+		<text>Ztratili jsme kontakt s hlнdkovэm druћstvem. Vљem jednotkбm: buпte extrйmnм opatrnн, dбvejte si pozor.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_4">
+		<text>Pozor, vojбci. Ztratili jsme kontakt s dalљнm druћstvem. Nevypadб to, ћe by se ti kluci jeљtм vrбtili. Dбvejte si pozor, aќ se vбm to nestane taky. Nezapomeтte: nepшнtel mщћe инhat v kaћdйm koutм!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_ambush_in_yard">
+		<text>Sypou se na nбs ze vљech stran. Hele, zkusнme je zastavit na nбdvoшн, ty projdi budovou.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_leader_join_freedom">
+		<text>Ћoldбku, tady Иechov. Pokud se k nбm poшбd chceљ pшidat, stav se za mnou na zбkladnu Svobody. Svoboda je pшipravenб pшijmout tм do naљich шad.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_0_up">
+		<text>Dobrэ zprбvy, chlapi! Teп ovlбdбme vљechny cesty do naљeho ъdolн. Chystбme se navљtнvit Povinnost, takћe pokud se chcete nмkdo pшidat, mншнme na Smetiљtм!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_1_up">
+		<text>Dobrб prбce, chlapi. Podaшilo se nбm zabezpeиit Smeќбk. Teп musнme vyrazit na Agroprom! A hlavnм nestшнlejte na neutrбlnн stalkery!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_1_down">
+		<text>Nepшнtel se snaћн proniknout do Temnэho ъdolн! No tak, chlapi, braтte svou Svobodu!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_2_up">
+		<text>Tak se mi to lнbн! Naљн jednotce se podaшilo zabezpeиit pozici u cesty na Agroprom! Teп uћ mщћeme zaklepat Povinnosti na vrata!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_2_down">
+		<text>Chlapi, ztratili jsme jednotku na Smeќбku. Cesta do Temnэho ъdolн je nehlнdanб!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_3_up">
+		<text>Agroprom mб Svobodu, jestli mi rozumнte! Skvмlб prбce! Teп je na иase napadnout ty kretйny z Povinnosti pшнmo v jejich zбkladnм!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_3_down">
+		<text>Љpatnэ zprбvy, chlapi. Kluci, kteшн hlнdali cestu do Agropromu, jsou mrtvн. Musнme tu cestu zabezpeиit, aќ to stojн co to stojн!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_4_up">
+		<text>Bravo! Podaшilo se nбm zniиit zбkladnu Povinnosti! Z tohohle se jen tak nevzpamatujou! Koneиnм si mщћeme uћнt svobodu!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_4_down">
+		<text>Povinnost nмjak dokбzala zorganizovat protiъtok a zabrala Agroprom. To nenн dobrэ, chlapi! Pokud to takhle pщjde dбl, tak vбlka nikdy neskonин!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_5_down">
+		<text>Tak co, kdo mб chuќ si zabojovat? Povinnost se prej vrбtila! Pшiletмli ve vrtulnнcнch, obsadili zбkladnu a v Agropromu postшнleli vљechno, co se hejbalo.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_zavod_task_sniper_dead">
+		<text>Stшecha иistб, pшesouvбm se.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_underground_agru_leader_dolg_pda">
+		<text>Tady generбl Krylov. Poslyљ, musнљ si dбvat pozor, podzemн je plnй mutantщ. Podle mapy je шнdicн jednotka pumpy umнstмnб jednu ъroveт pod tebou. Poslal jsem ti souшadnice. Dej si pozor... a hodnм љtмstн.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_underground_agru_leader_clear_sky_pda">
+		<text>Ћoldбku, tady Lebedмv. Dopisy nalezenй ve skrэљi toho hodnм vysvмtlujн. Teп vнme, ћe se Stшelcova skupina dostala do stшedu, a taky vнme, ћe to chtмjн zkusit znovu. Neopatrnн idioti! Pokud uspмjн, spustн dalљн velkou emisi - tak silnou, ћe usmaћн kaћdй ћivй stvoшenн v Zуnм a samotnб Zуna se stane nestabilnн. To nemщћeme dovolit! Stшelec vyrazil k jezeru Jantar. Kromм tebe nikoho bliћљнho nemбme. Zkus ho tam zachytit, my se postarбme o jeho parќбky.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_blokpost_shout_1">
+		<text>Hej, ћoldбku! Co tady sakra dмlбљ?! Zdrhej jako o zбvod - muќбci tady budou kaћdou chvilku!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_blokpost_dialog">
+		<text>No vidнљ to? Kde mбљ vybavenн, chlapeиku? Tohle je nebezpeиnэ mнsto - bez dobrэho obleku a poшбdnэ zbranм se daleko nedostaneљ. Potvory jsou v poslednн dobм инm dбl tнm horљн, takћe budem vdмиnн za kaћdou pomoc v Zуnм. Pokud si chceљ vydмlat, stav se na zбkladnм a pokecej si s generбlem. Jedno naљe druћstvo tam prбvм mншн. Kdyћ pщjdeљ s nima, uљetшнљ si problйmy.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_squad_snorks_attack_1">
+		<text>Tady mбte, mutovanэ svinм!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_squad_snorks_attack_2">
+		<text>To jsou snorci! Na nм, chlapi!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_squad_snorks_attack_3">
+		<text>Zщstaтte v klidu! Stшнlejte dбvkama!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_1">
+		<text>Иernobylљtн veterбni, pшidejte se k Povinnosti! Na naљich ramenou spoинvб velkб zodpovмdnost! Pokud neochrбnнme svмt pшed rozrщstajнcн se Zуnou, kdo jinэ to udмlб?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_2">
+		<text>Svobodnн stalkeшi, veterбni a lovci - pшidejte se k Povinnosti! Chrбnit svмt pшed nebezpeиnou Zуnou je povinnost nбs vљech!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_3">
+		<text>Stalkere, pшidej se k Povinnosti! Pomoz nбm ochrбnit svмt pшed Zуnou!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_4">
+		<text>Svмt se tшese hrщzou pшi pohledu na nemoci rozљiшujнcн se ze Zуny. Pшidej se k Povinnosti a pomoz zachrбnit nevinnй.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_5">
+		<text>Smrtнcн anomбlie, nebezpeиnн mutanti, anarchisti ani banditi nezastavн Povinnost na triumfбlnнm pochodu za zбchranou planety a jejнch obyvatel.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_6">
+		<text>Kaћdэ novэ иlen Povinnosti nafasuje vynikajнcн vybavenн. A co je dщleћitмjљн, boj s mutanty ti pшinese vмиnou slбvu, zapнљeљ svй jmйno do dмjin!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_7">
+		<text>Vмшнme v naљe vнtмzstvн! Љpнna Zуny bude vymazбna!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_dolg_1">
+		<text>Hej, vojбku!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_dolg_2">
+		<text>Jsem rбd, ћe tм vidim ћivэho!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_dolg_3">
+		<text>Vнtej zpбtky!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_nodolg_1">
+		<text>Hej, zelenбиi! Pojп se pшidat k Povinnosti!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_nodolg_2">
+		<text>Hej, stalkere! Na ъzemн Povinnosti se o nic nepokouљej, je ti to jasnэ?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_nodolg_3">
+		<text>Dodrћuj pravidla a vyhneљ se zranмnн.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_1">
+		<text>Ahoj! Nemusнљ se bбt - pojп sem.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_2">
+		<text>Nestщj tam a pojп sem!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_3">
+		<text>Vojбku! Kupшedu na stшed, teп hned!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_1">
+		<text>Serћante Иersove, posнlбm k vбm ћoldбka. Pщjde do podzemн. Postarejte se, aby se dostal aћ k dншe. </text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_2">
+		<text>Generбle, on se fakt nмkdo upsal na cestu dolщ?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_3">
+		<text>Sprбvnм. Postarejte se, aby mмl dost munice.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_4">
+		<text>Ano, pane!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_5">
+		<text>No... hodnм љtмstн. Serћant ti dб potшebnй vybavenн a pбr tipщ. Souшadnice hnнzda uћ jsem ti poslal.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_wait_1">
+		<text>Mщћou pшijнt kaћdou chvнli!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_wait_2">
+		<text>Soustшeпte se! Miшte na hnнzdo!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_wait_3">
+		<text>Vљichni dбvejte pozor!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_attack_1">
+		<text>Vylнzajн! Pal!!!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_reward_pda">
+		<text>Skvмlб prбce, stalkere! Po zatopenн tunelщ by tady teп mмl bэt trochu vмtљн klid. Mбљ to u nбs! Stav se pro odmмnu.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_hello_1">
+		<text>Nazdar. Uvidнme, jak to umнљ s bouchaиkou!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_win_1">
+		<text>To nenн љpatnэ, stav se pro odmмnu.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_lose_1">
+		<text>Pшнљtм budeљ mнt tшeba vнc љtмstн. Stav se za mnou, pokecбme.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_bye_1">
+		<text>Stav se, aћ budeљ mнt chuќ sestшelit si pбr terищ.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_0_up">
+		<text>Pozor vљem jednotkбm. Podaшilo se nбm zabezpeиit Agroprom. Prбvм se dбvajн dohromady skupiny dobrovolnнkщ pro ъtok na Svobodu. Okamћitэm cнlem je zнskat pшedsunutou zбkladnu u Smetiљtм.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_1_up">
+		<text>Mбme zшнzenэ pшedsunutэ stanoviљtм na Smetiљti. Dalљнm cнlem je zabezpeиit cestu do Temnэho ъkolu. Neutrбlnн stalkery nechte na pokoji.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_1_down">
+		<text>Nepшбtelskэ jednotky pronikly do Agropromu. Svobodu nemщћeme porazit, dokud nebude naљe zбkladna zabezpeиenб! Zlikvidujte nepшнtele a zabezpeиte vљechny cesty do Agropromu!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_2_up">
+		<text>Pшipravujeme se na ъtok na Temnэ ъdolн. Vљem jednotkбm, udrћujte maximбlnн bojovou pшipravenost.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_2_down">
+		<text>Pozor vљem jednotkбm! Ztratili jsme kontrolu nad pozicн na Smetiљti. Potшebujeme ji k ъtoku na zбkladnu Svobody - tak to tam obsaпte!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_3_up">
+		<text>Dobrэ zprбvy! Pшedsunutэ jednotky zaujaly pozici v Temnэm ъdolн! Teп nбs uћ nemщћe nic zastavit, provedeme ъtok na zбkladnu Svobody!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_3_down">
+		<text>Vљem jednotkбm, nepшнtel zaъtoиil na naљe sнly na Smetiљti. Cestu do Temnэho ъdolн uћ nemбme pod kontrolou.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_4_up">
+		<text>Vљem jednotkбm, obsadili jsme zбkladnu Svobody! Anarchisti byli poraћenн a uћ nбs v naљem boji se Zуnou nebudou otravovat. Gratuluju vљem, kteшн k tomuhle monumentбlnнmu vнtмzstvн pшispмli!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_4_down">
+		<text>Naљe jednotky v Temnэm ъdolн byly poraћeny a zahnбny zpбtky na Smetiљtм. Musнme zнskat pozici v Temnэm ъdolн, aќ mщћeme pokraиovat v ъtoku na zбkladnu Svobody!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_5_down">
+		<text>Pozor vљem jednotkбm! Prщzkum hlбsн, ћe velkб skupina bojovnнkщ Svobody obsadila zбkladnu a teп ovlбdб Temnэ ъdolн. Je potшeba ukбzat jim, zaи je toho loket.</text>
+	</string>
+</string_table>

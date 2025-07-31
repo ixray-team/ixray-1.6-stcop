@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="pda_end_tutorial">
+		<text>Nos, akkor meg is volnбnk...</text>
+	</string>
+	<string id="pda_start_tutorial">
+		<text>Lйpйsenkйnti oktatбs.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_1">
+		<text>Jуl van, szуval, mint azt mбr te is tudod, a fх cйlunk, hogy бtvegyьk az Ingovбny irбnyнtбsбt, ami bizony hбborъt jelent a behatolуkkal.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_10">
+		<text>Vйgьl itt lбthatod a jelenlegi stratйgiai feladatokat, illetve a taktikai kьldetйseket, amelyeket teljesнtened kell a stratйgiai feladat elvйgzйsйhez!</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_11">
+		<text>A sikeres stratйgiai kьldetйsek az alsу rйszen talбlhatуk.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_2">
+		<text>Ez a szekciу a jelenlegi kьzdelem бllapotбnak taktikai rйszleteit mutatja.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_3">
+		<text>A bal oldalon lбthatod a jelenlegi frakciуddal kapcsolatos informбciуkat. Most ugye rуlunk, a Tiszta Йgboltrуl.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_4">
+		<text>A jobb oldalon az ellensйgrхl lбthatod a legfontosabb informбciуkat.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_5">
+		<text>Ez a hozzбvetхleges szintje a katonai haderхnknek.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_6">
+		<text>Ez mutatja a katonбink szбmбt.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_7">
+		<text>Ez pedig a logisztikai tбmogatбsunk szintje.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_8">
+		<text>Az alsу rйszen lбthatу szimbуlumok jelzik a harci felszerelйsьnk megkьlцnbцztetх jegyeit.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_9">
+		<text>Hasonlу mutatуk lбthatуk az ellensйgeinkrхl is.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_1">
+		<text>Az utolsу fьlцn a kьlцnbцzх frakciуk kapcsolatairуl йs katonai haderejьk rangsorбrуl szerezhetsz tudomбst.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_2">
+		<text>Йs a statisztikбid is itt jelennek meg.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_1">
+		<text>Nйzz csak ide! Ez a Kьldetйsek szekciу, a legfontosabb ъtmutatуd.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_10">
+		<text>A feladatok felsorolбsa mellett a tйrkйp jelzi a szцvetsйges osztagok helyzetйt, valamint az йszlelt ellensйgek koordinбtбit is.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_2">
+		<text>Ez mutatja az elsхdleges kьldetйsedet...</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_3">
+		<text>Valamint a kivбlasztott mбsodlagos kьldetйsedet is.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_4">
+		<text>Ha tцbb mбsodlagos kьldetйsed is lenne, vбlogass kцzьlьk az alбbbi gombokkal!</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_5">
+		<text>A legtцbb kьldetйst a tйrkйp is kijelzi majd, kivйve azt a nйhбny ritka kivйtelt, amikor a cйlpont helyzete nem ismert.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_6">
+		<text>Nemcsak az ellensйg legyхzйsйben lesz szьksйgьnk a segнtsйgedre, hanem a stratйgiai fontossбgъ бllбsok elfoglalбsбban is.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_7">
+		<text>Az ehhez hasonlу helyzetekben, az embereink mйltбnyolni fogjбk, ha zбrуtыzzel segнtesz nekik az бllбsok lerohanбsбban.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_8">
+		<text>Egyйbkйnt jу lenne, ha figyelnйl a segйlyhнvбsokra. Az embereink йlete mъlhat a dцntйseiden.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_9">
+		<text>Mutass a tйrkйpen egy adott helyre, hogy rйszletes informбciуkat lбss az adott terьletrхl!</text>
+	</string>
+</string_table>

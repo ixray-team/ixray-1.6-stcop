@@ -1,0 +1,1020 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_bandit_leader_hello_11">
+		<text>Mit akarsz?</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1">
+		<text>Hmm.. Most, hogy mondod, tйnyleg volna egy munka. Van egy fickу, akinek el kellene tыnnie. Ha vбllalod, elintйzem, hogy a fickу a rйgi buszmegбllуban vбrjon rбd, abban ami a keleti fal mцgцtt van. Йrdekel?</text>
+	</string>
+	<string id="gar_bandit_trader_hello_11">
+		<text>Tehбt... van valami szajrй?</text>
+	</string>
+	<string id="gar_bandit_tech_hello_11">
+		<text>Hй, haver... huk... Mi kйne?</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_0">
+		<text>Jуga megadta a szajrйja koordinбtбit, de valуszнnыleg a hely tцmve van anomбliбkkal йs mutбnsokkal.</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_1">
+		<text>Valуban? Az a szajrй Jуga kedvenc бtverйse, pajtбs. Mi, te komolyan azt gondoltad, hogy te vagy az elsх balfйk, akinek odaadta a koordinбtбkat? Egy rakбs vesztes prуbбlta mбr megszerezni a szajrйt... A legutуbbinak mйg az ott йlх pszichonikus kutyбt is sikerьlt megцlnie, mielхtt szйnnй йgette volna pбr ezer volt. Gondolom, нgy valamivel kцnnyebb megszerezni a... ццц..."jutalmat."</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_0">
+		<text>Jуga ъgy dцntцtt, kitakarнtja az бsatуkat a bolhapiacrуl egyszer s mindenkorra.</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_1">
+		<text>Micsoda? Mi ьtцtt belй, megхrьlt? Itt lehetett a legjobban lenyъlni az бsatуkat. Ez a fхnцkьnk vйgйt fogja jelenteni, hidd csak el nekem! Neki befellegzett! A csempйszek mбr нgy is bujkбlnak, йs ha a bolhapiac kiesik, az бsatуk egy pillanat alatt felszнvуdnak. Йs nйhбny hуnap mъlva, amikor a srбcok nem tudnak majd kit kifosztani, mit mond nekik Jуga? Nos, beszйlni fogok a srбcokkal... Jуga a sajбt sнrjбt бssa...</text>
+	</string>
+	<string id="gar_bandit_barman_hello_11">
+		<text>Szуval?</text>
+	</string>
+	<string id="gar_bandit_barman_join_0">
+		<text>Hogy csatlakozhatnйk?</text>
+	</string>
+	<string id="gar_bandit_barman_join_1">
+		<text>У, szуval Jуga szбrnyai alб akarsz kerьlni! Hбt akkor megyek, йs beszйlek vele! A lakуkocsijбban van, szart sem csinбl, csak vбrja a hozzбd hasonlу idiуtбkat. Vбllalj mйg azйrt pбr megbнzatбst tхle, hбtha meggondolod magad!</text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_0">
+		<text>Jуga felbйrelt, hogy intйzzek el egy Sztringov nevы fickуt. Ismered?</text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_1">
+		<text>Nem, nem ismerem, de hadd adjak neked egy tanбcsot! Elхszцr mindig magadra gondolj! Amikor a fickуk farkasszemet nйznek a fegyver csцvйvel, hajlamosak nagylelkыek lenni... hasznбld ki! Csak gondoskodj rуla, hogy ne legyen idejьk megbбnni a nagylelkыsйgьket!</text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_0">
+		<text>Jуga felbйrelt, hogy intйzzek el valami csempйszt, йs annak nйhбny бsatу ьgyfelйt.</text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_1">
+		<text>Ez a Jуga aztбn nem kispбlyбzik, mi? Mйg ha az бsatуk meg is kaparintanak valamit, nem йrnek vele semmit. Bбrmikor elintйzhetnйnk хket, de miйrt tennйnk? Gond nйlkьl kirabolhatjuk хket. Ami a csempйszt illeti, mйgis mit gondol Jуga? Szerinte honnan szerzem a szarsбgaimat? Csessze meg!</text>
+	</string>
+	<string id="gar_bandit_barman_questions_0">
+		<text>Lenne pбr kйrdйsem.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1">
+		<text>Ne kнmйlj!</text>
+	</string>
+	<string id="gar_bandit_barman_questions_11">
+		<text>Mit csinбlsz itt?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_111">
+		<text>Hogy mit csinбlok? Lуgatom a tцkцmet, йs piбt vedelek. Egyszуval lopom a napot. Gyerekkorom уta vezetх szeretnйk lenni. Az eszem meg is lenne hozzб, de nйzd csak meg, vodkбt iszom, йs csak nйzem, ahogy Jуga szart sem csinбl, csak hнzik, mint egy disznу! A fiъknak sincs az йgvilбgon semmi dolguk. Цregem, ha йn lennйk itt a fejes, mindenkinek keresnйk valami tennivalуt! Akkora felfordulбst kellene okoznunk a Zуnбban, ami mellett mйg egy kisugбrzбs is eltцrpьl!</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1111">
+		<text>Йrtem. Mйg meg akartam kйrdezni, hogy...</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1112">
+		<text>Eleget beszйltьnk mбr.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_12">
+		<text>Mi ъjsбg a Zуnбban?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_121">
+		<text>Nos, egyre tцbb kisugбrzбs йr minket, a Zуna pedig mindegyik utбn megvбltozik. Sok ъj, йrdekes terьlet nyнlt meg, йs sokan ki is akarjбk hasнtani a maguk szeletйt a tortбbуl. Nincs is ezzel semmi problйma. Ha van egy kis sьtnivalуd, йs egy egйsz klбn бll az oldaladon, de te mйgis otthon maradsz йs szart sem csinбlsz, ahelyett, hogy a Zуna kincseiйrt harcolnбl... annбl nagyobb bыnt el sem tudok kйpzelni!</text>
+	</string>
+	<string id="gar_bandit_barman_questions_13">
+		<text>Milyen a viszonyotok a szomszйdokkal?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_131">
+		<text>Tцbbй-kevйsbй a kцvetkezх a helyzet. A Zуnбban egyedьl csak nekьnk van, mondjuk ъgy, szabбlyzatunk. Mi nem fosztogatуk vagyunk, hanem farkasok. Rajtunk kнvьl pedig minden balfйk birka. Nincs semmifйle rendszer az йletьkben, ezйrt pбsztorkйnt mi terelgetjьk хket. Vegyьk pйldбul a Szemйtdombot. Eddig, ha a stalkerek talбltak valamit azon a rozsdahalmon, lehetett az bбrmilyen уcskasбg is, azonnal elkezdtek lцvцldцzni egymбsra. Нgy nem lehet ьzletelni, ъgyhogy idejцttek az embereink, йs felбllнtottak nйhбny szabбlyt. Azуta csend van. Mбsokkal mйg nem sikerьlt ezt megcsinбlnunk, de annak is eljцn az ideje. De nem is foglalkozom most ezzel, egйszen mбs dolgok kцtik most le a figyelmem.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_14">
+		<text>Jуl van, majd legkцzelebb beszйlьnk!</text>
+	</string>
+	<string id="gar_bandit_barman_questions_141">
+		<text>Ha te mondod...</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_11">
+		<text>Hellу, pajtбs, van kedved egy kis varjъvadбszathoz?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_111">
+		<text>Persze!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1111">
+		<text>Nagyszerы! Jбtszhatsz tйt nйlkьl, pйnzre vagy megprуbбlhatsz felбllнtani egy ъj rekordot. Mit vбlasztasz?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_112">
+		<text>Most nincs kedvem.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1121">
+		<text>Te tudod, pajtбs! Itt leszek, ha meggondolnбd magad!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_21">
+		<text>Ahogy нgйrtem, itt a dohбny. Йn mindig megtartom a szavamat! Megprуbбlod ъjbуl?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_31">
+		<text>Biztos csak rosszul jцtt ki a lйpйs. Prуbбld meg ъjra, pajtбs!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_41">
+		<text>Hova mйsz, ember? Az, hogy kint mit csinбlsz, rбd tartozik, de mi lenne, ha maradnбl, йs a szabбlyok szerint jбtszanбl?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_51">
+		<text>Tudsz rуla, hogy megy az idхd? Kйsхbb is beszйlhetьnk.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_511">
+		<text>Йrtem!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_0">
+		<text>Pйnzre szeretnйk jбtszani!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1">
+		<text>Zene fьleimnek! Akarod, hogy бtfussuk elхtte a szabбlyokat?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11">
+		<text>Kezdjьnk hozzб!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111">
+		<text>Elйg a beszйdbхl, pajtбs! Szуval, mit gondolsz, hбny varjat tudsz elintйzni egy perc alatt?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111111">
+		<text>Megegyeztьnk!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111111">
+		<text>Fasza! Kйszнtsd a stukkered, цreg!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111111">
+		<text>Rendben!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112">
+		<text>Nincs annyi pйnzem.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111121">
+		<text>Akkor miйrt nem mondasz annyit, amit megengedhetsz magadnak?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111211">
+		<text>Jу, akkor mуdosнtom a varjak szбmбt!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111212">
+		<text>Nem, nem йrdekel.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112121">
+		<text>Nos, jбtszhatsz tйt nйlkьl, vagy megprуbбlhatsz felбllнtani egy ъj rekordot, de az nem olcsу mulatsбg. Mit mondasz?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_12">
+		<text>Kifejtenйd?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_121">
+		<text>Pйnzre jбtszani az igazi mуka! Mondd meg, pontosan, hбny varjat szedsz le egy perc alatt, tedd fel a tйted, йs kapd el хket! Ha sikerьlt megцlnцd annyit, amennyit mondtбl, szйpen megduplбzom a pйnzedet. Ha nem, megtartom a tйtet. Йs ne feledd, minйl tцbb a varjъ, annбl nagyobb a tйt!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_13">
+		<text>Hirtelen elment a kedvem az egйsztхl.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_0">
+		<text>Vannak бltalбnos szabбlyok?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_1">
+		<text>Nem igazбn. Elindнtom a stoppert, felkйszьlsz, йs a jelemre elkezded irtani a varjakat. Ha megfelelх mennyisйget цlsz meg egy perc alatt, nyertйl, szйp munka, meg hasonlуk. Rajtad бll, hogy цlцd meg хket. De ne feledd, ha elhagyod ezt a terьletet, a jбtйknak vйge! Szуval, hogy szeretnйl jбtszani? Tйt nйlkьl, pйnzre vagy megprуbбlsz felбllнtani egy ъj rekordot?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_0">
+		<text>Most nincs kedvem jбtszani.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_1">
+		<text>Te tudod, pajtбs! Itt leszek, ha meggondolnбd magad!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_0">
+		<text>Megprуbбlok felбllнtani egy ъj rekordot.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11">
+		<text>Kezdjьk!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1111">
+		<text>Rendben!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11111">
+		<text>Jуl van, bizonyнtsd be, hogy bajnok tнpus vagy, pajtбs!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1112">
+		<text>Nincs elйg pйnzem.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11121">
+		<text>Vannak mбs lehetхsйgek is. Jбtszhatsz pйnzre, vagy csak ъgy tйt nйlkьl. Mit mondasz?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1113">
+		<text>Йn... meggondoltam magam.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_12">
+		<text>Fussuk бt mйg egyszer a szabбlyokat!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_121">
+		<text>Ez mбr igazi fйrfiaknak valу! Ha ъgy gondolod, meg tudod dцnteni a jelenlegi rekordot, ehhez mйrten tegyйl fel tйtet, йs ha sikerьlt ъj rekordot felбllнtanod, megduplбzom a tйtedet, emellett pedig te leszel az ъj bajnok meg minden. De ha nem, megtartom a pйnzt.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_13">
+		<text>Йn... meggondoltam magam.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_0">
+		<text>Tйt nйlkьl.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_1">
+		<text>Csak gyakorolni akarsz? Emlйkszel mйg a szabбlyokra, igaz?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11">
+		<text>Persze! Kezdjьk a lцvйszetet!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111">
+		<text>Okй, hбny varjat tudsz majd lelхni?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11111">
+		<text>Jуl van, akkor virнtsd a lуvйt!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111111">
+		<text>Persze!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_21">
+		<text>Nem, mondd el!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_211">
+		<text>Nos, ha tйt nйlkьl jбtszol, akkor nem nyerhetsz pйnzt. Jуl jцhet, ha csak gyakorolni szeretnйl vagy szarul йrzed magad йs szйt akarsz lхni valamit. Eldцntцd, hogy hбny varjat tudsz megцlni egy perc alatt, majd megprуbбlod azt teljesнteni.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_31">
+		<text>Meggondoltam magam.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_311">
+		<text>Semmi gond! A lehetхsйgek a rйgiek. Pйnzre jбtszol vagy megprуbбlkozol egy rekorddal. Mit mondasz?</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_111">
+		<text>Mit йrtesz azon, hogy "hozzбd hasonlу"? Elismerem, hogy egy istenverte akadйmiбn sem diplomбztam le, de ehhez a fajta munkбhoz megvan a kйzьgyessйgem. Йn voltam a legjobb specialista az ьzemben, kitьntetйsekkel, dicsйretekkel, meg a tцbbivel. Ezeket mindig a barбtaimmal ьnnepeltem nйhбny ital mellett, amнg a fхnцkцm be nem kцpцtt minket. Mindannyiunkat kirъgtak. Az a rohadйk! Egyйbkйnt komoly cйg volt, elvйgre a vйdelmi iparban dolgoztunk. Ezutбn felvettek technikusnak a helyi lakбsszцvetkezetbe. Mindig hozzбm jцttek, ha valami tцrtйnt, mert csak йn voltam az egyetlen profi. Nйhбnyan бt is csъsztattak egy kis pйnzt, vagy fizettek egy italt, szуval szйp idхk voltak... amнg egy ьveg pia miatt цssze nem verekedtem egy vнzvezetйkszerelхvel. A harc hevйben ledцftem az бtkozottat egy csavarhъzуval. Tъlйlte ugyan, de kaptam egy kis kйnyszerpihenхt a bцrtцnben, йs mire hazaйrtem, mбr ьres volt a hбzam. Elhagyott a felesйgem... Ekkor nagyon elkeseredtem, alkoholizmusba sьllyedtem. A sajбt ostobasбgomnak kцszцnhetхen vйgьl a hбzamat is elveszнtettem, йs hajlйktalan lettem. Akkor jцttem ide. Йs tudod mit? Itt igenis megbecsьlnek, mert tudom, hogy mit csinбlok. Йn pedig semmit sem vбltoztam, nйha mйg egy ьveg italt is elfogadok a munkбmйrt cserйbe... ezt prуbбld йszben tartani!</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_121">
+		<text>A kйzremegйs mйg egyбltalбn nem jelenti azt, hogy haszontalan lennйk! Egyszerыen csak mбsnapos vagyok, ez minden. Hadd igyak pбr kupicбval, az mindig segнt, йs jobb leszek, mint ъj koromban! Te csak ne aggуdj, jobb munkбt vйgzek itt bбrmelyik jуzan kurafinбl, nem vicc! Bбrmit megcsinбlok, amire szьksйged van. Megjavнtom a stukkeredet, teszek mйg kevlбrt a pбncйlzatodhoz vagy kisegнtelek egy fejlesztйssel. Csak ne feledkezz el jу barбtodrуl, Бtlбtszуrуl, йs idхnkйnt fizess majd neki egy italt a munkбssбgйrt!</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_131">
+		<text>Хszintйn? Nagyнvben szarok rб, hogy mi tцrtйnik! Amнg van elйg munkбm (йs piбm!), addig nincs gond. Lehet elcsesztem az йletem, de mбr kйsх, hogy vбltoztassak rajta. Ugyan miйrt tцmnйm a fejem haszontalan pletykбkkal? Annyi meg annyi szarsбg tцrtйnik ezen a helyen. Talбlkoztбl mбr Kirillel? Tudod, azzal a foltos fejыvel! Mйg Foltosnak is becйzzьk. Nos, ha mйg nem lбttad, most is biztos leissza magбt valahol a sбrga fцldig. Szуval, pбrszor lбttam Foltost (ha-ha!), amint kimegy a bбzisrуl. Gondoltam, biztos szerzett magбnak a srбc egy rejtekhelyet, ahovб azokat a zsбkmбnyokat rejti, amiket nem akar mбsokkal elosztani. Tцbben is йszrevettйk, йs valahogy Jуga is tudomбst szerzett rуla. Magбhoz hнvatta Foltost, йs megparancsolta, hogy mutassa meg neki a rejtekhelyet. Foltos eskьdцzцtt, hogy "Fхnцk, nem vagyok бrulу, eskьszцm...", нgy hбt elment йs megmutatta. Kiderьlt, hogy a srбc цsszeszedett valami csernobili kцlyцkkutyбt, mert nem volt kivel beszйlnie. A tцbbiek nem tartjбk valami sokra. Jуga persze tiszta ideg volt, lelхtte a kutyбt, Foltost цsszeverette, йs megvonta tхle a rйszйt. Цregem, ilyen az йlet...</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_141">
+		<text>Х a legjobb barбtom, Szinka. Meg is fulladnбl benne, annyi vodkбt ittunk mi mбr ketten! Mбr a megйrkezйsem napjбn цsszehaverkodtunk. Elхszцr megittunk egy italt, hogy megьnnepeljьk a talбlkozбsunkat, majd alaposan цsszeverekedtьnk, mert elkezdtьnk az йletrхl beszйlgetni, йs nem йrtettьnk egyet valamiben. Ne aggуdj, Szinka jу ember, bбr rйszegen mйg mindig hajlamosak vagyunk цsszeverekedni! De vele mindig beszйlhetek, ha valami problйmбm van, х az egyetlen igaz barбtom, mint Pavlov йs a kutyбja.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_151">
+		<text>Van egy alapelv, amihez minden fйrfinak tartania kell magбt: soha ne keverd a vodkбt a sцrrel! Nyilvбnvalу, igaz? Nos, ugyanez igaz a fegyverekre is. Vбlassz ki egy fegyverjellemzхt, йs fejleszd fel maximumra, йrtetted? Nem szбmнt, hogy mi az, pontossбg, tыzgyorsasбg vagy akбrmi, csak fejleszd fel maximumra! Egy kimaxolt jellemzх sokkal tцbbet йr, mint tцbb elkezdett.</text>
+	</string>
+	<string id="gar_bandit_leader_hello_21">
+		<text>Remйlem, Sztringov mбr feldobta a talpбt!</text>
+	</string>
+	<string id="gar_bandit_leader_hello_31">
+		<text>Kizбrt dolog, hogy a csempйsz йlve kijusson a Szemйtdombrуl, de ha az бsatуk szereznek maguknak stukkert, nem fogok repesni az цrцmtхl. Vilбgos voltam?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_41">
+		<text>Az бsatуk a bolhapiacon vannak, te mйgis itt lopod a napot. Csak szerintem kellene ennek mбshogy lennie?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_61">
+		<text>Azйrt jцttйl, hogy az ьzletrхl beszйljьk vagy csak gondoltad, meglбtogatsz?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_91">
+		<text>Csupa fьl vagyok!</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_0">
+		<text>Csatlakozhatok hozzбtok?</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_1">
+		<text>Lassan a testtel, te kurafi! Elхbb meg kell felelned a prуbбn, йs ez alatt komoly prуbбt йrtek! Van egy munkбm szбmodra.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_0">
+		<text>Szуval, most mбr csatlakozhatok? Beveszel?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_1">
+		<text>Te tйnyleg ilyen hьlye vagy? Adtam egy munkбt, menj йs csinбld meg! Ha elvйgezted, utбna visszatйrьnk rб.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_2">
+		<text>Elvйgezted a munkбt, mйghozzб jуl, tъlsбgosan is jуl, ami azt illeti... Amikor pedig minden ilyen simбn megy, hajlamos vagyok gyanakvу lenni. Szуval, mi lenne, ha utazgatnбl mйg egy kicsit a Zуnбban, amнg utбnad nйzek? Ha tйnyleg tiszta vagy, a PDA-don keresni foglak!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_3">
+		<text>Ъgy lбtom, hogy a Szabadsбghoz tartozol. Nos, nekem is vannak embereim, йs йn vagyok a vezetхjьk. Kйszen бllsz rб, hogy kilйpj a Szabadsбgtуl?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_4">
+		<text>Lбm, lбm, egy szolgбlatos akar bekerьlni a csapatomba! Nos, itt csak egy fхnцk van, az pedig йn vagyok. Kйszen бllsz rб, hogy lecserйld rбm a fхnцkeidet?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5">
+		<text>Nos, az йn csapatomba csak igazi fйrfiak kerьlhetnek be, te pedig bebizonyнtottad, hogy neked is itt a helyed! Egy szavadba kerьl, йs felveszьnk. Mit mondasz?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51">
+		<text>Mindig is arrуl бlmodtam, hogy ilyen kemйny fickуkkal fogok egyьtt lуgni!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511">
+		<text>Hidd el, bхven lesz lehetхsйged dolgozni az edzettsйgeden! Tudod, hogy mыkцdnek nбlunk a dolgok?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5111">
+		<text>Nem. Magyarбzd el, szйpen kйrlek!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51111">
+		<text>Nos, az egйsz Zуna egy nagy felfordulбs, ahol mindenki harcol mindenkivel. Mi a sajбt szabбlyaink szerint йlьnk, mбsoknak pedig megtanнtjuk, hogyan tiszteljйk ezeket a szabбlyokat. A "tanнtбs" persze pйnzbe kerьl, ezйrt is fosztjuk ki rendre az бsatуkat. A Szemйtdombot mбr mi irбnyнtjuk, most a Kordon jцn. Ahhoz pedig, hogy mi irбnyнtsuk a Kordont, ki kell takarнtanunk onnan a stalkereket, hogy megmutassuk nekik, ki a fхnцk!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511111">
+		<text>Йrtem!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5112">
+		<text>Igen, tudom, nincs szьksйg kiselхadбsra.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51121">
+		<text>Rendben, akkor ennyi volt. A PDA-dat бtбllнtottuk a frekvenciбnkra, нgy mindig tudni fogod, hogy az embereink mire kйszьlnek, illetve megnйzheted a tцbbi klбnnal folytatott harcunk helyzetйt is. Jуl van, vйge a mыsornak, tыnj a szemem elхl!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511211">
+		<text>Vettem, fхnцk! Megyek, vбr a munka!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_52">
+		<text>Mйg бtgondolom.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_0">
+		<text>Szeretnйk nektek dolgozni!</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_11">
+		<text>Megteszem!</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_111">
+		<text>Nagyszerы! A fickу neve Sztringov. Menj a megбllуhoz, ha minden igaz, mire odaйrsz, mбr ott lesz!</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1111">
+		<text>Йrtettem!</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_12">
+		<text>Az effйle munkбkat nem nekem talбltбk ki.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_121">
+		<text>Te tudod! Szуlj, ha meggondolnбd magad! Talбn mйg йletben lesz a fickу.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_0">
+		<text>Ъgy dцntцttem, hogy vйgьl mйgiscsak elvбllalom azt a munkбt!</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_1">
+		<text>Jуl van! Szerencsйd van, mйg йl a fickу. Nemsokбra a rйgi buszmegбllуnбl lesz, a keleti falon tъl. Intйzd el! A neve Sztringov, mindenkйppen gyхzхdj meg rуla, hogy a megfelelх embert kapod el!</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_11">
+		<text>Йrtettem!</text>
+	</string>
+	<string id="gar_bandit_leader_meet_greet_b_2">
+		<text>Nйzzenek csak oda! Hбt itt vagy!</text>
+	</string>
+	<string id="gar_bandit_leader_questions_0">
+		<text>Szeretnйk kйrdezni valamit.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1">
+		<text>Micsodбt?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_11">
+		<text>Mesйlj magadrуl!</text>
+	</string>
+	<string id="gar_bandit_leader_questions_111">
+		<text>Miйrt, mi vagy te, egy zsaru? Nem fogok vбlaszolni az бtkozott kйrdйseidre! Te csak egy kurafi vagy, egy remйnytelen vesztes, ugyanolyan, mint az a sok szбz, akin бtgбzoltam, hogy idбig eljuthassak. Йs tudod minek kцszцnhetem, hogy ma itt vagyok? Tцbb idхt tцltцttem gondolkodбssal, mint beszйddel. Nos, van mйg egy oka, ha cselekedni kell, gyorsabban teszem, mint a tцbbiek, igaz tцbbeket is bбntok meg vele, йrted?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1111">
+		<text>Йrtem! Lenne mйg valami.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1112">
+		<text>Йrtem! Nincs tцbb kйrdйsem.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_12">
+		<text>Nem aggуdsz amiatt, hogy a stalkerek esetleg fellбzadnak йs megtбmadnak?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_121">
+		<text>Egy igazi fйrfi egy valami miatt aggуdik, hogy tagja lesz a hagyomбnyostуl eltйrх beбllнtуdбsъaknak, ha йrted, mire gondolok! Ettхl eltekintve nem nyugtalankodom semmi miatt. Ahhoz elйg erхsek vagyunk, hogy tovбbbra is kifosszuk az бsatуkat a Szemйtdombon. De mйg, ha egy teljes klбnnal is tбmadnбnak rбnk, akkor is megtanнtanбnk azoknak az okбdйkoknak, hogy nem йrdemes velьnk baszakodni! Egyre tцbben csatlakoznak hozzбnk, нgy amint elйg pйnzt gyыjtцttьnk цssze, elhagyjuk ezt a szarkupacot, йs szerzьnk magunknak egy valamirevalу bбzist! Йs ami a bбzis jelenlegi lakуit illeti... hбt, nekik keresniьk kell majd egy mбsik helyet, ahol йlhetnek, nem igaz?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_13">
+		<text>Йrdekel egyбltalбn, hogy mi tцrtйnik a Zуnбban?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_131">
+		<text>Engem csak az йrdekel, hogy honnan tбmadnak majd a bхrfejыek vagy mбs faszszopуk! A tцbbit le se szarom, kivйve talбn a kisugбrzбsokat йs a hadsereggel harcolу stalkereket, mert ezekbхl profitбlhatunk. Hadd mesйljek el neked egy tцrtйnetet! Rйgebben volt itt ez a szerencsйtlen, Sйfnek hнvtuk. Na nem azйrt, mert szakбcs volt, hanem, mert kйpes volt akбr szбz lйpйsrхl is kiszъrni egy hъsdarбlуt, az egyik legrohadйkabb anomбliбt az цsszes kцzьl. Idхvel egyre pofбtlanabb lett, folyton azt hajtogatta, hogy х megment minket a biztos halбltуl, mйgsem kap tцbb lуvйt. A kis rohadйkot emlйkeztetnem kellett, hogy ki is itt a fхnцk, ъgyhogy behнvattam, bevertem egyet a kйpйbe, йs eltцrtem a faszszopу ujjait, amнg eszmйletlen volt. Ezutбn szуltam az embereimnek, hogy kцssйk be a szemйt, йs vigyйk ki valahova. Kitalбltam, ha sikerьl megtennie pбr szбz lйpйst anйlkьl, hogy meghalna, akkor meghagyom a cipхpucolуmnak. Nos, sikerьlt pontosan beletrafбlnia az egyik hхn szeretett hъsdarбlуjбba, нgy vйgezte tehбt Sйf. Mi a tцrtйnet mondanivalуja? Ha kibaszol velem, darabokra vagdoslak!</text>
+	</string>
+	<string id="gar_bandit_leader_questions_14">
+		<text>Semmit, kцszцnцm!</text>
+	</string>
+	<string id="gar_bandit_leader_questions_141">
+		<text>Jу fiъ! Minйl kevesebbet tudsz, annбl tovбbb йlsz!</text>
+	</string>
+	<string id="gar_bandit_leader_reward_0">
+		<text>Nem gondolod, hogy a legutуbbi munkбmйrt kapott jutalmam nem igazбn tьkrцzi a vбllalt kockбzatot?</text>
+	</string>
+	<string id="gar_bandit_leader_reward_111">
+		<text>Nem gondolom, tudom! Йrted? Jуl van, jуl van, beismerem, hogy fйlreismertelek, ezйrt elmondok neked egy titkot. A legutуbbi, hatalmas kisugбrzбs elхtt elrejtettem egy kьlцnleges stukkert. A kisugбrzбs utбn az egйsz terьletet anomбliбk leptйk el. Kйsхbb talбlkoztam nйhбny fickуval, akik elmondtбk, hogy nem is az anomбliбkkal, sokkal inkбbb a szцrnyekkel kell vigyбzni. Lйnyeg a lйnyeg, nem egyszerы odajutni, de megadhatom a pontos koordinбtбkat, ha kedved tбmadna egy kis sйtбhoz. Ha sikerьlne odajutnod, az elrejtett cucc bхven megйrnй a kockбzatot.</text>
+	</string>
+	<string id="gar_bandit_leader_reward_1111">
+		<text>Azt majd meglбtjuk!</text>
+	</string>
+	<string id="gar_bandit_tech_join_0">
+		<text>Elmondanбd, hogy csatlakozhatnйk a frakciуtokhoz?</text>
+	</string>
+	<string id="gar_bandit_tech_join_1">
+		<text>Ezt a fхnцk dцnti el. A lakуkocsija a hangбrban van.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_0">
+		<text>Vбlaszolnбl pбr kйrdйsemre?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1">
+		<text>Persze!</text>
+	</string>
+	<string id="gar_bandit_tech_questions_11">
+		<text>Hogy lett egy hozzбd hasonlу fickуbуl technikus?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_111">
+		<text>Mit йrtesz azon, hogy "hozzбd hasonlу"? Elismerem, hogy egy istenverte akadйmiбn sem diplomбztam le, de ehhez a fajta munkбhoz megvan a kйzьgyessйgem. Йn voltam a legjobb specialista az ьzemben, kitьntetйsekkel, dicsйretekkel, meg a tцbbivel. Ezeket mindig a barбtaimmal ьnnepeltem nйhбny ital mellett, amнg a fхnцkцm be nem kцpцtt minket. Mindannyiunkat kirъgtak. Az a rohadйk! Egyйbkйnt komoly cйg volt, elvйgre a vйdelmi iparban dolgoztunk. Ezutбn felvettek technikusnak a helyi lakбsszцvetkezetbe. Mindig hozzбm jцttek, ha valami tцrtйnt, mert csak йn voltam az egyetlen profi. Nйhбnyan бt is csъsztattak egy kis pйnzt, vagy fizettek egy italt, szуval szйp idхk voltak... amнg egy ьveg pia miatt цssze nem verekedtem egy vнzvezetйkszerelхvel. A harc hevйben ledцftem az бtkozottat egy csavarhъzуval. Tъlйlte ugyan, de kaptam egy kis kйnyszerpihenхt a bцrtцnben, йs mire hazaйrtem, mбr ьres volt a hбzam. Elhagyott a felesйgem... Ekkor nagyon elkeseredtem, alkoholizmusba sьllyedtem. A sajбt ostobasбgomnak kцszцnhetхen vйgьl a hбzamat is elveszнtettem, йs hajlйktalan lettem. Akkor jцttem ide. Йs tudod mit? Itt igenis megbecsьlnek, mert tudom, hogy mit csinбlok. Йn pedig semmit sem vбltoztam, nйha mйg egy ьveg italt is elfogadok a munkбmйrt cserйbe... ezt prуbбld йszben tartani!</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1111">
+		<text>Йrtem! Nem bбnnбd, ha feltennйk pбr kйrdйst?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1112">
+		<text>Йrtem! Ennyit akartam.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_12">
+		<text>Kйpes vagy egyбltalбn valamire?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_121">
+		<text>A kйzremegйs mйg egyбltalбn nem jelenti azt, hogy haszontalan lennйk! Egyszerыen csak mбsnapos vagyok, ez minden. Hadd igyak pбr kupicбval, az mindig segнt, йs jobb leszek, mint ъj koromban! Te csak ne aggуdj, jobb munkбt vйgzek itt bбrmelyik jуzan kurafinбl, nem vicc! Bбrmit megcsinбlok, amire szьksйged van. Megjavнtom a stukkeredet, teszek mйg kevlбrt a pбncйlzatodhoz vagy kisegнtelek egy fejlesztйssel. Csak ne feledkezz el jу barбtodrуl, Бtlбtszуrуl, йs idхnkйnt fizess majd neki egy italt a munkбssбgйrt!</text>
+	</string>
+	<string id="gar_bandit_tech_questions_13">
+		<text>Tudsz te egyбltalбn arrуl, hogy mi folyik kцrьlцtted?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_131">
+		<text>Хszintйn? Nagyнvben szarok rб, hogy mi tцrtйnik! Amнg van elйg munkбm (йs piбm!), addig nincs gond. Lehet elcsesztem az йletem, de mбr kйsх, hogy vбltoztassak rajta. Ugyan miйrt tцmnйm a fejem haszontalan pletykбkkal? Annyi meg annyi szarsбg tцrtйnik ezen a helyen. Talбlkoztбl mбr Kirillel? Tudod, azzal a foltos fejыvel! Mйg Foltosnak is becйzzьk. Nos, ha mйg nem lбttad, most is biztos leissza magбt valahol a sбrga fцldig. Szуval, pбrszor lбttam Foltost (ha-ha!), amint kimegy a bбzisrуl. Gondoltam, biztos szerzett magбnak a srбc egy rejtekhelyet, ahovб azokat a zsбkmбnyokat rejti, amiket nem akar mбsokkal elosztani. Tцbben is йszrevettйk, йs valahogy Jуga is tudomбst szerzett rуla. Magбhoz hнvatta Foltost, йs megparancsolta, hogy mutassa meg neki a rejtekhelyet. Foltos eskьdцzцtt, hogy "Fхnцk, nem vagyok бrulу, eskьszцm...", нgy hбt elment йs megmutatta. Kiderьlt, hogy a srбc цsszeszedett valami csernobili kцlyцkkutyбt, mert nem volt kivel beszйlnie. A tцbbiek nem tartjбk valami sokra. Jуga persze tiszta ideg volt, lelхtte a kutyбt, Foltost цsszeverette, йs megvonta tхle a rйszйt. Цregem, ilyen az йlet...</text>
+	</string>
+	<string id="gar_bandit_tech_questions_14">
+		<text>Ki az a fickу, aki mindig ott alszik a sarokban?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_141">
+		<text>Х a legjobb barбtom, Szinka. Meg is fulladnбl benne, annyi vodkбt ittunk mi mбr ketten! Mбr a megйrkezйsem napjбn цsszehaverkodtunk. Elхszцr megittunk egy italt, hogy megьnnepeljьk a talбlkozбsunkat, majd alaposan цsszeverekedtьnk, mert elkezdtьnk az йletrхl beszйlgetni, йs nem йrtettьnk egyet valamiben. Ne aggуdj, Szinka jу ember, bбr rйszegen mйg mindig hajlamosak vagyunk цsszeverekedni! De vele mindig beszйlhetek, ha valami problйmбm van, х az egyetlen igaz barбtom, mint Pavlov йs a kutyбja.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_15">
+		<text>Szerinted, melyik fegyverjellemzхt йrdemes fejlesztenem?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_151">
+		<text>Van egy alapelv, amihez minden fйrfinak tartania kell magбt: soha ne keverd a vodkбt a sцrrel! Nyilvбnvalу, igaz? Nos, ugyanez igaz a fegyverekre is. Vбlassz ki egy fegyverjellemzхt, йs fejleszd fel maximumra, йrtetted? Nem szбmнt, hogy mi az, pontossбg, tыzgyorsasбg vagy akбrmi, csak fejleszd fel maximumra! Egy kimaxolt jellemzх sokkal tцbbet йr, mint tцbb elkezdett.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_16">
+		<text>Jуl van! Elйg volt egyszerre ennyi kйrdйs.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_161">
+		<text>Nos, йn itt leszek, ha egy kicsit beszйlgetni szeretnйl, ezt ne felejtsd el!</text>
+	</string>
+	<string id="gar_bandit_trader_join_0">
+		<text>Hogy csatlakozhatnйk a klбnotokhoz?</text>
+	</string>
+	<string id="gar_bandit_trader_join_1">
+		<text>Kйrdezd Jуgбt! Х dцnt ezekben az ьgyekben. Nem is nehйz megtalбlni, csak keresd a "Fхnцk" йs "Ъtvonal regisztrбciу" tбblбkat!</text>
+	</string>
+	<string id="gar_bandit_trader_questions_0">
+		<text>Mit szуlnбl egy kis csevegйshez, amнg nincs mozgбs az ьzletben?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1">
+		<text>Persze, mi a helyzet?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_11">
+		<text>Mesйlj magadrуl!</text>
+	</string>
+	<string id="gar_bandit_trader_questions_111">
+		<text>Illegбlis ьgyleteket folytattam mйg a Szovjetuniу idejйn, amнg el nem kaptak egy nagyobb szбllнtmбnnyal. Fйrfi mуdjбra leьltem az idхmet, kцzben szereztem pбr barбtot йs kapcsolatot az alvilбgban, нgy amikor kiszabadultam elkezdtem felvбsбrolni a betцrхk бruit. Kйsхbb megint elcsнptek, нgy ьltem mйg egy kicsit, de amire kijutottam a Szovjetuniуnak mбr befellegzett. Soha nem tudtam hozzбszokni a vбltozбsokhoz, leйgtem, йs szar volt az йletem... de akkor megjelent a Zуna, йs azonnal idejцttem. Rцgtцn a rйgi idхkre emlйkeztetett ez a hely, нgy azon nyomban kereskedх lettem.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1111">
+		<text>Йrtem! Mesйlnйl mйg valamit?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1112">
+		<text>Jуl van, elйg volt a lazsбlбsbуl!</text>
+	</string>
+	<string id="gar_bandit_trader_questions_12">
+		<text>Mit gondolsz Jуgбrуl?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_121">
+		<text>Hogy mit gondolok rуla? Jуga nem sokбig fog mбr fхnцk maradni. Ъgy йrzem, hogy Borov elхbb vagy utуbb lйpni fog, mert Jуga kezd egyre jobban elszбllni magбtуl, йs ъgy tыnik, kйptelen messzebb lбtni az orrбtуl. Kнgyуt melenget a keblйn, йs elхbb-utуbb megharapja хt. Йs nem azйrt mondtam ezt el, hogy aztбn boldog-boldogtalannak elmesйld! Rбd bнztam az informбciуimat, ъgyhogy, ha talбlsz valami йrdekeset, akkor elhozod ide, megйrtetted? Te csak ne aggуdj, nem szбmнt, hogy ki a fхnцk, Jуga vagy Borov, йn akkor is itt fogok бrulni!</text>
+	</string>
+	<string id="gar_bandit_trader_questions_13">
+		<text>Mesйlj a Szemйtdombrуl!</text>
+	</string>
+	<string id="gar_bandit_trader_questions_131">
+		<text>Nem йrtem, hogy ki akarna цnszбntбbуl erre a szarkupacra jцnni. Korбbban soha senki nem jцtt ide, mert itt ъgyis csak szemetet йs sugбrzбst talбlnбnak. Йs akkor "bumm", nйhбny stalkernek mбkja lett, йs kiбstak pбr csecsebecsйt. Azуta ъgy цzцnlenek a Zуnбbуl az emberek, mint a kanos tengerйszek egy szajhбhoz. Hatalmas volt a felfordulбs, amнg az embereink meg nem jelentenek, hogy rendet teremtsenek. Mert a Zуnбnak нgy vagy ъgy, de rend kell. Teljesen mindegy, hogy a zsernyбkok vagy bхrfejыek tartatjбk-e be a tцrvйnyt, vagy gengszterek kormбnyoznak kedvьk szerint, йs pontosan ez az, amit mi csinбlunk a Szemйtdombon. Ahhoz viszont nem kell diploma, hogy tudd, a rend fenntartбsa pйnzbe kerьl. Az embereinknek enniьk kell. Ezйrt megkapjбk jutбnyos rйszьket a zsбkmбnybуl, нgy йn sem panaszkodom, bбr gondoltam mбr rб, hogy keresek egy jцvedelmezхbb helyet.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_14">
+		<text>Mik a legъjabb hнrek a Zуnбban?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_141">
+		<text>Legъjabb hнrek, mi? Csak vigyбzz, nehogy a legъjabb egyben a legutolsу is legyen, ha йrted, mire gondolok! Цsszessйgйben elmondhatу, hogy mutбns szempontbуl kцzel sem olyan rossz az itteni helyzet, mint a Zуnбban beljebb, de a minap tцrtйnt egy baleset... Egy stalker jцtt vissza, teljesen lesбpadt, remegett a keze, meg hasonlуk... Egyfolytбban a bыneit йs egyйb szarsбgait gyуnta meg. Az tцrtйnt, hogy a haverjбval йppen nйhбny kopogу szellem elхl menekьltek, amikor belebotlottak egy csapat hцrcsцgbe. A fickу a "mindenkinek sajбt magбval kell tцrхdnie" elvet kцvetve lepuffantotta a haverjбt, йs futбsnak eredt. A hцrcsцgцk nyilvбnvalуan nem foglalkoztak vele, hiszen mбr megvolt a friss hъsuk, amin lakomбzhatnak, de amikor a kis hхsьnk meglйpett, elkezdett gondolkodni azon, hogy mit is tett... Miutбn megivott Borovnбl kйt ьveggel, te is hallhattad volna a sirбnkozбsбt, hogy a haverja mikйnt adta neki az utolsу elsхsegйlycsomagjбt, meg hasonlуkat... Mindegy, szуval a fickу mйg aznap este felakasztotta magбt... ez tцrtйnik az emberekkel a Zуnбban.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_15">
+		<text>Semmi kьlцnцs, gondolom.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_151">
+		<text>Ahogy gondolod.</text>
+	</string>
+	<string id="gar_digger_leader_attack_0">
+		<text>A koncentrбciуs tбbor megtбmadбsбval kapcsolatban...</text>
+	</string>
+	<string id="gar_digger_leader_attack_1">
+		<text>Figyelj ide, rйgуta tervezem mбr, hogy megtбmadom a fosztogatуkat, йs nyomбst gyakorlok rбjuk, hogy visszafizessem nekik mindazt, amit tettek! A gond csak az, hogy az бsatуk kibaszottul fйlnek, йs nem is akarjбk elhinni, hogy ez lehetsйges. Amint valaki megemlнteni azt a szуt, hogy "koncentrбciуs tбbor", minden bбtorsбguk elszбll. Ez pedig azt jelenti, hogy egyedьl ъgy valуsнthatom meg az бlmomat, ha elhitetetem az бsatуkkal, hogy nyerhetьnk!</text>
+	</string>
+	<string id="gar_digger_leader_attack_11">
+		<text>Йs ezt, hogy akarod elйrni?</text>
+	</string>
+	<string id="gar_digger_leader_attack_111">
+		<text>Ki akarom szabadнtani az бsatуkat a tбborbуl, majd eltыntetni az egйszet a Fцld szнnйrхl! Ha sikerьlne, az бsatуk rбjцnnйnek, hogy a fosztogatуk kцzel sem legyхzhetetlenek. Csupбn egy jelre van szьksйgьk, mint pйldбul, amit Che Guevara adott a kubaiaknak! Ezйrt kellenek a fegyverek, hogy esйlyt adhassak a fiaimnak a fosztogatуk ellen! Bбr хszintйn szуlva, fegyverekkel is kevйs esйlyьnk van... Ezйrt is kйrem azt, hogy vezesd te хket! Tapasztalt harcos vagy, ha te irбnyнtanбl minket, biztos vagyok benne, hogy nyernйnk! Segнtesz nekьnk?</text>
+	</string>
+	<string id="gar_digger_leader_attack_1111">
+		<text>Segнtsek megtбmadni a koncentrбciуs tбbort? Rendben, segнtek!</text>
+	</string>
+	<string id="gar_digger_leader_attack_11111">
+		<text>Valahogy tudtam, hogy megbнzhatok benned! Itt vannak a koordinбtбk. A fiaim mбr vбrnak a csempйsz kйszletbхl szerzett fegyverekkel. Йrtesнtem хket az йrkezйsedrхl! Kйz- йs lбbtцrйst, tцbbszцrцsen is!</text>
+	</string>
+	<string id="gar_digger_leader_attack_111111">
+		<text>Megteszem, amit lehet!</text>
+	</string>
+	<string id="gar_digger_leader_attack_1112">
+		<text>Nem mondhatnбm, hogy meghatott a kis szуnoklatod. Majd бtgondolom.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11121">
+		<text>Mit kell ezen бtgondolni? Ha most az бsatуk nem fognak цssze, hamarosan a fosztogatуk tъl erхssй vбlnak! Йs szerinted, akkor mi fog tцrtйnni? Majd йn elmondom! Elцzцnlik az egйsz Zуnбt, az pedig senkinek sem lesz jу! Gyerьnk mбr, ember, egyedьl te tudsz levezйnyelni egy sikeres tбmadбst a tбbor ellen!</text>
+	</string>
+	<string id="gar_digger_leader_attack_2">
+		<text>Meg kell tбmadnunk a tбbort! Csak нgy йrhetjьk el, hogy az бsatуk higgyenek magukban! Segнtesz nekьnk?</text>
+	</string>
+	<string id="gar_digger_leader_break_0">
+		<text>Йg veled!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_0">
+		<text>Egy elsхsegйlycsomag?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1">
+		<text>Igen, ezt нrjбk a dobozбn: "terepen hasznбlhatу egйszsйgьgyi csomag." Mйg a Zуna kialakulбsakor бstam fel. Gondolom, az elsх tudomбnyos expedнciу sorбn hagyhattбk itt... Йrtйkes, bбr senki nem akarja megvenni, mйg kйtezerйrt sem. Tъl sok ez egy бsatуnak. Miйrt nem veszed meg te, barбtom? Nagyon kellene a pйnz...</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11">
+		<text>Egy elsхsegйlycsomagot kйtezerйrt? Add csak ide, mйg hasznбt vehetem!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111">
+		<text>Nagy segнtsйg voltбl, barбtom! Itt az elsхsegйlycsomag. Tudod, lehet, hogy ostoba vagyok, de azt hiszem, megbнzhatom benned. Azйrt kellett a pйnz, hogy vйgre fegyvereket vehessek a csempйszektхl a fiaimnak!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111">
+		<text>Йrtem, de mi kцze ennek a bizalomhoz?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111">
+		<text>Nos, a helyzet az, hogy Sztringov az imйnt indult el, hogy talбlkozzon a csempйsszel. A pйnz nagy rйsze mбr megvan, de ha nбla lenne az is, amit adtбl, megvehetnй az цsszes fegyvert, amire szьksйgьnk lenne. Ezйrt azt szeretnйm kйrni, hogy vidd el ezt a pйnzt Sztringovnak! Itt vannak a koordinбtбk. Йrtesнtem az йrkezйsedrхl, de azйrt siess, rendben?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111111">
+		<text>Rendben!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111111">
+		<text>Tudtam, hogy jуl нtйltelek meg! Elхre is kцszцnцm!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111111">
+		<text>Akkor kцszцnd, ha mбr elvйgeztem!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111112">
+		<text>Mit is kell tennem?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111121">
+		<text>El kell vinned kйt rongyot Sztringovnak, aki a csempйszre vбr.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111211">
+		<text>Йrtem!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111113">
+		<text>Бtgondolom.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111131">
+		<text>Hmm... Remйlem, nem tйvedtem veled kapcsolatban!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111311">
+		<text>Akkor remйnykedj csak!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_112">
+		<text>Szнvesen tennйm, de nemrйg ъgy dцntцttьnk, hogy az ьzletelйst meghagyjuk estйre, a fцlцsleges szemtanъkat elkerьlendх. Gyere vissza az elsхsegйlycsomagйrt, amint besцtйtedett!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_12">
+		<text>Megveszem. Csak elхbb цssze kell szednem a pйnzt!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_121">
+		<text>Barбtom, ha tйnyleg megveszed, jцvцk neked eggyel! De csak este ьzletelьnk, nehogy lebukjunk! Йn talбltam ki a szabбlyt, ъgyhogy muszбj betartanom!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_13">
+		<text>Бtgondolom.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_131">
+		<text>Barбtom, nem tudom, honnan szerezhetnйk mйg pйnzt...</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_2">
+		<text>Igen, csak kйt rongy.  Adhatnбm olcsуbban is, de pontosan kйtezerre lenne szьksйgem... Elviszed?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_3">
+		<text>Rendben! Sikerьlt mбr цsszeszedned a kйt rongyot?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_31">
+		<text>Igen. Add ide az elsхsegйlycsomagot!</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_32">
+		<text>Mйg nem.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_321">
+		<text>Nos... az elsхsegйlycsomag csak rбd vбr, йs йn is rбd vбrok! A pokolba, tйnyleg nem tudok mбshonnan pйnzt szerezni!</text>
+	</string>
+	<string id="gar_digger_leader_hello_11">
+		<text>Kopj le, haver, mintha nem lenne mбr нgy is keserves az йlet! Az idхjбrбs szar, sehol semmi zsбkmбny, fosztogatуk йs mutбnsok хrzik a legjobb helyeket... Mйg ha szerencsйd is van, йs felбsol valami йrtйkeset, akkor sem fogsz kijutni a Szemйtdombrуl! Valamelyik mocsadйk ъgyis elkobozza tхled, rбadбsul mйg Ъjfiъ йs a srбcok is eltыntek!</text>
+	</string>
+	<string id="gar_digger_leader_hello_111">
+		<text>Esetleg segнthetek valamiben?</text>
+	</string>
+	<string id="gar_digger_leader_hello_1111">
+		<text>Segнteni, azt mondod? Egyбltalбn honnan tudhatnбm, hogy megbнzhatom-e benned? Bбr nem mintha sok vбlasztбsom lenne, nem igaz? Szьksйgem lenne egy tбrgyra egy Ъjfiъ nevы бsatуtуl! Mбr ha tйnyleg segнteni akarsz...</text>
+	</string>
+	<string id="gar_digger_leader_hello_112">
+		<text>Ez a te gondod, nem az enyйm.</text>
+	</string>
+	<string id="gar_digger_leader_hello_1121">
+		<text>Nos, nem mondanбm, hogy meglepхdtem, itt senki sem tцrхdik senkivel... A fene belйd, Ъjfiъ, hol vagy mбr?</text>
+	</string>
+	<string id="gar_digger_leader_hello_12">
+		<text>Miйrt, Istenem? Miйrt?...Hol van mбr az az бtkozott Ъjfiъ...</text>
+	</string>
+	<string id="gar_digger_leader_hello_13">
+		<text>Szуval, haver, most akkor komolyan gondoltad, hogy segнtesz Ъjfiъval vagy sem?</text>
+	</string>
+	<string id="gar_digger_leader_hello_14">
+		<text>Elindultбl mбr megkeresni Ъjfiъt?</text>
+	</string>
+	<string id="gar_digger_leader_hello_15">
+		<text>Elhoztad Ъjfiъ rйgi PDA-jбt?</text>
+	</string>
+	<string id="gar_digger_leader_hello_21">
+		<text>Megveszed mбr vйgre azt az elsхsegйlycsomagot? Meg kell йrtened, ember, nem adnбm ilyen olcsуn, ha nem kellene ennyire a pйnz!</text>
+	</string>
+	<string id="gar_digger_leader_hello_22">
+		<text>Sikerьlt mбr elйg dohбnyt цsszekaparnod az elsхsegйlycsomagra?</text>
+	</string>
+	<string id="gar_digger_leader_hello_31">
+		<text>Vidd el gyorsan ezt a pйnzt Sztringovnak, rendben? Bнzom a becsьletessйgedben!</text>
+	</string>
+	<string id="gar_digger_leader_hello_311">
+		<text>Ez kedves.</text>
+	</string>
+	<string id="gar_digger_leader_hello_32">
+		<text>Haver, miйrt pazarolod itt az idхd? Sztringov nemsokбra elmegy!</text>
+	</string>
+	<string id="gar_digger_leader_hello_321">
+		<text>Azt kйtlem, csak nyugi!</text>
+	</string>
+	<string id="gar_digger_leader_hello_33">
+		<text>Haver, otthagytad Sztringov PDA-jбt? Csak нgy szerezhetjьk meg azokat a fegyvereket!</text>
+	</string>
+	<string id="gar_digger_leader_hello_331">
+		<text>Йrtem, vigyбzz magadra!</text>
+	</string>
+	<string id="gar_digger_leader_hello_34">
+		<text>Elhoztad a csempйsz PDA-jбt? Kцsz... fogadok, Sztringov volt az, aki eladta a csempйszt a fosztogatуknak! Ezek utбn, hogy bнzhatnйk meg bбrkiben is? Ъgy йrtem, Sztringov is volt a tбborban, mйgis, amint odakerьlt engedett a szemйlyes йrdekeknek... Nos, ez mбr a mъltй, mбr ami Sztringovot illeti. Egyйbkйnt az embereim mбr fel is vettйk a fegyvereket a kйszletbхl... Azt hiszem, most mбr elmondhatom, hogy mire kellenek. A segнtsйgьkkel megtбmadjuk a koncentrбciуs tбbort.</text>
+	</string>
+	<string id="gar_digger_leader_hello_342">
+		<text>Persze, de ne felejtsd el, hogy mбr felszabadнtottam az бsatуkat a tбborban!</text>
+	</string>
+	<string id="gar_digger_leader_hello_51">
+		<text>Nos, lassan kйszen бllunk, hogy megtбmadjuk a tбbort... Beavassalak a rйszletekbe?</text>
+	</string>
+	<string id="gar_digger_leader_hello_52">
+		<text>Haver, nйlkьled nincs йrtelme megtбmadni a tбbort. Mi бsatуk vagyunk, nem pedig katonбk... A fiaim szart se tudnak harcolni, a taktika pedig nem egy olyan dolog, amit бsatу iskolбban tanнtanak, ha йrted, mire gondolok! A legjobb, amit kitelhet tхlьk, цssze-vissza tьzelni fedezйskйnt. Ha viszont te vezetnйd хket, az mбr egy egйszen mбs tцrtйnet lenne. Kцnyцrgцm neked! Kйrlek, vezesd te a tбbor megtбmadбsбt!</text>
+	</string>
+	<string id="gar_digger_leader_hello_53">
+		<text>Rajta, a fiaim mбr vбrnak rбd!</text>
+	</string>
+	<string id="gar_digger_leader_hello_531">
+		<text>Megyek mбr! Vigyбzz magadra!</text>
+	</string>
+	<string id="gar_digger_leader_hello_54">
+		<text>Mйgis mit csinбlsz, ember?! A fiaink a vesztьkbe rohannak!</text>
+	</string>
+	<string id="gar_digger_leader_hello_55">
+		<text>A fenйbe, ember... Ъgy tыnik, az embereinket megцltйk. Mбr csak te bosszulhatod meg a halбlukat! Цld meg a rohadйkokat a tбborban! Szabadнtsd ki a srбcokat!</text>
+	</string>
+	<string id="gar_digger_leader_hello_61">
+		<text>Tudod, haver, nem olyan rossz az йlet.</text>
+	</string>
+	<string id="gar_digger_leader_hello_71">
+		<text>Az йletem... mivel йrdemeltem йn ezt ki...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_0">
+		<text>Ъjfiъval kapcsolatban...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1">
+		<text>Nos, a helyzet a kцvetkezх: Az egyik бsatуnknak, Ъjfiъnak, el kellett volna hoznia nekem a rйgi PDA-jбt, de egyszerыen csak eltыnt. Sem х, sem pedig a csoportja nem lйpett kapcsolatba velem, de muszбj megszereznem azt a PDA-t! Legszнvesebben йn magam mennйk vagy a barбtomat, Sztringovot kьldenйm, de most egyikьnk sem mehet el! El tudod hozni nekem a PDA-t?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11">
+		<text>Gondolom. Hol talбlom ezt az Ъjfiъt?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111">
+		<text>Nem tudom, hol talбlhatod meg, sokat vбndorol, de a tбbora innen dйlre van, a ciszternбk йs a szemйthalom mцgцtt. Ha Ъjfiъ ott van, mondd neki, hogy Dьhцdt Napr kьldцtt! Ha nincs ott, csak keresd a szerszбmoslбdбjбt! A PDA-nak a kettхs fenйk alatti rejtett rekeszben kell lennie. Йrtetted?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1111">
+		<text>Йrtettem!</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11111">
+		<text>Jу.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112">
+		<text>Tudod, voltam a tбborban, йs nincs ott egy бrva lйlek sem. Csak holttestek, darabokra tйpve.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121">
+		<text>A picsбba... velьk is! Szцrnyek jбrjбk estйnkйnt a Szemйtdombot, йs megцlnek mindenkit, aki nincs felfegyverkezve, azaz minket, бsatуkat. Eddig mйg egyetlen tъlйlх sem maradt, aki beszбmolhatott volna rуluk. Az Isten verje meg ezt a rohadt бsatу йletet...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111211">
+		<text>Mindazok utбn, ami tцrtйnt, talбn nem ez a legalkalmasabb idх az цnsajnбlatra, haver.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112111">
+		<text>Igen, igazad van! Emlйkszel mйg, hol talбlhatod meg a PDA-t?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121111">
+		<text>Igen, emlйkszem.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112112">
+		<text>Igen, igazad van! Йs elhoztad Ъjfiъ rйgi PDA-jбt?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1113">
+		<text>Mondd el megint!</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11131">
+		<text>Rцviden, Ъjfiъ tбbora innen dйlre van, a ciszternбk йs a szemйthalom mцgцtt. El kell hoznod nekem azt a rйgi PDA-t! Kйt helyen lehet: Ъjfiъnбl vagy a szerszбmoslбdбjбban.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11132">
+		<text>Rцviden, Ъjfiъ tбbora innen dйlre van, a ciszternбk йs a szemйthalom mцgцtt. Hozd nekem a rйgi PDA-t a szerszбmoslбdбbуl!</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_12">
+		<text>Tudod, nem sok kedvem van ma a kьldetйsekhez.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_121">
+		<text>A segнtsйgedet kйrem, te pedig...!</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_2">
+		<text>Rendben van, йs hol vannak?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_21">
+		<text>Ki tudja? Mйg nem kerestem хket.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_211">
+		<text>Figyelj, ember, tйnyleg szьksйgem van arra a PDA-ra! Tйgy egy szнvessйget, йs keresd meg хket!</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3">
+		<text>Megvan a PDA, igaz?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31">
+		<text>Ъjfiъval kapcsolatban...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_311">
+		<text>Ember, te aztбn kihъztбl a szarbуl! Tessйk, fogadd el jutalmul! Rendben, lбssuk csak... A fenйbe, itt csak mбsfйl rongy van. Ъgy tыnik, hogy nem fizettйk ki az utolsу rendelйst. Hmm... Tudod, йn йs Ъjfiъ, Isten nyugosztalja, a PDA-n keresztьl kьldtьnk egymбsnak pйnzt. Lйnyeg a lйnyeg, mindenkйppen szьksйgem van most a pйnzre, de nem sikerьlt Ъjfiъnak цsszeszednie annyit, amit нgйrt, ъgyhogy valahonnan mйg szereznem kell kйt rongyot! A gond az, hogy mбr tъladtam minden kйszletьnkцn...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3111">
+		<text>Van ez нgy.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31111">
+		<text>Vбrj csak... van mйg itt egy elsхsegйlycsomagom! Nem szeretnйd vйletlenьl megvenni? Ъgy terveztem, hogy hбrom rongyйrt adom el, de neked odaadom kettхйrt is. Soha vissza nem tйrх alkalom, mit mondasz?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_32">
+		<text>Nem, nem veszem meg.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_321">
+		<text>Figyelj, Ъjfiъt йs az embereit darabokra tйptйk, nyugodjanak bйkйben... De akkor is szьksйgem van arra a PDA-ra! Kйrlek, hozd el nekem!</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_11">
+		<text>Nem vagyok hajlandу dolgozni, amнg ezek a szem nйlkьli szцrnyek itt уlбlkodnak!</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_21">
+		<text>Nos, testvйr, nehйz йlet jutott az бsatуknak...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_11">
+		<text>Mi? Mit akarsz? Nem lбtod, hogy pihenek?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_21">
+		<text>Hmm... Hagyj bйkйn... Hadd aludjak...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_31">
+		<text>Jуga kьldцtt? Vйgre mбr! Mi tartott eddig?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_41">
+		<text>Igen, igen, megyek mбr! Csak elхbb meg akarok gyхzхdni rуla, hogy nem botlok bele Jуga embereibe, utбna mбr itt sem vagyok!</text>
+	</string>
+	<string id="gar_digger_traitor_hello_411">
+		<text>Gyerьnk, gyerьnk!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_0">
+		<text>Jуl van, akkor kimondom! Jуga megkйrt, hogy rendezzem veled a dolgokat. Vedd ъgy, hogy ez az utolsу fizetsйged!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1">
+		<text>Ideje volt... Hй, vбrj csak, haver, vбrj! Jуga le akar lцvetni? Ne... ne... ne цlj meg! Tцbbet fizetek nбla!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11">
+		<text>Mennyivel tцbbet?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111">
+		<text>Nos, ццц... Nem tudom, hogy Jуga mennyit нgйrt neked, de tudom egy halott csempйsz kйszletйnek a koordinбtбit. Legalбbb цt rongy йrtйkben vannak ott cuccok!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1111">
+		<text>Бruld el a koordinбtбkat, йs szнvуdj fel, megйrtetted?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11111">
+		<text>Persze, persze! A kйszlet egy rozsdбs kocsi csomagtartуjбban van, itt vannak a koordinбtбk! Kцszцnцm, ember! Tudok egy titkos utat, ъgyhogy senki sem fog lбtni, ezt megнgйrhetem! Most... megyek, rendben?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111111">
+		<text>Rendben!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1112">
+		<text>Egy ismeretlen kйszlet ismeretlen cuccokkal? Ez nem elйg. Йg veled!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_12">
+		<text>Nem йrdekel, йg veled!</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_0">
+		<text>Ъgy hallottam, hogy цssze tudsz hozni egy talбlkбt a csempйsszel.</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_1">
+		<text>Szуval tйged kьldtek a fegyverekйrt? Igen, lehet rуla szу. Бltalбban valamelyik бsatбs kцzelйben talбlkozom a fickуval, innen nyugatra. Itt vannak a koordinбtбk. Valahol ott lesz a csempйsz, ъgyhogy menj oda, addig йn йrtesнtem az йrkezйsedrхl! Nбlad van a pйnz, igaz? Ragyogу!</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_11">
+		<text>Йrtettem, vigyбzz magadra!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_0">
+		<text>Nem fйlsz a fosztogatуktуl?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_1">
+		<text>Persze, hogy fйlek, de mit tehetnйk? Valahogy meg kell йlnie az embernek. Azйrt megtanultuk, hogy уvatosnak kell lennьnk. Nappal csak kisebb уcskasбgokat бrulunk, nehogy felkeltsьk mбsok figyelmйt. De mйg нgy is alig merьnk mozogni йs lйlegezni. Nem lehetьnk elйg уvatosak ezen a helyen!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_0">
+		<text>Mit бrulsz?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_1">
+		<text>Csak nйhбny уcskasбgot. Tudod, azt бrulom, amit kiбsok. Ebbхl йs hйbe-hуba egy kereskedйsbхl meg tudok йlni... Az az igazsбg, hogy a Zуnбban a csere az egyetlen jбrhatу ъt!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_1">
+		<text>Hellу! Йrdekel valami?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_0">
+		<text>Mi ez a hely?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_1">
+		<text>Nos, ez itt a bolhapiac, akkor pedig elvileg mi lennйnk a bolhapiacosok. Kereskedхk vagyunk, haver! Hйbe-hуba eladunk pбr aprуsбgot... Хszinte leszek veled, az бruink szarok, de hй, legalбbb meg tudunk йlni belхle, igaz? Szуval, csak azйrt jцttйl, hogy beszйlgess vagy kereskedni is akarsz?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_0">
+		<text>Te vagy itt az egyetlen kereskedх?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_1">
+		<text>Persze, hogy nem! Jу pбr fickу ьzletel itt, de van egy szabбlyunk, hogy a nagyobb dolgokat csak napnyugta utбn bocsбtjuk бruba. Nappal csak йn vagyok a "nem sok, de legalбbb kevйs" бrummal, azonban, ha leszбllj az йj, elхkerьlnek az igazi portйkбk, йs megindul a nyьzsgйs!</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_0">
+		<text>default text</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_1">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_11">
+		<text>Mi? Mi ez?...A fenйbe, a szнvbajt hozod rбm! Nem lбtod, hogy alszom?</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_111">
+		<text>У, sajnбlom! Vigyбzz magadra!</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_0">
+		<text>default text</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_1">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_11">
+		<text>Hellу, haver! Gyere csak, ne szйgyenlхskцdj, ha szьksйged van valamire!</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_111">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_11">
+		<text>Korбn felkeltйl... nincs most itt az ideje, hogy az ьzletrхl beszйlgessьnk, ugye йrted? Gyere vissza... kйsхbb!</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_111">
+		<text>Vettem!</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_11">
+		<text>Jу estйt! Esetleg йrdekelne valami... kьlцnleges?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_111">
+		<text>Persze, mutasd meg!</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_112">
+		<text>Nem, csak йlveztem a tбrsasбgod. Йg veled!</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21">
+		<text>Mit akarsz?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211">
+		<text>Kereskedni szeretnйk. Mit szуlsz hozzб?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111">
+		<text>Kereskedni? Йs ki is vagy te?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21111">
+		<text>Hй, ha nem kell a pйnz, rendben! Megyek akkor a tцbbi kereskedхhцz, хk elйg okosak ahhoz, hogy ne tegyenek fel ostoba kйrdйseket!</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211111">
+		<text>Csigavйr, ember! A tцbbiek ьzleteltek veled? Hmm, nos, хk nem ьzletelnek csak ъgy akбrkivel, szуval... Van бrum. Йrdekel?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111111">
+		<text>Ez mбr beszйd! Mutasd!</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21112">
+		<text>Semmi kцzцd hozzб!</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212">
+		<text>Korrekt. Ismersz a kцrnyйken kereskedхket?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121">
+		<text>Nem.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211">
+		<text>Egyet sem?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111">
+		<text>Нgy van.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111">
+		<text>Biztos?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111">
+		<text>Biztos.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111111">
+		<text>Haver, nem vagyok sem fosztogatу, sem bхrfejы, sem pedig zombi! Most akkor kereskedх vagy?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111111">
+		<text>Kereskedх vagyok. Meg is nйzed бruimat vagy csak kйrdezхskцdsz?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111111">
+		<text>Цrцmmel megnйznйm az бruidat!</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21212">
+		<text>Akkor йg veled!</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_213">
+		<text>Tхled semmit.</text>
+	</string>
+	<string id="gar_bandit_commentators_11">
+		<text>Ezt kapd ki, haver! Egy lцvйs ezzel a szйpsйggel, йs tollak lepik el az eget!</text>
+	</string>
+	<string id="gar_bandit_commentators_111">
+		<text>Hmm... jobb lesz, ha most megyek!</text>
+	</string>
+	<string id="gar_bandit_commentators_12">
+		<text>Te sem szereted a szбrnyasokat, igaz? Ne aggуdj, itt rengeteg van belхlьk!</text>
+	</string>
+	<string id="gar_bandit_commentators_13">
+		<text>Mit бlldogбlsz ott? Gyerьnk, mйszбrold le az бtkozottakat, rendezz vйrfьrdхt, gyerьnk!</text>
+	</string>
+	<string id="gar_bandit_leader_break_0">
+		<text>Йg veled!</text>
+	</string>
+	<string id="gar_bandit_robbery_11">
+		<text>Ьdvцzlet, perkбlj szйpen egy kis dohбnyt! Йs nem kell sнrdogбlni amiatt, hogy kiraboltak. Ne feledd, ennyit megйrdemlьnk, amiйrt betartatjuk a tцrvйnyeket йs a szabбlyokat a Szemйtdombon! Egyetйrtesz?</text>
+	</string>
+	<string id="gar_bandit_robbery_111">
+		<text>У, nagyon szнvesen tбmogatom a munkбssбgotokat! Tessйk, itt van!</text>
+	</string>
+	<string id="gar_bandit_robbery_1111">
+		<text>Ez a mi emberьnk! Szуval, йn akkor most elmegyek, rendben? De tartsd csak meg a pisztolyt, haver! Nem vagyunk mi gengszterek, hogy csak itt hagyjunk vйdtelenьl, nem igaz? Majd, ha legkцzelebb szцrnyekbe botlasz, megkцszцnцd nekьnk! Nos, akkor sok szerencsйt, йs йg veled!</text>
+	</string>
+	<string id="gar_bandit_robbery_11111">
+		<text>Jуl van, szia!</text>
+	</string>
+	<string id="gar_bandit_trader_reward_0">
+		<text>A jutalmamйrt jцttem, amiйrt megtisztнtottam a bolhapiacot!</text>
+	</string>
+	<string id="gar_bandit_trader_reward_1">
+		<text>У, igen! Emlйkszem, parancsolj!</text>
+	</string>
+	<string id="gar_bandit_trader_reward_11">
+		<text>Hmm! Nem gondolod, hogy egy ekkora melу ennйl azйrt tцbbet йr?</text>
+	</string>
+	<string id="gar_bandit_trader_reward_111">
+		<text>Azt nem йn dцntцm el. Amit a fхnцk mond, azt kifizetem. Nehogy azt hidd, hogy bбrmi hasznom is szбrmazna ebbхl az ьzletbхl! De megйrtelek, Jуga nem valami nagylelkы mostansбg. Tudod mit... menj csak el hozzб! A srбcok tudjбk, hogy kemйnyen dolgoztбl, szуval, hacsak a fхnцk nem akarja, hogy a tцbbiek zsugorinak tartsбk, fizetni fog neked!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11">
+		<text>Hellу! Esetleg kinйztйl valamit az бruim kцzьl?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11111">
+		<text>Mi ez a hely?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111111">
+		<text>Nos, ez itt a bolhapiac, akkor pedig elvileg mi lennйnk a bolhapiacosok. He-he! Kereskedхk vagyunk, haver! Hйbe-hуba eladunk pбr aprуsбgot... Хszinte leszek veled, az бruink szarok, de hй, legalбbb meg tudunk йlni belхle, igaz? Szуval, csak azйrt jцttйl, hogy beszйlgess vagy kereskedni is akarsz?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11112">
+		<text>Mit бrulsz?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111121">
+		<text>Csak nйhбny уcskasбgot. Tudod, azt бrulom, amit kiбsok. Ebbхl йs hйbe-hуba egy kereskedйsbхl meg tudok йlni... Az az igazsбg, hogy a Zуnбban a csere az egyetlen jбrhatу ъt!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11113">
+		<text>Te vagy itt az egyetlen kereskedх?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111131">
+		<text>Persze, hogy nem! Jу pбr fickу ьzletel itt, de van egy szabбlyunk, hogy a nagyobb dolgokat csak napnyugta utбn bocsбtjuk бruba. Nappal csak йn vagyok a "nem sok, de legalбbb kevйs" бrummal, azonban, ha leszбllj az йj, elхkerьlnek az igazi portйkбk, йs megindul a nyьzsgйs!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11114">
+		<text>Nem fйlsz a fosztogatуktуl?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111141">
+		<text>Persze, hogy fйlek, de mit tehetnйk? Valahogy meg kell йlnie az embernek. Azйrt megtanultuk, hogy уvatosnak kell lennьnk. Nappal csak kisebb уcskasбgokat бrulunk, nehogy felkeltsьk mбsok figyelmйt. De mйg нgy is alig merьnk mozogni йs lйlegezni. Nem lehetьnk elйg уvatosak ezen a helyen!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11115">
+		<text>Egyelхre semmi. Йg veled!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_61">
+		<text>Szйp lцvйsek voltak, pajtбs. Igazбn elgondolkodhatnбl rajta, hogy pйnzre jбtssz! Szeretnйl mйg gyakorolni?</text>
+	</string>
+	<string id="gar_bandit_robbery_12">
+		<text>Vedd csak szйpen elх a PDA-dat, ideje kiperkбlni a lуvйt. Йs nehogy azt hidd, hogy nincs haszna, azйrt fizetsz, hogy rendet tartsunk a Szemйtdombban, felfogtad?</text>
+	</string>
+	<string id="gar_bandit_robbery_121">
+		<text>Nos, ha ez az бra a rend fenntartбsбnak, akkor tessйk!</text>
+	</string>
+	<string id="gar_bandit_robbery_1211">
+		<text>Ejha, egy veszteshez kйpest vбg az eszed! Akkor elveszem mindet, rendben? A felszerelйsedet megtarthatod, nem vagyunk mi barbбrok, hogy elvegyьk a fegyvereidet йs a tцbbi holmidat. Hidd el, kйsхbb mйg megkцszцnцd nekьnk, ha belebotlasz pбr mutбnsba! Jуl van, elйg a fecsegйsbхl, tыnj el innen!</text>
+	</string>
+	<string id="gar_bandit_robbery_12111">
+		<text>Aztбn... aztбn lйgy уvatos!</text>
+	</string>
+</string_table>

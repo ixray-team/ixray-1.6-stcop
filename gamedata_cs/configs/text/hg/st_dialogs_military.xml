@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hello_mil_freedom_11">
+		<text>Sikerьlt бtjutnod a Vцrцs-erdхn. Pokolian szerencsйs fickу lehetsz! De az itteni helyzet mйg ennйl is nehezebb, zsoldos. A hatбr elesett, nem tudja mбr tovбbb tartani a hadsereg.</text>
+	</string>
+	<string id="hello_mil_freedom_111">
+		<text>Mi tцrtйnt a hadsereggel?</text>
+	</string>
+	<string id="hello_mil_freedom_2">
+		<text>Meghaltak... majdnem mindannyian. Akik tъlйltйk az йlхhalottak йs a mutбnsok tбmadбsait, beszorultak, mint patkбnyok a lyukba, a helikopter-leszбllуhely melletti bбzisukra. Rбadбsul rengeteg embert elveszнtettьnk a nagy kisugбrzбsban.</text>
+	</string>
+	<string id="hello_mil_freedom_22">
+		<text>Hogy йrted azt, hogy elveszнtettetek? Mi tцrtйnt?</text>
+	</string>
+	<string id="hello_mil_freedom_222">
+		<text>Senki sem tudja biztosan, zsoldos, de az emberek eltыntek. Magбnyos stalkerek йs teljes csoportok. Nйha elkapunk rбdiуn egy-egy ьzenetet, amiben segнtsйget kйrnek. Egy zsoldos csapat egy teljes hйtig kereste az embereit a tanyбn.</text>
+	</string>
+	<string id="hello_mil_freedom_3">
+		<text>Hadd menjek oda kцrьlnйzni!</text>
+	</string>
+	<string id="hello_mil_freedom_333">
+		<text>Szуlj, ha kiderнtettйl valamit!</text>
+	</string>
+	<string id="hello_mil_freedom_44">
+		<text>Ъgy lesz!</text>
+	</string>
+	<string id="hello_mil_freedom_55">
+		<text>Йs most?</text>
+	</string>
+	<string id="hello_mil_freedom_555">
+		<text>Felejtsd el, йg veled!</text>
+	</string>
+	<string id="hello_mil_freedom_66">
+		<text>Sikerьlt бtjutnod a Vцrцs-erdхn. Pokolian szerencsйs fickу lehetsz! De az itteni helyzet mйg ennйl is nehezebb, zsoldos.</text>
+	</string>
+	<string id="hello_mil_freedom_666">
+		<text>Mi folyik itt? Magyarбzd el!</text>
+	</string>
+	<string id="hello_mil_freedom_6666">
+		<text>Elхbb lбtogasd meg az Erdйszt, majd х beavat a dolgokba!</text>
+	</string>
+	<string id="hello_mil_freedom_77">
+		<text>Йs most?</text>
+	</string>
+	<string id="hello_mil_freedom_777">
+		<text>Felejtsd el, йg veled!</text>
+	</string>
+	<string id="hello_mil_killer_11">
+		<text>Mit bуklбszol itt, zsoldos?</text>
+	</string>
+	<string id="hello_mil_killer_111">
+		<text>Tйged kereslek! A Szabadsбg emberei mondtбk a helyхrsйgen, hogy a csapatod eltыnt a kцrnyйkrхl. Mi tцrtйnt?</text>
+	</string>
+	<string id="hello_mil_killer_1111">
+		<text>Nйhбny hйttel ezelхtt fontos megrendelйst kaptunk egy ritka relikviбra. A kйrйs legfelьlrхl jцtt, az ьgyfйl igazi nagykutya. Minden jуl is ment, az osztagunk megtalбlta a relikviбt nem messze a Hatбrtуl, йs mбr indultunk is visszafelй, amikor elkapta хket egy nagy kisugбrzбs. Azt hittьk, mind meghaltak, de szerencsйjьk volt йs tъlйltйk. A gond csak az, hogy teljesen eltыntek a kцrnyйkrхl. Minket rendeltek ki, hogy talбljuk meg хket. Muszбj betartanunk, amit нgйrtьnk, ha ezt elcsesszьk, egy ьgyfйl sem fog tцbb megbнzбst adni a zsoldosoknak!</text>
+	</string>
+	<string id="hello_mil_killer_11111">
+		<text>Nem lehetsйges, hogy meghaltak? Nem egyszerы tъlйlni egy kisugбrzбst.</text>
+	</string>
+	<string id="hello_mil_killer_111111">
+		<text>Elfogtunk pбr rйszletet az osztagunk rбdiуьzeneteibхl, de nem tudtunk belхlьk kivenni semmit. Egyedьl annyit tudunk, hogy fйnyes nappal tыntek el, йs valami csapdбba ejtette хket. Lehet egy anomбlia vagy valami ъj szцrnyыsйg, ami megjelent a Zуnбn. Nem tudjuk, hogy mitйvхk legyьnk! Van egy rйgi vнztorony a tanyбnбl, talбn ott tisztбbban foghatnбnk a rбdiуьzeneteiket. Korбbban megprуbбltunk felmбszni rб, de hirtelen elхugrott egy fйlelmetes szцrnyeteg йs magбval ragadta az egyik emberьnket. Mi is majdnem ott maradtunk!</text>
+	</string>
+	<string id="hello_mil_killer_1111111">
+		<text>Szйp kis munkбt adtбl nekem. De egy fйrfinak meg kell tennie, amit egy fйrfinak meg kell tennie! Ugyanъgy kцtelessйgem kitalбlni, hogy menekнthetnйnk ki a csapatot, mint neked!</text>
+	</string>
+	<string id="hello_mil_killer_11111112">
+		<text>Elintйztem a szцrnyet. Most mбr csak tovбbbнtanom kell a koordinбtбkat a vнztoronybуl!</text>
+	</string>
+	<string id="hello_mil_killer_11111113">
+		<text>Nincs miйrt aggуdni, mбr tovбbbнtottam a koordinбtбkat a vнztoronybуl!</text>
+	</string>
+	<string id="hello_mil_killer_22">
+		<text>Цrьlцk, hogy lбtlak! Kitalбltad mбr, hogy szabadнthatnбnk ki a srбcainkat?</text>
+	</string>
+	<string id="hello_mil_killer_222">
+		<text>Mйg nem.</text>
+	</string>
+	<string id="hello_mil_killer_44">
+		<text>Mi ъjsбg, zsoldos?</text>
+	</string>
+	<string id="hello_mil_killer_444">
+		<text>Az йgvilбgon semmi!</text>
+	</string>
+	<string id="hello_mil_killer_55">
+		<text>Eltelt mбr egy kis idх, miуta legutуbb lбttunk. Tъl rйgуta vannak mбr az embereink abban az anomбliбban! Kitalбltad mбr, hogy szabadнthatnбnk ki хket?</text>
+	</string>
+	<string id="hello_mil_killer_555">
+		<text>Persze! Erdйsz megadta a kijбrat koordinбtбit, ahol a zsoldosok kijuthatnak a tйrbuborйkbуl. Csak egy erхs adуkйszьlйkre van szьksйgem, hogy elkьldhessem nekik a koordinбtбkat.</text>
+	</string>
+	<string id="hello_mil_killer_5555">
+		<text>A hadsereg bбzisбn lennie kell egy adуkйszьlйknek! A katonбkat elkapta egy elйg nagy kisugбrzбs, йs csak egy tucat йlte tъl kцzьlьk. Mindannyian SOS jeleket kьldenek, remйnykednek egy esetleges mentхakciуban. Szerintem, fцlцslegesen, nem hiszem, hogy bбrki is idejцnne. Itt hagyjбk хket meghalni, mint mindig.</text>
+	</string>
+	<string id="hello_mil_killer_55555">
+		<text>Egy tucat katona nem kis ellenбllбs, mйg egy kisugбrzбs utбn sem. Segнtesz nekem? Elvйgre kцzцs cйlйrt kьzdьnk, nem igaz?</text>
+	</string>
+	<string id="hello_mil_killer_555555">
+		<text>Nem kerьlhetьnk nyнlt konfliktusba a hadsereggel. Sajnбlom, zsoldos, ezъttal nem segнthetek! De ъgy hallottam, hogy a Szabadsбg kinйzte magбnak a bбzist. Az elfoglalбsбval kцzelebb kerьlnйnek a hatбr irбnyнtбsбhoz. Хk kisegнthetnek, fхleg, hogy a parancsnokuk tartozik nekem. Csak kapcsolatba kell lйpnem velьk!</text>
+	</string>
+	<string id="hello_mil_killer_5555555">
+		<text>Kцsz a tippet!</text>
+	</string>
+	<string id="hello_mil_killer_55555555">
+		<text>Sok szerencsйt, zsoldos!</text>
+	</string>
+	<string id="hello_mil_killer_5555556">
+		<text>Megoldom egyedьl, nem vagyok a Szabadsбg barбtja!</text>
+	</string>
+	<string id="hello_mil_killer_66">
+		<text>Alakulnak a dolgok?</text>
+	</string>
+	<string id="hello_mil_killer_666">
+		<text>Mйg nem.</text>
+	</string>
+	<string id="hello_mil_killer_667">
+		<text>Kijuttattuk a harcosaitokat a buborйkbуl! Limanszk felй indultak, ha minden jуl megy pбr уrбn belьl ide is йrnek.</text>
+	</string>
+	<string id="hello_mil_killer_6676">
+		<text>Nagyszerы hнrek! Kцszцnцk mindent, ember! Egy йletre az adуsod vagyok!</text>
+	</string>
+	<string id="hello_mil_killer_77">
+		<text>Egyszer majd elrendezzьk a Zуnбban! Isten veled!</text>
+	</string>
+	<string id="mil_killer_about_around_0">
+		<text>Jуl йrtesьlt vagy a helyi hнrekben?</text>
+	</string>
+	<string id="mil_killer_about_around_1">
+		<text>Nos, egy ideje mбr itt vagyunk, szуval figyelgetjьk a dolgokat. Pбr napja hirtelen feltыnt a Monolit frakciу. Korбbban kaptam egy megbнzбst nйhбny monolititуl. Йn mondom neked, azok nem szбzasok! Бllandуan a Monolitrуl beszйltek, egy genetikai modulrуl vagy mirхl. Aztбn egyszer csak ъtra keltek йs elzarбndokoltak a radaron tъlra. Azt hittьk, ennyi volt, nyugodjanak bйkйben az ostoba bolondok! De nйzz csak oda, a zarбndokaink visszajцttek, йs bolondabbak, mint valaha! Most azon gondolkodom, hogy vajon mit talбlhattak ott a Zуna kцzepйn. Lehet, magбt a Monolitot? Vagy egyszerыen csak szart sem talбltak, йs a frusztrбciуtуl teljesen megkergьltek? Ezeknйl a pszichopatбknбl nem lehet tudni!</text>
+	</string>
+	<string id="mil_killer_about_last_time_0">
+		<text>Tцrtйnt mйg valami йrdekes?</text>
+	</string>
+	<string id="mil_killer_about_last_time_1">
+		<text>A Zуnбban mindig tцrtйnik valami, йs minden йrdekes. Mбr mesйltem neked a Monolitrуl, mindenki errхl beszйl most... Hallottбl a legъjabb Zуna expedнciуrуl? Hivatalosan kцrnyezetkutatуk az ENSZ-tхl, de ez csak a papнron szerepel нgy. Persze, van kцztьk egy pбr pбpaszemes tudуs, de elйg egy pillantбst vetned a tцbbire, йs mбris tudod, hogy azok veterбn harcosok! Nem tudom, hogy miйrt vannak itt. У, йs ezt kapd ki! Nem hasznбlnak kнsйrхket. Most vagy mыhold alapjбn tбjйkozуdnak, vagy pedig olyan titkos a kьldetйsьk, hogy senkit sem avathatnak be. Ъgy tыnik, a radar felй mennek. Nem tudom, hogy fog ez vйgzхdni, de ъgy йrzem, csъnya lesz!</text>
+	</string>
+	<string id="mil_killer_about_what_is_you_doing_0">
+		<text>Mibхl йltek meg?</text>
+	</string>
+	<string id="mil_killer_about_what_is_you_doing_1">
+		<text>Mйg mindig az embereinket prуbбljuk megtalбlni, hogy a fene esne belй! Nem azt csinбljuk, mint a stalkerek, mi megprуbбlunk adott munkбkra koncentrбlni. Mondjuk ъgy, hogy egyйni vбllalkozуk vagyunk. Korбbban mйg soha nem voltam ilyen mйlyen a Zуnбban. Mбr нgy is annyi mindent kellett elviselnьnk, hogy a srбcok mбr mennйnek vissza a picsбba a Kordonba. Rбadбsul nemrйg hallottunk pбr mutбnsrуl, amik mбr az elme irбnyнtбsбn is tъllйptek. Хk az irбnyнtуk, igaz? Nos, ezek a rohadйkok mбr lбttatnak is veled dolgokat. Pйldбul a barбtaiddal sйtбlsz, йs hirtelen йlхhalottak vesznek kцrьl, te pedig elkezdesz lхni mindenfelй... Vagy, ezt kapd ki, azt hiszed, hogy egy nyнlegyenes ъton haladsz, de valуjбban mindjбrt leesel egy sziklбrуl!</text>
+	</string>
+</string_table>

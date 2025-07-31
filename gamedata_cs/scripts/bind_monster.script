@@ -69,7 +69,7 @@ function generic_object_binder:update(delta)
 		end
 
 		-- Àןהויע מענÿהא
-		local squad = db.storage[self.object:id()].squad_obj
+		local squad = db.storage[self.object:id()] and db.storage[self.object:id()].squad_obj
 		if squad ~= nil then
 			if squad.commander_id == self.object:id() then
 				squad:update()

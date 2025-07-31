@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_leader_hello_dialog_11">
+		<text>Jу napot, zsoldos. Mi jбratban errefelй?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_12">
+		<text>Hй, zsoldos, mбr vбrnak rбd a barlangban!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111">
+		<text>Nem sok embert lбttam eddig, aki цnkйnt ment volna le oda. Van fogalmad rуla, hogy mi vбr rбd ott lent?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111111">
+		<text>„Nem lehet olyan veszйlyes...” Hah! A dolgok igencsak megvбltoztak, miуta eldцntцttьk, hogy lezбrjuk azt az alagutat. Azt hiszem, kicsit tъlzбsba vittьk a robbantбst, leomlott a falak egy rйsze йs ъjabb jбratok nyнltak meg. A mutбnsok hordбi gyorsabban цzцnlenek elх onnan, mint ahogy elkiabбlhatnбd magad, hogy „vйrszнvуk!” Sok tбrsunk sosem tйrt vissza onnan...</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111111">
+		<text>Elrendeltem, hogy minden kijбratot hegesszenek le. Ez segнtett is, de csak egy ideig. A mutбnsok elkezdtek lyukakat бsni йs kijцttek a fцld alуl. Mire elzбrunk egy nyнlбst, mбr kiбstak egy mбsikat. Ъgy йrzem, egyetlen dolog vezйrli хket: minden бron vйgezni akarnak velьnk.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111111111">
+		<text>Segнtek lejutni oda, de cserйbe kйrnйk valamit. Rendben, az alsу szint tйrkйpe egy szivattyъбllomбst mutat, ez vezeti el a talajvizet. Ha elzбrod a szivattyъt, йs megnyitod a tartбly csapjait, a vнz gyorsan elбrasztja a barlangokat, a mutбnsok pedig megfulladnak.</text>
+	</string>
+	<string id="agr_leader_about_dolg_1">
+		<text>A mi frakciуnkat Szolgбlatnak hнvjбk. Hogy miйrt? Egyszerы. Ha mi nem tesszьk meg, akkor senki. A mi kцtelessйgьnk, hogy harcoljunk a Zуna йs annak minden teremtmйnye ellen. Katonбink tцbbsйge egyszerы stalkerkйnt kezdte, akik csak pйnzt akartak keresni. De miutбn megtapasztaltбk, hogy mit is jelent a Zуna, rбjцttek, hogy itt az ideje tenni ellene valamit. Hogy ha kell, inkбbb felбldozzuk az йletьnk, minthogy mutбnsokat engedjьnk az otthonunkba. Szйgyen, hogy nem minden stalker gondolkodik нgy. Ennйl is nagyobb szegйny, hogy mйg ezekkel az idiуtбkkal is kьzdenьnk kell, hogy a Zуna ne terjeszkedhessen.</text>
+	</string>
+	<string id="agr_leader_about_dolg_111">
+		<text>Az Agroprom Kutatуintйzet stratйgiailag jу helyen talбlhatу, nem is beszйlve a fцld alatt lйvх jбratairуl... Nos, nem olyan rйg elindнtottunk ott egy kutatбsi projektet mely a Zуnбt tanulmбnyozza. Elхszцr a mutбnsok anatуmiбjбt йs йlettani felйpнtйsйt tanulmбnyoztuk. Mбs szуval, megprуbбltuk kiderнteni, hogy mikйnt lehetne egyszerыbben megцlni хket. Hosszъ йs lassъ folyamat volt, de vйletlenьl rбbukkantunk nйhбny anyagra az Intйzet alatti jбratokban... nйhбny nagyon йrdekes anyagra.</text>
+	</string>
+	<string id="agr_leader_about_dolg_11111">
+		<text>A Szovjetuniу idejйn titkos kнsйrleteket folytattak, melyek cйlja a tudat feletti uralom volt. El tudja hinni? Azok a fickуk szбmos dolgot elйrtek – sikerьlt nekik egyszerы parancsokat tбplбlni бllatok elmйjйbe. Ezйrt feltйtelezzьk, hogy valami vagy valaki kйpes irбnyнtani a mutбnsokat. Sajnos minden eddigi kutatбsi eredmйny ezt a tйnyt lбtszik alбtбmasztani. Amint kifьstцljьk az egyik fйszkьket, azonnal ellentбmadбst indнtanak vйrszнvуkkal vagy pszeudokutyбkkal. Fogadok, hogy ez nem egyszerы vйletlen... Nem hiszek az ismйtlхdх vйletlenekben. Valaminek lennie kell az esemйnyek mцgцtt – ebben biztos vagyok.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0">
+		<text>Hй... Mit gondolsz, hovб mйsz?</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_011">
+		<text>Akkor menj.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_012">
+		<text>Йs?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_13">
+		<text>Hй, mi szйl hozott erre?</text>
+	</string>
+	<string id="agr_barman_join_duty_11">
+		<text>Elхbb beszйlj Krilovval! A kцzponti йpьlet mбsodik emeletйn megtalбlod. Ne йrts fйlre, de nem szнvesen enged be az ember egy idegent az otthonбba йs nyнlik meg elхtte. A vezetхnk majd eldцnti, hogy megbнzhatunk-e benned.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_01">
+		<text>Lбtnom kell a vezetхtцket!</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0111">
+		<text>Kцsz!</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0122">
+		<text>Persze, megйrtem!</text>
+	</string>
+	<string id="agr_duty_barman_around_0">
+		<text>Mik a legъjabb a pletykбk?</text>
+	</string>
+	<string id="agr_duty_barman_around_1">
+		<text>Pletykбk? Nos, felszнvуdott egy egйsz frakciу. Йs nem, nem emberek vagy szцrnyek intйztйk el хket, egyszerыen csak szхrйn-szбlбn eltыntek. Mi tagadбs, furcsa fickуk voltak, igazi megszбllottjai a Zуnбnak. Ъgy hittйk, hogy a Zуna йl, a kцzepйn pedig van egy Monolit, a Kнvбnsбgteljesнtх. Нgy hбt kikiбltottбk magukat a Monolit vйdelmezхjйnek, aztбn egy szйp napon fogtбk a cуkmуkjukat йs ъtra keltek. Ъgy van, a Kнvбnsбgteljesнtхhцz. A Perzselх felй indultak, бtlйptek a Hatбron, azуta senki sem lбtta хket.</text>
+	</string>
+	<string id="agr_duty_barman_jelanie_0">
+		<text>Йs mit gondolsz a Kнvбnsбgteljesнtхrхl?</text>
+	</string>
+	<string id="agr_duty_barman_jelanie_1">
+		<text>Nos, lйtezik, ez biztos. Ez pedig azt jelenti, hogy mindenkйppen el kell jutnunk oda! Egy klбn kйpes is lenne megtisztнtani az odavezetх utat, azonban, ha a klбnok цsszefognбnak, talбn mйg a Perzselхn is бtjuthatnбnk. A dolgok jelenlegi бllбsa szerint minden frakciу tud valamit, de inkбbb meghalnak, mintsem, hogy megosszбk azt mбsokkal. Mindegyik frakciу ragaszkodik a titkбhoz. Йs ha ehhez mйg hozzбveszьnk egy akkora fйlkegyelmыt, mint Mityбj, mбris holtpontra jutottunk. Egyedьl mбr csak Szidorovics foglalkozik hнrszerzйssel, de mivel rуla van szу, kйszьlj fel, hogy ingyen nбla semmit sem kapsz!</text>
+	</string>
+	<string id="agr_duty_barman_you_0">
+		<text>Mesйlj egy kicsit magadrуl!</text>
+	</string>
+	<string id="agr_duty_barman_you_1">
+		<text>Egy kisvбrosbуl jцttem. Kцzйpiskolбt vйgeztem, szolgбltam a seregben. Miutбn leszereltem nem talбltam munkбt, fхiskolбra menni pedig nem sok йrtelme lett volna... Lйnyeg a lйnyeg, a kikйpzхtбborba kerьltem, йs egyszer csak itt talбltam magam. Elхszцr a Kordonban szolgбltam. Egy napon az ezredesьnk ъgy dцntцtt, szьksйge van egy ritka relikviбra, ami majd meggyуgyнtja хt. Mivel hallani sem akart stalkerek felbйrlйsйrхl, a mi osztagunkat bнzta meg a "feladattal." Az бtkozott tйrkйp, amit adtak, legalбbb harminc йves volt! Azok a szemetek... Nйhбny уrбval kйsхbb mбr az embereink tцbb mint felйt elnyeltйk az anomбliбk. Йs mйg csak ezutбn jцttek a kutyбk, meg a vйrszнvуk. A nap vйgйre mбr csak йn йs az хrmester maradtunk. Hбla az йgnek volt nбlunk elsхsegйlycsomag, нgy sikerьlt elvergхdnьnk a Szolgбlat bбzisбig! A lбbamat teljesen szйtmarcangoltбk, csoda, hogy egyбltalбn megmaradt. Mindenesetre a Szolgбlat emberei ellбttak minket, majd megmutattбk a visszautat. Igazi fйrfiak хk, akik egyszerы, de igaz йletet йlnek, sok barбtra tettem szert ott tartуzkodбsom alatt. Нgy tehбt, amint leszereltem, fogtam a cуkmуkomat, йs azonnal visszajцttem a Zуnбba. Megkerestem a Szolgбlat tбborбt йs jelentkeztem hozzбjuk, йs mit ad isten, fel is vettek.</text>
+	</string>
+	<string id="agr_duty_barman_zone_0">
+		<text>Mit tudsz mesйlni a Zуnбrуl?</text>
+	</string>
+	<string id="agr_duty_barman_zone_1">
+		<text>Хszintйn szуlva, nem sokat. Mйg nem rйgуta vagyok itt, de egyszer talбlkoztam egy igazi veterбnnal, az volt aztбn az igazбn йrdekes beszйlgetйs! Mesйlt a Zуna kialakulбsбrуl, amikor az elхszцr ide merйszkedх emberek megtettйk az elsх felfedezйseket. Hamar megtanultбk a leckйt, miutбn egy fickу szцrnyы halбlt halt egy anomбliбban. Ezutбn kezdtek a tudуsok az elsх kнsйrleti vйdхfelszerelйseken йs anomбliaйrzйkelхkцn dolgozni. Minden egyes ъjнtбs valakinek az egйszsйgйre vagy esetenkйnt a halбlбra йpьlt. Nйha a tudуsok keresnek egy halбlбn lйvх stalkert, meggyуgyнtjбk, majd elkezdenek kйrdezхskцdni. Hol szerezted ezt a sйrьlйst, ki vagy mi okozta? Йs mindent feljegyeznek, hogy kйsхbb mйg tцbb vйdхrйteget tegyenek egy ruhбra, vagy бllнtsanak egy kicsit valamelyik йrzйkelхn. \nA prуba йs tйvedйs mуdszere, ahogy az a veterбn mondanб, a legnehezebb ъt, de egyben a leghatйkonyabb is. Bizony, rossz soruk volt az elsх stalkereknek, nem ъgy, mint nekьnk. Most mбr csak felveszel egy ilyen ruhбt, йs oda mйsz, ahovб csak akarsz.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_2">
+		<text>Szуval te lennйl az, aki elйg bбtorsбgot йrez ahhoz, hogy lemenjen a fцld alб, mi? Azt tanбcsolom, gondold бt mйg egyszer! A legjobb harcosaink kцzьl mбr tцbb mint egy tucat odaveszett. Az a hely tцmve van szцrnyetegekkel, йs az йgvilбgon semmit sem tudunk tenni ellenьk! Sхt mi tцbb, Krilov tбbornok elrendelte a bejбratok eltorlaszolбsбt!</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_3">
+		<text>Megprуbбlok lejutni, hogy elбrasszam a barlangokat, de йlve visszajutni sem lenne egy rossz dolog.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_4">
+		<text>Rendben van, legyen, ha sikerrel jбrsz, a Szolgбlat jцn neked eggyel! Itt van kцzvetlenьl az egyik lyuk, ahonnan a szцrnyek a felszнnre mбsznak. Egyenesen levisz majd a mйlybe. Lйgy rйsen, йs figyelj a lхszeredre! Sok sikert!</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_5">
+		<text>Kцsz!</text>
+	</string>
+	<string id="agr_duty_mechanic_about_many_word_0">
+		<text>Mindig ilyen bхbeszйdы vagy?</text>
+	</string>
+	<string id="agr_duty_mechanic_about_many_word_1">
+		<text>Mindig ilyen kнvбncsi vagy? Ne felejtsd el, aki kнvбncsi, hamar megцregszik!</text>
+	</string>
+	<string id="agr_duty_mechanic_about_upgrade_0">
+		<text>Milyen fegyver fejlesztйsekhez йrtesz?</text>
+	</string>
+	<string id="agr_duty_mechanic_about_upgrade_1">
+		<text>Sokfйlйhez. Majdnem mindhez. Talбn nem tudtad, hogy a szolgбlatos technikusok a legjobbak a Zуnбban? Ъgy tovбbbfejlesztem a gйppuskбdat, hogy a vйgйn rб sem ismersz, йs olyan golyубllуvб teszlek, mint senki mбs! Egy szу mint szбz, йrtek hozzб.</text>
+	</string>
+	<string id="agr_duty_mechanic_like_parametrs_0">
+		<text>Szerinted mit lehetne fejleszteni ezen a stukkeren?</text>
+	</string>
+	<string id="agr_duty_mechanic_like_parametrs_1">
+		<text>Az ьgyfйlnek mindig igaza van, tehбt a dцntйs a tied. Kйszнthetek belхle egy jobb gйppuskбt, vagy бtalakнthatom egy mesterlцvйsz puskбvб, bбr itt a lehetхsйgeim korlбtozottak. Йs persze megtarthatod нgy is, ahogy van.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1">
+		<text>Hellу, miйrt is ne! Mik a szabбlyok?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_100">
+		<text>Ьdv, zsoldos! Szeretnйd kiderнteni, hogy milyen jу lцvйsz is vagy?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_11">
+		<text>Hбrom lehetхsйged van: gyakorlбs, pontlцvйszet йs cйllцvйszet.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_111">
+		<text>Mesйlj a gyakorlбsrуl!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1111">
+		<text>Mi sem egyszerыbb. Elхszцr kivбlasztod a fegyveredet, majd a lхtбvolsбgot. Egy bizonyos szбmъ menet alatt kell minйl tцbb pontot szerezned. Termйszetesen, a gyakorlбsban nem nyerhetsz semmit, de ъj rekordot ettхl mйg felбllнthatsz.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_11111">
+		<text>Tiszta sor! Йs a tцbbi szabбly?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_112">
+		<text>Mesйlj a pontlцvйszetrхl!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1121">
+		<text>Elхszцr kivбlasztod a fegyveredet, majd a lхtбvolsбgot. Egy bizonyos szбmъ menet alatt kell elйrned egy ponthatбrt. Ez mбr pйnzre megy. Felteszed a tйtet, йs ha elйred a ponthatбrt, fizetek. Ha nem... Megtartom a tйtet.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_113">
+		<text>Mesйlj a cйllцvйszetrхl!\n</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1131">
+		<text>Elхszцr kivбlasztod a fegyveredet. A cйlpontok vйletlenszerыen tыnnek majd fel. Egy bizonyos szбmъ menet alatt kell eltalбlnod a cйltбblбk kцzepйt. Ez a legnehezebb feladat, ъgyhogy csak csнnjбn a tйtekkel! A fogadбs vбltozatlan. Ha eltalбlod az цsszes cйlpontot, fizetek. Ha nem, megtartom a tйtet.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2">
+		<text>Elйg a beszйdbхl, essьnk neki!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_200">
+		<text>Kйsz is? Szйp munka!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21">
+		<text>Йs mйg valami. Indulбs elхtt hagyd itt a holmidat! Csak az йn stukkeremet hasznбlhatod, нgy az igazsбgos. Fцlцsleges bosszankodnod, amint vйgeztйl, visszakapod minden cuccodat!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211">
+		<text>Szeretnйk gyakorolni!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111">
+		<text>Nagyszerы vбlasztбs! Emlйkszel mйg a szabбlyokra, igaz?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21110">
+		<text>default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211101">
+		<text>Aha.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111011">
+		<text>Rendben, kйz- йs lбbtцrйst!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211102">
+		<text>Sajnos, nincs elйg pйnzem!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111021">
+		<text>Semmi gond, gyere vissza, ha kйszen бllsz!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211103">
+		<text>Nem.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21111">
+		<text>Nem.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21112">
+		<text>Igen, kezdjьk!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121">
+		<text>Vбlassz fegyvert!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111211">
+		<text>PMm.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21112111">
+		<text>Vбlaszd ki a lхtбvolsбgot!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121111">
+		<text>30 mйter.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121112">
+		<text>40 mйter.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121113">
+		<text>50 mйter.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121114">
+		<text>60 mйter.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121115">
+		<text>70 mйter.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111212">
+		<text>Martha.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111213">
+		<text>Akm 74/2U.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111214">
+		<text>Viper 5.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111215">
+		<text>Akm 74/2.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111216">
+		<text>TRs 301.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_212">
+		<text>Ki szeretnйm prуbбlni a pontlцvйszetet!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_213">
+		<text>Ki szeretnйm prуbбlni a cйllцvйszetet!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_3">
+		<text>Nincs idхm holmi jбtйkokra! Talбn majd mбskor kiprуbбlom.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_300">
+		<text>Mire vбrsz mйg? Gyere vissza, ha mбr befejezted a lцvцldцzйst!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_3000">
+		<text>Jуl van!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_4">
+		<text>Hбny pontom lett?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_41">
+		<text>default2</text>
+	</string>
+	<string id="agr_duty_trader_about_fight_0">
+		<text>Mit szуlnбl hozzб, ha szйtrъgnбm a seggedet? Abbуl tanulnбl?</text>
+	</string>
+	<string id="agr_duty_trader_about_fight_1">
+		<text>Mit szуlnбl hozzб, ha idehнvnбm a srбcokat? Rцgtцn цsszeszarnбd magad, mi? Nem, komolyan mondom, folytasd csak, йs a fiъk szнves цrцmest mutatnak neked pбr dolgot, vetted? Nem ismersz senkit, йs tйged sem ismer senki. Ъgy elintйzlek, hogy nem fogjбk tudni megkьlцnbцztetni a seggedet az arcodtуl! Olyan leszel, mint egy йlхhalott, megйrtetted? A picsбba, csak йn vagyok ilyen szerencsйtlen, hogy minden nap цsszefutok egy magadfajta sцpredйkkel? Annyi йs annyi seggfej prуbбlja tцnkretenni a napomat, ugyan mit йrdekli хket, hogy йn itt egy ьzletet prуbбlnйk vezetni! Az ilyen fйlkegyelmы vбsбrlуk teljesen kikйszнtenek! </text>
+	</string>
+	<string id="agr_duty_trader_about_freetime_0">
+		<text>Milyen szуrakozбsi lehetхsйgek vannak a kцrnyйken?</text>
+	</string>
+	<string id="agr_duty_trader_about_freetime_1">
+		<text>Ha nem vetted volna йszre, nem йrek rб! Nincs idхm szуrakozni, йs arra sincs, hogy egy hozzбd hasonlу fйlkegyelmыvel cseverйsszek! Hбt nem lбtod, hogy feltartasz engem йs a tцbbieket? Ha valamilyen kьlцnleges szуrakozбsra vбgysz, hъzz el innen, menj йs prуbбld meg a Szabadsбg bбzisбt, vagy mit tudom йn! Ez nem egy бtkozott kocsma, felfogtad?</text>
+	</string>
+	<string id="agr_duty_trader_about_original_weapons_0">
+		<text>Esetleg бrulsz valami kьlцnlegeset?</text>
+	</string>
+	<string id="agr_duty_trader_about_original_weapons_1">
+		<text>Nem csak hьlye vagy, hanem mйg vak is? Egy tanбcs a szellemileg korlбtozottaknak: minden, amit itt lбtsz, eladу. Ez nem бruhбz, nem is ABC, mйg csak nem is vegyeskereskedйs! Ha akarsz valamit, szйpen, csendben kifizeted, йs elmйsz. Ha nem akarsz semmit, akkor sйtбlj tovбbb, йs ne pazarold az idхmet! A picsбba, ember, nйzd csak meg ezeket a burzsuj disznуkat, ahogy itt mбszkбlnak, йs folyton mondogatjбk, hogy "mutasd meg ezt," "magyarбzd ezt el"... mintha tartoznйk nekik valamivel! Miйrt nem lehet ezt szцvegelйs nйlkьl?!</text>
+	</string>
+	<string id="agr_duty_trader_quest_0">
+		<text>Van mйg valami йrtйkes?</text>
+	</string>
+	<string id="agr_duty_trader_quest_1">
+		<text>Informбciуm vannak egy csinos kis kйszletrхl. Mindцssze 5,000 rubelйrt.</text>
+	</string>
+	<string id="agr_duty_trader_quest_2">
+		<text>Folytasd!</text>
+	</string>
+	<string id="agr_duty_trader_quest_22">
+		<text>Nem йrdekel.</text>
+	</string>
+	<string id="agr_duty_trader_quest_3">
+		<text>A kйszlet helyzetйt megtalбlod a PDA-don.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_bad_trader_0">
+		<text>Ki az a barom, aki ott elnцkцl a boltodban?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_bad_trader_1">
+		<text>Ne is foglalkozz vele, х a helyi bunkу, Mityбj! Ahogy egy bizonyos professzor mondanб, х "csak egy kцzцnsйges disznу!" Nincs kert gaz nйlkьl, йs Mityбj lenne a mi kijelцlt gazunk. Ami azt illeti, remekьl elvegyьlhetne az Inkvizнtor бllatkertjйben a tцbbi torzszьlцtt kцzцtt. Nйha azt kнvбnom, bбrcsak цrцkbe fogadnб egy pszeudokutya... De a viccet fйlretйve, sokkal jobb нgy, hogy kereskedik. Ha azzal tцlti a napjбt, hogy naphosszat csak a kocsmбban vedel, tцbbet verik, mint iszik, vagy mйg rosszabb. Mindenki tisztбban van vele, hogy verekedйsйrt hamar hыvцsre lehet kerьlni, de sokakat mйg ez sem tart vissza.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_military_0">
+		<text>Figyelj, tйnyleg igaz, hogy szцvetkeztetek azokkal a katonбkkal?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_military_1">
+		<text>Errхl nem beszйlhetek, ennek a helynek is megvannak a maga szabбlyai. Az viszont tйny, hogy a tбbornokunk, Krilov, valaha katona volt. Hallottam tцrtйneteket, hogy a Zуna kialakulбsakor a kormбny milyen katonai mыveletet hajtott itt vйgre. Bekьldtйk хket a Zуna kellхs kцzepйbe, hogy nukleбris tцltetekkel robbantsбk fel az egйsz kуcerбjt. El tudod kйpzelni, hogy ez mit jelent? Azokat a fickуkat bekьldtйk vйdelem йs йrzйkelхk nйlkьl, rбadбsul fogalmuk sem volt rуla, hogy mi vбr rбjuk a Zуnбban. Sokan azonnal el is tыntek az anomбliбkban, a tцbbiekkel pedig egy kisugбrzбs vйgzett. Azt a nйhбny kevйs tъlйlхt pedig itt hagytбk, hogy lassъ halбlt haljanak. Krilov tбbornok is kцzйjьk tartozott. Nem tudom pontosan, hogy kivel szцvetkezik, de azуta gyыlцli a hadsereget, miуta a halбlba kьldtйk хt йs a bajtбrsait. A Szpecnaznбl ellenben vannak kapcsolatai. Ott csak a legkivбlуbb harcosok szolgбlhatnak. Gyakran keresztezik egymбs ъtjбt a Szolgбlattal. Kцrьlbelьl ennyi, vedd ъgy, hogy ez a rцvidнtett vбltozat!</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_story_0">
+		<text>Mesйlnйl valami йrdekeset?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_story_1">
+		<text>Persze, sхt mйg egy kis fekete mбgia is lesz benne! Hallottбl mбr a Doktorrуl? Бllнtуlag az ingovбny tбvol esх rйszйben йl. Mйg soha nem hallottбl rуla? Nos, barбtom, hadd mesйljem el neked a Zуna egyik legrйgebbi legendбjбt! Tehбt, itt van ez a Doktor, aki bбrkit fel tud tбmasztani holtбbуl, mйg akkor is, ha a szerencsйtlen flуtбst aprу darabokra vбgtбk. Senki sem tudja, hogy csinбlja, de kйpes rб, ez tйny! Йn ugyan nem lбttam egyetlen feltбmasztott embert sem, de ismerek olyat, aki igen. Йs itt kezdхdik az йrdekes rйsz. Azt beszйlik, hogy a doktor az elsх stalkerek egyike. Valуszнnыleg sikerьlt eljutnia a Kнvбnsбgteljesнtхhцz. Йs tudod, hogy mit kнvбnt? A kйpessйget, hogy segнthessen minden йlхlйnyen. Meg is kapta ezt az adomбnyt, de tцbbй mбr nem kйpes megkьlцnbцztetni az embert a mutбnstуl. Ha йn, egy йlхlйny, megsebesнtenйk egy mбsik йlхlйnyt, pйldбul egy vйrszнvуt, a Doktor habozбs nйlkьl meggyуgyнtanб, йs fordнtva is. У, йs a doktort szinte lehetetlen megtalбlni, legtцbbszцr egyedьl mutatkozik. De ha nem, akkor egy megszelнdнtett csernobili kutyбval van. Azok szerint, akik lбttбk, nem akбrmilyen lбtvбny!</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_0">
+		<text>Hogy kцtцttйl ki vйgьl a Zуnбban?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_1">
+		<text>Parancsot teljesнtettem, mйgis mit gondoltбl? A kьlцnleges erхk egy osztagбnak voltam a vezetхje. Nem, nem a Szpecnazй. A feladatunk az volt, hogy... ez most lйnyegtelen. Az egйsz osztagom odaveszett, amikor a Zуna szнvйlyes ьdvцzletekйnt kibocsбtott egy kisugбrzбst elsх lбtogatуira. Mйg csak jбrmыveink sem voltak, ejtхernyхvel dobtak le minket majdnem a kellхs kцzepйbe. Йn voltam az egyedьli tъlйlх. Hogy lehetsйges ez? Honnan a fenйbхl tudhatnбm? Talбn, mert mйg nem йrkezett el az idхm. De hadd mondjak neked valamit,  ember, ezt бtйlni mбr mбs lapra tartozik... Anomбliбk, szцrnyek mindenfelй, a lхszer pedig йppen csak arra volt elйg, hogy fхbe lхdd magad. Amikor a tartalйkaim elfogytak, olyan undorнtу dolgokat ettem meg, hogy mбr a puszta emlйkйtхl elhбnyom magam. Tцbb mint egy hуnapig kуszбltam a tйrsйgben, egyik rцnktхl a mбsikig vбnszorogtam. Aztбn talбlkoztam pбr emberrel. Kьlцnbцzх katonai egysйgekkel, legtцbbjьk rettentх rossz бllapotban volt. Йs нgy alakult meg a Szolgбlat.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_12">
+		<text>Ki az a barom, aki ott elnцkцl a boltodban?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_122">
+		<text>Ne is foglalkozz vele, х a helyi bunkу, Mityбj! Ahogy egy bizonyos professzor mondanб, х "csak egy kцzцnsйges disznу!" Nincs kert gaz nйlkьl, йs Mityбj lenne a mi kijelцlt gazunk. Az Inkvizнtor бllatkertjйben remekьl elvegyьlhetne a tцbbi torzszьlцtt kцzцtt. Nйha azt kнvбnom, bбrcsak цrцkbe fogadnб egy pszeudokutya... De a viccet fйlretйve, sokkal jobb х нgy kereskedхkйnt. Ha azzal tцlti a napjбt, hogy naphosszat csak a kocsmбban vedel, tцbbet verik, mint iszik, vagy mйg rosszabb. Mindenki tisztбban van vele, hogy verekedйsйrt hamar hыvцsre lehet kerьlni, de sokakat mйg ez sem tart vissza.\n</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_133">
+		<text>Az igazsбg az, hogy a legtцbb szolgбlatos korбbban katona volt. Gondolom, mбr hallottбl a tбbornokunk tцrtйnetйrхl. Az elsх hullбm nagy rйsze meghalt, akik pedig tъlйltйk, megalapнtottбk a klбnt. Ugyan megmaradtunk a peremnek ezen az oldalбn, de nйhбnyunk mйg mindig ismer jelenleg is szolgбlatban lйvх katonбkat. Termйszetesen, jobban kijцvьnk velьk, mint a tцbbi klбn. Ezйrt is hiszi azt mindenki, hogy szцvetsйgben бllunk velьk. Kцrьlbelьl ez a lйnyeg.</text>
+	</string>
+	<string id="agr_duty_zooman_about_animals_0">
+		<text>Ki fogja be neked az бllatokat?</text>
+	</string>
+	<string id="agr_duty_zooman_about_animals_1">
+		<text>Rйgebben йn magam csinбltam. Hбt nem volt egy йletbiztosнtбs, az hйtszentsйg! Pбrszor majdnem feldobtam a bocskort. Aztбn szйp lassan elkezdtek csatlakozgatni hozzбm az emberek. Micsoda йlmйnyek, йs micsoda izgalmak! Arrуl nem is beszйlve, hogy remekьl lehet vele kйrkedni a kocsmбkban: hй, ember, lehet, hogy te megцlted ezt a szцrnyet, de йn йlve elfogtam! A napokban elpusztult egy pбr egyiptomi ugrуegйr. Kйt srбc цnkйnt jelentkezett, hogy majd хk fognak helyette ъjakat. Tцkцs legйnyek, de бtkozottul naivak! Hъst kцtцztek egy madzagra, йs megkцzelнtettйk az egereket. Mindent ъgy csinбltak, ahogy kell... legalбbbis majdnem. Egyikьk csalogatni kezdett pбrat, mнg a mбsik kordбban tartotta a tцbbit a fegyverйvel. Be is cserkйsztйk a prйdбjukat, de amint elindultak az egйsz falka utбnuk eredt. Lefutottak vagy egy fйl maratont, mire elйrtйk a bбzist, йs a srбcaink kisegнtettйk хket a fegyverьkkel. A hхsцk pedig pihenйskйppen a pohбr fenekйre nйztek.</text>
+	</string>
+	<string id="agr_duty_zooman_about_zoo_0">
+		<text>Mi йrtelme ennek az бllatkertnek?</text>
+	</string>
+	<string id="agr_duty_zooman_about_zoo_1">
+		<text>Emlйkszel arra a rйgi filmre, az уriбsi, mutбns csуtбnyokkal? "Mielхtt megцlnйl egy fйrget, tanulmбnyozd бt alaposan" Nem igaz? Nos, ez a hely is errхl szуl. Legyen akбr az egy vak kutya, az ъjoncok megfigyelhetnek egyet a ketrecben, mielхtt цsszefutnбnak vele a vadonban. Нgy legalбbb megspуrolhatunk pбr tiszta alsуnemыt, ha nem tцbbet! Megfigyelik a szцrnyet, tanulmбnyozzбk a szokбsait, нgy amikor elйrkezik az idх, йs az йletьk mъlik rajta, a kezьk rezzenйstelen lesz. A tцbbi vadбllat sem kьlцnbцzik. Arrуl nem is beszйlve, hogy a Zуnбban nem sok szуrakozбsi lehetхsйg van, нgy a kis bemutatуm pont kapуra jцn.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_0">
+		<text>Van valami munkбd?</text>
+	</string>
+	<string id="agr_duty_zooman_quest_1">
+		<text>Persze! A migrбciуs tйrkйpet keressьk.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_11">
+		<text>Nem.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_2">
+		<text>Igen.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_22">
+		<text>Nem.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_0">
+		<text>A munkбrуl van szу.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_1">
+		<text>Elvйgezted a munkбt?</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_2">
+		<text>Igen.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_22">
+		<text>Nem.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_3">
+		<text>Kцszцnцm!</text>
+	</string>
+	<string id="agr_leader_about_dolg_0">
+		<text>Mesйlj a frakciуtokrуl!</text>
+	</string>
+	<string id="agr_leader_about_dolg_11">
+		<text>Ti mivel foglalkoztok, srбcok?</text>
+	</string>
+	<string id="agr_leader_about_dolg_1111">
+		<text>Mirхl beszйlsz?</text>
+	</string>
+	<string id="agr_leader_about_zone_0">
+		<text>Mesйlj a Zуnбrуl!</text>
+	</string>
+	<string id="agr_leader_about_zone_1">
+		<text>A Zуna olyan, mint egy kelйs a bolygу testйn. Nйhбny idiуta azt hiszi, hogy egy adomбny. Szerintьk a Zуna csupa mуka йs kacagбs... Nйzz kцrьl! Egy mutбns rбd tбmad йjszaka, szerinted ez egy adomбny? Egy anomбlia darabokra tйp, vajon ez is egy adomбny lenne? ... Nem, uram, a Zуna egy kуr, йs hacsak nem harcolunk ellene, mindannyiunkat felemйszt!</text>
+	</string>
+	<string id="agr_leader_about_zone_11">
+		<text>De hiszen te magad is hasznбlsz relikviбkat, nem?</text>
+	</string>
+	<string id="agr_leader_about_zone_111">
+		<text>Ъgy tartja a mondбs, hogy szerelemben, hбborъban mindent szabad. Nem йrtem, mi rossz van abban, ha ellensйgeink erхforrбsбt felhasznбljuk ellenьk! Hiszen nem a sajбt cйljainkra gyыjtjьk хket, nem igaz? Egy бtlagos relikvia kйt vagy hбrom ъj fegyvert йr, йs mйg egy kis lхszer is kijцn belхle, hбrom ъj fegyver pedig legalбbb egy tucat halott mutбnst jelent naponta...</text>
+	</string>
+	<string id="agr_leader_about_zone_1111">
+		<text>De mйgis hogyan gyхzhetnйnk le a Zуnбt?</text>
+	</string>
+	<string id="agr_leader_about_zone_11111">
+		<text>Ezt senki sem tudja, de ha nem kьzdьnk ellene, a Zуna felemйszt bennьnket! Kцtelessйgьnk harcolni ellene! Ahogy йn lбtom, ez a hбborъ dцnti el, hogy van-e keresnivalуnk a Fцldцn. Mбr hуnapok уta tanulmбnyozzuk a Zуnбt, йs egy dolgot biztosan tudok: a Zуna йl! Йl, ami azt jelenti, hogy lennie kell gyenge pontjбnak is. Csupбn annyi a dolgunk, hogy megtalбljuk.</text>
+	</string>
+	<string id="agr_leader_first_join_0">
+		<text>Szeretnйk csatlakozni a frakciуtokhoz!</text>
+	</string>
+	<string id="agr_leader_first_join_1">
+		<text>Nem ismerьnk, нgy nem tudunk bevenni. Elхbb segнts nekьnk, utбna majd beszйlьnk!</text>
+	</string>
+	<string id="agr_leader_first_join_2">
+		<text>Rendben.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111">
+		<text>Be akarok jutni az Agroprom fцld alatti rйszйbe.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111">
+		<text>A fцld alatt van, ugyanaz, mint a tцbbi. A hallottak alapjбn nem sok veszйly leselkedik odalent.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111111">
+		<text>Йs most?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111111111">
+		<text>Йs akkor, hogy juthatok le a fцld alб?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111111111">
+		<text>Egyetйrtek.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_12222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_122222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1222222">
+		<text>text in default</text>
+	</string>
+	<string id="agr_leader_hello_dialog_14">
+		<text>Jу munkбt vйgeztйl, zsoldos! Tessйk, ez a tied... Hasznбt veszed mйg a Zуnбban!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_144">
+		<text>Kцszцnцm a jutalmat! Bьszke vagyok rб, hogy szolgбlatos lehetek!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_145">
+		<text>Nincs rб szьksйgem!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_15">
+		<text>Ьdvцzlet! Mit tehetek йrted?</text>
+	</string>
+	<string id="agr_leader_join_duty_0">
+		<text>Szeretnйk belйpni a Szolgбlatba!</text>
+	</string>
+	<string id="agr_leader_join_duty_33">
+		<text>Addig nincs felvйtel, amнg nem semlegesнtjьk a mutбns fenyegetйst, megйrtetted? Nem akarok mindenfйle embert felvenni, csakhogy gyarapнtsam velьk a vesztesйglistбnkat. Ha tйnyleg a Szolgбlat katonбja akarsz lenni, bizonyнts йlesben, menj йs vezesd a mutбnsok elleni tбmadбst!</text>
+	</string>
+	<string id="agr_leader_join_duty_44">
+		<text>Szabadъszу stalker vagy, igaz? Akkor most mбr egyetйrtesz abban, hogy a Zуna csak egy tumor a bolygу testйn? Jу... a Szolgбlat mindig kйszen бll, hogy elfogadja azokat, akik hыek eszmйnyeihez. Egyik ilyen eszmйnyьnk a fegyelem. Miutбn csatlakoztбl a sorainkhoz, nincs tцbb csavargбs! Tehбt, kйszen бllsz rб, hogy kцzйnk tartozz?</text>
+	</string>
+	<string id="agr_leader_join_duty_444">
+		<text>Kйszen бllok! Vбrom a parancsot, uram!</text>
+	</string>
+	<string id="agr_leader_join_duty_4444">
+		<text>Pihenj! Hasznбld nyugodtan a budit, de nincs bagуzбs! Egйszsйges katonбkra van szьksйgьnk. Ismered a Szolgбlat elхнrбsait, igaz?</text>
+	</string>
+	<string id="agr_leader_join_duty_44444">
+		<text>Nem, uram!</text>
+	</string>
+	<string id="agr_leader_join_duty_444444">
+		<text>A legfontosabb a szigorъ fegyelem йs a mindenkori engedelmessйg. Nem vitatod meg a parancsokat, kцveted хket! A klбn fх cйlja, hogy harcoljon a Zуna ivadйkai йs a Szabadsбg anarchistбi ellen. Feladatunk, hogy megszabadнtsuk a vilбgot a szцrnyektхl, anomбliбktуl йs a Szabadsбg tagjaitуl! Ha nem tesszьk meg, a Zуna holnap behatolhat otthonainkba, йs elragadhatja szeretteinket! Kцtelessйgьnk megszabadнtani a vilбgot ettхl a szennytхl! Vilбgos, katona?</text>
+	</string>
+	<string id="agr_leader_join_duty_4444444">
+		<text>Igen, uram! Kйszen бllok, hogy a Szolgбlat embere legyek!</text>
+	</string>
+	<string id="agr_leader_join_duty_44444444">
+		<text>Kivбlу! Gratulбlok, katona! Mostantуl a Szolgбlat tagja vagy. A PDA-dban most mбr van egy taktikai szekciу is, ami kijelzi a Szabadsбggal szembeni helyzetьnket. Valamint feltцltцttem egy dekуdolуt is a PDA-dra, amivel hallgathatod a belsхs rбdiуs kommunikбciуnkat, нgy kapod majd a parancsaidat is. Rendben van... azt hiszem, ez minden. Lelйphetsz!</text>
+	</string>
+	<string id="agr_leader_join_duty_444444444">
+		<text>Igen, uram!</text>
+	</string>
+	<string id="agr_leader_join_duty_44445">
+		<text>Igen, uram!</text>
+	</string>
+	<string id="agr_leader_join_duty_55">
+		<text>Fosztogatу vagy, igaz? Ne is fбraszd magad a beszйddel! Ti, fosztogatуk, nekem mind ugyanolyanok vagytok... Rendben van, tehбt ъgy dцntцttйl, hogy elхbъjsz vйgre, йs csatlakozol az elit harcosokhoz. Dicsйretes dцntйs. Ъgy hallottam, hogy Jуga kemйnyen fogja az embereit, jу, нgy kцnnyebb lesz beilleszkedned. De ne feledd, a Szolgбlat emberei csak йs kizбrуlag a Szolgбlat parancsnokainak engedelmeskedhetnek! Meg kell szьntetned mindenfйle kapcsolatot Jуgбval! Kйszen бllsz erre?</text>
+	</string>
+	<string id="agr_leader_join_duty_66">
+		<text>Ezt mбr nevezem! Bebizonyнtottad, hogy igazi harcos vagy, tцbb hozzбd hasonlу fickуra lenne mйg szьksйgьnk!</text>
+	</string>
+	<string id="agr_leader_join_duty_66666666">
+		<text>Igen, uram! Kйszen бllok, hogy a Szolgбlat embere legyek!</text>
+	</string>
+	<string id="agr_leader_join_duty_77">
+		<text>Mбr a Szolgбlat embere vagy.</text>
+	</string>
+	<string id="agr_mechanic_join_duty_11">
+		<text>Ehhez fel keresned a parancsnokot!</text>
+	</string>
+	<string id="agr_stalker_about_agroprom_0">
+		<text>Lбtom, mбr szйpen beilleszkedtйl, de ennek mi йrtelme van?</text>
+	</string>
+	<string id="agr_stalker_about_agroprom_1">
+		<text>Zsoldos, lenne itt szбmodra egy feladatunk! A Szolgбlat nem azйrt fizet minket, hogy a seggьnket meresszьk! Egyedьl nem tudjбk irбnyнtбs alatt tartani az egйsz terьletet. A mutбnsok egyre nagyobb nyomбst gyakorolnak rбjuk, ezйrt a tбmogatбsunkat kйrtйk. Segнtьnk nekik megtartani ezt a gyбrtelepet. Ha kisegнtesz minket, a parancsnok valahogy biztos meghбlбlja majd!</text>
+	</string>
+	<string id="agr_stalker_commander_1_11">
+		<text>Szуval, a kцvetkezх a helyzet! A bбzisunkat folyamatosan tбmadбsok alatt tartjбk. A mutбnsokon mбr nem lepхdьnk meg, de a fosztogatуk offenzнvбja teljesen vбratlanul йrt minket. Eddig mйg soha nem merйszkedtek a Szolgбlat terьletйre, most viszont tбbort vertek egy elhagyatott vasъti alagъtban, nem messze a Szemйtdombba vezetх ъttуl. Nagy nehezen sikerьl visszavernьnk a tбmadбsaikat, de ha ki tudnбd szorнtani хket abbуl az alagъtbуl, az бtkozottul nagy segнtsйg lenne! Segнtesz nekьnk?</text>
+	</string>
+	<string id="agr_stalker_commander_1_111">
+		<text>Persze, segнtek!</text>
+	</string>
+	<string id="agr_stalker_commander_1_1111">
+		<text>Kцszцnjьk, цrьlцk, hogy mellettьnk бllsz!</text>
+	</string>
+	<string id="agr_stalker_commander_1_112">
+		<text>Nincs erre idхm!</text>
+	</string>
+	<string id="agr_stalker_commander_1_1122">
+		<text>Kбr йrte...</text>
+	</string>
+	<string id="agr_stalker_commander_1_22">
+		<text>Nos? Az embereim kйszen бllnak!</text>
+	</string>
+	<string id="agr_stalker_commander_1_222">
+		<text>Mбr indulok is...</text>
+	</string>
+	<string id="agr_stalker_commander_1_33">
+		<text>Kцszцnцm, hogy segнtettйl szembeszбllni azokkal a mocskokkal! Kцtve hiszem, hogy a kцzeljцvхben visszamerйszkednйnek ide! </text>
+	</string>
+	<string id="agr_stalker_commander_1_44">
+		<text>Mit szeretnйl?</text>
+	</string>
+	<string id="agr_stalker_commander_2_11">
+		<text>Elхszцr is, kцszцnцk mindent, barбtom! Tartozom neked, de tйnyleg, nйlkьled elхbb-utуbb vйgьnk lett volna! Mбr csak egyetlen problйmбnk maradt, a fosztogatуk beбstбk magukat a fцldalatti labirintus egyik bejбratбhoz. A fiaim szerint a fosztogatуk talбltak egy titkos jбratot, ami innen a Szemйtdombra vezet. Valaha rйgen mi is lementьnk azon a lejбron, йs egйszen biztos vagyok benne, hogy nem volt ott lйtra. Ez azt jelenti, hogy a fosztogatуk segнtenek a barбtaiknak kijutni a felszнnre. A feladatod, hogy vйgezz velьk. Segнtesz nekьnk?</text>
+	</string>
+	<string id="agr_stalker_commander_2_111">
+		<text>Segнtek, persze.</text>
+	</string>
+	<string id="agr_stalker_commander_2_1111">
+		<text>Kцszцnцm, цrьlцk, hogy mellettьnk бllsz!</text>
+	</string>
+	<string id="agr_stalker_commander_2_1112">
+		<text>Kбr йrte...</text>
+	</string>
+	<string id="agr_stalker_commander_2_112">
+		<text>Nincs erre idхm!</text>
+	</string>
+	<string id="agr_stalker_commander_2_22">
+		<text>Nos? Az embereim kйszen бllnak!</text>
+	</string>
+	<string id="agr_stalker_commander_2_222">
+		<text>Mбr indulok is...</text>
+	</string>
+	<string id="agr_stalker_commander_2_33">
+		<text>Kцszцnцm, hogy segнtettйl szembeszбllni azokkal a mocskokkal! Kцtve hiszem, hogy a kцzeljцvхben visszamerйszkednйnek ide! </text>
+	</string>
+	<string id="agr_stalker_commander_2_44">
+		<text>Mit szeretnйl?</text>
+	</string>
+	<string id="agr_stalker_commander_3_11">
+		<text>Volt mбr dolgod mutбnsokkal, zsoldos? Van itt egy kis problйmбnk. Mutбnsok egy nagyobb csoportja tыnt fel a bбzisunk йszaki rйszйnйl, valamint egyre tцbb szipka йs kutya garбzdбlkodik a kцrnyйken. Olyan, mintha irбnyнtanбk хket. Fogalmam sincs, hogy ez vйletlen egybeesйs-e vagy sem, de nagyon elegьnk van mбr ezekbхl a tбmadбsokbуl! Azt mondom, itt az idх, hogy visszavбgjunk! Ha elйg mutбnst цlnйnk meg, йs elkergetnйnk a tцbbit, szusszanhatnбnk vйgre egyet! A legtцbb emberem menten beszarik, amint meglбt egy szipkбt, de te jу harcos vagy. Megtennйd nekьnk ezt a szнvessйget, йs megtisztнtanбd azt a mutбnsodъt?</text>
+	</string>
+	<string id="agr_stalker_commander_3_111">
+		<text>Persze, segнtek!</text>
+	</string>
+	<string id="agr_stalker_commander_3_1111">
+		<text>Kцszцnцm, цrьlцk, hogy mellettьnk бllsz!</text>
+	</string>
+	<string id="agr_stalker_commander_3_1112">
+		<text>Kбr йrte...</text>
+	</string>
+	<string id="agr_stalker_commander_3_112">
+		<text>Nincs erre idхm!</text>
+	</string>
+	<string id="agr_stalker_commander_3_22">
+		<text>Nos? Az embereim kйszen бllnak!</text>
+	</string>
+	<string id="agr_stalker_commander_3_222">
+		<text>Mбr indulok is...</text>
+	</string>
+	<string id="agr_stalker_commander_3_33">
+		<text>Kцszцnцm, hogy segнtettйl megtisztнtani azt a mutбnsodъt! Kцtve hiszem, hogy a kцzeljцvхben visszamerйszkednйnek ide! </text>
+	</string>
+	<string id="agr_stalker_commander_3_44">
+		<text>Mit szeretnйl?</text>
+	</string>
+	<string id="agr_stalker_leader_about_contact_0">
+		<text>Jу a viszonyotok a tцbbi frakciуval?</text>
+	</string>
+	<string id="agr_stalker_leader_about_contact_1">
+		<text>Mйg alakнtjuk a barбtsбgokat, йs ismerkedьnk az ellensйgeinkkel, de kellхen jу viszonyban vagyunk mindenkivel, kivйve persze a fosztogatуkat. Cйljaink ugyan nem egyeznek meg a tцbbi frakciуйval, de ettхl mйg nem kell megцlnьnk хket, nem igaz? Errхl szуl a Zуna. Йlni йs йlni hagyni... Hбt йljьnk, йs majd kiderьl, mi lesz! Viselkedйsьnk attуl fьgg, mikйnt viszonyul hozzбnk a tцbbi klбn.</text>
+	</string>
+	<string id="agr_stalker_leader_about_join_0">
+		<text>Miйrt nem csatlakoztatok eddig egy mбsik frakciуhoz?</text>
+	</string>
+	<string id="agr_stalker_leader_about_join_1">
+		<text>Mindnyбjan kьlцn utakon jбrunk. A Szolgбlat el akarja pusztнtani a Zуnбt, a Szabadsбg el akarja pusztнtani a Szolgбlatot, a fosztogatуk pedig minden adandу alkalmat kihasznбlnak arra, hogy mйg tцbb pйnzhez jussanak. Elegem van belхle, mбr nem bнrom tovбbb! Egyedьl jбrtam a Zуnбt, mйg a Szabadsбgnбl is voltam egy ideig, de miutбn fejьkbe vettйk, hogy elintйzik a Szolgбlatot, fogtam magam, йs tovбbbбlltam. A Szolgбlatnбl mйg rosszabb a helyzet. Egyenkйnt jу emberek, de csak kerьljenek цssze, йs azonnal fanatikus хrьltekkй vбlnak! Mit is akartam mondani? У igen, a stalkereknek nem szabadna egymбst цlniьk csak azйrt, mert mбs klбnba tartoznak, egyszerыen csak йlniьk kellene az йletьket! Zsбkmбny utбn kutatni, йletben maradni, hiszen errхl szуl igazбbуl a Zуna. Йn eszerint йlek, ahogy a legtцbb emberьnk is.</text>
+	</string>
+	<string id="agr_stalker_leader_about_you_0">
+		<text>Mesйlj magadrуl!</text>
+	</string>
+	<string id="agr_stalker_leader_about_you_1">
+		<text>Csak egy бtlagos Gipsz Jakab vagyok, nincs bennem semmi kьlцnleges. Egйsz йletemben ide-oda sodrуdtam. Tнz йvesen elszцktem Kнnбba, hogy Shaolin harcmыvйszetet tanuljak. Hбrom nappal kйsхbb elkaptak minket a kamionon, az apбm alaposan el is vert йrte. Idхsebb koromban folyton utaztam, stoppolva beutaztam egйsz Eurуpбt, egy telet pedig a csukcsokkal tцltцttem. Aztбn kialakult a Zуna. Abban az idхben volt egy Leszka nevы barбtnхm. Igazi kalandor volt, akбrcsak йn. Х legalбbbis ъgy gondolta, hogy barбtok vagyunk, bбr йn mбskйnt йreztem... Mindegy is, egy nap Leszkбt kerestem йs nйhбny barбtom mondta, hogy elment a Zуnбba. Rцgtцn fogtam a holmimat, a gumilцvedйkkel megtцltцtt pisztolyomat, йs elindultam idefelй. Az utazбsaim sorбn szerzett tapasztalatomnak kцszцnhetхen ide is йrtem. Tцbb hуnapig kerestem хt, mindenkinek mutogattam a fotуjбt. Vйgьl egy stalker elmondta, hogy nemzetkцzi katonбk elfogtбk Leszkбt valami szйpfiъval a Zуna hatбrбnбl. Kaptak egy kis dorgбlбst, majd hazakьldtйk хket. Нgy hбt, gondoltam, Isten бldjon, Leszka, Isten бldjon! Nem mentem utбna haza. Mostanra pedig mбr itt ragadtam a Zуnбban.</text>
+	</string>
+	<string id="agr_stalker_leader_about_zone_0">
+		<text>Kйrlek, mesйlj a Zуnбrуl!</text>
+	</string>
+	<string id="agr_stalker_leader_about_zone_1">
+		<text>Tudod, a Zуna mбr azelхtt is baljуs hely volt, mielхtt kialakult volna a mostani formбja. Kцzvetlenьl a 1986-os eredeti katasztrуfa utбn tцrtйnt. Minden olyan titokzatos volt akkor, de az informбciуk lassacskбn szivбrogni kezdtek, йs mindenfйle pletyka ьtцtte fel a fejйt. Egyik ijesztхbb volt, mint a mбsik. Nйhбnyan mutбnsokat lбttak nem messze a csernobili atomerхmыtхl, nйhбnyan pedig szellemekbe botlottak kihalt falvakban. Jу pбr йv telt csendesen, de akkor megtцrtйnt a baj. Pбr kьlfцldi idiуta tъrбzni jцtt a Zуnбba. Legtцbbjьk fйrfi volt, de voltak kцztьk nхk is. Unatkozу arisztokratбk, akiket vonzott az apokaliptikus kцrnyezet. Nem tudom, hogy kitхl kaptбk a tippet, de egy emberekkel tцmцtt busz йrkezett a Zуnбba. Megйrkeztek, majd azon nyomban el is tыntek a velьk йrkezх rendхri kнsйrettel egyьtt! A tцrtйnet akkora felbolydulбst okozott, hogy a Zуnбt teljesen elzбrtбk. Йvekkel kйsхbb az elsх ideйrkezх stalkerek furcsa йlхhalottakrуl szбmoltak be, akiknek a motyogбsa leginkбbb angol beszйdre emlйkeztetett. Hбt itt a tцrtйneted...</text>
+	</string>
+	<string id="agr_stalker_mechanic_about_gun_and_armor_upgrades_0">
+		<text>Mondd el, mit tudsz a fegyverek йs pбncйlzatok fejlesztйsйrхl!</text>
+	</string>
+	<string id="agr_stalker_mechanic_about_gun_and_armor_upgrades_1">
+		<text>Nem igazбn йrtek a pбncйlzatokhoz. Stukkerek, na az az йn asztalom! Figyelj, цreg, ha azon filуzol, hogy egy бtlagos mordбlyt fejlesztenйl fel, tegyйl le rуla! Azok olyanok, mint a kнnai piacon vett csukбk: ma felveszed, holnap mehetsz is egy mбsikйrt. Az ilyen a cuccokbуl van a kerнtйs itt a Zуnбban. Amit igazбn йrdemes fejleszteni, azok a minхsйgi, ritka csъzlik. Igazi цrцm azokon dolgozni. Egy halom dolgot lehet fejleszteni rajtuk, йs azok valуban jуl йs sokбig fognak szolgбlni. Sz'al azt ajбnlom, csak speckу йs megbнzhatу fegyverekbe feccцlj!</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_0">
+		<text>Van valami munkбd?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_1">
+		<text>Szьksйged van mйg fejlesztйsekre?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_11">
+		<text>Nem.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_2">
+		<text>Igen.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_22">
+		<text>Nem</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_3">
+		<text>Akkor hozd el a PDA-t!</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_4">
+		<text>Rendben.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_44">
+		<text>Meggondoltam magam.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_0">
+		<text>A munkбrуl van szу.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_1">
+		<text>Sikerьlt? Megvan a PDA?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_2">
+		<text>Itt a PDA-d!</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_22">
+		<text>Mйg nincs.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_222">
+		<text>Akkor vбrok.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_3">
+		<text>Kivбlу! Most mбr kaphatsz ъj fejlesztйseket!</text>
+	</string>
+	<string id="agr_stalker_mechanic_what_is_you_doing_0">
+		<text>Mihez йrtesz?</text>
+	</string>
+	<string id="agr_stalker_mechanic_what_is_you_doing_1">
+		<text>Nem vagyok szakember, de azйrt nem olyan rossz a munkбm, legalбbbis azt mondjбk. Leginkбbb pisztolyokhoz йrtek, de elboldogulok sцrйtesekkel йs puskбkkal is. Йn csak annyit tudok, hogy a fegyverek lхnek, a szцrnyek hullnak, a stalkerek pedig jцnnek megkцszцnni!</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_3">
+		<text>Zsoldos! Szйp munka, нgy most mбr van egy biztonsбgos цsvйnyьnk Jantarba. Menj, йs vedd fel az egyik pбncйlruhбnkat, megvйd az anomбliбktуl йs a Zуna mбs csapбsaitуl is!</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_33">
+		<text>Eddig mйg semmi, zsoldos.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_333">
+		<text>Indulunk Jantarba, nincs idх beszйdre!</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_4">
+		<text>Цrьlцk, hogy segнthettem a csapatodon!</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_5">
+		<text>Indulunk Jantarba. Йg veled, йs sok szerencsйt!</text>
+	</string>
+	<string id="agr_stalker_secret_trader_about_zone_0">
+		<text>Mit gondolsz a Zуnбrуl?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_about_zone_1">
+		<text>A Zуna egyfajta prуba. Attуl fьggхen, hogy mit gondolsz a Zуnбrуl, mбs йs mбs prуbбk elй бllнt. Ha ъgy gondolod, hogy gonosz, vagy az igaz szabadsбg szimbуluma, esetleg maga a paradicsom, pontosan azt az oldalбt fogja mutatni neked. Ami engem illett, nem egy бlruhбjбt lбttam mбr a Zуnбnak, de nekem mindig is a hatalom megtestesнtхje volt. Igaz, mйg nem sikerьlt teljesen megйrtenem a Zуna lйnyegйt йs a benne lйvх hatalmat.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_0">
+		<text>Van valami munkбd?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_1">
+		<text>Nos, lenne itt valami. Informбciуkat gyыjtцk a Zуnбrуl. Isten igazбbуl a titkok azok, amik a leginkбbb йrdekelnek. Titkok, amik segнtenek a stalkereknek a tъlйlйsben. Tudod, olyan dolgokra gondolok, mint pйldбul бtsйtбlni vйdelem nйlkьl egy anomбliбn. Nos, egy nap idejцtt ez a stalker, hogy beszйljen velem. Azt бllнtotta, hogy kйpes vйdelem nйlkьl ъgy besйtбlni egy vegyi anomбlia kцzepйbe, hogy egy haja szбla sem gцrbьl meg. A titokйrt cserйbe, azt akarta, hogy бruljam el, hol a legйrdemesebb йrtйkes relikviбk utбn kutatni. Erre azt mondtam neki, hogy menjen az Ingovбnyba, йs keressen meg egy hбzat, ami pontosan egy anomбlia kellхs kцzepйben van. A megбllapodбs egyszerы volt, hozzon valamilyen bizonyнtйkot arrуl, hogy ott jбrt, йs akkor megosztjuk egymбssal a titkainkat! Ekkor elment, йs tнz percen belьl mбr a segнtsйgьnket kйrte. Sajnos, az itteni embereknek is megvannak a maguk problйmбi, нgy senki sem ment neki segнteni! Termйszetesen, az nyilvбnvalу, hogy hazugsбg volt a titka, de akkor is йrdekelne, hogy mikйnt gondolhatta azt, hogy sikerьlne megъsznia sйrьlйsek nйlkьl egy vegyi anomбliбt. Hozd el nekem a PDA-jбt, йs нgйrem, nem bбnod meg!</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_11">
+		<text>Sajnбlom, de egyelхre nincs semmi!</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_2">
+		<text>Rendben van, elvбllalom!</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_22">
+		<text>Talбn majd mбskor.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_3">
+		<text>Nagyszerы! Vбrom, hogy visszatйrj a PDA-val! Ha hirtelen rosszul йreznйd magad egy anomбliбban, ne pazarold az idхdet SOS-jel kьldйsйre, mert ъgysem segнtene rajtad senki! Ahelyett, hogy kцrbe-kцrbe jбrkбlnбl a hбz kцrьl, inkбbb nyisd fel a rбcsot, йs menj be a vнzbe! Az anomбlia a vнz kцrьl gyengйbb, megйrtetted?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_0">
+		<text>A munkбrуl van szу.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_1">
+		<text>Sikerьlt? Megvan a PDA?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_2">
+		<text>Igen, itt van.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_22">
+		<text>Mйg nincs.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_3">
+		<text>Szйp munka, itt a jutalmad a bбtorsбgodйrt!</text>
+	</string>
+	<string id="agr_stalker_secret_trader_what_is_you_doing_0">
+		<text>Mit csinбlsz itt?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_what_is_you_doing_1">
+		<text>Tanulok. A kцrnyezх vilбgrуl йs цnmagamrуl. Azt mondjбk, hogy csak egy igazsбg lйtezik, de szбmos ъt vezet hozzб. Ezeket az utakat prуbбlgatom. Magamba nйzek, hallgatom a Zуnбt, megfigyelem a helyi vadvilбgot. Йs tudod mit, nincs szьksйgem tцbbй fegyverekre vagy pбncйlzatokra! A Zуna nem, mint ellensйgйre tekint rбm, nem akar lйpten-nyomon darabokra tйpni. Mйg a szцrnyek is bйkйn hagynak. Ez pedig csak azt jelentheti, hogy a stalkerek sajбt maguknak okoztбk a problйmбikat, amikor бllig felfegyverkezve megszбlltбk a Zуnбt. Ha engem kйrdezel, vйgьl a bьszkesйgьk fogja az emberek vesztйt okozni. Nйzd csak meg azokat a vйlekedйseket, amik szerint az ember бll a tбplбlkozбsi lбnc csъcsбn! Mi van, ha mйgsem? Mi van, ha az emberek csak a termйszet aprу kis rйszei? Ъgy tыnik, senkinek nincs rб ideje, hogy egy pillanatra megбlljon, йs elgondolkodjon ezen egy kicsit, pedig nem бrtana!</text>
+	</string>
+	<string id="agr_stalker_secret_trader_who_are_you_0">
+		<text>Ki vagy te?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_who_are_you_1">
+		<text>Egy ember. Homo sapiens. Egy teremtmйny, aki szabadon vбlaszthat. Hogy mi kцzьl? Fogyasztбs йs megismerйs. Tudod, ha csak йs kizбrуlag a fogyasztбsra koncentrбlsz, az elхbb-utуbb megbosszulja magбt. Velem is ez tцrtйnt. Nйhбny йvig йn is stalker voltam. Napjaim elhasznбlt tбrak йs megkaparintott zsбkmбnyok forgatagбban zajlottak. Egy nap visszanйztem, йs nem lбttam ott semmit! Csak az elhasznбlt tбrakat, a megszerzett zsбkmбnyt йs a bevedelt vodkбt. Nagyon elkeseredtem. Йs akkor egyszer csak megvilбgosodtam! Olyan йrzйs volt, mintha levetkхznйm mъltam бrnyait, йs vйgre megtalбlnбm igazi цnmagamat. Egy remetйt. Mбsok sбmбnnak is neveznek, nem is tйvesen.</text>
+	</string>
+	<string id="agr_stalker_tir_1">
+		<text>Szйp napot! Kнvбncsi vagy rб, hogy milyen jу mesterlцvйsz is vagy valуjбban?</text>
+	</string>
+	<string id="agr_stalker_tir_2">
+		<text>Nem rossz, egyбltalбn nem rossz! Tessйk, itt a jutalmad!</text>
+	</string>
+	<string id="agr_stalker_tir_3">
+		<text>Az йlet mбr csak ilyen, egyszer fent, egyszer lent! Ha akarod, bбrmikor megprуbбlhatod ъjra.</text>
+	</string>
+	<string id="agr_stalker_tir_4">
+		<text>Ha ismйt kedved tбmadna egy kis lцvцldцzйshez, ugorj be!</text>
+	</string>
+	<string id="agr_stalker_trader_about_dolg_0">
+		<text>Mit tudsz mondani a Szolgбlatrуl?</text>
+	</string>
+	<string id="agr_stalker_trader_about_dolg_1">
+		<text>Tudom, hova akarsz kilyukadni! A Szolgбlat szцvetkezett a hadsereggel, igaz? Folyton ezt mondjбk, de ez szemenszedett hazugsбg! Nem, йn magam is нgy gondoltam, amнg rйszese nem voltam az egyik harcuknak. Egyedьl vбndoroltam, йs йppen zsбkmбnyt kerestem, amikor meghallottam a lцvйseket. Halkan kцzelebb osontam, йs elхvettem a tбvcsцvemet. A Szolgбlat harcosai йs a katonбk egymбst lхttйk kцrьlbelьl 30 mйternyire. Fogalmam sincs, hogy vйgzхdцtt, mert elmenekьltem, de az hйtszentsйg, hogy nem volt valami testvйries a hangulat! Van azonban mбs problйmбnk is. A srбcok szerint pбr feketйbe цltцzцtt stalker lepaktбlt a Szpecnaz embereivel. Nem valami megnyugtatу gondolat, nem igaz?</text>
+	</string>
+	<string id="agr_stalker_trader_about_prisoner_0">
+		<text>Kik ezek a fickуk itt az alagsorodban?</text>
+	</string>
+	<string id="agr_stalker_trader_about_prisoner_1">
+		<text>Az embereink visszafelй tartottak a bбzisra a zsбkmбnyukkal. A Szemйtdombon keresztьl jцttek, йs mбr a peremnйl jбrtak, hisz te is ismered a helyet. Йs akkor hirtelen fosztogatуk tыntek fel 30 mйterre tхlьk, йs нgy szуltak, "Elkaptunk titeket, balfйkek, tegyйtek szйpen le a fegyvereiteket, йs adjбtok бt a zsбkmбnyt!" A csapat vezetхje, Irokйz, ekkor azt mondta, "Akkor prуbбljбtok meg elvenni tхlьnk!", majd elkezdett tьzelni! A csapat fбtуl fбig rohant, nyomukban a fosztogatуkkal. Vйgьl cikkcakkban sikerьlt eljutniuk Agropromba, ahol az embereink szнvйlyes fogadtatбsban rйszesнtettйk a fosztogatуkat. Нgy tehбt most хrizetben tartjuk az ъriembereket, de nem igazбn tudjuk, hogy mihez kezdjьnk velьk.</text>
+	</string>
+	<string id="agr_stalker_trader_about_select_0">
+		<text>Nem mondom, lбttam mбr nagyobb vбlasztйkot is.</text>
+	</string>
+	<string id="agr_stalker_trader_about_select_1">
+		<text>Ha nagyobb vбlasztйkot akarsz, menj el egy bevбsбrlуkцzpontba! Ezen a helyen tцbbnyire csak olyan emberek vannak, akik azйrt jцttek ide, hogy egy kis pйnzйrt cserйbe segнtsenek a Szolgбlatnak a mutбnsok elleni harcban. Gondoltam, itt szьksйg lehet a portйkбmra, нgy hбt magamhoz vettem, amit tudtam, йs idejцttem. Йs igen, ez minden, amim van!</text>
+	</string>
+	<string id="agr_stalker_trader_about_trader_0">
+		<text>Hogy lett belхled kereskedх?</text>
+	</string>
+	<string id="agr_stalker_trader_about_trader_1">
+		<text>Nos, a fiъknak fegyver, lхszer, elsхsegйlycsomag йs ehhez hasonlу cuccok kellenek, нgy hбt ellбtom хket. Jу pйnzt fizet a Szolgбlat a stalkereknek, нgy az ьzlet is jуl megy. Egyedьl csak azt bбnom, hogy kevйs egyedi tбrgyat hoznak, a legtцbb zsбkmбny, amit lбtok, mind mбsodosztбlyъ.</text>
+	</string>
+	<string id="agr_trader_join_duty_11">
+		<text>Ъgy nйzek йn ki szerinted, mint egy toborzу? Keresd fel a parancsnokot az irodбjбban, йs kйrdezd meg хt!</text>
+	</string>
+	<string id="agr_weaponmaster_join_duty_11">
+		<text>Mi sem egyszerыbb. Lбtod ott azt az йpьletet? Menj fel a mбsodik emeletre, йs keresd Krilovot! Majd х megnйzi, hogy megfelelsz-e a Szpecnaz kцvetelmйnyeinek, ha igen, mбr kцzйnk is tartozol!</text>
+	</string>
+	<string id="agr_zooman_join_duty_11">
+		<text>Keresd fel Krilovot a fхhadiszбllбsunk mбsodik emeletйn! Mesйlj neki magadrуl! Elхszцr beszйlget veled egy kicsit, majd prуbбra teszi a hыsйgedet. Ha minden simбn megy, mбr kцzйnk is tartozol.</text>
+	</string>
+	<string id="agr_stalker_commander_1_0">
+		<text>Miben segнthetek?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11">
+		<text>Ьdv, zsoldos! Szeretnйd kiderнteni, hogy milyen jу lцvйsz is vagy?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111">
+		<text>Igen.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111">
+		<text>Emlйkszel a szabбlyokra?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111">
+		<text>Kezdjьnk hozzб!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111">
+		<text>Йs mйg valami. Indulбs elхtt hagyd itt a holmidat! Csak az йn stukkeremet hasznбlhatod, нgy az igazsбgos. Ne bosszankodj, amint vйgeztйl, visszakapod minden cuccodat!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111">
+		<text>Йrtem!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111">
+		<text>Vбlaszd ki, hogy mire szeretnйl jбtszani!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111111">
+		<text>Gyakorolni szeretnйk.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111">
+		<text>Vбlassz fegyvert!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111111111">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111111">
+		<text>Megegyeztьnk!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111111">
+		<text>Nos, akkor sok szerencsйt!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111112">
+		<text>Sajnбlom, de nincs annyi pйnzem.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111121">
+		<text>Semmi gond! Vбlasztasz akkor valami mбst?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111112">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111113">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111114">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111115">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111116">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111112">
+		<text>Legyen pontlцvйszet!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111113">
+		<text>Legyen cйllцvйszet!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11112">
+		<text>Nem, mondd el!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112">
+		<text>Mik a szabбlyok?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121">
+		<text>Hбrom lehetхsйged van: gyakorlбs, pontlцvйszet йs cйllцvйszet.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111">
+		<text>Mindhбrom esetben vбlasztasz egy fegyvert, majd kapsz 10 mбsodpercet, hogy felkйszьlj. A cйlpontok vйletlenszerыn fognak feltыnni.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211111">
+		<text>A gyakorlбs egyszerы. Egy cйlpont hбrom talбlat utбn tыnik el. A feladatod, hogy megprуbбlj minйl tцbb pontot szerezni. Ahogy gondolom mбr kitalбltad, a gyakorlбssal nem nyerhetsz pйnzt, de arra jу, hogy prуbбra tedd a tudбsodat.\n</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111111">
+		<text>A kцvetkezх lehetхsйg a pontlцvйszet. Az egyes cйlpontok mindцssze kйt mбsodpercig tыnnek fel, йs meg kell prуbбlnod minйl tцbbet eltalбlni. Az idхd vйges, ъgyhogy igyekezz a cйlzбssal! Itt mбr pйnzre jбtszunk. Ha elйred a megadott ponthatбrod, fizetek. Ha nem... te fizetsz nekem.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211111111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111111111">
+		<text>Az utolsу lehetхsйg pedig a cйllцvйszet. Itt el kell talбlnod a cйltбblбk kцzepйt. A feladatod, hogy a megadott idхn belхl, minйl tцbb cйlpontot leszedj. A hбrom kцzьl ez a legnehezebb, ъgyhogy csak csнnjбn a tйtekkel! A fogadбs vбltozatlan. Ha elegendх cйlpontot eltalбlsz, fizetek. Ha nem, megtartom a tйtet.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111111111">
+		<text>Minden vilбgos. Jбtsszunk!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_113">
+		<text>Nincs most idхm holmi jбtйkokra! Talбn majd kйsхbb.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1131">
+		<text>Jуl van, ahogy gondolod!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_21">
+		<text>Vйgeztйl is? Szйp munka!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_211">
+		<text>Szуval, hбny pontom lett?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_2111">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_211111">
+		<text>Megprуbбlod mйg egyszer?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_2111111">
+		<text>Igen.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_31">
+		<text>Elйg volt a csбszkбlбsbуl! Gyere vissza, ha mбr befejezted a lцvцldцzйst!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_311">
+		<text>Rendben!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_answer_bad">
+		<text>Megint nekem volt igazam. Йn nyertem a fogadбst, de ne keseredj el! Legkцzelebb majd tцbb szerencsйd lesz.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_answer_good">
+		<text>Bevallom, alбbecsьltelek! Vedd el a pйnzt, megйrdemled!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_cot_phrase_part_1">
+		<text>Az idхd vйges, йs legalбbb ennyi cйlpontot el kell talбlnod: </text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_cot_phrase_part_2">
+		<text>Йn arra fogadok, hogy nem fog sikerьlni:</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_answer_bad">
+		<text>Prуbбlj gyakorolni egy kicsit! Mйg nem бllsz kйszen rб, hogy pйnzben jбtsszбl. A pontod kevesebb, mint </text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_answer_good">
+		<text>Kйszen бllsz rб, hogy igazi pйnzben jбtsszбl! A pontod tцbb mint</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_phrase">
+		<text>Sok szerencsйt a lцvйszethez! Legalбbb ennyi pontot kell szerezned:</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tss_phrase_part_1">
+		<text>Az idхd vйges, йs legalбbb ennyi pontot kell szerezned:</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tss_phrase_part_2">
+		<text>Йn arra fogadok, hogy nem fog sikerьlni:</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_10">
+		<text>Az Oreszt lenne. A kцzponti йpьlet felsх emeletйn talбlod. A kereskedхink йs a technikusaink is ott vannak, ahogy annak lennie kell!</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_2">
+		<text>Jу reggelt, katona!</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_3">
+		<text>Mi folyik itt?</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_4">
+		<text>A Szolgбlathoz hasonlуan megprуbбljuk elfojtani a mutбnsok йs a tцbbi sцpredйk, fosztogatуk йs tбrsaik, tбmadбsait.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_5">
+		<text>Soha nem hallottam mйg olyan stalkerekrхl, akik segнtenйnek a Szolgбlatnak.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_6">
+		<text>Nemcsak segнtьnk nekik! Amikor a mutбnsok elхbъjtak az ьregeikbхl, йs elkezdtek цzцnleni Agropromba, a Szolgбlatnak be kellett szьntetnie a folyamatos tбmadбsokat. Хk jцttek hozzбnk segнtsйgйrt, mi pedig bьszkesйgbхl nem vetьnk el munkбkat. Йs vйgьl is egйsz jу kis csapatot alkotunk.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_7">
+		<text>Kezdenek vйgre цsszeбllni a dolgok. Lбtom, mйg egy kis bбzist is felбllнtottatok.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_8">
+		<text>Igen, akik ъgy dцntenek, hogy segнtenek a Szolgбlatnak, mind idejцnnek. Itt biztonsбgosabb, rбadбsul нgy Krilov is komolyabban vesz minket. </text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_9">
+		<text>Ki itt a fхnцk?</text>
+	</string>
+	<string id="agr_stalker_commander_2_0">
+		<text>Miben segнthetek?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_2">
+		<text>Hellу!</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_3">
+		<text>Mi folyik itt?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_4">
+		<text>Mйg nekem sem sikerьlt rбjцnnцm. Csak nemrйg йrkeztem, hogy keressek egy kis lуvйt. Nem йrdekel, mit kell csinбlnom, amнg jуl megfizetnek йrte.\n</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_5">
+		<text>Ki itt a fхnцk?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_6">
+		<text>Az Oreszt lenne. A kцzponti йpьlet felsх emeletйn talбlod. A kereskedхink йs a technikusaink is ott vannak, ahogy annak lennie kell!</text>
+	</string>
+	<string id="agr_stalker_commander_3_0">
+		<text>Miben segнthetek?</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_2">
+		<text>Hellу, zsoldos!</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_3">
+		<text>Mi folyik itt?</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_4">
+		<text>Nincs idхm bбjcsevelyre, zsoldos! Ha kйrdйsed van, menj el Oreszthez! A kцzponti йpьlet felsх emeletйn megtalбlod.</text>
+	</string>
+</string_table>

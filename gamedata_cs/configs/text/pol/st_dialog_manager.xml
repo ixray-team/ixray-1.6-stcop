@@ -1,0 +1,1653 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="dm_intro_1">
+		<text>Co sіychaж! Rzadko moїna tu teraz usіyszeж pozdrowienie. Znacznie іatwiej o kulkк w plecy. </text>
+	</string>
+	<string id="dm_intro_2">
+		<text>Witaj! Jak dobrze zobaczyж czіowieka, a nie tylko w kуіko trzciny i potwory.</text>
+	</string>
+	<string id="dm_intro_3">
+		<text>Czoіem! Pierwszy raz na Bagnach? Ja tu zawкdrowaіem po Emisji, a teraz nie mogк znaleџж drogi powrotnej.</text>
+	</string>
+	<string id="dm_intro_4">
+		<text>Nowa twarz w tej dziurze! Witaj!</text>
+	</string>
+	<string id="dm_intro_5">
+		<text>Czeњж! Masz chwilк? Umieram z nudуw.</text>
+	</string>
+	<string id="dm_intro_6">
+		<text>Pi№tka, bracie! Wygl№dasz na fajnego kolesia!</text>
+	</string>
+	<string id="dm_intro_7">
+		<text>Podobaj№ ci siк widoki? Cholera, w promieniu piкciu mil nie ma nic innego, jedyne urozmaicenie to ruiny i potwory.</text>
+	</string>
+	<string id="dm_intro_8">
+		<text>A wiкc ty teї skoсczyіeњ w tym przeklкtym miejscu, co? Jeњli chcesz siк st№d wydostaж, lepiej wynajmij przewodnika.</text>
+	</string>
+	<string id="dm_intro_9">
+		<text>Hej! Jesteњ tu nowy? Posіuchaj dobrej rady - trzymaj siк z dala od trzкsawisk, nawet siк nie obejrzysz, jak ciк wci№gn№. Nie waікsaj siк teї po torach, chyba їe chcesz zarobiж kulkк.</text>
+	</string>
+	<string id="dm_intro_10">
+		<text>Jestem tu od niedawna, ale juї mi siк rzygaж chce od tego miejsca. Niestety, іatwiej tu trafiж, niї siк st№d wydostaж.</text>
+	</string>
+	<string id="dm_intro_11">
+		<text>Hej, dobry czіowieku! Teї siк ukrywasz? Wszyscy dookoіa przed czymњ siк ukrywaj№ - jedni przed swoj№ przeszіoњci№, inni przed samymi sob№...</text>
+	</string>
+	<string id="dm_intro_12">
+		<text>Pierwszy raz na Bagnach? To sіuchaj: tutaj musisz siк wystrzegaж przede wszystkim ludzi. Potwory i ruchome piaski to przy nich drobnostka. Trzymaj siк kкp trzciny, a poїyjesz dіuїej.</text>
+	</string>
+	<string id="dm_about_0">
+		<text>Szlag by trafiі te komary! Proszк, masz tu anomaliк - przegryzaj№ siк przez gumowy pіaszcz! A sіowo ci dajк, їe inne miejscowe atrakcje nie s№ wcale lepsze. Jest tu taki bagienny stwуr, ktуry moїe sprawiж, їe dosіownie "siкgniesz dna", іapiesz, o co mi chodzi?</text>
+	</string>
+	<string id="dm_about_1">
+		<text>W Zonie trudno jest przeїyж w pojedynkк, ale ten obszar jest najgorszy. Jestem zmкczony tym, їe dzieс w dzieс bez przerwy czujк strach. Chciaіbym siк przyі№czyж do jakiejњ frakcji, ale nie bardzo jest z czego wybieraж - albo ktуryњ z gangуw, albo ci stalkerzy w niebieskich ciuchach. Niespecjalnie ci№gnie mnie do bandytуw - w koсcu z jakiegoњ powodu nimi s№, nie? W kaїdej chwili mog№ czіowieka zadџgaж, tak po prostu, i wtedy koniec. Wolaіbym trzymaж ze stalkerami. Myњlisz, їe mnie przyjm№? Chociaї niby sk№d miaіbyњ to wiedzieж?</text>
+	</string>
+	<string id="dm_about_2">
+		<text>W tym pudle їyj№ gіуwnie renegaci - tacy, ktуrych nie chc№ nawet bandyci z Zony. Kilka razy widziaіem patrole tych niebieskich stalkerуw - nazywaj№ siк "Bікkitne Niebo", "Czyste Niebo", czy jakoњ podobnie. Ci goњcie s№ za powaїni, powinni siк trochк wyluzowaж! Lokalizacjк swojego obozu trzymaj№ w sekrecie - chкtnie bym siк przekonaі, co tam chowaj№. </text>
+	</string>
+	<string id="dm_about_3">
+		<text>O rany! Mam mokre skarpety, stopy caіe w pijawkach, a sweter chyba zaraz zgnije od tej wilgoci. Oddaіbym wszystko za gor№c№ kobitк, gor№c№ k№piel, suche ubranie i kieliszek koniaku przed pіon№cym kominkiem! Tylko їe niestety wszystko, na co mogк liczyж, to іyk wуdki przy ognisku i narzekania innych ofiar losu. A i to tylko wtedy, jeњli przyі№czк siк do jakiegoњ gangu.</text>
+	</string>
+	<string id="dm_about_4">
+		<text>Sіyszaіeњ o "Czystym Niebie"? Ten cholerny klan jest tak tajemniczy, jakby wszyscy tam byli jakimiњ tajnymi agentami. Dowiedziaіem siк o nich przez radio, ze strzкpуw rуїnych rozmуw. Sіyszaіem teї inne historie o stalkerach.</text>
+	</string>
+	<string id="dm_about_5">
+		<text>Stalker nie moїe siк juї stoczyж niїej, niї na Bagna. Trafiaj№ tu tylko tacy, ktуrzy uciekaj№ przed wiкkszymi kіopotami, niї trzкsawiska, mutanty czy gruџlica. Na zewn№trz wiкkszoњж z nich gniіaby w wiкzieniu albo na cmentarzu. Jeњli o mnie chodzi, to nie mogіem siк dogadaж z chіopakami z wojska, wiкc musiaіem przez jakiњ czas tuіaж siк po Zonie, dopуki Emisja nie otworzyіa przejњcia w te okolice. To dobre miejsce na kryjуwkк.</text>
+	</string>
+	<string id="dm_about_6">
+		<text>Powiadam ci, przyjacielu, jeњli jest na ziemi miejsce, w ktуrym moїna siк zgubiж, to s№ nim Bagna. Moїna po nich kr№їyж caіymi tygodniami. Tylko їe nie kaїdy ma na to ochotк. Jeњli nie dopadn№ ciк potwory, to zrobi№ to trzкsawiska, a mamy tu pod dostatkiem i jednych, i drugich. Jestem tu, odk№d odkryto њcieїkк, i nie ma lepszej kryjуwki - dopуki udaje ci siк przeїyж. </text>
+	</string>
+	<string id="dm_about_7">
+		<text>Te bagna tкtni№ їyciem, i nie mуwiк tu tylko o mutantach. Jest tu peіno stalkerуw - jedni kryj№ siк przed prawem, inni przed byіymi kumplami. Trafili w odpowiednie miejsce - dopiero co odkryto dziury w polach anomalii, wiкc jest tu jeszcze mnуstwo biaіych plam. Tyle, їe їycie tutaj wcale nie staіo siк prostsze. Za duїo tu teraz іajdakуw - zastrzel№ ciк bez mrugniкcia okiem i jeszcze zіupi№ twoje stygn№ce zwіoki.</text>
+	</string>
+	<string id="dm_about_8">
+		<text>Potwory, trzкsawiska, niech szlag trafi tк cholern№ Zonк! Rzygaж mi siк juї chce od іaїenia po tych bagnach! Nie chcк sraж w gacie ze strachu za kaїdym razem, gdy coњ zaszeleњci w trzcinach albo pluњnie w wodzie, albo jak њmigіowiec przeleci mi nad gіow№. Moїe powinniњmy stworzyж jakiњ klan i znaleџж sobie bardziej suche miejsce? Kaїdy czuіby siк lepiej maj№c kumpli, ktуrzy pomogliby mu w razie potrzeby, i ognisko w nocy. A gdyby tak jeszcze grzaіa siк na nim jakaњ zupa albo pieczeс... Dorzuciж do tego gitarк i masz raj na ziemi!</text>
+	</string>
+	<string id="dm_about_9">
+		<text>Codziennie to samo: niїsze formy їycia kryj№ siк w trzcinach, ludzie topi№ siк w trzкsawiskach, dookoіa lataj№ helikoptery i strzelaj№ do stalkerуw. Aha, no i czasami pojawiaj№ siк chіopaki w niebieskich strojach - oni s№ z "Czystego Nieba". To ciekawe, krкc№ siк tu juї od pewnego czasu, a do niedawna pies z kulaw№ nog№ o nich nie sіyszaі.</text>
+	</string>
+	<string id="dm_about_10">
+		<text>Przed Emisj№ stalkerzy dobrze siк zastanawiali, zanim tu przyszli. Za duїo anomalii, trzкsawisk i wilgoci, a jeszcze wiкcej smrodu. Oprуcz tego s№ potwory i komary - te drugie zdecydowanie gorsze - a gdzie siк nie odwrуcisz, wszкdzie peіno trzcin. Po co komu takie problemy? Ale po Emisji wszystko siк zmieniіo. Anomalie poprzesuwaіy siк, a wszystkie frakcje zaczкіy tіuc siк o nowe terytoria. Wiem, їe dziwnie to zabrzmi, ale wielu z nas їyje siк tu teraz lepiej. To gіуwnie hoіota, taka jak ja, i kilku durniуw, ktуrym siк wydaje, їe kiedyњ to miejsce bкdzie naleїeж do nich.</text>
+	</string>
+	<string id="dm_about_11">
+		<text>Stary, mam juї serdecznie dosyж tuіania siк po tych bagnach! Wrуciіbym, jasne, gdyby nie kilka starych grzechуw, ktуre mi na to nie pozwalaj№ - wiкcej nie powiem. Chкtnie wst№piіbym do jakiegoњ klanu, ale nawet nie ma z czego wybieraж - dookoіa tylko bandyci.</text>
+	</string>
+	<string id="dm_about_12">
+		<text>Jasne, Bagna to nie їaden raj - raczej totalne zadupie, nawet jak na standardy Zony. Ale szczerze mуwi№c, wіaњnie dlatego tu jestem. Pewni ludzie uwaїali, їe jestem im coњ winien, i bardzo siк niecierpliwili, їeby to dostaж. Wiкc siedzк tutaj - i mam o wiele wiкksze szanse na przeїycie, niї gdziekolwiek indziej. Nie znajd№ mnie w tych trzcinach nawet za sto lat!</text>
+	</string>
+	<string id="dm_about_13">
+		<text>Pojawiіa siк tu ostatnio nowa frakcja - "Czyste Niebo". Nie mam pojкcia, o co im chodzi, ale wierz mi, widziaіem juї w їyciu rуїnych ludzi - ci s№ kompletnymi њwirami. Jak to: "co mam na myњli"? To naukowcy, jacyњ jajogіowi. Z drugiej strony, caіkiem nieџle radz№ sobie z broni№. A jeњli widzк inteligentnego goњcia ze spluw№, to dobrze siк zastanowiк, zanim wejdк mu w drogк.</text>
+	</string>
+	<string id="dm_action_info_0">
+		<text>Koleњ, jak chcesz trochк dіuїej poїyж, to nie zadawaj zbyt wielu pytaс. Sam siк na tym przejechaіem. Teї taki byіem, dopуki nie dowiedziaіem siк odrobinк za duїo. Dlatego teraz muszк ukrywaж siк w tej dziurze. Wіaњciwie to miaіem szczкњcie, trafiіem tu dziкki Emisji. Moїna іaziж po tych bagnach tygodniami i nie zobaczyж їywej duszy - poza dzikami i miкsaczami.</text>
+	</string>
+	<string id="dm_action_info_1">
+		<text>Cholera! To by byіo na tyle, jeњli chodzi o moje szczкњcie. Zawsze korzystaіem z їycia, ale teraz ono wykorzystuje mnie. Myњlisz, їe chciaіem skoсczyж w tym њmietniku? O nie, w Zonie њwietnie sobie radziіem. Szіo mi jak po maњle, robiіem dobr№ kasк... ale kiedy moi kumple postanowili wbiж mi nуї w plecy, musiaіem stamt№d spadaж. Za co ten nуї? Nie twуj interes.</text>
+	</string>
+	<string id="dm_action_info_2">
+		<text>Sporo przegraіem w karty z miejscowymi zіodziejami. Poszedіem na caіoњж - postawiіem swoje їycie. Nie miaіem ochoty pіaciж, wiкc zwiaіem tutaj. Po drodze zadarіem jeszcze z kolesiami z wojska. Teraz muszк tu tkwiж z wszelkiej maњci hoіot№.</text>
+	</string>
+	<string id="dm_action_info_3">
+		<text>Zanim tu trafiіem, odsiadywaіem wyrok, bo jeden sukinsyn mnie wystawiі. Nie bardzo mi siк uњmiechaіo gniж w pace, wiкc razem z paroma innymi chіopakami postanowiliњmy siк stamt№d zwin№ж. Zaіatwiliњmy jednego straїnika, zabraliњmy mu broс i ruszyliњmy prosto do Zony. Jak tylko tu dotarliњmy, tamci juї mnie nie zobaczyli. Nie chcк mieж nic wspуlnego z tamtymi facetami - s№ rуwnie parszywi jak te bagna. No i tu wіaњnie siк ukrywam.</text>
+	</string>
+	<string id="dm_action_info_4">
+		<text>Co to za przesіuchanie? A moїe jesteњ jakimњ kapusiem? Dobra, dobra, spokojnie. Wiem, їe nikt mnie tu nie znajdzie... W porz№dku, sіuchaj. Zrobiіem cos gіupiego - okradіem zіodziei. Kiedy zrozumiaіem, їe nie cofn№ siк przed niczym - naprawdк przed niczym - їeby odzyskaж іup, od razu nawiaіem do Zony. Ale te chciwe gnojki wyњledziіy mnie tutaj i nasіaіy na mnie kilku wynajкtych zabуjcуw. Z Boї№ pomoc№ udaіo mi siк ich zaіatwiж. Teraz kombinujк, їeby stworzyж wіasny gang. Czujк, їe moglibyњmy osi№gn№ж coњ wielkiego.</text>
+	</string>
+	<string id="dm_action_info_5">
+		<text>Uwielbiaіem filmy akcji - to dlatego trafiіem do Zony. Prуbowaіem zachowywaж siк jak bohater z Hollywood. Oczywiњcie szybko pojawiіy siк kіopoty... I nastкpne, i jeszcze nastкpne - gdzie bym siк nie ruszyі, wszкdzie byli wrogowie. W koсcu musiaіem uciekaж do tej nory. Jasne, moїna tu zgin№ж szybciej, niї pstrykniesz palcami, ale jeњli zechcesz, moїesz teї w kaїdej chwili znikn№ж w trzcinach. Ale to nie jest film, tylko masa krwi i flakуw.</text>
+	</string>
+	<string id="dm_action_info_6">
+		<text>Moja historia jest krуtka - zadarіem z grub№ ryb№ i za moj№ gіowк zostaіa wyznaczona cena. Dopiero wtedy siк przekonaіem, ilu іowcуw nagrуd їyje w Zonie. Uciekіem tu, їeby zejњж z oczu zbyt ciekawskim. Jak tylko sprawa trochк przyschnie, znajdк drania i pogadam z nim jak mкїczyzna z mкїczyzn№.</text>
+	</string>
+	<string id="dm_intro_13">
+		<text>Miіo ciк widzieж!</text>
+	</string>
+	<string id="dm_intro_14">
+		<text>Witaj!</text>
+	</string>
+	<string id="dm_intro_15">
+		<text>Czeњж!</text>
+	</string>
+	<string id="dm_intro_16">
+		<text>Tak?</text>
+	</string>
+	<string id="dm_intro_17">
+		<text>Szukasz pomocy?</text>
+	</string>
+	<string id="dm_intro_18">
+		<text>Mogк ci jakoњ pomуc?</text>
+	</string>
+	<string id="dm_intro_19">
+		<text>Witamy na Bagnach!</text>
+	</string>
+	<string id="dm_intro_20">
+		<text>Posіuchaj mojej rady - uwaїaj na trzкsawiska i na potwory.</text>
+	</string>
+	<string id="dm_intro_21">
+		<text>Nowa twarz!</text>
+	</string>
+	<string id="dm_intro_22">
+		<text>Zaufaj mi, przyjacielu, trzymaj siк blisko trzcin.</text>
+	</string>
+	<string id="dm_intro_23">
+		<text>Jeњli chcesz wydostaж siк z tych bagien, znajdџ sobie przewodnika.</text>
+	</string>
+	<string id="dm_about_14">
+		<text>Przez dіugi czas Bagna byіy niedostкpne dla wiкkszoњci stalkerуw. Їyliњmy sobie spokojnie, badaliњmy teren, powstrzymywaliњmy mutanty. Po Emisji wszystko siк zmieniіo. Anomalie poprzesuwaіy siк, pojawiіo siк wiele nowych przybyszуw. Przychodzili gіуwnie zza Kordonu. Na mуj rozum, czіowiek naprawdк musi mieж przed czym uciekaж, їeby chroniж siк w takim miejscu jak to...</text>
+	</string>
+	<string id="dm_about_15">
+		<text>Bagna to przystaс dla rozmaitych renegatуw. Rуїni tu trafiaj№ - przypadkowi samotnicy, wyrzutki z tej czy innej frakcji, a takїe zwykli przestкpcy. Przyjmujemy kaїdego, z tym їe jednych witamy z otwartymi ramionami, a inni wyjeїdїaj№ st№d nogami do przodu.</text>
+	</string>
+	<string id="dm_about_16">
+		<text>Musimy coњ zrobiж, zanim bкdzie za pуџno! Zona budzi siк z dіugiego snu. Ostatnia emisja byіa tak silna, jakby miaі nast№piж koniec њwiata. Nie moїemy po prostu siк tu okopaж i czekaж na prawdziw№ katastrofк. Nawet nie chcк myњleж o jej nastкpstwach. Powiem tylko, їe wybuch w Czarnobylu wygl№daіby przy tym jak strzaі z kapiszona.</text>
+	</string>
+	<string id="dm_about_17">
+		<text>Badamy aktywnoњж miejscowych anomalii. Bagna idealnie siк do tego nadaj№. Juї zlokalizowaliњmy sporo interesuj№cych punktуw i codziennie znajdujemy nowe. Gdybyњmy tylko mieli wiкcej њrodkуw...</text>
+	</string>
+	<string id="dm_about_18">
+		<text>To miejsce w niczym nie przypomina Zony. Jasne, jest tu duїo potworуw, ale bardzo niewiele anomalii. Wyj№wszy ten szczegуі, jest to caіkiem zwyczajne bagno.</text>
+	</string>
+	<string id="dm_about_19">
+		<text>Bagna byіy kiedyњ spokojnym miejscem. Nikt nam nie przeszkadzaі, nikt nie szukaі artefaktуw. Nie byіo ani mniej, ani bardziej niebezpiecznie niї w innych czкњciach Zony. Nikogo nie ci№gnкіo do tej gкstwiny trzcin i trzкsawisk. Ale czasy siк zmieniaj№. Nie mam pojкcia, co siк dzieje dookoіa Bagien, ale zalewa nas prawdziwa powуdџ lekkomyњlnych przybyszуw z zewn№trz.</text>
+	</string>
+	<string id="dm_about_20">
+		<text>Nie ma zbyt wiele do opowiadania - s№ tu tylko trzкsawiska, trzciny i potwory. No i oczywiњcie olbrzymie komary. Na pуіnocny zachуd st№d znajduje siк Kordon, a na pуіnocy leїy Agroprom. Na poіudniu i zachodzie, poza granicami Zony, jest czysta ziemia.</text>
+	</string>
+	<string id="dm_about_21">
+		<text>To byіo do niedawna spokojne miejsce. Tylko my, bagna, dziki i miкsacze. Teraz robi siк tu tіoczno, i moim zdaniem ten tіok nie wrуїy nic dobrego. Porz№dni ludzie nie maja tu czego szukaж. No juї, juї, nie obraїaj siк - ty jesteњ wyj№tkiem.</text>
+	</string>
+	<string id="dm_about_22">
+		<text>Nasze obecne poіoїenie to zasіuga wyі№cznie naszych przywуdcуw, Lebiediewa i Tyczkowa. Kiedyњ na miejscu naszego obozu leїaіa wioska, ale zatopiono j№ za czasуw sowieckich, kiedy budowano zbiornik wodny. Nie ma go na їadnej mapie, wiкc szukanie nas bez przewodnika to naprawdк gіupi pomysі.</text>
+	</string>
+	<string id="dm_about_23">
+		<text>Trafiliњmy tutaj, aby unikn№ж zbкdnego zainteresowania. Dlaczego? Byіy pewne powody. Lebiediew albo Tyczkow powiedz№ ci, jeњli przyjdzie im ochota. Jesteњmy tu ukryci nawet przed odwiedzaj№cymi Bagna. Jeњli chcesz znaleџж bazк, nie wyruszaj samotnie - znajdџ przewodnika. Tak bкdzie o wiele bezpieczniej.</text>
+	</string>
+	<string id="dm_about_24">
+		<text>Jest tu mokro, zimno, beznadziejnie i cuchnie jak cholera. Co jeszcze chcesz wiedzieж? Mam ci opowiedzieж o bestii, ktуra potrafi њci№gn№ж ciк na samo dno bagna? Czy moїe o tym, jak w ci№gu minuty moїna uton№ж w ruchomych piaskach?</text>
+	</string>
+	<string id="dm_about_25">
+		<text>To jest dobra kryjуwka. Przed kim? Przed kaїdym - bandytami, wojskiem czy kimkolwiek, kto ma ciк na oku. Wystarczy wskoczyж w trzciny, i szukaj wiatru w polu. Oczywiњcie, jeњli chcesz siк przyczaiж, nie rуb tego zbyt blisko ziemi. Czyha tu za duїo puіapek i paskudnych stworуw, ktуre tylko czekaj№, їeby ciк capn№ж. Jeden faіszywy krok i "hasta la vista, baby"!</text>
+	</string>
+	<string id="dm_about_26">
+		<text>Po tych bagnach moїna bі№dziж caіymi dniami. Wszystko wygl№da tak samo - woda, trzciny, od czasu do czasu jakieњ zielsko. To pewnie dlatego Lebiediew i Tyczkow wybrali to miejsce na obуz. Nawet wojsko nas tu nie znajdzie, mimo tych swoich helikopterуw. Dziкki temu moїemy spokojnie zaіatwiaж swoje sprawy i nikt nie patrzy nam na rкce.</text>
+	</string>
+	<string id="dm_about_27">
+		<text>Ukrywamy siк tutaj juї tak dіugo, їe czasem mam wraїenie, їe caіy њwiat to jedno wielkie bagno. Sіyszaіem, їe kiedyњ byіa tu normalna ziemia, z wioskami, polami i caі№ reszt№. Potem zaczкli budowaж tamк dla elektrowni wodnej i skoсczyіo siк tak, їe zatopili caіy teren. Albo coњ џle policzyli, albo po prostu spieprzyli sprawк - okazaіo siк, їe wody jest za duїo. Nie zd№їyli nawet ewakuowaж wszystkich mieszkaсcуw. No i teraz jest tu gigantyczne bagno.</text>
+	</string>
+	<string id="dm_about_28">
+		<text>Rozejrzyj siк. Zobaczyіeњ juї wszystko, co jest do zobaczenia na Bagnach. Gdzie siк nie odwrуcisz, wszкdzie to samo cholerstwo - trzciny, zatopione budynki i wysepki suchego l№du. Zapomnij o znalezieniu naszej bazy - nawet jeњli wiesz, czego szukaж. Bior№c pod uwagк, ilu ludzi wie o istnieniu "Czystego Nieba", nie martwimy siк, їe ktoњ nas wykryje.</text>
+	</string>
+	<string id="dm_about_29">
+		<text>Jesteњmy tu z okreњlonego powodu. Przed Emisj№ to byіa najbardziej wyludniona i niedostкpna czкњж Zony. Jasne, moїna by przedrzeж siк gікbiej do њrodka, ale nikt by nie przeїyі takiej wyprawy. Myњl o tym jak o peryferiach. Na wschodzie mamy Kordon, na pуіnocy Agroprom, a inne kierunki... Tam juї koсczy siк Zona.</text>
+	</string>
+	<string id="dm_about_30">
+		<text>Tak, zwracasz siк do wіaњciwej osoby. Nikt nie zna Bagien tak jak "Czyste Niebo". Jesteњmy tu od... ha, kto to wie? W takim miejscu іatwo straciж poczucie czasu. Jego upіyw jest tak drкtwy i ponury, jak otaczaj№ce nas widoki. Niedіugo nie bкdziesz juї wiedziaі, ile minкіo dni. A jeњli chcesz siк st№d wydostaж, musisz znaleџж przewodnika z "Czystego Nieba" - same wskazуwki na nic ci siк nie przydadz№.</text>
+	</string>
+	<string id="dm_action_info_7">
+		<text>To nasza praca. Emisja zapewniіa nam jej sporo. Tak naprawdк nie jesteњmy wojownikami, ale czasy s№, jakie s№ - jak ktoњ chce przeїyж, musi umieж sobie radziж z broni№. Coњ mi siк zdaje, їe moja bкdzie miaіa niedіugo sporo roboty.</text>
+	</string>
+	<string id="dm_action_info_8">
+		<text>Jestem tu z misj№ od Lebiediewa. Przykro mi, nic wiкcej nie powiem - prywatne sprawy klanu.</text>
+	</string>
+	<string id="dm_action_info_9">
+		<text>Przygotowujк siк do kolejnego zadania. W dzisiejszych czasach na Bagnach jest zbyt wielu drani. Kaїdemu siк wydaje, їe racjк ma silniejszy. Zapominaj№, їe w przypadku przemocy kaїda akcja wywoіuje jeszcze silniejsz№ reakcjк.</text>
+	</string>
+	<string id="dm_action_info_10">
+		<text>Na razie siк obijam, ale to nie potrwa dіugo. "Czyste Niebo" zawsze ma coњ do zrobienia - teraz jest tego wiкcej niї kiedykolwiek wczeњniej.</text>
+	</string>
+	<string id="dm_action_info_11">
+		<text>Przygotowujк siк do zadania w gікbi Bagien. Zona staje siк bardzo niespokojna, wiкc musimy ruszyж tyіki i zacz№ж dziaіaж. Zapamiкtaj moje sіowa - szykuj№ siк wielkie zmiany.</text>
+	</string>
+	<string id="dm_action_info_12">
+		<text>Badam Zonк - tak jak pozostali. To najbardziej niesamowite zjawisko, z jakim ludzie mieli dot№d do czynienia. Nie powinniњmy walczyж z Zon№, powinniњmy j№ badaж, prуbowaж j№ zrozumieж i їyж z ni№ w pokoju. Zapamiкtaj moje sіowa - Zona tu pozostanie.</text>
+	</string>
+	<string id="dm_action_info_13">
+		<text>Wszyscy zajmujemy siк tym samym - prowadzimy badania naukowe. Zonк trzeba zbadaж. Codziennie trafiam w niej na coњ, co mnie zdumiewa. Jest tu wiele okropnych rzeczy, ale rуwnie duїo wspaniaіych. Artefakty to zaledwie wierzchoіek gуry lodowej. Doњwiadczeni stalkerzy opowiadaj№ o monolicie w centrum Zony - podobno potrafi on speіniж kaїde їyczenie. Chciaіbym go kiedyњ znaleџж.</text>
+	</string>
+	<string id="dm_action_info_14">
+		<text>Moje przyrz№dy zanotowaіy bardzo wysok№ koncentracjк energii - oznacza to, їe jest duїa szansa na pojawienie siк tutaj artefaktуw lub anomalii. Dokonaіem pomiarуw i wysіaіem je do Tyczkowa. Teraz czekam na dalsze rozkazy.</text>
+	</string>
+	<string id="dm_action_info_15">
+		<text>Aktualnie nic, ale mam duїo obowi№zkуw. Jesteњmy naukowcami, technikami i їoіnierzami - trzy w jednym. Dziњ walczymy, jutro wyruszamy z ekspedycj№ naukow№ - tak to wіaњnie wygl№da.</text>
+	</string>
+	<string id="dm_action_info_16">
+		<text>Trafiіem do "Czystego Nieba" przez przypadek. Topiіem siк w bagnie, a ci faceci wyci№gnкli mnie i zabrali do swojej bazy. Pogadaіem z Lebiediewem, ktуry okazaі siк bardzo rozs№dnym czіowiekiem. Wie wiкcej na temat Zony, niї inni chcieliby w ogуle usіyszeж. Klan ma szczytny cel, wiкc przyі№czyіem siк do niego i staram siк pomagaж najlepiej, jak umiem.</text>
+	</string>
+	<string id="dm_action_info_17">
+		<text>Juї dіugo naleїк do klanu - jestem jednym z pierwszych czіonkуw. Od samego pocz№tku badaіem Zonк na Bagnach. Dokonujк rozmaitych pomiarуw, sporz№dzam wykresy, dbam o sprzкt, i tak dalej. Zastrzeliіem kilka potworуw - oczywiњcie dla celуw naukowych. Ostatnio coraz czкњciej musimy chwytaж za broс.</text>
+	</string>
+	<string id="dm_action_info_18">
+		<text>Prowadzimy obserwacje i zbieramy dane - jak kaїdy tutaj. S№dzк, їe Tyczkow i Lebiediew wiedz№ o Zonie wiкcej, niї my wszyscy razem wziкci. Jednak rzadko opowiadaj№ o tym nam, zwykіym їoіnierzom. My dbamy o bieї№ce sprawy, a oni zajmuj№ siк bardziej dalekosiкїnymi planami.</text>
+	</string>
+	<string id="dm_action_info_19">
+		<text>Czekamy na wiadomoњci od naszych chіopakуw. Zapuњcili siк z misj№ w gі№b Bagien. Bior№c pod uwagк, co siк dzieje, mog№ potrzebowaж naszej pomocy.</text>
+	</string>
+	<string id="dm_cool_info_0">
+		<text>Duїo nowego. Chociaїby Emisja...nie tylko Zona siк przez ni№ zmieniіa. My wszyscy... jakby byіo w nas wiкcej zіoњci. W jednej chwili ktoњ jest twoim kumplem, a w nastкpnej chce ci odstrzeliж gіowк. Ech, sam nie wiem, o czym gadam. Lepiej zapytaj Lebiediewa.</text>
+	</string>
+	<string id="dm_cool_info_1">
+		<text>Ci№gle dochodzi do kolejnych emisji - nigdy czegoњ takiego nie widziaіem. Zona przeїywa wstrz№s i wszystko dookoіa nas siк zmienia. Na znajomych њcieїkach roi siк od њmiercionoњnych anomalii, otwieraj№ siк przejњcia na obszary, ktуre byіy dot№d odciкte. Bagna teї staj№ siк bardziej dostкpne. Zaіoїк siк, їe wszystkie frakcje zaczn№ siк niedіugo gryџж o te ziemie.</text>
+	</string>
+	<string id="dm_cool_info_2">
+		<text>Sk№d mam wiedzieж, co nowego? Їyjemy na tych bagnach jak na innej planecie. Lepiej spytaj kogoњ, kto nie jest st№d.</text>
+	</string>
+	<string id="dm_cool_info_3">
+		<text>Powiadaj№, їe Emisja objкіa wiele miejsc, nie tylko Bagna, Tereny zamieszkane dot№d przez stalkerуw zamieniіy siк w labirynty peіne anomalii, a miejsca, do ktуrych wczeњniej nie byіo dostкpu, teraz stoj№ otworem, gotowe, aby je badaж lub іupiж.</text>
+	</string>
+	<string id="dm_cool_info_4">
+		<text>Wyniki naszych badaс wskazuj№, їe coraz czкstsze emisje nie oznaczaj№ dla nas nic dobrego. Zona staіa siк niestabilna. Kolejne zmiany spowoduj№ walki o nowe tereny - te, ktуre byіy wczeњniej niedostкpne ze wzglкdu na anomalie. Coњ wisi w powietrzu... i nie jest to nic dobrego.</text>
+	</string>
+	<string id="dm_cool_info_5">
+		<text>Sіyszaіem, їe stalkerzy z Kordonu nieџle skopali tyіki їoіnierzom. Nie bardzo potrafiк to sobie wyobraziж, ale plotka to plotka. Co jeszcze... Na Wysypisku znaleziono skіad ze starymi pojazdami, sprzкtem i innymi skarbami - wszystko pochodzi z czasu pierwszego wypadku, roku 1986. Podejrzewano, їe jest skaїone, ale teraz te rzeczy s№ dosіownie bezcenne. Rozpкtaіa siк prawdziwa gor№czka zіota, co oczywiњcie przyci№gnкіo caі№ zgrajк bandytуw. Teraz trzymaj№ wysypisko za jaja i dr№ pasy z naszych braci stalkerуw.</text>
+	</string>
+	<string id="dm_cool_info_6">
+		<text>Emisja przyniosіa niepokoj№ce wieњci. Nic nie zakіуcaіo kilku nastкpnych dni, ale teraz widzimy, їe to byіa cisza przed burz№. Wiele frakcji, w tym nasza, szykuje siк do walki. Jednak pozostali bкd№ walczyж o ziemiк, a nam chodzi o coњ zupeіnie innego.</text>
+	</string>
+	<string id="dm_intro_24">
+		<text>Hej, bracie!</text>
+	</string>
+	<string id="dm_intro_25">
+		<text>Masz pytania? Sіuїк pomoc№.</text>
+	</string>
+	<string id="dm_intro_26">
+		<text>Pytaj - dopуki jestem w nastroju do udzielania odpowiedzi.</text>
+	</string>
+	<string id="dm_intro_27">
+		<text>Witaj w Kordonie, stalkerze!</text>
+	</string>
+	<string id="dm_intro_28">
+		<text>Juї dawno nie widziaіem w Kordonie doњwiadczonego najemnika. Jesteњ jednym z nich, prawda?</text>
+	</string>
+	<string id="dm_intro_29">
+		<text>Czeњж, bracie! Witaj w naszych stronach!</text>
+	</string>
+	<string id="dm_intro_30">
+		<text>Dobrze spotkaж pobratymca!</text>
+	</string>
+	<string id="dm_intro_31">
+		<text>Witaj! Trzymaj siк nas, stalkerуw, bandyci i wojsko s№ ostatnio zbyt nerwowi.</text>
+	</string>
+	<string id="dm_about_31">
+		<text>Nie ma co udawaж - Kordon to zadupie zony, a to i tak za duїo powiedziane. Mamy niewiele anomalii, o artefaktach nawet nie warto wspominaж, a potwory s№ praktycznie nieszkodliwe. S№ tu drogi na Wysypisko i do Doliny Mroku. Moїna tez przedostaж siк na Bagna, ale kto by chciaі tam iњж?</text>
+	</string>
+	<string id="dm_about_32">
+		<text>Kiedyњ byіo tu caіkiem spokojnie. Wszystko biegіo ustalonym torem: nowi siк nie wychylali, stalkerzy zbierali artefakty i sprzedawali je Sidorowiczowi, a armia zapewniaіa "ochronк" przed bandytami. Wiкkszoњж їoіnierzy byіa dosyж przyzwoita. Ale potem wszystko siк zmieniіo. Pojawiіa siк banda oprychуw z Wysypiska, ktуra zaczкіa robiж interesy z dowуdc№. Teraz zapanowaіo tu bezprawie, nie moїna juї ufaж wojsku. Ale nie ma tego zіego... Stalkerzy poі№czyli siіy, wiкc wojsko nie moїe juї traktowaж nas jak popychadіa.</text>
+	</string>
+	<string id="dm_about_33">
+		<text>Nabijasz siк ze mnie? Nie wierzк, їe taki stary wyjadacz jak ty nigdy nie sіyszaі o Kordonie. To tam zaczyna wiкkszoњж їуіtodziobуw. Stamt№d moїna dotrzeж do bardziej niebezpiecznych miejsc, takich jak Wysypisko, Dolina Mroku czy Bagna. Jedyne zagroїenia, jakie tutaj mamy, to bandyci i їoіnierze, ktуrzy zaczynaj№ siк za bardzo panoszyж. Ale niedіugo siк z nimi uporamy - stalkerzy niedawno poі№czyli siіy wіaњnie w tym celu.</text>
+	</string>
+	<string id="dm_about_34">
+		<text>No dobra, wygl№da to tak. Tam, za tym przyczуіkiem, jest skraj Zony - przeszіoњж, z ktуrej wszyscy przyszliњmy. Nie ma tam anomalii ani potworуw, ale to juї wiesz. Na zachуd st№d leї№ Bagna. Z tamtej strony biegnie droga do wioski kotуw i starego wкzіa transportowego, w ktуrym mieњci siк baza wojskowa. Zaraz za tamtym mostem jest obуz stalkerуw, a dalej - terytorium bandytуw i frakcji "Wolnoњж" - Wysypisko i Dolina Mroku. I to by byіo na tyle.</text>
+	</string>
+	<string id="dm_about_35">
+		<text>Wojsko to banda parszywych іotrуw. Maj№ za zadanie kompletnie odci№ж Zonк od њwiata zewnкtrznego. Ale czy zastanawiaіeњ siк kiedyњ, jak nam siк udaje zdobyж przerуїne towary z zewn№trz, a tamci otrzymuj№ artefakty i inne nielegalne przedmioty z Zony? Oczywiњcie wszystko przechodzi przez їoіnierzy, i moїesz byж pewien, їe przy kaїdej transakcji nieџle sobie napychaj№ kieszenie. Kiedyњ wystarczyіo trochк posmarowaж, їeby dotrzymywali sіowa, ale te czasy siк skoсczyіy. Pіacisz czy nie - niewaїne, juї nie moїna na nich polegaж. Efekt byі taki, їe stalkerzy, ktуrzy przecieї mogli schowaж gіowy w piasek jak zawsze, zaczкli nagle przeciwstawiaж siк wojsku. Kr№ї№ plotki, їe wziкli nawet dowуdcк przyczуіka jako zakіadnika.</text>
+	</string>
+	<string id="dm_about_36">
+		<text>Jest tu tak, jak wszкdzie indziej. Stalkerzy szukaj№cy іupуw, ludzie szukaj№cy stalkerуw do zіupienia. Ryzykujemy їycie badaj№c anomalie i walcz№c z potworami za kawaіek chleba, i po co to wszystko? I tak nam to zabieraj№. Nie wiesz, o czym mуwiк? O wojsku, oczywiњcie. Teraz przynajmniej siedz№ cicho, bo ich dowуdca jest naszym zakіadnikiem. Nie mog№ zgіosiж tego do generalicji - skoсczyіoby siк inspekcj№, a oni boj№ siк jak ognia ujawnienia swoich brudnych sztuczek. Dziкki temu trochк przyhamowali.</text>
+	</string>
+	<string id="dm_about_37">
+		<text>Stalkerzy siк jednocz№. Kiedy zaczyna siк robiж gor№co, nie ma sensu walczyж w pojedynkк. Wojsko ostrzy sobie na nas zкby z jednej strony, bandyci dіawi№ nas z drugiej. Byliњmy miкdzy mіotem a kowadіem, i w koсcu trzeba byіo siк postawiж. Niech tu przyjd№, jeњli chc№ - odpowiednio ich przywitamy.</text>
+	</string>
+	<string id="dm_about_38">
+		<text>Nie bкdк siк rozwodziі nad tymi stalkerskimi bzdurami o anomaliach, promieniowaniu i potworach. Mam tu cos naprawdк ciekawego. Stalkerzy poїarli siк z wojskiem po tym, jak ktoњ zostaі pozbawiony duїego udziaіu w іupach. Stalkerzy wziкli dowуdcк їoіnierzy jako zakіadnika. Morale wojska posypaіo siк jak domek z kart. Ich szef byі oczywiњcie na tyle cwany, їe dobrze ukryі towar przed swoim oddziaіem. Teraz utknкli: nie mog№ wezwaж wsparcia z zewn№trz, nie mog№ teї zaatakowaж stalkerуw, bo wtedy strac№ dowуdcк i jego forsк do kompletu. Co jeszcze... Widujemy tu coraz wiкcej zbirуw z Wysypiska. To chyba wszystko. Uwaїaj na siebie.</text>
+	</string>
+	<string id="dm_about_39">
+		<text>Tyle siк ostatnio dziaіo... Moїesz w to nie wierzyж, ale stalkerzy po raz pierwszy w historii przejкli kontrolк nad Kordonem. Zamienili stare gospodarstwo w bazк. Kto by pomyњlaі, їe do tego dojdzie? Jeњli to potrwa dіuїej, stalkerzy bкd№ rz№dziж Zon№. I tak powinno byж.</text>
+	</string>
+	<string id="dm_about_40">
+		<text>Їycie w Kordonie jest teraz ciкїkie. Walczymy z wojskiem i z bandytami i mamy juї dosyж i jednych, i drugich. Їoіnierze tіuk№ siк z nami jak dzicy, a chciwe dranie maj№ oko na nasze ziemie. Ale cуї, i tak jest tu bezpieczniej, niї w wielu innych miejscach.</text>
+	</string>
+	<string id="dm_about_41">
+		<text>Frakcje z Zony zwalczaj№ siк nawzajem, prуbuj№c wydrzeж sobie ziemie i pola artefaktуw. Kordon nie jest wyj№tkiem. Armia, bandyci i stalkerzy - czyli my - ci№gle siк ze sob№ zmagaj№. Na razie my wygrywamy.</text>
+	</string>
+	<string id="dm_about_42">
+		<text>Zona rozpoczyna siк w Kordonie. Kaїdy kot zaczyna wіaњnie tutaj i przez miesi№c czy dwa uczy siк, jak to dziaіa. Jeњli nie jest kompletnym idiot№, rzecz jasna. Ale dla ciebie to chyba їadna nowoњж, co? Nie wygl№dasz mi na їуіtodzioba.</text>
+	</string>
+	<string id="dm_about_43">
+		<text>Wojsko i my dziaіaliњmy kiedyњ razem. My zbieraliњmy i szmuglowaliњmy artefakty, a oni patrzyli na to przez palce - za drobn№ opіat№. A potem zaczкli coraz bardziej siк panoszyж - zgarniali nasze іupy, nawet napuszczali na nas bandytуw. W koсcu, moїna powiedzieж, doszіo miкdzy nami do "sprzeczki". Teraz musimy walczyж na dwуch frontach - z wojskiem i z bandytami.</text>
+	</string>
+	<string id="dm_about_44">
+		<text>Caіkiem niedawno nasi chіopcy wykopali naprawdк cenny artefakt. Piкciu z nich straciіo їycie nios№c go tutaj, a ci, ktуrzy przeїyli, teї wygl№dali jak trupy. Musiaіo chodziж o naprawdк powaїnego klienta, bo Sidorowicz nabraі wody w usta. Chіopcy juї prawie wykonali dostawк, ale dowуdca przyczуіka doszedі nagle do wniosku, їe chce dostaж wiкcej, niї zostaіo uzgodnione. Sukinsyn powiadomiі bandytуw, a ci urz№dzili zasadzkк. Przepadli nasi ludzie, przepadі teї іup. Najpierw chcieliњmy zaіatwiж dowуdcк, ale potem zdecydowaliњmy, їe weџmiemy go jako zakіadnika. Chcemy tylko odzyskaж swoj№ wіasnoњж, i wczeњniej czy pуџniej wyszarpiemy mu j№ z gardіa.</text>
+	</string>
+	<string id="dm_action_info_20">
+		<text>Nie rуїniк siк od pozostaіych - prуbujк zwi№zaж koniec z koсcem i zarobiж przy tym kilka groszy ekstra. Nie mogк siк doczekaж, kiedy zaczniemy zabawк tu w Kordonie! Zawsze wiedziaіem, їe wojsko i bandyci dostan№ w koсcu zasіuїon№ nauczkк. No i poza tym handel artefaktami stanie siк o wiele іatwiejszy.</text>
+	</string>
+	<string id="dm_action_info_21">
+		<text>Na razie chcк nabraж doњwiadczenia i trochк zaoszczкdziж. Jak tylko zbiorк wystarczaj№c№ sumк, kupiк sobie dobr№ broс i kombinezon i ruszк prosto do centrum Zony. Kr№ї№ plotki, їe kilku goњciom juї siк udaіo znaleџж tam Speіniacz Їyczeс. Tam wіaњnie siк wybieram. A jak go znajdк, nie zmarnujк swojego їyczenia, moїesz byж pewny!</text>
+	</string>
+	<string id="dm_action_info_22">
+		<text>Nasіuchaіem siк bajeczek o Zonie i byіem na tyle gіupi, їe w nie uwierzyіem. Ale szybko siк przekonaіem, їe od wewn№trz wiele rzeczy wygl№da zupeіnie inaczej. Okazaіo siк, їe jestem wiкkszym miкczakiem, niї myњlaіem. Јatwo tu umrzeж, nieіatwo znajdowaж artefakty. Ale najgorsze jest to, їe w caіej Zonie nie ma ani jednego spokojnego miejsca. Nawet kiedy њpiк, jedno oko mam otwarte.</text>
+	</string>
+	<string id="dm_action_info_23">
+		<text>Zona mnie oczarowaіa. Po prostu tкdy przechodziіem, trochк jak turysta, i zіapaіem bakcyla. Chodzi o to, їe tutaj ludzie s№ prawdziwi - i przyjaciele, i wrogowie. Poczucie їycia w zagroїeniu, to, їe na kaїdym kroku czyha њmierж - to sprawia, їe takie miejskie lalusie jak my czuj№, їe їyj№! Rozkoszujк siк kaїd№ chwil№.</text>
+	</string>
+	<string id="dm_action_info_24">
+		<text>Mam siк tu spotkaж z kumplem. Ma przy sobie trochк towarуw, ktуre znaleџliњmy, tylko їe poszliњmy innymi drogami i ja dotarіem tu wczeњniej. Nie, na pewno siк nie zgubiі - to prawdziwy twardziel. Pewnie poszedі okrкїn№ drog№. A moїe spotkaі starego przyjaciela. W kaїdym razie nie martwiк siк, powinien tu byж w kaїdej chwili.</text>
+	</string>
+	<string id="dm_action_info_25">
+		<text>Jeden dupek sprzedaі mi mapк jakiegoњ skіadu i zaczynam podejrzewaж, їe to faіszywka. Przeczesaіem caіy teren i nie znalazіem nawet jednego artefaktu. Zabijк drania, jak go znajdк!</text>
+	</string>
+	<string id="dm_action_info_26">
+		<text>Po ostatniej wyprawie po іupy trochк wyluzowaіem. Przeszliњmy prawie caі№ drogк do Bariery i przygotowaliњmy zabezpieczenia przed bestiami, ktуre przyіaї№ z centrum. Mieliњmy њwietn№ druїynк - Kudіaty Aleks, Lesza Kumpel, Pleњniak - wspaniaіe chіopaki, kaїdy jeden. Zdobyіem trochк іupуw, sprzedaіem je za dobr№ cenк i postanowiіem zrobiж sobie przerwк. Rуwnie dobrze mogк odpoczywaж tutaj, jak gdziekolwiek indziej.</text>
+	</string>
+	<string id="dm_cool_info_7">
+		<text>Podobno grupa stalkerуw przedarіa siк do centrum Zony. To byіo przed sama Emisj№ - ciekawe, czy zd№їyli dotrzeж do Speіniacza Їyczeс...</text>
+	</string>
+	<string id="dm_cool_info_8">
+		<text>Zdobywanie іupуw nigdy nie byіo trudniejsze niї teraz. Nawet jeњli nie rozszarpi№ ciк potwory i uda ci siк przedostaж przez pola anomalii, nadal czekaj№ ciк bandyci na drodze, a dalej wojsko. Czкsto siк zdarza, їe czіowiek wraca do domu uboїszy, niї wyruszyі. Ktoњ powinien zaj№ж siк tymi pijawkami! Moїe stalkerzy dadz№ im w koсcu nauczkк.</text>
+	</string>
+	<string id="dm_cool_info_9">
+		<text>Sіyszaіeњ, co siк dzieje na Wysypisku? Jak tylko stalkerzy odkryli trochк wartoњciowych przedmiotуw i zaczкli je wykopywaж z tych haіd, zleciaіa siк tam chmara bandytуw. Zaіoїyli nawet bazк na tym obszarze - wszystko po to, їeby mуc іatwiej іupiж naszych braci stalkerуw. Teraz dzieje siк tam naprawdк џle. Kopacze s№ okradani i mordowani jeden po drugim, a kaїdy, kto siк temu sprzeciwi, trafia do obozu koncentracyjnego. To gorsze niї њmierж - wiкџniowie s№ zmuszani do kopania na najbardziej skaїonych obszarach Wysypiska. Biedacy padaj№ jak muchy od promieniowania i anomalii, a bandyci bogac№ siк na ich њmierci. Podsumowuj№c, przyjacielu - uwaїaj na Wysypisku.</text>
+	</string>
+	<string id="dm_cool_info_10">
+		<text>Zaraz za Barier№ jest jakiњ Zwкglacz. Wypala mуzg kaїdemu, kto do niego podejdzie, i bach! Mamy nowego zombiaka. Chyba jeszcze nikomu nie udaіo siк przeїyж. Kr№ї№ teї rуїne historie o Speіniaczu Їyczeс, ale nie wierzк w ani jedno sіowo.</text>
+	</string>
+	<string id="dm_intro_32">
+		<text>Wsadџ sobie gікboko swoje dobre maniery i przejdџ do rzeczy! Czego chcesz?</text>
+	</string>
+	<string id="dm_intro_33">
+		<text>Odpieprz siк, gnojku.</text>
+	</string>
+	<string id="dm_intro_34">
+		<text>Zaіуїmy, їe odpowiem "czeњж". I co teraz?</text>
+	</string>
+	<string id="dm_intro_35">
+		<text>Co tam, stary?</text>
+	</string>
+	<string id="dm_intro_36">
+		<text>Ej, masz dymka?</text>
+	</string>
+	<string id="dm_intro_37">
+		<text>Jak leci?</text>
+	</string>
+	<string id="dm_intro_38">
+		<text>Spokojnie z tym њciskaniem r№k. Czego szukasz?</text>
+	</string>
+	<string id="dm_intro_39">
+		<text>Ale numer! Sk№d siк tu wzi№іeњ? No dalej, nie b№dџ taki tajemniczy.</text>
+	</string>
+	<string id="dm_intro_40">
+		<text>Patrzcie patrzcie, mamy tu nowego brzydala! Jak leci?</text>
+	</string>
+	<string id="dm_intro_41">
+		<text>Co tam, bracie? Chcesz odnieњж sukces? Wchodџ, wchodџ, wystarczy dla wszystkich.</text>
+	</string>
+	<string id="dm_intro_42">
+		<text>Ty rуwnieї witaj. Masz jakieњ pytania?</text>
+	</string>
+	<string id="dm_intro_43">
+		<text>Cze. Tylko spokojnie, jasne? Bez gіupich wyskokуw.</text>
+	</string>
+	<string id="dm_intro_44">
+		<text>Chowam siк przed moim kuratorem, a ty?</text>
+	</string>
+	<string id="dm_intro_45">
+		<text>Co sіychaж dobrego? Ja tu mam wakacje od pudіa, a ty?</text>
+	</string>
+	<string id="dm_intro_46">
+		<text>Hej hej, fajnie, їe jesteњ tu sam, bez їadnych ogonуw.</text>
+	</string>
+	<string id="dm_intro_47">
+		<text>Co tam, stary? Musisz mieж niezіe problemy, skoro tu przyszedіeњ.</text>
+	</string>
+	<string id="dm_intro_48">
+		<text>Kogo my tu mamy! Wysypisko kaїdego wita z otwartymi ramionami... oczywiњcie, hmmm, poza њmieciami.</text>
+	</string>
+	<string id="dm_intro_49">
+		<text>Ja ciк krкcк! Sk№d tu siк wzi№іeњ, stary? Siadaj, siadaj, musimy pogadaж.</text>
+	</string>
+	<string id="dm_intro_50">
+		<text>Ale jaja! Kopsniesz szluga?</text>
+	</string>
+	<string id="dm_intro_51">
+		<text>Rany! Dziкki Bogu zobaczyіem, їe jesteњ czіowiekiem, inaczej rozwaliіbym ci іeb. Dobra, wyluzuj i pogadajmy.</text>
+	</string>
+	<string id="dm_intro_52">
+		<text>Niech mnie њciњnie! Nie boisz siк chodziж w pojedynkк?</text>
+	</string>
+	<string id="dm_intro_53">
+		<text>Timmy, kopк lat! Wіaњnie o tobie myњlaіem.</text>
+	</string>
+	<string id="dm_intro_54">
+		<text>A niech mnie, kogo my tu mamy! Dobra, opowiadaj.</text>
+	</string>
+	<string id="dm_intro_55">
+		<text>Hej, ty tam. Chodџ tu i powiedz mi coњ ciekawego.</text>
+	</string>
+	<string id="dm_intro_56">
+		<text>Niech mnie kaczka kopnie! Ktoњ nowy w Zonie! Mi casa su casa, amigo!</text>
+	</string>
+	<string id="dm_intro_57">
+		<text>Hej, nie wychylaj siк, dobra? Teraz bкdzie szybka i њwiсska gadka, a jak powiem, rozdzielamy siк, kumasz?</text>
+	</string>
+	<string id="dm_intro_58">
+		<text>Co tam, stary? Co tu porabiasz? No dalej, wyrzuж to z siebie.</text>
+	</string>
+	<string id="dm_intro_59">
+		<text>Ej, palancie! Przejdџ do rzeczy albo spadaj st№d.</text>
+	</string>
+	<string id="dm_intro_60">
+		<text>Hej, coњ ty taki sztywny, jesteњ glin№?</text>
+	</string>
+	<string id="dm_intro_61">
+		<text>O czym chcesz gadaж, ofiaro?</text>
+	</string>
+	<string id="dm_about_45">
+		<text>Ci stalkerzy to straszne miкczaki. Јatwiej juї nie moїe byж - paікtaj№ siк dookoіa, a my ich tylko gnoimy.</text>
+	</string>
+	<string id="dm_about_46">
+		<text>Co ja jestem, informacja? To nie biblioteka, cieciu.</text>
+	</string>
+	<string id="dm_about_47">
+		<text>Lepiej siк nie zatrzymuj, жwoku. Nie gadam z takimi cieniasami, ale mуj gnat bywa bardziej rozmowny.</text>
+	</string>
+	<string id="dm_about_48">
+		<text>Jak chcesz opowieњci, idџ pogadaж z miкsaczem albo њlepym psem. Ja nie strzкpiк jкzyka na obcych, zwіaszcza takich іamag jak ty.</text>
+	</string>
+	<string id="dm_about_49">
+		<text>A, czort z tym - opowiem ci. Lokalny bonza nazywa siк Joga, i to on tutaj rz№dzi. Ma wіasn№ norк w bazie, peіn№ drogiego towaru. Jest teї Borow - to barman z aspiracjami na arystokratк. Dalej mamy Agroprom, gdzie ta stalkerska haіastra i chіopaki z "Powinnoњci" broni№ nas przed potworami, hehe. Jeњli pуjdziesz w drug№ stronк, trafisz tam, gdzie ludzie handluj№ swoim towarem na czarnym rynku. Wiкcej ciekawych rzeczy moїna tam znaleџж noc№, ale wtedy jest oczywiњcie bardziej niebezpiecznie, szczegуlnie za spraw№ braci Asubers. A dalej za tym wszystkim jest "Wolnoњж" w Dolinie Mroku.</text>
+	</string>
+	<string id="dm_about_50">
+		<text>Stary, to wіaњnie na Wysypisku czerwoni wywalali kiedyњ caі№ masк skaїonego gуwna. Tranzystory, szmanzystory, wirniki, szmirniki... czaisz, o co chodzi. Wszкdzie poza nasz№ ukochan№ Zon№ byіby to bezuїyteczny szmelc. Pewnie zauwaїyіeњ, їe nie mamy tu sklepуw z czкњciami ani mechanikуw, ale musimy jakoњ naprawiaж nasz sprzкt. Dlatego ta rupieciarnia to prawdziwa kopalnia zіota! Nikt juї nie przejmuje siк promieniowaniem i kto їyw, szuka tu іatwych іupуw. Jedni wykopuj№ towar, inni handluj№, a jeszcze inni pobieraj№ podatki - to wіaњnie my.</text>
+	</string>
+	<string id="dm_about_51">
+		<text>Nie zamierzam szkoliж kotуw takich, jak ty. Krуtko mуwi№c, jest tak: ten magazyn to nasza baza, Agroprom na zachуd st№d jest przytuliskiem "Powinnoњci" i stalkerskiej haіastry, a na wschodzie znajduje siк "Wolnoњж" - oni s№ w porz№dku, ale mamy z nimi na pieсku. Nie radzк wybieraж siк na pуіnoc - od czasуw Emisji roi siк tam od anomalii. A na poіudniu leїy Kordon, to tam wojsko i rуїni stalkerzy gryz№ siк miкdzy sob№.</text>
+	</string>
+	<string id="dm_about_52">
+		<text>Wysypisko to najfajniejsze miejsce w Zonie, sіowo ci dajк. Silni i sprytni spokojnie tu sobie poradz№. Ja tylko trafiіy siк tu skrytki z rуїnym towarem, stalkerzy zlecieli siк jak muchy do miodu. Wtedy zaczкіy siк dobre czasy, przynajmniej dla nas. Stalkerzy tu przyszli, wykopali rуїne rzeczy z najpaskudniejszych dziur, i praktycznie wrкczyli nam swoje znaleziska - nie musieliњmy nawet kiwn№ж palcem. Na tych spokojnych nakіadamy podatki, ale awanturnicy trafiaj№ do niewoli i do obozu koncentracyjnego.</text>
+	</string>
+	<string id="dm_about_53">
+		<text>Tu trafiaj№ tylko najwiкksi twardziele! Їadnych palantуw, tylko my - prawdziwi przedsiкbiorczy dranie. Jasne, mamy swoich pachoіkуw - w koсcu prawdziwy zіodziej musi mieж kogoњ, kto bкdzie za niego wykonywaі brudn№ robotк. Brakuje nam tylko dziwek.</text>
+	</string>
+	<string id="dm_about_54">
+		<text>To my ustanawiamy prawa na Wysypisku, a inni musz№ ich przestrzegaж. Najwaїniejsze prawo brzmi: musisz siк dzieliж swoim іupem. Jeњli nie chcesz, zmusimy ciк do tego. Wierz mi, kaїdy, kto prуbuje siк stawiaж, szybko tego їaіuje.</text>
+	</string>
+	<string id="dm_about_55">
+		<text>To tu spкdzamy naszych stalkerskich kopaczy. Niektуrzy kolesie usiіuj№ byж za sprytni. Chcesz szukaж towaru - droga wolna, ale pamiкtaj, їe Wysypisko jest nasze! Chcemy tylko wdziкcznoњci za nasz№ goњcinnoњж. Nie miej wiкc nam za zіe, їe zostaіeњ oskubany przy wejњciu. Tak to po prostu dziaіa.</text>
+	</string>
+	<string id="dm_about_56">
+		<text>Spadaj st№d, dupku! Idџ pogadaж z kopaczami, oni ci wyjaњni№, co i jak.</text>
+	</string>
+	<string id="dm_about_57">
+		<text>Nasza robota to wyіapywanie frajerуw. Oni wyciskaj№ zyski z naszej ziemi, a my wyciskamy ich. Pilnujemy porz№dku i spokoju na Wysypisku, jasne?</text>
+	</string>
+	<string id="dm_about_58">
+		<text>To tu prawdziwi mкїczyџni robi№ duїe pieni№dze. I robi№ je na frajerach takich jak ty, co ty na to? Przychodz№ tu takie іazкgi, bez kasy, bez domu, wiкc kaїemy im harowaж jak woіom i zarabiaж dla nas. Te zera oddzielaj№ њmiecie od cennych towarуw, a potem nasi handlarze je sprzedaj№. Tak tu siк wіaњnie їyje.</text>
+	</string>
+	<string id="dm_about_59">
+		<text>Jesteњ jakimњ pismakiem, czy co? Napiszesz o mnie w gazecie? Hahaha! Dobra, sіuchaj, chіoptasiu. Jesteњmy tu krуlami i rz№dzimy Wysypiskiem. Odpalasz nam trochк kasy, a my nie zawracamy ci gіowy. Ale jeњli nie pіacisz, wpadasz po uszy w gуwno. To jest coњ jak gor№czka zіota. A to dlatego, їe sowieckie pozostaіoњci zakopane w tych њmieciach s№ teraz na wagк zіota. Wiкc jeњli wpadniesz w dіugi albo zaczniesz odstawiaж bohatera, wyњlemy ciк prosto do obozu. Jest tam rуwnie zabawnie, jak w kopalni uranu - to przez te wszystkie anomalie i promieniowanie. Ale nie jest aї tak џle, bo wtedy koniec twoich kіopotуw jest juї bliski... I twojego їycia teї.</text>
+	</string>
+	<string id="dm_about_60">
+		<text>To my dbamy tu o prawo i porz№dek. Widzisz, zbyt wielu ludzi chciaіoby siк obіowiж na skarbach Wysypiska. My tylko pobieramy uczciw№ opіatк. Zapewniamy bezpieczne warunki pracy i ochronк, ale sam rozumiesz, їe to kosztuje. Pytasz o obуz koncentracyjny? Cуї, tam koсcz№ њmiecie, i to praktycznie na wіasne їyczenie. Tacy jak oni i tak s№ bezuїyteczni i skazani na wyginiкcie - my tylko wspomagamy naturaln№ selekcjк.</text>
+	</string>
+	<string id="dm_about_61">
+		<text>To my tu rozdajemy karty, rozumiesz? Odbкbnialiњmy wyroki w tym pudle, zanim pojawili siк tu pierwsi stalkerzy. Hahaha, "odbкbnialiњmy" w "pudle" - fajne, nie? To siк nazywa gra sіуw.</text>
+	</string>
+	<string id="dm_action_info_27">
+		<text>A ty co, jesteњ moim adwokatem? Zadaj takie pytanie na ulicy, a moїe byж twoim ostatnim...</text>
+	</string>
+	<string id="dm_action_info_28">
+		<text>Im mniej wiesz, tym spokojniej њpisz.</text>
+	</string>
+	<string id="dm_action_info_29">
+		<text>A co ciк to obchodzi? To moja sprawa, i nikomu nic do tego.</text>
+	</string>
+	<string id="dm_action_info_30">
+		<text>Mam od razu odstrzeliж ci іeb, czy chcesz siк najpierw dowiedzieж, dlaczego twoje pytanie byіo nie na miejscu?</text>
+	</string>
+	<string id="dm_action_info_31">
+		<text>Mam w tym pudle waїn№ robotк. Jak zobaczк miкczaka, to go wyіapujк, dzielк siк kas№ z chіopakami, odpalam dziaіkк Jodze - z szacunku, rzecz jasna - i tyle. Czasami robimy powaїniejsze rzeczy, ale nie myњl, їe bкdк ci o tym opowiadaі.</text>
+	</string>
+	<string id="dm_action_info_32">
+		<text>Pytasz, co robiк w Zonie? Chowam siк przed wњcibskimi byіymi kumplami. Tam, na zewn№trz, nie dawali mi spokoju swoimi pytaniami i kazaniami o їyciu...wiкc trochк siк posprzeczaliњmy. Mam nadziejк, їe nie zamierzasz truж mi tutaj o moralnoњci i innych takich? Nie? Dobrze, w takim razie idџ dalej.</text>
+	</string>
+	<string id="dm_action_info_33">
+		<text>Co tu jest trudnego do zrozumienia? To raj dla facetуw, ktуrzy wiedz№ co robi№. Straїnicy i frajerzy nie sprawiaj№ kіopotуw - іatwiej juї chyba nie da siк obіowiж. Jak wiesz, co robiж, rуb to dobrze, a jesteњ skazany na sukces.</text>
+	</string>
+	<string id="dm_action_info_34">
+		<text>Kiedyњ pracowaіem jako stalker. Ja i mуj kumpel kr№їyliњmy po Zonie szukaj№c іupуw i z trudem przeїywaj№c. Pewnego dnia wpadliњmy na kontrolera, i tylko mnie udaіo siк uciec. Zadbaіem o to, їeby mуj kumpel nie zostaі zombiakiem, ale obiecaіem sobie, їe nigdy tam nie wrуcк. Teraz trzymam z tymi bandziorami. Moїna tu nieџle їyж, dopуki jest siк ostroїnym - oni nie kieruj№ siк miіoњci№ bliџniego, jeњli wiesz, co mam na myњli.</text>
+	</string>
+	<string id="dm_action_info_35">
+		<text>A co ciebie to obchodzi? Wystarczy na ciebie spojrzeж, їeby wiedzieж, їe masz wіasne problemy. W tych okolicach nie warto za duїo wiedzieж, bo moїna szybko kopn№ж w kalendarz. Zmieniaj№c temat, ten wуz wygl№da nieџle - chcesz go sprzedaж, zanim trafisz na anomaliк? No juї, daj spokуj - tylko ciк podpuszczam.</text>
+	</string>
+	<string id="dm_action_info_36">
+		<text>Kaїdy na Wysypisku, і№cznie ze mn№, zajmuje siк tym samym - zarabianiem forsy, ktуra pozwoli mu siк wycofaж. Kopacze haruj№, stalkerzy przeczesuj№ tereny w poszukiwaniu іupуw, a my wyciskamy z nich kasк za utrzymywanie porz№dku w tym miejscu. Јatwa robota, ale ma swoje minusy.</text>
+	</string>
+	<string id="dm_action_info_37">
+		<text>Pewnie myњlisz, їe z ciebie jakiњ twardziel, ktуry moїe zadawaж takie pytania? To, o czym mуwiк, i to, co robiк, to dwie rуїne rzeczy.</text>
+	</string>
+	<string id="dm_action_info_38">
+		<text>Oskubujк miejscowych stalkerуw i kopaczy. Rozkopuj№ nasze њmietnisko w poszukiwaniu іupуw, a ja biorк z tego, co mogк.</text>
+	</string>
+	<string id="dm_action_info_39">
+		<text>Razem z kumplami chcemy ruszyж do Doliny Mroku i wyrwaж coњ od tych kotуw z "Wolnoњci". Tylko їe nie moїemy tego zrobiж bez pozwolenia Jogi - on tu jest szefem. Nie za bardzo mam ochotк mu siк stawiaж, wiкc na razie nadal obmyњlamy plan.</text>
+	</string>
+	<string id="dm_action_info_40">
+		<text>Zostaіem bandyt№ przez przypadek. Chciaіem byж stalkerem, ale nie wyszіo. Nie szkodzi - zaoszczкdzк trochк kasy, poznam waїnych ludzi i dostanк swoj№ dziaіkк w іupach z Wysypiska.</text>
+	</string>
+	<string id="dm_action_info_41">
+		<text>Do mnie mуwisz? Rozum ci odjкіo, їeby mnie o to pytaж? Zaraz tu zawoіam paru chіopakуw - pokaїemy ci, co robimy ze szczeniakami, ktуrym siк wydaje, їe potrafi№ gryџж.</text>
+	</string>
+	<string id="dm_cool_info_11">
+		<text>Rуїne widziaіem wiкzienia, ale to bije wszystkie na gіowк. To tutaj, na Wysypisku, bije serce Zony. Tu ustalamy wіasne prawa. Chcesz їyж - musisz pіaciж, a jak nie, to dostajesz pryczк w obozie albo kulkк w іeb. Zrozumiano?</text>
+	</string>
+	<string id="dm_cool_info_12">
+		<text>O ktуr№ Zonк pytasz? O tк? To przedszkole w porуwnaniu z niektуrymi wiкzieniami, ktуre znam. Prawdziwy raj dla zіodziei. Drut kolczasty i uzbrojeni їoіnierze? To pestka. Mamy wіasn№ armiк. Moїesz іaziж gdzie chcesz, dostawaж masy paczek z zewn№trz i chlaж ile wlezie - zabawa na caіego! Jedyny problem to brak kobiet. Nie podoba im siк tutaj. Czasami mam tak№ chcicк, їe nawet mutanty zaczynaj№ mnie krкciж...</text>
+	</string>
+	<string id="dm_cool_info_13">
+		<text>Masz tupet, їeby zadawaж takie pytania. Zjeїdїaj st№d.</text>
+	</string>
+	<string id="dm_intro_62">
+		<text>Wybraіeњ kiepski moment na wizytк na Wysypisku, bracie.</text>
+	</string>
+	<string id="dm_intro_63">
+		<text>Kolego, gdybyњ tylko wiedziaі, jak mnie juї mкcz№ te bandyckie gкby...</text>
+	</string>
+	<string id="dm_intro_64">
+		<text>Miіo ciк widzieж, bracie!</text>
+	</string>
+	<string id="dm_intro_65">
+		<text>Dobrze jest, brachu!</text>
+	</string>
+	<string id="dm_intro_66">
+		<text>Poіamania nуg, stary! Niech ciк omijaj№ kule i anomalie!</text>
+	</string>
+	<string id="dm_intro_67">
+		<text>Jak dobrze spotkaж towarzysza broni!</text>
+	</string>
+	<string id="dm_about_62">
+		<text>Sіyszaіem, їe przed pierwszym wypadkiem byіa tu olbrzymia jama. Po wybuchu w elektrowni zaczкli tu przywoziж skaїone pojazdy, sprzкt i inny zіom, i wszystko wrzucali do tej dziury. Byіo tego tak duїo, їe caіkowicie j№ zapeіnili, nawet z nadwyїk№. No wiкc teraz tu siedzimy i wykopujemy te cacka.</text>
+	</string>
+	<string id="dm_about_63">
+		<text>Niedaleko st№d jest obуz, w ktуrym bandyci trzymaj№ stalkerуw, takich jak my. Wolaіbym umrzeж, niї tam skoсczyж - zmuszaj№ ich do kopania przez szesnaњcie godzin na dobк i wysyіaj№ do najbardziej niebezpiecznych czкњci Zony - bez їadnego zabezpieczenia ani sprzкtu. Karmi№ ochіapami, bij№... Nie muszк chyba wiкcej mуwiж - dla nich jesteњmy gorsi od bydіa.</text>
+	</string>
+	<string id="dm_about_64">
+		<text>Nowicjusze nie maj№ tu іatwo. Tutejsze bestie mog№ ciк zeїreж w mgnieniu oka, a handlarze tylko czekaj№, їeby orїn№ж nowego. Jakby tego byіo maіo, bandyci solidnie utrudniaj№ їycie, i nawet inni stalkerzy nie s№ zbyt chкtni, їeby dzieliж siк z tob№ swoimi sekretami.</text>
+	</string>
+	<string id="dm_about_65">
+		<text>My, stalkerzy z Wysypiska, musimy trzymaж siк razem, bo inaczej bandyci przerobi№ nas na mielone. Jak im raz podpadniesz, to juї jesteњ w drodze do ich obozu. Jako niewolnik. Tam siк nie їyje dіugo - jeden dzieс kopania w strefie promieniowania i jesteњ їywym trupem.</text>
+	</string>
+	<string id="dm_about_66">
+		<text>Wysypiskiem rz№dz№ dziњ bandyci. Trzymaj№ nas za jaja tak mocno, їe bez ich pozwolenia nie moїemy siк nawet odlaж. Chcesz wejњж? Pіaж. Chcesz wyjњж? Pіaж jeszcze wiкcej. Nawet jak znajdziesz coњ cennego, to i tak moїesz nie opuњciж Wysypiska. Jak trafisz na bandytуw, masz dwa wyjњcia: albo oni zabieraj№ wszystko, albo ty dostajesz kulkк. Moїe byж jeszcze gorzej - mog№ ciк zmusiж do kopania w tych њmieciach, dopуki nie zabije ciк anomalia albo promieniowanie.</text>
+	</string>
+	<string id="dm_about_67">
+		<text>To miejsce byіo wysypiskiem odpadуw radioaktywnych. Trafiaіo tu wszystko, co њwieciіo w ciemnoњciach, i pies z kulaw№ nog№ siк tym nie interesowaі, dopуki nie pojawiіa siк Zona. Teraz konserwy, lampy z tranzystorami i czкњci zamienne s№ cenniejsze niї zіoto, i dlatego wіaњnie stalkerzy przychodz№ tu kopaж. Ale bandyci szybko skumali, o co chodzi, i teraz to oni tu rz№dz№. Caіa kasa spіywa do nich - my tylko harujemy i nie dostajemy nic w zamian.</text>
+	</string>
+	<string id="dm_about_68">
+		<text>Bandyci kontroluj№ tu wszystko. To oni ustalaj№ zasady, oni pobieraj№ podatki od kopaczy i ci№gn№ zyski z pracy innych. Stalkerzy przekopuj№ siк przez odpady radioaktywne w poszukiwaniu pozostaіoњci epoki sowieckiej, ale korzyњci odnosz№ z tego tylko bandyci. Ale chyba o tym wiesz... Musiaіeњ zapіaciж, їeby wejњж, tak? Ha, jak bкdziesz wychodziж, zaї№daj№ jeszcze wiкcej, zobaczysz.</text>
+	</string>
+	<string id="dm_about_69">
+		<text>Jedyna dobra rzecz, jak№ moїna zrobiж na Wysypisku, to jak najszybciej st№d spieprzaж. Uczciwy stalker nie ma tu czego szukaж. Nawet jak ci siк poszczкњci i znajdziesz coњ wartoњciowego, zabior№ to bandyci albo zostaniesz nieџle napromieniowany podczas tego caіego kopania. O wiele lepiej jest iњж na wschуd, do "Wolnoњci" w Dolinie Mroku albo na zachуd, do Agropromu - do "Powinnoњci" i normalnych stalkerуw. To jest nasza Zona, Zona stalkerуw. Tutaj rz№dz№ kryminaliњci, a tacy jak my nie maj№ tu czego szukaж.</text>
+	</string>
+	<string id="dm_about_70">
+		<text>Moїna siк tu wzbogaciж, to pewne. Czemu nie? Nawet wczoraj sіyszaіem o stalkerze, ktуry znalazі na Wysypisku caі№ masк cennych rzeczy. Nie wiem dokіadnie, co to byіo - jest wiele wersji i trudno powiedzieж, ktуra jest prawdziwa - ale na pewno wiadomo, їe siк wzbogaciі. Ja teї coњ znajdк, a wtedy kupiк przyzwoite wyposaїenie i wybiorк siк poza dzikie tereny - to wіaњnie tam moїna trafiж na najlepsze artefakty.</text>
+	</string>
+	<string id="dm_about_71">
+		<text>Wysypisko i jego durna gor№czka zіota! Doszіo do najgorszego, co mogіo siк zdarzyж - jakiњ kretyn znalazі w tych њmieciach coњ cennego. Od razu њci№gnкіy tu rуїne gangi, ktуre podporz№dkowaіy sobie stalkerуw. To haсba, їe nasi bracia pozwolili tym szumowinom rz№dziж Zon№ i nami. Maj№ nawet obуz koncentracyjny, do ktуrego zsyіaj№ najbardziej niepokornych. Trzeba tam kopaж w radioaktywnych odpadach, їeby w ogуle dostaж jedzenie. Wierz mi, musimy siк st№d wydostaж. </text>
+	</string>
+	<string id="dm_about_72">
+		<text>Sіuchaj, kolego, im szybciej siк st№d zwiniesz, tym lepiej. Nie czeka ciк tu nic poza podatkami i poniїeniem przez bandytуw, noїem w plecach albo miejscуwk№ w obozie koncentracyjnym. Ja na twoim miejscu zabraіbym siк st№d jak najszybciej.</text>
+	</string>
+	<string id="dm_about_73">
+		<text>To nasze miejscowe Klondike. Musisz to zrozumieж, przyjacielu, wszystko w Zonie jest pod kluczem, wojsko juї o to zadbaіo. Czasami trzeba walczyж o konserwк, nie mуwi№c juї o czкњciach albo sprzкcie. A nawet jeњli handlarze coњ maj№, to nie sprzedaj№ tego tanio. Tutaj jest inaczej. W tych stertach szmelcu moїna znaleџж cenne rzeczy, i to caіkiem za darmo. Po wypadku w Czarnobylu wyrzucali tu wszystko, co siк daіo. Jasne, jest trochк promieniowania i trzeba oddaж bandytom udziaі ze wszystkiego, co siк znajdzie, ale i tak moїna znaleџж duїo - i to w jednym miejscu! Skombinuj wiкc sobie іopatк, zacznij kopaж i kop, dopуki nie znajdziesz wіasnej "їyіy zіota".</text>
+	</string>
+	<string id="dm_about_74">
+		<text>Jeњli nadal nie wiesz, czym jest Wysypisko, ja ci powiem. Stalkerzy wykopuj№ rуїne rzeczy, a bandyci im to zabieraj№. Zbudowali sobie nawet bazк w starym magazynie. Teraz, kiedy kontroluj№ caіe Wysypisko, їyje im siк caіkiem inaczej - nie babrz№ siк w gуwnie, zamiast tego іupi№ kopaczy i coraz bardziej siк bogac№. Gnojki! Moїesz teї tu znaleџж cos w rodzaju pchlego targu. Handlarze kupuj№ od kopaczy i sprzedaj№ przydatne, a czasami nawet unikalne przedmioty. Wiкkszoњж handlu toczy siк w nocy, wiкc miej oczy dookoіa gіowy - niektуrzy kupcy chкtnie korzystaj№ z osіony ciemnoњci, їeby wcisn№ж klientowi bezuїyteczny zіom. S№ caіkiem nieџli w takich "transakcjach".</text>
+	</string>
+	<string id="dm_about_75">
+		<text>W tym miejscu chciwi i silni їyj№ z chciwych i gіupich. Tak siк skіada, їe te sterty skaїonych њmieci zawieraj№ nie tylko bezuїyteczny zіom, ale teї pewne przedmioty, ktуre s№ bardzo cenione w Zonie. Oczywiњcie przyci№ga to gіupcуw, ktуrzy marz№ o znalezieniu wielkiego skarbu. Niestety, tylko silni maj№ szansк na wzbogacenie siк. Ja byіem idiot№ i sіono za to zapіaciіem.</text>
+	</string>
+	<string id="dm_action_info_42">
+		<text>Przewaїnie kopiк, ale w dzisiejszych czasach trzeba naprawdк uwaїaж - prawie kaїdy ma chrapkк na coњ, co do niego nie naleїy. Kiedyњ jedynym problemem byli bandyci, ale teraz inny stalker moїe byж rуwnie niebezpieczny. To juї nie s№ te stare, dobre czasy, kiedy moїna byіo oddaж ostatni№ konserwк innemu stalkerowi i mieж pewnoњж, їe w razie potrzeby on zrobi to samo dla ciebie. A teraz... Ech!</text>
+	</string>
+	<string id="dm_action_info_43">
+		<text>Nic specjalnego. Robiк to, co inni kopacze - prуbujк przeїyж i zdobyж doњж forsy, їeby starczyіo na kawaіek chleba, konserwк i trochк amunicji. Jeњli mi siк poszczкњci, wzbogacк siк i wtedy bкdк mуgі siк wynieњж z tego miejsca, ale najpierw chcк odwiedziж Speіniacz Їyczeс - od dawna o tym marzк.</text>
+	</string>
+	<string id="dm_action_info_44">
+		<text>Jestem tu nowy... Nadal prуbujк zdecydowaж, co chcк robiж. Muszк naprawdк uwaїaж, nowi s№ tu uwaїani za formк podludzi. Ludzie gadaj№ o gуrach zіota, ale nie widzк tu zbyt wiele gotуwki. Moїe powinienem o tym zapomnieж i wst№piж do "Powinnoњci"...</text>
+	</string>
+	<string id="dm_action_info_45">
+		<text>Jestem taki, jak wszyscy tutaj: liczк na cud. Moїe uda mi siк wykopaж coњ cennego, za co mуgіbym kupiж swoj№ wolnoњж od bandytуw, i zostaіoby mi tyle, їebym siк wzbogaciі. Co, myњlisz, їe to mrzonki? Zdarzaіo siк wczeњniej, moїe siк zdarzyж znowu. Sіyszaіem o kopaczu, ktуry trafiі na skіad wojskowych odbiornikуw radiowych. Mуwi№, їe jest teraz szanowanym stalkerem, ktуry њpi na forsie i dobrym sprzкcie. Co prawda, ja go nigdy nie spotkaіem - to wszystko zdarzyіo siк zanim tu przyszedіem.</text>
+	</string>
+	<string id="dm_action_info_46">
+		<text>Szukam czegoњ cennego w tych њmieciach. Jest tu peіno rzeczy z czasуw sowieckich, od konserw po silniki diesla. Za coњ takiego moїna podіapaж trochк grosza w Zonie, trzeba tylko mieж cierpliwoњж i sporo lekуw przeciwpromiennych.</text>
+	</string>
+	<string id="dm_action_info_47">
+		<text>Mam dіug do spіacenia. Jeњli nie znajdк duїego іupu dla bandytуw, zrobi№ ze mnie niewolnika i zmusz№ do kopania w najbardziej niebezpiecznych miejscach, a to nie jest zabawne.</text>
+	</string>
+	<string id="dm_action_info_48">
+		<text>Byіem w drodze do Doliny Mroku, kiedy te њwinie zabraіy przy wejњciu moje pieni№dze. Їeby wyjњж, teї muszк zapіaciж. Nie chcк, їeby inni stalkerzy patrzyli na mnie jak na cieniasa bez grosza przy duszy, wiкc przed wyruszeniem w dalsz№ drogк prуbujк trochк zarobiж. Sкk w tym, їe im wiкcej pracujк, tym wiкksze mam dіugi. Ale jest w porz№dku, niedіugo siк st№d wyniosк.</text>
+	</string>
+	<string id="dm_action_info_49">
+		<text>Chciaіem doі№czyж do "Powinnoњci" w Agropromie. Jeden koleњ obiecaі, їe pomoїe mi tam dotrzeж, ale kiedy doszliњmy do Wysypiska, zmyі siк z moj№ fors№. Teraz siк tu waікsam i prуbujк skombinowaж jakiњ przyzwoity sprzкt i broс. Wierz mi, nie jest іatwo. Bandyci wiedz№, їe jeњli pozwol№ kopaczom na posiadanie broni, nie skoсczy siк to dla nich dobrze, wiкc ostro tego pilnuj№. Wіaњciwie nie ma szans na zdobycie tu spluwy i naboi.</text>
+	</string>
+	<string id="dm_action_info_50">
+		<text>Szliњmy razem z kumplem do Bariery, mieliњmy siк tam spotkaж ze znajomymi stalkerami - ale na Wysypisku zatrzymali nas bandyci. Kumpel zachowaі siк jak kretyn, nie chciaі zapіaciж i zacz№і siк z nimi kіуciж. Oni nie byli zainteresowani dyskusj№, po prostu wziкli go do niewoli, i tyle. No wiкc teraz ja harujк jak wуі, їeby wyci№gn№ж tego osіa i ruszyж w dalsz№ drogк. Juї nawet wiem, ktуrкdy, i mam teraz wiкksze doњwiadczenie, ale nie jest іatwo zebraж dosyж forsy - podatki s№ tu zabуjcze, a zdobycie broni i amunicji graniczy z cudem. To dlatego, їe bandyci konfiskuj№ wszystko przy wejњciach.</text>
+	</string>
+	<string id="dm_action_info_51">
+		<text>Mуj brat zagin№і w Zonie. Poszedіem go szukaж, ale przeszkodzili mi bandyci. Pogadaіem z miejscowymi stalkerami i podobno brat spкdziі tu trochк czasu. Teraz prуbujк dowiedzieж siк jak najwiкcej na ten temat... mam nadziejк, їe go odnajdк. Kto wie, moїe nawet їywego...</text>
+	</string>
+	<string id="dm_action_info_52">
+		<text>Siedzк tu od wiekуw prуbuj№c znaleџж coњ cenniejszego niї stara konserwa. Do tej pory nie miaіem szczкњcia, ale ten tam Mitia Kіapouch trafiі na silnik transportera i naoliwione іoїyska - tuї obok miejsca, w ktуrym pracowaіem. To niezіe znalezisko, a byіoby jeszcze lepsze, gdyby miaі kogoњ, komu mуgіby je sprzedaж, haha! Co tam, ja tez niedіugo wykopiк coњ ciekawego.</text>
+	</string>
+	<string id="dm_action_info_53">
+		<text>Zmierzaіem do Agropromu, ale wci№gnкіa mnie tutejsza gor№czka zіota. Znalazіem kilka rzeczy, ktуre udaіo mi siк dobrze sprzedaж - to jest o niebo іatwiejsze i bezpieczniejsze, niї wydіubywanie artefaktуw z anomalii. Podstawa to staіe kontrolowanie wskaџnikуw promieniowania, bo inaczej czіowiek bкdzie њwieciі jak choinka przez resztк swojego krуtkiego їycia.</text>
+	</string>
+	<string id="dm_action_info_54">
+		<text>Szukam іupуw. Przyszliњmy tu caі№ grup№ z wioski kotуw, po tym jak usіyszeliњmy plotki o znalezieniu cennych staroci na Wysypisku. Stwierdziliњmy, їe zanim nauczymy siк znajdowaж artefakty, caіa zabawa przejdzie nam koіo nosa. Teraz widzк, їe powinniњmy byli zostaж w wiosce. Dwуch chіopakуw zginкіo od razu, a kolejny pracuje w obozie... Nawet nie wiemy, czy їyje, promieniowanie mogіo go dawno zabiж. Stary, gdybym tylko dorwaі jakiegoњ gnata, pokazaіbym tym bandytom... Wydaj№ siк gіupi, ale sprytnie rz№dz№ tym miejscem. Jesteњmy podzieleni i bez szans na znalezienie jakiejkolwiek broni. Moїna kopaж do woli, ale nie w grupach wiкkszych niї trzy osoby. Stary, mуwiк ci - my stalkerzy musimy siк zebraж do kupy i przegoniж st№d tych drani.</text>
+	</string>
+	<string id="dm_cool_info_14">
+		<text>Znajomi stalkerzy, ktуrzy spкdzili trochк czasu w okolicach Agrorpromu, mуwili mi, їe "Powinnoњж" ma spore problemy z potworami. Zawaliіy siк jakieњ katakumby czy inne podziemia i teraz wyіaї№ stamt№d straszne paskudztwa.</text>
+	</string>
+	<string id="dm_cool_info_15">
+		<text>Wybraіem siк do wojskowych magazynуw razem z moim kumplem - po Emisji sprawy zaczкіy wygl№daж naprawdк џle. Wojsko solidnie oberwaіo, "Wolnoњж" prуbuje przej№ж ich bazк, a ze њrodka Zony ci№gn№ wojownicy "Monolitu" i zgraje potworуw, morduj№c wszystko na swej drodze. W radio sіychaж strzкpy rozmуw, ale nie sposуb znaleџж tych, ktуrzy je prowadz№. Moraі z tej opowieњci pіynie taki: im gікbiej zapuњcisz siк w Zonк, tym wiкksze kіopoty ciк czekaj№.</text>
+	</string>
+	<string id="dm_cool_info_16">
+		<text>Ludzie mуwi№, їe Emisja umoїliwiіa dostкp do miejsc takich jak Czerwony Las czy Bagna, ktуre wczeњniej byіy nieosi№galne z powodu anomalii. Rуwnoczeњnie zamknкіa drogк do czкњci obszarуw, do ktуrych moїna byіo normalnie podrуїowaж. Nie da siк przedostaж do Rostoku... Przed Emisj№ byіo tam mnуstwo stalkerуw i nikt nie wie, co siк z nimi staіo.</text>
+	</string>
+	<string id="dm_intro_68">
+		<text>Hej!</text>
+	</string>
+	<string id="dm_intro_69">
+		<text>Hej, najemniku. Jeњli zamierzasz walczyж z pomiotami Zony, "Powinnoњж" jest twoim sojusznikiem.</text>
+	</string>
+	<string id="dm_intro_70">
+		<text>Hej! Przyі№cz siк do "Powinnoњci" - oto frakcja dla prawdziwych mкїczyzn.</text>
+	</string>
+	<string id="dm_intro_71">
+		<text>W tych okolicach musisz byж ostroїny i trzymaж siк gіуwnych drуg. Jeden faіszywy krok i skoсczysz jako њniadanie jakiejњ bestii.</text>
+	</string>
+	<string id="dm_intro_72">
+		<text>Hej!</text>
+	</string>
+	<string id="dm_intro_73">
+		<text>Witaj, przyjacielu. Pozwуl, їe coњ doradzк - nawet na chwilк nie traж czujnoњci. Bycie atakowanym kilka razy w ci№gu nocy wcale nie jest takie zabawne.</text>
+	</string>
+	<string id="dm_intro_74">
+		<text>To nie jest najlepszy czas na pobyt tutaj, stalkerze. Mamy tu prawdziw№ wojnк.</text>
+	</string>
+	<string id="dm_intro_75">
+		<text>Hej! Musisz mieж oczy dookoіa gіowy, tutejsze bestie s№ naprawdк cwane. Jak stracisz czujnoњж, to nawet siк nie zorientujesz, kiedy oberwiesz.</text>
+	</string>
+	<string id="dm_intro_76">
+		<text>Witaj, przyjacielu. Zawsze miіo zobaczyж innego stalkera.</text>
+	</string>
+	<string id="dm_intro_77">
+		<text>Jak leci? Oto serdeczne ukraiсskie powitanie.</text>
+	</string>
+	<string id="dm_intro_78">
+		<text>Hej, brachu! Jak chcesz o coњ spytaж, to wal њmiaіo.</text>
+	</string>
+	<string id="dm_about_76">
+		<text>O czym tu gadaж? Wystarczy, їe siк rozejrzysz, i juї wszystko bкdziesz wiedziaі.</text>
+	</string>
+	<string id="dm_about_77">
+		<text>Te cholerne potwory atakuj№ nas ze wszystkich stron - im wiкcej zabijamy, tym wiкcej pojawia siк nowych! Trudno, i tak w koсcu wygramy. Przydaіoby nam siк tylko trochк przyzwoitej broni i kilku doњwiadczonych ludzi, ktуrzy by jej uїywali. To by wystarczyіo, їeby szybko doprowadziж to miejsce do porz№dku i pomњciж naszych zabitych braci.</text>
+	</string>
+	<string id="dm_about_78">
+		<text>Powiadam ci, to miejsce jest przeklкte. Nie tylko Agroprom, ale caіa Zona. Ci№gle walczymy, ale z czym? Zwykіe potwory nie s№ w stanie tak szybko siк rozmnaїaж! Jednego dnia je wybijamy, a drugiego pojawia siк ich jeszcze wiкcej.</text>
+	</string>
+	<string id="dm_about_79">
+		<text>Posіuchaj, nie zіapiesz tu nic poza kul№ w іeb. W nocy atakuje nas mrowie mutantуw, a my je odpieramy. Nasza baza w dawnym Instytucie to caіkiem inna sprawa. Jest tam bar, handlarz, warsztat naprawczy i inne takie - sam zobaczysz. Moїna teї odpocz№ж i naprawiж broс na neutralnym terenie, dopуki nie zadziera siк miejscowymi. Jeњli siк nie mylк, ich szefem jest Orest. A jeњli chcesz siк st№d wydostaж, to na wschodzie masz Wysypisko, na poіudniu Bagna, a na pуіnocy Jezioro Jantar i bazк naukowcуw.</text>
+	</string>
+	<string id="dm_about_80">
+		<text>Kiedyњ byі tu instytut naukowy, ktуry nazywaі siк... no, Instytut Agroprom. Cokolwiek dziaіo siк w nim wczeњniej, teraz sіuїy nam jako baza. Naszym dowуdc№ jest generaі Kryіow, ale nazywamy go po prostu Komandorem. Nie prosto w oczy, rzecz jasna. Jest tu teї neutralna baza, ktуra mieњci siк w opuszczonej fabryce. Jeњli pуjdziesz na poіudnie, trafisz na Bagna. Na wschodzie leїy Wysypisko, ktуre kontroluj№ teraz bandyci - ci dranie wykorzystuj№ fakt, їe jesteњmy teraz zajкci i nie moїemy siк z nimi rozprawiж. Na pуіnocy rozci№ga siк Jezioro Jantar. Podobno dochodzi tam do jakichњ emisji, ktуre zmieniaj№ ludzi w zombi. Jako їe wіaњnie z tamtej strony jesteњmy ostro atakowani, ta teoria wydaje siк sіuszna.</text>
+	</string>
+	<string id="dm_about_81">
+		<text>Chcesz posіuchaж historyjek o przygodach stalkerуw? Wybraіeњ niewіaњciwe miejsce, maіy. Tutaj siк їyje naprawdк, a nie jak w bajkach. Kiedy nadchodzi noc, pojawia siк tyle potworуw, їe nie nad№їamy praж gaci. Widzisz tamte dziury w ziemi? Jak tylko siк њciemnia, stamt№d wіaњnie wyіaї№, i wierz mi, synu, nie ma siк czym zachwycaж. Nie przychodz№ pojedynczo ani nawet dziesi№tkami... Kiedy wyіaї№ siк zabawiж, robi№ to na caіego. Zabijamy tyle, ile zdoіamy, ale to nie poprawia sytuacji - gdzieњ pod ziemi№ musi byж jakiњ cholerny inkubator. Najlepszym pomysіem byіoby zrzucenie tu bomby atomowej!</text>
+	</string>
+	<string id="dm_about_82">
+		<text>Robi siк tu gor№co, niech zdechnк, jeњli kіamiк! W zeszіym tygodniu wrуciliњmy do bazy i zostawiliњmy tu paru chіopakуw. W nocy zostali zaatakowani, co nie jest tutaj niczym dziwnym, ale kiedy rano wrуciliњmy, nie byіo tu niczego. Їadnego њladu po naszych chіopakach, їadnych ciaі czy martwych potworуw... Tylko krew, іuski po nabojach, poszarpane ubrania i znaki na ziemi.</text>
+	</string>
+	<string id="dm_about_83">
+		<text>Mam dosyж tego miejsca. Siedzimy tu juї od tygodni, Bуg wie jak dіugo, a z kaїdym atakiem potworуw jest tylko gorzej. Czujк siк tak, jakbym nie miaі juї w sobie doњж gniewu, їeby z nimi walczyж, o amunicji nie wspominaj№c. Czasami po prostu mam ochotк rzuciж gnata i dusiж tych drani goіymi rкkami. Moїe to potwory jakoњ mieszaj№ nam w gіowach? No trudno, prкdzej czy pуџniej wybijemy je do nogi.</text>
+	</string>
+	<string id="dm_about_84">
+		<text>Jeden, jedyny raz po napadzie dostaliњmy wiadomoњж przez radio od naszych chіopcуw z Agropromu: "SOS! Pomocy, jesteњmy atakowani!" - A potem odgіosy strzelaniny, wrzaski i wycie. W kilka minut wysіaliњmy na pomoc dwudziestu chіopa, ale zanim tam dotarliњmy, wszystko ucichіo, nie byіo teї їywej duszy. Tylko jedna latarka leїaіa na ziemi i bіyskaіa. Kiedy wzeszіo sіoсce, prуbowaliњmy pуjњж za њladami, ale prowadziіy do podziemi instytutu - a po ostatnim napadzie, kiedy zawaliі siк tunel, boimy siк tam wchodziж. Nie muszк dodawaж, їe od tamtej pory nie widzieliњmy juz naszych chіopakуw. </text>
+	</string>
+	<string id="dm_about_85">
+		<text>Wsadџ sobie swoje pytania, koleњ. I bez nich jest wystarczaj№co џle. Kaїdej nocy tracimy przyjaciуі - jedni gin№ w walce, inni przepadaj№ bez њladu. Bywa, їe przychodzisz rano zluzowaж obsadк posterunku i nikogo tam nie zastajesz - tylko wygasіe ognisko i martw№ ciszк. Wierz mi, to naprawdк przeraїaj№cy widok. Wiкc idџ wkurzaж swoimi pytaniami kogoњ innego - my w "Powinnoњci" nie potrzebujemy twojej pomocy, їeby zwariowaж.</text>
+	</string>
+	<string id="dm_about_86">
+		<text>Wszкdzie tu mamy swoje posterunki. Kaїdej nocy zewsz№d wyіaї№ potwory, a jest ich tyle, їe nie trzeba nawet celowaж - prujesz z broni i modlisz siк. Wypeіzaj№ z tych dziur w ziemi, a my prуbujemy je odeprzeж. Sk№d siк bior№? Diabli wiedz№.</text>
+	</string>
+	<string id="dm_about_87">
+		<text>Mutanty wyіaї№ spod Agropromu. Podejrzewam, їe kiedy nasi chіopcy prуbowali wysadziж podziemne przejњcia, tunele zawaliіy siк do ich legowiska. Juї nie liczymy, ile wykoсczyliњmy. Hej, nie jesteњ przypadkiem z "Wolnoњci"? Twoja gкba wygl№da znajomo, znaіem kiedyњ takiego jednego... No dobra, pilnuj siк teraz.</text>
+	</string>
+	<string id="dm_about_88">
+		<text>Pierwszy raz w Agropromie, co? No to sіuchaj. Mamy bazк w dawnym instytucie badawczym. Stara fabryka to teren neutralnych stalkerуw. Czasami atakuj№ nas zombiaki z Jeziora Jantar na pуіnocy, a spod ziemi wyіaї№ potwory. Dalej na wschodzie znajduje siк Wysypisko, a na poіudniu rozci№gaj№ siк Bagna.</text>
+	</string>
+	<string id="dm_about_89">
+		<text>Bez w№tpienia mamy tu przyzwoit№ bazк. Strzelnica, ZOO, "Pod spokojnym Atomem" - to nasz miejscowy bar - wszystko, czego dusza zapragnie. Ale nie dochodzi do їadnych wygіupуw, dyscyplina stoi na najwyїszym poziomie!</text>
+	</string>
+	<string id="dm_about_90">
+		<text>Agroprom to dawny instytut naukowy. Oczywiњcie od pojawienia siк Zony nie prowadzi siк tutaj zbyt wielu badaс. Ha ha. Zamiast tego uїywamy budynku jako bazy, z ktуrej walczymy z pomiotami Zony. Utrzymujemy zwarte szyki przeciw potworom, ktуre wyіaї№ spod ziemi. Walczymy, aby ratowaж їycie innych stalkerуw - czasami za cenк wіasnego.</text>
+	</string>
+	<string id="dm_about_91">
+		<text>Kiedyњ їyіo siк tu іatwiej, wiesz? Jasne, wtedy teї byіy potwory, ale dawaliњmy sobie z nimi radк. Teraz jest naprawdк kiepsko. Kaїdej nocy zabijamy dziesi№tki tych bestii, a im wiкcej rozwalimy, tym wiкcej przyіazi ich kolejnej nocy. Padamy jak muchy.</text>
+	</string>
+	<string id="dm_about_92">
+		<text>My - to znaczy "Powinnoњж" - walczymy z potworami, ktуre prуbuj№ wyleџж na powierzchniк, wiкc nie mamy czasu na pogaduszki - z pewnoњci№ to rozumiesz. Jeњli szukasz іatwej roboty, moїesz iњж do bazy neutralnych w opuszczonej fabryce, ale moїesz teї zostaж i pomуc nam - doњwiadczony wojownik zawsze jest mile widziany. Nasz dowуdca dobrze ci zapіaci za wszelkie wsparcie udzielone "Powinnoњci".</text>
+	</string>
+	<string id="dm_action_info_55">
+		<text>Wњcibski jesteњ, co? Chcesz wiedzieж, dlaczego jesteњmy przeciwko Zonie? Bo to ni mniej, ni wiкcej, tylko њwiкta wojna! Albo wygramy, albo przegramy, nie ma nic "pomiкdzy", z Zon№ siк nie negocjuje. Jesteњ z nami albo przeciwko nam, innych opcji nie ma.</text>
+	</string>
+	<string id="dm_action_info_56">
+		<text>Jak to wygl№da? Nie mam nic lepszego do roboty, wiкc zaj№іem siк dla przyjemnoњci malarstwem, tylko czekaj, aї siк њciemni i przyjdzie farba... Synu, tu siк toczy wojna, prawdziwa wojna z mutantami - krew, flaki i tak dalej. Musimy wzi№ж siк w garњж i raz a dobrze wytкpiж te parszywe zmutowane paskudztwa. Nie mog№ siк mnoїyж bez koсca, prawda?</text>
+	</string>
+	<string id="dm_action_info_57">
+		<text>Walczк z Zon№. Chcesz wiedzieж, dlaczego? No to wyobraџ sobie, їe jakiњ њwir przyіazi do twojego domu, urz№dza siк w k№cie i zaczyna stopniowo wypychaж ciebie i twoj№ rodzinк na zewn№trz. Co byњ wtedy zrobiі? Zіapaіbyњ sukinsyna za kark i wywaliі go na zbity pysk, zgadza siк? To jest mniej wiкcej to, czym zajmuje siк tutaj "Powinnoњж". Nasza misja to przepкdzenie Zony tam, sk№d przyszіa, a najlepiej zaіatwi to otwarta wojna. Co, masz moїe lepszy pomysі?</text>
+	</string>
+	<string id="dm_action_info_58">
+		<text>Walczк z rzeczami, ktуre nie pozwalaj№ nam spaж w nocy. Uwaїam, їe niszczenie pomiotуw Zony to obowi№zek kaїdego stalkera. Nie rozumiem, jak moїna myњleж inaczej. Jak nie usuniesz wrzodu, to caіe ciaіo moїe zachorowaж, prawda? A ta zaraza pochіonie caі№ planetк. Wyobraџ sobie przyszіoњж naszych dzieci: na lewo - potwуr, na prawo anomalia, a teraz wybierz, co ciк zabije.</text>
+	</string>
+	<string id="dm_action_info_59">
+		<text>Zona jest zіa, synu. To zіo, ktуre wisi nad nasz№ planet№ jak topуr kata nad szyj№ skazaсca. Kіopot w tym, їe nie wszyscy to rozumiej№. Ci nieliczni, ktуrzy to potrafi№, poі№czyli siк i utworzyli "Powinnoњж", grupк, ktуrej celem jest powstrzymanie dalszej ekspansji tego zіa. Widziaіeњ, ile mutantуw zabijamy kaїdego dnia, wyobraџ sobie, co by siк staіo, gdybyњmy pozwolili im wyjњж poza Zonк. Krуtko mуwi№c, jesteњmy ostatni№ lini№ obrony ludzkoњci na tej planecie, i naprawdк nie pojmujк, dlaczego s№ tacy, ktуrzy siк nam przeciwstawiaj№ i nie s№ w stanie zrozumieж takich oczywistych faktуw.</text>
+	</string>
+	<string id="dm_action_info_60">
+		<text>Wypeіniam swуj obowi№zek wzglкdem ludzkoњci, i nie s№ to tylko piкkne sіowa, ale najszczersza prawda. Przed czym j№ ratujк? Przed Zon№ i jej parszywymi tworami. Musimy zniszczyж to џrуdіo zіa i choroby, zanim ono zniszczy nas.</text>
+	</string>
+	<string id="dm_action_info_61">
+		<text>Wspуlnie z moimi towarzyszami walczк z mutantami. Ostatnio wystarczy ich dla wszystkich. Do tego znad Jeziora Jantar przyіaї№ stada zombi, z ktуrymi teї musimy sobie radziж. Wiкc jeњli chcesz wst№piж do najlepszego klanu wojownikуw, jaki istnieje, "Powinnoњж" jest dla ciebie idealna.</text>
+	</string>
+	<string id="dm_action_info_62">
+		<text>Prуbujк zdecydowaж, jak№ bestiк przyprowadziж Inkwizytorowi. Zarz№dza maіym ZOO w naszej bazie, trzyma w nim okazy miejscowej fauny. Marzк o wciњniкciu tam kontrolera, ale nawet gdyby udaіo nam siк go zdobyж, pewnie pozamieniaіby nas wszystkich w zombi.</text>
+	</string>
+	<string id="dm_action_info_63">
+		<text>Wst№piіem do "Powinnoњci" zupeіnie niedawno i byіa to najlepsza decyzja w moim їyciu. Wszyscy s№ tu zawodowcami, a klan jest zdyscyplinowany i њwietnie zorganizowany.</text>
+	</string>
+	<string id="dm_action_info_64">
+		<text>Jestem tu nowy, nadal prуbujк wszystko sobie poukіadaж. Kiedyњ chodziіem po Zonie sam, a teraz uczк siк osіaniaж tych, ktуrzy dziel№ ze mn№ moje problemy.</text>
+	</string>
+	<string id="dm_action_info_65">
+		<text>Wykonujк rozkazy. Tu jest jak w wojsku - mamy dowуdcк, oficerуw i logistykк. Wszystko jest jasne jak sіoсce. Wypeіniaj rozkazy, a moїe nawet uda ci siк przeїyж.</text>
+	</string>
+	<string id="dm_action_info_66">
+		<text>Walczк z tymi przeklкtymi potworami. Co mogк powiedzieж? Jestem zmкczony tymi nocnymi atakami, ale nie szkodzi, przetrzymamy to. W koсcu znajdziemy serce Zony i raz na zawsze wyeliminujemy to wynaturzenie.</text>
+	</string>
+	<string id="dm_action_info_67">
+		<text>Wielu moich kumpli naleїaіo do "Powinnoњci", wiкc ja teї do niej wst№piіem. Zastanawiaіem siк nad tym przez kilka miesiкcy, nie byіem pewien, czy to sіuszna decyzja, ale teraz њmiejк siк na myњl o tych w№tpliwoњciach! Wspaniale jest byж w "Powinnoњci", no i jest to o wiele bezpieczniejsze, niї tuіanie siк po Zonie w pojedynkк.</text>
+	</string>
+	<string id="dm_cool_info_17">
+		<text>Nic dobrego. Z dnia na dzieс jest gorzej, zwіaszcza po duїej emisji. Zona przeszіa wstrz№s i staіa siк jeszcze surowsza dla ludzi. Potwory s№ szybsze, bardziej agresywne i jeszcze bardziej bezwzglкdne. W dodatku klany zaczкіy walczyж miкdzy sob№ i wszystko to razem nie wygl№da zbyt dobrze. Kilka naszych grup urz№dziіo wypady do Zony... Mуwi№, їe otworzyіy siк tam њcieїki do nowych terytoriуw.</text>
+	</string>
+	<string id="dm_cool_info_18">
+		<text>Zona jest za kaїdym razem inna. Zawsze jest coњ nowego, ale panuje w niej chaos. Najwyїszy czas, їeby "Powinnoњж" wprowadziіa tu trochк іadu. Jak tylko Zona zmieniіa siк w wyniku Emisji, wybuchіy walki - їeby ustaliж, co jest pod czyj№ kontrol№. Gdybyњmy zajкli nowe terytoria, wszystkie grupy otrzymaіyby do nich taki sam dostкp. No, moїe poza "Wolnoњci№". W kaїdym razie prawie poіowa naszych chіopcуw wyruszyіa w gі№b Zony.</text>
+	</string>
+	<string id="dm_cool_info_19">
+		<text>Sіyszaіem, їe pojawiі siк nowy mutant, ktуry їyje w pobliїu bagien. Podobno wygl№da jak pijawka, ale jest jeszcze bardziej niebezpieczny. Sunie po cichu przez krzaki, szuka ofiary, a potem "bam!" - i juї ma w pazurach bezwіadne ciaіo. Najgorsze jest to, їe kiedyњ їyіy wyі№cznie wokуі bagien, ale teraz zauwaїono kilka z nich rуwnieї tutaj.</text>
+	</string>
+	<string id="dm_cool_info_20">
+		<text>Sіyszaіem, їe wiele anomalii i artefaktуw nie jest juї widocznych. Pewnie emisje napompowaіy Zonк energi№ anomalii, ktуra daje im i artefaktom nowe wіaњciwoњci. Na twoim miejscu byіbym ostroїny, nie moїna juї tak po prostu biegaж sobie po Zonie. Dzisiaj detektor moїe ocaliж ci їycie, ale jeњli chcesz naprawdк soczystych k№skуw, lepiej skombinuj sobie taki naprawdк dobry. Zapamiкtaj to sobie i uwaїaj na siebie. </text>
+	</string>
+	<string id="dm_intro_79">
+		<text>Hej, stary!</text>
+	</string>
+	<string id="dm_intro_80">
+		<text>Co tam, brachu?</text>
+	</string>
+	<string id="dm_intro_81">
+		<text>Guten tag! Nicht schiessen... Wszyscy tu jesteњmy przyjaciele.</text>
+	</string>
+	<string id="dm_intro_82">
+		<text>Chcesz mnie o coњ spytaж, stalkerze?</text>
+	</string>
+	<string id="dm_intro_83">
+		<text>Szukasz rady?</text>
+	</string>
+	<string id="dm_intro_84">
+		<text>Witaj, przyjacielu.</text>
+	</string>
+	<string id="dm_intro_85">
+		<text>Co mogк dla ciebie zrobiж?</text>
+	</string>
+	<string id="dm_intro_86">
+		<text>Jeњli to twoja pierwsza wizyta w Dolinie Mroku, odwiedџ bazк "Wolnoњci". To prawdziwa beczka њmiechu, zwіaszcza te kіуtnie mechanikуw z Aszotem.</text>
+	</string>
+	<string id="dm_intro_87">
+		<text>Hej, bracie!</text>
+	</string>
+	<string id="dm_intro_88">
+		<text>Witaj, przyjacielu!</text>
+	</string>
+	<string id="dm_intro_89">
+		<text>Witaj na ziemiach wolnych stalkerуw!</text>
+	</string>
+	<string id="dm_about_93">
+		<text>To jest najlepsze miejsce w Zonie, bo tu jest baza "Wolnoњci". Kogo obchodz№ mutanty i anomalie? Jak siк trochк napijesz, to nawet wir nie stanowi problemu, a jeњli zaleїy ci wіaњnie na tym, їeby siк napiж, to trafiіeњ w odpowiednie miejsce!</text>
+	</string>
+	<string id="dm_about_94">
+		<text>Dolina Mroku to raj dla wolnych stalkerуw. Nikt tu nie truje o powinnoњciach czy kodeksie. W opuszczonej fabryce znajdziesz najlepszy klan w Zonie i masz niepowtarzaln№ okazjк zostaж jego czіonkiem! Mamy tu dobre poіoїenie. Na zachуd st№d leїy Wysypisko, na poіudniu Kordon, a na pуіnocy magazyny wojskowe.</text>
+	</string>
+	<string id="dm_about_95">
+		<text>Gіуwn№ atrakcj№ Doliny jest baza "Wolnoњci". Na pewno j№ zauwaїysz - rozgl№daj siк za ogromn№ fabryk№. Nikt nie naprawi twojej broni i pancerza lepiej, niї Wujek Jar. Jeњli chcesz zrobiж dobry interes na sprzкcie, zgіoњ siк do Aszota, ale jeњli chcesz zrobiж sobie zasіuїon№ przerwк, wpadnij do "Јyku Wolnoњci". "Јyk" jest znany w caіej Zonie ze swoich obfitych porcji, no i to dobre miejsce na podіapanie jakiejњ roboty.</text>
+	</string>
+	<string id="dm_about_96">
+		<text>Mamy tu teraz trochк kіopotуw - ktoњ dziesi№tkuje naszych chіopakуw. Wszyscy czіonkowie "Wolnoњci", ktуrzy nie maj№ akurat innych zadaс, zostali w trybie natychmiastowym wezwani do Doliny, їeby pomуc nam zidentyfikowaж wroga. Zaczкliњmy teї pilnowaж wejњж... W dzisiejszych czasach ostroїnoњci nigdy za wiele.</text>
+	</string>
+	<string id="dm_about_97">
+		<text>Dolina jest peіna opuszczonych fabryk, sіyszaіem nawet, їe pod ziemi№ s№ laboratoria, oczywiњcie teї opustoszaіe. Cуї, nie mam pewnoњci, jeњli chodzi o to, co jest pod ziemi№, ale na powierzchni zaіoїyliњmy bazк w jednej z tych fabryk. Wpadnij do naszego baru, jak bкdziesz miaі czas - na pewno dobrze siк tam zabawisz.</text>
+	</string>
+	<string id="dm_about_98">
+		<text>O Dolinie Mroku? O czym tu opowiadaж? Zreszt№ i tak nie jestem w tym dobry. Lepiej zapytaj Aszota albo Gandziк. Jeden jest kupcem, a drugi barmanem w naszej bazie, gdybyњ nie wiedziaі.</text>
+	</string>
+	<string id="dm_about_99">
+		<text>W samej dolinie nie ma nic specjalnego. Mamy tu wszystkiego po trochu: potwory, anomalie, nawet kilka artefaktуw, jeњli siк wie, gdzie ich szukaж. Poza tym jest tu tak samo, jak wszкdzie indziej, ale opuszczone budynki przemysіowe naprawdк siк przydaj№ - doskonale nadaj№ siк na bazк.</text>
+	</string>
+	<string id="dm_about_100">
+		<text>To dobre miejsce dla pocz№tkuj№cego stalkera; blisko do Kordonu i niewiele anomalii. Nawet potwory trafiaj№ siк dosyж rzadko! A poza tym, jeњli ma siк szczкњcie, moїna tu znaleџж przyzwoite іupy, ktуre potem da siк sprzedaж w naszej bazie, gdzie jest bezpiecznie. Najtrudniej jest przedostaж siк tutaj przez wojskowe posterunki na Wysypisku i jeszcze uwaїaж, їeby promieniowanie nie usmaїyіo ci jaj.</text>
+	</string>
+	<string id="dm_about_101">
+		<text>Dolina Mroku pozwala kotom zdobyж doњwiadczenie w zawodzie stalkera i znaleџж pierwsze artefakty, a ci bardziej doњwiadczeni mog№ na chwilк oderwaж siк od tego koszmaru, jakim jest "prawdziwa" Zona i odzyskaж siіy, zanim do niej wrуc№. Kaїdy moїe zrelaksowaж siк w "Јyku Wolnoњci", naprawiж sprzкt albo pohandlowaж z Aszotem w jego sklepie - wszystko to na terenie naszej bazy.</text>
+	</string>
+	<string id="dm_about_102">
+		<text>Ja interesujк siк tu gіуwnie "Јykiem Wolnoњci". To fajny bar, jego wіaњciciel nazywa siк Gandzia... bardzo odpowiednio, rozumiesz, co mam na myњli? Moїna siк tam wyluzowaж tak jak na zewn№trz... Nie wiem, co ci jeszcze powiedzieж, bo tak naprawdк nic innego mnie tu nie obchodzi.</text>
+	</string>
+	<string id="dm_about_103">
+		<text>W bazie "Wolnoњci" jest technik, ktуry przerobi ci zardzewiaіego AK na flaka. Mуwiк ci, stary, ten facet to geniusz, a tamtejszy handlarz to teї fajny koleњ.</text>
+	</string>
+	<string id="dm_about_104">
+		<text>Ostatnio dzieje siк coњ dziwnego. Ktoњ po cichu zabija naszych chіopakуw. Zaіoїyliњmy posterunki na wszystkich drogach w dolinie, ale to nie pomogіo. Co jakiњ czas jedna z naszych grup jest atakowana tak szybko, їe zanim dotrzemy z pomoc№, jest juї po wszystkim. I nie mamy pojкcia, kto za tym stoi; doszіo do tego, їe zaczynamy podejrzewaж siebie nawzajem.</text>
+	</string>
+	<string id="dm_about_105">
+		<text>Dolina przypomina teraz gniazdo szerszeni. Wszyscy zrobili siк nerwowi, a nowa twarz od razu wzbudza podejrzenia. Widzisz, ktoњ wybija do nogi nasze posterunki, a my nie mamy zielonego pojкcia, kto to jest. To dlatego trudno nam komukolwiek zaufaж, wі№czaj№c w to naszych wіasnych ludzi. Chіopcy s№ wkurzeni, bo kaїdy z nas straciі w tych atakach dobrych przyjaciуі.</text>
+	</string>
+	<string id="dm_about_106">
+		<text>A czemu chcesz wiedzieж? Nie bierz tego do siebie, ale od pewnego czasu jacyњ dranie atakuj№ posterunki i patrole, a kiedy przybywaj№ posiіki, znajduj№ juї tylko martwe ciaіa naszych chіopakуw. I їadnej wskazуwki, kto to moїe robiж... Dlatego tropimy szczury w naszych wіasnych szeregach.</text>
+	</string>
+	<string id="dm_about_174">
+		<text>Teraz nie dzieje siк tu nic dobrego. Ktoњ zabija bojownikуw "Wolnoњci", ale nie wiadomo, kto to jest. Sкk w tym, їe te ataki zawsze uderzaj№ w nasz najsіabszy punkt, jakby ten ktoњ dokіadnie wiedziaі, gdzie go szukaж. Rany, aї siк bojк policzyж, ilu ludzi straciliњmy do tej pory, i nic nie moїemy z tym zrobiж. Siedzimy i czekamy, a jak tylko trochк odetchniemy, dostajemy sygnaі SOS z jednego z naszych posterunkуw. A jak tam docieramy, znajdujemy tylko zwіoki. Zwіoki naszych chіopakуw.</text>
+	</string>
+	<string id="dm_about_175">
+		<text>W "Wolnoњci" musi byж jakiњ kret. Ktoњ przesyіa dane naszym wrogom, a oni doskonale je wykorzystuj№. Uderzaj№ po cichu, morduj№ naszych chіopcуw i znikaj№ bez њladu. Klan poniуsі ciкїkie straty, a to naprawdк bardzo utrudnia nam zajкcie magazynуw wojskowych... No nic, niewaїne... Przysiкgam, jeњli ten kret wpadnie w moje rкce, іajdak zapіaci mi z nawi№zk№ za kaїdego przyjaciela, ktуrego przez niego straciіem.</text>
+	</string>
+	<string id="dm_about_176">
+		<text>Jeњli pytasz ogуlnie, to powiem, їe to miejsce nie rуїni siк od reszty Zony. Szukamy іupуw, walczymy, giniemy i robimy plany na przyszіoњж. Jeњli chcesz znaж szczegуіy, to muszк stwierdziж, їe obecna sytuacja nie jest zdrowa. Wіaњnie dlatego nie jesteњmy zbyt chкtni do pogawкdek z obcymi.</text>
+	</string>
+	<string id="dm_action_info_68">
+		<text>Wszystko, co moїe robiж stalker: szukam іupуw, zabijam mutanty i imprezujк z kumplami, jak mam za co. Czasami trzeba pochowaж jakiegoњ kumpla, jeњli zostaіo z niego cokolwiek, co moїna pochowaж.</text>
+	</string>
+	<string id="dm_action_info_69">
+		<text>Czekam na tego dupka, mojego byіego przyjaciela. Znaleџliњmy razem trochк іupуw, a w drodze powrotnej nadzialiњmy siк na stado nibypsуw. Zacz№іem do nich strzelaж i nawet nie zauwaїyіem, їe ten draс zwiaі z moim plecakiem. Po prostu zostawiі mnie na pastwк losu i zagarn№і mуj udziaі. Ledwo uszedіem z їyciem! Wiкc czekam teraz na niego, їeby siк upewniж, їe jemu siк to nie udaіo - kiedyњ musi siк tu pojawiж.</text>
+	</string>
+	<string id="dm_action_info_70">
+		<text>Juї od jakiegoњ czasu chciaіem wst№piж do "Wolnoњci", ale jakoњ nie mogіem siк zebraж, їeby to zrobiж. A teraz patrzysz na dumnego czіonka grupy, i daruj sobie їarty o "dumnych czіonkach", dobra? Nie, nie mam kompleksуw, po prostu jestem zmкczony tymi ci№gіymi, gіupimi їartami.</text>
+	</string>
+	<string id="dm_action_info_71">
+		<text>Rozmawiam z tob№, a jak ci siк wydaje? Ale tak powaїnie, to jestem stalkerem. Jeњli wiesz, co robi№ stalkerzy, to wiesz, co robiк ja.</text>
+	</string>
+	<string id="dm_action_info_72">
+		<text>To moїe byж dla ciebie trudne do pojкcia, ale... Mieszkam tutaj! I pracujк tutaj. Jako stalker. Mamy tutaj bazк. Moїe sіyszaіeњ o klanie, ktуry nazywa siк "Wolnoњж"? Dolina Mroku to nasz teren. Jak ci siк wydaje, co czіonek "Wolnoњci" robi na terytorium "Wolnoњci"?</text>
+	</string>
+	<string id="dm_action_info_73">
+		<text>Prуbujк wyci№gaж artefakty z anomalii i nie daж siк przy tym zabiж.</text>
+	</string>
+	<string id="dm_action_info_74">
+		<text>Prуbujк urz№dziж zasadzkк na jednego psa. Nie ma siк z czego њmiaж! Nie masz pojкcia, jaka to sprytna suka! Podkrada siк pod obуz w nocy i wyje. Jeњli strzelisz, ucieka, a potem wraca od innej strony i zaczyna od nowa. Od trzech dni nie mogк zasn№ж. Jeњli odkryjк, gdzie mieszka, zaduszк paskudк goіymi rкkami!</text>
+	</string>
+	<string id="dm_action_info_75">
+		<text>Razem z chіopakami pilnujemy tego obszaru na wypadek nagіego ataku. Pewnie sіyszaіeњ, їe ktoњ napada na nasze posterunki i patrole? To wielka strata, ci chіopcy byli dobrymi stalkerami.</text>
+	</string>
+	<string id="dm_action_info_76">
+		<text>Cуї, tak naprawdк to w Zonie niewiele jest do roboty: szukanie іupуw, walka albo badanie jej sekretуw. No i jeszcze dbanie o to, їeby kaїdy miaі jednakowy dostкp do tych sekretуw. Tym siк wіaњnie zajmujк.</text>
+	</string>
+	<string id="dm_action_info_77">
+		<text>Sіyszaіeњ kiedyњ o artefakcie "meduza"? Moim celem jest znalezienie tej pereіki i sprzedanie jej Aszotowi za kupк forsy. Zostaw mnie w spokoju i pozwуl pomyњleж, gdzie mуgіbym j№ zdobyж.</text>
+	</string>
+	<string id="dm_action_info_78">
+		<text>Czy wiedziaіeњ, їe "Wolnoњж" teї bada Zonк? Zgoda, nie jesteњmy naukowcami, ale takїe chcemy wiedzieж, jak powstaі ten cud natury. Wszystko tutaj jest darem dla ludzkoњci: kaїda anomalia, artefakt czy tajemnicza emisja. O czym to mуwiliњmy? Aha, spytaіeњ mnie, co tu robiк. Zbieram dane do badaс - dokonujк pomiarуw promieniowania w otoczeniu, temperatury, wilgotnoњci, notujк teї obecnoњж potworуw i anomalii... Jeњli nie masz nic przeciwko temu, chciaіbym juї wrуciж do pracy.</text>
+	</string>
+	<string id="dm_action_info_79">
+		<text>No wiкc to miejsce to nasza baza, gdybyњ siк jeszcze nie zorientowaі, a wszystko co robiк jest bezpoњrednio zwi№zane z tym oczywistym faktem. Czyli nawet jeњli waікsam siк tu pozornie bez zajкcia, w rzeczywistoњci wypeіniam dwa zadania o kluczowym znaczeniu: sprawiam wraїenie, їe mamy tu masк ludzi i umoїliwiam odpoczynek innemu bojownikowi.</text>
+	</string>
+	<string id="dm_action_info_80">
+		<text>Szukam w Zonie przygуd, a tutaj, w Dolinie Mroku, mam tego peіno. Robiк to dziкki "Wolnoњci", i nie obchodzi mnie, jak pompatycznie to brzmi.</text>
+	</string>
+	<string id="dm_about_107">
+		<text>Gіуwn№ siік w dolinie stanowi "Wolnoњж". Mimo to ostatnio nieџle obrywaj№. Co jakiњ czas dochodzi do atakуw na odlegіe posterunki - obroсcy gin№ w tajemniczych okolicznoњciach, nie wiadomo, kim s№ napastnicy ani jak udaje im siк unikaж patroli "Wolnoњci". Rozwaїaіem przyі№czenie siк do klanu, ale bezsensowna њmierж nie leїy w moich planach, wiкc na razie siк wstrzymam. </text>
+	</string>
+	<string id="dm_about_108">
+		<text>To miejsce nie rуїni siк od innych - nie jest ani lepsze, ani gorsze. Anomalie, potwory, promieniowanie i niszczej№ce posowieckie budynki. Gospodarstwa, fabryki i tym podobne. Jedyna rуїnica to baza "Wolnoњci". Tamtejsze chіopaki s№ caіkiem w porz№dku, ale ostatnio wydaj№ siк podenerwowani. Nic dziwnego, bior№c pod uwagк ich obecne problemy.</text>
+	</string>
+	<string id="dm_about_109">
+		<text>Do niedawna Dolina Mroku byіa jednym z najprzyjemniejszych miejsc w Zonie, jeњli w ogуle moїna uїyж sіowa "przyjemne" w odniesieniu do jakiejkolwiek jej czкњci. Byіo tu tak samo niebezpiecznie, jak wszкdzie indziej, ale zawsze trafiaіo siк sporo przyzwoitych artefaktуw, a nie byіo bandytуw, wojska, Mуzgozwкglacza czy innego gуwna. Ale od niedawna ktoњ naprawdк wkurza "Wolnoњж" i nie jest juї tak rуїowo, jak kiedyњ. Zdarza siк, їe niewinny przechodzieс oberwie kulkк przeznaczon№ dla czіonka klanu.</text>
+	</string>
+	<string id="dm_about_110">
+		<text>Dolina Mroku leїy z dala od gіуwnych drуg do centrum Zony. Moїna siк z niej dostaж tylko do Kordonu i do Wysypiska. Pewnie dlatego nie ma tu ci№gle takich tіumуw jak w innych miejscach, i z tego powodu "Wolnoњж" wybraіa to miejsce na swoj№ bazк. W№tpiк, їebym mуgі ci powiedzieж cokolwiek, czego jeszcze nie wiesz na temat klanu.</text>
+	</string>
+	<string id="dm_about_111">
+		<text>To jeden z najlepszych obszarуw Zony dla neutralnego stalkera. Nie ma tu wojska, bandytуw ani najgroџniejszych mutantуw. Masz do roboty tylko zbieranie іupуw i unikanie anomalii, czyli to, o co chodzi w zawodzie stalkera.</text>
+	</string>
+	<string id="dm_about_112">
+		<text>Znam miejsca, przy ktуrych Dolina Mroku wygl№da jak przedszkole. Nibypsy i anomalie - ha! Jak pochodzisz po Zonie tyle lat, co ja, zrozumiesz, o czym mуwiк. Poczekaj, jak kontroler wpeіznie ci do gіowy albo znienacka rzuci siк na ciebie pijawka - wtedy nie wstyd zesraж siк w gacie ze strachu. A s№ jeszcze znacznie gorsze rzeczy - sіyszaіeњ kiedykolwiek o Mуzgozwкglaczu? To jest dopiero niebezpieczna rzecz. Nie moїna jej zobaczyж, nie moїna jej dotkn№ж, a juї na pewno nie moїna jej zabiж, a tymczasem ona bez trudu moїe zrobiж ci coњ okropnego.</text>
+	</string>
+	<string id="dm_about_113">
+		<text>"Wolnoњж" kontroluje wszystko dookoіa, ale nie przesadzaj№, tak jak bandyci. Nie ma їadnych ograniczeс w dostкpie do doliny i szukaniu w niej artefaktуw, i nikomu nie trzeba skіadaж їadnych opіat czy іapуwek. Moim zdaniem to najlepsze miejsce w Zonie.</text>
+	</string>
+	<string id="dm_about_114">
+		<text>Chіopaki z "Wolnoњci" opowiedz№ ci o tym lepiej niї ja. Dlaczego nie pуjdziesz do ich bazy i nie zapytasz? Nie jestem zbyt dіugo i zwykle trzymam siк staіych tras. Wiem tylko, jak dostaж siк z Wysypiska do bazy "Wolnoњci", a stamt№d do gospodarstwa, ktуre leїy na poіudniu.</text>
+	</string>
+	<string id="dm_about_115">
+		<text>Przez pierwsze parк tygodni uwaїasz, їe to najlepsze miejsce w Zonie. Jest tu stosunkowo bezpiecznie, a chіopaki z "Wolnoњci" s№ w porz№dku - moїna siк z nimi іatwo zaprzyjaџniж i nie wycyckaj№ ciк, jak z tob№ handluj№. Jednak po jakimњ czasie zaczynasz siк nudziж, bo dolina leїy z dala od gіуwnych drуg i niewiele siк tu dzieje. To dobre miejsce na odpoczynek i uzupeіnienie zapasуw przed ponownym rzuceniem siк w chaos Zony, ale mieszkanie tutaj moїe czіowieka tylko rozleniwiж. Dla mnie lepsz№ opcj№ jest Wysypisko na zachodzie, a jak tam siк nie uda, moїna pуjњж do Kordonu i powkurzaж їoіnierzy.</text>
+	</string>
+	<string id="dm_about_116">
+		<text>Zdrowy i bystry facet moїe tu nieџle zarobiж wykonuj№c misje dla "Wolnoњci" albo po prostu zdobywaj№c іupy. "Wolnoњж" nie ma wspуlnej puli kasy jak bandyci ani funduszu wsparcia jak "Powinnoњж"; tutaj dostajesz to, co zarobisz - co znajdziesz, to twoje. Moїna skіadaж dobrowolne datki - w њwiкta albo na prezent urodzinowy dla dowуdcy, ale jeњli coњ ci nie odpowiada, zawsze moїesz wyruszyж do Kordonu, albo - jeњli jesteњ bardzo hojny i chcesz "dobrowolnie" oddaж swoj№ ciкїko zarobion№ kasк bandytom - do Wysypiska na zachodzie.</text>
+	</string>
+	<string id="dm_about_117">
+		<text>Jeњli nie lubisz uїeraж siк z kontrolerami i pijawkami, to Dolina Mroku jest dla ciebie idealnym miejscem. Jedyne potwory to dziki, miкsacze i psy. Co do anomalii, to wystarczy, їe zachowasz czujnoњж i bкdziesz je obchodziі dookoіa.</text>
+	</string>
+	<string id="dm_action_info_81">
+		<text>Przyszedіem do doliny zbieraж artefakty, ale okazaіo siк, їe "Wolnoњж" ma tutaj bazк. Polubiіem ich i chciaіem do nich doі№czyж, ale na razie nie przyjmuj№ nowych rekrutуw ze wzglкdu na te ataki na ich posterunki. S№ wњciekli i podejrzliwi - i przeњwietlaj№ kaїdego tak dokіadnie, їe juї tylko Rentgena brakuje. To oczywiњcie їart, bo niby sk№d wziкliby tu Rentgena? No ale s№ naprawdк zaniepokojeni, wiкc na razie musiaіem wstrzymaж siк z podaniem o przyjкcie.</text>
+	</string>
+	<string id="dm_action_info_82">
+		<text>Przyszedіem, їeby wst№piж do "Wolnoњci" - potrzebuj№ teraz њwieїej krwi. Ale naprawdк uwaїaj№, kogo przyjmuj№, chyba maj№ teraz problem ze szpiegiem.</text>
+	</string>
+	<string id="dm_action_info_83">
+		<text>Szukam іupуw, a to jest jedno z najbezpieczniejszych miejsc w okolicy. Nie trzeba siк przejmowaж wygуrowanymi podatkami, tak jak na Wysypisku, hordami mutantуw, jak w Agropromie, a skorumpowani їoіnierze s№ daleko st№d. Anomalie i potwory s№ nieliczne i nie takie zіe, zwіaszcza w porуwnaniu do innych miejsc.</text>
+	</string>
+	<string id="dm_action_info_84">
+		<text>Polujк na mutanty. Handlarze i naukowcy nieџle pіac№ za ich narz№dy. Nie wierzysz? Sam ich zapytaj.</text>
+	</string>
+	<string id="dm_action_info_85">
+		<text>To mуj dom. Chіopaki i ja zaіoїyliњmy wіasny obуz, w ktуym odpoczywamy pomiкdzy wyprawami do Zony. To miejsce nieџle siк do tego nadaje.</text>
+	</string>
+	<string id="dm_action_info_86">
+		<text>Przyszedіem tu, їeby uciec od trudуw i problemуw obecnych w innych czкњciach Zony. Wojsko w magazynach w Kordonie traktuje nas, stalkerуw, jak gуwno, bandyci na Wysypisku robi№, co im siк їywnie podoba, a "Powinnoњж" w Agropromie robi ludziom pranie mуzgu, їeby walczyli z kaїdym, kto nie trzyma z nimi. Tutaj wszyscy s№ wolni i rуwni, a czкsto takїe pijani, co mi w zupeіnoњci odpowiada.</text>
+	</string>
+	<string id="dm_action_info_87">
+		<text>Zostaіem rozdzielony z moj№ grup№ na Wysypisku. Mieliњmy potyczkк z bandytami, bo nie chcieliњmy im zapіaciж, a oni ostro reaguj№ na coњ takiego. Nieџle skopaliњmy im dupy, ale potem dostali wsparcie i musieliњmy siк wycofaж. Ja poszedіem na wschуd i dotarіem tutaj, do Doliny Mroku. Nie chcк ryzykowaж wracaj№c przez Wysypisko, wiкc mam nadziejк, їe ktoњ z pozostaіych teї tu wyl№duje. Wtedy zdecydujemy, co robimy dalej.</text>
+	</string>
+	<string id="dm_action_info_88">
+		<text>Jestem w Zonie od niedawna, jedyne miejsca, jakie znam poza tym, to Kordon i Wysypisko. Prуbujк zdobyж trochк doњwiadczenia, a przy okazji moїe znaleџж jakieњ іupy.</text>
+	</string>
+	<string id="dm_action_info_89">
+		<text>Dowiedziaіem siк, їe tu, w Dolinie Mroku, moїna znaleџж masy іupуw, a potem sprzedaж je handlarzowi "Wolnoњci". Jestem tu juї jakiњ czas, ale jak dot№d znalazіem jedynie wielkie nic. Moїe mam pecha albo szukam w nieodpowiednich miejscach? Sam nie wiem...</text>
+	</string>
+	<string id="dm_action_info_90">
+		<text>Aszot ma do sprzedania dobre pancerze, ale akurat krucho u mnie z fors№. Wiкc postanowiіem poszukaж jakichњ іupуw, bo bystry facet zawsze da sobie radк w Dolinie. Kіopot w tym, їe zawsze mam za maіo. Czasami wydam za duїo na naboje albo leki, a czasami po prostu przepuszczк caі№ kasк na wуdк w "Јyku Wolnoњci".</text>
+	</string>
+	<string id="dm_cool_info_21">
+		<text>Po Emisji wszystko wydaje siк nowe. Znajome i bezpieczne њcieїki nie s№ juї ani znajome, ani bezpieczne, i trzeba szukaж innych na bagnach. Druga strona medalu jest taka, їe moїna teraz dotrzeж do nowych czкњci Zony, a kto wie, jakie tajemnice czekaj№ tam na odkrycie? Podobno gікboko w Zonie jest nawet maіe miasteczko, nienaruszone od czasуw sowieckich. Jak tylko nasz szef o tym usіyszaі, wysіaі tam duї№ grupк na rekonesans. A potem dowiedziaі siк, їe "Powinnoњж" teї wysіaіa swoj№ ekipк, wiкc kazaі naszym chіopakom, їeby siк pospieszyli. Jeњli cokolwiek z tego wyjdzie, to na pewno bкdк miaі dla ciebie wiadomoњci.</text>
+	</string>
+	<string id="dm_cool_info_22">
+		<text>Podobno emisje, ktуre ostatnio wstrz№snкіy Zon№, zostaіy wywoіane przez grupк stalkerуw, ktуrym udaіo siк przejњж obok Mуzgozwкglacza, prostu do centrum Zony. Wyobraџ sobie, przeszli koіo Zwкglacza! Cholera, i nawet wrуcili cali i zdrowi. Ciekaw jestem, co wywoіuje emisje... Moїe to Zona siк mњci?</text>
+	</string>
+	<string id="dm_cool_info_23">
+		<text>Anomalie s№ teraz bardziej њmiercionoњne. To juї nie s№ maіe skupiska energii, staіy siк wiкksze i znacznie bardziej niebezpieczne. Dzisiaj nie uratuje ciк juї rozrzucenie paru њrub - jeњli chcesz przeїyж promieniowanie i toksyczne opary, musisz mieж naprawdк dobry sprzкt ochronny i dwa razy siк zastanowiж, zanim postawisz kolejny krok.</text>
+	</string>
+	<string id="dm_intro_90">
+		<text>Uwaїaj na zombi, ktуre wyіaї№ z fabryki - wylewaj№ siк z niej jak rzeka gуwna!</text>
+	</string>
+	<string id="dm_intro_91">
+		<text>Ufff, stary. Tak bardzo przypominasz zombi, їe maіo brakowaіo, a odstrzeliіbym ci іeb.</text>
+	</string>
+	<string id="dm_intro_92">
+		<text>Witaj w Jantar Jeziorze, gdzie kaїdy rybк zіapaж moїe. Ha ha! Zaіapaіeњ? To siк rymuje! Ha ha!</text>
+	</string>
+	<string id="dm_intro_93">
+		<text>Witaj nad Jeziorem Jantar, bracie.</text>
+	</string>
+	<string id="dm_intro_94">
+		<text>Przywiaі ciк tu dobry wiatr, stalkerze - przydaіaby nam siк twoja pomoc. </text>
+	</string>
+	<string id="dm_intro_95">
+		<text>Hej, stary!</text>
+	</string>
+	<string id="dm_about_118">
+		<text>Tylko pamiкtaj, їeby nie zbliїaж siк do tej przeklкtej fabryki, bo stamt№d juї siк nie wychodzi. Zaczynasz wariowaж jeszcze zanim dotrzesz do wejњcia, i tylko Zona wie, co siк dzieje w њrodku. </text>
+	</string>
+	<string id="dm_about_119">
+		<text>Stary, mуwiк ci, to miejsce jest naprawdк straszne. Z fabryki bez przerwy wyіaї№ na nas zombi, zabijamy je na pкczki, ale nikt, kto prуbowaі wejњж do њrodka i sprawdziж, co siк tam dzieje, nie wyszedі stamt№d їywy. Sam kiedyњ prуbowaіem zbliїyж siк do fabryki, ale gdy tylko podszedіem trochк bliїej niї zazwyczaj, poczuіem, jak mуzg mi siк topi! Nie mogіem siк ruszyж, byіem skoіowany i sіyszaіem coњ w mojej gіowie - chіopie, prawie siк tam posraіem! Spieprzyіem stamt№d najszybciej, jak mogіem, ale te dџwiкki odzywaіy siк w mojej gіowie jeszcze przez caіy dzieс. Wyobraїam sobie te stosy ciaі ludzi, ktуrzy poszli dalej niї ja.</text>
+	</string>
+	<string id="dm_about_120">
+		<text>Kiedyњ byіo tu jezioro o nazwie Jantar, ale teraz to tylko wielka kaіuїa cuchn№cych odpadуw. Naukowcy maj№ tu swуj obуz; prowadz№ badania w swoich bunkrach i czasami wyprawiaj№ siк na ekspedycje. Bywa, їe nawet daj№ nam robotк. Jak ktoњ ma szczкњcie, to moїe tu znaleџж parк artefaktуw albo zabraж broс z trupa zombiaka. Tego nam tu akurat nie brakuje - zombi. Problem w tym, їe przyіaї№ tu ze starej fabryki, ale my nawet nie moїemy siк do niej zbliїyж. Jak tylko ktoњ podejdzie bliїej, coњ zaczyna solidnie mu m№ciж w gіowie. Wszyscy odwaїni juї dawno zginкli, teraz zostali juї tylko ostroїni.</text>
+	</string>
+	<string id="dm_about_121">
+		<text>Nie rozumiem tego miejsca. Ja i mуj kumpel prуbowaliњmy wejњж do fabryki, bo to jedna z nielicznych czкњci Zony, w ktуrej jeszcze nikt nie byі - pomyњleliњmy, їe musz№ tam byж niezіe іupy. Ha! Jak tylko dotarliњmy do bramy, poczuіem zawroty gіowy, zacz№іem sіyszeж dziwne haіasy i szepty, i widzieж rуїne rzeczy. Mуj kumpel byі zaraz za mn№ i zdoіaі nas stamt№d wyci№gn№ж: jak tylko zobaczyі, їe miкknк, zіapaі mnie i wywlуkі w bezpieczne miejsce. Jakby tego byіo maіo, niewiele brakowaіo, їeby inni stalkerzy wziкli nas za zombiaki i zastrzelili, kiedy wracaliњmy.</text>
+	</string>
+	<string id="dm_about_122">
+		<text>Naukowcy maj№ obуz tuї koіo wyschniкtego jeziora, a stalkerzy walcz№ z umocnionych pozycji z niekoсcz№c№ siк powodzi№ zombi. Nikt nie wie, co siк dzieje w starej fabryce, ale jak tylko siк do niej zbliїysz, zaczynasz sіyszeж w gіowie rуїnie dџwiкki i gіosy, masz zawroty gіowy, jesteњ osіabiony - nawet jajogіowi nie maj№ pojкcia, o co w tym chodzi.</text>
+	</string>
+	<string id="dm_about_123">
+		<text>Ten obszar nazywa siк Jantar. Moїe i kiedyњ byіo tu jezioro, ale jeњli wybierasz siк na wakacje, to raczej nie tutaj. Teraz mamy tu tylko bіotnist№ kaіuїк, promieniowanie i zgrajк zombi, a jeњli to ci nie wystarczy, to wybierz siк do starej fabryki. Nie, їeby udaіo ci siк do niej zbliїyж - ludzie trac№ rozum jeszcze zanim przejd№ przez bramк.</text>
+	</string>
+	<string id="dm_about_124">
+		<text>Najbardziej niebezpiecznym miejscem jest fabryka. Obszar wokуі niej jest dotkniкty jakimњ nieznanym typem emisji i kaїdy, kto prуbowaі wejњж do њrodka, opowiada dziwne historie o gіosach i dџwiкkach, ktуre rozlegaіy mu siк w gіowie. Kilku prуbowaіo i zwariowaіo, a ci, ktуrzy byli doњж odwaїni, їeby jednak wejњж do samej fabryki, nigdy z niej nie wyszіi.</text>
+	</string>
+	<string id="dm_about_125">
+		<text>Trzymamy z tutejszymi naukowcami. My bronimy ich przed nieustannymi atakami zombi z opuszczonej fabryki, a w zamian za to oni daj№ nam leki, sprzкt i czasami nawet robotк. Tylko nieliczni weszli do samej fabryki, bo dziaіa tam emisja, ktуra rozwala ludziom mуzgi jak zderzenie z ciкїarуwk№. Ale z drugiej strony ci, ktуrym udaіo siк podczas spokojnych okresуw i wyszli stamt№d їywi, przynieњli sporo naprawdк cennych іupуw.</text>
+	</string>
+	<string id="dm_about_126">
+		<text>W tej fabryce musi byж coњ cennego - zaіoїк siк, їe Sacharow i jego naukowcy daliby za to gуrк forsy. Niestety nie jest іatwo siк tam dostaж i na razie nikomu siк to nie udaіo. Albo zombi witaj№ ciк z otwartymi ramionami, albo... Coњ dziwnego robi siк ludziom z gіowami, kiedy podchodz№ bliїej. Zaczynaj№ widzieж rуїne rzeczy i krкci im siк w gіowie. Jeњli nie zawrуcisz na czas, to koniec. Straciіem w ten sposуb kilku kumpli... Wszyscy za bardzo chcieli odkryж sekrety fabryki!</text>
+	</string>
+	<string id="dm_about_127">
+		<text>Kiedyњ, przed pierwszym incydentem, byіo tu jezioro o nazwie Jantar. Kiedy budowali fabrykк, spieprzyli coњ pod ziemi№ i jezioro wyschіo, zostaіa tylko cuchn№ca kaіuїa. Teraz naukowcy maj№ obуz w pobliїu tego, co zostaіo z jeziora, a wspomniana fabryka, trochк dalej st№d, nadal sprawia problemy. Jak tylko ktoњ do niej podejdzie, jego mуzg kompletnie siк rozstraja, w ogуle nie da siк myњleж. Juї tylko samobуjcy prуbuj№ wejњж do њrodka, caіa reszta ogranicza siк do zabijania zamienionych w zombi stalkerуw, ktуrzy wyіaї№ z fabryki, i do pomagania naukowcom.</text>
+	</string>
+	<string id="dm_about_128">
+		<text>Naukowcy badaj№ Zonк tu nad Jeziorem Jantar. Gіуwn№ lokaln№ atrakcj№ jest fabryka, w ktуrej z powodu emisji zaginкіo cholernie duїo ludzi. Nikt, kto tam wchodzi, nie wychodzi їywy, a my nie mamy pojкcia, co siк z nimi dzieje.</text>
+	</string>
+	<string id="dm_about_129">
+		<text>Naukowcy maj№ tu bazк, a stalkerzy ostrzeliwuj№ zombi z umocnionych pozycji. Na poіudniu leїy Agroprom, gdzie "Powinnoњж" walczy z mutantami, a na pуіnocy mamy Czerwony Las. Nie wiemy, co w nim jest, bo jeszcze nikt stamt№d nie wrуciі.</text>
+	</string>
+	<string id="dm_action_info_91">
+		<text>Pomagam naukowcom w badaniach. Oczywiњcie nie bezpoњrednio. Ja i inni chіopcy bronimy ich przed zombiakami, ochraniamy ich ekspedycje i przynosimy Sacharowowi rуїne artefakty, narz№dy mutantуw i inne gуwna, ktуre s№ mu potrzebne. Z kolei oni badaj№ emisje, ktуre rozpuszczaj№ ludziom mуzgi w fabryce. Jak znajd№ sposуb na ich obejњcie, tylko patrzeж, jak caіe tіumy rzuc№ siк szukaж іupуw w fabryce.</text>
+	</string>
+	<string id="dm_action_info_92">
+		<text>Czekam, kiedy jajogіowi znajd№ sposуb na radzenie sobie z emisjami, ktуre nie pozwalaj№ nam wejњж do fabryki. Co nas powstrzymuje? Idџ i sam zobacz. Coњ zaczyna m№ciж ci w gіowie, i to tak mocno, їe nie wiesz, za ktуry koniec trzyma siк broс. Wielu stalkerуw tam weszіo... i juї nie wyszіo.</text>
+	</string>
+	<string id="dm_action_info_93">
+		<text>Zgіosiіem siк na ochotnika do pomocy naukowcom. Sprowadza siк to gіуwnie do bronienia ich przed kolejnymi atakami zombi. To dobry ukіad, bior№c pod uwagк, їe zaopatruj№ nas w bandaїe, leki i amunicjк. To miejsce jest caіkiem niezіe, dopуki czіowiek siк nie wychyla.</text>
+	</string>
+	<string id="dm_action_info_94">
+		<text>Jeden stalker-weteran sprzedaі mi mapк wszystkich kryjуwek na tym obszarze. Zapamiкtaіem je i spaliіem mapк, wiкc zabicie mnie w niczym ci nie pomoїe. Wyczyњciіem juї wszystkie schowki na zewn№trz fabryki, i byіy dokіadnie tam, gdzie pokazywaіa mapa, ale najlepsze s№ w њrodku. Kiedy Sacharow i jego ludzie wykombinuj№, jak poradziж sobie z emisjami, zaraz tam polecк.</text>
+	</string>
+	<string id="dm_action_info_95">
+		<text>Odbieram jakieњ odczyty od Sacharowa. Brakuje mu asystentуw, wiкc czasami pіaci stalkerom za wykonywanie dla niego rуїnych zadaс.</text>
+	</string>
+	<string id="dm_action_info_96">
+		<text>Znajomy kupiec powiedziaі mi, їe krкci siк tu mуj byіy kumpel z wojska. Przyszedіem go znaleџж. Kiedy siк spotkamy, bкdziemy razem pracowaж w Zonie.</text>
+	</string>
+	<string id="dm_action_info_97">
+		<text>Stary, jestem wykoсczony. Wykoсczony wyciskaniem іupуw z Zony, wykoсczony walk№ z potworami i wykoсczony biciem siк z bandytami o kawaіek ziemi. Robiк tu sobie przerwк. Muszк tylko zastrzeliж czasami jakiegoњ zombiaka, a naukowcy mi za to pіac№. Trochк siк tu jeszcze poobijam, a potem ruszam w bardziej niebezpieczne miejsca. W zonie jest tak, їe im wiкksze niebezpieczeсstwo, tym lepsze іupy.</text>
+	</string>
+	<string id="dm_action_info_98">
+		<text>Po Emisji postanowiіem ruszyж w maі№ podrуї po Zonie i zobaczyж, co siк zmieniіo. Byіem juї wszкdzie, od Bagien po samego Zwкglacza, i widziaіem wiкcej, niї potrafisz sobie wyobraziж. Przybyіem tu, їeby sprzedaж trochк іupуw, a spotkaіem paru porz№dnych goњci. Teraz razem walczymy.</text>
+	</string>
+	<string id="dm_action_info_99">
+		<text>Dochodzк do siebie po ostatniej strzelaninie. Zombi byіo tak duїo, їe ledwo zdoіaliњmy je pokonaж - gdyby to byli normalni ludzie, nie rozmawiaіbym tu teraz z tob№. Na szczкњcie zombiaki s№ gіupie jak but, nie maj№ їadnej strategii ani nic. Ale i tak bitwa byіa ciкїka i trafiіa mnie zabі№kana kula. To tylko draњniкcie, wiкc wyliїк siк z tego.</text>
+	</string>
+	<string id="dm_action_info_100">
+		<text>Chcк wejњж do tej fabryki, ale trochк siк waham. Z jednej strony bojк siк jak cholera, ale z drugiej naprawdк chcк siк dowiedzieж, co jest w њrodku. Prкdzej czy pуџniej ktoњ odkryje jej sekrety, wiкc czemu nie miaіbym to byж ja?</text>
+	</string>
+	<string id="dm_action_info_101">
+		<text>Prуbujк zaoszczкdziж na dobr№ broс. Pracujк dla naukowcуw - odpieram zombi, ktуre prуbuj№ zbliїyж siк do ich obozu. Jak bкdк miaі wystarczaj№co duїo kasy, kupiк tк broс, ktуr№ sobie upatrzyіem, i ruszк w dalsz№ wкdrуwkк po Zonie.</text>
+	</string>
+	<string id="dm_action_info_102">
+		<text>Przyszedіem tu z Agropromu, gdzie spкdziіem trochк czasu walcz№c w klanie Oresta. Przyszedі czas na zmianк otoczenia. Teraz bardzo ym chciaі zbadaж Czerwony Las, ale nie da siк tam dostaж ze wzglкdu na Mуzgozwкglacz w fabryce. Samo podejњcie do niego to juї powaїna misja.</text>
+	</string>
+	<string id="dm_action_info_103">
+		<text>Pomagaіem "Powinnoњci" walczyж z mutantami w Agropromie, kiedy znad Jantaru nadeszіa gromada zombi. Zebraliњmy grupк, ktуra miaіa sobie z nimi poradziж, i poprosiіem o przydziaі do niej. Przyszliњmy tutaj, rozwaliliњmy wszystko po drodze, i chіopaki z "Powinnoњci" ruszyіy z powrotem. Ja wypatrzyіem niezіy kombinezon ochronny, ktуry byі do kupienia w bazie naukowcуw, i postanowiіem zostaж tu i zaoszczкdziж na niego.</text>
+	</string>
+	<string id="dm_action_info_104">
+		<text>ZOSTAW MNIE W SPOKOJU!!! Co? Nie, nie ty. Tracк rozum, stary. Byіem na tyle gіupi, їeby pуjњж do fabryki i samemu zobaczyж, jak tam jest. No i teraz mam za swoje. Kompletnie pomieszaіo mi siк w gіowie... dziкki Bogu, їe chіopaki w ogуle mnie stamt№d wyci№gnкіy. Rozmawiam teraz z tob№, a rуwnoczeњnie sіyszк gіosy, szepty w mojej gіowie. Zamknij siк, do cholery! Nie, nie ty... Ech, niewaїne.</text>
+	</string>
+	<string id="dm_cool_info_24">
+		<text>Sіyszaіem, їe grupa stalkerуw prуbowaіa przedrzeж siк do centrum Zony. Niektуrzy twierdz№, їe im siк udaіo, inni, їe nie, ale wszyscy uwaїaj№, їe musi byж jakiњ zwi№zek pomiкdzy ich wypraw№ i ostatni№ emisj№. Ciekawe, czy znaleџli Speіniacz Їyczeс i o coњ poprosili?</text>
+	</string>
+	<string id="dm_cool_info_25">
+		<text>Podobno w Zonie zaginкіa caіa frakcja. Sіyszaіeњ kiedyњ o "Monolicie"? Kiedyњ ochraniali Zonк przed innymi, ale przed sam№ Emisj№ wyruszyli w kierunku centrum. Od tamtej pory nie dawali znaku їycia, ale ostatnio od strony Zwкglacza miaіy miejsce ataki bardzo agresywnych stalkerуw, ktуrzy zabijaj№ kaїdego i nie zadaj№ pytaс. Wiem to, bo sam ich widziaіem w okolicy magazynуw wojskowych, i moim zdaniem to chyba ci sami monolitianie, ktуrzy zaginкli. Wcale by mnie to nie zdziwiіo, bo ich mundury wygl№daіy bardzo podobnie.</text>
+	</string>
+	<string id="dm_cool_info_26">
+		<text>Po Emisji wszystko siк zmieniіo. Teraz to zupeіnie inna Zona. Klany walcz№, potwory wyіaї№ z kaїdej dziury, odkrywane s№ nowe terytoria, a drogi do starych s№ blokowane przez anomalie. Pojawiaj№ siк nawet nowe artefakty... Co wiкcej mogк powiedzieж? Znowu czujк siк jak kot.</text>
+	</string>
+	<string id="dm_cool_info_27">
+		<text>Wczoraj sіyszaіem, їe po Emisji wojsko przeїywa naprawdк ciкїkie chwile w magazynach. Podobno "Wolnoњж" ma zakusy na ich terytorium i teraz mog№ juї tylko siedzieж w swojej bazie i modliж siк. Wojsko jest osіabione, ale wiedz№, їe baza jest punktem kluczowym. Inna rzecz, o ktуrej wszyscy mуwi№, to powrуt monolitian z centrum Zony. Wszyscy myњleli, їe juї dawno zginкli. Stary, strasznie chciaіbym spotkaж jednego z nich i spytaж, jak jest w tym centrum.</text>
+	</string>
+	<string id="dm_cool_info_28">
+		<text>Sіyszaіem, їe za Jeziorem Jantar pojawiіa siк њcieїka do Czerwonego Lasu. Kr№ї№ o nim najdziwniejsze opowieњci, na przykіad o tym, їe caіy las poczerwieniaі w ci№gu jednego dnia od jakiegoњ pyіu z kosmosu. Od tamtej pory uwaїa siк go za bardzo niebezpieczne miejsce... Zaginкіo tam wielu ludzi, a po pewnym czasie zniknкіy nawet њcieїki, ktуre do niego prowadziіy. Dobrze bym siк zastanowiі, zanim bym tam poszedі.</text>
+	</string>
+	<string id="dm_cool_info_29">
+		<text>Stary, tyle siк tu dzieje, їe trudno za tym nad№їyж. Myњlaіem, їe to Jantar leїy na skraju tego, co odkryliњmy w Zonie, ale Emisja byіa tak potкїna, їe otworzyіy siк њcieїki do Czerwonego Lasu i Limaсska, tego zaginionego miasta. Kilku naszych chіopakуw poszіo tam koіo fabryki, ale nie wiem, czy udaіo im siк j№ omin№ж. Sіyszaіem teї, їe "Powinnoњж" i "Wolnoњж", dwa najpotкїniejsze klany w Zonie, tocz№ wojnк o kontrolк nad Limaсskiem.</text>
+	</string>
+	<string id="dm_intro_96">
+		<text>Znowu ty? Co nowego tym razem?</text>
+	</string>
+	<string id="dm_intro_97">
+		<text>Zdecydowanie witaj, stalkerze.</text>
+	</string>
+	<string id="dm_intro_98">
+		<text>Czoіem, mіody czіowieku!</text>
+	</string>
+	<string id="dm_intro_99">
+		<text>Czeњж! Czego chcesz?</text>
+	</string>
+	<string id="dm_intro_100">
+		<text>Chcesz pohandlowaж czy szukasz pracy?</text>
+	</string>
+	<string id="dm_intro_101">
+		<text>Pewnie interesuje ciк informacja. Odpowiem na twoje pytania najlepiej, jak umiem.</text>
+	</string>
+	<string id="dm_intro_102">
+		<text>Jak leci, kolego?</text>
+	</string>
+	<string id="dm_intro_103">
+		<text>Oto prawdziwe powitanie "Wolnoњci" dla prawdziwie wolnego stalkera.</text>
+	</string>
+	<string id="dm_intro_104">
+		<text>Czeњж, stalkerze.</text>
+	</string>
+	<string id="dm_intro_105">
+		<text>Wygl№dasz, jakbyњ miaі tysi№ce pytaс. Wiкc pytaj!</text>
+	</string>
+	<string id="dm_about_130">
+		<text>To jest kluczowy obszar Zony - st№d moїesz dojњж do Zwкglacza, do Czerwonego Lasu, do Limaсska i dalej... nie, їeby ktoњ wiedziaі, co tam jest. Mamy tu takїe star№ bazк wojskow№, ktуr№ armia zaіoїyіa jeszcze przed duї№ emisj№. Dzisiaj maj№ tam okoіo dwudziestu ludzi, a zajкcie bazy daіoby nam kontrolк nad okolicznymi ziemiami. Musimy po prostu pomуc їoіnierzom w ewakuacji, ze tak powiem...</text>
+	</string>
+	<string id="dm_about_131">
+		<text>Droga na pуіnoc jest zablokowana z powodu Mуzgozwкglacza. Co prawda nie powstrzymuje to bojownikуw z "Monolitu" przed przychodzeniem tutaj, a ostatnio nie s№ zbyt przyjaџnie nastawieni. Najpierw strzelaj№, a potem nawet nie zadaj№ pytaс. Jeњli pуjdziesz na poіudnie, dotrzesz do Doliny Mroku, a na zachodzie znajduje siк Czerwony Las. Nie jest to najprzyjemniejsza czкњж Zony, ale mniej tam strzelania. Za lasem znaleziono teї drogк do Limaсska. Miasto nie jest duїe, ale to waїny punkt strategiczny, wiкc "Powinnoњж" i nasi chіopcy zabijaj№ siк o niego.</text>
+	</string>
+	<string id="dm_about_132">
+		<text>Kiedyњ byіa tu baza i magazyny wojskowe, ale mocno ucierpiaіy w wyniku emisji. Ci, ktуrzy przeїyli, nie maj№ juї tyle tupetu, co kiedyњ - ukrywaj№ siк w bazie przed stalkerami i sraj№ w gacie na myњl o wytkniкciu z niej nosa. Ci№gle prosz№ swoje dowуdztwo o grupк ewakuacyjn№, ale nikt nie przychodzi im z pomoc№. Myњlк, їe tym na zewn№trz Zony teї nie wiedzie siк zbyt dobrze. Albo to, albo sygnaі w ogуle do nich nie dociera. Prawie mi їal tych biednych dupkуw - jasne, to szczury, ale nawet szczury powinny dbaж o swoich.</text>
+	</string>
+	<string id="dm_about_133">
+		<text>Magazyny przez dіugi czas naleїaіy do wojska, ale ostatnia emisja wszystko zmieniіa. Zrobiіo siк tu tak paskudnie, їe przeїyіo bardzo niewielu, gіуwnie ci, ktуrzy ukryli siк w bazie. Ci, ktуrzy byli na zewn№trz, zginкli na miejscu. Sk№d to wiem? Cуї, bracie, "Wolnoњж" teї ma swуj wywiad, a teraz to my kontrolujemy sytuacjк; no i samotni stalkerzy poі№czyli wreszcie siіy, їeby wspуlnie powstrzymaж potwory przychodz№ce od Mуzgozwкglacza.</text>
+	</string>
+	<string id="dm_about_134">
+		<text>Kiedy pierwszy raz tu dotarliњmy, panowaі chaos. Wojsko porzuciіo obronк Bariery i zakopaіo siк w swojej bazie. Kіopot w tym, їe Bariery trzeba broniж przez caіy czas, inaczej zalej№ nas i pozabijaj№ rozmaite potwory. To dlatego sami prуbujemy jej broniж i przyda nam siк do tego kaїda pomoc, bo jeњli Bariera padnie, to wszyscy ucierpimy.</text>
+	</string>
+	<string id="dm_about_135">
+		<text>Na wzgуrzu znajduje siк byіa baza wojskowa i liczymy na to, їe niedіugo bкdzie naleїaіa do nas. Kawaіek dalej jest maіe gospodarstwo, tylko parк budynkуw, a przy radioaktywnych bagnach stoi maіa chata. Z innych rzeczy moїna tu znaleџж kilka opuszczonych wiosek i nasze posterunki. Te gіуwne leї№ na drogach wiod№cych do Czerwonego Lasu i Doliny Mroku. Stalkerzy broni№ Bariery na wіasn№ rкkк i prуbuj№ odpieraж kolejne fale monolitian i mutantуw. To cud - nigdy wczeњniej nie widziaіem, їeby stalkerzy і№czyli siіy w innym celu niї zdobycie pieniкdzy!</text>
+	</string>
+	<string id="dm_about_136">
+		<text>Jeњli pуjdziesz na pуіnoc, dotrzesz do Bariery, gdzie stalkerzy usiіuj№ utrzymaж pozycje obronne przeciw mutantom nadci№gaj№cym od Zwкglacza. Na prawo od Bariery znajdziesz bagno i chatkк na palach. Najlepiej siк tam nie zbliїaj, bo poziom promieniowania jest cholernie wysoki. Dalej od bagien leїy baza wojskowa. Nasz zachodni posterunek strzeїe drogi do Czerwonego Lasu i do Limaсska - to wіaњnie tam idzie aktualnie wiкkszoњж klanu - a posterunek poіudniowy ochrania њcieїkк do Doliny Mroku.</text>
+	</string>
+	<string id="dm_about_137">
+		<text>Wszystko wokуі siк zmienia - i to bardzo szybko. Magazyny wojskowe wkrуtce stan№ siк magazynami "Wolnoњci". Nasze posterunki i umocnione pozycje samotnych stalkerуw chroni№ gіуwnych przejњж do tego obszaru. Bariera na pуіnocy powstrzymuje potwory i mutanty przed wydostaniem siк z centrum Zony. Na szczкњcie broni№ jej stalkerzy - gdyby nie oni, byіoby z nami krucho. Nasz posterunek na zachodzie ochrania drogк do Limaсska przez Czerwony Las, a ten na poіudniu zapewnia bezpieczne wejњcie do Doliny Mroku, w ktуrej znajduje siк obecnie nasza gіуwna baza. To miejsce jest teraz peіne rozmaitych stalkerуw - odpowiada im swoboda, ktуr№ zapewniamy, zmuszaj№c wojsko do pozostania w ich bazie. S№dzк, їe w tych opuszczonych wsiach i gospodarstwach znalazіoby siк trochк niezіych artefaktуw i innego towaru.</text>
+	</string>
+	<string id="dm_about_138">
+		<text>Po tym, jak wojsko straciіo kontrolк nad tym terenem, pojawiіa siк tu caіa gromada stalkerуw, ktуrzy mieli nadziejк, їe uda im siк omin№ж Mуzgozwкglacza. Kretyni! Od razu ci mogк powiedzieж, їe przejњcie obok Zwкglacza jest po prostu niemoїliwe. Nikt, kto tego prуbowaі, nie wrуciі їywy. "Wolnoњж" ma tu za zadanie pozbyж siк wojska i zaіoїyж bazк. W koсcu, jeњli mamy broniж Bariery, musimy mieж w pobliїu bazк.</text>
+	</string>
+	<string id="dm_about_139">
+		<text>To miejsce jest domem dla prawdziwej stalkerskiej braci. Najlepsi z nich zgromadzili siк przy magazynach wojskowych i szukaj№ sposobu na przejњcie obok Zwкglacza. Morale jest wysokie i kaїdy ma juї masк їyczeс do wypowiedzenia, kiedy dojd№ do centrum, do Speіniacza Їyczeс. Durnie! Mieli doњж rozumu, їeby dojњж aї do magazynуw, ale s№ juї zbyt gіupi, by zrozumieж, їe za Zwкglaczem czeka ich tylko њmierж. To, na czym powinni siк skupiж, to pomaganie nam przy obronie Bariery, bo jeњli ona padnie, to juї tylko Speіniacz Їyczeс bкdzie w stanie nas uratowaж!</text>
+	</string>
+	<string id="dm_about_140">
+		<text>Wszystko siк zmienia w niesamowitym tempie. Gromady fanatycznych monolitian i mutantуw atakuj№ nas falami od Zwкglacza. S№ teї te fragmenty transmisji radiowych, od ktуrych aї ciarki mnie przechodz№. Myњlк, їe podczas Emisji zaginкіo tu duїo ludzi, ale zamiast umrzeж, po prostu siк zgubili, jeњli rozumiesz, o co mi chodzi. To tak, jakby nic siк nie zmieniіo, ale oni nie mog№ siк wydostaж. Kto wie, moїe to jakaњ nowa anomalia, z ktуrej nie moїna uciec? Strasznie mi їal tych biedakуw, ale nie mam pojкcia, jak im pomуc.</text>
+	</string>
+	<string id="dm_action_info_105">
+		<text>Wszystko, co tu mamy do roboty, to utrzymaж Barierк i zmusiж wojsko do wyjњcia z ich bazy. Nasz przywуdca jest іebskim facetem - mnie nigdy nie przyszіo do gіowy, їe obrona Bariery byіaby sto razy іatwiejsza, gdybyњmy mieli bazк blisko niej. To dlatego to on dowodzi "Wolnoњci№", a ja gadam tu z tob№. No ale przynajmniej nie mam jego zmartwieс i mogк siк nawaliж, kiedy tylko chcк, i nikogo to nie obchodzi!</text>
+	</string>
+	<string id="dm_action_info_106">
+		<text>Bronimy Bariery - najlepiej, jak umiemy. Wojsko porzuciіo jej obronк po Emisji i wtedy przedostaіo siк tu tyle potworуw, їe nawet my w Dolinie Mroku sraliњmy w gacie ze strachu. To wtedy nasz szef zorganizowaі ekspedycjк. Z innych wydarzeс, to zza Bariery wrуcili pierwsi monolitianie z zaginionego oddziaіu. Chyba nie byі tak "zaginiony", jak nam siк wydawaіo.</text>
+	</string>
+	<string id="dm_action_info_107">
+		<text>Szukam naszego oddziaіu zwiadowczego. Wyruszyli w tym kierunku przed Emisj№ i od tamtej pory nikt ich nie widziaі. Od czasu do czasu otrzymujemy urywki komunikatуw, w ktуrych prosz№ o pomoc i mуwi№, їe koсcz№ im siк zapasy. To dziwne, stary - zaginiony oddziaі jest gdzieњ blisko, widz№ nawet wieїк bazy wojskowej, ale gdzie by siк nie ruszyli, ci№gle s№ w tym samym miejscu. Tak jakby utknкli na wstкdze Mцbiusa. No wiкc іamiк sobie gіowк prуbuj№c wykombinowaж, co z tym zrobiж.</text>
+	</string>
+	<string id="dm_action_info_108">
+		<text>Mamy tu maіy ukіad z wojskiem. Oni dostaj№ nasze kule, a my dostaniemy ich bazк. Dla mnie to uczciwe. Razem z chіopakami ostro z nimi "negocjujemy".</text>
+	</string>
+	<string id="dm_action_info_109">
+		<text>Kiedy nie walczymy, co nie zdarza siк zbyt czкsto, zwykle siedzк przy ognisku, opowiadam rуїne historie i kawaіy, rozpijamy z chіopakami flaszkк czy dwie. Kiedy juї zakoсczymy swoje sprawy tutaj i w Limaсsku - dwуch niezbadanych obszarach Zony - moїe uda nam siк znaleџж drogк do jej centrum. To stamt№d przychodz№ monolitianie.</text>
+	</string>
+	<string id="dm_action_info_110">
+		<text>Miіo spкdzam czas: pijк, imprezujк i їartujк z kumplami. Kto wie, co siк stanie jutro, albo nawet za minutк? Moїe wdepnк w anomaliк albo oberwк kulkк. Trzeba siк bawiж, pуki starczy їycia.</text>
+	</string>
+	<string id="dm_action_info_111">
+		<text>Postanowiіem zostaж bohaterem. Bior№c pod uwagк, co siк teraz dzieje w "Wolnoњci", moїna teraz szybko awansowaж i przejњж do historii dziкki osi№gniкciom wojennym. Trzeba byж po prostu sprytnym bohaterem, chyba їe komuњ zaleїy na "Purpurowym Sercu". Nie chowaж siк za innymi, ale teї nie prosiж siк o kulkк.</text>
+	</string>
+	<string id="dm_action_info_112">
+		<text>Przyszedіem tu jako ochotnik z Doliny Mroku, їeby trochк przycisn№ж wojsko. Chciaіem znaleџж siк w centrum akcji i potrzebowaіem zmiany otoczenia - miaіem juї serdecznie dosyж siedzenia w tym samym miejscu.</text>
+	</string>
+	<string id="dm_action_info_113">
+		<text>Wypeіniam zadania, ktуre zleciі mi dowуdca. Co, wydawaіo ci siк, їe "Powinnoњж" to jedyny klan, ktуry potrafi wykonywaж rozkazy? My teї wiemy, czym jest dyscyplina, kiedy sytuacja tego wymaga. Trzeba byж idiot№, їeby naprawdк wierzyж w to, їe "Wolnoњж" to same lumpy i pijusy. Pomyњl tylko, gdyby tak byіo, to caіy nasz klan juї dawno w№chaіby kwiatki od spodu.</text>
+	</string>
+	<string id="dm_action_info_114">
+		<text>Wszyscy poszli walczyж, to co miaіem robiж? Nie jestem tchуrzem i, do cholery, zdrajc№ teї nie! Walczymy tu za wspуln№ sprawк. Jest czas na wygіupy i jest czas na powagк. A obecnie nie moїna siк wyluzowaж nawet na sekundк.</text>
+	</string>
+	<string id="dm_action_info_115">
+		<text>Walczymy. Z kim? No, z kaїdym, kto jest przeciwko nam. Nie jesteњmy band№ jakichњ anarchistуw - nasz klan jest cholernie dobrze zorganizowany i nikt z nas nie sprawia problemуw. Moїe tego tak nie widaж, jak w wojsku czy w "Powinnoњci", bo w koсcu wst№piliњmy do klanu, їeby byж wolnymi i rуwnymi, ale kiedy trzeba, potrafimy siк zebraж i zrobiж, co naleїy. Wiкc przygotuj siк, przyjacielu, zaraz zobaczysz prawdziw№ "Wolnoњж" w akcji.</text>
+	</string>
+	<string id="dm_cool_info_30">
+		<text>"Wolnoњж" przeїywa teraz trudne chwile. Jak tylko znaleџliњmy kreta i trochк siк pozbieraliњmy po atakach bandytуw, za Czerwonym Lasem pojawiі siк Limaсsk i wojsko zaczкіo traciж kontrolк nad tutejszymi magazynami. Wiкc stoczyliњmy rуwnoczeњnie kilka potyczek i teraz mamy wrogуw na kaїdym froncie. Mam nadziejк, їe nie weџmiemy na siebie zbyt duїego obci№їenia.</text>
+	</string>
+	<string id="dm_cool_info_31">
+		<text>Po Emisji Zona podzieliіa siк na coњ w rodzaju baniek. Wielu ludzi zginкіo w tych okolicach i wygl№da to tak, jakby utknкli w jakiejњ kosmicznej baсce, z ktуrej nie ma wyjњcia - w ktуr№ stronк by nie poszli, nie mog№ siк ruszyж! Paru naprawdк porz№dnych chіopakуw utknкіo w tych baсkach, a jeњli pуjdzie siк w wyїej poіoїone miejsca, moїna usіyszeж ich woіania o pomoc. Wiкc jeњli nie chcesz do nich doі№czyж, lepiej b№dџ ostroїny.</text>
+	</string>
+	<string id="dm_cool_info_32">
+		<text>Po Emisji okazaіo siк, їe wiele waїnych drуg do centrum Zony biegnie przez magazyny. Nasze grupy w terenie dotarіy wczoraj do Limaсska, miasta, o ktуrym nikt nigdy wczeњniej nie sіyszaі. Moїe da siк iњж stamt№d takїe do innych miejsc, ale najbardziej by mnie ucieszyіo, gdyby ktoњ w koсcu rozwi№zaі sekret Zwкglacza i otworzyі drogк na pуіnoc!</text>
+	</string>
+	<string id="dm_cool_info_33">
+		<text>Ostatnio dorwaliњmy szczura, ktуry przekazywaі informacje bandytom, їeby mogli wyrzynaж naszych chіopakуw jak bydіo. Zgadnij, kto to byі! Zgadza siк, nasz dowуdca! Nie wygl№dasz na zdziwionego, kto ci powiedziaі? W kaїdym razie naprawdк їaіosny z niego sukinsyn - їeby tak zdradziж wіasny klan! Їaіujк, їe sam go nie rozwaliіem!</text>
+	</string>
+	<string id="dm_cool_info_34">
+		<text>Stary, Zona bкdzie niedіugo wolna, a nazwк mojego klanu bкdzie siк powtarzaж w kaїdym jej zak№tku! Zaіatwimy "Powinnoњж" w Limaсsku i zajmiemy tк bazк. Potem na pewno uda nam siк przejњж koіo Zwкglacza i dalej na pуіnoc. Monolitianom siк udaіo, wiкc czemu my mamy byж gorsi? Nie wiem, co tam znaleџli, ale walcz№, jakby to byіo coњ cholernie waїnego.</text>
+	</string>
+	<string id="dm_cool_info_35">
+		<text>Bracie, szykuj№ siк wielkie zmiany! Magazyny wojskowe i reszta tego obszaru przejd№ na wіasnoњж "Wolnoњci". Nasze posterunki juї teraz strzeg№ wszystkich waїnych drуg, a niedіugo ulokujemy siк w bazie wojskowej. Jest tu droga, ktуra prowadzi na pуіnoc, prosto do centrum Zony, a kiedy poradzimy sobie z Mуzgozwкglaczem, bкdziemy pierwszymi, ktуrzy odkryj№, czy to rzeczywiњcie prawda z tym... Speіniaczem Їyczeс.</text>
+	</string>
+	<string id="dm_intro_106">
+		<text>Witaj, nieznajomy!</text>
+	</string>
+	<string id="dm_intro_107">
+		<text>Czeњж i czoіem, stalkerze!</text>
+	</string>
+	<string id="dm_intro_108">
+		<text>Hej!</text>
+	</string>
+	<string id="dm_about_141">
+		<text>To jest ostatnia zamieszkana czкњж Zony przed Mуzgozwкglaczem. Tylko szaleсcy id№ jeszcze dalej - i їaden z nich nie wraca. Nawet teren wokуі magazynуw jest peіen krwioїerczych potworуw i њmiertelnych zagroїeс, ale nikt nie ma pojкcia, co jest dalej. Ostatnio w Czerwonym Lesie znaleziono now№ њcieїkк do nieodkrytych obszarуw; sіyszaіem opowieњci o znalezieniu maіego miasteczka, ale sam nigdy go nie widziaіem.</text>
+	</string>
+	<string id="dm_about_142">
+		<text>Powiedziaіbym, їe najwaїniejsza tutaj jest baza wojskowa. "Wolnoњж" walczy o ni№ z wojskiem, z ktуrego po ostatniej Emisji zostaіy juї tylko niedobitki. Jest tu teї kilka wsi. Nic specjalnego, ale w ruinach starych chat moїna czasem znaleџж niezіe іupy. Na pуіnocy znajduje siк Bariera, zbudowana przez stalkerуw w celu powstrzymania potworуw, ktуre przychodz№ od Mуzgozwкglacza. Jeњli chcesz st№d odejњж, idџ na poіudnie do Doliny Mroku, a jeњli chcesz zobaczyж, jak "Powinnoњж" walczy z wiкkszoњci№ siі "Wolnoњci" o nowe terytoria, kieruj siк na zachуd - do Czerwonego Lasu.</text>
+	</string>
+	<string id="dm_about_143">
+		<text>Dzieje siк tu przede wszystkim to, їe maіa grupa stalkerуw usiіuje odpieraж potwory i zombi przychodz№ce od Zwкglacza. Gіуwne siіy "Powinnoњci" i "Wolnoњci" walcz№ ze sob№ gdzieњ za Czerwonym Lasem. Podobno odkryto tam drogк do maіego miasteczka o nazwie Limaсsk.</text>
+	</string>
+	<string id="dm_about_144">
+		<text>Stary, robi siк tu coraz bardziej gor№co. Po wielkiej Emisji stalkerzy odkryli drogк do Limaсska wiod№c№ przez Czerwony Las. Droga biegnie przez obszar magazynуw wojskowych i jak tylko wiadomoњci siк rozeszіy, weszіy tam i "Powinnoњж", i "Wolnoњж". Przy Barierze teї jest ostro, bo stada potworуw to juї nie jedyny problem. Moїesz mi nie wierzyж, ale takїe monolitianie tam atakuj№... Do tej pory nawet nie przypuszczaіem, їe te opowieњci o nich s№ prawd№!</text>
+	</string>
+	<string id="dm_about_145">
+		<text>Ostatnio Zona zmienia siк tak szybko, їe juї nie jestem pewien, czy to, co o niej wiem, jest jeszcze prawd№. Poza tym jestem tu od niedawna, wiкc nie mam zbyt wielu informacji. Podobno na pуіnoc st№d znajduje siк coњ o nazwie Mуzgozwкglacz, sіyszaіem teї, їe na zachodzie leї№ Czerwony Las i Limaсsk, gdzie skacz№ sobie do gardeі "Powinnoњж" i "Wolnoњж".</text>
+	</string>
+	<string id="dm_about_146">
+		<text>Kiedy tu dotarliњmy, "Wolnoњж" juї rozprawiaіa siк z wojskiem i nie wygl№daіo na to, їeby siк specjalnie przemкczali. Teraz jesteњmy w pewnym sensie na rozdroїu - nie chcemy wkurzyж jednej strony, ale druga teї chyba nic dla nas nie ma. Ech, wіaњciwie i tak nie po to tu jesteњmy.</text>
+	</string>
+	<string id="dm_about_147">
+		<text>Wszystko, co siк tutaj dzieje, dzieje siк z powodu bazy wojskowej. Jej poіoїenie na tym obszarze jest cholernie waїne, bo to najlepsze miejsce do sprawowania kontroli nad przylegіymi ziemiami. Wioski i gospodarstwa, ktуre widzisz tu dookoіa, to przy tym maіe piwo. To dlatego "Wolnoњж" robi wszystko, їeby je zaj№ж - juї zaіoїyli posterunki na drogach do Doliny Mroku i Czerwonego Lasu. Ci chіopcy dobrze wiedz№ co robi№. Pуіnocne posterunki s№ na razie bronione przez samotnych stalkerуw, ktуrzy prуbuj№ odpieraж ataki mutantуw, ale mam przeczucie, їe "Wolnoњж" przyjdzie na te tereny, jak tylko zaіatwi№ sprawк z baz№.</text>
+	</string>
+	<string id="dm_about_148">
+		<text>Ten obszar bкdzie chyba niedіugo naleїaі do "Wolnoњci". Odk№d uporali siк ze swoimi problemami wewnкtrznymi, naprawdк solidnie wziкli siк za walkк. S№ tutaj, w Limaсsku, no i nadal trzymaj№ siк w Dolinie Mroku. Mуwiк "nadal", bo cholernie siк rozproszyli: walcz№ o Limaсsk, o bazк wojskow№ i maj№ teї swoj№ kwaterк gіуwn№ w Dolinie Mroku. Mam silne przeczucie, їe bandyci zaczn№ ich stamt№d wypieraж. Pomyњl tylko: wszystko, czego potrzeba, to jeden іebski bandyta, ktуry skuma sytuacjк i w peіni j№ wykorzysta, mocno przyciskaj№c "Wolnoњж". Na ich miejscu tak wіaњnie bym zrobiі.</text>
+	</string>
+	<string id="dm_about_149">
+		<text>Stary, na tym miejscu ci№ї№ jakieњ naprawdк gуwniane czary. Nic, tylko chodzimy w kуіko i szukamy zaginionych kumpli, ale na razie znajdujemy tylko potwory. Jeњli wejdzie siк wyїej, moїna czasami usіyszeж fragmenty ich komunikatуw radiowych, ale sensu w nich nie ma їadnego. A to i tak jeszcze nie wszystko! Jak wyjaњniж pojawienie siк monolitian zza Bariery?! Kiedyњ widziaіem jednego z nich. Byі ranny, miaі szkliste oczy i ci№gle mamrotaі te same sіowa: "Broniж Monolitu!". Chyba nie czuі bуlu, bo rzucaі siк mojemu kumplowi do gardіa, dopуki nie wpakowaliњmy w niego kilku magazynkуw. Czego oni chc№? Dlaczego wrуcili po Emisji? Stary, same pytania...</text>
+	</string>
+	<string id="dm_action_info_116">
+		<text>Szukamy naszych chіopakуw, ktуrych przed Emisj№ widziano po raz ostatni wіaњnie w tym miejscu. Czasami na wzgуrzach іapiemy strzкpy transmisji radiowych, ale poza tym nie ma po nich њladu! Nie mam zielonego pojкcia, gdzie zacz№ж ich szukaж.</text>
+	</string>
+	<string id="dm_action_info_117">
+		<text>Jesteњmy czymњ w rodzaju ekspedycji ratunkowej, szukamy jednego z naszych oddziaіуw. Emisja zіapaіa ich gdzieњ na tym obszarze i straciliњmy z nimi kontakt. Wysіano nas tu, їebyњmy znaleџli naszych chіopakуw... albo to, co z nich zostaіo.</text>
+	</string>
+	<string id="dm_action_info_118">
+		<text>Dzisiaj kto їyw ci№gnie do centrum Zony i prуbuje odkryж jej tajemnice. Sam bym nie miaі nic przeciwko uzyskaniu kilku odpowiedzi, bo prуbujк wykombinowaж, jak przejњж koіo Mуzgozwкglacza. Ci№gle znajduj№ teraz nowe њcieїki, i pewnie jedna z nich moїe prowadziж do samego serca Zony. Nie bкdк pierwszy siк rzucaі do badania nowej drogi - taki gіupi to ja nie jestem! Ale chкtnie dowiedziaіbym siк, co siк dzieje - moїe ktoњ jednak w koсcu znajdzie sposуb na dotarcie do Prawdy.</text>
+	</string>
+	<string id="dm_action_info_119">
+		<text>Pilnie nadstawiam tu uszu, chociaї nasze gіуwne zadanie to odnalezienie zaginionego oddziaіu. Naszych zіapaіa tu Emisja i od tamtej pory ich nie widzieliњmy. Co jakiњ czas prуbuj№ nawi№zaж z nami kontakt, ale jak dot№d nic z tego nie wyszіo. Przetrz№snкliњmy caіy ten obszar i nic! Zgіupieж od tego moїna!</text>
+	</string>
+	<string id="dm_action_info_120">
+		<text>Nie rуїnimy siк od innych, stary - czekamy, aї jakiњ fajny chіopak znajdzie sposуb na przejњcie obok Mуzgozwкglacza. A wtedy pуjdziemy sobie bez problemуw do centrum Zony i zaopatrzymy w najlepsze artefakty. Nic nie szkodzi, їe nie dotrzemy tam pierwsi, bo w ten sposуb bкdziemy mieli o wiele wiкksze szanse na przeїycie. Nie jestem tchуrzem, jestem ostroїny. Zrozumiesz, kiedy przybкdzie ci lat.</text>
+	</string>
+	<string id="dm_action_info_121">
+		<text>Њcigamy duchy. Nie wierzysz mi? Prawdк mуwi№c, ja teї bym w to nie uwierzyі! Chodzi o to, їe sіyszymy fragmenty komunikatуw nadawanych przez zaginiony oddziaі, rozpoznajemy nawet gіosy naszych chіopakуw, ale nie moїemy ich znaleџж, pogadaж z nimi czy choжby okreњliж, sk№d dochodzi sygnaі. To dlatego powiedziaіem, їe њcigamy duchy... Szlag by trafiі tк Emisjк!</text>
+	</string>
+	<string id="dm_action_info_122">
+		<text>Czekam, aї szef wyda rozkaz. Subordynacja i inne takie. Jesteњmy tu, їeby uratowaж grupк Leszego, ale nie jest іatwo, bior№c pod uwagк, їe nie moїemy znaleџж tych biednych sukinsynуw! Co gorsza straciliњmy naszego radiooperatora w wiosce przy wieїy ciњnieс. Poszliњmy tam, їeby zіapaж wyraџniejszy sygnaі radiowy, i jakaњ niewidzialna oњmiornica niespodziewanie go wykoсczyіa. Nic nie mogliњmy zrobiж, bo nie szkolili nas do walki z potworami - obecnie naszym najwiкkszym wrogiem s№ inni ludzie.</text>
+	</string>
+	<string id="dm_action_info_123">
+		<text>Przed sam№ Emisj№ grupa Leszego wypeіniіa naprawdк waїne zadanie - znalazіa bardzo rzadki artefakt. Skontaktowaliњmy siк nawet z klientem, їeby go powiadomiж, їe towar jest w drodze, ale Leszy nigdy nie wrуciі. Jesteњmy najemnikami i mamy swуj kodeks - bez niego bylibyњmy niczym. Kontrakt musi zostaж wykonany. Kropka. Jeњli spieprzymy robotк, nasza reputacja l№duje w bіocie i їaden powaїny klient nigdy wiкcej nie da nam pracy! I wtedy znowu musielibyњmy waікsaж sie po Zonie jako stalkerzy.</text>
+	</string>
+	<string id="dm_cool_info_36">
+		<text>Chciaіbym wiedzieж o tym coњ starego. Jesteњmy najemnikami, kolego. Idziemy do Zony ze specjaln№ misj№ i chcemy osi№gn№ж nasze cele dziкki precyzyjnym planom i znakomitemu przygotowaniu.</text>
+	</string>
+	<string id="dm_cool_info_37">
+		<text>Podobno stalkerski klan o nazwie "Monolit", ktуry byі uwaїany za zaginiony, ponownie siк pojawiі. Pewnego dnia przestali rozrabiaж jak pozostali w Zonie i jak jeden m№ї wyruszyli do centrum Zony na poszukiwania Speіniacza Їyczeс. Przez dіugi czas nie dawali znaku їycia, a teraz nagle wrуcili. Ale nikt siк specjalnie z tego nie cieszy, bo ci№gle tylko wywrzaskuj№ idiotyczne hasіa i atakuj№ kaїdego w zasiкgu wzroku.</text>
+	</string>
+	<string id="dm_cool_info_38">
+		<text>Ostatnio odkryto drogк do Limaсska przez Czerwony Las i "Wolnoњж" juї tam jest. "Powinnoњж" prуbuje zrobiж to samo. My tu sobie gadamy, a tam juї pewnie krwawa jatka, bo jedni i drudzy chc№ zdobyж kontrolк nad tym gуwnianym miastem i za nic nie oddadz№ jej przeciwnikom. "Wolnoњж" jest teraz nastawiona na ekspansjк - prуbuj№ zaj№ж rуwnieї bazк wojskow№! Nie przepadam za wojskiem, ale їal mi ich. Bardzo ucierpieli od Emisji, a teraz takїe stalkerzy przypieraj№ ich do muru.</text>
+	</string>
+	<string id="dm_cool_info_39">
+		<text>Sіyszaіem, їe "Powinnoњж" nieџle siк namкczyіa z mutantami w Agropromie. Spieprzyli coњ pod ziemi№ i za cholerк nie mogli powstrzymaж napіywu potworуw. Przez pewien czas byі to raj dla handlarzy - taki popyt na amunicjк... W kaїdym razie podobno pomуgі im samotny stalker, ktуry w pojedynkк zatopiі podziemia! Nie mam pojкcia, czy to prawda, ale jeњli tak, to ten stalker musi byж nieziemskim wymiataczem. Nie ma tu wielu ludzi, ktуrzy daliby radк wleџж do legowiska mutantуw, pokazaж Zonie palec i nie straciж go razem z rкk№. Jeњli kiedyњ spotkam tego stalkera, kupiк kapelusz, tylko po to, їeby mуc go przed nim zdj№ж.</text>
+	</string>
+	<string id="dm_intro_109">
+		<text>To zaszczyt poznaж wasz№ pomarszczonoњж.</text>
+	</string>
+	<string id="dm_intro_110">
+		<text>Zaіoїк siк, їe masz mocn№ іapк, wielkoludzie!</text>
+	</string>
+	<string id="dm_intro_111">
+		<text>Witaj w magazynach.</text>
+	</string>
+	<string id="dm_about_150">
+		<text>To jest ostatni obszar Zony, ktуry zbadali stalkerzy. Moїna tu znaleџж magazyny wojskowe, ale jeњli pуjdziesz dalej, trafisz na Mуzgozwкglacza - podobno kaїdy, kto dostanie siк w sferк jego dziaіania, natychmiast traci rozum! To oczywiњcie spekulacje, bo nikt, kto tam poszedі, nie wrуciі! Droga z magazynуw do Zwкglacza jest zablokowana przez Barierк, ktуra ma powstrzymywaж potwory przychodz№ce z centrum. Po wielkiej Emisjii zaczкli siк teї pojawiaж monolitianie. Zastanawiam sie, czego szukaj№ w tej czкњci Zony... Moїe przyszli pozabijaж tych, ktуrzy zagraїaj№ ich wyimaginowanemu Monolitowi?</text>
+	</string>
+	<string id="dm_about_151">
+		<text>Wojsko pokazaіo swoje prawdziwe oblicze po Emisji - porzucili posterunki i schowali siк w swojej bazie jak szczury. No ale jest ich tylko dwudziestu, byli najbliїej centrum, wiкc moїna ich zrozumieж. Jak tylko wojsko straciіo kontrolк nad magazynami, wszyscy siк tu zlecieli: stalkerzy, najemnicy, "Powinnoњж" i "Wolnoњж". To dobrze, їe stalkerzy mieli doњж rozumu, aby poі№czyж siіy w obronie Bariery. Jeњli zalew mutantуw i monolitian nie zostanie powstrzymany, wszyscy ucierpimy, nawet armia w Kordonie.</text>
+	</string>
+	<string id="dm_about_152">
+		<text>Pewnie juї sіyszaіeњ od innych o bazie wojskowej i Barierze? Nie ma tu zbyt wiele oprуcz kilku wiosek i gospodarstwa. Nie bardzo jest o czym opowiadaж, ale opuszczony dom moїe byж uїywany jako kryjуwka albo nawet baza operacyjna, pod warunkiem, їe wczeњniej nie zajкіy go mutanty. B№dџ ostroїny - w tych okolicach jest ich sporo.</text>
+	</string>
+	<string id="dm_about_153">
+		<text>Wystarczyіo kilka minut aktywnej Emisji, їeby magazyny wojskowe przeszіy na wіasnoњж stalkerуw. Te wojskowe koguciki ukrywaj№ siк teraz przed "Wolnoњci№" gікboko w swojej bazie i boj№ siк wystawiж czubek nosa na zewn№trz. Z kolei "Monolit" wydaje siк nie baж nikogo. Myњleliњmy, їe wszyscy juї wyginкli dawno temu, ale їyj№ i ostro sobie poczynaj№ - przyszli tu od Zwкglacza i rozwalaj№ wszystko, co zobacz№!</text>
+	</string>
+	<string id="dm_about_154">
+		<text>Dzieje siк tu coњ naprawdк dziwnego. Odk№d wojsko osіabіo po Emisji, pojawiіa siк banda rуїnych stalkerуw. Wszyscy licz№ na to, їe uda im siк dotrzeж do centrum Zony. Niektуrzy chc№ poіoїyж swoje chciwe іapska na rzadkich artefaktach, inni chc№ pуjњж do Speіniacza Їyczeс, a jeszcze inni szukaj№ jakiegoњ kosmicznego Monolitu... Po mojemu, to wszyscy zbzikowali, moїe to Zwкglacz juї smaїy ich mуzgi?</text>
+	</string>
+	<string id="dm_about_155">
+		<text>Mogк ci wszystko opowiedzieж ze szczegуіami, bo szukaj№c artefaktуw poznaіem ten teren jak wіasn№ kieszeс. Gіуwny punkt odniesienia w tej okolicy to baza wojskowa. Znajduje siк na wzgуrzu, wiкc widaж j№ juї z daleka. Na pуіnocy jest Bariera, a na poіudniu Dolina Mroku. Jeњli pуjdziesz na zachуd przez wioskк, dojdziesz do Czerwonego Lasu. Jest teї kilka gospodarstw i chata koіo bagien, ale na twoim miejscu trzymaіbym siк od nich z daleka - tamtejsze promieniowanie moїe byж њmiertelne.</text>
+	</string>
+	<string id="dm_about_156">
+		<text>Wojsko zostawiіo tu sporo cennych rzeczy. Kіopot w tym, їe pewnie wszystko to zgarnie "Wolnoњж", bo maj№ chrapkк na bazк wojskow№. Wszystko, co mamy, to barykady na drodze do Zwкglacza i artefakty, ktуre moїna znaleџж dookoіa. Aha, no i jest teї kilka wyludnionych wiosek, w ktуrych moїna sobie wybraж dom. Jeњli ma siк szczкњcie, moїna nawet trafiж na niewidzialnego wspуіlokatora, takiego z mackami i w ogуle.</text>
+	</string>
+	<string id="dm_about_157">
+		<text>Wojsko nie ma juї kontroli nad tym obszarem. "Wolnoњж" niedіugo "rozwi№їe" problem wojska raz na zawsze, a wtedy to miejsce bкdzie rуwnie dobre, jak Dolina Mroku. W miкdzyczasie mamy wіasn№ misjк: ochraniaж Barierк. Odk№d zobaczyіem, jakie gуwno atakuje nas zza Bariery, straciіem chкж do przygуd. Chкtnie pozwolк innym frajerom wykitowaж podczas prуby przejњcia obok Zwкglacza.</text>
+	</string>
+	<string id="dm_about_158">
+		<text>Dowiedzieliњmy siк o Barierze w bazie "Wolnoњci" w Dolinie Mroku. Kr№їyіy pogіoski, їe wojsko zostaіo st№d wykopane i їe stalkerzy poі№czyli siіy, aby broniж tego terenu przed "Monolitem". Wyruszyliњmy caіym oddziaіem na odsiecz naszym braciom, ale ostatecznie tylko mnie udaіo siк przeїyж. Niektуrzy chіopcy zboczyli z drogi, inni zginкli na drodze, a kilku poszіo dalej...</text>
+	</string>
+	<string id="dm_about_159">
+		<text>Wojsko szybko traci kontrolк nad tym miejscem. Nie tak dawno temu stalkerzy zajкli magazyny i razem z "Wolnoњci№" kontroluj№ wiкkszoњж kluczowych punktуw na tym terenie. Zebraliњmy siк tutaj, їeby pilnowaж Bariery i odpieraж ataki szalonych monolitian i paskudnych mutantуw przychodz№cych tu od Radaru. "Wolnoњж" kontroluje zachodni№ i poіudniow№ czкњж tego obszaru i naprawdк szybko buduj№ wіasn№ bazк wojskow№. A, widzieliњmy teї jakichњ najemnikуw, ktуrzy szukali tu swojego zaginionego oddziaіu czy coњ takiego.</text>
+	</string>
+	<string id="dm_action_info_124">
+		<text>Zgadnij. Zbieram іupy. Wojsko juї tu nie rz№dzi, wiкc moїemy robiж, co chcemy. Przygotowujк siк teї do wyprawy do centrum Zony. Oczywiњcie muszк czasami pomagaж przy obronie Bariery, ale to czкњciowo dla mojego wіasnego bezpieczeсstwa, a czasami po walce moїna nawet zgarn№ж niezі№ broс czy amunicjк.</text>
+	</string>
+	<string id="dm_action_info_125">
+		<text>Przyszedіem walczyж przy Barierze. Mуj kumpel w barze "Powinnoњci" powiedziaі mi, їe paru kolesi urz№dziіo tu pozycje obronne do walki z mutantami. Mуwiі, їe zawsze jest tu do kogo postrzelaж, wiкc wyruszyіem w њrodku nocy, їeby przyі№czyж siк do zabawy!</text>
+	</string>
+	<string id="dm_action_info_126">
+		<text>Zawsze mnie ci№gnкіo w nowe miejsca. Do Zony przyszedіem dlatego, їe znudziіa mnie monotonia їycia na zewn№trz, a tutaj zawsze s№ jakieњ tajemnice do odkrycia. Druga rzecz to kasa. Kaїdy potrzebuje jedzenia i amunicji, ale forsк moїna dostaж tylko za іupy. Mam teї nadziejк, їe ktoњ znajdzie sposуb na ominiкcie Zwкglacza, bo wtedy bкdк pierwszym, ktуry pogna do centrum Zony. Mam tylko jedno їyczenie - їeby Zona zniknкіa.</text>
+	</string>
+	<string id="dm_action_info_127">
+		<text>Prуbujк dotrzymaж kroku "Wolnoњci". Chciaіem iњж z nimi do Limaсska, ale kiedy dotarіem do Doliny Mroku, ich juї nie byіo. Aszot mуwiі, їe bкd№ szli t№ drog№, ale znowu siк spуџniіem i przeszli juї przez Czerwony Las. Teraz juї nigdy ich nie dogoniк! Sam t№ drog№ nie pуjdк, a nie sіyszaіem, їeby jakaњ grupa miaіa tкdy iњж w najbliїszym czasie.</text>
+	</string>
+	<string id="dm_action_info_128">
+		<text>Chciaіem tu tylko chwilк odpocz№ж przed wyruszeniem do Czerwonego Lasu. Chcк siк dowiedzieж, co tam jest, po drugiej stronie Limaсska. Kogo obchodzi, їe inni nie wrуcili? Moїe nie wrуcili dlatego, їe coњ znaleџli. No bo spуjrz tylko na monolitian: od miesiкcy nie dawali znaku їycia, a teraz nagle pokazali siк znowu... Bуg jeden wie, co tam znaleџli.</text>
+	</string>
+	<string id="dm_action_info_129">
+		<text>Wіaњnie wrуciіem z pustymi rкkami z Czerwonego Lasu. Ja i paru kumpli prуbowaliњmy przez niego przejњж, ale nagle bez powodu zaczкliњmy siк baж. Stary, tak siк posraliњmy, їe biegliњmy caі№ drogк do Bariery; to cud, їe їaden z nas nie wdepn№і w anomaliк. Co dziwne, nadal nie wiem, co nas tak przeraziіo! W kaїdym razie ten las jest cholernie pokrкcony.</text>
+	</string>
+	<string id="dm_action_info_130">
+		<text>Chcк poznaж caі№ Zonк. Teraz dotarіem do magazynуw, ale wczeњniej byіem w Kordonie, na Bagnach, w Agropromie i w Dolinie Mroku. Przez jakiњ czas byіem nawet niewolnikiem bandytуw z Wysypiska. Jak juї dobrze siк tutaj rozejrzк, wyruszк w dalsz№ drogк.</text>
+	</string>
+	<string id="dm_action_info_131">
+		<text>Nie ma juї zbyt wielu terytoriуw, ktуre nie znajdowaіyby siк pod kontrol№ innych klanуw czy frakcji, a samotny stalker nie zdziaіa zbyt wiele w Agropromie czy na Wysypisku. Nawet Limaсsk - dopiero co go znaleџli, a popatrz, ilu ludzi tam idzie. W magazynach jest inaczej, bo sytuacja nie jest do koсca jasna: nie naleї№ juї do wojska, ale teї nie s№ tak naprawdк wіasnoњci№ "Wolnoњci". W dodatku ten teren leїy blisko nowoodkrytych terytoriуw, a jeњli siк tam wybierzesz, jesteњ ustawiony do koсca їycia - to tam s№ wszystkie najrzadsze artefakty.</text>
+	</string>
+	<string id="dm_action_info_132">
+		<text>Szukam cennego artefaktu. Sidorowicz poprosiі mnie o niego, a ja nie zdoіaіem go znaleџж ani w Kordonie, ani w Dolinie Mroku. Szukanie іupуw na Wysypisku wi№їe siк ze zbyt duїymi problemami, a w Agropromie wszystko dziel№ pomiкdzy siebie dwa stalkerskie klany, zwіaszcza, їe po tym, jak jakiњ bohater zatopiі tamtejsze podziemia, "Powinnoњж" nie musi juї przeznaczaж wiкkszoњci czasu na walkк z mutantami. Ale dopуki w tym miejscu panuje zamкt, moїe uda mi siк znaleџж to, czego szukam. </text>
+	</string>
+	<string id="dm_action_info_133">
+		<text>Przysіano mnie tu z Doliny Mroku, miaіem dostarczyж waїn№ wiadomoњж do dowуdcy miejscowego oddziaіu "Wolnoњci". Dostaіem zapіatк i postanowiіem trochк siк tu pokrкciж. Czemu by nie? Tutejsze chіopaki s№ caіkiem w porz№dku i nikt jeszcze nie prуbuje wymuszaж tu wіasnych reguі. Jasne, jest duїo strzelania i anomalii, a monolitianie nie daj№ nam spaж po nocach, ale tak juї jest w Zonie!</text>
+	</string>
+	<string id="dm_action_info_134">
+		<text>Zamierzam iњж na pуіnoc, obok Zwкglacza. Podobno monolitianom udaіo siк go omin№ж, a paru stalkerуw dotarіo nawet do Speіniacza Їyczeс i wrуciіo w jednym kawaіku. Nikt nie wie, dlaczego wrуcili. Moїe skoсczyіy im siк naboje albo za bardzo ich napromieniowaіo. To nieistotne - jeњli innym siк udaіo, to mnie teї moїe, i nie obchodzi mnie, co ktoњ na ten temat s№dzi!</text>
+	</string>
+	<string id="dm_action_info_135">
+		<text>Wygl№dasz, jakbyњ byі w Zonie od dawna, stalkerze. Powinieneњ juї wiedzieж, їe zadawanie takich pytaс nie jest zbyt m№dre. To nie twуj interes, ot, co. Gdybym chciaі porozmawiaж o tych sprawach, to bym to zrobiі. Z osob№, z ktуr№ chciaіbym o nich rozmawiaж. Nastкpne pytanie.</text>
+	</string>
+	<string id="dm_cool_info_40">
+		<text>Po tym, jak monolitianie zaczкli napіywaж tu zza Bariery, wpadliњmy na pomysі, їeby schwytaж jednego їywcem i dowiedzieж siк, jak zdoіali omin№ж Zwкglacza i dostaж siк do centrum Zony. Rany, kosztowaіo nas to mnуstwo ludzi i jeszcze wiкcej amunicji, ale w koсcu siк udaіo. Ten facet miaі w piersi pуі magazynka, ale i tak byі jeszcze caіkiem dziarski: rzucaі siк, beіkotaі i prуbowaі chwyciж naszego dowуdcк. Pytaliњmy go uprzejmie, potem pytaliњmy go nieuprzejmie, ale nic z niego nie wyci№gnкliњmy, w kуіko tylko krzyczaі "Broniж Monolitu!"... Coњ musiaіo im siк staж po tamtej stronie. Wiкc w koсcu nie dowiedzieliњmy siк, jak przejњж obok Zwкglacza, ale skoro oni przychodz№ zza Bariery, to musi byж jakiњ sposуb, nie? Jak myњlisz? </text>
+	</string>
+	<string id="dm_cool_info_41">
+		<text>Najnowsze wiadomoњci s№ takie, їe za Czerwonym Lasem znaleziono drogк do miasta Limaсsk i teraz "Powinnoњж" i "Wolnoњж" wyrzynaj№ siк o ni№. Miasteczko musi byж cenn№ zdobycz№, skoro urz№dzili o nie tak№ krwaw№ іaџniк.</text>
+	</string>
+	<string id="dm_cool_info_42">
+		<text>Sіyszaіem, їe jakiњ najemnik naprawdк pomуgі stalkerom w Kordonie, rozwi№zuj№c problem z wojskiem. Teraz wojsko nie sprawia im juї kіopotуw, bo boi siк kolejnej reakcji. Zaraz, s№dz№c z opisu, ten najemnik... to ty! Nie b№dџ taki skromny, bracie, chcк ci uњcisn№ж dіoс! Rz№dzisz, stary!</text>
+	</string>
+	<string id="dm_cool_info_43">
+		<text>Emisje zdarzaj№ siк tak czкsto, їe mamy z nimi prawdziwy problem. Czegoњ takiego nie byіo juї od bardzo dawna. Chodzi o to, їe nadchodz№ jedna po drugiej, a Zona za kaїdym razem siк zmienia. Czasem po emisji moїna znaleџж nowe anomalie, a czasami odkrywa siк przejњcie przez istniej№ce pole anomalii. Wіaњnie tak znaleziono drogк do Limaсska, chociaї wiкkszoњж stalkerуw nigdy o tym nie sіyszaіa. Juї wielu ludzi zginкіo z powodu tej caіej sytuacji, i nie chodzi tu tylko o emisje. Toczy siк tu prawdziwa wojna o nowe terytoria i wszystko to wygl№da naprawdк okropnie.</text>
+	</string>
+	<string id="dm_cool_info_44">
+		<text>Jak tu w ogуle moїe byж coњ nowego? To miejsce to przedszkole, zerуwka. Chociaї jeњli najpierw nie pokrкcisz siк trochк tutaj, їeby siк podszkoliж, i pуjdziesz prosto do Zony, nawet siк nie obejrzysz, jak bкdziesz martwy. To dlatego ci, ktуrzy maj№ trochк oleju w gіowie, zostaj№ tu na jakiњ czas przed wyruszeniem w dalsz№ drogк. Poza tym moїna tu zdobyж przyzwoit№ broс i inny sprzкt - wszyscy tak robi№.</text>
+	</string>
+	<string id="dm_action_info_136">
+		<text>Nic. Prуbujк nie zgin№ж, do tego siк to mniej wiкcej sprowadza.</text>
+	</string>
+	<string id="dm_about_160">
+		<text>Nie wierzк, cholera, prawie wpadіem godzinк temu! Byіem przed szeњcioma miesi№cami i wszкdzie byі spokуj i cisza, a teraz za kaїdym krzakiem czai siк їoіdak! To jakieњ wariactwo...</text>
+	</string>
+	<string id="dm_cool_info_45">
+		<text>Co? Co chcesz wiedzieж? Powiem ci jedno: 'Powinnoњж" to moїe i gliny, ale trzeba przyznaж, їe znaj№ siк na utrzymywaniu porz№dku. Chociaї i tak ich nie lubiк. Myњl№, їe wszystko naleїy do nich: "Nie rуb tego, nie bierz tamtego". A w dodatku juї zadecydowali, co moїna mуwiж na zewn№trz, a co trzeba ukrywaж! Sіyszaіem nawet, їe chc№ zniszczyж Zonк, kawaіek po kawaіku. To mnie akurat nie dziwi, w koсcu to byli їoіnierze... Cholerni marzyciele. Kіopot w tym, їe podobno wspiera ich sama gуra.</text>
+	</string>
+	<string id="dm_about_161">
+		<text>Te ziemie s№ teraz kontrolowane przez "Powinnoњж", a prawo "Powinnoњci" jest ich prawem. Kontrolujemy granice Zony i uspokajamy zbytnich zapaleсcуw: durnych marzycieli, ktуrzy њci№gaj№ tu caіymi stadami... i gin№ jak muchy juї pierwszego dnia.</text>
+	</string>
+	<string id="dm_about_162">
+		<text>Kieruj siк do obozu - tam usіyszysz wszystkie plotki. Koty takie jak ty zwykle tam wpadaj№, їeby zebraж wskazуwki albo trochк odpocz№ж. S№ tu їoіnierze, ale nimi siк za bardzo nie przejmuj. Co nie oznacza, їe powinieneњ wchodziж im w drogк, bo oni strzelaj№ do nas bez wiкkszego namysіu... Niedaleko sklepu jest miіe, spokojne miejsce, gdzie moїesz odpocz№ж.</text>
+	</string>
+	<string id="dm_cool_info_46">
+		<text>Sіyszaіeњ, їe "Powinnoњж" rekrutuje nowych czіonkуw? Zastanawiaіem siк nad tym przez chwilк, ale jednak w koсcu stwierdziіem, їe dam sobie z tym spokуj. To by byіo jak powrуt do wojska, dyscyplina i inne bzdury... Odsіuїyіem dwa lata w armii i wystarczy mi na caіe їycie...</text>
+	</string>
+	<string id="dm_action_info_137">
+		<text>Cуї, myњlaіem o wyprawieniu siк nad Jantar, ale zmieniіem zdanie. Jajogіowi maj№ tam duї№ bazк naukow№. Badaj№ diabli wiedz№ co, podczas gdy dookoіa ich laboratoriуw tіuk№ siк zombiaki. Sielanka, co?</text>
+	</string>
+	<string id="dm_cool_info_47">
+		<text>Ostatnio musieliњmy oczyњciж tereny wokуі Jeziora Jantar i wyszіo nam to naprawdк dobrze! S№ tam laboratoria, ale takїe masy zombi, wiкc czasami musimy pomagaж naukowcom.</text>
+	</string>
+	<string id="dm_cool_info_48">
+		<text>Wiesz co, niech "Powinnoњж", "Wolnoњж" i іowcy іupуw walcz№ sobie o tк ziemiк. Co mi do tego? Do diabіa z tym wszystkim...</text>
+	</string>
+	<string id="dm_action_info_138">
+		<text>Pracujemy tu teraz, stalkerze. Mamy tu nie tylko od cholery mutantуw, ale takїe tych pieprzonych najemnikуw i dupkуw z "Wolnoњci", przez ktуrych mamy same problemy...</text>
+	</string>
+	<string id="dm_cool_info_49">
+		<text>Nic. Guzik wiem. Biorк, co mogк i kiedy mogк i prуbujк jakoњ zwi№zaж koniec z koсcem. Nie mam ochoty iњж dalej w gі№b Zony, niech to diabli! Tam, sk№d jestem, nie ma pracy, a muszк jeszcze utrzymaж їonк... Trzeba jakoњ zarabiaж na їycie, nie? Po jednym dniu spкdzonym tu na Wysypisku moїna znaleџж kilka prostych artefaktуw, a to juї wystarczy na przyzwoity posiіek i coњ, czym moїna go popiж.</text>
+	</string>
+	<string id="dm_cool_info_50">
+		<text>No wiesz... Jedni osiedlili siк tu, na Wysypisku, i zbieraj№ zіom, a inni poszli dalej w gі№b Zony. Jasne, moїna tam znaleџж naprawdк niezіy towar, ale to nie jest їycie dla kaїdego. Koty bez doњwiadczenia musz№ tu walczyж o przetrwanie, a jeњli nie ma siк dobrego sprzкtu, to szanse na przeїycie praktycznie nie istniej№.</text>
+	</string>
+	<string id="dm_action_info_141">
+		<text>Nie twуj interes... Nie mкcz ludzi gіupimi pytaniami, a oni teї nie bкd№ ciк mкczyж.</text>
+	</string>
+	<string id="dm_cool_info_51">
+		<text>Stary, kocham naszych naukowcуw! To cholernie zabawni faceci! Zazwyczaj nie wytykaj№ swoich m№draliсskich nosуw z bunkra, ale kiedy juї stamt№d wyjd№, tak jak wczoraj... Jazda bez trzymanki! Wszкdzie oddziaіy, њmigіowce, transportery! Nastкpnym razem bкdziemy tu pewnie mieli okrкt wojenny albo przynajmniej opancerzony poci№g...</text>
+	</string>
+	<string id="dm_cool_info_52">
+		<text>Co? Nie ma nic nowego, ale za to starego gуwna mamy tyle, їe moїna siк w nim utopiж. Bandyci zrobili siк niewiarygodnie bezczelni. To my ryzykujemy їyciem w anomaliach, szukaj№c artefaktуw, a oni siк na tym bogac№... Kutasy! Trzymaj siк z daleka od Wysypiska - to wіaњnie takie bandyckie miejsce.</text>
+	</string>
+	<string id="dm_action_info_139">
+		<text>Utkn№іem tu, rozumiesz? Chcк wrуciж do domu, ale mi nie pozwalaj№. To tyle, jeњli chodzi o wiadomoњci... Faceci, ktуrzy chodz№ daleko w gі№b Zony - zawodowcy - opowiadaj№ o przerуїnych rzeczach. Czasami wracaj№ z іupami, na widok ktуrych czіowiek zaczyna siк њliniж. Mуwi№, їe tam jest masa bogactw do zgarniкcia. Ale nie kaїdy da radк tam dotrzeж, a tym bardziej wrуciж.</text>
+	</string>
+	<string id="dm_cool_info_53">
+		<text>Nie jestem na bieї№co z ostatnimi wydarzeniami.</text>
+	</string>
+	<string id="dm_cool_info_54">
+		<text>Sіyszaіeњ pogіoski o tym, їe Zona siк rozrasta? Myњlк, їe to prawda, bo widziaіem przy granicy kilka naprawdк przeraїaj№cych mutantуw - takich, ktуre wczeњniej spotykaіo siк tylko w pobliїu centrum Zony. Kiepsko, co?</text>
+	</string>
+	<string id="dm_cool_info_55">
+		<text>Moїe jednak jest trochк prawdy w tym caіym gadaniu o pijawkach przy granicy Zony. Ale co to ma wspуlnego z tym, їe Zona siк rozrasta? Kilku pijawkom udaіo siк dotrzeж do granicy... Musieliњmy je jakoњ przegapiж, to wszystko. Wcale bym siк nie zdziwiі, w koсcu czкsto harujemy od rana do nocy! Ale dajemy sobie radк - nie sіyszy siк za pіotem okrzykуw: "Pomocy, jesteњmy otoczeni przez mutanty!", prawda?</text>
+	</string>
+	<string id="dm_about_167">
+		<text>B№dџ ostroїny, te chodz№ce trupy zalaіy caіy teren. S№ gіupie, ale bardzo agresywne. Jesteњmy tu oblкїeni przez dwadzieњcia cztery godziny na dobк. Krуtko mуwi№c, mіodzieсcze, jest tu doњж niebezpiecznie.</text>
+	</string>
+	<string id="dm_about_168">
+		<text>Nie wiem, co ci powiedzieж... Ci№gle siк coњ dzieje, ale tutaj to normalka. Na zewn№trz w to nie wierz№, ale w koсcu jesteњmy stref№ anomalii.</text>
+	</string>
+	<string id="dm_cool_info_56">
+		<text>Chcesz plotek? Powiem ci coњ, co nie jest plotk№: niedіugo zapanuje tu іad i porz№dek. Oczyњcimy Zonк z mutantуw, i z pewnych dupkуw takїe...</text>
+	</string>
+	<string id="dm_cool_info_57">
+		<text>Sіyszaіeњ, co chіopaki z "Powinnoњci" chc№ nam zrobiж, jak nas dopadn№? Zetr№ nas na proch, a to dopiero pocz№tek. Bardzo mnie to wszystko niepokoi... Zwіaszcza, їe podobno maj№ teraz jakiњ super sprzкt.</text>
+	</string>
+	<string id="dm_cool_info_58">
+		<text>Wiadomoњci, hк? A kogo obchodzi, co gadaj№ ludzie? Jak bкdziesz wierzyі we wszystko, co usіyszysz, to w koсcu zwariujesz. Mуwi siк na przykіad, їe jakiњ zahartowany, doњwiadczony stalker wrуciі z centrum z przedmiotem, ktуrego nikt nigdy wczeњniej nie widziaі, i zarobiі na nim kupк szmalu... Sam mуgіbym powymyњlaж setki takich historyjek!</text>
+	</string>
+	<string id="dm_help_12">
+		<text>Wielkie dziкki.</text>
+	</string>
+	<string id="dm_about_169">
+		<text>Co ty tu robisz bez ochrony? Їycie ci niemiіe? Tutaj za kaїdym krzakiem czyha anomalia. Nikt siк nawet nie odlewa bez ochrony, bo zanim siк skoсczy, moїna dostaж "zdrow№" dawkк promieniowania. </text>
+	</string>
+	<string id="dm_about_170">
+		<text>Chyba jeszcze nie wiesz, jak siк trzeba zachowaж, wiкc udzielк ci przyjacielskiej rady: trzymaj siк z daleka od wojska. Jak tylko ich zauwaїysz, bierz nogi za pas, bo to straszni idioci. Najpierw nafaszeruj№ ciк oіowiem, a potem sprawdz№ w papierach, kim byіeњ.</text>
+	</string>
+	<string id="dm_intro_112">
+		<text>Dzieс dobry.</text>
+	</string>
+	<string id="dm_intro_113">
+		<text>Dzieс dobry.</text>
+	</string>
+	<string id="dm_intro_114">
+		<text>Hej, co sіychaж?</text>
+	</string>
+	<string id="dm_intro_115">
+		<text>Hej, stary!</text>
+	</string>
+	<string id="dm_intro_116">
+		<text>Hej.</text>
+	</string>
+	<string id="dm_intro_117">
+		<text>O, czeњж!</text>
+	</string>
+	<string id="dm_intro_118">
+		<text>Czeњж.</text>
+	</string>
+	<string id="dm_intro_119">
+		<text>Witaj!</text>
+	</string>
+	<string id="dm_intro_120">
+		<text>Witaj, stalkerze.</text>
+	</string>
+	<string id="dm_intro_121">
+		<text>Witaj, stalkerze.</text>
+	</string>
+	<string id="dm_intro_122">
+		<text>Hej, stalkerze!</text>
+	</string>
+	<string id="dm_intro_123">
+		<text>Jak leci?</text>
+	</string>
+	<string id="dm_intro_124">
+		<text>No no, kogo my tu mamy!</text>
+	</string>
+	<string id="dm_intro_125">
+		<text>A kogуї my tu mamy?</text>
+	</string>
+	<string id="dm_intro_126">
+		<text>Czeњж, stary.</text>
+	</string>
+	<string id="dm_about_165">
+		<text>To jak chodzenie po polu minowym, tylko jeszcze gorzej. Rzeczy, ktуre siк tutaj czasami dziej№... ani na chwilк nie moїna straciж czujnoњci!</text>
+	</string>
+	<string id="dm_about_171">
+		<text>Lepiej przez caіy czas siк pilnuj. Dopуki siк pilnujesz, to їyjesz, bo jak tylko przestaniesz siк pilnowaж, jesteњ martwy.</text>
+	</string>
+	<string id="dm_about_172">
+		<text>W tym miejscu musisz mieж oczy dookoіa gіowy, nawet we њnie, bo w kaїdej chwili moїe siк zdarzyж coњ paskudnego.</text>
+	</string>
+	<string id="dm_about_173">
+		<text>Uwaїaj na tych drani! S№ jak szaraсcza!</text>
+	</string>
+	<string id="dm_help_0">
+		<text>Hej bracie, pomуї!</text>
+	</string>
+	<string id="dm_help_1">
+		<text>Pomocy!</text>
+	</string>
+	<string id="dm_help_2">
+		<text>Straї, jestem ranny! Do mnie!</text>
+	</string>
+	<string id="dm_help_3">
+		<text>Ratunku! Umieram!</text>
+	</string>
+	<string id="dm_help_4">
+		<text>Chіopaki, potrzebujк apteczki!</text>
+	</string>
+	<string id="dm_help_5">
+		<text>Przynieњcie mi apteczkк!</text>
+	</string>
+	<string id="dm_help_6">
+		<text>Chіopaki, potrzebna mi pomoc! Pospieszcie siк!</text>
+	</string>
+	<string id="dm_help_7">
+		<text>Koledzy, potrzebujк apteczki!</text>
+	</string>
+	<string id="dm_help_8">
+		<text>Niech mi ktoњ da apteczkк!</text>
+	</string>
+	<string id="dm_help_9">
+		<text>Przyjacielu, potrzebujк apteczki... Apteczki.</text>
+	</string>
+	<string id="dm_help_10">
+		<text>Stary, pomуї mi!</text>
+	</string>
+	<string id="dm_help_11">
+		<text>Hej kolego, nie odst№piіbyњ mi apteczki?</text>
+	</string>
+	<string id="dm_cool_info_59">
+		<text>Sіyszaіem, їe te baіwany z Kordonu nieџle skopaіy tyіki їoіnierzom i wsadziіy ich durnego szefa do klatki. Chкtnie bym sobie obejrzaі to widowisko. Co za upokorzenie!</text>
+	</string>
+	<string id="dm_cool_info_60">
+		<text>Te cholerne emisje to nie їarty! Jeњli nawet nie usmaїysz siк na miejscu, mog№ ciк zabiж na pierdylion innych sposobуw! Mieliњmy tu naprawdк fajne miejsca, a teraz wszystkie s№ peіne przeklкtych anomalii. Gdzie siк nie ruszysz, umierasz ze strachu, їe zaraz coњ ciк strzeli w tyіek.</text>
+	</string>
+	<string id="dm_cool_info_61">
+		<text>Mamy tк rzeї№czkк zіota... a moїe gor№czkк zіota? W kaїdym razie stalkerzy przekopuj№ siк przez gуry radioaktywnego gуwna, czasami znajduj№ coњ cennego, a my dbamy o to, їeby obywaіo siк bez awantur.</text>
+	</string>
+	<string id="dm_cool_info_62">
+		<text>Kilka dni temu Koіjan i jego kumple trafili na emisjк, wiкc teraz ktoњ inny nosi ich buty, jeњli rozumiesz, o co mi chodzi. Tak wіaњnie koсcz№ ci, ktуrzy paікtaj№ siк na zewn№trz bazy. Trzymaj siк obozu, a nic ci siк nie stanie.</text>
+	</string>
+	<string id="dm_cool_info_63">
+		<text>Stalkerskie іajzy z Agropromu zaіoїyіy jakiњ gang. Sukinsyny zwabiіy kilku naszych i trzymaj№ ich pod kluczem. Boj№ siк ich zabiж - wiedz№, їe wtedy nasza zemsta byіaby straszna.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_enemy">
+		<text>Co? Wrуg pod bokiem, a ty mi zawracasz gіowк takim gуwnem.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_friend">
+		<text>Czego chcesz? Idziemy spotkaж siк z naszymi chіopakami, zaіoїyli obуz niedaleko st№d.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_none">
+		<text>Niedaleko jest miіa, pusta polanka - tam wіaњnie idziemy.</text>
+	</string>
+	<string id="dm_sim_action_stay_point_enemy_near">
+		<text>Co z tob№? Siedzimy sobie spokojnie, pilnujemy obozu i w ogуle, a dookoіa nas kr№їy masa wrogуw. Wiкc moїe po prostu zjeїdїaj st№d ze swoimi pytaniami.</text>
+	</string>
+	<string id="dm_sim_action_stay_point_none_near">
+		<text>Masz jakiњ problem? Zrobiliњmy sobie maі№ przerwк, i tyle. Cicho, spokojnie, nikogo w pobliїu...</text>
+	</string>
+	<string id="dm_actor_news_1">
+		<text>Jakieњ wiadomoњci?</text>
+	</string>
+	<string id="dm_actor_news_2">
+		<text>Co nowego?</text>
+	</string>
+	<string id="dm_actor_news_3">
+		<text>Jakieњ wieњci?</text>
+	</string>
+	<string id="dm_army_no_news_1">
+		<text>Jak chcesz wiadomoњci, poszukaj sobie telewizora - my tu mamy na co dzieс tylko harуwк. Nuuuuuuda.</text>
+	</string>
+	<string id="dm_army_no_news_2">
+		<text>Wal siк! Wiadomoњci siк zachciaіo, co? Kup sobie gazetк w kiosku za rogiem!</text>
+	</string>
+	<string id="dm_army_no_news_3">
+		<text>Jasne, mamy tu masк wiadomoњci... Їуіtodziobom wystarczaj№ na tydzieс. Potem juї tylko nuda.</text>
+	</string>
+	<string id="dm_army_no_news_4">
+		<text>Jak trafisz na jakieњ ciekawe wiadomoњci, podrzuж mi je, dobra? Ha! Sіuchaj, moїe zamiast tego pohandlujmy - masz coњ wartoњciowego?</text>
+	</string>
+	<string id="dm_bandit_no_news_1">
+		<text>A co nowego mogіoby siк tu wydarzyж? Codziennie to samo gуwno!</text>
+	</string>
+	<string id="dm_bandit_no_news_2">
+		<text>Dobre, dobre! Chyba nie s№dzisz, їe do tej dziury dociera wiele wiadomoњci, co?</text>
+	</string>
+	<string id="dm_bandit_no_news_3">
+		<text>Їycie jest do dupy... Tylko їe to їadna nowina.</text>
+	</string>
+	<string id="dm_bandit_no_news_4">
+		<text>Dupa, a nie wiadomoњci! Hej, masz coњ na handel?</text>
+	</string>
+	<string id="dm_csky_no_news_1">
+		<text>Wiadomoњci, powiadasz? Cуї, harujemy tu jak woіy. Miejmy nadziejк, їe niedіugo bкdziemy mogli chodziж po Zonie jak normalni ludzie, a nie wariowaж na kaїdym kroku od anomalii.</text>
+	</string>
+	<string id="dm_csky_no_news_2">
+		<text>Nie sіyszaіem їadnych wiadomoњci. Codziennie dzieje siк to samo: iњж tu albo tam, obserwowaж to czy inne miejsce... Mamy tylko nadziejк, їe ten wysiіek w koсcu siк opіaci.</text>
+	</string>
+	<string id="dm_csky_no_news_3">
+		<text>Jest tu tylko jedna wiadomoњж: Zona nie zna siк na їartach. Badamy j№, ale w kaїdej chwili moїe poїreж nas їywcem... Sіuchaj, nie masz przypadkiem jakichњ uїytecznych artefaktуw?</text>
+	</string>
+	<string id="dm_csky_no_news_4">
+		<text>Bo ja wiem... nic mi nie przychodzi do gіowy. Ale co powiesz na maіy handelek?</text>
+	</string>
+	<string id="dm_default_no_news_1">
+		<text>Nie mam czasu na wiadomoњci! Jak masz dostaж jak№њ wiadomosж, to zawsze do ciebie trafi. My tu tylko biegamy jak chomiki w koіowrotku.</text>
+	</string>
+	<string id="dm_default_no_news_2">
+		<text>Nie sіyszaіem їadnych wiadomoњci, i Bogu za to dziкkujк! Jeњli dostajemy tu jakies wieњci, to tylko te zіe, jeњli wiesz, co mam na myњli. Wiкc - odpukaж w niemalowane - miejmy nadziejк, їe zostanie po staremu.</text>
+	</string>
+	<string id="dm_default_no_news_3">
+		<text>Co ciк w ogуle obchodz№ wiadomoњci? Lepiej siк pilnuj, їeby pozostaж w jednym kawaіku. Przy okazji, masz coњ na sprzedaї?</text>
+	</string>
+	<string id="dm_default_no_news_4">
+		<text>Sk№d mam wiedzieж? A moїe trochк pohandlujemy? Rozіуїmy swoje rzeczy i kaїdy bierze, co mu siк spodoba, co?</text>
+	</string>
+	<string id="dm_dolg_no_news_1">
+		<text>Jak oczyњcimy to miejsce, to bкdzie z tego waїna wiadomoњж. Do tego czasu bкdziemy pracowac, a nie traciж czas na zabawк.</text>
+	</string>
+	<string id="dm_dolg_no_news_2">
+		<text>Nadal jesteњ w Zonie - niech ci to wystarczy za wiadomoњж. Wiesz co, nie rozumiem tych stalkerуw - czy naprawdк tak fajnie taszczyж ze sob№ broс i kombinezon, kiedy idziesz siк wysikaж w krzaki?</text>
+	</string>
+	<string id="dm_dolg_no_news_3">
+		<text>Wiesz co, wiadomoњci niespecjalnie nas krкc№. Po ten towar musiaіbyњ wrуciж na zewn№trz. Ale krкci nas handel innymi rzeczami... Powiedz, masz coњ wartoњciowego na wymianк?</text>
+	</string>
+	<string id="dm_dolg_no_news_4">
+		<text>Wiadomoњci? Kolejna banda idiotуw wlazіa w anomaliк, innych rozszarpaіy jakies bestie - nic nowego. Sіuchaj, masz jakiњ towar? Cokolwiek na sprzedaї?</text>
+	</string>
+	<string id="dm_freedom_no_news_1">
+		<text>Stary, na cholerк ci wiadomoњci? Wyluzuj! Przestaс siк martwiж i sprуbuj dobrze siк bawiж.</text>
+	</string>
+	<string id="dm_freedom_no_news_2">
+		<text>Mamy tu duїo sіoсca, њwieїego powietrza i trawy... trawa jest њwietna, mуwiк ci... No dalej, stary, przestaс siк zamartwiaж i ciesz siк їyciem!</text>
+	</string>
+	<string id="dm_freedom_no_news_3">
+		<text>Nie wiem, na co przydaіyby siк tutaj jakieњ wiadomoњci... Nie њledzк wiadomoњci, kropka. Lepiej mi powiedz, czy masz coњ do sprzedania. Ubijemy interes?</text>
+	</string>
+	<string id="dm_freedom_no_news_4">
+		<text>Wiesz co, koleњ, nie mam pojкcia. Nie dociera tu zbyt wiele wiadomoњci. Podejdџmy do tego bardziej praktycznie. Na przykіad, gdybyњ tak miaі coњ na sprzedaї, mуgіbym to od ciebie kupiж.</text>
+	</string>
+</string_table>
