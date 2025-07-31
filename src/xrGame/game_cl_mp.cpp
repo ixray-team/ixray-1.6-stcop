@@ -34,7 +34,7 @@
 #include "../xrCore/ppmd_compressor.h"
 #include "../xrCore/rt_compressor.h"
 #include "game_cl_mp_snd_messages.h"
-#include "../3rd party/crypto/crypto.h"
+#include "../3rd-party/crypto/crypto.h"
 
 #include "game_cl_base_weapon_usage_statistic.h"
 

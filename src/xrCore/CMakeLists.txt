@@ -132,9 +132,16 @@ list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/tst-independent-alloc.c")
 
 if (MSVC)
 	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
+	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
 else()
 	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Windows/")
 	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "discord/api/")
+
+	if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
+	else()
+		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
+	endif()
 endif()
 
 # xrCore project
@@ -151,7 +158,7 @@ endif()
 
 # Includes 
 target_include_directories(xrCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd party/lzo/include")
+target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd-party/lzo/include")
 target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC})
 target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
 
