@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mar_csky_leader_intro_dialog_0">
+		<text>Ьdvцzцllek az йlхk vilбgбban stalker. Hogy йrzed magad?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_2">
+		<text>Emlйkszel, hogy mi tцrtйnt veled?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_4">
+		<text>Vicces kedvedben vagy, mi? Ez jу elхjel. Lebegyev vagyok, a csoport vezetхje, йn felelek mindenkiйrt... beleйrtve tйged is, legalбbbis amнg itt vagy. Tiszta Йgboltnak nevezzьk magunkat, йs most a mi bбzisunkon vagy. A kisugбrzбs utбn szedtьnk fel az Ingovбnyban...</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_6">
+		<text>Szerencsйs? Hmm... nem hinnйm. A tйnyek a kцvetkezхk: Tъlйlted a kisugбrzбst, erre nem tudok magyarбzatot adni. Mбsodszor, egy jбrхrьnk megtalбlt az Ingovбnyban, ami lйnyegйben egy vйgelбthatatlan futуhomok. Harmadszor pedig egy csapat pszeudokutya majdnem cafatokra tйpett, de a fiъk mйg idejйben kimentettek. Ezen esemйnyek lбncolata az mondatja velem, hogy ez nem puszta szerencse mыve... De elхbb be kell fejeznem amit csinбlok, majd kйsхbb folytatjuk ezt a beszйlgetйst.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_0">
+		<text>Hellу zsoldos! Valуsбgos legenda vбlt belхled. Mйg te sem hinnйd el, hogy milyen szуbeszйdek terjengenek. De hбt ez van. Itt van egy ital a szerencse fiбnak, a hбz szбmlбjбra. Ez majd segнt lazнtani, йs mesйlni a kalandjaidrуl. Majd megцl a kнvбncsisбg.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_2">
+		<text>Nos jу. Te iszol, йn meg majd mesйlek neked errхl a helyrхl. Rйgen elйg csendes kцrnyйk volt – megvoltak az цsvйnyek, felfedeztьk a megfelelх helyeket, mыkцdцtt a kцzlekedйs. Termйszetesen az Ingovбny nem egy leбnyбlom, de nem is volt olyan rossz. Nos... legalбbbis a legutуbbi kisugбrzбsig – a legnagyobb, amit valaha lбttam. Manapsбg a fiъk istenhez йs az цrdцghцz is imбdkoznak mielхtt kimennek. Mert ha йlve tйrsz vissza, mбr az is felйr egy csodбval. De kitartunk, mert ezek a fiъk nem pusztбn a zsбkmбny remйnyйben vannak itt, хk egy jу ьgyйrt harcolnak...</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_4">
+		<text>Йn palackokat gyыjtцttem, egyiket a mбsik utбn. Нgy jutottam el ide ... Haha. Na jу, csak vicceltem, haver. Az igazsбg az, hogy nem volt szбmomra mбshol hely a vilбgon. Nem akar befogadni, ezйrt ide jцttem... elхszцr a Zуnбba majd a Tiszta Йgbolthoz. A fiъk rendesek, йs itt szьksйg van rбm. Visszajцnnek a kьldetйsekrхl, йn meg tцltцk nekik egy italt, elmondok nйhбny trбgбr viccet - ennyi a munkбm... egyszerы de hatйkony. Egyйbkйnt a kцrnyйken Ridegkйnt ismernek.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_6">
+		<text>Ahogy lбthatod, a bбzisunk egy kicsiny, sьppedх tanya a vйgtelen, romantikus Ingovбny kцzepйn. Az nem tudom, hogy pontosan hol van. De a Zуnбban ez az utolsу hely, ahol igazi emberekkel talбlkozhatsz: olyan emberekkel akik nem akarnak бtverni, hбtba szъrni, vagy hagyni elvйrezni, csak hogy megspуroljanak egy elsхsegйlycsomagot.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_8">
+		<text>Tudod, miйrt nem hallottбl mйg rуla? Mert tъl sok ember akar tudni rуla, йs minйl kevesebben tudjбk, annбl jobb!\nLebegyev a vezetхnk – ez a fickу olyan mint egy kхszikla. Х tartja egyben az egйsz csapatot.\nAztбn ott van mйg Kalancsa, Kalancsa professzor. Olyan mint egy kйt lбbon jбrу enciklopйdia йs egy szбmolуgйp egyben – х tцbbet tud a Zуnбrуl mint..., nos mindegy...\nA technikusunkat Хsznek hнvjбk. Kйpes egy ьres dobozbуl is puskбt csinбlni neked. Bбr jуl jцnne neki nйhбny tartalйkeszkцz, de ettхl eltekintve...\nVйgьl ott van mйg Szuszlov. Х a kereskedх, de nem olyan mint a tцbbi. Х nem fog бtverni vagy kifosztani – х tudja, hogy min mennek keresztьl a stalkerek a zsбkmбny megszerzйse йrdekйben, йs х ezt tiszteletben tartja.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_1">
+		<text>Most mбr van valami fogalmad az alapokrуl. Mбs dolgok megйrtйshez bхvebb magyarбzat szьksйges. Az viszont megmagyarбzhatatlan, hogy hogyan йltйl tъl kйt kisugбrzбst is. Egyйrtelmы, hogy nem йrt a kisugбrzбs csъcsйrtйke, mert akkor mбr halott lennйl. Bбr azt meg kell hagyni, hogy olyan szintы kisugбrzбst йltйl tъl, ami mбsok szбmбra mбr halбlos. Rцviden kцrьlbelьl ez tцrtйnt veled.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_3">
+		<text>Igaz – nйhбny kйpessйged, mint pйldбul a motorikus kйpessйgek, a reakciуidх йs a kitartбsod gyorsan megnхtt a kisugбrzбs utбn. Ъgy tыnik, mintha a kisugбrzбs energiбval lбtta volna el a testedet... Ellenben, az erх eme rцvid periуdusбt бllapotod йles zuhanбsa kцvette. Ennek hatбsбt йrzйkeled most.\nVйgezetьl, elmondok valamit, amit mбr tudsz: a kisugбrzбs pusztнtja az idegrendszeredet – ha ez tцbbszцr megtцrtйnik, akkor meghalsz... vagy, ami mйg ennйl is rosszabb, hogy elveszted intelligenciбdat йs цnmagad.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_5">
+		<text>Sajnos nem. A legtцbb amit tehetek, hogy csцkkentem a kisugбrzбs okozta negatнv hatбsokat. Jelenleg egy sor teszten dolgozok, amint Lebegyev бtnйzte az eredmйnyeket, el tudjuk majd vйgezni a megfelelх beavatkozбsokat. Ennek ellenйre, ъjra szeretnйm kihangsъlyozni, hogy ez nem csodaszer, йs nem fogja megoldani a problйmбt. Most csak annyit tudok mondani, hogy kaptбl egy kis idхt mielхtt egyйrtelmыen ki tudnбnk jelenteni, hogy idegrendszered бllapota mikor kezd romlani.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_7">
+		<text>Sajnбlom, de ez minden. Mбr csak annyit tudok tenni йrted, hogy vбlaszolok az esetleges kйrdйseidre.</text>
+	</string>
+	<string id="mar_csky_doctor_about_people_1">
+		<text>Az emberek tйvednek, amikor azt hiszik, felfogjбk a Zуna valуdi mibenlйtйt. Nйhбnyan egyszerыen egy univerzбlis gonosznak tekintik, mбsok a mennyorszбg ajбndйkбnak, megint mбsok pedig a meggazdagodбs forrбsбnak... Mindannyian hibбsan йrtelmezik a dolgokat. Lehetetlen megйrteni a Zуnбt ъgy, hogy azt az emberi felfogбs lencsйin keresztьl vizsgбljuk, tovбbbб tъl korai mйg az embernek akбr megprуbбlni is. Ebbхl az kцvetkezik, hogy mind a kormбnyzat, mind a stalkerek hibбs alapokbуl kiindulva kцzelнtik meg a Zуna jelentette problйmбt. Attуl fйlek, hogy ennek a lehetsйges kцvetkezmйnyei megjуsolhatatlanok lesznek, vagy mбr most is azok. Ez termйszetesen szцrnyы veszйlyforrбst jelent...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_1">
+		<text>Fiatal barбtom, bбrcsak tudnбm a vбlaszt erre a kйrdйsre... Aprуlйkosan tanulmбnyozzuk a Zуnбt, hogy megtalбljuk a vбlaszt.\nA Zуna a cselekvйsek... mondjuk ъgy, hogy „fйlrevezetett” emberi cselekvйsek eredmйnyekйnt jцtt lйtre. Most pedig kйptelenek vagyunk elйrni a korбbbi бllapotot. A Zуnбt nem lehet elpusztнtani, ahogy termйszetes ъton sem fog eltыnni. Mi, itt a Tiszta Йgboltnбl, ъgy gondoljuk, hogy csak egy mуdon lehet megbйkнteni az embereket a Zуnбval: egyьttйlйssel.</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_3">
+		<text>Hogyan lehetne a legjobban elmagyarбzni? Mondjuk ъgy, hogy minden цsszetett rendszer a termйszetben, йs ebbe a Zуna is beletartozik, automatikusan egyensъlyi helyzetbe kнvбn jutni a destabilizбlу kьlsх tйnyezхk hiбnyбban. Itt pont ez volt a helyzet az elmъlt йvekben – a Zуna stabil volt, йs nem voltak jelentхs mйrtйkы eltйrйsek a normбlis йrtйkektхl... Most pedig? Lбttunk egy hatalmas kisugбrzбst,  amely megvбltoztatta a Zуna arculatбt. A rendszer instabil, torzult... йs amolyan mыkцdйsi hiba jцtt lйtre. Kisugбrzбs kisugбrzбst kцvet, йs a Zуna ъgymond telepumpбlja magбt energiбval minden egyes alkalommal. Olyan mйrtйkben, hogy az йrzйkelхk kijelzхje hihetetlen sebessйggel vбltozik! Ha nem talбlunk valami mуdot arra, hogy visszafordнtsuk ezt a folyamatot, a bekцvetkezх katasztrуfa sokkal nagyobb lesz mint az 1986-os.\nA legfontosabb tanulsбga ennek az egйsznek az, hogy ez a mыkцdйsi hiba nem termйszetes eredetы. Ez emberi kйz mыve.</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_5">
+		<text>Ezt prуbбljuk kiderнteni. Talбn ha megtudnбnk, hogy ki zavarta meg a Zуna egyensъlyбt, lenne esйlyьnk megakadбlyozni egy ъjabb katasztrуfбt.</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_7">
+		<text>Mivel elsхsorban az ember okozta az egйsz problйmбt, az ember lehet az egyetlen, aki a dolgokat helyrerakja. Йn nagyon remйlem, hogy ez sikerьlhet.</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_9">
+		<text>Attуl fйlek, erre a kйrdйsre йn nem tudom a vбlaszt. Javaslom, kйrdezd meg Lebegyevet.</text>
+	</string>
+	<string id="mar_csky_doctor_hello_dialog_0">
+		<text>Цrьlцk, hogy lбtlak. Mбr sokkal jobban nйzel ki.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_1">
+		<text>Sajnos – igen. Nos, segнtesz nekьnk?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_0">
+		<text>Szнvtбl egy kis friss levegхt? Jobban nйzel, ki az biztos.\nHadd mondjam el, mi a helyzet.\nA Tiszta Йgbolt bбzison vagy. Ne is prуbбlj emlйkezni, hogy kik vagyunk – mйg soha nem hallottбl rуlunk, йs ennek nagyon jу oka van. A kьldetйsьnk a Zуnбt kutatбsa.\nЪgy gondoljuk, hogy a Zуnбt tanulmбnyozni kell, meg kell йrteni, hogy az emberisйg tudja, mivel бll szemben. A megйrtйs jelenti a kulcsot az egyьttйlйshez. Ha belegondolsz, a Zуna az egyik legcsodбlatosabb jelensйg, amivel az emberisйg egйsz tцrtйnelme sorбn talбlkozott!</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_10">
+		<text>Mostanбban kemйny idхket йlьnk. A kisugбrzбs csцkkentette az anomбliбk szбmбt az Ingovбnyban. Ennek eredmйnyekйnt a terьlet kцnnyebben hozzбfйrhetх lett a fosztogatуk йs mбs йlхskцdхk szбmбra. Olyan sok van belхlьk, hogy hamarosan a mi bбzisunkon fognak letelepedni, ha nem teszьnk semmit. A gond az, hogy nem igazбn vagyunk harcosok, нgy folyamatosan veszнtьnk a terьletьnkbхl. De te, elйg csak rбd nйzni, йs mбris lбtszik, hogy te harcos vagy. A te tapasztalatod megmentheti sok tбrsunk йletйt.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_2">
+		<text>Ahogy mondtam, kutatуk vagyunk. Megprуbбljuk megйrteni a Zуna termйszetйt, okokat talбlni megjelenйsйre, йs meghatбrozni azokat a szabбlyokat, melyek egйsz lйtezйsйt irбnyнtjбk. Minket nem vonz a pйnz, mi nem keresьnk relikviбkat, йs a tцbbi frakciуval valу бllandу csatбrozбs sem йrdekel. Ezйrt rejtхztьnk el itt az Ingovбnyban, йs ezйrt koncentrбlunk a kutatбsokra.\nA mi erхssйgьnk nem a harc, hanem a tudбs – a Zуna ismerete, amelyet йvek hosszъ kutatбsa sorбn gyыjtцttьnk цssze. Tцbbet tudunk rуla, mint amennyit a stalkerek йs kormбny цsszesen tud. Kutatбsunk egyre inkбbb egysйges kйppй бllt цssze... a legutуbbi kisugбrzбsig, nйhбny nappal ezelхtt...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_4">
+		<text>Nem, a kisugбrzбs hihetetlenьl erхs volt. Olyan volt, mint egy hurrikбn, amely vйgigsцpцrt az egйsz Zуnбn, megvбltoztatva azt... Minden mбs lett. Az ismert, eddig biztonsбgosnak hitt terьletek most radioaktнvak йs tele vannak anomбliбkkal, de elйrhetsz olyan rйszeket is, amelyeket korбbban, йveken бt nem lehetett elйrni. Mйg a legkemйnyebb stalkerek sem tudjбk, hogy mi vбr rбjuk kedvenc цsvйnyeiken.\nA mбsik dolog, hogy az emberek is megvбltoztak, йs ez azonnal йszrevehetх volt. A kisugбrzбs megsemmisнtette a kьlцnbцzх frakciуk kцzцtti tцrйkeny egyensъlyt, йs most mindenki a terьletekйrt harcol...\nMбs szуval szбmos furcsa dolog tцrtйnt, йs mйg most sem ismerjьk ezen vбltozбsok teljes mйrtйkйt. Csak nйhбny napja volt a kisugбrzбs. Ha engem kйrdezel, a legfurcsбbb dolog az, hogy te tъlйlted.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_6">
+		<text>Йrtem. Miben segнthetek?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_8">
+		<text>Nem kцnnyы kijutni innen, hosszъtбvon legalбbbis. Az Ingovбnyban igazi labirintust alkot a nбd йs a sugбrzу futуhomok, mely kцzt rettenetes szцrnyek йs emberi sцpredйk nyьzsцg... nem is tudom, melyik a rosszabb. Csak egy vezetхvel tudsz biztonsбgosan бtkelni az Ingovбnyon. Csak nйhбny ilyen emberьnk van. Olyan emberek, akikre gondolkodбs nйlkьl rбbнznбm az йletem. Sajnos a dolog nem ilyen egyszerы, mert ha elengedlek, ittlйtьnk talбn nem marad titok sokбig.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_0">
+		<text>Tъlйlted a kisugбrzбst, ъjra! Mбr nem is vagyok annyira meglepve. A fiъk nem messze a toronytуl talбltak rбd, miutбn a dolgok lenyugodtak egy kicsit.\nTudod, Kalancsбnak igaza volt. A te eseted szemben бll minden tudomбnyos magyarбzattal. Ъgy gondolja, hogy valamifйle... hogy is mondjam... „szokatlan” kйpessйgre tettйl szert, ami segнt, hogy tъlйld azokat az abnormбlis esemйnyeket, amelyek mбsok йletйt azonnal kioltanбk. Emellett ъgy tыnik, hogy valami nцveli tested teljesнtхkйpessйgйt. A lйnyeg az, hogy a mыszereink mбr nem tudtбk mutatni a mйrt szintet. Vбrj-vбrj, ne olyan hevesen. Minden dolognak van egy hбtulьtхje: a kisugбrzбs tцnkreteszi az idegrendszeredet. Ha ez нgy folytatуdik, meghalsz.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_10">
+		<text>Igazad van, de tudjuk, hogyan lehet megakadбlyozni a katasztrуfбt, йs megбllнtani a kisugбrzбst. Йs ez azйrt mбr valami...</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_12">
+		<text>Meg kell tudnunk, hogy ki jutott el a Zуna kцzpontjбba йs meg kell бllнtanunk, bбrmibe is kerьl.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_14">
+		<text>Furcsa kapcsolat van kцzted йs a Zуna kцzцtt. Egyrйszt, minden ъjabb kisugбrzбs fokozatosan elpusztнt, mбsrйszt tъlйlsz olyan helyzeteket is, ahol mбsoknak esйlyьk sem lenne. A zsigereimben йrzem, hogy a kйpessйgeid... adomбnyod, бtkod, nevezd, aminek akarod... azt jelenti, hogy бt tudsz jutni olyan helyeken is, amirхl mбsok csak бlmodnak. Most pedig nagyon gyorsan kell cselekednьnk.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_16">
+		<text>Tudtam, hogy meg fogod kйrdezni. A vбlasz egyszerы: ha a kisugбrzбs nem fejezхdik be, az idegrendszered egyszerыen kiйg, йs te meghalsz. Segнts nekьnk, йs ments meg magad. Ez most ъgy hangzott, mint egy popcornmozi egyik mondata, de tйnyleg nincs mбs esйlyed.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_2">
+		<text>A normбl kisugбrzбs gyakorlatilag a Zуnбban felgyьlemlett energia elszabadulбsa, amolyan kisьlйs. De ami most tцrtйnik, az valami mбs.\nAz йn vйlemйnyem az, hogy a kisugбrzбsok szбmбnak ilyetйn megnцvekedйse a Zуna vбlasza valamilyen komoly fenyegetйsre, olyan, mint az emberi immunrendszer reakciуja. Nehйz tбrgyilagosan elmagyarбzni az ember йs a Zуna kapcsolatбt. A Zуna megtыr minket bizonyos helyeken, mбs helyekre viszont nem enged be. Bбrmi van is a Perzselхn tъl йs beljebb, a Zуna szнvйben, az tabu – egy olyan hely, ahovб a stalkereknek nem szabad belйpniьk. Ъgy gondolom, hogy a Zуnбban tapasztalhatу esemйnyek annak kцvetkezmйnyei, hogy valaki megszegte ezt a tabut, йs bemerйszkedett az Agy Perzselхn belьlre.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_4">
+		<text>Nehйz megmondani. Erre akkor tudnйk vбlaszolni, ha tudnбm, hogy mi van a Zуna kцzpontjбban. Nйhбnyan azt mondjбk, hogy a Monolit. Mбsok szerint a Kнvбnsбgteljesнtх... a leginkбbb mohуk arrуl бlmodnak, hogy ritka relikviбk tцmege vбr ott rбjuk... йn voltam az erхmыnйl, korбbban mint fiatal specialista, de nem tudom, hogy most mi lehet ott. Annyit mondhatok, hogy a Perzselх okkal jelent meg. Megakadбlyozza, hogy bбrki bejusson a Zуna kцzepйbe. Az emberek nem mehetnek az Agy Perzselхnйl beljebb.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_6">
+		<text>A nagy kisugбrzбsig nem hittem volna. A pokolba is, senki sem gondolta volna. Ha elfogadjuk, hogy a kisugбrzбs maga egy vйdelmi mechanizmus, akkor a vбlasz egyйrtelmы: valaki бtjutott a Perzselхn, a Zуna pedig a kisugбrzбssal reagбlt. Mivel a kisugбrzбsok nem szыntek meg azуta sem, akбrki is volt ott, mйg mindig йletben van. A Zуna megprуbбlja elkapni, йs megцl minden йlхlйnyt kцzben.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_8">
+		<text>Sokat tudok a Zуnбrуl, de nem mondhatok el mindent. Nйhбny dologgal kapcsolatban bнznod kell bennem.\nEgy rendszer, bбrmilyen rendszer, egyensъlyi бllapotra tцrekszik. A Zуna jelenleg instabil, az instabilitбs pedig nцvekszik. Ha a folytonos kisugбrzбs nem szыnik meg, a Zуna olyan instabillб vбlhat, hogy egy ъjabb katasztrуfa fog bekцvetkezni. Ezzel pedig eljutottunk oda, hogy mit is csinбl a Tiszta Йgbolt – megprуbбljuk megelхzni a katasztrуfбt.</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_0">
+		<text>Elйg a beszйdbхl! Megtбmadtбk egy бllomбsunkat... Segнts visszaverni a tбmadбst!\nHa йrdekel, nйhбnyan azok kцzьl is ott harcolnak, akik megmentettek tйged. \nArra mйg emlйkszel, hogyan kell tъlйlni a Zуnбban?</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_21">
+		<text>Nagyszerы! Menj a kereskedхhцz, х majd ad neked valami indulу felszerelйst. Ha vйgeztйl, indulj egyenesen az бllomбsra. Amint kilйptйl a bбzis kapuin, kцvesd az utasнtбsaimat – megprуbбllak irбnyнtani.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_1">
+		<text>Nйzd meg magad. Alig van felszerelйs – olyan, mintha egy atomhбborъ utбn lennйnk. Ha talбlunk is valamit, az szinte mindig elromlik, йs nincs semmink, amit pуtalkatrйsznek hasznбlhatnбnk. Ezйrt kell minden fellelhetх dolgot a legjobban hasznosнtani... A mъlt hйten kйszнtenem kellett egy rбdiуt. Mit gondolsz, mit hasznбltam? Egy бtkozott hыtхszekrйnyt. Nem tudom, hogy ezen nevessek-e, vagy inkбbb sнrjak...</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_3">
+		<text>Nincs tъl sok izgalmas dolog a kцrnyйken. Nem olyan, mint a Szemйtdomb... ъgy hallottam, hogy rйgi szovjet dolgokat is kiбstak! A csernobili baleset utбn szбmos konvoj szбllнtott oda szennyezett jбrmыveket, felszerelйseket йs mindenfйle szemetet... Ъgy gondoltбk, hogy mindez csak szemйt mert radioaktнv. Akkor az is volt. Ma mбr senki sem hнvnб sugбrzбsnak. Olyan az egйsz mint az aranylбz. Rengeteg stalker ment oda a Zуna minden rйszйrхl, hogy kiбssanak valamit. Kбr, hogy szinte semmi sem jut el ezekbхl ide, hacsak Lebegyev el nem kьldi a fiъkat, hogy beszerezzenek valamilyen kьlцnleges alkatrйszt...</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_5">
+		<text>Semmi kьlцnцs. Javнtom йs felъjнtom a fegyvereket йs a ruhбkat... Alapvetхen elvйgzek mindent, amit el kell vйgezni. Ha valami meg kell javнtani – йn vagyok a megfelelх ember.\nУ, ha szert tehetnйk nйhбny alkatrйszre, olyan jбtйkszereket csinбlnйk a fiъknak, hogy no! Fegyvereket, pбncйlt, felszerelйseket – egйszen ъj szнnvonalra emelnйm хket!\nHa talбlsz valami hasznosat, ne felejtsd el elhozni nekem, йs йn csinбlok belхle valami szйpet – megнgйrem.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_0">
+		<text>Ьdvцzцllek, vendйg a tбvoli vidйkekrхl! Mit szйl hozott? Duzzadу pйnztбrca, vagy az egzotikus csodбk?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_10">
+		<text>Igen, tudom. Ide figyelj. Mбr нgy is tъl sokat mondtam neked. Az idх pйnz, ha ьzletelni akarsz, legyen, ha nem, akkor viszlбt kйsхbb.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_2">
+		<text>Igen, hallottam a tцrtйnetedet. A lйnyeg az, hogy mйg mindig йletben vagy... a dolgaidat kцnnyedйn pуtolni lehet, amнg a Zуna kedves hozzбd... Szуval ьzletelni akarsz, vagy kйrdezхskцdni?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_4">
+		<text>Mi ilyen emberek vagyunk! Nem vehetsz plusz 15 percet az йletedhez, vagy extra йletet a halбltуl, de mirбnk, kereskedхkre mindenhol szьksйg van. Mйg a Zуnбban is, mйg az Ingovбnyban is, mйg a fцld alatt is. \nAz csak illъziу, hogy a Zуna le van zбrva йs a hadsereg хrzi az цsszes ki йs bevezetх utat. Csak gondolj bele, manapsбg a vilбg bбrmely rйszйn talбlhatsz olyan relikviбkat йs ritka fajokat, amelyek a Zуnбbуl szбrmaznak. Emellett pedig a stalkerek soha nem йrzik hiбnyбt a konzerveknek, vodkбnak, lхszernek йs mбs felszerelйsnek – valakinek ezekkel is foglalkoznia kell, igaz? Nos, itt jцvьnk mi a kйpbe. Ez nem olyan hely, ahol csempйszett CD-ket бrulsz, mikцzben a zsaruk minden бtkozott nap a sarkadban vannak!\nItt a helyzet nagyon egyszerы: a kьlvilбgnak megvannak az йrdekeltsйgei a Zуnбban, йs ez  fordнtva is igaz, de ez hivatalosan tilos, bьntetendх йs minden marhasбg! Mi ezйrt vagyunk itt... Biztosнtjuk, hogy az igйnyek ki legyenek elйgнtve, нgy mindenki boldog. Van egy vicc a kereskedхk kцzцtt: ha valaki fegyvert fog rбd, a legnagyobb esйlyed akkor van, ha meg tudod venni tхle.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_6">
+		<text>Ne is beszйljьnk errхl! Fogalmad sincs, mennyire fбrasztу, amikor ezekkel az бrukkal hбzalok! Бtlagos relikviбk tonnбi fordulnak meg nбlam, de a legjobb бruk rendre elkerьlnek. Mбr йvek уta nem volt semmi egyedi a termйkeim kцzцtt.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_8">
+		<text>Ki tudja? Talбn a stalkerek mбr megtalбltak mindent, ami йrdekes. Бm ha egyszer tъljutnбnk a Perzselхn, цregem, az egy csoda lenne! Ъgy hallottam, ott annyi relikviбt talбlhatsz, ami egy йletre elйg lenne, feltйve, ha az йleted nem ott йr vйget. Itt az ideje, hogy mi, kereskedхk egyesнtsьk erхinket, йs valahogy бtjussunk azon a valamin.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_0">
+		<text>Vйgre! Tessйk, itt az alapfelszerelйs – kimondottan хrjбratozбsra terveztйk.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_2">
+		<text>Azt a parancsot kaptam, hogy ellбssalak valami felszerelйssel. Nincs idх kйrdйsekre, a fiъknak segнtsйgre van szьksйgьk!</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_111">
+		<text>Figyelj! Felhasznбltunk minden kapcsolatunkat йs цsszekцttetйsьnket a Zуnбban. Megtudtuk, hogy a Kordon kцzelйben egy stalker nйhбny furcsa alkatrйsz irбnt йrdeklхdцtt Szidorovicsnбl. Jelenleg csak ennyit tudunk, de ez is valami.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_11111">
+		<text>Termйszetesen az ingovбnyon бt. De mбr mondtam neked, a kisugбrzбs utбn mindenfйle sцpredйk jelent meg arra, йs most majdnem az egйsz terьletet хk uraljбk. Tъlzбs nйlkьl, ostrom alatt бllunk. Nem fogom veszйlybe sodorni a vezetхk йletйt, szуval, mielхtt elmйsz a Kordonhoz, vissza kell szereznьnk az Ingovбny fцlцtti uralmat.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_211">
+		<text>Nos, van idхd meggondolni magad. Bбr nem sok. Gyere vissza, ha felkйszьltйl.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_11">
+		<text>Menj, lбtogasd meg a csapost. Igyбl egy jуt, aztбn gyere vissza. Most nincs йrtelme beszйlgetni veled – olyan vagy, mintha valami kьtyь бtprogramozta volna az agyadat.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_21">
+		<text>Mit keresel mйg mindig itt? Menj, йs vedd бt a felszerelйst Szuszlovtуl. Most azonnal!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_31">
+		<text>Megvan a felszerelйs? Na, akkor ne vesztegessьk az idхt, indulj futуlйpйsben az бllomбsra!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_41">
+		<text>A te йrdeked is, hogy segнts. Hacsak nem akarod йleted hбtralйvх rйszйt ьres vбzkйnt leйlni.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_91">
+		<text>Ki vele, haver!</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_11">
+		<text>Azt javaslom, keresd meg Lebegyevet – nem szokбsa fцlцslegesen hнvogatni az embereket.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_21">
+		<text>Az idх nem igazбn alkalmas a dumбlбshoz. Nem hallottad? A mбsodik бllomбst megtбmadtбk. Mi lenne, ha kimennйl segнteni nekik?</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_31">
+		<text>Hellу Mr. Kйt-kisugбrzбst-is-tъlйltem! Azt hiszem, Lebegyev beszйlni akart veled. Miйrt nem mйgy йs keresed meg mielхtt egy harmadik kisugбrzбs is elkap? Ha ha ha!</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_41">
+		<text>Mi a helyzet, tesу?</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_11">
+		<text>Hй haver! Ъgy festesz, mint egy hulla! Friss levegхre lenne szьksйged. Csak mellйkesen jegyzem meg, hogy van egy nyitott bбr a kцzelben.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_21">
+		<text>Szerintem tйged keresett Lebegyev. Azt hiszem beszйlned kellene vele. Addig йn rendbe kapok nйhбny fegyvert... szokбs szerint szemetet hasznбlva.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_31">
+		<text>Halottad a mбsodik бllomбs segйlykйrйsйt, nem? Akkor menj, йs segнts nekik!</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_41">
+		<text>Hellу, csodafiъ! Ъgy hallottam, hogy Lebegyev szeretne sьtkйrezni egyet a sйrthetetlen aurбdban. Keresd meg!</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_91">
+		<text>Mi ъjsбg?</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_11">
+		<text>Szent tehйn! Olyan sбpadt vagy, mint egy vбmpнr! Sьrgхsen meg kell lбtogatnod a bбrt!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_21">
+		<text>Elйg jуl nйzel ki... mбrmint ahhoz kйpest, hogy tъlйlted a kisugбrzбst. Szerintem jуt tenne egy kis pihi Lebegyevnйl a kandallу mellett...</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_31">
+		<text>Kйsхbb mйg beszйlьnk. Most szьksйg van rбd az бllomбson. Menj!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_41">
+		<text>У szegйnyem! Meg kellene lбtogatnod Lebegyevet.. Egy ital talбn nem is lesz elйg.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_91">
+		<text>Akarsz ьzletelni?</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_111">
+		<text>Megvagy!</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_211">
+		<text>Pontosan ezt is fogom csinбlni!</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_311">
+		<text>Ez aztбn remek vicc... NEM AZ!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_1">
+		<text>Sok mesйlni valу nincs. Egy tudуscsoportot vezettem az ingovбnyon keresztьl, amikor eltalбlt egy kisugбrzбs. Azutбn mбr nem emlйkszem semmire... Itt tйrtem magamhoz. Most pedig te mondd el, hogy mi tцrtйnt!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_3">
+		<text>Hogy kerьltйl ide?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_5">
+		<text>Ez a hely... Elmondanбd, hogy pontosan hol is vagyunk?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_7">
+		<text>Ismerem a Zуnбt, de a Tiszta Йgboltrуl mйg soha nem hallottam. Hogy mыkцdnek itt a dolgok?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_9">
+		<text>...</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_0">
+		<text>Mi tцrtйnt velem?</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_2">
+		<text>Igen, nem igazбn йrzem jуl magam...</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_4">
+		<text>Meg tudod бllнtani a idegrendszerem pusztulбsбt?</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_6">
+		<text>Tudsz mйg tenni йrtem valamit?</text>
+	</string>
+	<string id="mar_csky_doctor_about_people_0">
+		<text>Mindenfйle embert lбttam mбr a Zуnбban. Nйhбnyan azйrt jцttek ide, hogy megvalуsнtsбk az бlmaikat, nйhбnyan, hogy megkeressйk a Zуna csodбit, йs nйhбnyan pedig csak azйrt, hogy zsбkmбnyt keressenek. Miйrt vizsgбlja a Tiszta Йgbolt a Zуnбt?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_0">
+		<text>Mi is a Zуna?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_2">
+		<text>Mik ezek a rengйsek a Zуnбban? Tudsz rуluk valamit?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_4">
+		<text>Bбrcsak tudnбm, hogy ki az...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_6">
+		<text>Tйnyleg kйpes lenne erre az ember?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_8">
+		<text>De hogyan? Mi йrtelme ennek a "mentхakciуnak?"</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_11">
+		<text>Most mбr elйg a semmittevйsbхl, ember! Ьzletet kцtцttйl Lebegyevvel? Akkor csinбld azt, amit mondott, йs kйsz!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_111">
+		<text>Majd йn beszйlek a fejйvel, kцszi!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21">
+		<text>Szуval, kйsz vagy, indulhatunk a helyхrsйgre?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_211">
+		<text>Kйsz vagyok.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_2111">
+		<text>Okйs! Az ъt alatt be lesz kцtve a szemed. Gondolom, megйrted. Titokban kell tartanunk az ъtvonalakat!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21111">
+		<text>Jуl van.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_212">
+		<text>Mйg nem.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_2121">
+		<text>Akkor siess!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21211">
+		<text>Okй-zsokй!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_31">
+		<text>Nem foglak бtvezetni az ingovбnyon, Lebegyev parancsa.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_311">
+		<text>Йrtem!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_41">
+		<text>Szуval, бtvezesselek a Nagy Ingovбnyon?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_411">
+		<text>Igen.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_4111">
+		<text>Tudod a szabбlyokat, bekцtjьk a szemed! Ne engedd el a vбllamat, akkor nem lesz gond!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_41111">
+		<text>Rendben!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_412">
+		<text>Mйg ne!</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_11">
+		<text>Remek! Elvezesselek a bбzisunkra?</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_111">
+		<text>Igen.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_1111">
+		<text>Jуl van, akkor ezt a kцsd a szemedre, йs ne engedd el a vбllamat, amнg nem szуlok!</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_11111">
+		<text>Menjьnk!</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_112">
+		<text>Mйg ne!</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_0">
+		<text>Ъgy tыnik, nem sok vбlasztбsom van.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_11">
+		<text>Igen.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_1111">
+		<text>Jу lesz. Hogy jutok a Kordonba?</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_111111">
+		<text>Йrtettem!</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_21">
+		<text>Nem, kell egy kis idх, mнg бtgondolom!</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_2111">
+		<text>Бll az alku!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_111">
+		<text>Йrtem, mire cйlzol!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_211">
+		<text>Rendben!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_311">
+		<text>Aha!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_911">
+		<text>Gondoltam, beugrom egy percre. Most mбr mennem kell!</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_1">
+		<text>Miйrt bujkбlsz?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_11">
+		<text>...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_3">
+		<text>Mi olyan kьlцnleges benne? Korбbban is voltak kisugбrzбsok...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_5">
+		<text>Ha tudnбm, hogy йltem tъl, azonnal elmondanбm! De nem emlйkszem semmire...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_7">
+		<text>Jobb, ha most elmegyek! Voltam mбr jobban is, de jбrni tudok, йs a fegyver sem esik ki a kezembхl. Hogy jutok ki innen?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_9">
+		<text>Mire akarsz kilyukadni?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_1">
+		<text>Miйrt lettek ilyen gyakoriak a kisugбrzбsok?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_11">
+		<text>Lбtom, цnbizalombуl nincs hiбny. Szуval, mi a terv?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_13">
+		<text>Йs ezt miйrt csak nekem mondod el?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_15">
+		<text>Hmm... Nem tudom, hogy bele akarok-e ugrani a dolgok kцzepйbe. Miйrt kell nekem ebben rйszt vennem?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_3">
+		<text>Valaki бtjutott a Perzselхn? Milyen veszйlyt jelent ez a Zуnбra nйzve?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_5">
+		<text>Tйnylegesen бt lehet jutni a Perzselхn? Йs elmйletileg?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_7">
+		<text>Milyen veszйlyei vannak a gyakori kisugбrzбsoknak?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_9">
+		<text>Megelхzni a katasztrуfбt? Mйg ahhoz sincs erхtцk, hogy a fosztogatуkkal harcoljatok!</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_1">
+		<text>Hasogat a fejem... йs forog velem a vilбg... Szуval remek formбban vagyok.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_3">
+		<text>Rendben... Emlйkszem, hogy egy expedнciуt vezettem az ingovбnyon keresztьl. Egy tudуscsoportot. Ekkor... a kisugбrzбs... Ez minden. Hol vagyok, ez mбr a mennyorszбg? De akkor miйrt hasonlнt minden annyira a Zуnбra?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_5">
+		<text>Azt hiszem, akkor szerencsйm volt...</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_111">
+		<text>Rendben!</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_2">
+		<text>Csak tцredйkekre emlйkszem.</text>
+	</string>
+	<string id="mar_csky_tactic_about_me_dialog_0">
+		<text>Mit csinбlsz itt?</text>
+	</string>
+	<string id="mar_csky_tactic_about_me_dialog_1">
+		<text>Prуbбlnйk pihenni egy kicsit. Цsszegyыjtцm a srбcok бltal hozott informбciуkat. Йs bбtor vezetхnk tanбcsadуja vagyok. Tudod, mi, kнsйrхk vagyunk a Tiszta Йgbolt szemei йs fьlei az Ingovбnyban.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_11">
+		<text>Haver, mбr tцbb mint hбrom napja nem aludtam... Vagy van mбr nйgy is? Hadd szundнtsak egyet, okйs?</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_111">
+		<text>Okйs!</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_21">
+		<text>Haver, kйrlek...</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_211">
+		<text>Jуl van, jуl van, pihenj csak!</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_31">
+		<text>Vбrj egy percet! Eljutni kцnnyы a Nagy Ingovбnyba, a kнsйrхink majd kivezetnek, de ha йletben is akarsz ott maradni, tisztбban kell lenned a jelenlegi taktikai helyzettel, йs a PDA-d ъj lehetхsйgeivel! Szуval, ha ezek kцzьl йrdekel valami, csak kйrdezz!</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_41">
+		<text>Szinte az egйsz Ingovбnyt elleptйk a fosztogatуk йs a szцrnyek. Lйnyegйben ostrom alatt бllunk!</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_51">
+		<text>Persze, sikerьlt biztosнtanunk egy бllбst a Nagy Ingovбnyban, de ez csak egy a sok kцzьl. Nem tъl rуzsбs a helyzetьnk, nekem elhiheted!</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_61">
+		<text>Az Ingovбny biztonsбgos, legalбbbis, amennyire egy ingovбny az lehet. Ugyanez mбr nem mondhatу el a kivezetх utakrуl.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_71">
+		<text>Бllhatatos kis fickу vagy, ugye tudod? Le vagyunk nyыgцzve, igen, a kнsйrхk is. Ha el szeretnйl menni a Kordonba, egyikьnk vбrni fog rбd a faluban, az Ingovбny dйlkeleti rйszйn!</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_81">
+		<text>Minden rendben van? Akkor visszamegyek szunyуkбlni...</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_0">
+		<text>Milyen a taktikai helyzet?</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_1">
+		<text>Egy szуban? Szar. Kйt szуban? Nagyon szar. A harcosaink alig tudjбk mбr megtartani a Nagy Ingovбnyt, egyre hбtrйbb йs hбtrйbb szorнtjбk хket a fosztogatуk йs a szцrnyek. Az ellensйg szбmbeli fцlйnyben van.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_2">
+		<text>Sikerьlt megszilбrdнtanunk jelenlйtьnket az Ingovбnyban, de a fosztogatуk tovбbbra is hбborgatnak minket. A folyamatos rajtьtйseik, amiket egy йszakkeletre fekvх farmrуl irбnyнtanak, egyre... kellemetlenebbek, finoman szуlva!</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_3">
+		<text>Az Ingovбny a mienk, kivйve egy maroknyi terьletet. Sajnos, ezekbe beletartoznak a minket a kьlvilбggal цsszekцtх цsvйnyek is. Ezek tovбbbra is az ellensйg kezйn vannak. </text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_4">
+		<text>Egy szуban? Fasza! A fosztogatуk йs a szцrnyek idхnkйnt mйg hбborgatnak minket, de ahhoz kйpest, hogy nemrйg mйg milyen volt az Ingovбny, most maga a fцldi paradicsom! </text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_0">
+		<text>Mit kell tennьnk ahhoz, hogy бtvegyьk az Ingovбny irбnyнtбsбt?</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_1">
+		<text>Meg kell ritkнtanunk az ellensйg sorait! Azaz minйl tцbbet le kell lхnьnk azok kцzьl, akik tьzelnek rбnk! Ha nem tesszьk, az embereinknek nem lesz esйlye biztosнtani az Ingovбnyt!</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_2">
+		<text>El kell foglalnunk az йszakkeleti farmot! Tъl rйgуta йlхskцdnek mбr ott a fosztogatуk!</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_3">
+		<text>El kell foglalnunk a Kordonba йs Agropromba vezetх, stratйgiai fontossбgъ цsvйnyeket! Nйlkьlьk gyakorlatilag elvбgtak minket a kьlvilбgtуl.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_4">
+		<text>Pihenni? Йbredj fel, az Ingovбny a mienk!</text>
+	</string>
+	<string id="mar_csky_tactic_tutorial_dialog_0">
+		<text>Mesйlj a PDA-m ъj lehetхsйgeirхl!</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_0">
+		<text>Hellу! Mi ъjsбg, Szaki?</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_2">
+		<text>Ez nem lesz sйtagalopp.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_4">
+		<text>Nos, hogy alakulnak mostansбg a dolgaid?</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_111">
+		<text>Йrtem, mire cйlzol!</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_211">
+		<text>Йrtem!</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_311">
+		<text>Aha!</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_411">
+		<text>Jу!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_111">
+		<text>Okos elgondolбs!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_211">
+		<text>Jу цtlet!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_311">
+		<text>Йrtem!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_411">
+		<text>Aha, kцszцnцm a tanбcsot!</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_1">
+		<text>Egyik sem, sajnos! Eltalбlt egy kisugбrzбs, йs йppen csak tъlйltem. Nem maradt semmim. Ъgy tыnik, a kisugбrzбs szйtszуrta minden holmimat az Ingovбnyban...</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_101">
+		<text>Йg veled!</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_3">
+		<text>Igen, igen... Mйg egy ilyen titkos helyen is, mint az Ingovбny, szьksйg van kereskedхkre. Nem gondolod?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_5">
+		<text>Йrtem! Azt leszбmнtva, hogy elsхre nem ъgy nйz ki, hogy nagyon jуl menne az ьzleted.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_7">
+		<text>Miйrt ilyen szegйnyes a vбlasztйk?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_9">
+		<text>Nem te vagy az egyetlen, aki arrafelй kacsingat.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_1">
+		<text>Kцsz! Hй, mindig ilyen stresszes itt?</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_3">
+		<text>Igen. Йn mentem!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51">
+		<text>Hellу! Mit szeretnйl, hova vezessьnk?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_511">
+		<text>A Kordonba.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5111">
+		<text>Igen, ember, le a kalappal elхtted, hogy segнtettйl a srбcainknak! Mбr el is felejtettem, hogy milyen biztonsбgban jбrni az Ingovбnyban... mбr amennyire a mocsarak a Zуna peremйn ezt engedik. Mindegy, menjьnk dolgunkra! Нgy van?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51111">
+		<text>Aha.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_511111">
+		<text>Ezъttal csinбlhatjuk szem bekцtйs nйlkьl is. Ha vйletlenьl futуhomokba lйpnйl, nyitott szemmel sokkal nagyobb йlvezet meghalni... csak vicceltem! Tartsd nyitva a szemed, йs jegyezd meg az utat az Ingovбnyon keresztьl! Legkцzelebb mбr csak magadra hagyatkozhatsz majd!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5111111">
+		<text>Йrtettem!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51112">
+		<text>Nem, mйg el kell intйznem pбr dolgot!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5112">
+		<text>Hmm, az jу messze van innen... jуl van. Szedjьk akkor a lбbunkat!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_512">
+		<text>A bбzisotokra.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5121">
+		<text>Rendben! Kцsd be a szemed, йs ne engedd el a vбllamat!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51211">
+		<text>Menjьnk!</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_513">
+		<text>A halбszfaluba.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_514">
+		<text>A falu romokhoz.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_515">
+		<text>A leйgett tanyбhoz.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_516">
+		<text>A dйli tanyбhoz.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_517">
+		<text>Sehova. Kйsхbb talбlkozunk!</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_7">
+		<text>...</text>
+	</string>
+</string_table>

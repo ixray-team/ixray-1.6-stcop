@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mil_actor_attack_house">
+		<text>Zlikwiduj wojskowych w kwaterze gіуwnej</text>
+	</string>
+	<string id="mil_actor_attack_house_text">
+		<text>Oddziaі wojskowy zaj№і pozycje obronne w budynku kwatery gіуwnej. Zlikwiduj wojskowych w budynku</text>
+	</string>
+	<string id="mil_additional_quest_1_name">
+		<text>Opanuj transport wojskowy ze њmigіowca.</text>
+	</string>
+	<string id="mil_additional_quest_1_text">
+		<text>W okolic rozbiі siк patrolowy њmigіowiec wojskowy z cenn№ broni№ i amunicj№. Potrzebujemy tych zapasуw, aby utrzymaж barierк - licz№ siк kaїda spluwa i kaїdy nabуj. Niestety, nasi chіopcy nie mog№ siк przedostaж na ten obszar. Okolicк kontroluj№ monolitianie - to zawsze byli twardziele, a teraz maj№ jeszcze w odrуїnieniu od nas kombinezony przeciwradiacyjne.</text>
+	</string>
+	<string id="mil_additional_quest_2_name">
+		<text>Odszukaj PDA</text>
+	</string>
+	<string id="mil_additional_quest_2_text">
+		<text>Kilka nocy temu oddziaі stalkerуw zostaі zaatakowany przez watahк gіodnych i bezwzglкdnych psуw. Nikt nie przeїyі. Dowуdca oddziaіu polegі wraz ze swymi podwіadnymi, ale przenosiі waїne informacje. Odszukaj jego zwіoki i zabierz PDA z tymi informacjami.</text>
+	</string>
+	<string id="mil_additional_quest_3_name">
+		<text>Odszukaj іup zaginionego stalkera</text>
+	</string>
+	<string id="mil_additional_quest_3_text">
+		<text>Anomalia zabiіa jednego z naszych snajperуw; amunicja snajperska jest bezcenna. Sowicie wynagrodzimy ciк za zwrot tych naboi.</text>
+	</string>
+	<string id="mil_additional_quest_4_name">
+		<text>Zabierz martwemu stalkerowi artefakt</text>
+	</string>
+	<string id="mil_additional_quest_4_text">
+		<text>Jeden z naszych stalkerуw przebyі bagno-anomaliк, ale nie zdoіaі stamt№d wynieњж cennego artefaktu. Dostarcz nam go, a otrzymasz nagrodк.</text>
+	</string>
+	<string id="mil_additional_quest_5_name">
+		<text>Znajdџ artefakt w wiosce</text>
+	</string>
+	<string id="mil_additional_quest_5_text">
+		<text>Ta wioska jest przeklкta, stalkerze. Pijawki wyskakuj№ tam znik№d - nikt nie odwaїa siк tam zapuњciж. Ci№gnie tam jednak szukaj№cych podniety wariatуw. Mimo, їe zagnieџdziіy siк tam najbardziej bezwzglкdne i niebezpieczne pijawki caіej Zony! Inna sprawa, їe jak ci siк uda je pozabijaж, to w opuszczonym domu znajdziesz artefakt bкd№cy unikatem na skalк Zony.</text>
+	</string>
+	<string id="mil_contact_with_clear_sky_commander_descr">
+		<text>Spotkaj siк z Lebiediewem</text>
+	</string>
+	<string id="mil_contact_with_clear_sky_commander_name">
+		<text>Oddziaі najemnikуw zdoіaі wydostaж siк z b№bla przestrzennego i kieruje siк ku mostowi do Limaсska. Straї przednia Czystego Nieba jest juї przy moњcie. Rusz ku Czerwonemu Lasowi i spotkaj siк z Lebiediewem.</text>
+	</string>
+	<string id="mil_defend_barrier_name">
+		<text>Broс bariery</text>
+	</string>
+	<string id="mil_defend_barrier_text">
+		<text>Znowu zaatakowano barierк. Pomуї stalkerom j№ obroniж.</text>
+	</string>
+	<string id="mil_elim_military">
+		<text>Zlikwiduj wojskowych</text>
+	</string>
+	<string id="mil_elim_military_text">
+		<text>Zlikwiduj wojskowych w bazie</text>
+	</string>
+	<string id="mil_hires">
+		<text>Spotkaj siк z najemnikami w wiosce</text>
+	</string>
+	<string id="mil_hires_text">
+		<text>Grupa najemnikуw w opuszczonej wiosce szuka innej grupy uwiкzionej w anomalii przestrzennej koіo Limaсska. Udziel№ ci dokіadniejszych informacji co do miejsca, gdzie sygnaі radiowy jest najmocniejszy. Spotkaj siк z najemnikami w wiosce.</text>
+	</string>
+	<string id="mil_hog_about_signal_1">
+		<text>Cholera! Przepraszam, ale nie znam siк na tym. Jeњli ktoњ ma ci w tym pomуc, to Leњnik. Podobno wie o Zonie wszystko.</text>
+	</string>
+	<string id="mil_hog_hello_dialog_11">
+		<text>Witaj, najemniku!</text>
+	</string>
+	<string id="mil_hog_hello_dialog_12">
+		<text>Dobrze ciк widzieж. Ustaliіeњ juї, jak wyci№gn№ж naszych?</text>
+	</string>
+	<string id="mil_hog_hello_dialog_1221">
+		<text>Baza bandytуw na Wysypisku to twardy orzech do zgryzienia. Sam sobie nie dasz rady.</text>
+	</string>
+	<string id="mil_hog_hello_dialog_1231">
+		<text>Bкdzie ci do tego potrzebny dobry przekaџnik. Wojsko ma coњ takiego... Coњ siк wymyњli.</text>
+	</string>
+	<string id="mil_hog_hello_dialog_13">
+		<text>Najemniku - idџ zobaczyж siк z Kostianem!</text>
+	</string>
+	<string id="mil_hog_talk_about_1">
+		<text>Kilka tygodni temu dostaliњmy waїne zamуwienie na wyj№tkowy artefakt. Zamуwienie przyszіo z samej gуry - klient to gruba ryba. Wszystko szіo dobrze - nasz oddziaі znalazі artefakt w pobliїu Bariery i wіaњnie wracaі, gdy dostaі duї№ Emisj№. Myњleliњmy, їe juї po nich, ale poszczкњciіo im siк i przeїyli. Kіopot polega na tym, їe zaginкli gdzieњ w tej okolicy. Nakazano nam ich odnaleџж, bo musimy speіniж obietnicк. Jeњli damy ciaіa, їaden klient nigdy juї nie zіoїy zamуwienia u najemnikуw.</text>
+	</string>
+	<string id="mil_hog_talk_about_111">
+		<text>Odbieramy fragmenty transmisji naszego oddziaіu, ale nie skіada siк to w nic sensownego. Wiadomo tylko jedno - zaginкli w biaіy dzieс i siedz№ teraz w jakiejњ puіapce. Moїe to byж anomalia lub jakieњ nowe cholerstwo, ktуre pojawiіo siк w Zonie. Nie wiemy, co robiж. Przy gospodarstwie stoi stara wieїa wodna - s№dzк, їe na gуrze sygnaі ich transmisji bкdzie silniejszy. Prуbowaliњmy juї tam wchodziж, ale znik№d wyskoczyі paskudny potwуr, chwyciі jednego z naszych i go ze sob№ zabraі. Reszta ledwie uszіa z їyciem!</text>
+	</string>
+	<string id="mil_hog_talk_about_11111">
+		<text>Oszalaіeњ? Wci№ї jestem obesrany po ostatnim razie, a chіopaki nawet siк nie zbliї№ do tej wieїy. Ty natomiast wygl№dasz mi na kogoњ, kto wie co nieco o Zonie. Nie mуgіbyњ zabiж tej bestii i odebraж wiadomoњci od naszych?</text>
+	</string>
+	<string id="mil_kill_bs">
+		<text>Zabij pijawkк</text>
+	</string>
+	<string id="mil_kill_bs_text">
+		<text>W pobliїu wieїy wodnej dostrzeїono pijawkк. To na wieїy odbierzesz najmocniejszy sygnaі w okolicy. Zabij pijawkк.</text>
+	</string>
+	<string id="mil_reach_battle">
+		<text>Spotkaj siк z oddziaіem "Wolnoњci"</text>
+	</string>
+	<string id="mil_reach_battle_text">
+		<text>Spotkaj siк z oddziaіem "Wolnoњci"</text>
+	</string>
+	<string id="mil_reach_tower_task">
+		<text>Odbierz transmisjк</text>
+	</string>
+	<string id="mil_reach_tower_task_text">
+		<text>Wieїa wodna to najwyїszy punkt magazynуw wojskowych, sygnaі bкdzie tam najsilniejszy. Wespnij siк na jej szczyt i odbierz przekaz zaginionej grupy najemnikуw.</text>
+	</string>
+	<string id="mil_talk_2_forester2">
+		<text>Pomуw z Leњnikiem</text>
+	</string>
+	<string id="mil_talk_2_forester2_text">
+		<text>Leњnik odebraі na kanale radiowym swego PDA wiadomoњж od zaginionej grupy najemnikуw. Wrуж do Leњnika, aby odebraж dalsze instrukcje.</text>
+	</string>
+	<string id="mil_talk_2_fr_com">
+		<text>Spotkaj siк z oddziaіem "Wolnoњci"</text>
+	</string>
+	<string id="mil_talk_2_fr_com_text">
+		<text>Wolnoњж szykuje siк do ataku na bazк armijn№ celem wyrzucenia stamt№d wojskowych i zaіoїenia w magazynach wіasnej bazy. Pomуї Wolnoњci w ataku na bazк armijn№.</text>
+	</string>
+	<string id="mil_talk_2_merc_2_task">
+		<text>Pomуw z najemnikami</text>
+	</string>
+	<string id="mil_talk_2_merc_2_task_text">
+		<text>Baza jest peіna їoіnierzy uwaїnie pilnuj№cych przekaџnika. Bez pomocy z zewn№trz trudno bкdzie ich przegnaж i przekazaж najemnikom wspуіrzкdne potrzebne do opuszczenia b№bla przestrzennego. Wrуж do opuszczonej wioski pomуwiж ponownie z najemnikami.</text>
+	</string>
+	<string id="mil_test">
+		<text>Pomуї</text>
+	</string>
+	<string id="mil_transfer_coo">
+		<text>Przekaї wspуіrzкdne</text>
+	</string>
+	<string id="mil_transfer_coo_text">
+		<text>Droga do przekaџnika stoi otworem. Wejdџ na szczyt wieїy i przekaї wspуіrzкdne otrzymane od Leњnika grupie uwiкzionej w anomalii przestrzennej.</text>
+	</string>
+	<string id="mil_treasure_weapon_box_descr">
+		<text>Skrzynia z amunicj№</text>
+	</string>
+	<string id="mil_treasure_weapon_box_name">
+		<text>Skrzynia z amunicj№</text>
+	</string>
+	<string id="mil_blockpost_task">
+		<text>Pomуw z dowуdc№ posterunku</text>
+	</string>
+	<string id="mil_blockpost_text">
+		<text>Pomуw z dowуdc№ posterunku o sytuacji w magazynach wojskowych.</text>
+	</string>
+</string_table>

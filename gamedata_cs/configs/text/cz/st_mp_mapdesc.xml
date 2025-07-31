@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="ui_map_desc_mp_agroprom_large">
+		<text>Zvlбљtnн mнsto. V tйto budovм se pravdмpodobnм skrэvajн mnohб tajemstvн, aиkoliv stalkery sem pшitahuje nмco jinйho - bohatб zбsoba artefaktщ. Jde zkrбtka o oblast vysokэch rizik a vysokэch ziskщ. Pшemэљlej rychle a jednej rychleji, pak bude љtмstн na tvй stranм.</text>
+	</string>
+	<string id="ui_map_desc_mp_agroprom_short">
+		<text>Zvlбљtnн mнsto. V tйto budovм se pravdмpodobnм skrэvajн mnohб tajemstvн, aиkoliv stalkery sem pшitahuje nмco jinйho - bohatб zбsoba artefaktщ. Jde zkrбtka o oblast vysokэch rizik a vysokэch ziskщ...</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_large">
+		<text>Autobusovй nбdraћн umнstмnй u vstupu do Zуny. Zdejљн traktory, autobusy a nбklaпбky jiћ nadobro dojezdily... Zatнm zde nebyly nalezeny ћбdnй artefakty, ale zkuљenн stalkeшi si i pшesto toto mнsto oblнbili. Lovн zde novбиky, kterй pak okradou o veљkerэ majetek. Kryj se v budovбch a za vozidly, mмj se na pozoru pшed nepшбteli na stшechбch.</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_short">
+		<text>Autobusovй nбdraћн umнstмnй u vstupu do Zуny. Zdejљн traktory, autobusy a nбklaпбky jiћ nadobro dojezdily...</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_large">
+		<text>Zбhadnй a fascinujнcн mнsto. Tento bazйn byl kdysi vybudovбn, aby se v nмm provбdмly jakйsi pokusy, ovљem jeho pravб podstata zщstane navмky tajemstvнm. Nenachбzejн se tu snad ћбdnй artefakty, takћe stalkery sem mohou pшitбhnout leda pozщstatky roztodivnэch pшнstrojщ a zaшнzenн. Obezшetnм sleduj stшechy a pamatuj na mнstnн extrйmnм vysokй hladiny radiace.</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_short">
+		<text>Zбhadnй a fascinujнcн mнsto. Tento bazйn byl kdysi vybudovбn, aby se v nмm provбdмly jakйsi pokusy, ovљem jeho pravб podstava zщstane navмky tajemstvнm.</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_large">
+		<text>Tato bezъtмљnб vyшazenб tovбrna je hшbitovem nespoиtu stalkerщ. Na kaћdйm rohu na nбvљtмvnнka инhajн anomбlie, pшesto vљak se sem stalkeшi doslova hrnou, omбmeni kouzlem zdejљнch cennэch artefaktщ. Dбvej pozor na radiaci!</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_short">
+		<text>Tato bezъtмљnб vyшazenб tovбrna je hшbitovem nespoиtu stalkerщ. </text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_large">
+		<text>Z obrovskй a zapбchajнcн sklбdky, na nнћ byly po vэbuchu v roce 1986 navezeny hromady radioaktivnнho odpadu, mнsty trин opuљtмnй jeшбby a rozliиnй stroje. Mezi dalљн mнstnн atrakce patшн starй polorozpadlй budovy a velikбnskэ hangбr. Blнzkost ke vstupu do Zуny a relativnн hojnost artefaktщ sem pшitahujн stalkery, kteшн upшednostтujн snazљн koшist.</text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_short">
+		<text>Z obrovskй a zapбchajнcн sklбdky, na nнћ byly po vэbuchu v roce 1986 navezeny hromady radioaktivnнho odpadu, mнsty trин opuљtмnй jeшбby a rozliиnй stroje. </text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_large">
+		<text>Opuљtмnб bohapustб vesnice v srdci Zуny. Zdejљн malй, mмlkй a rezavй jezero, v nмmћ parkujн kopy poniиenэch vozidel, иlovмka naplnн podvмdomэm strachem z bezъtмљnosti Zуny. Mмj se na pozoru pшed odstшelovaиi a pamatuj: odvбћnйmu Zуna pшeje.</text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_short">
+		<text>Opuљtмnб bohapustб vesnice v srdci Zуny. Zdejљн malй, mмlkй a rezavй jezero, v nмmћ parkujн kopy poniиenэch vozidel, иlovмka naplnн podvмdomэm strachem z bezъtмљnosti Zуny. </text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_large">
+		<text>Opuљtмnб armбdnн zбkladna s nenбvratnм rozbitэmi nбklaпбky a obrnмnэmi transportйry, dezolбtnнm velitelstvнm a kasбrnami. Jejн opuљtмnэ vzhled vљak klame: zбkladna je doslova zlatэm dolem artefaktщ, coћ znamenб, ћe nepшбtelй mohou инhat za kaћdэm rohem. Ukaћ jim, ћe jsi lepљн!</text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_short">
+		<text>Opuљtмnб armбdnн zбkladna s nenбvratnм rozbitэmi nбklaпбky a obrnмnэmi transportйry, dezolбtnнm velitelstvнm a kasбrnami.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_large">
+		<text>Tato starб vesnice je vskutku zlovмstnй mнsto. Najdeљ-li dost odvahy na jejн nбvљtмvu, pшiprav se na uvнtacн kulku do hlavy. Tady nebudeљ v bezpeин ani na jedinйm kroku, radљi si pшiprav hledн a tlumiи.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_short">
+		<text>Tato starб vesnice je vskutku zlovмstnй mнsto. Najdeљ-li dost odvahy na jejн nбvљtмvu, pшiprav se na uvнtacн kulku do hlavy. </text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_large">
+		<text>Z Pripjati, dшнvмjљнho bydliљtм zamмstnancщ jadernй elektrбrny, dnes zbэvajн jen trosky. V rozvalinбch tйto industriбlnн mrљiny инhajн иetnб nebezpeиenstva, takћe si dobшe stшeћ svщj ћivot.</text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_short">
+		<text>Mмsto Pripjaќ leћнcн nedaleko jadernй elektrбrny je pшipomнnkou иernobylskй katastrofy.</text>
+	</string>
+	<string id="ui_map_desc_mp_railraod_short">
+		<text>Malб ћelezniиnн stanice poblнћ rostockй tovбrny.</text>
+	</string>
+	<string id="ui_map_desc_mp_railroad_large">
+		<text>Malб ћelezniиnн stanice poblнћ rostockй tovбrny, plnб zrezavмlэch vagуnщ a lokomotiv, navмky uvнzlэch na kolejнch. Pшehrљel artefaktщ sem pшitahuje nebojбcnй stalkery ze vљech koutщ Zуny.</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_large">
+		<text>Tato tovбrna zahrabanб pod hromadami ћeleza a betonu je znepokojivм tichб. V minulйm stoletн vљak doslova pшekypovala ћivotem, dмlnнci pospнchali na љichty, z reproduktorщ se linuly budovatelskй slogany... Ty иasy uћ jsou dбvno pryи, dnes je tovбrna mrtvб.</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_short">
+		<text>Tato starб opuљtмnб tovбrna zahrabanб pod hromadami ћeleza a betonu je znepokojivм tichб.</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_large">
+		<text>Neћ se zde usadila Povinnost, bэvala tato oblast okrajem rostockй tovбrny. Jde o mнsto sice dмsivй, leи bohatй na artefakty. Kaћdэ prбzdnэ hangбr je pшeplnмn smrtнcнmi nбstrahami. Buп obzvlбљtм opatrnэ a pozornм sleduj bнlou vмћ...</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_short">
+		<text>Neћ se zde usadila Povinnost, bэvala tato oblast okrajem rostockй tovбrny. Jde o mнsto sice dмsivй, leи bohatй na artefakty. </text>
+	</string>
+	<string id="ui_map_desc_mp_autostation_large">
+		<text>Opuљtмnб budova depa a pшilehlй oblasti. Nachбzн se zde nмco mбlo vэstroje, musнљ jen peиlivм hledat. Dбvej pozor na silnй anomбlie a stшelce na stшeљe depa – ta je skvмlou vyhlнdkou, z nнћ je vidмt na tйmмш vљechny pшнstupovй cesty.</text>
+	</string>
+	<string id="ui_map_desc_mp_autostation_short">
+		<text>Opuљtмnб budova depa a pшilehlй oblasti. Dбvej pozor na silnй anomбlie a stшelce na stшeљe depa.</text>
+	</string>
+	<string id="ui_map_desc_mp_firestation_large">
+		<text>Poћбrnн stanice, jejнћ veљkerй sнly byly roku 1986 nasazeny k zбchranм Иernobylskй elektrбrny. Z vмћe je skvмlэ rozhled do blнzkйho i dalekйho okolн. Do pшнzemн a vyљљнch pater budovy chodн jen mбlo lidн, ovљem to je moћnб dobrб zprбva. Uћ delљн dobu si zde jednotlivй frakce jdou po krku a pшetahujн se o nejlepљн strategickй pozice.</text>
+	</string>
+	<string id="ui_map_desc_mp_firestation_short">
+		<text>Poћбrnн stanice, jejнћ veљkerй sнly byly roku 1986 nasazeny k zбchranм Иernobylskй elektrбrny. Z vмћe je skvмlэ rozhled do okolн...</text>
+	</string>
+	<string id="ui_map_desc_mp_limansk_large">
+		<text>Nevelikб иtvrќ zбhadnйho mмsta Limansku – opuљtмnй bytovky a mezi nimi napщl dostavenй budovy. Kdyћ zde bylo nalezeno nмkolik drahэch artefaktщ, novinky se aћ pшнliљ rychle roznesly po celй Zуnм. Do Limansku vede jen mбlo cest a od tй doby na nich stшelba neustala ani na minutu.</text>
+	</string>
+	<string id="ui_map_desc_mp_limansk_short">
+		<text>Nevelikб иtvrќ zбhadnйho mмsta Limansku – opuљtмnй bytovky a mezi nimi napщl dostavenй budovy.</text>
+	</string>
+	<string id="ui_map_desc_mp_pool_large">
+		<text>Tohle nenн jen tak ledajakэ bazйn – jde spнљ o krvavй lбznм. Vykachliиkovanэmi chodbami otшбsajн vэbuchy, kшik umнrajнcнch a ozvмny kulek... Jen mбlo stalkerщ sem znб cestu a jeљtм mйnм znб cestu ven.</text>
+	</string>
+	<string id="ui_map_desc_mp_pool_short">
+		<text>Tohle nenн jen tak ledajakэ bazйn – jde spнљ o krvavй lбznм. Vykachliиkovanэmi chodbami otшбsajн vэbuchy, kшik umнrajнcнch a ozvмny kulek...</text>
+	</string>
+	<string id="ui_map_desc_mp_rembasa_large">
+		<text>Opravna nedaleko od malй vesnice. Vљechna provozuschopnб vozidla byla zrekvнrovбna pшi nбpravм љkod po nehodм v Иernobylu. Zbylб vozidla byla postupem иasu rozebrбna na nбhradnн dнly. Oblast je plnб nebezpeин, napшнklad moибlщ a zamoшenйho rбkosн, ve kterйm bys – budeљ-li mнt љtмstн – mohl najнt nмco velmi cennйho.</text>
+	</string>
+	<string id="ui_map_desc_mp_rembasa_short">
+		<text>Opravna nedaleko od malй vesnice. Oblast je plnб nebezpeин, napшнklad moибlщ a zamoшenйho rбkosн.</text>
+	</string>
+	<string id="ui_map_desc_mp_sport_center_large">
+		<text>Sportovnн stшedisko v Pripjati leћн nedaleko opuљtмnй љkoly. Љkбla zde provozovanэch sportщ se od roku 1986 radikбlnм zmмnila, stejnм jako poиet nadљenэch sportovcщ. Stalkery sem pшitahuje pochybnб touha po slбvм, koшisti a artefaktech... nмkdy zde zщstбvajн uћ navмky.</text>
+	</string>
+	<string id="ui_map_desc_mp_sport_center_short">
+		<text>Sportovnн stшedisko v Pripjati leћнcн nedaleko opuљtмnй љkoly. </text>
+	</string>
+	<string id="ui_map_desc_mp_darkvalley_large">
+		<text>V tйto nebezpeиnй ибsti Temnйho ъdolн jsou jen dvм zajнmavб mнsta - dlouhб ulice a opuљtмnб kolej. Nikdo nevн, co se na tй koleji uиilo dшнve, ale teп se tam mщћeљ nauиit, jak pшeћнt. A pozor! Na stшechбch buп velice opatrnэ.</text>
+	</string>
+	<string id="ui_map_desc_mp_darkvalley_short">
+		<text>V tйto nebezpeиnй ибsti Temnйho ъdolн jsou jen dvм zajнmavб mнsta - dlouhб ulice a opuљtмnб kolej...</text>
+	</string>
+	<string id="mp_autostation">
+		<text>Opuљtмnй skladiљtм</text>
+	</string>
+	<string id="ui_map_desc_mp_training_camp_short">
+		<text>Velmi podivnй mнsto. Gravitaиnн anomбlie roztrhaly zem na kusy a vytvoшily velice nezvyklй prostшedн... </text>
+	</string>
+	<string id="ui_map_desc_mp_training_camp_large">
+		<text>Velice nezvyklй mнsto. Stalkeшi, kteшн tvrdн, ћe jej spatшili, jsou vмtљinou ostatnнm pro smнch, ale pшesto toto mнsto existuje. Gravitaиnн anomбlie roztrhaly zem na kusy a vytvoшily velice podivnй prostшedн. Dominantou oblasti jsou tшi mohutnй vмћe, zbytky vojenskйho vybavenн a ostrщvky vznбљejнcн se ve vzduchu.</text>
+	</string>
+</string_table>

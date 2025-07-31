@@ -8,15 +8,15 @@ local function add_to_release_table(release_tbl, object_id)
 	printf("add to release_objects_table ["..object_id.."]")
 	local obj_params = {}
 	obj_params.id = object_id
-	obj_params.death_time = time_global() 			
-	table.insert(release_tbl, obj_params)	
+	obj_params.death_time = time_global()
+	table.insert(release_tbl, obj_params)
 end
 
 local function find_nearest_obj_to_release(release_tbl)
 	local max_distanse = 0
 	local pos_in_table = nil
 	local actor = db.actor
-	local actor_pos = actor:position()	
+	local actor_pos = actor:position()
 	for k,v in pairs(release_tbl) do
 		printf("release_objects_table["..k.."] = "..v.id)
 		local object = alife():object(v.id)
@@ -30,7 +30,7 @@ local function find_nearest_obj_to_release(release_tbl)
 			if distance_to_body > max_distanse and time_global() > v.death_time + 6000 then
 				max_distanse = distance_to_body
 				pos_in_table = k
-			end					
+			end
 		end
 	end
 	return pos_in_table
@@ -71,7 +71,7 @@ function Crelease_body:moving_dead_body(obj)
 			add_to_release_table(self.release_objects_table, object_id)
 			return
 		else
-			self:try_to_release()			
+			self:try_to_release()
 		end
 		add_to_release_table(self.release_objects_table, object_id)
 	end
@@ -83,20 +83,20 @@ function Crelease_body:try_to_release()
 	local overflow_count = #self.release_objects_table - self.body_max_count
 	for i = 1, overflow_count do
 		pos_in_table = find_nearest_obj_to_release(self.release_objects_table)
-	
-		if pos_in_table == nil then 
+
+		if pos_in_table == nil then
 			return
 		end
-		
+
 		local release_object = alife():object(self.release_objects_table[pos_in_table].id)
-		
+
 		if release_object and bind_stalker.delayed_alife_release_objects[self.release_objects_table[pos_in_table].id] == nil then
 			printf("releasing object ["..release_object:name().."]")
 			alife():release(release_object, true)
-		end	
-		
-		table.remove(self.release_objects_table, pos_in_table)	
-	end	
+		end
+
+		table.remove(self.release_objects_table, pos_in_table)
+	end
 end
 
 
@@ -116,7 +116,32 @@ function Crelease_body:inspection_result(obj)
 		printf("Object << "..obj:name().." >> presence_in_story") -- помечен как сюжетный
 		return false
 	end
+	if self:check_for_known_info(obj) then
+		printf("Object << "..obj:name().." >> presence_in_known_info")
+		return false
+	end
 	return true
+end
+
+function  Crelease_body:check_for_known_info(obj)
+	local char_ini = ""
+	local spawn_ini = obj:spawn_ini()
+	local filename = nil
+	if spawn_ini then
+		filename = utils.cfg_get_string(spawn_ini, "logic", "cfg", obj, false, "")
+		printf("filename is [%s]", tostring(filename))
+	end
+	if filename ~= nil then
+		char_ini = ini_file(filename)
+	else
+		char_ini = obj:spawn_ini() or ini_file("scripts\\dummy.ltx")
+	end
+	local st = db.storage[obj:id()]
+	local known_info = utils.cfg_get_string(char_ini, st.section_logic, "known_info", obj, false, "", nil) or "known_info"
+	if char_ini:section_exist(known_info) then
+		return true
+	end
+	return false
 end
 
 function Crelease_body:save(packet)
@@ -146,13 +171,13 @@ function Crelease_body:load(reader)
 	local level_id = reader:r_u16()
 	if level_id ~= game_graph():vertex(alife():object(0).m_game_vertex_id):level_id() then
 		self.release_objects_table = {}
-	end 
+	end
 	set_save_marker(reader, "load", true, "Crelease_body")
 end
 
 function get_release_body_manager()
 	if(RB_manager==nil) then
-        RB_manager = Crelease_body()
-    end
-    return RB_manager
+				RB_manager = Crelease_body()
+		end
+		return RB_manager
 end

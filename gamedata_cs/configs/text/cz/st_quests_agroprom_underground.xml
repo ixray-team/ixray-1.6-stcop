@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agru_find_secret_task_name">
+		<text>Najdi skrэљ skupiny stalkerщ</text>
+	</string>
+	<string id="agru_find_secret_task_text">
+		<text>V podzemн Agropromu se nachбzн skrэљ skupiny stalkerщ, kteшн pronikly aћ do stшedu Zуny. Stalkeшi si v tйto skrэљi navzбjem zanechбvali zprбvy. Musнљ tu skrэљ najнt a vzнt z nн PDA se zprбvami.</text>
+	</string>
+	<string id="agru_go_out_end_task_name">
+		<text>Vylez z podzemн</text>
+	</string>
+	<string id="agru_go_out_end_task_text">
+		<text>Dostaт se ven z podzemн.</text>
+	</string>
+	<string id="agru_go_out_task_name">
+		<text>Opusќ zaplavenou oblast</text>
+	</string>
+	<string id="agru_go_out_task_text">
+		<text>Byla vypuљtмna voda z nouzovэch nбdrћн. Dojde k zaplavenн spodnнch pater. Radмji se dostaт pryи ze zaplavovanй oblasti.</text>
+	</string>
+	<string id="agru_leader_dolg_task_name">
+		<text>Zatop podzemн</text>
+	</string>
+	<string id="agru_leader_dolg_task_text">
+		<text>V podzemн se nachбzн starй иerpadlo, jнmћ se dшнve иerpala podpovrchovб voda ven. Najdi ovlбdacн panel иerpadla a vypusќ vodu z nбdrћн. Tнmto zaplavнљ podzemн.</text>
+	</string>
+	<string id="agru_destroy_monsters_task_name">
+		<text>Zniи mutanty</text>
+	</string>
+	<string id="agru_destroy_monsters_task_text">
+		<text>Zniи mutanty, kteшн se vlastnнmi tмly tlaин na pшedmмty a blokujн tak pшнstup k ovlбdacн mнstnosti иerpacн stanice.</text>
+	</string>
+</string_table>

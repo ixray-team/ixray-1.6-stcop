@@ -189,8 +189,9 @@ function action_teleport_to_point(fs, ss, dn, pi)
 end
 
 function start_teleport(point, look)
-    get_console():execute("hud_crosshair 0")
-    get_console():execute("hud_weapon 0")
+    level.show_weapon(false)
+--    get_console():execute("hud_crosshair 0")
+--    get_console():execute("hud_weapon 0")
     level.disable_input()
     level.hide_indicators_safe()
 	local hud = get_hud()
@@ -220,8 +221,9 @@ function pp_effector_callback()
 end
 
 function teleport_end()
-    get_console():execute("hud_crosshair 1")
-    get_console():execute("hud_weapon 1")
+--    get_console():execute("hud_crosshair 1")
+--    get_console():execute("hud_weapon 1")
+    level.show_weapon(true)
     level.enable_input()
     level.show_indicators()
     teleport_point = nil

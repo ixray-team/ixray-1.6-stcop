@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="lim_destroy_ambush_2_name">
+		<text>Zniszcz wrogуw na rozstajach</text>
+	</string>
+	<string id="lim_destroy_ambush_2_text">
+		<text>Zniszcz wrog№ zasadzkк na rozstajach</text>
+	</string>
+	<string id="lim_destroy_bandit_minigun_name">
+		<text>Zniszcz stanowisko karabinu maszynowego</text>
+	</string>
+	<string id="lim_destroy_bandit_minigun_text">
+		<text>Na rozstajach trwa wymiana ognia. Budynek z lewej kontroluj№ bandyci; to dobra pozycja do oczyszczenia dalszej drogi. Zniszcz stanowisko karabinu maszynowego w budynku.</text>
+	</string>
+	<string id="lim_destroy_military_minigun_name">
+		<text>Zablokuj stanowisko karabinu maszynowego</text>
+	</string>
+	<string id="lim_destroy_military_minigun_text">
+		<text>Wrуg zaj№і pozycje obronne w budynku po drugiej stronie mostu. Ten obszar jest tak dobrze chroniony, їe oddziaі Czystego Nieba w ogуle nie przedarі siк na drug№ stronк. Musisz dostaж siк do budynku, aby powstrzymaж wrogi ostrzaі; w miкdzyczasie oddziaі Czystego Nieba odwrуci uwagк wroga.</text>
+	</string>
+	<string id="lim_electro_fence_name">
+		<text>Wyі№cz generator</text>
+	</string>
+	<string id="lim_electro_fence_text">
+		<text>Zlokalizowano generator - wyі№cz go i odetnij zasilanie ogrodzenia.</text>
+	</string>
+	<string id="lim_find_way_through_construction_name">
+		<text>Odszukaj drogк przez plac budowy</text>
+	</string>
+	<string id="lim_find_way_through_construction_text">
+		<text>Jesteњ bardzo blisko przedmieњж Limaсska; droga prowadzi tu przez niedokoсczone osiedle. Odszukaj drogк przez plac budowy.</text>
+	</string>
+	<string id="lim_go_into_limansk_name">
+		<text>Wykonaj zwiad drogi przez Limaсsk</text>
+	</string>
+	<string id="lim_go_into_limansk_text">
+		<text>Lebiediew wydaі rozkaz zwiadu drogi prowadz№cej przez Limaсsk celem zabezpieczenia przejњcia gіуwnego oddziaіu Czystego Nieba. Na ulicach miasta trwa wojna - postкpuj ostroїnie.</text>
+	</string>
+	<string id="lim_go_to_canal_name">
+		<text>Rusz ku mostowi kanaіem</text>
+	</string>
+	<string id="lim_go_to_canal_text">
+		<text>Wrogi ostrzaі jest zbyt gwaіtowny. Rusz ku mostowi kanaіem.</text>
+	</string>
+	<string id="lim_destroy_ambush_1_name">
+		<text>Wyeliminuj zasadzkк</text>
+	</string>
+	<string id="lim_destroy_ambush_1_text">
+		<text>Wyeliminuj zasadzkк</text>
+	</string>
+	<string id="lim_electro_fence_actor_come_back_name">
+		<text>Wrуж do dowуdcy grupy</text>
+	</string>
+	<string id="lim_electro_fence_actor_come_back_text">
+		<text>Wrуж do dowуdcy grupy.</text>
+	</string>
+	<string id="lim_electro_fence_cs_soldier_cover_name">
+		<text>Pomуї wojownikowi podkraњж siк do snajpera</text>
+	</string>
+	<string id="lim_electro_fence_cs_soldier_cover_text">
+		<text>Pomуї wojownikowi Czystego Nieba podkraњж siк do snajpera.</text>
+	</string>
+	<string id="lim_electro_fence_find_transformator_name">
+		<text>Odszukaj generator</text>
+	</string>
+	<string id="lim_electro_fence_find_transformator_text">
+		<text>Drogк do generatora blokuje ogrodzenie elektryczne. W mieњcie od dawna nie ma pr№du, czyli ogrodzenie musi mieж wіasne zasilanie. Kable і№cz№ je z budynkiem instytutu po prawej; odszukaj generator zasilaj№cy ogrodzenie.</text>
+	</string>
+	<string id="lim_electro_fence_sniper_name">
+		<text>Wyeliminuj snajpera</text>
+	</string>
+	<string id="lim_electro_fence_sniper_text">
+		<text>Zasilanie ogrodzenia zostaіo odciкte - moїesz juї podejњж bliїej do snajpera i go wyeliminowaж. Zabij go.</text>
+	</string>
+	<string id="lim_find_bridge_squad_comander_name">
+		<text>Odszukaj dowуdcк grupy</text>
+	</string>
+	<string id="lim_find_bridge_squad_comander_text">
+		<text>Odszukaj dowуdcк grupy</text>
+	</string>
+</string_table>

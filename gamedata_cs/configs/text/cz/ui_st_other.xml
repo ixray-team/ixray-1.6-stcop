@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Btn_Cancel">
+		<text>Zruљit</text>
+	</string>
+	<string id="Btn_No">
+		<text>Ne</text>
+	</string>
+	<string id="Btn_OK">
+		<text>OK</text>
+	</string>
+	<string id="Btn_Yes">
+		<text>Ano</text>
+	</string>
+	<string id="bad">
+		<text>љpatnэ</text>
+	</string>
+	<string id="enemy">
+		<text>nepшнtel</text>
+	</string>
+	<string id="excellent">
+		<text>vynikajнcн</text>
+	</string>
+	<string id="experienced">
+		<text>zkuљenэ</text>
+	</string>
+	<string id="friendly">
+		<text>pшнtel</text>
+	</string>
+	<string id="global_map">
+		<text>Mapa Zуny</text>
+	</string>
+	<string id="good">
+		<text>dobrэ</text>
+	</string>
+	<string id="id_mp_money">
+		<text>Penнze</text>
+	</string>
+	<string id="indifferent">
+		<text>nestrannэ</text>
+	</string>
+	<string id="master">
+		<text>mistr</text>
+	</string>
+	<string id="mm_mp_pda_hunt">
+		<text>PDA bonus</text>
+	</string>
+	<string id="mp_only_one_voting">
+		<text>V jednu chvнli mщћe bэt aktivnн jen jedno hlasovбnн</text>
+	</string>
+	<string id="neutral">
+		<text>neutrбlnн</text>
+	</string>
+	<string id="novice">
+		<text>zaибteиnнk</text>
+	</string>
+	<string id="st_audio">
+		<text>Zvuk</text>
+	</string>
+	<string id="st_bolt">
+		<text>Konektor</text>
+	</string>
+	<string id="st_client_connecting_to">
+		<text>KLIENT: Probнhб pшipojovбnн k</text>
+	</string>
+	<string id="st_client_spawning">
+		<text>KLIENT: Probнhб rozmнstмnн</text>
+	</string>
+	<string id="st_client_synchronising">
+		<text>KLIENT: Probнhб synchronizace</text>
+	</string>
+	<string id="st_controll">
+		<text>Ovlбdбnн</text>
+	</string>
+	<string id="st_creating_new_game">
+		<text>Vytvбшн se novб hra</text>
+	</string>
+	<string id="st_drink">
+		<text>vypнt</text>
+	</string>
+	<string id="st_game">
+		<text>Hra</text>
+	</string>
+	<string id="st_item_used">
+		<text>Pouћito</text>
+	</string>
+	<string id="st_items">
+		<text>Pшedmмty</text>
+	</string>
+	<string id="st_level">
+		<text>Ъroveт</text>
+	</string>
+	<string id="st_loading_ai_objects">
+		<text>Naинtajн se objekty umмlй inteligence</text>
+	</string>
+	<string id="st_loading_alife_simulator">
+		<text>SERVER: Naинtб se simulбtor ћivota</text>
+	</string>
+	<string id="st_loading_cform">
+		<text>Naинtб se CFORM</text>
+	</string>
+	<string id="st_loading_details">
+		<text>Naинtajн se detaily</text>
+	</string>
+	<string id="st_loading_geometry">
+		<text>Naинtб se geometrie</text>
+	</string>
+	<string id="st_loading_saved_game">
+		<text>Naинtб se uloћenб pozice</text>
+	</string>
+	<string id="st_loading_sectors_portals">
+		<text>Naинtajн se sektory a portбly</text>
+	</string>
+	<string id="st_loading_shaders">
+		<text>Naинtajн se shadery</text>
+	</string>
+	<string id="st_loading_spatial_db">
+		<text>Naинtб se prostorovб databбze</text>
+	</string>
+	<string id="st_loading_textures">
+		<text>Naинtajн se textury</text>
+	</string>
+	<string id="st_mp_direct_ip">
+		<text>Pшнmй IP</text>
+	</string>
+	<string id="st_no_active_task">
+		<text>Ћбdnй aktivnн ъkoly</text>
+	</string>
+	<string id="st_not_enough_money">
+		<text>Nedostatek penмz</text>
+	</string>
+	<string id="st_not_enough_money_npc">
+		<text>nehrбиskб postava nemб dostatek penмz</text>
+	</string>
+	<string id="st_opening_stream">
+		<text>Otevнrб se stream</text>
+	</string>
+	<string id="st_prefetching_objects">
+		<text>Objekty se uklбdajн do pamмti</text>
+	</string>
+	<string id="st_server_connecting">
+		<text>SERVER: Probнhб pшipojovбnн</text>
+	</string>
+	<string id="st_server_starting">
+		<text>SERVER: Zahajovбnн</text>
+	</string>
+	<string id="st_validating_cdkey">
+		<text>Ovмшuje se CD klни</text>
+	</string>
+	<string id="st_video">
+		<text>Grafika</text>
+	</string>
+	<string id="terrible">
+		<text>pшнљernэ</text>
+	</string>
+	<string id="ui_st_btn_cancel">
+		<text>Zruљit</text>
+	</string>
+	<string id="ui_st_btn_no">
+		<text>Ne</text>
+	</string>
+	<string id="ui_st_btn_ok">
+		<text>OK</text>
+	</string>
+	<string id="ui_st_btn_yes">
+		<text>Ano</text>
+	</string>
+	<string id="ui_st_cant_run_r2">
+		<text>Na svйm PC nespustнљ Render 2</text>
+	</string>
+	<string id="ui_st_community">
+		<text>Frakce</text>
+	</string>
+	<string id="ui_st_conn_cdkey_disabled">
+		<text>Chyba pшipojenн: Tvщj CD klни byl deaktivovбn. Kontaktuj zбkaznickou podporu.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_in_use">
+		<text>Chyba pшipojenн: Tento CD klни je jiћ vyuћнvбn.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_invalid">
+		<text>Chyba pшipojenн: Neplatnэ CD klни.</text>
+	</string>
+	<string id="ui_st_conn_invalid_host">
+		<text>Chyba pшipojenн: Neplatnэ hostitel.</text>
+	</string>
+	<string id="ui_st_conn_invalid_pass">
+		<text>Chyba pшipojenн: Nesprбvnй heslo.</text>
+	</string>
+	<string id="ui_st_conn_new_patch">
+		<text>Pшejeљ si stбhnout novou aktualizaci hned?\n Verze: %s\n Umнstмnн: %s</text>
+	</string>
+	<string id="ui_st_conn_no_new_patch">
+		<text>Nejsou dostupnй ћбdnй novй aktualizace.</text>
+	</string>
+	<string id="ui_st_conn_rejected_server">
+		<text>Chyba pшipojenн: Pшipojenн zamнtnuto serverem.</text>
+	</string>
+	<string id="ui_st_conn_sess_full">
+		<text>Chyba pшipojenн: Server je plnэ.</text>
+	</string>
+	<string id="ui_st_conn_version_differs">
+		<text>Chyba pшipojenн: Rozdнlnб verze.</text>
+	</string>
+	<string id="ui_st_connecting_to_masterserver">
+		<text>Probнhб pшipojovбnн k hlavnнmu serveru</text>
+	</string>
+	<string id="ui_st_days">
+		<text>Dnщ</text>
+	</string>
+	<string id="ui_st_error">
+		<text>Chyba</text>
+	</string>
+	<string id="ui_st_error_loading">
+		<text>Chyba pшi naинtбnн</text>
+	</string>
+	<string id="ui_st_file_exist_owerwrite_q">
+		<text>Soubor s tнmto nбzvem jiћ existuje. Chceљ jej pшepsat?</text>
+	</string>
+	<string id="ui_st_file_name_is_empty">
+		<text>Zadej nбzev souboru</text>
+	</string>
+	<string id="ui_st_hours">
+		<text>hod.</text>
+	</string>
+	<string id="ui_st_kicked_by_server">
+		<text>Vyhozen serverem</text>
+	</string>
+	<string id="ui_st_leave">
+		<text>Opustit hru</text>
+	</string>
+	<string id="ui_st_load_game_confirm">
+		<text>Naиtenнm hry pшijdeљ o veљkerб neuloћenб data. Chceљ pokraиovat?</text>
+	</string>
+	<string id="ui_st_mins">
+		<text>min.</text>
+	</string>
+	<string id="ui_st_months">
+		<text>mмsнcщ</text>
+	</string>
+	<string id="ui_st_opponent_items">
+		<text>Batoh</text>
+	</string>
+	<string id="ui_st_params">
+		<text>Parametry</text>
+	</string>
+	<string id="ui_st_patch_download_error">
+		<text>Aktualizaci nelze stбhnout.</text>
+	</string>
+	<string id="ui_st_patch_download_success">
+		<text>Aktualizace ъspмљnм staћena. Pшejeљ si ji nainstalovat?</text>
+	</string>
+	<string id="ui_st_price">
+		<text>Cena</text>
+	</string>
+	<string id="ui_st_rank">
+		<text>hodnost</text>
+	</string>
+	<string id="ui_st_relation">
+		<text>pшнstup</text>
+	</string>
+	<string id="ui_st_reputation">
+		<text>reputace</text>
+	</string>
+	<string id="ui_st_secs">
+		<text>vteшin</text>
+	</string>
+	<string id="ui_st_select_one_map">
+		<text>Zvol prosнm alespoт jednu mapu</text>
+	</string>
+	<string id="ui_st_take_all">
+		<text>Vzнt vљe</text>
+	</string>
+	<string id="ui_st_time_remains">
+		<text>Zbэvб: </text>
+	</string>
+	<string id="ui_st_trade">
+		<text>Obchodovat</text>
+	</string>
+	<string id="ui_st_upgrade">
+		<text>Vylepљenн</text>
+	</string>
+	<string id="ui_st_voting_disabled">
+		<text>Hlasovбnн je vypnuto</text>
+	</string>
+	<string id="ui_st_want_to_leave_game_q">
+		<text>Opravdu si pшejeљ opustit hru?</text>
+	</string>
+	<string id="ui_st_your_items">
+		<text>Tvй pшedmмty</text>
+	</string>
+	<string id="very_bad">
+		<text>velmi љpatnэ</text>
+	</string>
+	<string id="very_good">
+		<text>velmi dobrэ</text>
+	</string>
+	<string id="veteran">
+		<text>veterбn</text>
+	</string>
+	<string id="st_no_buck">
+		<text>zapotшebн jinб munice</text>
+	</string>
+	<string id="st_rubles">
+		<text>rublщ.</text>
+	</string>
+	<string id="ui_inv_repair">
+		<text>Opravit</text>
+	</string>
+	<string id="ui_repair_button_hint">
+		<text>Opravit</text>
+	</string>
+	<string id="ui_total_price">
+		<text>Celkem</text>
+	</string>
+	<string id="lim_bandit_ambush_spot">
+		<text>Pшepadenн bandity</text>
+	</string>
+	<string id="ui_st_kicked_by_battleye">
+		<text>byl vykopnut BattIEyem:</text>
+	</string>
+</string_table>

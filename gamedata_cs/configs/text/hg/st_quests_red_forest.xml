@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_artefact_huntesr_capture_smart_name">
+		<text>Хrizd a stalkereket az anomбliбs terьlethez vezetх ъton!</text>
+	</string>
+	<string id="red_artefact_huntesr_capture_smart_text">
+		<text>Хrizd a stalkereket az anomбliбs terьlethez vezetх ъton!</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_name">
+		<text>Vйdd meg a stalkereket az anomбliбs terьleten!</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_text">
+		<text>Vйdd meg a stalkereket az anomбliбs terьleten!</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_name">
+		<text>Fedezd a zsoldosokat!</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_text">
+		<text>A zsoldosok megtбmadtбk a folyу tъloldalбn бllomбsozу fosztogatуkat. Nyъjts zбrуtьzet, hogy elfoglalhassбk a helyьket!</text>
+	</string>
+	<string id="red_bridge_cover_allyes_name">
+		<text>Intйzd el a fosztogatуkat!</text>
+	</string>
+	<string id="red_bridge_cover_allyes_text">
+		<text>Tъl sokan vannak a fosztogatуk. Нgy a zsoldosok nem tudjбk leengedni a hidat. Цlj meg minйl tцbb fosztogatуt!</text>
+	</string>
+	<string id="red_bridge_cover_bridge_name">
+		<text>Fedezd a zsoldost a kezelхpult kцzelйben!</text>
+	</string>
+	<string id="red_bridge_cover_bridge_text">
+		<text>Egy zsoldosnak sikerьlt eljutnia a hнd kezelхpultjбig. Nyъjts zбrуtьzet, amнg a zsoldos leengedi a hidat!</text>
+	</string>
+	<string id="red_bridge_go_to_positon_name">
+		<text>Vegyйl fel tьzelхбllбst!</text>
+	</string>
+	<string id="red_bridge_go_to_positon_text">
+		<text>Vegyйl fel tьzelхбllбst a kapuhбz elsх emeletйn! Ez a legideбlisabb pozнciу a fosztogatуk megtбmadбsбhoz.</text>
+	</string>
+	<string id="red_bridge_kill_sniper_name">
+		<text>Цlj meg minden mesterlцvйszt a hegyen!</text>
+	</string>
+	<string id="red_bridge_kill_sniper_text">
+		<text>A fosztogatуk biztosнtottбk a hнd kezelхpultjбt. Amнg хk йletben vannak, a zsoldosoknak esйlyьk sem lesz a hнd leengedйsйre. Цlj meg minden mesterlцvйszt a hegyen!</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_name">
+		<text>Beszйlj Lebegyevvel!</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_text">
+		<text>A hidat leengedtйk, tiszta az ъt Limanszkba. Beszйlj Lebegyevvel!</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_name">
+		<text>Vбrj a stalkerosztag megйrkezйsйig!</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_text">
+		<text>Vбrj a stalkerosztag megйrkezйsйig!</text>
+	</string>
+	<string id="red_bring_compass_name">
+		<text>Vidd el az Irбnytыt Erdйsznek!</text>
+	</string>
+	<string id="red_bring_compass_text">
+		<text>Az Irбnytыnek kцszцnhetхen Erdйsz kijutott egy tйrbuborйkbуl nйhбny nappal ezelхtt. A relikviбval talбn sikerьl vйgre kiszabadнtani a zsoldosokat a buborйkbуl. Vidd el az Irбnytыt Erdйsznek!</text>
+	</string>
+	<string id="red_find_compass_name">
+		<text>Talбld meg az Irбnytы relikviбt</text>
+	</string>
+	<string id="red_find_compass_text">
+		<text>Erdйsz kьlцnцs relikviбra bukkant egy tйranomбlia belsejйben, ami nagyon hasonlнt ahhoz a buborйkhoz, ami csapdбba ejtette a zsoldosokat a hadsereg raktбrtelepйn. Ъton hazafelй azonban kiraboltбk Erdйszt, нgy elveszнtette a relikviбt. Talбld meg az Irбnytыt! </text>
+	</string>
+	<string id="red_find_forester_name">
+		<text>Beszйlj Erdйsszel!</text>
+	</string>
+	<string id="red_find_forester_text">
+		<text>Erdйsz egy elhagyatott kunyhуban lakik. Х segнthetne eljutnod Limanszkba. Beszйlj Erdйsszel!</text>
+	</string>
+	<string id="red_find_teleport_name">
+		<text>Talбld meg a tйranomбliбt!</text>
+	</string>
+	<string id="red_find_teleport_text">
+		<text>Az eltыnt csapat PDA-jбban megemlнtenek egy Vцrцs-erdхn keresztьl vezetх цsvйnyt. Az ъt mйlyйn talбlhatу egy tйranomбlia, ami egy цreg kunyhуhoz vezet az erdх szйlйn. Itt lakik Erdйsz. Talбld meg a tйranomбliбt!</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_name">
+		<text>Vidd el a Vцrцs-erdх tйrkйpйt tartalmazу PDA-t!</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_text">
+		<text>Vidd el a Vцrцs-erdх tйrkйpйt tartalmazу PDA-t!</text>
+	</string>
+	<string id="red_go_to_signal_sos_name">
+		<text>Vбlaszolj az SOS jelzйsre!</text>
+	</string>
+	<string id="red_go_to_signal_sos_text">
+		<text>Nem ismert, hogy lehet eljutni a Vцrцs-erdхn keresztьl Erdйszhez. Egy segйlyhнvбs jцn a Vцrцs-erdхbхl. Vбlaszolj a jelzйsre!</text>
+	</string>
+	<string id="red_help_with_bridge_name">
+		<text>Segнts a Tiszta Йgboltnak elfoglalni a hidat!</text>
+	</string>
+	<string id="red_help_with_bridge_text">
+		<text>Egy zsoldososztag kцzeledik a Limanszkba vezetх hнdhoz. A folyу fosztogatуk бltal uralt oldalбra fognak megйrkezni, нgy hamarosan igen forrу lesz a helyzet a hнdnбl. Segнts a Tiszta Йgboltnak leengedni a Limanszkba vezetх hidat!</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_name">
+		<text>Intйzd el a tбmadуkat!</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_text">
+		<text>Sztrelokot egy stalkercsapat vйdelmezi. Intйzd el a tбmadуkat!</text>
+	</string>
+	<string id="red_pursuit_strelok_name">
+		<text>Бllнtsd meg Sztrelokot!</text>
+	</string>
+	<string id="red_pursuit_strelok_text">
+		<text>Sztrelok bement az alagъtba. Menj utбna, йs gondoskodj rуla, hogy ne jusson el a Zуna kцzepйbe!</text>
+	</string>
+	<string id="red_pursuit_talk_csky_name">
+		<text>Бllнtsd meg Sztrelokot!</text>
+	</string>
+	<string id="red_pursuit_talk_csky_text">
+		<text>Sztrelok a kцzelben van, kevesebb, mint 100 mйteren belьl. Kapd el!</text>
+	</string>
+	<string id="red_stalker_reinforced_name">
+		<text>Foglald el a rйgi bбnyбt!</text>
+	</string>
+	<string id="red_stalker_reinforced_text">
+		<text>Foglald el a rйgi bбnyбt! A terьleten magas az anomбlia aktivitбs, йs bхsйges szбmъ relikvia talбlhatу.</text>
+	</string>
+	<string id="red_go_to_military_base_name">
+		<text>Menj a katonai bбzisra</text>
+	</string>
+	<string id="red_go_to_military_base_text">
+		<text>A katonai bбzison van egy adуkйszьlйk, ami elйg erхs ahhoz, hogy ьzenetet kьldhessьnk a Limanszk melletti tйrbuborйkban raboskodу csapatnak. Menj a katonai raktбrtelepre!</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_name">
+		<text>Keress цsvйnyt az anomбliбs terьletre!</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_text">
+		<text>Az eltыnt csapat PDA-jбban megemlнtenek egy Vцrцs-erdхn keresztьl vezetх цsvйnyt. Az ъt mйlyйn talбlhatу egy tйranomбlia, ami egy цreg kunyhуhoz vezet az erdх szйlйn. Itt lakik Erdйsz. Talбld meg a tйranomбliбt!</text>
+	</string>
+	<string id="red_find_signals_on_military_name">
+		<text>Fogadd a rбdiуьzenetet!</text>
+	</string>
+	<string id="red_find_signals_on_military_text">
+		<text>Erdйsz elfogott egy alig йrthetх, zavaros rбdiуьzenetet egy ismeretlen csapattуl, akiket fogsбgba ejtett egy kьlцnцs anomбlia, Limanszk kцzelйben. Talбn хk ismerik a Limanszkba vezetх utat. Menj a katonai raktбrtelepre, йs keress egy helyet, ahol tisztбbb jelet foghatnбl!</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_name">
+		<text>Vedd fel a PDA-t!</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_text">
+		<text>Egy halott stalker PDA-ja mйg mindig mыkцdik. Fontos informбciуkat tartalmazhat Vцrцs-erdхrхl. Vedd fel azt a PDA-t!</text>
+	</string>
+	<string id="red_recover_item_1_name">
+		<text>Szerezd meg a Vцrцs-erdх tйrkйpйt tartalmazу PDA-t!</text>
+	</string>
+	<string id="red_recover_item_1_text">
+		<text>Zsoldos, elkйlne a segнtsйged! Szьksйgьnk lenne egy pontos tйrkйpre a Vцrцs-erdхrхl! A hallottak alapjбn tцbb stalker csapat is megprуbбlta mбr felderнteni az erdхt, de a legtцbbjьknek nyoma veszett. Keresd meg a jegyzeteiket, йs hozd el хket nekem!</text>
+	</string>
+	<string id="red_recover_item_2_name">
+		<text>Szerezd meg a tank gйppuskбjбt!</text>
+	</string>
+	<string id="red_recover_item_2_text">
+		<text>Lenne itt egy munka a szбmodra! Erdйsztхl hallottam, hogy az erdх mйlyйn van egy rйgi, szovjet tank. Senki sem tudja, hogy kerьlt oda, egyszerыen csak megjelent a nagy erejы kisugбrzбs utбn. A helyzet az, hogy a tank hellyel-kцzzel sйrtetlen. Persze, vezetni azйrt nem lehet, de a rбszerelt gйppuskбt megszerezheted rуla. Hozd el nekem azt a gйppuskбt, йs megfizetem a fбradalmaidat!</text>
+	</string>
+	<string id="red_recover_item_3_name">
+		<text>Juttasd vissza a kнsйrleti szerkezetet!</text>
+	</string>
+	<string id="red_recover_item_3_text">
+		<text>Visszahozhatnбl nekem valamit. Egy prototнpust teszteltьnk a tudуsaknak, egy aprу szerkezetet, ami az anomбliбk erхssйgйt mйri. A jelenlegi бllapotбban nem sokra hasznбlhatу. Kцzel kйt napjukba kerьlt, mire megtanнtottбk nekьnk a hasznбlatбt. Informбciуt gyыjtцttьnk a rйgi bбnyбban, amikor tцrtйnt valami, valami megtбmadott bennьnket... mindenfйle szarsбg repkedett felettьnk, egyedьl nekem sikerьlt йlve kijutnom onnan. A szerkezet lenn maradt a srбcokkal, elnyeltйk хket az anomбliбk. Az a valami, ami megtбmadott minket, mйg mindig odalenn lehet, ъgyhogy nem lesz egyszerы visszaszerezni, de ha sikerьl, nem marad el a jutalmad.</text>
+	</string>
+</string_table>

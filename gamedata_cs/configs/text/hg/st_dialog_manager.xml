@@ -1,0 +1,1653 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="dm_intro_1">
+		<text>Mi a helyzet? Nem sokan ьdvцzlik erre az embert. Manapsбg inkбbb hбtba lхnek kцszцnйs helyett.</text>
+	</string>
+	<string id="dm_intro_2">
+		<text>Ьdvцzцllek! Olyan jу vйgre йlх embert lбtni, a rengeteg szцrny йs nбd helyett.</text>
+	</string>
+	<string id="dm_intro_3">
+		<text>Hй! Ъj vagy az Ingovбnyban? A kisugбrzбs utбn keveredtem ide, most meg nem tudok kijutni innen.</text>
+	</string>
+	<string id="dm_intro_4">
+		<text>Egy ъj arc ezen a szemйttelepen! Ьdvцzцllek!</text>
+	</string>
+	<string id="dm_intro_5">
+		<text>Hellу! Van egy perced? Mбr eluntam az agyamat...</text>
+	</string>
+	<string id="dm_intro_6">
+		<text>Adj egy цtцst tesу! Ъgy nйzel ki, mint aki most jбr itt elхszцr!</text>
+	</string>
+	<string id="dm_intro_7">
+		<text>Tetszik a tбj? Цt mйrfцldцn бt ilyen ez az бtkozott hely, minden irбnyban. Csak nйhбny romos йpьlet йs persze a szцrnyek jelentenek nйmi vбltozбst.</text>
+	</string>
+	<string id="dm_intro_8">
+		<text>Szуval, te is ezen az бtkozott helyen kцtцttйl ki? Jobb, ha felbйrelsz egy vezetхt, ha ki akarsz jutni.</text>
+	</string>
+	<string id="dm_intro_9">
+		<text>Hй! Szуval ъj vagy erre? Fogadd meg a tanбcsom – vigyбzz a mocsaras helyekkel, egйszben elnyelnek. A csapбsokat se nagyon hasznбld, hacsak nem akarsz golyуt a fejedbe.</text>
+	</string>
+	<string id="dm_intro_10">
+		<text>Nemrйg уta vagyok itt, de mбr belefбradtam ebbe a helybe. Sajnos kijutni nem olyan egyszerы, mint be.</text>
+	</string>
+	<string id="dm_intro_11">
+		<text>Hellу, jуember! Te is rejtхzkцdni akarsz? Itt mindenki el akar bъjni valami elхl, van aki a mъltjбtуl, van aki sajбt magбtуl...</text>
+	</string>
+	<string id="dm_intro_12">
+		<text>Elхszцr vagy az Ingovбnyban? Akkor nagyon figyelj, Mindenek felett, az emberekre kell figyelned. A szцrnyek йs a futуhomok csak a mбsodik gond. Maradj a nбdasokban, йs tovбbb fogsz йlni.</text>
+	</string>
+	<string id="dm_about_0">
+		<text>Ezek az бtkozott szъnyogok! Ez is egy anomбlia – kйpesek бtszъrni a gumiruhбn! Йs a tцbbi helyi lбtvбnyossбg sem sokkal jobb, nekem elhiheted. Van ez a mocsбrlakу lйny, amitхl tйnyleg padlуt fogsz. Йrted amit mondok?</text>
+	</string>
+	<string id="dm_about_1">
+		<text>A Zуnбban nagyon nehйz egyedьl tъlйlni, de ez a terьlet a legrosszabb. Mбr belefбradtam, hogy minden nap, minden percben fйlnem kelljen. Csatlakozni akarok valakihez, de nincs tъl sok lehetхsйg – valamelyik banda, vagy azok a kйk ruhбs stalkerek. Nem igazбn kedvelem a fosztogatуkat, nem a semmiйrt lettek fosztogatуk, nem igaz? Egy nap leszъrnak, csak ъgy a hecc kedvйrйt, йs annyi. Szнvesebben csatlakoznйk azokhoz a stalkerekhez. Szerinted befogadnak? De hogyan is tudhatnбd?</text>
+	</string>
+	<string id="dm_about_2">
+		<text>Ez a hely leginkбbb a renegбtok otthona, olyanokй akiket mйg a Zуna fosztogatуi sem fogadnak be. Nйhбnyszor lбttam ezeket a stalkereket jбrхrцzni, kйk szнnы бlcaruhбban – Kйk йgboltnak vagy Tiszta Йgboltnak, vagy valami hasonlуnak  hнvjбk хket. Azok a fickуk tъl komolyak, nekem meg el kell lazulnom! A tбboruk helyzete titok – lenne kedvem kiderнteni, hogy mit хrizgetnek ott.</text>
+	</string>
+	<string id="dm_about_3">
+		<text>Hй haver! Бtбztak a zoknijaim, a lбbamon piуcбk mбszkбlnak, a pulуverem meg hamarosan szйtfoszlik ennyi nedvessйgtхl. Mit meg nem adnйk most egy kis meleg йtelйrt, forrу fьrdхйrt, nйhбny szбraz ruhбйrt йs egy pohбr konyakйrt egy kandallу mellett! De mindцssze egy adag vodka йs a tцbbi hozzбm hasonlу vesztes nyбvogбsa vбr rбm a tбbortыznйl. De mйg az sem – hacsak nem csatlakozok egy csoporthoz.</text>
+	</string>
+	<string id="dm_about_4">
+		<text>Tudsz valamit a Tiszta Йgboltrуl? Az az бtkozott klбn olyan titokzatos, hogy mбr arra gondolsz mind titkos ьgynцk, vagy mi. Csak nйhбny elkapott rбdiуbeszйlgetйsbхl tudok a lйtezйsьkrхl. Ennyi, йs mйg nйhбny stalker mesйi.</text>
+	</string>
+	<string id="dm_about_5">
+		<text>Az Ingovбny az utolsу hely, ahovб egy stalker mehet. Itt csak olyan emberekkel fogsz talбlkozni, akik menekьlnek a problйmбik elхl. Olyan problйmбk elхl, amik komolyabbak, mint a lбpvidйk, a mutбnsok йs a pusztulбs. Kint egy rйszьk most bцrtцnben rothadna, vagy a fцld alatt lenne. Йn, йn nem jцttem ki valami jуl a katonбkkal, ezйrt egy darabig a Zуnбban mбszkбltam, amнg a kisugбrzбs meg nem nyitotta ezeket a helyeket. Itt tцkйletesen el lehet bъjni.</text>
+	</string>
+	<string id="dm_about_6">
+		<text>Йn mondom neked, haver, ha van olyan hely a fцldцn ahol el lehet tыnni, akkor az Ingovбny olyan. Heteket tцlthetsz azzal, hogy kцrbe-kцrbe jбrsz. Nйhбnyan nem szнvesen tennйk ezt. Ha a szцrnyek nem kapnak el, majd elkap a mocsбr йs mindkettхbхl rengeteg van. Йn mбr azуta itt vagyok, hogy az elsх цsvйnyeket felfedeztйk. Ez a legjobb rejtekhely, mбr ha tъlйled.</text>
+	</string>
+	<string id="dm_about_7">
+		<text>Ezek a mocsarak tele vannak йlettel, йs nem csak a mutбnsokra gondolok. Rengeteg stalker van a kцrnyйken – nйhбnyan a tцrvйny elхl bujkбlnak, mбsok a korбbbi tбrsaik elхl. Йs mind a legjobb helyre jцttek! A anomбliбk kцzцtti rйseket mйg csak most kezdik felfedezni, szуval mйg rengeteg ismeretlen terьlet van. Az йlet nem vбlt kцnnyebbй. Tъl sok a sцpredйk a kцrnyйken manapsбg – egy szempillantбs alatt lelхnek, йs kifosztjбk mйg alig kihыlt testedet.</text>
+	</string>
+	<string id="dm_about_8">
+		<text>A szцrnyek, a mocsбr az egйsz бtkozott Zуna! Mбr belefбradtam, hogy ebben a mocsбrban barangoljak! Nem azйrt jцttem ide, hogy minden egyes alkalommal gatyбt kelljen cserйlnem, amikor megzцrren a nбd, megcsobban a vнz, vagy egy helikopter szбll el az йgen. Talбn цssze kйne бllnunk valami klбnnб, йs szereznьnk magunknak egy szбrazabb helyet. Hбt nem lenne jobb, ha barбtok vigyбznбnak rбd йs a ropogna a tбbortыz йjszaka? Fхleg, ha mйg valami dobozos leves is fхne rajta, vagy friss hъs? Adj mйg hozzб nйmi gitбrhangot, йs kйsz is a fцldi paradicsom!</text>
+	</string>
+	<string id="dm_about_9">
+		<text>Itt minden nap egyforma: a gonosztevхk a nбdasban rejtхznek, az emberek belefulladnak a mocsбrba, az йgen helikopterek kцrцznek, йs lelцvik a stalkereket. У, йs nйha feltыnik nйhбny fickу kйk бlcaruhбban – A Tiszta Йgbolt emberei. Йrdekes, hogy a klбn mбr itt йl egy ideje, de az utуbbi ideig senki sem hallott rуluk.</text>
+	</string>
+	<string id="dm_about_10">
+		<text>A kisugбrzбs elхtt a stalkerek kйtszer is meggondoltбk, hogy eljцjjenek ide. Tъl sok anomбlia йs mocsбr, tъl sok nyirkossбg йs mйg tцbb bыz. Aztбn itt vannak mйg a szцrnyek, йs a szъnyogok, amik mйg rosszabbak, йs azok az бtkozott nбdasok, bбrmerre nйzel is. De miйrt is йrdekelne, igaz? Minden megvбltozott a Kisugбrzбs utбn. Az anomбliбk бthelyezхdtek, йs minden frakciу a sajбt feje utбn megy, mind ъj terьletekйrt harcol. Szуval, errefelй most sokan jobban йlnek, mint korбbban, bбr ez viccesen hangzik. Fхleg a sцpredйk, mint йn – йs nйhбny хrьlt, akik azt hiszik, hogy egy nap цvйk lesz a kцrnyйk.</text>
+	</string>
+	<string id="dm_about_11">
+		<text>У haver, mбr unom ezt a mocsaras kцrnyйket! Persze, vissza is mehetnйk, de van nйhбny rйgi bыnцm ami miatt nem lehet. Ne is beszйljьnk rуla. Nem bбnnбm, ha csatlakozhatnйk valamilyen klбnhoz, de itt nincs egy sem, amelyik emlнtйsre mйltу – csak egy csomу fosztogatу.</text>
+	</string>
+	<string id="dm_about_12">
+		<text>Ez az Ingovбny nem a paradicsom, az biztos. Inkбbb neveznйm a Fцld pцcegцdrйnek, mйg a Zуna mйrcйjйhez kйpest is. De йn pont ezйrt jцttem ide. Nйhбny ember ъgy gondolta, hogy tartozok nekik valamivel, йs nem tudtak vбrni, hogy megkapjбk. Szуval itt vagyok. Sokkal nagyobb az esйlyem a tъlйlйsre, mint bбrhol mбshol. Kizбrt dolog, hogy rбm talбljanak ebben a nбdasban!</text>
+	</string>
+	<string id="dm_about_13">
+		<text>Egy ъj helyi csoport jelent meg a kцrnyйken, Tiszta Йgbolt a nevьk. Nem tudom, hogy mi cйlbуl vannak itt, de mбr lбttam jу pбr embert az йletemben, йs йn mondom neked, ezek tiszta хrьltek! Hogy йrte azt, hogy hogy йrtem? Ezek mind tudуsok, vagy ilyen okostojбsok. Ez viszont nem gбtolja meg хket abban, hogy jуl bбnjanak a fegyverrel. Ha egy fickуnak esze is йs fegyvere is van, akkor kйtszer is meggondolom, hogy az ъtjukba бlljak e.</text>
+	</string>
+	<string id="dm_action_info_0">
+		<text>Hй haver, ha nem kйrdezхskцdsz annyit, sokkal tovбbb йlhetsz. Ez szemйlyes tapasztalat. Йn is ezt csinбltam, amнg meg nem mutattбk, hogy mik a szabбlyok. Most meg itt kell bujkбlnom ebben az бtkozott mocsбrban. Az igazsбg az, hogy szerencsйs voltam, hogy ide kerьltem, a Kisugбrzбsnak kцszцnhetхen. Hetekig kуborolhatsz az ingovбnyban ъgy, hogy egy lйlekkel sem talбlkozol, kivйve nйhбny vaddisznуt.</text>
+	</string>
+	<string id="dm_action_info_1">
+		<text>A fenйbe is! Ennyit a szerencsйmrхl... Mindig sokat kaptam az йlettхl, de most az kap sokat belхlem. Azt hiszed, az йn цtletem volt ide jцnni? Nem uram! Jуl ment a sorom a Zуnбban. Йltem, mint hal a vнzben, jу pйnzt kerestem, de le kellett lйpnem amikor a haverok ъgy gondoltбk, hogy kйst dцfnek a hбtamba. Hogy miйrt? Ehhez semmi kцzцd.</text>
+	</string>
+	<string id="dm_action_info_2">
+		<text>Sokat veszettem egy kбrtyajбtйkban a helyi tolvajokkal szemben. Feltettem mindent – az йletemet. Nem igazбn akartam kifizetni хket, szуval lehъztam ide. Ъtkцzben volt egy csetepatйm a hadsereggel is. Most meg itt ragadtam, mindenfйle csхcselйk kцzцtt.</text>
+	</string>
+	<string id="dm_action_info_3">
+		<text>Mielхtt idejцttem, a bцrtцnben voltam, mert az egyik szemйt feldobott. Nem az volt az бlmom, hogy egy bцrtцnben fogok megrohadni, szуval йn, йs mйg nйhбny csбvу, ъgy dцntцttьnk, hogy lelйpьnk. Elkaptuk az egyik хrt, elvettьk a fegyverйt йs egyenesen a Zуnбhoz jцttьnk. Akkor lбttak utoljбra amikor ideйrtьnk. Nem akarok semmit azoktуl a fickуktуl – olyan rohadtak, mint ez a mocsбr. Szуval most itt bujkбlok.</text>
+	</string>
+	<string id="dm_action_info_4">
+		<text>Miйrt kйrdezel ennyit? Honnan tudjam, hogy nem vagy valami besъgу? Okй, Okй, nyugodj meg. Tudom, hogy itt senki sem talбl meg... rendben, figyelj. Elйg hьlye voltam, hogy kiraboljak nйhбny tolvajt. Amikor rбjцttem, hogy mindent megtennйnek, komolyan mindent, hogy visszakapjбk a pйnzьket, azonnal a Zуna felй indultam. De azok a kapzsi бllatok lenyomoztak, йs a nyakamra kьldtek nйhбny bйrgyilkost. Szerencsйm volt, hogy el tudtam intйzni хket, isten segнtsйgйvel. Most azon gondolkodom, hogy lйtrehozom a sajбt bandбmat. Egy napon majd nagyok leszьnk, йrzem.</text>
+	</string>
+	<string id="dm_action_info_5">
+		<text>Nem lбttam elйg akciуfilmet. Ezйrt jцttem a Zуnбba, megprуbбltam hollywoodi akciуhхs lenni. Termйszetesen hamarosan jцttek a gondok... йs csak jцttek... йs jцttek – bбrhovб is fordultam, mindenhol ellensйget talбltam, Vйgьl ebbe a patkбnyfйszekbe kellett menekьlnцm. Persze itt olyan kцnnyen meg lehet halni, hogy csak na, de el is tыnhetsz a nбdasban, amikor csak akarsz. Nem egйszen olyan, mint a filmekben – tъl sok a vйr йs a kiцmlх belek.</text>
+	</string>
+	<string id="dm_action_info_6">
+		<text>Egyszerы tцrtйnet – kereszteztem nйhбny kemйny fiъ ъtjбt, йs хk vйrdнjat tыztek ki a fejemre. Akkor tudtam meg, hogy a Zуnбban mennyi fejvadбsz van. A kнvбncsi szemek elхl menekьltem ide. Amint lenyugszanak a dolgok, megtalбlom a szemeteket, йs elbeszйlgetek velьk, mint fйrfi a fйrfival.</text>
+	</string>
+	<string id="dm_intro_13">
+		<text>Цrьlцk, hogy lбtlak!</text>
+	</string>
+	<string id="dm_intro_14">
+		<text>Ьdvцzцllek!</text>
+	</string>
+	<string id="dm_intro_15">
+		<text>Hellу!</text>
+	</string>
+	<string id="dm_intro_16">
+		<text>Igen?</text>
+	</string>
+	<string id="dm_intro_17">
+		<text>Segнtsйget keresel?</text>
+	</string>
+	<string id="dm_intro_18">
+		<text>Segнthetek?</text>
+	</string>
+	<string id="dm_intro_19">
+		<text>Ьdvцzцllek az Ingovбnyban!</text>
+	</string>
+	<string id="dm_intro_20">
+		<text>Fogadd meg a tanбcsomat – vigyбzz a mocsбrral йs a szцrnyekkel.</text>
+	</string>
+	<string id="dm_intro_21">
+		<text>Egy ъj arc a kцrnyйken!</text>
+	</string>
+	<string id="dm_intro_22">
+		<text>Bнzz bennem, barбtom, йs maradj a nбdasban.</text>
+	</string>
+	<string id="dm_intro_23">
+		<text>Ha ki akarsz jutni az ingovбnybуl, keress egy vezetхt.</text>
+	</string>
+	<string id="dm_about_14">
+		<text>Az Ingovбny hosszъ ideig elzбrt terьlet volt a legtцbb stalker szбmбra. Bйkйsen йltьnk itt, felfedezve a terepet, йs kordбban tartva a mutбnsokat. A Kisugбrzбs mindent megvбltoztatott. Az anomбliбk elcsъsztak, йs ъj arcok kezdtek beszбllingуzni. Legtцbbjьk a Kordonon keresztьl jutott el ide. Azt hiszem, valami miatt biztos megйri egy olyan helyre menekьlni, mint ez...</text>
+	</string>
+	<string id="dm_about_15">
+		<text>Az Ingovбny a renegбtok mennyorszбga. Mindenfйle ember eljut ide – magбnyos harcosok, a tцbbi csoport kizбrt tagjai, vagy egyszerы bыnцzхk. Mi цrцmmel lбtjuk mindet, nйhбnyukat tбrt karokkal, mбsokat teli tбrral.</text>
+	</string>
+	<string id="dm_about_16">
+		<text>Tennьnk kell valamit, vagy tъl kйsх lesz. Ъgy tыnik, hogy a Zуna kezd felйbredni hosszъ бlmбbуl. Az utolsу kisugбrzбs olyan erхs volt, hogy ъgy йreztьk, vйge a vilбgnak. Nem бshatjuk be magunkat, йs ьlhetьnk цlbe tett kйzzel, vбrva az igazi katasztrуfбt. El sem merem kйpzelni a kцvetkezmйnyeket. Legyen elйg annyi, hogy az eredeti csernobili robbanбs ehhez kйpest gyermeki csнnynek tыnik majd.</text>
+	</string>
+	<string id="dm_about_17">
+		<text>Tanulmбnyozzuk a helyi anomбliбkat. Erre az Ingovбny a legalkalmasabb hely. Mбr szбmos helyet sikerьlt azonosнtanunk, йs minden nap ъjakat talбlunk. Bбrcsak tцbb pйnzьnk lenne...</text>
+	</string>
+	<string id="dm_about_18">
+		<text>Ez a hely nem olyan, mint a Zуna tцbbi rйsze. Rengeteg szцrny van itt az biztos, de nagyon kevйs az anomбlia. Ettхl eltekintve ez egy teljesen normбlis ingovбny, pont olyan, mint bбrmely mбsik a vilбgon.</text>
+	</string>
+	<string id="dm_about_19">
+		<text>Az Ingovбny valaha nyugalmas helynek szбmнtott. Senki sem zavart minket, senki sem jцtt relikviбkat keresni. Йs itt is ugyanannyi mуdon halhattunk meg, mint bбrhol mбshol a Zуnбban. Ez a nбdrengeteg йs a mocsбr senkit sem vonzott igazбn. De a dolgok megvбltoztak. Fogalmam sincs, hogy mi tцrtйnik az Ingovбnyon kнvьl, de a sok vakmerх figura csak ъgy цzцnlik erre a helyre.</text>
+	</string>
+	<string id="dm_about_20">
+		<text>Nem lehet sokat mondani rуla – erre csak szцrnyek, mocsarak йs nбd van. Meg hatalmas szъnyogok, termйszetesen. A Kordon innen йszak-nyugatra van, Agroprom pedig йszakra. Dйlre йs nyugatra, a Zуna hatбrain tъl tiszta a terьlet.</text>
+	</string>
+	<string id="dm_about_21">
+		<text>Mostanбig ez a hely elйg nyugalmas volt. Csak mi voltunk itt, az ingovбny, a vadkanok йs a vйrmalacok. Most egyre zsъfoltabbб kezd vбlni, йs ha engem kйrdezel, nem jу emberek jцnnek. A jуknak nincs semmi dolguk erre. Ne vedd sйrtйsnek, te kivйtel vagy.</text>
+	</string>
+	<string id="dm_about_22">
+		<text>Csak vezetхinknek, Lebegyevnek йs Kalancsa professzornak kцszцnhetjьk a helyzetьnket. A tбborunk egy rйgi faluban van, amit a szovjet idхkben elбrasztott a vнz egy vнztбrozу йpнtйse miatt. Egyetlen tйrkйpen sem szerepel, szуval vezetх nйlkьl szinte lehetetlen megtalбlni minket.</text>
+	</string>
+	<string id="dm_about_23">
+		<text>Azйrt jцttьnk ide, hogy elbъjunk a kйretlen tekintetek elхl. Miйrt? Volt rб okunk. Majd Lebegyev йs Kalancsa elmondja, ha kedvet йreznek rб. Itt rejtve vagyunk az Ingovбnyba lбtogatуk elхl. Ha el akarsz jutni a bбzishoz, ne menj egyedьl – keres egy vezetхt. Ъgy sokkal biztonsбgosabb.</text>
+	</string>
+	<string id="dm_about_24">
+		<text>Ez a hely nedves, hideg, szбnalmas йs pokolian bьdцs. Mit akarsz mйg tudni rуla? Akarsz arrуl hallani, hogy lehъz valami szцrny a vнz mйlyйre? Esetleg arrуl, hogy a futуhomokba sьllyedsz egy perc alatt?</text>
+	</string>
+	<string id="dm_about_25">
+		<text>Ezen a helyen jуl el lehet bъjni. Hogy kitхl? Mindenkitхl: fosztogatуk, a katonasбg йs mindenki elхl, aki szemet vetett  rбd. Csak ugorj be a nбdasba, йs mбr el is tыntйl. Termйszetesen ha nem akarod felhнvni magadra a figyelmet, akkor ne szу szerint йrtsd. Tъl sok csalуka hely van, ami csapdбba akar ejteni. Egy rossz lйpйst йs hasta la vista bйbi!</text>
+	</string>
+	<string id="dm_about_26">
+		<text>Napokig kуvбlyoghatsz ezekben a mocsarakban йs nem jutsz sehova. Minden hely egyforma: vнz, nбd йs elvйtve valami mбs vegetбciу. Azt hiszem, ezйrt vбlasztotta Lebegyev йs Kalancsa ezt a helyet tбbornak. Itt lent mйg a hadsereg helikopterei sem lбtnak meg. Ezйrt tudunk a sajбt dolgunkra koncentrбlni anйlkьl, hogy bбrki kikйmlelne.</text>
+	</string>
+	<string id="dm_about_27">
+		<text>Mбr olyan rйg vagyunk itt, hogy nйha olyan йrzйsem van, hogy az egйsz vilбg egy hatalmas mocsбr. Egyszer hallottam egy tцrtйnetet arrуl, hogy ez a hely rйgen normбlis terьlet volt, falvakkal, mezхkkel йs mбs megszokott dolgokkal. Aztбn elkezdtйk йpнteni a gбtat йs a vнzi erхmыvet, йs vйgьl elбrasztottбk a terьletet. Vagy rosszul szбmoltak, vagy csak elcsesztйk a dolgot, de tъl sok lett itt a vнz. Egy csomу embert nem tudtak idхben kimenekнteni. Most meg az egйsz egy nagy ingovбny.</text>
+	</string>
+	<string id="dm_about_28">
+		<text>Nйzz csak kцrbe! Itt mindent megtalбlsz, ami az Ingovбnyra jellemzх. Ugyanazok az бtkozott dolgok – nбd, fйlig elsьllyedt hбzak йs nйmi szбraz fцldterьlet. Ne is akard megtalбlni a bбzisunkat, mйg akkor sem, ha tudod, hogy mit keresel. Nem nagyon fйlьnk attуl, hogy felfedeznek, mivel eleve kevesen tudnak a lйtezйsьnkrхl.</text>
+	</string>
+	<string id="dm_about_29">
+		<text>Okkal vagyunk itt. A kisugбrzбs elхtt ez volt a Zуna legelhagyatottabb, legnehezebben megkцzelнthetх terьlete. Termйszetesen bбrmikor beljebb mehetsz a kцzйppont felй, de egy ilyen kirбndulбst senki sem йlne tъl. Vedd ъgy, hogy ez a kьlvбros. Innen keletre van a Kordon, йszakra Agroprom йs a tцbbi irбnyban... nos, ott йr vйget a Zуna.</text>
+	</string>
+	<string id="dm_about_30">
+		<text>Igen, a legjobb embertхl kйrdezed. Senki sem ismeri annyira jуl az Ingovбnyt mint a Tiszta Йgbolt. Mбr miуta is vagyunk itt... ki tudja? Ilyen helyeken nehйz szбmon tartani az idхt. Itt lent az idх ugyanolyan lassan telik, mint amilyen kopбr йs borъs a kцrnyйk. Hamarosan nem fogod mбr szбmolni a napokat. Ha ki akarsz jutni innen, keresned kell egy vezetхt a Tiszta Йgbolt tagjai kцzцtt – egy ъtbaigazнtбsnak nem lenne sok йrtelme.</text>
+	</string>
+	<string id="dm_action_info_7">
+		<text>Ez a munkбnk. A kisugбrzбs miatt nagyon elfoglaltak vagyunk. Az igazat megvallva, nem igazбn vagyunk harcosok, de ilyen idхkben, ha meg akarod йrni a kцvetkezх napot is, meg kell tanulnod hasznбlni a fegyvered. Azt hiszem, hogy az enyйm hamarosan kiveszi a rйszйt a dolgokbуl.</text>
+	</string>
+	<string id="dm_action_info_8">
+		<text>Lebegyev kьldetйssel bнzott meg. Sajnбlom, nem mondhatok semmit – a klбn belsх ьgyйrхl van szу.</text>
+	</string>
+	<string id="dm_action_info_9">
+		<text>Kйszьlцk a kцvetkezх megbнzatбsomra. Manapsбg tъl sok a sцpredйk az Ingovбnyban. Mindenki azt hiszi, hogy az erх jogokat ad neki. De elfelejtik, hogy mindig van egy olyan erх, ami erхsebb mint хk.</text>
+	</string>
+	<string id="dm_action_info_10">
+		<text>Csak idхzцk errefelй, de nem sokбig. A Tiszta Йgboltnбl mindig sok a tennivalу, most pedig tцbb, mint valaha.</text>
+	</string>
+	<string id="dm_action_info_11">
+		<text>Egy kьldetйsre kйszьlцk, az Ingovбny belsхbb terьletein. A Zуna egyre nyugtalanabb, szуval цssze kell szedni magunkat йs mennьnk kell. Ne feledd a szavam stalker, nagy vбltozбsok jцnnek.</text>
+	</string>
+	<string id="dm_action_info_12">
+		<text>Mint mindannyian, йn is a Zуnбt kutatom. Ez a legcsodбlatosabb dolog, amivel az emberisйg valaha talбlkozott. Nem kellene harcolnunk a Zуna ellen – kutatnunk kellene, meg kellene prуbбlni megйrteni, йs vele egyьtt lйtezni, bйkйben. A Zуna цrцkre itt marad, ez ne feledd.</text>
+	</string>
+	<string id="dm_action_info_13">
+		<text>Mind ugyanazt csinбljuk – tudomбnyos kutatбs. A Zуnбt tanulmбnyozni kell. Minden nap ъjabb dolgokkal ejt бmultba. Legalбbb annyi csodбlatos dolog van benne, mint ahбny szцrnyыsйges. A relikviбk mйg csak meg sem kцzelнtik ezeket a csodбs dolgokat. Tapasztalt stalkerek gyakran beszйlnek a Zуna kцzepйn бllу Monolitrуl, йs arrуl, hogy az minden kнvбnsбgodat teljesнteni tudja. Bбrcsak eljutnйk oda egy nap.</text>
+	</string>
+	<string id="dm_action_info_14">
+		<text>Mыszereim nagyon magas energiakoncentrбciуt jeleznek, ami azt jelenti, hogy megnх az anomбliбk йs relikviбk megjelenйsйnek esйlye. Elkьldtem a mйrйsi eredmйnyeket Kalancsбnak. Most vбrom a tovбbbi parancsokat.</text>
+	</string>
+	<string id="dm_action_info_15">
+		<text>Most йppen semmi, de rengeteg feladatom van. Tudуsok vagyunk, technikusok йs katonбk is egyben. Ma harcolunk, holnap elmegyьnk egy tudomбnyos expedнciуra – нgy mennek a dolgok.</text>
+	</string>
+	<string id="dm_action_info_16">
+		<text>Vйletlenьl csatlakoztam a Tiszta Йgbolthoz. Egyik nap belesьllyedtem a mocsбrba, de ezek a fickуk kihъztak onnan йs elhoztak a bбzisukra. Beszйlgettem Lebegyevvel. Rengeteg jу dolgot mondott. Tцbbet tud a Zуnбrуl, mint amennyit mбsok akarnбnak hallani rуla. Ъgy tыnik, hogy ennek a klбnnak йrtйkes cйljai vannak, ezйrt csatlakoztam hozzбjuk, йs megteszek mindent, hogy segнtsek nekik.</text>
+	</string>
+	<string id="dm_action_info_17">
+		<text>Az egyik legkitartуbb tag vagyok – a klбn egyik elsх tagja. Mбr a kezdetek kezdetйtхl tanulmбnyozom az Ingovбnyt, itt a Zуnбban. Szбmos mйrйst elvйgzek, grafikonokat rajzolok, rendben tartom a felszerelйst. Lelхttem mбr nйhбny szцrnyet – kutatбsi cйlokra, termйszetesen. Manapsбg egyre tцbbszцr kell hasznбlnunk a fegyvereinket.</text>
+	</string>
+	<string id="dm_action_info_18">
+		<text>Mint mindenki mбs, mi is megfigyelьnk, йs adatokat gyыjtьnk. Szerintem Lebegyev йs Kalancsa mбr tцbbet tudnak a Zуnбrуl, mint mi egyьtt. Ennek ellenйre ritkбn beszйlnek rуla nekьnk egyszerы katonбknak. Nekьnk csak az aktuбlis problйmбkkal kell foglalkoznunk, amнg хk foglalkoznak a nagy dolgokkal.</text>
+	</string>
+	<string id="dm_action_info_19">
+		<text>Hнreket vбrok a fiъktуl. Kьldetйsen vannak, mйlyen a mocsбrban. Ilyen kцrьlmйnyek kцzцtt lehet, hogy szьksйgьk lesz a segнtsйgьnkre.</text>
+	</string>
+	<string id="dm_cool_info_0">
+		<text>Sok ъj dolog van. Pйldбul a Kisugбrzбs... nem csak a Zуnбt vбltoztatta meg. Mind megvбltoztunk. Sokkal tцbb bennьnk a harag, vagy valami ilyesmi. Az egyik percben kedves vagy az emberrel, a mбsik percben meg azt lбtod, hogy fegyvert nyom a fejedhez. У, azt sem tudom, hogy mirхl beszйlek. Jobb, ha megkйrdezed Lebegyevet.</text>
+	</string>
+	<string id="dm_cool_info_1">
+		<text>Egyre tцbb kisugбrzбs tцrtйnik - mйg sohasem lбttam ilyet. A Zуna megrбzkуdik, megvбltoztatva minden maga kцrьl. Az ismerхs цsvйnyek halбlos anomбliбkba vezetnek, йs ъj, korбbban elzбrt terьletek nyнlnak meg. Az Ingovбny is egyre kцnnyebben megkцzelнthetх. Fogadok, hogy az a sok csoport hamarosan itt fog lбrmбzni.</text>
+	</string>
+	<string id="dm_cool_info_2">
+		<text>Honnan tudnбm, hogy mik a hнrek? Olyan itt йlni az Ingovбnyban, mintha egy mбsik bolygуn йlnйl. Jobb, ha megkйrdezed azokat, akik nem itt йlnek.</text>
+	</string>
+	<string id="dm_cool_info_3">
+		<text>Azt mondjбk, hogy a kisugбrzбs utat nyitott szбmos terьletre, nem csak az Ingovбnyhoz. A megszokott stalker terьleteken anomбliбk alakultak ki. Az olyan helyek, ahovб soha senki sem jutott el korбbban, nyitva бllnak a felfedezхk йs fosztogatуk elхtt.</text>
+	</string>
+	<string id="dm_cool_info_4">
+		<text>Kutatбsaink szerint, az egyre gyakoribb kisugбrzбsok semmi jуt nem tartogatnak szбmunkra. A Zуna instabillб vбlt. Az ъj vбltozбsok egyre tцbb harcot eredmйnyeznek a korбbban elzбrt terьletek fцlцtt. Valami tцrtйnni fog, йs ez a valami nem biztos, hogy jу lesz.</text>
+	</string>
+	<string id="dm_cool_info_5">
+		<text>Hallottam, hogy a stalkerek a Kordonnбl jуl elvertйk a katonбkat. Azt nem йrtem, hogy ezt hogyan tudtбk megtenni, de ezek csak pletykбk. Lбssuk, mi van mйg. Talбltak egy csomу rйgi jбrmыvet, felszerelйst йs mбs hasznos dolgot a Szemйtdombon – olyan cuccokat, amik mйg 1986-bуl szбrmaznak. Azt hittйk, hogy mind fertхzцtt, de most ezek szу szerint felbecsьlhetetlenek. Igazi aranylбz tцrt ki, ami termйszetesen odavonzott egy csomу fosztogatуt. Most цvйk a Szemйtdomb, йlve nyъzzбk meg a stalkereket.</text>
+	</string>
+	<string id="dm_cool_info_6">
+		<text>A kisugбrzбs szбmos zavarу dolgot eredmйnyezett. Nйhбny napnyi nyugalom kцvette, de ez csak a vihar elхtti csend volt. Sok frakciу kezd harcolni, kцztьk a miйnk is. Harcolni fognak a terьletйrt, bбr a mi ittlйtьnk oka teljesen mбs...</text>
+	</string>
+	<string id="dm_intro_24">
+		<text>Hй, testvйr!</text>
+	</string>
+	<string id="dm_intro_25">
+		<text>Kйrdйsed van? Azйrt vagyok itt, hogy segнtsek!</text>
+	</string>
+	<string id="dm_intro_26">
+		<text>Kйrdezz hбt - amнg vбlaszolуs kedvemben vagyok.</text>
+	</string>
+	<string id="dm_intro_27">
+		<text>Stalker! Ьdvцzцllek a Kordonban!</text>
+	</string>
+	<string id="dm_intro_28">
+		<text>Rйgуta nem lбtni harcedzett zsoldosokat a Kordonban. Te annak szбmнtasz, ugye?</text>
+	</string>
+	<string id="dm_intro_29">
+		<text>Testvйrem! Hadd ьdvцzцljelek a kцrnyйkьnkцn!</text>
+	</string>
+	<string id="dm_intro_30">
+		<text>Mindig цrцm egy bajtбrssal talбlkozni!</text>
+	</string>
+	<string id="dm_intro_31">
+		<text>Ьdv! Maradj kцzel hozzбnk, stalkerekhez, mert a fosztogatуk йs a hadsereg is elйg harapуsak mostansбg!</text>
+	</string>
+	<string id="dm_about_31">
+		<text>A Kordon pont az, aminek lбtszik: a Zуna pereme, ami egyre kijjebb йs kijjebb tolуdik. Vannak anomбliбk, emlнtйsre mйltу relikviбk nincsenek, de legalбbb a szцrnyek бrtalmatlanok. Utak vezetnek Szemйtdomb йs a Sцtйtvцlgy felй, illetve eljuthatsz innen az Ingovбnyba is, de ugyan mi a francnak mennйl oda?</text>
+	</string>
+	<string id="dm_about_32">
+		<text>Rйgebben elйg unalmas volt ez a hely. Megvolt a bevett szokбs: az ъjak csak mentek a fejьk utбn, a stalkerek relikviбkat gyыjtцttek йs eladtбk Szidorovicsnak, a hadsereg pedig "vйdelmet" nyъjtott a fosztogatуktуl. A katona srбcok tцbbnyire tыrhetх figurбk voltak, csak aztбn megvбltozott minden. Megjelent nйhбny szemйtdombi alak йs ьzletelni kezdtek a parancsnokkal, aztбn felborult a rend, a hadsereg pedig megbнzhatatlannб vбlt. De a rossz dolgokat gyakran valami jу is kцveti: a stalkerek цsszefogtak, нgy legalбbb a hadsereg mбr nem erхszakoskodik.</text>
+	</string>
+	<string id="dm_about_33">
+		<text>Szуrakozol velem? Nem hittem volna, hogy egy magadfajta цreg rуka nem hallott mйg a Kordonrуl! Innen indul minden zцldfьlы. Innen lehet eljutni a hъzуsabb helyekre, mint pйldбul Szemйtdomb, a Sцtйtvцlgy vagy az Ingovбny. Itt csak a fosztogatуk йs a hadsereg fenyeget minket, nagyon elkanбszodtak az utуbbi idхben. De hamarosan letцrjьk a kedvьket - ezйrt is fogtak цssze nemrйg a stalkerek!</text>
+	</string>
+	<string id="dm_about_34">
+		<text>Hбt, gyorsan цsszefoglalom. Arra, a helyхrsйgen tъl van a Zуna hatбra - onnan jцttьnk mindannyian. Ott se anomбliбk, se szцrnyek nincsenek, de ezt ъgyis tudod. Nyugatra fekszik az Ingovбny, ez az ъt pedig Kopaszfaluba йs a rйgi raktбrйpьlethez vezet, ott бllomбsozik a hadsereg. A hнd utбn van egy stalker tбbor, de azon tъl mбr a fosztogatуk йs a szabadok felьgyelik a terьletet: Szemйtdombot йs a Sцtйtvцlgyet. Rцviden ennyi.</text>
+	</string>
+	<string id="dm_about_35">
+		<text>A hadsereg csak tцbb tucatnyi mocskos szemйtlбda. A feladatuk, hogy elzбrjбk a Zуnбt a kьlvilбgtуl йs korlбtozzanak minden kьlsх kapcsolatot. De szerinted hogy szerzьnk be kinti бrukat, йs hogy jutnak ki a Zуnбbуl a relikviбk йs a tцbbi illegбlis cucc? Nanб, hogy minden keresztьlmegy a hadsereg emberein, йs biztosra veheted, hogy minden ьzletnйl megtцmik a sajбt zsebьket is! Rйgebben, ha megkented хket, azйrt бlltбk a szavukat, de ma mбr ez sem нgy megy. Akбr fizetsz, akбr nem, mellettьk nem vagy biztonsбgban. Ezek miatt tцrtйnt, hogy a stalkerek, akik akбr a homokba is dughattбk volna a fejьket - mint mondjuk azt mindig is tettйk - kiбlltak a hadsereg ellen. Azt is hallottam, hogy tъszul ejtettйk a helyхrsйg parancsnokбt!</text>
+	</string>
+	<string id="dm_about_36">
+		<text>Olyan ott, mint bбrhol mбshol. Nйhбny stalker zsбkmбnyt, mбsok pedig kizsбkmбnyolhatу stalkereket keresnek. Az йletьnket kockбztatva kutatjuk az anomбliбkat йs kьzdьnk a szцrnyekkel, akбr egy falatnyi kenyйrйrt is, de minek? Hogy rцgtцn kivegyйk a kezьnkbхl? Nem йrted, hogy kikrхl beszйlek? Hбt a hadseregrхl, kikrхl mбsrуl! Mondjuk, most meghъztбk magukat, mert foglyul ejtettьk a parancsnokukat. Ezt nem jelenthetik a vezйrkarnak - kьlцnben kivizsgбlnбk a dolgot, mбrpedig ezek a legkevйsbй sem akarjбk, hogy fйny derьljцn az aljas mуdszereikre. Csak нgy tudjuk kordбban tartani хket.</text>
+	</string>
+	<string id="dm_about_37">
+		<text>Egyesьlnek a stalkerek! Ha kezd forrуsodni a talaj, nincs йrtelme egyedьl nekivбgni. Az egyik oldalrуl a hadsereg vicsorog rбnk, a mбsikrуl a fosztogatуk ugranak a torkunknak. Szуval, kйt tыz kцzй szorulva, mi is felбllнtottuk a sбncainkat. Jцjjenek csak, ha nagyon akarnak - de nem adjuk kцnnyen magunkat!</text>
+	</string>
+	<string id="dm_about_38">
+		<text>Hagyjuk a szokбsos stalker dumбt az anomбliбkrуl, a sugбrzбsrуl йs a szцrnyekrхl; йn megmondom a frankуt. A stalkerek йs a hadsereg kцzцtt azйrt mйrgesedett el a helyzet, mert valaki tъl nagy rйszesedйst akart egy zsбkmбnybуl. Vбlaszul a stalkerek foglyul ejtettйk a hadsereg parancsnokбt, a sereg morбlja rцvidesen a porba zuhant. Persze, mert a vezйrьk elйg ravasz volt, hogy a sajбt osztaga elхl is elrejtse az бrut. Most nem tudnak mit tenni: kintrхl nem hнvhatnak erхsнtйst, de a stalkereket sem tбmadhatjбk meg, kьlцnben a parancsnokukkal egyьtt veszнtenйk el a pйnzьket is. Ezen kнvьl egyre gyakrabban lбtni szemйtdombi tahуkat. Lйnyegйben ennyi, legalбbbis szerintem. Vigyбzz magadra!</text>
+	</string>
+	<string id="dm_about_39">
+		<text>Itt most zajlik az йlet. Kйpzeld, ez az elsх alkalom, hogy sikerьlt a stalkereknek a Kordon felett бtvenni az irбnyнtбst! A rйgi tanyбt is bбzissб alakнtottбk! Ki gondolta volna, hogy ez valaha megtцrtйnik? Ha нgy folytatjбk, az egйsz Zуnбt a stalkerek fogjбk uralni! Йs нgy is lenne helyes.</text>
+	</string>
+	<string id="dm_about_40">
+		<text>Nehйz megйlni a Kordonnбl. Szemben бllunk a hadsereggel йs a fosztogatуkkal, mбr mindegyikkel tele a hуcipхnk. A katonбk a szart is kifacsarjбk belхlьnk, a kapzsi zsivбnyok meg nagyon szemeznek a terьleteinkkel. De mйg нgy is biztonsбgosabb itt, mint sok mбsik helyen.</text>
+	</string>
+	<string id="dm_about_41">
+		<text>A Zуna frakciуi hбborъban бllnak egymбssal, folyton ъj terьletekйrt йs relikvia-lelхhelyekйrt kьzdenek. Ez alуl a Kordon sem kivйtel. A hadsereg, a fosztogatуk йs a stalkerek - azok lennйnk mi - az erejьket fitogtatva ugranak egymбsnak! Egyelхre mi бllunk a legjobban.</text>
+	</string>
+	<string id="dm_about_42">
+		<text>A Zуna a Kordonnбl kezdхdik. Az ъjak innen indulnak йs egy-kйt hуnapig tart, mire бtlбtjбk a dolgokat. Mбrmint, ha nem teljesen hьlyйk. De barбtom, ez neked ugye nem ъjdonsбg? Nekem te nem tыnsz ъjoncnak.</text>
+	</string>
+	<string id="dm_about_43">
+		<text>Egy idхben egyьttmыkцdtьnk a hadsereggel. Mi gyыjtцgettьk йs csempйszgettьk a relikviбkat, хk pedig szemet hunytak felette - egy bizonyos цsszegйrt. De aztбn nagyon elszбlltak maguktуl. Zsebre tettйk a zsбkmбnyainkat, йs mйg a fosztogatуkat is rбnk бllнtottбk! Ezutбn, ъgymond "цsszerъgtuk a port". Most kйt fronton viselьnk hбborъt - a sereggel йs a fosztogatуkkal is.</text>
+	</string>
+	<string id="dm_about_44">
+		<text>Nem is olyan rйg, a srбcok kiбstak egy igazбn йrtйkes relikviбt. Цt йletet kцvetelt, hogy idehozzбk, йs a tъlйlхk sem voltak jobb bхrben. A vбsбrlу egy igazi nagyhal lehetett, mert Szidorovics mйlyen hallgatott a kilйtйrхl. Annyira kцzel voltak mбr a fiъk a leszбllнtбshoz, amikor is a helyхrsйg parancsnoka hirtelen ъgy hatбrozott, hogy tцbb jбr neki a szokбsos rйszesedйsnйl. A szarhбzi leadta a drуtot a fosztogatуknak, akik rajtaьtцttek a csapaton! A fiaink meghaltak йs a zsбkmбny is eltыnt! Elхszцr vйgezni akartunk a parancsnokkal, de aztбn ъgy dцntцttьnk, hogy inkбbb fogsбgba ejtjьk. Csak azt akarjuk, ami a miйnk, йs elхbb-utуbb ki is verjьk belхle!</text>
+	</string>
+	<string id="dm_action_info_20">
+		<text>Olyan vagyok, mint akбrki mбs - prуbбlok megйlni, nйha egy kis mellйkest is keresni. Йs mбr alig vбrom, hogy mi ьzemeltessьk a Kordont! Mindig is tudtam, hogy a sereg йs a fosztogatуk majd megkapjбk, amit йrdemelnek! De mйg fontosabb, hogy нgy sokkal kцnnyebben lehet kereskedni a relikviбkkal.</text>
+	</string>
+	<string id="dm_action_info_21">
+		<text>Egyelхre csak tapasztalatot йs a pйnzt gyыjtцk. Ha lesz elйg, veszek egy jуfajta flintбt йs pбncйlzatot, йs irбny egyenesen a Zуna kцzepe! Ъgy hallottam, valaki mбr eljutott oda йs megtalбlta a Kнvбnsбgteljesнtхt. Йn is ezt akarom! Йs ha megtalбlom, nem fogok fukarkodni a kнvбnsбggal, ezt elhiheted!</text>
+	</string>
+	<string id="dm_action_info_22">
+		<text>Sok tьndйrmesйt hallottam a Zуnбrуl, йs elйg bolond voltam, hogy hittem bennьk. De hamar rбdцbbentem, hogy jуval бrnyaltabb a helyzet, ha tйnyleg benne vagy. Puhбnyabbnak szбmнtok, mint azt gondoltam. Meghalni kцnnyы, relikviбt gyыjteni nem az. De a legidegesнtхbb, hogy nincs egy nyugodt hely ebben az egйsz rohadt Zуnбban! Mйg alvбs kцzben is fйlig йbernek kell maradnom.</text>
+	</string>
+	<string id="dm_action_info_23">
+		<text>Engem elbыvцlt a Zуna. Йpp csak erre jбrtam, mint egy turista, йs magбval ragadott a dolog. Ъgy йrzem, itt tйnyleg йlnek az emberek, a barбtok йs ellensйgek egyarбnt! A veszйly, a tudat, hogy minden mozdulatod a halбl цvezi - ez kell nekьnk, vбrosi ficsъroknak! Йlvezek minden egyes pillanatot!</text>
+	</string>
+	<string id="dm_action_info_24">
+		<text>Egy barбtomra vбrok. Х hozza a zsбkmбnyt, amit talбltunk, csak mбs utakon jцttьnk йs hamarabb йrtem ide. Б, nem hinnйm, hogy eltйvedt volna - kisujjбban a szakma. Talбn csak egy kis kerьlхt tett, vagy valami. Vagy цsszefutott egy rйgi barбtjбval. Mindegy, nem aggуdok, bбrmelyik percben ideйrhet...</text>
+	</string>
+	<string id="dm_action_info_25">
+		<text>Egy alбvalу frбter rбm sуzta nйhбny rejtekhely tйrkйpйt, de kezdem azt hinni, hogy бtvбgott! Keresztьl-kasul vйgigjбrtam a terьletet, de egy istenverte relikviбt sem talбltam! Megkeresem йs kicsinбlom azt a fйrget! </text>
+	</string>
+	<string id="dm_action_info_26">
+		<text>Kicsit visszavettem, miуta legutуbb portyбzni voltunk. Eljutottunk szinte a Hatбrig, йs felбllнtottuk a vйdelmьnket a kцzpontbуl цzцnlх szцrnyek ellen. Remek csapat voltunk - Lompos Szanya, Jуsrбc Ljoha йs Penйszvirбg - igazбn tцkцs fiъk. Egйsz szйp dolgokat zsбkmбnyoltam, eladtam egy kцteg zцldhasъйrt, йs ъgy dцntцttem, hogy pihenek egy kicsit. Ez a hely is van olyan jу relaxбlni, mint bбrmely mбsik.</text>
+	</string>
+	<string id="dm_cool_info_7">
+		<text>Mesйltйk, hogy egy csapatnyi stalker бtverekedte magбt a Zуna kцzepйig! Йs ez pont a Kisugбrzбst megelхzхen tцrtйnt. Kнvбncsi vagyok, hogy idхben elйrtйk-e a Kнvбnsбgteljesнtхt...</text>
+	</string>
+	<string id="dm_cool_info_8">
+		<text>A zsбkmбnyszerzйs sosem volt ennyire problйmбs. Ha elkerьlцd a szцrnyek karmait йs az anomбlia-mezхkцn is tъljutsz, mйg mindig ott vannak az utakon kуszбlу fosztogatуk, meg persze a hadsereg. Manapsбg az sem ritka, ha szegйnyebben tйrsz vissza, mint ahogy elindultбl! Valaki tehetne mбr valamit az effйle lehъzбsok ellen! Talбn a stalkerek majd mуresre tanнtjбk ezt a nйpsйget...</text>
+	</string>
+	<string id="dm_cool_info_9">
+		<text>Nem hallottad, mi folyik Szemйtdombon? Amint a stalkerek йrtйkes eszkцzцket talбltak йs elkezdtйk kitъrni a szemйtkupacok alуl, egybхl gyыlni kezdtek a fosztogatуk, mint a legyek a szarra! Egy bбzist is lйtesнtettek a tйrsйgben, csak hogy kцnnyebben tudjбk megkopasztani a stalker testvйreinket. Rettenetes бllapotok uralkodnak! Az бsatуkat vбlogatбs nйlkьl fosztogatjбk йs gyilkoljбk, aki meg fellйp ellenьk, azt munkatбborba viszik. Ez a sors mйg a halбlnбl is sokkal kegyetlenebb: a rabokat Szemйtdomb legfertхzцttebb helyein dolgoztatjбk. Szegйny цrdцgцkkel a tucatnyi anomбlia йs a sugбrzбs vйgez, a fosztogatуk pedig meggazdagszanak a halбlukon. Mi ebbхl a tanulsбg? Szemйtdombon csak уvatosan, barбtom!</text>
+	</string>
+	<string id="dm_cool_info_10">
+		<text>A Hatбron tъl van valamifйle Perzselх. Ha valaki tъl kцzel merйszkedik hozzб, annak megsьti az agyбt, йs - нme! - elkйszьlt egy ъjabb zombi. Ъgy tudom, senki sem ъszta meg йlve. Hallani tцrtйnetek a Kнvбnsбgteljesнtхrхl is, de azokbуl egy szуt sem hiszek.</text>
+	</string>
+	<string id="dm_intro_32">
+		<text>Itt kitцrцlheted a jуmodorral, tйrjьnk a tбrgyra! Mi kell?</text>
+	</string>
+	<string id="dm_intro_33">
+		<text>Kopj le, bunkу!</text>
+	</string>
+	<string id="dm_intro_34">
+		<text>Gondoltam, visszakцszцnцk. Йs most?</text>
+	</string>
+	<string id="dm_intro_35">
+		<text>Mi van, mester?</text>
+	</string>
+	<string id="dm_intro_36">
+		<text>Hй, van cigid?</text>
+	</string>
+	<string id="dm_intro_37">
+		<text>Mi a pбlya?</text>
+	</string>
+	<string id="dm_intro_38">
+		<text>Hanyagolhatjuk a kйzfogбst. Mi jбratban?</text>
+	</string>
+	<string id="dm_intro_39">
+		<text>Jу йg! Te meg honnan jцttйl? Gyerьnk, avass be!</text>
+	</string>
+	<string id="dm_intro_40">
+		<text>Nйzzйk, emberek, milyen szakadt ez a tag! Miben segнthetek?</text>
+	</string>
+	<string id="dm_intro_41">
+		<text>Ьdv, tesу! Jцttйl szerencsйt prуbбlni? Gyere csak, akadnak lehetхsйgek!</text>
+	</string>
+	<string id="dm_intro_42">
+		<text>Йn is ьdvцzцllek. Kйrdйsed van?</text>
+	</string>
+	<string id="dm_intro_43">
+		<text>Remek. Csak lazбn - йs nem szуrakozik senki, vilбgos?</text>
+	</string>
+	<string id="dm_intro_44">
+		<text>Йn a felьgyelхtiszt elхl bujkбlok. Hбt te?</text>
+	</string>
+	<string id="dm_intro_45">
+		<text>Hogy ityeg? Йn kijцttem levegхzni az intйzmйnybхl. Йs te?</text>
+	</string>
+	<string id="dm_intro_46">
+		<text>Hahу! Цrьlцk, hogy kнsйret nйlkьl jцttйl!</text>
+	</string>
+	<string id="dm_intro_47">
+		<text>Remek! Te is komoly bajban lehetsz, ha ide jцttйl.</text>
+	</string>
+	<string id="dm_intro_48">
+		<text>Nйzzйtek, ki van itt! Szemйtdombon bбrkit szнvesen lбtunk, csak ne ide hordja a szemetйt.</text>
+	</string>
+	<string id="dm_intro_49">
+		<text>Menten berosбlok! Honnan jцttйl, haver? Csьccs le, dumcsizzunk egy kicsit!</text>
+	</string>
+	<string id="dm_intro_50">
+		<text>Az цregцrdцg vinnй el! Nincs szбmomra egy cigid?</text>
+	</string>
+	<string id="dm_intro_51">
+		<text>Az Istenit! Szerencsйre йszrevettem, hogy te is ember vagy, kьlцnben szitбvб lхttelek volna. Mбr rendben, fъjd ki magad, йs beszйlj!</text>
+	</string>
+	<string id="dm_intro_52">
+		<text>A macska bajszбt! Te nem fйlsz egyedьl kуricбlni?</text>
+	</string>
+	<string id="dm_intro_53">
+		<text>Vaszij, de rйg lбttalak! Йpp rбd gondoltam!</text>
+	</string>
+	<string id="dm_intro_54">
+		<text>Kit lбtnak szemeim! Grubanij! Na mesйlj, mi van!</text>
+	</string>
+	<string id="dm_intro_55">
+		<text>Йn is цrьlцk! Gyere йs beszйlgessьnk!</text>
+	</string>
+	<string id="dm_intro_56">
+		<text>Цrdцg йs pokol! Egy ъj arc a Zуnбban! Mi casa su casa, amigo!</text>
+	</string>
+	<string id="dm_intro_57">
+		<text>Maradjon kцztьnk, rendben? Gyorsan megbeszйljьk a mocskos rйszleteket, aztбn ha ъgy gondolom, lezбrjuk a tйmбt. Vilбgos?</text>
+	</string>
+	<string id="dm_intro_58">
+		<text>Mi van veled, haver? Mi jбratban errefelй? Mesйlj csak!</text>
+	</string>
+	<string id="dm_intro_59">
+		<text>Цreg! Csak a lйnyeget, vagy inkбbb ne is fбrassz!</text>
+	</string>
+	<string id="dm_intro_60">
+		<text>Hй, nagyon feszьltnek tыnsz. Zsaru lennйl, vagy mi?</text>
+	</string>
+	<string id="dm_intro_61">
+		<text>Mirхl akarsz beszйlni, te kis hьlye?</text>
+	</string>
+	<string id="dm_about_45">
+		<text>Nagyon puhбnyok ezek a stalkerek! A jбtszma kцnnyebb nem is lehetne - хk csak kуvбlyognak, mi meg leszedegetjьk хket.</text>
+	</string>
+	<string id="dm_about_46">
+		<text>Azt hiszed, йn vagyok az informбciуs pult? Az йn agyam sem kбptalan, seggfej!</text>
+	</string>
+	<string id="dm_about_47">
+		<text>Ne merj megбllni, seggfej! Йn nem tцrхdцk a hozzбd hasonlу fйrgekkel, de a fegyverem talбn igen...</text>
+	</string>
+	<string id="dm_about_48">
+		<text>Ha tцrtйnetekre vбgysz, keress magadnak egy vйrmalacot vagy egy vak kutyбt. Йn nem beszйlek idegenekkel, fхleg nem a hozzбd hasonlу trуgerekkel.</text>
+	</string>
+	<string id="dm_about_49">
+		<text>Hбt, egye fene - elmondok neked mindent. Szуval, a helyi fхnцk Jуga, х kйpviseli a tцrvйnyt. Van egy szemйlyes kis odъja a bбzison, telepakolva drбga cuccokkal. Van nekьnk egy Borov, х a csapos, amъgy fхnemesnek kйpzeli magбt. Ha tovбbbmйsz, Agropromba jutsz, ott бllomбsozik a stalker csьrhe йs a szolgбlatosok, хk vйdenek minket a szцrnyektхl, hehe. Ha a mбsik irбnyba mйsz, akkor majd a feketepiacon alkudozу nйpekbe fogsz botlani. Ezen a piacon estйnkйnt nagyobb a vбlasztйk, de veszйlyesebb is! A legnagyobbik baj pedig a Kidбlj testvйrek. Ha mйg tovбbb mйsz, arra a sцtйtvцlgyi szabadokat talбlod.</text>
+	</string>
+	<string id="dm_about_50">
+		<text>Haver, a vцrцsцk egykor Szemйtdombra szбllнtottak mindenfйle kiйgett szir-szart! Tranzisztor s manzisztor, rotor s motor... miegymбs. A szeretett Zуnбnkon kнvьl ezek persze tцk йrtйktelenek lennйnek. Gondolom feltыnt, hogy nincsenek se alkatrйszellбtуk, se mыhelyek, de attуl mйg nйha цssze kell pofozni a cuccainkat. Йs ez tesz egy szemйtkupacot kincsesbбnyбvб! A sugбrzбst mбr mindenki leszarja йs vбrjбk a sьlt galambot! Nйhбnyan a fцldet tъrjбk, nйhбnyan csereberйlnek, mбsok pedig leszedik a sбpot - ezt csinбljuk mi.</text>
+	</string>
+	<string id="dm_about_51">
+		<text>Йn nem foglalkozom a hozzбd hasonlу zцldfьlыekkel. Rцviden a lйnyeg: ez a raktбrйpьlet a bбzisunk, innen nyugatra van Agroprom, a szolgбlatosok йs a stalker csьrhe otthona, keletre pedig a szabadok vannak - azok a srбcok rendben lennйnek, de azйrt vannak problйmбink. Йszakra semmikйpp ne menj - a Kisugбrzбs уta hemzsegnek az anomбliбk. Dйlre pedig a Kordon talбlhatу, a hadsereg йs a kispбlyбs stalkerek oda-vissza foglaljбk egymбstуl a helyet.</text>
+	</string>
+	<string id="dm_about_52">
+		<text>Szavamra mondom, Szemйtdomb a legtutibb hely a Zуnбban! Ha kemйny az цklцd йs vбg az eszed, itt el fogsz boldogulni. Ha a szemйt aljбn talбlnak valami йrtйkeset, egybхl megjelennek a stalkerek is, mintha mбgnes vonzanб хket. Azok a szйp napok, legalбbbis a mi szбmunkra! Szуval jцnnek a stalkerek, a legborzasztуbb helyekrхl is kiбssбk a dolgokat, aztбn a legtцbbjьk бtadja nekьnk a zsбkmбnyt - йs mйg a kisujjunkat sem kell mozdнtani! Az йrtelmesebbjйt megadуztatjuk, de aki kemйnykedik vagy nem a szabбlyok szerint jбtszik, azt munkatбborba vetjьk.</text>
+	</string>
+	<string id="dm_about_53">
+		<text>A tбrsasбgunkba csak a legmenхbbek csatlakozhatnak! Itt nincsenek vesztesek, csak mi: a csalбd tagjai, a hivatбsos bыnцzхk. Meg vannak a csicskбink is - egy vйrbeli tolvajnak beosztott is kell, aki elvйgzi helyette a piszkos munkбt. Csajok viszont sajnos nincsenek.</text>
+	</string>
+	<string id="dm_about_54">
+		<text>Mi нrjuk Szemйtdomb tцrvйnyeit, йs be is tartatjuk хket. Az elsх szabбly, hogy osztozkodnod kell a zsбkmбnyodbуl. Ha nem akarsz, mi meggyхzьnk! Йs hidd el, ha valaki kiбll ellenьnk, igen hamar meg fogja bбnni.</text>
+	</string>
+	<string id="dm_about_55">
+		<text>Itt szoktuk tцmцrнteni a stalker бsatуkat. Nйhбnyan sajnos ьgyeskedni prуbбlnak. Zsбkmбnyйrt jцttйl - rendben van, de ne feledd: Szemйtdomb a miйnk! Mi csak egy kis tбmogatбst kйrьnk, a vendйgszeretetьnkйrt cserйbe. Szуval nem kell hхbцrцgni, ha megmotozunk a kijбratnбl. Itt ez a szabбly.</text>
+	</string>
+	<string id="dm_about_56">
+		<text>Kopj le, seggfej! Inkбbb keresd az бsatуk tбrsasбgбt, хk majd ъtba igazнtanak.</text>
+	</string>
+	<string id="dm_about_57">
+		<text>A feladatunk, hogy nyakon csнpjьk a trуgereket. Pйnzt akarnak kisajtolni a fцldjeinkbхl, hбt mi is kisajtoljuk хket! Mi vigyбzzuk Szemйtdomb nyugalmбt йs senki nem problйmбzik, vilбgos?</text>
+	</string>
+	<string id="dm_about_58">
+		<text>A tцkцs fйrfiak itt tudjбk megszedni magukat! Az olyan vesztesekbхl, mint pйldбul te! Ez hogy tetszik? A magadfajtбk idejцnnek nincstelenьl йs hontalanul, йs mi dolgoztatjuk хket, hogy jobban йljьnk. Ezek a szerencsйtlenek guberбljбk ki az йrtйkeket a szemйtbхl, a kereskedхink pedig tъladnak rajtuk. Errefelй нgy mennek a dolgok.</text>
+	</string>
+	<string id="dm_about_59">
+		<text>Tбn' egy ъjsбgнrу lennйl? Benne leszek a holnapi lapban? Ha-ha-ha! Na, jуl figyelj, fiacskбm! Mi vagyunk az utak lovagjai йs mi uralkodunk Szemйtdombon! Adj egy kis lйt йs megyьnk is a dolgunkra. De ha nem fizetsz - nagy szarba kerьlsz! Ez itt egy amolyan aranyforrбs. Tudod, az egykor ide temetett szovjet csecsebecsйk ma mбr a sajбt sъlyukat йrik aranyban. Szуval, ha nem tudunk megegyezni, vagy hхskцdni prуbбlsz, egyenesen a tбborba viszьnk! Az legalбbb olyan jу mуka, mint urбniumot fejteni, a sugбrzбssal йs az anomбlia-pajtбsokkal egyьtt! De van egy jу hнrem is. Nem fog sokбig tartani a szenvedйsed... ahogy az йleted sem.</text>
+	</string>
+	<string id="dm_about_60">
+		<text>Itten mi vigyбzzuk a tцrvйnyt йs a rendet. Te is lбthatod, tъl sokan akarnak maguknak egy szeletet Szemйtdomb gazdagsбgбbуl. Mi csak kivetjьk a tisztessйges vбmot. Garantбljuk a jу munkakцrьlmйnyeket йs a biztonsбgot, de belбthatod, ennek megvannak a maga kцltsйgei. Joggal kйrdezheted, hogy mi van a munkatбborral. Hбt, oda a vesztesek kerьlnek, lйnyegйben a sajбt akaratukbуl. A fajtбjuk hasztalan - mi csak segнtjьk a termйszetes kivбlasztуdбst!</text>
+	</string>
+	<string id="dm_about_61">
+		<text>Itt mi mondjuk meg, hogy mi van, йrted? Mi mбr akkor itt hъztuk az igбt, mielхtt az elsх stalker betette a lбbбt! Haha, rнmelt, hбt ez kйsz! Nagyon jу vagyok!</text>
+	</string>
+	<string id="dm_action_info_27">
+		<text>Azt hiszed, te vagy az ьgyvйdem? Ha az utcбn kйrdezel egy ilyet, talбn az lesz az utolsу mondatod...</text>
+	</string>
+	<string id="dm_action_info_28">
+		<text>Minйl kevesebbet tudsz, este annбl nyugodtabban alszol.</text>
+	</string>
+	<string id="dm_action_info_29">
+		<text>Amъgy, miйrt йrdekel tйged? A dolgaim csak rбm tartozik йs senki mбsra!</text>
+	</string>
+	<string id="dm_action_info_30">
+		<text>Most lхjem szйt a fejed, vagy elхbb elmondjam, hogy mi bajom a kйrdйseddel?</text>
+	</string>
+	<string id="dm_action_info_31">
+		<text>Nagy dolgokra kйszьlьnk ebben a lebujban. Ha lбtok egy nyavalyбst, azt elkapom, a pйnzйt megosztom a fiъkkal, йs Jуgбnak is adok belхle - az хszinte tiszteletem jelйьl - йs ennyi! Nйha gonoszabb csнnyeket is csinбlunk, de neked nem fogok kцpni.</text>
+	</string>
+	<string id="dm_action_info_32">
+		<text>Ъgy йrted, hogy mit keresek a Zуnбban? Nйhбny igen kellemetlen, rйgi barбtom elхl bujkбlok. Ha kint lennйk, folyamatosan csak kйrdezgetnйnek bizonyos dolgokrуl, meg hegyi beszйdet tartanбnak az йlet rendjйrхl... Hбt, volt kцztьnk egy kis... цsszetыzйs. Ugye, te nem azйrt jцttйl, hogy a helyesrхl йs helytelenrхl beszйlj? Nem? Remek! Akkor menj csak a dolgodra!</text>
+	</string>
+	<string id="dm_action_info_33">
+		<text>Mit nem lehet ezen йrteni? Ez itt a magabiztosak paradicsoma. Az хrцkkel йs a balekokkal kцnnyы elbбnni - ennйl kцnnyebben nem is lehet pйnzt szerezni. Csak tedd, amit tenned kell, йs a pйnz az цledbe hullik!</text>
+	</string>
+	<string id="dm_action_info_34">
+		<text>Rйgebben stalkerkйnt csak gьriztem. A barбtommal zsбkmбnyokat keresve beporoszkбltuk a Zуnбt, kцzben prуbбltunk tъlйlni. Egy nap egy irбnyнtуba botlottunk, йs csak йn voltam elйg szerencsйs, hogy megъsszam. Nem hagytam, hogy a barбtom zombivб vбljon, de megfogadtam, hogy tцbbet nem megyek a kцrnyйkre. Most itt йlek ezekkel a nagyremйnyы tolvajokkal. Egйsz jуl el lehet lenni, csak vigyбzni kell - хk nem azok a "megbocsбtу" tнpusъak, ha йrted, mire cйlzok.</text>
+	</string>
+	<string id="dm_action_info_35">
+		<text>Mi ьtцtt belйd, he? Lбtom, megvannak a magad problйmбi. Ezen a kцrnyйken, ha tъl sokat tudsz, hamar a fыbe haraphatsz. Amъgy jу kis dolgokat harбcsoltбl цssze - nincs kedved cserйlni, mielхtt mйg belesйtбlnбl egy anomбliбba? Jaj mбr, mutasd a zsebeidet - nem akarok semmi rosszat.</text>
+	</string>
+	<string id="dm_action_info_36">
+		<text>Szemйtdombon mindenki ugyanazt csinбlja, beleйrtve engem is: a nyugdнjбra gyыjt. Az бsatуk gьriznek, a stalkerek zsбkmбnyok utбn kutatnak, mi meg lehъzzuk хket, hogy fenntartsuk a rendet. Egyszerы melуnak hangzik, de megvannak бm a maga fortйlyai!</text>
+	</string>
+	<string id="dm_action_info_37">
+		<text>Nagyon kemйny csбvуnak hiszed magad, hogy ilyeneket kйrdezgetsz. De amit csinбlok йs amirхl mesйlek, az kйt kьlцn dolog.</text>
+	</string>
+	<string id="dm_action_info_38">
+		<text>Йn mindig kifosztom a helyi stalkereket йs бsatуkat. A mi szemetьnkben turkбlnak, hбt csak abbуl kйrek, ami a miйnk!</text>
+	</string>
+	<string id="dm_action_info_39">
+		<text>A fiъkkal le akarunk menni a Sцtйtvцlgybe, цsszekapnбnk a szabadokkal. De ehhez szьksйgьnk van Jуga engedйlyйre - ugye, itt х a fхnцk. Nem szeretnйk vele цsszetыzйsbe kerьlni, szуval, mйg csak gondolkodunk a dolgon.</text>
+	</string>
+	<string id="dm_action_info_40">
+		<text>Merх vйletlensйgbхl csatlakoztam a fosztogatуkhoz. Eredetileg stalker akartam lenni, de nem mыkцdцtt a dolog. Nem bбnom egyйbkйnt. Gyыjtцm a pйnzt, йpнtem a kapcsolatokat йs bezsebelem a rйszem a szemйtdombi zsбkmбnyokbуl.</text>
+	</string>
+	<string id="dm_action_info_41">
+		<text>Nekem szуltбl? Elment az eszed, hogy ilyeneket kйrdezgetsz tхlem? Mindjбrt hнvom a barбtaimat - hadd mutassuk meg, hogy bбnunk az okoskodу napkцzisekkel!</text>
+	</string>
+	<string id="dm_cool_info_11">
+		<text>Sokfelй lбttam mбr bцrtцnцket, de ez a legьtхsebb mind kцzьl! Szemйtdomb gyakorlatilag a Zуna szнve, itt mi нrjuk a szabбlyokat. Ha йlni akarsz - fizetsz. Ha nem, akkor kapsz egy hбlуhelyet a tбborban, vagy egy skulуt a mellkasodba. Elйg vilбgos voltam?</text>
+	</string>
+	<string id="dm_cool_info_12">
+		<text>Melyik Zуnбra gondolsz? Erre itt? Ez egy jбtszуtйr azokhoz a helyekhez kйpest, amiket megjбrtam. A tolvajok fцldi paradicsoma! Drуtkerнtйs йs katonбk? Semmisйg! Nekьnk is van hadseregьnk. Szabadon jбrhatsz bбrmerre, bбrmikor fogadhatsz kintrхl csomagokat, leihatod magad a sбrga fцldig - jу mulatsбg, fйrfimunka! Az egyetlen problйma - hogy nincsenek nхk. Nem szeretnek itt. Nйha mбr annyira sуvбrgok, hogy a mutбnsokat is megkнvбnom...</text>
+	</string>
+	<string id="dm_cool_info_13">
+		<text>Van vйr a pucбdban, hogy ilyet mersz kйrdezni. De inkбbb kopj le!</text>
+	</string>
+	<string id="dm_intro_62">
+		<text>Rossz idхben jцttйl a Szemйtdombra, testvйr!</text>
+	</string>
+	<string id="dm_intro_63">
+		<text>Haver! Ha tudnбd, hogy mennyire unom mбr, hogy a fosztogatуk mindig lehъznak...</text>
+	</string>
+	<string id="dm_intro_64">
+		<text>Цrьlцk, hogy lбtlak, testvйr!</text>
+	</string>
+	<string id="dm_intro_65">
+		<text>Цrьlцk, tesу!</text>
+	</string>
+	<string id="dm_intro_66">
+		<text>Kйz йs lбbtцrйst! Kerьld el a golyуkat йs az anomбliбkat!</text>
+	</string>
+	<string id="dm_intro_67">
+		<text>Egy bajtбrs!</text>
+	</string>
+	<string id="dm_about_62">
+		<text>Az hiszem, a baleset elхtt mйg egy hatalmas gцdцr volt itt. Aztбn, az erхmыben tцrtйnt robbanбs utбn ide kezdtйk hordani a sugбrzу jбrmыveket, felszerelйseket йs minden vackot: csak beledobбltбk a gцdцrbe. Teljesen megtцltцttйk, de mйg utбna is hordtбk! Szуval, ezйrt vagyunk itt: kiбsni a jу dolgokat!</text>
+	</string>
+	<string id="dm_about_63">
+		<text>Nem messze innen van egy munkatбbor, a hozzбnk hasonlу stalkereket dolgoztatjбk a fosztogatуk. Inkбbb a halбl, mint hogy ott vйgezzem - napi tizenhat уrбt kell бsnod a Zуna legveszйlyesebb йs legsugбrzуbb helyein, bбrmifйle vйdelem vagy felszerelйs nйlkьl. Enni csak a maradйkukat kapod, бllandуan vernek... Gondolom, йrzed mбr - ъgy bбnnak veled, mint egy бllattal!</text>
+	</string>
+	<string id="dm_about_64">
+		<text>Nem kцnnyы a kezdхk dolga. A vadбllatok хket eszik reggelire, a kereskedхk vбgyбlma pedig, hogy бtverjйk az ъjakat. A fosztogatуk persze mindenki sorsбt megkeserнtik, йs mйg a stalker bajtбrsak sem szнvesen osztjбk meg a titkaikat.</text>
+	</string>
+	<string id="dm_about_65">
+		<text>Mi, stalkerek, vagy цsszetartunk Szemйtdombon, vagy mindenьnket elveszik a fosztogatуk, nйha mйg tцbbet is. Ha tartozol nekik, egyenes ъt vezet a munkatбborba. A rabszolgбjuk leszel. Senki sem hъzza sokбig - бsol egy napig a sugбrfertхzцtt rйszen, aztбn mбr halott is vagy.</text>
+	</string>
+	<string id="dm_about_66">
+		<text>Manapsбg a fosztogatуk uraljбk Szemйtdombot. Szorongatjбk a tцkeinket, mindent csak az х tudtukkal csinбlhatunk. Jцttйl a vбrosba? Fizess! El akarsz menni? Fizess tцbbet! Mйg ha talбlsz is valami йrtйkeset, akkor sem biztos, hogy kiengednek onnan. Ha цsszefutsz egy fosztogatу bandбval, kйt lehetхsйged van: vagy odaadsz mindent, vagy golyуt eresztenek belйd. Rosszabb esetben elvisznek roncsokat бsni, amнg be nem teljesнti a sorsod egy anomбlia, vagy a sugбrzбs.</text>
+	</string>
+	<string id="dm_about_67">
+		<text>Rйgen ez volt a sugбrzу hulladйk lerakуhelye. Ha valami vilбgнtott a sцtйtben, egybхl hoztбk ide, йs mindenki szart is az egйszre, amнg ki nem alakult a Zуna. Йs most a hъskonzervek, a tranzisztoros lбmpбk йs a pуtalkatrйszek a sajбt sъlyukat йrik aranyban, nem csoda, hogy jцnnek бsni a stalkerek is! Sajnos, a fosztogatуk voltak a legszemfьlesebbek, most хk a kiskakasok. Vйgeredmйnyben цvйk minden haszon - mi meg йhbйrйrt gбlyбzunk.</text>
+	</string>
+	<string id="dm_about_68">
+		<text>Ez itt mind a fosztogatуk kezйben van. Хk нrjбk a szabбlyokat, хk szedik az adуt az бsatуktуl, gyakorlatilag mбsok munkбjбbуl йlnek. A stalkerek keresztьlverekedik magukat a radioaktнv szemeten, kiбssбk a szovjet йra hagyatйkait, de a jutalom mindig a fosztogatуkй. Gondolom, te is tudod... Fizetned kellett, amikor jцttйl, ugye? Nos, kifelй mйg annбl is tцbbet fognak kйrni, majd meglбtod!</text>
+	</string>
+	<string id="dm_about_69">
+		<text>Szemйtdombon egy йrtelmes dolgot tehetsz: elhъzhatsz innen a lehetх legmesszebb! Egy becsьletes stalker itt nem talбlja meg a szбmнtбsait: ha szerencsйd van йs talбlsz is valamit, azt a fosztogatуk elveszik, de legalбbbis a mocsok бsбsa kцzben kapsz egy kellemes sugбradagot. Jobb dцntйs, ha keletre mйsz Sцtйtvцlgybe, a szabadokhoz, vagy nyugatra Agropromba, a szolgбlatosokhoz йs a tцbbi stalkerhez. Az a mi Zуnбnk, a stalkerek Zуnбja! Ez itt a bыnцzхk terьlete. Hidd el, neked itt nincs keresnivalуd.</text>
+	</string>
+	<string id="dm_about_70">
+		<text>Itt aztбn meg lehet gazdagodni! Nem hiszed? Pont a minap hallottam egy stalkerrхl, aki egy kamionnyi йrtйkes cuccot talбlt Szemйtdombon! Nem tudni, hogy pontosan mit, ugye, mindenki mбskйpp mesйli, йs ki tudja, hogy mi az igaz. De a srбc meggazdagodott, йs ez a lйnyeg! Egy nap majd йn is talбlok valamit, akkor vйgre megvehetem a legprofibb felszerelйst йs elindulhatok a vadon felй - arra vannak a legйrtйkesebb relikviбk.</text>
+	</string>
+	<string id="dm_about_71">
+		<text>Szemйtdomb йs az a rohadt aranylбz! Gyбszos nap volt, amikor egy szerencsйs flуtбs valami йrtйkeset talбlt ezekben a szemйtkupacokban! A bandбk egybхl bevonultak йs elnyomnak minden ide tйvedх stalkert. Szйgyen, hogy a testvйrisйgьnk hagyta elhatalmasodni ezeket a fйrgeket mind a Zуnбn, mind magunkon! Ezek mйg egy munkatбbort is fenntartanak a bыnцseiknek! A kosztйrt cserйbe tъrhatod a radioaktнv hulladйkot. A legokosabb lenne menekьlni innen, hidd el nekem!</text>
+	</string>
+	<string id="dm_about_72">
+		<text>Nйzd, haver. Minйl hamarabb lelйpsz innen, annбl jobb. Szбmodra nincs itt semmi: adуznod kell, a fosztogatуk csak megalбznak, talбn mйg kйst is kapsz a hбtadba, vagy egy kellemes helyet a munkatбborba. A helyedben futnйk innen, ahogy a lбbam bнrja!</text>
+	</string>
+	<string id="dm_about_73">
+		<text>Ez a hely a mi Klondike-unk. Vйsd az eszedbe, barбtom: a teljes Zуna lakat alatt van, a hadsereg hibбtlanul elszigetelte. Nйha meg kell kьzdened egy hъskonzervйrt, бruba kell bocsбtanod nйhбny pуtalkatrйszt, vagy a felszerelйsed. Ha pedig van valami hasznos a kereskedхknйl, azt nem adjбk olcsуn. De itt minden mбskйpp mыkцdik! Ezek kцzцtt a szemйtkupacok kцzцtt йrtйkes dolgokat talбlhatsz, mindent ide temettek a csernobili atomkatasztrуfa utбn. Persze van egy kis sugбrzбs, йs amit talбlsz, azt meg kell osztanod a fosztogatуkkal... De minden pillanatban megvan az esйlyed, hogy szakнts egy nagyot! Szуval, barбtom, ragadj egy бsуt йs csak бss, amнg meg nem talбlod a sajбt "aranyad"!</text>
+	</string>
+	<string id="dm_about_74">
+		<text>Ha mйg mindig nem lбtod бt Szemйtdomb mыkцdйsйt, йn elmesйlem neked. A stalkerek kiбssбk a cuccokat, a fosztogatуk meg elveszik tхlьk. Mйg egy bбzist is berendeztek a rйgi raktбrйpьletben. Nagyon megvбltozott a sorsuk, miуta az цvйk Szemйtdomb - szart se csinбlnak, csak lehъzzбk az бsatуkat йs tцmik a zsebьket. A mocskok! Amъgy van itt egy bolhapiac is. Ott adnak-vesznek az бsatуk, йs a kereskedхk, nйha igen hasznos, esetenkйnt egyedi dolgokat lehet kifogni! Az ьzletelйs бltalбban este zajlik, szуval jуl nйzz meg mindent - a legtцbb бrus nem уdzkodik kacatokat rбd sуzni a sцtйtben! Jбratosak mбr az effйle cserйkben.</text>
+	</string>
+	<string id="dm_about_75">
+		<text>Ez az a hely, ahol a pйnzйhes erхsek kihasznбljбk a pйnzйhes bolondokat. A sors fintora, hogy ezek a sugбrzу szemйthalmok a sok йrtйktelen kacat mellett nйhбny, a Zуnбban igen йrtйkes dolgot rejtenek. Termйszetszerы, hogy a nagy бlmokkal megбldott bolondok ide gyыlnek a meggazdagodбs remйnyйben. Йn is bolond voltam, йs sъlyosan megfizettem йrte.</text>
+	</string>
+	<string id="dm_action_info_42">
+		<text>Йn csak бsok, de manapsбg mбr azt is уvatosan kell csinбlni. Бltalбban azt is megkнvбnjбk az emberek, ami nem az цvйk! Rйgebben csak a fosztogatуkkal voltak problйmбk, de mбr a stalker barбtaink is ugyanolyan veszйlyesek lehetnek. Bezzeg a rйgi szйp idхkben az utolsу hъskonzerved is nyugodt szнvvel nyъjtottad бt a melletted ьlх stalkernek, mert tudtad, hogy szьksйg esetйn х is megsegнt tйged. De ma... pfuj!</text>
+	</string>
+	<string id="dm_action_info_43">
+		<text>Semmi kьlцnцs. Mint a tцbbi бsatу, йn is mindent beleadok a tъlйlйsйrt йs egy falat kenyйrйrt, egy hъskonzervйrt vagy lхszerйrt. Ha bejцn a szerencsйm, gazdagon hagyom itt ezt a helyet, de elхtte beugrok mйg a Kнvбnsбgteljesнtхhцz is. Van valami, amit nagyon rйgуta szeretnйk.</text>
+	</string>
+	<string id="dm_action_info_44">
+		<text>Йn mйg ъj vagyok itt... йs mйg mindig nem dцntцttem el, hogy mit szeretnйk csinбlni. Уvatosnak kell lennem, az ъjakat itt nem veszik emberszбmba. Az emberek aranyhegyekrхl beszйlnek, de йn semmi pйnzt nem lбtok. Talбn a legjobb lenne elfelejteni ezt a helyet, йs csatlakozni a Szolgбlathoz...</text>
+	</string>
+	<string id="dm_action_info_45">
+		<text>Mint a tцbbiek: йn is vбrom a csodбt. Talбn ki tudok бsni egy akkora йrtйket, hogy kivбlthassam a szabadsбgom a fosztogatуktуl, йs maradjon is elйg pйnzem. Azt hiszed, ez csak egy бlom? Nos, tцrtйnt mбr ilyen eset, bбrmikor megtцrtйnhet ъjra! Hallottam egy бsatуrуl, aki egy raklapnyi katonai rбdiуt talбlt. Mбra egy megbecsьlt stalker vбlt belхle, van pйnze a szуrakozбsra йs a jу felszerelйsekre! Sajnos, nem ismertem хt, ez mйg azelхtt tцrtйnt, hogy ide kerьltem volna.</text>
+	</string>
+	<string id="dm_action_info_46">
+		<text>Kincseket keresek ezekben a szemйthalmokban. Egy csomу dolgot hagytak itt a szovjetek, a hъskonzervektхl kezdve a dнzelmotorokig. Az effйle dolgok elйg szйp summбt йrnek a Zуnбban, neked pedig csak tьrelemre йs jу sok sugбrzбs elleni gyуgyszerre van szьksйged!</text>
+	</string>
+	<string id="dm_action_info_47">
+		<text>Tartozбsom van. Ha nem viszek elйg cuccot a fosztogatуknak, szolgasorba vetnek йs a legveszйlyesebb helyeket fogjбk velem бsatni! Йs az nem jу vicc.</text>
+	</string>
+	<string id="dm_action_info_48">
+		<text>Sцtйtvцlgy felй tartottam, amikor azok a szemйtlбdбk a bejбratnбl elvettйk a pйnzem. Majd azйrt is fizetnem kell, hogy elmehessek innen! Nem akarok egy nincstelen koldusnak tыnni a tцbbi stalker szemйben, ezйrt megprуbбlok egy kis pйnzt keresni, mielхtt tovбbbбllok. A baj csak az, hogy minйl tцbbet maradok, annбl nagyobbra hнzik a tartozбsom. De nem gond, hamarosan kijutok innen.</text>
+	</string>
+	<string id="dm_action_info_49">
+		<text>Йn Agropromban akartam a Szolgбlathoz csatlakozni. Egy fickу aszonta, hogy odavezet engem, de amikor ideйrtьnk Szemйtdombra, lelйpett a pйnzemmel. Most itt rontom a levegхt, kuporgatok egy megbнzhatу felszerelйsre йs fegyverekre. Megmondom хszintйn, nehezen haladok. A fosztogatуk tudjбk, hogy nem bцlcs dolog, ha fegyver jut az бsatуk kezйbe, kьzdenek is ellene kйzzel-lбbbal. Itt szinte lehetetlen fegyverhez йs skulуhoz jutni!</text>
+	</string>
+	<string id="dm_action_info_50">
+		<text>A haverommal a Hatбr felй mentьnk, talбlkozуnk volt nйhбny stalker ismerхsьnkkel, de megбllнtottak minket Szemйtdombnбl. A haverom hьlye volt, hogy nem fizetett йs leбllt vitatkozni a fosztogatуkkal. Azok nem zavartattбk magukat, a szolgбjukkйnt hurcoltбk el. Ennyi. Vйrt izzadva dolgozok, hogy kivбlthassam йs folytathassuk az utunkat. Mбr van egy ъtvonaltervem, tapasztaltabb is vagyok, de a pйnz цsszeszedйse nem egyszerы - magasak az itteni adуk, a fegyverek йs a lхszer beszerzйse pedig gyakorlatilag lehetetlen, mert a fosztogatуk minden ilyesmit elkoboznak a bejбratnбl.</text>
+	</string>
+	<string id="dm_action_info_51">
+		<text>A bбtyбm eltыnt a Zуnбban. Kerestem mindenfelй, de a fosztogatуk leбllнtottak. Aztбn beszйltem nйhбny helyi stalkerrel, azt mondtбk, egy ideig errefele lуgott a bratyу. Prуbбlom kiderнteni, amit csak tudok... remйlem, vйgьl rбtalбlok. Ki tudja, talбn mйg йletben van...</text>
+	</string>
+	<string id="dm_action_info_52">
+		<text>Ki tudja, miуta vagyok itt. Azуta csak kutatok, hбtha talбlok valamit, ami йrtйkesebb egy rйgi hъskonzervnйl. Eddig nem jбrtam szerencsйvel, de az a Nagyfьlы Mitye pont mellettem dolgozott, йs talбlt egy szбllнtуszalag motort, meg beolajozott csapбgyakat. Tйnyleg szйp, de mйg szebb lenne, ha valaki olyat is talбl, akinek el tudja adni! Ha-ha! Na mindegy, йn hamarosan kiбsok valami hasznosat.</text>
+	</string>
+	<string id="dm_action_info_53">
+		<text>Йn igazбbуl Agroprom felй tartottam, de engem is magбval rбntott az aranylбz. Talбltam pбr elйg jу cuccot, szйpen kerestem velьk - йs ez mйg mindig sokkalta kцnnyebb йs biztonsбgosabb, mint relikviбkat halбszni az anomбliбk kцzьl. A legfontosabb, hogy tartsd a szemed a sugбrzбsmйrхn, kьlцnben a kevйs hбtralйvх napodban ъgy fogsz vilбgнtani, mint egy karбcsonyfa...</text>
+	</string>
+	<string id="dm_action_info_54">
+		<text>Vadбszom a zsбkmбnyt. Kopaszfalubуl csapatostуl jцttьnk a hнrre, hogy rйgi йs йrtйkes cuccokat talбltak Szemйtdombon. Ъgy okoskodtunk, hogy mire belejцnnйnk a relikviavadбszatba, addigra lecsъsznбnk minden mуkбrуl. Visszagondolva, nyugodtan maradhattunk volna a faluban. Kйt srбc egybхl elvйrzett, egy mбsik meg a tбborban dolgozik... talбn mбr bele is pusztult a sugбrzбsba. Bбrcsak a mancsaim kцzй akadna valami, amivel megelйgszenek a fosztogatуk! Nem tъl eszes nйpsйg, de jуl kiйpнtettйk ezt a helyet. Elszigeteltek minket egymбstуl, fegyvert szerezni meg kйptelensйg. Annyit бsol, amennyit csak akarsz, de legfeljebb hбrmas csoportokban! Ъgy йrzem, legalбbb mi, stalkerek цsszefoghatnбnk vйgre, hogy elыzzьk innen ezeket a szemйtlбdбkat!</text>
+	</string>
+	<string id="dm_cool_info_14">
+		<text>Egy stalker ismerхsцm mesйlte, aki Agropromban is йlt egy ideig, hogy a szolgбlatosoknak igencsak meggyыlik a bajuk a szцrnyekkel. Nйhбny barlangrendszer beomolhatott vagy valami, mert elleptйk a kцrnyйket a nyavalyбs vadбllatok.</text>
+	</string>
+	<string id="dm_cool_info_15">
+		<text>Egy haverommal a katonai raktбrtelepre mentьnk - eldurvult a helyzet a Kisugбrzбs уta. Jуl arcon csaptбk a hadsereget: a szabadok el akarjбk foglalni a bбzisukat, mнg a monoliti harcosok йs szцrnyek egyre csak jцnnek a Zуna kцzepe felхl, йs mindent elsцpцrnek, ami az ъtjukba kerьl. A rбdiуn nйha el lehet csнpni egy-egy beszйlgetйsfoszlбnyt, de embereket semerre se lбtni. A tцrtйnet tanulsбga: minйl mйlyebben mйsz a Zуnбba, annбl nagyobb problйmбkkal szembesьlsz.</text>
+	</string>
+	<string id="dm_cool_info_16">
+		<text>Ъgy tudom, hogy a Kisugбrzбs utбn megkцzelнthetхvй vбltak azok a helyek, pйldбul a Vцrцs-erdх vagy az Ingovбny, amelyeket azelхtt nem lehetett elйrni az anomбliбk miatt. Persze ez fordнtva is igaz, pбr terьlet, ahova azelхtt el tudtбl menni, most megkцzelнthetetlenek. Pйldбul, most egy ъt sem vezet Rosztokba... йs sok stalker tartуzkodott ott a Kisugбrzбs idejйn... senki sem tudja, mi lett velьk.</text>
+	</string>
+	<string id="dm_intro_68">
+		<text>Hй!</text>
+	</string>
+	<string id="dm_intro_69">
+		<text>Hй, te zsoldos! Ha a Zуna цrdцgfajzatai ellen akarsz harcolni, szбmнthatsz a Szolgбlat tбmogatбsбra!</text>
+	</string>
+	<string id="dm_intro_70">
+		<text>Hй, te! Csatlakozz a Szolgбlathoz, a kemйny fйrfiak frakciуjбhoz!</text>
+	</string>
+	<string id="dm_intro_71">
+		<text>Legyйl nagyon уvatos, йs kцvesd a fхutakat! Egy уvatlan lйpйs, йs egy vadбllat gyomrбban vйgzed!</text>
+	</string>
+	<string id="dm_intro_72">
+		<text>Hй!</text>
+	</string>
+	<string id="dm_intro_73">
+		<text>Ьdvцzцllek, barбtom! Azt javaslom, mindig legyйl йber! Ha hбrom-nйgy alkalommal tбmadnak rбd egy йjszaka, az nem olyan mуkбs, mint amilyennek hangzik.</text>
+	</string>
+	<string id="dm_intro_74">
+		<text>Rossz idхben jцttйl ide, stalker! Egy valуsбgos hбborъt vнvunk.</text>
+	</string>
+	<string id="dm_intro_75">
+		<text>Hй! Tartsd csak nyitva a szemed, nagyon ravaszak az itteni szцrnyek! Elйg, ha csak egy pillanatra lankad a figyelmed, йs mбr vйged is van!</text>
+	</string>
+	<string id="dm_intro_76">
+		<text>Ьdv, barбtom! Mindig цrьlцk, ha egy stalkert lбtok!</text>
+	</string>
+	<string id="dm_intro_77">
+		<text>Mi a pбlya? Hadd ьdvцzцljelek ukrбnhoz mйltуan!</text>
+	</string>
+	<string id="dm_intro_78">
+		<text>Hй, tesу! Bбrmi kйrdйsed van, kйrdezz nyugodtan!</text>
+	</string>
+	<string id="dm_about_76">
+		<text>Mit is mondhatnйk? Nйzz kцrbe, йs megйrtesz mindent, amit kell!</text>
+	</string>
+	<string id="dm_about_77">
+		<text>Minden irбnybуl jцnnek azok a rohadt szцrnyek - ha egyet megцlьnk, kettх бll a helyйre! De mindegy, a gyхzelem a miйnk lesz! Csak hatйkony fegyverekre йs nйhбny jу harcosra van szьksйgьnk. Ha lenne, mбr rйg rendet raktunk volna, йs megbosszultuk volna az elesett testvйreinket!</text>
+	</string>
+	<string id="dm_about_78">
+		<text>Йn mondom, бtok ьl ezen a helyen! Nem csak Agropromon, de magбn az egйsz Zуnбn is! Бllandуan harcolunk, de mi ellen? Az бtlagos szцrnyek nem szaporodnak ilyen gyorsan! Ma lemйszбroljuk хket, de holnapra mйg tцbben lesznek!</text>
+	</string>
+	<string id="dm_about_79">
+		<text>Hбt, te itt semmit nem fogsz talбlni, legfeljebb tйged talбl meg egy golyу. Estйnkйnt hatalmas szбmban rohannak meg minket a mutбnsok, mi meg rendszerint visszaverjьk хket. Megйr egy misйt a rйgi kutatуintйzetben felvert bбzisunk is: van ott egy bбr, egy kereskedх, egy javнtуmыhely йs mйg pбr dolog - majd meglбtod. A semleges terьleteken akбr ki is pihenheted magad йs megjavнttathatod a fegyvered, ha jуl kijцssz a helyiekkel. A vezetхjьket Oresztnek hнvjбk, ha jуl emlйkszem. Ha el akarsz menni innen, akkor keletre van Szemйtdomb, dйlre az Ingovбny, йszakra pedig a Jantar-tу йs a tudуsok bбzisa.</text>
+	</string>
+	<string id="dm_about_80">
+		<text>Rйgen egy kutatуintйzet бllt itt, ъgy hнvtбk, hogy... nos, Agropromi Kutatуintйzet. Bбrmire is hasznбltбk, most a mi bбzisunk. A parancsnokunk Krilov tбbornok, de mi csak Kapitбnynak szуlнtjuk. Na persze a hбta mцgцtt. Van egy semleges bбzis is a kцrnyйken, az elhagyatott gyбrйpьletnйl. Ha dйlre indulsz, az Ingovбnyhoz jutsz. Keletre van Szemйtdomb, ott a fosztogatуk diktбlnak - a mocskok kihasznбljбk, hogy nagyon elfoglaltak vagyunk йs nincs arra keretьnk, hogy vйgre elbбnjunk velьk. Йszakra fekszik a Jantar-tу, a szуbeszйd szerint van ott valamifйle sugбrzбs, ami zombivб vбltoztatja az embereket. A tйny, miszerint nagy csoportokban szoktak onnan tбmadni, szerintem alбtбmasztja az elmйletet.</text>
+	</string>
+	<string id="dm_about_81">
+		<text>Egy stalker kalandos mesйire vagy kнvбncsi? Hбt, akkor rossz helyen keresgйlsz, цcsi! Mi csak komoly dolgokkal foglalkozunk. Estйnkйnt annyi szцrny szokott tбmadni, hogy nadrбgot cserйlni sincs idхnk! Lбtod azokat a lyukakat? Йs ott, a mйlyedйseket a fцldben? Nos, amint besцtйtedik, kimбsznak azokbуl, йs hidd el, az nem szйp lбtvбny! Nem egyenkйnt, de mйg csak nem is tucatjбval jцnnek... ha szуrakozni tбmad kedvьk, senkit sem hagynak otthon, ebben biztos vagyok! Megцlьnk, amennyit csak tudunk, de mintha mi sem tцrtйnne - egy kibaszott inkubбtor lehet valahol a fцld alatt... nem is lenne rossz цtlet atomot dobni erre a kуcerбjra!</text>
+	</string>
+	<string id="dm_about_82">
+		<text>Fiam, йn nem kertelek, itt egyre forrуbb a talaj. Mъlt hйten visszaindultunk a bбzisunkra, йs itt hagytunk pбr srбcot. Este rajtuk ьtцttek, ami megszokott dolog egy ilyen helyen, de mire reggel visszatйrtьnk, mбr semmi sem volt itt! A srбcoknak nyoma veszett, se testek, se halott szцrnyek... csak vйr, tцltйnyhьvelyek, szйtszaggatott pбncйlzatok йs nyomok a fцldцn.</text>
+	</string>
+	<string id="dm_about_83">
+		<text>Unom mбr ezt a helyet! Isten tudja, hбny hete vagyunk itt, йs a szцrnyek minden egyes tбmadбsбval csak romlik a helyzet! Ъgy йrzem, mбr nincs bennem elйg tыz a kьzdelemhez, a lхszerrхl nem is beszйlve. Nйha szнvesen eldobnбm a puskбt, hogy puszta kйzzel tйpjem szйt a mocskokat! Talбn belemбsznak a fejьnkbe ezek a szцrnyek? Mindegy, elхbb-utуbb ъgyis vйgzьnk az цsszessel!</text>
+	</string>
+	<string id="dm_about_84">
+		<text>Йpp egy portyбnkrуl jцttьnk vissza, amikor ьzenetet kaptunk az agropromi srбcoktуl: "SOS! Segнtsйg, lerohantak minket!", aztбn csak puskaropogбst, sikolyokat йs ьvцltцzйst hallottunk a rбdiуbуl. Perceken belьl mбr hъszan indultunk a segнtsйgьkre, de mire odaйrtьnk, csak nйma csend volt йs hullaszag, йs egy lelket sem lбttunk. Csak egy zseblбmpa pislogott a fцldцn. Miutбn felkelt a nap, megprуbбltuk kцvetni a nyomokat, de azok az intйzet csatornarendszerйbe vezettek. Nemrйg, az egyik lenti portyбnk sorбn beomlott egy jбrat, azуta fйlьnk lemenni. Ja, gondolom mondanom sem kell, a srбcokat azуta nem lбttuk.</text>
+	</string>
+	<string id="dm_about_85">
+		<text>Tedd fel bбtran a kйrdйseidet, haver! Mйg nem vagyok elйg szarul. Minden este elveszнtjьk nйhбny barбtunkat - pбran elesnek a harcban, mбsok egyszerыen eltыnnek. Van, hogy reggel vбltбskйnt mйsz egy хrбllomбsra, de nem talбlsz ott senkit, csak egy parбzslу tбbortыz йs a nйma csend fogad. Nagyon ijesztх lбtvбny, nekem elhiheted. Szуval inkбbb fбrassz valaki mбst a kйrdйseiddel, a szolgбlatosok nйlkьled is meg fognak хrьlni!</text>
+	</string>
+	<string id="dm_about_86">
+		<text>Mindenhol ott vannak az хrposztjaink. Йs minden йjjel olyan sok szцrnyeteg tцr elх a fбk kцzьl, hogy mйg cйlozni sem йrdemes - csak szуrd meg хket, йs remйld a legjobbakat! Azokon a lyukakon keresztьl mбsznak ki a fцldbхl, mi meg prуbбljuk visszaszorнtani хket. Hogy pontosan honnan jцnnek? Hбt honnan a fenйbхl tudjam?</text>
+	</string>
+	<string id="dm_about_87">
+		<text>A mutбnsok Agroprom alуl mбsznak elх! Erre akkor jцttem rб, amikor a srбcok megprуbбltбk berobbantani a fцld alatti jбratot, az alagъt pedig az odъjukra omlott! Meg sem bнrtuk szбmolni, hбnyat szцrnyet pusztнtottunk el! Amъgy, te vйletlenьl nem a Szabadsбg tagja vagy? A fejed rohadtul emlйkeztet egy rйgi ismerхsцmre... Na mindegy, vigyбzz magadra!</text>
+	</string>
+	<string id="dm_about_88">
+		<text>Elхszцr jбrsz Agropromban, mi? Hбt, akkor mesйlek. A bбzisunk a rйgi kutatуintйzetben van, a rйgi gyбr viszont a semleges stalkerekhez tartozik. Nйha rбnk tцrnek a zombik йszakrуl, a Jantar-tу felхl, a szцrnyek pedig a fцld alуl. Ha tovбbb mйsz keletre, arra Szemйtdombot talбlod, dйlre pedig az Ingovбnyt.</text>
+	</string>
+	<string id="dm_about_89">
+		<text>Egйsz tыrhetх bбzisunk van, semmi kйtsйg. Egy cйllцvцlde, egy бllatkert, az Atombйke - ez a helyi bбr - minden, amit egy fйrfi kнvбnhat! De persze nem csibйszkedьnk, itt a fegyelem a legfхbb irбnyelv!</text>
+	</string>
+	<string id="dm_about_90">
+		<text>Agropromban rйgen egy kutatуintйzet mыkцdцtt, bбr a Zуna kialakulбsa уta nyilvбn nem folytatnak kutatбsokat, ha-ha. Helyette mi vettьk igйnybe az йpьletet, ez a bбzisunk! Itt tartjuk a frontot a Zуna teremtmйnyei ellen, amik tцbbnyire a fцld alуl bъjnak elх. A kьzdelmьnk cйlja, hogy megvйdjьk a tцbbi stalker йletйt, akбr a sajбtunk бrбn is!</text>
+	</string>
+	<string id="dm_about_91">
+		<text>Elhiszed, hogy rйgebben kцnnyebb volt? Persze szцrnyek akkor is voltak, de gond nйlkьl el tudtunk velьk bбnni. Mostanra viszont megromlott a helyzet. Minden este tucatjбval цljьk a vadбllatokat, йs minйl tцbbet szedьnk le, kцvetkezх este annбl tцbben lesznek! Mi pedig csak hullunk, mint a legyek.</text>
+	</string>
+	<string id="dm_about_92">
+		<text>Mi, szolgбlatosok, kemйnyen kьzdьnk a felszнnre tцrekvх szцrnyek ellen, szуval remйlem, megйrted, hogy nincs idхnk dumбlgatni. Ha te a kцnnyebb utat kedveled, menj az elhagyatott gyбrйpьletben lйvх semleges bбzisba, de ha gondolod, szнvesen vesszьk a segнtsйged - mindig цrцmmel fogadjuk a tapasztalt harcosokat! Nem mellйkesen a parancsnokunk minden, szolgбlatosoknak tett tбmogatбst illхen megfizet.</text>
+	</string>
+	<string id="dm_action_info_55">
+		<text>Szeretsz kнvбncsiskodni, mi? Tudni akarod, miйrt kьzdьnk a Zуna ellen? Hбt csak! Ez egy szent hбborъ, se tцbb, se kevesebb! Itt vagy gyхzьnk, vagy elbukunk, nincs "kцzйpъt"! A Zуnбval nem lehet alkudozni. A dцntйs a tiйd: velьnk, vagy ellenьnk!</text>
+	</string>
+	<string id="dm_action_info_56">
+		<text>Neked hogy tetszik? Nincs jobb dolgom, szуval elkezdtem festegetni. Csak vбrj, amнg besцtйtedik, йs jцn az ъjabb adag festйk. Lбtod hбt, egy hбborъ zajlik a mutбnsok ellen, egy igazi hбborъ... vйr, belek, miegymбs. Egy vйgsх csapбssal el tudnбnk pusztнtani az цsszes mocskos mutбnst! Mбrmint, elхbb-utуbb csak elfogynak, nem?</text>
+	</string>
+	<string id="dm_action_info_57">
+		<text>Hadban бllok a Zуnбval. Akarod tudni, miйrt? Nos, kйpzeld csak el, hogy egy mocskos idegen rбd tцr az otthonodban, bekцltцzik a szobбdba йs terrorizбlni kezd tйged йs a csalбdod! Mit tennйl az adott helyzetben? Hбt megragadnбd a szarhбzi grabancбt, йs kivбgnбd, mint macskбt szarni! A Szolgбlat is ezt csinбlja, nagy vonalakban. A kьldetйsьnk visszaszorнtani a Zуnбt oda, ahonnan jцtt. Erre a legjobb mуdszer egy nyнlt hбborъ. Miйrt, neked talбn van jobb цtleted?</text>
+	</string>
+	<string id="dm_action_info_58">
+		<text>Azйrt kьzdцk, hogy йjszaka nyugodtabban tudjunk aludni. Szerintem minden stalkernek egyenesen a kцtelessйge, hogy elpusztнtsa a Zуna fattyait! Nem йrtem, hogy valaki miйrt ne kьzdene ezйrt a cйlйrt. Ha egy fekйlyt nem kezelnek, az megfertхzi az egйsz testet, nem igaz? Ezek az йlхskцdхk elszaporodnбnak az egйsz bolygуn! Kйpzeld csak el, hogy йlhetnйnek egy olyan vilбgban a gyermekeink... balra egy szцrny, jobbra egy anomбlia. Melyiket vбlassza szegйny?</text>
+	</string>
+	<string id="dm_action_info_59">
+		<text>A Zуna gonosz, gyermekem. Maga a megtestesьlt gonosz, ami Damoklйsz kardjakйnt lebeg a bolygуnk felett! Az a baj, hogy ezt sokan nem tudjбk. Csak azok a kevesek, akik цsszeбlltak йs megalapнtottбk a Szolgбlatot. Cйlunk, hogy megбllнtsuk a gonosz terjedйsйt! Te is lбttad, hбny mutбnssal vйgzьnk minden egyes nap, kйpzeld csak el, mi lenne, ha azok is szabadon kуszбlnбnak a Zуnбban! Rцviden szуlva, ezen a bolygуn mi vagyunk az emberisйg utolsу bбstyбja, gyermekem. Хszintйn mondom, nem is йrtem, hogy lehet nem йrteni ezeket a tйnyeket, йs ellensйgeskedni velьnk.</text>
+	</string>
+	<string id="dm_action_info_60">
+		<text>Az emberi kцtelessйgem teljesнtem, йs ezek nem csak szйp szavak! Ez az igazsбg. Hogy mitхl vйdelmezem az embereket? A Zуnбtуl йs az elfajzott teremtmйnyeitхl. El kell pusztнtanunk ennek a rбkfenйnek a forrбsбt, mielхtt az pusztнt el minket!</text>
+	</string>
+	<string id="dm_action_info_61">
+		<text>Az elvtбrsakkal vбllvetve kьzdцk a mutбnsok ellen! Manapsбg bхven akad aprнtani valу. Йs mintha ez nem lenne elйg, nйha a zombik is lejцnnek a Jantar-tуtуl, olyankor azokkal is el kell bбnnunk. Szуval, ha csatlakozni szeretnйl a legeredmйnyesebb harcos klбnhoz, a Szolgбlatot neked talбltбk ki!</text>
+	</string>
+	<string id="dm_action_info_62">
+		<text>Prуbбlom eldцnteni, hogy milyen vadбllatot szбllнtsak Inkvizнtornak. Egy бllatkertet tart fenn a bбzison, ahol bemutatja a helyi fauna tagjait. Szнvesen lбtnйk ott egy irбnyнtуt, de attуl fйlek, hogy ha elkapnбnk egy pйldбnyt, az zombivб vбltoztatnб mindannyiunkat.</text>
+	</string>
+	<string id="dm_action_info_63">
+		<text>Nemrйg csatlakoztam a Szolgбlathoz, йs szerintem ez volt йletem legjobb dцntйse! Itt mindenki vйrprofi, a klбntagok fegyelmezettek йs jуl szervezettek.</text>
+	</string>
+	<string id="dm_action_info_64">
+		<text>Mйg ъj vagyok erre, prуbбlom tanulni a szabбlyokat. Azelхtt egyedьl jбrtam a Zуnбt, de most meg kell tanulnom fedezni a tцbbieket, ha mбr egyьtt osztozunk ezen a nehйz sorson.</text>
+	</string>
+	<string id="dm_action_info_65">
+		<text>Mindig azt teszem, amit parancsolnak. Mintha a seregben lennйk - van egy parancsnok, vannak tisztek, йs vannak kцzlegйnyek. Egyszerы, mint az egyszer egy. Kцvesd a parancsokat, йs akkor van esйlyed a tъlйlйsre.</text>
+	</string>
+	<string id="dm_action_info_66">
+		<text>Ezekkel a rohadt szцrnyekkel kьzdцk. Mit mondjak erre? Kezdek belefбradni, hogy minden este rбnk tбmadnak, de nem baj, elintйzzьk хket. Egy nap meg fogjuk talбlni a Zуna szнvйt, йs akkor egyszer s mindenkorra vйget vetьnk ennek az elfajzбsnak!</text>
+	</string>
+	<string id="dm_action_info_67">
+		<text>Sok haverom volt szolgбlatos, ezйrt csatlakoztam йn is. Vacillбltam pбr hуnapig, hogy mi lenne a helyes dцntйs, de visszagondolva mбr csak nevetek a kйtsйgeimen! Szolgбlatosnak lenni igazбn remek, йs sokkal biztonsбgosabb, mint egyedьl bolyongani a Zуnбban.</text>
+	</string>
+	<string id="dm_cool_info_17">
+		<text>Semmi jу. Egyre rosszabbak a napjaim, fхleg a nagy kisugбrzбs уta. Felbolydult az egйsz Zуna, йs mйg barбtsбgtalanabb lett az emberek szбmбra: a szцrnyek gyorsabbak, dьhцsebbek йs kegyetlenebbek. Ehhez hozzбjцn mйg a tйny, hogy a klбnok hбborъzni kezdtek egymбssal, hбt, nem tыnik fйnyesnek a jцvх. Nйhбny egysйgьnk nekivбgott a Zуnбnak... azt mondtбk, hogy ъj terьletekre vezetх utak nyнltak meg.</text>
+	</string>
+	<string id="dm_cool_info_18">
+		<text>A Zуna mindig vбltozik. Mindig van benne valami ъj, valami kiismerhetetlen. De azйrt ideje lenne mбr, hogy a Szolgбlat rendet teremtsen. Amint megvбltoztatta a Zуnбt a Kisugбrzбs, egybхl elkezdхdtek a hatalmi harcok. Ha a mieink lennйnek az ъj terьletek, minden csoport szбmбra biztosнtanбnk a szabad бthaladбst! Na jу, a szabadoknak talбn mйgsem. Amъgy a srбcoknak legalбbb a fele elindult a Zуna mйlyйbe.</text>
+	</string>
+	<string id="dm_cool_info_19">
+		<text>Valaki mesйlte, hogy egy ъj fajta mutбns йl az ingovбny kцrnyйkйn. Бllнtуlag ъgy nйz ki, mint egy vйrszнvу, de mйg azoknбl is veszйlyesebb! Hangtalanul mozog a bokrok бrnyйkбban, kifigyeli az бldozatбt, aztбn "huss!" - йs egy йlettelen testet tart a karmaival. De a legrosszabb, hogy mбr nem csak az ingovбny kцrnyйkйn йlnek, mert бllнtуlag a kцzelben is lбttak ilyeneket!</text>
+	</string>
+	<string id="dm_cool_info_20">
+		<text>Mondtбk nekem, hogy egy csomу anomбlia йs relikvia mбr nem is lбthatу! Szerintem a kisugбrzбs megemelte a Zуna anomбliбs energiбjбt, йs ez ъj tulajdonsбgokkal ruhбzta fel az anomбliбkat йs a relikviбkat. A helyedben уvatos lennйk, mбr nem lehet csak ъgy szaladgбlni a Zуnбban! Manapsбg egy йrzйkelх vбlaszt el йlettхl йs halбltуl. Ha zsнros fogбsokra pбlyбzol, egy kivбlу йrzйkelхre lesz szьksйged, ezt vйsd az eszedbe! Ja, йs legyйl nagyon уvatos!</text>
+	</string>
+	<string id="dm_intro_79">
+		<text>Hй, haver!</text>
+	</string>
+	<string id="dm_intro_80">
+		<text>Mizu, tesу?</text>
+	</string>
+	<string id="dm_intro_81">
+		<text>Guten tag! Nicht schiessen... itt mindenki jуbarбt.</text>
+	</string>
+	<string id="dm_intro_82">
+		<text>Kйrdezni akarsz valamit, stalker?</text>
+	</string>
+	<string id="dm_intro_83">
+		<text>Adjak nйhбny tanбcsot?</text>
+	</string>
+	<string id="dm_intro_84">
+		<text>Ьdvцzцllek, barбtom!</text>
+	</string>
+	<string id="dm_intro_85">
+		<text>Mit tehetek йrted?</text>
+	</string>
+	<string id="dm_intro_86">
+		<text>Ha most jбrsz elхszцr a Sцtйtvцlgyben, lбtogasd meg a szabadok bбzisбt! Mindig ott kezdхdik a buli, fхleg, ha a gйpйsz йs Asot цsszevesznek!</text>
+	</string>
+	<string id="dm_intro_87">
+		<text>Hй, tesу!</text>
+	</string>
+	<string id="dm_intro_88">
+		<text>Ьdv!</text>
+	</string>
+	<string id="dm_intro_89">
+		<text>Ьdvцzцllek a szabad stalkerek fцldjйn!</text>
+	</string>
+	<string id="dm_about_93">
+		<text>Ez a legjobb hely az egйsz Zуnбban, mert itt van a Szabadsбg bбzisa! Kit йrdekelnek a mutбnsok йs az anomбliбk? Egy feles utбn mйg egy цrvйny sem akadбly! Йs ha felesezni akarsz, a legjobb helyen jбrsz!</text>
+	</string>
+	<string id="dm_about_94">
+		<text>Sцtйtvцlgy a szabad stalkerek mennyorszбga! Itt senki sem papol kцtelessйgrхl йs szabбlyzatokrуl. Az elhagyatott gyбrйpьletnйl talбlod a Zуna legjobb klбnjбt, szerintem bevesznek a kцreikbe! Olyan jу nekьnk itt. Nyugatra van Szemйtdomb, a Kordon dйlre talбlhatу, йszakra pedig csak a hadsereg raktбrtelepe van.</text>
+	</string>
+	<string id="dm_about_95">
+		<text>A Vцlgy legkedveltebb helye a Szabadsбg bбzisa. Nem lehet eltйveszteni - csak keresd a hatalmas gyбrйpьletet! Senki mбs nem йrt ъgy a fegyverek цsszerakбsбhoz, mint Jar apу! Ha felszerelйst akarsz vбsбrolni, Asot a te embered, de ha a jуl megйrdemelt pihenйsed akarod itt tцlteni, akkor irбny az Egy Korty Szabadsбg bбr! Zуnaszerte kцztudott, hogy a Kortyban nem spуrolnak semmivel, йs mellesleg munkбt is bбrmikor tudnak adni.</text>
+	</string>
+	<string id="dm_about_96">
+		<text>Jelenleg nagy szarban vagyunk - valaki halomra цli a fiainkat! A Szabadsбg minden tagjбt, akinek nincs egyйb feladata, sьrgхsen visszahнvtunk a Vцlgybe, hogy segнtsenek azonosнtani az ellensйget. Mбr a bejбratot is хrizzьk... nem lehetьnk elйg уvatosak.</text>
+	</string>
+	<string id="dm_about_97">
+		<text>A Vцlgy tele van rйgi, elhagyott gyбrakkal, egyesek szerint mйg fцld alatti kutatуlaborok is vannak, de azok termйszetesen ьresek. Hбt, ki tudja, mi van a fцld alatt, viszont az egyik gyбrйpьletben kialakнtottuk a bбzisunkat. Ha lesz idхd, ugorj be a bбrba - tetszeni fog, bбrmibe lefogadom!</text>
+	</string>
+	<string id="dm_about_98">
+		<text>A Sцtйtvцlgyrхl? Mit mesйlhetnйk? Amъgy se tudom jуl elхadni. Kйrdezted mбr Asotot vagy Gandzsбt? Az egyik a kereskedх, a mбsik a csapos a bбzisunkon, ha esetleg nem tudnбd.</text>
+	</string>
+	<string id="dm_about_99">
+		<text>Nincs ebben a vцlgyben semmi kьlцnцs. Mindenbхl egy kicsi: vannak szцrnyek, anomбliбk, йs lehet talбlni relikviбkat is. Persze, csak ha jу helyen keresel. Ezeken kнvьl semmi egyedi, de legalбbb kihasznбljuk az elhagyatott ipari lйtesнtmйnyeket - tцkйletes helyet nyъjtanak a bбzisunknak!</text>
+	</string>
+	<string id="dm_about_100">
+		<text>Ez jу hely a kezdх stalkereknek: kцzel van a Kordonhoz, йs csak kevйs anomбlia van a kцrnyйken. Szцrnyeket is ritkбn lбtni. A hab a tortбn, hogy ha melletted бll a szerencse, igen йrtйkes zsбkmбnyokat talбlhatsz, йs teljes biztonsбgban adhatsz tъl rajtuk a bбzison. Az egyedьli nehйzsйg az idejutбs, бt kell menni a katonai бllomбsokon йs Szemйtdombon, kцzben pedig vigyбzni kell, hogy oda ne йgesse a segged egy anomбlia.</text>
+	</string>
+	<string id="dm_about_101">
+		<text>A Sцtйtvцlgyben a kezdхk elsajбtнthatjбk a stalker mestersйget, йs kцnnyen megtalбlhatjбk az elsх relikviбikat. A tapasztalt profik itt kiheverhetik az "igazi" Zуna rйmбlmait, hogy цsszeszedjйk magukat йs ъjult erхvel tйrhessenek vissza! Bбrki ellazulhat az Egy Korty Szabadsбg bбrban, megjavнttathatja a felszerelйsйt, vagy alkudozhat Asot boltjбban. Mindezt a bбzisunk biztonsбgбban.</text>
+	</string>
+	<string id="dm_about_102">
+		<text>Lйnyegйben az Egy Korty Szabadsбg miatt jцttem ide. Nagyon jу kis hely! Gandzsa a pultos... beszйdes nйv. Ott nyugodtan ellazulhatsz, mintha csak kint lennйl... Mбst nem nagyon tudok mesйlni, a tцbbi dolgot leszarom.</text>
+	</string>
+	<string id="dm_about_103">
+		<text>Van egy mыszerйsz a Szabadsбg bбzisбn, az a tag egy rozsdбs AK-t is kйpes lйgvйdelmi ьteggй alakнtani! Szьletett zseni. Amъgy a kereskedх is rendes fickу.</text>
+	</string>
+	<string id="dm_about_104">
+		<text>Furcsa dolgok tцrtйntek mostansбg. Valaki csendesen, йs fйlelmetes hatйkonysбggal цldцsi a fiainkat. Minden, a vцlgybe vezetх utat tбmaszpontokkal vйdьnk, de ez sem segнt. Rendszeresen rajtaьtnek valamelyik csapatunkon, de annyira gyorsak, hogy mire odaйrьnk, mбr mindennek vйge. Fogalmunk sincs, hogy ki teheti ezt, mбr mieinkre is a gyanъ бrnyйka vetьl.</text>
+	</string>
+	<string id="dm_about_105">
+		<text>A Vцlgy felbolydult, mint egy darбzsfйszek. Pattanбsig feszьltek az idegek, nйhбny figura pedig gyanъt keltett a tцbbiekben. Gondolom, hallottad, hogy valakik letбmadjбk a tбmaszpontjainkat, йs fogalmunk sincs, hogy kik azok. Ezйrt nem bнzhatunk senkiben, mйg a sajбt embereinkben sem! A fiъk idegesek, sajnos mбr mindenki veszнtette el barбtjбt a tбmadбsok sorбn.</text>
+	</string>
+	<string id="dm_about_106">
+		<text>Miйrt akarod tudni? Ne vedd a szнvedre. Nйhбny szarhбzi kemйnykedik velьnk mбr egy ideje: megtбmadjбk a tбmaszpontjainkat йs az хrjбratainkat, йs mire megйrkezik a segнtsйg, mбr csak holtan talбljuk a mieinket. Semmi nyom, semmi... ezйrt kezdtьnk tйglбkat keresni a sorainkban.</text>
+	</string>
+	<string id="dm_about_174">
+		<text>Mostanбban nem tцrtйnik semmi jу. Valaki gyilkolja a Szabadsбg katonбkat, de senki sem tudja, hogy kicsoda. Megбllapнtottuk, hogy a tбmadуk mindig a leggyengйbb pontunkon tбmadnak, mintha mindig pontosan tudnбk, hol van az. Meg se merem mбr szбmolni, hogy hбny emberьnk veszett oda, йs a legrosszabb, hogy nem tehetьnk semmit! Цlbe tett kйzzel vбrunk, йs amint pihennйnk egy kicsit, mбris kьldi az SOS-t valamelyik tбmaszpont! De mire odaйrьnk, csak halottakat lбtni. A mi halottainkat.</text>
+	</string>
+	<string id="dm_about_175">
+		<text>Szerintem beйpьlt egy tйgla a Szabadsбg soraiba! Valaki kiszivбrogtatja az informбciуt az ellensйgeinknek, akik piszkosul ki is hasznбljбk! Csendben tбmadnak, megцlnek mindenkit йs nem hagynak nyomokat. Sъlyos vesztesйgeket szenvedett a klбn, нgy mбr problйmбs lesz elfoglalni a hadsereg raktбrtelepйt... na mindegy... eskьszцm, ha a kezem kцzй akad az a besъgу, kamatostul visszakapja, amit a barбtaim elvesztйse miatt йrzek!</text>
+	</string>
+	<string id="dm_about_176">
+		<text>Ha бltalбban kйrdezed, ez a hely sem kьlцnbцzik a tцbbitхl a Zуnбban. Zsбkmбnyokat keresьnk, harcolunk, nйhбnyan elesnek a kьzdelemben, йs tervezzьk a jцvхnket. Ha az konkrйt dolgokra gondolsz, meg kell, hogy mondjam, hogy itt йlni nem egy йletbiztosнtбs. Ezйrt nem is szeretьnk trйcselni a kнvьlбllуkkal.</text>
+	</string>
+	<string id="dm_action_info_68">
+		<text>A stalkereknek nincs sok lehetхsйgьk: zsбkmбnyt szereznek, цlik a mutбnsokat, йs egyьtt mulatnak velem, ha йppen tцmve van a zsebem. Nйha eltemetem a barбtaimat, mбr ha maradt belхlьk annyi, amit el lehet temetni.</text>
+	</string>
+	<string id="dm_action_info_69">
+		<text>Arra a segghьlye, egykori haveromra vбrok. Egyьtt talбltuk a zsбkmбnyt, de a visszaъton beleьtkцztьnk egy falkбnyi pszeudokutyбba. Odapцrkцltem a seggьknek, de nem vettem йszre, hogy az a szarhбzi kцzben lelйpett a tбskбmmal! Magamra hagyott, йs elvitte a rйszem is a zsбkmбnybуl! Йpp, hogy megъsztam! Ha talбlkozunk, х nem fogja - йs valamikor csak ideeszi a fene.</text>
+	</string>
+	<string id="dm_action_info_70">
+		<text>Rйgуta akartam a Szabadsбghoz csatlakozni, de nem voltam a kцrnyйken, hogy jelentkezni tudjak. Viszont mбr йn is szabad vagyok! De nem mint egy madбr, okй? Йrtem йn a humort, de mбr nagyon unom, hogy mindenki ezzel viccelхdik.</text>
+	</string>
+	<string id="dm_action_info_71">
+		<text>Most хszintйn, szerinted? De komolyan, lбtod, hogy stalker vagyok. Tudod, hogy a stalkerek mit csinбlnak. Kapizsga?</text>
+	</string>
+	<string id="dm_action_info_72">
+		<text>Hбt, talбn kicsit nehйz lehet megйrteni, de... йn itt йlek! Stalkerkйnt is dolgozom, йs egy bбzisunk is van. Hallottбl mбr a Szabadsбg nevezetы klбnrуl? Igen, a Sцtйtvцlgy a mi terьletьnk. Йs szerinted mit csinбlnak a szabadok a sajбt terьletьkцn?</text>
+	</string>
+	<string id="dm_action_info_73">
+		<text>Йn csak bбnyбszom a relikviбkat az anomбliбk kцzьl, йs prуbбlok йletben maradni.</text>
+	</string>
+	<string id="dm_action_info_74">
+		<text>Megprуbбlom leterнteni azt a kutyбt. Ne nevess! Fogalmad sincs, milyen ravasz jуszбg! Estйnkйnt a tбbor kцzelйbe merйszkedik, йs ugatja a Holdat! Ha rбlхsz, elfut, йs hбtulrуl kцzelнt! Йs csak vonyнt. Mбr hбrom napja nem tudok aludni! Ha rбtalбlok a vackбra, a puszta kezemmel fogom megfojtani!</text>
+	</string>
+	<string id="dm_action_info_75">
+		<text>A srбcokkal хrizzьk a terьletet, hogy ne tudjanak rajtunk ьtni. Mбr biztos hallottad, hogy valakik le szoktбk tбmadni a tбmaszpontjainkat йs az хrjбratainkat. Szйgyen! Pedig mindannyian jу stalkerek voltak.</text>
+	</string>
+	<string id="dm_action_info_76">
+		<text>Hбt, sok dolgot nem lehet csinбlni a Zуnбban: zsбkmбnyt kereshetsz, illetve kutathatod a titkokat. Lйnyegйben ennyi, illetve megoszthatod ezeket a titkokat mбsokkal is. Йn ezzel foglalkozom.</text>
+	</string>
+	<string id="dm_action_info_77">
+		<text>Hallottбl mбr a medъza relikviбrуl? A kьldetйsem, hogy talбljak egyet, йs eladjam Asotnak, persze jу бron. Ezйrt kйrlek, hagyj gondolkozni, hogy hol talбlhatok egy olyat!</text>
+	</string>
+	<string id="dm_action_info_78">
+		<text>Tudtad, hogy a szabadok tanulmбnyozzбk is a Zуnбt? Igaz, nem vagyunk tudуsok, de kнvбncsiak vagyunk, hogy mi hozta lйtre ezt a termйszeti csodбt. Itt minden egy ajбndйk az emberisйgnek: az anomбliбk, a relikviбk йs az a titokzatos kisugбrzбs! Mirхl is beszйltьnk? Ja igen, azt kйrdezted, hogy mit csinбlok. Kutatбsi adatokat gyыjtцk - mйrem a hбttйrsugбrzбst, a hхmйrsйkletet, a pбratartalmat йs lejegyzetelem a szцrnyek йs az anomбliбk elхfordulбsait... Йs most, ha megbocsбtasz, folytatnбm a munkбm.</text>
+	</string>
+	<string id="dm_action_info_79">
+		<text>Hбt, ha nem tыnt volna fel, ez itt a mi bбzisunk, йs minden, amit csinбlok, цsszefьgg ezzel a nyilvбnvalу tйnnyel. Szуval, ha csak cйltalanul bolyongok, mйg akkor is a kйt legfontosabb feladatot lбtom el: azt a benyomбst keltem, hogy mi sokan vagyunk, йs bйkйben megfйrьnk a tцbbi harcos mellett.</text>
+	</string>
+	<string id="dm_action_info_80">
+		<text>A kalandokйrt jцttem a Zуnбba, йs itt, a Sцtйtvцlgyben meg is kapom azokat! Цrьlцk ennek a lehetхsйgnek - hбla a Szabadsбgnak! Nem, egyбltalбn nem zavar, ha nagykйpыnek tыnцk.</text>
+	</string>
+	<string id="dm_about_107">
+		<text>A vцlgyben a legnagyobb erхt a Szabadsбg kйpviseli. De ъgy hallottam, mostanбban komoly vesztesйgeket szenvedtek. Sыrыn lerohanjбk a kihelyezett бllomбsaikat - a vйdхk elesnek, senki nem lбtott semmit, fogalmuk sincs, hogy a tбmadуk hogy kerьltйk el a Szabad хrjбratokat, vagy egyбltalбn, hogy kik lehetnek azok. Gondolkodtam rajta, hogy csatlakozzak a klбnhoz, de feleslegesen meghalni valahogy nem szerepel a terveim kцzцtt. Ъgyhogy, mйg vбrok egy picit.</text>
+	</string>
+	<string id="dm_about_108">
+		<text>Ez a hely sem kьlцnbцzik a tцbbitхl - nem jobb, nem rosszabb. Anomбliбk, szцrnyek, sugбrzбs йs omladozу szovjet йpьletek, paraszthбzak, gyбrak, miegymбs. Az egyetlen, ami mбs, az a Szabadsбg bбzisa. Jу srбcok vannak ott, csak elйg idegesek mostansбg. De nem hibбztatom хket, van elйg bajuk.</text>
+	</string>
+	<string id="dm_about_109">
+		<text>Idбig a Sцtйtvцlgy volt a Zуna legkellemesebb helye, mбrmint ha van йrtelme hasznбlni a "kellemes" kifejezйst. Legalбbb olyan veszйlyes volt a vцlgy, mint bбrhol mбshol, de legalбbb lehetett talбlni kцzepesen йrtйkes relikviбkat, nem voltak se fosztogatуk, se katonбk, йs nem volt Agyperzselх meg hasonlу szarok. De valakik nagyon felidegesнtettйk a szabadokat, йs mбris nem olyan rуzsбs a helyzet. Mбr az sem ritka, ha egy bбmйszkodуt talбl el egy eltйvedt golyу, amit eredetileg egy klбntagnak szбntak!</text>
+	</string>
+	<string id="dm_about_110">
+		<text>A Sцtйtvцlgy tбvol esik a Zуna kцzepйbe vezetх utaktуl. Innen csak a Kordonhoz йs Szemйtdombba tudsz eljutni. A tцbbi hellyel ellentйtben itt nyilvбn ezйrt nincs folyamatos mozgбs, йs pont ezйrt vбlasztotta ezt a helyet a Szabadsбg a bбzisбul. Amъgy nem hinnйm, hogy bбrmit is mondhatnйk rуluk, amit mйg nem tudsz.</text>
+	</string>
+	<string id="dm_about_111">
+		<text>Egy semleges stalker szбmбra ez a legjobb hely a Zуnбban. Itt nincs jelen a hadsereg, nincsenek fosztogatуk, se tъlzottan veszйlyes mutбnsok. Itt csak zsбkmбnyokat kell gyыjteni, йs elkerьlni az anomбliбkat, йs pont errхl szуl stalkernek lenni!</text>
+	</string>
+	<string id="dm_about_112">
+		<text>Olyan helyeket is megjбrtam, amikhez kйpest a Sцtйtvцlgy egy jбtszуtйr. Pszeudokutyбk йs anomбliбk - hah! Ha majd annyi ideje leszel a Zуnбban, mint йn, majd megйrted. Majd ha irбnyнtуk turkбlnak a fejedben, йs vйrszнvуk vetik rбd magukat a semmibхl - ilyenkor nem ciki, ha magad alб csinбlsz! Йs mйg a tцredйkйt sem mondtam el - hallottбl mбr az Agyperzselхrхl? Na az a nem mindegy! Nem lбtod, nem tapinthatod, йs kurvбra nem pusztнthatod el, viszont az minden gond nйlkьl csъf dolgokat mыvelhet veled!</text>
+	</string>
+	<string id="dm_about_113">
+		<text>Bбr itt mindent a Szabadsбg irбnyнt, mйgsem telepedtek rбnk annyira, mint a fosztogatуk. Megkцtйsek nйlkьl jбrhatod a vцlgyet, gyыjtheted a relikviбkat, йs nem kell vбmokat meg tiszteletdнjakat fizetned senkinek. Vйlemйnyem szerint messze ez a legjobb hely a Zуnбban!</text>
+	</string>
+	<string id="dm_about_114">
+		<text>A szabadok ezt jobban tudjбk. Miйrt nem mйsz el a bбzisukra, йs kйrdezed meg хket? Йn csak nemrйg йrkeztem, йs nem is nйzegettem az ъj utakat. Csak azt tudom, hogy hogyan juthatok Szemйtdombrуl a Szabad bбzishoz, onnan pedig a dйli paraszthбzhoz.</text>
+	</string>
+	<string id="dm_about_115">
+		<text>Pбr hйtig biztosra veszed, hogy ez a Zуna legjobb helye. Viszonylag biztonsбgos, a szabadok meg rendes srбcok - lehet velьk haverkodni, йs nem fognak бtverni egy cserйnйl. De ha mбr itt vagy egy ideje, megunod a dolgot, a vцlgy messze van mindentхl йs nem is nagyon tцrtйnik itt semmi йrdekes. Jу hely, ha pihenni jцttйl ide, mielхtt ъjra belemerьlnйl a Zуna kбoszбba, de ha itt йlsz, csak gyengьlsz йs ellustulsz. Йn jobban csнpem Szemйtdombot, nyugatra van innen, de akбr a Kordonba is mehetnйk katonбkat idegesнteni.</text>
+	</string>
+	<string id="dm_about_116">
+		<text>Ha eszes vagy, йs jуl szolgбl az egйszsйged, itt kцnnyen megszedheted magad a Szabadsбg kьldetйseinek teljesнtйsйvel, vagy simбn zsбkmбnyszerzйssel. Itt nincs kцzцs kassza, mint a fosztogatуknбl, vagy segйlyezйsi alap, mint Szolgбlatnбl: itt amit talбlsz, az csak a tiйd. Na persze, alkalmankйnt azйrt illik tбmogatni хket... pйldбul ьnnepnapokon, vagy a parancsnok szьlinapjбn. De ha valami mйgsem tetszene, bбrmikor lelйphetsz a Kordonba, vagy ha kivйtelesen nagylelkыnek йrzed magad, йs szнvesen "adomбnyoznбd" a megtakarнtott pйnzed a fosztogatуknak, akkor Szemйtdombot nyugatra talбlod!</text>
+	</string>
+	<string id="dm_about_117">
+		<text>Ha nincs kedved irбnyнtуkkal йs vйrszнvуkkal kemйnykedni, akkor a Sцtйtvцlgy a te helyed! Itt csak vadkanok, vйrmalacok йs kutyбk йlnek. Az anomбliбkkal sincs gond, csak figyelj rбjuk, йs kerьld el хket!</text>
+	</string>
+	<string id="dm_action_info_81">
+		<text>Relikviбkat gyыjteni jцttem a vцlgybe, йs itt derьlt ki, hogy itt van a Szabadsбg bбzisa. Mбr szimpatizбltam velьk egy ideje, йs csatlakozni is akartam, de most nincs tagfelvйtel az бllomбsaikat йrt tбmadбsok miatt. Dьhцsek йs gyanakvуak - mindenkit бtvilбgнtanak, aki az ъtjukba kerьl. Na persze, nem szу szerint, ugyan honnan lennйnek detektoraik? A lйnyeg, hogy aggуdnak a srбcok, ezйrt ideiglenes szьnetel a tagfelvйtel.</text>
+	</string>
+	<string id="dm_action_info_82">
+		<text>Azйrt jцttem, hogy csatlakozzak a Szabadsбghoz - mostanбban elkel egy kis vйrfrissнtйs! De nagyon megnйzik, hogy kit fogadnak be: ъgy gondolom, fйlnek a besъgуktуl.</text>
+	</string>
+	<string id="dm_action_info_83">
+		<text>Zsбkmбnyokat keresek, йs ez a legbiztonsбgosabb hely. Itt nincsenek kizsбkmбnyolу adуterhek, mint Szemйtdombon, nincsenek hordбnyi mutбnsok, mint Agropromban, йs kilomйterekre nem lбtni korrupt katonбkat. Az anomбliбk йs a nйha felbukkanу szцrnyek nem olyan vйszesek, fхleg a tцbbi helyhez kйpest.</text>
+	</string>
+	<string id="dm_action_info_84">
+		<text>Mutбnsokra vadбszok. A kereskedхk йs a tudуsok tisztessйgesen fizetnek bizonyos szervekйrt. Nem hiszed? Jбrj utбna!</text>
+	</string>
+	<string id="dm_action_info_85">
+		<text>Ez az otthonom, a fiъkkal йpнtettьk ezt a tбbort. A zуnai portyбzбsok kцzцtt itt ьlьnk цssze, йs pihenjьk ki magunkat, erre tцkйletesen megfelel ez a hely.</text>
+	</string>
+	<string id="dm_action_info_86">
+		<text>A Zуna mбs rйszein szokбsos gьrcцlйs йs folyamatos szнvбs elхl menekьltem ide. A hadsereg raktбrtelepйnйl йs a Kordonnбl ъgy bбnnak a stalkerekkel, mint a szarral. A szemйtdombi fosztogatуk bбrmit megtehetnek, az agropromi szolgбlatosok meg telebeszйlik a fejed azzal, hogy aki nincs velьk, az ellenьk van. Itt viszont szabad vagy йs egyenlх, esetenkйnt ittas, йs ez nagyon tetszik nekem.</text>
+	</string>
+	<string id="dm_action_info_87">
+		<text>Szemйtdombon elszakadtam a csapatomtуl. Volt egy kis nйzeteltйrйsьnk a fosztogatуkkal, mert nem akartunk vбmot fizetni, azt pedig nem tыrik. Kemйnyen elbбntunk velьk, de aztбn megйrkezett az erхsнtйs, йs olajra kellett lйpnьnk. Йn keletre futottam, йs itt kцtцttem ki, a Sцtйtvцlgyben. Nem merek Szemйtdombon keresztьl visszamenni, inkбbb abban bнzok, hogy nem csak йn menekьltem erre. Kцzцsen majd eldцntjьk, hogy mi legyen a kцvetkezх lйpйs.</text>
+	</string>
+	<string id="dm_action_info_88">
+		<text>Nemrйg йrkeztem a Zуnбba, eddig mйg csak a Kordont йs Szemйtdombot lбttam. Egyelхre jбrom a vadont, hбtha talбlok valami zsбkmбnyt, amin tъladhatok.</text>
+	</string>
+	<string id="dm_action_info_89">
+		<text>Ъgy hallottam, hogy a Sцtйtvцlgyben szбzбval lehet zsбkmбnyokat talбlni, amiket egybхl el is lehet adni a szabad kereskedхnek. Mбr itt vagyok egy ideje, de mйg semmit sem talбltam. Ennyire szerencsйtlen lennйk, vagy csak rossz helyen keresek? Nem tudom...</text>
+	</string>
+	<string id="dm_action_info_90">
+		<text>Asot igazбn kivбlу pбncйlzatokat бrul, de sajnos lapos a zsebem. Ъgy dцntцttem, hogy begyыjtцk pбr zsбkmбnyt: egy ravasz srбc szбmбra mindig akad valami a Vцlgyben! De az a baj, hogy mindig csak egy kicsivel van kevesebb pйnzem! Nйha tъl sokat kцltцk lхszerre йs gyуgyszerekre, mбskor meg eliszom az цsszes vasam az Egy Korty Szabadsбgban.</text>
+	</string>
+	<string id="dm_cool_info_21">
+		<text>Йn ъgy lбtom, hogy a Kisugбrzбs уta minden megvбltozott. Az ismerхs йs biztonsбgos utak mбr se nem ismerхsek, se nem biztonsбgosak. A mocsбrban pйldбul teljesen ъjakat kell keresni. Viszont van a dologban valami jу is, a Zуna ъj terьletei vбltak megkцzelнthetхvй, amik ki tudja, milyen titkokat rejtenek. Valaki azt is mondta, hogy egy egйsz kis falu is van a Zуna mйlyйn, amit nem йrintett a Szovjetuniу szele. Amint ezt a fхnцkьnk is meghallotta, egybхl kirendelt egy nagyobb osztagot a felderнtйsйre. Kiderьlt, hogy a Szolgбlat is indнtott egy csapatot, szуval elkezdte siettetni a srбcokat. A kutatбs eredmйnyei nagyon meglepхek lesznek, ebben biztos vagyok!</text>
+	</string>
+	<string id="dm_cool_info_22">
+		<text>Azt mondjбk, hogy a Kisugбrzбst, ami vйgigsцpцrt a Zуnбn, egy csapatnyi stalker hozta lйtre, akik бtverekedtйk magukat az Agyperzselхn, egйszen a Zуna kцzepйig! El tudod ezt hinni? Keresztьl a Perzselхn! Йs a legdurvбbb, hogy йpsйgben visszatйrtek! Kнvбncsi vagyok, mi okozhatja a Kisugбrzбst... talбn ez magбnak a Zуnбnak a bosszъja?</text>
+	</string>
+	<string id="dm_cool_info_23">
+		<text>Egyre halбlosabbak az anomбliбk. Mбr nem csak besыrыsцdцtt anomбliбs energiбk, hanem egyre nagyobbak йs veszйlyesebbek! Mбr nem elйg, ha csavarokat dobбlsz mindenfelй - ha tъl akarod йlni a sugбrzбst йs a savas esхket, akkor elйg komoly vйdхfelszerelйsekre van szьksйg, йs minden lйpйsed kйtszer is meg kell gondolnod!</text>
+	</string>
+	<string id="dm_intro_90">
+		<text>Vigyбzz a gyбrbуl tбmadу zombikkal - baromi sokan szoktak lenni!</text>
+	</string>
+	<string id="dm_intro_91">
+		<text>Hъ, haver! Te is tцk ъgy nйzel ki, mint egy zombi! Majdnem szйtlхttem a fejed!</text>
+	</string>
+	<string id="dm_intro_92">
+		<text>Ьdvцzцllek a Jantar-tуnбl, ahol legszнvesebben halat fognбl! Ha-ha! Vбgod, hogy rнmelt? Ha-ha!</text>
+	</string>
+	<string id="dm_intro_93">
+		<text>Ьdvцzцllek Jantarban, testvйr!</text>
+	</string>
+	<string id="dm_intro_94">
+		<text>Jу helyre jцttйl, stalker - szьksйgьnk van a segнtsйgedre.</text>
+	</string>
+	<string id="dm_intro_95">
+		<text>Hй, haver!</text>
+	</string>
+	<string id="dm_about_118">
+		<text>Tartsd tбvol magad a gyбrtуl, aki oda belйp, az nem jut ki йlve! De mire a bejбrathoz йrsz, mбr addigra megхrьlsz! Csak a Zуna tudhatja, hogy mi folyik ott bent.</text>
+	</string>
+	<string id="dm_about_119">
+		<text>Megmondom хszintйn, fйlelmetes ez a hely. Folyamatosan tбmadnak minket a zombik a gyбrbуl. Mi tucatjбval mйszбroljuk хket, de akik megprуbбltбk kiderнteni, hogy mi folyik ott bent, sosem tйrtek vissza. Egyszer йn is megprуbбltam megkцzelнteni a gyбrat, de amint picit kцzelebb йrtem a szokбsosnбl, йreztem, hogy olvad az agyam! Nem bнrtam mozogni, szйdьltem, йs hangokat hallottam a fejemben - haver, majdnem цsszeroppantam! Egybхl elindultam visszafelй, de a hangokat azуta is hallom. El tudom kйpzelni, hogy halmokban hevernek azoknak a tetemei, akik nбlam kцzelebb merйszkedtek.</text>
+	</string>
+	<string id="dm_about_120">
+		<text>Rйgebben a Jantar nevezetы tу terьlt itt el, de ami maradt belхle, mбr csak egy nagy, szennytхl bыzlх pocsolya. A tudуsoknak van egy tбbora a parton: kutatбsokat folytatnak a bunkereikben, mбskor pedig felfedezх utakra indulnak. Nйha minket is megbнznak valamilyen munkбval. Ha szerencsйd van, цsszeszedhetsz egy-kйt relikviбt, vagy valamilyen puskбt egy halott zombitуl. Itt csak egy dologbуl nem szыkцlkцdьnk - zombikbуl. A legnagyobb baj, hogy mнg хk ide tudnak jцnni a gyбrbуl, mi nem tudjuk megkцzelнteni хket. Amint elindulsz arrafelй, mintha valami belemбszna az agyad mйlyйbe. A bбtor testvйreink mбr rйg odavesztek, csak az уvatosabbak maradtak meg nekьnk.</text>
+	</string>
+	<string id="dm_about_121">
+		<text>Nem йrtem ezt a helyet. Egy barбtommal megprуbбltunk bemenni a gyбrba, a Zуna kevйs йrintetlen terьleteinek egyikйbe. Gondoltuk, biztos lбdaszбmra fogjuk talбlni az йrtйkes zsбkmбnyokat. Hah! Amint a kapuhoz йrtьnk, elkezdtem szйdьlni, furcsa, suttogу hangokat hallottam, йs kьlцnцs dolgokat lбttam. A tбrsam mцgцttem volt, йs sikerьlt elvonszolnia onnan: amint йszrevette, hogy megbйnultam, megragadott, йs csak rohant. A legsъlyosabb pedig az volt, amikor visszaйrve a tцbbi stalker цsszetйvesztett minket a zombikkal, йs tьzet nyitottak rбnk.</text>
+	</string>
+	<string id="dm_about_122">
+		<text>A tudуsok a kiszбradt tу mellett tбboroznak, mнg a stalkerek a zombik vйgelбthatatlan hordбjбval kьzdenek a megerхsнtett vйdбllбsaikbуl. Senki sem tudja, hogy mi folyik a rйgi gyбrban, de amint a kцzelйbe mйsz, hangokat йs zajt hallasz a fejedben, majd szйdьlni kezdesz йs elgyengьlsz. Mйg az йszlйnyek sem tudjбk, hogy mi lehet ez.</text>
+	</string>
+	<string id="dm_about_123">
+		<text>Ъgy hнvjбk ezt a terьletet, hogy Jantar. Egykor egy szйp tу volt itt, de ha nyaralni tбmad kedved, semmikйpp se gyere ide! Mбr csak egy iszapos pocsolyбnk van, sugбrzбssal йs tцbb tonnбnyi zombival megspйkelve. Ha ez mйgis kevйs neked, akkor nйzd meg a rйgi gyбrat. Na persze, nem kцzelrхl, ъgysem jutsz el odбig - tцbbnyire mбr a kapu elхtt megхrьlnek az emberek.</text>
+	</string>
+	<string id="dm_about_124">
+		<text>A gyбr a legveszйlyesebb hely a kцrnyйken, a kцrьlцtte lйvх terьletet egy ismeretlen tнpusъ kisugбrzбs fertхzi. Furcsa tцrtйneteket mesйlnek, akik megprуbбltak a kцzelйbe fйrkхzni: hangokat йs zajokat hallanak. Mind beleхrьlt, aki megprуbбlta, akik meg elйg tцkцsek voltak, hogy bemenjenek, sosem jцttek ki onnan.</text>
+	</string>
+	<string id="dm_about_125">
+		<text>Mi a tudуsokkal barбtkozunk. Hullбmokban tбmadnak a zombik az elhagyatott gyбrйpьletbхl, de mi megvйdjьk a barбtainkat! Cserйbe, хk pedig kisegнtenek gyуgyszerekkel, felszerelйssel йs nйha a munkбnkban is. Csak nagyon kevйs ember jut el magбhoz a gyбrhoz, mert van ott valami kisugбrzбs, ami ъgy letarolja az agyad, mint egy kamion. De persze ott vannak azok is, akik elkaptбk a csendesebb idхszakot, йlve kijutottak, йs rettentх йrtйkes zsбkmбnyokat hoztak magukkal!</text>
+	</string>
+	<string id="dm_about_126">
+		<text>Biztosra veszem, hogy valami nagyon йrtйkes dolog van a gyбrban - szerintem Szaharov йs a tudуsai szнves-цrцmest megfizetnйk, ha rбtehetnйk a kezьket. A baj mбr csak az, hogy bejutni nem tъl egyszerы, йs mйg senkinek sem sikerьlt. Vagy a zombik ьdvцzцlnek, vagy... Ha kцzel megyьnk, valami furcsa dolog tцrtйnik az emberek fejйben: szйdьlьnk йs hallucinбlunk. Ha nem fordulsz vissza idхben, vйged van. Tцbb barбtomat is нgy vesztettem el... tъl sokat kockбztattak, hogy felderнtsйk a gyбr titkait!</text>
+	</string>
+	<string id="dm_about_127">
+		<text>Az elsх baleset elхtt egy tу volt itt, a Jantar-tу. Amikor felhъztбk a gyбrat, valamit elcsesztek a fцld alatt, йs elfolyt az цsszes vнz, csak egy bыzцs pocsolya maradt belхle. Most a tudуsoknak van egy tбbora a tу maradvбnya mellett, kicsit arrйbb a gyбr meg azуta is problйmбkat okoz. Ha a kцzelйbe mйsz, teljesen becsavarodsz йs semmit sem bнrsz csinбlni! Csak az цngyilkosjelцltek szoktak prуbбlkozni - mindenki mбs inkбbb csak цli a gyбrbуl tбmadу, zombivб vбltozott stalkereket, illetve segнt a tudуsoknak.</text>
+	</string>
+	<string id="dm_about_128">
+		<text>A tudуsok itt, a Jantar-tуnбl kutatjбk a Zуnбt. A legnagyobb helyi nevezetessйg a gyбrйpьlet, rengeteg ember veszett oda a kisugбrzбs miatt. Aki egyszer oda bemegy, tцbbй nem jцn ki. Sajnos, fogalmunk sincs, mi tцrtйnhetett velьk.</text>
+	</string>
+	<string id="dm_about_129">
+		<text>A tudуsoknak van egy bбzisuk, a stalkerek meg az erхsнtett vйdбllбsaikbуl lцvik a zombikat. Dйlre van Agroprom, ott a mutбnsokkal gyыlik meg a Szolgбlat baja, йszakra pedig a Vцrцs-erdхt talбlod. Nem tudjuk, mi van ott, mert mйg senki sem tйrt vissza, hogy elmesйlje.</text>
+	</string>
+	<string id="dm_action_info_91">
+		<text>Йn a kutatуknak segнtek a kнsйrleteikben. Persze nem szemйlyesen. A srбcokkal a zombiktуl vйdem хket, biztosнtjuk az expedнciуikat, йs kьlцnfйle relikviбkat szerzьnk Szaharovnak: mutбns szerveket йs egyйb szarokat, mindig, ami kell neki. Cserйbe, хk a gyбrbуl jцvх kisugбrzбst kutatjбk, ami megolvasztja az emberek agyбt. Ha rбjцnnek, mit lehet ellene tenni, mindenki itt fog zsбkmбnyt keresni, majd meglбtod!</text>
+	</string>
+	<string id="dm_action_info_92">
+		<text>Arra vбrok, hogy az okostojбsok vйgre kitalбljбk, hogy hogyan lehetne lekьzdeni a kisugбrzбst, ami miatt nem tudunk behatolni a gyбrba. Hogy mi akadбlyoz meg minket? Menj, йs prуbбld ki! Valami цsszezavarja a fejed, de ъgy, hogy mйg azt sem tudod, melyik vйgйn fogd a puskбd! Sok stalker ment be... йs egyik sem tйrt vissza.</text>
+	</string>
+	<string id="dm_action_info_93">
+		<text>Azйrt jelentkeztem, hogy segнtsem a tudуsokat. Ez tцbbnyire azt jelenti, hogy megvйdem хket a zombitбmadбsok minden egyes hullбmбtуl. Jу ьzlet, fхleg, hogy ellбtnak minket kцtszerrel, gyуgyszerrel йs lхszerrel is. Nem vйszes ez a hely, ha jуl megy a laposkъszбs!</text>
+	</string>
+	<string id="dm_action_info_94">
+		<text>Egy veterбn stalker eladott nekem egy a tйrkйpet, bejelцlve az цsszes kцrnyйkbeli rejtekhellyel. Megtanultam kнvьlrхl, йs elйgettem, szуval ha lelхsz, azzal nem jutsz sokra. Egyйbkйnt is, mбr kipucoltam az цsszest, ami a gyбron kнvьl volt, mindegyiket pontosan ott talбltam, ahol a tйrkйp jelцlte. A legjobbak viszont a gyбrйpьleten belьl vannak. Amint Szaharov йs a csapata rбjцnnek, hogy lehet legyхzni a kisugбrzбst, йn mбr abban a szempillantбsban bent leszek a gyбrban!</text>
+	</string>
+	<string id="dm_action_info_95">
+		<text>Szaharovnak viszem a kiйrtйkelйseket. Nincsenek asszisztensei, ezйrt fizet a stalkereknek, hogy elvйgezzйk helyette a babramunkбt.</text>
+	</string>
+	<string id="dm_action_info_96">
+		<text>Az egyik ismerхs boltos mondta, hogy egy rйgi haverom a seregbхl is ide keveredett. Azйrt jцttem, hogy megkeressem хt! Ha цsszefutunk, tuti egyьtt fogjuk jбrni a Zуnбt!</text>
+	</string>
+	<string id="dm_action_info_97">
+		<text>Цreg, йn kifбradtam. Fбradt vagyok mбr, hogy zsбkmбnyokat szerezzek a Zуnбban, belefбradtam a szцrnyekkel valу kьzdelembe, kikйszнtett, hogy a fosztogatуkkal kell versenyezni a terьletekйrt. Inkбbb kipihenem magam. Csak annyi a dolgom, hogy nйha lelхjek pбr zombit, a tudуsok mйg fizetnek is йrte! Egy ideig mйg lustбlkodok, aztбn elindulok a veszйlyesebb terьletek felй. A Zуnбban is бll az aranyszabбly: minйl nagyobb a kockбzat, annбl nagyobb a haszon.</text>
+	</string>
+	<string id="dm_action_info_98">
+		<text>A Kisugбrzбs utбn eldцntцttem, hogy kцrbejбrom a Zуnбt, йs megnйzem a vбltozбsokat. Az Ingovбnytуl eljutottam egйszen magбig a Perzselхig! Kцzben tцbbet lбttam, mint valaha is gondolnбd. Ъgy kerьltem ide, hogy eredetileg csak a zsбkmбnyaimat akartam eladni, de itt kivбlу emberekkel talбlkoztam. Azуta vбllvetve kьzdьnk!</text>
+	</string>
+	<string id="dm_action_info_99">
+		<text>Mйg a legutуbbi lцvцldцzйsben szerzett sйrьlйseimet бpolom. Annyi zombi tбmadt rбnk, alig tudtuk legyыrni хket - ha normбl emberek lettek volna, most nem beszйlgetnйnk. Mйg szerencse, hogy annyi eszьk sincs, mint egy zsбk krumplinak! Se taktika, se semmi. Ennek ellenйre komoly csatбt vнvtunk, egy kуsza golyу pedig elkapott. Szerencsйre csak egy karcolбs, ъgy йrzem, megmaradok.</text>
+	</string>
+	<string id="dm_action_info_100">
+		<text>Be akarok menni a gyбrba, de nem tudom rбszбnni magam. Egyrйszt majd beszarok, ъgy fйlek, de azйrt nagyon kнvбncsi vagyok, hogy mi lehet odabent. Elхbb-utуbb ъgyis felderнti valaki a titkokat, йs az a valaki miйrt ne lehetnйk йn?</text>
+	</string>
+	<string id="dm_action_info_101">
+		<text>Egy jуfajta fegyverre spуrolok. Йn a tudуsoknak dolgozom - a feladatom, hogy ne engedjem a zombikat a tбbor kцzelйbe. Ha цsszejцn elйg pйnz, megveszem azt a puskбt, amelyiket kinйztem, aztбn elindulok kalandozni a Zуnбba!</text>
+	</string>
+	<string id="dm_action_info_102">
+		<text>Agroprombуl jцttem, egy ideig Oreszt klбnjбban harcoltam. Meguntam a kцrnyezetet, kellett egy kis vбltozбs. Kцrьl szeretnйk nйzni a Vцrцs-erdхben, de nem tudok odajutni a gyбrban lйvх Agyperzselх miatt. Mбr a kцzelйbe fйrkхzni sem semmi feladat!</text>
+	</string>
+	<string id="dm_action_info_103">
+		<text>Agropromban a szolgбlatosoknak segнtettem visszatartani a mutбnsokat, aztбn egyszer egy halom zombi йrkezett Jantarbуl. Felбllнtottunk egy egysйget, hogy bбnjon el a problйma gyцkerйvel, йs йn цnkйnt jelentkeztem! Szуval, idejцttьnk, mindennel vйgeztьnk, ami az utunkba kerьlt, aztбn a szolgбlatos srбcok hazaindultak. Nekem eladбsra kнnбltak egy egйsz jу vйdхцltцzetet a kutatуk laborjбban, ami nagyon megtetszett. Ъgy dцntцttem, hogy itt maradok йs цsszegyыjtцm rб a pйnzt!</text>
+	</string>
+	<string id="dm_action_info_104">
+		<text>HAGYJБL MБR BЙKЙN! Mi van? Nem, nem te. Haver, kezdek ebbe beleхrьlni. Tъl hьlye voltam, йs elindultam a gyбrba. Magam akartam megtapasztalni. Hбt, ez van. Majd szйtmegy a fejem... mйg szerencse, hogy a srбcok ki tudtak menteni. Beszйlek hozzбd, йs kцzben suttogбst hallok a fejemben. Kussolj mбr! Nem, nem te. Izй... na mindegy.</text>
+	</string>
+	<string id="dm_cool_info_24">
+		<text>Egy tцrtйnet szerint egy csapatnyi stalker megprуbбlt eljutni a Zуna kцzepйhez! Egyesek szerint sikerьlt nekik, mбsok szerint nem, de abban mindenki egyetйrt, hogy valami kapcsolatnak kell lennie az ъtjuk йs a legutуbbi kisugбrzбs kцzцtt. Szerinted megtalбltбk a Kнvбnsбgteljesнtхt? Йs kнvбntak valamit?</text>
+	</string>
+	<string id="dm_cool_info_25">
+		<text>Valaki mesйlte, hogy egy egйsz frakciу veszett oda a Zуnбban. Hallottбl mбr a Monolitrуl? Nos, хk vйdelmeztйk a Zуnбt a tцbbi embertхl, de elindultak a Zуna kцzepe felй, nem sokkal a Kisugбrzбs elхtt. Azуta senki sem hallott rуluk, de nemrйg megjelent nйhбny igen agresszнv stalker a Perzselх irбnyбbуl, йs nem kйrdeztek semmit, csak цldцkцltek. Ezt onnan tudom, hogy a sajбt szememmel lбttam хket a katonai raktбrtelep kцrnyйkйn, szerintem elkйpzelhetх, hogy хk az eltыnt monolitiak. Kicsit sem lepхdnek meg, fхleg, hogy az egyenruhбik is nagyon hasonlуak voltak!</text>
+	</string>
+	<string id="dm_cool_info_26">
+		<text>A Kisugбrzбs уta minden megvбltozott. Mintha egy teljesen mбsik Zуnбban lennйk. A klбnok egymбssal harcolnak, minden bokor mцgцtt egy szцrny leselkedik, ъgy terьleteket kezdtьnk felderнteni, mнg a rйgi, ismert helyek megkцzelнthetetlenek lettek az anomбliбk miatt. Sхt, mйg ъjfajta relikviбkat is talбltunk... mit fыzhetnйk hozzб? Megint ъgy йrzem magam, mint egy ъjfiъ.</text>
+	</string>
+	<string id="dm_cool_info_27">
+		<text>Ma mondta valaki, hogy milyen rosszul megy a Kisugбrzбs уta a hadseregnek a raktбrtelepnйl. Ъgy tыnik, hogy a szabadok fenik a fogukat a terьleteikre, хk pedig csak annyit tehetnek, hogy visszahъzуdnak a bбzisukba йs imбdkoznak. A hadsereg meggyengьlt, de tudjбk, hogy a bбzisuk mйg kulcsfontossбgъ. A mбsik, amirхl beszйlnek, hogy a monolitiak visszatйrnek a kцzpontbуl. Pedig azt hittьk, hogy mind meghaltak! Olyan szнvesen talбlkoznйk eggyel! Biztos megkйrdeznйm, hogy milyen a kцzpontban.</text>
+	</string>
+	<string id="dm_cool_info_28">
+		<text>Hallottam valakitхl, hogy a Jantar-tу mцgцtt megnyнlt egy ъt a Vцrцs-erdхbe. Sok йrdekes dolgot mesйlnek rуla, pйldбul, hogy egyik naprуl a mбsikra lepte el a kцd, йs vцrцsцdцtt be az erdх. Amъgy azуta nagyon veszйlyes helynek szбmнt... rengeteg ember veszett oda, sхt, egy idх utбn az oda vezetх utak is eltыntek! Gondold бt mйg egyszer, ha oda akarsz menni!</text>
+	</string>
+	<string id="dm_cool_info_29">
+		<text>Haver, annyi minden tцrtйnik, nem is bнrom kцvetni! Azt hittem, hogy Jantar mбr az ismert Zуna peremйn van, de a Kisugбrzбs annyira erхs volt, hogy utakat nyitott meg a Vцrцs-erdхbe йs Limanszkba, az elveszett vбrosba! Nйhбny srбc elindult arrafelй, a gyбron keresztьl mentek, ezйrt sajnos nem tudom, hogy vйgьl eljutottak-e odбig. Valami olyasmit is hallottam, hogy a Szolgбlat йs a Szabadsбg, a Zуna kйt legerхsebb klбnja egymбssal kьzdenek Limanszk birtoklбsбйrt.</text>
+	</string>
+	<string id="dm_intro_96">
+		<text>Mбr megint te? Mesйlj, mi ъjsбg?</text>
+	</string>
+	<string id="dm_intro_97">
+		<text>Szнvembхl ьdvцzцllek, stalker!</text>
+	</string>
+	<string id="dm_intro_98">
+		<text>Szevasz, srбc!</text>
+	</string>
+	<string id="dm_intro_99">
+		<text>Hellу! Mit szeretnйl?</text>
+	</string>
+	<string id="dm_intro_100">
+		<text>Kereskedni akarsz, vagy munkбt kйrsz?</text>
+	</string>
+	<string id="dm_intro_101">
+		<text>Lбtom, informбciуra szomjazol. Kйrdezz csak, a legjobb tudбsom szerint fogok vбlaszolni!</text>
+	</string>
+	<string id="dm_intro_102">
+		<text>Hogy vagy, haver?</text>
+	</string>
+	<string id="dm_intro_103">
+		<text>Igazбn Szabad ьdvцzletem egy igazi szabad stalkernek!</text>
+	</string>
+	<string id="dm_intro_104">
+		<text>Stalker!</text>
+	</string>
+	<string id="dm_intro_105">
+		<text>Lбtom, ezernyi kйrdйsed van. Kйrdezz hбt!</text>
+	</string>
+	<string id="dm_about_130">
+		<text>Ez itt egy kцzponti helye a Zуnбnak - innen megkцzelнtheted a Perzselхt, a Vцrцs-erdхt, Limanszkot, йs ki tudja, mйg mit... Van a kцzelben egy rйgi katonai bбzis, ahova nem sokkal a nagy kisugбrzбs elхtt telepьlt be a hadsereg. Manapsбg legfeljebb kцrьlbelьl hъsz emberьk tarthatja a frontot. Ha elfoglalnбnk a bбzist, azzal az ellenхrzйsьnk alб vonnбnk a kцrnyezх terьleteket! Majd segнtьnk evakuбlni a katonбkat, ha йrted, mire cйlzok...</text>
+	</string>
+	<string id="dm_about_131">
+		<text>Az йszakra vezetх ъt gyakorlatilag jбrhatatlan az Agyperzselх miatt. De ez mintha nem zavarnб a Monolit harcosokat, akik az utуbbi idхben nem tъl barбtsбgosak. Elхszцr lхnek, utбna meg lustбk kйrdezni. Ha dйlre mйsz, a Sцtйtvцlgybe jutsz, nyugatra pedig a Vцrцs-erdхbe. Kйtsйg kнvьl nem a Zуna legszebb helye, de legalбbb nem lцvцldцznek ott annyit. Egy utat is talбltak az erdхn tъl, ami Limanszkba vezet. Kicsi vбros, de stratйgiailag hatalmas a jelentхsйge, a szolgбlatosokkal ezйrt is ontjuk egymбs vйrйt.</text>
+	</string>
+	<string id="dm_about_132">
+		<text>Rйgen egy katonai bбzis йs raktбrtelep volt itt, de megszenvedtйk a kisugбrzбst. A tъlйlхknek mбr nem olyan nagy a pofбjuk - a bбzisukban bujkбlnak a stalkerek elхl, ki se merik dugni a kйpьket. Az evakuбlбsukat kйrvйnyezik a fхhadiszбllбstуl, de senki sem akar segнteni nekik. Talбn nem csak itt bent, de a Zуnбn kнvьl sem kedvelik хket. Vagy lehet, hogy egyszerыen nem jut ki a rбdiуjel. Azйrt, valahol sajnбlom a szegйny цrdцgцket - tudom, hogy patkбny az цsszes, de a patkбnyoknak is meg kйne vйdeniьk a sajбtjaikat.</text>
+	</string>
+	<string id="dm_about_133">
+		<text>A raktбrtelep sokбig a hadsereg kezйben volt, de a legutуbbi kisugбrzбs mindent megvбltoztatott. Annyira erхs volt, hogy alig maradtak tъlйlхk, fхleg azok maradtak meg, akik a bбzisban bъjtak el. Akik a szabadban voltak, mind meghaltak! Hogy honnan tudom? Hбt, testvйr, a Szabadsбgnak egy hнrszerzх hбlуzata is van, йs most mi uraljuk a helyzetet! A magбnyos stalkerek pedig цsszefogtak, hogy megбllнtsбk az Agyperzselх szцrnyeit.</text>
+	</string>
+	<string id="dm_about_134">
+		<text>Amikor elхszцr jцttьnk ide, teljes volt a zыrzavar. A hadsereg feladta a Hatбr vйdelmйt, йs beбstбk magukat a bбzisukba. A baj csak az, hogy a Hatбrt vйdeni kell, kьlцnben betцrnek a szцrnyek йs kicsinбlnak mindenkit. Ezйrt most mi magunk prуbбljuk feltartani хket, йs szьksйgьnk is van minden segнtsйgre, mert ha a Hatбrt elveszнtjьk - a szenvedйs elkerьlhetetlen lesz.</text>
+	</string>
+	<string id="dm_about_135">
+		<text>Van egy rйgi katonai bбzis a dombon, remйljьk, hogy hamarosan mбr a miйnk lesz! Ha egy kicsit tovбbb mйsz, ott egy tanya nйhбny йpьlettel, йs van egy viskу a radioaktнv mocsбrnбl. A kцrnyйken nincs sok mбs dolog, csak nйhбny, elhagyatott falu, meg a tбmaszpontjaink. A fontosabbak a Vцrцs-erdхbe йs a Sцtйtvцlgybe vezetх utak mentйn vannak. A stalkereknek maguknak kell vйdeniьk a Hatбrt: vissza kell verniьk a monolitiak йs a mutбnsok hullбmait! Kicsit meglep a dolog - eddig csak azt lбttam, hogy a stalkerek kizбrуlag a pйnz remйnyйben kйpesek цsszefogni.</text>
+	</string>
+	<string id="dm_about_136">
+		<text>Ha йszakra mйsz, a Hatбrhoz jutsz, ahol a stalkerek prуbбljбk tartani magukat a Perzselх mutбnsai ellen. A Hatбrtуl jobbra van egy mocsбr, йs egy cцlцpцkцn бllу faviskу. Kerьld el azt a helyet, mert rohadt erхs ott a sugбrzбs! Ha kцveted a mocsбrt, egy katonai bбzishoz йrsz. Egyйbkйnt a nyugati бllomбsunk vйdi a Vцrцs-erdхbe йs Limanszkba vezetх utat - jelenleg mindegyik klбn arra a helyre pбlyбzik - a dйli бllomбsunk pedig a Sцtйtvцlgyet хrzi.</text>
+	</string>
+	<string id="dm_about_137">
+		<text>Itt minden nagyon gyorsan vбltozik. A hadsereg raktбrtelepйt hamarosan a Szabadsбg raktбrtelepйnek fogjuk hнvni. Magбnyos stalkerek хrkцdnek az бllomбsokban йs a megerхsнtett pozнciуkban, amelyek a legfontosabb ide vezetх utakat vйdik. Йszakra van a Hatбr, ott a Zуna kцzepйbхl elхretцrх mutбnsokat бllнtjбk meg. Mйg szerencse, hogy a stalkerek хrzik a Hatбrt - kellemetlen lenne a helyzet, ha nem хk lбtnбk el ezt a feladatot. A nyugati бllomбsunk хrzi a Vцrцs-erdхn keresztьl Limanszkba vezetх utat, a dйli pedig biztosнtja a biztonsбgos бtjбrбst a Sцtйtvцlgybe. Ugye, jelenleg ott van a bбzisunk. Ez a hely tele van mindenfйle stalkerekkel - йlvezik a szabadsбgot, amit a hadsereg visszaszorнtбsбval tartunk fent, mert azok beбstбk magukat a bбzisukba. Ъgy tudom, jуfйle relikviбkat йs hasznos holmikat lehet talбlni az elhagyatott falvakban йs tanyбkban.</text>
+	</string>
+	<string id="dm_about_138">
+		<text>Miutбn a hadsereg elvesztette a fцlйnyйt, rengeteg stalker йrkezett a terьletre, abban a remйnyben, hogy majd tъljutnak az Agyperzselхn. Idiуtбk! Йn mondom, бtjutni a Perzselхn egyszerыen lehetetlen! Akik megprуbбltбk, sosem tйrtek vissza! A Szabadsбg meg azйrt jцtt, hogy kiыzzйk a sereget, йs бtvegyйk a bбzisukat. Vйgьl is, ha mi akarjuk tartani a Hatбrt, szьksйgьnk van egy kцzeli bбzisra is.</text>
+	</string>
+	<string id="dm_about_139">
+		<text>Ez a hely az igaz stalker testvйrisйg otthona! A legjobbak mбr a hadsereg raktбrtelepйnйl gyьlekeznek, йs egy utat keresnek, ami megkerьli a Perzselхt. Nagy a lelkesedйs, йs mindenkinek van egy, kettх, esetleg hъsz kнvбnsбga, amit majd elmondana a Kнvбnsбgteljesнtхnek, ha elйrik a Zуna kцzepйt. Barmok! Annyira azйrt nem hьlyйk, hogy ne jussanak el a raktбrtelepig, de nem kйpesek belбtni, hogy a Perzselхn tъl csak a halбl vбrja хket. Sokkal hasznosabb lenne, ha inkбbb a Hatбrnбl segнtenйnek nekьnk, mert ha elvesztjьk azt a helyet, akkor mбr csak maga a Kнvбnsбgteljesнtх menthet meg minket!</text>
+	</string>
+	<string id="dm_about_140">
+		<text>Percenkйnt vбltoznak a dolgok. A Perzselх felхl fanatikus monolitiak йs zombik tбmadnak, aztбn vannak ezek rбdiуbeszйlgetйs-rйszletek, amiktхl kiver a frбsz. Szerintem, a Kisugбrzбs idejйn rengeteg ember tыnt el ezen a kцrnyйken, de ahelyett, hogy meghaltak volna, inkбbb csak elvesztek, ha йrtesz engem. Mintha semmi sem tцrtйnt volna, egyszerыen csak nem tudnak kijutni. Talбn egy ъjfajta anomбlia, amibхl nincs menekvйs... ki tudja? Sajnбlom szegйnyeket, de fogalmam sincs, hogy segнthetnйk rajtuk.</text>
+	</string>
+	<string id="dm_action_info_105">
+		<text>Csak annyi a dolgunk, hogy tartsuk a Hatбrt, йs kiыzzьk a hadsereget a bбzisukbуl. A vezetхnk egy rуkбnбl is ravaszabb - nekem pйldбul eszembe sem jutott, hogy mennyivel kцnnyebb volna хrizni a Hatбrt, ha lenne egy kцzeli bбzisunk. Talбn ezйrt vezeti х a szabadokat, йn pedig kцvetem. De legalбbb nem nyomja annyi gond a vбllam, йs mindenki leszarja, ha az asztal alatt fetrengek. </text>
+	</string>
+	<string id="dm_action_info_106">
+		<text>A legjobb tudбsunk szerint хrizzьk a Hatбrt! A Kisugбrzбs utбn a hadsereg feladta a vйdбllбsait, нgy annyi szцrny tudott бttцrni, hogy mйg mi, a Sцtйtvцlgyben is a nadrбgunkba szartunk. Ekkor kezdte el szervezni a fхnцkьnk az expedнciуt. A mбsik йrdekes dolog, hogy visszatйrtek az elsх monolitiak, az eltыnt osztag tagjai a Hatбr mцgьl. Talбn mйgsem "tыntek el" annyira, mint mi azt gondoltuk.</text>
+	</string>
+	<string id="dm_action_info_107">
+		<text>A felderнtх osztagunkat keresem. A Kisugбrzбs elхtt erre jбrtak, de azуta senki sem lбtta хket. Nйha fogunk nйhбny tцredйket a rбdiуadбsaikbуl, rendszeresen segнtsйget kйrnek, йs jelentik, hogy vйszesen fogy az ellбtmбnyuk. Nagyon furcsa - a kцzelben van az eltыnt osztag, mйg a katonai bбzis tornyбt is lбtjбk, de hiбba indulnak bбrmerre, egy lйpйst sem haladnak, mintha egy Mцbius-szalagon ragadtak volna. Szуval, itt vagyok, йs azon tцrцm a fejem, hogy vajon mit tehetnйk.</text>
+	</string>
+	<string id="dm_action_info_108">
+		<text>Kцtцttьnk egy aprуcska megбllapodбst a hadsereggel. Хk megkapjбk a lхszerьnket, mi meg a bбzisukat. Szerintem korrekt. A srбcokkal nagyon kemйny "alkupartnerek" vagyunk.</text>
+	</string>
+	<string id="dm_action_info_109">
+		<text>Ha йppen nem harcolunk, ami mondjuk elйg ritka eset, akkor бltalбban egy tбbortыznйl ьlьnk йs tцrtйneteket, vicceket mesйlьnk, meg persze piбlunk. Ha vйgeztьnk itt йs Limanszkban - a Zуna kйt йrintetlen terьletйn - utбna talбn kйpesek leszьnk eljutni a Zуna kцzepйbe! Onnan jцnnek a monolitiak.</text>
+	</string>
+	<string id="dm_action_info_110">
+		<text>Jуl йrzem magam: evйs-ivбs, szуrakozunk-mulatunk, йs sok haver van itt. Ki tudhatja, hogy mi tцrtйnik velem mбsnap, a kцvetkezх уrбban, vagy mйg abban a percben? Talбn beletйvedek egy anomбliбba, vagy eltalбl egy golyу. Rцvid az йlet, ki kell hasznбlni, amнg lehet!</text>
+	</string>
+	<string id="dm_action_info_111">
+		<text>Hхs akarok lenni! figyelembe vйve a Szabadsбg jelenlegi helyzetйt, kцnnyen fel lehetne kapaszkodni a klбn ranglйtrбjбn, йs a harci hхstettekkel biztosнthatod a helyed a tцrtйnelemkцnyvekben! De okosan kell hхsnek lenni, kьlцnben csak egy bнborszнv medбlt kapsz. Szуval nem szabad a hбtsу sorokban bujkбlni, de a darбlуba sem йrdemes berohanni!</text>
+	</string>
+	<string id="dm_action_info_112">
+		<text>A Sцtйtvцlgybхl jцttem, hogy borsot tцrjek a hadsereg orra alб! Kell egy kis izgalom йs kцrnyezetvбltozбs - kezdtem belebetegedni, hogy nem jбrok semerre!</text>
+	</string>
+	<string id="dm_action_info_113">
+		<text>A parancsnok utasнtбsait kцvetem. Hбt azt hitted, hogy csak a Szolgбlat az egyetlen klбn, ahol parancsokat osztanak? Mi is tudunk fegyelmezettek lenni, ha megkнvбnja a helyzet. Csak a hьlyйk hiszik azt, hogy a Szabadsбg kizбrуlag drogosokat йs piбsokat tцmцrнt! Gondolj csak bele, ha ez igaz lenne, a klбnunk mбr rйg a mъlt homбlyбba veszett volna!</text>
+	</string>
+	<string id="dm_action_info_114">
+		<text>Mindenki harcolni indult, mit tehettem volna? Nem vagyok gyбva, sem egy rohadt бrulу! Egy kцzцs ьgyйrt harcolunk! Megvan, mikor lehet baromkodni, йs megvan, hogy mikor kell komolynak lenni. Йs most egy pillanatra sem pihenhetьnk!</text>
+	</string>
+	<string id="dm_action_info_115">
+		<text>Йn harcolok! Hogy kik ellen? Hбt az ellensйgeink ellen! Mi nem egy csapatnyi anarchista vagyunk - mi alбvetjьk magunkat a klбnunk hierarchiбjбnak! Talбn nem tыnik annyira kiйpнtettnek, mint a hadseregй vagy a Szolgбlatй, de ennek az az oka, hogy mi azйrt csatlakoztunk, hogy йlvezzьk a szabadsбgot йs egyenlхsйget! De ha van valami, bбrmikor цssze tudjuk szedni magunkat йs elvйgezzьk a piszkos munkбt is! Szуval jуl figyelj, barбtom: most megnйzheted, milyenek bevetйs kцzben a szabadok!</text>
+	</string>
+	<string id="dm_cool_info_30">
+		<text>A szabadokra mostanбban rбjбr a rъd. Alig sikerьlt megtalбltuk a tйglбt, йs rendezni a sorainkat a fosztogatуk tбmadбsai utбn, mбris elйrhetхvй vбlt Limanszk, tъl a Vцrцs-erdхn; a hadsereg pedig egyre gyengьl, йs kezdik elveszteni a raktбrterьletet. Harcoltunk itt is, ott is, most meg tцbbfrontos hбborъt vнvunk. Remйlem, nem osztjuk meg tъlsбgosan az erхinket.</text>
+	</string>
+	<string id="dm_cool_info_31">
+		<text>A Kisugбrzбs уta mintha buborйkokra oszlott volna a Zуna. Rengeteg ember tыnt el a kцrnyйken, йs ъgy tыnik, mintha kijбrat nйlkьli tйrbuborйkba szorultak volna - bбrmerre is mennйnek, nem tudnak haladni! Nйhбny nagyon jу barбtom is ilyen buborйkokba kerьlt, йs ha felmйsz egy elйg magas helyre, hallhatod a sikolyaikat, ahogy segнtsйgйrt esedeznek! Te pedig nem tehetsz semmit, hacsak nem akarsz csatlakozni hozzбjuk.</text>
+	</string>
+	<string id="dm_cool_info_32">
+		<text>A kisugбrzбs utбn kiderьlt, hogy rengeteg fontos, a Zуna kцzйppontjбba vezetх ъt keresztьlhalad a raktбrtelepen. Az elхrekьldцtt egysйgeink ma йrtйk el Limanszkot, egy vбrost, amirхl mйg senki sem hallott ezelхtt!  Talбn mбs helyekre is el lehet onnan jutni, de leginkбbb azt remйlem, hogy vйgre valaki megfejti a Perzselх titkбt, йs megnyitja az йszakra vezetх utat!</text>
+	</string>
+	<string id="dm_cool_info_33">
+		<text>Nemrйg sikerьlt elkapnunk azt a patkбnyt, aki kiszivбrogtatta az informбciуt a fosztogatуknak! Azok a mocskok йltek a lehetхsйggel, йs rendszeresen lemйszбroltбk az embereinket. Nem fogod elhinni, hogy ki volt az! Pontosan, a parancsnokunk! Lбtom, nem lepett meg tйged - ki mondta el? Minden, elйg aljas egy szemйtlбda volt, hogy elбrulta a sajбt klбnjбt! Sajnбlom, hogy nem йn nyнrtam ki a mocskot!</text>
+	</string>
+	<string id="dm_cool_info_34">
+		<text>Haver, kezdjьk felszabadнtani a Zуnбt, йs mindenhol ismerni fogjбk a klбnom nevйt! A szolgбlatosokat kiverjьk Limanszkbуl йs ezt a bбzist is megszerezzьk! Akkorra mбr kйpesek leszьnk бttцrni a Perzselхn, йs elindulhatunk йszakra. Ha a monolitiaknak sikerьlt, nekьnk miйrt ne menne? Nem tudom, mit talбlhattak ott, de ъgy kьzdenek йrte, mintha valami rettentх fontos dolog lenne.</text>
+	</string>
+	<string id="dm_cool_info_35">
+		<text>Testvйr, a nagy vбltozбsok kapujбban бllunk! A katonai raktбrtelep, йs ameddig ellбtsz, az mind a szabadok tulajdonбba fog kerьlni! Mбr a mi бllomбsaink ellenхrzik a fontosabb utakat, йs mбr nincs messze, hogy bevegyьk a katonai bбzist! Van egy ъt, ami йszakra vezet, egyenesen a Zуna kцzepйbe. Ha elintйztьk az Agyperzselхt, mi lehetьnk az elsхk, akik kiderнtik, hogy tйnyleg lйtezik-e az a bizonyos... Kнvбnsбgteljesнtх.</text>
+	</string>
+	<string id="dm_intro_106">
+		<text>Hellу idegen!</text>
+	</string>
+	<string id="dm_intro_107">
+		<text>Hellу stalker, ьdvцzцllek!</text>
+	</string>
+	<string id="dm_intro_108">
+		<text>Hй!</text>
+	</string>
+	<string id="dm_about_141">
+		<text>Az Agyperzselх elхtt ez az utolsу lakott terьlet a Zуnбban. Csak az хrьltek mennek tovбbb, de vissza mбr хk sem tйrnek. Mбr a raktбrtelep kцrnyйkйn is nagyszбmban fordulnak elх a vйrszomjas szцrnyek йs halбlos veszйlyek, de hogy mi van azon tъl, azt senki sem tudja. A Vцrцs-erdхben nemrйg felfedeztek egy utat az eddig felderнtetlen terьletekhez. Azt is hallottam, hogy most derнtenek fel egy kis vбrost, de magam mйg nem jбrtam ott.</text>
+	</string>
+	<string id="dm_about_142">
+		<text>Szerintem a legfontosabb dolog a kцrnyйken a katonai bбzis. A szabadok el akarjбk foglalni a hadseregtхl, mert a sereg nagyon meggyengьlt a legutуbbi Kisugбrzбs уta. Van a kцrnyйken nйhбny falu is. Nincs azokban semmi kьlцnцs, de talбn akad valamilyen relikvia a rйgi kunyhуkban. Йszakra van a Hatбr, a stalkerek йpнtettйk, hogy feltartsбk az Agyperzselх felхl tбmadу szцrnyeket. Ha nem tetszik ez a hely, csak menj dйlre a Sцtйtvцlgybe, vagy ha vйgig akarod nйzni, ahogy az ъj terьletekйrt vнvott csatбban a szolgбlatosok ontjбk a szabadok vйrйt, akkor menj nyugatra a Vцrцs-erdхbe!</text>
+	</string>
+	<string id="dm_about_143">
+		<text>A legnagyobb dolog, hogy egy kis csapatnyi stalker prуbбlja feltartуztatni a Perzselх felхl tбmadу szцrnyeket йs zombikat. A szabadok йs a szolgбlatosok fх erхi valahol a Vцrцs-erdх kцrnyйkйn harcolnak. Ъgy tudom, felfedeztek egy utat, ami a Zуna kialakulбsa elхtt йpьlt vбrosba, Limanszkba vezet.</text>
+	</string>
+	<string id="dm_about_144">
+		<text>Kezd forrуsodni a helyzet, haver! A nagy Kisugбrzбs utбn a stalkerek talбltak egy utat ami keresztьl megy a Vцrцs-erdхn, egyenesen Limanszkba! Az ъt elhalad a hadsereg raktбrtelepйnйl is, amint ez kiderьlt, egybхl bevonultak a szolgбlatosok йs a szabadok is. A Hatбrnбl is kezd egyre izgalmasabb lenni a dolog, mert mбr nem csak a szцrnyek jelentik a problйmбt. Ha hiszed, ha nem, mбr a monolitiak is prуbбlnak бttцrni rajtuk... Pedig idбig azt sem hittem el, hogy valaha lйteztek!</text>
+	</string>
+	<string id="dm_about_145">
+		<text>Manapsбg olyan gyorsan vбltozik a Zуna, hogy sok minden, amit tudtam rуla, talбn mбr nem is ъgy van! Rбadбsul nem is vagyok itt olyan rйgуta, szуval most kicsit elveszettnek йrzem magam. Azt mondjбk, hogy йszakra van valami Agyperzselх, a Vцrцs-erdх йs Limanszk pedig nyugatra vannak. Az a legъjabb, hogy a szabadok йs a szolgбlatosok ott цldцsik egymбst.</text>
+	</string>
+	<string id="dm_about_146">
+		<text>Amikor idejцttьnk, addigra mбr rendesen megdolgoztбk a szabadok a hadsereget, de nem ъgy tыnt, mintha ez nagyon megviselte volna хket. Most kйt szйk kцzt a pad alб estьnk - egyik oldalt sem akarjuk felbхszнteni, viszont egyik sem tud nyъjtani nekьnk semmit. Hmm, hбt, nagyon nem ezйrt jцttьnk ide.</text>
+	</string>
+	<string id="dm_about_147">
+		<text>Ami itt folyik, az mind a katonai bбzis miatt van. Stratйgiailag kulcsfontossбgъ helyen van, onnan lehet a legjobban felьgyelni a kцrnyezх terьleteket. A tanyбk йs falvak, amiket lбtsz, цssze sem hasonlнthatуak a bбzissal. Ezйrt tesz meg mindent a Szabadsбg, hogy бtvegyйk az irбnyнtбst - mбr бllomбsokat is felбllнtottak a Sцtйtvцlgybe йs a Vцrцs-erdхbe vezetх utakon. Tudjбk a srбcok, hogy mit csinбlnak! Az йszaki бllomбst jelenleg magбnyos stalkerek vйdik, prуbбljбk visszaverni a mutбnsok tбmadбsait, de ъgy gondolom, hogy amint a Szabadok elfoglaltбk a bбzist, egybхl bevonulnak arra a terьletre is.</text>
+	</string>
+	<string id="dm_about_148">
+		<text>Ъgy tыnik, hogy hamarosan ez is a Szabadsбg terьlete lesz. Miutбn megoldottбk a belsх problйmбikat, nagyon odatettйk magukat a harcban! Jelen vannak itt is йs Limanszkban is, meg mйg a Sцtйtvцlgyben is tartjбk magukat. Azйrt mondom, hogy "mйg", mert szerintem tъlsбgosan is szйtosztottбk az erхiket: egyszerre kьzdenek Limanszkйrt йs a katonai bбzisйrt, meg persze a sцtйtvцlgyi fхhadiszбllбsukat is vйdeni kell. Erхs a gyanъm, hogy a fosztogatуk megprуbбljбk kiыzni хket onnan. Gondolj csak bele: ha csak egy okos fosztogatу is lйtezik, aki бtlбtja a helyzetet, az ki tudnб hasznбlni az elхnyьket йs rajtaьthetnйnek a szabadokon! A helyьkben йn biztos ezt tennйm.</text>
+	</string>
+	<string id="dm_about_149">
+		<text>Gonosz varбzserх jбrja бt ezt a helyet, йn mondom! Kцrbe-kцrbe jбrkбlunk, keressьk az elveszett barбtainkat, de eddig csak szцrnyekbe botlottunk. Ha egy magasabb helyen бllsz, el tudsz csнpni foszlбnyokat a rбdiуzбsukbуl, de йrthetetlen, amit mondanak. Йs mйg csak most jцn a java! Mivel magyarбzod, hogy elхbukkantak a Hatбron tъlrуl a monolitiak? Egyszer lбttam az egyikьket. Sebesьlt volt, ьveges volt a tekintete, йs egy mondatot ismйtelgetett: "Vйdjйtek a Monolitot!" Amъgy szerintem nem йrzett fбjdalmat, de legalбbbis csak ъgy tudtuk lebeszйlni a tбrsam fojtogatбsбrуl, hogy beleeresztettьnk nйhбny tбrat. Hogy mit akarhatnak? Йs miйrt tйrtek vissza a Kisugбrzбs utбn? Nekem is csak kйrdйseim vannak, barбtom...</text>
+	</string>
+	<string id="dm_action_info_116">
+		<text>A fiainkat keressьk, akiket a legutуbbi Kisugбrzбs elхtt valahol erre lбttak. Ha felmegyьnk a dombokra, ьzenetfoszlбnyokat veszьnk a rбdiуn, de ezen kнvьl semmi nyom! Fogalmam sincs, merre kйne kezdeni a keresйst.</text>
+	</string>
+	<string id="dm_action_info_117">
+		<text>Mi gyakorlatilag egy mentхcsapat vagyunk, az egyik osztagunkйrt jцttьnk. A Kisugбrzбs valahol a kцrnyйken йrte хket, aztбn megszakadt velьk minden kapcsolat. Azйrt jцttьnk, hogy megtalбljuk a fiainkat... legalбbbis, ami maradt belхlьk.</text>
+	</string>
+	<string id="dm_action_info_118">
+		<text>Manapsбg mindenki a Zуna kцzйppontjбba pбlyбzik, meg akarjбk fejteni a titkait. Jу lenne vбlaszt kapni nйhбny kйrdйsre, mert tцbbek kцzt йn is azon dolgozom, hogy valahogyan tъljussunk az Agyperzselхn. Mindig ъjabb йs ъjabb цsvйnyekre bukkannak, biztosra veszem, hogy legalбbb az egyik egyenesen a Zуna szнvйbe vezet! Йn biztos nem leszek az elsх, aki beleveti magбt йs feltбrja az ъj utat - fйltem a tyъkszarost! De tudni szeretnйm, hogy mi folyik kцrьlцttьnk - remйlem, valaki rбtalбl az Igazsбgra!</text>
+	</string>
+	<string id="dm_action_info_119">
+		<text>Folyton hegyezem a fьlem, azzal a feladattal kьldtek minket ide, hogy keressьk meg az eltыnt osztagot. Valahol errefelй kaphatta el хket a Kisugбrzбs, azуta nem lбttuk хket. Rendszeresen prуbбlunk kapcsolatba lйpni velьnk, de mйg nem igazбn sikerьlt. Minden fыszбlat megvizsgбltunk a kцrnyйken, de semmi! Ha rб gondolok, kirбz a hideg.</text>
+	</string>
+	<string id="dm_action_info_120">
+		<text>Olyanok vagyunk, mint bбrki mбs - arra vбrunk, hogy egy kedves ember talбljon egy utat, ami megkerьli az Agyperzselхt. A kцnnyebbik ъton mennйnk a Zуna kцzepйbe, йs megszereznйnk magunknak a legjobb relikviбkat! Az se baj, ha nem mi jutunk oda elsхnek, mivel nekьnk sokkal jobbak lesznek az esйlyeink a tъlйlйsre. Nem vagyok gyбva, csak уvatos. Ha nagyobb leszel, megйrted.</text>
+	</string>
+	<string id="dm_action_info_121">
+		<text>Szellemeket keresek. Nem hiszed? Хszintйn szуlva, йn sem hittem volna el mбsoknak! Szуval az az alapja, hogy nйha fogjuk egy eltыnt szakasz rбdiуzбsбnak a rйszleteit. Mйg a hangokat is megismerjьk, de a srбcokat sehol sem talбljuk! Ьzenni sem tudunk nekik, йs azt sem tudjuk bemйrni, hogy honnan jцn a jel. Ezйrt mondtam, hogy szellemeket keresek... francba a Kisugбrzбssal!</text>
+	</string>
+	<string id="dm_action_info_122">
+		<text>Vбrom a fхnцk parancsait! Alacsonyabb rangъ vagyok, meg minden. Azйrt jцttьnk, hogy megmentsьk Lesij csapatбt, de nem egyszerы, mйg azt sem tudjuk, hol lehetnek a szerencsйtlenek! De ami mйg ennйl is rosszabb: a falu vнztбrozуjбnбl elvesztettьk a rбdiуsunkat. Abban a remйnyben mentьnk oda, hogy jobb lesz a vйtel, erre valami lбthatatlan polip elхugrott a semmibхl, йs vйgzett szegйnnyel! Lуszart se tudtunk csinбlni, minket nem kйpeztek ki a szцrnyek elleni harcra - manapsбg emberek ellen szoktunk kьzdeni.</text>
+	</string>
+	<string id="dm_action_info_123">
+		<text>Lesij csapata egy kiemelten fontos kьldetйst vйgzett a Kisugбrzбs elхtt - talбltak egy hihetetlenьl ritka relikviбt! Szуltunk is az ьgyfelьnknek, hogy ne izguljon, mбr ъton van az бru, de Lesij csak nem йrkezett meg. Mi zsoldosok vagyunk, megvannak a szabбlyaink - anйlkьl semmik sem lennйnk. A megbнzбsokat el kell vйgezni. Pont. Ha elcsesszьk a munkбt, a hнrnevьnket lehъzhatjuk a klotyуn, йs nem lesznek tцbbй komoly megbнzуink! Ъjra stalkerkйnt kellene jбrnunk a Zуnбt.</text>
+	</string>
+	<string id="dm_cool_info_36">
+		<text>Bбrcsak tudnйk mesйlni valamit! Mi zsoldosok vagyunk, haver. Kьldetйseket teljesнtьnk a Zуnбban, a sikereink pedig a gondos tervezйsen йs a kivбlу felkйszьltsйgьnkцn mъlnak.</text>
+	</string>
+	<string id="dm_cool_info_37">
+		<text>Hallottam, hogy ъjra felbukkant egy Monolit nevezetы stalker klбn, pedig хk elvileg eltыntek mбr egyszer. Egyszer csak lelйptek, mint azt sokan teszik, йs megindultak a Zуna kцzepe felй, megkeresni a Kнvбnsбgteljesнtхt. Hosszъ ideig semmit sem tudtunk rуluk, de most visszatйrtek. Egyйbkйnt senki sem цrьl a viszontlбtбsnak, mert csak hьlye jelmondatokat kiabбlnak йs mindenkinek nekiesnek, akit meglбtnak. </text>
+	</string>
+	<string id="dm_cool_info_38">
+		<text>Nemrйg felfedeztйk a Vцrцs-erdхn keresztьl Limanszkba vezetх utat, йs a szabadok mбr ott is vannak. A szolgбlatosok is prуbбlkoznak. Most, ahogy beszйlьnk, szerintem йpp vйrfьrdх zajlik ott, mert mindketten pбlyбznak a kis szar vбrosra, йs egyik klбn sem fog engedni. A Szabadsбg nagyon akar terjeszkedni - mйg a katonai bбzis bevйtelйvel is prуbбlkoznak! Nem szimpatizбlok a hadsereggel, de kicsit azйrt sajnбlom хket. Nagyon megsнnylettйk a Kisugбrzбst, most pedig a stalkerek akarjбk a vйrьket.</text>
+	</string>
+	<string id="dm_cool_info_39">
+		<text>Hallottam, hogy a Szolgбlat elйg nehezen tudta kezelni az agropromi mutбns-problйmбt. Valamit elrontottak a fцld alatt, aztбn az istennek sem bнrtбk visszaszorнtani a szцrnyeket! Pedig a kereskedхk mennyorszбga volt a hely, bбrmennyi lхszert el lehetett adni. Amъgy azt hallottam, hogy egy magбnyos stalker egyedьl oldotta meg a dolgot: elбrasztotta a csatornarendszert! Nem tudom, hogy tйnyleg нgy tцrtйnt-e, de ha igen, nagyon kemйny lehet az a csбvу! Kevйs az olyan ember, aki lemerйszkedik a mutбnsok barlangjбba, jуl bemutat nekik, йs mйg meg is ъssza a dolgot! Ha valaha is talбlkozok vele, venni fogok egy sapkбt, csak azйrt, hogy tiszteleghessek elхtte!</text>
+	</string>
+	<string id="dm_intro_109">
+		<text>Цrьlцk, hogy megismertelek, gyыrцtt kйpы!</text>
+	</string>
+	<string id="dm_intro_110">
+		<text>Hadd rбzzam meg a kezed, nagyfiъ!</text>
+	</string>
+	<string id="dm_intro_111">
+		<text>Ьdvцzцllek a raktбrtelepen!</text>
+	</string>
+	<string id="dm_about_150">
+		<text>A Zуnбnak ez a legvйgsх, felderнtett terьlete. Itt talбlod a katonai raktбrtelepet, de ha tovбbbmйsz, az Agyperzselхbe ьtkцzцl - azt mondjбk, hogy akik kapcsolatba kerьltek vele, azok mind az eszьket vesztettйk! Ez persze csak spekulбciу, mert akik odamentek, azok sosem tйrtek vissza. A raktбrteleprхl a Perzselхhцz vezetх ъton van a Hatбr, a feladata, hogy feltartsa a Zуna kцzepйbхl tбmadу szцrnyeket. A nagy Kisugбrzбs уta a monolitiak is felbukkantak. Kнvбncsi vagyok, mit akarhatnak errefelй... talбn el akarjбk pusztнtani azokat, akik fenyegetik a kitalбlt Monolitjukat?</text>
+	</string>
+	<string id="dm_about_151">
+		<text>A Kisugбrzбs utбn kiderьlt, milyen fбbуl faragtбk a hadsereget - feladtбk az бllomбsaikat, йs patkбnyok mуdjбra elbъjtak a bбzisukba! Mondjuk mбr kцrьlbelьl csak hъszan lehetnek, mivel nagyon kцzel vannak a kцzponthoz, szуval valahol хket is meg lehet йrteni. Amint a hadsereg elvesztette a raktбrterьlet felьgyeletйt, mindenki megszбllta a helyet!  Stalkerek, zsoldosok, a Szolgбlat йs a Szabadsбg. Egyйbkйnt цrьlцk, hogy a stalkereknek volt annyi eszьk, hogy цsszeбlltak vйdeni a Hatбrt. Ha nem tartanбk fel a mutбnsok йs a monolitiak hullбmait, azt mindenki megszenvednй, mйg a hadsereg is a Kordonnбl!</text>
+	</string>
+	<string id="dm_about_152">
+		<text>Gondolom, mбr mindenki mesйlt a katonai bбzisrуl йs a Hatбrrуl. Ezeken kнvьl nincs semmi a kцrnyйken, csak pбr falu йs tanya. Nincs mit mondani rуluk, van egy elhagyatott hбz, amit kivбlу bъvуhely, vagy akбr egy tбmaszpont is lehetne, persze, csak ha nem kцltцzik be egy mutбns. Vigyбzz velьk - szйp szбmmal akadnak a kцrnyйken!</text>
+	</string>
+	<string id="dm_about_153">
+		<text>Egy pбr percnyi aktнv Kisugбrzбs, йs a katonai raktбrtelep mбris a stalkerekй lett! A nagypofбjъ katonбk most bujkбlnak a szabadok elхl: visszamenekьltek a bбzisukba, йs ki sem merik dugni a kйpьket! A monolitiak sajnos nem ilyenek, azok mintha nem fйlnйnek senkitхl. Mind azt hittьk, hogy rйges-rйg meghaltak, pedig bizony йlnek йs kхkemйnyek - a Perzselх felхl jцnnek, йs lхnek mindenkire, aki mozog!</text>
+	</string>
+	<string id="dm_about_154">
+		<text>Nagyon furcsa dolgok tцrtйntek mostanбban. Most, hogy a sereget meggyengнtette a Kisugбrzбs, hordбkban йrkeznek a kьlцnfйle stalkerek! De mindenki a Zуna kцzepйbe akar jutni: egyesek ritka relikviбkat akarnak megkaparintani, mбsok a Kнvбnsбgteljesнtхt kutatjбk, megint mбsok egy idegen eredetы Monolitot keresnek... Szerintem mбr mind megbolondultak, talбn a Perzselх йpp most sьtцgeti a fejьket.</text>
+	</string>
+	<string id="dm_about_155">
+		<text>Rйszletesen beszбmolhatok neked bбrmirхl, йn mбr bejбrtam minden zegйt-zugбt a terьletnek, amikor mйg relikviбkat kerestem. A legfхbb tбjйkozуdбsi pont a katonai bбzis. Egy domb tetejйn йpьlt, szуval messzirхl is jуl lehet lбtni. Onnan йszakra van a Hatбr, a Sцtйtvцlgy pedig dйlre fekszik. Ha nyugtra vбgsz a falun keresztьl, akkor a Vцrцs-erdхbe jutsz. Van nйhбny tanya йs egy viskу is a mocsбrnбl, de a helyedben inkбbb elkerьlnйm - halбlos ott a sugбrzбs!</text>
+	</string>
+	<string id="dm_about_156">
+		<text>Йrtйkes dolgokat hagyott hбtra a hadsereg. Csak az zavar, hogy a szabadokй lesz minden, mert хk kokettбlnak a katonai bбzissal. Nekьnk csak nйhбny barikбdunk van a Perzselх felй vezetх ъton, meg persze az ъton heverх relikviбk is a mieink. Ja, tйnyleg, van nйhбny elhagyatott falu a kцrnyйken, ahova be is kцltцzhetsz, ha ъgy йrzed. Ha szerencsйd van, egy lбthatatlan, csбposfejы szobatбrsad is lesz!</text>
+	</string>
+	<string id="dm_about_157">
+		<text>Ezt a terьletet mбr kicsъszott a hadsereg kezйbхl. A szabadok egyszer s mindenkorra "elintйzik" ezt a katona-problйmбt, йs akkor itt is olyan jу lesz, mint a Sцtйtvцlgyben. Kцzben persze nekьnk is megvan a magunk dolga: vйdjьk a Hatбrt! Elйg volt egyszer lбtni, hogy mik jцnnek a Hatбr tъloldalбrуl, йs цrцkre elment a kedvem a kalandozбstуl. Hadd prуbбlkozzon inkбbb a tцbbi vesztes tъljutni a Perzselхn. Hadd keressйk a halбlukat.</text>
+	</string>
+	<string id="dm_about_158">
+		<text>A sцtйtvцlgyi Szabad bбzisban hallottunk a Hatбrrуl. Azt beszйltйk, hogy kiыztйk onnan a hadsereget, йs egyszerы stalkerek fogtak цssze, hogy megvйdjйk a terьletet a monolitiaktуl. Egy egйsz szakasz jцtt velьnk, segнteni akartunk a testvйreinknek, de vйgьl csak йn йrkeztem meg ide. Nйhбnyan letйrtek az ъtrуl, egyesek meghaltak, mбsok pedig egyenesen mentek tovбbb...</text>
+	</string>
+	<string id="dm_about_159">
+		<text>Egyre kevйsbй kйpes a hadsereg a terьlet ellenхrzйsйre. Nem is olyan rйg, a stalkerek elfoglaltбk a raktбrtelepet, йs a szabadokkal egyьtt a kezьkben van a terьlet цsszes stratйgiai pontja. Azйrt egyesьltьnk, hogy eredmйnyesebben tudjuk vйdeni a Hatбrt, йs vissza tudjuk verni az хrьlt monolitiakat, meg a rйmsйges mutбnsokat, amik a Radar felхl jцnnek. A Szabadsбg felьgyeli a nyugati йs a dйli rйszt, йs hamarosan a katonai bбzis is az цvйk lesz. Ja, zsoldosokat is lбttunk errefelй, asszem egy eltыnt osztagot keresnek, vagy valami ilyesmi.</text>
+	</string>
+	<string id="dm_action_info_124">
+		<text>Talбld ki! Zsбkmбnyt gyыjtцk. Itt mбr nem a hadsereg az ъr, azt tehetьnk, amit csak akarunk! Kйszьlхdцk, hogy a Zуna kцzepe felй vegyem az irбnyt. Persze, nйha be kell segнteni a Hatбrхrцknek is, de ez vйgьl is a sajбt biztonsбgom szolgбlja. Mбsrйszt, ha vйge a lцvцldцzйsnek, цssze lehet szedni egy csomу lхszert, meg elejtett fegyvereket.</text>
+	</string>
+	<string id="dm_action_info_125">
+		<text>Azйrt jцttem, hogy a Hatбrnбl harcoljak! A Szolgбlat ivуjбban mondta egy barбtom, hogy itt бllнtottбk fel a mutбnsok elleni vйdvonalat. Azt mondta, hogy mindig van mire lхni, szуval mбr aznap este elindultam, hogy ki ne maradjak a bulibуl!</text>
+	</string>
+	<string id="dm_action_info_126">
+		<text>Mindig is vonzottak az ъj terьletek. A Zуnбba is azйrt jцttem, mert belefбradtam a kinti unalmas йletbe, itt viszont mindig akadnak felfedezйsre vбrу ъjdonsбgok! Na meg persze a pйnz. Enni kell, йs lхszer nйlkьl sem jutsz messzire, de a zsбkmбnyйrt mindig fizetnek valamennyit. Remйlem, valaki kitalбlja, hogy lehetne megkerьlni a Perzselхt, mert az elsхk kцzцtt akarok lenni, akik eljutnak a Zуna kцzepйbe! Mert van egy szent kнvбnsбgom - azt akarom, hogy tыnjцn el a Zуna!</text>
+	</string>
+	<string id="dm_action_info_127">
+		<text>Prуbбlok jуban lenni a szabadokkal. Velьk akartam menni Limanszkba, de sajnos kйsve йrkeztem a Sцtйtvцlgybe, хk meg mбr elmentek addigra. Asot mondta, hogy ezen az ъton fognak menni, de mire ideйrtem, mбr a Vцrцs-erdхt is megjбrtбk! Mбr esйlyem sincs, hogy utolйrjem хket. egyedьl nem fogok nekivбgni, йs egy csoportot sem ismerek, akik arra akarnбnak menni.</text>
+	</string>
+	<string id="dm_action_info_128">
+		<text>Csak kifъjom magam, mielхtt nekivбgnйk a Vцrцs-erdхnek. Tudni akarom, hogy mi van az erdхn tъl, Limanszkban! Kit йrdekel, ha eddig mйg senki sem tйrt vissza? Talбn azйrt nem, mert talбltak valamit. Vegyьk pйldбul a monolitiakat: hуnapok уta nem hallottunk rуla, most meg hirtelen elхkerьltek... Isten tudja, miket talбlhattak!</text>
+	</string>
+	<string id="dm_action_info_129">
+		<text>Ьres kйzzel tйrtem vissza a Vцrцs-erdхbхl. Nйhбny barбtommal megprуbбltunk keresztьlmenni, aztбn ok nйlkьl mindenkinek inбba szбllt a bбtorsбga. Ъgy fйltьnk, hogy a Hatбrig futottunk! Csoda, hogy senki sem lйpett egy anomбliбba. De a legviccesebb, hogy nem tudjuk, mitхl ijedtьnk meg! Bбr kйtsйg kнvьl rйmisztх az az erdх.</text>
+	</string>
+	<string id="dm_action_info_130">
+		<text>Be akarom jбrni az egйsz Zуnбt! Most йrtem a raktбrtelephez, de voltam mбr a Kordonnбl, az Ingovбnyban, Agropromban йs megjбrtam a Sцtйtvцlgyet is! Sхt, egy ideig a fosztogatуk rabszolgбjakйnt Szemйtdombon is voltam. Ha bejбrtam ezt a helyet, innen is tovбbbбllok.</text>
+	</string>
+	<string id="dm_action_info_131">
+		<text>Kevйs az olyan terьlet, ami nincs mйg a klбnok vagy valamelyik frakciу kezйben, йs Agropromban vagy Szemйtdombon nincs helye a magбnyos stalkereknek. Meg ott van Limanszk, - csak nemrйg fedeztйk fel, de mбris milyen sokan indultak oda! Viszont itt, a raktбrtelepen mбs a helyzet. Nagyon bizonytalan a szituбciу: mбr nem a hadseregй a terьlet, de mйg a Szabadsбg sem erхsнtette meg a jelenlйtйt. A mбsik dolog, hogy nagyon kцzel van az ъjonnan felfedezett terьletekhez, amik az йleted lehetхsйgйt jelentik - mert ott talбlhatуak a legritkбbb relikviбk.</text>
+	</string>
+	<string id="dm_action_info_132">
+		<text>Egy йrtйkes relikviбt keresek. Szidorovics kйrte, hogy szerezzek neki egyet, de nem talбlni sem a Kordonnбl, sem a Sцtйtvцlgyben, Szemйtdombon zsбkmбny utбn kutatni pedig rohadt macerбs, nem йrdemes belevбgni. Agropromot a kйt stalker klбn fosztotta ki teljesen, fхleg, miуta egy stalker elбrasztotta a csatornarendszerьket. Sok idхt szabadнtott fel a Szolgбlatnak, mivel azуta nem kell a mutбnsok ellen kьzdeniьk. Viszont ezen a helyen van esйlyem megtalбlni, amit keresek, mйg a nagy mozgolуdбs ellenйre is.</text>
+	</string>
+	<string id="dm_action_info_133">
+		<text>A Sцtйtvцlgybхl kьldtek, egy ьzenetet vittem a szabad csapatok helyi parancsnokбnak. kifizettek, йs йn ъgy dцntцttem, hogy a kцrnyйken maradok. Miйrt is ne? Kijцvцk a srбcokkal, йs mйg senki sem prуbбlja rбnk kйnyszerнteni az akaratбt. Persze, tыzpбrbajok йs anomбliбk gyakran elхfordulnak, йs a monolitiak miatt az йjszakбink sem nyugodtak, de hбt mi mбst is vбrhatnбnk a Zуnбtуl?</text>
+	</string>
+	<string id="dm_action_info_134">
+		<text>Йszakra akarok menni, keresztьl a Perzselхn. Ъgy hallottam, hogy a monolitiaknak sikerьlt, nйhбny stalker pedig elйrte a Kнvбnsбgteljesнtхt, йs йpsйgben vissza is tйrtek! Mondjuk azt senki sem tudja, hogy minek. Talбn kifogytak a lхszerbхl, vagy tъl nagy sugбrzбsdуzist kaptak. De nem szбmнt - ha mбsoknak sikerьlt, nekem miйrt ne menne? Йs kit йrdekelnek a tцbbiek tanбcsai?</text>
+	</string>
+	<string id="dm_action_info_135">
+		<text>Lбtom, stalker, te is rйgуta jбrod a Zуnбt. Szerintem mбr igazбn megtanulhattad volna, hogy nem bцlcs dolog mбsokat ilyen kйrdйsekkel zaklatni. Semmi kцzцd hozzб. Ha el akarnбm mondani, megtettem volna magamtуl. Majd megosztom azzal, aki йrdemes rб. Kйrdezz inkбbb valami mбst!</text>
+	</string>
+	<string id="dm_cool_info_40">
+		<text>Miutбn elkezdtek visszatйrni a monolitiak a Hatбron tъlrуl, eszьnkbe jutott, hogy jу lenne egyet elkapni йs kifaggatni, hogy mi hogy juthatnбnk бt a Perzselхn, йs hogy йrhetnйnk el a Zуna kцzepйt. Nem mondom, sok йletbe йs mйg tцbb lхszerbe kerьlt, de elfogtuk az egyikьket! Egy fйl tбrat eresztettьnk a mellkasбba, de egйsz jуl bнrta: hцrgцtt, kьzdцtt, йs megprуbбlta elkapni a vezйrьnket! Kйrtьk szйp szуval, kйrtьk csъnyбn, de semmi hasznosat nem mondott, folyamatosan csak azt kiabбlta: "Vйdjйtek a Monolitot!"... Odaбt biztos tцrtйnt velьk valami. Sajnos nem sikerьlt kiderнtenьnk, hogy mikйnt juthatnбnk бt a Perzselхn, de ha хk kйpesek rб, biztos megvan a mуdja, nem? Te mit gondolsz errхl?</text>
+	</string>
+	<string id="dm_cool_info_41">
+		<text>A legfrissebb hнrek szerint talбltak egy Limanszkba vezetх utat az erdх tъloldalбn, a Szolgбlat йs a Szabadsбg pedig ott цlik egymбst. Йrtйkes lehet az a kis vбros, ha ekkora бldozatokra is hajlandуak!</text>
+	</string>
+	<string id="dm_cool_info_42">
+		<text>Ъgy hallottam, hogy egy zsoldos segнtette ki a stalkereket a Kordonnбl: segнtett megoldani egy affйrt a hadsereggel. Azуta nem kemйnykedik velьk a sereg, mert fйlnek a bosszъtуl. Most, hogy belegondolok, az a zsoldos... pont olyan, mint te! Ne szйgyenlхskцdj, haver! Inkбbb hadd rбzzam meg a kezed! Nagyon jу csбvу vagy!</text>
+	</string>
+	<string id="dm_cool_info_43">
+		<text>Annyira gyakorivб vбltak a kisugбrzбsok, hogy mбr kezdenek komoly problйmбt jelenteni. Pedig rйgen nem voltak ilyenek. Nйha azйrt elхfordulnak, йs minden alkalommal megvбltoztatjбk a Zуnбt. Egyes kisugбrzбsok utбn ъjfajta anomбliбk jelennek meg, vagy megnyнlik egy ъt egy addig бtjбrhatatlan anomбlia-mezхn. Нgy talбlhattunk rб a Limanszkba vezetх ъtra, pedig a stalkerek nagy rйsze mйg csak nem is hallott a helyrхl! De a megvбltozott helyzet mindig sok halottat kнvбn, йs nem csak a kisugбrzбs miatt. Hбborъ folyik az ъj terьletek birtoklбsбйrt, йs az kicsit sem kellemes.</text>
+	</string>
+	<string id="dm_cool_info_44">
+		<text>Mifйle ъjdonsбg lehetne itt? Gondolj ъgy erre a helyre, mint az ovisok iskolai elхkйszнtхjйre. Ha nem teszel meg mindent, hogy megtanuld a szabбlyokat, йs nem veted bele magad a Zуnбba, nem leszel hosszъ йletы. Ezйrt van az, hogy az okosabbja mindig eltцlt itt egy kis idхit, mielхtt tovбbb indulna. De a legfontosabb, hogy itt igen jуfajta fegyvereket йs felszerelйseket szerezhetsz - йs mindenki erre pбlyбzik!</text>
+	</string>
+	<string id="dm_action_info_136">
+		<text>Semmit. Csak maradj йletben - ez a legfontosabb.</text>
+	</string>
+	<string id="dm_about_160">
+		<text>Ezt nem hiszem el, azt elmъlt egy уrбban majdnem kicsinбltak! Mбr hat hуnapja йlek itt, eddig minden bйkйs йs csendes volt, de most egy katona lapul minden bokor alatt! Хrjнtх...</text>
+	</string>
+	<string id="dm_cool_info_45">
+		<text>Mi? Most meg mit akarsz? Csak azt mondhatom, hogy lehet, hogy a Szolgбlat prуbбlja jбtszani a csendхrцket, de tйny, hogy хk tudjбk, hogy kell rendet tartani. De ettхl mйg nem kedvelem хket. Azt hiszik, hogy minden az цvйk! "Ne vidd el!" meg "Ne nyъlj hozzб!". De ami tйnyleg vйrlбzнtу, hogy meghatбroztбk, hogy mirхl beszйlhetsz йs mirхl kell hallgatnod! Azt is hallottam, hogy aprбnkйnt el akarjбk pusztнtani az egйsz Zуnбt. Mondjuk, leszerelt katonбktуl, ez nem meglepх... hьlye бlmodozуk! Viszont, ami problйmбs lehet: ъgy hallottam, hogy a legfelsхbb kцrцkben is vannak tбmogatуik.</text>
+	</string>
+	<string id="dm_about_161">
+		<text>Jelenleg a Szolgбlat kezйben van ez a terьlet. A Szolgбlat elхнrбsai immбr itt is tцrvйnykйnt йrvйnyesek! Mi хrizzьk a Zуna hatбrбt йs lehыtjьk a nagyfiъkat: azok a barmok csapatostul szoktak йrkezni... йs tucatjбval halnak mбr az elsх napon.</text>
+	</string>
+	<string id="dm_about_162">
+		<text>Menj a tбborba - ott minden pletykбt elmesйlnek. A magadfajta kezdхk mindig benйznek oda, ha ъtbaigazнtбst keresnek, vagy egyszerыen csak pihenni akarnak. Katonбk is vannak a kцrnyйken, de nem kell fйlni tхlьk. De azйrt inkбbb ne kerьlj az ъtjukba, mert nem szнvbajosak, ha le kell lхni valakit... Amъgy van egy nagyon kellemes, bйkйs kis hely a kereskedх mellett, ott nyugodtan megpihenhetsz.</text>
+	</string>
+	<string id="dm_cool_info_46">
+		<text>Hallottad, hogy a Szolgбlat toborzбst tart? Magam is elgondolkoztam a lehetхsйgen, de rбjцttem, hogy annyira azйrt nem izgat. Olyan lenne, mint visszatйrni a seregbe: fegyelem, meg hasonlу hьlyesйgek... Йn mбr leszolgбltam kйt йvet, bхven elйg volt egy йletre...</text>
+	</string>
+	<string id="dm_action_info_137">
+		<text>El akartam menni Jantarba, de aztбn meggondoltam magam. A sok okostojбs egy remekьl felszerelt kutatуlabort tart fenn a terьleten. Isten tudja, hogy mit tudnak kutatni, mikцzben zombik dьhцngnek a laborjaik kцrьl. Szerinted is nagyon idilli?</text>
+	</string>
+	<string id="dm_cool_info_47">
+		<text>Nemrйg rendet kellett raknunk a Jantar-tуnбl, йs nem mondom, elйg jу munkбt vйgeztьnk! Ott vannak ugye a kutatуlaborok, de tцbb hordбnyi zombi tбrsasбgбban, szуval nйha kisegнtjьk kicsit a tudуsokat.</text>
+	</string>
+	<string id="dm_cool_info_48">
+		<text>Tudod, mire gondolok? Az lenne jу, ha a Szolgбlat, a Szabadsбg йs a fosztogatуk megkьzdenйnek ezйrt a helyйrt! Hogy miйrt lenne jу? Mert pokolra kerьlne az цsszes...</text>
+	</string>
+	<string id="dm_action_info_138">
+		<text>Stalker, mi most itt dolgozunk. Nem csak a rengeteg mutбnssal, de rendszerint a seggfej zsoldosokkal йs az idiуta szabadokkal is meggyыlik a bajunk...</text>
+	</string>
+	<string id="dm_cool_info_49">
+		<text>Semmi. Fingom sincs. Megszerzem, amit tudok, йs prуbбlok йldegйlni. Nem kнvбnkozom a Zуna mйlyйbe, hьlye, aki oda vбgyik! Ahonnan йn jцttem, ott nem volt munka, az asszony is csak kolonc volt... De йlni kell, nem? Ha egy napig itt keresgйlsz Szemйtdomb kцrnyйkйn, talбlhatsz nйhбny бtlagos relikviбt, amibхl kijцn az aznapi kajбd, este meg leцblнtheted valamivel.</text>
+	</string>
+	<string id="dm_cool_info_50">
+		<text>Hбt, tudod... Nйhбnyan letelepedtek Szemйtdombon, йs kacatokat gyыjtцgetnek, mбsok bevetettйk magukat a Zуnбba. Йrthetх, jуfajta relikviбkat lehet ott talбlni, de erre nem kйpes mindenki. A tapasztalatlan kezdхk цrьlhetnek, ha a mбsnapot megйrik, rendes felszerelйs nйlkьl pedig hajszбlnyi esйlyьk sincs.</text>
+	</string>
+	<string id="dm_action_info_141">
+		<text>Semmi kцzцd hozzб... Ne faggass mбsokat hьlye kйrdйsekkel, йs akkor a te dolgaidat sem fogjбk firtatni.</text>
+	</string>
+	<string id="dm_cool_info_51">
+		<text>Йn nagyon csнpem ezeket a tudуsokat! Vicces csуkбk, elhiheted! Бltalбban nem dugjбk ki az okos kis fejьket a bunkerekbхl, de ha kijцnnek, mint a mъltkor is... akkor elszabadul a pokol! Mindenhol katonбk, helikopterek, csapatszбllнtуk! Legkцzelebb hнvhatnбnak egy csatahajуt, de legalбbbis egy pбncйlvonatot...</text>
+	</string>
+	<string id="dm_cool_info_52">
+		<text>Ъjsбg? Nem tцrtйnik itt semmi, csak a lerбgott csontok. Hihetetlen, hogy mennyire elkanбszodtak a fosztogatуk! Az йletьnket kockбztatjuk, hogy az anomбliбk kцzцtt megkeressьk a relikviбkat, a jutalmat pedig хk szedik be... Kцcsцgцk! Szуval, kerьld el Szemйtdombot - az minden szempontbуl az х terьletьk.</text>
+	</string>
+	<string id="dm_action_info_139">
+		<text>Hбt, lбtod, hogy itt ragadtam. Haza szeretnйk menni, de nem engednek. Mбs ъjsбg nincs... A fiъk - a profik - akik mбr megjбrtбk a Zуna mйlyйt, йrdekes dolgokat szoktak mesйlni. Olyan relikviбkat hoznak, hogy mindenkinek csorog a nyбla! Йs azzal kбbнtanak, hogy ezek csak ъgy hevernek a fцldцn - йs arra vбrnak, hogy valaki felvegye хket. De sajnos kevesen jutnak el odбig, йs mйg kevesebben jutnak vissza.</text>
+	</string>
+	<string id="dm_cool_info_53">
+		<text>Хszintйn szуlva, nem kцvettem az esemйnyeket az utуbbi idхben.</text>
+	</string>
+	<string id="dm_cool_info_54">
+		<text>Te is hallottad, hogy nцvekszik a Zуna? Lehet benne valami, mert nagyon ijesztх mutбnsokat lбttam a kьlsх terьleteken. Olyanokat, amikkel eddig csak a Zуna kцzepйn lehetett talбlkozni! Jуl hangzik, mi?</text>
+	</string>
+	<string id="dm_cool_info_55">
+		<text>Hбt, talбn igaz, hogy vannak vйrszнvуk a Zуna kerьletйnйl, de miйrt kцvetkezik ebbхl a Zуna nцvekedйse? Csak azйrt, mert pбr ilyen eljutott a kьlsх terьletekre... szerintem egyйbkйnt mi nem vettьk йszre, йs engedtьk бt хket. De ez nem csoda, van, hogy йjjel йs nappal is egyfolytбban dolgozunk, nehezen bнrjuk! De azйrt jуl vйgezzьk a munkбnkat - vйgьl is, hбnyszor hallottбl a kьlsх terьleteken kiabбlni valakit, hogy "Segнtsйg, kцrbevettek a mutбnsok!"?</text>
+	</string>
+	<string id="dm_about_167">
+		<text>Csak уvatosan, azok a kйt lбbon jбrу hullбk elleptйk az egйsz terьletet! Agyuk az nincs, de rohadt agresszнvek! Folyamatos ostrom alatt бllunk, йjjel йs nappal egyarбnt! Rцviden, nagyon veszйlyes itt, fiatalember.</text>
+	</string>
+	<string id="dm_about_168">
+		<text>Nem tudom, mit mondhatnйk... Mindig tцrtйnik valami, de itt ez a szokбsos. Kint ezt persze nem hiszik el, de vйgьl is, mi egy igen rendhagyу zуnбban vagyunk.</text>
+	</string>
+	<string id="dm_cool_info_56">
+		<text>Йrdekelnek a pletykбk? Mondok neked valamit, de ez nem csak pletyka: hamarosan rendet teremtьnk. Kiыzzьk a Zуnбbуl a mutбnsokat, meg nйhбny mocskos alakot is...</text>
+	</string>
+	<string id="dm_cool_info_57">
+		<text>Hallottad mбr, hogy mit beszйlnek a szolgбlatosok, hogy mit fognak velьnk tenni? Azzal fenyegetхznek, hogy az нrmagunkat is kiirtjбk, йs ez csak a kezdet. Nagyon aggasztу... Fхleg, hogy nyнlt titok, hogy felfegyvereztйk magukat a legspйcibb eszkцzцkkel.</text>
+	</string>
+	<string id="dm_cool_info_58">
+		<text>Hogy mi ъjsбg, mi? Hбt kit йrdekel az emberek vйlemйnye? Ha magadra veszel minden tцrtйnetet, elхbb-utуbb beleхrьlsz. Pйldбul ez: valaki mondta, hogy egy kхkemйny stalker visszatйrt a kцzйppontbуl, valami olyat hozott, amit mйg senki sem lбtott, йs keresett egy zsбk pйnzt... Hбt, hasonlу tцrtйneteket йn is bбrmikor ki tudnйk talбlni.</text>
+	</string>
+	<string id="dm_help_12">
+		<text>Nagyon szйpen kцszцnцm!</text>
+	</string>
+	<string id="dm_about_169">
+		<text>Mit csinбlsz itt, vйdхruha nйlkьl? Hбt meguntad az йleted? Itt minden fыszбl mцgцtt van egy anomбlia! Itt senki sem szokott vйdхruha nйlkьl jбrkбlni, mert mielхtt fыbe harapsz, mйg egy "izmos" sugбrzбsadagot is kapsz.</text>
+	</string>
+	<string id="dm_about_170">
+		<text>Lбtom, nem talбlod a helyed, ezйrt fogadj meg egy barбti jу tanбcsot: kerьld el a hadsereget! Ha meglбtod хket, azonnal vedd fel a nyъlcipхt, mert nagyon hьlye egy nйpsйg! Elхszцr belйd eresztenek egy sorozatot, йs csak utбni ellenхrzik a papнrjaidat!</text>
+	</string>
+	<string id="dm_intro_112">
+		<text>Szйp napot!</text>
+	</string>
+	<string id="dm_intro_113">
+		<text>Jу napot!</text>
+	</string>
+	<string id="dm_intro_114">
+		<text>Hali, mi a pбlya?</text>
+	</string>
+	<string id="dm_intro_115">
+		<text>Halihу!</text>
+	</string>
+	<string id="dm_intro_116">
+		<text>Szeva!</text>
+	</string>
+	<string id="dm_intro_117">
+		<text>У, szevasz!</text>
+	</string>
+	<string id="dm_intro_118">
+		<text>Hellу!</text>
+	</string>
+	<string id="dm_intro_119">
+		<text>Ьdvцzцllek!</text>
+	</string>
+	<string id="dm_intro_120">
+		<text>Hellу, stalker!</text>
+	</string>
+	<string id="dm_intro_121">
+		<text>Ьdvцzцllek, stalker!</text>
+	</string>
+	<string id="dm_intro_122">
+		<text>Hй, stalker!</text>
+	</string>
+	<string id="dm_intro_123">
+		<text>Hogy vagy?</text>
+	</string>
+	<string id="dm_intro_124">
+		<text>Kit lбtnak szemeim!</text>
+	</string>
+	<string id="dm_intro_125">
+		<text>Kit tisztelhetьnk benned?</text>
+	</string>
+	<string id="dm_intro_126">
+		<text>Szevasz, haver!</text>
+	</string>
+	<string id="dm_about_165">
+		<text>Mintha egy aknamezхn kellene бtmenni, csak rosszabb. Nйha olyan dolgok tцrtйnnek itt... sose lankadhat a figyelmed!</text>
+	</string>
+	<string id="dm_about_171">
+		<text>Azt tanбcsolom, hogy mindig maradj йber. Ha йber vagy, akkor йlve maradsz! Ha nem figyelsz, akkor vйged.</text>
+	</string>
+	<string id="dm_about_172">
+		<text>Tartsd mindig nyitva a szemed, mйg amikor alszol is, mert bбrmelyik pillanatban beьthet a bazdmeg!</text>
+	</string>
+	<string id="dm_about_173">
+		<text>Vigyбzz a mocskokkal! Annyian vannak, mint a sбskбk!</text>
+	</string>
+	<string id="dm_help_0">
+		<text>Segнts, testvйr!</text>
+	</string>
+	<string id="dm_help_1">
+		<text>Valaki segнtsen!</text>
+	</string>
+	<string id="dm_help_2">
+		<text>Хrsйg! Ide! Megsйrьltem!</text>
+	</string>
+	<string id="dm_help_3">
+		<text>Segнtsйg! Meg fogok halni!</text>
+	</string>
+	<string id="dm_help_4">
+		<text>Fiъk, kell egy elsхsegйlycsomag!</text>
+	</string>
+	<string id="dm_help_5">
+		<text>Hozzatok egy elsхsegйlycsomagot!</text>
+	</string>
+	<string id="dm_help_6">
+		<text>Fiъk, elsхsegйly kell! Siessetek!</text>
+	</string>
+	<string id="dm_help_7">
+		<text>Srбcok, kell egy elsхsegйlycsomag!</text>
+	</string>
+	<string id="dm_help_8">
+		<text>Valaki adjon mбr egy elsхsegйlycsomagot!</text>
+	</string>
+	<string id="dm_help_9">
+		<text>Barбtom, egy elsхsegйly... egy elsхsegйlycsomagot!</text>
+	</string>
+	<string id="dm_help_10">
+		<text>Segнts rajtam, haver!</text>
+	</string>
+	<string id="dm_help_11">
+		<text>Hй, haver, megszбnnбl egy elsхsegйlycsomaggal?</text>
+	</string>
+	<string id="dm_cool_info_59">
+		<text>Hallottam, hogy azok a csirkйk a Kordonnбl jуl elbбntak a hadsereggel, йs mйg azt az ьtхdцtt tisztet is fogsбgba ejtettйk! Azйrt megnйznйm, milyen mыsцr megy ott! Azaz, ъgy йrtem, micsoda szйgyen!</text>
+	</string>
+	<string id="dm_cool_info_60">
+		<text>Az mondanak a kisugбrzбsrуl, az nem csak ijesztgetйs! Ha nem йgsz el ott helyben, akkor is milliу mбs mуdon tud vйgezni veled! Az eddig szйpnek mondott helyek most tele vannak rohadt anomбliбkkal. Mintha zabszem lenne a seggedben, ъgy fйlsz, hogy megpцrkцlnek!</text>
+	</string>
+	<string id="dm_cool_info_61">
+		<text>Hбt, itt van ez az aranyesх... vagy aranylбz? Mindegy, a lйnyeg, hogy a stalkerek a halmokban бllу, radioaktнv szemetet kutatjбk, nйha talбlnak egyet s mбst, mi meg figyelьnk, hogy ne balhйzzon senki.</text>
+	</string>
+	<string id="dm_cool_info_62">
+		<text>Nйhбny napja Koljant йs a haverjait elkapta egy kisugбrzбs, нgy ma mбr valaki mбs hordja a csizmбjбt, ha vбgod, mire gondolok. Нgy jбr az, aki messzire kуborol a bбzistуl! Ha a kцzelben vagy, nincs mitхl fйlned.</text>
+	</string>
+	<string id="dm_cool_info_63">
+		<text>Nйhбny utolsу agropromi stalker alapнtott valami bandбt. A ravasz ribancok kikцtцztйk az embereinket! Megцlni persze nem mertйk хket - fйltek a kemйny megtorlбstуl.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_enemy">
+		<text>Mi? Kцzel az ellensйg, te pedig ilyen szarsбgokat hordasz nekem цssze?</text>
+	</string>
+	<string id="dm_sim_action_attack_point_friend">
+		<text>Mit akarsz? Hamarosan talбlkozunk az embereinkkel, akik tбbort vertek a kцzelben.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_none">
+		<text>Ott van mйg egy szabad hely, odamegyьnk!</text>
+	</string>
+	<string id="dm_sim_action_stay_point_enemy_near">
+		<text>Mi ьtцtt belйd? Ьldцgйlьnk, хrkцdьnk a tбborban, kцrьlцttьnk pedig mindenfйle ellensйg уlбlkodik. Ъgyhogy hagyjбl bйkйn a kйrdйseiddel!</text>
+	</string>
+	<string id="dm_sim_action_stay_point_none_near">
+		<text>Mi bajod van? Vйgre leьltьnk egy kicsit pihenni. Minden olyan szйp йs csendes, senki sem...</text>
+	</string>
+	<string id="dm_actor_news_1">
+		<text>Mi ъjsбg?</text>
+	</string>
+	<string id="dm_actor_news_2">
+		<text>Van valami hнr?</text>
+	</string>
+	<string id="dm_actor_news_3">
+		<text>Mi hнr mostansбg?</text>
+	</string>
+	<string id="dm_army_no_news_1">
+		<text>Ha hнreket akarsz, menj, йs keress egy tйvйt! Itt csak a mindennapi robot megy. Dцgunaaaalom...</text>
+	</string>
+	<string id="dm_army_no_news_2">
+		<text>Cseszd meg! Hнreket akarsz? Menj, keress valamit az ъjsбgбrusnбl, ott van a sarkon tъl!</text>
+	</string>
+	<string id="dm_army_no_news_3">
+		<text>Persze, egy csomу йrdekessйg tцrtйnt itt! Egy zцldfцlыnek egy hйtig is tudnбm mesйlni! De aztбn persze elveszne az ъjdonsбg varбzsa...</text>
+	</string>
+	<string id="dm_army_no_news_4">
+		<text>Ha valami ъjba botlanбl, kьldd csak el hozzбm, jу? Hah! Figyelj, kereskedjьnk inkбbb, van valami йrtйkes holmid?</text>
+	</string>
+	<string id="dm_bandit_no_news_1">
+		<text>Itt mйgis mi lehetne ъj? A helyzet vбltozatlanul szar, csak a napok telnek.</text>
+	</string>
+	<string id="dm_bandit_no_news_2">
+		<text>Ez jу vicc volt, pajtбs! Ugye nem gondolod komolyan, hogy bхvelkedьnk a hнrekben ebben a szarkupacban?</text>
+	</string>
+	<string id="dm_bandit_no_news_3">
+		<text>Szar az йlet... de ez nem ъjdonsбg.</text>
+	</string>
+	<string id="dm_bandit_no_news_4">
+		<text>Hнr a fenйket!... Hй, mit szуlnбl inkбbb egy kis kereskedйshez?</text>
+	</string>
+	<string id="dm_csky_no_news_1">
+		<text>Hнr kell?... Nos, kis hнjбn halбlra dolgozzuk magunkat. Remйlhetхleg, nemsokбra normбlis ember mуdjбra jбrkбlhatunk majd a Zуnбban, anйlkьl, hogy rettegnьnk kellene az anomбliбktуl.</text>
+	</string>
+	<string id="dm_csky_no_news_2">
+		<text>Nem hallottam semmit. Ugyanaz megy nap mint nap. Menj ide, хrkцdj itt... Csak remйlni tudjuk, hogy megйri veszхdnьnk!</text>
+	</string>
+	<string id="dm_csky_no_news_3">
+		<text>Itt csak egyetlen hнr van: a Zуna nem jбtйk. Tanulmбnyozzuk, de egy pillanat alatt elpusztнthat minket... Figyelj, nincs vйletlenьl valami relikviбd?</text>
+	</string>
+	<string id="dm_csky_no_news_4">
+		<text>Nemtom... hirtelen nem ugrik be semmi. De mit szуlnбl egy kis kereskedйshez?</text>
+	</string>
+	<string id="dm_default_no_news_1">
+		<text>Mintha lenne rб idхm! A hнrek ъgyis megtalбljбk az embert, ha szьksйg van rб! Itt viszont nem csinбlunk mбst, csak rohangбlunk kцrbe-kцrbe, mint hцrcsцg a mуkuskerйken!</text>
+	</string>
+	<string id="dm_default_no_news_2">
+		<text>Nem hallottam semmit, hбla Istennek! Ezen a helyen mindig csak rossz hнreket kap az ember, ha йrted, mire gondolok! Йs remйlem, lekopogom, ez нgy is marad!</text>
+	</string>
+	<string id="dm_default_no_news_3">
+		<text>Mit foglalkozol egyбltalбn a hнrekkel? A lйnyeg, hogy vigyбzz magadra, йs prуbбlj meg egy darabban maradni!... Jut eszembe, nincs valami бrud?</text>
+	</string>
+	<string id="dm_default_no_news_4">
+		<text>Honnan tudhatnбm? Szуval, mit szуlnбl egy kis kereskedйshez? Tegyьk ki az йrtйkeinket, йs mindenki azt viszi, amit akar, jу?</text>
+	</string>
+	<string id="dm_dolg_no_news_1">
+		<text>Ha egyszer kitakarнtjuk vйgre ezt a helyet, na az majd hнr lesz! Addig viszont munka van, nincs lazsбlбs...</text>
+	</string>
+	<string id="dm_dolg_no_news_2">
+		<text>Mйg mindig a Zуnбban vagy, itt egy hнr! Tudod, nem йrtem a stalkereket! Tйnyleg olyan jу йrzйs felfegyverkezve, teljes pбncйlzatban menni a bozуtosba, amikor pisбlnod kell?..</text>
+	</string>
+	<string id="dm_dolg_no_news_3">
+		<text>Nem sok hнr jut el hozzбnk ezen a helyen, pajtбs. Ehhez kйnytelen vagy kimenni. A kereskedйs viszont mбr egy mбsik tцrtйnet... mondd csak, nincs valami йrtйkes holmid?</text>
+	</string>
+	<string id="dm_dolg_no_news_4">
+		<text>Hнr, mi? Pбr idiуtбnak megint sikerьlt belebotlania egy anomбliбba, mбsokat vadбllatok tйptek szйt, csak a szokбsos... Figyelj, van valami zsбkmбnyod? Bбrmid, amit eladnбl?</text>
+	</string>
+	<string id="dm_freedom_no_news_1">
+		<text>Pajtбs, mi az цrdцgйrt kellenek neked hнrek? Nyugi! Csak lazulj el, йs йrezd jуl magad...</text>
+	</string>
+	<string id="dm_freedom_no_news_2">
+		<text>Gyцnyцrыen sьt a nap, tiszta a levegх, йs a fы... nagyon jу minхsйgы fы... gyerьnk mбr, haver, ne gцrcsцlj annyit, csak йlvezd az йletet!</text>
+	</string>
+	<string id="dm_freedom_no_news_3">
+		<text>Ezen a helyen ne szбmнts biztatу... Nem kцvetem a hнreket, йs kйsz! De mondd csak, van valami бrud? Ьzleteljьnk inkбbb egy kicsit!</text>
+	</string>
+	<string id="dm_freedom_no_news_4">
+		<text>Figyelj, pajtбs, nem tudom... Nem sok hнr jut el idбig. Legyьnk egy kicsit gyakorlatiasabbak! Pйldбul, ha van esetleg valami бrud, megvehetnйm tхled...</text>
+	</string>
+</string_table>

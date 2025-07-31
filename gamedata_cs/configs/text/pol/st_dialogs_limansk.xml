@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="lim_bandit_wounded_dialog_1_11">
+		<text>Pomocy! Dajcie apteczkк, kumpel mi umiera.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_111">
+		<text>Masz.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1111">
+		<text>Zaczekaj, najpierw pomogк kumplowi.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_112">
+		<text>Przykro mi, nie mam apteczki.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1121">
+		<text>Cholera...</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_113">
+		<text>Wal siк, dupku.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_11">
+		<text>Dziкki za uratowanie tyіka. Wygl№da na to, їe zmierzasz do miasta; uwaїaj - na wprost na ulicy czeka zasadzka. Ludzie Reda przyczepili drut do samochoru - nie przewrуж siк o niego. Trzymaj siк prawj strony, a nic ci nie bкdzie.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_111">
+		<text>Kto jeszcze jest w mieњcie?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1111">
+		<text>Mnуstwo nowych robi straszny baіagan. Powinnoњж i Wolnoњж ruszyіy do centrum - pewnie szukaj№ drogi do wnкtrza Zony. Widzieliњmy parк њmigіowcуw, wiкc wojskowi teї tam s№. A takїe paru stalkerуw - tyle, їe ci przychodz№ z drugiej strony, z wnкtrza Zony.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_112">
+		<text>Co siк dzieje w mieњcie?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1121">
+		<text>Nasz szef i jego ludzie obsadzili dom dalej przy ulicy, dalej nie przejd№. Jeњli chcesz siк przedrzeж do miasta, musisz ich stamt№d wykurzyж.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_113">
+		<text>Nie bкdк dziкkowaж - spadaj, zanim postanowiк ciк zastrzeliж.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_12">
+		<text>Szybko, musimy st№d spadaж.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_121">
+		<text>Starczy - idџ.</text>
+	</string>
+</string_table>

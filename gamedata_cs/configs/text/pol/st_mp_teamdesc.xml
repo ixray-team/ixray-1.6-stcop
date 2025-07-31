@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="team_1_desc">
+		<text>Anarchiњci Zony. Utrzymuj№, їe Zona jest sanktuarium wolnoњci, i uwaїaj№, їe wszystkie prawa, zasady i konwencje њwiata zewnкtrznego tutaj s№ niewaїne. Ich motto brzmi: "Rуb co chcesz i pilnuj swojego nosa". "Wolnoњж" zwalcza starania rz№du o przejкcie kontroli nad Zon№ i prowadzi wojnк z najemnikami. Jej czіonkowie s№ zwykle wyposaїeni w radzieck№ i rosyjsk№ broс.</text>
+	</string>
+	<string id="team_1_name">
+		<text>Frakcja "Wolnoњж" (wolni stalkerzy)</text>
+	</string>
+	<string id="team_2_desc">
+		<text>Grupa szukaj№cych przygуd zbirуw z caіego њwiata. Nie gardzi najpodlejsz№ robot№. Ich motto brzmi "Pieni№dze nie њmierdz№", za to artefakty pachn№ zarobkiem... Najemnicy s№ zwykle wyposaїeni w zachodni№ broс.</text>
+	</string>
+	<string id="team_2_name">
+		<text>"Najemnicy" (zbiry)</text>
+	</string>
+</string_table>

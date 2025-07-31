@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="ammo-9x18-fmj">
+		<text>9x18 mm-es lцvedйk</text>
+	</string>
+	<string id="ammo-9x18-fmj_s">
+		<text>9x18</text>
+	</string>
+	<string id="ammo-9x18-fmj_descr">
+		<text>Egyszerы teljeskцpenyes lцvedйk. Nagyon hatйkony puha cйlpontok ellen. Hasznбlhatу a PMm, a PB1s йs a Fora-12 tнpusъ pisztolyokban.</text>
+	</string>
+	<string id="ammo-9x18-pmm">
+		<text>9x18 mm +P+ lцvedйk</text>
+	</string>
+	<string id="ammo-9x18-pmm_s">
+		<text>9x18 +P+</text>
+	</string>
+	<string id="ammo-9x18-pmm_descr">
+		<text>Ebben a tбrban olyan lцvedйkek vannak, melyek megбllнtу ereje nagyobb. Nem hatбsos pбncйlozott egysйgek ellen. Hasznбlhatу a PMm, a PB1s йs a Fora-12 tнpusъ pisztolyokban.</text>
+	</string>
+	<string id="ammo-9x19-fmj">
+		<text>9x19 mm FMJ lцvedйk</text>
+	</string>
+	<string id="ammo-9x19-fmj_s">
+		<text>9x19 FMJ</text>
+	</string>
+	<string id="ammo-9x19-fmj_descr">
+		<text>Egyszerы teljeskцpenyes 9x19 mm tбr. Nem hatйkonyak pбncйlozott egysйgek ellen. Hasznбlhatу a Walker P9m, a HPSS-1m йs a Martha tнpusъ pisztolyokban, valamint a Viper 5 tнpusъ gйppisztolyban.</text>
+	</string>
+	<string id="ammo-9x19-pbp">
+		<text>9x19 mm-es PBP lцvedйk</text>
+	</string>
+	<string id="ammo-9x19-pbp_s">
+		<text>9x19 PBP</text>
+	</string>
+	<string id="ammo-9x19-pbp_descr">
+		<text>Egy erхs 9x19 mm lцvedйk, melynek hegye ьreges. Pбncйlozott egysйgek ellen hatбstalan. Hasznбlhatу a Walker P9m, a HPSS-1m йs a Martha tнpusъ pisztolyokban, valamint a Viper 5 tнpusъ gйppisztolyban.</text>
+	</string>
+	<string id="ammo-11.43x23-fmj">
+		<text>.45 ACP lцvedйk</text>
+	</string>
+	<string id="ammo-11.43x23-fmj_s">
+		<text>.45 ACP</text>
+	</string>
+	<string id="ammo-11.43x23-fmj_descr">
+		<text>Egyszerы teljeskцpenyes .45 kaliberы lцvedйkek. Hasznбlhatу a Kora-919 йs az SIP-t M200 tнpusъ pisztolyokban.</text>
+	</string>
+	<string id="ammo-11.43x23-hydro">
+		<text>.45 ACP Hydro lцvedйk</text>
+	</string>
+	<string id="ammo-11.43x23-hydro_s">
+		<text>.45 Hydro</text>
+	</string>
+	<string id="ammo-11.43x23-hydro_descr">
+		<text>Egy Hydro-Shock lцvedйk, melynek javнtottak a jellemzхin, kifejezetten a Kora-919 йs a SIP-t M200 tнpusъ pisztolyokhoz. A hydro lцvedйkek hegye ьreges, ami nagy megбllнtу erхt eredmйnyez.</text>
+	</string>
+	<string id="ammo-5.45x39-fmj">
+		<text>5.45x39 mm-es lцvedйk</text>
+	</string>
+	<string id="ammo-5.45x39-fmj_s">
+		<text>5.45x39</text>
+	</string>
+	<string id="ammo-5.45x39-fmj_descr">
+		<text>A Varsуi egyezmйny orszбgaiban rendszeresнtett gйpkarabйlyokban hasznбlt lцvedйk, Hasznбlhatу az Akm 74/2U, Akm 74/2 йs az AC96/s tнpusъ fegyverekben.</text>
+	</string>
+	<string id="ammo-5.45x39-ap">
+		<text>5.45x39 mm-es BP lцvedйk</text>
+	</string>
+	<string id="ammo-5.45x39-ap_s">
+		<text>5.45x39 BP</text>
+	</string>
+	<string id="ammo-5.45x39-ap_descr">
+		<text>Pбncйltцrх lцvedйk a Varsуi egyezmйny orszбgaiban rendszeresнtett, automata fegyverekhez. Hasznбlhatу az Akm 74/2U, Akm 74/2 йs az AC96/s tнpusъ fegyverekben.</text>
+	</string>
+	<string id="ammo-5.56x45-ss190">
+		<text>5.56?45 mm-es lцvedйk</text>
+	</string>
+	<string id="ammo-5.56x45-ss190_s">
+		<text>5.56?45</text>
+	</string>
+	<string id="ammo-5.56x45-ss190_descr">
+		<text>Rendszeresнtett NATO lцvedйk, amit szйles kцrben ismernek a belga SS109 megnevezйsen. Hasznбlhatу az IL 86, Trs 301, SGI 5k, GP 37 йs az Ft 200M tнpusъ fegyverekben.</text>
+	</string>
+	<string id="ammo-5.56x45-ap">
+		<text>5.56x45 mm-es AP lцvedйk</text>
+	</string>
+	<string id="ammo-5.56x45-ap_s">
+		<text>5.56 AP</text>
+	</string>
+	<string id="ammo-5.56x45-ap_descr">
+		<text>Pбncйltцrх lцvedйk az IL 86, Trs 301, SGI 5k, GP 37 йs az Ft 200M tнpusъ fegyverekhez.</text>
+	</string>
+	<string id="ammo-9x39-pab9">
+		<text>9x39 mm-es PAB-9 lцvedйk</text>
+	</string>
+	<string id="ammo-9x39-pab9_s">
+		<text>9x39 PAB9</text>
+	</string>
+	<string id="ammo-9x39-pab9_descr">
+		<text>Olcsу, бltalбnos cйlъ lцvedйk. Bбr sebessйge nem йri el a hang sebessйgйt, megfelelх megбllнtу erхt biztosнt. Hasznбlhatу a Tunder S14 йs az SA Avalanche tнpusъ gйpkarabйlyokhoz, valamint a Vintar BC kьlцnleges cйlъ, mesterlцvйsz-puskбhoz is.</text>
+	</string>
+	<string id="ammo-9x39-ap">
+		<text>9x39 mm-es SP-6 lцvedйk</text>
+	</string>
+	<string id="ammo-9x39-ap_s">
+		<text>9x39 SP-6</text>
+	</string>
+	<string id="ammo-7.62x54-7h14">
+		<text>7.62x54 mm-es 7N1 lцvedйk</text>
+	</string>
+	<string id="ammo-7.62x54-7h14_s">
+		<text>7.62 7N1</text>
+	</string>
+	<string id="ammo-7.62x54-7h14_descr">
+		<text>7.62 kaliberes, nagy pontossбgъ pбncйltцrх lцvedйkek mesterlцvйsz puskбkhoz. Hasznбljбk az SVDm 2 йs az SVUmk2 mesterlцvйsz puskбkhoz.</text>
+	</string>
+	<string id="ammo-7.62x54-ap">
+		<text>7.62x54 mm-es PP lцvedйk</text>
+	</string>
+	<string id="ammo-7.62x54-ap_s">
+		<text>7.62 PP</text>
+	</string>
+	<string id="ammo-7.62x54-ap_descr">
+		<text>Olcsуbb 7,62 kaliberes gйppuska lхszer. Tervezйse miatt nem fйr be a mesterlцvйsz puskбkba, нgy csak az RP-74 tнpusъ gйppuskбhoz hasznбljбk.</text>
+	</string>
+	<string id="ammo-12x70-buck">
+		<text>12x70 sцrйt</text>
+	</string>
+	<string id="ammo-12x70-buck_s">
+		<text>12x70 sцrйt</text>
+	</string>
+	<string id="ammo-12x70-buck_descr">
+		<text>Бltalбnosan hasznбlt 12 kaliberes lцvedйk, 6 mm nagysбgъ sцrйtekkel. Kьlцnцsen kцzelrхl halбlos. Vadбszpuskбkban, sцrйtes puskбkban valamint az SPSA14 йs Chaser 13 tнpusъ, fйlautomata sцrйtesben hasznбljбk. </text>
+	</string>
+	<string id="ammo-12x76-zhekan">
+		<text>12x76 nagy kaliberы sцrйt </text>
+	</string>
+	<string id="ammo-12x76-zhekan_s">
+		<text>12x76 nagy kaliberы sцrйt </text>
+	</string>
+	<string id="ammo-12x76-zhekan_descr">
+		<text>Ezt a nagymйretы golyуkat tartalmazу sцrйtet бltalбban nagy testы vadak elejtйsйre hasznбljбk, de termйszetesen mбs cйlokra is hasznбlhatу. A pбncйl бtlyukasztбsa helyett a lцvedйkek egyszerыen бttцrik a pбncйlt. Vadбszpuskбkban, sцrйtes puskбkban valamint az SPSA14 йs Chaser 13 tнpusъ, fйlautomata sцrйtesben hasznбljбk. </text>
+	</string>
+	<string id="ammo-12x76-dart">
+		<text>12x76 nyilacskбk</text>
+	</string>
+	<string id="ammo-12x76-dart_s">
+		<text>12x76 nyilacskбk</text>
+	</string>
+	<string id="ammo-12x76-dart_descr">
+		<text>Nyнlszerы lцvedйk. Szбrnyai stabilitбst adnak neki, mely megnцveli a pontossбgбt. A masszнv acйltest bбrmely testpбncйlon kйpes бthatolni. Vadбszpuskбkban, sцrйtes puskбkban valamint az SPSA14 йs Chaser 13 tнpusъ, fйlautomata sцrйtesben hasznбljбk. </text>
+	</string>
+	<string id="ammo-gauss">
+		<text>Akkumulбtorok</text>
+	</string>
+	<string id="ammo-gauss_descr">
+		<text>Nagy kapacitбsъ energiacellбk. Az EM1 elektromбgneses fegyver prototнpusбhoz hasznбljбk.</text>
+	</string>
+	<string id="ammo-m209">
+		<text>M209 grбnбt</text>
+	</string>
+	<string id="ammo-m209_s">
+		<text>M209</text>
+	</string>
+	<string id="ammo-m209_descr">
+		<text>Az M203 tнpusъ fegyver csх alб szerelhetх grбnбtvetхjйhez, йs az Ft 200M beйpнtett grбnбtvetхjйhez hasznбljбk.</text>
+	</string>
+	<string id="ammo-vog-25">
+		<text>VOG-25 grбnбt</text>
+	</string>
+	<string id="ammo-vog-25_s">
+		<text>VOG-25</text>
+	</string>
+	<string id="ammo-vog-25_descr">
+		<text>A GP-25 Koster csх alб szerelhetх grбnбtvetх, йs a Tunder S14 tнpusъ fegyver kiegйszнtхjйnek standard grбnбtja. Hasznбlhatу a Bulldog 6, forgуtбras grбnбtvetхbe is.</text>
+	</string>
+	<string id="ammo-og-7b">
+		<text>OG-7V grбnбt</text>
+	</string>
+	<string id="ammo-og-7b_s">
+		<text>OG-7V</text>
+	</string>
+	<string id="ammo-og-7b_descr">
+		<text>Az RPG-7u repeszgrбnбtja. Nagyon hatбsos puha йs kцnnyы pбncйlzatot viselх ellenfelek ellen.</text>
+	</string>
+	<string id="st_grenade_f1">
+		<text>F1 grбnбt</text>
+	</string>
+	<string id="st_grenade_f1_descr">
+		<text>Vйdelmi kйzigrбnбt, olyan repeszekkel, melyek kйpesek бtlyukasztani az egyszerыbb testpбncйlokat. A lцkйshullбm sugara 10 mйteres.</text>
+	</string>
+	<string id="st_grenade_rgd5">
+		<text>RGD-5 grбnбt</text>
+	</string>
+	<string id="st_grenade_rgd5_descr">
+		<text>Tбmadу kйzigrбnбt kisebb sugarъ repesztalбlati йrtйkkel. A lцkйshullбm 8 mйteres.</text>
+	</string>
+	<string id="st_grenade_smoke">
+		<text>Fьstgrбnбt</text>
+	</string>
+	<string id="st_grenade_smoke_descr">
+		<text>Fьstgrбnбt, mely segнtsйgйvel fьstfalat lehet lйtrehozni. Hatбsa 10 mбsodpercig tart.</text>
+	</string>
+	<string id="st_grenade_launcher">
+		<text>GP-25 "Koster"</text>
+	</string>
+	<string id="st_grenade_launcher_descr">
+		<text>Rohampuskбk csцve alб szerelhetх grбnбtvetх, amit a Varsуi szerzхdйs orszбgaiban hasznбlnak. VOG-25 tнpusъ lхszert hasznбl.</text>
+	</string>
+	<string id="st_grenade_launcher_m203">
+		<text>M203</text>
+	</string>
+	<string id="st_grenade_launcher_m203_descr">
+		<text>Csх alб szerelhetх grбnбtvetх a NATO orszбgokban rendszeresнtett fegyverek szбmбra. M209 tнpusъ lхszert hasznбl.</text>
+	</string>
+	<string id="st_addon_scope">
+		<text>PSO-1 tбvcsх</text>
+	</string>
+	<string id="st_addon_scope_descr">
+		<text>Nagyon elterjedt, szovjet gyбrtmбnyъ tбvcsх. Fecskefarkakkal illeszkedik a fegyverhez, ami a Varsуi szerzхdйs orszбgaiban szabvбny.</text>
+	</string>
+	<string id="st_addon_scope_susat">
+		<text>SUSAT tбvcsх</text>
+	</string>
+	<string id="st_addon_scope_susat_descr">
+		<text>4x optikai tбvcsх, melyet a NATO бltal rendszeresнtett fegyverekre lehet felszerelni.</text>
+	</string>
+	<string id="st_addon_silencer">
+		<text>Hangtompнtу</text>
+	</string>
+	<string id="st_addon_silencer_descr">
+		<text>Hatйkony hangtompнtу, melyet a Zуnбban dolgozу mesteremberek alkottak. Tцbbfйle rцgzнtхvel kaphatу, hogy minden fegyverre fel lehessen szerelni.</text>
+	</string>
+	<string id="st_wpn_pm">
+		<text>PMm</text>
+	</string>
+	<string id="st_wpn_pm_descr">
+		<text>A szovjet цrцksйg egyik leggyakoribb fegyvere a Zуnбban. Megbнzhatу йs olcsу, бm a hozzб tartozу tбr kicsi, pontossбga pedig nem megfelelх. Sok kezdх elsхdleges fegyverkйnt hasznбlja. A fegyver 9x18 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_pb">
+		<text>PB1s</text>
+	</string>
+	<string id="st_wpn_pb_descr">
+		<text>Beйpнtett hangtompнtуval rendelkezх pisztoly, amit korбbban az orosz Szpecnaz hasznбlt. Bбr elavult darab, de igen hatйkony, ha jу kezekbe kerьl. A fegyver 9x18 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_fort">
+		<text>Fora-12</text>
+	</string>
+	<string id="st_wpn_fort_descr">
+		<text>Ukrбn gyбrtmбnyъ rendхrsйgi pisztoly. Nagyobb pontossбgъ, jobb a kialakнtбsa, йs nagyobb a hozzб valу tбr, mint a Makarov esetйben. Mindez a megbнzhatуsбg rovбsбra megy. A fegyver 9x18 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_beretta">
+		<text>Martha</text>
+	</string>
+	<string id="st_wpn_beretta_descr">
+		<text>A Martha tнpusъ fegyvert elsхsorban az amerikai hadsereg йs rendхrsйg is hasznбlja, valamint szбmos mбs katonai йs rendfenntartу szervezet a vilбg mбs rйszein. A fegyver az alvilбg kцrйben is hasonlу nйpszerыsйgnek цrvend, kцszцnhetхen erejйnek йs a tбr nagysбgбnak. A fegyver 9x19 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_walther">
+		<text>Walker P9m</text>
+	</string>
+	<string id="st_wpn_walther_descr">
+		<text>Egy tцkйletes, nйmet gyбrtmбnyъ pisztoly. Megbнzhatу, pontos йs a tбr is nagy mйretы – fхleg ennйl a modellnйl, amelyik 9 mm-es parabellum tбrakat hasznбl. A fegyver 9x19 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_hpsa">
+		<text>HPSS-1m</text>
+	</string>
+	<string id="st_wpn_hpsa_descr">
+		<text>A Browning megйrdemli a hнrnevйt, mint a XX. szбzad egyik legjobb kйzifegyvere. Megbнzhatу, erх йs pontos. 13 darab, 9x19 mm-es tцltйny fйr a tбrba.</text>
+	</string>
+	<string id="st_wpn_colt1911">
+		<text>Kora-919</text>
+	</string>
+	<string id="st_wpn_colt1911_descr">
+		<text>A klasszikus automata colt, ami a XX. szбzad minden konfliktusбban kimagaslуan szerepelt. Magabiztosan lйpett az ъj йvszбzadba. Kцzepes mйretы tбrбt nagyszerыen kompenzбlja az erхs .45 -цs tцltйny.</text>
+	</string>
+	<string id="st_wpn_sig220">
+		<text>SIP-t M200</text>
+	</string>
+	<string id="st_wpn_sig220_descr">
+		<text>Ez a modell, amit mйg 1975-ben terveztek, nagyon kцzkedvelt az egйsz vilбgon. Bбr a tбr relatнve kicsi, a fegyver szerkezetileg olyan megbнzhatу, mint egy svбjci уra. Mбsik elхnye az erхs, .45 -цs Colt tцltйny.</text>
+	</string>
+	<string id="st_wpn_usp">
+		<text>UDP Compact</text>
+	</string>
+	<string id="st_wpn_usp_descr">
+		<text>Ez a megbнzhatу fegyver a nйmet minхsйg йs megbнzhatуsбg mintapйldбnya. Ez a kompakt, rцvid hatуtбvъ fegyver fхleg a Zуna veterбnjai kцzцtt nйpszerы. 45 mm-es tцltйnyeket hasznбl.</text>
+	</string>
+	<string id="st_wpn_eagle">
+		<text>Black Kite</text>
+	</string>
+	<string id="st_wpn_eagle_descr">
+		<text>Az igazi hхsцk igazi fegyvere – nagy, nehйz йs szцrnyen halбlos. A Zуnбban csak бra, mйrete йs a vadбszhatу elefбntok hiбnya miatt nem lett olyan nйpszerы. 45 mm-es tцltйnyt hasznбl.</text>
+	</string>
+	<string id="st_wpn_mp5">
+		<text>Viper 5</text>
+	</string>
+	<string id="st_wpn_mp5_descr">
+		<text>A XX. szбzad utolsу nйhбny йvtizedйben a Viper 5 gйppisztolyt a vilбg minden rйszйn hasznбltбk a kьlцnleges erхk йs a rendхrsйg egyarбnt. Miutбn levбltottбk az ъjabb modellek, fokozatosan feltыntek a feketepiacon. Innen kerьltek be a Zуnбba nagyobb mennyisйgben. 9X19 mm-es tцltйnyeket hasznбl.</text>
+	</string>
+	<string id="st_wpn_ak74u">
+		<text>Akm 74/2U</text>
+	</string>
+	<string id="st_wpn_ak74u_descr">
+		<text>Bбr mйretйt йs sъlyбt tekintve ezt a fegyvert gyakran a gйppisztolyok kцzй soroljбk, valуjбban mыkцdйsi mechanizmusa йs a hasznбlt lхszer alapjбn ez egy rohampuska. Figyelemre mйltу a kis mйrete (ami kifejezetten elхnyцs vбrosi harcokban) йs nagy pбncйllyukasztу kйpessйge. Hбtrбnya viszonylag a rцvid lхtбvolsбg йs, hogy sorozatlцvйs kцzben gyorsan felhevьl. 5.45x39 mm-es tцltйnyt hasznбl.</text>
+	</string>
+	<string id="st_wpn_ak74">
+		<text>Akm 74/2</text>
+	</string>
+	<string id="st_wpn_ak74_descr">
+		<text>Ezt a fegyvert 1974-ben terveztйk, 5.45x39 mm-es lцvedйket hasznбl. Egyszerы йs megbнzhatу fegyver. Alacsony elхбllнtбsi kцltsйgы, de nem feltйtlen kцnnyы hasznбlni, йs nem a legpontosabb. A Zуnбban ez az elsхdleges fegyver a hadsereg йs a stalkerek soraiban egyarбnt.</text>
+	</string>
+	<string id="st_wpn_abakan">
+		<text>AC96/2</text>
+	</string>
+	<string id="st_wpn_abakan_descr">
+		<text>Az AK47 alapjбn kйszнtett modell 1996-bуl. Pontossбgra йs rцvid sorozatok leadбsбra terveztйk. 5.45x39 mm-es tцltйnyt hasznбl.</text>
+	</string>
+	<string id="st_wpn_l85">
+		<text>IL 86</text>
+	</string>
+	<string id="st_wpn_l85_descr">
+		<text>Miutбn a brit hadsereg lecserйlte ezt a modellt, nagy mennyisйgben jelentek meg a feketepiacon, majd a Zуnбban is. A puska legnagyobb elхnye a 4x tбvcsх йs a leadott elsх lцvйs nagy pontossбga. A pontossбg csцkken, ha rцvid sorozatokat lхnek vele. A fegyver belsх mechanizmusa nem olyan megbнzhatу. 5.56x45 mm-es lцvedйket hasznбl.</text>
+	</string>
+	<string id="st_wpn_lr300">
+		<text>TRs 301</text>
+	</string>
+	<string id="st_wpn_lr300_descr">
+		<text>A hнres M16 csalбdjбnak egyik legъjabb tagja. Kivйtelesen sima lцvйsйnek, jу tervezйsйnek йs megfelelх sъlyбnak kцszцnhetхen ez a fegyver nagy pontossбggal bнr. Kцnnyen koszolуdik, ami csцkkenti hatйkonysбgбt a harcmezхn. 5.56x45 mm-es lцvedйket hasznбl.</text>
+	</string>
+	<string id="st_wpn_sig550">
+		<text>SGI 5k</text>
+	</string>
+	<string id="st_wpn_sig550_descr">
+		<text>Meglehetхsen ъj, svбjci gyбrtmбnyъ rohampuska, ami NATO lцvedйket hasznбl. A fegyver pontossбga, puha lцvйse, йs magas megbнzhatуsбga miatt kцzkedvelt fegyver. 5.56x45 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_g36">
+		<text>GP 37</text>
+	</string>
+	<string id="st_wpn_g36_descr">
+		<text>Nйmet gyбrtmбnyъ gйpkarabйly, a modern fegyverek egyik legjobb pйldбja – pehelysъlyъ, megbнzhatу йs ergonomikus. 5.56x45 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_fn2000">
+		<text>FT 200M</text>
+	</string>
+	<string id="st_wpn_fn2000_descr">
+		<text>Ez a rohampuska szбmнtуgйppel vezйrelt tыzvezetх rendszerrel йs 40 mm-es grбnбtvetхvel rendelkezik. 5.56x45 mm-es lхszert йs M209 tнpusъ grбnбtot hasznбl.</text>
+	</string>
+	<string id="st_wpn_groza">
+		<text>Tunder S14</text>
+	</string>
+	<string id="st_wpn_groza_descr">
+		<text>A Zуna kihнvбsaiban nagyon kellemes, ha egy ilyen fegyverьnk van: gйpkarabйly йs egyben grбnбtvetх is. Kompakt, megbнzhatу, tцbbfunkciуs fegyver. A katonasбg stalkerei kцzцtt kimondottan kedvelt. 9X39 mm-es tцltйnyt йs VOG-25 tнpusъ grбnбtot hasznбl.</text>
+	</string>
+	<string id="st_wpn_val">
+		<text>SA "Avalanche"</text>
+	</string>
+	<string id="st_wpn_val_descr">
+		<text>A hangtompнtуs Vintar BC mesterlцvйsz puska egy mуdosнtott vбltozata. A fegyver kйpes rцvid sorozatokban lхni, a puskatus behajthatу, йs nagyobb a tбr. Elsхsorban kьlцnleges egysйgek szбmбra terveztйk, akiknek a feladatuk vйgrehajtбsa sorбn csendes, villуdzбs nйlkьli tьzelйsre van szьksйgьk. 9X39 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_vintorez">
+		<text>Vintar BC </text>
+	</string>
+	<string id="st_wpn_vintorez_descr">
+		<text>Mesterlцvйsz puska, melyet kifejezetten csendes йs villanбsmentes hasznбlatra terveztek, beйpнtett hangtompнtуval. Sok stalker szereti, annak ellenйre, hogy a tбr mйrete kicsi. 9X39 mm-es tцltйnyeket hasznбl.</text>
+	</string>
+	<string id="st_wpn_svd">
+		<text>SVDm 2</text>
+	</string>
+	<string id="st_wpn_svd_descr">
+		<text>Az 1960-as йvektхl kezdve szйles kцrben alkalmazott fegyver a szovjet, majd az orosz katonai mыveletek sorбn. Kimagaslу megbнzhatуsбga йs kцnnyы hasznбlhatуsбga tette ismertй. 7.62 7H14 tнpusъ lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_svu">
+		<text>SVUmk2</text>
+	</string>
+	<string id="st_wpn_svu_descr">
+		<text>Modernizбlt mesterlцvйsz puska. Gyorsabb, precнzebb lцvйsei йs pehelysъlya szбmtalan stalker elismerйsйt kivнvta. 7.62 7H14 tнpusъ lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_rp">
+		<text>RP-74</text>
+	</string>
+	<string id="st_wpn_rp_descr">
+		<text>Sъlya йs pontatlansбga ellenйre nagyon sokan szeretik a Zуnбban ezt a kцnnyы gйppisztolyt. Legtцbb esetben lйtszбmfцlйnyben lйvх ellensйges csapatok vagy mutбnsfйszkek ellen hasznбljбk. 7,62 PP tнpusъ lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_bm16">
+		<text>Sцrйtes puska</text>
+	</string>
+	<string id="st_wpn_bm16_descr">
+		<text>Lefыrйszelt csцvы vadбszpuska, kйt pбrhuzamos csхvel. Sokkal kцnnyebb йs robusztusabb, mint egy teljes mйretы sцrйtes, de csak kцzeli cйlpontokkal szemben hatбsos. Az egyik legkedveltebb fegyver a kezdх stalkerek kцzцtt. 12X70 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_toz34">
+		<text>vadбszpuska</text>
+	</string>
+	<string id="st_wpn_toz34_descr">
+		<text>Nagyon gyakori йs teljesen бtlagos vadбszpuska. Leggyakrabban a kezdхk hasznбljбk a Zуna peremterьletein. 12X70 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_spas12">
+		<text>SPSA14 </text>
+	</string>
+	<string id="st_wpn_spas12_descr">
+		<text>Az SPSA huzagolatlan csцvы fйlautomata sцrйtes puskбt mйg az 1970-es йvek vйgйn terveztйk, a rendхrsйg йs a hadsereg бltalбnos cйlъ fegyverekйnt. Bбr kimondottan megbнzhatу йs rugalmas, meglehetхsen vaskos, komplex йs drбga. Talбn az Zуna legjobb kцzelharci fegyvere. 12X70 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_wincheaster1300">
+		<text>Chaser 13</text>
+	</string>
+	<string id="st_wpn_wincheaster1300_descr">
+		<text>Egy rendkнvьl megbнzhatу, amerikai gyбrtmбnyъ, huzagolatlan csцvы, tцbblцvetы sцrйtes, amit kimondottan a legkemйnyebb harctйri kцrьlmйnyekhez terveztek. Minden alkatrйsze korrуziубllу anyaggal van befedve. 12X70 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_rpg7">
+		<text>RPG-7u </text>
+	</string>
+	<string id="st_wpn_rpg7_descr">
+		<text>Az 1960-as йvek grбnбtvetхje a hadsereg raktбraibуl kerьlt be a Zуnбba. Bбr hatalmas mйrete йs sъlya miatt nem feltйtlen ez a stalker legjobb fegyvere, de van olyan eset, amikor jу szolgбlatot tehet. OG-7V tнpusъ grбnбtokat hasznбl.</text>
+	</string>
+	<string id="st_wpn_rg6">
+		<text>Bulldog 6</text>
+	</string>
+	<string id="st_wpn_rg6_descr">
+		<text>Ez a forgуtбras grбnбtvetх nйlkьlцzhetetlen, amikor nagy terьleten tбmadу mutбnsokat kell elintйzni, jуl vйdett, mozdulatlan cйlpontokat kell megtбmadni, vagy egyszerыen csak kimondottan kitartу ellensйggel szemben kell fellйpni. VOG-25 tнpusъ grбnбtokat hasznбl.</text>
+	</string>
+	<string id="st_wpn_gauss">
+		<text>EM1 puska</text>
+	</string>
+	<string id="st_wpn_gauss_descr">
+		<text>Egy kнsйrleti elektromбgneses puska, amivel tбvolrуl mыkцdйskйptelennй tehetхk  az elektromos eszkцzцk. Йlх cйlpont ellen hatбstalan. Akkumulбtorok tбplбljбk.</text>
+	</string>
+	<string id="st_wpn_mp5_m1">
+		<text>Viper 5m</text>
+	</string>
+	<string id="st_wpn_mp5_m1_descr">
+		<text>A Viper tнpusъ gйppisztoly mуdosнtott vбltozata. Az alkatrйszek jobb цsszehangolбsбnak kцszцnhetхen a fegyvernek magasabb a torkolati sebessйge. 9X19 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_hpsa_m1">
+		<text>HPCS-1</text>
+	</string>
+	<string id="st_wpn_hpsa_m1_descr">
+		<text>Ez a fegyver az XPSS-1m tнpusъ pisztoly mуdosнtott vбltozata, amit kemйny kцrnyezeti viszonyok kцzцtt is lehet hasznбlni. A szinte teljesen hьlyebiztos fegyver 9x19 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_fort_m1">
+		<text>Fora-14</text>
+	</string>
+	<string id="st_wpn_fort_m1_descr">
+		<text>A Fora-14 modell tцltйnytбra nagyobb, mint az alapmodellй. 9X18 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_ak74_m1">
+		<text>Akv 74</text>
+	</string>
+	<string id="st_wpn_ak74_m1_descr">
+		<text>Az Akm 74/2 tнpusъ gйpkarabйly modernizбlt vбltozata. Az бttervezйsnek kцszцnhetхen tыzgyorsasбga percenkйnt 100 lцvйsre nцvekedett. Eltбvolнtottak rуla nйhбny elemet, hogy a csх kцnnyebb legyen. Emiatt a tбvcsцvet nem lehet felszerelni rб. 5,45x39 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_eagle_m1">
+		<text>Big Ben</text>
+	</string>
+	<string id="st_wpn_eagle_m1_descr">
+		<text>Igazi Gуliбt a pisztolyok kцzцtt. Az amъgy is hosszъ csцvйt kiegйszнtettйk egy бllandу toldattal. Kimagaslу erхt kйpvisel йs .45 kaliberes lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_sig550_m1">
+		<text>SGI 5.45</text>
+	</string>
+	<string id="st_wpn_sig550_m1_descr">
+		<text>Nйhбny ьgyes kezы ember mуdosнtotta az SGI 5k tнpusъ fegyvert, hogy az alkalmas legyen a szovjet gyбrtmбnyъ lхszerek fogadбsбra, ami a Zуnбban nagyon elterjedt. Mindezt ъgy oldottбk meg, hogy a puska kйpes hasznбlni az eredeti 5.45x39 mm-es lхszert is.</text>
+	</string>
+	<string id="st_wpn_abakan_m1">
+		<text>AC96sl</text>
+	</string>
+	<string id="st_wpn_abakan_m1_descr">
+		<text>Az AC96/2 tнpusъ fegyver hangtompнtуs vбltozata. A fegyver ьgyesen kialakнtott, hangtompнtуs csцvet kapott, ami nцvelte pontossбgбt, megtartva a fegyver eredeti, rohampuska funkciуjбt. 5,45x39 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_wincheaster1300_m1">
+		<text>„Szabadsбg” ьldцzх</text>
+	</string>
+	<string id="st_wpn_wincheaster1300_m1_descr">
+		<text>A tцbbi sцrйtestхl eltйrхen ennek a fegyvernek huzagolt csцve volt. Ez teszi lehetхvй, hogy ki tudjon hegyes lцvedйkeket йs sцrйtet is. Mindemellett jelentхsen megnцveli a fegyver pontossбgбt, amikor golyуkat lх ki. 12X76 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_vintorez_m1">
+		<text>"Avalanche" Vintar</text>
+	</string>
+	<string id="st_wpn_vintorez_m1_descr">
+		<text>Hibrid vбltozat, mely kombinбlja mindkйt modell elхnyeit. Нgy a tбrkapacitбs 20 lцvedйkre nхtt, йs megnхtt a fegyver pontossбga. A fegyver 2x nagyнtбsъ tбvcsцvйt kцzeli cйlpontok bemйrйsйre terveztйk. 9X39 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_spas12_m2">
+		<text>SPSA-AUT</text>
+	</string>
+	<string id="st_wpn_spas12_m2_descr">
+		<text>Az SPSA-AUT egy fйlautomata sцrйtes puska, melyet a Szolgбlat mыhelyйben kйszнtettek, azzal a cйllal, hogy a szцrnyek ellen harcoljanak vele. A fejlesztett lхszeradagolу berendezйsnek kцszцnhetхen megnхtt a tыzgyorsasбga, йs kiemelkedх az цsszetartбsa amikor sцrйtet hasznбlnak benne. A megnцvelt tбr egyszerre 10 darab, 12x70 mm–es lхszert tбrol.</text>
+	</string>
+	<string id="st_wpn_lr300_m1">
+		<text>TPS „Balkezes”</text>
+	</string>
+	<string id="st_wpn_lr300_m1_descr">
+		<text>Ez a fegyver a hozzбйrtйs mintapйldбnya, kimondottan a tulajdonos igйnyeihez alakнtva. A tervezйs felбldozza a tыzgyorsasбgot a pontossбg nцvelйse йrdekйben, szуval ha ugyanazt a cйlpontot akarod tнzszer eltalбlni, tнz mбsodpercen belьl – erre a fegyverre van szьksйged. 5,56x45 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_l85_m1">
+		<text>IL86s</text>
+	</string>
+	<string id="st_wpn_l85_m1_descr">
+		<text>Az IL86 tнpusъ puska mesterlцvйsz vбltozata. Meghosszabbнtott csцve nagyobb kezdхsebessйget biztosнt, ezбltal laposabb lesz a kilхtt lцvedйk rцppбlyбja йs nagyobb tбvolsбgon is pontos lesz. 5,56x45 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_fn2000_m1">
+		<text>FT 202M</text>
+	</string>
+	<string id="st_wpn_fn2000_m1_descr">
+		<text>Egy rohampuska modernizбlt vбltozata. Kimondottan a rцvid sorozatok pontossбgбra koncentrбlva kйszьlt. A csх alatt elhelyezkedх grбnбtvetх lцvedйk stabilizбtorral van felszerelve, jelentхsen csцkkentve a fegyver szуrбsбt. Ennek a mуdosнtбsnak az a hбtrбnya, hogy a grбnбtvetх hasznбlhatatlan lesz. 5,56x45 mm-es lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_svu_m1">
+		<text>SV-Am</text>
+	</string>
+	<string id="st_wpn_svu_m1_descr">
+		<text>Egy mesterlцvйsz puska automata vбltozata, sokkal puhбbb visszarъgбssal rendelkezik, ami lehetхvй teszi a gyorsabb, pontosabb tьzelйst. 7,62 7H14 tнpusъ lхszert hasznбl.</text>
+	</string>
+	<string id="st_wpn_groza_m1">
+		<text>Tunder S14sn</text>
+	</string>
+	<string id="st_wpn_groza_m1_descr">
+		<text>A Tunder S14 tнpusъ gйpkarabйly mesterlцvйsz vбltozata. Ez a kiegyensъlyozott fegyver alkalmas pontos, automata lцvйsek leadбsбra. A csх alatti grбnбtvetх is hasznos lehet. 9X39 mm-es lхszert йs VOG-25 tнpusъ grбnбtot hasznбl.</text>
+	</string>
+	<string id="ammo-9x39-ap_descr">
+		<text>9x39 mm-es pбncйltцrх lцvedйk. Hangsebessйg alatti sebessйgйhйhez kйpest figyelemre mйltу megбllнtу ereje van a kaliberйnek kцszцnhetхen. A lцvedйk speciбlis tervezйse lehetхvй teszi, hogy a legtцbb pбncйlzaton бthatoljon. Tunder S14 йs SA Avalanche gйpkarabйlyoknбl, йs egyedi gyбrtбsъ Vintar BC mesterlцvйsz puskбknбl hasznбljбk.</text>
+	</string>
+	<string id="st_knife">
+		<text>Kйs</text>
+	</string>
+	<string id="ammo_minigame_descr">
+		<text>Lхszer, a cйllцvцlde egyedi jelzйsйvel.</text>
+	</string>
+	<string id="ammo_minigame_name">
+		<text>Cйllцvцlde lхszer</text>
+	</string>
+</string_table>

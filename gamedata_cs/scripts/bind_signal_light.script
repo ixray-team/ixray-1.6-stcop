@@ -78,7 +78,7 @@ function signal_light_binder:net_destroy()
 end
 
 function signal_light_binder:launch()
-	if not(device().precache_frame < 1 and (level.get_time_hours() < 3 or level.get_time_hours() > 22)) then
+	if not(db.actor~=nil and (level.get_time_hours() < 3 or level.get_time_hours() > 22)) then
 		return false
 	end
 

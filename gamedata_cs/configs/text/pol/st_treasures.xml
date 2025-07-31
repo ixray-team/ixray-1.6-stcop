@@ -1,0 +1,1797 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_val_box_01_2">
+		<text>Skrzynka w piwnicy</text>
+	</string>
+	<string id="st_val_box_01_2_descr">
+		<text>Zostawiіem swoje rzeczy w piwnicy koіo drzwi z ostrzeїeniem przed niebezpieczeсstwem. Nie mam teraz czasu, ale na pewno po nie wrуcк.</text>
+	</string>
+	<string id="st_val_electric_box_01">
+		<text>Towar w centralce telefonicznej</text>
+	</string>
+	<string id="st_val_electric_box_01_descr">
+		<text>Urz№dziіem sobie schowek w centralce telefonicznej na pierwszym piкtrze opuszczonej fabryki. Poczekam, aї znajdк jeszcze parк artefaktуw, i puszczк wszystko za niezі№ sumkк.</text>
+	</string>
+	<string id="st_val_pipe_o1_base_free">
+		<text>Schowek na koсcu kolektora</text>
+	</string>
+	<string id="st_val_pipe_o1_base_free_descr">
+		<text>Przypadkiem wlazіem do koсcуwki kolektora pod baz№. Wygl№daіa na niezіy schowek, wiкc zostawiіem tam trochк towaru w poprzecznej rurze.</text>
+	</string>
+	<string id="st_val_pipe_02">
+		<text>Towar w rurze</text>
+	</string>
+	<string id="st_val_pipe_02_descr">
+		<text>Zrobiіem schowek w rurze na parterze opuszczonej fabryki, koіo schodуw.</text>
+	</string>
+	<string id="st_val_pipe_02_0000">
+		<text>Rura pod zbiornikiem</text>
+	</string>
+	<string id="st_val_pipe_02_0000_descr">
+		<text>Sfora psуw zwкszyіa mуj њlad, gdy przechodziіem koіo gospodarstwa, wiкc zostawiіem swуj towar w rurze pod zbiornikiem i daіem nogк. Zabiorк go, jak bкdк mуgі.</text>
+	</string>
+	<string id="st_val_pipe_valve_01_01">
+		<text>Schowek w fabryce</text>
+	</string>
+	<string id="st_val_pipe_valve_01_01_descr">
+		<text>Solidny schowek w opuszczonej fabryce. Po drugiej stronie wejњcia, w poprzecznej rurze z zaworem. Јatwo j№ pomyliж z innymi podobnymi.</text>
+	</string>
+	<string id="st_val_rucksack_01">
+		<text>Plecak w kabinie</text>
+	</string>
+	<string id="st_val_rucksack_01_descr">
+		<text>Powinienem zabraж swуj plecak z przedniego siedzenia przewrуconej ciкїarуwki. Musiaіem go tam ostatnio zostawiж, їeby nie dobrali mi siк do dupy.</text>
+	</string>
+	<string id="st_val_rucksack_01_free_base">
+		<text>Schowek pod jodі№</text>
+	</string>
+	<string id="st_val_rucksack_01_free_base_descr">
+		<text>Obym nie zapomniaі, pod ktуr№ jodі№ zostawiіem swуj towar. Niedaleko jest wlot kolektora, ale samo drzewo niczym siк nie wyrуїnia.</text>
+	</string>
+	<string id="st_val_rucksack_02">
+		<text>Plecak na drzewie</text>
+	</string>
+	<string id="st_val_rucksack_02_descr">
+		<text>Wszyscy chowaj№ towar pod ziemi№, a ja swуj schowaіem na drzewie. Na pewno nikt tam nie bкdzie szukaі!</text>
+	</string>
+	<string id="st_val_rucksack_02_02">
+		<text>Schowek pod dachem</text>
+	</string>
+	<string id="st_val_rucksack_02_02_descr">
+		<text>Nie martwiк siк o swуj towar. Nawet jeњli ktoњ bкdzie go szukaі, musiaіby skakaж po belkach jak wiewiуrka, їeby go znaleџж.</text>
+	</string>
+	<string id="st_val_rucksack_02_03">
+		<text>Schowek na wieїy</text>
+	</string>
+	<string id="st_val_rucksack_02_03_descr">
+		<text>Powiedziaіem partnerowi, їe zgubiіem swуj plecak po drodze, a ten frajer uwierzyі. Naprawdк schowaіem go na wieїy ciњnieс. Ci№gle tam na mnie czeka.</text>
+	</string>
+	<string id="st_val_rucksack_02_2">
+		<text>Plecak w windzie</text>
+	</string>
+	<string id="st_val_rucksack_02_2_descr">
+		<text>Podczas strzelaniny nie miaіem czasu porz№dnie ukryж swojego towaru. Wrzuciіem go do rury pod deskami. Wrуcк po niego w dogodnym momencie.</text>
+	</string>
+	<string id="st_val_instrument_case_01">
+		<text>Walizka њlusarza</text>
+	</string>
+	<string id="st_val_instrument_case_01_descr">
+		<text>Znalazіem walizkк naleї№c№ dawniej do њlusarza i schowaіem w niej mуj "skarb". W dogodnym momencie przeniosк go w bezpieczniejsze miejsce.</text>
+	</string>
+	<string id="st_val_seif_01">
+		<text>Sejf w fabryce</text>
+	</string>
+	<string id="st_val_seif_01_descr">
+		<text>Jeњli ktoњ to czyta, to znaczy, їe w№cham kwiatki od spodu. Wiкc jeњli chodzi o towar w sejfie - mam nadziejк, їe nigdy siк do niego nie dostaniesz, dupku!</text>
+	</string>
+	<string id="st_val_seif_02_descr">
+		<text>Nie wiedziaіem, czy przeїyjк tк potyczkк, wiкc schowaіem swуj towar w zardzewiaіym sejfie na opuszczonym gospodarstwie. Czas go zabraж.</text>
+	</string>
+	<string id="st_val_trees_log_01">
+		<text>Pieniek na wyspie</text>
+	</string>
+	<string id="st_val_trees_log_01_descr">
+		<text>Mуj kumpel miaі przy sobie trochк niezіego towaru, jak go napadli na bagnach. Nie przeїyі, ale zd№їyі mi powiedzieж, їe ukryі czкњж w sprуchniaіym pieсku niedaleko anteny. Powinienem zabraж stamt№d te rzeczy.</text>
+	</string>
+	<string id="st_val_trees_log_01_1">
+		<text>Sprуchniaіa kіoda</text>
+	</string>
+	<string id="st_val_trees_log_01_1_descr">
+		<text>Nie ufam swojemu partnerowi. Pewnie bкdzie prуbowaі mnie obrobiж, wiкc chowam przed nim swуj towar. Zrobiіem schowek niedaleko mostu na wyspк, w drewnianej kіodzie. Mam nadziejк, їe go nie znajdzie.</text>
+	</string>
+	<string id="st_val_trees_stump_01">
+		<text>Sprуchniaіy pieniek</text>
+	</string>
+	<string id="st_val_trees_stump_01_descr">
+		<text>Niedawno uciekaіem przed dzikami i zostawiіem swуj towar  w sprуchniaіym pniu niedaleko starego gospodarstwa.</text>
+	</string>
+	<string id="st_val_trees_stump_01_0000">
+		<text>Pieс koіo wzgуrza</text>
+	</string>
+	<string id="st_val_trees_stump_01_0000_descr">
+		<text>Zrobiіem sobie schowek u stуp wzgуrza, pod starym pniem drzewa. To dobre miejsce, mam nadziejк, їe szczкњcie bкdzie mi sprzyjaж i dorzucк tam jeszcze co nieco.</text>
+	</string>
+	<string id="st_val_trees_stump_01_1">
+		<text>Pieс koіo drewnianego pomostu</text>
+	</string>
+	<string id="st_val_trees_stump_01_1_descr">
+		<text>Widziaіem, jak Kola krкciі siк parк razy koіo pnia na wyspie. Pewnie trzyma tam swуj towar, stary kutwa. Niech jeszcze trochк nazbiera, wtedy tam wpadnк.</text>
+	</string>
+	<string id="st_val_trees_zaz968">
+		<text>Stary Zaporoїec</text>
+	</string>
+	<string id="st_val_trees_zaz968_descr">
+		<text>Frajerzy siк gіowi№, gdzie znika ich towar! Ha, ha, ha! Chowam go w starym Zaporoїcu niedaleko Bagien. Na pewno nikt nie bкdzie tam szukaі.</text>
+	</string>
+	<string id="st_yan_electric_box_01">
+		<text>Skrzynka elektryczna w fabryce</text>
+	</string>
+	<string id="st_yan_electric_box_01_descr">
+		<text>Zajrzaіem do PDA Andrieja i dowiedziaіem siк, їe jak "mуzgotrzep" przestaі dziaіaж, Andriej zrobiі sobie schowek w przerdzewiaіej skrzynce elektrycznej w fabryce.</text>
+	</string>
+	<string id="st_yan_electric_box_02">
+		<text>Deska rozdzielcza w transformatorowni</text>
+	</string>
+	<string id="st_yan_electric_box_02_descr">
+		<text>Jak caіa fabryka przestawaіa dziaіaж, zostawiіem swoje rzeczy za desk№ rozdzielcz№ w transformatorowni.</text>
+	</string>
+	<string id="st_yan_instrument_case_01">
+		<text>Walizka w fabryce</text>
+	</string>
+	<string id="st_yan_instrument_case_01_descr">
+		<text>Znalazіem w hangarze stary zestaw narzкdziowy. Coњ w nim grzechotaіo, ale nie miaіem czasu zajrzeж. Zostawiіem go tam na dogodny moment.</text>
+	</string>
+	<string id="st_yan_instrument_case_01_0000">
+		<text>Walizeczka w ciкїarуwce</text>
+	</string>
+	<string id="st_yan_instrument_case_01_0000_descr">
+		<text>Niezіe miejsce na schowek - pomiкdzy kabin№ a podіog№. Miejscowe zombi i promieniowanie stanowi№ naturaln№ ochronк.</text>
+	</string>
+	<string id="st_yan_pipe_01">
+		<text>Schowek obok ogrodzenia</text>
+	</string>
+	<string id="st_yan_pipe_01_descr">
+		<text>Schowaіem co nieco przy przeciкciu rur obok pojazdu budowlanego, przy ogrodzeniu.</text>
+	</string>
+	<string id="st_yan_pipe_02">
+		<text>Drobiazgi ukryte w rurze</text>
+	</string>
+	<string id="st_yan_pipe_02_descr">
+		<text>Zabraіem ze sob№ najcenniejsze rzeczy, a resztк ukryіem w rurze w pomieszczeniu z dziur№ w њcianie.</text>
+	</string>
+	<string id="st_yan_rucksack_01">
+		<text>Plecak koіo wejњcia</text>
+	</string>
+	<string id="st_yan_rucksack_01_descr">
+		<text>Musiaіem zostawiж peіen plecak towaru w ruinach obok wejњcia. Ciekawe, czy ktoњ go juї znalazі...</text>
+	</string>
+	<string id="st_yan_rucksack_02">
+		<text>Schowek w szybie wentylacyjnym</text>
+	</string>
+	<string id="st_yan_rucksack_02_descr">
+		<text>Hej, Tocha, pamiкtasz wspуіrzкdne i punkt odniesienia? Plecak jest w szybie wentylacyjnym obok przebitej њciany budynku. Pozdrawiam, Sowa.</text>
+	</string>
+	<string id="st_yan_rucksack_02_0000">
+		<text>Plecak pod siedzeniem</text>
+	</string>
+	<string id="st_yan_rucksack_02_0000_descr">
+		<text>Nie miaіem czasu na zastanowienie, wiкc wsadziіem towar pod siedzenie kierowcy w zardzewiaіym UAZ-ie.</text>
+	</string>
+	<string id="st_yan_rucksack_02_0001">
+		<text>Schowek w skrzyni biegуw dџwigu</text>
+	</string>
+	<string id="st_yan_rucksack_02_0001_descr">
+		<text>Bуg wie, co mnie skіoniіo, їeby schowaж swуj towar tak wysoko. Teraz nawet ja nie mogк siк tam dostaж!</text>
+	</string>
+	<string id="st_yan_seif_01">
+		<text>Schowek w sejfie</text>
+	</string>
+	<string id="st_yan_seif_01_descr">
+		<text>Mam najlepszy schowek w caіej Zonie. Jest w sejfie na terenie fabryki.</text>
+	</string>
+	<string id="st_yan_trees_log_01">
+		<text>Wydr№їona kіoda</text>
+	</string>
+	<string id="st_yan_trees_log_01_descr">
+		<text>Schowaіem swoje rzeczy w wydr№їonej kіodzie obok "ciernia".</text>
+	</string>
+	<string id="st_yan_trees_log_01_0000">
+		<text>Kіoda koіo wzgуrza</text>
+	</string>
+	<string id="st_yan_trees_log_01_0000_descr">
+		<text>Z fabryki zaczкіy wyіaziж zombie i musiaіem rozstaж siк ze swoim towarem - nie byіo innego wyjњcia. Schowaіem go w kіodzie u stуp wzgуrza.</text>
+	</string>
+	<string id="st_yan_trees_stump_01">
+		<text>Pieс koіo wieїy</text>
+	</string>
+	<string id="st_yan_trees_stump_01_descr">
+		<text>Zrobiіem kolejny schowek w pniu na wzgуrzu, gdzie stoi wieїa wysokiego napiкcia. Wszyscy myњl№, їe chodzк tam podziwiaж widoki, debile!</text>
+	</string>
+	<string id="gar_equipment_pipe_01_ss">
+		<text>Rozszerzony koniec rury</text>
+	</string>
+	<string id="gar_equipment_pipe_01_ss_descr">
+		<text>Zrobiіem schowek w rozszerzonym koсcu rury, na kupie radioaktywnych њmieci.</text>
+	</string>
+	<string id="gar_equipment_pipe_02_ss">
+		<text>Rura obok silnika</text>
+	</string>
+	<string id="gar_equipment_pipe_02_ss_descr">
+		<text>Obok starego silnika na zіomowisku jest rura z moim towarem.</text>
+	</string>
+	<string id="st_agr_cross_1">
+		<text>Pod krzyїem</text>
+	</string>
+	<string id="st_agr_cross_1_descr">
+		<text>Agroprom, krzaki, krzyї. Nagrobek pod krzyїem.</text>
+	</string>
+	<string id="st_agr_electric_box_02">
+		<text>Panel elektryczny w warsztacie</text>
+	</string>
+	<string id="st_agr_electric_box_02_descr">
+		<text>Ten sukinsyn Susznic zabiera nam caі№ zdobycz. Pieprzony dziadyga. Chowam przed nim mуj towar w panelu elektrycznym na pierwszym piкtrze.</text>
+	</string>
+	<string id="st_agr_instrument_case_01">
+		<text>Ci№gnik</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0000">
+		<text>Samochуd w garaїu</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0000_descr">
+		<text>Chowam moje rzeczy w bagaїniku terenуwki dowуdcy. O ile nigdzie nie odjedzie, mуj towar jest bezpieczny.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0001">
+		<text>Skrzynka pod wagonem</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0001_descr">
+		<text>Skrzynka narzкdziowa pod wagonem w Agropromie.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0002">
+		<text>Autobus na przystanku</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0002_descr">
+		<text>Skrzynka narzкdziowa na przystanku autobusowym, niedaleko neutralnej bazy.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_descr">
+		<text>Jak Timocha naprawiі ci№gnik, nar№baliњmy siк i ruszyliњmy na przejaїdїkк po nocy. Wyskoczyіa na nas pijawka. Musieliњmy siк zmywaж w podskokach i zostawiliњmy tam skrzynkк z naszym towarem.</text>
+	</string>
+	<string id="st_agr_pipe_02">
+		<text>Rura w gruzowisku</text>
+	</string>
+	<string id="st_agr_pipe_02_descr">
+		<text>Schowek: zablokowane wejњcie do podziemi, w rurze w ksztaіcie litery L.</text>
+	</string>
+	<string id="st_agr_rucksack_01">
+		<text>Niczyj plecak</text>
+	</string>
+	<string id="st_agr_rucksack_01_0000">
+		<text>Baza stalkerуw</text>
+	</string>
+	<string id="st_agr_rucksack_01_0000_descr">
+		<text>Wrzuciіem mуj plecak na drzewo, bo inaczej wszyscy by siк skapowali, їe to ja zaіatwiіem Witalija. Najkrуtsz№ drog№ moїna siк tam dostaж przez rury w neutralnej bazie.</text>
+	</string>
+	<string id="st_agr_rucksack_01_descr">
+		<text>Zauwaїyіem go na drzewie niedaleko bazy "Powinnoњci", ale nie miaіem czasu po niego wchodziж.</text>
+	</string>
+	<string id="st_agr_rucksack_02">
+		<text>Rura na Bagnach</text>
+	</string>
+	<string id="st_agr_rucksack_02_0000">
+		<text>Zgubiony plecak</text>
+	</string>
+	<string id="st_agr_rucksack_02_0000_descr">
+		<text>Odpoczywaliњmy na skaіach, wracaj№c z wyprawy, i zgubiіem swуj plecak. Wrуcк po niego, jak bкdк miaі czas.</text>
+	</string>
+	<string id="st_agr_rucksack_02_0001">
+		<text>Plecak montera</text>
+	</string>
+	<string id="st_agr_rucksack_02_0001_descr">
+		<text>Musiaіem wejњж na sam szczyt wieїy, zanim nasi ludzie odgonili te cholerne psy. Musiaіem zostawiж plecak w krzakach.</text>
+	</string>
+	<string id="st_agr_rucksack_02_descr">
+		<text>Moja skrytka jest w rurze na Bagnach. Towar jest w plecaku.</text>
+	</string>
+	<string id="st_agr_seif_01">
+		<text>Sejf w krzakach</text>
+	</string>
+	<string id="st_agr_seif_01_descr">
+		<text>Prуbowaliњmy przetachaж ten sejf peіen towaru przez w№wуz. Od deszczu zrobiіo siк takie bіocko, їe ci№gle siк њlizgaliњmy i przewracaliњmy, aї w koсcu zostawiliњmy go po drodze.</text>
+	</string>
+	<string id="st_agr_trees_log_01">
+		<text>Odosobniona kіoda</text>
+	</string>
+	<string id="st_agr_trees_log_01_0000">
+		<text>Jajka wielkanocne</text>
+	</string>
+	<string id="st_agr_trees_log_01_0000_descr">
+		<text>Na Wielkanoc Tocha kazaі nam porobiж schowki dla klanu. Wetkn№іem jedno z tych "jaj wielkanocnych" w kіodк.</text>
+	</string>
+	<string id="st_agr_trees_log_01_descr">
+		<text>Nikt nie bкdzie szukaі mojego schowka w kіodzie na takim zadupiu.</text>
+	</string>
+	<string id="st_agru_treasure_1">
+		<text>Rura w sterowni</text>
+	</string>
+	<string id="st_agru_treasure_1_descr">
+		<text>Jak zaroiіo siк od potworуw, schowaіem czкњж towaru w rurze i wzi№іem nogi za pas</text>
+	</string>
+	<string id="st_agru_treasure_2">
+		<text>Plecak w anomalii</text>
+	</string>
+	<string id="st_agru_treasure_2_descr">
+		<text>Przechodz№c przez most, przypadkowo upuњciіem mуj plecak w skaїone miejsce. Prуbowaіem go wydostaж, ale nie udaіo mi siк.</text>
+	</string>
+	<string id="st_agru_treasure_3">
+		<text>Porzucony kredens</text>
+	</string>
+	<string id="st_agru_treasure_3_descr">
+		<text>Zawsze ceniіem sobie ten kredens. Duїo w nim miejsca. Jak mutanty zaczкіy wyіaziж z dziur, musiaіem zwiewaж i go zostawiіem.</text>
+	</string>
+	<string id="st_agru_treasure_4">
+		<text>Plecak obok zwіok</text>
+	</string>
+	<string id="st_agru_treasure_4_descr">
+		<text>Wredne maіe mutanty, wygl№daj№ce jak szczury albo myszoskoczki, rozerwaіy mojego kumpla na strzкpy. Ledwo zwiaіem - Bogu dziкki, їe obok byіy schody</text>
+	</string>
+	<string id="st_agru_treasure_5">
+		<text>Plecak pod schodami</text>
+	</string>
+	<string id="st_agru_treasure_5_descr">
+		<text>Widziaіem duїy czarny plecak w wodzie pod schodami. Poszedіbym go zabraж, gdyby nie ta cholerna anomalia.</text>
+	</string>
+	<string id="st_esc_cross_2">
+		<text>Pod krzyїem na wzgуrzu</text>
+	</string>
+	<string id="st_esc_cross_2_descr">
+		<text>Schowaіem moj№ zdobycz w faіszywym grobie stalkera na wzgуrzu.</text>
+	</string>
+	<string id="st_esc_instrument_case_01_ramp">
+		<text>Skrzynia na moњcie</text>
+	</string>
+	<string id="st_esc_instrument_case_01_ramp_descr">
+		<text>Schowaіem swoj№ zdobycz w skrzyni na przeciкciu belek mostu. Pot leciaі ze mnie strumieniami, jak siк tam wdrapywaіem.</text>
+	</string>
+	<string id="st_esc_pipe_02_in_crater">
+		<text>Rura pod zwalonym drzewem</text>
+	</string>
+	<string id="st_esc_pipe_02_in_crater_descr">
+		<text>Rozbiliњmy obуz niedaleko osady їуіtodziobуw. Schowaіem swoje rzeczy w rurze pod zwalonym drzewem. Pуџniej je zabiorк.</text>
+	</string>
+	<string id="st_esc_pipe_03_in_crater">
+		<text>Rura w tunelu</text>
+	</string>
+	<string id="st_esc_pipe_03_in_crater_descr">
+		<text>Wrzucaliњmy na prуbк rуїne њmiecie do anomalii i przez przypadek wrzuciliњmy rurк z naszym towarem. Ci№gle tam jest i siк kurzy.</text>
+	</string>
+	<string id="st_esc_rucksack_01_in_chimney">
+		<text>Plecak w rurze od pieca</text>
+	</string>
+	<string id="st_esc_rucksack_01_in_chimney_descr">
+		<text>Jak byіem kotem, zrobiіem sobie maіy schowek w rurze od pieca. Nawet juї nie pamiкtam, co w nim jest.</text>
+	</string>
+	<string id="st_esc_rucksack_01_natree">
+		<text>Schowek na drzewie</text>
+	</string>
+	<string id="st_esc_rucksack_01_natree_descr">
+		<text>Obserwowaіem dworzec autobusowy z drzewa i postanowiіem zostawiж na nim swуj plecak. Najіatwiej wdrapaж siк tam po gaікzi od strony wzgуrza.</text>
+	</string>
+	<string id="st_esc_rucksack_01_pod_train">
+		<text>Pod lokomotyw№</text>
+	</string>
+	<string id="st_esc_rucksack_01_pod_train_descr">
+		<text>Dowуdca kazaі nam pomуc jak najszybciej grupie Nikoіajewa. Wtedy wrzuciіem swуj plecak pod lokomotywк, obok nasypu.</text>
+	</string>
+	<string id="st_esc_rucksack_02_inbush">
+		<text>Plecak za krzakiem</text>
+	</string>
+	<string id="st_esc_rucksack_02_inbush_descr">
+		<text>Pewnej nocy napotkaliњmy bandytуw i doszіo do strzelaniny. Chwilк pуџniej musieliњmy siк stamt№d zmywaж, wiкc wrzuciіem swуj plecak pomiкdzy kamienie za krzakiem.</text>
+	</string>
+	<string id="st_esc_rucksack_02_natree">
+		<text>Plecak pod drewnem</text>
+	</string>
+	<string id="st_esc_rucksack_02_natree_descr">
+		<text>Zakryіem swуj schowek stert№ drewna obok piкtrowego budynku naprzeciw gospodarstwa.</text>
+	</string>
+	<string id="st_esc_seif_03">
+		<text>Sejf w rurze</text>
+	</string>
+	<string id="st_esc_seif_03_0000">
+		<text>Sejf w bazie</text>
+	</string>
+	<string id="st_esc_seif_03_0000_desc">
+		<text>Ziі trzyma swуj towar w sejfie w neutralnej bazie w Kordonie.</text>
+	</string>
+	<string id="st_esc_seif_03_descr">
+		<text>Zrobiliњmy z Koіjanem skrytkк w sejfie na zіomowisku niedaleko wioski nowicjuszy.</text>
+	</string>
+	<string id="st_esc_trees_log_01">
+		<text>Schowek w kіodzie</text>
+	</string>
+	<string id="st_esc_trees_log_01_descr">
+		<text>Zaatakowaіy mnie psy, wiкc nie miaіem wyboru - schowaіem towar w pкkniкtej kіodzie w њrodku pola i zwiaіem do obozu.</text>
+	</string>
+	<string id="st_esc_trees_log_02">
+		<text>Kryjуwka w kіodzie</text>
+	</string>
+	<string id="st_esc_trees_log_02_descr">
+		<text>Zdobyіem wspуіrzкdne kryjуwki martwego stalkera - jest w kіodzie za gospodarstwem.</text>
+	</string>
+	<string id="st_esc_trees_stump_01">
+		<text>Pieс w lesie њwierkowym</text>
+	</string>
+	<string id="st_esc_trees_stump_01_descr">
+		<text>Schowaliњmy z kumplem swуj towar w starym pniu wњrуd jodeі.</text>
+	</string>
+	<string id="st_esc_trees_stump_01_penb_syn_trader">
+		<text>Pieс obok osady</text>
+	</string>
+	<string id="st_esc_trees_stump_01_penb_syn_trader_descr">
+		<text>Zrobiіem swуj schowek niedaleko. Wybraіem pierwszy przyzwoity pieс z dziur№ obok wioski nowicjuszy. Tam chowam wszelk№ zdobycz.</text>
+	</string>
+	<string id="st_esc_trees_stump_02">
+		<text>Pieс w lesie</text>
+	</string>
+	<string id="st_esc_trees_stump_02_descr">
+		<text>Sidorowicz kazaі nam zrobiж schowek obok placуwki prowadz№cej na zewn№trz, niby dla jakiegoњ kota. Ukryіem wszystko pod pniem koіo wzgуrza.</text>
+	</string>
+	<string id="st_esc_trees_stump_03">
+		<text>Pieс obok Kordonu</text>
+	</string>
+	<string id="st_esc_trees_stump_03_descr">
+		<text>W drodze na Wysypisko ukryіem wszystko w pniu w lesie, їeby bandyci nic ode mnie nie zgarnкli.</text>
+	</string>
+	<string id="st_found_new_treasure">
+		<text>Otrzymano informacjк o schowku:</text>
+	</string>
+	<string id="st_gar_electric_box_01">
+		<text>Panel elektryczny w њmieciach</text>
+	</string>
+	<string id="st_gar_electric_box_01_descr">
+		<text>Odіoїyіem co nieco, їeby pуџniej sprzedaж na pchlim targu. Towar jest w panelu elektrycznym obok kabiny przewrуconego dџwigu.</text>
+	</string>
+	<string id="st_gar_electric_box_02">
+		<text>Panel pod szop№</text>
+	</string>
+	<string id="st_gar_electric_box_02_descr">
+		<text>Nie mogк siк doczekaж, kiedy sprzedam towar ukryty w panelu pod szop№ niedaleko st№d.</text>
+	</string>
+	<string id="st_gar_electric_box_02_ss">
+		<text>Panel elektryczny na zіomowisku</text>
+	</string>
+	<string id="st_gar_electric_box_02_ss_descr">
+		<text>Towar jest pod osіon№ panelu elektrycznego w stercie њmieci.</text>
+	</string>
+	<string id="st_gar_pipe_02">
+		<text>Rura na Wysypisku</text>
+	</string>
+	<string id="st_gar_pipe_02_descr">
+		<text>Wіoїyіem swуj towar do odciкtej rury, їeby nikt mi go nie zabraі</text>
+	</string>
+	<string id="st_gar_pipe_05">
+		<text>Rura przy podstawie dџwigu</text>
+	</string>
+	<string id="st_gar_pipe_05_descr">
+		<text>Przy podstawie przewrуconego dџwigu jest rura - tam schowaіem czкњж swoich њwiecideіek, wiesz, na czarn№ godzinк.</text>
+	</string>
+	<string id="st_gar_rucksack_02">
+		<text>Plecak pod jodі№</text>
+	</string>
+	<string id="st_gar_rucksack_02_1_ss">
+		<text>Plecak w kabinie dџwigu</text>
+	</string>
+	<string id="st_gar_rucksack_02_1_ss_descr">
+		<text>Schowaіem swуj plecak w kabinie dџwigu, jak jeszcze staі. Teraz nie mogк siк tam dostaж.</text>
+	</string>
+	<string id="st_gar_rucksack_02_descr">
+		<text>Mуj plecak wraz zawartoњci№ poczeka sobie na lepsze czasy pod t№ jodі№.</text>
+	</string>
+	<string id="st_gar_rucksack_02_ss">
+		<text>Kryjуwka przed wrogami</text>
+	</string>
+	<string id="st_gar_rucksack_02_ss_descr">
+		<text>Wrzuciіem swуj plecak w stertк radioaktywnych њmieci, їeby moi wrogowie go nie dostali.</text>
+	</string>
+	<string id="st_gar_rucksack_03">
+		<text>Schowek na zіomowisku</text>
+	</string>
+	<string id="st_gar_rucksack_03_descr">
+		<text>Wetkn№іem swoje rzeczy pod betonow№ pіytк przy cmentarzysku skaїonych wrakуw. Muszк je szybko odzyskaж, їeby ktoњ mnie nie uprzedziі.</text>
+	</string>
+	<string id="st_gar_rucksack_04">
+		<text>Dach lokomotywy</text>
+	</string>
+	<string id="st_gar_rucksack_04_descr">
+		<text>Zostawiіem swуj maіy plecaczek na dachu lokomotywy. Јatwo siк do niego dostaж z nasypu, ale trudno go zauwaїyж.</text>
+	</string>
+	<string id="st_gar_seif_01">
+		<text>Sejf w kaіuїy</text>
+	</string>
+	<string id="st_gar_seif_01_descr">
+		<text>W№tpiк, by komuњ chciaіo siк grzebaж w zatopionym sejfie w takiej kaіuїy. To dobre miejsce na tymczasowy schowek.</text>
+	</string>
+	<string id="st_gar_seif_03">
+		<text>Sejf pod podpor№</text>
+	</string>
+	<string id="st_gar_seif_03_descr">
+		<text>Wsadziіem mуj towar do sejfu obok znaku ostrzeїenia przed promieniowaniem. Wіamywacz musiaіby nie liczyж siк z їyciem, їeby siк do niego dostaж!</text>
+	</string>
+	<string id="st_gar_trees_log_01">
+		<text>Dziura w kіodzie</text>
+	</string>
+	<string id="st_gar_trees_log_01_descr">
+		<text>Uїyіem dziury w kіodzie niedaleko obozu koncentracyjnego jako schowka.</text>
+	</string>
+	<string id="st_gar_trees_log_02">
+		<text>Kіoda za dкbem</text>
+	</string>
+	<string id="st_gar_trees_log_02_descr">
+		<text>Koіjan daі mi cynk - powiedziaі, їe Zielarz chowa swуj towar w kіodzie za uschniкtym dкbem.</text>
+	</string>
+	<string id="st_gar_trees_log_03">
+		<text>Kіoda w krzakach</text>
+	</string>
+	<string id="st_gar_trees_log_03_descr">
+		<text>Schowaіem swуj towar w kіodzie i zaci№gn№іem j№ w krzaki. Tam nie powinna zwracaж niczyjej uwagi.</text>
+	</string>
+	<string id="st_gar_trees_stump_01">
+		<text>Schowek uciekiniera</text>
+	</string>
+	<string id="st_gar_trees_stump_01_descr">
+		<text>Jeden z kopaczy chciaі zwiaж z naszym towarem, ale Pasterz z chіopakami inaczej siк na to zapatrywali. Rozwalili go, ale nie mogli znaleџж towaru. Tylko ja widziaіem pieс, ktуrego kopacze uїywali jako schowka.</text>
+	</string>
+	<string id="st_gar_trees_stump_03">
+		<text>Samotny schowek</text>
+	</string>
+	<string id="st_gar_trees_stump_03_descr">
+		<text>Wybraіem samotny wydr№їony pieс na schowek - na wypadek, gdyby jeden z naszych chіopakуw prуbowaі mnie obrobiж.</text>
+	</string>
+	<string id="st_gar_trees_stump_04">
+		<text>Schowek obok bazy</text>
+	</string>
+	<string id="st_gar_trees_stump_04_descr">
+		<text>Nie wiem, jak inni, ale ja swуj towar chowam pod samym nosem Jogi - obok ogrodzenia, pod starym pniem.</text>
+	</string>
+	<string id="st_gar_zaz968">
+		<text>Biaіy Zaporoїec</text>
+	</string>
+	<string id="st_gar_zaz968_descr">
+		<text>Nadejdzie dzieс, kiedy Joga nie bкdzie rz№dziі Wysypiskiem. Wtedy wygrzebiк mуj towar z biaіego Zaporoїca i poїegnam siк z Wysypiskiem.</text>
+	</string>
+	<string id="st_hos_electric_box_02">
+		<text>Panel elektryczny w szpitalu</text>
+	</string>
+	<string id="st_hos_electric_box_02_descr">
+		<text>Nasza grupa zrobiіa schowek w panelu elektrycznym na parterze szpitala.</text>
+	</string>
+	<string id="st_hos_rucksack_01">
+		<text>Plecak pod schodami</text>
+	</string>
+	<string id="st_hos_rucksack_01_descr">
+		<text>Jak zdobywaliњmy pierwsze piкtro, musieliњmy pozbyж siк wszystkiego, co nie byіo niezbкdne.</text>
+	</string>
+	<string id="st_hos_seif_01">
+		<text>Barykady w korytarzu</text>
+	</string>
+	<string id="st_hos_seif_01_descr">
+		<text>Tkwiіem pod ostrzaіem na korytarzu na pierwszym piкtrze szpitala. Musiaіem schowaж towar w starym sejfie na barykadach.</text>
+	</string>
+	<string id="st_lim_electric_box_01">
+		<text>Rura w kanaіach</text>
+	</string>
+	<string id="st_lim_electric_box_01_2">
+		<text>Panel elektryczny w Radiofali</text>
+	</string>
+	<string id="st_lim_electric_box_01_2_descr">
+		<text>Jak zdobywaliњmy budynek instytutu, znalazіem czyjњ schowek w panelu elektrycznym na balkonie, ale za bardzo nam siк spieszyіo, їeby zabraж z niego towar.</text>
+	</string>
+	<string id="st_lim_electric_box_01_descr">
+		<text>Znalazіem czyjњ schowek w rurze w kanaіach. Pуjdк tam, jak bкdк w pobliїu.</text>
+	</string>
+	<string id="st_lim_instrument_case_01">
+		<text>Torba we wnкce</text>
+	</string>
+	<string id="st_lim_instrument_case_01_1">
+		<text>Torba na strychu</text>
+	</string>
+	<string id="st_lim_instrument_case_01_1_descr">
+		<text>Odpieraliњmy ataki przez dwa dni. Pod koniec musieliњmy wycofaж siк na dach, ale wtedy przybyіy nasze posiіki. Zauwaїyіem walizkк na strychu, ale zapomniaіem j№ zabraж.</text>
+	</string>
+	<string id="st_lim_instrument_case_01_descr">
+		<text>Przechodziliњmy przez podwуrze, gdy zauwaїyіem przy ogrodzeniu niewielk№ skrzynkк na narzкdzia.</text>
+	</string>
+	<string id="st_lim_pipe_02">
+		<text>Rura pod UAZ-em</text>
+	</string>
+	<string id="st_lim_pipe_02_01">
+		<text>Za garaїami</text>
+	</string>
+	<string id="st_lim_pipe_02_01_descr">
+		<text>Widziaіem czyjњ schowek za garaїami, ale nie miaіem czasu go przejrzeж. Jest w duїej rurze za drzewem.</text>
+	</string>
+	<string id="st_lim_pipe_02_2">
+		<text>Rura w њmietniku</text>
+	</string>
+	<string id="st_lim_pipe_02_2_descr">
+		<text>Przygwoџdzili nas na jakimњ podwуrzu. Byі tam pojemnik na њmiecie, a w њrodku rura, w ktуrej chyba coњ byіo. Jak tylko skoсczymy tutaj, wrуcк tam i sprawdzк.</text>
+	</string>
+	<string id="st_lim_pipe_02_descr">
+		<text>Torba z jakimњ towarem wystawaіa spod UAZ-a. Nie miaіem czasu sprawdziж, ale moїe uda mi siк pуџniej - jeњli wczeњniej nie zginк.</text>
+	</string>
+	<string id="st_lim_rucksack_01">
+		<text>Plecak pod schowkiem na rкkawiczki</text>
+	</string>
+	<string id="st_lim_rucksack_01_descr">
+		<text>Wsadziіem plecak biednego Blaszaka pod deskк rozdzielcz№ starego Moskwicza.</text>
+	</string>
+	<string id="st_lim_rucksack_02_1">
+		<text>Plecak przy ogrodzeniu</text>
+	</string>
+	<string id="st_lim_rucksack_02_12">
+		<text>Rzeczy rannego</text>
+	</string>
+	<string id="st_lim_rucksack_02_12_descr">
+		<text>Trafili Sanka, jak przechodziliњmy przez mur. Musiaі zostawiж swуj plecak, їeby uratowaж tyіek.</text>
+	</string>
+	<string id="st_lim_rucksack_02_1_descr">
+		<text>Gonili mnie, wiкc zostawiіem swуj plecak przy ogrodzeniu pod tymi wspуіrzкdnymi.</text>
+	</string>
+	<string id="st_lim_rucksack_02_2">
+		<text>Plecak truposza</text>
+	</string>
+	<string id="st_lim_rucksack_02_2_descr">
+		<text>Kot obok mnie dostaі granatem - wykitowaі na miejscu. Dan wzi№і jego plecak i wrzuciі go pod most. Trupowi siк nie przyda, a nam moїe.</text>
+	</string>
+	<string id="st_lim_seif_03">
+		<text>Sejf w garaїu</text>
+	</string>
+	<string id="st_lim_seif_03_descr">
+		<text>Szukaliњmy zbiega w garaїach i znaleџliњmy sejf. Powinniњmy kiedy sprуbowaж go otworzyж.</text>
+	</string>
+	<string id="st_lim_trees_log_01">
+		<text>Wpуі zakopana kіoda</text>
+	</string>
+	<string id="st_lim_trees_log_01_descr">
+		<text>Zanim zaіatwiliњmy tego gnoja, widziaіem, jak grzebaі w kіodzie za altan№.</text>
+	</string>
+	<string id="st_lim_trees_stump_01_1">
+		<text>Zawini№tko w pniu</text>
+	</string>
+	<string id="st_lim_trees_stump_01_1_descr">
+		<text>Gdy szykowaliњmy siк do ataku, widziaіem jakieњ zawini№tko w tym pniu.</text>
+	</string>
+	<string id="st_mar_nichka_0000">
+		<text>Schowek obok bunkra</text>
+	</string>
+	<string id="st_mar_nichka_0000_descr">
+		<text>Gang Chiсczyka zbliїaі siк do mnie, wiкc zatopiіem towar obok wіazu do bunkra na bagnach, niedaleko opuszczonego dworca autobusowego.</text>
+	</string>
+	<string id="st_mar_nichka_0001">
+		<text>Pudeіko pod wieї№</text>
+	</string>
+	<string id="st_mar_nichka_0001_descr">
+		<text>Zbieram swуj towar w schowku pod jedn№ z wieї wysokiego napiкcia.</text>
+	</string>
+	<string id="st_mar_nichka_0003">
+		<text>Skrzynka w kabinie ZIЈ-a</text>
+	</string>
+	<string id="st_mar_nichka_0003_descr">
+		<text>Kulawy Alek przyniуsі sk№dњ skrzynkк narzкdziow№ њlusarza. Naіoїyliњmy do niej towaru i schowaliњmy ja w kabinie zardzewiaіego ZIЈ-a.</text>
+	</string>
+	<string id="st_mar_nichka_0004">
+		<text>Rura w przepompowni</text>
+	</string>
+	<string id="st_mar_nichka_0004_descr">
+		<text>Schowaіem coњ w rozszerzonym koсcu rury obok zaworu w starej przepompowni na њrodku bagien.</text>
+	</string>
+	<string id="st_mar_nichka_0005">
+		<text>Rura na bagnach</text>
+	</string>
+	<string id="st_mar_nichka_0005_descr">
+		<text>Miaіem doњж tachania po bagnach swojego towaru, wiкc zostawiіem go na pуіwyspie w rurze z zaworem. Pomyњlaіem, їe dziкki temu bкdк miaі lїej, a towarowi nic siк w trzcinie nie stanie.</text>
+	</string>
+	<string id="st_mar_nichka_0006">
+		<text>Plecak na bagnach</text>
+	</string>
+	<string id="st_mar_nichka_0006_descr">
+		<text>Ledwo uciekіem jednej z tych bagiennych bestii. Zwiewaj№c, zgubiіem plecak, ale nie mam ochoty teraz po niego wracaж.</text>
+	</string>
+	<string id="st_mar_nichka_0007">
+		<text>Zanurzony sejf</text>
+	</string>
+	<string id="st_mar_nichka_0007_descr">
+		<text>Niedaleko zawalonego mostu jest zanurzony w wodzie sejf. Zaufaіem mu i schowaіem do niego swуj towar.</text>
+	</string>
+	<string id="st_mar_nichka_0008">
+		<text>Plecak w trzcinie</text>
+	</string>
+	<string id="st_mar_nichka_0008_descr">
+		<text>Zostawiіem plecak w trzcinie, jak walczyіem z dzikami. Nie mam їadnego punktu odniesienia, tylko wspуіrzкdne miejsca.</text>
+	</string>
+	<string id="st_mar_nichka_0009">
+		<text>Pozostawione artefakty</text>
+	</string>
+	<string id="st_mar_nichka_0009_descr">
+		<text>Przekrкciіem jakiegoњ frajera i zabraіem mu plecak peіen towaru. Postanowiіem ukryж go w trzcinie, їeby nikt mnie z nim nie zіapaі.</text>
+	</string>
+	<string id="st_mar_nichka_0010">
+		<text>Pniak obok drzewa</text>
+	</string>
+	<string id="st_mar_nichka_0010_descr">
+		<text>Postanowiіem schowaж swoje rzeczy w pniaku obok wyschniкtego drzewa. Zabiorк je, gdy bкdк sie їegnaі z Bagnami.</text>
+	</string>
+	<string id="st_mar_nichka_0011">
+		<text>Kіoda obok wieїy</text>
+	</string>
+	<string id="st_mar_nichka_0011_descr">
+		<text>Pкkniкta kіoda niedaleko wieїy wysokiego napiкcia.</text>
+	</string>
+	<string id="st_mar_nichka_0012">
+		<text>Grуb z mask№ przeciwgazow№</text>
+	</string>
+	<string id="st_mar_nichka_0012_descr">
+		<text>Martwym bardziej ufam niї їywym. Mуj schowek jest na cmentarzu, w grobie z mask№ przeciwgazow№ na lewym kraсcu.</text>
+	</string>
+	<string id="st_mar_nichka_0013">
+		<text>Drewniany krzyї</text>
+	</string>
+	<string id="st_mar_nichka_0013_descr">
+		<text>Odіoїyіem co nieco na czarn№ godzinк. Schowek jest w jedynym grobie z drewnianym krzyїem na przycerkiewnym cmentarzu.</text>
+	</string>
+	<string id="st_mar_nichka_0014">
+		<text>Sterta drewna przy cerkwi</text>
+	</string>
+	<string id="st_mar_nichka_0014_descr">
+		<text>Dobry Boїe, zaopiekuj siк moimi rzeczami. Ukryіem je w pкkniкtej kіodzie w stercie drewna.</text>
+	</string>
+	<string id="st_mar_nichka_0015">
+		<text>Schowek w trzcinie</text>
+	</string>
+	<string id="st_mar_nichka_0015_descr">
+		<text>Zostawiіem plecak w trzcinie niedaleko cerkwi. Teraz nie mogк go znaleџж nawet po wspуіrzкdnych z PDA.</text>
+	</string>
+	<string id="st_mar_nichka_0016">
+		<text>Sejf w ziemi</text>
+	</string>
+	<string id="st_mar_nichka_0016_descr">
+		<text>Wsadziіem mуj towar do sefju na brzegu bagna obok cerkwi. Walcie siк, frajerzy!</text>
+	</string>
+	<string id="st_mar_nichka_0017">
+		<text>Torba pod piecem</text>
+	</string>
+	<string id="st_mar_nichka_0017_descr">
+		<text>Co ma wspуlnego gor№cy piec z gor№c№ lask№? Na jednym i drugim moїesz siк sparzyж! Ha, ha. W piecu schowaіem moj№ torbк peіn№ towaru.</text>
+	</string>
+	<string id="st_mar_nichka_0018">
+		<text>Towar w Zaporoїcu</text>
+	</string>
+	<string id="st_mar_nichka_0018_descr">
+		<text>Spкdziliњmy pуі nocy na wpуі zatopionym Zaporoїcu, zanim nasi kumple przyszli nam z pomoc№. Nie wiedziaіem, kto pierwszy do nas dotrze, wiкc schowaіem swуj towar w okolicy. Powinienem go wygrzebaж, pуki њwieci sіoсce.</text>
+	</string>
+	<string id="st_mar_nichka_0019">
+		<text>Pniak obok torуw</text>
+	</string>
+	<string id="st_mar_nichka_0019_descr">
+		<text>Przechodziliњmy obok torуw, gdy usіyszeliњmy strzaіy. Schowaіem mуj towar w pniaku za jakimiњ gіazami na wszelki wypadek.</text>
+	</string>
+	<string id="st_mar_nichka_0020">
+		<text>Rura od zbiornika</text>
+	</string>
+	<string id="st_mar_nichka_0020_descr">
+		<text>Trzymamy z chіopakami towar w wylocie rury, tej z zaworem, biegn№cej od zbiornika na Bagna.</text>
+	</string>
+	<string id="st_mar_nichka_0021">
+		<text>Plecak przy materacu</text>
+	</string>
+	<string id="st_mar_nichka_0021_descr">
+		<text>Gіupi Lecha spaі na materacu w podtopionej іodzi i zapomniaі swojego plecaka.</text>
+	</string>
+	<string id="st_mar_nichka_0022">
+		<text>Skrzynka w kuchni</text>
+	</string>
+	<string id="st_mar_nichka_0022_descr">
+		<text>Odіoїyіem trochк rzeczy do pуџniejszego przehandlowania. S№ w niebieskiej skrzynce w letniej kuchni.</text>
+	</string>
+	<string id="st_mar_nichka_0023">
+		<text>Schowek w kіodzie</text>
+	</string>
+	<string id="st_mar_nichka_0023_descr">
+		<text>Zanim przeszedіem do innej czкњci Bagien, musiaіem odci№їyж plecak. Schowaіem czкњж towaru w pкkniкtej kіodzie.</text>
+	</string>
+	<string id="st_mar_nichka_0024">
+		<text>Schowek w panelu</text>
+	</string>
+	<string id="st_mar_nichka_0024_descr">
+		<text>Panel na zewn№trz transformatorowni na gospodarstwie. Niebezpieczeсstwo! Nie zbliїaж siк!</text>
+	</string>
+	<string id="st_mar_nichka_0025">
+		<text>Skrzynka elektryczna na dworcu autobusowym</text>
+	</string>
+	<string id="st_mar_nichka_0025_descr">
+		<text>Gdy doі№czyіem do gangu Szarego, ukryіem trochк њwiecideіek w skrzynce elektrycznej na dworcu. Kto wie, moїe siк kiedyњ przydadz№.</text>
+	</string>
+	<string id="st_mar_nichka_0026">
+		<text>Plecak na szlaku</text>
+	</string>
+	<string id="st_mar_nichka_0026_descr">
+		<text>Napotkaіem na szlaku potwora, a miaіem przy sobie tylko nуї. Rzuciіem plecak i skoczyіem na niego. Znaleџli mnie pуџniej pуіtora kilometra dalej. Powinienem tam kiedyњ wrуciж.</text>
+	</string>
+	<string id="st_mar_nichka_0027">
+		<text>Pniak obok mіodego drzewa</text>
+	</string>
+	<string id="st_mar_nichka_0027_descr">
+		<text>Hak moїe skubaж frajerуw, ja zbieram towar po trochu i chowam go pod pniakiem obok mіodego drzewa.</text>
+	</string>
+	<string id="st_mar_nichka_0028">
+		<text>Sejf za uschniкtym drzewem</text>
+	</string>
+	<string id="st_mar_nichka_0028_descr">
+		<text>Zbieram towar, їeby wymieniж go na leki dla syna. Chowam go w sejfie za uschniкtym drzewem. Jak tylko bкdк miaі wystarczaj№c№ iloњж, zmywam siк z Zony.</text>
+	</string>
+	<string id="st_mar_nichka_0029">
+		<text>Schowek w krzakach</text>
+	</string>
+	<string id="st_mar_nichka_0029_descr">
+		<text>Po wyjњciu z Bagien nie miaіem siіy iњж, wiкc zostawiіem towar przy њcieїce w krzakach.</text>
+	</string>
+	<string id="st_mar_nichka_0030">
+		<text>Schowek pod ciкїarуwk№</text>
+	</string>
+	<string id="st_mar_nichka_0030_descr">
+		<text>W skrzynce narzкdziowej pod ciкїarуwk№, naprzeciwko mostu.</text>
+	</string>
+	<string id="st_mar_nichka_0031">
+		<text>Na њrodku bagna</text>
+	</string>
+	<string id="st_mar_nichka_0031_descr">
+		<text>Zostawiіem skrzynkк z towarem w samym њrodku bagna, na betonowej pіycie z wystaj№cymi metalowymi prкtami. Zabiorк j№, jak bкdк wychodziі na zewn№trz.</text>
+	</string>
+	<string id="st_mar_nichka_0032">
+		<text>Skrzynka w piecu</text>
+	</string>
+	<string id="st_mar_nichka_0032_descr">
+		<text>Mуj schowek jest w skrzynce, skrzynka w piecu, piec w zgliszczach domu, dom na Bagnach.</text>
+	</string>
+	<string id="st_mar_nichka_0033">
+		<text>Sejf w trzcinie</text>
+	</string>
+	<string id="st_mar_nichka_0033_descr">
+		<text>Nie wiem, sk№d siк wzi№і ten sejf na bagnie, ale nie mogіem siк oprzeж okazji. Trzymam tam teraz swoje rzeczy.</text>
+	</string>
+	<string id="st_mar_nichka_0034">
+		<text>Pieс drzewa na bagnach</text>
+	</string>
+	<string id="st_mar_nichka_0034_descr">
+		<text>Szef powiedziaі, їeby nie braж za duїo towaru. Schowaіem mуj pod pniakiem obok wieїy ciњnieс, w krzakach pod drzewem.</text>
+	</string>
+	<string id="st_mar_nichka_0035">
+		<text>Kіoda na bagnach</text>
+	</string>
+	<string id="st_mar_nichka_0035_descr">
+		<text>Przedzieraj№c siк przez bagna, zauwaїyіem sprуchniaі№ kіodк obok drewnianego pomostu. Pomyњlaіem, їe bкdzie siк њwietnie nadawaж do chowania moich "skarbуw".</text>
+	</string>
+	<string id="st_mar_nichka_0036">
+		<text>Plecak na wyspie</text>
+	</string>
+	<string id="st_mar_nichka_0036_descr">
+		<text>Ganiaі mnie bagienny stwуr. Po paru kilometrach tego maratonu tak siк zmкczyіem, їe musiaіem zostawiж plecak na jednej z wysp.</text>
+	</string>
+	<string id="st_mar_nichka_0037">
+		<text>Wіaz obok stacji</text>
+	</string>
+	<string id="st_mar_nichka_0037_descr">
+		<text>Zostawiіem mуj towar pod jednym z wіazуw obok stacji, їeby nie ukradі mi go jakiњ rabuњ.</text>
+	</string>
+	<string id="st_mar_nichka_0038">
+		<text>Schowek w rurze</text>
+	</string>
+	<string id="st_mar_nichka_0038_descr">
+		<text>Po Mitce pozostaі tylko ten czarny plecak w wielkiej rurze.</text>
+	</string>
+	<string id="st_mar_nichka_0039">
+		<text>Skrzynka narzкdziowa w kabinie</text>
+	</string>
+	<string id="st_mar_nichka_0039_descr">
+		<text>Znalazіem skrzynkк narzкdziow№ na bagnie, wsadziіem tam swoje rzeczy i schowaіem j№ w kabinie dџwigu. Poczekam, aї sprawy siк polepsz№, i j№ zabiorк.</text>
+	</string>
+	<string id="st_mar_nichka_0040">
+		<text>Plecak pod wagonem</text>
+	</string>
+	<string id="st_mar_nichka_0040_descr">
+		<text>Prуbowaіem uciekaж, wiкc zmniejszyіem swoje obci№їenie, zostawiaj№c plecak pod wagonem na torach.</text>
+	</string>
+	<string id="st_mar_nichka_0041">
+		<text>Na krawкdzi kopuіy</text>
+	</string>
+	<string id="st_mar_nichka_0041_descr">
+		<text>Zostawiіem plecak na krawкdzi kopuіy cerkwi. Musiaіem wygl№daж jak kozica, skacz№c po tym dachu.</text>
+	</string>
+	<string id="st_mar_nichka_0042">
+		<text>Pod mostem</text>
+	</string>
+	<string id="st_mar_nichka_0042_descr">
+		<text>Schowaliњmy siк pod mostem, a goni№cy nas kolesie po nim przebiegli. Zostawiіem tam plecak z towarem obok belki.</text>
+	</string>
+	<string id="st_mar_nichka_0043">
+		<text>Pomiкdzy gіazami</text>
+	</string>
+	<string id="st_mar_nichka_0043_descr">
+		<text>Wrzuciіem torbк w szczelinк pomiкdzy trzema gіazami, bo mogіa wpaњж w rкce jakichњ chciwych gnojkуw.</text>
+	</string>
+	<string id="st_mar_nichka_0044">
+		<text>Kіoda pod gіazami</text>
+	</string>
+	<string id="st_mar_nichka_0044_descr">
+		<text>Szukaіem bezpiecznego schowka na mуj towar i znalazіem іadn№ dziuraw№ kіodк pod gіazami w trzcinie.</text>
+	</string>
+	<string id="st_mil_cross_1">
+		<text>Schowek w grobie</text>
+	</string>
+	<string id="st_mil_cross_1_descr">
+		<text>Schowaіem swoje rzeczy pod krzyїem na grobie. Niech spoczywaj№ w pokoju, pуki po nie nie wrуcк.</text>
+	</string>
+	<string id="st_mil_cross_2">
+		<text>Krzyї obok drzewa</text>
+	</string>
+	<string id="st_mil_cross_2_descr">
+		<text>Zrobiіem schowek w grobie obok drzewa.</text>
+	</string>
+	<string id="st_mil_instrument_case_01">
+		<text>Walizka w piecu</text>
+	</string>
+	<string id="st_mil_instrument_case_01_descr">
+		<text>Wsadziіem maі№ walizkк do pieca w rozpadaj№cej siк chacie. Bкdк tam znosiі mуj towar w miarк zbierania.</text>
+	</string>
+	<string id="st_mil_pipe_02">
+		<text>Rura przy wejњciu do bazy</text>
+	</string>
+	<string id="st_mil_pipe_02_descr">
+		<text>Schowaіem towar pod samym nosem chor№їego. Jest w rurze za budk№ wartownika przy wejњciu do bazy.</text>
+	</string>
+	<string id="st_mil_rucksack_01">
+		<text>Plecak przy kominie</text>
+	</string>
+	<string id="st_mil_rucksack_01_0000">
+		<text>Schowek w Moskwiczu</text>
+	</string>
+	<string id="st_mil_rucksack_01_0000_descr">
+		<text>Jak wrуci Maks, dam mu jego plecak, a na razie niech leїy w starym Moskwiczu.</text>
+	</string>
+	<string id="st_mil_rucksack_01_descr">
+		<text>Zostawiіem plecak przy kominie na strychu rozpadaj№cego siк domu. Wrуciіbym po niego, gdyby nie ta pijawka w wiosce.</text>
+	</string>
+	<string id="st_mil_rucksack_02">
+		<text>Plecak pod przyczep№</text>
+	</string>
+	<string id="st_mil_rucksack_02_0000">
+		<text>Schowek pod mostem</text>
+	</string>
+	<string id="st_mil_rucksack_02_0000_descr">
+		<text>Plecak jest w wagonie pod mostem w bazie wojskowej.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0001">
+		<text>Szczelina w tunelu</text>
+	</string>
+	<string id="st_mil_rucksack_02_0001_descr">
+		<text>Jak zrobiіo siк gor№co, wrzuciіem swуj plecak do szczeliny na tunelu, ale zaczepiі siк o prкt. Їal mi byіo odchodziж bez niego - muszк wrуciж i go zabraж.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0002">
+		<text>Schowek w wychodku</text>
+	</string>
+	<string id="st_mil_rucksack_02_0002_descr">
+		<text>W№tpiк, czy ktoњ bкdzie szukaі towaru w wiejskim wychodku. Tam wіaњnie jest mуj schowek, wiкc siк nie martwiк.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0003">
+		<text>Schowek obok ogrodzenia</text>
+	</string>
+	<string id="st_mil_rucksack_02_0003_descr">
+		<text>Zostawiіem plecak biednego Koіjana za hangarem. Miaіem doњж swojego towaru do niesienia.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0004">
+		<text>Plecak pod drzewem</text>
+	</string>
+	<string id="st_mil_rucksack_02_0004_descr">
+		<text>Jak tylko zobaczyіem tego potwora obok wieїy ciњnieс, rzuciіem swуj plecak pod przewrуcone drzewo. W takich chwilach maіe obci№їenie moїe ci uratowaж tyіek.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0005">
+		<text>Plecak w piwnicy</text>
+	</string>
+	<string id="st_mil_rucksack_02_0005_descr">
+		<text>Taki byіem skoіowany po emisji, їe zostawiіem plecak w piwnicy. Wrуcк po niego, jak bкdzie ze mn№ lepiej.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0006">
+		<text>Zapomniany plecak</text>
+	</string>
+	<string id="st_mil_rucksack_02_0006_descr">
+		<text>Wybuch rozniуsі њcianк na kawaіki, a jeden z nich mnie przywaliі. Musiaіem zdj№ж plecak, їeby siк stamt№d wygrzebaж i zrobiж rozpierduchк, a przy tym ostatnim tak siк dobrze bawiіem, їe zapomniaіem o plecaku. Pewie ci№gle tam leїy...</text>
+	</string>
+	<string id="st_mil_rucksack_02_0007">
+		<text>Schowek w kuchni</text>
+	</string>
+	<string id="st_mil_rucksack_02_0007_descr">
+		<text>Zielony plecak w kuchni w jednym z domуw w opuszczonej wiosce. Wspуіrzкdne zapisane.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0008">
+		<text>Schowek pod gіazem</text>
+	</string>
+	<string id="st_mil_rucksack_02_0008_descr">
+		<text>Musiaіem ostatnio spieprzaж i zostawiіem plecak peіen towaru w krzakach pomiкdzy dwoma gіazami.</text>
+	</string>
+	<string id="st_mil_rucksack_02_descr">
+		<text>Widziaіem, jak jeden koleњ wrzuciі swуj plecak pod przyczepк przed nadejњciem emisji. Powinienem to zbadaж.</text>
+	</string>
+	<string id="st_mil_trees_01_0001">
+		<text>Kіoda pod gіazami</text>
+	</string>
+	<string id="st_mil_trees_01_0001_descr">
+		<text>Na skraju grupy gіazуw jest kіoda, a w niej, z dala od wњcibskich oczu, jest mуj schowek</text>
+	</string>
+	<string id="st_mil_trees_log_01">
+		<text>Pкkniкta kіoda</text>
+	</string>
+	<string id="st_mil_trees_log_01_0000">
+		<text>Schowek w saniach</text>
+	</string>
+	<string id="st_mil_trees_log_01_0000_descr">
+		<text>Schowek w duїej kіodzie obok saс.</text>
+	</string>
+	<string id="st_mil_trees_log_01_0001">
+		<text>Kіoda pod gіazami</text>
+	</string>
+	<string id="st_mil_trees_log_01_0001_descr">
+		<text>Na skraju grupy gіazуw jest kіoda, a w niej, z dala od wњcibskich oczu, jest mуj schowek</text>
+	</string>
+	<string id="st_mil_trees_log_01_descr">
+		<text>Schowaіem swoje rzeczy w kіodzie pod sosn№, obok przewrуconej wieїy.</text>
+	</string>
+	<string id="st_mil_trees_stump_01">
+		<text>Pniak za betonowymi pіytami</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0000">
+		<text>Pniak obok ogrodzenia</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0000_descr">
+		<text>Witiok powiedziaі, їe zostawiі moj№ dziaіkк w pniaku pomiкdzy ogrodzeniem bazy wojskowej i maіym bagnem.</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0001">
+		<text>Pniak obok ogrodzenia</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0001_descr">
+		<text>Witiok powiedziaі, їe zostawiі moj№ dziaіkк w pniaku pomiкdzy ogrodzeniem bazy wojskowej i maіym bagnem.</text>
+	</string>
+	<string id="st_mil_trees_stump_01_descr">
+		<text>Pniak pomiкdzy dwoma gіazami, za stosem betonowych pіyt.</text>
+	</string>
+	<string id="st_red_box_01_0000">
+		<text>Niebieska skrzynka</text>
+	</string>
+	<string id="st_red_box_01_0000_descr">
+		<text>Mуj towar jest w niebieskiej skrzyni na pierwszym piкtrze budynku obok chaty.</text>
+	</string>
+	<string id="st_red_pipe_02">
+		<text>Rura w wуzku</text>
+	</string>
+	<string id="st_red_pipe_02_descr">
+		<text>Wetkn№іem swoje rzeczy do rury, ktуr№ wrzuciіem do zardzewiaіego wуzka w starym kamienioіomie.</text>
+	</string>
+	<string id="st_red_rucksack_01">
+		<text>Czarny plecak</text>
+	</string>
+	<string id="st_red_rucksack_01_1_0000">
+		<text>Plecak na gaікzi</text>
+	</string>
+	<string id="st_red_rucksack_01_1_0000_descr">
+		<text>Chowaіem siк przed jak№њ besti№ na drzewie. Nie widziaіem jej, ale dobrze sіyszaіem. Zostawiіem plecak na gaікzi, zeskoczyіem i daіem chodu.</text>
+	</string>
+	<string id="st_red_rucksack_01_descr">
+		<text>Cholera, jak uciekaіem z lasu, zostawiіem tam mуj czarny plecak. Nawet wiem, gdzie jest, ale nie wrуcк tam, chyba їe ktoњ najpierw zjara caіy las napalmem.</text>
+	</string>
+	<string id="st_red_rucksack_01_on_tree">
+		<text>Drzewo obok ogrodzenia</text>
+	</string>
+	<string id="st_red_rucksack_01_on_tree_descr">
+		<text>Musiaіem zwiewaж przed cholern№ pijawk№ aї do ogrodzenia rezerwatu i wleџж na drzewo. Gdybym nie zostawiі plecaka na tym drzewie, nie przeskoczyіbym przez ogrodzenie.</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_2">
+		<text>Plecak w jaskini</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_2_descr">
+		<text>W nocy wczoіgaіem siк do jaskini, їeby siк zdrzemn№ж. Przebudziіa mnie pijawka dobieraj№ca siк do mojej torby. Zwiaіem stamt№d jak mistrz sprintu, ale pijawka ma mуj plecak.</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_3">
+		<text>Gіaz przy w№wozie</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_3_descr">
+		<text>Kilka psуw zapкdziіo mnie do w№wozu, wiкc rzuciіem plecak na gіazy i sprуbowaіem siк przebiж.</text>
+	</string>
+	<string id="st_red_rucksack_02">
+		<text>Plecak w krzakach</text>
+	</string>
+	<string id="st_red_rucksack_02_0000">
+		<text>Plecak w lesie</text>
+	</string>
+	<string id="st_red_rucksack_02_0000_descr">
+		<text>Byіo jak w horrorze. Nie wiem, jak siк wydostaіem. Straciіem plecak, ale pamiкtam, їe mogіem go zostawiж tylko w jednym miejscu.</text>
+	</string>
+	<string id="st_red_rucksack_02_0001">
+		<text>Plecak pod gіazami</text>
+	</string>
+	<string id="st_red_rucksack_02_0001_descr">
+		<text>Byіo mi za ciкїko z plecakiem Koli, wiкc wіoїyіem go pod gіazy przy zjeџdzie na most w Limaсsku.</text>
+	</string>
+	<string id="st_red_rucksack_02_4">
+		<text>Przeklкty towar</text>
+	</string>
+	<string id="st_red_rucksack_02_4_descr">
+		<text>Ten plecak ma niezі№ historiк. Kaїdy, kto siк go dotkn№і, nie їyje. Wyrzuciіem go, їeby nie mieж do czynienia z tym przeklкtym cholerstwem</text>
+	</string>
+	<string id="st_red_rucksack_02_5">
+		<text>Dziwne miejsce</text>
+	</string>
+	<string id="st_red_rucksack_02_5_descr">
+		<text>Zdrzemn№іem siк koіo gіazu z plecakiem pod gіow№. Rano znalazіem siк w zupeіnie innym miejscu. Prуbowaіem znaleџж ten gіaz, ale z jakiegoњ powodu chodziіem w kуіko.</text>
+	</string>
+	<string id="st_red_rucksack_02_6">
+		<text>Plecak w osypisku</text>
+	</string>
+	<string id="st_red_rucksack_02_6_descr">
+		<text>W w№wozie osunкіy siк skaіy i zleciaіy prosto na mnie przy wyjњciu z Czerwonego Lasu. Potem coњ ciemnego zaczкіo siк zza nich wynurzaж. Ledwo zwiaіem, ale musiaіem po drodze wyrzuciж swoje rzeczy.</text>
+	</string>
+	<string id="st_red_rucksack_02_descr">
+		<text>Przedzieraliњmy siк przez krzaki i zgubiіem plecak.</text>
+	</string>
+	<string id="st_red_rucksack_02_in_stone">
+		<text>Zgubiony plecak</text>
+	</string>
+	<string id="st_red_rucksack_02_in_stone_descr">
+		<text>Ten idiota Abram zgubiі mуj plecak na skaіach, gdzieњ w tej okolicy. Teraz boi siк wrуciж po niego. Prawdziwy przyjaciel!</text>
+	</string>
+	<string id="st_red_rucksack_02_in_tonnel">
+		<text>Schowek w chodniku kopalni</text>
+	</string>
+	<string id="st_red_rucksack_02_in_tonnel_descr">
+		<text>Schowaіem swoje artefakty na koсcu chodnika w opuszczonej kopalni.</text>
+	</string>
+	<string id="st_red_sekret_trees_stump_01_0000">
+		<text>Pniak w dziczy</text>
+	</string>
+	<string id="st_red_sekret_trees_stump_01_0000_descr">
+		<text>Zabі№dziіem w Czerwonym Lesie i zostawiіem caіy towar tutaj, w pniaku.</text>
+	</string>
+	<string id="st_red_trees_log_01">
+		<text>Towar w dziurze w drzewie</text>
+	</string>
+	<string id="st_red_trees_log_01_descr">
+		<text>W drodze do Limaсska Bicz i ja schowaliњmy swoje rzeczy w dziurze w powalonym drzewie, niedaleko wyjњcia z rezerwatu.</text>
+	</string>
+	<string id="st_red_trees_stump_01">
+		<text>Podziurawiony pniak</text>
+	</string>
+	<string id="st_red_trees_stump_01_0000">
+		<text>Pniak przed lasem</text>
+	</string>
+	<string id="st_red_trees_stump_01_0000_descr">
+		<text>Nie wiemy, co czeka nas w tym lesie, wiкc schowaliњmy swoje rzeczy w sprуchniaіym pniaku.</text>
+	</string>
+	<string id="st_red_trees_stump_01_2_0000">
+		<text>Pniak obok w№wozu</text>
+	</string>
+	<string id="st_red_trees_stump_01_2_0000_descr">
+		<text>Zostawiliњmy trochк towaru obok tej zar№bistej anomalii. Kierujemy siк do samej anomalii. Jest tak niesamowita, їe na pewno s№ w niej naprawdк cenne artefakty.</text>
+	</string>
+	<string id="st_red_trees_stump_01_3">
+		<text>Wielki pniak</text>
+	</string>
+	<string id="st_red_trees_stump_01_3_descr">
+		<text>Sewa powiedziaі mi o wielkim wydr№їonym pniu w Czerwonym Lesie. Sprуbujк go znaleџж i zobaczyж, co jest w њrodku.</text>
+	</string>
+	<string id="st_red_trees_stump_01_4">
+		<text>Schowek w pniaku</text>
+	</string>
+	<string id="st_red_trees_stump_01_4_descr">
+		<text>Schowaliњmy z Їek№ trochк rzeczy w pniaku w Czerwonym Lesie.</text>
+	</string>
+	<string id="st_red_trees_stump_01_7">
+		<text>Pniak obok w№wozu</text>
+	</string>
+	<string id="st_red_trees_stump_01_7_descr">
+		<text>Wpadaj№c do w№wozu, trafiіem na ten pniak, wiкc na razie schowaіem w nim swoje rzeczy.</text>
+	</string>
+	<string id="st_red_trees_stump_01_descr">
+		<text>Usіyszaіem krzyki i wycie, wiкc wsadziіem rzeczy do najbliїszego podziurawionego pniaka i zwiaіem.</text>
+	</string>
+	<string id="st_red_zaz968">
+		<text>Zaporoїec przy wejњciu do kopalni</text>
+	</string>
+	<string id="st_red_zaz968_descr">
+		<text>Schowaіem mуj towar pod siedzeniem Zaporoїca przy wejњciu do kopalni. Zabiorк go, zanim pуjdк do Sidorowicza.</text>
+	</string>
+	<string id="st_val_seif_02">
+		<text>Sejf w gospodarstwie</text>
+	</string>
+	<string id="st_yan_trees_log_01_0001">
+		<text>Kіoda za garaїami</text>
+	</string>
+	<string id="st_yan_trees_log_01_0001_descr">
+		<text>Schowaіem swуj towar w kіodzie za garaїami, obok fabryki "Jantar". Wtedy to byіo najlepsze miejsce.</text>
+	</string>
+	<string id="val_equipment_rucksack_01_02">
+		<text>Schowek pod mіod№ jodі№.</text>
+	</string>
+	<string id="val_equipment_rucksack_01_02_descr">
+		<text>Schowaіem swуj plecak w rurze pod mіod№ jodі№ niedaleko bagna.</text>
+	</string>
+	<string id="esc_treasure_weapon_prisoner_descr">
+		<text>W betonowej rurze ukryty jest maіy sejf. S№ w nim rzeczy, ktуre zachowaіem na czarn№ godzinк.</text>
+	</string>
+	<string id="esc_treasure_weapon_prisoner_name">
+		<text>Schowek majora Chaleckija.</text>
+	</string>
+	<string id="gar_treasure_quest_digger_reward">
+		<text>Stary schowek</text>
+	</string>
+	<string id="gar_treasure_quest_digger_reward_descr">
+		<text>Kopacze chowali swoj№ zdobycz w tym schowku.</text>
+	</string>
+	<string id="gar_treasure_quest_old_pda">
+		<text>Skrzynka narzкdziowa</text>
+	</string>
+	<string id="gar_treasure_quest_old_pda_descr">
+		<text>Stary PDA jest pod faіszywym spodem skrzynki narzкdziowej</text>
+	</string>
+	<string id="gar_treasure_quest_reward_in_anomaly">
+		<text>Schowek w anomalii</text>
+	</string>
+	<string id="gar_treasure_quest_reward_in_anomaly_descr">
+		<text>Jeњli Joga nie kіamaі, w schowku wњrуd anomalii znajduje siк specjalna spluwa.</text>
+	</string>
+	<string id="gar_treasure_quest_smuggler_weapons">
+		<text>Bagaїnik samochodu</text>
+	</string>
+	<string id="gar_treasure_quest_smuggler_weapons_descr">
+		<text>Zdaniem Stringowa w bagaїniku starego samochodu jest towar jakiegoњ przemytnika.</text>
+	</string>
+	<string id="st_esc_seif_03_0000_descr">
+		<text>Ziі trzyma swуj towar w sejfie, w neutralnej bazie w Kordonie.</text>
+	</string>
+	<string id="st_mar_q_n_10">
+		<text>Schowek na Bagnach</text>
+	</string>
+	<string id="st_mar_q_n_10_descr">
+		<text>W przetwуrni odpadуw na Bagnach jest bardzo cenny schowek. Jego zawartoњж jest teraz twoja.</text>
+	</string>
+	<string id="st_mar_q_n_11">
+		<text>Sejf z nagrod№</text>
+	</string>
+	<string id="st_mar_q_n_11_descr">
+		<text>Koleњ, to klucze do sejfu, w ktуrym jest coњ cennego. Przynajmniej tak sіyszaіem...</text>
+	</string>
+	<string id="st_mar_q_n_12">
+		<text>Nagroda</text>
+	</string>
+	<string id="st_mar_q_n_12_descr">
+		<text>Nasze tajne schowki za twoj№ kasк. Sprzedajк je wszystkie tylko tobie.</text>
+	</string>
+	<string id="st_mar_q_n_13">
+		<text>Maіa walizka</text>
+	</string>
+	<string id="st_mar_q_n_13_descr">
+		<text>W takim wypadku tu s№ wspуіrzкdne walizki z towarem. Znajdziesz j№ za њmietnikiem koіo muru.</text>
+	</string>
+	<string id="st_mar_q_n_14">
+		<text>Sejf pod mostem</text>
+	</string>
+	<string id="st_mar_q_n_14_descr">
+		<text>Nie bкdк ciк zanudzaі opowieњciami. Znajdziesz schowek w sejfie pod mostem.</text>
+	</string>
+	<string id="st_mar_q_n_6">
+		<text>Plecak jako zapіata</text>
+	</string>
+	<string id="st_mar_q_n_6_descr">
+		<text>Zawartoњж plecaka, ktуrego wspуіrzкdne przesyіam ci na PDA, jest warta wiкcej niї pieni№dze, ktуre zostawiasz w mojej kieszeni.</text>
+	</string>
+	<string id="st_mar_q_n_7">
+		<text>Sejf z zamkiem szyfrowym</text>
+	</string>
+	<string id="st_mar_q_n_7_descr">
+		<text>Twoje pieni№dze s№ warte іupu ukryteto w sejfie na Bagnach.</text>
+	</string>
+	<string id="st_mar_q_n_8">
+		<text>Јup jako zapіata</text>
+	</string>
+	<string id="st_mar_q_n_8_descr">
+		<text>Јup, ktуry znajdziesz w czarnym plecaku pod gіazami, naleїy teraz do ciebie. Uznajmy, їe jesteњmy rozliczeni.</text>
+	</string>
+	<string id="st_mar_q_n_9">
+		<text>Skrzynka pod wieї№</text>
+	</string>
+	<string id="st_mar_q_n_9_descr">
+		<text>Zaufane џrуdіo doniosіo mi raz o towarze w niczyim schowku pod wieї№.</text>
+	</string>
+	<string id="st_mar_q_t_a_15">
+		<text>Plecak martwego їoіnierza</text>
+	</string>
+	<string id="st_mar_q_t_a_15_descr">
+		<text>Dostaniesz wiкcej, niї zapіaciіeњ. Twoja nagroda jest w plecaku obok ciaіa їoіnierza.</text>
+	</string>
+	<string id="st_mar_q_t_a_3">
+		<text>Dodatkowy kіopot</text>
+	</string>
+	<string id="st_mar_q_t_a_3_descr">
+		<text>Wysil siк trochк i znajdџ plecak martwego їoіnierza, a wszystkie wydatki zwrуc№ ci siк z nawi№zk№.</text>
+	</string>
+	<string id="st_mar_q_t_l_16">
+		<text>Trudna nagroda</text>
+	</string>
+	<string id="st_mar_q_t_l_16_descr">
+		<text>Nagrodzк ciк informacj№ o cennym, ale trudnym do zdobycia іupie. Uwaїaj na siebie - jego poprzedni wіaњciciel nie posіuchaі moich rad...</text>
+	</string>
+	<string id="st_mar_q_t_l_1">
+		<text>Plecak trupa</text>
+	</string>
+	<string id="st_mar_q_t_l_1_descr">
+		<text>Towar jest w plecaku na plecach trupa.</text>
+	</string>
+	<string id="st_mar_q_t_l_2">
+		<text>Spadochroniarz</text>
+	</string>
+	<string id="st_mar_q_t_l_2_descr">
+		<text>Truposza znajdziesz pod tymi wspуіrzкdnymi. W jego plecaku jest twoja naleїnoњж.</text>
+	</string>
+	<string id="st_mar_q_t_l_4">
+		<text>Ciaіo bojownika</text>
+	</string>
+	<string id="st_mar_q_t_l_4_descr">
+		<text>Informacja dla ciebie: mіodzik "odpoczywaj№cy" w krzakach pilnuje dla ciebie swojego plecaka.</text>
+	</string>
+	<string id="st_mar_q_t_l_5">
+		<text>Plecak pod ruroci№giem</text>
+	</string>
+	<string id="st_mar_q_t_l_5_descr">
+		<text>Weџ te wspуіrzкdne - wskazuj№ plecak obok ciaіa stalkera pod ruroci№giem.</text>
+	</string>
+	<string id="st_esc_q10_n">
+		<text>Pniak obok drutu kolczastego</text>
+	</string>
+	<string id="st_esc_q10_n_descr">
+		<text>Dobra, koleњ. Swoj№ nagrodк znajdziesz w pniaku obok drutu kolczastego.</text>
+	</string>
+	<string id="st_esc_q1_n">
+		<text>Zielona skrzynia</text>
+	</string>
+	<string id="st_esc_q1_n_descr">
+		<text>Zachowaіem ten towar specjalnie dla ciebie. Jest w wojskowej skrzyni na obrzeїach Kordonu. Oddajк z nim kawaіek swojego serca!</text>
+	</string>
+	<string id="st_esc_q2_n">
+		<text>Maіy samotny plecak</text>
+	</string>
+	<string id="st_esc_q2_n_descr">
+		<text>Twoja szczodroњж zostanie nagrodzona wielkodusznoњci№! He, he. Oto mуj schowek. Zrуb z nim i jego zawartoњci№, co zechcesz.</text>
+	</string>
+	<string id="st_esc_q3_t_l">
+		<text>Droga na Bagna</text>
+	</string>
+	<string id="st_esc_q3_t_l_descr">
+		<text>Ja biorк twoje pieni№dze, ty bierzesz mуj schowek. Znajdziesz go przy drodze na Bagna, obok ciaіa.</text>
+	</string>
+	<string id="st_esc_q4_t_a">
+		<text>Nagroda dla bohatera</text>
+	</string>
+	<string id="st_esc_q4_t_a_descr">
+		<text>Twуj zakup czeka na ciebie w plecaku obok ciaіa pechowego stalkera. Szukaj go koіo starego elektrowozu.</text>
+	</string>
+	<string id="st_esc_q5_n">
+		<text>Rekompensata</text>
+	</string>
+	<string id="st_esc_q5_n_descr">
+		<text>Schowek znajdziesz pod tymi wspуіrzкdnymi, w plecaku pod drzewem</text>
+	</string>
+	<string id="st_esc_q6_n">
+		<text>Wstкp dozwolony</text>
+	</string>
+	<string id="st_esc_q6_n_descr">
+		<text>Moja czкњж umowy jest w panelu elektrycznym windy. Moїesz tam њmiaіo grzebaж, nie ma pr№du. Ale nie mogк zagwarantowaж tego samego, jeњli chodzi o anomalie...</text>
+	</string>
+	<string id="st_esc_q7_n">
+		<text>Walizka pod wagonem</text>
+	</string>
+	<string id="st_esc_q7_n_descr">
+		<text>Twoj№ zdobycz№ jest zawartoњж walizki pod wagonem.</text>
+	</string>
+	<string id="st_esc_q8_n">
+		<text>Faіszywy grуb</text>
+	</string>
+	<string id="st_esc_q8_n_descr">
+		<text>Rozkopywanie grobуw to zіy uczynek, ale mуj schowek jest w faіszywym grobie, wiкc nie bкdziesz zakіуcaі spokoju zmarіym.</text>
+	</string>
+	<string id="st_esc_q9_t_a">
+		<text>Walizka za zіomowiskiem</text>
+	</string>
+	<string id="st_esc_q9_t_a_descr">
+		<text>Zapіacк ci zawartoњci№ walizki leї№cej obok anomalii za zіomowiskiem w Kordonie. Siкga po ni№ pewien jegomoњж, ale nie przejmuj siк nim, zostaі wyі№czony z akcji.</text>
+	</string>
+	<string id="st_gar_q10_n">
+		<text>Pniak na skraju Wysypiska</text>
+	</string>
+	<string id="st_gar_q10_n_descr">
+		<text>Dam ci cynk. Twoje wynagrodzenie czeka w pniaku na skraju Wysypiska.</text>
+	</string>
+	<string id="st_gar_q1_n">
+		<text>Czarny plecak we wraku</text>
+	</string>
+	<string id="st_gar_q1_n_descr">
+		<text>Twoja naleїnoњж znajduje siк w czarnym plecaku we wraku dџwigu.</text>
+	</string>
+	<string id="st_gar_q2_n">
+		<text>Odciкta rura</text>
+	</string>
+	<string id="st_gar_q2_n_descr">
+		<text>Ja dostaіem pieni№dze, ale ty musisz iњж po swуj towar do schowka w odciкtej rurze.</text>
+	</string>
+	<string id="st_gar_q3_n">
+		<text>Skrzynka elektryczna we wraku</text>
+	</string>
+	<string id="st_gar_q3_n_descr">
+		<text>Jakiњ czas temu zrobiіem ten schowek dla siebie, ale teraz muszк oddaж go tobie. Trudno.</text>
+	</string>
+	<string id="st_gar_q4_n">
+		<text>Skrzynka w skaїonych њmieciach</text>
+	</string>
+	<string id="st_gar_q4_n_descr">
+		<text>Dajк ci wspуіrzкdne skrzynki z towarem. Nie usmaї sobie tylko jajek - panuje tam duїe promieniowanie.</text>
+	</string>
+	<string id="st_gar_q5_n">
+		<text>Skrzynia obok lemiesza buldoїera</text>
+	</string>
+	<string id="st_gar_q5_n_descr">
+		<text>Znajdziesz swуj zakup obok lemiesza buldoїera.</text>
+	</string>
+	<string id="st_gar_q6_t_l">
+		<text>Plecak trupa</text>
+	</string>
+	<string id="st_gar_q6_t_l_descr">
+		<text>Nie boisz siк duchуw, co? Szukaj schowka w plecaku obok zwіok.</text>
+	</string>
+	<string id="st_gar_q7_t_l">
+		<text>Zwіoki obok koparki</text>
+	</string>
+	<string id="st_gar_q7_t_l_descr">
+		<text>Martwy chіopak obok przewrуconej koparki sprezentuje ci zawartoњж swojego plecaka</text>
+	</string>
+	<string id="st_gar_q8_t_a">
+		<text>Zwіoki na Wysypisku</text>
+	</string>
+	<string id="st_gar_q8_t_a_descr">
+		<text>Bкdziesz musiaі siк trochк namкczyж, by zdobyж swoj№ naleїnoњж. Towar jest w plecaku ofiary anomalii.</text>
+	</string>
+	<string id="st_gar_q9_n">
+		<text>Po drodze do Agropromu</text>
+	</string>
+	<string id="st_gar_q9_n_descr">
+		<text>Szukaj skrzynki w UAZ-ie po drodze do Agropromu. Powinieneњ doceniж jej zawartoњж.</text>
+	</string>
+	<string id="st_val_q10_n">
+		<text>Sejf w hangarze</text>
+	</string>
+	<string id="st_val_q10_n_descr">
+		<text>Dotrzymujк przyrzeczeс - obiecany schowek czeka w sejfie w starej fabryce.</text>
+	</string>
+	<string id="st_val_q11_t_l">
+		<text>Zwіoki przy skaіach</text>
+	</string>
+	<string id="st_val_q11_t_l_descr">
+		<text>Wіaњnie kupiіeњ zawartoњж plecaka znajduj№cego siк na zwіokach leї№cych koіo skaі.</text>
+	</string>
+	<string id="st_val_q1_n">
+		<text>Pod zbiornikiem</text>
+	</string>
+	<string id="st_val_q1_n_descr">
+		<text>Mуj towar - wrуж, teraz to twуj towar - jest w plecaku pod zbiornikiem.</text>
+	</string>
+	<string id="st_val_q2_n">
+		<text>Krzewy obok jodіy</text>
+	</string>
+	<string id="st_val_q2_n_descr">
+		<text>Wracaj№c z udanej wyprawy, schowaіem zdobycz w krzewach. Teraz moїesz z niej skorzystaж.</text>
+	</string>
+	<string id="st_val_q3_t_a">
+		<text>Zwіoki їoіnierza</text>
+	</string>
+	<string id="st_val_q3_t_a_descr">
+		<text>Zapisz sobie: bardzo cenny іup - plecak - pechowy їoіnierz - zaraz obok anomalii.</text>
+	</string>
+	<string id="st_val_q4_n">
+		<text>Јup w krzakach</text>
+	</string>
+	<string id="st_val_q4_n_descr">
+		<text>Zawsze regulujк swoje rachunki, a teraz wedіug mojego rachunku mam ci daж wspуіrzкdne mojego towaru.</text>
+	</string>
+	<string id="st_val_q5_n">
+		<text>Sejf w bazie "Wolnoњci"</text>
+	</string>
+	<string id="st_val_q5_n_descr">
+		<text>W dwupiкtrowym budynku w bazie "Wolnoњci" jest sejf z cenn№ zawartoњci№.</text>
+	</string>
+	<string id="st_val_q6_n">
+		<text>Skrzynia na szczycie wieїy</text>
+	</string>
+	<string id="st_val_q6_n_descr">
+		<text>Doceniam twoje zainteresowanie i zaspokojк je zawartoњci№ niebieskiej skrzyni na szczycie wieїy za baz№ "Wolnoњci".</text>
+	</string>
+	<string id="st_val_q7_n">
+		<text>Grуb stalkera</text>
+	</string>
+	<string id="st_val_q7_n_descr">
+		<text>Wіaњnie kupiіeњ to, co jest pod krzyїem na grobie stalkera obok starego drzewa</text>
+	</string>
+	<string id="st_val_q8_n">
+		<text>Skrzynka pod siedzeniem</text>
+	</string>
+	<string id="st_val_q8_n_descr">
+		<text>Pod siedzeniem kierowcy w czerwonym ЈAZ-ie znajdziesz skrzynkк. Moїesz sprawdziж, co w niej jest. Albo nie - jak chcesz.</text>
+	</string>
+	<string id="st_val_q9_n">
+		<text>Pniak obok ogrodzenia</text>
+	</string>
+	<string id="st_val_q9_n_descr">
+		<text>Na takie przypadki mam trochк towaru ukrytego w pniaku obok ogrodzenia.</text>
+	</string>
+	<string id="st_agr_q10_t_l">
+		<text>Skonfiskowany towar obok anomalii</text>
+	</string>
+	<string id="st_agr_q10_t_l_descr">
+		<text>Pewien їoіnierz wlazі w anomaliк i jego plecak z towarem skonfiskowanym stalkerom wci№ї tam jest, leїy obok niego. Jeњli ci siк uda, moїe byж twуj.</text>
+	</string>
+	<string id="st_agr_q1_n">
+		<text>Przy ogrodzeniu obok drutu kolczastego</text>
+	</string>
+	<string id="st_agr_q1_n_descr">
+		<text>Dobra, zapіacк ci zawartoњci№ tego schowka - plecaka stalkera przy ogrodzeniu. Jako punkt odniesienia posіuїy ci wieїa wysokiego napiкcia.</text>
+	</string>
+	<string id="st_agr_q2_n">
+		<text>Pod wyrwanym drzewem</text>
+	</string>
+	<string id="st_agr_q2_n_descr">
+		<text>Nie mamy magazynуw w Zonie, przykro mi! Pospiesz siк i zgarnij towar spod wyrwanego drzewa, zanim ktoњ inny to zrobi.</text>
+	</string>
+	<string id="st_agr_q3_t_a">
+		<text>Zwіoki w napromieniowanym punkcie</text>
+	</string>
+	<string id="st_agr_q3_t_a_descr">
+		<text>Interesuj№ ciк peіne schowki i to wіaњnie mam. Bкd№ twoje, jeњli odwaїysz siк wejњж do napromieniowanego punktu. Twoja nagroda leїy przy zwіokach.</text>
+	</string>
+	<string id="st_agr_q4_n">
+		<text>Walce na grobie</text>
+	</string>
+	<string id="st_agr_q4_n_descr">
+		<text>Honor jest wart wiкcej od pieniкdzy, wiкc weџ sobie towar ukryty w walcach na anonimowym grobie.</text>
+	</string>
+	<string id="st_agr_q5_n">
+		<text>Rуg ogrodzenia</text>
+	</string>
+	<string id="st_agr_q5_n_descr">
+		<text>Po ostatniej emisji Walka Chiсczyk, niech go Bуg bіogosіawi, schowaі coњ w starym pniaku w rogu ogrodzenia.</text>
+	</string>
+	<string id="st_agr_q6_n">
+		<text>Centralka telefoniczna</text>
+	</string>
+	<string id="st_agr_q6_n_descr">
+		<text>Mуj towar - przepraszam, twуj towar - jest w centralce telefonicznej w bazie "Powinnoњci".</text>
+	</string>
+	<string id="st_agr_q7_n">
+		<text>Kіoda przy drzewie</text>
+	</string>
+	<string id="st_agr_q7_n_descr">
+		<text>Ktуregoњ dnia dobrzy ludzie opowiedzieli mi o schowku naleї№cym do moich wrogуw. Oprуїnij go, co?</text>
+	</string>
+	<string id="st_agr_q8_t_a">
+		<text>Zwіoki w furgonetce</text>
+	</string>
+	<string id="st_agr_q8_t_a_descr">
+		<text>Ci їoіnierze tak siк spieszyli, їe wjechali prosto w anomaliк w tej okolicy. Wszyscy kopnкli w kalendarz, a ty moїesz kopn№ж siк po ich towar.</text>
+	</string>
+	<string id="st_agr_q9_n">
+		<text>Sejf pod osuwiskiem</text>
+	</string>
+	<string id="st_agr_q9_n_descr">
+		<text>Zagrzebaіem sejf z moim towarem w w№wozie. Udawajmy, їe od pocz№tku byі przeznaczony dla ciebie</text>
+	</string>
+	<string id="st_agru_q1_n">
+		<text>Poprzeczna belka pod schodami</text>
+	</string>
+	<string id="st_agru_q1_n_descr">
+		<text>Wiem o pewnym schowku w tym przeklкtym miejscu. Z drugiej strony, moїesz mieж pewnoњж, їe nikt w nim nie grzebaі. Szukaj w piwnicy pod schodami.</text>
+	</string>
+	<string id="st_agru_q2_n">
+		<text>Walizka pod ziemi№</text>
+	</string>
+	<string id="st_agru_q2_n_descr">
+		<text>U stуp spiralnych schodуw znajdziesz walizkк z towarem. Uwaїaj, by nie zakіуciж spokoju licznym mieszkaсcom podziemi.</text>
+	</string>
+	<string id="st_agru_q3_t_a">
+		<text>Pod ziemi№</text>
+	</string>
+	<string id="st_agru_q3_t_a_descr">
+		<text>Jest miejsce, w ktуrym moїesz znaleџж plecak їoіnierza. Trafiі na anomaliк w podziemiach Agropromu. Oby tylko ciebie nie spotkaіo to samo!</text>
+	</string>
+	<string id="st_agru_q4_n">
+		<text>Rura w kolektorze</text>
+	</string>
+	<string id="st_agru_q4_n_descr">
+		<text>Z PDA jakiegoњ stalkera dowiedziaіem siк o schowku ukrytym w podziemiach Agropromu. Skopiuj sobie wspуіrzкdne.</text>
+	</string>
+	<string id="st_yan_q8_t_l">
+		<text>Zwіoki w jeziorze</text>
+	</string>
+	<string id="st_yan_q8_t_l_descr">
+		<text>Szukaj pleacka їoіnierza, ktуry wybraі siк popіywaж w jeziorze.</text>
+	</string>
+	<string id="st_yan_q1_n">
+		<text>Skrzynia na dachu kotіowni</text>
+	</string>
+	<string id="st_yan_q1_n_descr">
+		<text>W niebieskiej skrzyni na dachu kotіowni jest maіy schowek. W okolicy roi siк od zombi, wiкc uwaїaj.</text>
+	</string>
+	<string id="st_yan_q2_n">
+		<text>Skrzynia w wagonie</text>
+	</string>
+	<string id="st_yan_q2_n_descr">
+		<text>Њwietnie - weџ te wspуіrzкdne skrzyni w wagonie w fabryce. Idџ tam - bкdziesz wiedziaі, co zrobiж</text>
+	</string>
+	<string id="st_yan_q3_t_l">
+		<text>Plecak przy rynnie</text>
+	</string>
+	<string id="st_yan_q3_t_l_descr">
+		<text>Znajdџ plecak przy rynnie, a bкdziemy kwita. Obok leї№ zwіoki jakiegoњ neutralnego, wiкc іatwo go znajdziesz.</text>
+	</string>
+	<string id="st_yan_q4_n">
+		<text>Skrzynia w bazie naukowcуw</text>
+	</string>
+	<string id="st_yan_q4_n_descr">
+		<text>Doskonale! Weџ wszystko, co znajdziesz w skrzyni w bagaїniku UAZ-a w bazie naukowcуw.</text>
+	</string>
+	<string id="st_yan_q5_n">
+		<text>Budka z centralk№ telefoniczn№</text>
+	</string>
+	<string id="st_yan_q5_n_descr">
+		<text>Zapіacк ci wspуіrzкdnymi schowka w budce koіo fabryki.</text>
+	</string>
+	<string id="st_yan_q6_n">
+		<text>Wylot zbiornika</text>
+	</string>
+	<string id="st_yan_q6_n_descr">
+		<text>Coњ jest ukryte w wylocie zbiornika w fabryce. Nigdy nie sprawdzaіem co takiego.</text>
+	</string>
+	<string id="st_yan_q7_n">
+		<text>Kabina MAZ-a</text>
+	</string>
+	<string id="st_yan_q7_n_descr">
+		<text>Towar znajdziesz w skrzyce w kabinie MAZ-a.</text>
+	</string>
+	<string id="st_yan_q9_n">
+		<text>Pniak naprzeciwko obozu naukowcуw</text>
+	</string>
+	<string id="st_yan_q9_n_descr">
+		<text>Szukaj schowka pod pniakiem naprzeciwko obozu naukowcуw.</text>
+	</string>
+	<string id="st_red_q10_n">
+		<text>Rura w kopalni</text>
+	</string>
+	<string id="st_red_q10_n_descr">
+		<text>Wiem, їe coњ cennego jest w schowku w Czerwonym Lesie.</text>
+	</string>
+	<string id="st_red_q1_t_l">
+		<text>Martwy stalker</text>
+	</string>
+	<string id="st_red_q1_t_l_descr">
+		<text>Widziaіem w PDA martwego stalkera, їe miaі coњ ciekawego w plecaku. Oto wspуіrzкdne.</text>
+	</string>
+	<string id="st_red_q2_t_a">
+		<text>Niebezpieczny schowek</text>
+	</string>
+	<string id="st_red_q2_t_a_descr">
+		<text>Wysіaіem juї jakiegoњ frajera do tego schowka, ale wiem, їe do niego nie dotarі - odwaliі kitк w pobliskiej anomalii.</text>
+	</string>
+	<string id="st_red_q3_n">
+		<text>Czerwony zawуr</text>
+	</string>
+	<string id="st_red_q3_n_descr">
+		<text>Schowek jest za czerwonym zaworem na rurze w kopalni. Jego zawartoњж wcale mnie nie interesuje.</text>
+	</string>
+	<string id="st_red_q4_n">
+		<text>Autobus</text>
+	</string>
+	<string id="st_red_q4_n_descr">
+		<text>Mуj kumpel zrobiі sobie schowek pod tylnym siedzeniem tego autobusu. Nie ma go juї wњrуd nas, wiкc nie bкdzie miaі nic przeciwko, jak odwiedzisz jego skrytkк.</text>
+	</string>
+	<string id="st_red_q5_n">
+		<text>Rura w gruzowisku</text>
+	</string>
+	<string id="st_red_q5_n_descr">
+		<text>Dowiedziaіem siк o tej skrytce od wiкџnia - jest w rurze w gruzowisku za transporterem.</text>
+	</string>
+	<string id="st_red_q6_n">
+		<text>Skrzynia z plecakiem</text>
+	</string>
+	<string id="st_red_q6_n_descr">
+		<text>Twуj skarb jest wprost bajeczny! Dobra, sіuchaj - nagroda jest w plecaku, plecak w skrzyni, skrzynia przy moњcie, most po drugiej stronie Czerwonego Lasu</text>
+	</string>
+	<string id="st_red_q7_t_a">
+		<text>Plecak nieszczкњnika</text>
+	</string>
+	<string id="st_red_q7_t_a_descr">
+		<text>Ten nieszczкњnik niуsі dla mnie plecak przez Czerwony Las, ale mu siк nie udaіo. Jeњli znajdziesz ten plecak, bкdzie twуj.</text>
+	</string>
+	<string id="st_red_q8_n">
+		<text>Sejf obok tramwaju</text>
+	</string>
+	<string id="st_red_q8_n_descr">
+		<text>Moje informacje s№ prawdziwe, to їadna њciema. Jakiњ lump schowaі coњ cennego w sejfie obok przewrуconego tramwaju.</text>
+	</string>
+	<string id="st_red_q9_n">
+		<text>Zwykіy stary pniak</text>
+	</string>
+	<string id="st_red_q9_n_descr">
+		<text>W podziurawionym pniaku jest schowek. Nie odznacza siк wygl№dem, bez moich wspуіrzкdnych na niego nie trafisz. Dlatego teї ci je dajк.</text>
+	</string>
+	<string id="st_mil_q10_n">
+		<text>Schowek w lesie</text>
+	</string>
+	<string id="st_mil_q10_n_descr">
+		<text>Pod skaіami w lesie jest schowany plecak, a ja przekazujк jego wspуіrzкdne odpowiedniej osobie.</text>
+	</string>
+	<string id="st_mil_q1_t_l">
+		<text>Plecak pod zwіokami</text>
+	</string>
+	<string id="st_mil_q1_t_l_descr">
+		<text>Moїe to nie jest prawdziwy schowek, ale w plecaku na wieїy ciњnieс powinno byж coњ cennego.</text>
+	</string>
+	<string id="st_mil_q2_n">
+		<text>Schowek pod wyrwanym drzewem</text>
+	</string>
+	<string id="st_mil_q2_n_descr">
+		<text>Moїesz mi wierzyж - pod wyrwanym drzewem jest schowek.</text>
+	</string>
+	<string id="st_mil_q3_n">
+		<text>Sejf babuni</text>
+	</string>
+	<string id="st_mil_q3_n_descr">
+		<text>Nie wie, jak sejf znalazі siк na piecu, ale џrуdіa mуwi№ mi, їe nie jest pusty.</text>
+	</string>
+	<string id="st_mil_q4_n">
+		<text>Schowek w grobie</text>
+	</string>
+	<string id="st_mil_q4_n_descr">
+		<text>Mуwi№, їe moїna siк wzbogaciж, zagl№daj№c pod krzyї pod tymi wspуіrzкdnymi.</text>
+	</string>
+	<string id="st_mil_q5_n">
+		<text>Skrzynia w bazie wojskowej</text>
+	</string>
+	<string id="st_mil_q5_n_descr">
+		<text>Jeњli uda ci siк wњlizgn№ж do bazy wojskowej, w skrzyni na strychu znajdziesz nagrodк za swуj trud.</text>
+	</string>
+	<string id="st_mil_q6_n_a">
+		<text>Sejf w szafie</text>
+	</string>
+	<string id="st_mil_q6_n_a_descr">
+		<text>Wedіug moich џrуdeі coњ cennego jest w sejfie w koszarach.</text>
+	</string>
+	<string id="st_mil_q7_n_a">
+		<text>Maіy sejf</text>
+	</string>
+	<string id="st_mil_q7_n_a_descr">
+		<text>Kapitan Jeltiszew nosiі swуj sejf caіy czas przy sobie, dopуki go nie przenieњli gdzie indziej. Moїe pуjdziesz sprawdziж, co jest w њrodku?</text>
+	</string>
+	<string id="st_mil_q8_n_a">
+		<text>Sterta њmieci</text>
+	</string>
+	<string id="st_mil_q8_n_a_descr">
+		<text>Jawa specjalnie trzymaі swoje rzeczy w stercie њmieci, tylko їe w koсcu o nich zapomniaі. Ja to sobie zapisaіem i teraz przekazujк tobie.</text>
+	</string>
+	<string id="st_mil_q9_n_a">
+		<text>Skrzynka z tajemnic№</text>
+	</string>
+	<string id="st_mil_q9_n_a_descr">
+		<text>Za kabin№ wojskowego MAZ-a jest skrzynka z tajemnic№. Wіaњnie tк tajemnicк sprzedajк tobie.</text>
+	</string>
+</string_table>
