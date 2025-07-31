@@ -117,9 +117,10 @@ void CLevel::remove_objects	()
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
-void CLevel::net_Stop		()
+void CLevel::net_Stop()
 {
-	Msg							("- Disconnect");
+	Msg("- Disconnect");
+	script_client_events.clear();
 
 	if(CurrentGameUI())
 	{
