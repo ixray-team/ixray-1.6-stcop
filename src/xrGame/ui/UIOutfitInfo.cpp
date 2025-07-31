@@ -97,6 +97,7 @@ void CUIOutfitImmunity::SetProgressValue(float cur, float comp)
 
 CUIOutfitInfo::CUIOutfitInfo()
 {
+	m_Prop_line = nullptr;
 	for ( u32 i = 0; i < max_count; ++i )
 	{
 		m_items[i] = nullptr;
@@ -118,22 +119,24 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 	CUIXmlInit::InitWindow( xml_doc, base_str, 0, this );
 	
 	string128 buf;
-	//m_caption = new CUIStatic();
-	//AttachChild( m_caption );
-	//m_caption->SetAutoDelete( true );	
-	//string128 buf;
-	//strconcat( sizeof(buf), buf, base_str, ":caption" );
-	//CUIXmlInit::InitStatic( xml_doc, buf, 0, m_caption );
 
-	m_Prop_line = new CUIStatic();
-	AttachChild( m_Prop_line );
-	m_Prop_line->SetAutoDelete( true );	
-	xr_strconcat(buf, base_str, ":", "prop_line" );
-	CUIXmlInit::InitStatic( xml_doc, buf, 0, m_Prop_line );
+	xr_strconcat(buf, base_str, ":caption");
+	if (xml_doc.NavigateToNode(buf))
+	{
+		m_caption = UIHelper::CreateStatic(xml_doc, buf, this);
+	}
 
+	xr_strconcat(buf, base_str, ":", "prop_line");
+	if (xml_doc.NavigateToNode(buf))
+	{
+		m_Prop_line = UIHelper::CreateStatic(xml_doc, buf, this);
+	}
 
 	Fvector2 pos;
-	pos.set( 0.0f, m_Prop_line->GetWndPos().y+m_Prop_line->GetWndSize().y );
+	if (m_Prop_line)
+		pos.set(0.0f, m_Prop_line->GetWndPos().y + m_Prop_line->GetWndSize().y);
+	else if (m_caption)
+		pos.set(0.0f, m_caption->GetWndSize().y);
 
 	for ( u32 i = 0; i < max_count; ++i )
 	{
