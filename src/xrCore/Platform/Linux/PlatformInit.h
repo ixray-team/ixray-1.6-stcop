@@ -7,6 +7,7 @@
 #include <utime.h>
 #include <pthread.h>
 #include <dlfcn.h>
+#include <stddef.h>
 
 #include <sys/stat.h>
 #include <sys/mman.h>
