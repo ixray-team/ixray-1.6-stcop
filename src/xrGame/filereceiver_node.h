@@ -26,7 +26,7 @@ public:
 	bool	is_complete			();
 	void	signal_callback		(receiving_status_t status);
 	
-	inline	u32	const			get_downloaded_size	() { return m_writer->tell(); };
+	inline	u32	const			get_downloaded_size	() { return (u32)m_writer->tell(); };
 	//inline	shared_str const &	get_file_name		() { return m_file_name; };
 	inline	u32 const			get_last_read_time	() { return m_last_read_time; };
 	inline	void				set_last_read_time	(u32 const read_time) { m_last_read_time = read_time; };
