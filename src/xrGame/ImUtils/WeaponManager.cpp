@@ -198,7 +198,8 @@ void RenderWeaponManagerWindow()
 
 			if (Render)
 			{
-				imgui_weapon_manager.ui_icons = Render->getSurface("ui\\ui_icon_equipment");
+				const auto surface = READ_IF_EXISTS(pSettings, r_string, pItem->m_section_id, "icons_texture", "ui\\ui_icon_equipment");
+				imgui_weapon_manager.ui_icons = Render->getSurface(surface);
 			}
 
 			if (!imgui_weapon_manager.init)
