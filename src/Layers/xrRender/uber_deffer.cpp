@@ -81,11 +81,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		RImplementation.addShaderOption("USE_STEEPPARALLAX", "1");
 	}
 
-	if(C.bDetail_Diffuse) {
+	if(dt && dt[0] && C.bDetail_Diffuse) {
 		RImplementation.addShaderOption("USE_TDETAIL", "1");
 	}
 
-	if(C.bDetail_Bump && C.bDetail_Diffuse) {
+	if(bHasDetailBump && dt && dt[0] && C.bDetail_Diffuse) {
 		RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
 	}
 
