@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="cant_walk">
+		<text>Tъl kimerьlt vagy a sйtбhoz</text>
+	</string>
+	<string id="cant_walk_weight">
+		<text>Tъl nagy a terhed ahhoz, hogy tovбbbmenj</text>
+	</string>
+	<string id="car_character_use">
+		<text>Ajtу kinyitбsa: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="character_use">
+		<text>Beszйd: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use">
+		<text>Holttest бtkutatбsa: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use_or_drag">
+		<text>Holttest бtkutatбsa: ($$ACTION_USE$$) \n Holttest elvonszolбsa: (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+	<string id="general_complete_task">
+		<text>Feladat vйgrehajtva:</text>
+	</string>
+	<string id="general_fail_task">
+		<text>Feladat sikertelen:</text>
+	</string>
+	<string id="general_in_item">
+		<text>Megszerzett tбrgy:</text>
+	</string>
+	<string id="general_in_money">
+		<text>Megszerzett pйnz:</text>
+	</string>
+	<string id="general_new_task">
+		<text>Ъj feladat:</text>
+	</string>
+	<string id="general_out_item">
+		<text>Elveszнtett tбrgy:</text>
+	</string>
+	<string id="general_out_money">
+		<text>Elveszнtett pйnz:</text>
+	</string>
+	<string id="general_reverse_task">
+		<text>Feladat megszakнtva:</text>
+	</string>
+	<string id="general_update_task">
+		<text>Feladat frissнtve:</text>
+	</string>
+	<string id="gun_jammed">
+		<text>Besьlt a fegyver. Ъjra kell tцltened!</text>
+	</string>
+	<string id="inventory_box_use">
+		<text>Бtkutatбs: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="inventory_item_use">
+		<text>Tбrgy felvйtele: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="level_changer_invitation">
+		<text>Бtmйsz egy mбsik helyszнnre?</text>
+	</string>
+	<string id="physic_shell_use">
+		<text>Objektum mozgatбsa: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_autosave">
+		<text>Automatikus mentйs</text>
+	</string>
+	<string id="st_codelock">
+		<text>Kombinбciуs zбr: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_demo_play">
+		<text>FEJLESZTЙS ALATT</text>
+	</string>
+	<string id="st_found_new_pda">
+		<text>Talбlt informбciу:</text>
+	</string>
+	<string id="st_game_over">
+		<text>Vйge a jбtйknak</text>
+	</string>
+	<string id="st_game_over_press_jump">
+		<text>Nyomj ($$ACTION_JUMP$$) gombot, hogy kilйpj a fхmenьbe!</text>
+	</string>
+	<string id="st_game_paused">
+		<text>Szьnet</text>
+	</string>
+	<string id="st_game_saved">
+		<text>jбtйk elmentve</text>
+	</string>
+	<string id="st_helmet_countdown">
+		<text>Vйdelmi leбllнtбs</text>
+	</string>
+	<string id="st_psy_danger">
+		<text>Kritikus pszichikus kisugбrzбs szint! Azonnal hagyd el a veszйlyes terьletet!</text>
+	</string>
+	<string id="st_radiation_danger">
+		<text>Veszйlyes sugбrzбsszint! Az бtjutбshoz vйdelem szьksйges.</text>
+	</string>
+	<string id="st_search_treasure">
+		<text>Rejtekhely бtkutatбsa: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_tip">
+		<text>Ьzenet, </text>
+	</string>
+	<string id="tip_car_locked">
+		<text>Zбrva</text>
+	</string>
+	<string id="tip_car_use">
+		<text>Ajtу kinyitбsa: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_door_blocked">
+		<text>Ajtу zбrva</text>
+	</string>
+	<string id="tip_door_close">
+		<text>Nyomj ($$ACTION_USE$$) gombot, hogy bezбrd az ajtуt!</text>
+	</string>
+	<string id="tip_door_coded">
+		<text>Az ajtуt kуdzбr nyitja.</text>
+	</string>
+	<string id="tip_door_decode">
+		<text>Nyomj ($$ACTION_USE$$) gombot, hogy dekуdold az ajtуt!</text>
+	</string>
+	<string id="tip_door_decoding">
+		<text>Dekуdolбs folyamatban</text>
+	</string>
+	<string id="tip_door_locked">
+		<text>Zбrva van az ajtу</text>
+	</string>
+	<string id="tip_door_open">
+		<text>Nyomj ($$ACTION_USE$$) gombot, hogy kinyisd az ajtуt!</text>
+	</string>
+	<string id="tip_gate_close">
+		<text>Nyomj ($$ACTION_USE$$) gombot, hogy bezбrt a kaput!</text>
+	</string>
+	<string id="tip_gate_locked">
+		<text>Zбrva van a kapu</text>
+	</string>
+	<string id="tip_gate_open">
+		<text>Nyomj ($$ACTION_USE$$) gombot, hogy kinyisd a kaput!</text>
+	</string>
+	<string id="tip_grate_blocked">
+		<text>Kapu zбrva</text>
+	</string>
+	<string id="tips_agroprom_undeground">
+		<text>Engedйly szьksйges, hogy belйpj az ьregbe</text>
+	</string>
+	<string id="tips_kran_press">
+		<text>Daru forgatбsa: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_radio_tower">
+		<text>Rбdiуьzenet elkьldйse: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_red_dynamit_undeground">
+		<text>Detonбtor bekapcsolбsa: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_secret_strelka">
+		<text>Sztrelok kйszlete: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="mar_disabled_level_changer">
+		<text>Kнsйrх nйlkьl nem csбszkбlhatsz csak ъgy a mocsarakban.</text>
+	</string>
+	<string id="shooting_fire">
+		<text>Tыz!</text>
+	</string>
+	<string id="shooting_round_over">
+		<text>Vйge a kцrnek! Tйrj vissza a menьbe!</text>
+	</string>
+	<string id="shooting_time_left">
+		<text>Hбtralevх idх:</text>
+	</string>
+	<string id="shooting_your_count">
+		<text>Eltalбlt cйlpontok:</text>
+	</string>
+	<string id="shooting_your_points">
+		<text>Pontszбmod:</text>
+	</string>
+	<string id="shooting_your_time">
+		<text>Idхd:</text>
+	</string>
+	<string id="st_agru_warning_go_out">
+		<text>Hagyd el a veszйlyes terьletet!</text>
+	</string>
+	<string id="st_agru_warning_time_left">
+		<text>Idх az elбrasztбsig:</text>
+	</string>
+	<string id="tips_agroprom_undeground2">
+		<text>Csatornarendszer elбrasztva</text>
+	</string>
+	<string id="level_changer_disabled">
+		<text>Nem talбlod a tovбbbvezetх utat.</text>
+	</string>
+	<string id="tips_tranformer_off">
+		<text>Generбtor lekapcsolбsa: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="ui_st_mp_experience_grow">
+		<text>A jбtйkйlmйny vбltozhat az online jбtйk sorбn!</text>
+	</string>
+	<string id="renegade">
+		<text>Renegбtok</text>
+	</string>
+	<string id="agru_cs_warning">
+		<text>FIGYELEM! HAGYD EL AZONNAL A VESZЙLYES TERЬLETET!</text>
+	</string>
+</string_table>

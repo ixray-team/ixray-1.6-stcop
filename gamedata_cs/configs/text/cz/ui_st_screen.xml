@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="cant_walk">
+		<text>Samэm vyиerpбnнm nemщћeљ chodit</text>
+	</string>
+	<string id="cant_walk_weight">
+		<text>Nemщћeљ pokraиovat, jsi pшнliљ naloћen</text>
+	</string>
+	<string id="car_character_use">
+		<text>Otevшнt dveшe ($$ACTION_USE$$)</text>
+	</string>
+	<string id="character_use">
+		<text>Mluvit ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use">
+		<text>Prohledat tмlo ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use_or_drag">
+		<text>Prohledat tмlo ($$ACTION_USE$$) \n Odtбhnout tмlo (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+	<string id="general_complete_task">
+		<text>Ъkol splnмn:</text>
+	</string>
+	<string id="general_fail_task">
+		<text>Ъkol se nezdaшil:</text>
+	</string>
+	<string id="general_in_item">
+		<text>Obdrћen pшedmмt:</text>
+	</string>
+	<string id="general_in_money">
+		<text>Obdrћeny penнze:</text>
+	</string>
+	<string id="general_new_task">
+		<text>Novэ ъkol:</text>
+	</string>
+	<string id="general_out_item">
+		<text>Odebrбn pшedmмt:</text>
+	</string>
+	<string id="general_out_money">
+		<text>Odebrбny penнze:</text>
+	</string>
+	<string id="general_reverse_task">
+		<text>Mise zruљena:</text>
+	</string>
+	<string id="general_update_task">
+		<text>Ъkol aktualizovбn:</text>
+	</string>
+	<string id="gun_jammed">
+		<text>Zbraт se zasekla. Musнљ ji znovu nabнt.</text>
+	</string>
+	<string id="inventory_box_use">
+		<text>Prohledat ($$ACTION_USE$$)</text>
+	</string>
+	<string id="inventory_item_use">
+		<text>Sebrat pшedmмt ($$ACTION_USE$$)</text>
+	</string>
+	<string id="level_changer_invitation">
+		<text>Pшesunout se do dalљн oblasti?</text>
+	</string>
+	<string id="physic_shell_use">
+		<text>Pohnout pшedmмtem ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_autosave">
+		<text>Automatickй uloћenн</text>
+	</string>
+	<string id="st_codelock">
+		<text>Инselnнkovэ zбmek ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_demo_play">
+		<text>PROBНHБ PRБCE</text>
+	</string>
+	<string id="st_found_new_pda">
+		<text>Nalezeny informace:</text>
+	</string>
+	<string id="st_game_over">
+		<text>Konec hry</text>
+	</string>
+	<string id="st_game_over_press_jump">
+		<text>Stiskem ($$ACTION_JUMP$$) se vrбtнљ do hlavnн nabнdky.</text>
+	</string>
+	<string id="st_game_paused">
+		<text>Pauza</text>
+	</string>
+	<string id="st_game_saved">
+		<text>hra uloћena</text>
+	</string>
+	<string id="st_helmet_countdown">
+		<text>Vypnutн ochrany</text>
+	</string>
+	<string id="st_psy_danger">
+		<text>Kritickб ъroveт psi-zбшenн. Okamћitм opusќ nebezpeиnou zуnu.</text>
+	</string>
+	<string id="st_radiation_danger">
+		<text>Nebezpeиnб ъroveт radiace. Bez ochrany nelze projнt.</text>
+	</string>
+	<string id="st_search_treasure">
+		<text>Prohledat skrэљ ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_tip">
+		<text>Zprбva:</text>
+	</string>
+	<string id="tip_car_locked">
+		<text>Zablokovбno</text>
+	</string>
+	<string id="tip_car_use">
+		<text>Otevшнt dveшe ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_door_blocked">
+		<text>Dveшe zablokovбny</text>
+	</string>
+	<string id="tip_door_close">
+		<text>Stiskem ($$ACTION_USE$$) zavшeљ dveшe</text>
+	</string>
+	<string id="tip_door_coded">
+		<text>Dveшe jsou zamиeny na kуd</text>
+	</string>
+	<string id="tip_door_decode">
+		<text>Stiskem ($$ACTION_USE$$) zahбjнљ dekуdovбnн</text>
+	</string>
+	<string id="tip_door_decoding">
+		<text>Probнhб dekуdovбnн</text>
+	</string>
+	<string id="tip_door_locked">
+		<text>Dveшe jsou zamиeny </text>
+	</string>
+	<string id="tip_door_open">
+		<text>Stiskem ($$ACTION_USE$$) otevшeљ dveшe</text>
+	</string>
+	<string id="tip_gate_close">
+		<text>Stiskem ($$ACTION_USE$$) zavшeљ brбnu</text>
+	</string>
+	<string id="tip_gate_locked">
+		<text>Brбna je zablokovanб</text>
+	</string>
+	<string id="tip_gate_open">
+		<text>Stiskem ($$ACTION_USE$$) otevшeљ brбnu</text>
+	</string>
+	<string id="tip_grate_blocked">
+		<text>Mшнћ je zablokovanб</text>
+	</string>
+	<string id="tips_agroprom_undeground">
+		<text>Ke vstupu do dнry je zapotшebн povolenн.</text>
+	</string>
+	<string id="tips_kran_press">
+		<text>Otoиit jeшбb ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_radio_tower">
+		<text>Odvysнlat zprбvu ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_red_dynamit_undeground">
+		<text>Zapnout detonбtor ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_secret_strelka">
+		<text>Stшelcova skrэљ ($$ACTION_USE$$)</text>
+	</string>
+	<string id="mar_disabled_level_changer">
+		<text>Moибlem neprojdeљ bez prщvodce.</text>
+	</string>
+	<string id="shooting_fire">
+		<text>Pal!</text>
+	</string>
+	<string id="shooting_round_over">
+		<text>Konec kola! Vraќ se k љйfovi.</text>
+	</string>
+	<string id="shooting_time_left">
+		<text>Zbэvajнcн иas:</text>
+	</string>
+	<string id="shooting_your_count">
+		<text>Zasaћenй cнle:</text>
+	</string>
+	<string id="shooting_your_points">
+		<text>Tvй skуre:</text>
+	</string>
+	<string id="shooting_your_time">
+		<text>Tvщj иas:</text>
+	</string>
+	<string id="st_agru_warning_go_out">
+		<text>Opusќ nebezpeиnou oblast!</text>
+	</string>
+	<string id="st_agru_warning_time_left">
+		<text>Иas do zaplavenн:</text>
+	</string>
+	<string id="tips_agroprom_undeground2">
+		<text>Podzemн zaplaveno</text>
+	</string>
+	<string id="level_changer_disabled">
+		<text>Nemщћeљ najнt cestu.</text>
+	</string>
+	<string id="tips_tranformer_off">
+		<text>Deaktivovat generбtor ($$ACTION_USE$$)</text>
+	</string>
+	<string id="ui_st_mp_experience_grow">
+		<text>Upozornмnн: Uvedenэ rating nemusн bэt platnэ pro online hru</text>
+	</string>
+	<string id="renegade">
+		<text>Odpadlнci</text>
+	</string>
+	<string id="agru_cs_warning">
+		<text>POZOR! OKAMЋITМ OPUSЌTE NEBEZPEИNOU OBLAST</text>
+	</string>
+</string_table>

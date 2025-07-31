@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_comm_talk_11">
+		<text>Na co иumнљ, ksichte?</text>
+	</string>
+	<string id="esc_comm_talk_1111">
+		<text>Jen se smмj! Pokud chceљ zjistit, kam jsem si schoval skшнтku s koшistн, tak tм иekб zklamбnн. Vraќ se do svэ milovanэ Zуny! Mн chlapi vбs patetickэ srбиe brzo zlikvidujou! A co se tэиe vaљeho prбskaиe, toho povмsнme na most, aby vљichni vidмli, co je иekб, kdyћ se zkusн srбt do armбdy!</text>
+	</string>
+	<string id="esc_comm_talk_111111">
+		<text>Jo tak?! Hm, a kolik by tvoje sluћby stбly? Co kdybych tм poћбdal, aќ mэm chlapщm pomщћeљ a sundбљ ty snajpry na ћelezniиnнm valu?</text>
+	</string>
+	<string id="esc_leader_what_happens_1">
+		<text>Jak ti to шнct... stalkeшi a armбda dшнv spolupracovali. Oni nбm dбvali zbranм, my jim penнze, a vљichni byli spokojenн. Obиas nбm шнkali, kdyћ se nмkde objevily novэ anomбlie. Ale jednou zaиal bэt jejich velitel trochu moc chamtivej. Spojil se s banditama a zaиal jim prodбvat informace o naљich pozicнch. Nejdшнv jsme si mysleli, ћe maj banditi prostм љtмstн, ale pak jsme je jednou naиapali pшi kљeftech s armбdou. V tu chvнli jsme se dali dohromady a rozhodli se, ћe musej padat hlavy.</text>
+	</string>
+	<string id="esc_leader_talk_11">
+		<text>Nazdar! Takovejch jako seљ ty v Kordonu moc nevidнme... co tм sem pшivбdн?</text>
+	</string>
+	<string id="esc_leader_talk_22">
+		<text>Tak co, zjistils nмco uћiteиnэho?</text>
+	</string>
+	<string id="esc_leader_talk_33">
+		<text>Sakra, takћe tenhle pшнbмh se koneиnм doиkal dobrэho konce! Teп armбda zщstane zavшenб na svejch pozicнch a nevystrин nos.</text>
+	</string>
+	<string id="esc_leader_talk_44">
+		<text>Hele, musнљ se postarat o velitelovy kamarбdy.</text>
+	</string>
+	<string id="esc_leader_talk_55">
+		<text>Co sakra udмlбme s tнm velitelem?...</text>
+	</string>
+	<string id="esc_leader_talk_1111">
+		<text>Od Sidoroviиe, шнkбљ... takћe vнљ o veliteli? Fajn, budu s tebou jednat na rovinu. Dшнv jsme s armбdou spolupracovali. Oni nбs nechбvali bezpeиnм pшevбћet zboћн a obиas nбm dali nмjakэ uћiteиnэ informace. Za to jsme jim dobшe platili. Ale pak jsme zjistili, ћe ten hajzlнk jejich velitel pracoval pro obм strany - dodбval informace o nбs banditщm! Pak prodal naљe dva chlapy jako otroky na Smeќбk! To byla poslednн kapka.</text>
+	</string>
+	<string id="esc_leader_talk_111111">
+		<text>Jo, asi jsme se nechali trochu unэst... teп nevнm, co dбl. Mбme velitele jako rukojmн, coћ je tak trochu zбruka, ћe nбs armбda nezbombarduje vrtulnнkama. Nemщћeme ho zabнt, ale nemщћeme ho ani nechat jнt... Ten mazanej mizera moc dobшe vн, ћe ho potшebujem ћivэho, a nechce ustoupit ani o krok. Problйm je v tom, ћe akorбt on vн, kde je koшist schovanб. Pokud koшist nedodбme Sidoroviиovi, uћ s nбma nikdy nebude kљeftovat. Pokud bychom tu svini armбdnн dokбzali zpracovat, aby hrбla podle naљich pravidel, byla by to ъplnм jinб hra, to mi vмш.</text>
+	</string>
+	<string id="esc_leader_talk_2222">
+		<text>Samozшejmм, ћe ho zachrбnн - ta svinм jim dluћн hromadu penмz! Шнdil si vlastnн kљefty a prachy nмkde ulil. Hele, mбm nбpad. Velitel mб akorбt dva chlapy, na kterэ se mщћe spolehnout - slouћili spolu v pevnщstce a jeli v tom kљeftu s nнm, takћe udмlajн, co budou moct, aby ho dostali ven. Pokud se jich zbavнme, tak si ten hajzl snad uvмdomн, ћe uћ pro nмj nikdo nepшijde. Povolн a my z nмj vymlбtнme, kam koшist schoval. O prachy se podмlнme a Sidoroviи dostane tu svoji skшнnku. Co ty na to?</text>
+	</string>
+	<string id="esc_leader_talk_222222">
+		<text>Mбm pocit, ћe je ani nebudeme muset hledat. Chaletskйho kбmoљi se tady nмkde potloukajн a chystajн se na nбs zaъtoиit. U vэtahu jsme objevili malэ druћstvo. Pomoz nбm je zlikvidovat.</text>
+	</string>
+	<string id="esc_trader_meet_11">
+		<text>Nazdar. Povнdej, co tм sem pшivбdн?</text>
+	</string>
+	<string id="esc_trader_meet_22">
+		<text>Dнk za tu skшнnku. Teп to mщћu doшeљit s klientem. V Zуnм jsem pшeћil tak dlouho jen proto, ћe vћdycky dodrћнm slovo. Pokud tady vydrbeљ s klientem, tak nejspнљ brzy najdeљ ve vlastnнch zбdech nмин kudlu. Ale dost kecщ o mnм, pшejdeme k tobм a tomu tvэmu stalkerovi. Byl tady. Jmenuje se Tesбk a hledal nмjakэ elektronkovэ zesilovaиe a podobnэ elektronickэ krбmy... jб se v tмch nesmyslech nevyznбm. Prodal jsem mu zesбk, ale dalљн vмci, co chtмl, jsem nemмl, tak jsem mu шek, aќ se zkusн stavit u kopбищ na Smeќбku. Nedбvno stalkeшi na Smeќбku vyhrabali nмjakэ starэ pohшbenэ vybavenн z doby po nehodм v elektrбrnм, takћe majн spousty starejch souибstek. Zkus ho najнt tam.  A nezapomeт: pokud ti jde o kљeft, jsem tvщj иlovмk.</text>
+	</string>
+	<string id="esc_trader_meet_44">
+		<text>Hej, furt иekбm na tu skшнnku. Mмl bys na to pamatovat.</text>
+	</string>
+	<string id="esc_trader_meet_55">
+		<text>Tak po иem jdeљ?</text>
+	</string>
+	<string id="esc_trader_meet_2222">
+		<text>Pokud potшebujeљ jeљtм nмco, tady budeљ vћdycky vнtanej. Za pomoc s armбdou mбљ u mм doћivotnн slevu.</text>
+	</string>
+	<string id="esc_trader_meet_1111">
+		<text>Hmm... Vнdбm tady tolik stalkerщ, ћe se fakt nedб si je vљechny zapamatovat. Proи bych mмl kvщli tobм namбhat pamмќ?</text>
+	</string>
+	<string id="esc_trader_meet_111111">
+		<text>Takћe teп mluvнme obchodnм, to se mi lнbн. Dobшe. Uћ jsem tady nмjakou dobu, moje kљefty jedou, mбm spousty objednбvek a lidi mi vмшн. Ale s poslednн objednбvkou jsou problйmy, a navнc je klient nмkdo dщleћitej a jde po unikбtnн vмci! Vљechno љlo v pohodм, stalkeшi sehnali v Zуnм zboћн, a armбda se mмla postarat, aby mohlo projнt pшes Kordon. Ale teп se ty dvм party zaиaly kvщli nмиemu hбdat a je to tady jak v blбzinci! Stalkeшi bojujou s armбdou a nikdo nemб tuљenн, kde zboћн skonиilo. A to se mi vщbec nelнbн, protoћe objednбvku je tшeba splnit. Takћe: pomoz mi sehnat skшнnku se zboћнm a jб ti шeknu nмco o tvэm stalkerovi a jeho souибstkбch. Dohodnuto?</text>
+	</string>
+	<string id="esc_trader_meet_11111111">
+		<text>Stav se u stalkerщ u ћelezniиnнho valu. Majн tam zшнzenou zбkladnu a drћej tam v zajetн armбdnнho velitele Chaletskйho. Je mi fuk, co tam v tэ zбkladnм udмlбљ, jestli si ti magoшi chtмjн dбl hrбt na Robina Hooda a jeho veselou partu, jejich vмc. Jб chci skшнтku a koшist, co je uvnitш. Pro zaибtek si zkus promluvit s Valeriбnem, љйfem stalkerщ. Dбm mu vмdмt, ћe pшichбzнљ ode mм.</text>
+	</string>
+	<string id="esc_comm_about_life_in_zone_1">
+		<text>No, mбљ to u mм. Tak jб ti nмco шeknu - vнm, ћe se stalkeшi snaћн dostat do centra Zуny. Vidмl jsem starэ vojenskэ mapy a ukбzalo se, ћe centrum Zуny je pшesnм tam, kde bejvala иernobylskб atomovб elektrбrna. Moћnб je to nбhoda, ale na tvэm mнstм bych na to pamatoval. Problйm ale je, ћe tu oblast nedokбћou zobrazit ani vojenskэ satelity, v ћбdnэ ибsti spektra. Uћ pшes ni ani nezkouљej lнtat, protoћe jsou interference tak silnэ, ћe letadla explodujou samy od sebe. Je to samozшejmм pшнsnм tajnэ, ale mщj kбmoљ u raketovejch vojsk se o tom prokecl pшi sklence. Pokud chceљ mou radu - vyhэbej se stшedu Zуny.</text>
+	</string>
+	<string id="esc_comm_about_prisoner_1">
+		<text>Myslнљ, ћe je to sranda? Vole, kdybychom mluvili za jinejch okolnostн, dal bych ti jinou odpovмп... uћ mм to fakt sere... Chlapi, se kterejma jsem v armбdм zaинnal, maj vљichni nablнskanэ hvмzdiиky a poшбdnэ vybavenн a dшepмj na mnohem lepљнch mнstech... myslнљ, ћe nemбm nic lepљнho na prбci neћ lovit lidi, jako seљ ty, po celэ Zуnм? Uћ toho mбm plnэ zuby, celэ tэhle zasranэ Zуny, mizernejch stalkerщ a toho zkurvence Sidoroviиe... a na mutanty bych taky nejradљi zapomnмl... chcнpбme jeden za druhэm, abychom je zastavili, ale vћdycky pшijdou dalљн a dalљн. A vљichni venku jen blekotajн, jak "musнme chrбnit svмt pшed hrщzami Zуny"; "To nedovolнme..." Generбlovй, ti kretйni v televizi... v tмch jejich sraиkбch by se jeden utopil! A kolik z tмch dementщ s hvмzdiиkama se tady vщbec kdy ukбzalo? Kolik z nich se plazilo po bшiљe mezi anomбliema, co? Kolik z tмch lenivejch zasrancщ vyиistilo aspoт jeden sektor nebo celej den honilo stalkery po baћinбch? Ti hajzlovй vћdycky pouћнvaj armбdu na ucpбnн tмch nejvмtљнch sraиek!</text>
+	</string>
+	<string id="esc_comm_about_prisoner_111">
+		<text>No tak co, ћe nechбvбm koшist prochбzet pшes Kordon vэmмnou za trochu penмz? Ћiju a nechбvбm ostatnн ћнt, chбpeљ? Vнљ vщbec, debile, kolik je mщj oficiбlnн plat? Pшesnм, zkus vyћнt z nмиeho takovэho! Neplatмj mi skoro nic a иekajн, ћe budu jeљtм pyљnэ na svou prбci i zemi... љйfovй vydмlбvajн na Zуnм mraky penмz, stejnм jako vљichni ostatnн. Tak proи bych nemohl i jб? Mojн pracн je dмlat, co mi rozkбћou, a pшeћнt. Tak pшeћнvбm, jak to jen jde nejlнp. Proklнnбm tuhle zasranou dнru a vљechny kretйny v nн... nevнm, jestli je mбm vљechny postшнlet, nebo si radљi vystшelit mozek z hlavy sбm.</text>
+	</string>
+	<string id="esc_comm_about_prisoner_11111">
+		<text>Podvod? No a? Seru na tebe a tobм podobnй. Ani tady nemбte co dмlat. Mмl vбs nмkdo odstшelit, jakmile jste pшekroиili hranice Zуny. Nedмlбm si prdel, mбm takovэ rozkazy. Problйm je v tom, ћe na mrtvole se moc vydмlat nedб a jб si za svou prбci zaslouћнm lepљн kompenzaci. Armбda ji nezaplatн, tak si ji musнm vybrat sбm. A hбdky mezi vaљema frakcema, ty mм fakt neserou, klidnм se pozabнjejte mezi sebou, jб si stмћovat nebudu.</text>
+	</string>
+	<string id="esc_comm_talk_33">
+		<text>Stalkere, sice jsem ztratil svou koшist a mн kamarбdi jsou mrtvн, ale uћ jsem se dostal z horљнho! Chceљ vмdмt, kde je moje skrэљ?</text>
+	</string>
+	<string id="esc_comm_talk_3333">
+		<text>Pomoz mi odsud, stalkere. Jen mi dej pistoli, aћ se nebude nikdo dнvat, a jб uћ se postarбm o zbytek.</text>
+	</string>
+	<string id="esc_comm_talk_333333">
+		<text>Budu k tobм upшнmnej. Skrэљ je v trubce, poblнћ Zуny anomбliн.</text>
+	</string>
+	<string id="esc_comm_talk_44">
+		<text>Dнky za tu zbraт.</text>
+	</string>
+	<string id="esc_comm_talk_5555">
+		<text>Co jeљtм chceљ?</text>
+	</string>
+	<string id="esc_leader_about_home_1">
+		<text>Docela dobrэ, шнkбљ? Jб шнkбm, fakt dobrэ! Ale nebylo to zadarmo, protoћe nбs ty armбdnн svinм vysбvaly, jak to jen љlo. Posнlali nбs na nбjezdy a odstшelovali naљe z vrtulnнkщ. \nOvlбdli veљkerej obchod, a kdyћ tм chytli s nмjakou koшistн, tak ti ji prostм sebrali. A dмlat pro nм zakбzky mмlo sotva smysl - neplatili skoro nic, pokud vщbec zaplatili. Ale spravedlnost zvнtмzila, dokonce i v Zуnм! Kdyћ nбs Chaletskij prodal banditщm, rozhodli jsme se, ћe uћ toho mбme dost, a vzali jsme si ho jako rukojmн. Zbytek armбdnнch srбищ si nadмlal do kalhot a od tэ doby nбm dбvajн pokoj. Bojej se o svэho velitele. \nTakћe jsme si v Zуnм vykousali svoje vlastnн mнsteиko a teп se to nezmмnн! Tohle je fakt dщleћitэ: mбme stalkerskou zбkladnu a Kordon je teп v bezpeин. A teп uћ to bude jen lepљн, na to si mщћeљ vsadit!</text>
+	</string>
+	<string id="esc_leader_about_home_111">
+		<text>No, kбmo, mбme vнc plбnщ neћ samotnej Bщh, kdyћ zaинnal se stvoшenнm! Musнme dostavмt zбkladnu - to je naљe priorita. Pak musнme naverbovat vнc lidн - ale oni pшijdou sami, vљak uvidнљ! Lidi vмdн, ћe bojujem za sprбvnou vмc! Jakmile dбme dohromady poшбdnou armбdu, ukбћeme banditщm, zaи je toho loket! Serou nбs uћ vмky a pro takovэ hajzly nenн v Zуnм mнsto! No a pak... no, jб vмшнm, ћe se jednou vydбme hloubмjc do Zуny. Moћnб se dokonce dostanem aћ do stшedu, to je sen kaћdэho stalkera! Иekajн nбs velkэ vмci, to ti povнdбm!</text>
+	</string>
+	<string id="esc_leader_about_home_11111">
+		<text>No jak vidнљ, mбme tady spoustu prбce... ale vмшнm, ћe kdyћ seљ spokojenej s tнm, co mбљ, zнskбљ toho o hodnм vнc! Podaшilo se nбm zaинt a to je nejdщleћitмjљн! Uћ tady mбme technika i pшekupnнka. Jsou to dobшн chlapi, klidnм se za nima stav, pнchnou ti. Aћ tady dostanem vнc lidн, tak to poшбdnм rozjedeme! Jsem si jistej, ћe to dokбћu dotбhnout k vмtљнm vмcem! Pamatuj, tohle je jenom zaибtek!</text>
+	</string>
+	<string id="esc_leader_about_prisoner_1">
+		<text>Utekl! Ten hajzl zabil dva strбћnэ a zdrhnul do lesa! Teп ho nikdy nenajdeme! Nemбm tuљenн, jak se mohl dostat k bouchaиce.</text>
+	</string>
+	<string id="esc_trader_about_other_1">
+		<text>Jб ti to vysvмtlнm jeљtм jednou. Pшineseљ mi koшist, o kterou se hбdajн stalkeшi a armбda, a jб ti odpovнm na vљechny otбzky.</text>
+	</string>
+	<string id="esc_comm_about_info_0">
+		<text>Co pro tebe mщћu udмlat?</text>
+	</string>
+	<string id="esc_comm_about_info_1">
+		<text>Zaplatнm ti za kaћdou informaci, kterб bude za nмco stбt. Takћe, co vљechno vнљ?</text>
+	</string>
+	<string id="esc_comm_about_info_11">
+		<text>Nic.</text>
+	</string>
+	<string id="esc_comm_about_info_2">
+		<text>Zabil jsem vojenskйho velitele a sebral jsem mu PDA. Vymмnнm ho za koшist.</text>
+	</string>
+	<string id="esc_comm_about_info_22">
+		<text>Teп zrovna nemбm ћбdnй cennй informace.</text>
+	</string>
+	<string id="esc_comm_about_info_3">
+		<text>To PDA pro mм urиitou cenu mб, koupнm ho od tebe.</text>
+	</string>
+	<string id="esc_comm_about_info_4">
+		<text>Platн.</text>
+	</string>
+	<string id="esc_comm_about_info_5">
+		<text>Rozmyslel jsem si to.</text>
+	</string>
+	<string id="esc_comm_about_life_in_zone_0">
+		<text>Neslyљel jsi v poslednн dobм nмco zajнmavйho?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_0">
+		<text>Jak ses vlastnм dostal ke stalkerщm do lochu?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_11">
+		<text>Ehm, kdyћ tм tak hroznм љtveme, proи nбs nechбљ pokraиovat v paљovбnн?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_1111">
+		<text>Kdyћ jsi tak zбsadovэ, proи prodбvбљ banditщm informace o stalkerech? Mnм to pшipadб zбkeшnй...</text>
+	</string>
+	<string id="esc_comm_talk_111">
+		<text>Ha, to je ale љvanda, vojenskэ velitel a v base.</text>
+	</string>
+	<string id="esc_comm_talk_11111">
+		<text>To nenн mщj љйf. Jб jsem ћoldбk.</text>
+	</string>
+	<string id="esc_comm_talk_1111111">
+		<text>Na krysu, jako jsi ty, je to moc drahэ.</text>
+	</string>
+	<string id="esc_comm_talk_11111122">
+		<text>Kurva drбt... vsadнm levou kouli, ћe to byl Sidoroviи! Vмdмl jsem, ћe mi obиas s nминm kљeftuje za zбdy. A rozhodnм si to dobшe naиasoval, ћe mi vrazil kudlu do zad zrovna teп!... No co uћ, ћivot nikdy nebyl fйr, a ani nebude. Poslouchej, dvм armбdnн druћstva jsou pшipravenб k ъtoku, jedno u depa a druhй u mlэna. Velн jim Sokolov od depa. Zajdi za nнm a vyшiп mu, ћe jsem naћivu a v poшбdku, protoћe se mм stalkeшi neodvбћili odprбsknout. Шekni mu, aby zahбjil ъtok.</text>
+	</string>
+	<string id="esc_comm_talk_111121">
+		<text>Kurva drбt... vsadнm levou kouli, ћe to byl Sidoroviи! Vмdмl jsem, ћe mi obиas s nминm kљeftuje za zбdy. A rozhodnм si to dobшe naиasoval, ћe mi vrazil kudlu do zad zrovna teп!... No co uћ, ћivot nikdy nebyl fйr, a ani nebude. Poslouchej, dvм armбdnн druћstva jsou pшipravenб k ъtoku, jedno u depa a druhй u mlэna. Velн jim Sokolov od depa. Zajdi za nнm a vyшiп mu, ћe jsem naћivu a v poшбdku, protoћe se mм stalkeшi neodvбћili odprбsknout. Шekni mu, aby zahбjil ъtok.</text>
+	</string>
+	<string id="esc_comm_talk_21">
+		<text>Samozшejmм, moji chlapi svйho velitele ctн. Љli by pro mм bez rozmэљlenн i na smrt.</text>
+	</string>
+	<string id="esc_comm_talk_333">
+		<text>Tak jo, a co za to na oplбtku chceљ?</text>
+	</string>
+	<string id="esc_comm_talk_33333">
+		<text>Tady mбљ pistoli, ale kdyby tм nмkdo chytil pшi pokusu o ъtмk - v ћivotм jsem tм nevidмl.</text>
+	</string>
+	<string id="esc_comm_talk_3333333">
+		<text>Doufбm, ћes mм nepodrazil.</text>
+	</string>
+	<string id="esc_comm_talk_33334">
+		<text>Ha, nech si zdбt, kбmo. Svoji bouchaиku ti nedбm.</text>
+	</string>
+	<string id="esc_comm_talk_334">
+		<text>Nepotшebuju tvoje smradlavй skrэљe. Jsi љpinavб krysa a jб ti pomбhat nebudu.</text>
+	</string>
+	<string id="esc_comm_talk_444">
+		<text>Nenн problйm.</text>
+	</string>
+	<string id="esc_comm_talk_55">
+		<text>Co potшebujeљ teп?</text>
+	</string>
+	<string id="esc_comm_talk_555">
+		<text>No...</text>
+	</string>
+	<string id="esc_comm_talk_6666">
+		<text>Co chceљ?</text>
+	</string>
+	<string id="esc_driver_about_you_0">
+		<text>Jak se ti stalo, ћe jsi skonиil v Zуnм?</text>
+	</string>
+	<string id="esc_driver_about_you_1">
+		<text>Jak jsem se sem dostal? Normбlka, pшeveleli mм sem. Doufal jsem, ћe mм pшevelн k nмjakй jednotce blнћ k naљemu mмsteиku, ale poslali mм do Zуny. Tady mщћeљ zapomenout na to, ћe bys psal dopisy nebo odjel na dovolenou. Pшes den je to normбlnн vojna: rozkazy, pochodovбnн, salutovбnн... ale v noci aby se иlovмk pomalu zaиal modlit, protoћe to pak je fakticky straљidelnэ. Шнkб se, ћe tм v noci poљlou na strбћ na perimetr, a najednou uslyљнљ vytн... blнћ a blнћ. Nмkdy ty potvory dokonce uvidнљ. Ъplnм mi z toho svinstva ztuhla krev v ћilбch... a starљн vojclovй jsou dмsnн иurбci, tшeba tм vzbudн uprostшed noci a poљlou si tм pro vodku. Aќ si mм tшeba zabijou, ale ze zбkladny uћ po tй prvnн akci ven nevylezu... Viќka, ten hoch, kterйho sem pшeveleli se mnou, udмlal, co po nмm chtмli, a naљli ho aћ rбno, ъplnм promodralйho, s oиima jako kola od befka... tak se vydмsil, ћe mu selhalo srdce a bylo na fleku po nмm...</text>
+	</string>
+	<string id="esc_driver_fear_0">
+		<text>Prosнm, nezabнjej mм!</text>
+	</string>
+	<string id="esc_driver_fear_11">
+		<text>Vљechno mб svщj dщvod. Byli jsme s velitelem na obchщzce perimetru, kdyћ nбs napadli. Zabili strбћe a velitele vzali jako rukojmн - jб jsem tak tak vyvбzl...</text>
+	</string>
+	<string id="esc_driver_fear_111">
+		<text>Tak proи ses nevrбtil ke svй jednotce, vojбku?</text>
+	</string>
+	<string id="esc_driver_fear_1111">
+		<text>A proи bych se tam teп tak asi vracel? Hned by mм љoupli pшed tribunбl, ћe jsem opustil velitele!</text>
+	</string>
+	<string id="esc_driver_quest_0">
+		<text>Mщћu ti nмjak pomoct?</text>
+	</string>
+	<string id="esc_driver_quest_1">
+		<text>Jeden z mэch nejlepљнch kamarбdщ utнkal pшed stalkery a шekl si, ћe se zaљije do tunelu. Podaшilo se mu dostat dovnitш, ale ven uћ se nevyљkrбbal a umшel tam ћнznн. Zkouљel jsem mu tam donйst vodu, ale marnб snaha. Bylo to tam fakt divnэ - vidмl jsem ho pшнmo pшed sebou, ale furt jsem se k nмmu nemohl dostat. Mohl bys mi zkusit pшinйst nмco z jeho vмcн? Chtмl bych si po nмm nechat nмco na pamбtku. Ale шнkбm ti na rovinu, ћe nevнm, jak se tam dovnitш dostat. Moћnб by ses mohl zeptat stalkerщ - vмdн toto o Zуnм mnohem vнc neћ my vojбci.</text>
+	</string>
+	<string id="esc_driver_quest_11">
+		<text>Myslнm, ћe to nezvlбdneљ.</text>
+	</string>
+	<string id="esc_driver_quest_2">
+		<text>Dobшe, zkusнm to.</text>
+	</string>
+	<string id="esc_driver_quest_22">
+		<text>Nemбm na to иas.</text>
+	</string>
+	<string id="esc_driver_quest_complete_0">
+		<text>Jdu kvщli tй prбci.</text>
+	</string>
+	<string id="esc_driver_quest_complete_1">
+		<text>Tak jak to љlo?</text>
+	</string>
+	<string id="esc_driver_quest_complete_2">
+		<text>Donesl jsem ti jeho PDA. Byla to jedinб vмc, kterб u jeho tмla zщstala.</text>
+	</string>
+	<string id="esc_driver_quest_complete_22">
+		<text>Jeљtм nic.</text>
+	</string>
+	<string id="esc_driver_quest_complete_222">
+		<text>To je љkoda. Pamatuj si, spolйhбm na tebe.</text>
+	</string>
+	<string id="esc_driver_quest_complete_3">
+		<text>Dмkuju ti! Tady mбљ nмco mбlo za pomoc.</text>
+	</string>
+	<string id="esc_driver_who_are_you_0">
+		<text>Co jsi zaи?</text>
+	</string>
+	<string id="esc_driver_who_are_you_1">
+		<text>Semjon... Vojнn... Jehтбk... Bэval jsem шidiиem naљeho velitele, Chaletskйho. Chtмl, abych ho zavezl podнvat se za stalkerama. Na hrбz jsme se dostali v poшбdku, ale kdyћ jsme si s nimi љli promluvit, nasadili veliteli klepeta a jб jsem vzal kramle.</text>
+	</string>
+	<string id="esc_driver_who_are_you_2">
+		<text>Tak co budeљ dмlat?</text>
+	</string>
+	<string id="esc_driver_who_are_you_3">
+		<text>Proи bych se tam teп vracel? Hned by mм љoupli pшed tribunбl, ћe jsem opustil velitele!</text>
+	</string>
+	<string id="esc_driver_who_are_you_4">
+		<text>Pojп se mnou. Vybijeme stalkery, zachrбnнme Chaletskйho a o koшist se rozdмlнme!</text>
+	</string>
+	<string id="esc_driver_who_are_you_44">
+		<text>Aha.</text>
+	</string>
+	<string id="esc_driver_who_are_you_5">
+		<text>To je dobrej nбpad, иlovмиe, jenћe jб nemбm bouchaиku. Dej mi aspoт pistoli a pщjdu s tebou.</text>
+	</string>
+	<string id="esc_driver_who_are_you_6">
+		<text>Na, vezmi si tuhle. Bez krochny bys mi nebyl moc platnej.</text>
+	</string>
+	<string id="esc_driver_who_are_you_66">
+		<text>Ne, radљi ne. Nechci, aby mм ostatnн naљli s kulkou v zбdech.</text>
+	</string>
+	<string id="esc_leader_about_home_0">
+		<text>Vidнm, ћe ses tady hezky usadil.</text>
+	</string>
+	<string id="esc_leader_about_home_11">
+		<text>To mм tмљн - sбm taky nemбm armбdu zrovna moc v lбsce. Mбљ uћ nмjakй plбny do budoucna?</text>
+	</string>
+	<string id="esc_leader_about_home_1111">
+		<text>Povмz mi o vaљн zбkladnм.</text>
+	</string>
+	<string id="esc_leader_about_prisoner_0">
+		<text>Kde drћн majora Chaletskйho?</text>
+	</string>
+	<string id="esc_leader_about_you_0">
+		<text>Jak dlouho uћ jsi stalkerem?</text>
+	</string>
+	<string id="esc_leader_about_you_1">
+		<text>Nмjakэ ten pбtek uћ se tu potloukбm. Byl jsem tu s chlapama uћ v roce 2000, brali jsme ћeleznэ љrot do sbмru. Pak se objevila Zуna. Nejdшнv jsme byli pмknм vydмљenн, ale stejnм jsme si шekli, ћe se poohlнdneme po nмиem cennэm. Poшбd jsme chodili na ћeleznej љrot, dokud jsme nenaљli prvnн artefakt. A tumбљ! Ukбzalo se, ћe mб cenu svй vбhy ve zlatм. Pшedstav si to, ani dneska nenн artefaktщ nмjak vyslovenм moc, ale tehdy vмtљina lidн vщbec netuљila, ћe nмco takovйho existuje. Ty prachy, co jsme za to dostali - jeљtм teп se mi sbнhajн sliny, kdyћ si na to vzpomenu! Uћ to nenн, co to bejvalo...</text>
+	</string>
+	<string id="esc_leader_about_you_11">
+		<text>Co dмlбљ v Kordonu?</text>
+	</string>
+	<string id="esc_leader_about_you_111">
+		<text>Co to mб bэt za otбzku? Kordon je nмco jako brбna do Zуny. Chodн sem spousta stalkerщ. Dб se tu dobшe odpoинvat, doplnit nбboje a od Sidoroviиe иlovмk dostane za koшist sluљnou cenu. A pokud potшebujeљ parќбka, potuluje se na Kordonu spousta zelenбищ, kteшн jsou pro starйho mazбka ochotni projнt ohnмm i vodou. Jsme pro nм nмco jako ћivй legendy.</text>
+	</string>
+	<string id="esc_leader_about_zone_0">
+		<text>Povмz mi nмco o Zуnм.</text>
+	</string>
+	<string id="esc_leader_about_zone_1">
+		<text>To se ptбљ ty mм? Proи se nezeptбљ nмjakйho vмdбtora - ti poшбd strkajн Zуnu pod mikroskop nebo pod rentgen. Jб toho v podstatм o Zуnм moc nevнm... Je to pro mм prostм mнsto, kde se dajн vydмlбvat prachy. Chci si jen vydмlat tolik, abych si mohl za pбr let poшнdit svщj vlastnн barбk nмkde na pobшeћн.</text>
+	</string>
+	<string id="esc_leader_first_join_0">
+		<text>Jak se mщћu pшidat k vaљemu klanu?</text>
+	</string>
+	<string id="esc_leader_first_join_1">
+		<text>Usnadnнm ti to! Dokaћ mi, ћe jsi dobrэ, poctivэ chlap, a budu rбd, kdyћ se staneљ mэm brбchou. Ale vнљ, jak se шнkб, ћe v nouzi poznбљ pшнtele? Mбme tu poшбd plnй ruce prбce s rщznou verbeћн, takћe kdyћ nбm pomщћeљ, budeme to brбt, jako ћe jsi "sloћil test na jedniиku s hvмzdiиkou".</text>
+	</string>
+	<string id="esc_leader_first_join_11">
+		<text>Aha.</text>
+	</string>
+	<string id="esc_leader_good_job_0">
+		<text>Jak jeљtм mщћu stalkerщm pomoct?</text>
+	</string>
+	<string id="esc_leader_good_job_1">
+		<text>Vojenskй jednotce u depa velн jeden ze zбstupcщ velitele v Kordonu. Mб u sebe PDA s cennэmi informacemi.</text>
+	</string>
+	<string id="esc_leader_good_job_11">
+		<text>Dobшe.</text>
+	</string>
+	<string id="esc_leader_good_job_12">
+		<text>Zatнm nic.</text>
+	</string>
+	<string id="esc_leader_good_job_2">
+		<text>Zabil jsem velitele zelenэch mozkщ a sebral jsem mu PDA. Nehodilo by se ti?</text>
+	</string>
+	<string id="esc_leader_good_job_3">
+		<text>Vэbornм, stalkere. V tom PDA je spousta uћiteиnэch informacн - dмkuju ti. Tady mбљ odmмnu.</text>
+	</string>
+	<string id="esc_leader_good_job_4">
+		<text>Dмkuju ti!</text>
+	</string>
+	<string id="esc_leader_join_stalker_0">
+		<text>Mщћu se pшidat ke tvйmu klanu? Udмlal jsem uћ dost, abych se mohl stбt jednнm z vбs?</text>
+	</string>
+	<string id="esc_leader_join_stalker_1">
+		<text>Hodnм jsi nбm pomohl, o tom ћбdnб, ale... Jsme stalkeшi, a mм se nezdб, ћe bys mмl zkuљenosti, kterй иlovмk v naљн branћi potшebuje. Mмl by ses vydat hloub do Zуny a nмco se o tom nauиit... Zatнmco pщjdeљ na zkuљenou, jб tady poшeљнm tu naљi neshodu s armбdou a jak s tнm skonинm, dбm ti vмdмt!</text>
+	</string>
+	<string id="esc_leader_join_stalker_2">
+		<text>Иlovмиe, my tu mбme jeden nevyшeљenэ problйm vedle druhйho... zatнm na to ani nemysli, je moc brzo. Co kdybychom se nejdшнv vypoшбdali s problйmy a pak aћ se podнvali, jak jsme na tom?</text>
+	</string>
+	<string id="esc_leader_join_stalker_3">
+		<text>Ty seљ od Povinnosќбkщ, ne? Musнљ pochopit, ћe naљe bratrstvo a tvн velitelй, ћe mбme... ehm... znaиnм odliљnй nбzory na Zуnu. Pokud se k nбm chceљ opravu pшidat, budeљ muset zapomenout na svou minulost u Povinnosti. Souhlasнљ?</text>
+	</string>
+	<string id="esc_leader_join_stalker_33">
+		<text>Jasnм. Nenн nad ћivot svobodnйho stalkera, ne?</text>
+	</string>
+	<string id="esc_leader_join_stalker_333">
+		<text>Ale? A studenэ pivo a vyhшбtou plбћ nмkde u moшe bys nechtмl, co? Eh, ani mi nemluv... Doufбm, ћe kodex stalkerщ uћ znбљ, nebo ne?</text>
+	</string>
+	<string id="esc_leader_join_stalker_3333">
+		<text>Radљi mi to vysvмtli, jen tak pro vљechny pшнpady.</text>
+	</string>
+	<string id="esc_leader_join_stalker_33333">
+		<text>Aha, takћe je to na mм. Tak jo. Blahopшeji nбm obмma k novйmu pшнrщstku do naљн pшбtelskй komunity! Nechќ se ti muќбci a anomбlie na tvэch cestбch vyhэbajн, stalkere! Aktivoval jsem ti v PDAиku kodek, abys mohl pшijнmat vysнlбnн od dalљнch stalkerщ z klanu a taky v taktickэm reћimu sledovat, jak si vedeme proti banditщm. Jeљtм jednou blahopшeju!</text>
+	</string>
+	<string id="esc_leader_join_stalker_333333">
+		<text>Chбpu.</text>
+	</string>
+	<string id="esc_leader_join_stalker_3333333">
+		<text>No, to mi staин. Je mi potмљenнm pшivнtat tм jako novйho иlena naљeho pшбtelskйho spoleиenstvн! Na svэch cestбch si dбvej pozor na anomбlie a mutanty, stalkere! Aktivoval jsem kodek ve tvйm PDA, pomocн kterйho budeљ moci pшijнmat zprбvy od ostatnнch stalkerщ z klanu a v taktickй nabнdce sledovat nбљ postup ve vбlce proti banditщm. Jeљtм jednou ti blahopшeju!</text>
+	</string>
+	<string id="esc_leader_join_stalker_33333333">
+		<text>Aha. A teп mм prosнm omluv, musнm jнt zase na chvнli stalkerovat...</text>
+	</string>
+	<string id="esc_leader_join_stalker_33334">
+		<text>Jasnм. Byl jsem v Zуnм celkem dlouho.</text>
+	</string>
+	<string id="esc_leader_join_stalker_3334">
+		<text>Budu o tom pшemэљlet.</text>
+	</string>
+	<string id="esc_leader_join_stalker_4">
+		<text>Dobшe, dobшe. Ani u Svobody nemбљ dost svobody? Chceљ si vyzkouљet skuteиnou svobodu a volnost stalkerskйho ћivota? To je v poшбdku, ale pamatuj si, ћe i kdyћ jsme s kluky ze Svobody vљichni kamarбdi, hrajeme si na vlastnнm pнskoviљti a oni majн taky svoje. Pokud se k nбm chceљ pшidat, budeљ muset odejнt z jejich klanu. Souhlasнљ?</text>
+	</string>
+	<string id="esc_leader_join_stalker_5">
+		<text>Samozшejmм! Lнbil ses mi od prvnнho pohledu, ale urиitм chбpeљ, ћe jsem tм musel nejdшнv vyzkouљet! Po tom, cos dokбzal, tм velice rбd pшijmu. Co ty na to?</text>
+	</string>
+	<string id="esc_leader_talk_111">
+		<text>Posнlб mм Sidoroviи.</text>
+	</string>
+	<string id="esc_leader_talk_11111">
+		<text>Tys zaъtoиil na vojcly?</text>
+	</string>
+	<string id="esc_leader_talk_1111111">
+		<text>Jdu si trochu pokecat s velitelem. Tшeba uћ to vzdб a шekne mi, kde je ten kufшнk s koшistн.</text>
+	</string>
+	<string id="esc_leader_talk_222">
+		<text>Je to umнnмnej malej zasranec - o kufшнku neprozradil ani slovo. Mнsto toho v jednom kuse ћvanн o tмch svejch kamarбdech, ћe prej se na nмj nevykaљlou a tutovм ho pшijdou zachrбnit.</text>
+	</string>
+	<string id="esc_leader_talk_22222">
+		<text>To by byla taky jedna moћnost. Mбљ nмjakou pшedstavu o tom, kde bych mohl najнt Chaletskйho kбmoљe?</text>
+	</string>
+	<string id="esc_leader_talk_2222222">
+		<text>Udмlбm, co budu moct.</text>
+	</string>
+	<string id="esc_leader_talk_66">
+		<text>No dobшe, tak si jdi pokecat s velitelem...</text>
+	</string>
+	<string id="esc_leader_what_happens_0">
+		<text>Co se tady stalo?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_0">
+		<text>Co chceљ?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_1">
+		<text>Kdepak je major Chaletskij, ten, co ho tu mбte jako rukojmн? Nмjak ho tu nevidнm...</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_11">
+		<text>Zdrhnul.</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_111">
+		<text>Tэjo. Jak se to mohlo stбt?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_1111">
+		<text>No, sedнm tady a hlнdбm ho, zdбlo se mi, ћe celou vмиnost. Byl jsem uћ hroznм utahanэ, tak jsem na dvм minutky zavшel oиi. Pak jsem je otevшel a ejhle - byl v trapu.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_0">
+		<text>Nech mм na pokoji, jsem ve sluћbм.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_1">
+		<text>Jenom jedna otбzka: co to tady hlнdбљ?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_11">
+		<text>Stшeћнme novй ъzemн stalkerщ.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_111">
+		<text>Novй? To mi vysvмtli...</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_1111">
+		<text>Zajdi si na zбkladnu a poptej se tam. Jб tu mбm prбci.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_2">
+		<text>No dobшe.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_3">
+		<text>Co je zaи ta "иernб dнra" na mostм?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_33">
+		<text>Иlovмиe, my taky vщbec netuљнme, ale vљechno, co do nн hodнme, tam zmizн. Uћ jsem tam nahбzeli vљechny odpadky, co jsme naљli, v rбmci ochrany ћivotnнho prostшedн, znбљ to. Ale pak jsme naљli tu hromadu naљeho smetн v anomбlce v jednom z tunelщ. V Zуnм se obиas dмjou fakt divnэ vмci. Je to ujetэ!</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_0">
+		<text>Povмz mi nмco o sobм.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_1">
+		<text>Cenнm si svй nezбvislosti, proto taky vћdycky pracuju na vlastnн pмst a jenom pro sebe. Kdyћ jsem ale slyљel, ћe tady stalkeшi skшнpli armбdu a zaloћili si tu vlastnн zбkladnu, nevбhal jsem a vyrazil jsem sem. Vнљ jak, potkal jsem v Zуnм spoustu nejrщznмjљнch lidн, ale stalkery mбm ze vљeho nejradљi. Jsou v pododм, tak je to. Nemajн ћбdnэ debilnн morбlnн kodexy, pravidla, vyhlбљky a podobnэ svinstvo jako jinэ frakce. Kdyby mмlo bэt po mэm, smмli by do Zуny v prvй шadм jenom stalkeшi. Obchodnнkщm, jako jsem jб, by se pak mnohem lнp vydмlбvalo a taky by se trochu uklidnila situace. Proto jsem se taky rozhodl tмm chlapщm pomoct.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_11">
+		<text>Technika v Zуnм иlovмk jen tak nevidн. Povнdej, co vљechno umнљ.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_111">
+		<text>No, nemщћeљ иekat, ћe budu prodбvat mуdnн udмlбtka nebo nмjakэ sloћitosti. Ale hlavu mбm chytrou a svй prбci rozumнm sakra dobшe. Vщbec by mм nepшekvapilo, kdyby ti moje schopnosti nмkdy zachrбnily ћivot. Vмtљinou opravuju zbranм a zbroj, ale kdyћ mбm sprбvnэ souибstky, mщћu taky vylepљovat bouchaиky a vybavenн. Pokud chceљ vмdмt pшesnм, co vљechno umнm vylepљit, podнvej se na seznam - urиitм se v tom nмjak zorientujeљ.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_1111">
+		<text>Pokud tomu dobшe rozumнm, prochodil jsi skoro celou Zуnu. Vidмls nмkde nмco neobvykйho?</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_11111">
+		<text>Nмco neobvyklйho? Po tй velkй emisi jsem na cestм z Agropromu sem vidмl jednu fakt divnou vмc. Kousek zemм, kterэ dшнv bэval normбlnн, se zmмnil - byl rщznм zdeformovanэ a pokroucenэ. Detektor radiace se mi zblбznil jeљtм dшнv, neћ jsem se k tomu staиil pшiblнћit. Pak mi kluci povнdali, ћe je to jedna z nejsilnмjљнch anomбlek. Jde z toho mнsta tolik energie, ћe by na to mohlo mмsнc svнtit celэ sнdliљtм! Celб ta oblast je nebezpeиnб jak prase, ale je pravda, ћe se u tй pokroucenice dajн najнt hodnм vzбcnй artefakty. V kaћdйm pшнpadм, pokud bys nмkdy na takovй mнsto narazil, dбvej si bacha.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_0">
+		<text>Poslyљ, kбmo, zrovna jsme koukali, jak si gumy tбhly do depa bednu zbranн a stшeliva. Nбm by na nic nebyla, ale шнkali jsme si, ћe ty bys moћnб mohl mнt zбjem.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_1">
+		<text>Pravdмpodobnм jsou tam vojcli namaиkanн hlava na hlavм. Stojн ta munice fakt za to?</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_2">
+		<text>No, zamysli se nad tнm. Mнstnн obchodnнci normбlnм stшelivo rбћe 5.45 neprodбvajн - je to velkб љance, a ty bouchaиky jsou zbrusu novэ. Chci шнct, jб vнm, ћe to nenн prбce pro sуlistu, takћe bychom ti s klukama i pomohli za nмjakэ ten pakatel, шeknмme za 500 rublщ. Zaplatнљ nбm a nechбљ si vљechno, co se v depu najde, co шнkбљ?</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_3">
+		<text>Dobшe, ale asi bych vбm mмl шнct, ћe za prбci vмtљinou platн jinн lidi mnм, ne jб nмkomu.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_33">
+		<text>Ne, zkusнm to zvlбdnout sбm. Dнkec za tip.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_4">
+		<text>Nedмlej si s tнm starosti, taky jsem bэval ћoldбk. Sнla zvyku, znбљ to, ne?</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_0">
+		<text>Povмz mi nмco o sobм.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_1">
+		<text>Jsem obchodnнk, i kdyћ to nedмlбm dlouho. Teprve jsme pшijeli, jak vidнљ. Otec Valeriбn шнkal, ћe tady mщћeљ bэt, kэm chceљ, a jб jsem se rozhodl, ћe bych teda tak jako chtмl bэt kupcem. Proи taky ne? Schopnosti na to mбm a dobшe vнm, jak to dмlal Sidoroviи, tak bych to mмl zvlбdnout taky. Uћ na zбkladce jsem od spoluћбkщ inkasoval prachy za pщjиenн komiksщ. Jo, to byly dobrэ иasy. Prostм jsem rozenэ byznysmen, chбpeљ? Takћe jsem tady a rozkoukбvбm se v novй profesi, abych tak шekl. Zatнm nakupuju zбsoby od Sidoroviиe, takћe nemбm nijak extra ceny, ale mбm tu pбr vмcн, co by tм mohly zajнmat - ибst koшisti, kterou naљi chlapi pobrali pшi nбjezdech.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_111">
+		<text>Jo, brбcho, teп se nбm teprve povede dobшe. Ti nбfukovй od armбdy nбs koneиnм nechajн na pokoji a stalkeшi slнznou smetanu. Po delљнm nбjezdu si mщћem v Kordonu dбt padla a trochu si odpoиinout a kvalita vybavenн se taky o hodnм zlepљн. A navнc ukoшistнme i spoustu prachщ. Ne jako pшedtнm, kdyћ armбda pobrala vљechny naљe zisky a nechala nбm jen zbytky. Jen poиkej - vљak my tмm parchantщm jeљtм nasolнme pod ocas. Moћnб je v noci obиas trochu pokropнme olovem, abychom je udrћeli ve stшehu. To by byla dobrб sranda, co шнkбљ? Hehe... no prostм, teп se vмci zmмnн, o tom nepochybuj.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_2">
+		<text>Takћe ty si myslнљ, ћe se teп situace v Kordonu zmмnн?</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_3">
+		<text>Jo, brбcho, teп se nбm teprve povede dobшe. Ti nбfukovй od armбdy nбs koneиnм nechajн na pokoji a stalkeшi slнznou smetanu. Po delљнm nбjezdu si mщћem v Kordonu dбt padla a trochu si odpoиinout, a kvalita vybavenн se taky o hodnм zlepљн. A navнc ukoшistнme i spoustu prachщ, ne jako pшedtнm, kdyћ armбda pobrala vљechny naљe zisky a nechala nбm jen zbytky. Jen poиkej - vљak my tмm parchantщm jeљtм nasolнme pod ocas. Moћnб je v noci obиas trochu pokropнme olovem, abychom je udrћeli ve stшehu - to by byla dobrб sranda, co шнkбљ? Hehe... no prostм, teп se vмci zmмnн, o tom nepochybuj.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_0">
+		<text>Mщћu ti nмjak pomoct?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_1">
+		<text>Pomoct? No, moћnб bys mohl. Vнљ, sotva jsme si tu zшнdili zбkladnu, a neћ jsme mohli poшбdnм zabezpeиit oblast, zaиali se nбm sem slнzat banditi jako mouchy na kus hovna - okrбdajн stalkery, kteшн mi sem nosн koшist. Jestli to tak pщjde dбl, budu brzo na mizinм. Dalљн tlupa banditщ se objevila pшнmo u naљн zбkladny. Mohl bys jim kvщli mм dбt za vyuиenou?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_11">
+		<text>Ne, teп zrovna mi nijak pomoct nemщћeљ.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_2">
+		<text>To nenн problйm! Jб jim ukбћu, zaи je toho loket, ћe na to do smrti nezapomenou.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_22">
+		<text>Moћnб nмkdy jindy.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_0">
+		<text>Jdu kvщli tмm banditщm.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_1">
+		<text>Tak co, jak to љlo?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_2">
+		<text>Ty bandity jsem sejmul.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_22">
+		<text>Jeљtм jsem to nepoшeљil.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_222">
+		<text>Dobшe, ale rбd bych ti pшipomenul, ћe jde o иas.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_3">
+		<text>Dнky! Tady mбљ odmмnu!</text>
+	</string>
+	<string id="esc_trader_about_other_0">
+		<text>Nechtмl bys mi vyprбvмt nмco zajнmavйho?</text>
+	</string>
+	<string id="esc_trader_about_questions_0">
+		<text>Odpovнљ mi na pбr otбzek?</text>
+	</string>
+	<string id="esc_trader_about_questions_1">
+		<text>No, vypadбљ na seriуznнho manнka, a sprбvnйmu chlapovi jб klidnм na pбr otбzek odpovнm. Ptej se...</text>
+	</string>
+	<string id="esc_trader_about_questions_11">
+		<text>Jsi tu uћ dlouho?</text>
+	</string>
+	<string id="esc_trader_about_questions_111">
+		<text>Hodnм dlouho, to jo. Byl jsem v Zуnм mezi prvnнma. Nemмli jsme tehdy detektory radiace ani ochrannй obleky, takћe ћivotnost иlovмka nebyla na tomhle mнstм moc vysokб. Proto jsem taky nikdy nebyl dбl neћ na Smeќбku. Takovй vмci pro mм nejsou. Zato mбm dobrou hlavu na nмco jinйho: jsem jako strojnн olej - maљina se beze mм zasekne a lidi se zaиnou rvбt. Ale kdyћ jsem poblнћ, hned jsou vљichni v pohodм. I kdyћ je Zуna plnб zбzrakщ, poptбvka po zбzracнch mnohonбsobnм pшevyљuje nabнdku - chce je vlбda, tajnй sluћby, soukromй agentury i prachatн sbмratelй. Jб jsem jejich pojнtkem s tнmhle mнstem: zajiљќuju obchod mezi Zуnou a vnмjљнm svмtem. Znбm ty sprбvnй lidi a dokбћu vyшeљit prakticky jakэkoliv problйm, ani na to nemusнm vylйzt z kancelбшe. Jsem dнky tomu dost dщleћitб osoba.</text>
+	</string>
+	<string id="esc_trader_about_questions_22">
+		<text>Ale proи sis jako domov vybral zrovna tohle mнsto?</text>
+	</string>
+	<string id="esc_trader_about_questions_222">
+		<text>Proи jsem tady? No, lнbн se mi poиasн a vyhlнdka je tu prostм ъchvatnб. Haha! Pravda je, ћe na to, abych se po Zуnм potuloval jako stalker, uћ jsem zkrбtka moc starэ. A kromм toho bych pravdмpodobnм nepшeћil setkбnн s kontrolnн hlнdkou. Tady je celkem klid, to je hlavnн dщvod. Lidi, kteшн mм chtмjн najнt, mм najdou, aќ uћ jsem kdekoliv. Kdyћ nмkdo dostane zбvaћnou objednбvku nebo potшebuje kvalitnн zboћн, jde s tнm jen a jenom za mnou. Nмkdy se mi tu dokonce vytvoшн fronta. Proи? Protoћe pokud nedostanu zboћн pшes Kordon jб, nezvlбdne to nikdo.</text>
+	</string>
+	<string id="esc_trader_about_questions_33">
+		<text>Povмz mi nмco o Zуnм.</text>
+	</string>
+	<string id="esc_trader_about_questions_333">
+		<text>V Zуnм v souиasnй dobм moc klidno nenн. Pшed pбr dny otшбsla celou Zуnou emise. Tak silnou emisi jsem pшedtнm vidмl jenom jednou - kdyћ se Zуna objevila. Armбda tehdy dala dohromady pomмrnм velkou jednotku a maљнrovali pшнmo do Zуny, aby tam odpбlili atomovku a srovnali celou Zуnu za kaћdou cenu se zemн. Kdyћ se dostali celkem blнzko k centru, zasбhla je tak silnб emise, ћe tanky lнtaly vzduchem jako angliибky. Vмtљina vojбkщ pшi vэbuchu zemшela, a ti, co to neschytali hned, zщstali opuљtмnн v centru Zуny. Poшбd volali rбdiem o pomoc... jenћe generбlovй nemмli odvahu tam poslat dalљн skupinu. Pшeћivљн pak pochcнpali celkem rychle, dнky vљem tмm anomбlkбm, proti kterэm nemмli ochranu. \n Nemбm tuљenн, proи doљlo k dalљн tak velkй emisi. Moћnб se Zуna na nмkoho nasrala? Na armбdu tмћko, ti po tй poslednн akci z Kordonu vщbec nevylejzajн. Jedinн, kdo se tady potulujн, jsou stalkeшi, a vypadб to, ћe se o nм Zуna moc nezajнmб... ale najednou tu mбme jednu emisi za druhou, a kaћdб je o nмco silnмjљн neћ ta pшedeљlб. Nemбm z celй tй vмci ani trochu dobrej pocit...</text>
+	</string>
+	<string id="esc_trader_about_questions_44">
+		<text>Neslyљel jsi nмjakй zvмsti o tom, co se dмje hluboko v Zуnм?</text>
+	</string>
+	<string id="esc_trader_about_questions_444">
+		<text>Jeden dva zajнmavй drby se vћdycky najdou. Spousta stalkerщ mi dluћн sluћbiиku, tak mi na uzavшenэch frekvencнch vyprбvмjн, co je novйho. Nejzajнmavмjљн novinka teп je, ћe se otevшely cesty do novэch ибstн Zуny. Pшedtнm o tмch mнstech nikdo neslyљel celй roky, natoћ aby se tam zaљel podнvat. Cesty blokovaly smrtнcн anomбlie, ale teп je jich prэ o nмco mнт. Poшбd je dost tмћkй pшes nм projнt, ale uћ je to moћnй! Umнљ si pшedstavit, co to pro mм znamenб? Novй oblasti znamenajн novй artefakty, moћnб dosud neslэchanй. A do инch starэch vrбsиitэch pracek se vљechno to bбjeиnй zboћн dostane? Sprбvnм, mбљ recht.</text>
+	</string>
+	<string id="esc_trader_about_situation_0">
+		<text>Co se tady dмje?</text>
+	</string>
+	<string id="esc_trader_about_situation_1">
+		<text>Jednнm slovem: chaos. Stalkeшi bojujн s armбdou. Dшнv tu platila takovб pravidla: vojбci mмli oblast pod kontrolou, brali si svщj podнl a jinak nechбvali lidi v klidu paљovat zboћн dovnitш a ven. Tu a tam stalkerщm trochu zatopili, aby jim pшipomnмli, ћe jsou poшбd tady, ale to bylo tak vљechno. No, tak ta pravidla uћ neplatн. Eh, stalkeшi si myslн, ћe teп to tady majн pod palcem oni, protoћe tu rozpoutali takovй malй peklниko a pшevzali Kordon. Ti ubozн parchanti si nevidн ani na љpiиku nosu. Nechci vidмt, jak tohle dopadne. Jasnм, zelenй mozky jsou zatнm pшнliљ vydмљenй, neћ aby to hlбsily nahoru, protoћe by se tнm pшiљlo na jejich љpinavй kљeftнky, ale dшнve иi pozdмji dorazн na zбkladnu inspekce a vљechno to praskne. A potom... no, vљichni vнme, co bude pak - zvlбљtnн vojenskб operace. Vмш mi, jedna nбvљtмva иety specnazбkщ a nezщstane tady jedinб ћivб duљe. Jo, a taky vymмnн vљechny ty lampasбky na zбkladnм. To znamenб, ћe pшijdu o vљechny svoje kontakty, a jak mбm potom obchodovat a paљovat zboћн, aћ k tomu dojde? Stalkeшi si ukousli moc silnй sousto.</text>
+	</string>
+	<string id="esc_trader_about_you_0">
+		<text>Povмz mi nмco o sobм.</text>
+	</string>
+	<string id="esc_trader_about_you_1">
+		<text>Co bych ti povнdal? Jsem starэ a nemocnэ, tak si tu hezky tiљe sedнm a dмlбm malй kљeftнky - prodбvбm lйkбrniиky, klukщm pбr buшtщ... nenн to nic moc, ale poшбd je to o dost lepљн neћ stбtnн dщchod.</text>
+	</string>
+	<string id="esc_trader_about_you_11">
+		<text>Se mi zdб, ћe seљ тбkej skromnej. Ostatnн o tobм povнdajн onaиejљн vмci.</text>
+	</string>
+	<string id="esc_trader_about_you_111">
+		<text>Jo, lidi toho nakecajн, ale vмtљinou nic z toho nenн pravda. Hele - vћdyќ tм ani neznбm. Udмlбme kљeft - kdyћ se osvмdинљ v akci, protoћe kecy vidнm, ћe ti jdou dobшe, moћnб si pшed tebou pustнm hubu na љpacнr. Tak, co ty na to?</text>
+	</string>
+	<string id="esc_trader_about_zone_1">
+		<text>Chceљ slyљet dobrodruћnй pшнbмhy o stalkerech? Tak jo, ptej se.</text>
+	</string>
+	<string id="esc_trader_about_zone_111">
+		<text>Иlovмиe, teп ti byla takovб emise... tak silnou prdu na mou duљi nepamatuju. Chytlo nбs to tak moc, ћe mi v bunkru popraskaly skleniиky a to ho mбm pшesnм na kraji tй zpropadenй Zуny! Netuљнm, proи se to stalo, ale jsem si jistэ, ћe se nмco sakra zmмnilo. Povнdб se, ћe nмkdo naљel cestu, kterб vede do starйho mмstaиka Limansku. Pшedstav si to! Stalkeшi celй roky proиesбvali lesy a hledali, kudy by se dalo projнt pшes anomбlky, a z niиeho nic se cesta jednoho dne jen tak objevн. Dokonce prэ podйl cesty nenн nikde skoro ћбdnб radiace! A stejnй je to na blatech - dшнv ses tam dostal leda tak vojenskэm vrtulnнkem, a teп tam mщћeљ dokonce chodit, pokud ti nevadн, ћe ti poteиe do bot.</text>
+	</string>
+	<string id="esc_trader_about_zone_121">
+		<text>Vбlka? Vбlka je furt ta samб, aќ jdeљ kamkoliv, a Zуna nenн vэjimkou. Vнљ jak, lidi vћdycky najdou nмjakэ dщvod, proи proti sobм bojovat, aќ uћ kvщli koшisti, nebo za ideбly, ale vћdycky v tom byl шбd a kaћdэ znal svoje mнsto. Teп po emisi je to jinй. Povinnost a Svoboda se spolu rvou o Limansk jako dva hladovн psi o kost, a banditщm zatнm moc narostl hшebнnek a zaиali si na stalkery fakt moc dovolovat...</text>
+	</string>
+	<string id="esc_trader_about_zone_131">
+		<text>Stшed Zуny? Ha ha! Spousta lidн se snaћila dojнt aћ ke stшedu, ale nikdo z nich se nevrбtil zpбtky. Jedinб cesta tam vede kolem Vypalovaиe mozkщ, a v Zуnм nenн ћivб duљe, kterб by vмdмla, jak se kolem nмj bezpeиnм dostat. Sakra pes, a i kdyby na to nмkdo pшiљel, tмћko to bude vyklбdat ostatnнm! Pшedstav si, ћe bys objevil Aladinovu jeskyni - pobнhal bys kolem a vyprбvмl bys vљem na potkбnн, kde leћн? Jб a pбr mэch kolegщ obchodnнkщ se snaћнme najнt cestu kolem Vypalovaиe uћ pмknм dlouho, ale nejsme zatнm o nic blнћ, neћ kdyћ jsme s tнm zaиali!</text>
+	</string>
+	<string id="esc_trader_about_zone_13111">
+		<text>Bщh vн, co to je... Stalkeшi tak mluvн o lese na sever od armбdnнch skladщ. Tvrdн, ћe ti to tam uvaшн mozek... do slova a do pнsmene. Zdravэ иlovмk v tмch lesнch nepшeћije ani deset minut. Nabнdli jsme stalkerщm za pшesnй informace o Vypalovaиi sluљnй penнze, ale zatнm nikdo nic nezjistil. Obиas se tam ztrбcejн lidй, a иasem je nмkdo najde mrtvй. Nebo jsou z nich zombice...</text>
+	</string>
+	<string id="esc_trader_community_0">
+		<text>Pшiљel jsem o vљechny dobrй vztahy se stalkery, nebudu moct najнt koшist a pшinйst ti ji!</text>
+	</string>
+	<string id="esc_trader_community_1">
+		<text>Jak se to mohlo stбt, co?! I kdyћ, pokud mi za to zaplatнљ, mohl bych ti u nich vyjednat mнr.</text>
+	</string>
+	<string id="esc_trader_community_2">
+		<text>Souhlasнm. Na, tady mбљ prachy.</text>
+	</string>
+	<string id="esc_trader_community_22">
+		<text>Ne, jб si s tнm nмjak poradнm.</text>
+	</string>
+	<string id="esc_trader_community_222">
+		<text>Tolik penмz teп u sebe nemбm.</text>
+	</string>
+	<string id="esc_trader_community_3">
+		<text>Stalkeшi ti pro tentokrбt odpustн, ale aќ uћ se to nestane.</text>
+	</string>
+	<string id="esc_trader_community_33">
+		<text>Bude to tvщj pohшeb, kбmo.</text>
+	</string>
+	<string id="esc_trader_community_333">
+		<text>Vraќ se, aћ budeљ mнt dost penмz.</text>
+	</string>
+	<string id="esc_trader_meet_111">
+		<text>Шнkб se, ћe tu byl nedбvno jeden stalker a pнdil se po vzбcnэch souибstkбch. Pamatujeљ se na nмj?</text>
+	</string>
+	<string id="esc_trader_meet_11111">
+		<text>Инm bych ti tak mohl osvмћit pamмќ?</text>
+	</string>
+	<string id="esc_trader_meet_1111111">
+		<text>Dobшe, co pшesnм potшebujeљ, abych udмlal?</text>
+	</string>
+	<string id="esc_trader_meet_111111111">
+		<text>Domluveno.</text>
+	</string>
+	<string id="esc_trader_meet_222">
+		<text>Dobшe,  dнky za radu.</text>
+	</string>
+	<string id="esc_wolf_about_around_0">
+		<text>Stalo se tady v okolн jeљtм nмco?</text>
+	</string>
+	<string id="esc_wolf_about_around_1">
+		<text>Tohle je vesniиka zelenбищ. Na jednй stranм vsi najdeљ Sidoroviищv obchod. Za nн je vojenskб zбkladna, ale to asi vнљ, kdyћ jsi z toho smмru pшiљel. Na druhй stranм vede cesta hloub do Zуny.</text>
+	</string>
+	<string id="esc_wolf_about_around_11">
+		<text>Povмz mi nмco o tй vsi pro zelenбиe.</text>
+	</string>
+	<string id="esc_wolf_about_around_111">
+		<text>Jo, co bych to tak mohl шнct o vнsce zelenбищ? Chytшejљн kluci si tady u Sidoroviиe nakoupн dost vybavenн, aby jim to chvнli vydrћelo, a vyrazн na Smeќбk. Dajн se tam najнt lepљн artefakty a vмtљinou to ani nenн tak nebezpeиnй. Aspoт tam naberou nмjakй zkuљenosti, aspoт to шнkajн. A ti, co zщstanou tady... to jsou naprostб bйиka, abych tak шekl. Nмkteшн z tмch lidн, co tu vidнљ... zatracenн hipнci v pantoflнch a s rancem trбvy, kteшн hledajн "dobrodruћstvн", nebo praљtмnн љprti, kteшн nikdy nedrћeli ve svэch holиiинch praciиkбch nic nebezpeиnмjљнho neћ mikroskop. Takovн pozйшi nбm tu vмtљinou dlouho nepшeћijн. Obиas nбm sem zavнtajн jeden dva zkuљenн stalkeшi, kteшн vyloћн u Sidoroviиe koшist a pбr dnщ se spokojenм flбkajн.</text>
+	</string>
+	<string id="esc_wolf_about_around_1111">
+		<text>Mбљ to tu hezky zaшнzenй. Armбda vбs neotravuje?</text>
+	</string>
+	<string id="esc_wolf_about_around_11111">
+		<text>No, s vojбky v poslednн dobм moc problйmщ nemбme - my jsme teп jejich poslednн starost. Dokonce jsem je slyљel шнkat vмci, jako: "Proи plэtvat na stalkery stшelivem? Stejnм brzo skapou v anomбliнch." A my si taky o potнћe nekoledujeme - kdyћ vojcli po nмkom jdou, klidнme se jim z cesty. Pшi nбjezdech nebo pшi inspekcнch zбkladny zalezeme do sklepa a jsme pмknм potichouиku. Nemбme rбdi konflikty, vнљ?</text>
+	</string>
+	<string id="esc_wolf_about_around_22">
+		<text>Povмz mi nмco o Sidoroviиovi.</text>
+	</string>
+	<string id="esc_wolf_about_around_222">
+		<text>To je zvlбљtnн, ћe se na nмj ptбљ zrovna ty. Nevypadбљ, ћe bys byl v Zуnм prvnн den, a ptбљ se mм na Sidoroviиe? Sakra, kaћdej pшece znб Sidoroviиe! Je to ten nejvбћenмjљн obchodnнk v celй Zуnм! Pokud ti nedokбћe prodat, co potшebujeљ, neseћene ti to nikdo.</text>
+	</string>
+	<string id="esc_wolf_about_you_0">
+		<text>Povмz mi nмco o sobм.</text>
+	</string>
+	<string id="esc_wolf_about_you_1">
+		<text>Jб tomu tady љйfuju. Uинm tyhlety zelenбиe a љprty, co majн dмlat, aby z nich nebylo ћrбdlo pro muќбky, sotva vlezou do Zуny. Nenн to tak jednoduchй, vнљ? Strбvil jsem v Zуnм vмtљн ибst ћivota, a teп se uћ nмjakou dobu snaћнm dostat odtud... Bщh vн, jak dlouho uћ trинm v Kordonu... ale pшipadбm si, jako by mм tohle mнsto nechtмlo pustit. Buп tu mбme armбdnн nбjezd, nebo dalљн emisi, nebo se namane dobшe placenб prбciиka... a vћdycky si шнkбm: "Tak dobшe, jeљtм tohle a pak odsud vypadnu", ale poшбd jsem tady.</text>
+	</string>
+	<string id="esc_wolf_about_zone_0">
+		<text>Povмz mi o tomhle mнstм nмco.</text>
+	</string>
+	<string id="esc_wolf_about_zone_1">
+		<text>Jsme v Kordonu. Vnмjљн svмt zaинnб hned za vojenskou zбkladnou a vљechno, co je na druhй stranм, uћ je Zуna. I kdyћ to tak nevypadб, kdyћ se tady rozhlнdneљ kolem sebe: anomбlek ani artefaktщ tu moc nenн, jsou daleko od sebe, a dokonce i potvor tu nenн moc k vidмnн. V tйhle oblasti je pomмrnм klid - rozhodnм je tu vмtљн klid neћ kdekoli jinde v Zуnм, protoћe se armбda snaћн mнt vљechno pod kontrolou.</text>
+	</string>
+	<string id="esc_wolf_about_zone_111">
+		<text>Tohle je vesniиka zelenбищ. Na jednй stranм vsi najdeљ Sidoroviищv obchod. Za nн je vojenskб zбkladna, ale to asi vнљ, kdyћ jsi z toho smмru pшiљel. Na druhй stranм vede cesta hloub do Zуny.</text>
+	</string>
+	<string id="esc_wolf_brother_0">
+		<text>Poslal mм pro tebe Vlk. Ty budeљ jeho brбcha, ћe jo?</text>
+	</string>
+	<string id="esc_wolf_brother_1">
+		<text>Jo, jsem jeho brбcha. A myslнm, ћe bych odsud mмl zmizet, jak jen to nejrychleji pщjde. Problйm je, ћe nemбm bouchaиku... nedal bys mi nмco, prosнm tм?</text>
+	</string>
+	<string id="esc_wolf_brother_2">
+		<text>Na, vezmi si tady tu pistoli.</text>
+	</string>
+	<string id="esc_wolf_brother_22">
+		<text>Na, vezmi si tady tu brokovnici.</text>
+	</string>
+	<string id="esc_wolf_brother_222">
+		<text>Na, vezmi si tady tu ъtoиnou puљku.</text>
+	</string>
+	<string id="esc_wolf_brother_2222">
+		<text>Ћбdnou nemбm.</text>
+	</string>
+	<string id="esc_wolf_brother_55">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="esc_wolf_brother_complete_0">
+		<text>Dostal jsem tvйho brбchu ven!</text>
+	</string>
+	<string id="esc_wolf_brother_complete_1">
+		<text>Vэbornм! Tady mбљ odmмnu.</text>
+	</string>
+	<string id="esc_wolf_novice_complete_0">
+		<text>Sledoval jsem toho stalkera, pшesnм jak jsi chtмl.</text>
+	</string>
+	<string id="esc_wolf_novice_complete_1">
+		<text>Dobrб prбce, stalkere. Doufбm, ћe ho to nauиilo troљe skromnosti.</text>
+	</string>
+	<string id="esc_wolf_novice_fail_0">
+		<text>Naneљtмstн se mi ho nepodaшilo ochrбnit. Umшel.</text>
+	</string>
+	<string id="esc_wolf_novice_fail_1">
+		<text>Sakra! Mмl jsem tam jнt sбm! Sice by se byl nasral, ale mohl aspoт zщstat naћivu. Kurтa chlape, pшiљli jsme o fakt slibnйho stalkera.</text>
+	</string>
+	<string id="esc_wolf_novice_thank_you_0">
+		<text>Dнk, ћes mi zachrбnil mou neschopnou prdel, stalkere. Myslel jsem, ћe v tom lese chcнpnu, ћe mм иokli rozeberou na souибstky. Sбm uћ do lesa v ћivotм nevlezu.</text>
+	</string>
+	<string id="esc_wolf_other_works_0">
+		<text>Nemмl bys pro mм nмjakou prбci?</text>
+	</string>
+	<string id="esc_wolf_other_works_1">
+		<text>Jo, mмl. Banditi zajali jako rukojmн mйho brбchu a poћadujн za nмj horentnн vэkupnй. Tolik penмz nemбm ani omylem, a s tмma zdejљнma lamama je ani hned tak neseћenu. I kdybych je mмl, jak mбm vмdмt, ћe brбchu prostм nepodшнznou, aћ jim je dбm?</text>
+	</string>
+	<string id="esc_wolf_other_works_11">
+		<text>Jeљtм ne.</text>
+	</string>
+	<string id="esc_wolf_other_works_111">
+		<text>Jeden z mэch klukщ tмћce nese, ћe ho ostatnн povaћujн za zelenбиe, a tak si шekl, ћe pщjde postшнlet pбr psщ, aby si u ostatnнch zнskal trochu respektu. Je to ostrэ hoch a stшнlн fakt dobшe, ale je to takovэ mladэ ucho, vнљ? Dмlбm si o nмj starosti. Myslel jsem si, jestli bys mu nemohl trochu pomoct...</text>
+	</string>
+	<string id="esc_wolf_other_works_1111">
+		<text>Teп uћ si nмjak poradнme. Stav se pozdмji - tшeba zas budeme nмjakou pomoc potшebovat.</text>
+	</string>
+	<string id="esc_wolf_other_works_11111">
+		<text>Ne.</text>
+	</string>
+	<string id="esc_wolf_other_works_1112">
+		<text>Nenн problйm, kde ho najdu?</text>
+	</string>
+	<string id="esc_wolf_other_works_11121">
+		<text>Tady mбљ souшadnice.</text>
+	</string>
+	<string id="esc_wolf_other_works_1113">
+		<text>Promiт, ale tentokrбt ne.</text>
+	</string>
+	<string id="esc_wolf_other_works_11131">
+		<text>Vy ћoldбci jste vљichni stejnн - neudмlбte pro nikoho ani hovno!</text>
+	</string>
+	<string id="esc_wolf_other_works_2">
+		<text>Vнљ co? Zkusнm tvйho brбchu dostat v poшбdku ven.</text>
+	</string>
+	<string id="esc_wolf_other_works_22">
+		<text>Dнkec, vмdмl jsem, ћe mi pomщћeљ. Tady mбљ souшadnice jejich tбbora. Dбvej si bacha a hodnм љtмstн!</text>
+	</string>
+	<string id="esc_wolf_other_works_3">
+		<text>Naneљtмstн ti nemщћu pomoct.</text>
+	</string>
+	<string id="esc_wolf_other_works_4">
+		<text>To nenн mщj problйm.</text>
+	</string>
+	<string id="esc_wolf_other_works_44">
+		<text>Tak odpal.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_0">
+		<text>Tak co, horkб hlavo, jeљtм tм bavн hrбt si na hrdinu?</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_11">
+		<text>Tбhni ode mм! Jб se s tмma potvorama vypoшбdбm sбm! To jim ukбћe! Uћ mi nikdy nebudou nadбvat zelenбищ!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_1112">
+		<text>Mбm strach!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_112">
+		<text>Na, vezmi si tady tu pistoli.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_1122">
+		<text>Na, vezmi si tady tu brokovnici.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_11222">
+		<text>Na, vezmi si tady tu ъtoиnou puљku.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_112222">
+		<text>Jб si s nimi poradнm.</text>
+	</string>
+	<string id="esc_wolf_talk_0">
+		<text>Tohle je vesniиka zelenбищ, nenн to ћoldбckej tбbor, kбmo.</text>
+	</string>
+	<string id="esc_wolf_talk_1">
+		<text>Pшiљel jsem navљtнvit Sidoroviиe.</text>
+	</string>
+	<string id="esc_wolf_talk_11">
+		<text>Je v bunkru, hned za dмdinou.</text>
+	</string>
+	<string id="esc_wolf_talk_111">
+		<text>Dнkec, hned za nнm zajdu.</text>
+	</string>
+	<string id="esc_wolf_talk_2">
+		<text>Mбm ъkol od Sidoroviиe - potшebuju se stavit na zбkladnм stalkerщ.</text>
+	</string>
+	<string id="esc_wolf_talk_22">
+		<text>Jo, to je hned u ћelezniиnнho nбspu. Majн tam hotovй stakerskй nebe.</text>
+	</string>
+	<string id="esc_wolf_talk_222">
+		<text>Dнk.</text>
+	</string>
+</string_table>

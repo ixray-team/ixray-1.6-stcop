@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding="windows-1251"?>
 
 <game_information_portions>
+  <info_portion id="esc_joined_stalkers"></info_portion>
 
   <!-- First Scene - Military Base -->
   <info_portion id="esc_actor_inside"></info_portion>

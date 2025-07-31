@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mar_capture_plant">
+		<text>Dobuп laboratoш</text>
+	</string>
+	<string id="mar_capture_plant_text">
+		<text>Dobuп laboratoш, v nнћ se extrahujн anomбlnн lбtky ze dna baћiny.</text>
+	</string>
+	<string id="mar_capture_tower">
+		<text>Dobuп strбћnн vмћ</text>
+	</string>
+	<string id="mar_capture_tower_text">
+		<text>Pomoz druћstvu Jasnй oblohy dobэt strбћnн vмћ drћenou bandity.</text>
+	</string>
+	<string id="mar_defend_tower">
+		<text>Odraz ъtok banditщ na vмћ</text>
+	</string>
+	<string id="mar_defend_tower_text">
+		<text>Odraz protiъtok banditщ na strбћnн vмћ.</text>
+	</string>
+	<string id="mar_story_capture_bandit_base">
+		<text>Dobuп severovэchodnн statek</text>
+	</string>
+	<string id="mar_story_capture_bandit_base_text">
+		<text>Pozabнjej bandity na statku severovэchodnм od baћin a statek obsaп.</text>
+	</string>
+	<string id="mar_story_capture_levelchangers">
+		<text>Dobuп pшнstup k cestбm do vnмjљнho svмta</text>
+	</string>
+	<string id="mar_story_capture_levelchangers_text">
+		<text>Dobuп pozice poblнћ cest do Kordonu a Agropromu a tyto cesty zajisti.</text>
+	</string>
+	<string id="mar_story_empower_csky">
+		<text>Pomoz Jasnй obloze v baћinбch</text>
+	</string>
+	<string id="mar_story_empower_csky_text">
+		<text>Zlikviduj nepшбtelskй sнly a pomoz tak Jasnй obloze udrћet se v baћinбch.</text>
+	</string>
+	<string id="mar_story_go_to_escape">
+		<text>Dojdi s prщvodcem do Kordonu</text>
+	</string>
+	<string id="mar_story_go_to_escape_text">
+		<text>Setkej se s prщvodcem a dojdi s nнm do Kordonu.</text>
+	</string>
+	<string id="mar_story_go_to_marsh">
+		<text>Jdi s prщvodcem do velkэch baћin</text>
+	</string>
+	<string id="mar_story_go_to_marsh_text">
+		<text>Poћбdej prщvodce, aby tм zavedl do Velkэch baћin.</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh">
+		<text>Dobuп baћiny</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh_text">
+		<text>Dobuп baћiny, aby mмli prщvodci bezpeиnмjљн cestu.</text>
+	</string>
+	<string id="mar_story_talk_with_barman">
+		<text>Promluv si s barmanem</text>
+	</string>
+	<string id="mar_story_talk_with_barman_text">
+		<text>Promluv si s barmanem o zбkladnм Jasnй oblohy.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1">
+		<text>Promluv si s Lebedмvem</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1_text">
+		<text>Zjisti, o co Lebedмvovi љlo.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2">
+		<text>Zeptej se Lebedмva, co se stalo</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2_text">
+		<text>Zeptej se Lebedмva, co se stalo po druhйm zбшenн.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3">
+		<text>Dohodni se s Lebedмvem na vzбjemnй pomoci</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3_text">
+		<text>Dohodni se s Lebedмvem, ћe ti pomщћe dostat se z baћin.</text>
+	</string>
+	<string id="mar_story_talk_with_guide">
+		<text>Zamiш s prщvodcem ke stanoviљti</text>
+	</string>
+	<string id="mar_story_talk_with_guide_text">
+		<text>Poћбdej prщvodce, aby tм zavedl ke stanoviљti.</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych">
+		<text>Promluv si se Sidoroviиem</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych_text">
+		<text>Zeptej se Sidoroviиe na stalkera, kterэ se zajнmal o podivnй souибstky. Ten je jedinou stopou, jakou mб Jasnб obloha v pбtrбnн po pшниinбch nedбvnэch zбшenн v Zуnм.</text>
+	</string>
+	<string id="mar_story_talk_with_trader">
+		<text>Vezmi si od kupce vybavenн</text>
+	</string>
+	<string id="mar_story_talk_with_trader_text">
+		<text>Zнskej od kupce sadu vybavenн.</text>
+	</string>
+	<string id="mar_tutorial_help">
+		<text>Pomoz stanoviљti</text>
+	</string>
+	<string id="mar_tutorial_help_text">
+		<text>Odpovмz na volбnн o pomoc ze stanoviљtм Jasnй oblohy.</text>
+	</string>
+	<string id="mar_tutorial_kill_boars">
+		<text>Zabij divoибky</text>
+	</string>
+	<string id="mar_tutorial_kill_boars_text">
+		<text>Zlikviduj divoибky ъtoинcн na stanoviљtм Jasnй oblohy.</text>
+	</string>
+	<string id="mar_tutorial_return_to_base">
+		<text>Vraќ se na zбkladnu Jasnй oblohy</text>
+	</string>
+	<string id="mar_tutorial_return_to_base_text">
+		<text>Skryj se uvnitш zбkladny Jasnй oblohy, jeљtм neћ tм zasбhne zбшenн.</text>
+	</string>
+	<string id="mar_tutorial_tower_top">
+		<text>Vylez na vмћ</text>
+	</string>
+	<string id="mar_tutorial_tower_top_text">
+		<text>Vylez na vмћ, abys unikl mutantщm.</text>
+	</string>
+	<string id="st_bring_item_1_name">
+		<text>Doruи granбty</text>
+	</string>
+	<string id="st_bring_item_1_text">
+		<text>Druћstvo Jasnй oblohy si objednalo nмkolik granбtщ.</text>
+	</string>
+	<string id="st_bring_item_2_name">
+		<text>Doruи zdravotnickй potшeby</text>
+	</string>
+	<string id="st_bring_item_2_text">
+		<text>Druћstvo Jasnй oblohy zoufale potшebuje zdravotnickй potшeby.</text>
+	</string>
+	<string id="st_bring_item_3_name">
+		<text>Doruи munici</text>
+	</string>
+	<string id="st_bring_item_3_text">
+		<text>Druћstvo Jasnй oblohy potшebuje patrony do brokovnice.</text>
+	</string>
+	<string id="st_bring_item_4_name">
+		<text>Doruи munici</text>
+	</string>
+	<string id="st_bring_item_4_text">
+		<text>Druћstvo Jasnй oblohy potшebuje nбboje do pistole.</text>
+	</string>
+	<string id="st_bring_item_5_name">
+		<text>Doruи munici</text>
+	</string>
+	<string id="st_bring_item_5_text">
+		<text>Druћstvo Jasnй oblohy potшebuje nбboje do puљky.</text>
+	</string>
+	<string id="st_recover_item_1_name">
+		<text>Pшines PMm</text>
+	</string>
+	<string id="st_recover_item_1_text">
+		<text>Jistй druћstvo Jasnй oblohy na noиnн misi narazilo na doupм divoибkщ. Teп uћ je na zбchranu tмch muћщ nejspнљ pozdм, nicmйnм jejich velitel u sebe mмl modifikovanou PMm. Tahle pistole by se mohla frakci hodit. Pшines ji zpмt.</text>
+	</string>
+	<string id="st_recover_item_2_name">
+		<text>Pшines AK74/2u</text>
+	</string>
+	<string id="st_recover_item_2_text">
+		<text>Pшed nмkolika dny zaъtoиila skupina odpadlнkщ na druћstvo Jasnй oblohy, kterй zrovna od armбdy kupovalo zбsilku zbranн. Odpadlнci se zmocnili vмtљiny zbranн, ale tu nejlepљн ъtoиnou puљku se pшed nimi podaшilo skrэt. Teп ji budeљ muset najнt.</text>
+	</string>
+	<string id="st_recover_item_3_name">
+		<text>Zнskej artefakt</text>
+	</string>
+	<string id="st_recover_item_3_text">
+		<text>Druћstvo Jasnй oblohy zachytilo nouzovй vysнlбnн od stalkera, jenћ ъdajnм naљel vzбcnэ artefakt, ale nevмdмl, jak se mб dostat ven z oblasti anomбliн. Druћstvo se k nмmu nestaиilo dostat vиas a signбl se odmlиel. Bмћ ten artefakt najнt.</text>
+	</string>
+	<string id="st_recover_item_4_name">
+		<text>Pшines PDA</text>
+	</string>
+	<string id="st_recover_item_4_text">
+		<text>Jeden z naљich nejlepљнch stopaшщ se ztratil venku pшi noиnн prщzkumnй misi. Najdi pшinejmenљнm jeho PDA, aby informace, kterй se mu podaшilo nasbнrat, nepшiљly vniveи.</text>
+	</string>
+	<string id="st_recover_item_5_name">
+		<text>Pшines kombinйzu</text>
+	</string>
+	<string id="st_recover_item_5_text">
+		<text>Odpadlнci nedбvno dobyli malou vэzkumnou stanici v baћinбch, zrovna kdyћ v nн probнhal experiment. Vмdci potahovali kombinйzu zvlбљtnнm anomбlnнm rosolem. Pшines tu kombinйzu zpмt, aby naљi vмdci mohli v experimentu pokraиovat.</text>
+	</string>
+	<string id="st_sim_sos_name">
+		<text>Pomoz</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_name">
+		<text>Najdi informace o kevlarovй vestм</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_text">
+		<text>Aby mohl Gray vylepљit tvou vestu, bude potшebovat informace o kevlarovэch zbrojнch.</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_name">
+		<text>Najdi informace o ъsќovэch brzdбch</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_text">
+		<text>Gray chce sestavit speciбlnн ъsќovou brzdu, ale nevн dost o tom, jak tyto vмciиky fungujн. Najdi nмjakй informace a pшines mu je.</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_name">
+		<text>Najdi informace o modifikacнch hlavnн</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_text">
+		<text>Gray dokбћe sestrojit prodlouћenн hlavnм, kterй by zlepљilo charakteristiky zbranм, ale chybн mu jistб data.</text>
+	</string>
+	<string id="st_mar_leader_notify_actor">
+		<text>Ћoldбku, soustшeп se! Naљнm cнlem je pшevzнt kontrolu nad baћinama. Jestli nevнљ, co dмlat, podнvej se na aktivnн ъkoly ve tvйm PDAиku.</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_desc">
+		<text>PDA s informacemi o baћinбch, sesbнral prщvodce z Jasnй oblohy</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_name">
+		<text>PDA prщzkumnнka Jasnй oblohy</text>
+	</string>
+</string_table>

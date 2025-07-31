@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="bandit_outfit_description">
+		<text>Tradycyjny strуj bandytуw - skуrzana kurtka z wszytymi elementami pancerza. Nie stanowi wіaњciwie їadnej ochrony przed surowymi warunkami panuj№cymi w Zonie. Kurtka zawiera pojemnik na dwa artefakty.</text>
+	</string>
+	<string id="bandit_outfit_name">
+		<text>Kurtka bandyty</text>
+	</string>
+	<string id="dolg_outfit_description">
+		<text>Nowoczeњniejsza wersja kombinezonu ochronnego "Powinnoњci", zapewniaj№ca dobr№ ochronк przed anomaliami, w odrуїnieniu od kombinezonуw serii PSZ. Wbudowana kamizelka kuloodporna moїe zatrzymaж pocisk z pistoletu. Nie moїna zamontowaж w nim pojemnika na artefakty.</text>
+	</string>
+	<string id="dolg_outfit_name">
+		<text>PS5-M "Wszechstronna ochrona"</text>
+	</string>
+	<string id="exo_outfit_description">
+		<text>Eksperymentalny prototyp wojskowego egzoszkieletu. Nigdy nie produkowany masowo ze wzglкdu na ogromny koszt i niewielkie wady konstrukcyjne. Niewielkie partie wyprodukowano w podziemnych zakіadach poza Ukrain№. Egzoszkielet trzeciej generacji, w ktуrym poprawiono ograniczaj№ce swobodк ruchуw wady konstrukcyjne poprzednich wersji i wzmocniono pancerz.</text>
+	</string>
+	<string id="exo_outfit_name">
+		<text>Egzoszkielet</text>
+	</string>
+	<string id="military_outfit_description">
+		<text>Wosjkowy kombinezon pancerny stworzony na potrzeby operacji szturmowych na obszarach silnych anomalii. Skіada siк z wojskowego pancerza, wbudowanego kombinezonu kompensacyjnego i heіmu Sfera-12M. Moїe powstrzymaж pocisk z karabinu szturmowego. Nie moїna zamontowaж w nim pojemnika na artefakty.</text>
+	</string>
+	<string id="military_outfit_name">
+		<text>Kombinezon "Buіat"</text>
+	</string>
+	<string id="mp_exo_outfit_description">
+		<text>Ten egzoszkielet zapewnia doskonaі№ ochronк przed pociskami i odіamkami, kosztem ograniczenia swobody ruchуw. Nie chroni przed pociskami o duїej przebijalnoњci.</text>
+	</string>
+	<string id="mp_exo_outfit_name">
+		<text>Egzoszkielet</text>
+	</string>
+	<string id="mp_military_outfit_description">
+		<text>Wojskowy kombinezon pancerny stworzony na potrzeby operacji szturmowych. Zapewnia znakomit№ ochronк przed pociskami i odіamkami bez ograniczania swobody ruchуw. Nie chroni przed pociskami o duїej przebijalnoњci.</text>
+	</string>
+	<string id="mp_military_outfit_name">
+		<text>Wojskowy kombinezon pancerny</text>
+	</string>
+	<string id="mp_scientific_outfit_description">
+		<text>Kombinezon stworzony na potrzeby prac badawczych w Zonie. Zawiera aparat tlenowy o zamkniкtym obiegu i wbudowany system tіumienia pуl anomalii, dziкki czemu stanowi doskonaі№ ochronк przed anomaliami. Bardzo delikatny ze wzglкdu na sіaby pancerz. Zawiera pojemnik na artefakty.</text>
+	</string>
+	<string id="mp_scientific_outfit_name">
+		<text>Kombinezon naukowca</text>
+	</string>
+	<string id="scientific_outfit_description">
+		<text>Ten kombinezon, wyprodukowany w jednym z kijowskich instytutуw badawczych, jest њwietn№ alternatyw№ dla kombinezonуw domowej roboty. Skіada siк z opancerzonego kombinezonu, aparatu tlenowego o zamkniкtym obiegu i systemu tіumienia pуl anomalii. Wszystko to wykonano z dobrze dobranych materiaіуw, dziкki czemu kombinezon ten stanowi doskonaіy wybуr. Jego jedyn№ wad№ jest cena.</text>
+	</string>
+	<string id="scientific_outfit_name">
+		<text>Kombinezon SEVA</text>
+	</string>
+	<string id="specops_outfit_description">
+		<text>Beryl-5M to kombinezon Specnazu, zmodyfikowany do uїytku w Zonie. Kombinezon skіada siк z wojskowej kamizelki kuloodpornej serii PSZ-9a pokrytej berylem oraz heіmu Sfera-08. Powstaі na potrzeby operacji szturmowych na terenach wysokim stкїeniu promieniowania. Jest nieskuteczny na terenach o duїej aktywnoњci anomalii.</text>
+	</string>
+	<string id="specops_outfit_name">
+		<text>Kombinezon "Beryl-5M"</text>
+	</string>
+	<string id="stalker_outfit_description">
+		<text>Kombinezon stalkera wyprodukowany przez "majsterkowiczуw". Skіada siк z lekkiej wojskowej kamizelki kuloodpornej i kombinezonu z gumowanej tkaniny. Choж nie chroni nawet przed strzaіami z pistoletu, cieszy siк duїym powodzeniem ze wzglкdu na nisk№ cenк i spore moїliwoњci modyfikacji. Zawiera pojemnik na dwa artefakty.</text>
+	</string>
+	<string id="stalker_outfit_name">
+		<text>Kombinezon "Wschуd Sіoсca"</text>
+	</string>
+	<string id="svoboda_heavy_outfit_description">
+		<text>Wzmocniony kombinezon wyprodukowany przez rzemieњlnikуw "Wolnoњci". Wchodz№ca w jego skіad standardowa wojskowa kamizelka kuloodporna z elementami cyrkonowymi zapewnia dobr№ ochronк przed kulami karabinowymi oraz odіamkami. Materiaі, z ktуrego wykonano kombinezon, jest zіoїony z dwуch warstw: specjalnej skуry i tkaniny z przкdz№ azbestow№. Kombinezon zapewnia niewielk№ ochronк przed anomaliami i promieniowaniem.</text>
+	</string>
+	<string id="svoboda_heavy_outfit_name">
+		<text>Kombinezon "Straїnik Wolnoњci"</text>
+	</string>
+	<string id="svoboda_light_outfit_description">
+		<text>Lekki kombinezon stalkera produkowany przez rzemieњlnikуw "Wolnoњci". Skіada siк z lekkiej wojskowej kamizelki kuloodpornej wzmocnionej kevlarem. Chroni przed sіab№ broni№. Materiaі, z ktуrego zostaі wykonany, potraktowano specjaln№ mieszank№ zwiкkszaj№c№ ochronк przed anomaliami.</text>
+	</string>
+	<string id="svoboda_light_outfit_name">
+		<text>Kombinezon "Powiew Wolnoњci"</text>
+	</string>
+	<string id="csky_heavy_outfit_description">
+		<text>Standardowe wyposaїenie oddziaіуw szturmowych "Czystego Nieba". Kamizelka kuloodporna moїe zatrzymaж kulк pistoletow№, a zintegrowana maska przeciwgazowa dobrze chroni przed anomaliami. Zawiera pojemnik na jeden artefakt.</text>
+	</string>
+	<string id="csky_heavy_outfit_name">
+		<text>Kamizelka kuloodporna CS-1</text>
+	</string>
+	<string id="csky_light_outfit_description">
+		<text>Tк kamizelkк kuloodporn№ stworzono na potrzeby dziaіaс poszukiwawczych w terenie o maіej aktywnoњci anomalii. Dziкki wykonaniu z materiaіуw wyїszej jakoњci kamizelka ma wiкksz№ wytrzymaіoњж. Zawiera pojemnik na jeden artefakt.</text>
+	</string>
+	<string id="csky_light_outfit_name">
+		<text>Kamizelka kuloodporna CS-3</text>
+	</string>
+	<string id="dolg_heavy_outfit_description">
+		<text>Wczesny model kombinezonu "Powinnoњci". Ma wbudowan№ kamizelkк kuloodporn№, ale praktycznie wcale nie chroni przed anomaliami. Nie moїna zamontowaж w nim pojemnika na artefakty.</text>
+	</string>
+	<string id="dolg_heavy_outfit_name">
+		<text>Pancerz PSZ-9d</text>
+	</string>
+	<string id="exo_freedom_outfit_description">
+		<text>Ulepszona wersja zwykіego egzoszkieletu. Wykorzystanie lїejszych materiaіуw umoїliwiіo zmniejszenie wagi kombinezonu i zwiкkszenie jego wytrzymaіoњci.</text>
+	</string>
+	<string id="exo_freedom_outfit_name">
+		<text>Egzoszkielet "Wolnoњж"</text>
+	</string>
+	<string id="novice_outfit_description">
+		<text>Popularny ubiуr stalkerуw-nowicjuszy. Nie chroni przed kulami ani anomaliami, ale jest lepszy niї nic. Moїna go ulepszyж celem umieszczenia w nim maksymalnie dwуch artefaktуw.</text>
+	</string>
+	<string id="novice_outfit_name">
+		<text>Skуrzana kurtka</text>
+	</string>
+</string_table>

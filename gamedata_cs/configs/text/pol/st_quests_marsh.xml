@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mar_capture_plant">
+		<text>Zdob№dџ fabrykк</text>
+	</string>
+	<string id="mar_capture_plant_text">
+		<text>Zdob№dџ fabrykк wykorzystywan№ do wyci№gania wywoіuj№cych anomalie substancji z dna bagna.</text>
+	</string>
+	<string id="mar_capture_tower">
+		<text>Zdob№dџ wieїк straїnicz№</text>
+	</string>
+	<string id="mar_capture_tower_text">
+		<text>Pomуї oddziaіowi Czystego Nieba opanowaж wieїк straїnicz№ bandytуw.</text>
+	</string>
+	<string id="mar_defend_tower">
+		<text>Odeprzyj atak bandytуw na wieїк</text>
+	</string>
+	<string id="mar_defend_tower_text">
+		<text>Odeprzyj kontratak bandytуw na wieїк straїnicz№.</text>
+	</string>
+	<string id="mar_story_capture_bandit_base">
+		<text>Zdob№dџ gospodarstwo na pуіnocnym wschodzie.</text>
+	</string>
+	<string id="mar_story_capture_bandit_base_text">
+		<text>Zdob№dџ gospodarstwo na pуіnocny wschуd od Bagien, likwiduj№c tamtejszych bandytуw.</text>
+	</string>
+	<string id="mar_story_capture_levelchangers">
+		<text>Zdob№dџ podejњcia do drуg prowadz№cych do њwiata zewnкtrznego</text>
+	</string>
+	<string id="mar_story_capture_levelchangers_text">
+		<text>Zabezpiecz przejњcia do Kordonu i Agropromu, opanowuj№c s№siaduj№ce z nimi pozycje.</text>
+	</string>
+	<string id="mar_story_empower_csky">
+		<text>Wzmocnij pozycjк Czystego Nieba na Bagnach</text>
+	</string>
+	<string id="mar_story_empower_csky_text">
+		<text>Wzmocnij pozycjк Czystego Nieba na Bagnach, likwiduj№c wrogуw.</text>
+	</string>
+	<string id="mar_story_go_to_escape">
+		<text>Udaj siк z przewodnikiem do Kordonu</text>
+	</string>
+	<string id="mar_story_go_to_escape_text">
+		<text>Spotkaj siк z przewodnikiem i udaj siк z nim do Kordonu.</text>
+	</string>
+	<string id="mar_story_go_to_marsh">
+		<text>Udaj siк z przewodnikiem na Wielkie Bagna</text>
+	</string>
+	<string id="mar_story_go_to_marsh_text">
+		<text>Poproњ przewodnika, aby zaprowadziі ciк na Wielkie Bagna.</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh">
+		<text>Opanuj Bagna</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh_text">
+		<text>Opanuj Bagna, aby uczyniж drogi bezpiecznymi dla przewodnikуw.</text>
+	</string>
+	<string id="mar_story_talk_with_barman">
+		<text>Pomуw z barmanem</text>
+	</string>
+	<string id="mar_story_talk_with_barman_text">
+		<text>Spytaj barmana o bazк Czystego Nieba.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1">
+		<text>Pomуw z Lebiediewem</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1_text">
+		<text>Dowiedz siк, czego chciaі Lebiediew.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2">
+		<text>Spytaj Lebiediewa, co siк staіo</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2_text">
+		<text>Spytaj Lebiediewa, co siк staіo po drugiej emisji.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3">
+		<text>Dogadaj siк z Lebiediewem co do wzajemnej pomocy</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3_text">
+		<text>Dogadaj siк z Lebiediewem co do uіatwienia ci opuszczenia Bagien.</text>
+	</string>
+	<string id="mar_story_talk_with_guide">
+		<text>Udaj siк z przewodnikiem do posterunku</text>
+	</string>
+	<string id="mar_story_talk_with_guide_text">
+		<text>Poproњ przewodnika, aby zaprowadziі ciк do posterunku.</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych">
+		<text>Pomуw z Sidorowiczem</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych_text">
+		<text>Zapytaj Sidorowicza o stalkera zainteresowanego dziwnymi czкњciami. To jedyna poszlaka Czystego Nieba w sprawie problemуw Zony z emisjami.</text>
+	</string>
+	<string id="mar_story_talk_with_trader">
+		<text>Pobierz ekwipunek u handlarza</text>
+	</string>
+	<string id="mar_story_talk_with_trader_text">
+		<text>Odbierz ekwipunek od handlarza.</text>
+	</string>
+	<string id="mar_tutorial_help">
+		<text>Wspomуї posterunek</text>
+	</string>
+	<string id="mar_tutorial_help_text">
+		<text>Zareaguj na sygnaі SOS z posterunku Czystego Nieba.</text>
+	</string>
+	<string id="mar_tutorial_kill_boars">
+		<text>Zabij dziki</text>
+	</string>
+	<string id="mar_tutorial_kill_boars_text">
+		<text>Wyeliminuj dziki atakuj№ce posterunek Czystego Nieba</text>
+	</string>
+	<string id="mar_tutorial_return_to_base">
+		<text>Wrуж do bazy Czystego Nieba</text>
+	</string>
+	<string id="mar_tutorial_return_to_base_text">
+		<text>Schowaj siк za osіon№ w bazie Czystego Nieba, zanim nast№pi emisja.</text>
+	</string>
+	<string id="mar_tutorial_tower_top">
+		<text>Wespnij siк na wieїк</text>
+	</string>
+	<string id="mar_tutorial_tower_top_text">
+		<text>Wespnij siк na wieїк, aby uciec potworom.</text>
+	</string>
+	<string id="st_bring_item_1_name">
+		<text>Dostarcz granaty</text>
+	</string>
+	<string id="st_bring_item_1_text">
+		<text>Oddziaі Czystego Nieba prosiі o kilka granatуw.</text>
+	</string>
+	<string id="st_bring_item_2_name">
+		<text>Dostarcz њrodki medyczne</text>
+	</string>
+	<string id="st_bring_item_2_text">
+		<text>Oddziaі Czystego Nieba bardzo potrzebuje њrodkуw medycznych.</text>
+	</string>
+	<string id="st_bring_item_3_name">
+		<text>Dostarcz amunicjк</text>
+	</string>
+	<string id="st_bring_item_3_text">
+		<text>Oddziaі Czystego Nieba potrzebuje nabojуw do strzelb.</text>
+	</string>
+	<string id="st_bring_item_4_name">
+		<text>Dostarcz amunicjк</text>
+	</string>
+	<string id="st_bring_item_4_text">
+		<text>Oddziaі Czystego Nieba potrzebuje nabojуw pistoletowych.</text>
+	</string>
+	<string id="st_bring_item_5_name">
+		<text>Dostarcz amunicjк</text>
+	</string>
+	<string id="st_bring_item_5_text">
+		<text>Oddziaі Czystego Nieba potrzebuje nabojуw do karabinуw szturmowych.</text>
+	</string>
+	<string id="st_recover_item_1_name">
+		<text>Zwrуж PMm</text>
+	</string>
+	<string id="st_recover_item_1_text">
+		<text>Podczas nocnej misji oddziaі Czystego Nieba wpadі na norк dzikуw. Dla ludzi jest juї zapewne zbyt pуџno, ale dowуdca jednostki dysponowaі zmodyfikowanym pistoletem PMm, ktуry moїe siк jeszcze przydaж frakcji. Odzyskaj go.</text>
+	</string>
+	<string id="st_recover_item_2_name">
+		<text>Zwrуж AK74/2u</text>
+	</string>
+	<string id="st_recover_item_2_text">
+		<text>Kilka dni temu renegaci zaatakowali oddziaі Czystego Nieba w trakcie zakupu broni od wojskowych. Renegaci zdobyli wiкkszoњж spluw, ale nasi zdoіali ukryж najlepszy karabin szturmowy. Musisz go odzyskaж.</text>
+	</string>
+	<string id="st_recover_item_3_name">
+		<text>Zdob№dџ artefakt</text>
+	</string>
+	<string id="st_recover_item_3_text">
+		<text>Oddziaі Czystego Nieba odebraі sygnaі SOS od stalkera twierdz№cego, їe odnalazі rzadki artefakt, ale nie wie, jak siк wydostaж z obszaru anomalii. Oddziaі nie zdoіaі do niego dotrzeж, a sygnaі zdechі. Musisz zdobyж artefakt.</text>
+	</string>
+	<string id="st_recover_item_4_name">
+		<text>Zwrуж PDA</text>
+	</string>
+	<string id="st_recover_item_4_text">
+		<text>Podczas nocnej misji rozpoznawczej zagin№і jeden z naszych najlepszych tropicieli. Musisz odzyskaж chociaї jego PDA, aby zebrane przez niego informacje siк nie zmarnowaіy.</text>
+	</string>
+	<string id="st_recover_item_5_name">
+		<text>Odzyskaj kombinezon</text>
+	</string>
+	<string id="st_recover_item_5_text">
+		<text>Renegaci opanowali niedawno maі№ fabrykк na Bagnach, w ktуrej przeprowadzano wіaњnie eksperyment - napeіniano kombinezon galaret№ z anomalii. Odzyskaj kombinezon, pozwalaj№c naszym naukowcom na ocenк rezultatуw eksperymentu.</text>
+	</string>
+	<string id="st_sim_sos_name">
+		<text>Pomуї</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_name">
+		<text>Odszukaj informacje o kevlarowej kamizelce kuloodpornej</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_text">
+		<text>Szary potrzebuje informacji o kevlarowej kamizelce kuloodpornej, aby ulepszyж twуj pancerz.</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_name">
+		<text>Odszukaj informacje o hamulcach wylotowych</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_text">
+		<text>Szary chce wyprodukowaж specjalny hamulec wylotowy, ale nie wie doњж o zasadzie ich dziaіania. Odszukaj odpowiednie informacje i mu je dostarcz.</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_name">
+		<text>Odszukaj informacje o modyfikacjach luf</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_text">
+		<text>Szary moїe przedіuїyж lufк broni celem poprawy jej wіasnoњci, brakuje mu jednak danych.</text>
+	</string>
+	<string id="st_mar_leader_notify_actor">
+		<text>Najemniku - skoncentruj siк! Naszym celem jest przejкcie kontroli nad Bagnami. Jeњli nie wiesz, co robiж, poszukaj aktywnych zadaс w swoim PDA.</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_desc">
+		<text>PDA z informacjami o Bagnach zebranymi przez tropiciela Czystego Nieba.</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_name">
+		<text>PDA zwiadowcy CN.</text>
+	</string>
+</string_table>

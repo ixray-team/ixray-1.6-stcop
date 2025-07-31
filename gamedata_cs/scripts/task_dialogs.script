@@ -33,15 +33,15 @@ function squad_has_tasks(npc, actor, p1, p2)
 	end
 
 	-- Нужно взять sim_combat сквада
-	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager	
+	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager
 	-- У него взять текущее состояние
-	local combat_stage = combat.squads[squad.squad_id]._stage	
+	local combat_stage = combat.squads[squad.squad_id]._stage
 	-- Таск выдавать только если оно равно idle
 	if combat_stage ~= "idle" then
 		return false
 	end
 
-	
+
 	for k,v in pairs(squad.random_tasks) do
 		if(task_manager.get_task_manager():get_task_by_entity_id(v).status~="selected") then
 			return true
@@ -62,15 +62,15 @@ function squad_hasnt_tasks(npc, actor, p1, p2)
 	end
 
 	-- Нужно взять sim_combat сквада
-	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager	
+	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager
 	-- У него взять текущее состояние
-	local combat_stage = combat.squads[squad.squad_id]._stage	
+	local combat_stage = combat.squads[squad.squad_id]._stage
 	-- Таск выдавать только если оно равно idle
 	if combat_stage ~= "idle" then
 		return true
 	end
-	
-	
+
+
 	for k,v in pairs(squad.random_tasks) do
 		if(task_manager.get_task_manager():get_task_by_entity_id(v).status~="selected") then
 			return false
@@ -216,6 +216,9 @@ function give_squad_capture_task(npc, actor, p1, p2)
 	end
 	local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[tonumber(p2)-20])
 	local player = sim_board.get_sim_board().players[squad.player_id]
+	if p2 == 23 then
+		task:init_task(squad.squad_id)
+	end 
 	task:give_task(player.player_name)
 	task.squad = squad
 	if sr_recoveritem.target_sr then
@@ -295,7 +298,7 @@ function is_recover_item_task(actor, npc)
 	local npc_id = npc:id()
 	if squad.random_tasks[3] ~= nil and npc_id == squad.commander_id then
 		local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[3])
-		if task.commander_id == npc_id then
+		if task.target == npc_id then
 		   	return task.state=="have_item"
 		end
 	end

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_actor_destroy_wave1">
+		<text>Miejsce, w ktуrym pojawiaj№ siк zombi</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_name">
+		<text>Nie pozwуl, aby zombi zbliїyіy siк do stalkerуw na dachu</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_text">
+		<text>Osіaniaj stalkerуw na dachu obsіuguj№cych zawуr instalacyjny. Nie pozwуl, aby zombi zbliїyіy siк ekipy naprawczej na dachu!</text>
+	</string>
+	<string id="yan_actor_destroy_wave2">
+		<text>Miejsce, w ktуrym pojawiaj№ siк zombi</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_name">
+		<text>Nie pozwуl, aby zombi zbliїyіy siк do stalkerуw w hangarze</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_text">
+		<text>Osіaniaj stalkerуw w hangarze obsіuguj№cych zawуr instalacyjny. Nie pozwуl, aby zombi zbliїyіy siк ekipy naprawczej w hangarze!</text>
+	</string>
+	<string id="yan_actor_go_base_defence">
+		<text>Broс bazy naukowcуw</text>
+	</string>
+	<string id="yan_actor_go_base_defence_name">
+		<text>Broс bazy naukowcуw</text>
+	</string>
+	<string id="yan_actor_go_base_defence_text">
+		<text>Broс bazy naukowcуw</text>
+	</string>
+	<string id="yan_actor_go_base_science">
+		<text>Na czas ataku zombi wrota do bunkra naukowcуw s№ zablokowane. Odeprzyj natarcie zombi, aby przedostaж siк do wnкtrza bunkra i pomуwiж z naukowcami.</text>
+	</string>
+	<string id="yan_actor_go_base_science_name">
+		<text>Pomуw z Sacharowem</text>
+	</string>
+	<string id="yan_actor_go_base_science_text">
+		<text>Strielok ruszyі do naukowcуw nad Jantarem. Udaj siк tam i pomуw z profesorem Sacharowem. Moїe on bкdzie wiedziaі, gdzie szukaж Strieloka.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest">
+		<text>Њcieїka do Czerwonego Lasu stoi otworem</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_name">
+		<text>Udaj siк do Czerwonego Lasu</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_text">
+		<text>Stacja chіodzenia zostaіa naprawiona i ustabilizowana, emisje psioniczne zostaіy ograniczone do minimum. Droga do Czerwonego Lasu jest bezpieczna - udaj siк tam, to tam zmierza Strielok.</text>
+	</string>
+	<string id="yan_actor_go_to_stalker">
+		<text>tekst domyњlny</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_name">
+		<text>tekst domyњlny</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_text">
+		<text>tekst domyњlny</text>
+	</string>
+	<string id="yan_main_quest_line">
+		<text>Nie pozwуl zgin№ж ekipie naprawczej</text>
+	</string>
+	<string id="yan_main_quest_line_name">
+		<text>Utrzymaj pozycjк!</text>
+	</string>
+	<string id="yan_main_quest_line_text">
+		<text>Utrzymaj pozycjк!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy">
+		<text>Zanieњ dokumenty Sacharowowi</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_name">
+		<text>Zanieњ dokumenty Sacharowowi</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_text">
+		<text>Zanieњ dokumenty Sacharowowi. Pomog№ mu poj№ж, czemu nad Jantarem wystкpuj№ tak silne emisje psioniczne.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke">
+		<text>Wywalcz sobie drogк do urz№dzenia</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_name">
+		<text>Wywalcz sobie drogк do fabryki</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_text">
+		<text>Obszar wokуі fabryki jest peіen zombi. Wspуlnie z Lewusem i jego grup№ przebij siк do њrodka. Pospiesz siк - pole psioniczne moїe lada chwila osi№gn№ж stan krytyczny.</text>
+	</string>
+	<string id="yan_quest_doc">
+		<text>Odszukaj dokumenty</text>
+	</string>
+	<string id="yan_quest_doc_name">
+		<text>Odszukaj PDA z dokumentami</text>
+	</string>
+	<string id="yan_quest_doc_text">
+		<text>Grupa stalkerуw znalazіa na obszarze fabryki waїne dokumenty, ktуre mog№ pomуc Sacharowowi ustaliж przyczynк wystкpowania nad Jantarem potкїnego pola psionicznego. Sygnaі grupy zdechі w pobliїu wyjњcia z fabryki - odszukaj PDA z dokumentami.</text>
+	</string>
+	<string id="yan_quest_levsha">
+		<text>Spotkaj siк z Lewusem</text>
+	</string>
+	<string id="yan_quest_levsha_name">
+		<text>Spotkaj siк z grup№ Lewusa</text>
+	</string>
+	<string id="yan_quest_levsha_text">
+		<text>Grupa stalkerуw szykuje siк do przebicia do fabryki w czasie, gdy emisje psioniczne s№ najsіabsze. Spotkaj siк z Lewusem, dowуdc№ grupy.</text>
+	</string>
+	<string id="yan_repair_defend">
+		<text>Zajmij pozycjк na dachu hangaru</text>
+	</string>
+	<string id="yan_repair_defend_name">
+		<text>Pod№їaj za stalkerem na dach hangaru</text>
+	</string>
+	<string id="yan_repair_defend_text">
+		<text>Lewus nakazaі wszystkim zajкcie pozycji. Pod№їaj za stalkerem na dach hangaru i zajmij pozycjк.</text>
+	</string>
+	<string id="yan_recover_item_1_name">
+		<text>Sprowadџ Szkarіatny Kwiat</text>
+	</string>
+	<string id="yan_recover_item_1_text">
+		<text>Pomуї mi, najemniku. W Zonie moїna znaleџж artefakt okreњlany mianem Szkarіatnego Kwiatu. Stalkerowi siк nie przyda, ale paniusie nie mog№ siк na niego napatrzeж. Szykuje mi siк randka - dziкki temu cacuszku na pewno sobie pociupciam. Dlatego wci№ї jestem w Zonie; Kwiat widziano w tej okolicy. Artefakt wygl№da jak magiczny kwiatek, ktуry њwieci dniem i noc№. Przynieњ mi go, a godnie ciк wynagrodzк!</text>
+	</string>
+	<string id="yan_recover_item_2_name">
+		<text>Zwrуж pami№tkowy granat</text>
+	</string>
+	<string id="yan_recover_item_2_text">
+		<text>Mam potrzebк, najemniku. Straciіem pami№tkк wygl№daj№c№ jak granat... tyle, їe to nie granat. No, treningowy. Odzyskaj go dla mnie... Chyba wiem, gdzie go szukaж - byіem w fabryce, gdy coњ siк staіo z moim mуzgiem - prawie zapomniaіem, kim jestem! Ockn№іem siк tutaj; granat powinien byж wci№ї w fabryce. Przynieњ mi go!</text>
+	</string>
+</string_table>

@@ -172,7 +172,11 @@ float gbuf_unpack_mtl( float mtl_hemi )
    return float( packed_hemi ) * (1.0/31.0) * 1.333333333;
 }
 
+#ifndef EXTEND_F_DEFFER
 f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col )
+#else
+f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col, uint imask )
+#endif
 {
 	f_deffer res;
 
@@ -183,6 +187,10 @@ f_deffer pack_gbuffer( float4 norm, float4 pos, float4 col )
 #else
 	res.position	= float4( gbuf_pack_normal( norm ), pos.z, gbuf_pack_hemi_mtl( norm.w, pos.w ) );
 	res.C			   = col;
+#endif
+
+#ifdef EXTEND_F_DEFFER
+   res.mask = imask;
 #endif
 
 	return res;

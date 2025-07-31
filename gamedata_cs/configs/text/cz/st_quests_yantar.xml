@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_actor_destroy_wave1">
+		<text>Mнsto, kde se objevujн zombie</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_name">
+		<text>Nedovol zombiнm pшiblнћit se ke stalkerщm na stшeљe.</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_text">
+		<text>Kryj stalkery na stшeљe, aby mohli opravit instalaиnн ventil. Nedopusќ, aby k nim na stшechu pronikly zombie!</text>
+	</string>
+	<string id="yan_actor_destroy_wave2">
+		<text>Mнsto, kde se objevujн zombie</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_name">
+		<text>Nedovol zombiнm pшiblнћit se ke stalkerщm v hangбru</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_text">
+		<text>Kryj stalkery v hangбru, aby mohli opravit instalaиnн ventil. Nedopusќ, aby k nim do hangбru pronikly zombie!</text>
+	</string>
+	<string id="yan_actor_go_base_defence">
+		<text>Braт zбkladnu vмdcщ</text>
+	</string>
+	<string id="yan_actor_go_base_defence_name">
+		<text>Braт zбkladnu vмdcщ</text>
+	</string>
+	<string id="yan_actor_go_base_defence_text">
+		<text>Braт zбkladnu vмdcщ</text>
+	</string>
+	<string id="yan_actor_go_base_science">
+		<text>Dokud budou zombie ъtoиit, vмdci nechajн dveшe od svйho bunkru zablokovanй. Odraz ъtok zombiн a bмћ si dovnitш bunkru promluvit s vмdci.</text>
+	</string>
+	<string id="yan_actor_go_base_science_name">
+		<text>Promluv si se Sacharovem</text>
+	</string>
+	<string id="yan_actor_go_base_science_text">
+		<text>Stшelec se vydal navљtнvit vмdce v Jantaru. Bмћ do Jantaru a promluv si s profesorem Sacharovem. Tшeba bude vмdмt, kde Stшelce najнt.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest">
+		<text>Cesta do Rudйho lesa je volnб</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_name">
+		<text>Jdi do Rudйho lesa</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_text">
+		<text>Podaшilo se vбm opravit a stabilizovat chladicн stanici, takћe psychickй zбшenн se pohybuje na minimu. Cesta do Rudйho lesa je volnб. Jdi do Rudйho lesa – pшesnм tam mб namншeno i Stшelec.</text>
+	</string>
+	<string id="yan_actor_go_to_stalker">
+		<text>vэchozн text</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_name">
+		<text>vэchozн text</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_text">
+		<text>vэchozн text</text>
+	</string>
+	<string id="yan_main_quest_line">
+		<text>Nedopusќ smrt opravбшskйho tэmu</text>
+	</string>
+	<string id="yan_main_quest_line_name">
+		<text>Udrћuj pozici!</text>
+	</string>
+	<string id="yan_main_quest_line_text">
+		<text>Udrћuj pozici!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy">
+		<text>Dones dokumenty Sacharovi</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_name">
+		<text>Dones dokumenty Sacharovi</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_text">
+		<text>Dones dokumenty Sacharovi. Snad z nich vyиte, proи z Jantaru vychбzejн tak silnй psychickй emise.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke">
+		<text>Dostaт se k zaшнzenн</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_name">
+		<text>Dostaт se k tovбrnм</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_text">
+		<text>Okolн tovбrny je plnй zombiн. Pшidej se k Levaиkovi a spolu s jeho skupinou se probojuj dovnitш. Ale pospнchej – ъroveт psi-zбшenн mщћe kaћdou minutou vystoupat na kritickou hodnotu.</text>
+	</string>
+	<string id="yan_quest_doc">
+		<text>Najdi dokumenty</text>
+	</string>
+	<string id="yan_quest_doc_name">
+		<text>Najdi PDA s dokumenty</text>
+	</string>
+	<string id="yan_quest_doc_text">
+		<text>Jistб skupina stalkerщ naљla v okolн tovбrny dщleћitй dokumenty. S jejich pomocн by mohl Sacharov odhalit zdroj psi-zбшenн v Jantaru. Signбl skupiny se odmlиel nмkde poblнћ vchodu do tovбrny. Najdi PDA s dokumenty.</text>
+	</string>
+	<string id="yan_quest_levsha">
+		<text>Setkej se s Levaиkou</text>
+	</string>
+	<string id="yan_quest_levsha_name">
+		<text>Setkej se s Levaиkovou skupinou</text>
+	</string>
+	<string id="yan_quest_levsha_text">
+		<text>Skupina stalkerщ se chystб probнt skrz tovбrnu, dokud je psi-zбшenн na nнzkй hladinм. Setkej se s Levaиkou, jejich velitelem.</text>
+	</string>
+	<string id="yan_repair_defend">
+		<text>Zaujmi pozici na stшeљe hangбru</text>
+	</string>
+	<string id="yan_repair_defend_name">
+		<text>Nбsleduj stalkera na stшechu hangбru</text>
+	</string>
+	<string id="yan_repair_defend_text">
+		<text>Levaиka rozkбzal, aby se vљichni pшipravili na svб mнsta. Nбsleduj stalkera na stшechu a zaujmi tam pozici.</text>
+	</string>
+	<string id="yan_recover_item_1_name">
+		<text>Pшines Љarlatovou kvмtinu</text>
+	</string>
+	<string id="yan_recover_item_1_text">
+		<text>Pomoz mi, ћoldбku. V Zуnм se dб najнt artefakt, kterэmu se шнkб Љarlatovб kvмtina. Stalkerщm je k niиemu, ale ћenskэ se z nмj mщћou zblбznit. Mбm domluvenэ rande a шнkбm si, ћe kdyћ jн tu kvмtinu pшinesu, tak urиitм zaboduju. Proto se v tэ zatracenэ Zуnм jeљtм poflakuju, prej tady nмkde ten artefakt byl. Vypadб jako magickб kytka, kterб zбшн ve dne v noci. Pшines mi ten artefakt a jб se postarбm, aby se ti to vyplatilo!</text>
+	</string>
+	<string id="yan_recover_item_2_name">
+		<text>Pшines granбt suvenэr</text>
+	</string>
+	<string id="yan_recover_item_2_text">
+		<text>Hele, nмco bych potшeboval. Ztratil jsem suvenэr, kterej vypadб jako granбt… ale nenн to granбt… No teda je, ale cviиnej. To je fuk, prostм mi ho najdi. Myslнm, ћe vнm, kde bys ho mohl najнt. Byl jsem zrovna v tovбrnм, kdyћ se to stalo… mozek se mi celej pomotal a mбlem jsem zapomnмl, kdo jsem! Kdyћ jsem se vzpamatoval, byl jsem tady, takћe bych шekl, ћe granбt bude furt v tovбrnм. Pшines mi ho!</text>
+	</string>
+</string_table>

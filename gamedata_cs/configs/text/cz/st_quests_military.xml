@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mil_actor_attack_house">
+		<text>Zlikviduj vojбky v budovм velitelstvн</text>
+	</string>
+	<string id="mil_actor_attack_house_text">
+		<text>Vojenskй jednotka zaujala obrannй pozice v budovм velitelstvн. Zlikviduj vљechny vojбky v budovм.</text>
+	</string>
+	<string id="mil_additional_quest_1_name">
+		<text>Vezmi z vrtulnнku armбdnн zбsoby</text>
+	</string>
+	<string id="mil_additional_quest_1_text">
+		<text>Poblнћ se zшнtila hlнdkujнcн armбdnн helikoptйra, kterб vezla cennй zbranм a munici. Tyto zбsoby potшebujeme k udrћenн bariйry - kaћdб zbraт a kaћdэ nбboj jsou nedocenitelnй. Bohuћel, do tй oblasti se naљi hoљi nedostanou. Drћн to tam Monolit. Nejenћe to jsou pмknн tvrпбci, ale na rozdнl od nбs majн i protiradiaиnн obleky.</text>
+	</string>
+	<string id="mil_additional_quest_2_name">
+		<text>Najdi PDA</text>
+	</string>
+	<string id="mil_additional_quest_2_text">
+		<text>Pшed nмkolika dny byla skupina stalkerщ pшepadena smeиkou nemilosrdnэch hladovэch psщ. Nikdo nepшeћil. Velitel skupiny zemшel spolu se svэmi muћi a jako na potvoru nбm mмl pшinйst dщleћitй informace. Najdi velitelovo tмlo a vezmi od nмj PDA s tмmi informacemi.</text>
+	</string>
+	<string id="mil_additional_quest_3_name">
+		<text>Najdi vмci ztracenйho stalkera</text>
+	</string>
+	<string id="mil_additional_quest_3_text">
+		<text>Jeden z naљich odstшelovaищ pouћнval cennou munici, ale zaшval v anomбlii. Kdyby se ti povedlo pшinйst jeho munici zpмt, љtмdшe bysme se ti odmмnili.</text>
+	</string>
+	<string id="mil_additional_quest_4_name">
+		<text>Seber artefakt mrtvйmu stalkerovi</text>
+	</string>
+	<string id="mil_additional_quest_4_text">
+		<text>Jednomu z naљich stalkerщ se podaшilo projнt skrz anomбlnн baћinu, ale zpбtky s artefaktem uћ se nedostal. Pшines nбm ten artefakt, dostaneљ odmмnu.</text>
+	</string>
+	<string id="mil_additional_quest_5_name">
+		<text>Pшines artefakt z vesnice</text>
+	</string>
+	<string id="mil_additional_quest_5_text">
+		<text>Tahle vesnice je prokletб, stalkere. Odevљad se vynoшujou krvesajovй a nikdo nemб koule na to, aby tam lezl. Pшнleћitostnм se tam vydб parta hazardйrщ, pшitahuje je to jako mouchy hnщj, a je jim jedno, ћe tam ћijou ti nejbrutбlnмjљн a nejnebezpeиnмjљн upншi ze Zуny. Ono totiћ kdyћ se pшes nм dostaneљ, v opuљtмnэm domм najdeљ artefakt, jakej se nikde jinde v Zуnм nevyskytuje.</text>
+	</string>
+	<string id="mil_contact_with_clear_sky_commander_descr">
+		<text>Setkej se s Lebedмvem</text>
+	</string>
+	<string id="mil_contact_with_clear_sky_commander_name">
+		<text>Skupinм ћoldбkщ se podaшilo uniknout z prostorovй kapsy a nynн mншн smмrem na Limansk. Pшedsunutй druћstvo Jasnй oblohy uћ иekб u mostu. Vyraz smмrem k Rudйmu lesu a setkej se s Lebedмvem.</text>
+	</string>
+	<string id="mil_defend_barrier_name">
+		<text>Braт bariйru</text>
+	</string>
+	<string id="mil_defend_barrier_text">
+		<text>Bariйra byla opмt napadena. Pomoz ji stalkerщm ubrбnit.</text>
+	</string>
+	<string id="mil_elim_military">
+		<text>Zlikviduj vojбky</text>
+	</string>
+	<string id="mil_elim_military_text">
+		<text>Zlikviduj vojбky na zбkladnм.</text>
+	</string>
+	<string id="mil_hires">
+		<text>Setkej se s ћoldбky ve vsi</text>
+	</string>
+	<string id="mil_hires_text">
+		<text>V opuљtмnй vesnici иekб skupina ћoldбkщ na svй parќбky, kteшн uvнzli v prostorovй anomбlii poblнћ Limansku. Snad ti dokбћн poradit, z jakйho mнsta se dб odvysнlat nejsilnмjљн signбl. Setkej se s ћoldбky ve vsi.</text>
+	</string>
+	<string id="mil_hog_about_signal_1">
+		<text>Krucinбl! Sorry, brбcho, v tomhle se nevyznбm. Jestli ti nмkdo dokбћe pomoct, pak jedinм Lesnнk. Ten prej o Zуnм vн naprosto vљechno, co se o nн vмdмt dб.</text>
+	</string>
+	<string id="mil_hog_hello_dialog_11">
+		<text>Ahoj, ћoldбku!</text>
+	</string>
+	<string id="mil_hog_hello_dialog_12">
+		<text>Rбd tм zas vidнm. Tak uћ jsi zjistil, jak dostat naљe chlapy ven?</text>
+	</string>
+	<string id="mil_hog_hello_dialog_1221">
+		<text>Jo, zбkladna banditщ na Smetiљti je tvrdej oшнљek. Sбm to nezvlбdneљ.</text>
+	</string>
+	<string id="mil_hog_hello_dialog_1231">
+		<text>Hmm... K tomu budeљ potшebovat silnej vysнlaи. Jeden podobnej snad mнvala armбda... poиkej, my uћ nмco vymyslнme...</text>
+	</string>
+	<string id="mil_hog_hello_dialog_13">
+		<text>Ћoldбku, chce s tebou mluvit Kostyan!</text>
+	</string>
+	<string id="mil_hog_talk_about_1">
+		<text>Pшed nмkolika tejdny nбm pшiљla dщleћitб objednбvka na vzбcnej artefakt. Klientem byl nмkdo zvrchu – prej velkэ zvншe. No, samotnб akce probнhala klidnм: naљe druћstvo naљlo ten artefakt nмkde u Bariйry, a zrovna kdyћ se vracelo zpбtky, tak pшiљlo to velkэ zбшenн. Mysleli jsme, ћe to nerozchodмj, ale oni to jako zбzrakem pшeћili. Akorбt ћe potom se nбm nмkde v tэhle oblasti ztratili. Mбme pшнkaz je najнt, abychom mohli doruиit tu zбsilku. Jestli to poserem, ћбdnej klient uћ nebude chtнt se ћoldбky spolupracovat.</text>
+	</string>
+	<string id="mil_hog_talk_about_111">
+		<text>Sem tam zachytнme ъtrћky z pшenosщ naљeho druћstva, ale nedokбћeme z nich nic vyинst. Vнme jenom, ћe se ztratili za bнlэho dne a ћe teп trин nмkde v pasti. Moћnб jde o anomбlii nebo o nмjakэ svinstvo, co se v Zуnм jeљtм neobjevilo. Netuљнme, co dмlat. U statku stojн starб vodбrenskб vмћ, na nн bysme mohli lнp pшijнmat vysнlбnн. Snaћili jsme se na nн vylйzt, ale zniиehonic na nбs vyskoиila pшнљernб bestie, chтapla jednoho z naљich chlapщ a odtбhla ho pryи. Sotva jsme odtamtud zdrhli!</text>
+	</string>
+	<string id="mil_hog_talk_about_11111">
+		<text>Zblбznil ses? Jб mбm v kalhotбch nasrбno jeљtм odminule a chlapi se k tэ vмћi nepшiblнћej na sto honщ. Oproti tomu ty vypadбљ, jako ћe se v Zуnм celkem vyznбљ. Nemohl bys asi zabнt tu potvoru a odvysнlat zprбvu naљim lidem, co?</text>
+	</string>
+	<string id="mil_kill_bs">
+		<text>Zabij upнra</text>
+	</string>
+	<string id="mil_kill_bs_text">
+		<text>V okolн vodбrenskй vмћe, na nнћ je nejlepљн signбl v okolн, byl spatшen upнr. Zabij ho.</text>
+	</string>
+	<string id="mil_reach_battle">
+		<text>Setkej se s druћstvem Svobody</text>
+	</string>
+	<string id="mil_reach_battle_text">
+		<text>Setkej se s druћstvem Svobody</text>
+	</string>
+	<string id="mil_reach_tower_task">
+		<text>Pшijmi vysнlбnн</text>
+	</string>
+	<string id="mil_reach_tower_task_text">
+		<text>Vodбrenskб vмћ je nejvyvэљenмjљнm bodem v okolн vojenskэch skladiљќ a je na nн nejsilnмjљн signбl. Vylez na jejн vrcholek a pшijmi vysнlбnн od skupiny ztracenэch ћoldбkщ.</text>
+	</string>
+	<string id="mil_talk_2_forester2">
+		<text>Promluv si s Lesnнkem</text>
+	</string>
+	<string id="mil_talk_2_forester2_text">
+		<text>Lesnнk na jednom z kanбlщ svйho PDA zachytil rбdiovou zprбvu od ztracenй skupiny ћoldбkщ. Vraќ se k Lesnнkovi pro dalљн instrukce.</text>
+	</string>
+	<string id="mil_talk_2_fr_com">
+		<text>Setkej se s druћstvem Svobody</text>
+	</string>
+	<string id="mil_talk_2_fr_com_text">
+		<text>Svoboda se pшipravuje k ъtoku na armбdnн zбkladnu. Chce totiћ vyhnat vojбky a v armбdnнch skladiљtнch zaloћit zбkladnu vlastnн. Pomoc Svobodм v ъtoku.</text>
+	</string>
+	<string id="mil_talk_2_merc_2_task">
+		<text>Promluv si se ћoldбky</text>
+	</string>
+	<string id="mil_talk_2_merc_2_task_text">
+		<text>Zбkladna je plnб vojбkщ, kteшн majн vysнlaи pod peиlivэm dohledem. Bez nмин pomoci se ti je jen tak vyhnat nepodaшн a nebudeљ tak moci odvysнlat souшadnice ћoldбkщm uvмznмnэm v prostorovй kapse. Vraќ se do opuљtмnй vesnice a znovu si promluv se ћoldбky.</text>
+	</string>
+	<string id="mil_test">
+		<text>Pomoz</text>
+	</string>
+	<string id="mil_transfer_coo">
+		<text>Odvysнlej souшadnice</text>
+	</string>
+	<string id="mil_transfer_coo_text">
+		<text>Cesta k vysнlaиi je volnб. Vylez na vrchol vмћe a odvysнlej souшadnice, kterй Lesnнk pшipravil pro skupinu ћoldбkщ uvмznмnou v prostorovй kapse.</text>
+	</string>
+	<string id="mil_treasure_weapon_box_descr">
+		<text>Bedna s municн</text>
+	</string>
+	<string id="mil_treasure_weapon_box_name">
+		<text>Bedna s municн</text>
+	</string>
+	<string id="mil_blockpost_task">
+		<text>Promluv si s velitelem stanoviљtм</text>
+	</string>
+	<string id="mil_blockpost_text">
+		<text>Promluv si s velitelem stanoviљtм o situaci v armбdnнch skladiљtнch.</text>
+	</string>
+</string_table>

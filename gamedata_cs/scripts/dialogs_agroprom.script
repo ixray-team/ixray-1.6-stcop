@@ -10,11 +10,13 @@ function transfer_ammo(first_speaker, second_speaker)
 end
 
 function transfer_items_dolg(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "dolg_outfit")
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_abakan_up2")
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_5.45x39_fmj", 3)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_addon_grenade_launcher")
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_vog-25", 5)
+	if not has_alife_info("agr_joined_duty") then
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "dolg_outfit")
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_groza")
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_9x39_pab9", 3)
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_vog-25", 5)
+		db.actor:give_info_portion("agr_joined_duty")
+	end
 end
 
 
@@ -36,7 +38,7 @@ end
 -- transfer mechanic pda
 
 function transfer_mechanic_pda(first_speaker, second_speaker)
-    dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "agr_mechanic_pda")
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "agr_mechanic_pda")
 end
 
 function actor_has_mechanic_pda(first_speaker, second_speaker)
@@ -52,7 +54,7 @@ end
 -- transfer secret trader pda
 
 function transfer_secret_trader_pda(first_speaker, second_speaker)
-    dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "agr_pda_for_secret_trader")
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "agr_pda_for_secret_trader")
 end
 
 function actor_has_secret_trader_pda(first_speaker, second_speaker)
@@ -68,7 +70,7 @@ end
 -- transfer map animals
 
 function transfer_map_animals(first_speaker, second_speaker)
-    dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "agr_map_animals")
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "agr_map_animals")
 end
 
 function actor_has_map_animals(first_speaker, second_speaker)

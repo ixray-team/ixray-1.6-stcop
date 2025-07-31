@@ -6,6 +6,7 @@ level_spot = quest_npc
 path_walk = esc_leader_stalkerbase_walk
 path_look = esc_leader_stalkerbase_look
 on_info = {+esc_mission_2_stalker_leader_complete -esc_com_tell_about_habar} walker@dopros
+on_info2 = {=actor_enemy} walker@4
 meet = meet
 combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
@@ -125,13 +126,27 @@ on_npc_not_in_zone = 408 | esc_space_restrictor_zak | walker@3
 path_walk = esc_leader_stalkerbase_walk
 path_look = esc_leader_stalkerbase_look
 meet = meet
+on_info = {=actor_enemy} walker@4
 def_state_moving = walk
 combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
 invulnerable = true
 out_restr = esc_space_restrictor_in_restr_4
-on_info = %+esc_prisoner_dialog_2%
+on_info2 = %+esc_prisoner_dialog_2%
 on_game_timer = 30 | walker@wait
+
+[walker@4]
+path_walk = esc_leader_stalkerbase_walk
+path_look = esc_leader_stalkerbase_look
+meet = no_meet
+on_info = {!actor_enemy} walker@3
+def_state_moving = walk
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_4
+;on_info = %+esc_prisoner_dialog_2%
+;on_game_timer = 30 | walker@wait
 
 [meet]
 meet_state	= 4| ward@nil

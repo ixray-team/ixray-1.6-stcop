@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hide_from_surge_name">
+		<text>Ukryj siк, aby unikn№ж emisji</text>
+	</string>
+	<string id="hide_from_surge_name2">
+		<text>Poczekaj na koniec emisji</text>
+	</string>
+	<string id="hide_from_surge_text">
+		<text>Biegnij za najbliїsz№ osіonк i ukryj siк, aby unikn№ж emisji</text>
+	</string>
+	<string id="hide_from_surge_text1">
+		<text>Uwaga! Zbliїa siк emisja!!! Szacowany czas do emisji:</text>
+	</string>
+	<string id="hide_from_surge_text2">
+		<text>sek.</text>
+	</string>
+	<string id="sim_bring_item">
+		<text>Dostarcz przedmioty.</text>
+	</string>
+	<string id="sim_bring_item_text">
+		<text>Zanieњ zebrane przedmioty dowуdcy oddziaіu</text>
+	</string>
+	<string id="sim_capture_smart">
+		<text>Zdob№dџ</text>
+	</string>
+	<string id="sim_capture_smart_text">
+		<text>Musisz zdobyж i utrzymaж wskazany obiekt.</text>
+	</string>
+	<string id="sim_capture_wait_smart">
+		<text>Utrzymaj punkt do przybycia pomocy</text>
+	</string>
+	<string id="sim_defend_smart">
+		<text>Broс obozu</text>
+	</string>
+	<string id="sim_defend_smart_delay">
+		<text>Pomуї</text>
+	</string>
+	<string id="sim_defend_smart_delay_text">
+		<text>W okolicy zauwaїono wrogуw. Wkrуtce zaatakuj№.</text>
+	</string>
+	<string id="sim_defend_smart_text">
+		<text>Oddziaі zostaі zaatakowany przez wroga. Pomуї mu w odparciu ataku.</text>
+	</string>
+	<string id="sim_eliminate_smart">
+		<text>Wyeliminuj wrogуw</text>
+	</string>
+	<string id="sim_eliminate_smart_text">
+		<text>Zlikwiduj wrogуw w punkcie kontrolnym</text>
+	</string>
+	<string id="sim_find_upgrade">
+		<text>Odszukaj ulepszenie</text>
+	</string>
+	<string id="sim_find_upgrade_consent">
+		<text>Zgoda?</text>
+	</string>
+	<string id="sim_recover_item">
+		<text>Zwrуж przedmiot:</text>
+	</string>
+	<string id="sim_repeal_counterattack">
+		<text>Odeprzyj kontratak wroga.</text>
+	</string>
+	<string id="sim_take_reward">
+		<text>Odbierz sw№ nagrodк</text>
+	</string>
+	<string id="sim_take_reward_text">
+		<text>Handlarz frakcji ma dla ciebie nagrodк.</text>
+	</string>
+	<string id="st_sim_eliminate_path_smart">
+		<text>Oczyњж drogк</text>
+	</string>
+	<string id="st_sim_eliminate_path_text">
+		<text>Pomуї sojuszniczemu oddziaіowi w przedarciu siк.</text>
+	</string>
+	<string id="st_sim_eliminate_resource_smart">
+		<text>Wyeliminuj wrogуw</text>
+	</string>
+	<string id="st_sim_eliminate_resource_text">
+		<text>Przepкdџ wrogуw z tego obszaru. To ich osіabi.</text>
+	</string>
+	<string id="test_storyline_task_text">
+		<text>Zbliї siк do beczki</text>
+	</string>
+	<string id="tm_random_task_bring_item">
+		<text>tekst domyњlny</text>
+	</string>
+	<string id="stc_kill_gunslinger_name">
+		<text>Dezaktywuj ochronк psioniczn№ Strieloka</text>
+	</string>
+	<string id="stc_kill_gunslinger_text">
+		<text>Pole psioniczne w stacji wykracza poza skalк pomiarow№, ale Strielok dysponuje prototypowym kombinezonem chroni№cym go przed emisjami psionicznymi. Dezaktywuj go, aby powstrzymaж Strieloka. Jego elektronikк rozwalisz dziaіkiem elektromagnetycznym - ostrzelaj z niego Strieloka.</text>
+	</string>
+	<string id="stc_kill_monolith_name">
+		<text>Odszukaj teleport prowadz№cy do ruroci№gu grzewczego</text>
+	</string>
+	<string id="stc_kill_monolith_text">
+		<text>Przestrzeс wokуі stacji peіna jest teleportуw. Aby mуc dalej ostrzeliwaж Strieloka, musisz wrуciж do ruroci№gu grzewczego; odszuka teleport, ktуry doс prowadzi.</text>
+	</string>
+</string_table>

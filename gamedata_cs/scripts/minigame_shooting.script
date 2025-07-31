@@ -28,8 +28,9 @@ function CMGShooting:update(name, sr_called)
 	if(MG_state=="started") then
         local time = time_global()
         if(self.prev_time==0) then
-	        get_console():execute("hud_crosshair 0")
-	        get_console():execute("hud_weapon 0")
+--	        get_console():execute("hud_crosshair 0")
+--	        get_console():execute("hud_weapon 0")
+	        level.show_weapon(false)
 	        level.disable_input()
 	        level.hide_indicators_safe()
 	        local hud = get_hud()
@@ -53,8 +54,9 @@ function CMGShooting:update(name, sr_called)
 			end
 			if(diff_time<=8000) then
 				if(self.ui_disabled) then
-	                get_console():execute("hud_crosshair 1")
-	                get_console():execute("hud_weapon 1")
+--	                get_console():execute("hud_crosshair 1")
+--	                get_console():execute("hud_weapon 1")
+	                level.show_weapon(true)
 	                level.enable_input()
 	                level.show_indicators()
 	                self.ui_disabled = false
@@ -102,8 +104,9 @@ function CMGShooting:update(name, sr_called)
                 cs_shooting_get_ready:wnd():SetTextST(game.translate_string("shooting_round_over"))
 --	            local task = task_manager.get_task_manager():select_task("storyline", "agr_additional_quest_shooting", "dolg")
 --	            task:give_task("dolg")
-                get_console():execute("hud_crosshair 0")
-                get_console():execute("hud_weapon 0")
+--				get_console():execute("hud_crosshair 0")
+--				get_console():execute("hud_weapon 0")
+	            level.show_weapon(false)
                 level.disable_input()
                 level.hide_indicators_safe()
 	            local hud = get_hud()
@@ -120,8 +123,9 @@ function CMGShooting:update(name, sr_called)
                     self.teleported = false
 				else
 					if(diff_time<3000) and (self.teleported) then
-	                    get_console():execute("hud_crosshair 1")
-	                    get_console():execute("hud_weapon 1")
+--	                    get_console():execute("hud_crosshair 1")
+--	                    get_console():execute("hud_weapon 1")
+	                    level.show_weapon(true)
 	                    level.enable_input()
 	                    level.show_indicators()
 		                db.actor:give_info_portion("agr_shooting_door_exit")

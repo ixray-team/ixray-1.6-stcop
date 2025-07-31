@@ -266,7 +266,7 @@ void        tonemap              (out half4 low, out half4 high, half3 rgb, half
 
         high	=		low/def_hdr		;        // 8x dynamic range
 #else
-        low		=       half4           (low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1) ),           0 )	;
+        low		=       half4           ( ( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1) ),           0 )	;
         high	=       half4       	(rgb/def_hdr,   0 )	;		// 8x dynamic range
 #endif
 

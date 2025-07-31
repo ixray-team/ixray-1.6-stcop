@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_freedom_blockpost_robbery_dialog_0">
+		<text>Rendben stalker, maradj veszteg... Ki vagy te, йs mit keresel erre?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11">
+		<text>Valуszнnыleg mбr halott. Azt javaslom ne maradj itt sokбig, hacsak nem szeretnйl csatlakozni hozzб.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1111">
+		<text>Valaki бllandуan megtбmad minket. Igazi profik – esйlyьnk sincs ellenьk. Mi felьgyeljьk az utat egйszen a Sцtйtvцlgyig, de ez nem igazбn zavarja хket. Egyetlen hely van ahol megpihenhetsz: a bбzis. Ha Agyarrуl akarsz kйrdezni, a Szabadsбg bбzisa a legjobb hely.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51">
+		<text>Csak nem megfuttatott az a kutya?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11">
+		<text>Remek volt! Jуl megmutattad azoknak a szemйt mutбnsoknak! Gyere vissza, ha tovбbbi feladatokat szeretnйl.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_21">
+		<text>Hй haver! Mire volna szьksйged?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11">
+		<text>Nos, vйgre szemtхl-szemben is talбlkozunk. A nevem Csehov, йs йn vagyok a fхnцk a kцrnyйken. Az adatok amiket a megtalбlt PDA-rуl letцltцttьnk rбvilбgнtanak nйhбny dologra. A vцlgy minden kijбratбt lezбrtuk, de az хrjбratokat йs az бllomбsokat нgy is folyamatosan tбmadtбk. Nem egyszer a teljes хrjбratozу egysйget lemйszбroltбk. A fiъk mбr arra gondoltak, hogy valahogy megsйrtettьk a Zуnбt, йs ez valamifйle bьntetйs. Mйg azzal is prуbбlkoztunk, hogy talizmбnokat kйszнtettьnk a szellemek ellen... de mint kiderьlt, semmi misztikus nem бll a dolgok mцgцtt – a parancsnok kiadta minden egysйgьnk adatait... Az a patkбny!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111">
+		<text>Nem vбrtam volna tхle, hogy ilyet tesz. Йvek уta ismerem хt. Egyьtt kerestьk az elsх relikviбt, mi tettьk a Szabadsбgot azzб ami! Megbнztam benne. Minden tervьnket ismerte, йs egyszerыen eladott minket...</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111">
+		<text>Amint vettьk a rбdiуadбst az бllomбsrуl, a parancsnok felszнvуdott. Tudta, hogy bajban van. Meg kell talбlnunk. Tъl sokat tud, ha nem mindent. Minden utat хrzьnk ami a vцlgybхl kivezet, ezйrt nem juthatott messzire. Kцvetjьk a PDA-ja helyzetйt – a Kordonhoz vezetх ъt kцzelйben van. Nйhбny egysйgьnk arrafelй tart.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111 ">
+		<text>Igen, volt ott egy ilyen stalker. Nagyon йrdekeltйk a ritka alkatrйszek, йs a hasonlу kьtyьk. Bizonyбra tudta, hogy a Zуnбban nбlunk vannak a legjobb szerelхk. Eladtam neki az alkatrйszt amit kйrt, miйrt is ne tettem volna? Jуl fizetett, йs mйg csak nem is alkudozott. Csak azt nem tudom, hogy mit akar ezekkel a уsdi cuccokkal. Rйgi, katonai kуdfejtх gйpekben hasznбltбk azokat. Rцgtцn elhagyta a bбzist, йs senki sem lбtta хt azуta.  </text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31">
+		<text>Kцszцnjьk a segнtsйget! A tanyбnбl tцrtйnt lцvцldцzйs utбn mбr biztosan tudjuk, hogy a zsoldosok бllnak a tбmadбsok mцgцtt. Ezt tбmasztja alб a parancsnok PDA-ja is. A kйrdйs csak az, hogy mi a fenйt keresnek itt. A zsoldosok mindig semlegesek voltak, йs mindenkivel egyьttmыkцdtek a Zуnбban. Kнvбncsi vagyok, hogy ki volt a munka megrendelхje. Talбn a Szolgбlat... vagy a hadsereg. Tцbb a kйrdйs mint a vбlasz, de a vйgйre jбrok ennek, arra mйrget vehetsz.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_3111">
+		<text>Te elvйgezted a rйszed, ezйrt elmondom amit Agyarrуl tudok. Ritka alkatrйszeket keresett erre, йs igazбn kнvбncsivб tett, hogy mit is akar kezdeni azzal a halom rйgi уcskavassal. Amikor egyenesen rбkйrdeztem, azt mondta, hogy tцrхdjek a magam dolgбval – de pechjйre, йn nem adom fel olyan kцnnyen. Megkйrtem az egyik technikusunkat, hogy tцrje fel a PDA-jбt, нgy nйhбny napig sikerьlt kцvetni, hogy mit csinбl. Ъgy tыnik, a Szemйtdombra ment – йn ott keresnйm. Egyйbkйnt feljegyeztem a PDA-ja frekvenciбjбt, йs mбr бt is tцltцttem a tiйdbe. Mбr jelzi is a helyzetйt.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41">
+		<text>Kйszen бllsz, hogy ъjra segнts a Szabadsбgnak?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111">
+		<text>Mбr sokkal tцbbet tudunk, de a zsoldosok folyamatosan tбmadnak, йs lassan felйljьk az цsszes erхforrбsunk. Йs mйg mindig nem йrtem, hogyan jutnak be a vцlgybe. Minden ъton бllomбsaink vannak. Ъgy tыnik van itt valahol egy alagъt, amirхl nem tudunk. Csak нgy juthatnak be a Sцtйtvцlgybe. Meg kell talбlnunk azt a jбratot, йs fel kell robbantanunk!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_71">
+		<text>Zsoldos, meg kell szereznьnk az antennбk fцlцtti irбnyнtбst!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_51">
+		<text>Kцszцnjьk a segнtsйget! Erre nem szбmнtottam. Tudod, a Zуnбban a legtцbben csak magukkal tцrхdnek. Felteszem, a zsoldosok megkaptбk a magukйt. Az alagъt, amin keresztьl bejutottak a vцlgybe, mбr hasznбlhatatlan. A fiъk a biztonsбg kedvййrt az egйsz helyet нzekre szedik, hogy a tudtunk nйlkьl mйg egy egйr se jцhessen be a vцlgybe. Mйg mindig nem tudjuk, ki bйrelte fel a zsoldosokat a tбmadбsokra, de ъgy йrzem, hamarosan a megbнzу is kйzre kerьl. Na mindegy, itt a jutalmad.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_61">
+		<text>Hй! Mi szйl hozott erre?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111 ">
+		<text>Okй, segнtek neked... ha te is segнtesz nekem. Semmi szemйlyes, de nehйz idхket йlьnk, йs ha a dolgok nem vбltoznak, a Szabadsбgnak nem marad elйg embere, hogy megvйdjйk a bбzist a banditбk tбmadбsaitуl... Segнts rбjцnni, hogy kik tбmadnak minket, йs elmondok mindent Agyarrуl.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_121">
+		<text>Keresd meg a parancsnokot, йs hozd el elйm йlve... vagy halva. Ha megteszed, elmondom, hol talбlod meg Agyart. A parancsnok PDA-jбnak koordinбtбit feltцltцttem a tiйdre.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111 ">
+		<text>Van egy rйgi hбromszцgelх a vцlgyben. Fцldmйrхk йpнtettйk mйg a szovjet idхkben. A hбromszцgelх hбrom antennбbуl бll. Mihelyst mindhбrom antenna be van kapcsolva, ellenхrzйs alatt tudod tartani az egйsz vцlgyet. Ha mыkцdik, rбjцhetьnk, hogy a zsoldosok hogyan jutnak be a vцlgybe.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111 ">
+		<text>Az egyik antenna itt van a bбzison, de a mбsik kettхt elfoglaltбk a zsoldosok. Segнts visszaszerezni az uralmat a mбsik kettх antenna fцlцtt is!</text>
+	</string>
+	<string id="val_arena_master_about_rule_0">
+		<text>Milyen szabбlyok vannak az Arйnбban?</text>
+	</string>
+	<string id="val_arena_master_about_rule_1">
+		<text>Szabбlyok? Ahogy mondani szokбs, cйlozz pontosan, nagyjбbуl ennyi! Meg kell nyerned minden menetet, ez pedig nagyrйszt a szerencsйn mъlik. Mбrmint szьksйged lesz minden szerencsйdre, ha kikapsz egy rozsdбs sцrйtes puskбt, vйdelemnek pedig egy kцtцtt pulcsit, mнg a pasasnak teljes pбncйlzata йs egy akkora stukkere van, ami mйg egy mamutot is leterнtene. Arrуl nem is beszйlve, hogy nйha nem is egy fickу ellen kell kьzdened, hanem kettх vagy akбr hбrom ellen. Ha jelentkezel, annak csak kйt lehetsйges kimenetele lehet. Vagy nyersz vagy pedig egy rothadу hulla leszel, ilyen egyszerы. Ha megnyered az цsszes menetet, kifizetem a jutalmat, de ha kudarcot vallasz, az adуsom vagy! Tehбt, benne vagy?</text>
+	</string>
+	<string id="val_arena_master_comeback_0">
+		<text>Gyere vissza, ha mбr kйszen бllsz!</text>
+	</string>
+	<string id="val_arena_master_darkvalley_0">
+		<text>Hol voltбl mйg a Sцtйtvцlgyцn kнvьl?</text>
+	</string>
+	<string id="val_arena_master_darkvalley_1">
+		<text>Nos, barбtom, ha tйnyleg tudni akarod, йn bejбrtam a Zуna minden zegйt-zugбt! Amennyi szarsбgot йn lбttam... A Zуnбban vбndorolni nem mindig olyan egyszerы, szinte soha az, ami azt illeti. De tйnyleg, senkinek sem kцnnyы itt boldogulnia, hacsak ki nem segнt a Kнsйrх! Hallottбl mбr rуla? Nem? У, цregem, х volt az elsх stalker! A legelsх! Х az elsх ember, aki belйpett a Zуnбba, ezйrt is hнvjбk a Kнsйrхnek! Ъgy ismeri ezt az istenverte helyet, mint a sajбt tenyerйt, йs ha mйg a Zуna бt is alakul egy kisugбrzбs miatt, akkor is gond nйlkьl elvisz oda, ahova csak akarod. Szьletett tehetsйg a fickу, mintha lenne egy hatodik йrzйke vagy mi! A gond az, hogy egyrйszt nehйz megtalбlni, mбsrйszt nem бll szуba akбrkivel, йs csak a fekete stalker tudja, hogy egyeseknek miйrt segнt, mбsokat pedig miйrt utasнt vissza. Arra viszont mйrget vehetsz, ha beleegyezik, hogy elvisz valahova, nyugodt utazбsban lesz rйszed! Engedd el magad, dхlj hбtra, йs йlvezd az utat! Mindenesetre, az hйtszentsйg, hogy szнvesen beszйlnйk vele! Fogadok, hogy mйg azt is tudja, mi van a radaron tъl!</text>
+	</string>
+	<string id="val_arena_master_good_fight_0">
+		<text>Remek harc volt! Itt a pйnzed! Mit szуlnбl mйg egy kis tыzharchoz?</text>
+	</string>
+	<string id="val_arena_master_good_luck_0">
+		<text>Sok sikert, zsoldos!</text>
+	</string>
+	<string id="val_arena_master_loozer_0">
+		<text>Ez pech, pajtбs! Ne aggуdj, legkцzelebb majd tцbb szerencsйd lesz!</text>
+	</string>
+	<string id="val_arena_master_money_back_0">
+		<text>Gyere vissza, amint цsszekapartбl egy kis pйnzt!</text>
+	</string>
+	<string id="val_barmen_about_barmen_0">
+		<text>Hogy lett belхled csapos?</text>
+	</string>
+	<string id="val_barmen_about_barmen_1">
+		<text>Rossz a kйrdйs, tesу. Azt kellene inkбbb kйrdezned, hogy a csapos Gandzsa, a szнvуs Gandzsa, a mindenhol йs mindenkivel bulizу Gandzsa, hogy kцtцtt ki vйgьl a Zуnбban! De erre nem vбlaszolok, tesу. Ez egy szomorъ tцrtйnet, йs йn alapvetхen egy vidбm fickу vagyok. Egyszer csak itt talбltam magam. Ez mбr csak нgy mыkцdik. Magamra maradtam, йs vйgtelenьl magбnyos voltam, tesу. Нgy van, pajtбs, borzalmas volt! De akkor pozitнv energiбkat kezdtem йrezni... egyenesen a Szabadsбgbуl. Rцgtцn tudtam, hogy хk az йn embereim. Vбlaszthattam, de nem voltak tцbbй kйtsйgeim. Vйgre szabad lettem. Mбra jobb йletem van, mint a legtцbb embernek a kinti, хrьlt vilбgban, a Zуnбn kнvьl. Van annyim, hogy igyak, cigizzek, itt van a Zуna йs az emberek, akik tцrtйneteket mesйlnek rуla... A fenйbe, ez a helyi fы szart sem йr!</text>
+	</string>
+	<string id="val_barmen_about_zone_0">
+		<text>Gyerьnk, mesйlj akkor egy tцrtйnetet a Zуnбrуl!</text>
+	</string>
+	<string id="val_barmen_about_zone_1">
+		<text>Testvйrem, megkapsz tхlem mindent, amit csak kйrsz: kenyeret, fьvet, vizet, vodkбt, mйg az eget is! Йs persze informбciуt is. Hegyezd a fьled! A hнrek szerint a Zуna legmйlyйn mйg mindig mыkцdnek titkos laborok. Kьlцnцs, igaz? Hogyan йlhettйk tъl az emberek a kisugбrzбst йs bнrhatjбk йtel vagy energia nйlkьl? Egyбltalбn emberek irбnyнtjбk azokat a laborokat? Цregem, mi van, ha azok valуjбban rideg йs kцnyцrtelen fцldцnkнvьliek? Egy tesу egyszer elmesйlte, hogy elfogta egy labor rбdiуadбsбt, amikor Jantarban volt. Azt mondta, hogy olyan furcsбk йs ijesztхek voltak a hangok, hogy azon nyomban kikapcsolta a kйszьlйkйt. Egy mбsik pasas pedig azt бllнtotta, hogy цsszefutott egy fйlig бtlбtszу lйnnyel, aminek a vйdхfelszerelйse sokkal fejlettebb volt a stalkerekйnйl. Az бtlбtszу valami azt mondta neki, hogy "Tбvozz! Dolgozunk, йs hбtrбltatod a munkбnkat." Бllнtуlag ez kцzvetlenьl a radar mellett tцrtйnt. Azйrt ne higgy el mindent, tesу! De, persze, ki tudja? Talбn a Zуna tйnyleg tiszta energiбvб vбltoztatta azokat az embereket... </text>
+	</string>
+	<string id="val_comendant_about_freedom_0">
+		<text>Csatlakozhatok a Szabadsбghoz?</text>
+	</string>
+	<string id="val_comendant_about_freedom_1">
+		<text>Hбt nem megmondtam? Honnan tudhatnбm, ki vagy igazбbуl? Mi van, ha valaki mбs kьldцtt? Manapsбg mбr nem bнzhatunk senkiben, ъgyhogy nem lйphetsz csak ъgy be... Prуbбra kell tennьnk, meg kell rуla bizonyosodnunk, hogy nem forgatsz semmit a fejedben! Menj бt a prуbбn, csinбlj pбr munkбt a klбnnak, йs majd Csehov eldцnti, hogy kellesz-e a Szabadsбgnak vagy sem!</text>
+	</string>
+	<string id="val_comendant_about_news_0">
+		<text>Mi ъjsбg?</text>
+	</string>
+	<string id="val_comendant_about_news_1">
+		<text>Ma reggel esett, ez elйg nagy ъjsбg? Figyelj, nincs most idхm beszйlgetni, ez tйnyleg nem a megfelelх alkalom! Pбr seggfej sorra цli meg az embereimet, mintha nem lennйnek mбr amъgy is kevesen! Ezйrt megйrtheted, a hнrek megvitatбsa nem igazбn йlvez most prioritбst a teendхim kцzцtt. Rбadбsul honnan tudhatnбm, hogy nem te vagy az egyik szemйtlбda, aki a fiaimat tizedeli? Ha barбti csevelyre jцttйl, rossz helyen kopogtatsz, pajtбs!</text>
+	</string>
+	<string id="val_fixer_about_benefit_0">
+		<text>Valami hasznos tanбcs egy stalkernek?</text>
+	</string>
+	<string id="val_fixer_about_benefit_1">
+		<text>Hasznos? A mi munkakцrьnkben a hasznos az, ami segнt a tъlйlйsben. Vagy pedig, ami megцli az ellensйgedet. Mesйlek neked a relikviбkrуl. Hogy mi az a relikvia? Цsszesыrыsцdцtt rendellenes energiбk, akбr egy leveskocka. Emellett bizonyos relikviбk... ццц... mi is az az бtkozott szу... б, igen... anomбliбkat ge-ne-rбlnak. Azt hiszem, нgy mondta Csehov. Mindegy, a gond az, hogy miutбn a relikvia kibocsбt egy anomбliбt, mбr semmit sem йr. Maga az anomбlia nem tъlsбgosan erхs, mйg csak nem is tart sokбig, de arra jу, hogy feltartуztass vagy lerбzz vele valakit.</text>
+	</string>
+	<string id="val_fixer_about_power_0">
+		<text>Mi a szakterьleted?</text>
+	</string>
+	<string id="val_fixer_about_power_1">
+		<text>Nos, igazбn elememben a konyhбban, villбval a kezemben vagyok. Csak vicceltem, pajtбs! A mesterlцvйsz puskбk szakйrtхje vagyok. Magam is egйsz jуl lцvцk, йs mбsokon is segнtek. Szйpen бtalakнthatom a gйpkarabйlyodat. Ъgy fog tьzelni, mint egy Szpecnaz SVD, miutбn vйgeztem vele. Йs ha szereznйl egy igazi mesterlцvйsz puskбt, у anyбm, az ellensйgednek jу hosszъ kerьlхutat kellene tennie, hogy elkerьljцn, ezt megнgйrhetem! Tovбbbб a pбncйlzatodat is kijavнthatom, ha szьksйges.</text>
+	</string>
+	<string id="val_fixer_about_weapons_0">
+		<text>Kнvбncsi lennйk a tapasztalataidra. Hogy йrdemes fejleszteni a fegyvereket йs a pбncйlzatot?</text>
+	</string>
+	<string id="val_fixer_about_weapons_1">
+		<text>Tapasztalatom az van bхsйgesen. Azt mondom neked: ne prуbбlj meg mindent egyszerre fejleszteni! Ha azt akarod, hogy neked legyen a legnagyobb tыzerejы stukkered, ami emellett a legpontosabb is, ki kell бbrбndнtsalak! Tegyьk fel, ha egyszer nцveled a fegyvered becsapуdбsi sebessйgйt, akkor legkцzelebb is azt nцveld, mert egyes fejlesztйseket nem lehet eltбvolнtani. Ha ъgy dцntesz, hogy mesterlцvйsz puskбt akarsz kйszнteni a megnцvelt tыzerejы fegyveredbхl, mбr tъl kйsх lesz, ezйrt elхre kell gondolkodnod, mйghozzб jуl!</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_11">
+		<text>Mi ъjsбg?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_0">
+		<text>Van valami munka?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_1">
+		<text>Nйhбny napja kьlцnцs fйnyek szыrхdnek ki estйnkйnt a benzinkъt elhagyatott йpьletйbхl. Persze, lehet csak cigarettбztak vagy fбklyбk voltak. Mi lenne, ha megnйznйnk? Ъgy йrtem, ha valamifйle gonosz, azt tudjuk kezelni, de ha azok a rohadйkok a Szemйtdombrуl, akkor нgy is, ъgy is le kell rendeznьnk хket... </text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_11">
+		<text>Rendben, megyek йs megnйzem!</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_12">
+		<text>Nem йrdekel.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_2">
+		<text>Szуval, mi volt a benzinkъtnбl?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_21">
+		<text>Fosztogatуk, szerintem, tйged figyeltek. Elsхre nem igazбn voltak barбtsбgosak, de sikerьlt lecsillapнtanom хket.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_212">
+		<text>Hбt ez furcsa. Mindegy, itt a jutalmad! Kцsz mйg egyszer!</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_213">
+		<text>Ha lбtnбl mйg szellemeket, szуlj csak nyugodtan.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_214">
+		<text>Volt valami nбluk, tessйk, nйzd meg!</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_215">
+		<text>Nagyon йrdekes. Mutasd meg ezt a PDA-t Sukinnak! Biztos йrdekli majd, hogy a fosztogatуk informбciуkat gyыjtцttek.\n</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_22">
+		<text>Amekkora ott a radioaktivitбs, nem csodбlnбm, ha nemsokбra egy kis, zцld emberke lenne belхlem.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_3">
+		<text>Nem.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1">
+		<text>Zsoldos vagyok. Egy Agyar nevы stalkert keresek.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_111">
+		<text>Halott? Mi folyik itt?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11111">
+		<text>Kцszцnцm az informбciуt!</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_21">
+		<text>Tыnj a szemem elхl!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11">
+		<text>Rossz helyet vбlasztottбl a napi sйtбdhoz, pajtбs! Hбt nem tudod, hogy йjt nappallб tйve tбmadnak minket? Mбr a bбzisunkon mбszkбlni sem egy йletbiztosнtбs, de a Szabadsбgos kabбt kйt lбbon cйlpontot csinбl belхled...</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111">
+		<text>Egy Agyar nevы stalkert keresek. Hallottбl rуla?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111">
+		<text>Szemйlyesen nem ismerem. Nйhбny nappal ezelхtt jбrt itt egy csцves. A fхnцkkel ьzletelt valamit, nйgyszemkцzt, termйszetesen. Akбr a te embered is lehetett, de tйnyleg nem tudom.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111">
+		<text>Lбthatnбm a Szabadsбg vezetхjйt?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111">
+		<text>Цregem, te aztбn nem vagy szнvbajos!... Figyelj ide, amнg нgy el vagyunk zбrva, felejtsd el, hogy talбlkozol a fхnцkkel! Hiszen csak egy zsoldos vagy. Most, hogy mondod... ha megteszel nekem egy kis szнvessйget, szуlok pбr szуt az йrdekedben a nagy embernйl. Na, mit mondasz? </text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111111">
+		<text>Rendben, mi a feladatom?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111111">
+		<text>Egy pszeudo-kutya garбzdбlkodik nem messze a bбzistуl, йs pokollб teszi az йletьnket! Ha egyszer megйrzi a fхtt йtel illatбt a bбrban, bъcsъt mondhatsz az йletednek! Egyre nyugtalanabbak az emberek. Intйzd el nekьnk ezt a kis problйmбt, йs amikor visszaйrsz, rбtйrьnk a komolyabb dolgokra!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111111">
+		<text>Vedd ъgy, hogy kйsz!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_511">
+		<text>Nem szбmнt. Lбbjegyzet: a szцrny halott.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_5111">
+		<text>Jуl van! A kцvetkezх feladatod mбr egy kicsit nehezebb lesz. Jуl figyelj! Lхszert kell vinnьnk a tбvoli helyхrsйgen бllomбsozу srбcoknak! Menj egyenesen Asothoz, х majd elmondja, hogy pontosan mit йs hova vigyйl!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51111">
+		<text>Йrtettem!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_512">
+		<text>Ne most!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_61">
+		<text>Mбr mondtam, keresd meg Asotot!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_611">
+		<text>Йg veled!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_71">
+		<text>Mйg mindig itt vagy? Hбt nem megmondtam, hogy minden perc szбmнt? Irбny a helyхrsйg! Most!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_711">
+		<text>Йg veled!</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_11">
+		<text>Hъzz el! Ha van valami kйrdйsed, beszйlj a parancsnokkal!</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_111">
+		<text>Йg veled!</text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_11">
+		<text>Mit csinбlsz te itt? Bбrmelyik percben tбmadhatnak. Rohanj a bбzisra, йs mondd meg a parancsoknak, hogy fogytбn a lхszerьnk! Mondd meg neki, hogy kьldjцn mйg!</text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_111">
+		<text>Йg veled!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11">
+		<text>Hellу, zsoldos! Van kedved egy kis pйnzt keresni?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_111">
+		<text>Mindig.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1111">
+		<text>Egy barбtom megнgйrte, hogy elhoz nekem pбr ritka бbrбt, de nem йrkezett meg a bбzisra. Azуta senki nem lбtta, de mindenkйppen szьksйgem lenne rбjuk, mйghozzб napfelkelte elхtt! Az idх pйnz, gondolom, megйrted! Szуval, segнtesz?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11111">
+		<text>Persze!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11112">
+		<text>Nem.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1112">
+		<text>Lenne egy sьrgхs munkбm, amit diszkrйten kellene megoldani, szemtanъk nйlkьl, ha йrted, mire gondolok! Gyere vissza, ha mбr besцtйtedett, tizenegy kцrьl!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11121">
+		<text>Rendben!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_112">
+		<text>Kцsz, de nem!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_12">
+		<text>Szeretnйl gazdag lenni?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21">
+		<text>Sikerьlt megszerezni?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_211">
+		<text>Itt vannak, de a barбtodat elfelejtheted, a vйrszнvуk reggelije volt.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2111">
+		<text>Szegйny цrdцg! Mindenesetre, itt a jutalmad!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21111">
+		<text>Ha lesz mйg egy kis kцltхpйnzed, csak szуlj!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_212">
+		<text>Lassan a testtel, mйg nincs meg!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2121">
+		<text>Reggelig vбrok, de siess!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21211">
+		<text>Rendben!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_31">
+		<text>Hellу!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_311">
+		<text>Йg veled!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_41">
+		<text>Mбr mondtam, gyere vissza, amint besцtйtedett!</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_51">
+		<text>Elkйstйl! Нgy mбr nem fizet az ьgyfelem.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_511">
+		<text>Picsбba!</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_0">
+		<text>Mit csinбl pontosan a klбnod?</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_1">
+		<text>A Klбnunk a Zуnбban йl йs tanulmбnyozza azt, gyakorlatias йrtelemben. Ъgy hiszem, hogy a Zуna egy hihetetlen tudomбnyos lehetхsйg az egйsz emberisйg szбmбra. Szбmos йve mбr, hogy a Zуna relikviбkat hoz lйtre, amik fantasztikus kutatбsi anyagok, rбadбsul naprуl napra egyre tцbb lesz belхlьk. Ami az anomбliбkat illeti, laborokban lehetetlen reprodukбlni az бltaluk lйtrehozott kutatбsi feltйteleket. Biztos vagyok benne, hogy nйhбny йv mъlva hatalmas elхrelйpйs lesz a tudomбnyban йs az emberi йrtelem egyйb terьletein, kцszцnhetхen az itteni kutatбsunknak. Ezt az elхrelйpйst pedig mindenki йrzйkelni fogja... mйg azok is, akiknek a legkцzelebbi kapcsolata a tudomбnnyal йs a technolуgiбval a mobil telefonjuk!</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_0">
+		<text>Miйrt utбljбtok annyira a Szolgбlatot?</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_1">
+		<text>Utбljuk? Az nem kifejezйs! Semmi kцzцs nincs bennьnk, йs vйlemйnyem szerint, a Zуna elleni viaskodбsukkal csak maguk alatt vбgjбk a fбt. Nйzd csak meg a bizonyнtйkokat! Akбrhol is indнt keresztes hбborъt a Szolgбlat a Zуna ellen, ott egyre tцbb йs tцbb mutбns, illetve anomбlia jelenik meg. Ahelyett, hogy tanulmбnyoznбk йs megprуbбlnбnak egyьtt йlni vele, a Szolgбlat mйg csak tetйzi a bajt. Minйl nagyobb csapбst mйrnek a Zуnбra, az annбl nagyobb erхvel tбmad vissza. Ha ez нgy folytatуdik, elkerьlhetetlen lesz egy katasztrуfa, az pedig mindannyiunk vйgйt jelentenй. Rцviden, a Szolgбlat egy idiуta bunkуkbуl бllу frakciу, akik nem hallanak, йs nem lбtnak semmit, йs csak annyit tudnak, hogy kell meghъzni a ravaszt! Gyakorlatilag a megйrkezйsьnk уta harcolunk egymбssal, йs elхbb vagy utуbb csak egy frakciу fog maradni!</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_0">
+		<text>Tudsz valami йrdekeset a Zуnбrуl?</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_1">
+		<text>Nйhбny perc nem elйg arra, hogy mindent elmondjak neked, amit tudok. Pйldбul egy terьlet, ahol kнsйrleteket vйgzьnk, a stalkerek, akik intuitнv kapcsolatban бllnak a Zуnбval. Soha nem hordanak maguknбl elektronikai felszerelйseket vagy fйm fegyvereket. Sхt szerintьk a Zуnбt kifejezetten irritбljбk a fegyverek йs az elektronikбk, ezйrt is kьld szцrnyeket, hogy megtбmadjбk ezeket az embereket йs ezйrt бllнt anomбliбkat az ъtjukba. Ъgy vйlik, hogy a Zуnбban valу boldogulбshoz csak йs kizбrуlag a sajбt ьgyessйgьnkre kell tбmaszkodnunk. Szinte mindannyiukat megfertхzte valamilyen szinten a Zуna, de tъlйltйk, sхt mйg kьlцnleges kйpessйgekre is szert tettek. Nйhбnyuk цsztцnцsen tud navigбlni halбlos anomбliбk kцzцtt, mбsok a legeltorzultabb erdхbхl is gond nйlkьl kijutnak, sхt mйg olyanokrуl is hallottam, akiktхl tбvol maradnak a szцrnyek. Azt beszйlik, hogy az egyik ilyen fickу Agropromban telepedett le.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111">
+		<text>Szerencsйtlenьl alakultak a dolgok.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111">
+		<text>Йs most hol van a parancsnok?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111">
+		<text>Ъgy hallottam, hogy itt jбrt egy Agyar nevы stalker.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111">
+		<text>Igen, volt itt egy ilyen nevы ember. Ritka alkatrйszek, meg hasonlуk йrdekeltйk. Biztos tudta, hogy nekьnk vannak a legjobb technikusaink az egйsz Zуnбban, нgy hбt eladtam neki az alkatrйszt, amit kйrt, йs miйrt ne tettem volna? Azonnal fizetett, mйg csak nem is alkudozott. Bбr azt nem tudom, hogy mit akar vele kezdeni. Ezeket az alkatrйszeket a hadsereg hasznбlta a rйgi kriptogrбfiai gйpekben... Miutбn odaadtam neki az alkatrйszt, egybхl elhagyta a bбzist, azуta nem is lбttam.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111111">
+		<text>Van valami sejtйsed, hogy hova mehetett Agyar?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111">
+		<text>Segнtek neked, de elхbb tegyйl meg nekem egy szнvessйget! Ne neheztelj rбm йrte! Egyre kilбtбstalanabb helyzetben vagyunk. Ha ez нgy folytatуdik, nem marad senki, aki megvйdhetnй a bбzist a fosztogatуktуl... Segнts kiderнteni, hogy ki tбmad minket, йs elmondom, hol talбlod Agyart!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_12">
+		<text>Megegyeztьnk! Mit kell tennem?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1211">
+		<text>Бll az alku!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_21">
+		<text>Ide figyelj, zsoldos, egy szуt sem szуlok addig Agyarrуl, amнg ki nem derнtem, hogy pontosan ki йs honnan tбmad minket!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_311">
+		<text>Szуval, mi van Agyarral?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31111">
+		<text>Kцszцnцm az informбciуt!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411">
+		<text>Kйszen бllok!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111">
+		<text>Lehetetlen megtalбlni, hogy honnan jutnak be a zsoldosok! A Vцlgy hatalmas! Mintha egy tыt keresnйl a szйnakazalban.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111">
+		<text>Van egy hбromszцgelх a Vцlgyben, fцldmйrхk йpнtettйk mйg a szovjet idхkben. Цsszesen hбrom antennбbуl бll. Amint mind a hбrmat aktivбlod, virtuбlisan бtfйsьlheted a vцlgy teljes felszнnйt. Ha mыkцdik, lбtni fogjuk, pontosan, hogy jutnak be a zsoldosok.\n</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111111">
+		<text>Mit kell tennem?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111">
+		<text>Az egyik antenna itt van a bбzison, a mбsik kettх viszont a zsoldosok kezйn van. Segнts nekьnk elfoglalni хket!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111111">
+		<text>Бll az alku!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_412">
+		<text>Majd mбskor.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4121">
+		<text>Hбt... akkor sok sikert, stalker!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_511">
+		<text>Йg veled!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_711">
+		<text>Rendben!</text>
+	</string>
+	<string id="val_freedom_leader_join_first_0">
+		<text>Szeretnйk csatlakozni hozzбtok!</text>
+	</string>
+	<string id="val_freedom_leader_join_first_1">
+		<text>Tudod, felvйtel elхtt le kellene ьlnьnk egy kicsit beszйlgetni, hogy jobban megismerjьnk... Erre viszont most egyбltalбn nincs idхm, йs amнg nem tudok valamit tenni az embereimet йrt tбmadбsok ellen, ez nem is fog vбltozni. Segнts nekem, йs visszatйrьnk rб!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_0">
+		<text>Csatlakozni szeretnйk a Szabadsбghoz! Eleget tettem mбr йrte?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_1">
+		<text>Talбn igen, talбn nem... Addig viszont nem veszьnk be, amнg meg nem szыnnek a tбmadбsok a fiaim ellen! Segнts nekьnk, йs visszatйrьnk rб!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_2">
+		<text>Hбt persze! Ki tudja, nйlkьled hбny emberьnk halt volna meg? De egyelхre mйg nem vehetlek fel. Ne kйrdezd, miйrt... mondjuk ъgy, hogy babonбbуl. Elйrkezik mйg viszont az az idх, amikor tбrt karokkal fogunk vбrni. Akkor pedig kapcsolatba lйpek veled. Remйlem, nem gondolod meg magad addigra!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_3">
+		<text>Ъgy lбtom, szabad stalker vagy. Nos, a legtцbb emberьnk korбbban szintйn stalker volt. A frakciуink sokban egyeznek... de azйrt vannak kьlцnbsйgek is. Meg kell йrtened, ha csatlakozol a Szabadsбghoz, elveszнtesz mindent, amit a stalkereknйl elйrtйl! Kйsz vagy meghozni ezt az бldozatot?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_4">
+		<text>Javнts ki, ha tйvednйk, de te nem Jуga egyik embere vagy? Ezt nevezem... ritkбn lбtni olyan fosztogatуt, aki a Szabadsбg oldalбn szeretne harcolni. De persze, ha tйnyleg ezt szeretnйd, felkйszьltйl, hogy tiszteld mбsok szabadsбgбt, йs eljuttatod a Zуna ajбndйkait az emberisйgnek... Szнvesen lбtunk. Termйszetesen, ha fel is veszьnk, meg kell нgйrned, hogy tцbbet nem ьzletelsz Jуgбval! Megegyeztьnk?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5">
+		<text>Ostoba kйrdйs, цregem! Цrьlnйk neki, ha egy hozzбd hasonlу igazi fйrfi a csapatom tagja lenne! Szуval, ha komolyan gondolod, akkor persze!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51">
+		<text>Komolyan gondolom.  Vйgre magamba szippanthatom a Szabadsбg йdes levegхjйt!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511">
+		<text>Йlvezd ki, testvйrem, de ne feledd: a szabadsбg csak egy szьksйglet! Tisztбban vagy a hiedelmeinkkel?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5111">
+		<text>Az lenne a legjobb, ha elmondanбl mindent, hбtha kimaradtam valamibхl.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51111">
+		<text>Tiszteljьk harcosaink йs mбs stalkerek szabadsбgбt, йs hisszьk, hogy a Zуna, mint az emberisйg legnagyobb ajбndйka, mindenki szбmбra elйrhetх! Egy hatalmas elхrelйpйs lehetхsйgйt hordozza magбban, egy lehetхsйget mindannyiunk szбmбra. A Szolgбlat el akarja pusztнtani a Zуnбt, hogy kisajбtнtsa titkait. Meg kell бllнtanunk хket! Elsхdleges feladatunk, hogy harcoljunk ellenьk!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511111">
+		<text>Йrtem!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5112">
+		<text>Hбt persze!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51121">
+		<text>Nos, akkor ettхl a pillanattуl fogva kцzйnk tartozol. A Szabadsбg bбzisa az ъj otthonod. Feltцltцk egy dekуdolуt a PDA-dra, amivel foghatod a Szabadsбg egysйgeinek йs harcosainak rбdiуьzeneteit. Valamint a taktikai szekciуban megnйzheted a Szolgбlattal folytatott harcunk jelenlegi helyzetйt.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511211">
+		<text>A Szolgбlat napjai meg vannak szбmlбlva... Mindenkivel megismertetem a szabadsбgot!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_52">
+		<text>Бtgondolom.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_0">
+		<text>A csapos tanбcsolta, hogy mutassam meg neked ezt a PDA-t.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_1">
+		<text>У, igen! Rйgуta gyanнtottam, hogy a fosztogatуknak a bбzisunkra fбj a foga. Szйp munka volt, testvйr! Tessйk, itt a jutalmad!</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_11">
+		<text>Йg veled!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111">
+		<text>A parancsnok kьldцtt a lхszerйrt.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111">
+		<text>У, vйgьl csak talбlt egy hхst...</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11111">
+		<text>Hхst?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111111">
+		<text>Igen, mert az emberek nem merik kitenni a lбbukat a bбzison kнvьlre. Kйt nap alatt hбromszor tбmadtбk meg az бllбsainkat, tцbb mint tizenцt emberьnk halt meg, йs senki sem tudja, hogy ki йrte a felelхs. Bбrkik is legyenek... mindig egy lйpйssel elхttьnk jбrnak. Mindig pontosan tudjбk, hol lesz az osztagunk, a tervьket pedig hajszбlnyi pontossбggal hajtjбk vйgre. Csak arra tudok gondolni, hogy valaki kцzьlьnk segнt nekik... de hagyjuk! Itt a csomag, йs feltцltцttem a PDA-dra a koordinбtбkat. Kйz- йs lбbtцrйst!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111111">
+		<text>Йg veled!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_12">
+		<text>Semmisйg.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_31">
+		<text>Hй, pajtбs! Rohanj azonnal a helyхrsйgre! A srбcok nem hъzzбk mбr sokбig lхszer nйlkьl!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_311">
+		<text>Йg veled!</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_0">
+		<text>Van valami munkбd?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_1">
+		<text>A bбzist folyamatosan tбmadбs alatt tartjбk a mutбnsok. Az odъjuk a kцzelben van, pusztнtsd el! Remйlhetхleg, ez majd visszaszorнtja хket egy ideig!</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_11">
+		<text>Rendben!</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_12">
+		<text>Ezt a munkбt nem nekem talбltбk ki.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_2">
+		<text>Elintйzted a mutбnsokat?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_21">
+		<text>Vйgeztem velьk.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_211">
+		<text>Itt a jutalmad.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_22">
+		<text>Nem.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_221">
+		<text>Hбt, az nem jу! Gyere vissza, ha mбr kifьstцlted a malackбkat!</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_3">
+		<text>Nem.</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_1">
+		<text>У, testvйrem! Tudod, a Szabadsбg lйnyege, nos, megszabadulni minden kцtelezettsйgtхl. Mindenki azt csinбl, amit csak akar. Relikviбkat szeretnйl gyыjteni? Csak nyugodtan! Esetleg kereskednйl? Az is rendben van. Akбr mйg egy sakk klubot is alapнthatsz, ha йppen ahhoz йrzel kedvet. Szabбlyaink lйnyege, hogy nincsenek korlбtok... amнg meg nem sйrted a Szabadsбg tagjainak jogait. Mi nem egyszerыen egy frakciу vagyunk, hanem a szabad stalkerek kommunбja, testvйr. Vannak harcosaink, de mыvйszeink is. A mйrnцkeink pedig a legkivбlуbbak a Zуnбban, ezt bбrki megmondhatja!</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_111">
+		<text>Ez az йlet, testvйr... Nekьnk, akik йrtйkeljьk a szemйlyes szabadsбgot, йs nem akarjuk, hogy az йletьnket nйhбny цltцnyцs fazon irбnyнtsa, цssze kell tartanunk a tъlйlйshez! Csak нgy mыkцdhet. A kinti hatalmassбgok nem akarjбk megvetni a lбbukat a Zуnбban. Ez pedig megadja nekьnk mindazt a teret, amire csak szьksйgьnk van!... Olyan emberek йlnek itt, akik nem talбltбk meg helyьket a mбsik vilбgban.</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_1">
+		<text>Testvйr, a Zуna az йgiek ajбndйka! Az emberisйget kialakulбsa уta kьlцnfйle betegsйgek sъjtjбk. Most pedig nйzd csak, micsoda lehetхsйgek бllnak elхttьnk! Vegyьk pйldбul ezeket a sebgyуgyнtу relikviбkat. Forradalmasнtani fogjбk az orvostudomбnyt! Йs mi van a relikviбkkal, amik ellentmondanak a gravitбciу tцrvйnyeinek йs a mбgneses mezх elmйletйnek? Eddig egyetlen pici kнsйrlethez йvekig tartott felйpнteni egy gyбrat, igaz? De most, a Zуna olyan, mint egy kйszre gyбrtott, kьltйri laboratуrium, amirхl a kutatуkцzpontok eddig mйg csak бlmodni sem mertek!</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_111">
+		<text>Persze, hogy veszйlyes! Akбrcsak a tыz, mйgis hasznбljuk, nem igaz? ... Hiszem, ha megtanuljuk rendesen kihasznбlni a Zуnбban rejlх lehetхsйgeket, vйgre a helyes irбnyba terelhetjьk az emberisйg jцvхjйt. Pontosan emiatt kьzdьnk azйrt, hogy szabad bejбrбs legyen a Zуnбba. Hiszen ez kцztulajdon, nem engedhetjьk meg, hogy egy aprу kis csoportosulбs йrdekeit szolgбlja!</text>
+	</string>
+	<string id="val_pressman_nickname_0">
+		<text>Honnan kaptad az "Ъjsбgнrу" becenevet?</text>
+	</string>
+	<string id="val_pressman_nickname_1">
+		<text>Ez egy rйgi tцrtйnet. Valaha ъjsбgнrу voltam, mйghozzб nem is rossz. Egy vezйrcikk йrdekйben jцttem a Zуnбba, hogy нrjak az itt бllomбsozу katonбk nehйz kцrьlmйnyeirхl. A hadsereg egy egйsz йjjelen бt tartу ivбszattal kцszцntцtt, amit, ццц, mondjuk ъgy, hogy egy йjszakai szafari kцvetett. Magбra az ъtra viszont mбr nem emlйkszem. Finoman szуlva, kicsit becsнptem, de legalбbb egy-kйt kйpet sikerьlt itt-ott csinбlnom. Egy bizonyos ponton egyszer csak kidхltem, mire felйbredtem, mбr reggel volt. Egyedьl fekьdtem a fцldцn, kцzvetlenьl mellettem pedig egy autуnyom vйgzхdцtt... Valaki nyugodtan kocsikбzott, йs akkor "bumm!", filmszakadбs. A tбskбm йs az irataim eltыntek... gondolom, a Zуna kedvelhetett, mert kйsхbb sikerьlt ismйt emberekbe botlanom. Csak йppen ez most egy mбsik csapat volt, akik bezбrtak egy alagsorba, mondvбn, hogy illegбlisan lйptem be a zуnбba, йs elkйpzelhetх, hogy fertхzцtt vagyok, ъgyhogy csak ьljek nyugodtan, amнg ki nem talбlnak valamit! De egy kis zцldhasъйrt cserйbe elengednйnek. Jу pбr napot eltцlthettem mбr abban az alagsorban, amikor Ashot megйrkezett йs megvбsбrolta a szabadsбgomat. Most a Szabadsбg embere vagyok, йs йletem vйgйig hбlбs leszek Ashotnak! Sok mindenen keresztьlmentьnk mi mбr ketten, a dolgok, amiket lбttunk... йs csak imбdkozni tudok Istenhez йs a Zуnбhoz, hogy mйg tцbbet lбthassunk, mielхtt vйgleg lejбrna az idхnk!</text>
+	</string>
+	<string id="val_pressman_story_0">
+		<text>Hallottбl valami йrdekeset?</text>
+	</string>
+	<string id="val_pressman_story_1">
+		<text>Nem tudom, hogy hallottad-e, de ъj mutбnsok kezdtek feltыnni a Zуnбban. Tudod, miйrt? Nos, bizonyos helyeken egy ъjfajta anomбlia ьtцtte fel a fejйt. Minden йlхlйny, ami belemegy egy ilyenbe, megvбltozik, talбn mйg бt is alakul. Ami йrdekes, hogy eddig egyetlen бtvбltozбs sem bizonyult halбlosnak. Talбn valуjбban nem is halбlosak. Ha egy embert beszнv egy ilyen anomбlia, a lйtrejцtt lйnynek tovбbbra is megmarad a tudatбnak egy rйsze. Kйpzeld csak el, amint egyedьl sйtбlgatsz, йs hirtelen elхbъjik a bokorbуl egy szцrny. Honnan tudhatnбd, hogy nem egy emberi lйny volt az, akinek szьksйge volt a segнtsйgedre? Ezйrt is van, hogy ezek az ъj mutбnsok nem йlnek sokбig... бltalбban az elsх stalker, akivel цsszefutnak, gondoskodik rуla, hogy нgy legyen.</text>
+	</string>
+	<string id="val_questman_about_zone_0">
+		<text>Tudsz valami йrdekeset a Zуnбrуl?</text>
+	</string>
+	<string id="val_questman_about_zone_1">
+		<text>Az embereket sok mindent beszйlnek. Mйg olyanok is vannak, akik szerint minden, ami a Zуnбban tцrtйnik йs maga a Zуna is a fцldцnkнvьliek mыve. Az elmйletьk az, hogy itt hagytak egy modult, a Fekete Monolitot, valahol a terьlet kцzepйn, йs az megvбltoztatott mindent. Egyfajta globбlis kнsйrlet az emberisйgen. Tudod, olyan ez nekik, mint egy fegyvertesztelх intйzmйny. A stalkerek relikviбkat gyыjtenek, eladjбk хket, ami azt jelenti, hogy kцrьlbelьl mбr minden nagyobb kutatуkцzpontnak van pбr darabja. Йs pontosan нgy nцveli a befolyбsбt a Fekete Monolit a vilбgban. Senki sem tudja, hogy milyen kцvetkezmйnyei lesznek ennek. Talбn a relikviбk csak dнsztбrgyak vagy tйnyleg hatбssal vannak valahogy az emberekre? Lehet, hogy ez az elmйlet csak egy nagy humbug, de ki mernй azt бllнtani, hogy a Zуna ok nйlkьl terjeszti a relikviбkat? Bбrcsak vбlaszt kaphatnбnk a kйrdйseinkre azoktуl, akik azon az бtkozott radaron tъl йlnek! Elmondhatnбk, hogy tйnyleg van-e egy Monolit kцzйpen vagy sem, az sok mindent tisztбzna.</text>
+	</string>
+	<string id="val_questman_dissatisfied_0">
+		<text>Mitхl vagy ilyen gondterhelt?</text>
+	</string>
+	<string id="val_questman_dissatisfied_1">
+		<text>Mйgis mitхl kellene nyugodtnak lennem, mi? Szнvesen megnйznйm, hogy mennyire хriznйd meg a jуkedvedet, ha egy kйt lбbon jбrу cйlpont lennйl egy vйdelem nйlkьli bбzison! Tudod te egyбltalбn, hogy mйg mi mindent kellene itt csinбlnunk? Erхsнtйsek, йpнtkezйsek... De a nagykutyбknak persze nincs rб idejьk. Vajon mйgis, mit gondolnak? A pokolba, mбr azt sem tudom, hogy gondolkodik-e itt egyбltalбn valaki! Йs kьlцnben is a lehetх legszarabb helyen vagyunk, tбvol minden fontosabb pozнciуtуl! Цregem, sьrgхsen fel kellene javнtanom ezt a szemйtdombot, de aligha fogjбk megengedni.</text>
+	</string>
+	<string id="val_trader_about_freedom_0">
+		<text>Hogy йrzed magad a Szabadsбgban?</text>
+	</string>
+	<string id="val_trader_about_freedom_1">
+		<text>Jуl, nagyon jуl! Kнvбnni sem tudnйk jobb otthont, цregem! Tudod, soha nem voltak testvйreim, de ezen a helyen szinte mindenki a testvйrem, a tцbbiek pedig megbнzhatу barбtok, akikre bбrmikor szбmнthatok. Segнtenek nekem, йn segнtek nekik. Tudod, йn kereskedх vagyok, нgy rengeteg informбciуhoz jutok a Zуnбrуl, ami azt illeti, tцbbet tudok a legtцbb veterбnnбl. Ezek az informбciуk pedig nem egyszer megmentettйk mбr az itteni srбcok йletйt.</text>
+	</string>
+	<string id="val_trader_about_said_0">
+		<text>Hallottбl mostanбban valami йrdekeset?</text>
+	</string>
+	<string id="val_trader_about_said_1">
+		<text>Valami йrdekeset? Jуl van, elmondok akkor egy kis esti mesйt az бlmokrуl. Prуbбltбl mбr a Zуna mйlyйn aludni? Nos, azt javaslom, ne is prуbбld ki, mert minden kйpzeletet felьlmъlу szцrnyыsйgekrхl бlmodnбl! Hallottam is ezzel kapcsolatban nйhбny tцrtйnetet. Egy fickуnak megrepedt a szнve, mikцzben aludt. Micsoda borzalmas halбl! Egy mбsik pasas bбr felйbredt, de teljesen megtйbolyodott. Azуta mбst sem csinбl, csak valamilyen sцtйt stalkerek elхl bujkбl. Hбt ennyi lett volna! Ha mбr mindenkйppen aludni akarsz, szьksйged lesz egy speciбlis sisakra, aminek van egy vйkony drуtrбcs a belsejйben. Бllнtуlag minden katonai stalkernek ilyen van йs ъgy alszanak, mint a bunda!</text>
+	</string>
+	<string id="val_trader_where_manufactured_0">
+		<text>Honnan szerzed az бrudat?</text>
+	</string>
+	<string id="val_trader_where_manufactured_1">
+		<text>Megvannak a magam szбllнtуi, de ezt az informбciуt nem бrulom el csak ъgy bбrkinek. Нgy is van elйg bajom. A jуindulatom fogja egyszer a vesztemet okozni. Kedves vagyok az emberekhez, udvarias az ьgyfelekhez, a boltom vбlasztйka pedig jobb, mint egy бruhбzй. Rбadбsul az бraim is alacsonyak, akбr egy mбjusban tartott tйli vбsбrй. Egyszуval nйpszerы kereskedх vagyok a Zуnбban. De nem mindenki kцrйben. A Kidбlj testvйrek a feketepiacrуl felraktak a feketelistбjukra, csak azйrt, mert a konkurenciбjuk vagyok. Tudod, mennyi vйrdнjat tыztek ki a fejemre? Annyi pйnzbхl egy teljes йvig, minden este ъj lбnnyal nyaralhatnбl. Persze, nйhбny itteni fickуnak megtetszett a Kidбlj fiъk ajбnlata... хk a keselyыk martalйkбvб vбltak. A fiъk megvйdenek engem, azйrt nem vagyok teljesen tehetetlen.</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_0">
+		<text>Mizujs, haver?</text>
+	</string>
+	<string id="val_freedom_barmen_name">
+		<text>Gandzsa</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_0">
+		<text>Voltam a benzinkъtnбl. Fosztogatуk szбlltбk meg azt a helyet, йs mintha figyelnйnek titeket.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_1">
+		<text>Nahбt, pedig mбr azt hittem, hogy ennйl rosszabb nem lehet, de lбss csodбt, most mбr a fosztogatуk is terveznek ellenьnk valamit! Bбrhogy is legyen, itt a jutalmad, йs kцszцnцm a kemйny munkбd!</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_11">
+		<text>Ha lenne mйg valami, amit el kellene intйzni, csak szуlj!</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_12">
+		<text>Ilyen aprу csecsebecsйket hordanak magukon. Talбn azok йrdekelnek majd.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_121">
+		<text>Nagyon jу! A fosztogatуk a PDA-jukra gyыjtцttйk az informбciуkat. Mutasd meg Csehovnak, хt biztosan йrdekelni fogja!</text>
+	</string>
+</string_table>

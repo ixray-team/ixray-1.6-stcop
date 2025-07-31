@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_additional_quest_1_name">
+		<text>Odszukaj іup martwego stalkera</text>
+	</string>
+	<string id="agr_additional_quest_1_text">
+		<text>Odszukaj іup martwego stalkera</text>
+	</string>
+	<string id="agr_additional_quest_3_name">
+		<text>Odszukaj zaginionego stalkera</text>
+	</string>
+	<string id="agr_additional_quest_3_text">
+		<text>Odszukaj zaginionego stalkera</text>
+	</string>
+	<string id="agr_at_blokpost_name">
+		<text>Pomуw z przywуdc№ frakcji Powinnoњж</text>
+	</string>
+	<string id="agr_at_blokpost_text">
+		<text>Pomуw z przywуdc№ frakcji Powinnoњж. Generaі Kryіow moїe wiedzieж, gdzie znajduje siк wejњcie do podziemi Agropromu. Tam swoje іupy chowaj№ stalkerzy, ktуrzy dotarli do centrum Zony.</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_name">
+		<text>Zniszcz obуz bandytуw</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_text">
+		<text>Musisz zniszczyж obуz bandytуw w tunelu. Wykorzystuj№ go do przygotowywania atakуw na obуz stalkerуw.</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_name">
+		<text>Zniszcz oddziaі bandytуw</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_text">
+		<text>Oddziaі bandytуw broni jednego z podziemnych wyjњж i pomaga swym towarzyszom przedostawaж siк na powierzchniк. Oddziaі ten musi zostaж zniszczony.</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_name">
+		<text>Zniszcz norк mutantуw</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_text">
+		<text>Pustkowie przed baz№ stalkerуw jest peіne potworуw - to obszar dziki i niebezpieczny. Musisz zniszczyж norк mutantуw.</text>
+	</string>
+	<string id="agr_defend_duty_base_1_name">
+		<text>Broс bazy Powinnoњci</text>
+	</string>
+	<string id="agr_defend_duty_base_1_text">
+		<text>Baza Powinnoњci zostaіa zaatakowana. Pomуї odeprzeж natarcie, a czeka ciк nagroda.</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_name">
+		<text>Broс bazy stalkerуw</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_text">
+		<text>Baza stalkerуw jest zagroїona - pomуї odeprzeж natarcie, a nie ominie ciк nagroda.</text>
+	</string>
+	<string id="agr_go_in_hole_name">
+		<text>Zejdџ w podziemia Agropromu</text>
+	</string>
+	<string id="agr_go_in_hole_text">
+		<text>Musisz zejњж w podziemia Agropromu. Jedyna droga na dуі prowadzi przez dziurк mutantуw.</text>
+	</string>
+	<string id="agr_go_out_hole_name">
+		<text>Pomуw z Sacharowem</text>
+	</string>
+	<string id="agr_go_out_hole_text">
+		<text>Komunikaty grupy Strieloka z podziemnego schowka wiele tіumacz№. Strielok udaі siк na spotkanie z naukowcami przy Jantarze; dotrzyj tam i pomуw z profesorem Sacharowem. Moїe on bкdzie wiedziaі, gdzie szukaж Strieloka.</text>
+	</string>
+	<string id="agr_go_to_hole_name">
+		<text>Dotrzyj do dziury</text>
+	</string>
+	<string id="agr_go_to_hole_text">
+		<text>Їoіnierze "Powinnoњci" zablokowali wszystkie wejњcia i wyjњcia z podziemi. Teraz moїesz siк tam dostaж tylko przez dziury, ktуre do wydostawania siк na powierzchniк wykorzystuj№ potwory. Musisz dotrzeж do dziury.</text>
+	</string>
+	<string id="agr_mechanic_pda_1_name">
+		<text>Odszukaj PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_1_text">
+		<text>Odszukaj PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_2_name">
+		<text>Dostarcz PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_2_text">
+		<text>Dostarcz PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_name">
+		<text>Odszukaj PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_text">
+		<text>Odszukaj PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_name">
+		<text>Dostarcz PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_text">
+		<text>Dostarcz PDA</text>
+	</string>
+	<string id="agr_no_task_name">
+		<text>Odszukaj schowek grupy stalkerуw</text>
+	</string>
+	<string id="agr_no_task_text">
+		<text>PDA Kіa zawiera wspуіrzкdne schowka naleї№cego do grupy stalkerуw, ktуrzy dotarli do centrum Zony i wywoіali w niej katastrofк. To waїne znalezisko - schowek moїe zawieraж cenne informacje. Musisz znaleџж w nim PDA.</text>
+	</string>
+	<string id="agr_pda_map_animals_1_name">
+		<text>Odszukaj mapк migracyjn№</text>
+	</string>
+	<string id="agr_pda_map_animals_1_text">
+		<text>Odszukaj mapк z zaznaczonymi schematami migracji w Zonie rzadkich gatunkуw potworуw.</text>
+	</string>
+	<string id="agr_pda_map_animals_2_name">
+		<text>Dostarcz mapк migracyjn№</text>
+	</string>
+	<string id="agr_pda_map_animals_2_text">
+		<text>Dostarcz mapк migracyjn№ Inkwizytorowi</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_name">
+		<text>Pomуї stalkerom</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_text">
+		<text>Grupa stalkerуw usiіuje dotrzeж przez trzкsawisko do naukowcуw nad Jantarem. Pomуї im zachowaж їycie podczas przeprawy</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_name">
+		<text>Odbierz nagrodк</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_text">
+		<text>Odbierz nagrodк od Pіatonowa</text>
+	</string>
+	<string id="agr_start_name">
+		<text>Pomуw z dowуdc№ posterunku</text>
+	</string>
+	<string id="agr_start_text">
+		<text>Zasiкgnij u dowуdcy posterunku informacji o sytuacji w Agropromie.</text>
+	</string>
+	<string id="agr_take_reward_name">
+		<text>Odbierz nagrodк od Kryіowa</text>
+	</string>
+	<string id="agr_take_reward_text">
+		<text>Podziemia s№ zalane - powinno to tymczasowo powstrzymaж ataki mutantуw na frakcjк Powinnoњж. Generaі Kryіow sowicie ciк wynagrodzi za wykonanie tej misji. Odbierz nagrodк od Kryіowa.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_name">
+		<text>Odszukaj informacje o wywaїeniu mechanizmu karabinu maszynowego</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_text">
+		<text>Technik nazwiskiem Gromow szuka sposobu na zwiкkszenie szybkostrzelnoњci karabinu maszynowego poprzez wywaїenie jego mechanizmu. Dobrze ci zapіaci za informacje na ten temat.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_name">
+		<text>Odszukaj informacje o modyfikacji ukіadu odprowadzania gazуw karabinu maszynowego</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_text">
+		<text>Gromow jest bliski ulepszenia karabinu maszynowego. Potrzebuje juї tylko trochк czasu i danych technicznych ukіadu odprowadzania gazуw.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_name">
+		<text>Odszukaj informacje o pistoletowym hamulcu wylotowym</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_text">
+		<text>Technik stalkerуw z Agropromu szuka dokіadnych informacji o hamulcach wylotowych dla potкїnych pistoletуw wielkokalibrowych.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_name">
+		<text>Odszukaj informacje o mechanizmach pneumatycznych dla strzelb bojowych</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_text">
+		<text>Technik stalkerуw z Agropromu szuka dokіadnych informacji o mechanizmach pneumatycznych dla strzelb bojowych.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_name">
+		<text>Odszukaj informacje o modyfikacjach luf pistoletowych</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_text">
+		<text>Technik stalkerуw nie ma doњж doњwiadczenia, aby zmodyfikowaж lufк potкїnego pistoletu. Zapіaci za informacje na ten temat.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_name">
+		<text>Odszukaj informacje o hamulcu wylotowym dla karabinu maszynowego</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_text">
+		<text>Technik "Powinnoњci" pracuje nad ulepszonym hamulcem wylotowym dla karabinu maszynowego, brakuje mu jednak pewnych informacji technicznych.</text>
+	</string>
+	<string id="agr_attack_monster_group_name">
+		<text>Zniszcz norк mutantуw</text>
+	</string>
+	<string id="agr_attack_monster_group_text">
+		<text>Od czasu do czasu maіe grupki mutantуw atakuj№ stalkerуw w fabryce. Zniszczenie potworуw w ich norze na pуіnoc od fabryki moїe przerwaж te ataki.</text>
+	</string>
+	<string id="agr_recover_item_1_name">
+		<text>Zwrуж strzelbк czіonkowi "Powinnoњci"</text>
+	</string>
+	<string id="agr_recover_item_1_text">
+		<text>Mieliњmy oczyњciж pewien obszar z mutantуw, ale wpadliњmy na olbrzymiego skurczybyka. Walczyliњmy przynajmniej godzinк i koсczyіa siк nam amunicja, a bestia byіa daleka od њmierci. Kazaіem chіopakуw siк wycofaж i zostaіem, aby osіoniж ich odwrуt; wywaliіem wszystkie pociski, po czym rzuciіem drania strzelb№. Co ciekawe, sukinkot zacz№і їreж strzelbк, a mnie zignorowaі. Odzyskaj dla mnie tк broс - uratowaіa mi їycie!</text>
+	</string>
+	<string id="agr_recover_item_2_name">
+		<text>Zwrуж PDA z tajnymi informacjami</text>
+	</string>
+	<string id="agr_recover_item_2_text">
+		<text>Na Wysypisku napadli mnie bandyci. Zabrali mi wszystko - gotуwkк, broс, amunicjк i leki. Co gorsza, zabrali mi teї PDA z informacjami o miejscach zajкtych na Wysypisku przez bandytуw. Jeњli nie dostarczк ich Kryіowowi, pogrzebie mnie їywcem. Pomуї mi odzyskaж moje PDA!</text>
+	</string>
+	<string id="agr_recover_item_3_name">
+		<text>Zwrуж walizkк czіonkowi "Powinnoњci"</text>
+	</string>
+	<string id="agr_recover_item_3_text">
+		<text>Najemniku - gdy mutanty zaczкіy siк zapuszczaж pod ziemiк, musieliњmy wycofaж siк z naszych pozycji. Zostawiіem tam walizkк z broni№, amunicj№, lekami i detektorem... Trzeba siк byіo ratowaж. Pomуї mi odzyskaж walizkк.</text>
+	</string>
+	<string id="agr_recover_item_4_name">
+		<text>Zwrуж karabin szturmowy czіonkowi "Powinnoњci"</text>
+	</string>
+	<string id="agr_recover_item_4_text">
+		<text>Pokіуciіem siк o jakieњ bzdury z przewodnikiem i teraz nie chce mnie zaprowadziж do stalkerуw! Twierdzi, їe nie chce mnie na oczy widzieж - a mi nie uњmiecha siк samotne waікsanie po Zonie. Zostawiіem u stalkerуw spluwк; jeden z naszych dostaі awans i њwiкtowaliњmy to. Nieџle siк schlaіem - chіopaki ledwo odstawili mnie do koszar, ale juї o karabinie zapomnieli. Przyniesiesz mi go? Bez broni dupa ze mnie, a nie їoіnierz.</text>
+	</string>
+</string_table>

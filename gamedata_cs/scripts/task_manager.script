@@ -126,7 +126,7 @@ function CRandomTask:save(packet)
 	end
 	packet:w_u16(n)
 	for k,v in pairs(self.inited_tasks) do
-		printf("saving TASK [%s] base_id[%s] E_id [%s]", k, v.base_id, v.entity_id)
+		printf("SAVING TASK [%s] base_id[%s] E_id [%s]", k, v.base_id, v.entity_id)
 		packet:w_stringZ(v.base_id)
 		packet:w_stringZ(k)
 		packet:w_u16(task_id_by_type[v.type])
@@ -171,7 +171,18 @@ function CRandomTask:save(packet)
 			packet:w_u16(vv.entity_id)
 		end
 	end
-
+--[[
+	printf("--------------task_manager.save()	start")
+	printf("--------------task_manager.save()	task_info:")
+	print_table(self.task_info)
+	printf("--------------task_manager.save()	inited_tasks:")
+	print_table(self.inited_tasks)
+	printf("--------------task_manager.save()	rewards:")
+	print_table(self.rewards)
+	printf("--------------task_manager.save()	inited_find_upgrade_tasks:")
+	print_table(self.inited_find_upgrade_tasks)
+	printf("--------------task_manager.save()	end")
+]]
 	set_save_marker(packet, "save", true, "CRandomTask")
 end
 -- Load
@@ -213,7 +224,7 @@ function CRandomTask:load(reader)
 		end
 		if(obj~=nil) then
 			obj:load(reader)
-			printf("LOAD:TASK [%s] status [%s] e_id [%s]", obj.base_id, obj.status, tostring(obj.entity_id))
+			printf("LOADING TASK [%s] status [%s] e_id [%s]", obj.base_id, obj.status, tostring(obj.entity_id))
 			self.inited_tasks[id] = obj
 			if(obj.status=="selected") then
 				self.task_info[tostring(obj.entity_id)] = obj
@@ -255,13 +266,25 @@ function CRandomTask:load(reader)
 			self.inited_find_upgrade_tasks[k][kk] = self:get_task_by_entity_id(ei)
 		end
 	end
-
+--[[
+	printf("--------------task_manager.load()	start")
+	printf("--------------task_manager.load()	task_info:")
+	print_table(self.task_info)
+	printf("--------------task_manager.load()	inited_tasks:")
+	print_table(self.inited_tasks)
+	printf("--------------task_manager.load()	rewards:")
+	print_table(self.rewards)
+	printf("--------------task_manager.load()	inited_find_upgrade_tasks:")
+	print_table(self.inited_find_upgrade_tasks)
+	printf("--------------task_manager.load()	end")
+]]
 	set_save_marker(reader, "load", true, "CRandomTask")
 end
 --------------------------------------------------------------------------------
 
 --' Выдача квеста игроку
 function CRandomTask:give_task(task_id, community)
+--	printf("CRandomTask:give_task() task_id[%s] comm[%s]", tostring(task_id), tostring(community))
 	if self.task_info[task_id] == nil then
 		abort("Wrong task id [%s] in give_task function.", tostring(task_id))
 	end
@@ -269,13 +292,13 @@ function CRandomTask:give_task(task_id, community)
 end
 --' Проверяем, не выполнен ли таск
 function CRandomTask:task_complete(p1)
-	--printf("***tc %s", tostring(p1))
 	if self.task_info[p1] == nil then
 		return false
 	end
 	self.task_info[p1]:check_task(self)
 	if(self.task_info[p1].last_check_task=="complete") then
 		xr_statistic.inc_completed_quests_counter()
+--		printf("CRandomTask:task_complete %s", tostring(p1))
 		return true
 	else
 		return false
@@ -296,12 +319,14 @@ function CRandomTask:task_fail(p1)
 	--printf("tname %s", tostring(self.task_info[p1].base_id))
 	--printf("   %s", tostring(self.task_info[p1].last_check_task))
 	if(self.task_info[p1].last_check_task=="fail") then
+--		printf("CRandomTask:task_fail %s", tostring(p1))
 		xr_statistic.inc_failed_quests_counter()
 	end
 	return self.task_info[p1].last_check_task == "fail" or self.task_info[p1].last_check_task == "reversed"
 end
 --' Коллбек таска
 function CRandomTask:task_callback(task, completed)
+--    printf("CRandomTask:task_callback")
 	--' Если задание выполнилось - надо выдать с него награду!
 	local task_id = task:get_id()
 	local delta
@@ -309,7 +334,7 @@ function CRandomTask:task_callback(task, completed)
 	if self.task_info[task_id] == nil then
 		return
 	end
-	printf("task_callback2: [%s]", task:get_title())
+	printf("task_callback: [%s]", task:get_title())
 	if completed == true then
 		printf("Task %s completed", tostring(task_id))
 		self.task_info[task_id]:init_reward()
@@ -348,9 +373,23 @@ function CRandomTask:task_callback(task, completed)
 		end
 	end
 	self.task_info[task_id] = nil
+--[[
+	printf("--------------task_manager.task_callback()	start")
+	printf("--------------task_manager.task_callback()	task_info:")
+	print_table(self.task_info)
+	printf("--------------task_manager.task_callback()	inited_tasks:")
+	print_table(self.inited_tasks)
+	printf("--------------task_manager.task_callback()	rewards:")
+	print_table(self.rewards)
+	printf("--------------task_manager.task_callback()	inited_find_upgrade_tasks:")
+	print_table(self.inited_find_upgrade_tasks)
+	printf("--------------task_manager.task_callback()	end")
+]]
 end
 --' Выбор наиболее подходящего таска по условию
 function CRandomTask:select_task(type, obj, faction)
+--	printf("CRandomTask:select_task")
+    callstack()
 	local task_table = nil
 	--local key = self.id_generator:get_id()
 	if type == "storyline" then
@@ -388,7 +427,7 @@ function CRandomTask:select_task(type, obj, faction)
 		task_table = self.eliminate_squad_tasks
 		key = tostring(faction).."_eliminate_squad_"..obj.squad_id
 	end
---	printf("!!!Select task for key [%s]", tostring(key))
+	printf("!!!Select task for key [%s]", tostring(key))
 
 	if task_table == nil then
 		abort("Wrong type [%s] in select_task.", tostring(type))
@@ -404,9 +443,8 @@ function CRandomTask:select_task(type, obj, faction)
 		printf("!!!Return inited task type[%s] for %s, key[%s], entity_id[%s]", tostring(type), tostring(faction), tostring(key), self.inited_tasks[key].entity_id)
 		return self.inited_tasks[key]
 	end
-	printf("new_EId for "..key)
 	local new_EId = self.id_generator:get_id()
-	printf("new_EId [%s]", tostring(new_EId))
+--	printf("new_EId [%s]", tostring(new_EId))
 
 	local max_prior = -1
 	local selected_task = nil
@@ -423,16 +461,18 @@ function CRandomTask:select_task(type, obj, faction)
 		end
 	end
 	if selected_task == nil then
+--		printf("selected_task == nil")
 		return
 	end
 	printf("!!!Init new task type[%s] for %s, key[%s], entity_id[%s]", tostring(type), tostring(faction), tostring(key), new_EId)
-
 	--' Заносим таск в список уже проинициализированных.
 	self.inited_tasks[key] = selected_task:get_inited_task(obj, faction, new_EId)
 	return self.inited_tasks[key]
 end
 
 function CRandomTask:select_find_upgrade_task(obj, faction)
+--	printf("CRandomTask:select_find_upgrade_task")
+--    callstack()
 	if self.inited_find_upgrade_tasks[obj:id()] == nil then
 		self.inited_find_upgrade_tasks[obj:id()] = {}
 	end
@@ -453,12 +493,15 @@ function CRandomTask:select_find_upgrade_task(obj, faction)
 end
 -- Выдача инициализированного квеста по entity_id
 function CRandomTask:get_task_by_entity_id(entity_id)
+--	printf("CRandomTask:get_task_by_entity_id --->e_i[%s]", tostring(entity_id))
+--	callstack()
 	for k,v in pairs(self.inited_tasks) do
 		if(v.entity_id==entity_id) then
 			return v
 		end
 	end
-	abort("There is no task with entity_id %s", tostring(entity_id))
+	return nil
+--	abort("There is no task with entity_id %s", tostring(entity_id))
 end
 function CRandomTask:get_task_by_key(type, obj, faction)
 	if type == "storyline" then
@@ -560,7 +603,7 @@ end
 
 --' Регистрируем нового выдавателя наград
 function CRandomTask:register_rewarder(npc_id, community)
-	printf("register rewarder %s for %s", npc_id, community)
+--	printf("register rewarder %s for %s", npc_id, community)
 	self.rewarders[community] = npc_id
 end
 --' Регистрируем нового выдавателя квестов
@@ -625,10 +668,10 @@ function task_fail(p1)
 	return get_task_manager():task_fail(p1)
 end
 function task_callback(_task, state)
-	printf("task_callback")
+--	printf("task_callback")
 	--' В случае есть квест выполнен или провален - надо вызвать обнуление.
 	if state == task.fail or state == task.completed then
-		printf("task_callback1")
+--		printf("task_callback1")
 		get_task_manager():task_callback(_task, state == task.completed)
 	end
 end

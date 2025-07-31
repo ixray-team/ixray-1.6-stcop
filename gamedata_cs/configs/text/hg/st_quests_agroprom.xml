@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_additional_quest_1_name">
+		<text>Keresd meg a halott stalker zsбkmбnyбt!</text>
+	</string>
+	<string id="agr_additional_quest_1_text">
+		<text>Keresd meg a halott stalker zsбkmбnyбt!</text>
+	</string>
+	<string id="agr_additional_quest_3_name">
+		<text>Keresd meg az eltыnt stalkert!</text>
+	</string>
+	<string id="agr_additional_quest_3_text">
+		<text>Keresd meg az eltыnt stalkert!</text>
+	</string>
+	<string id="agr_at_blokpost_name">
+		<text>Beszйlj a Szolgбlat vezetхjйvel!</text>
+	</string>
+	<string id="agr_at_blokpost_text">
+		<text>Beszйlj a Szolgбlat vezetхjйvel! Talбn Krilov tбbornak tudja, hol talбlhatу az agropromi csatornarendszer bejбrata. A Zуna kцzepйt elйrх stalkerek ott tartjбk a kйszleteiket.</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_name">
+		<text>Semmisнtsd meg a fosztogatу tбbort!</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_text">
+		<text>Meg kell semmisнtened a fosztogatу tбbort az alagъtban! A fosztogatуk onnan irбnyнtjбk a stalker tбbor elleni tбmadбsaikat.</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_name">
+		<text>Intйzd el a fosztogatу osztagot!</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_text">
+		<text>A csatornarendszer egyik kijбratбt egy fosztogatу csapat хrzi, ahonnan folyamatosan йrkeznek az embereik a felszнnre. Meg kell semmisнtened a csapatot!</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_name">
+		<text>Semmisнtsd meg a mutбnsodъt!</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_text">
+		<text>A stalker bбzis elхtti kopбr terьletet elleptйk a szцrnyek. Veszйlyessй vбlt a kцrnyйk. Meg kell semmisнtened a mutбnsodъt!</text>
+	</string>
+	<string id="agr_defend_duty_base_1_name">
+		<text>Vйdd meg a Szolgбlat bбzisбt!</text>
+	</string>
+	<string id="agr_defend_duty_base_1_text">
+		<text>Megtбmadtбk a Szolgбlat bбzisбt. Segнts visszaverni a tбmadбst, йs megkapod a jutalmad!</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_name">
+		<text>Vйdd meg a stalker bбzist!</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_text">
+		<text>Veszйlyben a stalker bбzis. Segнts a stalkereknek visszaverni a tбmadбst, hogy jutalmat kapj!</text>
+	</string>
+	<string id="agr_go_in_hole_name">
+		<text>Ereszkedj le az agropromi csatornarendszerbe!</text>
+	</string>
+	<string id="agr_go_in_hole_text">
+		<text>Le kell ereszkedned az agropromi csatornarendszerbe! Az egyetlen lefelй vezetх ъt egy mutбnsodъn keresztьl vezet.</text>
+	</string>
+	<string id="agr_go_out_hole_name">
+		<text>Beszйlj Szaharovval!</text>
+	</string>
+	<string id="agr_go_out_hole_text">
+		<text>A fцld alatti rejtekhelyen talбlt, rцgzнtett beszйlgetйsek mindent megmagyarбznak. Sztrelok elment Jantarba a tudуsokhoz. Menj Jantarba, йs beszйlj Szaharov professzorral! Talбn х tudja, hol van Sztrelok.</text>
+	</string>
+	<string id="agr_go_to_hole_name">
+		<text>Йrd el a lyukat!</text>
+	</string>
+	<string id="agr_go_to_hole_text">
+		<text>A Szolgбlat katonбi elzбrtбk a fцld alatti rйsz цsszes bejбratбt йs kijбratбt. Az egyetlen lefelй vezetх ъt egy lyukon бt vezet, ahonnan a szцrnyek a felszнnre mбsznak. El kell йrned a lyukat!</text>
+	</string>
+	<string id="agr_mechanic_pda_1_name">
+		<text>Keresd meg a PDA-t!</text>
+	</string>
+	<string id="agr_mechanic_pda_1_text">
+		<text>Keresd meg a PDA-t!</text>
+	</string>
+	<string id="agr_mechanic_pda_2_name">
+		<text>Vidd el a PDA-t!</text>
+	</string>
+	<string id="agr_mechanic_pda_2_text">
+		<text>Vidd el a PDA-t!</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_name">
+		<text>Keresd meg a PDA-t!</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_text">
+		<text>Keresd meg a PDA-t!</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_name">
+		<text>Vidd el a PDA-t!</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_text">
+		<text>Vidd el a PDA-t!</text>
+	</string>
+	<string id="agr_no_task_name">
+		<text>Keresd meg a stalker csapat rejtekhelyйt!</text>
+	</string>
+	<string id="agr_no_task_text">
+		<text>Agyar PDA-ja tartalmazta egy stalker csapat rejtekhelyйnek koordinбtбit, akik elйrve a Zуna kцzepйt, elхidйztek egy katasztrуfбt. Ez mindenkйppen fontos felfedezйs, mert az elrejtett csomag akбr йrtйkes informбciуkat is tartalmazhat. Meg kell talбlnod a PDA-t a rejtekhelyen!</text>
+	</string>
+	<string id="agr_pda_map_animals_1_name">
+		<text>Keresd meg a vбndorlбsi tйrkйpet!</text>
+	</string>
+	<string id="agr_pda_map_animals_1_text">
+		<text>Keresd meg a tйrkйpet, ami a Zуna ritka szцrnyeinek vбndorlбsбt mutatja!</text>
+	</string>
+	<string id="agr_pda_map_animals_2_name">
+		<text>Vidd el a vбndorlбsi tйrkйpet!</text>
+	</string>
+	<string id="agr_pda_map_animals_2_text">
+		<text>Vidd el a vбndorlбsi tйrkйpet az Inkvizнtornak!</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_name">
+		<text>Segнts a stalkereknek!</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_text">
+		<text>Egy stalker csapat el akar jutni a jantari tudуsokhoz a mocsбron keresztьl. Segнts a stalkereknek йlve бtjutni a lбpon!</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_name">
+		<text>Gyыjtsd be a jutalmat!</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_text">
+		<text>Gyыjtsd be a jutalmat Platonovtуl!</text>
+	</string>
+	<string id="agr_start_name">
+		<text>Beszйlj a helyхrsйg parancsnokбval!</text>
+	</string>
+	<string id="agr_start_text">
+		<text>Szerezz informбciуt az agropromi helyzetrхl a helyхrsйg parancsnokбtуl!</text>
+	</string>
+	<string id="agr_take_reward_name">
+		<text>Vedd бt a jutalmat Krilovtуl!</text>
+	</string>
+	<string id="agr_take_reward_text">
+		<text>A csatorna elбrasztбsa egy ideig biztos megakadбlyozza majd a mutбnsokat, hogy megtбmadjбk a Szolgбlatot. Krilov tбbornoktуl nagylelkы jutalomra szбmнthatsz a kьldetйs sikeres elvйgzйsййrt. Vedd бt a jutalmad Krilovtуl!</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_name">
+		<text>Keress informбciуkat a gйppuskбk automatizбlt alkatrйszeinek kiegyensъlyozбsбrуl!</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_text">
+		<text>Villбm, a technikus, keresi, hogyan tudnб az automatizбlt alkatrйszek kiegyensъlyozбsбval nцvelni a gйppuskбk tыzgyorsasбgбt. Szйp цsszeget fizetne az ezzel kapcsolatos informбciуkйrt.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_name">
+		<text>Keress informбciуkat a gйppuskбk gбzkiбramlбsбnak mуdosнtбsairуl!</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_text">
+		<text>Villбm nagyon kцzel jбr mбr hozzб, hogy tцkйletesнtse a gйppuskбk jellemzхit. Mindцssze egy kis szabad idхre йs a gбzkiбramlбssal kapcsolatos informбciуkra lenne szьksйge!</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_name">
+		<text>Keress informбciуkat a pisztolyok csхszбjfйkйrхl!</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_text">
+		<text>Az agropromi stalker technikus nagy kaliberы pisztolyok csхszбjfйkйrхl keres rйszletes informбciуkat.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_name">
+		<text>Keress informбciуkat a harci sцrйtes puskбk pumpбlу mechanizmusбrуl!</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_text">
+		<text>Az agropromi stalker technikus harci sцrйtes puskбk pumpбlу mechanizmusбrуl keres informбciуkat.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_name">
+		<text>Keress informбciуkat a pisztolycsцvek mуdosнtбsairуl!</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_text">
+		<text>A stalker technikusnak nincs elйg tapasztalata ahhoz, hogy mуdosнtsa egy nagy tыzerejы pisztoly csцvйt. Fizetne is az ezzel kapcsolatos informбciуkйrt.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_name">
+		<text>Keress informбciуkat a gйppuskбk csхszбjfйkйrхl!</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_text">
+		<text>A Szolgбlat technikusa egy fejlesztett gйppuska csхszбjfйken munkбlkodik, de szьksйge lenne mйg nйhбny mыszaki informбciуra.</text>
+	</string>
+	<string id="agr_attack_monster_group_name">
+		<text>Semmisнtsd meg a mutбnsodъt!</text>
+	</string>
+	<string id="agr_attack_monster_group_text">
+		<text>Mutбnshordбk keserнtik meg a gyбrnбl йlх stalkerek йletetйt. Цld meg a szцrnyeket a gyбrtуl йszakra levх odъjukban, hogy vйget vess a tбmadбsoknak!</text>
+	</string>
+	<string id="agr_recover_item_1_name">
+		<text>Vidd vissza a sцrйtes puskбt a szolgбlatosnak!</text>
+	</string>
+	<string id="agr_recover_item_1_text">
+		<text>A minap egy feladat sorбn, ahol meg kellett tisztнtanunk egy terьletet a mutбnsoktуl, belefutottunk egy nagyobb darabba. A harc majd egy уrбn бt tartott йs mбr fogyуban volt a lхszerьnk, de az a dцg mйg csak nem is haldokolt. Visszavonulуt fъjtam, de hбtramaradtam, hogy lekцssem a mutбnsokat, amнg a fiъk elmenekьlnek. Ellхttem minden lхszeremet йs a szцrny kйpйbe vбgtam a sцrйtes puskбmat. Talбld ki, mi tцrtйnt ezutбn! Az a rohadйk rбgcsбlni kezdte a stukkert, йs nem is foglalkozott velem. Hozd vissza a sцrйtes puskбmat, elvйgre megmentette az йletemet!</text>
+	</string>
+	<string id="agr_recover_item_2_name">
+		<text>Vidd vissza a titkos informбciуkat tartalmazу PDA-t!</text>
+	</string>
+	<string id="agr_recover_item_2_text">
+		<text>Zsoldos, megtбmadtak a Szemйtdombban a fosztogatуk. Elvittek mindent: pйnzt, fegyvert, lхszert, mйg az egйszsйgьgyi kйszleteket is. Rбadбsul a PDA-mat is elvittйk, ami a fosztogatу rejtekhelyekrхl tartalmazott informбciуkat a Szemйtdombban. Ha nem viszem el Krilovnak, йlve eltemet! Segнts visszaszereznem!</text>
+	</string>
+	<string id="agr_recover_item_3_name">
+		<text>Hozd vissza a szolgбlatos lбdбjбt!</text>
+	</string>
+	<string id="agr_recover_item_3_text">
+		<text>Zsoldos, amikor a mutбnsok felbukkantak a csatornarendszerben, muszбj volt elhagynunk az бllбsainkat йs visszavonulnunk. Kйnytelen voltam hбtrahagyni a lбdбmat tele fegyverrel, lхszerrel, gyуgyszerrel йs a detektorommal. Nem volt idхm gondolkodni, sajбt magamat kellett mentenem. Segнts visszaszereznem azt a lбdбt!</text>
+	</string>
+	<string id="agr_recover_item_4_name">
+		<text>Vidd vissza a szolgбlatos gйpkarabйlyбt!</text>
+	</string>
+	<string id="agr_recover_item_4_text">
+		<text>Valami hьlyesйgen цsszevesztem egy kнsйrхvel, most pedig nem akar elvezetni a stalkerekhez. Azt mondja, hogy lбtni sem akar tцbbet, йn pedig nem szнvesen kуborolnйk egyedьl a Zуnбban. A stalkereknйl hagytam a fegyveremet, amikor mъlt hйten meglбtogattam хket. Az egyik emberьnket elхlйptettйk, mi pedig pбr ьveg pia tбrsasбgбban megьnnepeltьk. Alaposan elбztam: a fiъk alig tudtak visszavonszolni a kaszбrnyбkba, de a fegyveremrхl elfelejtkeztek. Vissza tudnбd hozni nekem? A stukkerem nйlkьl nem is йrzem magam igazi katonбnak.</text>
+	</string>
+</string_table>

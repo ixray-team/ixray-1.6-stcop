@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding="windows-1251"?>
 
 <game_information_portions>
+	<info_portion id="gar_joined_bandits"/>
+
 	<info_portion id="gar_visited_level"/>
 
 	<info_portion id="gar_story_find_diggers_started"/>

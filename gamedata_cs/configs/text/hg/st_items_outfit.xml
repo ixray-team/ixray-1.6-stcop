@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="bandit_outfit_description">
+		<text>A fosztogatуk hagyomбnyos цltцzйke – egy bхrdzseki, amelybe pбncйlszerыen fйmet varrnak. Az бltala biztosнtott vйdelem teljessйggel elйgtelen a Zуnбban tapasztalhatу kцrьlmйnyekkel szemben. A dzsekinek kйt rekesze van, melybe kйt relikvia fйr be.</text>
+	</string>
+	<string id="bandit_outfit_name">
+		<text>A fosztogatуk kabбtja</text>
+	</string>
+	<string id="dolg_outfit_description">
+		<text>A Szolgбlatnбl hasznбlt vйdхruha modernizбlt vбltozata, ami a PSZ sorozatъ ruhбknбl jobb vйdelmet biztosнt az anomбliбkkal szemben. A beйpнtett testpбncйl kйpes megбllнtani egy pisztolygolyуt. Nem lehet бtalakнtani relikviбk szбllнtбsбra.</text>
+	</string>
+	<string id="dolg_outfit_name">
+		<text>PS5-M „Univerzбlis vйdelem”</text>
+	</string>
+	<string id="exo_outfit_description">
+		<text>Egy katonai kьlsх pбncйl kнsйrleti mintadarabja. Sosem kerьlt sorozatgyбrtбsra a szйlsхsйgesen magas бra йs nйhбny tervezйsi hiba miatt. Kisebb mennyisйgben gyбrtjбk Ukrajnбn kнvьl, eldugott ьzemekben. Ez egy harmadik generбciуs цltцzet, amiben javнtottбk a mozgбst korlбtozу tervezйsi hibбkat, йs erхsebb pбncйlt йpнtettek be.</text>
+	</string>
+	<string id="exo_outfit_name">
+		<text>Kьlsх pбncйl</text>
+	</string>
+	<string id="military_outfit_description">
+		<text>A "Bulat" pбncйlozott katonai ruhбt olyan terьleteken vйgrehajtott bevetйsekre terveztйk, ahol az anomбliбk nagy veszйlyt jelentenek. Egy erхsen pбncйlozott katonai ruha, egy beйpнtett kompenzбlу цltцzet, йs egy Sphere-12M sisak alkotja a teljes цltцzetet. A pбncйlzat kйpes felfogni egy rohampuska lцvedйkйt. Nem lehet бtalakнtani relikviбk szбllнtбsra.</text>
+	</string>
+	<string id="military_outfit_name">
+		<text>„Bulat” pбncйlozott цltцzet</text>
+	</string>
+	<string id="mp_exo_outfit_description">
+		<text>Ez a kьlsх pбncйl tцkйletes vйdelmet biztosнt a lцvedйkek йs repeszek ellen. Ennek бra a mozgбs korlбtozottsбga. A pбncйltцrх lцvedйkekkel szemben nem nyъjt vйdelmet.</text>
+	</string>
+	<string id="mp_exo_outfit_name">
+		<text>Kьlsх pбncйl</text>
+	</string>
+	<string id="mp_military_outfit_description">
+		<text>Ezt a pбncйlozott katonai цltцzetet fegyveres цsszecsapбsokhoz terveztйk. Tцkйletes vйdelmet biztosнt a lцvedйkek йs a repeszek ellen anйlkьl, hogy befolyбsolnб viselхje mozgбsбt. A pбncйltцrх lцvedйkekkel szemben nem nyъjt vйdelmet.</text>
+	</string>
+	<string id="mp_military_outfit_name">
+		<text>Katonai pбncйlruha</text>
+	</string>
+	<string id="mp_scientific_outfit_description">
+		<text>Ezt, a teljes testet befedх цltцzetet a Zуnбban vйgzendх tudomбnyos mыveletek cйljбbуl hoztбk lйtre. Az цltцzet rйsze egy zбrtkцrы lйlegeztetх-rendszer йs egy beйpнtett anomбlia mezх elnyomу rendszer. Emiatt tцkйletes vйdelmet biztosнt az anomбliбkkal szemben. Alacsony pбncйlozottsбga miatt azonban rendkнvьl sйrьlйkeny. Beйpнtett rekeszeket tartalmaz relikviбk szбllнtбsбhoz.</text>
+	</string>
+	<string id="mp_scientific_outfit_name">
+		<text>Tudomбnyos цltцzet</text>
+	</string>
+	<string id="scientific_outfit_description">
+		<text>Ez az цltцzet, melyet az egyik kijevi intйzet tervezett, tцkйletes alternatнvбt nyъjt mбs, hбzilag kйszнtett stalker цltцzetekkel szemben. Tцkйletes цtvцzete a pбncйlozott цltцzetnek, egy zбrtkцrы lйlegeztetх-rendszernek йs egy anomбliбkat elnyomу rendszernek. Ezek, йs a gondosan kivбlasztott alkotуelemek miatt ez a ruha a tцkйletes vбlasztбs. Az egyetlen hбtrбnya a borsos бr.</text>
+	</string>
+	<string id="scientific_outfit_name">
+		<text>SEVA цltцzet.</text>
+	</string>
+	<string id="specops_outfit_description">
+		<text>A Berill-5M testpбncйl az eredeti Szpecnaz testpбncйl Zуnбhoz бtalakнtott vбltozata. A ruha rйsze egy PSZ-9a jelzйsы katonai testpбncйl, berillium borнtбssal, йs egy Sphere-08 tнpusъ sisak. Nagyon magas sugбrzбsъ terьleteken vйgrehajtott katonai feladatokhoz terveztйk. Magas anomбliбt mutatу terьletekre nem alkalmas.</text>
+	</string>
+	<string id="specops_outfit_name">
+		<text>„Berill-5M” pбncйlruha</text>
+	</string>
+	<string id="stalker_outfit_description">
+		<text>Ezt az цltцzetet hobbifejlesztхk terveztйk, йs kйszнtettйk. Ez a stalker цltцzet hatйkonyan цtvцz egy kцnnyы katonai testpбncйlt йs gumнrozott цltцzetet. Annak ellenйre, hogy ez az цltцzet mйg a leggyengйbb pisztoly lцvedйkйnek sem kйpes ellenбllni, nagyon nйpszerы a stalkerek kцrйben, fхleg alacsony бra йs alakнthatуsбga miatt. Van benne egy rekesz melybe kйt relikviбt lehet tenni.</text>
+	</string>
+	<string id="stalker_outfit_name">
+		<text>„Napfelkelte” цltцzet</text>
+	</string>
+	<string id="svoboda_heavy_outfit_description">
+		<text>A Szabadsбg mesteremberei бltal megerхsнtett stalker цltцzet. Egy rendszeresнtett katonai testpбncйl,  cirkуnium lemezekkel bevonva. Hatйkony vйdelmet nyъjt a gйppisztolyok йs a rohampuskбk lцvedйkeivel, valamint a repeszekkel szemben, minden tбvolsбgon. Az цltцzet dupla rйtegы anyaga tartalmaz egy speciбlisan kezelt bхrlemezt, egy olyan anyaggal egyьtt ami azbesztszбlakat tartalmaz. Az цltцzet alapvetх vйdelmet nyъjt az anomбliбk йs a sugбrzбs ellen.</text>
+	</string>
+	<string id="svoboda_heavy_outfit_name">
+		<text>„A Szabadsбg хrzхi” цltцzet</text>
+	</string>
+	<string id="svoboda_light_outfit_description">
+		<text>Ez a hihetetlenьl kцnnyы цltцzetet a Szabadsбg mesterei kйszнtettйk. A kцnnyы katonai testpбncйlt megerхsнtettйk kevlбr lemezekkel, hogy biztos vйdelmet nyъjtson a pisztolybуl kilхtt lцvedйkekkel szemben. Az цltцzet anyagбt egy speciбlis oldattal kezelik, mely nцveli az anomбliбkkal szembeni ellenбllбsбt.</text>
+	</string>
+	<string id="svoboda_light_outfit_name">
+		<text>„A Szabadsбg szбrnyai” цltцzet</text>
+	</string>
+	<string id="csky_heavy_outfit_description">
+		<text>A Tiszta Йgbolt rohamosztagбnak alapfelszerelйse. A pбncйlzat kйpes felfogni egy pisztolygolyуt, mнg a beйpнtett gбzбlarc megfelelх vйdelmet nyъjt az anomбliбk hatбsai ellen. Magбba foglal egy relikvia tбrolбsбra alkalmas rekeszt is.</text>
+	</string>
+	<string id="csky_heavy_outfit_name">
+		<text>CS-1 pбncйlzat</text>
+	</string>
+	<string id="csky_light_outfit_description">
+		<text>A pбncйlzatot kifejezetten olyan terьleteken folytatott kutatуmunkбkra terveztйk, ahol alacsonyabb az anomбliбk elхfordulбsa. Minхsйgi anyaga nagyobb tartуssбgot biztosнt. Magбba foglal egy relikvia tбrolбsбra alkalmas rekeszt is.</text>
+	</string>
+	<string id="csky_light_outfit_name">
+		<text>CS-3a pбncйlzat</text>
+	</string>
+	<string id="dolg_heavy_outfit_description">
+		<text>Egy korai szolgбlatos цltцzйk. Beйpнtett pбncйlzatбrуl vбlt hнressй, amely gyakorlatilag semmifйle vйdelmet nem nyъjt az anomбliбk hatбsai ellen. Nem tehetх bele relikviatartу.</text>
+	</string>
+	<string id="dolg_heavy_outfit_name">
+		<text>PSZ-9d "Szolgбlat pбncйlzat"</text>
+	</string>
+	<string id="exo_freedom_outfit_description">
+		<text>Az alapszintы kьlsх vбz fejlesztett vбltozata. A kцnnyebb anyagoknak kцszцnhetхen a tervezхk csцkkentettйk az цltцzйk sъlyбt, йs nцveltйk a tartуssбgбt.</text>
+	</string>
+	<string id="exo_freedom_outfit_name">
+		<text>Szabadsбg kьlsх vбz</text>
+	</string>
+	<string id="novice_outfit_description">
+		<text>Az ъjonc stalkerek gyakori viselete. Nem ment meg a golyуk йs az anomбliбk ellen, de mйg mindig jobb, mint a semmi. Bхvнthetх egy rekesszel, amely kйt relikvia tбrolбsбra alkalmas.</text>
+	</string>
+	<string id="novice_outfit_name">
+		<text>Bхrkabбt</text>
+	</string>
+</string_table>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hosp_task_general_name">
+		<text>Znajdџ drogк do elektrowni atomowej</text>
+	</string>
+	<string id="hosp_task_general_text">
+		<text>Droga do elektrowni atomowej prowadzi przez zrujnowany szpital. Pospiesz siк - Strielok min№і Zwкglacz i jest juї blisko elektrowni. Odszukaj wejњcie do katakumb</text>
+	</string>
+	<string id="hosp_task_heli_name">
+		<text>Zlikwiduj helikopter</text>
+	</string>
+	<string id="hosp_task_heli_text">
+		<text>Zestrzel wojskowy helikopter</text>
+	</string>
+	<string id="hosp_task_kill_sniper_name">
+		<text>Zabij snajpera</text>
+	</string>
+	<string id="hosp_task_kill_sniper_text">
+		<text>Snajper nie ma osіony z tej strony. Zabij snajpera.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_name">
+		<text>Podkradnij siк do snajpera</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_text">
+		<text>Sali szpitalnej broni№ snajper i stanowisko karabinu maszynowego. Pozycja snajpera jest dobrze osіoniкta. Czyste Niebo odwrуci uwagк wroga - ty przejdџ przez salк i zlikwiduj snajpera.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_name">
+		<text>Przedostaс siк na drug№ stronк sali</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_text">
+		<text>Karabin maszynowy ostrzeliwuje niїsze piкtro, snajper panuje na wyїszym. Czyste Niebo odwrуci na krуtko uwagк wroga. Nie ruszaj siк bez rozkazu dowуdcy oddziaіu Czystego Nieba.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_name">
+		<text>Dotrzyj do mostu</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_text">
+		<text>Musisz dotrzeж do mostu. Nie ruszaj siк bez rozkazu dowуdcy oddziaіu Czystego Nieba, ktуry odwrуci uwagк wroga.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_name">
+		<text>Przejdџ przez most</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_text">
+		<text>Przejdџ przez most. Nie ruszaj siк bez rozkazu dowуdcy oddziaіu Czystego Nieba, ktуry odwrуci uwagк wroga.</text>
+	</string>
+	<string id="hosp_task_z2_exit_name">
+		<text>Przejdџ do kolejnej sali</text>
+	</string>
+	<string id="hosp_task_z2_exit_text">
+		<text>Spadaj№cy helikopter zniszczyі њcianк, otwieraj№c przejњcie do nastкpnej sali. Wkrocz do niej.</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_name">
+		<text>Osіaniaj oddziaі Czystego Nieba</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_text">
+		<text>Oddziaі Czystego Nieba prуbuje wysadziж stanowisko karabinu maszynowego, ale atakuj№ go monolitianie. Osіaniaj ogniem oddziaі Czystego Nieba.</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_name">
+		<text>Utrzymaj siк do przybycia pomocy</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_text">
+		<text>Zbliїa siк oddziaі Czystego Nieba. Utrzymaj siк do nadejњcia posiіkуw.</text>
+	</string>
+</string_table>

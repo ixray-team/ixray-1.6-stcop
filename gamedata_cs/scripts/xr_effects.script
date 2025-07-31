@@ -46,8 +46,9 @@ function disable_ui(actor, npc)
 	if db.actor:is_talking() then
 		db.actor:stop_talk()
 	end
-	get_console():execute("hud_crosshair 0")
-	get_console():execute("hud_weapon 0")
+--	get_console():execute("hud_crosshair 0")
+--	get_console():execute("hud_weapon 0")
+    level.show_weapon(false)
 	level.disable_input()
 	level.hide_indicators_safe()
 	local hud = get_hud()
@@ -56,12 +57,11 @@ function disable_ui(actor, npc)
 end
 
 function enable_ui(actor, npc)
-		get_console():execute("hud_crosshair 1")
-		get_console():execute("hud_weapon 1")
-		level.enable_input()
-		level.show_indicators()
-		--db.actor:restore_weapon()
-		--printf("xr_effects <enable_ui>")
+--	get_console():execute("hud_crosshair 1")
+--	get_console():execute("hud_weapon 1")
+    level.show_weapon(true)
+    level.enable_input()
+    level.show_indicators()
 end
 
 local cam_effector_playing_object_id = nil
@@ -774,6 +774,11 @@ function on_tutor_gameover_stop()
 --  c:execute("disconnect")
 	printf("main_menu on console command is executed")
 	c:execute("main_menu on")
+end
+
+function on_tutor_gameover_quickload()
+	local c = get_console()
+	c:execute("load_last_save")
 end
 
 
@@ -1589,11 +1594,15 @@ function enable_level_changer(actor, npc, p)
 	if(p[1]~=nil) then
         local obj = level_object_by_sid(tonumber(p[1]))
         if(obj) then
+			if db.storage[obj:id()] and db.storage[obj:id()].s_obj then
+	            db.storage[obj:id()].s_obj.enabled = true
+    	        db.storage[obj:id()].s_obj.hint = "level_changer_invitation"
+			else
+				return
+			end
             obj:enable_level_changer(true)
             level_tasks.add_lchanger_location()
             obj:set_level_changer_invitation("level_changer_invitation")
-            db.storage[obj:id()].s_obj.enabled = true
-            db.storage[obj:id()].s_obj.hint = "level_changer_invitation"
 		end
 	end
 end
@@ -1602,6 +1611,9 @@ function disable_level_changer(actor, npc, p)
 	if(p[1]~=nil) then
         local obj = level_object_by_sid(tonumber(p[1]))
         if(obj) then
+			if not(db.storage[obj:id()] and db.storage[obj:id()].s_obj) then
+				return
+			end
             obj:enable_level_changer(false)
             level_tasks.del_lchanger_mapspot(tonumber(p[1]))
 			db.storage[obj:id()].s_obj.enabled = false

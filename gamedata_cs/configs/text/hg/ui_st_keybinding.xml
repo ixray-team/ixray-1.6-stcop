@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="kb_active_jobs">
+		<text>PDA</text>
+	</string>
+	<string id="kb_alife_command">
+		<text>Tбmadбsi parancs</text>
+	</string>
+	<string id="kb_always_run">
+		<text>Mйlyguggolбs</text>
+	</string>
+	<string id="kb_artefact">
+		<text>Relikvia</text>
+	</string>
+	<string id="kb_backward">
+		<text>Hбtra</text>
+	</string>
+	<string id="kb_binoculars">
+		<text>Messzelбtу</text>
+	</string>
+	<string id="kb_buy_menu">
+		<text>Vбsбrlбs menь</text>
+	</string>
+	<string id="kb_chat">
+		<text>Csevegйs</text>
+	</string>
+	<string id="kb_chat_team">
+		<text>Csapatcsevegйs</text>
+	</string>
+	<string id="kb_console">
+		<text>Konzol</text>
+	</string>
+	<string id="kb_contacts">
+		<text>PDA kapcsolatok</text>
+	</string>
+	<string id="kb_crouch">
+		<text>Guggolбs</text>
+	</string>
+	<string id="kb_crouch_toggle">
+		<text>Folyamatos guggolбs</text>
+	</string>
+	<string id="kb_down">
+		<text>Lefelй</text>
+	</string>
+	<string id="kb_drop">
+		<text>Eldobбs</text>
+	</string>
+	<string id="kb_fire">
+		<text>Tьzelйs</text>
+	</string>
+	<string id="kb_firemode_next">
+		<text>Kцvetkezх tьzelйsi mуd</text>
+	</string>
+	<string id="kb_firemode_prev">
+		<text>Elхzх tьzelйsi mуd</text>
+	</string>
+	<string id="kb_forward">
+		<text>Elхre</text>
+	</string>
+	<string id="kb_func">
+		<text>Grбnбtvetх</text>
+	</string>
+	<string id="kb_grp_common">
+		<text>Бltalбnos</text>
+	</string>
+	<string id="kb_grp_direction">
+		<text>Irбnyok</text>
+	</string>
+	<string id="kb_grp_inventory">
+		<text>Leltбr</text>
+	</string>
+	<string id="kb_grp_movement">
+		<text>Mozgбs</text>
+	</string>
+	<string id="kb_grp_multiplayer">
+		<text>Tцbbszemйlyes jбtйk</text>
+	</string>
+	<string id="kb_grp_weapons">
+		<text>Fegyver</text>
+	</string>
+	<string id="kb_inventory">
+		<text>Leltбr</text>
+	</string>
+	<string id="kb_jump">
+		<text>Ugrбs</text>
+	</string>
+	<string id="kb_left">
+		<text>Balra</text>
+	</string>
+	<string id="kb_left_lookout">
+		<text>Balra dхlйs</text>
+	</string>
+	<string id="kb_left_strafe">
+		<text>Balra oldalazбs</text>
+	</string>
+	<string id="kb_map">
+		<text>PDA tйrkйp</text>
+	</string>
+	<string id="kb_next_slot">
+		<text>Kцvetkezх fegyver</text>
+	</string>
+	<string id="kb_night_vision">
+		<text>Йjjellбtу</text>
+	</string>
+	<string id="kb_pause">
+		<text>Szьnet</text>
+	</string>
+	<string id="kb_pda">
+		<text>PDA</text>
+	</string>
+	<string id="kb_prev_slot">
+		<text>Elхzх fegyver</text>
+	</string>
+	<string id="kb_quit">
+		<text>Kilйpйs</text>
+	</string>
+	<string id="kb_reload">
+		<text>Ъjratцltйs</text>
+	</string>
+	<string id="kb_repair">
+		<text>Javнtбs</text>
+	</string>
+	<string id="kb_right">
+		<text>Jobbra</text>
+	</string>
+	<string id="kb_right_lookout">
+		<text>Jobbra dхlйs</text>
+	</string>
+	<string id="kb_right_strafe">
+		<text>Jobbra oldalazбs</text>
+	</string>
+	<string id="kb_scores">
+		<text>Pontszбm</text>
+	</string>
+	<string id="kb_screenshot">
+		<text>Pillanatfelvйtel</text>
+	</string>
+	<string id="kb_skin_menu">
+		<text>Megjelenйs menь</text>
+	</string>
+	<string id="kb_sprint">
+		<text>Sprint</text>
+	</string>
+	<string id="kb_team_menu">
+		<text>Csapat menь</text>
+	</string>
+	<string id="kb_torch">
+		<text>Zseblбmpa</text>
+	</string>
+	<string id="kb_turn_engine">
+		<text>Bekapcsolбs</text>
+	</string>
+	<string id="kb_up">
+		<text>Felfelй</text>
+	</string>
+	<string id="kb_use">
+		<text>Hasznбl</text>
+	</string>
+	<string id="kb_use_bandage">
+		<text>Gyorskцtцzйs</text>
+	</string>
+	<string id="kb_use_medkit">
+		<text>Gyors elsхsegйly</text>
+	</string>
+	<string id="kb_vote_begin">
+		<text>Szavazбs megkezdйse</text>
+	</string>
+	<string id="kb_vote_menu">
+		<text>Szavazбs</text>
+	</string>
+	<string id="kb_vote_no">
+		<text>"Igen" szavazat</text>
+	</string>
+	<string id="kb_vote_yes">
+		<text>"Nem" szavazat</text>
+	</string>
+	<string id="kb_weapon1">
+		<text>1-es fegyver</text>
+	</string>
+	<string id="kb_weapon2">
+		<text>2-es fegyver</text>
+	</string>
+	<string id="kb_weapon3">
+		<text>3-as fegyver</text>
+	</string>
+	<string id="kb_weapon4">
+		<text>4-es fegyver</text>
+	</string>
+	<string id="kb_weapon5">
+		<text>5-цs fegyver</text>
+	</string>
+	<string id="kb_weapon6">
+		<text>6-os fegyver</text>
+	</string>
+	<string id="kb_wpn_next">
+		<text>Lхszervбltбs</text>
+	</string>
+	<string id="kb_wpn_prev">
+		<text>Tнpus elхzх fegyvere</text>
+	</string>
+	<string id="kb_zoom">
+		<text>Kцzelнtйs</text>
+	</string>
+	<string id="speech_menu_group">
+		<text>Hangьzenet (1)</text>
+	</string>
+	<string id="speech_menu_personal">
+		<text>Hangьzenet (2)</text>
+	</string>
+	<string id="kb_detector">
+		<text>Йrzйkelх</text>
+	</string>
+</string_table>

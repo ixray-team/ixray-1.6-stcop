@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="af_neutral">
+		<text>Relikvia</text>
+	</string>
+	<string id="friend">
+		<text>Barбti</text>
+	</string>
+	<string id="mp_art_destroyed">
+		<text>Megsemmisьlt a relikvia!</text>
+	</string>
+	<string id="mp_art_spowned">
+		<text>Megjelent a relikvia! Vidd a bбzisodra, hogy szerezz egy pontot!</text>
+	</string>
+	<string id="mp_artefacts">
+		<text>relikvia</text>
+	</string>
+	<string id="mp_artefacts_upcase">
+		<text>Relikvia</text>
+	</string>
+	<string id="mp_auto_select">
+		<text>Automatikus vбl.</text>
+	</string>
+	<string id="mp_back">
+		<text>Vissza</text>
+	</string>
+	<string id="mp_ban">
+		<text>Kitiltбs</text>
+	</string>
+	<string id="mp_by_anomaly">
+		<text>egy anomбlia бltal</text>
+	</string>
+	<string id="mp_cancel">
+		<text>Mйgsem</text>
+	</string>
+	<string id="mp_change_map">
+		<text>Tйrkйpvбltбs</text>
+	</string>
+	<string id="mp_change_weather">
+		<text>Idхjбrбsvбltбs</text>
+	</string>
+	<string id="mp_chat">
+		<text>Csevegйs</text>
+	</string>
+	<string id="mp_connected">
+		<text>kapcsolуdva</text>
+	</string>
+	<string id="mp_deaths">
+		<text>halбl</text>
+	</string>
+	<string id="mp_description">
+		<text>Leнrбs</text>
+	</string>
+	<string id="mp_disconnected">
+		<text>levбlasztva</text>
+	</string>
+	<string id="mp_enter_text">
+		<text>Add meg a szavazбs szцvegйt</text>
+	</string>
+	<string id="mp_entered_game">
+		<text>belйpett a jбtйkba</text>
+	</string>
+	<string id="mp_first_eye">
+		<text>(Elsх szemйlyы nйzet)</text>
+	</string>
+	<string id="mp_frags">
+		<text>pont</text>
+	</string>
+	<string id="mp_frags_upcase">
+		<text>Pont</text>
+	</string>
+	<string id="mp_free_fly">
+		<text>(Szabad kamera)</text>
+	</string>
+	<string id="mp_free_look">
+		<text>(Harmadik szemйlyы nйzet)</text>
+	</string>
+	<string id="mp_from">
+		<text>ezzel:</text>
+	</string>
+	<string id="mp_go">
+		<text>RAJT!</text>
+	</string>
+	<string id="mp_has_drop_art">
+		<text>elejtett egy %s relikviбt</text>
+	</string>
+	<string id="mp_has_tak_art">
+		<text>felvett egy %s relikviбt</text>
+	</string>
+	<string id="mp_headhuntrs">
+		<text>Zsoldosok</text>
+	</string>
+	<string id="mp_is_now">
+		<text>most</text>
+	</string>
+	<string id="mp_joined">
+		<text>csatlakozott</text>
+	</string>
+	<string id="mp_kick">
+		<text>Kirъgбs</text>
+	</string>
+	<string id="mp_look_at">
+		<text>(Rцgzнtett)</text>
+	</string>
+	<string id="mp_map_desc">
+		<text>Tйrkйpleнrбs</text>
+	</string>
+	<string id="mp_match_started">
+		<text>Elkezdхdцtt a mйrkхzйs!</text>
+	</string>
+	<string id="mp_modes">
+		<text>Mуdok</text>
+	</string>
+	<string id="mp_name">
+		<text>nйv</text>
+	</string>
+	<string id="mp_next">
+		<text>Kцvetkezх</text>
+	</string>
+	<string id="mp_no_voted">
+		<text>Nem szavazott</text>
+	</string>
+	<string id="mp_ping">
+		<text>ping</text>
+	</string>
+	<string id="mp_player_wins">
+		<text>%s nyerte a mйrkхzйst!</text>
+	</string>
+	<string id="mp_players">
+		<text>Jбtйkos</text>
+	</string>
+	<string id="mp_press_fire2spectator">
+		<text>Nyomj Tьzelйs gombot, hogy szemlйlх mуdba vбlts</text>
+	</string>
+	<string id="mp_press_jump2pay_spaw">
+		<text>Nyomj Ugrбs gombot, hogy vбsбrolj egy azonnali ъjraйledйst</text>
+	</string>
+	<string id="mp_press_jump2select_skin">
+		<text>Nyomj Ugrбs gombot, hogy kivбlassz egy megjelenйst</text>
+	</string>
+	<string id="mp_press_jump2select_team">
+		<text>Nyomj Ugrбs gombot a csapatvбlasztбshoz</text>
+	</string>
+	<string id="mp_press_jump2spawn">
+		<text>Nyomj Ugrбs gombot az ъjraйledйshez</text>
+	</string>
+	<string id="mp_press_jump2start">
+		<text>Nyomj Ugrбs gombot a kezdйshez</text>
+	</string>
+	<string id="mp_press_to_buy">
+		<text>Nyomj ($$ACTION_BUY_MENU$$) gombot, hogy belйpj a vбsбrlбs menьbe</text>
+	</string>
+	<string id="mp_press_yes2pay">
+		<text>%d$ pйnzed van. %d$ alkalommal йledhetsz ъjra. A fizetйshez kattints az Igenre!</text>
+	</string>
+	<string id="mp_ready">
+		<text>Kйsz...</text>
+	</string>
+	<string id="mp_restart">
+		<text>Ъjraindнtбs</text>
+	</string>
+	<string id="mp_restart_fast">
+		<text>Gyors ъjraindнtбs</text>
+	</string>
+	<string id="mp_scores">
+		<text>pontot szerzett</text>
+	</string>
+	<string id="mp_select_ban">
+		<text>Vбlassz jбtйkost szavazбssal kitiltбshoz</text>
+	</string>
+	<string id="mp_select_category">
+		<text>Vбlassz szavazбs kategуriбt</text>
+	</string>
+	<string id="mp_select_kick">
+		<text>Vбlassz jбtйkost szavazбssal kirъgбshoz</text>
+	</string>
+	<string id="mp_select_kick_player">
+		<text>Vбlassz jбtйkost szavazбssal kirъgбshoz</text>
+	</string>
+	<string id="mp_select_map">
+		<text>Vбlassz tйrkйpet szavazбsra</text>
+	</string>
+	<string id="mp_si_afbearer_cant_sprint">
+		<text>Relikviбval valу sprint tiltбsa</text>
+	</string>
+	<string id="mp_si_afcount">
+		<text>- Szбmlбlу</text>
+	</string>
+	<string id="mp_si_afrespawntime">
+		<text>- Vбrakozбs</text>
+	</string>
+	<string id="mp_si_afstaytime">
+		<text>- Ъjraйledйsi idх</text>
+	</string>
+	<string id="mp_si_anomalies">
+		<text>Anomбliбk</text>
+	</string>
+	<string id="mp_si_anomalies_period">
+		<text>Anomбlia idхtartam</text>
+	</string>
+	<string id="mp_si_any_time">
+		<text>Bбrmikor</text>
+	</string>
+	<string id="mp_si_artefact_captured">
+		<text>Relikvia megkaparintva</text>
+	</string>
+	<string id="mp_si_artefacts">
+		<text>Relikviбk:</text>
+	</string>
+	<string id="mp_si_autoteam_balance">
+		<text>Automatikus csapategyensъly</text>
+	</string>
+	<string id="mp_si_autoteam_swap">
+		<text>Automatikus csapatcsere</text>
+	</string>
+	<string id="mp_si_disabled">
+		<text>Kikapcsolva</text>
+	</string>
+	<string id="mp_si_enabled">
+		<text>Bekapcsolva</text>
+	</string>
+	<string id="mp_si_first_eye">
+		<text>- Elsх szemйlyы</text>
+	</string>
+	<string id="mp_si_forcerespawn">
+		<text>Kйnyszerнtett ъjraйledйs</text>
+	</string>
+	<string id="mp_si_fraglimit">
+		<text>Gyilokhatбr</text>
+	</string>
+	<string id="mp_si_free_fly">
+		<text>- Szabadrepьlйs</text>
+	</string>
+	<string id="mp_si_free_look">
+		<text>- Szabad nйzйs</text>
+	</string>
+	<string id="mp_si_friendly_fire">
+		<text>Barбti tыz</text>
+	</string>
+	<string id="mp_si_friendly_indicators">
+		<text>Barбtmutatуk</text>
+	</string>
+	<string id="mp_si_friendly_names">
+		<text>Barбtnevek</text>
+	</string>
+	<string id="mp_si_infinite">
+		<text>Vйgtelen</text>
+	</string>
+	<string id="mp_si_invinsibility">
+		<text>Lбthatatlansбg:</text>
+	</string>
+	<string id="mp_si_invinsibility_indicators">
+		<text>- Mutatуk</text>
+	</string>
+	<string id="mp_si_invinsibility_time">
+		<text>- Idх</text>
+	</string>
+	<string id="mp_si_look_at">
+		<text>- Harmadik szemйlyы</text>
+	</string>
+	<string id="mp_si_maprotation">
+		<text>Tйrkйpforgatбs</text>
+	</string>
+	<string id="mp_si_min">
+		<text>perc</text>
+	</string>
+	<string id="mp_si_no">
+		<text>Nem</text>
+	</string>
+	<string id="mp_si_players_respawn">
+		<text>Ъjraйledйs</text>
+	</string>
+	<string id="mp_si_return_players">
+		<text>A jбtйkosok visszatйrtek a bбzisokra</text>
+	</string>
+	<string id="mp_si_sec">
+		<text>mp</text>
+	</string>
+	<string id="mp_si_servername">
+		<text>Szervernйv:</text>
+	</string>
+	<string id="mp_si_shielded_bases">
+		<text>Vйdett bбzisok</text>
+	</string>
+	<string id="mp_si_spectatormodes">
+		<text>Szemlйlх mуdok:</text>
+	</string>
+	<string id="mp_si_team_only">
+		<text>- Csak csapat</text>
+	</string>
+	<string id="mp_si_time_limit">
+		<text>Idхkorlбt</text>
+	</string>
+	<string id="mp_si_version">
+		<text>Verziу:</text>
+	</string>
+	<string id="mp_si_voting">
+		<text>Szavazбs</text>
+	</string>
+	<string id="mp_si_warmuptime">
+		<text>Bemelegнtйs</text>
+	</string>
+	<string id="mp_si_yes">
+		<text>Igen</text>
+	</string>
+	<string id="mp_skin_selection">
+		<text>Megjelenйs-vбlasztбs</text>
+	</string>
+	<string id="mp_spectator">
+		<text>Szemlйlх</text>
+	</string>
+	<string id="mp_spectators">
+		<text>SZEMLЙLХK</text>
+	</string>
+	<string id="mp_status">
+		<text>бllapot</text>
+	</string>
+	<string id="mp_switched_to">
+		<text>erre vбltott:</text>
+	</string>
+	<string id="mp_team_free_stalkers">
+		<text>Szabadsбg</text>
+	</string>
+	<string id="mp_team_selection">
+		<text>Csapatvбlasztбs</text>
+	</string>
+	<string id="mp_team_wins">
+		<text>%s csapata GYХZЦTT!</text>
+	</string>
+	<string id="mp_text">
+		<text>Szцveg</text>
+	</string>
+	<string id="mp_time2respawn">
+		<text>Idх az ъjraйledйsig:</text>
+	</string>
+	<string id="mp_time2start">
+		<text>Idх a kezdйsig:</text>
+	</string>
+	<string id="mp_timeleft">
+		<text>Hбtralevх idх: %d:%d; Megbeszйlt: %.2f</text>
+	</string>
+	<string id="mp_vote_hint">
+		<text>TБMOGATУ szavazat-[$$ACTION_VOTE_YES$$]\nELLENZХ szavazat-[$$ACTION_VOTE_NO$$]\nEredmйnyek-[$$ACTION_VOTE$$]</text>
+	</string>
+	<string id="mp_vote_no">
+		<text>Nem</text>
+	</string>
+	<string id="mp_vote_yes">
+		<text>Igen</text>
+	</string>
+	<string id="mp_voted">
+		<text>szavazott</text>
+	</string>
+	<string id="mp_voted_no">
+		<text>ellenzх</text>
+	</string>
+	<string id="mp_voted_yes">
+		<text>tбmogatу</text>
+	</string>
+	<string id="mp_voting_broken">
+		<text>A szavazбst megszakнtotta a szerver!</text>
+	</string>
+	<string id="mp_voting_started">
+		<text>%s' szavazбst %s indнtotta.</text>
+	</string>
+	<string id="mp_voting_started_msg">
+		<text>Elkezdхdцtt a szavazбs!</text>
+	</string>
+	<string id="mp_weather_clear">
+		<text>Tiszta</text>
+	</string>
+	<string id="mp_weather_cloudy">
+		<text>Borъs</text>
+	</string>
+	<string id="mp_weather_night">
+		<text>Йjszaka</text>
+	</string>
+	<string id="mp_weather_rain">
+		<text>Esх</text>
+	</string>
+	<string id="mp_with_backstab">
+		<text>Hбtbadцfйs!!!</text>
+	</string>
+	<string id="mp_with_headshot">
+		<text>Fejlцvйs!!!</text>
+	</string>
+	<string id="mp_your_rank">
+		<text>A jelenlegi rangod:</text>
+	</string>
+	<string id="self">
+		<text>Te vagy az</text>
+	</string>
+	<string id="st_mp_disabled_voting">
+		<text>A szavazбs nem elйrhetх ezen a szerveren.</text>
+	</string>
+	<string id="st_mp_no_current_voting">
+		<text>Nincs aktнv szavazat.</text>
+	</string>
+	<string id="st_mp_ready">
+		<text>kйsz</text>
+	</string>
+	<string id="st_mp_say_to_all">
+		<text>Mindenkinek</text>
+	</string>
+	<string id="st_mp_say_to_team">
+		<text>Csapatnak</text>
+	</string>
+	<string id="st_mp_voting_failed">
+		<text>Sikertelen szavazбs!</text>
+	</string>
+	<string id="st_mp_voting_succeed">
+		<text>Sikeres szavazбs!</text>
+	</string>
+	<string id="team_base_1">
+		<text>Szabadsбg bбzis</text>
+	</string>
+	<string id="team_base_2">
+		<text>Zsoldos bбzis</text>
+	</string>
+	<string id="ui_st_description">
+		<text>Leнrбs</text>
+	</string>
+	<string id="ui_st_team1_name">
+		<text>Szabadsбg</text>
+	</string>
+	<string id="ui_st_team2_name">
+		<text>Zsoldosok</text>
+	</string>
+	<string id="mp_returned_artefact">
+		<text>visszajuttatta a relikviбt</text>
+	</string>
+	<string id="mp_captured_artefact">
+		<text>megszerezte a relikviбt</text>
+	</string>
+	<string id="mp_you_captured_artefact">
+		<text>Megszerezted az ellensйg relikviбjбt, vidd el a relikviбtokhoz!</text>
+	</string>
+	<string id="mp_has_dropped_artefact">
+		<text>elveszнtette a relikviбt</text>
+	</string>
+	<string id="mp_artefact_dropped">
+		<text>Relikvia elveszнtve</text>
+	</string>
+	<string id="mp_artefact_on_base">
+		<text>Relikvia a bбzisunkon</text>
+	</string>
+	<string id="mp_artefact_on_enemy_base">
+		<text>Relikvia az ellensйg bбzisбn</text>
+	</string>
+	<string id="ui_st_map_not_found">
+		<text>Tйrkйp nem talбlhatу.</text>
+	</string>
+	<string id="ui_st_map_data_corrupted">
+		<text>A tйrkйp йrvйnytelen vagy sйrьlt.</text>
+	</string>
+	<string id="ui_st_btn_copy_url">
+		<text>Hivatkozбs mбsolбsa</text>
+	</string>
+	<string id="ui_st_btn_download_map">
+		<text>Tйrkйp letцltйse</text>
+	</string>
+	<string id="mp_you_captured_own_artefact">
+		<text>Felvetted a relikviбt. Aktivбld, majd vidd vissza a bбzisra!</text>
+	</string>
+	<string id="mp_sport_center">
+		<text>Sportkцzpont</text>
+	</string>
+	<string id="mp_training_camp">
+		<text>Kikйpzхtбbor</text>
+	</string>
+	<string id="mp_rembasa">
+		<text>Javнtубllomбs</text>
+	</string>
+	<string id="mp_military_2">
+		<text>Цreg falu</text>
+	</string>
+	<string id="mp_firestation">
+		<text>Tыzoltубllomбs</text>
+	</string>
+	<string id="mp_garbage">
+		<text>Szemйtdomb</text>
+	</string>
+	<string id="mp_limansk">
+		<text>Limanszk</text>
+	</string>
+	<string id="mm_mp_max_ping">
+		<text>max ping</text>
+	</string>
+	<string id="modes">
+		<text>Mуdok</text>
+	</string>
+	<string id="st_mp_only_one_voting">
+		<text>Csak egy aktнv szavazat engedйlyezett</text>
+	</string>
+	<string id="mp_si_battleye">
+		<text>Battleye</text>
+	</string>
+	<string id="mp_si_max_ping">
+		<text>Max ping</text>
+	</string>
+	<string id="st_kicked_by_server ">
+		<text>Kirъgott a szerver</text>
+	</string>
+	<string id="ui_st_team">
+		<text>Csapat</text>
+	</string>
+</string_table>

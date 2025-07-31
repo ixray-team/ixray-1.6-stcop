@@ -32,9 +32,20 @@ function give_reward_for_destroy_killer_base(first_speaker, second_speaker)
 end
 
 function freedom_join_reward(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "svoboda_heavy_outfit")
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_sig550_up2")
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_addon_scope_susat")
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_5.56x45_ap", 3)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "medkit_scientic", 3)
+	if not has_alife_info("val_joined_freedom") then
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "svoboda_heavy_outfit")
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_sig550_up2")
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_addon_scope_susat")
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_5.56x45_ap", 3)
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "medkit_scientic", 3)
+		db.actor:give_info_portion("val_joined_freedom")
+	end
+end
+
+function barman_give_reward_for_bandits(first_speaker, second_speaker)
+	dialogs.relocate_money(first_speaker, 1000, "in")
+end
+
+function is_bloobsucker_task_complete(first_speaker, second_speaker)
+	return has_alife_info("val_night_bloodsucker_complete") or has_alife_info("val_night_bloodsucker_fail")
 end

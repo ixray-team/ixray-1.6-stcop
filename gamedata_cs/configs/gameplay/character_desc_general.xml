@@ -1084,7 +1084,7 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_ak74 \n
+      wpn_ak74_up2 \n
       ammo_5.45x39_ap = 1 \n
       wpn_beretta = 1 \n
       ammo_9x19_fmj = 1 \n
@@ -1114,9 +1114,69 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_lr300 \n
+      wpn_lr300_up2 \n
       ammo_5.56x45_ap = 1 \n
       wpn_beretta = 1 \n
+      ammo_9x19_fmj = 1 \n
+      grenade_f1 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+  <specific_character id="sim_default_freedom_3_default_2" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>sim_default_freedom_3</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+
+    <rank>750</rank>
+    <reputation>0</reputation>
+	<money min="2500" max="5000" infinitive="0"/>
+    <visual>actors\stalker_freedom\stalker_freedom_3</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300_up2 = 1, scope \n
+      ammo_5.56x45_ap = 1 \n
+      wpn_fort = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_f1 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+  <specific_character id="sim_default_freedom_3_default_3" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_freedom_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>sim_default_freedom_3</class>
+    <community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+
+    <rank>750</rank>
+    <reputation>0</reputation>
+	<money min="2500" max="5000" infinitive="0"/>
+    <visual>actors\stalker_freedom\stalker_freedom_3</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_svu \n
+      ammo_7.62x54_7h1 = 1 \n
+      wpn_walther = 1 \n
       ammo_9x19_fmj = 1 \n
       grenade_f1 = 1 \n
 #include "gameplay\character_items.xml"
@@ -1145,8 +1205,8 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_sig550 = 1 \n
-      ammo_5.56x45_ap = 1 \n
+      wpn_svd = 1 \n
+      ammo_7.62x54_7h1 = 1 \n
       wpn_usp \n
       ammo_11.43x23_fmj = 1 \n
       grenade_f1 = 1 \n
@@ -1527,8 +1587,8 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_ak74 \n
-      ammo_5.45x39_ap = 1 \n
+      wpn_val \n
+      ammo_9x39_ap = 1 \n
       wpn_desert_eagle \n
       ammo_11.43x23_fmj = 1 \n
       grenade_rgd5 = 1 \n
@@ -1557,9 +1617,9 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_ak74 \n
-      ammo_5.45x39_ap = 1 \n
-      wpn_colt1911 \n
+      wpn_val \n
+      ammo_9x39_ap = 1 \n
+      wpn_desert_eagle \n
       ammo_11.43x23_fmj = 1 \n
       grenade_rgd5 = 1 \n
 #include "gameplay\character_items.xml"

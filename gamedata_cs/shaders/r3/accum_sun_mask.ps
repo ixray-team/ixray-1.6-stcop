@@ -4,10 +4,18 @@
 #define EPS	(0.9f/255.f)
 //#define EPS	(40.f/255.f)
 #define CLIP_THRESHOLD	(1.0f/255.f)
+#ifdef MSAA_OPTIMIZATION
+#ifdef GBUFFER_OPTIMIZATION
+float4 main ( p_TL I, float4 pos2d : SV_Position, uint iSample : SV_SAMPLEINDEX ) : SV_Target
+#else
+float4 main ( p_TL I, uint iSample : SV_SAMPLEINDEX ) : SV_Target
+#endif
+#else
 #ifdef GBUFFER_OPTIMIZATION
 float4 main ( p_TL I, float4 pos2d : SV_Position ) : SV_Target
 #else
 float4 main ( p_TL I ) : SV_Target
+#endif
 #endif
 {
   	// Sample the fat framebuffer:

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_defend_bandit_base_name">
+		<text>Broс bazy bandytуw</text>
+	</string>
+	<string id="gar_defend_bandit_base_text">
+		<text>Broс bazy bandytуw przed atakiem wroga</text>
+	</string>
+	<string id="gar_quest_bring_money_name">
+		<text>Dostarcz Naprowi po zmroku dwa tysi№ce gotуwk№</text>
+	</string>
+	<string id="gar_quest_bring_money_text">
+		<text>Kup od Dzikiego Napra z pchlego targu apteczkк za dwa tysi№ce. Tak duїe operacje na pchlim targu przeprowadza siк noc№.</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_name">
+		<text>Dostarcz Dzikiemu Naprowi stare PDA</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_text">
+		<text>Dostarcz Dzikiemu Naprowi z pchlego targu stare PDA, ktуre znalazіeњ w faіszywym dnie skrzynki narzкdziowej w zniszczonym obozie Њwieїaka.</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_name">
+		<text>Zabij zdrajcк</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_text">
+		<text>Zabij Stringowa za wprowadzenie ciк w zasadzkк.</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_name">
+		<text>Przejmij wraz z bandytami pchli targ</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_text">
+		<text>Urz№dџ kopaczom na pchlim targu masakrк, aby daж innym nauczkк; zadbaj, aby na straїy pozostaі jeden z bandytуw.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_name">
+		<text>Wyjmij stare PDA ze skrzynki narzкdziowej</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_text">
+		<text>Znajdџ stare PDA w obozie Њwieїaka, aby zanieњж je Dzikiemu Naprowi. PDA powinno byж ukryte w faіszywym dnie skrzynki narzкdziowej.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_name">
+		<text>Zabierz stare PDA z obozu Њwieїaka</text>
+	</string>
+	<string id="gar_quest_get_old_pda_text">
+		<text>Zabierz Њwieїakowi jego stare PDA, aby zanieњж je Dzikiemu Naprowi. Jeњli Њwieїaka nie bкdzie, zabierz PDA z faіszywego dna skrzynki narzкdziowej.</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_name">
+		<text>Zabierz fanty ze zwіok Stringowa</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_text">
+		<text>Przeszukaj zwіoki Stringowa i zabierz wszystko, co ma jak№њ wartoњж.</text>
+	</string>
+	<string id="gar_quest_get_weapons_name">
+		<text>Dostarcz Stringowowi dwa tysi№ce</text>
+	</string>
+	<string id="gar_quest_get_weapons_text">
+		<text>Dostarcz Stringowowi dwa tysi№ce gotуwk№, aby kupiі partiк szmuglowanej broni.</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_name">
+		<text>Zlikwiduj goњcia znanego jako Stringow</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_text">
+		<text>Zabij goњcia nazwiskiem Stringow - zgodnie z poleceniem Jogi.</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_name">
+		<text>Zlikwiduj przemytnika i kopaczy</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_text">
+		<text>Zabij przemytnika i prуbuj№cych kupiж od niego broс kopaczy.</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_name">
+		<text>Zniszcz nocnych іowcуw</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_text">
+		<text>Odszukaj i zniszcz istoty poluj№ce na kopaczy. Poszukiwania moїesz zacz№ж w miejscu, w ktуrym zaatakowali grupк uratowanych. Bardzo moїliwe, їe moїna je odnaleџж tylko noc№.</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_name">
+		<text>Zlikwiduj straїnikуw bandyckiego obozu koncentracyjnego</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_text">
+		<text>Wraz z oddziaіem kopaczy zlikwiduj straїnikуw bandyckiego obozu koncentracyjnego i uwolnij wiкџniуw.</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_name">
+		<text>Spotkaj siк z oddziaіem kopaczy</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_text">
+		<text>Spotkaj siк z oddziaіem kopaczy i poprowadџ atak na bandycki obуz koncentracyjny.</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_name">
+		<text>Pomуw z Dzikim Naprem</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_text">
+		<text>Dowiedz siк, jakie to waїne sprawy ma do ciebie Dziki Napr w kwestii pchlego targu.</text>
+	</string>
+	<string id="gar_story_chase_digger_name">
+		<text>Wydob№dџ informacje z posіaсca kopaczy</text>
+	</string>
+	<string id="gar_story_chase_digger_text">
+		<text>Pomуw z posіaсcem kopaczy i dowiedz siк, gdzie poszedі Kieі.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_name">
+		<text>Odszukaj Kіa</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_text">
+		<text>Odszukaj Kіa w piwnicy korzystaj№c z jego sygnaіu PDA.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_name">
+		<text>Dogoс Kіa</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_text">
+		<text>Dogoс Kіa korzystaj№c z jego sygnaіu PDA.</text>
+	</string>
+	<string id="gar_story_find_cache_name">
+		<text>Odszukaj schowek</text>
+	</string>
+	<string id="gar_story_find_cache_text">
+		<text>Odszukaj schowek grupy Kіa.</text>
+	</string>
+	<string id="gar_story_find_diggers_name">
+		<text>Zasiкgnij u kopaczy informacji o Kle</text>
+	</string>
+	<string id="gar_story_find_diggers_text">
+		<text>Sprуbuj dowiedzieж siк, gdzie przebywa Kieі rozmawiaj№c z kopaczami, ktуrych wedіug handlarza miaі odwiedziі.</text>
+	</string>
+	<string id="gar_story_get_pda_name">
+		<text>Podnieњ PDA Kіa</text>
+	</string>
+	<string id="gar_story_get_pda_text">
+		<text>Podnieњ PDA upuszczone przez kіa</text>
+	</string>
+	<string id="gar_story_go_to_freedom_name">
+		<text>Pod№ї za Kіem do Doliny Mroku</text>
+	</string>
+	<string id="gar_story_go_to_freedom_text">
+		<text>Pod№ї za Kіem do Doliny Mroku.</text>
+	</string>
+	<string id="gar_story_kill_dogs_name">
+		<text>Zabij њlepe psy</text>
+	</string>
+	<string id="gar_story_kill_dogs_text">
+		<text>Zabij њlepe psy blokuj№ce posіaсca kopaczy w dolinie.</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_name">
+		<text>Przeszukaj zwіoki kopacza</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_text">
+		<text>Poszukaj przy zwіokach kopacza informacji o Kle.</text>
+	</string>
+	<string id="gar_quest_bandit_reward_name">
+		<text>Odbierz od Zкba sw№ nagrodк</text>
+	</string>
+	<string id="gar_quest_bandit_reward_text">
+		<text>Idџ do handlarza Zкba i odbierz nagrodк za oczyszczenie pchlego targu.</text>
+	</string>
+	<string id="gar_quest_bandit_secret_name">
+		<text>Zabierz karabin ze schowka w anomalii</text>
+	</string>
+	<string id="gar_quest_bandit_secret_text">
+		<text>Zabierz karabin, o ktуrym mуwiі Joga ze schowka w anomalii</text>
+	</string>
+	<string id="gar_quest_captive_reward_name">
+		<text>Zabierz іup ze schowka</text>
+	</string>
+	<string id="gar_quest_captive_reward_text">
+		<text>Zabierz іup ze starego schowka wykorzystywanego przez kopaczy uwolnionych z obozu koncentracyjnego.</text>
+	</string>
+	<string id="gar_quest_more_reward_name">
+		<text>Zaї№daj nagrody od Jogi</text>
+	</string>
+	<string id="gar_quest_more_reward_text">
+		<text>Zarz№dzaj od Jogi dodatkowej nagrody za oczyszczenie pchlego targu.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_name">
+		<text>Odszukaj informacje o wzmocnionej kamizelce kuloodpornej</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_text">
+		<text>Zanieњ Limpidowi flachк alkoholu i informacje o wzmocnionej kamizelce kuloodpornej. Byж moїe zdoіa w zamian zamontowaж coњ podobnego na twoim kombinezonie.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_name">
+		<text>Odszukaj informacje o ekranowaniu kombinezonu</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_text">
+		<text>Limpid nigdy nie sіyszaі o emisjach psionicznych, ale jeњli dostarczysz mu niezbкdnych informacji, zіoїy i zainstaluje na twoim kombinezonie ukіad chroni№cy ciк przed nimi.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_name">
+		<text>Odszukaj informacje o aparacie tlenowym o obiegu zamkniкtym</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_text">
+		<text>Technik bandytуw, Limpid, wiele potrafi, ale do zainstalowania w kombinezonie aparatu tlenowego o obiegu zamkniкtym bкdzie potrzebowaі dodatkowych informacji.</text>
+	</string>
+	<string id="gar_quest_redemption_name">
+		<text>Odzyskaj swoje fanty</text>
+	</string>
+	<string id="gar_quest_redemption_text">
+		<text>Odzyskaj przedmioty zabrane ci przez bandytуw w pobliїu pchlego targu.</text>
+	</string>
+	<string id="gar_recover_item_1_name">
+		<text>Zwrуж Chasera 13</text>
+	</string>
+	<string id="gar_recover_item_1_text">
+		<text>Posіuchaj historyjki: jeden z chіopakуw zіapaі durnego kopacza i zabraі go na spacer miкdzy anomaliami. Obaj zginкli w Grawi. Tak bywa, ale goњж zabraі na misjк Chasera, ktуry tam zostaі. Byіoby miіo, gdybyњ go odzyskaі.</text>
+	</string>
+	<string id="gar_recover_item_2_name">
+		<text>Odszukaj zmodyfikowan№ broс</text>
+	</string>
+	<string id="gar_recover_item_2_text">
+		<text>Bracie - mуgіbyњ coњ dla mnie zrobiж. Siedzieliњmy u Limpida, gdy szykowaі dla kogoњ њwietn№ spluwк z rуїnymi modyfikacjami. Ten goњж nie umiaі siк dogadaж z naszym szefem, Joga kazaі nam wiкc sprawiж, aby znikn№і. Wpкdziliњmy go po cichu w jakieњ anomalie i byі spokуj - ale spluwa tam zostaіa. Przynieњ mi tк broс, a zadbam, aby Z№b nie poїaіowaі ci nagrody.</text>
+	</string>
+	<string id="gar_recover_item_3_name">
+		<text>Dostarcz flaszkк wуdki "Kozak"</text>
+	</string>
+	<string id="gar_recover_item_3_text">
+		<text>Pomуї mi, przynieњ jakiњ trunek. Tylko nie to њwiсstwo, ktуre tu wszyscy іaduj№. Ukryіem kilka flaszek solidnego alkoholu, ale nie mogк sam tam teraz pуjњж. Przynieњ to mi - tylko їeby nikt tam za tob№ nie poszedі!</text>
+	</string>
+	<string id="gar_recover_item_4_name">
+		<text>Zwrуж kurtkк nowicjusza</text>
+	</string>
+	<string id="gar_recover_item_4_text">
+		<text>Z Kordonu przypaікtaі siк tu niedawno taki goњж - zielony i wkurzaj№cy. Opowiadaі wszystkim o swej magicznej kurtce, ktуra miaіa rzekomo radziж sobie z kaїd№ anomali№. Nie zamkn№і siк nawet po schwytaniu przez bandytуw - dopуki nie wpкdzili go w Grawi. Frajer miaі racjк - kurtce faktycznie nic siк nie staіo. Przydaіaby mi siк taka, jeњli mi j№ przyniesiesz.</text>
+	</string>
+	<string id="gar_recover_item_5_name">
+		<text>Przynieњ pistolet z inskrypcj№</text>
+	</string>
+	<string id="gar_recover_item_5_text">
+		<text>Moїesz mi w czymњ pomуc. Miaіem pistolet - nic niezwykіego, ale daі mi go dziadek. Zgubiіem go, byі problem... Schlaliњmy siк i postanowiliњmy przestraszyж kilku bandziorуw. Zakradliњmy siк noc№ do ich obozu i zaczкliњmy udawaж mutanty. Okazaіo siк, їe nie ma tam їadnych bandytуw - zaatakowaіy mnie dwie pijawki. Ledwie uszіem z їyciem, gubi№c tam pistolet.</text>
+	</string>
+</string_table>

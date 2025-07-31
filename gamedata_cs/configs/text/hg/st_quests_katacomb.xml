@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hospital_task_general_text">
+		<text>Talбld meg a katakombбk bejбratбt!</text>
+	</string>
+	<string id="hospital_task_general_title">
+		<text>Talбld meg a katakombбk bejбratбt!</text>
+	</string>
+	<string id="katacomb_task_3_objective_1">
+		<text>Tarts ki, amнg megйrkezik a Tiszta Йgbolt osztag!</text>
+	</string>
+	<string id="katacomb_task_3_objective_2">
+		<text>Segнts a Tiszta Йgbolt osztagnak!</text>
+	</string>
+	<string id="katacomb_task_3_text">
+		<text>Verekedd бt magad a katakombбk bejбratбig!</text>
+	</string>
+	<string id="katacomb_task_3_title">
+		<text>Verekedd бt magad a katakombбk bejбratбig!</text>
+	</string>
+	<string id="katacomb_task_helicopter_text">
+		<text>Intйzd el a helikoptert!</text>
+	</string>
+	<string id="katacomb_task_helicopter_title">
+		<text>Intйzd el a helikoptert!</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_text">
+		<text>Цld meg a mesterlцvйszt!</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_title">
+		<text>Цld meg a mesterlцvйszt!</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_1">
+		<text>Menj tovбbb a fцldszintre vezetх lйpcsхhцz!</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_2">
+		<text>Rohanj keresztьl a fцldszinten!</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_3">
+		<text>Йrd el a hidat!</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_4">
+		<text>Juss бt a hнdon!</text>
+	</string>
+	<string id="katacomb_task_sniper_back_text">
+		<text>Segнts a Tiszta Йgbolt osztagnak elmenekьlnie az ellensйg tбmadбsa elхl!</text>
+	</string>
+	<string id="katacomb_task_sniper_back_title">
+		<text>Lopуzz az ellensйges mesterlцvйsz kцzelйbe!</text>
+	</string>
+	<string id="katacomb_task_z2_exit_text">
+		<text>Menj tovбbb a harmadik csarnokba!</text>
+	</string>
+	<string id="katacomb_task_z2_exit_title">
+		<text>Menj tovбbb a harmadik csarnokba!</text>
+	</string>
+</string_table>

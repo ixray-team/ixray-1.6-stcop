@@ -27,7 +27,7 @@ function evaluator_on_position:__init(name, storage) super (nil, name)
 	self.a = storage
 end
 function evaluator_on_position:evaluate()
-    if self.object:level_vertex_id() == self.a.pos_vertex then
+		if self.object:level_vertex_id() == self.a.pos_vertex then
 		return true
 	end
 	return false
@@ -166,7 +166,7 @@ function CKampManager:__init(path)
 	for k = 1, self.patrol:count() - 1 do
 		-- если есть 1 или 2 флажок - отметить сектор как занятый
 		if self.patrol:flag(k,1) or
-		   self.patrol:flag(k,2)
+			 self.patrol:flag(k,2)
 		then
 			-- отметить сектор как занятый
 			for key,value in pairs(self.position) do
@@ -302,6 +302,7 @@ function CKampManager:getDestVertex(npc, radius)
  		local tmp_pos = vector():set(0,0,0)
 		tmp_pos.x = pp.x + dir.x * radius
 		tmp_pos.z = pp.z + dir.z * radius
+		tmp_pos.y = pp.y
 	 	dest_vertex = level.vertex_id(tmp_pos)
 	 	if dest_vertex == 4294967295 then
 	 		if radius < 1 then
@@ -335,7 +336,7 @@ function CKampManager:proceedState(npc)
 		end
 	end
 	if self.begin ~= nil and
-	   time_global() - self.begin < self.timeout[self.kamp_state].min
+		 time_global() - self.begin < self.timeout[self.kamp_state].min
 	then
 		return
 	end
@@ -410,7 +411,7 @@ function CKampManager:proceedRole(npc, director)
 	local npc_id = npc:id()
 	-- Выбирать новое состояние только раз в какое то время.
 	if self.npc[npc_id].begin == nil or
-	   time_global() - self.npc[npc_id].begin >= self.npc[npc_id].state_idle
+		 time_global() - self.npc[npc_id].begin >= self.npc[npc_id].state_idle
 	then
 		if director then
 			states = self.avail_state[self.kamp_state].directed
@@ -543,7 +544,7 @@ function CKampManager:checkNpcAbility(npc)
 	local npc_id = npc:id()
 
 	if npc:character_community() ~= "monolith" and
-	   npc:character_community() ~= "zombied"
+		 npc:character_community() ~= "zombied"
 	then
 		-- есть колбасу
 		if npc:object("kolbasa") then
@@ -609,7 +610,7 @@ function CKampManager:addNpc(npc)
 	end
 
 	if npc:character_community() == "monolith" or
-	   npc:character_community() == "zombied"
+		 npc:character_community() == "zombied"
 	then
 		self.npc[npc:id()] = {name = npc:name(), position = nil, current = nil, speak = 0, states = {
 								stand_wait = false, sit = false, sit_ass = false, sit_knee = false, declarate = true,
