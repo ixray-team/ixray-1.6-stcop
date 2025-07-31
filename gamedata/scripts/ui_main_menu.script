@@ -46,17 +46,6 @@ function main_menu:InitControls()
 		self:Register(btn, "russian_lang")
 	end
 	-- IX-Ray end
-
-    self.l_mgr = mm:GetLoginMngr()
-    self.acc_mgr = mm:GetAccountMngr()
-    self.profile_store = mm:GetProfileStore()
-    self.gs_profile = self.l_mgr:get_current_profile()
-
-    if (self.gs_profile and not(level.present())) then
-		self.shniaga:ShowPage(CUIMMShniaga.epi_new_network_game) --fake
-		self.shniaga:SetPage(CUIMMShniaga.epi_main, "ui_mm_main.xml", "menu_main_logout")
-		self.shniaga:ShowPage(CUIMMShniaga.epi_main)
-    end
 end
 
 function main_menu:Show(f)

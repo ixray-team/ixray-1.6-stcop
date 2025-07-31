@@ -12,6 +12,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "smart_cover.h"
+#include "../xrScripts/script_callback_ex.h"
 
 bool CScriptGameObject::use_smart_covers_only		() const
 {

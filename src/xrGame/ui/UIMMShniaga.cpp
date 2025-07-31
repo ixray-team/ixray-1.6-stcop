@@ -11,7 +11,6 @@
 #include "object_broker.h"
 #include "../Actor.h"
 #include "../saved_game_wrapper.h"
-#include "../login_manager.h"
 #include "MainMenu.h"
 #include "../gamespy/GameSpy_Full.h"
 
