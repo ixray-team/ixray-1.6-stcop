@@ -125,6 +125,27 @@ function options_dialog:UpdateDependControls()
 	for i,j in pairs(self.m_preconditions) do
 		j				(i, _current_id, _ssample_trb_val, _ssample_cb_val)
 	end
+
+	self:UpdateMSAA()
+end
+
+function options_dialog:UpdateMSAA()
+	local _r3_msaa_opt_enabled	= self.chk_r3_msaa_opt:GetCheck()
+	local bNeedResetValue = false
+	local _id = 2
+	if _r3_msaa_opt_enabled then
+		self.r3_msaa_alphatest:enable_id(_id)
+	else
+		bNeedResetValue = (self.r3_msaa_alphatest:CurrentID()==_id)
+		self.r3_msaa_alphatest:disable_id(_id)
+	end
+
+	self.r3_msaa_alphatest:SetCurrentValue()
+
+	if bNeedResetValue then
+		self.r3_msaa_alphatest:SetCurrentID(1)
+	end
+
 end
 
 function options_dialog:InitCallBacks()
@@ -142,7 +163,9 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
 	self:AddCallback("trb_ssample",			ui_events.BUTTON_CLICKED,	self.UpdateDependControls,	self)
 	self:AddCallback("cb_ssample",			ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
+	self:AddCallback("check_r3_msaa_opt",	ui_events.BUTTON_CLICKED,	self.UpdateMSAA,			self)
 	
+
 end
 
 function options_dialog:OnBtnCheckUpdates()
