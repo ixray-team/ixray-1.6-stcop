@@ -7,7 +7,8 @@ meet = meet
 invulnerable = true
 path_walk = yan_walker_saharov_walk
 path_look = yan_walker_saharov_look
-on_info = {+yan_actor_away_saharov} camper@1
+on_info = {+yan_actor_away_saharov =dist_to_actor_le(5)} camper@1
+on_info2 = {+yan_actor_away_saharov !dist_to_actor_le(5)} camper@1 %=play_sound(yan_scientist_start_frase:yan_st_sakharov_name)%
 combat_ignore_cond = always
 def_state_moving1 = yan_professor_walk
 def_state_moving2 = yan_professor_walk
