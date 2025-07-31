@@ -1398,35 +1398,97 @@ void CWeaponMagazined::ResetSilencerKoeffs()
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion("anm_show", FALSE, this, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_show"), FALSE, GetState());
 }
 
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
-	PlayHUDMotion("anm_hide", TRUE, this, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_hide"), TRUE, GetState());
+}
+
+shared_str CWeaponMagazined::SetCurrentReloadAnimation()
+{
+	shared_str anim = "anm_reload";
+
+	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
+	{
+		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+		if (IsMisfire())
+		{
+			AddSuffixName(anim, "_misfire");
+			AddSuffixName(anim, "_jammed");
+
+			if (empty)
+			{
+				AddSuffixName(anim, "_last");
+			}
+		}
+		else if (empty)
+		{
+			AddSuffixName(anim, "_empty");
+		}
+
+		if (IsChangeAmmoType())
+		{
+			AddSuffixName(anim, "_ammochange");
+		}
+
+		if (ScopeAttachable() && !IsScopeAttached())
+		{
+			AddSuffixName(anim, "_noscope");
+		}
+
+	}
+
+	return anim;
+}
+
+shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_name)
+{
+	shared_str anim = first_name;
+
+	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
+	{
+		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+
+		if (IsZoomed())
+		{
+			AddSuffixName(anim, "_aim");
+		}
+
+		if (IsMisfire())
+		{
+			AddSuffixName(anim, "_misfire");
+			AddSuffixName(anim, "_jammed");
+		}
+		else if (empty)
+		{
+			AddSuffixName(anim, "_empty");
+		}
+
+		if (ScopeAttachable() && !IsScopeAttached())
+		{
+			AddSuffixName(anim, "_noscope");
+		}
+	}
+
+	return anim;
 }
 
 void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
-
-	bool need_full_reload = HudAnimationExist("anm_reload_empty") && (m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0);
-
-	if (HudAnimationExist("anm_reload_misfire") && IsMisfire())
+	PlayHUDMotion(SetCurrentReloadAnimation(), TRUE, GetState());
+	if (ParentIsActor() && IsMisfire() && (HudAnimationExist("anm_reload_misfire") || HudAnimationExist("anm_reload_jammed")))
 	{
-		PlayHUDMotion("anm_reload_misfire", TRUE, this, GetState());
 		bMisfireReload = true;
 	}
-	else if (need_full_reload)
-		PlayHUDMotion("anm_reload_empty", TRUE, this, GetState());
-	else
-		PlayHUDMotion("anm_reload", TRUE, this, GetState());
 }
 
 void CWeaponMagazined::PlayAnimAim()
 {
-	PlayHUDMotion("anm_idle_aim", TRUE, nullptr, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_aim"), TRUE, GetState());
 }
 
 void CWeaponMagazined::PlaySoundAim(bool in)
@@ -1445,13 +1507,49 @@ void CWeaponMagazined::PlayAnimIdle()
 	if (IsZoomed())
 		PlayAnimAim();
 	else
-		inherited::PlayAnimIdle();
+	{
+		if (TryPlayAnimIdle())
+		{
+			return;
+		}
+
+		shared_str new_name = SetCurrentIdleAnimation();
+
+		PlayHUDMotion(SetCurrentStateAnimation(new_name), TRUE, GetState());
+	}
+}
+
+shared_str CWeaponMagazined::SetCurrentShootAnimation()
+{
+	bool last = m_bAmmoInChamber ? iAmmoChamberElapsed == 1 && iAmmoElapsed == 0 : iAmmoElapsed == 1;
+	shared_str anim = HudAnimationExist("anm_shoot") ? "anm_shoot" : HudAnimationExist("anm_shot_l") && last ? "anm_shot_l" : "anm_shots";
+
+	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
+	{
+		if (IsZoomed())
+		{
+			AddSuffixName(anim, "_aim");
+		}
+
+		if (IsMisfire())
+		{
+			AddSuffixName(anim, "_misfire");
+			AddSuffixName(anim, "_jammed");
+		}
+		else if (last)
+		{
+			AddSuffixName(anim, "_last");
+			AddSuffixName(anim, "_l");
+		}
+	}
+
+	return anim;
 }
 
 void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState()==eFire);
-	PlayHUDMotion("anm_shots", FALSE, this, GetState());
+	PlayHUDMotion(SetCurrentShootAnimation(), FALSE, GetState());
 }
 
 void CWeaponMagazined::OnZoomIn			()
