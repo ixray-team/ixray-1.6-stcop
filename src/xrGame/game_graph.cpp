@@ -7,11 +7,19 @@ CGameGraph::CGameGraph(const IReader& _stream)
 	m_header.load(&stream);
 
 	const u32 AIVersion = header().version();
-	R_ASSERT2(AIVersion >= XRAI_MINIMAL_VERSION && AIVersion <= XRAI_CURRENT_VERSION, "Graph version mismatch!");
+	R_ASSERT2(AIVersion >= XRAI_SOC_VERSION && AIVersion <= XRAI_CURRENT_VERSION, "Graph version mismatch!");
 	m_edges = (BYTE*)_stream.pointer();
 	m_nodes = (CVertex*)_stream.pointer();
 	m_current_level_some_vertex_id = _GRAPH_ID(-1);
 	m_enabled.assign(header().vertex_count(), true);
+
+	if (header().version() <= XRAI_SOC_VERSION)
+	{
+		m_cross_tables = nullptr;
+		m_current_level_cross_table = nullptr;
+		return;
+	}
+
 	u8* temp = (u8*)(m_nodes + header().vertex_count());
 	temp += header().edge_count() * sizeof(CGameGraph::CEdge);
 	m_cross_tables = (u32*)(((CLevelPoint*)temp) + header().death_point_count());
@@ -27,19 +35,27 @@ CGameGraph::~CGameGraph()
 void CGameGraph::set_current_level(u32  level_id)
 {
 	xr_delete(m_current_level_cross_table);
-	u32* current_cross_table = m_cross_tables;
-	auto	I = header().levels().begin();
-	auto	E = header().levels().end();
-	for (; I != E; ++I) {
-		if (level_id != (*I).first) {
-			current_cross_table = (u32*)((u8*)current_cross_table + *current_cross_table);
-			continue;
+	if (m_cross_tables)
+	{
+		u32* current_cross_table = m_cross_tables;
+		auto	I = header().levels().begin();
+		auto	E = header().levels().end();
+		for (; I != E; ++I) {
+			if (level_id != (*I).first) {
+				current_cross_table = (u32*)((u8*)current_cross_table + *current_cross_table);
+				continue;
+			}
+	
+			m_current_level_cross_table = new CGameLevelCrossTable(current_cross_table + 1, *current_cross_table);
+			break;
 		}
-
-		m_current_level_cross_table = new CGameLevelCrossTable(current_cross_table + 1, *current_cross_table);
-		break;
 	}
-
+	else
+	{
+		string_path fName;
+		FS.update_path(fName, "$level$", CROSS_TABLE_NAME);
+		m_current_level_cross_table = new CGameLevelCrossTable(fName);
+	}
 	VERIFY(m_current_level_cross_table);
 
 	m_current_level_some_vertex_id = _GRAPH_ID(-1);

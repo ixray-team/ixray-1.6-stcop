@@ -12,6 +12,8 @@
 #include "../xrScripts/script_export_space.h"
 #include "game_level_cross_table.h"
 
+#define GRAPH_NAME			"game.graph"
+
 class CGameGraph:public IGameGraph
 {
 private:
