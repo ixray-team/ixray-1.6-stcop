@@ -1,0 +1,64 @@
+<booster_params x="0" y="0" width="260" height="20">
+    <prop_line x="0" y="-2" width="260" height="1" stretch="1">
+    </prop_line>
+
+	<boost_health x="0" y="0" width="257" height="20">
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_inv_icon_health_restore_speed</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="100" color_mode="1">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</boost_health>
+
+	<boost_satiety x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_inv_icon_satiety_restore_speed</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="10" color_mode="1">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</boost_satiety>
+
+	<boost_power x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_inv_icon_power_restore_speed</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="100" color_mode="1">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</boost_power>
+
+	<boost_bleeding x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_inv_icon_bleeding_restore_speed</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="100" color_mode="2">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</boost_bleeding>
+
+	<boost_radiation x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_inv_icon_radiation_restore_speed</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="100" color_mode="2">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</boost_radiation>
+
+	<item_portions x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_am_propery_09</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="300">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</item_portions>
+</booster_params>
