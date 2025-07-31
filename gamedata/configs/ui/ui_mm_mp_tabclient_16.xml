@@ -84,21 +84,16 @@
 	            <text font="letterica16" vert_align="c">mm_mp_filters</text>
 	        </auto_static>
 	    </cap_filters>
-<!--
-	    <radio_tab_network_connection x="160" y="-3" width="188" height="22" radio="1">
-	        <button x="0" y="0" width="22" height="28" id="internet">
-	            <text font="letterica16" complex_mode="0" x="24" y="3">mm_mp_internet</text>
+
+	    <radio_tab_network_connection x="120" y="-3" width="211" height="22" radio="1">
+	        <button x="0" y="0" width="32" height="28" id="internet">
+	            <text font="letterica16" complex_mode="0" align="l" x="28" y="3">mm_mp_internet</text>
 	        </button>
-	        <button x="72" y="0" width="22" height="28" id="lan">
-	            <text font="letterica16" complex_mode="0" x="24" y="3">mm_mp_lan</text>
+	        <button x="90" y="0" width="32" height="28" id="lan">
+	            <text font="letterica16" complex_mode="0" align="l" x="28" y="3">mm_mp_lan</text>
 	        </button>
 	    </radio_tab_network_connection>
 
-	    <btn_direct_ip x="345" y="0" width="86" height="24" stretch="1">
-	        <text align="c" font="letterica18" complex_mode="0">st_mp_direct_ip</text>
-	        <texture>ui_inGame2_button</texture>
-	    </btn_direct_ip>
--->
 	    <check_empty x="439" y="53" width="35" height="29" stretch="1">
 	        <texture>ui_inGame2_checkbox</texture>
 	        <text x="-13" font="letterica16">mm_mp_empty</text>
