@@ -194,7 +194,7 @@ void IM_Manipulator::CommandRotate(Fmatrix& ObjectMatrix, Fmatrix& DeltaMatrix, 
 		Flags = ImGuizmo::ROTATE_Y;
 	}
 
-	const bool IsManipulated = ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, Flags, ImGuizmo::WORLD, (float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrRotateSnap);
+	const bool IsManipulated = ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, Flags, (ImGuizmo::MODE)imManipulator.MatrixMode, (float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrRotateSnap);
 
 	if (IsManipulated)
 	{
@@ -237,7 +237,12 @@ void IM_Manipulator::CommandMove(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatrix
 			}
 		}
 
-		const bool IsManipulated = ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, ImGuizmo::TRANSLATE, ImGuizmo::WORLD, (float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrMoveSnap);
+		const bool IsManipulated = ImGuizmo::Manipulate
+		(
+			(float*)&Device.mView, (float*)&Device.mProject, 
+			ImGuizmo::TRANSLATE, (ImGuizmo::MODE)imManipulator.MatrixMode, 
+			(float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrMoveSnap
+		);
 
 		if (IsManipulated)
 		{
@@ -254,7 +259,12 @@ void IM_Manipulator::CommandMove(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatrix
 	}
 	else if (NodeObject != nullptr)
 	{
-		const bool IsManipulated = ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, ImGuizmo::TRANSLATE_Y, ImGuizmo::WORLD, (float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrMoveSnap);
+		const bool IsManipulated = ImGuizmo::Manipulate
+		(
+			(float*)&Device.mView, (float*)&Device.mProject, 
+			ImGuizmo::TRANSLATE_Y, (ImGuizmo::MODE)imManipulator.MatrixMode, 
+			(float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrMoveSnap
+		);
 
 		if (IsManipulated)
 		{
