@@ -388,7 +388,9 @@ void CRender::render_menu() {
 Fvector3 ps_r_taa_jitter_full = {0,0,0};
 
 extern u32 g_r;
-void CRender::Render		()
+bool is_render_cubemap = false;
+
+void CRender::Render()
 {
 	PIX_EVENT(CRender_Render);
 
@@ -418,6 +420,91 @@ void CRender::Render		()
 		return;
 	}
 
+	if(RImplementation.o.offscreen_reflecitons && pLastSector) {
+		PIX_EVENT(CRender_RenderReflections);
+
+		is_render_cubemap = true;
+		static Fmatrix cProj{}, cView{}, cTrans{};
+		static Fvector cmNorm[6]{}, cmDir[6]{};
+
+		auto& CurrentEnv = *g_pGamePersistent->Environment().CurrentEnv;
+		u32 RefSize = Target->rt_Reflection->dwSize;
+
+		Fvector4 fog_color4 = {
+			CurrentEnv.fog_color.x / (1.0f + CurrentEnv.fog_color.x),
+			CurrentEnv.fog_color.y / (1.0f + CurrentEnv.fog_color.y),
+			CurrentEnv.fog_color.z / (1.0f + CurrentEnv.fog_color.z),
+			CurrentEnv.far_plane
+		};
+
+		cProj.build_projection(PI_DIV_2 + 0.002f, 1.0f,
+		VIEWPORT_NEAR, CurrentEnv.far_plane * ps_r4_vslr_distance);
+
+		cmDir[2].mul(Device.vCameraTop, +1.0f);
+		cmDir[3].mul(Device.vCameraTop, -1.0f);
+
+		cmNorm[2].mul(Device.vCameraDirection, -1.0f);
+		cmNorm[3].mul(Device.vCameraDirection, +1.0f);
+
+		cmDir[0].mul(Device.vCameraRight, +1.0f);
+		cmDir[1].mul(Device.vCameraRight, -1.0f);
+
+		cmNorm[0].mul(Device.vCameraTop, +1.0f);
+		cmNorm[1].mul(Device.vCameraTop, +1.0f);
+
+		cmDir[4].mul(Device.vCameraDirection, +1.0f);
+		cmDir[5].mul(Device.vCameraDirection, -1.0f);
+
+		cmNorm[4].mul(Device.vCameraTop, +1.0f);
+		cmNorm[5].mul(Device.vCameraTop, +1.0f);
+
+		RCache.set_xform_project(cProj);
+
+		phase = PHASE_REFLECT;
+
+		HOM.Disable();
+		r_pmask(true, false, true);
+
+		ps_r_taa_jitter.set(0, 0, -1);
+		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+		
+		Fvector PointPos = Device.vCameraPosition;
+		RContext->CopyResource(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
+
+		for(auto i = 0; i < 6; ++i) {
+			PIX_EVENT(CRender_RenderReflectionsBySide);
+
+			cView.build_camera_dir(PointPos, cmDir[i], cmNorm[i]);
+			cTrans.mul(cProj, cView);
+
+			r_dsgraph_render_subspace(pLastSector, cTrans, PointPos, FALSE, FALSE);
+
+			RCache.set_xform_view(cView);
+			mapWmark.clear();
+
+			RContext->ClearRenderTargetView(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
+			RContext->ClearDepthStencilView(Target->rt_Depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0);
+
+			Target->u_setrt(RefSize, RefSize,
+				Target->rt_Reflection->pRT[i], NULL, NULL, Target->rt_Depth->pZRT);
+			
+			RImplementation.rmNormal();
+
+			RCache.set_Stencil(FALSE);
+			RCache.set_ColorWriteEnable();
+
+			r_dsgraph_render_graph(0);
+		}
+
+		RContext->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());
+
+		RCache.set_xform_project(Device.mProject);
+		RCache.set_xform_view(Device.mView);
+
+		is_render_cubemap = false;
+		phase = PHASE_NORMAL;
+	}
+
 	if(ps_r_scale_mode > 1) {
 		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
 		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
@@ -444,21 +531,18 @@ void CRender::Render		()
 
 	g_pGamePersistent->Environment().RenderSky();
 
-	// Configure
-	RImplementation.o.distortion				= FALSE;		// disable distorion
-	Fcolor					sun_color			= ((light*)Lights.sun_adapted._get())->color;
-	bool					bSUN				= !o.sunstatic && (u_diffuse2s(sun_color.r,sun_color.g,sun_color.b)>EPS);
-
-	// Msg						("sstatic: %s, sun: %s",o.sunstatic?;"true":"false", bSUN?"true":"false");
+	RImplementation.o.distortion = FALSE;
+	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->color;
+	bool bSUN = !o.sunstatic && u_diffuse2s(sun_color) > EPS;
 
 	RCache.set_xform_world(Fidentity);
 
-	// HOM
-	ViewBase.CreateFromMatrix					(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	View										= 0;
-	if (!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
-		HOM.Enable									();
-		HOM.Render									(ViewBase);
+	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	View = 0;
+
+	if(!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC)) {
+		HOM.Enable();
+		HOM.Render(ViewBase);
 	}
 	
 	//******* Z-prefill calc - DEFERRER RENDERER
@@ -477,7 +561,7 @@ void CRender::Render		()
 		RCache.set_ColorWriteEnable					(FALSE);
 		r_dsgraph_render_graph						(0);
 		RCache.set_ColorWriteEnable					( );
-	} 
+	}
 	else 
 	{
 		Target->phase_scene_prepare					();
@@ -604,7 +688,8 @@ void CRender::Render		()
 	{
 		PIX_EVENT(ZBUFFER_COPY);
 		RCache.set_ZB(NULL);
-		ID3D11Resource* res;
+
+		ID3D11Resource* res{};
 		RDepth->GetResource(&res);
 
 		RContext->CopyResource(Target->rt_Position->pSurface, res);
