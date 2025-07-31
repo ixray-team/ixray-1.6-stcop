@@ -109,6 +109,7 @@ public:
 	virtual void			load					(IReader &input_packet);
 
 	IC float				GetPower				() const			{return m_fPower;}	
+	IC void					SetPower				(float val)			{ m_fPower = val; clamp(m_fPower, 0.f, m_fPowerMax); }
 	IC float				GetRadiation			() const			{return m_fRadiation;}
 	IC float				GetPsyHealth			() const			{return m_fPsyHealth;}
 
@@ -162,6 +163,8 @@ public:
 	PLAYER_ADDICTION_BASE(Alcohol);
 	PLAYER_ADDICTION_BASE(Thirst);
 	PLAYER_ADDICTION_BASE(Sleepiness);
+	using WOUND_VECTOR = xr_vector<CWound*>;
+	using WOUND_VECTOR_IT = WOUND_VECTOR::iterator;
 
 protected:
 	void					UpdateHealth			();
