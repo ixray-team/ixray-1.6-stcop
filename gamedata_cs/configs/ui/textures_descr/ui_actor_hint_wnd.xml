@@ -75,7 +75,7 @@
 	    <texture id="ui_inGame2_circle_radiation_yellow" x="291" y="886" width="33" height="35" />
 	    <texture id="ui_inGame2_circle_radiation_orange" x="291" y="927" width="33" height="35" />
 	    <texture id="ui_inGame2_circle_radiation_red" x="291" y="969" width="33" height="35" />
-
+<!--
 	    <texture id="ui_inGame2_triangle_Radiation_yellow" x="419" y="817" width="37" height="33" />
 	    <texture id="ui_inGame2_triangle_Radiation_orange" x="419" y="857" width="37" height="33" />
 	    <texture id="ui_inGame2_triangle_Radiation_red" x="419" y="899" width="37" height="33" />
@@ -92,7 +92,7 @@
 	    <texture id="ui_inGame2_triangle_Fire_green" x="379" y="725" width="37" height="33" />
 	    <texture id="ui_inGame2_triangle_Radiation_green" x="419" y="725" width="37" height="33" />
 	    <texture id="ui_inGame2_triangle_Biological_green" x="459" y="725" width="37" height="33" />
-
+-->
 	    <texture id="ui_inGame2_shield_Psy" x="342" y="958" width="31" height="41" />
 	    <texture id="ui_inGame2_shield_Radiation" x="384" y="958" width="31" height="41" />
 	    <texture id="ui_inGame2_shield_biological" x="424" y="958" width="31" height="41" />
