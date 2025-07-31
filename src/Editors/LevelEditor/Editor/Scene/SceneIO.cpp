@@ -785,15 +785,15 @@ bool EScene::LoadLTX(LPCSTR map_name, bool bUndo)
 	full_name = map_name;
 
 	ELog.Msg( mtInformation, "EScene: loading '%s'", map_name);
-		;
+
 	if (FS.TryLoad(full_name.c_str()))
 	{
-		CTimer T; T.Start();
+		CTimer T; 
+		T.Start();
 
 		// lock main level
-		
-		CInifile	ini(full_name.c_str());
-		version 	= ini.r_u32("version","value");
+		CInifile ini(full_name.c_str());
+		version = ini.r_u32("version","value");
 
 		if (version!=CURRENT_FILE_VERSION)
 		{
@@ -881,16 +881,16 @@ bool EScene::Load(LPCSTR map_name, bool bUndo)
 		SDL_SetWindowTitle(g_AppInfo.Window, Name.c_str());
 	}
 
-	xr_string 		full_name;
-	full_name 		= map_name;
+	xr_string full_name;
+	full_name = map_name;
 
 	ELog.Msg( mtInformation, "EScene: loading '%s'", map_name);
 	if (  FS.TryLoad(full_name.c_str()))
 	{
-		CTimer T; T.Start();
-			
+		CTimer T; 
+		T.Start();
+
 		// read main level
-	  ;
 		IReader* F 	= FS.r_open(full_name.c_str()); VERIFY(F);
 		// Version
 		R_ASSERT	(F->r_chunk(CHUNK_VERSION, &version));
@@ -1163,7 +1163,7 @@ void EScene::PasteSelection()
 
 void EScene::DuplicateSelection(ObjClassID classfilter)
 {
-    HGLOBAL hmem = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, sizeof(SceneClipData) );
+	HGLOBAL hmem = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, sizeof(SceneClipData) );
 	SceneClipData *sceneclipdata = (SceneClipData *)GlobalLock(hmem);
 
 	sceneclipdata->m_ClassFilter = classfilter;
