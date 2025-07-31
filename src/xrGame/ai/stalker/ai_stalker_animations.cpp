@@ -17,7 +17,7 @@ enum Quantize
 ((a)._31), ((a)._32), ((a)._33), ((a)._34), \
 ((a)._41), ((a)._42), ((a)._43), ((a)._44)
 
-void StalkerMotionData::Quantize(NET_Packet& packet)										// Сжалось с 24 байт в 8 байт (54 бита еще 10 бит свободны)
+void StalkerMotionData::Quantize(NET_Packet& packet)										// РЎР¶Р°Р»РѕСЃСЊ СЃ 24 Р±Р°Р№С‚ РІ 8 Р±Р°Р№С‚ (54 Р±РёС‚Р° РµС‰Рµ 10 Р±РёС‚ СЃРІРѕР±РѕРґРЅС‹)
 {
 	 
 	u32 current = 0;
@@ -102,7 +102,7 @@ void StalkerMotionData::Dequantize(NET_Packet& packet)
 
 
 
-	// БЕЗ МАТРИЦ  12 + 2 Байта с матрицами + 96	= 110
+	// Р‘Р•Р— РњРђРўР РР¦  12 + 2 Р‘Р°Р№С‚Р° СЃ РјР°С‚СЂРёС†Р°РјРё + 96	= 110
 //	if (ScriptAnimCtrl)
 //		packet.r_matrix(ScriptMatrixImport);	// 48 BYTES
 //	if (GlobalAnimCtrl)
