@@ -34,6 +34,7 @@ void UILeftBarForm::Draw()
 													OBJCLASS_WM,
 													OBJCLASS_FOG_VOL,
 													OBJCLASS_PUDDLES,
+													OBJCLASS_TERRAIN,
 													OBJCLASS_force_dword
 		};
 
