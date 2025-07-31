@@ -160,18 +160,20 @@ void CWeaponShotgun::switch2_EndReload	()
 void CWeaponShotgun::PlayAnimOpenWeapon()
 {
 	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_open",FALSE,this,GetState());
+	PlayHUDMotion("anm_open", FALSE, GetState());
 }
+
 void CWeaponShotgun::PlayAnimAddOneCartridgeWeapon()
 {
 	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_add_cartridge",FALSE,this,GetState());
+	PlayHUDMotion("anm_add_cartridge", FALSE, GetState());
 }
+
 void CWeaponShotgun::PlayAnimCloseWeapon()
 {
 	VERIFY(GetState()==eReload);
 
-	PlayHUDMotion("anm_close",FALSE,this,GetState());
+	PlayHUDMotion("anm_close", FALSE, GetState());
 }
 
 void	CWeaponShotgun::net_Export	(NET_Packet& P)
