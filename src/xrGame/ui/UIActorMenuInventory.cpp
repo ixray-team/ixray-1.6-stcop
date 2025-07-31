@@ -53,9 +53,12 @@ void CUIActorMenu::InitInventoryMode()
 		if (m_pInvList[i])
 			m_pInvList[i]->Show(true);
 	}
+	if (m_pQuickSlot)
 	m_pQuickSlot->Show(true);
 	m_pTrashList->Show(true);
 	m_RightDelimiter->Show(false);
+	if (m_clock_value)
+		m_clock_value->Show(true);
 
 	InitInventoryContents(m_pInventoryBagList);
 
@@ -66,6 +69,8 @@ void CUIActorMenu::InitInventoryMode()
 void CUIActorMenu::DeInitInventoryMode()
 {
 	m_pTrashList->Show(false);
+	if (m_clock_value)
+		m_clock_value->Show(false);
 	clear_highlight_lists();
 }
 
@@ -329,7 +334,7 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 						lst_to_add->SetItem	(itm);
 					}
 				}
-				if(m_pActorInvOwner)
+				if(m_pActorInvOwner && m_pQuickSlot)
 					m_pQuickSlot->ReloadReferences(m_pActorInvOwner);
 			}break;
 		case GE_TRADE_SELL :
@@ -377,7 +382,7 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 				}
 
 
-				if(m_pActorInvOwner)
+				if(m_pActorInvOwner && m_pQuickSlot)
 					m_pQuickSlot->ReloadReferences(m_pActorInvOwner);
 			}break;
 	}
@@ -503,6 +508,7 @@ void CUIActorMenu::InitInventoryContents(CUIDragDropListEx* pBagList)
 		//if(helmet)
 		//	helmet->ReloadBonesProtection();
 	}
+	if (m_pQuickSlot)
 	m_pQuickSlot->ReloadReferences(m_pActorInvOwner);
 }
 
@@ -863,7 +869,7 @@ bool CUIActorMenu::ToQuickSlot(CUICellItem* itm)
 	if(slot_idx==255)
 		return false;
 
-	if (m_pQuickSlot->SetItem(create_cell_item(iitem), GetUICursor().GetCursorPosition())) {
+	if (m_pQuickSlot && m_pQuickSlot->SetItem(create_cell_item(iitem), GetUICursor().GetCursorPosition())) {
 		xr_strcpy(ACTOR_DEFS::g_quick_use_slots[slot_idx], iitem->m_section_id.c_str());
 		return false;
 	}
@@ -1453,9 +1459,9 @@ void CUIActorMenu::UpdateOutfit()
 
 	VERIFY( m_pInventoryBeltList );
 	CCustomOutfit* outfit    = m_pActorInvOwner->GetOutfit();
-	if(outfit && !outfit->bIsHelmetAvaliable)
+	if(outfit && !outfit->bIsHelmetAvaliable && m_HelmetOver)
 		m_HelmetOver->Show(true);
-	else
+	else if (m_HelmetOver)
 		m_HelmetOver->Show(false);
 
 	if ( !outfit )

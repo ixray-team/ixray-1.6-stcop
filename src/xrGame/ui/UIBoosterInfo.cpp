@@ -26,7 +26,8 @@ CUIBoosterInfo::~CUIBoosterInfo()
 	xr_delete(m_booster_satiety);
 	xr_delete(m_booster_anabiotic);
 	xr_delete(m_booster_time);
-	xr_delete(m_Prop_line);
+	if (m_Prop_line)
+		xr_delete(m_Prop_line);
 }
 
 LPCSTR boost_influence_caption[] =
@@ -57,21 +58,25 @@ void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 	CUIXmlInit::InitWindow(xml, base, 0, this);
 	xml.SetLocalRoot(base_node);
 	
-	m_Prop_line = new CUIStatic();
-	AttachChild(m_Prop_line);
-	m_Prop_line->SetAutoDelete(false);	
-	CUIXmlInit::InitStatic(xml, "prop_line", 0, m_Prop_line);
+	if (xml.NavigateToNode("prop_line"))
+	{
+		m_Prop_line = UIHelper::CreateStatic(xml, "prop_line", this);
+		m_Prop_line->SetAutoDelete(false);
+	}
 
 	for(u32 i = 0; i < eBoostExplImmunity; ++i)
 	{
-		m_booster_items[i] = new UIBoosterInfoItem();
-		m_booster_items[i]->Init(xml, ef_boosters_section_names[i]);
-		m_booster_items[i]->SetAutoDelete(false);
+		if (xml.NavigateToNode(ef_boosters_section_names[i]))
+		{
+			m_booster_items[i] = new UIBoosterInfoItem();
+			m_booster_items[i]->Init(xml, ef_boosters_section_names[i]);
+			m_booster_items[i]->SetAutoDelete(false);
 
-		LPCSTR name = g_pStringTable->translate(boost_influence_caption[i]).c_str();
-		m_booster_items[i]->SetCaption(name);
+			LPCSTR name = g_pStringTable->translate(boost_influence_caption[i]).c_str();
+			m_booster_items[i]->SetCaption(name);
 
-		xml.SetLocalRoot(base_node);
+			xml.SetLocalRoot(base_node);
+		}
 	}
 
 	m_booster_satiety = new UIBoosterInfoItem();
@@ -81,18 +86,24 @@ void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 	m_booster_satiety->SetCaption(name);
 	xml.SetLocalRoot( base_node );
 
-	m_booster_anabiotic = new UIBoosterInfoItem();
-	m_booster_anabiotic->Init(xml, "boost_anabiotic");
-	m_booster_anabiotic->SetAutoDelete(false);
-	name = g_pStringTable->translate("ui_inv_survive_surge").c_str();
-	m_booster_anabiotic->SetCaption(name);
-	xml.SetLocalRoot( base_node );
+	if (xml.NavigateToNode("boost_anabiotic"))
+	{
+		m_booster_anabiotic = new UIBoosterInfoItem();
+		m_booster_anabiotic->Init(xml, "boost_anabiotic");
+		m_booster_anabiotic->SetAutoDelete(false);
+		name = g_pStringTable->translate("ui_inv_survive_surge").c_str();
+		m_booster_anabiotic->SetCaption(name);
+		xml.SetLocalRoot(base_node);
+	}
 
-	m_booster_time = new UIBoosterInfoItem();
-	m_booster_time->Init(xml, "boost_time");
-	m_booster_time->SetAutoDelete(false);
-	name = g_pStringTable->translate("ui_inv_effect_time").c_str();
-	m_booster_time->SetCaption(name);
+	if (xml.NavigateToNode("boost_time"))
+	{
+		m_booster_time = new UIBoosterInfoItem();
+		m_booster_time->Init(xml, "boost_time");
+		m_booster_time->SetAutoDelete(false);
+		name = g_pStringTable->translate("ui_inv_effect_time").c_str();
+		m_booster_time->SetCaption(name);
+	}
 
 	xml.SetLocalRoot( stored_root );
 }
@@ -100,7 +111,8 @@ void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 void CUIBoosterInfo::SetInfo( shared_str const& section )
 {
 	DetachAll();
-	AttachChild( m_Prop_line );
+	if (m_Prop_line)
+		AttachChild( m_Prop_line );
 
 	CActor* actor = smart_cast<CActor*>( Level().CurrentViewEntity() );
 	if ( !actor )
@@ -110,13 +122,14 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 
 	CEntityCondition::BOOSTER_MAP boosters = actor->conditions().GetCurBoosterInfluences();
 
-	float val = 0.0f, max_val = 1.0f;
+	float val = 0.0f, max_val = 1.0f, h = 0.0f;
 	Fvector2 pos;
-	float h = m_Prop_line->GetWndPos().y+m_Prop_line->GetWndSize().y;
+	if (m_Prop_line)
+		h = m_Prop_line->GetWndPos().y + m_Prop_line->GetWndSize().y;
 
 	for (u32 i = 0; i < eBoostExplImmunity; ++i)
 	{
-		if(pSettings->line_exist(section.c_str(), ef_boosters_section_names[i]))
+		if(pSettings->line_exist(section.c_str(), ef_boosters_section_names[i]) && ef_boosters_section_names[i] && m_booster_items[i])
 		{
 			val	= pSettings->r_float(section, ef_boosters_section_names[i]);
 			if(fis_zero(val))
@@ -180,7 +193,7 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 		}
 	}
 
-	if(!xr_strcmp(section.c_str(), "drug_anabiotic"))
+	if(!xr_strcmp(section.c_str(), "drug_anabiotic") && m_booster_anabiotic)
 	{
 		pos.set(m_booster_anabiotic->GetWndPos());
 		pos.y = h;
@@ -190,7 +203,7 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 		AttachChild(m_booster_anabiotic);
 	}
 
-	if(pSettings->line_exist(section.c_str(), "boost_time"))
+	if(pSettings->line_exist(section.c_str(), "boost_time") && m_booster_time)
 	{
 		val	= pSettings->r_float(section, "boost_time");
 		if(!fis_zero(val))
