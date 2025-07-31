@@ -269,6 +269,8 @@ namespace Platform
         int result = unlink(conv_fn);
         return result;
     }
+
+    size_t Stat(const char* path, time_t& Time);
 }
 
 inline int _rmdir(const char *path)
