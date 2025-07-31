@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_scientist_hello_dialog_11">
+		<text>Ale ale, jen mбlokdy tady vidнm novэ obliиej. Co bys rбd vмdмl?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_12">
+		<text>Mмls љtмstн?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_13">
+		<text>Jsem rбd, ћe jsme si mohli navzбjem asistovat. Mщћu ti jeљtм s nминm pomoct?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_14">
+		<text>Jdi prosнm za Levбkem. Иekб na tebe.</text>
+	</string>
+	<string id="yan_scientist_go_diggers_1">
+		<text>V severozбpadnн ибsti zaшнzenн se ztratila jedna skupina. Je to tam samэ zombбk. Nemщћu tam poslat nikoho ze stalkerщ, kteшн hlнdajн perimetr, protoћe uћ tak sotva odrбћнme ъtoky. Signбl SOS je poшбd aktivnн, tak se prosнm pokus dostat ty stalkery ven, pokud jeљtм ћijн.</text>
+	</string>
+	<string id="yan_scientist_bring_documents_1">
+		<text>Tмch mladнkщ je љkoda. Opravdu doufбm, ћe jejich obмќ nevyjde na zmar. Podнvбme se na ty dokumenty... velmi zajнmavй! Nмkterб z mэch podezшenн jsou tнmto podloћenб... Ne, tohle je rozhodnм zajнmavй!... vэbornм. Poskytlo mi to odpovмdi na spoustu otбzek, ale budeme potшebovat иas, neћ ъplnм pochopнme, co se dмje...</text>
+	</string>
+	<string id="yan_scientist_bring_documents_111">
+		<text>V tomto pшнpadм to vypadб, ћe jde o zaшнzenн vytvoшenй lidmi. Dokumenty pшedstavujн manuбl k chladicнmu systйmu zaшнzenн, kterй se nachбzн v podzemnн ибsti instalace. Mб neuvмшitelnou spotшebu energie! Takћe to zaинnб bэt jasnй... Vypadб to, ћe vэboje psionickй aktivity nastбvajн nбsledkem selhбnн chladicнho systйmu toho zaшнzenн... pokud bychom ho mohli opravit, znaиnм by to snнћilo ъrovnм psi-emisн. Budu potшebovat nмjakou dobu, abych si to promyslel, pokraиuj zatнm prosнm k zaшнzenн a pшipoj se k Levбkovi a jeho skupinм stalkerщ. Neћ tam dojdeљ, mмl bych uћ pro vбs mнt dalљн informace.</text>
+	</string>
+	<string id="yan_scientist_about_zombie_1">
+		<text>Dмlajн nбm problйmy ode dne, kdy jsme tady laboratoш zшнdili. Zdi jsou silnй, ale шvanн a dalљн rбmus z vnмjљнho svмta je velmi ruљivэ. Jak si asi dovedeљ pшedstavit, provбdмnн vэzkumu, nebo dokonce i obyиejnй spanн, je za tмchto podmнnek celkem obtнћnй. Navнc musнme obиas bunkr opustit a nasbнrat vzorky.</text>
+	</string>
+	<string id="yan_scientist_about_zombie_111">
+		<text>Nad tнmhle problйmem jsme pшemэљleli velmi dlouho. Bez ohledu na to, jakй ъsilн uиinн armбda na vyиiљtмnн oblasti, se zombie vћdy vrбtн. Vљechno zaиalo bэt jasnй, kdyћ byl mezi zombie objeven mщj dшнvмjљн asistent, kterэ zmizel v tovбrnм pшi provбdмnн mмшenн. Jde o psionickй pole. Kaћdэ, na koho zapщsobн, ztratн svou mysl a zmмnн se na zombie. Dojde k nenapravitelnйmu poљkozenн vyљљнch mozkovэch funkcн. Ta stvoшenн tedy pшestбvajн bэt lidmi, nemajн kognitivnн schopnosti a jejich chovбnн je pouze to, co zщstбvб z иistм zvншecнch instinktщ...</text>
+	</string>
+	<string id="yan_scientist_about_strelok_1">
+		<text>Ano, navљtнvil nбs. Vмdмl toho hodnм, mnohem vнc neћ ostatnн. Dokonce tvrdil, ћe se dostal do stшedu Zуny! Pochopitelnм jsem mu to nevмшil, i kdyћ mi ukбzal nмkolik fotografiн...</text>
+	</string>
+	<string id="yan_scientist_about_strelok_111">
+		<text>Dohodli jsme se s nнm. Slнbil nбm, ћe provede testovбnн jednoho z naљich slibnэch experimentбlnнch modelщ: blokбtoru psi-emisн, my mu slнbili za odmмnu finбlnн verzi. Stшelec vмшil, ћe se s blokбtorem dostane pшes Vypalovaи mozku. Dali jsme mu prototyp a on vyrazil do tovбrny. Tehdy jsme Stшelce i prototyp vidмli naposledy. Dostali jsme nмjakб data ze satelitu, ale pak jsme signбl ztratili. Vypadб to, jako by Stшelce v tovбrnм zasбhla velmi silnб emise.</text>
+	</string>
+	<string id="yan_scientist_about_strelok_11111">
+		<text>Pokud je Stшelec v tovбrnм, je tйmмш nemoћnй dostat se tam bez zaшнzenн chrбnнcнho pшed psi-emisemi. Emise vychбzejнcн z tovбrny sledujeme uћ lйta: majн nepravidelnou pulznн charakteristiku. Kdyћ se nachбzejн v nнzkй fбzi, je moћnй vejнt do tovбrny relativnм bezpeиnм. Ale nejsme schopnн nikoho ochrбnit, kdyћ dojde k dalљн emisi, takћe jнt dovnitш je jako hrбt ruskou ruletu. Pokud se rozhodneљ nбsledovat Stшelce do tovбrny, nejspнљ pшijdeљ o mozek a pшidбљ se k zombбkщm. Ale moћnб bych pro tebe mohl nмco udмlat. Pшed иasem mм kontaktovala skupina stalkerщ, kteшн se dokбzali dostat z tovбrny ћivн. V jednй z budov narazil na archiv technickй dokumentace. Ty dokumenty by nбm mohly objasnit, co se v tovбrnм nachбzн, a odhalit zdroj tмch silnэch psi-emisн. Pomoz mi ty dokumenty najнt a jб ti na oplбtku pomщћu dostat se do tovбrny.</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_1">
+		<text>Je to opuљtмnб tovбrna! Pшitahuje stalkery jako magnet, protoћe je to jedna z mбla budov, do kterй se jeљtм nedostali. Tvrdн se, ћe se uvnitш nachбzн vzбcnй artefakty a cennй vybavenн, takћe se tam stalkeшi snaћн dostat s nadмjн, ћe narazн na zlatou ћнlu. Ale problйm je v tom, ћe je to jako hrбt ruskou ruletu. Psi-pole je extrйmnм nestabilnн - kdyћ se ъroveт blнћн k vrcholu, dokбћe lidskэ mozek spбlit bмhem pбr sekund.</text>
+	</string>
+	<string id="yan_levsha_hello_dialog_11">
+		<text>Ћoldбku, dostal jsem informace od Sacharova. Ale je to pмknej maras. Vidнљ tбmhleten prщlom ve zdi? Tamtudy mбme jнt, je to nejkratљн cesta k tomu stroji. Ty pщjdeљ za nбma a nebudeљ pшedbнhat - jб a mн hoљi jsme sehranej tэm, akorбt by ses nбm pletl. Jasnэ?</text>
+	</string>
+	<string id="yan_levsha_hello_dialog_111">
+		<text>Jasnэ.</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_0">
+		<text>Co tu dмlajн stalkeшi?</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_11">
+		<text>Co je Levaиka zaи?</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_111">
+		<text>Levaиka je inteligentnмjљн neћ ostatnн. Jeho tэm pro nбs pracuje, pomбhб nбm provбdмt mмшenн a odebнrat vzorky. My jim na vэmмnu poskytujeme vysoce kvalitnн zdravotnickou pomoc. Kdybychom si takto navzбjem nepomбhali, urиitм bychom vљichni zahynuli uћ pшed drahnou dobou.</text>
+	</string>
+	<string id="yan_scientist_about_strelok_0">
+		<text>Vнm, ћe tady byl Stшelec. Co o nмm vнte?</text>
+	</string>
+	<string id="yan_scientist_about_strelok_11">
+		<text>Kde je Stшelec teп?</text>
+	</string>
+	<string id="yan_scientist_about_strelok_1111">
+		<text>Kde bych naљel Stшelce?</text>
+	</string>
+	<string id="yan_scientist_about_zombie_0">
+		<text>Ъtoин na vбs zombie иasto?</text>
+	</string>
+	<string id="yan_scientist_about_zombie_11">
+		<text>Jestli je to pravda, tak odkud potom pшichбzejн zombie?</text>
+	</string>
+	<string id="yan_scientist_bring_documents_0">
+		<text>Stalkeшi jsou mrtvн. Mбm tu dokumenty.</text>
+	</string>
+	<string id="yan_scientist_bring_documents_11">
+		<text>Profesore, nemohl byste mluvit konkrйtnмji?</text>
+	</string>
+	<string id="yan_scientist_go_diggers_0">
+		<text>Obstarбm vбm ty dokumenty. Teп mi ale povмzte vљechno, co vнte.</text>
+	</string>
+	<string id="yan_scientist_start_frase_1">
+		<text>Za minutku!</text>
+	</string>
+	<string id="yan_scientist_start_frase_2">
+		<text>Jeљtм okamћниek!</text>
+	</string>
+</string_table>

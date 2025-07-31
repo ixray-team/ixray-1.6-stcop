@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_forester_hello_dialog_0">
+		<text>Иemu vdминm za to potмљenн?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1">
+		<text>Ћoldбci ti poskytli opravdu zajнmavй informace. Zшejmм jsem mмl pravdu. Velkб emise, kterб otшбsla Zуnou, byla tak mocnб, ћe zmмnila samotnэ prostor a vytvoшila z nмj smyиku.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111">
+		<text>Nechoп na mм s tмma vмdмckэma kecama, profesore. Prostм je tam smyиka: aќ jdeљ kamkoli, vћdycky se vrбtнљ na pщvodnн mнsto. Takћe po emisi stalkeшi uvнzli v tмch prostorovэch bublinбch kolem Limansku a nemщћou ven. No, teп o tom nмco mбlo vнme, souшadnice ћoldбkщ, frekvence PDA, takћe uћ lнp chбpu, jak ty bubliny fungujou. </text>
+	</string>
+	<string id="red_forester_has_compas_1">
+		<text>Uћ jsem ztratil nadмji, ћe kdy uvidнm kompas! Dнky! Dej mi chvilku, a jб najdu cestu ven z bubliny. Mezitнm bys mмl najнt zpщsob, jak dostat informace k ћoldбkщm. Na to budeљ potшebovat silnou vysнlaиku. Prej je jedna takovб ve vojenskэm skladiљti - tak komunikujou s vnмjљнm svмtem. Mмla by bэt dost silnб, abys s nн mohl zavolat ћoldбky.</text>
+	</string>
+	<string id="red_forester_has_compas_111">
+		<text>Poљlu ti souшadnice, kterй potшebujeљ, jakmile najdeљ vysнlaи. Pokud udмlajн vљechno sprбvnм, dostanou se z bubliny a mмli by se objevit kousek od mostu do Limansku. Moћnб by mohli dokonce navљtнvit i bandity u mostu.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11111">
+		<text>No, pшed pбr dnн jsem v bublinм uvнznul i jб. Tenkrбt jsem nevмdмl, ћe je to novб anomбlie, tak jsem si fakt шнkal, jestli uћ nemagoшнm - lesnн mэtinky vypadaly povмdomм, ale aќ jsem љel kam jsem љel, nemohl jsem najнt cestu ven! A pak mi Zуna sama dala artefakt, kterэ mi ukбzal cestu z bubliny. Шнkбm mu kompas. Po cestм domщ mм pшepadli banditi... nechali mм bэt, slitovali se nad starэm dмdkem, ale vzali si kompas. Seћeт mi ten artefakt a jб vymyslнm, jak dostat ћoldбky ven.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111111">
+		<text>Ti hajzlovй si postavili tбbor u Rudйho lesa. Nahrбl jsem ti jejich souшadnice do PDA.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_1">
+		<text>Limansk byl na spoustu let ztracenэ a mмlo to spoustu dobrэch dщvodщ. Pro nбs vљechny by bylo nejlepљн, kdyby zщstal ztracenэ. Co chceљ v Limansku?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_3">
+		<text>Nejsi normбlnн иlovмk. Zуna na tobм nechala zvlбљtnн znamenн a nevнm, jestli je to poћehnбnн, nebo kletba. Normбlnн sled udбlostн je naruљenэ. Zуna zaинnб bэt extrйmnм nestabilnн a ty jsi souибstн toho procesu. Pomщћu ti... aиkoli nevнm, jestli dмlбm sprбvnou vмc.
+Dostat se do Limansku nenн snadnй. Nejkratљн cesta do mмsta vede pшes most, ale ten je zvednutэ. Ale, a to mм celkem pшekvapilo, nenн to jedinб cesta, kterб tam vede. Svoboda a Povinnost zvedly most hned po velkй emisi, ale pшed pбr dny se na druhйm bшehu objevili banditi a obsadili most. To znamenб, ћe se dб na druhou stranu dostat jeљtм i nмjak jinak.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_5">
+		<text>Velkб emise Zуnu ъplnм zmмnila. Bezpeиnй a znбmй cesty jsou teп plnй smrtнcнch anomбliн, ale mнsto toho se objevily novй cesty, dlouhй roky nepouћitelnй. A pochybuju, ћe byly zatнm objeveny vљechny... vмш tomu, nebo ne, ale obиas na PDA zachytнm fragmety rбdiovй komunikace poblнћ Limansku. To mщћe znamenat jen jednu vмc: stalkeшi naљli novou cestu do Limansku a potшebujн pomoc.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_7">
+		<text>Nanaљtмstн byl signбl tak slabэ, ћe jsem z nмj moc nedostal. Jestli jsem to sprбvnм pochopil, tak jsou stalkeшi uvмznмnн v nмjakйm zakшivenйm prostoru - aќ jdou kterэmkoli smмrem, vћdycky se vrбtн na pщvodnн mнsto. Pokud bychom je dokбzali dostat ven, mohli bychom od nich zjistit, jak se dostat do Limansku.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_9">
+		<text>Jdi k vojenskэm skladiљtнm. Na tмch kopcнch by mohl bэt signбl lepљн. Pokud nмco najdeљ, dбљ mi vмdмt, jo?</text>
+	</string>
+	<string id="red_artefact_hunters_11">
+		<text>Zdarec, ћoldбku. Mбme љtмstн, ћe tм Zуna zavedla k nбm!</text>
+	</string>
+	<string id="red_artefact_hunters_111">
+		<text>Иau.</text>
+	</string>
+	<string id="red_artefact_hunters_1111">
+		<text>Mбme pro tebe prбci. Do tohodle lesa jsme se nevydali jenom tak sbнrat houby. Nedaleko se nachбzн oblast anomбliн a v nн celэ hory artefaktщ. Vнm sice, jak se tam dostat, ale cesta vede lesem – a o lese uћ jsi urиitм slyљel. Za kaћdэm stromem инhб smrt. Kdyћ nбs doprovodнљ na mнsto a tam si chvнli postojнљ na strбћi, odmмnнme se ti krбsnэm a mastnэm artefaktem. Dohodnuto?</text>
+	</string>
+	<string id="red_artefact_hunters_11111">
+		<text>Dohodnuto, jdeme.</text>
+	</string>
+	<string id="red_artefact_hunters_11112">
+		<text>Mnм se ten les taky nelнbн. Bмћte sami.</text>
+	</string>
+	<string id="red_artefact_hunters_111121">
+		<text>Jak myslнљ. Kdyby sis to rozmyslel, tak se vraќ.</text>
+	</string>
+	<string id="red_artefact_hunters_21">
+		<text>Ano?</text>
+	</string>
+	<string id="red_artefact_hunters_211">
+		<text>Jak jsi to шнkal s tнm mнstem plnэm artefaktщ?</text>
+	</string>
+	<string id="red_artefact_hunters_22">
+		<text>Sbohem.</text>
+	</string>
+	<string id="red_artefact_hunters_31">
+		<text>Promluvнme si jindy.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11">
+		<text>Hlavnм nestшнlej!</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_111">
+		<text>Co jste zaи, bando?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1111">
+		<text>Obyиejnэ stalkeшi. Najal nбs Stшelec.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11111">
+		<text>Proи na mм stшнlнte?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_111111">
+		<text>Stшelec шнkal, ћe mu nмkdo jde po krku a ћe ho mбme chrбnit. Mмli jsme tм za vraha.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1111111">
+		<text>Aha.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_112">
+		<text>Kam zmizel Stшelec?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1121">
+		<text>Nevнm, neшekl nбm, kam jde.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11211">
+		<text>Neшekl ani slovo? Moћnб by ti dнra v hlavм oprбљila pamмќ.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_112111">
+		<text>Ne, prosнm! Opravdu nбm neшekl, kam jde. Vнm jenom, kde schovбvб svoje vмci. Tohle jsou souшadnice, tumбљ.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1121111">
+		<text>Dobrб...</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11212">
+		<text>V poшбdku...</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_113">
+		<text>Nevнљ, kde bych naљel Lesnнka?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1131">
+		<text>Vнm. Podнvej se po nмm poblнћ starэho dolu na opaиnэ stranм lesa. Lesnнk prodal Stшelcovi mapu, kterб tм bezpeиnм provede lesem. Bez tэ mapy je to ale nepшehlednэ bludiљtм.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11311">
+		<text>Mщћeљ mм tam zavйst?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_113111">
+		<text>Jasnм, mбm tu mapu v hlavм. Ale cesta bude nebezpeиnб, les je plnej mutantщ.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1131111">
+		<text>Ty zvlбdnu. Pojпme.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_114">
+		<text>Uћ jdu, drћte se.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_0">
+		<text>Hlavnм nestшнlej!</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_1">
+		<text>Co jste zaи, bando?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_11">
+		<text>Obyиejnэ stalkeшi. Najal nбs Stшelec.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_111">
+		<text>Proи na mм stшнlнte?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_1111">
+		<text>Stшelec шнkal, ћe mu nмkdo jde po krku a ћe ho mбme chrбnit. Mмli jsme tм za vraha.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_11111">
+		<text>Aha.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_3">
+		<text>Kam zmizel Stшelec?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_31">
+		<text>Nevнm, neшekl nбm, kam jde.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_311">
+		<text>Neшekl ani slovo? Moћnб by ti dнra v hlavм oprбљila pamмќ.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_3111">
+		<text>Ne, prosнm! Opravdu nбm neшekl, kam jde. Vнm jenom, kde schovбvб svoje vмci. Tohle jsou souшadnice, tumбљ.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_31111">
+		<text>Dobrб...</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_312">
+		<text>V poшбdku...</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_4">
+		<text>Nevнљ, kde bych naљel Lesnнka?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_41">
+		<text>Vнm. Podнvej se po nмm poblнћ starэho dolu na opaиnэ stranм lesa. Lesnнk prodal Stшelcovi mapu, kterб tм bezpeиnм provede lesem. Bez tэ mapy je to ale nepшehlednэ bludiљtм.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_411">
+		<text>Mщћeљ mм tam zavйst?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_4111">
+		<text>Jasnм, mбm tu mapu v hlavм. Ale cesta bude nebezpeиnб, les je plnej mutantщ.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_41111">
+		<text>Ty zvlбdnu. Pojпme.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_5">
+		<text>Uћ jdu, drћte se.</text>
+	</string>
+	<string id="red_bounty_hunter_way_11">
+		<text>Pojпme rychleji, je tu dost nebezpeиno.</text>
+	</string>
+	<string id="red_bounty_hunter_way_111">
+		<text>Co hrozн?</text>
+	</string>
+	<string id="red_bounty_hunter_way_1111">
+		<text>Tady jsme v Rudэm lese! Stalkeшi se tu ztrбcejн po tuctech a my se prochбzнme sami ve dvou. Pojпme, neћ toho budete litovat.</text>
+	</string>
+	<string id="red_bounty_hunter_way_12">
+		<text>Uћ tam budeme. Nedaleko je tбboшiљtм stalkerщ.</text>
+	</string>
+	<string id="red_bounty_hunter_way_13">
+		<text>A jsme tu. Lesnнk ћije tбmhle ve skladiљti.</text>
+	</string>
+	<string id="red_bounty_hunter_way_14">
+		<text>Musнme pшidat.</text>
+	</string>
+	<string id="red_bounty_hunter_way_15">
+		<text>Ahoj!</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11">
+		<text>Nepшibliћuj se k vratщm! Je na nich bomba.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_111">
+		<text>Coћe, krucinбl? Jб potшebuju na druhou stranu!</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_1111">
+		<text>Ћoldбku, ta brбna se nebude otevнrat, dokud tu jsme my. Z lesa mщћou kaћdou vteшinou vyskoиit mutanti a dбt si nбs k snнdani. Ale jestli nбm pomщћeљ, otevшeme ti. Potшebujeme se dostat do starэho dolu – prej je tam fщra artefaktщ. Taky je v nмm bezpeиno a dб se tam schovat pшed zбшenнm. Akorбt ћe sami ho neubrбnнme. S nбma sem љlo jeљtм nмkolik dalљнch stalkerщ, nмkterэ pшes Smetiљtм, jinэ pшes Jantar. Jestli nмkdo z nich pшeћil cestu, najdi ho a pшiveп ho k dolu. Pak ti otevшeme brбnu.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11111">
+		<text>Domluveno. Jб pшivedu pomoc, vy otevшete brбnu.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11112">
+		<text>Ani nбhodou.</text>
+	</string>
+	<string id="red_forest_stalkers_task_11">
+		<text>Zdar, ћoldбku.</text>
+	</string>
+	<string id="red_forest_stalkers_task_111">
+		<text>Nazdar.</text>
+	</string>
+	<string id="red_forest_stalkers_task_1111">
+		<text>Mбme pro tebe prбciиku.</text>
+	</string>
+	<string id="red_forest_stalkers_task_11111">
+		<text>Pokraиuj.</text>
+	</string>
+	<string id="red_forest_stalkers_task_111111">
+		<text>Seћeт nбm mapu Rudэho lesa.</text>
+	</string>
+	<string id="red_forest_stalkers_task_11111111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="red_forest_stalkers_task_2">
+		<text>Tady mбte tu mapu.</text>
+	</string>
+	<string id="red_forest_stalkers_task_21">
+		<text>Dнky za pomoc.</text>
+	</string>
+	<string id="red_forester_about_forest_0">
+		<text>Vyprбvмj mi o Rudэm lese.</text>
+	</string>
+	<string id="red_forester_about_forest_1">
+		<text>Bejvala to tady pшнrodnн rezervace a jб v nн dмlal lesnнka. Chrбnil jsem les a zvншata pшed pytlбkama. Dneska rezervaci chrбnн Zуna - a chrбnн ji tak dobшe, ћe ji lidi obchбzejн desetikilometrovэm obloukem. Kdyћ do lesa vleze cizinec, mб to najisto spoинtanэ. Ani jб nevнm, co vљechno kde инhб, a to jsem tu Lesnнkem. Иlovмk vkroин do mlhy a ono ho nмco tшeba odtбhne do neznбma. I kdyby si љel dva kroky za nнm, stejnм by sis nevљiml, co se mu stalo. Takћe tak to tady chodн, synku.</text>
+	</string>
+	<string id="red_forester_about_limansk_0">
+		<text>Potшebuju se dostat do Limansku.</text>
+	</string>
+	<string id="red_forester_about_limansk_1">
+		<text>Limansk se ztratil pшed mnoha lety a bylo k tomu dost pбdnэch dщvodщ. Pro vљechny bude nejlepљн, kdyћ zщstane ztracenej. Proи ho hledбљ?</text>
+	</string>
+	<string id="red_forester_about_limansk_11">
+		<text>Znн to sice otшepanм, ale jde o otбzku ћivota a smrti.</text>
+	</string>
+	<string id="red_forester_about_limansk_111">
+		<text>Jsi neobyиejnej иlovмk. Zуna se na tobм podivnэm zpщsobem podepsala. Jestli to je poћehnбnн, nebo kletba, to netuљнm. Kaћdopбdnм Zуna je инm dбl tнm mнт stabilnн. Starэ pravidla pшestбvajн platit a cosi mi шнkб, ћe za to mщћeљ prбvм ty. Pomщћu ti, ale poшбd si nejsem jistej, jestli dмlбm sprбvnou vмc.</text>
+	</string>
+	<string id="red_forester_about_zone_0">
+		<text>Co mi mщћeљ шнct o Zуnм?</text>
+	</string>
+	<string id="red_forester_about_zone_1">
+		<text>O Zуnм, jo? Zуna si ћije vlastnнm ћivotem a my lidi se jн do nмj motбme - nмkdo mнт, nмkdo vнc. Zуna se snaћн likvidovat vљechny ohroћenн stejnэm zpщsobem, jako se naљe tмlo vypoшбdбvб s nemocн. My mбme horeиku, Zуna mб zase svoje otшesy - zбшenн. Ъћasnej zpщsob, jak nбs ze sebe setшepat. Инm vнc jн budeme drбћdit, tнm silnмjљн zбшenн bude vydбvat.</text>
+	</string>
+	<string id="red_forester_about_zone_11">
+		<text>Jak jsi tu pшeћil tмch nмkolik let - sбm a obklopen smrtelnэm nebezpeинm?</text>
+	</string>
+	<string id="red_forester_about_zone_111">
+		<text>Jedinб poљetilб akce by dokбzala Zуnu zniиit... a spolu s nн i vљechno, co do nн patшн. Nejenom mutanty a anomбlie, ale taky artefakty a vбs stalkery... a mм. Cнtнm, ћe Zуna je poшбdnм rozruљenб - nмco ji drбћdн a naruљuje jejн rovnovбhu. Schyluje se k bouшi... a jб si nejsem jistej, jestli se dб poшбd jeљtм udrћet status quo.</text>
+	</string>
+	<string id="red_forester_cheet_0">
+		<text>vэchozн text</text>
+	</string>
+	<string id="red_forester_cheet_1">
+		<text>Pшines mi vzбcnej artefakt kompas. Moћnэ naleziљtм mбљ v PDAиku.</text>
+	</string>
+	<string id="red_forester_has_compas_0">
+		<text>Mбm ten artefakt.</text>
+	</string>
+	<string id="red_forester_has_compas_11">
+		<text>Co se stane, aћ ho najdu?</text>
+	</string>
+	<string id="red_forester_hello_dialog_1">
+		<text>Co takovej zelenби pohledбvб v Lesnнkovм chэљi?</text>
+	</string>
+	<string id="red_forester_hello_dialog_2">
+		<text>Pшivedla tм ke mnм nбhoda?</text>
+	</string>
+	<string id="red_forester_hello_dialog_3">
+		<text>Hodnм љtмstн, synku!</text>
+	</string>
+	<string id="red_forester_hello_dialog_4">
+		<text>Nezapomeт na mм!</text>
+	</string>
+	<string id="red_forester_hello_dialog_5">
+		<text>Pamatuj si mм dobшe!</text>
+	</string>
+	<string id="red_forester_limansk_0">
+		<text>Povмz mi o Limansku.</text>
+	</string>
+	<string id="red_forester_limansk_1">
+		<text>O tom mмstм dlouhou dobu nikdo nic neslyљel. Spousta lidн ani nevмшн, ћe Limansk kdy existoval. Tihle lidi ale lћou: to mмsto existuje - vidмl jsem ho na vlastnн oиi jeљtм pшed prvnн katastrofou. Bejval tam uzavшenej vэzkumnej institut, velkэ sнdlo, domy postavenэ speciбlnм pro vмdce a jejich posluhovaиe. Ten institut mмl fajnovэ jmйno... cosi jako Rбdiovб vlna. Mмli v nмm obrovskou antйnu vysokou jako pмtipatrovej barбk! Byli to fakt intelektuбlovй, tihleti chlapнci. Akorбt ћe v Limansku nikdy nemмli klid. Obyvatelй byli љнlenм vyhejbavн a podezнravэ k cizincщm. Poшбd si nмco jenom mumlali pod vousy a vychvalovali sovмtskej reћim, a to i kdyћ jsme mмli nedostatek potravin. My vesniиani jsme se Limansku vyhejbali - lidi tam nebyli zrovna srdeиnэ a po nмjakэm иase ve mмstм tм zaиala bolet hlava... urиitм kvщli tэ antйnм. Potom vybuchl Иernobyl, ale Limask ani neevakuovali. Moћnб se posralo nмco v nмjakэch dokumentech, moћnб za to mщћe to tajnщstkбшstvн, netuљнm. Ale toho dne jsem o Limansku slyљel naposledy. Stejnм tam nemбm co pohledбvat...</text>
+	</string>
+	<string id="red_forester_limansk_11">
+		<text>Ale jб jsem vidмl cestu do Limansku a most pшes шeku.</text>
+	</string>
+	<string id="red_forester_limansk_111">
+		<text>Bejvala tady fщra anomбliн, ale od velkэho zбшenн je tu celkem bezpeиno. Stalkerщm netrvalo dlouho, neћ si uvмdomili, ћe se do stшedu Zуny mщћou dostat pшes Limansk a vyhnout se tak Vypalovaиi mozkщ. Svoboda a Povinnost spolu zaиaly natvrdo vбlиit, jakmile se k tomu mмstu dostaly, a ve vzniklэ vбlce by se dost dobшe dokбzaly vyhladit navzбjem. I kdyћ to by nikomu z ostatnнch obyvatel Zуny asi nijak zvlбљќ nevadilo.</text>
+	</string>
+	<string id="red_forester_limansk_12">
+		<text>Bejvala tady fщra anomбliн, ale od velkэho zбшenн je tu celkem bezpeиno. Stalkerщm netrvalo dlouho, neћ si uvмdomili, ћe se do stшedu Zуny mщћou dostat pшes Limansk a vyhnout se tak Vypalovaиi mozkщ. Svoboda a Povinnost spolu zaиaly natvrdo vбlиit, jakmile se k tomu mмstu dostaly, a ve vzniklэ vбlce by se dost dobшe dokбzaly vyhladit navzбjem. I kdyћ to by nikomu z ostatnнch obyvatel Zуny asi nijak zvlбљќ nevadilo.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_0">
+		<text>Dostal jsem zprбvu od ћoldбkщ z armбdnнch skladiљќ. Podle vљeho pшi tom velkэm zбшenн zkejsli uvnitш nмjakэ podivnэ anomбlie. Prej se z nн teп nemщћou dostat ven - vћdycky se vrбtмj na stejnэ mнsto, ze kterэho vyљli. Dali mi svoje souшadnice.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11">
+		<text>Takћe nмco jako Mцbiщv pruh?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111">
+		<text>A jak mбm ћoldбky dostat ven z tэ kapsy?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111111">
+		<text>Nevнљ, kde jsou zakopanн banditi?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111112">
+		<text>Tumбљ, mбm ten tvщj vzбcnej artefakt.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111121">
+		<text>Uћ jsem ani nedoufal, ћe kompas jeљtм kdy uvidнm! Dмkuju! Dej mi chvнli иasu a jб zjistнm, kudy se dostat z tэ kapsy. Mezitнm mщћeљ vymyslet zpщsob, jak ztracenэmu druћstvu odvysнlбme souшadnice. Bмћ do armбdnнch skladiљќ najнt vysнlaиku.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11111211">
+		<text>A co bude, aћ tu vysнlaиku najdu?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111112111">
+		<text>Aћ ji najdeљ, dбm ti souшadnice pro ћoldбky.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_0">
+		<text>Potшebuju se dostat do Limansku.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_2">
+		<text>Znн to sice otшepanм, ale jde o otбzku ћivota a smrti.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_4">
+		<text>Nevнљ, jak se banditi dostali na druhou stranu?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_6">
+		<text>Co se tмm stalkerщm stalo?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_8">
+		<text>Co mбm dмlat?</text>
+	</string>
+	<string id="red_forester_who_are_you_0">
+		<text>Co jsi zaи?</text>
+	</string>
+	<string id="red_forester_who_are_you_1">
+		<text>Co bych ti o sobм povмdмl? Jsem Lesnнk. Ћiju tady uћ dlouhou dobu, celej ћivot jsem strбvil poblнћ tohodle lesa. Jsem starej. V mэm vмku uћ si иlovмk na svэ bydliљtм zvykne, aќ uћ je jakэkoliv. Po nehodм v jadernэ elektrбrnм jsem odmнtl evakuaci a vznik Zуny jsem taky pшeћil. Pamatuju si, jak se tenkrбt zablesklo na horizontu... spousta lidн ten den natбhla baиkory, ale mм Zуna uљetшila. Teda... nejen uљetшila! Obdarovala mм! Dшнv jsem dokбzal najнt stezku lesem, dneska dokбћu vycнtit bezpeиnou cestu skrze skuteиnм nebezpeиnэ anomбlie. Stalkeшi mi zбvidмj, i kdyћ jб ze svэho daru nejsem zas tak nadљenej. Pochop - vљechno dobrэ mб svou cenu. Jednoho dne si Zуna vybere platbu za svщj dar. A toho dne se obбvбm, kamarбde.</text>
+	</string>
+	<string id="red_forester_who_are_you_111">
+		<text>Kdepak, tady bejval ъplnм typickej borovicovej les. No a taky pшнrodnн rezervace, ale u toho taky veљkerэ vzrщљo konин. Les zrudnul aћ po vэbuchu v иernobylskэ elektrбrnм v roce 1986. Jeљtм kdyћ jsem љel spбt, tak byl zelenej, ale rбno uћ vypadal tak, jak ho vidнљ teп. Pak se objevila Zуna a z lesa utekly zvншata a ptбci. Zщstal jsem tu jako jedinб ћivб bytost. Jenom jб, Rudej les a hustб mlha, co se nikdy nezvedб.</text>
+	</string>
+	<string id="red_forester_who_are_you_11111">
+		<text>Jo, tady uћ zaшvala hromada stalkerщ. Slyљel jsem dokonce i historky, podle kterэch v Rudэm lese ћije zlej duch. Podle mм se ale les nijak neliљн od zbytku Zуny. Kdyћ se k nмmu chovбљ sprбvnм, neublнћн ti. Prщser je, ћe vy stalkeшi se nikdy k niиemu sprбvnм nechovбte. Pшivlastтujete si ибsti Zуny a oplбtkou za to dostanete... co si zaslouћнte.</text>
+	</string>
+	<string id="red_leshiy_reward_11">
+		<text>Che... Pшiљel jsem o vљechny svэ vojбky. Pшedstav si to - vylezeme z kapsy a narazнme rovnou na bandity.</text>
+	</string>
+	<string id="red_leshiy_reward_12">
+		<text>Dнky, ћoldбku. Bez tebe bysme to nezvlбdli. Vezmi si prosнm tohle, bude se ti to hodit.</text>
+	</string>
+	<string id="red_leshiy_reward_13">
+		<text>Dнky, ћoldбku. Bez tebe bysme to nezvlбdli. Vezmi si prosнm tohle, bude se ti to hodit.</text>
+	</string>
+	<string id="red_leshiy_reward_14">
+		<text>Dнky, ћoldбku. Vбћnм jsi nбm pomohl - bez tebe bysme ten most rozhodnм nespustili. A taky bysme se nedostali ven z kapsy. Vezmi si prosнm tohle, bude se ti to hodit.</text>
+	</string>
+	<string id="red_leshiy_reward_15">
+		<text>Dнky, ћoldбku. Vбћnм jsi nбm pomohl - bez tebe bysme ten most rozhodnм nespustili. A taky bysme se nedostali ven z kapsy. Vezmi si prosнm tohle, bude se ti to hodit.</text>
+	</string>
+	<string id="red_leshiy_reward_16">
+		<text>Nazdar, Jizvo.</text>
+	</string>
+	<string id="red_leshiy_story_1_0">
+		<text>Povмz mi o prostorovэch kapsбch.</text>
+	</string>
+	<string id="red_leshiy_story_1_1">
+		<text>Prostorovэ kapsy, brбcho, jsou nejsvinљtмjљн svinstvo, co se dб v Zуnм najнt. Objevily se teprve nedбvno. Kdyћ to takovэ kapsy vlezeљ, hochu, mбљ zadмlбno na solidnн prщser. Aќ uћ pщjeљ kamkoliv a jakoukoliv cestou, vћdycky se vrбtнљ zpбtky na zaибtek. Nikdy jsem o kapsбch neslyљel, dokud jsem se do jednэ sбm nedostal. Zasбhlo nбs zбшenн a celб naљe skupina propadla rovnou do prostorovэ kapsy. Celэ dny jsme pak chodili v kruzнch! Pбr klukщ se chtмlo radљi zastшelit. Poшбd шнkali: "Hele, vocaп se stejnм nedostanem, proи to rovnou neskonиit na mнstм?". Nмkterэ dalљн blouznili a vidмli pшнљernэ vмci. Kopal jsem do nich a nadбval jsem jim, abych je pшimмl k chщzi. Ale uћ si to sotva vybavuju... ty vole, poшбd nemщћu uvмшit, ћe jsme venku. Mockrбt dнky za pomoc.</text>
+	</string>
+	<string id="red_leshiy_story_2_0">
+		<text>Na jakэ misi jste byli?</text>
+	</string>
+	<string id="red_leshiy_story_2_1">
+		<text>Hele, brбcho, uber! Co je to za otбzku? Obchodnн tajemstvн je nмco jako zpovмdnн tajemstvн, akorбt pшнsnмjљн. Rozhodnм ti ho nemщћu vyћvanit. I kdyћ... ale иert to vem, beztak jsi nбm zachrбnil kejhбky. Tak poslouchej. Souhlasili jsme, ћe pro jednu velkou korporaci najdem jistej vzбcnej a ohromnм cennej artefakt. Nepovнm ti jakej, protoћe to by bylo proti smlouvм. Kaћdopбdnм jsme ho naљli. Jak se nбm to povedlo, by bylo na delљн vyprбvмnн, ale uћ bych tu misi neopakoval za ћбdnou ибstku na svмtм. Svэho ћivota si cenнm vнc neћ kouskщ papнru s vodotiskem. Uћ od samэho zaибtku jsem z tэ prбce mмl blbej dojem. A jak jsem se obбval, celб akce se zvrhla v dмs a hrщzu. Kdyћ jsme se s koшistн v ruce otoиili na zpбteиnн cestu, prбsk! Zбшenн nбs mбlem pohшbilo a navrch jsme spadli do tэ pitomэ kapsy. Kdepak, uћ ћбdnej podobnej dћob - k tomu mм nedonutнte.</text>
+	</string>
+	<string id="red_artefact_hunters_reward_dialog_11">
+		<text>Dнky za pomoc, tady mбљ odmмnu.</text>
+	</string>
+</string_table>

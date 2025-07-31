@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hospital_task_general_text">
+		<text>Odszukaj wejњcie do katakumb</text>
+	</string>
+	<string id="hospital_task_general_title">
+		<text>Odszukaj wejњcie do katakumb</text>
+	</string>
+	<string id="katacomb_task_3_objective_1">
+		<text>Utrzymaj siк do przybycia oddziaіu Czystego Nieba</text>
+	</string>
+	<string id="katacomb_task_3_objective_2">
+		<text>Wspomуї oddziaі Czystego Nieba</text>
+	</string>
+	<string id="katacomb_task_3_text">
+		<text>Wywalcz sobie drogк do wejњcia do katakumb</text>
+	</string>
+	<string id="katacomb_task_3_title">
+		<text>Wywalcz sobie drogк do wejњcia do katakumb</text>
+	</string>
+	<string id="katacomb_task_helicopter_text">
+		<text>Zlikwiduj helikopter</text>
+	</string>
+	<string id="katacomb_task_helicopter_title">
+		<text>Zlikwiduj helikopter</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_text">
+		<text>Zabij snajpera</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_title">
+		<text>Zabij snajpera</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_1">
+		<text>Rusz ku schodom na parter</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_2">
+		<text>Przebiegnij przez parter</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_3">
+		<text>Dotrzyj do mostu</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_4">
+		<text>Przejdџ przez most</text>
+	</string>
+	<string id="katacomb_task_sniper_back_text">
+		<text>Pomуї oddziaіowi Czystego Nieba unikn№ж wrogiego ostrzaіu</text>
+	</string>
+	<string id="katacomb_task_sniper_back_title">
+		<text>Podkradnij siк do wrogiego snajpera</text>
+	</string>
+	<string id="katacomb_task_z2_exit_text">
+		<text>Przejdџ do trzeciej sali</text>
+	</string>
+	<string id="katacomb_task_z2_exit_title">
+		<text>Przejdџ do trzeciej sali</text>
+	</string>
+</string_table>

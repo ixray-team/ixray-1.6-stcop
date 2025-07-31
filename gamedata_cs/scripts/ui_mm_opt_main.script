@@ -118,11 +118,12 @@ end
 
 function options_dialog:UpdateDependControls()
 	
-	local _current_id	= self.combo_renderer:CurrentID()
-	local _ssample_val	= self.ss_trb:GetIValue()
+	local _current_id		= self.combo_renderer:CurrentID()
+	local _ssample_trb_val	= self.ss_trb:GetIValue()
+	local _ssample_cb_val	= self.ss_cb:CurrentID()
 	
 	for i,j in pairs(self.m_preconditions) do
-		j				(i, _current_id, _ssample_val)
+		j				(i, _current_id, _ssample_trb_val, _ssample_cb_val)
 	end
 end
 
@@ -140,6 +141,7 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("combo_renderer",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)	
 	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
 	self:AddCallback("trb_ssample",			ui_events.BUTTON_CLICKED,	self.UpdateDependControls,	self)
+	self:AddCallback("cb_ssample",			ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
 	
 end
 

@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_duty_bar_secret_1_descr">
+		<text>Popis bonusu 1</text>
+	</string>
+	<string id="agr_duty_bar_secret_1_name">
+		<text>Bonus 1</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_descr">
+		<text>Popis bonusu 2</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_name">
+		<text>Bonus 2</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_descr">
+		<text>Popis bonusu 3</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_name">
+		<text>Bonus 3</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_descr">
+		<text>Popis bonusu 4</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_name">
+		<text>Bonus 4</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_descr">
+		<text>Popis bonusu 5</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_name">
+		<text>Bonus 5</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_descr">
+		<text>Popis bonusu 6</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_name">
+		<text>Bonus 6</text>
+	</string>
+	<string id="device_pda_old">
+		<text>Baћantovo starй PDA </text>
+	</string>
+	<string id="esc_treasure_novice_stalker_descr">
+		<text>Tyhle vмci jsem si schoval na horљн иasy. Jestli se jich nмkdy doћiju, rozhodnм se sem vrбtнm.</text>
+	</string>
+	<string id="esc_treasure_novice_stalker_name">
+		<text>Zelenбиova skrэљ</text>
+	</string>
+	<string id="esc_treasure_weapon_box_descr">
+		<text>Zbranм a munice se budou hodit v bojнch proti armбdм a banditщm.</text>
+	</string>
+	<string id="esc_treasure_weapon_box_name">
+		<text>Bedna se zbranмmi a municн.</text>
+	</string>
+	<string id="st_agr_map_animals">
+		<text>PDA s mapou migracн</text>
+	</string>
+	<string id="st_agr_map_animals_descr">
+		<text>Mapa migracн ti pomщћe najнt vzбcnй druhy mutantщ a ulovit je pro vмdeckй ъиely.</text>
+	</string>
+	<string id="st_agr_mechanic_pda">
+		<text>PDA s daty o zbraтovэch modifikacнch</text>
+	</string>
+	<string id="st_agr_mechanic_pda_descr">
+		<text>Elektronickй diagramy ti pomohou s modifikacemi zbranн.</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader">
+		<text>PDA s cennэmi informacemi.</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader_descr">
+		<text>Ћбdnб data.</text>
+	</string>
+	<string id="st_device_pda_fang">
+		<text>Tesбkovo PDA</text>
+	</string>
+	<string id="st_device_pda_fang_descr">
+		<text>Tesбkovo PDA</text>
+	</string>
+	<string id="st_device_pda_lost_squard_descr">
+		<text>Tajnй informace o vojenskэch aktivitбch ve skladiљtнch.</text>
+	</string>
+	<string id="st_device_pda_lost_squard_fang">
+		<text>PDA velitele stalkerskй skupiny</text>
+	</string>
+	<string id="st_device_pda_military">
+		<text>Generбlovo PDA</text>
+	</string>
+	<string id="st_device_pda_military_descr">
+		<text>Toto PDA obsahuje tajnй informace o bezprostшednнch plбnech armбdy v Kordonu.</text>
+	</string>
+	<string id="st_esc_device_pda_driver">
+		<text>PDA шidiиova kamarбda</text>
+	</string>
+	<string id="st_esc_device_pda_driver_descr">
+		<text>PDA шidiиova kamarбda.</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card">
+		<text>Informace o zbraтovэch modifikacнch</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card_descr">
+		<text>Informace o zbraтovэch modifikacнch.</text>
+	</string>
+	<string id="st_esc_military_documentation">
+		<text>Tajnб vojenskб data</text>
+	</string>
+	<string id="st_esc_military_documentation_descr">
+		<text>Tajnб data.</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard">
+		<text>Velitelovo PDA</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard_descr">
+		<text>PDA patшнcн veliteli stalkerskй skupiny. Obsahuje cennй informace o plбnech banditщ na dobytн armбdnнch skladiљќ.</text>
+	</string>
+	<string id="st_red_forest_pda_map">
+		<text>PDA s mapou Rudйho lesa</text>
+	</string>
+	<string id="st_red_forest_pda_map_descr">
+		<text>V tomto PDA je uloћena mapa Rudйho lesa, na nнћ lze vidмt oblasti anomбliн i velkou prostorovou anomбlii. Tato anomбlie by tм nejspнљ mohla pшenйst k Lesnнkovм domu.</text>
+	</string>
+	<string id="device_pda_digger_descr">
+		<text>Toto PDA obsahuje technickou dokumentaci, kterб by mмla vмdcщm pomoci v hledбnн zdroje psi-zбшenн v Jantaru.</text>
+	</string>
+	<string id="device_pda_digger_name">
+		<text>PDA ztracenй skupiny</text>
+	</string>
+	<string id="device_pda_garbage_traitor">
+		<text>Paљerбkovo PDA</text>
+	</string>
+	<string id="device_pda_garbage_traitor_descr">
+		<text>Paљerбkovo PDA nalezenй mezi Stringovovэmi vмcmi.</text>
+	</string>
+	<string id="device_pda_old_descr">
+		<text>Starй PDA nalezenй pod faleљnэm dnem skшнтky na nбшadн v Baћantovм tбboшe.</text>
+	</string>
+	<string id="flesh_up_a_novice_outfit_name">
+		<text>Flashdisk s ъdaji o ultralehkй kevlarovй vestм</text>
+	</string>
+	<string id="flesh_up_ab_pkm_name">
+		<text>Flashdisk s ъdaji o vyvaћovбnн automatickэch souибstek kulometu</text>
+	</string>
+	<string id="flesh_up_ab_svu_name">
+		<text>Flashdisk s ъdaji o hlavnнch odtшelovacнch puљek</text>
+	</string>
+	<string id="flesh_up_abcd_pkm_name">
+		<text>Flashdisk s ъdaji o modifikacнch plynovй vэpusti kulometu</text>
+	</string>
+	<string id="flesh_up_abcd_svu_name">
+		<text>Flashdisk s ъdaji o elektronickэch stabilizбtorech pro odstшelovacн puљky</text>
+	</string>
+	<string id="flesh_up_ac_ak74u_name">
+		<text>Flashdisk s ъdaji o vyvaћovбnн automatickэch souибstek</text>
+	</string>
+	<string id="flesh_up_ac_desert_eagle_name">
+		<text>Flashdisk s ъdaji o ъsќovэch brzdбch pistolн</text>
+	</string>
+	<string id="flesh_up_ac_mp5_name">
+		<text>Flashdisk s ъdaji o ъsќovэch brzdбch samopalщ</text>
+	</string>
+	<string id="flesh_up_ac_spas12_name">
+		<text>Flashdisk s ъdaji o pumpovacнch mechanismech pro vojenskй brokovnice</text>
+	</string>
+	<string id="flesh_up_ac_wincheaster1300_name">
+		<text>Flashdisk s ъdaji o pumpovacнch mechanismech pro brokovnice</text>
+	</string>
+	<string id="flesh_up_aceg_scientific_outfit_name">
+		<text>Flashdisk s ъdaji o vyztuћenнch neprщstшelnэch vest</text>
+	</string>
+	<string id="flesh_up_bd_desert_eagle_name">
+		<text>Flashdisk s ъdaji o modifikacнch pistolovэch hlavnн</text>
+	</string>
+	<string id="flesh_up_bd_mp5_name">
+		<text>Flashdisk s ъdaji o modifikacнch samopalovэch hlavnн</text>
+	</string>
+	<string id="flesh_up_bd_wincheaster1300_name">
+		<text>Flashdisk s ъdaji o elektronickйm stabilizaиnнm systйmu pro brokovnice</text>
+	</string>
+	<string id="flesh_up_bdfh_scientific_outfit_name">
+		<text>Flashdisk s ъdaji o systйmu ochrany pшed psi-zбшenнm</text>
+	</string>
+	<string id="flesh_up_cd_pkm_name">
+		<text>Flashdisk s ъdaji o ъsќovэch brzdбch kulometщ</text>
+	</string>
+	<string id="flesh_up_cd_svu_name">
+		<text>Flashdisk s ъdaji o ъsќovэch brzdбch odstшelovacнch puљek</text>
+	</string>
+	<string id="flesh_up_fh_scientific_outfit_name">
+		<text>Flashdisk s ъdaji o uzavшenйm dэchacнm modulu</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_desc">
+		<text>PDA s nбkresy, kterэm by rozumмl jen gйnius</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_name">
+		<text>PDA kбmoљe strejdy Jara</text>
+	</string>
+	<string id="st_device_pda_comendant_desc">
+		<text>Osobnн PDA velitele Lingova. Obsahuje mimo jinй informace o kolaboraci se ћoldбky.</text>
+	</string>
+	<string id="st_device_pda_comendant_name">
+		<text>Lingovovo PDA</text>
+	</string>
+	<string id="st_device_pda_freedom">
+		<text>PDA иlena Svobody</text>
+	</string>
+	<string id="st_device_pda_freedom_desc">
+		<text>PDA bojovnнka Svobody obsahujнcн zбznam rozhovoru mezi ъtoиnнky.</text>
+	</string>
+	<string id="st_esc_trader_habar_desc">
+		<text>Kufшнk zamиenэ na kуd. Pro Sidoroviиe je velmi cennэ.</text>
+	</string>
+	<string id="st_esc_trader_habar_name">
+		<text>Koшist</text>
+	</string>
+	<string id="st_pda_descr">
+		<text>Ћбdnб data.</text>
+	</string>
+	<string id="st_pda_name">
+		<text>PDA</text>
+	</string>
+	<string id="st_agr_quest_duty_abakan">
+		<text>Ъtoиnб puљka иlena Povinnosti</text>
+	</string>
+	<string id="st_agr_quest_duty_abakan_descr">
+		<text>Inventбrnн инslo zbranм je peиlivм oznaиenй bнlou barvou. Takovб peиlivost naznaиuje, ћe by mohla patшit vojбkovi z frakce Povinnost.</text>
+	</string>
+	<string id="st_agr_quest_duty_case">
+		<text>Skшнna иlena Povinnosti</text>
+	</string>
+	<string id="st_agr_quest_duty_case_descr">
+		<text>Skшнnka zamиenб kombinaиnнm zбmkem. Podle vљeho je uvnitш nмkolik volnм vloћenэch vмcн. Na etiketм pшilepenй na hornн stranu skшнnky je nбpis s volacнm znakem jednoho z иlenщ Povinnosti.</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda">
+		<text>PDA s tajnэmi informacemi</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda_descr">
+		<text>PDA s nмkolika zбznamy, kterй podle vљeho patшн иlenu Povinnosti. Naprostб vмtљina obsahu je zaљifrovanб.</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12">
+		<text>Brokovnice Ripper</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12_descr">
+		<text>Vypadб to, ћe zbraт nмkdo zkusil zniиit. Podle popisky vyrytйho do paћby je jasnй, ћe jde zbraт z omezenй sйrie, ale nejzajнmavмjљн je jejн hrozivй jmйno Ripper neboli trhaи.</text>
+	</string>
+	<string id="st_esc_quest_akm47">
+		<text>Trofejnн AKM-47/2</text>
+	</string>
+	<string id="st_esc_quest_akm47_descr">
+		<text>Starб, odrbanб ъtoиnб puљka. Do paћby jsou vyrytй stopy drбpщ. Legendбrnн zbraт.</text>
+	</string>
+	<string id="st_esc_quest_luky_detector">
+		<text>Љќastnэ detektor</text>
+	</string>
+	<string id="st_esc_quest_luky_detector_descr">
+		<text>Starэ detektor s pшilepenэmi nбlepkami z banбnщ a ћvэkaиek. Vypadб celkem normбlnм, je zvlбљtnн, ћe by ho nмkdo mohl povaћovat za nмco mimoшбdnйho.</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka">
+		<text>Magickб vodka</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka_descr">
+		<text>Kalnб tekutina pбchnoucн po alkoholu. Musн mнt nejmнт 80%, bude lepљн ji ani nezkouљet.</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit">
+		<text>Speciбlnн medikit NPR-21p</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit_descr">
+		<text>Na lйkбrniиce je nбpis "NPR-21p protiradiaиnн sada (testovacн model)." U nбvodu k pouћitн je znepokojivм dlouhэ seznam nepшнjemnэch vedlejљнch ъиinkщ.</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit">
+		<text>Odolnб koћenб bunda</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit_descr">
+		<text>Aиkoli pшedchozнho majitele bundy anomбlie roztrhala na kusy, bunda je pшekvapivм nepoљkozenб.</text>
+	</string>
+	<string id="st_gar_quest_vodka_2">
+		<text>Vodka Cossacks 2</text>
+	</string>
+	<string id="st_gar_quest_vodka_2_descr">
+		<text>Podle љpatnм pшilepenй etikety a podivnйho sedimentu na dnм lahve jde zшejmм o domбcн samohonku.</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle">
+		<text>Modifikovanб bouchaиka</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle_descr">
+		<text>Fakt pмknм drsnб bouchaиka. Modifikoval ji vэjimeиnм talentovanэ puљkaш.</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm">
+		<text>Popsanб pistole</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm_descr">
+		<text>Do rukojeti pistole je nмco vyryto. Nбpis je nezшetelnэ, dб se rozluљtit pouze: "Za vэ…eи… pro…e.. nн po…i..sti."</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300">
+		<text>Banditщv Chaser 13</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300_descr">
+		<text>Do brokovnice je vyryto nмkolik ибrek, kterй zшejmм oznaиujн stalkery, kterй s nн jejн pшedchozн majitel zabil.</text>
+	</string>
+	<string id="st_red_forest_pda_map_2">
+		<text>PDA s mapou Rudйho lesa</text>
+	</string>
+	<string id="st_red_forest_pda_map_2_descr">
+		<text>V tomto PDA je uloћenб mapa Rudйho lesa se spoustou znaиek. Znaиky urиujн oblasti s velkou ъrovnн radiace. Poslednн zбznam byl proveden v 23:15 a znн: "Mмli jsme pшeиkat noc u mostu, v noci se z lesa nedostaneme."</text>
+	</string>
+	<string id="st_red_quest_prototipe_device">
+		<text>Experimentбlnн zaшнzenн</text>
+	</string>
+	<string id="st_red_quest_prototipe_device_descr">
+		<text>Zaшнzenн se spoustou indikбtorщ a pшepнnaищ. Nikde nenн ћбdnэ popis, kterэ by napovнdal jak ho pouћнt nebo k иemu je.</text>
+	</string>
+	<string id="st_red_quest_tank_minigun">
+		<text>Tankistickэ kulomet</text>
+	</string>
+	<string id="st_red_quest_tank_minigun_descr">
+		<text>Kulomet urиenэ do tankovй vмћe, ale je moћnй pouћнvat ho i jako ruиnн kulomet.</text>
+	</string>
+	<string id="st_val_quest_flash_movies">
+		<text>USB disk s filmy</text>
+	</string>
+	<string id="st_val_quest_flash_movies_descr">
+		<text>USB disk s nejnovмjљнmi filmy, ale kvщli jejich vysokйmu rozliљenн nenн moћnй je na PDA sledovat.</text>
+	</string>
+	<string id="st_val_quest_guitar_serg">
+		<text>Seregova kytara</text>
+	</string>
+	<string id="st_val_quest_guitar_serg_descr">
+		<text>Na kytaшe je propiskou napsбno, ћe je to dбrek pro nмjakйho Seregu od jeho pшнtelkynм.</text>
+	</string>
+	<string id="st_val_quest_scope_x8">
+		<text>Optika 8X</text>
+	</string>
+	<string id="st_val_quest_scope_x8_descr">
+		<text>Vynikajнcн puљkohled s montбћnнm systйmem, kterэ pщjde zшejmм pouћнt jen na loveckou puљku.</text>
+	</string>
+	<string id="st_yan_quest_granade">
+		<text>Granбt suvenэr</text>
+	</string>
+	<string id="st_yan_quest_granade_descr">
+		<text>Cviиnэ granбt. K pojistce je pшipevnмnэ krouћek na klниe ve tvaru bнlйho krбlниka.</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower">
+		<text>Љarlatovб kvмtina</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower_descr">
+		<text>Zбhadnэ artefakt neznбmйho pщvodu. Nevytvбшн prakticky ћбdnй emise, ale je potvrzeno, ћe dobшe pщsobн na ћeny.</text>
+	</string>
+</string_table>

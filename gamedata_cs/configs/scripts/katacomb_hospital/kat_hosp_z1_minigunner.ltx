@@ -8,6 +8,7 @@ on_info = %+minigun_off%
 [walker@fire]
 danger = danger_condition
 combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
 ;out_restr = z3_defender_restr
 path_walk = z1_minigunner_walk
 path_look = z1_minigunner_look
@@ -15,16 +16,19 @@ invulnerable = true
 on_info = {+minigun_off} walker
 on_info2 = {+hospital_z1_komander_speak} walker@fire2 
 group = 1
+wounded = wounded
 
 [walker@fire2]
 danger = danger_condition
 combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
 ;out_restr = z3_defender_restr
 path_walk = z1_minigunner_walk
 path_look = z1_minigunner_look
 ;invulnerable = true
 on_info = {+minigun_off} walker
 group = 1
+wounded = wounded
 
 [walker]
 on_info = {+lim_z1_minigun_off_2} %=hit_npc(205:bip01_head:500:50)%
@@ -33,6 +37,15 @@ path_look = z1_minigunner_look
 danger = danger_condition
 combat_ignore_cond = always
 group = 1
+wounded = wounded
+
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false
+
 
 [danger_condition]
 ignore_distance = 0

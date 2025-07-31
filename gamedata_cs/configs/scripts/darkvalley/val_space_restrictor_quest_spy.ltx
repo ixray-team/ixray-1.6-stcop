@@ -2,7 +2,7 @@
 active = sr_idle
 
 [sr_idle]
-on_info = {+val_be_info_bandit_spy} sr_idle@2 %=create_squad(val_smart_terrain_9_4_spy:val_smart_terrain_9_4) =give_inited_task(storyline:val_bandit_spy:freedom)% 
+on_info = {+val_be_info_bandit_spy} sr_idle@2 %=clear_smart_terrain(val_smart_terrain_9_4) =create_squad(val_smart_terrain_9_4_spy:val_smart_terrain_9_4) =give_inited_task(storyline:val_bandit_spy:freedom)% 
 
 [sr_idle@2]
 on_game_timer = 10 | sr_idle@3

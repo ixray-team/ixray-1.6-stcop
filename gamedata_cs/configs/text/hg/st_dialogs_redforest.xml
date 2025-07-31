@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_forester_hello_dialog_0">
+		<text>Minek kцszцnhetem ezt a megtiszteltetйst?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1">
+		<text>A zsoldosok nagyon йrdekes informбciуkkal lбttak el. Ъgy lбtszik, igazam volt. A nagy kisugбrzбs, ami megrбzta a Zуnбt, olyan erхteljes volt, hogy magбt a teret is megvбltoztatta, egyfajta hurokba formбlta.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111">
+		<text>Professzor, nem lehetne kevйsbй tudomбnyosan? Vйgtelenнtett lett: bбrmerre mйsz, mindig a kiindulбsi pontba jutsz vissza. Ennek eredmйnyekйnt a kisugбrzбs utбn szбmos stalker kerьlt tйrbuborйkba Limanszk kцrnyйkйn, йs nem is tudtak kijutni. Nos, legalбbb mбr tudunk valamit – a zsoldosok koordinбtбit, a PDA frekvenciбt, йs mбr ezeket a buborйkokat is jobban йrtem.</text>
+	</string>
+	<string id="red_forester_has_compas_1">
+		<text>Mбt feladtam minden remйnyt, hogy ъjra lбthassam az Irбnytыt! Kцszцnцm! Adj egy kis idхt, йs megtalбlom a kivezetх utat a buborйkbуl. Amнg йn ezzel foglalkozom, neked valahogy tбjйkoztatnod kell zsoldosokat. Ehhez szьksйg lesz egy nagyteljesнtmйnyы adуra. Hallottam, hogy a hadsereg raktбrtelepйn van egy ilyen adуtorony – ezzel kommunikбlnak a kьlvilбggal. Elйg erхsnek kell lennie, hogy elйrd vele a zsoldosokat.</text>
+	</string>
+	<string id="red_forester_has_compas_111">
+		<text>Elkьldцm neked a szьksйges koordinбtбkat, amint megvan az adу. Ha mindent rendben csinбlnak, ki fognak jutni a buborйkbуl, йs a Limanszkba vezetх hнd kцzelйben bukkannak elх. Talбn mйg a hнd kцzelйben lйvх fosztogatуkat is meglephetik.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11111">
+		<text>Nos, igazбbуl йn magam is egy ilyen buborйk foglya voltam nйhбny nappal ezelхtt. Akkor mйg nem tudtam, hogy egy ъj anomбliбrуl van szу, azt hittem, hogy elvesztettem a jуzan eszem – az erdei tisztбs ismerхsnek tыnt, de bбrmerre is mentem, nem tudtam kijutni az erdхbхl! Aztбn maga a Zуna adott nekem egy relikviбt, ami megmutatta nekem a kivezetх utat. Йn irбnytыnek neveztem el. Hazafelй menet megtбmadtak a fosztogatуk. Engem megkнmйltek – egy vйn цreget, de elvettйk az irбnytыt. Szerezd vissza a relikviбt, йs kitalбlok valamit, hogy kihozzam a zsoldosokat.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111111">
+		<text>Az a szemйt a Vцrцs-erdх peremйn tбborozott le. Feltцltцttem a koordinбtбkat a PDA-ra.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_1">
+		<text>Limanszk йvekig elveszett vбros volt, aminek jу oka volt. Mindannyiunknak jobb lenne, ha elveszett is maradna. Mit akarsz te Limanszkban?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_3">
+		<text>Te aztбn nem vagy egy бtlagos ember. A Zуna megjelцlt, de azt nem tudom, hogy ez inkбbb бldбs vagy бtok. Az esemйnyek normбl menete felborult. A Zуna egyre instabilabbб vбlik, йs te rйsze vagy ennek a folyamatnak. Segнtek neked... bбr nem vagyok biztos benne, hogy helyesen teszem. Limanszkba nem kцnnyы bejutni. A legrцvidebb ъt a hнdon бt vezet. De az fel van hъzva. Bбr, йs ez szбmomra is meglepetйs volt, nem ez az egyetlen ъt. A Szabadsбg йs a Szolgбlat tagjai felhъztбk a hidat a nagy kisugбrzбs utбn. Ennek ellenйre nemrйg fosztogatуk jelentek meg a tъlsу parton, йs elfoglaltбk a hidat. Ez azt jelenti, hogy legalбbb mйg egy ъton be lehet jutni a vбrosba.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_5">
+		<text>A nagy kisugбrzбs nagyon megvбltoztatta a Zуnбt. A biztonsбgos йs ismerхs rйszeket halбlos anomбliбk leptйk el. Megjelentek viszont ъj utak is, melyek йveken бt elйrhetetlenek voltak. Kйtlem, hogy mindet megtalбltбk mбr... Akбr hiszed, akбr nem, olykor rбdiуjeleket fogok valahonnan Limanszk kцzelйbхl a PDA-mon. Ez csak egy dolgot jelenthet, a stalkerek bejutottak valahogy a vбrosba, йs segнtsйgre szorulnak.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_7">
+		<text>Sajnos a jel olyan gyenge, hogy nem veszek ki sokat belхle. Ъgy gondolom, hogy stalkerek estek csapdбba valamilyen meghajlott tйrben – akбrmerre indulnak el, oda йrkeznek vissza, ahonnan elindultak. Ha ki tudnбnk hozni хket, megtudhatnбnk, hogyan lehet bejutni Limanszkba.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_9">
+		<text>Menj a hadsereg raktбrtelepйhez! A jel valуszнnыleg erхsebb lesz a hegy tetejйn. Ha rбjцssz valamire, szуlj, rendben?</text>
+	</string>
+	<string id="red_artefact_hunters_11">
+		<text>Mizъjs, zsoldos? Szerencsйsek vagyunk, hogy a Zуna eljuttatott minket hozzбd!</text>
+	</string>
+	<string id="red_artefact_hunters_111">
+		<text>Hellу!</text>
+	</string>
+	<string id="red_artefact_hunters_1111">
+		<text>Van egy munkбnk szбmodra. Tudod, nem egйszen azйrt jцttьnk ebbe az erdхbe, hogy gombбt szedjьnk. Egy anomбliбs zуna van a kцzelben, ami tцmve van relikviбkkal. Tudom, hogy lehet odajutni, de az ъt az erdхn keresztьl vezet. Gondolom, te is hallottбl tцrtйneteket errхl a helyrхl. Ez egy halбlos csapda. Szуval, ha elviszel minket, йs хrkцdsz egy kicsit, kapsz tхlьnk egy relikviбt a fбradalmaidйrt. Megegyeztьnk?</text>
+	</string>
+	<string id="red_artefact_hunters_11111">
+		<text>Megegyeztьnk, induljunk!</text>
+	</string>
+	<string id="red_artefact_hunters_11112">
+		<text>Nekem sem tetszik ez az erdх. Mennem kell!</text>
+	</string>
+	<string id="red_artefact_hunters_111121">
+		<text>Ahogy gondolod. Gyere vissza, ha meggondolnбd magad!</text>
+	</string>
+	<string id="red_artefact_hunters_21">
+		<text>Igen?</text>
+	</string>
+	<string id="red_artefact_hunters_211">
+		<text>Mit is mondtбl arrуl a helyrхl, ami tцmve van relikviбkkal?</text>
+	</string>
+	<string id="red_artefact_hunters_22">
+		<text>Hellу!</text>
+	</string>
+	<string id="red_artefact_hunters_31">
+		<text>Kйsхbb beszйlьnk!</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11">
+		<text>Ne lхj!</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_111">
+		<text>Kik vagytok ti?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1111">
+		<text>Egyszerы stalkerek. Sztrelok bйrelt fel minket.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11111">
+		<text>Miйrt tбmadtatok meg?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_111111">
+		<text>Sztrelok mondta, hogy valaki vadбszik rб, йs hogy vйdelemre van szьksйge. Azt hittьk, orgyilkos vagy!</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1111111">
+		<text>Йrtem!</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_112">
+		<text>Hova ment Sztrelok?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1121">
+		<text>Nem tudom, nem mondta, hogy hova megy!</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11211">
+		<text>Mi, nem mondott semmit? Egy lyuk a fejetekben felfrissнtenй a memуriбtokat?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_112111">
+		<text>Kйrlek, ne! Tйnyleg nem mondta el, hogy hova megy! Csak annyit tudok, hogy hol tartja a kйszleteit. Itt vannak a koordinбtбk.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1121111">
+		<text>Rendben...</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11212">
+		<text>Jуl van...</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_113">
+		<text>Tudod, hogy talбlhatnбm meg Erdйszt?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1131">
+		<text>Igen. A rйgi bбnyбnбl keresd, az erdх tъloldalбn! Eladott Sztreloknak egy tйrkйpet, amivel бtjuthat az erdхn. Tйrkйp nйlkьl olyan az a hely, mint egy labirintus.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11311">
+		<text>El tudsz vezetni oda?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_113111">
+		<text>Igen, megjegyeztem a tйrkйpet. De veszйlyes, az erdх tele van mutбnsokkal.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1131111">
+		<text>Majd йn gondoskodom rуluk, induljunk!</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_114">
+		<text>Indulok, ne moccanj!</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_0">
+		<text>Ne lхj!</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_1">
+		<text>Kik vagytok ti?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_11">
+		<text>Egyszerы stalkerek. Sztrelok bйrelt fel minket.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_111">
+		<text>Miйrt tбmadtatok meg?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_1111">
+		<text>Sztrelok mondta, hogy valaki vadбszik rб, йs hogy vйdelemre van szьksйge. Azt hittьk, orgyilkos vagy!</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_11111">
+		<text>Йrtem!</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_3">
+		<text>Hova ment Sztrelok?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_31">
+		<text>Nem tudom, nem mondta, hogy hova megy.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_311">
+		<text>Mi, nem mondott semmit? Egy lyuk a fejetekben felfrissнtenй a memуriбtokat?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_3111">
+		<text>Kйrlek, ne! Tйnyleg nem mondta el, hogy hova megy! Csak annyit tudok, hogy hol tartja a kйszleteit. Itt vannak a koordinбtбk.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_31111">
+		<text>Rendben...</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_312">
+		<text>Jуl van...</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_4">
+		<text>Tudod, hogy talбlhatnбm meg Erdйszt?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_41">
+		<text>Igen. A rйgi bбnyбnбl keresd, az erdх tъloldalбn! Eladott Sztreloknak egy tйrkйpet, amivel бtjuthat az erdхn. Tйrkйp nйlkьl olyan az a hely, mint egy labirintus.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_411">
+		<text>El tudsz vezetni oda?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_4111">
+		<text>Igen, megjegyeztem a tйrkйpet. De veszйlyes, az erdх tele van mutбnsokkal.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_41111">
+		<text>Majd йn gondoskodom rуluk, induljunk!</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_5">
+		<text>Indulok, ne moccanj!</text>
+	</string>
+	<string id="red_bounty_hunter_way_11">
+		<text>Menjьnk gyorsabban, nagyon veszйlyes ez a hely!</text>
+	</string>
+	<string id="red_bounty_hunter_way_111">
+		<text>Veszйlyes?</text>
+	</string>
+	<string id="red_bounty_hunter_way_1111">
+		<text>Ez a Vцrцs-erdх! A hely, ahol tucatjбval tыnnek el a stalkerek, йs mi csak ketten vagyunk. Hъzzunk bele, mielхtt megbбnjuk!</text>
+	</string>
+	<string id="red_bounty_hunter_way_12">
+		<text>Mбr majdnem ott vagyunk! Van egy stalker tбbor a kцzelben.</text>
+	</string>
+	<string id="red_bounty_hunter_way_13">
+		<text>Itt vagyunk! Abban a raktбrban йl Erdйsz.</text>
+	</string>
+	<string id="red_bounty_hunter_way_14">
+		<text>Menjьnk gyorsabban!</text>
+	</string>
+	<string id="red_bounty_hunter_way_15">
+		<text>Hellу!</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11">
+		<text>Ne menj a kapuk kцzelйbe! Csapdбk vйdik.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_111">
+		<text>Mi az цrdцg?! Бt kell jutnom!</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_1111">
+		<text>Zsoldos, amнg mi itt vagyunk, nem nyitjuk ki a kapukat! Az erdхbхl bбrmikor elхbukkanhatnak szцrnyek, akkor pedig reggelikйnt vйgezzьk. De ha segнtesz nekьnk, mi is segнtьnk neked. El akarunk jutni a rйgi bбnyбba, бllнtуlag sok relikviбt talбlni odabent. Rбadбsul biztonsбgos is, нgy elbъjhatnбnk a kisugбrzбsok elхl. Csak az a gond, hogy egyedьl nem tudjuk megtartani. Utazott mйg velьnk pбr stalker. Nйhбnyan a Szemйtdombon, nйhбnyan pedig Jantaron бt keresztьl indultak. Szуval, ha valamelyikьk бtjutna, azt akarjuk, hogy vezesd хt a bбnyбhoz! Йs akkor kinyitjuk neked a kapukat!</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11111">
+		<text>Megegyeztьnk! Йn hozok segнtsйget, ti pedig kinyitjбtok a kapukat.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11112">
+		<text>Kizбrt dolog!</text>
+	</string>
+	<string id="red_forest_stalkers_task_11">
+		<text>Hellу, zsoldos!</text>
+	</string>
+	<string id="red_forest_stalkers_task_111">
+		<text>Hellу!</text>
+	</string>
+	<string id="red_forest_stalkers_task_1111">
+		<text>Van egy munkбnk szбmodra!</text>
+	</string>
+	<string id="red_forest_stalkers_task_11111">
+		<text>Folytasd!</text>
+	</string>
+	<string id="red_forest_stalkers_task_111111">
+		<text>Szerezd meg nekьnk Vцrцs-erdх tйrkйpйt!</text>
+	</string>
+	<string id="red_forest_stalkers_task_11111111">
+		<text>Rendben!</text>
+	</string>
+	<string id="red_forest_stalkers_task_2">
+		<text>Itt a tйrkйpetek.</text>
+	</string>
+	<string id="red_forest_stalkers_task_21">
+		<text>Kцszцnjьk a segнtsйget!</text>
+	</string>
+	<string id="red_forester_about_forest_0">
+		<text>Mesйlj a Vцrцs-erdхrхl!</text>
+	</string>
+	<string id="red_forester_about_forest_1">
+		<text>Valaha vadon йlх бllatok йlхhelye volt, йs йn voltam a helyi erdйsz. Megvйdtem az erdхt йs az бllatait az orvvadбszoktуl. Most maga a Zуna vйdelmezi ezt a helyet, йs mindezt olyan jуl teszi, hogy az emberek kйpesek akбr egy tucat mйrfцlddel is tцbbet utazni, csakhogy elkerьljйk. Ha egy idegen bemerйszkedik az erdхbe, gyakorlatilag mбr halott. Lehet йn vagyok az Erdйsz, de mйg sem tudom pontosan, hogy mi folyik itt. Egy ember besйtбl a kцdbe, йs hirtelen beszippantja valami. Mйg, ha kцzvetlenьl mцgцtte mйsz, akkor sem tudod, hogy pontosan mi okozta a vesztйt. Hбt ennyi, fiacskбm!</text>
+	</string>
+	<string id="red_forester_about_limansk_0">
+		<text>El kell jutnom Limanszkba!</text>
+	</string>
+	<string id="red_forester_about_limansk_1">
+		<text>Limanszk йvekkel ezelхtt elveszett, ennek pedig nem is egy oka volt. Mindannyiunk szбmбra az lenne a legjobb, ha elveszett is maradna. Mit akarsz Limanszkban?</text>
+	</string>
+	<string id="red_forester_about_limansk_11">
+		<text>Tudom, hogy elcsйpeltnek fog hangzani, de йlet-halбl kйrdйse.</text>
+	</string>
+	<string id="red_forester_about_limansk_111">
+		<text>Nem vagy mindennapi ember. A Zуna kьlцnцs nyomot hagyott rajtad. Bбr azt, hogy ez бldбs vagy бtok, nem tudom megmondani. A Zуna egyre labilisabbб vбlik. A dolgok szokбsos menete felborult, йs valami azt sъgja, hogy ennek te vagy az okozуja. Segнtek neked, de nem mondhatnбm, hogy biztos vagyok a dцntйsemben.</text>
+	</string>
+	<string id="red_forester_about_zone_0">
+		<text>Mit tudsz elmondani a Zуnбrуl?</text>
+	</string>
+	<string id="red_forester_about_zone_1">
+		<text>A Zуna... A Zуnбnak megvan a sajбt йlete, mi, emberek, pedig csak az ъtjбban vagyunk. Valaki jobban, valaki kevйsbй. A Zуna mыkцdйsi elve, hogy semlegesнtsen mindent, ami veszйlyes lehet a lйtezйsйre, hasonlуan, ahogy a testьnk harcol a fertхzйsek ellen. Mi lбzasok leszьnk, a Zуnбban pedig rengйsek keletkeznek. Kisugбrzбsok, ezzel akar ъgymond "kiцklendezni" minket. Minйl nagyobb bosszъsбgot okozunk, annбl nagyobb lesz a kцvetkezх kisugбrzбs.</text>
+	</string>
+	<string id="red_forester_about_zone_11">
+		<text>Hogy sikerьlt ennyi йvig йletben maradnod, egyedьl, annyi veszйly kцzepette?</text>
+	</string>
+	<string id="red_forester_about_zone_111">
+		<text>Egyetlen ostoba cselekedet elpusztнthatja a Zуnбt... йs vele egyьtt mindent, ami hozzбtartozik. Nemcsak a mutбnsokat йs az anomбliбkat, hanem a relikviбkat йs titeket, stalkereket, is... йs engem. Йrzem, hogy legbelьl nyugtalan a Zуna. Valami idegesнti, йs zavarja az egyensъlyбt. Vihar kйszьlхdik... йs nem tudom, hogy a fennбllу бllapot megхrizhetх-e.</text>
+	</string>
+	<string id="red_forester_cheet_0">
+		<text>text in default</text>
+	</string>
+	<string id="red_forester_cheet_1">
+		<text>Hozd el nekem az egyedi Irбnytы relikviбt! Keress a PDA-don lehetsйges lelхhelyeket!</text>
+	</string>
+	<string id="red_forester_has_compas_0">
+		<text>Megvan a relikvia.</text>
+	</string>
+	<string id="red_forester_has_compas_11">
+		<text>Mi tцrtйnik, ha megtalбlom?</text>
+	</string>
+	<string id="red_forester_hello_dialog_1">
+		<text>Mit keres egy hozzбd hasonlу ъjonc az Erdйsz otthonбban?</text>
+	</string>
+	<string id="red_forester_hello_dialog_2">
+		<text>A vakszerencse vezetett el hozzбm?</text>
+	</string>
+	<string id="red_forester_hello_dialog_3">
+		<text>Sok szerencsйt, fiam!</text>
+	</string>
+	<string id="red_forester_hello_dialog_4">
+		<text>Ne feledkezz el rуlam!</text>
+	</string>
+	<string id="red_forester_hello_dialog_5">
+		<text>Emlйkezz rбm!</text>
+	</string>
+	<string id="red_forester_limansk_0">
+		<text>Mesйlj Limanszkrуl!</text>
+	</string>
+	<string id="red_forester_limansk_1">
+		<text>Rйgуta nem hallott mбr senki arrуl a vбrosrуl. Sokan mйg azt sem hiszik el, hogy Limanszk valaha lйtezett. De rosszul tudjбk.  A vбros lйtezik, a sajбt szememmel lбttam az elsх katasztrуfa elхtt. Tudod, volt egy hatalmas, zбrt intйzet, ahol kifejezetten a tudуsoknak йs alkalmazottaiknak йpнtettek hбzakat. Egy meglehetхsen szokatlan nevы kutatуintйzet volt...talбn Rбdiуhullбm? Felszereltek egy hatalmas, цtemeletes hбz nagysбgъ antennбt is. Nagyon intelligens fickуk voltak azok. Csak az volt a gond, hogy sosem volt igazбn bйke Limanszkban. A lakуi mindig уvatosan, gyanakodva fogadtбk az idegeneket. Egyfolytбban az orruk alatt motyogtak, йs a szovjet rezsimet йltettйk, mйg akkor is, ha kйszlethiбnyuk volt. Mi, vidйkiek, gyakran jбrtunk Limanszkban. Az emberek nem igazбn voltak szнvйlyesek, йs valahogy fбjt az ember szнve a vбros lбttбn...biztos az antenna miatt. Akkor pedig megtцrtйnt Csernobil, de Limanszkot mйg csak nem is evakuбltбk. Lehet elcsesztek valamit a papнrmunkбval, vagy csak titokban tartottбk, tйnyleg nem tudom. De ekkor hallottam utoljбra a vбrosrуl. Semmi dolgom ott...</text>
+	</string>
+	<string id="red_forester_limansk_11">
+		<text>De lбttam egy utat Limanszkba, йs egy folyуn бtнvelх hidat.</text>
+	</string>
+	<string id="red_forester_limansk_111">
+		<text>Ez a hely rйgebben nyьzsgцtt az anomбliбktуl, de a Kisugбrzбs utбn szinte biztonsбgossб vбlt. A stalkerek hamar rбjцttek, hogy Limanszkon keresztьl elйrhetik a Zуna kцzepйt, йs mйg csak бt sem kell menniьk az Agyperzselхn. A Szolgбlat йs a Szabadsбg valуsбgos hбborъba kezdett, amint elйrtйk a vбrost, ez pedig akбr mindkettхjьk vйgйt is jelentheti. De lefogadom, hogy ezt a Zуnбban szinte senki sem bбnnб!</text>
+	</string>
+	<string id="red_forester_limansk_12">
+		<text>Ez a hely rйgebben nyьzsgцtt az anomбliбktуl, de a Kisugбrzбs utбn szinte biztonsбgossб vбlt. A stalkerek hamar rбjцttek, hogy Limanszkon keresztьl elйrhetik a Zуna kцzepйt, йs mйg csak бt sem kell menniьk az Agyperzselхn. A Szolgбlat йs a Szabadsбg valуsбgos hбborъba kezdett, amint elйrtйk a vбrost, ez pedig akбr mindkettхjьk vйgйt is jelentheti. De lefogadom, hogy ezt a Zуnбban szinte senki sem bбnnб!</text>
+	</string>
+	<string id="red_forester_lost_stalkers_0">
+		<text>Kaptam egy ьzenetet a hadsereg raktбrainбl tartуzkodу zsoldosoktуl. Ъgy tыnik, hogy a nagy kisugбrzбs alatt csapdбba ejtette хket egy furcsa anomбlia. Azt mondjбk, hogy nem tudnak kijutni, mindig oda lyukadnak ki, ahonnan elindultak. Megadtбk a koordinбtбikat.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11">
+		<text>Mint egy Mцbius-gyыrы?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111">
+		<text>Йs hogy juttassam ki a zsoldosokat a buborйkbуl?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111111">
+		<text>Nem tudod, hova бstбk be magukat a fosztogatуk?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111112">
+		<text>Tessйk, megszereztem a ritka relikviбdat!</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111121">
+		<text>Mбr teljesen lemondtam rуla, hogy mйg egyszer ъjra lбtom az irбnytыt! Kцszцnцm! Adj egy kis idхt, йs megtalбlom a kiutat a buborйkbуl! Amнg йn ezt csinбlom, valahogy бt kell sugбroznod a koordinбtбkat az elveszett osztagnak! Keresd meg az adуkйszьlйket a hadsereg raktбrainбl!</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11111211">
+		<text>Йs mi fog tцrtйnni, ha megtalбltam az adуkйszьlйket?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111112111">
+		<text>Amint megtalбlod az adуkйszьlйket, megadom a koordinбtбkat, amikre a zsoldosoknak szьksйgьk van!</text>
+	</string>
+	<string id="red_forester_need_to_limansk_0">
+		<text>El kell jutnom Limanszkba!</text>
+	</string>
+	<string id="red_forester_need_to_limansk_2">
+		<text>Tudom, hogy elcsйpeltnek fog hangzani, de йlet-halбl kйrdйse.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_4">
+		<text>Tudod, hogy jutottak бt a fosztogatуk a tъloldalra?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_6">
+		<text>Mi tцrtйnt a stalkerekkel?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_8">
+		<text>Mit kell tennem?</text>
+	</string>
+	<string id="red_forester_who_are_you_0">
+		<text>Ki vagy te?</text>
+	</string>
+	<string id="red_forester_who_are_you_1">
+		<text>Mit mesйlhetnйk magamrуl? Erdйsz vagyok. Rйgуta itt vagyok mбr. Egйsz йletemben emellett az erdх mellett йltem. Цreg vagyok. Az йn koromban hozzбnх az ember az otthonбhoz, nem szбmнt, hogy milyen is az! Visszautasнtottam az evakuбlбst az erхmыnйl tцrtйnt baleset utбn, йs tъlйltem a Zуna megjelenйsйt is. Emlйkszem egy villanбsra a horizonton... sok ember meghalt aznap, de tudod, a Zуna megkнmйlt engem. Fenйket, nem is megkнmйlt, adomбnyt kaptam tхle! Rйgen цsvйnyeket talбltam az erdхben, most pedig megйrzem a halбlos anomбliбkon бtvezetх, biztonsбgos utakat. A stalkerek irigykednek rбm, de nem mondanбm, hogy nagyon boldog lennйk az adomбnyom miatt. Meg kell йrtened, hogy mindennek megvan a maga бra! Egy nap a Zуna megfizetteti velem az adomбnyomat. Ettхl fйlek йn, pajtбs!</text>
+	</string>
+	<string id="red_forester_who_are_you_111">
+		<text>Nem, egyszerы kis fenyхerdх volt ez. Igaz, egyben termйszetvйdelmi terьlet is volt, ami akkoriban kьlцnlegessйgnek szбmнtott. Az 1986-os Csernobili Atomerхmыnйl tцrtйnt baleset utбn vбlt vцrцssй. Amikor lefekьdtem mйg zцld volt, de mire felйbredtem mбr ъgy nйzett ki, ahogy most te is lбtod. Majd a Zуna megjelent, az бllatok йs a madarak elhagytбk az erdхt. Йn voltam az egyedьli йlхlйny, aki itt maradt. Csak йn, a vцrцs-erdх йs ez a sыrы kцd, ami soha nem tыnik el.</text>
+	</string>
+	<string id="red_forester_who_are_you_11111">
+		<text>Igen, sok stalker vesztette itt йletйt. Mйg olyan pletykбkat is hallottam, hogy egy gonosz szellem lakozik a Vцrцs-erdхben. Vйlemйnyem szerint, az erdх pontosan olyan, mint majd minden mбs a Zуnбban. Ha rendesen bбnsz vele, nem nyъl hozzбd. A gond az, hogy ti, stalkerek, semmivel sem bбntok jуl. Uralni akarjбtok a Zуna rйszeit, cserйbe megkapjбtok a... amit megйrdemeltek.</text>
+	</string>
+	<string id="red_leshiy_reward_11">
+		<text>Minden katonбm halott! Kйpzeld csak el, ha kijutnбnk a buborйkbуl, йs цsszefutnбnk a mocsadйk fosztogatуkkal!</text>
+	</string>
+	<string id="red_leshiy_reward_12">
+		<text>Kцszцnцm, zsoldos! Nйlkьled nem sikerьlt volna. Kйrlek, fogadd ezt el, mйg hasznodra lesz!</text>
+	</string>
+	<string id="red_leshiy_reward_13">
+		<text>Kцszцnцm, zsoldos! Nйlkьled nem sikerьlt volna! Kйrlek, fogadd ezt el, mйg hasznodra lesz!</text>
+	</string>
+	<string id="red_leshiy_reward_14">
+		<text>Kцszцnцm, zsoldos! Nagy segнtsйg voltбl, nйlkьled az hйtszentsйg, hogy nem tudtuk volna leengedni a hidat, sem pedig kijutni a buborйkbуl! Kйrlek, fogadd ezt el, mйg hasznodra lesz!</text>
+	</string>
+	<string id="red_leshiy_reward_15">
+		<text>Kцszцnцm, zsoldos! Nagy segнtsйg voltбl, nйlkьled az hйtszentsйg, hogy nem tudtuk volna leengedni a hidat, sem pedig kijutni a buborйkbуl! Kйrlek, fogadd ezt el, mйg hasznodra lesz!</text>
+	</string>
+	<string id="red_leshiy_reward_16">
+		<text>Hellу, Heg!</text>
+	</string>
+	<string id="red_leshiy_story_1_0">
+		<text>Mesйlj a tйrbuborйkokrуl!</text>
+	</string>
+	<string id="red_leshiy_story_1_1">
+		<text>A tйrbuborйk, testvйr, a legnagyobb szarsбgok egyike, amikbe belefuthatsz a Zуnбban. Nemrйg йszlelt jelensйg. Ha bekerьlsz egy buborйkba, цregem, akkor nagy bajban vagy. Bбrhova mйsz, bбrmilyen irбnyba indulsz, mindig visszakerьlsz  a kiindulуpontra. Mйg csak nem is hallottam rуla, mielхtt belekerьltem volna. Egy kisugбrzбs eltalбlt minket, йs az egйsz osztagunk egy ilyen tйrbuborйkban talбlta magбt. Napokig sйtбltunk kцrbe-kцrbe! Nйhбnyan mбr arra kйszьltek, hogy lelцvik magukat. Azt mondtбk, hogy ebbхl nincs kiъt, ъgyhogy miйrt ne fejezzйk be itt йs most... Mбsok pedig mindenfйle szцrnyыsйgeket kйpzelхdtek. Rugdostam йs бtkozуdtam, ahogy prуbбltam talpon tartani хket! Alig emlйkszem mбr rб... Ember, mйg most sem hiszem el, hogy kijutottunk onnan! Kцszцnцm szйpen, hogy segнtettйl nekьnk!</text>
+	</string>
+	<string id="red_leshiy_story_2_0">
+		<text>Milyen kьldetйsen voltatok?</text>
+	</string>
+	<string id="red_leshiy_story_2_1">
+		<text>Hй, testvйr! Mifйle kйrdйs ez? Egy szerzхdйs megszegйse olyan, mint a hamis tanъzбs, csak szigorъbb. Kizбrt dolog, hogy elmondjam neked! De hбt...egye fene, elvйgre megmentetted az йletьnket! Figyelj! Megegyeztьnk, hogy megkeresьnk egy ritka йs hihetetlenьl йrtйkes relikviбt egy nagyvбllalatnak. A szбndйkos elhallgatбsi zбradйk miatt nem mondom meg, hogy pontosan melyiknek. Meg is talбltuk, amit kerestьnk. Ennek mуdja mбr egy mбsik tцrtйnet, de legyen elйg annyi, hogy nincs az a pйnz, amiйrt ъjra elvбllalnйk egy ilyen munkбt! Tцbbre tartom az йletemet ezeknйl a vнzjeles papнroknбl. Bыzlцtt nekem ez az egйsz a kezdetektхl fogva! De a pйnz egyszerыen tъl jу volt ahhoz, hogy elforduljak. Йs ahogy tartottam tхle a portyбzбs rйmбlommб vбltozott. Ahogy elindultunk kezьnkben a zsбkmбnnyal visszafelй, egyszer csak bumm! A kisugбrzбs majdnem eltemetett minket, rбadбsul ott volt az az бtkozott tйrbuborйk is. Tцbbet ilyet nem vбllalok, rбm ne szбmнtson senki!</text>
+	</string>
+	<string id="red_artefact_hunters_reward_dialog_11">
+		<text>Kцszцnцm a segнtsйget, itt a jutalmad!</text>
+	</string>
+</string_table>

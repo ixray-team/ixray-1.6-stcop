@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_artefact_huntesr_capture_smart_name">
+		<text>Ochraniaj stalkerуw zmierzaj№cych do obszaru anomalii</text>
+	</string>
+	<string id="red_artefact_huntesr_capture_smart_text">
+		<text>Ochraniaj stalkerуw zmierzaj№cych do obszaru anomalii</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_name">
+		<text>Broс stalkerуw na obszarze anomalii</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_text">
+		<text>Broс stalkerуw na obszarze anomalii</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_name">
+		<text>Osіaniaj najemnikуw</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_text">
+		<text>Najemnicy atakuj№ bandytуw po drugiej stronie rzeki. Osіaniaj ich i pomуї im zaj№ж pozycjк.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_name">
+		<text>Zniszcz bandytуw</text>
+	</string>
+	<string id="red_bridge_cover_allyes_text">
+		<text>Bandytуw jest zbyt wielu i uniemoїliwiaj№ najemnikom opuszczenie mostu. Zabij jak najwiкcej bandytуw.</text>
+	</string>
+	<string id="red_bridge_cover_bridge_name">
+		<text>Osіaniaj najemnika przy panelu kontrolnym</text>
+	</string>
+	<string id="red_bridge_cover_bridge_text">
+		<text>Najemnik zaj№і pozycjк przy panelu kontrolnym mostu. Osіaniaj go, їeby mуgі opuњciж most.</text>
+	</string>
+	<string id="red_bridge_go_to_positon_name">
+		<text>Zajmij pozycjк strzeleck№</text>
+	</string>
+	<string id="red_bridge_go_to_positon_text">
+		<text>Zajmij pozycjк strzeleck№ na piкtrze strуїуwki. To najlepszy punkt do ostrzeliwania bandytуw.</text>
+	</string>
+	<string id="red_bridge_kill_sniper_name">
+		<text>Wyeliminuj snajperуw ze wzgуrza</text>
+	</string>
+	<string id="red_bridge_kill_sniper_text">
+		<text>Snajperzy panuj№ nad terenem wokуі panelu kontrolnego mostu; dopуki їyj№, najemnicy nie maj№ szans na opuszczenie mostu. Wyeliminuj snajperуw ze wzgуrza.</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_name">
+		<text>Pomуw z Lebiediewem</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_text">
+		<text>Most zostaі opuszczony, droga do Limaсska stoi otworem. Pomуw z Lebiediewem</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_name">
+		<text>Poczekaj na przybycie oddziaіu stalkerуw</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_text">
+		<text>Poczekaj na przybycie oddziaіu stalkerуw</text>
+	</string>
+	<string id="red_bring_compass_name">
+		<text>Zanieњ Leњnikowi Kompas</text>
+	</string>
+	<string id="red_bring_compass_text">
+		<text>Dziкki Kompasowi Leњnik zdoіaі kilka dni temu wydostaж siк z b№bla przestrzennego. Ten artefakt powinien przydaж siк najemnikуw uwiкzionym w podobnym b№blu. Przynieњ Kompas Leњnikowi.</text>
+	</string>
+	<string id="red_find_compass_name">
+		<text>Odszukaj Kompas</text>
+	</string>
+	<string id="red_find_compass_text">
+		<text>Leњnik znalazі wyj№tkowy artefakt w anomalii przestrzennej przypominaj№cej b№bel, w ktуrym uwiкzieni s№ w pobliїu magazynуw wojskowych najemnicy. W drodze powrotnej artefakt zabrali Leњnikowi bandyci. Odszukaj Kompas.</text>
+	</string>
+	<string id="red_find_forester_name">
+		<text>Pomуw z Leњnikiem</text>
+	</string>
+	<string id="red_find_forester_text">
+		<text>Їyj№cy w opuszczonej chacie Leњnik moїe ci pomуc znaleџж drogк do Limaсska. Pomуw z Leњnikiem</text>
+	</string>
+	<string id="red_find_teleport_name">
+		<text>Odszukaj anomaliк przestrzenn№</text>
+	</string>
+	<string id="red_find_teleport_text">
+		<text>PDA zaginionej grupy zawiera informacje o drodze przez Czerwony Las. To gdzieњ w leњnej gіuszy naleїy szukaж anomalii przestrzennej prowadz№cej do starej chaty na skraju lasu. Wіaњnie tam mieszka Leњnik. Odszukaj anomaliк przestrzenn№.</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_name">
+		<text>Dostarcz PDA z map№ Czerwonego Lasu</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_text">
+		<text>Dostarcz PDA z map№ Czerwonego Lasu</text>
+	</string>
+	<string id="red_go_to_signal_sos_name">
+		<text>Odpowiedz na sygnaі SOS</text>
+	</string>
+	<string id="red_go_to_signal_sos_text">
+		<text>Њcieїka prowadz№ca do chaty Leњnika przez Czerwony Las pozostaje nieznana. Z Czerwonego Lasu nadano sygnaі SOS - odpowiedz naс.</text>
+	</string>
+	<string id="red_help_with_bridge_name">
+		<text>Pomуї Czystemu Niebu zdobyж most</text>
+	</string>
+	<string id="red_help_with_bridge_text">
+		<text>Oddziaі najemnikуw zbliїa siк do mostu do Limaсska. Przejd№ na opanowany przez bandytуw brzeg rzeki, wiкc wkrуtce na moњcie moїe byж naprawdк gor№co. Pomуї Czystemu Niebu obniїyж most prowadz№cy do Limaсska.</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_name">
+		<text>Wyeliminuj zasadzkк</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_text">
+		<text>Strieloka osіania grupa stalkerуw. Wyeliminuj zasadzkк.</text>
+	</string>
+	<string id="red_pursuit_strelok_name">
+		<text>Powstrzymaj Strieloka</text>
+	</string>
+	<string id="red_pursuit_strelok_text">
+		<text>Strielok wszedі do tunelu. Udaj siк za nim i dopilnuj, aby nie przedostaі siк do centrum Zony.</text>
+	</string>
+	<string id="red_pursuit_talk_csky_name">
+		<text>Powstrzymaj Strieloka</text>
+	</string>
+	<string id="red_pursuit_talk_csky_text">
+		<text>Strielok jest bardzo blisko - w promieniu 100 metrуw. Dogoс go.</text>
+	</string>
+	<string id="red_stalker_reinforced_name">
+		<text>Zdob№dџ star№ kopalniк</text>
+	</string>
+	<string id="red_stalker_reinforced_text">
+		<text>Zdob№dџ star№ kopalniк. Duїo w niej anomalii, sporo teї rzadkich artefaktуw.</text>
+	</string>
+	<string id="red_go_to_military_base_name">
+		<text>Udaj siк do bazy armijnej</text>
+	</string>
+	<string id="red_go_to_military_base_text">
+		<text>Baza armijna dysponuje potкїnym przekaџnikiem, ktуry pozwoli nam wysіaж sygnaі do grupy uwiкzionej w b№blu przestrzennym w pobliїu Limaсska. Idџ do magazynуw wojskowych.</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_name">
+		<text>Znajdџ drogк do obszaru anomalii</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_text">
+		<text>PDA zaginionej grupy zawiera informacje o drodze przez Czerwony Las. To gdzieњ w leњnej gіuszy naleїy szukaж anomalii przestrzennej prowadz№cej do starej chaty na skraju lasu. Wіaњnie tam mieszka Leњnik. Odszukaj anomaliк.</text>
+	</string>
+	<string id="red_find_signals_on_military_name">
+		<text>Odbierz wiadomoњж radiow№</text>
+	</string>
+	<string id="red_find_signals_on_military_text">
+		<text>Leњnik otrzymuje niezrozumiaіe fragmenty wiadomoњci radiowych od niezidentyfikowanej grupy, ktуra zostaіa uwiкziona w dziwnej anomalii bardzo blisko Limaсska. Grupa moїe znaж inn№ drogк prowadz№c№ do miasta - udaj siк do magazynуw wojskowych i odszukaj miejsce, w ktуrym bкdzie moїna odebraж wyraџniejszy sygnaі.</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_name">
+		<text>Podnieњ PDA</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_text">
+		<text>PDA martwego stalkera wci№ї jest aktywne i moїe zawieraж cenne informacje o Czerwonym Lesie. Podnieњ PDA.</text>
+	</string>
+	<string id="red_recover_item_1_name">
+		<text>Przynieњ PDA z map№ Czerwonego Lasu</text>
+	</string>
+	<string id="red_recover_item_1_text">
+		<text>Przydaіaby siк nam twoja pomoc, najemniku. Potrzebujemy dokіadnej mapy Czerwonego Lasu. Podobno kilka grup stalkerуw prуbowaіo zbadaж ten obszar, wiкkszoњж z nich zaginкіa. Odszukaj ich notatki i mi je dostarcz.</text>
+	</string>
+	<string id="red_recover_item_2_name">
+		<text>Przynieњ czoіgowy karabin maszynowy</text>
+	</string>
+	<string id="red_recover_item_2_text">
+		<text>Mam dla ciebie robуtkк. Leњnik twierdzi, їe gікboko w lesie utkn№і stary radziecki czoіg. Nikt nie wie, jakim cudem tam trafiі, ale nast№piіo to po potкїnej emisji. Czoіg jest prawie nienaruszony - pewnie, nie da siк nim odjechaж, ale moїna zabraж z niego karabin maszynowy. Przynieњ mi go, a otrzymasz sowit№ nagrodк.</text>
+	</string>
+	<string id="red_recover_item_3_name">
+		<text>Zwrуж urz№dzenie eksperymentalne</text>
+	</string>
+	<string id="red_recover_item_3_text">
+		<text>Moїesz mi coњ przynieњж. Badaliњmy dla naukowcуw pewien prototyp - maіy miernik siіy anomalii. Na razie nie nadaje siк do uїycia, dwa dni uczyli nas, jak to obsіugiwaж. Zbieraliњmy informacje w starej kopalni, gdy coњ siк staіo... Coњ nas zaatakowaіo. Zrobiіo siк naprawdк nieciekawie - tylko ja uszіem z їyciem. Urz№dzenie zostaіo tam z chіopakami, powpadali w jakieњ anomalie. To, co nas zaatakowaіo pewnie teї tam siк czai - nie bкdzie іatwo odzyskaж tego sprzкtu. Jeњli ci siк uda, czeka na ciebie solidna nagroda.</text>
+	</string>
+</string_table>

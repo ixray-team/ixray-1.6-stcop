@@ -10,7 +10,7 @@ def_state_moving1 = assault
 def_state_moving2 = assault
 def_state_moving3 = assault
 meet = no_meet
-on_info = {+val_talked_to_blockpost_leader_complete +gar_story_got_info_from_digger} walker@start_work1_1
+on_info = {+val_talked_to_blockpost_leader_complete +gar_story_got_info_from_digger -val_reply_to_sos_done} walker@start_work1_1
 
 [walker@start_work1_1]
 path_walk = blockpost_guard_walker_1_walk
@@ -54,7 +54,7 @@ def_state_moving1 = assault
 def_state_moving2 = assault
 def_state_moving3 = assault
 meet = no_meet
-on_info = {+val_talked_to_blockpost_leader_complete +gar_story_got_info_from_digger} walker@start_work2_1
+on_info = {+val_talked_to_blockpost_leader_complete +gar_story_got_info_from_digger -val_reply_to_sos_done} walker@start_work2_1
 
 [walker@start_work2_1]
 path_walk = blockpost_guard_walker_2_walk
@@ -99,8 +99,8 @@ def_state_moving1 = assault
 def_state_moving2 = assault
 def_state_moving3 = assault
 meet = no_meet
-on_info = {+val_play_sound_gunfire_1_start} remark
-on_info2 = {+val_play_sound_gunfire_3_start} walker@start_work3_5
+on_info = {+val_play_sound_gunfire_1_start -val_reply_to_sos_done} remark
+on_info2 = {+val_play_sound_gunfire_3_start -val_reply_to_sos_done} walker@start_work3_5
 
 [remark]
 anim = wait_rac

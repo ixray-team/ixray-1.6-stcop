@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_freedom_blockpost_robbery_dialog_0">
+		<text>Dobra, stalkerze, nie ruszaj siк... Kim jesteњ i co tu robisz?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11">
+		<text>Pewnie juї nie їyje, a tobie radzк zmywaж siк st№d, jeњli nie chcesz skoсczyж jak on.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1111">
+		<text>Ktoњ nas ci№gle atakuje. Widaж, їe siк na tym zna - za kaїdym razem nie mamy szans. Kontrolujemy wszystkie drogi prowadz№ce w Dolinк Mroku, ale to wcale nie przeszkadza temu, kto nas atakuje. Tylko w bazie moїemy siк rozluџniж. Jeњli szukasz informacji na temat Kіa, sprуbuj w bazie "Wolnoњci".</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51">
+		<text>Jak tam, kundel ciк trochк przegoniі?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11">
+		<text>Czeњж. Czego ci dzisiaj potrzeba?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_21">
+		<text>Czeњж, stary. Szukasz dobrej okazji?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11">
+		<text>No proszк, w koсcu spotykamy siк twarz№ w twarz. Nazywam siк Czechow, jestem tu szefem. Nagranie na znalezionym przez ciebie PDA wyjaњnia kilka spraw. Zablokowaliњmy wszystkie wyjazdy z doliny, ale nasze placуwki i patrole wci№ї byіy atakowane! Parк razy ledwo patrol zd№їyі opuњciж bazк, a juї byіo po nim. Chіopaki zaczynali myњleж, їe obraziliњmy czymњ Zonк i to jest kara. Prуbowaliњmy nawet urokуw ochronnych przeciw duchom i takich tam... Ale teraz juї wiemy, їe nie byіo w tym їadnej mistyki - dowуdca wyjawiaі wszystkie nasze ruchy... Pieprzony szczur!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111">
+		<text>Nie spodziewaіem siк tego po nim! Znaіem go kopк lat! Razem szukaliњmy pierwszych artefaktуw, razem budowaliњmy "Wolnoњж"! Powierzyіem mu planowanie operacji, a on wzi№і i nas sprzedaі...</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111">
+		<text>Jak tylko rozmowa z placуwk№ pojawiіa siк na naszej czкstotliwoњci radiowej, dowуdca wyparowaі. Wiedziaі, їe ma przesrane. Musimy go znaleџж. Wie za duїo, moїe nawet wszystko. Wszystkie wyjњcia z doliny s№ zabezpieczone, wiкc nie mуgі zajњж daleko. Њledzimy jego PDA - jest w pobliїu drogi do Kordonu. Kilka naszych oddziaіуw zmierza w tamtym kierunku.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111 ">
+		<text>Taa, byі taki stalker. Interesowaіy go rzadkie czкњci i takie tam. Musiaі wiedzieж, їe mamy najlepszy zespуі technikуw w caіej Zonie! Sprzedaіem mu czкњж, ktуrej szukaі, bo czemu nie? Zapіaciі nieџle i nawet siк nie targowaі. Nie wiem, na co mu byіa, tych czкњci uїywano tylko w starych maszynach szyfruj№cych armii. Zaraz potem wyszedі z bazy i nikt go odt№d nie widziaі.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31">
+		<text>Dziкki za pomoc! Po strzelaninie w gospodarstwie wiemy, їe za atakami na "Wolnoњж" stoj№ najemnicy. Potwierdzaj№ to rуwnieї informacje z PDA dowуdcy. Teraz pytanie: po co to robi№? Najemnicy zawsze byli neutralni i wspуіpracowali ze wszystkimi frakcjami w Zonie. Ciekawe, na czyje zamуwienie byіa ta robota. Moїe "Powinnoњci"... albo armii. Mam teraz wiкcej pytaс niї odpowiedzi, ale rozgryzк to, moїesz byж pewien.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_3111">
+		<text>Dotrzymaіeњ swojej czкњci umowy, wiкc opowiem ci o Kle. Szukaі tu rzadkich czкњci i bardzo mnie zaciekawiіo, na co mu ten stary szmelc. Zapytaіem go wprost, a on powiedziaі, їebym siк nie wtr№caі - ale ja siк іatwo nie poddajк! Kazaіem jednemu z naszych technikуw wіamaж siк na czкstotliwoњж jego PDA i przez kilka dni monitorowaliњmy jego poczynania. Wygl№da na to, їe poszedі na Wysypisko - tam bym go szukaі. Przy okazji, zapisaіem sobie czкstotliwoњж jego PDA - juї ci j№ przesіaіem. Twуj PDA pokazuje ci teraz jego poіoїenie.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41">
+		<text>Jesteњ gotуw pomуc "Wolnoњci" jeszcze raz?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111">
+		<text>Wiemy duїo wiкcej, ale najemnicy ci№gle nas atakuj№ i zostaіy nas tu resztki. Wci№ї nie wiem, jak przedostaj№ siк do doliny - na wszystkich drogach s№ nasze placуwki. Gdzieњ musi byж tunel, o ktуrym nie wiemy. Za jego pomoc№ najemnicy dostaj№ siк do doliny. Musimy znaleџж tк dziurк i rozwaliж j№ na dobre!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_71">
+		<text>Najemniku, musimy przej№ж kontrolк nad antenami.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_51">
+		<text>Dziкki za pomoc! Nie spodziewaіem siк jej, bo wiкkszoњж ludzi w Zonie myњli tylko o sobie. Nieџle doіoїyliњmy tym najemnikom. Tunel, ktуrym przechodzili do doliny jest nieczynny, ale chіopaki wysadz№ to wszystko w cholerк, їeby nawet mysz nie mogіa przeњlizgn№ж siк do doliny bez naszej wiedzy! Wci№ї jeszcze nie wiemy, kto kazaі najemnikom nas atakowaж, ale myњlк, їe wkrуtce dotrzemy do klienta. Tak czy siak, oto twoja nagroda!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_61">
+		<text>Hej! Co ciк tu sprowadza?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111 ">
+		<text>Tak, pomogк ci... Oczywiњcie, jeњli ty pomoїesz mnie. To nic osobistego, ale jesteњmy w kiepskiej sytuacji i jeњli nic siк nie zmieni, "Wolnoњж" nie bкdzie miaіa ludzi do obrony bazy przed atakami bandytуw... Pomуї mi znaleџж sprawcк tych atakуw, a dam ci informacje na temat Kіa.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_121">
+		<text>Znajdџ dowуdcк i przyprowadџ go do mnie їywego... albo martwego. Jeњli to zrobisz, powiem ci, gdzie znaleџж Kіa. Przesіaіem ci wspуіrzкdne PDA dowуdcy.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111 ">
+		<text>W Dolinie jest stary triangulator. Zostaі zbudowany przez geodetуw za radzieckich czasуw. Triangulator skіada siк z trzech anten. Po wі№czeniu wszystkich trzech moїesz monitorowaж teren caіej Doliny. Jeњli to podziaіa, bкdziemy mogli wykryж, ktуrкdy najemnicy wchodz№ do Doliny.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111 ">
+		<text>Jedna z anten jest tutaj w bazie, ale dwie pozostaіe zostaіy przejкte przez najemnikуw. Pomуї nam je odzyskaж!</text>
+	</string>
+	<string id="val_arena_master_about_rule_0">
+		<text>Jakie s№ zasady na Arenie?</text>
+	</string>
+	<string id="val_arena_master_about_rule_1">
+		<text>Zasady? Strzelaj prosto, jak to mуwi№, i to chyba wszystko. Musisz wygraж kaїd№ rundк, a to zaleїy od szczкњcia. Znaczy, bкdzie ci potrzebne szczкњcie, jak dostaniesz zardzewiaі№ strzelbк i sweter, a naprzeciwko ciebie stanie koleњ w kamizelce kuloodpornej ze spluw№, ktуr№ moїna powaliж mamuta. Czasami nie bкdziesz walczyі z jednym przeciwnikiem, ale z dwoma albo nawet trzema. Jeњli siк na to zgodzisz, moїliwe s№ najwyїej dwa wyjњcia. Albo bкdziesz zwyciкzc№, albo gnij№cym trupem, proњciej siк nie da. Jeњli wygrasz wszystkie rundy, dostaniesz nagrodк, ale jeњli przegrasz, bкdziesz mi wisiaі. To co, chcesz graж?</text>
+	</string>
+	<string id="val_arena_master_comeback_0">
+		<text>Wrуж, jak bкdziesz gotуw.</text>
+	</string>
+	<string id="val_arena_master_darkvalley_0">
+		<text>Gdzie byіeњ, nie licz№c Dolny Mroku?</text>
+	</string>
+	<string id="val_arena_master_darkvalley_1">
+		<text>Sіuchaj, kolego, byіem w kaїdym zak№tku Zony. Takie popieprzone rzeczy, jakie widziaіem... Ech. Јaїenie po Zonie nie zawsze jest іatwe, wіaњciwie nigdy nie jest. Ale z drugiej strony, nikomu tu nie jest іatwo, chyba їe prowadzi ciк sam Przewodnik. Sіyszaіeњ o nim? Nie? Stary, on byі pierwszym stalkerem! Pierwszym w historii! Jako pierwszy przemierzaі Zonк i dlatego nazywaj№ go Przewodnikiem. Zna to zasrane miejsce jak wіasn№ kieszeс i nawet jeњli Zona zmieni siк po emisji, Przewodnik i tak zaprowadzi ciк tam, gdzie chcesz, spoko wodza. To prawdziwy talent, jakby miaі szуsty zmysі. Kіopot w tym, їe trudno go znaleџж, w dodatku nie kaїdemu chce pomagaж, a tylko Czarny Stalker wie, czemu niektуrym pomaga, a innym odmawia. Jednego moїesz byж pewien - jeњli zgodzi siк gdzieњ ciк zaprowadziж, podrуї pуjdzie jak po maњle - moїna siк rozluџniж i podziwiaж widoki. Tak czy siak, cholernie chciaіbym z nim pogadaж - na pewno wie, co jest za radarem, musiaі tam kiedyњ byж, na sto procent.</text>
+	</string>
+	<string id="val_arena_master_good_fight_0">
+		<text>Dobra walka. Oto kasa. Masz ochotк na kolejn№ strzelaninк?</text>
+	</string>
+	<string id="val_arena_master_good_luck_0">
+		<text>Powodzenia, najemniku.</text>
+	</string>
+	<string id="val_arena_master_loozer_0">
+		<text>Pechunio, kolego. Nie martw siк, nastкpnym razem pуjdzie ci lepiej.</text>
+	</string>
+	<string id="val_arena_master_money_back_0">
+		<text>Wrуж, jak nazbierasz trochк kasy.</text>
+	</string>
+	<string id="val_barmen_about_barmen_0">
+		<text>Jak zostaіeњ barmanem?</text>
+	</string>
+	<string id="val_barmen_about_barmen_1">
+		<text>Zadajesz niewіaњciwe pytanie, brachu. Powinieneњ zapytaж, jak Gandzia barman, Gandzia fajkarz, Gandzia, ktуry imprezowaі z najrуїniejszymi ludџmi w najrуїniejszych zak№tkach њwiata, znalazі siк w Zonie. Ale na to pytanie, brachu, nie odpowiem. To doіuj№ca historia, a ja jestem optymistycznym kolesiem. Po prostu siк tu znalazіem. Tak to juї jest. Byіem sam i odczuіem kosmiczn№ pustkк, brachu. To byі straszny dуі. Ale pуџniej poczuіem pozytywne wibracje... ze strony "Wolnoњci". Wiedziaіem, їe to swoi ludzie. Musiaіem wybraж, ale nie miaіem w№tpliwoњci. Odnalazіem wolnoњж - teraz prowadzк lepsze їycie niї wiкkszoњж ludzi w zwariowanym њwiecie poza Zon№. Tutaj mam siк czego napiж, co zapaliж, mam Zonк i ludzi, ktуrzy opowiadaj№ mi rуїne rzeczy... Cholera, ten miejscowy towar jest zupeіnie do dupy!</text>
+	</string>
+	<string id="val_barmen_about_zone_0">
+		<text>Opowiedz mi coњ o Zonie.</text>
+	</string>
+	<string id="val_barmen_about_zone_1">
+		<text>Brachu, podzielк siк z tob№ wszystkim: chlebem, zioіem, wod№, wуd№ i niebem. Informacjami teї. Sіuchaj uwaїnie. W gікbi Zony s№ tajne laboratoria - wci№ї czynne, jak sіyszaіem. Dziwne, nie? Jak ludzie mogli przeїyж emisjк i przetrwaж bez poїywienia i wody? Zastanawiam siк, czy w tych laboratoriach w ogуle s№ ludzie. Stary, a jeњli to obcy ze swoimi beznamiкtnymi, bezlitosnymi intelektami? Jeden koleњ powiedziaі mi, їe przechwyciі transmisje radiowe na temat jakiegoњ laboratorium, jak byі nad Jantarem. Powiedziaі, їe te transmisje byіy takie dziwne, їe od razu wyі№czyі odbiornik. Inny koleњ powiedziaі mi, їe napotkaі pуіprzezroczyste stworzenie w kombinezonie ochronnym, duїo bardziej zaawansowanym od noszonych przez stalkerуw. To przezroczyste coњ powiedziaіo mu: "Odjedџ. Pracujemy. Przeszkadzasz nam w pracy". Z drugiej strony, to siк podobno zdarzyіo zaraz obok radaru. Nie wierz od razu w takie historie, brachu. Ale znowu kto wie? Moїe Zona faktycznie zamieniіa tych ludzi w czyst№ energiк?</text>
+	</string>
+	<string id="val_comendant_about_freedom_0">
+		<text>Mogк doі№czyж do "Wolnoњci"?</text>
+	</string>
+	<string id="val_comendant_about_freedom_1">
+		<text>Juї ci mуwiіem: sk№d mam wiedzieж, kim naprawdк jesteњ? A jeњli ktoњ ciк tu przysіaі? Nastaіy takie czasy, їe nikomu nie moїna ufaж, wiкc nie przyjmiemy ciк ot, tak... Musimy ciк sprawdziж, porz№dnie przetestowaж, czy na pewno nie masz jakichњ mrocznych myњli w tym swoim іbie. Jak przejdziesz test i wykonasz dla nas parк zadaс, Czechow zdecyduje, czy przydasz siк "Wolnoњci", czy nie.</text>
+	</string>
+	<string id="val_comendant_about_news_0">
+		<text>Co nowego?</text>
+	</string>
+	<string id="val_comendant_about_news_1">
+		<text>Z rana padaіo, starczy ci takich nowin? Sіuchaj, nie mam czasu na gadanie z tob№, sytuacja nie jest na to odpowiednia. Jakieњ dupki zabijaj№ moich ludzi na lewo i prawo, a i tak mam ich za maіo! Tak wiкc kіapanie dziobem na temat nowin nie jest teraz dla mnie najwaїniejsz№ spraw№. Sk№d mam w ogуle wiedzieж, czy nie jesteњ jednym z sukinsynуw, ktуrzy rozwalaj№ moich chіopcуw? Jeњli przyszedіeњ na rozmowк od serca, to џle trafiіeњ, kolego.</text>
+	</string>
+	<string id="val_fixer_about_benefit_0">
+		<text>Masz jakieњ uїyteczne informacje dla stalkera?</text>
+	</string>
+	<string id="val_fixer_about_benefit_1">
+		<text>Uїyteczne? W naszej pracy uїyteczne jest to, co pomaga utrzymaж siк przy їyciu. Albo coњ, co zabije przeciwnika. Opowiem ci o artefaktach. Co to jest artefakt? To skupisko energii anomalii, coњ jak kostka bulionu. S№ teї artefakty, ktуre... eee... jak to siк mуwi... ge-ne-ru-j№ anomalie! Chyba tak jakoњ mуwi Czechow. Tak czy siak, rzecz w tym, їe jak artefakt wygeneruje anomaliк, staje siк bezuїyteczny. Sama anomalia nie jest specjalnie potкїna i szybko znika, ale wystarczy, їeby ktoњ siк na chwilк zatrzymaі albo zupeіnie zgubiі twуj trop.</text>
+	</string>
+	<string id="val_fixer_about_power_0">
+		<text>Czym siк zajmujesz?</text>
+	</string>
+	<string id="val_fixer_about_power_1">
+		<text>Najlepiej mi idzie z widelcem w kuchni! Ha, ha! Їartujк. Jestem strzelcem wyborowym. Sam nieџle strzelam i pomagam innym. Mogк przerobiж ci karabin szturmowy - jak siк nim zajmк, bкdzie strzelaі jak SVD Specnazu. A jeњli masz prawdziwy karabin snajperski, o rany - przeciwnicy bкd№ ciк omijaж szerokim іukiem, obiecujк. Mogк ci teї poіataж pancerz w razie potrzeby.</text>
+	</string>
+	<string id="val_fixer_about_weapons_0">
+		<text>Podziel siк ze mn№ swoim doњwiadczeniem. Jak najlepiej ulepszyж broс i pancerz?</text>
+	</string>
+	<string id="val_fixer_about_weapons_1">
+		<text>Doњwiadczenia mi nie brakuje. Powiem ci tak: nie prуbuj ulepszaж wszystkiego naraz. Jeњli chcesz mieж najpotкїniejsz№ spluwк, ktуra jest teї najcelniejsza, przestaс marzyж. Jak raz zwiкkszysz moc obalaj№c№ swojej broni, nastкpnym razem zrуb to samo! A to dlatego, їe niektуrych ulepszeс nie da siк usun№ж. Jeњli zechcesz zrobiж karabin snajperski z broni, ktуrej wczeњniej zwiкkszyіeњ moc, bкdzie juї za pуџno, wiкc myњl z wyprzedzeniem i dobrze siк zastanуw.</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_11">
+		<text>Jak leci?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_0">
+		<text>Masz dla mnie robotк?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_1">
+		<text>Od kilku nocy widzк jakieњ њwiatіo pal№ce siк w opuszczonym budynku na stacji benzynowej. To mog№ byж papierosy albo latarki. Moїe byњ siк tam przeszedі i sprawdziі? To znaczy, jeњli to tylko jakieњ zwykіe zіo, to damy sobie radк, ale jeњli to te bydlaki z Wysypiska, to trzeba ich zdj№ж.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_11">
+		<text>Dobra, sprawdzк to.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_12">
+		<text>Nie interesuje mnie to.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_2">
+		<text>I co byіo na tej stacji benzynowej?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_21">
+		<text>Bandyci, chyba was obserwowali. Z pocz№tku nie byli przyjaџnie nastawieni, ale udaіo mi siк ich uspokoiж.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_212">
+		<text>To dziwne. Tak czy siak, masz tu nagrodк. Dziкki jeszcze raz!</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_213">
+		<text>Jeњli jeszcze zobaczysz jakieњ duchy, powiedz mi.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_214">
+		<text>Mieli coњ przy sobie, spуjrz.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_215">
+		<text>Bardzo ciekawe. Pokaї tego PDA Lingowowi. Bandyci zbierali informacje, na pewno bкdzie tym zainteresowany.\n</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_22">
+		<text>Jest taki radioaktywny, їe niedіugo stanк siк maіym zielonym ludkiem.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_3">
+		<text>Nie.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1">
+		<text>Jestem najemnikiem. Szukam stalkera nazywanego Kіem.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_111">
+		<text>Czemu nie їyje? Co tu siк dzieje?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11111">
+		<text>Dziкki za informacje.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_21">
+		<text>Zіaџ mi z celownika.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11">
+		<text>Wybraіeњ zіe miejsce na spacer, koleњ. Nie wiesz, їe atakuj№ tu nas dniem i noc№? Siedzenie w naszej bazie jest i tak niebezpieczne, ale w kurtce "Wolnoњci" jesteњ chodz№cym celem...</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111">
+		<text>Szukam stalkera nazywanego Kіem. Sіyszaіeњ o nim?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111">
+		<text>Nie znam go osobiњcie. Parк dni temu krкciі siк tu jakiњ wіуczкga. Miaі jakiњ podejrzany interes do naszego przywуdcy - oczywiњcie bez њwiadkуw. To mуgі byж on, ale wіaњciwie nie wiem.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111">
+		<text>Jak mogк siк spotkaж z przywуdc№ "Wolnoњci"?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111">
+		<text>Ha, niecierpliwy jesteњ, kolego!... Sіuchaj, zapomnij o spotkaniu z dowуdc№, dopуki mamy kwarantannк. Wiesz, jesteњ tylko najemnikiem. Mimo to... jeњli coњ dla mnie zrobisz, szepnк sіуwko szefowi. Co ty na to?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111111">
+		<text>Co to za robota?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111111">
+		<text>Niedaleko bazy nibypies urz№dziі sobie legowisko i teraz nie daje nam spokoju. Jak tylko poczuje, їe w barze siк coњ gotuje, mamy przer№bane! Chіopcy zrobili siк nerwowi przez tego cholernego potwora. Zaіatw to dla nas, a jak wrуcisz, przejdziemy do powaїniejszych spraw.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111111">
+		<text>Zaіatwione.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_511">
+		<text>To nie ma znaczenia. Waїne, їe bestia nie їyje.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_5111">
+		<text>Dobra. Nastкpne zadanie bкdzie trochк trudniejsze. Sіuchaj: musimy dostarczyж amunicjк chіopakom w oddalonej placуwce. Idџ od razu do Aszota - on powie ci, co trzeba zabraж i dok№d.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51111">
+		<text>Rozumiem.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_512">
+		<text>Nie teraz.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_61">
+		<text>Mуwiіem, idџ do Aszota!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_611">
+		<text>Na razie.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_71">
+		<text>Wci№ї tu jesteњ? Nie sіyszaіeњ, liczy siк kaїda sekunda! Biegiem na placуwkк! Juї!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_711">
+		<text>Na razie.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_11">
+		<text>Odpieprz siк. Jeњli masz jakieњ pytania, idџ do dowуdcy.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_111">
+		<text>Na razie.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_11">
+		<text>Co tu robisz? W kaїdej chwili spodziewamy siк ataku. Leж do naszej bazy i powiedz dowуdcy, їe mamy maіo amunicji. Niech przyњle dostawк.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_111">
+		<text>Na razie.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11">
+		<text>Witaj, najemniku. Chcesz trochк zarobiж?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_111">
+		<text>Zawsze.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1111">
+		<text>Dobra. Kumpel obiecaі dostarczyж mi pewne rzadkie schematy, ale nie dotarі do bazy. Teraz nie wiadomo, gdzie jest, a mnie s№ potrzebne te schematy - muszк je mieж przed њwitem. Czas to pieni№dz, kumasz? To co, pomoїesz mi?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11111">
+		<text>Pewnie.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11112">
+		<text>Nie.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1112">
+		<text>Mam robotк do wykonania, ale trzeba to zaіatwiж naprawdк dyskretnie - їadnych њwiadkуw, rozumiesz? Wpadnij, jak bкdzie ciemno, koіo jedenastej.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11121">
+		<text>Dobra.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_112">
+		<text>Nie, dziкki.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_12">
+		<text>Chcesz siк wzbogaciж?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21">
+		<text>Co z czкњciami?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_211">
+		<text>Oto one, ale o swoim kumplu zapomnij - pijawki zrobiіy sobie z niego њniadanie.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2111">
+		<text>Biedaczek. Oto twoja nagroda.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21111">
+		<text>Jak bкdziesz jeszcze chciaі rozstaж siк z fors№, daj znaж.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_212">
+		<text>Chwileczkк, jeszcze ich nie mam.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2121">
+		<text>Poczekam do rana, ale siк pospiesz.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21211">
+		<text>Dobra.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_31">
+		<text>Czeњж.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_311">
+		<text>Na razie.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_41">
+		<text>Mуwiіem, wrуж po zmroku.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_51">
+		<text>Spуџniіeњ siк. Teraz klient nam nie zapіaci.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_511">
+		<text>Psiakrew!</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_0">
+		<text>Czym zajmuje siк twoja frakcja?</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_1">
+		<text>Nasza frakcja ma siedzibк w Zonie i bada j№ w praktycznym sensie. Moim zdaniem Zona jest niewiarygodn№ okazj№ naukow№ dla caіej ludzkoњci. Od kilku lat Zona wytwarza artefakty, ktуre s№ znakomitym materiaіem badawczym, a z kaїdym dniem ich przybywa. Jeњli chodzi o anomalie, w їadnym laboratorium nie da siк odtworzyж wytwarzanych przez nie warunkуw! Bez w№tpienia za kilka lat w nauce i innych dziedzinach wiedzy dokona siк ogromny postкp dziкki naszym badaniom w Zonie. Kaїdy odczuje skutki tego postкpu... Nawet ludzie, ktуrych najbliїszym zwi№zkiem z nauk№ i technik№ jest telefon komуrkowy!</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_0">
+		<text>Czemu tak nie lubicie "Powinnoњci"?</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_1">
+		<text>Nie lubimy? Delikatnie powiedziane. Nie mamy ze sob№ nic wspуlnego i moim zdaniem przez ich walkк z Zon№ opуr Zony staje siк coraz silniejszy. Jeњli przyjrzysz siк dowodom, wszкdzie, gdzie "Powinnoњж" zaczyna swoj№ krucjatк przeciwko Zonie, przybywa mutantуw i anomalii. Zamiast badaж Zonк i szukaж sposobu na koegzystencjк, "Powinnoњж" pogікbia problem. Im mocniej atakuj№ Zonк, tym mocniej ona oddaje. Jeњli nie przestan№, dojdzie do katastrofy i bкdzie po nas wszystkich. Mуwi№c krуtko, "Powinnoњж" to frakcja zwykіych tкpych trepуw, ktуrzy nic nie sіysz№, nic nie widz№ i wiedz№ tylko, jak nacisn№ж spust. Walczymy, wіaњciwie odk№d tu jesteњmy, i w koсcu zostanie tylko jedna frakcja.</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_0">
+		<text>Wiesz coњ ciekawego na temat Zony?</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_1">
+		<text>Na opowiedzenie ci wszystkiego potrzeba by sporo wiкcej niї kilka minut. Na przykіad, jedn№ z dziedzin naszych badaс s№ stalkerzy, ktуrzy maj№ intuicyjn№ wiкџ z Zon№. Nigdy nie nosz№ elektroniki ani metalowej broni. Mуwi№ nawet, їe broс i elektronika denerwuj№ Zonк - a ona w odpowiedzi nasyіa potwory na ludzi, ktуrzy je nosz№, i wytwarza im anomalie pod nogami. Uwaїaj№, їe by czuж siк dobrze w Zonie, czіowiekowi wystarcz№ same zdolnoњci. Kaїdy z nich zostaі w jakiњ sposуb wypaczony przez Zonк, ale udaіo im siк przeїyж, a nawet wyrobiж w sobie dziwne zdolnoњci! Niektуrzy intuicyjnie omijaj№ zabуjcze anomalie, inni potrafi№ wydostaж siк z najgкstszego lasu, a niektуrzy potrafi№ podobno trzymaж potwory na dystans. Mуwi№, їe kilku takich ludzi osiadіo w Agropromie.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111">
+		<text>Nieprzyjemny rozwуj sytuacji.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111">
+		<text>A gdzie jest teraz dowуdca?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111">
+		<text>Podobno byі tu stalker, ktуrego zw№ Kіem?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111">
+		<text>Tak, byі tu taki. Interesowaі siк rzadko spotykanymi czкњciami i podobnym szmelcem. Musiaі wiedzieж, їe mamy najlepszy zespуі technikуw w caіej Zonie! Sprzedaіem mu czкњж, ktуrej szukaі, bo czemu by nie? Zapіaciі od razu - nawet siк nie targowaі. Nie wiem tylko, na co mu byіa. Te czкњci byіy uїywane w starych wojskowych urz№dzeniach szyfruj№cych... Opuњciі bazк, jak tylko daіem mu tк czкњж, i wiкcej go nie widziaіem.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111111">
+		<text>Nie wiesz, gdzie Kieі mуgі pуjњж?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111">
+		<text>Pomogк ci, ale najpierw ty musisz mi pomуc. To nic osobistego! Jesteњmy w kiepskiej sytuacji i jeњli nic siк nie zmieni, nie bкdzie komu broniж bazy przed bandytami... Pomуї mi znaleџж sprawcк tych atakуw, a powiem ci, gdzie szukaж Kіa.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_12">
+		<text>Umowa stoi. Co mam zrobiж?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1211">
+		<text>Zgoda.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_21">
+		<text>Sіuchaj, najemniku. Nie powiem ci o Kle, dopуki siк nie dowiem, kto nas atakuje i sk№d przychodzi.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_311">
+		<text>To co z tym Kіem?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31111">
+		<text>Dziкki za informacje.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411">
+		<text>Jestem gotуw.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111">
+		<text>Jak chcesz siк dowiedzieж, ktуrкdy przechodz№ najemnicy? Dolina jest ogromna! To jak szukanie igіy w stogu siana.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111">
+		<text>W Dolinie jest triangulator. Zostaі zbudowany przez geodetуw za radzieckich czasуw. Triangulator skіada siк z trzech anten. Po wі№czeniu wszystkich trzech moїesz monitorowaж teren caіej Doliny. Jeњli to podziaіa, bкdziemy mogli wykryж, ktуrкdy najemnicy wchodz№ do Doliny.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111111">
+		<text>Co mam zrobiж?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111">
+		<text>Jedna z anten jest tutaj w bazie, ale dwie pozostaіe zostaіy przejкte przez najemnikуw. Pomуї nam je odzyskaж!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111111">
+		<text>Zgoda.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_412">
+		<text>Innym razem.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4121">
+		<text>Powodzenia, stalkerze.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_511">
+		<text>Na razie.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_711">
+		<text>Dobra.</text>
+	</string>
+	<string id="val_freedom_leader_join_first_0">
+		<text>Chcк siк do was przyі№czyж.</text>
+	</string>
+	<string id="val_freedom_leader_join_first_1">
+		<text>Widzisz, їebyњmy ciк przyjкli, musimy usi№њж, porozmawiaж, zorientowaж siк, kim jesteњ... Nie mamy teraz na to czasu i nie s№dzк, їebym znalazі na to chwilк, dopуki nie uporam siк z atakami na moich ludzi. Pomуї mi, to pogadamy.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_0">
+		<text>Chcк przyі№czyж siк do "Wolnoњci". Dostatecznie siк juї przysіuїyіem?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_1">
+		<text>Moїe tak, moїe nie. Tak czy siak, nie wpuszczк ciк, dopуki nie ustan№ ataki na moich chіopcуw. Pomуї nam, to pogadamy.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_2">
+		<text>Z pewnoњci№. Kto wie ilu jeszcze chіopakуw by zginкіo, gdyby nie ty? Ale nie mogк ciк teraz wpuњciж. Nie pytaj dlaczego... Potraktuj to jak przes№d. Ale przyjdzie czas, їe bкdziemy gotowi przyj№ж ciк z otwartymi ramionami! Skontaktujк siк wtedy z tob№. Mam nadziejк, їe do tego czasu nie zmienisz zdania.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_3">
+		<text>Wygl№da na to, їe jesteњ wolnym stalkerem. Wiкkszoњж moich ludzi teї byіa stalkerami. Nasze frakcje s№ do siebie doњж podobne... Ale mamy teї rуїnice. Musisz zrozumieж, їe jeњli przyі№czysz siк do "Wolnoњci", stracisz wszystko, co osi№gn№іeњ ze stalkerami. Jesteњ na to gotуw?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_4">
+		<text>Popraw mnie jeњli siк mylк, ale naleїysz chyba do wesoіej kompanii Jogi? To zabawne... Nieczкsto bandyta chce walczyж w imiк "Wolnoњci". Ale jeњli naprawdк tego chcesz i jesteњ gotуw szanowaж wolnoњж innych i przekazywaж dary Zony reszcie ludzkoњci... Z radoњci№ ciк przyjmiemy. Oczywiњcie, jeњli tak siк stanie, musisz przyrzec, їe nie bкdziesz wiкcej robiі interesуw z Jog№. Zgoda?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5">
+		<text>Idiotyczne pytanie, kolego. Z radoњci№ przyjmк kogoњ takiego jak ty na czіonka mojej druїyny, jeњli tylko nie masz nic przeciwko, naturalnie.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51">
+		<text>Nie mam. W koсcu mogк oddychaж њwieїym powietrzem wolnoњci!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511">
+		<text>Korzystaj z tego, bracie, ale pamiкtaj: wolnoњж jest dla nas koniecznoњci№. Znasz wyznawane przez nas zasady?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5111">
+		<text>Najlepiej bкdzie, jak wszystko mi powiesz, bo mogіo mnie coњ omin№ж.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51111">
+		<text>Szanujemy wolnoњж naszych czіonkуw i innych stalkerуw. Uwaїamy teї, їe Zona, jako najwiкkszy dar ludzkoњci, jest otwarta dla wszystkich. Stanowi szansк na ogromny skok naprzуd, szansк dla nas wszystkich! "Powinnoњж" chce zniszczyж Zonк i zagarn№ж jej tajemnice. Musimy ich powstrzymaж. Naszym gіуwnym zadaniem jest walka z "Powinnoњci№".</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511111">
+		<text>Rozumiem.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5112">
+		<text>Oczywiњcie!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51121">
+		<text>Zatem odt№d jesteњ jednym z nas! Baza "Wolnoњci" jest twoim domem. Przeњlк ci na PDA kodek umoїliwiaj№cy odbiуr transmisji radiowych od czіonkуw i oddziaіуw "Wolnoњci". Bкdziesz teї mуgі na ekranie taktycznym њledziж na bieї№co przebieg naszej walki z "Powinnoњci№".</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511211">
+		<text>Dni "Powinnoњci" s№ policzone... Przyniosк wolnoњж masom.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_52">
+		<text>Zastanowiк siк.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_0">
+		<text>Barman powiedziaі, їebym pokazaі ci ten PDA.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_1">
+		<text>Ach, tak. Od dawna podejrzewaіem, їe bandyci interesuj№ siк nasz№ baz№. Dobrze siк spisaіeњ, oto nagroda.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_11">
+		<text>Na razie.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111">
+		<text>Przyszedіem po amunicjк, dowуdca mnie przysіaі.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111">
+		<text>To jednak znaleџli bohatera...</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11111">
+		<text>Czemu bohatera?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111111">
+		<text>Bo nikt nie ma jaj, їeby choж wyjrzeж na zewn№trz. W ci№gu dwуch dni byіy trzy ataki na nasze placуwki, piкtnastu ludzi nie їyje i nikt nie ma pojкcia, czyja to sprawka. Ten ktoњ zawsze wyprzedza nas o krok. Zawsze wie, gdzie pojawi siк nasz oddziaі, i wykonuje swуj plan co do joty. Nie mogк siк oprzeж wraїeniu, їe ktoњ z naszych przekazuje im informacje... No nic. Masz tu paczkк od naszych chіopcуw. Przesіaіem wspуіrzкdne na twуj PDA. Poіamania nуg!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111111">
+		<text>Na razie.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_12">
+		<text>Nic.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_31">
+		<text>Stary! Leж na placуwkк, migiem! Nasze chіopaki nie wytrzymaj№ duїo dіuїej bez amunicji!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_311">
+		<text>Na razie.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_0">
+		<text>Masz dla mnie robotк?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_1">
+		<text>Nasza baza jest ci№gle atakowana przez mutanty. Ich legowisko jest niedaleko st№d - zniszcz je, to moїe trochк siк uspokoj№.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_11">
+		<text>Dobra.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_12">
+		<text>Nie, to nie robota dla mnie.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_2">
+		<text>Zaj№іeњ siк mutantami?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_21">
+		<text>Wykoсczyіem je.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_211">
+		<text>Oto nagroda.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_22">
+		<text>Nie.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_221">
+		<text>Niedobrze. Wrуж, jak maіe њwinki siк usmaї№.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_3">
+		<text>Nie.</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_1">
+		<text>Bracie! Istot№ "Wolnoњci" jest... wolnoњж od wszelkich zobowi№zaс. Kaїdy moїe robiж, co mu siк podoba. Chcesz zbieraж artefakty? Proszк bardzo! Chcesz handlowaж? Nie ma problemu. Moїesz nawet zaіoїyж kуіko szachowe, jak to ciк krкci! Nasza podstawowa zasada to: brak ograniczeс... o ile nie naruszasz praw innych czіonkуw "Wolnoњci". Nie jesteњmy tylko frakcj№, bracie - jesteњmy komun№ wolnych stalkerуw! Niektуrzy z nas walcz№, ale s№ teї artyњci. A nasi inїynierowie nie maj№ sobie rуwnych w caіej Zonie, kaїdy ci to przyzna!</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_111">
+		<text>Takie їycie, bracie... Ci, ktуrzy ceni№ sobie swobody osobiste i nie chc№ byж rz№dzeni przez sztywniakуw w garniturach, musz№ trzymaж siк razem, їeby przeїyж. Dziaіa to tak: ludzie panuj№cy tam na zewn№trz trzymaj№ siк z dala od Zony. Dziкki temu moїemy swobodnie robiж to, co zawsze chcieliњmy!... Tutaj znajdziesz ludzi, ktуrzy nie odnaleџli swego miejsca w tamtym њwiecie.</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_1">
+		<text>Bracie, Zona jest darem niebios! Od samego pocz№tku ludzkoњж cierpiaіa pod brzemieniem choroby. A teraz - popatrz, jakie mamy moїliwoњci! Na przykіad lecz№ce artefakty - one zrewolucjonizuj№ medycynк! A co z anomaliami, ktуre opieraj№ siк prawom grawitacji i teorii pуl magnetycznych? Zbudowanie oњrodka badawczego do przeprowadzenia najmniejszego eksperymentu trwaіo lata, nie? A teraz Zona jest jak gotowe laboratorium na њwieїym powietrzu, o jakim oњrodki badawcze mog№ tylko pomarzyж!</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_111">
+		<text>Oczywiњcie, їe jest niebezpieczna. Ale ogieс teї jest, a uїywamy go... Uwaїam, їe jeњli nauczymy siк odpowiednio wykorzystywaж bogactwa Zony, moїemy nadaж dziejom ludzkoњci odpowiedni bieg! Dlatego walczymy o swobodny dostкp do Zony. To dobro publiczne, nie moїemy pozwoliж, by sіuїyіo tylko nielicznej grupie.</text>
+	</string>
+	<string id="val_pressman_nickname_0">
+		<text>Dlaczego nazywaj№ ciк "Dziennikarz"?</text>
+	</string>
+	<string id="val_pressman_nickname_1">
+		<text>To ma zwi№zek z moj№ przeszіoњci№. Byіem dziennikarzem, i to dobrym. Przyjechaіem do Zony z zadaniem: napisaж o trudnym їyciu stacjonuj№cych tu їoіnierzy. Armia przywitaіa mnie caіonocnym chlaniem, po ktуrym zabrali mnie na coњ w rodzaju nocnego safari. Nie pamiкtam podrуїy, trochк siк nawaliіem, ale zrobiіem parк zdjкж tu i tam. W koсcu urwaі mi siк film, a jak siк obudziіem rano, leїaіem sam na ziemi, a obok mnie koсczyіy siк њlady opon. Tak po prostu, samochуd sobie jechaі i nagle bum! Nie ma nic. Moja torba i dokumenty teї zniknкіy... Ale Zona chyba mnie polubiіa, bo udaіo mi siк dotrzeж do ludzi. Tym razem byіa to inna grupa - zamknкli mnie w piwnicy, їe niby wszedіem do Zony nielegalnie i mogк byж skaїony, wiкc mam siedzieж i czekaж, aї oni wszystko zaіatwi№. Chyba їe dam im w іapк, to mnie puszcz№. Zmarnowaіem kawaі czasu w tej piwnicy, aї przyszedі Aszot i mnie wykupiі. Teraz jestem w "Wolnoњci" i bкdк wdziкczny Aszotowi do koсca їycia. Dіugo siк znamy, niejedno widzieliњmy i... modlк siк do Boga i do Zony, їebyњmy jeszcze sporo zobaczyli, nim przyjdzie na nas czas.</text>
+	</string>
+	<string id="val_pressman_story_0">
+		<text>Moїesz mi opowiedzieж coњ ciekawego?</text>
+	</string>
+	<string id="val_pressman_story_1">
+		<text>Nie wiem, czy sіyszaіeњ, їe w Zonie zaczкіy pojawiaж siк nowe mutanty. Wiesz jak? W niektуrych miejscach powstaіy anomalie nowego rodzaju. Kaїde stworzenie, ktуre siк znajdzie w jednej z nich, zmienia siк, przeksztaіca. Co ciekawe, їadne przeksztaіceс nie byіo dot№d zabуjcze. Moїe one nie s№ z natury zabуjcze. Jeњli czіowiek wpadnie do takiej anomalii, stworzenie, ktуre z niego powstanie ma wci№ї coњ w rodzaju њwiadomoњci. Wyobraџ sobie, їe idziesz, a tu coњ paskudnego wyskakuje zza krzaka. Jak poznaж, їe to coњ byіo wczeњniej czіowiekiem i potrzebuje twojej pomocy? Dlatego te nowe mutanty nie їyj№ zbyt dіugo... Zwykle za przyczyn№ pierwszego napotkanego stalkera.</text>
+	</string>
+	<string id="val_questman_about_zone_0">
+		<text>Wiesz coњ ciekawego na temat Zony?</text>
+	</string>
+	<string id="val_questman_about_zone_1">
+		<text>Ludzie mуwi№ rуїne rzeczy. Niektуrzy mуwi№ nawet, їe sama Zona i wszystko, co siк w niej dzieje, to robota kosmitуw. Wedіug tej teorii gdzieњ w centrum pozostawili moduі, Czarny Monolit, ktуry zmieniі wszystko wokуі siebie. Taki globalny eksperyment na ludzkoњci. To dla nich taki oњrodek testowania broni, kapujesz? Stalkerzy zbieraj№ artefakty i sprzedaj№ je, co oznacza, їe kaїdy duїy oњrodek badaс naukowych ma ich pewnie parк. W ten sposуb Czarny Monolit rozszerza swoje wpіywy na caіy њwiat. Nikt nie wie, jakie bкd№ tego skutki. Moїe artefakty to tylko bіyskotki, a moїe naprawdк wpіywaj№ jakoњ na ludzi. Moїe ta teoria to stek bzdur, ale kto moїe mieж pewnoњж, їe Zona rozrzuca artefakty bez powodu? Gdybyњmy tylko mogli siк czegoњ dowiedzieж od ludzi, ktуrzy byli za tym cholernym radarem. Mogliby nam powiedzieж, czy w centrum naprawdк jest jakiњ Monolit - to by co nieco wyjaњniіo.</text>
+	</string>
+	<string id="val_questman_dissatisfied_0">
+		<text>Czym siк tak martwisz?</text>
+	</string>
+	<string id="val_questman_dissatisfied_1">
+		<text>A z czego tu siк cieszyж? Ciekawe, czy ty byњ siк cieszyі, jakbyњ byі wystawiony na odstrzaі w bazie bez їadnej ochrony. Wiesz, ile jeszcze trzeba tu zrobiж? Nowe umocnienia, dodatkowe budynki... Ale wierchuszka nie ma na to czasu, nie wiem juї, o czym oni myњl№. Nie wiem, czy ktoњ tu w ogуle jeszcze myњli! W kaїdym razie siedzimy w tej zasranej dziurze, z dala od waїnych pozycji. Zaprowadziіbym tu szybko porz№dki, ale mi nie pozwol№.</text>
+	</string>
+	<string id="val_trader_about_freedom_0">
+		<text>Jak siк їyje w "Wolnoњci"?</text>
+	</string>
+	<string id="val_trader_about_freedom_1">
+		<text>Caіkiem dobrze. O lepszym domu nie marze, stary. Wiesz, nigdy nie miaіem braci, ale tutaj prawie kaїdy jest dla mnie jak brat, a reszta to zaufani przyjaciele, na ktуrych moїna polegaж. Oni pomagaj№ mnie, ja pomagam im. Wiesz, jestem handlarzem, wiкc docieraj№ do mnie informacje na temat Zony i wiem wiкcej niї wiкkszoњж weteranуw. A takie informacje uratowaіy juї nieraz wielu naszych chіopakуw.</text>
+	</string>
+	<string id="val_trader_about_said_0">
+		<text>Sіyszaіeњ ostatnio jakieњ ciekawe plotki?</text>
+	</string>
+	<string id="val_trader_about_said_1">
+		<text>Plotki? Dobra, posіuchaj bajki na dobranoc, w dodatku dotyczy snуw. Prуbowaіeњ kiedyњ spaж w gікbi Zony? Lepiej nawet nie prуbuj, bo przyњni№ ci siк niewyobraїalne koszmary. Sіyszaіem o tym parк historyjek: jednemu goњciowi pкkіo serce podczas snu... straszna њmierж. Inny siк obudziі, ale pomieszaіo mu siк w gіowie - teraz ci№gle ukrywa siк przed jakimiњ mrocznymi stalkerami, o ktуrych ci№gle nawija. Takie to plotki... Jeњli naprawdк musisz zmruїyж oczy, potrzebny ci jest specjalny heіm wyіoїony drucian№ siatk№. Mуwi№, їe wszyscy wojskowi stalkerzy takie maj№ i њpi№ jak dzieci.</text>
+	</string>
+	<string id="val_trader_where_manufactured_0">
+		<text>Sk№d bierzesz towar?</text>
+	</string>
+	<string id="val_trader_where_manufactured_1">
+		<text>Mam swoich dostawcуw, ale nikomu o nich nie mуwiк. I tak mam doњж problemуw: uprzejmoњж mnie kiedyњ wykoсczy. Jestem dobry dla ludzi, uprzejmy dla klientуw, a w sklepie mam lepszy wybуr niї w supermarkecie. W dodatku ceny s№ naprawdк niskie, jak zimowa wyprzedaї w maju, wiкc jestem popularnym handlarzem w Zonie. Ale nie wszyscy za mn№ przepadaj№. Bracia Asubers z czarnego rynku dopisali mnie na swoj№ czarn№ listк, bo jestem konkurencj№. Wiesz, jak№ nagrodк wyznaczyli za moj№ gіowк? Mуgіbyњ za tak№ kasк hulaж przez rok codziennie z inn№ dziewczyn№. Kilku goњciom z okolicy spodobaіa siк oferta Asubersуw... A sкpom posmakowaіo ich miкso. Chіopaki tutaj mnie broni№, a sam teї nie dajк sobie w kaszк dmuchaж.</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_0">
+		<text>Siema, stary.</text>
+	</string>
+	<string id="val_freedom_barmen_name">
+		<text>Gandzia</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_0">
+		<text>Byіem na stacji benzynowej. Bandyci uwili tam sobie gniazdko - chyba was obserwuj№.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_1">
+		<text>Ech, myњlaіem, їe juї nam starczy kіopotуw, ale nie - nawet bandyci chc№ siк nam dobraж do dupy. Tak czy owak, oto nagroda. Dziкki za ciкїk№ pracк.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_11">
+		<text>Jakbyњ miaі jeszcze coњ do zrobienia, daj mi znaж.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_12">
+		<text>Mieli przy sobie to cacko. Moїe ciк zainteresuje.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_121">
+		<text>Bardzo іadne. Bandyci zebrali trochк informacji na tym PDA. Pokaї go Czechowowi - na pewno bкdzie zainteresowany.</text>
+	</string>
+</string_table>

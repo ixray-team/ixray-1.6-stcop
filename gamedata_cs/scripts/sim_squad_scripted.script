@@ -102,6 +102,9 @@ function sim_squad_scripted:get_script_target()
 			self.need_free_update = false
 		end
 	end
+	if self.parsed_targets[self.next_target] == nil then
+		self.next_target = 1
+	end
 
 
 	local nt = self:pick_next_target()

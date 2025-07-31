@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_activate_artefact">
+		<text>aktywuj artefakt</text>
+	</string>
+	<string id="st_attach_gl_to_rifle">
+		<text>zaіуї granatnik na karabin</text>
+	</string>
+	<string id="st_attach_scope_to_pistol">
+		<text>zaіуї celownik na pistolet</text>
+	</string>
+	<string id="st_attach_scope_to_rifle">
+		<text>zaіуї celownik na karabin</text>
+	</string>
+	<string id="st_attach_silencer_to_pistol">
+		<text>zaіуї tіumik na pistolet</text>
+	</string>
+	<string id="st_attach_silencer_to_rifle">
+		<text>zaіуї tіumik na karabin</text>
+	</string>
+	<string id="st_base_cost">
+		<text>cena</text>
+	</string>
+	<string id="st_community">
+		<text>Grupa:</text>
+	</string>
+	<string id="st_condition">
+		<text>Stan</text>
+	</string>
+	<string id="st_detach_gl">
+		<text>zdejmij granatnik</text>
+	</string>
+	<string id="st_detach_scope">
+		<text>zdejmij celownik</text>
+	</string>
+	<string id="st_detach_silencer">
+		<text>zdejmij tіumik</text>
+	</string>
+	<string id="st_dress_outfit">
+		<text>zaіуї kombinezon</text>
+	</string>
+	<string id="st_drop">
+		<text>wyrzuж</text>
+	</string>
+	<string id="st_drop_all">
+		<text>wyrzuж wszystko</text>
+	</string>
+	<string id="st_eat">
+		<text>zjedz</text>
+	</string>
+	<string id="st_kg">
+		<text>kg</text>
+	</string>
+	<string id="st_move_on_belt">
+		<text>przyczep do paska</text>
+	</string>
+	<string id="st_move_to_bag">
+		<text>przenieњ do plecaka</text>
+	</string>
+	<string id="st_move_to_slot">
+		<text>przenieњ do okienka</text>
+	</string>
+	<string id="st_sell_item">
+		<text>sprzedaj przedmiot</text>
+	</string>
+	<string id="st_ui_acid_sensor">
+		<text>Ochrona przed kwasem</text>
+	</string>
+	<string id="st_ui_armor_static">
+		<text>Ochrona pancerna</text>
+	</string>
+	<string id="st_ui_fire_sensor">
+		<text>Ochrona przed ogniem</text>
+	</string>
+	<string id="st_ui_health_static">
+		<text>Zdrowie</text>
+	</string>
+	<string id="st_ui_main_sensor">
+		<text>Skaїenie\nradioaktywne</text>
+	</string>
+	<string id="st_ui_psi_sensor">
+		<text>Ochrona psioniczna</text>
+	</string>
+	<string id="st_ui_radia_sensor">
+		<text>Ochrona - promieniowanie</text>
+	</string>
+	<string id="st_ui_stamina_state">
+		<text>Kondycja</text>
+	</string>
+	<string id="st_undress_outfit">
+		<text>zdejmij kombinezon</text>
+	</string>
+	<string id="st_unload_magazine">
+		<text>rozіaduj</text>
+	</string>
+	<string id="st_use">
+		<text>uїyj</text>
+	</string>
+	<string id="st_weight">
+		<text>waga</text>
+	</string>
+	<string id="ui_inv_accuracy">
+		<text>Celnoњж</text>
+	</string>
+	<string id="ui_inv_ammo_pistol">
+		<text>Kup podstawow№ amunicjк do pistoletu (Q)</text>
+	</string>
+	<string id="ui_inv_ammo_rifle">
+		<text>Kup amunicjк do karabinu (W)</text>
+	</string>
+	<string id="ui_inv_bag">
+		<text>Plecak</text>
+	</string>
+	<string id="ui_inv_belt">
+		<text>Pas</text>
+	</string>
+	<string id="ui_inv_bleeding">
+		<text>Krwawienie</text>
+	</string>
+	<string id="ui_inv_cancel">
+		<text>Anuluj</text>
+	</string>
+	<string id="ui_inv_cant_buy_item">
+		<text>Nie moїna kupiж przedmiotu</text>
+	</string>
+	<string id="ui_inv_clear">
+		<text>Wyczyњж</text>
+	</string>
+	<string id="ui_inv_count_restr">
+		<text>Ograniczenia iloњci</text>
+	</string>
+	<string id="ui_inv_damage">
+		<text>Obraїenia</text>
+	</string>
+	<string id="ui_inv_default(F5)">
+		<text>Domyњlne (F5)</text>
+	</string>
+	<string id="ui_inv_description">
+		<text>Opis</text>
+	</string>
+	<string id="ui_inv_drop">
+		<text>Wyjmij</text>
+	</string>
+	<string id="ui_inv_equipment">
+		<text>Wyposaїenie</text>
+	</string>
+	<string id="ui_inv_exit">
+		<text>Wyjњcie</text>
+	</string>
+	<string id="ui_inv_granadelauncher_rifle">
+		<text>Kup granatnik do karabinu (D)</text>
+	</string>
+	<string id="ui_inv_granades">
+		<text>Granaty</text>
+	</string>
+	<string id="ui_inv_granades_rifle">
+		<text>Kup granaty do granatnika (E)</text>
+	</string>
+	<string id="ui_inv_handling">
+		<text>Obsіuga</text>
+	</string>
+	<string id="ui_inv_has">
+		<text>jest teraz</text>
+	</string>
+	<string id="ui_inv_health">
+		<text>Zdrowie</text>
+	</string>
+	<string id="ui_inv_heavy_weapons">
+		<text>Ciкїkie</text>
+	</string>
+	<string id="ui_inv_items_list">
+		<text>Lista przedmiotуw</text>
+	</string>
+	<string id="ui_inv_last_buy">
+		<text>Kup ostatni zestaw</text>
+	</string>
+	<string id="ui_inv_last_buy(F4)">
+		<text>Poprzednie (F4)</text>
+	</string>
+	<string id="ui_inv_money">
+		<text>Pieni№dze</text>
+	</string>
+	<string id="ui_inv_need">
+		<text>wymagane</text>
+	</string>
+	<string id="ui_inv_not_enought_money">
+		<text>Brak pieniкdzy</text>
+	</string>
+	<string id="ui_inv_ok">
+		<text>OK</text>
+	</string>
+	<string id="ui_inv_outfit_burn_protection">
+		<text>Ogieс</text>
+	</string>
+	<string id="ui_inv_outfit_chemical_burn_protection">
+		<text>Chemiczne</text>
+	</string>
+	<string id="ui_inv_outfit_explosion_protection">
+		<text>Oparzenie chemiczne</text>
+	</string>
+	<string id="ui_inv_outfit_fire_wound_protection">
+		<text>Kuloodporne</text>
+	</string>
+	<string id="ui_inv_outfit_params">
+		<text>Parametry</text>
+	</string>
+	<string id="ui_inv_outfit_radiation_protection">
+		<text>Promieniowanie</text>
+	</string>
+	<string id="ui_inv_outfit_shock_protection">
+		<text>Elektryczne</text>
+	</string>
+	<string id="ui_inv_outfit_strike_protection">
+		<text>Siіa uderzenia</text>
+	</string>
+	<string id="ui_inv_outfit_telepatic_protection">
+		<text>Telepatia</text>
+	</string>
+	<string id="ui_inv_outfit_wound_protection">
+		<text>Zadrapanie</text>
+	</string>
+	<string id="ui_inv_outfits">
+		<text>Kombinezony</text>
+	</string>
+	<string id="ui_inv_personal">
+		<text>Kombinezon</text>
+	</string>
+	<string id="ui_inv_pistols">
+		<text>Pistolety</text>
+	</string>
+	<string id="ui_inv_power">
+		<text>Wytrzymaіoњж</text>
+	</string>
+	<string id="ui_inv_preset1(F1)">
+		<text>Zestaw 1 (F1)</text>
+	</string>
+	<string id="ui_inv_preset2(F2)">
+		<text>Zestaw 2 (F2)</text>
+	</string>
+	<string id="ui_inv_preset3(F3)">
+		<text>Zestaw 3 (F3)</text>
+	</string>
+	<string id="ui_inv_primary_weapons">
+		<text>Podstawowa</text>
+	</string>
+	<string id="ui_inv_radiation">
+		<text>Promieniowanie</text>
+	</string>
+	<string id="ui_inv_rank_restr">
+		<text>Ograniczenie stopnia</text>
+	</string>
+	<string id="ui_inv_rate_of_fire">
+		<text>Szybkostrzelnoњж</text>
+	</string>
+	<string id="ui_inv_reset_items(C)">
+		<text>Resetuj (C)</text>
+	</string>
+	<string id="ui_inv_rest">
+		<text>Odpocznij</text>
+	</string>
+	<string id="ui_inv_rifles">
+		<text>Szturmowe</text>
+	</string>
+	<string id="ui_inv_satiety">
+		<text>Gіуd</text>
+	</string>
+	<string id="ui_inv_scope_rifle">
+		<text>Kup celownik optyczny do karabinu (S)</text>
+	</string>
+	<string id="ui_inv_sell_items(X)">
+		<text>Sprzedaj wszystkie przedmioty w plecaku (X)</text>
+	</string>
+	<string id="ui_inv_shop">
+		<text>Sklep</text>
+	</string>
+	<string id="ui_inv_shotguns">
+		<text>Strzelby</text>
+	</string>
+	<string id="ui_inv_silencer_pistol">
+		<text>Kup tіumik do pistoletu (A)</text>
+	</string>
+	<string id="ui_inv_silencer_rifle">
+		<text>Kup tіumik do karabinu (F)</text>
+	</string>
+	<string id="ui_inv_sniper_rifles">
+		<text>Snajperskie</text>
+	</string>
+	<string id="ui_inv_time">
+		<text>Czas</text>
+	</string>
+	<string id="ui_inv_total_money">
+		<text>Suma pieniкdzy</text>
+	</string>
+	<string id="ui_inv_weight">
+		<text>Waga</text>
+	</string>
+	<string id="ui_inv_you_already_have">
+		<text>Masz juї</text>
+	</string>
+	<string id="ui_st_err_gs_not_available">
+		<text>Usіugi online dla gry "S.T.A.L.K.E.R." nie s№ dostкpne.</text>
+	</string>
+	<string id="ui_st_err_sb_master_server_conn_fail">
+		<text>Nie udaіo siк poі№czyж z gіуwnym serwerem.</text>
+	</string>
+	<string id="ui_st_outfit_protect">
+		<text>Ochrona:</text>
+	</string>
+	<string id="ui_st_preset_def">
+		<text>Gotowy zestaw</text>
+	</string>
+	<string id="ui_st_preset_stored_to">
+		<text>Kupiony zestaw zapisany jako</text>
+	</string>
+	<string id="ui_total_weight">
+		<text>Ј№czna waga:</text>
+	</string>
+	<string id="not_enough_money_partner">
+		<text>Postaж nie ma doњж pieniкdzy.</text>
+	</string>
+	<string id="not_enough_money_actor">
+		<text>Nie masz doњж pieniкdzy.</text>
+	</string>
+	<string id="ui_inv_outfit_additional_weight">
+		<text>Dop. ciкї.</text>
+	</string>
+</string_table>

@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_leader_hello_dialog_11">
+		<text>Vнtej, ћoldбku. Co tady chceљ?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_12">
+		<text>Hej, ћoldбku, иekajн na tebe v doupмti.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111">
+		<text>Nepotkal jsem moc lidн, kteшн by byli ochotnн jнt tam dolщ. Mбљ tuљenн, proti иemu tam budeљ stбt?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111111">
+		<text>Nemмlo by to bэt moc nebezpeиnэ... - pche! Jakmile jsme se rozhodli zablokovat ten jednosmмrnэ tunel, tak se situace fakt zmмnila. Шekl bych, ћe jsme to pшehnali s trhavinama: vэbuch strhnul nмkterэ zdi a otevшel cesty do novejch jeskynн. Vyrazila z nich banda muќбkщ dшнv, neћ bys staиil шнct "do prdele!" Spousta naљich se na povrch nedostala...</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111111">
+		<text>Pшikбzal jsem zavaшit vљechny vэchody. To pomohlo, ale jen na chvilku. Mutanti se zaиali prokopбvat a ъtoиit na nбs z podzemн. Sotva jsme jim staиili zablokovat jednu dнru, uћ mмli vykopanou dalљн. Vypadalo to, jako by je nмco hnalo, jako by nбs chtмli dorazit za kaћdou cenu.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111111111">
+		<text>Pomщћu ti dostat se do podzemн, ale chci za to od tebe laskavost. Fajn, podle mapy podzemн je tam pumpa, kterб odsбvб podzemnн vodu. Pokud pumpu vypneљ a otevшeљ ventil nбdrћe, voda zatopн jeskynм a muќбci by se mмli utopit.</text>
+	</string>
+	<string id="agr_leader_about_dolg_1">
+		<text>Naљe frakce se nazэvб Povinnost. Ptбљ se proи? Je to jednoduchэ. Kdyћ to neudмlбme my, tak kdo? Naљн povinnostн je bojovat se Zуnou a jejнmi zplozenci. Spousta z naљich souиasnэch иlenщ zaиala jako normбlnн stalkeшi, kteшн se snaћili jen vydмlat penнze, ale po tom, co vidмli hrщzy Zуny, si uvмdomili, ћe je s tнm tшeba nмco udмlat. Je lepљн obмtovat v pшнpadм potшeby svщj ћivot, neћ pustit mutanty do naљich domovщ! Je ostuda, ћe to tak nevidн vљichni stalkeшi. A jeљtм vмtљн ostuda je, ћe s nмkterэmi tмmi idioty musнme bojovat, abychom jim zabrбnili v rozљiшovбnн Zуny...</text>
+	</string>
+	<string id="agr_leader_about_dolg_111">
+		<text>Vэzkumnэ institut Agroprom je na dobrй strategickй pozici, o podzemnнch tunelech pod nнm nemluvм... No, pшed иasem jsme zшнdili vэzkumnэ program, kterэ mмl studovat Zуnu. Nejdшнv jsme zkoumali anatomii a fyziologii mutantщ. Jinэmi slovy, hledali jsme zpщsoby, jak je snбz zabнt. Bylo to pomalй a dlouhй hledбnн, neћ jsme nбhodou narazili na nмjakй materiбly v podzemн Agropromu... a byly to opravdu zajнmavй materiбly.</text>
+	</string>
+	<string id="agr_leader_about_dolg_11111">
+		<text>Tajnй experimenty pro ovlбdбnн vмdomн provбdмnй za dob Sovмtщ, no vмшil bys tomu? Celkem v tom vэzkumu pokroиili - dokonce dokбzali zanйst jednoduchй pшнkazy do mozkщ zvншat. To nбs vedlo k podezшenн, ћe nмkdo nebo nмco by mohlo ovlбdat mutanty. Naneљtмstн tuhle teorii podporujн vљechna data, kterб jsme zatнm zнskali. Jakmile vypбlнme hnнzdo mutantщ, provedou odvetnэ ъtok upнrem nebo smeиkou pseudopsщ. Инm rychleji je niинme, tнm rychleji na nбs ъtoин. Vsadнm se, ћe to nenн jen nбhoda... na opakovanй nбhody nevмшнm. Nмco za tнm stojн, tнm jsem si jistэ.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0">
+		<text>Hej... kam si myslнљ, ћe jde?</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_011">
+		<text>No tak jdi.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_012">
+		<text>A?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_13">
+		<text>Hej, co tм sem pшivбdн?</text>
+	</string>
+	<string id="agr_barman_join_duty_11">
+		<text>Radљi se zeptej Krylova. Najdeљ ho v hlavnн budovм, ve druhйm poschodн. Urиitм mi dбљ za pravdu, ћe nenн dobrй pustit si do barбku nмkoho cizнho a hned si mu vylнvat hercnu. Nбљ velitel tм omrkne a uvidнme, jestli шekne, ћe se ti dб vмшit.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_01">
+		<text>Potшebuju mluvit s vaљнm velitelem.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0111">
+		<text>Dнky.</text>
+	</string>
+	<string id="agr_dialog_go_to_leader_0122">
+		<text>Jasnм.</text>
+	</string>
+	<string id="agr_duty_barman_around_0">
+		<text>Copak si teп љtмbetajн vrabci na stшeљe?</text>
+	</string>
+	<string id="agr_duty_barman_around_1">
+		<text>Myslнљ jako drby? No, pohшeљuje se celб jedna frakce. A nenн to, jako kdyћ je sejmou lidi nebo je vyhubн potvory. Prostм jen tak zmizeli, nekecбm. Byli to divnн chlapi, tмћce zapбlenн pro Zуnu. Vмшili, ћe je Zуna ћivэ organismus a uprostшed nн ћe stojн Monolit, kterэ mб schopnost plnit pшбnн. Tak se prohlбsili za ochrбnce toho Monolitu. A pak se jednoho dne celб frakce sebrala a vydali se do centra. Jo, pшнmo k plniиi pшбnн. Mншili k Vypalovaиi mozkщ, pшeљli bariйru a od tй doby o nich nikdo neslyљel.</text>
+	</string>
+	<string id="agr_duty_barman_jelanie_0">
+		<text>A co si o tom plniиi pшбnн myslнљ ty?</text>
+	</string>
+	<string id="agr_duty_barman_jelanie_1">
+		<text>No, jedna vмc je jistб: fakt existuje. Takћe bychom k nмmu rozhodnм mмli najнt cestu. Mмl by na to staиit i jeden klan. Ale kdyby se spojily vљechny klany, moћnб by se nбm dokonce mohlo podaшit dostat pшes Vypalovaи mozkщ. Teп je situace zhruba takovб, ћe kaћdб frakce nмco vн, ale radљi by chcнpla, neћ by se o to podмlila s nмkэm jinэm. Kaћdэ si chrбnн vlastnн tajemstvн. Pшidej k tomu takovйho debila, jako je Mitaj, a vљem bude brzy pмknм horko. Jedinэ, kdo se snaћн kousek po kousku shromaћпovat informace, je Sidoroviи. Je to takovэ prakticky zamмшenэ manнk. Vљak znбљ Sidoroviиe: иlovмk od nмj nemщћe иekat nic zadarmo.</text>
+	</string>
+	<string id="agr_duty_barman_you_0">
+		<text>Povмz mi nмco o sobм.</text>
+	</string>
+	<string id="agr_duty_barman_you_1">
+		<text>Pochбzнm z takovйho malйho mмsteиka. Odmaturoval jsem, љel jsem na vojnu. Kdyћ mм vykopli, prбci jsem nemмl, chodit na vejљku nemмlo cenu... Abych to zkrбtil, proљel jsem sbмrnэm tбborem a dostal jsem se sem. Teda, nejdшнv jsem slouћil v Kordonu. Dokud si nбљ plukovnнk neusmyslel, ћe k uzdravenн potшebuje vzбcnэ artefakt. Stalkery se mu najнmat nechtмlo, tak tнm "ъkolem" povмшil naљe druћstvo. Dostali jsme mapu, kterб mohla bэt tak tшicet let starб. Parchanti zasranн... Za pбr hodin nбs anomбlie pшipravily o polovinu chlapщ. Napadli nбs psi, pak ty krveћнznivй mrchy. Do veиera jsme zbyli se serћantem sami dva. Naљtмstн jsme u sebe mмli lйkбrniиky, a tak se nбm podaшilo doplazit na zбkladnu Povinnosti. Haksnu jsem mмl celou posekanou - div ћe mi ji tehdy neuшнzli. Chlapi z Povinnosti nбs ale postavili zpбtky na nohy a ukбzali nбm cestu zpбtky. Jsou to dobшн kluci, vedou jednoduchэ, ale dobrэ ћivot a naљel jsem si mezi nima spoustu kamarбdщ. Takћe sotva jsem mмl odslouћeno, pobalil jsem si vмci a hup zpбtky do Zуny. Naљel jsem zбkladnu Povinnosti, poћбdal jsem je, jestli by mм nevzali, a vidнљ - jo, vzali mм.</text>
+	</string>
+	<string id="agr_duty_barman_zone_0">
+		<text>Co mi mщћeљ шнct o Zуnм?</text>
+	</string>
+	<string id="agr_duty_barman_zone_1">
+		<text>Abych byl upшнmnэ, tak v podstatм nic moc - nejsem zdejљн pamмtnнk. Ale jednou jsem se bavil s opravdovэm veterбnem a ten povнdal fakt zajнmavэ vмci. O prvnнch poибtcнch Zуny, o tom, jak se lidй odvбћili na prvnн vэpravy a o prvnнch nбlezech. Kdyћ nмkdo chcнpl straљlivou smrtн v anomбliнch, pro ostatnн to bylo varovбnн. Vмdci pak zaиali s vэrobou prvnнch ochrannэch oblekщ a detektorщ anomбliн. Za kaћdй novй vylepљenн vмtљinou nмkdo zaplatil vlastnнm zdravнm a nмkdy i ћivotem. Obиas se vмdcщm podaшilo najнt stalkera, kterэ uћ mмl smrt na jazyku, dali ho dohromady a pak se zaиali vyptбvat: kde jsi pшiљel k tomu zranмnн? Kdo ti to udмlal? Dмlali si poznбmky a pшidбvali dalљн vrstvy do ochrannэch oblekщ nebo dolaпovali rozsah nмkterэch иidel. \n Veterбni by шekli, ћe to byla metoda pokusu a omylu - ten nejobtнћnмjљн zpщsob, ale taky ten nejъиinnмjљн. Jo, prvnн stalkeшi to urиitм mмli tмћkй, ne jako my. Teп si prostм vezmeљ univerzбlnн ohoz, zahбjнљ palbu a uћ se vezeљ.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_2">
+		<text>Takћe ty jsi ta stateиnб duљe, kterб by vlezla do podzemн, jo? Dobшe si to rozmysli, neћ to zkusнљ - uћ jsme tam pшiљli o vнc neћ tucet naљich nejlepљнch bojovnнkщ. Dнra je plnб potvor a my jim nemщћeme ani prd. Generбl Krylov uћ v podstatм vydal rozkaz zavaшit vљechny vchody a vэchody.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_3">
+		<text>Pokusнm se tam slйzt a zatopit jeskynм. Ale taky bych se rбd dostal ven ћivэ.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_4">
+		<text>Pшнmo tady mбme jednu dнru s potvorama, kterй odtud stбle vylйzajн na povrch. Zavede tм pшнmo do podzemн. Dбvej si pozor a sleduj, jak jsi na tom s nбbojema. Hodnм љtмstн.</text>
+	</string>
+	<string id="agr_duty_holeman_dialog_5">
+		<text>Dмkuju.</text>
+	</string>
+	<string id="agr_duty_mechanic_about_many_word_0">
+		<text>Vћdycky ti to tak moc kecб?</text>
+	</string>
+	<string id="agr_duty_mechanic_about_many_word_1">
+		<text>A ty jsi vћdycky tak dotмrnэ? Pamatuj si, ћe kdo je zvмdavэ, bude brzo starэ.</text>
+	</string>
+	<string id="agr_duty_mechanic_about_upgrade_0">
+		<text>Na jakб zbraтovб vylepљenн se specializujeљ?</text>
+	</string>
+	<string id="agr_duty_mechanic_about_upgrade_1">
+		<text>Na vљechny druhy. Skoro na vљechna vylepљenн. Povinnost mб nejlepљн techniky v celй Zуnм, kapiљto? Kulomet ti dokбћu vylepљit jako nikdo jinэ. Taky z tebe mщћu udмlat neprщstшelтбka, jakйho svмt nevidмl. Prostм svй prбci rozumнm, no.</text>
+	</string>
+	<string id="agr_duty_mechanic_like_parametrs_0">
+		<text>Co myslнљ, ћe bych si mмl na tйhle krochnм vylepљit?</text>
+	</string>
+	<string id="agr_duty_mechanic_like_parametrs_1">
+		<text>Klient mб vћdycky pravdu: vyrobнm ti, co si usmyslнљ. Mщћu ti z toho udмlat lepљн ъtoиnou zbraт. Nebo lepљн odstшelovaиku, i kdyћ ne zas o tolik. Nebo si ji prostм mщћeљ nechat tak, jak je.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1">
+		<text>No, proи ne. Jakб jsou pravidla?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_100">
+		<text>Hej, ty, chlape. Nechceљ si vyzkouљet, jak dobшe stшнlнљ?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_11">
+		<text>Mбљ tшi moћnosti: cviиenн, soutмћ na zбsahy nebo soutмћ na pшesnost.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_111">
+		<text>Povмz mi nмco o tom cviиenн.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1111">
+		<text>Je to ъplnм jednoduchй. Nejdшнv si vybereљ zbraт, potom vzdбlenost. Budeљ mнt omezenй mnoћstvн nбbojщ a tvэm cнlem je nastшнlet tolik bodщ, kolik se ti podaшн. Pшi cviиenн samozшejmм nemщћeљ nic vyhrбt, ale mщћeљ pшekonat rekordnн skуre.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_11111">
+		<text>Uћ je mi to jasnй. Vysvмtli mi zbytek pravidel.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_112">
+		<text>Povмz mi o soutмћi na zбsahy.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1121">
+		<text>Nejdшнv si vybereљ zbraт, potom vzdбlenost. Budeљ mнt omezenй mnoћstvн nбbojщ a tvэm cнlem je zasбhnout urиitэ terи. Hrajeme o penнze. Vsadнљ si, a kdyћ nastшнlнљ do terиe potшebnй skуre, vyplatнm ti vэhru; pokud nenastшнlнљ, nechбm si sбzku.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_113">
+		<text>Povмz mi o soutмћi na pшesnost. \n</text>
+	</string>
+	<string id="agr_duty_tir_dialog_1131">
+		<text>Nejdшнv si vybereљ zbraт, pak se zaиnou nбhodnм objevovat terиe. Budeљ mнt omezenй mnoћstvн nбbojщ a tvэm cнlem je pokaћdй zasбhnout terи do иernйho. Je to sloћitмjљн ъkol, takћe to zkus, ale nesnaћ se zruinovat. Sбzky jsou stejnй. Kdyћ zasбhneљ vљechny terиe, vyplatнm ti vэhru; pokud nezasбhneљ, nechбm si sбzku.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2">
+		<text>Dost шeин, jdeme hrбt.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_200">
+		<text>Hotovo? Dobrб prбce!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21">
+		<text>Jeљtм nмco. Ukaћ mi, co mбљ na prodej, neћ pщjdu.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211">
+		<text>Chtмl bych se pocviиit.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111">
+		<text>Vэbornм. Pravidla si pamatujeљ, ne?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21110">
+		<text>Zбkladnн nastavenн</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211101">
+		<text>Ano.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111011">
+		<text>Dobшe, zlom vaz!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211102">
+		<text>Bohuћel teп nemбm na zaplacenн.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111021">
+		<text>Nenн problйm. Vraќ se, aћ budeљ mнt.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211103">
+		<text>Ne.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21111">
+		<text>Ne.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21112">
+		<text>Jo, jdeme na to.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121">
+		<text>Vyber si zbraт.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111211">
+		<text>PMm.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_21112111">
+		<text>Vyber si vzdбlenost terиe.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121111">
+		<text>30 metrщ.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121112">
+		<text>40 metrщ.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121113">
+		<text>50 metrщ.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121114">
+		<text>60 metrщ.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_211121115">
+		<text>70 metrщ.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111212">
+		<text>Marta.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111213">
+		<text>Akm 74/2U.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111214">
+		<text>Viper 5.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111215">
+		<text>Akm 74/2.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_2111216">
+		<text>TRs 301.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_212">
+		<text>Chtмl bych zkusit soutмћ na body.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_213">
+		<text>Chtмl bych zkusit soutмћ na pшesnost.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_3">
+		<text>Teп nemбm иas na hranн. Moћnб to zkusнm pozdмji.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_300">
+		<text>Necourej se mi tady kolem. Vraќ se, aћ budeљ mнt nastшнleno.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_3000">
+		<text>Tak jo.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_4">
+		<text>Tak jakй mбm skуre?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_41">
+		<text>Zбkladnн nastavenн 2</text>
+	</string>
+	<string id="agr_duty_trader_about_fight_0">
+		<text>Co kdybych tм nakopal do prdele - byl bys pak sluљnмjљн?</text>
+	</string>
+	<string id="agr_duty_trader_about_fight_1">
+		<text>Co kdybych na tebe zavolal tбmhle svoje hochy - nasral by sis pak do kalhot? Ne, myslнm to vбћnм, pokraиuj stejnэm zpщsobem a mн kluci ti vнc neћ s radostн ukбћou, co se sluљн a patшн, kapiљto? Nikoho tu neznбљ, a nikdo neznб tebe! Dostaneљ takovou naklбdaиku, ћe nepoznбљ, jestli mбљ koleno v prdeli, nebo naopak! Skonинљ jako zombби, slyљнљ mм? Ksakru, proи zrovna jб musнm kaћdej den potkбvat takovэ lъzry. Kdejakб lama se mi snaћн otrбvit nбladu - vщbec jim kurva nevadн, ћe tady kurva dмlбme obchody! Kdyby byli mн zбkaznнci jen z poloviиky z prdele jako ty, nevydмlal bych si za celej den ani na slanou vodu!!</text>
+	</string>
+	<string id="agr_duty_trader_about_freetime_0">
+		<text>Jak se tady v okolн bavнte?</text>
+	</string>
+	<string id="agr_duty_trader_about_freetime_1">
+		<text>Иistм pro tvou informaci, jб tady pracuju. Na zбbavu иas nemбm, a na zbyteиnй ћvanмnн se љmйиkaшem, jako seљ ty, uћ vщbec ne. Mбm prбci, nevidнљ? A ostatnн chlapi taky. Pokud se chceљ nмjak extra pobavit, padej odsud a zkus to na zбkladnм Svobody, nebo nevim kde. My tady kluby na povalovбnн netrpнme, je to jasnй?</text>
+	</string>
+	<string id="agr_duty_trader_about_original_weapons_0">
+		<text>Nemбљ na prodej nмco zvlбљtnнho?</text>
+	</string>
+	<string id="agr_duty_trader_about_original_weapons_1">
+		<text>Seљ slepej, nebo co? Chytrйmu napovмz, hloupйho trkni, takћe: jo, vљechno, co tu vidнљ, je na prodej. Ale nejsme ani obchoпбk, ani sбmoљka, dokonce ani blbб trafika. Kdyћ nмco chceљ, v klidu za to zaplatнљ, vezmeљ si to a jdeљ. Pokud nic nepotшebujeљ, jdi si svou cestou a nezdrћuje mм. Sakra, chlape, vidнљ, ћe bych obletoval nмjakй vyћranй zбkaznice, co vrkajн "ukaћte mi tohle" a "vysvмtlete mi tamto", jako kdybych jim byl nмco dluћnej? Nechбme to, jak to je, a teп je to jednoduchэ, chбpeљ?!</text>
+	</string>
+	<string id="agr_duty_trader_quest_0">
+		<text>Mбљ jeљtм nмco cennйho?</text>
+	</string>
+	<string id="agr_duty_trader_quest_1">
+		<text>Mщћu ti prodat informace o jednй hezkй skrэљi. Stбlo by tм to 5000 rublщ.</text>
+	</string>
+	<string id="agr_duty_trader_quest_2">
+		<text>Pokraиuj.</text>
+	</string>
+	<string id="agr_duty_trader_quest_22">
+		<text>Nemбm zбjem.</text>
+	</string>
+	<string id="agr_duty_trader_quest_3">
+		<text>Nahrбl jsem ti umнstмnн skrэљe do PDAиka.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_bad_trader_0">
+		<text>Co je to za debila, co љйfuje vaљemu kљeftu?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_bad_trader_1">
+		<text>Toho si nevљнmej, to je nбљ mнstnн blbec Mitaj. Jak шнkal jeden profesor, nenн to "nic neћ sprostб svinм"! V kaћdй zahradм roste plevel a Mitaj je takovб naљe kopшiva. Vэbornм by se hodil inkvizitorovi do zoo - zlatэ hшeb sbнrky pitomcщ, kteшн se rбdi pшedvбdн. Obиas lituju, ћe se ho neujal nмjakэ pseudopes... ale je fakt, ћe jako z obchodnнka je z nмj uћitek. Ten kdyby chodil chlastat do baru, nestrбvil by pitнm tolik иasu, jako tнm, ћe by mu nмkdo dбval na prdel - nebo nмco horљнho. I kdyћ vezmeme v ъvahu, ћe by za takovй zachбzenн mohli иlovмka obмsit na vмtrбku, vмtљinu lidн by to nezastavilo.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_military_0">
+		<text>Poslyљ, je vбћnм pravda, ћe ses bratшниkoval se zelenэmi mozky?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_military_1">
+		<text>Ani bych neшekl - i kdyћ, konec koncщ, my tady taky mбme urиitou disciplнnu. To nбљ generбl Krylov, jу, to byl pravej vojбk. Slyљel jsem vyprбvмt o tom, jak tady vlбda organizovala vojenskэ operace v dobбch krбtce po vzniku Zуny. Poslali je pшнmo do centra Zуny a mмli rozkazy odpбlit ji atomovkou. No, umнљ si to pшedstavit? Ti chlapi nemмli ћбdnou ochranu, ћбdnй detektory a vщbec nevмdмli, co mohou v Zуnм иekat. Spoustu jich hned dostaly anomбlie a vмtљinu z tмch, kteшн pшeћili, zahubila emise. Tмch pбr, kteшн pшeћili, mohlo leda tak pomalu chcнpnout. Generбl Krylov byl jednнm z nich. Netuљнm, s kэm se bratшниkuje, ale armбdu upшнmnм nenбvidн od tй doby, co poslala jeho i jeho kamarбdy na jistou smrt. Taky prej mб nмjakй spojenн na Specnaz. A Specnaz bere jen opravdovй chlapy. Povinnost na nм obиas nмkde narazн. No, a to je ve struиnosti vљechno.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_story_0">
+		<text>Nepovнљ mi nмjakэ zajнmavэ pшнbмh?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_story_1">
+		<text>Tak jo, znбm jeden celkem straљidelnэ. Uћ jsi slyљel o doktorovi? Mмl by ъdajnм bydlet nмkde daleko na blatech. Nikdy jsi o nмm neslyљel? Jo, kбmo, tak ti teda povнm, ћe je to jedna z nejstarљнch legend v Zуnм. Takћe o doktorovi. Dokбћe kohokoliv vzkшнsit z mrtvэch, dokonce i pokud bylo tмlo rozsekanй na kusy. Nikdo netuљн, jak to dмlб, ale vљichni vмdн, ћe je to pravda. Jб jsem sice nikoho z tмch vzkшнљenэch lidн nevidмl, ale znбm pбr lidн, co je vidмli na vlastnн oиi. A teп to nejzajнmavмjљн. Шнkб se, ћe je doktor jednнm z pщvodnнch stalkerщ. Ъdajnм se mu podaшilo dojнt k plniиi pшбnн. A vнљ, o co poћбdal? Aby byl schopen pomбhat vљem ћivэm tvorщm. Dostal velkэ dar, to jo, ale pшestal dмlat rozdнly mezi lidma a mutantama. Kdybych jб - jako ћivб bytost - zranil jinou ћivou bytost, tшeba nмjakou tu krvelaиnou mrchu - doktor by ji vylйиil. A naopak. Jenћe najнt doktora je skoro nemoћnй, kdyћ se nмkde objevн, dмlб to vмtљinou sбm od sebe. Doprovбzн ho chromэ иernobylskэ pes. Ti, kteшн ho vidмli, tvrdн, ћe to byl nбramnэ pohled.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_0">
+		<text>Jak ses dostal sem do Zуny?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_1">
+		<text>Dostal jsem to rozkazem, co sis myslel? Velel jsem batalionu speciбlnнch jednotek. Ne, nebyli to Specnaz. Mмli jsme za ъkol... to nepotшebujeљ vмdмt. Pшiљel jsem o celэ batalion najednou, kdyћ Zуna s lбskou pшivнtala svй prvnн nбvљtмvnнky emisн. Nemмli jsme ani ћбdnб vozidla - shodili nбs s padбkem pмknм hluboko, skoro do centra Zуny. Jб jsem to jako jedinэ pшeћil. Proи? Jak to mбm kurva vмdмt? Asi jeљtм nepшiљel mщj иas. Ale dovol, abych ti шekl, иlovмиe, ћe to byla nмjakб zkuљenost... Vљude anomбlie, potvory - a nбbojщ stмћн dost na to, aby se иlovмk zastшelil sбm. Kdyћ mi doљly zбsoby, jedl jsem takovй fujtajbly, ћe se mi dмlб na blitн, jen kdyћ si na to vzpomenu. Potuloval jsem se po oblasti jeљtм mмsнc, vlekl jsem se od jednoho paшezu ke druhйmu. Pak jsem narazil na dalљн lidi. Od rщznэch vojenskэch jednotek a vмtљina byla pмknм dobitб. Tak jsme dali dohromady Povinnost.</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_12">
+		<text>Co je to za feќбka, ten tvщj vedoucн prodejny?</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_122">
+		<text>Toho si nevљнmej, to je nбљ mнstnн blbec Mitaj. Jak шнkal jeden profesor, nenн to "nic neћ sprostб svinм"! V kaћdй zahradм roste plevel a Mitaj je takovб naљe kopшiva. Vэbornм by se hodil inkvizitorovi do zoo - zlatэ hшeb sbнrky pitomcщ, kteшн se rбdi pшedvбdн. Obиas lituju, ћe se ho neujal nмjakэ pseudopes... ale je fakt, ћe jako z obchodnнka je z nмj uћitek. Ten kdyby chodil chlastat do baru, nestrбvil by pitнm tolik иasu, jako tнm, ћe by mu nмkdo dбval na prdel - nebo nмco horљнho. I kdyћ vezmeme v ъvahu, ћe by za takovй zachбzenн mohli иlovмka obмsit na vмtrбku, vмtљinu lidн by to nezastavilo. \n</text>
+	</string>
+	<string id="agr_duty_weaponmaster_about_you_in_zone_133">
+		<text>Pravda je, ћe vмtљina lidн od Povinnosti jsou bэvalн vojбci. Pokud vнm, uћ jsi slyљel pшнbмh naљeho generбla: v prvnн vlnм skoro vљichni pochcнpali, a ti, kteшн pшeћili, zaloћili klan. Zщstali jsme na tйto stranм perimetru, ale nмkteшн z nбs poшбd znajн pбr lidн v иinnй sluћbм. V podstatм s nima vychбzнme lнp neћ s ostatnнmi klany. Proto si kdekdo myslн, ћe tбhneme s armбdou za jeden provaz. V zбsadм stejnм nejsou daleko od pravdy.</text>
+	</string>
+	<string id="agr_duty_zooman_about_animals_0">
+		<text>Kdo pro tebe chytб zvншata?</text>
+	</string>
+	<string id="agr_duty_zooman_about_animals_1">
+		<text>Pщvodnм jsem si je zvykl chytat sбm. Bylo to celkem o hubu, to ti шeknu! Pбrkrбt jsem skoro natбhl brka. Pak se ke mnм pшidalo pбr dalљнch klukщ, jeden po druhйm. Je to zajнmavб zkuљenost, a taky vzruљujнcн. A hlavnм si pшedstav, jak potom mщћeљ dмlat ramena v knajpм: jo, hochu, tys tu potvoru moћnб zabil, ale jб jsem ji chytil ћivou! Nedбvno mi tu mбlem skapal pбrek nadљencщ. Dva mladн kluci se nabнdli, ћe pщjdou na doplтovacн lov. Stateиnн, ale bolestnм nezkuљenн. Vљechno udмlali sprбvnм - teda skoro. Jeden jich pбr odlбkal, zatнmco druhэ drћel smeиku v bezpeиnй vzdбlenosti stшelnou zbranн. Koшist chytili, ale kdyћ se s nн mмli k odchodu, vrhla se na nм celб smeиka! Ubмhli tak pщl maratonu, neћ se dostali na zбkladnu, kde je naљi chlapi mohli krэt palbou. Kaћdэ pak vyћral celou flaљku tvrdйho jen tak na uklidnмnн.</text>
+	</string>
+	<string id="agr_duty_zooman_about_zoo_0">
+		<text>K иemu je tahle zoologickб zahrada dobrб?</text>
+	</string>
+	<string id="agr_duty_zooman_about_zoo_1">
+		<text>Pamatujeљ se na ten starэ film o obшнch mutovanэch љvбbech? "Neћ zabijeљ brouka, dobшe si ho prohlнdni!" Ne? Hehe. No tohle mнsto je nмco na ten zpщsob. Neћ narazн novбиek na slepsa venku v terйnu, mмl by si ho radљi prohlнdnout tady v kleci. Zachrбnн mu to jedny иistй gatм, pokud nic jinйho! Mщћe si potvoru prohlнdnout, studovat jejн zvyky, a aћ pшijde иas, kdy na tom bude zбviset jeho ћivot, nebudou se mu hrщzou klepat ruce. Kromм toho v Zуnм moc zбbavy nenн, a tak se sem moje malб ъchylnб vэstavka celkem hodн.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_0">
+		<text>Nemмl bys pro mм nмjakou prбci?</text>
+	</string>
+	<string id="agr_duty_zooman_quest_1">
+		<text>Jasnм. Hledбm migraиnн mapu.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_11">
+		<text>Ne.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_2">
+		<text>Ano.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_22">
+		<text>Ne.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_0">
+		<text>Pшiљel jsem kvщli tй prбci.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_1">
+		<text>Takћe, co je novйho?</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_2">
+		<text>Ano.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_22">
+		<text>Ne.</text>
+	</string>
+	<string id="agr_duty_zooman_quest_complete_3">
+		<text>Dмkuju ti.</text>
+	</string>
+	<string id="agr_leader_about_dolg_0">
+		<text>Povмz mi nмco o vaљн frakci.</text>
+	</string>
+	<string id="agr_leader_about_dolg_11">
+		<text>Co vy chlapi vlastnм dмlбte?</text>
+	</string>
+	<string id="agr_leader_about_dolg_1111">
+		<text>O иem to mluvнљ?</text>
+	</string>
+	<string id="agr_leader_about_zone_0">
+		<text>Povмz mi nмco o Zуnм.</text>
+	</string>
+	<string id="agr_leader_about_zone_1">
+		<text>Zуna je nмco jako vшed na tмle tйhle planety. Nмkteшн pitomci si myslн, ћe je to dar, ћe nбm Zуna dбvб vљechny tyhle hraиky... Jen se kolem sebe podнvej! V noci na nбs ъtoин mutanti - dar za vљechny prachy, co шнkбљ? Anomбlky, co tм roztrhajн na kusy - taky dobrej dar, ne? Kdepak, Zуna je nemoc, a pokud proti nн nezaиneme bojovat, vљechny nбs seћere!</text>
+	</string>
+	<string id="agr_leader_about_zone_11">
+		<text>Ale ty taky pouћнvбљ artefakty, ne?</text>
+	</string>
+	<string id="agr_leader_about_zone_111">
+		<text>Шнkб se, ћe za vбlky netшeba љetшit hlaveт. Nevidнm nic љpatnйho na tom, kdyћ proti nepшнteli pouћiju jeho vlastnн zbranм. Chci шнct, pшece je nesbнrбme jen pro vlastnн zisk, ne? Za prщmмrnэ artefakt se dajн poшнdit dvм tшi novй bouchaиky a nмjakб ta munice do nich, a dvм tшi krochny znamenajн tucet mrtvэch muќбkщ dennм...</text>
+	</string>
+	<string id="agr_leader_about_zone_1111">
+		<text>Jak by ale nмkdo mohl porazit Zуnu?</text>
+	</string>
+	<string id="agr_leader_about_zone_11111">
+		<text>To je tмћkб hбdanka. Ale kdyћ se budeme opravdu snaћit, Zуna nakonec vydб vљechna tajemstvн. Je naљн povinnostн pokraиovat v boji! Jak to vidнm jб, bojujeme tady o svй prбvo na ћivot na Zemi. Studujeme Zуnu uћ celй mмsнce a jedno ti mщћu шнct jistм - Zуna je ћivб. Je to ћivэ organismus, tak musн mнt nмjakou slabinu. Jen ji musнme najнt.</text>
+	</string>
+	<string id="agr_leader_first_join_0">
+		<text>Rбd bych se pшidal ke tvй frakci.</text>
+	</string>
+	<string id="agr_leader_first_join_1">
+		<text>Neznбme tм, takћe nejsme pшipraveni tм vzнt mezi sebe. Pomoz nбm, a pak si o tom promluvнme.</text>
+	</string>
+	<string id="agr_leader_first_join_2">
+		<text>Dobшe.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111">
+		<text>Potшebuju najнt vchod do podzemн Agropromu.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111">
+		<text>Je to podzemн jako kaћdй jinй. Slyљel jsem, ћe by tam nemмlo bэt zas tak nebezpeиno.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1111111">
+		<text>A co teп?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_111111111">
+		<text>A jak se teп dostanu do podzemн?</text>
+	</string>
+	<string id="agr_leader_hello_dialog_11111111111">
+		<text>Souhlasнm.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1222">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_leader_hello_dialog_12222">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_leader_hello_dialog_122222">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_leader_hello_dialog_1222222">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="agr_leader_hello_dialog_14">
+		<text>Svou povinnost jsi splnil dobшe. Tady mбљ nмco ode mм... V Zуnм se ti to bude hodit.</text>
+	</string>
+	<string id="agr_leader_hello_dialog_144">
+		<text>Dмkuju ti za odmмnu! Jsem hrdэ, ћe slouћнm Povinnosti!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_145">
+		<text>Tohle nepotшebuju!</text>
+	</string>
+	<string id="agr_leader_hello_dialog_15">
+		<text>Jak se mбљ? Co pro tebe mщћu udмlat?</text>
+	</string>
+	<string id="agr_leader_join_duty_0">
+		<text>Chtмl bych vstoupit do шad Povinnosti.</text>
+	</string>
+	<string id="agr_leader_join_duty_33">
+		<text>Ћбdnэ nбbor nechystбme, dokud se nevypoшбdбme s tмmi mutanty, je to jasnй? Nehodlбm nabнrat novй иleny, jen abych o nм obohatil seznam ztrбt. Pokud se skuteиnм chceљ stбt vojбkem Povinnosti, zkus se osvмdиit v akci - jdi se postavit do иela boje proti mutantщm.</text>
+	</string>
+	<string id="agr_leader_join_duty_44">
+		<text>Ty jsi volnэ stalker, ћe? Tak co, uћ se mnou souhlasнљ, ћe je Zуna nбdor na tмle tйhle planety? Dobшe... Povinnost je vћdycky pшipravena pшijmout ty, kteшн vмшн jejнm ideбlщm. Jednнm z naљich ideбlщ je disciplнna. Aћ se k nбm pшidбљ, uћ se nebudeљ moct jen tak poflakovat kolem. Takћe, jsi pшipraven stбt se jednнm z nбs?</text>
+	</string>
+	<string id="agr_leader_join_duty_444">
+		<text>Jsem pшipravenэ. Иekбm na vaљe rozkazy, pane!</text>
+	</string>
+	<string id="agr_leader_join_duty_4444">
+		<text>Pohov. Klidnм si zajdi na hajzlнk, ale nekuш tam. Povinnost potшebuje zdravй vojбky. Stanovy Povinnosti znбљ?</text>
+	</string>
+	<string id="agr_leader_join_duty_44444">
+		<text>Ne, pane!</text>
+	</string>
+	<string id="agr_leader_join_duty_444444">
+		<text>Nadevљe si cenнme pшнsnй disciplнny a pшesnй subordinace. O rozkazech se nediskutuje, rozkazy se plnн. Hlavnнm cнlem klanu je bojovat proti zplozencщm Zуny a proti tмm anarchistщm ze Svobody. V ideбlnнm pшнpadм bychom mмli svмt zbavit vљech nestvщr, anomбliн a pшнsluљnнkщ Svobody. Jestli to neudмlбme, rozљншн se Zуna zнtra k nбm domщ a sebere nбm naљe milovanй. Je naљн povinnostн zbavit svмt tohoto vшedu. Je to jasnй, vojбku?</text>
+	</string>
+	<string id="agr_leader_join_duty_4444444">
+		<text>Ano, pane! Jsem pшipraven slouћit Povinnosti!</text>
+	</string>
+	<string id="agr_leader_join_duty_44444444">
+		<text>Vэbornм. Blahopшeji, vojнne - odteп jsi иlenem Povinnosti! V PDA jsme ti aktivovali taktickou sekci, kterб ukazuje, jak si vedeme proti Svobodм. Takй jsme ti do PDA nahrбli kodeky, kterй ti umoћnн pшijнmat internн rбdiovй vysнlбnн a dostбvat ode mм rozkazy. Dobшe... to bude vљechno. Bмћ konat svou povinnost!</text>
+	</string>
+	<string id="agr_leader_join_duty_444444444">
+		<text>Ano, pane!</text>
+	</string>
+	<string id="agr_leader_join_duty_44445">
+		<text>Ano, pane!</text>
+	</string>
+	<string id="agr_leader_join_duty_55">
+		<text>Ty jsi bandita, viп? Ani mi nic neшнkej. Takovн, jako jsi ty, jsou u mм vљichni banditi... Dobшe, takћe ses rozhodl vyhrabat z dнry a pшidat se k elitnн jednotce. Chvбlyhodnй rozhodnutн. Slyљel jsem, ћe je Joga na svй lidi pмknм tvrdэ. To je dobшe, aspoт si snбz zvykneљ na naљi rutinu. Ale pamatuj si: иlenovй Povinnosti poslouchajн velitele Povinnosti. Budeљ muset pшeruљit vљechny vztahy s Jogou. Jsi pшipravenэ to udмlat?</text>
+	</string>
+	<string id="agr_leader_join_duty_66">
+		<text>Tak, teп si mщћeme promluvit. Prokбzal jsi, ћe jsi skuteиnэ bojovnнk, a takovэch chlapщ, jako jsi ty, nemбme nikdy dost. Jsi pшipraven vstoupit do шad Povinnosti?</text>
+	</string>
+	<string id="agr_leader_join_duty_66666666">
+		<text>Ano, pane! Jsem pшipraven slouћit Povinnosti!</text>
+	</string>
+	<string id="agr_leader_join_duty_77">
+		<text>Ty uћ jsi иlenem Povinnosti.</text>
+	</string>
+	<string id="agr_mechanic_join_duty_11">
+		<text>Staин, abys zaљel za velitelem.</text>
+	</string>
+	<string id="agr_stalker_about_agroprom_0">
+		<text>Vidнm, ћe ses tu celkem hezky usadil. Mбљ to tu docela dobrэ, ale proи to vљechno?</text>
+	</string>
+	<string id="agr_stalker_about_agroprom_1">
+		<text>Mбme pro tebe ъkol - Povinnost nбm neplatн za sezenн na zadku. Sami celй ъzemн pod kontrolou neudrћн. Muќбci na nм vyvнjejн nбtlak, tak nбs poћбdali o pomoc. Teп jim pomбhбme drћet tenhle komplex. Kdyћ nбm pomщћeљ, velitel se ti urиitм nмjak odmмnн.</text>
+	</string>
+	<string id="agr_stalker_commander_1_11">
+		<text>No, vмci se majн takhle: na naљi zбkladnu poшбd nмkdo ъtoин. Na mutanty uћ jsme si zvykli, ale banditi nбs nachytali se staћenэma kalhotama - nikdy pшedtнm se na ъzemн Povinnosti neodvбћili, ale teп se utбboшili v opuљtмnйm ћelezniиnнm tunelu kousek od cesty na Smeќбk. Tak tak se nбm podaшilo jejich ъtoky odrazit, ale kdybys je vykouшil z toho tunelu, po иertech by nбm to usnadnilo situaci. Pomщћeљ nбm?</text>
+	</string>
+	<string id="agr_stalker_commander_1_111">
+		<text>Nenн problйm, pomщћu vбm.</text>
+	</string>
+	<string id="agr_stalker_commander_1_1111">
+		<text>Dнky, jsem rбd, ћe do toho jdeљ s nбmi.</text>
+	</string>
+	<string id="agr_stalker_commander_1_112">
+		<text>Nemбm na to иas...</text>
+	</string>
+	<string id="agr_stalker_commander_1_1122">
+		<text>To je zlэ...</text>
+	</string>
+	<string id="agr_stalker_commander_1_22">
+		<text>Tak co? Moji chlapi иekajн!</text>
+	</string>
+	<string id="agr_stalker_commander_1_222">
+		<text>Uћ jdu...</text>
+	</string>
+	<string id="agr_stalker_commander_1_33">
+		<text>Dнk, ћes nбm pomohl se s tмma hajzlama vypoшбdat. Myslнm, ћe se hned tak nevrбtн.</text>
+	</string>
+	<string id="agr_stalker_commander_1_44">
+		<text>Co potшebujeљ?</text>
+	</string>
+	<string id="agr_stalker_commander_2_11">
+		<text>Ze vљeho nejdшнv, dнky moc, chlape! Mбљ to u mм, protoћe nebэt tebe, dшнv nebo pozdмji by nбs usmaћili. Jedinэ nбљ zbэvajнcн problйm je, ћe se banditi usadili u jednoho vchodu po podzemnнho labyrintu. Mн chlapi jsou si celkem jistн, ћe banditi naљli nмjakэ tajnэ podzemnн prщchod ze Smeќбku. Uћ jsem tam kdysi byl a vнm urиitм, ћe tam nikde nenн ћebшнk, takћe banditi musн svэm kamarбdщm pomбhat vylйzt na povrch. Naљнm ъkolem je zbavit se jich. Nemohl bys nбm pomoct?</text>
+	</string>
+	<string id="agr_stalker_commander_2_111">
+		<text>Nenн problйm, pomщћu vбm.</text>
+	</string>
+	<string id="agr_stalker_commander_2_1111">
+		<text>Dнky, jsem rбd, ћe do toho jdeљ s nбmi.</text>
+	</string>
+	<string id="agr_stalker_commander_2_1112">
+		<text>To je zlэ...</text>
+	</string>
+	<string id="agr_stalker_commander_2_112">
+		<text>Nemбm na to иas...</text>
+	</string>
+	<string id="agr_stalker_commander_2_22">
+		<text>Tak co? Moji chlapi иekajн!</text>
+	</string>
+	<string id="agr_stalker_commander_2_222">
+		<text>Uћ jdu...</text>
+	</string>
+	<string id="agr_stalker_commander_2_33">
+		<text>Dнk, ћes nбm pomohl se s tмma hajzlama vypoшбdat. Myslнm, ћe se hned tak nevrбtн.</text>
+	</string>
+	<string id="agr_stalker_commander_2_44">
+		<text>Co potшebujeљ?</text>
+	</string>
+	<string id="agr_stalker_commander_3_11">
+		<text>Poslyљ, mмl jsi nмkdy co do иinмnн s mutanty? Mбme tu takovэ problйm: severnм od naљн zбkladny se objevila velkб skupina mutantщ a potuluje se tu v okolн spousta potvor a иoklщ, skoro jako by je sem nмkdo poslal. Nevim, jestli je to jen shoda okolnostн, nebo jak, ale uћ nбs ty ъtoky unavujн. Myslнm, ћe bychom mмli vyrazit do ъtoku sami - pokud pobijeme dost mutantщ a rozeћeneme zbytek, snad budeme mнt chvнli klid, a my uћ ho nutnм potшebujeme. Vмtљina mэch klukщ si nadмlб do kalhot, sotva nмjakou potvoru zmerин, ale ty jsi dobrэ bojovnнk. Mohl bys nбm prokбzat sluћbu a vyиistit to doupм mutantщ?</text>
+	</string>
+	<string id="agr_stalker_commander_3_111">
+		<text>Nenн problйm, pomщћu vбm.</text>
+	</string>
+	<string id="agr_stalker_commander_3_1111">
+		<text>Dнky, jsem rбd, ћe do toho jdeљ s nбmi.</text>
+	</string>
+	<string id="agr_stalker_commander_3_1112">
+		<text>To je zlэ...</text>
+	</string>
+	<string id="agr_stalker_commander_3_112">
+		<text>Nemбm na to иas...</text>
+	</string>
+	<string id="agr_stalker_commander_3_22">
+		<text>Tak co? Moji chlapi иekajн!</text>
+	</string>
+	<string id="agr_stalker_commander_3_222">
+		<text>Uћ jdu...</text>
+	</string>
+	<string id="agr_stalker_commander_3_33">
+		<text>Dнk, ћes nбm pomohl vyиistit to doupм mutantщ. Myslнm, ћe se hned tak nevrбtн.</text>
+	</string>
+	<string id="agr_stalker_commander_3_44">
+		<text>Co potшebujeљ?</text>
+	</string>
+	<string id="agr_stalker_leader_about_contact_0">
+		<text>Jak vychбzнte s ostatnнmi frakcemi?</text>
+	</string>
+	<string id="agr_stalker_leader_about_contact_1">
+		<text>Zatнm na ћбdnб pшekotnб pшбtelstvн ani zapшisбhlб nepшбtelstvн nedoљlo. Vychбzнme se vљemi celkem dobшe - samozшejmм kromм banditщ. Nesledujeme sice stejnй cнle jako jinй frakce, ale proto je jeљtм nemusнme zabнjet. Tak by to v Zуnм mмlo bэt, ne? Ћнt a nechat ћнt... Takћe si chvнli v klidu poћijeme a uvidнme. Co udмlбme, to zбvisн na tom, jak se k nбm ostatnн klany budou chovat.</text>
+	</string>
+	<string id="agr_stalker_leader_about_join_0">
+		<text>Proи ses jeљtм nepшidal k nмjakй jinй frakci?</text>
+	</string>
+	<string id="agr_stalker_leader_about_join_1">
+		<text>Myslнm, ћe sledujeme rozdнlnй cнle. Povinnost se snaћн zniиit Zуnu, Svoboda se snaћн zniиit Povinnost a banditi vyuћнvajн kaћdou pшнleћitost, aby si co nejvнc nahrabali. Uћ toho mбm dost a dбl to snбљet nebudu. Potuloval jsem se v Zуnм na vlastnн pмst, a dokonce jsem byl nмjakэ иas u Svobody, ale kdyћ zaиali mluvit o tom, ћe pobijн Povinnost, vzal jsem kramle a odfrиel jsem. Povinnost je jeљtм horљн. Sami o sobм to nejsou љpatnн lidй, ale sotva je dбљ dohromaly, jsou z nich vyloћenн fanatici. Takћe, co jsem to шнkal? Jo... stalkeшi by se nemмli zabнjet иistм na zбkladм pшнsluљnosti ke klanu, mмli by si prostм ћнt po svйm. Hledat koшist, snaћit se pшeћнt - prostм dмlat to, k иemu je Zуna dobrб. Tak aspoт ћiju jб a vмtљina naљich lidн.</text>
+	</string>
+	<string id="agr_stalker_leader_about_you_0">
+		<text>Povмz mi nмco o sobм.</text>
+	</string>
+	<string id="agr_stalker_leader_about_you_1">
+		<text>Jsem jen takovej obyиejnej Pepнk, jako kaћdej jinej. Ale vћdycky jsem mмl tak trochu toulavэ boty. Kdyћ mi bylo deset, vypravil jsem se do Инny, studovat shaolinskб bojovб umмnн. Za tшi dny nбs naиapali v nбkladnнm vlaku a tбta mi nabanиil, co se do mм veљlo. Kdyћ jsem byl starљн, poшбd jsem cestoval - projel jsem stopem vмtљinu Evropy a jednu zimu jsem strбvil u Иukищ. Pak se objevila Zуna. Kamarбdil jsem se tehdy s holиinou jmйnem Leska - taky takovou hledaиkou dobrodruћstvн, jako jsem byl jб. Teda, spнљ se kamarбdila ona se mnou a jб jsem to bral trochu jinak... Prostм, jednoho dne hledбm Lesku a kamarбdi povнdajн, ћe odjela do Zуny. Tak jsem si pobalil vмci, sebral jsem pistoli a pбr gumovэch nбbojщ a љup tam za nн. S toulбnнm jsem mмl spoustu zkuљenostн, a tak jsem to zvlбdl. Hledal jsem ji celй mмsнce, nosil jsem si jejн fotku a kaћdйho jsem s nн otravoval. Nakonec mi jeden stalker шekl, ћe Lesku spolu s nмjakэm hezounkem zatkla zahraniиnн vojenskб jednotka nмkde u hranic Zуny. Poшбdnм jim vynadali a poslali je domщ. Tak jsem si шekl, dнky ti, Lesko, bщh ti ћehnej. Jб jsem se domщ nevrбtil. A tak jsem prostм uvнzl v Zуnм.</text>
+	</string>
+	<string id="agr_stalker_leader_about_zone_0">
+		<text>Povмz mi nмco o Zуnм.</text>
+	</string>
+	<string id="agr_stalker_leader_about_zone_1">
+		<text>Vнљ, neћ se Zуna stala tнm, инm je teп, bэvalo to takovй pochybnй mнsto. To bylo hned po pщvodnн katastrofм v roce 1986. Hroznм se to tehdy tutlalo, ale informace stejnм pomalu prosakovaly a љншily se fбmy vљeho druhu, jedna dмsivмjљн neћ druhб. Nмkdo prэ vidмl u иernobylskй elektrбrny mutanty, jinн narazili v opuљtмnэch vesnicнch na duchy. Pбr let bylo ticho po pмљinм, ale pak pшiљla jedna opravdu љkaredб historka. Pбr zahraniиnнch hlupбkщ si do Zуny vyjelo na dovolenou. Vмtљinou chlapi, ale i nмjakй holky - snщљka znudмnэch aristokratщ, co chtмli vidмt exotickou apokalypsu. Nevim, koho podplatili, ale najeli s autobusem plnэm turistщ pшнmo do Zуny. A jak tam vjeli, tak taky zmizeli - spolu s celэm policejnнm doprovodem. Byla z toho takovб ostuda, ћe do Zуny absolutnм zakбzali vstup. Ale prvnн stalkeшi, kteшн sem pшiљli, vyprбvмli nмco o hodnм zvlбљtnнch zombicнch, jejichћ mumlбnн pшipomнnalo angliиtinu. Takћe tak nмjak...</text>
+	</string>
+	<string id="agr_stalker_mechanic_about_gun_and_armor_upgrades_0">
+		<text>Povмz mi, co vнљ o vylepљovбnн zbranн a zbroje.</text>
+	</string>
+	<string id="agr_stalker_mechanic_about_gun_and_armor_upgrades_1">
+		<text>Ve zbrojнch se moc nevyznбm. Bouchaиky - to jo, to je moje parketa, tмm rozumнm dobшe. Poslyљ, kбmo: pokud uvaћujeљ o vylepљenн obyиejnй zbranм, ani se nenamбhej. Jsou jako tenisky od љikmooиek ze stбnku - dneska je obnosнљ, zнtra si zajdeљ pro novй. V Zуnм je takovэch zbranн spousta a vмtљinou jsou stejnм vљechny na prd. Vylepљovat se vyplatн vzбcnй, hodnм kvalitnн bouchaиky. S takovэma je radost pracovat. Nabнzн se ti u nich celб шada moћnostн vylepљenн a pak ti takovб zbraт slouћн dlouho a dobшe. Takћe ti poradнm: investuj jenom do speciбlnнch, spolehlivэch zbranн.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_0">
+		<text>Nemмl bys pro mм nмjakou prбci?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_1">
+		<text>Nepotшebujeљ nмjakй dalљн vylepљenн?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_11">
+		<text>Ne.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_2">
+		<text>Ano.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_22">
+		<text>Ne.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_3">
+		<text>Tak mi dones PDA.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_4">
+		<text>Dobшe.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_44">
+		<text>Rozmyslel jsem si to.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_0">
+		<text>Pшiљel jsem skrzeva tu prбci.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_1">
+		<text>Zadaшilo se? Mбљ pro mм to PDA?</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_2">
+		<text>Tady mбљ to PDA.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_22">
+		<text>Jeљtм ne.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_222">
+		<text>Иekбm.</text>
+	</string>
+	<string id="agr_stalker_mechanic_quest_complete_3">
+		<text>Vэbornм. Teп mщћeљ pouћнvat novб vylepљenн.</text>
+	</string>
+	<string id="agr_stalker_mechanic_what_is_you_doing_0">
+		<text>Co bys mi mohl udмlat?</text>
+	</string>
+	<string id="agr_stalker_mechanic_what_is_you_doing_1">
+		<text>Mistr nejsem, ale љpatnou prбci taky nedмlбm - aspoт to vљichni шнkajн. Nejlepљн kvalifikaci mбm na doladмnн pistolн, ale dмlal jsem uћ i s brokovnicema a s puљkama. Mбm v tom jasno - zbranм obstarajн stшнlenн, potvory majн za ъkol chcнpnout a stalkeшi mi pak pшijdou podмkovat.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_3">
+		<text>Dobrб prбce, иlovмиe! Mбme teп volnou cestu k jezeru Jantar! Bмћ a vyber si jeden z naљich ochrannэch odмvщ, pomщћe ti proti anomбliнm a proti jinэm nepшнjemnэm vмcem v Zуnм.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_33">
+		<text>Zatнm jsi nepшedvedl ћбdnй vэsledky.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_333">
+		<text>Musнme odejнt k Jantaru. Nemбme иas na ћvбsty.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_4">
+		<text>Jsem rбd, ћe jsem vбm mohl pomoct.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_complete_5">
+		<text>Odjнћdнme k Jantaru. Mмj se dobшe a hodnм љtмstн.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_about_zone_0">
+		<text>Co si myslнљ o Zуnм?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_about_zone_1">
+		<text>Zуna je zkouљka. Jak se v Zуnм cнtнљ, zбvisн na tom, jakб zkouљka ti byla uloћena. Aќ uћ ji povaћujeљ za ztмlesnмnй zlo, za symbol naprostй svobody, nebo za pшнsnou "kojnou", najdeљ v nн vћdy pшesnм to, co od nн oиekбvбљ. Osobnм jsem sice pohlйdl do nмkolika tvбшн Zуny, ale je pro mм pшedevљнm zшнdlem moci. Dosud jsem vљak zcela neporozumмl esenci Zуny samotnй ani moci v nн skrytй.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_0">
+		<text>Nemмl bys pro mм nмjakou prбci?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_1">
+		<text>Jo, nмco bych mмl. Sbнrбm informace o Zуnм. Vlastnм se zajнmбm pшedevљнm o jejн tajemstvн, o takovб tajemstvн, kterб pomбhajн stalkerщm pшeћнt. Jako tшeba jak mohou projнt bez ochrany skrze anomбlii, chбpeљ? Jednou za mnou takhle pшiљel stalker a prohlбsil, ћe mщћe vstoupit bez ochrany pшнmo doprostшed chemickй anomбlie a vщbec nic se mu nestane! Na oplбtku za to tajemstvн po mnм chtмl, abych mu poradil mнsta, kde najde cennй artefakty, tak jsem mu шekl, aby zaљel na blata a hledal dщm - jeden tam stojн pшнmo uprostшed anomбlie. Шekl jsem mu, ћe jestli mi pшinese dщkaz, ћe tam opravdu byl, vymмnнme tajemstvн. Vypravil se tam a ani ne za deset minut volal o pomoc. Naneљtмstн se lidi zrovna potэkali s vlastnнmi problйmy a nikdo mu pomoct neљel. Zjevnм s tнm svэm tajemstvнm nemмl pravdu, ale mм by poшбd zajнmalo, jak si myslel, ћe by se mohl vyhnout zranмnн od chemickй anomбlie. Dones mi jeho PDA a odmмnнm se ti.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_11">
+		<text>Promiт, ale teп zrovna nic nepotшebuju.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_2">
+		<text>Dobшe, souhlasнm.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_22">
+		<text>Moћnб nмkdy jindy.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_3">
+		<text>Vэbornм. Poиkбm, aћ mi pшineseљ to PDA. Kdyby ses najednou v anomбlii zaиal cнtit zle, nenamбhej se nбm posнlat tнsтovй volбnн, protoћe ti stejnм nikdo na pomoc nepшijde. Mнsto abys chodil v kruzнch kolem domu, prolez pod plotem a pak hupsni do vody, anomбlie jsou ve vodм slabљн, vнљ?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_0">
+		<text>Jdu kvщli tй prбci.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_1">
+		<text>Jak to љlo? Mбљ to PDA?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_2">
+		<text>Jo, tady je.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_22">
+		<text>Jeљtм ne.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_quest_complete_3">
+		<text>Dobrб prбce, tady je odmмna za stateиnost.</text>
+	</string>
+	<string id="agr_stalker_secret_trader_what_is_you_doing_0">
+		<text>Co tady dмlбљ?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_what_is_you_doing_1">
+		<text>Uинm se. O okolnнm svмtм i sбm o sobм. Шнkб se, ћe je jen jedna pravda, ale vede k nн mnoho cest. Tak zkouљнm rщznй cesty - pшemэљlнm sбm o sobм, naslouchбm Zуnм, pozoruju mнstnн flуru a faunu. A vнљ co? Uћ ani nepotшebuju zbranм a zbroj. Zуna uћ ve mnм nevidн nepшнtele, a tak se mм na kaћdйm kroku nesnaћн roztrhat na kousky. Dokonce i potvory mм nechбvajн na pokoji. Coћ mм vede k pшesvмdиenн, ћe si stalkeшi za vмtљinu problйmщ mщћou sami, dнky tomu, ћe do Zуny vpadli po zuby ozbrojenн. Myslнm, ћe иlovмk иasto doplatн na svou vlastnн pэchu - tшeba to, jak se prohlaљujeme za pбny tvorstva. Co kdyћ jнm иlovмk nenн? Co kdyћ je jen maliиkou souибstн pшнrody? Nikdo dneska nemб иas se na chvнli zastavit a zamyslet se nad tнm, ale mмli by se zamyslet, fakt mмli...</text>
+	</string>
+	<string id="agr_stalker_secret_trader_who_are_you_0">
+		<text>Co jsi zaи?</text>
+	</string>
+	<string id="agr_stalker_secret_trader_who_are_you_1">
+		<text>Иlovмk. Homo sapiens. Tvor obdaшenэ svobodnou vщlн. Mщћu se svobodnм rozhodnout mezi konzumnнm pшнstupem a poznбnнm. Vнљ, kdyћ nмco poшбd jenom spotшebovбvбљ, иasem se ti to tak иi onak vymstн. A to se stalo mnм. Taky jsem tady pбr let stalkeшil. Dny jsem poинtal podle spotшeby munice a zнskanй koшisti. A pak jsem se jednou za sebou ohlйdl, a vщbec nic jsem nevidмl. Jen ty vystшнlenй patrony, nalezenou koшist a vychlastanou vodku. Bylo mi z toho fakt blbм a hoшko na duљi. A tehdy jsem na to pшiљel. Bylo to, jako bych ze sebe otшepal vљechno to svinstvo a koneиnм jsem si uvмdomil, co jsem zaи. Poustevnнk. Pravda, taky mi tu nмkteшн шнkajн љaman, a ti taky nejsou daleko od pravdy.</text>
+	</string>
+	<string id="agr_stalker_tir_1">
+		<text>Dobrэ den. Nechceљ si vyzkouљet, jak jsi dobrэ s odstшelovaиkou?</text>
+	</string>
+	<string id="agr_stalker_tir_2">
+		<text>To nebylo zlй, to vщbec nebylo љpatnй! Tady mбљ odmмnu.</text>
+	</string>
+	<string id="agr_stalker_tir_3">
+		<text>Takovэ uћ je ћivot - dneska smщla, zнtra љtмstн. Mщћeљ to kdykoliv zkusit znovu.</text>
+	</string>
+	<string id="agr_stalker_tir_4">
+		<text>Aћ si budeљ chtнt zase zastшнlet, zastav se.</text>
+	</string>
+	<string id="agr_stalker_trader_about_dolg_0">
+		<text>Co mi mщћeљ шнct o Povinnosti?</text>
+	</string>
+	<string id="agr_stalker_trader_about_dolg_1">
+		<text>Vнm, co se tнm snaћнљ naznaиit: ћe je Povinnost ve spojenн s armбdou, co? To mi шнkajн v jednom kuse, ale nenн to prostм pravda. Sбm jsem si to myslel, dokud jsem nevidмl pшestшelku mezi nima. Љel jsem zrovna sбm, hledal jsem koшist a najednou slyљнm stшelbu. Tiљe jsem se pшiplнћil a vzal jsem si na to optiku. A co nevidнm? Povinnosќбci a gumy po sobм stшнlejн ani ne na 30 metrщ. Netuљнm, jak to skonиilo, protoћe jsem se odtud odplнћil, ale na bratrskou lбsku to moc nevypadalo. A je tu jeљtм dalљн problйm. Naљi hoљi vidмli nмjakй stalkery, jak se bratшниkujou se Specnazem. To nevypadб moc dobшe, co?</text>
+	</string>
+	<string id="agr_stalker_trader_about_prisoner_0">
+		<text>Co je to za chlapy, co dшepн u vбs ve sklepм?</text>
+	</string>
+	<string id="agr_stalker_trader_about_prisoner_1">
+		<text>Pбr naљich klukщ se vracelo s koшistн na zбkladnu a prochбzeli pшes Smeќбk. Prochбzeli jen tak po okraji - vљak vнљ, co je to za plac. Z niиeho nic vyskoиili nмjakэch 30 metrщ od nich banditi a hned spustili: "A mбme vбs, vy sraиky, zahoпte zbranм a navalte koшist!" Vщdce naљн skupiny, Irokйz, povнdб: "Tak pojпte a zkuste nбm ji sebrat!" Naиeћ zaиal stшнlet a celб skupinka kliиkovala od jednoho stromu ke druhйmu a banditi za nima. Takhle se jim podaшilo pшebмhnout aћ k Agropromu, kde naљi kluci pшichystali banditщm vшelй uvнtбnн. Tak jsme ty manнky strиili pod zбmek, ale v podstatм netuљнme, co bychom s nima mмli dмlat.</text>
+	</string>
+	<string id="agr_stalker_trader_about_select_0">
+		<text>Moc velkэ vэbмr tu nemбљ, co?</text>
+	</string>
+	<string id="agr_stalker_trader_about_select_1">
+		<text>Jestli chceљ vмtљн sortiment, mщћeљ jнt do obchoпбku. Sem chodн vмtљinou akorбt hafo lidн, kteшн pшiљli Povinnosti pomoct bojovat s muќбkama. Za penнze. Proto jsem sem taky doљel jб - иekal jsem, ћe tu bude poptбvka. Nabral jsem, kolik jsem unesl, nмco uћ jsem prodal a to, co vidнљ, je vљechno, co jeљtм mбm.</text>
+	</string>
+	<string id="agr_stalker_trader_about_trader_0">
+		<text>Jak ses vlastnм stal obchodnнkem?</text>
+	</string>
+	<string id="agr_stalker_trader_about_trader_1">
+		<text>No, kluci potшebovali zbranм, munici, lйkбrniиky, takovэ vмci, tak jsem jim to zaиal dodбvat. Povinnost platн stalkerщm dobшe, takћe mi obchod jen kvetl. Jen bych si pшбl, aby mi nosili vнc unikбtnнch vмcн, vмtљina jejich koшisti jsou druhoшadй prkotiny.</text>
+	</string>
+	<string id="agr_trader_join_duty_11">
+		<text>Vypadбm snad jako klanovej verbнш? Zajdi si za velitelem do kanclu a zeptej se ho sбm!</text>
+	</string>
+	<string id="agr_weaponmaster_join_duty_11">
+		<text>To je jednoduchэ. Vidнљ tбmhle ten barбk? Pщjdeљ to druhэho patra, najdeљ Krylova, ten tм omrkne podle osvмdиenejch specnazбckejch praktik a hotovo - seљ jednнm z nбs.</text>
+	</string>
+	<string id="agr_zooman_join_duty_11">
+		<text>Zajdi si za Krylovem do druhйho patra na ъstшedн. Popovнdej mu o sobм. Vyslechne tм a zadб ti "test vмrnosti". Pokud pщjde vљechno dobшe, staneљ se jednнm z nбs.</text>
+	</string>
+	<string id="agr_stalker_commander_1_0">
+		<text>Jak ti mщћu pomoct?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11">
+		<text>Hej, ћoldбku. Nechceљ si vyzkouљet, jak dobшe umнљ stшнlet?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111">
+		<text>Chci.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111">
+		<text>Pamatujeљ si pravidla?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111">
+		<text>Tak vzhщru na to.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111">
+		<text>Jeљtм jedna vмc. Neћ pщjdeљ, nech si u mм vмci. Aby vљechno bylo fйr, nesmнљ pouћнvat nic neћ mojн bouchaиku. Ale nemбљ se иeho bбt – tvэ vмci ti vљecinky vrбtнm, aћ skonинљ.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111">
+		<text>Jasnм.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111">
+		<text>Zvol, o co chceљ hrбt.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111111">
+		<text>Chci se procviиit.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111">
+		<text>Zvol si zbraт.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111">
+		<text>vэchozн text</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111111111">
+		<text>vэchozн text</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111111">
+		<text>Domluveno.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111111">
+		<text>Tak teda hodnм љtмstн!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1111111111112">
+		<text>Tolik penмz bohuћel nemбm.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111111121">
+		<text>V pohodм. Chceљ si zvolit jinej reћim?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111112">
+		<text>vэchozн text</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111113">
+		<text>vэchozн text</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111114">
+		<text>vэchozн text</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111115">
+		<text>vэchozн text</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11111111116">
+		<text>vэchozн text</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111112">
+		<text>Chtмl bych soutмћit na skуre.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_111111113">
+		<text>Chtмl bych soutмћit na pшesnost.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11112">
+		<text>Ne, povмz mi je.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112">
+		<text>Jakб pravidla?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121">
+		<text>Mбљ tшi moћnosti: cviиnб stшelba, soutмћ na skуre, nebo soutмћ na pшesnost.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111">
+		<text>Ve vљech tшech reћimech si sбm zvolнљ zbraт a dostaneљ 10 vteшin na pшнpravu. Potom zaиnou nбhodnм vyskakovat cнle.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211111">
+		<text>Cviиnб stшelba je snadnб: kaћdэ terи spadne po tшech zбsazнch. Tvэm cнlem je zнskat co nejvнc bodщ. Jak by se dalo oиekбvat, pшi cviиnй stшelbм si nevydмlбљ ћбdnй penнze, ale zase si mщћeљ dobшe oprбљit svй schopnosti.\n</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111111">
+		<text>Druhэ reћim je soutмћ na skуre. Kaћdэ cнl vyskoин zhruba jen na dvм vteшiny a ty musнљ stшelbou do nмj nasbнrat co nejvнc bodщ. Mбљ omezenэ иas, takћe nemiш pшнliљ dlouho. Tady uћ se hraje o penнze. Jestli dosбhneљ vytyиenйho skуre, platнm jб tobм. Jestli ne, platнљ ty mnм.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_11211111111">
+		<text>...</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_112111111111">
+		<text>A poslednнm reћimem je soutмћ na pшesnost. Pшi nн musнљ zasбhnout kaћdэ terи pшesnм do stшedu. Cнlem je strefit co nejvнc terищ v omezenйm иase. Jde o nejobtнћnмjљн reћim, takћe se hned nepшiveп na mizinu. Sбzenн funguje stejnм jako obvykle. Pokud trefнљ potшebnй mnoћstvн terищ, platнm jб tobм. Pokud ne, nechбm si tvojн sбzku.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1121111111111">
+		<text>Vљechno chбpu. Pojпme na to.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_113">
+		<text>Teп nemбm иas na hry, snad pozdмji.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_1131">
+		<text>Dobrб, jak chceљ.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_21">
+		<text>Hotovo? Dobrб prбce!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_211">
+		<text>Tak jakй mбm skуre?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_2111">
+		<text>vэchozн text</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_211111">
+		<text>Chceљ si to zopakovat?</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_2111111">
+		<text>Rozhodnм.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_31">
+		<text>Pшestaт se courat! Aћ dostшнlнљ, pшijп zpбtky.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_311">
+		<text>Dobrб.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_answer_bad">
+		<text>He, zase jsem mмl pravdu. Tuhle sбzku jsem vyhrбl, ale nezoufej – pшнљtм budeљ mнt vнc љtмstн.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_answer_good">
+		<text>Spletl jsem se v tobм! Vezmi si tyhle penнze – poctivм sis je zaslouћil.</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_cot_phrase_part_1">
+		<text>Mбљ omezenэ иas a zбsahщ potшebujeљ alespoт</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_cot_phrase_part_2">
+		<text>Vsadнm se, ћe se ti nepovede:</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_answer_bad">
+		<text>Zkus jeљtм trochu cviиit – na hru o penнze jeљtм nejsi pшipravenэ. Mбљ mйnм neћ</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_answer_good">
+		<text>Teп uћ mщћeљ hrбt klidnм i o penнze. Mбљ vнc neћ</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tht_phrase">
+		<text>Hodnм љtмstн pшi stшнlenн! Bodщ potшebujeљ alespoт</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tss_phrase_part_1">
+		<text>Mбљ omezenэ иas a bodщ potшebujeљ alespoт</text>
+	</string>
+	<string id="agr_duty_tir_dialog_hello_tss_phrase_part_2">
+		<text>Vsadнm se, ћe se ti nepovede:</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_10">
+		<text>To je Orest. Zkus ho najнt v nejvyљљнm patшi hlavnн budovy. Je tam i nбљ obchodnнk a technik - pшesnм jak to je nejlepљн.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_2">
+		<text>Dobrэ rбnko, vojбku.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_3">
+		<text>Co se to tu dмje?</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_4">
+		<text>Podobnм jako Povinnost i my se snaћнme odrбћet ъtoky mutantщ a dalљн havмti – banditщ a tak.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_5">
+		<text>Nevнm o tom, ћe by stalkeшi pomбhali Povinnosti.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_6">
+		<text>My nejenom ћe pomбhбme. Kdyћ mutanti vylezli ze svэch dмr a zaиali se hrnout na Agroprom, Povinnost uћ nedokбzala odolбvat jejich ъtokщm. Pшiљla nбs poprosit o pomoc a my nejsme zas tak namyљlenн, abysme odmнtli prбci. Utvoшili jsme solidnн tэm.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_7">
+		<text>Teп uћ mi vмci dбvajн vмtљн smysl. Vidнm, ћe jste si dokonce zaloћili i malou zбkladnu.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_8">
+		<text>Jo, tady se shromaћпujou vљichni, kdo pomбhali Povinnosti. Je to tak bezpeиnмjљн, a navнc nбs teп Krylov bere vбћnмji.</text>
+	</string>
+	<string id="agr_stalker_commander_1_about_situation_9">
+		<text>Kdo tomu tady љйfuje?</text>
+	</string>
+	<string id="agr_stalker_commander_2_0">
+		<text>Jak ti mщћu pomoct?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_2">
+		<text>Zdravнm.</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_3">
+		<text>Co se to tu dмje?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_4">
+		<text>Jeљtм v tom nemбm tak docela poшбdek. Pшiљel jsem teprve nedбvno, abych si vydмlal trochu љkvбry. Je mi jedno, co dмlбm, dokud se platн v hotovosti.\n</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_5">
+		<text>Kdo tomu tady љйfuje?</text>
+	</string>
+	<string id="agr_stalker_commander_2_about_situation_6">
+		<text>Orest. Najdeљ ho ve vrchnнm patшe ъstшednн budovy. Sнdlн tam i nбљ obchodnнk a technik – mбme to pмknм uspoшбdanэ.</text>
+	</string>
+	<string id="agr_stalker_commander_3_0">
+		<text>Jak ti mщћu pomoct?</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_2">
+		<text>Nazdar, ћoldбku.</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_3">
+		<text>Co se to tu dмje?</text>
+	</string>
+	<string id="agr_stalker_guard_dialog_4">
+		<text>Teп nemбm иas na шeиiиky, ћoldбku. Jestli mбљ nмjakej dotaz, bмћ za Orestem. Je v hornнm patшe ъstшednн budovy.</text>
+	</string>
+</string_table>

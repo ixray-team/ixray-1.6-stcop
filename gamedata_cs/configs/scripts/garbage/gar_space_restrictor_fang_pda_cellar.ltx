@@ -39,9 +39,8 @@ on_info = {=actor_has_item(device_pda_fang)} sr_idle@awoke_2 %+gar_story_got_fan
 on_signal = theme_end | sr_idle@awoke_3_time %+gar_story_cannot_find_fang%
 
 [sr_idle@awoke_3_time]
-on_timer = 2000 | sr_idle@awoke_4 %=play_sound(gar_csky_leader_goto_agroprom:csky:mar_csky_commander_name)%
+on_timer = 2000 | sr_idle@end_section %+gar_story_need_to_go_to_cache =play_sound(gar_csky_leader_goto_agroprom:csky:mar_csky_commander_name)%
 
 [sr_idle@awoke_4]
-on_signal = theme_end | sr_idle@end_section %+gar_story_need_to_go_to_cache%
 
 [sr_idle@end_section]

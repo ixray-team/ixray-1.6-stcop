@@ -14,10 +14,18 @@ struct 	_input
 };
 */
 
+#ifdef MSAA_OPTIMIZATION
+#ifdef GBUFFER_OPTIMIZATION
+float4 	main	( p_aa_AA_sun I, float4 pos2d : SV_Position, uint iSample : SV_SAMPLEINDEX ) : SV_Target
+#else
+float4 	main	( p_aa_AA_sun I, uint iSample : SV_SAMPLEINDEX ) : SV_Target
+#endif
+#else
 #ifdef GBUFFER_OPTIMIZATION
 float4 	main	( p_aa_AA_sun I, float4 pos2d : SV_Position ) : SV_Target
 #else
 float4 	main	( p_aa_AA_sun I ) : SV_Target
+#endif
 #endif
 {
 	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc, pos2d, ISAMPLE) );

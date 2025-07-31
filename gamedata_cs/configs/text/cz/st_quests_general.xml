@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hide_from_surge_name">
+		<text>Skryj se pшed zбшenнm</text>
+	</string>
+	<string id="hide_from_surge_name2">
+		<text>Poиkej, dokud zбшenн neodeznн</text>
+	</string>
+	<string id="hide_from_surge_text">
+		<text>Utнkej do nejbliћљнho krytu a skryj se pшed zбшenнm</text>
+	</string>
+	<string id="hide_from_surge_text1">
+		<text>Pozor! Blнћн se zбшenн! Odhadovanэ иas do zбшenн:</text>
+	</string>
+	<string id="hide_from_surge_text2">
+		<text>vteшin.</text>
+	</string>
+	<string id="sim_bring_item">
+		<text>Doruи pшedmмty:</text>
+	</string>
+	<string id="sim_bring_item_text">
+		<text>Dones posbнranй pшedmмty veliteli jednotky.</text>
+	</string>
+	<string id="sim_capture_smart">
+		<text>Dobuп</text>
+	</string>
+	<string id="sim_capture_smart_text">
+		<text>Uvedenй mнsto musнљ dobэt a udrћet.</text>
+	</string>
+	<string id="sim_capture_wait_smart">
+		<text>Drћ mнsto, dokud nedorazн pomoc</text>
+	</string>
+	<string id="sim_defend_smart">
+		<text>Braт tбbor</text>
+	</string>
+	<string id="sim_defend_smart_delay">
+		<text>Pomoz</text>
+	</string>
+	<string id="sim_defend_smart_delay_text">
+		<text>V tйto oblasti byl spatшen nepшнtel. Ъtok je na spadnutн.</text>
+	</string>
+	<string id="sim_defend_smart_text">
+		<text>Druћstvo bylo pшepadeno nepшнtelem. Pomoz druћstvu odrazit ъtok.</text>
+	</string>
+	<string id="sim_eliminate_smart">
+		<text>Zlikviduj nepшбtele</text>
+	</string>
+	<string id="sim_eliminate_smart_text">
+		<text>Zlikviduj nepшбtele u kontrolnнho bodu.</text>
+	</string>
+	<string id="sim_find_upgrade">
+		<text>Najdi modifikaci</text>
+	</string>
+	<string id="sim_find_upgrade_consent">
+		<text>Souhlasнљ?</text>
+	</string>
+	<string id="sim_recover_item">
+		<text>Vraќ pшedmмt:</text>
+	</string>
+	<string id="sim_repeal_counterattack">
+		<text>Odraz nepшбtelskэ protiъtok.</text>
+	</string>
+	<string id="sim_take_reward">
+		<text>Vyzvedni si odmмnu</text>
+	</string>
+	<string id="sim_take_reward_text">
+		<text>Nynн si mщћeљ u vщdce frakce vyzvednout odmмnu.</text>
+	</string>
+	<string id="st_sim_eliminate_path_smart">
+		<text>Vyиisti silnici</text>
+	</string>
+	<string id="st_sim_eliminate_path_text">
+		<text>Pomoc pшбtelskйmu druћstvu projнt.</text>
+	</string>
+	<string id="st_sim_eliminate_resource_smart">
+		<text>Zlikviduj nepшбtele</text>
+	</string>
+	<string id="st_sim_eliminate_resource_text">
+		<text>Vyћeт nepшбtele z oblasti. Tнm je oslabнљ.</text>
+	</string>
+	<string id="test_storyline_task_text">
+		<text>Dojdi k sudu</text>
+	</string>
+	<string id="tm_random_task_bring_item">
+		<text>vэchozн text</text>
+	</string>
+	<string id="stc_kill_gunslinger_name">
+		<text>Vyшaп Stшelcovu ochranu pшed psi-zбшenнm</text>
+	</string>
+	<string id="stc_kill_gunslinger_text">
+		<text>Intenzita psi-zбшenн vylйzб vysoko nad mмшitelnou љkбlu, ovљem Stшelce pшed zбшenнm chrбnн onen prototyp. Kdyћ ho zniинљ, zastavнљ Stшelce. Elektromagnetickб puљka dokбћe poљkodit elektroniku prototypu – zasбhni z nн Stшelce a vyшaп tak jeho ochranu.</text>
+	</string>
+	<string id="stc_kill_monolith_name">
+		<text>Najdi teleport vedoucн k teplovodu</text>
+	</string>
+	<string id="stc_kill_monolith_text">
+		<text>Prostor v okolн stanice je pшeplnмn teleporty. Abys mohl dбle stшнlet na Stшelce, musнљ se vrбtit zpмt k teplovodu. Najdi teleport, kterэ tм tam pшemнstн.</text>
+	</string>
+</string_table>

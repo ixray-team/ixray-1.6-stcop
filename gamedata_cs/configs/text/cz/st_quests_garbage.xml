@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_defend_bandit_base_name">
+		<text>Braт tбbor banditщ</text>
+	</string>
+	<string id="gar_defend_bandit_base_text">
+		<text>Braт tбbor banditщ pшed ъtokem nepшбtel.</text>
+	</string>
+	<string id="gar_quest_bring_money_name">
+		<text>Po setmмnн pшines Naprovi dva tisнce v hotovosti</text>
+	</string>
+	<string id="gar_quest_bring_money_text">
+		<text>Kup si od Divokйho Napra na bleљнm trhu lйkбrniиku za 2000. Takto velikй kљefty se na bleљнm trhu odehrбvajн aћ po setmмnн.</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_name">
+		<text>Pшines Divokйmu Naprovi starй PDA</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_text">
+		<text>Pшines Divokйmu Naprovi na bleљн trh to starй PDA, kterй jsi naљel pod faleљnэm dnem schrбnky na nбшadн v zniиenйm Baћantovм tбboшe.</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_name">
+		<text>Zabij zrбdce</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_text">
+		<text>Zabij Stringova za to, jak tм navedl do lйиky.</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_name">
+		<text>Ve spoluprбci s bandity dobuп bleљн trh</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_text">
+		<text>Zmasakruj kopбиe na bleљнm trhu, aby si z toho ostatnн vzali ponauиenн, a pak dohlйdni na to, aby tam jeden z banditщ zщstal na strбћi.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_name">
+		<text>Vezmi starй PDA ze schrбnky na nбшadн</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_text">
+		<text>Vezmi starй PDA z Baћantova tбbora a dones je Divokйmu Naprovi. PDA by mмlo bэt pod faleљnэm dnem ve schrбnce na nбшadн.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_name">
+		<text>Vezmi starй PDA z Baћantova tбbora</text>
+	</string>
+	<string id="gar_quest_get_old_pda_text">
+		<text>Najdi v tбboшe Baћanta, vezmi mu PDA a dones je Divokйmu Naprovi. Kdyby tam Baћant nebyl, ukradni PDA zpod faleљnйho dna ve schrбnce na nбшadн.</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_name">
+		<text>Ober Stringovovu mrtvolu</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_text">
+		<text>Prohledej Stringovovo tмlo a vezmi si vљechno cennй.</text>
+	</string>
+	<string id="gar_quest_get_weapons_name">
+		<text>Dones Stringovovi dva tisнce</text>
+	</string>
+	<string id="gar_quest_get_weapons_text">
+		<text>Dones Stringovovi 2000 v hotovosti a kup zбsilku paљovanэch zbranн.</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_name">
+		<text>Sejmi chlбpka jmйnem Stringov</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_text">
+		<text>Zabij jakйhosi Stringova, pшeje si to Jуga.</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_name">
+		<text>Pozabнjej paљerбka a kopбиe</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_text">
+		<text>Pozabнjej paљerбka a kopбиe, kteшн si od nмj chtмjн koupit zbranм.</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_name">
+		<text>Zniи Noиnн lovce</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_text">
+		<text>Najdi a zniи bytosti, kterй lovн kopбиe. V hledбnн mщћeљ zaинt na mнstм, kde nedбvno pшepadli uprchlнkovu skupinu. Pravdмpodobnм se vљak budou dбt najнt jen v noci.</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_name">
+		<text>Zlikviduj strбћnй u koncentraиnнho tбbora banditщ.</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_text">
+		<text>Nejprve zlikviduj strбћnй u koncentraиnнho tбbora banditщ a potй spolu s kopбиi osvoboп zajatce.</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_name">
+		<text>Setkej se s druћstvem kopбищ</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_text">
+		<text>Setkej se s druћstvem kopбищ a veп ъtok na koncentraиnн tбbor banditщ.</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_name">
+		<text>Promluv si s Divokэm Naprem</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_text">
+		<text>Jdi na bleљн trh a zjisti, jakэ dщleћitэ obchod s tebou chtмl Divokэ Napr projednбvat.</text>
+	</string>
+	<string id="gar_story_chase_digger_name">
+		<text>Zнskej informace od posla kopбищ</text>
+	</string>
+	<string id="gar_story_chase_digger_text">
+		<text>Zeptej se posla kopбищ, kam odeљel Tesбk.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_name">
+		<text>Najdi Tesбka</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_text">
+		<text>Najdi ve sklepм Tesбka, staин se шнdit signбlem z jeho PDA.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_name">
+		<text>Dostihni Tesбka</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_text">
+		<text>Dostihni Tesбka, staин se шнdit signбlem z jeho PDA.</text>
+	</string>
+	<string id="gar_story_find_cache_name">
+		<text>Najdi skrэљ</text>
+	</string>
+	<string id="gar_story_find_cache_text">
+		<text>Najdi skrэљ Tesбkovy skupiny.</text>
+	</string>
+	<string id="gar_story_find_diggers_name">
+		<text>Zнskej od kopбищ informace o Tesбkovi</text>
+	</string>
+	<string id="gar_story_find_diggers_text">
+		<text>Poptej se na Tesбka u kopбищ, kterй podle kupce nedбvno navљtнvil.</text>
+	</string>
+	<string id="gar_story_get_pda_name">
+		<text>Seber Tesбkovo PDA</text>
+	</string>
+	<string id="gar_story_get_pda_text">
+		<text>Seber PDA, kterй Tesбk upustil.</text>
+	</string>
+	<string id="gar_story_go_to_freedom_name">
+		<text>Nбsleduj Tesбka do Temnйho ъdolн</text>
+	</string>
+	<string id="gar_story_go_to_freedom_text">
+		<text>Nбsleduj Tesбka do Temnйho ъdolн.</text>
+	</string>
+	<string id="gar_story_kill_dogs_name">
+		<text>Pozabнjej slepй psy</text>
+	</string>
+	<string id="gar_story_kill_dogs_text">
+		<text>Pozabнjej slepй psy, kteшн drћн posla kopбищ v ъdolн.</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_name">
+		<text>Prohledej kopбиovo tмlo</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_text">
+		<text>Prohledej kopбиovo tмlo kvщli informacнm o Tesбkovi.</text>
+	</string>
+	<string id="gar_quest_bandit_reward_name">
+		<text>Vyzvedni si u Zuba odmмnu</text>
+	</string>
+	<string id="gar_quest_bandit_reward_text">
+		<text>Zajdi za kupcem Zubem a vyzvedni si odmмnu za vyиiљtмnн bleљнho trhu.</text>
+	</string>
+	<string id="gar_quest_bandit_secret_name">
+		<text>Seber zbraт ze skrэљe v anomбlii</text>
+	</string>
+	<string id="gar_quest_bandit_secret_text">
+		<text>Seber zbraт ze skrэљe v anomбlii, o kterй mluvil Jуga.</text>
+	</string>
+	<string id="gar_quest_captive_reward_name">
+		<text>Seber koшist ze skrэљe</text>
+	</string>
+	<string id="gar_quest_captive_reward_text">
+		<text>Seber koшist ze starй skrэљe, kterou pouћнvali kopбиi osvobozenн z koncentraиnнho tбbora.</text>
+	</string>
+	<string id="gar_quest_more_reward_name">
+		<text>Шekni si Jуgovi o odmмnu</text>
+	</string>
+	<string id="gar_quest_more_reward_text">
+		<text>Шekni si Jуgovi o vyљљн odmмnu za vyиiљtмnн bleљнho trhu.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_name">
+		<text>Najdi informace o vyztuћenй neprщstшelnй vestм</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_text">
+		<text>Pшines Prщzraиnэmu lahev chlastu a jistй informace o vyztuћenй neprщstшelnй vestм. Vэmмnnou za to ti nainstaluje podobnй vylepљenн do tvй vesty.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_name">
+		<text>Najdi informace o zaљtнtмnн pro kombinйzy</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_text">
+		<text>Prщzraиnej nikdy o psi-zбшenн neslyљel, ale pokud mu poskytneљ potшebnй informace, mohl by na nмjakйm obleku sestrojit a zprovoznit systйm, kterэ by nositele pшed emisemi chrбnil.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_name">
+		<text>Najdi informace o uzavшenйm dэchacнm modulu</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_text">
+		<text>Prщzraиnej, technik banditщ, dokбћe sestavit libovolnou modifikaci. Aby ale mohl vyrobit uzavшenэ dэchacн systйm, potшebuje dodateиnй informace.</text>
+	</string>
+	<string id="gar_quest_redemption_name">
+		<text>Zнskej zpмt svй vмci</text>
+	</string>
+	<string id="gar_quest_redemption_text">
+		<text>Zнskej zpмt svй vмci od banditщ u bleљнho trhu</text>
+	</string>
+	<string id="gar_recover_item_1_name">
+		<text>Pшines Chaser 13</text>
+	</string>
+	<string id="gar_recover_item_1_text">
+		<text>No jde o tohle: jeden z naљich chytnul nмjakэho kopбиe a vzal ho na prochбzku k anomбliнm. Oba zakalili, coћ mм nijak nevadн, ale ten mizera si ode mм pujиil Chasera a jб chci tu bouchaиku zpбtky. Pokud mi ji pшineseљ, bylo by to fajn.</text>
+	</string>
+	<string id="gar_recover_item_2_name">
+		<text>Najdi modifikovanou zbraт</text>
+	</string>
+	<string id="gar_recover_item_2_text">
+		<text>Hele, brбcho, nмco bys pro mм mohl udмlat. Sedмli jsme u Limpida, dмlal zrovna na fakt dobrэ bouchaиce pro jednoho tэpka, modifikovanэ aћ na pщdu. No ale ten tэpek se moc nepohodl s naљim љйfem, tak nбm Joga шekl, aќ se o nмj postarбme. Jo, v pohodм jsme ho nahnali do jednэ anomбlie, ale ta bouchaиka tam furt je. Pшines mi ji a jб se postarбm, aby ti Zubatej dal nмjakou odmмnu.</text>
+	</string>
+	<string id="gar_recover_item_3_name">
+		<text>Dones lбhev kozбckй vodky</text>
+	</string>
+	<string id="gar_recover_item_3_text">
+		<text>Hele, kбmo, pшines mi nмjakej chlast, jo? Ale ne takovэ sraиky, co pijou vљichni ostatnн. Schoval jsem si pбr flaљek dobrэho chlastu, ale na blbэm mнstм, teп tam sбm jнt nemщћu. Tak mi pro nм zajdi a dej si bacha, aby tм nikdo nevidмl, jo?</text>
+	</string>
+	<string id="gar_recover_item_4_name">
+		<text>Pшines bundu zelenбиe</text>
+	</string>
+	<string id="gar_recover_item_4_text">
+		<text>Z Kordуnu sem nedбvno pшilezl jeden chlap, takovej ten typ otravnэho zelenбиe. Vљem vyprбvмl o svэ magickэ bundм, kterб prej vydrћн kaћdou anomбlii. Prej nezavшel hubu, ani kdyћ ho chytili banditi, tak ho z legrace nahnali do anomбlie. A hele, mмl pravdu. Bunda pшeћila anomбlii bez jedinэho љkrбbance. On ne. Ale mnм by se takovб bunda hodila, takћe kdyћ mi ji pшineseљ, vydмlбљ na tom.</text>
+	</string>
+	<string id="gar_recover_item_5_name">
+		<text>Pшines podepsanou pistoli</text>
+	</string>
+	<string id="gar_recover_item_5_text">
+		<text>Jo, s nминm bys mi mohl pomoct. Mмl jsem pistoli, nic zvlбљtnнho, ale dostal jsem ji od dмdeиka. No, a ztratil jsem ji. Oћrali jsme se a rozhodli jsme se, ћe pщjdem trochu prudit bandity. Kdyћ se setmмlo, vplazili jsme se do tбbora, kterej jsme si pшes den vybrali, a zaиali vшнskat jako mutanti. No, jenћe v tom tбboшe nebyli ћбdnн banditi, mнsto toho na nбs nabмhli dva upншi. Sotva jsem se odtamtud dostal ћivej, ale bouchaиka mi tam vypadla!</text>
+	</string>
+</string_table>

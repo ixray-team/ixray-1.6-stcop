@@ -1,7 +1,8 @@
 [trader]
 buy_condition = trade_generic_buy
 sell_condition = {=is_faction_friend_to_actor(csky)} trade_friend_sell, trade_generic_sell
-buy_supplies = {=is_faction_resource_greater(csky:3)} supplies_exp_3, {=is_faction_resource_greater(csky:2)} supplies_exp_2, {=is_faction_resource_greater(csky:1)} supplies_exp_1, supplies_generic
+;buy_supplies = {=is_faction_resource_greater(csky:3)} supplies_exp_3, {=is_faction_resource_greater(csky:2)} supplies_exp_2, {=is_faction_resource_greater(csky:1)} supplies_exp_1, supplies_generic
+buy_supplies = {=is_csky_at_expansion_3_or_higher} supplies_exp_3, {=is_csky_at_expansion_2} supplies_exp_2, {=is_csky_at_expansion_1} supplies_exp_1, supplies_generic
 
 
 [trade_generic_buy]

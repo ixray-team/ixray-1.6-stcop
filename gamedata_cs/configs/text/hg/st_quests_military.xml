@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mil_actor_attack_house">
+		<text>Semmisнtsd meg a katonбkat a fхhadiszбllбs йpьletйben!</text>
+	</string>
+	<string id="mil_actor_attack_house_text">
+		<text>Egy katonai alakulat vйdelmi бllбst vett fel a fхhadiszбllбs йpьletйben. Intйzd el a katonбkat az йpьletben!</text>
+	</string>
+	<string id="mil_additional_quest_1_name">
+		<text>Szerezd meg a hadsereg szбllнtmбnyбt a helikopternйl!</text>
+	</string>
+	<string id="mil_additional_quest_1_text">
+		<text>Egy йrtйkes lхszert йs fegyvereket szбllнtу felderнtх helikopter zuhant le a kцzelben. Muszбj megtartaniuk a hatбrt, нgy minden fegyverre йs tбrra szьksйgьk lehet! Sajnos, az embereink nem tudnak eljutni a becsapуdбs helyszнnйre. A terьlet a monolitiak fennhatуsбga alatt бll. Igazi kemйny fickуk, rбadбsul velьnk ellentйtben mйg vйdхruhбjuk is van a sugбrzбs ellen.</text>
+	</string>
+	<string id="mil_additional_quest_2_name">
+		<text>Keresd meg a PDA-t!</text>
+	</string>
+	<string id="mil_additional_quest_2_text">
+		<text>Nйhбny napja egy йhezх kutyafalka megtбmadott egy stalker osztagot. Nem voltak tъlйlхk. Az osztagparancsnok is az embereivel veszett, aki fontos informбciуkat szбllнtott nekьnk. Talбld meg a parancsnok holttestйt, йs szerezd meg a PDA-t, amin az informбciуk vannak!</text>
+	</string>
+	<string id="mil_additional_quest_3_name">
+		<text>Talбld meg az eltыnt stalker zsбkmбnyбt!</text>
+	</string>
+	<string id="mil_additional_quest_3_text">
+		<text>Az egyik mesterlцvйszьnk, akinйl felbecsьlhetetlen йrtйkы lхszer volt, meghalt egy anomбliбban. Ha visszaszerzed a lхszert, nem marad el a jutalmad!</text>
+	</string>
+	<string id="mil_additional_quest_4_name">
+		<text>Szerezd meg a relikviбt a halott stalkertхl!</text>
+	</string>
+	<string id="mil_additional_quest_4_text">
+		<text>Az egyik stalkerьnknek sikerьlt бtjutnia egy anomбliбs mocsбron, de az йrtйkes relikviбt mбr nem tudta visszahozni. Hozd el nekьnk a relikviбt, йs megkapod a jutalmad!</text>
+	</string>
+	<string id="mil_additional_quest_5_name">
+		<text>Vedd fel a relikviбt a falubуl!</text>
+	</string>
+	<string id="mil_additional_quest_5_text">
+		<text>Azt a falut elбtkoztбk, stalker. Csak ъgy vйrszнvуk tыnnek fel a semmibхl, senkinek sincs mersze odamenni. Nйhбny хrьlt kalandort mйgis vonz a hely, annak ellenйre is, hogy a Zуna legkegyetlenebb йs legveszйlyesebb vйrszнvуi йlnek ott. Mindenesetre, ha sikerьl megцlnцd хket, egy elhagyatott hбzban talбlsz egy olyan relikviбt, amilyet mйg soha nem lбttбl a Zуnбban.</text>
+	</string>
+	<string id="mil_contact_with_clear_sky_commander_descr">
+		<text>Talбlkozz Lebegyevvel!</text>
+	</string>
+	<string id="mil_contact_with_clear_sky_commander_name">
+		<text>Egy zsoldososztagnak sikerьlt kijutnia a tйrbuborйkbуl, йs most Limanszk felй tartanak. A menetelх Tiszta Йgbolt osztag mбr a hнdnбl van. Menj Vцrцs-erdх felй, йs talбlkozz Lebegyevvel!</text>
+	</string>
+	<string id="mil_defend_barrier_name">
+		<text>Vйdd meg a hatбrt!</text>
+	</string>
+	<string id="mil_defend_barrier_text">
+		<text>Ismйt megtбmadtбk a hatбrt. Segнts a stalkereknek megvйdeni a hatбrt!</text>
+	</string>
+	<string id="mil_elim_military">
+		<text>Semmisнtsd meg a hadsereget!</text>
+	</string>
+	<string id="mil_elim_military_text">
+		<text>Semmisнtsd meg a hadsereget a bбzison!</text>
+	</string>
+	<string id="mil_hires">
+		<text>Talбlkozz a faluban a zsoldosokkal!</text>
+	</string>
+	<string id="mil_hires_text">
+		<text>Egy elhagyatott faluban egy zsoldososztag keresi a csapatot, akik Limanszk kцzelйben csapdбba estek egy tйrbuborйkban. Nekik biztos lesz valami цtletьk, hogy hol lehetne erхsebb rбdiуjelet fogni. Talбlkozz a faluban a zsoldosokkal!</text>
+	</string>
+	<string id="mil_hog_about_signal_1">
+		<text>A fenйbe! Sajnбlom, tesу, ez nem az йn szakterьletem! Esetleg prуbбld meg Erdйszt! Mindig azt hangoztatja, hogy mindent tud a Zуnбrуl, amit tudni lehet.</text>
+	</string>
+	<string id="mil_hog_hello_dialog_11">
+		<text>Hellу, zsoldos!</text>
+	</string>
+	<string id="mil_hog_hello_dialog_12">
+		<text>Цrьlцk, hogy lбtlak! Kitalбltad mбr, hogy szabadнthatnбnk ki a srбcainkat?</text>
+	</string>
+	<string id="mil_hog_hello_dialog_1221">
+		<text>Igen, kemйny diу lesz megtцrni a fosztogatуk bбzisбt a Szemйtdombon. Egyedьl nem fogsz boldogulni.</text>
+	</string>
+	<string id="mil_hog_hello_dialog_1231">
+		<text>Hmm... ehhez szerezned kell egy jу erхs adуkйszьlйket! A hadseregnek volt is egy... vбrj csak, mindjбrt kitalбlunk valamit...</text>
+	</string>
+	<string id="mil_hog_hello_dialog_13">
+		<text>Zsoldos, Kosztyan lбtni akar!</text>
+	</string>
+	<string id="mil_hog_talk_about_1">
+		<text>Nйhбny hйttel ezelхtt fontos megrendelйst kaptunk egy ritka relikviбra. A kйrйs legfelьlrхl jцtt, az ьgyfйl igazi nagykutya. Minden jуl is ment, az osztagunk megtalбlta a relikviбt nem messze a Hatбrtуl, йs mбr indultak is visszafelй, amikor elkapta хket egy nagy kisugбrzбs. Azt hittьk, mind meghaltak, de szerencsйjьk volt йs tъlйltйk. A gond csak az, hogy teljesen eltыntek a kцrnyйkrхl. Minket rendeltek ki, hogy talбljuk meg хket. Muszбj betartanunk, amit нgйrtьnk, ha ezt elcsesszьk, egy ьgyfйl sem fog tцbb megbнzбst adni a zsoldosoknak!</text>
+	</string>
+	<string id="mil_hog_talk_about_111">
+		<text>Elfogtunk pбr rйszletet az osztagunk rбdiуьzeneteibхl, de nem tudtunk belхlьk kivenni semmit. Egyedьl annyit tisztбzott, hogy fйnyes nappal tыntek el, йs valami csapdбba ejtette хket. Lehet egy anomбlia vagy valami ъj szцrnyыsйg, ami megjelent a Zуnбban. Nem tudjuk, hogy mitйvхk legyьnk! Van egy rйgi vнztorony a tanyбnбl, talбn ott tisztбbban foghatnбnk a rбdiуьzeneteiket. Korбbban megprуbбltunk felmбszni rб, de hirtelen elхugrott egy fйlelmetes szцrnyeteg, йs magбval ragadta az egyik emberьnket. Mi is majdnem ott maradtunk!</text>
+	</string>
+	<string id="mil_hog_talk_about_11111">
+		<text>Viccelsz? Mйg most is majd цsszeszarom magam, ha csak rбgondolok a mъltkorira, йs a srбcok sem mennek a torony kцzelйbe! Te viszont sok mindent бtйlhettйl mбr a Zуnбban. Mi lenne, ha megцlnйd azt a szцrnyeteget, йs megszereznйd az embereink ьzenetйt?</text>
+	</string>
+	<string id="mil_kill_bs">
+		<text>Цld meg a vйrszнvуt!</text>
+	</string>
+	<string id="mil_kill_bs_text">
+		<text>Egy vйrszнvуt lбttak a vнztorony kцzelйben, ami a legnagyobb jelerхssйget nyъjtanб a kцrnyйken. Цld meg a vйrszнvуt!</text>
+	</string>
+	<string id="mil_reach_battle">
+		<text>Talбlkozz a Szabadsбg osztagбval!</text>
+	</string>
+	<string id="mil_reach_battle_text">
+		<text>Talбlkozz a Szabadsбg osztagбval!</text>
+	</string>
+	<string id="mil_reach_tower_task">
+		<text>Fogd be az adбst!</text>
+	</string>
+	<string id="mil_reach_tower_task_text">
+		<text>A vнztorony a legmagasabb pontja a katonai raktбrtelepnek. Ez biztosнtja a legnagyobb jelerхssйget. Menj fel a torony tetejйre, йs fogadd az eltыnt zsoldoscsapat jelzйsйt!</text>
+	</string>
+	<string id="mil_talk_2_forester2">
+		<text>Beszйlj Erdйsszel!</text>
+	</string>
+	<string id="mil_talk_2_forester2_text">
+		<text>Erdйsz PDA-jбnak rбdiуcsatornбja elfogott egy ьzenetet az eltыnt zsoldoscsapattуl. Menj vissza Erdйszhez tovбbbi utasнtбsokйrt!</text>
+	</string>
+	<string id="mil_talk_2_fr_com">
+		<text>Talбlkozz a Szabadsбg osztagбval!</text>
+	</string>
+	<string id="mil_talk_2_fr_com_text">
+		<text>A Szabadsбg felkйszьlt, hogy a hadsereg bбzisбnak megtбmadбsбval elьldцzzйk a katonбikat, majd kiйpнtsйk sajбt tбborukat a hadsereg raktбrtelepйn. Segнts a Szabadsбgnak megtбmadni a bбzist!</text>
+	</string>
+	<string id="mil_talk_2_merc_2_task">
+		<text>Beszйlj a zsoldosokkal!</text>
+	</string>
+	<string id="mil_talk_2_merc_2_task_text">
+		<text>A bбzis tele van katonбkkal, akik folyamatosan figyelnek az adуkйszьlйkre. Kьlsх segнtsйg nйlkьl nem lesz egyszerы elьldцzni хket, hogy utбna a koordinбtбk elkьldйsйvel kisegнtsd a zsoldosokat a tйrbuborйkbуl. Menj vissza az elhagyatott faluba, йs beszйlj ъjra a zsoldosokkal!</text>
+	</string>
+	<string id="mil_test">
+		<text>Segнts!</text>
+	</string>
+	<string id="mil_transfer_coo">
+		<text>Kьldd el a koordinбtбkat!</text>
+	</string>
+	<string id="mil_transfer_coo_text">
+		<text>Szabad az ъt az adуkйszьlйkhez. Menj fel a torony tetejйre, йs kьldd el az Erdйsz бltal megadott koordinбtбkat a tйrbuborйkban ragadt zsoldoscsapatnak!</text>
+	</string>
+	<string id="mil_treasure_weapon_box_descr">
+		<text>Lхszeres lбda</text>
+	</string>
+	<string id="mil_treasure_weapon_box_name">
+		<text>Lхszeres lбda</text>
+	</string>
+	<string id="mil_blockpost_task">
+		<text>Beszйlj a helyхrsйg parancsnokбval!</text>
+	</string>
+	<string id="mil_blockpost_text">
+		<text>Beszйlj a helyхrsйg parancsnokбval a katonai raktбrtelepen fennбllу helyzetrхl!</text>
+	</string>
+</string_table>

@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_duty_bar_secret_1_descr">
+		<text>Opis sekretu 1</text>
+	</string>
+	<string id="agr_duty_bar_secret_1_name">
+		<text>Sekret 1</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_descr">
+		<text>Opis sekretu 2</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_name">
+		<text>Sekret 2</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_descr">
+		<text>Opis sekretu 3</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_name">
+		<text>Sekret 3</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_descr">
+		<text>Opis sekretu 4</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_name">
+		<text>Sekret 4</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_descr">
+		<text>Opis sekretu 5</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_name">
+		<text>Sekret 5</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_descr">
+		<text>Opis sekretu 6</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_name">
+		<text>Sekret 6</text>
+	</string>
+	<string id="device_pda_old">
+		<text>Stary PDA Њwieїaka</text>
+	</string>
+	<string id="esc_treasure_novice_stalker_descr">
+		<text>To s№ rzeczy, ktуre zachowaіem na czarn№ godzinк. Jeњli kiedyњ nadejdzie, przyjdк tu po swуj towar.</text>
+	</string>
+	<string id="esc_treasure_novice_stalker_name">
+		<text>Schowek kota</text>
+	</string>
+	<string id="esc_treasure_weapon_box_descr">
+		<text>Broс i amunicja przyda siк do walki z wojskiem i bandytami.</text>
+	</string>
+	<string id="esc_treasure_weapon_box_name">
+		<text>Sejf z broni№ i amunicj№</text>
+	</string>
+	<string id="st_agr_map_animals">
+		<text>PDA z map№ migracji</text>
+	</string>
+	<string id="st_agr_map_animals_descr">
+		<text>Na mapie migracji zaznaczono miejsca wystкpowania rzadkich gatunkуw potworуw do wykorzystania w celach badawczych.</text>
+	</string>
+	<string id="st_agr_mechanic_pda">
+		<text>PDA z danymi o ulepszeniach broni</text>
+	</string>
+	<string id="st_agr_mechanic_pda_descr">
+		<text>Elektroniczne wykresy uіatwiaj№ce ulepszanie broni.</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader">
+		<text>PDA z cennymi danymi</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader_descr">
+		<text>Brak danych.</text>
+	</string>
+	<string id="st_device_pda_fang">
+		<text>PDA Kіa</text>
+	</string>
+	<string id="st_device_pda_fang_descr">
+		<text>PDA Kіa</text>
+	</string>
+	<string id="st_device_pda_lost_squard_descr">
+		<text>Poufne informacje o dziaіaniach wojska w magazynach.</text>
+	</string>
+	<string id="st_device_pda_lost_squard_fang">
+		<text>PDA dowуdcy grupy stalkerуw</text>
+	</string>
+	<string id="st_device_pda_military">
+		<text>PDA Generaіa</text>
+	</string>
+	<string id="st_device_pda_military_descr">
+		<text>Ten PDA zawiera tajne dane na temat najbliїszych planуw dziaіaс wojska w Kordonie.</text>
+	</string>
+	<string id="st_esc_device_pda_driver">
+		<text>PDA kumpla kierowcy</text>
+	</string>
+	<string id="st_esc_device_pda_driver_descr">
+		<text>PDA kumpla kierowcy</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card">
+		<text>Informacje o ulepszeniach broni</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card_descr">
+		<text>Informacje o ulepszeniach broni</text>
+	</string>
+	<string id="st_esc_military_documentation">
+		<text>Tajne dane wojskowe</text>
+	</string>
+	<string id="st_esc_military_documentation_descr">
+		<text>Tajne dane.</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard">
+		<text>PDA dowуdcy</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard_descr">
+		<text>PDA naleї№cy do dowуdcy grupy stalkerуw. Zawiera cenne informacje o planach bandytуw zwi№zanych z przejкciem magazynуw wojskowych.</text>
+	</string>
+	<string id="st_red_forest_pda_map">
+		<text>PDA z map№ Czerwonego Lasu</text>
+	</string>
+	<string id="st_red_forest_pda_map_descr">
+		<text>Na tym PDA umieszczono mapк Czerwonego Lasu, pokazuj№c№ obszar anomalii i anomaliк przestrzenn№. Wygl№da na to, їe anomalia moїe przenosiж do miejsca zamieszkania Leњnika.</text>
+	</string>
+	<string id="device_pda_digger_descr">
+		<text>Ten PDA zawiera dokumentacjк techniczn№, ktуra moїe pomуc naukowcom w wykryciu przyczyny pojawienia siк nad Jantarem potкїnego pola psionicznego.</text>
+	</string>
+	<string id="device_pda_digger_name">
+		<text>PDA zagubionego oddziaіu</text>
+	</string>
+	<string id="device_pda_garbage_traitor">
+		<text>PDA przemytnika</text>
+	</string>
+	<string id="device_pda_garbage_traitor_descr">
+		<text>PDA przemytnika znaleziony w rzeczach Stringowa.</text>
+	</string>
+	<string id="device_pda_old_descr">
+		<text>Stary PDA znaleziony pod faіszywym dnem skrzynki narzкdziowej w obozie Њwieїaka.</text>
+	</string>
+	<string id="flesh_up_a_novice_outfit_name">
+		<text>Pendrive z danymi na temat superlekkiej kamizelki kuloodpornej z kevlaru</text>
+	</string>
+	<string id="flesh_up_ab_pkm_name">
+		<text>Pendrive z danymi na temat wywaїenia mechanizmu broni maszynowej</text>
+	</string>
+	<string id="flesh_up_ab_svu_name">
+		<text>Pendrive z danymi na temat luf karabinуw snajperskich</text>
+	</string>
+	<string id="flesh_up_abcd_pkm_name">
+		<text>Pendrive z danymi na temat modyfikacji systemu odprowadzania gazуw w broni maszynowej</text>
+	</string>
+	<string id="flesh_up_abcd_svu_name">
+		<text>Pendrive z danymi na temat elektronicznego stabilizatora do karabinуw snajperskich</text>
+	</string>
+	<string id="flesh_up_ac_ak74u_name">
+		<text>Pendrive z danymi na temat wywaїenia mechanizmu</text>
+	</string>
+	<string id="flesh_up_ac_desert_eagle_name">
+		<text>Pendrive z danymi na temat hamulca wylotowego do pistoletu</text>
+	</string>
+	<string id="flesh_up_ac_mp5_name">
+		<text>Pendrive z danymi na temat hamulca wylotowego do pistoletu maszynowego</text>
+	</string>
+	<string id="flesh_up_ac_spas12_name">
+		<text>Pendrive z danymi na temat mechanizmуw pneumatycznych do strzelb bojowych</text>
+	</string>
+	<string id="flesh_up_ac_wincheaster1300_name">
+		<text>Pendrive z danymi na temat mechanizmуw pneumatycznych do strzelb</text>
+	</string>
+	<string id="flesh_up_aceg_scientific_outfit_name">
+		<text>Pendrive z danymi na temat wzmocnionej wojskowej kamizelki kuloodpornej</text>
+	</string>
+	<string id="flesh_up_bd_desert_eagle_name">
+		<text>Pendrive z danymi na temat modyfikacji lufy pistoletu</text>
+	</string>
+	<string id="flesh_up_bd_mp5_name">
+		<text>Pendrive z danymi na temat modyfikacji lufy pistoletu maszynowego</text>
+	</string>
+	<string id="flesh_up_bd_wincheaster1300_name">
+		<text>Pendrive z danymi na temat elektronicznego stabilizatora do strzelb</text>
+	</string>
+	<string id="flesh_up_bdfh_scientific_outfit_name">
+		<text>Pendrive z danymi na temat systemu ochrony psionicznej</text>
+	</string>
+	<string id="flesh_up_cd_pkm_name">
+		<text>Pendrive z danymi na temat hamulca wylotowego do broni maszynowej</text>
+	</string>
+	<string id="flesh_up_cd_svu_name">
+		<text>Pendrive z danymi na temat hamulca wylotowego do karabinu snajperskiego</text>
+	</string>
+	<string id="flesh_up_fh_scientific_outfit_name">
+		<text>Pendrive z danymi na temat aparatu tlenowego o obiegu zamkniкtym</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_desc">
+		<text>PDA z rysunkami, ktуre zrozumie tylko geniusz.</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_name">
+		<text>PDA kolegi wujka Jara</text>
+	</string>
+	<string id="st_device_pda_comendant_desc">
+		<text>Osobisty PDA komendanta Lingowa. Zawiera miкdzy innymi informacje na temat wspуіpracy z najemnikami.</text>
+	</string>
+	<string id="st_device_pda_comendant_name">
+		<text>PDA Lingowa</text>
+	</string>
+	<string id="st_device_pda_freedom">
+		<text>PDA stalkera "Wolnoњci"</text>
+	</string>
+	<string id="st_device_pda_freedom_desc">
+		<text>PDA czіonka "Wolnoњci", zawieraj№cy nagranie rozmowy pomiкdzy napastnikami.</text>
+	</string>
+	<string id="st_esc_trader_habar_desc">
+		<text>Walizka z zamkiem szyfrowym. Niezwykle cenna dla Sidorowicza.</text>
+	</string>
+	<string id="st_esc_trader_habar_name">
+		<text>Zdobycz</text>
+	</string>
+	<string id="st_pda_descr">
+		<text>Brak danych.</text>
+	</string>
+	<string id="st_pda_name">
+		<text>PDA</text>
+	</string>
+	<string id="st_agr_quest_duty_abakan">
+		<text>Karabin szturmowy czіonka "Powinnoњci"</text>
+	</string>
+	<string id="st_agr_quest_duty_abakan_descr">
+		<text>Na karabinie starannie wymalowano biaі№ farb№ jego numer magazynowy, co sugeruje, їe broс naleїy do їoіnierza frakcji "Powinnoњж".</text>
+	</string>
+	<string id="st_agr_quest_duty_case">
+		<text>Walizka czіonka "Powinnoњci"</text>
+	</string>
+	<string id="st_agr_quest_duty_case_descr">
+		<text>Walizka jest zamkniкta zamkiem szyfrowym. Dџwiкki, jakie wydaje sugeruj№, їe zawiera rуїne przedmioty. Na jej szczycie zaznaczono markerem sygnaі wywoіawczy wіaњciciela - czіonka "Powinnoњci".</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda">
+		<text>PDA z tajnymi informacjami</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda_descr">
+		<text>Liczne wpisy w tym PDA nie pozostawiaj№ w№tpliwoњci, їe naleїy ono do czіonka "Powinnoњci". Pozostaіe treњci s№ porz№dnie zaszyfrowane.</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12">
+		<text>Strzelba "Rozpruwacz"</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12_descr">
+		<text>Ta broс byіa najwyraџniej celem brutalnego ataku. Informacje fabryczne na kolbie sugeruj№, їe to czкњж ograniczonej serii wyrуїniaj№cej siк ulepszon№ powіok№ oraz przeraїaj№c№ nazw№: "Rozpruwacz".</text>
+	</string>
+	<string id="st_esc_quest_akm47">
+		<text>Trofiejny AKM-47/2</text>
+	</string>
+	<string id="st_esc_quest_akm47_descr">
+		<text>Stary, zuїyty karabin szturmowy ze њladami pazurуw na kolbie. Legendarny orкї.</text>
+	</string>
+	<string id="st_esc_quest_luky_detector">
+		<text>Fartowny detektor</text>
+	</string>
+	<string id="st_esc_quest_luky_detector_descr">
+		<text>Stary detektor, do ktуrego przylepiono nalepki z gum balonowych i bananуw. Wygl№da normalnie i trudno uwierzyж, aby ktoњ uznaі go za coњ wyj№tkowego.</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka">
+		<text>"Magiczna" wуdka</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka_descr">
+		<text>Mкtny pіyn o silnej woni alkoholu. Zawiera go zapewne okoіo 80-90%, wiкc lepiej go nie piж.</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit">
+		<text>Apteczka specjalna NPR-21p</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit_descr">
+		<text>Apteczka opatrzona sіowami "Zestaw antyradiacyjny NPR-21p (model testowy)". Na ulotce wymieniono potкїn№ listк nieprzyjemnych efektуw ubocznych.</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit">
+		<text>Trwaіa kurtka skуrzana</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit_descr">
+		<text>Wygl№da na to, їe poprzedni wіaњciciel tej kurtki zostaі rozszarpany przez anomaliк, kurtka jednak na tym w їaden sposуb nie ucierpiaіa.</text>
+	</string>
+	<string id="st_gar_quest_vodka_2">
+		<text>Wуda "Kozak 2"</text>
+	</string>
+	<string id="st_gar_quest_vodka_2_descr">
+		<text>Џle przylepiona etykieta i dziwny osad na dnie butelki sugeruj№, їe to wyrуb domowy.</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle">
+		<text>Zmodyfikowana spluwa</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle_descr">
+		<text>Kawaі solidnej broni. Uzdolniony technik znacz№co ulepszyі jej fabryczne charakterystyki.</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm">
+		<text>Pistolet z inskrypcj№</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm_descr">
+		<text>Na uchwycie pistoletu widaж inskrypcjк. Jest czкњciowo zatarta, moїna odczytaж z niej nastкpuj№ce fragmenty: "Za z...іugi wykracz... poza wym...i sіuїb...".</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300">
+		<text>Bandycki Chasera 13</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300_descr">
+		<text>Kilka naciкж na kolbie tej strzelby odpowiada stalkerom, ktуrzy zostali ni№ zabici.</text>
+	</string>
+	<string id="st_red_forest_pda_map_2">
+		<text>PDA z map№ Czerwonego Lasu</text>
+	</string>
+	<string id="st_red_forest_pda_map_2_descr">
+		<text>PDA zawiera mapк Czerwonego Lasu z oznaczeniami obszarуw o silnym promieniowaniu. Ostatni wpis pochodzi z 23:15 i brzmi: "Trzeba byіo spкdziж noc na moњcie - nie wydostaniemy siк teraz z tego lasu".</text>
+	</string>
+	<string id="st_red_quest_prototipe_device">
+		<text>Urz№dzenie eksperymentalne</text>
+	</string>
+	<string id="st_red_quest_prototipe_device_descr">
+		<text>Urz№dzenie z licznymi przeі№cznikami i wskaџnikami. Brakuje instrukcji mog№cej uіatwiж zrozumienie celu jego istnienia.</text>
+	</string>
+	<string id="st_red_quest_tank_minigun">
+		<text>Czoіgowy karabin maszynowy</text>
+	</string>
+	<string id="st_red_quest_tank_minigun_descr">
+		<text>Ten karabin maszynowy jest przeznaczony do montaїu na czoіgu, ale moїe byж teї wykorzystywany w charakterze rkm-u.</text>
+	</string>
+	<string id="st_val_quest_flash_movies">
+		<text>Pendrive z filmami</text>
+	</string>
+	<string id="st_val_quest_flash_movies_descr">
+		<text>Pendrive z najnowszymi filmami; nie obejrzysz ich jednak na PDA ze wzglкdu na ich rozdzielczoњж.</text>
+	</string>
+	<string id="st_val_quest_guitar_serg">
+		<text>Gitara Seregi</text>
+	</string>
+	<string id="st_val_quest_guitar_serg_descr">
+		<text>Na gryfie gitary dіugopisem zapisano, їe byіa ona darem dla niejakiego Seregi od jego dziewczyny.</text>
+	</string>
+	<string id="st_val_quest_scope_x8">
+		<text>Celownik 8x</text>
+	</string>
+	<string id="st_val_quest_scope_x8_descr">
+		<text>Doskonaіy celownik ze specjalnym uchwytem montaїowym pasuj№cym chyba tylko do karabinu myњliwskiego.</text>
+	</string>
+	<string id="st_yan_quest_granade">
+		<text>Granat pami№tkowy</text>
+	</string>
+	<string id="st_yan_quest_granade_descr">
+		<text>Granat жwiczebny. Do zawleczki doі№czono іaсcuszek z breloczkiem w ksztaіcie biaіego krуlika.</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower">
+		<text>Szkarіatny Kwiat</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower_descr">
+		<text>Tajemniczy artefakt nieznanego pochodzenia. Nie powoduje praktycznie їadnych emisji, dziaіaj№c jedynie w charakterze wabika na kobiety.</text>
+	</string>
+</string_table>

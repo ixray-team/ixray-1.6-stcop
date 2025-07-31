@@ -393,12 +393,12 @@ function calculate_priority(PRT_subtable, PTID_subtable, npc, phrase_id)
 	else
 		for i=1,#PTID_subtable.npc_community do
 			if(PTID_subtable.npc_community[i]==npc:character_community()) then
---		        priority = priority + 3
-		        priority = priority + 2
+		        priority = priority + 3
+--		        priority = priority + 2
 				break
 			end
 		end
---	    priority = priority - 1 -- if community hasn't match - then decrease priority
+	    priority = priority - 1 -- if community hasn't match - then decrease priority
 	end
 	if(PTID_subtable.level=="not_set") then
     	priority = priority + 0

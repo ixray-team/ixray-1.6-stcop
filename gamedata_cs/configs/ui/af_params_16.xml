@@ -12,9 +12,10 @@
 
 	<radiation_restore_speed x="0" y="0" width="214" height="20">
 		<caption x="0" y="0" width="15" height="20" stretch="1">
-			<texture>ui_inv_icon_radiation_restore_speed</texture>
+			<texture>ui_inv_icon_radiation_immunity</texture>
 			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
 		</caption>
+		<texture_minus>ui_inv_icon_radiation_restore_speed</texture_minus>
 		<value x="117" y="0" width="30" height="20" magnitude="1000" sign_inverse="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>

@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mar_csky_leader_intro_dialog_0">
+		<text>Witamy ponownie w њwiecie їywych, stalkerze. Jak siк czujesz?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_2">
+		<text>Pamiкtasz, co ci siк staіo?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_4">
+		<text>Jesteњ w nastroju do їartуw? To dobrze wrуїy twojemu powrotowi do zdrowia. Jestem Lebiediew, przywуdca grupy, ja tu jestem odpowiedzialny za wszystkich... Ј№cznie z tob№, dopуki tu jesteњ. Zwiemy siк "Czyste Niebo", a ty jesteњ teraz w naszej bazie. Zabraliњmy ciк z Bagien po emisji...</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_6">
+		<text>Szczкњcie? Hm... W№tpiк. Fakty s№ takie: przeїyіeњ emisjк - to pierwsza rzecz, ktуrej wci№ї nie umiem wyjaњniж. Po drugie, nasz patrol znalazі ciк na Bagnach, ktуre s№ w zasadzie bezkresnymi ruchomymi piaskami. Po trzecie, prawie rozszarpaіa ciк na strzкpy sfora nibypsуw, ale nasi chіopcy wyci№gnкli ciк w ostatniej chwili. Taki ci№g wydarzeс mуwi mi, їe to wiкcej niї szczкњcie... Tak czy siak, muszк skoсczyж to, co robiк, wiкc dokoсczymy tк rozmowк pуџniej.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_0">
+		<text>Witaj, najemniku! Jak byіeњ nieprzytomny, staіeњ siк prawdziw№ legend№ - sam byњ nie uwierzyі w niektуre z plotek, ktуre sіyszaіem... Ha! Tak czy siak, stawiam ci kolejkк, pieprzony farciarzu! Rozluџnij siк i opowiedz mi o swoich przygodach, bo umieram z ciekawoњci!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_2">
+		<text>W takim razie ty pij, a ja ci opowiem o tym miejscu. Dawniej byіo tu caіkiem spokojnie - znaleџliњmy swoje њcieїki, wybadaliњmy co trzeba, mieliњmy dojњcia pod kontrol№. Oczywiњcie, їycie na Bagnach to nie sielanka, ale tak џle teї nie byіo. Taa... Nie byіo џle do ostatniej emisji - najwiкkszej dot№d. Teraz nasi chіopcy modl№ siк i do Boga, i do Diabіa przed wyjњciem z bazy, bo powrуt w jednym kawaіku to prawdziwy cud! Ale jakoњ trzymamy wszystko w kupie, bo nasi chіopcy nie s№ tu, їeby siк nachapaж, tylko walcz№ dla sprawy...</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_4">
+		<text>Zbieraіem butelki, jedn№ po drugiej, aї doprowadziіy mnie tutaj... Ha, ha! Їartujк! Tak naprawdк nie byіo dla mnie miejsca w tym innym њwiecie, odtr№ciі mnie. W koсcu trafiіem tutaj... Najpierw do Zony, a potem do "Czystego Nieba". Chіopaki tu s№ w porz№dku, a ja siк na coњ przydajк. Jak wracaj№ z misji, nalewam im kolejkк, opowiadam parк sproњnych dowcipуw i moje zadanie jest wykonane - proste, ale skuteczne. Swoj№ drog№, nazywaj№ mnie tu Zimny.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_6">
+		<text>W naszej bazie. Jak widzisz, jest to maіe, zapadaj№ce siк gospodarstwo w њrodku romantycznych, bezkresnych Bagien. Nie powiem ci, gdzie dokіadnie siк znajduje, ale to ostatnie miejsce w Zonie, gdzie moїna spotkaж prawdziwych ludzi: kolesi, ktуrzy ciк nie wydymaj№, nie wsadz№ ci kosy w plecy i nie dadz№ ci siк wykrwawiж, їeby zaoszczкdziж apteczkк!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_8">
+		<text>Wiesz, dlaczego nigdy o nim nie sіyszaіeњ? Bo zbyt wielu ludzi chce siк o nim dowiedzieж, a im mniej, tym lepiej!\nLebiediew jest naszym przywуdc№ - ten facet to prawdziwa skaіa. Jest spoiwem, ktуre trzyma nasz№ grupк razem.\nJest teї Tyczkow, profesor Tyczkow. To chodz№ce poі№czenie encyklopedii i kalkulatora. Wie o Zonie wiкcej niї... W kaїdym razie...\nNaszego technika nazywaj№ Szary, potrafi zrobiж spluwк z puszki, i to razem z amunicj№. Przydaіoby mu siк trochк czкњci, ale nie licz№c tego...\nNo i wreszcie Susіow. To handlarz, ale rуїni siк od kolegуw po fachu. Nie bкdzie prуbowaі ciк orїn№ж - wie, ile trudu kosztuje stalkerуw zdobycie towaru, i szanuje to.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_1">
+		<text>Rozumiesz juї co nieco niektуre sprawy, a inne wymagaj№ dokіadniejszego wyjaњnienia. Niewytіumaczalny pozostaje fakt, їe dwa razy znalazіeњ siк w zasiкgu emisji i przeїyіeњ. Na pewno nie byіeњ w ognisku tych emisji, bo wtedy z pewnoњci№ byњ zgin№і, ale wygl№da na to, їe jesteњ w stanie przeїyж zabуjcze dla innych poziomy emisji. Tak ogуlnie przedstawia siк zarys wydarzeс.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_3">
+		<text>To prawda - niektуre z twoich cech, takie jak sprawnoњж ruchowa, refleks i wytrzymaіoњж, ulegіy gwaіtownej poprawie po emisji. Wygl№da na to, їe emisja byіa dla twojego ciaіa џrуdіem energii... Z drugiej strony, po krуtkim przypіywie siіy nastкpuje ostry spadek samopoczucia, czego efekty teraz odczuwasz.\nNa koniec powiem ci coњ, co juї wiesz: emisje niszcz№ twуj ukіad nerwowy. Jeњli siк powtуrz№, zginiesz... lub co gorsze, stracisz inteligencjк i wіasne "ja".</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_5">
+		<text>Niestety nie. Mogк najwyїej zmniejszyж negatywny wpіyw emisji na twoje ciaіo. Przeprowadzam obecnie szereg testуw, a gdy Lebiediew potwierdzi wyniki, bкdк mуgі dokonaж odpowiednich zabiegуw. Muszк jednak jeszcze raz podkreњliж, їe to nie jest cudowne lekarstwo na twуj problem, zyskasz jedynie trochк czasu, zanim twуj ukіad nerwowy zacznie siк rozpadaж.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_7">
+		<text>Przykro mi, to wszystko. Mogк jeszcze odpowiedzieж ci na ewentualne pytania.</text>
+	</string>
+	<string id="mar_csky_doctor_about_people_1">
+		<text>Ludziom siк bікdnie wydaje, їe rozumiej№ istotк Zony. Niektуrzy uwaїaj№ j№ za uniwersalne zіo, inni - za cud zesіany ludzkoњci, a jeszcze inni za џrуdіo bogactwa... Wszyscy siк myl№. Zony nie da siк zrozumieж, patrz№c przez pryzmat ludzkiego postrzegania. Co wiкcej, ludzie nie s№ jeszcze gotowi, їeby choж prуbowaж. Dlatego teї dziaіania zarуwno rz№du, jak i stalkerуw wzglкdem Zony s№ chybione i obawiam siк, їe potencjalne konsekwencje mog№ byж... albo zaiste s№ zupeіnie nieprzewidywalne. Naturalnie, stanowi to ogromne zagroїenie...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_1">
+		<text>Mіody czіowieku, gdybym tylko znaі odpowiedџ na to pytanie... Pracowicie badamy Zonк, by j№ znaleџж!\nZona pojawiіa siк w wyniku dziaіaс... powiedzmy, "nieprzemyњlanych" dziaіaс ludzi i nie potrafimy wrуciж do poprzedniego stanu. Zony nie da siк zniszczyж, nie zniknie teї sama. My, "Czyste Niebo", uwaїamy, їe moїna pogodziж czіowieka z Zon№ tylko w jeden sposуb: przez koegzystencjк.</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_3">
+		<text>Jak to najlepiej wyjaњniж? Powiem tak: kaїdy skomplikowany ukіad w przyrodzie, і№cznie z Zon№, automatycznie d№їy do rуwnowagi przy braku zewnкtrznych czynnikуw destabilizuj№cych. Tak byіo w ostatnich latach - Zona byіa stabilna, nie pojawiaіy siк istotne odstкpstwa od normy... A teraz? Mieliњmy olbrzymi№ emisjк, ktуra odmieniіa Zonк. Ukіad staі siк niestabilny, znieksztaіcony... Doszіo do swego rodzaju usterki. Nastкpuj№ emisje jedna po drugiej, a przy kaїdej Zona іaduje siк energi№ tak bardzo, їe wskaџniki na moich czujnikach lataj№ jak oszalaіe! Jeњli nie odwrуcimy tej tendencji, skoсczy siк to katastrof№ o wiele wiкksz№ niї w 1986 roku.\nNajwaїniejsze jest to, їe ta "usterka" nie nast№piіa z przyczyn naturalnych. To robota ludzi...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_5">
+		<text>Tego prуbujemy siк dowiedzieж. Moїe odkrycie, kto zakіуciі rуwnowagк Zony, umoїliwi nam unikniкcie katastrofy.</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_7">
+		<text>Poniewaї ludzie doprowadzili do takiego stanu, moїliwe, їe tylko oni mog№ to naprawiж. W kaїdym razie tak№ mam nadziejк...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_9">
+		<text>Obawiam siк, їe na to pytanie nie mogк odpowiedzieж. Zadaj je Lebiediewowi.</text>
+	</string>
+	<string id="mar_csky_doctor_hello_dialog_0">
+		<text>Dobrze ciк widzieж, mіodzieсcze. Wygl№dasz zdecydowanie lepiej.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_1">
+		<text>Niestety tak. To co, pomoїesz nam?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_0">
+		<text>Przewietrzyіeњ siк? Wygl№dasz na pewno lepiej. \nWprowadzк ciк w sytuacjк. \nJesteњ w bazie "Czystego Nieba". Nie prуbuj sobie przypomnieж, kim jesteњmy - nigdy o nas nie sіyszaіeњ, i to nie bez powodu. Nasz№ misj№ jest badanie Zony. \nUwaїamy, їe Zonк naleїy zbadaж i zrozumieж, їeby ludzkoњж wiedziaіa, z czym ma tu do czynienia. Zrozumienie jest kluczem do koegzystencji z Zon№, bo jak siк nad tym zastanowiж, Zona jest najcudowniejszym zjawiskiem, jakie ukazaіo siк ludzkoњci na przestrzeni dziejуw!</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_10">
+		<text>Ostatnio nastaіy dla nas ciкїkie czasy. Emisja zmniejszyіa liczbк anomalii na Bagnach, uіatwiaj№c dostкp bandytom i innej hoіocie. Jest ich tylu, їe niedіugo zaіoї№ obуz na њrodku naszej bazy, jeњli temu nie zaradzimy! Rzecz w tym, їe marni z nas wojacy, wiкc ci№gle tracimy teren, ale ty... Na pierwszy rzut oka widaж, їe siк na tym znasz! Twoje doњwiadczenie moїe ocaliж їycie wielu moim chіopakom.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_2">
+		<text>Jak mуwiіem, jesteњmy badaczami. Prуbujemy poznaж naturк Zony, okreњliж powody, dla ktуrych siк pojawiіa, i sformuіowaж zasady rz№dz№ce jej istnieniem. Nie kieruje nami ї№dza wzbogacenia siк, nie szukamy pуl artefaktуw, nie interesuj№ nas wojenki o terytorium z innymi frakcjami. Dlatego teї zaszyliњmy siк na Bagnach i skupiliњmy na badaniach. \nNasz№ siln№ stron№ nie jest walka, tylko wiedza - wiedza o Zonie, gromadzona przez lata prac badawczych. Wiemy o niej wiкcej niї rz№d i stalkerzy razem wziкci, a nasze badania w koсcu zaczкіy ukіadaж siк w spуjny obraz... Do tej wielkiej emisji kilka dni temu...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_4">
+		<text>Nie, ta emisja byіa niezmiernie potкїna, jedyna w swoim rodzaju. Byіa niczym huragan, ktуry przetoczyі siк przez caі№ Zonк, zmieniaj№c j№... Nic nie jest takie samo: dobrze znane i doњж bezpieczne obszary staіy siк bardzo radioaktywne i peіne anomalii, ale moїliwe staіo siк wejњcie w miejsca, do ktуrych nie byіo dostкpu od lat. Nawet najbardziej doњwiadczeni stalkerzy nie wiedz№, co ich czeka na ulubionej њcieїce. \nZmienili siк teї ludzie, widaж to od razu. Emisja zniszczyіa delikatn№ rуwnowagк pomiкdzy frakcjami, ktуre teraz walcz№ o terytorium... \nInnymi sіowy, wiele dziwnych rzeczy siк wydarzyіo i nie do koсca jeszcze pojmujк skalк tych zmian... Minкіo tylko kilka dni od emisji. Moim zdaniem najdziwniejsze jest to, їe udaіo ci siк przeїyж.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_6">
+		<text>Rozumiem. Mogк ci jakoњ pomуc?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_8">
+		<text>Wydostanie siк st№d nie bкdzie wcale іatwe. Bagna to labirynt trzciny i radioaktywnych ruchomych piaskуw peіen potwornych bestii i ludzkich szumowin... Nie wiem, co gorsze. Tylko przewodnik moїe ciк st№d bezpiecznie wyprowadziж - mamy ich tylko kilku, to ludzie, ktуrym bez wahania poњwiкciіbym їycie. Niestety, to nie takie proste, bo jak ciк st№d puszczк, nasza obecnoњж tutaj moїe przestaж byж tajemnic№.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_0">
+		<text>Znowu przeїyіeњ emisjк! Nawet nie jestem zaskoczony! Nasi chіopcy znaleџli ciк w pobliїu wieїy, gdy trochк siк uspokoiіo. \nWiesz, Tyczkow miaі racjк: opierasz siк naukowym wyjaњnieniom. On uwaїa, їe nabyіeњ pewne... "niezwykіe" zdolnoњci, ktуre umoїliwiaj№ ci przeїycie anormalnej aktywnoњci, ktуra innych rozerwaіaby dosіownie na atomy. Wygl№da na to, їe z nieznanych przyczyn twoje ciaіo ma wiкksz№ sprawnoњж, do tego stopnia, їe nasze czytniki wychodz№ poza skalк. Czekaj, nie ciesz siк zanadto. W beczce miodu zawsze znajdzie siк іyїka dziegciu: kaїda emisja uszkadza twуj ukіad nerwowy, jeњli pуjdzie tak dalej - umrzesz.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_10">
+		<text>Masz racjк, ale wiemy, jak zapobiec katastrofie i powstrzymaж emisje. A to juї coњ...</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_12">
+		<text>Musimy siк dowiedzieж, kto byі w centrum Zony i powstrzymaж go za wszelk№ cenк.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_14">
+		<text>Miкdzy tob№ a Zon№ jest jakaњ dziwna wiкџ. Z jednej strony kaїda emisja stopniowo ciк zabija. Z drugiej, przeїyіeњ w sytuacjach, ktуre kaїdego innego pozbawiіyby їycia. Mam przeczucie, їe twoja zdolnoњж... twуj dar, kl№twa, jak zwaі, tak zwaі... umoїliwia ci przetrwanie w miejscach, o ktуrych inni nawet nie marz№. A teraz musimy dziaіaж bardzo szybko.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_16">
+		<text>Wiedziaіem, їe o to zapytasz. Odpowiedџ jest prosta: jeњli emisje siк nie skoсcz№, twуj ukіad nerwowy siк wypali i umrzesz. Pomуї nam, a zachowasz їycie. To moїe zabrzmi jak cytat z durnego filmu, ale naprawdк nie masz wyboru.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_2">
+		<text>Normalna emisja jest uwolnieniem energii nagromadzonej w Zonie, swego rodzaju wyіadowaniem. Ale teraz dzieje siк coњ zupeіnie innego! \nMoim zdaniem wzrastaj№ca regularnoњж tych emisji to reakcja Zony na jakieњ powaїne zagroїenie, podobna do reakcji ludzkiego ukіadu odpornoњciowego. Trudno racjonalnie wyjaњniж koegzystencjк ludzi i Zony. Zona toleruje nas w niektуrych miejscach i zabrania nam wchodziж do innych. Wszystko za Zwкglaczem i dalej w stronк centrum Zony jest zakazane - stalkerzy nie mog№ tam wchodziж. Myњlк, їe ostatnie wydarzenia w Zonie s№ zwi№zane z tym, їe ktoњ zіamaі ten zakaz i przeszedі przez Mуzgozwкglacz.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_4">
+		<text>Trudno powiedzieж. Odpowiedџ na to pytanie wymaga wiedzy, co jest w centrum Zony. Niektуrzy mуwi№, їe Monolit, inni - їe Speіniacz Їyczeс... Ci z mniej wybujaі№ fantazj№ marz№ o polach rzadkich artefaktуw... Ja sam byіem w elektrowni j№drowej, jako mіody specjalista, ale nie wiem, co tam teraz jest. Mogк tylko powiedzieж, їe Zwкglacz pojawiі siк nie bez powodu. Uniemoїliwia dojњcie do centrum Zony. Ludzie nie mog№ przechodziж przez Mуzgozwкglacz.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_6">
+		<text>Nie s№dziіem tak, aї do czasu duїej emisji. Nikt tak nie s№dziі. Ale jeњli przyj№ж, їe emisje s№ reakcj№ obronn№, to odpowiedџ jest oczywista: ktoњ przeszedі przez Zwкglacz, a emisja byіa reakcj№ Zony. A poniewaї emisje nie ustaіy, ten ktoњ musi byж ci№gle їywy. Zona prуbuje go dorwaж i przy okazji zabija wszystko co їywe.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_8">
+		<text>Wiele wiem o Zonie, ale nie wszystko mogк ci powiedzieж. Musisz mi zaufaж w pewnych kwestiach. \nKaїdy ukіad musi byж w rуwnowadze. Zona jest teraz niestabilna, a ta niestabilnoњж wzrasta. Jeњli emisje nie ustan№, Zona stanie siк tak niestabilna, їe musi nast№piж kolejna katastrofa. I tu dochodzimy do przedmiotu dziaіaс "Czystego Nieba" - prуbujemy zapobiec tej katastrofie.</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_0">
+		<text>Starczy tego gadania! Nasza placуwka znowu zostaіa zaatakowana... Pomуї nam odeprzeж napastnikуw! \nJeњli to sprawi jak№њ rуїnicк, s№ tam teraz chіopcy, ktуrzy ciк uratowali. \nPamiкtasz jeszcze, jak przeїyж w Zonie?</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_21">
+		<text>Њwietnie! Idџ do handlarza, on da ci podstawowy sprzкt. Pуџniej ruszaj od razu na placуwkк. Gdy znajdziesz siк poza baz№, sіuchaj moich wskazуwek - sprуbujк tob№ pokierowaж.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_1">
+		<text>Sam zobacz. Prawie w ogуle nie ma sprzкtu - jest jak po wojnie nuklearnej! Jak coњ dostaniemy, to i tak siк rozpada, a nie ma tu їadnego szmelcu na czкњci zapasowe. Dlatego muszк przystosowywaж wszystko, co znajdк... Dopiero co w zeszіym tygodniu miaіem do zrobienia odbiornik radiowy. Wiesz, z czego wzi№іem czкњci? Z pieprzonej lodуwki. Ha! Nie wiem, czy siк њmiaж, czy pіakaж...</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_3">
+		<text>Taa, nie ma siк tu czym ekscytowaж. Co innego na wysypisku... Odkopali stare radzieckie skіady! Po wypadku w elektrowni w Czarnobylu wysyіali tam konwoje ze skaїonymi pojazdami, sprzкtem i podobnym szajsem... Myњleli, їe to wszystko jest bezuїyteczne po skaїeniu! Ale to byіo wtedy! Teraz nikt by tego nie nazwaі promieniowaniem, wiкc maj№ tam normaln№ gor№czkк zіota. Stalkerzy zіaї№ siк z caіej Zony w poszukiwaniu zdobyczy. Szkoda, їe maіo tego dociera tutaj, chyba їe Lebiediew wyњle chіopakуw po jakieњ konkretne czкњci.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_5">
+		<text>Nic specjalnego. Naprawiam i ulepszam broс i kombinezony... W zasadzie robiк wszystko, co jest do zrobienia. Jeњli trzeba coњ naprawiж, wal jak w dym. \nEch, gdybym miaі trochк czкњci zapasowych, mуgіbym zrobiж chіopakom fajne zabawki! Broс, pancerze, wyposaїenie - zupeіnie co innego niї maj№ teraz! \nPamiкtaj, jak znajdziesz coњ przydatnego, przynieњ to tutaj, a ja to іadnie podrasujк.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_0">
+		<text>Witaj, goњciu z obcych krain! Z czym przybywasz? Z wypchan№ sakw№ czy z egzotycznymi cudeсkami?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_10">
+		<text>Tak, wiem. Sіuchaj, i tak za duїo ci juї powiedziaіem. Czas to pieni№dz, wiкc jeњli chcesz pohandlowaж, њmiaіo, a jeњli nie - do zobaczenia.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_2">
+		<text>Tak, sіyszaіem, co ci siк przytrafiіo. Najwaїniejsze, їe їyjesz... Graty siк znajd№ nowe, o ile Zona bкdzie ci przyjazna... Handlujemy czy chcesz o coњ zapytaж?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_4">
+		<text>Tacy wіaњnie jesteњmy! Nie kupisz dodatkowych piкtnastu minut їycia albo wybawienia od њmierci, ale my handlarze jesteњmy potrzebni wszкdzie. Nawet w Zonie, nawet na Bagnach i w podziemiach. \nTo zіudzenie, їe Zona jest pod kluczem, їe armia odciкіa wszystkie wejњcia i wyjњcia. Pomyњl, w dzisiejszych czasach moїna znaleџж artefakty z Zony w kaїdym zak№tku њwiata, a twoim kolegom stalkerom nigdy nie brakuje konserw, wуdki, amunicji ani sprzкtu - ktoњ musi byж za to wszystko odpowiedzialny. To jest wіaњnie nasze miejsce. Tu nie jest tak jak na zewn№trz, їe sprzedajesz pirackie pіyty, a gliny codziennie chc№ ci siк dobraж do tyіka! \nTutaj sytuacja jest bardzo prosta: њwiat zewnкtrzny interesuje siк Zon№ i vice versa. I wіaњnie dlatego tu jesteњmy... Dbamy, by to zainteresowanie zostaіo zaspokojone i wszyscy byli zadowoleni. Wњrуd handlarzy kr№їy taki їart: jak ktoњ celuje do ciebie z broni, najlepiej sprуbowaж j№ od niego kupiж!</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_6">
+		<text>Nie mуwmy o tym! Nie wyobraїasz sobie, jak doњж mam sprzedawania tego badziewia! Wszкdzie peіno zwykіych artefaktуw, ale najlepsze okazy omijaj№ to miejsce. Od dawna nie miaіem w sklepie unikatowego przedmiotu.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_8">
+		<text>Kto wie? Moїe stalkerzy znaleџli juї wszystko, co byіo do znalezienia?... Stary, przedostanie siк za Zwкglacz to marzenie. Podobno moїna tam nazbieraж tyle artefaktуw, їe starczy do koсca їycia... o ile їycie nie skoсczy siк od razu tam. Najwyїszy czas, їeby handlarze poі№czyli siіy i wykorzystali swoje dojњcia, by znaleџж sposуb na przejњcie tego czegoњ...</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_0">
+		<text>Nareszcie! Weџ ten podstawowy zestaw wyposaїenia - stworzono go z myњl№ o misjach patrolowych.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_2">
+		<text>Mam rozkaz wydaж ci sprzкt. Chіopaki natychmiast potrzebuj№ twojej pomocy!</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_111">
+		<text>To sіuchaj uwaїnie. Wykorzystaliњmy wszystkie swoje kontakty w Zonie, by dowiedzieж siк, їe jakiњ stalker w Kordonie pytaі Sidorowicza o bardzo dziwne czкњci. Nic wiкcej na razie nie wiemy, ale to jakiњ trop.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_11111">
+		<text>Przez Bagna, jak inaczej? Ale pamiкtaj, co ci powiedziaіem - po Emisji w okolicy pojawiіa siк caіa armia najrуїniejszych gnid, kontroluj№ prawie wszystko. Jesteњmy oblкїeni, wcale nie przesadzam. Wiкc zanim pomoїemy ci dostaж siк do Kordonu, musimy odzyskaж kontrolк nad Bagnami. Z twoj№ pomoc№ powinno nam siк udaж. </text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_211">
+		<text>Masz jeszcze czas to przemyњleж, ale nieduїo. Wrуж, jak bкdziesz gotуw.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_11">
+		<text>Idџ pogadaж z barmanem. Wypij kielicha i dopiero wrуж. Teraz nie ma co z tob№ rozmawiaж - wygl№dasz, jakby kontroler poprzestawiaі ci w mуzgu.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_21">
+		<text>Co tu jeszcze robisz? Natychmiast idџ po wyposaїenie do Susіowa!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_31">
+		<text>Masz wyposaїenie? To nie traж czasu - zasuwaj w podskokach na placуwkк!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_41">
+		<text>Pomoc nam leїy w twoim interesie. Oczywiњcie, chyba їe chcesz spкdziж resztк їycia jako bezmуzga skorupa.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_91">
+		<text>Gadaj, koleњ.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_11">
+		<text>Lepiej idџ do Lebiediewa - on nie wzywa ludzi bez powodu.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_21">
+		<text>To nie najlepsza chwila na rozmowк, koleњ. Druga placуwka jest atakowana. Moїe pуjdziesz im pomуc?</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_31">
+		<text>Witam pana "co to dla mnie dwie emisje"! Lebiediew chciaі z tob№ porozmawiaж. Moїe pуjdziesz z nim pogadaж, zanim dosiкgnie ciк trzecia emisja? Ha, ha!</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_41">
+		<text>Co nowego, koleњ?</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_11">
+		<text>Hej, kolego, kiepsko wygl№dasz! Idџ siк przewietrzyж czy coњ. Przy okazji, mamy tu bar na powietrzu.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_21">
+		<text>Lebiediew ciк chyba szukaі. Powinieneњ z nim pogadaж. W tym czasie poіatam kilka gnatуw... Za pomoc№ zіomu, jak zwykle.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_31">
+		<text>Sіyszaіeњ sygnaі "Pomocy!" z drugiej placуwki, tak? Pomуї im!</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_41">
+		<text>Witaj, Cudzie Zony! Podobno Lebiediew chce uszczkn№ж dla siebie trochк twojej niezwyciкїonej aury! Idџ do niego.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_91">
+		<text>Co tam?</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_11">
+		<text>Oїeї ty! Jesteњ blady jak wampir! Musisz zajrzeж do baru, to ci pomoїe!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_21">
+		<text>Wygl№dasz caіkiem nieџle... Jak na kogoњ, kto przeїyі emisjк. Naprawdк powinieneњ posiedzieж przy ogniu u Lebiediewa.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_31">
+		<text>Moїemy pogadaж pуџniej. Jesteњ natychmiast potrzebny na placуwce, idџ!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_41">
+		<text>A niech mnie! Powinieneњ iњж do Lebiediewa... Jedna lufa nie wystarczy.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_91">
+		<text>Interesuje ciк handel?</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_111">
+		<text>Jasne.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_211">
+		<text>Wіaњnie to robiк.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_311">
+		<text>Niezіy dowcip... A raczej zіy!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_1">
+		<text>To krуtka historia. Prowadziіem przez bagna grupк naukowcуw, gdy poszіa emisja. Nic wiкcej nie pamiкtam - przytomnoњж odzyskaіem tutaj. Teraz ty opowiedz, co i jak.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_3">
+		<text>Jak tu trafiіeњ?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_5">
+		<text>To miejsce... Moїesz mi podpowiedzieж, gdzie jesteњmy?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_7">
+		<text>Nie jestem nowy w Zonie, ale nigdy nie sіyszaіem o Czystym Niebie. Jak tu jest?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_9">
+		<text>...</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_0">
+		<text>Co siк ze mn№ staіo?</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_2">
+		<text>Nie czujк siк najlepiej...</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_4">
+		<text>Moїesz nie niszczyж juї mojego ukіadu nerwowego?</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_6">
+		<text>Moїesz zrobiж dla mnie coњ innego?</text>
+	</string>
+	<string id="mar_csky_doctor_about_people_0">
+		<text>Widywaіem juї w Zonie rуїnych typуw. Niektуrzy przychodz№ tu w pogoni za swymi marzeniami, inni pragn№ tutejszych cudуw, jeszcze inni - іupуw. Dlaczego Czyste Niebo bada Zonк?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_0">
+		<text>Czym jest Zona?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_2">
+		<text>Wiesz moїe, czemu Zona siк trzкsie? Cokolwiek na ten temat?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_4">
+		<text>Chciaіbym wiedzieж, do kogo naleїy...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_6">
+		<text>Czіowiek naprawdк tak moїe?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_8">
+		<text>W jaki sposуb? Jaki sens ma "plan ratunkowy"?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_11">
+		<text>Przestaс tu siк krкciж. Masz interes do Lebiediewa? To rуb, co kaїe.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_111">
+		<text>Dziкki, pogadam z nim.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21">
+		<text>Gotowy na drogк do posterunku?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_211">
+		<text>Gotowy.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_2111">
+		<text>Њwietnie. Zasіoniк ci oczy. Musimy zachowaж nasze trasy w tajemnicy.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21111">
+		<text>Jasne.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_212">
+		<text>Jeszcze nie.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_2121">
+		<text>Pospiesz siк.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21211">
+		<text>Oczywiњcie.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_31">
+		<text>Nie przeprowadzк ciк przez bagna - Lebiediew zabroniі.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_311">
+		<text>Rozumiem.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_41">
+		<text>Mam ciк zaprowadziж na Wielkie Bagna?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_411">
+		<text>Tak.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_4111">
+		<text>Znasz reguіy - muszк zasіoniж ci oczy. Nie puszczaj mnie, a bкdzie dobrze.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_41111">
+		<text>OK.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_412">
+		<text>Jeszcze nie.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_11">
+		<text>Њwietnie. Zaprowadziж ciк do naszej bazy?</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_111">
+		<text>Tak.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_1111">
+		<text>Dobra - zaіуї to na gіowк i nie puszczaj mnie, dopуki nie powiem.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_11111">
+		<text>Chodџmy.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_112">
+		<text>Jeszcze nie.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_0">
+		<text>W tej sytuacji, nie pozostaje mi nic innego.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_11">
+		<text>Tak.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_1111">
+		<text>W porz№dku. Jak dotrк do Kordonu?</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_111111">
+		<text>Zrozumiano.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_21">
+		<text>Muszк to jeszcze przemyњleж.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_2111">
+		<text>Umowa stoi.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_111">
+		<text>Rozumiem twoje stanowisko.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_211">
+		<text>OK.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_311">
+		<text>Taa.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_911">
+		<text>Wpadіem na chwilк, muszк juї ruszaж.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_1">
+		<text>Czemu siк ukrywasz?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_11">
+		<text>...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_3">
+		<text>Co w tym dziwnego? Emisje siк zdarzaj№...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_5">
+		<text>Gdybym wiedziaі, jak udaіo mi siк przeїyж, natychmiast bym ci powiedziaі. Niestety, nic nie pamiкtam...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_7">
+		<text>Lepiej juї pуjdк. Џle ze mn№, ale mogк chodziж i strzelaж. Jak siк st№d wydostaж?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_9">
+		<text>Co chcesz przez to powiedzieж?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_1">
+		<text>Czemu emisje s№ tak czкste?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_11">
+		<text>Niezіa pewnoњж siebie. Jaki masz plan?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_13">
+		<text>Dlaczego mуwisz to akurat mnie?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_15">
+		<text>Hmm... Nie wiem, czy chcк siк pakowaж w kіopoty. Dlaczego muszк braж w tym udziaі?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_3">
+		<text>Ktoњ przeszedі obok Zwкglacza? Jakie to stwarza zagroїenie dla Zony?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_5">
+		<text>Naprawdк istnieje sposуb miniкcia Zwкglacza? Choжby teoretycznie?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_7">
+		<text>Jakie zagroїenie stwarzaj№ tak czкste emisje?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_9">
+		<text>Zapobiec katastrofie? Nie potraficie nawet obroniж siк przed bandytami.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_1">
+		<text>Јeb mi pкka, њwiat wiruje... Jestem w њwietnej formie.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_3">
+		<text>OK... Pamiкtam, їe przeprowadzaіem przez bagna ekspedycjк. Jakichњ naukowcуw. Potem byіa emisja... I tyle. Jestem w niebie? Tylko dlaczego tak bardzo przypomina Zonк?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_5">
+		<text>Och. Wiкc miaіem chyba fart...</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_111">
+		<text>OK.</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_2">
+		<text>Pamiкtam fragmenty.</text>
+	</string>
+	<string id="mar_csky_tactic_about_me_dialog_0">
+		<text>Co tu robisz?</text>
+	</string>
+	<string id="mar_csky_tactic_about_me_dialog_1">
+		<text>Prуbujк odpocz№ж. Zbieram informacje, ktуre dostarczacie. Konsultujк siк z naszym dzielnym przywуdc№. Jesteњmy przewodnikami - oczami i uszami Czystego Nieba na Bagnach.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_11">
+		<text>Stary, nie spaіem od trzech dni... a moїe czterech? Muszк trochк pokimaж, kapewu?</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_111">
+		<text>Kapewu.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_21">
+		<text>Stary, proszк...</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_211">
+		<text>Dobra juї, odpoczywaj.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_31">
+		<text>Moment. Dotarcie na Wielkie Bagna jest proste - zaprowadz№ ciк tam nasi przewodnicy. Jeњli jednak chcesz tam przetrwaж, musisz poznaж obecn№ sytuacjк taktyczn№ i nowe funkcje swojego PDA. Daj znaж, jak zechcesz siк o tym dowiedzieж.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_41">
+		<text>Na Bagnach moїna nieџle wtopiж - peіno tu bandytуw i potworуw. Jesteњmy tu w zasadzie oblкїeni.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_51">
+		<text>Udaіo nam siк uchwyciж przyczуіek na Wielkich Bagnach, ale malutki - ledwie na jedn№ nogк. I nie jest to zbyt wygodna pozycja.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_61">
+		<text>Bagna s№ bezpieczne - na tyle, na ile bagno moїe byж bezpieczne... Co innego ze њcieїkami prowadz№cymi poza nie.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_71">
+		<text>Uparta z ciebie istota. Wszyscy jesteњmy pod wraїeniem - nawet przewodnicy. Jeњli chcesz ruszyж do Kordonu, ktoњ z nas bкdzie na ciebie czekaж w wiosce po poіudniowo-wschodniej stronie Bagien.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_81">
+		<text>Wszystko w porz№dku? Wrуcк wiкc do drzemki...</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_0">
+		<text>Jak wygl№da sytuacja taktyczna?</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_1">
+		<text>Jednym sіowem: fatalnie. Dwoma: jeszcze gorzej. Nasi wojownicy ledwie utrzymuj№ Wielkie Bagna - ci№gle spychaj№ ich bandyci i potwory. Wrуg jest liczniejszy.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_2">
+		<text>Udaіo siк nam zaznaczyж nasz№ obecnoњж na Bagnach, ale mamy ci№gle problemy z bandytami. Te ci№gіe najazdy z gospodarstwa na pуіnocny wschуd st№d s№... delikatnie mуwi№c uci№їliwe.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_3">
+		<text>Bagna s№ nasze poza pojedynczymi maіymi obszarami. Niestety, wњrуd obszarуw tych znajduj№ siк њcieїki і№cz№ce nas ze њwiatem zewnкtrznym - wci№ї kontroluj№ je wrogowie.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_4">
+		<text>Jednym sіowem: њwietnie. Od czasu do czasu wkurzaj№ nas jeszcze bandyci i potwory, ale w porуwnaniu z wczeњniejsz№ sytuacj№ Bagna s№ prawdziwym rajem na ziemi.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_0">
+		<text>Co trzeba zrobiж, aby opanowaж Bagna?</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_1">
+		<text>Zmniejszyж liczebnoњж przeciwnika - zastrzeliж jak najwiкcej tych, ktуrzy do nas strzelaj№. Inaczej nasi wojownicy nie bкd№ mogli zabezpieczyж Bagien.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_2">
+		<text>Zdobyж gospodarstwo na pуіnocnym wschodzie. Bandyci za bardzo siк tam rozbestwili.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_3">
+		<text>Opanuj korzystne pozycje nad њcieїkami prowadz№cymi do Kordonu i Agropromu. Bez nich jesteњmy w zasadzie odciкci od њwiata.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_4">
+		<text>Odpocz№ж? Obudџ siк - Bagna s№ nasze!</text>
+	</string>
+	<string id="mar_csky_tactic_tutorial_dialog_0">
+		<text>Opowiedz mi o nowych funkcjach mojego PDA.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_0">
+		<text>Hej! Jak leci, zіota r№czko?</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_2">
+		<text>To nie takie proste.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_4">
+		<text>Jak ci siк ukіada w їyciu osobistym?</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_111">
+		<text>Rozumiem twoj№ sugestiк.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_211">
+		<text>Rozumiem.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_311">
+		<text>Taa.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_411">
+		<text>Dobra.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_111">
+		<text>Dobrze myњlisz.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_211">
+		<text>Dobry pomysі.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_311">
+		<text>Rozumiem.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_411">
+		<text>Dziкki za radк.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_1">
+		<text>Niestety - oberwaіem emisj№, ledwie przeїyіem. Nie mam niczego. Emisja rozrzuciіa moje rzeczy po caіych Bagnach...</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_101">
+		<text>Do zobaczenia.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_3">
+		<text>Tak, tak... Nawet w takim cichym lokalu na Bagnach znajdzie siк miejsce dla handlarza. Niespodzianka, prawda?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_5">
+		<text>Rozumiem. Wygl№da jednak, їe interesy nie id№ za dobrze.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_7">
+		<text>Dlaczego wybуr jest tak ograniczony?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_9">
+		<text>Nie tylko wy patrzycie w tym kierunku.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_1">
+		<text>Dziкki. Zawsze tyle tu stresуw?</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_3">
+		<text>Taa. Spadam.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51">
+		<text>Hej! Gdzie ciк mam zaprowadziж?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_511">
+		<text>Do Kordonu.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5111">
+		<text>Jestem ci wdziкczny za wspomoїenie naszych. Zapomniaіem, їe na Bagnach moїe byж bezpiecznie... na tyle, na ile bezpieczne mog№ byж mokradіa na obrzeїach Zony. Wrужmy do rzeczy. Idziemy?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51111">
+		<text>Taa.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_511111">
+		<text>Tym razem nie musisz zasіaniaж oczu. Jak wejdziesz w lotne piaski, fajniej umiera siк z otwartymi oczami... Їartujк! Miej oczy szeroko otwarte i zapamiкtaj drogк przez Bagna - nastкpnym razem bкdziesz sobie musiaі radziж sam.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5111111">
+		<text>Jasne.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51112">
+		<text>Nie, muszк tu dokoсczyж pewne sprawy.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5112">
+		<text>To daleko st№d... No cуї. Moїe pobiegamy?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_512">
+		<text>Do waszej bazy.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5121">
+		<text>OK. Zasіaniaj oczy i nie puszczaj mojej rкki.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51211">
+		<text>Chodџmy.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_513">
+		<text>Do osady rybackiej.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_514">
+		<text>Do ruin wioski.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_515">
+		<text>Do spalonego gospodarstwa.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_516">
+		<text>Do gospodarstwa na poіudniu.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_517">
+		<text>Nigdzie. Do zobaczenia.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_7">
+		<text>...</text>
+	</string>
+</string_table>

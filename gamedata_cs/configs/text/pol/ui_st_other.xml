@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Btn_Cancel">
+		<text>Anuluj</text>
+	</string>
+	<string id="Btn_No">
+		<text>Nie</text>
+	</string>
+	<string id="Btn_OK">
+		<text>OK</text>
+	</string>
+	<string id="Btn_Yes">
+		<text>Tak</text>
+	</string>
+	<string id="bad">
+		<text>zіy</text>
+	</string>
+	<string id="enemy">
+		<text>wrуg</text>
+	</string>
+	<string id="excellent">
+		<text>њwietny</text>
+	</string>
+	<string id="experienced">
+		<text>doњwiadczony</text>
+	</string>
+	<string id="friendly">
+		<text>przyjaciel</text>
+	</string>
+	<string id="global_map">
+		<text>Mapa Zony</text>
+	</string>
+	<string id="good">
+		<text>dobry</text>
+	</string>
+	<string id="id_mp_money">
+		<text>Pieni№dze</text>
+	</string>
+	<string id="indifferent">
+		<text>obojкtny</text>
+	</string>
+	<string id="master">
+		<text>mistrz</text>
+	</string>
+	<string id="mm_mp_pda_hunt">
+		<text>Bonus za zdobyte PDA</text>
+	</string>
+	<string id="mp_only_one_voting">
+		<text>Dozwolone tylko jedno aktywne gіosowanie</text>
+	</string>
+	<string id="neutral">
+		<text>neutralny</text>
+	</string>
+	<string id="novice">
+		<text>nowicjusz</text>
+	</string>
+	<string id="st_audio">
+		<text>Dџwiкk</text>
+	</string>
+	<string id="st_bolt">
+		<text>Њruba</text>
+	</string>
+	<string id="st_client_connecting_to">
+		<text>KLIENT: Ј№czenie z</text>
+	</string>
+	<string id="st_client_spawning">
+		<text>KLIENT: Odradzanie</text>
+	</string>
+	<string id="st_client_synchronising">
+		<text>KLIENT: Synchronizacja</text>
+	</string>
+	<string id="st_controll">
+		<text>Sterowanie</text>
+	</string>
+	<string id="st_creating_new_game">
+		<text>Tworzenie nowej gry</text>
+	</string>
+	<string id="st_drink">
+		<text>pij</text>
+	</string>
+	<string id="st_game">
+		<text>Rozgrywka</text>
+	</string>
+	<string id="st_item_used">
+		<text>Uїywane</text>
+	</string>
+	<string id="st_items">
+		<text>Przedmioty</text>
+	</string>
+	<string id="st_level">
+		<text>Poziom</text>
+	</string>
+	<string id="st_loading_ai_objects">
+		<text>Wczytywanie obiektуw SI</text>
+	</string>
+	<string id="st_loading_alife_simulator">
+		<text>SERWER: Wczytywanie symulatora Alife</text>
+	</string>
+	<string id="st_loading_cform">
+		<text>Wczytywanie CFORM</text>
+	</string>
+	<string id="st_loading_details">
+		<text>Wczytywanie detali</text>
+	</string>
+	<string id="st_loading_geometry">
+		<text>Wczytywanie danych geometrycznych</text>
+	</string>
+	<string id="st_loading_saved_game">
+		<text>Wczytywanie zapisanej gry</text>
+	</string>
+	<string id="st_loading_sectors_portals">
+		<text>Wczytywanie stref i portali</text>
+	</string>
+	<string id="st_loading_shaders">
+		<text>Wczytywanie shaderуw</text>
+	</string>
+	<string id="st_loading_spatial_db">
+		<text>Wczytywanie przestrzennej bazy danych</text>
+	</string>
+	<string id="st_loading_textures">
+		<text>Wczytywanie tekstur</text>
+	</string>
+	<string id="st_mp_direct_ip">
+		<text>Adres IP</text>
+	</string>
+	<string id="st_no_active_task">
+		<text>Brak bieї№cego zadania</text>
+	</string>
+	<string id="st_not_enough_money">
+		<text>Brak pieniкdzy</text>
+	</string>
+	<string id="st_not_enough_money_npc">
+		<text>BN ma za maіo pieniкdzy</text>
+	</string>
+	<string id="st_opening_stream">
+		<text>Otwieranie strumienia</text>
+	</string>
+	<string id="st_prefetching_objects">
+		<text>Buforowanie obiektуw</text>
+	</string>
+	<string id="st_server_connecting">
+		<text>SERWER: і№czenie</text>
+	</string>
+	<string id="st_server_starting">
+		<text>SERWER: rozpoczynanie</text>
+	</string>
+	<string id="st_validating_cdkey">
+		<text>Sprawdzanie numeru seryjnego</text>
+	</string>
+	<string id="st_video">
+		<text>Grafika</text>
+	</string>
+	<string id="terrible">
+		<text>straszny</text>
+	</string>
+	<string id="ui_st_btn_cancel">
+		<text>Anuluj</text>
+	</string>
+	<string id="ui_st_btn_no">
+		<text>Nie</text>
+	</string>
+	<string id="ui_st_btn_ok">
+		<text>OK</text>
+	</string>
+	<string id="ui_st_btn_yes">
+		<text>Tak</text>
+	</string>
+	<string id="ui_st_cant_run_r2">
+		<text>Nie moїesz uruchomiж Render 2 na swoim komputerze.</text>
+	</string>
+	<string id="ui_st_community">
+		<text>Frakcja</text>
+	</string>
+	<string id="ui_st_conn_cdkey_disabled">
+		<text>Bі№d poі№czenia: numer seryjny jest niewaїny. Skontaktuj siк z dziaіem pomocy technicznej.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_in_use">
+		<text>Bі№d poі№czenia: numer seryjny w uїyciu.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_invalid">
+		<text>Bі№d poі№czenia: niewіaњciwy numer seryjny</text>
+	</string>
+	<string id="ui_st_conn_invalid_host">
+		<text>Bі№d poі№czenia: nieprawidіowy adres</text>
+	</string>
+	<string id="ui_st_conn_invalid_pass">
+		<text>Bі№d poі№czenia: nieprawidіowe hasіo</text>
+	</string>
+	<string id="ui_st_conn_new_patch">
+		<text>Nowa poprawka, wersja: %s\n Lokalizacja: %s\nCzy chcesz j№ teraz pobraж?</text>
+	</string>
+	<string id="ui_st_conn_no_new_patch">
+		<text>Brak nowych poprawek.</text>
+	</string>
+	<string id="ui_st_conn_rejected_server">
+		<text>Bі№d poі№czenia: poі№czenie odrzucone przez serwer</text>
+	</string>
+	<string id="ui_st_conn_sess_full">
+		<text>Bі№d poі№czenia: sesja peіna</text>
+	</string>
+	<string id="ui_st_conn_version_differs">
+		<text>Bі№d poі№czenia: inna wersja.</text>
+	</string>
+	<string id="ui_st_connecting_to_masterserver">
+		<text>Ј№czenie z gіуwnym serwerem</text>
+	</string>
+	<string id="ui_st_days">
+		<text>Dni</text>
+	</string>
+	<string id="ui_st_error">
+		<text>Bі№d</text>
+	</string>
+	<string id="ui_st_error_loading">
+		<text>Bі№d wczytywania</text>
+	</string>
+	<string id="ui_st_file_exist_owerwrite_q">
+		<text>Plik o tej nazwie juї istnieje. Czy chcesz go nadpisaж?</text>
+	</string>
+	<string id="ui_st_file_name_is_empty">
+		<text>Brak nazwy pliku</text>
+	</string>
+	<string id="ui_st_hours">
+		<text>godz.</text>
+	</string>
+	<string id="ui_st_kicked_by_server">
+		<text>Wyrzucony przez serwer</text>
+	</string>
+	<string id="ui_st_leave">
+		<text>Wyjdџ</text>
+	</string>
+	<string id="ui_st_load_game_confirm">
+		<text>Wczytanie gry spowoduje utratк niezapisanych danych. Czy chcesz kontynuowaж?</text>
+	</string>
+	<string id="ui_st_mins">
+		<text>min.</text>
+	</string>
+	<string id="ui_st_months">
+		<text>miesi№ce</text>
+	</string>
+	<string id="ui_st_opponent_items">
+		<text>Plecak</text>
+	</string>
+	<string id="ui_st_params">
+		<text>Parametry</text>
+	</string>
+	<string id="ui_st_patch_download_error">
+		<text>Nie udaіo siк pobraж poprawki.</text>
+	</string>
+	<string id="ui_st_patch_download_success">
+		<text>Udaіo siк pobraж poprawkк. Czy chcesz j№ zainstalowaж?</text>
+	</string>
+	<string id="ui_st_price">
+		<text>Cena</text>
+	</string>
+	<string id="ui_st_rank">
+		<text>ranga</text>
+	</string>
+	<string id="ui_st_relation">
+		<text>przychylnoњж</text>
+	</string>
+	<string id="ui_st_reputation">
+		<text>reputacja</text>
+	</string>
+	<string id="ui_st_secs">
+		<text>s</text>
+	</string>
+	<string id="ui_st_select_one_map">
+		<text>Wybierz przynajmniej jedn№ mapк.</text>
+	</string>
+	<string id="ui_st_take_all">
+		<text>Weџ wszystko</text>
+	</string>
+	<string id="ui_st_time_remains">
+		<text>Pozostaіo: </text>
+	</string>
+	<string id="ui_st_trade">
+		<text>Handel</text>
+	</string>
+	<string id="ui_st_upgrade">
+		<text>Ulepsz</text>
+	</string>
+	<string id="ui_st_voting_disabled">
+		<text>Nie moїna gіosowaж.</text>
+	</string>
+	<string id="ui_st_want_to_leave_game_q">
+		<text>Czy na pewno chcesz wyjњж z gry?</text>
+	</string>
+	<string id="ui_st_your_items">
+		<text>Twoje przedmioty</text>
+	</string>
+	<string id="very_bad">
+		<text>bardzo zіy</text>
+	</string>
+	<string id="very_good">
+		<text>bardzo dobry</text>
+	</string>
+	<string id="veteran">
+		<text>weteran</text>
+	</string>
+	<string id="st_no_buck">
+		<text>nie uїywa nabojуw kulowych</text>
+	</string>
+	<string id="st_rubles">
+		<text>rubli.</text>
+	</string>
+	<string id="ui_inv_repair">
+		<text>Napraw</text>
+	</string>
+	<string id="ui_repair_button_hint">
+		<text>Napraw</text>
+	</string>
+	<string id="ui_total_price">
+		<text>Ј№cznie</text>
+	</string>
+	<string id="lim_bandit_ambush_spot">
+		<text>Zasadzka bandytуw</text>
+	</string>
+	<string id="ui_st_kicked_by_battleye">
+		<text>wykopany przez BattlEye:</text>
+	</string>
+</string_table>

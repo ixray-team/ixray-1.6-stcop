@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_scientist_hello_dialog_11">
+		<text>Proszк, proszк... Rzadko widaж tu now№ twarz! Co chciaіbyњ wiedzieж?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_12">
+		<text>Udaіo siк?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_13">
+		<text>Cieszк siк, їe mogliњmy sobie nawzajem pomуc. Mogк zrobiж dla ciebie coњ jeszcze?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_14">
+		<text>Idџ do Lewusa. Czeka na ciebie.</text>
+	</string>
+	<string id="yan_scientist_go_diggers_1">
+		<text>Grupa zaginкіa w pуіnocno-zachodniej czкњci obiektu. Ten teren jest peіen zombie. Nie moїemy wysіaж tam stalkerуw strzeg№cych obwodu, bo i tak ledwo radz№ sobie z atakami. Sygnaі SOS dochodz№cy stamt№d jest wci№ї aktywny, wiкc sprуbuj wydostaж stalkerуw, jeњli jeszcze їyj№.</text>
+	</string>
+	<string id="yan_scientist_bring_documents_1">
+		<text>Szkoda tych mіodych ludzi. Mam szczer№ nadziejк, їe ich poњwiкcenie nie poszіo na marne. Spуjrzmy na te dokumenty... Bardzo ciekawe! Czкњж moich podejrzeс siк potwierdza... To zdecydowanie ciekawe!... Doskonale. Otrzymaliњmy odpowiedzi na wiele pytaс, ale potrzebujemy czasu na peіne zrozumienie, co siк dzieje...</text>
+	</string>
+	<string id="yan_scientist_bring_documents_111">
+		<text>W tym przypadku najwyraџniej mamy do czynienia z konstrukcj№ stworzon№ przez czіowieka. Te dokumenty to instrukcja obsіugi systemu chіodz№cego tego urz№dzenia, znajduj№cego siк w podziemnej czкњci obiektu. To coњ zuїywa ogromne iloњci energii! Sytuacja staje siк jaњniejsza... Wygl№da na to, їe te przypіywy aktywnoњci psionicznej s№ wynikiem uszkodzenia systemu chіodz№cego urz№dzenia... Jeњli uda siк go naprawiж, poziom emisji psionicznych ulegnie znacznemu obniїeniu. Muszк to jeszcze rozwaїyж, wiкc udaj siк do obiektu i doі№cz do Lewusa i jego grupy stalkerуw. Bкdк miaі wiкcej informacji, gdy tam dotrzesz.</text>
+	</string>
+	<string id="yan_scientist_about_zombie_1">
+		<text>Sprawiaj№ nam problemy od momentu uruchomienia tego laboratorium. Mury s№ mocne, ale wycie i inne haіasy z zewn№trz bardzo nam przeszkadzaj№. Nietrudno sobie wyobraziж, їe prowadzenie badaс, a nawet spanie w tych warunkach to nie lada wyczyn. Na domiar zіego czasemi musimy wychodziж z bunkra, by zebraж prуbki.</text>
+	</string>
+	<string id="yan_scientist_about_zombie_111">
+		<text>Spкdziliњmy wiele czasu nad t№ spraw№. Pomimo wszelkich staraс armii, by oczyњciж ten obiekt, zombi ci№gle wracaj№. Wszystko staіo siк jasne, gdy mуj asystent zagin№і, wyszedіszy dokonaж pomiarуw przy fabryce, i wrуciі jako jeden z zombi... To pole psioniczne. Pod jego wpіywem kaїdy traci rozum i staje siк zombi. Wynika to z nieodwracalnych uszkodzeс wyїszych funkcji ludzkiego mуzgu. Te stworzenia przestaj№ wiкc byж ludџmi: trac№ zdolnoњci poznawcze i ich zachowanie jest pochodn№ czysto zwierzкcych instynktуw...</text>
+	</string>
+	<string id="yan_scientist_about_strelok_1">
+		<text>Tak, byі u nas. Wiedziaі bardzo duїo, wiele wiкcej niї inni. Mуwiі nawet, їe byі w centrum Zony! Oczywiњcie, nie wierzyіem mu, chociaї pokazywaі mi fotografie...</text>
+	</string>
+	<string id="yan_scientist_about_strelok_111">
+		<text>Zawarliњmy z nim umowк. Obiecaі przeprowadziж badania polowe jednego z naszych eksperymentalnych modeli, urz№dzenia blokuj№cego emisje psioniczne, a my przyrzekliњmy w zamian daж mu ostateczn№ wersjк. Strielok uwaїaі, їe urz№dzenie umoїliwi mu przejњcie przez Mуzgozwкglacz. Daliњmy mu prototyp i wszedі do fabryki. Wiкcej nie widzieliњmy ani jego, ani prototypu. Otrzymaliњmy nieco danych przez satelitк, ale sygnaі siк urwaі. Wygl№da na to, їe dosiкgіa go potкїna emisja w fabryce.</text>
+	</string>
+	<string id="yan_scientist_about_strelok_11111">
+		<text>Jeњli Strielok jest w fabryce, dostanie siк do њrodka bez urz№dzenia ochrony psionicznej bкdzie niemoїliwe. Od lat badamy emisje psioniczne pochodz№ce z fabryki. Maj№ wyraџn№ strukturк impulsow№. Gdy s№ w fazie niskiej, ludzie mog№ stosunkowo bezpiecznie wchodziж do fabryki. Nie jesteњmy jednak w stanie przewidzieж, kiedy nast№pi kolejna emisja, wiкc wchodzenie tam jest jak gra w rosyjsk№ ruletkк. Jeњli wejdziesz za Strielokiem do fabryki, najpewniej skoсczysz z wypalonym mуzgiem jak wiкkszoњж tutejszych zombie. Mam jednak coњ, co moїe ci pomуc. Jakiњ czas temu skontaktowaіa siк ze mn№ grupa stalkerуw, ktуrym udaіo siк ujњж z їyciem z fabryki. W jednym z budynkуw znaleџli dokumentacjк techniczn№. Dokumenty te mog№ pomуc w wyjaњnieniu, co znajduje siк w fabryce, i odkryciu џrуdіa tak potкїnych emisji psionicznych. Jeњli pomoїesz mi znaleџж te dokumenty, pomogк ci dostaж siк do fabryki.</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_1">
+		<text>To opuszczona fabryka! Przyci№ga stalkerуw jak magnes, bo to jeden z niewielu budynkуw, do ktуrych siк jeszcze nie dostali. Mуwi siк, їe s№ tam bardzo rzadkie artefakty, wiкc stalkerzy prуbuj№ tam wejњж w nadziei na odkrycie їyіy zіota. Problem w tym, їe wchodzenie tam jest jak gra w rosyjsk№ ruletkк. Pole psioniczne jest bardzo niestabilne, gdy wzrasta, emisje mog№ wypaliж mуzg w ci№gu kilku sekund.</text>
+	</string>
+	<string id="yan_levsha_hello_dialog_11">
+		<text>Najemniku - dostaіem informacje od Sacharowa. Ale burdel... Widzisz tк dziurк w њcianie? To nasza њcieїka, najkrуtsza droga do maszyny. Idџ za mn№ i nie wysuwaj siк na przуd - tworzymy z chіopakami dobry zespуі, tylko byњ nam wchodziі w drogк. Jasne?</text>
+	</string>
+	<string id="yan_levsha_hello_dialog_111">
+		<text>Jasne.</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_0">
+		<text>Co tu robi№ stalkerzy?</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_11">
+		<text>Co z Lewusem?</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_111">
+		<text>Lewus jest inteligentniejszy od innych. Jego ekipa pracuje dla nas, pomaga nam dokonywaж pomiarуw i pobieraж prуbki. W zamian zapewniamy im wsparcie medyczne wysokiej jakoњci. Z pewnoњci№ bez tej obustronnej wspуіpracy obie strony dawno by juї nie їyіy.</text>
+	</string>
+	<string id="yan_scientist_about_strelok_0">
+		<text>Wiem, їe byі tu Strielok. Co o nim wiesz?</text>
+	</string>
+	<string id="yan_scientist_about_strelok_11">
+		<text>Gdzie jest Strielok?</text>
+	</string>
+	<string id="yan_scientist_about_strelok_1111">
+		<text>Jak znaleџж Strieloka?</text>
+	</string>
+	<string id="yan_scientist_about_zombie_0">
+		<text>Zombi czкsto was atakuj№?</text>
+	</string>
+	<string id="yan_scientist_about_zombie_11">
+		<text>Skoro tak, to ciekawe, sk№d wziкіy siк zombi...</text>
+	</string>
+	<string id="yan_scientist_bring_documents_0">
+		<text>Stalkerzy byli martwi. Oto dokumenty.</text>
+	</string>
+	<string id="yan_scientist_bring_documents_11">
+		<text>Profesorze - nie moїna dokіadniej?</text>
+	</string>
+	<string id="yan_scientist_go_diggers_0">
+		<text>Zgadzam siк na pozyskanie dokumentуw. Powiedz wszystko, co wiesz.</text>
+	</string>
+	<string id="yan_scientist_start_frase_1">
+		<text>Za chwilkк!</text>
+	</string>
+	<string id="yan_scientist_start_frase_2">
+		<text>Momencik!</text>
+	</string>
+</string_table>

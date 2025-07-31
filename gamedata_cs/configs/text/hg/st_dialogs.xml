@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="actor_break_dialog_0">
+		<text>Viszlбt legkцzelebb!</text>
+	</string>
+	<string id="actor_help_wounded_0">
+		<text>Minden rendben?</text>
+	</string>
+	<string id="actor_help_wounded_1">
+		<text>Mйgis, hogy nйz ki? Kell egy elsхsegйlycsomag, de legalбbbis nйmi kцtszer.</text>
+	</string>
+	<string id="actor_help_wounded_11">
+		<text>Tessйk, itt egy elsхsegйlycsomag.</text>
+	</string>
+	<string id="actor_help_wounded_111">
+		<text>Kцszцnцm testvйr, nem fogom elfelejteni!</text>
+	</string>
+	<string id="actor_help_wounded_12">
+		<text>Tessйk, egy kevйs kцtszer.</text>
+	</string>
+	<string id="actor_help_wounded_13">
+		<text>Sajnбlom, de nekem sincs.</text>
+	</string>
+	<string id="actor_help_wounded_131">
+		<text>Egyбltalбn hogy lehet tъlйlni a Zуnбban? Mi van, ha valaki megsйrьl? Rendbe se tudod hozni magad!</text>
+	</string>
+	<string id="actor_help_wounded_14">
+		<text>Hmm, hбt, kellemetlen. Sajnбlom, de nem tudok adni - kьlцnben nem maradna nekem.</text>
+	</string>
+	<string id="actor_help_wounded_141">
+		<text>Ahogy йrzed, haver. De remйlem, te is tudod: fehйr ember nem felejt!</text>
+	</string>
+	<string id="agr_duty_tir_dialog_all_targets_phrase_part_1">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_all_targets_phrase_part_2">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_all_targets_phrase_part_3">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_on_time_phrase_part_1">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_on_time_phrase_part_3">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_phrase_part_1">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_phrase_part_2">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_phrase_part_3">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_count_phrase_part_4">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_p_or_c_answer_bad">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_p_or_c_answer_good">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_points_phrase_part_1">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_points_phrase_part_2">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_points_phrase_part_3">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_answer_bad_part_1">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_answer_bad_part_2">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_answer_good_part_1">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_answer_good_part_2">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_phrase_part_1">
+		<text>text in default</text>
+	</string>
+	<string id="agr_duty_tir_dialog_training_phrase_part_2">
+		<text>text in default</text>
+	</string>
+	<string id="bring_item_task_0">
+		<text>Parancsolj, elhoztam, amit kйrtйl!</text>
+	</string>
+	<string id="bring_item_task_1">
+		<text>Kцsz!</text>
+	</string>
+	<string id="crowkiller_dialog_100">
+		<text>Hellу, minden rendben? Mit szуlnбl egy kis varjъvadбszathoz? Fogadjunk, hogy nem tudod megdцnteni a rekordomat!</text>
+	</string>
+	<string id="crowkiller_dialog_200">
+		<text>У, hбt te vagy az!</text>
+	</string>
+	<string id="crowkiller_dialog_210">
+		<text>Tйnyleg azt hiszed, hogy meg tudod dцnteni a rekordomat?</text>
+	</string>
+	<string id="crowkiller_dialog_211">
+		<text>Elхbb mondd el a szabбlyokat!</text>
+	</string>
+	<string id="crowkiller_dialog_2110">
+		<text>A szabбlyok pofonegyszerыek: egy perc alatt minйl tцbb varjъt kell megцlnцd a sajбt fegyvereddel. De ne csavarogj el tъl messzire, kьlцnben a talбlatok nem szбmнtanak!</text>
+	</string>
+	<string id="crowkiller_dialog_212">
+		<text>Mennyi most a rekord?</text>
+	</string>
+	<string id="crowkiller_dialog_2120">
+		<text>A jelenlegi rekord 0.</text>
+	</string>
+	<string id="crowkiller_dialog_213">
+		<text>Vadбszatra fel!</text>
+	</string>
+	<string id="crowkiller_dialog_214">
+		<text>Kцsz, de kihagyom, mennem kell!</text>
+	</string>
+	<string id="crowkiller_dialog_220">
+		<text>Mondtam, hogy ne csavarogj el! Ez nem szбmнtott!</text>
+	</string>
+	<string id="crowkiller_dialog_230">
+		<text>Lejбrt az idх!</text>
+	</string>
+	<string id="crowkiller_dialog_231">
+		<text>Gratulбlok, megdцntцtted a rekordot!</text>
+	</string>
+	<string id="crowkiller_dialog_232">
+		<text>Sajnos, ez nem jцtt цssze!</text>
+	</string>
+	<string id="crowkiller_dialog_300">
+		<text>Mire vбrsz mйg?</text>
+	</string>
+	<string id="crowkiller_dialog_crows_per_minute">
+		<text>Ennyire gondoltam:</text>
+	</string>
+	<string id="crowkiller_dialog_money_stake">
+		<text>Nos, akkor a tйt:</text>
+	</string>
+	<string id="crowkiller_dialog_record_crows">
+		<text>Na ezt mбr nevezem! Minйl tцbb varjъt kell megцlnцd egy perc alatt. A jelenlegi rekord:</text>
+	</string>
+	<string id="crowkiller_dialog_record_stake">
+		<text>A rekordot figyelembe vйve, a tйt:</text>
+	</string>
+	<string id="crowkiller_game_get_ready">
+		<text>Kйszьlj!</text>
+	</string>
+	<string id="crowkiller_game_runned_out">
+		<text>Elhagytad a terьletet!</text>
+	</string>
+	<string id="crowkiller_game_time_is_out">
+		<text>Lejбrt az idх!</text>
+	</string>
+	<string id="crowkiller_game_crows_killed">
+		<text>Megцlt varjak:</text>
+	</string>
+	<string id="default_robbery_dialog_0">
+		<text>Virнtsd a lуvйt vagy hъzz el, цreg!</text>
+	</string>
+	<string id="default_robbery_dialog_1">
+		<text>Persze, semmi problйma, itt a pйnz!</text>
+	</string>
+	<string id="default_robbery_dialog_11">
+		<text>Rendben, бtmehetsz, de hъzd meg magad, kьlцnben szйtloccsantjuk az agyadat!</text>
+	</string>
+	<string id="default_robbery_dialog_111">
+		<text>Rendben!</text>
+	</string>
+	<string id="dm_hello_general">
+		<text>Ьdvцzlet!</text>
+	</string>
+	<string id="dm_information_general">
+		<text>Mi hнr a Zуnбban?</text>
+	</string>
+	<string id="dm_information_no_more">
+		<text>Mбst nem hallottam.</text>
+	</string>
+	<string id="dm_occupation_general">
+		<text>Mit csinбlsz itt?</text>
+	</string>
+	<string id="dm_occupation_no_more">
+		<text>Mбst nem tudok mondani.</text>
+	</string>
+	<string id="dm_place_general">
+		<text>Mesйlj errхl a helyrхl!</text>
+	</string>
+	<string id="dm_place_no_more">
+		<text>Mбst nem hallottam.</text>
+	</string>
+	<string id="dm_wounded_bandage">
+		<text>Tessйk, fogd a kцtszert!</text>
+	</string>
+	<string id="dm_wounded_general">
+		<text>Segнts!</text>
+	</string>
+	<string id="dm_wounded_medkit">
+		<text>Tessйk, fogd az elsхsegйlycsomagot!</text>
+	</string>
+	<string id="dm_wounded_sorry">
+		<text>Sajnбlom, nincs nбlam!</text>
+	</string>
+	<string id="dm_wounded_thanks">
+		<text>Kцszцnцm!</text>
+	</string>
+	<string id="exchange_flash_card_0">
+		<text>Szereztem informбciуkat kьlцnbцzх fejlesztйsekrхl. Esetleg йrdekelnek?</text>
+	</string>
+	<string id="exchange_flash_card_1">
+		<text>Persze! Ennyit tudok fizetni az informбciуkйrt:</text>
+	</string>
+	<string id="exchange_flash_card_11">
+		<text>Flash meghajtу1</text>
+	</string>
+	<string id="exchange_flash_card_12">
+		<text>Flash meghajtу2</text>
+	</string>
+	<string id="exchange_flash_card_13">
+		<text>Flash meghajtу3</text>
+	</string>
+	<string id="exchange_flash_card_14">
+		<text>Flash meghajtу4</text>
+	</string>
+	<string id="exchange_flash_card_15">
+		<text>Viszlбt!</text>
+	</string>
+	<string id="exchange_flash_card_21">
+		<text>Nagyszerы, itt a pйnzed! Vйgre kйszнthetek ъj fejlesztйseket!</text>
+	</string>
+	<string id="exchange_flash_card_22">
+		<text>Nagyszerы, itt a pйnzed! Vйgre kйszнthetek ъj fejlesztйseket!</text>
+	</string>
+	<string id="exchange_flash_card_23">
+		<text>Nagyszerы, itt a pйnzed! Vйgre kйszнthetek ъj fejlesztйseket!</text>
+	</string>
+	<string id="exchange_flash_card_24">
+		<text>Nagyszerы, itt a pйnzed! Vйgre kйszнthetek ъj fejlesztйseket!</text>
+	</string>
+	<string id="find_upgrade_task_0">
+		<text>Szereztem informбciуkat a kйrt fejlesztйsekrхl.</text>
+	</string>
+	<string id="find_upgrade_task_1">
+		<text>Kцszцnцm a segнtsйget! Vйgre kйszнthetek ъj fejlesztйseket!</text>
+	</string>
+	<string id="hello_dialog_2">
+		<text>Hellу!</text>
+	</string>
+	<string id="hello_dialog_3">
+		<text>Figyu, tesу, nem segнtenйl ki?</text>
+	</string>
+	<string id="recover_item_task_0">
+		<text>Visszahoztam, amit kйrtйl.</text>
+	</string>
+	<string id="recover_item_task_1">
+		<text>Kцsz!</text>
+	</string>
+	<string id="shooting_dialog_0">
+		<text>Mit akarsz?</text>
+	</string>
+	<string id="shooting_dialog_1">
+		<text>Gyakorolni!</text>
+	</string>
+	<string id="shooting_dialog_2">
+		<text>Ne kнmйlj!</text>
+	</string>
+	<string id="shooting_dialog_3">
+		<text>Pontokra akarok jбtszani!</text>
+	</string>
+	<string id="shooting_dialog_31">
+		<text>Hбny pontra?</text>
+	</string>
+	<string id="shooting_dialog_311">
+		<text>50-re.</text>
+	</string>
+	<string id="shooting_dialog_312">
+		<text>75-re.</text>
+	</string>
+	<string id="shooting_dialog_313">
+		<text>100-ra.</text>
+	</string>
+	<string id="shooting_dialog_4">
+		<text>Cйlpontokra akarok jбtszani!</text>
+	</string>
+	<string id="shooting_dialog_41">
+		<text>Cйlpontok szбma?</text>
+	</string>
+	<string id="shooting_dialog_411">
+		<text>5.</text>
+	</string>
+	<string id="shooting_dialog_4111">
+		<text>Tбvolsбg?</text>
+	</string>
+	<string id="shooting_dialog_41111">
+		<text>5 mйter.</text>
+	</string>
+	<string id="shooting_dialog_411111">
+		<text>Vбlassz fegyvert: pisztoly vagy gйpkarabйly?</text>
+	</string>
+	<string id="shooting_dialog_4111111">
+		<text>Pisztoly.</text>
+	</string>
+	<string id="shooting_dialog_4111112">
+		<text>Gйpkarabйly.</text>
+	</string>
+	<string id="shooting_dialog_41112">
+		<text>7 mйter.</text>
+	</string>
+	<string id="shooting_dialog_41113">
+		<text>10 mйter.</text>
+	</string>
+	<string id="shooting_dialog_412">
+		<text>7.</text>
+	</string>
+	<string id="shooting_dialog_413">
+		<text>10.</text>
+	</string>
+	<string id="shooting_dialog_5">
+		<text>Nos?</text>
+	</string>
+	<string id="shooting_dialog_51">
+		<text>nulla</text>
+	</string>
+	<string id="shooting_dialog_5111">
+		<text>nulla</text>
+	</string>
+	<string id="shooting_dialog_511111">
+		<text>Ъjra?</text>
+	</string>
+	<string id="shooting_dialog_52">
+		<text>nulla</text>
+	</string>
+	<string id="shooting_dialog_5211">
+		<text>nulla</text>
+	</string>
+	<string id="shooting_dialog_53">
+		<text>nulla</text>
+	</string>
+	<string id="shooting_dialog_5311">
+		<text>nulla</text>
+	</string>
+	<string id="shooting_dialog_6">
+		<text>Viszlбt!</text>
+	</string>
+	<string id="shooting_dialog_71">
+		<text>Йs?</text>
+	</string>
+	<string id="test_dialog_0">
+		<text>Hellу!</text>
+	</string>
+	<string id="test_dialog_1">
+		<text>Igen.</text>
+	</string>
+	<string id="test_dialog_3">
+		<text>Nem tudom.</text>
+	</string>
+	<string id="tm_mechanic_task_0">
+		<text>Milyen fegyvereket tudsz fejleszteni?</text>
+	</string>
+	<string id="tm_random_task_0">
+		<text>Segнthetek?</text>
+	</string>
+	<string id="tm_random_task_1">
+		<text>Szьksйgem lenne valamire:</text>
+	</string>
+	<string id="tm_random_task_11">
+		<text>Cйlpontfoglalбs:</text>
+	</string>
+	<string id="tm_random_task_12">
+		<text>Foglalбs2</text>
+	</string>
+	<string id="tm_random_task_13">
+		<text>Tбrgy visszaszerzйse.</text>
+	</string>
+	<string id="tm_random_task_14">
+		<text>Tбrgyak kйzbesнtйse.</text>
+	</string>
+	<string id="tm_random_task_15">
+		<text>Kцszцnцm, meggondoltam magam!</text>
+	</string>
+	<string id="tm_random_task_2">
+		<text>Nem, nem tudsz.</text>
+	</string>
+	<string id="tm_random_task_21">
+		<text>rendben</text>
+	</string>
+	<string id="tm_random_task_22">
+		<text>rendben</text>
+	</string>
+	<string id="tm_random_task_23">
+		<text>Biztos, hogy menni fog?</text>
+	</string>
+	<string id="tm_random_task_24">
+		<text>rendben</text>
+	</string>
+	<string id="tm_random_task_33">
+		<text>Igen.</text>
+	</string>
+	<string id="tm_random_task_34">
+		<text>Nem.</text>
+	</string>
+	<string id="tm_random_task_43">
+		<text>rendben</text>
+	</string>
+	<string id="tm_reward_task_0">
+		<text>Van valamid szбmomra?</text>
+	</string>
+	<string id="tm_reward_task_1">
+		<text>Igen, kisegнtettйl minket a bajbуl, pajtбs. Tessйk, a jutalmad!</text>
+	</string>
+	<string id="tm_reward_task_2">
+		<text>Sajnбlom, de egyelхre nem tudok jutalmat adni!</text>
+	</string>
+	<string id="tm_upgr_task_0">
+		<text>Van valami munkбd?</text>
+	</string>
+	<string id="tm_upgr_task_1">
+		<text>Informбciуk kellenйnek fejlesztйsekrхl.</text>
+	</string>
+	<string id="tm_upgr_task_11">
+		<text>Fegyverek йs pбncйlzatok.</text>
+	</string>
+	<string id="tm_upgr_task_21">
+		<text>Van itt valami. Mбr egy ideje keresek бbrбkat nйhбny fejlesztйsrхl. Ha rбbukkannбl egyre, tartsd meg, йs hozd el ide nekem! Itt egy lista azokrуl, amiket keresek.</text>
+	</string>
+	<string id="tm_upgr_task_31">
+		<text>Feladat1</text>
+	</string>
+	<string id="tm_upgr_task_32">
+		<text>Feladat2</text>
+	</string>
+	<string id="tm_upgr_task_33">
+		<text>Feladat3</text>
+	</string>
+	<string id="tm_upgr_task_34">
+		<text>Feladat4</text>
+	</string>
+	<string id="tm_upgr_task_35">
+		<text>Feladat5</text>
+	</string>
+	<string id="tm_upgr_task_41">
+		<text>Megegyeztьnk?</text>
+	</string>
+	<string id="tm_upgr_task_42">
+		<text>Megegyeztьnk?</text>
+	</string>
+	<string id="tm_upgr_task_43">
+		<text>Megegyeztьnk?</text>
+	</string>
+	<string id="tm_upgr_task_44">
+		<text>Megegyeztьnk?</text>
+	</string>
+	<string id="tm_upgr_task_45">
+		<text>Megegyeztьnk?</text>
+	</string>
+	<string id="tm_upgr_task_51">
+		<text>Rendben, elhozom, amit talбlok!</text>
+	</string>
+	<string id="tm_upgr_task_52">
+		<text>Igen.</text>
+	</string>
+	<string id="tm_upgr_task_53">
+		<text>Igen.</text>
+	</string>
+	<string id="tm_upgr_task_54">
+		<text>Igen.</text>
+	</string>
+	<string id="tm_upgr_task_55">
+		<text>Igen.</text>
+	</string>
+	<string id="tm_upgr_task_56">
+		<text>Talбn majd mбskor.</text>
+	</string>
+	<string id="tm_upgr_task_61">
+		<text>Sok sikert!</text>
+	</string>
+	<string id="tm_upgr_task_62">
+		<text>text in default</text>
+	</string>
+	<string id="tm_upgr_task_63">
+		<text>text in default</text>
+	</string>
+	<string id="tm_upgr_task_64">
+		<text>text in default</text>
+	</string>
+	<string id="tm_upgr_task_65">
+		<text>text in default</text>
+	</string>
+	<string id="tm_weapon_up_task_0">
+		<text>Van esetleg valami kьlцnleges megbнzбsod?</text>
+	</string>
+	<string id="tm_weapon_up_task_1">
+		<text>Lenne itt valami:</text>
+	</string>
+	<string id="tm_weapon_up_task_11">
+		<text>Pisztolyok.</text>
+	</string>
+	<string id="tm_weapon_up_task_111">
+		<text>rendben</text>
+	</string>
+	<string id="tm_weapon_up_task_12">
+		<text>Gйpkarabйlyok.</text>
+	</string>
+	<string id="tm_weapon_up_task_121">
+		<text>rendben.</text>
+	</string>
+	<string id="tm_weapon_up_task_13">
+		<text>Puskбk.</text>
+	</string>
+	<string id="tm_weapon_up_task_131">
+		<text>rendben.</text>
+	</string>
+	<string id="tm_weapon_up_task_14">
+		<text>Sцrйtes puskбk.</text>
+	</string>
+	<string id="tm_weapon_up_task_141">
+		<text>rendben.</text>
+	</string>
+	<string id="tm_weapon_up_task_2">
+		<text>Nincs.</text>
+	</string>
+	<string id="treasure_dialog_0">
+		<text>Mit tudsz ajбnlani?</text>
+	</string>
+	<string id="treasure_dialog_11">
+		<text>Йs mennyibe fбj?</text>
+	</string>
+	<string id="treasure_dialog_1111">
+		<text>Pontosan mi van odabent?</text>
+	</string>
+	<string id="treasure_dialog_11111">
+		<text>Rendben, itt vannak a koordinбtбk!</text>
+	</string>
+	<string id="treasure_dialog_1112">
+		<text>Megegyeztьnk!</text>
+	</string>
+	<string id="treasure_dialog_11121">
+		<text>Nos, akkor gyere vissza, amikor mбr lesz!</text>
+	</string>
+	<string id="treasure_dialog_1113">
+		<text>Megхrьltйl? Nincs annyi pйnzem!</text>
+	</string>
+	<string id="treasure_dialog_11131">
+		<text>Fogalmam sincs.</text>
+	</string>
+	<string id="treasure_dialog_1114">
+		<text>Nem йrdekel.</text>
+	</string>
+	<string id="treasure_dialog_12">
+		<text>Nem, kцsz!</text>
+	</string>
+	<string id="treasure_dialog_121">
+		<text>Ahogy gondolod!</text>
+	</string>
+	<string id="treasure_dialog_131">
+		<text>text in default</text>
+	</string>
+	<string id="treasure_dialog_2">
+		<text>Nem izgat a dolog.</text>
+	</string>
+	<string id="actor_break_dialog_1">
+		<text>Rendben, viszlбt!</text>
+	</string>
+	<string id="actor_break_dialog_2">
+		<text>Kйsхbb talбlkozunk!</text>
+	</string>
+	<string id="actor_break_dialog_3">
+		<text>Jуl van, szia!</text>
+	</string>
+	<string id="st_tm_guide_0">
+		<text>Hova tudsz elvezetni?</text>
+	</string>
+	<string id="st_tm_guide_1">
+		<text>Egyelхre sehova.</text>
+	</string>
+	<string id="st_tm_guide_2">
+		<text>Nйhбny helyre, de ne felejtsd el, hogy csak olyan helyekre tudlak elvezetni, ahova ismerek biztonsбgos цsvйnyt. Йs a tбvolsбg hatбrozza meg az цsszeget is. Mondd csak, hova szeretnйl menni?</text>
+	</string>
+	<string id="st_tm_guide_21">
+		<text>Indulhatunk?</text>
+	</string>
+	<string id="st_tm_guide_211">
+		<text>Igen, menjьnk!</text>
+	</string>
+	<string id="st_tm_guide_212">
+		<text>Egy kicsit kйsхbb.</text>
+	</string>
+	<string id="st_tm_guide_3">
+		<text>Ьres</text>
+	</string>
+</string_table>

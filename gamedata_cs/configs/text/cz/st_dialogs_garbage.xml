@@ -1,0 +1,1020 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_bandit_leader_hello_11">
+		<text>Co chceљ?</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1">
+		<text>Hmm... Kdyћ o tom mluvнљ, mбm prбci, kterou je tшeba udмlat. Je tady jeden chlбpek, kterej musн zmizet. Kdyћ to vezmeљ, postarбm se, aby byl poblнћ starэ autobusovэ zastбvky, tэ za vэchodnн zdн. Troufбљ si na to?</text>
+	</string>
+	<string id="gar_bandit_trader_hello_11">
+		<text>Tak co... mбљ nмco?</text>
+	</string>
+	<string id="gar_bandit_tech_hello_11">
+		<text>Senka i jб se o svэ zбkaznнky rбdi postarбme.</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_0">
+		<text>Joga mi dal souшadnice svй skrэљe, ale ъdajnм je to tam teп buп samб anomбlka, nebo zmutovanб hlava na hlavм.</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_1">
+		<text>Vбћnм? Ha! Ta skrэљ je Jogova oblнbenб fligna, kбmo. Co, to sis doopravdy myslel, ћe jsi prvnн cucбk, kterйmu ty souшadnice dal? Spousta lam se do tй skrэљe snaћila dostat... Poslednнmu se dokonce podaшilo sejmou toho psypsa, co tam mмl pelech, ale skoro hned na to dostal pбr tisнc voltщ pшнmo do prdele. Pшedpoklбdбm, ћe teп uћ se ti pro tu... odmмnu... ani moc chtнt nebude, co?</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_0">
+		<text>Joga se rozhodl, ћe kopбиe jednou provћdy vykope z bleљбku.</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_1">
+		<text>Co? Zblбznil se? Je to pшece to nejlepљн mнsto, kde se dajн z kopбlistщ okopat nмjakэ praљule! Jo, tнm si љйfнk zadмlal na vlastnн konec, dej na mм. Je hotovej. Paљerбci se schovбvajн uћ teп, a kdyћ vyшadн z иinnosti i bleљбk, budou kopбиi brzo na suchu. Za pбr mмsнcщ nezbude nikdo, koho by mohli kluci trochu oљkubat, a co jim pak Joga шekne? Vнљ, uћ jsem s klukama tak trochu mluvil, a... Joga si hezky kope vlastnн hrobeиek...</text>
+	</string>
+	<string id="gar_bandit_barman_hello_11">
+		<text>Takћe?</text>
+	</string>
+	<string id="gar_bandit_barman_join_0">
+		<text>Jak se k vбm mщћu pшidat?</text>
+	</string>
+	<string id="gar_bandit_barman_join_1">
+		<text>Co, ty chceљ pod Jogova ochrannб kшнdla? No, tak se ho jdi zeptat. Je ve svэm pшнvмsu, dмlб piиoviny a иekб na idioty, jako seљ ty. Kdyћ pro nмj budeљ nмjakou dobu pobнhat kolem jako blbec, uvidнљ, jestli se to jeљtм nerozmyslнљ.</text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_0">
+		<text>Joga mi naшнdil nabмhnout na chlapa jmйnem Stringov. Neznбљ nмkoho takovйho?</text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_1">
+		<text>Ne, ale trochu ti poradнm, kdyћ dovolнљ. Musнљ vћdycky myslet nejdшнv na sebe. Chlбpek, kterэ koukб do plnй bedny bouchaиek, si mщћe dovolit je љtмdшe... pouћнvat. Ty si musнљ dбt pozor, aby neћil tak dlouho, aby svй љtмdrosti nemohl litovat.</text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_0">
+		<text>Joga si objednal zбsah proti nмjakйmu paљerбkovi a pбr jeho kopбlistickэm zбkaznнkщm.</text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_1">
+		<text>Jo, je ten nбљ Joga ale tvrпбk, co? Aќ uћ se kopouљщm dostane do tмch jejich љpinavэch pracek cokoliv, moc jim to nepomщћe. Mщћeme na nм nabмhnout, kdykoli se nбm zlнbн, ale proи bysme to dмlali? Oљkubat je jako vћdycky by bylo mnohem jednoduљљн. Ale pokud jde o toho paљerбka, co si sakra Joga myslн? Odkud podle nмj beru svэ zasranэ zboћн? Do piиi s jeћkem taky uћ...</text>
+	</string>
+	<string id="gar_bandit_barman_questions_0">
+		<text>Mмl bych pбr otбzek.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1">
+		<text>Stшнlej.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_11">
+		<text>Co tady dмlбљ?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_111">
+		<text>Co bych dмlal? Klбtнm nohama a liju do sebe chlast. V podstatм jen tak marnнm posranej иas. Uћ jako kluk jsem chtмl bэt kбpo a poskoka jsem nikdy nikomu nedмlal. A koukni na mм teп, liju do sebe vodku a smutnм koukбm, jak Joga dмlб piиoviny a pшibнrб na vбze. Povнm ti, chlape, kdybych to tu mмl pod palcem jб, jб uћ bych kluky nмjak zamмstnal! Nadмlali bychom tu tolik problйmщ, ћe by se Zуna tшбsla hrщzou hщш neћ pшi emisi.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1111">
+		<text>Aha. Taky jsem se chtмl zeptat...</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1112">
+		<text>Jo, to uћ by myslнm mohlo staиit, pokud jde o kecy.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_12">
+		<text>Co je v Zуnм novйho?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_121">
+		<text>No, emise po nбs jdou stбle pravidelnмji a Zуna se pokaћdй nмjak zmмnн. Otevшela se spousta novэch zajнmavэch oblastн, a hafo lidн koukб, co by na tom trhli. A mм to ћнly netrhб. Kdyћ mбљ na krku dobrou hlavu a za zбdy celej klan, byl by podle mм zloиin sedмt doma a dмlat kraviny, mнsto aby si иlovмk zkouљel najнt v Zуnм jeden dva kousky...</text>
+	</string>
+	<string id="gar_bandit_barman_questions_13">
+		<text>Jak dobшe vychбzнte se sousedy?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_131">
+		<text>No, v zбsadм je to takhle: vy jsme v Zуnм jedinн, kdo mб jakэs takэs morбlnн kodex. Nejsme banditй, jsme vlci. A ti ostatnн cucбci jsou ovce. Ћijн bez jakйhokoliv шбdu, tak jim dмlбme pastэшe. Vezmi si napшнklad Smeќбk. Kdykoliv stalkeшi mezi tнm rezavэm љrotem najdou nмco pouћitelnйho, zaиnou se pro kaћdou prkotinu stшнlet mezi sebou. Tak se ale obchodovat nedб, a tak sem nabмhli naљi kluci, stanovili pбr zбkladnнch pravidel a od tй doby jde vљechno jako po mбsle. Jinde se nбm to jeљtм tak hezky poшeљit nepodaшilo, ale taky se k tomu dostaneme. Teп zrovna si s tнm ale velkй starosti nedмlбm - musнm myslet na jinй vмci.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_14">
+		<text>Nevadн, popovнdбme si pшнљtм.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_141">
+		<text>Jak chceљ.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_11">
+		<text>Hej, kбmo, nechceљ si postшнlet pбr vran?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_111">
+		<text>Jasnм.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1111">
+		<text>Dobшe. Hraje se pro zбbavu, pro prachy nebo mщћeљ zkusit pшekonat rekord.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_112">
+		<text>Ne, myslнm, ћe ne.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1121">
+		<text>Jak chceљ, kбmo. Kdyby sis to rozmyslel, budu tady.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_21">
+		<text>Tady mбљ, jak jsem slнbil. Hraju fйr. Co takhle dalљн kolo?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_31">
+		<text>To byla smщla. Zkus to jeљtм jednou, kбmo!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_41">
+		<text>Kam to sakra jdeљ, chlape? Co si zastшelнљ venku, to je tvoje vмc, tak co kdybys zщstal tady a hrбl podle pravidel?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_51">
+		<text>Vнљ, ћe ti bмћн иas, ћe? Pokecбme potom.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_511">
+		<text>Mбm to.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_0">
+		<text>Chci si zahrбt o prachy.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1">
+		<text>To je hudba pro moje uљi. Mбm ti radљi zopakovat pravidla?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11">
+		<text>Pojпme stшнlet.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111">
+		<text>Dost шeин, kбmo. Tak co, kolik vran myslнљ, ћe dokбћeљ sejmout za minutu?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111111">
+		<text>Domluveno.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111111">
+		<text>Houbelec. Pшiprav si krochnu, иlovмиe.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112">
+		<text>Tolik penмz nemбm.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111121">
+		<text>Tak co kdyby sis vybral nмco, co si mщћeљ dovolit?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111211">
+		<text>Dobшe, vyberu si jinэ poиet vran.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111212">
+		<text>Ne, nemбm zбjem.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112121">
+		<text>No, mщћeљ hrбt jen tak pro zбbavu. Nebo mщћeљ zkusit pшekonat rekord, ale to je celkem drahэ љpбs. Tak co шнkбљ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_12">
+		<text>Vysvмtli mi to, prosнm.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_121">
+		<text>Hrбt o prachy, to je moje definice zбbavy. Шekneљ mi, kolik vran sestшelнљ za minutu, vsadнљ prachy a jdeљ na vмc. Kdyћ jich zabijeљ tolik, kolik jsi шнkal, dostaneљ dvakrбt tolik penмz, pмknм na dшevo. Pokud ne, nechбm si sбzku. A pamatuj si, инm vнc vran, tнm vyљљн sбzky.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_13">
+		<text>Teп zrovna se na hru moc necнtнm.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_0">
+		<text>Existujн nмjakб obecnб pravidla?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_1">
+		<text>V podstatм ne. Jб spustнm stopky, ty se pшipravнљ a na mщj signбl zaиneљ stшнlet vrбny. Pokud jich za minutu zabijeљ sprбvnэ poиet, vyhrбvбљ - dobrб prбce a tak podobnм. Kolik se jich rozhodneљ zabнt, to zбleћн na tobм. Ale pamatuj si, ћe pokud z tйhle oblasti odejdeљ, hra konин. Takћe, chceљ si zahrбt pro zбbavu, pro penнze nebo zkusнљ pшekonat rekord?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_0">
+		<text>Nмjak se teп na hru necнtнm.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_1">
+		<text>Jak chceљ, kбmo. Kdyby sis to rozmyslel, budu tady.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_0">
+		<text>Chtмl bych zkusit pшekonat rekord.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11">
+		<text>Zaиneme.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11111">
+		<text>Dobшe, podнvбme se, jestli z tebe nebude љampion, kбmo.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1112">
+		<text>Rбd bych, ale nemбm penнze.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11121">
+		<text>Jo, tнm se to zjednoduљuje: mщћeљ si zahrбt o penнze nebo jen tak pro legraci. Co шнkбљ?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1113">
+		<text>Jб... rozmyslel jsem si to.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_12">
+		<text>Zopakuj mi, prosнm tм, pravidla.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_121">
+		<text>Jo, tohle je hra pro opravdovй chlapy. Pokud si myslнљ, ћe dokбћeљ pшekonat rekord, uzavшeљ sбzku ve vэљi rekordu. Pokud se ti podaшн pшekonat rekord, dбm ti dvojnбsobek sбzky a staneљ se љampionem a tak dбl. Kdyћ ho nepшekonбљ, nechбm si tvoje prachy.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_13">
+		<text>Jб... rozmyslel jsem si to.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_0">
+		<text>Pro zбbavu.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_1">
+		<text>Aha, chceљ se pocviиit? Pravidla si pamatujeљ, ne?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11">
+		<text>Jo. Jdeme si zastшнlet.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111">
+		<text>Dobшe, kolik vran chceљ sejmout?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11111">
+		<text>Dobшe, tak vysol prachy na dшevo.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_21">
+		<text>Ne. Povнdej.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_211">
+		<text>No, pro zбbavu se prostм hraje jen tak - nepotшebujeљ na to prachy. Je to dobrй, kdyћ se chceљ pocviиit, a taky kdyћ jsi naљtvanэ a mбљ chuќ nмco rozstшнlet. Tipneљ si, kolik vran dokбћeљ sejmout za minutu, a pak to zkusнљ udмlat.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_31">
+		<text>Rozmyslel jsem si to.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_311">
+		<text>Nenн problйm. Nabнdka je poшбd stejnб: mщћeљ hrбt o prachy nebo zkusit pшekonat rekord. Co si vybereљ?</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_111">
+		<text>Co tнm chceљ шнct, "nмkdo jako jб"? Dobшe, nepromoval jsem na ћбdnй podмlanй akademii, ale mбm na takovou prбci љikovnэ pracky - bэval jsem nejlepљн specialista z celй fabriky, samб medaile, иestnй uznбnн a tak. Vмtљinou jsme s kamarбdy pшi kaћdй takovй pшнleћitosti trochu zachlastali, ale pak nбs pшedбk nahlбsil a vyhodili nбs vљechny. Parchant zasranэ! Fabrika byla fakt namakanб, vљak jsme taky dмlali pro obranu. Pak mм zamмstnali na byќбku jako ъdrћbбшe. Kdyћ se nмco stalo, љli s tнm vћdycky za mnou, pби jsem byl jedinej profнk љiroko daleko. Lidi mi obиas nмco podstrиili nebo mi nalili skleniиku a ћivot byl bezva... dokud jsem se s jednнm instalatйrem neporval o flaљku. Trochu se to vyostшilo, tak jsem toho parchanta bodl љroubovбkem. Pшeћil to, ale stejnм mм љoupli do basy, a kdyћ jsem si odbruиel, naљel jsem barбk prбzdnej. Ћena mм opustila. Mмl jsem dмsnou depresi, tak jsem se obиas nмkde serval. Dнky vlastnн blbosti jsem pшiљel i o barбk a skonиil jsem jako bezdomovec. Tak jsem se protloukl sem. A vнљ co? Tady se o mм starajн dobшe, protoћe rozumнm svй prбci. A jб jsem taky spokojenэ, obиas mi dokonce nмkdo pшinese za fuљku lahvinku... pamatuj na to.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_121">
+		<text>Jen proto, ћe se mi tшesou ruce, si jeљtм nemusнљ myslet, ћe nejsem k niиemu. Mбm prostм zrovna kocovinu, nic vнc. Pбr jich do sebe kopnu a bude po problйmu - hned budu jako novэ! A nedмlej si starosti, odvedu lepљн prбci, neћ kdejakэ stшнzlivэ zkurvysyn, o tom ћбdnб. Zvlбdnu vљechno, co potшebujeљ: mщћu ti opravit bouchaиku, pшidat na zbroj trochu novйho kevlaru nebo ti namontovat тбkэ to vylepљenниko. Jen na starйho dobrйho kбmoљe Prщhledтбka nezapomeт a hezky mu za jeho tvrdou prбci dolнvej jednu za druhou.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_131">
+		<text>Upшнmnм шeиeno, nemбm tuљenн, co se kde dмje.  Dokud je tu kolem dost prбce (a chlastu!), abych se nмjak obeљel, je vљechno v poшбdku. Moћnб si ћiju dost mizernм, ale teп uћ je pozdм na tom nмco mмnit. Tak proи bych si mмl zatмћovat hlavu spoustou zbyteиnejch kecщ? Chci шнct, dмje se tu kolem spousta vљelijakэch љpinavostн. Potkal uћ jsi Kyrila? To je ten kluk s poпobanэm ksichtem - dokonce mu vљichni шнkбme "Teиkovanej".  No, pokud jsi ho nevidмl, tak zas nejspнљ nмkde podnikб expedici na samй dno flaљky. No prostм, zmerиil jsem poпobance, jak se obиas plнћн ven ze zбkladny. Doљlo mi, ћe tam kluk mб nмkde skrэљ na vмci z koшisti, o kterэ se po nбjezdu nechce s ostatnнma dмlit. Ostatnн si toho taky vљimli, a nмjak se to иasem doneslo aћ k Jogovi. Zavolal si Teиkovanэho a povнdб mu, aby vydal, co mб ve skrэљi. Teиkoun chvнli kтoural: "Љйfe, takovб krysa jб nejsem, pшнsahбm...", ale nakonec љel ven a ukбzal mu to. Vyљlo najevo, ћe kluk nмkde naљel zranмnй љtмnм иernobylбka a krmil ho odpadkama, protoћe nemмl nikoho, s kэm by si pokecal - chlapi o nмm nemajн valnй mнnмnн. Joga se kvщli tomu stejnм pмknм nasral - љtмnм zastшelil, Teиkovanej dostal naklбdaиku a pшiљel o svщj podнl. Иlovмиe, takovej je ћivot...</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_141">
+		<text>A tohle je mщj nejlepљн kбmoљ, Seтka. Uћ jsem spolu vypili tolik vodky, ћe by ses v nн utopil, haha! Skamarбdili jsme se hned, jak jsem sem pшiљel: dali jsme si skleniиku, abychom to setkбnн oslavili, a pak jsme si dali tak trochu po hubм, protoћe jsme zaиali mluvit o ћivotм a moc jsme se v nбzorech neshodli. Ale neboj, Seтka je fakt dobrej manнk, i kdyћ se obиas v opilosti jeљtм tak trochu koиkujeme. Ale mщћu si s nнm vћdycky pokecat, kdyћ jsem na dnм - je to mщj jedinэ pшнtel, asi jako mмl ten Pavlov toho psa.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_151">
+		<text>Je jeden zбkladnн princip, kterйho by se mмl kaћdэ chlap drћet: nikdy nemнchat vodku s pivem. Nedмlбm si srandu, jasnэ? No, a se zbranмma je to podobnэ. Mщћeљ vzнt kteroukoliv charakteristiku zbranм a vylepљovat ji aћ na maximum, jasnй? Nezбleћн na tom, co si vybereљ, aќ uћ pшesnost, rychlost stшelby nebo cokoliv jinйho, prostм to vytбhni na maximum. S jednou plnм vylepљenou charakteristikou se dostaneљ dбl, neћ s nмkolika napщl dokurvenэma.</text>
+	</string>
+	<string id="gar_bandit_leader_hello_21">
+		<text>Doufбm, ћe uћ to teп Stringov pochopil.</text>
+	</string>
+	<string id="gar_bandit_leader_hello_31">
+		<text>Paљerбk se ze Smeќбku nedostane ћivэ, ale kdyby kopбlisti pobrali nмjakй bouchaиky, nemмl bych z toho vщbec radost, je to jasnй?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_41">
+		<text>Kopбиi jsou poшбd na иernйm trhu, ale ty furt trинљ tady. Jsem tu snad jedinэ љiroko daleko, kdo v tom vidн problйm?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_61">
+		<text>Pшiљel sis promluvit obchodnм, nebo se mi jen snaћнљ sloћit poklonu?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_91">
+		<text>Jsem jedno velkй ucho.</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_0">
+		<text>Dovolнљ, abych se k vбm pшidal?</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_1">
+		<text>Pomalu, pankбиi, jedno po druhэm! Nejdшнv musнљ sloћit zkouљku, a to tak, ћe vopravdovou. Jen ti musнm vybrat ъkol.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_0">
+		<text>Tak co, jsem teп pro vбs dost dobrэ? Berete mм?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_1">
+		<text>Seљ blbej, nebo co? Dal jsem ti prбci, tak ji bмћ poшeљit, a zkus nic neposrat. Aћ to bude hotovй, tak si o tom promluvнme.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_2">
+		<text>Prбci jsi poшeљil, a dobшe, aћ moc dobшe, jen co je pravda... Kdyћ jdou vмci moc hladce, je mi to podezшelй, takћe co kdyby ses chvнli flбkal po Zуnм a jб si na tebe zatнm vezmu reference? Pokud seљ opravdu иistej, poљlu ti vzkaz na PDA.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_3">
+		<text>Vypadбљ na zbмha od Svobody. Takћe hele, jб tu mбm svou vlastnн smeиku, a tй velнm jб. Jsi ochotnэ vystoupit ze Svobody?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_4">
+		<text>Vida Davida, chlбpek od Povinnosti, a chce se k nбm pшidat. No, tady je jenom jeden љйf, a to jsem jб. Jsi pшipravenэ opustit kvщli mnм svй bэvalй vedenн?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5">
+		<text>No, do svйho tэmu beru jenom opravdovй chlapy, ale prбvм jsi prokбzal, ћe jsi dost dobrэ, abys mohl bэt jednнm z nich. Staин jedno slovo a bereme tм. Co шнkбљ?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51">
+		<text>Vћdycky jsou to chtмl tбhnout s tvrdэma chlapama, jako jste vy.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511">
+		<text>Tvrпбka z tebe jeљtм poшбdnм vytvrdнme, ћбdnэ strach. Vнљ uћ, jak to tady sakra chodн?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5111">
+		<text>Ne. Vysvмtli mi to, prosнm pмknм.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51111">
+		<text>No, v Zуnм je bordel a vљichni se mydlн mezi sebou. My tu mбme vlastnн pravidla a vysvмtlujeme ostatnнm, ћe je budou dodrћovat. Naљe "vэuka" je trochu finanиnм nбroиnмjљн, a tak obиas oљkubeme kopбlisty o prachy. Smeќбk uћ je vyшeљenэ, a teп je na шadм Kordon. Abychom na Kordonu dostali vмci pod kontrolu, budeme muset nakopat tamnнm stalkerщm a ukбzat jim, kdo je tady љйf.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511111">
+		<text>Rozumнm.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5112">
+		<text>Jsem v pohodм, pшednбљku nepotшebuju.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51121">
+		<text>Dobшe, tak to bychom mмli. Naladil jsem ti PDA na naљi frekvenci, takћe budeљ vћdycky vмdмt, co naљi kluci zrovna chystajн a jak si vedeme v boji proti ostatnнm klanщm. Dobшe, konec divadэlka, a teп padej!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511211">
+		<text>Rozumнm, љйfe. Jdu rozљншit шady naљich pracujнcнch.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_52">
+		<text>Rozmyslнm si to.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_0">
+		<text>Chtмl bych pro tebe pracovat.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_11">
+		<text>Udмlбm to.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_111">
+		<text>Vэbornм. Ten chlбpek se jmenuje Stringov. Bмћ rovnou na zastбvku - hбdбm, ћe neћ tam dorazнљ, uћ tam bude.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1111">
+		<text>Rozumнm.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_12">
+		<text>Ne-e, tahlecta krvavб prбce nenн nic pro mм.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_121">
+		<text>Tvoje vмc. Kdyby sis to rozmyslel, dej mi vмdмt - tшeba ten chlбpek bude jeљtм naћivu.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_0">
+		<text>Rozhodl jsem se, ћe se pшece jen podнvбm na tu prбciиku.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_1">
+		<text>Dobшe. Mбљ kliku - chlбpek je jeљtм naћivu. Najdeљ ho na starй autobusovй zastбvce za vэchodnн zdн, mмl by tam brzo pшijнt. Postarej se o nмj. Шнkб si Stringov, dej si bacha, abys dostal sprбvnйho chlapa.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_11">
+		<text>Rozumнm.</text>
+	</string>
+	<string id="gar_bandit_leader_meet_greet_b_2">
+		<text>Teda, aќ se na mнstм propadnu! To seљ ty!</text>
+	</string>
+	<string id="gar_bandit_leader_questions_0">
+		<text>Rбd bych se na nмco zeptal.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1">
+		<text>Co to je?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_11">
+		<text>Povмz mi o sobм nмco.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_111">
+		<text>Kdo si myslнљ, ћe seљ, policajt? Na ћбdnэ blbэ otбzky ti neodpovнm. Nejseљ nic neћ pitomej pankби, beznadмjnб lama, stejnб jako stovky jinэch, pшes kterй jsem se dostal tam, kde jsem teп. A dostal jsem se sem proto, ћe jsem hodnм pшemэљlel a moc jsem neћvanil. Jo, a jeљtм z jednoho dщvodu - kdyћ uћ jsem se musel pohnout, udeшil jsem rychlejc neћ ostatnн, a tak, aby to vнc bolelo, rozumнљ?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1111">
+		<text>Aha. Chtмl jsem se zeptat jeљtм na nмco jinйho.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1112">
+		<text>Aha. Dobшe, uћ ћбdnэ otбzky.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_12">
+		<text>Nebojнљ se, ћe se stalkeшi vzbouшн a napadnou tм?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_121">
+		<text>Sprбvnej chlap se bojн jen jednй vмci - ћe se stane иlenem brigбdy s netradiиnн orientacн, jestli chбpeљ, jak to myslнm. Kromм toho mм nic netrбpн. Na to, abych pokraиoval ve ћdнmбnн kopбищ na Smeќбku, mбm odvahy vнc neћ dost. I kdyby se do nбs pustil tшeba celej klan, ukбzali bychom tмm srбищm, ћe se do nбs nemajн navбћet. Poшбd se k nбm pшidбvajн novн chlapi, a aћ dбme dohromady dost chechtбkщ, vykaљleme se na tuhle zasranou dнru a poшнdнme si nмkde sluљnou zбkladnu. A co se tэиe tмch, co tam bydleli pшed nбma... ti si budou muset najнt nмjakэ novэ bydlenн, ne?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_13">
+		<text>Zajнmбљ se o to, co se dмje v Zуnм?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_131">
+		<text>Zajнmбm se jenom o jednu vмc: odkud na nбs zaъtoин zelenэ mozky nebo jinн vylнzanн иurбci. Nemyslнm kurva љopa na nic jinэho, leda tak jeљtм na emise a na to, ћe se stalkeшi mydlн s vojclama, protoћe na takovejch vмcech se dб vydмlat. A stejnм, nмco ti povнm, kdyћ mм nechбљ mluvit. Poflakoval se tady kolem jeden ztroskotanec, шнkali jsme mu Љйfkuchaш. Ne proto, ћe by fakt umмl vaшit, ale protoћe nмjak vidмl masomlejnek, to je jedna z nejzasranмjљнch anomбlek tady kolem, uћ na nмjakэch sto krokщ. Zaиal na to bэt celkem pyљnэ, poшбd шнkal, jak nбs zachraтuje pшed jistou smrtн, ale jeho podнl ћe zdaleka nenн tolik, kolik by si zaslouћil. Tomu malйmu parchantovi bylo potшeba pшipomenout, kdo je tady љйf, tak jsem si ho zavolal, ubalil jsem mu jednu mezi oиi, a kdyћ byl bez sebe, polбmal jsem tomu иurбkovi prsty. Pak mu chlapi zavбvazli oиi a љoupli jsme ho na fakt љikovnэ mнsto. Шнkal jsem si, ћe jestli ujde sto krokщ a pшeћije to, nechбm ho naћivu a bude mi pucovat kanady. Jenћe narazil na svщj milovanej masomlejnek a doљйfkuchaшoval. A jakй je z toho morбlnн pouиenн? Neser se do mм, jinak z tebe bude sekanб.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_14">
+		<text>Nic, dнky.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_141">
+		<text>Hodnэ kluk. Инm mнт toho vнљ, tнm dэl zщstaneљ naћivu.</text>
+	</string>
+	<string id="gar_bandit_leader_reward_0">
+		<text>Nemyslнљ, ћe odmмna za mou poslednн prбci nebyla ъmмrnб riziku?</text>
+	</string>
+	<string id="gar_bandit_leader_reward_111">
+		<text>Nemyslнm, jб to vнm, ale co jsi иekal? Dobшe, dobшe, moћnб nejsi takovб pankбиskб lama, jak jsem si pщvodnм myslel, tak ti teda povнm o jednй skrэљi. Pшed poslednн emisн jsem si tam schoval jednu speciбlnн bouchaиku, takovou velkou krбvu. Po emisi je to mнsto samб anomбlka, ale narazil jsem na manнka, kterэ mi шнkal, ћe si tam nemusнљ ani tak dбvat pozor na anomбlie, jako spнљ na potvory. Tak иi onak se tam teп nedб jednoduљe dostat, ale pokud by ses tam chtмl vypravit, dбm ti spolehlivй souшadnice. Pokud se ti to podaшн, obsah tй skэљe za to riziko stojн.</text>
+	</string>
+	<string id="gar_bandit_leader_reward_1111">
+		<text>Dobшe, uvidнme.</text>
+	</string>
+	<string id="gar_bandit_tech_join_0">
+		<text>Mщћeљ mi шнct, jak bych se mohl pшidat ke tvй frakci?</text>
+	</string>
+	<string id="gar_bandit_tech_join_1">
+		<text>O tom musн rozhodnout љйf. Je ve svйm pшнvмsu v hangбru.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_0">
+		<text>Mohl bys mi odpovмdмt na pбr otбzek?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1">
+		<text>Jasтaиka!</text>
+	</string>
+	<string id="gar_bandit_tech_questions_11">
+		<text>Jak se z nмkoho, jako seљ ty, stane technik?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_111">
+		<text>Co tнm chceљ шнct, "nмkdo jako jб"? Dobшe, nepromoval jsem na ћбdnй podмlanй akademii, ale mбm na takovou prбci љikovnэ pracky - bэval jsem nejlepљн specialista z celй fabriky, samб medaile, иestnй uznбnн a tak. Vмtљinou jsme s kamarбdy pшi kaћdй takovй pшнleћitosti trochu zachlastali, ale pak nбs pшedбk nahlбsil a vyhodili nбs vљechny. Parchant zasranэ! Fabrika byla fakt namakanб, vљak jsme taky dмlali pro obranu. Pak mм zamмstnali na byќбku jako ъdrћbбшe. Kdyћ se nмco stalo, љli s tнm vћdycky za mnou, pби jsem byl jedinej profнk љiroko daleko. Lidi mi obиas nмco podstrиili nebo mi nalili skleniиku a ћivot byl bezva... dokud jsem se s jednнm instalatйrem neporval o flaљku. Trochu se to vyostшilo, tak jsem toho parchanta bodl љroubovбkem. Pшeћil to, ale stejnм mм љoupli do basy, a kdyћ jsem si odbruиel, naљel jsem barбk prбzdnej. Ћena mм opustila. Mмl jsem dмsnou depresi, tak jsem se obиas nмkde serval. Dнky vlastnн blbosti jsem pшiљel i o barбk a skonиil jsem jako bezdomovec. Tak jsem se protloukl sem. A vнљ co? Tady se o mм starajн dobшe, protoћe rozumнm svй prбci. A jб jsem taky spokojenэ, obиas mi dokonce nмkdo pшinese za fuљku lahvinku... pamatuj na to.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1111">
+		<text>Aha. Mщћu se zeptat jeљtм na nмco jinйho?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1112">
+		<text>Rozumнm. To je zatнm vљechno.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_12">
+		<text>Jak mщћeљ takhle vщbec pracovat?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_121">
+		<text>Jen proto, ћe se mi tшesou ruce, si jeљtм nemusнљ myslet, ћe nejsem k niиemu. Mбm prostм zrovna kocovinu, nic vнc. Pбr jich do sebe kopnu a bude po problйmu - hned budu jako novэ! A nedмlej si starosti, odvedu lepљн prбci, neћ kdejakэ stшнzlivэ zkurvysyn, o tom ћбdnб. Zvlбdnu vљechno, co potшebujeљ: mщћu ti opravit bouchaиku, pшidat na zbroj trochu novйho kevlaru nebo ti namontovat тбkэ to vylepљenниko. Jen na starйho dobrйho kбmoљe Prщhledтбka nezapomeт a hezky mu za jeho tvrdou prбci dolнvej jednu za druhou.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_13">
+		<text>Mбљ ty vщbec pшedstavu, co se kolem tebe dмje?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_131">
+		<text>Upшнmnм шeиeno, nemбm tuљenн, co se kde dмje.  Dokud je tu kolem dost prбce (a chlastu!), abych se nмjak obeљel, je vљechno v poшбdku. Moћnб si ћiju dost mizernм, ale teп uћ je pozdм na tom nмco mмnit. Tak proи bych si mмl zatмћovat hlavu spoustou zbyteиnejch kecщ? Chci шнct, dмje se tu kolem spousta vљelijakэch љpinavostн. Potkal uћ jsi Kyrila? To je ten kluk s poпobanэm ksichtem - dokonce mu vљichni шнkбme "Teиkovanej".  No, pokud jsi ho nevidмl, tak zas nejspнљ nмkde podnikб expedici na samй dno flaљky. No prostм, zmerиil jsem poпobance, jak se obиas plнћн ven ze zбkladny. Doљlo mi, ћe tam kluk mб nмkde skrэљ na vмci z koшisti, o kterэ se po nбjezdu nechce s ostatnнma dмlit. Ostatnн si toho taky vљimli, a nмjak se to иasem doneslo aћ k Jogovi. Zavolal si Teиkovanэho a povнdб mu, aby vydal, co mб ve skrэљi. Teиkoun chvнli kтoural: "Љйfe, takovб krysa jб nejsem, pшнsahбm...", ale nakonec љel ven a ukбzal mu to. Vyљlo najevo, ћe kluk nмkde naљel zranмnй љtмnм иernobylбka a krmil ho odpadkama, protoћe nemмl nikoho, s kэm by si pokecal - chlapi o nмm nemajн valnй mнnмnн. Joga se kvщli tomu stejnм pмknм nasral - љtмnм zastшelil, Teиkovanej dostal naklбdaиku a pшiљel o svщj podнl. Иlovмиe, takovej je ћivot...</text>
+	</string>
+	<string id="gar_bandit_tech_questions_14">
+		<text>Co je zaи ten chlбpek, co spн tбmhle v rohu?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_141">
+		<text>Aha -  tohle je mщj nejlepљн kбmoљ, Seтka. Uћ jsem spolu vypili tolik vodky, ћe by ses v nн utopil, haha! Skamarбdili jsme se hned, jak jsem sem pшiљel: dali jsme si skleniиku, abychom to setkбnн oslavili, a pak jsme si dali tak trochu po hubм, protoћe jsme zaиali mluvit o ћivotм a moc jsme se v nбzorech neshodli. Ale neboj, Seтka je fakt dobrej manнk, i kdyћ se obиas v opilosti jeљtм tak trochu koиkujeme. Ale mщћu si s nнm vћdycky pokecat, kdyћ jsem na dnм - je to mщj jedinэ pшнtel, asi jako mмl ten Pavlov toho psa.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_15">
+		<text>Kterou vlastnost zbranм bych si podle tebe mмl nechat vylepљit?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_151">
+		<text>Je jeden zбkladnн princip, kterйho by se mмl kaћdэ chlap drћet: nikdy nemнchat vodku s pivem. Nedмlбm si srandu, jasnэ? No, a se zbranмma je to podobnэ. Mщћeљ vzнt kteroukoliv charakteristiku zbranм a vylepљovat ji aћ na maximum, jasnй? Nezбleћн na tom, co si vybereљ, aќ uћ pшesnost, rychlost stшelby nebo cokoliv jinйho, prostм to vytбhni na maximum. S jednou plnм vylepљenou charakteristikou se dostaneљ dбl, neћ s nмkolika napщl dokurvenэma.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_16">
+		<text>Dobшe. To by zatнm, co se otбzek tэиe, staиilo.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_161">
+		<text>Jo, jб jsem vћdycky upшнmnej a rбd si vyliju srdниko, pamatuj si to.</text>
+	</string>
+	<string id="gar_bandit_trader_join_0">
+		<text>Jak bych se mohl pшidat ke klanu?</text>
+	</string>
+	<string id="gar_bandit_trader_join_1">
+		<text>Zeptej se Jogy! Vlбdne tady tomu jako тбkй krбlisko иi co. Nechб si шнkat "љйf", ale pшesnмjљн by bylo "olupovaи pocestnэch".</text>
+	</string>
+	<string id="gar_bandit_trader_questions_0">
+		<text>Nechceљ si pokecat, kdyћ v obchodм nikdo nenн?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1">
+		<text>Jasnм, o co jde?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_11">
+		<text>Povмz mi nмco o sobм.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_111">
+		<text>Jeљtм za Sovмtщ jsem porщznu handloval s vмcma a chytili mм pшi jednom velkэm kљeftu. Odsedмl jsem si to jako chlap, naљel jsem v lochu pбr dobrэch kamarбdщ a navбzal kontakty s podsvмtнm, a kdyћ mм pustili, ћivil jsem se jako pшekupnнk kradenйho zboћн. Po иase mм zas иapli a zavшeli, a kdyћ mм pustili, byl uћ Sovмtskej svaz ten tam. Nikdy jsem se tomu poшбdnм nepшizpщsobil - nemмl jsem ani vindru a ћivot byl na hovno - ale kdyћ se objevila Zуna, hned jsem sem vyrazil. Tady mi to hned zaиalo pшipadat jako za starэch dobrэch иasщ, tak jsem se dlouho nerozmэљlel a stal jsem se obchodnнkem.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1111">
+		<text>Aha. Mщћeљ mi шнct jeљtм nмco dalљнho?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1112">
+		<text>Jasnм. Uћ toho mlбcenн hubou bylo dost.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_12">
+		<text>Co si myslнљ o Jogovi?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_121">
+		<text>Myslнm si jednu vмc: Joga uћ dlouho љйfem nebude. Mбm takovэ dojem, ћe ho Borov dшнve иi pozdмji sesadн, protoћe Joga mб sice velkй plбny, ale nevidн si ani na љpiиku nosu. Hшeje si na prsou hada, kterэ ho dшнve иi pozdмji uљtkne. Neшнkбm ti to proto, abys љel a vyћvanil to kaћdйmu na potkбnн. Svмшil jsem ti dщvмrnou informaci, takћe aћ najdeљ nмco, co by stбlo za to, dones to prodat sem ke mnм, jasnй? Neboj, je celkem jedno, kdo bude љйfovat - jestli Joga nebo Borov - jб tady stejnм obchodovat budu.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_13">
+		<text>Povмz mi nмco o Smeќбku.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_131">
+		<text>Nechбpu, ћe se nмkomu do tй zasranй dнry vщbec chce chodit. Pшedtнm sem nikdo nelezl, protoћe tam nebylo nic neћ sklбdka radioaktivnнch odpadkщ. A pak ejhle - pбr stalkerщ mмlo kliku a vykopalo pбr hezkэch serepetiиek. Pak se sem zaиali stahovat lidi z celй Zуny jako nadrћenн nбmoшnнci za dмvkama. Byl to tu jeden velkэ bordel, dokud se neobjevili naљi kluci a neudмlali tady aspoт jakэs takэs poшбdek. A Zуna tak иi onak poшбdek potшebuje. Buп budou udrћovat prбvo a poшбdek ty prasбckй zelenй mozky, nebo si gangsteшi zavedou vlastnн poшбdky a to je to, co se stalo tady na Smeќбku. A nemusнљ bэt velkб bedna s Nobelovkou, aby ti doљlo, ћe poшбdek stojн prachy - naљi kluci musн nмco ћrбt. Takћe dostбvajн fйrovej podнl z prodeje a jб se tady taky nemбm zle, i kdyћ jsem si шнkal, ћe se moћnб pшesunu nмkam, kde budou lepљн zisky.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_14">
+		<text>Jakй jsou nejnovмjљн zprбvy ze Zуny?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_141">
+		<text>Nejnovмjљн zprбvy, jo? Hlavnм si dбvej pozor, aby se z nejnovмjљнch nestaly poslednн, jestli vнљ, jak to myslнm. Mutanti tu obecnм nejsou tak љpatnн jako ve zbytku Zуny, ale byl tady onehdб jeden incident... Vrбtil se jeden stalker, bнlej jako kшнda, ruce se mu klepaly a vщbec... Zaиal se zpovнdat ze svejch hшнchщ a klel pшitom jako dlaћdiи. Ъdajnм s nмjakэm kamarбdem utнkal pшed poltergeisty, kdyћ narazili na skupinu kшeиkщ. Tak si шekl, zachraт se, kdo mщћeљ, vysypal zбsobnнk do parќбka a vzal kramle. Kшeиci se ho zjevnм pronбsledovat nesnaћili, kdyћ uћ tam иerstvй maso mмli, a zaиali hodovat, ale sotva odtud nбљ hrdina utekl, zaиalo ho hryzat svмdomн nad tнm, co udмlal... Vyћahnul u Borova ze dvм flaљky a zaиal lamentovat, jak mu jeho kбmoљ jednou dal poslednн lйkбrniиku a tak... No prostм, jeљtм ten den v noci se chlбpek obмsil. To se lidem v Zуnм stбvб.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_15">
+		<text>Hбdбm, ћe nic.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_151">
+		<text>Je to na tobм.</text>
+	</string>
+	<string id="gar_digger_leader_attack_0">
+		<text>Co se tэиe toho ъtoku na koncentrбk...</text>
+	</string>
+	<string id="gar_digger_leader_attack_1">
+		<text>Poslyљ, uћ dlouho si brousнm zuby na bandity a rбd bych je trochu zmбиknul - oplatil jim vљechno, co udмlali oni nбm. Hlavnн problйm je v tom, ћe jsou kopбиi dмsnм vydмљenн a nemyslн si, ћe by to љlo. Jak se nмkdo zmнnн o koncentrбku, zmizн vљechno jejich odhodlбnн jako dэm. To znamenб, ћe jedinэ zpщsob, jak bych mohl svщj sen uskuteиnit, je ty lopaty pшesvмdиit, ћe fakt mщћeme vyhrбt.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11">
+		<text>A jak to hodlбљ udмlat?</text>
+	</string>
+	<string id="gar_digger_leader_attack_111">
+		<text>Chtмl bych osvobodit kopбиe z koncentrбku a srovnat ho se zemн. Kdyћ se mi to podaшн, kopбиi si uvмdomн, ћe banditi nejsou ani zdaleka neporazitelnн. Potшebujou prostм jen symbol, nмco jako dal Che Guevara lidem na Kubм! Na to jsem potшeboval ty zbranм - rozdat je klukщm, abychom mohli bojovat proti banditщm. Upшнmnм шeиeno, ani s bouchaиkama nemбme velkou љanci... Proto tм taky prosнm, aby ses ujal vedenн. Ty seљ aspoт zkuљenэ bojovnнk - kdyћ nбm budeљ velet ty, urиitм to zvlбdneme, jak to nejlнp pщjde! Pomщћeљ nбm?</text>
+	</string>
+	<string id="gar_digger_leader_attack_1111">
+		<text>Jestli vбm pomщћu zaъtoиit na koncentrбk? Jo, pomщћu.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11111">
+		<text>Jб jsem vмdмl, ћe je na tebe spolehnutн! Tady jsou souшadnice toho mнsta. Moji kluci uћ tam jsou, s tмma zbranмma z paљerбckй skrэљe. Spojнm se s nima a шeknu jim, ћe uћ jsi na cestм. Zlom vaz, nejlнp kaћdйmu, na koho narazнљ!</text>
+	</string>
+	<string id="gar_digger_leader_attack_111111">
+		<text>Budu se snaћit.</text>
+	</string>
+	<string id="gar_digger_leader_attack_1112">
+		<text>Nemщћu шнct, ћe by mм ten tvщj malэ proslov nмjak nadchl. Ale nechбm si to projнt hlavou.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11121">
+		<text>Co je na tom k rozmэљlenн? Pokud kopбиi nebudou spolupracovat teп, zнskajн banditi brzy pшнliљ velkou moc. Co myslнљ, ћe se stane potom? Jб ti povнm, co se stane - rozlezou se do Zуny a to bude љpatnэ pro vљechny! No tak, chlape, jsi naљe jedinб љance, ћe se nбm na tбbor podaшн zaъtoиit!</text>
+	</string>
+	<string id="gar_digger_leader_attack_2">
+		<text>Potшebujeme zaъtoиit na koncentrбk! Je to jedinб moћnost, jak zvednout kopбищm morбlku a dodat sebevмdomн! Pomщћeљ nбm?</text>
+	</string>
+	<string id="gar_digger_leader_break_0">
+		<text>Na vidмnou.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_0">
+		<text>Lйkбrniиka, шнkбљ?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1">
+		<text>Jo, pшesnм to se na tй krabiиce pнљe: "polnн sada rychle ъиinkujнcнch lйиiv". Vyhrabal jsem ji v jednй starй skrэљi, hned jak s Zуna objevila. Hбdбm, ћe ji tu nechala nмkterб z prvnнch vмdeckэch vэprav... Je hodnм cennб, ale nikdo ji ode mм nechce koupit, dokonce ani za dvм tisнcovky ne. Pro kopбиe je to moc penмz. Proи si ji nekoupнљ ty, иlovмиe? Fakt bych potшeboval prachy...</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11">
+		<text>Lйkбrniиka za dva tisнce? Tak jo, dej ji sem, bude se hodit.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111">
+		<text>Ty jo, kбmo, vytrhl jsi mi trn z paty! Tady mбљ lйkбrniиku. Vнљ, moћnб jsem pitomec, ale mбm pocit, ћe ti mщћu vмшit. Za ty prachy potшebuju koupit od paљerбka bouchaиky a koneиnм kluky trochu vyzbrojit.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111">
+		<text>Aha, a co to mб spoleиnйho s dщvмrou?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111">
+		<text>No, jde o to, ћe Stringov zrovna vyrazil za tнm paљerбkem. Vмtљinu prachщ uћ mб, ale kdyby mмl i to, cos mi teп dal, mohl by nakoupit vљechno, co potшebujeme. Tak jsem se tм chtмl zeptat, jestli bys ty prachy nemohl dбt Stringovovi. Tady mбљ souшadnice. Шeknu mu, aby tam na tebe poиkal, ale pospмљ si, jo?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111111">
+		<text>Vмdмl jsem, ћe se v tobм nepletu. Pшedem dнky.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111111">
+		<text>Podмkovat mi mщћeљ, aћ bude za co.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111112">
+		<text>Jeљtм jednou, co ћe to mбm udмlat?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111121">
+		<text>Potшebuju, abys ty dva tбcy zanesl Stringovovi. Иekб na paљerбka.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111211">
+		<text>Aha.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111113">
+		<text>Budu o tom uvaћovat.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111131">
+		<text>Hmm... Doufбm, ћe jsem se v tobм nespletl.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111311">
+		<text>Tak jo, mщћeљ doufat dбl.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_112">
+		<text>Rбd bych, ale nedбvno jsem se rozhodl, ћe budu vљechny vмtљн kљefty dмlat aћ veиer, abych se vyhnul neћбdoucнm svмdkщm. Vraќ se, aћ se setmн - lйkбrniиka na tebe poиkб.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_12">
+		<text>Koupнm ji. Ale nejdшнv na ni musнm sehnat dost penмz.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_121">
+		<text>Ty vole, jestli ji fakt koupнљ, mбљ to u mм! Jedinэ problйm je, ћe delбme vљechny kљefty aћ v noci, aby nбs nikdo nevidмl. Jб jsem s tнm pravidlem pшiљel, tak bych ho mмl dodrћovat.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_13">
+		<text>Rozmyslнm si to.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_131">
+		<text>Ty vole, jб uћ nevнm, od koho jinйho bych ty prachy jeљtм mohl zkusit sehnat...</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_2">
+		<text>Jo, jen dva tбcy. Prodal bych ji i levnмji, ale fakt potшebuju pшesnм dva tбcy... Vezmeљ si ji?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_3">
+		<text>Sprбvnм. Tak co, uћ jsi sehnal dva tбcy?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_31">
+		<text>Jo. Dej sem tu lйkбrniиku.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_32">
+		<text>Jeљtм ne.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_321">
+		<text>No... Lйkбrniиka tu na tebe иekб, a jб na tebe иekбm jeљtм netrpмlivмjc. Sakra, jб uћ fakt nevнm, od koho jinйho bych ty prachy sehnal...</text>
+	</string>
+	<string id="gar_digger_leader_hello_11">
+		<text>Odpal, vole, ћivot i bez toho stojн za prd. Poиasн je na hovno, koшist nenн kde vzнt - na nejlepљнch mнstech mбљ buп bandity, nebo muќбky... A i kdyћ mбљ kliku a vyhrabeљ nмco rozumnэho, nemбљ љanci dostat se s tнm ze Smeќбku - nмkdo ti to co nevidмt zkonfiskuje, a navнc se ztratil Baћant a jeho chlapi.</text>
+	</string>
+	<string id="gar_digger_leader_hello_111">
+		<text>Mщћu ti nмjak pomoct?</text>
+	</string>
+	<string id="gar_digger_leader_hello_1111">
+		<text>Pomoct, шнkбљ? Jak mбm vмdмt, jestli se ti dб vмшit? I kdyћ, na druhou stranu nemбm moc na vybranou, co? Nutnм potшebuju jednu vмciиku od kopбиe, co mu шнkaj Baћant. Takћe pokud mi fakt chceљ pomoct...</text>
+	</string>
+	<string id="gar_digger_leader_hello_112">
+		<text>To je tvщj problйm, ne mщj.</text>
+	</string>
+	<string id="gar_digger_leader_hello_1121">
+		<text>Jo, to mм nepшekvapuje... Tady se nikdo nestarб o nikoho jinйho neћ o sebe... Do prиic s tebou, Baћante, kde vмzнљ?</text>
+	</string>
+	<string id="gar_digger_leader_hello_12">
+		<text>Proи, proboha? Proи? Kde je ten zatracenej Baћant...</text>
+	</string>
+	<string id="gar_digger_leader_hello_13">
+		<text>Ty, vole, to jaks шнkal, ћe bys Baћantovi pomohl, tos myslel vбћnм?</text>
+	</string>
+	<string id="gar_digger_leader_hello_14">
+		<text>Tak co, uћ ses byl podнvat po Baћantovi?</text>
+	</string>
+	<string id="gar_digger_leader_hello_15">
+		<text>Tak co, pшinesl jsi mi Baћantovo starэ PDA?</text>
+	</string>
+	<string id="gar_digger_leader_hello_21">
+		<text>Tak co, nechceљ uћ koupit tu lйkбrniиku? Pochop, иlovмиe, jб ty prachy fakt nutnм potшebuju, proto ji taky prodбvбm tak levnм.</text>
+	</string>
+	<string id="gar_digger_leader_hello_22">
+		<text>Tak co, uћ jsi dal dohromady dost penмz na tu lйkбrniиku?</text>
+	</string>
+	<string id="gar_digger_leader_hello_31">
+		<text>Zanes ty prachy rychle Stringovovi, jo? Vмшнm ti, ћe mu to иestnм dбљ.</text>
+	</string>
+	<string id="gar_digger_leader_hello_311">
+		<text>To je od tebe pмknэ.</text>
+	</string>
+	<string id="gar_digger_leader_hello_32">
+		<text>Ty vole, proи se tady flбkбљ takovou dobu? Stringov uћ tam dбvno bude!</text>
+	</string>
+	<string id="gar_digger_leader_hello_321">
+		<text>O tom pochybuju. Uklidni se.</text>
+	</string>
+	<string id="gar_digger_leader_hello_33">
+		<text>Vole, nechal jsi tam to Stringovovo PDA? Je to naљe jedinб nadмje, jak se dostat k tмm bouchaиkбm!</text>
+	</string>
+	<string id="gar_digger_leader_hello_331">
+		<text>Aha. Dбvej na sebe pozor.</text>
+	</string>
+	<string id="gar_digger_leader_hello_34">
+		<text>Neseљ mi to paљerбckэ PDA? Dнkec... vsadнm se, ћe to byl Stringov, kdo prбsknul paљerбka banditщm. Jak mб иlovмk po takovй sviтбrnм nмkomu vмшit? Chci шнct, Stringov sбm byl taky v koncentrбku, a pшesto, kdyћ pшiљlo na vмc, dal pшednost osobnнmu zisku... No nic, vzal to пas a Stringova taky. Mimochodem, moji chlapi uћ vyzvedli bouchaиky ze skrэљe... Myslнm, ћe ti klidnм mщћu шнct, na co je mбme. Chystбme se zaъtoиit na koncentrбk.</text>
+	</string>
+	<string id="gar_digger_leader_hello_342">
+		<text>Jasnм, ale uvмdom si, ћe uћ jsme osvobodili kopбиe z koncentrбku.</text>
+	</string>
+	<string id="gar_digger_leader_hello_51">
+		<text>No, uћ jsme skoro pшipravenн k ъtoku na koncentrбk... Mбm ti vysvмtlit podrobnosti?</text>
+	</string>
+	<string id="gar_digger_leader_hello_52">
+		<text>Vole, bez tebe nemб smysl, abychom na koncentrбk ъtoиili. Jsme kopбиi, nejsme zelenэ mozky... Moji kluci jako bojovnнci stojн za hovno, a taktiku se na bбтskй taky nenauинљ, jestli vнљ, jak to myslнm. Nejlepљн, co tak zvlбdnou, bude nбhodnб pшehradnб palba. Ale kdybys jim velel ty, to by pane byla jinб pohбdka. Snaћnм tм prosнm - byl bys tak hodnэ a velel tomu ъtoku na koncentrбk?</text>
+	</string>
+	<string id="gar_digger_leader_hello_53">
+		<text>Pokraиuj, moji kluci uћ na tebe иekajн.</text>
+	</string>
+	<string id="gar_digger_leader_hello_531">
+		<text>Jdu na to. Dбvej si bacha.</text>
+	</string>
+	<string id="gar_digger_leader_hello_54">
+		<text>Co to dмlбљ, иlovмиe?! Tбmhle umнrajн naљi kluci!</text>
+	</string>
+	<string id="gar_digger_leader_hello_55">
+		<text>Sakra, chlape... Zdб se, ћe to naљi kluci nedali. Jen ty mщћeљ pomstнt jejich smrt! Pozabнjej vљechny ty parchanty koncentrбиnickй! Osvoboп naљe chlapy!</text>
+	</string>
+	<string id="gar_digger_leader_hello_61">
+		<text>Vнљ, vole, ћivot nenн tak љpatnб vмc.</text>
+	</string>
+	<string id="gar_digger_leader_hello_71">
+		<text>Ach jo, zasranej psн ћivot... Co jsem komu udмlal, ћe jsem si zaslouћil tohle?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_0">
+		<text>Co se tэиe Baћanta...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1">
+		<text>No, situace se nбm posrala zhruba takhle: Baћant, jeden kolega od lopaty, mi mмl pшinйst svoje starй PDA, jenћe zmiznul. Nekontaktoval ani mм, ani nikoho jinйho z naљн skupiny, a jб to PDA fakt nutnм potшebuju. Zaљel bych si pro nм sбm nebo bych poslal kбmoљe Stringova, jenћe teп oba musнme zщstat tady. Nemohl bys mi to PDA pшinйst?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11">
+		<text>Pшedpoklбdбm, ћe jo. Kde bych toho Baћanta naљel?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111">
+		<text>Kde bys ho naљel, to nevнm, hodnм se toulб po okolн, ale mщћu ti шнct, ћe tбboшн na jih odsud, za cisternama a takovou hromadou bordelu. Pokud tam Baћant bude, povмz mu, ћe tм posнlб Divokej Napr. Kdyby tam nebyl, prostм mu prober bednu s nбшadнm. PDA by mмl mнt v tajnй pшihrбdce pod faleљnэm dnem. Je ti to jasnй?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1111">
+		<text>Jasnм.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112">
+		<text>Vнљ, byl jsem v tбboшe, ale nevidмl jsem tam jedinou ћivou duљi. Jenom hromady mrtvol, rozervanэch na malэ kousky.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121">
+		<text>Do hajzlu s nima taky! V noci se po Smeќбku potuluje pбr potvor a zabijou vљechno, co nenн dost dobшe ozbrojenй, иili nбs - kopбиe. Zatнm to nikdo nepшeћil, aby nбm o tom mohl nмco шнct. Zasranej zkurvenej kopбиskej ћivot svinskej blbej…</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111211">
+		<text>Teп se toho dмje tolik, ћe moћnб nenн nejlepљн doba se litovat, kбmo.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112111">
+		<text>Jo, mбљ pravdu. Pamatujeљ si, kde najdeљ to PDA?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121111">
+		<text>Jo, pamatuju.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112112">
+		<text>Jo, mбљ pravdu. Tak co, naљel jsi to Baћantovo starэ PDA?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1113">
+		<text>Zopakuj mi to.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11131">
+		<text>Struиnм шeиeno, Baћant tбboшн na jih odsud, za cisternama a hromadou bordelu. Ty mбљ sebrat jeho starэ PDA a donйst mi ho. Mщћe bэt na dvou mнstech: buп ho mб Baћant u sebe, nebo bude v bednм na nбшadн.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11132">
+		<text>Struиnм шeиeno, Baћant tбboшн na jih odsud, za cisternama a hromadou bordelu. Ty mбљ sebrat jeho starэ PDA a donйst mi ho. Mщћe bэt na dvou mнstech: buп ho mб Baћant u sebe, nebo bude v bednм na nбшadн.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_12">
+		<text>Vнљ, dneska zrovna nemбm chuќ dмlat nмkomu poskoka.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_121">
+		<text>Jб tм tu prosнm o pomoc a ty... Ach jo!</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_2">
+		<text>Dobшe, tak kde teda jsou?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_21">
+		<text>Kdo vн? Jeљtм jsem se na nм nebyl podнvat.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_211">
+		<text>Poslouchej, иlovмиe, jб fakt potшebuju to PDA. Buп tak hodnэ a bмћ se mi po nмm podнvat.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3">
+		<text>Tys to PDA naљel, viп?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31">
+		<text>Jo. Tumбљ.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_311">
+		<text>Иlovмиe, tys mм fakt vytбhl z bryndy. Tady, vezmi si za odmмnu tohle. Taбk, teп se na to podнvбme... Sakra, je tu jen patnбct stovek. Zdб se, ћe za poslednн objednбvku nedostal zaplaceno. Hmm... Vнљ, my jsme s Baћantem tohle PDA pouћнvali, kdyћ jsme si chtмli pшedat prachy. Jenћe teп zrovna nutnм potшebuju prachy, ale Baћant nedal dohromady tolik, kolik slнbil, takћe bych poшбd nмkde potшeboval schrastit dva tбcy. Problйm je, ћe uћ jsme vybrali vљechny skrэљe aћ do dna...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3111">
+		<text>Jo, hochu, prщsery se stбvajн.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31111">
+		<text>Poиkat... Poшбd jeљtм mбm tady tu lйkбrniиku, na kterou nemбm kupce. Nemohl bys ji ode mм koupit? Chtмl jsem ji pщvodnм stшelit za tшi tбcy, ale nechбm ti ji za dva. Nevнdanej kљeft, co шнkбљ?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_32">
+		<text>Ale nevzal jsem si ho.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_321">
+		<text>Poslouchej, иlovмиe, Baћant a jeho chlapi jsou moћnб rozebranн na souибstky, aќ odpoинvajн v pokoji... ale jб fakt nutnм potшebuju to PDA. Pшinesl bys mi ho, prosнm?</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_11">
+		<text>Jdi se bodnout, nikam nejdu, kdyћ se tu vљude kolem plazн ty bezokй potvory!</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_21">
+		<text>Jo, brбcho, kopбиi holt majн tvrdej chlebниek...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_11">
+		<text>Co je? Co chceљ? Nevidнљ, ћe mбm pauzu?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_21">
+		<text>Hmmchrrr... Nech mм bejt... Nebuп mм...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_31">
+		<text>Posнlб tм Joga? No koneиnм! Proи ti to tak trvalo?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_41">
+		<text>Jo, jo, uћ jdu! Jen si musнm zkontrolovat, ћe si nenabмhnu na Jogovy lidi, a hned tam budu.</text>
+	</string>
+	<string id="gar_digger_traitor_hello_411">
+		<text>Pohyb, pohyb.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_0">
+		<text>Dobшe, tady to je. Joga шнkal, ћe s tebou mбm vyrovnat ъиty. Mщћeљ to povaћovat za poslednн splбtku.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1">
+		<text>No koneиnм... Hej, poиkej, vole, co blbneљ? Joga mм chce nechat zmlбtit? Ne... neй... Nestшнlej mм! Zaplatнm ti vнc neћ Joga!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11">
+		<text>To jako kolik?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111">
+		<text>No, netuљнm, kolik penмz ti slнbil Joga, ale mбm souшadnice skrэљe toho mrtvйho paљerбka. Je v nн zboћн nejmнт za pмt tбcщ!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1111">
+		<text>Hmm. Dej sem souшadnice a koukej zmizet, rozumнљ?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11111">
+		<text>Jasnм, jasnм. Skrэљ je v kufru jednй zrezivмlй rachotiny, tady mбљ souшadnice! Dнky, chlape! Znбm tajnou stezku, nikdo mм neuvidн, zaruиenм! Tak... Tak jб jdu, jo?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1112">
+		<text>Neznбmб skrэљ plnб neznбmйho zboћн? Ne, to nestaин. Sbohem.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_12">
+		<text>Nemбm zбjem. Sbohem.</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_0">
+		<text>Шekli mi, ћe bys mi mohl domluvit schщzku s paљerбkem.</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_1">
+		<text>Tak ty jsi ten, kterйho si poslali pro bouchaиky? Jo, mщћu ti domluvit schщzku. Hele, normбlnм se s nнm potkбvбm u jednoho naљeho vэkopu, zбpadnм odsud. Tady mбљ souшadnice. Paљerбk by tam teп nмkdy mмl bэt, tak mщћeљ vyrazit a jб mu dбm echo, ћe uћ jdeљ. Mбљ s sebou prachy? Vэbornм.</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_11">
+		<text>Jasnэ. Dбvej bacha.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_0">
+		<text>Nebojнљ se banditщ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_1">
+		<text>Jasnм ћe bojнm, ale co mбm dмlat? Nмjak se ћivit musнm. Ale nauиili jsme se bэt opatrnн - pшes den prodбvбme jenom rщznэ maliиkosti, abychom nepшitahovali pozornost. Prostм se snaћнme moc nehэbat a neupozorтovat na sebe. Tady nikdy nemщћeљ bэt zbyteиnм moc opatrnэ.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_0">
+		<text>Co mбљ na prodej?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_1">
+		<text>Jen pбr blbostн. Vнљ jak, prodбvбm, co tu vyhrabu. Kromм toho se tady tu a tam stavн obchodnнk... Шeknu ti, v Zуnм je barterovej obchod prostм k nezaplacenн!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_1">
+		<text>Hej! Nemмl bys o nмco zбjem?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_0">
+		<text>Co je to tady za mнsto?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_1">
+		<text>No, tady seљ na bleљнm trhu, takћe my jsme tнm pбdem bleљatн obchodnнci. Hehe, jsme prostм kљeftsmani, kбmo - prodбvбme tu a tam rщznй drobnosti... Budu k tobм upшнmnej: zboћн stojн za prd, ale aspoт mщћeme poшбd kљeftovat, ne? Takћe, pшiљel sis nмco koupit, nebo je tak na kus шeиi?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_0">
+		<text>Ty jsi tu jedinэ obchodnнk?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_1">
+		<text>Jasnм ћe ne!  Chodн sem obchodovat spousta lidн, ale mбme takovэ pravidlo, ћe se velkэ kљefty dмlajн aћ po setmмnн. Pшes den jsem tu jenom jб a moje zboћн, kterй uћ od pohledu "za nic nestojн", ale kdyћ pшijdeљ v noci, objevн se i opravdickй zboћн a dмlajн se skuteиnй obchody.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_0">
+		<text>Zбkladnн text</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_1">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_11">
+		<text>He? Co se dмje?... Sakra, tys mм ale vydмsil. To nevidнљ, ћe spнm?</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_111">
+		<text>Jй, promiт. Dбvej pozor.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_0">
+		<text>Zбkladnн text</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_1">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_11">
+		<text>Hej, kбmo. Pojп blнћ, jestli nмco chceљ, nestyп se.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_111">
+		<text>Text v zбkladnнm nastavenн</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_11">
+		<text>Jdeљ moc brzo... teп nenн vhodnб doba na шeиi o vбћnэch obchodech, rozumнљ mi? Vraќ se... Pozdмjc.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_111">
+		<text>Rozumнm.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_11">
+		<text>Dobrэ veиer. Mбљ nмjakй... zvlбљtnн pшбnн?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_111">
+		<text>Pшesnм tak. Ukaћ, co mбљ.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_112">
+		<text>Ne, jen jsem se na tebe pшiљel podнvat. Na vidмnou.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21">
+		<text>Co chceљ?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211">
+		<text>Obchodovat. Co ty na to?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111">
+		<text>Obchodovat? A ty seљ jako kdo?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21111">
+		<text>Hele, nechceљ prachy, neubude. Zajdu nahoru k jinэmu obchodnнkovi, je jich tu jako blech - a jsou dost chytшн na to, aby se blbм nevyptбvali.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211111">
+		<text>Poиkej, иlovмиe. Kluci nahoшe s tebou kљeftovali? No, dobшe, oni nedмlajн obchody hned tak s nмkэm, tak jo... mмl bych tu тбkэ zboћн. Chceљ se kouknout?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111111">
+		<text>To je rozumnб шeи. Tak ukaћ.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21112">
+		<text>Do toho ti nic nenн.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212">
+		<text>Poctivej obchod. Nevнљ tady kolem o nмjakйm obchodnнkovi?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121">
+		<text>Ne.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211">
+		<text>Ani o jednom?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111">
+		<text>Pшesnм tak.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111">
+		<text>Vнљ to jistм?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111">
+		<text>Naprosto jistм.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111111">
+		<text>Ty vole, nejsem ani bandita, ani zelenej mozek, ani zombice. To seљ obchodnнk ty sбm, nebo jak?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111111">
+		<text>Jo, jsem obchodnнk. Chceљ se podнvat na zboћн, nebo jen tak blbм ћvanit?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111111">
+		<text>Spнљ bych se koukl na to zboћн.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21212">
+		<text>Tak se podнvej.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_213">
+		<text>Od tebe nic.</text>
+	</string>
+	<string id="gar_bandit_commentators_11">
+		<text>Mrkej na tohle, vole! Jeden vэstшel z tэhle krasavice a vљude lнtб peшн!</text>
+	</string>
+	<string id="gar_bandit_commentators_111">
+		<text>Hmm... snad abych љel.</text>
+	</string>
+	<string id="gar_bandit_commentators_12">
+		<text>Taky nemбљ rбd ptбky, co? Ћбdnej strach, tady jich mбme hromady!</text>
+	</string>
+	<string id="gar_bandit_commentators_13">
+		<text>Co tu jen tak postбvбљ? No tak, pomlaќ ty potvory, nadмlej z nich kaљi, odvaћ se!</text>
+	</string>
+	<string id="gar_bandit_leader_break_0">
+		<text>Mмj se.</text>
+	</string>
+	<string id="gar_bandit_robbery_11">
+		<text>Zdravниko. Co kdybys obrбtil kapsy? A netvaш se, jako kdyby tм prбvм okradli – pamatuj, ћe udrћujeme poшбdek na Smetiљti, takћe jsme si to vlastnм zaslouћili. Vљechno jasnэ?</text>
+	</string>
+	<string id="gar_bandit_robbery_111">
+		<text>No, udrћovбnн poшбdku se musн podporovat. Tumбte.</text>
+	</string>
+	<string id="gar_bandit_robbery_1111">
+		<text>To je nбљ chlapec! Takћe jб si vezmu vљechno tohle, jo? Tu pistoli si mщћeљ nechat, kamarбde. Nejsme pшece hulvбti, abysme ti servali i koљili ze zad. Jeљtм nбm podмkujeљ, aћ narazнљ na nмjakэ pшнљery. Tak hodnм љtмstн a na shledanou!</text>
+	</string>
+	<string id="gar_bandit_robbery_11111">
+		<text>Jo, mмjte se.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_0">
+		<text>Pшiљel jsem si vyzvednout odmмnu za vyиiљtмnн bleљнho trhu.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_1">
+		<text>Jo, jasnм. Uћ si vzpomнnбm. Tady mбљ.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_11">
+		<text>Hmm. Nezdб se ti, ћe tak velkб prбce by zaslouћila vмtљн odmмnu?</text>
+	</string>
+	<string id="gar_bandit_trader_reward_111">
+		<text>O tom jб nerozhoduju. Platнm ti to, co mi pшikбzal љйf – nemysli si o mnм, ћe jsem si z toho nмco urval pro sebe. Ale soucнtнm s tebou, Jуga tentokrбt nebyl moc љtмdrej. Vнљ ty co... radљi se za nнm stav. Chlapi vмdмj, ћe ses hodnм nadшel, takћe jestli pшed nima љйf nebude chtнt vypadat jako drћgreљle, mмl by ti s radostн pшidat.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11">
+		<text>Hej! Mщћu ti nмco nabнdnout?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11111">
+		<text>Co je tohle za mнsto?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111111">
+		<text>No todletons je bleљн trh, takћe my asi budeme bleљн trhovci. Hehe, jsme obchodnнci, kбmo – prodбvбme vљelijakэ drobnosti. Budu k tobм upшнmnej: naљe zboћн jsou pмknэ klumpy, ale co, hlavnм ћe podnikбme, ne? Ty jsi pшiљel kvщli obchodu, nebo jen na kus шeиi?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11112">
+		<text>Co prodбvбљ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111121">
+		<text>Vљelijakэ krбmy. Prodбvбm to, co vykopu, rozumнљ. Ћiju z ъlovkщ a z obиasnэho kљeftнku... a musнm uznat, obchod je v Zуnм tou nejschщdnмjљн cestou.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11113">
+		<text>To jsi tady jedinej kupec?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111131">
+		<text>Ale kdepak! Krбmek tady provozuje spousta chlapщ, ale mбme takovэ pravidlo, ћe velkэ vмci se smмjн prodбvat aћ po zбpadu slunce. Pшes den jsem tu jenom jб se svэm zboћнm, takovэm tнm, co za moc nestojн. Ale jakmile padne noc, vytбhnu svщj skuteиnej sortiment a to se teprve toин obchody.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11114">
+		<text>Nebojнљ se banditщ?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111141">
+		<text>Samo ћe bojнm, ale co nadмlбm? Nмjak se ћivit musнљ. Nauиili jsme se ale bэt opatrnн – pшes den prodбvбme jenom malэ cetky, abysme se vyhnuli pozornosti. I tak se ale snaћнme pohybovat pшi zemi a moc nedejchat. Tady иlovмk nemщћe nikdy bejt dost opatrnej.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11115">
+		<text>Zatнm nic. Mмj se.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_61">
+		<text>Tomu шнkбm pмknб stшelba, kamarбde. Neuvaћoval jsi nad tнm, ћe by sis zahrбl o penнze? Co takhle si to jeљtм zopбknout?</text>
+	</string>
+	<string id="gar_bandit_robbery_12">
+		<text>No, vytбhni PDA, je иas podмlit se o prachy. A nemysli si, ћe o nic nejde - platнљ nбm za to, ћe dodrћujem na Smeќбku poшбdek, jasnэ?</text>
+	</string>
+	<string id="gar_bandit_robbery_121">
+		<text>No, pokud je to na dodrћovбnн poшбdku, tak tady mбљ.</text>
+	</string>
+	<string id="gar_bandit_robbery_1211">
+		<text>No na takovэho srбиe seљ docela chytrej! Fajn, tak my si vezmem vљechno, jo? Vybavenн si mщћeљ nechat, nejsme zvншata, abychom ti sebrali i bouchaиku. Vљak nбm jeљtм podмkujeљ, aћ narazнљ na nмjakэho mutanta, vљak uvidнљ. Tak dost kecщ, vypadni.</text>
+	</string>
+	<string id="gar_bandit_robbery_12111">
+		<text>Dej na sebe pozor.</text>
+	</string>
+</string_table>
