@@ -52,14 +52,17 @@ void ESceneTerrainTool::FillProp(LPCSTR pref, PropItemVec& items)
 
 BOOL ESceneTerrainTool::_AppendObject(CCustomObject* object)
 {
-	string_path Path = {};
-	FS.update_path(Path, "$server_data_root$", object->GetName());
-	xr_strcat(Path, ".r16");
+	if (object->GetName())
+	{
+		string_path Path = {};
+		FS.update_path(Path, "$server_data_root$", object->GetName());
+		xr_strcat(Path, ".r16");
 
-	FS.TryLoad(Path);
-	IReader* Stream = FS.r_open(Path);
-	object->LoadStream(*Stream);
-	FS.r_close(Stream);
+		FS.TryLoad(Path);
+		IReader* Stream = FS.r_open(Path);
+		object->LoadStream(*Stream);
+		FS.r_close(Stream);
+	}
 
 	return inherited::_AppendObject(object);
 }
