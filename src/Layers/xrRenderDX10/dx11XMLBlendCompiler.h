@@ -1,5 +1,5 @@
 #pragma once
-#include "../../xrCore/XmlParser/xrXMLParser.h"
+#include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
 #include "../xrRender/blenders/Blender.h"
 #include "../xrRender/blenders/Blender_Recorder.h"
 
