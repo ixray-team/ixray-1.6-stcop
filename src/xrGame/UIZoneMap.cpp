@@ -25,6 +25,7 @@ visible(true)
 {	
 	m_clock_wnd = nullptr;
 	m_pointerDistanceText = nullptr;
+	disabled = false;
 }
 
 CUIZoneMap::~CUIZoneMap()
@@ -127,7 +128,7 @@ void CUIZoneMap::Init()
 
 void CUIZoneMap::Render			()
 {
-	if ( !visible )
+	if ( !visible || disabled )
 		return;
 
 	xrCriticalSectionGuard guard(Level().MapManager().UpdateCS);
@@ -138,6 +139,9 @@ void CUIZoneMap::Render			()
 
 void CUIZoneMap::Update()
 {
+	if (disabled)
+		return;
+
 	CActor* pActor = smart_cast<CActor*>( Level().CurrentViewEntity() );
 	if ( !pActor ) return;
 
