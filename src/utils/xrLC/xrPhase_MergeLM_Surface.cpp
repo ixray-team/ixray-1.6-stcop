@@ -3,7 +3,7 @@
 #include <immintrin.h>
 #include <intrin.h>
 
-#define MAX_GRID_SPACE_WRITE 0.9f	// 90% НАПОЛНЕНИЯ LMAP
+extern float MAX_GRID_SPACE_WRITE  = 0.95f;	// 90% НАПОЛНЕНИЯ LMAP
 // Surfaces
 
 void SurfacePlacePerpixel::RecalcY()
@@ -36,28 +36,37 @@ void SurfacePlacePerpixel::_InitSurface_tbb()
 	FillMemory(occupied_y, SurfaceGrid, 0);
 }
 
-void SurfacePlacePerpixel::_rect_register_tbb(L_rect& R, lm_layer* D)
+bool SurfacePlacePerpixel::_rect_register_tbb(L_rect& R, lm_layer* D)
 {
-	u8* lm = &*(D->marker.begin());
-	u32		s_x = D->width + 2 * BORDER;
-	u32		s_y = D->height + 2 * BORDER;
+	csLMMerge.Enter();
 
-	// Normal (and fastest way)
- 	for (u32 y = 0; y < s_y; y++)
+	bool isCanRegister = Place_Perpixel_tbb(R, D);
+	if (isCanRegister)
 	{
-		u32 _Y = y + R.a.y;
+		u8* lm = &*(D->marker.begin());
+		u32		s_x = D->width + 2 * BORDER;
+		u32		s_y = D->height + 2 * BORDER;
 
-		BYTE* P = surface_tbb + _Y * SurfaceGrid + R.a.x;	// destination scan-line
-		u8* S = lm + y * s_x;
-		for (u32 x = 0; x < s_x; x++, P++, S++)
+		// Normal (and fastest way)
+		for (u32 y = 0; y < s_y; y++)
 		{
-			if (*S >= alpha_ref)
+			u32 _Y = y + R.a.y;
+
+			BYTE* P = surface_tbb + _Y * SurfaceGrid + R.a.x;	// destination scan-line
+			u8* S = lm + y * s_x;
+			for (u32 x = 0; x < s_x; x++, P++, S++)
 			{
-				*P = 255;
-				occupied_y[_Y] += 1;
+				if (*S >= alpha_ref)
+				{
+					*P = 255;
+					occupied_y[_Y] += 1;
+				}
 			}
 		}
 	}
+	csLMMerge.Leave();
+
+	return isCanRegister;
 }
  
 bool SurfacePlacePerpixel::Place_Perpixel_tbb(L_rect& R, lm_layer* D)
@@ -84,26 +93,16 @@ bool SurfacePlacePerpixel::Place_Perpixel_tbb(L_rect& R, lm_layer* D)
 
 bool SurfacePlacePerpixel::rect_place_full(L_rect& r, lm_layer* D)
 {
-	int SizeX = r.b.x;
-	int SizeY = r.b.y;
+	int SizeX = r.b.x; int SizeY = r.b.y;
+ 	int x_max = SurfaceGrid - SizeX; int y_max = SurfaceGrid - SizeY;
+ 	int y_max_line = SurfaceGrid * MAX_GRID_SPACE_WRITE;
 
-	int x_max = SurfaceGrid - SizeX;
-	int y_max = SurfaceGrid - SizeY;
-
-	int y_max_line = SurfaceGrid * MAX_GRID_SPACE_WRITE;
-
-	L_rect R;
-	
+	L_rect R;	
 	for (int _Y = StartYPos; _Y < y_max; _Y++)
-	{
-		if (occupied_y[_Y] > y_max_line)			// Нет Места под заливку
-			continue;
-
-		if (occupied_y[_Y] > SurfaceGrid - SizeX)	// Нет Места под заливку
-			continue;
-
-		if (SurfaceGrid - occupied_y[_Y] < SizeX)   // Не влезет тупо
-			continue;
+	{	
+		// Нет Места под заливку
+		if (SurfaceGrid - occupied_y[_Y] < SizeX)    continue;
+		if (occupied_y[_Y] > y_max_line)			 continue;
   
 		BYTE* temp_surf = surface_tbb + _Y * SurfaceGrid;
  
@@ -111,10 +110,9 @@ bool SurfacePlacePerpixel::rect_place_full(L_rect& r, lm_layer* D)
 		for (int _X = 0; _X < x_max; _X++)
 		{
 			R.init(_X, _Y, _X + SizeX, _Y + SizeY);
-			if (Place_Perpixel_tbb(R, D))
+			if (Place_Perpixel_tbb(R, D) && _rect_register_tbb(R, D))
 			{
-				_rect_register_tbb(R, D);
- 				r.set(R);
+  				r.set(R);
 				return TRUE;
 			}
 		}
