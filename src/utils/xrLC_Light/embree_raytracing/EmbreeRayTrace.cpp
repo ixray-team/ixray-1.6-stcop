@@ -177,11 +177,8 @@ void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTran
 void EmbreeData::InitializeGeometry(size_t& geom_static_mem, size_t& geom_murefs_mem)
 {
  	// Конструктор модели
-	Phase("Embree Loading (Convert Faces to RayTrace)");
-	EmbreeData::GetGlobalData(geom_static_mem, geom_murefs_mem);
-	 
-	Phase("Embree Loading (Move Geometry Buffers to Embree Memory)");
- 	LoadGeomBuffer(IntelGeometryNormal, scene_quality, false, static_geom);
+ 	EmbreeData::GetGlobalData(geom_static_mem, geom_murefs_mem);
+   	LoadGeomBuffer(IntelGeometryNormal, scene_quality, false, static_geom);
 	LoadGeomBuffer(IntelGeometryMuModels, scene_quality, false, murefs_geom);
   	LoadGeomBuffer(IntelGeometryTransp, scene_quality, true, static_geom_transp);
 	LoadGeomBuffer(IntelGeometryMuModelsTransp, scene_quality, true, murefs_geom_transp);
