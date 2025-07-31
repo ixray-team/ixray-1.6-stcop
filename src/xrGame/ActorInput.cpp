@@ -766,10 +766,20 @@ void CActor::SwitchNightVision()
 
 	if (GetNightVisionEffector())
 	{
-		GetNightVisionEffector()->SwitchNightVision();
+		if (m_sNVGAnimator.size() > 0)
+		{
+			bool has_nvg = GetOutfit() && GetOutfit()->m_NightVisionSect.size() > 0 || GetHelmet() && GetHelmet()->m_NightVisionSect.size() > 0;
+			if (HudAnimator() && !HudAnimator()->IsActive() && has_nvg)
+			{
+				HudAnimator()->StartAnimator(m_sNVGAnimator);
+				HudAnimator()->SetLeftCallback({ GetNightVisionEffector(), &CNightVisionEffector::SwitchNightVision });
+			}
+		}
+		else
+		{
+			GetNightVisionEffector()->SwitchNightVision();
+		}
 	}
-
-	return;
 }
 
 void CActor::SwitchTorch()
@@ -777,16 +787,19 @@ void CActor::SwitchTorch()
 	if (CurrentGameUI() && CurrentGameUI()->TopInputReceiver())
 		return;
 
-	xr_vector<CAttachableItem*> const& all = CAttachmentOwner::attached_objects();
-	xr_vector<CAttachableItem*>::const_iterator it = all.begin();
-	xr_vector<CAttachableItem*>::const_iterator it_e = all.end();
-	for ( ; it != it_e; ++it )
+	if (CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT)))
 	{
-		CTorch* torch = smart_cast<CTorch*>(*it);
-		if ( torch )
-		{		
+		if (m_sHeadlampAnimator.size() > 0)
+		{
+			if (HudAnimator() && !HudAnimator()->IsActive())
+			{
+				HudAnimator()->StartAnimator(m_sHeadlampAnimator);
+				HudAnimator()->SetLeftCallback({ torch, &CTorch::Switch });
+			}
+		}
+		else
+		{
 			torch->Switch();
-			return;
 		}
 	}
 }
