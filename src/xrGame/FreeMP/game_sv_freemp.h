@@ -6,7 +6,8 @@
 class game_sv_freemp : public game_sv_mp, private pure_relcase
 {
 	using inherited = game_sv_mp;
-
+	xr_hash_map<xr_string, int> map_quest;
+	xr_hash_map<xr_string, int> map_items;
 public:
 	game_sv_freemp();
 	virtual							~game_sv_freemp();
