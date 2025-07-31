@@ -66,7 +66,7 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
     // Using fixed fallof factors according to float16 depth coordinate precision.
     float fAtten = 1 - smoothstep(min(RainFallof.y - 15.0f, RainFallof.x), RainFallof.y, P.z);
     s *= fAtten * fAtten;
-	s *= 1.0f - O.SSS;
+	//s *= 1.0f - O.SSS;
 
     //	Apply rain density
     s *= RainDensity.x;
@@ -106,10 +106,18 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
 
     //	Translate NM to view space
     water.xyz = mul((float3x3)m_V, water.xyz);
+    s *= dot(D.xyz, float3(0.33, 0.33, 0.33));
 
     N += water.xyz;
     N = normalize(N);
-    s *= dot(D.xyz, float3(0.33, 0.33, 0.33));
+
+    N.xy = NormalEncode(N);
+
+#ifdef USE_LEGACY_LIGHT
+    N.z = 0.8f * s + O.Roughness;
+#else
+    N.z = lerp(O.Roughness, 0.01f, saturate(s * 4.0f)); 
+#endif
 
     return float4(N, s);
 }
