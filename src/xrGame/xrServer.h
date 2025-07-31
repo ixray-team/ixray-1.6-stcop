@@ -52,6 +52,13 @@ public:
 	secure_messaging::key_t		m_secret_key;
 	s32							m_last_key_sync_request_seed;
 
+
+	u32 m_last_update_time_15 = 0;
+	u32 m_last_update_time_10 = 0;
+	u32 m_last_update_time_05 = 0;
+	u32 m_last_update_time_5 = 0;
+	u32 m_last_update_time_1 = 0;
+
 							xrClientData			();
 	virtual					~xrClientData			();
 	virtual void			Clear					();
@@ -117,6 +124,14 @@ private:
 	IReader*					m_server_rules;
 
 	xr_deque<ScriptEvent>		script_server_events;
+	
+	struct UpdatePacket
+	{
+		CSE_Abstract* Entity = nullptr;
+		NET_Packet	  Packet;
+	};
+
+	xr_vector<UpdatePacket> m_update_packets;
 
 	struct DelayedPacket
 	{
