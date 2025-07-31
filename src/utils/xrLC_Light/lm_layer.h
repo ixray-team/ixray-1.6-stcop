@@ -2,7 +2,7 @@
 
 #include "base_color.h"
 
-#define BORDER 4
+#define BORDER 1
  
 
 struct XRLC_LIGHT_API  lm_layer
