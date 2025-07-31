@@ -1,172 +1,180 @@
 /*
-        Ground-Truth Based Ambient Occlusion
+		Ground-Truth *Based* Ambient Occlusion (unidirectional variant, no arccos)
 
-        References:
-        - Practical Real-Time Strategies for Accurate Indirect Occlusion [Jimenez et. al];
-        - Screen space indirect lighting with visibility bitmask [Olivier Therrien, Yannick Levesque, Guillaume Gilet]
+		References:
+		- Practical Real-Time Strategies for Accurate Indirect Occlusion [Jimenez et. al];
+		- Screen space indirect lighting with visibility bitmask [Olivier Therrien, Yannick Levesque, Guillaume Gilet]
+		- "GT-VBAO (uniformly weighted)" on ShaderToy [TinyTexel]
 
-        Credits:
-        - MartyMcFly (huge help with understanding bitmask AO concept)
-        - Michal Drobot (approximate arccos function)
+		Credits:
+		- MartyMcFly (huge help with GTAO(VB) implementation and understading the concept of visibility bitmask)
+		- TinyTexel (no-arccosine GTAO; main inspiration, https://www.shadertoy.com/view/4cdfzf)
+		- Olivier Therrien (original bitmask implementation, + https://x.com/volfaze/status/1865481248929456639)
 
-        Author:
-        - LVutner
+		Author:
+		- LVutner
 
-        Do not judge me. I had to butcher the AO algorithm to save some performance.
-
-        ---IX-Ray Engine---
+		---IX-Ray Engine---
 */
 
 #include "common.hlsli"
 
 struct PSInput
 {
-    float4 hpos : SV_POSITION;
-    float4 texcoord : TEXCOORD0;
+	float4 hpos : SV_POSITION;
+	float2 texcoord : TEXCOORD0;
 };
 
-float gtao_parameters; // Factor used to transform world space radius to screen space
-uniform Texture2D s_half_depth;
+float gtao_parameters; //Factor used to transform world space radius into screen space
 
-// Arccosine approximation by Michal Drobot
-// TODO: Make a 'fastmath' like library
-float fastacos_approx(float x)
+float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal, float2 texcoord, float2 jitter)
 {
-    float res = -0.156583 * abs(x) + 1.5707964;
-    res *= sqrt(1.0 - abs(x));
-    return x >= 0.0 ? res : 3.1415927 - res;
+	//Few constants
+	//TBD: Put everything into common header
+	const float GTAO_PI = 3.1415927;
+	const float GTAO_TAU = 6.2831854;	
+	const float GTAO_HALF_PI = 1.5707964;
+	const float GTAO_PI_RCP = 0.31830988148;
+	const float GTAO_2_OVER_PI = 0.63661976296;
+
+	//Settings
+	int GTAO_DIRECTIONS = 3; //Direction count (3 is sufficient for low radii)
+	int GTAO_STEPS = 4; //Step count
+	float GTAO_RADIUS = 0.5; //World space radius (Keep it low. Cache-trasher. I am not joking.)
+	float GTAO_NEG_1_OVER_RADIUSQR = -1.0 / (GTAO_RADIUS * GTAO_RADIUS); //Just for falloff. Hardcode it if you need to
+
+	//Bias the position to avoid numerical issues
+	//0.9992 would be OK even for vanilla view-z buffer
+	view_position *= 0.9992;
+
+	//View direction
+	float3 view_direction = -normalize(view_position);
+
+	//Screen-space radius
+	float screen_radius = (GTAO_RADIUS * gtao_parameters) / view_position.z;
+
+	//Slice scale
+	//Y flipped as in original GTAO paper, DirectX hello
+	float2 slice_scale = pos_decompression_params2.zw * screen_radius * float2(1.0, -1.0);
+
+	//Slice angle, we integrate AO over 2*PI
+	float slice_angle = GTAO_TAU / float(GTAO_DIRECTIONS);
+
+	//Accumulated occlusion and slice weight
+	float2 occ_weight = (0.0).xx;
+
+	for (int i = 0; i < GTAO_DIRECTIONS; i++)
+	{
+		float angle = (float(i) + jitter.x) * slice_angle;
+
+		//Slice direction
+		float3 slice_direction = float3(cos(angle), sin(angle), 0.0);
+
+		//GTAO math (Papa doenitz - please take a look at that... maybe you can optimize it)
+		float3 ortho_direction = slice_direction - view_direction * dot(slice_direction.xy, view_direction.xy); //slice_direction.z is always zero, no point in vec3 dot product
+		float3 axis = cross(slice_direction, view_direction);
+		float3 proj_normal = view_normal - axis * dot(view_normal, axis);
+		float proj_normal_length_rcp = rsqrt(dot(proj_normal, proj_normal) + 1e-6); //Better safe than sorry
+		proj_normal *= proj_normal_length_rcp; //Normalize
+
+		float sin_n = dot(ortho_direction, -proj_normal); //Yup, projected normal has to be flipped
+
+		//Init horizon
+		//sin(n) so we don't count values *below* the hemisphere
+		//We don't need to clamp our horizons later
+		float max_horizon_cos = sin_n;
+
+		//Find hot horizons in your area :flushed:
+		for(int j = 0; j < GTAO_STEPS; j += 2)
+		{
+			//Ray increment
+			float2 increment = (j + float2(0.0, 1.0) + jitter.yy) / GTAO_STEPS;
+
+			//Squared for more detail in crevices...			
+			increment *= increment;
+
+			//le sample coords
+			float4 s_texcoord = texcoord.xyxy + slice_direction.xyxy * slice_scale.xyxy * increment.xxyy;
+
+			//Guard band
+			if(dot(s_texcoord.zw - saturate(s_texcoord.zw), 1.0) != 0.0)
+				break;
+
+			//Fetch z-buffer
+			float2 s_depth = {
+				s_position.SampleLevel(smp_nofilter, s_texcoord.xy, 0.0f).x,
+				s_position.SampleLevel(smp_nofilter, s_texcoord.zw, 0.0f).x
+			};
+
+			//1st tap
+			//Manual unrolling, process 2 steps at the time
+			{
+				// Sample the view space position
+				float3 s_vector = GbufferGetPointRealUnjitter(s_texcoord.xy, s_depth.x);
+				s_vector -= view_position; //Occlusion vector
+
+				float s_vec_length = dot(s_vector, s_vector);
+				float s_horizon = dot(s_vector, view_direction) * rsqrt(s_vec_length);
+
+				//'Obscurance' term, basically a simple falloff known from HBAO/HBAO+. Just a MAD + saturate
+				float falloff = saturate(s_vec_length * GTAO_NEG_1_OVER_RADIUSQR + 1.0);
+				s_horizon = lerp(max_horizon_cos, s_horizon, falloff);
+
+				max_horizon_cos = max(max_horizon_cos, s_horizon);
+			}
+
+			//2nd tap
+			{
+				float3 s_vector = GbufferGetPointRealUnjitter(s_texcoord.zw, s_depth.y);
+				s_vector -= view_position;
+
+				float s_vec_length = dot(s_vector, s_vector);
+				float s_horizon = dot(s_vector, view_direction) * rsqrt(s_vec_length);
+
+				float falloff = saturate(s_vec_length * GTAO_NEG_1_OVER_RADIUSQR + 1.0);
+
+				s_horizon = lerp(max_horizon_cos, s_horizon, falloff);
+
+				max_horizon_cos = max(max_horizon_cos, s_horizon);
+			}
+		}
+
+		//This is an approximation of importance sampling (Horizon remap is baked into equation)
+		//Marty's MXAO uses smoothstep() which is a neat approximation (~2% error IIRC?).
+		//Note: 1.0 + sinNm - c_horizon_cos is identical to uniformly weighted GTAO (See Jimenez et al presentation for details)
+		max_horizon_cos = saturate(0.5 * sin(GTAO_HALF_PI * (1.0 + sin_n) - GTAO_HALF_PI * max_horizon_cos) + 0.5);
+
+		//Accumulate
+		//rcp(x) because we are supposed to weight samples by length of projected normal
+		occ_weight += float2(1.0 - max_horizon_cos, 1.0) * rcp(proj_normal_length_rcp);
+	}
+
+    //Normalize
+	occ_weight.x *= rcp(occ_weight.y);
+
+	//Compensate for missing side...
+	return saturate(1.0 - occ_weight.x * 2.0);
 }
 
-float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal, float zbuffer, float2 texcoord, float jitter)
-{
-    // Exclude HUD, and far plane geometry
-    if (view_position.z > 60.0f)
-    {
-        return 1.0f;
-    }
-
-    // Few constants
-    const float GTAO_PI = 3.1415927;
-    const float GTAO_HALF_PI = 1.5707964;
-
-    int GTAO_DIRECTIONS = 4; // Amount of hemisphere slices
-    float GTAO_THICKNESS = 0.75; // Thickness factor
-    float GTAO_RADIUS = 1.0; // World space radius
-    float GTAO_SECTORS = 24.0; // Amount of sectors distributed around the hemisphere slice
-
-    // Bias the depth to avoid self-intersections
-    view_position *= 0.996f;
-
-    // View direction
-    float3 view_direction = -normalize(view_position);
-
-    // Screen-space radius
-    float screen_radius = (GTAO_RADIUS * gtao_parameters) / view_position.z;
-
-    // Slice scale
-    float2 slice_scale = float2(pos_decompression_params2.z, -pos_decompression_params2.w) * screen_radius;
-
-    // Accumulated occlusion
-    float occlusion = 0.0f;
-
-    [loop]
-    for (int i = 0; i < GTAO_DIRECTIONS; i++)
-    {
-        // Generate uniform[no] disk. This is generally incorrect, but we don't care as this should run fast
-        float increment = (jitter + float(i)) / float(GTAO_DIRECTIONS);
-        float phi = increment * 2457.56; // If you know, you know :)
-
-        float3 slice_direction = (float3)0.0;
-        sincos(phi, slice_direction.y, slice_direction.x);
-        slice_direction.xy *= increment; // No sqrt(x), we want more detail in crevices
-
-        float2 omega[2] = {-slice_direction.xy * slice_scale, slice_direction.xy * slice_scale};
-
-        // Math from GTAO paper
-        float3 ortho_direction = slice_direction - (dot(slice_direction.xy, view_direction.xy) * view_direction);
-        float3 axis = cross(slice_direction, view_direction);
-        float3 proj_normal = view_normal - axis * dot(view_normal, axis);
-        float proj_normal_length = length(proj_normal);
-
-        float cos_n = saturate(dot(proj_normal, view_direction) / proj_normal_length);
-        float sign_n = dot(ortho_direction, proj_normal) >= 0.0 ? 1.0 : -1.0;
-        float n = sign_n * fastacos_approx(cos_n);
-
-        // Init bitfield
-        uint bitfield = 0u;
-
-        // Process each side
-        [unroll]
-        for (int side = 0; side < 2; side++)
-        {
-            float2 s_texcoord = texcoord.xy + omega[side];
-
-            // Guard band
-            if (dot(s_texcoord.xy - saturate(s_texcoord.xy), 1.0) != 0.0)
-            {
-                break;
-            }
-
-            // Sample the view space position
-            // float s_view_z = s_half_depth.SampleLevel(smp_nofilter, s_texcoord, 0.0).x;
-            float3 s_view_position = GbufferGetPointRealUnjitter(s_texcoord);
-
-            // Get front and back vectors
-            float3 s_front_vector = s_view_position - view_position;
-            float3 s_back_vector = s_front_vector - view_direction * GTAO_THICKNESS;
-
-            float2 s_horizon_v = float2(dot(s_front_vector, view_direction), dot(s_back_vector, view_direction));
-            s_horizon_v *= float2(rsqrt(dot(s_front_vector, s_front_vector)), rsqrt(dot(s_back_vector, s_back_vector)));
-            s_horizon_v = float2(fastacos_approx(s_horizon_v.x), fastacos_approx(s_horizon_v.y));
-            s_horizon_v = side == 0 ? s_horizon_v : -s_horizon_v.yx; // Tricky part - sorting. Thanks to MartyMcFly for help!
-            s_horizon_v = saturate((s_horizon_v + n + GTAO_HALF_PI) / GTAO_PI);
-
-            // Floor=full sector | round=half sector
-            uint a = uint(s_horizon_v.x * GTAO_SECTORS);
-            uint b = uint(floor(saturate(s_horizon_v.y - s_horizon_v.x) * GTAO_SECTORS));
-
-            // Update the bitfield
-            bitfield |= ((1u << b) - 1u) << a;
-        }
-        occlusion += saturate(1.0 - countbits(bitfield) / GTAO_SECTORS); // Attempt to account for bias...
-    }
-    // Normalize
-    occlusion /= GTAO_DIRECTIONS;
-
-    // Because we are *always* working in sRGB, it makes sense to square AO contribution
-    return occlusion * occlusion;
-}
-
+Texture3D s_blue_noise;
 uint main(PSInput I) : SV_Target
 {
-    uint2 pixel_index = uint2(floor(I.hpos.xy)) & 3;
+	//Sample blue noise texture
+	//You can replace 0 with m_taa_jitter.w % 32 to animate it (texture contains 32 frames)
+	float3 jitter_tex = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, 0)].xyz;
 
-    // This noise pattern seems to work best
-    float noise_pattern[16] =
+	//Unpack G-Buffer data...
+	float3 Normal, Point;
 	{
-		0.40625, 0.71875, 0.03125, 0.84375,
-		0.90625, 0.78125, 0.34375, 0.21875,
-		0.53125, 0.15625, 0.65625, 0.28125,
-		0.96875, 0.59375, 0.09375, 0.46875
-	};
-
-    float jitter = noise_pattern[pixel_index.x + pixel_index.y * 4u];
-
-    // Unpack G-Buffer data...
-    float3 Normal, Point; float Depth;
-    {
-        Normal = s_normal.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).xyz;
-        Normal = NormalDecode(Normal.xy);
-		
-        Depth = s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x;
-        Point = GbufferGetPointRealUnjitter(I.texcoord.xy, Depth);
+		Normal = s_normal.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).xyz;
+		Normal = NormalDecode(Normal.xy);
+		Point = GbufferGetPointRealUnjitter(I.texcoord.xy, s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x);
     }
 
-    // Init
-    float occlusion = example_how_to_not_implement_gtao(Point, Normal, Depth, I.texcoord.xy, jitter);
+	//Init. Don't render GTAO past 60 units. It will become a noisy mess...
+	//View-pos is shifted towards view normal; this eliminates self-occlusion
+	float occlusion = Point.z > 60.0 ? 1.0 : example_how_to_not_implement_gtao(Point + Normal * 0.0035, Normal, I.texcoord.xy, jitter_tex.xy);
 
-    // Pack the data into R32_UINT
-    uint2 packed = uint2(asuint(f32tof16(Point.z)), (asuint(f32tof16(occlusion)) << 16));
-    return packed.x | packed.y;
+	//Pack the data into R32_UINT (16 bits for depth, and 16 for occlusion)
+	return asuint(f32tof16(Point.z)) | (asuint(f32tof16(occlusion)) << 16);
 }
-
