@@ -1,4 +1,4 @@
-#if ( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if ( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1) ) 
 #define EXTEND_F_DEFFER
 #endif
 
@@ -16,17 +16,28 @@ float4 	main	( p_flat I ) : SV_Target
 
 #else	//	ATOC
 
+#ifdef	MSAA_ALPHATEST_DX10_1_ATOC
+f_deffer 	main	( p_flat I, float4 pos2d : SV_Position )
+#else	//	MSAA_ALPHATEST_DX10_1_ATOC
 f_deffer 	main	( p_flat I )
+#endif	//	MSAA_ALPHATEST_DX10_1_ATOC
 {
   f_deffer	O;
 
   // 1. Base texture + kill pixels with low alpha
   
-#if !( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if !defined(MSAA_ALPHATEST_DX10_1)
+
   float4 D 	= tbase	 	(I.tcdh);
-#ifndef	MSAA_ALPHATEST_ATOC
-	clip		(D.w-def_aref);
-#endif	//	MSAA_ALPHATEST_ATOC
+
+#if	!( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_0_ATOC) )
+	clip					(D.w-def_aref);
+#endif	//	!( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1_ATOC) )
+#ifdef 	MSAA_ALPHATEST_DX10_1_ATOC
+	float alpha = (D.w-def_aref*0.5f)/(1-def_aref*0.5f);
+	uint mask = alpha_to_coverage ( alpha, pos2d );
+#endif	//	MSAA_ALPHATEST_DX10_1_ATOC
+
 #else
   uint mask = 0x0;
   float2 ddx_base = ddx( I.tcdh );
@@ -77,7 +88,7 @@ f_deffer 	main	( p_flat I )
 
   // 2. Standart output
   float4 Ne     = float4	(normalize((float3)I.N.xyz), 					h			);
-#if !( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if !( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1) )
   O				= pack_gbuffer(
   								Ne,
 								float4 	(I.position.xyz + Ne.xyz*def_virtualh/2.h	, 	ms			),

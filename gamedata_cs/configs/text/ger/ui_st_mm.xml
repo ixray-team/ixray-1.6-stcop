@@ -675,4 +675,13 @@
 	<string id="ui_st_invalid_saved_game">
 		<text>Die Spielversion des Spielstands stimmt nicht mit der aktuellen Spielversion überein.</text>
 	</string>
+	<string id="st_opt_atest_msaa_dx10_0">
+		<text>DX10.0-Modus [Standard]</text>
+	</string>
+	<string id="st_opt_atest_msaa_dx10_1">
+		<text>DX10.1-Modus [Höhere Qualität]</text>
+	</string>
+	<string id="st_opt_ultra">
+		<text>Ultra</text>
+	</string>
 </string_table>

@@ -675,4 +675,13 @@
 	<string id="ui_st_invalid_saved_game">
 		<text>Wersja gry z której pochodzi zapisany stan nie odpowiada wersji zainstalowanej.</text>
 	</string>
+	<string id="st_opt_atest_msaa_dx10_0">
+		<text>Režim DX10.0 [standardní]</text>
+	</string>
+	<string id="st_opt_atest_msaa_dx10_1">
+		<text>Režim DX10.1 [vyšší kvalita]</text>
+	</string>
+	<string id="st_opt_ultra">
+		<text>Ultra</text>
+	</string>
 </string_table>

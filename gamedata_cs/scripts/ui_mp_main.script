@@ -566,6 +566,10 @@ function mp_main:OnKeyboard(dik, keyboard_action)
 	return true
 end
 
+function mp_main:on_show_script()
+	self.cdkey:Show(true)
+end
+
 function mp_main:Update()
 	CUIScriptWnd.Update(self)
 	
