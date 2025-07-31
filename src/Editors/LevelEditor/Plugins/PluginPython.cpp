@@ -33,8 +33,12 @@ xr_string CPluginPython::RunCommand(const xr_string& command)
 	PROCESS_INFORMATION pi;
 	xr_string cmd = "cmd /C " + command;
 
+	// Указываем рабочий каталог
+	string_path Root;
+	FS.update_path(Root, "$fs_root$", "");
+
 	// Создаем процесс
-	if (!CreateProcessA(nullptr, const_cast<char*>(cmd.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi))
+	if (!CreateProcessA(nullptr, const_cast<char*>(cmd.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW, nullptr, Root, &si, &pi))
 	{
 		CloseHandle(hRead);
 		CloseHandle(hWrite);
@@ -59,6 +63,7 @@ xr_string CPluginPython::RunCommand(const xr_string& command)
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 
+	output = Platform::ANSI_TO_UTF8(output);
 	return output;
 }
 
