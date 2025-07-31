@@ -68,10 +68,10 @@ void CLevelPreferences::Load()
 
 	if (JSONData["ContentBrowser"].contains("ISEPath"))
 	{
-		GContentView->ISEPath = JSONData["ContentBrowser"]["ISEPath"];
+		GContentView->VirtualPath = JSONData["ContentBrowser"]["ISEPath"];
 		if (GContentView->IsSpawnElement)
 		{
-			GContentView->RescanISEDirectory(GContentView->ISEPath);
+			GContentView->RescanISEDirectory(GContentView->VirtualPath);
 		}
 	}
 	
@@ -117,7 +117,7 @@ void CLevelPreferences::Save()
 	JSONData["Compilers Path"]["xrDO"] = Compiler_xrDO.c_str();
 
 	JSONData["ContentBrowser"]["CurPath"] = GContentView->CurrentDir;
-	JSONData["ContentBrowser"]["ISEPath"] = GContentView->ISEPath;
+	JSONData["ContentBrowser"]["ISEPath"] = GContentView->VirtualPath;
 	JSONData["ContentBrowser"]["IsSpawnElement"] = GContentView->IsSpawnElement;
 	JSONData["ContentBrowser"]["ViewMode"] = GContentView->ViewMode;
 

@@ -14,5 +14,5 @@ public:
 
 private:
     UIRenderForm View;
-    CSceneObject* ViewMesh = nullptr;
+    CEditableObject* ViewMesh = nullptr;
 };
