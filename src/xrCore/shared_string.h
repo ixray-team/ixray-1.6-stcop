@@ -40,13 +40,7 @@ public:
 
 	str_value* dock(str_c value);
 	void clean();
-	void dump();
-	void dump(IWriter* W);
-	void verify();
 	u32  stat_economy();
-#ifdef PROFILE_CRITICAL_SECTIONS
-	str_container() :cs(MUTEX_PROFILE_ID(str_container)) {}
-#endif // PROFILE_CRITICAL_SECTIONS
 };
 XRCORE_API extern str_container* g_pStringContainer;
 
