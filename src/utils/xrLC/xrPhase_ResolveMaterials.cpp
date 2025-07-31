@@ -61,11 +61,9 @@ void	CBuild::xrPhase_ResolveMaterials()
 			g_XSplit[I]->reserve	(counts[I].dwCount);
 		}
 
-		std::for_each(std::execution::par, lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(),
-		[&](Face* F)
+		std::for_each(std::execution::par, lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
 		{
-			// Face*	F							= *F_it;
-			if (!F->Shader().flags.bRendering)
+ 			if (!F->Shader().flags.bRendering)
 				return;		// continue;
 
 			for (u32 I = 0; I < counts.size(); I++)
