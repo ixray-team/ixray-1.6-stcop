@@ -26,6 +26,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 {
 	bIsLevelEditor = true;
 
+	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS))
+	{
+		Msg("! SDL_Init Error: %s", SDL_GetError());
+		return 0;
+	}
+
 	splash::show(IDB_LE);
 
 	splash::update(5, "Initializing Debugger");
@@ -147,16 +153,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 			case SDL_EVENT_KEY_DOWN:
 				if (UI)
 				{
-					UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
-					UI->ApplyShortCutInput(Event.key.keysym.scancode);
+					UI->KeyDown(Event.key.scancode, UI->GetShiftState());
+					UI->ApplyShortCutInput(Event.key.scancode);
 
 					if (UI->IsPlayInEditor())
 					{
 						if (pInput->IsAcquire)
 						{
-							pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, true);
+							pInput->KeyboardButtonUpdate(Event.key.scancode, true);
 						}
-						else if (Event.key.keysym.scancode == SDL_SCANCODE_LALT)
+						else if (Event.key.scancode == SDL_SCANCODE_LALT)
 						{
 							pInput->acquire();
 							UI->IsEnableInput = false;
@@ -166,12 +172,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 				}break;
 			case SDL_EVENT_KEY_UP:
 				if (UI) {
-					UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
+					UI->KeyUp(Event.key.scancode, UI->GetShiftState());
 					if(UI->IsPlayInEditor() && pInput->IsAcquire) 
 					{
 						if (pInput->IsAcquire)
 						{
-							pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, false);
+							pInput->KeyboardButtonUpdate(Event.key.scancode, false);
 						}
 					}
 				}
