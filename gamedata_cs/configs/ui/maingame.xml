@@ -128,6 +128,9 @@
 		<resist_back_psi x="236" y="-115" width="28" height="28">
 			<texture>ui_hud2_res_back</texture>
 		</resist_back_psi>
+		<resist_back_starvation x="236" y="-145" width="23" height="28">
+			<texture>ui_hud2_res_back</texture>
+		</resist_back_starvation>
 
 		<indik_rad  x="239" y="-22" width="22" height="22" light_anim="la_hud1" la_cyclic="1" la_texture="1" la_text="0" la_alpha="0">
 			<texture>ui_hud2_res_rad</texture>
@@ -141,7 +144,9 @@
 		<indik_psi x="239" y="-112" width="22" height="22" light_anim="la_hud1" la_cyclic="1" la_texture="1" la_text="0" la_alpha="0">
 			<texture>ui_hud2_res_psi</texture>
 		</indik_psi>
-
+		<indicator_starvation x="239" y="-142" width="22" height="22">
+			<texture>ui_hud2_res_eat</texture>
+		</indicator_starvation>
 
 		<progress_bar_health x="35" y="56" width="114" height="9" horz="1" min="0" max="100" pos="0">
 			<progress>
