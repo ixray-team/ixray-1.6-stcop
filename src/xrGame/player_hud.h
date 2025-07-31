@@ -20,6 +20,7 @@ struct player_hud_motion
 	shared_str				m_alias_name;
 	shared_str				m_base_name;
 	shared_str				m_additional_name;
+	xr_vector<shared_str>	m_bone_parts;
 	float					m_anim_speed;
 	xr_vector<motion_descr>	m_animations;
 };
