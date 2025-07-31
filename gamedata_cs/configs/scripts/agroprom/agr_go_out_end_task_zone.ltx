@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_info = {=actor_on_level(agroprom) +agru_end_agroprom_underhround} sr_idle@end %+agru_go_out_end_task_complete%
+
+[sr_idle@end]

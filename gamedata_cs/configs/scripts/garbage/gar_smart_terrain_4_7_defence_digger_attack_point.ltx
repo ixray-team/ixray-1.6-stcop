@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle@spawn
+
+[sr_idle@spawn]
+on_info = {+gar_quest_meet_with_digger_fighters_started} sr_idle@start %=clear_smart_terrain(gar_smart_terrain_4_7) =create_squad(gar_digger_fighters:gar_smart_terrain_4_7)%
+
+[sr_idle@start]
+on_actor_inside = sr_idle@end_section %+gar_quest_meet_with_digger_fighters_done%
+on_info = {=counter_greater(conc_camp_in_combat:0)} nil %+gar_quest_meet_with_digger_fighters_done%
+
+[sr_idle@end_section]

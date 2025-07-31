@@ -1,0 +1,29 @@
+[logic]
+active = ph_door@open
+
+[ph_door@open]
+locked = false
+closed = false
+snd_open_start = wood_large_open
+snd_close_start = wood_large_close_start
+snd_close_stop = wood_large_close_stop
+on_info =  {=is_smart_in_combat(esc_smart_terrain_5_7) !get_task_by_smart(esc_smart_terrain_5_7)}
+on_use = ph_door@close
+
+[ph_door@close]
+locked = false
+closed = true
+snd_open_start = wood_large_open
+snd_close_start = wood_large_close_start
+snd_close_stop = wood_large_close_stop
+on_info = {+esc_mission_2_stalker_leader_complete -esc_take_habar_complete} ph_door@open
+on_info2 = {=is_smart_in_combat(esc_smart_terrain_5_7) !get_task_by_smart(esc_smart_terrain_5_7)}
+on_use = ph_door@open
+
+[ph_door@locked]
+locked = true
+closed = true
+snd_open_start = wood_large_open
+snd_close_start = wood_large_close_start
+snd_close_stop = wood_large_close_stop
+on_info = {!is_smart_in_combat(esc_smart_terrain_5_7)} ph_door@open

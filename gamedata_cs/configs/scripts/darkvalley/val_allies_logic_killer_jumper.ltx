@@ -1,0 +1,214 @@
+;------------------------------killer_jumper_1------------------
+[logic@work100]
+active = walker@start_work1
+suitable = {=check_npc_name(val_killer_sniper_6)} true
+prior = 200
+
+[walker@start_work1]
+path_walk = killer_1_jumper_1_walk
+path_look = killer_1_jumper_1_look
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_out_restr_1_4
+no_retreat = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+radius = 10
+on_signal = anim_start | remark@work1
+
+[remark@work1]
+anim = jump_down_arena_1_crop
+meet = no_meet
+on_info = %=restore_health%
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = anim_end | walker@start_work1_1
+
+[walker@start_work1_1]
+path_walk = killer_1_jumper_2_walk
+path_look = killer_1_jumper_2_look
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+radius = 10
+
+;------------------------------killer_jumper_2------------------
+[logic@work200]
+active = walker@start_work2
+suitable = {=check_npc_name(val_killer_sniper_7)} true
+prior = 200
+
+[walker@start_work2]
+path_walk = killer_2_jumper_1_walk
+path_look = killer_2_jumper_1_look
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_out_restr_1_4
+radius = 10
+on_signal = anim_start | remark@work2
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[remark@work2]
+anim = jump_down_arena_1_crop
+meet = no_meet
+on_info = %=restore_health%
+on_signal = anim_end | walker@start_work2_1
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[walker@start_work2_1]
+path_walk = killer_2_jumper_2_walk
+path_look = killer_2_jumper_2_look
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+radius = 10
+
+;------------------------------killer_jumper_3------------------
+[logic@work300]
+active = walker@start_work3
+suitable = {=check_npc_name(val_killer_sniper_8)} true
+prior = 200
+
+[walker@start_work3]
+path_walk = killer_3_jumper_1_walk
+path_look = killer_3_jumper_1_look
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_out_restr_1_4
+radius = 10
+on_signal = anim_start | remark@work3
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[remark@work3]
+anim = jump_down_arena_1_crop
+meet = no_meet
+on_info = %=restore_health%
+on_signal = anim_end | walker@start_work3_1
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[walker@start_work3_1]
+path_walk = killer_3_jumper_2_walk
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = smart_cover | smartcover@jumper3
+radius = 10 
+
+[smartcover@jumper3]
+cover_name = val_killer_3_jumper_smartcover_1
+target_path = val_killer_3_jumper_smartcover_1_target
+;cover_state = fire_target
+
+
+;------------------------------killer_jumper_4------------------
+[logic@work400]
+active = walker@start_work4
+suitable = {=check_npc_name(val_killer_sniper_9)} true
+prior = 200
+
+[walker@start_work4]
+path_walk = killer_4_jumper_1_walk
+path_look = killer_4_jumper_1_look
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_out_restr_1_4
+radius = 10
+on_signal = anim_start | remark@work4
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[remark@work4]
+anim = jump_down_arena_1_crop
+meet = no_meet
+on_info = %=restore_health%
+on_signal = anim_end | walker@start_work4_1
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[walker@start_work4_1]
+path_walk = killer_4_jumper_2_walk
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = smart_cover | smartcover@jumper4
+radius = 10 
+
+[smartcover@jumper4]
+cover_name = val_killer_4_jumper_smartcover_1
+target_path = val_killer_4_jumper_smartcover_1_target
+;cover_state = fire_target
+on_info2 = {=fighting_dist_le(5)} remark@work4_1
+
+[remark@work4_1]
+out_restr = val_smart_terrain_1_2_defence
+on_info = {=fighting_dist_ge(5)} smartcover@jumper4
+
+;------------------------------killer_jumper_5------------------
+[logic@work500]
+active = walker@start_work5
+suitable = {=check_npc_name(val_killer_sniper_10)} true
+prior = 200
+
+[walker@start_work5]
+path_walk = killer_5_jumper_1_walk
+path_look = killer_5_jumper_1_look
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+out_restr = val_out_restr_1_4
+radius = 10
+on_signal = anim_start | remark@work5
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+
+[remark@work5]
+anim = jump_down_arena_1_crop
+meet = no_meet
+on_info = %=restore_health%
+on_signal = anim_end | walker@start_work5_1
+
+[walker@start_work5_1]
+path_walk = killer_5_jumper_2_walk
+meet = no_meet
+def_state_campering = threat_na
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = smart_cover | smartcover@jumper5
+radius = 10 
+
+[smartcover@jumper5]
+cover_name = val_killer_5_jumper_smartcover_1
+target_path = val_killer_5_jumper_smartcover_1_target
+;cover_state = fire_target
+on_info2 = {=fighting_dist_le(5)} remark@work5_1
+
+[remark@work5_1]
+out_restr = val_smart_terrain_1_2_defence
+on_info = {=fighting_dist_ge(5)} smartcover@jumper5

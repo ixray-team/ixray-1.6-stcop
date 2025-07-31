@@ -1,0 +1,12 @@
+#include "common.h"
+
+struct	ui_vert_out
+{
+ 	half2 	tc0		: TEXCOORD0;
+};
+
+half4 	main ( ui_vert_out I )	: SV_Target
+{
+	half4 r	= s_base.Sample( smp_base, I.tc0 );
+	return r;
+}

@@ -1,0 +1,175 @@
+;*****************************
+;********* csky 1 ***********
+[logic@csky_work1]
+active = remark@attack_work1
+suitable = {=check_npc_name(lim_csky_commander) =is_gulag_attacking_target(lim_smart_terrain_6) -lim_military_minigun_out} true
+prior = 170
+post_combat_time = 0,0
+
+[remark@attack_work1]
+invulnerable = true
+path_walk = kamp_1_task
+combat_ignore_cond = true
+anim = threat
+on_game_timer = 20 | smartcover@wait_work1 %=request_current_squad_stage(prepare)%
+
+[smartcover@wait_work1]
+invulnerable = true
+path_walk = kamp_1_task
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_1
+;target_path = lim_smart_terrain_5_smartcover_1_fire_point
+;on_game_timer = 150 | {+lim_condition5} smartcover@fire_work1
+on_actor_dist_le_nvis = 5 | {-lim_bridge_csky_fire} smartcover@talk_work1 %+lim_find_bridge_squad_comander_complete =play_sound(lim_cs_storm_troop2_leader_to_actor1)%
+
+[smartcover@talk_work1]
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_1
+target_path = lim_smart_terrain_5_smartcover_1_fire_point
+cover_state = idle_target
+on_signal = sound_end | smartcover@talk2_work1 %=play_sound(lim_cs_storm_troop2_leader_to_actor2)%
+
+[smartcover@talk2_work1]
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_1
+target_path = lim_smart_terrain_5_smartcover_1_fire_point
+cover_state = idle_target
+on_signal = sound_end | smartcover@talk3_work1 %=play_sound(lim_cs_storm_troop2_leader_to_actor3)%
+
+[smartcover@talk3_work1]
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_1
+target_path = lim_smart_terrain_5_smartcover_1_fire_point
+cover_state = idle_target
+on_signal = sound_end | smartcover@talk4_work1 %=play_sound(lim_cs_storm_troop2_leader_order2) +lim_military_minigun_task%
+
+[smartcover@talk4_work1]
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_1
+target_path = lim_smart_terrain_5_smartcover_1_fire_point
+cover_state = idle_target
+on_signal = sound_end | smartcover@fire_work1 %+lim_bridge_csky_fire%
+
+[smartcover@fire_work1]
+invulnerable = true
+meet = no_meet
+;combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_1
+target_path = lim_smart_terrain_5_smartcover_1_fire_point
+cover_state = fire_target
+on_game_timer = 100 | smartcover@wait2_work1
+on_info = {+lim_military_minigun_out}
+
+[smartcover@wait2_work1]
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_1
+on_game_timer = 100 | smartcover@fire_work1
+on_info = {+lim_military_minigun_out}
+
+;************************
+
+[logic@csky_work2]
+active = smartcover@wait_work2
+suitable = {=check_npc_name(lim_csky_soldier) -lim_military_minigun_out} true
+prior = 170
+post_combat_time = 0,0
+
+[smartcover@wait_work2]
+invulnerable = true
+meet = no_meet
+path_walk = kamp_1_task
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_2
+;target_path = lim_smart_terrain_5_smartcover_2_fire_point
+on_game_timer = 100 | {+lim_bridge_csky_fire} smartcover@fire_work2 
+
+[smartcover@fire_work2]
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_2
+target_path = lim_smart_terrain_5_smartcover_2_fire_point
+cover_state = fire_target
+on_game_timer = 100 | smartcover@wait_work2
+ 
+;************************
+
+[logic@csky_work3]
+active = smartcover@wait_work3
+suitable = {=check_npc_name(lim_csky_soldier) -lim_military_minigun_out} true
+prior = 170
+post_combat_time = 0,0
+
+[smartcover@wait_work3]
+invulnerable = true
+meet = no_meet
+path_walk = kamp_1_task
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_3
+;target_path = lim_smart_terrain_5_smartcover_3_fire_point
+on_game_timer = 150 | {+lim_go_to_canal_complete} smartcover@fire_work3
+on_info = {+lim_bridge_csky_fire}  smartcover@fire2_work3
+
+[smartcover@fire_work3]
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_3
+target_path = lim_smart_terrain_5_smartcover_3_fire_point
+cover_state = fire_target
+on_game_timer = 50 | smartcover@wait_work3
+on_info = {+lim_bridge_csky_fire}  smartcover@fire2_work3
+
+[smartcover@fire2_work3]
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_3
+target_path = lim_smart_terrain_5_smartcover_3_fire_point
+cover_state = fire_target
+on_game_timer = 100 | smartcover@wait2_work3
+
+[smartcover@wait2_work3]
+invulnerable = true
+meet = no_meet
+path_walk = kamp_1_task
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_3
+;target_path = lim_smart_terrain_5_smartcover_3_fire_point
+on_game_timer = 150 | smartcover@fire2_work3
+
+;************************
+
+[logic@csky_work4]
+active = smartcover@wait_work4
+suitable = {=check_npc_name(lim_csky_soldier) -lim_military_minigun_out} true
+prior = 170
+post_combat_time = 0,0
+
+[smartcover@wait_work4]
+invulnerable = true
+meet = no_meet
+path_walk = kamp_1_task
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_4
+;target_path = lim_smart_terrain_5_smartcover_4_fire_point
+on_game_timer = 150 | {+lim_bridge_csky_fire} smartcover@fire_work4
+
+[smartcover@fire_work4]
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_5_smartcover_4
+target_path = lim_smart_terrain_5_smartcover_4_fire_point
+cover_state = fire_target
+on_game_timer = 100 | smartcover@wait_work4

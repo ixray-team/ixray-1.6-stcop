@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+red_bridge_scene_begin} sr_idle@spawn %=spawn_object(red_bridge_csky_commander:bridge_csky_spawn_way_1) =spawn_object(red_bridge_csky_soldier_1:bridge_csky_spawn_way_1) =spawn_object(red_bridge_csky_soldier_2:bridge_csky_spawn_way_1)%
+
+[sr_idle@spawn]
+on_info = sr_idle@wait %=spawn_object(red_bridge_csky_soldier_3:bridge_csky_spawn_way_1) =spawn_object(red_bridge_csky_soldier_4:bridge_csky_spawn_way_1)%
+
+
+
+[sr_idle@wait]
+on_info = nil %=spawn_object(red_bridge_csky_soldier_5:bridge_csky_spawn_way_1) =spawn_object(red_bridge_csky_soldier_6:bridge_csky_spawn_way_1) =spawn_object(red_bridge_csky_soldier_7:bridge_csky_spawn_way_1)%

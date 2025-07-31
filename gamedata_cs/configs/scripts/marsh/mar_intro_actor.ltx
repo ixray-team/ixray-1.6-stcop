@@ -1,0 +1,10 @@
+[logic]
+active = remark@scene_1_end
+
+;[remark@scene_1_start]
+;on_info = {+mar_intro_start} remark@scene_1_end
+
+[remark@scene_1_end]
+anim = mar_intro_1_actor
+on_info = {+mar_intro_scene_1_end} nil %=destroy_object%
+meet = no_meet

@@ -1,0 +1,22 @@
+[logic]
+active = sr_idle@spawn2
+
+[sr_idle@spawn]
+on_info = {-duty_help_csky -freedom_help_csky} sr_idle@spawn2 %=spawn_object(lim_ambush_2_enemy_1_stalker:lim_smart_terrain_3_spec_wait_1_walk) =spawn_object(lim_ambush_2_enemy_2_stalker:lim_smart_terrain_3_spec_wait_2_walk) =spawn_object(lim_ambush_2_enemy_3_stalker:lim_smart_terrain_3_spec_wait_3_walk) =spawn_object(lim_ambush_2_enemy_4_stalker:lim_smart_terrain_3_spec_wait_4_walk) =spawn_object(lim_ambush_2_enemy_5_stalker:lim_smart_terrain_3_spec_wait_5_walk)%
+
+[sr_idle@spawn2]
+on_info = {-duty_help_csky -freedom_help_csky} sr_idle@ambush %=spawn_npc_in_zone(lim_enemy_stalker_2:lim_winfire_zone_enemy2_1) =spawn_npc_in_zone(lim_enemy_stalker_2:lim_winfire_zone_enemy2_8) =spawn_npc_in_zone(lim_enemy_stalker_2:lim_winfire_zone_enemy2_9) =spawn_npc_in_zone(lim_enemy_stalker_2:lim_winfire_zone_enemy2_10)%
+
+[sr_idle@ambush]
+on_info = {=actor_in_zone(lim_check_1_restr)} sr_idle %+lim_ambush2%
+on_info2 = {=squad_in_zone(lim_csky_storm_troops2:lim_check_1_restr)} sr_idle %+lim_ambush2%
+
+[sr_idle]
+;on_info = {=counter_equal(lim_ambush2_count:0)} sr_idle@1 %+lim_smart_3_captured%
+on_info = {!squad_exist(lim_monolith_ambush2_squad)} sr_idle@1 %+lim_smart_3_captured%
+
+[sr_idle@1]
+on_info = {=smart_captured_by_faction(lim_smart_terrain_3:csky)} sr_idle@nil %+lim_condition4 =update_squad(lim_csky_storm_troops2)%
+
+[sr_idle@nil]
+;on_info = {=actor_}

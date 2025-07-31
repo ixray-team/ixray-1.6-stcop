@@ -1,0 +1,10 @@
+<!-- <actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog> -->
+<start_dialog>dm_hello_dialog</start_dialog>
+<actor_dialog>tm_random_task</actor_dialog>
+<actor_dialog>guiders_dialog</actor_dialog>
+<actor_dialog>dm_information_dialog</actor_dialog>
+<actor_dialog>dm_occupation_dialog</actor_dialog>
+<actor_dialog>dm_place_dialog</actor_dialog>
+<actor_dialog>recover_item_task</actor_dialog>
+<actor_dialog>bring_item_task</actor_dialog>
+<actor_dialog>actor_news_dialog</actor_dialog>

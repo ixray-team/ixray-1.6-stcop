@@ -1,0 +1,98 @@
+-- Andrey "Bandicoot" Zakoliukin --
+
+
+
+-- transfer functions
+
+function transfer_ammo(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_spas12")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_12x76_zhekan", 3)
+end
+
+
+
+-- task reward
+
+function agr_additional_quest_5b_reward(first_speaker, second_speaker)
+	task_manager.get_task_manager():immediate_give_reward(first_speaker,second_speaker,"agr_additional_quest_5b")
+end
+
+function agr_additional_quest_6b_reward(first_speaker, second_speaker)
+	task_manager.get_task_manager():immediate_give_reward(first_speaker,second_speaker,"agr_additional_quest_6b")
+end
+
+function agr_additional_quest_7b_reward(first_speaker, second_speaker)
+	task_manager.get_task_manager():immediate_give_reward(first_speaker,second_speaker,"agr_additional_quest_7b")
+end
+
+
+-- transfer mechanic pda
+
+function transfer_mechanic_pda(first_speaker, second_speaker)
+    dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "agr_mechanic_pda")
+end
+
+function actor_has_mechanic_pda(first_speaker, second_speaker)
+		return first_speaker:object("agr_mechanic_pda") ~= nil
+end
+
+function actor_hasnt_mechanic_pda(first_speaker, second_speaker)
+		return not actor_has_mechanic_pda(first_speaker, second_speaker)
+end
+
+
+
+-- transfer secret trader pda
+
+function transfer_secret_trader_pda(first_speaker, second_speaker)
+    dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "agr_pda_for_secret_trader")
+end
+
+function actor_has_secret_trader_pda(first_speaker, second_speaker)
+		return first_speaker:object("agr_pda_for_secret_trader") ~= nil
+end
+
+function actor_hasnt_secret_trader_pda(first_speaker, second_speaker)
+		return not actor_has_mechanic_pda(first_speaker, second_speaker)
+end
+
+
+
+-- transfer map animals
+
+function transfer_map_animals(first_speaker, second_speaker)
+    dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "agr_map_animals")
+end
+
+function actor_has_map_animals(first_speaker, second_speaker)
+		return first_speaker:object("agr_map_animals") ~= nil
+end
+
+function actor_hasnt_map_animals(first_speaker, second_speaker)
+		return not actor_has_map_animals(first_speaker, second_speaker)
+end
+
+
+function is_smart_captured_by_bandits_1()
+	return xr_conditions.smart_captured_by_faction(nil,nil,{"agr_smart_terrain_6_4","bandit"})
+end
+
+function is_smart_not_captured_by_bandits_1()
+	return not xr_conditions.smart_captured_by_faction_1(nil,nil,{"agr_smart_terrain_6_4","bandit"})
+end
+
+function is_smart_captured_by_bandits_2()
+	return xr_conditions.smart_captured_by_faction(nil,nil,{"agr_smart_terrain_2_3","bandit"})
+end
+
+function is_smart_not_captured_by_bandits_2()
+	return not xr_conditions.smart_captured_by_faction_1(nil,nil,{"agr_smart_terrain_2_3","bandit"})
+end
+
+function is_smart_captured_by_monster()
+	return xr_conditions.smart_captured_by_faction(nil,nil,{"agr_smart_terrain_4_2","bandit"})
+end
+
+function is_smart_not_captured_by_monster()
+	return not xr_conditions.smart_captured_by_monster(nil,nil,{"agr_smart_terrain_4_2","bandit"})
+end

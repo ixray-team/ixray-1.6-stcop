@@ -1,0 +1,291 @@
+local level_scripts = {
+	escape_tasks,
+	garbage_tasks,
+	agroprom_tasks,
+	darkvalley_tasks,
+	bar_rostok_tasks,
+    yantar_tasks,
+    mil_tasks,
+	radar_tasks,
+	pripyat_tasks
+}
+
+
+local jump_level_by_name = {
+	l01_escape				= "l02_garbage",
+	l02_garbage				= "l03_agroprom",
+	l03_agroprom			= "l03u_agr_underground",
+	l03u_agr_underground	= "l04_darkvalley",
+	l04_darkvalley			= "l04u_labx18",
+	l04u_labx18				= "l05_bar",
+	l05_bar					= "l06_rostok",
+	l06_rostok				= "l07_military",
+	l07_military			= "l08_yantar",
+	l08_yantar				= "l08u_brainlab",
+	l08u_brainlab			= "l10_radar",
+	l10_radar				= "l10u_bunker",
+	l10u_bunker				= "l11_pripyat",
+	l11_pripyat				= "l12_stancia",
+	l12_stancia				= "l12u_sarcofag",
+	l12u_sarcofag			= "l12u_control_monolith",
+	l12u_control_monolith	= "l12_stancia_2",
+	l12_stancia_2			= "l01_escape"
+}
+
+function proceed()
+	if db.actor == nil then
+		return
+	end
+	for k, v in pairs( level_scripts ) do
+		v.proceed()
+	end
+
+end
+
+function autojump()
+end
+
+function process_info_portion(info_id)
+	if db.actor == nil then
+		return
+	end
+	for k, v in pairs( level_scripts ) do
+		if v.process_info_portion(info_id) then
+			return
+		end
+	end
+end
+
+function add_location(sid, location, hint)
+	local sim = alife()
+	if sim then
+		local obj = sim:story_object(sid)
+
+		if obj then
+			if hint then
+				if(_G.dev_debug) then
+					level.map_add_object_spot(obj.id, location, hint)
+				end
+			else
+				if(_G.dev_debug) then
+					level.map_add_object_spot(obj.id, location, "")
+				end
+			end
+		end
+	end
+end
+
+function remove_location(sid, location)
+	local sim = alife()
+	if sim then
+		local obj = sim:story_object(sid)
+        if(_G.dev_debug) then
+			if obj and level.map_has_object_spot(obj.id, location) then
+				level.map_remove_object_spot(obj.id, location)
+			end
+		end
+	end
+end
+
+function remove_location_safe(sid, location)
+	local sim = alife()
+	if sim then
+		local obj = sim:story_object(sid)
+		if obj then
+            if(_G.dev_debug) then
+	           for a = 1, level.map_has_object_spot(obj.id, location), 1 do
+	               level.map_remove_object_spot(obj.id, location)
+	           end
+			end
+		end
+	end
+end
+
+function is_map_spot_present(sid, location)
+	local sim = alife()
+	if sim then
+		local obj = sim:story_object(sid)
+        if(_G.dev_debug) then
+	        if obj and level.map_has_object_spot(obj.id, location) ~= 0 then
+	           return true
+	        end
+		end
+	end
+	return false
+end
+
+
+function add_lchanger_location()
+--[[
+	local sim = alife()
+	if sim then
+		-- escape
+		local obj = sim:story_object(91)
+		if obj then
+	        if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
+			end
+		end
+
+		-- garbage
+		obj = sim:story_object(191)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_agroprom")
+			end
+		end
+		obj = sim:story_object(192)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_agroprom")
+			end
+		end
+		obj = sim:story_object(193)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_escape")
+			end
+		end
+		obj = sim:story_object(194)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_bar")
+			end
+		end
+		obj = sim:story_object(195)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_darkvalley")
+			end
+		end
+		obj = sim:story_object(196)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_darkvalley")
+			end
+		end
+
+		-- agroprom
+		obj = sim:story_object(391)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
+			end
+		end
+		obj = sim:story_object(392)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
+			end
+		end
+
+		-- darkvalley
+		obj = sim:story_object(415)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
+			end
+		end
+		obj = sim:story_object(416)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
+			end
+		end
+		obj = sim:story_object(417)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_escape")
+			end
+		end
+
+		-- rostok
+		obj = sim:story_object(608)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_yantar")
+			end
+		end
+
+		-- bar
+		obj = sim:story_object(592)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_military")
+			end
+		end
+		obj = sim:story_object(593)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_garbage")
+			end
+		end
+		obj = sim:story_object(594)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "bar_rostok")
+			end
+		end
+
+		-- military
+		obj = sim:story_object(771)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_bar")
+			end
+		end
+		obj = sim:story_object(773)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_radar")
+			end
+		end
+
+		-- yantar
+		obj = sim:story_object(925)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_rostok")
+			end
+		end
+
+		-- radar
+		obj = sim:story_object(1007)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_pripyat")
+			end
+		end
+		obj = sim:story_object(1008)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_military")
+			end
+		end
+
+		-- pripyat
+		obj = sim:story_object(833)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_radar")
+			end
+		end
+		obj = sim:story_object(832)
+		if obj then
+            if(_G.dev_debug) then
+				level.map_add_object_spot(obj.id, "level_changer", "to_aes")
+			end
+		end
+	end
+]]
+end
+
+
+function set_task_state(id_state, id_task, id_subtask)
+	if db.actor then
+		db.actor:set_task_state(id_state, id_task, id_subtask)
+	end
+end
+
+function notify_new_task()
+end

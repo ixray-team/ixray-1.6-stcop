@@ -1,0 +1,39 @@
+--[[------------------------------------------------------------------------------------------------------------------
+Respawn binder
+--------------------------------------------------------------------------------------------------------------------]]
+
+function bind(obj)
+	printf("RESPAWN: [%s] binder called", obj:name())
+	local ini = obj:spawn_ini()
+
+	if not ini then
+		return
+	end
+
+	obj:bind_object(respawn_binder(obj))
+end
+
+----------------------------------------------------------------------------------------------------------------------
+
+class "respawn_binder" ( object_binder )
+function respawn_binder:__init( obj ) super( obj )
+	printf("RESPAWN: [%s] binded", obj:name())
+end
+function respawn_binder:net_spawn( server_object )
+	if not object_binder.net_spawn( self, server_object ) then
+		return false
+	end
+
+	-- получить ссылку на настоящий серверный объект
+	self.se_respawn = alife():object( server_object.id )
+	printf("RESPAWN: [%s] net_spawn", self.object:name())
+	return true
+end
+function respawn_binder:net_destroy()
+	printf("RESPAWN: [%s] net_destroy", self.object:name())
+	object_binder.net_destroy( self )
+end
+function respawn_binder:update( delta )
+	object_binder.update( self, delta )
+	self.se_respawn:update_online()
+end

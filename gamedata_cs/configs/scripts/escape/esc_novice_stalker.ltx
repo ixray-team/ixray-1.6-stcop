@@ -1,0 +1,62 @@
+[logic]
+active = walker@prewait
+meet = meet
+on_death = death
+on_hit = hit
+
+[walker@prewait]
+wounded = wounded
+path_walk = esc_novice_stalker_walk_1
+path_look = esc_novice_stalker_look_1
+on_info = {+esc_stalker_novice_defend} walker@wait
+on_info2 = {+esc_wolf_novice_2} walker@run
+on_info3 = {!squad_exist(esc_dogs_lair_guard_5_12)} walker@run %+esc_wolf_novice_2%
+meet = meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_novice_stalker_out_restr
+
+[walker@wait]
+wounded = wounded
+path_walk = esc_novice_stalker_walk_1
+path_look = esc_novice_stalker_look_1
+on_info = {+esc_wolf_novice_2} walker@run
+on_info2 = {!squad_exist(esc_dogs_lair_guard_5_12)} walker@run %+esc_wolf_novice_2%
+meet = meet
+out_restr = esc_novice_stalker_out_restr
+
+[walker@run]
+wounded = wounded
+path_walk = esc_novice_stalker_walk_2
+path_look = esc_novice_stalker_look_2
+def_state_moving = run
+meet = no_meet
+on_info = {-esc_novice_info_enemy_dogs =squad_exist(esc_dogs_lair_guard_5_12)} %=set_squad_goodwill_to_npc(esc_dogs_lair_guard_5_12:enemy) +esc_novice_info_enemy_dogs%
+on_npc_in_zone = 433 | esc_space_restrictors_2_12_sr_defense | walker@walk
+on_actor_dist_ge_nvis = 100 | walker@death %+esc_stalker_novice_fail =kill_npc%
+
+[walker@death]
+wounded = wounded
+path_walk = esc_novice_stalker_walk_2
+path_look = esc_novice_stalker_look_2
+meet = no_meet
+
+[walker@walk]
+wounded = wounded
+path_walk = esc_novice_stalker_walk_2
+path_look = esc_novice_stalker_look_2
+on_info = %+esc_wolf_novice_3%
+
+[death]
+on_info = %+esc_stalker_novice_fail%
+
+[hit]
+on_info = %+esc_stalker_novice_hit%
+
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false

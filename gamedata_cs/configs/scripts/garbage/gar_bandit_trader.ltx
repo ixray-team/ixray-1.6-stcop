@@ -1,0 +1,49 @@
+[meet]
+meet_state 		= 5|nil@nil
+sound_start 	= gar_bandit_trader_meet
+sound_stop 		= gar_bandit_trader_meet_bye
+use_wpn	= true
+use = true
+quest_npc = true
+
+[logic]
+active = walker@trader
+;suitable = {=check_npc_name(gar_bandit_trader)}
+;prior = 130
+level_spot = trader
+trade = misc\trade\trade_trader_gar_bandit.ltx
+
+[walker@trader]
+path_walk = gar_smart_terrain_3_5_bandit_trader_walk
+path_look = gar_smart_terrain_3_5_bandit_trader_look
+on_signal = turn_end | smartcover@look_at_table_idle_trader
+def_state_standing = ward_noweap
+out_restr = gar_space_restrictor_bandit_trader_in
+meet = meet
+
+[smartcover@look_at_table_idle_trader]
+cover_name = gar_smart_cover_bandit_trader_lead_stand_look_at_table
+loophole_name = lead_stand_look_at_table
+cover_state = idle_target
+on_timer = 15000 | {~50} smartcover@look_at_table_fire_trader, smartcover@look_at_table_fire_no_lookout_trader
+out_restr = gar_space_restrictor_bandit_trader_in
+meet = meet
+;target_path = gar_smart_terrain_3_5_bandit_trader_look
+
+[smartcover@look_at_table_fire_trader]
+cover_name = gar_smart_cover_bandit_trader_lead_stand_look_at_table
+loophole_name = lead_stand_look_at_table
+cover_state = fire_target
+on_timer = 15000 | {~50} smartcover@look_at_table_idle_trader, smartcover@look_at_table_fire_no_lookout_trader
+out_restr = gar_space_restrictor_bandit_trader_in
+meet = meet
+;target_path = gar_smart_terrain_3_5_bandit_trader_look
+
+[smartcover@look_at_table_fire_no_lookout_trader]
+cover_name = gar_smart_cover_bandit_trader_lead_stand_look_at_table
+loophole_name = lead_stand_look_at_table
+cover_state = fire_no_lookout_target
+on_timer = 15000 | {~50} smartcover@look_at_table_idle_trader, smartcover@look_at_table_fire_trader
+out_restr = gar_space_restrictor_bandit_trader_in
+meet = meet
+;target_path = gar_smart_terrain_3_5_bandit_trader_look

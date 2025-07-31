@@ -1,0 +1,22 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+hospital_cs_entrance} sr_idle@spawn1 %=spawn_object(kat_hosp_z3_cs_commander:z3_cs_commander_walk_1:0) =spawn_object(kat_hosp_z3_cs_grenadier:z3_cs_grenadier_walk_1:0)%
+
+[sr_idle@spawn1]
+on_info = {-hospital_z3_cs_soldier1} %+hospital_z3_cs_soldier1 =spawn_object(kat_hosp_z3_cs_soldier1:z3_cs_soldier1_walk:0)%
+on_info2 = {-hospital_z3_cs_soldier2} %+hospital_z3_cs_soldier2 =spawn_object(kat_hosp_z3_cs_soldier2:z3_cs_soldier2_walk:0)%
+on_info3 = {-hospital_z3_cs_soldier3} %+hospital_z3_cs_soldier3 =spawn_object(kat_hosp_z3_cs_soldier3:z3_cs_soldier3_walk:0)%
+on_info4 = {-hospital_z3_cs_soldier4} %+hospital_z3_cs_soldier4 =spawn_object(kat_hosp_z3_cs_soldier4:z3_cs_soldier4_walk:0)%
+on_game_timer = 50 | sr_idle@pause
+
+[sr_idle@pause]
+on_game_timer = 200 | sr_idle@spawn1
+on_info = {+hospital_cs_victory} sr_idle@1
+
+[sr_idle@1]
+on_info = {+hospital_z3_enemy_last_wave} sr_idle@wait
+
+[sr_idle@wait]
+on_game_timer = 300 | sr_idle@spawn1

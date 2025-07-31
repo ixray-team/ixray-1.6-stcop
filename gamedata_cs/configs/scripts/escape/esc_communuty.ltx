@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_info = {=gulag_enemy_actor(esc_smart_terrain_5_7) -esc_first_join_stalker} sr_idle@enemy %=give_inited_task(storyline:esc_stalker_enemy:csky) +esc_stalker_enemy%
+
+[sr_idle@enemy]
+on_info = {+esc_stalker_neutral} sr_idle@start %=set_level_faction_community(stalker:escape:neutral) -esc_stalker_enemy -esc_stalker_neutral%
+on_info2 = {=gulag_neutral_actor(esc_smart_terrain_5_7)} sr_idle@complete %+esc_stalker_neutral -esc_stalker_enemy%
+on_info3 = {=gulag_friend_actor(esc_smart_terrain_5_7)} sr_idle@complete %+esc_stalker_neutral -esc_stalker_enemy%
+
+[sr_idle@complete]
+on_info = sr_idle@start %-esc_stalker_neutral%

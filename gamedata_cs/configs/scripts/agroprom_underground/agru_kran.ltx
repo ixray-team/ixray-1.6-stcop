@@ -1,0 +1,16 @@
+[logic]
+active = ph_button@locked
+
+[ph_button@locked]
+anim_blend = false
+anim = stop
+on_press = ph_button@unlocked %+agru_leader_dolg_task_complete%
+tooltip = tips_kran_press
+
+[ph_button@unlocked]
+anim = rotate
+on_game_timer = 10 | ph_button@end
+
+[ph_button@end]
+anim = stop
+

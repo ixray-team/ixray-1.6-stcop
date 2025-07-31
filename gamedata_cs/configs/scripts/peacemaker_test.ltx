@@ -1,0 +1,38 @@
+[logic]
+;active=sr_cutscene
+active=sr_idle
+
+[sr_idle]
+;on_info = {!signal_rocket_flying(test_rocket)} sr_idle@1
+;on_info=sr_idle@1 %=create_squad(test_duty2:smart_terrain_1) =create_squad(test_csky:smart_terrain_3) =create_squad(test_bandit:smart_terrain_4) =create_squad(test_freedom2:smart_terrain_2)%
+;on_info=sr_idle@1 %=activate_surge(20)%
+; =create_squad(test_freedom21:smart_terrain_2) =create_squad(test_csky:smart_terrain_3) =create_squad(test_bandit:smart_terrain_4) =create_squad(test_freedom2:smart_terrain_2) =create_squad(test_duty2:smart_terrain_1)%
+;on_timer = 5000 | nil %+test_info_1%
+
+[sr_idle@1]
+;on_timer = 10000| sr_idle %=launch_signal_rocket(test_rocket)%
+;on_info=sr_idle@2 %=give_inited_task(eliminate_smart:smart_terrain_1:csky)%
+;on_info = sr_idle@2 %=give_inited_task(storyline:test_storyline_task:csky)%
+;%=set_level_faction_community(csky:peacemaker_selo:neutral)%
+;
+
+[sr_idle@2]
+;on_timer = 3000 | sr_idle@3 %=give_inited_task(storyline:test_storyline_task2:csky)%
+;on_signal = sound_end | sr_idle@3
+;on_timer = 10000 | nil %=play_sound(alife_general_help:dolg:agr_barman_name)%
+;on_info=sr_idle@3 %=activate_surge(10)%
+;{=is_faction_enemy_to_actor(csky)} sr_idle@3 %=activate_surge(6)%
+;on_actor_inside=sr_idle@3 %=play_sound(esc_hello_stalker_leader:csky)%
+;on_info=sr_idle@3 %=set_level_faction_community(bandit:peacemaker_selo:enemy)%
+
+[sr_idle@3]
+on_timer = 3000 | nil %+test_info_2 =give_inited_task(storyline:test_storyline_task3:csky)%
+;on_actor_outside=sr_idle@2 %=play_sound(esc_bye_stalker_leader)%
+;on_timer = 1000 | nil %=play_sound(alife_defence_done:dolg:agr_barman_name)%
+;on_info = nil %=play_sound(arena_introduce:csky)%
+
+;[sr_cutscene]
+;point = patrol_path
+;look = patrol_path_1
+;cam_effector = test_effector
+;on_signal = cameff_end | nil

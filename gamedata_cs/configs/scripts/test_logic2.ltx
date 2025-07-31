@@ -1,0 +1,32 @@
+[logic]
+active = remark
+relation = enemy
+
+on_death = death
+
+[death]
+on_info = %=dec_counter(lim_ambush2_count)%
+
+[remark]
+out_restr = $script_id$
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hide_na
+on_info = {+lim_ambush2} smartcover@2 %=hit_npc_from_actor =make_actor_visible_to_npc%
+wounded = wounded
+
+[smartcover@2]
+def_state_moving = assault
+use_in_combat = true
+out_restr = $script_id$
+cover_name = $script_id$_cover
+;target_enemy = actor
+;cover_state = fire_target
+wounded = wounded
+
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false

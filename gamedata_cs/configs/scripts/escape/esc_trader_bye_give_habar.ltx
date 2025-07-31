@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {=actor_in_zone(esc_trader_bye_give_habar) +esc_take_habar_complete -esc_bring_habar_complete} sr_idle@end %=play_sound(esc_trader_bye_give_habar:stalker:escape_trader_name)%
+
+[sr_idle@end]

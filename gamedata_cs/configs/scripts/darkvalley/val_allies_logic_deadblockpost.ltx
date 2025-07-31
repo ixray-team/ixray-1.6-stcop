@@ -1,0 +1,48 @@
+[logic@work1]
+active = walker@start_work1
+suitable =  {=check_npc_name(val_freedom_deadblockpost_guard_1)}
+
+[walker@start_work1]
+path_walk = deadblockpost_walker_1_walk
+path_look = deadblockpost_walker_1_look
+on_info = {+val_deadblockpost_sos} nil %=kill_npc%
+
+
+[logic@work2]
+active = walker@start_work2
+suitable = {=check_npc_name(val_freedom_deadblockpost_guard_2)}
+
+[walker@start_work2]
+path_walk = deadblockpost_walker_2_walk
+path_look = deadblockpost_walker_2_look
+on_info = {+val_deadblockpost_sos} nil %=kill_npc%
+
+
+[logic@work3]
+active = walker@start_work3
+suitable = {=check_npc_name(val_freedom_deadblockpost_guard_3)}
+
+[walker@start_work3]
+path_walk = deadblockpost_walker_3_walk
+path_look = deadblockpost_walker_3_look
+on_info = {+val_deadblockpost_sos} nil %=kill_npc%
+
+
+[logic@work4]
+active = walker@start_work4
+suitable = {=check_npc_name(val_freedom_deadblockpost_guard_4)}
+
+[walker@start_work4]
+path_walk = deadblockpost_walker_4_walk
+path_look = deadblockpost_walker_4_look
+on_info = {+val_deadblockpost_sos} nil %=kill_npc%
+
+
+[logic@work5]
+active = walker@start_work5
+suitable = {=check_npc_name(val_freedom_deadblockpost_guard_5)}
+
+[walker@start_work5]
+path_walk = deadblockpost_walker_5_walk
+path_look = deadblockpost_walker_5_look
+on_info = {+val_deadblockpost_sos} nil %=kill_npc%

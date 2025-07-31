@@ -1,0 +1,36 @@
+function main ()
+
+lvl_darkvalley_start.main()
+
+local infos_table = {
+"val_temp_start_quest_complete",
+"val_talked_to_blockpost_leader_complete",
+"val_come_to_freedom_base_complete",
+"val_come_to_comendant_complete",
+"val_reply_to_sos_complete",
+"val_come_back_comendant_to_revard",
+"val_go_to_trader_complete",
+"val_deliver_ammo_complete",
+"val_go_to_freedom_leader_complete",
+"val_pursuit_comendant_complete",
+"val_take_pda_complete",
+"val_deliver_pda_complete",
+"val_bring_to_fang_complete",
+"val_destroy_boar_guard_9_2_complete",
+"val_check_blockpost_complete",
+"val_find_pda_complete",
+"val_bandit_spy_die",
+"val_night_bloodsucker_complete",
+"val_night_bloodsucker_reward_complete"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+if level.name() == "garbage" and not task_manager.get_task_manager().inited_tasks["freedom_general_gar_story_chase_pda_signal"] then
+	xr_effects.give_inited_task(nil, nil, {"storyline", "gar_story_chase_pda_signal", "freedom"})
+end
+	
+end

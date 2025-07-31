@@ -1,0 +1,29 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {!black_screen +agru_nvidia_presentation} sr_cutscene@cam1
+
+[sr_cutscene@cam1]
+point = agru_nv_camera_walk
+look = agru_nv_camera_look
+cam_effector = scenario_cam\Agraprom_underground\camera1_0_904
+on_signal = cameff_end | sr_cutscene@cam2 %-agr_postprocess_started%
+on_timer = 34133 | {-agr_postprocess_started} %=run_postprocess(agr_u_fade) +agr_postprocess_started%
+on_info = {-agru_nvidia_presentation} sr_idle
+
+[sr_cutscene@cam2]
+point = agru_nv_camera_walk
+look = agru_nv_camera_look
+cam_effector = scenario_cam\Agraprom_underground\camera1_1364_2552
+on_signal = cameff_end | sr_cutscene@cam3 %-agr_postprocess_started%
+on_timer = 37600 | {-agr_postprocess_started} %=run_postprocess(agr_u_fade) +agr_postprocess_started%
+on_info = {-agru_nvidia_presentation} sr_idle
+
+[sr_cutscene@cam3]
+point = agru_nv_camera_walk
+look = agru_nv_camera_look
+cam_effector = scenario_cam\Agraprom_underground\camera1_2633_5150
+on_signal = cameff_end | sr_cutscene@cam1 %=quit%
+on_timer = 82900 | {-agr_postprocess_started} %=run_postprocess(agr_u_fade) +agr_postprocess_started%
+on_info = {-agru_nvidia_presentation} sr_idle

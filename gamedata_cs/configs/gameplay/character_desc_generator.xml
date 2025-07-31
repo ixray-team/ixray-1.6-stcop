@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+  <specific_character id="gen_stalker_zombied_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_zombied_4</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>gen_stalker_zombied</class>
+    <community>zombied</community> 
+		<snd_config>characters_voice\human_02\zombied\</snd_config>
+		
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_zombied\stalker_zombied_4</visual>
+    <crouch_type>0</crouch_type>
+    <supplies>
+      [spawn] \n
+      wpn_lr300\n
+      device_torch \n
+      ammo_5.56x45_ss190\n
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+  </specific_character>
+
+  <specific_character id="gen_stalker_uno_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>uui_npc_u_neutral_2_face_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>gen_stalker_uno</class>
+    <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+    <rank>100</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_oon\stalker_oon_1</visual>
+    <supplies>
+      [spawn] \n
+      wpn_lr300 \n
+      ammo_5.56x45_ss190 \n
+    </supplies>
+
+#include "gameplay\character_criticals_4.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="gen_stalker_uno_leader_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_neutral_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>gen_stalker_uno_leader</class>
+    <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_02\stalker\</snd_config>
+
+    <rank>100</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_oon\stalker_oon_2</visual>
+    <supplies>
+      [spawn] \n
+      wpn_lr300 \n
+      ammo_5.56x45_ss190 \n
+    </supplies>
+
+#include "gameplay\character_criticals_4.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+  
+  <specific_character id="gen_stalker_dummy_actor_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_actor</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>gen_stalker_dummy_actor</class>
+    <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+    <rank>100</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_hero\stalker_hero_1</visual>
+    <supplies>
+      [spawn] \n
+      wpn_lr300 \n
+      ammo_5.56x45_ss190 \n
+    </supplies>
+
+#include "gameplay\character_criticals_4.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+</xml>

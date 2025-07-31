@@ -1,0 +1,39 @@
+[logic]
+active = remark
+relation = enemy
+
+[remark]
+out_restr = $script_id$
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hide_na
+on_info = {+lim_bandit_ambush} smartcover@2 %=hit_npc_from_actor =make_actor_visible_to_npc%
+on_info2 = {+lim_no_bandit_ambush} %=destroy_object%
+show_spot = false
+
+[smartcover@1]
+;use_in_combat = true
+combat_ignore_cond = true
+out_restr = $script_id$
+cover_name = $script_id$_cover
+target_enemy = actor
+cover_state = idle_target
+on_info = {+lim_bandit_ambush} smartcover@2 %=hit_npc_from_actor =make_actor_visible_to_npc%
+on_info2 = {+lim_no_bandit_ambush} %=destroy_object%
+show_spot = false
+
+[smartcover@2]
+def_state_moving = assault
+use_in_combat = true
+out_restr = $script_id$
+cover_name = $script_id$_cover
+;target_enemy = actor
+;cover_state = fire_target
+;on_info = {=fighting_dist_le(10)} remark@2
+show_spot = false
+
+[remark@2]
+out_restr = $script_id$
+anim = threat_na
+on_info = {=fighting_dist_ge(12)} smartcover@2
+show_spot = false

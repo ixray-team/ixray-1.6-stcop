@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle@spawn_squad
+
+[sr_idle@spawn_squad]
+on_actor_inside = sr_idle@check %+lim_bandit_house_attack2%
+
+[sr_idle@check]
+on_info = {!squad_exist(lim_house_attack_1)} nil %+lim_bandit_house_attackers +lim_condition3% 

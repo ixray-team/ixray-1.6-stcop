@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+	<info_portion id="stc_strelok_hit_1"></info_portion>
+	<info_portion id="stc_strelok_hit_2"></info_portion>
+	<info_portion id="stc_strelok_hit_3"></info_portion>
+	<info_portion id="stc_strelok_hit_4"></info_portion>
+	<info_portion id="stc_strelok_hit_5"></info_portion>
+	<info_portion id="stc_scene_1_enemy_spawn"></info_portion>
+	<info_portion id="stc_scene_2_enemy_spawn"></info_portion>
+	<info_portion id="stc_scene_2_enemy_2_spawn"></info_portion>
+	<info_portion id="stc_scene_3_enemy_spawn"></info_portion>
+	<info_portion id="stc_scene_4_enemy_spawn"></info_portion>
+	<info_portion id="stc_scene_5_enemy_spawn"></info_portion>
+	<info_portion id="stc_scene_6_enemy_spawn"></info_portion>
+	<info_portion id="stc_scene_7_enemy_spawn_1"></info_portion>
+	<info_portion id="stc_scene_7_enemy_spawn_2"></info_portion>
+	<info_portion id="stc_scene_8_enemy_spawn"></info_portion>
+	<info_portion id="stc_scene_start"></info_portion>
+	<info_portion id="stc_scout_talk"></info_portion>
+	<info_portion id="stc_first_teleport_monolith_spawn_1"></info_portion>
+	<info_portion id="stc_first_teleport_monolith_spawn_2"></info_portion>
+	<info_portion id="stc_first_teleport_monolith_spawn_3"></info_portion>
+	<info_portion id="stc_first_teleport_monolith_spawn_4"></info_portion>
+	<info_portion id="stc_first_scene_cameff_end"></info_portion>
+	
+	<info_portion id="stc_first_teleport_actor"></info_portion>
+	<info_portion id="stc_strelok_can_run_1"></info_portion>
+	<info_portion id="stc_strelok_can_run_2"></info_portion>
+	<info_portion id="stc_strelok_can_run_3"></info_portion>
+	<info_portion id="stc_additional_q1"></info_portion>
+	<info_portion id="stc_first_teleport_spawn_3"></info_portion>
+	<info_portion id="stc_second_teleport_spawn_2"></info_portion>
+	<info_portion id="stc_second_teleport_spawn_3"></info_portion>
+	<info_portion id="stc_second_teleport_actor_out"></info_portion>
+	<info_portion id="stc_strelok_can_run_6"></info_portion>
+	<info_portion id="stc_strelok_is_near_dead"></info_portion>
+	<info_portion id="stc_strelok_dead"></info_portion>
+	<info_portion id="stc_surge_continued"></info_portion>
+	<info_portion id="stc_final_fade"></info_portion>
+	<info_portion id="stc_first_teleport_spawn_6"></info_portion>
+	<info_portion id="stc_final_cutscene_2"></info_portion>
+	<info_portion id="stc_last_effector_1"></info_portion>
+	<info_portion id="stc_last_effector_2"></info_portion>
+	<info_portion id="stc_last_effector_3"></info_portion>
+	<info_portion id="stc_armagedets_start"></info_portion>
+	
+	
+</game_information_portions>

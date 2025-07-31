@@ -1,0 +1,8 @@
+function test_dialog_function(ss,dn,pi)
+	printf(" ___ pi = "..pi)
+	if(pi=="1") then
+		return "Script Да"
+	else
+		return "Script Нет"
+	end
+end

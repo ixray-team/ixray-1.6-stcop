@@ -1,0 +1,56 @@
+[logic@work1]
+active = walker@work1
+suitable = true
+meet = meet
+
+[walker@work1]
+path_walk = wlkr_1_walk
+path_look = wlkr_1_look
+on_info = {=in_zone(esc_space_stalker_patrol)} %+esc_stalker_patrol_in_zone%
+meet = meet
+on_info2 = {+esc_mil_5_9_attack} walker@defense_work1
+on_combat = combat@work1
+
+[combat@work1]
+on_info = %+esc_mil_5_9_attack%
+
+[walker@defense_work1]
+path_walk = df1_walk
+path_look = df1_look
+meet = no_meet
+on_info = {+mil_squad_1_5_9_dead} walker@work1
+on_combat = combat@work1
+
+[meet]
+meet_state = 10| wait@meet_comander_start
+meet_state_wpn = 10| backoff@meet_weapon_wait
+victim = 30| nil| 20| actor
+victim_wpn = 30| nil| 20| actor
+use	= true
+use_wpn = false
+;meet_dialog = dialog_id
+abuse = true
+
+;********* defense2,3 ***********
+
+[logic@work2]
+active = walker@defense_work2
+suitable = {+esc_mil_5_9_attack} true
+meet = meet
+
+[walker@defense_work2]
+path_walk = df2_walk
+path_look = df2_look
+meet = no_meet
+
+;****************************************
+
+[logic@work3]
+active = walker@defense_work3
+suitable = {+esc_mil_5_9_attack} true
+meet = meet
+
+[walker@defense_work3]
+path_walk = df3_walk
+path_look = df3_look
+meet = no_meet

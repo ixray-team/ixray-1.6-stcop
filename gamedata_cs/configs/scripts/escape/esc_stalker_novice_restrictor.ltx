@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {=actor_in_zone(esc_novice_stalker_restrictor) +esc_wolf_novice} sr_idle@2 %+esc_stalker_novice_defend%
+
+[sr_idle@2]

@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+
+  <!-- Bridge down -->>
+  
+  <info_portion id="red_bridge_scene_begin"/>
+  <info_portion id="red_bridge_bandit_1"/>
+  <info_portion id="red_bridge_bandit_2"/>
+  <info_portion id="red_bridge_bandit_3"/>
+  <info_portion id="red_bridge_bandit_4"/>
+  <info_portion id="red_bridge_bandit_5"/>
+  <info_portion id="red_bridge_bandit_6"/>
+  <info_portion id="red_bridge_bandit_7"/>
+  <info_portion id="red_bridge_ally_strike"/>
+  <info_portion id="duty_help_csky"/>
+  <info_portion id="freedom_help_csky"/>
+  <info_portion id="stalker_help_csky"/>
+  <info_portion id="red_bridge_allyes_skirmish"/>
+  <info_portion id="red_bridge_allyes_skirmish2"/>
+  <info_portion id="red_bridge_allyes_try_pull_down"/>
+  <info_portion id="red_bridge_sniper_spawn"/>
+  <info_portion id="red_bridge_sniper_fire"/>
+  <info_portion id="red_bridge_allyes_out"/>
+  <info_portion id="red_bridge_captured"/>
+  <info_portion id="red_bridge_down_done"/>
+  <info_portion id="red_bridge_actor_out"/>  
+  <info_portion id="red_bridge_bandit_out"/>
+  <info_portion id="red_bridge_allyes_win"/>
+   <info_portion id="red_bridge_allyes_free"/>
+  <info_portion id="red_bridge_bridge_move"/>
+  <info_portion id="red_bridge_bandit_enter_true"/>
+  <info_portion id="red_bridge_csky_assault"/>
+  <info_portion id="red_bridge_allyes_by_bridge"/>
+  <info_portion id="red_bridge_sniper_work1"/>
+  <info_portion id="red_bridge_sniper_work2"/>
+  <info_portion id="red_bridge_sniper_work3"/>
+  <info_portion id="red_bridge_sniper_work4"/>
+  <info_portion id="red_bridge_actor_fail"/>
+  <info_portion id="red_bridge_thanks_leshiy_reply"/>
+  <info_portion id="red_bridge_thanks_leshiy"/>
+  <info_portion id="red_bridge_thanks_leshiy_reply2"/>
+  <info_portion id="red_bridge_thanks_leshiy_reply3"/>
+  <info_portion id="red_bridge_thanks_leshiy_reply4"/>
+  <info_portion id="red_bridge_finished"/>
+  <info_portion id="red_bridge_leshiy_redy"/>
+  <info_portion id="red_bridge_clear_path"/>
+  <info_portion id="red_bridge_actor_come"/>
+  <info_portion id="red_actor_help_with_bridge"/>
+  <info_portion id="red_bridge_talk_with_comander"/>
+  <info_portion id="red_bridge_actor_in_position"/>
+  <info_portion id="red_bridge_cover_allyes_complete"/>
+  <info_portion id="red_bridge_cover_allyes2_complete"/>
+  <info_portion id="red_bridge_csky_go_limansk"/>
+  <info_portion id="red_bridge_go_lever"/>
+  <info_portion id="red_bridge_stalkers_go"/>
+  <info_portion id="red_bridge_cs1"/>
+  <info_portion id="red_bridge_cs2"/>
+  <info_portion id="red_bridge_cs3"/>
+  <info_portion id="red_bridge_cs4"/>
+  <info_portion id="red_bridge_cs5"/>
+  <info_portion id="red_bridge_cs6"/>
+  <info_portion id="red_bridge_cs7"/>
+  <info_portion id="red_bridge_sniper_snd"/>
+  <info_portion id="red_bridge_try_pull_down_first"/>
+  <info_portion id="red_bridge_bandits_task"/>
+  <info_portion id="red_bridge_stalkers_go_bridge"/>
+  <info_portion id="red_bridge_sniper_task_complete"/>
+  <info_portion id="red_bridge_sniper_target"/>
+  <info_portion id="red_bridge_actor_talk_with_cs_commander"/>
+  <info_portion id="red_bridge_sniper_first_task"/>
+    
+  <!-- pursuit Strelok -->
+  
+  <info_portion id="red_pursuit_strelok_go"/>
+  <info_portion id="red_pursuit_strelok_go_1"/>
+  <info_portion id="red_pursuit_strelok_go_2"/>
+  <info_portion id="red_pursuit_strelok_go_3"/>
+  
+  <info_portion id="red_pursuit_ambush_attack"/>
+  <info_portion id="red_pursuit_ambush_attack1"/>
+  <info_portion id="red_pursuit_ambush_attack2"/>
+  <info_portion id="red_pursuit_boars_attack"/>
+  <info_portion id="red_pursuit_strelok_offline"/>
+  <info_portion id="red_pursuit_scene_begin"/>
+  <info_portion id="red_pursuit_tunnel_explode"/>
+  <info_portion id="red_pursuit_bounty_hunter_1"/>
+  <info_portion id="red_pursuit_bounty_hunter_2"/>
+  <info_portion id="red_pursuit_bounty_hunter_3"/>
+  <info_portion id="red_pursuit_bounty_hunter_4"/>
+  <info_portion id="red_pursuit_bounty_hunter_5"/>
+  <info_portion id="red_pursuit_bounty_hunter_6"/>
+  <info_portion id="red_pursuit_bounty_hunter_surrender_info"/>
+  <info_portion id="red_bounty_hunters_free"/>
+  <info_portion id="red_pursuit_csky_talk"/>
+  <info_portion id="red_pursuit_csky_talk2"/>
+  <info_portion id="red_pursuit_strelok_spich"/>
+  <info_portion id="red_pursuit_task_end"/>
+  <info_portion id="red_bridge_bandit_attacked"/>
+  <info_portion id="red_pursuit_bandit_attack"/>
+  <info_portion id="red_strelok_task_end"/>
+  <info_portion id="red_pursuit_bandits_enter"/>
+  <info_portion id="red_pursuit_bandit_guard_bridge"/>
+  <info_portion id="red_pursuit_bandit_guard_bridge2"/>
+  <info_portion id="red_bridge_bandit_time_out"/>
+  <info_portion id="red_pursuit_bounty_hunters_hit"/>
+  <info_portion id="red_pursuit_camfly_begin" />
+  <info_portion id="red_bounty_hunters_go_info" />
+  <info_portion id="red_bounty_hunter_far" />
+  <info_portion id="red_bounty_hunter_middle" />
+  <info_portion id="red_bounty_hunter_forester_place" />
+  <info_portion id="red_pursuit_ambush_task_end" />
+  <info_portion id="red_pursuit_explode" />
+  <info_portion id="red_bounty_hunters_attack_2" />
+  <info_portion id="red_bounty_hunters_give_treasure" />
+  
+  <!-- artefact hunters -->>
+  
+  <info_portion id="red_artefact_hunters_go"/>
+  <info_portion id="red_artefact_hunters_go2"/>
+  <info_portion id="red_artefact_hunters_task_complete"/>
+  <info_portion id="red_artefact_hunters_task_fail"/>
+  <info_portion id="red_artefact_hunters_actor_refuse"/>
+  <info_portion id="red_artefact_hunters_task_2_complete"/>
+  <info_portion id="red_artefact_hunters_give_reward"/>
+  
+  <!-- smart terrain exclusive -->
+  <info_portion id="red_smart_3_2_init_tech_job"/>
+  <info_portion id="red_smart_3_2_init_artefact_search"/>
+  <info_portion id="red_smart_6_3_init_artefact_search"/>
+  
+  <!-- Red forest monsters -->>
+  
+  <info_portion id="red_bloodsucker_spawn"/>
+  <info_portion id="red_bloodsucker_off"/>
+  <info_portion id="red_bloodsucker_spawn_on"/>
+  <info_portion id="red_undeground_open" />
+  <info_portion id="red_psy_dog_attack" />
+  <info_portion id="red_underground_dynamit_use" />
+  
+  <info_portion id="red_teleport_way" />
+  <info_portion id="red_teleport_way_2" />
+  <info_portion id="red_actor_find_teleport" />
+  <info_portion id="red_go_to_sos_signal_task_complete" />
+  <info_portion id="red_forest_gate_staler_off" />
+  
+  <!-- Lesnik -->>
+  
+  <info_portion id="red_actor_find_forester"/>
+  <info_portion id="red_actor_choose_dolg"/>
+  <info_portion id="red_actor_choose_freedom"/>
+  <info_portion id="red_actor_choose_investigation"/>
+  <info_portion id="red_forester_actor_has_compas"/>
+  <info_portion id="red_forester_search_compas_task"/>
+  <info_portion id="red_forester_take_compas"/>
+  <info_portion id="red_forester_who_are_you"/>
+  
+  <!-- Leshiy -->
+  <info_portion id="red_leshiy_reward_1"/>
+  <info_portion id="red_leshiy_reward_2"/>
+  <info_portion id="red_leshiy_reward_3"/>
+  <info_portion id="red_leshiy_reward_4"/>
+  <info_portion id="red_leshiy_reward_5"/>
+  <info_portion id="red_leshiy_reward_done" />
+  
+  <info_portion id="red_forest_open" />
+  <info_portion id="red_forest_allyes_have_map" />
+  <info_portion id="red_forest_bring_red_forest_map_task" />
+  <info_portion id="red_forest_bring_red_forest_map_task_done" />
+  <info_portion id="red_forest_gate_keepers_dialog_end" />
+  <info_portion id="red_stalker_reinforced_task_complete" />
+  <info_portion id="red_forest_stalker_sos" />
+  <info_portion id="red_bloodsucker_first_spawn" />
+  <info_portion id="red_capture_undeground_camp_done" />
+    
+</game_information_portions>

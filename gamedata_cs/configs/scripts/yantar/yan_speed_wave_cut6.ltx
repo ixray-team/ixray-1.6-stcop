@@ -1,0 +1,18 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+yan_ready_perekl_cut6} sr_idle@timer_1
+
+[sr_idle@timer_1]
+on_game_timer = 350 | %+yan_wave_speedx2_cut6% sr_idle@2
+
+[sr_idle@2]
+on_game_timer = 50 | %-yan_wave_speedx2_cut6% sr_idle@4
+
+;[sr_idle@3]
+;on_game_timer = 450 | %+yan_fast_zombi_cut6% ;%-yan_stalker_3_kaput -yan_stalker_4_kaput -yan_stalker_5_kaput% sr_idle@4 
+
+[sr_idle@4]
+on_info = %-yan_fast_zombi_cut6% nil 
+

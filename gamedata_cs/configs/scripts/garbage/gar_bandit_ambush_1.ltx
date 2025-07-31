@@ -1,0 +1,29 @@
+[logic]
+active = walker@talk_1
+
+[walker@talk_1]
+path_walk = gar_bandit_ambush_1_walk
+path_look = gar_bandit_ambush_1_look
+combat_ignore_cond = true
+;on_info = {+gar_story_ambush_talk_1}
+on_timer = 2000 | %=play_sound(gar_bandit_ambush_talk_1:bandit)%
+on_signal = theme_end | walker@wait_3 %+gar_story_ambush_talk_1_played%
+
+[walker@wait_3]
+path_walk = gar_bandit_ambush_1_walk
+path_look = gar_bandit_ambush_1_look
+combat_ignore_cond = true
+on_info = {+gar_story_ambush_talk_2_played} walker@talk_3
+
+[walker@talk_3]
+path_walk = gar_bandit_ambush_1_walk
+path_look = gar_bandit_ambush_1_look
+combat_ignore_cond = true
+on_timer = 300 | %=play_sound(gar_bandit_ambush_talk_3:bandit)%
+on_signal = theme_end | walker@stop %+gar_story_ambush_talk_3_played%
+
+[walker@stop]
+path_walk = gar_bandit_ambush_1_walk
+path_look = gar_bandit_ambush_1_look
+on_info = {+gar_story_ambush_remove} nil %=destroy_object%
+combat_ignore_cond = true

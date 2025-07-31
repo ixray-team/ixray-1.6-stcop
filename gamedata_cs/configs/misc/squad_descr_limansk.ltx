@@ -1,0 +1,142 @@
+; «десь содержатс€ дескрипшены сквадов, которые потом можно создавать использу€ спец функции.
+
+;---------------------------LEVEL LIMANSK-----------------
+
+[lim_csky_storm_troops]
+faction = csky
+npc = lim_csky_commander_2, lim_csky_soldier, lim_csky_soldier, lim_csky_soldier, lim_csky_soldier
+target_smart = lim_smart_terrain_1
+invulnerability = true
+attack_power = 500
+
+[lim_csky_storm_troops2]
+faction = csky
+npc = lim_csky_commander_2, lim_csky_soldier, lim_csky_soldier, lim_csky_soldier, lim_csky_soldier
+;target_smart = {+lim_condition4} lim_smart_terrain_4, {+lim_condition3} lim_smart_terrain_3, lim_smart_terrain_2
+target_smart = {+lim_condition4} lim_smart_terrain_4, lim_smart_terrain_3
+invulnerability = {+lim_condition6} false, true
+;invulnerability = true
+attack_power = 500
+relationship=friend
+
+[lim_csky_enter_squad]
+faction = csky
+npc = lim_csky_commander, lim_csky_soldier, lim_csky_soldier
+target_smart = {+lim_condition3}lim_smart_terrain_2, lim_smart_terrain_1
+;invulnerability = {+lim_bandit_away} false, true
+attack_power = 500
+relationship=friend
+
+[lim_csky_bridge_squad]
+faction = csky
+npc = lim_csky_commander, lim_csky_soldier, lim_csky_soldier, lim_csky_soldier
+;target_smart = {+lim_military_minigun_out} lim_smart_terrain_6, lim_smart_terrain_5
+target_smart = lim_smart_terrain_6
+attack_power = 500
+relationship=friend
+
+[lim_allyes_recon_squad]
+faction = csky
+npc = lim_csky_commander_2, lim_csky_soldier, lim_csky_soldier, lim_csky_soldier
+target_smart = lim_smart_terrain_10
+relationship=friend
+
+[lim_allyes_final_squad]
+faction = csky
+npc = lim_csky_commander, lim_csky_soldier, lim_csky_soldier, lim_csky_soldier, lim_csky_soldier
+target_smart = lim_smart_terrain_10
+relationship=friend
+
+[lim_allyes_final_squad2]
+faction = csky
+npc = lim_csky_tech, sim_default_csky_3, sim_default_csky_3, sim_default_csky_3, sim_default_csky_3
+target_smart = lim_smart_terrain_10
+relationship=friend
+
+[lim_allyes_final_squad3]
+faction = csky
+npc = lim_csky_tech, sim_default_csky_3, sim_default_csky_3, sim_default_csky_3, sim_default_csky_3
+target_smart = lim_smart_terrain_10
+relationship=friend
+
+[lim_monolith_ambush2_squad]
+faction = monolith
+npc = lim_ambush_2_enemy_1_stalker, lim_ambush_2_enemy_2_stalker, lim_ambush_2_enemy_3_stalker, lim_ambush_2_enemy_4_stalker, lim_ambush_2_enemy_5_stalker
+target_smart = lim_smart_terrain_3
+attack_power = 400
+sympathy=0
+relationship=enemy
+show_spot = {-lim_ambush2} true, false
+
+[lim_house_attack_1]
+faction = monolith
+npc = lim_barricade_enemy_1, lim_barricade_enemy_2, lim_barricade_enemy_3, lim_barricade_enemy_4, lim_barricade_enemy_5
+target_smart = {+lim_bandit_house_go} lim_smart_terrain_2, lim_smart_terrain_3
+;target_smart = lim_smart_terrain_2
+attack_power = 400
+sympathy=0
+relationship=enemy
+
+[lim_military_squad_1]
+faction = monolith
+;npc = lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy lim_stalker_enemy
+npc = sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2
+target_smart = lim_smart_terrain_3
+sympathy=0
+relationship=enemy
+
+[lim_duty_squad_1]
+faction = freedom
+npc = sim_default_duty_2, sim_default_duty_2, sim_default_duty_2, sim_default_duty_2, sim_default_duty_2
+target_smart = lim_smart_terrain_3
+
+[lim_freedom_squad_1]
+faction = freedom
+npc = sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2, sim_default_freedom_2
+target_smart = lim_smart_terrain_3
+
+[lim_smart_6_enemy_squad_1]
+faction = army
+npc = sim_default_military_3, sim_default_military_3, sim_default_military_3, sim_default_military_3, sim_default_military_3
+target_smart = lim_smart_terrain_6
+sympathy=0
+relationship=enemy
+
+[lim_smart_6_enemy_squad_2]
+faction = army
+npc = sim_default_military_3, sim_default_military_3, sim_default_military_3
+target_smart = lim_smart_terrain_6
+sympathy=0
+relationship=enemy
+
+[lim_enemy_stalker_smart_9_squad_1]
+faction = monolith
+;npc = lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy
+npc = sim_default_monolith_3, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2
+target_smart = lim_smart_terrain_9
+sympathy=0
+relationship=enemy
+
+[lim_enemy_stalker_smart_9_squad_2]
+faction = monolith
+;npc = lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy
+npc = sim_default_monolith_3, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2
+target_smart = lim_smart_terrain_9
+sympathy=0
+relationship=enemy
+
+[lim_enemy_stalker_smart_9_squad_3]
+faction = monolith
+;npc = lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy
+npc = sim_default_monolith_3, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2
+target_smart = lim_smart_terrain_9
+sympathy=0
+relationship=enemy
+
+[lim_enemy_stalker_smart_9_squad_4]
+faction = monolith
+;npc = lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy, lim_stalker_enemy
+npc = sim_default_monolith_3, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2, sim_default_monolith_2
+target_smart = lim_smart_terrain_9
+sympathy=0
+relationship=enemy

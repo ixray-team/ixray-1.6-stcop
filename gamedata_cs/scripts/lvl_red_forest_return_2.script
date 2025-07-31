@@ -1,0 +1,23 @@
+function main ()
+
+lvl_military_return.main()
+
+local infos_table = {
+"forester_telled_coordinates",
+"forester_talked_2",
+"mil_merc_talked_f1_f2_wt1",
+"mil_actor_go_to_limansk",
+"mil_sound_thanks",
+"red_bridge_scene_begin"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+if level.name() == "red_forest" and not task_manager.get_task_manager().inited_tasks["csky_general_mil_contact_with_clear_sky_commander"] then
+	xr_effects.give_inited_task(nil, nil, {"storyline", "mil_contact_with_clear_sky_commander", "csky"})
+end
+	
+end

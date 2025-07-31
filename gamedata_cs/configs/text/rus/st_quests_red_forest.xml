@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_artefact_huntesr_capture_smart_name">
+		<text>Охранять сталкеров на пути к аномальной зоне</text>
+	</string>
+	<string id="red_artefact_huntesr_capture_smart_text">
+		<text>Охранять сталкеров на пути к аномальной зоне</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_name">
+		<text>Защищать сталкеров в аномальной зоне</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_text">
+		<text>Защищать сталкеров в аномальной зоне</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_name">
+		<text>Прикрывать наёмников</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_text">
+		<text>Наёмники атакуют бандитов на другом берегу. Необходимо прикрыть наёмников огнём и помочь им закрепится на позициях.</text>
+	</string>
+	<string id="red_bridge_cover_allyes_name">
+		<text>Уничтожить бандитов</text>
+	</string>
+	<string id="red_bridge_cover_allyes_text">
+		<text>Бандитов слишком много, наёмники не могут опустить мост. Необходимо уничтожить как можно больше бандитов.</text>
+	</string>
+	<string id="red_bridge_cover_bridge_name">
+		<text>Прикрывать наёмника у пульта.</text>
+	</string>
+	<string id="red_bridge_cover_bridge_text">
+		<text>Наёмники уже заняли позиции у пульта управления мостом. Необходимо пркрывать огнём бойца, который попытается опустить мост.</text>
+	</string>
+	<string id="red_bridge_go_to_positon_name">
+		<text>Занять огневую позицию</text>
+	</string>
+	<string id="red_bridge_go_to_positon_text">
+		<text>Занять огневую позицию на втором этаже КПП. Это прекрасная огневая точка для обстрела бандитов.</text>
+	</string>
+	<string id="red_bridge_kill_sniper_name">
+		<text>Уничтожить снайперов на холме</text>
+	</string>
+	<string id="red_bridge_kill_sniper_text">
+		<text>Вражеские снайперы ведут огонь по пульту управления мостом. Необходимо уничтожить снайперов на холме.</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_name">
+		<text>Поговорить с Лебедевым</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_text">
+		<text>Мост опущен и дорога в Лиманск свободна. Необходимо поговорить с Лебедевым.</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_name">
+		<text>Ожидать прихода отряда сталкеров</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_text">
+		<text>Ожидать прихода отряда сталкеров</text>
+	</string>
+	<string id="red_bring_compass_name">
+		<text>Принести «Компас» Леснику</text>
+	</string>
+	<string id="red_bring_compass_text">
+		<text>С помощью «Компаса» Лесник несколько дней назад смог выбраться из «Пузыря». Теперь этот артефакт должен помочь вывести отряд наёмников из такой же аномалии. Нужно принести Компас Леснику.</text>
+	</string>
+	<string id="red_find_compass_name">
+		<text>Найти артефакт «Компас»</text>
+	</string>
+	<string id="red_find_compass_text">
+		<text>В пространственной аномалии, очень похожей на пространственный пузырь, в который попали наёмники, Лесник нашёл уникальный артефакт. На обратном пути его ограбили бандиты и артефакт отобрали. Необходимо найти и вернуть «Компас».</text>
+	</string>
+	<string id="red_find_forester_name">
+		<text>Поговорить с Лесником</text>
+	</string>
+	<string id="red_find_forester_text">
+		<text>Хижина Лесника, который может подсказать способ попасть в Лиманск, находится в заброшенном капере. Необходимо поговорить с Лесником.</text>
+	</string>
+	<string id="red_find_teleport_name">
+		<text>Найти пространственную аномалию</text>
+	</string>
+	<string id="red_find_teleport_text">
+		<text>На КПК погибшей группы были заметки о пути через Рыжий лес. В глубине этого леса находится пространственная аномалия, ведущая к старому каперу на окраине леса. Именно там живёт Лесник. Необходимо обнаружить пространственную аномалию.</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_name">
+		<text>Принести КПК с картой Рыжего леса</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_text">
+		<text>Принести КПК с картой Рыжего леса</text>
+	</string>
+	<string id="red_go_to_signal_sos_name">
+		<text>Идти на сигнал SOS</text>
+	</string>
+	<string id="red_go_to_signal_sos_text">
+		<text>Дорога к Леснику через Рыжый лес точно не известна. Из Рыжего леса слышен сигнал SOS. Прийти на помощь.</text>
+	</string>
+	<string id="red_help_with_bridge_name">
+		<text>Помочь «Чистому небу» захватить мост</text>
+	</string>
+	<string id="red_help_with_bridge_text">
+		<text>Отряд наёмников уже на подходе к мосту в Лиманск. Выйдут они как раз со стороны позиций бандитов, поэтому скоро у моста будет жарко. Помочь «Чистому небу» опустить мост, ведущий в Лиманск.</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_name">
+		<text>Уничтожить засаду</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_text">
+		<text>Стрелка прикрывает отряд сталкеров. Уничтожить их засаду.</text>
+	</string>
+	<string id="red_pursuit_strelok_name">
+		<text>Остановить Стрелка</text>
+	</string>
+	<string id="red_pursuit_strelok_text">
+		<text>Стрелок скрылся в тоннеле. Необходимо догнать Стрелка и остановить его продвижение к центру Зоны.</text>
+	</string>
+	<string id="red_pursuit_talk_csky_name">
+		<text>Остановить Стрелка</text>
+	</string>
+	<string id="red_pursuit_talk_csky_text">
+		<text>Стрелок находится совсем рядом - до него не более сотни метров. Необходимо догнать Стрелка.</text>
+	</string>
+	<string id="red_stalker_reinforced_name">
+		<text>Захватить старую шахту</text>
+	</string>
+	<string id="red_stalker_reinforced_text">
+		<text>Захватить старую шахту. В этом районе высокий уровень аномальной активности и множество редких артефактов.</text>
+	</string>
+	<string id="red_go_to_military_base_name">
+		<text>Идти на базу военных</text>
+	</string>
+	<string id="red_go_to_military_base_text">
+		<text>На базе военных есть мощный передатчик, который позволит передать сообщение группе, застрявшей в пространственном пузыре под Лиманском. Необходимо идти на военные склады</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_name">
+		<text>Найти проход в аномальную зону</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_text">
+		<text>На КПК погибшей группы были заметки о пути через Рыжий лес. В глубине этого леса находится пространственная аномалия, которая ведет к старому каперу на опушке. Именно там и живёт Лесник. Необходимо найти проход к аномалии.</text>
+	</string>
+	<string id="red_find_signals_on_military_name">
+		<text>Получить радиопередачу сообщения</text>
+	</string>
+	<string id="red_find_signals_on_military_text">
+		<text>Лесник получает обрывки радиосообщений от неизвестного отряда, который попал в странную аномалию под Лиманском. Возможно, эти ребята знают тайный путь в город. Необходимо отправиться на военные склады и найти место, в котором можно было бы поймать более четкий радиосигнал.</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_name">
+		<text>Поднять КПК</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_text">
+		<text>КПК одного из погибших сталкеров всё ещё активен. В нём может содержаться важная информация о Рыжем лесе. Необходимо поднять КПК.</text>
+	</string>
+</string_table>

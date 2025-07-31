@@ -1,0 +1,50 @@
+[all_zone_detector]
+actor_radia_factor  = 0.5      ; не используется
+
+zone_class_1		= zone_radioactive
+zone_sound_1_		= detectors\geiger_1
+zone_sound_1_1		= detectors\geiger_2
+zone_sound_1_2		= detectors\geiger_3
+zone_sound_1_3		= detectors\geiger_4
+zone_sound_1_4		= detectors\geiger_5
+zone_sound_1_5		= detectors\geiger_6
+zone_sound_1_6		= detectors\geiger_1
+zone_sound_1_7		= detectors\geiger_1
+zone_sound_1_8		= detectors\geiger_1
+zone_freq_1			= 0.01, 2
+
+;--only beeper
+zone_class_2		= zone_mine_gravitational_average ;ZS_GALAN/strike
+zone_sound_2_		= detectors\DA-2_beep1
+zone_freq_2			= 0.05, 2
+
+zone_class_3		= zone_mine_gravitational_weak ;ZS_MBALD/strike
+zone_sound_3_		= detectors\DA-2_beep1
+zone_freq_3			= 0.05, 2 ; min,max
+
+zone_class_4		= zone_mine_gravitational_strong ;ZS_MINCE/strike
+zone_sound_4_		= detectors\DA-2_beep1
+zone_freq_4			= 0.05, 2
+
+
+[radiation_zone_detector]
+actor_radia_factor  = 0.5      ; не используется
+
+zone_radius         = 4       ; (метр) расстояние чувствительности зоны
+max_power           = 0.166    ; потом использоваться не будет, будет тут: actor.ltx (230) radio_zone_max_power=
+threshold           = 0.5      ; граница жёлтого и красного
+
+[fire_zone_detector]
+zone_radius         = 4
+max_power           = 0.166
+threshold           = 0.5
+
+[acid_zone_detector]
+zone_radius         = 4
+max_power           = 0.166
+threshold           = 0.5
+
+[psi_zone_detector]
+zone_radius         = 4
+max_power           = 0.166
+threshold           = 0.5

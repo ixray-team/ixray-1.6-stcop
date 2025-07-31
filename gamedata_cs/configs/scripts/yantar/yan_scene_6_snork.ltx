@@ -1,0 +1,22 @@
+[logic]
+active = mob_walker@prepare
+on_death = death
+
+[mob_walker@prepare]
+path_walk = yan_scene_6_snork_prepare_walk
+path_look = yan_scene_6_snork_prepare_look
+on_info = {+yan_space_restrictor_actor_ready_cut5} mob_jump
+
+[mob_jump]
+path_jump = yan_scene_6_snork_jump_way
+ph_jump_factor = 1.5
+offset = 0,0,0
+on_signal = jumped | mob_walker
+on_death = death
+
+[mob_walker]
+path_walk = yan_scene_6_snork_walk
+on_death = death
+
+[death]
+on_info = %+yan_scene_6_snork_dead%

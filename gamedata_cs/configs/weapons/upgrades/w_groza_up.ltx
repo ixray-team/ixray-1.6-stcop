@@ -1,0 +1,455 @@
+[up_sect_a_groza]
+cost		      		= 3000
+value					= +10
+rpm                     = 50
+
+[up_sect_b_groza]
+cost		      		= 3000
+value					= +10
+fire_dispersion_base	= -0.08	;0.7
+
+[up_sect_c_groza]
+cost		      		= 3000
+value					= -20
+rpm                     = -200
+
+cam_dispersion          = -0.12		;0.6
+cam_dispersion_inc      = -0.12		;0.6
+cam_step_angle_horz     = -0.34		;1.7
+
+zoom_cam_dispersion     	= -0.08 ;0.4
+zoom_cam_dispersion_inc     = -0.08 ;0.4
+zoom_cam_step_angle_horz    = -0.3	;1.5
+
+[up_sect_d_groza]
+cost		      		= 3000
+value					= -50
+value2					= st_upgr_rpm_lowered
+rpm						= -200
+
+cam_dispersion              = -0.3		;0.6
+cam_dispersion_inc         	= -0.3		;0.6
+cam_step_angle_horz        	= -0.85		;1.7
+
+zoom_cam_dispersion          = -0.2		;0.4
+zoom_cam_dispersion_inc      = -0.2		;0.4
+zoom_cam_step_angle_horz     = -0.75	;1.5
+
+
+[up_sect_e_groza]
+cost	      	     	= 3000
+value					= +20
+control_inertion_factor = -0.2
+inv_weight              = -0.5
+PDM_disp_vel_factor     = -0.3 ;1.5
+PDM_disp_accel_factor   = -0.3 ;1.5
+
+[up_sect_f_groza]
+cost		      		= 3000
+value					= +20
+bullet_speed			= 50
+hit_power				= 0.45, 0.45, 0.45, 0.45
+
+[up_sect_g_groza]
+cost		      		= 3000
+value					= +10
+ammo_mag_size           = 10
+
+[up_sect_h_groza]
+cost		      		= 3000
+value					= +20
+ammo_mag_size           = -10
+fire_dispersion_base	= -0.15 ;0.7
+
+[up_sect_j_groza]
+cost		      		= 3000
+value					= "5.45x39"
+ammo_class          	= ammo_5.45x39_fmj, ammo_5.45x39_ap
+
+[up_sect_ac_groza]
+cost		      		= 4500
+value					= +25
+rpm						= 150
+
+[up_sect_bd_groza]
+cost		      		= 4500
+value					= +20
+fire_dispersion_base	= -0.15 ;0.7
+
+[up_sect_eg_groza]
+cost		      		= 4500
+value					= -20
+
+cam_dispersion          = -0.12		;0.6
+cam_dispersion_inc      = -0.12		;0.6
+cam_step_angle_horz     = -0.34		;1.7
+
+zoom_cam_dispersion     	= -0.08 ;0.4
+zoom_cam_dispersion_inc     = -0.08 ;0.4
+zoom_cam_step_angle_horz    = -0.3	;1.5
+
+[up_sect_fh_groza]
+cost		      		= 4500
+value					= +30
+fire_dispersion_base	= -0.2 ;0.7
+
+
+[up_sect_aceg_groza]
+cost		      		= 7500
+value					= +30
+rpm						= 150
+
+[up_sect_bdfh_groza]
+cost	      	     	= 7500
+value					= +40
+bullet_speed			= 100
+hit_power				= 0.5, 0.5, 0.5, 0.5
+
+[up_a_groza]
+scheme_index            = 0, 0
+known                   = 1
+;;invented                = 1                							; 0
+effects                 = up_gr_ac_groza
+section                 = up_sect_a_groza
+property                = prop_rpm
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = on_weapon_upgrade_something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_zatvor_rpm
+description             = st_upg_zatvor_rpm_descr
+icon                    = ui_wp_upgrade_30
+
+[up_b_groza]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = up_gr_bd_groza
+section                 = up_sect_b_groza
+property                = prop_dispersion
+
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_zatvor_recoil
+description             = st_upg_zatvor_recoil_descr
+icon                    = ui_wp_upgrade_31
+
+[up_c_groza]
+scheme_index            = 0, 2
+known                   = 1
+effects                 = up_gr_ac_groza
+section                 = up_sect_c_groza
+property                = prop_recoil
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_porsh_recoil
+description             = st_upg_porsh_recoil_descr
+icon                    = ui_wp_upgrade_41
+
+[up_d_groza]
+scheme_index            = 0, 3
+known                   = 1
+effects                 = up_gr_bd_groza
+section                 = up_sect_d_groza
+property                = prop_recoil
+
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_porsh_rpm
+description             = st_upg_porsh_rpm_descr
+icon                    = ui_wp_upgrade_42
+
+[up_e_groza]
+scheme_index            = 0, 4
+known                   = 1
+effects                 = up_gr_eg_groza
+section                 = up_sect_e_groza
+property                = prop_inertion
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_barrel_weight
+description             = st_upg_barrel_weight_descr
+icon                    = ui_wp_upgrade_52
+
+[up_f_groza]
+scheme_index            = 0, 5
+known                   = 1
+effects                 = up_gr_fh_groza
+section                 = up_sect_f_groza
+property                = prop_bullet_speed
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_hard_barrel_curved
+description             = st_upg_hard_barrel_curved_descr
+icon                    = ui_wp_upgrade_23
+
+[up_g_groza]
+scheme_index            = 0, 6
+known                   = 1
+effects                 = up_gr_eg_groza
+section                 = up_sect_g_groza
+property                = prop_ammo_size
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_charger_assault
+description             = st_upg_charger_assault_descr
+icon                    = ui_wp_upgrade_13
+
+[up_h_groza]
+scheme_index            = 0, 7
+known                   = 1
+effects                 = up_gr_fh_groza
+section                 = up_sect_h_groza
+property                = prop_dispersion
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here_h
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_charger_small
+description             = st_upg_charger_small_descr
+icon                    = ui_wp_upgrade_14
+
+[up_j_groza]
+scheme_index            = 0, 8
+known                   = 1
+effects                 = 
+section                 = up_sect_j_groza
+property                = prop_calibre
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_calibre_5_45
+description             = st_upg_calibre_5_45_descr
+icon                    = ui_wp_upgrade_21
+
+
+[up_ac_groza]
+scheme_index            = 1, 0
+known                   = 1
+effects                 = up_gr_aceg_groza
+section                 = up_sect_ac_groza
+property                = prop_rpm
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_auto_rpm
+description             = st_upg_auto_rpm_descr
+icon                    = ui_wp_upgrade_38
+
+[up_bd_groza]
+scheme_index            = 1, 1
+known                   = 1
+effects                 = up_gr_bdfh_groza
+section                 = up_sect_bd_groza
+property                = prop_dispersion
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_trigger_accur
+description             = st_upg_trigger_accur_descr
+icon                    = ui_wp_upgrade_34
+
+
+[up_eg_groza]
+scheme_index            = 1, 2
+known                   = 1
+effects                 = up_gr_aceg_groza
+section                 = up_sect_eg_groza
+property                = prop_recoil
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_barrel_recoil
+description             = st_upg_barrel_recoil_descr
+icon                    = ui_wp_upgrade_24
+
+[up_fh_groza]
+scheme_index            = 1, 3
+known                   = 1
+effects                 = up_gr_bdfh_groza
+section                 = up_sect_fh_groza
+property                = prop_bullet_speed
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_electro_accur
+description             = st_upg_electro_accur_descr
+icon                    = ui_wp_upgrade_33
+
+[up_aceg_groza]
+scheme_index            = 2, 0
+effects                 =
+section                 = up_sect_aceg_groza
+property                = prop_rpm
+
+known                   = 1
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_barrel_rpm
+description             = st_upg_barrel_rpm_descr
+icon                    = ui_wp_upgrade_27
+
+[up_bdfh_groza]
+scheme_index            = 2, 1
+effects                 =
+section                 = up_sect_bdfh_groza
+property                = prop_dispersion
+
+known                   = 1
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_accel_curved
+description             = st_upg_accel_curved_descr
+icon                    = ui_wp_upgrade_18
+
+
+[up_gr_ab_groza]
+elements                = up_a_groza, up_b_groza
+
+[up_gr_cd_groza]
+elements                = up_c_groza, up_d_groza
+
+[up_gr_ef_groza]
+elements                = up_e_groza, up_f_groza
+
+[up_gr_gh_groza]
+elements                = up_g_groza, up_h_groza
+
+[up_gr_j_groza]
+elements                = up_j_groza
+
+
+[up_gr_ac_groza]
+elements                = up_ac_groza
+
+[up_gr_bd_groza]
+elements                = up_bd_groza
+
+[up_gr_eg_groza]
+elements                = up_eg_groza
+
+[up_gr_fh_groza]
+elements                = up_fh_groza
+
+[up_gr_aceg_groza]
+elements                = up_aceg_groza
+
+[up_gr_bdfh_groza]
+elements                = up_bdfh_groza

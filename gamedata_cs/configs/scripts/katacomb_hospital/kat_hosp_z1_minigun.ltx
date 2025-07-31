@@ -1,0 +1,281 @@
+[logic]
+active = ph_idle@1
+
+[ph_idle@1]
+auto_fire = false
+on_info = {+hospital_z1_action} ph_minigun@1
+on_info2 = {+minigun_off} ph_idle2
+
+[ph_minigun@1] ;--стреляет по точкам
+auto_fire = true
+path_fire = minigun_fire_way_1
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@2
+on_info = {+cover_fire_hide} ph_idle
+on_info2 = {+minigun_off} ph_idle2
+on_actor_not_in_zone = kat_hosp_z1_sniper_ignore_restr | ph_minigun@1_1
+
+[ph_minigun@2] ;--стреляет по точкам
+auto_fire = true
+path_fire = minigun_fire_way_2
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@3
+on_info = {+cover_fire_hide} ph_idle
+on_info2 = {+minigun_off} ph_idle2
+on_actor_not_in_zone = kat_hosp_z1_sniper_ignore_restr | ph_minigun@1_1
+
+[ph_minigun@3] ;--стреляет по точкам
+auto_fire = true
+path_fire = minigun_fire_way_3
+;invulnerable = true
+fire_range = 150
+on_game_timer = 3 | ph_minigun@4
+on_info = {+cover_fire_hide} ph_idle
+on_info2 = {+minigun_off} ph_idle2
+on_actor_not_in_zone = kat_hosp_z1_sniper_ignore_restr | ph_minigun@1_1
+
+[ph_minigun@4] ;--стреляет по точкам
+auto_fire = true
+path_fire = minigun_fire_way_4
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@5
+on_info = {+cover_fire_hide} ph_idle
+on_info2 = {+minigun_off} ph_idle2
+on_actor_not_in_zone = kat_hosp_z1_sniper_ignore_restr | ph_minigun@1_1
+
+[ph_minigun@5] ;--стреляет по точкам
+auto_fire = true
+path_fire = minigun_fire_way_5
+;invulnerable = true
+fire_range = 150
+on_game_timer = 1 | ph_minigun@reload
+on_info = {+cover_fire_hide} ph_idle
+on_info2 = {+minigun_off} ph_idle2
+on_actor_not_in_zone = kat_hosp_z1_sniper_ignore_restr | ph_minigun@1_1
+
+[ph_minigun@reload] ;--стреляет по точкам, до сцены со снайпером
+auto_fire = false
+;target = actor
+;invulnerable = true
+fire_range = 150
+on_game_timer = 30 | ph_minigun@1
+on_info = {+cover_fire_hide} ph_idle
+on_info2 = {+minigun_off} ph_idle2
+on_actor_not_in_zone = kat_hosp_z1_sniper_ignore_restr | ph_minigun@1_1
+
+;--стреляет по точкам, когда видит игрока переключается на убивание игрока
+
+[ph_minigun@1_1] 
+auto_fire = true
+path_fire = minigun_fire_way_1
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@2_1
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_3} ph_minigun@floor1_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@2_1]
+auto_fire = true
+path_fire = minigun_fire_way_2
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@3_1
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_3} ph_minigun@floor1_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@3_1]
+auto_fire = true
+path_fire = minigun_fire_way_3
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@5_1
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_3} ph_minigun@floor1_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@4_1]
+auto_fire = true
+path_fire = minigun_fire_way_4
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@reload_1
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_3} ph_minigun@floor1_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@5_1]
+;auto_fire = true
+;path_fire = minigun_fire_way_5
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@reload_1
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_3} ph_minigun@floor1_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@reload_1]
+auto_fire = true
+;target = actor
+;invulnerable = true
+fire_range = 150
+on_game_timer = 30 | ph_minigun@1
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_3} ph_minigun@floor1_1
+on_info4 = {+sniper_fire_scene -sniper_fire_scene_end} ph_minigun@1_1
+on_info5 = {+minigun_off} ph_idle2
+
+[ph_minigun@floor1_1] 
+auto_fire = true
+path_fire = minigun_fire_way_floor1_1
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@floor1_2
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_4} ph_minigun@bridge_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@floor1_2]
+auto_fire = true
+path_fire = minigun_fire_way_floor1_2
+;invulnerable = true
+fire_range = 150
+on_game_timer = 4 | ph_minigun@floor1_3
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_4} ph_minigun@bridge_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@floor1_3]
+auto_fire = true
+path_fire = minigun_fire_way_floor1_3
+;invulnerable = true
+fire_range = 150
+on_game_timer = 3 | ph_minigun@floor1_4
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_4} ph_minigun@bridge_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@floor1_4]
+auto_fire = true
+path_fire = minigun_fire_way_floor1_4
+;invulnerable = true
+fire_range = 150
+on_game_timer = 3 | ph_minigun@floor1_5
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_4} ph_minigun@bridge_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@floor1_5]
+auto_fire = true
+path_fire = minigun_fire_way_floor1_5
+;invulnerable = true
+fire_range = 150
+on_game_timer = 1 | ph_minigun@floor1_reload
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_4} ph_minigun@bridge_1
+on_info4 = {+minigun_off} ph_idle2
+
+[ph_minigun@floor1_reload]
+auto_fire = true
+;target = actor
+;invulnerable = true
+fire_range = 150
+on_game_timer = 30 | ph_minigun@floor1_1
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+rush_4} ph_minigun@bridge_1
+on_info4 = {+minigun_off} ph_idle2
+
+;--стреляет по мостику
+[ph_minigun@bridge_1] 
+auto_fire = true
+path_fire = minigun_fire_way_1 ;--minigun_fire_way_bridge_1
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@bridge_2
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+minigun_off} ph_idle2
+
+[ph_minigun@bridge_2]
+auto_fire = true
+path_fire = minigun_fire_way_2 ;--minigun_fire_way_bridge_2
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@bridge_3
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+minigun_off} ph_idle2
+
+[ph_minigun@bridge_3]
+auto_fire = true
+path_fire = minigun_fire_way_3 ;--minigun_fire_way_bridge_3
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@bridge_4
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+minigun_off} ph_idle2
+
+[ph_minigun@bridge_4]
+auto_fire = true
+path_fire = minigun_fire_way_4 ;--minigun_fire_way_bridge_4
+;invulnerable = true
+fire_range = 150
+on_game_timer = 5 | ph_minigun@bridge_5
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+minigun_off} ph_idle2
+
+[ph_minigun@bridge_5]
+auto_fire = true
+path_fire = minigun_fire_way_5 ;--minigun_fire_way_bridge_5
+;invulnerable = true
+fire_range = 150
+on_game_timer = 1 | ph_minigun@bridge_reload
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+minigun_off} ph_idle2
+
+[ph_minigun@bridge_reload]
+auto_fire = true
+target = actor
+;invulnerable = true
+fire_range = 150
+on_game_timer = 100 | ph_minigun@bridge_1
+on_info = {=is_minigun_see_actor} ph_minigun@actor
+on_info2 = {+cover_fire_hide} ph_idle
+on_info3 = {+minigun_off} ph_idle2
+
+
+[ph_minigun@actor] ;-- стреляет по игроку
+auto_fire = true
+target = actor
+;invulnerable = true
+fire_range = 150
+on_actor_in_zone = kat_hosp_z1_sniper_ignore_restr | ph_minigun@1
+on_info = {+cover_fire_hide} ph_idle
+on_info2 = {!is_minigun_see_actor} ph_minigun@1
+on_info3 = {+minigun_off} ph_idle2
+
+
+[ph_idle] ;-- пережидает огонь на прикрытие
+on_info = {+cover_fire_end} ph_minigun@actor
+
+[ph_idle2] ;-- выключен
+auto_fire = false

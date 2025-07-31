@@ -1,0 +1,16 @@
+[logic]
+active = camper@wait
+
+[camper@wait]
+out_restr = lim_final_enemy_restr_2
+combat_ignore_cond = true
+path_walk = lim_final_enemy_wait_3_walk
+path_look = lim_final_enemy_wait_3_walk
+on_info = {+lim_final_sniper_fire2} camper@fire
+
+[camper@fire]
+out_restr = lim_final_enemy_restr_2
+;combat_ignore_cond = {!is_enemy_actor}
+path_walk = lim_final_enemy_fire_3_walk
+path_look = lim_final_enemy_fire_3_look
+radius = 30

@@ -1,0 +1,107 @@
+;;; defend smart and wait actor ;;;
+
+[logic@scientist_1]
+active = walker@scientist_1
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 40
+
+[walker@scientist_1]
+path_walk = scientist_1_walk
+path_look = scientist_1_look
+
+[logic@scientist_2]
+active = walker@scientist_2
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 40
+
+[walker@scientist_2]
+path_walk = scientist_2_walk
+path_look = scientist_2_look
+
+[logic@scientist_3]
+active = walker@scientist_3
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 40
+
+[walker@scientist_3]
+path_walk = scientist_3_walk
+path_look = scientist_3_look
+
+[logic@scientist_4]
+active = walker@scientist_4
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 40
+
+[walker@scientist_4]
+path_walk = scientist_4_walk
+path_look = scientist_4_look
+
+[logic@scientist_leader]
+active = walker@scientist_leader
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 41
+
+[walker@scientist_leader]
+path_walk = scientist_leader_walk
+path_look = scientist_leader_look
+meet = meet@scientist_leader
+on_info = {+agr_stalker_scientist_quest_3} walker@scientist_leader_end
+
+[walker@scientist_leader_end]
+path_walk = scientist_leader_walk
+path_look = scientist_leader_look
+
+[meet@scientist_leader]
+meet_dialog = agr_stalker_scientist_quest_complete
+
+;;; go to Yantar ;;;
+
+[logic@scientist_1_go]
+active = walker@scientist_1_go
+suitable = {=check_npc_name(sim_default_stalker_) +agr_stalker_scientist_quest_3} true
+prior = 42
+
+[walker@scientist_1_go]
+path_walk = scientist_1_go_walk
+path_look = scientist_1_go_look
+on_info = {=npc_in_zone(agr_scientists_dead_zone)} %=kill_npc%
+
+[logic@scientist_2_go]
+active = walker@scientist_2_go
+suitable = {=check_npc_name(sim_default_stalker_) +agr_stalker_scientist_quest_3} true
+prior = 42
+
+[walker@scientist_2_go]
+path_walk = scientist_2_go_walk
+path_look = scientist_2_go_look
+on_info = {=npc_in_zone(agr_scientists_dead_zone)} %=kill_npc%
+
+[logic@scientist_3_go]
+active = walker@scientist_3_go
+suitable = {=check_npc_name(sim_default_stalker_) +agr_stalker_scientist_quest_3} true
+prior = 42
+
+[walker@scientist_3_go]
+path_walk = scientist_3_go_walk
+path_look = scientist_3_go_look
+on_info = {=npc_in_zone(agr_scientists_dead_zone)} %=kill_npc%
+
+[logic@scientist_4_go]
+active = walker@scientist_4_go
+suitable = {=check_npc_name(sim_default_stalker_) +agr_stalker_scientist_quest_3} true
+prior = 42
+
+[walker@scientist_4_go]
+path_walk = scientist_4_go_walk
+path_look = scientist_4_go_look
+on_info = {=npc_in_zone(agr_scientists_dead_zone)} %=kill_npc%
+
+[logic@scientist_5_go]
+active = walker@scientist_5_go
+suitable = {=check_npc_name(sim_default_stalker_) +agr_stalker_scientist_quest_3} true
+prior = 42
+
+[walker@scientist_5_go]
+path_walk = scientist_5_go_walk
+path_look = scientist_5_go_look
+on_info = {=npc_in_zone(agr_scientists_dead_zone)} %=kill_npc%

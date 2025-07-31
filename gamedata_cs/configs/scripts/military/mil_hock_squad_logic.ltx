@@ -1,0 +1,85 @@
+[logic@hock]
+active = camper@0
+suitable = {=check_npc_name(mil_hog)} true
+on_death = death
+
+[camper@0]
+path_walk = com_2_walk
+path_look = com_2_look
+on_info = {+mil_start_after_red_forest +mil_actor_bridge} camper@1
+on_info2 = {+forester_telled_coordinates +forester_talked_2} camper@1
+meet = no_meet
+
+[camper@1]
+path_walk = com_2_walk
+path_look = com_2_look
+meet = meet
+on_info = {+mil_merc_talked_f1_f2_wt1 -mil_merc_talked_i_hate_freedom -mil_racya_dialog_3_end} remark@1
+
+[remark@1]
+target = actor
+anim = guard_rac
+combat_ignore_cond = always
+on_signal = sound_end | %+mil_racya_dialog_1% remark@2
+meet = no_meet
+snd = mil_hog_to_freedom_2
+
+[remark@2]
+target = actor
+anim = guard_rac
+combat_ignore_cond = always
+on_info = {+mil_racya_dialog_1_end} remark@3
+meet = no_meet
+
+[remark@3]
+target = actor
+anim = guard_rac
+combat_ignore_cond = always
+on_signal = sound_end | %+mil_racya_dialog_2% remark@4
+meet = no_meet
+snd = mil_hog_to_freedom_4
+
+[remark@4]
+target = actor
+anim = guard_rac
+combat_ignore_cond = always
+on_info = {+mil_racya_dialog_2_end} remark@5
+meet = no_meet
+
+[remark@5]
+target = actor
+anim = guard_rac
+combat_ignore_cond = always
+on_signal = sound_end | %+mil_racya_dialog_3% remark@6
+meet = no_meet
+snd = mil_hog_to_freedom_6
+
+[remark@6]
+target = actor
+anim = guard_rac
+combat_ignore_cond = always
+on_info = {+mil_racya_dialog_3_end} remark@7 %=play_sound(mil_hog_to_actor:killer:mil_hog_name)%
+meet = no_meet
+
+[remark@7]
+target = actor
+anim = wait
+combat_ignore_cond = always
+meet = no_meet
+on_signal = sound_end | camper@1
+
+[meet]
+meet_state = 10 | guard@nil
+meet_state_wpn = 40 | threat@mil_hog_greetings
+victim = 10 | actor
+victim_wpn = 30 | actor
+use	= true
+use_wpn	= false
+;meet_dialog = hello_mil_killer
+
+[death]
+on_info = %+mil_hog_death%
+
+[known_info]
+mil_merc_talked_f1_f2_wt1
+mil_merc_talked_i_hate_freedom

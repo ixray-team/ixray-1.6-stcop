@@ -1,0 +1,33 @@
+[logic]
+active = camper@wait
+relation = enemy
+
+[camper@wait]
+;out_restr = lim_bandit_house_zone_1
+combat_ignore_cond = true
+path_walk = lim_bandit_house_bandit_7_walk
+path_look = lim_bandit_house_bandit_7_look
+def_state_moving = raid
+def_state_campering = hide_na
+def_state_campering_fire = hide_fire
+radius = 1
+on_info = {+lim_bandit_house_attack1} smartcover@fire
+
+[smartcover@fire]
+out_restr = lim_bandit_house_zone_1
+;combat_ignore_cond = {!is_enemy_actor}
+path_walk = lim_bandit_house_bandit_7_walk
+cover_name = lim_bandit_house_cover_2
+target_path = lim_bandit_house_bandit_7_fire_look
+cover_state = fire_target
+on_info = {=actor_in_zone(lim_bandit_house_zone_1)} camper@fire
+
+[camper@fire]
+out_restr = lim_bandit_house_zone_1
+path_walk = lim_bandit_house_bandit_7_walk
+path_look = lim_bandit_house_bandit_7_look
+def_state_moving = raid
+def_state_campering = hide_na
+def_state_campering_fire = hide_fire
+radius = 15
+on_info = {=actor_out_zone(lim_bandit_house_zone_1)} smartcover@fire

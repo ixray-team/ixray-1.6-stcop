@@ -1,0 +1,13 @@
+function give_pda(first_speaker, second_speaker)
+	if first_speaker:object("device_pda_digger") ~= nil then
+		dialogs.relocate_item_section(first_speaker, "device_pda_digger", "out")
+    end
+end
+
+function if_actor_has_pda(first_speaker, second_speaker)
+	return first_speaker:object("device_pda_digger") ~= nil 	
+end
+
+function if_actor_has_not_pda(first_speaker, second_speaker)
+	return not if_actor_has_pda(first_speaker, second_speaker)
+end

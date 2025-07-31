@@ -1,0 +1,15 @@
+[logic]
+active = walker@floor_2
+on_death = death
+
+[death]
+on_info = %-hospital_z3_enemy_8 =dec_counter(hospital_z3_cout)%
+
+[walker@floor_2]
+post_combat_time = 0,0
+out_restr = kat_hosp_z3_floor_right_restr_2
+path_walk = z3_enemy_floor2_8_walk
+path_look = z3_enemy_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault

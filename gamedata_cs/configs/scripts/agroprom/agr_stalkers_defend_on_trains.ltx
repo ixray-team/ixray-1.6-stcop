@@ -1,0 +1,148 @@
+[logic@work1]
+active = walker@wait1
+suitable = {=check_npc_name(sim_default_stalker_3)} true
+prior = 40
+on_death = death@1
+
+[death@1]
+on_info = %-train_pre_jump_1 -train_jump_1%
+
+[walker@wait1]
+path_walk = agr_stalker_defender_on_trains_1_walk
+path_look = agr_stalker_defender_on_trains_1_look
+on_info = {+train_pre_jump_1} walker@wait1_2 %=play_sound(agr_stalker_train_shout_1)%
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+meet = no_meet
+
+[walker@wait1_2]
+path_walk = agr_stalker_defender_on_trains_1_walk
+path_look = agr_stalker_defender_on_trains_1_look_2
+on_info = {+train_jump_1} %=hit_npc(agr_smart_terrain_4_4_near_1_agr_hit_1:bip01_spine1:100:1000)% walker@wait1_1
+meet = no_meet
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+radius = 0
+
+[walker@wait1_1]
+path_walk = agr_stalker_defender_on_trains_1_walk
+path_look = agr_stalker_defender_on_trains_1_look_2
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+radius = 0
+
+[logic@work2]
+active = walker@wait2
+suitable = {=check_npc_name(sim_default_stalker_3)} true
+prior = 40
+on_death = death@2
+
+[death@2]
+on_info = %-train_pre_jump_2 -train_jump_2%
+
+[walker@wait2]
+path_walk = agr_stalker_defender_on_trains_2_walk
+path_look = agr_stalker_defender_on_trains_2_look
+on_info = {+train_pre_jump_2} walker@wait2_2 %=play_sound(agr_stalker_train_shout_1)%
+;combat_ignore_cond = always
+meet = no_meet
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+radius = 0
+
+[walker@wait2_2]
+path_walk = agr_stalker_defender_on_trains_2_walk
+path_look = agr_stalker_defender_on_trains_2_look_2
+on_info = {+train_jump_2} %=hit_npc(agr_smart_terrain_4_4_near_1_agr_hit_2:bip01_spine1:100:1000)% walker@wait2_1
+;combat_ignore_cond = always
+meet = no_meet
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+radius = 0
+
+[walker@wait2_1]
+path_walk = agr_stalker_defender_on_trains_2_walk
+path_look = agr_stalker_defender_on_trains_2_look_2
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+radius = 0
+
+[logic@work3]
+active = walker@wait3
+suitable = {=check_npc_name(sim_default_stalker_3)} true
+prior = 40
+on_death = death@3
+
+[death@3]
+on_info = %-train_pre_jump_3 -train_jump_3%
+
+[walker@wait3]
+path_walk = agr_stalker_defender_on_trains_3_walk
+path_look = agr_stalker_defender_on_trains_3_look
+on_info = {+train_pre_jump_3} walker@wait3_2 %=play_sound(agr_stalker_train_shout_1)%
+;combat_ignore_cond = always
+meet = no_meet
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+radius = 0
+
+[walker@wait3_2]
+path_walk = agr_stalker_defender_on_trains_3_walk
+path_look = agr_stalker_defender_on_trains_3_look_2
+on_info = {+train_jump_3} %=hit_npc(agr_smart_terrain_4_4_near_1_agr_hit_3:bip01_spine1:100:1000)% walker@wait3_1
+meet = no_meet
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+radius = 0
+
+[walker@wait3_1]
+path_walk = agr_stalker_defender_on_trains_3_walk
+path_look = agr_stalker_defender_on_trains_3_look_2
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+radius = 0
+
+;;; Commander 1
+
+[logic@commander_1]
+active = walker@commander_1
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 40
+
+[walker@commander_1]
+path_walk = agr_stalker_commander_1_walk
+path_look = agr_stalker_commander_1_look
+meet = meet@commander_1
+
+[meet@commander_1]
+meet_dialog = agr_stalker_commander_1_about_situation
+
+;;; Commander 2
+
+[logic@commander_2]
+active = walker@commander_2
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 40
+
+[walker@commander_2]
+path_walk = agr_stalker_commander_2_walk
+path_look = agr_stalker_commander_2_look
+meet = meet@commander_2
+
+[meet@commander_2]
+meet_dialog = agr_stalker_commander_2_about_situation
+
+;;; Guarder
+
+[logic@guarder]
+active = walker@guarder
+suitable = {=check_npc_name(sim_default_stalker_)} true
+prior = 40
+
+[walker@guarder]
+path_walk = agr_stalker_guarder_1_walk
+path_look = agr_stalker_guarder_1_look
+meet = meet@guarder
+
+[meet@guarder]
+meet_dialog = agr_stalker_guard_dialog

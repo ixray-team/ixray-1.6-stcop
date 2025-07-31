@@ -1,0 +1,20 @@
+[logic]
+active = patrol@attack1
+on_death = death
+
+[death]
+on_info = %=dec_counter(lim_square_enemy_count)%
+
+[patrol@attack1]
+post_combat_time = 0,0
+out_restr = lim_square_enemy_restr
+path_walk = lim_square_enemy_attack_walk
+path_look = lim_square_enemy_attack_look
+on_info = {+lim_military_minigun_out !actor_see_npc =dist_to_actor_ge(50)} %=destroy_object% ;patrol@attack2
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[patrol@attack2]
+post_combat_time = 0,0
+path_walk = lim_square_enemy_attack_2_walk

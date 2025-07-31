@@ -1,0 +1,194 @@
+function draw_name(item)
+printf("%s",item:name())
+end
+
+function main()
+db.actor:inventory_for_each(draw_name)
+end
+
+function main22()
+	local board = sim_board.get_sim_board()
+	local player = board.players["dolg"]
+	local smart = board.smarts_by_names["test_terrain_1"]
+
+	for k,v in pairs(board.smarts[smart.id].squads) do
+	    board:exit_smart(v, smart)
+	    board:remove_squad(v)
+	end
+ 
+	local squad = board:create_squad(player.player_name, sim_squad_scripted.sim_squad_scripted, smart, "test_attack")
+	
+	board:enter_smart(squad, smart.id)
+
+	for k,v in pairs(squad.squad_npc) do
+	    local obj = alife():object(k)
+	    board:setup_squad_and_group(obj)
+	end
+	squad:update()
+end
+
+
+function stats()
+	local board = sim_board.get_sim_board()
+
+	local st = {}
+	for faction_id,faction in pairs(board.players) do
+		local fst = {}
+		
+		fst.id = faction_id
+		fst.resource_level 	= faction.resource_level
+		fst.absolute_power 	= faction.absolute_power
+		
+		
+		local squads = {}
+		local npc_stats = {}
+		for k,squad in pairs(faction.squads) do
+			local squad_level = alife():level_name(game_graph():vertex(board.smarts[squad.smart_id].smrt.m_game_vertex_id):level_id())
+
+			if squads[squad_level] == nil then
+				squads[squad_level] = {_total_power = 0}
+			end
+		
+			squads[squad_level][squad.squad_id] = {num = squad.npc_count, pow = squad.squad_power}
+			squads[squad_level]._total_power = squads[squad_level]._total_power + squad.squad_power
+			
+			-- Собираем распределение силы отделььных персонажей
+			for kk,npc_id in pairs(squad.squad_npc) do
+				local obj = alife():object(npc_id)
+				local obj_power = 5*obj:rank()/1000
+				if npc_stats[obj_power] == nil then
+					npc_stats[obj_power] = 0
+				end
+				npc_stats[obj_power] = npc_stats[obj_power] + 1
+			end
+			  
+		end 
+		
+		local sq_fin = {}
+		for k,v in pairs(squads) do
+			local total_power = v._total_power
+			v._total_power = nil
+			table.insert(sq_fin, {level = k, level_power = total_power, squads = v})
+		end
+		
+		table.sort(sq_fin, function(a,b) return a.level_power > b.level_power end)			
+		fst.squads 			= sq_fin		
+		
+		local npc_fin = {}
+		for k,v in pairs(npc_stats) do
+			table.insert(npc_fin, {pow = k, quan = v})
+		end
+		table.sort(npc_fin, function(a,b) return a.pow > b.pow end)
+		
+		fst.npc = npc_fin
+		table.insert(st, fst)				
+	end
+
+	
+	table.sort(st, function(a,b) return a.absolute_power > b.absolute_power end)
+
+
+	for k,v in pairs(st) do
+		printf("faction %s", v.id)
+		printf("    resource %s", v.resource_level)
+		printf("    power %s", v.absolute_power)
+
+		local pow, quan = 0,0
+		for kk,vv in pairs(v.npc) do
+			pow = pow + vv.pow*vv.quan
+			quan = quan + vv.quan			
+		end
+		
+		if quan > 0 then
+			printf("    npc: num (%s) ave_rank (%s)", quan, (pow/quan)*200)
+			for kk,vv in pairs(v.npc) do
+				printf("        power %s num %s rank %s", vv.pow, vv.quan, vv.pow*200)
+			end
+		end
+		
+		printf("    squads:")
+		for kk,vv in pairs(v.squads) do
+			local pow, num = 0,0
+			for kkk,vvv in pairs(vv.squads) do
+				pow = pow + vvv.pow
+				num = num + vvv.num
+			end
+			printf("    at level %s power %s num %s ave_rank %s", vv.level, vv.level_power, num, (pow/num)*200)
+			for kkk,vvv in pairs(vv.squads) do
+				printf("        %s : pow %s num %s ave_rank %s", kkk, vvv.pow, vvv.num, (vvv.pow/vvv.num)*200)
+			end
+		end
+		
+	end
+
+--	print_table(st)
+end
+
+
+
+
+function spawns()
+	local board = sim_board.get_sim_board()
+	
+	printf("Monster lairs:")
+	for smart_id,level_id in pairs(board.mutant_lair) do
+		printf("    %s on level %s", board.smarts[smart_id].smrt:name(), alife():level_name(level_id))
+	end
+
+	printf("Respawn sectors:")	
+	for smart_id,respawn_sector in pairs(board.spawn_smarts) do
+		printf("    %s", board.smarts[smart_id].smrt:name())
+		if type(respawn_sector) == "table" then
+			print_table(respawn_sector, "      ")
+		else
+			printf("      %s", board.smarts[smart_id].smrt:name())
+		end
+	end	
+end
+
+
+
+
+
+
+
+function main88()
+        level.add_cam_effector2("camera_effects\\scenario_cam\\mp_military_weather\\mp_military_weather.anm", 999, true, "")
+end
+
+function main89()
+        local h = hit()
+        h.draftsman = db.actor
+        h.type = hit.fire_wound
+        h.power = 0.9
+        h.impulse = 1
+
+    h.direction = vector():set(0,0,1)
+        db.actor:hit(h)
+end
+
+function get_text_test(npc, dlg_id, phrase_id)
+ return "be-be-be"
+end
+
+function __main()
+        send_task(2,"2-nd",task.storyline,1, "red_location")
+        send_task(3,"3-rd",task.storyline,1, "red_location")
+end
+
+function send_task(object_id, task_id, task_type, task_prio, ln)
+        local t                                        = CGameTask()
+
+        t:set_title                                (task_id.."_title")
+        t:set_id                                (task_id)
+        t:set_type                                (task_type)
+        t:set_priority                        (task_prio)
+        t:set_icon_name                        ("ui_iconsTotal_storyline_eliminate_gunslinger")
+
+        t:set_description                ("Configurable button bar to start external programs or internal menu commands.-Configurable main menu.-Internal unpackers for ZIP, ARJ, LZH, GZ, TAR, RAR and ACE formats.-Internal ZIP packer, based on ZLib by Jean-loup Gailly.")
+
+        t:set_map_hint                        (task_id.."_map_hint")
+        t:set_map_location                (ln)
+        t:set_map_object_id                (object_id)
+        db.actor:give_task                (t,0,false)
+end

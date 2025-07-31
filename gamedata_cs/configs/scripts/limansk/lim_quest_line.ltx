@@ -1,0 +1,35 @@
+[logic]
+active = sr_idle@ambush_2_task
+
+[sr_idle@ambush_2_task]
+on_info = {+lim_ambush2} sr_idle@go_to_canal %=give_inited_task(storyline:lim_destroy_ambush_2:csky)%
+
+[sr_idle@go_to_canal]
+on_info = {+lim_go_to_canal_task} sr_idle@find_comander %=give_inited_task(storyline:lim_go_to_canal:csky)%
+on_info2 = {+lim_go_to_canal_complete} sr_idle@find_comander
+
+[sr_idle@find_comander]
+on_info = {+lim_go_to_canal_complete} sr_idle@destroy_military_minigun %=give_inited_task(storyline:lim_find_bridge_squad_comander:csky)%
+on_info2 = {+lim_military_minigun_out} sr_idle@construction_task
+on_info3 = {=actor_in_zone(lim_military_minigun_reversed_restr)} sr_idle@construction_task %+lim_actor_skip_military_minigun_task% 
+
+[sr_idle@destroy_military_minigun]
+on_info = {+lim_military_minigun_task} sr_idle@construction_task %=give_inited_task(storyline:lim_destroy_military_minigun:csky)%
+on_info2 = {=actor_in_zone(lim_military_minigun_reversed_restr)} sr_idle@construction_task %+lim_actor_skip_military_minigun_task% 
+
+[sr_idle@construction_task]
+on_info = {=actor_in_zone(lim_construction_task_restr)} sr_idle@construction_task_complete %=give_inited_task(storyline:lim_find_way_through_construction:csky)%
+
+[sr_idle@construction_task_complete]
+on_info = {=actor_in_zone(lim_construction_passed_restr)} sr_idle@cs_soldier_cover %+lim_construction_passed%
+
+[sr_idle@cs_soldier_cover]
+on_info = {+lim_recon_squad_order_1} sr_idle@find_transformer %=give_inited_task(storyline:lim_electro_fence_cs_soldier_cover:csky)%
+
+[sr_idle@find_transformer]
+on_info = {+lim_shut_transformer_task} sr_idle@shutdown_transformer %=give_inited_task(storyline:lim_electro_fence_find_transformator:csky)%
+
+[sr_idle@shutdown_transformer]
+on_info = {=actor_in_zone(lim_final_find_transformer)} sr_idle@nil %+lim_final_actor_find_transformer =give_inited_task(storyline:lim_electro_fence:csky)%
+
+[sr_idle@nil]

@@ -1,0 +1,31 @@
+[logic]
+active = camper@wait
+on_death = death
+
+[death]
+on_info = %-lim_construction_enemy_1%
+
+[camper@wait]
+out_restr = lim_construction_restr
+combat_ignore_cond = true
+path_walk = lim_construction_enemy_wait_1_walk
+path_look = lim_construction_enemy_wait_1_walk
+on_info = {=actor_in_zone(lim_construction_enemy_fire_zone_1)} camper@fire
+on_info2 = {=actor_in_zone(lim_construction_enemy_fire_zone_2)} camper@fire
+on_info3 = {=actor_in_zone(lim_construction_enemy_fire_zone_3)} camper@fire
+on_info4 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2
+
+[camper@fire]
+out_restr = lim_construction_restr
+path_walk = lim_construction_enemy_fire_1_walk
+path_look = lim_construction_enemy_fire_1_look
+radius = 50
+def_state_moving = sneak_run
+on_info = {=actor_out_zone(lim_construction_enemy_fire_zone_1) =actor_out_zone(lim_construction_enemy_fire_zone_2) =actor_out_zone(lim_construction_enemy_fire_zone_3)} camper@wait
+on_info2 = {=actor_in_zone(lim_smart_terrain_9_attack)} camper@fire2
+
+[camper@fire2]
+out_restr = lim_construction_restr
+path_walk = lim_construction_enemy_first_floor_1_walk
+path_look = lim_construction_enemy_first_floor_1_walk
+def_state_moving = assault

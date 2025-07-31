@@ -1,0 +1,61 @@
+#include "treasure_agroprom.ltx"
+#include "treasure_agroprom_underground.ltx"
+#include "treasure_dark_valley.ltx"
+#include "treasure_escape.ltx"
+#include "treasure_garbage.ltx"
+#include "treasure_hospital.ltx"
+#include "treasure_limansk.ltx"
+#include "treasure_marsh.ltx"
+#include "treasure_military.ltx"
+#include "treasure_red_forest.ltx"
+#include "treasure_yantar.ltx"
+
+[list]:list_treasure_garbage, list_treasure_escape, list_treasure_red_forest, list_treasure_military, list_treasure_marsh, list_treasure_agroprom, list_treasure_agroprom_underground, list_treasure_dark_valley, list_treasure_hospital, list_treasure_limansk, list_treasure_yantar
+test_treasure
+;test_treasure2
+;test_treasure3
+;test_treasure4
+;test_treasure5
+
+[test_treasure]
+target = smart_terrain_1_box
+name = st_lim_pipe_02_2
+description = st_lim_pipe_02_2_descr
+items = wpn_ak74, 2, vodka, 2, ammo_9x19_pbp, 75
+community = bandit
+;treasure_cost = 2000
+;say_item_name = false
+;condlist = {=check_npc_name(barman)} true
+condlist = {=actor_on_level(peacemaker_selo)} true
+
+[test_treasure2]
+target = 65000
+name = abracadabra2
+description = abracadabra_descr2
+items = wpn_sig550
+community = freedom
+condlist = true
+
+[test_treasure3]
+target = 65001
+name = abracadabra3
+description = abracadabra_descr3
+items = wpn_gauss
+community = arena_enemy
+condlist = true
+
+[test_treasure4]
+target = 65001
+name = abracadabra4
+description = abracadabra_descr4
+items = wpn_beretta
+community = bandit
+condlist = true
+
+[test_treasure5]
+target = 65000
+name = abracadabra5
+description = abracadabra_descr5
+items = wpn_val
+community = arena_enemy
+condlist = true

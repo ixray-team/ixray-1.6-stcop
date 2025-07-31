@@ -1,0 +1,20 @@
+[logic@work1]
+active = walker@enter_work1
+;combat_ignore = combat_ignore
+suitable = {=check_npc_name(esc_prapor)} true
+meet = meet
+
+[walker@enter_work1]
+path_walk = wlkr_1_walk
+path_look = wlkr_1_look
+meet = meet
+
+[meet]
+meet_state = 10| guard@nil
+;meet_state_wpn = 15| backoff@meet_weapon_wait
+victim = 20| nil| 20| actor
+victim_wpn = 20| nil| 20| actor
+use	= true
+use_wpn = false
+meet_dialog = esc_mil_prapor_talk
+abuse = true

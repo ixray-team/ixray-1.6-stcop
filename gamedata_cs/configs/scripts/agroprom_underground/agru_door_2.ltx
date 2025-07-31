@@ -1,0 +1,28 @@
+[collide]
+ignore_static
+
+[logic]
+active = ph_door@locked
+
+[ph_door@locked]
+locked = true
+closed = true
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop
+on_info = {+agru_controller_death} ph_door@open %+agru_tushkano_run%
+
+[ph_door@open]
+locked = false
+closed = false
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop
+on_info = {+agru_leader_dolg_task_complete} ph_door@locked2
+
+[ph_door@locked2]
+locked = true
+closed = true
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop

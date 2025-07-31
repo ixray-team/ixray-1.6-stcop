@@ -1,0 +1,93 @@
+[logic]
+active = walker@tutorial_1
+trade = misc\trade\trade_trader_mar_csky.ltx
+level_spot = trader
+
+[walker@tutorial_1]
+path_walk = mar_smart_terrain_csky_base_trader_walk
+path_look = mar_smart_terrain_csky_base_trader_look
+on_info = {+mar_intro_talk_with_trader_radio_played} walker@tutorial_5, {+mar_intro_talk_with_trader_started} remark@tutorial_2
+def_state_standing = wait_trade
+def_state_moving = walk_noweap
+def_state_moving1 = walk_noweap
+combat_ignore_cond = true
+meet = meet@ward
+
+[remark@tutorial_2]
+anim = wait_rac_noweap
+target = actor
+;lvl
+on_info = {+mar_intro_talk_with_trader_radio_timer -mar_lvl_sim} remark@tutorial_3, {+mar_intro_talk_with_trader_radio_timer +mar_lvl_sim} walker@tutorial_5
+combat_ignore_cond = true
+meet = no_meet
+
+[remark@tutorial_3]
+anim = wait_rac_noweap
+target = actor
+on_timer = 1000 | remark@tutorial_4
+combat_ignore_cond = true
+meet = no_meet
+
+[remark@tutorial_4]
+anim = wait_rac_noweap
+target = actor
+snd = mar_csky_trader_reply_0
+on_signal = sound_end | walker@tutorial_5 %+mar_intro_talk_with_trader_radio_played%
+combat_ignore_cond = true
+meet = no_meet
+
+[walker@tutorial_5]
+path_walk = mar_smart_terrain_csky_base_trader_walk
+path_look = mar_smart_terrain_csky_base_trader_look
+on_info = {+mar_intro_talk_with_guide_end} smartcover@intro2
+def_state_standing = wait_trade
+combat_ignore_cond = true
+meet = meet@no_trade
+
+[smartcover@intro2]
+path_walk = mar_smart_terrain_csky_base_trader_walk
+cover_name = mar_smart_cover_csky_trader_lead_stand_look_in_window
+loophole_name = lead_stand_look_in_window
+cover_state = idle_target
+on_info = {+mar_csky_trader_first_talked} smartcover@main_window_idle
+combat_ignore_cond = true
+meet = meet@no_trade
+
+;-----------------------------------------------------------------------------
+
+[smartcover@main_window_idle]
+path_walk = mar_smart_terrain_csky_base_trader_walk
+cover_name = mar_smart_cover_csky_trader_lead_stand_look_in_window
+loophole_name = lead_stand_look_in_window
+cover_state = idle_target
+combat_ignore_cond = true
+meet = meet@ward
+
+;-----------------------------------------------------------------------------
+
+[meet@no_trade]
+meet_state = 5 | nil@nil
+meet_state_wpn = 5 | nil@nil
+victim = 5 | actor
+victim_wpn = 5 | actor
+use = true
+use_wpn = true
+precond = visibility
+meet_dialog	= {-mar_intro_talk_with_guide_started} mar_csky_trader_intro_dialog, {+mar_intro_talk_with_guide_end -mar_csky_trader_first_talked} mar_csky_trader_intro2_dialog
+trade_enable = false
+allow_break = false
+sound_start 	= mar_csky_trader_meet
+;sound_stop 		= mar_csky_trader_meet_bye
+quest_npc = true
+
+[meet@ward]
+meet_state = 5 | {-mar_intro_talk_with_guide_end} ward_noweap@nil, nil@nil
+meet_state_wpn = 5 | {-mar_intro_talk_with_guide_end} ward_noweap@nil, nil@nil
+victim = 5 | actor
+victim_wpn = 5 | actor
+use = true
+use_wpn = true
+precond = visibility
+sound_start 	= mar_csky_trader_meet
+sound_stop 		= mar_csky_trader_meet_bye
+quest_npc = true

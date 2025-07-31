@@ -1,0 +1,17 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+;on_info = {+red_bloodsucker_off} sr_idle@wait
+;on_actor_inside = sr_idle@2 %=play_sound(red_bloodsucker_growl)%
+
+[sr_idle@2]
+on_info = {+red_bloodsucker_off} sr_idle@wait
+on_actor_outside = sr_idle@wait2
+
+[sr_idle@wait2]
+on_info = {+red_bloodsucker_off} sr_idle@wait
+on_game_timer = 300 | sr_idle
+
+[sr_idle@wait]
+on_game_timer = 10000 | sr_idle %-red_bloodsucker_off%

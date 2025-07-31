@@ -1,0 +1,185 @@
+#include "tm_sim.ltx"
+#include "tm_marsh.ltx"
+#include "tm_escape.ltx"
+#include "tm_garbadge.ltx"
+#include "tm_darkvalley.ltx"
+#include "tm_agroprom.ltx"
+#include "tm_agroprom_underground.ltx"
+#include "tm_yantar.ltx"
+#include "tm_military.ltx"
+#include "tm_red_forest.ltx"
+#include "tm_limansk.ltx"
+#include "tm_hospital.ltx"
+#include "tm_stancia_2.ltx"
+#include "tm_upgrades.ltx"
+
+; Типы заданий: eliminate_smart, capture_smart, defend_smart, take_reward, storyline
+; Выдача заданий: =give_inited_task(тип_задания:ид_задания:группировка)
+
+[list]:list_tm_sim, list_tm_marsh, list_tm_escape, list_tm_garbadge, list_tm_darkvalley, list_tm_agroprom, list_tm_agroprom_underground, list_tm_yantar, list_tm_military, list_tm_red_forest, list_tm_limansk, list_tm_hospital,list_tm_stancia_2, list_tm_upgrades
+test_eliminate_smart
+test_storyline_task
+test_overlapped_task
+test_overlapping_task
+test_recover_item
+test_recover_item2
+test_find_upgrade
+test_find_upgrade2
+test_hide_from_surge
+test_eliminate_squad
+test_bring_item
+test_storyline_task2
+test_storyline_task3
+
+[test_bring_item]
+type = bring_item
+task_type = additional
+name = test_bring_item_name
+text = test_bring_item_text
+condlist_0 = {} comlete
+condlist_1 = {} fail
+target_cond = {=check_npc_squad(test_duty2)} true
+;requested_items = wpn_sig550,grenade_f1,grenade_f1
+;community_relation_delta_fail=-2000
+;community_relation_delta_complete=+2000
+
+[test_hide_from_surge]
+type = hide_from_surge
+;task_type = storyline
+task_type = additional
+spot = secondary_task_location_complex
+target_cond = true
+;icon = ui_mt_image_attack_tower
+;spot = mar_capture_tower_location
+name = hide_from_surge_name
+text = hide_from_surge_text
+condlist_0 = {} comlete
+condlist_1 = {} fail
+
+[test_recover_item]
+type = recover_item
+task_type = additional
+name = test_recover_item_name
+text = test_recover_item_text
+reward_money = {~50} 1000, 2000
+reward_item = wpn_ak74:wpn_groza:ammo_9x18_fmj:ammo_9x18_fmj:ammo_5.45x39_fmj:ammo_5.45x39_fmj
+immediate_reward = true
+target_npc_or_box_name = mil_additional_quest_2_commander
+target_cond = {=check_npc_squad(test_freedom2) =actor_on_level(distemper_selo)} true
+requested_items = mil_device_pda_lost_squard
+
+[test_recover_item2]
+type = recover_item
+task_type = additional
+name = test_recover_item_name2
+text = test_recover_item_text2
+reward_money = {~50} 1000, 2000
+reward_item = wpn_ak74:wpn_groza:ammo_9x18_fmj:ammo_9x18_fmj:ammo_5.45x39_fmj:ammo_5.45x39_fmj
+immediate_reward = true
+target_npc_or_box_name = jes
+target_cond = {=check_npc_squad(test_duty2) =actor_on_level(distemper_selo)} true
+requested_items = wpn_gauss
+
+[test_find_upgrade]
+type = find_upgrade
+task_type = additional
+name = test_find_upgrade_name
+text = test_find_upgrade_text
+on_complete = %+test_info_1%
+cost = 2000
+;target_zone_name = level_prefix_space_restrictor_0002
+target_npc_or_box_name = jes
+target_cond = {=check_npc_name(level_prefix_stalker) =actor_on_level(distemper_selo) -test_info_1} true
+requested_item = flesh_up_ac_spas12
+reward_upgr = wpn_ak74, up_a_ak74
+
+[test_find_upgrade2]
+type = find_upgrade
+task_type = additional
+name = test_find_upgrade_name2
+text = test_find_upgrade_text2
+on_complete = %+test_info_2%
+cost = 1000
+target_zone_name = level_prefix_space_restrictor_0000
+;target_npc_or_box_name = jes
+target_cond = {=check_npc_name(level_prefix_stalker) =actor_on_level(distemper_selo) -test_info_2} true
+requested_item = flesh_up_bd_desert_eagle
+reward_upgr = wpn_ak74, up_c_ak74
+
+[test_eliminate_smart]
+type = eliminate_smart
+task_type = additional
+target_cond = true
+;reward_money = 1000
+;reward_item = wpn_ak74, wpn_groza
+name = sim_eliminate_smart
+text = sim_eliminate_smart_text
+condlist_0 = {} comlete
+condlist_1 = {} fail
+
+[test_eliminate_squad]
+type = eliminate_squad
+task_type = additional
+target_cond = true
+name = sim_eliminate_squad
+text = sim_eliminate_squad_text
+condlist_0 = {} comlete
+condlist_1 = {} fail
+
+
+[test_storyline_task]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = test_storyline_task_name
+text = test_storyline_task_text
+target_story_ids = 65000
+condlist_0 = {+test_info_1} complete
+spot = mar_capture_tower_location
+
+[test_storyline_task2]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 4
+name = test_storyline_task2_name
+text = test_storyline_task2_text
+target_story_ids = 65001
+condlist_0 = {+test_info_2} complete
+spot = mar_capture_tower_location
+
+[test_storyline_task3]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 4
+name = test_storyline_task3_name
+text = test_storyline_task3_text
+target_story_ids = 65001
+condlist_0 = {+test_info_3} complete
+spot = mar_capture_tower_location
+
+[test_overlapped_task]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 3
+name = test_storyline_task_name
+text = test_storyline_task_text
+target_story_ids = 65000
+
+[test_overlapping_task]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = sim_take_reward
+text = sim_take_reward_text
+condlist_0 = {-test_info_1} complete
+target_story_ids = 65000

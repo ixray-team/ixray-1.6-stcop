@@ -1,0 +1,10 @@
+[logic]
+active = mob_home
+on_death = mob_death
+
+[mob_death]
+on_info = %=dec_counter(red_tushkano_count)%
+
+[mob_home]
+out_restr = red_smart_terrain_3_2_undeground_restr_2
+path_home = red_undeground_tushkano_home

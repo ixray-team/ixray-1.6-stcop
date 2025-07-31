@@ -1,0 +1,466 @@
+[combat_ignore]
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+
+
+
+;Учёный 1, первая партия
+
+[logic@work1]
+active = remark@choice_work1
+combat_ignore = combat_ignore
+
+[remark@choice_work1]
+on_info = {+gen_cutscene_04} walker@cutscene_04_work1
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_04_work1]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+on_game_timer = 350 | walker@cutscene_04_sound_1_work1
+
+[walker@cutscene_04_sound_1_work1]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+;-- Звук "Босс, кажется мы нашли безопасный проход..."
+on_info = %=play_sound(uno_scientist_passage)%
+
+
+;Учёный 2, первая партия
+
+[logic@work2]
+active = remark@choice_work2
+combat_ignore = combat_ignore
+
+[remark@choice_work2]
+on_info = {+gen_cutscene_04} walker@cutscene_04_work2
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_04_work2]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+
+
+;Учёный 3, первая партия
+
+[logic@work3]
+active = remark@choice_work3
+combat_ignore = combat_ignore
+
+[remark@choice_work3]
+on_info = {+gen_cutscene_04} walker@cutscene_04_work3
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_04_work3]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+
+
+;Учёный 4, лидер, первая партия
+
+[logic@work4]
+active = remark@choice_work4
+combat_ignore = combat_ignore
+
+[remark@choice_work4]
+on_info = {+gen_cutscene_04} walker@cutscene_04_work4
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_04_work4]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+on_game_timer = 55 | walker@cutscene_04_sound_1_work4
+
+[walker@cutscene_04_sound_1_work4]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+;-- Звук "Нифига себе..."
+on_info = %=play_sound(uno_commander_story_2)%
+on_game_timer = 140 | walker@cutscene_04_sound_2_work4
+
+[walker@cutscene_04_sound_2_work4]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+;-- Звук "Наёмник, не заедайся..."
+on_info = %=play_sound(uno_commander_shut_up)%
+on_game_timer = 180 | walker@cutscene_04_sound_3_work4
+
+[walker@cutscene_04_sound_3_work4]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+;-- Звук "Хватит болтать..."
+on_info = %=play_sound(uno_commander_forward)%
+
+
+;Учёный 5, первая партия
+
+[logic@work5]
+active = remark@choice_work5
+combat_ignore = combat_ignore
+
+[remark@choice_work5]
+on_info = {+gen_cutscene_04} walker@cutscene_04_work5
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_04_work5]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+
+
+;Наёмник, первая партия
+
+[logic@work6]
+active = remark@choice_work6
+combat_ignore = combat_ignore
+
+[remark@choice_work6]
+on_info = {+gen_cutscene_04} walker@cutscene_04_work6
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_04_work6]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+on_game_timer = 145 | walker@cutscene_04_sound_1_work6
+
+[walker@cutscene_04_sound_1_work6]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+;-- Звук "Командир, не трать время..."
+on_info = %=play_sound(actor_no_time)%
+on_game_timer = 135 | walker@cutscene_04_sound_2_work6
+
+[walker@cutscene_04_sound_2_work6]
+path_walk = cutscene_04
+path_look = cutscene_04_look
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+;-- Звук "Задницей чую, будут неприятности..."
+on_info = %=play_sound(actor_go_faster)%
+
+
+;Учёный 1, вторая партия
+
+[logic@work7]
+active = remark@choice_work7
+combat_ignore = combat_ignore
+
+[remark@choice_work7]
+on_info = {+gen_cutscene_08} walker@cutscene_08_work7, {+gen_cutscene_02} walker@cutscene_02_work7
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_02_work7]
+path_walk = cutscene_02
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+
+[walker@cutscene_08_work7]
+path_walk = cutscene_08
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+on_game_timer = 220 | %=play_sound(uno_scientist_snork_1)%
+
+
+;Учёный 2, вторая партия
+
+[logic@work8]
+active = remark@choice_work8
+combat_ignore = combat_ignore
+
+[remark@choice_work8]
+on_info = {+gen_cutscene_08} walker@cutscene_08_work8, {+gen_cutscene_02} walker@cutscene_02_work8
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_02_work8]
+path_walk = cutscene_02
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+
+[walker@cutscene_08_work8]
+path_walk = cutscene_08
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+
+
+;Учёный 3, вторая партия
+
+[logic@work9]
+active = remark@choice_work9
+combat_ignore = combat_ignore
+
+[remark@choice_work9]
+on_info = {+gen_cutscene_08} walker@cutscene_08_work9, {+gen_cutscene_02} walker@cutscene_02_work9
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_02_work9]
+path_walk = cutscene_02
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+
+[walker@cutscene_08_work9]
+path_walk = cutscene_08
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+on_info = {+gen_snork_anim_right_4_danger} remark@kill_snork_anim_right_4_work9
+meet = no_meet
+
+[remark@kill_snork_anim_right_4_work9]
+anim = threat_fire
+target = logic@work6, gen_st_snorks
+combat_ignore_cond = always
+invulnerable = true
+danger = danger_condition
+meet = no_meet
+
+
+;Учёный 4, лидер, вторая партия
+
+[logic@work10]
+active = remark@choice_work10
+combat_ignore = combat_ignore
+
+[remark@choice_work10]
+on_info = {+gen_cutscene_08} walker@cutscene_08_work10, {+gen_cutscene_02} walker@cutscene_02_work10
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_02_work10]
+path_walk = cutscene_02_leader
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+on_game_timer = 260 | walker@cutscene_02_sound_1_work10
+
+[walker@cutscene_02_sound_1_work10]
+path_walk = cutscene_02_leader
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+;-- Звук "Полная слепота приборов..."
+on_info = %=play_sound(uno_commander_story_1)%
+on_game_timer = 35 | walker@cutscene_02_sound_2_work10
+
+[walker@cutscene_02_sound_2_work10]
+path_walk = cutscene_02_leader
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+;-- Звук "Контора так стреманулась..."
+on_info = %=play_sound(uno_commander_story_1b)%
+
+[walker@cutscene_08_work10]
+path_walk = cutscene_08
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+on_info = {+gen_snork_anim_right_4_danger} remark@kill_snork_anim_right_4_work10
+meet = no_meet
+
+[remark@kill_snork_anim_right_4_work10]
+anim = threat
+target = logic@work6, gen_st_snorks
+;on_info = {+gen_snork_anim_right_4_dead}
+combat_ignore_cond = always
+invulnerable = true
+danger = danger_condition
+on_game_timer = 60 | walker@cutscene_10_work_sound_1_10
+meet = no_meet
+
+[walker@cutscene_10_work_sound_1_10]
+path_walk = cutscene_08
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+;-- Звук "Это засада!.."
+on_info = %=play_sound(uno_commander_defence)%
+meet = no_meet
+
+
+;Учёный 5, вторая партия
+
+[logic@work11]
+active = remark@choice_work11
+combat_ignore = combat_ignore
+
+[remark@choice_work11]
+on_info = {+gen_cutscene_08} walker@cutscene_08_work11, {+gen_cutscene_02} walker@cutscene_02_work11
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_02_work11]
+path_walk = cutscene_02
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+
+[walker@cutscene_08_work11]
+path_walk = cutscene_08
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+on_info = {+gen_snork_anim_right_4_danger} remark@kill_snork_anim_right_4_work11
+meet = no_meet
+
+[remark@kill_snork_anim_right_4_work11]
+anim = threat_fire
+target = logic@work6, gen_st_snorks
+;on_info = {+gen_snork_anim_right_4_dead}
+combat_ignore_cond = always
+invulnerable = true
+danger = danger_condition
+meet = no_meet
+
+
+;Наёмник, вторая партия
+
+[logic@work12]
+active = remark@choice_work12
+combat_ignore = combat_ignore
+
+[remark@choice_work12]
+on_info = {+gen_cutscene_08} walker@cutscene_08_work12, {+gen_cutscene_02} walker@cutscene_02_work12
+target = nil
+path_walk = cutscene_02
+
+[walker@cutscene_02_work12]
+path_walk = cutscene_02
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+
+[walker@cutscene_08_work12]
+path_walk = cutscene_08
+invulnerable = true
+danger = danger_condition
+combat_ignore_cond = always
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol

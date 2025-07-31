@@ -1,0 +1,156 @@
+[logic@work1]
+active = walker@start_work1
+suitable = {=check_npc_name(val_freedom_blockpost_guard_north_1)}
+
+[walker@start_work1]
+path_walk = blockpost_guard_walker_1_walk
+path_look = blockpost_guard_walker_1_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+meet = no_meet
+on_info = {+val_talked_to_blockpost_leader_complete +gar_story_got_info_from_digger} walker@start_work1_1
+
+[walker@start_work1_1]
+path_walk = blockpost_guard_walker_1_walk
+path_look = blockpost_guard_walker_1_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+meet = no_meet
+on_info = {+val_play_sound_gunfire_1_start} walker@start_work1_2
+
+[walker@start_work1_2]
+path_walk = blockpost_guard_walker_1_walk
+path_look = blockpost_guard_walker_3_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+meet = no_meet
+on_game_timer = 200 | walker@start_work1_3
+
+[walker@start_work1_3]
+path_walk = blockpost_guard_walker_1_walk
+path_look = blockpost_guard_walker_1_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+meet = no_meet
+
+;-----------------------Валкер2-------------
+[logic@work2]
+active = walker@start_work2
+suitable = {=check_npc_name(val_freedom_blockpost_guard_north_2)}
+
+[walker@start_work2]
+path_walk = blockpost_guard_walker_2_walk
+path_look = blockpost_guard_walker_2_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+meet = no_meet
+on_info = {+val_talked_to_blockpost_leader_complete +gar_story_got_info_from_digger} walker@start_work2_1
+
+[walker@start_work2_1]
+path_walk = blockpost_guard_walker_2_walk
+path_look = blockpost_guard_walker_2_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+meet = no_meet
+on_info = {+val_play_sound_gunfire_1_start} walker@start_work2_2
+
+[walker@start_work2_2]
+path_walk = blockpost_guard_walker_2_walk
+path_look = blockpost_guard_walker_4_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+meet = no_meet
+on_game_timer = 200 | walker@start_work2_3
+
+[walker@start_work2_3]
+path_walk = blockpost_guard_walker_2_walk
+path_look = blockpost_guard_walker_2_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+meet = no_meet
+
+
+;------------Лидер блокпоста--------------
+[logic@work3]
+active = walker@start_work3
+suitable = {=check_npc_name(val_freedom_blockpost_guard_leader_north)}
+
+[walker@start_work3]
+path_walk = blockpost_leader_walker_1_walk
+path_look = blockpost_leader_walker_1_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+meet = no_meet
+on_info = {+val_play_sound_gunfire_1_start} remark
+on_info2 = {+val_play_sound_gunfire_3_start} walker@start_work3_5
+
+[remark]
+anim = wait_rac
+target = val_smart_terrain_5_7_blockpost_leader_walker_1_look,0
+snd = val_freedom_blockpost_reply_sos_1
+on_signal = sound_end  | remark@2
+on_info = {+val_play_sound_gunfire_3_start} walker@start_work3_5
+meet = no_meet
+
+[remark@2]
+anim = guard
+target = actor
+snd = val_freedom_blockpost_reply_sos
+on_signal = sound_end  | walker@start_work3_2 %=give_inited_task(storyline:val_reply_to_sos:freedom)%
+on_info = {+val_play_sound_gunfire_3_start} walker@start_work3_5
+meet = no_meet
+
+[walker@start_work3_2]
+path_walk = blockpost_leader_walker_1_walk
+path_look = blockpost_leader_walker_1_look
+out_restr = val_smart_terrain_5_7_defence
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+meet = no_meet
+on_game_timer = 200 | walker@start_work3_4
+on_info = {+val_play_sound_gunfire_3_start} walker@start_work3_5
+
+[walker@start_work3_4]
+out_restr = val_smart_terrain_5_7_defence
+path_walk = blockpost_leader_walker_1_walk
+path_look = blockpost_leader_walker_1_look
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+meet = no_meet
+on_info = {-val_come_to_deadblockpost_sound} remark@3
+on_info2 = {+val_play_sound_gunfire_3_start} walker@start_work3_5
+
+[remark@3]
+anim = guard
+target = actor
+snd = val_freedom_blockpost_reply_sos_done
+on_signal = sound_end  | walker@start_work3_5
+
+[walker@start_work3_5]
+out_restr = val_smart_terrain_5_7_defence
+path_walk = blockpost_leader_walker_1_walk
+path_look = blockpost_leader_walker_1_look
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+meet = meet

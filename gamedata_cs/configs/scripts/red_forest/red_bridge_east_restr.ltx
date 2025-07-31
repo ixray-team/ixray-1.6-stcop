@@ -1,0 +1,20 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+red_bridge_scene_begin} sr_idle@actor_check %+red_bridge_actor_come +mil_freedom_com_talked +red_bridge_bandit_enter_true =play_sound(red_bridge_actor_hail:csky:mar_csky_commander_name)%
+
+[sr_idle@allyes_sign]
+on_actor_outside = %=play_sound(red_bridge_actor_flee:csky:mar_csky_commander_name)%
+
+[sr_idle@actor_check]
+on_actor_outside = {-red_bridge_down_done} sr_idle@actor_flee {-red_bridge_down_done} %=play_sound(red_bridge_actor_flee:csky:mar_csky_commander_name:csky:mar_csky_commander_name)%
+on_info = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@actor_flee]
+on_info = %=play_sound(red_bridge_actor_flee:csky:mar_csky_commander_name)%
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+on_actor_inside = {-red_bridge_down_done} sr_idle@actor_check
+on_game_timer = 9000 | sr_idle@nil %+red_bridge_actor_fail%
+
+[sr_idle@nil]

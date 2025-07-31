@@ -1,0 +1,37 @@
+[logic]
+active = walker
+on_death = death@4
+on_combat = combat
+
+[death@4]
+on_info = %+yan_destroy_zombi4_cut2 =dec_counter(yan_base_silence_cut2_restr)%  
+
+[combat]
+combat_type = zombied
+
+[walker]
+group = 7
+radius = 0
+path_walk = yan_walker_zombie_cut2_way_4_walk
+path_look = yan_walker_zombie_cut2_way_4_look
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+danger = danger_condition
+on_info = {=in_zone(yan_base_silence_cut2_restr)} camper2 %=inc_counter(yan_base_silence_cut2_restr)%
+combat_ignore_cond = {=fighting_dist_ge(2)}
+
+[camper2]
+out_restr = yan_base_silence_cut2_restr
+radius = 0
+path_walk = yan_walker_zombie_cut2_way_4a_walk
+path_look = yan_walker_zombie_cut2_way_4a_look
+;on_signal = on_krisha | %+yan_zombied_on_krisha_cut6%
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+danger = danger_condition
+combat_ignore_cond = {=fighting_dist_ge(2)}
+on_signal = nil | nil
+
+[danger_condition]
+ignore_distance_sound = 0
+ignore_distance = 0

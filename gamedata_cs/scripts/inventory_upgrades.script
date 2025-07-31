@@ -1,0 +1,259 @@
+---------------------------------------------------------------------------------------------
+--' funtions for upgerade items ----------------------------------------------------
+--' Made by Distemper ----------------------------------------------------------------
+--' 03.08 --------------------------------------------------------------------------------
+	--' функция доступности апгрейда
+		--' function precondition_functor_a( param1, section )
+	--' функция применения апгрейда (отнимание денег)
+		--' function effect_functor_a( param2, section )
+	--' функция отображения нужных сдедств  для апгрейда
+		--' function prereq_functor_a( param3, section )
+	--' функция временно не используеться
+		--' function prereq_tooltip_functor_a( param3 )
+    --' функции для отображения свойств апгрейдов
+		--' function property_functor_a( param1, name )
+		--' function property_functor_b( param1, name )
+		--' function property_functor_c( param1, name )
+--------------------------------------------------------------------------------------------
+local issue_condlist = true
+local mechanic_name = ""
+local char_ini = ini_file("item_upgrades.ltx")
+local param_ini = ini_file("misc\\stalkers_upgarde_info.ltx")
+
+function precondition_functor_a( param1, section )
+	if not char_ini:line_exist(section, "cost") then
+		abort("line \"cost\" does not exists in section "..section)
+	end
+	issue_condlist = true
+	if db.actor then
+		if param_ini:line_exist(mechanic_name.."_upgr", section) then
+			local param = param_ini:r_string(mechanic_name.."_upgr", section)
+			if param == nil then
+				return 0
+			elseif param == "false" then
+				issue_condlist = false
+				return 2
+			end
+			local possibility_utility_table = xr_logic.parse_condlist(victim, mechanic_name.."_upgr", section, param)
+			local possibility_utility = xr_logic.pick_section_from_condlist(db.actor, victim, possibility_utility_table)
+			if not possibility_utility then
+				issue_condlist = false
+				return 2 ---false
+			end
+		end
+		if db.actor:money() < char_ini:r_u32(section, "cost") then
+			return 1 ---false
+		end
+	end
+	return 0 ---true
+end
+
+function effect_functor_a( param2, section, loading ) --( string, string, int )
+	if loading == 0 then
+		local money = char_ini:r_u32(section, "cost")
+		xr_statistic.inc_spent_money_counter(money)
+		db.actor:give_money(money*-1)
+	end
+end
+
+function prereq_functor_a( param3, section )
+    if issue_condlist then
+		if db.actor then
+			local price = char_ini:r_u32(section, "cost")
+			local cash = db.actor:money()
+			if cash < price then
+				return game.translate_string("st_upgr_cost")..": "..price.." RU\\n"..game.translate_string("ui_inv_not_enought_money")..": "..price-cash.." RU"
+			elseif cash >= price then
+				return game.translate_string("st_upgr_cost").." "..price.." RU"
+			end
+		end
+		return " "
+	else
+		return game.translate_string("st_upgr_condlist")
+	end
+end
+
+function prereq_tooltip_functor_a( param3 )
+    return true
+end
+
+-- ТРЕБУЕТ ОПТИМИЗАЦИИ!!!!!!!!!!!!!!!!!!
+
+function property_functor_a( param1, name )
+	local prorerty_name = char_ini:r_string(name, "name")
+	local t_prorerty_name = game.translate_string(prorerty_name)
+	local section_table = utils.parse_names(param1)
+	local section_table_n = #section_table
+	local section = section_table[1]
+	if section_table_n == 0 then
+		return ""
+	elseif section_table_n == 1 then		
+		if not char_ini:line_exist(section, "value") or not char_ini:r_string(section, "value") then
+			if name ~= "prop_armor" then
+				return t_prorerty_name
+			end
+		end
+		local value = ""
+		if name ~= "prop_armor" then
+			value = char_ini:r_string(section, "value")
+		end
+		if not char_ini:line_exist(section, "value2") or not char_ini:r_string(section, "value2") then
+			if name == "prop_ammo_size" then
+				return t_prorerty_name.." "..value.." "..game.translate_string("st_upgr_ammunition")
+			end
+			return t_prorerty_name.." "..value.."%"
+		end
+		local value2 = char_ini:r_string(section, "value2")
+		if name == "prop_armor" then
+			return t_prorerty_name.." "..game.translate_string(value2)
+		else
+			return t_prorerty_name.." "..value.."%, "..game.translate_string(value2)
+		end
+	elseif section_table_n > 1 then		
+		local sum = 0
+		local comma = ", "
+		local complementary = ""
+		for i=1, section_table_n do
+			if not char_ini:line_exist(section_table[i], "value") or not char_ini:r_s32(section_table[i], "value") then
+				if name ~= "prop_artefact" and name ~= "prop_armor" then
+					return t_prorerty_name
+				end
+			end
+			if name == "prop_artefact" then
+				sum = sum + 1
+			elseif name ~= "prop_armor" then
+				local value = char_ini:r_s32(section_table[i], "value")
+				sum = sum + value
+			end			
+			if char_ini:line_exist(section_table[i], "value2") then
+				local value2 = char_ini:r_string(section_table[i], "value2")
+				if value2 then
+					if name == "prop_armor" then
+						sum = sum + 1
+					else	
+						if not string.find(complementary, value2) then
+							complementary = complementary..comma..game.translate_string(value2)
+						end
+					end	
+				end
+			end
+			if i == section_table_n then
+				if name == "prop_artefact" then
+					return t_prorerty_name.." x"..sum
+				end
+				if name == "prop_armor" then
+					local value2 = char_ini:r_string(section_table[i], "value2")
+					if value2 then
+						return t_prorerty_name.." "..game.translate_string(value2).." x"..sum
+					end	
+				end
+				if sum > 0 then
+					if name == "prop_ammo_size" then
+						return t_prorerty_name.." +"..sum.." "..game.translate_string("st_upgr_ammunition")
+					end
+					return t_prorerty_name.." +"..sum.."%"..complementary
+				else
+					if name == "prop_ammo_size" then
+						return t_prorerty_name.." "..sum.." "..game..translate_string("st_upgr_ammunition")
+					end
+					return t_prorerty_name.." "..sum.."%"..complementary
+				end
+			end
+		end
+	end
+end
+
+function property_functor_b( param1, name )
+	return issue_property( param1, name )
+end
+
+function property_functor_c( param1, name )
+	return issue_property( param1, name )
+end
+
+function need_victim(obj)
+	victim = obj
+end
+
+function issue_property( param1, name )
+	local prorerty_name = char_ini:r_string(name, "name")
+	local t_prorerty_name = game.translate_string(prorerty_name)
+	local value_table = utils.parse_names(param1)
+	local section = value_table[1]
+	if section then
+		if not char_ini:line_exist(section, "value") or not char_ini:r_string(section, "value") then
+			return t_prorerty_name
+		end
+		local value = char_ini:r_string(section, "value")
+		return t_prorerty_name.." "..string.sub(value, 2, -2)
+	else
+		return t_prorerty_name
+	end
+end
+
+local function how_much_repair( item_name, item_condition )
+	local ltx = system_ini()
+	local cost = ltx:r_u32(item_name, "cost")
+	local class = ltx:r_string(item_name, "class")
+	local cof = 0.8
+	if class == "E_STLK" then
+		cof = 0.5
+	else
+		cof = 0.8
+	end
+	return math.floor(cost*(1-item_condition)*cof)
+end
+
+function can_repair_item( item_name, item_condition, mechanic ) --( string, float, string )
+	-- if not param_ini:line_exist(mechanic, item_name) then		
+		-- return false
+	-- end
+	-- if param_ini:line_exist(mechanic, "he_upgrade_nothing") then
+		-- if not (param_ini:r_string(mechanic, item_name) == "repair") then			
+			-- return false
+		-- end
+	-- end
+	local price = how_much_repair( item_name, item_condition )
+	if db.actor:money() < price then		
+		return false
+	end
+	return true
+end
+
+function question_repair_item( item_name, item_condition, can, mechanic ) --( string, float, bool, string )
+	-- if not param_ini:line_exist(mechanic, item_name) then		
+		-- return "st_upgr_inability_repair"
+	-- end
+	-- if param_ini:line_exist(mechanic, "he_upgrade_nothing") then
+		-- if not (param_ini:r_string(mechanic, item_name) == "repair") then			
+			-- return "st_upgr_inability_repair"
+		-- end
+	-- end
+	local price = how_much_repair( item_name, item_condition )
+	if db.actor:money() < price then		
+		return game.translate_string("st_upgr_cost")..": "..price.." RU\\n"..game.translate_string("ui_inv_not_enought_money")..": "..price-db.actor:money().." RU"
+	end
+	return game.translate_string("st_upgr_cost").." "..price.." RU. "..game.translate_string("ui_inv_repair").."?"
+end
+
+function effect_repair_item( item_name, item_condition ) --( string, float )
+	if mechanic_name ~= "kat_cs_commander" then
+		local price = how_much_repair( item_name, item_condition )
+	    xr_statistic.inc_spent_money_counter(price)
+		db.actor:give_money(price*-1)
+	end	
+end
+
+function can_upgrade_item( item_name, mechanic ) --( string, string )
+	if param_ini:line_exist(mechanic, "he_upgrade_nothing") then
+		return false
+	end
+	if not param_ini:line_exist(mechanic, item_name) then
+		return false
+	end
+	-- if param_ini:r_string(mechanic, item_name) == "repair" then
+		-- return false
+	-- end
+	mechanic_name = mechanic
+	return true
+end

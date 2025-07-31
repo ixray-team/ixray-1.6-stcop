@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+esc_trader_bandits_1} sr_idle@2 %=give_inited_task(eliminate_smart:esc_smart_terrain_6_6:stalker)%
+
+[sr_idle@2]
+on_info = {+esc_trader_bandits_2} sr_idle@3 %=give_inited_task(storyline:esc_eliminate_smart_military_6_6_reward:stalker)%
+
+[sr_idle@3]

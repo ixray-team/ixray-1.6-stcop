@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+door_blow_up} sr_idle@2 %=hit_obj_chemical(202:link:5000:300) =play_sound(hosp_expl_door)%
+
+[sr_idle@2]

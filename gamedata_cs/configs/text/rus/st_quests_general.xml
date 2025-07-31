@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hide_from_surge_name">
+		<text>Спрятаться от выброса</text>
+	</string>
+	<string id="hide_from_surge_name2">
+		<text>Дождаться окончания выброса</text>
+	</string>
+	<string id="hide_from_surge_text">
+		<text>Бежать к ближайшему укрытию и спрятаться от выброса</text>
+	</string>
+	<string id="hide_from_surge_text1">
+		<text>Внимание! Все в укрытия! Приближается выброс! Повторяю, приближается выброс! Ориентировочное время до выброса:</text>
+	</string>
+	<string id="hide_from_surge_text2">
+		<text>секунд.</text>
+	</string>
+	<string id="sim_bring_item">
+		<text>Принести предметы.</text>
+	</string>
+	<string id="sim_bring_item_text">
+		<text>Отнести собранные предметы командиру группировки</text>
+	</string>
+	<string id="sim_capture_smart">
+		<text>Захватить</text>
+	</string>
+	<string id="sim_capture_smart_text">
+		<text>Необходимо захватить и удержать под своим контролем указанный объект</text>
+	</string>
+	<string id="sim_capture_wait_smart">
+		<text>Удержать точку до прихода союзников</text>
+	</string>
+	<string id="sim_defend_smart">
+		<text>Защитить лагерь</text>
+	</string>
+	<string id="sim_defend_smart_delay">
+		<text>Прийти на помощь</text>
+	</string>
+	<string id="sim_defend_smart_delay_text">
+		<text>Вокруг данной точки замечен противник. Атака ожидается с минуты на минуту.</text>
+	</string>
+	<string id="sim_defend_smart_text">
+		<text>На отряд напал противник. Необходимо помочь им отразить нападение.</text>
+	</string>
+	<string id="sim_eliminate_smart">
+		<text>Уничтожить противника</text>
+	</string>
+	<string id="sim_eliminate_smart_text">
+		<text>Уничтожить противника в ключевой точке</text>
+	</string>
+	<string id="sim_find_upgrade">
+		<text>Найти усовершенствование</text>
+	</string>
+	<string id="sim_find_upgrade_consent">
+		<text>Согласен?</text>
+	</string>
+	<string id="sim_recover_item">
+		<text>Вернуть предмет:</text>
+	</string>
+	<string id="sim_repeal_counterattack">
+		<text>Отразить контратаку противника на точку</text>
+	</string>
+	<string id="sim_take_reward">
+		<text>Получить награду</text>
+	</string>
+	<string id="sim_take_reward_text">
+		<text>Награда ждёт у торговца группировки</text>
+	</string>
+	<string id="st_sim_eliminate_path_smart">
+		<text>Расчистить дорогу</text>
+	</string>
+	<string id="st_sim_eliminate_path_text">
+		<text>Необходимо помочь пробиться отряду союзников</text>
+	</string>
+	<string id="st_sim_eliminate_resource_smart">
+		<text>Уничтожить противника</text>
+	</string>
+	<string id="st_sim_eliminate_resource_text">
+		<text>Нужно выбить противника с данной территории: это ослабит его позиции</text>
+	</string>
+	<string id="test_storyline_task_text">
+		<text>Подойти к бочке</text>
+	</string>
+	<string id="tm_random_task_bring_item">
+		<text>шт.</text>
+	</string>
+	<string id="stc_kill_gunslinger_name">
+		<text>Вывести из строя пси-защиту Стрелка</text>
+	</string>
+	<string id="stc_kill_gunslinger_text">
+		<text>Уровень пси-излучения на станции зашкаливает, но Стрелок защищён от него прототипом. Если вывести из строя это устройство, Стрелка можно будет остановить. Электронику прототипа можно вывести из строя на расстоянии при помощи электромагнитного ружья.</text>
+	</string>
+	<string id="stc_kill_monolith_name">
+		<text>Найти телепорт, ведущий на теплотрассу</text>
+	</string>
+	<string id="stc_kill_monolith_text">
+		<text>Пространство вокруг станции пронизано телепортами. Чтобы вести огонь по Стрелку, необходимо вернуться на теплотрассу. Найти телепорт, который ведёт обратно к теплотрассе.</text>
+	</string>
+</string_table>

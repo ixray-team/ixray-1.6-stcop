@@ -1,0 +1,14 @@
+[logic]
+active = smartcover@1
+
+[smartcover@1]
+cover_name 		= stc_first_scene_monolith_smartcover_1
+loophole_name 	= lh_3
+cover_state 	= default_behaviour 
+on_info = {+stc_scene_start} walker@to_battle
+target_path =  stc_first_scene_monolith_smartcover_path_1
+use_in_combat = true
+
+[walker@to_battle]
+path_walk = stc_battle_walk
+ 

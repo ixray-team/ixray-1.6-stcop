@@ -1,0 +1,35 @@
+[spawn]
+ammo_7.62x54_7h1
+
+[dont_spawn_character_supplies]
+
+[logic]
+active = camper@fire
+on_death = death
+
+[death]
+on_info = %+hospital_z3_last_door%
+
+[camper@fire]
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+;out_restr = z3_defender_restr
+path_walk = z3_minigun
+path_look = z3_minigun_look
+radius = 0
+def_state_campering = threat
+shoot = terminal
+invulnerable = true
+on_info = {+hospital_z3_minigun_off} camper@fire2
+
+[camper@fire2]
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+;out_restr = z3_defender_restr
+path_walk = z3_minigun
+path_look = z3_minigun_look
+radius = 0
+def_state_campering = threat
+shoot = terminal
+on_info = %=kill_npc%
+;on_info = %=hit_npc(z3_cs_grenadier_fire:bip01_head:500:100)%

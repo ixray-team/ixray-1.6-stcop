@@ -1,0 +1,70 @@
+[logic]
+active = camper@wait_signal
+on_death = death
+
+[death]
+on_info = %=dec_counter(lim_square_enemy_count) -lim_roof_sniper_2_off%
+
+[camper@wait_signal]
+show_spot = false
+out_restr = lim_roof_sniper_2_zone
+combat_ignore_cond = true
+path_walk = lim_roof_sniper_2_wait_way
+path_look = lim_roof_sniper_2_wait_way
+on_info = {+lim_condition5} camper@go_to_fire_point
+
+[camper@go_to_fire_point]
+out_restr = lim_roof_sniper_2_zone
+combat_ignore_cond = true
+path_walk = lim_roof_sniper_2_attack_walk
+path_look = lim_roof_sniper_2_attack_look
+radius = 0
+def_state_moving = sneak_run
+on_info = {=see_actor} camper@fire
+on_signal = action | camper@fire
+wounded = wounded@work1
+
+[camper@fire]
+out_restr = lim_roof_sniper_2_zone
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = lim_roof_sniper_2_attack_walk
+path_look = lim_roof_sniper_2_attack_look
+radius = 0
+def_state_moving = sneak_run
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+;on_timer = 1000 | {!see_actor} remark@search
+;on_game_timer = 70 | camper@wait
+on_info = {=health_le(0.5)} camper@wait
+wounded = wounded@work1
+sniper = true
+
+[remark@search]
+out_restr = lim_roof_sniper_2_zone
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hide_na
+target = actor
+on_info = {=see_actor} camper@fire
+;on_game_timer = 50 | camper@wait
+wounded = wounded@work1
+
+[camper@wait]
+out_restr = lim_roof_sniper_2_zone
+combat_ignore_cond = true
+path_walk = lim_roof_sniper_2_wait_way
+path_look = lim_roof_sniper_2_wait_way
+radius = 0
+def_state_moving = sneak_run
+on_game_timer = 70 | camper@go_to_fire_point %=restore_health%
+on_info = {+lim_military_minigun_out !actor_see_npc} %=destroy_object%
+wounded = wounded@work1
+
+[wounded@work1]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false
+
+

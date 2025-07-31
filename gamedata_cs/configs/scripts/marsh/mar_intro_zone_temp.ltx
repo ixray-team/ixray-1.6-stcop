@@ -1,0 +1,34 @@
+[logic]
+active = sr_idle@scene_2_spawn
+
+[sr_idle@scene_1_spawn]
+;=disable_ui
+;ToDo remove test
+on_info = {+mar_story_go_to_escape_done} nil, {+mar_lvl_sim} sr_idle@test, sr_idle@scene_1_time %=set_faction_community_to_actor(bandit:enemy)  =spawn_object(mar_intro_lebedev_1:mar_intro_scene_1_lebedev:0:249.3) =spawn_object(mar_intro_kalancha:mar_intro_scene_1_kalancha:0:163.0) =spawn_object(mar_intro_actor:mar_intro_scene_1_actor:0:0.0)%
+
+[sr_idle@scene_1_time]
+on_timer = 40000 | sr_idle@scene_2_spawn %=run_postprocess(mar_fade)%
+;ToDo remove test
+on_info = {+mar_lvl_sim} sr_idle@test
+
+;-----------------------------------------------------------------------
+
+[sr_idle@scene_2_spawn]
+on_timer = 2500 | sr_idle@scene_2_sit %+mar_intro_scene_1_end =spawn_object(mar_intro_lebedev_2:mar_intro_scene_2_lebedev:0:270.0) =update_weather(true)%
+;ToDo remove test
+on_info = {+mar_lvl_sim} sr_idle@test
+
+[sr_idle@scene_2_sit]
+on_timer = 14000 | sr_idle@scene_2_talk
+;ToDo remove test
+on_info = {+mar_lvl_sim} sr_idle@test
+
+[sr_idle@scene_2_talk]
+;ToDo remove test
+on_info = {+mar_lvl_sim} sr_idle@test, {+mar_intro_scene_2_end} sr_idle@scene_2_end
+
+[sr_idle@scene_2_end]
+on_info = {+mar_intro_scene_2_cameff_end} nil %=enable_ui =give_inited_task(storyline:mar_story_talk_with_barman:csky)%
+;ToDo remove test
+on_info = {+mar_lvl_sim} sr_idle@test
+;-----------------------------------------------------------------------

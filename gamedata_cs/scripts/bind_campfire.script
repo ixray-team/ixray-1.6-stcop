@@ -1,0 +1,54 @@
+--'******************************************************
+--'*	Биндер объекта костра .
+--'******************************************************
+campfire_table = {}
+campfire_timeout = {}
+fire_zones_table = {}
+function bind(obj)
+	obj:bind_object(campfire_binder(obj))
+end
+
+class "campfire_binder" (object_binder)
+function campfire_binder:__init(obj) super(obj)
+	self.campfire = obj:get_campfire()
+end
+function campfire_binder:net_spawn(server_object)
+	if not object_binder.net_spawn(self, server_object) then
+		return false
+	end
+	local camp_name = string.gsub(self.object:name(), "_campfire", "")
+	if level.patrol_path_exists(camp_name) then
+		self.campfire:turn_off()
+		campfire_table[self.object:name()] = self.campfire
+		campfire_timeout[self.object:name()] = math.random(10,40)
+	end
+	if self.object:section() == "campfire_gas_fire" then
+		fire_zones_table[self.object:name()] = self.campfire
+		self.campfire:turn_off()
+	end
+	return true
+end
+function campfire_binder:update(delta)
+	object_binder.update(self, delta)
+--[[	printf("campfire_update!!!")
+	local kamp = xr_kamp.kamps[string.gsub(self.object:name(), "_campfire", "")]  
+	if kamp ~= nil and kamp.population > 0 then
+		if self.campfire:is_on() then
+			if (level.get_time_hours() >= 4 and level.get_time_hours() < 21) and level.get_time_minutes() >= campfire_timeout[self.object:name()]  then
+				printf("turning off campfire %s %s %s",tostring(level.get_time_hours() >= 6 and level.get_time_hours() < 21),tostring(self.population),tostring(campfire:is_on()))
+				self.campfire:turn_off()
+				printf("turning off campfire %s %s %s",tostring(level.get_time_hours() >= 6 and level.get_time_hours() < 21),tostring(self.population),tostring(campfire:is_on()))
+				
+			end
+		else
+			if (level.get_time_hours() < 4 or level.get_time_hours() >= 21) and level.get_time_minutes() >= campfire_timeout[self.object:name()] then
+				printf("turning on campfire %s %s %s",tostring(level.get_time_hours() >= 6 and level.get_time_hours() < 21),tostring(self.population),tostring(campfire:is_on()))
+				self.campfire:turn_on()
+			end
+		end	
+	else
+		self.campfire:turn_off()
+	end ]]--	
+end
+	
+		

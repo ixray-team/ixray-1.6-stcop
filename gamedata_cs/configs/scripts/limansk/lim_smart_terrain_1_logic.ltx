@@ -1,0 +1,477 @@
+;*****************************
+;********* csky solider ***********
+
+[logic@work1]
+active = patrol@work1
+suitable = {=check_npc_name(lim_csky_commander) -lim_condition1 -lim_condition2} true
+post_combat_time = 0,0
+
+[patrol@work1]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = spec_1_walk
+path_look = spec_1_look
+formation = back
+commander = true
+move_type = rush
+def_state_moving = rush
+on_signal = snd1 | %=play_sound(lim_cs_enter_squad_attention)%
+on_signal2 = snd2 | %=play_sound(lim_cs_enter_squad_see_target)%
+on_signal3 = snd3 | %=play_sound(lim_cs_enter_squad_check)%
+on_signal4 = action | camper@danger_work1 %+lim_csky_enter_danger%
+on_info = {+lim_csky_enter_danger} camper@danger_work1
+ 
+
+[camper@danger_work1]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_1_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} remark@fire_work1
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work1
+on_info2 = {=hit_by_actor} camper@fire_work1
+on_signal = action | remark@danger_work1 %=play_sound(lim_cs_enter_squad_fire1)%
+
+[remark@danger_work1]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat
+target = 609
+on_signal = sound_end | %+lim_cs_enter_squad_fire1%
+on_info = {+lim_bandit_away} remark@fire_work1
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work1
+on_info3 = {+lim_bandit_wounded_dont_shoot} remark@threat1_work1 %=play_sound(lim_cs_enter_squad_threat1)%
+
+[remark@threat1_work1]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat
+target = 609
+on_signal = sound_end | %+lim_cs_enter_squad_threat1%
+on_info = {+lim_bandit_away} remark@fire_work1
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work1
+on_info3 = {+lim_bandit_wounded_medkit1} remark@threat2_work1 %=play_sound(lim_cs_enter_squad_threat2)%
+;on_game_timer = 300 | remark@fire_work1 %+lim_bandit_away%
+
+[remark@threat2_work1]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat
+target = 609
+on_signal = sound_end | %+lim_cs_enter_squad_threat2%
+on_info = {+lim_bandit_away} remark@fire_work1
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work1
+on_game_timer = 300 | remark@threat3_work1 %=play_sound(lim_cs_enter_squad_fire2)%
+
+[remark@threat3_work1]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat
+target = 609
+on_signal = sound_end | remark@fire_work1 %+lim_bandit_away%
+on_info = {+lim_bandit_have_medkit} camper@danger2_work1
+
+[camper@danger2_work1]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_1_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} remark@fire_work1
+on_info2 = {+lim_bandit_say_abaut_ambush} camper@wait_work1 %=play_sound(lim_cs_enter_squad_bandit_free)%
+
+[remark@fire_work1]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 609
+on_game_timer = 20 | {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work1
+on_info = {-lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} walker@fire_work1
+
+[remark@fire2_work1]
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 608
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work1
+
+[walker@fire_work1]
+;invulnerable = true
+out_restr = lim_smart_terrain_1_defence
+combat_ignore_cond = {!npc_in_zone(lim_smart_terrain_1_defence)}
+path_walk = wait_1_walk
+path_look = wait_1_look
+;no_retreat = true
+;radius = 0
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work1
+
+[camper@wait_work1]
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_1_walk
+path_look = wait_1_look
+on_info = {+lim_bandit_away} camper@fire_work1
+
+[camper@wait2_work1]
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_1_walk
+path_look = wait_1_look
+;************************************
+
+[logic@work2]
+active = patrol@work2
+suitable = {=check_npc_name(lim_csky_soldier) -lim_condition1 -lim_condition2} true
+
+[patrol@work2]
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = spec_1_walk
+path_look = spec_1_look
+meet = no_meet
+on_signal = action | camper@danger_work2 %+lim_csky_enter_danger%
+on_info = {+lim_csky_enter_danger} camper@danger_work2
+
+[camper@danger_work2]
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_2_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} camper@fire_work2
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work2
+on_signal = action | remark@danger_work2
+
+[remark@danger_work2]
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat
+target = 609
+on_info = {+lim_bandit_away} remark@fire_work2
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work2
+on_game_timer = 600 | remark@fire_work2 %+lim_bandit_away%
+
+[camper@danger2_work2]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_2_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} remark@fire_work2
+on_info2 = {+lim_bandit_say_abaut_ambush} camper@wait_work2
+
+[remark@fire_work2]
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 609
+on_game_timer = 20 | {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work2
+on_info = {-lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work2
+
+[remark@fire2_work2]
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 608
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work2
+
+[camper@fire_work2]
+meet = no_meet
+;invulnerable = true
+;combat_ignore_cond = {!npc_in_zone(lim_smart_terrain_1_defence)}
+path_walk = wait_2_walk
+path_look = wait_1_look
+no_retreat = true
+radius = 0
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work2
+
+[camper@wait_work2]
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_2_walk
+path_look = wait_1_look
+on_info = {+lim_bandit_away} camper@fire_work2
+
+[camper@wait2_work2]
+meet = no_meet
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_2_walk
+path_look = wait_1_look
+;************************************
+
+[logic@work3]
+active = patrol@work3
+suitable = {=check_npc_name(lim_csky_soldier) -lim_condition1 -lim_condition2} true
+
+[patrol@work3]
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = spec_1_walk
+path_look = spec_1_look
+meet = no_meet
+on_signal = action | camper@danger_work3 %+lim_csky_enter_danger%
+on_info = {+lim_csky_enter_danger} camper@danger_work3
+
+[camper@danger_work3]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_3_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} camper@fire_work3
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work3
+on_signal = action | remark@danger_work3
+
+[remark@danger_work3]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat
+target = 609
+on_info = {+lim_bandit_away} remark@fire_work3
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work3
+on_game_timer = 600 | remark@fire_work3 %+lim_bandit_away%
+
+[camper@danger2_work3]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_3_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} remark@fire_work3
+on_info2 = {+lim_bandit_say_abaut_ambush} camper@wait_work3
+
+[remark@fire_work3]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 609
+on_game_timer = 20 | {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work3
+on_info = {-lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work3
+
+[remark@fire2_work3]
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 608
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work3
+
+[camper@fire_work3]
+;invulnerable = true
+;combat_ignore_cond = {!npc_in_zone(lim_smart_terrain_1_defence)}
+path_walk = wait_3_walk
+path_look = wait_1_look
+no_retreat = true
+radius = 0
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work3
+
+[camper@wait_work3]
+meet = no_meet
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_3_walk
+path_look = wait_1_look
+on_info = {+lim_bandit_away} camper@fire_work3
+
+[camper@wait2_work3]
+meet = no_meet
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_3_walk
+path_look = wait_1_look
+
+;************************************
+
+[logic@work4]
+active = patrol@work4
+suitable = {=check_npc_name(lim_csky_soldier) -lim_condition1 -lim_condition2} true
+
+[patrol@work4]
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = spec_1_walk
+path_look = spec_1_look
+meet = no_meet
+on_signal = action | camper@danger_work4 %+lim_csky_enter_danger%
+on_info = {+lim_csky_enter_danger} camper@danger_work4
+
+[camper@danger_work4]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_4_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} camper@fire_work4
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work4
+on_signal = action | remark@danger_work4
+
+[remark@danger_work4]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat
+target = 609
+on_info = {+lim_bandit_away} remark@fire_work4
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work4
+on_game_timer = 600 | remark@fire_work4 %+lim_bandit_away%
+
+[camper@danger2_work4]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_4_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} remark@fire_work4
+on_info2 = {+lim_bandit_say_abaut_ambush} camper@wait_work4
+
+[remark@fire_work4]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 609
+on_game_timer = 20 | {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work4
+on_info = {-lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work4
+
+[remark@fire2_work4]
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 608
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work4
+
+[camper@fire_work4]
+meet = no_meet
+;invulnerable = true
+;combat_ignore_cond = {!npc_in_zone(lim_smart_terrain_1_defence)}
+path_walk = wait_4_walk
+path_look = wait_1_look
+no_retreat = true
+radius = 0
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work4
+
+[camper@wait_work4]
+meet = no_meet
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_4_walk
+path_look = wait_1_look
+on_info = {+lim_bandit_away} camper@fire_work4
+
+[camper@wait2_work4]
+meet = no_meet
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_4_walk
+path_look = wait_1_look
+
+;************************************
+
+[logic@work5]
+active = patrol@work5
+suitable = {=check_npc_name(lim_csky_soldier) -lim_condition1 -lim_condition2} true
+
+[patrol@work5]
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = spec_1_walk
+path_look = spec_1_look
+meet = no_meet
+on_signal = action | camper@danger_work5 %+lim_csky_enter_danger%
+on_info = {+lim_csky_enter_danger} camper@danger_work5
+
+[camper@danger_work5]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_5_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} camper@fire_work5
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work5
+on_signal = action | remark@danger_work5
+
+[remark@danger_work5]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat
+target = 609
+on_info = {+lim_bandit_away} remark@fire_work5
+on_info2 = {+lim_bandit_have_medkit} camper@danger2_work5
+on_game_timer = 600 | remark@fire_work5 %+lim_bandit_away%
+
+[camper@danger2_work5]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = danger_5_walk
+path_look = danger_look
+radius = 0
+def_state_moving = raid
+on_info = {+lim_bandit_away} remark@fire_work5
+on_info2 = {+lim_bandit_say_abaut_ambush} camper@wait_work5
+
+[remark@fire_work5]
+;invulnerable = true
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 609
+on_game_timer = 20 | {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work5
+on_info = {-lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work5
+
+[remark@fire2_work5]
+meet = no_meet
+combat_ignore_cond = {!is_enemy_actor}
+anim = threat_fire
+target = 608
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work5
+
+[camper@fire_work5]
+meet = no_meet
+;invulnerable = true
+;combat_ignore_cond = {!npc_in_zone(lim_smart_terrain_1_defence)}
+path_walk = wait_5_walk
+path_look = wait_1_look
+no_retreat = true
+radius = 0
+on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work5
+
+[camper@wait_work5]
+meet = no_meet
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_5_walk
+path_look = wait_1_look
+on_info = {+lim_bandit_away} camper@fire_work5
+
+[camper@wait2_work5]
+meet = no_meet
+;invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = wait_5_walk
+path_look = wait_1_look

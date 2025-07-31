@@ -1,0 +1,14 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+agru_go_out_end_task_complete} sr_idle@stop %+yan_ready_actor_cut2%  
+
+[sr_idle@stop]
+on_info = {+start_surge +yan_quest_doc} sr_idle@spawn
+
+[sr_idle@spawn]
+on_info =  {!actor_in_zone(yan_space_restrictor_spawn_zombi1_surge) !squad_exist(yan_squad_zombi_in_sci_base2)} %=create_squad(yan_squad_zombi_in_sci_base2:yan_smart_terrain_zombi_spawn)%
+on_info2 = {!actor_in_zone(yan_space_restrictor_spawn_zombi2_surge) !squad_exist(yan_squad_zombi_in_sci_base1)} %=create_squad(yan_squad_zombi_in_sci_base1:yan_smart_terrain_zombi_in_sci_base1)% 
+;on_info3 = {!actor_in_zone(yan_space_restrictor_spawn_zombi3_surge) !squad_exist(yan_squad_zombi_in_sci_base3)} %=create_squad(yan_squad_zombi_in_sci_base3:yan_smart_terrain_zombi_in_sci_base3)%
+on_info3 = sr_idle@stop %-start_surge% 

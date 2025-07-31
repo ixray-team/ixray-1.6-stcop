@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_stuff">
+		<text>Создатели игры</text>
+	</string>
+	<string id="st_producer">
+		<text>Продюсер</text>
+	</string>
+	<string id="st_gsc">
+		<text>Сергей "-GSC-" Григорович</text>
+	</string>
+	<string id="st_project_lead">
+		<text>Руководитель проекта</text>
+	</string>
+	<string id="st_bolshakov">
+		<text>Антон Большаков</text>
+	</string>
+	<string id="st_lead_designer">
+		<text>Ведущий дизайнер</text>
+	</string>
+	<string id="st_negrobov">
+		<text>Юрий Негробов</text>
+	</string>
+	<string id="st_art_director">
+		<text>Арт-директор</text>
+	</string>
+	<string id="st_tolmachev">
+		<text>Илья Толмачев</text>
+	</string>
+	<string id="st_lead_programmer">
+		<text>Главный программист</text>
+	</string>
+	<string id="st_iassenev">
+		<text>Дмитрий Ясенев</text>
+	</string>
+	<string id="st_lead_game_designer">
+		<text>Ведущий геймдизайнер</text>
+	</string>
+	<string id="st_didenko">
+		<text>Руслан Диденко</text>
+	</string>
+	<string id="st_art_department">
+		<text>Отдел графики</text>
+	</string>
+	<string id="st_level_design">
+		<text>Дизайн уровней</text>
+	</string>
+	<string id="st_zaitsev">
+		<text>Евгений Зайцев</text>
+	</string>
+	<string id="st_mironov">
+		<text>Константин Миронов</text>
+	</string>
+	<string id="st_kurbatov">
+		<text>Сергей Курбатов</text>
+	</string>
+	<string id="st_androshchuk">
+		<text>Роман Андрощук</text>
+	</string>
+	<string id="st_konstantinov">
+		<text>Юрий Константинов</text>
+	</string>
+	<string id="st_pasichniy">
+		<text>Игорь Пасичный</text>
+	</string>
+	<string id="st_merkulov">
+		<text>Виктор Меркулов</text>
+	</string>
+	<string id="st_maistrenko">
+		<text>Сергей Майстренко</text>
+	</string>
+	<string id="st_lead_animator">
+		<text>Ведущий аниматор</text>
+	</string>
+	<string id="st_markevich">
+		<text>Павел Маркевич</text>
+	</string>
+	<string id="st_animators">
+		<text>Аниматоры</text>
+	</string>
+	<string id="st_yablun">
+		<text>Евгений Яблонь</text>
+	</string>
+	<string id="st_korunchak">
+		<text>Владимир Корунчак</text>
+	</string>
+	<string id="st_character_models">
+		<text>Модели персонажей</text>
+	</string>
+	<string id="st_kovach">
+		<text>Александр Ковач</text>
+	</string>
+	<string id="st_textures">
+		<text>Текстуры</text>
+	</string>
+	<string id="st_starodub">
+		<text>Людмила Стародуб</text>
+	</string>
+	<string id="st_sidorenko">
+		<text>Игорь Сидоренко</text>
+	</string>
+	<string id="st_ui_art">
+		<text>Интерфейс и графика</text>
+	</string>
+	<string id="st_nesin">
+		<text>Роман Несин</text>
+	</string>
+	<string id="st_lead_programmers">
+		<text>Ведущие программисты</text>
+	</string>
+	<string id="st_kolomiech">
+		<text>Андрей Коломиец</text>
+	</string>
+	<string id="st_kolomiech2">
+		<text>- Gameplay and UI</text>
+	</string>
+	<string id="st_lobanchikov">
+		<text>Игорь Лобанчиков</text>
+	</string>
+	<string id="st_lobanchikov2">
+		<text>- Render</text>
+	</string>
+	<string id="st_slipchenko">
+		<text>Константин Слипченко</text>
+	</string>
+	<string id="st_slipchenko2">
+		<text>- Physics and Animations</text>
+	</string>
+	<string id="st_programmers">
+		<text>Программисты</text>
+	</string>
+	<string id="st_maniluyk">
+		<text>Александр "loopzilla" Манилюк</text>
+	</string>
+	<string id="st_maniluyk2">
+		<text>- Network</text>
+	</string>
+	<string id="st_chechin">
+		<text>Сергей "Lain" Чечин</text>
+	</string>
+	<string id="st_chechin2">
+		<text>- Monsters AI</text>
+	</string>
+	<string id="st_sokolov">
+		<text>Евгений "sea" Соколов</text>
+	</string>
+	<string id="st_sokolov2">
+		<text>- Gameplay and UI</text>
+	</string>
+	<string id="st_ivanchov">
+		<text>Сергей Иванцов</text>
+	</string>
+	<string id="st_ivanchov2">
+		<text>- Optimization</text>
+	</string>
+	<string id="st_plichko">
+		<text>Александр Пличко</text>
+	</string>
+	<string id="st_scriptoman">
+		<text>- скрипты и наполнение игры</text>
+	</string>
+	<string id="st_prishchepa">
+		<text>Сергей Прищепа</text>
+	</string>
+	<string id="st_khimera">
+		<text>Денис Химера</text>
+	</string>
+	<string id="st_gamedesign_department">
+		<text>Отдел гейм-дизайна</text>
+	</string>
+	<string id="st_verpahovskiy">
+		<text>Андрей Верпаховский</text>
+	</string>
+	<string id="st_dushinskiy">
+		<text>Петр Душинский</text>
+	</string>
+	<string id="st_zakolukin">
+		<text>Андрей Заколюкин</text>
+	</string>
+	<string id="st_skripal">
+		<text>Юрий Скрипаль</text>
+	</string>
+	<string id="st_demidenko">
+		<text>Александр Демиденко</text>
+	</string>
+	<string id="st_sound_producer">
+		<text>Звукорежиссер</text>
+	</string>
+	<string id="st_kuzmenko">
+		<text>Дмитрий Кузьменко</text>
+	</string>
+	<string id="st_original_music">
+		<text>Музыка</text>
+	</string>
+	<string id="st_mooze">
+		<text>MoozE</text>
+	</string>
+	<string id="st_omelchuk">
+		<text>Алексей Омельчук </text>
+	</string>
+	<string id="st_additional_music">
+		<text>Дополнительная музыка</text>
+	</string>
+	<string id="st_firelake">
+		<text>FireLake</text>
+	</string>
+	<string id="st_addaraya">
+		<text>...</text>
+	</string>
+	<string id="st_localization">
+		<text>Локализация</text>
+	</string>
+	<string id="st_kuchma">
+		<text>Евгений "Smile" Кучма</text>
+	</string>
+	<string id="st_dialogs">
+		<text>Составление диалогов</text>
+	</string>
+	<string id="st_besarab">
+		<text>Юрий Бесараб</text>
+	</string>
+	<string id="st_volinech">
+		<text>Тарас "Tatarik" Волынец</text>
+	</string>
+	<string id="st_lefty">
+		<text>Lefty</text>
+	</string>
+	<string id="st_texts">
+		<text>Работа с текстами</text>
+	</string>
+	<string id="st_litvinenko">
+		<text>Владимир Литвиненко</text>
+	</string>
+	<string id="st_lead_qa_department">
+		<text>Лид тестеры</text>
+	</string>
+	<string id="st_krivets">
+		<text>Дмитрий Кривец</text>
+	</string>
+	<string id="st_mikhailov">
+		<text>Павел "CoRR" Михайлов</text>
+	</string>
+	<string id="st_qa_department">
+		<text>Тестеры</text>
+	</string>
+	<string id="st_shelest">
+		<text>Сергей Шелест</text>
+	</string>
+	<string id="st_koval">
+		<text>Кирилл Коваль</text>
+	</string>
+	<string id="st_konovaya">
+		<text>Игорь Коновал</text>
+	</string>
+	<string id="st_shevchuk">
+		<text>Глеб Шевчук</text>
+	</string>
+	<string id="st_gurbanov">
+		<text>Эльшан Гурбанов</text>
+	</string>
+	<string id="st_gaiduchenko">
+		<text>Иван Гайдученко</text>
+	</string>
+	<string id="st_semeniy">
+		<text>Максим Семений</text>
+	</string>
+	<string id="st_voskolovich">
+		<text>Анастасия Восколович</text>
+	</string>
+	<string id="st_voronin">
+		<text>Владимир Воронин</text>
+	</string>
+	<string id="st_davidian">
+		<text>Дмитрий "Abe" Давидян</text>
+	</string>
+	<string id="st_kirienko">
+		<text>Андрей "Darin" Кириенко</text>
+	</string>
+	<string id="st_poperechniy">
+		<text>Данила "West" Поперечный</text>
+	</string>
+	<string id="st_falchenko">
+		<text>Юрий "Dark" Фальченко</text>
+	</string>
+	<string id="st_dvornikov">
+		<text>Михаил "Chips" Дворников</text>
+	</string>
+	<string id="st_usupov">
+		<text>Денис "Tetri$Zz" Юсупов</text>
+	</string>
+	<string id="st_dovgoluk">
+		<text>Лена "redstain" Довгалюк</text>
+	</string>
+	<string id="st_mopev">
+		<text>Владимир "Hein" Морев</text>
+	</string>
+	<string id="st_kozhukhar">
+		<text>Алексей Кожухарь</text>
+	</string>
+	<string id="st_polozov">
+		<text>Николай "vortigaunt" Полозов</text>
+	</string>	
+	<string id="st_pr_department">
+		<text>PR отдел</text>
+	</string>
+	<string id="st_yavorsky">
+		<text>Олег Яворский</text>
+	</string>
+	<string id="st_yeltyshev">
+		<text>Валентин Елтышев</text>
+	</string>
+	<string id="st_kuzhel">
+		<text>Ольга Кужель</text>
+	</string>
+	<string id="st_promotional_material">
+		<text>Рекламные материалы</text>
+	</string>
+	<string id="st_troekyrova">
+		<text>Ольга Троекурова</text>
+	</string>
+	<string id="st_khivrenko">
+		<text>Иван Хивренко</text>
+	</string>
+	<string id="st_sales_department">
+		<text>Отдел продаж и развития бизнеса</text>
+	</string>
+	<string id="st_boyko">
+		<text>Виктория Бойко</text>
+	</string>
+	<!-- <string id="st_actors">
+		<text>Актеры</text>
+	</string>
+	<string id="st_borisenuk">
+		<text>Юрий Борисенок</text>
+	</string>
+	<string id="st_vilkov">
+		<text>Александр Вилков</text>
+	</string>
+	<string id="st_bogush">
+		<text>Анатолий Богуш</text>
+	</string>
+	<string id="st_girich">
+		<text>Анжелика Гирич</text>
+	</string>
+	<string id="st_tereshchyk">
+		<text>Владимир Терещук</text>
+	</string>
+	<string id="st_german">
+		<text>Григорий Герман</text>
+	</string>
+	<string id="st_stalchuk">
+		<text>Олег Стальчук</text>
+	</string>
+	<string id="st_malukha">
+		<text>Евгений Малуха</text>
+	</string>
+	<string id="st_rozin">
+		<text>Иван Розин</text>
+	</string>
+	<string id="st_timoshenko">
+		<text>Арсений Тимошенко</text>
+	</string> -->
+	<string id="st_web_programmer">
+		<text>Web-программист</text>
+	</string>
+	<string id="st_terlik">
+		<text>Сергей Терлюк</text>
+	</string>
+	<string id="st_special_thanks">
+		<text>Отдельная благодарность</text>
+	</string>
+	<string id="st_thanks_chernobyl">
+		<text>Александру Новикову, Игорю Грамоткину и остальному персоналу и администрации Чернобыльской Электростанции за поддержку</text>
+	</string>
+	<string id="st_thanks_chernobyl2">
+		<text>Администрации Зоны отчуждения за разрешение проводить наши сумасшедшие исследования</text>
+	</string>
+	<string id="st_thanks_chernobyl3">
+		<text>Персоналу агентства Чернобыльинтеринформ за содействие</text>
+	</string>
+	<string id="st_thanks_naumova">
+		<text>Александру Наумову за огромный информационный вклад и за его благородную миссию</text>
+	</string>
+	<string id="st_thanks_firelake">
+		<text>Группе FIRELAKE (www.firelake.in.ua)</text>
+	</string>
+	<string id="st_thanks_firelake2">
+		<text>Илье Новаку за помощь в работе над сценарием</text>
+	</string>
+	<string id="st_thanks_firelake3">
+		<text>Порталу UKRGAME.NET за постоянную поддержку сетевой игры S.T.A.L.K.E.R.</text>
+	</string>
+	<string id="st_thanks_fanbase">
+		<text>От всего сердца благодарим Алексея "Don Reba" Бадалова, Marcos "Pixel" Duarte, Megamat, Abe, Dark, Артём "BAC9-FLCL" Зуев, Maciej "Stierlitz" Prieditis, Dennis "Siro" Tchernov, Алексей "Хеш" Белендинов, Sooltan DJ, Ygrek, NatVac, Иван "xStream" Сидоров, Eвгений "sokol_jack" Соколовский, Дмитрий "Red75" Рощин, сайт Stalker-Portal.ru (Александр "Leks" Абрамов, Игорь "Gag" Соловьёв, Алексей "DaimoN" Дронов)</text>
+	</string>
+	<string id="st_thanks_fanbase2">
+		<text>Всем, кто организовывал и принимал активнейшее участие в ролевой страйкбольной игре S.T.A.L.K.E.R.: Reality, а особенно:</text>
+	</string>
+	<string id="st_thanks_fanbase3">
+		<text>Дмитрий "Comandor" Иванов </text>
+	</string>
+	<string id="st_thanks_fanbase4">
+		<text>Евгений "Mulder" Халецкий</text>
+	</string>
+	<string id="st_thanks_fanbase5">
+		<text>Сергей "Тур" Лещенко</text>
+	</string>
+	<string id="st_thanks_fanbase6">
+		<text>Денис "Fiedel" Котляр</text>
+	</string>
+	<string id="st_thanks_fanbase7">
+		<text>Владимир "Rover" Смолькин</text>
+	</string>
+	<string id="st_thanks_fanbase8">
+		<text>Дмитрий "Профессор" Гуревич</text>
+	</string>
+	<string id="st_thanks_fanbase9">
+		<text>Станислав "Chesba" Легкобит</text>
+	</string>
+	<string id="st_thanks_fanbase10">
+		<text>Константин "Инквизитор" Крюков</text>
+	</string>
+	<string id="st_thanks_fanbase11">
+		<text>Игумен Валериан (Головченко) aka oVal</text>
+	</string>
+	<string id="st_thanks_fanbase12">
+		<text>Ашот, BigZ, Gild, Zeel, Андрей Паук.</text>
+	</string>
+	<string id="st_thanks_fanbase13">
+		<text>и всех остальных многочисленных поклонников по всему миру, которые страстно поддерживали разработку проекта S.T.A.L.K.E.R.</text>
+	</string>
+	<string id="st_thanks_all">
+		<text>От всей команды ОГРОМНОЕ СПАСИБО всем поклонникам и фанатам проекта S.T.A.L.K.E.R.</text>
+	</string>
+</string_table>

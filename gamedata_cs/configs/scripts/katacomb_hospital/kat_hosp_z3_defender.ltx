@@ -1,0 +1,41 @@
+[logic]
+active = walker
+on_death = death
+
+[death]
+on_info = %=dec_counter(hospital_z3_cout)%
+
+[walker]
+post_combat_time = 0,0
+combat_ignore_cond = always
+on_info = %=inc_counter(hospital_z3_cout)% camper@hide
+path_walk = z3_defender_1_walk_0
+path_look = z3_defender_1_look
+wounded = wounded
+
+[camper@hide]
+post_combat_time = 0,0
+out_restr = z3_defender_restr
+combat_ignore_cond = always
+path_walk = z3_defender_1_walk_0
+path_look = z3_defender_1_look
+;on_info = {+hospital_z3_sniper_fire} camper@fire
+on_info = {+hospital_cs_entrance} camper@fire
+wounded = wounded
+
+[camper@fire]
+post_combat_time = 0,0
+out_restr = z3_defender_restr
+path_walk = z3_defender_1_walk
+path_look = z3_defender_1_look
+radius = 1
+def_state_campering_fire = hide_sniper_fire
+shoot = terminal
+wounded = wounded
+
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false

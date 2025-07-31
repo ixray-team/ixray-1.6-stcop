@@ -1,0 +1,134 @@
+[logic@work1]
+active = walker@work1
+suitable = {+esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+prior = 40
+
+[walker@work1]
+path_walk = story_military_1_walk
+path_look = story_military_1_look
+
+[logic@work2]
+active = walker@work2
+suitable = {+esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+prior = 40
+
+[walker@work2]
+path_walk = story_military_2_walk
+path_look = story_military_2_look
+
+[logic@work3]
+active = walker@work3
+suitable = {+esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+prior = 40
+
+[walker@work3]
+path_walk = story_military_3_walk
+path_look = story_military_3_look
+
+[logic@work4]
+active = walker@work4
+suitable = {+esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+prior = 40
+
+[walker@work4]
+path_walk = story_military_4_walk
+path_look = story_military_4_look
+;out_restr = esc_out_restr_atp_1
+
+[logic@work5]
+active = walker@work5
+suitable = {+esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete =check_npc_name(esc_military_general)} true
+prior = 40
+
+[walker@work5]
+path_walk = story_military_5_walk
+path_look = story_military_5_look
+;out_restr = esc_out_restr_atp_1
+
+[logic@work6]
+active = walker@work6
+suitable = {+esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+prior = 40
+
+[walker@work6]
+path_walk = story_military_6_walk
+path_look = story_military_6_look
+;out_restr = esc_out_restr_atp_1
+
+[logic@work7]
+active = walker@work7
+suitable = {+esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+prior = 40
+
+[walker@work7]
+path_walk = story_military_7_walk
+path_look = story_military_7_look
+;out_restr = esc_out_restr_atp_1
+
+[logic@work8]
+active = walker@work8
+suitable = {+esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+prior = 40
+
+[walker@work8]
+path_walk = story_military_8_walk
+path_look = story_military_8_look
+
+[logic@work9]
+active = walker@work9
+suitable = {+esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+prior = 40
+
+[walker@work9]
+path_walk = story_military_9_walk
+path_look = story_military_9_look
+
+[logic@work10]
+active = smartcover@work10
+suitable = {-esc_military_atp_smartcover_1 +esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+on_death = death@work10
+on_hit = hit@work10
+prior = 100
+
+[smartcover@work10]
+path_walk = story_military_10_walk
+path_look = story_military_10_look
+cover_name = esc_smart_terrain_7_11_smartcover_65
+loophole_name = lh_8
+cover_state = fire_target
+use_in_combat = true
+on_info = {=actor_in_zone(esc_atp_smartcover_zone)} smartcover@work10 %+esc_military_atp_smartcover_1%
+on_info2 = {=squad_in_zone(esc_smart_terrain_7_10_stalker_mission_squad:esc_atp_smartcover_zone)} smartcover@work10 %+esc_military_atp_smartcover_1%
+
+[walker@work10]
+path_walk = story_military_10_walk
+path_look = story_military_10_look
+
+[death@work10]
+on_info = %+esc_military_atp_smartcover_1%
+
+[hit@work10]
+on_info = %+esc_military_atp_smartcover_1%
+
+[logic@work11]
+active = smartcover@work11
+suitable = {-esc_military_atp_smartcover_2 +esc_mission_stalker_leader_complete -esc_mission_2_stalker_leader_complete} true
+on_death = death@work11
+on_hit = hit@work11
+prior = 100
+
+[smartcover@work11]
+path_walk = story_military_11_walk
+path_look = story_military_11_look
+cover_name = esc_smart_terrain_7_11_smartcover_67
+loophole_name = lh_8
+cover_state = fire_target
+use_in_combat = true
+on_info = {=actor_in_zone(esc_atp_smartcover_zone)} smartcover@work11 %+esc_military_atp_smartcover_2%
+on_info2 = {=squad_in_zone(esc_smart_terrain_7_10_stalker_mission_squad:esc_atp_smartcover_zone)} smartcover@work11 %+esc_military_atp_smartcover_2%
+
+[death@work11]
+on_info = %+esc_military_atp_smartcover_2%
+
+[hit@work11]
+on_info = %+esc_military_atp_smartcover_2%

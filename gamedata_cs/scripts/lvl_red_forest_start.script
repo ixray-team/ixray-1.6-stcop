@@ -1,0 +1,28 @@
+function main ()
+
+lvl_yantar_start.main()
+
+local infos_table = {
+"yan_hold_position_cut6",
+"yan_ready_actor_position_cut6",
+"yan_task1_end_cut6",
+"yan_task2_end_cut6",
+"yan_end_quest_line",
+"yan_questions_scientists",
+"yan_otnesti_doc_saharavy",
+"yan_quest_levsha",
+"yan_proriv_k_ystanovke",
+"yan_actor_start_to_go",
+"yan_go_to_red_forest_cut6"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+--if level.name() == "red_forest" then
+--	xr_effects.give_inited_task(nil, nil, {"storyline", "", ""})
+--end
+
+end

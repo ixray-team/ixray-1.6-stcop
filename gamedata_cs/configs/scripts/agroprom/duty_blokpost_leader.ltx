@@ -1,0 +1,43 @@
+[logic@work1]
+active = walker@binoc
+suitable = {=check_npc_name(sim_default_duty_) +agr_garbage_end} true
+prior = 42
+level_spot = quest_npc
+
+[walker@binoc]
+path_walk = agr_blokpost_leader_1_walk
+path_look = agr_blokpost_leader_1_look
+combat_ignore_cond = always
+on_info = {=actor_on_level(agroprom) +agr_garbage_end -agr_blokpost_shout_sound} remark@look_player %=play_sound(agr_blokpost_shout:dolg:agr_smart_terrain_7_4)%
+
+[remark@look_player]
+anim = hello_wpn
+target = actor
+meet = no_meet
+on_signal = sound_end | remark@prelook_player %+agr_blokpost_shout_sound%
+combat_ignore_cond = always
+
+[remark@prelook_player]
+on_actor_dist_le_nvis = 3 | remark@ready_to_say %+agr_actor_inside_2%
+
+[remark@ready_to_say]
+anim = wait
+target = actor
+snd = agr_blokpost_dialog
+on_signal = sound_end  | walker@end %+agr_actor_inside_3%
+meet = no_meet
+combat_ignore_cond = always
+
+[walker@end]
+path_walk = agr_blokpost_leader_1_walk
+path_look = agr_blokpost_leader_1_look
+meet = meet@end
+
+[known_info]
+agr_actor_inside_2
+agr_actor_inside_3
+
+[meet@end]
+meet_state_wpn = 5 | wait@nil
+use	= true
+use_wpn	= true

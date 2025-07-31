@@ -1,0 +1,98 @@
+----------------------------------------------------------------------------------------------------
+-- FX Sound
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Jim
+----------------------------------------------------------------------------------------------------
+
+class "fx_snd"
+
+function fx_snd:__init(obj, storage)
+	self.object = obj
+	self.st		= storage
+	
+	self.played	= true
+end
+
+function fx_snd:reset_scheme()
+	printf("Fx Sound :: Reset Scheme")
+	self.cur_point	= 0
+	self.snd_obj	= xr_sound.get_safe_sound_object(self.st.snd)
+	
+	self:set_positions()
+	
+	self.st.signals = {}
+	
+	self.complete	= false
+end
+
+function fx_snd:update(delta)
+	
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end
+	
+	if self.complete then return end
+	
+	-- play sound
+	if not self.snd_obj:playing() then 
+		self.snd_obj:play_at_pos(self.object, self.current)
+	else 
+		self.snd_obj:set_position(self.current)	
+	end
+	
+	-- update current position
+	local target_pos = vector():set(self.current)
+	target_pos:mad(self.dir, self.st.velocity * delta / 1000)
+	
+	if target_pos:distance_to(self.current) > self.current:distance_to(self.target) then
+		self.cur_point	= self:next_point()
+		self:set_positions()
+	else
+		self.current	= vector():set(target_pos)
+	end
+	
+end
+
+function fx_snd:next_point()
+	if self.cur_point+1 < patrol(self.st.path):count() then
+		return self.cur_point+1
+	else
+		return 0
+	end
+	
+end
+
+function fx_snd:set_positions()
+	
+	if (self:next_point() == 0) then
+		self.complete = true
+		self.st.signals["completed"] = true
+		return
+	end
+
+	self.current	= patrol(self.st.path):point(self.cur_point)
+	self.target		= patrol(self.st.path):point(self:next_point())
+	self.dir		= vector():sub(self.target, self.current):normalize()
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	
+	local new_action = fx_snd(npc, storage)
+
+	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+	
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
+	st.logic    = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	
+	st.path		= utils.cfg_get_string(ini, section, "path",		npc, false, "")
+	st.snd		= utils.cfg_get_string(ini, section, "sound",		npc, false, "")
+	st.velocity = utils.cfg_get_number(ini, section, "velocity",	npc, false, 3)
+		
+end
+

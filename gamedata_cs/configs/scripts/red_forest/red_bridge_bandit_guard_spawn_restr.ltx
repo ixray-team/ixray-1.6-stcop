@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+red_pursuit_scene_begin} sr_idle@2 %=inc_counter(red_pursuit_bridge_guard_count:2) =spawn_object(red_bridge_bandit_guard_1:red_bridge_bandit_bridge_guard_spawn_way) =spawn_object(red_bridge_bandit_guard_2:red_bridge_bandit_bridge_guard_spawn_way)%
+on_info2 = {+red_bridge_scene_begin} sr_idle@2 ;%=inc_counter(red_pursuit_bridge_guard_count) =dec_counter(red_pursuit_bridge_guard_count)%
+
+[sr_idle@2]
+;on_info = {+red_bridge_scene_begin} nil %=spawn_object(red_bridge_bandit_guard_1:red_bridge_bandit_bridge_guard_spawn_way) =spawn_object(red_bridge_bandit_guard_2:red_bridge_bandit_bridge_guard_spawn_way)%

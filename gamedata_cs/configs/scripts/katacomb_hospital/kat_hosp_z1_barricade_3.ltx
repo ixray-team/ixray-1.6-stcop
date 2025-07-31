@@ -1,0 +1,112 @@
+[logic]
+active = remark@weapon_unstrapped
+post_combat_time = 0,0 
+
+[remark@weapon_unstrapped]
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+path_walk = barricade_hide_5_walk
+anim = threat
+on_game_timer = 20 | smartcover@wait
+
+[smartcover@wait]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+path_walk = barricade_hide_3_walk
+combat_ignore_cond = true
+cover_name = hosp_barricade_3_smartcover
+cover_state = default_behaviour
+on_info = {+hospital_z1_action} smartcover@hide2
+
+;-- прячется до начала сцены со снайпером
+[smartcover@hide]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_3_smartcover
+cover_state = default_behaviour
+on_info = {+cover_fire} smartcover@fire
+on_info2 = {+sniper_fire_scene_end} smartcover@hide2
+
+;-- стреляет до начала сцены со снайпером
+[smartcover@fire]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_3_smartcover
+cover_state = fire_target
+target_path = barricade_fire_3_look
+on_info = {+cover_fire_end} smartcover@hide
+on_info2 = {+sniper_fire_scene} smartcover@hide
+on_info3 = {+sniper_fire_scene_end} smartcover@hide2
+
+;-- прячется 
+[smartcover@hide2]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_3_smartcover
+cover_state = lookout_target
+on_info = {+cover_fire} smartcover@fire2
+on_info2 = {+sniper_off} camper@rush
+
+;-- стреляет, прикрывает игрока
+[smartcover@fire2]
+use_in_combat = true
+invulnerable = true
+meet = no_meet
+combat_ignore_cond = true
+cover_name = hosp_barricade_3_smartcover
+cover_state = fire_target
+target_path = barricade_fire_3_look
+on_info = {+cover_fire_end} smartcover@hide2
+
+;-- проход отряда ЧН по второму этажу
+[camper@rush]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+path_walk = barricade_rush_4_walk
+path_look = barricade_rush_4_look
+radius = 5
+no_retreat = true
+def_state_moving = sneak_run
+on_info = {+door_blow_up} camper@final_wait
+meet = no_meet
+invulnerable = true
+
+[camper@final_wait]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+path_walk = barricade_rush_4_walk
+path_look = barricade_rush_4_look
+radius = 0
+no_retreat = true
+def_state_moving = sneak_run
+on_game_timer = 30 | camper@final
+meet = no_meet
+invulnerable = true
+
+;-- отряд ЧН занимает финальные точки перед проломом
+[camper@final]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+path_walk = barricade_final_2_walk
+path_look = barricade_final_2_look
+radius = 0
+no_retreat = true
+def_state_moving = sneak_run
+meet = no_meet
+invulnerable = true
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_sound = 0
+
+[danger_condition@rush]
+ignore_distance_corpse = 0

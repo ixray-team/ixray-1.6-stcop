@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes" ?>
+<game_dialogs>
+    <dialog id="vodka">
+        <phrase_list>
+            <phrase id="0">
+                <text>vodka_0</text>
+                <next>100</next>
+            </phrase>
+            <phrase id="100">
+                <text>vodka_100</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="test1">
+        <phrase_list>
+            <phrase id="0">
+                <text>test1_0</text>
+                <next>101</next>
+                <next>102</next>
+                <next>103</next>
+            </phrase>
+            <phrase id="101">
+                <text>test1_101</text>
+                <next>200</next>
+            </phrase>
+            <phrase id="102">
+                <text>test1_102</text>
+                <next>200</next>
+            </phrase>
+            <phrase id="103">
+                <text>test1_103</text>
+                <next>200</next>
+            </phrase>
+            <phrase id="200">
+                <text>test1_200</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="test_dialog">
+        <phrase_list>
+            <phrase id="103">
+                <text>test_dialog_103</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="101">
+                <text>test_dialog_101</text>
+            </phrase>
+            <phrase id="302">
+                <text>test_dialog_302</text>
+            </phrase>
+            <phrase id="301">
+                <text>test_dialog_301</text>
+                <next>201</next>
+            </phrase>
+            <phrase id="102">
+                <text>test_dialog_102</text>
+                <next>201</next>
+            </phrase>
+            <phrase id="0">
+                <text>test_dialog_0</text>
+                <next>100</next>
+                <next>102</next>
+                <next>103</next>
+                <next>101</next>
+            </phrase>
+            <phrase id="100">
+                <text>test_dialog_100</text>
+                <next>200</next>
+            </phrase>
+            <phrase id="200">
+                <text>test_dialog_200</text>
+            </phrase>
+            <phrase id="201">
+                <text>test_dialog_201</text>
+                <give_info>test_info</give_info>
+                <next>301</next>
+                <next>302</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="proba">
+        <phrase_list>
+            <phrase id="0">
+                <next>100</next>
+            </phrase>
+            <phrase id="100">
+                <text></text>
+                <next>202</next>
+            </phrase>
+            <phrase id="202">
+                <text></text>
+                <next>301</next>
+            </phrase>
+            <phrase id="301">
+                <text></text>
+                <next>401</next>
+            </phrase>
+            <phrase id="401">
+                <text></text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>

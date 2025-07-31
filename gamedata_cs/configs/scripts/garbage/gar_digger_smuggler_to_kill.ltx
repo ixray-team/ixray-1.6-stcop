@@ -1,0 +1,49 @@
+[logic@smuggler]
+active = kamp@main
+suitable = {+gar_quest_kill_smuggler_prepare -gar_quest_kill_smuggler_done =check_npc_name(gar_digger_smuggler)}
+on_death = death
+
+[logic@stalker_1]
+active = kamp@main
+suitable = {+gar_quest_kill_smuggler_prepare -gar_quest_kill_smuggler_done =check_npc_name(sim_default_digger)}
+on_death = death
+
+[logic@stalker_2]
+active = kamp@main
+suitable = {+gar_quest_kill_smuggler_prepare -gar_quest_kill_smuggler_done =check_npc_name(sim_default_digger)}
+on_death = death
+
+[logic@stalker_3]
+active = kamp@main
+suitable = {+gar_quest_kill_smuggler_prepare -gar_quest_kill_smuggler_done =check_npc_name(sim_default_digger)}
+on_death = death
+
+[logic@stalker_4]
+active = kamp@main
+suitable = {+gar_quest_kill_smuggler_prepare -gar_quest_kill_smuggler_done =check_npc_name(sim_default_digger)}
+on_death = death
+
+;--------------------------------
+
+[kamp@main]
+center_point = kamp_1
+path_walk = kamp_1_task
+;on_info = kamp@catch %=hit_npc_from_actor%
+;combat_ignore_cond = true
+;combat_ignore_keep_when_attacked = true
+
+;[kamp@catch]
+;center_point = kamp_1
+;path_walk = kamp_1_task
+;on_timer = 5000 | kamp@wait
+;combat_ignore_cond = true
+;combat_ignore_keep_when_attacked = true
+
+;[kamp@wait]
+;center_point = kamp_1
+;path_walk = kamp_1_task
+
+;--------------------------------
+
+[death]
+on_info = %+gar_flea_market_stop_quest_line%

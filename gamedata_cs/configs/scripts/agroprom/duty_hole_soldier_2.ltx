@@ -1,0 +1,36 @@
+[logic@soldier02]
+active = walker
+suitable = {=check_npc_name(sim_default_duty_) -agru_leader_dolg_task_complete} true
+prior = 42
+
+[walker]
+path_walk = agr_duty_hole_soldier_2_walk
+path_look = agr_duty_hole_soldier_2_look
+on_info = {+snork} camper
+out_restr = agr_out_restr_hole
+
+[camper]
+path_walk = agr_duty_hole_soldier_2_walk
+path_look = agr_duty_hole_soldier_2_look
+faction = dolg
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_info = {+sattack -agr_snork_shout_sound} remark@2
+out_restr = agr_out_restr_hole
+
+[remark@2]
+anim = threat
+target = agr_duty_hole_soldier_3_look, 0
+snd = agr_hole_attack_0
+on_signal = sound_end | camper@2
+meet = no_meet
+combat_ignore_cond = always
+faction = dolg
+on_info = %+agr_snork_shout_sound%
+
+[camper@2]
+path_walk = agr_duty_hole_soldier_2_walk
+path_look = agr_duty_hole_soldier_2_look
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+out_restr = agr_out_restr_hole

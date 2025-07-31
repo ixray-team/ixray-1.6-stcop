@@ -1,0 +1,12 @@
+[logic]
+
+active = sr_idle
+
+[sr_idle]
+on_info = sr_idle@1 %=bridge_up()% ; =turn_off(513)%
+
+[sr_idle@1]
+on_info = {+red_bridge_bridge_move -red_bridge_down_done} sr_idle@2 %=bridge_down()% ; =turn_on(513)%
+
+[sr_idle@2]
+on_info = {-red_bridge_bridge_move -red_bridge_down_done} sr_idle@1 %=bridge_stop()% ; =turn_off(513)%

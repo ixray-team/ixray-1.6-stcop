@@ -1,0 +1,294 @@
+local items_table = {
+	                    "wpn_addon_scope",
+						"wpn_addon_scope_4x",
+	                    "wpn_addon_scope_susat",
+	                    "wpn_addon_silencer",
+						"wpn_addon_grenade_launcher",
+	                    "wpn_addon_grenade_launcher_m203",
+						"novice_outfit", 		-- 1
+						"bandit_outfit", 		-- 2
+						"stalker_outfit", 		-- 3
+						"cs_light_outfit",		-- 4
+						"svoboda_light_outfit",	-- 5
+						"scientific_outfit",	-- 6
+						"cs_heavy_outfit",		-- 7
+						"dolg_outfit",			-- 8
+						"svoboda_heavy_outfit",	-- 9
+						"specops_outfit",		-- 10
+						"exo_outfit",			-- 11
+						"dolg_heavy_outfit",	-- 12
+						"svoboda_exo_outfit",	-- 13
+						"military_outfit",		-- 14
+						"wpn_pm",				-- 15
+						"wpn_pb",				-- 16
+						"wpn_fort",				-- 17
+						"wpn_hpsa",				-- 18
+						"wpn_beretta",			-- 19
+						"wpn_walther",			-- 20
+						"wpn_sig220",			-- 21
+						"wpn_colt1911",			-- 22
+						"wpn_usp",				-- 23
+						"wpn_desert_eagle",		-- 24
+						"wpn_bm16",				-- 25
+						"wpn_toz34",			-- 26
+						"wpn_wincheaster1300",	-- 27
+						"wpn_spas12",			-- 28
+						"wpn_ak74u",			-- 29
+						"wpn_mp5",				-- 30
+						"wpn_ak74",				-- 31
+						"wpn_abakan",			-- 32
+						"wpn_l85",				-- 33
+						"wpn_lr300",			-- 34
+						"wpn_sig550",			-- 35
+						"wpn_groza",			-- 36
+						"wpn_val",				-- 37
+						"wpn_vintorez",			-- 38
+						"wpn_svu",				-- 39
+						"wpn_svd",				-- 40
+						"wpn_rg-6",				-- 41
+						"wpn_rpg7",				-- 42
+						"wpn_g36",				-- 43
+						"wpn_fn2000",			-- 45
+						"wpn_pkm",				-- 46
+						"wpn_gauss",			-- 47
+						"wpn_knife",			-- 48
+                        "grenade_f1",
+						"grenade_rgd5",
+						"grenade_gd-05",
+						"wpn_ak74_up",
+						"wpn_ak74_up2",
+						"wpn_ak74_minigame",
+						"wpn_ak74u_minigame",
+						"wpn_beretta_minigame",
+						"wpn_binoc",
+						"wpn_desert_eagle_up",
+						"wpn_gauss_aes",
+						"wpn_lr300_minigame",
+						"wpn_lr300_up2",
+						"wpn_mp5_minigame",
+						"wpn_pm_minigame",
+						"wpn_pm_up",
+						"wpn_pm_9x19",
+						"wpn_sig550_minigame",
+						"wpn_val_minigame",
+						"wpn_vintorez_up",
+						"bread",
+						"kolbasa",
+						"conserva",
+						"vodka",
+						"antirad",
+						"medkit",
+						"medkit_army",
+						"medkit_scientic",
+						"energy_drink",
+						"bandage",
+						"device_pda",
+						"device_torch",
+						"af_medusa",
+						"af_cristall_flower",
+						"af_night_star",
+						"af_vyvert",
+						"af_gravi",
+						"af_gold_fish",
+						"af_cristall",
+						"af_fireball",
+						"af_dummy_glassbeads",
+						"af_eye",
+						"af_fire",
+						"af_blood",
+						"af_mincer_meat",
+						"af_soul",
+						"af_fuzz_kolobok",
+						"af_baloon",
+						"af_glass",
+						"af_electra_sparkler",
+						"af_electra_flash",
+						"af_electra_moonlight",
+						"af_dummy_battery",
+						"af_dummy_dummy",
+						"af_ice",
+						"af_compass",
+						"detector_simple",
+						"detector_advanced",
+						"detector_elite",
+						"device_pda_fang",
+						"esc_trader_habar",
+						"device_pda_military",
+						"device_pda_old",
+						"device_pda_garbage_traitor",
+						"device_pda_comendant",
+						"device_pda_freedom",
+						"device_pda_bloodsucker",
+						"device_pda_digger",
+						"mar_quest_wpn_pm_1",
+						"mar_quest_wpn_ak74u_1",
+						"mar_quest_af_cristall_flower_1",
+						"mar_quest_scout_pda",
+						"mar_quest_novice_outfit_1",
+						"mil_quest_af_fuzz_kolobok",
+						"mil_device_pda_lost_squard",
+						"esc_device_pda_driver",
+						"agr_pda_for_secret_trader",
+						"agr_map_animals",
+						"red_forest_pda_map",
+						"red_forest_pda_map_2",
+					}
+local ammo_table = {
+						"ammo_9x18_fmj",
+						"ammo_9x18_pmm",
+						"ammo_9x19_fmj",
+						"ammo_9x19_pbp",
+						"ammo_11.43x23_fmj",
+						"ammo_11.43x23_hydro",
+						"ammo_5.45x39_fmj",
+						"ammo_5.45x39_ap",
+						"ammo_5.56x45_ss190",
+						"ammo_5.56x45_ap",
+						"ammo_pkm_100",
+						"ammo_7.62x54_7h14",
+						"ammo_223_fmj",
+						"ammo_gauss",
+						"ammo_9x39_pab9",
+						"ammo_9x39_ap",
+						"ammo_12x70_buck",
+						"ammo_12x76_dart",
+						"ammo_12x76_zhekan",
+						"ammo_og-7b",
+						"ammo_vog-25p",
+						"ammo_vog-25",
+						"ammo_m209",
+						"ammo_minigame",
+	"flesh_up_ac_spas12"
+					}
+
+class "spawn_item" (CUIListItemEx)
+
+function spawn_item:__init() super()
+	self:SetWndRect		(Frect():set(0,0,300,22))
+	
+	local ca = 255
+	local cr = 216
+	local cg = 186
+	local cb = 140
+	
+	self.text					= CUIStatic	()
+	self.text:SetAutoDelete		(true)
+	self:AttachChild			(self.text)
+	self.text:SetWndRect		(Frect():set(0,0,300,22))
+	self.text:SetText			("filename")
+	self.text:SetFont			(GetFontLetterica18Russian())
+	self.text:SetTextColor		(ca,cr,cg,cb)
+end
+
+
+class "spawn_item_dialog" (CUIScriptWnd)
+
+function spawn_item_dialog:__init() super()
+   self:InitControls()
+   self:InitCallBacks()
+   self:FillList()
+end
+
+function spawn_item_dialog:__finalize()
+end
+
+function spawn_item_dialog:FillList()
+	
+	for i = 1, #items_table do
+		self:AddItemToList(items_table[i])
+	end
+	for i = 1, #ammo_table do
+		self:AddItemToList(ammo_table[i])
+	end
+end
+
+function spawn_item_dialog:InitControls()
+	local xml				= CScriptXmlInit()
+	local ctrl
+	xml:ParseFile			("ui_spawn_dlg.xml")
+
+	ctrl					= xml:InitStatic("background",self)
+	
+
+	self:SetWndPos			(vector2():set(100,100))
+	self:SetWndSize			(vector2():set(ctrl:GetWidth(),ctrl:GetHeight()))
+	ctrl:SetWndPos			(vector2():set(0,0))
+
+	self.list = xml:InitList	("list",self)
+	self.list:ShowSelectedItem	(true)
+	self:Register				(self.list, "list_window")
+
+	self.check					= xml:InitCheck("check_own_to_actor",self)
+		
+	ctrl						= xml:Init3tButton("btn_create",self)	
+	self:Register				(ctrl, "btn_create")
+
+	
+	ctrl = xml:Init3tButton		("btn_close",self)	
+	self:Register				(ctrl, "btn_close")
+end
+
+function spawn_item_dialog:InitCallBacks()
+	self:AddCallback("btn_create",		ui_events.BUTTON_CLICKED,             self.OnButton_create_clicked,	self)
+	self:AddCallback("btn_close",		ui_events.BUTTON_CLICKED,             self.OnButton_close_clicked,	self)
+	self:AddCallback("list_window",		ui_events.WINDOW_LBUTTON_DB_CLICK,	  self.OnButton_create_clicked,	self)
+end
+
+
+
+function spawn_item_dialog:OnButton_create_clicked()	
+	if self.list:GetSize()==0 then 
+		return 
+	end
+
+	local index = self.list:GetSelectedItem()
+	
+	if index == -1 then 
+		return 
+	end
+
+	local item			= self.list:GetItem(index)
+	local itmname		= item.text:GetText()
+	local id
+	if self.check:GetCheck() then
+		id = db.actor:id()
+	else
+		id = -1
+	end
+	
+	alife():create(itmname, db.actor:position(), 0, 0, id)
+end
+
+function spawn_item_dialog:OnButton_close_clicked()
+	self:GetHolder():start_stop_menu	(self,true)
+	_G.si_dlg = nil
+end
+
+function spawn_item_dialog:OnKeyboard(dik, keyboard_action)
+	local bind = dik_to_bind(dik)
+	if bind == key_bindings.kQUIT then
+		self:OnButton_close_clicked()
+	else
+	if dik==28 then
+		self:OnButton_create_clicked()
+	end
+	end
+	   
+	return true
+end
+
+function spawn_item_dialog:AddItemToList(item_name)
+	local _itm				= spawn_item()
+	_itm.text:SetText		(item_name)
+	
+	self.list:AddItem		(_itm)
+end
+
+
+
+function main()
+	if _G.si_dlg==nil then
+		_G.si_dlg = spawn_item_dialog()
+	end
+	level.start_stop_menu(_G.si_dlg,true)
+end

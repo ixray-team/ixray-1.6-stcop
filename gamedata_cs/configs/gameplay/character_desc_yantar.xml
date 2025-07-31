@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+  <specific_character id="yan_stalker_zombied_0_default" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_zombied_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>yan_stalker_zombied</class>
+    <community>zombied</community> 
+    <snd_config>characters_voice\human_01\zombied\</snd_config>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_zombied\stalker_zombied_3</visual>
+    <crouch_type>0</crouch_type>
+    <supplies>
+      [spawn]\n
+      device_torch \n
+      wpn_pm = 1 \n
+      wpn_ak74 = 1 \n
+      ammo_5.45x39_ap = 1 \n
+      ammo_9x18_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+	<specific_character id="yan_stalker_zombied_1_default" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_zombied_2</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio></bio>
+
+		<class>yan_stalker_zombied</class>
+		<community>zombied</community> 
+		<snd_config>characters_voice\human_02\zombied\</snd_config>
+
+		<rank>400</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\stalker_zombied\stalker_zombied_2</visual>
+		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn]\n
+			device_torch \n
+			wpn_fort = 1 \n
+			wpn_ak74u \n
+      		ammo_5.45x39_fmj = 1 \n
+      		ammo_9x18_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
+	
+	<specific_character id="yan_stalker_zombied_2_default" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_zombied_1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio></bio>
+
+		<class>yan_stalker_zombied</class>
+		<community>zombied</community> 
+		<snd_config>characters_voice\human_02\zombied\</snd_config>
+
+		<rank>400</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\stalker_zombied\stalker_zombied_1</visual>
+		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn]\n
+			device_torch \n
+			wpn_pm = 1 \n
+			wpn_wincheaster1300 = 1 \n
+      		ammo_12x70_buck = 1 \n
+      		ammo_9x18_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
+	
+	<specific_character id="yan_stalker_sakharov" team_default = "1">
+		<name>yan_st_sakharov_name</name>
+		<icon>ui_npc_u_ucheniy_1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio></bio>
+
+		<class>yan_stalker_sakharov</class>
+		<community>ecolog</community> <terrain_sect>sakharov_terrain</terrain_sect>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+
+		<rank>400</rank>
+		<reputation>0</reputation>
+ 		<money min="20000" max="50000" infinitive="1"/>
+		<visual>actors\stalker_ucheniy\stalker_ucheniy_1</visual>
+		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			hand_radio = 1 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>yan_scientist_hello_dialog</start_dialog>
+    <actor_dialog>yan_scientist_go_diggers</actor_dialog>
+    <actor_dialog>yan_scientist_about_strelok</actor_dialog>
+    <actor_dialog>yan_scientist_about_stalkers</actor_dialog>
+    <actor_dialog>yan_scientist_about_zombie</actor_dialog>
+    <actor_dialog>yan_scientist_bring_documents</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+  </specific_character>
+  
+  <specific_character id="yan_stalker_levsha" team_default = "1">
+    <name>yan_st_levsha_name</name>
+    <icon>ui_npc_u_neutral_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>yan_stalker_levsha</class>
+    <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_02\stalker\</snd_config>
+
+    <rank>300</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_beretta = 1 \n
+      wpn_ak74u = 1 \n
+      ammo_5.45x39_ap = 1 \n
+      ammo_9x19_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+    <start_dialog>yan_levsha_hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="yan_stalker_sci_base" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_neutral_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>yan_stalker_sci_base</class>
+    <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\stalker\</snd_config>
+
+    <rank>300</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_neutral\stalker_neutral_2</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_usp = 1 \n
+      wpn_l85 \n
+      ammo_5.56x45_ap = 1 \n
+      ammo_11.43x23_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+    <!--<start_dialog>yan_levsha_hello_dialog</start_dialog>-->
+  </specific_character>
+
+
+  <specific_character id="yan_default_stalker_2" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_neutral_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>yan_default_stalker_2</class>
+    <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\stalker\</snd_config>
+
+    <rank>300</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_neutral\stalker_neutral_2</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_beretta = 1 \n
+      wpn_lr300 = 1, scope \n
+      ammo_5.56x45_ap = 1 \n
+      ammo_9x19_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="yan_default_stalker_1" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_neutral_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>yan_default_stalker_1</class>
+    <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\stalker\</snd_config>
+
+    <rank>300</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_neutral\stalker_neutral_2</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_fort = 1 \n
+      wpn_ak74 = 1 \n
+      ammo_5.45x39_ap = 1 \n
+      ammo_9x18_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+</xml>

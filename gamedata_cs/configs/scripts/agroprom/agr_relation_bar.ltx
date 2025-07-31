@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle@friend
+
+[sr_idle@friend]
+on_info = {+agr_bar_actor_enemy} sr_idle@enemy
+
+[sr_idle@enemy]
+on_info = {!is_faction_enemy_to_actor(dolg)} sr_idle@friend %-agr_bar_actor_enemy%
+

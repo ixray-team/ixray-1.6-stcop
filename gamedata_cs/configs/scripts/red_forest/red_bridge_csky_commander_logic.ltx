@@ -1,0 +1,185 @@
+;*****************************
+;********* csky commander ***********
+
+[logic]
+active = smartcover@commander_wait
+relation = friend
+post_combat_time = 0,0
+
+;***** обстреливают бандитов *****
+[smartcover@commander_wait]
+;use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+cover_name = red_bridge_east_smartcover_com
+;cover_state = idle_target
+;target_path = red_bridge_csky_smart_soldier_1_f1_fire_look
+loophole_name = lh_4
+on_actor_dist_le = 5 | smartcover@actor_come %+mil_freedom_com_talked%
+on_info = {+red_bridge_down_done} smartcover@commander_wait3
+on_info2 = {+red_bridge_actor_in_position} smartcover@commander_wait2
+
+[smartcover@actor_come]
+invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+cover_name = red_bridge_east_smartcover_com
+cover_state = idle_target
+on_game_timer = 10 | smartcover@actor_come2 %=play_sound(red_bridge_actor_come:csky:mar_csky_commander_name)%
+on_actor_dist_ge_nvis = 7 | smartcover@commander_wait2 %+red_bridge_actor_talk_with_cs_commander%
+meet = no_meet
+
+[smartcover@actor_come2]
+invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+cover_name = red_bridge_east_smartcover_com
+cover_state = idle_target
+on_signal = sound_end | smartcover@commander_wait2 %+red_bridge_actor_talk_with_cs_commander%
+on_actor_dist_ge_nvis = 7 | smartcover@commander_wait2 %+red_bridge_actor_talk_with_cs_commander%
+meet = no_meet
+
+[smartcover@commander_wait2]
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+cover_name = red_bridge_east_smartcover_com
+;cover_state = idle_target
+;target_path = red_bridge_csky_smart_soldier_1_f1_fire_look
+loophole_name = lh_4
+on_info = {+red_bridge_down_done} smartcover@commander_wait3
+
+[smartcover@commander_wait3]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+cover_name = red_bridge_east_smartcover_com
+;cover_state = idle_target
+;target_path = red_bridge_csky_smart_soldier_1_f1_fire_look
+loophole_name = lh_4
+on_game_timer = 150 | walker@bridge_walk_work_6
+
+[walker@bridge_walk_work_6]
+;out_restr = red_bridge_csky_restr
+invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = red_bridge_csky_smart_bridge_walk
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_signal = action | camper@assault_work_6
+meet = no_meet
+
+[camper@assault_work_6]
+out_restr = red_bridge_attack_restr
+invulnerable = true
+path_walk = red_bridge_csky_smart_soldier_2_assault_walk
+path_look = red_bridge_csky_smart_soldier_2_assault_look
+radius = 20
+no_retreat = true
+def_state_moving = assault
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+on_info = {+red_bridge_bandit_out} camper@wait_talk_work_6
+meet = no_meet
+
+[camper@wait_talk_work_6]
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_comander_talk_walk
+path_look = red_bridge_csky_smart_comander_talk_1_look
+meet = no_meet
+on_game_timer = 600 | camper@talk_work_6
+on_actor_dist_le_nvis = 10 | camper@talk_work_6
+
+[camper@talk_work_6]
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_comander_talk_walk
+path_look = red_bridge_csky_smart_comander_talk_1_look
+on_signal = action | {+red_bridge_leshiy_redy} camper@talk_leshiy_work_6 %+red_bridge_thanks_leshiy =play_sound(red_bridge_thanks_leshiy)%
+meet = no_meet
+
+[camper@talk_leshiy_work_6]
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_comander_talk_walk
+path_look = red_bridge_csky_smart_comander_talk_1_look
+on_info = {+red_bridge_thanks_leshiy_reply} camper@reply2_work_6
+meet = no_meet
+
+[camper@reply2_work_6]
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_comander_talk_walk
+path_look = red_bridge_csky_smart_comander_talk_1_look
+on_game_timer = 50 | camper@reply3_work_6 %+red_bridge_thanks_leshiy_reply2 =play_sound(red_bridge_thanks_leshiy_reply2)%
+meet = no_meet
+
+[camper@reply3_work_6]
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_comander_talk_walk
+path_look = red_bridge_csky_smart_comander_talk_1_look
+on_info = {+red_bridge_thanks_leshiy_reply3} camper@reply4_work_6
+meet = no_meet
+
+[camper@reply4_work_6]
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_comander_talk_walk
+path_look = red_bridge_csky_smart_comander_talk_1_look
+on_game_timer = 30 | camper@wait_talk2_work_6 %+red_bridge_thanks_leshiy_reply4 =play_sound(red_bridge_thanks_leshiy_reply4)%
+meet = no_meet
+
+[camper@wait_talk2_work_6]
+meet = no_meet
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_comander_talk_2_walk
+path_look = red_bridge_csky_smart_comander_talk_2_look
+on_signal = action2 | {+red_bridge_cs1 +red_bridge_cs2 +red_bridge_cs3 +red_bridge_cs4 +red_bridge_cs5} camper@talk2_work_6
+
+[camper@talk2_work_6]
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_comander_talk_2_walk
+path_look = red_bridge_csky_smart_comander_talk_2_look
+on_game_timer = 20 | camper@talk3_work_6 %+red_bridge_finished =play_sound(red_bridge_finished:csky:mar_csky_commander_name)%
+;on_game_timer2 = 70 | walker@bridge_guard_work_6 %+red_bridge_csky_go_limansk%
+meet = no_meet
+
+[camper@talk3_work_6]
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_comander_talk_2_walk
+path_look = red_bridge_csky_smart_comander_talk_2_look
+on_signal = sound_end | walker@bridge_guard_work_6 %+red_bridge_csky_go_limansk%
+meet = no_meet
+
+[walker@bridge_guard_work_6]
+meet = meet
+invulnerable = true
+out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_soldier_4_guard_walk
+path_look = red_bridge_csky_smart_soldier_4_guard_look
+on_info = {=dist_to_actor_ge(150) !actor_see_npc} %=destroy_object%
+
+[patrol@go_limansk_work_6]
+invulnerable = true
+;out_restr = red_bridge_bandit_restr
+path_walk = red_bridge_csky_smart_go_limansk_walk
+path_look = red_bridge_csky_smart_go_limansk_look
+commander = true
+on_signal = action | nil %=destroy_object%
+meet = no_meet
+
+
+[meet]
+meet_state = 5 | ward@nil
+meet_state_wpn = 5 | ward@nil
+victim = 5 | actor
+victim_wpn = 5 | actor
+sound_start = mar_csky_leader_meet
+sound_stop 	= mar_csky_leader_meet_bye
+quest_npc 	= true

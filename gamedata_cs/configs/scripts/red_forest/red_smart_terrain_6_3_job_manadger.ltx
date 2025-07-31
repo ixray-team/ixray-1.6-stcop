@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle@activate_job
+
+[sr_idle@activate_job]
+on_game_timer = 150 | sr_idle@check_work %+red_smart_6_3_init_artefact_search%
+
+[sr_idle@check_work]
+on_info = {-red_smart_6_3_init_artefact_search} sr_idle@activate_job

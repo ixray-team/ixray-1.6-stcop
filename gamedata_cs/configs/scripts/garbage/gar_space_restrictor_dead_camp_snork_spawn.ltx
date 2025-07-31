@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle@clear
+
+[sr_idle@clear]
+on_info = {+gar_quest_get_old_pda_started} sr_idle@spawn %=clear_smart_terrain(gar_smart_terrain_5_5)%
+
+[sr_idle@spawn]
+on_actor_inside = {+gar_quest_get_old_pda_box_started} sr_idle@end_section %=create_squad(gar_dead_camp_snork:gar_smart_terrain_5_5)%
+
+[sr_idle@end_section]

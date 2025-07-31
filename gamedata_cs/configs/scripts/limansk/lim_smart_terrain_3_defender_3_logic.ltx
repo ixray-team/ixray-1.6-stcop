@@ -1,0 +1,25 @@
+[logic@defend_work3]
+active = camper@ambush_work3
+suitable = {=check_npc_name(lim_ambush_2_enemy_3_stalker) -lim_smart_3_captured}
+on_death = death@work3
+
+[death@work3]
+on_info = %=dec_counter(lim_ambush2_count)%
+
+[camper@ambush_work3]
+out_restr = lim_smart_terrain_3_defence
+path_walk = spec_wait_3_walk
+path_look = spec_wait_3_look
+combat_ignore_cond = true
+on_info = {+lim_ambush2} walker@defender_work3
+on_info2 = {=heavy_wounded} nil %=dec_counter(lim_ambush2_count)%
+def_state_moving = assault
+
+[walker@defender_work3]
+out_restr = lim_smart_terrain_3_defence
+path_walk = guard_3_walk
+path_look = guard_3_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {=heavy_wounded} nil %=dec_counter(lim_ambush2_count)%

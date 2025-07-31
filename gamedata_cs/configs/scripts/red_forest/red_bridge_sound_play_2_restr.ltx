@@ -1,0 +1,18 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+red_bridge_allyes_try_pull_down} sr_idle@2 ;пока побежит первый наемник
+
+[sr_idle@2]
+on_info = {-red_bridge_allyes_try_pull_down} sr_idle@wait %+red_bridge_sniper_first_task =play_sound(red_bridge_lever_killed_first:killer:red_ally_leshiy_name) =give_inited_task(storyline:red_bridge_kill_sniper:csky)%
+
+[sr_idle@3]
+on_info = {-red_bridge_allyes_try_pull_down} sr_idle@wait %=play_sound(red_bridge_lever_killed:killer:red_ally_leshiy_name)%
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@wait]
+on_info = {+red_bridge_sniper_fire} sr_idle@3
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@nil]

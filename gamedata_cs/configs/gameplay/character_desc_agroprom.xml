@@ -1,0 +1,815 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+
+        <specific_character id="agr_weaponmaster" team_default = "1">
+                <name>agr_weaponmaster_name</name>
+                <icon>ui_npc_u_dolg_2_mask</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>Плотный мужчина 30-35 лет с полными губами и круглыми глазами. Одет в парку с капюшоном, поверх капюшона очки на резинке. Низкий голос, прямой взгляд, немного нахальное поведение.</bio>
+
+                <class>agr_weaponmaster</class>
+                <community>dolg</community>
+
+                <rank>600</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+                <snd_config>characters_voice\human_01\dolg\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>agr_duty_tir_dialog_hello</start_dialog>
+    <actor_dialog>agr_duty_weaponmaster_about_you_in_zone</actor_dialog>
+    <actor_dialog>agr_duty_weaponmaster_about_military</actor_dialog>
+    <actor_dialog>agr_duty_weaponmaster_about_bad_trader</actor_dialog>
+    <actor_dialog>agr_duty_weaponmaster_about_story</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+<!-- #include "gameplay\character_dialogs.xml"-->
+        </specific_character>
+
+        <specific_character id="agr_barman" team_default = "1">
+                <name>agr_barman_name</name>
+                <icon>ui_npc_u_dolg_2_face_2</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>Круглолицый молодой парень. Хороший и спокойный боец, преданный «Долгу».</bio>
+
+                <class>agr_barman</class>
+                <community>dolg</community>
+
+                <rank>600</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_dolg\stalker_dolg_2_face_2</visual>
+                <snd_config>characters_voice\human_02\dolg\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>agr_duty_barman_you</actor_dialog>
+    <actor_dialog>agr_duty_barman_zone</actor_dialog>
+    <actor_dialog>agr_duty_barman_jelanie</actor_dialog>
+    <actor_dialog>agr_duty_barman_around</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+        </specific_character>
+
+  <specific_character id="agr_duty_base_commander" team_default = "1">
+    <name>agr_duty_base_commander_name</name>
+    <icon>ui_npc_u_dolg_2_face_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Коммандир военных сил базы Долга</bio>
+
+    <class>agr_duty_base_commander</class>
+    <community>dolg</community>
+
+    <rank>900</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2_face_1</visual>
+    <snd_config>characters_voice\human_02\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+	hand_radio \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>agr_leader_hello_dialog</start_dialog>
+    <actor_dialog>agr_leader_first_join</actor_dialog>
+    <actor_dialog>agr_leader_join_duty</actor_dialog>
+    <actor_dialog>agr_leader_about_dolg</actor_dialog>
+    <actor_dialog>agr_leader_about_zone</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+    <actor_dialog>tm_reward_task</actor_dialog>
+        </specific_character>
+
+        <specific_character id="agr_secret_trader" team_default = "1">
+                <name>agr_secret_trader_name</name>
+                <icon>ui_npc_u_neutral_2_mask</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>Молчаливый, угрюмый сталкер, плохо идущий на контакт. Говорит короткими глубокомысленными фразами, но без пафоса.</bio>
+
+                <class>agr_secret_trader</class>
+                <community>stalker</community>
+
+                <rank>300</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+                <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+                        wpn_val = 1, scope \n
+                        wpn_lr300_up2 = 1 \n
+                        wpn_ak74_up = 2 \n
+                        wpn_ak74_up2 = 1 \n
+                        wpn_rg-6 = 1 \n
+                        ammo_9x39_ap = 1 \n
+                        wpn_rpg7 = 1 \n
+                        medkit_scientic = 11 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+                </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>agr_stalker_secret_trader_quest</actor_dialog>
+    <actor_dialog>agr_stalker_secret_trader_quest_complete</actor_dialog>
+    <actor_dialog>agr_stalker_secret_trader_who_are_you</actor_dialog>
+    <actor_dialog>agr_stalker_secret_trader_what_is_you_doing</actor_dialog>
+    <actor_dialog>agr_stalker_secret_trader_about_zone</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+<!-- #include "gameplay\character_dialogs.xml" -->
+  </specific_character>
+
+        <specific_character id="agr_stalker_base_leader" team_default = "1">
+                <name>agr_stalker_base_leader_name</name>
+                <icon>ui_npc_u_neutral_2_mask</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>«Душа компании», которого выбрали в лидеры за умение находить ко всем подход. Большой, сильный, уверенный в себе, веселый и незлобный.</bio>
+
+                <class>agr_stalker_base_leader</class>
+                <community>stalker</community>
+		<money min="90000" max="100000" infinitive="0"/>
+                <rank>600</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+                <snd_config>characters_voice\human_02\stalker\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>agr_stalker_commander_1</actor_dialog>
+    <actor_dialog>agr_stalker_commander_2</actor_dialog>
+    <actor_dialog>agr_stalker_commander_3</actor_dialog>
+    <actor_dialog>agr_stalker_leader_about_you</actor_dialog>
+    <actor_dialog>agr_stalker_leader_about_zone</actor_dialog>
+    <actor_dialog>agr_stalker_leader_about_join</actor_dialog>
+    <actor_dialog>agr_stalker_leader_about_contact</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+  </specific_character>
+
+        <specific_character id="agr_stalker_base_trader" team_default = "1">
+                <name>agr_stalker_base_trader_name</name>
+                <icon>ui_npc_u_neutral_2_mask</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>Парень 22-25 лет, достаточно серьезный и хорошо разбирающийся в вопросах сталкерства.</bio>
+
+                <class>agr_stalker_base_trader</class>
+                <community>stalker</community>
+		<money min="25000" max="70000" infinitive="0"/>
+                <rank>300</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+                <snd_config>characters_voice\human_02\stalker\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>agr_stalker_trader_about_select</actor_dialog>
+    <actor_dialog>agr_stalker_trader_about_prisoner</actor_dialog>
+    <actor_dialog>agr_stalker_trader_about_dolg</actor_dialog>
+    <actor_dialog>agr_stalker_trader_about_trader</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+  </specific_character>
+
+        <specific_character id="agr_stalker_base_mechanic" team_default = "1">
+                <name>agr_stalker_base_mechanic_name</name>
+                <icon>ui_npc_u_neutral_2_mask</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>Молодой парень 18-20 лет, с басовитым голосом. Немного нагловатый. Хочет казаться старше, поэтому пытается выглядеть хмурым и серьезным. Общительный, незлобный.</bio>
+
+                <class>agr_stalker_base_mechanic</class>
+                <community>stalker</community>
+
+                <rank>300</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+                <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+                </supplies>
+
+	<mechanic_mode>1</mechanic_mode>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>tm_upgr_task</actor_dialog>
+    <actor_dialog>find_upgrade_task</actor_dialog>
+    <actor_dialog>agr_stalker_mechanic_what_is_you_doing</actor_dialog>
+    <actor_dialog>agr_stalker_mechanic_about_gun_and_armor_upgrades</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+  </specific_character>
+
+        <specific_character id="agr_prisoner_1" team_default = "1">
+                <name>agr_prisoner_1_name</name>
+                <icon>ui_npc_u_bandit_3</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>Заложник</bio>
+
+                <class>agr_prisoner_1</class>
+                <community>stalker</community>
+
+                <rank>100</rank>
+                <reputation>0</reputation>
+
+                   <visual>actors\stalker_bandit\stalker_bandit_3</visual>
+                <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="agr_prisoner_2" team_default = "1">
+    <name>agr_prisoner_2_name</name>
+    <icon>ui_npc_u_bandit_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Заложник</bio>
+
+    <class>agr_prisoner_2</class>
+    <community>stalker</community>
+
+    <rank>100</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_bandit\stalker_bandit_1</visual>
+    <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+    <supplies>
+      [spawn] \n
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="agr_duty_base_mechanic" team_default = "1">
+    <name>agr_duty_base_mechanic_name</name>
+    <icon>ui_npc_u_dolg_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Механик-автослесарь. 45-50 лет, руки вечно в масле, поэтому держит их широко разведя от тела в стороны. Брутальный молчун.</bio>
+
+    <class>agr_duty_base_mechanic</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+    <snd_config>characters_voice\human_01\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+	<mechanic_mode>1</mechanic_mode>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>tm_upgr_task</actor_dialog>
+    <actor_dialog>find_upgrade_task</actor_dialog>
+    <actor_dialog>agr_duty_mechanic_about_upgrade</actor_dialog>
+    <actor_dialog>agr_duty_mechanic_like_parametrs</actor_dialog>
+    <actor_dialog>agr_duty_mechanic_about_many_word</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+  </specific_character>
+
+  <specific_character id="agr_duty_base_trader" team_default = "1">
+    <name>agr_duty_base_trader_name</name>
+    <icon>ui_npc_u_dolg_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Грубый продавец времен развитого социализма. Хамит, грубит, делом не занимается. Принцип «не нравится – не бери».</bio>
+
+    <class>agr_duty_base_trader</class>
+    <community>dolg</community>
+    <money min="40000" max="100000" infinitive="0"/>
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+    <snd_config>characters_voice\human_02\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>agr_duty_trader_about_freetime</actor_dialog>
+    <actor_dialog>agr_duty_trader_about_original_weapons</actor_dialog>
+    <actor_dialog>agr_duty_trader_about_fight</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+  </specific_character>
+
+  <specific_character id="agr_hourman" team_default = "1">
+    <name>agr_hourman_name</name>
+    <icon>ui_npc_u_dolg_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Лидер блокпоста группировки "Долг". Хорошо экипирован. Руководит южным блокпостом.</bio>
+
+    <class>agr_hourman</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+    <snd_config>characters_voice\human_02\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+      wpn_beretta \n
+      ammo_11.43x23_hydro = 1 \n
+      wpn_val \n
+      ammo_9x39_sp5 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="agr_storylineperson" team_default = "1">
+    <name>Серёга</name>
+    <icon>ui_npc_u_dolg_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Лидер блокпоста группировки "Долг". Хорошо экипирован. Руководит южным блокпостом.</bio>
+
+    <class>agr_storylineperson</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+    <snd_config>characters_voice\human_01\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+<!-- #include "gameplay\character_dialogs.xml" -->
+  </specific_character>
+
+  <specific_character id="agr_zooman" team_default = "1">
+    <name>agr_zooman_name</name>
+    <icon>ui_npc_u_dolg_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Крепкий мужчина 35-40 лет, усатый и немного навеселе. Низкий громкий голос.</bio>
+
+    <class>agr_zooman</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+    <snd_config>characters_voice\human_02\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+      wpn_beretta \n
+      ammo_9x19_fmj = 1 \n
+      wpn_spas12 \n
+      ammo_12x70_buck = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+<!--    <actor_dialog>agr_duty_zooman_quest</actor_dialog> -->
+<!--    <actor_dialog>agr_duty_zooman_quest_complete</actor_dialog> -->
+    <actor_dialog>agr_duty_zooman_about_zoo</actor_dialog>
+    <actor_dialog>agr_duty_zooman_about_animals</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+<!-- #include "gameplay\character_dialogs.xml" -->
+  </specific_character>
+
+  <specific_character id="agr_holeman" team_default = "1">
+    <name>agr_holeman_name</name>
+    <icon>ui_npc_u_dolg_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>1.</bio>
+
+    <class>agr_holeman</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+    <snd_config>characters_voice\human_02\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+      wpn_beretta \n
+      ammo_9x19_fmj = 1 \n
+      wpn_spas12 \n
+      ammo_12x70_buck = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>agr_duty_holeman_dialog</start_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+	<specific_character id="agr_stalker_zombied_1_default" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_zombied_1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio></bio>
+
+		<class>agr_stalker_zombied</class>
+		<community>zombied</community>
+		<snd_config>characters_voice\human_01\zombied\</snd_config>
+
+    		<rank>90</rank>
+    		<reputation>80</reputation>
+
+		<visual>actors\stalker_zombied\stalker_zombied_1</visual>
+		<!-- <crouch_type>0</crouch_type> -->
+		<supplies>
+			[spawn]
+			wpn_beretta = 1 \n
+			wpn_sig550 \n
+			ammo_5.56x45_ss190 = 1 \n
+			ammo_9x19_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+#include "gameplay\character_dialogs.xml"
+#include "gameplay\character_criticals_1.xml"
+	</specific_character>
+
+  <specific_character id="agr_bar_stalker_1" team_default = "1">
+    <name>agr_bar_stalker_1_name</name>
+    <icon>ui_npc_u_dolg_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Любит пить пиво с друзьями в старом баре на базе Долга.</bio>
+
+    <class>agr_bar_stalker_1</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2</visual>
+    <snd_config>characters_voice\human_03\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_abakan \n
+      ammo_5.45x39_ap = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_rgd5 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="agr_bar_stalker_2" team_default = "1">
+    <name>agr_bar_stalker_2_name</name>
+    <icon>ui_npc_u_dolg_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Повалит любого кабана одной рукой.</bio>
+
+    <class>agr_bar_stalker_2</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2</visual>
+    <snd_config>characters_voice\human_03\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_abakan \n
+      ammo_5.45x39_ap = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_rgd5 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="agr_bar_stalker_3" team_default = "1">
+    <name>agr_bar_stalker_3_name</name>
+    <icon>ui_npc_u_dolg_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Жадный и злой, скучный и не интересный.</bio>
+
+    <class>agr_bar_stalker_3</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+	<money min="2000" max="8000" infinitive="0"/>
+    <visual>actors\stalker_dolg\stalker_dolg_2</visual>
+    <snd_config>characters_voice\human_03\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_abakan_up2 = 1, scope \n
+      ammo_5.45x39_ap = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_f1 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="agr_bar_stalker_4" team_default = "1">
+    <name>agr_bar_stalker_4_name</name>
+    <icon>ui_npc_u_dolg_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Жадный и злой, скучный и не интересный.</bio>
+
+    <class>agr_bar_stalker_4</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2</visual>
+    <snd_config>characters_voice\human_03\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_abakan \n
+      ammo_5.45x39_ap = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_rgd5 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="agr_bar_stalker_5" team_default = "1">
+    <name>agr_bar_stalker_5_name</name>
+    <icon>ui_npc_u_dolg_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Жадный и злой, скучный и не интересный.</bio>
+
+    <class>agr_bar_stalker_5</class>
+    <community>dolg</community>
+
+    <rank>600</rank>
+    <reputation>80</reputation>
+
+    <visual>actors\stalker_dolg\stalker_dolg_2</visual>
+    <snd_config>characters_voice\human_03\dolg\</snd_config>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_abakan \n
+      ammo_5.45x39_ap = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_rgd5 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+        <specific_character id="agr_stalker_pda" team_default = "1">
+                <name>agr_stalker_pda_name</name>
+                <icon>ui_npc_u_neutral_2_mask</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>.</bio>
+
+                <class>agr_stalker_pda</class>
+                <community>stalker</community>
+
+                <rank>100</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+                <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+		agr_mechanic_pda \n
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+	#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+        <specific_character id="agr_stalker_pda_for_secret_trader" team_default = "1">
+                <name>agr_stalker_pda_for_secret_trader_name</name>
+                <icon>ui_npc_u_neutral_2_mask</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>.</bio>
+
+                <class>agr_stalker_pda_for_secret_trader</class>
+                <community>stalker</community>
+
+                <rank>100</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+                <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+		agr_pda_for_secret_trader \n
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+	#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+        <specific_character id="agr_stalker_map_animals" team_default = "1">
+                <name>agr_stalker_map_animals_name</name>
+                <icon>ui_npc_u_neutral_2_mask</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>.</bio>
+
+                <class>agr_stalker_map_animals</class>
+                <community>stalker</community>
+
+                <rank>100</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+                <snd_config>characters_voice\human_02\stalker\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+		agr_map_animals \n
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+	#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+        <specific_character id="agr_stalker_scientist" team_default = "1">
+                <name>agr_stalker_scientist_name</name>
+                <icon>ui_npc_u_neutral_2_mask</icon>
+                <map_icon x="1" y="0"></map_icon>
+                <bio>.</bio>
+
+                <class>agr_stalker_scientist</class>
+                <community>stalker</community>
+
+                <rank>100</rank>
+                <reputation>80</reputation>
+
+                <visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+                <snd_config>characters_voice\human_01\stalker\</snd_config>
+
+                <supplies>
+                        [spawn] \n
+                </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+    <start_dialog>hello_dialog</start_dialog>
+    <actor_dialog>agr_stalker_scientist_quest</actor_dialog>
+    <actor_dialog>agr_stalker_mechanic_quest_complete</actor_dialog>
+  </specific_character>
+  
+  <specific_character id="agr_dolg_blockpost_commander" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_dolg_2_mask</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>agr_dolg_blockpost_commander</class>
+    <community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_02\dolg\</snd_config>
+
+    <rank>600</rank>
+    <reputation>0</reputation>
+	<money min="1500" max="3500" infinitive="0"/>
+    <visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj = 1 \n
+      wpn_pm = 1 \n
+      ammo_9x18_fmj = 1 \n
+      grenade_rgd5 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+</xml>

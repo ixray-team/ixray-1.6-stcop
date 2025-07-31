@@ -1,0 +1,87 @@
+function set_dest_smart_cover(cover_id)
+	local object = level_object_by_sid(44444)
+	object:set_dest_smart_cover(cover_id)
+end
+
+function set_dest_loophole(loophole_id)
+	local object = level_object_by_sid(44444)
+	object:set_dest_loophole(loophole_id)
+end
+
+function set_smart_cover_target(id)
+	local object = level_object_by_sid(44444)
+	if id == "actor" then
+		object:set_smart_cover_target(db.actor)
+	elseif id ~= nil then
+		object:set_smart_cover_target(patrol(id):point(0))
+	else
+		object:set_smart_cover_target()
+	end
+end
+
+function in_loophole_fov(id)
+	local object = level_object_by_sid(44444)
+	if id == "actor" then
+		printf("in_loophole_range  ======  [%s]", tostring(object:in_loophole_fov(db.actor:position())))
+	else
+		printf("in_loophole_range  ======  [%s]", tostring(object:in_loophole_fov(patrol(id):point(0))))
+	end
+end
+
+function in_loophole_range(id)
+	local object = level_object_by_sid(44444)
+	if id == "actor" then
+		printf("in_loophole_range  ======  [%s]", tostring(object:in_loophole_range(db.actor:position())))
+	else
+		printf("in_loophole_range  ======  [%s]", tostring(object:in_loophole_range(patrol(id):point(0))))
+	end
+end
+function set_dest_smart_cover(cover_id)
+	local object = level_object_by_sid(44444)
+	object:set_dest_smart_cover(cover_id)
+end
+
+
+function set_smart_cover_target_selector(use)
+	local object = level_object_by_sid(44444)
+	if use ~= nil then		
+		object:smart_cover_setup_target_selector(target_selector)
+		return
+	end
+	object:smart_cover_setup_target_selector(nil)
+end
+
+local cover_state = "idle_target"
+
+function change_cover_state(state)
+	cover_state = state
+end
+
+function target_selector (obj)
+	printf("target_selector:using state [%s] for npc[%s]!!!", cover_state, obj:name())		
+	if cover_state == "idle_target" then		
+		obj:smart_cover_setup_idle_target()	
+	elseif cover_state == "lookout_target" then
+		obj:smart_cover_setup_lookout_target()	
+	elseif cover_state == "fire_target" then
+		obj:smart_cover_setup_fire_target()	
+	elseif cover_state == "fire_no_lookout_target" then
+		obj:smart_cover_setup_fire_no_lookout_target()
+	end	
+end
+
+function movement_target_reached()
+	local object = level_object_by_sid(44444)
+	printf("movement_target_reached() ======  [%s]", tostring(object:movement_target_reached()))
+end
+
+function set_dest_level_vertex_id()
+	local object = level_object_by_sid(44444)
+	object:set_dest_level_vertex_id(object:level_vertex_id())
+end
+
+function set_dest_level_vertex_id_by_path(path)
+	local object = level_object_by_sid(44444)
+	object:set_dest_level_vertex_id(patrol(path):level_vertex_id(0))	
+end
+
