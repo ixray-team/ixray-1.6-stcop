@@ -251,7 +251,8 @@ protected:
 
 	u32							m_animation_slot;
 
-	HUD_SOUND_COLLECTION_LAYERED m_sounds;
+	HUD_SOUND_COLLECTION		m_sounds;
+	HUD_SOUND_COLLECTION_LAYERED m_layered_sounds;
 	InertionData				m_current_inertion;
 	HudLightTorch				m_HudLight;
 	float						m_nearwall_dist_max;
