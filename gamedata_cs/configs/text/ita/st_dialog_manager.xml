@@ -1,0 +1,1653 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="dm_intro_1">
+		<text>Come butta? Da queste parti non capita spesso di ricevere un saluto... specie di questi tempi и piщ facile beccarsi un proiettile.</text>
+	</string>
+	<string id="dm_intro_2">
+		<text>Benvenuto! Mi fa piacere vedere un umano, invece dei soliti canneti e dei mostri.</text>
+	</string>
+	<string id="dm_intro_3">
+		<text>Salve! Sei nuovo delle Paludi? Io sono venuto qui dopo l'emissione e da allora non ce l'ho piщ fatta ad andarmene.</text>
+	</string>
+	<string id="dm_intro_4">
+		<text>Un volto nuovo in questo schifo! Benvenuto!</text>
+	</string>
+	<string id="dm_intro_5">
+		<text>Ciao! Hai un secondo? Mi sto annoiando a morte...</text>
+	</string>
+	<string id="dm_intro_6">
+		<text>Dammi un cinque, fratello! Sembri un tipo davvero simpatico!</text>
+	</string>
+	<string id="dm_intro_7">
+		<text>Ti piace il panorama, eh? Non cambia mai, per otto chilometri. Dappertutto, solo rovine e mostri che sfasciano tutto. </text>
+	</string>
+	<string id="dm_intro_8">
+		<text>E come ci sei finito tu in questo buco, eh? Se vuoi andartene, ti conviene assoldare una guida.</text>
+	</string>
+	<string id="dm_intro_9">
+		<text>Ehi, sei nuovo di qui? Ascolta il mio consiglio: fai attenzione alle zone palustri, possono ingoiarti in un attimo! E stai lontano anche dai sentieri, se non vuoi beccarti un proiettile.</text>
+	</string>
+	<string id="dm_intro_10">
+		<text>Non sono qui da molto, ma questo posto mi ha giа stufato. Purtroppo, uscirne non и facile come entrarci.</text>
+	</string>
+	<string id="dm_intro_11">
+		<text>Salve, amico mio! Anche tu ti stai nascondendo? Qui attorno si nascondono tutti: chi dal passato, chi da se stesso...</text>
+	</string>
+	<string id="dm_intro_12">
+		<text>Prima volta nelle Paludi? Allora ascoltami bene: quelli a cui devi fare piщ attenzione sono gli umani. Mostri e sabbie mobili non sono nulla al confronto. Resta nei canneti e vivrai piщ a lungo.</text>
+	</string>
+	<string id="dm_about_0">
+		<text>Dannazione a queste zanzare! Ecco una vera anomalia: queste cose pungono anche attraverso gli abiti piщ pesanti! E le altre attrazioni locali non sono da meno: in questa palude vivono cose che possono conciarti per le feste, mi capisci?</text>
+	</string>
+	<string id="dm_about_1">
+		<text>Non и facile vivere da soli nella Zona, quest'area poi и la peggiore. Non ce la faccio piщ a vivere sempre nel terrore. Voglio unirmi a qualche fazione, ma non и che ci sia molta scelta: o qualche banda, oppure gli stalker. I criminali non mi piacciono... altrimenti non sarebbero criminali, credo, no? Quei tipi sono capaci di ammazzarti cosм, soltanto per gioco. Preferirei unirmi agli stalker... secondo te mi prenderebbero con loro? Ah, ma come diavolo potresti saperlo?</text>
+	</string>
+	<string id="dm_about_2">
+		<text>Questo posto и una dimora di sbandati, indesiderabili persino per i banditi della Zona. Un paio di volte ho visto le pattuglie degli stalker, in tuta mimetica blu: li chiamano Blue Sky, o Clear Sky, o qualcosa del genere. Quei ragazzi dovrebbero prendere le cose piщ alla leggera! La posizione del loro campo и segreta... chissа cosa nascondono da quelle parti.</text>
+	</string>
+	<string id="dm_about_3">
+		<text>Dannazione! Ho le calze zuppe, i piedi ricoperti di sanguisughe e la maglietta in decomposizione per l'umiditа! Cosa non darei per una bella ragazza, un bagno caldo, degli abiti asciutti e un bicchiere di cognac accanto a un camino! E invece ad aspettarmi ho soltanto un bicchiere di vodka vicino al fuoco e i lamenti degli altri rifiuti come me. Anzi, neppure quello, a meno che non entri in qualche banda.</text>
+	</string>
+	<string id="dm_about_4">
+		<text>Conosci quelli della Clear Sky? Quel dannato clan и impenetrabile, sembrano tutti agenti segreti o robe del genere. Io so della loro esistenza solo grazie a qualche frammento di comunicazioni radio. E ai racconti di qualche stalker.</text>
+	</string>
+	<string id="dm_about_5">
+		<text>Uno stalker non puт scendere piщ in basso di queste Paludi. Qui si trovano solo persone in fuga da problemi ancora peggiori del terreno infido, dei mutanti e della desolazione. Fuori di qui molti di loro sarebbero a marcire in prigione, oppure direttamente sottoterra. Io? Io non andavo d'accordo con quelli dell'esercito, cosм ho girato attorno alla Zona per un bel po' di tempo, fino a quando l'emissione non ha aperto l'accesso a queste zone. Questo и un ottimo rifugio.</text>
+	</string>
+	<string id="dm_about_6">
+		<text>Ti dico una cosa, amico: se c'и un posto sulla Terra dove puoi "smarrirti", sono le Paludi. Qui puoi girare in tondo per settimane! Solo che molti non ce la fanno: se non ti beccano i mostri, lo fanno le sabbie mobili, e ce n'и in abbondanza di entrambi. Io bazzico questa zona fin dalla scoperta di questo sentiero, и il miglior nascondiglio che si possa trovare, se riesci a restare vivo.</text>
+	</string>
+	<string id="dm_about_7">
+		<text>Queste Paludi sono piene di vita, e non mi riferisco solo ai mutanti. Ci sono un sacco di stalker, alcuni fuggono dalla legge, altri da ex compari. E sono venuti nel posto giusto! I vuoti nei campi di anomalia sono stati appena scoperti, ci sono ancora molti luoghi sconosciuti. Solo che vivere qui non и facile: ci sono troppe mele marce di questi tempi, tutti pronti a farti la pelle e a depredare il tuo cadavere senza neppure battere ciglio.</text>
+	</string>
+	<string id="dm_about_8">
+		<text>I mostri, le paludi, l'intera dannata Zona! Non ce la faccio piщ a vagabondare in questi acquitrini! Non voglio farmela sotto dalla paura ogni volta che sento un fruscio fra le canne, o un elicottero in cielo! Forse dovremmo unirci, formare una specie di clan e conquistare un pezzo di terreno all'asciutto. Non sarebbe meglio avere qualche amico pronto ad aiutarti, e un bel fuoco acceso la notte? Magari con una bella zuppa di canne, o un po' di carne ad arrostire. Mancherebbe solo una chitarra per avere il paradiso!</text>
+	</string>
+	<string id="dm_about_9">
+		<text>Qui ogni giorno и uguale all'altro: reietti che si nascondono fra i canneti, persone che affogano nelle paludi, elicotteri che volano qua sopra e ammazzano gli stalker. Oh, e a volte ci sono quelli in tuta mimetica blu, quelli della Clear Sky. Quel clan esiste da un bel po', ma se ne и saputo qualcosa soltanto di recente.</text>
+	</string>
+	<string id="dm_about_10">
+		<text>Prima dell'emissione, gli stalker se ne stavano alla larga da questo posto: troppe anomalie e troppe paludi, troppa umiditа e un fetore nauseabondo. E poi ci sono i mostri, e le zanzare, e queste dannate canne ovunque volgi lo sguardo. Perchй venire in un inferno del genere? Poi, perт, le cose sono cambiate: le anomalie si sono spostate e tutte le fazioni hanno voluto la loro vendetta, combattendo per i nuovi territori. E cosм adesso qui c'и un sacco di gente che vive meglio di prima, per quanto possa sembrare buffo. Piщ che altro rifiuti come me, con l'aggiunta di qualche pazzo convinto di poter diventare il padrone di tutto.</text>
+	</string>
+	<string id="dm_about_11">
+		<text>Maledizione, non ne posso piщ di vagare fra queste paludi! Purtroppo alcuni peccatucci di gioventщ non mi permettono di andarmene, mettiamola cosм. Mi piacerebbe unirmi a un clan, ma da queste parti ci sono soltanto bande di criminali...</text>
+	</string>
+	<string id="dm_about_12">
+		<text>Queste Paludi non sono un paradiso, poco ma sicuro... sono piщ l'inferno in terra, anche per gli standard della Zona. E io sono qui proprio per questo... per sfuggire a delle persone che ritenevano dovessi saldare un certo debito. Insomma, ho piщ possibilitа di sopravvivere qui, che altrove: fra questi canneti non mi troveranno neppure fra cento anni!</text>
+	</string>
+	<string id="dm_about_13">
+		<text>Di recente ha fatto la sua comparsa una nuova fazione, la Clear Sky. Non so che cos'abbiano per la testa, ma posso assicurarti che sono dei nerd paurosi. Come sarebbe che cosa intendo dire? Sono degli scienziati, dei capoccioni insomma! Il che comunque non gli impedisce di maneggiare le armi con una certa perizia. E se un uomo и armato e ha anche un cervello nella testa, beh, pensaci due volte, prima di scontrarti con lui.</text>
+	</string>
+	<string id="dm_action_info_0">
+		<text>Senti, un consiglio: fai poche domande e vedrai che vivrai piщ a lungo. Parlo per esperienza personale! Io stavo sempre a chiedere, finchй non ho finito per sapere troppo: e ora devo restare nascosto qui. Anzi, и stata persino una fortuna finire in questo posto, grazie all'emissione! Si puт girare per settimane nelle paludi senza incontrare nessuno, eccezion fatta per cinghiali e mostri carnivori.</text>
+	</string>
+	<string id="dm_action_info_1">
+		<text>Dannazione! La mia solita sfortuna... ho sempre succhiato il midollo della vita, e ora и lei a succhiare il mio. Credi che sia qui per una mia scelta? Nossignore: io andavo forte nella Zona, stavo facendo soldi a palate! Poi, perт, ho dovuto levarmi di torno quando i miei compari hanno pensato bene di pugnalarmi alle spalle. Per quale motivo? Beh, non sono affari tuoi.</text>
+	</string>
+	<string id="dm_action_info_2">
+		<text>Ho perso una brutta partita a carte con dei criminali del posto... ci sono andato dentro pesante e mi son giocato la mia vita. Dato che non mi andava di saldare il debito, mi sono trasferito qui. E durante il cammino ho pure “litigato” con i ragazzi dell’esercito... E adesso mi ritrovo inchiodato in questo buco.</text>
+	</string>
+	<string id="dm_action_info_3">
+		<text>Prima di venire qua, ero finito in gattabuia, per colpa di un tipo che mi aveva incastrato. Dato che marcire in cella non era una prospettiva allettante, io e un paio di amici abbiamo deciso di evadere. Abbiamo ammazzato una guardia e siamo corsi dritti fino alla Zona. Quando siamo arrivati qui, me ne sono andato per i fatti miei: gli altri erano pazzi da legare. E cosм ora me ne sto nascosto qui.</text>
+	</string>
+	<string id="dm_action_info_4">
+		<text>Che sono tutte queste domande, eh? Come faccio a sapere che non vuoi incastrarmi? OK, OK, calma... tanto non puт trovarmi nessuno, qui. E va bene, ascolta: sono stato cosм stupido da derubare dei ladri. Quando ho capito che avrebbero fatto di tutto, e intendo proprio di tutto, per riavere il malloppo, sono venuto dritto alla Zona. Quei bastardi perт mi hanno trovato e hanno spedito un paio di sicari, che per fortuna sono riuscito a stendere... Ora sto pensando di creare la mia banda: sento che un giorno faremo il colpo grosso! </text>
+	</string>
+	<string id="dm_action_info_5">
+		<text>Adoravo i film d’azione... ed и per questo che sono venuto nella Zona, per giocare a fare l’eroe di Hollywood. Ovviamente le cose sono andate in maniera diversa... ovunque mi girassi, c’erano degli avversari. Ben presto mi sono ritrovato a fuggire come un topo di fogna. Certo, qui morire и facile, ma и anche facile sparire fra le canne per il resto della vita. Questo non и un film, ma un inferno di carne e sangue.</text>
+	</string>
+	<string id="dm_action_info_6">
+		<text>La mia и una storia semplice: mi sono scontrato con un pezzo grosso e lui mi ha messo una taglia sulla testa. Ben presto ho fatto la conoscenza di tutti i cacciatori di taglie della Zona e sono fuggito qui. Quando le acque si saranno calmate, troverт quel bastardo e scambierт due parole con lui.</text>
+	</string>
+	<string id="dm_intro_13">
+		<text>Che piacere vederti!</text>
+	</string>
+	<string id="dm_intro_14">
+		<text>Salve!</text>
+	</string>
+	<string id="dm_intro_15">
+		<text>Ciao!</text>
+	</string>
+	<string id="dm_intro_16">
+		<text>Sм?</text>
+	</string>
+	<string id="dm_intro_17">
+		<text>Ti serve aiuto?</text>
+	</string>
+	<string id="dm_intro_18">
+		<text>Posso aiutarti?</text>
+	</string>
+	<string id="dm_intro_19">
+		<text>Benvenuto nelle Paludi!</text>
+	</string>
+	<string id="dm_intro_20">
+		<text>Segui il mio consiglio... Attento agli acquitrini e ai mostri.</text>
+	</string>
+	<string id="dm_intro_21">
+		<text>Finalmente un volto nuovo!</text>
+	</string>
+	<string id="dm_intro_22">
+		<text>Segui il mio consiglio, amico, e non allontanarti dai canneti.</text>
+	</string>
+	<string id="dm_intro_23">
+		<text>Se vuoi uscire vivo da queste paludi, prima trovati una guida.</text>
+	</string>
+	<string id="dm_about_14">
+		<text>Per parecchio tempo, le Paludi erano precluse a gran parte degli stalker. Campavamo tranquilli, esplorando il terreno e tenendo a bada i mutanti. L'emissione ha cambiato tutto. Sono arrivate le Anomalie, accompagnate da volti nuovi, arrivati per lo piщ dal Cordon. Di certo devi scappare da qualcosa di serio per essere venuto in un posto del genere...</text>
+	</string>
+	<string id="dm_about_15">
+		<text>Le Paludi sono un rifugio per i rinnegati d'ogni sorta. Qui arriva gente di ogni tipo: lupi solitari, reietti di varie fazioni e semplici criminali. Noi li accogliamo tutti quanti, alcuni a braccia aperte e altri a calci nei denti.</text>
+	</string>
+	<string id="dm_about_16">
+		<text>Dobbiamo fare qualcosa prima che sia troppo tardi! И come se la Zona si stesse risvegliando dopo un lungo sonno. L'ultima emissione и stata cosм forte che pensavo fosse arrivata la fine del mondo. Non possiamo stare qui a girarci i pollici aspettando che arrivi una vera catastrofe. Non voglio neanche immaginarmi cosa accadrebbe dopo. Basti dire che, al confronto, l'esplosione di Chernobyl sembrerebbe un petardo innocente.</text>
+	</string>
+	<string id="dm_about_17">
+		<text>Conduciamo delle ricerche sull'attivitа anomala locale. Le Paludi sono un luogo perfetto dove farlo. Abbiamo giа localizzato una serie di punti d'attenzione e ne scopriamo di nuovi ogni giorno che passa. Se solo avessimo piщ finanziamenti...</text>
+	</string>
+	<string id="dm_about_18">
+		<text>Questo posto non и affatto come la Zona. Ci sono parecchi mostri, и vero, ma pochissime anomalie. A parte questo и una palude normalissima, come tutte le altre.</text>
+	</string>
+	<string id="dm_about_19">
+		<text>Una volta le Paludi erano un posto tranquillo. Nessuno veniva a darci fastidio o a cercare manufatti. Allo stesso tempo, c'erano le stesse possibilitа di morire che nel resto della Zona. Questa giungla di canneti e di acquitrini non ha mai attirato nessuno. Ma i tempi cambiano. Non so cosa stia succedendo fuori dalle Paludi, ma sta arrivando gente bizzarra di ogni tipo.</text>
+	</string>
+	<string id="dm_about_20">
+		<text>Non c'и molto da dire: ci sono acquitrini, canneti e mostri. Ah, e anche delle zanzare gigantesche. Il Cordon si trova a nordovest, mentre l'Agroprom a nord. A ovest e a sud, oltre i confini della Zona, ci sono terre libere.</text>
+	</string>
+	<string id="dm_about_21">
+		<text>Fino a poco tempo fa, questo era un posto tranquillo. C'eravamo solo noi, le paludi, i cinghiali e i mostri carnivori. Ora si sta affollando, e della gente sbagliata, se vuoi il mio parere. La brava gente non ha motivo di venire qui. Beh, senza offesa, tu sei un'eccezione.</text>
+	</string>
+	<string id="dm_about_22">
+		<text>Possiamo ringraziare solo i nostri capi, Lebedev e Beanpolev, per tutti i nostri guai. Il nostro accampamento и un ex villaggio che fu inondato ai tempi dei sovietici, quando fu costruita la riserva d'acqua. Non compare su nessuna mappa, quindi cercare di trovarci senza una guida и un'idea alquanto dissennata.</text>
+	</string>
+	<string id="dm_about_23">
+		<text>Siamo venuti qui per allontanarci da attenzioni indesiderate. Perchй? Avevamo i nostri motivi. Lebedev o Beanpolev te lo potranno dire, se ne avranno voglia. Qui ci nascondiamo persino dalla gente delle Paludi. Se vuoi raggiungere la base non viaggiare da solo, ma trovati una guida. Cosм sarai molto piщ al sicuro.</text>
+	</string>
+	<string id="dm_about_24">
+		<text>Questo posto и umido, freddo, squallido e puzza da morire. Cos'altro vuoi sapere? Delle storie su dei mostri che trascinano la gente in fondo alla palude? O di sabbie mobili in cui si affonda in un minuto esatto?</text>
+	</string>
+	<string id="dm_about_25">
+		<text>Questo и anche un ottimo posto dove nascondersi. Da chi? Da tutti: banditi, soldati o chiunque ti abbia messo gli occhi addosso. Se non vuoi farti trovare, salta tra i canneti e il gioco и fatto. Certo, non in senso letterale: ci sono troppi luoghi pericolosi dove и facile cadere in trappola, abitati da parecchie creature malvagie. Un passo falso e hasta la vista, baby!</text>
+	</string>
+	<string id="dm_about_26">
+		<text>Potresti vagare tra questi acquitrini per giorni, senza arrivare da nessuna parte. Sembra tutto uguale: acqua, canneti e un po' di vegetazione qua e lа. Forse и per questo che Lebedev e Beanpolev hanno scelto di accamparsi qui. Nemmeno gli elicotteri dell'esercito potrebbero individuarci, quaggiщ. И cosм che siamo riusciti a fare affari liberamente, lontano da occhi indiscreti.</text>
+	</string>
+	<string id="dm_about_27">
+		<text>Ci nascondiamo qui da talmente tanto che a volte ho l'impressione che il mondo sia solo una grossa palude. Ho sentito dire che una volta questa era una terra normale, con villaggi, campi e tutto il resto. Poi iniziarono a costruire una diga per lo stabilimento idroelettrico, e hanno finito con l'inondare la zona. O hanno sbagliato i calcoli o hanno toppato e basta, ma c'era davvero troppa acqua. Parecchia gente non и stata nemmeno fatta evacuare in tempo. E cosм ora resta solo una gigantesca palude.</text>
+	</string>
+	<string id="dm_about_28">
+		<text>Guardati attorno. Delle Paludi hai visto tutto quello che c'и da vedere. Ovunque ti giri c'и la stessa dannata cosa: canneti, edifici mezzi sprofondati e zone di terra secca. Puoi anche scordarti di trovare la nostra base, anche se sai quello che stai cercando. E considerato il numero di persone che sanno della Clear Sky, non abbiamo paura di essere scoperti.</text>
+	</string>
+	<string id="dm_about_29">
+		<text>Ci siamo stabiliti qui per un motivo ben preciso. Prima dell'emissione, questa era la parte piщ desolata e inaccessibile della Zona. Certo, ci si poteva spingere verso il centro, ma sarebbe stato impossibile sopravvivere a un viaggio simile. Puoi considerare quest'area come la periferia: a est si trova il Cordon, a nord l'Agroprom e nelle altre direzioni... lм finisce la Zona.</text>
+	</string>
+	<string id="dm_about_30">
+		<text>Sм, lo chiedi alla persona giusta. Nessuno conosce le Paludi come la Clear Sky. Siamo qui da... eh eh, e chi lo sa piщ? И difficile tenere il conto del tempo in un posto simile. Qui lo scorrere del tempo и cupo e malinconico quanto il panorama. Presto anche tu perderai il conto dei giorni. Comunque, se vuoi andartene da qui dovrai trovare un uomo della Clear Sky disposto a farti da guida. Darti delle indicazioni sarebbe del tutto inutile.</text>
+	</string>
+	<string id="dm_action_info_7">
+		<text>Questo и il nostro lavoro. L'emissione ci ha dato parecchio da fare. A dire la veritа non siamo veri e propri combattenti ma, in tempi come questi, se si vuole sopravvivere и meglio saper usare una pistola. Ho la sensazione che la mia sarа presto in azione.</text>
+	</string>
+	<string id="dm_action_info_8">
+		<text>Sono in missione per conto di Lebedev. Spiacente ma le mie labbra sono sigillate: affari riservati del clan.</text>
+	</string>
+	<string id="dm_action_info_9">
+		<text>Mi sto preparando alla prossima missione. Oggigiorno c'и troppa gentaglia nelle Paludi. Tutti pensano che la forza giustifichi ogni azione. Si dimenticano che per ogni forza ne esiste una contraria e piщ forte.</text>
+	</string>
+	<string id="dm_action_info_10">
+		<text>Al momento sto oziando, ma non per molto ancora. La Clear Sky ha parecchio lavoro da fare, ora piщ che mai.</text>
+	</string>
+	<string id="dm_action_info_11">
+		<text>Mi sto preparando per una missione nelle zone piщ profonde delle Paludi. La Zona sta diventando piuttosto irrequieta, quindi sarа meglio che muoviamo le chiappe. Ricorda le mie parole, stalker: ci attendono grandi cambiamenti.</text>
+	</string>
+	<string id="dm_action_info_12">
+		<text>Come tutti noi, esploro la Zona. И la cosa piщ straordinaria in cui l'umanitа sia mai incappata. Non dovremmo combatterla, ma studiarla, cercando di capirla e di coesistervi in pace. Ricorda le mie parole: la Zona non se ne andrа.</text>
+	</string>
+	<string id="dm_action_info_13">
+		<text>Facciamo tutti la stessa cosa: ricerche scientifiche. La Zona deve essere studiata. Ogni giorno trova un modo nuovo per sbalordirmi. Qui ci sono cose splendide, e altrettante terribili. I manufatti possono darti solo una vaga idea: gli stalker piщ esperti parlano di un Monolite al centro della Zona, in grado di realizzare ogni tuo desiderio. Mi piacerebbe trovarlo, un giorno.</text>
+	</string>
+	<string id="dm_action_info_14">
+		<text>I miei strumenti hanno registrato un'elevata concentrazione di energia, il che significa che in questa zona si trovano parecchi manufatti o anomalie. Ho eseguito le misurazioni e le ho inviate a Beanpolev. Ora attendo altri ordini.</text>
+	</string>
+	<string id="dm_action_info_15">
+		<text>Al momento nulla, ma ho parecchie responsabilitа. Siamo scienziati, tecnici e soldati al tempo stesso. Oggi combattiamo e domani eseguiamo una spedizione scientifica, и cosм che funziona.</text>
+	</string>
+	<string id="dm_action_info_16">
+		<text>Mi sono unito alla Clear Sky per caso. Un giorno stavo sprofondando nel pantano, quando questi ragazzi mi hanno tirato fuori e mi hanno portato alla loro base. Ho scambiato due parole con Lebedev, che mi ha proprio convinto. Sa piщ cose lui sulla Zona di ciт che gli altri credono di sapere. Lo scopo del clan sembra essere meritevole, quindi mi sono unito e ho iniziato a fare tutto il possibile per rendermi utile.</text>
+	</string>
+	<string id="dm_action_info_17">
+		<text>Sono membro da molto tempo, uno dei primi del clan. Ho studiato la Zona delle Paludi fin dai suoi inizi. Eseguo varie misurazioni, traccio dei grafici, eseguo la manutenzione sulle attrezzature e via dicendo. Ho sparato a qualche mostro, ma sempre a scopo di ricerca. In questi giorni dobbiamo impugnare le pistole sempre piщ spesso.</text>
+	</string>
+	<string id="dm_action_info_18">
+		<text>Come tutti da queste parti, osserviamo e raccogliamo dati. Credo che Beanpolev e Lebedev abbiano scoperto piщ cose sulla Zona che tutti noi messi insieme, ma raramente ne parlano a noi poveri soldati comuni. Noi ci preoccupiamo solo delle prioritа piщ immediate, mentre loro si occupano del quadro generale.</text>
+	</string>
+	<string id="dm_action_info_19">
+		<text>Aspettiamo notizie dai nostri ragazzi. Si sono addentrati nelle Paludi per una missione. In tempi come questi, forse hanno bisogno del nostro aiuto.</text>
+	</string>
+	<string id="dm_cool_info_0">
+		<text>Molte cose son cambiate. L'emissione, innanzitutto, non ha mutato soltanto la Zona, ma anche tutti noi. Siamo piщ rabbiosi, o qualcosa del genere. Un attimo prima si и tutti amici, e quello dopo ci si punta la pistola alla testa. Oh, ma senti che assurditа sto dicendo. Ti conviene parlare con Lebedev.</text>
+	</string>
+	<string id="dm_cool_info_1">
+		<text>Avvengono sempre piщ emissioni... non ho mai visto nulla del genere. La Zona si sta scuotendo, mutando tutto quello che ci circonda. I sentieri giа battuti vengono inghiottiti in letali anomalie, mentre si aprono nuovi territori, prima inaccessibili. Anche le Paludi stanno diventando piщ avvicinabili. Scommetto che presto le fazioni scateneranno un putiferio per accaparrarsi queste terre.</text>
+	</string>
+	<string id="dm_cool_info_2">
+		<text>Come faccio a sapere se c'и qualcosa di nuovo? Viviamo in queste paludi come se fossimo su un altro pianeta. Ti conviene chiedere a chi non и del posto.</text>
+	</string>
+	<string id="dm_cool_info_3">
+		<text>Dicono che l'emissione ha raggiunto molti luoghi, non solo le Paludi. I luoghi dove vivevano gli stalker sono diventati labirinti di anomalia, e i luoghi a cui nessuno poteva accedere sono ora aperti alle esplorazioni e al saccheggio.</text>
+	</string>
+	<string id="dm_cool_info_4">
+		<text>Stando alle nostre ricerche, queste emissioni sempre piщ frequenti non portano nulla di buono. La Zona и diventata instabile. Questi nuovi cambiamenti scateneranno altre lotte per il possesso dei territori prima inaccessibili per via delle anomalie. Sta per succedere qualcosa, e di certo non sarа nulla di buono.</text>
+	</string>
+	<string id="dm_cool_info_5">
+		<text>Ho sentito dire che gli stalker del Cordon hanno dato una bella lezione ai ragazzi dell'esercito. Non so come ci siano riusciti, ma cercavi voci del genere, no? Vediamo che altro so... Hanno trovato un nascondiglio di vecchi veicoli, attrezzature e altri beni alla Discarica: roba che risale addirittura al 1986, l'anno dell'incidente originale. Si pensava che fosse contaminata, ma ora и diventata merce inestimabile. И esplosa cosм una vera e propria caccia all'oro, che ovviamente ha attirato anche un mucchio di banditi. Si tengono la Discarica bella stretta, scuoiando vivi i nostri fratelli stalker.</text>
+	</string>
+	<string id="dm_cool_info_6">
+		<text>L'emissione ha portato delle novitа terribili. И stata seguita da alcuni giorni di calma, ma ora и chiaro che si trattava solo della calma prima della tempesta. Molte fazioni stanno iniziando a lottare, compresa la nostra. Combatteranno per la terra, anche se la nostra causa и molto, molto diversa...</text>
+	</string>
+	<string id="dm_intro_24">
+		<text>Ehi, fratello!</text>
+	</string>
+	<string id="dm_intro_25">
+		<text>Hai delle domande? Sono qui per aiutarti.</text>
+	</string>
+	<string id="dm_intro_26">
+		<text>Chiedi pure, sono in vena di rispondere alle domande.</text>
+	</string>
+	<string id="dm_intro_27">
+		<text>Salve, stalker! Benvenuto al Cordon!</text>
+	</string>
+	<string id="dm_intro_28">
+		<text>И da un po' che non si vedeva un mercenario consumato al Cordon. Tu sei uno di loro, vero?</text>
+	</string>
+	<string id="dm_intro_29">
+		<text>Salve, fratello! Benvenuto nel nostro angolo di boschi!</text>
+	</string>
+	<string id="dm_intro_30">
+		<text>И bello incontrare un fratello d'arme!</text>
+	</string>
+	<string id="dm_intro_31">
+		<text>Ciao! Stai vicino a noi stalker, perchй in questi giorni i banditi e l'esercito sono molto tesi.</text>
+	</string>
+	<string id="dm_about_31">
+		<text>Il Cordon и quel che и: la regione piщ selvaggia e meno popolata della Zona, e questo и tutto. Qui ci sono poche anomalie, quasi nessun manufatto degno di nota e i mostri sono pressochй innocui. Ci sono strade che portano alla Discarica e alla Valle Oscura. Si puт anche arrivare alle Paludi, ma perchй mai si dovrebbe andare fino a lм?</text>
+	</string>
+	<string id="dm_about_32">
+		<text>Una volta questo era un posto tranquillo. C'erano abitudini ben radicate: i novellini si limitavano a fare quello che sapevano fare, gli stalker raccoglievano manufatti e li vendevano a Sidorovich, e i militari fornivano "protezione" dai banditi. I soldati erano per lo piщ brava gente. Ma poi tutto и cambiato. Un gruppo di sciocchi и arrivato dalla Discarica e ha iniziato a fare affari con il comandante. Ora non esiste piщ alcun ordine, e non ci si puт piщ fidare dei militari. Eppure, spesso la sfortuna porta fortuna: gli stalker hanno unito le forze e l'esercito non puт piщ fare il prepotente.</text>
+	</string>
+	<string id="dm_about_33">
+		<text>Stai scherzando? И impossibile che una vecchia canaglia come te non abbia mai sentito parlare del Cordon. Questo и il punto di partenza per i principianti. Da qui si arriva a zone piщ pericolose, come la Discarica, la Valle Oscura e le Paludi. Gli unici pericoli che abbiamo qui sono i banditi e l'esercito, che si stanno montando la testa. Ma presto sistemeremo anche loro... gli stalker hanno unito le forze apposta.</text>
+	</string>
+	<string id="dm_about_34">
+		<text>Bene, ecco come stanno le cose. Oltre l'avamposto, c'и il confine della Zona: il passato da cui tutti proveniamo. Non ci sono mostri o anomalie, ma questo lo sai giа. A ovest si trovano le Paludi. Laggiщ c'и la strada che porta al villaggio di principianti e al vecchio deposito di trasporti dove si trovano i militari. Subito dopo quel ponte si trova un accampamento di stalker, dopodichй и territorio dei banditi e della Freedom: la Discarica e la Valle Oscura. Direi che и tutto.</text>
+	</string>
+	<string id="dm_about_35">
+		<text>L'esercito и solo un ammasso di luridi truffatori. Il loro lavoro и di sigillare tutti gli accessi alla Zona. Ma ti sei mai chiesto come facciamo a procurarci ogni sorta di bene dal mondo esterno e come quest'ultimo riceva manufatti e altri oggetti illegali della Zona? Ma certo, passa tutto dai ragazzi dell'esercito e puoi stare certo che ogni transazione contribuisce a gonfiargli il portafogli. Una volta si pagava il pizzo e loro mantenevano la parola, ma non и piщ cosм. Che si paghi o no, non si и mai al sicuro. Il fatto и che gli stalker, che avrebbero potuto infilare la testa nella sabbia come al solito, hanno iniziato a ribellarsi ai militari. Si dice che abbiano persino preso in ostaggio il comandante dell'avamposto.</text>
+	</string>
+	<string id="dm_about_36">
+		<text>Non и molto diverso dagli altri posti. Alcuni stalker sono alla ricerca di cibo e altri di altri stalker da derubare. Rischiamo le vite a esplorare le anomalie e ad affrontare i mostri per un tozzo di pane e a che pro? Solo per vedercelo strappato di mano. Non sai di chi sto parlando? Ma dei militari, и ovvio. Oggi se ne stanno buoni perchй abbiamo preso in ostaggio il loro comandante. Non possono fare rapporto al personale generale, perchй questo porterebbe a un'ispezione e l'ultima cosa che vogliono и che i loro sporchi trucchi vengano alla luce. И cosм che li abbiamo messi zitti e buoni.</text>
+	</string>
+	<string id="dm_about_37">
+		<text>Gli stalker si stanno unendo. Quando il gioco si fa duro, non ha senso giocare da soli. Da una parte l'esercito scopre i denti e dall'altra i banditi ci tengono per il collo. Quindi, tra l'incudine e il martello, abbiamo deciso di ribellarci. Che vengano, se vogliono... saremo pronti a rispondere.</text>
+	</string>
+	<string id="dm_about_38">
+		<text>Non ti racconterт le solite fesserie da stalker sulle anomalie, le radiazioni e i mostri. Ecco le vere novitа: gli stalker e l'esercito sono entrati in conflitto dopo che qualcuno si и perso un bel pezzo di bottino. Cosм gli stalker hanno preso in ostaggio il comandante dell'esercito. I soldati hanno perso l'entusiasmo alla svelta. Certo, il loro capo era stato abbastanza furbo da nascondere la merce di valore alle sue truppe. Ma ora sono bloccati: non possono chiedere aiuto all'esterno e non possono attaccare gli stalker senza perdere il comandante e i suoi soldi. A parte questo, ci sono sempre piщ delinquenti provenienti dalla Discarica. Direi che questo и tutto. Abbi cura di te.</text>
+	</string>
+	<string id="dm_about_39">
+		<text>Ultimamente sono successe parecchie cose. Che tu ci creda o no, gli stalker sono riusciti a impossessarsi del Cordon per la prima volta nella storia. Hanno persino trasformato la vecchia fattoria in una base. Chi avrebbe mai pensato che sarebbe successo? Se si va avanti cosм, la Zona sarа controllata dagli stalker.</text>
+	</string>
+	<string id="dm_about_40">
+		<text>Ora la vita al Cordon и piuttosto dura. Ci siamo messi contro sia i militari che i banditi, e cominciamo ad averne abbastanza di entrambi. I soldatini ci stanno facendo veramente arrabbiare e i fessi avidi hanno messo gli occhi sulle nostre terre. E comunque qui siamo piщ al sicuro che in molti altri posti.</text>
+	</string>
+	<string id="dm_about_41">
+		<text>Le fazioni della Zona sono in guerra tra loro: combattono per ottenere nuovi territori e nuovi campi di manufatti. Il Cordon non fa eccezione. L'esercito, i banditi e gli stalker, cioи noi, lottiamo l'uno contro gli altri. Per il momento vinciamo noi.</text>
+	</string>
+	<string id="dm_about_42">
+		<text>La Zona inizia al Cordon. Tutti i novellini partono da qui e impiegano un paio di mesi a imparare le basi del mestiere. A meno che uno non sia un completo idiota, и chiaro. Ma questo lo sai giа, no? Non mi sembri un principiante.</text>
+	</string>
+	<string id="dm_about_43">
+		<text>Una volta cooperavamo con i militari. Noi raccoglievamo e contrabbandavamo manufatti e loro chiudevano un occhio sui nostri traffici... A un prezzo. Poi si sono montati la testa. Saccheggiavano i nostri bottini e posizionavano dei banditi sui nostri sentieri. Abbiamo avuto quello che si potrebbe definire un "crollo". Ora la guerra imperversa su entrambi i fronti: quello dell'esercito e quello dei banditi.</text>
+	</string>
+	<string id="dm_about_44">
+		<text>Un po' di tempo fa i nostri ragazzi hanno trovato un manufatto di grande valore. Abbiamo perso cinque uomini per portarlo qui, e anche quelli che sono sopravvissuti non avevano un aspetto molto migliore. Il cliente doveva essere un pezzo grosso, perchй Sidorovich ha tenuto tutto sotto silenzio. I ragazzi stavano per completare la consegna, ma il comandante dell'avamposto ha deciso che voleva una fetta piщ grande di quella che gli spettava. Quel bastardo ha pagato alcuni banditi per tendere un'imboscata. Ora abbiamo perso i nostri ragazzi e il bottino. All'inizio avremmo voluto uccidere il comandante, poi abbiamo preferito tenerlo in ostaggio. Vogliamo solo quello che ci spetta, e prima o poi glielo tireremo fuori a suon di pugni.</text>
+	</string>
+	<string id="dm_action_info_20">
+		<text>Non sono diverso dagli altri: cerco di tirare a campare e di guadagnare qualcosa, nel frattempo. Quando prenderemo il controllo del Cordon, sarа un'altra storia! Sapevo che prima poi esercito e criminali avrebbero avuto il fatto loro... E poi, trafficare in manufatti sarа molto piщ facile.</text>
+	</string>
+	<string id="dm_action_info_21">
+		<text>Per ora faccio un po' di esperienza e metto da parte un po' di soldi. Non appena ne avrт abbastanza mi comprerт un bel cannone e una buona corazza, poi andrт dritto nel centro della Zona. Si dice che qualcuno ci sia giа arrivato, e abbia trovato l'Esauditore di desideri. Ecco dove andrт. E quando lo avrт trovato, puoi stare sicuro che non sbaglierт desiderio!</text>
+	</string>
+	<string id="dm_action_info_22">
+		<text>Ho sentito un sacco di storielle sulla Zona e sono stato cosм ingenuo da credervi, ma come ho presto imparato, viverle dall'interno и molto diverso. Ho scoperto di essere un osso molto meno duro di quel che pensassi. Qui и facile morire, mentre raccogliere manufatti non lo и affatto. Quello che mi mortifica di piщ, perт, и che in tutta la Zona non c'и un solo punto tranquillo. Anche quando dormo, resto per metа sveglio.</text>
+	</string>
+	<string id="dm_action_info_23">
+		<text>La Zona mi ha incantato. Passavo di qui, come un turista, e sono stato stregato. Il fatto и che qui le persone, amiche o nemiche che siano, sono persone vere! Il pericolo e la sensazione che la morte si nasconda dietro ogni angolo, fanno sentire vive noi canaglie di cittа! E ogni secondo che passa mi godo questa sensazione.</text>
+	</string>
+	<string id="dm_action_info_24">
+		<text>Sono qui per incontrare un amico. Sta portando dei tesori che abbiamo trovato insieme. Abbiamo fatto strade diverse e io sono arrivato un po' prima. No, di sicuro non si и perso... И un vero soldato. Forse ha fatto un giro lungo o qualcosa del genere. O forse ha incontrato un vecchio amico. Comunque non mi preoccupo, arriverа da un momento all'altro...</text>
+	</string>
+	<string id="dm_action_info_25">
+		<text>Un sacco di letame mi ha venduto una mappa per raggiungere una specie di nascondiglio, ma inizio a sospettare che si tratti di un raggiro. Ho perlustrato tutta la zona ma non ho trovato un solo manufatto. Lo ammazzo quel bastardo appena lo trovo!</text>
+	</string>
+	<string id="dm_action_info_26">
+		<text>Dopo l'ultima ricerca di manufatti me la prendo comoda. Ci siamo spinti fin quasi alla Barriera e abbiamo disposto alcune difese contro le bestie che provengono dal centro. Eravamo una grande squadra: Shaggy Alex, Lesha Homeboy, Moldey, tutti ragazzi in gamba. Io ho scelto dei manufatti niente male, li ho venduti per un bel gruzzolo e ho deciso di prendermi una pausa. Per rilassarsi, questo posto и adatto come qualsiasi altro.</text>
+	</string>
+	<string id="dm_cool_info_7">
+		<text>Ho sentito dire che un gruppo di stalker si и fatto strada fino al centro della Zona, un attimo prima che l'emissione colpisse. Chissа se sono riusciti a raggiungere l'Esauditore di desideri in tempo...</text>
+	</string>
+	<string id="dm_cool_info_8">
+		<text>Procurarsi i tesori non и mai stato cosм difficile. Anche se si riesce a sfuggire agli artigli dei mostri e a superare i campi di anomalia, ci sono i banditi a bloccare la strada e infine i militari. Di questi tempi non и raro tornare a casa con meno di quanto si aveva all'andata. Qualcuno deve fare qualcosa riguardo queste sanguisughe! Forse gli stalker gli insegneranno finalmente una lezioncina...</text>
+	</string>
+	<string id="dm_cool_info_9">
+		<text>Hai saputo cosa sta succedendo alla Discarica? Non appena gli stalker hanno scoperto della merce di valore in mezzo a quei cumuli di cianfrusaglie e hanno iniziato a tirarla fuori, i banditi sono arrivati come sciami di mosche sul letame. Hanno persino allestito una base nella zona, solo per derubare i nostri fratelli stalker piщ facilmente. I cercatori vengono rapinati e uccisi a destra e a manca, e chiunque osi lamentarsi viene gettato in un campo di concentramento. E questo potrebbe essere un destino peggiore persino della morte: i prigionieri sono costretti a scavare nelle zone piщ contaminate della Discarica. Quei poveri diavoli muoiono a dozzine a causa delle radiazioni e delle anomalie, e i banditi si arricchiscono con le loro morti. Insomma, amico, sii prudente alla Discarica.</text>
+	</string>
+	<string id="dm_cool_info_10">
+		<text>Subito dopo la Barriera c'и una specie di Bruciacervella. Chiunque vi si avvicini, si ritrova il cervello in pappa e ta-da! Ecco un nuovo zombi. A quanto pare nessuno и mai riuscito a superarlo vivo. Si raccontano anche delle storie su un Esauditore di desideri, ma io non credo a una sola parola.</text>
+	</string>
+	<string id="dm_intro_32">
+		<text>Infilati le tue buone maniere dove non batte il sole e vieni al dunque! Che accidenti vuoi?</text>
+	</string>
+	<string id="dm_intro_33">
+		<text>Smamma, teppista!</text>
+	</string>
+	<string id="dm_intro_34">
+		<text>Fai finta che ti abbia giа salutato. E adesso che vuoi?</text>
+	</string>
+	<string id="dm_intro_35">
+		<text>Che si dice, amico?</text>
+	</string>
+	<string id="dm_intro_36">
+		<text>Ehi, hai da accendere?</text>
+	</string>
+	<string id="dm_intro_37">
+		<text>Come butta?</text>
+	</string>
+	<string id="dm_intro_38">
+		<text>Ehi, piano con le strette di mano. Cosa cerchi?</text>
+	</string>
+	<string id="dm_intro_39">
+		<text>Santo cielo! Da dove sei arrivato? Forza, vuota il sacco.</text>
+	</string>
+	<string id="dm_intro_40">
+		<text>Ma guarda, и arrivata una nuova faccia da criminale! Come butta?</text>
+	</string>
+	<string id="dm_intro_41">
+		<text>Ehi, fratello! Sei qui per uccidere qualcuno? Vieni pure, qui troverai quel che cerchi.</text>
+	</string>
+	<string id="dm_intro_42">
+		<text>Ciao anche a te. Hai delle domande?</text>
+	</string>
+	<string id="dm_intro_43">
+		<text>Ehi. Vediamo di stare calmi. Niente scherzi, intesi?</text>
+	</string>
+	<string id="dm_intro_44">
+		<text>Io mi nascondo dal mio garante per la libertа vigilata, e tu?</text>
+	</string>
+	<string id="dm_intro_45">
+		<text>Come va? Io mi prendo una vacanza dal resto del gruppo, e tu?</text>
+	</string>
+	<string id="dm_intro_46">
+		<text>Ehi, и bello vedere che non hai nessuno alle calcagna.</text>
+	</string>
+	<string id="dm_intro_47">
+		<text>Ehi, amico! Se sei finito da queste parti sei senza dubbio in grossi guai.</text>
+	</string>
+	<string id="dm_intro_48">
+		<text>Ma guarda chi c'и! La Discarica accoglie tutti tranne, beh, la spazzatura.</text>
+	</string>
+	<string id="dm_intro_49">
+		<text>Ma pensa un po'! Da dove arrivi, amico? Siediti e facciamoci una chiacchierata.</text>
+	</string>
+	<string id="dm_intro_50">
+		<text>Porca miseriaccia! Non hai mica da offrirmi una sigaretta?</text>
+	</string>
+	<string id="dm_intro_51">
+		<text>Cacchio! Per fortuna che mi sono accorto che sei un uomo, altrimenti ti avrei freddato. Va bene, calmiamoci e parliamo.</text>
+	</string>
+	<string id="dm_intro_52">
+		<text>Ma che spavento! Non hai paura ad andartene in giro da solo?</text>
+	</string>
+	<string id="dm_intro_53">
+		<text>Timmy, quant'и che non ci si vedeva! Stavo proprio pensando a te.</text>
+	</string>
+	<string id="dm_intro_54">
+		<text>Accidenti, ma guarda chi c'и! OK, comincia a parlare.</text>
+	</string>
+	<string id="dm_intro_55">
+		<text>Ehi tu. Vieni qui e raccontami qualcosa di nuovo.</text>
+	</string>
+	<string id="dm_intro_56">
+		<text>Ma tu pensa un po'! Un volto nuovo nella Zona! Mi casa es tu casa, amigo!</text>
+	</string>
+	<string id="dm_intro_57">
+		<text>Ehi, fai piano, ti spiace? Adesso ci facciamo una chiacchierata e quando lo decido io ci saluteremo, intesi?</text>
+	</string>
+	<string id="dm_intro_58">
+		<text>Ehi, amico, che ci fai da queste parti? Forza, parla.</text>
+	</string>
+	<string id="dm_intro_59">
+		<text>Ehi, babbeo! Vieni al punto o smamma.</text>
+	</string>
+	<string id="dm_intro_60">
+		<text>Ehi, mi sembri un po' rigido. Sei per caso un poliziotto?</text>
+	</string>
+	<string id="dm_intro_61">
+		<text>Di cosa vuoi parlare, perdente da due soldi?</text>
+	</string>
+	<string id="dm_about_45">
+		<text>Questi stalker sono delle vere femminucce. Il gioco и molto semplice: loro se ne vanno in giro e noi li eliminiamo.</text>
+	</string>
+	<string id="dm_about_46">
+		<text>Mi hai preso per un ufficio informazioni? Non sei mica in biblioteca, teppista.</text>
+	</string>
+	<string id="dm_about_47">
+		<text>Ti conviene tirare dritto, babbeo. Io non parlo con la gentaglia come te, ma forse la mia pistola sм...</text>
+	</string>
+	<string id="dm_about_48">
+		<text>Se vuoi sentire delle storie vai a parlare con un mostro carnivoro o con un cane cieco. Io non parlo con gli sconosciuti, soprattutto con i teppistelli come te.</text>
+	</string>
+	<string id="dm_about_49">
+		<text>Ah, al diavolo, te ne parlerт. Il capo del posto si chiama Yoga, ed и una vera autoritа da queste parti. Alla base ha un rifugio tutto suo pieno di roba costosissima. Poi c'и Borov: lui и il barista e un vero aspirante aristocratico. Piщ su c'и Agroprom, dove si ammassano gli stalker e quelli della Duty ci difendono dai mostri, eh eh. Se vai dall'altra parte, invece, troverai gente che vende roba sul mercato nero. Di sera il mercato offre una maggiore varietа di merce, ma anche di pericoli: i piщ grandi sono i fratelli Asubers. Ancora piщ avanti troverai la Freedom nella Valle Oscura.</text>
+	</string>
+	<string id="dm_about_50">
+		<text>Amico, la Discarica и il posto dove una volta i rossi scaricavano tutta la merce contaminata. Transistor, congegni, rotori, motori... Hai capito, no? Certo, non servirebbero a nessuno se non fosse per la nostra amata Zona. Probabilmente ti sei accorto che non ci sono negozi di ferramenta nй officine, ma in qualche modo dovremo pur riparare le nostre attrezzature, no? Questo trasforma i rottami in una miniera d'oro! Ormai nessuno si preoccupa piщ delle radiazioni, quindi arrivano tutti nella speranza di arraffare qualcosa. Alcuni dissotterrano la merce, altri la scambiano e altri ci guadagnano, ovvero noi.</text>
+	</string>
+	<string id="dm_about_51">
+		<text>Me ne frego dei principianti come te. In due parole le cose stanno cosм: questo deposito и la nostra base. Agroprom, a ovest di qui, и dove si trovano la Duty e la marmaglia di stalker. A est c'и la Freedom: quei ragazzi sono a posto, anche se a noi non vanno del tutto a genio. Non ti conviene andare a nord, da quando c'и stata l'emissione quel posto и pieno di anomalie. E verso sud si trova il Cordon, dove stanno l'esercito e gli stalker da due soldi a massacrarsi a vicenda.</text>
+	</string>
+	<string id="dm_about_52">
+		<text>La Discarica и il posto piщ figo di tutta la Zona, te lo giuro. Se sei forte e scaltro qui ti troverai alla grande. Non appena hanno trovato dei nascondigli di merce in queste fogne, gli stalker sono arrivati a sciami, come attirati da una calamita. И lм che sono iniziati i bei tempi, almeno per noi. Gli stalker vengono qui, estraggono la roba dai pozzi piщ terribili e in pratica ci consegnano il loro bottino: noi non dobbiamo muovere un dito. Tassiamo i piщ mansueti, mentre quelli piщ insubordinati li facciamo prigionieri e li buttiamo in un campo di concentramento.</text>
+	</string>
+	<string id="dm_about_53">
+		<text>Questa festa и riservata! Niente babbei, ma solo noi... Uomini con la U maiuscola e criminali di professione. Certo, anche noi abbiamo i nostri scagnozzi: dopotutto un vero ladro ha bisogno di sottoposti per fare il lavoro sporco. Ci mancano solo le prostitute.</text>
+	</string>
+	<string id="dm_about_54">
+		<text>Nella Discarica siamo noi a dettare legge, e gli altri devono adattarsi. La prima legge и che bisogna condividere i propri tesori. Se non vuoi farlo, noi ti costringiamo. E fidati di me, chiunque si metta in testa di ribellarsi se ne pente molto presto.</text>
+	</string>
+	<string id="dm_about_55">
+		<text>Qui и dove raduniamo i nostri stalker scavatori. Alcuni pensano di essere piщ furbi di quel che sono. Vuoi cercare dei tesori? Bene! Ma non dimenticare che la Discarica appartiene a noi! Chiediamo solo che la nostra ospitalitа sia apprezzata. Quindi non arrabbiarti se all'ingresso ti hanno fatto lo sgambetto. Da queste parti funziona cosм.</text>
+	</string>
+	<string id="dm_about_56">
+		<text>Ehi, scemo, sparisci! Vai a parlare con gli scavatori, loro ti diranno come stanno le cose.</text>
+	</string>
+	<string id="dm_about_57">
+		<text>Il nostro lavoro и tenere a stecchetto i babbei di queste parti. Loro spremono la terra per il nostro guadagno, e noi spremiamo loro. Manteniamo alto il livello di civiltа nella Discarica e tutto fila liscio, и chiaro?</text>
+	</string>
+	<string id="dm_about_58">
+		<text>Qui и dove i veri uomini fanno i soldi. Ed и grazie a babbei come te, sai? Un perdente come te arriva da queste parti senza soldi, senza un posto dove andare, quindi noi lo sfruttiamo per guadagnare bene. I teppistelli separano la spazzatura dalla merce e i nostri trafficanti la vendono. Da queste parti и cosм che funziona.</text>
+	</string>
+	<string id="dm_about_59">
+		<text>Cosa sei, una specie di giornalista? Scriverai di me sul giornale di domani? Ah ah ah! E va bene, ragazzo, ascolta. Noi siamo i cavalieri della strada e dominiamo la Discarica. Tu ci procuri un guadagno e noi badiamo ai fatti nostri. Se non paghi finisci in grossi guai. И come una corsa all'oro. Questo perchй quei gingilli sovietici sepolti in questa fogna ora valgono tanto oro quanto pesano. Quindi se ti indebiti con noi o ti metti in testa di fare l'eroe, ti spediamo dritto all'accampamento. Lavorare laggiщ и divertente quanto estrarre l'uranio, tra tutte quelle anomalie e radiazioni. La buona notizia и che almeno i tuoi guai finirebbero subito... insieme alla tua vita.</text>
+	</string>
+	<string id="dm_about_60">
+		<text>Noi siamo i responsabili della legge e dell'ordine di questo posto. Vedi, c'и troppa gente che vuole mettere le mani sulle ricchezze della Discarica. Noi ci prendiamo solo la nostra giusta parte. Forniamo condizioni di lavoro sicure e garantiamo la sicurezza, ma questo ha i suoi prezzi, come certo capirai. Vuoi sapere del campo di concentramento? Beh, и un posto dove finiscono i perdenti, praticamente di loro spontanea volontа. Quelli come loro sono inutili e possono essere spazzati via: noi non facciamo che aiutare la selezione naturale!</text>
+	</string>
+	<string id="dm_about_61">
+		<text>Siamo noi a prendere le decisioni qui, capito? Lo facciamo fin da prima che arrivasse il primo stalker. Ah ah ah! Questo posto и nostro, spero che sia chiaro.</text>
+	</string>
+	<string id="dm_action_info_27">
+		<text>E tu chi sei, il mio avvocato? Se fai una domanda del genere per strada potrebbe essere l'ultima che fai...</text>
+	</string>
+	<string id="dm_action_info_28">
+		<text>Meno cose sai, meglio dormi di notte.</text>
+	</string>
+	<string id="dm_action_info_29">
+		<text>Ma comunque cosa te ne importa? I fatti miei riguardano solo me e nessun altro.</text>
+	</string>
+	<string id="dm_action_info_30">
+		<text>Vuoi che ti faccia saltare subito le cervella o preferisci sapere cosa c'era che non andava nella tua domanda?</text>
+	</string>
+	<string id="dm_action_info_31">
+		<text>In questo posto faccio grandi cose. Vedo una femminuccia, lo spremo per bene, mi divido il contante con i ragazzi, tengo qualcosa da parte per Yoga - per puro rispetto - e questo и tutto. A volte commettiamo anche crimini piщ seri, ma non aspettarti che li venga a raccontare a te.</text>
+	</string>
+	<string id="dm_action_info_32">
+		<text>Intendi dire cosa faccio nella Zona? Mi nascondo dai miei vecchi compagni impiccioni. Nel mondo esterno mi facevano un sacco di domande e paternali sulla vita... E cosм abbiamo avuto un... alterco. Spero che tu non sia qui per tirare fuori di nuovo tutte quelle faccende sulla moralitа, vero? No? Bene, allora vai pure.</text>
+	</string>
+	<string id="dm_action_info_33">
+		<text>Cosa c'и di tanto difficile da capire? И un paradiso per quelli che sanno cosa fanno. Manipolare le guardie e i babbei и un gioco da ragazzi, e cosм fare soldi non и mai stato tanto facile. Fai bene il tuo lavoro e farai fortuna.</text>
+	</string>
+	<string id="dm_action_info_34">
+		<text>Un tempo sgobbavo come stalker. Io e un mio amico vagavamo per la Zona alla ricerca di tesori, sopravvivendo a fatica. Un giorno siamo incappati in un controllore e solo io sono stato abbastanza fortunato da sopravvivere. Ho fatto in modo che il mio compare non rimanesse uno zombi, ma mi sono ripromesso di non tornarci mai piщ. Ora sono qui con queste iene. Non si sta male, basta fare attenzione: non sono il tipo di persone che "dimenticano e perdonano", se capisci quel che intendo dire.</text>
+	</string>
+	<string id="dm_action_info_35">
+		<text>Che ti prende, eh? И sufficiente guardarti per capire che hai i tuoi bei problemi. Da queste parti sapere troppe cose puт aiutarti a tirare le cuoia prima del dovuto. A proposito, le tue cuoia non sembrano male... Ti va uno scambio prima di finire su un'anomalia? Ah, andiamo, rilassati... ti sto solo prendendo in giro.</text>
+	</string>
+	<string id="dm_action_info_36">
+		<text>Tutti alla Discarica, me compreso, sono occupati a fare la stessa cosa: mettere da parte due soldi con cui andare in pensione. Gli scavatori sgobbano, gli stalker perlustrano la terra in cerca di tesori e noi li spremiamo per tenere questo posto in ordine. И un lavoro molto semplice, ma ha le sue finezze.</text>
+	</string>
+	<string id="dm_action_info_37">
+		<text>Ti credi un pezzo grosso, per fare domande del genere? Quello che faccio e quello di cui parlo sono due cose diverse.</text>
+	</string>
+	<string id="dm_action_info_38">
+		<text>Derubo gli stalker e gli scavatori del posto. Loro perlustrano la nostra fogna in cerca di tesori e io mi tengo la mia fetta.</text>
+	</string>
+	<string id="dm_action_info_39">
+		<text>Io e i miei amici vogliamo dirigerci alla Valle Oscura e dare una lezioncina a quelli della Freedom. Solo che non possiamo farlo senza il permesso di Yoga: da queste parti comanda lui. Non и consigliabile scavalcarlo, quindi per il momento ci tocca aspettare.</text>
+	</string>
+	<string id="dm_action_info_40">
+		<text>Mi sono unito ai banditi per caso. In teoria sarei dovuto diventare uno stalker ma non ha funzionato. Ma va bene cosм. Risparmierт un po' di soldi, conoscerт un po' di gente e mi prenderт la mia fetta di tesori alla Discarica.</text>
+	</string>
+	<string id="dm_action_info_41">
+		<text>Stai parlando con me? Sei fuori di testa a fare domande del genere? Aspetta che chiamo un po' di amici... Ti faremo vedere cosa ne facciamo dei novellini che si credono giа dei duri.</text>
+	</string>
+	<string id="dm_cool_info_11">
+		<text>Ho visto ogni genere di fogna, ma questa le batte tutte. Il cuore della Zona и proprio qui nella Discarica. Qui ci creiamo le leggi da soli. Se vuoi vivere paghi, e se non lo fai smammi o ti becchi una scarica di piombo nel petto. Mi sono spiegato?</text>
+	</string>
+	<string id="dm_cool_info_12">
+		<text>Di che Zona parli? Di questa? Ma questo и un parco divertimenti per bambini, se confrontato ad altri posti dove sono stato. Un vero paradiso dei ladri. Filo spinato e soldati armati? Beh, quello non era nulla. Noi abbiamo il nostro esercito. Ti puoi muovere liberamente, ottenere scorte infinite dal mondo esterno e sbronzarti quanto vuoi... и un vero spasso! L'unico problema и che non ci sono donne. Questo posto non gli piace. Ogni tanto mi prendono certe voglie, che persino i mutanti mi sembrano attraenti...</text>
+	</string>
+	<string id="dm_cool_info_13">
+		<text>Hai un bel fegato a fare domande del genere. Ora smamma.</text>
+	</string>
+	<string id="dm_intro_62">
+		<text>Hai scelto un pessimo momento per arrivare alla Discarica, fratello.</text>
+	</string>
+	<string id="dm_intro_63">
+		<text>Ehi, amico! Se solo sapessi quanto sono stufo di questi assalti dei banditi...</text>
+	</string>
+	<string id="dm_intro_64">
+		<text>Ben trovato, fratello!</text>
+	</string>
+	<string id="dm_intro_65">
+		<text>Ben fatto, fratello!</text>
+	</string>
+	<string id="dm_intro_66">
+		<text>In bocca al lupo, amico! Stai alla larga dai proiettili e dalle anomalie!</text>
+	</string>
+	<string id="dm_intro_67">
+		<text>И sempre bello incontrare un fratello d'arme!</text>
+	</string>
+	<string id="dm_about_62">
+		<text>Ho sentito dire che qui, prima del primo incidente, c'era un gigantesco pozzo. Dopo l'esplosione alla centrale energetica sono iniziati ad arrivare i veicoli contaminati, le attrezzature e altre cianfrusaglie, che venivano scaricate nel pozzo. Ce n'erano talmente tante da riempirlo e anche di piщ. E adesso eccoci qui, a scavare in mezzo a tutta questa roba.</text>
+	</string>
+	<string id="dm_about_63">
+		<text>Non lontano da qui c'и un accampamento, dove i banditi tengono prigionieri gli stalker come noi. Preferirei morire piuttosto che fare quella fine: ti fanno scavare per 16 ore al giorno e ti mandano nelle zone piщ pericolose e radioattive della Zona, senza nessuna attrezzatura o protezione. Ti danno da mangiare gli scarti e ti picchiano... Hai capito anche tu il quadro: per loro non siamo altro che maledetto bestiame.</text>
+	</string>
+	<string id="dm_about_64">
+		<text>Qui la vita non и facile per i novellini. Le bestie che vivono qui ti divorerebbero per colazione, e i trafficanti non vedono l'ora di derubare i nuovi arrivati. Inoltre, i banditi rendono la vita difficile a tutti, e anche i compagni stalker non sono molto propensi a condividere i loro segreti con te.</text>
+	</string>
+	<string id="dm_about_65">
+		<text>O gli stalker come noi si uniscono alla Discarica o i banditi ci porteranno via tutto quello che abbiamo e anche di piщ. Essere in debito con loro equivale ad avere un biglietto di sola andata per il loro accampamento. Da schiavo, naturalmente. Nessuno dura molto a lungo, laggiщ: basta scavare un giorno in una zona radioattiva e sei spacciato.</text>
+	</string>
+	<string id="dm_about_66">
+		<text>Oggigiorno sono i banditi a comandare nella Discarica. Ci tengono per il collo e noi non possiamo muovere un dito senza il loro permesso. Vuoi entrare? Paga. Vuoi uscire? Paga ancora di piщ. Anche se trovi qualcosa di valore, non и detto che riuscirai a portarlo fuori dalla Discarica. Se incappi in un gruppo di banditi hai due opzioni: o loro si prendono tutto o tu ti prendi un proiettile. O, ancora peggio, ti mandano a scavare tra l'immondizia finchй non muori in un'anomalia o muori per le radiazioni.</text>
+	</string>
+	<string id="dm_about_67">
+		<text>Una volta questo posto era una discarica radioattiva. Qui portavano tutto quello che luccicava al buio, e a nessuno importava che aspetto assumeva la Zona. E ora le scatole di carne, le lampade dotate di transistor e i pezzi di ricambio valgono tanto quanto pesano, ecco perchй gli stalker vengono qui a scavare. Ma i banditi hanno capito l'antifona alla svelta, e ora comandano loro nel pollaio. A conti fatti, sono loro a prendersi tutti i soldi... noi sgobbiamo e basta, senza ricevere nulla.</text>
+	</string>
+	<string id="dm_about_68">
+		<text>Qui i banditi hanno il controllo totale. Sono loro a dettare le regole, a raccogliere le tasse dagli scavatori e a trarre guadagno dalle fatiche altrui. Gli stalker rovistano la spazzatura radioattiva per riportare alla luce manufatti dell'era sovietica, ma sono i banditi a prendersi tutta la roba di valore. Ma tu dovresti giа saperlo... dopotutto hai pagato per entrare, no? Beh, per farti uscire vorranno ancora piщ soldi, vedrai.</text>
+	</string>
+	<string id="dm_about_69">
+		<text>L'unica cosa buona che si puт fare alla Discarica и andarsene. Qui non c'и nulla per uno stalker onesto. Anche se hai la fortuna di trovare qualcosa, o ti verrа portata via dai banditi o morirai per le radiazioni accumulate mentre scavi in mezzo a quella roba. Molto meglio andare a est, dalla Freedom nella Dark Valley, o a ovest, dalla Duty e dagli stalker normali ad Agroprom. Quella и la nostra Zona, la Zona degli stalker. Questo и territorio dei criminali, e qui non c'и niente per te, credimi.</text>
+	</string>
+	<string id="dm_about_70">
+		<text>Qui puoi arricchirti, questo и sicuro. Perchй no? Proprio l'altro giorno ho sentito parlare di uno stalker che aveva trovato un sacco di merce di valore alla Discarica. Non so esattamente cosa avesse trovato - ci sono troppe versioni diverse per essere sicuri - ma si и senza dubbio arricchito. Anche io troverт qualcosa, dopodichй mi comprerт un'attrezzatura decente e mi sposterт oltre le terre selvagge: и lм che si trovano i manufatti migliori.</text>
+	</string>
+	<string id="dm_about_71">
+		<text>Questa Discarica e la sua stupida corsa all'oro! La cosa peggiore che poteva succedere era che qualche bastardo trovasse qualcosa di valore in questi mucchi di spazzatura! E cosм Le bande sono arrivate al volo e hanno messo in ginocchio tutti gli stalker della zona. И una vergogna che la nostra fratellanza abbia permesso a questa feccia di dominare noi e la Zona. Hanno persino un campo di concentramento, dove vengono inviati i ribelli. Sono costretti a scavare tra i rifiuti radioattivi in cambio di cibo. Dobbiamo andarcene da qui, credimi.</text>
+	</string>
+	<string id="dm_about_72">
+		<text>Ascolta, amico, prima te ne vai da questo posto, meglio и. Qui non troverai nulla, se non tasse e umiliazione da parte dei banditi, un coltello nella schiena o un bel posticino in un campo di concentramento. Fossi in te me ne andrei, e alla svelta.</text>
+	</string>
+	<string id="dm_about_73">
+		<text>Questo posto и la nostra versione del Klondike. Amico, mettitelo in testa: ogni cosa nella Zona и sotto chiave, i militari l'hanno sigillata per bene. A volte bisogna lottare per mettere le mani su una scatoletta di carne, per non parlare dei ricambi o delle attrezzature. E anche se i trafficanti hanno qualcosa, non la vendono certo a buon mercato. Questo posto invece и diverso. Tra questi ammassi di rifiuti si trovano gratis cose di valore. Dopo l'incidente a Chernobyl hanno buttato tutto qui. Certo, ci sono un po' di radiazioni e bisogna pagare ai banditi una percentuale su tutto quello che si trova... ma di bottini ce ne sono in abbondanza! Quindi, amico, prendi una pala, comincia a scavare e non arrenderti finchй non avrai trovato la tua vena "d'oro".</text>
+	</string>
+	<string id="dm_about_74">
+		<text>Credimi, continuo a non sapere bene cosa sia la Discarica. Gli stalker dissotterrano della roba e i banditi gliela portano via. Si sono persino costruiti una base nel vecchio deposito. Ora che hanno il controllo di tutta la Discarica vivono una vita nuova... non fanno nulla, a parte derubare gli scavatori e arricchirsi. Bastardi! L'altra cosa che si puт trovare qui и una specie di mercato delle pulci. I trafficanti comprano dagli scavatori e vendono oggetti utili, a volte persino unici. La maggior parte degli scambi avviene nottetempo, quindi tieni gli occhi aperti: alcuni dei trafficanti non aspettano altro che rifilarti un pezzo di ferraglia con il favore delle tenebre. Sono diventati provetti in questi "traffici".</text>
+	</string>
+	<string id="dm_about_75">
+		<text>Questo и un posto dove le persone avide e forti vivono alle spalle di quelle avide e stupide. In mezzo a queste montagne di spazzatura contaminata, oltre a un sacco di cianfrusaglie inutili, ci sono alcuni oggetti di grande valore nella Zona. Naturalmente, questo attira gli sciocchi che si illudono di potersi arricchire. Il guaio и che qui solo i forti diventano ricchi. Io sono stato stupido e ho pagato cara la mia stupiditа.</text>
+	</string>
+	<string id="dm_action_info_42">
+		<text>Per lo piщ scavo, ma in questi giorni devo essere molto prudente, perchй a quanto pare tutti vogliono qualcosa anche se non gli appartiene. Una volta l'unico problema erano i banditi, ma ora un compagno stalker puт essere altrettanto pericoloso. Non и piщ come ai vecchi tempi, quando si poteva dare l'ultima scatoletta di carne a un altro stalker con la certezza che, se ci fosse stato bisogno, lui avrebbe fatto lo stesso per te. Ma ora... ugh!</text>
+	</string>
+	<string id="dm_action_info_43">
+		<text>Niente di che. Proprio come gli altri scavatori, faccio del mio meglio per cercare di restare vivo e di guadagnare quanto basta per un po' di pane, una scatoletta di carne e qualche cartuccia. Se ho fortuna diventerт ricco e me ne andrт da qui, ma prima voglio andare dall'Esauditore di desideri. C'и una cosa che desidero da parecchio tempo.</text>
+	</string>
+	<string id="dm_action_info_44">
+		<text>Io sono nuovo di queste parti... Devo ancora decidere cosa voglio fare. Devo essere molto prudente, i nuovi non sono nemmeno considerati umani in questo posto. La gente parla di montagne d'oro, ma a dire il vero io qui non vedo molti contanti. Forse dovrei lasciar perdere e unirmi alla Duty...</text>
+	</string>
+	<string id="dm_action_info_45">
+		<text>Io sono come tutti quelli che si trovano qui: spero in un miracolo. Forse riuscirт a trovare qualcosa di valore in modo da comprarmi la libertа da quei banditi e diventare sufficientemente ricco. Che c'и, pensi che stia sognando? Beh, и giа successo in passato e puт succedere di nuovo. Ho sentito dire di uno scavatore che ha trovato per caso delle radio militari. Dicono che ora и uno stalker rispettato, con un sacco di contante e delle ottime attrezzature. Io perт non l'ho mai incontrato, и successo tutto prima che arrivassi qui.</text>
+	</string>
+	<string id="dm_action_info_46">
+		<text>Sto cercando qualcosa di valore in mezzo a tutta questa spazzatura. C'и un sacco di roba rimasta dai tempi sovietici: davvero di tutto, dalla carne in scatola ai motori diesel. Cose del genere rendono bene qui nella Zona, basta solo avere pazienza e un sacco di medicine antiradiazioni.</text>
+	</string>
+	<string id="dm_action_info_47">
+		<text>Devo pagare un debito. Se non trovo un sacco di tesori da dare ai banditi, loro mi schiavizzeranno e mi costringeranno a scavare nei posti piщ pericolosi. E questo non и bello.</text>
+	</string>
+	<string id="dm_action_info_48">
+		<text>Stavo andando alla Valle Oscura quando questi maledetti si sono presi tutti i miei soldi all'ingresso. Mi toccherа pagare anche per uscire. Non voglio sembrare uno squattrinato agli occhi degli altri stalker, quindi voglio racimolare qualcosa prima di ripartire. Il guaio и che piщ lavoro piщ il mio debito sembra ingigantirsi. Ma non c'и problema, presto me ne andrт da qui.</text>
+	</string>
+	<string id="dm_action_info_49">
+		<text>Volevo unirmi con la Duty ad Agroprom. Un tizio aveva detto che mi avrebbe aiutato ad arrivarci, ma quando siamo arrivati alla Discarica и scappato con i miei contanti. Ora me ne sto qui, cercando di guadagnare abbastanza da comprarmi delle armi e dell'attrezzatura decente. Ti dirт che non и facile. I banditi sanno che non gli conviene permettere agli scavatori di mettere le mani sulle armi, quindi se le tengono belle strette. Da queste parti procurarsi una pistola e delle munizioni и un'impresa alquanto ardua.</text>
+	</string>
+	<string id="dm_action_info_50">
+		<text>Io e un mio amico eravamo diretti alla Barriera, per incontrarci con altri stalker che conosciamo, ma ci siamo fermati alla Discarica. Il mio amico и stato cosм stupido da rifiutarsi di pagare, e ha iniziato a discutere con i banditi. Loro non hanno battuto ciglio, l'hanno preso come schiavo e fine della storia. Cosм ora sono qui a sgobbare come un cane per liberarlo e ripartire. Ho anche pianificato il viaggio e accumulato un po' d'esperienza, ma mettere insieme il contante necessario non и facile: le tasse sono alte e procurarsi delle armi e munizioni и pressochй impossibile, dal momento che i banditi le confiscano all'ingresso.</text>
+	</string>
+	<string id="dm_action_info_51">
+		<text>Mio fratello и scomparso nella Zona. Sono andato a cercarlo, ma i banditi mi hanno fermato. Ho scambiato due parole con degli stalker di queste parti, e ho saputo che mio fratello и stato qui per un po'. Ora sto cercando di scoprire il piщ possibile, nella speranza di ritrovarlo. Chissа, forse и ancora vivo...</text>
+	</string>
+	<string id="dm_action_info_52">
+		<text>Sono anni che cerco di trovare qualcosa che valesse di piщ di una vecchia scatoletta di carne. Finora non ho avuto fortuna, ma Mitya Orecchie Grandi ha trovato il motore di un trasportatore e alcuni cuscinetti vicino a dove lavoravo io. И giа qualcosa, ma sarebbe ancora meglio se trovasse anche qualcuno a cui venderli! Ah ah! Beh, un giorno anche io dissotterrerт qualcosa di valore.</text>
+	</string>
+	<string id="dm_action_info_53">
+		<text>A dire il vero stavo andando ad Agroprom, ma sono rimasto bloccato in questa corsa all'oro. Ho trovato un paio di oggetti che si sono venduti piuttosto bene. Fare transazioni del genere и molto piщ facile e sicuro che cercare di pescare dei manufatti dalle anomalie. L'importante и ricordarsi di tenere d'occhio il contatore delle radiazioni o finirai per luccicare al buio come un albero di Natale per quel poco che ti resta da vivere...</text>
+	</string>
+	<string id="dm_action_info_54">
+		<text>Sono in cerca di tesori. Siamo venuti qui in gruppo dal villaggio dopo aver sentito che nella Discarica erano stati trovati oggetti antichi di valore. Abbiamo pensato che, se non avessimo imparato velocemente a estrarre i manufatti, ci saremmo persi tutto il divertimento. A ripensarci, avremmo fatto meglio a restare nel villaggio: due ragazzi sono morti subito e un altro sta lavorando all'accampamento... chissа, forse a quest'ora и giа morto per le radiazioni. Cavolo, se solo riuscissi a mettere le mani su un pezzo di valore gliela farei vedere a questi banditi... sembrano stupidi, ma gestiscono proprio bene questo posto. Ci tengono divisi, e procurarsi un'arma и quasi impossibile. Possiamo scavare quanto vogliamo, ma non possiamo formare gruppi piщ numerosi di tre. Credimi, amico, noi stalker dobbiamo unirci e scacciare i banditi da qui.</text>
+	</string>
+	<string id="dm_cool_info_14">
+		<text>Uno stalker che conosco e che ha passato un po' di tempo nei pressi di Agroprom dice che la Duty se la passa male ad affrontare i mostri. A quanto pare delle catacombe hanno ceduto e sta uscendo ogni genere di creatura ripugnante.</text>
+	</string>
+	<string id="dm_cool_info_15">
+		<text>Sono andato ai magazzini militari insieme a un amico... Dopo l'emissione la situazione и diventata davvero terribile. I militari hanno subito un brutto colpo. La Freedom sta cercando di conquistare la loro base, mentre i combattenti della Monolith e i mostri arrivano dal centro della Zona, uccidendo tutto quello che incontrano sul proprio sentiero. Alla radio si riescono a intercettare frammenti di conversazione, ma nessuno sa dove si trovino queste persone. La morale della storia и semplice: piщ si va verso il centro della Zona, piщ grandi sono i problemi da affrontare.</text>
+	</string>
+	<string id="dm_cool_info_16">
+		<text>Dicono che, dopo l'emissione, i luoghi a cui non si poteva accedere per via delle anomalie, come la Foresta rossa e le Paludi, ora sono raggiungibili. Allo stesso tempo, alcune delle zone che prima erano raggiungibili, ora non lo sono piщ. Non c'и piщ modo di arrivare a Rostok... e lм c'erano parecchi stalker prima dell'emissione... nessuno sa cosa sia loro successo.</text>
+	</string>
+	<string id="dm_intro_68">
+		<text>Ehi!</text>
+	</string>
+	<string id="dm_intro_69">
+		<text>Ehi, mercenario. Se sei qui per affrontare la progenie della Zona, allora considera la Duty tua alleata.</text>
+	</string>
+	<string id="dm_intro_70">
+		<text>Ehi! Unisciti alla Duty, la fazione dei veri uomini.</text>
+	</string>
+	<string id="dm_intro_71">
+		<text>Sii prudente e non allontanarti dalle strade principali. Un passo falso e diventerai la colazione di un mostro.</text>
+	</string>
+	<string id="dm_intro_72">
+		<text>Ehi!</text>
+	</string>
+	<string id="dm_intro_73">
+		<text>Salve, amico. Ti consiglio di tenere gli occhi aperti, da queste parti. Subire tre o quattro attacchi per notte non и divertente come forse sembra.</text>
+	</string>
+	<string id="dm_intro_74">
+		<text>Non hai scelto un buon momento per arrivare, stalker. C'и una vera e propria guerra in corso.</text>
+	</string>
+	<string id="dm_intro_75">
+		<text>Ehi! Tieni gli occhi aperti. Le bestie di queste parti sono molto scaltre: se abbassi la guardia non saprai nemmeno cosa ti ha colpito!</text>
+	</string>
+	<string id="dm_intro_76">
+		<text>Salve, amico. И sempre bello vedere un compagno stalker.</text>
+	</string>
+	<string id="dm_intro_77">
+		<text>Come butta? Ecco un bel benvenuto ucraino tutto per te.</text>
+	</string>
+	<string id="dm_intro_78">
+		<text>Ehi, fratello! Se vuoi chiedere qualcosa, fai pure.</text>
+	</string>
+	<string id="dm_about_76">
+		<text>Cosa c'и da dire? Guardati intorno e vedrai tutto quello che c'и da sapere.</text>
+	</string>
+	<string id="dm_about_77">
+		<text>Quei dannati mostri ci attaccano da tutte le parti... Sembra che piщ ne uccidiamo piщ ne arrivano! Ah, ma riusciremo a vincere. Ci serve solo qualche arma decente e dei buoni combattenti. Se li avessimo conquisteremmo questo posto in un batter d'occhi, e vendicheremmo i nostri fratelli caduti.</text>
+	</string>
+	<string id="dm_about_78">
+		<text>Credimi, questo posto и maledetto. Non parlo solo di Agroprom, ma di tutta la Zona. Continuiamo a combattere, ma contro chi lo stiamo facendo? I mostri normali non possono riprodursi a una simile velocitа! Oggi li massacriamo e domani sono ancora piщ numerosi.</text>
+	</string>
+	<string id="dm_about_79">
+		<text>Ascolta, qui l'unica cosa che riuscirai a trovare и un proiettile. Di notte i mutanti ci attaccano in gran numero e noi li respingiamo. La base che abbiamo in un edificio dell'ex Istituto di ricerca, и tutta un'altra storia. Lм c'и un bar, un trafficante, un negozio per le riparazioni e altre cose, vedere per credere. Potrai anche riposarti e farti riparare le pistole in un territorio neutrale, purchй non crei problemi a quelli del posto. Il capo, se non vado errato, si chiama Orest. E se vuoi andartene da questo posto, a est troverai la Discarica, a sud le Paludi e a nord il Lago Yantar e la base degli scienziati.</text>
+	</string>
+	<string id="dm_about_80">
+		<text>Qui una volta c'era un istituto di ricerca chiamato... Beh, Istituto di ricerca di Agroprom. Qualunque fosse il suo scopo, ora ci fa da base. Il nostro comandante и il generale Krylov, ma noi lo chiamiamo semplicemente commodoro. Non davanti a lui, ovvio. C'и anche una base neutrale qui vicino, alla fabbrica abbandonata. Se ti dirigi a sud arriverai alle Paludi. I banditi si sono impossessati della Discarica a est: quei bastardi si approfittano del fatto che ora abbiamo da fare e non possiamo occuparci di loro. A nord c'и il Lago Yantar. Dicono che da quelle parti si verifichino delle emissioni in grado di trasformare la gente in zombi. Il fatto che da quelle zone ci attacchino sempre in gruppi numerosi sembra sostenere questa teoria.</text>
+	</string>
+	<string id="dm_about_81">
+		<text>Vuoi sentire delle storie sulle avventure degli stalker? Beh, sei venuto nel posto sbagliato, ragazzo. Qui non c'и niente di romanzato, и tutto vero. Di notte ci sono talmente tanti mostri che abbiamo a malapena il tempo di farcela sotto. Vedi quei buchi? Proprio lм, quelle voragini nel terreno? Beh, non appena fa buio, i mostri escono da lм e, credimi figliolo, non и bello. Non escono da soli e nemmeno a dozzine... quando decidono di fare festa non si trattengono affatto, su questo non ci sono dubbi. Noi ne uccidiamo il piщ possibile, ma non sembra servire a molto. Sottoterra deve esserci una specie di maledetto incubatore... nuclearizzare tutto questo posto non sarebbe una cattiva idea!</text>
+	</string>
+	<string id="dm_about_82">
+		<text>Qui non si scherza, figliolo, dico davvero! La settimana scorsa siamo tornati alla base, dove avevamo lasciato alcuni ragazzi. Di notte sono stati attaccati, che и normale in un posto del genere, ma quando siamo tornati il mattino seguente non c'era piщ nulla. Nessuna traccia dei nostri ragazzi, nessun corpo, nessun mostro morto... solo sangue, armature vuote e lacerate e segni sul terreno.</text>
+	</string>
+	<string id="dm_about_83">
+		<text>Sono stufo di questo posto. Ormai siamo qui da chissа quante settimane e a ogni attacco dei mostri la situazione peggiora. Temo di aver quasi esaurito la rabbia necessaria per affrontarli, per non parlare delle munizioni. A volte vorrei lasciar cadere il fucile e farli a pezzi a mani nude. Forse sono i mostri che giocano con il nostro cervello? Beh, tanto prima o poi li ammazzeremo tutti.</text>
+	</string>
+	<string id="dm_about_84">
+		<text>Una volta, dopo un raid, abbiamo ricevuto un messaggio dai nostri ragazzi ad Agroprom che diceva "SOS! Aiuto, ci stanno sopraffacendo!" e abbiamo udito spari e grida alla radio. In pochi minuti abbiamo inviato degli uomini per aiutarli, ma quando sono arrivati era tutto tranquillo, e non c'era una sola anima viva. Solo una torcia sul pavimento che lampeggiava. Una volta sorto il sole abbiamo cercato di seguire le tracce, ma conducevano ai sotterranei dell'istituto. E dopo che il tunnel и collassato in seguito a un raid, avevamo troppa paura per entrare. Inutile dire che non abbiamo mai piщ rivisto i nostri ragazzi.</text>
+	</string>
+	<string id="dm_about_85">
+		<text>Prendi le tue domande e infilatele dove dico io, amico. Mi sento giа abbastanza male cosм come sto. Ogni notte che passa perdiamo degli amici, alcuni cadono in battaglia e altri semplicemente scompaiono. A volte andiamo a dare il cambio a un avamposto e lo troviamo vuoto, con poche braci e un silenzio di tomba. Ti assicuro che и un panorama terrorizzante. Quindi vai a infastidire qualcun altro con le tue domande: a noi combattenti della Duty non serve aiuto per impazzire.</text>
+	</string>
+	<string id="dm_about_86">
+		<text>Abbiamo collocato degli avamposti dappertutto. Di notte queste bestie escono allo scoperto e sono talmente tante che non c'и nemmeno bisogno di mirare: basta sparare e pregare! Escono da questi buchi nel terreno e noi cerchiamo di trattenerle. Da dove arrivano? Ah, chi lo sa...</text>
+	</string>
+	<string id="dm_about_87">
+		<text>I mutanti escono dal sottosuolo di Agroprom. Suppongo che, quando i nostri ragazzi hanno cercato di far saltare i passaggi sotterranei, i tunnel sono crollati sulla loro tana. Abbiamo perso il conto di quanti ne abbiamo massacrati. Senti, tu non и che per caso sei della Freedom, vero? Il tuo muso mi ricorda quello di uno che conoscevo... va bene, tieni gli occhi aperti.</text>
+	</string>
+	<string id="dm_about_88">
+		<text>Questa и la prima volta che vieni ad Agroprom, vero? Beh, allora stammi a sentire. La nostra base и nell'ex istituto di ricerca. Nella vecchia fabbrica ci sono degli stalker neutrali. A volte gli zombi attaccano dal Lago Yantar, a nord, e i mostri escono dal sottosuolo. A est troverai la Discarica, e a sud le Paludi.</text>
+	</string>
+	<string id="dm_about_89">
+		<text>Qui abbiamo una base niente male, su questo non si discute. Un poligono di tiro, uno zoo e l'Atomo pacifico, che и il nostro bar. Insomma, tutto quello che un uomo potrebbe desiderare. Ma non siamo teste calde... La disciplina innanzitutto!</text>
+	</string>
+	<string id="dm_about_90">
+		<text>Agroprom era un tempo un istituto di ricerca. Ovviamente, dopo la comparsa della Zona non si eseguono molte ricerche. Ah ah. Al contrario, usiamo questo edificio per respingere la progenie della Zona e contrattaccare i mostri che fuoriescono dal sottosuolo. Combattiamo per salvare le vite degli altri stalker, a volte a costo della nostra stessa vita.</text>
+	</string>
+	<string id="dm_about_91">
+		<text>Un tempo qui le cose erano piщ semplici, sai? Certo, anche allora c'erano i mostri, ma li gestivamo senza problemi. Oggi la situazione va molto male. Ogni notte uccidiamo dozzine di quei bastardi, e piщ ne ammazziamo piщ ne arrivano la notte dopo. Stiamo cadendo come mosche.</text>
+	</string>
+	<string id="dm_about_92">
+		<text>Noi, cioи la Duty, combattiamo i mostri che cercano di raggiungere la superficie, quindi non abbiamo molto tempo per chiacchierare. Sono certo che capirai. Se non vuoi guai puoi andare alla base neutrale alla fabbrica abbandonata, oppure puoi restare qui e aiutarci: i combattenti esperti sono sempre i benvenuti. Il nostro comandante pagherа bene il tuo supporto alla Duty.</text>
+	</string>
+	<string id="dm_action_info_55">
+		<text>Sei proprio un impiccione, eh? Vuoi sapere perchй lottiamo contro la Zona? Perchй sм! И come una guerra santa, nй piщ nй meno! O si vince o si perde, non ci sono vie di mezzo nй trattative con la Zona. Insomma, o sei con noi o contro di noi.</text>
+	</string>
+	<string id="dm_action_info_56">
+		<text>Secondo te? Non ho niente di meglio da fare, cosм ho iniziato a dipingere per hobby, basta aspettare che faccia buio e la vernice arriva da sй. Figliolo, c'и in corso una guerra contro i mutanti, una guerra vera... Con sangue, budella e tutto il resto. Dobbiamo compiere un ultimo sforzo e finire questa disgustosa feccia mutante. Insomma non potranno mica essere infiniti, no?</text>
+	</string>
+	<string id="dm_action_info_57">
+		<text>Combatto contro la Zona. Vuoi sapere il perchй? Beh, immagina che dei mostri entrino in casa tua, si mettano in un angolino e piano piano costringano te e la tua famiglia ad andarvene. Cosa faresti in una situazione simile? Di fatto questo и quello che sta facendo la Duty qui. La nostra missione и di respingere la Zona da ovunque sia arrivata, e il modo migliore per farlo и la guerra aperta. Tu hai per caso un'idea migliore?</text>
+	</string>
+	<string id="dm_action_info_58">
+		<text>Combatto le creature che ci impediscono di dormire la notte. Credo che il lavoro di ogni stalker sia di distruggere le manifestazioni della Zona. Non riesco a capire perchй qualcuno potrebbe volere il contrario. Se non si cura un'ulcera si ammala tutto il corpo, giusto? E poi i parassiti si diffonderebbero su tutto il pianeta. Immagina che futuro attende i nostri figli: a sinistra un mostro, a destra un'anomalia. Si potrа scegliere di che veleno morire.</text>
+	</string>
+	<string id="dm_action_info_59">
+		<text>La Zona и malvagia, figliolo. Un male che pende sul nostro pianeta come la scure di un boia sul collo di un condannato. Il problema и che non tutti riescono a capirlo. I pochi che invece lo fanno si sono uniti e hanno formato la Duty, un gruppo che cerca di impedire un'ulteriore diffusione di questo male. Hai visto quanti mutanti uccidiamo ogni giorno che passa: pensa a cosa succederebbe se gli permettessimo di allontanarsi dalla Zona. In breve, siamo l'ultima linea di difesa dell'umanitа su questo pianeta e non capisco proprio come sia possibile che qualcuno si opponga a noi e non riesca a capire questi semplici fatti.</text>
+	</string>
+	<string id="dm_action_info_60">
+		<text>Io compio il mio dovere nei confronti dell'umanitа, e queste non sono solo belle parole, ma la veritа. Da cosa la salvo? Dalla Zona e dalla sua maledetta progenie. Dobbiamo distruggere questa fonte di male e malattia prima che essa distrugga noi.</text>
+	</string>
+	<string id="dm_action_info_61">
+		<text>Combatto fianco a fianco con i miei compagni contro i mutanti. Ce ne sono moltissimi in questi giorni. Inoltre, a volte dal Lago Yantar scendono gruppi di zombi e dobbiamo occuparci anche di loro. Quindi, se vuoi unirti alla miglior fazione di combattenti, la Duty и la scelta giusta per te.</text>
+	</string>
+	<string id="dm_action_info_62">
+		<text>Cerco di decidere quale bestia portare all'Inquisitore. Lui gestisce uno zoo, alla nostra base, dove tiene degli esemplari della fauna locale. Mi piacerebbe catturare un Controllore, ma finiremmo tutti trasformati in zombi.</text>
+	</string>
+	<string id="dm_action_info_63">
+		<text>Mi sono unito alla Duty solo di recente, ed и stata la scelta migliore che abbia mai fatto in tutta la vita. Qui sono tutti dei professionisti, il clan и disciplinato e ben organizzato.</text>
+	</string>
+	<string id="dm_action_info_64">
+		<text>Sono nuovo e sto ancora cercando di capire come funzionano le cose. Una volta me ne andavo in giro per la Zona da solo, e ora sto imparando a coprire le spalle di quelli che condividono con me questi tempi difficili.</text>
+	</string>
+	<string id="dm_action_info_65">
+		<text>Eseguo gli ordini che ricevo. И come nell'esercito: abbiamo un comandante, gli ufficiali e i soldati. Tutto и alla luce del sole. Segui gli ordini e forse riuscirai a sopravvivere.</text>
+	</string>
+	<string id="dm_action_info_66">
+		<text>Combatto questi dannati mostri. Cosa posso dire? Sono stufo di subire gli attacchi di notte, ma ci inventeremo qualcosa. Alla fine troveremo il cuore della Zona e porremo fine a questo abominio una volta per tutte.</text>
+	</string>
+	<string id="dm_action_info_67">
+		<text>Un sacco di miei amici erano nella Duty, cosм alla fine mi sono arruolato anche io. Ci ho pensato su qualche mese, non ero certo fosse la cosa giusta, ma se ci ripenso adesso mi viene da ridere! Essere nella Duty и infinitamente meglio che vagare da solo nella Zona.</text>
+	</string>
+	<string id="dm_cool_info_17">
+		<text>Le cose non vanno bene: la situazione continua a peggiorare, specie dopo la grande emissione. La Zona и incasinata, ancora piщ inospitale: i mostri sono piщ veloci, furiosi e spietati che mai. Aggiungiamo a tutto questo il fatto che i clan cominciano a scontrarsi fra loro, e la situazione и nerissima. Qualche gruppo si и spostato nella Zona... dicono che si sono aperti dei passaggi verso nuovi territori.</text>
+	</string>
+	<string id="dm_cool_info_18">
+		<text>La Zona cambia in continuazione: c'и sempre qualcosa di nuovo, sempre caos. Era ora che la Duty arrivasse a portare un po' di ordine. Poi, subito dopo che l'Emissione ha stravolto la Zona, sono iniziati gli scontri. Tutti a caccia del proprio dominio. Se conquisteremo i nuovi territori, tutti i gruppi avranno eguale diritto di accesso. Beh, magari esclusa la Freedom... Comunque, quasi metа dei nostri uomini si sono addentrati nella Zona.</text>
+	</string>
+	<string id="dm_cool_info_19">
+		<text>Ho sentito che c'и un nuovo mutante che vive nella zona delle paludi: dicono che sembri un succhiasangue, ma и persino piщ pericoloso! Si muove in silenzio, a caccia della preda, e poi colpisce in un attimo, senza lasciare scampo. La cosa peggiore и che ora hanno cominciato a spostarsi, ne sono stati visti persino qui attorno. </text>
+	</string>
+	<string id="dm_cool_info_20">
+		<text>Ho sentito che molte anomalie e vari manufatti non sono piщ visibili: credo che le emissioni abbiano riempito la Zona di energia anomala, conferendo loro nuove proprietа. Starei attento, fossi in te: non si puт piщ andare tranquillamente in giro per la Zona! Oggi un rilevatore puт fare la differenza fra la vita e la morte, e ti conviene cercare di procurartene uno davvero buono. Ricordatelo, e fai attenzione.</text>
+	</string>
+	<string id="dm_intro_79">
+		<text>Ehi, amico!</text>
+	</string>
+	<string id="dm_intro_80">
+		<text>Che si dice, fratello?</text>
+	</string>
+	<string id="dm_intro_81">
+		<text>Guten tag! Nicht schiessen... qui siamo tutti amici.</text>
+	</string>
+	<string id="dm_intro_82">
+		<text>Devi chiedermi qualcosa, stalker?</text>
+	</string>
+	<string id="dm_intro_83">
+		<text>Vuoi un consiglio?</text>
+	</string>
+	<string id="dm_intro_84">
+		<text>Salve, amico.</text>
+	</string>
+	<string id="dm_intro_85">
+		<text>Cosa posso fare per te?</text>
+	</string>
+	<string id="dm_intro_86">
+		<text>Se и la prima volta che vieni nella Valle Oscura, fai un salto alla base della Freedom: il divertimento и tutto lм, in particolare nelle discussioni fra il meccanico e Bossolo.</text>
+	</string>
+	<string id="dm_intro_87">
+		<text>Ehi, fratello!</text>
+	</string>
+	<string id="dm_intro_88">
+		<text>Benvenuto, amico!</text>
+	</string>
+	<string id="dm_intro_89">
+		<text>Benvenuto nella terra degli stalker solitari!</text>
+	</string>
+	<string id="dm_about_93">
+		<text>Questo и il posto migliore di tutta la Zona, perchй qui c'и la base della Freedom. Chi se ne frega di mutanti e anomalie? Dopo una bella bevuta, perfino un vortice non и un problema! E se и una bevuta quella che cerchi, beh, sei venuto nel posto giusto! </text>
+	</string>
+	<string id="dm_about_94">
+		<text>La Valle Oscura и il paradiso degli stalker solitari: qui nessuno verrа a parlarti di dovere e codice! Alla fabbrica abbandonata potrai trovare il miglior clan di tutta la Zona, secondo me potresti pure entrarci! Qui abbiamo proprio un bel posticino... A ovest si trova la Discarica, il Cordon и a sud, a nord invece ci sono i magazzini militari.</text>
+	</string>
+	<string id="dm_about_95">
+		<text>L'attrazione principale della Valle и la base della Freedom. Non puoi mancarla: devi solo cercare un'enorme fabbrica! Nessuno sa riparare armi o armature come Zio Yar! Se invece vuoi comprare qualcosa, Bossolo и il tuo uomo... e per i momenti di relax, fai un salto al Boccale Libero, famoso in tutta la Zona per l'abbondanza delle sue dosi e per la quantitа di lavori che puт offrire a chi ha voglia di darsi da fare.</text>
+	</string>
+	<string id="dm_about_96">
+		<text>Al momento siamo in mezzo ai guai... c'и qualcuno che sta massacrando i nostri ragazzi! Tutti i membri della Freedom che non sono occupati in altri incarichi, sono stati richiamati nella Valle per identificare il nemico. Abbiamo anche iniziato a sorvegliare gli accessi... la prudenza non и mai troppa.</text>
+	</string>
+	<string id="dm_about_97">
+		<text>La Valle и piena di fabbriche abbandonate e ho sentito dire che ci sono anche dei laboratori sotterranei, ovviamente abbandonati anche loro. Beh, non so nel sottosuolo, ma noi abbiamo stabilito la base in una delle fabbriche: visita il nostro localino quando ti va, vedrai che ti divertirai un sacco.</text>
+	</string>
+	<string id="dm_about_98">
+		<text>Che ti posso dire della Valle Oscura? Non sono bravo a raccontare le cose, io... Perchй non chiedi a Bossolo o a Ganja? Ah, se non lo sai, sono il mercante e il barista della nostra base. </text>
+	</string>
+	<string id="dm_about_99">
+		<text>Non c'и nulla di speciale nella valle in sй... Qui puoi trovare un po' di tutto: mostri, anomalie, persino qualche manufatto, se sai dove guardare. A parte questo, non и diverso da qualsiasi altro posto, solo che qui gli edifici industriali abbandonati sono utili, dato che sono la sede perfetta per la nostra base. </text>
+	</string>
+	<string id="dm_about_100">
+		<text>Questo и un buon posto per uno stalker novellino: и vicino al Cordon e le anomalie sono poche e distanziate. Persino i mostri sono rari! E poi, se sei fortunato qui trovi anche qualche bottino decente, che puoi vendere alla nostra base, cioи in un posto sicuro. La cosa piщ difficile и arrivare qui, oltrepassando gli avamposti militari della Discarica e stando attendo a non finire fritto dalle radiazioni.</text>
+	</string>
+	<string id="dm_about_101">
+		<text>Nella Valle Oscura i novellini possono imparare ad agire come stalker, recuperando anche qualche manufatto. Quelli piщ esperti, invece, possono riposarsi dall'incubo della "vera" Zona, riprendendo le forze prima di tornare in azione. Tutti poi sono i benvenuti al Boccale Libero, e possono riparare l'equipaggiamento o concludere affari con Bossolo. Il tutto senza uscire dalla base.</text>
+	</string>
+	<string id="dm_about_102">
+		<text>Quello che mi interessa di piщ in questo posto и il Boccale Libero: и un bel locale, il proprietario si chiama Ganja... nomen omen, se capisci cosa intendo! Lа puoi passare qualche ora piacevole... E poi guarda non saprei che altro dirti, perchй non mi interessa nient'altro, francamente.</text>
+	</string>
+	<string id="dm_about_103">
+		<text>Alla base della Freedom c'и un tecnico che puт trasformare il tuo AK arrugginito in un cannone antiaereo: un vero genio! E anche il trafficante ci sa fare.</text>
+	</string>
+	<string id="dm_about_104">
+		<text>Sta succedendo qualcosa di strano... qualcuno sta ammazzando i nostri ragazzi, agisce in silenzio ed и letale. Stiamo controllando tutte le strade della Valle, ma non serve a niente: di tanto in tanto, uno dei nostri gruppi viene colpito cosм rapidamente che non facciamo in tempo a intervenire. Non sappiamo chi sia... ormai iniziamo a pensare a qualche traditore. </text>
+	</string>
+	<string id="dm_about_105">
+		<text>La Valle и come un nido di vespe: tutti sono nervosi e una faccia nuova suscita sempre qualche sospetto. Devi capirci: qualcuno sta distruggendo i nostri avamposti, e non sappiamo di chi si tratti... per questo non ci fidiamo piщ di nessuno, neppure della nostra gente. I ragazzi sono furiosi, hanno tutti perso qualche amico negli attacchi.</text>
+	</string>
+	<string id="dm_about_106">
+		<text>Perchй fai queste domande? Non prendertela, ma ci sono dei bastardi che ce l'hanno con noi, ultimamente: colpiscono avamposti e pattuglie e quando arrivano i rinforzi trovano soltanto cadaveri. Niente indizi, niente di niente... per questo sospettiamo di qualcuno dei nostri. </text>
+	</string>
+	<string id="dm_about_174">
+		<text>Qui le cose non vanno per niente bene: qualcuno sta ammazzando i combattenti della Freedom, e non sappiamo di chi si tratti. Sembra che riescano a colpire sempre i nostri punti deboli, come se sapessero dove attaccare... Amico, se penso a quanti sono giа morti mi vengono i brividi, e non riusciamo a fare nulla! Possiamo solo aspettare che arrivi un segnale di allarme da un avamposto, per poi andare la a recuperare i cadaveri. I cadaveri dei nostri ragazzi. </text>
+	</string>
+	<string id="dm_about_175">
+		<text>Lo ammetto, c'и una talpa nella Freedom: qualcuno passa informazioni al nemico, che le sfrutta a dovere. I loro attacchi sono silenziosi: ammazzano i nostri uomini e svaniscono. Il clan ha giа subito gravi perdite e questo ci ha impedito di conquistare i magazzini militari... ah, ma questo non importa... giuro che se riuscirт a mettere le mani sul traditore... la farт pagare a quel bastardo, per tutti gli amici che ho perso. </text>
+	</string>
+	<string id="dm_about_176">
+		<text>Se vuoi sapere come vanno le cose, allora ti dico che questo posto и come qualsiasi altro nella Zona. Andiamo in cerca di bottini, combattiamo e moriamo... e speriamo nel futuro. Se invece ti interessa qualcosa di particolare, allora sappi che le cose ora non vanno bene... ed и per questo che non mi piace perdere tempo chiacchierando. </text>
+	</string>
+	<string id="dm_action_info_68">
+		<text>Tutto quello che uno stalker puт fare: cercare bottini, uccidere mutanti e unirsi con i compari alla base, quando gira un po' di grana. A volte qualche compare mi tocca seppellirlo... quando ne resta abbastanza. </text>
+	</string>
+	<string id="dm_action_info_69">
+		<text>Sto aspettando quello stronzo del mio ex amico... abbiamo trovato insieme un bel bottino e ci siamo imbattuti in un branco di pseudo cani, sulla via del ritorno... ho iniziato a sparare e non ho visto il bastardo andarsene con la mia parte! Mi ha abbandonato la, riesci a crederci? Me la sono cavata a stento! E cosм ora lo aspetto. Prima o poi arriverа, vedrai. </text>
+	</string>
+	<string id="dm_action_info_70">
+		<text>Era parecchio che volevo unirmi alla Freedom, ma non mi decidevo mai a farlo. E adesso guarda, faccio parte a pieno titolo del gruppo, sono un grosso calibro, e risparmiati le battute, OK? No, non sono insicuro, и che sono stufo dei soliti scherzi idioti... </text>
+	</string>
+	<string id="dm_action_info_71">
+		<text>Ora sto qui a parlare con te, che cosa credi? No, seriamente, sono uno stalker. Se sai cosa fanno gli stalker, sai cosa faccio io.</text>
+	</string>
+	<string id="dm_action_info_72">
+		<text>Beh, so che per te sarа difficile capirlo, ma... io vivo qui! E ci lavoro anche, come stalker. Abbiamo una base, forse hai giа sentito parlare di un clan chiamato Freedom. Beh, la Valle Oscura и il nostro territorio. E secondo te che ci fa un membro della Freedom sul territorio della Freedom?</text>
+	</string>
+	<string id="dm_action_info_73">
+		<text>Cerco di recuperare manufatti dalle anomalie, magari senza crepare nel frattempo.</text>
+	</string>
+	<string id="dm_action_info_74">
+		<text>Sto cercando di tendere un'imboscata ad un cane. E non ridere! Non hai idea di quanto sia furbo! Si intrufola nel campo di notte e ulula: se provi a sparargli scappa, poi torna e ricomincia tutto da capo. Sono tre giorni che non dormo... se scopro la sua tana, giuro che lo soffoco con le mie mani, quel bastardo!</text>
+	</string>
+	<string id="dm_action_info_75">
+		<text>Io e i ragazzi sorvegliamo questa zona in caso di un attacco a sorpresa. Hai sentito che qualcuno ha colpito i nostri avamposti e le nostre pattuglie, no? Peccato, erano tutti ottimi stalker.</text>
+	</string>
+	<string id="dm_action_info_76">
+		<text>Beh, non c'и granchй da fare nella Zona: si cercano bottini, si combatte o se ne esplorano i segreti. Beh, e bisogna garantire che tutti abbiano accesso a questi segreti. И proprio quello che sto facendo adesso.</text>
+	</string>
+	<string id="dm_action_info_77">
+		<text>Conosci il manufatto "Medusa"? Beh, la mia missione и trovare questa piccola gemma e venderla a Bossolo per un bel po' di soldi. Ora lasciami in pace, cosм posso pensare dove trovarne una.</text>
+	</string>
+	<string id="dm_action_info_78">
+		<text>Lo sapevi che anche la Freedom sta studiando la Zona? Certo, non siamo scienziati, ma vogliamo scoprire da cosa и stato creato questo miracolo della natura. Le anomalie, i manufatti, le misteriose emissioni... Sono degli autentici doni per l'umanitа. Di cosa stavamo parlando? Ah, sм, mi hai chiesto cosa ci faccio qui. Sto raccogliendo dati per una ricerca. Rilevo le radiazioni di fondo, la temperatura, l'umiditа e prendo nota dei mostri e delle anomalie che vedo... Ora devo continuare il mio lavoro, se non ti dispiace.</text>
+	</string>
+	<string id="dm_action_info_79">
+		<text>Beh, questa и la nostra base, se non l'hai notato, e tutto ciт che faccio и strettamente legato a essa. Quindi, anche se mi vedi gironzolare senza far niente, in realtа sto eseguendo due incarichi cruciali: dare l'impressione che qui lavorino molte persone e consentire a un altro combattente di riposare.</text>
+	</string>
+	<string id="dm_action_info_80">
+		<text>Sono in cerca di avventure nella Zona, e qui nella Valle Oscura ce ne sono a bizzeffe. Posso farlo solo grazie alla Freedom, e non m'importa se questo suona presuntuoso da parte mia.</text>
+	</string>
+	<string id="dm_about_107">
+		<text>La principale potenza della valle и la Freedom, anche se di recente ha subito un duro colpo. Ogni tanto degli avamposti remoti vengono sopraffatti e i difensori muoiono, senza testimoni. Nessuno sa dire come facciano gli aggressori a evitare le pattuglie della Freedom, nй chi siano. Pensavo di unirmi al clan, ma morire inutilmente non fa parte dei miei piani, quindi non ho fretta.</text>
+	</string>
+	<string id="dm_about_108">
+		<text>Questo posto и uguale a tutti gli altri, nй migliore nй peggiore. Anomalie, mostri, radiazioni e palazzi sovietici fatiscenti, con fattorie, fabbriche e via dicendo. L'unica differenza и la base della Freedom. Quelli lм sono proprio forti, ma ultimamente mi sembrano agitati. И comprensibile, con tutti i problemi che hanno avuto di recente.</text>
+	</string>
+	<string id="dm_about_109">
+		<text>Fino a poco tempo fa, la Valle Oscura era uno dei luoghi piщ piacevoli della Zona... sempre che la parola "piacevole" abbia un senso in questo posto. La valle era pericolosa come qualsiasi altro luogo, ma c'erano manufatti abbastanza decenti da trovare. Niente banditi, militari, Bruciacervella o robe simili. Tuttavia, qualcuno ha iniziato a infastidire la Freedom e la situazione и degenerata parecchio. Non и raro che un passante si becchi un proiettile vagante indirizzato a un membro del clan.</text>
+	</string>
+	<string id="dm_about_110">
+		<text>La Valle Oscura и distante dalle vie principali che conducono al centro della Zona. Gli unici luoghi raggiungibili da qui sono il Cordon e la Discarica. Ecco perchй non c'и un flusso costante di persone che vanno e vengono come in altri posti, e questo spiega perchй la Freedom ha scelto questa zona per la sua base. Dubito di saperti dire qualcosa sul clan che tu non sappia giа.</text>
+	</string>
+	<string id="dm_about_111">
+		<text>Questa и una delle aree migliori della Zona per uno stalker neutrale. Qui non ci sono militari, banditi o i mutanti piщ pericolosi. Non si deve far altro che cercare bottini ed evitare le anomalie. Questo significa essere uno stalker.</text>
+	</string>
+	<string id="dm_about_112">
+		<text>Ho visto luoghi che fanno sembrare la Valle Oscura un parco giochi per bambini. Pseudocani e anomalie... ah! Esplora la Zona da cima a fondo come ho fatto io e capirai cosa intendo dire! Aspetta che un controllore ti entri nella testa o che un succhiasangue sbuchi dal nulla... Basta e avanza per farsela addosso! Ma questo и niente. Hai mai sentito parlare del Bruciacervella? Quello sм che и tosto. Non puoi vederlo, toccarlo nй tanto meno ucciderlo! Lui invece puт farti qualsiasi cosa senza troppi problemi.</text>
+	</string>
+	<string id="dm_about_113">
+		<text>La Freedom controlla l'intera area, ma non и pericolosa come i banditi. Puoi camminare nella vallata liberamente e raccogliere manufatti, senza dover pagare tasse o pedaggi a nessuno. И di gran lunga il posto piщ bello della Zona, secondo me.</text>
+	</string>
+	<string id="dm_about_114">
+		<text>I membri della Freedom sapranno aiutarti meglio di me. Perchй non vai a chiederglielo nella loro base? Non ci vado da un pezzo, e di solito prendo sempre le stesse strade. L'unica cosa che so и come andare dalla Discarica alla base della Freedom, e da lм alla fattoria a sud.</text>
+	</string>
+	<string id="dm_about_115">
+		<text>Le prime settimane pensi che questo posto sia il migliore della Zona. И relativamente sicuro e i membri della Freedom sono bravi ragazzi. Sono persone molto aperte e soprattutto oneste quando si parla d'affari. Dopo un po', perт, inizi ad annoiarti, dato che la valle и distante dalle strade principali e di solito non succede granchй. И il posto ideale per rilassarsi prima di tornare nel caos della Zona, ma vivendo qui rischi di diventare un pappamolla. Secondo me la Discarica a ovest и una scelta migliore, sempre che tu non voglia andare al Cordon a infastidire i militari.</text>
+	</string>
+	<string id="dm_about_116">
+		<text>Se sei sano e sveglio, qui puoi fare un bel po' di quattrini completando le missioni della Freedom o semplicemente andando a caccia di bottini. La Freedom non и ricca sfondata come i banditi e non possiede un fondo di assistenza come la Duty. Qui quello che trovi и tuo, basta cercare. Puoi fare delle donazioni volontarie nei giorni di festa o al compleanno del comandante, ma se non ti piace qualcosa puoi sempre andartene al Cordon oppure, se ti senti particolarmente generoso e vuoi "donare" i tuoi sudati risparmi ai banditi, alla Discarica piщ a ovest.</text>
+	</string>
+	<string id="dm_about_117">
+		<text>Se non vuoi avere a che fare con controllori e succhiasangue, la Valle Oscura и il posto che fa per te. Qui ci sono solo cinghiali, mostri carnivori e cani. Per quanto riguarda le anomalie, basta stare attenti ed evitarle.</text>
+	</string>
+	<string id="dm_action_info_81">
+		<text>Sono venuto nella valle in cerca di manufatti, ma poi ho scoperto che qui c'и la base della Freedom. Mi unirei volentieri a loro, ma al momento non accettano nessuno per via degli attacchi ai loro avamposti. Sono irritati e sospettosi, tanto da passare ai raggi X chiunque gli capiti a tiro. Scherzo, ovviamente... Hai mai visto una macchina ai raggi X da queste parti? Comunque, quelli della Freedom sono davvero preoccupati, perciт dovrт presentare la mia domanda di ammissione in un altro momento.</text>
+	</string>
+	<string id="dm_action_info_82">
+		<text>Sono qui per unirmi alla Freedom. Hanno bisogno di rinforzi, di questi tempi, ma sono molto diffidenti verso gli estranei. Pare se la stiano passando brutta.</text>
+	</string>
+	<string id="dm_action_info_83">
+		<text>Sono in cerca di bottini, e questo luogo и uno dei piщ sicuri. Qui non ci sono tasse esorbitanti come nella Discarica, nй orde di mutanti come all'Agroprom. E nessuna traccia di militari corrotti, per giunta! Le anomalie e i mostri che spuntano ogni tanto non sono un problema, rispetto ad altri posti.</text>
+	</string>
+	<string id="dm_action_info_84">
+		<text>Sono a caccia di mutanti. I trafficanti e gli scienziati pagano molto bene per i loro organi. Non mi credi? Chiediglielo tu stesso.</text>
+	</string>
+	<string id="dm_action_info_85">
+		<text>Questa и la mia casa. Io e i ragazzi abbiamo costruito una specie di accampamento. Dobbiamo riposarci e riprendere fiato tra un viaggio e l'altro nella Zona, e questo posto ci и sembrato l'ideale.</text>
+	</string>
+	<string id="dm_action_info_86">
+		<text>Sono venuto qui per sfuggire ai tormenti delle altre regioni della Zona. I militari ai depositi e al Cordon trattano noi stalker come pezzenti, i banditi della Discarica fanno quel diavolo che vogliono e la Duty all'Agroprom cerca di convincerti a lottare contro chiunque non stia con loro. Qui siamo tutti liberi e uguali, e spesso anche alticci. Insomma, и il posto giusto per me.</text>
+	</string>
+	<string id="dm_action_info_87">
+		<text>Mi sono separato dal mio gruppo alla Discarica. Abbiamo avuto un problema con i banditi, non volendo pagare le loro tasse, e quelli in genere non accettano volentieri questo tipo di comportamento. Li abbiamo conciati per le feste, ma quando sono arrivati i loro rinforzi ce la siamo svignata. Io mi sono diretto a est finendo qui, nella Valle Oscura. Non voglio rischiare di tornare alla Discarica, quindi spero che anche gli altri mi raggiungano qui. Poi decideremo cosa fare.</text>
+	</string>
+	<string id="dm_action_info_88">
+		<text>Sono nella Zona da lungo tempo, e gli unici altri posti che ho visto sono il Cordon e la Discarica. Voglio solo starmene tranquillo, e magari trovare qualcosa da rivendere a buon prezzo.</text>
+	</string>
+	<string id="dm_action_info_89">
+		<text>Dicevano che qui nella Valle Oscura fosse pieno di bottini da trovare e poi rivendere al trafficante della Freedom. Ormai sono qui da un pezzo, ma finora non ho trovato un bel nulla. И solo sfortuna? Oppure cerco nei posti sbagliati? Chissа...</text>
+	</string>
+	<string id="dm_action_info_90">
+		<text>Bossolo vende delle ottime armature, ma sono a corto di denaro. Quindi ho deciso di andare in cerca di bottini, visto che i tipi svegli possono tirare avanti senza problemi qui nella valle. Il problema и che i soldi non mi bastano mai. A volte spendo troppo in munizioni e medicinali, altre mi bevo tutti i miei risparmi al "Boccale libero".</text>
+	</string>
+	<string id="dm_cool_info_21">
+		<text>L'Emissione ha rivoluzionato tutto. Le vie tranquille e sicure non sono piщ tranquille e sicure, e bisogna cercarne di nuove nella palude. Ma il bello и che ora puoi raggiungere nuove parti della Zona. Chissа quali segreti nascondono! Dicono che ci sia persino una piccola cittа nel cuore della Zona, rimasta esattamente come all'epoca sovietica. Non appena il nostro capo и venuto a saperlo, ha inviato un bel po' di uomini a indagare. Poi ha scoperto che anche la Duty ha inviato un gruppo, quindi ha ordinato ai nostri di darsi una mossa. Se andrа tutto per il meglio, avrт di sicuro qualcosa di nuovo da dirti.</text>
+	</string>
+	<string id="dm_cool_info_22">
+		<text>Dicono che le emissioni che hanno sconvolto la Zona siano state innescate da un gruppo di stalker che sono riusciti a superare il Bruciacervella, arrivando al centro della Zona. Pensa un po', hanno superato il Bruciacervella! E sono tornati tutti interi. Chissа cosa ha causato le emissioni... Che sia una specie di vendetta della Zona?</text>
+	</string>
+	<string id="dm_cool_info_23">
+		<text>Le anomalie sono sempre piщ letali. Se prima erano piccole sacche di energia anomala, ora sono molto piщ grandi e pericolose. Di questi tempi и meglio non fare mosse azzardate. Per sopravvivere alle radiazioni e ai vapori tossici bisogna indossare protezioni belle pesanti e pensarci sempre due volte prima di fare un singolo passo.</text>
+	</string>
+	<string id="dm_intro_90">
+		<text>Attenzione agli zombi che escono dalla fabbrica. Lа fuori ce ne sono un'infinitа!</text>
+	</string>
+	<string id="dm_intro_91">
+		<text>Wow, amico. Assomigli cosм tanto a uno zombi che per poco non ti facevo saltare la testa.</text>
+	</string>
+	<string id="dm_intro_92">
+		<text>Benvenuto al lago Yantar, il lago che и tutto un programmar! Ah ah! Capito? Fa rima! Ah ah!</text>
+	</string>
+	<string id="dm_intro_93">
+		<text>Benvenuto a Yantar, fratello.</text>
+	</string>
+	<string id="dm_intro_94">
+		<text>Sei sulla strada giusta, stalker. Qui abbiamo bisogno del tuo aiuto.</text>
+	</string>
+	<string id="dm_intro_95">
+		<text>Ehi, tu!</text>
+	</string>
+	<string id="dm_about_118">
+		<text>Ricorda di stare sempre alla larga dalla fabbrica, perchй nessuno esce vivo da lм. Diavolo, inizi a dare i numeri non appena ti avvicini all'ingresso, e solo la Zona sa cosa succede lа dentro.</text>
+	</string>
+	<string id="dm_about_119">
+		<text>Credimi, amico, questo posto и terrorizzante. Noi continuiamo a massacrare le decine di zombi che escono dalla fabbrica, ma tutti quelli che si sono avventurati all'interno non ne sono mai usciti. Io stesso ho cercato di avvicinarmi alla fabbrica piщ del solito, ma ho sentito il cervello che si fondeva! Ero paralizzato, mi girava tutto e sentivo qualcosa nella testa. Me la sono fatta sotto, amico! Poi sono tornato indietro subito, ma quei rumori mi sono restati nella testa tutto il giorno. Riesco a immaginare i mucchi di cadaveri di quelli che si sono avvicinati alla fabbrica piщ di me.</text>
+	</string>
+	<string id="dm_about_120">
+		<text>Qui c'era un lago chiamato Yantar, ma ora и solo una pozza di scarichi maleodoranti. Gli scienziati hanno un campo lungo la riva. Conducono le loro ricerche nei bunker e partono per qualche spedizione, ogni tanto. A volte ci chiedono di fare qualcosa. Con un po' di fortuna potresti trovare qualche manufatto da queste parti, oppure delle armi sui cadaveri degli zombi. Ecco, se c'и qualcosa che non manca affatto da queste parti... sono gli zombi. Arrivano qui dalla vecchia fabbrica, ma non riusciamo ad avvicinarci a quel posto. Non appena cerchi di raggiungerla, inizia a scoppiarti la testa. Tutti i piщ coraggiosi sono morti da tempo, e ora restano solo i prudenti.</text>
+	</string>
+	<string id="dm_about_121">
+		<text>Questo posto non mi piace. Io e un mio compagno abbiamo cercato di entrare nella fabbrica, essendo una delle poche aree non esplorate della Zona. Pensavamo di trovare qualche bel bottino. Ah! Appena sono arrivato al cancello la testa ha iniziato a girarmi, ho sentito strani rumori e visto cose strane. Il mio compagno era dietro di me, ed и solo grazie a lui se ci siamo salvati. Non appena mi ha visto in quello stato, mi ha preso e trascinato via. Come se non bastasse, per poco non siamo stati scambiati per zombi e uccisi dai nostri colleghi stalker mentre tornavamo indietro.</text>
+	</string>
+	<string id="dm_about_122">
+		<text>Gli scienziati hanno un campo vicino al lago prosciugato, mentre gli stalker combattono orde infinite di zombi da alcune postazioni fortificate. Nessuno sa dire cosa succeda dentro la vecchia fabbrica, ma non appena ti avvicini inizi a sentire strane voci nella testa e a perdere le forze. Neanche i cervelloni sanno dare una spiegazione.</text>
+	</string>
+	<string id="dm_about_123">
+		<text>Questa regione viene chiamata Yantar. Un tempo c'era un lago, ma se vuoi farti una vacanza ti consiglio di cercare altrove. Ora qui abbiamo solo una palude puzzolente, radiazioni e mucchi di zombi. Se non ti basta, prova a farti un giro alla vecchia fabbrica. Non riuscirai, perт, ad avvicinarti piщ di tanto: la gente impazzisce ancor prima di superare il cancello.</text>
+	</string>
+	<string id="dm_about_124">
+		<text>Da queste parti, il posto piщ pericoloso и di sicuro la fabbrica. L'area in cui si trova и stata colpita da un'emissione sconosciuta, e chiunque abbia cercato di avvicinarsi dice di aver sentito voci e rumori nella testa. Quei pochi con le palle abbastanza grosse da provare a entrare non sono mai tornati indietro.</text>
+	</string>
+	<string id="dm_about_125">
+		<text>Qui collaboriamo con gli scienziati, difendendoli dalle orde di zombi che escono dalla fabbrica deserta. In cambio ci forniscono medicazioni ed equipaggiamento che a volte funziona per davvero. Pochissimi osano avventurarsi nella fabbrica, visto che c'и una specie di emissione che ti fa letteralmente scoppiare il cervello. Tuttavia, alcuni hanno sfruttato i periodi di quiete per entrare nella fabbrica, tornando indietro tutti interi e con un bottino di grande valore.</text>
+	</string>
+	<string id="dm_about_126">
+		<text>Sono sicuro che c'и qualcosa di molto prezioso dentro la fabbrica, e scommetto che Sakharov e i suoi scienziati se ne priverebbero volentieri in cambio di un po' di denaro. Entrare all'interno non и affatto facile, purtroppo, e finora non ci и riuscito nessuno. O ricevi un caloroso benvenuto da parte degli zombi... oppure ti scoppia la testa non appena ti avvicini. Inizi ad avere delle visioni e a sentirti confuso. Se non torni indietro subito, sei spacciato. Ho perso alcuni compagni in questo modo... Volevano scoprire i segreti della fabbrica a tutti i costi!</text>
+	</string>
+	<string id="dm_about_127">
+		<text>Qui c'era un lago chiamato Yantar, prima dell'incidente. Durante la costruzione della fabbrica devono aver combinato un casino nel sottosuolo, facendo defluire l'acqua del lago e trasformandolo in una pozza fetida. Ora gli scienziati hanno un campo accanto al cosiddetto lago, e quella stessa fabbrica sta causando un mucchio di problemi poco piщ avanti, lungo la strada. Il cervello ti va in corto non appena ti avvicini, e ti sembra di impazzire. Quelli che cercano ancora di entrarci sono autentici suicidi. Tutti gli altri continuano ad ammazzare gli stalker zombi che escono dalla fabbrica e ad aiutare gli scienziati.</text>
+	</string>
+	<string id="dm_about_128">
+		<text>Ci sono degli scienziati che studiano la Zona qui al Lago Yantar. L'attrazione principale и la fabbrica, e un sacco di persone sono scomparse lа dentro per via delle emissioni. Nessuno ne и mai uscito vivo e non abbiamo la minima idea di che fine facciano.</text>
+	</string>
+	<string id="dm_about_129">
+		<text>Gli scienziati hanno stabilito una base qui, e gli stalker usano le postazioni fortificate per uccidere gli zombi. A sud c'и l'Agroprom, con la Duty che combatte i mutanti, e piщ a nord puoi trovare la Foresta rossa. Non sappiamo cosa nasconda, visto che nessuno ne и mai uscito vivo.</text>
+	</string>
+	<string id="dm_action_info_91">
+		<text>Aiuto gli scienziati a condurre le loro ricerche. Non direttamente, ovvio. Io e i ragazzi li difendiamo dagli zombi, proteggiamo le loro spedizioni e portiamo a Sakharov vari manufatti, organi di mutanti e altra robaccia che ci chiede. In cambio studiano le emissioni che friggono il cervello a quelli che si avvicinano alla fabbrica. Quando troveranno un modo per superarle, la fabbrica verrа presa d'assalto dai cercatori di bottini, vedrai.</text>
+	</string>
+	<string id="dm_action_info_92">
+		<text>Sto aspettando che quei cervelloni trovino un modo per superare le emissioni che ci impediscono di entrare nella fabbrica. Perchй non ci riusciamo? Vai a scoprirlo da solo. C'и qualcosa che ti scombussola la testa a tal punto che non ricordi piщ da che parte si tiene la pistola. Un sacco di stalker hanno provato ad avvicinarsi... e non sono mai tornati.</text>
+	</string>
+	<string id="dm_action_info_93">
+		<text>Mi sono offerto volontario per aiutare gli scienziati. In pratica devo proteggerli dalle continue ondate di zombi. И un buon compromesso, visto che in cambio ci forniscono bende, medicazioni e munizioni. Questo posto non и cosм male, basta starsene tranquilli.</text>
+	</string>
+	<string id="dm_action_info_94">
+		<text>Uno stalker veterano mi ha venduto una mappa di tutti i nascondigli in quest'area. L'ho memorizzata e poi bruciata, quindi uccidermi non ti servirа a niente. Comunque ho giа ripulito tutti i nascondigli fuori dalla fabbrica, ed erano esattamente dove diceva la mappa. I migliori sono dentro la fabbrica, perт. Quando Sakharov e la sua squadra scopriranno come superare le emissioni, ci entrerт subito.</text>
+	</string>
+	<string id="dm_action_info_95">
+		<text>Sto raccogliendo dei dati per Sakharov. И a corto di assistenti, quindi paga gli stalker per fare queste piccole commissioni.</text>
+	</string>
+	<string id="dm_action_info_96">
+		<text>Un trafficante mi ha detto che un mio vecchio compagno d'armi bazzica da queste parti. Sono venuto qui a trovarlo, cosм potremo esplorare la Zona insieme.</text>
+	</string>
+	<string id="dm_action_info_97">
+		<text>Che stanchezza. Sono stufo di andare in cerca di bottini nella Zona, stufo di combattere i mostri e stufo di affrontare i banditi per avere un posto al sole. Mi sto riposando un po' qui. Basta sparare a qualche sporadico zombi, e gli scienziati mi pagano per farlo. Ho intenzione di restare qui un altro po', prima di raggiungere delle regioni piщ pericolose. Sai bene che nella Zona piщ grande и il pericolo, piщ sostanzioso sarа il bottino.</text>
+	</string>
+	<string id="dm_action_info_98">
+		<text>Dopo l'Emissione ho deciso di farmi un giro nella Zona per vedere cosa c'и di nuovo. Sono stato dappertutto, dalle Paludi al Bruciacervella, e non sai quante cose ho visto. Ero venuto qui per vendere un po' di bottino, e alla fine ho trovato dei compagni niente male. Ora combattiamo insieme.</text>
+	</string>
+	<string id="dm_action_info_99">
+		<text>Mi sto riprendendo dall'ultima battaglia. Gli zombi erano cosм tanti che siamo riusciti a respingerli per miracolo. Se fossero stati persone normali, ora non sarei qui a parlare con te. Per fortuna gli zombi sono degli imbecilli totali, senza alcuna tattica. Perт ci hanno dato lo stesso del filo da torcere e mi sono beccato una pallottola vagante. Niente di grave, mi rimetterт presto.</text>
+	</string>
+	<string id="dm_action_info_100">
+		<text>Voglio entrare nella fabbrica, ma sono molto combattuto. Da una parte sono spaventato a morte, dall'altra vorrei sapere cosa si nasconde lа dentro. Prima o poi qualcuno dovrа scoprire i suoi segreti, quindi perchй non posso essere io?</text>
+	</string>
+	<string id="dm_action_info_101">
+		<text>Sto cercando di raggranellare un po' di soldi per comprarmi una buona arma. Lavoro per gli scienziati, allontanando gli zombi dal loro campo. Quando avrт abbastanza denaro, comprerт quel bel fucile e andrт a esplorare la Zona.</text>
+	</string>
+	<string id="dm_action_info_102">
+		<text>Sono venuto qui dall'Agroprom dopo aver combattuto un po' nel clan di Orest. Avevo bisogno di cambiare aria. Ora vorrei tanto esplorare la Foresta rossa, ma il Bruciacervella della fabbrica blocca totalmente l'accesso. Avvicinarsi и giа un'impresa di per sй.</text>
+	</string>
+	<string id="dm_action_info_103">
+		<text>Stavo aiutando la Duty a combattere i mutanti quando un gruppo di zombi и arrivato da Yantar. Abbiamo formato una squadra per risolvere il problema, e mi sono offerto volontario. Poi siamo venuti qui, abbiamo ripulito tutto e i ragazzi della Duty sono tornati indietro. Io invece ho visto una bella tuta protettiva in vendita al laboratorio degli scienziati, quindi ho deciso di stare qui e risparmiare un po' di soldi per comprarla.</text>
+	</string>
+	<string id="dm_action_info_104">
+		<text>LASCIAMI IN PACE!!! Cosa?!? No, non dico a te. Sto impazzendo, amico. Ho fatto la cretinata di avvicinarmi alla fabbrica. Volevo vederla con i miei occhi. E ora guarda come sono ridotto... ho il cervello fritto. Meno male che gli altri mi hanno salvato. Ora sto parlando con te, ma sento un sacco di voci nella testa. Stai zitto! No, non dicevo a te. Ehm... lascia perdere.</text>
+	</string>
+	<string id="dm_cool_info_24">
+		<text>Ho sentito che un gruppo di stalker ha provato a raggiungere il centro della Zona. Secondo alcuni ce l'hanno fatta, altri dicono di no, ma c'и di sicuro un legame tra la loro spedizione e l'ultima emissione. Chissа, magari hanno trovato l'Esauditore di desideri e ne hanno espresso uno.</text>
+	</string>
+	<string id="dm_cool_info_25">
+		<text>Dicono che un'intera fazione sia andata dispersa nella Zona. Hai mai sentito parlare dei Monolitiani? Beh, un tempo proteggevano la Zona, ma a un certo punto si sono trasferiti verso il centro poco prima dell'Emissione. Da allora nessuno ha piщ avuto loro notizie, ma di recente alcuni stalker molto aggressivi hanno sferrato degli attacchi dall'area del Bruciacervella, uccidendo chiunque senza fare domande. Li ho visti io stesso dalle parti dei depositi militari, e scommetto che sono gli stessi Monolitiani scomparsi. Del resto, le uniformi erano quasi identiche.</text>
+	</string>
+	<string id="dm_cool_info_26">
+		<text>Dopo l'Emissione и cambiato tutto. Ora la Zona и completamente diversa. I clan sono in competizione, i mostri strisciano fuori da ogni buco, nuovi territori vengono scoperti e le vie che conducono a quelli conosciuti sono bloccate da strane anomalie. In giro abbiamo visto anche dei nuovi manufatti... Cosa posso dire? Mi sento di nuovo un novellino.</text>
+	</string>
+	<string id="dm_cool_info_27">
+		<text>L'altro giorno ho sentito dire che i militari hanno parecchi problemi giщ ai depositi, dopo l'Emissione. Pare che la Freedom sia interessata al loro territorio, quindi non possono far altro che rintanarsi nella loro base e pregare. I militari sono molto indeboliti, ma sanno che la loro base и la chiave di tutto. L'altra cosa sulla bocca di tutti и il ritorno dei Monolitiani dal centro. Eravamo convinti che l'avessero raggiunto. Non sai quanto vorrei incontrarne uno per chiedergli cosa c'и al centro della Zona.</text>
+	</string>
+	<string id="dm_cool_info_28">
+		<text>Ho sentito che dietro il Lago Yantar и comparsa una via che conduce alla Foresta rossa. Circolano strane voci su di essa. Per esempio, pare che la foresta sia diventata rossa e nebbiosa nell'arco di un solo giorno. Da allora и considerata un luogo estremamente pericoloso... Laggiщ sono scomparse un sacco di persone, e con esse anche le strade che conducevano nella foresta. Ci penserei due volte prima di dirigermi da quella parte.</text>
+	</string>
+	<string id="dm_cool_info_29">
+		<text>И difficile tenersi aggiornati su tutto ciт che succede. Pensavo che Yantar fosse al confine della regione esplorata della Zona, ma l'Emissione и stata cosм potente che si sono aperte nuove vie per la Foresta rossa e Limansk, la cittа perduta. Alcuni di noi hanno cercato di raggiungerla passando per la fabbrica, ma chissа se ci sono riusciti. Poi ho sentito dire che la Duty e la Freedom, le fazioni piщ potenti della Zona, sono in guerra per il controllo di Limansk.</text>
+	</string>
+	<string id="dm_intro_96">
+		<text>Ancora tu? Cosa vuoi adesso?</text>
+	</string>
+	<string id="dm_intro_97">
+		<text>Salve, stalker.</text>
+	</string>
+	<string id="dm_intro_98">
+		<text>Ciao, giovane!</text>
+	</string>
+	<string id="dm_intro_99">
+		<text>Salve! Cosa vuoi?</text>
+	</string>
+	<string id="dm_intro_100">
+		<text>Vuoi trafficare o ottenere un lavoro?</text>
+	</string>
+	<string id="dm_intro_101">
+		<text>Sei in cerca di informazioni, eh? Risponderт alle tue domande meglio che posso.</text>
+	</string>
+	<string id="dm_intro_102">
+		<text>Come va, amico?</text>
+	</string>
+	<string id="dm_intro_103">
+		<text>Un saluto davvero speciale da parte della Freedom a uno stalker davvero libero.</text>
+	</string>
+	<string id="dm_intro_104">
+		<text>Ehi, stalker.</text>
+	</string>
+	<string id="dm_intro_105">
+		<text>Sembri avere migliaia di domande. Forza, chiedi pure!</text>
+	</string>
+	<string id="dm_about_130">
+		<text>Questa и un'area chiave della Zona. Da qui puoi raggiungere il Bruciacervella, la Foresta rossa, Limansk e oltre... anche se nessuno sa cosa ci sia laggiщ. Da queste parti c'и anche una vecchia base militare costruita dall'esercito prima della grande emissione. Al momento ci sono solo 20 uomini a presidiarla, e catturandola potremmo ottenere il controllo dei territori adiacenti. Dobbiamo solo aiutare i militari a evacuare, per cosм dire...</text>
+	</string>
+	<string id="dm_about_131">
+		<text>La via verso nord и bloccata dal Bruciacervella, ma ciт non sembra impedire ai combattenti della Monolith di arrivare fin qui. Ti assicuro che non sono molto amichevoli, ultimamente. Prima sparano e poi fanno le domande. Andando a sud arriverai alla Valle Oscura, mentre a ovest troverai la Foresta rossa. Non и certo il luogo piщ bello della Zona, ma almeno и piщ tranquillo di tanti altri. Hanno anche trovato una strada per Limansk, dietro la foresta. И una cittа piccola ma strategicamente importante, e questo spiega perchй la Duty e i nostri ragazzi si stanno scannando per conquistarla.</text>
+	</string>
+	<string id="dm_about_132">
+		<text>Un tempo qui c'erano una base militare e dei depositi dell'esercito, ma l'emissione li ha ridotti piuttosto male. I pochi superstiti non sono piщ tanto spavaldi, e preferiscono stare al sicuro nella loro base con una paura matta di farsi vedere dagli stalker. Continuano a richiedere una squadra di evacuazione dal QG, ma nessuno и mai arrivato ad aiutarli. Scommetto che neanche i loro compagni si stanno divertendo molto, fuori dalla Zona. O forse и il segnale che non riesce a passare. Quei bastardi mi fanno quasi pena. Sono dei ratti schifosi, ma anche i ratti devono aiutarsi a vicenda, in caso di pericolo.</text>
+	</string>
+	<string id="dm_about_133">
+		<text>I militari avevano difeso i depositi per lungo tempo, prima che l'ultima emissione cambiasse tutto. И stata cosм violenta che ne sono sopravvissuti pochissimi, soprattutto quelli che si erano rifugiati nella base. Tutti quelli che si trovavano all'aperto sono morti all'istante. Come lo so? Beh, fratello, anche la Freedom ha un servizio di intelligence, e ora abbiamo la situazione sotto controllo. Inoltre, gli stalker solitari si sono uniti per respingere i mostri provenienti dal Bruciacervella.</text>
+	</string>
+	<string id="dm_about_134">
+		<text>Quando siamo arrivati qui, c'era il caos piщ assoluto. I militari avevano smesso di difendere la Barriera per trincerarsi nella loro base. Il problema и che la Barriera deve essere sempre protetta, altrimenti ci sarebbe un'invasione di mostri. Ecco perchй ora stiamo cercando di difenderla, e ci serve tutto l'aiuto possibile. Senza la Barriera, saremmo tutti in guai seri.</text>
+	</string>
+	<string id="dm_about_135">
+		<text>C'и una vecchia base militare sulla collina che speriamo cada presto nelle nostre mani. Poco piщ avanti c'и una piccola fattoria, giusto un paio di edifici, e una baracca di legno presso la palude radioattiva. Da queste parti puoi trovare anche un paio di villaggi abbandonati e i nostri avamposti. I principali sono lungo la strada che conduce alla Foresta rossa e alla Valle Oscura. Gli stalker stanno difendendo la Barriera, cercando di respingere le ondate di Monolitiani e mutanti. Pazzesco... Non ho mai visto gli stalker unire le forze per qualcosa che non sia il denaro!</text>
+	</string>
+	<string id="dm_about_136">
+		<text>Dirigendoti a nord troverai la Barriera, dove gli stalker stanno cercando di respingere i mutanti che provengono dal Bruciacervella. A destra della Barriera c'и una palude con una baracca su palafitte. Meglio starne alla larga, perт, visto che i livelli di radiazioni sono particolarmente elevati. Oltre la palude c'и la base militare. Il nostro avamposto occidentale sorveglia la strada che conduce alla Foresta rossa e a Limansk, la cittа verso cui и diretta gran parte del nostro clan. L'avamposto a sud, invece, protegge la via per la Valle Oscura.</text>
+	</string>
+	<string id="dm_about_137">
+		<text>Da queste parti sta cambiando tutto in fretta. Presto i depositi militari saranno controllati dalla Freedom. I nostri avamposti e le postazioni fortificate presidiate da stalker solitari difendono le vie d'accesso a quest'area. La Barriera a nord impedisce ai mostri e ai mutanti di uscire dal centro della Zona. Ora и sorvegliata dagli stalker, per fortuna. Senza di loro saremmo nei guai fino al collo. Il nostro avamposto a ovest copre la strada che conduce a Limansk attraverso la Foresta rossa, mentre quello a sud garantisce un passaggio sicuro alla Valle Oscura, dove si trova attualmente la nostra base principale. Ora questo posto и pieno zeppo di stalker che si godono la libertа che gli forniamo tenendo occupati i militari giщ alla loro base. Credo ci siano manufatti e altra bella roba nei villaggi abbandonati e nelle fattorie qui vicino.</text>
+	</string>
+	<string id="dm_about_138">
+		<text>Quando i militari hanno perso il controllo di quest'area, sono arrivati un mucchio di stalker che sperano di superare il Bruciacervella. Razza di cretini! Devi sapere che oltrepassare il Bruciacervella и assolutamente impossibile. Chiunque ci abbia provato non и mai tornato indietro. La Freedom и qui per sbarazzarsi dei militari e creare una base, necessaria per difendere al meglio la Barriera.</text>
+	</string>
+	<string id="dm_about_139">
+		<text>In questo luogo c'и una vera e propria fratellanza di stalker. I migliori si sono tutti raccolti ai depositi militari, in cerca di un modo per superare il Bruciacervella. Il morale и alto, e tutti pensano cosa chiedere una volta arrivati al centro e raggiunto l'Esauditore di desideri. Che idioti! Sono stati abbastanza svegli da arrivare fino ai depositi, ma non capiscono che oltre il Bruciacervella c'и solo la morte? Dovrebbero aiutarci a difendere la Barriera, invece, perchй se cadrа l'unica cosa che potrа salvarci sarа proprio l'Esauditore di desideri!</text>
+	</string>
+	<string id="dm_about_140">
+		<text>La situazione и ancora instabile. Orde di mutanti e Monolitiani fanatici sferrano attacchi dal Bruciacervella. Poi ci sono quei frammenti di trasmissioni radio che mi fanno venire i brividi. Immagino che durante l'Emissione un sacco di persone siano andate disperse laggiщ, ma invece di morire si sono semplicemente... perse. И come se non potessero piщ uscirne, insomma. Forse и un nuovo tipo di anomalia impossibile da evitare. Mi dispiace per quei poveretti, ma non ho la minima idea di come fare a salvarli.</text>
+	</string>
+	<string id="dm_action_info_105">
+		<text>Non dobbiamo far altro che difendere la Barriera e cacciare i militari dalla loro base. Il nostro capo и astuto come una volpe. Non avevo mai pensato che difendere la Barriera sarebbe stato molto piщ semplice se avessimo avuto una base nelle vicinanze. Ecco perchй и lui a guidare la Freedom e io sono qui a parlarti. Perт io non ho i suoi mal di testa e posso sbronzarmi quanto mi pare e piace!</text>
+	</string>
+	<string id="dm_action_info_106">
+		<text>Difendiamo la Barriera meglio che possiamo. I militari hanno smesso di farlo dopo l'Emissione, e sono arrivati cosм tanti mostri che anche noi nella Valle Oscura ce la siamo fatta addosso. Ecco perchй il nostro capo ha organizzato la spedizione. Poi и successo che i primi Monolitiani della squadra dispersa sono tornati da oltre la Barriera. Forse non erano "dispersi" come credevamo.</text>
+	</string>
+	<string id="dm_action_info_107">
+		<text>Sto cercando la nostra squadra di ricognizione. Sono andati in questa direzione poco prima dell'Emissione, e da allora nessuno li ha piщ visti. A volte riceviamo frammenti delle loro comunicazioni, in cui chiedono soccorsi e dicono che stanno esaurendo i rifornimenti. И strano, amico. La squadra dispersa и qui vicino, tanto che possono vedere la torre della base militare, ma pare che non riescano ad avanzare di un solo passo. И come se fossero bloccati in una fascia di Mцbius. Sto cercando di spremermi le meningi per trovare una soluzione.</text>
+	</string>
+	<string id="dm_action_info_108">
+		<text>Abbiamo stretto un accordo con i militari. Loro prendono i nostri proiettili e noi la loro base. Mi sembra onesto. Io e i ragazzi stiamo "negoziando" meglio che possiamo.</text>
+	</string>
+	<string id="dm_action_info_109">
+		<text>Quando non combattiamo, cosa che accade di rado, mi metto a raccontare storielle e barzellette accanto al fuoco, scolandomi qualche bottiglia con i ragazzi. Una volta finito il nostro lavoro qui e a Limansk, due aree ancora vergini della Zona, forse troveremo un modo per arrivare al centro della Zona. И da lм che vengono i Monolitiani.</text>
+	</string>
+	<string id="dm_action_info_110">
+		<text>Me la sto spassando fra sbornie, festini e scherzi con i miei compagni. Chissа cosa puт accadere di qui a domani, o persino fra un'ora, o un minuto? Potrei finire in un'anomalia, o rimediare un buco in testa. Meglio divertirsi finchй si и vivi.</text>
+	</string>
+	<string id="dm_action_info_111">
+		<text>Ho deciso di diventare un eroe. Alla Freedom, per come stanno le cose, si fa presto a scalare la vetta del clan e assicurarsi un posticino nella storia per meriti di guerra. Bisogna essere eroi furbi, se non vuoi finire decorato dopo essere morto. Questo non vuol dire ripararsi dietro agli altri, ma neppure andare incontro alle pallottole.</text>
+	</string>
+	<string id="dm_action_info_112">
+		<text>Sono arrivato dalla Valle Oscura come volontario, per dare un po' di fastidio all'esercito... avevo bisogno di azione, di aria nuova. Non ne potevo piщ di stare sempre nel solito posto.</text>
+	</string>
+	<string id="dm_action_info_113">
+		<text>Sto portando a termine gli incarichi che mi ha assegnato il comandante. Cosa credevi, che la Duty fosse l'unico clan in grado di far rispettare gli ordini? Quando occorre anche noi siamo disciplinati. Bisogna essere idioti per pensare che la Freedom sia fatta di tossici e alcolizzati. Se fosse cosм, secondo te, sarebbe ancora in piedi dopo tanto tempo?</text>
+	</string>
+	<string id="dm_action_info_114">
+		<text>Sono andati tutti a combattere, e io cosa avrei dovuto fare? Non sono un codardo nй tantomeno un traditore! Qui combattiamo tutti per una causa comune. C'и un tempo per divertirsi e un tempo per darsi da fare, e in questi giorni non c'и un attimo di tregua.</text>
+	</string>
+	<string id="dm_action_info_115">
+		<text>Combattere chi? Ovvio, quelli che si mettono contro di noi! Non siamo mica un branco di anarchici: non hai idea di quanto ordine ci sia nel nostro clan. E non siamo fannulloni. Forse se ci confronti con l'esercito o la Duty non ti sembrerа cosм, ma vedi: siamo qui per la libertа e l'uguaglianza, e basta un segnale per riunirci e sistemare ogni faccenda... tieniti forte amico, stai per vedere il volto duro della Freedom.</text>
+	</string>
+	<string id="dm_cool_info_30">
+		<text>La Freedom non se la sta passando molto bene. Subito dopo aver tirato il fiato per gli attacchi dei banditi e aver scovato la talpa, ecco apparire Limansk di lа dalla Foresta rossa e i militari hanno iniziato a perdere controllo sui magazzini dell'esercito. Ci sono state varie schermaglie e adesso abbiamo nemici su tutti i fronti. Speriamo di non sforzarci troppo.</text>
+	</string>
+	<string id="dm_cool_info_31">
+		<text>Dopo l'Emissione sembra che la Zona si sia suddivisa in tante bolle. Da queste parti и sparita un sacco di gente e pare siano rimasti intrappolati nello spazio di una di queste bolle senza uscita: ovunque tentassero di andare, non riuscivano a spostarsi! Sono stati risucchiati tanti bravi ragazzi... Se si sale in alto, si possono sentire frammenti delle loro grida d'aiuto. Quindi ora tieni gli occhi aperti, a meno che tu non voglia raggiungerli.</text>
+	</string>
+	<string id="dm_cool_info_32">
+		<text>Dopo l'Emissione, и emerso che molte importanti strade per il centro della Zona passano dai magazzini. I nostri gruppi avanzati sono arrivati a Limansk l'altro giorno, una cittа di cui prima nessuna aveva mai sentito parlare. Forse da lм si puт arrivare in altri posti, ma ciт che mi sta piщ a cuore и che qualcuno scopra una volta per tutte il segreto del Bruciacervella e apra una via per il nord!</text>
+	</string>
+	<string id="dm_cool_info_33">
+		<text>Poco tempo fa abbiamo preso la spia che informava i banditi, che cosм potevano fare a pezzi i nostri come bestie... e indovina chi era? Proprio il nostro comandante! Sembra che la cosa non ti sorprenda... te l'ha detto qualcuno? Quel bastardo traditore ha avuto quel che si meritava! Mi dispiace solo di non essere stato io ad ammazzarlo!</text>
+	</string>
+	<string id="dm_cool_info_34">
+		<text>Amico, la Zona sta per diventare libera e potrai sentire il nome del mio clan in ogni angolo! Sistemeremo la Duty a Limansk e conquisteremo anche questa base; in seguito dovremo riuscire a superare il Bruciacervella e andare a nord. Se ce l'hanno fatta i Monolitiani, ce la possiamo fare anche noi, giusto? Non so cosa vi abbiano trovato, ma sembra che lottino per un valido motivo.</text>
+	</string>
+	<string id="dm_cool_info_35">
+		<text>Grandi cambiamenti in vista, fratello! I magazzini militari e tutta l'area presto saranno proprietа della Freedom, i nostri avamposti coprono giа tutte le strade principali e presto anche la base militare sarа nelle nostre mani. Da qui parte una strada che va a nord, dritta al centro della Zona. Una volta sistemato il Bruciacervella saremo i primi a scoprire se c'и davvero o no questo... Esauditore di desideri.</text>
+	</string>
+	<string id="dm_intro_106">
+		<text>Salve, forestiero!</text>
+	</string>
+	<string id="dm_intro_107">
+		<text>Benvenuto, stalker!</text>
+	</string>
+	<string id="dm_intro_108">
+		<text>Ehi!</text>
+	</string>
+	<string id="dm_about_141">
+		<text>Questa и l'ultima area abitata della Zona prima del Bruciacervella. Solo un pazzo si spingerebbe oltre, e non ne и tornato mai nessuno. Anche l'area intorno ai magazzini pullula di mostri assetati di sangue e pericoli mortali, ma nessuno sa cosa ci sia dall'altra parte. Nella Foresta rossa hanno scoperto da poco un sentiero che va verso aree inesplorate; si dice addirittura che abbiano scoperto un villaggio... io perт non l'ho mai visto.</text>
+	</string>
+	<string id="dm_about_142">
+		<text>Secondo me la cosa piщ importante da queste parti и la base militare. La Freedom combatte contro l'esercito per averla, perchй i militari sono ridotti all'osso dopo l'ultima Emissione. Ci sono anche un paio di villaggi. Niente di speciale, ma fra i resti delle capanne a volte si trova un po' di bottino. A nord c'и la Barriera, costruita dagli stalker per contenere i mostri che arrivano dal Bruciacervella. Se vuoi andartene di qui, vai a sud verso la Valle Oscura; se invece vuoi vedere la Duty che combatte contro la Freedom nella corsa ai nuovi territori, vai a ovest nella Foresta rossa.</text>
+	</string>
+	<string id="dm_about_143">
+		<text>Qui in sostanza non c'и altro a parte gruppetti di stalker che arginano il flusso di mostri e zombi che arrivano dal Bruciacervella. I contingenti della Freedom e della Duty se le danno di santa ragione da qualche parte oltre la Foresta rossa... pare che abbiano ritrovato un villaggio precedente alla Zona, Limansk.</text>
+	</string>
+	<string id="dm_about_144">
+		<text>Qui sta succedendo un inferno, amico. Dopo la Grande Emissione gli stalker hanno scoperto una via attraverso la Foresta rossa che porta a Limansk. Passa dai magazzini militari e non appena si и sparsa la notizia, sono arrivate la Duty e la Freedom. Alla Barriera poi la situazione sta diventando movimentata: i mostri non sono piщ l'unico problema. Che tu ci creda o no, lм anche i Monolitiani hanno iniziato ad attaccare... Finora non avevo mai creduto alle storie su di loro!</text>
+	</string>
+	<string id="dm_about_145">
+		<text>Negli ultimi tempi la Zona muta cosм rapidamente che non riesco piщ a distinguere il reale dall'irreale. A dire il vero, non и da molto che sono qua e non ho molte informazioni. Pare che esista qualcosa chiamato il Bruciacervella piщ a nord, e che la Foresta rossa e Limansk, dove la Freedom e la Duty si stanno massacrando, siano a ovest.</text>
+	</string>
+	<string id="dm_about_146">
+		<text>Quando siamo arrivati, quelli della Freedom stavano giа sistemando a dovere l'esercito, e non parevano dare segni di cedimento. Noi per adesso siamo neutrali... non vogliamo tirarci addosso una fazione, in fondo poi non avremmo molto da guadagnare dall'altra... e comunque non и per questo che siamo qui. </text>
+	</string>
+	<string id="dm_about_147">
+		<text>Se succede qualcosa, qui, succede perchй c'и la base militare. La sua posizione и troppo importante: и il punto migliore da cui controllare i territori vicini... a confronto, fattorie e villaggi della zona sono noccioline, ed и per questo che la Freedom sta facendo l'impossibile per impadronirsene. Hanno giа piazzato degli avamposti sulle strade che conducono alla Valle Oscura e alla Foresta rossa. Loro sanno quello che fanno. Gli stalker solitari per il momento presidiano l'avamposto settentrionale nel tentativo di contenere l'invasione mutante, ma ho il presentimento che la Freedom si espanderа in quella zona una volta finito con la base.</text>
+	</string>
+	<string id="dm_about_148">
+		<text>Sembra che questo territorio presto cadrа in mano alla Freedom. Da quando hanno risolto i loro problemi interni, hanno messo una marcia in piщ. Sono presenti qui a Limansk e tengono ancora le posizioni nella Valle Oscura. Dico "ancora" perchй cosм facendo si sono sparpagliati un po' troppo, combattono per Limansk, per la base militare e hanno tuttora il proprio quartier generale nella Valle Oscura. Sono convinto che i banditi cominceranno a scacciarli da laggiщ. Pensandoci bene, basterebbe un bandito scaltro che, resosene conto, approfittasse della situazione e cominciasse a mettergli pressione. Almeno и quello che farei io al loro posto.</text>
+	</string>
+	<string id="dm_about_149">
+		<text>Amico, questo posto и stregato da una magia nera. Non facciamo altro che girare in tondo alla ricerca degli amici che abbiamo perso, ma finora non abbiamo trovato altro che mostri. Se sali in collina a volte ricevi frammenti delle loro trasmissioni radio, ma non ci si capisce niente, non hanno senso. E non hai visto niente! Come lo spieghi che sono comparsi i Monolitiani da oltre la Barriera? Una volta ne ho visto uno, ferito, con gli occhi vitrei, mentre ripeteva continuamente le stesse parole a mezza voce: "Difendere il Monolite!". Non credo sentisse dolore, se non gli avessimo scaricato qualche caricatore addosso non avrebbe nemmeno mollato la gola del mio amico. Ma cosa vogliono? Perchй sono tornati dopo l'Emissione? Come vedi ho solo delle domande, amico...</text>
+	</string>
+	<string id="dm_action_info_116">
+		<text>Stiamo cercando i nostri uomini che erano da queste parti prima dell'Emissione. A volte riusciamo a sentire delle trasmissioni radio spezzettate dall'alto delle colline, ma a parte questo non c'и traccia di loro! Non ho idea di dove iniziare a cercarli.</text>
+	</string>
+	<string id="dm_action_info_117">
+		<text>Stiamo svolgendo una specie di missione di soccorso per salvare una delle nostre squadre. L'Emissione li ha sorpresi qui vicino e abbiamo perso ogni contatto. Ci hanno mandati a ritrovarli... loro o ciт che ne resta.</text>
+	</string>
+	<string id="dm_action_info_118">
+		<text>Ora come ora, tutti vanno verso il centro della Zona, a cercare di scoprirne i segreti. Non mi dispiacerebbe trovare la risposta ad alcune delle mie domande, visto che sto cercando la maniera di superare il Bruciacervella. Si continuano a trovare nuovi sentieri. Secondo me, uno di essi potrebbe condurre proprio al cuore della Zona. Non sarт certo io il primo a esplorare una nuova strada, sarei un idiota! Ma mi piacerebbe sapere cosa sta accadendo... magari alla fine qualcuno troverа il modo di scoprire la Veritа.</text>
+	</string>
+	<string id="dm_action_info_119">
+		<text>Cerco di tenermi informato, anche se il nostro compito и di ritrovare la squadra scomparsa. Sono stati sorpresi dall'Emissione e da allora non li abbiamo piщ visti. Ogni tanto cercano di stabilire un ponte radio ma, finora, non и servito a niente. Abbiamo guardato sotto ogni sasso, ovunque, ma niente! Sto impazzendo, amico! </text>
+	</string>
+	<string id="dm_action_info_120">
+		<text>Senti, noi qui non siamo diversi dagli altri, stiamo solo aspettando che qualche tipo in gamba scopra come superare il Bruciacervella. A quel punto, prenderemo la strada piщ facile fino al centro della Zona e arrafferemo i manufatti migliori. Non и importante essere i primi ad arrivare lм, anzi, cosм sarа piщ facile sopravvivere. La mia non и vigliaccheria, ma solo prudenza. Lo capirai quando sarai un po' piщ vecchio.</text>
+	</string>
+	<string id="dm_action_info_121">
+		<text>Caccia ai fantasmi. Non ci credi? Beh, a dire il vero non ci avrei creduto nemmeno io! In pratica, sentiamo frammenti delle comunicazioni trasmesse da una squadra scomparsa, riusciamo persino a riconoscere le voci, ma non riusciamo a trovarli, nй a parlare con loro, nй a capire da dove viene il segnale. И per questo che siamo a caccia di fantasmi... maledetta Emissione!</text>
+	</string>
+	<string id="dm_action_info_122">
+		<text>Sto aspettando l'ordine dal capo. Subordinazione... quelle cose lм. Siamo qui per salvare il gruppo di Leshiy; и un po' difficile perт visto che non riusciamo a trovare quei poveri diavoli! E oltretutto, abbiamo perso il nostro operatore radio al villaggio vicino alla cisterna. Eravamo lа per avere un miglior segnale radio e un calamaro и sbucato dal nulla e lo ha fatto a pezzi. Non abbiamo potuto farci niente, non siamo addestrati contro i mostri, al giorno d'oggi i veri nemici sono gli uomini.</text>
+	</string>
+	<string id="dm_action_info_123">
+		<text>Il gruppo di Leshiy aveva portato a termine un incarico importantissimo proprio prima dell'Emissione: avevano trovato un manufatto rarissimo. Avevamo anche giа avvertito il cliente che la merce era in arrivo, ma Leshiy non ha fatto ritorno. Siamo mercenari e senza il nostro codice non siamo nessuno, un contratto deve essere rispettato. Punto. Se un lavoro va male, addio reputazione... dopo non avremmo altri clienti e non ci resterebbe che tornare a vagare nella Zona come stalker.</text>
+	</string>
+	<string id="dm_cool_info_36">
+		<text>Mi piacerebbe conoscere delle storie al riguardo. Siamo mercenari, amico: entriamo nella Zona per portare a termine incarichi precisi, grazie all'attenta preparazione e all'eccezionale addestramento.</text>
+	</string>
+	<string id="dm_cool_info_37">
+		<text>Ho sentito che un clan di stalker, chiamato Monolith, dato per scomparso, и riapparso. Un giorno avevano smesso di trafficare in giro come facevano tutti, per spostarsi in massa verso il centro della Zona alla ricerca dell'Esauditore di desideri. Di loro non si и piщ saputo nulla per un sacco di tempo... ed eccoli di nuovo. Intendiamoci: non abbiamo fatto i salti di gioia al rivederli, anche perchй non fanno altro che gridare slogan idioti e attaccare a vista chiunque.</text>
+	</string>
+	<string id="dm_cool_info_38">
+		<text>Di recente si и scoperta la strada per Limansk attraverso la Foresta rossa e la Freedom ci и giа arrivata. Anche la Duty ci sta provando. Sono certo che stiano giа versando sangue in abbondanza: quella cittа schifosa fa gola a entrambi e non lasceranno che l'altro clan se la prenda. La Freedom ha mire espansionistiche e ora come ora stanno cercando di conquistare anche la base militare! Non и che mi piaccia l'esercito, perт mi dispiace per loro. L'Emissione li ha decimati e gli stalker li hanno lasciati nei guai.</text>
+	</string>
+	<string id="dm_cool_info_39">
+		<text>Ho sentito che la Duty ha passato un brutto quarto d'ora per la faccenda dei mutanti ad Agroprom. Hanno combinato qualcosa sottoterra e non sono riusciti a fermare quell'orda di mostri. I trafficanti erano al settimo cielo con tutta quella richiesta di munizioni. Comunque, pare che uno stalker li abbia aiutati allagando le caverne. Non so se sia vero, ma quello stalker dev'essere un vero osso duro. Non ce ne sono molti in grado di infilarsi in un covo di mutanti, prendere per il culo la Zona e salvare la pelle. Se mai lo dovessi incontrare, mi comprerт un cappello solo per potermelo togliere davanti a lui!</text>
+	</string>
+	<string id="dm_intro_109">
+		<text>И un onore conoscerti.</text>
+	</string>
+	<string id="dm_intro_110">
+		<text>Scommetto che ti hanno fatto un sacco di feste, eh?</text>
+	</string>
+	<string id="dm_intro_111">
+		<text>Benvenuto ai magazzini.</text>
+	</string>
+	<string id="dm_about_150">
+		<text>Questo и l'ultimo territorio della Zona a essere stato esplorato dagli stalker. Qui si trovano i magazzini militari, ma proseguendo si incontra il Bruciacervella... pare che chiunque venga a contatto con esso impazzisca all'istante! Comunque sono tutte supposizioni, visto che nessuno, di chi ci и andato, и mai tornato indietro! La strada che dai magazzini va al Bruciacervella и interrotta dalla Barriera, che serve a fermare il flusso di mostri che arrivano dal centro. Dopo la grande Emissione, hanno iniziato a ricomparire i Monolitiani. Chissа cosa ci fanno in questa parte della Zona... che siano venuti a eliminare chi minaccia il loro presunto Monolite?</text>
+	</string>
+	<string id="dm_about_151">
+		<text>Dopo l'Emissione l'esercito ha mostrato il suo vero volto: hanno abbandonato gli avamposti e si sono nascosti nella base come topi. Ne и rimasta una ventina, ma и comprensibile, considerata la vicinanza al centro. Appena l'esercito ha perso il controllo dei magazzini, ci si sono avventati tutti sopra, come api sul miele: stalker, mercenari, la Duty e la Freedom. Per fortuna gli stalker hanno avuto il buonsenso di unirsi per proteggere la Barriera. Se nessuno blocca le orde di mutanti e Monolitiani, и una tragedia per tutti, anche per l'esercito al Cordon.</text>
+	</string>
+	<string id="dm_about_152">
+		<text>Immagino che ti abbiano parlato in molti della base militare e della Barriera... beh, qui intorno non c'и molto altro a parte un paio di villaggi e una fattoria. Niente di particolarmente interessante quindi, ma come nascondiglio, o addirittura come base operativa, puт andare bene anche una casa deserta... sempre che non ci sia arrivato prima un mutante. Fai attenzione, ce ne sono un po' in giro.</text>
+	</string>
+	<string id="dm_about_153">
+		<text>I magazzini militari sono diventati proprietа degli stalker nel giro dei due minuti di Emissione. Quei soldatini arroganti ora si nascondono dalla Freedom rintanandosi nella propria base, terrorizzati all'idea di mettere fuori il naso. Al contrario, la Monolith sembra non aver paura di nessuno. Credevamo fossero morti tutti tanto tempo fa e invece sono vivi e vegeti... arrivano dal Bruciacervella e distruggono tutto quello che trovano!</text>
+	</string>
+	<string id="dm_about_154">
+		<text>Da queste parti sta succedendo qualcosa di assurdo. Ora che l'esercito и stato indebolito dall'Emissione, c'и una moltitudine di stalker. Tutti sperano di raggiungere il centro della Zona, i piщ avidi per mettere le mani su manufatti rari, altri per far visita all'Esauditore di desideri, e anche chi cerca un qualche Monolite alieno... Per me hanno cominciato a dare tutti i numeri, forse il Bruciacervella gli sta friggendo il cervello.</text>
+	</string>
+	<string id="dm_about_155">
+		<text>Posso raccontarti tutto nei dettagli, visto che ho messo sottosopra ogni angolo di questa zona per cercare manufatti. Il punto di riferimento principale da queste parti и la base militare. Si trova in collina, puoi vederla da lontano. A nord di si trova la Barriera, a sud invece la Valle Oscura. Ma se decidi di andare a ovest attraversando il villaggio, arriverai alla Foresta rossa. Ci sono anche un paio di fattorie e una capanna vicino alla palude, ma se fossi in te mi terrei alla larga, le radiazioni lм sono molto forti.</text>
+	</string>
+	<string id="dm_about_156">
+		<text>C'и un bel po' di attrezzatura di valore lasciata qua dall'esercito. Il problema perт, secondo me, и che la Freedom vuole far man bassa, visto che hanno preso di mira la base militare. Noi non abbiamo che le barricate sulla strada per il Bruciacervella e i manufatti che troviamo in giro. Ah, ci sono anche un paio di villaggi deserti, puoi stabilirti in una casa abbandonata... e se sei fortunato puoi anche ritrovarti con un coinquilino invisibile, tentacoli e tutto. </text>
+	</string>
+	<string id="dm_about_157">
+		<text>La Freedom sta per "risolvere" la questione militare una volta per tutte, cosм questo posto diventerа una seconda Valle Oscura. Intanto noi abbiamo la nostra missione: proteggere la Barriera. Quando ho visto la schifezza che arriva da oltre la Barriera, ho perso ogni spirito d'avventura. Preferisco lasciare agli altri il privilegio di farsi ammazzare dal Bruciacervella.</text>
+	</string>
+	<string id="dm_about_158">
+		<text>Alla base della Freedom nella Valle Oscura abbiamo sentito parlare della Barriera. Pare che l'esercito sia stato cacciato da qui e che gli stalker abbiano unito le forze per difendere il territorio dalla Monolith. Siamo partiti con una squadra al completo, pensando di venire ad aiutare i nostri fratelli, ma alla fine ero l'unico. Alcuni si sono lasciati distrarre, altri sono morti per la via e qualcuno ha proseguito...</text>
+	</string>
+	<string id="dm_about_159">
+		<text>L'esercito sta mollando rapidamente la presa su questo posto. Poco tempo fa gli stalker si sono presi i magazzini e con la Freedom tengono la maggior parte dei punti strategici di questo territorio. Ci siamo uniti per presidiare la Barriera e respingere gli attacchi di Monolitiani impazziti e orrendi mutanti che arrivano dal Radar. Quelli della Freedom controllano le zone ovest e sud e stanno facendo un ottimo lavoro alla base militare. Ah, abbiamo visto anche dei mercenari in giro alla ricerca di una squadra scomparsa, o qualcosa del genere.</text>
+	</string>
+	<string id="dm_action_info_124">
+		<text>Prova a indovinare. Fare bottino, ecco tutto. L'esercito non la fa piщ da padrone e noi possiamo fare quello che vogliamo. Fra l'altro mi sto preparando ad una spedizione al centro della Zona. Certo, ogni tanto aiuto a difendere la Barriera, ma un po' lo faccio per la mia sicurezza, un po' perchй capita pure di trovare belle armi o munizioni dopo uno scontro.</text>
+	</string>
+	<string id="dm_action_info_125">
+		<text>Sono venuto a combattere alla Barriera. Un amico al bar della Duty mi ha detto che era qui che un po' di gente aveva organizzato la difesa dai mutanti, e che c'и sempre qualcuno a cui sparare. Allora, una notte sono partito e sono venuto qui a divertirmi!</text>
+	</string>
+	<string id="dm_action_info_126">
+		<text>Mi hanno sempre attratto i nuovi territori. Voglio dire, sono venuto nella Zona perchй ero stufo della routine monotona delle aree esterne, e da queste parti ci sono sempre segreti da scoprire. E poi i soldi. Servono cibo e munizioni, ma la grana la fai solo vendendo il bottino. Spero anche che si scopra il modo di superare il Bruciacervella, se dovesse accadere sarт il primo ad arrivare nel centro della Zona. Ho un solo grande desiderio: che la Zona scompaia.</text>
+	</string>
+	<string id="dm_action_info_127">
+		<text>Cercavo di raggiungere la Freedom. Volevo andare a Limansk con loro, ma sono arrivato tardi nella Valle Oscura e se ne erano giа andati. Bossolo ha detto che avrebbero seguito questa strada, ma quando sono arrivato erano giа nella Foresta rossa. Non ce la farт mai a raggiungerli! Di certo non partirт da solo, ma per ora, che io sappia, non va nessuno laggiщ.</text>
+	</string>
+	<string id="dm_action_info_128">
+		<text>Resto qui solo per riprendere un po' di fiato prima di addentrarmi nella Foresta rossa. Voglio sapere cosa si nasconde di lа da Limansk. Chi se ne importa se gli altri non sono tornati! Magari и proprio perchй hanno trovato qualcosa. Ecco, pensa ai Monolitiani, non se ne и piщ saputo niente per mesi, poi all'improvviso sono ricomparsi... Dio solo sa cos'hanno trovato.</text>
+	</string>
+	<string id="dm_action_info_129">
+		<text>Sono tornato a mani vuote dalla Foresta rossa. Avevo provato ad attraversarla con alcuni amici ma... ci siamo spaventati, senza motivo. Sм, ce la siamo fatta sotto di brutto e abbiamo corso fino alla Barriera; и un miracolo che nessuno si sia infilato in un'anomalia. Il bello и che non abbiamo capito cosa ci ha spaventati! Comunque, la foresta и un vero mistero.</text>
+	</string>
+	<string id="dm_action_info_130">
+		<text>Voglio esplorare tutta la Zona. Ora sono arrivato ai magazzini, ma prima sono stato al Cordon, nelle Paludi, all'Agroprom e nella Valle Oscura. Per un po' sono anche stato schiavo dei banditi alla Discarica. Quando ne avrт abbastanza di questo posto me ne andrт altrove.</text>
+	</string>
+	<string id="dm_action_info_131">
+		<text>Sono rimasti pochi territori a non essere ancora sotto il controllo di un clan o di una fazione e, credimi, uno stalker da solo non puт fare granchй ad Agroprom o alla Discarica. Come Limansk... l'hanno scoperta loro, ma vi si sono precipitati tutti. I magazzini sono un capitolo a parte, la situazione non и chiara: non appartengono piщ dell'esercito, ma non si puт ancora dire che siano proprietа della Freedom. E poi, il posto и abbastanza vicino ai territori appena scoperti e lм non c'и da affannarsi troppo per arricchirsi: i manufatti piщ rari si trovano proprio lм.</text>
+	</string>
+	<string id="dm_action_info_132">
+		<text>Sto cercando un manufatto raro. Sidorovich mi aveva chiesto di cercarglielo, ma non l'ho trovato al Cordon, nй alla Valle Oscura. Non vale la pena di rovistare alla Discarica per un magro bottino, e ad Agroprom ci sono due clan di stalker che fanno piazza pulita, soprattutto dopo che un folle eroe ha allagato le caverne consentendo alla Duty di sprecare meno energie contro i mutanti. Perт, finchй questo posto и in subbuglio, magari troverт quel che cerco.</text>
+	</string>
+	<string id="dm_action_info_133">
+		<text>Sono stato inviato dalla Valle Oscura per consegnare un messaggio importante al comandante di una squadra Freedom locale, ho avuto quello che mi spettava e ho deciso di rimanere. Perchй no? La gente и in gamba e nessuno vuole mettere i piedi in testa a nessuno. Ok, и pieno di anomalie e di battaglie, e i Monolitiani non ci fanno dormire un attimo, ma и cosм che voglio la Zona!</text>
+	</string>
+	<string id="dm_action_info_134">
+		<text>Voglio andare a nord passando dal Bruciacervella. Pare che i Monolitiani l'abbiano fatto e che qualche stalker sia arrivato dall'Esauditore di desideri e sia ritornato tutto intero. Non si sa perchй siano tornati, magari hanno finito le munizioni o si sono presi una bella dose di radiazioni. Ma alla fine, se ce l'hanno fatta loro ce la posso fare anch'io!</text>
+	</string>
+	<string id="dm_action_info_135">
+		<text>Non si direbbe che sei nuovo nella Zona, stalker, pensavo che ormai avessi imparato a non andare in giro a fare domande del genere. Non sono proprio affari tuoi. Se mi andasse di parlare di certe cose, lo farei io per primo... con chi mi va di parlarne. Prova con una domanda di riserva.</text>
+	</string>
+	<string id="dm_cool_info_40">
+		<text>Da quando i Monolitiani hanno cominciato ad arrivare a frotte da oltre la Barriera, abbiamo pensato di prenderne uno vivo per scoprire come erano arrivati al centro della Zona passando dal Bruciacervella. Dio santo, ci и costato un sacco di uomini e munizioni, ma ce l'abbiamo fatta. Dopo essersi preso mezzo caricatore in corpo il nostro amico era ancora in forma: sbuffava, si divincolava e si allungava verso il capo. Gliel'abbiamo chiesto gentilmente, poi un po' meno, ma non и servito a nulla, continuava a gridare "Difendere il Monolite"... Gli deve essere successo qualcosa lа. Di fatto non abbiamo scoperto come superare il Bruciacervella, ma ci dovrа pur essere un modo per superare la Barriera, no? Tu cosa ne pensi?</text>
+	</string>
+	<string id="dm_cool_info_41">
+		<text>La novitа del momento и la strada che da dietro la Foresta rossa porta al villaggio di Limansk, che ora la Duty e la Freedom si stanno contendendo. Se sono disposti a versare tanto sangue, deve essere sicuramente un villaggio prezioso.</text>
+	</string>
+	<string id="dm_cool_info_42">
+		<text>Pare che un mercenario abbia dato una bella mano agli stalker al Cordon per una faccenda fra loro e l'esercito... non hanno piщ avuto noie, l'esercito ora teme la loro possibile reazione. Aspetta, a giudicare dalla descrizione di quel mercenario... sei proprio tu! Dai, non essere timido, lascia che ti stringa la mano! Sei un tipo in gamba!</text>
+	</string>
+	<string id="dm_cool_info_43">
+		<text>Adesso le emissioni sono cosм frequenti da essere diventate un problema... era da tanto che non succedeva. Nel senso che ora si susseguono una all'altra e la Zona muta di continuo. A volte compaiono nuove anomalie dopo un'emissione, o dei passaggi attraverso campi di anomalia. И cosм che hanno scovato la strada per Limansk, e la maggior parte degli stalker non ne ha nemmeno mai sentito parlare. Questa situazione costa molte vite e non per le emissioni in sй: и in corso una vera e propria guerra per il controllo dei nuovi territori, niente di meno.</text>
+	</string>
+	<string id="dm_cool_info_44">
+		<text>Come fanno a esserci delle novitа, qui? И come la scuola elementare, o l'asilo. D'altra parte, perт, se non impari a cavartela, nella Zona non duri cinque minuti. Ecco perchй i furbi restano qui solo per un po', poi se ne vanno. E poi da queste parti puoi mettere le mani su delle armi e delle munizioni niente male. Lo fanno tutti.</text>
+	</string>
+	<string id="dm_action_info_136">
+		<text>Nulla. Sto solo cercando di sopravvivere, ecco tutto.</text>
+	</string>
+	<string id="dm_about_160">
+		<text>Roba da non crederci... un'ora fa sono quasi finito nei guai! Sei mesi fa il posto era tranquillo, ora ci sono teste rapate in uniforme nascoste in ogni cespuglio! И assurdo...</text>
+	</string>
+	<string id="dm_cool_info_45">
+		<text>E allora? Cosa vuoi sentirti dire? Io dico solo questo: quelli della Duty sono un po' i poliziotti locali, e puoi star certo che sanno mantenere l'ordine. Perт nel complesso non mi piacciono un granchй. Si divertono tanto a fare i padroni: non prendere questo, non portare via quell'altro... E poi hanno giа deciso cosa и permesso dire nel Mondo Esterno e su cosa bisogna tenere la bocca chiusa! Parlano tanto di smantellare la Zona e vogliono farlo davvero, un pezzettino per volta. Beh, non mi sorprende affatto, sono ex soldati... tutti sognatori. Ma la cosa peggiore и che sono appoggiati dall'alto.</text>
+	</string>
+	<string id="dm_about_161">
+		<text>Ora questo territorio и controllato da quelli della Duty, e sono le loro regole quelle che contano. Noi controlliamo i confini della Zona e diamo una regolata alle teste calde: i sognatori e i dilettanti che arrivano qui a frotte, come tanti illusi... e muoiono in massa giа dal giorno dopo.</text>
+	</string>
+	<string id="dm_about_162">
+		<text>Vai all'accampamento, lм potrai sentire tutte le voci di corridoio. Quelli che sono alle prime armi, i novellini come te, di solito vanno lм per ricevere qualche dritta o per riposarsi un po'. Nei paraggi ci sono dei soldati: non avere troppa paura di loro, ma non andare neanche infastidirli, perchй sono capaci di sparare senza pensarci due volte... Vicino al trafficante - ehm, al fornitore locale di merci - c'и un posto tranquillo dove ti puoi accampare.</text>
+	</string>
+	<string id="dm_cool_info_46">
+		<text>Hai sentito che quelli della Duty stanno reclutando nuovi membri? Io ci ho pensato su un po', ma poi ho deciso che possono andarsene al diavolo. Prima o poi mi prenderanno... ma non ho nessun bisogno di disciplina. Ho giа fatto due anni da militare e mi sono bastati...</text>
+	</string>
+	<string id="dm_action_info_137">
+		<text>Beh, stavo pensando di andare a Yantar, ma poi mi sono detto: al diavolo! Quei cervelloni hanno creato un'enorme base scientifica nella Zona. Loro scavano dappertutto per trovare chissа cosa, mentre fuori и pieno di zombie. Proprio un posticino da sogno.</text>
+	</string>
+	<string id="dm_cool_info_47">
+		<text>Di recente hanno bonificato la zona di Yantar... Sм, l'hanno ripulita proprio bene! Laggiщ ci sono dei laboratori di ricerca, ma anche troppi zombie. Cosм dobbiamo fare spesso un salto da quelle parti per aiutare gli scienziati.</text>
+	</string>
+	<string id="dm_cool_info_48">
+		<text>Sai cosa ti dico? Per me la Duty, la Freedom e i banditi possono anche ammazzarsi per decidere di chi и questa terra. A me non importa, che vadano tutti all'inferno...</text>
+	</string>
+	<string id="dm_action_info_138">
+		<text>Stalker, stiamo lavorando. Non solo qui c'и una zona di riproduzione di quei miserabili, ma abbiamo fra i piedi anche quei dannati mercenari e quei ritardati della Freedom...</text>
+	</string>
+	<string id="dm_cool_info_49">
+		<text>Niente. Io non so un accidente. Mi procuro qualcosa qua e lа, quanto basta per mangiare. И troppo spaventoso entrare nella Zona... al diavolo! E a casa non c'и lavoro, e devo mantenere mia moglie... dobbiamo pur vivere. Qui alla Discarica, se cerchi bene per tutto il giorno qualche manufatto lo trovi. E il pane lo porti a casa.</text>
+	</string>
+	<string id="dm_cool_info_50">
+		<text>Alcuni sopravvivono grazie alla Discarica, raccogliendo rottami vari, altri si addentrano nella Zona, dove si possono trovare oggetti molto migliori, ma non tutti se la sentono. Non и un posto da novellini e se non hai munizioni devi proprio toglierti l'idea dalla testa. И una causa persa.</text>
+	</string>
+	<string id="dm_action_info_141">
+		<text>Non sono affari tuoi... Non tormentare la gente con domande stupide e vedrai che nessuno darа fastidio a te.</text>
+	</string>
+	<string id="dm_cool_info_51">
+		<text>I nostri allegri scienziati mi fanno spanciare! Mi diverto un casino! Sai, di solito non osano mettere il naso fuori dal bunker. Ma se per caso escono, come l'altro giorno... apriti o cielo! Soldati, elicotteri e mezzi corazzati dappertutto! Giа che ci sono potrebbero portare qui una nave da guerra, o almeno un treno blindato.</text>
+	</string>
+	<string id="dm_cool_info_52">
+		<text>Qualcosa di nuovo? Qui c'и solo roba vecchia, tanto da poterci affogare dentro. Quei banditi sono fuori di testa! Noi rischiamo la vita in mezzo alle anomalie per procurarci i manufatti, e loro ci derubano... Bastardi! Sta' in guardia e tieniti alla larga dalla Discarica. Quello и il proprio il tipo di posto che piace a quella gentaglia.</text>
+	</string>
+	<string id="dm_action_info_139">
+		<text>Sono bloccato qui, capito? Bloccato. Voglio andare a casa, ma non me lo permettono. Tutte qui, le novitа. Quelli che si addentrano nel cuore della Zona, i professionisti, ne raccontano di tutti i colori. E a volte quando tornano portano tanta di quella roba che moriresti di invidia, a vederli. Dicono che alcuni posti sono come giacimenti d'oro, dove basta allungare la mano e prendersi quello che c'и. Certo, non sono tanti quelli che riescono ad arrivarci, e ancora meno quelli che riescono a tornare indietro con gli oggetti che hanno trovato.</text>
+	</string>
+	<string id="dm_cool_info_53">
+		<text>Beh, a dire il vero non sono al corrente delle ultime novitа.</text>
+	</string>
+	<string id="dm_cool_info_54">
+		<text>Hai sentito? Gira voce che la Zona si stia espandendo... e io penso che sia vero: ho visto uno spaventoso umanoide proprio vicino al perimetro, uno di quei mostri che prima potevi vedere solo se ti avvicinavi al centro della Zona. Le cose si mettono male, non credi?</text>
+	</string>
+	<string id="dm_cool_info_55">
+		<text>И possibilissimo che la storia dei succhiasangue avvistati vicino ai confini della Zona sia vera. Ma che c'entra questo con l'espansione della Zona? Diciamo pure che un gruppo di quelle bestie sia arrivato fino al confine, e l'abbia attraversato... E con questo? A volte siamo di pattuglia per giorni interi! E lavoriamo tranquilli, perchй dall'altra parte del perimetro non c'и nessuno che grida "Aiuto, i mutanti ci hanno circondato!".</text>
+	</string>
+	<string id="dm_about_167">
+		<text>Sta' attento, perchй quei cadaveri ambulanti hanno invaso tutto il territorio. Sono stupidi e aggressivi. Siamo costantemente sotto assedio, giorno e notte. Questo и un posto pericoloso, giovanotto.</text>
+	</string>
+	<string id="dm_about_168">
+		<text>Non so proprio che dirti... Qui succede sempre qualcosa, ma sempre entro i limiti del ragionevole. Nella Grande Terra la pensano diversamente, ma io e te ci troviamo in una zona anomala, per cosм dire.</text>
+	</string>
+	<string id="dm_cool_info_56">
+		<text>Che voci girano? Una cosa posso dirtela, e non и una voce: riporteremo l'ordine al piщ presto. Ripuliremo la Zona da ogni tipo di bestia, compresi certi viscidi individui...</text>
+	</string>
+	<string id="dm_cool_info_57">
+		<text>Hai sentito cosa minacciano di farci quelli della Duty? La cosa piщ gentile che dicono и che vogliono "ridurci in polvere". Questa faccenda mi preoccupa... soprattutto dal momento che pare siano armati ed equipaggiati di tutto punto.</text>
+	</string>
+	<string id="dm_cool_info_58">
+		<text>Novitа? Ma chi se ne importa delle voci che girano! Non puoi credere a quello che dice la gente. Ad esempio, raccontano che uno stalker esperto и tornato dall'interno della Zona portando con sй qualcosa che nessuno aveva mai visto prima, e che ha fatto fortuna... Beh, di storie cosм potrei inventarmene anch'io a centinaia!</text>
+	</string>
+	<string id="dm_help_12">
+		<text>Grazie mille.</text>
+	</string>
+	<string id="dm_about_169">
+		<text>Com'и che te ne vai in giro senza nessuna protezione? Ti sei stufato di vivere, per caso? C'и un'anomalia dietro ogni cespuglio: se ci finisci dentro, sei spacciato! Qui, se non vuoi assorbire una bella dose di radiazioni, non devi andare neanche a pisciare senza una protezione.</text>
+	</string>
+	<string id="dm_about_170">
+		<text>Mi sembra che tu non sia ancora pratico di questi dintorni... Lascia che ti dia un consiglio da amico: non immischiarti con i militari. Se ne vedi uno, gira subito al largo perchй con quelli non si ragiona. Prima ti piazzano in corpo una pallottola, o magari una decina, e poi ti guardano i documenti per vedere come ti chiami...</text>
+	</string>
+	<string id="dm_intro_112">
+		<text>Buongiorno.</text>
+	</string>
+	<string id="dm_intro_113">
+		<text>Buona giornata.</text>
+	</string>
+	<string id="dm_intro_114">
+		<text>Stammi bene.</text>
+	</string>
+	<string id="dm_intro_115">
+		<text>Ehi, amico!</text>
+	</string>
+	<string id="dm_intro_116">
+		<text>Ehi.</text>
+	</string>
+	<string id="dm_intro_117">
+		<text>Oh, ehi!</text>
+	</string>
+	<string id="dm_intro_118">
+		<text>Ehilа!</text>
+	</string>
+	<string id="dm_intro_119">
+		<text>Salve!</text>
+	</string>
+	<string id="dm_intro_120">
+		<text>Salve, stalker.</text>
+	</string>
+	<string id="dm_intro_121">
+		<text>Saluti, stalker.</text>
+	</string>
+	<string id="dm_intro_122">
+		<text>Ehi tu, stalker!</text>
+	</string>
+	<string id="dm_intro_123">
+		<text>Ehilа!</text>
+	</string>
+	<string id="dm_intro_124">
+		<text>Beh, e chi abbiamo qui?!?</text>
+	</string>
+	<string id="dm_intro_125">
+		<text>E questo qui, chi и?</text>
+	</string>
+	<string id="dm_intro_126">
+		<text>Salve, amico.</text>
+	</string>
+	<string id="dm_about_165">
+		<text>И come camminare in un campo minato, tranne che qui и peggio. Il diavolo solo sa cosa succede qui... Non puoi abbassare la guardia neanche per un secondo.</text>
+	</string>
+	<string id="dm_about_171">
+		<text>Stai sul "chi va lб". Poi resta all'erta e non abbassare mai la guardia. Appena ti rilassi, sei finito: i morti ti saranno addosso in un baleno.</text>
+	</string>
+	<string id="dm_about_172">
+		<text>Devi stare sempre sul "chi va lа"! Dormi con un occhio aperto: qui puт scoppiare un casino da un momento all'altro.</text>
+	</string>
+	<string id="dm_about_173">
+		<text>Sta' attento con quei bastardi! Sono come gli scarafaggi, ce ne sono a tonnellate!</text>
+	</string>
+	<string id="dm_help_0">
+		<text>Aiutami, fratello!</text>
+	</string>
+	<string id="dm_help_1">
+		<text>Qualcuno mi aiuti!</text>
+	</string>
+	<string id="dm_help_2">
+		<text>Guardie! Sono ferito! Venite qui!</text>
+	</string>
+	<string id="dm_help_3">
+		<text>Aiuto! Sto morendo!</text>
+	</string>
+	<string id="dm_help_4">
+		<text>Ragazzi, portate il kit di pronto soccorso!</text>
+	</string>
+	<string id="dm_help_5">
+		<text>Portate il kit di pronto soccorso!</text>
+	</string>
+	<string id="dm_help_6">
+		<text>Mi serve aiuto, ragazzi! Presto!</text>
+	</string>
+	<string id="dm_help_7">
+		<text>Il kit di pronto soccorso, ragazzi!</text>
+	</string>
+	<string id="dm_help_8">
+		<text>Qualcuno mi dia un kit di pronto soccorso!</text>
+	</string>
+	<string id="dm_help_9">
+		<text>Il kit di pronto soccorso, amico... il kit!</text>
+	</string>
+	<string id="dm_help_10">
+		<text>Aiutami, amico!</text>
+	</string>
+	<string id="dm_help_11">
+		<text>Ehi amico, mi presteresti il tuo kit di pronto soccorso?</text>
+	</string>
+	<string id="dm_cool_info_59">
+		<text>Ho sentito che quegli idioti al Cordon hanno dato una bella lezione ai soldati e hanno sequestrato quello scimmione del loro capo... mi piacerebbe assistere a quella scena, che vergogna!</text>
+	</string>
+	<string id="dm_cool_info_60">
+		<text>Non и uno scherzo questa storia delle emissioni! Se non ti friggono sul posto, ti ammazzano in mille altri modi! I pochi posti tranquilli che c'erano ora sono zeppi di maledette anomalie. Ovunque tu vada avrai sempre il terrore di lasciarci le chiappe!</text>
+	</string>
+	<string id="dm_cool_info_61">
+		<text>C'и questa malattia dell'oro... come la chiamavano, la febbre? Insomma, gli stalker rovistano in mucchi di merda radioattiva e trovano qualche gingillo, noi stiamo attenti che non succeda qualche casino. </text>
+	</string>
+	<string id="dm_cool_info_62">
+		<text>Pochi giorni fa Kolyan e i suoi uomini sono stati colpiti da un'emissione, e i suoi stivali hanno cambiato padrone... capisci? Ecco cosa ti capiterа se te ne vai in giro fuori dalla base. Resta nell'accampamento e non ti succederа niente.</text>
+	</string>
+	<string id="dm_cool_info_63">
+		<text>La feccia degli stalker ha messo su una banda ad Agroprom. Quei maledetti ruffiani hanno persuaso alcuni dei nostri e li hanno bloccati. Non hanno le palle per ammazzarli, lo sanno che verremmo a stanarli per fargliela pagare.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_enemy">
+		<text>Cosa? Il nemico и vicino e tu mi vieni a dire queste stronzate?</text>
+	</string>
+	<string id="dm_sim_action_attack_point_friend">
+		<text>Cosa vuoi? Dobbiamo incontrarci con i nostri uomini. Hanno un campo qui vicino.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_none">
+		<text>Qui vicino c'и un bel posto non ancora occupato. Siamo diretti proprio lм.</text>
+	</string>
+	<string id="dm_sim_action_stay_point_enemy_near">
+		<text>Che ti prende? Siamo qui a difendere il campo, circondati da ogni tipo di nemico. Vai a scocciare qualcun altro con le tue domande del cavolo.</text>
+	</string>
+	<string id="dm_sim_action_stay_point_none_near">
+		<text>Si puт sapere cos'hai? Siamo qui a riprendere un po' il fiato. И una bella nottata, e in giro non si vede nessuno...</text>
+	</string>
+	<string id="dm_actor_news_1">
+		<text>Novitа?</text>
+	</string>
+	<string id="dm_actor_news_2">
+		<text>Che si dice di nuovo?</text>
+	</string>
+	<string id="dm_actor_news_3">
+		<text>Qualche novitа?</text>
+	</string>
+	<string id="dm_army_no_news_1">
+		<text>Se vuoi sapere le ultime novitа, trovati una TV. Qui non и successo niente di nuovo. La solita barba...</text>
+	</string>
+	<string id="dm_army_no_news_2">
+		<text>Razza di cretino! Vuoi sapere le ultime novitа, eh? Vai a prenderti un giornale, sono appena dietro l'angolo!</text>
+	</string>
+	<string id="dm_army_no_news_3">
+		<text>Certo, ci sono un sacco di novitа... per un novellino alle prime armi. Basta passare una settimana qui per annoiarsi a morte.</text>
+	</string>
+	<string id="dm_army_no_news_4">
+		<text>Vieni a trovarmi se trovi qualcosa di nuovo, OK? Ah! Forse и meglio barattare... Hai qualcosa di interessante?</text>
+	</string>
+	<string id="dm_bandit_no_news_1">
+		<text>Che novitа potrebbero esserci? Ogni giorno и sempre la stessa merda!</text>
+	</string>
+	<string id="dm_bandit_no_news_2">
+		<text>Questa и buona, amico! Se cerchi novitа, sei arrivato nel posto sbagliato!</text>
+	</string>
+	<string id="dm_bandit_no_news_3">
+		<text>Nessuna novitа... Qui la vita и la solita merda.</text>
+	</string>
+	<string id="dm_bandit_no_news_4">
+		<text>Novitа un corno! Ehi, hai qualcosa da scambiare?</text>
+	</string>
+	<string id="dm_csky_no_news_1">
+		<text>Novitа? Beh, da queste parti ci stiamo dando parecchio da fare. Presto dovremmo riuscire ad attraversare la Zona come persone normali, senza dover temere quelle cavolo di anomalie.</text>
+	</string>
+	<string id="dm_csky_no_news_2">
+		<text>Novitа? Neanche l'ombra. Ogni giorno la stessa storia: vai in quel posto, sorveglia quell'altro... Speriamo che ne valga la pena.</text>
+	</string>
+	<string id="dm_csky_no_news_3">
+		<text>Da queste parti sappiamo solo una cosa: alla Zona non piace scherzare. La studiamo, ma potrebbe divorarci tutti in qualsiasi momento. Senti, hai per caso qualche manufatto utile?</text>
+	</string>
+	<string id="dm_csky_no_news_4">
+		<text>Bah... non mi viene in mente niente. Ma che ne diresti di fare uno scambio?</text>
+	</string>
+	<string id="dm_default_no_news_1">
+		<text>Non ho tempo per le ultime notizie! Se c'и qualche novitа importante, verrai a saperlo da solo. Qui ci sentiamo tutti dei topi in gabbia...</text>
+	</string>
+	<string id="dm_default_no_news_2">
+		<text>Grazie al cielo non ho sentito alcuna novitа. Di solito le novitа portano solo altri guai, da queste parti. Meglio toccare ferro, credimi.</text>
+	</string>
+	<string id="dm_default_no_news_3">
+		<text>Cosa vuoi che me ne importi? Guardati le spalle e cerca di restare tutto d'un pezzo! Avresti qualcosa da scambiare, comunque?</text>
+	</string>
+	<string id="dm_default_no_news_4">
+		<text>E io cosa ne so? Ehi, ti andrebbe di scambiare qualcosa? Mostriamo tutto quello che abbiamo e poi decidiamo cosa prendere, OK?</text>
+	</string>
+	<string id="dm_dolg_no_news_1">
+		<text>La vera novitа sarebbe riuscire a ripulire questo posto. Fino ad allora, non venire a scocciarmi con domande idiote...</text>
+	</string>
+	<string id="dm_dolg_no_news_2">
+		<text>Sai qual и la novitа? Che sei ancora nella Zona. Non riuscirт mai a capire gli stalker. Come fate ad andare a pisciare portandovi dietro le armi e la corazza?</text>
+	</string>
+	<string id="dm_dolg_no_news_3">
+		<text>Qui non ci sono grosse novitа, amico. Faresti meglio a tornare all'esterno. Perт ci piace scambiare... Hai per caso qualcosa di prezioso da barattare?</text>
+	</string>
+	<string id="dm_dolg_no_news_4">
+		<text>Novitа? Un branco di idioti и finito in un'anomalia, e un altro и stato massacrato dalle bestie. Solita storia. Hai qualche oggetto di valore, per caso? Qualcosa da vendere?</text>
+	</string>
+	<string id="dm_freedom_no_news_1">
+		<text>Perchй ti interessano tanto le "novitа"? Rilassati! Prendila con calma e cerca di divertirti...</text>
+	</string>
+	<string id="dm_freedom_no_news_2">
+		<text>Abbiamo molto sole, aria fresca e un sacco di erba... erba meravigliosa. Oh, avanti, smettila di preoccuparti e goditi la vita!</text>
+	</string>
+	<string id="dm_freedom_no_news_3">
+		<text>Da queste parti ci sono un mucchio di novitа... ma non mi interessano. Hai qualcosa da scambiare, piuttosto? Diamoci agli affari.</text>
+	</string>
+	<string id="dm_freedom_no_news_4">
+		<text>Non lo so, amico, davvero... Qui non ci sono molte novitа. Ma veniamo a questioni piщ importanti. Hai qualcosa da vendermi, per esempio?</text>
+	</string>
+</string_table>

@@ -2,7 +2,10 @@
 active = sr_idle
 
 [sr_idle]
-on_actor_inside = sr_idle1 %+rush_2 =play_sound(clear_sky_well:csky:st_ui_pda_legend_squad)% 
+on_actor_inside = sr_idle1 %+rush_2 =play_sound(clear_sky_well:csky:st_ui_pda_legend_squad)%, {+sniper_off} sr_idle@nil %+rush_2%
 
 [sr_idle1]
 on_info = {-rush_2} sr_idle
+on_info2 = {+sniper_off} sr_idle@nil
+
+[sr_idle@nil]

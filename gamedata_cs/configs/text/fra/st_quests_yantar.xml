@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_actor_destroy_wave1">
+		<text>L'endroit d'oщ les zombies sortent</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_name">
+		<text>Ne pas laisser les zombies approcher des stalkers sur le toit</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_text">
+		<text>Couvrez les stalkers sur le toit pendant qu'ils rйparent la valve. Ne laissez pas les zombies s'approcher d'eux.</text>
+	</string>
+	<string id="yan_actor_destroy_wave2">
+		<text>L'endroit d'oщ les zombies sortent</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_name">
+		<text>Ne pas laisser les zombies approcher des stalkers dans le hangar</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_text">
+		<text>Couvrez les stalkers dans le hangar pendant qu'ils travaillent sur la valve. Ne laissez pas les zombies s'approcher d'eux.</text>
+	</string>
+	<string id="yan_actor_go_base_defence">
+		<text>Dйfendre la base des scientifiques</text>
+	</string>
+	<string id="yan_actor_go_base_defence_name">
+		<text>Dйfendre la base des scientifiques</text>
+	</string>
+	<string id="yan_actor_go_base_defence_text">
+		<text>Dйfendez la base des scientifiques.</text>
+	</string>
+	<string id="yan_actor_go_base_science">
+		<text>Les portes du bunker des scientifiques resteront fermйes tant que les zombies attaqueront. Repoussez l'assaut pour pouvoir entrer et parler aux scientifiques !</text>
+	</string>
+	<string id="yan_actor_go_base_science_name">
+		<text>Parler а Sakharov</text>
+	</string>
+	<string id="yan_actor_go_base_science_text">
+		<text>Strelok est parti а la rencontre des scientifiques de Yantar. Allez parler au professeur Sakharov, il saura peut-кtre oщ trouver Strelok.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest">
+		<text>La route vers la Forкt rouge est ouverte.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_name">
+		<text>Aller dans la Forкt rouge</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_text">
+		<text>La station de refroidissement a йtй rйparйe et stabilisйe, les йmissions psi maintenant sont au plus bas. La voie vers la Forкt rouge est libre. Allez а la Forкt rouge, c'est vers lа que se dirige Strelok.</text>
+	</string>
+	<string id="yan_actor_go_to_stalker">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_name">
+		<text>text in default</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_text">
+		<text>text in default</text>
+	</string>
+	<string id="yan_main_quest_line">
+		<text>Protйger l'йquipe de rйparation</text>
+	</string>
+	<string id="yan_main_quest_line_name">
+		<text>Tenir la position</text>
+	</string>
+	<string id="yan_main_quest_line_text">
+		<text>Tenez la position !</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy">
+		<text>Apporter les documents а Sakharov</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_name">
+		<text>Apporter les documents а Sakharov</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_text">
+		<text>Apportez les documents а Sakharov. Ils l'aideront а comprendre pourquoi Yantar est soumise а de telles йmissions psi.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke">
+		<text>Se battre pour atteindre dispositif</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_name">
+		<text>Se battre pour traverser l'usine</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_text">
+		<text>Le secteur autour de l'usine grouille de zombies. Rejoignez le Gaucher et son groupe pour avancer ensemble а l'intйrieur. Dйpкchez-vous, le niveau du champ psi peut remonter а tout moment !</text>
+	</string>
+	<string id="yan_quest_doc">
+		<text>Trouver les documents</text>
+	</string>
+	<string id="yan_quest_doc_name">
+		<text>Trouver le PDA qui contient les documents</text>
+	</string>
+	<string id="yan_quest_doc_text">
+		<text>Un groupe de stalkers a trouvй dans l'usine des documents qui pourraient aider Sakharov а dйterminer l'origine du champ psi de Yantar. Le signal du groupe a disparu prиs de la sortie de l'usine. Retrouvez le PDA qui contient les documents.</text>
+	</string>
+	<string id="yan_quest_levsha">
+		<text>Rejoindre le Gaucher.</text>
+	</string>
+	<string id="yan_quest_levsha_name">
+		<text>Retrouver le groupe du Gaucher</text>
+	</string>
+	<string id="yan_quest_levsha_text">
+		<text>Un groupe de stalkers se prйpare а avancer а l'intйrieur de l'usine tant que le champ psi est au plus bas. Rejoignez le Gaucher, le chef de ce groupe.</text>
+	</string>
+	<string id="yan_repair_defend">
+		<text>Prendre position sur le toit du hangar</text>
+	</string>
+	<string id="yan_repair_defend_name">
+		<text>Suivre le stalker sur le toit du hangar</text>
+	</string>
+	<string id="yan_repair_defend_text">
+		<text>Le Gaucher a ordonnй а tout le monde de prendre position. Suivez le stalker sur le toit.</text>
+	</string>
+	<string id="yan_recover_item_1_name">
+		<text>Rapporter la Fleur йcarlate</text>
+	</string>
+	<string id="yan_recover_item_1_text">
+		<text>Faut que tu m'aides ! Y a un artefact dans la Zone qu'on appelle la Fleur йcarlate. Ce truc sert а rien pour un stalker qui se respecte, mais les filles en raffolent. J'ai un rencard dans pas longtemps et je me disais que j'assurerais forcйment avec un de ces trucs. C'est pour зa que je suis toujours dans cette Zone de merde. Paraоt qu'y a un de ces artefacts dans le coin. Il ressemble а un genre de fleur magique qui brille jour et nuit. Rapporte-le-moi et je saurai me montrer gйnйreux.</text>
+	</string>
+	<string id="yan_recover_item_2_name">
+		<text>Rapporter la grenade-souvenir</text>
+	</string>
+	<string id="yan_recover_item_2_text">
+		<text>Faudrait que tu me rendes un service. J'ai perdu un souvenir, un truc qui ressemble а une grenade... Sauf que c'est pas une grenade... Enfin si, mais du genre qu'on utilise pour l'entraоnement... Bref, faudrait que tu la rйcupиres pour moi... Je crois que je sais oщ tu peux la trouver... J'йtais dans l'usine quand il s'est passй un truc... J'ai eu l'impression que mon cerveau grillait et j'ai presque oubliй qui j'йtais ! Quand je me suis rйveillй, j'йtais ici, alors je me dis que ma grenade, elle doit toujours кtre dans l'usine. Rapporte-la-moi !</text>
+	</string>
+</string_table>

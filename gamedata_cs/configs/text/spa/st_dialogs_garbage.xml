@@ -1,0 +1,1020 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_bandit_leader_hello_11">
+		<text>їQuй es lo que quieres?</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1">
+		<text>Hmm... Ahora que lo dices, hay un trabajo que necesito que hagas. Hay un tipo que debe desaparecer. Si aceptas el trabajo, me asegurarй de que estй en la vieja parada del autobъs, la que estб al otro lado del muro oriental. їQuй me dices?</text>
+	</string>
+	<string id="gar_bandit_trader_hello_11">
+		<text>їQuй? їAlgo para mн?</text>
+	</string>
+	<string id="gar_bandit_tech_hello_11">
+		<text>Eh, colega... Ўhip! їQuй necesitas?</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_0">
+		<text>Yoga me dio las coordenadas de su escondite, pero al parecer el sitio ahora estб lleno de anomalнas y mutantes.</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_1">
+		<text>Ah, їsн? ЎJa! Ese escondite es la broma favorita de Yoga, colega. їDe verdad pensabas que eras el primer idiota al que le dio esas coordenadas? Muchos fracasados han intentado llegar a ese escondite. El ъltimo incluso logrу cargarse al pseudo perro que vivнa allн, justo antes de llevarse una sacudida de miles de voltios. Supongo que eso harб llevarse la... mmm... "recompensa" un poco mбs fбcil.</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_0">
+		<text>Yoga ha decidido sacar a los excavadores del mercadillo de una vez por todas.</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_1">
+		<text>їEh? їSe ha vuelto loco? ЎEs el mejor sitio para sacar dinero de los excavadores! Esto es el fin de nuestro jefe, te lo aseguro. Estб acabado. Los contrabandistas estбn escondidos y con el mercadillo cerrado, los excavadores van a estar en apuros. En unos meses los muchachos no tendrбn a nadie a quien exprimir, їy quй les dirб Yoga? En fin, hablarй con los muchachos. Yoga se estб cavando su propia tumba.</text>
+	</string>
+	<string id="gar_bandit_barman_hello_11">
+		<text>Asн que...</text>
+	</string>
+	<string id="gar_bandit_barman_join_0">
+		<text>їCуmo puedo unirme?</text>
+	</string>
+	<string id="gar_bandit_barman_join_1">
+		<text>Oh, їasн que quieres trabajar para Yoga? Bueno, pues ve a preguntarle. Estб en su caravana, sin hacer nada y esperando a idiotas como tъ. Pбsate algъn tiempo haciendo recados para йl, a ver si cambias de idea. </text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_0">
+		<text>Yoga ha ordenado matar a un tipo llamado Stringov. їLo conoces?</text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_1">
+		<text>No, no lo conozco, pero dйjame darte un consejo. Ten siempre en cuenta tus intereses. Cuando estбs apuntando a un tipo con un arma, puede volverse muy generoso. Aprovйchalo. Pero asegъrate de que no vive lo bastante como para arrepentirse de su generosidad.</text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_0">
+		<text>Yoga ha ordenado matar a un contrabandista y a algunos de sus clientes excavadores. </text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_1">
+		<text>Bueno, ese Yoga es muy radical, їno? Aunque los excavadores se metan en asuntos sucios de vez en cuando, no sirve de nada. Podrнamos cargбrnoslos cuando quisiйramos, їpero para quй? Exprimirlos es muy fбcil. Y en cuanto al contrabandista, їen quй estб pensando Yoga? їDe dуnde se cree que saco mi mercancнa? Oh, en fin, a la mierda.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_0">
+		<text>Tengo un par de preguntas.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1">
+		<text>Dispara.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_11">
+		<text>їQuй estбs haciendo aquн?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_111">
+		<text>Esperar y servir bebidas, eso es lo que hago. Perder el tiempo, bбsicamente. He querido ser un jefe desde niсo y nunca he sido un sirviente. Y mнrame ahora, sirviendo vodka mientras Yoga no hace nada y engorda. Los muchachos tampoco estбn haciendo mucho. ЎTнo, si yo fuese el jefe, los pondrнa a hacer algo! Causarнamos tantos problemas que la Zona iba a cambiar mбs que despuйs de una emisiуn.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1111">
+		<text>Ya veo. Tambiйn querнa preguntar...</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1112">
+		<text>Bueno, ya vale de charla por hoy.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_12">
+		<text>їQuй hay de nuevo en la Zona?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_121">
+		<text>Bueno, la frecuencia de las emisiones ha aumentado y la Zona estб cambiando con cada una. Se han abierto muchas бreas nuevas e interesantes y la gente estб deseando explorarlas. Si eres listo y tienes un clan para respaldarte, quedarte en casa y no hacer nada en vez de conquistar un territorio o dos de la Zona es un total desperdicio, en mi opiniуn.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_13">
+		<text>їQuй tal os llevбis con vuestros vecinos?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_131">
+		<text>Pues mбs o menos asн: somos los ъnicos en la Zona con un cуdigo de algъn tipo. No somos bandidos, somos lobos. Y el resto son pringaos y ovejas. No tienen orden alguno en sus vidas, asн que hacemos nuestro trabajo como pastores. Mira el vertedero, por ejemplo. Cuando los stalkers encuentran algo ъtil, empiezan a dispararse los unos a los otros para quedбrselo. Йse no es modo de hacer negocios, asн que nuestros muchachos vinieron aquн, pusieron algunas normas y desde entonces todo ha ido bien. Todavнa no hemos logrado hacer lo mismo con los demбs, pero todo llegarб. Ahora mismo no me preocupa, tengo otras cosas en mente.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_14">
+		<text>Olvнdalo, hablaremos la prуxima vez.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_141">
+		<text>Pues vale.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_11">
+		<text>Eh, tнo, їte apetece dispararle a unos cuervos?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_111">
+		<text>Claro.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1111">
+		<text>Estupendo. Puedes jugar por diversiуn, por dinero o para intentar establecer un nuevo rйcord. їQuй quieres hacer?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_112">
+		<text>No, no me apetece.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1121">
+		<text>Como quieras, colega. Estarй aquн si cambias de idea.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_21">
+		<text>Aquн tienes la pasta, como te prometн. Yo juego limpio. їQuieres volverlo a intentar?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_31">
+		<text>Quй mala suerte. ЎVuelve a intentarlo, tнo!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_41">
+		<text>їAdуnde vas, tнo? Si quieres disparar en otra parte es asunto tuyo, їpero quй tal si te quedas y sigues las reglas?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_51">
+		<text>їSabes que el tiempo corre, no? Podemos hablar luego.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_511">
+		<text>Entendido.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_0">
+		<text>Quiero jugar por dinero.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1">
+		<text>Eso es mъsica para mis oнdos. їQuieres que te explique las reglas o quй?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11">
+		<text>Empecemos a disparar.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111">
+		<text>Basta de charla, colega. A ver, їcuбntos cuervos puedes cargarte en un minuto?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111111">
+		<text>Trato hecho.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111111">
+		<text>Genial. Prepara tu arma, colega.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111111">
+		<text>Vale.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112">
+		<text>No tengo tanto dinero.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111121">
+		<text>їQuй tal si eliges algo que te puedas permitir?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111211">
+		<text>Sн, yo elegirнa un nъmero diferente de cuervos.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111212">
+		<text>No, no me interesa.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112121">
+		<text>Bueno, puedes jugar por diversiуn. O podrнas intentar batir un rйcord, pero te puede salir caro. їQuй me dices?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_12">
+		<text>Explнcate.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_121">
+		<text>Jugar por dinero es muy divertido. Dime cuбntos cuervos vas a abatir en un minuto, apuesta tu dinero y ve a por ellos. Si matas tantos como dijiste, doblas tu dinero. Si no, me quedo con la apuesta. Y recuerda, cuantos mбs cuervos, mбs alta es la apuesta.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_13">
+		<text>De repente no me apetece jugar.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_0">
+		<text>їHay alguna regla general?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_1">
+		<text>En realidad no. Inicio el cronуmetro, tъ te preparas y empiezas a disparar a los cuervos a mi seсal. Si matas la cantidad correcta en un minuto, ganas. Buen trabajo y todo eso. Cуmo matarlos es cosa tuya. Pero recuerda, si sales del бrea, se acabу el juego. Asн que, їquieres jugar por diversiуn, por dinero o para intentar establecer un nuevo rйcord?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_0">
+		<text>No me apetece jugar.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_1">
+		<text>Como quieras, colega. Estarй aquн si cambias de idea.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_0">
+		<text>Quiero establecer un nuevo rйcord.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11">
+		<text>Empecemos.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1111">
+		<text>Vale.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11111">
+		<text>Bien, a ver si eres un campeуn, colega.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1112">
+		<text>Me gustarнa, pero no tengo dinero.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11121">
+		<text>Bueno, hay opciones mбs simples: puedes jugar por dinero o por diversiуn. їQuй me dices?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1113">
+		<text>He cambiado de idea.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_12">
+		<text>Recuйrdame cuбles son las reglas.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_121">
+		<text>Bueno, esto es para hombres de verdad. Si crees que puedes batir el rйcord actual, haz una apuesta en consecuencia. Si logras establecer un nuevo rйcord, ganarбs el doble de tu apuesta y serбs el campeуn. Si no, me quedo con tu dinero.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_13">
+		<text>He cambiado de idea.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_0">
+		<text>Por diversiуn.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_1">
+		<text>Ah, їsolo quieres practicar? Te acuerdas de las reglas, їno?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11">
+		<text>Sн. Venga, a disparar.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111">
+		<text>Vale, їcuбntos cuervos puedes cargarte?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11111">
+		<text>Vale, dame el dinero.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111111">
+		<text>Vale.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_21">
+		<text>No. Dнmelas.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_211">
+		<text>A ver, si juegas por diversiуn, no ganarбs ningъn dinero. Es ъtil para practicar o para cuando te apetece dispararle a algo. Decide cuбntos cuervos puedes cargarte en un minuto y trata de cumplirlo.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_31">
+		<text>Cambiй de idea.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_311">
+		<text>No hay problema. Las opciones son las mismas: juega por dinero o trata de batir un rйcord. їQuй me dices?</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_111">
+		<text>їQuй quieres decir con eso? Claro, no me graduй en una maldita academia, pero creo que este tipo de trabajo se me da bien. Fui el mejor especialista de mi central, con medallas, condecoraciones y todo eso. Solнa celebrar ese tipo de cosas con mis amigos, bebiendo unas birras, hasta que nuestro jefe nos echу a todos. ЎQuй hijo de puta! Era una central muy elitista, porque estбbamos trabajando por la defensa de la industria. Despuйs de aquello, conseguн un trabajo como tйcnico en una oficina local de alojamiento. Siempre acudнan a mн cuando pasaba algo, porque era el ъnico profesional que tenнan. Algunas personas me daban propinillas o me servнan un trago y las cosas me iban muy bien... hasta que me peleй con un fontanero por una botella. Perdн la cabeza y apuсalй a aquel cabrуn con un destornillador. El tнo sobreviviу, pero yo acabй en una penitenciarнa. Para cuando volvн, ya no tenнa trabajo y mi mujer me habнa dejado. Sufrн una depresiуn. Perdн la casa por pura estupidez y me convertн en un sin techo. Entonces fue cuando vine aquн. їY sabes quй? Aquн me tratan bien porque sй lo que hago. Y sigo igual que siempre, a veces incluso acepto una buena botella como pago por un trabajo... no olvides eso.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_121">
+		<text>Solo porque me tiemblen las manos no significa que sea inъtil. Tengo resaca, eso es todo. Con un par de tragos estarй como nuevo. Y no te preocupes, trabajo mejor que cualquier hijo de puta sobrio que haya ahн fuera, en serio. Puedo hacer cualquier cosa que necesites: reparar tu arma, aсadir kevlar a tu blindaje o instalarte una actualizaciуn. Tan solo acuйrdate de tu buen amigo Limpid y sнrvele un trago por su duro trabajo de vez en cuando.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_131">
+		<text>Sinceramente, me importa una mierda lo que pase. Mientras haya suficiente trabajo (Ўy bebidas!), por mн todo estб bien. Quizб mi vida sea una mierda, pero es demasiado tarde para cambiarla ahora. їPor quй iba a llenar mi cabeza con rumores inъtiles? O sea, por aquн siempre pasa de todo. їConoces ya a Kirill? Es el tнo con la cara llena de granos. Incluso lo llamamos Granos. Bueno, si no lo has visto, probablemente estй emborrachбndose en alguna parte. El caso es que algunas veces habнa visto a Granos fuera de la base. Supuse que el chaval tenнa un escondite para guardar el botнn que no querнa compartir tras las incursiones. Los demбs tambiйn se dieron cuenta y Yoga terminу por enterarse. Llamу a Granos y le ordenу entregar el escondite. Granos le dijo: "Jefe, no soy ninguna rata, se lo juro...", asн que fue y le enseсу lo que era. Resulta que habнa recogido a un cachorrito herido de Chernуbil y lo estaba alimentando con las sobras, porque no tenнa a nadie mбs con quiйn hablar. Los muchachos no le tienen mucho aprecio. En fin, Yoga se cabreу con todo el asunto. Disparу al cachorrito, Granos se llevу una buena paliza y perdiу su parte. Tнo, asн es la vida...</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_141">
+		<text>Ah, es mi mejor amigo, Senka. Podrнas ahogarte en la cantidad de vodka que hemos bebido juntos, Ўja! Nos hicimos amigos desde el primer dнa: primero bebimos para celebrar nuestro encuentro, luego nos peleamos porque nos pusimos a hablar sobre la vida y discutimos. Pero no te preocupes, Senka es un tнo legal, aunque de vez en cuando йl y yo tengamos una pelea de borrachos. Siempre puedo hablar con йl cuando estoy deprimido. Es mi ъnico amigo de verdad, como Pavlov y su perro. </text>
+	</string>
+	<string id="gar_bandit_fixer_questions_151">
+		<text>Hay un principio bбsico que todo hombre debe recordar: nunca mezcles el vodka con la cerveza. Ya lo sabнas, їno? Bueno, pues con las armas es igual. Elige una caracterнstica de un arma y mejуrala a tope, їvale? Da igual lo que elijas, precisiуn, cadencia de disparo o lo que sea, solo optimнzala. Una caracterнstica mejorada a tope es mбs ъtil que varias mejoradas a medias.</text>
+	</string>
+	<string id="gar_bandit_leader_hello_21">
+		<text>Espero que Stringov la haya palmado.</text>
+	</string>
+	<string id="gar_bandit_leader_hello_31">
+		<text>De todos modos el contrabandista no va a salir con vida del vertedero, pero si los excavadores consiguen algunas armas, no me va a hacer ninguna gracia, їsabes?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_41">
+		<text>Los excavadores estбn en el mercadillo, pero tъ sigues aquн. їSoy el ъnico que ve cuбl es el problema?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_61">
+		<text>їHas venido a hablar de negocios o a presentarme tus respetos?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_91">
+		<text>Soy todo oнdos.</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_0">
+		<text>їMe puedo unir a vosotros?</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_1">
+		<text>ЎNo tan rбpido, macarra! Primero tienes que pasar la prueba, una prueba de verdad. Tengo un trabajo para ti.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_0">
+		<text>їQuй, puedo unirme ya? їMe aceptarбs?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_1">
+		<text>їEres tonto o quй? Te he dado un trabajo, asн que hazlo. Hablaremos cuando lo hayas completado.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_2">
+		<text>Hiciste el trabajo y lo hiciste bien, de hecho, demasiado bien. Siempre sospecho cuando las cosas salen demasiado bien. Asн que vete a dar una vuelta por la Zona mientras investigo un poco sobre ti. Si de verdad estбs limpio, te mandarй un mensaje a tu PDA.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_3">
+		<text>Parece que formas parte del grupo de Libertad. Bueno, aquн nosotros somos otro grupo y yo soy el jefe. їEstбs listo para dejar Libertad?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_4">
+		<text>Vaya, vaya, un miembro de Deber que quiere unirse a mi equipo. Bueno, aquн solo hay un jefe y йse soy yo. їEstбs listo para cambiar a tus jefes actuales por mн?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5">
+		<text>Bueno, en mi equipo solo hay hombres de verdad y has demostrado ser lo bastante bueno como para unirte a nosotros. Puedes unirte cuando quieras. їQuй me dices?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51">
+		<text>Siempre he querido ir con tнos duros como vosotros.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511">
+		<text>Tendrбs muchas ocasiones para endurecerte, te lo aseguro. їSabes cуmo funcionan las cosas aquн?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5111">
+		<text>No. Explнcamelo, por favor.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51111">
+		<text>A ver, la Zona es un lнo donde todos disparan contra todos. Nosotros vivimos segъn nuestras propias reglas y les enseсamos a otros a respetarlas. Nuestras "lecciones" cuestan dinero, por eso cobramos a los excavadores. El vertedero ya estб organizado, es hora de ir al Cordуn. Para controlar ese sitio, tenemos que expulsar a los stalkers de allн y enseсarles quiйn manda.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511111">
+		<text>Entendido.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5112">
+		<text>Ya sй todo, no me hace falta un sermуn.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51121">
+		<text>Bien, eso es todo. Ahora tu PDA estб sintonizada con nuestra frecuencia, asн siempre sabrбs quй estбn haciendo los muchachos y quй tal nos va en nuestra lucha contra otros clanes. De acuerdo, fin de la presentaciуn, Ўquнtate de mi vista!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511211">
+		<text>Entendido, grandullуn. Me unirй a la fuerza de trabajo.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_52">
+		<text>Me lo pensarй.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_0">
+		<text>Me gustarнa trabajar para ti.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_11">
+		<text>Lo harй.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_111">
+		<text>Genial. El tipo se llama Stringov. Ve a la parada. Creo que estarб en posiciуn para cuando llegues allн.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1111">
+		<text>Entendido.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_12">
+		<text>No, esta clase de trabajo no es para mн.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_121">
+		<text>Como quieras. Avнsame si cambias de idea. A lo mejor el tipo sigue con vida.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_0">
+		<text>He decidido aceptar el trabajo, despuйs de todo.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_1">
+		<text>Bien. Tienes suerte, el tipo sigue vivo. Pronto estarб en la vieja parada del autobъs, mбs allб del muro oriental. Ocъpate de йl, se llama Stringov. Y asegъrate de que te cargas al tipo correcto.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_11">
+		<text>Entendido.</text>
+	</string>
+	<string id="gar_bandit_leader_meet_greet_b_2">
+		<text>ЎVaya, que me aspen! ЎSi eres tъ!</text>
+	</string>
+	<string id="gar_bandit_leader_questions_0">
+		<text>Hay algo que quiero preguntarte.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1">
+		<text>їDe quй se trata?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_11">
+		<text>Hбblame de ti. </text>
+	</string>
+	<string id="gar_bandit_leader_questions_111">
+		<text>їQuй eres, un poli? No voy a responder tus jodidas preguntas. No eres mбs que basura, un fracasado, igual que los cientos que me he cargado para llegar adonde estoy ahora. Y la razуn por la que estoy aquн hoy es porque pasй mбs tiempo pensando y menos hablando. Bueno, hay otra razуn: si tenнa que actuar, lo hacнa mбs rбpido que los demбs y hacнa mбs daсo, їlo entiendes?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1111">
+		<text>Ya veo. Hay otra cosa que quiero preguntarte.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1112">
+		<text>Ya veo. No tengo mбs preguntas.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_12">
+		<text>їNo te preocupa que los stalkers se subleven y os ataquen?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_121">
+		<text>Un hombre de verdad solo tiene una preocupaciуn: convertirse en miembro de la brigada de orientaciуn no tradicional, tъ ya me entiendes. Aparte de eso, no hay nada que me preocupe. Tengo suficiente acero en las pelotas como para seguir exprimiendo a los excavadores en el vertedero. Aunque reuniesen a todo un clan para atacarnos, les enseсarнamos a esos cretinos a no meterse con nosotros. Nuestras filas no paran de aumentar y pronto tendremos suficiente dinero para dejar este agujero y mudarnos a una base en condiciones. Y en cuanto a los actuales residentes de esa base... bueno, tendrбn que buscarse un nuevo sitio para vivir, їno?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_13">
+		<text>їTe interesa lo que pasa en la Zona?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_131">
+		<text>Solo hay una cosa que me interese: desde dуnde van a atacarnos los militares o cualquier otro grupo. Todo lo demбs me importa una mierda, salvo las emisiones y la lucha de los stalkers contra el ejйrcito, porque siempre podemos beneficiarnos de esas cosas. En todo caso, voy a contarte una pequeсa historia. Por aquн antes tenнamos a un fracasado al que llamбbamos Cocinero. No es que fuese cocinero de verdad, es que podнa ver un pulverizador de carne, una de las peores anomalнas que hay por aquн, desde cien pasos de distancia. El tнo empezу a darse humos, decнa que nos estaba salvando de muertes seguras y que no cobraba lo bastante. El mamoncete necesitaba que le recordasen quiйn era el jefe por aquн, asн que lo llamй y le rompн los dedos. Luego los muchachos le vendaron los ojos y lo llevaron a un buen sitio. Pensй que si podнa andar cien pasos y sobrevivir, lo dejarнa vivir para que me limpiase las botas. Pues bien, se metiу de lleno en un pulverizador de carne y aquйl fue el fin de Cocinero. La moraleja es: si te metes conmigo, acabarбs hecho picadillo.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_14">
+		<text>Nada, gracias.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_141">
+		<text>Buen chico. Cuanto menos sepas, mбs tiempo vivirбs.</text>
+	</string>
+	<string id="gar_bandit_leader_reward_0">
+		<text>їNo crees que la recompensa por mi ъltimo trabajo no era acorde al riesgo?</text>
+	</string>
+	<string id="gar_bandit_leader_reward_111">
+		<text>No, no es que lo crea. Lo sй, їsabes a lo que me refiero? De acuerdo, de acuerdo, no eres el macarra que pensй al principio, asн que te voy a contar algo acerca de un pequeсo escondite. Escondн allн un arma especial antes de la ъltima emisiуn, la grande. Toda el бrea quedу cubierta de anomalнas despuйs de la emisiуn, pero un tipo me ha dicho que el problema no son las anomalнas, sino los monstruos. En todo caso, llegar hasta allн no es fбcil, pero te darй las coordenadas exactas por si te apetece intentarlo. Si lo consigues, lo que encontrarбs en el escondite te compensarб por el riesgo. </text>
+	</string>
+	<string id="gar_bandit_leader_reward_1111">
+		<text>Vale, veremos.</text>
+	</string>
+	<string id="gar_bandit_tech_join_0">
+		<text>їPuedes decirme cуmo puedo unirme a tu facciуn?</text>
+	</string>
+	<string id="gar_bandit_tech_join_1">
+		<text>Eso lo decidirб el jefe. Su caravana estб en el hangar.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_0">
+		<text>їPuedes responderme a un par de preguntas?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1">
+		<text>ЎClaro!</text>
+	</string>
+	<string id="gar_bandit_tech_questions_11">
+		<text>їCуmo es que alguien como tъ se convirtiу en tйcnico?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_111">
+		<text>їQuй quieres decir con eso? Claro, no me graduй en una maldita academia, pero creo que este tipo de trabajo se me da bien. Fui el mejor especialista de mi central, con medallas, condecoraciones y todo eso. Solнa celebrar ese tipo de cosas con mis amigos, bebiendo unas birras, hasta que nuestro jefe nos echу a todos. ЎQuй hijo de puta! Era una central muy elitista, porque estбbamos trabajando por la defensa de la industria. Despuйs de aquello, conseguн un trabajo como tйcnico en una oficina local de alojamiento. Siempre acudнan a mн cuando pasaba algo, porque era el ъnico profesional que tenнan. Algunas personas me daban propinillas o me servнan un trago y las cosas me iban muy bien... hasta que me peleй con un fontanero por una botella. Perdн la cabeza y apuсalй a aquel cabrуn con un destornillador. El tнo sobreviviу, pero yo acabй en una penitenciarнa. Para cuando volvн, ya no tenнa trabajo y mi mujer me habнa dejado. Sufrн una depresiуn. Perdн la casa por pura estupidez y me convertн en un sin techo. Entonces fue cuando vine aquн. їY sabes quй? Aquн me tratan bien porque sй lo que hago. Y sigo igual que siempre, a veces incluso acepto una buena botella como pago por un trabajo... no olvides eso.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1111">
+		<text>Ya veo. їTe importa si te hago otra pregunta?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1112">
+		<text>Entendido. Eso es todo por ahora.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_12">
+		<text>їEres capaz de hacer algo?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_121">
+		<text>Solo porque me tiemblen las manos no significa que sea inъtil. Tengo resaca, eso es todo. Con un par de tragos estarй como nuevo. Y no te preocupes, trabajo mejor que cualquier hijo de puta sobrio que haya ahн fuera, en serio. Puedo hacer cualquier cosa que necesites: reparar tu arma, aсadir kevlar a tu blindaje o instalarte una actualizaciуn. Tan solo acuйrdate de tu buen amigo Limpid y sнrvele un trago por su duro trabajo de vez en cuando.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_13">
+		<text>їTienes idea de lo que pasa a tu alrededor?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_131">
+		<text>Sinceramente, me importa una mierda lo que pase. Mientras haya suficiente trabajo (Ўy bebidas!), por mн todo estб bien. Quizб mi vida sea una mierda, pero es demasiado tarde para cambiarla ahora. їPor quй iba a llenar mi cabeza con rumores inъtiles? O sea, por aquн siempre pasa de todo. їConoces ya a Kirill? Es el tнo con la cara llena de granos. Incluso lo llamamos Granos. Bueno, si no lo has visto, probablemente estй emborrachбndose en alguna parte. El caso es que algunas veces habнa visto a Granos fuera de la base. Supuse que el chaval tenнa un escondite para guardar el botнn que no querнa compartir tras las incursiones. Los demбs tambiйn se dieron cuenta y Yoga terminу por enterarse. Llamу a Granos y le ordenу entregar el escondite. Granos le dijo: "Jefe, no soy ninguna rata, se lo juro...", asн que fue y le enseсу lo que era. Resulta que habнa recogido a un cachorrito herido de Chernуbil y lo estaba alimentando con las sobras, porque no tenнa a nadie mбs con quiйn hablar. Los muchachos no le tienen mucho aprecio. En fin, Yoga se cabreу con todo el asunto. Disparу al cachorrito, Granos se llevу una buena paliza y perdiу su parte. Tнo, asн es la vida...</text>
+	</string>
+	<string id="gar_bandit_tech_questions_14">
+		<text>їQuiйn es ese tipo que siempre duerme en la esquina?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_141">
+		<text>Ah, es mi mejor amigo, Senka. Podrнas ahogarte en la cantidad de vodka que hemos bebido juntos, Ўja! Nos hicimos amigos desde el primer dнa: primero bebimos para celebrar nuestro encuentro, luego nos peleamos porque nos pusimos a hablar sobre la vida y discutimos. Pero no te preocupes, Senka es un tнo legal, aunque de vez en cuando йl y yo tengamos una pelea de borrachos. Siempre puedo hablar con йl cuando estoy deprimido. Es mi ъnico amigo de verdad, como Pavlov y su perro. </text>
+	</string>
+	<string id="gar_bandit_tech_questions_15">
+		<text>їQuй crees que deberнa mejorar en un arma?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_151">
+		<text>Hay un principio bбsico que todo hombre debe recordar: nunca mezcles el vodka con la cerveza. Ya lo sabнas, їno? Bueno, pues con las armas es igual. Elige una caracterнstica de un arma y mejуrala a tope, їvale? Da igual lo que elijas, precisiуn, cadencia de disparo o lo que sea, solo optimiza eso. Una caracterнstica mejorada a tope es mбs ъtil que varias mejoradas a medias.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_16">
+		<text>Vale. Ya basta de preguntas por ahora.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_161">
+		<text>Bueno, siempre estoy dispuesto a charlar, asн que tenlo en cuenta.</text>
+	</string>
+	<string id="gar_bandit_trader_join_0">
+		<text>їCуmo puedo unirme a tu clan?</text>
+	</string>
+	<string id="gar_bandit_trader_join_1">
+		<text>ЎPregъntale a Yoga! Estб al cargo de ese tipo de cosas. Los letreros donde pone "Jefe" y "Registro de ruta" no pueden ser tan difнciles de encontrar.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_0">
+		<text>їTe apetece hablar, ahora que la tienda estб tranquila?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1">
+		<text>Claro, їde quй quieres hablar?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_11">
+		<text>Hбblame de ti. </text>
+	</string>
+	<string id="gar_bandit_trader_questions_111">
+		<text>Solнa hacer chanchullos en la Uniуn Soviйtica hasta que me pillaron en un negocio gordo. Cumplн mi condena como un hombre, hice buenas amistades y me puse en contacto con la gente de los bajos fondos. Cuando salн, empecй a comprar mercancнa robada. Volvieron a pillarme y pasй mбs tiempo en la cбrcel. Para cuando salн, la Uniуn Soviйtica estaba muerta y enterrada. Nunca logrй adaptarme a los cambios. Estaba arruinado y mi vida era una mierda. Entonces apareciу la Zona y vine aquн como una bala. Este sitio me recordaba los viejos tiempos, asн que me hice comerciante sin pensбrmelo dos veces.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1111">
+		<text>Ya veo. їPuedes contarme algo mбs?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1112">
+		<text>Vale, suficiente charla por ahora.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_12">
+		<text>їQuй piensas de Yoga?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_121">
+		<text>Esto es lo que pienso: no seguirб siendo el jefe mucho tiempo. Tengo el presentimiento de que Borov actuarб tarde o temprano, porque a Yoga se le estб subiendo el poder a la cabeza, no ve mбs allб de su nariz. Tiene una serpiente en su regazo que lo morderб mбs tarde o mбs temprano. Pero no vayas por ahн contбndole esto a todo el mundo, їeh? Te estoy contando informaciуn confidencial, asн que si te enteras de algo, ven a contбrmelo, їentendido? No te preocupes, da igual quiйn sea el jefe, Yoga o Borov, yo seguirй aquн haciendo negocios.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_13">
+		<text>Hбblame del vertedero.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_131">
+		<text>Je, no sй por quй alguien quiere venir a este agujero. Aquн antes no venнa nadie porque solo habнa basura y radiaciуn. Y entonces, Ўzas!, un par de stalkers tienen suerte y encuentran algunos artefactos valiosos. Despuйs de aquello, la gente empezу a venir de todas partes de la Zona como si fueran marineros cachondos persiguiendo a una puta. Este sitio era un desastre hasta que llegaron nuestros muchachos y pusieron un poco de orden. La Zona necesita orden, de un modo u otro. Si los cerdos y los militares no hacen cumplir la ley, los gбnsteres establecen sus propias reglas, y eso es lo que hemos hecho en el vertedero. No hace falta ser un genio para saber que el orden cuesta dinero. Nuestros muchachos tienen que comer, asн que se llevan una cuota justa de lo que se encuentra aquн. A mн no me va mal, pero estoy pensando en irme a un sitio mбs rentable.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_14">
+		<text>їCuбles son las ъltimas noticias en la Zona?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_141">
+		<text>Las ъltimas noticias, їeh? Tan solo procura que no sean las ъltimas para ti, ya sabes a lo que me refiero. Los mutantes en general no son tan malos como en el resto de la Zona, pero el otro dнa pasу algo... Un stalker volviу todo pбlido, con las manos temblando... empezу a confesar sus pecados y toda esa mierda. Al parecer, un colega y йl estaban huyendo de unos poltergeists cuando se toparon con un grupo de hбmsteres. Asн que este tнo decide salvarse йl solo, le dispara a su amigo y sale corriendo. Los hбmsteres obviamente no se molestaron en perseguirlo porque ya tenнan carne fresca, pero cuando nuestro pequeсo hйroe empezу a pensar en lo que habнa hecho... En fin, cuando iba por su segunda botella en el local de Borov, podнas oнrlo llorar porque su compaсero le habнa dado su ъltimo botiquнn y todo eso... Bueno, el caso es que aquella noche el tipo se ahorcу. Eso es lo que le pasa a la gente en la Zona.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_15">
+		<text>Nada, supongo.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_151">
+		<text>Allб tъ.</text>
+	</string>
+	<string id="gar_digger_leader_attack_0">
+		<text>Acerca de atacar el campo de concentraciуn...</text>
+	</string>
+	<string id="gar_digger_leader_attack_1">
+		<text>Escucha, hace tiempo que quiero luchar contra los bandidos y ponerlos contra las cuerdas, hacerlos pagar por todo lo que han hecho. El problema es que los excavadores estбn asustadнsimos y ni siquiera creen que sea posible. En cuanto alguien menciona las palabras "campo de concentraciуn", pierden todo su valor. Eso significa que el ъnico modo de hacer realidad mi sueсo es convencer a los excavadores de que podemos ganar.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11">
+		<text>їY cуmo piensas conseguirlo?</text>
+	</string>
+	<string id="gar_digger_leader_attack_111">
+		<text>Quiero liberar a los excavadores que hay prisioneros en el campamento y borrarlo de la faz de la Tierra. Con eso los excavadores comprenderбn que los bandidos no son invencibles. Todo lo que necesitan es un sнmbolo, Ўcomo el que el Che Guevara le dio a la gente de Cuba! Por eso necesito las armas, para que mis muchachos tengan una oportunidad contra los bandidos. Francamente, incluso con armas, nuestras probabilidades no son muy buenas. Por eso te pido que los guнes. Eres un combatiente experimentado. ЎContigo al mando, seguro que ganamos! їNos ayudarбs?</text>
+	</string>
+	<string id="gar_digger_leader_attack_1111">
+		<text>їAyudarte a atacar el campo de concentraciуn? Sн, lo harй.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11111">
+		<text>ЎSabнa que hacнa bien en confiar en ti! Aquн tienes las coordenadas de la posiciуn. Mis muchachos ya estбn listos con las armas del escondite de los contrabandistas. Me pondrй en contacto con ellos y les dirй que vienes. ЎQue tengas mucha suerte!</text>
+	</string>
+	<string id="gar_digger_leader_attack_111111">
+		<text>Lo harй lo mejor que pueda.</text>
+	</string>
+	<string id="gar_digger_leader_attack_1112">
+		<text>No puedo decir que tu pequeсo discurso me haya inspirado. Aunque me lo pensarй.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11121">
+		<text>їQuй tienes que pensar? Si los excavadores no trabajan juntos ahora, pronto los bandidos serбn demasiado poderosos. їQuй crees que pasarб entonces? Se extenderбn por la Zona, Ўy eso serб una mala situaciуn para todos! Vamos, tнo, Ўeres nuestra ъnica esperanza de atacar con йxito el campo de concentraciуn!</text>
+	</string>
+	<string id="gar_digger_leader_attack_2">
+		<text>ЎTenemos que atacar el campo de concentraciуn! ЎEs el ъnico modo de que los excavadores crean en sн mismos! їNos ayudarбs?</text>
+	</string>
+	<string id="gar_digger_leader_break_0">
+		<text>Nos vemos.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_0">
+		<text>їUn botiquнn?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1">
+		<text>Sн, eso es lo que dice en la caja: "un botiquнn con medicamentos de acciуn rбpida". Lo encontrй en un viejo escondite de cuando la Zona acababa de aparecer. Creo que lo dejу allн una de las primeras expediciones cientнficas. Es valioso, pero nadie quiere comprarlo, ni siquiera por dos mil. Es demasiado para un excavador. їPor quй no lo compras tъ, tнo? Necesito el dinero...</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11">
+		<text>їUn botiquнn por dos mil? Dбmelo, me vendrб bien.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111">
+		<text>ЎVaya, tнo, muchas gracias! Aquн tienes el botiquнn. Oye, a lo mejor soy tonto, pero creo que puedo confiar en ti. La razуn por la que necesitaba el dinero es para comprarle armas al contrabandista y dбrselas a mis muchachos.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111">
+		<text>Ya, їpero quй tiene que ver la confianza con eso?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111">
+		<text>Verбs, Stringov acaba de ir a ver al contrabandista. Tiene casi todo el dinero, pero si tuviese el que me acabas de dar, podrнa comprar todas las armas que necesitamos. Asн que quiero pedirte que le lleves este dinero a Stringov. Aquн tienes las coordenadas. Le dirй que te espere, pero date prisa, їvale?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111111">
+		<text>Vale.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111111">
+		<text>Sabнa que podнa contar contigo. Gracias por adelantado.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111111">
+		<text>Dбmelas cuando haya acabado.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111112">
+		<text>їQuй decнas que tengo que hacer?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111121">
+		<text>Tienes que llevarle dos de los grandes a Stringov. Estб esperando al contrabandista. </text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111211">
+		<text>Ya veo.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111113">
+		<text>Me lo pensarй.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111131">
+		<text>Mmm... Espero que no estuviese equivocado con respecto a ti.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111311">
+		<text>Bueno, sigue esperando.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_112">
+		<text>Estarнa encantado, pero hace poco decidimos dejar todos los tratos importantes para la noche, para evitar testigos innecesarios. Vuelve cuando oscurezca y el botiquнn serб tuyo.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_12">
+		<text>Lo comprarй. Solo necesito reunir primero el dinero.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_121">
+		<text>ЎTнo, si pudieses comprarlo, te deberнa una! Lo que pasa es que solo hacemos negocios por la noche para que no nos vean. Yo mismo establecн esa norma, asн que tengo que respetarla.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_13">
+		<text>Me lo pensarй.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_131">
+		<text>Tнo, no sй de dуnde voy a sacar ese dinero.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_2">
+		<text>Ya, son solo dos mil. Te lo venderнa mбs barato, pero necesito exactamente esa cantidad. їLo compras?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_3">
+		<text>Vale. їAsн que ya tienes dos mil?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_31">
+		<text>Sн. Dame ese botiquнn.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_32">
+		<text>Todavнa no.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_321">
+		<text>Bueno, el botiquнn y yo te estamos esperando. Diablos, no tengo a nadie mбs a quiйn vendйrselo.</text>
+	</string>
+	<string id="gar_digger_leader_hello_11">
+		<text>Que te den, tнo, la vida ya es lo bastante mala. El clima es una mierda, no hay botнn, hay bandidos y mutantes por todas partes... Incluso si tienes suerte y encuentras equipo decente, no vas a poder pasarlo por el vertedero, seguro que te lo confiscan. Y encima Freshy y los muchachos han desaparecido.</text>
+	</string>
+	<string id="gar_digger_leader_hello_111">
+		<text>їHay algo que pueda hacer para ayudar?</text>
+	</string>
+	<string id="gar_digger_leader_hello_1111">
+		<text>їAyudar? їCуmo sй que puedo confiar en ti? Por otra parte, tampoco es que tenga mucha elecciуn. Necesito un objeto que tiene un excavador llamado Freshy. Si de verdad quieres ayudarme...</text>
+	</string>
+	<string id="gar_digger_leader_hello_112">
+		<text>Eso es problema tuyo, no mнo.</text>
+	</string>
+	<string id="gar_digger_leader_hello_1121">
+		<text>Bueno, no me sorprende, Aquн nadie cuida de nadie. Maldito seas, Freshy, їdуnde te has metido?</text>
+	</string>
+	<string id="gar_digger_leader_hello_12">
+		<text>їPor quй, Dios? їPor quй? їDуnde estб ese maldito Freshy...?</text>
+	</string>
+	<string id="gar_digger_leader_hello_13">
+		<text>A ver, tнo, їlo de ayudar a encontrar a Freshy iba en serio o no?</text>
+	</string>
+	<string id="gar_digger_leader_hello_14">
+		<text>їQuй, has encontrado ya a Freshy?</text>
+	</string>
+	<string id="gar_digger_leader_hello_15">
+		<text>їMe has traнdo la vieja PDA de Freshy?</text>
+	</string>
+	<string id="gar_digger_leader_hello_21">
+		<text>їQuй, vas a comprar el botiquнn? Tienes que entenderme, tнo, si no necesitase el dinero tan desesperadamente, no lo venderнa tan barato.</text>
+	</string>
+	<string id="gar_digger_leader_hello_22">
+		<text>їHas conseguid reunir el dinero para el botiquнn?</text>
+	</string>
+	<string id="gar_digger_leader_hello_31">
+		<text>Llйvale el dinero a Stringov rбpido, їquieres? Confнo en tu palabra.</text>
+	</string>
+	<string id="gar_digger_leader_hello_311">
+		<text>Quй bien.</text>
+	</string>
+	<string id="gar_digger_leader_hello_32">
+		<text>Tнo, їpor quй estбs perdiendo el tiempo? ЎQue Stringov se irб pronto!</text>
+	</string>
+	<string id="gar_digger_leader_hello_321">
+		<text>Lo dudo. Tranquilo.</text>
+	</string>
+	<string id="gar_digger_leader_hello_33">
+		<text>Tнo, їte has dejado allн la PDA de Stringov? ЎEs nuestra ъnica oportunidad de conseguir esas armas!</text>
+	</string>
+	<string id="gar_digger_leader_hello_331">
+		<text>Ya veo. Cuнdate.</text>
+	</string>
+	<string id="gar_digger_leader_hello_34">
+		<text>їHas traнdo la PDA del contrabandista? Gracias... seguro que fue Stringov el que lo vendiу a los bandidos. їCуmo se puede confiar en nadie despuйs de algo asн? O sea, Stringov pasу un tiempo en el campo de concentraciуn y, a pesar de todo, cayу en la tentaciуn del lucro personal. En fin, todo eso ya es agua pasada, igual que Stringov. Por cierto, mis muchachos ya han recogido las armas del escondite. Creo que ya puedo contarte para quй son. Vamos a usarlas para atacar el campo de concentraciуn.</text>
+	</string>
+	<string id="gar_digger_leader_hello_342">
+		<text>Claro, pero recuerda que ya he liberado a los excavadores del campo de concentraciуn.</text>
+	</string>
+	<string id="gar_digger_leader_hello_51">
+		<text>Bueno estamos listos para atacar el campo de concentraciуn. їTe cuento los detalles?</text>
+	</string>
+	<string id="gar_digger_leader_hello_52">
+		<text>Tнo, no tiene sentido atacar el campo de concentraciуn sin ti. Somos excavadores, no soldados. Mis muchachos no saben luchar y en la escuela de excavadores no enseсan tбcticas, tъ ya me entiendes. Lo mejor que pueden hacer es proporcionar fuego de cobertura al azar. Pero si los diriges, serб una historia totalmente distinta. Te lo ruego, їpuedes encabezar el ataque al campo de concentraciуn?</text>
+	</string>
+	<string id="gar_digger_leader_hello_53">
+		<text>Adelante, mis muchachos te estбn esperando.</text>
+	</string>
+	<string id="gar_digger_leader_hello_531">
+		<text>Me ocuparй de ello. Cuнdate.</text>
+	</string>
+	<string id="gar_digger_leader_hello_54">
+		<text>ЎїQuй haces, tнo?! ЎNuestros muchachos estбn muriendo allн!</text>
+	</string>
+	<string id="gar_digger_leader_hello_55">
+		<text>Maldita sea, tнo. Parece que nuestros muchachos han palmado. ЎSolo tъ puedes vengar sus muertes! ЎAcaba con los cabrones del campo de concentraciуn! ЎLibera a nuestros hombres!</text>
+	</string>
+	<string id="gar_digger_leader_hello_61">
+		<text>їSabes, tнo? La vida no estб tan mal.</text>
+	</string>
+	<string id="gar_digger_leader_hello_71">
+		<text>Ugh, esta vida... їquй he hecho yo para merecer esto?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_0">
+		<text>Acerca de Freshy...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1">
+		<text>Bueno, la situaciуn es йsta: Freshy, uno de nuestros compaсeros excavadores, tenнa que traerme su vieja PDA, pero ha desaparecido. Ni йl ni nadie de su grupo se han puesto en contacto conmigo, pero necesito esa PDA con urgencia. Irнa yo mismo o mandarнa a mi colega Stringov, pero ahora ambos somos necesarios aquн. їPuedes traerme la PDA?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11">
+		<text>Supongo. їDуnde puedo encontrar a ese Freshy?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111">
+		<text>No sй dуnde puedes encontrarlo, va de aquн para allб, pero sй que su campamento estб al sur de aquн, tras las cisternas y el montуn de chatarra. Si ves a Freshy por allн, dile que Wild Napr te ha enviado. Si no estб, registra su caja de herramientas. La PDA deberнa estar en un compartimento bajo un fondo falso. їEntendido?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1111">
+		<text>Entendido.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11111">
+		<text>Bien.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112">
+		<text>Oye, he visitado el campamento y no habнa nadie con vida. Solo un montуn de cadбveres destrozados.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121">
+		<text>Mierda... Ўellos tambiйn! Por la noche hay una bestia que vaga por el vertedero y mata a todos los que no estбn bien armados. O sea, a nosotros, a los excavadores. Hasta ahora no ha habido ni un solo superviviente para contarlo. Maldita sea esta perra vida de excavador...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111211">
+		<text>Con todo lo que estб pasando, no es el mejor momento para compadecerse de uno mismo, colega.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112111">
+		<text>Sн, tienes razуn. їRecuerdas dуnde encontrar la PDA?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121111">
+		<text>Sн, lo recuerdo.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112112">
+		<text>Sн, tienes razуn. їHas traнdo la vieja PDA de Freshy?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1113">
+		<text>Dнmelo otra vez.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11131">
+		<text>En resumen, el campamento de Freshy estб al sur de aquн, detrбs de las cisternas y un montуn de basura. Tienes que conseguir su vieja PDA y traйrmela. Si no la tiene Freshy, estarб en su caja de herramientas.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11132">
+		<text>En resumen, el campamento de Freshy estб al sur de aquн, detrбs de las cisternas y un montуn de basura. Tienes que conseguir su vieja PDA de su caja de herramientas y traйrmela. </text>
+	</string>
+	<string id="gar_digger_leader_old_pda_12">
+		<text>Oye, hoy no me apetece hacer recados.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_121">
+		<text>Ye pido ayuda y tъ... ЎEh!</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_2">
+		<text>Vale, їdуnde estбn?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_21">
+		<text>їQuiйn sabe? Todavнa no he ido a verlos.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_211">
+		<text>Escucha, tнo, necesito esa PDA. Hazme el favor de ir a verlos.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3">
+		<text>Tienes la PDA, їverdad?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31">
+		<text>Sн. Toma.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_311">
+		<text>Tнo, me has salvado el culo. Toma esto como recompensa. Vale, veamos... Maldiciуn, aquн solo hay mil quinientos. Parece que no le pagaron por el ъltimo encargo. Mmm... Verбs, Freshy, que descanse en paz, y yo usбbamos esta PDA para pasarnos dinero entre nosotros. En todo caso, ahora necesito el dinero con urgencia, pero Freshy no ha conseguido reunir tanto como esperaba, asн que tengo que sacar dos de los grandes de donde sea. El problema es que ya he vaciado todos los escondites...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3111">
+		<text>Bueno, mala suerte.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31111">
+		<text>Espera... me queda este botiquнn sin vender. їMe lo comprarнas tъ? Pensaba venderlo por tres mil, pero te lo dejo por dos mil. Es un chollazo, їquй me dices?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_32">
+		<text>No, no la he cogido.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_321">
+		<text>Escucha, Freshy y sus chicos han sido despedazados, que descansen en paz... pero sigo necesitando esa PDA con urgencia. їMe la puedes traer, por favor?</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_11">
+		<text>A la mierda, Ўno con esas bestias ciegas acechando por allн!</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_21">
+		<text>Bueno, colega, la vida de excavador es dura...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_11">
+		<text>їCуmo? їQuй quieres? їNo ves que estoy descansando?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_21">
+		<text>Mmm... Dйjame en paz... dйjame dormir...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_31">
+		<text>їTe envнa Yoga? ЎBueno, por fin! їPor quй has tardado tanto?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_41">
+		<text>ЎSн, sн, ya voy! Voy a asegurarme de que no me topo con los hombres de Yoga y luego me largo de aquн.</text>
+	</string>
+	<string id="gar_digger_traitor_hello_411">
+		<text>Vamos, vamos.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_0">
+		<text>Vale. Yoga me ha pedido que zanje las cosas contigo. Considera esto tu finiquito.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1">
+		<text>Bueno, por fin... ЎEh, tнo, espera! їYoga quiere matarme? ЎNo... no... no me dispares! ЎTe pagarй mбs que Yoga!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11">
+		<text>їCuбnto es eso?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111">
+		<text>Bueno, erm... No sй cuбnto te ha prometido Yoga, pero tengo las coordenadas del escondite de un contrabandista muerto. ЎAhн hay mercancнas que valen por lo menos cinco de los grandes!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1111">
+		<text>Mmm. Dame las coordenadas y desaparece, їentendido?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11111">
+		<text>ЎPor supuesto, por supuesto! El escondite estб en el maletero de un coche oxidado, Ўtoma las coordenadas! ЎGracias, tнo! ЎConozco un camino secreto, asн que nadie me verб! Me... me voy, їvale?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111111">
+		<text>Vale.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1112">
+		<text>їUn escondite desconocido con mercancнas sin determinar? Eso no basta. Adiуs.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_12">
+		<text>No me interesa. Adiуs.</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_0">
+		<text>Me han dicho que puedes preparar un encuentro con el contrabandista. </text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_1">
+		<text>їAsн que te han enviado a por las armas? Sн, puedo organizar un encuentro. Mira, normalmente quedo con el tнo cerca de uno de nuestros sitios de excavaciуn, al oeste de aquн. Йstas son las coordenadas. Ahora el contrabandista deberнa estar por allн, asн que ve para allб y le avisarй de que vas de camino. їTienes dinero? Esplйndido.</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_11">
+		<text>Entendido. Cuнdate.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_0">
+		<text>їNo temes a los bandidos?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_1">
+		<text>Claro que sн, їpero quй puedo hacer? De algo hay que vivir. Aunque hemos aprendido a ser precavidos. Durante el dнa vendemos poca cosa para evitar atraer la atenciуn. Y en todo caso, procuramos que no nos vean. Toda precauciуn es poca por aquн.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_0">
+		<text>їQuй vendes?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_1">
+		<text>Solo chatarra. Vendo lo que desentierro, їsabes? Entre eso y algъn negocio aquн y allб voy tirando... Ya te digo, Ўen la Zona el comercio es fundamental!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_1">
+		<text>ЎEh! їQuieres comprar algo?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_0">
+		<text>їDуnde estamos?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_1">
+		<text>Bueno, esto es el mercadillo, asн que supongo que somos mercaderillos. Je, je, somos comerciantes, colega. Vendemos cositas aquн y allб. Serй sincero contigo, nuestra mercancнa es malнsima, pero oye, al menos seguimos en el negocio, їno? En fin, їhas venido a comerciar o solo a hablar?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_0">
+		<text>їEres el ъnico comerciante por aquн?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_1">
+		<text>ЎPor supuesto que no! Aquн hay muchos tipos haciendo negocio, pero tenemos una regla: las ventas importantes solo se hacen al anochecer. Durante el dнa solo estoy yo vendiendo mi mercancнa, que no es gran cosa, pero por la noche es cuando se venden las cosas gordas y se hacen buenos tratos.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_0">
+		<text>Texto predeterminado</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_1">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_11">
+		<text>їEh? їQuй estб pasando? Maldiciуn, me tenнas preocupado. їNo ves que estoy durmiendo?</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_111">
+		<text>Oh, perdona. Cuнdate.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_0">
+		<text>Texto predeterminado</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_1">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_11">
+		<text>Eh, colega. Vamos, si quieres algo, no te cortes.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_111">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_11">
+		<text>Sн que has madrugado. Ahora mismo no es el momento de hablar de negocios serios, їsabes? Vuelve mбs tarde... adiуs.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_111">
+		<text>Entendido.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_11">
+		<text>ЎBuenas tardes! їTe interesa algo en concreto?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_111">
+		<text>Eso es. A ver que tienes.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_112">
+		<text>No, solo he venido por el placer de tu compaснa. Hasta luego.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21">
+		<text>їQuй es lo que quieres?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211">
+		<text>Me gustarнa comerciar. їQuй me dices?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111">
+		<text>їComerciar? їY quiйn dices que eres?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21111">
+		<text>Eh, si no quieres mi dinero, no hay problema. Irй a ver a los comerciantes de arriba. Son lo bastante listos como para no hacer preguntas tontas.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211111">
+		<text>Espera, tнo. їLos chicos de arriba han hecho negocios contigo? Mmm, bueno, йsos no hacen negocios con cualquiera. Bueno... tengo algunas mercancнas. їQuieres verlas?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111111">
+		<text>Eso ya estб mejor. A ver quй tienes.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21112">
+		<text>No es asunto tuyo.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212">
+		<text>Un buen trato. їConoces algъn comerciante por aquн?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121">
+		<text>No.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211">
+		<text>їNi uno?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111">
+		<text>Asн es. </text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111">
+		<text>їEstбs seguro?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111">
+		<text>Estoy seguro.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111111">
+		<text>Tнo, no soy un bandido, un militar ni un zombi. їEres un comerciante o quй?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111111">
+		<text>Soy un comerciante. їVas a mirar la mercancнa o a hacer preguntas tontas?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111111">
+		<text>Me gustarнa ver la mercancнa.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21212">
+		<text>Pues adiуs.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_213">
+		<text>De ti, nada.</text>
+	</string>
+	<string id="gar_bandit_commentators_11">
+		<text>ЎMira, tнo! ЎUn disparo de esta preciosidad y el aire se llena de plumas! </text>
+	</string>
+	<string id="gar_bandit_commentators_111">
+		<text>Mmm... Serб mejor que me vaya ya.</text>
+	</string>
+	<string id="gar_bandit_commentators_12">
+		<text>A ti tampoco te gustan los pajarracos, їeh? Tranquilo, Ўaquн tenemos a patadas!</text>
+	</string>
+	<string id="gar_bandit_commentators_13">
+		<text>їA quй estбs esperando? ЎVamos, acaba con ellos, masбcralos, adelante!</text>
+	</string>
+	<string id="gar_bandit_leader_break_0">
+		<text>Hasta la vista.</text>
+	</string>
+	<string id="gar_bandit_robbery_11">
+		<text>Eh, hora de soltar el botнn. Pero no lloriquees como si te hubieran robado. Recuerda, nos hemos ganado esto manteniendo la ley y el orden en el vertedero. їEstб claro?</text>
+	</string>
+	<string id="gar_bandit_robbery_111">
+		<text>Oh, la ley y el orden son importantes. Toma.</text>
+	</string>
+	<string id="gar_bandit_robbery_1111">
+		<text>ЎBien dicho! Bueno, me llevo todo esto, їvale? Pero quйdate con esa pistola, tнo. No somos tan canallas de quitarle a alguien hasta la camisa. Nos lo agradecerбs la prуxima vez que te encuentres con algunos monstruos. Asн que, Ўadiуs y buena suerte!</text>
+	</string>
+	<string id="gar_bandit_robbery_11111">
+		<text>Sн, adiуs.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_0">
+		<text>He venido a por mi recompensa por limpiar el mercadillo.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_1">
+		<text>Ah, sн. Ya me acuerdo. Aquн tienes.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_11">
+		<text>Mmmm. їNo te parece que es poco para un trabajo tan grande como йste?</text>
+	</string>
+	<string id="gar_bandit_trader_reward_111">
+		<text>Eso no lo decido yo. Te he pagado lo que me ha dicho el jefe, no creas que me he quedado con una parte de tu sueldo. Pero te comprendo, esta vez Yoga no ha sido muy generoso. Mira, ve a hablar con йl. Los chicos saben que has trabajado mucho, asн que si no quiere quedar como un mнsero, tendrб que pagarte algo mбs.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11">
+		<text>ЎEh! їQuieres comprar algo?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11111">
+		<text>їDуnde estamos?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111111">
+		<text>Bueno, esto es el mercadillo, asн que supongo que somos mercaderillos. Je, je, somos comerciantes, colega. Vendemos cositas aquн y allб. Serй sincero contigo, nuestra mercancнa es malнsima, pero oye, al menos seguimos en el negocio, їno? En fin, їhas venido a comerciar o solo a hablar?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11112">
+		<text>їQuй vendes?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111121">
+		<text>Solo chatarra. Vendo lo que desentierro, їsabes? Entre eso y algъn negocio aquн y allб voy tirando... Ya te digo, Ўen la Zona el comercio es fundamental!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11113">
+		<text>їEres el ъnico comerciante por aquн?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111131">
+		<text>ЎPor supuesto que no! Aquн hay muchos tipos haciendo negocio, pero tenemos una regla: las ventas importantes solo se hacen al anochecer. Durante el dнa solo estoy yo vendiendo mi mercancнa, que no es gran cosa, pero por la noche es cuando se venden las cosas gordas y se hacen buenos tratos.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11114">
+		<text>їNo temes a los bandidos?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111141">
+		<text>Claro que sн, їpero quй puedo hacer? De algo hay que vivir. Aunque hemos aprendido a ser precavidos. Durante el dнa vendemos poca cosa para evitar atraer la atenciуn. Y en todo caso, procuramos que no nos vean. Toda precauciуn es poca por aquн.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11115">
+		<text>Nada por ahora. Adiуs.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_61">
+		<text>Buena punterнa, colega. Deberнas jugar por dinero. їTe apetece disparar un poco mбs?</text>
+	</string>
+	<string id="gar_bandit_robbery_12">
+		<text>Bueno, saca la PDA, que es hora de repartir la pasta. Y no creas que es para nada: nos pagas para mantener el orden en el vertedero, їestamos?</text>
+	</string>
+	<string id="gar_bandit_robbery_121">
+		<text>Bueno, si es para mantener el orden, aquн tenйis.</text>
+	</string>
+	<string id="gar_bandit_robbery_1211">
+		<text>ЎGuau, cuбnta inteligencia para ser un perdedor! Asн que me llevarй todo esto, їvale? Puedes quedarte con el equipo, no somos animales que te robamos las armas y las cosas. Nos lo agradecerбs cuando te encuentres con algunos mutantes, crйeme. Bueno, basta de hablar, vбmonos.</text>
+	</string>
+	<string id="gar_bandit_robbery_12111">
+		<text>Tъ... ve con cuidado.</text>
+	</string>
+</string_table>

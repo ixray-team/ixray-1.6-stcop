@@ -174,7 +174,7 @@ function CMGCrowKiller:save(thread, params_list)
 
     thread:w_u8(self.high_score)
     thread:w_u16(self.timer)
-    thread:w_u16(self.time_out)
+    thread:w_s16(self.time_out)
     thread:w_u8(self.killed_counter)
     thread:w_bool(self.win)
 	set_save_marker(thread, "save", true, "CMGCrowKiller")
@@ -201,7 +201,7 @@ function CMGCrowKiller:load(thread, params_list)
 
     self.high_score = thread:r_u8()
     self.timer = thread:r_u16()
-    self.time_out = thread:r_u16()
+    self.time_out = thread:r_s16()
     self.killed_counter = thread:r_u8()
     self.win = thread:r_bool()
 

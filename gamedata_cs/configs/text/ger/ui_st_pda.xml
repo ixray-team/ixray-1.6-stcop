@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Global Map">
+		<text>Globale Karte</text>
+	</string>
+	<string id="Local Map">
+		<text>Lokale Karte</text>
+	</string>
+	<string id="Time">
+		<text>Zeit</text>
+	</string>
+	<string id="actor">
+		<text>Sцldner</text>
+	</string>
+	<string id="actor_bandit">
+		<text>Bandit</text>
+	</string>
+	<string id="actor_csky">
+		<text>Clear Sky</text>
+	</string>
+	<string id="actor_dolg">
+		<text>Wдchter</text>
+	</string>
+	<string id="actor_freedom">
+		<text>Freiheit</text>
+	</string>
+	<string id="actor_stalker">
+		<text>Einzelgдnger</text>
+	</string>
+	<string id="agroprom">
+		<text>Agroprom Forschungsinstitut</text>
+	</string>
+	<string id="arena_enemy">
+		<text>Feind</text>
+	</string>
+	<string id="army">
+		<text>Militдr</text>
+	</string>
+	<string id="bandit">
+		<text>Bandit</text>
+	</string>
+	<string id="csky">
+		<text>Clear Sky</text>
+	</string>
+	<string id="darkvalley">
+		<text>Dunkles Tal</text>
+	</string>
+	<string id="dolg">
+		<text>Wдchter</text>
+	</string>
+	<string id="ecolog">
+		<text>Wissenschaftler</text>
+	</string>
+	<string id="escape">
+		<text>Kordon</text>
+	</string>
+	<string id="freedom">
+		<text>Freiheit</text>
+	</string>
+	<string id="garbage">
+		<text>Mьllhalde</text>
+	</string>
+	<string id="katacomb">
+		<text>Verlassenes Krankenhaus</text>
+	</string>
+	<string id="killer">
+		<text>Sцldner</text>
+	</string>
+	<string id="limansk">
+		<text>Limansk</text>
+	</string>
+	<string id="marsh">
+		<text>Sьmpfe</text>
+	</string>
+	<string id="military">
+		<text>Armeelagerhдuser</text>
+	</string>
+	<string id="monolith">
+		<text>Monolith</text>
+	</string>
+	<string id="monster">
+		<text>Mutant</text>
+	</string>
+	<string id="pda_btn_close">
+		<text>PDA ausschalten</text>
+	</string>
+	<string id="pda_btn_fractionwar">
+		<text>Krieg zwischen Fraktionen</text>
+	</string>
+	<string id="pda_btn_fractionwar_hint">
+		<text>Information ьber aktuelle Kriege zwischen Fraktionen</text>
+	</string>
+	<string id="pda_btn_logs">
+		<text>Nachrichtenprotokoll</text>
+	</string>
+	<string id="pda_btn_logs_hint">
+		<text>Nachrichtenverlauf anzeigen</text>
+	</string>
+	<string id="pda_btn_off_hint">
+		<text>Ausschalten</text>
+	</string>
+	<string id="pda_btn_quests">
+		<text>Karte</text>
+	</string>
+	<string id="pda_btn_quests_hint">
+		<text>Karte der Zone anzeigen</text>
+	</string>
+	<string id="pda_btn_ranking">
+		<text>Statistik</text>
+	</string>
+	<string id="pda_btn_ranking_hint">
+		<text>Information ьber Fraktionen anzeigen</text>
+	</string>
+	<string id="pda_filter_news">
+		<text>Neuigkeiten anzeigen</text>
+	</string>
+	<string id="pda_filter_talk">
+		<text>Dialoge anzeigen</text>
+	</string>
+	<string id="red_forest">
+		<text>Roter Wald</text>
+	</string>
+	<string id="st_enemy">
+		<text>Feinde</text>
+	</string>
+	<string id="st_faction_war_csky_capture_enemy_base">
+		<text>Feindliche Basis einnehmen</text>
+	</string>
+	<string id="st_faction_war_csky_need_more_power">
+		<text>Unsere Prдsenz in den Sьmpfen verstдrken</text>
+	</string>
+	<string id="st_faction_war_csky_relax">
+		<text>Feind besiegt</text>
+	</string>
+	<string id="st_faction_war_csky_secure_level">
+		<text>Alle Zugдnge zu den Sьmpfen sichern</text>
+	</string>
+	<string id="st_fraction_state">
+		<text>Fraktionsstдrke</text>
+	</string>
+	<string id="st_friend">
+		<text>Freunde</text>
+	</string>
+	<string id="st_location">
+		<text>Ort:</text>
+	</string>
+	<string id="st_location_bandit">
+		<text>Mьllhalde</text>
+	</string>
+	<string id="st_location_csky">
+		<text>Sьmpfe</text>
+	</string>
+	<string id="st_location_dolg">
+		<text>Agroprom Forschungsinstitut</text>
+	</string>
+	<string id="st_location_freedom">
+		<text>Dunkles Tal</text>
+	</string>
+	<string id="st_location_stalker">
+		<text>Kordon</text>
+	</string>
+	<string id="stalker">
+		<text>Einzelgдnger</text>
+	</string>
+	<string id="stancia_2">
+		<text>Tschernobyl AKW</text>
+	</string>
+	<string id="trader">
+		<text>Hдndler</text>
+	</string>
+	<string id="ui_fraction_standing">
+		<text>Fraktionsliste</text>
+	</string>
+	<string id="ui_no_fraction">
+		<text>Du gehцrst keiner Fraktion an</text>
+	</string>
+	<string id="ui_pda_details">
+		<text># /Details</text>
+	</string>
+	<string id="ui_st_capture">
+		<text>Erobere:</text>
+	</string>
+	<string id="ui_st_defend">
+		<text>Verteidige:</text>
+	</string>
+	<string id="ui_st_enemy_frac_info">
+		<text>Fraktionsinformationen</text>
+	</string>
+	<string id="ui_st_enemy_mem_count">
+		<text>Einheiten feindlicher Fraktion</text>
+	</string>
+	<string id="ui_st_enemy_resource">
+		<text>Ressourcen feindlicher Fraktion</text>
+	</string>
+	<string id="ui_st_name_bandit">
+		<text>Banditen</text>
+	</string>
+	<string id="ui_st_name_bandit_2">
+		<text>Abtrьnnige</text>
+	</string>
+	<string id="ui_st_name_csky">
+		<text>Clear Sky</text>
+	</string>
+	<string id="ui_st_name_dolg">
+		<text>Wдchter</text>
+	</string>
+	<string id="ui_st_name_freedom">
+		<text>Freiheit</text>
+	</string>
+	<string id="ui_st_name_stalker">
+		<text>Stalker</text>
+	</string>
+	<string id="ui_st_no_faction">
+		<text>Du bist kein Mitglied einer Fraktion</text>
+	</string>
+	<string id="ui_st_our_frac_info">
+		<text>Fraktionsinformationen</text>
+	</string>
+	<string id="ui_st_our_mem_count">
+		<text>Einheiten deiner Fraktion</text>
+	</string>
+	<string id="ui_st_our_resource">
+		<text>Ressourcen deiner Fraktion</text>
+	</string>
+	<string id="ui_st_state_confrontation">
+		<text>Fraktionsstдrke</text>
+	</string>
+	<string id="ui_st_target_static">
+		<text>Aktuelles Ziel deiner Fraktion</text>
+	</string>
+	<string id="yantar">
+		<text>Jantar</text>
+	</string>
+	<string id="zombied">
+		<text>Zombifiziert</text>
+	</string>
+	<string id="zoom_in_btn_hint">
+		<text>heranzoomen</text>
+	</string>
+	<string id="zoom_out_btn_hint">
+		<text>herauszoomen</text>
+	</string>
+	<string id="month_april">
+		<text>April</text>
+	</string>
+	<string id="month_august">
+		<text>August</text>
+	</string>
+	<string id="month_december">
+		<text>Dezember</text>
+	</string>
+	<string id="month_february">
+		<text>Februar</text>
+	</string>
+	<string id="month_january">
+		<text>Januar</text>
+	</string>
+	<string id="month_july">
+		<text>Juli</text>
+	</string>
+	<string id="month_june">
+		<text>Juni</text>
+	</string>
+	<string id="month_march">
+		<text>Mдrz</text>
+	</string>
+	<string id="month_may">
+		<text>Mai</text>
+	</string>
+	<string id="month_november">
+		<text>November</text>
+	</string>
+	<string id="month_october">
+		<text>Oktober</text>
+	</string>
+	<string id="month_september">
+		<text>September</text>
+	</string>
+	<string id="pda_cur_time">
+		<text>Aktuelle Zeit:</text>
+	</string>
+	<string id="pda_date_filter">
+		<text>Datenfilter</text>
+	</string>
+	<string id="pda_legend_caption">
+		<text>Legende</text>
+	</string>
+	<string id="pda_logs_common">
+		<text>Nachrichten:</text>
+	</string>
+	<string id="pda_logs_frags">
+		<text>Nachrichten:</text>
+	</string>
+	<string id="pda_logs_list_caption">
+		<text>Nachrichten:</text>
+	</string>
+	<string id="pda_logs_missions">
+		<text>Nachrichten:</text>
+	</string>
+	<string id="pda_stat_1">
+		<text>Spielzeit:</text>
+	</string>
+	<string id="pda_stat_2">
+		<text>Gefundene Verstecke:</text>
+	</string>
+	<string id="pda_stat_3">
+		<text>Verdientes Geld:</text>
+	</string>
+	<string id="pda_stat_4">
+		<text>Ausgegebenes Geld:</text>
+	</string>
+	<string id="pda_stat_5">
+		<text>Erhalten:</text>
+	</string>
+	<string id="pda_stat_6">
+		<text>Erfьllt:</text>
+	</string>
+	<string id="pda_stat_7">
+		<text>Fehlgeschlagen:</text>
+	</string>
+	<string id="pda_stat_8">
+		<text>Stalker:</text>
+	</string>
+	<string id="pda_stat_9">
+		<text>Monster:</text>
+	</string>
+	<string id="pda_stat_common">
+		<text>Gesamt</text>
+	</string>
+	<string id="pda_stat_frags">
+		<text>Getцtet</text>
+	</string>
+	<string id="pda_stat_missions">
+		<text>Auftrдge</text>
+	</string>
+	<string id="st_lchanger_to_aes">
+		<text>Zum Tschernobyl AKW</text>
+	</string>
+	<string id="st_lchanger_to_agroprom">
+		<text>Zum Agroprom-Forschungsinstitut</text>
+	</string>
+	<string id="st_lchanger_to_agroprom_und">
+		<text>In den Agroprom-Untergrund</text>
+	</string>
+	<string id="st_lchanger_to_darkvalley">
+		<text>Zum Dunklen Tal</text>
+	</string>
+	<string id="st_lchanger_to_escape">
+		<text>Zum Kordon</text>
+	</string>
+	<string id="st_lchanger_to_garbage">
+		<text>Zur Mьllhalde</text>
+	</string>
+	<string id="st_lchanger_to_hospital">
+		<text>Zum verlassenen Krankenhaus</text>
+	</string>
+	<string id="st_lchanger_to_limansk">
+		<text>Nach Limansk</text>
+	</string>
+	<string id="st_lchanger_to_marsh">
+		<text>Zu den Sьmpfen</text>
+	</string>
+	<string id="st_lchanger_to_military">
+		<text>Zu den Militдrlagern</text>
+	</string>
+	<string id="st_lchanger_to_red_forest">
+		<text>Zum Roten Wald</text>
+	</string>
+	<string id="st_lchanger_to_yantar">
+		<text>Nach Jantar</text>
+	</string>
+	<string id="st_ui_pda_legend_additional_task">
+		<text>Sekundдrziele</text>
+	</string>
+	<string id="st_ui_pda_legend_base">
+		<text>Fraktionsbasen</text>
+	</string>
+	<string id="st_ui_pda_legend_enemies">
+		<text>Feinde</text>
+	</string>
+	<string id="st_ui_pda_legend_friends">
+		<text>Verbьndete</text>
+	</string>
+	<string id="st_ui_pda_legend_lchanger">
+		<text>StraЯenverbindungen</text>
+	</string>
+	<string id="st_ui_pda_legend_main_task">
+		<text>Hauptgebдude</text>
+	</string>
+	<string id="st_ui_pda_legend_mechanic">
+		<text>Mechaniker</text>
+	</string>
+	<string id="st_ui_pda_legend_neutrals">
+		<text>Neutrale</text>
+	</string>
+	<string id="st_ui_pda_legend_scout">
+		<text>Ortskundiger</text>
+	</string>
+	<string id="st_ui_pda_legend_secrets">
+		<text>Verstecke</text>
+	</string>
+	<string id="st_ui_pda_legend_squad">
+		<text>Einheitskommandant</text>
+	</string>
+	<string id="st_ui_pda_legend_trader">
+		<text>Hдndler</text>
+	</string>
+	<string id="st_ui_pda_legend_vip">
+		<text>Wichtiger Charakter</text>
+	</string>
+	<string id="ui_logs_center_caption">
+		<text>Nachrichtenverlauf</text>
+	</string>
+	<string id="ui_map_btn_center">
+		<text>Auf Spieler zentrieren</text>
+	</string>
+	<string id="ui_map_btn_down">
+		<text>Nach unten</text>
+	</string>
+	<string id="ui_map_btn_left">
+		<text>Nach links</text>
+	</string>
+	<string id="ui_map_btn_legend">
+		<text>Legende anzeigen</text>
+	</string>
+	<string id="ui_map_btn_right">
+		<text>Nach rechts</text>
+	</string>
+	<string id="ui_map_btn_up">
+		<text>Nach oben</text>
+	</string>
+	<string id="ui_map_btn_zmreset">
+		<text>Max Herauszoomen</text>
+	</string>
+	<string id="ui_map_btn_zoom_in">
+		<text>Heranzoomen</text>
+	</string>
+	<string id="ui_map_btn_zoom_out">
+		<text>Herauszoomen</text>
+	</string>
+	<string id="ui_pda_secondary_task">
+		<text>Sekundдrziele</text>
+	</string>
+	<string id="ui_ranking_center_caption">
+		<text>Fraktionsranking</text>
+	</string>
+	<string id="ui_show_second_task_wnd">
+		<text>Liste der Sekundдrziele</text>
+	</string>
+	<string id="ui_task_btn_focus_center">
+		<text>Karte auf Ziel zentrieren</text>
+	</string>
+	<string id="ui_task_btn_focus_center2">
+		<text>Karte auf Ziel zentrieren</text>
+	</string>
+	<string id="ui_task_btn_visible_map_spot">
+		<text>Markierung anzeigen</text>
+	</string>
+	<string id="ui_st_eliminate">
+		<text>Zerstцren:</text>
+	</string>
+	<string id="ui_st_capture_or">
+		<text>oder</text>
+	</string>
+	<string id="ui_st_capture_one_of">
+		<text>Einen der folgenden Punkte einnehmen:</text>
+	</string>
+	<string id="st_faction_war_stalker_need_more_power">
+		<text>Ьberlegenheit erringen</text>
+	</string>
+	<string id="st_faction_war_stalker_secure_level">
+		<text>Die Wege von der Mьllhalde sichern</text>
+	</string>
+	<string id="st_faction_war_stalker_capture_placdarm">
+		<text>Auf der Mьllhalde FuЯ fassen</text>
+	</string>
+	<string id="st_faction_war_stalker_near_base">
+		<text>Die Banditen in ihrer Basis festnageln</text>
+	</string>
+	<string id="st_faction_war_stalker_eliminate_base">
+		<text>Die Banditenbasis zerstцren</text>
+	</string>
+	<string id="st_faction_war_stalker_relax">
+		<text>Die Banditen wurden geschlagen</text>
+	</string>
+	<string id="st_faction_war_bandit_need_more_power">
+		<text>Ьberlegenheit erlangen</text>
+	</string>
+	<string id="st_faction_war_bandit_secure_level">
+		<text>Die Wege vom Kordon sichern</text>
+	</string>
+	<string id="st_faction_war_bandit_capture_placdarm">
+		<text>Beim Kordon FuЯ fassen</text>
+	</string>
+	<string id="st_faction_war_bandit_near_base">
+		<text>In der Stalkerbasis FuЯ fassen</text>
+	</string>
+	<string id="st_faction_war_bandit_eliminate_base">
+		<text>Die Stalkerbasis zerstцren</text>
+	</string>
+	<string id="st_faction_war_bandit_relax">
+		<text>Die Stalkerbasis wurde zerstцrt</text>
+	</string>
+	<string id="st_faction_war_freedom_secure_level">
+		<text>Die Wege von der Mьllhalde sichern</text>
+	</string>
+	<string id="st_faction_war_freedom_capture_garbage">
+		<text>Auf der Mьllhalde FuЯ fassen</text>
+	</string>
+	<string id="st_faction_war_freedom_secure_garbage">
+		<text>Das Agroprom-Forschungsinstitut erreichen</text>
+	</string>
+	<string id="st_faction_war_freedom_capture_agroprom">
+		<text>Beim Agroprom-Forschungsinstitut FuЯ fassen</text>
+	</string>
+	<string id="st_faction_war_freedom_eliminate_base">
+		<text>Die Wдchterbasis zerstцren</text>
+	</string>
+	<string id="st_faction_war_freedom_relax">
+		<text>Die Wдchterbasis wurde zerstцrt</text>
+	</string>
+	<string id="st_faction_war_duty_secure_level">
+		<text>Die Wege von der Mьllhalde sichern</text>
+	</string>
+	<string id="st_faction_war_duty_capture_garbage">
+		<text>Auf der Mьllhalde FuЯ fassen</text>
+	</string>
+	<string id="st_faction_war_duty_secure_garbage">
+		<text>Den Weg ins Dunkle Tal erreichen</text>
+	</string>
+	<string id="st_faction_war_duty_capture_darkvalley">
+		<text>Im Dunklen Tal FuЯ fassen</text>
+	</string>
+	<string id="st_faction_war_duty_eliminate_base">
+		<text>Die Freiheitsbasis zerstцren</text>
+	</string>
+	<string id="st_faction_war_duty_relax">
+		<text>Die Freiheitsbasis wurde zerstцrt</text>
+	</string>
+	<string id="st_stage_icon_csky_power_no">
+		<text>Wir haben die Ьberlegenheit nicht erlangt</text>
+	</string>
+	<string id="st_stage_icon_csky_power_yes">
+		<text>Wir haben die Ьberlegenheit erlangt</text>
+	</string>
+	<string id="st_stage_icon_csky_capture_base_no">
+		<text>Die Basis der Abtrьnnigen ist momentan intakt</text>
+	</string>
+	<string id="st_stage_icon_csky_capture_base_yes">
+		<text>Die Basis der Abtrьnnigen wurde zerstцrt</text>
+	</string>
+	<string id="st_stage_icon_csky_secure_marsh_no">
+		<text>Wir haben keine Kontrolle ьber die StraЯe zum Kordon</text>
+	</string>
+	<string id="st_stage_icon_csky_secure_marsh_yes">
+		<text>Wir kontrollieren die StraЯe zum Kordon</text>
+	</string>
+	<string id="st_stage_icon_stalker_power_no">
+		<text>Wir haben die Ьberlegenheit nicht erlangt</text>
+	</string>
+	<string id="st_stage_icon_stalker_power_yes">
+		<text>Wir haben die Ьberlegenheit erlangt</text>
+	</string>
+	<string id="st_stage_icon_stalker_secure_escape_no">
+		<text>Wir haben keine Kontrolle ьber die Wege zur Mьllhalde</text>
+	</string>
+	<string id="st_stage_icon_stalker_secure_escape_yes">
+		<text>Wir kontrollieren die Wege zur Mьllhalde</text>
+	</string>
+	<string id="st_stage_icon_stalker_capture_garbage_no">
+		<text>Wir haben auf der Mьllhalde nicht FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_stalker_capture_garbage_yes">
+		<text>Wir haben auf der Mьllhalde FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_stalker_eliminate_bandit_no">
+		<text>Die Banditenbasis ist momentan intakt</text>
+	</string>
+	<string id="st_stage_icon_stalker_eliminate_bandit_yes">
+		<text>Die Banditenbasis wurde zerstцrt</text>
+	</string>
+	<string id="st_stage_icon_bandit_power_no">
+		<text>Wir haben die Ьberlegenheit nicht erlangt</text>
+	</string>
+	<string id="st_stage_icon_bandit_power_yes">
+		<text>Wir haben die Ьberlegenheit erlangt</text>
+	</string>
+	<string id="st_stage_icon_bandit_secure_garbage_no">
+		<text>Wir haben keine Kontrolle ьber die StraЯen zum Kordon</text>
+	</string>
+	<string id="st_stage_icon_bandit_secure_garbage_yes">
+		<text>Wir kontrollieren die StraЯen zum Kordon</text>
+	</string>
+	<string id="st_stage_icon_bandit_capture_escape_no">
+		<text>Wir haben beim Kordon nicht FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_bandit_capture_escape_yes">
+		<text>Wir haben beim Kordon FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_bandit_eliminate_stalker_no">
+		<text>Die Stalkerbasis ist momentan intakt</text>
+	</string>
+	<string id="st_stage_icon_bandit_eliminate_stalker_yes">
+		<text>Die Stalkerbasis wurde zerstцrt</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_darkvalley_no">
+		<text>Wir haben keine Kontrolle ьber die Wege zur Mьllhalde</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_darkvalley_yes">
+		<text>Wir kontrollieren die Wege zur Mьllhalde</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_garbage_no">
+		<text>Wir haben auf der Mьllhalde nicht FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_garbage_yes">
+		<text>Wir haben auf der Mьllhalde FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_garbage_no">
+		<text>Wir haben keine Kontrolle ьber die StraЯe zum Agroprom-Institut</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_garbage_yes">
+		<text>Wir kontrollieren die StraЯe zum Agroprom-Institut</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_agroprom_no">
+		<text>Wir haben beim Agroprom-Institut nicht FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_agroprom_yes">
+		<text>Wir haben beim Agroprom-Institut FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_freedom_eliminate_duty_no">
+		<text>Die Wдchterbasis ist momentan intakt</text>
+	</string>
+	<string id="st_stage_icon_freedom_eliminate_duty_yes">
+		<text>Die Wдchterbasis wurde zerstцrt</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_agroprom_no">
+		<text>Wir haben keine Kontrolle ьber die Wege zur Mьllhalde</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_agroprom_yes">
+		<text>Wir kontrollieren die Wege zur Mьllhalde</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_garbage_no">
+		<text>Wir haben auf der Mьllhalde nicht FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_garbage_yes">
+		<text>Wir haben auf der Mьllhalde FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_garbage_no">
+		<text>Wir haben keine Kontrolle ьber die StraЯe ins Dunkle Tal</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_garbage_yes">
+		<text>Wir kontrollieren die StraЯe ins Dunkle Tal</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_darkvalley_no">
+		<text>Wir haben im Dunklen Tal nicht FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_darkvalley_yes">
+		<text>Wir haben im Dunklen Tal FuЯ gefasst</text>
+	</string>
+	<string id="st_stage_icon_duty_eliminate_freedom_no">
+		<text>Die Freiheitsbasis ist momentan intakt</text>
+	</string>
+	<string id="st_stage_icon_duty_eliminate_freedom_yes">
+		<text>Die Freiheitsbasis wurde zerstцrt</text>
+	</string>
+	<string id="st_location_renegade">
+		<text>Sьmpfe</text>
+	</string>
+	<string id="st_ui_pda_legend_leader">
+		<text>Anfьhrer der Fraktion</text>
+	</string>
+	<string id="st_target">
+		<text>Ziel</text>
+	</string>
+	<string id="st_technic_specialization">
+		<text>Spezialisierung:</text>
+	</string>
+	<string id="st_technic_specialization_none">
+		<text>keine</text>
+	</string>
+	<string id="hospital">
+		<text>Verlassenes Krankenhaus.</text>
+	</string>
+</string_table>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="cant_walk">
+		<text>Sie sind zu erschцpft, um zu gehen.</text>
+	</string>
+	<string id="cant_walk_weight">
+		<text>Sie sind zu schwer beladen, um fortzufahren.</text>
+	</string>
+	<string id="car_character_use">
+		<text>Tьr цffnen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="character_use">
+		<text>Reden ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use">
+		<text>Kцrper durchsuchen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use_or_drag">
+		<text>Kцrper durchsuchen ($$ACTION_USE$$) \n Kцrper schleifen (UMSCHALTEN+$$ACTION_USE$$)</text>
+	</string>
+	<string id="general_complete_task">
+		<text>Auftrag erfьllt:</text>
+	</string>
+	<string id="general_fail_task">
+		<text>Auftrag fehlgeschlagen:</text>
+	</string>
+	<string id="general_in_item">
+		<text>Gegenstand erhalten:</text>
+	</string>
+	<string id="general_in_money">
+		<text>Geld erhalten:</text>
+	</string>
+	<string id="general_new_task">
+		<text>Neuer Auftrag:</text>
+	</string>
+	<string id="general_out_item">
+		<text>Gegenstand verloren:</text>
+	</string>
+	<string id="general_out_money">
+		<text>Geld verloren:</text>
+	</string>
+	<string id="general_reverse_task">
+		<text>Auftrag abgebrochen:</text>
+	</string>
+	<string id="general_update_task">
+		<text>Auftrag aktualisiert:</text>
+	</string>
+	<string id="gun_jammed">
+		<text>Ihre Waffe klemmt. Sie mьssen nachladen.</text>
+	</string>
+	<string id="inventory_box_use">
+		<text>Durchsuchen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="inventory_item_use">
+		<text>Folgendes Objekt aufheben: ($$ACTION_USE$$)</text>
+	</string>
+	<string id="level_changer_invitation">
+		<text>Zu einem anderen Ort gehen?</text>
+	</string>
+	<string id="physic_shell_use">
+		<text>Objekt bewegen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_autosave">
+		<text>Automatisches Speichern</text>
+	</string>
+	<string id="st_codelock">
+		<text>Kombinationsschloss ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_demo_play">
+		<text>IN ARBEIT</text>
+	</string>
+	<string id="st_found_new_pda">
+		<text>Gefundene Informationen:</text>
+	</string>
+	<string id="st_game_over">
+		<text>Game Over</text>
+	</string>
+	<string id="st_game_over_press_jump">
+		<text> ($$ACTION_JUMP$$) drьcken, um zum Hauptmenь zu gelangen.</text>
+	</string>
+	<string id="st_game_paused">
+		<text>Pause</text>
+	</string>
+	<string id="st_game_saved">
+		<text>Spiel gespeichert</text>
+	</string>
+	<string id="st_helmet_countdown">
+		<text>Notabschaltung</text>
+	</string>
+	<string id="st_psy_danger">
+		<text>PSI-Emissionsniveau kritisch. Gefahrenzone sofort verlassen.</text>
+	</string>
+	<string id="st_radiation_danger">
+		<text>Gefдhrliches Strahlenniveau. Zutritt nur mit Schutzkleidung.</text>
+	</string>
+	<string id="st_search_treasure">
+		<text>Das Versteck durchsuchen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_tip">
+		<text>Nachricht</text>
+	</string>
+	<string id="tip_car_locked">
+		<text>Blockiert</text>
+	</string>
+	<string id="tip_car_use">
+		<text>Tьr цffnen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_door_blocked">
+		<text>Tьr blockiert</text>
+	</string>
+	<string id="tip_door_close">
+		<text>Tьr schlieЯen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_door_coded">
+		<text>Die Tьr hat einen SchlieЯcode</text>
+	</string>
+	<string id="tip_door_decode">
+		<text>Tьr hacken ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_door_decoding">
+		<text>Dekodierung lдuft</text>
+	</string>
+	<string id="tip_door_locked">
+		<text>Die Tьr ist abgeschlossen</text>
+	</string>
+	<string id="tip_door_open">
+		<text>Tьr цffnen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_gate_close">
+		<text>Tor schlieЯen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_gate_locked">
+		<text>Das Tor ist blockiert</text>
+	</string>
+	<string id="tip_gate_open">
+		<text>Tor цffnen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_grate_blocked">
+		<text>Tor blockiert</text>
+	</string>
+	<string id="tips_agroprom_undeground">
+		<text>Erlaubnis zum Betreten des Loches nцtig.</text>
+	</string>
+	<string id="tips_kran_press">
+		<text>Ventil drehen ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_radio_tower">
+		<text>Funkspruch senden ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_red_dynamit_undeground">
+		<text>Zьnder einschalten ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_secret_strelka">
+		<text>Streloks Versteck ($$ACTION_USE$$)</text>
+	</string>
+	<string id="mar_disabled_level_changer">
+		<text>Du kannst die Sьmpfe nicht ohne einen Ortskundigen durchqueren.</text>
+	</string>
+	<string id="shooting_fire">
+		<text>Feuer!</text>
+	</string>
+	<string id="shooting_round_over">
+		<text>Ende der Runde! Zurьck zum Meister.</text>
+	</string>
+	<string id="shooting_time_left">
+		<text>Zeit ьbrig:</text>
+	</string>
+	<string id="shooting_your_count">
+		<text>Treffer:</text>
+	</string>
+	<string id="shooting_your_points">
+		<text>Deine Punkte:</text>
+	</string>
+	<string id="shooting_your_time">
+		<text>Deine Zeit:</text>
+	</string>
+	<string id="st_agru_warning_go_out">
+		<text>Verlasse den gefдhrdeten Bereich!</text>
+	</string>
+	<string id="st_agru_warning_time_left">
+		<text>Zeit bis Flutung:</text>
+	</string>
+	<string id="tips_agroprom_undeground2">
+		<text>Untergrund geflutet</text>
+	</string>
+	<string id="level_changer_disabled">
+		<text>Du kannst den weiteren Weg nicht finden.</text>
+	</string>
+	<string id="tips_tranformer_off">
+		<text>Schalte den Generator aus ($$ACTION_USE$$)</text>
+	</string>
+	<string id="ui_st_mp_experience_grow">
+		<text> -</text>
+	</string>
+	<string id="renegade">
+		<text>Abtrьnnige</text>
+	</string>
+	<string id="agru_cs_warning">
+		<text>ACHTUNG! VERLASSE SOFORT DAS GEFAHRENGEBIET!</text>
+	</string>
+</string_table>

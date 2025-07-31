@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_defend_bandit_base_name">
+		<text>Difendi la base dei banditi</text>
+	</string>
+	<string id="gar_defend_bandit_base_text">
+		<text>Difendi la base dei banditi dagli attacchi nemici.</text>
+	</string>
+	<string id="gar_quest_bring_money_name">
+		<text>Porta di notte a Napr 2.000 in contanti</text>
+	</string>
+	<string id="gar_quest_bring_money_text">
+		<text>Compra un kit di pronto soccorso da Napr il Selvaggio al mercato delle pulci per 2.000. I grossi affari come questo avvengono solo di notte.</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_name">
+		<text>Porta il vecchio PDA a Napr il Selvaggio</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_text">
+		<text>Porta a Napr il Selvaggio, al mercato delle pulci, il vecchio PDA trovato nel doppio fondo della cassetta degli attrezzi al campo distrutto di Freshy.</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_name">
+		<text>Uccidi il traditore</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_text">
+		<text>Stringov ti ha fatto cadere in un'imboscata, quindi devi ucciderlo.</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_name">
+		<text>Distruggi il mercato delle pulci insieme ai banditi</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_text">
+		<text>Massacra gli scavatori al mercato delle pulci per dare una lezione a tutti gli altri, assicurandoti che uno dei banditi rimanga a sorvegliarlo.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_name">
+		<text>Prendi il vecchio PDA dalla cassetta degli attrezzi</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_text">
+		<text>Prendi il vecchio PDA nel campo di Freshy e portalo a Napr il Selvaggio. Il PDA dovrebbe essere nel doppio fondo della cassetta degli attrezzi.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_name">
+		<text>Prendi il vecchio PDA nel campo di Freshy</text>
+	</string>
+	<string id="gar_quest_get_old_pda_text">
+		<text>Prendi il vecchio PDA di Freshy nel suo campo per portarlo a Napr il Selvaggio. Se Freshy non c'и, prendi il PDA nel doppio fondo della cassetta degli attrezzi.</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_name">
+		<text>Perquisisci il corpo di Stringov</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_text">
+		<text>Perquisisci il corpo di Stringov e prendi tutti gli oggetti di valore.</text>
+	</string>
+	<string id="gar_quest_get_weapons_name">
+		<text>Porta 2.000 a Stringov</text>
+	</string>
+	<string id="gar_quest_get_weapons_text">
+		<text>Porta 2.000 in contanti a Stringov per comprare un lotto di armi di contrabbando.</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_name">
+		<text>Elimina un certo Stringov</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_text">
+		<text>Uccidi un certo Stringov per ordine di Yoga.</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_name">
+		<text>Elimina il contrabbandiere e gli scavatori</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_text">
+		<text>Uccidi il contrabbandiere e gli scavatori che vogliono comprare armi da lui.</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_name">
+		<text>Distruggi i cacciatori notturni</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_text">
+		<text>Trova e distruggi le creature che danno la caccia agli scavatori. Puoi iniziare cercando nel luogo in cui hanno attaccato il gruppo del superstite. И probabile che escano solo di notte.</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_name">
+		<text>Elimina le guardie al campo di concentramento dei banditi</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_text">
+		<text>Libera i prigionieri insieme alla squadra di scavatori dopo aver ucciso le guardie del campo di concentramento dei banditi.</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_name">
+		<text>Vai dalla squadra di scavatori</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_text">
+		<text>Vai dalla squadra di scavatori e guida l'assalto contro il campo di concentramento dei banditi.</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_name">
+		<text>Parla con Napr il Selvaggio</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_text">
+		<text>Scopri di quale faccenda importante voleva parlarti Napr il Selvaggio al mercato delle pulci.</text>
+	</string>
+	<string id="gar_story_chase_digger_name">
+		<text>Ottieni informazioni dal messaggero degli scavatori</text>
+	</string>
+	<string id="gar_story_chase_digger_text">
+		<text>Parla con il messaggero degli scavatori per scoprire dove и andato Fang.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_name">
+		<text>Trova Fang</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_text">
+		<text>Trova Fang nel seminterrato seguendo il segnale del suo PDA.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_name">
+		<text>Trova Fang</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_text">
+		<text>Trova Fang seguendo il segnale del suo PDA.</text>
+	</string>
+	<string id="gar_story_find_cache_name">
+		<text>Trova il nascondiglio</text>
+	</string>
+	<string id="gar_story_find_cache_text">
+		<text>Trova il nascondiglio del gruppo di Fang.</text>
+	</string>
+	<string id="gar_story_find_diggers_name">
+		<text>Ottieni informazioni su Fang dagli scavatori</text>
+	</string>
+	<string id="gar_story_find_diggers_text">
+		<text>Scopri dove si trova Fang parlando con gli scavatori, presso i quali lui si era recato, secondo il trafficante.</text>
+	</string>
+	<string id="gar_story_get_pda_name">
+		<text>Ottieni il PDA di Fang</text>
+	</string>
+	<string id="gar_story_get_pda_text">
+		<text>Ottieni il PDA lasciato da Fang.</text>
+	</string>
+	<string id="gar_story_go_to_freedom_name">
+		<text>Segui Fang nella Valle Oscura</text>
+	</string>
+	<string id="gar_story_go_to_freedom_text">
+		<text>Segui Fang nella Valle Oscura.</text>
+	</string>
+	<string id="gar_story_kill_dogs_name">
+		<text>Uccidi i cani ciechi</text>
+	</string>
+	<string id="gar_story_kill_dogs_text">
+		<text>Uccidi i cani ciechi che hanno intrappolato il messaggero degli scavatori nella valle.</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_name">
+		<text>Perquisisci il corpo dello scavatore</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_text">
+		<text>Perquisisci il corpo dello scavatore per trovare informazioni su Fang.</text>
+	</string>
+	<string id="gar_quest_bandit_reward_name">
+		<text>Ottieni la tua ricompensa da Tooth</text>
+	</string>
+	<string id="gar_quest_bandit_reward_text">
+		<text>Vai da Tooth il trafficante e ottieni la tua ricompensa per aver ripulito il mercato delle pulci.</text>
+	</string>
+	<string id="gar_quest_bandit_secret_name">
+		<text>Prendi l'arma dal nascondiglio nell'anomalia</text>
+	</string>
+	<string id="gar_quest_bandit_secret_text">
+		<text>Prendi l'arma di cui ti ha parlato Yoga dal nascondiglio nell'anomalia.</text>
+	</string>
+	<string id="gar_quest_captive_reward_name">
+		<text>Prendi il bottino dal nascondiglio</text>
+	</string>
+	<string id="gar_quest_captive_reward_text">
+		<text>Prendi il bottino dal vecchio nascondiglio usato dagli scavatori liberati dal campo di concentramento.</text>
+	</string>
+	<string id="gar_quest_more_reward_name">
+		<text>Chiedi una ricompensa a Yoga</text>
+	</string>
+	<string id="gar_quest_more_reward_text">
+		<text>Chiedi una ricompensa aggiuntiva a Yoga per aver ripulito il mercato delle pulci.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_name">
+		<text>Trova informazioni sulle armature rinforzate</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_text">
+		<text>Porta a Limpido qualcosa da bere e delle informazioni sulle armature militari rinforzate. In cambio potrа installare qualcosa di simile sulla tua tuta.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_name">
+		<text>Trova informazioni su come schermare una tuta</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_text">
+		<text>Limpido non ha mai sentito parlare delle psico-emissioni, ma se riuscirai a portargli tutte le informazioni necessarie potrebbe creare e installare su una tuta un sistema in grado di proteggere da queste emissioni.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_name">
+		<text>Trova informazioni su un modulo di respirazione a ciclo chiuso</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_text">
+		<text>Limpido, il tecnico dei banditi, puт creare qualsiasi tipo di modifica, ma per installare un modulo di respirazione a circolo chiuso su una tuta ha bisogno di informazioni dettagliate.</text>
+	</string>
+	<string id="gar_quest_redemption_name">
+		<text>Recupera le tue cose</text>
+	</string>
+	<string id="gar_quest_redemption_text">
+		<text>Recupera gli oggetti rubati dai banditi nei pressi del mercato delle pulci.</text>
+	</string>
+	<string id="gar_recover_item_1_name">
+		<text>Recupera il Chaser 13</text>
+	</string>
+	<string id="gar_recover_item_1_text">
+		<text>Ecco come и andata. Uno di nostri ha beccato uno scavatore e l'ha portato a fare due passi tra alcune anomalie. Ci hanno entrambi rimesso la pelle, ma non и questo il problema. Quell'idiota aveva portato con sй un Chaser, quindi immagino sia ancora lм. Se riuscissi a recuperarlo, te ne sarei molto grato.</text>
+	</string>
+	<string id="gar_recover_item_2_name">
+		<text>Trova l'arma modificata</text>
+	</string>
+	<string id="gar_recover_item_2_text">
+		<text>Ehi, amico, avrei un favore da chiederti. Eravamo da Limpido mentre lui stava preparando un'arma davvero fantastica, con le modifiche e tutto il resto. Beh, quel tipo non va molto d'accordo con il nostro capo, quindi Yoga ci ha detto di farlo sparire. L'abbiamo portato a fare un giro tra le anomalie, ma credo che quell'arma sia ancora lм. Portamela e ti assicuro che Tooth saprа ricompensarti bene.</text>
+	</string>
+	<string id="gar_recover_item_3_name">
+		<text>Consegna una bottiglia di vodka "Cossacks"</text>
+	</string>
+	<string id="gar_recover_item_3_text">
+		<text>Ehi, amico, potresti portarmi qualcosa da bere? Ma non quella robaccia che bevono tutti, mi raccomando. Ho nascosto qualche bottiglia di roba buona in un posto sicuro, ma ora non posso andarci personalmente. Portami una bottiglia senza farti vedere da nessuno. Ci stai?</text>
+	</string>
+	<string id="gar_recover_item_4_name">
+		<text>Recupera la giacca del novellino</text>
+	</string>
+	<string id="gar_recover_item_4_text">
+		<text>L'altro giorno и arrivato un tizio dal Cordon. Sai, uno di quei fastidiosi novellini. Ha raccontato a tutti della sua giacca "magica" che, almeno secondo lui, poteva resistere a qualsiasi anomalia. Dei banditi che l'avevano catturato hanno dovuto gettarlo in un'anomalia gravitazionale per farlo tacere, e in effetti quel bastardo aveva ragione! La giacca и uscita intatta dall'anomalia. Mi tornerebbe sicuramente utile, se tu riuscissi a portarmela.</text>
+	</string>
+	<string id="gar_recover_item_5_name">
+		<text>Recupera la pistola con la scritta</text>
+	</string>
+	<string id="gar_recover_item_5_text">
+		<text>Sм, tu potresti darmi una mano. Avevo una pistola che non era niente di speciale, ma era un regalo di mio padre. L'ho persa in una specie di "incidente"... Una notte ci siamo ubriacati e abbiamo deciso di spaventare i banditi. Dopo esserci avvicinati al loro campo, abbiamo iniziato a imitare i versi dei mutanti. Il bello и che in quel campo non c'erano banditi, ma due succhiasangue a cui siamo sfuggiti per miracolo. E durante la fuga mi и caduta la pistola!</text>
+	</string>
+</string_table>
