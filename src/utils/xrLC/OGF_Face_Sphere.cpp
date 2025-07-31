@@ -25,12 +25,17 @@ BOOL				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
 void				OGF_Base::CalcBounds	() 
 {
 	// get geometry
-	static xr_vector<Fvector>		V;
+	xr_vector<Fvector>		V;
 	xr_vector<Fvector>::iterator	I;
 	V.clear						();
 	V.reserve					(4096);
 	GetGeometry					(V);
 	FPU::m64					();
+
+	//se7kills (Merging Problems Need fix this)
+	if (V.size() < 3)
+		return; 
+
 	R_ASSERT					(V.size()>=3);
 
 	// 1: calc first variation
