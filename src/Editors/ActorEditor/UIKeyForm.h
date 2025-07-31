@@ -12,6 +12,8 @@ private:
 	void SetMark(int id, int action);
 	void DrawMark(int id);
 	void DrawNotify();
+	void DrawNotify(const NotifyTracksType::value_type& elem);
+	void DrawNotify(const NotifyTrack& elem);
 	xr_vector<float> m_TempForPlotHistogram;
 	float m_Position;
 	bool m_AutoChange;
