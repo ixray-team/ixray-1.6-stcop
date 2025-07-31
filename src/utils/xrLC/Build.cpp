@@ -235,13 +235,6 @@ void CBuild::Run	(LPCSTR P)
 
 	Light						();
 
- 	//****************************************** Starting MU
-	FPU::m64r();
-	Phase("LIGHT: Starting MU...");
-	mem_Compact();
-	Light_prepare();
-	StartMu();
-
 	RunAfterLight				( fs );
 }
 
