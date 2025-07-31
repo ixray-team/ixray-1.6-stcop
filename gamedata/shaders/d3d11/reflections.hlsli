@@ -5,8 +5,8 @@
 #define SKYBLED_FADE
 #define USE_BASE_HUD_REFLECTIONS
 
-#define VSLR_FAST_BREAK
-#define SSLR_FAST_BREAK
+// #define VSLR_SLOW_BREAK
+// #define SSLR_SLOW_BREAK
 
 uniform float4 scaled_screen_res;
 
@@ -122,7 +122,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 			Delta = dot(SamplePoint.xyz, SamplePoint.xyz) - SampleHitPointLen;
 			Fade = abs(Delta * rcp(L * L + 1.0f)) < 0.15f;
 
-#ifndef VSLR_FAST_BREAK
+#ifdef VSLR_SLOW_BREAK
 			if(Fade)
 #endif
 			break;
@@ -189,7 +189,7 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 			Fade = is_hud || abs(Delta) * rcp(max(HitDepth, 0.001f)) < 0.007f;
 			EndProj.z = HitDepth;
 			
-#ifndef SSLR_FAST_BREAK
+#ifdef SSLR_SLOW_BREAK
 			if(Fade)
 #endif
 			break;
