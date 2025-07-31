@@ -66,7 +66,7 @@ xr_token							aa_type_token[] = {
 	{ 0,							0												}
 };
 
-u32			ps_screenshot_format = 0;			//	=	0;
+u32			ps_screenshot_format = 2;			//	=	0;
 xr_token							screenshot_format_token[] = {
 	{ "ss_jpg",						0												},
 	{ "ss_tga",						1												},
