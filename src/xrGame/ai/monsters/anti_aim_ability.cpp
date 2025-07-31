@@ -266,7 +266,7 @@ float   anti_aim_ability::calculate_angle () const
 
 bool   anti_aim_ability::check_update_condition () const
 {
-	if ( !m_object->g_Alive() || !Actor || !Actor()->g_Alive() )
+	if ( !m_object->g_Alive() || !Actor() || !Actor()->g_Alive() )
 		return							false;
 	
 	const CActor* actor = smart_cast<const CActor*>(m_object->EnemyMan.get_enemy());

@@ -430,77 +430,88 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 {
 	switch (type)
 	{
-	case GAME_EVENT_PLAYER_KILL: // (g_kill)
+	case GAME_EVENT_PLAYER_KILL:
 	{
 		u16 ID = P.r_u16();
 		xrClientData* l_pC = (xrClientData*)get_client(ID);
-		if (!l_pC) break;
-		KillPlayer(l_pC->ID, l_pC->ps->GameID);
+		if (l_pC)
+		{
+			KillPlayer(l_pC->ID, l_pC->ps->GameID);
+		}
+
+		break;
 	}
-	break;
 	case GAME_EVENT_TRANSFER_MONEY:
 	{
 		OnTransferMoney(P, sender);
+		break;
 	}
-	break;
 	case GAME_EVENT_MP_TRADE:
 	{
 		OnPlayerTrade(P, sender);
+		break;
 	}
-	break;
 	case GAME_EVENT_MP_REPAIR:
 	{
 		OnPlayerRepairItem(P, sender);
+		break;
 	}
-	break;
 	case GAME_EVENT_MP_ACTOR_SPAWN:
 	{
+		game_PlayerState* ps = nullptr;
+		if (xrClientData* xrCData = (xrClientData*)m_server->ID_to_client(sender))
+		{
+			ps = xrCData->ps;
+		}
 
-		xrClientData* xrCData = (xrClientData*)m_server->ID_to_client(sender);
-		if (!xrCData) return;
-
-		game_PlayerState* ps = xrCData->ps;
 		if (!ps) return;
 
 		CActorMP* actor = smart_cast<CActorMP*>(Level().Objects.net_Find(ps->GameID));
 		if (!actor) return;
 
-		int cur_user_id = GSQLConnector.GetUserIdByName(ps->getName());
-		if (cur_user_id > 0)
-		{
-			DBService::UserDBProperty res_data = GSQLConnector.SelectProperty(cur_user_id);
-			if (res_data.health > 0)
+		GSQLConnector.PushTask
+		(
+			[actor, ps, this]()
 			{
-				actor->conditions().ChangeHealth(res_data.health);
-				actor->conditions().ChangePower(res_data.stamina);
-				actor->conditions().ChangeRadiation(res_data.radiation);
-				actor->conditions().ChangePsyHealth(res_data.psy);
-				actor->conditions().ChangeSleepiness(res_data.sleepiness);
-				actor->conditions().ChangeSatiety(res_data.hunger);
-				actor->conditions().ChangeThirst(res_data.thirst);
-				actor->conditions().ChangeBleeding(res_data.wounds);
-				ps->money_for_round = res_data.money;
-				ps->team = res_data.community;
+				int cur_user_id = GSQLConnector.GetUserIdByName(ps->getName());
 
-				xr_vector<int> items = GSQLConnector.LoadInventory(cur_user_id);
-				for (int itm : items)
+				if (cur_user_id <= 0)
 				{
-					auto it = std::find_if(map_items.begin(), map_items.end(), [itm](const auto& pair) {
-						return pair.second == itm;
+					return;
+				}
+
+				DBService::UserDBProperty res_data = GSQLConnector.SelectProperty(cur_user_id);
+				if (res_data.health > 0)
+				{
+					actor->conditions().ChangeHealth(res_data.health);
+					actor->conditions().ChangePower(res_data.stamina);
+					actor->conditions().ChangeRadiation(res_data.radiation);
+					actor->conditions().ChangePsyHealth(res_data.psy);
+					actor->conditions().ChangeSleepiness(res_data.sleepiness);
+					actor->conditions().ChangeSatiety(res_data.hunger);
+					actor->conditions().ChangeThirst(res_data.thirst);
+					actor->conditions().ChangeBleeding(res_data.wounds);
+					ps->money_for_round = res_data.money;
+					ps->team = res_data.community;
+
+					xr_vector<int> items = GSQLConnector.LoadInventory(cur_user_id);
+					for (int itm : items)
+					{
+						auto it = std::find_if(map_items.begin(), map_items.end(), [itm](const auto& pair)
+						{
+							return pair.second == itm;
 						});
-					SpawnItemToActor(actor->ID(), (*it).first.c_str());
+
+						xrCriticalSectionGuard guard(SpawnGuard);
+						DoSpawnList[actor->ID()].push_back((*it).first.c_str());
+					}
 				}
 			}
-		}
-		else
-		{
-			Msg("! SOSI DJOPU");
-		}
+		);
+		break;
 	}
-	break;
-	default:
-		inherited::OnEvent(P, type, time, sender);
-	};
+	default: inherited::OnEvent(P, type, time, sender);
+	}
 }
 
 void game_sv_freemp::Update()
@@ -511,6 +522,17 @@ void game_sv_freemp::Update()
 	{
 		OnRoundStart();
 	}
+
+	xrCriticalSectionGuard guard(SpawnGuard);
+	for (auto& [ID, Items] : DoSpawnList)
+	{
+		for (shared_str ItemName : Items)
+		{
+			SpawnItemToActor(ID, *ItemName);
+		}
+	}
+
+	DoSpawnList.clear();
 }
 
 BOOL game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)

@@ -7,7 +7,6 @@
 
 XRNETSERVER_API DBService GSQLConnector;
 
-
 void DBService::SQLUpdateThread()
 {
 	PROF_THREAD("SQL Server Updater");
@@ -315,7 +314,7 @@ DBService::UserDBProfile Logon(LPCSTR username, LPCSTR password)
 {
 	DBService::UserDBProfile res_data;
 	
-	return std::move(res_data);
+	return res_data;
 }
 
 xr_hash_map<xr_string, int> DBService::LoadGame(shared_str need_field)
@@ -349,6 +348,12 @@ xr_hash_map<xr_string, int> DBService::LoadGame(shared_str need_field)
 	}
 
 	return std::move(something);
+}
+
+void DBService::PushTask(const std::function<void()>& Functor)
+{
+	xrCriticalSectionGuard guard(DelayCS);
+	TasksDelay.push_back(Functor);
 }
 
 DBService::UserDBProperty DBService::SelectProperty(int id)
