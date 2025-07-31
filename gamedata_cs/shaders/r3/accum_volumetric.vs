@@ -11,8 +11,8 @@ struct v2p
 {
 	float3 	lightToPos	: TEXCOORD0;		// light center to plane vector
 	float3 	vPos		: TEXCOORD1;		// position in camera space
-	half 	fDensity	: TEXCOORD2;		// plane density alon Z axis
-//	half2	tNoise 		: TEXCOORD3;		// projective noise
+	float 	fDensity	: TEXCOORD2;		// plane density alon Z axis
+//	float2	tNoise 		: TEXCOORD3;		// projective noise
 	float3	clip0		: SV_ClipDistance0;
 	float3	clip1		: SV_ClipDistance1;
 	float4 	hpos		: SV_Position;

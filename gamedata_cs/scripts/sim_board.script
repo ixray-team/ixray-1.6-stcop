@@ -28,7 +28,9 @@ sim_fight = {
         csky = "renegade",
         renegade = "csky",
         stalker = "bandit",
-        bandit = "stalker"
+        bandit = "stalker",
+        dolg = "freedom",
+        freedom = "duty"
 }
 
 sim_level_cluster = {
@@ -50,7 +52,7 @@ faction_cluster	= {
 		csky = 1,
 		stalker = 2,
 		bandit = 2,
-		duty = 2,
+		dolg = 2,
 		freedom = 2
 }
 
@@ -149,20 +151,24 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
                 point_value = point_value + 1000
             end
         else
-	        -- точка врага
-            local enemy_power = 0
-            for k,v in pairs(board.smarts[point.id].squads) do
-                enemy_power = enemy_power + v.squad_power
-            end
-            -- Вес точки увеличиваем на силу вражеских отрядов в точке
-            point_value = point_value + enemy_power
-            if point.combat_manager:point_under_attack() then
-                point_value = point_value + 100
-            end
-            local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id])
-            if friendly_squad_quan >= point.squad_capacity then
-                point_value = point_value + 1000
-            end
+        	if game_relations.is_factions_enemies(squad.player_id, point.player_name) then
+		        -- точка врага
+	            local enemy_power = 0
+	            for k,v in pairs(board.smarts[point.id].squads) do
+	                enemy_power = enemy_power + v.squad_power
+	            end
+	            -- Вес точки увеличиваем на силу вражеских отрядов в точке
+	            point_value = point_value + enemy_power
+	            if point.combat_manager:point_under_attack() then
+	                point_value = point_value + 100
+	            end
+	            local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id])
+	            if friendly_squad_quan >= point.squad_capacity then
+	                point_value = point_value + 1000
+	            end
+	        else
+	        	point_value = point_value + 1000
+	        end
         end
     else
 -- Если точка закрыта для симуляции - назначаем максимальный вес.
@@ -248,17 +254,17 @@ function calc_conductor_point(point, prev_point, npc, src_smart_id, tgt_smart_id
 	local point_player = point.player_name
     if point_player == "none" then
         -- точка ничья
-        point_value = point_value + 300
+        point_value = point_value + 200
     elseif point_player == community then
         -- точка наша
-        point_value = point_value + 100
+        point_value = point_value + 200
     else
         if game_relations.get_factions_community(point_player, community) < 0 then
             -- точка врага
             return false
         else
             -- точка не вражеской фракции
-            point_value = point_value + 1000
+            point_value = point_value + 200
         end
     end
 -- Если это финальная точка - путь найден, выходим.
@@ -442,6 +448,7 @@ function sim_board:get_spawn_smart(player)
         --printf("  check smart %s", smart:name())
         if is_point_avail(smart, player.player_name) then
         	--printf("    point avail")
+        	--printf(" cap %s + %s < %s", tostring(self:get_smart_squad_quantity(smart, player)), tostring(self:get_smart_population(smart)), tostring(smart.squad_capacity))
             if self:get_smart_squad_quantity(smart, player) + self:get_smart_population(smart) < smart.squad_capacity then
             	--printf("    cap allowed")
                 local spawn_player = xr_logic.pick_section_from_condlist(db.actor_proxy, smart, v)
@@ -465,9 +472,17 @@ end
 
 --' Создание нового отряда
 function sim_board:create_squad(player_id, squad_class, spawn_smart, sq_id, settings_id)
+		printf("create squad called")
         local squad_id = tostring(sq_id or self.id_generator:get_id())
 
         if self.squads[squad_id] ~= nil then
+        		printf("---------------------------")
+        		print_table(self.squads)
+        		printf("------------------------last_id %s", self.id_generator.m_last_id)        
+        		print_table(self.id_generator.m_given)
+        		printf("---------------------------")
+        		print_table(self.id_generator.m_free)
+        		printf("---------------------------")
                 abort("Two or more squad with id[%s] found!!!", squad_id)
         end
 
@@ -612,6 +627,7 @@ function sim_board:exit_smart(squad, smart)
 end
 --' Отряд занимает смарт (увеличиваются ресурсы)
 function sim_board:enter_smart(squad, smart_id, after_load)
+		callstack()
         if self.smarts[smart_id] == nil then
                 printf("   to tmp")
                 if self.tmp_entered_squad[smart_id] == nil then
@@ -631,26 +647,31 @@ function sim_board:enter_smart(squad, smart_id, after_load)
         printf("Squad %s enter smart %s. Quan = %s", tostring(squad.squad_id), smart:name(), tostring(self.smarts[smart_id].stayed_squad_quan))
         --' Первый отряд регистрится в смарте
         if self.smarts[smart_id].stayed_squad_quan == 0 then
-                --' Проверка на валидность
-                if smart.player_name ~= "none" then
-                        abort("Incorrect enter_smart call for squad %s!!!", tostring(squad.squad_id))
-                end
+            --' Проверка на валидность
+            if smart.player_name ~= "none" then
+                abort("Incorrect enter_smart call for squad %s!!!", tostring(squad.squad_id))
+            end
 
---                local new_smart = self.smarts[smart_id]
-                smart.player_name = player.player_name
-                printf("Player %s capture point %s!", player.player_name, smart:name())
-                --' Увеличиваем ресурсы
-                if smart.sim_type == "resource" then
-					player.resource_level = player.resource_level + 1
-            	end
-            	player:faction_brain_update(after_load)
-                --' Апдейтим отрисовку.
-                smart:refresh()
+            smart.player_name = player.player_name
+            printf("Player %s capture point %s!", player.player_name, smart:name())
+            --' Увеличиваем ресурсы
+            if smart.sim_type == "resource" then
+				player.resource_level = player.resource_level + 1
+            end
+            player:faction_brain_update(after_load)
+            --' Апдейтим отрисовку.
+            smart:refresh()
         else
-                player:calculate_squad_tasks()
+			-- Проверяем возможность вылета
+			if smart.player_name ~= player.player_name then
+				abort("Incorrect enter_smart call for squad %s!!!  %s ~= %s", tostring(squad.squad_id), tostring(smart.player_name), tostring(player.player_name))
+			end
+        
+            player:calculate_squad_tasks()
         end
         self.smarts[smart_id].stayed_squad_quan = self.smarts[smart_id].stayed_squad_quan + 1
-		squad:spawn_box_items(smart_id)
+		squad.items_spawned = false
+--		squad:spawn_box_items(smart_id)
 end
 
 -- установить squad и group в соответствии с работой

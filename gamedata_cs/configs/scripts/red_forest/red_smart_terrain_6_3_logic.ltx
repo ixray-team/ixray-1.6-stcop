@@ -1,7 +1,6 @@
 [logic@work1]
 active = walker@wait_actor_work1
-;suitable = {=check_npc_name(red_stalker_artefact_hunter) +red_artefact_hunters_go2 !is_smart_defending(red_smart_terrain_6_3) -red_artefact_hunters_give_reward}
-suitable = {=check_npc_squad(red_stalker_artefact_hunters_1) +red_artefact_hunters_go2) -red_artefact_hunters_give_reward}
+suitable = {=check_npc_squad(red_stalker_artefact_hunters_1) +red_artefact_hunters_go2 -red_artefact_hunters_give_reward}
 prior = 100
 level_spot = quest_npc
 

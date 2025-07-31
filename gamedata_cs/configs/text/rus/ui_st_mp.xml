@@ -259,7 +259,7 @@
 		<text>- От третьего лица</text>
 	</string>
 	<string id="mp_si_maprotation">
-		<text>Поворот карты</text>
+		<text>Смена карт</text>
 	</string>
 	<string id="mp_si_min">
 		<text>мин.</text>
@@ -493,7 +493,7 @@
 		<text>Разрешено только одно активное голосование</text>
 	</string>
 	<string id="mp_si_battleye">
-		<text>Battleye</text>
+		<text>BattlEye</text>
 	</string>
 	<string id="mp_si_max_ping">
 		<text>макс. пинг</text>

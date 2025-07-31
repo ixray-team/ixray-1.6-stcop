@@ -7,7 +7,7 @@
       <texture>ui_inGame2_back_02</texture>
     </auto_static>
     <auto_static x="130" y="512" width="256" height="256" stretch="1">
-      <texture>ui\ui_mm_newspaper</texture>
+      <texture x="1" y="1" width="254" height="254">ui\ui_mm_newspaper</texture>
     </auto_static>
   </background>
 
@@ -24,10 +24,10 @@
 			<text font="graffiti22" r="184" g="168" b="131">ui_mm_save_game</text>
 		</caption>
 		
-		<edit x="65" y="55" width="257" height="23">
+		<edit x="65" y="55" width="257" height="23" file_name_mode="1">
 			<texture>ui_linetext_e</texture>
 			
-			<text font="letterica18" r="240" g="217" b="182"/>
+			<text x="3" font="letterica18" r="240" g="217" b="182"/>
 		</edit>
 		
 		<list_frame x="65" y="96" width="449" height="307">

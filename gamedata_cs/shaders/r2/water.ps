@@ -15,9 +15,10 @@ struct   vf
 //        float          fog        :         FOG                ;
 };
 
-uniform        sampler2D                s_nmap;
-uniform        samplerCUBE                s_env0;
-uniform        samplerCUBE                s_env1;
+uniform sampler2D	s_nmap;
+uniform samplerCUBE	s_env0;
+uniform samplerCUBE	s_env1;
+uniform sampler2D	s_leaves;
 
 #if defined(USE_SOFT_WATER) && defined(NEED_SOFT_WATER)
 half3	water_intensity;
@@ -106,6 +107,16 @@ half4   main_ps_2_0  ( vf I )          : COLOR
 	alpha 		= min(alpha, saturate(waterDepth));
 
 	alpha 		= max (fog, alpha);
+
+	//	Leaves
+	half4	leaves	= tex2D(s_leaves, I.tbase);
+	half	calc_cos = dot ( I.M3,  v2point);
+	half	calc_depth = saturate(waterDepth*calc_cos);
+	half	fLeavesFactor = smoothstep(0.025, 0.05, calc_depth );
+			fLeavesFactor *= smoothstep(0.1, 0.075, calc_depth );
+	final		= lerp(final, leaves, leaves.a*fLeavesFactor);
+	alpha		= lerp(alpha, leaves.a, leaves.a*fLeavesFactor);
+
 #endif	//	USE_SOFT_WATER
 
 	return  half4   (final, alpha*I.c0.a*I.c0.a )                ;

@@ -1,9 +1,6 @@
 ----------------------------------------------------------------------------------------------------
 -- Remark
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
--- Изменения: Didenko Ruslan.
-----------------------------------------------------------------------------------------------------
 
 local state_initial = 0
 local state_animation = 1
@@ -16,10 +13,10 @@ local body_state_danger = 1
 ---------------------------------------------------------------------------------------------------------------------
 class "evaluator_need_remark" (property_evaluator)
 function evaluator_need_remark:__init(storage, name) super(nil, name)
-  	self.st = storage
+		self.st = storage
 end
 function evaluator_need_remark:evaluate()
-  	return xr_logic.is_active(self.object, self.st)
+		return xr_logic.is_active(self.object, self.st)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -34,17 +31,17 @@ function action_remark_activity:initialize()
 --	xr_sound.set_sound(self.object, nil)
 end
 function action_remark_activity:activate_scheme()
-    self.st.signals = {}
-    self.sound_end_signalled = false
-    self.action_end_signalled = false
-    self.anim_end_signalled = false
+		self.st.signals = {}
+		self.sound_end_signalled = false
+		self.action_end_signalled = false
+		self.anim_end_signalled = false
 
 	-- Определим нужно ли нам отыгрывать анимацию/поворачиваться на объект.
 	self.anim_scheduled = true
 
 	-- Определим нужно ли нам отыгрывать отдельно звук после поворота.
 	if self.st.snd_anim_sync == false and
-	   self.st.snd ~= nil
+		 self.st.snd ~= nil
 	then
 		self.snd_scheduled = true
 	else
@@ -64,33 +61,33 @@ function action_remark_activity:get_target()
 	if self.st.target_init == false then
 		self.st.target_position, self.st.target_id, self.st.target_init = initialize_gulag_target(self.object, self.st.target)
 		if st.target_init == false then
-			printf("target_is_ni!!!l")
+			--printf("target_is_ni!!!l")
 			return nil
 		end
 	end
 
-    if self.st.target_actor == true then
-        look_tbl.look_object = db.actor
-    end
+		if self.st.target_actor == true then
+				look_tbl.look_object = db.actor
+		end
 
-    if self.st.target_id then
-        look_tbl.look_object = level.object_by_id(self.st.target_id)
-    end
+		if self.st.target_id then
+				look_tbl.look_object = level.object_by_id(self.st.target_id)
+		end
 
-    if self.st.target_position then
-        look_tbl.look_position = self.st.target_position
-    end
-	printf("look_table")
-	print_table(look_tbl)
-    return look_tbl
+		if self.st.target_position then
+				look_tbl.look_position = self.st.target_position
+		end
+	--printf("look_table")
+	--print_table(look_tbl)
+		return look_tbl
 end
 function action_remark_activity:turn_end_callback()
-	printf("TURN END CALLBACK CALLED")
+	--printf("TURN END CALLBACK CALLED")
 --	self.state = state_sound
 --	self:update()
 end
 function action_remark_activity:time_callback()
-printf("TIME CALLBACK CALLED")
+--printf("TIME CALLBACK CALLED")
 	self.state = state_sound
 	self:update()
 end
@@ -139,7 +136,7 @@ function action_remark_activity:update()
 		end
 
 		if self.sound_end_signalled == true and
-		   self.anim_end_signalled == true
+			 self.anim_end_signalled == true
 		then
 			if self.action_end_signalled == false then
 				--printf("ACTION_END signalled!!!")
@@ -157,22 +154,6 @@ function action_remark_activity:update()
 				self.tips_sound:play(db.actor, 0, sound_object.s2d)
 			end
 		end
-
-
-	--[[	self.state = state_finish
-
-	--' 3. Мы должны выдать сигнал об окончании действия
-	--' должны выдать сигнал action_end
-	--' должны выдать сигнал sound_end
-	elseif true then
-		--' Проверить что звук уже запущен:
-		if self.snd_started == true then
-			if self.object:active_sound_count() ~= 0 then
-				self.snd_started = false
-			end
-		end]]
-
-
 	end
 
 end
@@ -192,17 +173,17 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function add_to_binder(npc, ini, scheme, section, storage)
 		printf("DEBUG: add_to_binder [%s]: scheme='%s', section='%s'", npc:name(), scheme, section)
-  		local operators	= {}
-	  	local properties  = {}
+			local operators	= {}
+			local properties  = {}
 
-	   	local manager = npc:motivation_action_manager()
+			 local manager = npc:motivation_action_manager()
 
 		properties["event"]			= xr_evaluators_id.reaction
 	 	properties["need_remark"]	= xr_evaluators_id.zmey_remark_base + 1
 
 	 	operators["action_remark"] = xr_actions_id.zmey_remark_base + 1
 
-	   	-- evaluators
+			 -- evaluators
 		manager:add_evaluator(properties["need_remark"], this.evaluator_need_remark(storage, "remark_need_remark"))
 
 		local new_action = this.action_remark_activity(npc, "action_remark_activity", storage)
@@ -213,29 +194,29 @@ function add_to_binder(npc, ini, scheme, section, storage)
 		new_action:add_precondition(world_property(xr_evaluators_id.smartcover_action + 3, false))
 		new_action:add_precondition(world_property(properties["need_remark"], true))
 		xr_motivator.addCommonPrecondition(new_action)
-	   	new_action:add_effect(world_property(properties["need_remark"], false))
+			 new_action:add_effect(world_property(properties["need_remark"], false))
 		manager:add_action(operators["action_remark"], new_action)
 
 		-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
 		xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
-	  	new_action = manager:action(xr_actions_id.alife)
-	  	new_action:add_precondition(world_property(properties["need_remark"], false))
+			new_action = manager:action(xr_actions_id.alife)
+			new_action:add_precondition(world_property(properties["need_remark"], false))
 end
 
 
 function parse_target(target)
-    local pos = string.find(target, ",")
-    if pos then
-        return string.sub(target, 1, pos - 1), string.sub(target, pos + 1)
-    else
-        return target, nil
-    end
+		local pos = string.find(target, ",")
+		if pos then
+				return string.sub(target, 1, pos - 1), string.sub(target, pos + 1)
+		else
+				return target, nil
+		end
 end
 function initialize_gulag_target(npc, target)
-    local gulag = nil
-    local param1, param2 = parse_target(target)
-	printf("r1")
+		local gulag = nil
+		local param1, param2 = parse_target(target)
+	--printf("r1")
 	-- Возможные варианты:
 	-- Передана работа в гулаге чувака
 	-- Передана работа и идентификатор гулага
@@ -245,22 +226,22 @@ function initialize_gulag_target(npc, target)
 	-- Если вторым параметром передано число, то это однозначно патрульный путь.
 	local wp_id = tonumber(param2)
 	if wp_id then
-		printf("r2")
+		--printf("r2")
 		return patrol(param1):point(wp_id), nil, true
 	end
-    if param2 then
-		printf("r3")
-        gulag = xr_gulag.get_gulag_by_name(param2)
-    else
-    	printf("r4")
-        gulag = xr_gulag.get_npc_smart(npc)
-    end
-    if gulag ~= nil then
-		printf("r5")
-        return nil, gulag:idNPCOnJob(param1), true
-    end
+		if param2 then
+		--printf("r3")
+				gulag = xr_gulag.get_gulag_by_name(param2)
+		else
+			--printf("r4")
+				gulag = xr_gulag.get_npc_smart(npc)
+		end
+		if gulag ~= nil then
+		--printf("r5")
+				return nil, gulag:idNPCOnJob(param1), true
+		end
 
-    return nil, nil, false
+		return nil, nil, false
 end
 
 
@@ -286,22 +267,22 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.target = utils.cfg_get_string          (ini, section,   "target",          npc, false, "", "nil")
 	st.target_id = nil
 	st.target_position = nil
-    if st.target and st.target ~= "nil" then
-	    if st.target == "actor" then
-		    st.target_actor = true
-		    st.target_init = true
-	    else
+		if st.target and st.target ~= "nil" then
+			if st.target == "actor" then
+				st.target_actor = true
+				st.target_init = true
+			else
 			st.target_actor = false
-	        local sid = tonumber(st.target)
-	        if sid then
-		        st.target_id = id_by_sid(sid)
-		        if not st.target_id then
-		            abort("remark <error>: Wrong story id [%s] for [%s] in section [%s].", st.target, npc:name(), section)
-		        end
-		        st.target_init = true
-            else
+					local sid = tonumber(st.target)
+					if sid then
+						st.target_id = id_by_sid(sid)
+						if not st.target_id then
+								abort("remark <error>: Wrong story id [%s] for [%s] in section [%s].", st.target, npc:name(), section)
+						end
+						st.target_init = true
+						else
 				st.target_position, st.target_id, st.target_init = initialize_gulag_target(npc, st.target)
-            end
-	    end
-    end
+						end
+			end
+		end
 end

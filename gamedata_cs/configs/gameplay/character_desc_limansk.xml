@@ -80,10 +80,10 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_ak74_up2 = 1, scope, launcher \n
-      ammo_5.45x39_ap = 1 \n
-      wpn_pm = 1 \n
-      ammo_9x18_fmj = 1 \n
+      wpn_val = 1 \n
+      ammo_9x39_ap = 1 \n
+      wpn_colt1911 = 1 \n
+      ammo_11.43x23_fmj = 1 \n
       grenade_f1 = 3 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
@@ -96,7 +96,7 @@
 
   <specific_character id="lim_stalker_enemy_default_1" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
-    <icon>ui_npc_u_monolith_3</icon>
+    <icon>ui_npc_u_monolith_2</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
 
@@ -107,16 +107,16 @@
     <rank>500</rank>
     <reputation>0</reputation>
 
-    <visual>actors\stalker_monolith\stalker_monolith_3</visual>
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
 
     <supplies>
       [spawn] \n
       device_torch \n
       wpn_ak74 \n
       ammo_5.45x39_ap = 1 \n
-      wpn_pm = 1 \n
-      ammo_9x18_fmj = 1 \n
-      grenade_f1 = 3 \n
+      wpn_walther = 1 \n
+      ammo_9x19_fmj = 1 \n
+      grenade_f1 = 2 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -144,11 +144,11 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_ak74 \n
-      ammo_5.45x39_ap = 1 \n
-      wpn_pm = 1 \n
+      wpn_sig550 \n
+      ammo_5.56x45_ap = 1 \n
+      wpn_fort = 1 \n
       ammo_9x18_fmj = 1 \n
-      grenade_f1 = 3 \n
+      grenade_f1 = 2 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -176,11 +176,43 @@
     <supplies>
       [spawn] \n
       device_torch \n
-      wpn_ak74 \n
+      wpn_abakan = 1, scope \n
       ammo_5.45x39_ap = 1 \n
       wpn_pm = 1 \n
       ammo_9x18_fmj = 1 \n
-      grenade_f1 = 3 \n
+      grenade_f1 = 2 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+  
+  <specific_character id="lim_stalker_enemy_default_4" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_monolith_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>lim_stalker_enemy</class>
+    <community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+
+    <rank>500</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_lr300 \n
+      ammo_5.56x45_ap = 1 \n
+      wpn_hpsa = 1 \n
+      ammo_9x19_fmj = 1 \n
+      grenade_f1 = 2 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"

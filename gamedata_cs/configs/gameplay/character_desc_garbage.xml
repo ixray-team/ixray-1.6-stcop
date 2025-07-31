@@ -234,10 +234,12 @@
     <snd_config>characters_voice\human_02\bandit\</snd_config>
     <supplies>
       [spawn] \n
+      device_torch \n
+      wpn_ak74 \n
+      ammo_5.45x39_fmj = 1 \n
       wpn_hpsa \n
-      ammo_9x19_fmj \n
-      wpn_wincheaster1300 \n
-      ammo_12x70_buck \n
+      ammo_9x19_fmj = 1 \n
+      grenade_rgd5 = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -265,10 +267,12 @@
     <snd_config>characters_voice\human_01\bandit\</snd_config>
     <supplies>
       [spawn] \n
-      wpn_hpsa \n
-      ammo_9x19_fmj \n
+      device_torch \n
       wpn_wincheaster1300 \n
-      ammo_12x70_buck \n
+      ammo_12x76_zhekan = 1 \n
+      wpn_beretta \n
+      ammo_9x19_fmj = 1 \n
+      grenade_rgd5 = 1 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"

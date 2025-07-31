@@ -12,7 +12,7 @@ on_timer = 2500 | sr_idle@ui %=teleport_actor(mar_smart_terrain_csky_base_telepo
 on_timer = 2500 | sr_idle@ui %=teleport_actor(mar_actor_teleport_at_marsh_walk:mar_actor_teleport_at_marsh_look) -mar_csky_guide_teleport_to_marsh +mar_story_go_to_marsh_done =play_sound(mar_csky_pathfinder_go_out:csky)%
 
 [sr_idle@to_escape]
-on_info = sr_idle@place_choice %=teleport_actor(mar_actor_teleport_to_escape_walk:mar_actor_teleport_to_escape_look) -mar_csky_guide_teleport_to_escape +mar_story_go_to_escape_done =enable_ui%
+on_info = sr_idle@place_choice %=set_actor_faction(none) =reset_faction_goodwill(csky) -mar_csky_guide_teleport_to_escape +mar_story_go_to_escape_done =enable_ui =teleport_actor(mar_actor_teleport_to_escape_walk:mar_actor_teleport_to_escape_look)%
 
 [sr_idle@ui]
 on_timer = 2500 | {-mar_csky_guide_teleport_talk_marsh} sr_idle@sound_marsh %=enable_ui +mar_csky_guide_teleport_talk_marsh%, sr_idle@place_choice %=enable_ui%

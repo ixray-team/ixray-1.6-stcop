@@ -298,11 +298,29 @@ struct	v_static_color
 
 ////////////////////////////////////////////////////////////////
 //	defer
+#ifndef GBUFFER_OPTIMIZATION
 struct                  f_deffer        		
 {
-	half4	position: SV_Target0;        // px,py,pz, m-id
-	half4	Ne		: SV_Target1;        // nx,ny,nz, hemi
-	half4	C		: SV_Target2;        // r, g, b,  gloss
+	float4	position: SV_Target0;        // px,py,pz, m-id
+	float4	Ne		  : SV_Target1;        // nx,ny,nz, hemi
+	float4	C		  : SV_Target2;        // r, g, b,  gloss
+};
+#else
+struct                  f_deffer        		
+{
+	float4	position: SV_Target0;        // xy=encoded normal, z = pz, w = encoded(m-id,hemi)
+	float4	C		  : SV_Target1;        // r, g, b,  gloss
+};
+#endif
+
+struct					gbuffer_data
+{
+	float3  P; // position.( mtl or sun )
+	float   mtl; // material id
+	float3  N; // normal
+	float   hemi; // AO
+	float3  C;
+	float   gloss;
 };
 
 ////////////////////////////////////////////////////////////////
@@ -315,11 +333,11 @@ struct v2p_bumped
 	float2	tcdh	: TEXCOORD0;	// Texture coordinates
 #endif
 	float4	position: TEXCOORD1;	// position + hemi
-	half3	M1		: TEXCOORD2;	// nmap 2 eye - 1
-	half3	M2		: TEXCOORD3;	// nmap 2 eye - 2
-	half3	M3		: TEXCOORD4;	// nmap 2 eye - 3
+	float3	M1		: TEXCOORD2;	// nmap 2 eye - 1
+	float3	M2		: TEXCOORD3;	// nmap 2 eye - 2
+	float3	M3		: TEXCOORD4;	// nmap 2 eye - 3
 #if defined(USE_PARALLAX) || defined(USE_STEEPPARALLAX)
-	half3	eye		: TEXCOORD5;	// vector to point in tangent space
+	float3	eye		: TEXCOORD5;	// vector to point in tangent space
   #ifdef USE_TDETAIL
 	float2	tcdbump	: TEXCOORD6;	// d-bump
     #ifdef USE_LM_HEMI
@@ -353,11 +371,11 @@ struct p_bumped
 	float2	tcdh	: TEXCOORD0;	// Texture coordinates
 #endif
 	float4	position: TEXCOORD1;	// position + hemi
-	half3	M1		: TEXCOORD2;	// nmap 2 eye - 1
-	half3	M2		: TEXCOORD3;	// nmap 2 eye - 2
-	half3	M3		: TEXCOORD4;	// nmap 2 eye - 3
+	float3	M1		: TEXCOORD2;	// nmap 2 eye - 1
+	float3	M2		: TEXCOORD3;	// nmap 2 eye - 2
+	float3	M3		: TEXCOORD4;	// nmap 2 eye - 3
 #if defined(USE_PARALLAX) || defined(USE_STEEPPARALLAX)
-	half3	eye		: TEXCOORD5;	// vector to point in tangent space
+	float3	eye		: TEXCOORD5;	// vector to point in tangent space
   #ifdef USE_TDETAIL
 	float2	tcdbump	: TEXCOORD6;	// d-bump
     #ifdef USE_LM_HEMI
@@ -391,7 +409,7 @@ struct	v2p_flat
 	float2	tcdh	: TEXCOORD0;	// Texture coordinates
 #endif
 	float4	position: TEXCOORD1;	// position + hemi
-	half3	N		: TEXCOORD2;	// Eye-space normal        (for lighting)
+	float3	N		: TEXCOORD2;	// Eye-space normal        (for lighting)
   #ifdef USE_TDETAIL
 	float2	tcdbump	: TEXCOORD3;	// d-bump
     #ifdef USE_LM_HEMI
@@ -413,7 +431,7 @@ struct	p_flat
 	float2	tcdh	: TEXCOORD0;	// Texture coordinates
 #endif
 	float4	position: TEXCOORD1;	// position + hemi
-	half3	N		: TEXCOORD2;	// Eye-space normal        (for lighting)
+	float3	N		: TEXCOORD2;	// Eye-space normal        (for lighting)
   #ifdef USE_TDETAIL
 	float2	tcdbump	: TEXCOORD3;	// d-bump
     #ifdef USE_LM_HEMI

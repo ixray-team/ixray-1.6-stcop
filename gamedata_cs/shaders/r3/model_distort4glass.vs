@@ -5,6 +5,10 @@ struct vf
 {
 	float2	tc0	: TEXCOORD0;	// base
 	float4	c0	: COLOR0;		// color
+//	Igor: for additional depth dest
+#ifdef	USE_SOFT_PARTICLES
+	float4 tctexgen	: TEXCOORD1;
+#endif	//	USE_SOFT_PARTICLES
 	float4	hpos: SV_Position;
 };
 
