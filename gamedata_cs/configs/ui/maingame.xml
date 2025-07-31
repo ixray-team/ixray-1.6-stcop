@@ -148,12 +148,14 @@
 			<texture>ui_hud2_res_eat</texture>
 		</indicator_starvation>
 
-		<progress_bar_health x="35" y="56" width="114" height="9" horz="1" min="0" max="100" pos="0">
+		<progress_bar_health x="35" y="56" width="114" height="9" horz="1" min="0" max="1" pos="0"
+		expression="floor(fltPlayerHealth * 55.0) / 55.0">
 			<progress>
 				<texture>ui_hud_shk_health</texture>
 			</progress>
 		</progress_bar_health>
-		<progress_bar_armor x="35" y="37" width="114" height="9" horz="1" min="0" max="100" pos="0">
+		<progress_bar_armor x="35" y="37" width="114" height="9" horz="1" min="0" max="1" pos="0"
+		expression="floor(fltPlayerArmor * 55.0) / 55.0">
 			<progress>
 				<texture>ui_hud_shk_armour</texture>
 			</progress>
@@ -165,14 +167,15 @@
 			</__auto_static>
 		</static_armor>
     
-    <progress_bar_stamina x="180" y="85" width="68" height="14" horz="1" min="0" max="100" pos="0">
+    <progress_bar_stamina x="180" y="85" width="68" height="14" horz="1" min="0" max="1" pos="0"
+	expression="floor(fltPlayerPower * 55.0) / 55.0">
       <progress>
         <texture>ui_hud_shk_stamina_new</texture>
       </progress>
     </progress_bar_stamina>
 
     <static_ammo x="78" y="78" width="72" height="28">
-			<text align="r" complex_mode="0" font="graffiti32" color="ui_7">Ammo</text>
+			<text align="r" complex_mode="0" font="graffiti22" color="ui_7">Ammo</text>
 		</static_ammo>
 
 		<static_wpn_icon x="19" y="74" width="30" height="30"/>
