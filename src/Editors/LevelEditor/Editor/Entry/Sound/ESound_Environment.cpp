@@ -54,6 +54,7 @@ bool ESoundEnvironment::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	m_EnvInner = ini.r_string(sect_name, "env_inner");
 	m_EnvOuter = ini.r_string(sect_name, "env_outer");
 
+	UpdateTransform();
 	return 			true;
 }
 
