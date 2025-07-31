@@ -6,14 +6,12 @@ class CDeflector;
 
 template <typename DataVertexType> struct Tvertex;
 
-
-
 template <typename DataVertexType>
 struct MESHSTRUCTURE_API Tface: public DataVertexType::DataFaceType 
 {
 	typedef	Tvertex<DataVertexType>	type_vertex;
 	typedef	Tface<DataVertexType>	type_face;
-	type_vertex*	v[3];
+	type_vertex* v[3] = {};
 
 public:
 				Tface	();
@@ -25,12 +23,12 @@ public:
 	void	OA_Unwarp	(CDeflector * d, xr_vector<type_face*>& affected);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-	IC void				raw_set_vertex( u8 index, type_vertex* _v )
+	IC void raw_set_vertex( u8 index, type_vertex* _v )
 	{
 		R_ASSERT( index<3 );
 		v[index] = _v;
 	}
-	IC type_vertex*		vertex( u8 index )
+	IC type_vertex*	vertex( u8 index )
 	{
 		R_ASSERT( index<3 );
 		return v[index];
@@ -227,7 +225,7 @@ struct MESHSTRUCTURE_API Tvertex: public DataVertexType
 	Tvertex* CreateCopy_NOADJ(v_vertices& vertises_storage) const;
 
 
-	v_faces							m_adjacents;
+	v_faces m_adjacents;
  
 
 	IC	type_vertex* CreateCopy(v_vertices& vertises_storage)

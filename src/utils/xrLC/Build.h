@@ -7,7 +7,7 @@
 #include "../Shader_xrLC.h"
 
 #include "../xrLC_Light/b_build_texture.h"
-#include "../xrLC_Light/xrFaceDefs.h"
+#include "../xrLC_Light/xrFace.h"
 
 class xrLC_GlobalData;
 class xrMU_Model;
