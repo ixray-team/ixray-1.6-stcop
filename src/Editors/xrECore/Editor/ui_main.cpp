@@ -687,12 +687,6 @@ bool TUI::OnCreate()
 
 	m_bReady		= true;
 
-#if 0
-	if (!CreateMailslot()) {
-		ELog.DlgMsg(mtError, "Can't create mail slot.\nIt's possible two Editors started.");
-		return 		false;
-	}
-#endif
 	string_path log_path;
 	if (!FS.exist(log_path,_temp_,""))
 	{
