@@ -639,7 +639,7 @@ void CEntityCondition::remove_links	(const CObject *object)
 	m_iWhoID				= m_object->ID();
 }
 
-bool CEntityCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const shared_str& sect)
+bool CEntityCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const shared_str& sect, bool use_sound)
 {
 	ChangeHealth	(V.fHealth);
 	ChangePower		(V.fPower);
@@ -652,7 +652,7 @@ bool CEntityCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const s
 	return true;
 }
 
-bool CEntityCondition::ApplyBooster(const SBooster& B, const shared_str& sect)
+bool CEntityCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bool use_sound)
 {
 	return true;
 }
