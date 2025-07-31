@@ -1,24 +1,18 @@
 #include "stdafx.h"
-
-#pragma hdrstop
-
 #include "EventManager.h"
-
 #include "xrDebug.h"
 #include "os_clipboard.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#include <malloc.h>
-
 #if defined(IXR_WINDOWS) && !defined(IXR_ARM64)
 #	include <direct.h>
 #	include <dxerr.h>
 #endif
-
 #pragma warning(pop)
 
 extern bool shared_str_initialized;
+XRCORE_API xrDebug Debug;
 
 #define DEBUG_INVOKE	__debugbreak();
 static BOOL bException = FALSE;
@@ -28,7 +22,6 @@ static BOOL bException = FALSE;
 #	define USE_OWN_MINI_DUMP
 #endif // DEBUG
 
-XRCORE_API	xrDebug		Debug;
 
 static bool	error_after_dialog = false;
 

@@ -211,7 +211,6 @@ public:
 //Borland global function dll interface
 #define	_BGCL	
 
-#include <DirectXMath.h>
 namespace Platform
 {
     XRCORE_API xr_string TCHAR_TO_ANSI_U8(const xr_special_char* C);
