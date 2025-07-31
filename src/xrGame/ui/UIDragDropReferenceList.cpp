@@ -153,18 +153,21 @@ void CUIDragDropReferenceList::OnItemDBClick(CUIWindow* w, void* pData)
 {
 	CUIStatic* ref = smart_cast<CUIStatic*>(w);
 	ITEMS_REFERENCES_VEC_IT it = std::find(m_references.begin(), m_references.end(), ref);
-	if(it != m_references.end())
+	if (it != m_references.end())
 	{
-		u8 index = u8(it-m_references.begin());
-		CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
-		if(actor)
+		u8 index = u8(it - m_references.begin());
+		CObject* current_entity = Level().CurrentViewEntity();
+		if (CActor* actor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
 		{
 			PIItem itm = actor->inventory().GetAny(ACTOR_DEFS::g_quick_use_slots[index]);
-			if(itm)
+			if (itm)
+			{
 				inherited::RemoveItem(GetCellAt(Ivector2().set(index, 0)).m_item, false);
+			}
 		}
+
 		xr_strcpy(ACTOR_DEFS::g_quick_use_slots[index], "");
-		(*it)->SetTextureColor(color_rgba(255,255,255,0));
+		(*it)->SetTextureColor(color_rgba(255, 255, 255, 0));
 	}
 }
 
@@ -174,28 +177,28 @@ void CUIDragDropReferenceList::OnItemDrop(CUIWindow* w, void* pData)
 	CUICellItem* itm = smart_cast<CUICellItem*>(w);
 	VERIFY(itm->OwnerList() == itm->OwnerList());
 
-	if(m_f_item_drop && m_f_item_drop(itm))
+	if (m_f_item_drop && m_f_item_drop(itm))
 	{
 		DestroyDragItem();
 		return;
 	}
 
-	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	CUIDragDropListEx*	new_owner		= m_drag_item->BackList();
-	if(old_owner && new_owner && old_owner!=new_owner)
+	CUIDragDropListEx* old_owner = itm->OwnerList();
+	CUIDragDropListEx* new_owner = m_drag_item->BackList();
+	if (old_owner && new_owner && old_owner != new_owner)
 	{
 		inherited::OnItemDrop(w, pData);
 		return;
 	}
 
-	CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
-	if(actor)
+	CObject* current_entity = Level().CurrentViewEntity();
+	if (CActor* actor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
 	{
 		Ivector2 vec = PickCell(GetUICursor().GetCursorPosition());
-		if(vec.x!=-1&&vec.y!=-1)
+		if (vec.x != -1 && vec.y != -1)
 		{
 			Ivector2 vec2 = m_container->GetItemPos(itm);
-			if(vec2.x!=-1&&vec2.y!=-1)
+			if (vec2.x != -1 && vec2.y != -1)
 			{
 				u8 index = u8(vec2.x);
 				shared_str tmp = ACTOR_DEFS::g_quick_use_slots[vec.x];

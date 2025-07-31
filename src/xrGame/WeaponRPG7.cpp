@@ -49,8 +49,8 @@ void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
 		d1.set(D);
 		p = p1;
 		d = d1;
-		CEntity* E = smart_cast<CEntity*>(H_Parent());
-		if (E)
+
+		if (CEntity* E = H_Parent() != nullptr ? H_Parent()->cast_entity() : nullptr)
 		{
 			E->g_fireParams(this, p2, d2);
 			p = p2;
@@ -91,7 +91,7 @@ void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
 			u_EventSend(P);
 		}
 	}
-	UpdateMissileVisibility	();
+	UpdateMissileVisibility();
 }
 
 void CWeaponRPG7::on_a_hud_attach()
@@ -102,17 +102,17 @@ void CWeaponRPG7::on_a_hud_attach()
 
 void CWeaponRPG7::UpdateMissileVisibility()
 {
-	bool vis_hud,vis_weap;
-	vis_hud		= (!!iAmmoElapsed || GetState()==eReload);
-	vis_weap	= !!iAmmoElapsed;
+	bool vis_hud, vis_weap;
+	vis_hud = (!!iAmmoElapsed || GetState() == eReload);
+	vis_weap = !!iAmmoElapsed;
 
-	if(GetHUDmode())
+	if (GetHUDmode())
 	{
-		HudItemData()->set_bone_visible("grenade",vis_hud,TRUE);
+		HudItemData()->set_bone_visible("grenade", vis_hud, TRUE);
 	}
 
-	IKinematics* pWeaponVisual	= smart_cast<IKinematics*>(Visual()); 
-	VERIFY						(pWeaponVisual);
+	IKinematics* pWeaponVisual = PKinematics(Visual());
+	VERIFY(pWeaponVisual);
 	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID("grenade"), vis_weap, TRUE);
 }
 

@@ -112,7 +112,7 @@ void CVoiceChat::OnRender()
 			CObject* pObject = Level().Objects.net_Find(id);
 			if (!pObject) continue;
 
-			CActor* pActor = smart_cast<CActor*>(pObject);
+			CActor* pActor = pObject->cast_actor();
 			if (!pActor) continue;
 
 			pActor->RenderIndicator(pos, 0.2, 0.2, GetVoiceIndicatorShader());
