@@ -3,7 +3,7 @@
 #include "OGF_Face.h"
 #include "nv_library/NvTriStrip.h"
 #include "nv_library/VertexCache.h"
-#include <d3dx9.h>
+#include <DirectXMesh.h>
 
 int xrSimulate (xr_vector<u16> &indices, int iCacheSize )
 {
@@ -64,27 +64,55 @@ void OGF::Stripify()
 		return;
 
 	// fast verts
-	if (fast_path_data.vertices.size() && fast_path_data.faces.size())
+	if (!fast_path_data.vertices.empty() && !fast_path_data.faces.empty())
 	{
-		// alternative stripification - faces
+		// Optimize face order
 		{
-			DWORD* remap = xr_alloc<DWORD>((u32)fast_path_data.faces.size());
-			HRESULT		rhr = D3DXOptimizeFaces(&fast_path_data.faces.front(), (u32)fast_path_data.faces.size(), (u32)fast_path_data.vertices.size(), FALSE, remap);
+			xr_vector<u32> remap(fast_path_data.faces.size());
+
+			HRESULT rhr = DirectX::OptimizeFacesLRU
+			(
+				&fast_path_data.faces.front().v[0],
+				fast_path_data.faces.size(),
+				remap.data()
+			);
+
 			R_CHK(rhr);
-			vecOGF_F	_source = fast_path_data.faces;
-			for (u32 it = 0; it < _source.size(); it++)		fast_path_data.faces[it] = _source[remap[it]];
-			xr_free(remap);
+
+			vecOGF_F _source = fast_path_data.faces;
+			for (u32 it = 0; it < _source.size(); ++it)
+			{
+				fast_path_data.faces[it] = _source[remap[it]];
+			}
 		}
 
-		// alternative stripification - vertices
+		// Optimize vertex order
 		{
-			DWORD* remap = xr_alloc<DWORD>((u32)fast_path_data.vertices.size());
-			HRESULT		rhr = D3DXOptimizeVertices(&fast_path_data.faces.front(), (u32)fast_path_data.faces.size(), (u32)fast_path_data.vertices.size(), FALSE, remap);
+			xr_vector<u32> remap(fast_path_data.vertices.size());
+
+			HRESULT rhr = DirectX::OptimizeVertices
+			(
+				&fast_path_data.faces.front().v[0],
+				fast_path_data.faces.size(),
+				fast_path_data.vertices.size(),
+				remap.data()
+			);
+
 			R_CHK(rhr);
-			vec_XV		_source = fast_path_data.vertices;
-			for (u32 it = 0; it < _source.size(); it++)		fast_path_data.vertices[remap[it]] = _source[it];
-			for (u32 it = 0; it < fast_path_data.faces.size(); it++)		for (u32 j = 0; j < 3; j++)		fast_path_data.faces[it].v[j] = (u16)remap[fast_path_data.faces[it].v[j]];
-			xr_free(remap);
+
+			vec_XV _source = fast_path_data.vertices;
+			for (u32 it = 0; it < _source.size(); ++it)
+			{
+				fast_path_data.vertices[remap[it]] = _source[it];
+			}
+
+			for (u32 it = 0; it < fast_path_data.faces.size(); ++it)
+			{
+				for (u32 j = 0; j < 3; ++j)
+				{
+					fast_path_data.faces[it].v[j] = static_cast<u16>(remap[fast_path_data.faces[it].v[j]]);
+				}
+			}
 		}
 	}
 
