@@ -15,6 +15,7 @@
 #include "lua_ext.h"
 
 #include "script_callback_ex.h"
+#include <luabind/class_info.hpp>
 
 SCRIPTS_API CScriptEngine* g_pScriptEngine = nullptr;
 
@@ -166,6 +167,7 @@ void CScriptEngine::init()
 	CScriptStorage::reinit();
 
 	luabind::open(lua());
+	luabind::bind_class_info(lua());
 	setup_callbacks();
 	g_object_factory->export_classes(lua());
 	setup_auto_load();
