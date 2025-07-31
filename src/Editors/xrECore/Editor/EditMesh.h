@@ -263,6 +263,7 @@ public:
 	VMapVec		    m_VMaps;
 	VMRefsVec	    m_VMRefs;
 	st_Face* m_Faces;    // + some array size!!!
+	Fvector* m_Vertices;	// |
 
 protected:
 	Fbox			m_Box;
@@ -277,7 +278,6 @@ protected:
 	u32				m_VertCount;
 	u32				m_FaceCount;
 	
-	Fvector*	    m_Vertices;	// |
 	AdjVec*			m_Adjs;    	// + some array size!!!
 	u32*			m_SmoothGroups;		// |
 	Fvector*		m_FaceNormals;	// |

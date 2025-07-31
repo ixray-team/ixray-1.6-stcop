@@ -4,13 +4,10 @@
 #pragma once
 #include "xrCDB.h"
 
-//#pragma once
-
-#include "../FixedVector.h"
-
 #pragma pack(push,4)
 
-enum EFC_Visible {
+enum EFC_Visible 
+{
 	fcvNone = 0,       // ѕолностью за пределами фрустума Ч не рисуем
 	fcvPartial = 1,       // „астично в фрустуме Ч можно рисовать
 	fcvFully = 2,       // ѕолностью в фрустуме Ч можно точно рисовать

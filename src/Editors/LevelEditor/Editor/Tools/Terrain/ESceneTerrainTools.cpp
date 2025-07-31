@@ -111,7 +111,7 @@ void ESceneTerrainTool::GetStaticDesc(int& v_cnt, int& f_cnt, bool b_selected_on
 		if (b_selected_only && !obj->Selected())
 			continue;
 
-		f_cnt += obj->TerrainObject.GetFaceCount();
-		v_cnt += obj->TerrainObject.GetVertexCount();
+		f_cnt += obj->TerrainObject->GetFaceCount();
+		v_cnt += obj->TerrainObject->GetVertexCount();
 	}
 }
