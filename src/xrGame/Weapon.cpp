@@ -2694,7 +2694,7 @@ float CWeapon::Weight() const
 extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
-	return (!IsPending() || GetState() == eSprintStart || GetState() == eSprintEnd) && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_mode != 0 && hud_adj_crosshair);
+	return (!IsPending() || GetState() == eEmptyClick || GetState() == eSprintStart || GetState() == eSprintEnd) && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_mode != 0 && hud_adj_crosshair);
 }
 
 bool CWeapon::show_indicators()
@@ -3308,5 +3308,15 @@ void CWeapon::UpdateCollimatorSight()
 	else for (auto& bone : m_sCollimatorSightsBones)
 	{
 		HudItemData()->set_bone_visible(bone, true, TRUE);
+	}
+}
+
+void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
+{
+	inherited::OnMotionMark(state, mark);
+
+	if (state == eEmptyClick && mark.name == "Left")
+	{
+		m_bBlockEmptyClick = false;
 	}
 }
