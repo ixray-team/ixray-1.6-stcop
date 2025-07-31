@@ -329,7 +329,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			if (strchr(N,'.')) *(strchr(N,'.')) = 0;
 			_strlwr			(N);
 
-			if (0==xr_strcmp(N,"level_lods")) {
+			if (0==xr_strcmp(N,"level_lods")) 
+			{
 				// HACK for merged lod textures
 				BT.dwWidth		= 1024;
 				BT.dwHeight		= 1024;
@@ -337,18 +338,17 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				BT.THM.SetHasSurface(FALSE);
 				BT.pSurface		= 0;
 
-			} else {
+			} 
+			else 
+			{
 				string_path			th_name;
 				FS.update_path	(th_name,"$game_textures$", xr_strconcat(th_name,N,".thm"));
-				clMsg			("processing: %s",th_name);
-				IReader* THM	= FS.r_open(th_name);
-
-
-				// se7kills Не трогать Можно нормально скипать отсуцтвие THM
+ 				IReader* THM	= FS.r_open(th_name);
+ 				// se7kills Не трогать Можно нормально скипать отсуцтвие THM
 				if (!THM)
 				{
-					clMsg("cannot find thm: %s", th_name);
-					is_thm_missing = true;
+					Msg("cannot find thm: %s", th_name);
+ 					is_thm_missing = true;
 					BT.dwWidth = 1024;
 					BT.dwHeight = 1024;
 					BT.bHasAlpha = FALSE;
@@ -408,8 +408,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					}
 				}
 
-			}
-
+			} 
 			// save all the stuff we've created
 			textures().push_back	(BT);
 		}
