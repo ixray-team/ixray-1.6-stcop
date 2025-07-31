@@ -248,6 +248,9 @@ public:
 	bool m_bIsAimStarted = false;
 	bool m_bRestGlSil = false;
 	bool m_bTacticalTorchStatus = false;
+	bool m_bJustAfterReload = false;
+	bool m_bIsPreloaded = false;
+	bool m_bAddCartridgeInOpen = false;
 	bool m_bBlockUpdateAmmoBonesShooting = false;
 	bool m_bUseLastAmmoType = false;
 	bool m_bUseChamberInUpdateBones = false;
