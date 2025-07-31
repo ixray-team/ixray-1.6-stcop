@@ -108,7 +108,6 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 			m_UIMainScrollH = tempScroll;
         else
         {
-            Msg("! Failed to init m_UIMainScrollH as FixedScrollBar, trying to initialize it as ScrollBar");
             xr_delete(tempScroll);
             m_UIMainScrollH = new CUIScrollBar();
             m_UIMainScrollH->InitScrollBar(Fvector2().set(r.left + dx, r.bottom - sy), r.right - r.left - dx * 2 - sx, true, "pda");
@@ -126,7 +125,6 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 			m_UIMainScrollV = tempScroll;
 		else
 		{
-			Msg("! Failed to init m_UIMainScrollV as FixedScrollBar, trying to initialize it as ScrollBar");
 			xr_delete(tempScroll);
 			m_UIMainScrollV = new CUIScrollBar();
 			m_UIMainScrollV->InitScrollBar(Fvector2().set(r.right - sx, r.top + dy), r.bottom - r.top - dy * 2, false, "pda");

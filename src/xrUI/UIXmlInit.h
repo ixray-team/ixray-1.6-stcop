@@ -53,7 +53,7 @@ public:
 	static bool 	InitSpin				(CUIXml& xml_doc, LPCSTR path, int index, CUICustomSpin* pWnd);
 	static bool 	InitText				(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* pWnd);
 	static bool 	InitText				(CUIXml& xml_doc, LPCSTR path, int index, CUILines* pLines);
-	static bool 	Init3tButton			(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd);
+	static bool 	Init3tButton			(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd, bool fatal = true);
 	static bool 	InitProgressBar			(CUIXml& xml_doc, LPCSTR path, int index, CUIProgressBar* pWnd);
 	static bool 	InitProgressShape		(CUIXml& xml_doc, LPCSTR path, int index, CUIProgressShape* pWnd);
 	static bool 	InitLoadscreenProgress	(CUIXml& xml_doc, LPCSTR path, int index, CUILoadingScreenProgress* pWnd);
@@ -64,7 +64,7 @@ public:
 	static bool 	InitSleepStatic			(CUIXml& xml_doc, LPCSTR path, int index, CUISleepStatic *pWnd);
 	static bool 	InitTextureOffset		(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* pWnd);
 	static bool 	InitSound				(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd);
-	static bool 	InitMultiTexture		(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd);
+	static bool 	InitMultiTexture		(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd, bool fatal = true);
 	static bool 	InitTexture				(CUIXml& xml_doc, LPCSTR path, int index, ITextureOwner* pWnd, bool fatal = true);
 	static bool 	InitOptionsItem			(CUIXml& xml_doc, LPCSTR paht, int index, CUIOptionsItem* pWnd);
 	static bool 	InitScrollView			(CUIXml& xml_doc, LPCSTR path, int index, CUIScrollView* pWnd);
