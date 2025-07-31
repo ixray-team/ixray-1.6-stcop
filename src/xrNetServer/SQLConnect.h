@@ -1,11 +1,12 @@
 #pragma once
+#ifdef IXR_MP_SQL
 #include <mysql/jdbc.h>
 
 class XRNETSERVER_API DBService
 {
 private:
-	sql::mysql::MySQL_Driver*	driver;
-	sql::Connection*			con;
+	sql::mysql::MySQL_Driver* driver;
+	sql::Connection* con;
 
 public:
 
@@ -82,4 +83,5 @@ private:
 	xrCriticalSection DelayCS;
 };
 
-extern XRNETSERVER_API DBService GSQLConnector;
+extern XRNETSERVER_API DBService* GSQLConnector;
+#endif
