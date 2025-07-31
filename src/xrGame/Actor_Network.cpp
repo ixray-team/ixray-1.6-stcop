@@ -539,6 +539,10 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 						Msg("[Actor.cpp] mp_actor_spawn");
 						g_actor = this;
 						g_pIGameActor = this;
+						NET_Packet			P;
+						u_EventGen(P, GE_GAME_EVENT, ID());
+							P.w_u16(GAME_EVENT_MP_ACTOR_SPAWN);
+						u_EventSend(P);
 					}
 				}
 			}
