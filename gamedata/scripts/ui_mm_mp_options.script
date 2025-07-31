@@ -4,8 +4,7 @@
 
 class "mp_options" (CUIWindow)
 
-function mp_options:__init(online_mode) super()
-	self.online = online_mode
+function mp_options:__init() super()
 end
 
 function mp_options:__finalize()
@@ -44,13 +43,9 @@ function mp_options:InitControls(x, y, xml, handler)
 	xml:InitStatic("tab_options:cap_rate_of_change",	self)
 	xml:InitStatic("tab_options:cap_max_ping",			self)
 
-	if (self.online) then
-		xml:InitStatic("tab_options:public_server_t", self)
-	else
-		xml:InitStatic("tab_options:public_server_d", self)
-	end
+--	xml:InitStatic("tab_options:public_server_t", self)
 	
---	handler.check_public_server			= xml:InitCheck("tab_options:check_public_server", 			self)
+	handler.check_public_server			= xml:InitCheck("tab_options:check_public_server", 			self)
 	handler.check_spectator				= xml:InitCheck("tab_options:check_spectator",				self)
 	handler.check_allow_voting			= xml:InitCheck("tab_options:check_allow_voting",			self)
 	handler.spin_max_ping				= xml:InitSpinNum("tab_options:spin_max_ping",				self)
@@ -100,11 +95,11 @@ function mp_options:InitControls(x, y, xml, handler)
 
 --	handler.check_public_server:SetDependControl(handler.check_verify_cdkey)
 
-	if (self.online) then
+--[[if (self.online) then
 --		handler.check_public_server:SetCheck(true)
 	else
 --		handler.check_public_server:SetCheck(false)
-	end
+	end]]
 	
 
 end
