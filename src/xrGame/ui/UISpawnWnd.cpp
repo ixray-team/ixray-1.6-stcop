@@ -19,8 +19,11 @@ CUISpawnWnd::CUISpawnWnd()
 
 	m_pFrames[0]	= new CUIStatic();	AttachChild(m_pFrames[0]);
 	m_pFrames[1]	= new CUIStatic();	AttachChild(m_pFrames[1]);
-//	m_pFrames[2]	= new CUIStatic();	AttachChild(m_pFrames[2]);
-
+	if (EngineExternal().ClearSkyMode())
+	{
+		m_pFrames[2] = new CUIStatic();	
+		AttachChild(m_pFrames[2]);
+	}
 	m_pTextDesc		= new CUIScrollView();	AttachChild(m_pTextDesc);
 
 	m_pBtnAutoSelect= new CUI3tButton();	AttachChild(m_pBtnAutoSelect);
@@ -36,7 +39,8 @@ CUISpawnWnd::~CUISpawnWnd()
 	xr_delete(m_pBackground);
 	xr_delete(m_pFrames[0]);
 	xr_delete(m_pFrames[1]);
-//	xr_delete(m_pFrames[2]);
+	if (m_pFrames[2])
+		xr_delete(m_pFrames[2]);
 	xr_delete(m_pImage1);
 	xr_delete(m_pImage2);
 	xr_delete(m_pTextDesc);
@@ -57,7 +61,9 @@ void CUISpawnWnd::Init()
 	CUIXmlInit::InitStatic(xml_doc,"team_selector:background",			0,	m_pBackground);
 	CUIXmlInit::InitStatic(xml_doc,"team_selector:image_frames_tl",		0,	m_pFrames[0]);
 	CUIXmlInit::InitStatic(xml_doc,"team_selector:image_frames_tr",		0,	m_pFrames[1]);
-//	CUIXmlInit::InitStatic(xml_doc,"team_selector:image_frames_bottom",	0,	m_pFrames[2]);
+	if (xml_doc.NavigateToNode("team_selector:image_frames_bottom"))
+	CUIXmlInit::InitStatic(xml_doc,"team_selector:image_frames_bottom",	0,	m_pFrames[2]);
+
 	CUIXmlInit::InitScrollView(xml_doc,"team_selector:text_desc",			0,	m_pTextDesc);
 
 	CUIXmlInit::InitStatic(xml_doc,"team_selector:image_0",0,m_pImage1);
