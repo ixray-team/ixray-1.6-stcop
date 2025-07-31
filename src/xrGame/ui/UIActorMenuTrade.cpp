@@ -148,15 +148,12 @@ void CUIActorMenu::DeInitTradeMode()
 	m_trade_buy_button->Show		(false);
 	m_trade_sell_button->Show		(false);
 
-	if(!CurrentGameUI())
+	if (!CurrentGameUI())
 		return;
-	//только если находимся в режиме single
-	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(!pGameSP) return;
 
-	if(pGameSP->TalkMenu->IsShown())
+	if (CurrentGameUI()->TalkMenu->IsShown())
 	{
-		pGameSP->TalkMenu->NeedUpdateQuestions();
+		CurrentGameUI()->TalkMenu->NeedUpdateQuestions();
 	}
 }
 
@@ -182,9 +179,13 @@ bool CUIActorMenu::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 			VERIFY							(new_owner==m_pTradeActorList);
 		}else
 			new_owner						= m_pTradeActorList;
-		
-		bool result							= (old_owner_type!=iActorBag) ? m_pActorInvOwner->inventory().Ruck(iitem) : true;
-		VERIFY								(result);
+
+		if (IsGameTypeSingle())
+		{
+			bool result = (old_owner_type != iActorBag) ? m_pActorInvOwner->inventory().Ruck(iitem) : true;
+			R_ASSERT(result);
+		}
+
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
 		
 		if(b_use_cursor_pos)
@@ -192,6 +193,8 @@ bool CUIActorMenu::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 		else
 			new_owner->SetItem				(i);
 		
+		// Pavel: Если мы переносим предмет из слота в окно торговли
+        // то необходимо переместить его по факту в рюкзак
 		if ( old_owner_type != iActorBag )
 		{
 			SendEvent_Item2Ruck				(iitem, m_pActorInvOwner->object_id());
@@ -202,7 +205,8 @@ bool CUIActorMenu::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 
 bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 {
-	PIItem	iitem						= (PIItem)itm->m_pData;
+	//Перенос в список для покупки.
+	PIItem iitem						= (PIItem)itm->m_pData;
 	SInvItemPlace	pl;
 	pl.type		= eItemPlaceRuck;
 	if ( !m_pPartnerInvOwner->AllowItemToTrade( iitem, pl ) )
@@ -222,7 +226,18 @@ bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 	}else
 		new_owner						= m_pTradePartnerList;
 
-	CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
+
+	CUICellItem* i = nullptr;
+	if (IsGameTypeSingle())
+	{
+		// удаляем из списка предметов NPC (и будем добавлять в список для покупки)
+		i = old_owner->RemoveItem(itm, (old_owner == new_owner));
+	}
+	else
+	{
+		// создаем новый cell item
+		i = create_cell_item(iitem);
+	}
 	
 	if(b_use_cursor_pos)
 		new_owner->SetItem				(i,old_owner->GetDragItemPosition());
@@ -235,22 +250,34 @@ bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 
 bool CUIActorMenu::ToPartnerTradeBag(CUICellItem* itm, bool b_use_cursor_pos)
 {
-	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	CUIDragDropListEx*	new_owner		= nullptr;
+	//CUIDragDropListEx*	old_owner		= itm->OwnerList();
+	//CUIDragDropListEx*	new_owner		= nullptr;
+	// Перенос назад в список предметов NPC
 
-	if(b_use_cursor_pos)
+	if (IsGameTypeSingle())
 	{
-		new_owner						= CUIDragDropListEx::m_drag_item->BackList();
-		VERIFY							(new_owner==m_pTradePartnerBagList);
-	}else
-		new_owner						= m_pTradePartnerBagList;
-	
-	CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
+		CUIDragDropListEx* old_owner = itm->OwnerList();
+		CUIDragDropListEx* new_owner = NULL;
 
-	if(b_use_cursor_pos)
-		new_owner->SetItem				(i,old_owner->GetDragItemPosition());
-	else
-		new_owner->SetItem				(i);
+		if (b_use_cursor_pos)
+		{
+			new_owner = CUIDragDropListEx::m_drag_item->BackList();
+			VERIFY(new_owner == m_pTradePartnerBagList);
+		}
+		else
+			new_owner = m_pTradePartnerBagList;
+		CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
+		if (b_use_cursor_pos)
+			new_owner->SetItem(i, old_owner->GetDragItemPosition());
+		else
+			new_owner->SetItem(i);
+	}
+	else {
+		CUIDragDropListEx* old_owner = itm->OwnerList();
+		// удаляем предмет из списка для покупки
+		CUICellItem* i = old_owner->RemoveItem(itm, false);
+		delete_data(i);
+	}
 	
 	return true;
 }
@@ -507,6 +534,12 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 
 void CUIActorMenu::TransferItems( CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying )
 {
+	if (!IsGameTypeSingle())
+	{
+		TransferItemsMp(pSellList, pBuyList, pTrade, bBuying);
+		return;
+	}
+
 	while ( pSellList->ItemsCount() )
 	{
 		CUICellItem* cell_item = pSellList->RemoveItem( pSellList->GetItemIdx(0), false );
@@ -529,4 +562,77 @@ void CUIActorMenu::TransferItems( CUIDragDropListEx* pSellList, CUIDragDropListE
 	}
 	pTrade->pThis.inv_owner->set_money(    pTrade->pThis.inv_owner->get_money(),    true );
 	pTrade->pPartner.inv_owner->set_money( pTrade->pPartner.inv_owner->get_money(), true );
+}
+
+void CUIActorMenu::TransferItemsMp(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying)
+{
+	if (pSellList->ItemsCount() == 0)
+		return;
+	CGameObject* pPlayer = smart_cast<CGameObject*>(pTrade->pPartner.inv_owner);
+	R_ASSERT(!!smart_cast<CActor*>(pPlayer));
+	if (bBuying)
+	{
+		// Sell to NPC
+		xr_vector<PIItem> items_to_destroy;
+		u32 totalPrice = 0;
+		while (pSellList->ItemsCount())
+		{
+			CUICellItem* cell_item = pSellList->GetItemIdx(0);
+			PIItem item = (PIItem)cell_item->m_pData;
+			items_to_destroy.push_back(item);
+			totalPrice += pTrade->GetItemPrice(item, bBuying);
+			cell_item = pSellList->RemoveItem(cell_item, false);
+			delete_data(cell_item);
+			cell_item = nullptr;
+		}
+		// Check to max for signed value
+		R_ASSERT(totalPrice < INT32_MAX);
+		NET_Packet P;
+		pPlayer->u_EventGen(P, GE_GAME_EVENT, pPlayer->ID());
+		P.w_u16(GAME_EVENT_MP_TRADE);
+		P.w_u8(true);									// Set as selling
+		P.w_u16(pTrade->pThis.inv_owner->object_id());	// NPC ID
+		P.w_u16(pPlayer->ID());							// Actor ID
+		P.w_s32(static_cast<s32>(totalPrice));			// Total price
+		P.w_u32(items_to_destroy.size());				// Items count
+		auto it = items_to_destroy.cbegin(), it_e = items_to_destroy.cend();
+		for (; it != it_e; it++)
+		{
+			P.w_u16((*it)->object_id());				// Item ID
+			P.w_float((*it)->GetCondition());			// Item condition (for correct price calculation)
+		}
+		pPlayer->u_EventSend(P);
+	}
+	else
+	{
+		// Buy from NPC
+		xr_map<u16, u16> sellMap;
+		u32 totalPrice = 0;
+		while (pSellList->ItemsCount())
+		{
+			CUICellItem* cell_item = pSellList->GetItemIdx(0);
+			PIItem item = (PIItem)cell_item->m_pData;
+			sellMap[item->object_id()] += 1;
+			totalPrice += pTrade->GetItemPrice(item, bBuying);
+			cell_item = pSellList->RemoveItem(cell_item, false);
+			delete_data(cell_item);
+			cell_item = nullptr;
+		}
+		// Check to max for signed value
+		R_ASSERT(totalPrice < INT32_MAX);
+		NET_Packet P;
+		pPlayer->u_EventGen(P, GE_GAME_EVENT, pPlayer->ID());
+		P.w_u16(GAME_EVENT_MP_TRADE);
+		P.w_u8(false);									// Set as buying
+		P.w_u16(pTrade->pThis.inv_owner->object_id());	// NPC ID
+		P.w_u16(pPlayer->ID());							// Actor ID
+		P.w_s32(static_cast<s32>(totalPrice)); // Total price
+		P.w_u32(sellMap.size());						// Map Size
+		for (auto it = sellMap.cbegin(); it != sellMap.cend(); it++)
+		{
+			P.w_u16(it->first);							// Item ID
+			P.w_u16(it->second);						// Count
+		}
+		pPlayer->u_EventSend(P);
+	}
 }

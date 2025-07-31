@@ -1988,7 +1988,11 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 			weapon->EnableActorNVisnAfterZoom();
 	}
 
-	if(		!just_before_destroy && 
+	// Pavel: при продаже в МП граната удаляется у игрока
+    // И после этого нельзя достать новую
+    // Поэтому закомментировал проверку на just_before_destroy
+	if(		//!just_before_destroy && 
+		    inventory_item &&
 			inventory_item->BaseSlot()==GRENADE_SLOT && 
 			nullptr==inventory().ItemFromSlot(GRENADE_SLOT) )
 	{
