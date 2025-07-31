@@ -513,8 +513,21 @@ void CHelicopter::net_Relcase(CObject* O )
 void CHelicopter::net_Import(NET_Packet& P)
 {
 	inherited::net_Import(P);
+}
 
-	Fvector Pos = P.r_vec3();
+void CHelicopter::net_Export(NET_Packet& P)
+{
+	inherited::net_Export(P);
+}
+
+BOOL CHelicopter::net_Relevant()
+{
+	return !IsGameTypeSingle();
+}
+
+void CHelicopter::SyncRead(NET_Packet& Packet)
+{
+	Fvector Pos = Packet.r_vec3();
 
 	m_movement.SetDestPosition(&Pos);
 	SetMaxVelocity(150);
@@ -522,14 +535,7 @@ void CHelicopter::net_Import(NET_Packet& P)
 	m_movement.AlreadyOnPoint();
 }
 
-void CHelicopter::net_Export(NET_Packet& P)
+void CHelicopter::SyncWrite(NET_Packet& Packet)
 {
-	inherited::net_Export(P);
-
-	P.w_vec3(m_movement.currP);
-}
-
-BOOL CHelicopter::net_Relevant()
-{
-	return !IsGameTypeSingle();
+	Packet.w_vec3(m_movement.currP);
 }
