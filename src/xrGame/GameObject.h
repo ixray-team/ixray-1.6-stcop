@@ -262,7 +262,7 @@ public:
 		return				(m_story_id);
 	}
 	
-	void FootStepCallback(float power, bool b_play, bool b_on_ground, bool b_hud_view);
+	virtual void FootStepCallback(float power, bool b_play, bool b_on_ground, bool b_hud_view);
 
 public:
 	virtual u32				ef_creature_type	() const;
