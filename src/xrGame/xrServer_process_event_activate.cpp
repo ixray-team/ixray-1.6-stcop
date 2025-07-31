@@ -2,6 +2,8 @@
 #include "xrServer.h"
 #include "xrserver_objects.h"
 
+ENGINE_API bool g_dedicated_server;
+
 void xrServer::Process_event_activate	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message)
 {
 	// Parse message
@@ -11,9 +13,26 @@ void xrServer::Process_event_activate	(NET_Packet& P, const ClientID sender, con
 #ifndef MASTER_GOLD
 	Msg("---Artefact activate (parent = %d) (item = %d)", id_parent, id_entity);
 #endif // #ifndef MASTER_GOLD
-	
-	R_ASSERT2(e_parent, make_string<const char*>("parent not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame));
-	R_ASSERT2(e_entity, make_string<const char*>("entity not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame));
+
+	if (g_dedicated_server)
+	{
+		if (e_parent == nullptr)
+		{
+			Msg("parent not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame);
+			return;
+		}
+
+		if (e_entity == nullptr)
+		{
+			Msg("entity not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame);
+			return;
+		}
+	}
+	else
+	{
+		R_ASSERT2(e_parent, make_string<const char*>("parent not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame));
+		R_ASSERT2(e_entity, make_string<const char*>("entity not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame));
+	}
 
 	if (!game->OnActivate(id_parent, id_entity))
 		return;
