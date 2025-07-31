@@ -22,6 +22,7 @@ public:
 		float wounds;
 		int money;
 		int community;
+		Fvector position;
 	};
 
 	struct UserDBProfile
