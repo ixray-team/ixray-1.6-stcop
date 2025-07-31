@@ -33,6 +33,8 @@ void CUIComboBox::script_register(lua_State *L)
 		.def("SetText",				&CUIComboBox::SetText)
 		.def("ClearList",			&CUIComboBox::ClearList)
 		.def("SetCurrentOptValue",	&CUIComboBox::SetCurrentOptValue)
+		.def("SetCurrentIdx",		&CUIComboBox::SetSelectedIDX)
+		.def("GetCurrentIdx",		&CUIComboBox::GetSelectedIDX)
 
 	];
 }
