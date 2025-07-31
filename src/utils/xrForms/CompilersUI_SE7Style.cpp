@@ -57,8 +57,8 @@ void RenderMainUI()
 			ImGui::TableSetupColumn("Levels");
 			ImGui::TableSetupColumn("Settings");
 			ImGui::TableSetupColumn("xrLC");
-			ImGui::TableSetupColumn("xrDO");
 			ImGui::TableSetupColumn("xrAI");
+			ImGui::TableSetupColumn("xrDO");
 
 			ImGui::TableHeadersRow();
 
@@ -94,6 +94,7 @@ void RenderMainUI()
 
 			if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
 			{
+				bool isReady = false;
 				if (gCompilerMode.LC)
 				{
 					for (auto& FILE : Files)
@@ -104,12 +105,59 @@ void RenderMainUI()
 							break;
 						}
 					}
-
-					extern void StartCompile();
-					StartCompile();
-
+					isReady = true;
 					Msg("Level For Building : %s", gCompilerMode.level_name);
 				}
+
+				if (gCompilerMode.AI)
+				{
+					std::string temp_maps;
+
+					int Size = 0;
+					for (auto& FILE : Files)
+					{
+						if (FILE.Select)
+						{
+							temp_maps += FILE.Name.c_str();
+							temp_maps += ",";
+							Size++;
+							//break;
+						}
+					}
+
+					if (Size > 1)
+						temp_maps.pop_back();
+					
+				
+					if (gCompilerMode.AI_BuildLevel)
+					{
+						if (Size > 1)
+						{	
+							Msg("Dont Correct Level Size > 1");
+							return;
+						}
+
+						strcpy( gCompilerMode.level_name, temp_maps.c_str() );
+						isReady = true;
+					}
+					 
+					if (gCompilerMode.AI_BuildSpawn)
+					{
+						strcpy(gCompilerMode.level_name, temp_maps.c_str());
+						isReady = true;
+					}
+
+					
+
+					Msg("Level For Building : %s", temp_maps.c_str());
+				}
+				
+				if (isReady)
+				{
+					extern void StartCompile();
+					StartCompile();
+				}
+
  			}
 			 
 			ImGui::TableSetColumnIndex(1);
@@ -185,7 +233,7 @@ void DrawLCConfig()
 
 void DrawDOConfig()
 {
-	if (ImGui::BeginChild("DO", { 200, 60 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("DO", { 200, 350 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
 		ImGui::Separator();
@@ -200,24 +248,48 @@ void DrawDOConfig()
 
 void DrawAIConfig()
 {
-	if (ImGui::BeginChild("AI", { 200, 130 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (gCompilerMode.AI_BuildSpawn && gCompilerMode.AI_BuildLevel)
 	{
-		ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);
-		ImGui::Separator();
-
-		ImGui::BeginDisabled(!gCompilerMode.AI);
-		ImGui::Checkbox("Build level", &gCompilerMode.AI_BuildLevel);
-		ImGui::Checkbox("Build global spawn", &gCompilerMode.AI_Spawn);
-		ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
-		ImGui::Checkbox("Draft AI-Map", &gCompilerMode.AI_Draft);
-
-		ImGui::InputText("Spawn Name", gCompilerMode.AI_spawn_name, sizeof(gCompilerMode.AI_spawn_name));
-		ImGui::InputText("Start Actor Level", gCompilerMode.AI_StartActor, sizeof(gCompilerMode.AI_StartActor));
-		
-		ImGui::EndDisabled();
-		ImGui::EndChild();
+		gCompilerMode.AI_BuildSpawn = false;
 	}
 
+
+	if (ImGui::BeginChild("AI", { 200, 350 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	{
+			ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);
+		
+			ImGui::BeginDisabled(!gCompilerMode.AI);
+
+			ImGui::Separator();
+
+			ImGui::Checkbox("AI Compiler ai.level", &gCompilerMode.AI_BuildLevel);
+		 
+				ImGui::BeginDisabled(!gCompilerMode.AI_BuildLevel);
+
+ 				ImGui::Checkbox("Draft AI-Map", &gCompilerMode.AI_Draft);
+				ImGui::Checkbox("Pure Covers", &gCompilerMode.AI_PureCovers);
+				ImGui::Checkbox("Verify", &gCompilerMode.AI_Verify);
+				ImGui::Checkbox("Verbose", &gCompilerMode.AI_Verbose);
+ 	  
+				ImGui::EndDisabled();
+		
+			ImGui::Separator();
+
+			ImGui::Checkbox("AI Compiler all.spawn", &gCompilerMode.AI_BuildSpawn);
+				ImGui::BeginDisabled(!gCompilerMode.AI_BuildSpawn);
+ 				
+ 				ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
+
+				ImGui::Text("Name all.spawn :");
+				ImGui::InputText("#1", gCompilerMode.AI_spawn_name, sizeof(gCompilerMode.AI_spawn_name));
+				ImGui::Text("Name level start:");
+				ImGui::InputText("#2", gCompilerMode.AI_StartActor, sizeof(gCompilerMode.AI_StartActor));
+ 
+				ImGui::EndDisabled();
+
+			ImGui::EndDisabled();
+	}
+	ImGui::EndChild();
 }
 
 
