@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Выдача информации сталкерам.
---	автор: Диденко Руслан (Stohe)
+--	Р’С‹РґР°С‡Р° РёРЅС„РѕСЂРјР°С†РёРё СЃС‚Р°Р»РєРµСЂР°Рј.
+--	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --	TODO:
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -782,7 +782,7 @@ local info_by_rank = {
 
 
 function loadInfo(npc, char_ini, known_info)
-	-- Загрузка из кастом даты
+	-- Р—Р°РіСЂСѓР·РєР° РёР· РєР°СЃС‚РѕРј РґР°С‚С‹
 	local known_info = known_info or "known_info"
 	if char_ini:section_exist(known_info) then
 		printf("Known info section exists [%s]", npc:name())
@@ -797,7 +797,7 @@ function loadInfo(npc, char_ini, known_info)
 	end
 
 	--[[
-	-- Загрузка из генератора.
+	-- Р—Р°РіСЂСѓР·РєР° РёР· РіРµРЅРµСЂР°С‚РѕСЂР°.
 	local community_info = info_by_community[npc:character_community()]
 	if community_info == nil then
 		return
@@ -810,11 +810,11 @@ function loadInfo(npc, char_ini, known_info)
 	end
 
 	local tt = {}
-	-- оставляем инфопоршны, которые есть и там и там.
+	-- РѕСЃС‚Р°РІР»СЏРµРј РёРЅС„РѕРїРѕСЂС€РЅС‹, РєРѕС‚РѕСЂС‹Рµ РµСЃС‚СЊ Рё С‚Р°Рј Рё С‚Р°Рј.
 	for k,v in pairs(community_info) do
 		for kk,vv in pairs(rank_info) do
 			if v == vv then
-				-- Добавляем в список доступных знаний
+				-- Р”РѕР±Р°РІР»СЏРµРј РІ СЃРїРёСЃРѕРє РґРѕСЃС‚СѓРїРЅС‹С… Р·РЅР°РЅРёР№
 				table.insert(tt, v)
 				break
 			end
@@ -831,11 +831,11 @@ function loadInfo(npc, char_ini, known_info)
 end
 
 function give_npc_info(npc, info)
-	-- Даем НПС инфопоршны
+	-- Р”Р°РµРј РќРџРЎ РёРЅС„РѕРїРѕСЂС€РЅС‹
 	npc:give_info_portion(info)
 
-	-- Проверяем есть ли озвученная история на этот инфопоршн, и если есть
-	-- добавляем ее тоже
+	-- РџСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё РѕР·РІСѓС‡РµРЅРЅР°СЏ РёСЃС‚РѕСЂРёСЏ РЅР° СЌС‚РѕС‚ РёРЅС„РѕРїРѕСЂС€РЅ, Рё РµСЃР»Рё РµСЃС‚СЊ
+	-- РґРѕР±Р°РІР»СЏРµРј РµРµ С‚РѕР¶Рµ
 	if sound_theme.theme[info] ~= nil then
 		if db.story_by_id[npc:id()] == nil then
 			db.story_by_id[npc:id()] = {}

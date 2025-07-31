@@ -12,7 +12,7 @@ function get_smart_cover_cover_loophole_2_jump()
 
 	
 			transitions = {
-			--' Анимации входа в бойницы
+			--' РђРЅРёРјР°С†РёРё РІС…РѕРґР° РІ Р±РѕР№РЅРёС†С‹
 			{
 				vertex0 = "",
 				vertex1 = "lh_2",
@@ -32,7 +32,7 @@ function get_smart_cover_cover_loophole_2_jump()
 							}
 			},
 
-			--' Анимации выхода из бойниц.
+			--' РђРЅРёРјР°С†РёРё РІС‹С…РѕРґР° РёР· Р±РѕР№РЅРёС†.
 			{
 				vertex0 = "lh_2",
 				vertex1 = "",

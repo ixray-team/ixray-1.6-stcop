@@ -1,6 +1,6 @@
 --[[------------------------------------------------------------------------------------------------
 Helicopter look
-Андрущенко Иван
+РђРЅРґСЂСѓС‰РµРЅРєРѕ РРІР°РЅ
 
 --------------------------------------------------------------------------------------------------]]
 local heli_looker = {}
@@ -26,11 +26,11 @@ function heli_look:calc_look_point(dest_point, look_state)
     if look_state and dest_point then
         local heli = self.obj:get_helicopter()
         local dist_to_dest_point = heli:GetDistanceToDestPosition()
-	    local new_direction = vector():set(0,0,0)                             --' ед. вектор заданного направления
-	    local curr_heli_position = self.obj:position()						--' текущая позиция
-	    local curr_heli_direction = self.obj:direction()					--' единичный вектор текущего направления
+	    local new_direction = vector():set(0,0,0)                             --' РµРґ. РІРµРєС‚РѕСЂ Р·Р°РґР°РЅРЅРѕРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ
+	    local curr_heli_position = self.obj:position()						--' С‚РµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ
+	    local curr_heli_direction = self.obj:direction()					--' РµРґРёРЅРёС‡РЅС‹Р№ РІРµРєС‚РѕСЂ С‚РµРєСѓС‰РµРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ
         local heli_velocity = heli:GetSpeedInDestPoint(0)
-	    local curr_heli_velocity = heli:GetCurrVelocity()					--' текущая скорость
+	    local curr_heli_velocity = heli:GetCurrVelocity()					--' С‚РµРєСѓС‰Р°СЏ СЃРєРѕСЂРѕСЃС‚СЊ
 
         new_direction.x = (dest_point.x - curr_heli_position.x)/dist_to_dest_point
         new_direction.y = (dest_point.y - curr_heli_position.y)/dist_to_dest_point

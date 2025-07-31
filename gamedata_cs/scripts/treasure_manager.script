@@ -48,11 +48,11 @@ function CTreasure:give_treasure()
 
 		news_manager.send_treasure(self.name)
 
-		--' Пометить на карте
+		--' РџРѕРјРµС‚РёС‚СЊ РЅР° РєР°СЂС‚Рµ
 		local text = "%c[255,238,155,23]"..game.translate_string(self.name).."\\n".."%c[default]"..game.translate_string(self.description)
 
 		level.map_add_object_spot_ser(obj.id, "treasure", text)
-		--' Сгенерить вещи
+		--' РЎРіРµРЅРµСЂРёС‚СЊ РІРµС‰Рё
 		if self.items then
 	        for kk,vv in pairs(self.items) do
 	            if ammo_section[vv.section] == true then
@@ -73,7 +73,7 @@ function CTreasure:give_treasure()
 	            end
 	        end
 		end
-		--' Пометим тайник как выданный
+		--' РџРѕРјРµС‚РёРј С‚Р°Р№РЅРёРє РєР°Рє РІС‹РґР°РЅРЅС‹Р№
 		self.active = true
 	else
 		printf("TREASURE [%s], target doesnt exist", self.section)
@@ -111,13 +111,13 @@ function use(npc)
 	for k,v in pairs(treasures) do
 --[[
 		printf("found treasure %s", tostring(v.section))
-		-- Проверить доступность по кондлисту.
+		-- РџСЂРѕРІРµСЂРёС‚СЊ РґРѕСЃС‚СѓРїРЅРѕСЃС‚СЊ РїРѕ РєРѕРЅРґР»РёСЃС‚Сѓ.
 		printf("    condlist %s", tostring(xr_logic.pick_section_from_condlist(db.actor, npc, v.condlist)))
-		-- Проверить доступность по рангу.
+		-- РџСЂРѕРІРµСЂРёС‚СЊ РґРѕСЃС‚СѓРїРЅРѕСЃС‚СЊ РїРѕ СЂР°РЅРіСѓ.
 		printf("    rank %s", tostring(v:check_rank_and_community(npc)))
-		-- Проверить не выдан ли он уже.
+		-- РџСЂРѕРІРµСЂРёС‚СЊ РЅРµ РІС‹РґР°РЅ Р»Рё РѕРЅ СѓР¶Рµ.
 		printf("    active %s", tostring(v.active))
-		-- Проверить не выдан ли другой тайник на этот же таргет.
+		-- РџСЂРѕРІРµСЂРёС‚СЊ РЅРµ РІС‹РґР°РЅ Р»Рё РґСЂСѓРіРѕР№ С‚Р°Р№РЅРёРє РЅР° СЌС‚РѕС‚ Р¶Рµ С‚Р°СЂРіРµС‚.
 		printf("    used %s", tostring(v:check_for_used_target()))
 		printf("    cost=%d", v.treasure_cost)
 ]]
@@ -163,7 +163,7 @@ end
 function load_treasures()
 	local treasure_ini = ini_file("misc\\treasure_manager.ltx")
 
-	--' Итерируемся по списку тем.
+	--' РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ СЃРїРёСЃРєСѓ С‚РµРј.
     if not treasure_ini:section_exist("list") then
 		abort("There is no section [list] in treasure_manager.ltx")
 	end
@@ -171,7 +171,7 @@ function load_treasures()
 	local id, value = "",""
 	local category = ""
 
-	--' начальная установка
+	--' РЅР°С‡Р°Р»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР°
 	treasures = {}
 
 	for i=0,n-1 do
@@ -200,7 +200,7 @@ function load(thread)
 	end
 	set_save_marker(thread, "load", true, "treasure_manager")
 end
--- Функция для выдачи тайника из xr_effect-ов.
+-- Р¤СѓРЅРєС†РёСЏ РґР»СЏ РІС‹РґР°С‡Рё С‚Р°Р№РЅРёРєР° РёР· xr_effect-РѕРІ.
 function give_treasure(treasure_id)
 	if treasures[treasure_id] ~= nil then
 		if treasures[treasure_id].active ~= true then

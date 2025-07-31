@@ -1,12 +1,12 @@
 ----------------------------------------------------------------------------------------------------------------------
---  Айдишники саундов
---  последнее обновление: 02.06.2004
+--  РђР№РґРёС€РЅРёРєРё СЃР°СѓРЅРґРѕРІ
+--  РїРѕСЃР»РµРґРЅРµРµ РѕР±РЅРѕРІР»РµРЅРёРµ: 02.06.2004
 ----------------------------------------------------------------------------------------------------------------------
 
--- Глобальные
+-- Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ
 global_sounds = stalker_ids.sound_script
 
---Сидорович
+--РЎРёРґРѕСЂРѕРІРёС‡
 sound_sidor_base    =   global_sounds + 1000
 
 sound_patrol_base   =   sound_sidor_base + 0
@@ -14,7 +14,7 @@ sound_wounded_base  =   sound_sidor_base + 10
 sound_report_base   =   sound_sidor_base + 30
 
 
--- Стохе
+-- РЎС‚РѕС…Рµ
 sound_stohe_base            = global_sounds + 2000
 stohe_kamp_base             = sound_stohe_base + 0
 stohe_tradeseller_base      = sound_stohe_base + 10
@@ -23,17 +23,17 @@ stohe_reaction_base         = sound_stohe_base + 30
 stohe_bobik_base            = sound_stohe_base + 40
 stohe_sleep_base            = sound_stohe_base + 50
 
--- Змей
+-- Р—РјРµР№
 sound_zmey_base             =   global_sounds + 3000
 zmey_guard_base             = sound_zmey_base + 0
 zmey_robber_base            = sound_zmey_base + 100
-zmey_robber_stop            = --[[zmey_robber_base +]] 0 -- Стоять!
-zmey_robber_do_not_move     = --[[zmey_robber_base +]] 1 -- Не двигаться!
-zmey_robber_drop_weap       = --[[zmey_robber_base +]] 2 -- Бросай ствол, коли жить охота
-zmey_robber_drop_weap_2     = --[[zmey_robber_base +]] 3 -- Брось оружие, кому говорю!
-zmey_robber_will_kill       = --[[zmey_robber_base +]] 4 -- Еще двинешься, убью
-zmey_robber_do_what_i_say   = --[[zmey_robber_base +]] 5 -- Молодец, будешь жить
-zmey_robber_will_shoot      = --[[zmey_robber_base +]] 6 -- Пристрелю!
+zmey_robber_stop            = --[[zmey_robber_base +]] 0 -- РЎС‚РѕСЏС‚СЊ!
+zmey_robber_do_not_move     = --[[zmey_robber_base +]] 1 -- РќРµ РґРІРёРіР°С‚СЊСЃСЏ!
+zmey_robber_drop_weap       = --[[zmey_robber_base +]] 2 -- Р‘СЂРѕСЃР°Р№ СЃС‚РІРѕР», РєРѕР»Рё Р¶РёС‚СЊ РѕС…РѕС‚Р°
+zmey_robber_drop_weap_2     = --[[zmey_robber_base +]] 3 -- Р‘СЂРѕСЃСЊ РѕСЂСѓР¶РёРµ, РєРѕРјСѓ РіРѕРІРѕСЂСЋ!
+zmey_robber_will_kill       = --[[zmey_robber_base +]] 4 -- Р•С‰Рµ РґРІРёРЅРµС€СЊСЃСЏ, СѓР±СЊСЋ
+zmey_robber_do_what_i_say   = --[[zmey_robber_base +]] 5 -- РњРѕР»РѕРґРµС†, Р±СѓРґРµС€СЊ Р¶РёС‚СЊ
+zmey_robber_will_shoot      = --[[zmey_robber_base +]] 6 -- РџСЂРёСЃС‚СЂРµР»СЋ!
 zmey_camper_base            = sound_zmey_base + 150
 zmey_sleeper_base           = sound_zmey_base + 200
 zmey_talker_base            = sound_zmey_base + 250
@@ -43,7 +43,7 @@ zmey_robber_guard_base      = sound_zmey_base + 400
 zmey_scared_base            = sound_zmey_base + 450
 zmey_zoneguard_base         = sound_zmey_base + 500
 
--- Чугай
+-- Р§СѓРіР°Р№
 chugai_sounds          = global_sounds + 4000
 
 ambush_bad_weather     = chugai_sounds + 0

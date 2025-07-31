@@ -13,7 +13,7 @@ function get_smart_cover_cover_loophole_lead_forester_idle_talk()
 
 	
 			transitions = {
-			--' Анимации входа в бойницы
+			--' РђРЅРёРјР°С†РёРё РІС…РѕРґР° РІ Р±РѕР№РЅРёС†С‹
 			{
 				vertex0 = "",
 				vertex1 = "forester_idle",
@@ -51,7 +51,7 @@ function get_smart_cover_cover_loophole_lead_forester_idle_talk()
 							}
 			},
 			
-			--' Анимации перехода между бойницами
+			--' РђРЅРёРјР°С†РёРё РїРµСЂРµС…РѕРґР° РјРµР¶РґСѓ Р±РѕР№РЅРёС†Р°РјРё
 			
 			{
 				vertex0 = "forester_idle",
@@ -90,7 +90,7 @@ function get_smart_cover_cover_loophole_lead_forester_idle_talk()
 							}				
 			},
 
-			--' Анимации выхода из бойниц.
+			--' РђРЅРёРјР°С†РёРё РІС‹С…РѕРґР° РёР· Р±РѕР№РЅРёС†.
 			{
 				vertex0 = "forester_idle",
 				vertex1 = "",

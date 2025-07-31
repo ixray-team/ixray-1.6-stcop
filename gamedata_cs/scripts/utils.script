@@ -1,41 +1,41 @@
 
 --[[
-ОПИСАНИЕ ФУНКЦИЙ
+РћРџРРЎРђРќРР• Р¤РЈРќРљР¦РР™
 
--- Выводит отладочное сообщение в лог, если скрипт активен (активный скрипт выбирается с помощью
--- переменной debug_info.trace_script).
+-- Р’С‹РІРѕРґРёС‚ РѕС‚Р»Р°РґРѕС‡РЅРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ РІ Р»РѕРі, РµСЃР»Рё СЃРєСЂРёРїС‚ Р°РєС‚РёРІРµРЅ (Р°РєС‚РёРІРЅС‹Р№ СЃРєСЂРёРїС‚ РІС‹Р±РёСЂР°РµС‚СЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ
+-- РїРµСЂРµРјРµРЅРЅРѕР№ debug_info.trace_script).
 function trace(script_name, fmt, ...)
 
--- Переводит переменную любого типа (включая nil) в строку. Используется для отладочного вывода информации.
+-- РџРµСЂРµРІРѕРґРёС‚ РїРµСЂРµРјРµРЅРЅСѓСЋ Р»СЋР±РѕРіРѕ С‚РёРїР° (РІРєР»СЋС‡Р°СЏ nil) РІ СЃС‚СЂРѕРєСѓ. РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РѕС‚Р»Р°РґРѕС‡РЅРѕРіРѕ РІС‹РІРѕРґР° РёРЅС„РѕСЂРјР°С†РёРё.
 function to_str(what)
 
--- Создает и возвращает копию вектора
+-- РЎРѕР·РґР°РµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ РІРµРєС‚РѕСЂР°
 function vector_copy_by_val(vec)
 
--- Настройка параметров игровых объектов:
+-- РќР°СЃС‚СЂРѕР№РєР° РїР°СЂР°РјРµС‚СЂРѕРІ РёРіСЂРѕРІС‹С… РѕР±СЉРµРєС‚РѕРІ:
 function cfg_get_bool(char_ini, section, field, object, mandatory, default_val)
 function cfg_get_string(char_ini, section, field, object, mandatory, gulag_name, default_val)
 function cfg_get_number(char_ini, section, field, object, mandatory, default_val)
 
--- Проверяет, находится ли stalker рядом с точкой path_point пути patrol_path
+-- РџСЂРѕРІРµСЂСЏРµС‚, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё stalker СЂСЏРґРѕРј СЃ С‚РѕС‡РєРѕР№ path_point РїСѓС‚Рё patrol_path
 function stalker_at_waypoint(stalker, patrol_path, path_point)
 
--- Послать stalker в заданную точку patrol_path(path_point)
+-- РџРѕСЃР»Р°С‚СЊ stalker РІ Р·Р°РґР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ patrol_path(path_point)
 function stalker_go_to_waypoint(stalker, patrol_path, path_point)
 
 --]]
 
 ----------------------------------------------------------------------------------------------------
 
--- Выводит отладочное сообщение в лог, если скрипт активен (активный скрипт выбирается с помощью
--- переменной debug_info.trace_script).
+-- Р’С‹РІРѕРґРёС‚ РѕС‚Р»Р°РґРѕС‡РЅРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ РІ Р»РѕРі, РµСЃР»Рё СЃРєСЂРёРїС‚ Р°РєС‚РёРІРµРЅ (Р°РєС‚РёРІРЅС‹Р№ СЃРєСЂРёРїС‚ РІС‹Р±РёСЂР°РµС‚СЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ
+-- РїРµСЂРµРјРµРЅРЅРѕР№ debug_info.trace_script).
 --function trace(script_name, fmt, ...)
 --	if debug_info.trace_script == script_name then
 --		log(string.format("[TRACE] " .. script_name .. ".script: " .. fmt, unpack(arg)))
 --	end
 --end
 
--- Переводит переменную любого типа (включая nil) в строку. Используется для отладочного вывода информации.
+-- РџРµСЂРµРІРѕРґРёС‚ РїРµСЂРµРјРµРЅРЅСѓСЋ Р»СЋР±РѕРіРѕ С‚РёРїР° (РІРєР»СЋС‡Р°СЏ nil) РІ СЃС‚СЂРѕРєСѓ. РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РѕС‚Р»Р°РґРѕС‡РЅРѕРіРѕ РІС‹РІРѕРґР° РёРЅС„РѕСЂРјР°С†РёРё.
 function to_str(what)
 	if what == nil then
 		return "<nil>"
@@ -44,11 +44,11 @@ function to_str(what)
 	end
 end
 
---'Копирование таблицы по значению
+--'РљРѕРїРёСЂРѕРІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РїРѕ Р·РЅР°С‡РµРЅРёСЋ
 function copy_table(dest, src)
 	for k,v in pairs(src) do
 		if type(v) == "table" then
-			--' рекурсивный вызов себя же для подтаблиц
+			--' СЂРµРєСѓСЂСЃРёРІРЅС‹Р№ РІС‹Р·РѕРІ СЃРµР±СЏ Р¶Рµ РґР»СЏ РїРѕРґС‚Р°Р±Р»РёС†
 			dest[k] = {}
 			copy_table(dest[k], v)
 		else
@@ -88,7 +88,7 @@ function print_table()
 	end
 end
 
---' Возвращает расстояние между двумя точками графа с учетом разности уровней
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ РґРІСѓРјСЏ С‚РѕС‡РєР°РјРё РіСЂР°С„Р° СЃ СѓС‡РµС‚РѕРј СЂР°Р·РЅРѕСЃС‚Рё СѓСЂРѕРІРЅРµР№
 function graph_distance(vid1, vid2)
 	local p1 = game_graph():vertex(vid1):game_point()
 	local p2 = game_graph():vertex(vid2):game_point()
@@ -98,12 +98,12 @@ function graph_distance(vid1, vid2)
 	return game_graph():vertex(vid1):game_point():distance_to(game_graph():vertex(vid2):game_point())
 end
 
---' Сравнивает два вектора
+--' РЎСЂР°РІРЅРёРІР°РµС‚ РґРІР° РІРµРєС‚РѕСЂР°
 function vector_cmp(a, b)
 		return a.x == b.x and a.y == b.y and a.z == b.z
 end
 
---' Сравнивает два вектора с заданной погрешностью
+--' РЎСЂР°РІРЅРёРІР°РµС‚ РґРІР° РІРµРєС‚РѕСЂР° СЃ Р·Р°РґР°РЅРЅРѕР№ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊСЋ
 function vector_cmp_prec(a, b, d)
 		return math.abs(a.x - b.x) <= d and
 					 math.abs(a.y - b.y) <= d and
@@ -111,7 +111,7 @@ function vector_cmp_prec(a, b, d)
 end
 
 
--- Создает и возвращает копию вектора
+-- РЎРѕР·РґР°РµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ РІРµРєС‚РѕСЂР°
 function vector_copy_by_val(vec)
 --[[
 	local newvec = vector()
@@ -123,15 +123,15 @@ function vector_copy_by_val(vec)
 	return vector():set(vec)
 end
 
--- Настройка параметра типа bool у игрового объекта.
+-- РќР°СЃС‚СЂРѕР№РєР° РїР°СЂР°РјРµС‚СЂР° С‚РёРїР° bool Сѓ РёРіСЂРѕРІРѕРіРѕ РѕР±СЉРµРєС‚Р°.
 --
--- char_ini - указатель на customdata (обычно object:spawn_ini())
--- section - имя секции в customdata
--- field - имя поля в customdata
--- object - игровой объект, от которого будет взято имя для сообщения об ошибке
--- mandatory - поле обязательно должно быть задано
+-- char_ini - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° customdata (РѕР±С‹С‡РЅРѕ object:spawn_ini())
+-- section - РёРјСЏ СЃРµРєС†РёРё РІ customdata
+-- field - РёРјСЏ РїРѕР»СЏ РІ customdata
+-- object - РёРіСЂРѕРІРѕР№ РѕР±СЉРµРєС‚, РѕС‚ РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґРµС‚ РІР·СЏС‚Рѕ РёРјСЏ РґР»СЏ СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕС€РёР±РєРµ
+-- mandatory - РїРѕР»Рµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ Р·Р°РґР°РЅРѕ
 --
--- Возвращает true или false
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ true РёР»Рё false
 function cfg_get_bool(char_ini, section, field, object, mandatory, default_val)
 	if mandatory == nil then
 		abort("section '%s': wrong arguments order in call to cfg_get_bool", section)
@@ -219,7 +219,7 @@ function mob_get_bool(char_ini, section, field, override, object, mandatory, def
 	return cfg_get_bool(char_ini, section, field, object, mandatory, default_val)
 end
 
--- Проверяет, находится ли stalker рядом с точкой path_point пути patrol_path
+-- РџСЂРѕРІРµСЂСЏРµС‚, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё stalker СЂСЏРґРѕРј СЃ С‚РѕС‡РєРѕР№ path_point РїСѓС‚Рё patrol_path
 function stalker_at_waypoint(stalker, patrol_path, path_point)
 --	return stalker:level_vertex_id() == patrol_path:level_vertex_id(path_point)
 
@@ -232,7 +232,7 @@ function stalker_at_waypoint(stalker, patrol_path, path_point)
 
 end
 
--- Послать stalker в заданную точку patrol_path(path_point)
+-- РџРѕСЃР»Р°С‚СЊ stalker РІ Р·Р°РґР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ patrol_path(path_point)
 --[[
 function stalker_go_to_waypoint(stalker, patrol_path, path_point)
 	if stalker:animation_count() > 0 then
@@ -308,7 +308,7 @@ function door_init(door)
 	door:set_use_callback(door_default_callback)
 end
 
--- Дверь door импульсом захлопнется и залочится, при юзе будет вызываться callback_fn
+-- Р”РІРµСЂСЊ door РёРјРїСѓР»СЊСЃРѕРј Р·Р°С…Р»РѕРїРЅРµС‚СЃСЏ Рё Р·Р°Р»РѕС‡РёС‚СЃСЏ, РїСЂРё СЋР·Рµ Р±СѓРґРµС‚ РІС‹Р·С‹РІР°С‚СЊСЃСЏ callback_fn
 function door_close_then_lock(door, callback_fn)
 	local ph_shell = door:get_physics_shell()
 	local joint = ph_shell:get_joint_by_bone_name("door")
@@ -324,10 +324,10 @@ function door_close_then_lock(door, callback_fn)
 	end
 end
 
---unlock_then_open(door) -- дверь разлочится и импульсом откроется
---locked(door) -- true, если дверь закрыта и залочена
+--unlock_then_open(door) -- РґРІРµСЂСЊ СЂР°Р·Р»РѕС‡РёС‚СЃСЏ Рё РёРјРїСѓР»СЊСЃРѕРј РѕС‚РєСЂРѕРµС‚СЃСЏ
+--locked(door) -- true, РµСЃР»Рё РґРІРµСЂСЊ Р·Р°РєСЂС‹С‚Р° Рё Р·Р°Р»РѕС‡РµРЅР°
 
---При попытке поюзать незапертую дверь она просто силой открывается до максимально допустимого состояния.
+--РџСЂРё РїРѕРїС‹С‚РєРµ РїРѕСЋР·Р°С‚СЊ РЅРµР·Р°РїРµСЂС‚СѓСЋ РґРІРµСЂСЊ РѕРЅР° РїСЂРѕСЃС‚Рѕ СЃРёР»РѕР№ РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ РґРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕ РґРѕРїСѓСЃС‚РёРјРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ.
 
 function parse_waypoint_data(pathname, wpflags, wpname)
 	local rslt = {}
@@ -518,17 +518,17 @@ function no_need_to_rotate_xz(npc, target_pos)
 	return y < 0.3
 end
 
--- Перевод угла из радианов в градусы
+-- РџРµСЂРµРІРѕРґ СѓРіР»Р° РёР· СЂР°РґРёР°РЅРѕРІ РІ РіСЂР°РґСѓСЃС‹
 function rad2deg(r)
 	return r * 180.0 / math.pi
 end
 
--- Перевод угла из градусов в радианы
+-- РџРµСЂРµРІРѕРґ СѓРіР»Р° РёР· РіСЂР°РґСѓСЃРѕРІ РІ СЂР°РґРёР°РЅС‹
 function deg2rad(d)
 	return d * math.pi / 180.0
 end
 
--- угол между двумя векторами в градусах.
+-- СѓРіРѕР» РјРµР¶РґСѓ РґРІСѓРјСЏ РІРµРєС‚РѕСЂР°РјРё РІ РіСЂР°РґСѓСЃР°С….
 function angle_diff(a1, a2)
 	local b1 = a1:normalize()
 	local b2 = a2:normalize()
@@ -537,7 +537,7 @@ function angle_diff(a1, a2)
 	return rad2deg(math.acos(math.abs(dotp)))
 end
 
--- true, если нужно поворачивать влево
+-- true, РµСЃР»Рё РЅСѓР¶РЅРѕ РїРѕРІРѕСЂР°С‡РёРІР°С‚СЊ РІР»РµРІРѕ
 function angle_left(dir1, dir2)
 	local dir_res = vector()
 	dir_res:crossproduct(dir1, dir2)
@@ -574,14 +574,14 @@ function npc_in_zone(npc, zone)
 	return npc ~= nil and zone ~= nil and zone:inside(npc:position())
 end
 
-------------------------- запись/загрузка CTime ---------------------------
+------------------------- Р·Р°РїРёСЃСЊ/Р·Р°РіСЂСѓР·РєР° CTime ---------------------------
 local CTime_0
 
 if not editor() then
 	CTime_0 = game.CTime()
 end
 
--- запись CTime в пакет. если t=nil, то запишет один нулевой байт
+-- Р·Р°РїРёСЃСЊ CTime РІ РїР°РєРµС‚. РµСЃР»Рё t=nil, С‚Рѕ Р·Р°РїРёС€РµС‚ РѕРґРёРЅ РЅСѓР»РµРІРѕР№ Р±Р°Р№С‚
 function w_CTime( p, t )
 	--set_save_marker(p, "save", false, "CTIME")
 	if t == nil then
@@ -607,7 +607,7 @@ function w_CTime( p, t )
 	--set_save_marker(p, "save", true, "CTIME")
 end
 
--- чтение CTime из пакета
+-- С‡С‚РµРЅРёРµ CTime РёР· РїР°РєРµС‚Р°
 function r_CTime( p )
 	--set_save_marker(p, "load", false, "CTIME")
 	local Y = p:r_u8()
@@ -629,8 +629,8 @@ function r_CTime( p )
 end
 ---------------------------------------------------------------------------
 
--- отослать в ближайшую разрешённую ноду по направлению к заданной.
--- возвращает vertex_id, в которое отправил персонажа
+-- РѕС‚РѕСЃР»Р°С‚СЊ РІ Р±Р»РёР¶Р°Р№С€СѓСЋ СЂР°Р·СЂРµС€С‘РЅРЅСѓСЋ РЅРѕРґСѓ РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ Рє Р·Р°РґР°РЅРЅРѕР№.
+-- РІРѕР·РІСЂР°С‰Р°РµС‚ vertex_id, РІ РєРѕС‚РѕСЂРѕРµ РѕС‚РїСЂР°РІРёР» РїРµСЂСЃРѕРЅР°Р¶Р°
 function send_to_nearest_accessible_vertex( npc, v_id )
 	if not npc:accessible( v_id ) then
 		local vtemp = vector()
@@ -643,8 +643,8 @@ function send_to_nearest_accessible_vertex( npc, v_id )
 	return v_id
 end
 
--- происходит ли в данный момент смена уровня?
--- нужно для того, чтобы объекты знали, какую информацию записывать при сохранении, а какую нет
+-- РїСЂРѕРёСЃС…РѕРґРёС‚ Р»Рё РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ СЃРјРµРЅР° СѓСЂРѕРІРЅСЏ?
+-- РЅСѓР¶РЅРѕ РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РѕР±СЉРµРєС‚С‹ Р·РЅР°Р»Рё, РєР°РєСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Р·Р°РїРёСЃС‹РІР°С‚СЊ РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё, Р° РєР°РєСѓСЋ РЅРµС‚
 function level_changing()
 	local sim = alife()
 
@@ -685,7 +685,7 @@ end
 
 
 
---' Вычитка свойств для спауна объектов.
+--' Р’С‹С‡РёС‚РєР° СЃРІРѕР№СЃС‚РІ РґР»СЏ СЃРїР°СѓРЅР° РѕР±СЉРµРєС‚РѕРІ.
 function parse_names(s)
 		local t = {}
 		for name in string.gfind( s, "([%w_%-.\\]+)%p*" ) do
@@ -695,7 +695,7 @@ function parse_names(s)
 end
 
 function parse_spawns(str)
-	--' если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
+	--' РµСЃР»Рё default-РѕРІ Р±РѕР»СЊС€Рµ, С‡РµРј Р·РЅР°С‡РµРЅРёР№ РІ ini, С‚Рѕ Р·Р°Р±РёС‚СЊ РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ РїРѕСЃР»РµРґРЅРёРј Р·РЅР°С‡РµРЅРёРµРј РёР· ini
 	local t = utils.parse_names(str)
 	local n = #t
 
@@ -704,16 +704,16 @@ function parse_spawns(str)
 	while k <= n do
 		local spawn = {}
 		spawn.section = t[k]
-		--' Проверяем что это не последняя запись
+		--' РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ СЌС‚Рѕ РЅРµ РїРѕСЃР»РµРґРЅСЏСЏ Р·Р°РїРёСЃСЊ
 		if t[k+1] ~= nil then
 			local p = tonumber(t[k+1])
-			--' проверяем что вторым числом задана вероятность, а не другая секция спавну
+			--' РїСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ РІС‚РѕСЂС‹Рј С‡РёСЃР»РѕРј Р·Р°РґР°РЅР° РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ, Р° РЅРµ РґСЂСѓРіР°СЏ СЃРµРєС†РёСЏ СЃРїР°РІРЅСѓ
 			if p then
-				--' забиваем число
+				--' Р·Р°Р±РёРІР°РµРј С‡РёСЃР»Рѕ
 				spawn.prob = p
 				k = k + 2
 			else
-				--' забиваем дефолт 1
+				--' Р·Р°Р±РёРІР°РµРј РґРµС„РѕР»С‚ 1
 				spawn.prob = 1
 				k = k + 1
 			end
@@ -729,7 +729,7 @@ end
 
 function r_2nums( spawn_ini, section, line, def1, def2 )
 	if spawn_ini:line_exist( section, line ) then
-		-- если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
+		-- РµСЃР»Рё default-РѕРІ Р±РѕР»СЊС€Рµ, С‡РµРј Р·РЅР°С‡РµРЅРёР№ РІ ini, С‚Рѕ Р·Р°Р±РёС‚СЊ РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ РїРѕСЃР»РµРґРЅРёРј Р·РЅР°С‡РµРЅРёРµРј РёР· ini
 		local t = utils.parse_names( spawn_ini:r_string( section, line ) )
 		local n = #t
 

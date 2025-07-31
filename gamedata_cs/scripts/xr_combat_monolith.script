@@ -1,6 +1,6 @@
 --[[----------------------------------------------------------------------------------------------------------
-Боевая схема сталкеров группировки "Монолит"
-Чугай Александр
+Р‘РѕРµРІР°СЏ СЃС…РµРјР° СЃС‚Р°Р»РєРµСЂРѕРІ РіСЂСѓРїРїРёСЂРѕРІРєРё "РњРѕРЅРѕР»РёС‚"
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 ------------------------------------------------------------------------------------------------------------]]
 
 local base = xr_evaluators_id.combat_monolith_base
@@ -91,7 +91,7 @@ function action_fight_close:finalize()
 	action_base.finalize( self )
 end
 
--- Внимание: вызывается во всех actions
+-- Р’РЅРёРјР°РЅРёРµ: РІС‹Р·С‹РІР°РµС‚СЃСЏ РІРѕ РІСЃРµС… actions
 function action_fight_close:hit_callback( obj, amount, local_direction, who, bone_index )
 	if who == nil then	
 		return
@@ -99,7 +99,7 @@ function action_fight_close:hit_callback( obj, amount, local_direction, who, bon
 
 	local be = self.object and self.object:best_enemy()
 
-	-- если получили хит от текущего врага, то мы знаем, где он
+	-- РµСЃР»Рё РїРѕР»СѓС‡РёР»Рё С…РёС‚ РѕС‚ С‚РµРєСѓС‰РµРіРѕ РІСЂР°РіР°, С‚Рѕ РјС‹ Р·РЅР°РµРј, РіРґРµ РѕРЅ
 	if be and who:id() == be:id() then
 		self.st.last_seen_vert_id = be:level_vertex_id()
 	end
@@ -241,7 +241,7 @@ function add_to_binder( npc, ini, st, planner )
 	action:add_effect      ( world_property( stalker_ids.property_enemy,     false ) )
 	planner:add_action( act_fight_close, action )
 
-	-- подписываем один, работает во всех!
+	-- РїРѕРґРїРёСЃС‹РІР°РµРј РѕРґРёРЅ, СЂР°Р±РѕС‚Р°РµС‚ РІРѕ РІСЃРµС…!
 	xr_logic.subscribe_action_for_events( npc, st, action )
 
 	action = action_fight_far( "combat_monolith_fight_far", st )

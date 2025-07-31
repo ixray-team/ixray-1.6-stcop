@@ -1,13 +1,13 @@
 --'******************************************************
---'*        Реестр смарт-террейнов. Игровое поле симуляции.
+--'*        Р РµРµСЃС‚СЂ СЃРјР°СЂС‚-С‚РµСЂСЂРµР№РЅРѕРІ. РРіСЂРѕРІРѕРµ РїРѕР»Рµ СЃРёРјСѓР»СЏС†РёРё.
 --'******************************************************
 
---' В этом ltx хранятся дескрипторы сквадов.
+--' Р’ СЌС‚РѕРј ltx С…СЂР°РЅСЏС‚СЃСЏ РґРµСЃРєСЂРёРїС‚РѕСЂС‹ СЃРєРІР°РґРѕРІ.
 squad_ltx = ini_file("misc\\squad_descr.ltx")
 
 local board = nil
 
---' Таблица соответствий сквадов уровням.
+--' РўР°Р±Р»РёС†Р° СЃРѕРѕС‚РІРµС‚СЃС‚РІРёР№ СЃРєРІР°РґРѕРІ СѓСЂРѕРІРЅСЏРј.
 squad_by_level = {
         stohe_selo = 1,
         marsh = 2,
@@ -64,7 +64,7 @@ local actor_communitites = {
         stalker         = "actor_stalker",
         none			= "actor"
 }
---' Активность группировок по времени суток. В таблицах забито повышение за 1 час ожидания.
+--' РђРєС‚РёРІРЅРѕСЃС‚СЊ РіСЂСѓРїРїРёСЂРѕРІРѕРє РїРѕ РІСЂРµРјРµРЅРё СЃСѓС‚РѕРє. Р’ С‚Р°Р±Р»РёС†Р°С… Р·Р°Р±РёС‚Рѕ РїРѕРІС‹С€РµРЅРёРµ Р·Р° 1 С‡Р°СЃ РѕР¶РёРґР°РЅРёСЏ.
 faction_activity = {
         csky        = { [00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
                         [06] = 00, [07] = 00, [08] = 00, [09] = 01, [10] = 01, [11] = 01,
@@ -124,40 +124,40 @@ faction_activity = {
 }
 
 function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive, front)
--- Высчитываем вес проверяемой точки (Потом вставить увеличение веса в зависимости от занятости поинта)
+-- Р’С‹СЃС‡РёС‚С‹РІР°РµРј РІРµСЃ РїСЂРѕРІРµСЂСЏРµРјРѕР№ С‚РѕС‡РєРё (РџРѕС‚РѕРј РІСЃС‚Р°РІРёС‚СЊ СѓРІРµР»РёС‡РµРЅРёРµ РІРµСЃР° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ Р·Р°РЅСЏС‚РѕСЃС‚Рё РїРѕРёРЅС‚Р°)
 	local board = get_sim_board()
     local point_value = prev_point.value
--- Если точка запрещена для нашего вида
+-- Р•СЃР»Рё С‚РѕС‡РєР° Р·Р°РїСЂРµС‰РµРЅР° РґР»СЏ РЅР°С€РµРіРѕ РІРёРґР°
     if point.forbidden_point ~= nil and point.forbidden_point == squad.player_id then
 	    point_value = point_value + 3000
     elseif (sim_level_cluster[point.smart_level] == sim_level_cluster[board.smarts[src_smart_id].smrt.smart_level]) and
 	    is_point_avail(point, squad.player_id) then
--- Если точка доступна и она в одном кластере с нами
+-- Р•СЃР»Рё С‚РѕС‡РєР° РґРѕСЃС‚СѓРїРЅР° Рё РѕРЅР° РІ РѕРґРЅРѕРј РєР»Р°СЃС‚РµСЂРµ СЃ РЅР°РјРё
 	    if point.player_name == "none" then
-            -- точка ничья
+            -- С‚РѕС‡РєР° РЅРёС‡СЊСЏ
             point_value = point_value + 1
             local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id])
             if friendly_squad_quan >= point.squad_capacity then
                 point_value = point_value + 1000
             end
         elseif point.player_name == squad.player_id then
-            -- точка наша
+            -- С‚РѕС‡РєР° РЅР°С€Р°
             local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id]) + board:get_smart_population(point)
             if friendly_squad_quan < point.squad_capacity then
-                -- Если точка наша и есть пустые места - вес 1
+                -- Р•СЃР»Рё С‚РѕС‡РєР° РЅР°С€Р° Рё РµСЃС‚СЊ РїСѓСЃС‚С‹Рµ РјРµСЃС‚Р° - РІРµСЃ 1
                 point_value = point_value + 1
             else
-                -- Если точка наша и пустых мест нет - вес 1000
+                -- Р•СЃР»Рё С‚РѕС‡РєР° РЅР°С€Р° Рё РїСѓСЃС‚С‹С… РјРµСЃС‚ РЅРµС‚ - РІРµСЃ 1000
                 point_value = point_value + 1000
             end
         else
         	if game_relations.is_factions_enemies(squad.player_id, point.player_name) then
-		        -- точка врага
+		        -- С‚РѕС‡РєР° РІСЂР°РіР°
 	            local enemy_power = 0
 	            for k,v in pairs(board.smarts[point.id].squads) do
 	                enemy_power = enemy_power + v.squad_power
 	            end
-	            -- Вес точки увеличиваем на силу вражеских отрядов в точке
+	            -- Р’РµСЃ С‚РѕС‡РєРё СѓРІРµР»РёС‡РёРІР°РµРј РЅР° СЃРёР»Сѓ РІСЂР°Р¶РµСЃРєРёС… РѕС‚СЂСЏРґРѕРІ РІ С‚РѕС‡РєРµ
 	            point_value = point_value + enemy_power
 	            if point.combat_manager:point_under_attack() then
 	                point_value = point_value + 100
@@ -171,23 +171,23 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
 	        end
         end
     else
--- Если точка закрыта для симуляции - назначаем максимальный вес.
+-- Р•СЃР»Рё С‚РѕС‡РєР° Р·Р°РєСЂС‹С‚Р° РґР»СЏ СЃРёРјСѓР»СЏС†РёРё - РЅР°Р·РЅР°С‡Р°РµРј РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РІРµСЃ.
         point_value = point_value + 2000
     end
 
--- Если это финальная точка - путь найден, выходим.
+-- Р•СЃР»Рё СЌС‚Рѕ С„РёРЅР°Р»СЊРЅР°СЏ С‚РѕС‡РєР° - РїСѓС‚СЊ РЅР°Р№РґРµРЅ, РІС‹С…РѕРґРёРј.
     if point.id == tgt_smart_id then
--- Найдена финальная точка!
+-- РќР°Р№РґРµРЅР° С„РёРЅР°Р»СЊРЅР°СЏ С‚РѕС‡РєР°!
         arhive[point.id] = {id = point.id, value = point_value, prev = prev_point.id}
         return true
     end
 
--- Если точка есть в архиве - игнорить.
+-- Р•СЃР»Рё С‚РѕС‡РєР° РµСЃС‚СЊ РІ Р°СЂС…РёРІРµ - РёРіРЅРѕСЂРёС‚СЊ.
     if arhive[point.id] ~= nil then
         return false
     end
 
--- Если точка есть в волне и текущее значение меньше чем в волне - изменить значение. Иначе - игнорить.
+-- Р•СЃР»Рё С‚РѕС‡РєР° РµСЃС‚СЊ РІ РІРѕР»РЅРµ Рё С‚РµРєСѓС‰РµРµ Р·РЅР°С‡РµРЅРёРµ РјРµРЅСЊС€Рµ С‡РµРј РІ РІРѕР»РЅРµ - РёР·РјРµРЅРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ. РРЅР°С‡Рµ - РёРіРЅРѕСЂРёС‚СЊ.
     local exist = false
     for k,v in pairs(front) do
         if v.id == point.id then
@@ -203,13 +203,13 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
         return false
     end
 
--- Если точки нет в волне - добавить.
+-- Р•СЃР»Рё С‚РѕС‡РєРё РЅРµС‚ РІ РІРѕР»РЅРµ - РґРѕР±Р°РІРёС‚СЊ.
     table.insert(front, {id = point.id, value = point_value, prev = prev_point.id})
     return false
 end
 
 function iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
--- Сортируем архив граничных точек и берем с минимальным весом.
+-- РЎРѕСЂС‚РёСЂСѓРµРј Р°СЂС…РёРІ РіСЂР°РЅРёС‡РЅС‹С… С‚РѕС‡РµРє Рё Р±РµСЂРµРј СЃ РјРёРЅРёРјР°Р»СЊРЅС‹Рј РІРµСЃРѕРј.
 	local board = get_sim_board()
     table.sort(front, function(a,b) return a.value < b.value end)
 
@@ -220,7 +220,7 @@ function iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
         abort("Path between [%s] and [%s] doesnt exist for [%s].", src_smart_name, tgt_smart_name, squad.squad_id)
     end
 
--- Берем соседние смарты.
+-- Р‘РµСЂРµРј СЃРѕСЃРµРґРЅРёРµ СЃРјР°СЂС‚С‹.
     local nearest_points = board:get_nearest_smarts(next_point)
     for k,v in pairs(nearest_points) do
         if calc_point(v, next_point, squad, src_smart_id, tgt_smart_id, arhive, front) == true then
@@ -228,7 +228,7 @@ function iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
             return true
         end
     end
--- Переносим точку в архив
+-- РџРµСЂРµРЅРѕСЃРёРј С‚РѕС‡РєСѓ РІ Р°СЂС…РёРІ
 	if next_point.id ~= src_smart_id then
         arhive[next_point.id] = front[1]
     end
@@ -253,30 +253,30 @@ function calc_conductor_point(point, prev_point, npc, src_smart_id, tgt_smart_id
     local community = npc:character_community()
 	local point_player = point.player_name
     if point_player == "none" then
-        -- точка ничья
+        -- С‚РѕС‡РєР° РЅРёС‡СЊСЏ
         point_value = point_value + 200
     elseif point_player == community then
-        -- точка наша
+        -- С‚РѕС‡РєР° РЅР°С€Р°
         point_value = point_value + 200
     else
         if game_relations.get_factions_community(point_player, community) < 0 then
-            -- точка врага
+            -- С‚РѕС‡РєР° РІСЂР°РіР°
             return false
         else
-            -- точка не вражеской фракции
+            -- С‚РѕС‡РєР° РЅРµ РІСЂР°Р¶РµСЃРєРѕР№ С„СЂР°РєС†РёРё
             point_value = point_value + 200
         end
     end
--- Если это финальная точка - путь найден, выходим.
+-- Р•СЃР»Рё СЌС‚Рѕ С„РёРЅР°Р»СЊРЅР°СЏ С‚РѕС‡РєР° - РїСѓС‚СЊ РЅР°Р№РґРµРЅ, РІС‹С…РѕРґРёРј.
     if point.id == tgt_smart_id then
         arhive[point.id] = {id = point.id, value = point_value, prev = prev_point.id}
         return true
     end
--- Если точка есть в архиве - игнорить.
+-- Р•СЃР»Рё С‚РѕС‡РєР° РµСЃС‚СЊ РІ Р°СЂС…РёРІРµ - РёРіРЅРѕСЂРёС‚СЊ.
     if arhive[point.id] ~= nil then
         return false
     end
--- Если точка есть в волне и текущее значение меньше чем в волне - изменить значение. Иначе - игнорить.
+-- Р•СЃР»Рё С‚РѕС‡РєР° РµСЃС‚СЊ РІ РІРѕР»РЅРµ Рё С‚РµРєСѓС‰РµРµ Р·РЅР°С‡РµРЅРёРµ РјРµРЅСЊС€Рµ С‡РµРј РІ РІРѕР»РЅРµ - РёР·РјРµРЅРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ. РРЅР°С‡Рµ - РёРіРЅРѕСЂРёС‚СЊ.
     local exist = false
     for k,v in pairs(front) do
         if v.id == point.id then
@@ -291,20 +291,20 @@ function calc_conductor_point(point, prev_point, npc, src_smart_id, tgt_smart_id
         end
         return false
     end
--- Если точки нет в волне - добавить.
+-- Р•СЃР»Рё С‚РѕС‡РєРё РЅРµС‚ РІ РІРѕР»РЅРµ - РґРѕР±Р°РІРёС‚СЊ.
     table.insert(front, {id = point.id, value = point_value, prev = prev_point.id})
     return false
 end
 
 function iterate_conductor_point(npc, src_smart_id, tgt_smart_id, arhive, front)
--- Сортируем архив граничных точек и берем с минимальным весом.
+-- РЎРѕСЂС‚РёСЂСѓРµРј Р°СЂС…РёРІ РіСЂР°РЅРёС‡РЅС‹С… С‚РѕС‡РµРє Рё Р±РµСЂРµРј СЃ РјРёРЅРёРјР°Р»СЊРЅС‹Рј РІРµСЃРѕРј.
 	local board = get_sim_board()
     table.sort(front, function(a,b) return a.value < b.value end)
     local next_point = front[1]
     if next_point == nil then
 		return false
     end
--- Берем соседние смарты.
+-- Р‘РµСЂРµРј СЃРѕСЃРµРґРЅРёРµ СЃРјР°СЂС‚С‹.
     local nearest_points = board:get_nearest_smarts(next_point)
     for k,v in pairs(nearest_points) do
         if calc_conductor_point(v, next_point, npc, src_smart_id, tgt_smart_id, arhive, front) == true then
@@ -312,7 +312,7 @@ function iterate_conductor_point(npc, src_smart_id, tgt_smart_id, arhive, front)
             return true
         end
     end
--- Переносим точку в архив
+-- РџРµСЂРµРЅРѕСЃРёРј С‚РѕС‡РєСѓ РІ Р°СЂС…РёРІ
 	if next_point.id ~= src_smart_id then
         arhive[next_point.id] = front[1]
     end
@@ -322,32 +322,32 @@ end
 
 class "sim_board"
 function sim_board:__init()
-        --' Таблица содержащая смарты и данные о них в формате:
+        --' РўР°Р±Р»РёС†Р° СЃРѕРґРµСЂР¶Р°С‰Р°СЏ СЃРјР°СЂС‚С‹ Рё РґР°РЅРЅС‹Рµ Рѕ РЅРёС… РІ С„РѕСЂРјР°С‚Рµ:
         --' smart = {smrt, targets = {}, dangers = {}, squads = {}, stayed_squad_quan = 0}
         self.smarts = {}
 		self.simulation_started = false
 
-        --' Таблица смартов по именам.
+        --' РўР°Р±Р»РёС†Р° СЃРјР°СЂС‚РѕРІ РїРѕ РёРјРµРЅР°Рј.
         self.smarts_by_names = {}
 
-        --' Таблица участвующих игроков.
+        --' РўР°Р±Р»РёС†Р° СѓС‡Р°СЃС‚РІСѓСЋС‰РёС… РёРіСЂРѕРєРѕРІ.
         self.players = {}
 
-        --' Таблица существующих отрядов.
+        --' РўР°Р±Р»РёС†Р° СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС… РѕС‚СЂСЏРґРѕРІ.
         self.squads = {}
 
-        --' отрисовывается ли сейчас поле на карте.
+        --' РѕС‚СЂРёСЃРѕРІС‹РІР°РµС‚СЃСЏ Р»Рё СЃРµР№С‡Р°СЃ РїРѕР»Рµ РЅР° РєР°СЂС‚Рµ.
 --'        self.show_flag = false
 
-        --' Генератор айдишников отряда
+        --' Р“РµРЅРµСЂР°С‚РѕСЂ Р°Р№РґРёС€РЅРёРєРѕРІ РѕС‚СЂСЏРґР°
         self.id_generator = object_collection.object_collection()
 
-        --' Таблица спаунсмартов. Смарт = уровень.
+        --' РўР°Р±Р»РёС†Р° СЃРїР°СѓРЅСЃРјР°СЂС‚РѕРІ. РЎРјР°СЂС‚ = СѓСЂРѕРІРµРЅСЊ.
         self.spawn_smarts = {}
-        -- Таблица для логовов мутантов на уровнях
+        -- РўР°Р±Р»РёС†Р° РґР»СЏ Р»РѕРіРѕРІРѕРІ РјСѓС‚Р°РЅС‚РѕРІ РЅР° СѓСЂРѕРІРЅСЏС…
         self.mutant_lair = {}
 
-        -- Временная таблица
+        -- Р’СЂРµРјРµРЅРЅР°СЏ С‚Р°Р±Р»РёС†Р°
         self.tmp_assigned_squad = {}
         self.tmp_entered_squad = {}
 
@@ -359,9 +359,9 @@ end
 function sim_board:stop_sim()
 	self.simulation_started = false
 end
--- Перевод игрока в группировку.
+-- РџРµСЂРµРІРѕРґ РёРіСЂРѕРєР° РІ РіСЂСѓРїРїРёСЂРѕРІРєСѓ.
 function sim_board:set_actor_community(community)
-    ---- Устанавливаем группировку игрока
+    ---- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РіСЂСѓРїРїРёСЂРѕРІРєСѓ РёРіСЂРѕРєР°
     db.actor:set_character_community(actor_communitites[community], 0, 0)
 	local tm = task_manager.get_task_manager()
 
@@ -370,7 +370,7 @@ function sim_board:set_actor_community(community)
             v.community_player = true
         else
             v.community_player = false
-            -- Обнуляем все квесты, которые выдала эта группировка
+            -- РћР±РЅСѓР»СЏРµРј РІСЃРµ РєРІРµСЃС‚С‹, РєРѕС‚РѕСЂС‹Рµ РІС‹РґР°Р»Р° СЌС‚Р° РіСЂСѓРїРїРёСЂРѕРІРєР°
 			for kk,vv in pairs(v.random_tasks) do
 				local task = tm:get_task_by_entity_id(vv)
 				task.last_check_task = "reversed"
@@ -379,7 +379,7 @@ function sim_board:set_actor_community(community)
         v.brain:calculate_expansion_targets()
     end
 end
---' Регистрация нового игрока.
+--' Р РµРіРёСЃС‚СЂР°С†РёСЏ РЅРѕРІРѕРіРѕ РёРіСЂРѕРєР°.
 function sim_board:register_player(obj)
         if self.players[obj.player_name] ~= nil then
                 abort("Player already exist in list [%s]", obj:name())
@@ -387,7 +387,7 @@ function sim_board:register_player(obj)
 
         self.players[obj.player_name] = obj
 end
---' АнРегистрация игрока.
+--' РђРЅР РµРіРёСЃС‚СЂР°С†РёСЏ РёРіСЂРѕРєР°.
 function sim_board:unregister_player(obj)
         if self.players[obj.player_name] == nil then
                 abort("Trying to unregister nil player [%s]", obj:name())
@@ -395,7 +395,7 @@ function sim_board:unregister_player(obj)
 
         self.players[obj.player_name] = nil
 end
---' Регистрация нового смарта.
+--' Р РµРіРёСЃС‚СЂР°С†РёСЏ РЅРѕРІРѕРіРѕ СЃРјР°СЂС‚Р°.
 function sim_board:register_smart(obj)
         printf("register_smart %s", obj:name())
         if self.smarts[obj.id] ~= nil then
@@ -413,7 +413,7 @@ function sim_board:register_smart(obj)
                 self:register_mutant_lair(obj)
         end
 end
--- Инициализация смарта
+-- РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРјР°СЂС‚Р°
 function sim_board:init_smart(obj)
         if self.tmp_assigned_squad[obj.id] ~= nil then
                 for k,v in pairs(self.tmp_assigned_squad[obj.id]) do
@@ -428,7 +428,7 @@ function sim_board:init_smart(obj)
                 self.tmp_entered_squad[obj.id] = nil
         end
 end
---' АнРегистрация смарта.
+--' РђРЅР РµРіРёСЃС‚СЂР°С†РёСЏ СЃРјР°СЂС‚Р°.
 function sim_board:unregister_smart(obj)
         if self.smarts[obj.id] == nil then
                 abort("Trying to unregister nil smart [%s]", obj:name())
@@ -436,20 +436,20 @@ function sim_board:unregister_smart(obj)
 
         self.smarts[obj.id] = nil
 end
---' Заполнение спаунточек
+--' Р—Р°РїРѕР»РЅРµРЅРёРµ СЃРїР°СѓРЅС‚РѕС‡РµРє
 function sim_board:register_spawn_smart(smart)
         self.spawn_smarts[smart.id] =  smart.respawn_sector
 end
---' Заполнение логов монстров
+--' Р—Р°РїРѕР»РЅРµРЅРёРµ Р»РѕРіРѕРІ РјРѕРЅСЃС‚СЂРѕРІ
 function sim_board:register_mutant_lair(smart)
         self.mutant_lair[smart.id] =  game_graph():vertex(smart.m_game_vertex_id):level_id()
 end
---' Поиск точки для спауна.
+--' РџРѕРёСЃРє С‚РѕС‡РєРё РґР»СЏ СЃРїР°СѓРЅР°.
 function sim_board:get_spawn_smart(player)
 	--printf("get spawn smart for %s", player.player_name)
-    --' итерируемся по спаун смартам
+    --' РёС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ СЃРїР°СѓРЅ СЃРјР°СЂС‚Р°Рј
     for k,v in pairs(self.spawn_smarts) do
-        --' Отсеиваем смарты, близко-распложенные к игроку.
+        --' РћС‚СЃРµРёРІР°РµРј СЃРјР°СЂС‚С‹, Р±Р»РёР·РєРѕ-СЂР°СЃРїР»РѕР¶РµРЅРЅС‹Рµ Рє РёРіСЂРѕРєСѓ.
         local smart = self.smarts[k].smrt
         --printf("  check smart %s", smart:name())
         if is_point_avail(smart, player.player_name) then
@@ -465,8 +465,8 @@ function sim_board:get_spawn_smart(player)
                       (alife():level_id() ~= game_graph():vertex(smart.m_game_vertex_id):level_id() or
                        db.actor:position():distance_to_sqr(smart.position) > smart.respawn_radius*smart.respawn_radius)
                     then
-                        --' Среди остальных берем смарт, который наиболее близок к незахваченной целевой точке группировки.
-                        return smart --' Для теста пока берем первый подходящий.
+                        --' РЎСЂРµРґРё РѕСЃС‚Р°Р»СЊРЅС‹С… Р±РµСЂРµРј СЃРјР°СЂС‚, РєРѕС‚РѕСЂС‹Р№ РЅР°РёР±РѕР»РµРµ Р±Р»РёР·РѕРє Рє РЅРµР·Р°С…РІР°С‡РµРЅРЅРѕР№ С†РµР»РµРІРѕР№ С‚РѕС‡РєРµ РіСЂСѓРїРїРёСЂРѕРІРєРё.
+                        return smart --' Р”Р»СЏ С‚РµСЃС‚Р° РїРѕРєР° Р±РµСЂРµРј РїРµСЂРІС‹Р№ РїРѕРґС…РѕРґСЏС‰РёР№.
                     end
                     --printf("    no distance")
                 end
@@ -476,7 +476,7 @@ function sim_board:get_spawn_smart(player)
     return nil
 end
 
---' Создание нового отряда
+--' РЎРѕР·РґР°РЅРёРµ РЅРѕРІРѕРіРѕ РѕС‚СЂСЏРґР°
 function sim_board:create_squad(player_id, squad_class, spawn_smart, sq_id, settings_id)
 		printf("create squad called")
         local squad_id = tostring(sq_id or self.id_generator:get_id())
@@ -497,23 +497,23 @@ function sim_board:create_squad(player_id, squad_class, spawn_smart, sq_id, sett
         printf("Creating squad[%s] in smart[%s]", squad_id, spawn_smart:name())
         self.squads[squad_id] = squad
 
-        --' Определяем в каком смарте создать новый отряд
+        --' РћРїСЂРµРґРµР»СЏРµРј РІ РєР°РєРѕРј СЃРјР°СЂС‚Рµ СЃРѕР·РґР°С‚СЊ РЅРѕРІС‹Р№ РѕС‚СЂСЏРґ
         squad:create_npc(spawn_smart)
         squad:set_squad_sympathy()
         squad:set_squad_relation()
         self:assign_squad_to_smart(squad, spawn_smart.id)
 
-        --' Пересчитываем Team, Squad, Group
+        --' РџРµСЂРµСЃС‡РёС‚С‹РІР°РµРј Team, Squad, Group
         for k,v in pairs(squad.squad_npc) do
                 local obj = alife():object(k)
                 squad.board:setup_squad_and_group(obj)
         end
-        --' Регистрануть новый отряд в его группировке.
+        --' Р РµРіРёСЃС‚СЂР°РЅСѓС‚СЊ РЅРѕРІС‹Р№ РѕС‚СЂСЏРґ РІ РµРіРѕ РіСЂСѓРїРїРёСЂРѕРІРєРµ.
         self.players[player_id]:register_squad(squad)
         self.players[player_id]:faction_brain_update()
         return squad
 end
---' Удалить отряд
+--' РЈРґР°Р»РёС‚СЊ РѕС‚СЂСЏРґ
 function sim_board:remove_squad(squad)
         printf("Remove squad %s", squad.squad_id)
 --        callstack()
@@ -537,10 +537,10 @@ function sim_board:remove_squad(squad)
 
         squad:clear_npc()
 
-        --' АнРегистрануть новый отряд в его группировке.
+        --' РђРЅР РµРіРёСЃС‚СЂР°РЅСѓС‚СЊ РЅРѕРІС‹Р№ РѕС‚СЂСЏРґ РІ РµРіРѕ РіСЂСѓРїРїРёСЂРѕРІРєРµ.
         player:unregister_squad(squad)
 
-        --' Удалить отряд
+        --' РЈРґР°Р»РёС‚СЊ РѕС‚СЂСЏРґ
         self.squads[squad.squad_id] = nil
 
         self.id_generator:remove(tonumber(squad.squad_id))
@@ -549,10 +549,10 @@ function sim_board:remove_squad(squad)
                 v:faction_brain_update()
         end
 end
---' Назначение отряда в смарт.
+--' РќР°Р·РЅР°С‡РµРЅРёРµ РѕС‚СЂСЏРґР° РІ СЃРјР°СЂС‚.
 function sim_board:assign_squad_to_smart(squad, smart_id)
-        -- Если смарта нету (например на загрузке он еще не загружен), то мы загоняем данные
-        -- во временную таблицу. И на загрузке смарта автодобавляем их.
+        -- Р•СЃР»Рё СЃРјР°СЂС‚Р° РЅРµС‚Сѓ (РЅР°РїСЂРёРјРµСЂ РЅР° Р·Р°РіСЂСѓР·РєРµ РѕРЅ РµС‰Рµ РЅРµ Р·Р°РіСЂСѓР¶РµРЅ), С‚Рѕ РјС‹ Р·Р°РіРѕРЅСЏРµРј РґР°РЅРЅС‹Рµ
+        -- РІРѕ РІСЂРµРјРµРЅРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ. Р РЅР° Р·Р°РіСЂСѓР·РєРµ СЃРјР°СЂС‚Р° Р°РІС‚РѕРґРѕР±Р°РІР»СЏРµРј РёС….
         printf("assigned squad %s to smart [%s].", tostring(squad.squad_id), tostring(smart_id))
 --        callstack()
 
@@ -566,7 +566,7 @@ function sim_board:assign_squad_to_smart(squad, smart_id)
         end
 
 
-        --' Убираем отряд из старого смарта
+        --' РЈР±РёСЂР°РµРј РѕС‚СЂСЏРґ РёР· СЃС‚Р°СЂРѕРіРѕ СЃРјР°СЂС‚Р°
         local old_smart_id = nil
     if squad.smart_id ~= nil then
         old_smart_id = squad.smart_id
@@ -580,17 +580,17 @@ function sim_board:assign_squad_to_smart(squad, smart_id)
                 return
         end
 
-        --' Передаем айди смарта отряду
+        --' РџРµСЂРµРґР°РµРј Р°Р№РґРё СЃРјР°СЂС‚Р° РѕС‚СЂСЏРґСѓ
     --if old_smart_id ~= smart_id then
                 squad:assign_smart(self.smarts[smart_id].smrt)
     --end
 
-        --' Прописываем отряд в новом смарте.
+        --' РџСЂРѕРїРёСЃС‹РІР°РµРј РѕС‚СЂСЏРґ РІ РЅРѕРІРѕРј СЃРјР°СЂС‚Рµ.
         self.smarts[smart_id].squads[squad.squad_id] = squad
 
         self.smarts[smart_id].smrt:refresh()
 end
---' Отряд покидает смарт (уменьшаются ресурсы)
+--' РћС‚СЂСЏРґ РїРѕРєРёРґР°РµС‚ СЃРјР°СЂС‚ (СѓРјРµРЅСЊС€Р°СЋС‚СЃСЏ СЂРµСЃСѓСЂСЃС‹)
 function sim_board:exit_smart(squad, smart)
     if smart == nil then
 		return
@@ -599,7 +599,7 @@ function sim_board:exit_smart(squad, smart)
 		return
     end
     local player = self.players[squad.player_id]
-    --' Проверка на валидность
+    --' РџСЂРѕРІРµСЂРєР° РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ
     if smart.player_name ~= player.player_name then
 		abort("Incorrect exit_smart call for squad %s from %s!!!  %s ~= %s", tostring(squad.squad_id), smart:name(), tostring(smart.player_name), tostring(player.player_name))
     end
@@ -613,13 +613,13 @@ function sim_board:exit_smart(squad, smart)
     if not smart.combat_manager:point_under_attack() then
 		self:reset_nearest_squads(smart)
     end
-    --' Проверка последний ли мы отряд.
+    --' РџСЂРѕРІРµСЂРєР° РїРѕСЃР»РµРґРЅРёР№ Р»Рё РјС‹ РѕС‚СЂСЏРґ.
     if self.smarts[smart.id].stayed_squad_quan > 0 then
 		self.players[squad.player_id]:calculate_squad_tasks()
 		return
     end
 
-    --' Уменьшаем ресурсы
+    --' РЈРјРµРЅСЊС€Р°РµРј СЂРµСЃСѓСЂСЃС‹
     if smart.sim_type == "resource" then
         player.resource_level = player.resource_level - 1
     end
@@ -628,10 +628,10 @@ function sim_board:exit_smart(squad, smart)
     smart.player_name = "none"
     printf("Player %s lose point %s!", player.player_name, smart:name())
 
-    --' Апдейтим отрисовку.
+    --' РђРїРґРµР№С‚РёРј РѕС‚СЂРёСЃРѕРІРєСѓ.
     smart:refresh()
 end
---' Отряд занимает смарт (увеличиваются ресурсы)
+--' РћС‚СЂСЏРґ Р·Р°РЅРёРјР°РµС‚ СЃРјР°СЂС‚ (СѓРІРµР»РёС‡РёРІР°СЋС‚СЃСЏ СЂРµСЃСѓСЂСЃС‹)
 function sim_board:enter_smart(squad, smart_id, after_load)
 		callstack()
         if self.smarts[smart_id] == nil then
@@ -651,24 +651,24 @@ function sim_board:enter_smart(squad, smart_id, after_load)
         end
         squad.entered_smart = smart_id
         printf("Squad %s enter smart %s. Quan = %s", tostring(squad.squad_id), smart:name(), tostring(self.smarts[smart_id].stayed_squad_quan))
-        --' Первый отряд регистрится в смарте
+        --' РџРµСЂРІС‹Р№ РѕС‚СЂСЏРґ СЂРµРіРёСЃС‚СЂРёС‚СЃСЏ РІ СЃРјР°СЂС‚Рµ
         if self.smarts[smart_id].stayed_squad_quan == 0 then
-            --' Проверка на валидность
+            --' РџСЂРѕРІРµСЂРєР° РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ
             if smart.player_name ~= "none" then
                 abort("Incorrect enter_smart call for squad %s!!!", tostring(squad.squad_id))
             end
 
             smart.player_name = player.player_name
             printf("Player %s capture point %s!", player.player_name, smart:name())
-            --' Увеличиваем ресурсы
+            --' РЈРІРµР»РёС‡РёРІР°РµРј СЂРµСЃСѓСЂСЃС‹
             if smart.sim_type == "resource" then
 				player.resource_level = player.resource_level + 1
             end
             player:faction_brain_update(after_load)
-            --' Апдейтим отрисовку.
+            --' РђРїРґРµР№С‚РёРј РѕС‚СЂРёСЃРѕРІРєСѓ.
             smart:refresh()
         else
-			-- Проверяем возможность вылета
+			-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹Р»РµС‚Р°
 			if smart.player_name ~= player.player_name then
 				abort("Incorrect enter_smart call for squad %s!!!  %s ~= %s", tostring(squad.squad_id), tostring(smart.player_name), tostring(player.player_name))
 			end
@@ -680,11 +680,11 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 --		squad:spawn_box_items(smart_id)
 end
 
--- установить squad и group в соответствии с работой
+-- СѓСЃС‚Р°РЅРѕРІРёС‚СЊ squad Рё group РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ СЂР°Р±РѕС‚РѕР№
 function sim_board:setup_squad_and_group(obj)
         --printf("tsg["..obj:name().."]")
         local level_name = level.name()
-        --' Группу берем из уровня.
+        --' Р“СЂСѓРїРїСѓ Р±РµСЂРµРј РёР· СѓСЂРѕРІРЅСЏ.
         local obj = alife():object(obj.id)
         local group = 0
         if squad_by_level[level_name] ~= nil then
@@ -692,7 +692,7 @@ function sim_board:setup_squad_and_group(obj)
         end
         change_team_sqaud_group(obj, obj.team, obj.squad, group)
 
-        --' Сквад берем из смарта.
+        --' РЎРєРІР°Рґ Р±РµСЂРµРј РёР· СЃРјР°СЂС‚Р°.
         local squad = self.squads[obj.squad_id]
         if squad == nil then
                 change_team_sqaud_group(obj, obj.team, 0, obj.group)
@@ -714,10 +714,10 @@ function sim_board:setup_squad_and_group(obj)
         --printf("TSG3: [%s][%s][%s]", tostring(obj.team), tostring(obj.squad), tostring(obj.group))
 end
 
---' Построение кросс таблицы переходов
+--' РџРѕСЃС‚СЂРѕРµРЅРёРµ РєСЂРѕСЃСЃ С‚Р°Р±Р»РёС†С‹ РїРµСЂРµС…РѕРґРѕРІ
 function sim_board:build_cross_table(obj)
         printf("build cross table for %s", obj:name())
-        --' Вычитать у смарта на кого он может нападать.
+        --' Р’С‹С‡РёС‚Р°С‚СЊ Сѓ СЃРјР°СЂС‚Р° РЅР° РєРѕРіРѕ РѕРЅ РјРѕР¶РµС‚ РЅР°РїР°РґР°С‚СЊ.
         local ini  = obj:spawn_ini()
         local ttt = utils.cfg_get_string(ini, "smart_terrain", "targets", obj, true, "", "")
         local targets
@@ -733,26 +733,26 @@ function sim_board:build_cross_table(obj)
                 if target_smart == nil then
                         abort("Wrong target name [%s] for smart [%s]", v, obj:name())
                 end
-                --' Занести эти данные в цели.
+                --' Р—Р°РЅРµСЃС‚Рё СЌС‚Рё РґР°РЅРЅС‹Рµ РІ С†РµР»Рё.
                 self.smarts[obj.id].targets[target_smart.id] = target_smart
 
-                --' У целей пометить данный смарт как опасность.
+                --' РЈ С†РµР»РµР№ РїРѕРјРµС‚РёС‚СЊ РґР°РЅРЅС‹Р№ СЃРјР°СЂС‚ РєР°Рє РѕРїР°СЃРЅРѕСЃС‚СЊ.
                 self.smarts[target_smart.id].dangers[obj.id] = obj
         end
 end
---' Возвращает смарты, соседние с данным.
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРјР°СЂС‚С‹, СЃРѕСЃРµРґРЅРёРµ СЃ РґР°РЅРЅС‹Рј.
 function sim_board:get_nearest_smarts(smart)
         return self.smarts[smart.id].targets
 end
---' Возвратить смарт по его имени.
+--' Р’РѕР·РІСЂР°С‚РёС‚СЊ СЃРјР°СЂС‚ РїРѕ РµРіРѕ РёРјРµРЅРё.
 function sim_board:get_smart_by_name(name)
         return self.smarts_by_names[name]
 end
---' Возвращает имя игрока, владеющего смартом.
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРјСЏ РёРіСЂРѕРєР°, РІР»Р°РґРµСЋС‰РµРіРѕ СЃРјР°СЂС‚РѕРј.
 function sim_board:get_smart_player(smart)
         return smart.player_name
 end
---' Возвращает количество отрядов в смарте.
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕС‚СЂСЏРґРѕРІ РІ СЃРјР°СЂС‚Рµ.
 function sim_board:get_smart_population(smart)
         return self.smarts[smart.id].stayed_squad_quan
 --        local i = 0
@@ -761,7 +761,7 @@ function sim_board:get_smart_population(smart)
 --        end
 --        return i
 end
---' СТатистика отрядов по смарту. Возвращает количество отрядов, которые атакуют точку
+--' РЎРўР°С‚РёСЃС‚РёРєР° РѕС‚СЂСЏРґРѕРІ РїРѕ СЃРјР°СЂС‚Сѓ. Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕС‚СЂСЏРґРѕРІ, РєРѕС‚РѕСЂС‹Рµ Р°С‚Р°РєСѓСЋС‚ С‚РѕС‡РєСѓ
 function sim_board:get_smart_squad_quantity(smart, player)
         return player.current_attack_quantity[smart.id] or 0
 --[[
@@ -788,24 +788,24 @@ function sim_board:get_smart_squad_quantity(smart, player)
 ]]
 end
 
--- Определение пути по графу смартов.
+-- РћРїСЂРµРґРµР»РµРЅРёРµ РїСѓС‚Рё РїРѕ РіСЂР°С„Сѓ СЃРјР°СЂС‚РѕРІ.
 function sim_board:find_path(src_smart_id, tgt_smart_id, squad)
     if src_smart_id == tgt_smart_id then
         return {{id = src_smart_id, value = 0}}
     end
--- Очередь узлов для экспансии.
+-- РћС‡РµСЂРµРґСЊ СѓР·Р»РѕРІ РґР»СЏ СЌРєСЃРїР°РЅСЃРёРё.
     local front = {}
     table.insert(front, {id = src_smart_id, value = 0, prev = true})
--- Тут мы будем хранить отработанные точки с указателями на направление кратчайшего пути в них.
+-- РўСѓС‚ РјС‹ Р±СѓРґРµРј С…СЂР°РЅРёС‚СЊ РѕС‚СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ С‚РѕС‡РєРё СЃ СѓРєР°Р·Р°С‚РµР»СЏРјРё РЅР° РЅР°РїСЂР°РІР»РµРЅРёРµ РєСЂР°С‚С‡Р°Р№С€РµРіРѕ РїСѓС‚Рё РІ РЅРёС….
     local arhive = {}
--- Запускаем итерационный поиск.
+-- Р—Р°РїСѓСЃРєР°РµРј РёС‚РµСЂР°С†РёРѕРЅРЅС‹Р№ РїРѕРёСЃРє.
     local is_founded = iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
--- Проверка на корректность поиска
+-- РџСЂРѕРІРµСЂРєР° РЅР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РїРѕРёСЃРєР°
     if is_founded == false then
         abort("PATH NOT FOUNDED from[%s] to[%s] for squad[%s]", src_smart_id, tgt_smart_id, squad.squad_id)
     end
 
--- Высчитываем пути
+-- Р’С‹СЃС‡РёС‚С‹РІР°РµРј РїСѓС‚Рё
     local step = tgt_smart_id
     local path = {}
     table.insert(path, {id = step, value = arhive[step].value})
@@ -816,19 +816,19 @@ function sim_board:find_path(src_smart_id, tgt_smart_id, squad)
     table.sort(path, function(a,b) return a.value < b.value end)
     return path
 end
--- Определение пути по графу смартов.
+-- РћРїСЂРµРґРµР»РµРЅРёРµ РїСѓС‚Рё РїРѕ РіСЂР°С„Сѓ СЃРјР°СЂС‚РѕРІ.
 function sim_board:find_conductor_path(src_smart_id, tgt_smart_id, npc)
     if src_smart_id == tgt_smart_id then
         return {{id = src_smart_id, value = 0}}
     end
--- Очередь узлов для экспансии.
+-- РћС‡РµСЂРµРґСЊ СѓР·Р»РѕРІ РґР»СЏ СЌРєСЃРїР°РЅСЃРёРё.
     local front = {}
     table.insert(front, {id = src_smart_id, value = 0, prev = true})
--- Тут мы будем хранить отработанные точки с указателями на направление кратчайшего пути в них.
+-- РўСѓС‚ РјС‹ Р±СѓРґРµРј С…СЂР°РЅРёС‚СЊ РѕС‚СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ С‚РѕС‡РєРё СЃ СѓРєР°Р·Р°С‚РµР»СЏРјРё РЅР° РЅР°РїСЂР°РІР»РµРЅРёРµ РєСЂР°С‚С‡Р°Р№С€РµРіРѕ РїСѓС‚Рё РІ РЅРёС….
     local arhive = {}
--- Запускаем итерационный поиск.
+-- Р—Р°РїСѓСЃРєР°РµРј РёС‚РµСЂР°С†РёРѕРЅРЅС‹Р№ РїРѕРёСЃРє.
     local is_founded = iterate_conductor_point(npc, src_smart_id, tgt_smart_id, arhive, front)
--- Высчитываем пути
+-- Р’С‹СЃС‡РёС‚С‹РІР°РµРј РїСѓС‚Рё
     local step = tgt_smart_id
     local path = {}
 	if is_founded then
@@ -846,14 +846,14 @@ function sim_board:actor_near_smart(smart)
         return db.actor:position():distance_to_sqr(smart.position) < 255
 end
 
---' Если в соседних точках у отрядов действие stay_smart - обнуляем его, чтобы они могли перевыбрать цель.
+--' Р•СЃР»Рё РІ СЃРѕСЃРµРґРЅРёС… С‚РѕС‡РєР°С… Сѓ РѕС‚СЂСЏРґРѕРІ РґРµР№СЃС‚РІРёРµ stay_smart - РѕР±РЅСѓР»СЏРµРј РµРіРѕ, С‡С‚РѕР±С‹ РѕРЅРё РјРѕРіР»Рё РїРµСЂРµРІС‹Р±СЂР°С‚СЊ С†РµР»СЊ.
 function sim_board:reset_nearest_squads(smart)
     printf("Reset nearest squads [%s]", smart:name())
     for k,v in pairs(self:get_nearest_smarts(smart)) do
         for kk,vv in pairs(self.smarts[v.id].squads) do
             if vv.current_action ~= nil and vv.current_action.name == "stay_point" then
 				--printf("reseting squad %s in %s", vv.squad_id, v:name())
-                --' Перед выбором нового убираем персонажа из текущего комбат менеджера
+                --' РџРµСЂРµРґ РІС‹Р±РѕСЂРѕРј РЅРѕРІРѕРіРѕ СѓР±РёСЂР°РµРј РїРµСЂСЃРѕРЅР°Р¶Р° РёР· С‚РµРєСѓС‰РµРіРѕ РєРѕРјР±Р°С‚ РјРµРЅРµРґР¶РµСЂР°
                 if v.sim_combat_id ~= nil then
                     local sim_combat = self.smarts[v.sim_combat_id].smrt.combat_manager
                     sim_combat:unregister_squad(vv)
@@ -869,43 +869,43 @@ end
 
 
 
---' Отрисовка игрового поля на карте.
+--' РћС‚СЂРёСЃРѕРІРєР° РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ РЅР° РєР°СЂС‚Рµ.
 function sim_board:show()
 --[[        if self.show_flag == true then
                 return
         end
         self.show_flag = true
 
-        --' Отрисовываем игроков.
+        --' РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РёРіСЂРѕРєРѕРІ.
         for k,v in pairs(self.players) do
                 v:show()
         end
 
-        --' Отрисовываем смарты.
+        --' РћС‚СЂРёСЃРѕРІС‹РІР°РµРј СЃРјР°СЂС‚С‹.
         for k,v in pairs(self.smarts) do
                 v.smrt:show()
         end]]
 end
---' Убирание отрисовки игрового поля на карте.
+--' РЈР±РёСЂР°РЅРёРµ РѕС‚СЂРёСЃРѕРІРєРё РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ РЅР° РєР°СЂС‚Рµ.
 function sim_board:hide()
 --[[        if self.show_flag == false then
                 return
         end
         self.show_flag = false
 
-        --' Убираем отрисовку игроков.
+        --' РЈР±РёСЂР°РµРј РѕС‚СЂРёСЃРѕРІРєСѓ РёРіСЂРѕРєРѕРІ.
         for k,v in pairs(self.players) do
                 v:hide()
         end
 
-        --' Убираем отрисовку смартов.
+        --' РЈР±РёСЂР°РµРј РѕС‚СЂРёСЃРѕРІРєСѓ СЃРјР°СЂС‚РѕРІ.
         for k,v in pairs(self.smarts) do
                 v:hide()
         end
 ]]
 end
 
---' Получение игрового поля.
+--' РџРѕР»СѓС‡РµРЅРёРµ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ.
 function get_sim_board()
         if board == nil then
                 board = sim_board()
@@ -913,12 +913,12 @@ function get_sim_board()
         return board
 end
 
---' Обнуление списка на создании игры.
+--' РћР±РЅСѓР»РµРЅРёРµ СЃРїРёСЃРєР° РЅР° СЃРѕР·РґР°РЅРёРё РёРіСЂС‹.
 function clear()
         board = nil
 end
 
--- Проверяет доступность смарттеррейна для симуляции
+-- РџСЂРѕРІРµСЂСЏРµС‚ РґРѕСЃС‚СѓРїРЅРѕСЃС‚СЊ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР° РґР»СЏ СЃРёРјСѓР»СЏС†РёРё
 function is_point_avail(point, faction_id)
         if point.no_mutant == true and faction_id == "monster" then
                 return false
@@ -931,7 +931,7 @@ end
 
 
 
---' Тестовые функции
+--' РўРµСЃС‚РѕРІС‹Рµ С„СѓРЅРєС†РёРё
 function print()
         --print_table(get_sim_board().smarts)
 end

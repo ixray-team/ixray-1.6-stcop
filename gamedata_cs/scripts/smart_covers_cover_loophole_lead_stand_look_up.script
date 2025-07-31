@@ -12,7 +12,7 @@ function get_smart_cover_cover_loophole_lead_stand_look_up()
 
 	
 			transitions = {
-			--' Анимации входа в бойницы
+			--' РђРЅРёРјР°С†РёРё РІС…РѕРґР° РІ Р±РѕР№РЅРёС†С‹
 			{
 				vertex0 = "",
 				vertex1 = "lead_stand_look_up",
@@ -33,7 +33,7 @@ function get_smart_cover_cover_loophole_lead_stand_look_up()
 			},
 
 
-			--' Анимации выхода из бойниц.
+			--' РђРЅРёРјР°С†РёРё РІС‹С…РѕРґР° РёР· Р±РѕР№РЅРёС†.
 			{
 				vertex0 = "lead_stand_look_up",
 				vertex1 = "",

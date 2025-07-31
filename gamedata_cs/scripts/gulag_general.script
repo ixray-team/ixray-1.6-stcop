@@ -2,7 +2,7 @@ local ltx
 
 function load_job(smart)
     printf("LOAD JOB %s", smart:name())
-    -- Иерархия задается таблицей вида:
+    -- РРµСЂР°СЂС…РёСЏ Р·Р°РґР°РµС‚СЃСЏ С‚Р°Р±Р»РёС†РµР№ РІРёРґР°:
 --[[
     self.jobs = {
         {
@@ -133,21 +133,21 @@ function load_job(smart)
 
 
 --'------------------------------------------------------------------------
---'         РАБОТЫ СТАЛКЕРОВ
+--'         Р РђР‘РћРўР« РЎРўРђР›РљР•Р РћР’
 --'------------------------------------------------------------------------
     local stalker_jobs = {_precondition_is_monster = false, _prior = 60, jobs = {}}
 
     --'------------------------------------------------------------------------
-    --'                      ОБЫЧНОЕ СОСТОЯНИЕ
+    --'                      РћР‘Р«Р§РќРћР• РЎРћРЎРўРћРЇРќРР•
     --'------------------------------------------------------------------------
         local stalker_general_jobs = {_prior = 40, jobs = {}}
         --'------------------------------------------------------------------------
         --'                      KAMP
         --'------------------------------------------------------------------------
-        -- Проверяем наличие кампов.
+        -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РєР°РјРїРѕРІ.
         local it = 1
         while level.patrol_path_exists(gname.."_kamp_"..it) do
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_kamp_"..it
             local ptr = patrol(way_name)
             local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -158,16 +158,16 @@ function load_job(smart)
             end
 
             for i = 1, job_count do
-                -- добавляем должность
+                -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
                 t = {   _prior = def_prior - (it - 1),
                         job_id = {  section = "logic@"..way_name,
-                                    reserve_job = true, -- Из этой работы берутся замены для гвардов
+                                    reserve_job = true, -- РР· СЌС‚РѕР№ СЂР°Р±РѕС‚С‹ Р±РµСЂСѓС‚СЃСЏ Р·Р°РјРµРЅС‹ РґР»СЏ РіРІР°СЂРґРѕРІ
                                     campfire = way_name }
                     }
                 table.insert(stalker_general_jobs.jobs, t)
             end
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..way_name.."]\n"..
                             "active = kamp@"..way_name.."\n"..
 
@@ -184,7 +184,7 @@ function load_job(smart)
             it = it + 1
         end
 
-        --' Проверка что найден хоть один путь кампа
+        --' РџСЂРѕРІРµСЂРєР° С‡С‚Рѕ РЅР°Р№РґРµРЅ С…РѕС‚СЊ РѕРґРёРЅ РїСѓС‚СЊ РєР°РјРїР°
         if it == 1 then
             abort("There is no kamp path in smart[%s]", gname)
         end
@@ -192,19 +192,19 @@ function load_job(smart)
         --'------------------------------------------------------------------------
         --'                         SLEEP
         --'------------------------------------------------------------------------
-        -- Проверяем наличие путей для сна.
+        -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ РґР»СЏ СЃРЅР°.
         it = 1
         while level.patrol_path_exists(gname.."_sleep_"..it) do
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_sleep_"..it
 
-            -- добавляем должность
+            -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
             t = {   _prior = 10,
                     job_id = {  section = "logic@"..way_name }
                 }
             table.insert(stalker_general_jobs.jobs, t)
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..way_name.."]\n"..
                             "active = sleeper@"..way_name.."\n"..
 
@@ -224,19 +224,19 @@ function load_job(smart)
         --'------------------------------------------------------------------------
         --'                           WALKER
         --'------------------------------------------------------------------------
-        -- Проверяем наличие путей брожения внутри лагеря.
+        -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ Р±СЂРѕР¶РµРЅРёСЏ РІРЅСѓС‚СЂРё Р»Р°РіРµСЂСЏ.
         it = 1
         while level.patrol_path_exists(gname.."_walker_"..it.."_walk") do
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_walker_"..it.."_walk"
 
-            -- добавляем должность
+            -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
             t = {   _prior = 15,
                     job_id = {  section = "logic@"..way_name }
                 }
             table.insert(stalker_general_jobs.jobs, t)
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..way_name.."]\n"..
                             "active = walker@"..way_name.."\n"..
 
@@ -264,10 +264,10 @@ function load_job(smart)
         --'------------------------------------------------------------------------
         --'                          PATROL
         --'------------------------------------------------------------------------
-        -- Проверяем наличие патрулей обхода в лагере.
+        -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїР°С‚СЂСѓР»РµР№ РѕР±С…РѕРґР° РІ Р»Р°РіРµСЂРµ.
         it = 1
         while level.patrol_path_exists(gname.."_patrol_"..it.."_walk") do
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_patrol_"..it.."_walk"
             local ptr = patrol(way_name)
             local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -277,14 +277,14 @@ function load_job(smart)
             end
 
             for i = 1, job_count do
-                -- добавляем должность
+                -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
                 t = {   _prior = 20,
                         job_id = { section = "logic@"..way_name }
                     }
                 table.insert(stalker_general_jobs.jobs, t)
             end
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..way_name.."]\n"..
                             "active = patrol@"..way_name.."\n"..
 
@@ -311,11 +311,11 @@ function load_job(smart)
         --'------------------------------------------------------------------------
         --'                 Commander point
         --'------------------------------------------------------------------------
-        -- Проверяем, есть ли в лагере путь для командира.
+        -- РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё РІ Р»Р°РіРµСЂРµ РїСѓС‚СЊ РґР»СЏ РєРѕРјР°РЅРґРёСЂР°.
         if level.patrol_path_exists(gname.."_comander_walk") then
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_comander_walk"
-            -- добавляем должность
+            -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
             t = {   _prior = 40,
                     job_id = {  section = "logic@"..way_name },
                     _precondition_function = function(se_obj, smart)
@@ -329,7 +329,7 @@ function load_job(smart)
 
             table.insert(stalker_general_jobs.jobs, t)
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..way_name.."]\n"..
                             "active = walker@"..way_name.."\n"..
 
@@ -352,17 +352,17 @@ function load_job(smart)
         --'------------------------------------------------------------------------
         --'                 Conductor point
         --'------------------------------------------------------------------------
-        -- Проверяем, есть ли в лагере путь для проводника.
+        -- РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё РІ Р»Р°РіРµСЂРµ РїСѓС‚СЊ РґР»СЏ РїСЂРѕРІРѕРґРЅРёРєР°.
         if level.patrol_path_exists(gname.."_conductor_walk") then
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_conductor_walk"
-            -- добавляем должность
+            -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
             t = {   _prior = 35,
                     job_id = {  section = "logic@"..way_name }}
 
             table.insert(stalker_general_jobs.jobs, t)
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..way_name.."]\n"..
                             "active = walker@"..way_name.."\n"..
                             "level_spot = guider\n"..
@@ -387,21 +387,21 @@ function load_job(smart)
         --'------------------------------------------------------------------------
         --'                              GUARD
         --'------------------------------------------------------------------------
-        -- Проверяем наличие часовых в лагере.
+        -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ С‡Р°СЃРѕРІС‹С… РІ Р»Р°РіРµСЂРµ.
         it = 1
         while level.patrol_path_exists(gname.."_guard_"..it.."_walk") do
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_guard_"..it.."_walk"
             --local guard_timeout = tostring(math.random(180,300))*1000
             local guard_timeout = tostring(math.random(20,21))*1000
 
-            -- добавляем должность
+            -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
             t = { _prior = 25,
                   job_id = { section = "logic@"..way_name }
                 }
             table.insert(stalker_general_jobs.jobs, t)
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..way_name.."]\n"..
                             "active = walker@"..way_name.."\n"..
 
@@ -442,7 +442,7 @@ function load_job(smart)
 
             job1_ltx = job1_ltx .. danger_ltx
 
-            --' настройки фоловера для каждого гварда!!!!!!!!!!!!!!!!!
+            --' РЅР°СЃС‚СЂРѕР№РєРё С„РѕР»РѕРІРµСЂР° РґР»СЏ РєР°Р¶РґРѕРіРѕ РіРІР°СЂРґР°!!!!!!!!!!!!!!!!!
             t = {   _prior = 24,
                     job_id = { section = "logic@follower_"..way_name },
                     _precondition_params = { changing_job = "logic@"..way_name },
@@ -484,7 +484,7 @@ function load_job(smart)
         table.insert(stalker_jobs.jobs, stalker_general_jobs)
 
     --'------------------------------------------------------------------------
-    --'                      АТАКА СМАРТА
+    --'                      РђРўРђРљРђ РЎРњРђР РўРђ
     --'------------------------------------------------------------------------
         local stalker_attack_jobs = {   _prior = 60, jobs = {},
                                         _current_squad_action = "attack_point"}
@@ -501,12 +501,12 @@ function load_job(smart)
             --'                  RANGER
             --'------------------------------------------------------------------------
             local capacity = smart.capacity
-            -- Проверяем возможность стать рейнджером
+            -- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СЃС‚Р°С‚СЊ СЂРµР№РЅРґР¶РµСЂРѕРј
             it = 1
             while level.patrol_path_exists(gname.."_to_"..target_smart.."_ranger_"..it.."_walk") do
-                    -- Необходимо вычитать количество работ из названия точки пути.
+                    -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
                     local way_name = gname.."_to_"..target_smart.."_ranger_"..it.."_walk"
-                    -- добавляем должность
+                    -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
                     t = {   _prior = 60,
                             _attack_job = true,
                             job_id = {  section = "logic@"..way_name }
@@ -514,7 +514,7 @@ function load_job(smart)
                     table.insert(stalker_attack_smart_jobs.jobs, t)
                     capacity = capacity - 1
 
-                    -- добавляем описание должности в лтх.
+                    -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
                     local job_ltx = "[logic@"..way_name.."]\n"..
                                     "active = camper@"..way_name.."\n"..
 
@@ -556,7 +556,7 @@ function load_job(smart)
             --'------------------------------------------------------------------------
             it = 1
             while level.patrol_path_exists(gname.."_to_"..target_smart.."_patrol_"..it.."_walk") do
-                -- Необходимо вычитать количество работ из названия точки пути.
+                -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
                 local way_name = gname.."_to_"..target_smart.."_patrol_"..it.."_walk"
                 local ptr = patrol(way_name)
                 local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -566,7 +566,7 @@ function load_job(smart)
                 end
 
                 for i = 1, job_count do
-                    -- добавляем должность
+                    -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
                     local sect_name = gname.."_to_"..target_smart.."_patrol"..tostring(i).."_"..it.."_walk"
                     t = {   _prior = 55,
                             _attack_job = true,
@@ -574,7 +574,7 @@ function load_job(smart)
                         }
                     table.insert(stalker_attack_smart_jobs.jobs, t)
 
-                    -- добавляем описание должности в лтх.
+                    -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
                     local sect_name = gname.."_to_"..target_smart.."_patrol"..tostring(i).."_"..it.."_walk"
                     local job_ltx = "[logic@"..sect_name.."]\n"..
                                     "active = patrol@"..sect_name.."\n"..
@@ -650,13 +650,13 @@ function load_job(smart)
             --'------------------------------------------------------------------------
             it = 1
             while level.patrol_path_exists(target_smart.."_kamp_"..it.."_task") do
-                -- Необходимо вычитать количество работ из названия точки пути.
+                -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
                 local way_name = target_smart.."_kamp_"..it.."_task"
                 local job_count = 5
 
                 for i = 1, job_count do
                     local sect_name = gname.."_to_"..target_smart.."_kamp"..tostring(i).."_"..it
-                    -- добавляем должность
+                    -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
                     t = {   _prior = 50,
                             _attack_job = true,
                             job_id = {  section = "logic@"..sect_name,
@@ -664,7 +664,7 @@ function load_job(smart)
                         }
                     table.insert(stalker_attack_smart_jobs.jobs, t)
 
-                    -- добавляем описание должности в лтх.
+                    -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
                     local job_ltx = "[logic@"..sect_name.."]\n"..
                                     "active = patrol@"..sect_name.."\n"..
 
@@ -716,21 +716,21 @@ function load_job(smart)
 
         table.insert(stalker_jobs.jobs, stalker_attack_jobs)
     --'------------------------------------------------------------------------
-    --'                      ЗАЩИТА СМАРТА
+    --'                      Р—РђР©РРўРђ РЎРњРђР РўРђ
     --'------------------------------------------------------------------------
         local stalker_defence_jobs = {  _prior = 45, jobs = {},
                                         _precondition_function = function(se_obj, smart)
-                                                                    -- Мы в обороне вообще
+                                                                    -- РњС‹ РІ РѕР±РѕСЂРѕРЅРµ РІРѕРѕР±С‰Рµ
                                                                     return xr_gulag.defending_smart(se_obj, smart)
                                                                  end}
 
         --'------------------------------------------------------------------------
         --'                     SNIPER
         --'------------------------------------------------------------------------
-        -- Проверяем наличие снайперов в лагере.
+        -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРЅР°Р№РїРµСЂРѕРІ РІ Р»Р°РіРµСЂРµ.
         it = 1
         while level.patrol_path_exists(gname.."_sniper_"..it.."_walk") do
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_sniper_"..it.."_walk"
             local ptr = patrol(way_name)
             local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -741,7 +741,7 @@ function load_job(smart)
                             state = "threat"
                     end
             end
-            -- добавляем должность
+            -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
             t = {   _prior = 30,
                     job_id = { section = "logic@"..way_name },
                     _precondition_params = { way_name = way_name },
@@ -751,7 +751,7 @@ function load_job(smart)
                 }
             table.insert(stalker_defence_jobs.jobs, t)
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..way_name.."]\n"..
                             "active = camper@"..way_name.."\n"..
 
@@ -776,10 +776,10 @@ function load_job(smart)
         --'------------------------------------------------------------------------
         --'                             CAMPER
         --'------------------------------------------------------------------------
-        -- Проверяем возможность стать кемпером :-)
+        -- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СЃС‚Р°С‚СЊ РєРµРјРїРµСЂРѕРј :-)
         it = 1
         while level.patrol_path_exists(gname.."_camper_"..it.."_walk") do
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_camper_"..it.."_walk"
             local ptr = patrol(way_name)
             local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -793,7 +793,7 @@ function load_job(smart)
             if wp_prop.radius ~= nil then
                  radius = wp_prop.radius
             end
-            -- добавляем должность
+            -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
             t = {   _prior = 45,
                     job_id = { section = "logic@"..way_name },
                     _precondition_params = { way_name = way_name },
@@ -803,7 +803,7 @@ function load_job(smart)
                 }
             table.insert(stalker_defence_jobs.jobs, t)
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..way_name.."]\n"..
                             "active = camper@"..way_name.."\n"..
 
@@ -830,10 +830,10 @@ function load_job(smart)
         --'------------------------------------------------------------------------
         --'                       GENERIC COVERS
         --'------------------------------------------------------------------------
-        -- Проверяем наличие кампов.
+        -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РєР°РјРїРѕРІ.
         local it = 1
         while level.patrol_path_exists(gname.."_kamp_"..it) do
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_kamp_"..it.."_task"
             local ptr = patrol(way_name)
             local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -843,7 +843,7 @@ function load_job(smart)
             end
 
             for i = 1, job_count do
-                -- Генерим смарткаверы
+                -- Р“РµРЅРµСЂРёРј СЃРјР°СЂС‚РєР°РІРµСЂС‹
                 t = {   _prior = 43,
                         job_id = { section = "logic@general_defend_smartcover_"..way_name },
                         _precondition_params = { way_name = way_name },
@@ -853,7 +853,7 @@ function load_job(smart)
                     }
                 table.insert(stalker_defence_jobs.jobs, t)
 
-                -- Генерим каверы
+                -- Р“РµРЅРµСЂРёРј РєР°РІРµСЂС‹
                 t = {   _prior = 43,
                         job_id = { section = "logic@general_defend_cover_"..way_name },
                         _precondition_params = { way_name = way_name },
@@ -876,7 +876,7 @@ function load_job(smart)
                             "sound_idle = post_combat_wait_long\n"..
                             "use_precalc_cover = true\n"
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             job_ltx = job_ltx .. "[logic@general_defend_cover_"..way_name.."]\n"..
                                 "active = cover@"..way_name.."\n"..
 
@@ -901,22 +901,22 @@ function load_job(smart)
 
         table.insert(stalker_jobs.jobs, stalker_defence_jobs)
     --'------------------------------------------------------------------------
-    --'                      ВЫБРОС
+    --'                      Р’Р«Р‘Р РћРЎ
     --'------------------------------------------------------------------------
         local stalker_surge_jobs = {_prior = 100, jobs = {},
                                     _precondition_function = function()
-                                                                -- Запущен ли сейчас выброс
+                                                                -- Р—Р°РїСѓС‰РµРЅ Р»Рё СЃРµР№С‡Р°СЃ РІС‹Р±СЂРѕСЃ
                                                                 return xr_conditions.is_surge_activated()-- and (smart.surge_hide_avaliable)
                                                              end
                                    }
         --'------------------------------------------------------------------------
         --'                      HIDE FROM SURGE
         --'------------------------------------------------------------------------
-        -- Проверяем наличие укрытий.
+        -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СѓРєСЂС‹С‚РёР№.
         if(smart.surge_hide_avaliable) then
             local it = 1
             while level.patrol_path_exists(gname.."_surge_hide_"..it) do
-                -- Необходимо вычитать количество работ из названия точки пути.
+                -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
                 local way_name = gname.."_surge_hide_"..it
                 local ptr = patrol(way_name)
                 local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -927,14 +927,14 @@ function load_job(smart)
                 end
 
                 for i = 1, job_count do
-                    -- добавляем должность
+                    -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
                     t = {   _prior = def_prior - (it - 1),
                             job_id = {section = "logic@"..way_name}
                         }
                     table.insert(stalker_surge_jobs.jobs, t)
                 end
 
-                -- добавляем описание должности в лтх.
+                -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
                 local job_ltx = "[logic@"..way_name.."]\n"..
                                 "active = surge_hide@"..way_name.."\n"..
 
@@ -952,7 +952,7 @@ function load_job(smart)
             local pop = smart.squad_capacity
             if(it<=pop) then
                 while level.patrol_path_exists(gname.."_kamp_"..it) do
-                    -- Необходимо вычитать количество работ из названия точки пути.
+                    -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
                     local way_name = gname.."_kamp_"..it
                     local ptr = patrol(way_name)
                     local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -963,14 +963,14 @@ function load_job(smart)
                     end
 
                     for i = 1, job_count do
-                        -- добавляем должность
+                        -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
                         t = {   _prior = def_prior - (it - 1),
                                 job_id = {section = "logic@surge_hide_"..way_name}
                             }
                         table.insert(stalker_surge_jobs.jobs, t)
                     end
 
-                    -- добавляем описание должности в лтх.
+                    -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
                     local job_ltx = "[logic@surge_hide_"..way_name.."]\n"..
                                     "active = surge_hide@"..way_name.."\n"..
 
@@ -992,12 +992,12 @@ function load_job(smart)
     table.insert(job_table, stalker_jobs)
 
 --'------------------------------------------------------------------------
---'         РАБОТЫ МОНСТРОВ
+--'         Р РђР‘РћРўР« РњРћРќРЎРўР РћР’
 --'------------------------------------------------------------------------
     local monster_jobs = {_precondition_is_monster = true, _prior = 50, jobs = {}}
 
     --'------------------------------------------------------------------------
-    --'                      ОБЫЧНОЕ СОСТОЯНИЕ
+    --'                      РћР‘Р«Р§РќРћР• РЎРћРЎРўРћРЇРќРР•
     --'------------------------------------------------------------------------
         local monster_general_jobs = {_prior = 40, jobs = {}}
 
@@ -1006,7 +1006,7 @@ function load_job(smart)
         --'------------------------------------------------------------------------
         it = 1
         while level.patrol_path_exists(gname.."_kamp_"..it.."_task") do
-            -- Необходимо вычитать количество работ из названия точки пути.
+            -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
             local way_name = gname.."_kamp_"..it.."_task"
             local ptr = patrol(way_name)
             local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -1025,14 +1025,14 @@ function load_job(smart)
             end
 
             for i = 1,job_count do
-                -- добавляем должность
+                -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
                 t = {   _prior = 40,
                         job_id = { section = "logic@"..gname.."_home_"..it }
                     }
                 table.insert(monster_general_jobs.jobs, t)
             end
 
-            -- добавляем описание должности в лтх.
+            -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
             local job_ltx = "[logic@"..gname.."_home_"..it.."]\n"..
                             "active = mob_home@"..gname.."_home_"..it.."\n"..
 
@@ -1051,7 +1051,7 @@ function load_job(smart)
 
         table.insert(monster_jobs.jobs, monster_general_jobs)
     --'------------------------------------------------------------------------
-    --'                      АТАКА СМАРТА
+    --'                      РђРўРђРљРђ РЎРњРђР РўРђ
     --'------------------------------------------------------------------------
         local monster_attack_jobs = {   _prior = 50, jobs = {},
                                         _current_squad_action = "attack_point"}
@@ -1069,14 +1069,14 @@ function load_job(smart)
             --'------------------------------------------------------------------------
             it = 1
             while level.patrol_path_exists(target_smart.."_kamp_"..it.."_task") do
-                -- Необходимо вычитать количество работ из названия точки пути.
+                -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
                 local way_name = gname.."_kamp_"..it.."_task"
                 local job_count = 10
                 local home_min_radius = 15
                 local home_max_radius = 30
 
                 for i = 1,job_count do
-                    -- добавляем должность
+                    -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
                     local sect_name = gname.."_to_"..target_smart.."_monster_attack_"..tostring(i).."_"..it
                     t = {   _prior = 50,
                             _attack_job = true,
@@ -1085,7 +1085,7 @@ function load_job(smart)
                         }
                     table.insert(monster_attack_smart_jobs.jobs, t)
 
-                    -- добавляем описание должности в лтх.
+                    -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
                     local job_ltx = "[logic@"..sect_name.."]\n"..
                                     "active = mob_home@"..sect_name.."\n"..
 
@@ -1117,7 +1117,7 @@ function load_job(smart)
     table.insert(job_table, monster_jobs)
 
 --'------------------------------------------------------------------------
---'                      ЭКСКЛЮЗИВНЫЕ РАБОТЫ
+--'                      Р­РљРЎРљР›Р®Р—РР’РќР«Р• Р РђР‘РћРўР«
 --'------------------------------------------------------------------------
     local smart_ini = smart:spawn_ini()
     if smart_ini:section_exist("smart_terrain") then
@@ -1155,10 +1155,10 @@ function add_exclusive_job(sect, work_field, smart_ini, job_table)
     local job_ini_file = ini_file(ini_path)
     local job_online =  utils.cfg_get_string(job_ini_file, "logic@"..work_field, "job_online", db.actor ,false , "", nil)
 
-    -- добавляем возможность указать приоритет уникальной работы в секции логики.(по дефолту её приоритет равен 45-ти)
+    -- РґРѕР±Р°РІР»СЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СѓРєР°Р·Р°С‚СЊ РїСЂРёРѕСЂРёС‚РµС‚ СѓРЅРёРєР°Р»СЊРЅРѕР№ СЂР°Р±РѕС‚С‹ РІ СЃРµРєС†РёРё Р»РѕРіРёРєРё.(РїРѕ РґРµС„РѕР»С‚Сѓ РµС‘ РїСЂРёРѕСЂРёС‚РµС‚ СЂР°РІРµРЅ 45-С‚Рё)
     local new_prior = utils.cfg_get_number(job_ini_file, "logic@"..work_field, "prior", nil , false, 45)
 
-    -- Проверяем есть ли у работы поле suitable. Если есть, нам нужно добавить прекондишн
+    -- РџСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё Сѓ СЂР°Р±РѕС‚С‹ РїРѕР»Рµ suitable. Р•СЃР»Рё РµСЃС‚СЊ, РЅР°Рј РЅСѓР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РїСЂРµРєРѕРЅРґРёС€РЅ
     local job_suitable = utils.cfg_get_string(job_ini_file, "logic@"..work_field, "suitable", smart, false, "")
     local is_monster = utils.cfg_get_bool(job_ini_file, "logic@"..work_field, "monster_job", smart, false, false)
 
@@ -1188,7 +1188,7 @@ function add_exclusive_job(sect, work_field, smart_ini, job_table)
                 }
     table.insert(job_table, t)
 
-    -- Затычка для оффлайна, когда невозможно проверить прекондишн
+    -- Р—Р°С‚С‹С‡РєР° РґР»СЏ РѕС„С„Р»Р°Р№РЅР°, РєРѕРіРґР° РЅРµРІРѕР·РјРѕР¶РЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ РїСЂРµРєРѕРЅРґРёС€РЅ
     t = {   _prior = -1,
             _precondition_is_monster = is_monster,
             job_id = {  section = "logic@"..work_field,

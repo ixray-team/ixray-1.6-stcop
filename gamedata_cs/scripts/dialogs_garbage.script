@@ -1,7 +1,7 @@
--- Äåíüãè äëÿ äèããåðà íà áàðàõîëêå
+-- Ð”ÐµÐ½ÑŒÐ³Ð¸ Ð´Ð»Ñ Ð´Ð¸Ð³Ð³ÐµÑ€Ð° Ð½Ð° Ð±Ð°Ñ€Ð°Ñ…Ð¾Ð»ÐºÐµ
 local money_for_digger = 2000
 
--- Íàãðàäû çà êâåñòû
+-- ÐÐ°Ð³Ñ€Ð°Ð´Ñ‹ Ð·Ð° ÐºÐ²ÐµÑÑ‚Ñ‹
 
 function reward_for_killer_pseudodogs(first_speaker, second_speaker)
 	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "kolbasa")
@@ -24,7 +24,7 @@ function reward_before_attack(first_speaker, second_speaker)
 	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_12x76_dart", 5)
 end
 
--- Ôóíêöèè äëÿ ïåðåäà÷è äåíåã çà ìåäêèò
+-- Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð¿ÐµÑ€ÐµÐ´Ð°Ñ‡Ð¸ Ð´ÐµÐ½ÐµÐ³ Ð·Ð° Ð¼ÐµÐ´ÐºÐ¸Ñ‚
 
 function has_money_for_digger(first_speaker, second_speaker)
 	return first_speaker:money() >= money_for_digger

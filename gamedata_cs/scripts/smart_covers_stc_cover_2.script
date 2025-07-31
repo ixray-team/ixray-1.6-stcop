@@ -12,7 +12,7 @@ function get_smart_cover_stc_2()
 
   
       transitions = {
-      --' Анимации входа в бойницы
+      --' РђРЅРёРјР°С†РёРё РІС…РѕРґР° РІ Р±РѕР№РЅРёС†С‹
     {
         vertex0 = "",
         vertex1 = "second",
@@ -32,7 +32,7 @@ function get_smart_cover_stc_2()
               }
       },	  
 	
-      --' Анимации выхода из бойниц.
+      --' РђРЅРёРјР°С†РёРё РІС‹С…РѕРґР° РёР· Р±РѕР№РЅРёС†.
       {
         vertex0 = "second",
         vertex1 = "",

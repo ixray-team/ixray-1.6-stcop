@@ -1,5 +1,5 @@
 --'*************************************************************************************
---' Дескриптор обычного задания
+--' Р”РµСЃРєСЂРёРїС‚РѕСЂ РѕР±С‹С‡РЅРѕРіРѕ Р·Р°РґР°РЅРёСЏ
 --'*************************************************************************************
 local task_types = {
 	storyline = 0,
@@ -70,7 +70,7 @@ function CGeneralTask:__init(task_ini, id, type)
 	self.entity_id 		= nil
 	self.support_attack	= utils.cfg_get_bool(task_ini, id, "support_attack", nil, false, true)
 	self.play_regard	= utils.cfg_get_string(task_ini, id, "play_regard", nil, false, "", "")
-	--' Условия выполнения и провала квеста
+	--' РЈСЃР»РѕРІРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Рё РїСЂРѕРІР°Р»Р° РєРІРµСЃС‚Р°
 	local i = 0
 	self.condlist = {}
 	while task_ini:line_exist(id, "condlist_"..i) do
@@ -78,7 +78,7 @@ function CGeneralTask:__init(task_ini, id, type)
 		i = i + 1
 	end
 
-	--' Награды за квест
+	--' РќР°РіСЂР°РґС‹ Р·Р° РєРІРµСЃС‚
 	self.on_init = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "on_init", nil, false, "", ""))
 	self.on_complete = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "on_complete", nil, false, "", ""))
 	self.on_reversed = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "on_reversed", nil, false, "", ""))
@@ -89,17 +89,17 @@ function CGeneralTask:__init(task_ini, id, type)
 
 	self.community_relation_delta_fail = utils.cfg_get_number(task_ini, id, "community_relation_delta_fail", nil, false, 0)
 	self.community_relation_delta_complete = utils.cfg_get_number(task_ini, id, "community_relation_delta_complete", nil, false, 0)
-	--' Статус квеста, может быть: "normal", "selected", "completed", "fail", "reversed"
+	--' РЎС‚Р°С‚СѓСЃ РєРІРµСЃС‚Р°, РјРѕР¶РµС‚ Р±С‹С‚СЊ: "normal", "selected", "completed", "fail", "reversed"
 	self.status = "normal"
 	self.actor_helped = false
 end
---' Выдача квеста
+--' Р’С‹РґР°С‡Р° РєРІРµСЃС‚Р°
 function CGeneralTask:give_task(community)
 	--callstack()
 	self.actor_come = false
 	self.actor_ignore = false
 
-	--' Помечаем этот таск что он выдан для определенного комьюнити. Пригодиться при выдаче награды
+	--' РџРѕРјРµС‡Р°РµРј СЌС‚РѕС‚ С‚Р°СЃРє С‡С‚Рѕ РѕРЅ РІС‹РґР°РЅ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ РєРѕРјСЊСЋРЅРёС‚Рё. РџСЂРёРіРѕРґРёС‚СЊСЃСЏ РїСЂРё РІС‹РґР°С‡Рµ РЅР°РіСЂР°РґС‹
 	self.community = community
 	local str = community
 	if str == "bandit" then
@@ -172,7 +172,7 @@ function CGeneralTask:give_task(community)
 --	level.map_remove_object_spot( self.target, "complex_spot_template" )
 	local time = 0
 	if self.wait_time ~= nil then
-		time = self.wait_time  -- Тут время задано в игровых секундах
+		time = self.wait_time  -- РўСѓС‚ РІСЂРµРјСЏ Р·Р°РґР°РЅРѕ РІ РёРіСЂРѕРІС‹С… СЃРµРєСѓРЅРґР°С…
 	end
 	if(self.spot==nil) then
 		if(type=="storyline") then
@@ -208,7 +208,7 @@ function CGeneralTask:give_task(community)
 			end
 		end
 	end
-	--' Заносим в task_info
+	--' Р—Р°РЅРѕСЃРёРј РІ task_info
 	self.status = "selected"
 	self.inited_time = game.get_game_time()
 	task_manager.get_task_manager().task_info[tostring(self.entity_id)] = self
@@ -216,14 +216,14 @@ function CGeneralTask:give_task(community)
 	self.t = t
 	xr_statistic.inc_recieved_quests_counter()
 end
---' Проверка текущего выполнения квеста
+--' РџСЂРѕРІРµСЂРєР° С‚РµРєСѓС‰РµРіРѕ РІС‹РїРѕР»РЅРµРЅРёСЏ РєРІРµСЃС‚Р°
 function CGeneralTask:check_task(tm)
 	local global_time = time_global()
 	if self.check_time ~= nil and
 		 self.last_check_task ~= nil and
 		 global_time - self.check_time <= 50
 	then
-		--' Возвращаем результат прошлой проверки (для оптимизации)
+		--' Р’РѕР·РІСЂР°С‰Р°РµРј СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРѕС€Р»РѕР№ РїСЂРѕРІРµСЂРєРё (РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё)
 		return
 	end
 
@@ -232,7 +232,7 @@ function CGeneralTask:check_task(tm)
 	for k,v in pairs(self.condlist) do
 		local t = xr_logic.pick_section_from_condlist(db.actor, db.actor, v)
 		if t ~= nil then
-			--' Проверка на валидность
+			--' РџСЂРѕРІРµСЂРєР° РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ
 			if valid_values[t] ~= true then
 				abort("Invalid task status [%s] for task [%s]", t, self.name)
 			end
@@ -261,7 +261,7 @@ function CGeneralTask:check_task(tm)
 	end
 ]]
 end
--- Функция, которая вызывается и ставит флажок, что актер действительно помог в ввыполнении этого таска.
+-- Р¤СѓРЅРєС†РёСЏ, РєРѕС‚РѕСЂР°СЏ РІС‹Р·С‹РІР°РµС‚СЃСЏ Рё СЃС‚Р°РІРёС‚ С„Р»Р°Р¶РѕРє, С‡С‚Рѕ Р°РєС‚РµСЂ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ РїРѕРјРѕРі РІ РІРІС‹РїРѕР»РЅРµРЅРёРё СЌС‚РѕРіРѕ С‚Р°СЃРєР°.
 function CGeneralTask:actor_help(squad_id)
 	if self.src_obj ~= nil and self.src_obj == squad_id then
 		return
@@ -271,9 +271,9 @@ function CGeneralTask:actor_help(squad_id)
 end
 function CGeneralTask:actor_comed()
 end
---' Инициализация награды
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РЅР°РіСЂР°РґС‹
 function CGeneralTask:init_reward()
-	--' Определяем, какая группировка нам должна
+	--' РћРїСЂРµРґРµР»СЏРµРј, РєР°РєР°СЏ РіСЂСѓРїРїРёСЂРѕРІРєР° РЅР°Рј РґРѕР»Р¶РЅР°
 --	printf("task_reward initialized")
 	if self.community == nil then
 --		printf("self.community == nil")
@@ -284,7 +284,7 @@ function CGeneralTask:init_reward()
 	local tm = task_manager.get_task_manager()
 
 	local is_reward = false
-	--' Нужно добавить таблицу предметы, которые нужно выдать
+	--' РќСѓР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ С‚Р°Р±Р»РёС†Сѓ РїСЂРµРґРјРµС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ РІС‹РґР°С‚СЊ
 	local money = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.reward_money)
 	local items = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.reward_item)
 	if not self.immediate_reward then
@@ -335,15 +335,15 @@ function CGeneralTask:init_reward()
 		return
 	end
 
-	--' Получить наградодавателя
+	--' РџРѕР»СѓС‡РёС‚СЊ РЅР°РіСЂР°РґРѕРґР°РІР°С‚РµР»СЏ
 	local rewarder = tm.rewarders[self.community]
 
-	--' Потом отремить!!!
+	--' РџРѕС‚РѕРј РѕС‚СЂРµРјРёС‚СЊ!!!
 	if rewarder == nil then
 		return
 	end
 
-	--' Инициировать им таск
+	--' РРЅРёС†РёРёСЂРѕРІР°С‚СЊ РёРј С‚Р°СЃРє
 	local reward_task = tm:select_task("take_reward", rewarder, self.community)
 	if reward_task.status == "normal" then
 		reward_task:give_task(self.community)
@@ -353,7 +353,7 @@ end
 function CGeneralTask:reverse_task()
 	self.last_check_task = "reversed"
 end
---' Деактивация квеста
+--' Р”РµР°РєС‚РёРІР°С†РёСЏ РєРІРµСЃС‚Р°
 function CGeneralTask:deactivate_task(task)
 	printf("deactivate task %s", self.name)
 
@@ -431,17 +431,17 @@ function CGeneralTask:load(reader)
 end
 
 --'*************************************************************************************
---' Класс задания на вынос смарттеррейна
+--' РљР»Р°СЃСЃ Р·Р°РґР°РЅРёСЏ РЅР° РІС‹РЅРѕСЃ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР°
 --'*************************************************************************************
 class "CEliminateSmartTask" (task_objects.CGeneralTask)
 function CEliminateSmartTask:__init(task_ini, id, type) super (task_ini, id, type)
-	--' Условие, что квест может быть выдан
+	--' РЈСЃР»РѕРІРёРµ, С‡С‚Рѕ РєРІРµСЃС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РІС‹РґР°РЅ
 	self.target_cond	= xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 
-	self.src_obj = nil --' Сквад, которому нужно перевыбрать задание при инициализации данного квеста.
+	self.src_obj = nil --' РЎРєРІР°Рґ, РєРѕС‚РѕСЂРѕРјСѓ РЅСѓР¶РЅРѕ РїРµСЂРµРІС‹Р±СЂР°С‚СЊ Р·Р°РґР°РЅРёРµ РїСЂРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґР°РЅРЅРѕРіРѕ РєРІРµСЃС‚Р°.
 	self.faction = nil -- faction who gived this task (if gived from sim_faction_brain_human)
 end
---' Проверка, может ли быть квест выдан данному смарту
+--' РџСЂРѕРІРµСЂРєР°, РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РєРІРµСЃС‚ РІС‹РґР°РЅ РґР°РЅРЅРѕРјСѓ СЃРјР°СЂС‚Сѓ
 function CEliminateSmartTask:check_target(smart, faction)
 	if self.faction_target ~= nil and self.faction_target ~= faction then
 		return
@@ -453,7 +453,7 @@ function CEliminateSmartTask:check_target(smart, faction)
 	end
 	return false
 end
---' Инициализация таска конкретным таргетом
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°СЃРєР° РєРѕРЅРєСЂРµС‚РЅС‹Рј С‚Р°СЂРіРµС‚РѕРј
 function CEliminateSmartTask:init_task(smart, faction)
 	self.target = smart.id
 --	self.target_obj = smart
@@ -463,20 +463,20 @@ function CEliminateSmartTask:init_task(smart, faction)
 
 	self.prior = self.base_prior --'+ smart.sim_prior[faction]
 end
---' Получить этот же квест, но инициализированный
+--' РџРѕР»СѓС‡РёС‚СЊ СЌС‚РѕС‚ Р¶Рµ РєРІРµСЃС‚, РЅРѕ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Р№
 function CEliminateSmartTask:get_inited_task(smart, faction, entity_id)
 	local task = CEliminateSmartTask(self.task_ini, self.base_id, self.type)
 	task:init_task(smart, faction)
 	task.entity_id = entity_id
 	return task
 end
---' Проверка текущего выполнения квеста
+--' РџСЂРѕРІРµСЂРєР° С‚РµРєСѓС‰РµРіРѕ РІС‹РїРѕР»РЅРµРЅРёСЏ РєРІРµСЃС‚Р°
 function CEliminateSmartTask:check_task(tm)
-	--' Квест считается выполненым когда смарттеррейн пуст
+	--' РљРІРµСЃС‚ СЃС‡РёС‚Р°РµС‚СЃСЏ РІС‹РїРѕР»РЅРµРЅС‹Рј РєРѕРіРґР° СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅ РїСѓСЃС‚
 	if self.board.smarts[self.target].smrt.player_name == "none" then
 		if self.actor_helped then
 			self.last_check_task = "complete"
-			--' Кидаем озвучку.
+			--' РљРёРґР°РµРј РѕР·РІСѓС‡РєСѓ.
 			if(self.play_regard=="") then
 				xr_sound.set_sound_play(db.actor:id(), "alife_general_help_"..self.community, self.community, self.target)
 			elseif(self.play_regard~="nil") then
@@ -493,7 +493,7 @@ end
 function CEliminateSmartTask:reverse_task()
 	self.last_check_task = "reversed"
 end
---' Деактивация квеста
+--' Р”РµР°РєС‚РёРІР°С†РёСЏ РєРІРµСЃС‚Р°
 function CEliminateSmartTask:deactivate_task(task)
 	task_objects.CGeneralTask.deactivate_task(self,task)
 	task_manager.get_task_manager():unregister_faction_task(self.community, self)
@@ -550,18 +550,18 @@ function CEliminateSmartTask:load(reader)
 end
 
 --'*************************************************************************************
---' Класс задания на захват смарттеррейна
+--' РљР»Р°СЃСЃ Р·Р°РґР°РЅРёСЏ РЅР° Р·Р°С…РІР°С‚ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР°
 --'*************************************************************************************
 class "CCaptureSmartTask" (task_objects.CGeneralTask)
 function CCaptureSmartTask:__init(task_ini, id, type) super (task_ini, id, type)
-	--' Условие, что квест может быть выдан
+	--' РЈСЃР»РѕРІРёРµ, С‡С‚Рѕ РєРІРµСЃС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РІС‹РґР°РЅ
 	self.target_cond	= xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 	self.counter_attack = utils.cfg_get_bool(task_ini, id, "counter_attack", nil, false, true)
 
-	self.src_obj = nil --' Сквад, которому нужно перевыбрать задание при инициализации данного квеста.
+	self.src_obj = nil --' РЎРєРІР°Рґ, РєРѕС‚РѕСЂРѕРјСѓ РЅСѓР¶РЅРѕ РїРµСЂРµРІС‹Р±СЂР°С‚СЊ Р·Р°РґР°РЅРёРµ РїСЂРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґР°РЅРЅРѕРіРѕ РєРІРµСЃС‚Р°.
 	self.faction = nil -- faction who gived this task (if gived from sim_faction_brain_human)
 end
---' Проверка, может ли быть квест выдан данному смарту
+--' РџСЂРѕРІРµСЂРєР°, РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РєРІРµСЃС‚ РІС‹РґР°РЅ РґР°РЅРЅРѕРјСѓ СЃРјР°СЂС‚Сѓ
 function CCaptureSmartTask:check_target(smart, faction)
 	if self.faction_target ~= nil and self.faction_target ~= faction then
 		return
@@ -573,7 +573,7 @@ function CCaptureSmartTask:check_target(smart, faction)
 	end
 	return false
 end
---' Инициализация таска конкретным таргетом
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°СЃРєР° РєРѕРЅРєСЂРµС‚РЅС‹Рј С‚Р°СЂРіРµС‚РѕРј
 function CCaptureSmartTask:init_task(smart, faction)
 	self.target = smart.id
 --	self.target_obj = smart
@@ -583,14 +583,14 @@ function CCaptureSmartTask:init_task(smart, faction)
 
 	self.prior = self.base_prior --'+ smart.sim_prior[faction]
 end
---' Получить этот же квест, но инициализированный
+--' РџРѕР»СѓС‡РёС‚СЊ СЌС‚РѕС‚ Р¶Рµ РєРІРµСЃС‚, РЅРѕ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Р№
 function CCaptureSmartTask:get_inited_task(smart, faction, entity_id)
 	local task = CCaptureSmartTask(self.task_ini, self.base_id , self.type)
 	task:init_task(smart, faction)
 	task.entity_id = entity_id
 	return task
 end
---' Проверка текущего выполнения квеста
+--' РџСЂРѕРІРµСЂРєР° С‚РµРєСѓС‰РµРіРѕ РІС‹РїРѕР»РЅРµРЅРёСЏ РєРІРµСЃС‚Р°
 function CCaptureSmartTask:check_task(tm)
 	self:check_title(self.state == "counter_attack")
 
@@ -607,7 +607,7 @@ function CCaptureSmartTask:check_task(tm)
 				if self.actor_helped then
 					self.last_check_task = "complete"
 					target_obj.combat_manager.combat_quest = "nil"
-					--' Кидаем озвучку.
+					--' РљРёРґР°РµРј РѕР·РІСѓС‡РєСѓ.
 					for kk,vv in pairs(self.board.smarts[target_obj.id].squads) do
 						if(self.play_regard=="") then
 							xr_sound.set_sound_play(vv.commander_id, "alife_defence_actor_help", self.community, self.target)
@@ -628,7 +628,7 @@ function CCaptureSmartTask:check_task(tm)
 				 self.counter_attack_community ~= "none" and
 				 self.board.players[self.counter_attack_community].brain.use_counter_attack == true
 			then
-				-- Отыгрываем озвучку контратаки
+				-- РћС‚С‹РіСЂС‹РІР°РµРј РѕР·РІСѓС‡РєСѓ РєРѕРЅС‚СЂР°С‚Р°РєРё
 				local ally_squad
 				for kk,vv in pairs(self.board.smarts[target_obj.id].squads) do
 					ally_squad = vv
@@ -646,7 +646,7 @@ function CCaptureSmartTask:check_task(tm)
 					return
 				end
 
-				--' Запускаем контратаку
+				--' Р—Р°РїСѓСЃРєР°РµРј РєРѕРЅС‚СЂР°С‚Р°РєСѓ
 				for k,v in pairs(self.board:get_nearest_smarts(target_obj)) do
 					for kk,vv in pairs(self.board.smarts[v.id].squads) do
 						if self.counter_attack_community == vv.player_id then
@@ -662,10 +662,10 @@ function CCaptureSmartTask:check_task(tm)
 				end
 			end
 
-			--' Контратаку запустиь не получилось, выполняем квест.
+			--' РљРѕРЅС‚СЂР°С‚Р°РєСѓ Р·Р°РїСѓСЃС‚РёСЊ РЅРµ РїРѕР»СѓС‡РёР»РѕСЃСЊ, РІС‹РїРѕР»РЅСЏРµРј РєРІРµСЃС‚.
 			if self.actor_helped then
 				self.last_check_task = "complete"
-				--' Кидаем озвучку.
+				--' РљРёРґР°РµРј РѕР·РІСѓС‡РєСѓ.
 				for kk,vv in pairs(self.board.smarts[target_obj.id].squads) do
 					if(self.play_regard=="") then
 						xr_sound.set_sound_play(vv.commander_id, "alife_defence_actor_help", self.community, self.target)
@@ -713,7 +713,7 @@ function CCaptureSmartTask:check_title(is_counterattack)
 ]]
 end
 function CCaptureSmartTask:give_task(community)
-	--' Указать скваду что у него есть выданное задание
+	--' РЈРєР°Р·Р°С‚СЊ СЃРєРІР°РґСѓ С‡С‚Рѕ Сѓ РЅРµРіРѕ РµСЃС‚СЊ РІС‹РґР°РЅРЅРѕРµ Р·Р°РґР°РЅРёРµ
 	if self.src_obj ~= nil then
 		sim_board.get_sim_board().squads[self.src_obj]:give_squad_task(self.target)
 	end
@@ -730,7 +730,7 @@ function CCaptureSmartTask:reverse_task()
 	local target_obj = self.board.smarts[self.target].smrt
 	target_obj.combat_manager.combat_quest = "nil"
 end
---' Деактивация квеста
+--' Р”РµР°РєС‚РёРІР°С†РёСЏ РєРІРµСЃС‚Р°
 function CCaptureSmartTask:deactivate_task(task)
 	task_objects.CGeneralTask.deactivate_task(self,task)
 	task_manager.get_task_manager():unregister_faction_task(self.community, self)
@@ -826,20 +826,20 @@ end
 
 
 --'*************************************************************************************
---' Класс задания на оборону смарттеррейна
+--' РљР»Р°СЃСЃ Р·Р°РґР°РЅРёСЏ РЅР° РѕР±РѕСЂРѕРЅСѓ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР°
 --'*************************************************************************************
 class "CDefendSmartTask" (task_objects.CGeneralTask)
 function CDefendSmartTask:__init(task_ini, id, type) super (task_ini, id, type)
-	--' Условие, что квест может быть выдан
+	--' РЈСЃР»РѕРІРёРµ, С‡С‚Рѕ РєРІРµСЃС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РІС‹РґР°РЅ
 	self.target_cond	= xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
-	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15) --' Время ожидания прихода игрока в минутах.
+	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15) --' Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РїСЂРёС…РѕРґР° РёРіСЂРѕРєР° РІ РјРёРЅСѓС‚Р°С….
 	if time == -1 then
 		self.wait_time = nil
 	else
 		self.wait_time = 60 * time
 	end
 end
---' Проверка, может ли быть квест выдан данному смарту
+--' РџСЂРѕРІРµСЂРєР°, РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РєРІРµСЃС‚ РІС‹РґР°РЅ РґР°РЅРЅРѕРјСѓ СЃРјР°СЂС‚Сѓ
 function CDefendSmartTask:check_target(smart, faction)
 	if self.faction_target ~= nil and self.faction_target ~= faction then
 		return
@@ -851,7 +851,7 @@ function CDefendSmartTask:check_target(smart, faction)
 	end
 	return false
 end
---' Инициализация таска конкретным таргетом
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°СЃРєР° РєРѕРЅРєСЂРµС‚РЅС‹Рј С‚Р°СЂРіРµС‚РѕРј
 function CDefendSmartTask:init_task(smart, faction)
 	self.target = smart.id
 --	self.target_obj = smart
@@ -861,7 +861,7 @@ function CDefendSmartTask:init_task(smart, faction)
 
 	self.prior = self.base_prior --'+ smart.sim_prior[faction]
 end
---' Получить этот же квест, но инициализированный
+--' РџРѕР»СѓС‡РёС‚СЊ СЌС‚РѕС‚ Р¶Рµ РєРІРµСЃС‚, РЅРѕ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Р№
 function CDefendSmartTask:get_inited_task(smart, faction, entity_id)
 	local task = CDefendSmartTask(self.task_ini, self.base_id, self.type)
 	task:init_task(smart, faction)
@@ -869,32 +869,32 @@ function CDefendSmartTask:get_inited_task(smart, faction, entity_id)
 
 	return task
 end
---' Проверка текущего выполнения квеста
+--' РџСЂРѕРІРµСЂРєР° С‚РµРєСѓС‰РµРіРѕ РІС‹РїРѕР»РЅРµРЅРёСЏ РєРІРµСЃС‚Р°
 function CDefendSmartTask:check_task(tm)
 	if self.check_time ~= nil and
 		 self.last_check_task ~= nil and
 			 time_global() - self.check_time <= 50
 	then
-		--' Возвращаем результат прошлой проверки (для оптимизации)
+		--' Р’РѕР·РІСЂР°С‰Р°РµРј СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРѕС€Р»РѕР№ РїСЂРѕРІРµСЂРєРё (РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё)
 		return
 	end
 
 	self.check_time = time_global()
 		local target_obj = self.board.smarts[self.target].smrt
-	--' Если в смарте никого не осталось - то квест провален.
+	--' Р•СЃР»Рё РІ СЃРјР°СЂС‚Рµ РЅРёРєРѕРіРѕ РЅРµ РѕСЃС‚Р°Р»РѕСЃСЊ - С‚Рѕ РєРІРµСЃС‚ РїСЂРѕРІР°Р»РµРЅ.
 	if target_obj.player_name == "none" then
 		target_obj.combat_manager.combat_quest = "nil"
 		self.last_check_task = "fail"
 		return
 	end
 
-	--' Квест считается выполненым, когда на него никто не будет нападать.
+	--' РљРІРµСЃС‚ СЃС‡РёС‚Р°РµС‚СЃСЏ РІС‹РїРѕР»РЅРµРЅС‹Рј, РєРѕРіРґР° РЅР° РЅРµРіРѕ РЅРёРєС‚Рѕ РЅРµ Р±СѓРґРµС‚ РЅР°РїР°РґР°С‚СЊ.
 	if not target_obj.combat_manager:point_under_attack() then
-		--' Игрок помог отбиться.
+		--' РРіСЂРѕРє РїРѕРјРѕРі РѕС‚Р±РёС‚СЊСЃСЏ.
 		if self.actor_helped then
 			local target_squads = self.board.smarts[self.target].squads
 			for k,squad in pairs(target_squads) do
-				--' Кидаем озвучку.
+				--' РљРёРґР°РµРј РѕР·РІСѓС‡РєСѓ.
 				if(self.play_regard=="") then
 					squad:issue_order("defend_actor_help")
 				end
@@ -914,7 +914,7 @@ function CDefendSmartTask:check_task(tm)
 		if self.actor_helped then
 			self:actor_comed(target_obj.combat_manager)
 		else
-			-- Время от времени просим игрока о помощи
+			-- Р’СЂРµРјСЏ РѕС‚ РІСЂРµРјРµРЅРё РїСЂРѕСЃРёРј РёРіСЂРѕРєР° Рѕ РїРѕРјРѕС‰Рё
 			if game.get_game_time():diffSec(self.last_called_time) > 50 then
 				local target_squads = self.board.smarts[self.target].squads
 				for k,squad in pairs(target_squads) do
@@ -951,7 +951,7 @@ function CDefendSmartTask:actor_ignored(target_obj_combat_manager)
 	end
 	self.actor_ignore = true
 
-	--' Игрок не пришел за установленное время - срываемся в бой.
+	--' РРіСЂРѕРє РЅРµ РїСЂРёС€РµР» Р·Р° СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРµ РІСЂРµРјСЏ - СЃСЂС‹РІР°РµРјСЃСЏ РІ Р±РѕР№.
 	target_obj_combat_manager:request_squad_stage(nil, "combat")
 	local target_squads = self.board.smarts[self.target].squads
 	for k,squad in pairs(target_squads) do
@@ -985,7 +985,7 @@ function CDefendSmartTask:reverse_task()
 	local target_obj = self.board.smarts[self.target].smrt
 	target_obj.combat_manager.combat_quest = "nil"
 end
---' Деактивация квеста
+--' Р”РµР°РєС‚РёРІР°С†РёСЏ РєРІРµСЃС‚Р°
 function CDefendSmartTask:deactivate_task(task)
 	task_objects.CGeneralTask.deactivate_task(self,task)
 	self.board.smarts[self.target].smrt.combat_manager.combat_quest = "nil"
@@ -1013,20 +1013,20 @@ end
 
 
 --'*************************************************************************************
---' Класс задания на оборону смарттеррейна от атаки с задержкой
+--' РљР»Р°СЃСЃ Р·Р°РґР°РЅРёСЏ РЅР° РѕР±РѕСЂРѕРЅСѓ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР° РѕС‚ Р°С‚Р°РєРё СЃ Р·Р°РґРµСЂР¶РєРѕР№
 --'*************************************************************************************
 class "CDefendSmartTaskDelay" (task_objects.CGeneralTask)
 function CDefendSmartTaskDelay:__init(task_ini, id, type) super (task_ini, id, type)
-	--' Условие, что квест может быть выдан
+	--' РЈСЃР»РѕРІРёРµ, С‡С‚Рѕ РєРІРµСЃС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РІС‹РґР°РЅ
 	self.target_cond	= xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
-	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15) --' Время ожидания прихода игрока в минутах.
+	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15) --' Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РїСЂРёС…РѕРґР° РёРіСЂРѕРєР° РІ РјРёРЅСѓС‚Р°С….
 	if time == -1 then
 		self.wait_time = nil
 	else
 		self.wait_time = 60 * time
 	end
 end
---' Проверка, может ли быть квест выдан данному смарту
+--' РџСЂРѕРІРµСЂРєР°, РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РєРІРµСЃС‚ РІС‹РґР°РЅ РґР°РЅРЅРѕРјСѓ СЃРјР°СЂС‚Сѓ
 function CDefendSmartTaskDelay:check_target(smart, faction)
 	if self.faction_target ~= nil and self.faction_target ~= faction then
 		return
@@ -1038,7 +1038,7 @@ function CDefendSmartTaskDelay:check_target(smart, faction)
 	end
 	return false
 end
---' Инициализация таска конкретным таргетом
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°СЃРєР° РєРѕРЅРєСЂРµС‚РЅС‹Рј С‚Р°СЂРіРµС‚РѕРј
 function CDefendSmartTaskDelay:init_task(smart, faction)
 	self.target = smart.id
 --	self.target_obj = smart
@@ -1048,25 +1048,25 @@ function CDefendSmartTaskDelay:init_task(smart, faction)
 
 	self.prior = self.base_prior --'+ smart.sim_prior[faction]
 end
---' Получить этот же квест, но инициализированный
+--' РџРѕР»СѓС‡РёС‚СЊ СЌС‚РѕС‚ Р¶Рµ РєРІРµСЃС‚, РЅРѕ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Р№
 function CDefendSmartTaskDelay:get_inited_task(smart, faction, entity_id)
 	local task = CDefendSmartTaskDelay(self.task_ini, self.base_id, self.type)
 	task:init_task(smart, faction)
 	task.entity_id = entity_id
 	return task
 end
---' Проверка текущего выполнения квеста
+--' РџСЂРѕРІРµСЂРєР° С‚РµРєСѓС‰РµРіРѕ РІС‹РїРѕР»РЅРµРЅРёСЏ РєРІРµСЃС‚Р°
 function CDefendSmartTaskDelay:check_task(tm)
 	if self.check_time ~= nil and
 		 self.last_check_task ~= nil and
 		 time_global() - self.check_time <= 50
 	then
-		--' Возвращаем результат прошлой проверки (для оптимизации)
+		--' Р’РѕР·РІСЂР°С‰Р°РµРј СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРѕС€Р»РѕР№ РїСЂРѕРІРµСЂРєРё (РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё)
 		return
 	end
 	self.check_time = time_global()
 
-	-- Если в смарте всех убили - квест провален
+	-- Р•СЃР»Рё РІ СЃРјР°СЂС‚Рµ РІСЃРµС… СѓР±РёР»Рё - РєРІРµСЃС‚ РїСЂРѕРІР°Р»РµРЅ
 	local target_obj = self.board.smarts[self.target].smrt
 	if target_obj.player_name ~= self.community  then
 		target_obj.combat_manager.combat_quest = "nil"
@@ -1074,9 +1074,9 @@ function CDefendSmartTaskDelay:check_task(tm)
 		return
 	end
 
-	-- Квест выполнен, если мертв нападающий отряд
+	-- РљРІРµСЃС‚ РІС‹РїРѕР»РЅРµРЅ, РµСЃР»Рё РјРµСЂС‚РІ РЅР°РїР°РґР°СЋС‰РёР№ РѕС‚СЂСЏРґ
 	if self.board.squads[self.src_squad_id] == nil then
-		--' Игрок помог отбиться.
+		--' РРіСЂРѕРє РїРѕРјРѕРі РѕС‚Р±РёС‚СЊСЃСЏ.
 		if self.actor_helped then
 			local target_squads = self.board.smarts[self.target].squads
 			for k,squad in pairs(target_squads) do
@@ -1107,7 +1107,7 @@ function CDefendSmartTaskDelay:check_task(tm)
 				break
 			end
 		else
-			-- Время от времени просим игрока о помощи
+			-- Р’СЂРµРјСЏ РѕС‚ РІСЂРµРјРµРЅРё РїСЂРѕСЃРёРј РёРіСЂРѕРєР° Рѕ РїРѕРјРѕС‰Рё
 			if game.get_game_time():diffSec(self.last_called_time) > 50 then
 				local target_squads = self.board.smarts[self.target].squads
 				for k,squad in pairs(target_squads) do
@@ -1121,7 +1121,7 @@ function CDefendSmartTaskDelay:check_task(tm)
 		end
 	end
 
-	-- Если время истекло - запускаем атаку.
+	-- Р•СЃР»Рё РІСЂРµРјСЏ РёСЃС‚РµРєР»Рѕ - Р·Р°РїСѓСЃРєР°РµРј Р°С‚Р°РєСѓ.
 	if self.attack_launched ~= true and (game.get_game_time():diffSec(self.inited_time) > self.wait_time or self.actor_come) then
 		local source_smart_squads = self.board.smarts[self.board.squads[self.src_squad_id].smart_id].squads
 		local attacking_num = 0
@@ -1162,7 +1162,7 @@ function CDefendSmartTaskDelay:reverse_task()
 	local target_obj = self.board.smarts[self.target].smrt
 	target_obj.combat_manager.combat_quest = "nil"
 end
---' Деактивация квеста
+--' Р”РµР°РєС‚РёРІР°С†РёСЏ РєРІРµСЃС‚Р°
 function CDefendSmartTaskDelay:deactivate_task(task)
 	task_objects.CGeneralTask.deactivate_task(self,task)
 	self.board.smarts[self.target].smrt.combat_manager.combat_quest = "nil"
@@ -1187,12 +1187,12 @@ end
 
 
 --'*************************************************************************************
---' Класс задания на получение награды
+--' РљР»Р°СЃСЃ Р·Р°РґР°РЅРёСЏ РЅР° РїРѕР»СѓС‡РµРЅРёРµ РЅР°РіСЂР°РґС‹
 --'*************************************************************************************
 class "CGetRewardTask" (task_objects.CGeneralTask)
 function CGetRewardTask:__init(task_ini, id, type) super (task_ini, id, type)
 end
---' Проверка, может ли быть квест выдан данному смарту
+--' РџСЂРѕРІРµСЂРєР°, РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РєРІРµСЃС‚ РІС‹РґР°РЅ РґР°РЅРЅРѕРјСѓ СЃРјР°СЂС‚Сѓ
 function CGetRewardTask:check_target(obj, faction)
 	if self.faction_target ~= nil and self.faction_target ~= faction then
 		return
@@ -1200,25 +1200,25 @@ function CGetRewardTask:check_target(obj, faction)
 
 	return true
 end
---' Инициализация таска конкретным таргетом
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°СЃРєР° РєРѕРЅРєСЂРµС‚РЅС‹Рј С‚Р°СЂРіРµС‚РѕРј
 function CGetRewardTask:init_task(npc_id)
 	self.target = npc_id
 	self.id	= self.id .. "_" .. npc_id
 end
---' Получить этот же квест, но инициализированный
+--' РџРѕР»СѓС‡РёС‚СЊ СЌС‚РѕС‚ Р¶Рµ РєРІРµСЃС‚, РЅРѕ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Р№
 function CGetRewardTask:get_inited_task(npc, faction,entity_id)
 	local task = CGetRewardTask(self.task_ini, self.base_id, self.type)
 	task:init_task(npc)
 	task.entity_id = entity_id
 	return task
 end
---' Проверка текущего выполнения квеста
+--' РџСЂРѕРІРµСЂРєР° С‚РµРєСѓС‰РµРіРѕ РІС‹РїРѕР»РЅРµРЅРёСЏ РєРІРµСЃС‚Р°
 function CGetRewardTask:check_task(tm)
 	if self.check_time ~= nil and
 		 self.last_check_task ~= nil and
 		 time_global() - self.check_time <= 50
 	then
-		--' Возвращаем результат прошлой проверки (для оптимизации)
+		--' Р’РѕР·РІСЂР°С‰Р°РµРј СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРѕС€Р»РѕР№ РїСЂРѕРІРµСЂРєРё (РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё)
 		return
 	end
 
@@ -1251,7 +1251,7 @@ function CGetRewardTask:check_task(tm)
 	return
 end
 
---' Описание наград
+--' РћРїРёСЃР°РЅРёРµ РЅР°РіСЂР°Рґ
 function CGetRewardTask:change_description()
 	local s = ""
 	local tm = task_manager.get_task_manager()
@@ -1299,11 +1299,11 @@ function CGetRewardTask:change_description()
 --	self.t:set_description(self.description)
 end
 
---' Деактивация квеста
+--' Р”РµР°РєС‚РёРІР°С†РёСЏ РєРІРµСЃС‚Р°
 function CGetRewardTask:deactivate_task(task)
 	task_objects.CGeneralTask.deactivate_task(self,task)
 end
---' Инициализация награды
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РЅР°РіСЂР°РґС‹
 function CGetRewardTask:init_reward()
 end
 
@@ -1326,18 +1326,18 @@ end
 
 
 --'*************************************************************************************
---' Cюжетное задание
+--' CСЋР¶РµС‚РЅРѕРµ Р·Р°РґР°РЅРёРµ
 --'*************************************************************************************
 class "CStorylineTask" (task_objects.CGeneralTask)
 function CStorylineTask:__init(task_ini, id, type) super (task_ini, id, type)
 --	self.target_story_ids = utils.cfg_get_number(task_ini, id, "target_story_ids", nil, true)
 	self.target_story_ids = utils.cfg_get_string(task_ini, id, "target_story_ids", nil, true, "")
 end
---' Проверка, может ли быть квест выдан данному смарту
+--' РџСЂРѕРІРµСЂРєР°, РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РєРІРµСЃС‚ РІС‹РґР°РЅ РґР°РЅРЅРѕРјСѓ СЃРјР°СЂС‚Сѓ
 function CStorylineTask:check_target(obj)
 	return self.base_id == obj
 end
---' Получить этот же квест, но инициализированный
+--' РџРѕР»СѓС‡РёС‚СЊ СЌС‚РѕС‚ Р¶Рµ РєРІРµСЃС‚, РЅРѕ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Р№
 function CStorylineTask:get_inited_task(obj, faction, entity_id)
 		local sid = tonumber(self.target_story_ids)
 		if(sid) then
@@ -2381,15 +2381,15 @@ function CHideFromSurgeTask:load(reader)
 end
 
 --'*************************************************************************************
---' Класс задания на Уничтожение отряда
+--' РљР»Р°СЃСЃ Р·Р°РґР°РЅРёСЏ РЅР° РЈРЅРёС‡С‚РѕР¶РµРЅРёРµ РѕС‚СЂСЏРґР°
 --'*************************************************************************************
 class "CEliminateSquadTask" (task_objects.CGeneralTask)
 function CEliminateSquadTask:__init(task_ini, id, type) super (task_ini, id, type)
-	--' Условие, что квест может быть выдан
+	--' РЈСЃР»РѕРІРёРµ, С‡С‚Рѕ РєРІРµСЃС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РІС‹РґР°РЅ
 	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
-	self.src_obj = nil --' Сквад, которому нужно перевыбрать задание при инициализации данного квеста.
+	self.src_obj = nil --' РЎРєРІР°Рґ, РєРѕС‚РѕСЂРѕРјСѓ РЅСѓР¶РЅРѕ РїРµСЂРµРІС‹Р±СЂР°С‚СЊ Р·Р°РґР°РЅРёРµ РїСЂРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґР°РЅРЅРѕРіРѕ РєРІРµСЃС‚Р°.
 end
---' Проверка, может ли быть квест выдан данному смарту
+--' РџСЂРѕРІРµСЂРєР°, РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РєРІРµСЃС‚ РІС‹РґР°РЅ РґР°РЅРЅРѕРјСѓ СЃРјР°СЂС‚Сѓ
 function CEliminateSquadTask:check_target(squad, faction)
 	if self.faction_target ~= nil and self.faction_target ~= faction then
 		return
@@ -2401,7 +2401,7 @@ function CEliminateSquadTask:check_target(squad, faction)
 	end
 	return false
 end
---' Инициализация таска конкретным таргетом
+--' РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°СЃРєР° РєРѕРЅРєСЂРµС‚РЅС‹Рј С‚Р°СЂРіРµС‚РѕРј
 function CEliminateSquadTask:init_task(squad, faction)
 	self.target = squad.commander_id
 	self.target_obj = squad.squad_id
@@ -2409,16 +2409,16 @@ function CEliminateSquadTask:init_task(squad, faction)
 	self.community = faction
 	self.prior = self.base_prior --'+ smart.sim_prior[faction]
 end
---' Получить этот же квест, но инициализированный
+--' РџРѕР»СѓС‡РёС‚СЊ СЌС‚РѕС‚ Р¶Рµ РєРІРµСЃС‚, РЅРѕ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Р№
 function CEliminateSquadTask:get_inited_task(squad, faction, entity_id)
 	local task = CEliminateSquadTask(self.task_ini, self.base_id, self.type)
 	task:init_task(squad, faction)
 	task.entity_id = entity_id
 	return task
 end
---' Проверка текущего выполнения квеста
+--' РџСЂРѕРІРµСЂРєР° С‚РµРєСѓС‰РµРіРѕ РІС‹РїРѕР»РЅРµРЅРёСЏ РєРІРµСЃС‚Р°
 function CEliminateSquadTask:check_task(tm)
-	--' Квест считается выполненым когда отряд уничтожен
+	--' РљРІРµСЃС‚ СЃС‡РёС‚Р°РµС‚СЃСЏ РІС‹РїРѕР»РЅРµРЅС‹Рј РєРѕРіРґР° РѕС‚СЂСЏРґ СѓРЅРёС‡С‚РѕР¶РµРЅ
 	if self.board.squads[self.target_obj] == nil then
 		self.last_check_task = "complete"
 	end
@@ -2431,7 +2431,7 @@ function CEliminateSquadTask:give_task(community)
 		-- self.board.smarts[self.target].smrt:hide()
 	-- end
 end
---' Деактивация квеста
+--' Р”РµР°РєС‚РёРІР°С†РёСЏ РєРІРµСЃС‚Р°
 function CEliminateSquadTask:deactivate_task(task)
 	task_objects.CGeneralTask.deactivate_task(self,task)
 	-- if self.task_type == task.storyline then
@@ -2587,9 +2587,9 @@ end
 -- Transfer quest items to npc
 function CFindUpgradeTask:transfer_items_looking_for(npc)
 	self.npc = npc
-	-- Забираем предмет
+	-- Р—Р°Р±РёСЂР°РµРј РїСЂРµРґРјРµС‚
 	dialogs.relocate_item_section(npc, self.requested_item, "out")
-	-- Выдаем рубасы за апгрейд
+	-- Р’С‹РґР°РµРј СЂСѓР±Р°СЃС‹ Р·Р° Р°РїРіСЂРµР№Рґ
 	dialogs.relocate_money(npc, self.cost, "in")
 	self.state = "finished"
 end

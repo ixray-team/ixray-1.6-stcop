@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- Cameras
 ----------------------------------------------------------------------------------------------------
--- Исходный скрипт: Oleg Hryptul (Haron) haronk@ukr.net
+-- РСЃС…РѕРґРЅС‹Р№ СЃРєСЂРёРїС‚: Oleg Hryptul (Haron) haronk@ukr.net
 ----------------------------------------------------------------------------------------------------
 
 local camera_off = 0
@@ -19,11 +19,11 @@ function action_camera_activity:__init(obj, storage)
 	self.st     = storage
 
 	self.path   = nil
-	self.num_wp = 0  -- количество вейпоинтов, между которыми будем двигать камеру
-	self.cur_wp = -1 -- текущий вейпоинт, к которому мы двигаемся
-	self.move_direction = 1 -- направление движения по вейпоинтам: 1 - вперед, (-1) - назад
-    self.track_enemy = nil -- вражеский сталкер
-	self.ocular_joint = nil -- джоинт окуляра камеры
+	self.num_wp = 0  -- РєРѕР»РёС‡РµСЃС‚РІРѕ РІРµР№РїРѕРёРЅС‚РѕРІ, РјРµР¶РґСѓ РєРѕС‚РѕСЂС‹РјРё Р±СѓРґРµРј РґРІРёРіР°С‚СЊ РєР°РјРµСЂСѓ
+	self.cur_wp = -1 -- С‚РµРєСѓС‰РёР№ РІРµР№РїРѕРёРЅС‚, Рє РєРѕС‚РѕСЂРѕРјСѓ РјС‹ РґРІРёРіР°РµРјСЃСЏ
+	self.move_direction = 1 -- РЅР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ РїРѕ РІРµР№РїРѕРёРЅС‚Р°Рј: 1 - РІРїРµСЂРµРґ, (-1) - РЅР°Р·Р°Рґ
+    self.track_enemy = nil -- РІСЂР°Р¶РµСЃРєРёР№ СЃС‚Р°Р»РєРµСЂ
+	self.ocular_joint = nil -- РґР¶РѕРёРЅС‚ РѕРєСѓР»СЏСЂР° РєР°РјРµСЂС‹
 	self.pause = false
 	self.pause_start = 0
 	
@@ -143,13 +143,13 @@ function action_camera_activity:update(delta)
 		return
 	end
 	
-	-- Камера после выхода из alife может уже быть не под скриптом, поэтому взять опять под скрипт
+	-- РљР°РјРµСЂР° РїРѕСЃР»Рµ РІС‹С…РѕРґР° РёР· alife РјРѕР¶РµС‚ СѓР¶Рµ Р±С‹С‚СЊ РЅРµ РїРѕРґ СЃРєСЂРёРїС‚РѕРј, РїРѕСЌС‚РѕРјСѓ РІР·СЏС‚СЊ РѕРїСЏС‚СЊ РїРѕРґ СЃРєСЂРёРїС‚
 	if not xr_logic.mob_captured(self.object) then
 		self:reset_scheme()
 		return
 	end
 
-    -- Следим за сталкером
+    -- РЎР»РµРґРёРј Р·Р° СЃС‚Р°Р»РєРµСЂРѕРј
     local actor_pos = utils.vector_copy_by_val(actor:bone_position("bip01_head"))
     local lense_pos = utils.vector_copy_by_val(self.object:bone_position("bone_light"))
     local actor_dir = utils.vector_copy_by_val(actor_pos):sub(lense_pos)
@@ -178,7 +178,7 @@ function action_camera_activity:update(delta)
 				self.track_enemy = nil
 				--self.enemy_pos = nil
 				
-				-- Проверяем нужно ли делать паузу
+				-- РџСЂРѕРІРµСЂСЏРµРј РЅСѓР¶РЅРѕ Р»Рё РґРµР»Р°С‚СЊ РїР°СѓР·Сѓ
 				if self.st.pause_after_lost_target > 0 then
 					printf("_hr: mode PAUSA time = %d", time_global())
 					self.state = camera_pause
@@ -225,7 +225,7 @@ function action_camera_activity:update(delta)
 				--	xr_logic.mob_capture(self.object, true)
 				--end
 				
-				-- Двигаем камеру по пути
+				-- Р”РІРёРіР°РµРј РєР°РјРµСЂСѓ РїРѕ РїСѓС‚Рё
 				if self.st.state == "path_tracking" then
 					if self.cur_wp == 0 then
 						self.move_direction = 1
@@ -238,7 +238,7 @@ function action_camera_activity:update(delta)
 					--printf("_hr: action_camera_activity:update: cur_wp = %d", self.cur_wp)
 					printf("_hr: set MOVING action")
 					action(self.object, look(self.path:point(self.cur_wp), self.st.speed_h, self.st.speed_p), cond(cond.look_end))
-				-- Двигаем камеру в диапазоне
+				-- Р”РІРёРіР°РµРј РєР°РјРµСЂСѓ РІ РґРёР°РїР°Р·РѕРЅРµ
 				--elseif self.st.state == "range_tracking" then
 				end
 			end
@@ -271,7 +271,7 @@ function action_camera_activity:update(delta)
 
 	in_focus = check_in_focus(a1, a2, self.st.focus_type, self.st.focus_angle)
 	
-	-- если камера не выполняет движение на игрока
+	-- РµСЃР»Рё РєР°РјРµСЂР° РЅРµ РІС‹РїРѕР»РЅСЏРµС‚ РґРІРёР¶РµРЅРёРµ РЅР° РёРіСЂРѕРєР°
 	if self.track_enemy and self.object:action() then
 		return
 	else
@@ -298,7 +298,7 @@ function action_camera_activity:update(delta)
 				xr_logic.mob_capture(self.object, true)
 			end
 			
-			-- Проверяем нужно ли делать паузу
+			-- РџСЂРѕРІРµСЂСЏРµРј РЅСѓР¶РЅРѕ Р»Рё РґРµР»Р°С‚СЊ РїР°СѓР·Сѓ
 			if self.st.pause_after_lost_target > 0 then
 				self.pause = true
 				self.pause_start = time_global()
@@ -309,7 +309,7 @@ function action_camera_activity:update(delta)
 		end
 	end
 
-    -- Проверяем не в паузе ли мы
+    -- РџСЂРѕРІРµСЂСЏРµРј РЅРµ РІ РїР°СѓР·Рµ Р»Рё РјС‹
     if self.pause then
 		if self.pause_start + self.st.pause_after_lost_target > time_global()
 		then
@@ -323,7 +323,7 @@ function action_camera_activity:update(delta)
     end
     
     if not self.track_enemy and not self.object:action() then
-        -- Двигаем камеру по пути
+        -- Р”РІРёРіР°РµРј РєР°РјРµСЂСѓ РїРѕ РїСѓС‚Рё
         if self.st.state == "path_tracking" then
 		    if self.cur_wp == 0 then
 			    self.move_direction = 1
@@ -336,7 +336,7 @@ function action_camera_activity:update(delta)
 		    --printf("_hr: action_camera_activity:update: cur_wp = %d", self.cur_wp)
 		    --action(self.object, look(look.point, self.path:point(self.cur_wp)), anim(anim.turn, 0), cond(cond.look_end))
 		    action(self.object, look(self.path:point(self.cur_wp), self.st.speed_h, self.st.speed_p), cond(cond.look_end))
-        -- Двигаем камеру в диапазоне
+        -- Р”РІРёРіР°РµРј РєР°РјРµСЂСѓ РІ РґРёР°РїР°Р·РѕРЅРµ
         --elseif self.st.state == "range_tracking" then
         end
 	end
@@ -349,7 +349,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = action_camera_activity(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 
@@ -359,19 +359,19 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
 	
     -- state:
-    --  off - камера выключена,
-    --  path_tracking - движение по пути,
-    --  range_tracking - движение камеры в определенных угловых границах
+    --  off - РєР°РјРµСЂР° РІС‹РєР»СЋС‡РµРЅР°,
+    --  path_tracking - РґРІРёР¶РµРЅРёРµ РїРѕ РїСѓС‚Рё,
+    --  range_tracking - РґРІРёР¶РµРЅРёРµ РєР°РјРµСЂС‹ РІ РѕРїСЂРµРґРµР»РµРЅРЅС‹С… СѓРіР»РѕРІС‹С… РіСЂР°РЅРёС†Р°С…
 	st.state = utils.cfg_get_string(ini, section, "state", npc, false, "", "path_tracking")
 
     if st.state == "path_tracking" then
-        -- path_look - путь, по которому будет поворачиваться камера
-        -- start_wp - вейпоинт, с которого будет начинаться движение камеры
+        -- path_look - РїСѓС‚СЊ, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ Р±СѓРґРµС‚ РїРѕРІРѕСЂР°С‡РёРІР°С‚СЊСЃСЏ РєР°РјРµСЂР°
+        -- start_wp - РІРµР№РїРѕРёРЅС‚, СЃ РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґРµС‚ РЅР°С‡РёРЅР°С‚СЊСЃСЏ РґРІРёР¶РµРЅРёРµ РєР°РјРµСЂС‹
 	    st.path_look = utils.cfg_get_string(ini, section, "path_look", npc, true, "")
 	    st.start_wp  = utils.cfg_get_number(ini, section, "start_wp", npc, false, 0)
 --[[	elseif st.state == "range_tracking" then
-        -- angle_h1, angle_h2 - начальный и конечный углы по горизонтали
-        -- angle_p - угол наклона камеры
+        -- angle_h1, angle_h2 - РЅР°С‡Р°Р»СЊРЅС‹Р№ Рё РєРѕРЅРµС‡РЅС‹Р№ СѓРіР»С‹ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
+        -- angle_p - СѓРіРѕР» РЅР°РєР»РѕРЅР° РєР°РјРµСЂС‹
 	    st.angle_h1 = utils.cfg_get_number(ini, section, "angle_h1", npc, false, -45)
 	    st.angle_h2 = utils.cfg_get_number(ini, section, "angle_h2", npc, false, 45)
 	    st.angle_p  = utils.cfg_get_number(ini, section, "angle_p", npc, false, 0)
@@ -380,31 +380,31 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
         st.state = "off"
     end
 
-    -- speed_h, speed_p - скорость поворота камеры по горизонтали и вертикали
+    -- speed_h, speed_p - СЃРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р° РєР°РјРµСЂС‹ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё Рё РІРµСЂС‚РёРєР°Р»Рё
 	st.speed_h = utils.cfg_get_number(ini, section, "speed_h", npc, false, 1)
 	st.speed_p = utils.cfg_get_number(ini, section, "speed_p", npc, false, 1)
 
-	-- focus_type - тип фокуса: cone - конический, rect - квадратный
+	-- focus_type - С‚РёРї С„РѕРєСѓСЃР°: cone - РєРѕРЅРёС‡РµСЃРєРёР№, rect - РєРІР°РґСЂР°С‚РЅС‹Р№
 	st.focus_type = utils.cfg_get_string(ini, section, "focus_type", npc, false, "", "cone")
 
     if st.focus_type == "rect" then
-		-- focus_angle_h, focus_angle_p - угол видимости камеры по горизонтали и вертикали
+		-- focus_angle_h, focus_angle_p - СѓРіРѕР» РІРёРґРёРјРѕСЃС‚Рё РєР°РјРµСЂС‹ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё Рё РІРµСЂС‚РёРєР°Р»Рё
 		st.focus_angle = {}
 		st.focus_angle_h = utils.cfg_get_number(ini, section, "focus_angle_h", npc, false, 90)
 		st.focus_angle_p = utils.cfg_get_number(ini, section, "focus_angle_p", npc, false, 90)
 	else
-		-- focus_angle - конический угол видимости
+		-- focus_angle - РєРѕРЅРёС‡РµСЃРєРёР№ СѓРіРѕР» РІРёРґРёРјРѕСЃС‚Рё
 		st.focus_type = "cone"
 		st.focus_angle = utils.cfg_get_number(ini, section, "focus_angle", npc, false, 135)
 	end
 
-    -- enemy_stalker - имя вражеского сталкера, за которым камера будет следить
-    -- с самого начала
+    -- enemy_stalker - РёРјСЏ РІСЂР°Р¶РµСЃРєРѕРіРѕ СЃС‚Р°Р»РєРµСЂР°, Р·Р° РєРѕС‚РѕСЂС‹Рј РєР°РјРµСЂР° Р±СѓРґРµС‚ СЃР»РµРґРёС‚СЊ
+    -- СЃ СЃР°РјРѕРіРѕ РЅР°С‡Р°Р»Р°
 	--st.enemy_stalker = utils.cfg_get_string(ini, section, "enemy_stalker", npc, false, "")
 
-	-- расстояние, на котором "замечаются" враги
+	-- СЂР°СЃСЃС‚РѕСЏРЅРёРµ, РЅР° РєРѕС‚РѕСЂРѕРј "Р·Р°РјРµС‡Р°СЋС‚СЃСЏ" РІСЂР°РіРё
     st.warn_distance = utils.cfg_get_number(ini, section, "warn_distance", npc, false, 10)
     
-    -- pause_after_lost_target - пауза после того, как цель вышла из поля зрения
+    -- pause_after_lost_target - РїР°СѓР·Р° РїРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє С†РµР»СЊ РІС‹С€Р»Р° РёР· РїРѕР»СЏ Р·СЂРµРЅРёСЏ
     st.pause_after_lost_target = utils.cfg_get_number(ini, section, "pause_after_lost_target", npc, false, 5000)
 end
