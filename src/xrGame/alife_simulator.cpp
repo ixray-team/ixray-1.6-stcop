@@ -29,6 +29,7 @@ extern void destroy_lua_knife_params();
 
 void restart_all				()
 {
+	PROF_EVENT("restart_all");
 	if (Core.ParamsData.test(ECoreParams::keep_lua))
 	{
 		return;
@@ -53,6 +54,7 @@ CALifeSimulator::CALifeSimulator		(xrServer *server, shared_str *command_line) :
 	CALifeInteractionManager	(server,alife_section),
 	CALifeSimulatorBase			(server,alife_section)
 {
+	PROF_EVENT("CALifeSimulator::CALifeSimulator");
 	restart_all();
 
 	ai().set_alife				(this);

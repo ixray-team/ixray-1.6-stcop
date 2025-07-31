@@ -29,7 +29,7 @@ CRT::~CRT() {
 
 void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags) {
 	if(pSurface) return;
-
+	PROF_EVENT("CRT::create");
 	R_ASSERT(RDevice && Name && Name[0] && w && h);
 	_order = CPU::GetCLK();
 
