@@ -116,7 +116,9 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 	
 	size_t s = GetMemory();
 
-	Status("Capturing Faces...");
+	Status("[RcastModel] Capturing Faces...");
+
+	CTimer t; t.Start();
 
 	int ProgressID = 0;
 	for (auto F : lc_global_data()->g_faces())
@@ -177,11 +179,15 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 		}
 	}
 
+	Status("[RcastModel] Capturing Faces End [%u ms]", t.GetElapsed_ms());
+
 	static_mem = GetMemory() - s;
 	Static_size = static_mem;
   
 	s = GetMemory();
-	Status("Capturing MU-Ref Faces...");
+	Status("[RcastModel] Capturing MU-Ref Faces...");
+
+	t.Start();
 
 	ProgressID = 0;
 	for (auto ref : lc_global_data()->mu_refs())
@@ -207,22 +213,30 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 	murefs_mem = GetMemory() - s;
 	MU_size = murefs_mem;
 
-	Status("Capturing MU-Ref Faces... Ended");
+	Status("[RcastModel] Capturing MU Faces End [%u ms]", t.GetElapsed_ms());
+
 }
+
 #include "../xrLC/Build.h"
 extern CBuild* pBuild;
 
 void EmbreeData::BuildRcast()
 { 
- 	clMsg("Start Export Build.cform");
+	Status("Start Export Build.cform");
+
+	CTimer t; t.Start();
+ 
 	TriangleContainer container;
 	container.AddOther(static_geom);
 	container.AddOther(static_geom_transp);
 	container.AddOther(murefs_geom);
 	container.AddOther(murefs_geom_transp);
- 
-	string_path				fn;
 
+	
+	Status("Ended Capturing Faces : [%u ms]", t.GetElapsed_ms());
+	t.Start();
+
+	string_path				fn;
 	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "build.cform"));
 	xr_vector<b_rc_face>	rc_faces;
 	rc_faces.resize(container.faces_cnt());
@@ -280,6 +294,8 @@ void EmbreeData::BuildRcast()
 	Msg("File Saved Size: %u mb", MFS->tell() / 1024 / 1024);
 
 	FS.w_close(MFS);
+
+	Status("Ended Saving Faces: [%u ms]", t.GetElapsed_ms());
 }
 
 
