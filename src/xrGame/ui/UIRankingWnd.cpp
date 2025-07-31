@@ -31,6 +31,8 @@
 
 #define  PDA_RANKING_XML		"pda_ranking.xml"
 
+using namespace luabind;
+
 CUIRankingWnd::CUIRankingWnd()
 {
 	m_actor_ch_info				= nullptr;
@@ -47,19 +49,37 @@ CUIRankingWnd::~CUIRankingWnd()
 	for(; b!=e; b++)
 		xr_delete(*b);
 	m_achieves_vec.clear();
+
+	if (m_coc_ranking_actor)
+	{
+		//Alundaio: CoC Rankings
+		RANKINGCOC_VEC_IT be = m_coc_ranking_vec.begin(), en = m_coc_ranking_vec.end();
+		for (; be != en; be++)
+			xr_delete(*be);
+		m_coc_ranking_vec.clear();
+
+		xr_delete(m_coc_ranking_actor);
+		//-Alundaio
+	}
 }
 
 void CUIRankingWnd::Show( bool status )
 {
 	if (status && Actor())
 	{
-		m_actor_ch_info->InitCharacter(Actor());
-		
-		string64 buf;
-		xr_sprintf( buf, sizeof(buf), "%d %s", Actor()->get_money(), "RU" );
-		m_money_value->SetText( buf );
-		m_money_value->AdjustWidthToText();
-		update_info();
+		if (m_actor_ch_info)
+		{
+			m_actor_ch_info->InitCharacter(Actor());
+		}
+
+		if (m_money_value)
+		{
+			string64 buf;
+			xr_sprintf(buf, sizeof(buf), "%d %s", Actor()->get_money(), "RU");
+			m_money_value->SetText(buf);
+			m_money_value->AdjustWidthToText();
+			update_info();
+		}
 	}
 	inherited::Show( status );
 }
@@ -94,21 +114,31 @@ void CUIRankingWnd::Init()
 	const static bool isCharacterInfo = EngineExternal()[EEngineExternalUI::DisableCharacterInfo];
 	if (!isCharacterInfo)
 	{
-		m_actor_ch_info = new CUICharacterInfo();
-		m_actor_ch_info->SetAutoDelete(true);
-		AttachChild(m_actor_ch_info);
-		m_actor_ch_info->InitCharacterInfo(&xml, "actor_ch_info");
+		if (xml.NavigateToNode("actor_ch_info", 0))
+		{
+			m_actor_ch_info = new CUICharacterInfo();
+			m_actor_ch_info->SetAutoDelete(true);
+			AttachChild(m_actor_ch_info);
+			m_actor_ch_info->InitCharacterInfo(&xml, "actor_ch_info");
+		}
+		if (xml.NavigateToNode("actor_icon_over", 0))
+			m_icon_overlay = UIHelper::CreateFrameWindow(xml, "actor_icon_over", this, false);
+		if (xml.NavigateToNode("money_caption", 0))
+			m_money_caption = UIHelper::CreateTextWnd(xml, "money_caption", this);
+		if (xml.NavigateToNode("money_value", 0))
+			m_money_value = UIHelper::CreateTextWnd(xml, "money_value", this);
 
-		m_icon_overlay = UIHelper::CreateFrameWindow(xml, "actor_icon_over", this, false);
-		m_money_caption = UIHelper::CreateTextWnd(xml, "money_caption", this);
-		m_money_value = UIHelper::CreateTextWnd(xml, "money_value", this);
+		if (m_money_caption)
+		{
+			m_money_caption->AdjustWidthToText();
+			pos = m_money_caption->GetWndPos();
+			pos.x += m_money_caption->GetWndSize().x + 10.0f;
+		}
+		if (m_money_value)
+			m_money_value->SetWndPos(pos);
 
-		m_money_caption->AdjustWidthToText();
-		pos = m_money_caption->GetWndPos();
-		pos.x += m_money_caption->GetWndSize().x + 10.0f;
-		m_money_value->SetWndPos(pos);
-
-		m_center_caption = UIHelper::CreateTextWnd(xml, "center_caption", this);
+		if (xml.NavigateToNode("center_caption", 0))
+			m_center_caption = UIHelper::CreateTextWnd(xml, "center_caption", this);
 
 		if (xml.NavigateToNode("fraction_static"))
 			m_faction_static = UIHelper::CreateStatic(xml, "fraction_static", this);
@@ -149,10 +179,13 @@ void CUIRankingWnd::Init()
 	}
 	xml.SetLocalRoot( stored_root );
 
-	string256 buf;
-	xr_strcpy( buf, sizeof(buf), m_center_caption->GetText() );
-	xr_strcat( buf, sizeof(buf), g_pStringTable->translate("ui_ranking_center_caption").c_str() );
-	m_center_caption->SetText( buf );
+	if (m_center_caption)
+	{
+		string256 buf;
+		xr_strcpy(buf, sizeof(buf), m_center_caption->GetText());
+		xr_strcat(buf, sizeof(buf), g_pStringTable->translate("ui_ranking_center_caption").c_str());
+		m_center_caption->SetText(buf);
+	}
 
 	if (xml.NavigateToNode("fraction_list"))
 	{
@@ -220,6 +253,51 @@ void CUIRankingWnd::Init()
 				add_achievement(xml, item.first);
 		}
 	}
+	// Alundaio: CoC Rankings
+	// St4lker0k765: it's not necessary for CoP anymore
+	if (xml.NavigateToNode("coc_ranking_background", 0))
+	{
+		m_coc_ranking_background = UIHelper::CreateFrameWindow(xml, "coc_ranking_background", this);
+	}
+	if (xml.NavigateToNode("coc_ranking_wnd", 0))
+	{
+		m_coc_ranking = new CUIScrollView();
+		CUIXmlInit::InitScrollView(xml, "coc_ranking_wnd", 0, m_coc_ranking);
+		m_coc_ranking->SetAutoDelete(true);
+		AttachChild(m_coc_ranking);
+		m_coc_ranking->SetWindowName("coc_ranking_list");
+	}
+
+	u8 topRankCount = 50;
+	luabind::functor<u8> getRankingArraySize;
+
+	if (ai().script_engine().functor("pda.get_rankings_array_size", getRankingArraySize))
+	{
+		topRankCount = getRankingArraySize();
+	}
+
+	if (m_coc_ranking != nullptr)
+	{
+		for (u8 i = 1; i <= topRankCount; i++)
+		{
+			CUIRankingsCoC* character_rank_item = new CUIRankingsCoC(m_coc_ranking);
+			character_rank_item->init_from_xml(xml, i, false);
+			m_coc_ranking_vec.push_back(character_rank_item);
+		}
+	}
+	if (xml.NavigateToNode("coc_ranking_wnd_actor", 0))
+	{
+		m_coc_ranking_actor_view = new CUIScrollView();
+		CUIXmlInit::InitScrollView(xml, "coc_ranking_wnd_actor", 0, m_coc_ranking_actor_view);
+		m_coc_ranking_actor_view->SetAutoDelete(true);
+		AttachChild(m_coc_ranking_actor_view);
+		m_coc_ranking_actor_view->SetWindowName("coc_ranking_list_actor");
+
+		m_coc_ranking_actor = new CUIRankingsCoC(m_coc_ranking_actor_view);
+		m_coc_ranking_actor->init_from_xml(xml, topRankCount + 1, true);
+	}
+	//-Alundaio
+
 	xml.SetLocalRoot(stored_root);
 }
 
@@ -257,6 +335,16 @@ void CUIRankingWnd::update_info()
 	for (const auto& achievement : m_achieves_vec)
 		achievement->Update();
 
+	if (m_coc_ranking_actor)
+	{
+		//Alundaio: CoC Ranking
+		RANKINGCOC_VEC_IT begin = m_coc_ranking_vec.begin(), end = m_coc_ranking_vec.end();
+		for (; begin != end; begin++)
+			(*begin)->Update();
+
+		m_coc_ranking_actor->Update();
+		//-Alundaio
+	}
 	get_statistic();
 	get_best_monster();
 	get_favorite_weapon();
@@ -300,25 +388,42 @@ void CUIRankingWnd::DrawHint()
 		if((*b)->IsShown())
 			(*b)->DrawHint();
 	}
+
+	//Alundaio: CoC Ranking
+	if (m_coc_ranking_actor)
+	{
+		RANKINGCOC_VEC_IT begin = m_coc_ranking_vec.begin(), end = m_coc_ranking_vec.end();
+		for (; begin != end; begin++)
+		{
+			if ((*begin)->IsShown())
+				(*begin)->DrawHint();
+		}
+
+		if (m_coc_ranking_actor->IsShown())
+			m_coc_ranking_actor->DrawHint();
+	}
+	//-Alundaio
 }
 
 void CUIRankingWnd::get_statistic()
 {
+	/*
 	string128 buf;
 	InventoryUtilities::GetTimePeriodAsString(buf, sizeof(buf), Level().GetStartGameTime(), Level().GetGameTime());
 	m_stat_info[0]->SetTextColor(color_rgba(170,170,170,255));
 	m_stat_info[0]->SetText(buf);
+	*/
 
-	luabind::functor<LPCSTR> funct;
-
-	if (!ai().script_engine().functor("pda.get_stat", funct))
-		return;
-
-	for(u8 i = 1; i < m_stat_count; ++i)
+	for(u8 i = 0; i < m_stat_count; ++i)
 	{
-		LPCSTR str = funct(i);
-		//m_stat_info[i]->SetTextColor(color_rgba(170, 170, 170, 255));
-		m_stat_info[i]->SetTextST(str);
+		luabind::functor<LPCSTR> funct;
+		if (ai().script_engine().functor("pda.get_stat", funct))
+		{
+			LPCSTR str = funct(i);
+			// m_stat_info[i]->SetTextColor(color_rgba(170, 170, 170, 255));
+			m_stat_info[i]->TextItemControl().SetColoringMode(true);
+			m_stat_info[i]->SetTextST(str);
+		}
 	}
 
 }
@@ -437,6 +542,17 @@ void CUIRankingWnd::ResetAll()
 	ACHIEVES_VEC_IT b = m_achieves_vec.begin(), e = m_achieves_vec.end();
 	for(; b!=e; b++)
 		(*b)->Reset();
+
+	if (m_coc_ranking_actor)
+	{
+		//Alundaio: CoC Rankings
+		RANKINGCOC_VEC_IT be = m_coc_ranking_vec.begin(), ed = m_coc_ranking_vec.end();
+		for (; be != ed; be++)
+			(*be)->Reset();
+
+		m_coc_ranking_actor->Reset();
+	}
+	//-Alundaio 
 
 	inherited::ResetAll();
 }
