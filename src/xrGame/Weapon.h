@@ -159,11 +159,31 @@ public:
 
 	virtual bool UseScopeTexture() {return true;};
 
+	struct SAmmoBonesParams
+	{
+		SAmmoBonesParams(u32 type) : AmmoType(type) {}
+		~SAmmoBonesParams()
+		{
+			for (auto& it : ConfigurationMap)
+			{
+				it.second.second.clear();
+			}
+			ConfigurationMap.clear();
+			AllBones.clear();
+		}
+		u8 AmmoType = undefined_ammo_type;
+		xr_hash_map<u32, std::pair<shared_str, RStringVec>> ConfigurationMap{};
+		RStringVec AllBones{};
+		void Load(const shared_str& section, u32 size);
+	};
+
 	//обновление видимости для косточек аддонов
 	void UpdateAddonsVisibility();
 	void UpdateHUDAddonsVisibility();
 	void ProcessScope();
 	void UpdateScopePosition();
+	void UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type);
+	void UpdateShellBones(u32 idx, u8 type);
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
 
@@ -219,6 +239,9 @@ public:
 	bool m_bUseGLHud = false;
 	bool m_bHideColimSightInAlter;
 	bool m_bIsAimStarted = false;
+	bool m_bBlockUpdateAmmoBonesShooting = false;
+	bool m_bUseLastAmmoType = false;
+	bool m_bUseChamberInUpdateBones = false;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -280,6 +303,10 @@ protected:
 
 protected:
 
+	u8 m_LastShotAmmoType = undefined_ammo_type;
+
+	xr_vector<SAmmoBonesParams*> m_ammo_bones_mag{}, m_ammo_bones_gl{}, m_shell_bones{};
+
 	RStringVec m_bDefHideBones {}, m_bDefShowBones {}, m_bHideBonesOverride {}, m_bDefHideBonesGLAttached {},
 		m_bHideBonesGLAttached {}, m_bHideBonesSilAttached {}, m_bHideBonesScopeAttached {},
 		m_bHideBonesUpgrade {}, m_bScopeShowBones{}, m_bScopeHideBones{}, m_bShowBonesUpgToHide{}, m_bShowBonesUpgToShow{},
@@ -291,6 +318,7 @@ protected:
 
 	void HideOneUpgradeLevel(const char* section);
 	void LoadUpgradeBonesToHide(const char* section, const char* line);
+	u32 FakeReload();
 	virtual void ForceUpdateHUD();
 
 public:
@@ -630,6 +658,7 @@ private:
 			bool			install_upgrade_hud_sect_gl(LPCSTR section, bool test);
 
 			bool			install_upgrade_bones		( LPCSTR section, bool test );
+			bool			install_upgrade_ammo_bones	( LPCSTR section, bool test );
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 
