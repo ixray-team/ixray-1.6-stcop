@@ -8,19 +8,20 @@
 
 #pragma once
 
-class CMemberPredicate {
+class CMemberPredicate
+{
 protected:
-	const CAI_Stalker		*m_object;
+	const CAI_Stalker* m_object;
 
 public:
-	IC				CMemberPredicate			(const CAI_Stalker *object)
+	IC CMemberPredicate(const CAI_Stalker* object)
 	{
-		m_object			= object;
+		m_object = object;
 	}
 
-	IC		bool	operator()					(const CMemberOrder *order) const
+	IC bool operator() (const CMemberOrder* order) const
 	{
-		return				(&order->object() == m_object);
+		return (&order->object() == m_object);
 	}
 };
 
@@ -57,14 +58,14 @@ IC	CMemberOrder &CAgentMemberManager::member	(const CAI_Stalker *object)
 	return					(**I);
 }
 
-IC	MemorySpace::squad_mask_type CAgentMemberManager::mask(const CAI_Stalker *object) const
+IC	u64 CAgentMemberManager::mask(const CAI_Stalker *object) const
 {
 	const_iterator			I = std::find_if(members().begin(),members().end(), CMemberPredicate(object));
 	VERIFY					(I != members().end());
-	return					(MemorySpace::squad_mask_type(1) << (I - members().begin()));
+	return					(u64(1) << (I - members().begin()));
 }
 
-IC	CAgentMemberManager::iterator CAgentMemberManager::member		(MemorySpace::squad_mask_type mask)
+IC	CAgentMemberManager::iterator CAgentMemberManager::member		(u64 mask)
 {
 	iterator				I = m_members.begin();
 	iterator				E = m_members.end();
@@ -77,22 +78,22 @@ IC	CAgentMemberManager::iterator CAgentMemberManager::member		(MemorySpace::squa
 #endif
 }
 
-IC	bool CAgentMemberManager::group_behaviour					() const
+IC	bool CAgentMemberManager::group_behaviour() const
 {
-	return					(members().size() > 1);
+	return (members().size() > 1);
 }
 
-IC	const CAgentMemberManager::squad_mask_type &CAgentMemberManager::combat_mask() const
+IC	const u64& CAgentMemberManager::combat_mask() const
 {
-	return					(m_combat_mask);
+	return (m_combat_mask);
 }
 
-IC	const u32 &CAgentMemberManager::throw_time_interval			() const
+IC	const u32& CAgentMemberManager::throw_time_interval() const
 {
-	return					(m_throw_time_interval);
+	return (m_throw_time_interval);
 }
 
-IC	void CAgentMemberManager::throw_time_interval				(const u32 &value)
+IC	void CAgentMemberManager::throw_time_interval(const u32& value)
 {
-	m_throw_time_interval	= value;
+	m_throw_time_interval = value;
 }

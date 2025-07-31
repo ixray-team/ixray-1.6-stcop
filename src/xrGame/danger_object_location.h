@@ -17,7 +17,7 @@ private:
 	const CGameObject		*m_object;
 
 public:
-	IC						CDangerObjectLocation	(const CGameObject *object, u32 level_time, u32 interval, float radius, const squad_mask_type &mask = squad_mask_type(-1));
+	IC						CDangerObjectLocation	(const CGameObject *object, u32 level_time, u32 interval, float radius, const u64 &mask = u64(-1));
 	virtual const Fvector	&position				() const;
 	virtual bool			useful					() const;
 	virtual	bool			operator==				(const CObject *object) const;

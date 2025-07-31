@@ -14,19 +14,19 @@
 class CAgentManager;
 class CEntity;
 
-class CAgentMemberManager {
+class CAgentMemberManager 
+{
 public:
 	typedef xr_vector<CMemberOrder*>		MEMBER_STORAGE;
 	typedef MEMBER_STORAGE::iterator		iterator;
 	typedef MEMBER_STORAGE::const_iterator	const_iterator;
-	typedef MemorySpace::squad_mask_type	squad_mask_type;
 
 private:
 	CAgentManager					*m_object;
 	MEMBER_STORAGE					m_members;
 	MEMBER_STORAGE					m_combat_members;
 	bool							m_actuality;
-	squad_mask_type					m_combat_mask;
+	u64					m_combat_mask;
 	u32								m_last_throw_time;
 	u32								m_throw_time_interval;
 
@@ -43,16 +43,16 @@ public:
 			CMemberOrder			*get_member				(const ALife::_OBJECT_ID &id);
 	IC		const MEMBER_STORAGE	&members				() const;
 	IC		MEMBER_STORAGE			&members				();
-	IC		squad_mask_type			mask					(const CAI_Stalker *object) const;
-			squad_mask_type			mask					(const ALife::_OBJECT_ID &id) const;
+	IC		u64			mask					(const CAI_Stalker *object) const;
+			u64			mask					(const ALife::_OBJECT_ID &id) const;
 	IC		bool					group_behaviour			() const;
-	IC		iterator				member					(squad_mask_type mask);
+	IC		iterator				member					(u64 mask);
 			void					remove_links			(CObject *object);
 			void					register_in_combat		(const CAI_Stalker *object);
 			void					unregister_in_combat	(const CAI_Stalker *object);
 			bool					registered_in_combat	(const CAI_Stalker *object) const;
-	IC		const squad_mask_type	&combat_mask			() const;
-			squad_mask_type			non_combat_members_mask	() const;
+	IC		const u64	&combat_mask			() const;
+			u64			non_combat_members_mask	() const;
 			MEMBER_STORAGE			&combat_members			();
 			u32						in_detour				() const;
 			bool					can_detour				() const;
