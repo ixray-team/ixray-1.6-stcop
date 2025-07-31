@@ -243,8 +243,8 @@ namespace IMNODES_NAMESPACE
     // function sets the GImGui global variable, which is not shared across dll boundaries.
     void SetImGuiContext(ImGuiContext* ctx);
 
-    IMGUI_API ImNodesContext* CreateContext();
-    IMGUI_API  void            DestroyContext(ImNodesContext* ctx = NULL); // NULL = destroy current context
+    XREUI_API ImNodesContext* CreateContext();
+    XREUI_API  void            DestroyContext(ImNodesContext* ctx = NULL); // NULL = destroy current context
     ImNodesContext* GetCurrentContext();
     void            SetCurrentContext(ImNodesContext* ctx);
 
@@ -267,35 +267,35 @@ namespace IMNODES_NAMESPACE
 
     // The top-level function call. Call this before calling BeginNode/EndNode. Calling this function
     // will result the node editor grid workspace being rendered.
-    IMGUI_API void BeginNodeEditor();
-    IMGUI_API void EndNodeEditor();
+    XREUI_API void BeginNodeEditor();
+    XREUI_API void EndNodeEditor();
 
     // Add a navigable minimap to the editor; call before EndNodeEditor after all
     // nodes and links have been specified
-    IMGUI_API void MiniMap(
+    XREUI_API void MiniMap(
         const float                                      minimap_size_fraction = 0.2f,
         const ImNodesMiniMapLocation                     location = ImNodesMiniMapLocation_TopLeft,
         const ImNodesMiniMapNodeHoveringCallback         node_hovering_callback = NULL,
         const ImNodesMiniMapNodeHoveringCallbackUserData node_hovering_callback_data = NULL);
 
     // Use PushColorStyle and PopColorStyle to modify ImNodesStyle::Colors mid-frame.
-    IMGUI_API void PushColorStyle(ImNodesCol item, unsigned int color);
-    IMGUI_API void PopColorStyle();
+    XREUI_API void PushColorStyle(ImNodesCol item, unsigned int color);
+    XREUI_API void PopColorStyle();
     void PushStyleVar(ImNodesStyleVar style_item, float value);
     void PushStyleVar(ImNodesStyleVar style_item, const ImVec2& value);
     void PopStyleVar(int count = 1);
 
     // id can be any positive or negative integer, but INT_MIN is currently reserved for internal use.
-    IMGUI_API void BeginNode(int id);
-    IMGUI_API void EndNode();
+    XREUI_API void BeginNode(int id);
+    XREUI_API void EndNode();
 
     ImVec2 GetNodeDimensions(int id);
 
     // Place your node title bar content (such as the node title, using ImGui::Text) between the
     // following function calls. These functions have to be called before adding any attributes, or the
     // layout of the node will be incorrect.
-    IMGUI_API void BeginNodeTitleBar();
-    IMGUI_API void EndNodeTitleBar();
+    XREUI_API void BeginNodeTitleBar();
+    XREUI_API void EndNodeTitleBar();
 
     // Attributes are ImGui UI elements embedded within the node. Attributes can have pin shapes
     // rendered next to them. Links are created between pins.
@@ -307,11 +307,11 @@ namespace IMNODES_NAMESPACE
     // Each attribute id must be unique.
 
     // Create an input attribute block. The pin is rendered on left side.
-    IMGUI_API void BeginInputAttribute(int id, ImNodesPinShape shape = ImNodesPinShape_CircleFilled);
-    IMGUI_API void EndInputAttribute();
+    XREUI_API void BeginInputAttribute(int id, ImNodesPinShape shape = ImNodesPinShape_CircleFilled);
+    XREUI_API void EndInputAttribute();
     // Create an output attribute block. The pin is rendered on the right side.
-    IMGUI_API void BeginOutputAttribute(int id, ImNodesPinShape shape = ImNodesPinShape_CircleFilled);
-    IMGUI_API void EndOutputAttribute();
+    XREUI_API void BeginOutputAttribute(int id, ImNodesPinShape shape = ImNodesPinShape_CircleFilled);
+    XREUI_API void EndOutputAttribute();
     // Create a static attribute block. A static attribute has no pin, and therefore can't be linked to
     // anything. However, you can still use IsAttributeActive() and IsAnyAttributeActive() to check for
     // attribute activity.
@@ -325,7 +325,7 @@ namespace IMNODES_NAMESPACE
     // Render a link between attributes.
     // The attributes ids used here must match the ids used in Begin(Input|Output)Attribute function
     // calls. The order of start_attr and end_attr doesn't make a difference for rendering the link.
-    IMGUI_API void Link(int id, int start_attribute_id, int end_attribute_id);
+    XREUI_API void Link(int id, int start_attribute_id, int end_attribute_id);
 
     // Enable or disable the ability to click and drag a specific node.
     void SetNodeDraggable(int node_id, const bool draggable);
@@ -339,7 +339,7 @@ namespace IMNODES_NAMESPACE
 
     // Use the following functions to get and set the node's coordinates in these coordinate systems.
 
-    IMGUI_API void SetNodeScreenSpacePos(int node_id, const ImVec2& screen_space_pos);
+    XREUI_API void SetNodeScreenSpacePos(int node_id, const ImVec2& screen_space_pos);
     void SetNodeEditorSpacePos(int node_id, const ImVec2& editor_space_pos);
     void SetNodeGridSpacePos(int node_id, const ImVec2& grid_pos);
 
@@ -356,7 +356,7 @@ namespace IMNODES_NAMESPACE
     // The following functions return true if a UI element is being hovered over by the mouse cursor.
     // Assigns the id of the UI element being hovered over to the function argument. Use these functions
     // after EndNodeEditor() has been called.
-    IMGUI_API bool IsNodeHovered(int* node_id);
+    XREUI_API bool IsNodeHovered(int* node_id);
     bool IsLinkHovered(int* link_id);
     bool IsPinHovered(int* attribute_id);
 
@@ -380,7 +380,7 @@ namespace IMNODES_NAMESPACE
     // known.
     void SelectNode(int node_id);
     void ClearNodeSelection(int node_id);
-    IMGUI_API bool IsNodeSelected(int node_id);
+    XREUI_API bool IsNodeSelected(int node_id);
     void SelectLink(int link_id);
     void ClearLinkSelection(int link_id);
     bool IsLinkSelected(int link_id);
@@ -402,13 +402,13 @@ namespace IMNODES_NAMESPACE
     // 2) an existing link which is detached from a pin and then dropped
     // Use the including_detached_links flag to control whether this function triggers when the user
     // detaches a link and drops it.
-    IMGUI_API bool IsLinkDropped(int* started_at_attribute_id = NULL, bool including_detached_links = true);
+    XREUI_API bool IsLinkDropped(int* started_at_attribute_id = NULL, bool including_detached_links = true);
     // Did the user finish creating a new link?
-    IMGUI_API bool IsLinkCreated(
+    XREUI_API bool IsLinkCreated(
         int* started_at_attribute_id,
         int* ended_at_attribute_id,
         bool* created_from_snap = NULL);
-    IMGUI_API  bool IsLinkCreated(
+    XREUI_API  bool IsLinkCreated(
         int* started_at_node_id,
         int* started_at_attribute_id,
         int* ended_at_node_id,

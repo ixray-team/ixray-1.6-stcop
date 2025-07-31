@@ -19,9 +19,13 @@ UIDOShuffle::~UIDOShuffle()
 
 	ApplyChanges();
 	xr_delete(m_Props);
-	if (m_Texture) m_Texture->Release();
+	if (m_Texture)
+		IM_TEXTURE_RELEASE(m_Texture);
+
 	ClearIndexForms();
-	if (m_RealTexture)m_RealTexture->Release();
+
+	if (m_RealTexture)
+		IM_TEXTURE_RELEASE(m_RealTexture);
 }
 
 void UIDOShuffle::Draw()
@@ -69,9 +73,13 @@ void UIDOShuffle::Draw()
 	{
 		if (m_RealTexture != m_Texture)
 		{
-			if (m_RealTexture)m_RealTexture->Release();
+			if (m_RealTexture)
+				IM_TEXTURE_RELEASE(m_RealTexture);
+
 			m_RealTexture = m_Texture;
-			if(m_RealTexture) m_RealTexture->AddRef();
+
+			if(m_RealTexture) 
+				IM_TEXTURE_RELEASE(m_RealTexture);
 		}
 		ImGui::Image(m_RealTexture ? m_RealTexture :m_TextureNull->pSurface, ImVec2(256, 256));
 
@@ -300,18 +308,31 @@ void UIDOShuffle::FillData()
 
 void UIDOShuffle::OnItemFocused(const char* name)
 {
-
 	if (!name)
 	{
-		if (m_Texture) m_Texture->Release(); m_Texture = nullptr;
+		if (m_Texture)
+		{
+			IM_TEXTURE_RELEASE(m_Texture);
+			m_Texture = nullptr;
+		}
+
 		m_Props->ClearProperties();
 		m_list_selected = -1;
 		return;
 	}
+
 	m_Thm = ImageLib.CreateThumbnail(name, EImageThumbnail::ETObject);
-	if (m_Texture) m_Texture->Release(); m_Texture = nullptr;
-	if (m_Thm)m_Thm->Update(m_Texture);
-	if (m_Thm)xr_delete(m_Thm);
+	if (m_Texture)
+	{
+		IM_TEXTURE_RELEASE(m_Texture);
+		m_Texture = nullptr;
+	}
+	
+	if (m_Thm)
+		m_Thm->Update((ID3DBaseTexture*&)m_Texture);
+
+	xr_delete(m_Thm);
+
 	EDetail *dd= DM->FindDOByName(name);
 	VERIFY(dd);
 	PropItemVec items;
