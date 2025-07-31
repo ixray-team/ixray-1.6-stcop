@@ -35,6 +35,8 @@
 
 namespace luabind
 {
+	LUABIND_API string_class DebugPrintStack(lua_State* L);
+
 	class LUABIND_API object
 	{
     	template<typename T>
