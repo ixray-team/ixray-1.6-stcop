@@ -89,6 +89,7 @@ private:
 public:
 	CUI3tButton*			m_btn_repair;
 	CUI3tButton*			m_btn_disassemble;
+	void DeInitInventory();
 
 protected:
 	CUIStatic*				m_background;
