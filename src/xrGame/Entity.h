@@ -98,7 +98,7 @@ public:
 
 	virtual void			Die					(CObject* who);
 //			void			KillEntity			(CObject* who);
-			void			KillEntity			(u16 whoID);
+			void			KillEntity			(u16 whoID, bool bypass_actor_check = false);
 		
 	// Events
 	virtual void			OnEvent				( NET_Packet& P, u16 type		);
