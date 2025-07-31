@@ -109,6 +109,7 @@
 #include "string_concatenations.h"
 #include "xr_path.h"
 #include "stack_string.h"
+#include "Combinable.h"
 
 // stl ext
 struct XRCORE_API xr_rtoken
