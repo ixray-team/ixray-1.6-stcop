@@ -111,8 +111,6 @@ function action_sleeper_activity:execute()
     end
 	if self.state == state_walking then
 		self.move_mgr:update()
-		if self.move_mgr:arrived_to_first_waypoint() then
-		end
 		return
 	end
 	if self.state == state_sleeping then
