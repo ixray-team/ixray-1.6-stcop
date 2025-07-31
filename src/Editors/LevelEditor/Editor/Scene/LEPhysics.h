@@ -19,10 +19,10 @@ class CScenePhysics
     void	UseSimulatePoses	();
     void	UpdateLevelCollision(){ b_update_level_collision=true; }
     void	OnSceneModified		();
-    bool	Simulating			();
+	bool	Simulating();
+	void 	DestroyObjectSpace();
 private:
     bool 	CreateObjectSpace	(bool b_selected_only);
-    void 	DestroyObjectSpace	();
 };
 
   extern 	CScenePhysics	g_scene_physics;
