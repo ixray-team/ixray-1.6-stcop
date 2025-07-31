@@ -66,6 +66,8 @@ class CSpectator;
 class CSilencer;
 class CScope;
 class CGrenadeLauncher;
+class CProjector;
+class CLevelChanger;
 
 class IKinematics;
 class CAI_Trader;
@@ -136,10 +138,12 @@ public:
 	virtual CBolt* cast_bolt() { return nullptr; }
 	virtual CPda* cast_pda() { return nullptr; }
 	virtual CInventoryBox* cast_inventory_box() { return nullptr; }
-	virtual CSpectator* cast_spectator() {return nullptr;}
-	virtual CSilencer* cast_addon_silencer() {return nullptr;}
-	virtual CScope* cast_addon_scope() {return nullptr;}
-	virtual CGrenadeLauncher* cast_addon_grenade_launcher() {return nullptr;}
+	virtual CSpectator* cast_spectator() { return nullptr; }
+	virtual CSilencer* cast_addon_silencer() { return nullptr; }
+	virtual CScope* cast_addon_scope() { return nullptr; }
+	virtual CGrenadeLauncher* cast_addon_grenade_launcher() { return nullptr; }
+	virtual CProjector* cast_projector() { return nullptr; }
+	virtual CLevelChanger* cast_level_changer() { return nullptr; }
 
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}
