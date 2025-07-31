@@ -37,6 +37,14 @@ void UILeftBarForm::Draw()
 			PTools->RemoveCurrent();
 		}
 
+		ImGui::Separator();
+
+		if (ImGui::Button("Import Effect"))
+		{
+			PTools->ImportPE();
+		}
+		ImGui::Separator();
+
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
 		if (ImGui::TreeNode("Items"))

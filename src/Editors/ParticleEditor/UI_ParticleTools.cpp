@@ -678,6 +678,22 @@ void CParticleTool::CommandJumpToItem()
     }*/
 }
 
+void CParticleTool::ImportPE()
+{
+    xr_string Path;
+    if (EFS.GetOpenName(_server_data_root_, Path, false, 0, -1, "*.pe"))
+    {
+        PS::CPEDef* def = new PS::CPEDef();
+        FS.TryLoad(Path);
+
+        CInifile ini(Path.c_str(), TRUE, TRUE, FALSE);
+        if (def->Load2(ini))
+        {
+            AppendPE(def, xr_path(Path.c_str()).xfilename().c_str());
+        }
+    }
+}
+
 PS::CPEDef*	CParticleTool::FindPE(LPCSTR name)
 {
 	return RImplementation.PSLibrary.FindPED(name);
