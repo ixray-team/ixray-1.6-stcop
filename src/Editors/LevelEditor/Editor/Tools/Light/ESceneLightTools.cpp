@@ -80,6 +80,19 @@ void  ESceneLightTool::OnRender(int priority, bool strictB2F)
 {
 	inherited::OnRender(priority, strictB2F);
 
+	if (bIsShowSun)
+		m_Flags.set(flShowSun, true);
+	else
+		m_Flags.set(flShowSun, false);
+	if (bIsUseSunDir)
+		m_Flags.set(flWthrSunDir, true);
+	else
+		m_Flags.set(flWthrSunDir, false);
+	if (bIsUseHemi)
+		m_Flags.set(flWthrHemi, true);
+	else
+		m_Flags.set(flWthrHemi, false);
+
 	if (m_Flags.is(flShowSun))
 	{
 		if ((true == strictB2F) && (1 == priority)) {
