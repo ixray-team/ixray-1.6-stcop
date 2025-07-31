@@ -238,11 +238,14 @@ void ImplicitLightingExec()
 		// base
 		Status	("Saving base...");
 		{
-			string_path				name, out_name;
-			sscanf					(strstr(Core.Params,"-f")+2,"%s",name);
+			string128				name; 
+			string_path				out_name;
+ 			xr_strcpy (name, lc_global_data()->GetLavelName() );
+			
 			R_ASSERT				(name[0] && defl.texture);
+
 			b_BuildTexture& TEX		=	*defl.texture;
-			xr_strconcat(out_name,name,"\\",TEX.name,".dds");
+			xr_strconcat(out_name, name, "\\", TEX.name, ".dds");
 			FS.update_path			(out_name,"$game_levels$",out_name);
 			clMsg					("Saving texture '%s'...",out_name);
 			VerifyPath				(out_name);
@@ -261,11 +264,10 @@ void ImplicitLightingExec()
 		// lmap
 		Status	("Saving lmap...");
 		{
-			//xr_vector<u32>			packed;
-			//defl.lmap.Pack			(packed);
-
-			string_path				name, out_name;
-			sscanf					(strstr(GetCommandLineA(),"-f")+2,"%s",name);
+			string128				name;
+			string_path				out_name;
+			xr_strcpy(name, lc_global_data()->GetLavelName());
+			 
 			b_BuildTexture& TEX		=	*defl.texture;
 			xr_strconcat(out_name,name,"\\",TEX.name,"_lm.dds");
 			FS.update_path			(out_name,"$game_levels$",out_name);
