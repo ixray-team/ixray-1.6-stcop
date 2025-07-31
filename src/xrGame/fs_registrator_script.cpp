@@ -111,6 +111,10 @@ FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
 	P->m_Flags.set	(FS_Path::flNeedRescan,TRUE);
 	FS.m_Flags.set	(CLocatorAPI::flNeedCheck,TRUE);
 	FS.rescan_pathes();
+	FS.IsAddonPhase = true;
+	FS.get_path("$arch_dir_addons$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
+	FS.rescan_pathes();
+	FS.IsAddonPhase = false;
 
 	FS_FileSet		files;
 	FS.file_list(files,path,flags,mask);
