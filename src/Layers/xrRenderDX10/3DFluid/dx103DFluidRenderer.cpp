@@ -672,7 +672,7 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	RCache.set_xform_world(transform);
 
 	// The near and far planes are used to unproject the scene's z-buffer values
-	RCache.set_c(strZNear, VIEWPORT_NEAR);
+	RCache.set_c(strZNear, Device.fViewportNear);
 	RCache.set_c(strZFar, g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	auto gridWorld = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&transform));
