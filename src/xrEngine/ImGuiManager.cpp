@@ -280,29 +280,40 @@ void CImGuiManager::Render()
 
 void CImGuiManager::UpdateCapture()
 {
-	if (ImGui::IsKeyPressed(ImGuiKey_I) && ImGui::IsKeyDown(ImGuiKey_LeftAlt))
-	{
-		if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
-		{
-			DrawUIRender = !DrawUIRender;
+    static bool keyProcessed = false;
 
-			if (!DrawUIRender)
-				CaptureInputs = false;
-		}
-		else if (DrawUIRender)
-		{
-			CaptureInputs = !CaptureInputs;
-		}
-	}
+    if (ImGui::IsKeyDown(ImGuiKey_LeftAlt))
+    {
+        if (!keyProcessed)
+        {
+            if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
+            {
+                DrawUIRender = !DrawUIRender;
 
-	if (CaptureInputs || g_dedicated_server)
-	{
-		SDL_ShowCursor();
-	}
-	else
-	{
-		SDL_HideCursor();
-	}
+                if (!DrawUIRender)
+                    CaptureInputs = false;
+            }
+            else if (DrawUIRender)
+            {
+                CaptureInputs = !CaptureInputs;
+            }
+
+            keyProcessed = true;
+        }
+    }
+    else
+    {
+        keyProcessed = false;
+    }
+
+    if (CaptureInputs || g_dedicated_server)
+    {
+        SDL_ShowCursor();
+    }
+    else
+    {
+        SDL_HideCursor();
+    }
 }
 
 bool CImGuiManager::IsCapturingInputs() const
