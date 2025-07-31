@@ -109,7 +109,7 @@ void CUIZoneMap::Init()
         m_clock_wnd->SetWndPos(temp);
     }
 
-	if ( IsGameTypeSingle() )
+	if ( IsGameTypeSingleCompatible() )
 	{
 		xml_init.InitStatic			(uiXml, "minimap:static_counter", 0, &m_Counter);
 		m_background.AttachChild	(&m_Counter);
@@ -145,7 +145,7 @@ void CUIZoneMap::Update()
 	CActor* pActor = smart_cast<CActor*>( Level().CurrentViewEntity() );
 	if ( !pActor ) return;
 
-	if ( !( Device.dwFrame % 20 ) && IsGameTypeSingle() )
+	if ( !( Device.dwFrame % 20 ) && IsGameTypeSingleCompatible() )
 	{
 		string16	text_str;
 		xr_strcpy( text_str, sizeof(text_str), "" );

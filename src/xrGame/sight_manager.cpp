@@ -76,26 +76,30 @@ float g_ai_aim_min_angle = 0;
 float g_ai_aim_max_angle = 31;
 BOOL  g_ai_aim_use_smooth_aim = 1;
 
-static inline float	select_speed	( float const distance, float const speed, float const min_speed, float const min_distance, float const max_distance )
+static inline float	select_speed(float const distance, float const speed, float const min_speed, float const min_distance, float const max_distance)
 {
-	VERIFY				( max_distance > min_distance );
+	VERIFY(max_distance >= min_distance);
 
 #ifdef DEBUG
-	if ( !g_ai_aim_use_smooth_aim )
+	if (!g_ai_aim_use_smooth_aim)
 		return speed;
 #endif// #ifdef DEBUG
 
-	if ( speed <= min_speed )
-		return			speed;
+	if (speed <= min_speed)
+		return speed;
 
-	if ( distance < min_distance )
-		return			min_speed;
+	if (distance < min_distance)
+		return min_speed;
 
-	if ( distance >= max_distance )
-		return			speed;
+	if (distance >= max_distance)
+		return speed;
 
-	float const factor	= (distance - min_distance)/(max_distance - min_distance);
-	return				min_speed + factor*(speed - min_speed);
+	float factor = (distance - min_distance) / (max_distance - min_distance);
+	if (max_distance == min_distance)
+	{
+		factor = 1.f;
+	}
+	return min_speed + factor * (speed - min_speed);
 }
 
 void CSightManager::Exec_Look(float time_delta)
