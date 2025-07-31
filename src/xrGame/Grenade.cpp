@@ -158,9 +158,6 @@ void CGrenade::State(u32 state)
 				PutNextToSlot			();
 				if (Local())
 				{
-#ifndef MASTER_GOLD
-					Msg( "Destroying local grenade[%d][%d]", ID(), Device.dwFrame );
-#endif // #ifndef MASTER_GOLD
 					DestroyObject();
 				}
 				
