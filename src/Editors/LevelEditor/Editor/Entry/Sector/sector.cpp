@@ -631,12 +631,38 @@ void CSector::SaveStream(IWriter& F)
 
 xr_token level_sub_map[] =
 {
-	{"default", u8(-1)},
-	{"#0", 0},
-	{"#1", 1},
-	{"#2", 2},
-	{"#3", 3},
-	{NULL, 4}
+    {"default", u8(-1)},
+    {"#0", 0},
+    {"#1", 1},
+    {"#2", 2},
+    {"#3", 3},
+    {"#4", 4},
+    {"#5", 5},
+    {"#6", 6},
+    {"#7", 7},
+    {"#8", 8},
+    {"#9", 9},
+    {"#10", 10},
+    {"#11", 11},
+    {"#12", 12},
+    {"#13", 13},
+    {"#14", 14},
+    {"#15", 15},
+    {"#16", 16},
+    {"#17", 17},
+    {"#18", 18},
+    {"#19", 19},
+    {"#20", 20},
+    {"#21", 21},
+    {"#22", 22},
+    {"#23", 23},
+    {"#24", 24},
+    {"#25", 25},
+    {"#26", 26},
+    {"#27", 27},
+    {"#28", 28},
+    {"#29", 29},
+    {NULL, 30}
 };
 
 void CSector::FillProp(LPCSTR pref, PropItemVec& items)
@@ -649,7 +675,6 @@ void CSector::FillProp(LPCSTR pref, PropItemVec& items)
 	PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Meshes"), 	xr_string::ToString(meshes).c_str());
 	PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Faces"), 	xr_string::ToString(faces).c_str());
 	PHelper().CreateToken8(items, PrepareKey(pref, GetName(),"Change LevelMap to"), &m_map_idx, level_sub_map);
-	
 }
 
 
