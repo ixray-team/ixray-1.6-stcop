@@ -82,6 +82,8 @@ public:
 	bool ClearSkyMode() const;
 	bool CallOfPripyatMode() const;
 	bool ShadowOfChernobylMode() const;
+	Fvector4 GetTalkDof() const;
+	float GetTalkFovScale() const;
 	u32 GetFontAltasSize() const;
 
 	bool operator[](const EEngineExternalUI& ID) const;
