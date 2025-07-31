@@ -6,14 +6,14 @@ XRCORE_API DiscordShared g_Discord;
 
 DiscordShared::DiscordShared()
 {
-#ifdef IXR_WINDOWS
+#ifdef IXR_ENABLE_DISCORD
 	Activity = {};
 #endif
 }
 
 DiscordShared::~DiscordShared()
 {
-#ifdef IXR_WINDOWS
+#ifdef IXR_ENABLE_DISCORD
 	xr_delete(Core);
 #endif
 }
@@ -21,7 +21,7 @@ DiscordShared::~DiscordShared()
 // Called when the game starts or when spawned
 void DiscordShared::Init() noexcept 
 {
-#ifdef IXR_WINDOWS
+#ifdef IXR_ENABLE_DISCORD
 	auto result = discord::Core::Create(1174634951715594311, DiscordCreateFlags_NoRequireDiscord, &Core);
 
 	if (Core == nullptr)
@@ -58,7 +58,7 @@ void DiscordShared::Init() noexcept
 // Called every frame
 void DiscordShared::Update() noexcept 
 {
-#ifdef IXR_WINDOWS
+#ifdef IXR_ENABLE_DISCORD
 	if (Core == nullptr)
 		return;
 
@@ -87,7 +87,7 @@ void DiscordShared::SetPhase(const xr_string& Name) noexcept
 void DiscordShared::SyncActivity() noexcept 
 {
 	static bool isCorrect = true;
-#ifdef IXR_WINDOWS
+#ifdef IXR_ENABLE_DISCORD
 
 	Activity.SetDetails(Platform::ANSI_TO_UTF8(Status).c_str());
 	Activity.SetState(Platform::ANSI_TO_UTF8(Phase).c_str());
