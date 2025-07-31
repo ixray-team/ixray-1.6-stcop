@@ -79,7 +79,7 @@ void CEntity::Die(CObject* who)
 	VERIFY(m_registered_member);
 	m_registered_member = false;
 
-	if (IsGameTypeSingle())
+	if (OnServer())
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
 }
 
