@@ -702,11 +702,11 @@ bool CInventory::Action(u16 cmd, u32 flags)
 		    b_send_event = true;
 			if(flags&CMD_START)
 			{
-                if(GetActiveSlot() == ARTEFACT_SLOT &&
-					ActiveItem() /*&& IsGameTypeSingle()*/)
+                if(GetActiveSlot() == ARTEFACT_SLOT && ActiveItem())
 				{
 					Activate(NO_ACTIVE_SLOT);
-				}else {
+				}else 
+				{
 					Activate(ARTEFACT_SLOT);
 				}
 			}

@@ -237,16 +237,7 @@ bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 
 
 	CUICellItem* i = nullptr;
-	//if (IsGameTypeSingle())
-	//{
-		// удаляем из списка предметов NPC (и будем добавлять в список для покупки)
-		i = old_owner->RemoveItem(itm, (old_owner == new_owner));
-	//}
-	//else
-	//{
-	//	// создаем новый cell item
-	//	i = create_cell_item(iitem);
-	//}
+	i = old_owner->RemoveItem(itm, (old_owner == new_owner));
 	
 	if(b_use_cursor_pos)
 		new_owner->SetItem				(i,old_owner->GetDragItemPosition());
@@ -259,35 +250,23 @@ bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 
 bool CUIActorMenu::ToPartnerTradeBag(CUICellItem* itm, bool b_use_cursor_pos)
 {
-	//CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	//CUIDragDropListEx*	new_owner		= nullptr;
 	// Перенос назад в список предметов NPC
+	CUIDragDropListEx* old_owner = itm->OwnerList();
+	CUIDragDropListEx* new_owner = NULL;
 
-	//if (IsGameTypeSingle())
-	//{
-		CUIDragDropListEx* old_owner = itm->OwnerList();
-		CUIDragDropListEx* new_owner = NULL;
+	if (b_use_cursor_pos)
+	{
+		new_owner = CUIDragDropListEx::m_drag_item->BackList();
+		VERIFY(new_owner == m_pTradePartnerBagList);
+	}
+	else
+		new_owner = m_pTradePartnerBagList;
+	CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
+	if (b_use_cursor_pos)
+		new_owner->SetItem(i, old_owner->GetDragItemPosition());
+	else
+		new_owner->SetItem(i);
 
-		if (b_use_cursor_pos)
-		{
-			new_owner = CUIDragDropListEx::m_drag_item->BackList();
-			VERIFY(new_owner == m_pTradePartnerBagList);
-		}
-		else
-			new_owner = m_pTradePartnerBagList;
-		CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
-		if (b_use_cursor_pos)
-			new_owner->SetItem(i, old_owner->GetDragItemPosition());
-		else
-			new_owner->SetItem(i);
-	//}
-	//else {
-	//	CUIDragDropListEx* old_owner = itm->OwnerList();
-	//	// удаляем предмет из списка для покупки
-	//	CUICellItem* i = old_owner->RemoveItem(itm, false);
-	//	delete_data(i);
-	//}
-	
 	return true;
 }
 
