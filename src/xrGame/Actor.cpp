@@ -1225,9 +1225,79 @@ void CActor::PlayRainOnHelmetSound()
 	}
 }
 
+#include "ClimableObject.h"
+
+bool hovering_checker(CActor* who)
+{
+	for (u32 I = 0; I < Level().Objects.o_count(); I++)
+	{
+		if (!who)
+			continue;
+
+		CObject* _O = Level().Objects.o_get_by_iterator(I);
+
+		if (!_O)
+			continue;
+
+		CClimableObject* climable = smart_cast<CClimableObject*>	(_O);
+
+		if (!climable)
+			continue;
+
+		Fvector ladder_up;
+		climable->UpperPoint(ladder_up);
+
+		if (ladder_up.distance_to(who->Position()) < 3.f)
+			return false;
+	}
+
+	Fvector Vel_y = who->character_physics_support()->movement()->GetVelocity();
+	float abs_ = _abs(Vel_y.x) + _abs(Vel_y.z);
+
+	if (who && Vel_y.y > 0.1f && abs_ < 0.1f && !(who->mstate_real & mcClimb))
+	{
+		Fvector point0, point1, point2, point3;
+		Fvector tmp0, tmp1, tmp2, tmp3;
+		collide::rq_result RQ, RQ0, RQ1, RQ2, RQ3;
+
+		Fbox box;
+		box.set(who->character_physics_support()->movement()->Box());
+		box.scale(-.1f);
+
+		box.getpoint(0, point0);
+		who->XFORM().transform(tmp0, Fvector(point0));
+		Level().ObjectSpace.RayPick(tmp0, Fvector().set(0.f, -1.f, 0.f), 1000.f, collide::rqtBoth, RQ0, who);
+
+		box.getpoint(1, point1);
+		who->XFORM().transform(tmp1, Fvector(point1));
+		Level().ObjectSpace.RayPick(tmp1, Fvector().set(0.f, -1.f, 0.f), 1000.f, collide::rqtBoth, RQ1, who);
+
+		box.getpoint(2, point2);
+		who->XFORM().transform(tmp2, Fvector(point2));
+		Level().ObjectSpace.RayPick(tmp2, Fvector().set(0.f, -1.f, 0.f), 1000.f, collide::rqtBoth, RQ2, who);
+
+		box.getpoint(3, point3);
+		who->XFORM().transform(tmp3, Fvector(point3));
+		Level().ObjectSpace.RayPick(tmp3, Fvector().set(0.f, -1.f, 0.f), 1000.f, collide::rqtBoth, RQ3, who);
+
+		Level().ObjectSpace.RayPick(who->Position(), Fvector().set(0.f, -1.f, 0.f), 1000.f, collide::rqtBoth, RQ, who);
+
+		const float JumpHeight = 1.6f;
+
+		return RQ0.range >= JumpHeight && RQ1.range >= JumpHeight && RQ2.range >= JumpHeight && RQ3.range >= JumpHeight && RQ.range >= JumpHeight;
+	}
+
+	return false;
+}
+#include "game_sv_mp.h"
 void CActor::UpdateCL()
 {
 	PROF_EVENT("CActor UpdateCL");
+
+	if (g_dedicated_server && g_Alive())
+	{
+		CheckFlyhack();
+	}
 
 	u32 ct = Device.dwTimeGlobal;
 	u32 dt = Device.GetTimeDeltaSafe(_last_update_time, ct);
@@ -1335,12 +1405,12 @@ void CActor::UpdateCL()
 	}
 	m_snd_noise -= 0.3f*Device.fTimeDelta;
 
-	inherited::UpdateCL				();
-	m_pPhysics_support->in_UpdateCL	();
+	inherited::UpdateCL();
+	m_pPhysics_support->in_UpdateCL();
 
 
-	if (g_Alive())  
-		PickupModeUpdate	();	
+	if (g_Alive())
+		PickupModeUpdate();
 
 	PickupModeUpdate_COD();
 
@@ -1350,9 +1420,10 @@ void CActor::UpdateCL()
 	cam_Update(float(Device.dwTimeDelta)/1000.0f, currentFOV());
 
 	if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
+	if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())
 	{
-		psHUD_Flags.set( HUD_CROSSHAIR_RT2, true );
-		psHUD_Flags.set( HUD_DRAW_RT, true );
+		psHUD_Flags.set(HUD_CROSSHAIR_RT2, true);
+		psHUD_Flags.set(HUD_DRAW_RT, true);
 	}
 
 	if (HudAnimator())
@@ -1376,9 +1447,10 @@ void CActor::UpdateCL()
 		{
 			float full_fire_disp = pWeapon->GetFireDispersion(true);
 
-			CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>	(Cameras().GetCamEffector(eCEZoom));
-			if(S) 
+			if (CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>(Cameras().GetCamEffector(eCEZoom)))
+			{
 				S->SetParams(full_fire_disp);
+			}
 
 			SetZoomAimingMode		(true);
 			// Force switch to first-person for zooming
@@ -1489,6 +1561,60 @@ void CActor::UpdateCL()
 	else
 		fSprintFactor -= Device.fTimeDelta / 0.1f;
 	clamp(fSprintFactor, 0.0f, 1.0f);
+}
+
+void CActor::CheckFlyhack()
+{
+	if ((mstate_real & (mcFall)) && !(mstate_real & (mcJump | mcLanding | mcLanding2)))
+	{
+		mstate_real &= ~mcFall;
+		mstate_wishful &= ~mcFall;
+	}
+
+	Fvector Vel_ = character_physics_support()->movement()->GetVelocity();
+	float Vel_xz_abs = _abs(Vel_.x) + _abs(Vel_.z);
+
+	game_PlayerState* ps = Game().GetPlayerByGameID(ID());
+
+	if (ps && (Vel_.y >= 15 || Vel_xz_abs >= 50 || hovering_checker(this)))
+	{
+		game_sv_mp* sv_game = smart_cast<game_sv_mp*>(Level().Server->game);
+
+		if (sv_game)
+		{
+			xrClientData* l_pC = (xrClientData*)sv_game->get_client(ps->GameID);
+
+			if (l_pC)
+			{
+				collide::rq_result RQ;
+				Fvector result, dir;
+				dir = Fvector().set(0, -1, 0);
+				result = XFORM().c;
+
+				if (Level().ObjectSpace.RayPick(result, dir, 1000.f, collide::rqtBoth, RQ, this))
+				{
+					if (RQ.range > .05f)
+					{
+						result.add(Fvector(dir).mul(RQ.range));
+
+						NET_Packet	P;
+						sv_game->u_EventGen(P, GE_MOVE_ACTOR, ps->GameID);
+						P.w_vec3(result);
+						P.w_vec3(Fvector().set(-r_torso.pitch, r_model_yaw, 0));
+						Level().Server->SendTo(l_pC->ID, P, net_flags(TRUE, TRUE));
+
+						NET_Packet Pa;
+						Pa.w_begin(M_GAMEMESSAGE);
+						Pa.w_u32(GAME_EVENT_SERVER_STRING_MESSAGE);
+						Pa.w_stringZ("Warning: Ошибка передвижения, возможно плохое соединение с сервером.");
+						Level().Server->SendTo(l_pC->ID, Pa, net_flags(TRUE, TRUE));
+
+						Msg("%s Warning: Ошибка передвижения, возможно плохое соединение с сервером.", Name());
+					}
+				}
+			}
+		}
+	}
 }
 
 void CActor::UpdatePlayerView()
