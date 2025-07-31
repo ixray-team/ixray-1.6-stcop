@@ -163,6 +163,7 @@
 // 127	 CSE_ALifeObjectClimable		added material;
 // 128	 CSE_ALifeObjectClimable		added can_fire in smart covers;
 // 129	 CSE_ALifeItemWeapon			added cur_scope
+//       CSE_AlifeCreatureActor         added IsWaunded and helicopter sync
 //------------------------------------------------------------------------------
 #define SPAWN_VERSION	u16(129)
 
