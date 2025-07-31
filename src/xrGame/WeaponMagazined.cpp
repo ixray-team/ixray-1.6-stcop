@@ -1560,9 +1560,56 @@ void CWeaponMagazined::PlayAnimReload()
 	}
 }
 
+shared_str CWeaponMagazined::SetCurrentAimAnimation()
+{
+	shared_str anim = "anm_idle_aim";
+
+	if (IsGrenadeLauncherAttached())
+	{
+		//Hack for original weapon configs
+		anim = IsGrenadeMode() && HudAnimationExist("anm_idle_g_aim") ? "anm_idle_g_aim" : (HudAnimationExist("anm_idle_w_gl_aim") ? "anm_idle_w_gl_aim" : anim);
+	}
+
+	if (CActor* actor = H_Parent()->cast_actor())
+	{
+		u32 state = actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
+		if (state & ACTOR_DEFS::EMoveCommand::mcAnyMove)
+		{
+			if (IsScopeAttached())
+			{
+				AddSuffixName(anim, "_scope", "_moving");
+			}
+			else
+			{
+				AddSuffixName(anim, "_moving");
+			}
+
+			if (state & ACTOR_DEFS::EMoveCommand::mcFwd)
+			{
+				AddSuffixName(anim, "_moving", "_forward");
+			}
+			else if (state & ACTOR_DEFS::EMoveCommand::mcBack)
+			{
+				AddSuffixName(anim, "_moving", "_back");
+			}
+
+			if (state & ACTOR_DEFS::EMoveCommand::mcLStrafe)
+			{
+				AddSuffixName(anim, "_moving", "_left");
+			}
+			else if (state & ACTOR_DEFS::EMoveCommand::mcRStrafe)
+			{
+				AddSuffixName(anim, "_moving", "_right");
+			}
+		}
+	}
+
+	return SetCurrentStateAnimation(anim);
+}
+
 void CWeaponMagazined::PlayAnimAim()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_aim"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentAimAnimation(), TRUE, GetState());
 }
 
 void CWeaponMagazined::PlaySoundAim(bool in)
