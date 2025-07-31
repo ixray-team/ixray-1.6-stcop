@@ -398,7 +398,8 @@ function set_active_subdialog(section)
 	
 	elseif (section == "eptRanking") then 
 	
-	elseif (section == "eptLogs") then 
+	elseif (section == "eptLogs") then
+	    return nil
 	
 	elseif (section == "eptRelations") then 
 		--return ui_pda_relations_tab.get_ui()
