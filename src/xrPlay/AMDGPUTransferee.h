@@ -57,6 +57,8 @@ private:
 	void	InitDeviceInfo	();
 	void	MakeGPUCount	();
 
+	const char* AGSGetErrorString(AGSReturnCode code);
+
 public:
 
 	ADL_MAIN_CONTROL_CREATE					Main_Control_Create;
