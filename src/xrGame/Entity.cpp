@@ -261,8 +261,7 @@ void CEntity::KillEntity(u16 whoID)
 		}
 #endif // MASTER_GOLD
 
-		Actor()->detach_Vehicle();
-		Actor()->use_MountedWeapon(nullptr);
+		Actor()->use_HolderEx(NULL, true);
 		Actor()->callback(GameObject::eActorBeforeDeath)(whoID);
 	}
 
