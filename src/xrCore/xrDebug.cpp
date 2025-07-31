@@ -24,12 +24,6 @@ extern bool shared_str_initialized;
 static BOOL bException = FALSE;
 #define USE_OWN_ERROR_MESSAGE_WINDOW
 
-#ifdef IXR_WINDOWS
-#include <new.h>							// for _set_new_mode
-#include <signal.h>							// for signals
-#endif
-
-
 #ifndef DEBUG
 #	define USE_OWN_MINI_DUMP
 #endif // DEBUG
@@ -96,7 +90,33 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		buffer			+= xr_sprintf(buffer,assertion_size - u32(buffer - buffer_base),"stack trace:%s%s",endline,endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
-		
+
+#if USE_CXX_STACKTRACE
+		auto stack = std::stacktrace::current();
+		int frame_i = 0;
+
+		for (auto i = stack.begin(); i != stack.end();++i)
+		{
+			if (i->source_file().empty())
+				continue;
+
+			if (i->source_file().contains("vctools\\crt\\vcstartup")
+				|| i->source_file().contains("VC\\Tools\\MSVC"))
+				continue;
+
+			if (i->description().contains("xrDebug::gather_info+")
+				|| i->description().contains("xrDebug::backend+")
+				|| i->description().contains("xrDebug::fail+"))
+				continue;
+
+#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
+			buffer += xr_sprintf(buffer, assertion_size - u32(buffer - buffer_base), "Frame %d: %s - %s:%d%s", ++frame_i, i->description().c_str(), i->source_file().c_str(), i->source_line(), endline);
+#endif // USE_OWN_ERROR_MESSAGE_WINDOW
+
+			Msg("Frame %d: %s - %s:%d\n", frame_i, i->description().c_str(), i->source_file().c_str(), i->source_line());
+		}
+#endif
+
 		if (shared_str_initialized)
 			xrLogger::FlushLog	();
 
