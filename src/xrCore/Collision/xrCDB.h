@@ -26,13 +26,9 @@ struct OpcodeArgs
 
 	Fvector pos;
 	bool valid = 1;
-	bool IntersectContinue = 1;
-	bool OccludeHas = false;
+ 	float energy;
 
-	float energy;
-
-	//int count = 0;
-	void* MDL;
+ 	void* MDL;
 	void* skip;
 	void* Light;
 };
