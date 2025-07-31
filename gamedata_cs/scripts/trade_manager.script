@@ -51,6 +51,9 @@ function update(npc)
 	tt.update_time = time_global() + 3600000
 
 	local str = xr_logic.pick_section_from_condlist(db.actor, npc, tt.buy_condition)
+	if(str=="" or str==nil) then
+		abort("Wrong section in buy_condition condlist for npc [%s]!", npc:name())
+	end
 	if tt.current_buy_condition ~= str then
 		--'printf("TRADE [%s]: buy condition = %s", npc:name(), str)
 		npc:buy_condition(tt.config, str)
@@ -58,10 +61,15 @@ function update(npc)
 	end
 
 	str = xr_logic.pick_section_from_condlist(db.actor, npc, tt.sell_condition)
+	if(str=="" or str==nil) then
+		abort("Wrong section in buy_condition condlist for npc [%s]!", npc:name())
+	end
 	if tt.current_sell_condition ~= str then
 		--'printf("TRADE [%s]: sell condition = %s", npc:name(), str)
 		npc:sell_condition(tt.config, str)
 		tt.current_sell_condition = str
+	else
+		printf("TRADE [%s]: current = %s   sell = %s", npc:name(), tostring(tt.current_sell_condition), tostring(str))
 	end
 
 	if tt.buy_supplies == nil then
@@ -69,6 +77,9 @@ function update(npc)
 	end
 
 	str = xr_logic.pick_section_from_condlist(db.actor, npc, tt.buy_supplies)
+	if(str=="" or str==nil) then
+		abort("Wrong section in buy_condition condlist for npc [%s]!", npc:name())
+	end
 	if tt.current_buy_supplies ~= str then
 		if tt.resuply_time ~= nil and tt.resuply_time < time_global() then
 			return
@@ -181,4 +192,27 @@ function load(obj, packet)
 		tt.resuply_time = cur_tm + a
 	end
 	set_save_marker(packet, "load", true, "trade_manager")
+end
+----------- NOT TO DELETE!!!!!!!!! called from engine
+function get_buy_discount(npc_id)
+	local str = utils.cfg_get_string(trade_manager[npc_id].config, "trader", "discounts", nil, false, "", "")
+	if(str=="") then
+		return 1
+	end
+
+	local sect = xr_logic.pick_section_from_condlist(db.actor, nil, xr_logic.parse_condlist(nil, "trade_manager", "discounts", str))
+	str = utils.cfg_get_number(trade_manager[npc_id].config, sect, "buy", nil, false, 1)
+		return str
+end
+----------- NOT TO DELETE!!!!!!!!! called from engine
+function get_sell_discount(npc_id)
+	local str = utils.cfg_get_string(trade_manager[npc_id].config, "trader", "discounts", nil, false, "", "")
+	if(str=="") then
+		return 1
+	end
+
+	local sect = xr_logic.pick_section_from_condlist(db.actor, nil, xr_logic.parse_condlist(npc, "trade_manager", "discounts", str))
+	str = utils.cfg_get_number(trade_manager[npc_id].config, sect, "sell", nil, false, 1)
+
+	return str
 end
