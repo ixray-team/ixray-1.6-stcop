@@ -385,7 +385,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
     ctl = xml:InitCheck("video_adv:check_dof_reload", _st)
     handler.reloadDof = ctl
     
-    local enableDofFunc = function(id)
+    local enableReloadDofFunc = function(id)
 		if mode_2(id) then
 			handler.reloadDof:Enable(handler.enableDof:GetCheck())
 			handler.reloadDof:SetCheck(handler.reloadDof:GetCheck() and handler.enableDof:GetCheck())
@@ -394,5 +394,21 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		return false
     end
 	
-    table.insert(handler.m_preconditions, {func=enableDofFunc, control=_st})
+    table.insert(handler.m_preconditions, {func=enableReloadDofFunc, control=_st})
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_dof_talk", _st)
+    ctl = xml:InitCheck("video_adv:check_dof_talk", _st)
+    handler.talkDof = ctl
+    
+    local enableTalkDofFunc = function(id)
+		if mode_2(id) then
+			handler.talkDof:Enable(handler.enableDof:GetCheck())
+			handler.talkDof:SetCheck(handler.talkDof:GetCheck() and handler.enableDof:GetCheck())
+			return true
+		end
+		return false
+    end
+	
+    table.insert(handler.m_preconditions, {func=enableTalkDofFunc, control=_st})
 end
