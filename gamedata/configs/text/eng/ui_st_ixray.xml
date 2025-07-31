@@ -93,6 +93,9 @@
     <string id="ui_mm_dof_reload">
         <text>DoF on Reload</text>
     </string>
+    <string id="ui_mm_dof_talk">
+        <text>DoF on Talk</text>
+    </string>
     <string id="ui_rs_fps_show">
         <text>FPS Counter</text>
     </string>
