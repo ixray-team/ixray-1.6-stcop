@@ -90,9 +90,7 @@ void CUIGameCustom::OnFrame()
 	m_window->Update();
 
 	//update windows
-	if( GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW|HUD_DRAW_RT) )
-		UIMainIngameWnd->Update	();
-
+	UIMainIngameWnd->Update();
 	m_pMessagesWnd->Update();
 }
 

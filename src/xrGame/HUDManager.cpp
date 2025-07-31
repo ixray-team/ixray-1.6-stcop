@@ -39,9 +39,6 @@ CHUDManager::~CHUDManager()
 //--------------------------------------------------------------------
 void CHUDManager::OnFrame()
 {
-	if (!psHUD_Flags.is(HUD_DRAW_RT2))	
-		return;
-
 	if(!b_online)						
 		return;
 
@@ -57,9 +54,6 @@ void CHUDManager::OnFrame()
 xrCriticalSection ui_lock;
 void CHUDManager::OnFrameMT()
 {
-	if (!psHUD_Flags.is(HUD_DRAW_RT2))	
-		return;
-
 	if(!b_online)						
 		return;
 	PROF_EVENT("CHUDManager::OnFrameMT");
