@@ -98,9 +98,7 @@ void CBuild::xrPhase_UVmap()
 					msF = FACE;
 
 					CDeflector* D = new CDeflector();
-
-				 
-					lc_global_data()->g_deflectors().push_back(D);
+ 					lc_global_data()->g_deflectors().push_back(D);
 					// Start recursion from this face
 					start_unwarp_recursion();
 					D->OA_SetNormal(FACE->N);
@@ -157,26 +155,25 @@ void CBuild::xrPhase_UVmap()
 		size_t VSize = lc_global_data()->g_vertices().size() * sizeof(Vertex);
 		size_t FSize = lc_global_data()->g_faces().size() * sizeof(Face);
 
-		AditionalData("SP[%u], xsp: %u| V: %u, F: %u", SP, g_XSplit.size(),
-			VSize / 1024 / 1024, FSize / 1024 / 1024);
+		AditionalData("SP[%u], xsp: %u", SP, g_XSplit.size());
 	}
   
 	size_t AllocatedDeflectors = 0;
+	size_t AllocatedLMAPS = 0;
+	size_t AllocatedTRIS  = 0;
 	for (auto D : lc_global_data()->g_deflectors())
 	{
 		AllocatedDeflectors += D->size_deflector();
+		AllocatedLMAPS += D->size_of_lm();
+		AllocatedTRIS += D->size_of_tris();
 	}
 
 	AllocatedDeflectors /= (1024 * 1024); // MB
-	clMsg("UV Map is Ended generation[%d], Deflectors Allocated[%llu] MB", g_XSplit.size(), AllocatedDeflectors);
+	AllocatedLMAPS /= (1024 * 1024); // MB
+	AllocatedTRIS /= (1024 * 1024); // MB
+	AditionalData("Deflectors: %u MB | LMaps: %u MB | QA_TRI: %u MB", AllocatedDeflectors, AllocatedLMAPS, AllocatedTRIS);
   	clMsg("%d subdivisions...", g_XSplit.size());
-
- 	
- 	AditionalData("DF:%umb| total: %u", 
-		AllocatedDeflectors, 
-		lc_global_data()->g_deflectors().size()
-	);
-	
+ 
  	// VALIDATION
 	for (auto SP = 0; SP < g_XSplit[SP]->size(); SP++)
 	{
