@@ -13,6 +13,7 @@ CUIListItem::CUIListItem()
     m_bHighlightText = false;
     m_iGroupID = -1;
     SetAutoDelete(true);
+    m_pTextControl->SetTextAlignment(CGameFont::alLeft);
 }
 
 CUIListItem::~CUIListItem()
