@@ -251,6 +251,7 @@ public:
 	bool m_bBlockUpdateAmmoBonesShooting = false;
 	bool m_bUseLastAmmoType = false;
 	bool m_bUseChamberInUpdateBones = false;
+	bool m_bBlockReload = false;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
