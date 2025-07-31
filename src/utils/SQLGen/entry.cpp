@@ -1,21 +1,169 @@
 #include "api.h"
 #include <imgui.h>
+#include <mysql/jdbc.h>
 
 #include "../xrForms/imgui_impl_sdl3.h"
 #include "../xrForms/imgui_impl_sdlrenderer3.h"
 
-SLoginInfo GLoginInfo;
+#include "../../Editors/xrEUI/spectrum.h"
+#include "ImGuiSpinner.h"
 
-void RenderMainUI()
+enum UIState
 {
-	// œÓÎÛ˜‡ÂÏ ÓÒÌÓ‚ÌÓÈ viewport
+	LoginForm = 0,
+	Connecting,
+	ConFail,
+	WorkForm
+};
+
+
+SLoginInfo GLoginInfo;
+UIState GUIState;
+void RenderLoginUI(ImGuiViewport* viewport,bool connecting = false)
+{	
+		if (connecting)
+		{
+			float r = 32;
+			ImGui::SetCursorPos({ (viewport->Size.x - r*2) / 2, (viewport->Size.y - r*2) / 2});
+			const ImU32 col = ImGui::GetColorU32(ImGuiCol_TextDisabled);
+			ImGui::Spinner("##spinner", r, 6, col);
+			//ImGui::LoadingIndicatorCircle("##spin", r, { 150,150,150,255 }, { 50,50,50,255 }, 12, 2.f);
+		}
+
+		// –¶–µ–Ω—Ç—Ä–∏—Ä—É–µ–º –ø–æ –≤–µ—Ä—Ç–∏–∫–∞–ª–∏ (—Ä–∞—Å–ø–æ–ª–∞–≥–∞–µ–º –ø—Ä–∏–º–µ—Ä–Ω–æ –ø–æ —Ü–µ–Ω—Ç—Ä—É —ç–∫—Ä–∞–Ω–∞)
+		float center_y = viewport->Size.y * 0.3f;
+		ImGui::SetCursorPosY(center_y);
+
+		// –¶–µ–Ω—Ç—Ä–∏—Ä—É–µ–º –∫–∞–∂–¥—ã–π —ç–ª–µ–º–µ–Ω—Ç –ø–æ –≥–æ—Ä–∏–∑–æ–Ω—Ç–∞–ª–∏
+		const float ItemWidth = 200.0f; // –®–∏—Ä–∏–Ω–∞ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ –≤–≤–æ–¥–∞
+		float WndWidth = viewport->Size.x;
+
+		auto x = ImGui::GetContentRegionAvail().x;
+		auto cur_x = ImGui::GetCursorPosX();
+
+		ImGui::BeginDisabled(connecting);
+
+		ImGui::SetCursorPosX((x - ItemWidth) / 2 + cur_x);
+		if (ImGui::BeginChild("##loginForm", { ItemWidth,-1 }, 0, 0))
+		{
+			 x = ImGui::GetContentRegionAvail().x;
+			 cur_x = ImGui::GetCursorPosX();
+			
+#define CenterText(text) ImGui::SetCursorPosX( (x-ImGui::CalcTextSize(text).x)/2 +cur_x );\
+								ImGui::Text(text);
+
+			// Login
+			ImGui::PushItemWidth(-1);
+			CenterText("Login");
+			ImGui::InputText("##login", GLoginInfo.Login, 32);
+
+			// Server
+			CenterText("Host");
+			ImGui::InputText("##server", GLoginInfo.Host, 128);
+
+			// Password
+			CenterText("Password");
+			ImGui::InputText("##pass", GLoginInfo.Pass, 32, ImGuiInputTextFlags_Password);
+
+			ImGui::Dummy({ 0,5 });
+			ImGui::Separator();
+			ImGui::Dummy({ 0,5 });
+
+			if (ImGui::Button("Login", { -1,35 }))
+			{
+				GUIState = UIState::Connecting;
+
+				std::thread([&]() {
+					try {
+						sql::Driver* driver = get_driver_instance();
+
+						std::unique_ptr<sql::Connection> conn(driver->connect(
+							GLoginInfo.Host,
+							GLoginInfo.Login,
+							GLoginInfo.Pass
+						));
+
+						// –ü—Ä–æ–≤–µ—Ä–∫–∞ —Å–æ—Å—Ç–æ—è–Ω–∏—è –ø–æ–¥–∫–ª—é—á–µ–Ω–∏—è
+						GUIState = (conn && conn->isValid() ? UIState::WorkForm : UIState::ConFail);
+
+					}
+					catch (const sql::SQLException& e) {
+						GUIState = UIState::ConFail;
+					}
+
+					}).detach();
+			}
+
+			ImGui::PopItemWidth();
+
+			ImGui::EndChild();
+		}
+		ImGui::EndDisabled();
+}
+
+void RenderErrorPage(ImGuiViewport* viewport)
+{
+	ImGui::OpenPopup("Connection Error");
+	if (ImGui::BeginPopupModal("Connection Error", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "Failed to connect to server!");
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		ImGuiStyle& style = ImGui::GetStyle();
+		float button_width = 120.0f;
+		float avail = ImGui::GetContentRegionAvail().x;
+		ImGui::SetCursorPosX((avail - button_width) * 0.5f);
+
+		if (ImGui::Button("OK", ImVec2(button_width, 0))) {
+			GUIState = UIState::LoginForm();
+		}
+		ImGui::EndPopup();
+	}
+}
+
+void RenderWorkForm(ImGuiViewport* viewport)
+{
+	//
+	static bool syncQuest;
+	static bool syncItems;
+	//
+
+	// –í–µ—Ä—Ö–Ω—è—è —á–∞—Å—Ç—å ‚Äî —á–µ–∫–±–æ–∫—Å—ã –∏ –∫–Ω–æ–ø–∫–∞
+	ImGui::BeginChild("Top", ImVec2(0, 250), true);
+	ImGui::Checkbox("Sync Quest", &syncQuest);
+	ImGui::Checkbox("Sync Items", &syncItems);
+
+	
+	ImGui::EndChild();
+	// –ö–Ω–æ–ø–∫–∞ —Å–ø—Ä–∞–≤–∞
+	ImGui::SetCursorPosX(viewport->Size.x - 90);
+	if (ImGui::Button("Sync", ImVec2(70, 30))) {
+		//some chto-to
+	}
+	// –ù–∏–∂–Ω—è—è —á–∞—Å—Ç—å ‚Äî –ª–æ–≥
+	ImGui::Separator();
+	ImGui::Text("–õ–æ–≥:");
+	ImGui::Separator();
+	ImGui::BeginChild("Log", ImVec2(0, 0), true);
+	for (int i = 0; i < 25; ++i) {
+		ImGui::TextUnformatted("palceholder log line");
+	}
+
+	ImGui::EndChild();
+}
+
+void UIHub()
+{
+	// –ü–æ–ª—É—á–∞–µ–º –æ—Å–Ω–æ–≤–Ω–æ–π viewport
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-	// ”ÒÚ‡Ì‡‚ÎË‚‡ÂÏ ÔÓÁËˆË˛ Ë ‡ÁÏÂ ÓÍÌ‡ ‡‚Ì˚ÏË viewport'Û
+	// –£—Å—Ç–∞–Ω–∞–≤–ª–∏–≤–∞–µ–º –ø–æ–∑–∏—Ü–∏—é –∏ —Ä–∞–∑–º–µ—Ä –æ–∫–Ω–∞ —Ä–∞–≤–Ω—ã–º–∏ viewport'—É
 	ImGui::SetNextWindowPos(viewport->Pos);
 	ImGui::SetNextWindowSize(viewport->Size);
 
-	// ”·Ë‡ÂÏ ‰ÂÍÓ‡ˆËË ÓÍÌ‡ (Á‡„ÓÎÓ‚ÓÍ, ‡ÏÍÛ Ë Ú.‰.)
+	// –£–±–∏—Ä–∞–µ–º –¥–µ–∫–æ—Ä–∞—Ü–∏–∏ –æ–∫–Ω–∞ (–∑–∞–≥–æ–ª–æ–≤–æ–∫, —Ä–∞–º–∫—É –∏ —Ç.–¥.)
 	ImGuiWindowFlags window_flags =
 		ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoCollapse |
@@ -26,39 +174,25 @@ void RenderMainUI()
 
 	if (ImGui::Begin("##MainWnd", nullptr, window_flags))
 	{
-		// ÷ÂÌÚËÛÂÏ ÔÓ ‚ÂÚËÍ‡ÎË (‡ÒÔÓÎ‡„‡ÂÏ ÔËÏÂÌÓ ÔÓ ˆÂÌÚÛ ˝Í‡Ì‡)
-		float center_y = viewport->Size.y * 0.3f;
-		ImGui::SetCursorPosY(center_y);
-
-		// ÷ÂÌÚËÛÂÏ Í‡Ê‰˚È ˝ÎÂÏÂÌÚ ÔÓ „ÓËÁÓÌÚ‡ÎË
-		float ItemWidth = 200.0f; // ÿËËÌ‡ ˝ÎÂÏÂÌÚÓ‚ ‚‚Ó‰‡
-		float WndWidth = viewport->Size.x;
-
-		// Login
-		ImGui::PushItemWidth(ItemWidth);
-		ImGui::SetCursorPosX((WndWidth - ItemWidth) * 0.5f);
-		ImGui::Text("Login");
-		ImGui::SetCursorPosX((WndWidth - ItemWidth) * 0.5f);
-		string32 Login = {};
-		ImGui::InputText("##login", Login, 32);
-
-		// Server
-		ImGui::SetNextItemWidth(ItemWidth);
-		ImGui::SetCursorPosX((WndWidth - ItemWidth) * 0.5f);
-		ImGui::Text("Server");
-		ImGui::SetCursorPosX((WndWidth - ItemWidth) * 0.5f);
-		string128 Server = {};
-		ImGui::InputText("##server", Server, 128);
-
-		// Password
-		ImGui::SetNextItemWidth(ItemWidth);
-		ImGui::SetCursorPosX((WndWidth - ItemWidth) * 0.5f);
-		ImGui::Text("Password");
-		ImGui::SetCursorPosX((WndWidth - ItemWidth) * 0.5f);
-		string32 Pass = {};
-		ImGui::InputText("##pass", Pass, 32, ImGuiInputTextFlags_Password);
-		ImGui::PopItemWidth();
-
+		switch (GUIState)
+		{
+		case UIState::LoginForm:
+			RenderLoginUI(viewport);
+			break;
+		case UIState::Connecting:
+			RenderLoginUI(viewport,true);
+			break;
+		case UIState::ConFail:
+			RenderErrorPage(viewport);
+			RenderLoginUI(viewport);
+			break;
+		case UIState::WorkForm:
+			RenderWorkForm(viewport);
+			//ImGui::Text("OK");
+			break;
+		default:
+			break;
+		}
 		ImGui::End();
 	}
 }
@@ -70,6 +204,8 @@ void SDL_Application()
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
 		return;
 	}
+
+	GUIState = UIState::LoginForm;
 
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Level Builder", 1000, 560, window_flags);
@@ -168,6 +304,10 @@ void SDL_Application()
 	colors[ImGuiCol_PlotHistogram] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 
+	//setup cool font!
+	ImGui::GetIO().Fonts->Clear();
+	ImGui::Spectrum::LoadFont(18.f);
+
 	// Setup Platform/Renderer backends
 	ImGui_ImplSDL3_InitForSDLRenderer(g_AppInfo.Window, renderer);
 	ImGui_ImplSDLRenderer3_Init(renderer);
@@ -202,7 +342,7 @@ void SDL_Application()
 		ImGui::NewFrame();
 
 		{
-			RenderMainUI();
+			UIHub();
 		}
 
 		// Rendering
