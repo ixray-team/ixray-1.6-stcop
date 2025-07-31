@@ -405,8 +405,11 @@ void DrawCompilerConfig()
 		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
 		ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
-		 
-		if (ImGui::InputInt("Threads Max", &gCompilerMode.ThreadsPerWork))
+		
+		ImGui::Separator();
+		ImGui::Text("Threads Max");
+
+		if (ImGui::InputInt("##Threads Max", &gCompilerMode.ThreadsPerWork))
 		{
 			gCompilerMode.ThreadsPerWork = std::min((u32)gCompilerMode.ThreadsPerWork, CPU::ID.n_threads);
 		}
