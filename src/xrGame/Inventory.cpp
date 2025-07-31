@@ -26,6 +26,10 @@
 #include "Grenade.h"
 
 using namespace InventoryUtilities;
+//Alundaio
+#include "../../xrScripts/script_engine.h" 
+using namespace luabind;
+//-Alundaio
 
 // what to block
 u16	INV_STATE_LADDER		= INV_STATE_BLOCK_ALL;
@@ -1277,8 +1281,19 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 	for(TIItemContainer::const_iterator it = m_ruck.begin(); m_ruck.end() != it; ++it) 
 	{
 		PIItem pIItem = *it;
-		if(!for_trade || pIItem->CanTrade())
+		if (!for_trade || pIItem->CanTrade())
+		{
+			if (m_pOwner->is_alive())
+			{
+				luabind::functor<bool> funct;
+				if (ai().script_engine().functor("actor_menu_inventory.CInventory_ItemAvailableToTrade", funct))
+				{
+					if (!funct(m_pOwner->cast_game_object()->lua_game_object(), pIItem->cast_game_object()->lua_game_object()))
+						continue;
+				}
+			}
 			items_container.push_back(pIItem);
+		}
 	}
 
 	if(m_bBeltUseful)
@@ -1286,8 +1301,19 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 		for(TIItemContainer::const_iterator it = m_belt.begin(); m_belt.end() != it; ++it) 
 		{
 			PIItem pIItem = *it;
-			if(!for_trade || pIItem->CanTrade())
+			if (!for_trade || pIItem->CanTrade())
+			{
+				if (m_pOwner->is_alive())
+				{
+					luabind::functor<bool> funct;
+					if (ai().script_engine().functor("actor_menu_inventory.CInventory_ItemAvailableToTrade", funct))
+					{
+						if (!funct(m_pOwner->cast_game_object()->lua_game_object(), pIItem->cast_game_object()->lua_game_object()))
+							continue;
+					}
+				}
 				items_container.push_back(pIItem);
+			}
 		}
 	}
 	
@@ -1298,7 +1324,18 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 		for (; I <= E; ++I) {
 			PIItem item = ItemFromSlot(I);
 			if (item && (item->BaseSlot() != BOLT_SLOT))
+			{
+				if (pOwner->is_alive())
+				{
+					luabind::functor<bool> funct;
+					if (ai().script_engine().functor("actor_menu_inventory.CInventory_ItemAvailableToTrade", funct))
+					{
+						if (!funct(pOwner->cast_game_object()->lua_game_object(), item->cast_game_object()->lua_game_object()))
+							continue;
+					}
+				}
 				items_container.push_back(item);
+			}
 		}
 	}
 	else if (m_bSlotsUseful) {
@@ -1315,9 +1352,30 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 						std::uint32_t slot = item->BaseSlot();
 
 						if (slot != INV_SLOT_3 /* && slot != INV_SLOT_2*/)
+						{
+							if (pOwner->is_alive())
+							{
+								luabind::functor<bool> funct;
+								if (ai().script_engine().functor("actor_menu_inventory.CInventory_ItemAvailableToTrade", funct))
+								{
+									if (!funct(pOwner->cast_game_object()->lua_game_object(), item->cast_game_object()->lua_game_object()))
+										continue;
+								}
+							}
 							items_container.push_back(item);
+						}
 					}
-					else {
+					else 
+					{
+						if (m_pOwner->is_alive())
+						{
+							luabind::functor<bool> funct;
+							if (ai().script_engine().functor("actor_menu_inventory.CInventory_ItemAvailableToTrade", funct))
+							{
+								if (!funct(m_pOwner->cast_game_object()->lua_game_object(), item->cast_game_object()->lua_game_object()))
+									continue;
+							}
+						}
 						items_container.push_back(item);
 					}
 				}
