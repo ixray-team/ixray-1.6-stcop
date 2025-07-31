@@ -54,6 +54,10 @@ class CLevelChanger;
 class CPhysicItem;
 class CEatableItem;
 class CScriptZone;
+class CHelicopter;
+class CHangingLamp;
+class CHolderCustom;
+class CCar;
 
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
@@ -216,6 +220,10 @@ public:
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
 	virtual CEatableItem* cast_eatable_item() { return nullptr; }
 	virtual CScriptZone* cast_script_zone() { return nullptr; }
+	virtual CHelicopter* cast_helicopter() { return nullptr; }
+	virtual CHangingLamp* cast_hanging_lamp() { return nullptr; }
+	virtual CHolderCustom* cast_holder_custom() { return nullptr; }
+	virtual CCar* cast_car() { return nullptr; }
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }
