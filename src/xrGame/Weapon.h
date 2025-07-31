@@ -194,6 +194,8 @@ public:
 	bool	NeedBlockSprint						() const;
 
 	bool bUpdateHUDBonesVisibility = false;
+	u32 _last_update_time;
+
 	bool bReloadKeyPressed;
 	bool bAmmotypeKeyPressed;
 	bool bStopReloadSignal;
