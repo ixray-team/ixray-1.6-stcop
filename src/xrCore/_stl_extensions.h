@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 using std::swap;
 
@@ -23,8 +24,8 @@ public:
 public:
 							pointer					address			(reference _Val) const					{	return (&_Val);	}
 							const_pointer			address			(const_reference _Val) const			{	return (&_Val);	}
-													xalloc			()										{	}
-													xalloc			(const xalloc<T>&)						{	}
+													xalloc			() = default;
+	xalloc			(const xalloc<T>&) = default;
 	template<class _Other>							xalloc			(const xalloc<_Other>&)					{	}
 	template<class _Other>	xalloc<T>&				operator=		(const xalloc<_Other>&)					{	return (*this);	}
 							pointer					allocate		(size_type n, const void* p=0) const	{	return xr_alloc<T>((u32)n);	}
@@ -49,7 +50,7 @@ struct xr_allocator {
 		typedef xalloc<T>	result;
 	};
 
-	static	void	*alloc		(const u32 &n)	{	return xr_malloc((u32)n);	}
+	static	void	*alloc		(const u32 n)	{	return xr_malloc((u32)n);	}
 	template <typename T>
 	static	void	dealloc		(T *&p)			{	xr_free(p);					}
 };
@@ -66,6 +67,12 @@ namespace std
 // vector
 template <typename T, typename allocator = xalloc<T> >
 using xr_vector = std::vector<T, allocator>;
+
+template <typename K, typename V>
+using xr_pair = std::pair<K, V>;
+
+template<typename... Args>
+using xr_tuple = std::tuple<Args...>;
 
 template <typename T>
 void clear_and_reserve(xr_vector<T> &vector_object) {
