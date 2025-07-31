@@ -10,6 +10,8 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "inventory_item_object.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 
 
 CInventoryItemObject::CInventoryItemObject	()
@@ -97,6 +99,17 @@ BOOL CInventoryItemObject::net_Spawn		(CSE_Abstract* DC)
 {
 	BOOL								res = CPhysicItem::net_Spawn(DC);
 	CInventoryItem::net_Spawn			(DC);
+	auto pKA = Visual()->dcast_PKinematicsAnimated();
+	if (pKA != nullptr)
+	{
+		auto motionId = pKA->ID_Cycle_Safe("idle");
+		if (!motionId)
+		{
+			motionId.set(0, 0);
+		}
+
+		pKA->PlayCycle(motionId, false);
+	}
 	return								(res);
 }
 
