@@ -463,15 +463,15 @@ void CArtefact::OnStateSwitch(u32 S)
 	switch(S){
 	case eShowing:
 		{
-			PlayHUDMotion("anm_show", FALSE, this, S);
+			PlayHUDMotion("anm_show", FALSE, S);
 		}break;
 	case eHiding:
 		{
-			PlayHUDMotion("anm_hide", FALSE, this, S);
+			PlayHUDMotion("anm_hide", FALSE, S);
 		}break;
 	case eActivating:
 		{
-			PlayHUDMotion("anm_activate", FALSE, this, S);
+			PlayHUDMotion("anm_activate", FALSE, S);
 		}break;
 	case eIdle:
 		{
@@ -482,7 +482,7 @@ void CArtefact::OnStateSwitch(u32 S)
 
 void CArtefact::PlayAnimIdle()
 {
-	PlayHUDMotion("anm_idle", FALSE, nullptr, eIdle);
+	PlayHUDMotion("anm_idle", FALSE, eIdle);
 }
 
 void CArtefact::OnAnimationEnd(u32 state)
