@@ -405,9 +405,6 @@ void RenderUIWeather() {
 	}
 
 #endif
-	//static bool b = getScriptWeather();
-	//if (ImGui::Checkbox("Script weather", &b))
-	//	setScriptWeather(b);
 
 	ImGui::Separator();
 	bool changed = false;
@@ -423,7 +420,7 @@ void RenderUIWeather() {
 		changed = true;
 	}
 
-	if (ImGui::ColorEdit3("ambient_color", (float*)&cur->ambient)) {
+	if (ImGui::ColorEdit4("ambient_color", (float*)&cur->ambient, ImGuiColorEditFlags_AlphaBar)) {
 		changed = true;
 	}
 	if (ImGui::ColorEdit4("clouds_color", (float*)&cur->clouds_color, ImGuiColorEditFlags_AlphaBar)) {
@@ -446,7 +443,7 @@ void RenderUIWeather() {
 	if (ImGui::SliderFloat("fog_density", &cur->fog_density, 0.0f, 1.0f)) {
 		changed = true;
 	}
-	if (ImGui::ColorEdit3("fog_color", (float*)&cur->fog_color)) {
+	if (ImGui::ColorEdit4("fog_color", (float*)&cur->fog_color, ImGuiColorEditFlags_AlphaBar)) {
 		changed = true;
 	}
 	if (ImGui::ColorEdit4("hemisphere_color", (float*)&cur->hemi_color, ImGuiColorEditFlags_AlphaBar)) {
@@ -510,7 +507,7 @@ void RenderUIWeather() {
 	if (ImGui::SliderFloat("rain_angle_rotation", &cur->rain_angle_rotation, 0.0f, 360.0f))
 		changed = true;
 
-	if (ImGui::ColorEdit3("sky_color", (float*)&cur->sky_color)) {
+	if (ImGui::ColorEdit4("sky_color", (float*)&cur->sky_color, ImGuiColorEditFlags_AlphaBar)) {
 		changed = true;
 	}
 
@@ -542,7 +539,7 @@ void RenderUIWeather() {
 		changed = true;
 	}
 
-	if (ImGui::ColorEdit3("sun_color", (float*)&cur->sun_color)) {
+	if (ImGui::ColorEdit4("sun_color", (float*)&cur->sun_color, ImGuiColorEditFlags_AlphaBar)) {
 		changed = true;
 	}
 	static float editor_altitude = 0.f;
@@ -630,6 +627,18 @@ void RenderUIWeather() {
 		}
 		modifiedWeathers.clear();
 	}
+	ImGui::BeginDisabled(modifiedWeathers.empty());
+	ImGui::SameLine();
+	if (ImGui::Button("Reset", ImVec2(100, 50)))
+	{
+		env.WeatherCycles.clear();
+		env.load();
+		env.SetWeather(cycles[iCycle], true);
+
+		modifiedWeathers.clear();
+	}
+	ImGui::EndDisabled();
+
 
 	ImGui::End();
 }
