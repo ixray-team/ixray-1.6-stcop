@@ -388,4 +388,13 @@
 	<string id="st_track_opt_on">
 		<text>on</text>
 	</string>
+	<string id="Contacts">
+		<text>Contacts</text>
+	</string>
+	<string id="pda_btn_contacts">
+		<text>Contacts</text>
+	</string>
+	<string id="pda_btn_contacts_hint">
+		<text>Show stalker contact list</text>
+	</string>
 </string_table>
