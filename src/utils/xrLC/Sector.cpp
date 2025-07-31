@@ -21,8 +21,7 @@ CSector::~CSector()
 {
 
 }
-
-
+ 
 #include <../xrForms/CompilersUI.h>
 extern CompilersMode gCompilerMode;
 
@@ -48,8 +47,8 @@ void CSector::BuildHierrarhy	()
 	delimiter = _max(scene_size.x, _max(scene_size.y, scene_size.z));
 	delimiter *= 2;
 
-	clMsg("Scene Fbox min{%.2f,%.2f,%.2f}, max{%.2f,%.2f,%.2f}, Delimiter: %.3f",
-		VPUSH(scene_bb.min), VPUSH(scene_bb.max), delimiter);
+	// clMsg("Scene Fbox min{%.2f,%.2f,%.2f}, max{%.2f,%.2f,%.2f}, Delimiter: %.3f",
+	// 	VPUSH(scene_bb.min), VPUSH(scene_bb.max), delimiter);
 
 	int		iLevel					= 2;
 	float	SizeLimit				= c_SS_maxsize/4.f;
@@ -75,7 +74,8 @@ void CSector::BuildHierrarhy	()
 
 		struct Hash
 		{
-			std::size_t operator()(const GridKey& k) const {
+			std::size_t operator()(const GridKey& k) const
+			{
 				return std::hash<int>()(k.x) ^ (std::hash<int>()(k.y) << 1);
 			}
 		};
@@ -90,10 +90,12 @@ void CSector::BuildHierrarhy	()
 	};
 
 
-	// Фикс гиганской сцены когда ловим Inf 256k макс  
-	if (delimiter > 256 * 1024)
-		delimiter = 256 * 1024;
+	// Фикс гиганской сцены когда ловим Inf 64k макс  
+	if (delimiter > 64 * 1024)
+		delimiter = 64 * 1024;
 	
+	CTimer tGlobalCalculateBounds;
+	u64 TotalMS = 0;
 
 	for (; SizeLimit<=delimiter; SizeLimit*=2)
 	{
@@ -105,7 +107,7 @@ void CSector::BuildHierrarhy	()
 
 		u32 IDx = 0;
 
-		u32 ChunkSize = 128;
+		u32 ChunkSize = 512;
 		for (auto O : g_tree)
 		{
 			if (!O->bConnected && O->Sector == SelfID )
@@ -119,6 +121,9 @@ void CSector::BuildHierrarhy	()
 			}
 			IDx++;
 		}
+		
+		bool use_grid = SizeLimit <= 512 ? true : false;
+ 		AditionalData("Delimiter: %f, use grid: %u", SizeLimit, use_grid);
 
    		for (auto& Ogf : data)
 		{
@@ -132,7 +137,6 @@ void CSector::BuildHierrarhy	()
 			OGF_Node* pNode					= new OGF_Node(iLevel,u16(SelfID));
 			pNode->AddChield				(I);
 
-			bool use_grid = SizeLimit <= ChunkSize ? true : false;
   			GridKey selected_grid = Ogf.key;
 				 
  			for (;;)
@@ -206,7 +210,9 @@ void CSector::BuildHierrarhy	()
 		 
    			if (pNode->chields.size()>1)	
 			{
+				tGlobalCalculateBounds.Start();
    				pNode->CalcBounds		(true);
+				TotalMS+=tGlobalCalculateBounds.GetElapsed_ms();
  				g_tree.push_back		(pNode);
   				bAnyNode				= TRUE;
 			}
@@ -239,6 +245,9 @@ void CSector::BuildHierrarhy	()
 	if (0==TreeRoot) {
 		clMsg("Can't build hierrarhy for sector #%d",SelfID);
 	}
+
+	if (TotalMS > 2000)
+		clMsg("Building Hierarhy Time: %u Ms", TotalMS);
 }
 
 void CSector::Validate()
