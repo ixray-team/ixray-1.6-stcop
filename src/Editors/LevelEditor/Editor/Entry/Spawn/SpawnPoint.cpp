@@ -531,9 +531,11 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 
 void CSpawnPoint::SSpawnData::OnFrame()
 {
+	xrCriticalSectionGuard guard(FrameMutex);
+
 	if (m_Data->m_editor_flags.is(CSE_Abstract::flUpdateProperties))
 		ExecCommand				(COMMAND_UPDATE_PROPERTIES);
-	// visual part
+
 	if (m_Visual)
 	{
 		if (m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange))
