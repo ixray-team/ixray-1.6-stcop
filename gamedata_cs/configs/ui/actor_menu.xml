@@ -61,7 +61,64 @@
     <text align="r" font="graffiti22" color="ui_7"/>
   </partner_money_static>
 
-
+  	<inventory_slot_wnd>
+		<slot> <!-- Knife -->
+		</slot>
+		<slot> <!-- Pistol -->
+			<slot_highlight x="448" y="304" width="98" height="47" stretch="1">
+				<texture>ui_inGame2_detector_highlighter</texture>
+			</slot_highlight>
+			<slot_dragdrop x="450" y="305" width="92" height="44"
+          cell_width="41" cell_height="41" rows_num="1" cols_num="2"
+          custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
+		vc_horiz_align="c"/>
+ 		</slot>
+		<slot> <!-- Auto -->
+			<slot_highlight x="552" y="93" width="100" height="265" stretch="1">
+				<texture>ui_inGame2_weapon_highlighter</texture>
+			</slot_highlight>
+			<slot_dragdrop x="556" y="100" width="91" height="249"
+          cell_width="41" cell_height="41" rows_num="6" cols_num="2"
+          custom_placement="0" vertical_placement="1" a="0" virtual_cells="1" vc_vert_align="c"
+		vc_horiz_align="c"/>
+		</slot>
+		<slot> <!-- Grenade -->
+		</slot>
+		<slot> <!-- Binoc -->
+		</slot>
+		<slot> <!-- Bolt -->
+		</slot>
+		<slot> <!-- Outfit -->
+			<slot_highlight x="446" y="150" width="100" height="141" stretch="1">
+				<texture>ui_inGame2_armor_highlighter</texture>
+			</slot_highlight>
+			<slot_dragdrop x="450" y="160" width="92" height="127"
+          cell_width="41" cell_height="41" rows_num="3" cols_num="2"
+          custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
+		vc_horiz_align="c"/>
+		</slot>
+		<slot> <!-- PDA -->
+		</slot>
+		<slot> <!-- Detector -->
+			<slot_highlight x="448" y="95" width="98" height="54" stretch="1">
+				<texture>ui_inGame2_detector_highlighter</texture>
+			</slot_highlight>
+			<slot_dragdrop x="475" y="100" width="41" height="41"
+          cell_width="41" cell_height="41" rows_num="1" cols_num="1"
+          custom_placement="0" a="0"/>
+		</slot>
+		<slot> <!-- Torch -->
+		</slot>
+		<slot> <!-- Artfake -->
+		</slot>
+		<slot> <!-- Helmet -->
+		</slot>
+	</inventory_slot_wnd>
+	
+	<artefact_slot_highlight x="358" y="94" width="58" height="58" dy="65" stretch="1">
+		<texture>ui_inGame2_artefakt_highlighter</texture>
+	</artefact_slot_highlight>
+	
 	<actor_weight_caption x="790" y="738" width="85" height="14">
 		<text align="l" font="letterica16" color="ui_3">ui_total_weight</text>
 	</actor_weight_caption>
@@ -136,25 +193,6 @@
   <dragdrop_belt x="371" y="105" width="45" height="320"
           cell_width="32" cell_height="32" rows_num="5" cols_num="1"
 		  cell_sp_x="0" cell_sp_y="33" a="0"/>
-
-  <dragdrop_outfit x="450" y="160" width="92" height="127"
-          cell_width="41" cell_height="41" rows_num="3" cols_num="2"
-          custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
-		vc_horiz_align="c"/>
-
-  <dragdrop_detector x="475" y="100" width="41" height="41"
-          cell_width="41" cell_height="41" rows_num="1" cols_num="1"
-          custom_placement="0" a="0"/>
-
-  <dragdrop_pistol x="450" y="305" width="92" height="44"
-          cell_width="41" cell_height="41" rows_num="1" cols_num="2"
-          custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
-		vc_horiz_align="c"/>
-
-  <dragdrop_automatic x="556" y="100" width="91" height="249"
-          cell_width="41" cell_height="41" rows_num="6" cols_num="2"
-          custom_placement="0" vertical_placement="1" a="0" virtual_cells="1" vc_vert_align="c"
-		vc_horiz_align="c"/>
   
     <dragdrop_actor_trade x="705" y="144" width="308" height="180"
           cell_width="41" cell_height="41" rows_num="4" cols_num="7"
@@ -250,7 +288,8 @@
 		<icon x="4" y="6" width="22" height="22" magnitude="1000">
 			<text align="c" vert_align="c" font="graffiti22" color="ui_4">99</text>
 		</icon>
-		<state_progress x="51" y="11" width="209" height="9" horz="1" min="0" max="1" pos="0">
+		<state_progress x="51" y="11" width="209" height="9" horz="1" min="0" max="1" pos="0"
+		expression="floor(fltPlayerPower * 55.0) / 55.0">
 			<progress>
 				<texture>ui_char_stamina</texture>
 			</progress>
@@ -262,7 +301,8 @@
 		<icon x="5" y="5" width="22" height="22" magnitude="100" light_anim="ui_slow_blinking" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
 			<texture a="255">ui_char_bleeding</texture>
 		</icon>
-		<state_progress x="51" y="11" width="209" height="9" horz="1" min="0" max="1" pos="0">
+		<state_progress x="51" y="11" width="209" height="9" horz="1" min="0" max="1" pos="0"
+		expression="floor(fltPlayerHealth * 55.0) / 55.0">
 			<progress>
 				<texture>ui_char_health</texture>
 			</progress>
@@ -274,7 +314,8 @@
 		<icon x="4" y="7" width="22" height="22" magnitude="100">
 			<text align="c" vert_align="c" font="graffiti22" color="ui_4">99</text>
 		</icon>
-		<state_progress x="51" y="11" width="209" height="9" horz="1" min="0" max="1" pos="0">
+		<state_progress x="51" y="11" width="209" height="9" horz="1" min="0" max="1" pos="0"
+		expression="floor(fltPlayerArmor * 55.0) / 55.0">
 			<progress>
 				<texture>ui_char_armor</texture>
 			</progress>
