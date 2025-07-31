@@ -784,6 +784,8 @@ void CCar::ParseDefinitions()
 	CExplosive::Load(ini, "explosion");
 	//CExplosive::SetInitiator(ID());
 	m_camera_position = ini->r_fvector3("car_definition", "camera_pos");
+	m_camera_position_2 = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos2", m_camera_position);
+	m_camera_current_position = &m_camera_position;
 	///////////////////////////car definition///////////////////////////////////////////////////
 	fill_wheel_vector(ini->r_string("car_definition", "driving_wheels"), m_driving_wheels);
 	fill_wheel_vector(ini->r_string("car_definition", "steering_wheels"), m_steering_wheels);
