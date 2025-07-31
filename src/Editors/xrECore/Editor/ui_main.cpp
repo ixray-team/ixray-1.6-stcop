@@ -289,24 +289,17 @@ void TUI::OnAppDeactivate()
 bool TUI::ShowHint(const AStringVec& SS)
 {
 	VERIFY(m_bReady);
-  /*  if (SS.size()){
-		xr_string S=_ListToSequence2(SS);
-		if (m_bHintShowing&&(S==m_LastHint)) return true;
-		m_LastHint = S;
-		m_bHintShowing = true;
-		if (!m_pHintWindow){
-			m_pHintWindow = new THintWindow((TComponent*)0);
-			m_pHintWindow->Brush->Color = (TColor)0x0d9F2FF;
+
+	if (!SS.empty() && ImGui::BeginTooltip())
+	{
+		for (const xr_string& Hint : SS)
+		{
+			ImGui::Text(Hint.c_str());
 		}
-		TRect rect = m_pHintWindow->CalcHintRect(320,S,0);
-		rect.Left+=m_HintPoint.x;    rect.Top+=m_HintPoint.y;
-		rect.Right+=m_HintPoint.x;   rect.Bottom+=m_HintPoint.y;
-		m_pHintWindow->ActivateHint(rect,S);
-	}else{
-		m_bHintShowing = false;
-		m_LastHint = "";
-	}*/
-	not_implemented();
+		ImGui::EndTooltip();
+	}
+
+	//not_implemented();
 	return m_bHintShowing;
 }
 //---------------------------------------------------------------------------
@@ -318,15 +311,17 @@ void TUI::HideHint()
 }
 //---------------------------------------------------------------------------
 
-void TUI::ShowHint(const xr_string& s)
+void TUI::ShowHint()
 {
-	VERIFY			(m_bReady);
-	GetCursorPos	(&m_HintPoint);
-	AStringVec 		SS;
-	SS.push_back	(s);
+	VERIFY(m_bReady);
+	GetCursorPos(&m_HintPoint);
+	AStringVec SS;
 	Tools->OnShowHint(SS);
-	if (!ShowHint(SS)) HideHint();
+
+	if (!ShowHint(SS)) 
+		HideHint();
 }
+
 //---------------------------------------------------------------------------
 
 #include "..\xrEngine\IGame_Persistent.h"
