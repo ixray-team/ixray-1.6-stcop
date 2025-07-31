@@ -57,7 +57,7 @@ bool CRenderTarget::phase_fsr() {
 	fsr2Params.frameTimeDelta = std::max(1.0f + EPS_L, float(Device.dwTimeDelta));
 
 	fsr2Params.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
-	fsr2Params.nearPlane = VIEWPORT_NEAR;
+	fsr2Params.nearPlane = Device.fViewportNear;
 	fsr2Params.fovH = deg2rad(Device.fFOV);
 
 	return g_Fsr2Wrapper.Draw(fsr2Params);
