@@ -69,6 +69,7 @@ public:
 	IC		CScriptEngine				&script_engine			() const;
 	IC		moving_objects				&moving_objects			() const;
 	IC		doors::manager&				doors					() const;
+	IC		CPatrolPathStorage&			patrol_paths_raw		();
 
 #ifdef DEBUG
 			void						validate				(const u32			level_id) const;
