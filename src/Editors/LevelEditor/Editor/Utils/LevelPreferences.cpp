@@ -72,6 +72,11 @@ void CLevelPreferences::Load()
 	}
 	
 
+	if (JSONData.contains("gizmo") && JSONData["gizmo"].contains("matrixmode"))
+	{
+		imManipulator.MatrixMode = JSONData["gizmo"]["matrixmode"];
+	}
+
 	if (JSONData["ContentBrowser"].contains("IsSpawnElement"))
 	{
 		GContentView->IsSpawnElement = JSONData["ContentBrowser"]["IsSpawnElement"];
@@ -92,6 +97,7 @@ void CLevelPreferences::Save()
 {
 	inherited::Save		();
 
+	JSONData["gizmo"]["matrixmode"] = imManipulator.MatrixMode;
 	JSONData["windows"]["object_list"] = OpenObjectList;
 	JSONData["windows"]["properties"] = OpenProperties;
 	JSONData["windows"]["world_properties"] = OpenWorldProperties;
