@@ -356,6 +356,8 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 	virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() {return this;};
 public:
 	virtual BOOL					Net_Relevant			();
+	virtual void SyncRead(NET_Packet& Packet);
+	virtual void SyncWrite(NET_Packet& Packet);
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureCrow,CSE_ALifeCreatureAbstract)
@@ -403,6 +405,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterRat,CSE_ALifeMonsterAbstract,CSE_AL
 	virtual const CSE_Abstract		*base				() const;
 	virtual CSE_Abstract			*cast_abstract			() {return this;};
 	virtual CSE_ALifeInventoryItem	*cast_inventory_item	() {return this;};
+
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie,CSE_ALifeMonsterAbstract)
@@ -517,6 +520,9 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker,CSE_ALifeHumanAbstract,CSE_PH
 	virtual	void					load					(NET_Packet &tNetPacket);
 	virtual BOOL					Net_Relevant() override;
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
+
+	virtual void SyncRead(NET_Packet& Packet);
+	virtual void SyncWrite(NET_Packet& Packet);
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeOnlineOfflineGroup,CSE_ALifeDynamicObject,CSE_ALifeSchedulable,CMovementManagerHolder)

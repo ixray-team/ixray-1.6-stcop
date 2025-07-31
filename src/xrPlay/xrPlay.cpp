@@ -17,7 +17,7 @@
 #include "NvGPUTransferee.h"
 
 #ifndef DEBUG
-#define NO_MULTI_INSTANCES
+//#define NO_MULTI_INSTANCES
 #endif
 
 void EnumerateDisplayModes()

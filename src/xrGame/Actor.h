@@ -514,8 +514,13 @@ protected:
 			void						ConvState			(u32 mstate_rl, string128 *buf);
 public:
 	virtual BOOL						net_Spawn			( CSE_Abstract* DC);
+
 	virtual void						net_Export			( NET_Packet& P);				// export to server
 	virtual void						net_Import			( NET_Packet& P);				// import from server
+
+	virtual void						SyncRead(NET_Packet& Packet);
+	virtual void						SyncWrite(NET_Packet& Packet);
+
 	virtual void						net_Destroy			();
 	virtual BOOL						net_Relevant		();//	{ return getSVU() | getLocal(); };		// relevant for export to server
 	virtual	void						net_Relcase			( CObject* O );					//

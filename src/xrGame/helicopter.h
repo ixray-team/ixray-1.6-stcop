@@ -272,6 +272,10 @@ public:
 	virtual void					net_Destroy			();
 	virtual void					net_Export			(NET_Packet &P) override;
 	virtual void					net_Import			(NET_Packet &P) override;
+
+	virtual void SyncRead(NET_Packet& Packet) override;
+	virtual void SyncWrite(NET_Packet& Packet)override;
+
 	virtual BOOL					net_Relevant		() override;
 	virtual void					net_Relcase			(CObject* O );
 	virtual void					save				(NET_Packet &output_packet);
