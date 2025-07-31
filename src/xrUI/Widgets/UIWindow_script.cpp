@@ -156,6 +156,7 @@ void CUIWindow::script_register(lua_State *L)
 	module(L)
 	[
 		class_<CDialogHolder>("CDialogHolder")
+		.def("start_stop_menu", &CDialogHolder::StartStopMenu)
 		.def("AddDialogToRender",		&CDialogHolder::AddDialogToRender)
 		.def("RemoveDialogToRender",	&CDialogHolder::RemoveDialogToRender),
 
