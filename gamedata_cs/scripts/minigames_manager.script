@@ -1,0 +1,181 @@
+--------------------------------------------------------------------------------
+-- Minigames managing ----------------------------------------------------------
+-- Made by Peacemaker ----------------------------------------------------------
+-- 27.12.07 --------------------------------------------------------------------
+--------------------------------------------------------------------------------
+local MG_manager = nil
+class "CMinigames"
+-- Class constructor
+function CMinigames:__init()
+    self.minigames =    {
+--                          minigame name       |        minigame's class (minigame's profile)        | current minigame's state
+                            test_crowkiller     = {game_profile = minigame_crowkiller.CMGCrowKiller(),    state = "valiable"},
+                            test_shooting       = {game_profile = minigame_shooting.CMGShooting(),        state = "valiable"},
+                        }
+    self.minigames_params = {
+--                              minigame name   |   parameters list
+                                test_crowkiller = {
+												   highscore = 0, timer = 60, win = false, crows_to_kill={0,0,0,0},
+								 				   money_multiplier=10, champion_multiplier=100, selected=0, game_type=""
+												  },
+                                test_shooting   = {
+												   wpn_type = "", game_type = "", obj_name = nil, win = 0,
+												   distance = 0, ammo = 0, targets = {}, target_counter = 0
+												  },
+                            }
+-- minigame profiles
+	self.shooting = ""
+	self.crowkiller = ""
+end
+-- Class update (called from minigame space restrictor)
+function CMinigames:update(minigame_name, obj_called)
+	local st = self:get_minigame_state(minigame_name)
+    if(st~="valiable") and (st~="enabled") then
+        self.minigames[minigame_name].game_profile:update(minigame_name, obj_called)
+    end
+    return st
+end
+-- Save manager
+function CMinigames:save(thread)
+	set_save_marker(thread, "save", false, "CMinigames")
+	local n = 0
+	for k,v in pairs(self.minigames) do
+		n = n + 1
+	end
+	thread:w_u16(n)
+	for k,v in pairs(self.minigames) do
+		thread:w_stringZ(k)
+		thread:w_stringZ(v.game_profile:get_profile_name())
+		thread:w_stringZ(self.minigames[k].state)
+		v.game_profile:save(thread, self.minigames_params[k])
+	end
+	set_save_marker(thread, "save", true, "CMinigames")
+end
+-- Load manager
+function CMinigames:load(thread)
+	set_save_marker(thread, "load", false, "CMinigames")
+	local n = thread:r_u16()
+	self.minigames = {}
+	self.minigames_params = {}
+	for i=1,n do
+		local key = thread:r_stringZ()
+		self.minigames[key] = {}
+        local profile = thread:r_stringZ()
+		if(profile=="CMGCrowKiller") then
+			self.minigames[key].game_profile = minigame_crowkiller.CMGCrowKiller()
+		elseif(profile=="CMGShooting") then
+			self.minigames[key].game_profile = minigame_shooting.CMGShooting()
+		end
+		self.minigames[key].state = thread:r_stringZ()
+		self.minigames_params[key] = {}
+		self.minigames[key].game_profile:load(thread, self.minigames_params[key])
+	end
+	set_save_marker(thread, "load", true, "CMinigames")
+end
+-- Have minigames manager been loaded?
+function CMinigames:params_exist(minigame_name)
+	return (self.minigames[minigame_name]~=nil)
+end
+-- Start minigame (params: minigame name, minigame space restrictor name)
+function CMinigames:start(minigame_name, obj_called)
+-- if minigame is valiable reinit it
+    if(self:get_minigame_state(minigame_name)=="enabled") then
+        self.minigames[minigame_name].game_profile:reinit(self.minigames_params[minigame_name])
+        self:set_minigame_state(minigame_name, "started")
+    else
+        printf("minigame %s now is unvaliable", minigame_name)
+    end
+end
+-- Get minigame profile from manager
+function CMinigames:get_minigame_profile(minigame_name)
+    return self.minigames[minigame_name].game_profile
+end
+-- Get minigame state from manager
+function CMinigames:get_minigame_state(minigame_name)
+    return self.minigames[minigame_name] and self.minigames[minigame_name].state
+end
+-- Set new minigame state to manager
+function CMinigames:set_minigame_state(minigame_name, new_state)
+    printf(""..minigame_name.." "..new_state)
+    self.minigames[minigame_name].state = new_state
+end
+-- Create a new parameter list in minigame manager
+function CMinigames:create_new_minigame_parameter_list(minigame_name, minigame_obj)
+	if(self.minigames[minigame_name]==nil) then
+	    self.minigames[minigame_name] = {game_profile = minigame_obj, state = "valiable"}
+	    self.minigames_params[minigame_name] = {}
+	end
+end
+-- Get minigame parameter from manager
+function CMinigames:get_minigame_param(minigame_name, param_name)
+    return self.minigames_params[minigame_name] and self.minigames_params[minigame_name][param_name]
+end
+-- Set new minigame parameter to manager
+function CMinigames:set_minigame_param(minigame_name, param_name, new_value)
+    local t = type(new_value)
+    if(t=="number") or (t=="string") then
+        printf(""..minigame_name.." "..param_name.." setting to "..new_value)
+    else
+        printf(""..minigame_name.." "..param_name.." setting to "..t)
+    end
+    self.minigames_params[minigame_name][param_name] = new_value
+end
+-- Enable minigame space restrictor update
+function CMinigames:enable_zone(minigame_name)
+    if(self.minigames[minigame_name].state=="enabled") then
+        self.minigames[minigame_name].state = "valiable"
+        return true
+    else
+        return false
+    end
+end
+-- (!!!only for CrowKiller minigame) Increase counter for killed crows
+function CMinigames:increase_killed_crow_counter()
+    for k,v in pairs(self.minigames) do
+        if(self.minigames[k].state=="running") and (self.minigames[k].game_profile:get_profile_name()=="CMGCrowKiller") then
+            self.minigames[k].game_profile:inc_killed_counter()
+        end
+    end
+end
+-- (!!!only for Shooting minigame) Target hit callback
+function CMinigames:on_target_hit(obj, amount, local_direction, who, bone_index)
+    for k,v in pairs(self.minigames) do
+        if(self.minigames[k].state=="running") and (self.minigames[k].game_profile:get_profile_name()=="CMGShooting") then
+            self.minigames[k].game_profile:hit_callback(obj, amount, local_direction, who, bone_index)
+        end
+    end
+end
+-- (!!!only for Shooting minigame) Target animation callback
+function CMinigames:animation_end(obj)
+    for k,v in pairs(self.minigames) do
+        if(self.minigames[k].state=="running") and (self.minigames[k].game_profile:get_profile_name()=="CMGShooting") then
+            self.minigames[k].game_profile:animation_end(obj)
+        end
+    end
+end
+-- Get current minigame name from manager
+function CMinigames:get_current_shooting()
+    return self.shooting
+end
+-- Get current minigame name from manager
+function CMinigames:get_current_crowkiller()
+    return self.crowkiller
+end
+-- Set current minigame name from manager
+function CMinigames:set_current_shooting(new_name)
+    self.shooting = new_name
+end
+-- Set current minigame name from manager
+function CMinigames:set_current_crowkiller(new_name)
+    self.crowkiller = new_name
+end
+--------------------------------------------------------------------------------
+-- Export
+--------------------------------------------------------------------------------
+-- Get our minigame manager (create if unexist)
+function get_minigames_manager()
+    if(MG_manager==nil) then
+        MG_manager = CMinigames()
+    end
+    return MG_manager
+end

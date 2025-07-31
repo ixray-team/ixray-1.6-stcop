@@ -1,0 +1,235 @@
+;*****************************
+;********* ally 1 ***********
+
+[logic@ally_work1]
+active = camper@talk_work1
+suitable = {=check_npc_name(red_bridge_stalker_leshiy) -red_bridge_allyes_free} true
+
+[camper@talk_work1]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_1_walk
+path_look = talk_1_look
+on_signal = action | camper@talk_wait_work1 %+red_bridge_leshiy_redy%
+meet = no_meet
+
+[camper@talk_wait_work1]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_1_walk
+path_look = talk_1_look
+on_info = {+red_bridge_thanks_leshiy} camper@reply_work1
+meet = no_meet
+
+[camper@reply_work1]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_1_walk
+path_look = talk_1_look
+on_game_timer = 30 | camper@reply2_work1 %+red_bridge_thanks_leshiy_reply =play_sound(red_bridge_thanks_leshiy_reply1)%
+meet = no_meet
+
+[camper@reply2_work1]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_1_walk
+path_look = talk_1_look
+on_info = {+red_bridge_thanks_leshiy_reply2} camper@reply3_work1
+meet = no_meet
+
+[camper@reply3_work1]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_1_walk
+path_look = talk_1_look
+on_game_timer = 15 | camper@reply4_work1 %+red_bridge_thanks_leshiy_reply3 =play_sound(red_bridge_thanks_leshiy_reply3)%
+meet = no_meet
+
+[camper@reply4_work1]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_1_walk
+path_look = talk_1_look
+on_game_timer = 25 | {+red_bridge_thanks_leshiy_reply4} camper@reward_work1 %+red_bridge_stalkers_go%
+meet = no_meet
+
+[camper@reward_work1]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_1_walk
+path_look = talk_1_look
+on_game_timer = 150 | walker@bridge_walk_work_1
+on_info = {=dist_to_actor_ge(3) +red_leshiy_reward_done} walker@bridge_walk_work_1
+meet = meet@work1
+
+[walker@bridge_walk_work_1]
+invulnerable = true
+combat_ignore_cond = always
+path_walk = bridge_walk
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+on_signal = action | camper@post_work1
+meet = no_meet
+
+[camper@post_work1]
+post_combat_time = 0,0
+out_restr = red_bridge_csky_restr
+invulnerable = true
+def_state_moving = patrol
+path_walk = post_1_walk
+path_look = post_1_look
+team = ally_team
+on_signal = action | %+red_bridge_allyes_free =update_squad(red_allyes_recon_squad_1)%
+
+[meet@work1]
+meet_state = 15 | hello_wpn@nil | 5 | talk_default@nil 
+meet_state_wpn = 15 | hello_wpn@nil | 5 | talk_default@nil 
+victim = 15 | actor
+victim_wpn = 15 | actor
+use	= true
+use_wpn	= true
+
+;*****************************
+;********* ally 2 ***********
+
+[logic@ally_work2]
+active = walker@talk_work2
+suitable = {=check_npc_name(red_bridge_ally_) -red_bridge_allyes_free}
+
+[walker@talk_work2]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_2_walk
+path_look = talk_1_look
+on_info = {+red_bridge_stalkers_go} walker@bridge_walk_work_2
+
+[walker@bridge_walk_work_2]
+invulnerable = true
+combat_ignore_cond = always
+path_walk = bridge_walk
+on_signal = action | camper@post_work2
+
+[camper@post_work2]
+post_combat_time = 0,0
+out_restr = red_bridge_csky_restr
+invulnerable = true
+def_state_moving = patrol
+path_walk = post_2_walk
+path_look = post_2_look
+team = ally_team
+
+;*****************************
+;********* ally 3 ***********
+
+[logic@ally_work3]
+active = walker@talk_work3
+suitable = {=check_npc_name(red_bridge_ally_) -red_bridge_allyes_free} true
+
+
+[walker@talk_work3]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_3_walk
+path_look = talk_1_look
+on_info = {+red_bridge_stalkers_go} walker@bridge_walk_work_3
+
+[walker@bridge_walk_work_3]
+invulnerable = true
+combat_ignore_cond = always
+path_walk = bridge_walk
+on_signal = action | camper@post_work3
+commander = true 
+move_type = patrol
+
+[camper@post_work3]
+post_combat_time = 0,0
+out_restr = red_bridge_csky_restr
+invulnerable = true
+def_state_moving = patrol
+path_walk = post_3_walk
+path_look = post_2_look
+team = ally_team
+
+
+;*****************************
+;********* ally 4 ***********
+
+[logic@ally_work4]
+active = walker@talk_work4
+suitable = {=check_npc_name(red_bridge_ally_) -red_bridge_allyes_free} true
+
+[walker@talk_work4]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_4_walk
+path_look = talk_1_look
+on_info = {+red_bridge_stalkers_go} walker@bridge_walk_work_4
+
+[remark@talk2_work4]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+target = talk_1_look
+anim = salut_free
+on_game_timer = 30 | walker@bridge_walk_work_4
+
+[walker@bridge_walk_work_4]
+invulnerable = true
+combat_ignore_cond = always
+path_walk = bridge_walk
+move_type = rush
+on_signal = action | camper@post_work4
+
+[camper@post_work4]
+post_combat_time = 0,0
+out_restr = red_bridge_csky_restr
+invulnerable = true
+def_state_moving = patrol
+path_walk = post_4_walk
+path_look = post_2_look
+team = ally_team
+
+;*****************************
+;********* ally 5 ***********
+
+[logic@ally_work5]
+active = walker@talk_work5
+suitable = {=check_npc_name(red_bridge_ally_) -red_bridge_allyes_free} true
+
+
+[walker@talk_work5]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+path_walk = talk_5_walk
+path_look = talk_1_look
+on_info = {+red_bridge_stalkers_go} walker@bridge_walk_work_5
+
+[remark@talk2_work5]
+out_restr = red_bridge_bandit_restr
+invulnerable = true
+target = talk_1_look
+anim = salut_free
+on_info = {+red_bridge_stalkers_go} walker@bridge_walk_work_5
+
+[walker@bridge_walk_work_5]
+invulnerable = true
+combat_ignore_cond = always
+path_walk = bridge_walk
+on_signal = action | camper@post_work5
+
+[camper@post_work5]
+post_combat_time = 0,0
+out_restr = red_bridge_csky_restr
+invulnerable = true
+def_state_moving = patrol
+path_walk = post_5_walk
+path_look = post_2_look
+team = ally_team
+
+;****************************
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false

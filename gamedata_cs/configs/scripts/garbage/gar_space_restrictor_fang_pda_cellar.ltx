@@ -1,0 +1,47 @@
+[logic]
+active = sr_idle@ko
+
+[sr_idle@ko]
+on_actor_inside = {+gar_story_came_to_ambush_door} sr_idle@unconscious_start_time_1 %=disable_ui =run_postprocess(gar_ambush_hit)%
+on_info = {+gar_story_need_to_go_to_cache} sr_idle@end_section ;2nd iteration
+
+[sr_idle@unconscious_start_time_1]
+on_timer = 2000 | sr_idle@unconscious_talk_4 %+gar_story_spawn_ambush_bandits =run_cam_effector_global(scenario_cam\garbage\cam_garbage_basement)%
+
+[sr_idle@unconscious_talk_4]
+on_info = {+gar_story_ambush_talk_4_played} sr_idle@unconscious_talk_4_time %=run_postprocess(gar_ambush_wake)%
+
+[sr_idle@unconscious_talk_4_time]
+on_timer = 3000 | sr_idle@unconscious_stop_1 %=take_money(all) =relocate_actor_inventory_to_box(718) +gar_story_ambush_remove =disable_anomaly(700) =teleport_actor(gar_bandit_ambush_teleport_walk:gar_bandit_ambush_teleport_look)%
+
+[sr_idle@unconscious_stop_1]
+on_timer = 1000 | sr_idle@unconscious_stop_2 %=play_sound(pda_alarm)%
+
+[sr_idle@unconscious_stop_2]
+on_signal = sound_end | sr_idle@unconscious_stop_3 %=play_sound(pda_alarm) =run_cam_effector_global(scenario_cam\garbage\cam_garbage_basement_stand)%
+
+[sr_idle@unconscious_stop_3]
+on_signal = sound_end | sr_idle@unconscious_stop_4 %=play_sound(pda_alarm)%
+
+[sr_idle@unconscious_stop_4]
+on_signal = sound_end | sr_idle@unconscious_end %=play_sound(pda_alarm)%
+
+[sr_idle@unconscious_end]
+on_signal = sound_end | sr_idle@awoke_1 %=play_sound(gar_find_fang_pda:csky:mar_csky_commander_name) =enable_ui%
+
+[sr_idle@awoke_1]
+on_signal = theme_end | sr_idle@get_pda %+gar_story_need_to_find_fang_pda%
+
+[sr_idle@get_pda]
+on_info = {=actor_has_item(device_pda_fang)} sr_idle@awoke_2 %+gar_story_got_fang_pda =play_sound(gar_fang_pda_rec:stalker)%
+
+[sr_idle@awoke_2]
+on_signal = theme_end | sr_idle@awoke_3_time %+gar_story_cannot_find_fang%
+
+[sr_idle@awoke_3_time]
+on_timer = 2000 | sr_idle@awoke_4 %=play_sound(gar_csky_leader_goto_agroprom:csky:mar_csky_commander_name)%
+
+[sr_idle@awoke_4]
+on_signal = theme_end | sr_idle@end_section %+gar_story_need_to_go_to_cache%
+
+[sr_idle@end_section]

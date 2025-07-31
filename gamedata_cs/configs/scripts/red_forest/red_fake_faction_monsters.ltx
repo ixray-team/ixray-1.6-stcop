@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle@spawn_monster2
+
+[sr_idle@spawn_monster2]
+on_info = {!squad_exist(red_forest_monsters_1) !is_dark_night() =dist_to_actor_ge(70) ~50} sr_idle@spawn_wait %=clear_smart_terrain(red_smart_terrain_monsters_3) =create_squad(red_forest_monsters_1:red_smart_terrain_monsters_3)%
+on_info2 = {!squad_exist(red_forest_monsters_2) =is_dark_night() =dist_to_actor_ge(70) ~70} sr_idle@spawn_wait %=clear_smart_terrain(red_smart_terrain_monsters_3) =create_squad(red_forest_monsters_2:red_smart_terrain_monsters_3)%, {!squad_exist(red_forest_monsters_3) =is_dark_night() =dist_to_actor_ge(70) ~70} sr_idle@spawn_wait %=clear_smart_terrain(red_smart_terrain_monsters_3) =create_squad(red_forest_monsters_3:red_smart_terrain_monsters_3)%, sr_idle@spawn_wait 
+
+[sr_idle@spawn_wait]
+on_game_timer = 3600 | sr_idle@spawn_monster2

@@ -1,0 +1,73 @@
+--------------------------------------------------------------------------------
+-- Space restrictor scheme for shooting minigame -------------------------------
+-- Made by Peacemaker ----------------------------------------------------------
+-- 04.01.08 --------------------------------------------------------------------
+--------------------------------------------------------------------------------
+class "CSRShooting"
+-- Class constructor
+function CSRShooting:__init(obj, storage)
+    self.object = obj
+    self.st = storage
+--    self.enabled = false
+end
+-- On scheme switch resets all self params
+function CSRShooting:reset_scheme()
+--    self.enabled = false
+end
+-- Class update
+function CSRShooting:update()
+-- try to switch to another scheme
+    local MGM = minigames_manager.get_minigames_manager()
+    local minigame_state = MGM:get_minigame_state(self.st.game_name)
+    if(xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)) then
+        return
+    end
+	if(minigame_state~="valiable") then
+		if(minigame_state=="enabled") then
+            MGM:set_minigame_param(self.st.game_name, "targets", self.st.target_names)
+	        MGM:start(self.st.game_name, self.object)
+	    elseif(minigame_state=="disabled") then
+            self:reset_scheme()
+            MGM:set_minigame_state(self.st.game_name, "valiable")
+		else
+			MGM:update(self.st.game_name, self.object)
+		end
+	end
+end
+--------------------------------------------------------------------------------
+-- Standart functions
+--------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+    xr_logic.subscribe_action_for_events(npc, storage, CSRShooting(npc, storage))
+end
+function set_scheme(obj, ini, scheme, section, gulag_name)
+-- standart lines: assigning new storage and binding our space restrictor
+    local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+    st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+-- getting game name from custom_data
+	local m = minigames_manager.get_minigames_manager()
+    st.game_name = utils.cfg_get_string(ini, section, "game_name", obj, false, "", "test_shooting")
+	if not(m:params_exist(st.game_name)) then
+	    m:create_new_minigame_parameter_list(st.game_name, minigame_shooting.CMGShooting())
+	    m:set_minigame_param(st.game_name, "wpn_type", "")
+	    m:set_minigame_param(st.game_name, "game_type", "")
+	    m:set_minigame_param(st.game_name, "win", 0)
+	    m:set_minigame_param(st.game_name, "distance", 0)
+	    m:set_minigame_param(st.game_name, "ammo", 0)
+	    m:set_minigame_param(st.game_name, "targets", {})
+	    m:set_minigame_param(st.game_name, "target_counter", 0)
+	    m:set_minigame_param(st.game_name, "obj_name", utils.cfg_get_string(ini, section, "obj_name", obj, false, "", ""))
+	    m:set_minigame_param(st.game_name, "stand_way", utils.cfg_get_string(ini, section, "stand_way", obj, false, "", "shooting_stand_way"))
+	    m:set_minigame_param(st.game_name, "look_way", utils.cfg_get_string(ini, section, "look_way", obj, false, "", "shooting_look_way"))
+	    m:set_minigame_param(st.game_name, "stand_way_back", utils.cfg_get_string(ini, section, "stand_way_back", obj, false, "", "shooting_stand_way_back"))
+	    m:set_minigame_param(st.game_name, "look_way_back", utils.cfg_get_string(ini, section, "stand_way_back", obj, false, "", "shooting_look_way_back"))
+	end
+    m:set_current_shooting(st.game_name)
+-- getting target names from custom_data
+    local dists = utils.cfg_get_string(ini, section, "target_dists", obj, true, "", "30,40,50,60,70")
+	local target_dist = parse_names(dists)
+    st.target_names = {}
+	for i=1,#target_dist do
+		table.insert(st.target_names, parse_names(utils.cfg_get_string(ini, section, tostring(target_dist[i]), obj, false, "", nil)))
+	end
+end

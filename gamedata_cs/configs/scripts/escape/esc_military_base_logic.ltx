@@ -1,0 +1,151 @@
+;Minigunner
+
+[logic@work1]
+active = walker@gun
+suitable = {=check_npc_name(sim_default_military_)} true
+prior = 43
+on_death = death@work1
+
+[death@work_1]
+on_info = %-esc_minigunner%
+
+[walker@gun]
+path_walk = wlkr_walk
+path_look = wlkr_look
+on_info = {=actor_in_zone(esc_minigunner_actor)} walker@stop_gun %-esc_minigunner%
+on_info2 = {!in_zone(esc_space_restrictor_minigun)} %-esc_minigunner%
+on_info3 = {=in_zone(esc_space_restrictor_minigun)} %+esc_minigunner%
+combat_ignore_cond = true
+out_restr = esc_space_restrictor_minigun
+def_state_moving1 = sprint
+def_state_moving2 = sprint
+def_state_moving3 = sprint
+
+[walker@stop_gun]
+path_walk = wlkr_walk_1
+path_look = wlkr_look_1
+on_info = {!actor_in_zone(esc_minigunner_actor)} walker@gun
+out_restr = esc_space_restrictor_minigun
+
+
+;fake camper
+
+[logic@work2]
+active = camper@mil_work2
+suitable = {=check_npc_name(sim_default_military_)} true
+prior = 42
+
+[camper@mil_work2]
+path_walk = grd_4_walk
+path_look = grd_4_look
+def_state_campering = threat_na
+sniper = true
+on_combat = combat@work2
+
+[combat@work2]
+on_info = %+esc_mil_defense%
+
+
+[logic@work3]
+active = walker@work3
+suitable = {=check_npc_name(sim_default_military_)} true
+prior = 41
+
+[walker@work3]
+path_walk = wlkr_walk_2
+path_look = wlkr_look_2
+on_combat = combat@work3
+
+[combat@work3]
+on_info = %+esc_mil_defense%
+
+
+;patrol
+
+[logic@work4]
+active = walker@work4
+suitable = {=check_npc_name(sim_default_military_) +esc_mil_patrol} true
+prior = 50
+
+[walker@work4]
+path_walk = pat_1_walk
+path_look = pat_1_look
+on_combat = combat@work4
+combat_ignore_cond = {!is_enemy_actor}
+on_signal = finish | %+esc_mil_patrol%
+on_info = %+esc_mil_patrol_gone%
+
+[combat@work4]
+on_info = %+esc_mil_defense%
+
+[logic@work5]
+active = walker@work5
+suitable = {=check_npc_name(sim_default_military_) +esc_mil_patrol} true
+prior = 50
+
+[walker@work5]
+path_walk = pat_2_walk
+path_look = pat_2_look
+def_state_moving = assault
+on_combat = combat@work5
+combat_ignore_cond = {!is_enemy_actor}
+on_signal = finish | %+esc_mil_patrol%
+on_info = %+esc_mil_patrol_gone%
+
+[combat@work5]
+on_info = %+esc_mil_defense%
+
+[logic@work6]
+active = walker@work6
+suitable = {=check_npc_name(sim_default_military_) +esc_mil_patrol} true
+prior = 50
+
+[walker@work6]
+path_walk = pat_3_walk
+path_look = pat_3_look
+def_state_moving = assault
+on_combat = combat@work6
+combat_ignore_cond = {!is_enemy_actor}
+on_signal = finish | %+esc_mil_patrol%
+danger = danger_condition
+on_info = %+esc_mil_patrol_gone%
+
+[combat@work6]
+on_info = %+esc_mil_defense%
+
+[danger_condition]
+ignore_distance = 0
+
+
+
+;road patrol
+
+[logic@work7]
+active = patrol@work7
+suitable = {=check_npc_name(sim_default_military_)} true
+prior = 41
+
+[patrol@work7]
+path_walk = grd_5_walk
+path_look = grd_5_look
+formation = around
+
+[logic@work8]
+active = patrol@work8
+suitable = {=check_npc_name(sim_default_military_)} true
+prior = 41
+
+[patrol@work8]
+path_walk = grd_5_walk
+path_look = grd_5_look
+formation = around
+
+[logic@work9]
+active = patrol@work9
+suitable = {=check_npc_name(sim_default_military_)} true
+prior = 41
+
+[patrol@work9]
+path_walk = grd_5_walk
+path_look = grd_5_look
+formation = around

@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+esc_habar_podval_spawn} sr_idle@1 %=spawn_object(esc_trader_habar:esc_trader_habar_3_spawn:0)%
+
+[sr_idle@1]
+on_info = {=actor_has_item(esc_trader_habar)} sr_idle@wait %+esc_actor_inside_habar%
+
+[sr_idle@wait]
+

@@ -1,0 +1,70 @@
+[logic]
+active = sr_idle
+
+
+[sr_idle]
+on_info = {+red_pursuit_scene_begin} sr_idle@wait_for_task %=play_sound(red_pursuit_locate_strelok:csky:mar_csky_commander_name)%
+on_info2 = {+red_bridge_scene_begin} sr_idle@wait_bridge
+on_info3 = {+red_pursuit_task_end} sr_idle@find_compass_task
+
+[sr_idle@wait_for_task]
+on_game_timer = 20 | sr_idle@ambush_task %=give_inited_task(storyline:red_pursuit_strelok_task:csky)%
+
+[sr_idle@ambush_task]
+on_info = {+red_pursuit_ambush_attack1} sr_idle@go_to_sos_signal %=give_inited_task(storyline:red_pursuit_destroy_ambush:csky)%
+;on_info2 = {+red_pursuit_strelok_offline} sr_idle@find_forester_task %=give_inited_task(storyline:red_pursuit_talk_csky:csky)%
+
+[sr_idle@go_to_sos_signal]
+on_info = {+red_forest_stalker_sos} sr_idle@red_take_red_forest_map_pda %=give_inited_task(storyline:red_go_to_signal_sos:csky)%
+
+[sr_idle@red_take_red_forest_map_pda]
+on_info = {=actor_in_zone(red_forest_pda_map_zone)} sr_idle@red_take_red_forest_map_pda2 %+red_go_to_sos_signal_task_complete%
+
+[sr_idle@red_take_red_forest_map_pda2]
+on_game_timer = 10 | sr_idle@find_teleport %=give_inited_task(storyline:red_take_red_forest_map_pda:csky)% 
+
+[sr_idle@find_teleport]
+on_info = {=actor_has_item(red_forest_pda_map)} sr_idle@find_teleport2 %+red_teleport_way =give_inited_task(storyline:red_find_teleport:csky) =send_tip(red_find_enter_to_anomal_place_text)%
+on_info2 = {+red_actor_find_forester} sr_idle@find_forester_task
+
+[sr_idle@find_teleport2]
+on_info = {=actor_in_zone(red_forest_teleport_sign)} sr_idle@find_forester_task %+red_teleport_way_2 =give_inited_task(storyline:red_find_teleport_2:csky)%
+on_info2 = {+red_actor_find_forester} sr_idle@find_forester_task
+
+[sr_idle@find_forester_task]
+on_info = {+red_actor_find_teleport} sr_idle@mil_reach_tower_task %=give_inited_task(storyline:red_find_forester:csky)%
+
+[sr_idle@mil_reach_tower_task]
+on_info = {+mil_start_storyline_info} sr_idle@find_compass_task %=give_inited_task(storyline:mil_blockpost:csky) +mil_start_after_red_forest%
+
+[sr_idle@find_compass_task]
+on_info = {+red_forester_search_compas_task} sr_idle@bring_compass_task %=give_inited_task(storyline:red_find_compass:csky)%
+
+[sr_idle@bring_compass_task]
+on_info = {+red_forester_actor_has_compas} sr_idle@find_transmitter %=give_inited_task(storyline:red_bring_compass:csky)% 
+
+[sr_idle@find_transmitter]
+on_info = {+forester_telled_coordinates +red_forester_take_compas} sr_idle@wait_bridge %=give_inited_task(storyline:red_go_to_military_base:csky)%
+
+[sr_idle@wait_bridge]
+on_info = {+red_bridge_actor_come} sr_idle@go_to_position %=give_inited_task(storyline:red_help_with_bridge:csky)%
+on_info2 = {+red_bridge_actor_fail} sr_idle@go_into_limansk
+
+;[sr_idle@talk_to_comander]
+;on_info = {+red_bridge_bandit_enter_true} sr_idle@go_to_position %=give_inited_task(storyline:red_bridge_talk_with_comander:csky)%
+;on_info2 = {+red_bridge_actor_fail} sr_idle@go_into_limansk
+
+[sr_idle@go_to_position]
+on_info = {+red_bridge_actor_talk_with_cs_commander} sr_idle@wait_for_allyes %=give_inited_task(storyline:red_bridge_go_to_positon:csky)%
+on_info2 = {+red_bridge_actor_in_position} sr_idle@wait_for_allyes
+on_info3 = {+red_bridge_actor_fail} sr_idle@go_into_limansk
+
+[sr_idle@wait_for_allyes]
+on_info = {+red_bridge_actor_in_position} sr_idle@go_into_limansk %=give_inited_task(storyline:red_bridge_wait_for_allyes:csky)%
+on_info2 = {+red_bridge_actor_fail} sr_idle@go_into_limansk
+
+[sr_idle@go_into_limansk]
+on_info = {+red_bridge_finished} sr_idle@nil %=give_inited_task(storyline:lim_go_into_limansk:csky)%
+on_info2 = {+red_bridge_actor_fail} sr_idle@nil %=give_inited_task(storyline:lim_go_into_limansk:csky)%
+
+[sr_idle@nil]

@@ -1,0 +1,17 @@
+[logic]
+active = sr_idle@spawn_squad
+
+[sr_idle@spawn_squad]
+on_info = sr_idle@check %+red_bridge_finished =clear_smart_terrain(lim_smart_terrain_3) =create_squad(lim_house_attack_1:lim_smart_terrain_3) =create_squad(lim_monolith_ambush2_squad:lim_smart_terrain_3)%
+
+[sr_idle@check]
+on_info = {=actor_in_zone(lim_squad_spawn)} sr_idle@create_csky_squad %+lim_no_bandit_ambush +lim_bandit_house_attack1 =play_sound(lim_cs_stalker_spich) +lim_condition2 =remove_map_spot(602:primary_task_location)%
+
+[sr_idle@create_csky_squad]
+on_info = {=actor_in_zone(lim_bandit_house_zone_1) +lim_bandit_house_go} sr_idle@remove_squad %=create_squad(lim_csky_storm_troops2:lim_smart_terrain_2) =play_sound(lim_cs_storm_troop_leader_clear_street)%
+on_info2 = {=actor_in_zone(lim_bandit_fire) +lim_bandit_house_go} sr_idle@remove_squad  %=create_squad(lim_csky_storm_troops2:lim_smart_terrain_2) =play_sound(lim_cs_storm_troop_leader_clear_street)%
+
+[sr_idle@remove_squad]
+on_info = {=squad_exist(lim_csky_storm_troops)} sr_idle@nil %=remove_squad(lim_csky_storm_troops)%
+
+[sr_idle@nil]

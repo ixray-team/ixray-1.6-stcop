@@ -1,0 +1,432 @@
+[list_tm_marsh]
+mar_story_talk_with_barman
+mar_story_talk_with_commander_1
+mar_story_talk_with_trader
+mar_story_talk_with_guide
+mar_tutorial_help
+mar_tutorial_tower_top
+mar_tutorial_kill_boars
+mar_tutorial_return_to_base
+mar_story_talk_with_commander_2
+mar_story_talk_with_commander_3
+;mar_story_take_control_over_marsh
+mar_story_talk_with_sidorovych
+mar_story_go_to_marsh
+mar_story_empower_csky
+mar_story_capture_bandit_base
+mar_story_capture_levelchangers
+mar_story_go_to_escape
+
+;mar_capture_renegade_base
+
+mar_bring_item_1
+mar_bring_item_2
+mar_bring_item_3
+mar_bring_item_4
+mar_bring_item_5
+
+mar_recover_item_1
+mar_recover_item_2
+mar_recover_item_3
+mar_recover_item_4
+mar_recover_item_5
+
+
+
+;Поговорить с барменом
+[mar_story_talk_with_barman]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = mar_story_talk_with_barman
+text = mar_story_talk_with_barman_text
+condlist_0 = {+mar_intro_talk_with_barman_done} complete
+target_story_ids = 302
+auto_name = false
+
+;Поговорить с лидером ЧН
+[mar_story_talk_with_commander_1]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = mar_story_talk_with_commander_1
+text = mar_story_talk_with_commander_1_text
+condlist_0 = {+mar_intro_talk_with_commander_1_done} complete
+target_story_ids = 303
+auto_name = false
+
+;Поговорить с торговцем
+[mar_story_talk_with_trader]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 3
+name = mar_story_talk_with_trader
+text = mar_story_talk_with_trader_text
+condlist_0 = {+mar_intro_talk_with_trader_done} complete
+target_story_ids = 304
+auto_name = false
+
+;Поговорить с проводником
+[mar_story_talk_with_guide]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 3
+name = mar_story_talk_with_guide
+text = mar_story_talk_with_guide_text
+condlist_0 = {+mar_intro_talk_with_guide_done} complete
+target_story_ids = 305
+auto_name = false
+
+;Помочь форпосту
+[mar_tutorial_help]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = mar_tutorial_help
+text = mar_tutorial_help_text
+condlist_0 = {+mar_tutorial_help_done} complete
+condlist_1 = {+mar_tutorial_help_reversed} reversed
+target_story_ids = 306
+auto_name = false
+reward_item = {-mar_tutorial_tower_top_done} flesh_up_a_novice_outfit:ammo_12x76_zhekan
+
+;Подняться на вышку
+[mar_tutorial_tower_top]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+spot = mar_tutorial_tower_top_location
+target_cond = true
+prior = 3
+name = mar_tutorial_tower_top
+text = mar_tutorial_tower_top_text
+condlist_0 = {+mar_tutorial_tower_top_done} complete
+condlist_1 = {+mar_tutorial_tower_top_reversed} reversed
+target_story_ids = 306
+auto_name = false
+reward_item = {-mar_tutorial_help_done} flesh_up_a_novice_outfit
+
+;Убить кабанов
+[mar_tutorial_kill_boars]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+spot = mar_tutorial_kill_boars_location
+target_cond = true
+prior = 3
+name = mar_tutorial_kill_boars
+text = mar_tutorial_kill_boars_text
+condlist_0 = {+mar_tutorial_kill_boars_done} complete
+condlist_1 = {+mar_tutorial_kill_boars_reversed} reversed
+target_story_ids = 306
+auto_name = false
+
+;Вернуться на базу
+[mar_tutorial_return_to_base]
+type = hide_from_surge
+task_type = storyline
+spot = secondary_task_location_complex
+target_cond = {-mar_tutorial_return_to_base_reversed =actor_on_level(marsh)} true
+prior = 4
+name = mar_tutorial_return_to_base
+text = mar_tutorial_return_to_base_text
+on_reversed = %+mar_tutorial_return_to_base_reversed%
+auto_name = false
+
+;Поговорить с лидером ЧН про второй выброс
+[mar_story_talk_with_commander_2]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = mar_story_talk_with_commander_2
+text = mar_story_talk_with_commander_2_text
+condlist_0 = {+mar_intro_talk_with_commander_2_done} complete
+target_story_ids = 303
+auto_name = false
+
+;Поговорить с лидером ЧН по поводу помощи
+[mar_story_talk_with_commander_3]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+spot = mar_story_talk_with_commander_3_location
+target_cond = true
+prior = 2
+name = mar_story_talk_with_commander_3
+text = mar_story_talk_with_commander_3_text
+condlist_0 = {+mar_intro_talk_with_commander_3_done} complete
+target_story_ids = 303
+auto_name = false
+
+;Отправиться на Болота
+[mar_story_go_to_marsh]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 4
+name = mar_story_go_to_marsh
+text = mar_story_go_to_marsh_text
+condlist_0 = {+mar_story_go_to_marsh_done} complete
+target_story_ids = 305
+auto_name = false
+
+;Усилить Чистое Небо
+[mar_story_empower_csky]
+type = storyline
+task_type = storyline
+spot = mar_story_empower_csky_location
+target_cond = true
+prior = 4
+name = mar_story_empower_csky
+text = mar_story_empower_csky_text
+condlist_0 = {+mar_story_empower_csky_done} complete
+target_story_ids = 309
+auto_name = false
+reward_money = 3000
+reward_item = {-mar_story_empower_csky_reward} flesh_up_bd_mp5 %+mar_story_empower_csky_reward%, medkit 
+
+;Захватить базу бандитов
+[mar_story_capture_bandit_base]
+type = capture_smart
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = {-mar_story_go_to_escape_done =is_csky_at_expansion_1 =target_smart_name(mar_smart_terrain_10_5)} true
+prior = 4
+name = mar_story_capture_bandit_base
+text = mar_story_capture_bandit_base_text
+reward_money = 1500
+reward_item = cs_light_outfit
+auto_name = false
+
+;Захватить точки перехода
+[mar_story_capture_levelchangers]
+type = capture_smart
+task_type = storyline
+;spot = mar_story_capture_levelchangers_location
+target_cond = {-mar_story_go_to_escape_done =is_csky_at_expansion_2 =target_smart_name(mar_smart_terrain_11_11)} true
+prior = 4
+name = mar_story_capture_levelchangers
+text = mar_story_capture_levelchangers_text
+auto_name = false
+reward_money = 1000
+reward_item = medkit:bandage:antirad
+
+;Выйти с проводником на Кордон
+[mar_story_go_to_escape]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 4
+name = mar_story_go_to_escape
+text = mar_story_go_to_escape_text
+condlist_0 = {+mar_story_go_to_escape_done} complete
+condlist_1 = {!is_csky_at_expansion_3_or_higher} reversed
+target_story_ids = 307
+auto_name = false
+
+;Поговорить с Сидоровичем
+[mar_story_talk_with_sidorovych]
+type = storyline
+task_type = storyline
+;icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 2
+name = mar_story_talk_with_sidorovych
+text = mar_story_talk_with_sidorovych_text
+condlist_0 = {+esc_actor_inside_traders_dung} complete
+on_complete = %+esc_reach_trader_complete%
+target_story_ids = 410
+auto_name = false
+
+;***************************************************
+; Сим квесты с уникальными наградами
+;***************************************************
+;[mar_capture_renegade_base]
+;type = capture_smart
+;task_type = storyline
+;icon = ui_mt_image_attack_factory
+;name = mar_capture_plant
+;text = mar_capture_plant_text
+;target_cond = {-mar_renegade_base_captured =target_smart_name(mar_smart_terrain_10_5)} true
+;prior = 4
+;on_complete = %+mar_renegade_base_captured%
+;reward_money = {~50} 1500, {~50}, 2000, 1000
+;reward_item = cs_light_outfit
+
+
+
+;***************************************************
+; Квесты на принесение предметов.
+;***************************************************
+[mar_bring_item_1]
+auto_name = false
+type = bring_item
+task_type = additional
+name = st_bring_item_1_name
+text = st_bring_item_1_text
+target_cond = {~20} true
+prior = 5
+faction = csky
+requested_items = grenade_rgd5,grenade_rgd5,grenade_rgd5
+community_relation_delta_complete = 100
+reward_money = {~50} 1000, {~50} 1500, 500
+auto_faction = true
+
+[mar_bring_item_2]
+auto_name = false
+type = bring_item
+task_type = additional
+name = st_bring_item_2_name
+text = st_bring_item_2_text
+target_cond = {~20} true
+prior = 5
+faction = csky
+requested_items = medkit,medkit
+community_relation_delta_complete = 100
+reward_money = {~50} 1000, {~50} 1500, 500
+auto_faction = true
+
+[mar_bring_item_3]
+auto_name = false
+type = bring_item
+task_type = additional
+name = st_bring_item_3_name
+text = st_bring_item_3_text
+target_cond = {~20} true
+prior = 5
+faction = csky
+requested_items = ammo_12x70_buck,ammo_12x70_buck,ammo_12x70_buck
+community_relation_delta_complete = 100
+reward_money = {~50} 1000, {~50} 1500, 500
+auto_faction = true
+
+[mar_bring_item_4]
+auto_name = false
+type = bring_item
+task_type = additional
+name = st_bring_item_4_name
+text = st_bring_item_4_text
+target_cond = {~20} true
+prior = 5
+faction = csky
+requested_items = ammo_9x18_fmj,ammo_9x18_fmj,ammo_9x18_fmj
+community_relation_delta_complete = 100
+reward_money = {~50} 1000, {~50} 1500, 500
+auto_faction = true
+
+[mar_bring_item_5]
+auto_name = false
+type = bring_item
+task_type = additional
+name = st_bring_item_5_name
+text = st_bring_item_5_text
+target_cond = {~20} true
+prior = 5
+faction = csky
+requested_items = ammo_5.45x39_fmj,ammo_5.45x39_fmj,ammo_5.45x39_fmj
+community_relation_delta_complete = 100
+reward_money = {~50} 1000, {~50} 1500, 500
+auto_faction = true
+
+
+
+; Логово монстров возле вышки (пропавший отряд)  mar_bring_item_1_corpse
+; Место контрабанды (спугнули во время торговли) mar_recover_item_2_box
+; Аномальное место под электропередачами (артефакт) mar_bring_item_3_stalker
+; Место среди камышей, где трусанули разведчика mar_reciver_item_4_corpse
+; рыжий прилесок (ренегаты тащили рюкзак с какой то хренью). mar_recover_item_5_box
+
+
+[mar_recover_item_1]   ;Вернуть проапгрейженный ПМ
+type = recover_item
+task_type = additional
+name = st_recover_item_1_name
+text = st_recover_item_1_text
+target_npc_or_box_name = mar_recover_item_1_corpse
+distanse = 100
+prior = 5
+faction = csky
+target_cond = {=actor_on_level(marsh) -mar_recover_item_1_done} true, false
+on_init = %+mar_recover_item_1_done%
+requested_items = mar_quest_wpn_pm_1
+community_relation_delta_complete = 300
+reward_money = {~20} 1000, {~50} 750, 500
+auto_faction = true
+
+[mar_recover_item_2]	;Проапгрейженный аксу
+type = recover_item
+task_type = additional
+name = st_recover_item_2_name
+text = st_recover_item_2_text
+target_npc_or_box_name = mar_recover_item_2_box
+distanse = 100
+prior = 5
+faction = csky
+target_cond = {=actor_on_level(marsh) -mar_recover_item_2_done} true, false
+on_init = %+mar_recover_item_2_done%
+requested_items = mar_quest_wpn_ak74u_1
+community_relation_delta_complete = 300
+reward_money = {~20} 1000, {~50} 750, 500
+auto_faction = true
+
+[mar_recover_item_3]	;Артефакт
+type = recover_item
+task_type = additional
+name = st_recover_item_3_name
+text = st_recover_item_3_text
+target_npc_or_box_name = mar_recover_item_3_stalker
+distanse = 100
+prior = 5
+faction = csky
+on_init = {=actor_on_level(marsh) -mar_recover_item_3_done} true, false
+on_complete = %+mar_recover_item_3_done%
+requested_items = mar_quest_af_cristall_flower_1
+community_relation_delta_complete = 300
+reward_money = {~20} 1000, {~50} 750, 500
+auto_faction = true
+
+[mar_recover_item_4]	;КПК
+type = recover_item
+task_type = additional
+name = st_recover_item_4_name
+text = st_recover_item_4_text
+target_npc_or_box_name = mar_recover_item_4_corpse
+distanse = 100
+prior = 5
+faction = csky
+target_cond = {=actor_on_level(marsh) -mar_recover_item_4_done} true, false
+on_init = %+mar_recover_item_4_done%
+requested_items = mar_quest_scout_pda
+community_relation_delta_complete = 300
+reward_money = {~20} 1500, {~50} 1000, 750
+auto_faction = true
+
+[mar_recover_item_5]	;Проапгрейженный броник новичка.
+type = recover_item
+task_type = additional
+name = st_recover_item_5_name
+text = st_recover_item_5_text
+target_npc_or_box_name = mar_recover_item_5_box
+distanse = 100
+prior = 5
+faction = csky
+target_cond = {=actor_on_level(marsh) -mar_recover_item_5_done} true, false
+on_init = %+mar_recover_item_5_done%
+requested_items = mar_quest_novice_outfit_1
+community_relation_delta_complete = 300
+reward_money = {~20} 1500, {~50} 1000, 750
+auto_faction = true

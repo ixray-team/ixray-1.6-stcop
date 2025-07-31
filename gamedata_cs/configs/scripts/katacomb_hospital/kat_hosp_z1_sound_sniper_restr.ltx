@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle@far_gun_fire
+
+[sr_idle@far_gun_fire]
+on_actor_in_zone = help_request_sound_restr | sr_idle@1
+
+
+[sr_idle@1]
+on_info = {-hospital_z1_action} %=play_sound(hosp_far_sniper)%, sr_idle@2
+
+[sr_idle@2]

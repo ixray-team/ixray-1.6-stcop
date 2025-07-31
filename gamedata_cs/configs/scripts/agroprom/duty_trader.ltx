@@ -1,0 +1,140 @@
+[logic]
+active = remark@wait
+level_spot = trader
+trade = misc\trade\trade_trader_agr_duty.ltx
+
+[remark@wait]
+path_walk = agr_duty_trader_walk
+path_look = agr_duty_trader_look
+out_restr = agr_in_restr_trader
+anim = wait_trade
+on_info = smartcover@near_table
+meet = meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+
+[smartcover@near_table]
+cover_name = agr_smart_cover_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = idle_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = agr_in_restr_trader
+on_timer = 13330 | smartcover@near_table2
+def_state_moving = walk
+on_info = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@near_table2]
+cover_name = agr_smart_cover_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = lookout_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = agr_in_restr_trader
+on_timer = 15000 | smartcover@near_table3
+def_state_moving = walk
+on_info = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@near_table3]
+cover_name = agr_smart_cover_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = fire_no_lookout_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = agr_in_restr_trader
+on_timer = 4500 | smartcover@near_table4
+def_state_moving = walk
+on_info = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@near_table4]
+cover_name = agr_smart_cover_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = fire_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = agr_in_restr_trader
+on_timer = 6500 | smartcover@near_table
+def_state_moving = walk
+on_info = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+meet = meet
+
+;[smartcover@look_up]
+;cover_name = agr_smart_cover_trader_2
+;loophole_name = lead_stand_look_up
+;cover_state = idle_target
+;combat_ignore_cond = true
+;combat_ignore_keep_when_attacked = true
+;invulnerable = true
+;out_restr = agr_in_restr_trader
+;on_timer = 15000 | smartcover@look_up2
+;def_state_moving = walk
+;on_info = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+;meet = meet
+;
+;[smartcover@look_up2]
+;cover_name = agr_smart_cover_trader_2
+;loophole_name = lead_stand_look_up
+;cover_state = fire_no_lookout_target
+;combat_ignore_cond = true
+;combat_ignore_keep_when_attacked = true
+;invulnerable = true
+;out_restr = agr_in_restr_trader
+;on_timer = 15000 | smartcover@write
+;def_state_moving = walk
+;on_info = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+;meet = meet
+;
+;[smartcover@write]
+;cover_name = agr_smart_cover_trader_3
+;loophole_name = lead_sit_sleep_write
+;cover_state = idle_target
+;combat_ignore_cond = true
+;combat_ignore_keep_when_attacked = true
+;invulnerable = true
+;out_restr = agr_in_restr_trader
+;on_timer = 16670 | smartcover@write2
+;def_state_moving = walk
+;on_info = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+;meet = meet
+;
+;[smartcover@write2]
+;cover_name = agr_smart_cover_trader_3
+;loophole_name = lead_sit_sleep_write
+;cover_state = lookout_target
+;combat_ignore_cond = true
+;combat_ignore_keep_when_attacked = true
+;invulnerable = true
+;out_restr = agr_in_restr_trader
+;on_timer = 16670 | smartcover@near_table
+;def_state_moving = walk
+;on_info = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+;meet = meet
+
+[smartcover@trade]
+cover_name = agr_smart_cover_trader_1
+loophole_name = lead_stand_look_at_table
+cover_state = idle_target
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = agr_in_restr_trader
+def_state_moving = walk
+meet = meet
+on_info = {!actor_in_zone(agr_trader_tradezone)} smartcover@near_table
+
+[meet]
+meet_state 		= 3|nil@nil
+victim			= 0|nil
+use				= true
+abuse			= false
+sound_start 	= agr_duty_trader_meet
+sound_stop 		= agr_duty_trader_meet_bye
+quest_npc 		= true

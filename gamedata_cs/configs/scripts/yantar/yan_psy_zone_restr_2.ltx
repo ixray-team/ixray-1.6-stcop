@@ -1,0 +1,15 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+start_surge !actor_in_zone(yan_space_restrictor_no_weapon_actor_base_cut2)} sr_psy_antenna@surge
+on_info2 = {+yan_start_monologa_cut6} sr_idle@stop
+
+[sr_psy_antenna@surge]
+eff_intensity = 200
+hit_intensity = 1
+on_game_timer = 150 | sr_idle
+on_info = {=actor_in_zone(yan_space_restrictor_no_weapon_actor_base_cut2)} sr_idle
+on_info2 = {+yan_start_monologa_cut6} sr_idle@stop
+
+[sr_idle@stop]

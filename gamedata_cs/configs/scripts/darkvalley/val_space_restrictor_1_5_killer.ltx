@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+val_strike_antenna_two_captured} sr_idle@timer
+
+[sr_idle@timer]
+on_game_timer = 20 | nil %=create_squad(val_smart_terrain_1_5_killer:val_smart_terrain_1_2)%

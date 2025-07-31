@@ -1,0 +1,27 @@
+[sim_faction]
+GroupControlSection	= 
+$spawn 			= "ai\sim_faction"
+class			= SFACTION
+script_binding	= bind_faction.bind
+
+shape_transp_color		= 0, 0, 255, 60 ;0x1800FF00
+shape_edge_color		= 32, 32, 32, 255 ;0xFF202020
+
+
+[smart_terrain]
+GroupControlSection	= 
+$spawn 			= "ai\smart_terrain"
+;$prefetch 		= 4
+$def_sphere		= 2
+class			= SMRTTRRN
+script_binding	= bind_smart_terrain.bind
+
+shape_transp_color		= 100, 100, 180, 60 ;0x1800FF00
+shape_edge_color		= 32, 32, 32, 255 ;0xFF202020
+
+
+[smart_terrain_stay_time]
+quick   = 2,  5
+medium  = 6,  8
+long    = 12, 14
+default = 10000, 10001

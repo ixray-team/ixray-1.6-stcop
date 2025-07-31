@@ -1,0 +1,575 @@
+;*****************************
+;********* ally 1 ***********
+
+[logic@work1]
+active = camper@wait_work1
+suitable = {=check_npc_name(red_bridge_stalker_leshiy) -red_bridge_bandit_out} true ; =is_gulag_attacking_target(red_bridge_bandit_smart)} true
+prior = 70
+post_combat_time = 0,0
+
+[danger@ignore]
+ignore_distance_grenade = = 0
+
+;***** выходит из точки спауна *****
+[camper@wait_work1]
+danger = danger@ignore
+invulnerable = true
+combat_ignore_cond = true
+path_walk = assault_start_1_walk
+path_look = assault_start_look
+radius = 0
+no_retreat = true
+def_state_moving = assault
+on_signal = action | camper@enter_work1
+team = ally_squad
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work1 %=request_current_squad_stage(prepare)%
+meet = no_meet
+
+[camper@enter_work1]
+danger = danger@ignore
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_bandit_bridge_guard_restr)}
+path_walk = enter_1_walk
+path_look = enter_1_look
+radius = 10
+no_retreat = true
+def_state_moving = rush
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+on_signal = action | camper@fire_work1
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work1 %=request_current_squad_stage(prepare)%
+meet = no_meet
+
+[camper@fire_work1]
+danger = danger@ignore
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_fire_restr)}
+path_walk = enter_1_walk
+path_look = enter_1_look
+radius = 10
+def_state_moving = rush
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_game_timer = 50 | %+red_bridge_allyes_skirmish%
+on_game_timer2 = 600 | camper@go_to_cover_work1 %+red_bridge_allyes_skirmish2%
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work1
+meet = no_meet
+
+;***** skirmish with bandits*****
+
+[camper@go_to_cover_work1]
+danger = danger@ignore
+out_restr = red_bridge_defence_restr
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_fire_restr)}
+path_walk = skirmish_1_walk
+path_look = skirmish_1_hide_look
+radius = 15
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_signal = action | smartcover@idle_work1 %+red_bridge_allyes_by_bridge%
+
+[smartcover@idle_work1]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_1
+;cover_state = idle_target
+target_path = red_bridge_ally_smart_skirmish_1_fire_look
+on_game_timer = 70 | {-red_bridge_bandit_time_out} smartcover@fire_work1
+on_info = {+red_bridge_csky_assault} camper@attack_work1
+
+[smartcover@fire_work1]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_1
+cover_state = fire_target
+target_path = red_bridge_ally_smart_skirmish_1_fire_look
+on_game_timer = 70 | smartcover@idle_work1
+on_info = {+red_bridge_csky_assault} camper@attack_work1
+on_info2 = {+red_bridge_bandit_time_out} smartcover@idle_work1
+on_info3 = {+red_bridge_actor_fail} camper@bridge_on_work1
+on_info4 = {=counter_equal(bridge_allyes_cout:1) +red_bridge_allyes_try_pull_down} camper@bridge_on_work1
+
+[camper@bridge_on_work1]
+invulnerable = true
+out_restr = red_bridge_bridge_control
+combat_ignore_cond = true
+path_walk = bridge_down_walk
+path_look = bridge_down_look
+radius = 0
+def_state_moving = assault
+on_signal = action | camper@try_bridge_down2_work1
+
+[camper@try_bridge_down2_work1]
+invulnerable = true
+out_restr = red_bridge_bridge_control
+combat_ignore_cond = true
+path_walk = bridge_down_walk
+path_look = bridge_down_look
+radius = 0
+def_state_moving = assault
+on_game_timer = 50 | %+red_bridge_bridge_move%
+on_info = {+red_bridge_down_done} camper@free_fire_work1
+
+[camper@free_fire_work1]
+out_restr = red_bridge_bridge_control
+invulnerable = true
+path_walk = bridge_down_walk
+path_look = bridge_free_fire_look
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+
+[camper@attack_work1]
+out_restr = red_bridge_attack_restr
+invulnerable = true
+path_walk = attack_1_walk
+path_look = attack_1_look
+radius = 20
+no_retreat = true 
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+meet = no_meet
+
+;*****************************
+;********* ally 2 ***********
+
+[logic@work2]
+active = camper@wait_work2
+suitable = {=check_npc_name(red_bridge_ally_stalker_1) -red_bridge_bandit_out -red_bridge_actor_fail} true ; =is_gulag_attacking_target(red_bridge_bandit_smart)} true
+prior = 70
+post_combat_time = 0,0
+
+;***** выходит из точки спауна *****
+[camper@wait_work2]
+invulnerable = true
+combat_ignore_cond = true
+path_walk = assault_start_2_walk
+path_look = assault_start_look
+radius = 0
+no_retreat = true
+def_state_moving = assault
+on_signal = action | camper@enter_work2
+team = ally_squad
+on_info = {+red_bridge_allyes_skirmish2} camper@enter_work2 %=request_current_squad_stage(prepare)%
+meet = no_meet
+
+[camper@enter_work2]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_bandit_bridge_guard_restr)}
+path_walk = enter_2_walk
+path_look = enter_1_look
+radius = 10
+no_retreat = true
+def_state_moving = rush
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+on_signal = action | camper@fire_work2
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work2
+
+[camper@fire_work2]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_fire_restr)}
+path_walk = enter_2_walk
+path_look = enter_1_look
+radius = 10
+def_state_moving = rush
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+on_game_timer = 100 | %+red_bridge_allyes_skirmish%
+on_game_timer2 = 300 | camper@go_to_cover_work2 %+red_bridge_allyes_skirmish2%
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work2
+
+;***** skirmish with bandits*****
+[camper@go_to_cover_work2]
+out_restr = red_bridge_defence_restr
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_fire_restr)}
+path_walk = skirmish_2_walk
+path_look = skirmish_2_hide_look
+radius = 15
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_signal = action | smartcover@idle_work2
+
+[smartcover@idle_work2]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_2
+cover_state = idle_target
+target_path = red_bridge_ally_smart_skirmish_2_fire_look
+on_game_timer = 70 | {-red_bridge_bandit_time_out} smartcover@fire_work2
+on_info = {+red_bridge_csky_assault} camper@attack_work2
+
+[smartcover@fire_work2]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_2
+cover_state = fire_no_lookout
+target_path = red_bridge_ally_smart_skirmish_2_fire_look
+on_game_timer = 50 | smartcover@idle_work2
+on_info = {+red_bridge_csky_assault} camper@attack_work2
+on_info2 = {+red_bridge_bandit_time_out} smartcover@idle_work2
+
+[camper@attack_work2]
+out_restr = red_bridge_attack_restr
+invulnerable = true
+path_walk = attack_2_walk
+path_look = attack_1_look
+radius = 15
+no_retreat = true 
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+
+;*****************************
+;********* ally 3 ***********
+
+[logic@work3]
+active = camper@wait_work3
+suitable = {=check_npc_name(red_bridge_ally_stalker_2) -red_bridge_bandit_out -red_bridge_actor_fail} true
+prior = 70
+post_combat_time = 0,0
+
+;***** выходит из точки спауна *****
+[camper@wait_work3]
+invulnerable = true
+combat_ignore_cond = true
+path_walk = assault_start_3_walk
+path_look = assault_start_look
+radius = 0
+no_retreat = true
+def_state_moving = assault
+on_signal = action | camper@enter_work3
+team = ally_squad
+on_info = {+red_bridge_allyes_skirmish2} camper@enter_work3 %=request_current_squad_stage(prepare)%
+meet = no_meet
+
+[camper@enter_work3]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_bandit_bridge_guard_restr)}
+path_walk = enter_3_walk
+path_look = enter_1_look
+radius = 10
+def_state_moving = rush
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+on_signal = action | camper@fire_work3
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work3
+
+[camper@fire_work3]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_fire_restr)}
+path_walk = enter_3_walk
+path_look = enter_1_look
+radius = 10
+def_state_moving = rush
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+on_game_timer = 150 | %+red_bridge_allyes_skirmish%
+on_game_timer2 = 300 | camper@go_to_cover_work3 %+red_bridge_allyes_skirmish2%
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work3
+
+;***** skirmish with bandits*****
+[camper@go_to_cover_work3]
+out_restr = red_bridge_defence_restr
+invulnerable = true
+combat_ignore_cond =  {!enemy_in_zone(red_bridge_fire_restr)}
+path_walk = skirmish_3_walk
+path_look = skirmish_3_hide_look
+radius = 15
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_signal = action | smartcover@idle_work3
+
+[smartcover@idle_work3]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_3
+cover_state = idle_target
+target_path = red_bridge_ally_smart_skirmish_3_fire_look
+on_game_timer = 100 | {-red_bridge_bandit_time_out} smartcover@fire_work3
+on_info = {+red_bridge_csky_assault} camper@attack_work3
+
+[smartcover@fire_work3]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+;combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_3
+;cover_state = fire_no_lookout
+;target_path = red_bridge_ally_smart_skirmish_3_fire_look
+on_game_timer = 50 | smartcover@idle_work3
+on_info = {+red_bridge_csky_assault} camper@attack_work3
+on_info2 = {+red_bridge_bandit_time_out} smartcover@idle_work3
+
+[camper@attack_work3]
+out_restr = red_bridge_attack_restr
+invulnerable = true
+path_walk = attack_3_walk
+path_look = attack_1_look
+radius = 15
+no_retreat = true 
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+
+;*****************************
+;********* ally 4 ***********
+
+[logic@work4]
+active = camper@wait_work4
+suitable = {=check_npc_name(red_bridge_ally_stalker_3) -red_bridge_bandit_out -red_bridge_actor_fail} true
+prior = 70
+post_combat_time = 0,0
+
+;***** выходит из точки спауна *****
+[camper@wait_work4]
+invulnerable = true
+combat_ignore_cond = true
+path_walk = assault_start_4_walk
+path_look = assault_start_look
+radius = 0
+no_retreat = true
+def_state_moving = assault
+on_signal = action | camper@enter_work4
+team = ally_squad
+on_info = {+red_bridge_allyes_skirmish2} camper@enter_work4 %=request_current_squad_stage(prepare)%
+meet = no_meet
+
+[camper@enter_work4]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_bandit_bridge_guard_restr)}
+path_walk = enter_4_walk
+path_look = enter_1_look
+radius = 10
+def_state_moving = rush
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+on_signal = action | camper@fire_work4
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work4
+
+[camper@fire_work4]
+invulnerable = true
+;combat_ignore_cond =  {=enemy_in_zone(red_bridge_fire_restr)} false, true
+path_walk = enter_4_walk
+path_look = enter_1_look
+radius = 10
+def_state_moving = assault
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+on_game_timer = 150 | %+red_bridge_allyes_skirmish%
+on_game_timer2 = 300 | camper@go_to_cover_work4 %+red_bridge_allyes_skirmish2%
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work4
+
+;***** skirmish with bandits*****
+[camper@go_to_cover_work4]
+out_restr = red_bridge_defence_restr
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_fire_restr)}
+path_walk = skirmish_4_walk
+path_look = skirmish_4_hide_look
+radius = 15
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_signal = action | smartcover@idle_work4
+
+[smartcover@idle_work4]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_4
+cover_state = idle_target
+target_path = red_bridge_ally_smart_skirmish_4_fire_look
+on_game_timer = 60 | {-red_bridge_bandit_time_out} smartcover@fire_work4
+on_info = {+red_bridge_csky_assault} camper@attack_work4
+
+[smartcover@fire_work4]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+;combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_4
+;cover_state = fire_no_lookout
+;target_path = red_bridge_ally_smart_skirmish_4_fire_look
+on_game_timer = 50 | smartcover@idle_work4
+on_info = {+red_bridge_csky_assault} camper@attack_work4
+on_info2 = {+red_bridge_bandit_time_out} smartcover@idle_work4
+
+[camper@attack_work4]
+out_restr = red_bridge_attack_restr
+invulnerable = true
+path_walk = attack_4_walk
+path_look = attack_1_look
+radius = 15
+no_retreat = true 
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+
+;*****************************
+;********* ally 5 ***********
+
+[logic@work5]
+active = camper@wait_work5
+suitable = {=check_npc_name(red_bridge_ally_stalker_4) -red_bridge_bandit_out -red_bridge_actor_fail} true
+prior = 70
+post_combat_time = 0,0
+
+;***** выходит из точки спауна *****
+[camper@wait_work5]
+invulnerable = true
+combat_ignore_cond = true
+path_walk = assault_start_5_walk
+path_look = assault_start_look
+radius = 0
+no_retreat = true
+def_state_moving = assault
+on_signal = action | camper@enter_work5
+team = ally_squad
+on_info = {+red_bridge_allyes_skirmish2} camper@enter_work5 %=request_current_squad_stage(prepare)%
+meet = no_meet
+
+[camper@enter_work5]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(red_bridge_bandit_bridge_guard_restr)}
+path_walk = enter_5_walk
+path_look = enter_1_look
+radius = 10
+def_state_moving = rush
+;def_state_campering = threat
+;def_state_campering_fire = threat_fire
+on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover_work5
+
+;***** skirmish with bandits*****
+[camper@go_to_cover_work5]
+out_restr = red_bridge_defence_restr
+invulnerable = true
+combat_ignore_cond =  {!enemy_in_zone(red_bridge_fire_restr)}
+path_walk = skirmish_5_walk
+path_look = skirmish_5_hide_look
+radius = 15
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+on_signal = action | smartcover@idle_work5
+
+[smartcover@idle_work5]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_5
+cover_state = idle_target
+target_path = red_bridge_ally_smart_skirmish_5_fire_look
+on_game_timer = 110 | {-red_bridge_bandit_time_out} smartcover@fire_work5
+on_info = {+red_bridge_csky_assault} camper@attack_work5
+
+[smartcover@fire_work5]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+;combat_ignore_cond = true
+cover_name = red_bridge_ally_smartcover_5
+;cover_state = fire_no_lookout
+;target_path = red_bridge_ally_smart_skirmish_5_fire_look
+on_game_timer = 50 | smartcover@idle_work5
+on_info = {+red_bridge_csky_assault} camper@attack_work5
+on_info2 = {+red_bridge_bandit_time_out} smartcover@idle_work5
+
+[camper@attack_work5]
+out_restr = red_bridge_attack_restr
+invulnerable = true
+path_walk = attack_5_walk
+path_look = attack_1_look
+radius = 15
+no_retreat = true 
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+
+;*****************************
+;********* ally 6 ***********
+
+[logic@work6]
+active = camper@bridge_on_work6
+combat_ignore = combat_ignore
+on_death = death@work6
+suitable = {=check_npc_name(red_bridge_ally_) -red_bridge_csky_assault +red_bridge_allyes_try_pull_down} true
+prior = 100
+post_combat_time = 0,0
+
+[death@work6]
+on_info = %+red_bridge_allyes_out -red_bridge_sniper_fire -red_bridge_bridge_move -red_bridge_allyes_try_pull_down =dec_counter(bridge_allyes_cout)%
+
+[camper@bridge_on_work6]
+invulnerable = true
+out_restr = red_bridge_bridge_control
+combat_ignore_cond = true
+path_walk = bridge_down_walk
+path_look = bridge_down_look
+radius = 0
+def_state_moving = assault
+on_signal = action | remark@try_bridge_down_work6 %+red_bridge_sniper_fire +red_bridge_try_pull_down_first%
+wounded = wounded
+
+[remark@try_bridge_down_work6]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = red_forest_bridge
+target = red_bridge_ally_smart_bridge_down_look, 0
+on_game_timer = 50 | remark@try_bridge_down2_work6 %+red_bridge_bridge_move%
+on_info = {+red_bridge_down_done} camper@free_fire_work6
+
+[remark@try_bridge_down2_work6]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = red_forest_bridge
+target = red_bridge_ally_smart_bridge_down_look, 0
+on_info = {+red_bridge_down_done} camper@free_fire_work6
+on_info2 = {+red_bridge_sniper_target} %-red_bridge_sniper_target =hit_npc(red_bridge_sniper_smart_exclusive_sniper_1_walk:bip01_head:1000:50)%
+
+[camper@try_bridge_down2_work6]
+out_restr = red_bridge_bridge_control
+combat_ignore_cond = true
+path_walk = bridge_down_walk
+path_look = bridge_down_look
+radius = 0
+def_state_moving = assault
+on_game_timer = 50 | %+red_bridge_bridge_move%
+on_info = {+red_bridge_down_done} camper@free_fire_work6
+on_info2 = {+red_bridge_sniper_target} %-red_bridge_sniper_target =hit_npc(red_bridge_sniper_smart_exclusive_sniper_1_walk:bip01_head:1000:50)%
+wounded = wounded
+
+[camper@free_fire_work6]
+out_restr = red_bridge_bridge_control
+invulnerable = true
+path_walk = bridge_down_walk
+path_look = bridge_free_fire_look
+def_state_moving = assault
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+
+;****** wounded section ***********
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false

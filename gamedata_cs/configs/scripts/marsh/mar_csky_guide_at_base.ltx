@@ -1,0 +1,72 @@
+[logic]
+active = walker@intro_main_1
+level_spot = guider
+
+[walker@intro_main_1]
+path_walk = mar_smart_terrain_csky_base_guide_intro_walk
+path_look = mar_smart_terrain_csky_base_guide_intro_look
+on_info = {+mar_intro_talk_with_guide_done} walker@main_1, {+mar_intro_talk_with_guide_started} walker@intro_main_2
+combat_ignore_cond = true
+meet = meet@no
+
+[walker@intro_main_2]
+path_walk = mar_smart_terrain_csky_base_guide_intro_walk
+path_look = mar_smart_terrain_csky_base_guide_intro_look
+on_info = {+mar_intro_talk_with_guide_done} walker@intro_timer
+combat_ignore_cond = true
+meet = meet@guide_conductor
+
+[walker@intro_timer]
+path_walk = mar_smart_terrain_csky_base_guide_intro_walk
+path_look = mar_smart_terrain_csky_base_guide_intro_look
+on_timer = 3000 | walker@main_1
+combat_ignore_cond = true
+meet = meet@guide_conductor
+
+[walker@main_1]
+path_walk = mar_smart_terrain_csky_base_guide_main_walk
+path_look = mar_smart_terrain_csky_base_guide_main_look
+on_info = {+mar_intro_talk_with_commander_3_done} walker@conductor_main_2
+combat_ignore_cond = true
+meet = meet@no
+
+[walker@conductor_main_2]
+path_walk = mar_smart_terrain_csky_base_guide_main_walk
+path_look = mar_smart_terrain_csky_base_guide_main_look
+on_info = {+mar_csky_guide_teleport_talk_base} walker@conductor_teleport_sound
+combat_ignore_cond = true
+meet = meet@guide_conductor
+
+[walker@conductor_teleport_sound]
+path_walk = mar_smart_terrain_csky_base_guide_main_walk
+path_look = mar_smart_terrain_csky_base_guide_main_look
+on_info = %=play_sound(mar_csky_pathfinder_go_in:csky:mar_csky_guide_name)%
+on_signal = sound_end | walker@conductor_main_2 %-mar_csky_guide_teleport_talk_base%
+combat_ignore_cond = true
+meet = no_meet
+
+
+[meet@no]
+meet_state = 5 | talk_default@nil
+meet_state_wpn = 5 | talk_default@nil
+victim = 10 | actor
+victim_wpn = 10 | actor
+use = true
+use_wpn = true
+meet_dialog = mar_csky_guide_at_base_dialog
+trade_enable = false
+
+[meet@guide_conductor]
+meet_state            = 30|hello_wpn|5|talk_default@meet_comander_wait
+meet_state_wpn        = 30|hello_wpn|5|threat@meet_weapon_wait
+victim                = 20|actor
+victim_wpn            = 20|actor
+sound_start		   = meet_comander_start
+sound_start_wpn	   = meet_weapon_start
+sound_stop			   = meet_comander_stop
+use                   = true
+use_wpn               = false
+meet_dialog = {-mar_story_go_to_marsh_done} mar_csky_guide_at_base_dialog
+trade_enable = false
+precond               = visibility
+meet_only_at_path	   = true

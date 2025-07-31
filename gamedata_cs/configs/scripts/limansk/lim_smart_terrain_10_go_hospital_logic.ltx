@@ -1,0 +1,52 @@
+;*****************************
+;********* work 1 ***********
+[logic@hosp_work1]
+active = patrol@go_hospital_work1
+suitable = {=check_npc_name(lim_csky_commander) +lim_electro_fence_off -lim_final_squad_destroy} true
+
+[patrol@go_hospital_work1]
+invulnerable = true
+path_walk = enter_hospital_walk
+move_type = rush
+on_signal = action | %+lim_final_squad_destroy%
+
+;******* work 2 ********
+[logic@hosp_work2]
+active = patrol@go_hospital_work2
+suitable = {=check_npc_name(lim_csky_soldier) +lim_electro_fence_off -lim_final_squad_destroy} true
+
+[patrol@go_hospital_work2]
+invulnerable = true
+path_walk = enter_hospital_walk
+move_type = rush
+on_signal = action | %+lim_final_squad_destroy%
+;******* work 3 ********
+[logic@hosp_work3]
+active = patrol@go_hospital_work3
+suitable = {=check_npc_name(lim_csky_soldier) +lim_electro_fence_off -lim_final_squad_destroy} true
+
+[patrol@go_hospital_work3]
+invulnerable = true
+path_walk = enter_hospital_walk
+move_type = rush
+on_signal = action | %+lim_final_squad_destroy%
+;******* work 4 ********
+[logic@hosp_work4]
+active = patrol@go_hospital_work4
+suitable = {=check_npc_name(lim_csky_soldier) +lim_electro_fence_off -lim_final_squad_destroy} true
+
+[patrol@go_hospital_work4]
+invulnerable = true
+path_walk = enter_hospital_walk
+move_type = rush
+on_signal = action | %+lim_final_squad_destroy%
+;******* work 5 ********
+[logic@hosp_work5]
+active = patrol@go_hospital_work5
+suitable = {=check_npc_name(lim_csky_soldier) +lim_electro_fence_off -lim_final_squad_destroy} true
+
+[patrol@go_hospital_work5]
+invulnerable = true
+path_walk = enter_hospital_walk
+move_type = rush
+on_signal = action | %+lim_final_squad_destroy%

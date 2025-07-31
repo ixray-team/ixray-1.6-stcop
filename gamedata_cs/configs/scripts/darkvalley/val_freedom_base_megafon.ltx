@@ -1,0 +1,38 @@
+[logic]
+active = sr_idle@random
+
+[sr_idle@random]
+on_info = {!actor_in_zone(val_gunnery_zone) !actor_in_zone(val_fixer_zone) +val_come_to_freedom_base_complete -val_rugan_1_played} sr_idle@val_freedom_megafon_rugan_1, {!actor_in_zone(val_gunnery_zone) !actor_in_zone(val_fixer_zone) +val_go_to_trader -val_rugan_2_played} sr_idle@val_freedom_megafon_rugan_2, {!actor_in_zone(val_gunnery_zone) !actor_in_zone(val_fixer_zone) +val_go_to_freedom_leader_complete -val_rugan_3_played} sr_idle@val_freedom_megafon_rugan_3, sr_idle@end_random_idle
+
+[sr_idle@end_random_idle]
+on_game_timer = 150 | sr_idle@end_random %=play_sound(val_freedom_megafon)%
+
+[sr_idle@end_random]
+on_signal = sound_end | sr_idle@pause
+
+[sr_idle@pause]
+on_timer = 45000 | sr_idle@random
+
+
+
+[sr_idle@val_freedom_megafon_rugan_1]
+on_game_timer = 80 | sr_idle@val_freedom_megafon_rugan_1_end %=play_sound(val_freedom_megafon_rugan_1)%
+
+[sr_idle@val_freedom_megafon_rugan_1_end]
+on_signal = sound_end | sr_idle@random %+val_rugan_1_played%
+on_info = {=actor_in_zone(val_gunnery_zone)} sr_idle@random %+val_rugan_1_played =stop_sound%, {=actor_in_zone(val_fixer_zone)} sr_idle@random %+val_rugan_1_played =stop_sound%
+
+[sr_idle@val_freedom_megafon_rugan_2]
+on_game_timer = 30 | sr_idle@val_freedom_megafon_rugan_2_end %=play_sound(val_freedom_megafon_rugan_2)%
+
+[sr_idle@val_freedom_megafon_rugan_2_end]
+on_signal = sound_end | sr_idle@random %+val_rugan_2_played%
+on_info = {=actor_in_zone(val_gunnery_zone)} sr_idle@random %+val_rugan_2_played =stop_sound%, {=actor_in_zone(val_fixer_zone)} sr_idle@random %+val_rugan_2_played =stop_sound%
+
+[sr_idle@val_freedom_megafon_rugan_3]
+on_game_timer = 30 | sr_idle@val_freedom_megafon_rugan_3_end %=play_sound(val_freedom_megafon_rugan_3)%
+
+[sr_idle@val_freedom_megafon_rugan_3_end]
+on_signal = sound_end | sr_idle@random %+val_rugan_3_played%
+on_info = {=actor_in_zone(val_gunnery_zone)} sr_idle@random %+val_rugan_3_played =stop_sound%, {=actor_in_zone(val_fixer_zone)} sr_idle@random %+val_rugan_3_played =stop_sound%
+

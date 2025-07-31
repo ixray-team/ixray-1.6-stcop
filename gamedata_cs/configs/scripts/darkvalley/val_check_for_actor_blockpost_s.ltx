@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+val_play_sound_gunfire_1_start} nil, {+val_blockpost_ns_dead} nil,sr_idle@2
+
+[sr_idle@2]
+on_info = {+val_come_to_freedom_blockpost_done} nil %+val_play_sound_gunfire_1_start +val_play_sound_gunfire_3_start%

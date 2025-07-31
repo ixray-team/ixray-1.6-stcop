@@ -1,0 +1,149 @@
+[logic]
+active = walker@wait_help
+on_death = death
+on_hit = hit 
+relation = neutral
+
+[hit]
+on_info = %+lim_bandit_away%
+
+[death]
+on_info = %+lim_bandit_wonded_2_out +lim_bandit_away%
+
+[walker@wait_help]
+combat_ignore_cond = true
+path_walk = lim_bandit_wonded_2_walk
+path_look = lim_bandit_wonded_2_look
+meet = meet
+on_info = {+lim_csky_enter_danger} remark@hands_up
+on_info2 = {+lim_bandit_have_medkit} walker@help
+on_info3 = {+lim_bandit_away} remark@fire %=actor_enemy()%
+on_info4 = {+lim_bandit_health_restore} walker@senks_actor
+
+[remark@hands_up]
+combat_ignore_cond = true
+anim = hands_up
+target = lim_smart_terrain_1_danger_1_walk, 0
+meet = meet@3
+on_info = {+lim_bandit_have_medkit} walker@help
+on_info2 = {+lim_cs_enter_squad_fire1} remark@dont_shoot %=play_sound(lim_bandit_wounded_dont_shoot)%
+on_info3 = {+lim_bandit_away} remark@fire %=actor_enemy()%
+on_info4 = {+lim_bandit_health_restore} walker@senks_actor
+
+[remark@dont_shoot]
+combat_ignore_cond = true
+anim = hands_up
+meet = no_meet
+target = lim_smart_terrain_1_danger_1_walk, 0
+on_info = {+lim_cs_enter_squad_threat1} remark@dont_shoot2 %=play_sound(lim_bandit_wounded_medkit1)%
+on_info2 = {+lim_bandit_away} remark@fire %=actor_enemy()%
+on_signal = sound_end | %+lim_bandit_wounded_dont_shoot%
+on_info3 = {+lim_bandit_health_restore} walker@senks_actor
+
+[remark@dont_shoot2]
+combat_ignore_cond = true
+anim = hands_up
+meet = no_meet
+target = lim_smart_terrain_1_danger_1_walk, 0
+on_info = {+lim_cs_enter_squad_threat2} remark@dont_shoot3
+on_info2 = {+lim_bandit_away} remark@fire %=actor_enemy()%
+on_signal = sound_end | %+lim_bandit_wounded_medkit1%
+on_info3 = {+lim_bandit_health_restore} walker@senks_actor
+
+[remark@dont_shoot3]
+combat_ignore_cond = true
+anim = hands_up
+meet = meet
+target = lim_smart_terrain_1_danger_1_walk, 0
+on_info = {+lim_bandit_have_medkit} walker@help %=play_sound(lim_bandit_wounded_senks)%
+on_info2 = %=play_sound(lim_bandit_wounded_medkit2)%
+on_info3 = {+lim_bandit_away} remark@fire %=actor_enemy()%
+on_info4 = {+lim_bandit_health_restore} walker@senks_actor
+
+[walker@help]
+combat_ignore_cond = true
+path_walk = lim_bandit_help_walk
+path_look = lim_bandit_help_look
+on_signal = action | remark@help %=play_sound(lim_bandit_wounded_help2_snd)%
+meet = no_meet
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+def_state_standing = wait
+on_info = {+lim_bandit_away} remark@fire %=actor_enemy()%
+
+[remark@help]
+combat_ignore_cond = true
+anim = dynamite
+target = lim_bandit_wonded_1_walk, 0
+on_signal = anim_end | walker@senks_actor %+lim_bandit_health_restore%
+meet = no_meet
+on_info = {+lim_bandit_away} remark@fire %=actor_enemy()%
+
+[walker@senks_actor]
+combat_ignore_cond = true
+path_walk = lim_bandit_sanks_2_walk
+path_look = lim_bandit_sanks_2_look
+on_signal = action | remark@senks_actor %=play_sound(lim_bandit_wounded_about_ambush) =add_map_spot(602:primary_task_location:lim_bandit_ambush_spot)%
+meet = no_meet
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+def_state_standing = wait
+on_info = {+lim_bandit_away} remark@fire %=actor_enemy()%
+
+;*** благодорит актера 
+[remark@senks_actor]
+combat_ignore_cond = true
+anim = wait
+target = actor
+meet = meet@2
+on_signal = sound_end | %+lim_bandit_say_abaut_ambush%
+on_game_timer = 300 | patrol@go %+lim_bandit_wounded_go%
+on_actor_dist_ge = 10 | patrol@go %+lim_bandit_wounded_go%
+on_info = {+lim_bandit_wounded_go} patrol@go
+on_info2 = {+lim_bandit_away} remark@fire %=actor_enemy()%
+
+;*** уходят из Лиманска
+[patrol@go]
+meet = no_meet
+combat_ignore_cond = true
+path_walk = lim_bandit_go_walk
+move_type = walk
+def_state_moving = walk
+on_signal = action | %=destroy_object%
+on_info2 = {+lim_bandit_away} remark@fire %=actor_enemy()%
+
+[remark@fire]
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+anim = threat_fire
+target = actor
+
+[meet]
+meet_state = 25 | hands_up@lim_bandit_wounded_help | 15 | hands_up@lim_bandit_wounded_medkit2
+meet_state_wpn = 25 | hands_up@lim_bandit_wounded_help | 15 | hands_up@lim_bandit_wounded_medkit2
+victim = 30 | actor
+victim_wpn = 30 | actor
+use	= true
+use_wpn	= true
+meet_dialog = lim_bandit_wounded_dialog_1
+trade_enable = false
+
+[meet@2]
+meet_state = 10 | wait@nil
+meet_state_wpn = 10 | wait@nil
+victim = 15 | actor
+victim_wpn = 15 | actor
+use	= true
+use_wpn	= true
+meet_dialog = lim_bandit_wounded_dialog_2
+trade_enable = false
+
+[meet@3]
+meet_state = 5 | hands_up@lim_bandit_wounded_medkit2
+meet_state_wpn = 5 | hands_up@lim_bandit_wounded_medkit2
+victim = 5 | actor
+victim_wpn = 5 | actor
+meet_dialog = lim_bandit_wounded_dialog_1
+trade_enable = false

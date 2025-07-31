@@ -1,0 +1,14 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+red_pursuit_camfly_begin} sr_idle@2 %=disable_ui =run_cam_effector_global(scenario_cam\cam_red_forest_bridge2:2121)% ; =teleport_actor(red_bridge_cameff_way:red_bridge_cameff_look)%
+
+[sr_idle@2]
+on_signal = cameff_end | nil %=enable_ui%
+
+[sr_cutscene@bridge_cam]
+point = red_bridge_cameff_way
+look = red_bridge_cameff_look
+cam_effector = scenario_cam\cam_red_forest_bridge2
+on_signal = cameff_end | nil

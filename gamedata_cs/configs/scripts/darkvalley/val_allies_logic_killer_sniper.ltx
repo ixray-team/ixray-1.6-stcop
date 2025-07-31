@@ -1,0 +1,123 @@
+[logic@work10]
+active = walker@start_work1
+suitable = {=check_npc_name(val_killer_sniper_1)} true
+prior = 200
+
+[walker@start_work1]
+path_walk = killer_sniper_1_walk
+path_look = killer_sniper_1_look
+meet = no_meet
+def_state_campering = threat_na
+radius = 15
+on_info = {+val_killer_1_1_dead} smartcover@kill1 %=hit_npc_from_actor% 
+
+[smartcover@kill1]
+cover_name = val_killer_1_1_smartcover_3
+target_path = val_killer_1_1_smartcover_3_target
+cover_state = fire_target
+on_info2 = {=fighting_dist_le(3)} remark@work1
+
+[remark@work1]
+out_restr = val_space_restrictor_1_1_zone
+on_info = {=fighting_dist_ge(5)} smartcover@kill1
+
+;------------------------------killer2--------------------
+[logic@work20]
+active = walker@start_work2
+suitable = {=check_npc_name(val_killer_sniper_2)} true
+prior = 200
+
+[walker@start_work2]
+path_walk = killer_sniper_2_walk
+path_look = killer_sniper_2_look
+meet = no_meet
+def_state_campering = threat_na
+radius = 15
+on_info = {+val_killer_1_1_dead} smartcover@kill2 %=hit_npc_from_actor% 
+
+[smartcover@kill2]
+cover_name = val_killer_1_1_smartcover_1
+target_path = val_killer_1_1_smartcover_1_target
+cover_state = fire_target
+on_info2 = {=fighting_dist_le(3)} remark@work2
+
+[remark@work2]
+out_restr = val_space_restrictor_1_1_zone
+on_info = {=fighting_dist_ge(5)} smartcover@kill1
+
+
+[logic@work30]
+active = walker@start_work3
+suitable = {=check_npc_name(val_killer_sniper_3)} true
+prior = 200
+
+[walker@start_work3]
+path_walk = killer_sniper_3_walk
+path_look = killer_sniper_3_look
+meet = no_meet
+def_state_campering = threat_na
+radius = 15
+on_info = {+val_killer_1_1_dead} smartcover@kill3 %=hit_npc_from_actor% 
+
+[smartcover@kill3]
+cover_name = val_killer_1_1_smartcover_2
+target_path = val_killer_1_1_smartcover_2_target
+cover_state = fire_target
+on_info2 = {=fighting_dist_le(3)} remark@work3
+
+[remark@work3]
+out_restr = val_space_restrictor_1_1_zone
+on_info = {=fighting_dist_ge(5)} smartcover@kill1
+
+[logic@work40]
+active = walker@start_work4
+suitable = {=check_npc_name(val_killer_sniper_4)} true
+prior = 200
+
+[walker@start_work4]
+path_walk = killer_sniper_4_walk
+path_look = killer_sniper_4_look
+meet = no_meet
+def_state_campering = threat_na
+radius = 15
+on_info = {+val_killer_1_1_dead} smartcover@kill4 %=hit_npc_from_actor% 
+
+[smartcover@kill4]
+cover_name = val_killer_1_1_smartcover_4
+target_path = val_killer_1_1_smartcover_4_target
+cover_state = fire_target
+on_info2 = {=fighting_dist_le(3)} remark@work4
+
+[remark@work4]
+out_restr = val_space_restrictor_1_1_zone
+on_info = {=fighting_dist_ge(5)} smartcover@kill4
+
+
+[logic@work50]
+active = walker@start_work5
+suitable = {=check_npc_name(val_killer_sniper_5)} true
+prior = 200
+on_death = death@work_5
+
+[death@work_5]
+on_info = %+val_killer_roof_sniper_6_dead%
+
+[walker@start_work5]
+path_walk = killer_sniper_5_walk
+path_look = killer_sniper_5_look
+meet = no_meet
+def_state_campering = threat_na
+radius = 15
+on_info = {+val_killer_1_1_dead} smartcover@kill5 %=hit_npc_from_actor% 
+
+[smartcover@kill5]
+cover_name = val_killer_1_1_smartcover_5
+target_path = val_killer_1_1_smartcover_5_target
+cover_state = fire_target
+on_info2 = {=fighting_dist_le(3)} remark@work5
+
+[remark@work5]
+out_restr = val_space_restrictor_1_1_zone
+on_info = {=fighting_dist_ge(5)} smartcover@kill5
+radius = 15
+meet = no_meet

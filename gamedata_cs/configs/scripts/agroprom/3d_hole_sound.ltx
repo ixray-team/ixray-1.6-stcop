@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@sound_line_0
+
+[sr_idle@sound_line_0]
+on_info = {+agr_actor_inside_8} sr_idle@sound_line_1 %=play_sound(snork_tunnel_distant)%
+
+[sr_idle@sound_line_1]
+on_info = {+snork} sr_idle@sound_line_2 %=play_sound(snork_tunnel_coming)%
+
+[sr_idle@sound_line_2]
+
+

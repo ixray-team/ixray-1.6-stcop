@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_info = {+val_killer_1_3_dead} sr_idle@timer
+
+[sr_idle@timer]
+on_game_timer = 50 | sr_idle
+
+[sr_idle]
+on_info = {!squad_exist(val_smart_terrain_2_2_freedom)} nil %=create_squad(val_smart_terrain_2_2_freedom:val_smart_terrain_9_6)%
+on_info2 = {+val_freedom_attack_brake} nil, {+val_freedom_attack_done} nil

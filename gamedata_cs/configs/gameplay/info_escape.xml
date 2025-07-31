@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+
+  <!-- First Scene - Military Base -->
+   <info_portion id="esc_actor_inside"></info_portion>
+    <info_portion id="esc_minigunner"></info_portion>
+  <info_portion id="esc_minigun_fire_on"></info_portion>
+  <info_portion id="esc_alarm"></info_portion>
+  <info_portion id="esc_alarm_alarm"></info_portion>
+  <info_portion id="esc_mil_defense"></info_portion>
+  <info_portion id="esc_invade"></info_portion>
+  <info_portion id="esc_dead_megafon"></info_portion>
+  <info_portion id="esc_mil_patrol"></info_portion>
+  <info_portion id="esc_mil_patrol_gone"></info_portion>
+  <info_portion id="esc_mil_minigun_hide_info"></info_portion>
+  <info_portion id="esc_silence"></info_portion>
+  <info_portion id="esc_fire"></info_portion>
+  <info_portion id="esc_actor_target"></info_portion>
+  
+  <!-- Second Scene - Sydorovich -->
+
+  <info_portion id="esc_wolf_talked"></info_portion>
+  <info_portion id="esc_wolf_talked_2"></info_portion>
+
+  <info_portion id="esc_trader_bye_played"></info_portion>
+  <info_portion id="esc_trader_hello_played"></info_portion>
+  <info_portion id="esc_actor_comes_2_trader"></info_portion>
+  
+  <info_portion id="esc_trader_hello_first_played"></info_portion>
+  <info_portion id="esc_trader_hello_search_played"></info_portion>
+  <info_portion id="esc_trader_hello_return_played"></info_portion>
+  <info_portion id="esc_trader_bye_search_played"></info_portion>
+  <info_portion id="esc_trader_bye_first_search_played"></info_portion>
+  <info_portion id="esc_trader_bye_garbage_played"></info_portion>
+  <info_portion id="esc_player_sleeps"></info_portion>
+  <info_portion id="esc_skip_angry"></info_portion>
+
+
+  <info_portion id="esc_trader_talked"></info_portion>
+  <info_portion id="esc_actor_come_first"></info_portion>
+  <info_portion id="esc_actor_inside_traders_dung"></info_portion>
+  <info_portion id="esc_trader_angry"></info_portion>
+   <info_portion id="esc_reach_trader_complete"></info_portion>
+   <info_portion id="esc_actor_comes2door"></info_portion>
+
+  <info_portion id="esc_voditel_talked"></info_portion>
+  
+
+  <!-- additional Scene - Mill Busstop -->
+
+  <info_portion id="esc_actor_near_mill"></info_portion>
+  <info_portion id="esc_stalker_patrol_in_zone"></info_portion>
+  <info_portion id="esc_mil_5_9_attack"></info_portion>
+  <info_portion id="esc_task_patrol"></info_portion>
+  <info_portion id="esc_stalker_patrol_dead"></info_portion>
+  <info_portion id="esc_stalker_patrol_resqued"></info_portion>
+  <info_portion id="mil_squad_1_5_9_dead"></info_portion>
+  <info_portion id="mil_squad_2_5_9_dead"></info_portion>
+
+  <!-- third Scene - Nasip -->
+  
+  <info_portion id="esc_actor_inside_tonnel"></info_portion>
+  <info_portion id="esc_actor_inside_tonnel_1"></info_portion>
+  <info_portion id="esc_actor_inside_bridge"></info_portion>
+  <info_portion id="esc_actor_inside_bridge_1"></info_portion>
+  <info_portion id="esc_nasip_commander_talked"></info_portion>
+  <info_portion id="esc_stalker_sniper_dead"></info_portion>
+
+  <!-- forth Scene - Stalker Base and bla bla bla -->
+  
+  <info_portion id="esc_actor_inside_stalkerbase"></info_portion>
+    <info_portion id="esc_reach_stalker_base_complete"></info_portion>
+  <info_portion id="esc_stalker_leader_meet"></info_portion>
+
+  <info_portion id="esc_7_11_mil_1_dead"></info_portion>
+  <info_portion id="esc_7_11_mil_2_dead"></info_portion>
+  <info_portion id="esc_7_11_mil_3_dead"></info_portion>
+  
+  <info_portion id="esc_actor_mission_stalker_leader"></info_portion>
+  <info_portion id="esc_actor_mission_stalker_leader_done"></info_portion>
+  <info_portion id="esc_mission_stalker_leader_complete"></info_portion>
+  <info_portion id="esc_mission_2_stalker_leader_complete"></info_portion>
+
+  <info_portion id="esc_leader_talked2"></info_portion>
+  
+  <info_portion id="esc_com_tell_about_habar"></info_portion>
+  <info_portion id="esc_leader_final_talked"></info_portion>
+  <info_portion id="esc_habar_mill_spawn"></info_portion>
+  <info_portion id="esc_habar_tonnel_spawn"></info_portion>
+  <info_portion id="esc_habar_podval_spawn"></info_portion>
+
+  <!-- Dialog with mil~Comm -->
+  <info_portion id="ct1_cm0"></info_portion>
+  <info_portion id="ct1_cm1"></info_portion>
+  <info_portion id="ct0_cm0"></info_portion>
+  <info_portion id="esc_prapor_talked"></info_portion>
+  
+  
+  <info_portion id="esc_military_comm_talked"></info_portion>
+  <info_portion id="esc_actor_mission_military_comm"></info_portion>
+  <info_portion id="esc_mission_military_comm_complete"></info_portion>
+  <info_portion id="esc_mission_military_eliminated_stalkerbase"></info_portion>
+  <info_portion id="esc_actor_inside_habar"></info_portion>
+  <info_portion id="esc_take_habar_complete"></info_portion>
+
+  <info_portion id="esc_actor_inside_traders_dung_last"></info_portion>
+  <info_portion id="esc_bring_habar_complete"></info_portion>
+
+  <info_portion id="esc_help_prisoner"></info_portion>
+  <info_portion id="esc_actor_have_secret"></info_portion>
+  <info_portion id="esc_prisoner_go_out"></info_portion>
+  <info_portion id="esc_take_weapon_complete"></info_portion>
+  <info_portion id="esc_prisoner_complete_dialog"></info_portion>
+  <info_portion id="esc_first_join_stalker"></info_portion>
+  <info_portion id="esc_join_stalker_on"></info_portion>
+  <info_portion id="esc_driver_fight"></info_portion>
+  <info_portion id="esc_additional_quest_2_info_complete"></info_portion>
+  <info_portion id="esc_additional_quest_3_info_complete"></info_portion>
+  <info_portion id="esc_additional_quest_2_spawn"></info_portion>
+  <info_portion id="esc_additional_quest_3_spawn"></info_portion>
+  <info_portion id="esc_additional_quest_3_fail"></info_portion>
+  <info_portion id="esc_treasure_1_complete"></info_portion>
+  <info_portion id="esc_treasure_2_complete"></info_portion>
+  <info_portion id="esc_treasure_3_complete"></info_portion>
+  <info_portion id="esc_prisoner_dialog_1"></info_portion>
+  <info_portion id="esc_prisoner_dialog_2"></info_portion>
+  <info_portion id="esc_leader_dialog_1"></info_portion>
+  <info_portion id="esc_wolf_brother_1"></info_portion>
+  <info_portion id="esc_wolf_brother_2"></info_portion>
+  <info_portion id="esc_wolf_brother_3"></info_portion>
+  <info_portion id="esc_wolf_brother_fail"></info_portion>
+  <info_portion id="esc_wolf_brother_info"></info_portion>
+  <info_portion id="esc_comm_info"></info_portion>
+  <info_portion id="esc_novice_info_friend_dogs"></info_portion>
+  <info_portion id="esc_novice_info_enemy_dogs"></info_portion>
+  <info_portion id="esc_wolf_novice"></info_portion>
+  <info_portion id="esc_wolf_novice_2"></info_portion>
+  <info_portion id="esc_wolf_novice_3"></info_portion>
+  <info_portion id="esc_wolf_novice_4"></info_portion>
+  <info_portion id="esc_stalker_novice_fail"></info_portion>
+  <info_portion id="esc_support_squad_attack"></info_portion>
+  <info_portion id="esc_driver_friend_1"></info_portion>
+  <info_portion id="esc_driver_friend_2"></info_portion>
+  <info_portion id="esc_driver_friend_3"></info_portion>
+  <info_portion id="esc_trader_bandits_1"></info_portion>
+  <info_portion id="esc_trader_bandits_2"></info_portion>
+  <info_portion id="esc_trader_bandits_3"></info_portion>
+  <info_portion id="esc_driver_dead"></info_portion>
+  <info_portion id="esc_wolf_dead"></info_portion>
+  <info_portion id="esc_stalker_mechanic_dead"></info_portion>
+  <info_portion id="esc_stalker_trader_dead"></info_portion>
+  <info_portion id="esc_stalker_novice_defend"></info_portion>
+  <info_portion id="esc_stalker_novice_dialog_fail"></info_portion>
+  <info_portion id="esc_wolf_call_sound"></info_portion>
+  <info_portion id="esc_stalker_novice_hit"></info_portion>
+  <info_portion id="esc_wpn_ak74_upgrade_1"></info_portion>
+  <info_portion id="esc_wpn_ak74_upgrade_2"></info_portion>
+  <info_portion id="esc_wpn_wincheaster1300_upgrade_1"></info_portion>
+  <info_portion id="esc_wpn_wincheaster1300_upgrade_2"></info_portion>
+  <info_portion id="esc_stalker_enemy"></info_portion>
+  <info_portion id="esc_stalker_neutral"></info_portion>
+  <info_portion id="esc_novice_secret"></info_portion>
+  <info_portion id="esc_military_atp_smartcover_1"></info_portion>
+  <info_portion id="esc_military_atp_smartcover_2"></info_portion>
+  <info_portion id="esc_zak_habar_complete"></info_portion>
+  
+  <info_portion id="esc_actor_kill_driver"></info_portion>
+  <info_portion id="esc_driver_dialog_fight"></info_portion>
+</game_information_portions>

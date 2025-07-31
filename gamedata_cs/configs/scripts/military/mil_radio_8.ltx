@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle@play
+
+[sr_idle@play]
+on_info = {=actor_in_zone(mil_space_restrictor_radio_8) -mil_actor_go_to_limansk +mil_start_after_red_forest} sr_idle@stop %=play_sound(mil_rnd_radio_8)%
+
+[sr_idle@stop]
+
+

@@ -1,0 +1,21 @@
+[logic]
+active = sr_idle@visit
+
+[sr_idle@visit]
+on_actor_inside = {+esc_bring_habar_complete} sr_idle@search %+gar_story_reached_dead_diggers_camp%
+
+[sr_idle@search]
+on_info = {+gar_story_searched_digger_body} sr_idle@leader_pda_sound %=play_sound(gar_dead_digger_leader_rec:stalker:st_name_gar_smart_terrain_5_5)%
+
+[sr_idle@leader_pda_sound]
+on_signal = sound_end | sr_idle@remove_leader_body %+gar_story_digger_pda_played%
+
+[sr_idle@remove_leader_body]
+on_info = {+gar_story_spawn_messenger_dogs} sr_idle@messenger_dead %=destroy_object(701)%
+; ToDo decide if we need it %=destroy_object(701)%
+
+[sr_idle@messenger_dead]
+on_info = {+gar_story_searched_messenger_body} %=play_sound(gar_digger_messenger_pda_rec:stalker:gar_digger_quester_name)%, {+gar_story_got_info_from_digger} sr_idle@end_section
+on_signal = theme_end | sr_idle@end_section %+gar_story_got_info_from_digger%
+
+[sr_idle@end_section]

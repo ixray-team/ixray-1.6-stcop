@@ -1,0 +1,25 @@
+[spawn]
+wpn_sig550
+ammo_5.56x45_ss190 = 5
+
+[logic]
+active = camper@hide
+combat_ignore = combat_ignore
+
+
+[camper@hide]
+combat_ignore_cond = true
+path_walk = barricade_hide_6_walk
+path_look = barricade_hide_6_look
+radius = 5
+on_info = {+sniper_fire_scene} walker@runner
+
+[walker@runner]
+combat_ignore_cond = true
+path_walk = barricade_run_6_walk
+def_state_moving1 = sneak_run
+def_state_moving2 = sneak_run
+def_state_moving3 = sneak_run
+on_npc_in_zone = 65001 | sniper_fire_restr | %+sniper_fire_scene_end =hit_npc(65000:bip01_spine1:500:500)%
+
+[combat_ignore]

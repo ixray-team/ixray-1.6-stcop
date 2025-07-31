@@ -1,0 +1,10 @@
+[logic]
+active = nil
+
+[sr_idle@spawn1]
+on_info = {+esc_actor_inside} sr_idle@spawn2 %=spawn_object(esc_stalker_guard_east_bridge:esc_smart_terrain_6_8_grd_2_walk)%
+
+[sr_idle@spawn2]
+on_info = {+esc_actor_inside} sr_idle@wait %=spawn_object(esc_stalker_guard_west_bridge:esc_smart_terrain_6_8_grd_3_walk)%
+
+[sr_idle@wait]

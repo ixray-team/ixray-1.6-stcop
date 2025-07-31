@@ -1,0 +1,36 @@
+[logic]
+active = sr_idle@bandit_base_box
+
+;[sr_idle@start_digger_conc_camp]
+;on_info = sr_idle@start_unique_bandits %=spawn_object(gar_digger_captive_1:gar_bandit_conc_camp_main_spawn_1) =spawn_object(gar_digger_captive_2:gar_bandit_conc_camp_main_spawn_2) =spawn_object(gar_digger_captive_3:gar_bandit_conc_camp_main_spawn_3) =spawn_object(gar_digger_captive_4:gar_bandit_conc_camp_main_spawn_4) =spawn_object(gar_digger_captive_leader:gar_bandit_conc_camp_main_spawn_5)%
+;;=create_squad(gar_digger_conc_camp:gar_smart_terrain_3_7)
+
+;[sr_idle@start_unique_bandits]
+;on_info = sr_idle@story_messenger %=create_squad(gar_bandit_base:gar_smart_terrain_3_5)%
+
+[sr_idle@bandit_base_box]
+on_info = sr_idle@story_messenger %=spawn_object_in(af_night_star:gar_treasure_quest_bandit_base) =spawn_object_in(af_electra_moonlight:gar_treasure_quest_bandit_base)%
+
+[sr_idle@story_messenger]
+on_info = {+gar_story_searched_digger_body} sr_idle@story_messenger_dogs_spawn %=create_squad(gar_digger_messenger_man:gar_smart_terrain_8_5)%
+
+[sr_idle@story_messenger_dogs_spawn]
+on_info = {+gar_story_spawn_messenger_dogs} sr_idle@story_messenger_dogs_exist %=create_squad(gar_digger_messenger_dogs:gar_smart_terrain_6_5)%
+
+[sr_idle@story_messenger_dogs_exist]
+on_info = {=squad_exist(gar_digger_messenger_dogs)} sr_idle@story_to_darkvalley_main %+gar_story_spawned_messenger_dogs%
+
+[sr_idle@story_to_darkvalley_main]
+on_info = {+gar_story_got_info_from_digger} sr_idle@story_to_darkvalley_stalkers ;sr_idle@story_to_darkvalley_bandits
+
+;[sr_idle@story_to_darkvalley_bandits]
+;on_actor_not_in_zone = gar_space_restrictor_stalkers_to_darkvalley | sr_idle@story_to_darkvalley_stalkers %=clear_smart_terrain(gar_smart_terrain_8_7) =create_squad(gar_bandit_to_darkvalley_1:gar_smart_terrain_8_7) =create_squad(gar_bandit_to_darkvalley_2:gar_smart_terrain_8_7)%
+
+[sr_idle@story_to_darkvalley_stalkers]
+on_actor_not_in_zone = gar_space_restrictor_stalkers_to_darkvalley | sr_idle@story_bandit_ambush %=clear_smart_terrain(gar_smart_terrain_6_6) =create_squad(gar_stalkers_to_darkvalley:gar_smart_terrain_6_6) +gar_story_stalkers_to_darkvalley% ;=play_sound(gar_stalker_group_talk:stalker:gar_smart_terrain_6_6)
+
+[sr_idle@story_bandit_ambush]
+;lvl
+on_info = {+gar_story_need_to_go_to_cache} sr_idle@end_section, {+gar_story_spawn_ambush_bandits} sr_idle@end_section %=spawn_object(gar_bandit_ambush_1:gar_bandit_ambush_1_walk) =spawn_object(gar_bandit_ambush_2:gar_bandit_ambush_2_walk)%
+
+[sr_idle@end_section]

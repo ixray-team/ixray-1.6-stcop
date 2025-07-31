@@ -1,0 +1,38 @@
+[logic]
+active=sr_crowkiller
+;active=sr_shooting
+;active=sr_no_weapon
+;active=sr_idle
+
+;[sr_idle]
+;on_timer=25000|nil %+test_info_1%
+;on_actor_inside=nil %+test_info_1%
+
+[sr_shooting]
+game_name=new_shooting
+target_dists=30,40,50,60,70
+30=target_5,target_10
+40=target_4,target_9
+50=target_3,target_8
+60=target_2,target_7
+70=target_1,target_6
+stand_way = path_walk_2
+look_way = path_walk_1
+stand_way_back = path_walk_1
+look_way_back = path_walk_2
+
+
+
+;obj_name=test_box_1
+
+;[sr_no_weapon]
+[sr_crowkiller]
+game_name = temp_crowkiller
+max_crows_on_level = 15
+spawn_path = path_walk_1, path_walk_2, path_walk_3
+highscore = 8
+timer = 60
+money_multiplier = 100
+champion_multiplier = 1000
+crows_to_kill = 1,2,3,4
+new_highscore_time = 0

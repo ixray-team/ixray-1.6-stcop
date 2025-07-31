@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle@in_underground
+
+[sr_idle@in_underground]
+on_actor_inside = %+agr_actor_inside_1 +agr_actor_inside_2 +agr_actor_inside_3 +agr_actor_inside_4 +agr_actor_inside_5 +agr_actor_inside_6 +agr_actor_inside_7 +agr_actor_inside_8 +agr_actor_inside_9 +agr_actor_inside_10% sr_idle@out_underground
+
+[sr_idle@out_underground]
+on_info = {+agru_find_secret_task_complete} sr_idle@end %+agru_go_out_end_task_complete%
+
+[sr_idle@end]

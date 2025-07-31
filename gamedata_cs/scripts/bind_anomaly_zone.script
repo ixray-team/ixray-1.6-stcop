@@ -1,0 +1,134 @@
+--'******************************************************
+--'*  Биндер объекта зоны аномалий .
+--'******************************************************
+function printf()
+end
+artefact_ways_by_id					= {}
+parent_zones_by_artefact_id			= {}
+
+function bind(obj)
+	obj:bind_object(anomaly_zone_binder(obj))
+end
+
+class "anomaly_zone_binder" (object_binder)
+function anomaly_zone_binder:__init(obj) super(obj)
+	local ini				= obj:spawn_ini()
+	local path				= utils.cfg_get_string(ini, "anomal_zone", "artefact_ways", nil, true, "", nil)	
+	local artefacts			= utils.cfg_get_string(ini, "anomal_zone", "artefacts", nil, true, "", nil)
+	self.artefact_count		= utils.cfg_get_number(ini, "anomal_zone", "artefact_count", nil, false, 1)
+	self.idle_time			= utils.cfg_get_number(ini, "anomal_zone", "idle_time", nil, false, 14400) * 1000
+	self.applying_force_xz	= utils.cfg_get_number(ini, "anomal_zone", "applying_force_xz", nil, false, 200)
+	self.applying_force_y	= utils.cfg_get_number(ini, "anomal_zone", "applying_force_y", nil, false, 400)
+	if path == nil then 
+		abort("There is no field 'artefact_ways' in section [anomal_zone] in obj [%s]", obj:name()) 
+	end
+	self.path_table			= parse_names(path)
+	if artefacts == nil then 
+		abort("There is no field 'artefacts' in section [anomal_zone] in obj [%s]", obj:name()) 
+	end
+	self.artefacts_table	= parse_names(artefacts)
+	self.spawned_count = 0
+	self.idle_time_end = 0
+end
+
+function anomaly_zone_binder:spawn_artefact_randomly()
+	local rnd_artefact			= self.artefacts_table[math.random(1, #self.artefacts_table)]
+	local rnd_path_name			= self.path_table[math.random(1, #self.path_table)]
+	local rnd_path				= patrol(rnd_path_name)
+	local rnd_path_point		= math.random(0, rnd_path:count() - 1)
+	local artefact_obj			= alife():create( rnd_artefact,
+										rnd_path:point(rnd_path_point),
+										self.object:level_vertex_id(),
+										self.object:game_vertex_id())	
+	 artefact_ways_by_id[artefact_obj.id] = rnd_path_name	
+	 parent_zones_by_artefact_id[artefact_obj.id] = self
+	 self.spawned_count = self.spawned_count + 1
+	 printf("artefact [%s] spawned at position %s by zone [%s]",artefact_obj:name(), vec_to_str(artefact_obj.position),self.object:name())
+end
+
+
+function anomaly_zone_binder:net_spawn(server_object)
+	if not object_binder.net_spawn(self, server_object) then
+		return false
+	end
+	-- пускаем цикл по количеству артефактов artefact_count.
+	if(self.spawned_count<self.artefact_count) and (self.idle_time_end<time_global()) then
+		for i=1,self.artefact_count-self.spawned_count do 
+			self:spawn_artefact_randomly()
+		end	
+	end
+	printf("spawned artefact!!!")
+	
+	
+	return true
+end
+
+function anomaly_zone_binder:update(delta)
+	object_binder.update(self, delta)
+	for k,v in pairs(artefact_ways_by_id) do
+		local cl_pos = (db.storage[k] and db.storage[k].object and db.storage[k].object:position())
+		
+		local art = alife():object(k)
+		if cl_pos ~= nil then
+			printf("pl:art [%s] se_pos %s cl_pos %s", art:name(), vec_to_str(art.position), vec_to_str(cl_pos))
+		else
+			printf("pl:art [%s] se_pos %s", art:name(), vec_to_str(art.position))
+		end
+	end
+	if self.spawned_count <  self.artefact_count and self.idle_time_end < time_global() then
+		self:spawn_artefact_randomly()
+		self.idle_time_end = time_global() + self.idle_time
+	end
+end
+  
+function anomaly_zone_binder:on_artefact_take()
+	self.spawned_count = self.spawned_count - 1
+	self.idle_time_end = time_global() + self.idle_time
+end
+
+-- Standart function for save
+function anomaly_zone_binder:net_save_relevant()
+	return true
+end
+-- Saving anomaly zone
+function anomaly_zone_binder:save(thread)
+	set_save_marker(thread, "save", false, "anomaly_zone_binder")
+	object_binder.save(self, thread)
+
+	local count = 0
+	for k,v in pairs(artefact_ways_by_id) do
+		count = count + 1
+	end
+	thread:w_u16(count)
+	for k,v in pairs(artefact_ways_by_id) do
+		thread:w_u16(k)
+		thread:w_stringZ(v)
+	end
+	thread:w_u8(self.spawned_count)
+	local time_diff = self.idle_time_end-time_global()
+	if(time_diff<=0) then
+		thread:w_u32(0)
+	else
+		thread:w_u32(time_diff)
+	end
+
+	set_save_marker(thread, "save", true, "anomaly_zone_binder")
+end
+-- Loading anomaly zone
+function anomaly_zone_binder:load(thread)
+	set_save_marker(thread, "load", false, "anomaly_zone_binder")
+	object_binder.load(self, thread)
+
+	local count = thread:r_u16()
+	for i=1,count do 
+		local art_id = thread:r_u16()
+		artefact_ways_by_id[art_id] = thread:r_stringZ()
+		parent_zones_by_artefact_id[art_id] = self
+	end
+	self.spawned_count = thread:r_u8()
+	local time_diff = thread:r_u32()
+	printf(time_diff)
+	self.idle_time_end = time_global()+time_diff
+
+	set_save_marker(thread, "load", true, "anomaly_zone_binder")
+end

@@ -1,0 +1,41 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = sr_idle@yan_wave1_go %+yan_hero_in_zone% 
+on_info = {+yan_start_remove} sr_idle@yan_wave1_go  
+
+[sr_idle@yan_wave1_go];--озвучка
+on_info = {+yan_wave1_go} sr_idle@yan_wave_naval %=play_sound(yan_wave1_go:stalker:yan_st_levsha_name)%
+
+[sr_idle@yan_wave_naval]
+on_info = {+yan_wave_naval} sr_idle@yan_roof_nores_stalker3 %=play_sound(yan_wave_naval:stalker:yan_st_levsha_name)%
+
+[sr_idle@yan_roof_nores_stalker3]
+on_info = {+yan_roof_nores_stalker3} sr_idle@yan_roof_nores_stalker4 %=play_sound(yan_roof_nores_stalker3:stalker:yan_st_levsha_name)%
+;on_info2 = {+yan_wave_naval_roof1} sr_idle@yan_wave_naval_roof1 
+on_info2 = {+yan_game_over_cut6} nil
+
+
+[sr_idle@yan_roof_nores_stalker4]
+on_info = {+yan_roof_nores_stalker4} sr_idle@yan_roof_nores_stalker5 %=play_sound(yan_roof_nores_stalker4:stalker:yan_st_levsha_name)%
+on_info2 = {+yan_wave_naval_roof1} sr_idle@yan_wave_naval_roof1 
+on_info3 = {+yan_game_over_cut6} nil
+
+[sr_idle@yan_roof_nores_stalker5]
+on_info = {+yan_roof_nores_stalker5} sr_idle@yan_wave_naval_roof1 %=play_sound(yan_roof_nores_stalker5:stalker:yan_st_levsha_name)%
+;on_info2 = {+yan_wave_naval_roof1} sr_idle@yan_wave_naval_roof1 
+on_info2 = {+yan_game_over_cut6} nil
+
+;[sr_idle@yan_fast_zombi_cut6]
+;on_info = {+yan_fast_zombi_cut6} sr_idle@yan_wave_naval_roof
+;on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@yan_wave_naval_roof1]
+on_info = {+yan_wave_naval_roof1} %=play_sound(yan_wave_naval_roof1:stalker:yan_st_levsha_name)% sr_idle@yan_wave_naval_roof
+on_info2 = {+yan_game_over_cut6} nil
+
+[sr_idle@yan_wave_naval_roof]
+on_game_timer = 270 | sr_idle@stop %=play_sound(yan_wave_clear_roof:stalker)%
+
+[sr_idle@stop]

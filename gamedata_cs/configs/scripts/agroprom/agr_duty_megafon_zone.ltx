@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_actor_in_zone = agr_duty_megafon_zone | sr_idle@end %+agr_duty_megafon_start%
+
+[sr_idle@end]
