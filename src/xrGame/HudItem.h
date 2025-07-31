@@ -163,7 +163,7 @@ public:
 	virtual bool				CheckCompatibility		(CHudItem*)			{return true;}
 
 	virtual float GetHudFov();
-	virtual bool AllowBore() { return !m_bDisableBore; }
+	virtual bool AllowBore() { return !m_bDisableBore && m_eAnimationsFlags.test(EAnimationsFlags::af_bore); }
 
 	enum EDevicesFlags
 	{
@@ -189,6 +189,7 @@ public:
 		af_det_hand_throw_end = (1 << 10),
 		af_det_hand_kick = (1 << 11),
 		af_det_hand_lam = (1 << 12),
+		af_bore = (1 << 13),
 		af_firemode = (1 << 14),
 	};
 
