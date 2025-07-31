@@ -17,13 +17,32 @@ bool SHeightMap::LoadRAW(const char* filename)
 	return true;
 }
 
+bool SHeightMap::SaveSteam(IWriter* Writer)
+{
+	if (!Writer || !Data || Width == 0 || Height == 0)
+		return false;
+
+	u16* raw_data = (u16*)xr_malloc(Width * Height * sizeof(u16));
+
+	for (u32 i = 0; i < Width * Height; ++i)
+	{
+		raw_data[i] = (u16)(Data[i] * 65535.f);
+	}
+
+	Writer->w(raw_data, Width * Height * sizeof(u16));
+	xr_free(raw_data);
+
+	return true;
+}
+
 bool SHeightMap::LoadSteam(IReader* Reader)
 {
 	if (!Reader)
 		return false;
 
 	Width = Height = (u32)sqrt(Reader->length() / sizeof(u16));
-	if (Width * Height * sizeof(u16) != Reader->length())
+	const size_t Offset = Width * Height * sizeof(u16);
+	if (Offset > Reader->length())
 	{
 		return false;
 	}
@@ -45,7 +64,7 @@ bool SHeightMap::LoadSteam(IReader* Reader)
 		if (Data[i] > MaxH) MaxH = Data[i];
 	}
 
-	PrecacheRenderData(100, 1.f, 0xffffff, true);
+	PrecacheRenderData(50, 1.f, 0xffffff, true);
 
 	return true;
 }
