@@ -46,7 +46,7 @@ void UIMainMenuForm::Draw()
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Quit", "")) { ExecCommand(COMMAND_QUIT); }
+			if (ImGui::MenuItem("Quit", "Alt+F4")) { ExecCommand(COMMAND_QUIT); }
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Preview Object"))
