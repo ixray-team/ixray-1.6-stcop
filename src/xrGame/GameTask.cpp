@@ -113,6 +113,20 @@ void CGameTask::CreateMapLocation( bool on_load )
 	}
 }
 
+bool CGameTask::isTaskCompleted()
+{
+	return false;
+}
+
+bool CGameTask::isTaskFail()
+{
+	return false;
+}
+
+void CGameTask::checkTask()
+{
+}
+
 void CGameTask::RemoveMapLocations(bool notify)
 {
 	if ( m_linked_map_location && !notify)

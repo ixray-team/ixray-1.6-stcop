@@ -94,14 +94,17 @@ void xrMemory::mem_compact()
 }
 
 // xr_strdup
-char*			xr_strdup		(const char* string)
-{	
-	VERIFY	(string);
-	u32		len			= u32(xr_strlen(string))+1	;
-	char *	memory		= (char*) Memory.mem_alloc(len);
-	CopyMemory		(memory,string,len);
-	return	memory;
+char* xr_strdup(const char* string)
+{
+	if (string == nullptr)
+		return nullptr;
+
+	const size_t len = xr_strlen(string) + 1;
+	char* memory = (char*)Memory.mem_alloc(len);
+	CopyMemory(memory, string, len);
+	return memory;
 }
+
 wchar_t* xr_strdup(const wchar_t* string) {
 	VERIFY(string);
 	size_t len = u32(wcslen(string)) + 1;

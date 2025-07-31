@@ -278,5 +278,6 @@ void export_classes	(lua_State *L)
 	CMedkit::script_register(L);
 	CPhysicsShellHolder::script_register(L);
 	CWeaponAmmo::script_register(L);
+	CGameTaskManager::script_register(L);
 #endif
 }
