@@ -14,7 +14,7 @@ class	ENGINE_API	IRender_ObjectSpecific;
 class	ENGINE_API	CCustomHUD;
 class	NET_Packet	;
 class	CSE_Abstract;
-
+class	CGameObject;
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
 #define CROW_RADIUS2	(60.f)
@@ -132,6 +132,8 @@ public:
 	virtual		CObject*				dcast_CObject		() override			{ return this;						}
 	virtual		IRenderable*			dcast_Renderable	() override			{ return this;						}
 	virtual		Feel::Sound*			dcast_FeelSound		() override			{ return nullptr;					}
+
+	virtual		CGameObject*			cast_game_object	()					{ return nullptr;					}
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }
