@@ -41,6 +41,7 @@ public:
 	virtual void	OnFocusLost			();
 	virtual void	Update				();
 	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData );
+			void	ShowOnlySecondaryTasks(bool mode) { m_show_only_secondary_tasks = mode; }
 
 			void	UpdateList			();
 
@@ -62,6 +63,7 @@ private: // m_
 
 //	u32					m_activ_task_count;
 	float				m_orig_h;
+	bool				m_show_only_secondary_tasks;
 
 }; // class UITaskListWnd
 
