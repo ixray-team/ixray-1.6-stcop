@@ -15,6 +15,8 @@
 #	include	<malloc.h>
 #endif // DEBUG
 
+#include "stack_string.h"
+
 XRCORE_API		xrCore	Core;
 XRCORE_API		u32		build_id;
 XRCORE_API		LPCSTR	build_date;
