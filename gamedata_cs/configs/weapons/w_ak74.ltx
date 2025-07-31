@@ -168,15 +168,13 @@ zoom_enabled            = true                                                ; 
 zoom_rotate_time        = 0.25
 scope_zoom_factor       = 50                                                ; fov for zoom mode
 
-scope_name              = wpn_addon_scope       ; section name for the attachable scope
-scope_x                 = 47                 ; offset in inventory icon
-scope_y                 = 0
 silencer_name           = wpn_addon_silencer    ; section name for the attachable silencer
 silencer_x              = 224                ; offset in inventory icon
 silencer_y              = 13
 grenade_launcher_name   = wpn_addon_grenade_launcher
 grenade_launcher_x      = 126
 grenade_launcher_y      = 24
+scopes_sect				= scope_ak74, scope_x2.7_ak74, scope_live_detector_ak74, scope_night_ak74
 
 ;звуки
 snd_draw                = weapons\ak74_draw
@@ -306,9 +304,29 @@ upgrade_scheme          = upgrade_scheme_u17b
 [wpn_ak74_up2]:wpn_ak74
 $spawn                      = "weapons\uniq\ak_74_up2"
 
-scope_status               = 2
+scope_status            = 2
 grenade_launcher_status    = 2
 
 upgrades                = up_gr_ab_ak74, up_gr_cd_ak74, up_gr_ef_ak74, up_gr_gh_ak74, up_gr_i_ak74, up_gr_j_ak74, up_gr_k_ak74
 installed_upgrades      = up_a_ak74, up_c_ak74, up_e_ak74, up_i_ak74, up_j_ak74
 upgrade_scheme          = upgrade_scheme_u17b
+
+[scope_ak74]
+scope_name 					= wpn_addon_scope
+scope_x              	= 47                 ; offset in inventory icon
+scope_y                 = 0
+
+[scope_x2.7_ak74]
+scope_name 					= wpn_addon_scope_x2.7
+scope_x              	= 47                 ; offset in inventory icon
+scope_y                 = 0
+
+[scope_live_detector_ak74]
+scope_name 					= wpn_addon_scope_detector
+scope_x              	= 47                 ; offset in inventory icon
+scope_y                 = 0
+
+[scope_night_ak74]
+scope_name 					= wpn_addon_scope_night
+scope_x              	= 47                 ; offset in inventory icon
+scope_y                 = 0
