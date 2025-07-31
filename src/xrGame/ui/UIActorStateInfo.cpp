@@ -301,10 +301,9 @@ void ui_actor_state_wnd::update_round_states(EStateType stt_type, float initial,
 
 	const float progress = floor(initial / max_power * 31) / 31; // number of sticks in progress bar
 	const float arrow = initial / max_power; //  = 0..1
-
-	if (!state->set_progress(progress))
+	
+	if (!state->set_progress(progress) && stt_type != stt_main)
 	{
-		//state->set_progress_shape(arrow);
 		state->set_arrow(arrow); // 0..1
 		state->set_text(arrow); // 0..1
 	}
@@ -319,8 +318,12 @@ void ui_actor_state_wnd::UpdateHitZone()
 		return;
 	}
 	wnd->UpdateZones();
+
 	if (m_state[stt_main])
-		m_state[stt_main]->set_arrow(wnd->get_main_sensor_value());
+	{
+		CActor* actor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : NULL;
+		m_state[stt_main]->set_arrow(actor->conditions().m_fRadiationZonePower);
+	}
 
 	/*
 	m_state[stt_fire]->set_arrow(wnd->get_zone_cur_power(ALife::eHitTypeBurn));
