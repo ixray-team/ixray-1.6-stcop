@@ -9,6 +9,7 @@
 #include "FS_internal.h"
 #include "stream_reader.h"
 #include "file_stream_reader.h"
+#include "Crypto/trivial_encryptor.h"
 
 #include "xrAddons.h"
 
@@ -130,7 +131,7 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 	}
 }
 
-IReader* open_chunk(FileHandle ptr, u32 ID)
+IReader* open_chunk(FileHandle ptr, u32 ID, pcstr archiveName, u32 archiveSize, bool shouldDecrypt = false)
 {
 #ifdef IXR_WINDOWS
 	BOOL res;
@@ -154,10 +155,23 @@ IReader* open_chunk(FileHandle ptr, u32 ID)
 
 			if (dwType & CFS_CompressMark)
 			{
-				BYTE* dest;
-				unsigned dest_sz;
+                BYTE* dest = nullptr;
+                unsigned dest_sz = 0;
 
-				_decompressLZ(&dest, &dest_sz, src_data, dwSize);
+                if (shouldDecrypt) // Try WW key first
+                    g_trivial_encryptor.decode(src_data, dwSize, src_data);
+
+                bool result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
+
+                if (!result && shouldDecrypt)
+                {
+                    // Let's try to decode with RU key
+                    g_trivial_encryptor.encode(src_data, dwSize, src_data); // rollback
+                    g_trivial_encryptor.decode(src_data, dwSize, src_data, trivial_encryptor::key_flag::russian);
+                    result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
+                }
+                R_ASSERT3(result, "Can't decompress archive", archiveName);
+
 				xr_free(src_data);
 				return new CTempReader(dest, dest_sz, 0);
 			}
@@ -224,6 +238,7 @@ void CLocatorAPI::LoadArchive(archive& A, LPCSTR entrypoint)
 {
 	// Create base path
 	string_path fs_entry_point;
+	bool shouldDecrypt = false;
 	fs_entry_point[0] = 0;
 
 	if(A.header)
@@ -262,17 +277,29 @@ void CLocatorAPI::LoadArchive(archive& A, LPCSTR entrypoint)
 
 	}else
 	{
-		R_ASSERT2				(0, "unsupported");
-		xr_strcpy				(fs_entry_point, sizeof(fs_entry_point), A.path.c_str());
-		if(strext(fs_entry_point))
-			*strext(fs_entry_point) = 0;
+        Msg("~ Found archive without ini header: %s", A.path.c_str());
+
+        if (!strstr(A.path.c_str(), ".xdb"))
+        {
+            Msg("Assuming that [%s] is encrypted ShoC archive", A.path.c_str());
+            shouldDecrypt = true;
+        }
+
+        auto P = pathes.find("$fs_root$");
+        if (P != pathes.end())
+        {
+            FS_Path* root = P->second;
+            // R_ASSERT3 (root, "path not found ", read_path.c_str());
+            xr_strcpy(fs_entry_point, sizeof fs_entry_point, root->m_Path);
+        }
+        xr_strcat(fs_entry_point, "gamedata\\");
 	}
 	if(entrypoint)
 		xr_strcpy				(fs_entry_point, sizeof(fs_entry_point), entrypoint);
 
 	// Read FileSystem
 	A.open				();
-	IReader* hdr		= open_chunk(A.hSrcFile,1); 
+	IReader* hdr		= open_chunk(A.hSrcFile,1, A.path.c_str(), A.size, shouldDecrypt); 
 	R_ASSERT			(hdr);
 
 	while (!hdr->eof())
@@ -359,7 +386,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path)
 	// Read header
 	BOOL bProcessArchiveLoading = TRUE;
 
-	IReader* hdr				= open_chunk(A.hSrcFile, CFS_HeaderChunkID); 
+	IReader* hdr				= open_chunk(A.hSrcFile, CFS_HeaderChunkID, A.path.c_str(), A.size);
 	if(hdr)
 	{
 		A.header				= new CInifile(hdr,"archive_header");
