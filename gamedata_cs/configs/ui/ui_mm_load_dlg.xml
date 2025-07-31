@@ -47,7 +47,7 @@
 		  <texture>ui_tablist_textbox</texture>
 	  </list_frame>
   		
-	  <list x="75" y="231" width="429" height="180" item_height="18">
+	  <list x="75" y="231" width="429" height="180" item_height="18" can_select="1">
 		  <font font="letterica16" r="216" g="186" b="140" />
 	  </list>
   				
