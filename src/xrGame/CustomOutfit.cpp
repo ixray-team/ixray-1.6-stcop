@@ -113,6 +113,9 @@ void CCustomOutfit::Load(LPCSTR section)
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
+
+	IsExo = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo", false);
+	IsExoProto = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo_proto", false);
 }
 
 void CCustomOutfit::ReloadBonesProtection()

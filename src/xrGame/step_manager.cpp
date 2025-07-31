@@ -8,16 +8,23 @@
 #include "IKLimbsController.h"
 #include "../xrEngine/Rain.h"
 
+#include "CustomOutfit.h"
+#include "InventoryOwner.h"
+
+
 #ifdef	DEBUG
 BOOL debug_step_info = FALSE;
 BOOL debug_step_info_load = FALSE;
 #endif
 
 extern float psHUDStepSoundVolume;
+static xr_hash_set<xr_string_view> exoVisuals = {};
+static FS_FileSet stepExoSounds = {};
+static FS_FileSet stepRainSounds = {};
+static bool isExoSection = false;
 
 CStepManager::CStepManager()
 {
-	static FS_FileSet stepRainSounds = {};
 	if (stepRainSounds.empty())
 	{
 		FS.file_list(stepRainSounds, "$game_sounds$", FS_ListFiles, R"(material\human\step\rain_*)");
@@ -30,6 +37,34 @@ CStepManager::CStepManager()
 			m_rain_steps.emplace_back().create(stepRainSound.name.c_str(), st_Effect, sg_SourceType);
 		}
 	}
+	isExoSection = pSettings->section_exist("exo_visuals");
+	if (!isExoSection)
+	{
+		return;
+	}
+
+	if (stepExoSounds.empty())
+	{
+		FS.file_list(stepExoSounds, "$game_sounds$", FS_ListFiles, R"(exo\exo_step*)");
+	}
+
+	if (m_exo_steps.empty())
+	{
+		for (auto& stepExoSound : stepExoSounds)
+		{
+			m_exo_steps.emplace_back().create(stepExoSound.name.c_str(), st_Effect, sg_SourceType);
+		}
+	}
+
+	if (exoVisuals.empty())
+	{
+		LPCSTR exoVisualName = {}, vall = {};
+		for (int k = 0; pSettings->r_line("exo_visuals", k, &exoVisualName, &vall); ++k)
+		{
+			exoVisuals.insert(exoVisualName);
+		}
+
+	}
 }
 
 CStepManager::~CStepManager()
@@ -38,8 +73,13 @@ CStepManager::~CStepManager()
 	{
 		rainStep.destroy();
 	}
-
 	m_rain_steps.clear();
+
+	for (auto& exoStep : m_exo_steps)
+	{
+		exoStep.destroy();
+	}
+	m_exo_steps.clear();
 }
 
 DLL_Pure *CStepManager::_construct	()
@@ -216,6 +256,7 @@ void CStepManager::update(bool b_hud_view)
 			{
 				m_step_sound.play_next(mtl_pair, m_object, m_step_info.params.step[i].power, b_hud_view);
 				PlayRainStep(b_hud_view);
+				PlayExoStep(b_hud_view);
 			}
 
 			CGameObject* object = smart_cast<CGameObject*>(m_object);
@@ -384,4 +425,52 @@ inline void CStepManager::PlayRainStep(const bool bHudView)
 	}
 	const int count = m_rain_steps.size();
 	m_rain_steps[Random.randI(count)].play_no_feedback(m_object, bHudView ? sm_2D : 0, 0, &pos, &rainVolume);
+}
+
+inline void CStepManager::PlayExoStep(const bool bHudView)
+{
+	if (!is_exo || m_exo_steps.empty())
+	{
+		return;
+	}
+
+	Fvector pos = m_object->Position();
+	if (bHudView)
+	{
+		pos = zero_vel;
+	}
+
+	float vol = Random.randF(2.2f, 2.8f);
+
+	const int count = m_exo_steps.size();
+	m_exo_steps[Random.randI(count)].play_no_feedback(m_object, bHudView ? sm_2D : 0, 0, &pos, &vol);
+}
+
+void CStepManager::CheckExo()
+{
+	if (exoVisuals.empty())
+	{
+		return;
+	}
+
+	if (m_object == nullptr)
+	{
+		return;
+	}
+
+	const char* vis = m_object->cNameVisual().c_str();
+	if (vis == nullptr || vis[0] == '\0')
+	{
+		return;
+	}
+
+	xr_string_view visual(vis);
+
+	constexpr xr_string_view ext = ".ogf";
+	if (visual.ends_with(ext))
+	{
+		visual.remove_suffix(ext.size());
+	}
+
+	is_exo = exoVisuals.contains(visual);
 }

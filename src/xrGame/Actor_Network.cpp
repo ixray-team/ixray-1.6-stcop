@@ -644,8 +644,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		setEnabled(TRUE);
 	}
 
-	m_hit_slowmo				= 0.f;
-
+	m_hit_slowmo = 0.f;
 	OnChangeVisual();
 	//----------------------------------
 	m_bAllowDeathRemove = false;
@@ -882,40 +881,46 @@ void	CActor::OnChangeVisual()
 	}
 	
 	IKinematicsAnimated* V	= smart_cast<IKinematicsAnimated*>(Visual());
-	if (V){
-		CStepManager::reload(cNameSect().c_str());
-		SetCallbacks		();
-		m_anims->Create		(V);
-		m_vehicle_anims->Create			(V);
-		CDamageManager::reload(*cNameSect(),"damage",pSettings);
-		//-------------------------------------------------------------------------------
-		m_head				= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head");
-		m_eye_left			= smart_cast<IKinematics*>(Visual())->LL_BoneID("eye_left");
-		m_eye_right			= smart_cast<IKinematics*>(Visual())->LL_BoneID("eye_right");
-		m_r_hand			= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone0"));
-		m_l_finger1			= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone1"));
-		m_r_finger2			= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone2"));
-		//-------------------------------------------------------------------------------
-		m_neck				= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_neck");
-		m_l_clavicle		= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_l_clavicle");
-		m_r_clavicle		= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_r_clavicle");
-		m_spine2			= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine2");
-		m_spine1			= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine1");
-		m_spine				= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine");
-		//-------------------------------------------------------------------------------
-		reattach_items();
-		//-------------------------------------------------------------------------------
-		m_pPhysics_support->in_ChangeVisual();
-		//-------------------------------------------------------------------------------
-		SetCallbacks		();
-		//-------------------------------------------------------------------------------
-		m_current_head.invalidate	();
-		m_current_legs.invalidate	();
-		m_current_torso.invalidate	();
-		m_current_legs_blend		= nullptr;
-		m_current_torso_blend		= nullptr;
-		m_current_jump_blend		= nullptr;
+	if (V == nullptr)
+	{
+		return;
 	}
+
+	CheckExo();
+
+	CStepManager::reload(cNameSect().c_str());
+
+	SetCallbacks();
+	m_anims->Create(V);
+	m_vehicle_anims->Create(V);
+	CDamageManager::reload(*cNameSect(), "damage", pSettings);
+	//-------------------------------------------------------------------------------
+	m_head = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head");
+	m_eye_left = smart_cast<IKinematics*>(Visual())->LL_BoneID("eye_left");
+	m_eye_right = smart_cast<IKinematics*>(Visual())->LL_BoneID("eye_right");
+	m_r_hand = smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(), "weapon_bone0"));
+	m_l_finger1 = smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(), "weapon_bone1"));
+	m_r_finger2 = smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(), "weapon_bone2"));
+	//-------------------------------------------------------------------------------
+	m_neck = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_neck");
+	m_l_clavicle = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_l_clavicle");
+	m_r_clavicle = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_r_clavicle");
+	m_spine2 = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine2");
+	m_spine1 = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine1");
+	m_spine = smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine");
+	//-------------------------------------------------------------------------------
+	reattach_items();
+	//-------------------------------------------------------------------------------
+	m_pPhysics_support->in_ChangeVisual();
+	//-------------------------------------------------------------------------------
+	SetCallbacks();
+	//-------------------------------------------------------------------------------
+	m_current_head.invalidate();
+	m_current_legs.invalidate();
+	m_current_torso.invalidate();
+	m_current_legs_blend = nullptr;
+	m_current_torso_blend = nullptr;
+	m_current_jump_blend = nullptr;
 };
 
 void	CActor::ChangeVisual			( shared_str NewVisual )
@@ -2039,4 +2044,10 @@ BOOL CActor::BonePassBullet(int boneID)
 void CActor::On_B_NotCurrentEntity()
 {
 	inventory().Items_SetCurrentEntityHud(false);
+}
+
+void CAI_Stalker::OnChangeVisual()
+{
+	inherited::OnChangeVisual();
+	CheckExo();
 }
