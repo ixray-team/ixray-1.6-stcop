@@ -1,11 +1,12 @@
 #include "StdAfx.h"
 #include "UISkinSelector.h"
+#include "UIGameCustom.h"
+
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIAnimatedStatic.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/Widgets/UIStatix.h"
 #include "../../xrUI/UICursor.h"
-#include "../UIGameCustom.h"
 #include "../game_cl_deathmatch.h"
 #include "../Level.h"
 

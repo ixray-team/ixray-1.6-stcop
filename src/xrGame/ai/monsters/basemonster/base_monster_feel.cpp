@@ -19,7 +19,7 @@
 #include "../../../game_object_space.h"
 #include "../../../ai_monster_space.h"
 #include "../control_animation_base.h"
-#include "../../../UIGameCustom.h"
+#include "ui/UIGameCustom.h"
 #include "../../../../xrUI/Widgets/UIStatic.h"
 #include "../../../ai_object_location.h"
 #include "../../../ActorEffector.h"

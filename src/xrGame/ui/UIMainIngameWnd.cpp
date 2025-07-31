@@ -2,7 +2,7 @@
 
 #include "UIMainIngameWnd.h"
 #include "UIMessagesWindow.h"
-#include "../UIZoneMap.h"
+#include "UIZoneMap.h"
 
 
 #include "../Actor.h"
@@ -13,7 +13,7 @@
 #include "../PDA.h"
 #include "../xrServerEntities/character_info.h"
 #include "../Inventory.h"
-#include "../UIGameSP.h"
+#include "UIGameSP.h"
 #include "../WeaponMagazined.h"
 #include "../Missile.h"
 #include "../Grenade.h"

@@ -2,7 +2,7 @@
 
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "gametype_chooser.h"
-#include "../UIGameCustom.h"
+#include "UIGameCustom.h"
 
 class CUIListBox;
 class CUIListBoxItem;

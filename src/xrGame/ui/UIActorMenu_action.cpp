@@ -9,7 +9,7 @@
 #include "UIActorMenu.h"
 #include "UIActorStateInfo.h"
 #include "../Actor.h"
-#include "../UIGameSP.h"
+#include "UIGameSP.h"
 #include "../Inventory.h"
 #include "../inventory_item.h"
 #include "../InventoryBox.h"
