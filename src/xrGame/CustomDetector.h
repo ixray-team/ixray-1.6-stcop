@@ -94,6 +94,8 @@ public:
 		eHandLam,
 	};
 
+	virtual CCustomDetector* cast_custom_detector() { return this; }
+
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
 	void 			UpdateNightVisionMode		(bool b_off);

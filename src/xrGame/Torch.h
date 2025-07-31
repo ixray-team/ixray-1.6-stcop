@@ -74,5 +74,7 @@ public:
 	virtual void	afterDetach				();
 	virtual void	renderable_Render		();
 
+	virtual CTorch* cast_torch() { return this; }
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

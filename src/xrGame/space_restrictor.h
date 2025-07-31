@@ -57,7 +57,9 @@ public:
 	virtual BOOL				UsedAI_Locations	();
 	virtual void				spatial_move		();
 	IC		bool				actual				() const;
-	virtual	CSpaceRestrictor	*cast_restrictor	() {return this;}
+	virtual CCustomZone* cast_custom_zone() { return nullptr; }
+	virtual CSpaceRestrictor* cast_restrictor() { return this; }
+	virtual CGameObject* cast_game_object() { return this; }
 	virtual	bool				register_schedule	() const {return false;}
 
 	virtual		void	shedule_Update				(u32 dt);

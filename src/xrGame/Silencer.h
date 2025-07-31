@@ -23,4 +23,5 @@ public:
 	virtual void UpdateCL			();
 	virtual void renderable_Render	();
 
+	virtual CSilencer* cast_addon_silencer() {return this;}
 };

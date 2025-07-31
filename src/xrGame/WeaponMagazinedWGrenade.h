@@ -68,6 +68,8 @@ public:
 	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
 	virtual shared_str SetCurrentShootAnimation();
 	
+	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() { return this; }
+
 	virtual bool	IsGrenadeMode() const { return m_bGrenadeMode; }
 private:
 	virtual	void	net_Spawn_install_upgrades	( Upgrades_type saved_upgrades );

@@ -9,6 +9,11 @@ class ENGINE_API CMotionDef;
 //заканчиваем стрельбу, только, если кончились патроны
 #define WEAPON_ININITE_QUEUE -1
 
+class CWeaponBinoculars;
+class CWeaponMagazinedWGrenade;
+class CWeaponBM16;
+class CWeaponRPG7;
+class CWeaponRG6;
 
 class CWeaponMagazined: public CWeapon
 {
@@ -75,7 +80,13 @@ public:
 	virtual void	Load(LPCSTR section);
 	virtual void	LoadSounds(LPCSTR section);
 			void	LoadSilencerKoeffs();
-	virtual CWeaponMagazined*cast_weapon_magazined	()		 {return this;}
+
+	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }
+	virtual CWeaponMagazined* cast_weapon_magazined() { return this; }
+	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() { return nullptr; }
+	virtual CWeaponBM16* cast_weapon_bm16() { return nullptr; }
+	virtual CWeaponRPG7* cast_weapon_rpg7() { return nullptr; }
+	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
 
 	virtual void	SetDefaults		();
 	virtual void	FireStart		();

@@ -40,6 +40,7 @@ public:
 
 	virtual bool WpnCanShoot() const { return false; }
 	virtual bool UseScopeTexture() { return true; }
+	virtual CWeaponBinoculars* cast_weapon_binoculars() { return this; }
 
 protected:
 	CBinocularsVision*					m_binoc_vision;
