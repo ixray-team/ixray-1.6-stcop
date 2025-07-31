@@ -203,7 +203,7 @@ target = yan_q7_n
 name = st_yan_q7_n
 description = st_yan_q7_n_descr
 items = ammo_vog-25, 5, antirad, 1
-condlist = {=actor_on_level(agroprom) =check_npc_name(agr_barman) +agru_go_out_end_task_complete} true, false
+condlist = {=actor_on_level(agroprom) =check_npc_name(agr_duty_barman) +agru_go_out_end_task_complete} true, false
 treasure_cost = 500
 say_item_name = false
 
@@ -212,7 +212,7 @@ target = yan_q8_t_l
 name = st_yan_q8_t_l
 description = st_yan_q8_t_l_descr
 items = ammo_pkm_100, 200
-condlist = {=actor_on_level(agroprom) =check_npc_name(agr_secret_trader) +agru_go_out_end_task_complete} true, false
+condlist = {=actor_on_level(agroprom) =check_npc_name(agr_stalker_secret_trader) +agru_go_out_end_task_complete} true, false
 treasure_cost = 1500
 say_item_name = false
 
@@ -221,6 +221,6 @@ target = yan_q9_n
 name = st_yan_q9_n
 description = st_yan_q9_n_descr
 items = medkit_scientic, 1
-condlist = {=actor_on_level(agroprom) =check_npc_name(agr_duty_base_trader) +agru_go_out_end_task_complete} true, false
+condlist = {=actor_on_level(agroprom) =check_npc_name(agr_duty_trader) +agru_go_out_end_task_complete} true, false
 treasure_cost = 1500
 say_item_name = false
