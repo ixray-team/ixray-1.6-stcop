@@ -1029,8 +1029,6 @@ void CWeaponMagazined::switch2_Fire	()
 
 void CWeaponMagazined::switch2_Empty()
 {
-	OnZoomOut();
-	
 	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
 	if (!isAutoreload)
 	{
