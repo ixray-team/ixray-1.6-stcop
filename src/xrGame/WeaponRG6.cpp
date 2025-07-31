@@ -51,53 +51,6 @@ void CWeaponRG6::Load(LPCSTR section)
 	inheritedSG::Load(section);
 }
 
-void CWeaponRG6::FireStart()
-{
-	if (!IsMisfire())
-	{
-		if (GetState() != eIdle)
-		{
-			return;
-		}
-
-		if (IsValid())
-		{
-			if (!IsWorking() || AllowFireWhileWorking())
-			{
-				CWeapon::FireStart();
-
-				if (iAmmoElapsed == 0)
-				{
-					switch2_Empty();
-				}
-				else
-				{
-					R_ASSERT(H_Parent());
-					SwitchState(eFire);
-				}
-			}
-		}
-		else
-		{
-			if (GetState() == eIdle)
-				switch2_Empty();
-		}
-	}
-	else
-	{
-		//misfire
-
-		CGameObject* object = smart_cast<CGameObject*>(H_Parent());
-		if (object)
-			object->callback(GameObject::eOnWeaponJammed)(object->lua_game_object(), this->lua_game_object());
-
-		if (smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity() == H_Parent()))
-			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
-
-		OnEmptyClick();
-	}
-}
-
 void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 {
 	inheritedSG::FireTrace(P, D);
