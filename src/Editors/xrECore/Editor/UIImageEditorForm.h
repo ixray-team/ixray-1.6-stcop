@@ -40,7 +40,7 @@ private:
 	void HideLib();
 	void UpdateLib();
 	void UpdateSelected();
-	void OnItemsFocused(ListItem* item);
+	void OnItemsFocused(ListItemsVec& item);
 	void SaveUsedTHM();
 private:
 	bool m_bFilterImage;
