@@ -351,6 +351,7 @@ public:
 	void						UpdateConditionProgressBars	();
 
 	void OnSuccessRepairMP(PIItem item);
+	const UIInvUpgradeInfo* GetUpgradeInfo() const { return m_upgrade_info; }
 
 	IC	UIHint*					get_hint_wnd				() { return m_hint_wnd; }
 
