@@ -75,10 +75,13 @@ void CTorch::Load(LPCSTR section)
 	inherited::Load			(section);
 	light_trace_bone		= pSettings->r_string(section,"light_trace_bone");
 
-	if (pSettings->line_exist(section, "snd_click"))
+	if (pSettings->line_exist(section, "sound_activate"))
 	{
-		const char* SoundName = pSettings->r_string(section, "snd_click");
-		m_switch_sound.create(SoundName, st_Effect, sg_SourceType);
+		m_sounds.LoadSound(section, "sound_activate", "soundActivate", false, SOUND_TYPE_ITEM_USING);
+	}
+	if (pSettings->line_exist(section, "sound_deactivate"))
+	{
+		m_sounds.LoadSound(section, "sound_deactivate", "soundDeactivate", false, SOUND_TYPE_ITEM_USING);
 	}
 }
 
@@ -87,19 +90,27 @@ void CTorch::Switch()
 	if (OnClient())			return;
 	bool bActive			= !m_switched_on;
 	Switch					(bActive);
+	CActor* pA = H_Parent()->cast_actor();
 
-	if (H_Parent() == Actor())
+	if (pA != nullptr)
 	{
-		if (m_switch_sound._feedback())
-			m_switch_sound.stop();
-
-		m_switch_sound.play(nullptr, sm_2D);
+		if (!m_switched_on)
+		{
+			if (m_sounds.FindSoundItem("soundActivate", false))
+				m_sounds.PlaySound("soundActivate", pA->Position(), NULL, !!pA->HUDview());
+		}
+		else if (m_switched_on)
+		{
+			if (m_sounds.FindSoundItem("soundDeactivate", false))
+				m_sounds.PlaySound("soundDeactivate", pA->Position(), NULL, !!pA->HUDview());
+		}
 	}
 }
 
 void CTorch::Switch(bool light_on)
 {
 	m_switched_on			= light_on;
+
 	if (can_use_dynamic_lights())
 	{
 		light_render->set_active(light_on);
