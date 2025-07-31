@@ -26,7 +26,8 @@ enum EHudStates {
 		eBore,
 		eSprintStart,
 		eSprintEnd,
-		eLastBaseState = eSprintEnd,
+		eDeviceSwitch,
+		eLastBaseState = eDeviceSwitch,
 };
 
 private:
@@ -109,10 +110,11 @@ public:
 	virtual void				OnStateSwitch		(u32 S);
 
 	virtual void				OnAnimationEnd		(u32 state);
-	virtual void				OnMotionMark		(u32 state, const motion_marks&){};
+	virtual void				OnMotionMark		(u32 state, const motion_marks&);
 
 	virtual void				PlayAnimIdle		();
 	virtual void				PlayAnimBore		();
+	virtual void				PlayAnimDeviceSwitch();
 	bool						TryPlayAnimIdle		();
 	virtual bool				MovingAnimAllowedNow ()				{return true;}
 
@@ -155,6 +157,23 @@ public:
 	virtual bool AllowBore() { return !m_bDisableBore; }
 
 	void PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allowOverlap = false);
+
+	enum EDevicesFlags
+	{
+		df_torch = (1 << 0),
+		df_nvg = (1 << 1),
+		df_clear_mask = (1 << 2),
+	};
+
+	enum EAnimationsFlags
+	{
+		af_torch = (1 << 0),
+		af_nvg = (1 << 1),
+		af_clear_mask = (1 << 2),
+	};
+
+	Flags32 m_eDevicesFlags;
+	Flags32 m_eAnimationsFlags;
 
 protected:
 
