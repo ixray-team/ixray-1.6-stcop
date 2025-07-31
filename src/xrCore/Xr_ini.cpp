@@ -1232,6 +1232,7 @@ void CInifile::LTXLoad(IReader* F, LPCSTR path, xr_string_map<xr_string, Sect>& 
 					
 					_splitpath(inc_name, nullptr, nullptr, inc_mask, inc_ext);
 					xr_string mask = xr_string(inc_mask) + inc_ext;
+					xr_strlwr(inc_path);
 					FS.file_list(fset, inc_path, FS_ListFiles, mask.c_str());
 					
 					for (FS_FileSet::iterator it = fset.begin(); it != fset.end(); it++)
