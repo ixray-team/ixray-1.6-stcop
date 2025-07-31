@@ -140,18 +140,6 @@ void CGameMtlLibrary::Load()
         OBJ->close		();
     }
 
-#ifndef _EDITOR
-	material_count		= (u32)materials.size();
-    material_pairs_rt.resize(material_count*material_count,0);
-    for (GameMtlPairIt p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it){
-		SGameMtlPair* S	= *p_it;
-    	int idx0		= GetMaterialIdx(S->mtl0)*material_count+GetMaterialIdx(S->mtl1);
-    	int idx1		= GetMaterialIdx(S->mtl1)*material_count+GetMaterialIdx(S->mtl0);
-	    material_pairs_rt[idx0]=S;
-	    material_pairs_rt[idx1]=S;
-    }
-#endif
-
 	FS.r_close		(F);
 }
 
