@@ -35,6 +35,10 @@ public:
 	typedef ScriptEngine::EScriptProcessors							EScriptProcessors;
 	typedef associative_vector<EScriptProcessors,CScriptProcess*>	CScriptProcessStorage;
 
+	//Alun: Allow directory structuring for scripts
+	using	script_list_type = xr_string_map<xr_string, xr_string>;
+	script_list_type xray_scripts;
+
 private:
 	bool						m_reload_modules;
 
