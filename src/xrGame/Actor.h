@@ -826,6 +826,8 @@ private:
 public:
 	bool OnLadder = false;
 	IC bool is_ladder() const { return OnLadder; };
+
+	float fSprintFactor = 0;
 };
 
 extern bool		isActorAccelerated			(u32 mstate, bool ZoomMode);

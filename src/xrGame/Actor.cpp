@@ -97,6 +97,7 @@ static Fvector	vFootExt;
 
 Flags32			psActorFlags={AF_DISABLE_CONDITION_TEST|AF_AUTOPICKUP|AF_RUN_BACKWARD|AF_IMPORTANT_SAVE|AF_DISPLAY_VOICE_ICON};
 
+ENGINE_API extern float		psHUD_FOV;
 
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
@@ -1111,13 +1112,15 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 	}
 }
 float g_fov = 67.5f;
-
 float CActor::currentFOV()
 {
-	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT | HUD_WEAPON_RT2))
-		return g_fov;
+	const float SprintFov = 7.0f * fSprintFactor;
 
-	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT | HUD_WEAPON_RT2))
+	{
+		return g_fov + SprintFov;
+	}
+	CWeapon* pWeapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
 
 	if (eacFreeLook != cam_active && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
 	{
@@ -1128,14 +1131,18 @@ float CActor::currentFOV()
 			return (2.f * atan(tan(fov) / pWeapon->GetZoomFactor()) * 180.f / PI);
 		}
 		else
-			return pWeapon->GetZoomFactor() * (0.75f);
+		{
+			return pWeapon->GetZoomFactor() * (0.75f) + SprintFov;
+		}
 	}
 	else if (IsTalking())
 	{
 		return g_fov * 0.75f;
 	}
 	else
-		return g_fov;
+	{
+		return g_fov + SprintFov;
+	}
 }
 
 float	NET_Jump = 0;
@@ -1444,6 +1451,13 @@ void CActor::UpdateCL()
 		g_player_hud->update			(trans);
 
 	pPickup->SetPickupMode(false);
+
+
+	if (mstate_real & mcSprint)
+		fSprintFactor += Device.fTimeDelta / 0.5f;
+	else
+		fSprintFactor -= Device.fTimeDelta / 0.1f;
+	clamp(fSprintFactor, 0.0f, 1.0f);
 }
 
 void CActor::UpdatePlayerView()
@@ -2176,7 +2190,6 @@ void CActor::ForceTransform(const Fmatrix& m)
 		character_physics_support()->movement()->BlockDamageSet( u64( block_damage_time_seconds/fixed_step ) );
 }
 
-ENGINE_API extern float		psHUD_FOV;
 float CActor::Radius()const
 { 
 	float R		= inherited::Radius();
