@@ -331,17 +331,19 @@ void ui_actor_state_item::init_from_xml( CUIXml& xml, LPCSTR path )
 	if ( xml.NavigateToNode( "icon", 0 ) )	
 	{
 		m_static = UIHelper::CreateStatic( xml, "icon", this );
-//		m_magnitude = xml.ReadAttribFlt( "icon", 0, "magnitude", 1.0f );
+		m_magnitude = xml.ReadAttribFlt( "icon", 0, "magnitude", 1.0f );
 		m_static->TextItemControl()->SetText("");
 	}
 	if ( xml.NavigateToNode( "icon2", 0 ) )	
 	{
 		m_static2 = UIHelper::CreateStatic( xml, "icon2", this );
+		m_magnitude = xml.ReadAttribFlt("icon2", 0, "magnitude", 1.0f);
 		m_static2->TextItemControl()->SetText("");
 	}
 	if ( xml.NavigateToNode( "icon3", 0 ) )	
 	{
 		m_static3 = UIHelper::CreateStatic( xml, "icon3", this );
+		m_magnitude = xml.ReadAttribFlt("icon3", 0, "magnitude", 1.0f);
 		m_static3->TextItemControl()->SetText("");
 	}
 	set_arrow( 0.0f );
@@ -349,17 +351,19 @@ void ui_actor_state_item::init_from_xml( CUIXml& xml, LPCSTR path )
 }
 
 
-void ui_actor_state_item::set_text( float value )
+bool ui_actor_state_item::set_text( float value )
 {
-	if ( !m_static )
+	if (!m_static)
 	{
-		return;
+		return false;
 	}
+
 	int v = (int)( value * m_magnitude + 0.49f );// m_magnitude=100
 	clamp( v, 0, 99 );
 	string32 text_res;
 	xr_sprintf( text_res, sizeof(text_res), "%d", v );
 	m_static->TextItemControl()->SetText( text_res );
+	return true;
 }
 
 bool ui_actor_state_item::set_progress( float value )
@@ -372,50 +376,53 @@ bool ui_actor_state_item::set_progress( float value )
 	return true;
 }
 
-void ui_actor_state_item::set_progress_shape( float value )
+bool ui_actor_state_item::set_progress_shape( float value )
 {
 	if ( !m_sensor )
 	{
-		return;
+		return false;
 	}
 	m_sensor->SetPos( value );
+	return true;
 }
 
-void ui_actor_state_item::set_arrow( float value )
+int ui_actor_state_item::set_arrow( float value )
 {
 	if ( !m_arrow )
 	{
-		return;	
+		return 0;	
 	}
 	m_arrow->SetNewValue( value );
 	if ( !m_arrow_shadow )
 	{
-		return;
+		return 1;
 	}
 	m_arrow_shadow->SetPos( m_arrow->GetPos() );
+	return 2;
 }
 
 
-void ui_actor_state_item::show_static( bool status, u8 number )
+bool ui_actor_state_item::show_static( bool status, u8 number )
 {
 	switch(number)
 	{
 	case 1:
 		if(!m_static)
-			return;
+			return false;
 		m_static->Show(status);
 		break;
 	case 2:
 		if(!m_static2)
-			return;
+			return false;
 		m_static2->Show(status);
 		break;
 	case 3:
 		if(!m_static3)
-			return;
+			return false;
 		m_static3->Show(status);
 		break;
 	default:
-		break;
+		return false;
 	}
+	return true;
 }
