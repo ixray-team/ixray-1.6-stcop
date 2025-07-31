@@ -79,6 +79,7 @@
 #include <chrono>
 #include <string>
 #include <optional>
+#include <numeric>
 
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
