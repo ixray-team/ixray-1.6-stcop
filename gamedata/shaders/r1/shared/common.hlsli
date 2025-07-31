@@ -21,6 +21,17 @@ uniform float3 eye_direction;
 uniform float3 eye_normal;
 uniform float4 dt_params;
 
+//GUNSLINGER**************************//
+uniform	float4 		m_hud_params;
+//uniform	float4		screen_res;
+uniform	float4		m_zoom_deviation;
+uniform	float4 		m_actor_params;
+uniform	float4 		m_affects;
+uniform	float4 		m_timearrow;
+uniform	float4 		m_timearrow2;
+uniform	float4 		m_digiclock;
+//************************************//
+
 float3 unpack_normal(float3 v)
 {
     return 2.0f * v - 1.0f;
