@@ -83,19 +83,26 @@ void CUICellItem::init()
 	CUIXmlInit::InitProgressBar(uiXml, "condition_progess_bar", 0, m_pConditionState);
 	m_pConditionState->Show(true);
 
-	m_custom_text = new CUIStatic();
-	m_custom_text->SetAutoDelete(true);
-	AttachChild(m_custom_text);
-	CUIXmlInit::InitStatic(uiXml, "cell_item_custom_text", 0, m_custom_text);
-	m_custom_text_pos = m_custom_text->GetWndPos();
-	m_custom_text->Show(false);
+	if (uiXml.NavigateToNode("cell_item_custom_text", 0))
+	{
+		m_custom_text = new CUIStatic();
+		m_custom_text->SetAutoDelete(true);
+		AttachChild(m_custom_text);
 
-	m_custom_mark = new CUIStatic();
-	m_custom_mark->SetAutoDelete(true);
-	AttachChild(m_custom_mark);
-	CUIXmlInit::InitStatic(uiXml, "cell_item_custom_mark", 0, m_custom_mark);
-	m_custom_mark_pos = m_custom_mark->GetWndPos();
-	m_custom_mark->Show(false);
+		CUIXmlInit::InitStatic(uiXml, "cell_item_custom_text", 0, m_custom_text);
+		m_custom_text_pos = m_custom_text->GetWndPos();
+		m_custom_text->Show(false);
+	}
+
+	if (uiXml.NavigateToNode("cell_item_custom_mark", 0))
+	{
+		m_custom_mark = new CUIStatic();
+		m_custom_mark->SetAutoDelete(true);
+		AttachChild(m_custom_mark);
+		CUIXmlInit::InitStatic(uiXml, "cell_item_custom_mark", 0, m_custom_mark);
+		m_custom_mark_pos = m_custom_mark->GetWndPos();
+		m_custom_mark->Show(false);
+	}
 }
 
 void CUICellItem::Draw()
@@ -149,6 +156,16 @@ void CUICellItem::Update()
 }
 
 void CUICellItem::UpdateCustomMarksAndText() {
+	if (m_custom_text == nullptr)
+	{
+		return;
+	}
+
+	if (m_custom_mark == nullptr)
+	{
+		return;
+	}
+
 	PIItem item = (PIItem)m_pData;
 	if (item) {
 		m_with_custom_text = item->m_custom_text != nullptr;
@@ -205,6 +222,7 @@ void CUICellItem::UpdateCustomMarksAndText() {
 			m_custom_mark->SetTextureOffset(item->m_custom_mark_offset.x, item->m_custom_mark_offset.y);
 		}
 	}
+
 	m_custom_text->Show(m_with_custom_text);
 	m_custom_mark->Show(m_with_custom_mark);
 }
