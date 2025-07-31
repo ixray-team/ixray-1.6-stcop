@@ -88,16 +88,16 @@ void CUIGameCTA::Init(int stage)
 		m_pRankIndicator->SetAutoDelete	(true);
 		m_pRankIndicator->InitFromXml	(uiXml);
 
-		if (EngineExternal().CallOfPripyatMode())
+		if (uiXml.NavigateToNode("reinforcement:front"))
+		{
+			m_pReinforcementInidcator_old = new CUIProgressShape();
+			CUIXmlInit::InitProgressShape(uiXml, "reinforcement", 0, m_pReinforcementInidcator_old);
+		}
+		else
 		{
 			m_pReinforcementInidcator = new CUITextWnd();
 			m_pReinforcementInidcator->SetAutoDelete(true);
 			CUIXmlInit::InitTextWnd(uiXml, "reinforcement", 0, m_pReinforcementInidcator);
-		}
-		else
-		{
-			m_pReinforcementInidcator_old = new CUIProgressShape();
-			CUIXmlInit::InitProgressShape(uiXml, "reinforcement", 0, m_pReinforcementInidcator_old);
 		}
 
 		m_team1_icon					= new CUIStatic();
