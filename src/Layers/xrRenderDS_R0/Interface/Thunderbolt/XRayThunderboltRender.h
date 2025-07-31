@@ -1,8 +1,8 @@
 #pragma once
-class XRayThunderboltRender:public IThunderboltRender
+class CDS0_ThunderboltRender:public IThunderboltRender
 {
 public:
-	XRayThunderboltRender();
+	CDS0_ThunderboltRender();
 	virtual void Copy(IThunderboltRender &_in) ;
 
 	virtual void Render(CEffect_Thunderbolt &owner);

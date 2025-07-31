@@ -1,74 +1,74 @@
 #include "stdafx.h"
 
-XRayEnvDescriptorMixerRender::XRayEnvDescriptorMixerRender()
+CDS0_EnvDescriptorMixerRender::CDS0_EnvDescriptorMixerRender()
 {
 }
 
-void XRayEnvDescriptorMixerRender::Copy(IEnvDescriptorMixerRender& _in)
+void CDS0_EnvDescriptorMixerRender::Copy(IEnvDescriptorMixerRender& _in)
 {
 
 }
 
-void XRayEnvDescriptorMixerRender::Destroy()
+void CDS0_EnvDescriptorMixerRender::Destroy()
 {
 }
 
-void XRayEnvDescriptorMixerRender::Clear()
+void CDS0_EnvDescriptorMixerRender::Clear()
 {
 	Destroy();
 }
 
-void XRayEnvDescriptorMixerRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB)
+void CDS0_EnvDescriptorMixerRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB)
 {
 	Destroy();
 	
 }
 
-XRayEnvDescriptorRender::XRayEnvDescriptorRender()
+CDS0_EnvDescriptorRender::CDS0_EnvDescriptorRender()
 {
 }
 
-void XRayEnvDescriptorRender::Copy(IEnvDescriptorRender& _in)
+void CDS0_EnvDescriptorRender::Copy(IEnvDescriptorRender& _in)
 {
 
 }
 
-void XRayEnvDescriptorRender::OnDeviceCreate(CEnvDescriptor& owner)
+void CDS0_EnvDescriptorRender::OnDeviceCreate(CEnvDescriptor& owner)
 {
 	
 }
 
-void XRayEnvDescriptorRender::OnDeviceDestroy()
+void CDS0_EnvDescriptorRender::OnDeviceDestroy()
 {
 
 }
 
 #include "../../XrEngine/xr_efflensflare.h"
-XRayEnvironmentRender::XRayEnvironmentRender()
+CDS0_EnvironmentRender::CDS0_EnvironmentRender()
 {
 
 }
 
-XRayEnvironmentRender::~XRayEnvironmentRender()
+CDS0_EnvironmentRender::~CDS0_EnvironmentRender()
 {
 }
 
-void XRayEnvironmentRender::Copy(IEnvironmentRender & _in)
+void CDS0_EnvironmentRender::Copy(IEnvironmentRender & _in)
 {
 	R_ASSERT(0);
 }
 
-void XRayEnvironmentRender::OnFrame(CEnvironment& env)
+void CDS0_EnvironmentRender::OnFrame(CEnvironment& env)
 {
 }
 
 
 
-void XRayEnvironmentRender::OnLoad()
+void CDS0_EnvironmentRender::OnLoad()
 {
 }
 
-void XRayEnvironmentRender::OnUnload()
+void CDS0_EnvironmentRender::OnUnload()
 {
 }
 #pragma pack(push,1)
@@ -87,7 +87,7 @@ struct v_skybox {
 };
 #pragma pack(pop)
 
-void XRayEnvironmentRender::RenderSky(CEnvironment& env)
+void CDS0_EnvironmentRender::RenderSky(CEnvironment& env)
 {
 }
 #pragma pack(push,1)
@@ -104,23 +104,23 @@ struct v_clouds {
 };
 #pragma pack(pop)
 
-void XRayEnvironmentRender::RenderClouds(CEnvironment& env)
+void CDS0_EnvironmentRender::RenderClouds(CEnvironment& env)
 {
 
 }
 
 
-void XRayEnvironmentRender::OnDeviceCreate()
+void CDS0_EnvironmentRender::OnDeviceCreate()
 {
 	
 }
 
-void XRayEnvironmentRender::OnDeviceDestroy()
+void CDS0_EnvironmentRender::OnDeviceDestroy()
 {
 
 }
 particles_systems::library_interface *null = 0;
-particles_systems::library_interface const & XRayEnvironmentRender::particles_systems_library()
+particles_systems::library_interface const & CDS0_EnvironmentRender::particles_systems_library()
 {
 	return *null;
 }

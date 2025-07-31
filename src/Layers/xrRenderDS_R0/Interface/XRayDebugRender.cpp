@@ -1,54 +1,54 @@
 #include "stdafx.h"
 #ifdef DEBUG_DRAW
-XRayDebugRender::XRayDebugRender()
+CDS0_DebugRender::CDS0_DebugRender()
 {
 }
 
-void XRayDebugRender::Render()
+void CDS0_DebugRender::Render()
 {
 }
 
-void XRayDebugRender::NextSceneMode()
+void CDS0_DebugRender::NextSceneMode()
 {
 }
 
-void XRayDebugRender::ZEnable(bool bEnable)
+void CDS0_DebugRender::ZEnable(bool bEnable)
 {
 }
 
-void XRayDebugRender::OnFrameEnd()
+void CDS0_DebugRender::OnFrameEnd()
 {
 }
 
-void XRayDebugRender::SetShader(const debug_shader& shader)
+void CDS0_DebugRender::SetShader(const debug_shader& shader)
 {
 }
 
-void XRayDebugRender::CacheSetXformWorld(const Fmatrix& M)
+void CDS0_DebugRender::CacheSetXformWorld(const Fmatrix& M)
 {
 }
 
-void XRayDebugRender::CacheSetCullMode(CullMode mode)
+void CDS0_DebugRender::CacheSetCullMode(CullMode mode)
 {
 }
 
-void XRayDebugRender::SetAmbient(u32 colour)
+void CDS0_DebugRender::SetAmbient(u32 colour)
 {
 }
 
-void XRayDebugRender::SetDebugShader(dbgShaderHandle shdHandle)
+void CDS0_DebugRender::SetDebugShader(dbgShaderHandle shdHandle)
 {
 }
 
-void XRayDebugRender::DestroyDebugShader(dbgShaderHandle shdHandle)
+void CDS0_DebugRender::DestroyDebugShader(dbgShaderHandle shdHandle)
 {
 }
 
-void XRayDebugRender::dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C)
+void CDS0_DebugRender::dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C)
 {
 }
 
-void XRayDebugRender::add_lines(const Fvector* vertices, const u32& vertex_count, const u32* pairs, const u32& pair_count, const u32& color)
+void CDS0_DebugRender::add_lines(const Fvector* vertices, const u32& vertex_count, const u32* pairs, const u32& pair_count, const u32& color)
 {
 }
 #endif

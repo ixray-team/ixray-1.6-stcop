@@ -1,10 +1,11 @@
 #pragma once
 
-class XRayRenderDeviceRender: public IRenderDeviceRender
+class CDS0_RenderDeviceRender:
+	public IRenderDeviceRender
 {
 public:
-	XRayRenderDeviceRender();
-	virtual ~XRayRenderDeviceRender();
+	CDS0_RenderDeviceRender();
+	virtual ~CDS0_RenderDeviceRender();
 	virtual void	Copy(IRenderDeviceRender &_in) ;
 
 	virtual void	setGamma(float fGamma);
