@@ -40,7 +40,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 	//Settings
 	int GTAO_DIRECTIONS = 3; //Direction count (3 is sufficient for low radii)
 	int GTAO_STEPS = 4; //Step count
-	float GTAO_RADIUS = 0.5; //World space radius (Keep it low. Cache-trasher. I am not joking.)
+	float GTAO_RADIUS = 0.85; //World space radius (Keep it low. Cache-trasher. I am not joking.)
 	float GTAO_NEG_1_OVER_RADIUSQR = -1.0 / (GTAO_RADIUS * GTAO_RADIUS); //Just for falloff. Hardcode it if you need to
 
 	//Bias the position to avoid numerical issues
@@ -70,18 +70,14 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 		//Slice direction
 		float3 slice_direction = float3(cos(angle), sin(angle), 0.0);
 
-		//GTAO math (Papa doenitz - please take a look at that... maybe you can optimize it)
-		float3 ortho_direction = slice_direction - view_direction * dot(slice_direction.xy, view_direction.xy); //slice_direction.z is always zero, no point in vec3 dot product
-		float3 axis = cross(slice_direction, view_direction);
+		//GTAO math
+		float3 axis = cross(view_direction, slice_direction);
 		float3 proj_normal = view_normal - axis * dot(view_normal, axis);
-		float proj_normal_length_rcp = rsqrt(dot(proj_normal, proj_normal) + 1e-6); //Better safe than sorry
-		proj_normal *= proj_normal_length_rcp; //Normalize
-
-		float sin_n = dot(ortho_direction, -proj_normal); //Yup, projected normal has to be flipped
+		float3 proj_tangent = cross(axis, proj_normal);
+		float proj_normal_length = length(proj_normal);
+		float sin_n = dot(proj_tangent, view_direction) * rcp(proj_normal_length);
 
 		//Init horizon
-		//sin(n) so we don't count values *below* the hemisphere
-		//We don't need to clamp our horizons later
 		float max_horizon_cos = sin_n;
 
 		//Find hot horizons in your area :flushed:
@@ -118,7 +114,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 
 				//'Obscurance' term, basically a simple falloff known from HBAO/HBAO+. Just a MAD + saturate
 				float falloff = saturate(s_vec_length * GTAO_NEG_1_OVER_RADIUSQR + 1.0);
-				s_horizon = lerp(max_horizon_cos, s_horizon, falloff);
+				s_horizon = lerp(-1.0, s_horizon, falloff);
 
 				max_horizon_cos = max(max_horizon_cos, s_horizon);
 			}
@@ -132,8 +128,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 				float s_horizon = dot(s_vector, view_direction) * rsqrt(s_vec_length);
 
 				float falloff = saturate(s_vec_length * GTAO_NEG_1_OVER_RADIUSQR + 1.0);
-
-				s_horizon = lerp(max_horizon_cos, s_horizon, falloff);
+				s_horizon = lerp(-1.0, s_horizon, falloff);
 
 				max_horizon_cos = max(max_horizon_cos, s_horizon);
 			}
@@ -146,7 +141,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 
 		//Accumulate
 		//rcp(x) because we are supposed to weight samples by length of projected normal
-		occ_weight += float2(1.0 - max_horizon_cos, 1.0) * rcp(proj_normal_length_rcp);
+		occ_weight += float2(1.0 - max_horizon_cos, 1.0) * proj_normal_length;
 	}
 
     //Normalize
@@ -159,6 +154,13 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 Texture3D s_blue_noise;
 uint main(PSInput I) : SV_Target
 {
+	//Sample depth buffer
+	float zbuffer = s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x;
+
+	//Early exit
+	if(zbuffer == 1.0)
+		return asuint(f32tof16(1000.0)) | (asuint(f32tof16(1.0)) << 16);
+
 	//Sample blue noise texture
 	//You can replace 0 with m_taa_jitter.w % 32 to animate it (texture contains 32 frames)
 	float3 jitter_tex = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, 0)].xyz;
@@ -168,7 +170,7 @@ uint main(PSInput I) : SV_Target
 	{
 		Normal = s_normal.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).xyz;
 		Normal = NormalDecode(Normal.xy);
-		Point = GbufferGetPointRealUnjitter(I.texcoord.xy, s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x);
+		Point = GbufferGetPointRealUnjitter(I.texcoord.xy, zbuffer);
     }
 
 	//Init. Don't render GTAO past 60 units. It will become a noisy mess...
