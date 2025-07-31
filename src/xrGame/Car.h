@@ -565,7 +565,7 @@ private:
 
 public:
 	virtual bool unlimited_ammo() { return false; };
-
+	virtual bool infinite_fire() { return false; }
 	virtual CCar* cast_car() override { return this; }
 	// Inventory for the car	
 	CInventory* GetInventory() { return &CInventoryOwner::inventory(); }
