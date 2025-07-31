@@ -889,7 +889,10 @@ void CHudItem::OnMotionMark(u32 state, const motion_marks& mark)
 		}
 		else if (m_eDevicesFlags.test(EDevicesFlags::df_clear_mask))
 		{
-			//Implement clearing mask
+			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+			{
+				pActor->ClearMaskCB();
+			}
 		}
 
 		m_eDevicesFlags.zero();
