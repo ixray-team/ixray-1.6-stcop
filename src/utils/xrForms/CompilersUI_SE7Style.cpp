@@ -362,17 +362,20 @@ void DrawCompilerConfig()
 		ImGui::Checkbox("Embree Optimized", &gCompilerMode.Embree_SplitBVH);
 
 		ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
- 		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
+		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
 		ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
 
 		ImGui::Separator();
 
-  		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
+		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
 		ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
 		ImGui::Checkbox("Show Main", &ShowMainUI);
 
-		ImGui::InputInt("Threads Max", &gCompilerMode.ThreadsPerWork);
+		if (ImGui::InputInt("Threads Max", &gCompilerMode.ThreadsPerWork))
+		{
+			gCompilerMode.ThreadsPerWork = std::min((u32)gCompilerMode.ThreadsPerWork, CPU::ID.n_threads);
+		}
 
 		//ImGui::EndChild();
 	}
