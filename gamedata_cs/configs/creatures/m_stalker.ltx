@@ -453,6 +453,9 @@ disp_stand_stand_zoom			= 1.5 ;1
 disp_stand_crouch_zoom			= 1.25;1
 
 ;---FIRE QUEUE PARAMETERS
+fire_queue_section = fire_queue_params
+
+;---FIRE QUEUE PARAMETERS
 weapon_min_queue_size_far		= 1
 weapon_max_queue_size_far		= 6
 weapon_min_queue_interval_far	= 500
@@ -689,3 +692,87 @@ bip01_r_thigh	 	 		= 10000.0, 1000, 0.5
 bip01_r_calf	 	 		= 10000.0, 1000, 0.4
 bip01_r_foot	 	 		= 10000.0, 1000, 0.3
 bip01_r_toe0	 	 		= 10000.0, 1000, 0.2
+
+[fire_queue_params]  ; min < 15 < medium < 30 < max
+pstl_min_queue_size_far			= 1
+pstl_max_queue_size_far			= 1
+pstl_min_queue_interval_far		= 3000
+pstl_max_queue_interval_far		= 5000
+
+pstl_min_queue_size_medium		= 1
+pstl_max_queue_size_medium		= 1
+pstl_min_queue_interval_medium	= 1000
+pstl_max_queue_interval_medium	= 3000
+
+pstl_min_queue_size_close		= 1
+pstl_max_queue_size_close		= 1
+pstl_min_queue_interval_close	= 500
+pstl_max_queue_interval_close	= 1000
+
+
+
+shtg_min_queue_size_far			= 1
+shtg_max_queue_size_far			= 1
+shtg_min_queue_interval_far		= 1500
+shtg_max_queue_interval_far		= 2000
+
+shtg_min_queue_size_medium		= 1
+shtg_max_queue_size_medium		= 1
+shtg_min_queue_interval_medium	= 1000
+shtg_max_queue_interval_medium	= 1500
+
+shtg_min_queue_size_close		= 2
+shtg_max_queue_size_close		= 2
+shtg_min_queue_interval_close	= 500
+shtg_max_queue_interval_close	= 1000
+
+
+
+snp_min_queue_size_far			= 1
+snp_max_queue_size_far			= 1
+snp_min_queue_interval_far		= 2000
+snp_max_queue_interval_far		= 3000
+
+snp_min_queue_size_medium		= 1
+snp_max_queue_size_medium		= 1
+snp_min_queue_interval_medium	= 1500
+snp_max_queue_interval_medium	= 2000
+
+snp_min_queue_size_close		= 1
+snp_max_queue_size_close		= 1
+snp_min_queue_interval_close	= 1000
+snp_max_queue_interval_close	= 1500
+
+
+
+auto_min_queue_size_far			= 1
+auto_max_queue_size_far			= 2
+auto_min_queue_interval_far		= 1500
+auto_max_queue_interval_far		= 2000
+
+auto_min_queue_size_medium		= 2
+auto_max_queue_size_medium		= 3
+auto_min_queue_interval_medium	= 1000
+auto_max_queue_interval_medium	= 1500
+
+auto_min_queue_size_close		= 3
+auto_max_queue_size_close		= 5
+auto_min_queue_interval_close	= 500
+auto_max_queue_interval_close	= 1000
+
+
+
+mchg_min_queue_size_far			= 10
+mchg_max_queue_size_far			= 15
+mchg_min_queue_interval_far		= 3000
+mchg_max_queue_interval_far		= 4000
+
+mchg_min_queue_size_medium		= 10
+mchg_max_queue_size_medium		= 15
+mchg_min_queue_interval_medium	= 2000
+mchg_max_queue_interval_medium	= 3000
+
+mchg_min_queue_size_close		= 10
+mchg_max_queue_size_close		= 15
+mchg_min_queue_interval_close	= 1000
+mchg_max_queue_interval_close	= 2000
