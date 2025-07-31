@@ -1,0 +1,19 @@
+[logic]
+active = sr_idle@2
+
+[sr_idle]
+on_info = {+hospital_z3_fierce_attack} sr_idle@spawn1
+
+[sr_idle@spawn1]
+on_info = {+hospital_z3_spawn_1_on} sr_idle@spawn2 %+hospital_z3_enemy_1 =spawn_object(kat_hosp_z3_floor2_enemy_1:z3_spawn_way_1)% , sr_idle@spawn2
+
+[sr_idle@spawn2]
+on_info = {+hospital_z3_spawn_2_on} sr_idle@pause %+hospital_z3_enemy_3 =spawn_object(kat_hosp_z3_floor2_enemy_3:z3_spawn_way_3)% , sr_idle@pause
+
+[sr_idle@pause]
+on_game_timer = 100 | sr_idle@check
+
+[sr_idle@check]
+on_info = {!counter_greater(hospital_z3_jumper_cout:3)} sr_idle@spawn1, {-hospital_z3_spawn_3_on} sr_idle@2
+
+[sr_idle@2]

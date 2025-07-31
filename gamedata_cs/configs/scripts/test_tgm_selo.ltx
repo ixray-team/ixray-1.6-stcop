@@ -1,0 +1,48 @@
+[logic]
+active = walker
+
+[walker]
+path_walk = way
+path_look = way
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+on_timer = 10000 | smartcover@1
+
+[smartcover@1]
+cover_name = level_prefix_smart_cover_mechanic
+loophole_name = lead_sit_sleep_mechanic
+;on_timer = 15000 | smartcover@2
+on_timer = 10000 | walker@1
+meet = no_meet
+
+[walker@1]
+path_walk = way
+path_look = way
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+on_timer = 5000 | smartcover@3
+
+[smartcover@2]
+cover_name = level_prefix_smart_cover_mechanic
+loophole_name = lead_sit_sleep_mechanic
+cover_state = fire_target
+target_path = way
+on_timer = 10000 | smartcover@1
+meet = no_meet
+
+[smartcover@3]
+cover_name = level_prefix_smart_cover_mechanic_2
+loophole_name = lead_sit_sleep_mechanic
+;on_timer = 15000 | smartcover@4
+on_timer = 10000 | smartcover@1
+meet = no_meet
+
+[smartcover@4]
+cover_name = level_prefix_smart_cover_mechanic_2
+loophole_name = lead_sit_sleep_mechanic
+cover_state = fire_target
+target_path = way
+on_timer = 10000 | smartcover@3
+meet = no_meet

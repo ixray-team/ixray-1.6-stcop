@@ -1,0 +1,28 @@
+function main ()
+
+lvl_red_forest_return_2.main()
+
+local infos_table = {
+"lim_go_to_hospital",
+"lim_bandit_house_attack1",
+"lim_bandit_house_go",
+"lim_smart_3_captured",
+"lim_go_to_canal_complete",
+"lim_find_bridge_squad_comander_complete",
+"lim_military_minigun_out",
+"lim_construction_passed",
+"lim_final_sniper_fire_actor",
+"lim_electro_fence_actor_come",
+"lim_electro_fence_off"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+--if level.name() == "hospital" then
+--	xr_effects.give_inited_task(nil, nil, {"storyline", "", ""})
+--end
+
+end

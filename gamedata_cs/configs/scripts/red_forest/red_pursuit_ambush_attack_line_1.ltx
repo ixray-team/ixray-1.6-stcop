@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+red_pursuit_scene_begin} sr_idle
+
+[sr_idle]
+on_actor_inside = sr_idle@2 %+red_pursuit_ambush_attack%
+on_info = {+red_pursuit_ambush_attack} sr_idle@2
+
+[sr_idle@2]
+on_game_timer = 5 | nil %+red_pursuit_ambush_attack1%

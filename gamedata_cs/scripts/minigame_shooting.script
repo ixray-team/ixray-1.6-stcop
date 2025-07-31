@@ -1,0 +1,1659 @@
+inventory_items = {}
+--------------------------------------------------------------------------------
+class "CMGShooting"
+-- Class constructor
+function CMGShooting:__init()
+	self.cur_game = nil
+	self.obj_name = ""
+	self.wpn_type = ""
+	self.ammo = 0
+	self.prev_time = 0
+    self.breaked = true
+end
+-- Reinitializing parameters on start new game
+function CMGShooting:reinit(params)
+	self.cur_game = minigame_shooting[params.game_type](params)
+	self.obj_name = params.obj_name
+	self.wpn_type = params.wpn_type
+	self.ammo = params.ammo
+	self.prev_time = 0
+	self.breaked = true
+    self.teleported = false
+    self.ui_disabled = false
+end
+-- CShooting update
+function CMGShooting:update(name, sr_called)
+    local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+	if(MG_state=="started") then
+        local time = time_global()
+        if(self.prev_time==0) then
+	        get_console():execute("hud_crosshair 0")
+	        get_console():execute("hud_weapon 0")
+	        level.disable_input()
+	        level.hide_indicators_safe()
+            level.add_pp_effector("mar_fade.ppe", 20608, false)
+            self.ui_disabled = true
+            self:spawn_weapon()
+            self.prev_time = time + 13000
+        else
+            local diff_time = self.prev_time-time
+			local cs_shooting_get_ready = get_hud():GetCustomStatic("shooting_get_ready")
+			if(cs_shooting_get_ready==nil) then
+			    get_hud():AddCustomStatic("shooting_get_ready", true)
+		    	cs_shooting_get_ready = get_hud():GetCustomStatic("shooting_get_ready")
+			end
+            if(diff_time>750) then
+				cs_shooting_get_ready:wnd():SetTextST(game.translate_string("crowkiller_game_get_ready")..string.format("\\n0:0%d", math.floor((self.prev_time-time)/1000)))
+			else
+				cs_shooting_get_ready:wnd():SetTextST(game.translate_string("shooting_fire"))
+			end
+			if(diff_time<=8000) then
+				if(self.ui_disabled) then
+	                get_console():execute("hud_crosshair 1")
+	                get_console():execute("hud_weapon 1")
+	                level.enable_input()
+	                level.show_indicators()
+	                self.ui_disabled = false
+				end
+            elseif(diff_time<=10500) then
+				if(self.teleported==false) then
+	                local point = patrol(MG_manager:get_minigame_param(name, "stand_way"))
+	                local look = patrol(MG_manager:get_minigame_param(name, "look_way"))
+	                db.actor:set_actor_position(point:point(0))
+	                local dir = look:point(0):sub(point:point(0))
+	                db.actor:set_actor_direction(-dir:getH())
+		            self.teleported = true
+				end
+			end
+            if(diff_time<0) then
+                self.prev_time = 0
+	            get_hud():RemoveCustomStatic("shooting_get_ready")
+				self.cur_game:set_target(-1)
+	            MG_manager:set_minigame_state(name, "running")
+                self.teleported = false
+            end
+        end
+    else
+        self.cur_game:update(name, sr_called)
+		if(MG_state=="running") then
+	        db.actor:set_callback(callback.weapon_no_ammo, self.ammo_ended, self)
+	        if not(sr_called:inside(db.actor:position())) then
+	            self.cur_game:outside()
+	            self.breaked = true
+	        elseif(self.breaked) then
+	            if(self.cur_game:inside()) then
+	                self.breaked = false
+	            end
+	        end
+		else
+	        db.actor:set_callback(callback.weapon_no_ammo, nil)
+            local time = time_global()
+            if(self.prev_time==0) then
+                self.prev_time = time + 8000
+                local cs_shooting_get_ready = get_hud():GetCustomStatic("shooting_get_ready")
+                if(cs_shooting_get_ready==nil) then
+                    get_hud():AddCustomStatic("shooting_get_ready", true)
+                    cs_shooting_get_ready = get_hud():GetCustomStatic("shooting_get_ready")
+                end
+                cs_shooting_get_ready:wnd():SetTextST(game.translate_string("shooting_round_over"))
+--	            local task = task_manager.get_task_manager():select_task("storyline", "agr_additional_quest_shooting", "dolg")
+--	            task:give_task("dolg")
+                get_console():execute("hud_crosshair 0")
+                get_console():execute("hud_weapon 0")
+                level.disable_input()
+                level.hide_indicators_safe()
+                level.add_pp_effector("mar_fade.ppe", 20608, false)
+                self.ui_disabled = true
+            elseif(self.prev_time>0) then
+				local diff_time = self.prev_time-time
+	            if(diff_time<0) then
+                    self.prev_time = -1
+                    get_hud():RemoveCustomStatic("shooting_get_ready")
+                    self.ui_disabled = false
+                    self.teleported = false
+				else
+					if(diff_time<3000) and (self.teleported) then
+	                    get_console():execute("hud_crosshair 1")
+	                    get_console():execute("hud_weapon 1")
+	                    level.enable_input()
+	                    level.show_indicators()
+		                db.actor:give_info_portion("agr_shooting_door_exit")
+					elseif(diff_time<5500) and not(self.teleported) then
+	                    local point = patrol(MG_manager:get_minigame_param(name, "stand_way_back"))
+	                    local look = patrol(MG_manager:get_minigame_param(name, "look_way_back"))
+	                    db.actor:set_actor_position(point:point(0))
+	                    local dir = look:point(0):sub(point:point(0))
+	                    db.actor:set_actor_direction(-dir:getH())
+	                    self.teleported = true
+					end
+				end
+            end
+		end
+	end
+end
+-- Get class name
+function CMGShooting:get_profile_name()
+    return "CMGShooting"
+end
+-- Save class object
+function CMGShooting:save(thread, params_list)
+	set_save_marker(thread, "save", false, "CMGShooting")
+--------------------------------------------------------------------------------
+	thread:w_stringZ(params_list.game_type)
+	thread:w_stringZ(params_list.wpn_type)
+	thread:w_stringZ(tostring(params_list.stand_way))
+    thread:w_stringZ(tostring(params_list.look_way))
+	thread:w_stringZ(tostring(params_list.stand_way_back))
+    thread:w_stringZ(tostring(params_list.look_way_back))
+    if(params_list.obj_name==nil) then
+	    thread:w_stringZ("nil")
+	else
+    	thread:w_stringZ(params_list.obj_name)
+    end
+	if(type(params_list.win)=="boolean") then
+		thread:w_u8(0)
+		thread:w_bool(params_list.win)
+	else
+		thread:w_u8(1)
+		thread:w_u16(params_list.win)
+	end
+	thread:w_u8(params_list.distance)
+	thread:w_u8(params_list.ammo)
+	thread:w_u8(#params_list.targets)
+	for i=1,#params_list.targets do
+	    thread:w_u8(#params_list.targets[i])
+	    for j=1,#params_list.targets[i] do
+			thread:w_stringZ(params_list.targets[i][j])
+		end
+	end
+    thread:w_u8(params_list.target_counter)
+--------------------------------------------------------------------------------
+	n = 0
+	for k,v in pairs(inventory_items) do
+		n = n + 1
+	end
+	thread:w_u8(n)
+	for k,v in pairs(inventory_items) do
+		thread:w_u16(v)
+	end
+--------------------------------------------------------------------------------
+	thread:w_u32(self.prev_time)
+	if(self.cur_game==nil) then
+		thread:w_stringZ("nil")
+	else
+		thread:w_stringZ(params_list.game_type)
+		self.cur_game:save(thread, params_list)
+	end
+--------------------------------------------------------------------------------
+	set_save_marker(thread, "save", true, "CMGShooting")
+end
+-- Load class object
+function CMGShooting:load(thread, params_list)
+	set_save_marker(thread, "load", false, "CMGShooting")
+--------------------------------------------------------------------------------
+	params_list.game_type = thread:r_stringZ()
+	params_list.wpn_type = thread:r_stringZ()
+	local way = thread:r_stringZ()
+	if(way~="nil") then
+		params_list.stand_way = way
+	end
+	way = thread:r_stringZ()
+	if(way~="nil") then
+		params_list.look_way = way
+	end
+	way = thread:r_stringZ()
+	if(way~="nil") then
+		params_list.stand_way_back = way
+	end
+	way = thread:r_stringZ()
+	if(way~="nil") then
+		params_list.look_way_back = way
+	end
+    local obj_name = thread:r_stringZ()
+    if(obj_name=="nil") then
+    	params_list.obj_name = nil
+    else
+    	params_list.obj_name = obj_name
+    end
+	local t = thread:r_u8()
+	if(t==0) then
+		params_list.win = thread:r_bool()
+	else
+		params_list.win = thread:r_u16()
+	end
+	params_list.distance = thread:r_u8()
+	params_list.ammo = thread:r_u8()
+	local n = thread:r_u8()
+	params_list.targets = {}
+	for i=1,n do
+	    local k = thread:r_u8()
+	    params_list.targets[i] = {}
+	    for j=1,k do
+			params_list.targets[i][j] = thread:r_stringZ()
+		end
+	end
+	params_list.target_counter = thread:r_u8()
+--------------------------------------------------------------------------------
+	n = thread:r_u8()
+	inventory_items = {}
+	for i=1,n do
+		inventory_items[i] = thread:r_u16()
+	end
+--------------------------------------------------------------------------------
+	self.prev_time = thread:r_u32()
+	self.breaked = true
+	local type = thread:r_stringZ()
+	if(type=="nil") then
+		self.cur_game = nil
+	else
+	    self.cur_game = minigame_shooting[type](params_list)
+	    self.cur_game:load(thread, params_list)
+	end
+	self.obj_name = params_list.obj_name
+	self.wpn_type = params_list.wpn_type
+	self.ammo = params_list.ammo
+--------------------------------------------------------------------------------
+	set_save_marker(thread, "load", true, "CMGShooting")
+end
+-- Callback called on target hit
+function CMGShooting:hit_callback(obj, amount, local_direction, who, bone_index)
+	if not(self.breaked) then
+		self.cur_game:hit_callback(obj, amount, local_direction, who, bone_index)
+	end
+end
+-- Actor callback on ammunition end (finishing minigame)
+function CMGShooting:ammo_ended(wpn, ammo_left_counter)
+	self.cur_game:ammo_ended(wpn, ammo_left_counter)
+end
+-- Target animation callback
+function CMGShooting:animation_end(obj)
+	self.cur_game:animation_end(obj)
+end
+-- Gives actor weapon of selected type and some ammunition
+-- Also transfer all his items to speaking char
+function CMGShooting:spawn_weapon()
+    db.actor:iterate_inventory(store_weapon, db.storage[alife():object(self.obj_name).id].object)
+    local obj = alife():create(self.wpn_type, vector(), 0, 0, db.actor:id())
+	local ammo = tonumber(system_ini():r_string(self.wpn_type, "ammo_mag_size"))
+	if(self.ammo>ammo) then
+	    se_respawn.create_ammo("ammo_minigame", vector(), 0, 0, db.actor:id(), self.ammo-ammo)
+	end
+end
+-- Returns all actor items to him and remove all given items
+function CMGShooting:restore_weapon()
+    db.actor:iterate_inventory(release_weapon, db.actor)
+    db.storage[alife():object(self.obj_name).id].object:iterate_inventory(get_back_items,db.storage[alife():object(self.obj_name).id].object)
+    inventory_items = {}
+end
+-- Global function for inventory iteration (called from CMGShooting:spawn_weapon())
+function store_weapon(obj, item)
+    table.insert(inventory_items, item:id())
+    db.actor:transfer_item(item, obj)
+end
+-- Global function for inventory iteration (called from CMGShooting:restore_weapon())
+function release_weapon(obj, item)
+    if(item:section()=="bolt") then
+        return
+    end
+	printf("releasing object ["..item:name().."]")
+    alife():release(alife():object(item:id()), true)
+end
+-- Global function for inventory iteration (called from CMGShooting:restore_weapon())
+function get_back_items(obj, item)
+	for k,v in pairs(inventory_items) do
+		if(item:id()==v) then
+			obj:transfer_item(item, db.actor)
+		end
+	end
+end
+--------------------------------------------------------------------------------
+class "training"
+-- Class constructor
+function training:__init(params)
+	self.type = "training"
+    self.win = params.win
+    self.ammo = params.ammo
+    self.cur_target = params.targets[params.distance][math.random(1, #params.targets[params.distance])]
+    self.points = 0
+    self.ammo_counter = 0
+end
+-- Game update
+function training:update(name, sr_called)
+	local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+    if(MG_state=="running") then
+        local cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        if(cs_shooting_counter==nil) then
+            get_hud():AddCustomStatic("shooting_counter", true)
+            cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        end
+--        cs_shooting_counter:wnd():SetTextST(game.translate_string("shooting_your_points").." "..tostring(self.points))
+        cs_shooting_counter:wnd():SetTextST(tostring(self.points))
+
+        if(self.ammo_counter>=self.ammo) then
+            MG_manager:set_minigame_state(name, "finished")
+        end
+    elseif(MG_state=="finished") then
+        db.actor:set_callback(callback.weapon_no_ammo, nil)
+        if(MG_manager:get_minigame_param(name, "win")==self.win)then
+            db.storage[self.cur_target]:anim_down()
+            MG_manager:set_minigame_param(name, "ammo", self.points)
+            if(self.points>=self.win) then
+                MG_manager:set_minigame_param(name, "win", true)
+            else
+                MG_manager:set_minigame_param(name, "win", false)
+            end
+        end
+    end
+end
+--
+function training:inside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_up()
+		return true
+	end
+    return false
+end
+--
+function training:outside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_down()
+	end
+end
+-- Callback called on target hit
+function training:hit_callback(obj, amount, local_direction, who, bone_index)
+-- if target is standing
+    if(obj:name()==self.cur_target) then
+        local points = 0
+-- calculate score
+        if(bone_index==9) then
+            points = 10
+        elseif(bone_index==8) then
+            points = 5
+        elseif(bone_index==7) then
+            points = 2
+        end
+        self.points = self.points + points
+        self.ammo_counter = self.ammo_counter + 1
+    end
+end
+-- Actor callback on ammunition end (finishing minigame)
+function training:ammo_ended(wpn, ammo_left_counter)
+	if(ammo_left_counter==0) then
+        self.ammo_counter = self.ammo
+	end
+end
+-- Target animation callback
+function training:animation_end()
+end
+-- Set current target standing and lay down the others
+function training:set_target(num)
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_up()
+	end
+end
+-- Save class object
+function training:save(thread, params_list)
+	set_save_marker(thread, "save", false, "training")
+	thread:w_u16(self.win)
+	thread:w_u16(self.ammo)
+	thread:w_stringZ(self.cur_target)
+	thread:w_u16(self.points)
+	thread:w_u8(self.ammo_counter)
+	set_save_marker(thread, "save", true, "training")
+end
+-- Load class object
+function training:load(thread, params_list)
+	set_save_marker(thread, "load", false, "training")
+	self.win = thread:r_u16()
+	self.ammo = thread:r_u16()
+	self.cur_target = thread:r_stringZ()
+	self.points = thread:r_u16()
+	self.ammo_counter = thread:r_u8()
+	set_save_marker(thread, "load", true, "training")
+end
+--------------------------------------------------------------------------------
+class "points"
+-- Class constructor
+function points:__init(params)
+	self.type = "points"
+    self.win = params.win
+    self.ammo = params.ammo
+    self.cur_target = params.targets[params.distance][math.random(1, #params.targets[params.distance])]
+    self.points = 0
+    self.ammo_counter = 0
+end
+-- Game update
+function points:update(name, sr_called)
+	local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+    if(MG_state=="running") then
+        local cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        if(cs_shooting_counter==nil) then
+            get_hud():AddCustomStatic("shooting_counter", true)
+            cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        end
+--        cs_shooting_counter:wnd():SetTextST(game.translate_string("shooting_your_points").." "..tostring(self.points))
+        cs_shooting_counter:wnd():SetTextST(tostring(self.points))
+
+        if(self.ammo_counter>=self.ammo) then
+            MG_manager:set_minigame_state(name, "finished")
+        end
+    elseif(MG_state=="finished") then
+        db.actor:set_callback(callback.weapon_no_ammo, nil)
+        if(MG_manager:get_minigame_param(name, "win")==self.win)then
+            self:outside()
+            MG_manager:set_minigame_param(name, "ammo", self.points)
+            if(self.points>=self.win) then
+                MG_manager:set_minigame_param(name, "win", true)
+            else
+                MG_manager:set_minigame_param(name, "win", false)
+            end
+        end
+    end
+end
+--
+function points:inside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_up()
+		return true
+	end
+    return false
+end
+--
+function points:outside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_down()
+	end
+end
+-- Callback called on target hit
+function points:hit_callback(obj, amount, local_direction, who, bone_index)
+-- if target is standing
+    if(obj:name()==self.cur_target) then
+        local points = 0
+-- calculate score
+        if(bone_index==9) then
+            points = 10
+        elseif(bone_index==8) then
+            points = 5
+        elseif(bone_index==7) then
+            points = 2
+        end
+        self.points = self.points + points
+        self.ammo_counter = self.ammo_counter + 1
+    end
+end
+-- Actor callback on ammunition end (finishing minigame)
+function points:ammo_ended(wpn, ammo_left_counter)
+	if(ammo_left_counter==0) then
+        self.ammo_counter = self.ammo
+	end
+end
+-- Target animation callback
+function points:animation_end()
+end
+-- Set current target standing and lay down the others
+function points:set_target(num)
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_up()
+	end
+end
+-- Save class object
+function points:save(thread, params_list)
+	set_save_marker(thread, "save", false, "points")
+	thread:w_u16(self.win)
+	thread:w_u16(self.ammo)
+	thread:w_stringZ(self.cur_target)
+	thread:w_u16(self.points)
+	thread:w_u8(self.ammo_counter)
+	set_save_marker(thread, "save", true, "points")
+end
+-- Load class object
+function points:load(thread, params_list)
+	set_save_marker(thread, "load", false, "points")
+	self.win = thread:r_u16()
+	self.ammo = thread:r_u16()
+	self.cur_target = thread:r_stringZ()
+	self.points = thread:r_u16()
+	self.ammo_counter = thread:r_u8()
+	set_save_marker(thread, "load", true, "points")
+end
+--------------------------------------------------------------------------------
+class "count"
+-- Class constructor
+function count:__init(params)
+	self.type = "count"
+	self.wpn_type = params.wpn_type
+    self.win = params.win
+    self.ammo = params.ammo
+    self.targets = params.targets
+    self.distance = params.distance
+    self.cur_target = params.targets[params.distance][1]
+    self.points = 0
+    self.scored = false
+    self.ammo_counter = 0
+end
+-- Game update
+function count:update(name, sr_called)
+	local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+    if(MG_state=="running") then
+        local cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        if(cs_shooting_counter==nil) then
+            get_hud():AddCustomStatic("shooting_counter", true)
+            cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        end
+--        cs_shooting_counter:wnd():SetTextST(game.translate_string("shooting_your_count").." "..tostring(self.points))
+        cs_shooting_counter:wnd():SetTextST(tostring(self.points))
+
+        if(self.ammo_counter>=self.ammo) then
+            MG_manager:set_minigame_state(name, "finished")
+        end
+    elseif(MG_state=="finished") then
+        db.actor:set_callback(callback.weapon_no_ammo, nil)
+        if(MG_manager:get_minigame_param(name, "win")==self.win)then
+            self:outside()
+            MG_manager:set_minigame_param(name, "ammo", self.points)
+            if(self.points>=self.win) then
+                MG_manager:set_minigame_param(name, "win", true)
+            else
+                MG_manager:set_minigame_param(name, "win", false)
+            end
+        end
+    end
+end
+--
+function count:inside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_up()
+		return true
+	end
+    return false
+end
+--
+function count:outside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_down()
+	end
+end
+-- Callback called on target hit
+function count:hit_callback(obj, amount, local_direction, who, bone_index)
+-- if target is standing
+    if(obj:name()==self.cur_target) then
+        if(bone_index==9) and not(self.scored) then
+            self.points = self.points + 1
+            self.scored = true
+            self:set_target(self:random_pos())
+        end
+        self.ammo_counter = self.ammo_counter + 1
+    end
+end
+-- Actor callback on ammunition end (finishing minigame)
+function count:ammo_ended(wpn, ammo_left_counter)
+	if(ammo_left_counter==0) then
+        self.ammo_counter = self.ammo
+	end
+end
+-- Target animation callback
+function count:animation_end(obj)
+    if(self.scored) and (obj:name()==self.cur_target) then
+		if(db.storage[self.cur_target]) then
+    	    db.storage[self.cur_target]:anim_up()
+		end
+        self.scored = false
+    end
+end
+-- Set current target standing and lay down the others
+function count:set_target(num)
+    local n = #self.targets
+	if(db.storage[self.cur_target]~=nil) then
+        db.storage[self.cur_target]:anim_down()
+	end
+    if(num>n) then
+        num = n
+    elseif(num<1) and (num~=-1) then
+        num = 1
+    elseif(num==-1) then
+        num = self.distance
+    end
+	n = #self.targets[num]
+    local rnd = math.random(1, n)
+	if(n>1) then
+		while(self.targets[num][rnd]==self.cur_target) do
+			rnd = math.random(1, n)
+		end
+	end
+    self.cur_target = self.targets[num][rnd]
+end
+-- Randomize current target number (used as parameter for previous f-n)
+function count:random_pos()
+    local n = #self.targets
+    if(self.distance>0) then
+        if(self.distance<=n-1) then
+            local num = math.random(self.distance, n)
+			local dist_table = minigame_dialogs.shooting_money_table["count"][self.wpn_type].distance
+            while(dist_table[num]==nil) do
+				if(dist_table[self.distance+1]==nil) then
+					return self.distance
+				end
+                num = math.random(self.distance, n)
+            end
+            return num
+        else
+            return self.distance
+        end
+    else
+        return 1
+    end
+end
+-- Save class object
+function count:save(thread, params_list)
+	set_save_marker(thread, "save", false, "count")
+	thread:w_stringZ(self.wpn_type)
+	thread:w_u8(self.win)
+	thread:w_u8(self.ammo)
+	thread:w_u8(#self.targets)
+	for i=1,#self.targets do
+		thread:w_u8(#self.targets[i])
+		for j=1,#self.targets[i] do
+			thread:w_stringZ(self.targets[i][j])
+		end
+	end
+	thread:w_u8(self.distance)
+	thread:w_stringZ(self.cur_target)
+	thread:w_u8(self.points)
+	thread:w_bool(self.scored)
+	thread:w_u8(self.ammo_counter)
+	set_save_marker(thread, "save", true, "count")
+end
+-- Load class object
+function count:load(thread, params_list)
+	set_save_marker(thread, "load", false, "count")
+	self.wpn_type = thread:r_stringZ()
+	self.win = thread:r_u8()
+	self.ammo = thread:r_u8()
+	local n = thread:r_u8()
+	self.targets = {}
+	for i=1,n do
+		self.targets[i] = {}
+		local k = thread:r_u8()
+		for j=1,k do
+			self.targets[i][j] = thread:r_stringZ()
+		end
+	end
+	self.distance = thread:r_u8()
+	self.cur_target = thread:r_stringZ()
+	self.points = thread:r_u8()
+	self.scored = thread:r_bool()
+	self.ammo_counter = thread:r_u8()
+	set_save_marker(thread, "load", true, "count")
+end
+--------------------------------------------------------------------------------
+class "three_hit_training"
+-- Class constructor
+function three_hit_training:__init(params)
+	self.type = "three_hit_training"
+	self.wpn_type = params.wpn_type
+    self.win = params.win
+    self.ammo = params.ammo
+    self.targets = params.targets
+    self.distance = params.distance
+    self.cur_target = params.targets[params.distance][1]
+    self.points = 0
+    self.scored = false
+    self.ammo_counter = 0
+    self.target_counter = 0
+    self.target_hit = 0
+end
+-- Game update
+function three_hit_training:update(name, sr_called)
+	local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+    if(MG_state=="running") then
+        local cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        if(cs_shooting_counter==nil) then
+            get_hud():AddCustomStatic("shooting_counter", true)
+            cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        end
+--        cs_shooting_counter:wnd():SetTextST(game.translate_string("shooting_your_points").." "..tostring(self.points))
+        cs_shooting_counter:wnd():SetTextST(tostring(self.points))
+
+        if(self.target_counter>=10) or (self.ammo_counter>=self.ammo) then
+            MG_manager:set_minigame_state(name, "finished")
+        end
+    elseif(MG_state=="finished") then
+        db.actor:set_callback(callback.weapon_no_ammo, nil)
+        if(MG_manager:get_minigame_param(name, "win")==self.win)then
+            self:outside()
+            MG_manager:set_minigame_param(name, "ammo", self.points)
+            if(self.points>=self.win) then
+                MG_manager:set_minigame_param(name, "win", true)
+            else
+                MG_manager:set_minigame_param(name, "win", false)
+            end
+        end
+    end
+end
+--
+function three_hit_training:inside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_up()
+		return true
+	end
+    return false
+end
+--
+function three_hit_training:outside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_down()
+	end
+end
+-- Callback called on target hit
+function three_hit_training:hit_callback(obj, amount, local_direction, who, bone_index)
+-- if target is standing
+    if(obj:name()==self.cur_target) and not(self.scored) then
+        local points = 0
+-- calculate score
+        if(bone_index==9) then
+            points = 10
+        elseif(bone_index==8) then
+            points = 5
+        elseif(bone_index==7) then
+            points = 2
+        end
+        self.points = self.points + points
+        self.ammo_counter = self.ammo_counter + 1
+		if(points~=0) then
+	        self.target_hit = self.target_hit + 1
+		end
+        if(self.target_hit==3)  then
+            self.target_hit = 0
+			self.target_counter = self.target_counter + 1
+            self.scored = true
+            self:set_target(self:random_pos())
+        end
+    end
+end
+-- Actor callback on ammunition end (finishing minigame)
+function three_hit_training:ammo_ended(wpn, ammo_left_counter)
+	if(ammo_left_counter==0) then
+        self.ammo_counter = self.ammo
+	end
+end
+-- Target animation callback
+function three_hit_training:animation_end(obj)
+    if(self.scored) and (obj:name()==self.cur_target) then
+		if(db.storage[self.cur_target]) then
+    	    db.storage[self.cur_target]:anim_up()
+		end
+        self.scored = false
+    end
+end
+-- Set current target standing and lay down the others
+function three_hit_training:set_target(num)
+    local n = #self.targets
+	if(db.storage[self.cur_target]~=nil) then
+        db.storage[self.cur_target]:anim_down()
+	end
+    if(num>n) then
+        num = n
+    elseif(num<1) and (num~=-1) then
+        num = 1
+    elseif(num==-1) then
+        num = self.distance
+    end
+	n = #self.targets[num]
+    local rnd = math.random(1, n)
+	if(n>1) then
+		while(self.targets[num][rnd]==self.cur_target) do
+			rnd = math.random(1, n)
+		end
+	end
+    self.cur_target = self.targets[num][rnd]
+end
+-- Randomize current target number (used as parameter for previous f-n)
+function three_hit_training:random_pos()
+    local n = #self.targets
+    if(self.distance>0) then
+        if(self.distance<=n-1) then
+            local num = math.random(self.distance, n)
+			local dist_table = minigame_dialogs.shooting_money_table["three_hit_training"][self.wpn_type].distance
+            while(dist_table[num]==nil) do
+				if(dist_table[self.distance+1]==nil) then
+					return self.distance
+				end
+                num = math.random(self.distance, n)
+            end
+            return num
+        else
+            return self.distance
+        end
+    else
+        return 1
+    end
+end
+-- Save class object
+function three_hit_training:save(thread, params_list)
+	set_save_marker(thread, "save", false, "three_hit_training")
+	thread:w_stringZ(self.wpn_type)
+	thread:w_u16(self.win)
+	thread:w_u8(self.ammo)
+	thread:w_u8(#self.targets)
+	for i=1,#self.targets do
+		thread:w_u8(#self.targets[i])
+		for j=1,#self.targets[i] do
+			thread:w_stringZ(self.targets[i][j])
+		end
+	end
+	thread:w_u8(self.distance)
+	thread:w_stringZ(self.cur_target)
+	thread:w_u16(self.points)
+	thread:w_bool(self.scored)
+	thread:w_u8(self.ammo_counter)
+	thread:w_u8(self.target_counter)
+	thread:w_u8(self.target_hit)
+	set_save_marker(thread, "save", true, "three_hit_training")
+end
+-- Load class object
+function three_hit_training:load(thread, params_list)
+	set_save_marker(thread, "load", false, "three_hit_training")
+	self.wpn_type = thread:r_stringZ()
+	self.win = thread:r_u16()
+	self.ammo = thread:r_u8()
+	local n = thread:r_u8()
+	self.targets = {}
+	for i=1,n do
+		self.targets[i] = {}
+		local k = thread:r_u8()
+		for j=1,k do
+			self.targets[i][j] = thread:r_stringZ()
+		end
+	end
+	self.distance = thread:r_u8()
+	self.cur_target = thread:r_stringZ()
+	self.points = thread:r_u16()
+	self.scored = thread:r_bool()
+	self.ammo_counter = thread:r_u8()
+	self.target_counter = thread:r_u8()
+	self.target_hit = thread:r_u8()
+	set_save_marker(thread, "load", true, "three_hit_training")
+end
+--------------------------------------------------------------------------------
+class "all_targets"
+-- Class constructor
+function all_targets:__init(params)
+	self.type = "all_targets"
+	self.wpn_type = params.wpn_type
+    self.win = params.win
+    self.ammo = params.ammo
+    self.targets = params.targets
+    self.ammo_counter = 0
+    self.time = 0
+    self.prev_time = time_global()
+	self.target_counter = params.target_counter
+	self.hitted_targets = {}
+	self.more_targets = false
+	self.last_target = ""
+end
+-- Game update
+function all_targets:update(name, sr_called)
+	local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+    if(MG_state=="running") then
+        local time = time_global()
+        if(time-self.prev_time>1000) then
+            self.time = self.time + 1
+            self.prev_time = time
+            local cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+            if(cs_shooting_counter==nil) then
+                get_hud():AddCustomStatic("shooting_counter", true)
+                cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+            end
+            local minutes = math.floor(self.time / 60)
+            local tens = math.floor((self.time - minutes * 60) / 10)
+            local seconds = math.mod(self.time - minutes * 60, 10)
+--            cs_shooting_counter:wnd():SetTextST(string.format("%s %d:%d%d", game.translate_string("shooting_your_time"), minutes, tens, seconds))
+            cs_shooting_counter:wnd():SetTextST(string.format("%d:%d%d", minutes, tens, seconds))
+        end
+        if(self.target_counter<=0) or (self.ammo_counter>=self.ammo) then
+            MG_manager:set_minigame_state(name, "finished")
+        end
+    elseif(MG_state=="finished") then
+        db.actor:set_callback(callback.weapon_no_ammo, nil)
+        if(MG_manager:get_minigame_param(name, "win")==self.win)then
+            self:outside()
+            get_hud():RemoveCustomStatic("shooting_timer")
+            MG_manager:set_minigame_param(name, "ammo", self.time)
+            if(self.time<=self.win) then
+                MG_manager:set_minigame_param(name, "win", true)
+            else
+                MG_manager:set_minigame_param(name, "win", false)
+            end
+        end
+    end
+end
+--
+function all_targets:inside()
+	local loaded = false
+	for i = 1,#self.targets do
+	    for k,v in pairs(self.hitted_targets[i]) do
+	        if(db.storage[v]) then
+	            db.storage[v]:anim_up()
+	            loaded = true
+	        end
+	    end
+	end
+	return loaded
+end
+--
+function all_targets:outside()
+	for i = 1,#self.targets do
+	    for k,v in pairs(self.hitted_targets[i]) do
+	        if(db.storage[v]) then
+	            db.storage[v]:anim_down()
+	        end
+	    end
+	end
+end
+-- Callback called on target hit
+function all_targets:hit_callback(obj, amount, local_direction, who, bone_index)
+	for i = 1,#self.targets do
+	    for k,v in pairs(self.hitted_targets[i]) do
+	        if(obj:name()==v) and (bone_index==9) then
+	            self.target_counter = self.target_counter - 1
+	            if(db.storage[v]) then
+	                db.storage[v]:anim_down()
+	            end
+	            self.last_target = v
+	            self.hitted_targets[i][k] = nil
+	        end
+	    end
+	end
+	local targ_count = 0
+	for i = 1,#self.targets do
+	    for k,v in pairs(self.hitted_targets[i]) do
+	        targ_count = targ_count + 1
+	    end
+	end
+	if(targ_count==0) and (self.target_counter>0) then
+		self.more_targets = true
+	end
+    self.ammo_counter = self.ammo_counter + 1
+end
+-- Actor callback on ammunition end (finishing minigame)
+function all_targets:ammo_ended(wpn, ammo_left_counter)
+	if(ammo_left_counter==0) then
+        self.ammo_counter = self.ammo
+	end
+end
+-- Target animation callback
+function all_targets:animation_end(obj)
+	if(self.more_targets) and (obj:name()==self.last_target) then
+		self.more_targets = false
+		self:set_target()
+	end
+end
+-- Set current target standing and lay down the others
+function all_targets:set_target(num)
+	self.hitted_targets = {}
+	for i = 1,#self.targets do
+		self.hitted_targets[i] = {}
+		for j = 1,#self.targets[i] do
+	        if(minigame_dialogs.shooting_money_table["all_targets"][self.wpn_type].distance[i]~=nil) then
+	            if(db.storage[self.targets[i][j]]) then
+	                db.storage[self.targets[i][j]]:anim_up()
+	            end
+	            self.hitted_targets[i][j] = self.targets[i][j]
+	        else
+	            self.hitted_targets[i][j] = nil
+	        end
+		end
+	end
+end
+-- Save class object
+function all_targets:save(thread, params_list)
+	set_save_marker(thread, "save", false, "all_targets")
+	thread:w_stringZ(self.wpn_type)
+	thread:w_u8(self.win)
+	thread:w_u8(self.ammo)
+	thread:w_u8(#self.targets)
+	for i=1,#self.targets do
+		thread:w_u8(#self.targets[i])
+		for j=1,#self.targets[i] do
+			thread:w_stringZ(self.targets[i][j])
+		end
+		if(self.hitted_targets[i]~=nil) then
+	        local n = 0
+	        for k,v in pairs(self.hitted_targets[i]) do
+	            n = n + 1
+	        end
+	        thread:w_u8(n)
+	        for k,v in pairs(self.hitted_targets[i]) do
+	            thread:w_u8(k)
+	            thread:w_stringZ(v)
+	        end
+		else
+	        thread:w_u8(-1)
+		end
+	end
+	thread:w_u8(self.ammo_counter)
+	thread:w_u16(self.time)
+	thread:w_u8(self.target_counter)
+	thread:w_u32(self.prev_time)
+	thread:w_bool(self.more_targets)
+    thread:w_stringZ(self.last_target)
+	set_save_marker(thread, "save", true, "all_targets")
+end
+-- Load class object
+function all_targets:load(thread, params_list)
+	set_save_marker(thread, "load", false, "all_targets")
+	self.wpn_type = thread:r_stringZ()
+	self.win = thread:r_u8()
+	self.ammo = thread:r_u8()
+	local n = thread:r_u8()
+	self.targets = {}
+    self.hitted_targets = {}
+	for i=1,n do
+		self.targets[i] = {}
+		local k = thread:r_u8()
+		for j=1,k do
+			self.targets[i][j] = thread:r_stringZ()
+		end
+	    self.hitted_targets[i] = {}
+	    n = thread:r_u8()
+		if(n~=255) then
+	        for i=1,n do
+	            local k = thread:r_u8()
+	            local v = thread:r_stringZ()
+	            self.hitted_targets[i][k] = v
+	        end
+		end
+	end
+	self.ammo_counter = thread:r_u8()
+	self.time = thread:r_u16()
+	self.target_counter = thread:r_u8()
+	self.prev_time = thread:r_u32()
+	self.more_targets = thread:r_bool()
+    self.last_target = thread:r_stringZ()
+	set_save_marker(thread, "load", true, "all_targets")
+end
+--------------------------------------------------------------------------------
+class "count_on_time"
+-- Class constructor
+function count_on_time:__init(params)
+	self.type = "count_on_time"
+	self.wpn_type = params.wpn_type
+    self.win = params.win
+    self.ammo = params.ammo
+    self.targets = params.targets
+    self.distance = params.distance
+    self.cur_target = ""
+    self.points = 0
+    self.scored = false
+    self.ammo_counter = 0
+	self.time = 100
+    self.prev_time = time_global()
+end
+-- Game update
+function count_on_time:update(name, sr_called)
+	local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+    if(MG_state=="running") then
+        local cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        if(cs_shooting_counter==nil) then
+            get_hud():AddCustomStatic("shooting_counter", true)
+            cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        end
+--        cs_shooting_counter:wnd():SetTextST(game.translate_string("shooting_your_count").." "..tostring(self.points))
+        cs_shooting_counter:wnd():SetTextST(tostring(self.points))
+
+        local time = time_global()
+        if(time-self.prev_time>1000) then
+            self.time = self.time - 1
+            self.prev_time = time
+            local cs_shooting_timer = get_hud():GetCustomStatic("shooting_timer")
+            if(cs_shooting_timer==nil) then
+                get_hud():AddCustomStatic("shooting_timer", true)
+                cs_shooting_timer = get_hud():GetCustomStatic("shooting_timer")
+            end
+            local minutes = math.floor(self.time / 60)
+            local tens = math.floor((self.time - minutes * 60) / 10)
+            local seconds = math.mod(self.time - minutes * 60, 10)
+--            cs_shooting_timer:wnd():SetTextST(string.format("%s %d:%d%d", game.translate_string("shooting_time_left"), minutes, tens, seconds))
+            cs_shooting_timer:wnd():SetTextST(string.format("%d:%d%d", minutes, tens, seconds))
+        end
+
+        if(self.time<=0) or (self.ammo_counter>=self.ammo) then
+            MG_manager:set_minigame_state(name, "finished")
+        end
+    elseif(MG_state=="finished") then
+        db.actor:set_callback(callback.weapon_no_ammo, nil)
+        if(MG_manager:get_minigame_param(name, "win")==self.win)then
+            self:outside()
+            get_hud():RemoveCustomStatic("shooting_timer")
+            MG_manager:set_minigame_param(name, "ammo", self.points)
+            if(self.points>=self.win) then
+                MG_manager:set_minigame_param(name, "win", true)
+            else
+                MG_manager:set_minigame_param(name, "win", false)
+            end
+        end
+    end
+end
+--
+function count_on_time:inside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_up()
+		return true
+	end
+    return false
+end
+--
+function count_on_time:outside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_down()
+	end
+end
+-- Callback called on target hit
+function count_on_time:hit_callback(obj, amount, local_direction, who, bone_index)
+-- if target is standing
+    if(obj:name()==self.cur_target) then
+        if(bone_index==9) and not(self.scored) then
+            self.points = self.points + 1
+            self.scored = true
+            self:set_target(self:random_pos())
+        end
+        self.ammo_counter = self.ammo_counter + 1
+    end
+end
+-- Actor callback on ammunition end (finishing minigame)
+function count_on_time:ammo_ended(wpn, ammo_left_counter)
+	if(ammo_left_counter==0) then
+        self.ammo_counter = self.ammo
+	end
+end
+-- Target animation callback
+function count_on_time:animation_end(obj)
+    if(self.scored) and (obj:name()==self.cur_target) then
+		if(db.storage[self.cur_target]) then
+    	    db.storage[self.cur_target]:anim_up()
+		end
+        self.scored = false
+    end
+end
+-- Set current target standing and lay down the others
+function count_on_time:set_target(num)
+    local n = #self.targets
+	if(db.storage[self.cur_target]~=nil) then
+        db.storage[self.cur_target]:anim_down()
+	end
+    if(num>n) then
+        num = n
+    elseif(num<1) and (num~=-1) then
+        num = 1
+    elseif(num==-1) then
+        num = self.distance
+    end
+	n = #self.targets[num]
+    local rnd = math.random(1, n)
+	if(n>1) then
+		while(self.targets[num][rnd]==self.cur_target) do
+			rnd = math.random(1, n)
+		end
+	end
+    self.cur_target = self.targets[num][rnd]
+end
+-- Randomize current target number (used as parameter for previous f-n)
+function count_on_time:random_pos()
+    local n = #self.targets
+    if(self.distance>0) then
+        if(self.distance<=n-1) then
+            local num = math.random(self.distance, n)
+			local dist_table = minigame_dialogs.shooting_money_table["count_on_time"][self.wpn_type].distance
+            while(dist_table[num]==nil) or (num==self.cur_target) do
+				if(dist_table[self.distance+1]==nil) then
+					return self.distance
+				end
+                num = math.random(self.distance, n)
+            end
+            return num
+        else
+            return self.distance
+        end
+    else
+        return 1
+    end
+end
+-- Save class object
+function count_on_time:save(thread, params_list)
+	set_save_marker(thread, "save", false, "count_on_time")
+	thread:w_stringZ(self.wpn_type)
+	thread:w_u8(self.win)
+	thread:w_u8(self.ammo)
+	thread:w_u8(#self.targets)
+	for i=1,#self.targets do
+		thread:w_u8(#self.targets[i])
+		for j=1,#self.targets[i] do
+			thread:w_stringZ(self.targets[i][j])
+		end
+	end
+	thread:w_u8(self.distance)
+	thread:w_stringZ(self.cur_target)
+	thread:w_u8(self.points)
+	thread:w_bool(self.scored)
+	thread:w_u8(self.ammo_counter)
+	thread:w_u8(self.time)
+	thread:w_u32(self.prev_time)
+	set_save_marker(thread, "save", true, "count_on_time")
+end
+-- Load class object
+function count_on_time:load(thread, params_list)
+	set_save_marker(thread, "load", false, "count_on_time")
+	self.wpn_type = thread:r_stringZ()
+	self.win = thread:r_u8()
+	self.ammo = thread:r_u8()
+	local n = thread:r_u8()
+	self.targets = {}
+	for i=1,n do
+		self.targets[i] = {}
+		local k = thread:r_u8()
+		for j=1,k do
+			self.targets[i][j] = thread:r_stringZ()
+		end
+	end
+	self.distance = thread:r_u8()
+	self.cur_target = thread:r_stringZ()
+	self.points = thread:r_u8()
+	self.scored = thread:r_bool()
+	self.ammo_counter = thread:r_u8()
+	self.time = thread:r_u8()
+	self.prev_time = thread:r_u32()
+	set_save_marker(thread, "load", true, "count_on_time")
+end
+--------------------------------------------------------------------------------
+class "ten_targets"
+-- Class constructor
+function ten_targets:__init(params)
+	self.type = "ten_targets"
+	self.wpn_type = params.wpn_type
+    self.win = params.win
+    self.ammo = params.ammo
+    self.targets = params.targets
+    self.distance = params.distance
+    self.cur_target = ""
+    self.points = 0
+    self.scored = false
+    self.ammo_counter = 0
+    self.time = 0
+    self.prev_time = time_global()
+end
+-- Game update
+function ten_targets:update(name, sr_called)
+	local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+    if(MG_state=="running") then
+        local time = time_global()
+        if(time-self.prev_time>1000) then
+            self.time = self.time + 1
+            self.prev_time = time
+            local cs_shooting_timer = get_hud():GetCustomStatic("shooting_timer")
+            if(cs_shooting_timer==nil) then
+                get_hud():AddCustomStatic("shooting_timer", true)
+                cs_shooting_timer = get_hud():GetCustomStatic("shooting_timer")
+            end
+            local minutes = math.floor(self.time / 60)
+            local tens = math.floor((self.time - minutes * 60) / 10)
+            local seconds = math.mod(self.time - minutes * 60, 10)
+--            cs_shooting_timer:wnd():SetTextST(string.format("%s %d:%d%d", game.translate_string("shooting_your_time"), minutes, tens, seconds))
+            cs_shooting_timer:wnd():SetTextST(string.format("%d:%d%d", minutes, tens, seconds))
+
+	        local cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+	        if(cs_shooting_counter==nil) then
+	            get_hud():AddCustomStatic("shooting_counter", true)
+	            cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+	        end
+--	        cs_shooting_counter:wnd():SetTextST(game.translate_string("shooting_your_count").." "..tostring(self.points).."/10")
+	        cs_shooting_counter:wnd():SetTextST(tostring(self.points).."/10")
+        end
+        if(self.points>=10) or (self.ammo_counter>=self.ammo) then
+            MG_manager:set_minigame_state(name, "finished")
+        end
+    elseif(MG_state=="finished") then
+        db.actor:set_callback(callback.weapon_no_ammo, nil)
+        if(MG_manager:get_minigame_param(name, "win")==self.win)then
+            self:outside()
+            get_hud():RemoveCustomStatic("shooting_timer")
+            MG_manager:set_minigame_param(name, "ammo", self.time)
+            if(self.time<=self.win) then
+                MG_manager:set_minigame_param(name, "win", true)
+            else
+                MG_manager:set_minigame_param(name, "win", false)
+            end
+        end
+    end
+end
+--
+function ten_targets:inside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_up()
+		return true
+	end
+    return false
+end
+--
+function ten_targets:outside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_down()
+	end
+end
+-- Callback called on target hit
+function ten_targets:hit_callback(obj, amount, local_direction, who, bone_index)
+    if(obj:name()==self.cur_target) then
+        if(bone_index==9) and not(self.scored) then
+            self.points = self.points + 1
+            self.scored = true
+            self:set_target(self:random_pos())
+        end
+        self.ammo_counter = self.ammo_counter + 1
+    end
+end
+-- Actor callback on ammunition end (finishing minigame)
+function ten_targets:ammo_ended(wpn, ammo_left_counter)
+	if(ammo_left_counter==0) then
+        self.ammo_counter = self.ammo
+	end
+end
+-- Target animation callback
+function ten_targets:animation_end(obj)
+    if(self.scored) and (obj:name()==self.cur_target) then
+		if(db.storage[self.cur_target]) then
+    	    db.storage[self.cur_target]:anim_up()
+		end
+        self.scored = false
+    end
+end
+-- Set current target standing and lay down the others
+function ten_targets:set_target(num)
+    local n = #self.targets
+	if(db.storage[self.cur_target]~=nil) then
+        db.storage[self.cur_target]:anim_down()
+	end
+    if(num>n) then
+        num = n
+    elseif(num<1) and (num~=-1) then
+        num = 1
+    elseif(num==-1) then
+        num = self.distance
+    end
+	n = #self.targets[num]
+    local rnd = math.random(1, n)
+	if(n>1) then
+		while(self.targets[num][rnd]==self.cur_target) do
+			rnd = math.random(1, n)
+		end
+	end
+    self.cur_target = self.targets[num][rnd]
+end
+-- Randomize current target number (used as parameter for previous f-n)
+function ten_targets:random_pos()
+    local n = #self.targets
+    if(self.distance>0) then
+        if(self.distance<=n-1) then
+            local num = math.random(self.distance, n)
+			local dist_table = minigame_dialogs.shooting_money_table["ten_targets"][self.wpn_type].distance
+            while(dist_table[num]==nil) or (num==self.cur_target) do
+				if(dist_table[self.distance+1]==nil) then
+					return self.distance
+				end
+                num = math.random(self.distance, n)
+            end
+            return num
+        else
+            return self.distance
+        end
+    else
+        return 1
+    end
+end
+-- Save class object
+function ten_targets:save(thread, params_list)
+	set_save_marker(thread, "save", false, "ten_targets")
+	thread:w_stringZ(self.wpn_type)
+	thread:w_u8(self.win)
+	thread:w_u8(self.ammo)
+	thread:w_u8(#self.targets)
+	for i=1,#self.targets do
+		thread:w_u8(#self.targets[i])
+		for j=1,#self.targets[i] do
+			thread:w_stringZ(self.targets[i][j])
+		end
+	end
+	thread:w_u8(self.distance)
+    thread:w_stringZ(self.cur_target)
+	thread:w_u8(self.points)
+	thread:w_bool(self.scored)
+	thread:w_u8(self.ammo_counter)
+	thread:w_u16(self.time)
+	thread:w_u32(self.prev_time)
+	set_save_marker(thread, "save", true, "ten_targets")
+end
+-- Load class object
+function ten_targets:load(thread, params_list)
+	set_save_marker(thread, "load", false, "ten_targets")
+	self.wpn_type = thread:r_stringZ()
+	self.win = thread:r_u8()
+	self.ammo = thread:r_u8()
+	local n = thread:r_u8()
+	self.targets = {}
+	for i=1,n do
+		self.targets[i] = {}
+		local k = thread:r_u8()
+		for j=1,k do
+			self.targets[i][j] = thread:r_stringZ()
+		end
+	end
+	self.distance = thread:r_u8()
+    self.cur_target = thread:r_stringZ()
+	self.points = thread:r_u8()
+	self.scored = thread:r_bool()
+	self.ammo_counter = thread:r_u8()
+	self.time = thread:r_u16()
+	self.prev_time = thread:r_u32()
+	set_save_marker(thread, "load", true, "ten_targets")
+end
+--------------------------------------------------------------------------------
+class "two_seconds_standing"
+-- Class constructor
+function two_seconds_standing:__init(params)
+	self.type = "two_seconds_standing"
+	self.wpn_type = params.wpn_type
+    self.win = params.win
+    self.ammo = params.ammo
+    self.targets = params.targets
+    self.distance = params.distance
+    self.cur_target = ""
+    self.points = 0
+    self.ammo_counter = 0
+	self.time = time_global()+100000
+    self.prev_time = time_global()
+end
+-- Game update
+function two_seconds_standing:update(name, sr_called)
+	local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+    if(MG_state=="running") then
+        local cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        if(cs_shooting_counter==nil) then
+            get_hud():AddCustomStatic("shooting_counter", true)
+            cs_shooting_counter = get_hud():GetCustomStatic("shooting_counter")
+        end
+--        cs_shooting_counter:wnd():SetTextST(game.translate_string("shooting_your_points").." "..tostring(self.points))
+        cs_shooting_counter:wnd():SetTextST(tostring(self.points))
+        local time = time_global()
+        if(time-self.prev_time>2500) then
+            self.prev_time = time
+			self:set_target(self:random_pos())
+		end
+
+        local cs_shooting_timer = get_hud():GetCustomStatic("shooting_timer")
+        if(cs_shooting_timer==nil) then
+            get_hud():AddCustomStatic("shooting_timer", true)
+            cs_shooting_timer = get_hud():GetCustomStatic("shooting_timer")
+        end
+		local t = math.floor((self.time - time)/1000)
+        local minutes = math.floor(t / 60)
+        local tens = math.floor((t - minutes * 60) / 10)
+        local seconds = math.mod(t - minutes * 60, 10)
+--        cs_shooting_timer:wnd():SetTextST(string.format("%s %d:%d%d", game.translate_string("shooting_time_left"), minutes, tens, seconds))
+        cs_shooting_timer:wnd():SetTextST(string.format("%d:%d%d", minutes, tens, seconds))
+
+        if(self.ammo_counter>=self.ammo) or (self.time<=time) then
+            MG_manager:set_minigame_state(name, "finished")
+        end
+    elseif(MG_state=="finished") then
+        db.actor:set_callback(callback.weapon_no_ammo, nil)
+        if(MG_manager:get_minigame_param(name, "win")==self.win)then
+            self:outside()
+            get_hud():RemoveCustomStatic("shooting_timer")
+            MG_manager:set_minigame_param(name, "ammo", self.points)
+            if(self.points>=self.win) then
+                MG_manager:set_minigame_param(name, "win", true)
+            else
+                MG_manager:set_minigame_param(name, "win", false)
+            end
+        end
+    end
+end
+--
+function two_seconds_standing:inside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_up()
+		return true
+	end
+    return false
+end
+--
+function two_seconds_standing:outside()
+	if(db.storage[self.cur_target]) then
+	    db.storage[self.cur_target]:anim_down()
+	end
+end
+-- Callback called on target hit
+function two_seconds_standing:hit_callback(obj, amount, local_direction, who, bone_index)
+    if(obj:name()==self.cur_target) then
+        local points = 0
+        if(bone_index==9) then
+            points = 10
+        elseif(bone_index==8) then
+            points = 5
+        elseif(bone_index==7) then
+            points = 2
+        end
+        self.points = self.points + points
+        self.ammo_counter = self.ammo_counter + 1
+    end
+end
+-- Actor callback on ammunition end (finishing minigame)
+function two_seconds_standing:ammo_ended(wpn, ammo_left_counter)
+	if(ammo_left_counter==0) then
+        self.ammo_counter = self.ammo
+	end
+end
+-- Target animation callback
+function two_seconds_standing:animation_end(obj)
+    if(obj:name()==self.cur_target) then
+		if(db.storage[self.cur_target]) then
+    	    db.storage[self.cur_target]:anim_up()
+		end
+    end
+end
+-- Set current target standing and lay down the others
+function two_seconds_standing:set_target(num)
+    local n = #self.targets
+	if(db.storage[self.cur_target]~=nil) then
+        db.storage[self.cur_target]:anim_down()
+	end
+    if(num>n) then
+        num = n
+    elseif(num<1) and (num~=-1) then
+        num = 1
+    elseif(num==-1) then
+        num = self.distance
+    end
+	n = #self.targets[num]
+    local rnd = math.random(1, n)
+	if(n>1) then
+		while(self.targets[num][rnd]==self.cur_target) do
+			rnd = math.random(1, n)
+		end
+	end
+    self.cur_target = self.targets[num][rnd]
+end
+-- Randomize current target number (used as parameter for previous f-n)
+function two_seconds_standing:random_pos()
+    local n = #self.targets
+    if(self.distance>0) then
+        if(self.distance<=n-1) then
+            local num = math.random(self.distance, n)
+			local dist_table = minigame_dialogs.shooting_money_table["two_seconds_standing"][self.wpn_type].distance
+            while(dist_table[num]==nil) or (num==self.cur_target) do
+				if(dist_table[self.distance+1]==nil) then
+					return self.distance
+				end
+                num = math.random(self.distance, n)
+            end
+            return num
+        else
+            return self.distance
+        end
+    else
+        return 1
+    end
+end
+-- Save class object
+function two_seconds_standing:save(thread, params_list)
+	set_save_marker(thread, "save", false, "two_seconds_standing")
+	thread:w_stringZ(self.wpn_type)
+	thread:w_u8(self.win)
+	thread:w_u8(self.ammo)
+	thread:w_u8(#self.targets)
+	for i=1,#self.targets do
+		thread:w_u8(#self.targets[i])
+		for j=1,#self.targets[i] do
+			thread:w_stringZ(self.targets[i][j])
+		end
+	end
+	thread:w_u8(self.distance)
+	thread:w_stringZ(self.cur_target)
+	thread:w_u8(self.points)
+--	thread:w_bool(self.scored)
+	thread:w_u8(self.ammo_counter)
+	thread:w_u8(self.time)
+	thread:w_u32(self.prev_time)
+	set_save_marker(thread, "save", true, "two_seconds_standing")
+end
+-- Load class object
+function two_seconds_standing:load(thread, params_list)
+	set_save_marker(thread, "load", false, "two_seconds_standing")
+	self.wpn_type = thread:r_stringZ()
+	self.win = thread:r_u8()
+	self.ammo = thread:r_u8()
+	local n = thread:r_u8()
+	self.targets = {}
+	for i=1,n do
+		self.targets[i] = {}
+		local k = thread:r_u8()
+		for j=1,k do
+			self.targets[i][j] = thread:r_stringZ()
+		end
+	end
+	self.distance = thread:r_u8()
+	self.cur_target = thread:r_stringZ()
+	self.points = thread:r_u8()
+--	self.scored = thread:r_bool()
+	self.ammo_counter = thread:r_u8()
+	self.time = thread:r_u8()
+	self.prev_time = thread:r_u32()
+	set_save_marker(thread, "load", true, "two_seconds_standing")
+end

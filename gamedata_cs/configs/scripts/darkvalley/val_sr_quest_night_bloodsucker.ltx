@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+val_night_bloodsucker_started} sr_idle@3 %=give_inited_task(storyline:val_night_bloodsucker:freedom)%
+
+[sr_idle@3]
+on_info = {=is_day} nil %+val_night_bloodsucker_fail%
+on_info2 = {+val_night_bloodsucker_complete} sr_idle@4 %=give_inited_task(storyline:val_night_bloodsucker_reward:freedom)%
+
+[sr_idle@4]
+on_info = {+val_night_bloodsucker_reward_complete} nil

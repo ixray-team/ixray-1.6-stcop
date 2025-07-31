@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+    <dialog id="dm_hello_dialog">
+        <init_func>dialog_manager.init_hello_dialogs</init_func>
+    </dialog>
+    <dialog id="dm_information_dialog">
+        <init_func>dialog_manager.init_information_dialogs</init_func>
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+    </dialog>
+    <dialog id="dm_occupation_dialog">
+        <init_func>dialog_manager.init_occupation_dialogs</init_func>
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+    </dialog>
+    <dialog id="dm_place_dialog">
+        <init_func>dialog_manager.init_place_dialogs</init_func>
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+    </dialog>
+    <dialog id="guiders_dialog">
+        <init_func>guiders.init_guiders_dialog</init_func>
+		<precondition>dialogs.allow_guide_dialog</precondition>
+    </dialog>
+
+    <!-- FINAL DIALOGS -->
+    <!-- ALIFE DIALOGS -->
+    <dialog id="hello_dialog">
+        <phrase_list>
+            <phrase id="1">
+                <next>2</next>
+                <next>3</next>
+            </phrase>
+            <phrase id="2">
+                <text>hello_dialog_2</text>
+                <precondition>dialogs.is_not_wounded</precondition>
+            </phrase>
+            <phrase id="3">
+                <text>hello_dialog_3</text>
+                <precondition>dialogs.is_wounded</precondition>
+            </phrase>
+            <phrase id="0">
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="actor_help_wounded" priority="10">
+        <precondition>dialogs.allow_wounded_dialog</precondition>
+        <precondition>dialogs.is_opp_wounded</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>actor_help_wounded_1</text>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+            </phrase>
+            <phrase id="11">
+                <text>actor_help_wounded_11</text>
+                <precondition>dialogs.actor_have_medkit</precondition>
+                <action>dialogs.transfer_medkit</action>
+                <next>111</next>
+            </phrase>
+            <phrase id="12">
+                <text>actor_help_wounded_12</text>
+                <precondition>dialogs.actor_have_bandage</precondition>
+                <action>dialogs.transfer_bandage</action>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>actor_help_wounded_111</text>
+            </phrase>
+            <phrase id="13">
+                <text>actor_help_wounded_13</text>
+                <next>131</next>
+            </phrase>
+            <phrase id="131">
+                <text>actor_help_wounded_131</text>
+            </phrase>
+            <phrase id="14">
+                <text>actor_help_wounded_14</text>
+                <next>141</next>
+            </phrase>
+            <phrase id="141">
+                <text>actor_help_wounded_141</text>
+            </phrase>
+            <phrase id="0">
+                <text>actor_help_wounded_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="bring_item_task">
+        <precondition>task_dialogs.is_bring_item_task</precondition>
+        <phrase_list>
+            <phrase id="0">
+                <text>bring_item_task_0</text>
+                <action>task_dialogs.transfer_bringed_item</action>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>bring_item_task_1</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="crowkiller_dialog">
+        <phrase_list>
+            <phrase id="4">
+                <text />
+                <next>210</next>
+            </phrase>
+            <phrase id="5">
+                <text />
+                <next>210</next>
+            </phrase>
+            <phrase id="6">
+                <text />
+                <next>210</next>
+            </phrase>
+            <phrase id="3">
+                <text />
+                <next>231</next>
+                <next>232</next>
+            </phrase>
+            <phrase id="231">
+                <text>crowkiller_dialog_231</text>
+                <precondition>minigame_dialogs.crowkiller_is_winned</precondition>
+                <action>minigame_dialogs.set_crowkiller_valiable</action>
+                <next>5</next>
+            </phrase>
+            <phrase id="232">
+                <text>crowkiller_dialog_232</text>
+                <precondition>minigame_dialogs.crowkiller_is_not_winned</precondition>
+                <action>minigame_dialogs.set_crowkiller_valiable</action>
+                <next>6</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <next>100</next>
+                <next>200</next>
+                <next>300</next>
+            </phrase>
+            <phrase id="2110">
+                <text>crowkiller_dialog_2110</text>
+                <next>212</next>
+                <next>213</next>
+                <next>214</next>
+            </phrase>
+            <phrase id="100">
+                <text>crowkiller_dialog_100</text>
+                <next>212</next>
+            </phrase>
+            <phrase id="212">
+                <text>crowkiller_dialog_212</text>
+                <next>2120</next>
+            </phrase>
+            <phrase id="2120">
+                <text>crowkiller_dialog_2120</text>
+                <script_text>minigame_dialogs.current_crowkiller_highscore</script_text>
+                <next>211</next>
+                <next>213</next>
+                <next>214</next>
+            </phrase>
+            <phrase id="211">
+                <text>crowkiller_dialog_211</text>
+                <next>2110</next>
+            </phrase>
+            <phrase id="213">
+                <text>crowkiller_dialog_213</text>
+                <action>minigame_dialogs.start_crowkiller</action>
+            </phrase>
+            <phrase id="214">
+                <text>crowkiller_dialog_214</text>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1000</next>
+                <next>2000</next>
+            </phrase>
+            <phrase id="1000">
+                <text />
+                <precondition>minigame_dialogs.is_crowkiller_first_talk</precondition>
+                <action>minigame_dialogs.set_crowkiller_first_talk</action>
+                <next>100</next>
+            </phrase>
+            <phrase id="2000">
+                <text />
+                <precondition>minigame_dialogs.is_not_crowkiller_first_talk</precondition>
+                <next>200</next>
+            </phrase>
+            <phrase id="200">
+                <text>crowkiller_dialog_200</text>
+                <next>2</next>
+            </phrase>
+            <phrase id="230">
+                <text>crowkiller_dialog_230</text>
+                <precondition>minigame_dialogs.crowkiller_is_finished</precondition>
+                <next>3</next>
+            </phrase>
+            <phrase id="210">
+                <text>crowkiller_dialog_210</text>
+                <precondition>minigame_dialogs.crowkiller_is_valiable</precondition>
+                <next>211</next>
+                <next>212</next>
+                <next>213</next>
+                <next>214</next>
+            </phrase>
+            <phrase id="300">
+                <text>crowkiller_dialog_300</text>
+                <precondition>minigame_dialogs.crowkiller_is_running</precondition>
+            </phrase>
+            <phrase id="2">
+                <text />
+                <next>220</next>
+                <next>230</next>
+                <next>210</next>
+                <next>300</next>
+            </phrase>
+            <phrase id="220">
+                <text>crowkiller_dialog_220</text>
+                <precondition>minigame_dialogs.crowkiller_is_breaked</precondition>
+                <action>minigame_dialogs.set_crowkiller_valiable</action>
+                <next>4</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="default_robbery_dialog">
+        <phrase_list>
+            <phrase id="0">
+                <text>default_robbery_dialog_0</text>
+                <next>1</next>
+            </phrase>
+            <phrase id="11">
+                <text>default_robbery_dialog_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>default_robbery_dialog_111</text>
+                <action>dialogs.break_dialog</action>
+                <action>sr_robbery.robbery_end</action>
+            </phrase>
+            <phrase id="1">
+                <text>default_robbery_dialog_1</text>
+                <action>sr_robbery.actor_give_money</action>
+                <next>11</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="find_upgrade_task">
+        <precondition>task_dialogs.is_find_upgrade_task</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>find_upgrade_task_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>find_upgrade_task_0</text>
+                <action>task_dialogs.transfer_find_upgrade</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="treasure_dialog">
+<!--        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition> -->
+        <phrase_list>
+            <phrase id="131">
+                <text>treasure_dialog_131</text>
+            </phrase>
+            <phrase id="2">
+                <text>treasure_dialog_2</text>
+                <precondition>treasure_manager.is_not_dialog_treasure</precondition>
+            </phrase>
+            <phrase id="12">
+                <text>treasure_dialog_12</text>
+                <next>121</next>
+            </phrase>
+            <phrase id="11">
+                <text>treasure_dialog_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text />
+                <script_text>treasure_manager.get_treasure_cost</script_text>
+                <next>1111</next>
+                <next>1112</next>
+                <next>1113</next>
+                <next>1114</next>
+            </phrase>
+            <phrase id="11111">
+                <text>treasure_dialog_11111</text>
+                <action>treasure_manager.give_treasure_from_dialog</action>
+            </phrase>
+            <phrase id="11121">
+                <text>treasure_dialog_11121</text>
+            </phrase>
+            <phrase id="121">
+                <text>treasure_dialog_121</text>
+            </phrase>
+            <phrase id="1112">
+                <text>treasure_dialog_1112</text>
+                <precondition>treasure_manager.have_money</precondition>
+                <next>11111</next>
+            </phrase>
+            <phrase id="1114">
+                <text>treasure_dialog_1114</text>
+                <next>121</next>
+            </phrase>
+            <phrase id="1113">
+                <text>treasure_dialog_1113</text>
+                <precondition>treasure_manager.have_no_money</precondition>
+                <next>11121</next>
+            </phrase>
+            <phrase id="1111">
+                <text>treasure_dialog_1111</text>
+                <next>11131</next>
+                <next>11132</next>
+            </phrase>
+            <phrase id="11131">
+                <text>treasure_dialog_11131</text>
+                <precondition>treasure_manager.is_not_item_name</precondition>
+                <next>1112</next>
+                <next>1113</next>
+                <next>1114</next>
+            </phrase>
+            <phrase id="11132">
+                <text />
+                <script_text>treasure_manager.get_item_name</script_text>
+                <precondition>treasure_manager.is_item_name</precondition>
+                <next>1114</next>
+                <next>1112</next>
+                <next>1113</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <script_text>treasure_manager.get_treasure_desc</script_text>
+                <precondition>treasure_manager.is_dialog_treasure</precondition>
+                <next>11</next>
+                <next>12</next>
+            </phrase>
+            <phrase id="0">
+<!--                <action>dialog_manager.action_disable_phrase</action> -->
+                <text>treasure_dialog_0</text>
+                <next>1</next>
+                <next>2</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="tm_faction_task">
+        <phrase_list>
+            <phrase id="11">
+                <text />
+                <precondition>task_dialogs.faction_has_prior</precondition>
+                <next>21</next>
+            </phrase>
+            <phrase id="12">
+                <text />
+                <precondition>task_dialogs.faction_has_prior</precondition>
+                <next>22</next>
+            </phrase>
+            <phrase id="22">
+                <text />
+                <action>task_dialogs.faction_give_prior</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="13">
+                <text />
+                <precondition>task_dialogs.faction_has_prior</precondition>
+                <next>23</next>
+            </phrase>
+            <phrase id="23">
+                <text />
+                <action>task_dialogs.faction_give_prior</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="14">
+                <text />
+                <precondition>task_dialogs.faction_has_prior</precondition>
+                <next>24</next>
+            </phrase>
+            <phrase id="24">
+                <text />
+                <action>task_dialogs.faction_give_prior</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="15">
+                <text />
+                <precondition>task_dialogs.faction_has_prior</precondition>
+                <next>25</next>
+            </phrase>
+            <phrase id="25">
+                <text />
+                <action>task_dialogs.faction_give_prior</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <precondition>task_dialogs.faction_has_task</precondition>
+                <action>task_dialogs.faction_show_task</action>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+                <next>15</next>
+            </phrase>
+            <phrase id="2">
+                <text />
+                <precondition>task_dialogs.faction_hasnt_task</precondition>
+            </phrase>
+            <phrase id="21">
+                <text />
+                <action>task_dialogs.faction_give_prior</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <action>task_dialogs.init_faction_task</action>
+                <next>1</next>
+                <next>2</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="test_dialog">
+        <phrase_list>
+            <phrase id="1">
+                <text>test_dialog_1</text>
+                <script_text>test_dialog.test_dialog_function</script_text>
+            </phrase>
+            <phrase id="2">
+                <text />
+                <script_text>test_dialog.test_dialog_function</script_text>
+            </phrase>
+            <phrase id="3">
+                <text>test_dialog_3</text>
+            </phrase>
+            <phrase id="0">
+                <text>test_dialog_0</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="shooting_dialog">
+        <phrase_list>
+            <phrase id="313">
+                <text>shooting_dialog_313</text>
+                <action>minigame_dialogs.set_shooting_points_100</action>
+                <next>4111</next>
+            </phrase>
+            <phrase id="312">
+                <text>shooting_dialog_312</text>
+                <action>minigame_dialogs.set_shooting_points_75</action>
+                <next>4111</next>
+            </phrase>
+            <phrase id="31">
+                <text>shooting_dialog_31</text>
+                <next>311</next>
+                <next>312</next>
+                <next>313</next>
+            </phrase>
+            <phrase id="411">
+                <text>shooting_dialog_411</text>
+                <action>minigame_dialogs.set_shooting_count_5</action>
+                <next>4111</next>
+            </phrase>
+            <phrase id="412">
+                <text>shooting_dialog_412</text>
+                <action>minigame_dialogs.set_shooting_count_7</action>
+                <next>4111</next>
+            </phrase>
+            <phrase id="413">
+                <text>shooting_dialog_413</text>
+                <action>minigame_dialogs.set_shooting_count_10</action>
+                <next>4111</next>
+            </phrase>
+            <phrase id="41">
+                <text>shooting_dialog_41</text>
+                <next>411</next>
+                <next>412</next>
+                <next>413</next>
+            </phrase>
+            <phrase id="521">
+                <text />
+                <next>5211</next>
+            </phrase>
+            <phrase id="52111">
+                <text />
+                <next>511111</next>
+            </phrase>
+            <phrase id="531">
+                <text />
+                <next>5311</next>
+            </phrase>
+            <phrase id="53111">
+                <text />
+                <next>511111</next>
+            </phrase>
+            <phrase id="5211">
+                <text>shooting_dialog_5211</text>
+                <script_text>minigame_dialogs.get_shooting_win_phrase</script_text>
+                <next>52111</next>
+            </phrase>
+            <phrase id="5311">
+                <text>shooting_dialog_5311</text>
+                <script_text>minigame_dialogs.get_shooting_win_phrase</script_text>
+                <next>53111</next>
+            </phrase>
+            <phrase id="52">
+                <text>shooting_dialog_52</text>
+                <script_text>minigame_dialogs.is_shooting_winned</script_text>
+                <precondition>minigame_dialogs.is_shooting_type_points</precondition>
+                <next>521</next>
+            </phrase>
+            <phrase id="53">
+                <text>shooting_dialog_53</text>
+                <script_text>minigame_dialogs.is_shooting_winned</script_text>
+                <precondition>minigame_dialogs.is_shooting_type_count</precondition>
+                <next>531</next>
+            </phrase>
+            <phrase id="71">
+                <text>shooting_dialog_71</text>
+            </phrase>
+            <phrase id="4111112">
+                <text>shooting_dialog_4111112</text>
+                <action>minigame_dialogs.set_shooting_weapon_ak74</action>
+                <next>2</next>
+            </phrase>
+            <phrase id="6">
+                <text>shooting_dialog_6</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="41112">
+                <text>shooting_dialog_41112</text>
+                <action>minigame_dialogs.set_shooting_dist_2</action>
+                <next>411111</next>
+            </phrase>
+            <phrase id="41113">
+                <text>shooting_dialog_41113</text>
+                <action>minigame_dialogs.set_shooting_dist_3</action>
+                <next>411111</next>
+            </phrase>
+            <phrase id="3">
+                <text>shooting_dialog_3</text>
+                <precondition>minigame_dialogs.is_shooting_valiable</precondition>
+                <action>minigame_dialogs.set_shooting_type_points</action>
+                <action>minigame_dialogs.set_shooting_ammo_count_10</action>
+                <next>31</next>
+            </phrase>
+            <phrase id="4">
+                <text>shooting_dialog_4</text>
+                <precondition>minigame_dialogs.is_shooting_valiable</precondition>
+                <action>minigame_dialogs.set_shooting_type_count</action>
+                <action>minigame_dialogs.set_shooting_ammo_count_10</action>
+                <next>41</next>
+            </phrase>
+            <phrase id="5111">
+                <text>shooting_dialog_5111</text>
+                <script_text>minigame_dialogs.get_shooting_win_phrase</script_text>
+                <next>51111</next>
+            </phrase>
+            <phrase id="511">
+                <text />
+                <next>5111</next>
+            </phrase>
+            <phrase id="51111">
+                <text />
+                <next>511111</next>
+            </phrase>
+            <phrase id="511111">
+                <text>shooting_dialog_511111</text>
+                <next>1</next>
+                <next>3</next>
+                <next>4</next>
+                <next>6</next>
+            </phrase>
+            <phrase id="311">
+                <text>shooting_dialog_311</text>
+                <action>minigame_dialogs.set_shooting_points_50</action>
+                <next>4111</next>
+            </phrase>
+            <phrase id="411111">
+                <text>shooting_dialog_411111</text>
+                <next>4111111</next>
+                <next>4111112</next>
+            </phrase>
+            <phrase id="4111111">
+                <text>shooting_dialog_4111111</text>
+                <action>minigame_dialogs.set_shooting_weapon_desert</action>
+                <next>2</next>
+            </phrase>
+            <phrase id="41111">
+                <text>shooting_dialog_41111</text>
+                <action>minigame_dialogs.set_shooting_dist_1</action>
+                <next>411111</next>
+            </phrase>
+            <phrase id="4111">
+                <text>shooting_dialog_4111</text>
+                <next>41111</next>
+                <next>41112</next>
+                <next>41113</next>
+            </phrase>
+            <phrase id="1">
+                <text>shooting_dialog_1</text>
+                <precondition>minigame_dialogs.is_shooting_valiable</precondition>
+                <action>minigame_dialogs.set_shooting_type_training</action>
+                <action>minigame_dialogs.set_shooting_ammo_count_unlim</action>
+                <next>4111</next>
+            </phrase>
+            <phrase id="51">
+                <text>shooting_dialog_51</text>
+                <script_text>minigame_dialogs.is_shooting_winned</script_text>
+                <precondition>minigame_dialogs.is_shooting_type_training</precondition>
+                <next>511</next>
+            </phrase>
+            <phrase id="2">
+                <text>shooting_dialog_2</text>
+                <action>minigame_dialogs.start_shooting</action>
+                <disable_info>agr_shooting_door_exit</disable_info>
+                <give_info>agr_shooting_door_enter</give_info>
+            </phrase>
+            <phrase id="5">
+                <text>shooting_dialog_5</text>
+                <precondition>minigame_dialogs.is_shooting_finished</precondition>
+                <action>minigame_dialogs.set_shooting_valiable</action>
+                <disable_info>agr_shooting_door_enter</disable_info>
+                <give_info>agr_shooting_door_exit</give_info>
+                <next>51</next>
+                <next>52</next>
+                <next>53</next>
+            </phrase>
+            <phrase id="0">
+                <text>shooting_dialog_0</text>
+                <next>1</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+                <next>6</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="recover_item_task">
+        <precondition>task_dialogs.is_recover_item_task</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>recover_item_task_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>recover_item_task_0</text>
+                <action>task_dialogs.transfer_recovered_item</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="actor_break_dialog" priority="-5">
+        <precondition>dialogs.allow_break_dialog</precondition>
+        <phrase_list>
+            <phrase id="0">
+                <text>actor_break_dialog_0</text>
+                <script_text>dialog_manager.create_bye_phrase</script_text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="actor_news_dialog">
+        <precondition>dialog_manager.news_dialog_precondition</precondition>
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="0">
+                <script_text>dialog_manager.create_question_phrase</script_text>
+<!--                <action>dialog_manager.action_disable_phrase</action> -->
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <script_text>dialog_manager.create_answer_phrase</script_text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+
+    <dialog id="tm_upgr_task">
+        <precondition>task_dialogs.mechanic_has_tasks</precondition>
+        <phrase_list>
+            <phrase id="0">
+                <text>tm_upgr_task_0</text>
+                <next>21</next>
+            </phrase>
+            <phrase id="21">
+                <text>tm_upgr_task_21</text>
+                <action>task_dialogs.mechanic_show_tasks</action>
+                <next>51</next>
+                <next>56</next>
+            </phrase>
+
+            <phrase id="51">
+                <text>tm_upgr_task_51</text>
+                <action>task_dialogs.give_find_upgrade_task</action>
+            </phrase>
+            <phrase id="56">
+                <text>tm_upgr_task_56</text>
+            </phrase>
+
+
+        </phrase_list>
+    </dialog>
+
+
+    <dialog id="tm_reward_task">
+        <phrase_list>
+            <phrase id="2">
+                <text>tm_reward_task_2</text>
+                <precondition>task_dialogs.rewarder_hasnt_reward</precondition>
+            </phrase>
+            <phrase id="1">
+                <text>tm_reward_task_1</text>
+                <precondition>task_dialogs.rewarder_has_reward</precondition>
+                <action>task_dialogs.rewarder_give_reward</action>
+            </phrase>
+            <phrase id="0">
+                <text>tm_reward_task_0</text>
+                <next>1</next>
+                <next>2</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="tm_random_task">
+        <precondition>task_dialogs.is_squad_leader</precondition>
+        <phrase_list>
+            <phrase id="15">
+                <text>tm_random_task_15</text>
+                <script_text>task_dialogs.create_task_answer_phrase</script_text>
+                <action>task_dialogs.squad_hasnt_capture_tasks</action>
+            </phrase>
+            <phrase id="2">
+                <text>tm_random_task_2</text>
+                <precondition>task_dialogs.squad_hasnt_tasks</precondition>
+            </phrase>
+            <phrase id="14">
+                <text>tm_random_task_14</text>
+                <script_text>task_dialogs.create_task_answer_phrase</script_text>
+                <precondition>task_dialogs.squad_has_capture_tasks</precondition>
+                <next>24</next>
+            </phrase>
+            <phrase id="12">
+                <text>tm_random_task_12</text>
+                <script_text>task_dialogs.create_task_answer_phrase</script_text>
+                <precondition>task_dialogs.squad_has_capture_tasks</precondition>
+                <next>22</next>
+            </phrase>
+            <phrase id="34">
+                <text>tm_random_task_34</text>
+                <action>task_dialogs.squad_hasnt_capture_tasks</action>
+            </phrase>
+            <phrase id="33">
+                <text>tm_random_task_33</text>
+                <next>43</next>
+            </phrase>
+            <phrase id="43">
+                <text>tm_random_task_43</text>
+                <action>task_dialogs.give_squad_capture_task</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="11">
+                <text>tm_random_task_11</text>
+                <script_text>task_dialogs.create_task_answer_phrase</script_text>
+                <precondition>task_dialogs.squad_has_capture_tasks</precondition>
+                <next>21</next>
+            </phrase>
+            <phrase id="13">
+                <text>tm_random_task_13</text>
+                <script_text>task_dialogs.create_task_answer_phrase</script_text>
+                <precondition>task_dialogs.squad_has_capture_tasks</precondition>
+                <next>23</next>
+            </phrase>
+            <phrase id="21">
+                <text>tm_random_task_21</text>
+                <action>task_dialogs.give_squad_capture_task</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="22">
+                <text>tm_random_task_22</text>
+                <action>task_dialogs.give_squad_capture_task</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="23">
+                <text>tm_random_task_23</text>
+                <script_text>task_dialogs.show_description</script_text>
+                <next>33</next>
+                <next>34</next>
+            </phrase>
+            <phrase id="24">
+                <text>tm_random_task_24</text>
+                <action>task_dialogs.give_squad_capture_task</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="1">
+                <text>tm_random_task_1</text>
+                <precondition>task_dialogs.squad_has_tasks</precondition>
+                <action>task_dialogs.show_tasks</action>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+                <next>15</next>
+            </phrase>
+            <phrase id="0">
+                <text>tm_random_task_0</text>
+                <action>task_dialogs.init_squad_task</action>
+                <next>1</next>
+                <next>2</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="exchange_flash_card">
+        <precondition>task_dialogs.mechanic_need_flash_card</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>exchange_flash_card_1</text>
+                <action>task_dialogs.mechanic_proposition</action>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+                <next>15</next>
+            </phrase>
+            <phrase id="0">
+                <text>exchange_flash_card_0</text>
+                <next>1</next>
+            </phrase>
+            <phrase id="11">
+                <text>exchange_flash_card_11</text>
+                <script_text>task_dialogs.mechanic_proposition_answer_phrase</script_text>
+                <next>21</next>
+            </phrase>
+            <phrase id="12">
+                <text>exchange_flash_card_12</text>
+                <script_text>task_dialogs.mechanic_proposition_answer_phrase</script_text>
+                <next>22</next>
+            </phrase>
+            <phrase id="13">
+                <text>exchange_flash_card_13</text>
+                <script_text>task_dialogs.mechanic_proposition_answer_phrase</script_text>
+                <next>23</next>
+            </phrase>
+            <phrase id="14">
+                <text>exchange_flash_card_14</text>
+                <script_text>task_dialogs.mechanic_proposition_answer_phrase</script_text>
+                <next>24</next>
+            </phrase>
+            <phrase id="15">
+                <text>exchange_flash_card_15</text>
+            </phrase>
+            <phrase id="21">
+                <text>exchange_flash_card_21</text>
+                <action>task_dialogs.mechanic_pay_flash_card</action>
+            </phrase>
+            <phrase id="22">
+                <text>exchange_flash_card_22</text>
+                <action>task_dialogs.mechanic_pay_flash_card</action>
+            </phrase>
+            <phrase id="23">
+                <text>exchange_flash_card_23</text>
+                <action>task_dialogs.mechanic_pay_flash_card</action>
+            </phrase>
+            <phrase id="24">
+                <text>exchange_flash_card_24</text>
+                <action>task_dialogs.mechanic_pay_flash_card</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>

@@ -1,0 +1,21 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+stc_final_cutscene_1} sr_cutscene@final
+on_info2 = {+stc_final_cutscene_2} sr_cutscene@final_2
+
+[sr_cutscene@final]
+cam_effector 	= scenario_cam\stancia_2_pol_11
+point 		= stc_way_hint_walk_2
+look 		= stc_way_hint_look_2
+on_timer = 9500 | {-stc_final_fade_2} %=stc_boom +stc_final_fade_2 =kill_actor%
+on_signal 	= cameff_end | sr_idle@end 
+
+[sr_cutscene@final_2]
+cam_effector 	= scenario_cam\stancia_2_pol_18
+point 		= stc_way_hint_walk_2
+look 		= stc_way_hint_look_2
+on_signal 	= cameff_end | sr_idle@end %+stc_final_movie%
+
+[sr_idle@end]

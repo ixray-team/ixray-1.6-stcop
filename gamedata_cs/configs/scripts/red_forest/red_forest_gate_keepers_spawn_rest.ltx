@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle@spawn_allyes2
+
+[sr_idle@spawn_allyes2]
+on_info = {=is_squad_enemy_to_actor(red_stalker_gate_keepers_1)} %=set_gulag_relation_actor(red_smart_terrain_4_2:enemy)%
+on_info2 = {=is_squad_enemy_to_actor(red_stalker_gate_keepers_2)} %=set_gulag_relation_actor(red_smart_terrain_4_2:enemy)%
+;on_info = {!is_smart_captured(red_smart_terrain_4_2) !squad_exist(red_stalker_gate_keepers_1) =dist_to_actor_ge(70)} nil %=create_squad(red_stalker_gate_keepers_1:red_smart_terrain_4_2)%
+;on_info2 = {+red_forest_open} nil

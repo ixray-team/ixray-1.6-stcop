@@ -1,0 +1,99 @@
+[levels]
+  level01
+  level02
+  level03
+  level04
+  level05
+  level06
+  level07
+  level08
+  level09
+  level10
+  level11
+  level12
+
+[level01]
+ name   = marsh
+ caption = "marsh"
+ offset  = 1050.0,     1000.0,    3830.0
+ weathers = [default]
+ id  = 01
+
+[level02]
+ name   = escape
+ caption = "escape"
+ offset  = 2130.0,     1000.0,    3970.0
+ weathers = [default] 
+ id  = 02
+
+[level03]
+ name   = garbage
+ caption = "garbage"
+ offset  = 2130.0,     1000.0,    2845.0
+ weathers = [default]
+ id  = 03
+
+[level04]
+ name   = darkvalley
+ caption = "darkvalley"
+ offset  = 2735.0,     1000.0,    2845.0
+ weathers = [default]
+ id  = 04
+
+[level05]
+ name   = agroprom
+ caption = "agroprom"
+ offset  = 1450.0,     1000.0,    2845.0
+ weathers = [default]
+ id  = 05
+
+[level06]
+ name   = agroprom_underground
+ caption = "agroprom_underground"
+ offset  = 1000.0,     800.0,    10000.0
+ weathers = indoor
+ id  = 06
+
+[level07]
+ name   = yantar
+ caption = "yantar"
+ offset  = 1530.0,     1000.0,    2150.0
+ weathers = [default]
+ id  = 07
+
+[level08]
+ name   = red_forest
+ caption = "red_forest"
+ offset  = 1530.0,     1000.0,    1540.0
+ weathers = [default]
+ id  = 08
+
+[level09]
+ name   = military
+ caption = "military"
+ offset  = 2130.0,     1000.0,    2150.0
+ weathers = [default]
+ id  = 09
+
+[level10]
+ name   = limansk
+ caption = "limansk"
+ offset  = 700.0,     1000.0,    1540.0
+ weathers = indoor
+ id  = 10
+
+[level11]
+ name   = hospital
+ caption = "hospital"
+ offset  = 700.0,     1000.0,    840.0
+ weathers = [default]
+ id  = 11
+ 
+[level12]
+ name   = stancia_2
+ caption = "stancia_2"
+ offset  = 700.0,     1000.0,    325.0
+ weathers = stancia2
+ id  = 12
+
+

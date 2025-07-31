@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+gar_quest_get_weapons_started} sr_light@yes
+
+[sr_light@yes]
+light_on = true
+on_info = {+gar_quest_get_weapons_arrived} sr_idle@end_section
+
+[sr_idle@end_section]

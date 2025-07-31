@@ -1,0 +1,30 @@
+[list_treasure_hospital]
+hos_treasure_1
+hos_treasure_2
+hos_treasure_3
+
+
+
+[hos_treasure_1] ;Ёлектрощиток в госпитале
+target = hos_treasure_1
+name = st_hos_electric_box_02
+description = st_hos_electric_box_02_descr
+items = medkit_scientic, 2, ammo_5.56x45_ap, 200
+community = monolith
+condlist = {=actor_on_level(hospital:limansk)} true, false
+
+[hos_treasure_2] ;–юкзак под лестницей
+target = hos_treasure_2
+name = st_hos_rucksack_01
+description = st_hos_rucksack_01_descr
+items = medkit_scientic, 2, ammo_5.56x45_ap, 120, ammo_m209, 3, ammo_vog-25, 3
+community = monolith
+condlist = {=actor_on_level(hospital:limansk)} true, false
+
+[hos_treasure_3] ;Ѕаррикады в коридор
+target = hos_treasure_3
+name = st_hos_seif_01
+description = st_hos_seif_01_descr
+items = medkit_scientic, 1, ammo_5.56x45_ap, 60
+community = monolith
+condlist = {=actor_on_level(hospital:limansk)} true, false

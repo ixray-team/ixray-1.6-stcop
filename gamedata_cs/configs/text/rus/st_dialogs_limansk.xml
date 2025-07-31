@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="lim_bandit_wounded_dialog_1_11">
+		<text>Пацаны помогите! Дайте аптечку, друг помирает!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_111">
+		<text>На, держи.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1111">
+		<text>Сейчас, только корешу помогу.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_112">
+		<text>Извини, нету аптечки.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1121">
+		<text>Эх, пацаны...</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_113">
+		<text>Обойдёшься, сучья морда.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_11">
+		<text>Спасибо, выручил. Я вижу, ты в город идёшь, так там чуть дальше по улице люди Рыжего засаду устроили. Возле машины растяжка стоит, так тебе надо по правой стороны улицы, тогда обойдешь.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_111">
+		<text>Кто ещё сейчас в городе?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1111">
+		<text>Сюда набилось уже полно народу, кругом бардак! Отряды «Долга» и «Свободы» прошли в центр города - наверно, ищут проход в самую глубь Зоны. Мы видели несколько вертолётов, так что в город наверняка вломились и военные. Ещё появились какие-то сталкеры, только они приходят с другой стороны, из центра Зоны.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_112">
+		<text>Что в городе творится?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1121">
+		<text>Бугор с братвой засел в доме ниже по улице, дальше они не суются. Если хочешь пройти в город, тебе придется выбить их из дома.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_113">
+		<text>Не за что, вали пока не пристрелил.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_12">
+		<text>Давай быстрее, нам сваливать отсюда надо!</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_121">
+		<text>Всё, сваливайте.</text>
+	</string>
+</string_table>

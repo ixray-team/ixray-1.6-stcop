@@ -1,0 +1,17 @@
+[logic]
+active = sr_idle@inside
+
+[sr_idle@inside]
+on_actor_inside = {-agr_stalker_scientist_quest_story !smart_captured_by_faction(agr_smart_terrain_1_2:stalker)} sr_idle@task %=clear_smart_terrain(agr_smart_terrain_1_3) +agr_stalker_scientist_quest_1 +agr_stalker_scientist_quest_story%
+
+[sr_idle@task]
+on_info = sr_idle@capture %=give_inited_task(storyline:agr_additional_quest_7a:stalker) =create_squad(agr_smart_terrain_1_3_scientists_squad:agr_smart_terrain_1_3)%
+
+[sr_idle@capture]
+on_info = {=smart_captured_by_faction(agr_smart_terrain_1_2:stalker)} sr_idle@reward %=give_inited_task(storyline:agr_additional_quest_7b:stalker) +agr_stalker_scientist_quest_2%
+
+[sr_idle@reward]
+on_info = {+agr_stalker_scientist_quest_3} sr_idle@end
+
+[sr_idle@end]
+

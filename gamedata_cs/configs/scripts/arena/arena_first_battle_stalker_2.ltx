@@ -1,0 +1,54 @@
+[logic]
+active = {~33} camper@jump_1, camper@jump
+combat_ignore = combat_ignore
+on_death = death
+smart_terrain = nil
+
+[camper@jump]
+combat_ignore_cond = always
+danger = danger_condition@2
+path_walk = survival_spawn
+path_look = survival_look
+def_state_moving = assault
+on_signal = jump | {~50} remark@0 , remark@2
+
+[camper@jump_1]
+combat_ignore_cond = always
+danger = danger_condition@2
+path_walk = survival_spawn_jump1
+path_look = survival_look
+def_state_moving = assault
+on_signal = jump |  remark@1
+
+[remark@0]
+combat_ignore_cond = always
+danger = danger_condition@2
+anim = jump_down_arena_0
+on_signal = anim_end | remark@last %=hit_npc_from_actor%
+invulnerable = true
+
+[remark@1]
+combat_ignore_cond = always
+danger = danger_condition@2
+anim = jump_down_arena_1
+on_signal = anim_end | remark@last %=hit_npc_from_actor%
+invulnerable = true
+
+[remark@2]
+combat_ignore_cond = always
+danger = danger_condition@2
+anim = jump_down_arena_2
+on_signal = anim_end | remark@last %=hit_npc_from_actor%
+invulnerable = true
+
+[remark@last] 
+in_restr = spawn_restr 
+anim = guard
+target = actor
+
+[danger_condition@2]
+ignore_distance = 0
+ignore_distance_grenade = 0
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_sound = 0 

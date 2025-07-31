@@ -1,0 +1,24 @@
+function transfer_ammo(first_speaker, second_speaker)
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_5.56x45_ap", 4) 
+		dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "grenade_rgd5", 3)		
+end
+
+function is_day(first_speaker, second_speaker)
+	return level.get_time_hours() > 3 and level.get_time_hours() < 23
+end
+
+function is_not_day(first_speaker, second_speaker)
+	return is_day(first_speaker, second_speaker) == false
+end
+
+function return_freedom_pda(first_speaker, second_speaker)
+	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_freedom")
+end
+
+function return_komendant_pda(first_speaker, second_speaker)
+	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_comendant")
+end
+
+function give_reward_for_destroy_killer_base(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "flesh_up_abcd_svu")	
+end

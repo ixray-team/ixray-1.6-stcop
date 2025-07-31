@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+yan_death_stalker3_cut6 +yan_death_stalker4_cut6 +yan_death_stalker5_cut6} %+yan_game_over_cut6% nil 
+
+[sr_idle@1]
+on_info = {+yan_wave_zombie2_cut6} sr_idle@end_wave2 %=give_inited_task(storyline:yan_actor_destroy_wave2:stalker)%
+
+[sr_idle@end_wave2]

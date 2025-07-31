@@ -1,0 +1,22 @@
+[logic]
+active = kamp@wait
+relation = enemy
+
+[kamp@wait]
+combat_ignore_cond = true
+out_restr = red_bridge_bandit_bridge_guard_restr
+combat_ignore_cond = true
+center_point = red_bridge_bandit_bridge_guard_wait
+def_state_moving = patrol
+on_info = {+red_pursuit_bandit_attack} camper@guard
+on_info2 = {+red_bridge_scene_begin} camper@guard
+
+[camper@guard]
+out_restr = red_bridge_bandit_bridge_guard_restr
+path_walk = red_bridge_bandit_bridge_guard_1_walk
+path_look = red_bridge_bandit_bridge_guard_1_fire_look
+radius = 10
+def_state_moving = assault
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+on_info = {-red_pursuit_bandit_attack -red_bridge_scene_begin} kamp@wait

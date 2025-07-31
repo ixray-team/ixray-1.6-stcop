@@ -1,0 +1,55 @@
+[list_tm_agroprom_underground]
+agru_leader_dolg_task
+agru_destroy_monsters_task
+agru_go_out_task
+agru_find_secret_task
+agru_go_out_end_task
+
+[agru_leader_dolg_task]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+name = agru_leader_dolg_task_name
+text = agru_leader_dolg_task_text
+target_story_ids = 1300
+condlist_0 = {+agru_leader_dolg_task_complete} complete
+community_relation_delta_fail=-400
+community_relation_delta_complete=+400
+
+[agru_destroy_monsters_task]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+name = agru_destroy_monsters_task_name
+text = agru_destroy_monsters_task_text
+target_story_ids = 1304
+condlist_0 = {+agru_controller_death} complete
+prior = 10
+
+[agru_go_out_task]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+name = agru_go_out_task_name
+text = agru_go_out_task_text
+target_story_ids = 1301
+condlist_0 = {+agru_go_out_task_complete} complete
+
+[agru_find_secret_task]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+name = agru_find_secret_task_name
+text = agru_find_secret_task_text
+target_story_ids = 1302
+condlist_0 = {+agru_find_secret_task_complete} complete
+
+[agru_go_out_end_task]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+name = agru_go_out_end_task_name
+text = agru_go_out_end_task_text
+target_story_ids = 1303
+condlist_0 = {+agru_go_out_end_task_complete} complete
+

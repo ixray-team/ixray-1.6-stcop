@@ -1,0 +1,23 @@
+function main ()
+
+lvl_red_forest_return_1.main()
+
+local infos_table = {
+"red_forester_search_compas_task",
+"red_forester_actor_has_compas",
+"red_forester_take_compas",
+"forester_talked_2",
+"forester_telled_coordinates"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+--if level.name() == "military" and not task_manager.get_task_manager().inited_tasks["csky_general_mil_talk_2_merc_2_task"] then
+--	xr_effects.give_inited_task(nil, nil, {"storyline", "mil_talk_2_merc_2_task", "csky"})
+--end
+
+end
+

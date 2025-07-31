@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agru_find_secret_task_name">
+		<text>Найти тайник группы сталкеров</text>
+	</string>
+	<string id="agru_find_secret_task_text">
+		<text>В подземельях НИИ «Агропром» находится тайник группы сталкеров, которые побывали в центре Зоны. Похоже, через него они обмениваются информацией. Необходимо найти тайник и КПК с этой перепиской</text>
+	</string>
+	<string id="agru_go_out_end_task_name">
+		<text>Выйти из подземелья</text>
+	</string>
+	<string id="agru_go_out_end_task_text">
+		<text>Выбраться из подземелья</text>
+	</string>
+	<string id="agru_go_out_task_name">
+		<text>Покинуть зону затопления</text>
+	</string>
+	<string id="agru_go_out_task_text">
+		<text>Активирован аварийный сброс воды. Нижние уровни будут затоплены. Необходимо покинуть зону затопления</text>
+	</string>
+	<string id="agru_leader_dolg_task_name">
+		<text>Затопить подземелья</text>
+	</string>
+	<string id="agru_leader_dolg_task_text">
+		<text>В подземелье находится старя насосная установка для откачивания грунтовых вод. Необходимо найти пульт управление установкой и активировать сброс воды из резервуаров: это приведет к затоплению подземелий.</text>
+	</string>
+	<string id="agru_destroy_monsters_task_name">
+		<text>Уничтожить мутантов</text>
+	</string>
+	<string id="agru_destroy_monsters_task_text">
+		<text>Уничтожить мутантов, которые создают физическое давление на предметы, блокируя проход в комнату управления насосной станцией</text>
+	</string>
+</string_table>

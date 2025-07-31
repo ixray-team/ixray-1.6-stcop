@@ -1,0 +1,639 @@
+--' Проверяем является ли указанный чувак командиром отряда.
+function is_squad_leader(actor, npc)
+	--printf("%s squad_leader", npc:name())
+	local squad = db.storage[npc:id()].squad_obj
+	--printf("%s squad_nil %s", npc:name(), tostring(squad == nil))
+	if squad == nil then
+		return false
+	end
+	--printf("%s squad_comander %s npc_id %s", npc:name(), tostring(squad.commander_id), npc:id())
+	return npc:id() == squad.commander_id
+end
+
+--' Пытаемся инициализировать квесты отряда
+function init_squad_task(actor, npc, p1, p2)
+	local squad = db.storage[npc:id()].squad_obj
+
+	if squad == nil then
+		abort("Squad is nil")
+	end
+
+	squad:init_squad_task()
+end
+
+--' Есть ли у отряда случайные задания
+function squad_has_tasks(npc, actor, p1, p2)
+	local squad = db.storage[npc:id()].squad_obj
+
+	if squad == nil then
+		return false
+	end
+	if(squad.current_action) and (squad.current_action.name=="attack_point") then
+		return false
+	end
+	for k,v in pairs(squad.random_tasks) do
+		if(task_manager.get_task_manager():get_task_by_entity_id(v).status~="selected") then
+			return true
+		end
+	end
+	return false
+	--return #squad.random_tasks > 0
+end
+--' Нет ли у отряда случайных заданий
+function squad_hasnt_tasks(npc, actor, p1, p2)
+	local squad = db.storage[npc:id()].squad_obj
+
+	if squad == nil then
+		return true
+	end
+	if(squad.current_action) and (squad.current_action.name=="attack_point") then
+		return true
+	end
+	for k,v in pairs(squad.random_tasks) do
+		if(task_manager.get_task_manager():get_task_by_entity_id(v).status~="selected") then
+			return false
+		end
+	end
+	return true
+
+--	return #squad.random_tasks == 0
+end
+--
+function show_tasks(npc, actor, dialog, phrase)
+	local squad = db.storage[npc:id()].squad_obj
+	if squad == nil then
+		abort("Squad is nil")
+	end
+
+	local news_caption = ""
+	local news_text = ""
+	for k,v in pairs(squad.random_tasks) do
+		local tsk = task_manager.get_task_manager():get_task_by_entity_id(v)
+		if(tsk.status~="selected") then
+			if(tsk.type=="eliminate_smart") then
+				news_caption = game.translate_string(tsk.name)
+				if(tsk.description~="NO_TEXT") then
+					news_text = tsk.description
+				else
+					news_text = game.translate_string("sim_eliminate_smart_text")
+				end
+			elseif(tsk.type=="capture_smart") then
+				local smart_name = smart_names.get_smart_terrain_name(sim_board.get_sim_board().smarts[tsk.target].smrt)
+				if(tsk.task_type==0) then
+					news_caption = game.translate_string(tsk.name)
+				else
+					if(smart_name~=nil) then
+						news_caption = game.translate_string(tsk.name)..": "..smart_name
+					else
+						news_caption = game.translate_string(tsk.name)..": "..sim_board.get_sim_board().smarts[tsk.target].smrt:name()
+					end
+				end
+				if(tsk.description~="NO_TEXT") then
+					news_text = tsk.description
+				else
+					news_text = game.translate_string("sim_capture_smart_text")
+				end
+			elseif(tsk.type=="defend_smart") then
+				news_caption = game.translate_string(tsk.name)
+				if(tsk.description~="NO_TEXT") then
+					news_text = tsk.description
+				else
+					news_text = game.translate_string("sim_defend_smart_text")
+				end
+			elseif(tsk.type=="take_reward") then
+				news_caption = game.translate_string(tsk.name)
+				if(tsk.description~="NO_TEXT") then
+					news_text = tsk.description
+				else
+					news_text = game.translate_string("sim_take_reward_text")
+				end
+			elseif(tsk.type=="sos") then
+				news_caption = game.translate_string(tsk.name)
+				if(tsk.description~="NO_TEXT") then
+					news_text = tsk.description
+				else
+					news_text = game.translate_string("sim_sos_text")
+				end
+			elseif(tsk.type=="bring_item") then
+				news_caption = game.translate_string("sim_bring_item")
+				local s = ""
+				for k,v in pairs(tsk.requested_items) do
+					local name = game.translate_string(system_ini():r_string(k, "inv_name")).." x"..#v
+					if(s~="") then
+						s = s..", "..name
+					else
+						s = name
+					end
+				end
+				s = s.."."
+				news_text = s
+			elseif(tsk.type=="recover_item") then
+				news_caption = game.translate_string("sim_recover_item")
+				local name = game.translate_string(system_ini():r_string(tsk.requested_item, "inv_name"))
+				news_text = name.."."
+			elseif(tsk.type=="eliminate_squad") then
+				news_caption = game.translate_string(tsk.name)
+				if(tsk.description~="NO_TEXT") then
+					news_text = tsk.description
+				else
+					news_text = game.translate_string("sim_eliminate_squad_text")
+				end
+			else
+				news_caption = game.translate_string("test_storyline_task")
+				news_text = game.translate_string("test_storyline_task_text")
+			end
+--			npc:give_talk_message(news_text, "ui_iconsTotal_lost_money", "iconed_answer_item")
+			npc:give_talk_message2(news_caption, news_text, "ui_iconsTotal_"..tsk.type, "iconed_answer_item")
+		end
+	end
+end
+
+function show_description(npc, dialog_name, phrase_id)
+	local squad = db.storage[npc:id()].squad_obj
+	if squad == nil then
+		abort("Squad is nil")
+	end
+	for k,v in pairs(squad.random_tasks) do
+		local tsk = task_manager.get_task_manager():get_task_by_entity_id(v)
+		if(tsk.status~="selected") then
+			if(tsk.type=="recover_item") then
+				return tsk.text
+			end
+		end
+	end
+	return ""
+end
+--' Есть ли у отряда случайные задания на захват смарта
+function squad_has_capture_tasks(actor, npc, p1, p2, p3)
+	local squad = db.storage[npc:id()].squad_obj
+
+	if squad == nil then
+		abort("Squad is nil")
+	end
+	printf("CHECK HAS TASK [%s][%s][%s]", tostring(p1), tostring(p2), tostring(p3))
+	if(squad.random_tasks[tonumber(p3)-10]~=nil) then
+		local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[tonumber(p3)-10])
+		return task.status~="selected"
+	else
+		return false
+	end
+--	return squad.random_tasks[tonumber(p3)-10] ~= nil
+end
+--' Выдать таск на захват смарта
+function give_squad_capture_task(npc, actor, p1, p2)
+	local squad = db.storage[npc:id()].squad_obj
+
+	if squad == nil then
+		abort("Squad is nil")
+	end
+	if tonumber(p2) == 43 then
+		p2 = 23
+	end
+	if(squad.random_tasks[tonumber(p2)-20]==nil) then
+		return
+	end
+	local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[tonumber(p2)-20])
+	local player = sim_board.get_sim_board().players[squad.player_id]
+	task:give_task(player.player_name)
+	task.squad = squad
+	if sr_recoveritem.target_sr then
+		if(squad.random_tasks[3]~=nil) then
+			local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[3])
+			if task.status ~= "selected" then
+				db.storage.table_squad_for_recoveritem[squad.squad_id] = nil
+			end
+		end
+	end
+end
+
+function squad_hasnt_capture_tasks(actor, npc, p1, p2, p3)
+	local squad = db.storage[npc:id()].squad_obj
+	if squad == nil then
+		abort("Squad is nil")
+	end
+	if sr_recoveritem.target_sr then
+		if(squad.random_tasks[3]~=nil) then
+			local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[3])
+			if task.status ~= "selected" then
+				db.storage.table_squad_for_recoveritem[squad.squad_id] = nil
+			end
+		end
+	end
+end
+
+function is_bring_item_task(actor, npc)
+	local squad = db.storage[npc:id()].squad_obj
+	if squad == nil then
+		return false
+	end
+	if(squad.random_tasks[4]~=nil) then
+		local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[4])
+    	return task.state=="have_item"
+	else
+		return false
+	end
+end
+
+function transfer_bringed_item(actor, npc)
+	local squad = db.storage[npc:id()].squad_obj
+	if squad == nil then
+		return false
+	end
+	local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[4])
+	task:transfer_items_looking_for(npc)
+	squad.random_tasks[4] = nil
+end
+
+function create_task_answer_phrase(npc, dialog_name, phrase_id)
+	local string = ""
+	if(phrase_id=="15") then
+		string = game.translate_string("tm_random_task_15")
+	elseif(phrase_id=="14") then
+		string = game.translate_string("tm_random_task_14")
+	elseif(phrase_id=="13") then
+		local task = task_manager.get_task_manager():get_task_by_entity_id(db.storage[npc:id()].squad_obj.random_tasks[tonumber(phrase_id)-10])
+		string = game.translate_string("sim_recover_item").." "..game.translate_string(system_ini():r_string(task.requested_item, "inv_name"))
+	else
+		local task = task_manager.get_task_manager():get_task_by_entity_id(db.storage[npc:id()].squad_obj.random_tasks[tonumber(phrase_id)-10])
+		local smt = sim_board.get_sim_board().smarts[task.target].smrt
+		local name = smart_names.get_smart_terrain_name(smt)
+		if(name==nil) then
+			name = smt:name()
+		end
+		string = game.translate_string("tm_random_task_11").." "..name
+	end
+	return string
+end
+
+function is_recover_item_task(actor, npc)
+	local squad = db.storage[npc:id()].squad_obj
+	if squad == nil then
+		return false
+	end
+	if(squad.random_tasks[3]~=nil) and (npc:id() == squad.commander_id) then
+		local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[3])
+		if task.commander_id == npc:id() then
+		   	return task.state=="have_item"
+		end
+	end
+	return false
+end
+
+function transfer_recovered_item(actor, npc)
+	local squad = db.storage[npc:id()].squad_obj
+	if squad == nil then
+		return false
+	end
+	local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[3])
+	task:transfer_items_looking_for(npc)
+	if sr_recoveritem.target_sr then
+		db.storage.recoveritem_table[db.storage.remember_target_for_recoveritem[squad.squad_id]] = db.storage[db.storage.remember_target_for_recoveritem[squad.squad_id]].object
+		db.storage.remember_target_for_recoveritem[squad.squad_id] = nil
+		sr_recoveritem.target_sr = nil
+	end
+	local board_squads = sim_board.get_sim_board().squads
+	for k,v in pairs(board_squads) do
+		v.random_tasks[3] = nil
+	end
+end
+
+--' Есть ли награда
+function rewarder_has_reward(npc, actor)
+	local tm = task_manager.get_task_manager()
+
+	--' Определяем за какую группировку отвечает нпс
+	local community = nil
+	local npc_id = npc:id()
+	for k,v in pairs(tm.rewarders) do
+		if v == npc_id then
+			community = k
+			break
+		end
+	end
+
+	if community == nil then
+		return false
+	end
+
+	if tm.rewards[community] == nil then
+		return false
+	end
+
+	print_table(tm.rewards)
+
+	return #tm.rewards[community] > 0
+end
+
+--' Нет ли награды
+function rewarder_hasnt_reward(npc, actor)
+	local tm = task_manager.get_task_manager()
+
+	--' Определяем за какую группировку отвечает нпс
+	local community = nil
+	local npc_id = npc:id()
+	for k,v in pairs(tm.rewarders) do
+		if v == npc_id then
+			community = k
+			break
+		end
+	end
+
+	if community == nil then
+		return true
+	end
+
+	if tm.rewards[community] == nil then
+		return true
+	end
+
+	return #tm.rewards[community] == 0
+end
+
+--' Выдать награду
+function rewarder_give_reward(npc, actor, p1, p2)
+	local tm = task_manager.get_task_manager()
+
+	--' Определяем за какую группировку отвечает нпс
+	local community = nil
+	local npc_id = npc:id()
+	for k,v in pairs(tm.rewarders) do
+		if v == npc_id then
+			community = k
+			break
+		end
+	end
+	local amount_money = 0
+	local ancillary_item_table = {}
+	--' Выдаем награды
+	for k,v in pairs(tm.rewards[community]) do
+		if v.money ~= nil then
+			if type(v.money) == "number" then
+				amount_money = amount_money + v.money
+			else
+				printf(type(v.money))
+				print_table(v.money)
+				abort("v.money not number")
+			end
+		elseif v.item ~= nil then
+			if ancillary_item_table[v.item] == nil then
+				ancillary_item_table[v.item] = 1
+			else
+				ancillary_item_table[v.item] = ancillary_item_table[v.item] + 1
+			end
+		end
+	end
+	if amount_money ~= 0 then
+		dialogs.relocate_money(npc, amount_money, "in")
+	end
+	for k,v in pairs(ancillary_item_table) do
+		dialogs.relocate_item_section(npc, k, "in", v)
+	end
+	--' Обнуляем список вещей
+	tm.rewards[community] = {}
+end
+
+
+
+
+
+
+
+
+
+
+
+
+--' Пытаемся инициализировать квесты группировки
+function init_faction_task(actor, npc, p1, p2)
+    local tm = task_manager.get_task_manager()
+    --' Определяем за какую группировку отвечает нпс
+    local community = nil
+    local npc_id = npc:id()
+    for k,v in pairs(tm.taskers) do
+		if v == npc_id then
+			community = k
+		end
+		break
+    end
+
+	local faction = sim_board.get_sim_board().players[community]
+
+	if faction == nil then
+		abort("Faction %s doesnt exist", community)
+	end
+
+	faction:init_faction_task()
+end
+
+--' Выдача квестов мозговым центром группировки!
+function faction_hasnt_task(npc, actor)
+	return false
+end
+
+function faction_has_task(npc, actor)
+	return true
+end
+
+--' Показываем игроку какие задания он может взять
+function faction_show_task(npc, actor)
+    local tm = task_manager.get_task_manager()
+    --' Определяем за какую группировку отвечает нпс
+    local community = nil
+    local npc_id = npc:id()
+    for k,v in pairs(tm.taskers) do
+		if v == npc_id then
+			community = k
+		end
+		break
+    end
+
+	local faction = sim_board.get_sim_board().players[community]
+
+	if faction == nil then
+		abort("Faction %s doesnt exist", community)
+	end
+
+	for k,v in pairs(faction.random_tasks) do
+		if k > 5 then
+			return
+		end
+--		db.actor:give_talk_message(game.translate_string(v.id), "ui_iconsTotal_locations", "iconed_trade_info")
+		db.actor:give_talk_message2(game.translate_string(v.id), game.translate_string(v.id), "ui_iconsTotal_locations", "iconed_trade_info")
+	end
+end
+
+function faction_has_prior(actor, npc, p1, p2, p3)
+    local tm = task_manager.get_task_manager()
+    --' Определяем за какую группировку отвечает нпс
+    local community = nil
+    local npc_id = npc:id()
+    for k,v in pairs(tm.taskers) do
+		if v == npc_id then
+			community = k
+		end
+		break
+    end
+
+	local faction = sim_board.get_sim_board().players[community]
+
+	if faction == nil then
+		abort("Faction %s doesnt exist", community)
+	end
+
+	return faction.random_tasks[tonumber(p3)-10] ~= nil
+end
+
+function faction_give_prior(npc, actor, p1, p2)
+    local tm = task_manager.get_task_manager()
+    --' Определяем за какую группировку отвечает нпс
+    local community = nil
+    local npc_id = npc:id()
+    for k,v in pairs(tm.taskers) do
+		if v == npc_id then
+			community = k
+		end
+		break
+    end
+
+	local faction = sim_board.get_sim_board().players[community]
+
+	if faction == nil then
+		abort("Faction %s doesnt exist", community)
+	end
+
+	faction.random_tasks[tonumber(p2)-20]:give_task(community)
+end
+
+
+
+
+
+
+
+
+function mechanic_has_tasks(actor, npc)
+	local tm = task_manager.get_task_manager()
+	tm:select_find_upgrade_task(npc, npc:character_community())
+	for k,v in pairs(tm.inited_find_upgrade_tasks[npc:id()]) do
+		if(v.status=="normal") then
+			return true
+		end
+	end
+	return false
+end
+
+function mechanic_show_tasks(npc, actor, dialog, phrase)
+	local news_text = ""
+	local task_table = task_manager.get_task_manager().inited_find_upgrade_tasks[npc:id()]
+	for k,v in pairs(task_table) do
+		local tsk = v
+		if tsk.status == "normal" then
+			news_text = tsk.item_for_reward
+--			npc:give_talk_message(news_text, "ui_iconsTotal_find_upgrade", "iconed_answer_item")
+			npc:give_talk_message2(game.translate_string("sim_find_upgrade"), news_text, "ui_iconsTotal_find_upgrade", "iconed_answer_item")
+		end
+	end
+end
+
+function give_find_upgrade_task(actor, npc, p1, p2)
+	local community = npc:character_community()
+	local task_table = task_manager.get_task_manager().inited_find_upgrade_tasks[npc:id()]
+	for k,v in pairs(task_table) do
+		if v.status == "normal" then
+			v:give_task(community)
+		end
+	end
+end
+
+function is_find_upgrade_task(actor, npc)
+	local task_table = task_manager.get_task_manager().inited_find_upgrade_tasks[npc:id()]
+	if task_table == nil then
+		return false
+	end
+	for k,v in pairs(task_table) do
+		local task = v
+		if task.state == "have_item" then
+			return true
+		end
+	end
+	return false
+end
+
+function transfer_find_upgrade(actor, npc)
+	local tm = task_manager.get_task_manager()
+	local task_table = tm.inited_find_upgrade_tasks[npc:id()]
+	for k,v in pairs(task_table) do
+		if v.state == "have_item" then
+			v:transfer_items_looking_for(npc)
+			v:finish_task()
+		end
+	end
+
+
+end
+
+function mechanic_need_flash_card(actor, npc)
+	printf("mechanic_need_flash_card")
+	local npc_name = npc:name()
+	local se_obj = alife():object(npc_name)
+	local npc_id = se_obj:profile_name()
+	flash_card_ini = ini_file("misc\\stalkers_flash_info.ltx")
+	if not flash_card_ini:section_exist(npc_id) then
+		printf("no section %s", tostring(npc_id))
+		return false
+	end
+	flash_card_table = {}
+	for i=0, flash_card_ini:line_count(npc_id)-1 do
+		result, section, value  = flash_card_ini:r_line(npc_id, i, "", "")
+		local temp_table = utils.parse_names(value)
+		flash_card_table[i+1] = {}
+		flash_card_table[i+1]["item"] = section
+		flash_card_table[i+1]["price"] = temp_table[1]
+		flash_card_table[i+1]["info"] = temp_table[2]
+	end
+	for k,v in pairs(flash_card_table) do
+		if actor:object(v.item) ~= nil then
+			printf("have object")
+			return true
+		end
+	end
+	printf("no object")
+	return false
+end
+
+function mechanic_proposition(npc, actor, dialog, phrase)
+	local news_caption = ""
+	local news_text = ""
+	for k,v in pairs(flash_card_table) do
+		if actor:object(v.item) ~= nil then
+			local name = game.translate_string(system_ini():r_string(v.item, "inv_name"))
+			local price = v.price
+			news_caption = name
+			news_text = price..game.translate_string("st_rubles")
+--			npc:give_talk_message(news_text, "ui_iconsTotal_lost_money", "iconed_answer_item")
+			npc:give_talk_message2(news_text, "ui_iconsTotal_lost_money", "iconed_answer_item")
+		end
+	end
+end
+
+function mechanic_proposition_answer_phrase(npc, dialog_name, phrase_id)
+	local string = ""
+	local i = phrase_id-10
+	if flash_card_table[i]~=nil then
+		if db.actor:object(flash_card_table[i].item) ~= nil then
+			local name = game.translate_string(system_ini():r_string(flash_card_table[i].item, "inv_name"))
+			local price = flash_card_table[i].price
+			string = name.."/"..price.." RU"
+		end
+	end
+	return string
+end
+
+function mechanic_pay_flash_card(npc, actor, p1, p2)
+	local i = p2-20
+	actor:give_info_portion(flash_card_table[i].info)
+	dialogs.relocate_item_section(npc, flash_card_table[i].item, "out")
+	dialogs.relocate_money(npc, tonumber(flash_card_table[i].price), "in")
+end
+
+

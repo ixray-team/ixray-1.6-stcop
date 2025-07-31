@@ -1,0 +1,35 @@
+[logic]
+active = walker@start
+
+[walker@start]
+path_walk = digger_messenger_safe_place_walk
+path_look = digger_messenger_safe_place_look
+combat_ignore_cond = true
+on_actor_dist_le_nvis = 10 | walker@jump
+meet = no_meet
+
+[walker@jump]
+path_walk = digger_messenger_safe_place_walk
+path_look = digger_messenger_safe_place_jump
+on_signal = jump | remark@jump
+combat_ignore_cond = true
+meet = no_meet
+
+[remark@jump]
+anim = gar_digger_messenger_jump
+;target = digger_messenger_safe_place_jump, 0
+on_signal = anim_end | walker@no_dogs
+combat_ignore_cond = true
+meet = no_meet
+
+[walker@no_dogs]
+path_walk = digger_messenger_no_dogs_walk
+path_look = digger_messenger_no_dogs_look
+;on_info = %=play_sound(gar_digger_messenger_thanks)%, walker@no_dogs_stay
+on_signal = sound_end | walker@no_dogs_stay %+gar_story_got_info_from_digger%
+meet = no_meet
+
+[walker@no_dogs_stay]
+path_walk = digger_messenger_no_dogs_walk
+path_look = digger_messenger_no_dogs_look
+meet = no_meet

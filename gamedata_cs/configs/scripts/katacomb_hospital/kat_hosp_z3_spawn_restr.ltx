@@ -1,0 +1,53 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+hospital_z3_fierce_attack} sr_idle@spawn1
+
+[sr_idle@spawn1]
+on_info = {-hospital_z3_enemy_1 +hospital_z3_spawn_1_on} sr_idle@spawn2 %+hospital_z3_enemy_1 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_1:z3_spawn_way_1)% , sr_idle@spawn2
+
+[sr_idle@spawn2]
+on_info = {-hospital_z3_enemy_2 +hospital_z3_spawn_2_on} sr_idle@spawn3 %+hospital_z3_enemy_2 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_2:z3_spawn_way_2)% , sr_idle@spawn3
+
+[sr_idle@spawn3]
+on_info = {-hospital_z3_enemy_3 +hospital_z3_spawn_3_on} sr_idle@spawn4 %+hospital_z3_enemy_3 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_3:z3_enemy_floor2_3_walk_0)% , sr_idle@spawn4
+
+[sr_idle@spawn4]
+on_info = {-hospital_z3_enemy_4 +hospital_z3_spawn_4_on} sr_idle@spawn5 %+hospital_z3_enemy_4 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_4:z3_enemy_floor2_4_walk_0)% , sr_idle@spawn5
+
+[sr_idle@spawn5]
+on_info = {-hospital_z3_enemy_5 +hospital_z3_spawn_5_on} sr_idle@spawn6 %+hospital_z3_enemy_5 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_5:z3_spawn_way_5)% , sr_idle@spawn6
+
+[sr_idle@spawn6]
+on_info = {-hospital_z3_enemy_6 +hospital_z3_spawn_6_on} sr_idle@spawn7 %+hospital_z3_enemy_6 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_6:z3_spawn_way_6)% , sr_idle@spawn7
+
+[sr_idle@spawn7]
+on_info = {-hospital_z3_enemy_7 +hospital_z3_spawn_7_on} sr_idle@spawn8 %+hospital_z3_enemy_7 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_7:z3_spawn_way_6)% , sr_idle@spawn8
+
+[sr_idle@spawn8]
+on_info = {-hospital_z3_enemy_8 +hospital_z3_spawn_8_on} sr_idle@spawn9 %+hospital_z3_enemy_8 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_8:z3_spawn_way_4)% , sr_idle@spawn9
+
+[sr_idle@spawn9]
+on_info = {-hospital_z3_enemy_9 +hospital_z3_spawn_9_on} sr_idle@spawn10 %+hospital_z3_enemy_9 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_9:z3_spawn_way_4)% , sr_idle@spawn10
+
+[sr_idle@spawn10]
+on_info = {-hospital_z3_enemy_10 +hospital_z3_spawn_10_on} sr_idle@pause %+hospital_z3_enemy_10 =inc_counter(hospital_z3_cout) =spawn_object(kat_hosp_z3_floor2_enemy_10:z3_spawn_way_4)% , sr_idle@pause
+
+
+[sr_idle@pause]
+on_game_timer = 200 | sr_idle@spawn1
+on_info = {+hospital_cs_entrance} sr_idle@pause2
+
+
+[sr_idle@pause2]
+on_game_timer = 150 | sr_idle@spawn3
+on_info = {-hospital_z3_spawn_3_on -hospital_z3_spawn_4_on} sr_idle@2
+
+[sr_idle@2]
+on_info = {+hospital_cs_victory} sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+hospital_z3_enemy_last_wave} sr_idle@3 %=spawn_object(kat_hosp_z3_floor2_enemy_4:z3_spawn_way_6) =spawn_object(kat_hosp_z3_floor2_enemy_5:z3_spawn_way_5) =spawn_object(kat_hosp_z3_floor2_enemy_6:z3_spawn_way_reserve_4) =spawn_object(kat_hosp_z3_floor2_enemy_7:z3_spawn_way_reserve_2) =spawn_object(kat_hosp_z3_floor2_enemy_7:z3_spawn_way_reserve_2) =spawn_object(kat_hosp_z3_floor2_enemy_5:z3_spawn_way_reserve_1) =spawn_object(kat_hosp_z3_floor2_enemy_6:z3_spawn_way_reserve_4) =spawn_object(kat_hosp_z3_floor2_enemy_7:z3_spawn_way_reserve_2)%
+
+[sr_idle@3]

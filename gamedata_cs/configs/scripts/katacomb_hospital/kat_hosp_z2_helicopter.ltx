@@ -1,0 +1,321 @@
+[logic]
+active = heli_move@hide
+
+[heli_move@hide]
+path_move = z2_heli_hide
+on_info = {+hospital_z2_enter} heli_move@hide2
+max_velocity = 10
+engine_sound = false 
+
+[heli_move@hide2]
+path_move = z2_heli_hide
+on_game_timer = 100 | heli_move@move
+max_velocity = 10
+engine_sound = false
+immortal = true
+
+[heli_move@move]
+path_move = z2_heli_move
+max_velocity = 100
+on_signal = see | heli_move@move2 %+hospital_heli_see_enemy%
+immortal = true
+
+
+[heli_move@move2]
+path_move = z2_heli_move_2
+path_look = z2_heli_look_idle
+max_velocity = 35
+on_info = {+hospital_heli_start_attack} heli_move@ne
+immortal = true
+
+[heli_move@show_fire]
+path_move = z2_heli_move_nw
+path_look = z2_heli_show_fire_1
+
+;-- не следит за игроком
+[heli_move@ne]
+path_move = z2_heli_move_nw
+path_look = heli_z2_ne_look ;z2_heli_look_idle
+use_rocket = false
+on_info = {+hospital_z2_actor_nw} heli_move@nw
+on_info2 = {+hospital_z2_actor_sw} heli_move@move_n_w_s
+on_info3 = {+hospital_z2_actor_se} heli_move@move_n_e_s
+on_info4 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info5 = {=heli_health_le(0.05)} heli_move@crash
+on_actor_in_zone = kat_hosp_z2_heli_hunt_restr | heli_move@actor_hunt_n
+max_velocity = 25
+enemy = all
+upd_vis = 8
+show_health = true
+immortal = true
+;fire_point = z2_heli_show_fire_4
+
+
+[heli_move@nw]
+path_move = z2_heli_move_nw
+path_look = heli_z2_nw_look ;z2_heli_look_idle
+use_rocket = false
+on_info = {+hospital_z2_actor_ne} heli_move@ne
+on_info2 = {+hospital_z2_actor_sw} heli_move@move_n_w_s
+on_info3 = {+hospital_z2_actor_se} heli_move@move_n_e_s
+on_info4 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info5 = {=heli_health_le(0.05)} heli_move@crash
+on_actor_in_zone = kat_hosp_z2_heli_hunt_restr | heli_move@actor_hunt_n
+max_velocity = 25
+enemy = all
+upd_vis = 8
+show_health = true
+immortal = true
+;fire_point = z2_heli_show_fire_5
+
+
+;-- следит за игроком
+[heli_move@actor_hunt_n]
+path_move = z2_heli_move_n
+path_look = actor 
+use_rocket = false
+;on_info = {+hospital_z2_actor_sw} heli_move@move_n_w_s
+;on_info2 = {+hospital_z2_actor_se} heli_move@move_n_e_s
+;on_info3 = {+hospital_z2_rpg_run} heli_move@rpg_1
+;on_info4 = {=heli_health_le(0.05)} heli_move@crash 
+;on_actor_not_in_zone = kat_hosp_z2_heli_hunt_restr | heli_move@nw
+max_velocity = 25
+upd_vis = 7
+enemy = all;actor
+stop_fire = true
+show_health = true
+immortal = true
+fire_point = z2_heli_show_fire_4
+on_game_timer = 30 | heli_move@actor_hunt_n2
+
+[heli_move@actor_hunt_n2]
+path_move = z2_heli_move_n
+path_look = actor 
+use_rocket = false
+on_info = {+hospital_z2_actor_sw} heli_move@move_n_w_s
+on_info2 = {+hospital_z2_actor_se} heli_move@move_n_e_s
+on_info3 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info4 = {=heli_health_le(0.05)} heli_move@crash 
+on_actor_not_in_zone = kat_hosp_z2_heli_hunt_restr | heli_move@nw
+max_velocity = 25
+enemy = all
+upd_vis = 7
+stop_fire = true
+show_health = true
+immortal = true
+
+
+[heli_move@move_n_w_s]
+path_move = z2_heli_move_n_w_s
+path_look = z2_heli_look_idle
+use_rocket = false
+on_info = {+hospital_z2_actor_nw} heli_move@move_s_w_n
+on_info2 = {+hospital_z2_actor_ne} heli_move@move_s_w_n
+on_info3 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info4 = {=heli_health_le(0.05)} heli_move@crash
+on_signal = hunt | heli_move@sw
+max_velocity = 25
+enemy = all;actor
+upd_vis = 5
+show_health = true
+immortal = true
+fire_point = z2_heli_show_fire_2
+
+
+[heli_move@move_n_e_s]
+path_move = z2_heli_move_n_e_s
+path_look = z2_heli_look_idle
+use_rocket = false
+on_info = {+hospital_z2_actor_nw} heli_move@move_s_e_n
+on_info2 = {+hospital_z2_actor_ne} heli_move@move_s_e_n
+on_info3 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info4 = {=heli_health_le(0.05)} heli_move@crash
+on_signal = hunt | heli_move@se
+max_velocity = 25
+enemy = all;actor
+upd_vis = 5
+show_health = true
+immortal = true
+fire_point = z2_heli_show_fire_1
+
+
+
+;-- не следит за игроком
+[heli_move@sw]
+path_move = heli_z2_se_walk			;--z2_heli_move_s
+path_look = heli_z2_sw_look ;z2_heli_look_idle
+use_rocket = false
+on_info = {+hospital_z2_actor_se} heli_move@se
+on_info2 = {+hospital_z2_actor_nw} heli_move@move_s_w_n
+on_info3 = {+hospital_z2_actor_ne} heli_move@move_s_e_n
+on_info4 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info5 = {=heli_health_le(0.05)} heli_move@crash
+on_actor_in_zone = kat_hosp_z2_heli_hunt_restr | heli_move@actor_hunt_s
+max_velocity = 25
+enemy = all
+upd_vis = 8
+show_health = true
+immortal = true
+;fire_point = z2_heli_show_fire_1
+
+
+[heli_move@se]
+path_move = heli_z2_se_walk
+path_look = heli_z2_se_look ;z2_heli_look_idle
+use_rocket = false
+on_info = {+hospital_z2_actor_sw} heli_move@sw
+on_info2 = {+hospital_z2_actor_nw} heli_move@move_s_w_n
+on_info3 = {+hospital_z2_actor_ne} heli_move@move_s_e_n
+on_info4 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info5 = {=heli_health_le(0.05)} heli_move@crash
+on_actor_in_zone = kat_hosp_z2_heli_hunt_restr | heli_move@actor_hunt_s
+max_velocity = 25
+enemy = all
+upd_vis = 8
+show_health = true
+immortal = true
+;fire_point = z2_heli_show_fire_2
+
+
+;-- следит за игроком
+[heli_move@actor_hunt_s]
+path_move = z2_heli_move_s
+path_look = actor 
+use_rocket = false
+;on_info = {+hospital_z2_actor_nw} heli_move@move_s_w_n
+;on_info2 = {+hospital_z2_actor_ne} heli_move@move_s_e_n
+;on_info3 = {+hospital_z2_rpg_run} heli_move@rpg_1
+;on_info4 = {=heli_health_le(0.05)} heli_move@crash
+;on_actor_not_in_zone = kat_hosp_z2_heli_hunt_restr | heli_move@sw
+max_velocity = 25
+upd_vis = 7
+enemy = all;actor
+stop_fire = true
+show_health = true
+immortal = true
+fire_point = z2_heli_show_fire_3
+on_game_timer = 30 | heli_move@actor_hunt_s2
+
+[heli_move@actor_hunt_s2]
+path_move = z2_heli_move_s
+path_look = actor 
+use_rocket = false
+on_info = {+hospital_z2_actor_nw} heli_move@move_s_w_n
+on_info2 = {+hospital_z2_actor_ne} heli_move@move_s_e_n
+on_info3 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info4 = {=heli_health_le(0.05)} heli_move@crash
+on_actor_not_in_zone = kat_hosp_z2_heli_hunt_restr | heli_move@sw
+max_velocity = 25
+enemy = all;actor
+upd_vis = 7
+stop_fire = true
+show_health = true
+immortal = true
+
+
+[heli_move@move_s_e_n]
+path_move = z2_heli_move_s_e_n
+path_look = z2_heli_look_idle
+use_rocket = false
+on_info = {+hospital_z2_actor_sw} heli_move@move_n_e_s
+on_info2 = {+hospital_z2_actor_se} heli_move@move_n_e_s
+on_info3 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info4 = {=heli_health_le(0.05)} heli_move@crash
+on_signal = hunt | heli_move@ne
+max_velocity = 25
+enemy = all;actor
+upd_vis = 5
+show_health = true
+immortal = true
+fire_point = z2_heli_show_fire_5
+
+
+[heli_move@move_s_w_n]
+path_move = z2_heli_move_s_w_n
+path_look = z2_heli_look_idle
+use_rocket = false
+on_info = {+hospital_z2_actor_sw} heli_move@move_n_w_s
+on_info2 = {+hospital_z2_actor_se} heli_move@move_n_w_s
+on_info3 = {+hospital_z2_rpg_run} heli_move@rpg_1
+on_info4 = {=heli_health_le(0.05)} heli_move@crash
+on_signal = hunt | heli_move@nw
+max_velocity = 25
+enemy = all;actor
+upd_vis = 5
+show_health = true
+immortal = true
+fire_point = z2_heli_show_fire_5
+
+
+[heli_move@rpg_1]
+path_move = z2_heli_wait
+path_look = z2_heli_fire
+use_rocket = false
+max_velocity = 25
+on_info = {+hospital_z2_rpg_fire} heli_move@rpg_2
+immortal = true
+show_health = true
+
+
+[heli_move@rpg_2]
+path_move = z2_heli_dodge
+path_look = z2_heli_fire
+max_velocity = 25
+on_info = {+hospital_z2_heli_fire} heli_move@rpg_3
+;fire_point = z2_heli_fire
+use_rocket = false
+show_health = true
+immortal = true
+
+[heli_move@rpg_3]
+path_move = z2_heli_dodge
+path_look = z2_heli_fire
+max_velocity = 25
+on_info = {-hospital_z2_rpg_fire} heli_move@se
+fire_point = z2_heli_fire
+use_rocket = false
+show_health = true
+immortal = true
+
+[heli_move@crash1]
+on_info = %=play_sound(helicopter_killed:army:lname_stalker_243)%
+path_move = z2_heli_move_crash_0
+;path_look = z2_heli_move_crash_look
+max_velocity = 100
+immortal = true
+on_signal = action | heli_move@crash1
+enemy = nil
+upd_vis = 1
+use_mgun = false
+use_rocket = false
+
+
+[heli_move@crash]
+on_info = %=play_sound(helicopter_killed:army:lname_stalker_243)%
+path_move = z2_heli_move_crash
+;path_look = z2_heli_move_crash_look
+max_velocity = 90 ;120
+immortal = true
+;on_game_timer = 40 | nil %=heli_die +hospital_z2_heli_crash +katacomb_task_z2_exit =run_cam_effector(kat_heli_down)%
+on_npc_in_zone = 209 | kat_hosp_z2_helicopter_restr | nil %=heli_die +hospital_z2_heli_crash +katacomb_task_z2_exit =run_cam_effector(kat_heli_down)%
+on_signal = action | nil %=heli_die +hospital_z2_heli_crash +katacomb_task_z2_exit =run_cam_effector(kat_heli_down)%
+enemy = nil
+use_mgun = false
+use_rocket = false
+
+[heli_move@crash_s]
+on_info = %=play_sound(helicopter_killed:army:lname_stalker_243)%
+path_move = z2_heli_move_crash
+path_look = z2_heli_move_crash_look
+max_velocity = 120
+immortal = true
+;on_game_timer = 70 | nil %=heli_die +hospital_z2_heli_crash +katacomb_task_z2_exit =run_cam_effector(kat_heli_down)%
+on_npc_in_zone = 209 | kat_hosp_z2_helicopter_restr | nil %=heli_die +hospital_z2_heli_crash +katacomb_task_z2_exit =run_cam_effector(kat_heli_down)%
+on_signal = action | nil %=heli_die +hospital_z2_heli_crash +katacomb_task_z2_exit =run_cam_effector(kat_heli_down)%
+enemy = nil
+use_mgun = false
+use_rocket = false
+
+[heli_move@crash2]
+path_move = z2_heli_move_crash
+max_velocity = 35

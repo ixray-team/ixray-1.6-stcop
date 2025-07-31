@@ -1,0 +1,23 @@
+[logic]
+active = remark
+relation = enemy
+on_death = death
+
+[death]
+on_info = %=dec_counter(lim_square_enemy_count)%
+
+[remark]
+show_spot = false
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hide_na
+on_info = {+lim_condition5} %=hit_npc_from_actor =make_actor_visible_to_npc% smartcover@1
+
+[smartcover@1]
+def_state_moving = assault
+use_in_combat = true
+out_restr = $script_id$
+cover_name = $script_id$_cover
+;target_path = $script_id$_fire_point
+;cover_state = fire_target
+on_info = {+lim_military_minigun_out !actor_see_npc =dist_to_actor_ge(50)} %=destroy_object%

@@ -1,0 +1,220 @@
+[list_tm_upgrades]
+mar_find_flesh_up_ac_mp5
+mar_find_flesh_up_bd_mp5
+mar_find_flesh_up_a_novice_outfit
+esc_find_flesh_up_ac_wincheaster1300
+esc_find_flesh_up_bd_wincheaster1300
+esc_find_flesh_up_ac_ak74u
+gar_find_flesh_up_fh_scientific_outfit
+gar_find_flesh_up_aceg_scientific_outfit
+gar_find_flesh_up_bdfh_scientific_outfit
+val_find_flesh_up_ab_svu
+val_find_flesh_up_cd_svu
+val_find_flesh_up_abcd_svu
+agr_find_flesh_up_ab_pkm
+agr_find_flesh_up_cd_pkm
+agr_find_flesh_up_abcd_pkm
+agr_find_flesh_up_ac_desert_eagle
+agr_find_flesh_up_bd_desert_eagle
+agr_find_flesh_up_ac_spas12
+
+;***************************************************
+;  весты на нахождение апгрейдов.
+;***************************************************
+[mar_find_flesh_up_ac_mp5]
+type = find_upgrade
+task_type = additional
+name = st_mar_find_flesh_up_ac_mp5_name
+text = st_mar_find_flesh_up_ac_mp5_text
+on_complete = %+info_up_ac_mp5%
+target_cond = {=check_npc_name(mar_csky_tech) -info_up_ac_mp5} true
+cost = 1125
+requested_item = flesh_up_ac_mp5
+reward_upgr = wpn_mp5, up_ac_mp5
+
+[mar_find_flesh_up_bd_mp5]
+type = find_upgrade
+task_type = additional
+name = st_mar_find_flesh_up_bd_mp5_name
+text = st_mar_find_flesh_up_bd_mp5_text
+on_complete = %+info_up_bd_mp5%
+target_cond = {=check_npc_name(mar_csky_tech) -info_up_bd_mp5} true
+cost = 1125
+requested_item = flesh_up_bd_mp5
+reward_upgr = wpn_mp5, up_bd_mp5
+
+[mar_find_flesh_up_a_novice_outfit]
+type = find_upgrade
+task_type = additional
+name = st_mar_find_flesh_up_a_novice_outfit_name
+text = st_mar_find_flesh_up_a_novice_outfit_text
+on_complete = %+info_up_a_novice_outfit%
+target_cond = {=check_npc_name(mar_csky_tech) -info_up_a_novice_outfit} true
+cost = 1000
+requested_item = flesh_up_a_novice_outfit
+reward_upgr = novice_outfit, up_a_novice_outfit
+
+[esc_find_flesh_up_ac_wincheaster1300]
+type = find_upgrade
+task_type = additional
+name = st_esc_find_flesh_up_ac_wincheaster1300_name
+text = st_esc_find_flesh_up_ac_wincheaster1300_text
+on_complete = %+info_up_ac_wincheaster1300%
+target_cond = {=check_npc_name(esc_stalker_mechanic) -info_up_ac_wincheaster1300} true
+cost = 750
+requested_item = flesh_up_ac_wincheaster1300
+reward_upgr = wpn_wincheaster1300, up_ac_wincheaster1300
+
+[esc_find_flesh_up_bd_wincheaster1300]
+type = find_upgrade
+task_type = additional
+name = st_esc_find_flesh_up_bd_wincheaster1300_name
+text = st_esc_find_flesh_up_bd_wincheaster1300_text
+on_complete = %+info_up_bd_wincheaster1300%
+target_cond = {=check_npc_name(esc_stalker_mechanic) -info_up_bd_wincheaster1300} true
+cost = 750
+requested_item = flesh_up_bd_wincheaster1300
+reward_upgr = wpn_wincheaster1300, up_bd_wincheaster1300
+
+[esc_find_flesh_up_ac_ak74u]
+type = find_upgrade
+task_type = additional
+name = st_esc_find_flesh_up_ac_ak74u_name
+text = st_esc_find_flesh_up_ac_ak74u_text
+on_complete = %+info_up_ac_ak74u%
+target_cond = {=check_npc_name(esc_stalker_mechanic) -info_up_ac_ak74u} true
+cost = 1355
+requested_item = flesh_up_ac_ak74u
+reward_upgr = wpn_ak74u, up_ac_ak74u
+
+[gar_find_flesh_up_fh_scientific_outfit]
+type = find_upgrade
+task_type = additional
+name = st_gar_find_flesh_up_fh_scientific_outfit_name
+text = st_gar_find_flesh_up_fh_scientific_outfit_text
+on_complete = %+info_up_fh_scientific_outfit%
+target_cond = {=check_npc_name(gar_bandit_fixer) -info_up_fh_scientific_outfit} true
+cost = 9375
+requested_item = flesh_up_fh_scientific_outfit
+reward_upgr = scientific_outfit, up_fh_scientific_outfit
+
+[gar_find_flesh_up_bdfh_scientific_outfit]
+type = find_upgrade
+task_type = additional
+name = st_gar_find_flesh_up_bdfh_scientific_outfit_name
+text = st_gar_find_flesh_up_bdfh_scientific_outfit_text
+on_complete = %+info_up_bdfh_scientific_outfit%
+target_cond = {=check_npc_name(gar_bandit_fixer) -info_up_bdfh_scientific_outfit} true
+cost = 12500
+requested_item = flesh_up_bdfh_scientific_outfit
+reward_upgr = scientific_outfit, up_bdfh_scientific_outfit
+
+[gar_find_flesh_up_aceg_scientific_outfit]
+type = find_upgrade
+task_type = additional
+name = st_gar_find_flesh_up_aceg_scientific_outfit_name
+text = st_gar_find_flesh_up_aceg_scientific_outfit_text
+on_complete = %+info_up_aceg_scientific_outfit%
+target_cond = {=check_npc_name(gar_bandit_fixer) -info_up_aceg_scientific_outfit} true
+cost = 12500
+requested_item = flesh_up_aceg_scientific_outfit
+reward_upgr = scientific_outfit, up_aceg_scientific_outfit
+
+[val_find_flesh_up_ab_svu]
+type = find_upgrade
+task_type = additional
+name = st_val_find_flesh_up_ab_svu_name
+text = st_val_find_flesh_up_ab_svu_text
+on_complete = %+info_up_ab_svu%
+target_cond = {=check_npc_name(val_freedom_fixer) -info_up_ab_svu} true
+cost = 3750
+requested_item = flesh_up_ab_svu
+reward_upgr = wpn_svu, up_ab_svu
+
+[val_find_flesh_up_cd_svu]
+type = find_upgrade
+task_type = additional
+name = st_val_find_flesh_up_cd_svu_name
+text = st_val_find_flesh_up_cd_svu_text
+on_complete = %+info_up_cd_svu%
+target_cond = {=check_npc_name(val_freedom_fixer) -info_up_cd_svu} true
+cost = 3750
+requested_item = flesh_up_cd_svu
+reward_upgr = wpn_svu, up_cd_svu
+
+[val_find_flesh_up_abcd_svu]
+type = find_upgrade
+task_type = additional
+name = st_val_find_flesh_up_abcd_svu_name
+text = st_val_find_flesh_up_abcd_svu_text
+on_complete = %+info_up_abcd_svu%
+target_cond = {=check_npc_name(val_freedom_fixer) -info_up_abcd_svu} true
+cost = 6250
+requested_item = flesh_up_abcd_svu
+reward_upgr = wpn_svu, up_abcd_svu
+
+[agr_find_flesh_up_ab_pkm]
+type = find_upgrade
+task_type = additional
+name = st_agr_find_flesh_up_ab_pkm_name
+text = st_agr_find_flesh_up_ab_pkm_text
+on_complete = %+info_up_ab_pkm%
+target_cond = {=check_npc_name(agr_duty_mechanic) -info_up_ab_pkm} true
+cost = 7500
+requested_item = flesh_up_ab_pkm
+reward_upgr = wpn_pkm, up_ab_pkm
+
+[agr_find_flesh_up_cd_pkm]
+type = find_upgrade
+task_type = additional
+name = st_agr_find_flesh_up_cd_pkm_name
+text = st_agr_find_flesh_up_cd_pkm_text
+on_complete = %+info_up_cd_pkm%
+target_cond = {=check_npc_name(agr_duty_mechanic) -info_up_cd_pkm} true
+cost = 7500
+requested_item = flesh_up_cd_pkm
+reward_upgr = wpn_pkm, up_cd_pkm
+
+[agr_find_flesh_up_abcd_pkm]
+type = find_upgrade
+task_type = additional
+name = st_agr_find_flesh_up_abcd_pkm_name
+text = st_agr_find_flesh_up_abcd_pkm_text
+on_complete = %+info_up_abcd_pkm%
+target_cond = {=check_npc_name(agr_duty_mechanic) -info_up_abcd_pkm} true
+cost = 12500
+requested_item = flesh_up_abcd_pkm
+reward_upgr = wpn_pkm, up_abcd_pkm
+
+[agr_find_flesh_up_ac_desert_eagle]
+type = find_upgrade
+task_type = additional
+name = st_agr_find_flesh_up_ac_desert_eagle_name
+text = st_agr_find_flesh_up_ac_desert_eagle_text
+on_complete = %+info_up_ac_desert_eagle%
+target_cond = {=check_npc_name(agr_stalker_base_mechanic) -info_up_ac_desert_eagle} true
+cost = 1125
+requested_item = flesh_up_ac_desert_eagle
+reward_upgr = wpn_desert_eagle, up_ac_desert_eagle
+
+[agr_find_flesh_up_bd_desert_eagle]
+type = find_upgrade
+task_type = additional
+name = st_agr_find_flesh_up_bd_desert_eagle_name
+text = st_agr_find_flesh_up_bd_desert_eagle_text
+on_complete = %+info_up_bd_desert_eagle%
+target_cond = {=check_npc_name(agr_stalker_base_mechanic) -info_up_bd_desert_eagle} true
+cost = 1125
+requested_item = flesh_up_bd_desert_eagle
+reward_upgr = wpn_desert_eagle, up_bd_desert_eagle
+
+[agr_find_flesh_up_ac_spas12]
+type = find_upgrade
+task_type = additional
+name = st_agr_find_flesh_up_ac_spas12_name
+text = st_agr_find_flesh_up_ac_spas12_text
+on_complete = %+info_up_ac_spas12%
+target_cond = {=check_npc_name(agr_stalker_base_mechanic) -info_up_ac_spas12} true
+cost = 1125
+requested_item = flesh_up_ac_spas12
+reward_upgr = wpn_spas12, up_ac_spas12

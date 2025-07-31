@@ -1,0 +1,12 @@
+[logic]
+active = walker
+
+[walker]
+path_walk = stc_battle_walk_2
+out_restr = stc_battle_restr_2
+invulnerable = true
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault 
+combat_ignore_cond = {=is_enemy_actor}
+combat_ignore_keep_when_attacked = true

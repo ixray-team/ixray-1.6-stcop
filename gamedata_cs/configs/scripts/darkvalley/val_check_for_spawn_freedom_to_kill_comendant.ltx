@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+val_kill_debill} sr_idle@2 %+val_kill_debill_spawn_freedom%
+ 
+[sr_idle@2]
+on_game_timer = 20 | nil %+val_killer_on_position_pric%

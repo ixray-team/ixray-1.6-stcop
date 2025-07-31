@@ -1,0 +1,410 @@
+----------------------------------------------------------------------------------------------------
+-- Cameras
+----------------------------------------------------------------------------------------------------
+-- »сходный скрипт: Oleg Hryptul (Haron) haronk@ukr.net
+----------------------------------------------------------------------------------------------------
+
+local camera_off = 0
+local camera_enemy_tracking = 1
+local camera_move = 2
+local camera_pause = 3
+
+class "action_camera_activity"
+
+----------------------------------------------------------------------------------------------------
+-- Constructor
+----------------------------------------------------------------------------------------------------
+function action_camera_activity:__init(obj, storage)
+	self.object = obj
+	self.st     = storage
+
+	self.path   = nil
+	self.num_wp = 0  -- количество вейпоинтов, между которыми будем двигать камеру
+	self.cur_wp = -1 -- текущий вейпоинт, к которому мы двигаемс€
+	self.move_direction = 1 -- направление движени€ по вейпоинтам: 1 - вперед, (-1) - назад
+    self.track_enemy = nil -- вражеский сталкер
+	self.ocular_joint = nil -- джоинт окул€ра камеры
+	self.pause = false
+	self.pause_start = 0
+	
+	self.state = camera_off
+	self.enemy_pos = nil
+	
+	printf("_hr: action_camera_activity:__init")
+end
+
+function action_camera_activity:reset_scheme()
+	printf("_hr: action_camera_activity:reset_scheme: self.object:name()='%s'", self.object:name())
+	
+	--self.st.signals = {}
+
+	xr_logic.mob_capture(self.object, true)
+
+	if self.st.state == "path_tracking" then
+		self.state = camera_move
+		
+	    if self.path == nil then
+		    self.path = patrol(self.st.path_look)
+	    end
+	    self.num_wp = self.path:count()
+	    self.cur_wp = self.st.start_wp
+    	
+	    action(self.object, look(self.path:point(self.cur_wp), self.st.speed_h, self.st.speed_p), cond(cond.look_end))
+	--elseif self.st.state == "range_tracking" then
+    end
+    
+    self.st.signals = {}
+end
+
+function rad2deg(r)
+	return r * 180.0 / math.pi
+end
+
+function deg2rad(d)
+	return d * math.pi / 180.0
+end
+
+function angle_diff(a1, a2)
+	--local x1, y1, z1 = a1.x, a1.y, a1.z
+	--local x2, y2, z2 = a2.x, a2.y, a2.z
+	--local dotp = (x1*x2+y1*y2+z1*z2)/math.sqrt((x1*x1+y1*y1+z1*z1)*(x2*x2+y2*y2+z2*z2))
+	local b1 = a1:normalize()
+	local b2 = a2:normalize()
+	local dotp = b1:dotproduct(b2)
+--[[
+	if dotp > 0 then
+		if dotp > math.pi then
+			dotp = dotp - 2 * math.pi
+		end
+	elseif dotp < - math.pi then
+		dotp = dotp + 2 * math.pi
+	end
+--]]
+	return rad2deg(math.acos(math.abs(dotp)))
+end
+
+function angle_diff_hp(a1, a2)
+	local res = {}
+	local b1 = vector():set(a1.x, 0, a1.z)
+	local b2 = vector():set(a2.x, 0, a2.z)
+	res.h = angle_diff(b1, b2)
+	b1 = vector():set(0, a1.y, a1.z)
+	b2 = vector():set(0, a2.y, a2.z)
+	res.p = angle_diff(b1, b2)
+	
+	return res
+end
+
+function action_camera_activity:in_focus(a1, a2, dist)
+	local res = false
+	local diff_angle
+	
+	if dist <= self.st.warn_distance then
+		res = true
+	end
+	
+    if self.st.focus_type == "rect" then
+		diff_angle = angle_diff_hp(a1, a2)
+		--printf("_hr: cam_dir(%f,%f,%f) diff_angle(%f)", a1.x, a1.y, a1.z, diff_angle)
+		if diff_angle.h < self.st.focus_angle_h / 2 and
+		   diff_angle.p < self.st.focus_angle_p / 2 then
+			--printf("_hr: res=%s", if_then_else(res,"true","false"))
+			return res
+		end
+    else -- "cone" - default
+		diff_angle = angle_diff(a1, a2)
+		--printf("_hr: cam_dir(%f,%f,%f) diff_angle(%f)", a1.x, a1.y, a1.z, diff_angle)
+		if diff_angle < self.st.focus_angle / 2 then
+			printf("_hr: res=%s angle(%.2f:%.2f) dist(%.2f:%.2f)",
+				if_then_else(res,"true","false"),
+				diff_angle, self.st.focus_angle / 2, dist, self.st.warn_distance)
+			return res 
+		end
+    end
+    
+	printf("_hr: res=false angle(%.2f:%.2f) dist(%.2f:%.2f)",
+		diff_angle, self.st.focus_angle / 2, dist, self.st.warn_distance)
+    return false
+end
+
+function action_camera_activity:update(delta)
+	--printf("_hr: action_camera_activity:update()")
+
+	--if not xr_logic.is_active(self.object, self.st) then
+	--	return
+	--end
+
+	local actor = level.actor()
+	if not actor then
+		return
+	end
+
+	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+		return
+	end
+	
+	--  амера после выхода из alife может уже быть не под скриптом, поэтому вз€ть оп€ть под скрипт
+	if not xr_logic.mob_captured(self.object) then
+		self:reset_scheme()
+		return
+	end
+
+    -- —ледим за сталкером
+    local actor_pos = utils.vector_copy_by_val(actor:bone_position("bip01_head"))
+    local lense_pos = utils.vector_copy_by_val(self.object:bone_position("bone_light"))
+    local actor_dir = utils.vector_copy_by_val(actor_pos):sub(lense_pos)
+    local lense_dir = self.object:get_current_direction()
+    lense_dir.x = - lense_dir.x
+    local dist = lense_pos:distance_to(actor_pos)
+    
+    local a4 = self.object:direction()
+		
+    if self.state == camera_enemy_tracking then
+		--printf("camera state == enemy_tracking")
+		if self:in_focus(lense_dir, actor_dir, dist) then
+			if actor_pos:distance_to_xz(self.enemy_pos) > 0.3 then
+				if self.object:action() then
+					printf("_hr: del SOME action")
+					xr_logic.mob_capture(self.object, true)
+				end
+				self.track_enemy = actor
+				self.enemy_pos = actor_pos
+				
+				printf("_hr: reset TRACKING action")
+				action(self.object, look(actor_pos, 5, 5), cond(cond.look_end))
+			end
+		else
+			if not self.object:action() then
+				self.track_enemy = nil
+				--self.enemy_pos = nil
+				
+				-- ѕровер€ем нужно ли делать паузу
+				if self.st.pause_after_lost_target > 0 then
+					printf("_hr: mode PAUSA time = %d", time_global())
+					self.state = camera_pause
+					self.pause_start = time_global()
+				else --if self.st.signals["enemy_tracking"] then
+					printf("_hr: mode MOVE time = %d", time_global())
+					self.state = camera_move
+					self.st.signals["enemy_tracking"] = false
+				end
+				--printf("_hr:\n  cam_dir(%f,%f,%f) actor_dir(%f,%f,%f)\n  actor_pos(%f,%f,%f) lense_pos(%f,%f,%f)\n  diff_angle(%f) hp(%f,%f)\n",
+				--		lense_dir.x, lense_dir.y, lense_dir.z, actor_dir.x, actor_dir.y, actor_dir.z,
+				--		actor_pos.x, actor_pos.y, actor_pos.z, lense_pos.x, lense_pos.y, lense_pos.z,
+				--		angle_diff(a1, a2),
+				--		rad2deg(a1:getH() - a2:getH()),
+				--		rad2deg(a1:getP() - a2:getP()))
+			end
+		end
+	--end
+    elseif self.state == camera_move then
+		--printf("camera state == camera_move")
+		if self:in_focus(lense_dir, actor_dir, dist) then
+			printf("_hr: mode TRACKING time = %d", time_global())
+			if self.object:action() then
+				printf("_hr: del MOVING action")
+				xr_logic.mob_capture(self.object, true)
+			end
+			--printf("_hr:\n  cam_dir(%f,%f,%f) actor_dir(%f,%f,%f)\n  actor_pos(%f,%f,%f) lense_pos(%f,%f,%f)\n  diff_angle(%f) hp(%f,%f)\n",
+			--		lense_dir.x, lense_dir.y, lense_dir.z, actor_dir.x, actor_dir.y, actor_dir.z,
+			--		actor_pos.x, actor_pos.y, actor_pos.z, lense_pos.x, lense_pos.y, lense_pos.z,
+			--		angle_diff(a1, a2),
+			--		rad2deg(a1:getH() - a2:getH()),
+			--		rad2deg(a1:getP() - a2:getP()))
+			
+			self.state = camera_enemy_tracking
+			self.st.signals["enemy_tracking"] = true
+			self.track_enemy = actor
+			self.enemy_pos = actor_pos
+			
+			printf("_hr: set TRACKING action")
+			action(self.object, look(actor_pos, 5, 5), cond(cond.look_end))
+		else
+			if not self.object:action() then
+				--if self.object:action() then
+				--	xr_logic.mob_capture(self.object, true)
+				--end
+				
+				-- ƒвигаем камеру по пути
+				if self.st.state == "path_tracking" then
+					if self.cur_wp == 0 then
+						self.move_direction = 1
+					elseif self.cur_wp == self.num_wp - 1 then
+						self.move_direction = -1
+					end
+		            
+					self.cur_wp = self.cur_wp + self.move_direction
+		            
+					--printf("_hr: action_camera_activity:update: cur_wp = %d", self.cur_wp)
+					printf("_hr: set MOVING action")
+					action(self.object, look(self.path:point(self.cur_wp), self.st.speed_h, self.st.speed_p), cond(cond.look_end))
+				-- ƒвигаем камеру в диапазоне
+				--elseif self.st.state == "range_tracking" then
+				end
+			end
+		end
+    end
+	
+    if self.state == camera_pause then
+		printf("camera state == camera_pause")
+		if time_global() >= self.pause_start + self.st.pause_after_lost_target
+		then
+			printf("_hr: mode MOVE time = %d", time_global())
+			self.state = camera_move
+		end
+    end
+--[[
+    
+    printf("_hr:\n    cam_ang(%f) hp(%f,%f)\n  actor_ang(%f) hp(%f,%f)\n angle_diff(%f) hp(%f,%f)\n",
+		angle_diff(a4, a1),
+		rad2deg(a4:getH() - a1:getH()),
+		rad2deg(a4:getP() - a1:getP()),
+		angle_diff(a4, a2),
+		rad2deg(a4:getH() - a2:getH()),
+		rad2deg(a4:getP() - a2:getP()),
+		angle_diff(a1, a2),
+		rad2deg(a1:getH() - a2:getH()),
+		rad2deg(a1:getP() - a2:getP()))
+
+    local v = self.object:direction()
+	printf("_hr: lense a(%f) hp(%f,%f)", angle_diff(v, a1), a1:getH() - v:getH(), a1:getP() - v:getP())
+
+	in_focus = check_in_focus(a1, a2, self.st.focus_type, self.st.focus_angle)
+	
+	-- если камера не выполн€ет движение на игрока
+	if self.track_enemy and self.object:action() then
+		return
+	else
+		if dist <= self.st.warn_distance
+		--and actor:see(self.object)
+		and in_focus
+		then
+			printf("_hr: cam_dir(%f,%f,%f) actor_dir(%f,%f,%f) diff_angle(%f) hp(%f,%f)",
+					a1.x, a1.y, a1.z, a2.x, a2.y, a2.z, diff_angle,
+					a1:getH() - a2:getH(), a1:getP() - a2:getP())
+					
+			if not self.st.signals["enemy_tracking"] then
+				self.st.signals["enemy_tracking"] = true
+			end
+			self.track_enemy = actor
+			if self.object:action() then
+				xr_logic.mob_capture(self.object, true)
+			end
+			action(self.object, look(actor:position(), 5, 5), cond(cond.look_end))
+			self.focus = false
+		elseif self.track_enemy then
+			self.track_enemy = nil
+			if self.object:action() then
+				xr_logic.mob_capture(self.object, true)
+			end
+			
+			-- ѕровер€ем нужно ли делать паузу
+			if self.st.pause_after_lost_target > 0 then
+				self.pause = true
+				self.pause_start = time_global()
+				return
+			elseif self.st.signals["enemy_tracking"] then
+				self.st.signals["enemy_tracking"] = false
+			end
+		end
+	end
+
+    -- ѕровер€ем не в паузе ли мы
+    if self.pause then
+		if self.pause_start + self.st.pause_after_lost_target > time_global()
+		then
+			return
+		end
+
+		self.pause = false
+		if self.st.signals["enemy_tracking"] then
+			self.st.signals["enemy_tracking"] = false
+		end
+    end
+    
+    if not self.track_enemy and not self.object:action() then
+        -- ƒвигаем камеру по пути
+        if self.st.state == "path_tracking" then
+		    if self.cur_wp == 0 then
+			    self.move_direction = 1
+		    elseif self.cur_wp == self.num_wp - 1 then
+			    self.move_direction = -1
+		    end
+            
+		    self.cur_wp = self.cur_wp + self.move_direction
+            
+		    --printf("_hr: action_camera_activity:update: cur_wp = %d", self.cur_wp)
+		    --action(self.object, look(look.point, self.path:point(self.cur_wp)), anim(anim.turn, 0), cond(cond.look_end))
+		    action(self.object, look(self.path:point(self.cur_wp), self.st.speed_h, self.st.speed_p), cond(cond.look_end))
+        -- ƒвигаем камеру в диапазоне
+        --elseif self.st.state == "range_tracking" then
+        end
+	end
+--]]
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	printf("DEBUG: add_to_binder: scheme='%s', section='%s'", scheme, section)
+
+	local new_action = action_camera_activity(npc, storage)
+
+	-- «арегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	
+    -- state:
+    --  off - камера выключена,
+    --  path_tracking - движение по пути,
+    --  range_tracking - движение камеры в определенных угловых границах
+	st.state = utils.cfg_get_string(ini, section, "state", npc, false, "", "path_tracking")
+
+    if st.state == "path_tracking" then
+        -- path_look - путь, по которому будет поворачиватьс€ камера
+        -- start_wp - вейпоинт, с которого будет начинатьс€ движение камеры
+	    st.path_look = utils.cfg_get_string(ini, section, "path_look", npc, true, "")
+	    st.start_wp  = utils.cfg_get_number(ini, section, "start_wp", npc, false, 0)
+--[[	elseif st.state == "range_tracking" then
+        -- angle_h1, angle_h2 - начальный и конечный углы по горизонтали
+        -- angle_p - угол наклона камеры
+	    st.angle_h1 = utils.cfg_get_number(ini, section, "angle_h1", npc, false, -45)
+	    st.angle_h2 = utils.cfg_get_number(ini, section, "angle_h2", npc, false, 45)
+	    st.angle_p  = utils.cfg_get_number(ini, section, "angle_p", npc, false, 0)
+--]]
+    else
+        st.state = "off"
+    end
+
+    -- speed_h, speed_p - скорость поворота камеры по горизонтали и вертикали
+	st.speed_h = utils.cfg_get_number(ini, section, "speed_h", npc, false, 1)
+	st.speed_p = utils.cfg_get_number(ini, section, "speed_p", npc, false, 1)
+
+	-- focus_type - тип фокуса: cone - конический, rect - квадратный
+	st.focus_type = utils.cfg_get_string(ini, section, "focus_type", npc, false, "", "cone")
+
+    if st.focus_type == "rect" then
+		-- focus_angle_h, focus_angle_p - угол видимости камеры по горизонтали и вертикали
+		st.focus_angle = {}
+		st.focus_angle_h = utils.cfg_get_number(ini, section, "focus_angle_h", npc, false, 90)
+		st.focus_angle_p = utils.cfg_get_number(ini, section, "focus_angle_p", npc, false, 90)
+	else
+		-- focus_angle - конический угол видимости
+		st.focus_type = "cone"
+		st.focus_angle = utils.cfg_get_number(ini, section, "focus_angle", npc, false, 135)
+	end
+
+    -- enemy_stalker - им€ вражеского сталкера, за которым камера будет следить
+    -- с самого начала
+	--st.enemy_stalker = utils.cfg_get_string(ini, section, "enemy_stalker", npc, false, "")
+
+	-- рассто€ние, на котором "замечаютс€" враги
+    st.warn_distance = utils.cfg_get_number(ini, section, "warn_distance", npc, false, 10)
+    
+    -- pause_after_lost_target - пауза после того, как цель вышла из пол€ зрени€
+    st.pause_after_lost_target = utils.cfg_get_number(ini, section, "pause_after_lost_target", npc, false, 5000)
+end

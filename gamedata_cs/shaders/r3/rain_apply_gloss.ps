@@ -1,0 +1,24 @@
+#include "common.h"
+#include "lmodel.h"
+//#include "shadow.h"
+
+Texture2D	s_patched_normal;
+
+float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
+{
+	float Gloss = s_patched_normal.Sample( smp_nofilter, tc ).a;
+
+//	float ColorIntencity = 1 - Gloss*0.5;
+
+	float ColorIntencity = 1 - sqrt(Gloss);
+
+//	ColorIntencity = max (ColorIntencity, 0.75);
+	ColorIntencity = max (ColorIntencity, 0.5);
+
+//	float ColorIntencity = (Gloss-0.1)/(Gloss+0.00001);
+
+//	ColorIntencity = min (ColorIntencity, 1);
+
+	//return float4(1,1,1,Gloss);
+	return float4( ColorIntencity, ColorIntencity, ColorIntencity, Gloss*0.5);
+}

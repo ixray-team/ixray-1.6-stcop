@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = sr_idle@teleport
+
+[sr_idle@teleport]
+on_info = %=run_postprocess(blink)%
+on_game_timer = 6 | sr_idle %=teleport_actor(teleport_way1:teleport_way2)%

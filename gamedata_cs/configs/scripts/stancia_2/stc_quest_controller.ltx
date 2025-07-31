@@ -1,0 +1,39 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_npc_in_zone = 1400 | stc_quest_controller | %+stc_strelok_gone%
+on_info = {+stc_strelok_dead} sr_idle@stc_strelok_dead_1
+on_info2 = {+stc_strelok_gone} sr_idle@strelok_gone %=start_surge_on_stancia_2(fx_surge_day_stancia_demo_1) +stc_armagedets_start%
+on_info3 = {+stc_strelok_is_near_dead} %=play_sound(stc_strelok_kill_reminder_6)%
+
+[sr_idle@strelok_gone]
+on_timer = 2000 | {-stc_final_fade} %=run_postprocess(agr_u_fade) +stc_final_fade%
+on_timer2 = 4000 | sr_idle@strelok_gone_snd %+stc_final_cutscene_1% 
+
+
+[sr_idle@strelok_gone_snd]
+on_info = %=play_sound(stc_final_scene_after_lost_strelok)%
+on_timer = 3000 | {-stc_last_effector_1} %=stc_boom(blowout_hit_2) +stc_last_effector_1%
+on_timer2 = 8000 | {-stc_last_effector_2} %=stc_boom(blowout_hit_3) +stc_last_effector_2%  
+on_signal = theme_end | sr_idle@kill_actor 
+
+[sr_idle@kill_actor]
+;on_timer = 4000 | nil %=stc_boom =kill_actor%
+
+[sr_idle@stc_strelok_dead_1]
+on_info = %=play_sound(stc_final_scene_after_kill_strelok)%
+on_signal = sound_end | sr_idle@stc_strelok_dead_2 %=start_surge_on_stancia_2(fx_surge_day_stancia_demo_2) +stc_armagedets_start% 
+
+[sr_idle@stc_strelok_dead_2]
+on_info = %=play_sound(stc_final_scene_after_kill_strelok)%
+on_timer = 8000 | {-stc_final_fade} %=run_postprocess(agr_u_fade) +stc_final_fade%
+on_timer2 = 10000 | %+stc_final_cutscene_2%
+on_timer3 = 1000 | {-stc_surge_continued} %=continue_surge_on_stancia_2 +stc_surge_continued%
+on_timer4 = 13000 | {-stc_last_effector_1} %=stc_boom(blowout_hit_2) +stc_last_effector_1%
+on_timer5 = 18000 | {-stc_last_effector_2} %=stc_boom(blowout_hit_3) +stc_last_effector_2%
+on_timer6 = 25000 | {-stc_last_effector_3} %+stc_last_effector_3 =run_tutorial(mov_csky_outro)%  
+
+
+[sr_idle@end]
+

@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {=actor_in_zone(esc_space_restrictor_fire)} sr_idle@fire %+esc_actor_target%
+
+[sr_idle@fire]

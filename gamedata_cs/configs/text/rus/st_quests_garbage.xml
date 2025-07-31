@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_defend_bandit_base_name">
+		<text>Защитить базу бандитов</text>
+	</string>
+	<string id="gar_defend_bandit_base_text">
+		<text>Защитить базу бандитов от нападения врагов</text>
+	</string>
+	<string id="gar_quest_bring_money_name">
+		<text>Принести Напру две тысячи, когда стемнеет</text>
+	</string>
+	<string id="gar_quest_bring_money_text">
+		<text>Купить у Дикого Напра на барахолке медкомплект за две тысячи. Столь крупные сделки на барахолке происходят только ночью, после наступления темноты.</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_name">
+		<text>Принести Напру старый КПК</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_text">
+		<text>Принести Дикому Напру на барахолку старый КПК, найденный под ложным дном ящика с инструментами в уничтоженном лагере Свежака.</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_name">
+		<text>Убить предателя</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_text">
+		<text>Убить Авоську, заманившего тебя в засаду</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_name">
+		<text>Занять Барахолку вместе с бандитами</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_text">
+		<text>Устроить показательную расправу над диггерами на Барахолке и проследить, чтобы кто-нибудь из бандитов остался там в качестве охраны.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_name">
+		<text>Взять старый КПК в ящике с инструментами</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_text">
+		<text>Взять в лагере Свежака старый КПК для Дикого Напра. КПК должен находится под ложным дном ящика с инструментами.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_name">
+		<text>Взять старый КПК в лагере Свежака</text>
+	</string>
+	<string id="gar_quest_get_old_pda_text">
+		<text>Взять у Свежака в его лагере старый КПК для Дикого Напра. Если Свежака не будет на месте, взять КПК под ложным дном ящика с инструментами.</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_name">
+		<text>Забрать вещи с трупа Авоськи</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_text">
+		<text>Обыскать труп Авоськи и забрать всё, что представляет интерес</text>
+	</string>
+	<string id="gar_quest_get_weapons_name">
+		<text>Принести Авоське две тысячи</text>
+	</string>
+	<string id="gar_quest_get_weapons_text">
+		<text>Принести Авоське две тысячи для покупки партии контрабандного оружия</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_name">
+		<text>Убрать человека по кличке Авоська</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_text">
+		<text>Убрать некоего Авоську, которого заказал Йога</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_name">
+		<text>Убрать Контрабандиста и диггеров</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_text">
+		<text>Уничтожить Контрабандиста и диггеров, которые хотят купить у него партию оружия</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_name">
+		<text>Уничтожить «ночных охотников»</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_text">
+		<text>Найти и убить существ, которые охотятся на диггеров. Поиски можно начать с того места, где они разорвали группу выжившего диггера. Скорее всего, встретиться с ними удастся только ночью.</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_name">
+		<text>Уничтожить охранников концлагеря бандитов</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_text">
+		<text>Вместе с группой диггеров освободить пленников, уничтожив охранников концлагеря бандитов</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_name">
+		<text>Встретиться с группой диггеров</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_text">
+		<text>Встретиться с группой диггеров, чтобы повести их в атаку на концлагерь бандитов</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_name">
+		<text>Поговорить с Диким Напром</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_text">
+		<text>Узнать у Дикого Напра на Барахолке, какое важное дело у него к тебе есть</text>
+	</string>
+	<string id="gar_story_chase_digger_name">
+		<text>Получить информацию от диггера-посланника</text>
+	</string>
+	<string id="gar_story_chase_digger_text">
+		<text>Узнать у диггера-посланника, куда отправился Клык</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_name">
+		<text>Найти Клыка</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_text">
+		<text>Найти Клыка в подвале, следуя за сигналом его КПК</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_name">
+		<text>Догнать Клыка</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_text">
+		<text>Догнать Клыка, следуя за сигналом его КПК</text>
+	</string>
+	<string id="gar_story_find_cache_name">
+		<text>Найти тайник</text>
+	</string>
+	<string id="gar_story_find_cache_text">
+		<text>Найти тайник группы Клыка</text>
+	</string>
+	<string id="gar_story_find_diggers_name">
+		<text>Получить у диггеров информацию о Клыке</text>
+	</string>
+	<string id="gar_story_find_diggers_text">
+		<text>Попытаться узнать место пребывания Клыка от диггеров, к которым, по словам торговца, он пошёл</text>
+	</string>
+	<string id="gar_story_get_pda_name">
+		<text>Поднять КПК Клыка</text>
+	</string>
+	<string id="gar_story_get_pda_text">
+		<text>Поднять КПК, который бросил Клык</text>
+	</string>
+	<string id="gar_story_go_to_freedom_name">
+		<text>Отправиться за Клыком в Тёмную долину</text>
+	</string>
+	<string id="gar_story_go_to_freedom_text">
+		<text>Отправиться в Тёмную долину вдогонку за Клыком</text>
+	</string>
+	<string id="gar_story_kill_dogs_name">
+		<text>Убить слепых псов</text>
+	</string>
+	<string id="gar_story_kill_dogs_text">
+		<text>Убить слепых псов, которые заперли диггера-посланника в долине</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_name">
+		<text>Обыскать тело диггера</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_text">
+		<text>Обыскать тело диггера в поисках информации о Клыке</text>
+	</string>
+	<string id="gar_quest_bandit_reward_name">
+		<text>Забрать награду у Зуба</text>
+	</string>
+	<string id="gar_quest_bandit_reward_text">
+		<text>Получить у барыги Зуба награду за зачистку Барахолки.</text>
+	</string>
+	<string id="gar_quest_bandit_secret_name">
+		<text>Забрать ствол из тайника в аномалии</text>
+	</string>
+	<string id="gar_quest_bandit_secret_text">
+		<text>Забрать из тайника в аномалии ствол, о котором говорил Йога.</text>
+	</string>
+	<string id="gar_quest_captive_reward_name">
+		<text>Забрать добычу из тайника</text>
+	</string>
+	<string id="gar_quest_captive_reward_text">
+		<text>Забрать добычу из старого тайника диггеров, освобождённых из концлагеря бандитов.</text>
+	</string>
+	<string id="gar_quest_more_reward_name">
+		<text>Потребовать награду у Йоги</text>
+	</string>
+	<string id="gar_quest_more_reward_text">
+		<text>Потребовать у Йоги дополнительную награду за зачистку Барахолки.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_name">
+		<text>Найти информацию об усиленном бронежилете</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_text">
+		<text>Нужно принести Прозрачному бутылку и информацию об усиленных армейских бронежилетах, тогда он сможет создать нечто похожее.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_name">
+		<text>Найти информацию об экранировании костюма</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_text">
+		<text>Удивительно, однако Прозрачный никогда не слышал о пси-воздействии. Но если достать для него нужную информацию, он сможет собрать и установить на костюм систему защиты от подобного излучения.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_name">
+		<text>Найти информацию о замкнутой системе дыхания</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_text">
+		<text>Техник с базы бандитов - Прозрачный - способен сделать почти любую модификацию, но для установки на костюм системы дыхания замкнутого цикла ему нужна дополнительная информация.</text>
+	</string>
+</string_table>

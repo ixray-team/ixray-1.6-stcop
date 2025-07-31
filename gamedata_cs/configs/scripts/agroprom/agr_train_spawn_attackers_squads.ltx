@@ -1,0 +1,26 @@
+[logic]
+active = sr_idle@line_0
+
+[sr_idle@line_0]
+on_info = {+agr_snork_simulation_attack_on_trains !squad_exist(agr_smart_terrain_4_2_snorks_1_lair)} sr_idle@line_00
+
+[sr_idle@line_00]
+on_game_timer = 600 | sr_idle@line_000
+
+[sr_idle@line_000]
+on_actor_dist_ge_nvis = 20 | {+agr_snork_simulation_attack_on_trains !squad_exist(agr_smart_terrain_4_2_snorks_1_lair) =smart_squad_population(monster:agr_smart_terrain_4_2:2)} sr_idle@line_1 %=create_squad(agr_smart_terrain_4_2_snorks_2_lair:agr_smart_terrain_4_2)%
+
+[sr_idle@line_1]
+on_info = {+agr_snork_simulation_attack_on_trains !squad_exist(agr_smart_terrain_4_2_snorks_2_lair)} sr_idle@line_11
+
+[sr_idle@line_11]
+on_game_timer = 600 | sr_idle@line_2
+
+[sr_idle@line_2]
+on_actor_dist_ge_nvis = 20 | {+agr_snork_simulation_attack_on_trains !squad_exist(agr_smart_terrain_4_2_snorks_2_lair) =smart_squad_population(monster:agr_smart_terrain_4_2:2)} sr_idle@line_3 %=create_squad(agr_smart_terrain_4_2_snorks_3_lair:agr_smart_terrain_4_2)%
+
+[sr_idle@line_3]
+on_info = {!squad_exist(agr_smart_terrain_4_2_snorks_3_lair)} sr_idle@line_4
+
+[sr_idle@line_4]
+on_game_timer = 2400 | sr_idle@line_0

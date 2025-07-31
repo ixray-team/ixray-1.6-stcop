@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle@check
+
+[sr_idle@check]
+on_info = {=actor_in_zone(lim_check_2_restr) +lim_condition4} sr_idle@timer, {=actor_in_zone(lim_check_2_restr) -lim_condition4} nil %+lim_condition5%  
+
+[sr_idle@timer]
+on_game_timer = 150 | nil %+lim_condition5%
+
+[sr_idle@timer2]
+on_game_timer = 150 | nil %+lim_go_to_canal_task%

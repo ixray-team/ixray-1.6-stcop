@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@check_bridge
+
+[sr_idle@check_bridge]
+on_info = {+red_bridge_down_done} sr_idle@check_reward
+
+[sr_idle@check_reward]
+on_info = {=counter_equal(bridge_allyes_cout:1)} nil %+red_leshiy_reward_1%
+on_info2 = {=counter_equal(bridge_allyes_cout:2)} nil %+red_leshiy_reward_2%
+on_info3 = {=counter_equal(bridge_allyes_cout:3)} nil %+red_leshiy_reward_3%
+on_info4 = {=counter_equal(bridge_allyes_cout:4)} nil %+red_leshiy_reward_4%
+on_info5 = {=counter_equal(bridge_allyes_cout:5)} nil %+red_leshiy_reward_5%

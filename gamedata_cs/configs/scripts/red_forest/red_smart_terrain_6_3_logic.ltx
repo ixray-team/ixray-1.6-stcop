@@ -1,0 +1,60 @@
+[logic@work1]
+active = walker@wait_actor_work1
+;suitable = {=check_npc_name(red_stalker_artefact_hunter) +red_artefact_hunters_go2 !is_smart_defending(red_smart_terrain_6_3) -red_artefact_hunters_give_reward}
+suitable = {=check_npc_squad(red_stalker_artefact_hunters_1) +red_artefact_hunters_go2) -red_artefact_hunters_give_reward}
+prior = 100
+level_spot = quest_npc
+
+[walker@wait_actor_work1]
+path_walk = reward_walk
+path_look = reward_look
+on_info = {=dist_to_actor_le(15) -red_artefact_hunters_task_complete} remark@see_to_actor_work1, {=dist_to_actor_ge(10) +red_artefact_hunters_task_complete} %+red_artefact_hunters_give_reward%
+meet = meet
+
+[remark@see_to_actor_work1]
+anim = hello_wpn
+target = actor
+meet = meet
+on_info = {=dist_to_actor_ge(15)} walker@wait_actor_work1
+on_info2 = {+red_artefact_hunters_task_complete} walker@wait_actor_work1
+
+[meet]
+meet_state = 10 | talk_default@nil 
+;meet_state_wpn = 10 | backoff@meet_weapon_wait 
+victim = 15 | actor
+victim_wpn = 15 | actor
+;zone = name| state@sound
+use	= true
+use_wpn	= false
+meet_dialog = red_artefact_hunters_reward_dialog
+
+;;;;;;;;;;;;;;;;;;;;;; artefact search ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[logic@artefact_work1]
+active = walker@artefact_work1
+suitable = {!is_smart_defending(red_smart_terrain_6_3) +red_artefact_hunters_give_reward +red_smart_6_3_init_artefact_search}
+prior = 100
+
+[walker@artefact_work1]
+out_restr = red_anomal_place_resrt
+path_walk = artefact_walker_1_walk
+path_look = artefact_walker_1_look
+meet = no_meet
+on_signal = action | %-red_smart_6_3_init_artefact_search%
+
+;;;;;;;;;;;;;;;;;;;; gigant work ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[logic@gigant_work1]
+active = mob_home@wait
+suitable = {=check_npc_squad(red_snork_attack_1)}
+monster_job = true
+
+[mob_home@wait]
+path_home = gigant_home
+home_min_radius = 25
+home_max_radius = 50
+on_info = {=hit_by_actor()} mob_home@agressive
+
+[mob_home@agressive]
+path_home = gigant_home
+home_min_radius = 70
+home_max_radius = 100
+on_game_timer = 3000 | mob_home

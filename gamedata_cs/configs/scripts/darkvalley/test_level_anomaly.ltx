@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle
+
+
+[sr_idle]
+on_info = sr_idle@check_death %=spawn_object(bes_selo_anomaly_2_npc:bes_selo_anomaly_2_walk) -val_test_spawn_2_npc%
+
+[sr_idle@check_death]
+on_info = {+val_test_spawn_2_npc} sr_idle
+

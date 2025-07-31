@@ -1,0 +1,147 @@
+[up_sect_a_pb]
+cost		      		= 100
+value					= +25
+rpm						= 50
+
+[up_sect_b_pb]
+cost		      		= 100
+value					= -20
+
+cam_dispersion          = -0.1		;0.5
+cam_dispersion_inc		= -0.1		;0.5
+cam_step_angle_horz		= -0.2		;1.0
+
+[up_sect_c_pb]
+cost		      		= 100
+value					= +20
+fire_dispersion_base	= -0.1 ;0.5
+
+[up_sect_d_pb]
+cost		      		= 100
+value					= +20
+fire_dispersion_base	= -0.1 ;0.5
+
+cam_dispersion          = -0.1		;0.5
+cam_dispersion_inc		= -0.1		;0.5
+cam_step_angle_horz		= -0.2		;1.0
+
+[up_sect_e_pb]
+cost		      		= 100
+value					= +4
+ammo_mag_size		 	= 4
+
+[up_a_pb]
+scheme_index            = 0, 0
+known                   = 1
+effects                 = 
+section                 = up_sect_a_pb
+property                = prop_rpm
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = on_weapon_upgrade_something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_zatvor_rpm
+description             = st_upg_zatvor_rpm_descr
+icon                    = ui_wp_upgrade_01
+
+[up_b_pb]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = 
+section                 = up_sect_b_pb
+property                = prop_recoil
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_zatvor_recoil
+description             = st_upg_zatvor_recoil_descr
+icon                    = ui_wp_upgrade_02
+
+[up_c_pb]
+scheme_index            = 0, 2
+known                   = 1
+effects                 = 
+section                 = up_sect_c_pb
+property                = prop_dispersion
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_trigger_accur
+description             = st_upg_trigger_accur_descr
+icon                    = ui_wp_upgrade_05
+
+[up_d_pb]
+scheme_index            = 0, 3
+known                   = 1
+effects                 = 
+section                 = up_sect_d_pb
+property                = prop_dispersion
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_handle_accur2
+description             = st_upg_handle_accur2_descr
+icon                    = ui_wp_upgrade_09
+
+[up_e_pb]
+scheme_index            = 0, 4
+known                   = 1
+effects                 = 
+section                 = up_sect_e_pb
+property                = prop_ammo_size
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_charger_big
+description             = st_upg_charger_big_descr
+icon                    = ui_wp_upgrade_06
+
+
+[up_gr_ab_pb]
+elements                = up_a_pb, up_b_pb
+
+[up_gr_c_pb]
+elements                = up_c_pb
+
+[up_gr_d_pb]
+elements                = up_d_pb
+
+[up_gr_e_pb]
+elements                = up_e_pb

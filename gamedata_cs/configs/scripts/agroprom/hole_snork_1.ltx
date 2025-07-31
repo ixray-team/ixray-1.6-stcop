@@ -1,0 +1,25 @@
+[logic]
+active = mob_walker
+on_death = mob_death
+
+[mob_walker]
+path_walk = agr_hole_snork_2_walk
+on_info = {=npc_in_zone(agr_hole_sound)} %+sattack%
+on_info2 = {=npc_in_zone(agr_hole_defend)} mob_jump
+braindead = true
+actor_friendly = true
+npc_friendly = true
+
+[mob_jump]
+path_jump = jump_mob
+ph_jump_factor = 1.5
+offset = 0,0,0
+on_signal = jumped | nil
+on_info = %+fire_hole_sound%
+
+
+[mob_death]
+on_info = %+death_1%
+
+
+

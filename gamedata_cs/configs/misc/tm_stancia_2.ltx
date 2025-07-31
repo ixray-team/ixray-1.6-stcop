@@ -1,0 +1,32 @@
+[list_tm_stancia_2]
+stc_kill_gunslinger
+stc_follow_to_teleport_1
+stc_follow_to_teleport_2
+
+[stc_kill_gunslinger]
+prior = 100
+type = storyline
+task_type = storyline
+target_story_ids = 1400
+name = stc_kill_gunslinger_name
+text = stc_kill_gunslinger_text
+condlist_0 = {+stc_strelok_dead} complete
+condlist_1 = {+stc_strelok_gone} fail
+
+[stc_follow_to_teleport_1]
+prior = 100
+type = storyline
+task_type = additional
+target_story_ids = 1415
+name = stc_kill_monolith_name
+text = stc_kill_monolith_text
+condlist_0 = {+stc_additional_q1} complete
+
+[stc_follow_to_teleport_2]
+prior = 100
+type = storyline
+task_type = additional
+target_story_ids = 1416
+name = stc_kill_monolith_name
+text = stc_kill_monolith_text
+condlist_0 = {+stc_second_teleport_actor_out} complete

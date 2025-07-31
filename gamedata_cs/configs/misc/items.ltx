@@ -1,0 +1,585 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	FOOD
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[bread]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\bread"
+;$prefetch 			= 32
+class				= II_FOOD
+cform				= skeleton
+visual				= dynamics\devices\dev_bred\dev_bred.ogf
+description			= st_bread_descr
+
+inv_name			= st_bread
+inv_name_short		= st_bread
+inv_weight			= 0.3	;0.2
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 11
+inv_grid_y			= 9
+cost				= 20
+
+attach_angle_offset		= -0.287979, 1.560923, 1.544060
+attach_position_offset	= 0.096910, -0.013594, 0.107925
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+// should be deleted after update
+bone_name				= bip01_r_hand
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+; eatable item
+eat_health = 0.05
+eat_satiety = 0.2
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = -1
+
+; food item
+slot				= -1
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[kolbasa]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\kolbasa"
+$prefetch 			= 8
+class				= II_FOOD
+cform				= skeleton
+visual				= dynamics\devices\dev_kolbasa\dev_kolbasa.ogf
+description			= st_kolbasa_descr
+
+inv_name			= st_kolbasa
+inv_name_short		= st_kolbasa
+inv_weight			= 0.5
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 19
+inv_grid_y			= 12
+cost				= 50
+
+attach_angle_offset		= 0.440521, 1.378287, -0.644026
+attach_position_offset	= 0.104196, -0.010821, 0.076969
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+// should be deleted after update
+bone_name				= bip01_r_hand
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+; eatable item
+eat_health = 0.05
+eat_satiety = 0.3
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = -1
+
+; food item
+slot				= -1
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+[conserva]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\conserva"
+;$prefetch 			= 32
+class				= II_FOOD
+cform				= skeleton
+visual				= dynamics\devices\dev_conserv\dev_conserv.ogf
+description			= st_conserva_descr
+
+inv_name			= st_conserva
+inv_name_short		= st_conserva
+inv_weight			= 0.3
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 9
+inv_grid_y			= 13
+cost				= 100
+
+; eatable item
+eat_health = 0.1
+eat_satiety = 0.4
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = -1
+
+; food item
+slot				= -1
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+attach_angle_offset		= 0.440521, 1.378287, -0.644026
+attach_position_offset	= 0.104196, -0.010821, 0.076969
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+// should be deleted after update
+bone_name				= bip01_r_hand
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+[vodka]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\vodka"
+;$prefetch 			= 32
+class				= II_BOTTL
+cform				= skeleton
+visual				= dynamics\devices\dev_vodka\dev_vodka.ogf
+description			= st_vodka_descr
+
+ef_weapon_type		= 0
+
+inv_name			= st_vodka
+inv_name_short		= st_vodka
+inv_weight			= 0.2	;0.2
+
+inv_grid_width		= 1
+inv_grid_height		= 2
+inv_grid_x			= 5
+inv_grid_y			= 2
+cost				= 100
+
+attach_angle_offset		= 0.000000, 0.000000, 0.000000
+attach_position_offset	= 0.087266, -0.078540, 0.052360
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+// should be deleted after update
+bone_name				= bip01_r_hand
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+; eatable item
+eat_health		= 0.01
+eat_satiety		= 0.01
+eat_power		= 0
+eat_radiation	= -0.3
+eat_alcohol		= 0.1
+wounds_heal_perc = 0
+eat_portions_num = -1
+
+; food item
+slot				= -1
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+break_particles		= destroy_fx\destroy_bottle
+break_sound			= material\bottle\collide\bottle_break_1
+
+
+[guitar_a]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "food and drugs\guitar_a"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = dynamics\devices\dev_guitar\dev_guitar.ogf
+cost					= 35
+inv_name				= st_guitar_name
+inv_name_short			= st_guitar_name
+description				= st_guitar_descr
+inv_weight				= 1.5
+inv_grid_width			= 4
+inv_grid_height			= 2
+inv_grid_x				= 10
+inv_grid_y				= 19
+attach_angle_offset		= -1.651084, -1.341824, 1.200789
+attach_position_offset	= 0.077492, -0.030020, 0.090059
+attach_bone_name		= bip01_l_hand
+auto_attach				= false
+
+[harmonica_a]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "food and drugs\harmonica_a"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = dynamics\devices\dev_harmonica\dev_harmonica.ogf
+cost					= 35
+inv_name				= "harmonica"
+inv_name_short			= "harmonica"
+inv_weight				= 0.35
+inv_grid_width			= 1
+inv_grid_height			= 1
+inv_grid_x				= 11
+inv_grid_y				= 2
+attach_angle_offset		= 0.000000, -1.204452, -1.262921
+attach_position_offset	= 0.081856, -0.035081, 0.011694
+attach_bone_name		= bip01_l_hand
+auto_attach				= false
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	MEDICAL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[antirad]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 			= "food and drugs\antirad"
+$prefetch 		= 32
+class			= II_ANTIR
+cform           = skeleton
+visual          = dynamics\devices\dev_antirad\dev_antirad.ogf
+description		= st_antirad_descr
+
+inv_name			= st_antirad
+inv_name_short		= st_antirad
+inv_weight			= 0.05
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 18
+inv_grid_y			= 12
+cost				= 300
+
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = -0.5
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[medkit]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\medkit"
+$prefetch 			= 8
+class				= II_MEDKI
+cform				= skeleton
+visual				= dynamics\devices\dev_aptechka\dev_aptechka_low.ogf
+description			= st_medkit_descr
+inv_name			= st_medkit
+inv_name_short		= st_medkit
+inv_weight			= 0.1
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 14
+cost				= 300
+
+; eatable item
+eat_health			= 0.5
+eat_satiety			= 0
+eat_power			= 0.0
+eat_radiation		= -0.05
+wounds_heal_perc	= 0.3
+eat_portions_num	= 1
+eat_max_power		= 0.1
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+[medkit_army]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\medkit_army"
+$prefetch 			= 8
+class				= II_MEDKI
+cform				= skeleton
+visual				= dynamics\devices\dev_aptechka\dev_aptechka_high.ogf
+description			= st_medkit_army_descr
+inv_name			= st_medkit_army
+inv_name_short		= st_medkit_army
+inv_weight			= 0.1	;0.2
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 16
+inv_grid_y			= 20
+cost				= 500
+
+; eatable item
+eat_health			= 0.75
+eat_satiety			= 0
+eat_power			= 0.0
+eat_radiation		= -0.1
+wounds_heal_perc	= 0.5
+eat_portions_num	= 1
+eat_max_power		= 0.1
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+[medkit_scientic]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\medkit_scientic"
+$prefetch 			= 8
+class				= II_MEDKI
+cform				= skeleton
+visual				= dynamics\devices\dev_aptechka\dev_aptechka_mid.ogf
+description			= st_medkit_science_descr
+inv_name			= st_medkit_science
+inv_name_short		= st_medkit_science
+inv_weight			= 0.1	;0.2
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 14
+inv_grid_y			= 20
+cost				= 1000
+
+; eatable item
+eat_health			= 1.0
+eat_satiety			= 0
+eat_power			= 0.0
+eat_radiation		= -1.0
+wounds_heal_perc	= 1.0
+eat_portions_num	= 1
+eat_max_power		= 0.1
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[energy_drink]:vodka
+$spawn 				= "food and drugs\energy_drink"
+inv_name			= st_energy_drink
+inv_name_short		= st_energy_drink
+visual				= dynamics\devices\dev_drink_stalker\dev_drink_stalker
+description			= st_energy_drink_descr
+cost				= 75
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 11 ;19 ;11
+inv_grid_y			= 0 ;7  ;0
+inv_weight			= 0.2
+
+eat_health			= 0
+eat_satiety			= 0
+eat_power			= 0.5
+eat_alcohol			= 0
+eat_radiation		= 0
+wounds_heal_perc	= 0
+eat_portions_num	= 1
+eat_max_power		= 0.2
+
+attach_angle_offset		= 0.000000, 0.000000, 0.000000
+attach_position_offset	= 0.087266, -0.078540, 0.052360
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+
+[bandage]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\bandage"
+$prefetch 			= 8
+class				= II_BANDG
+cform				= skeleton
+visual				= dynamics\devices\dev_bandage\dev_bandage.ogf
+description			= st_bandage_descr
+
+inv_name			= st_bandage
+inv_name_short		= st_bandage
+inv_weight			= 0.05	;0.2
+cost				= 200
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 3
+inv_grid_y			= 18
+
+; eatable item
+eat_health = 	0.0
+eat_satiety = 	0
+eat_power = 	0.0
+eat_radiation = 0.0
+wounds_heal_perc = 0.5
+eat_portions_num = 1	;100
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	DEVICES
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[device_pda]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency=
+$spawn 				= "devices\pda"
+$prefetch 			= 16
+class				= D_PDA
+cform				= skeleton
+visual				= dynamics\devices\dev_pda\dev_pda.ogf
+description			= st_pda_descr
+radius				= 68; 50
+slot				= 7
+default_to_ruck		= false
+sprint_allowed		= true
+control_inertion_factor = 1
+
+inv_name			= st_pda_name
+inv_name_short		= st_pda_name
+inv_weight			= 0.1	;0.2
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 13
+cost				= 20
+attach_angle_offset		= 3.080506,-1.493053,-1.202040   ;устанавливается в радианах Angle*PI/180
+attach_position_offset		= 0.080000,0.021273,0.100000
+attach_bone_name		= bip01_r_hand
+auto_attach			= false
+
+[dev_flash_1]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency=
+$spawn 				= "devices\dev_flash_1"
+$prefetch 			= 16
+class				= D_PDA
+cform				= skeleton
+visual				= dynamics\devices\dev_flash_1\dev_flash_1.ogf
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 11
+inv_grid_y			= 22
+
+slot				= 7
+radius				= 50
+default_to_ruck		= false
+inv_weight			= 0.05
+
+inv_name			= st_pda_name
+inv_name_short		= st_pda_name
+description			= st_pda_descr
+cost				= 50
+can_trade			= false
+
+[dev_flash_2]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency=
+$spawn 				= "devices\dev_flash_2"
+$prefetch 			= 16
+class				= D_PDA
+cform				= skeleton
+visual				= dynamics\devices\dev_flash_2\dev_flash_2.ogf
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 11
+inv_grid_y			= 23
+
+slot				= 7
+radius				= 50
+default_to_ruck		= false
+inv_weight			= 0.05
+
+inv_name			= st_pda_name
+inv_name_short		= st_pda_name
+description			= st_pda_descr
+cost				= 50
+can_trade			= false
+
+[device_torch]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn				= "devices\torch"
+$prefetch 			= 32
+class				= TORCH_S
+cform				= skeleton
+visual				= dynamics\devices\dev_torch_light\dev_torch_light.ogf
+description			= st_device_torch_descr
+cost				= 100
+inv_name			= st_device_torch
+inv_name_short		= st_device_torch
+inv_weight			= 0.0
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 16
+inv_grid_y			= 12
+
+;вещью нельзя торговать
+can_trade			= true
+
+position			= 0.35,0.25,0.0
+light_trace_bone		= lights_bone
+
+attach_angle_offset		= 3.062, 0.008, -1.532
+attach_position_offset		= 0.134, -0.007, 0.09
+
+attach_bone_name		= bip01_head
+auto_attach			= false
+
+night_vision				= on
+night_vision_texture		= wpn\wpn_night
+night_vision_effector		= postprocess_night
+
+snd_night_vision_on			= weapons\nv_start
+snd_night_vision_off		= weapons\nv_off
+snd_night_vision_idle		= weapons\nv_loop
+snd_night_vision_broken		= weapons\nv_off
+
+night_vision_recharge_time			= 6		;(c) время зарядки аккамулятора
+night_vision_recharge_time_min		= 2		;(c) мин. время зарядки аккамулятора, после которого уст-во уже может работать
+night_vision_discharge_time			= 20	;(c) время разрядки (работы) устройства после полной зарядки
+slot								= 9
+default_to_ruck						= false
+sprint_allowed						= true
+control_inertion_factor				= 1
+disabled_maps						= ai_test,ai_test2, andy_test_
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	OTHERS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_vodka_hud]:identity_immunities,hud_base
+fire_point               = 0.0, 0.0, 0.06
+fire_bone                = bip01_head
+orientation              = 0, 0, 0
+position                 = 0, 0, 0
+visual                   = dynamics\devices\dev_vodka\dev_vodka.ogf
+
+anim_idle			= vodka_2
+anim_show			= vodka_1
+anim_hide			= vodka_4
+anim_play			= vodka_5
+anim_prepare		= vodka_5
+anim_eat			= vodka_3

@@ -1,0 +1,131 @@
+;----------------------------walker1-------------------
+[logic@work10]
+active = walker@start_work6
+suitable = {=check_npc_name(val_freedom_attack_6)}
+prior = 200
+
+[walker@start_work6]
+path_walk = freedom_attack_walker_6_walk
+path_look = freedom_attack_walker_6_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+val_freedom_attack_brake} walker@die6
+out_restr = val_smart_2_1_bufer_zone_2
+
+[walker@die6]
+val_smart_2_1_bufer_zone_2
+path_walk = val_freedom_die_walk
+path_walk = val_freedom_die_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = true
+out_restr = val_smart_2_1_bufer_zone_2
+;----------------------------walker2-------------------
+[logic@work20]
+active = walker@start_work7
+suitable = {=check_npc_name(val_freedom_attack_7)}
+prior = 200
+
+[walker@start_work7]
+path_walk = freedom_attack_walker_7_walk
+path_look = freedom_attack_walker_7_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+val_freedom_attack_brake} walker@die7
+out_restr = val_smart_2_1_bufer_zone_2
+
+[walker@die7]
+path_walk = val_freedom_die_walk
+path_walk = val_freedom_die_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = true
+out_restr = val_smart_2_1_bufer_zone_2
+;----------------------------walker3-------------------
+[logic@work30]
+active = walker@start_work8
+suitable = {=check_npc_name(val_freedom_attack_8)}
+prior = 200
+
+[walker@start_work8]
+out_restr = val_smart_2_1_bufer_zone_2
+path_walk = freedom_attack_walker_8_walk
+path_look = freedom_attack_walker_8_look
+meet = no_meet
+val_smart_2_1_bufer_zone_2
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+val_freedom_attack_brake} walker@die8
+
+[walker@die8]
+val_smart_2_1_bufer_zone_2
+path_walk = val_freedom_die_walk
+path_walk = val_freedom_die_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = true
+;----------------------------walker4-------------------
+[logic@work40]
+active = walker@start_work9
+suitable = {=check_npc_name(val_freedom_attack_9)}
+prior = 200
+
+[walker@start_work9]
+val_smart_2_1_bufer_zone_2
+path_walk = freedom_attack_walker_9_walk
+path_look = freedom_attack_walker_9_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+val_freedom_attack_brake} walker@die9
+
+
+[walker@die9]
+val_smart_2_1_bufer_zone_2
+path_walk = val_freedom_die_walk
+path_walk = val_freedom_die_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = true
+
+;----------------------------walker5-------------------
+[logic@work50]
+active = walker@start_work10
+suitable = {=check_npc_name(val_freedom_attack_10)}
+prior = 200
+
+
+[walker@start_work10]
+val_smart_2_1_bufer_zone_2
+path_walk = freedom_attack_walker_10_walk
+path_look = freedom_attack_walker_10_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+val_freedom_attack_brake} walker@die10
+
+
+[walker@die10]
+val_smart_2_1_bufer_zone_2
+path_walk = val_freedom_die_walk
+path_walk = val_freedom_die_look
+meet = no_meet
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = true

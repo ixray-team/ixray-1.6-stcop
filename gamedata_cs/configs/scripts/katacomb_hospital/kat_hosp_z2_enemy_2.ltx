@@ -1,0 +1,89 @@
+[logic]
+active = walker@hide
+combat_ignore = combat_ignore
+on_death = death
+
+[death]
+on_info = %-hospital_z2_enemy_2 =dec_counter(hospital_z2_cout)%
+
+[walker]
+danger = danger_condition@2
+combat_ignore = always
+path_walk = z2_sw_enemy_2_walk
+path_look = z2_enemy_look
+on_info = walker@hide %=inc_counter(hospital_z2_cout)%
+group = 2
+
+[walker@hide]
+danger = danger_condition@2
+combat_ignore = always
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+path_walk = z2_enemy_hide_2_walk
+path_look = z2_enemy_look
+on_info = {+hospital_z2_enter} walker@nw
+group = 2
+
+[walker@sw]
+danger = danger_condition
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+path_walk = z2_sw_enemy_2_walk
+path_look = z2_enemy_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+hospital_z2_actor_se} walker@se
+on_info2 = {+hospital_z2_actor_ne} walker@ne
+on_info3 = {+hospital_z2_actor_nw} walker@nw
+group = 2
+
+[walker@se]
+danger = danger_condition
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+path_walk = z2_se_enemy_2_walk
+path_look = z2_enemy_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+hospital_z2_actor_sw} walker@sw
+on_info2 = {+hospital_z2_actor_ne} walker@ne
+on_info3 = {+hospital_z2_actor_nw} walker@nw
+group = 2
+
+[walker@nw]
+danger = danger_condition
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+path_walk = z2_nw_enemy_2_walk
+path_look = z2_enemy_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+hospital_z2_actor_se} walker@se
+on_info2 = {+hospital_z2_actor_ne} walker@ne
+on_info3 = {+hospital_z2_actor_sw} walker@sw
+group = 2
+
+[walker@ne]
+danger = danger_condition
+out_restr = kat_hosp_z2_enemy_restr
+in_restr = kat_hosp_z2_enemy_in_restr
+path_walk = z2_ne_enemy_2_walk
+path_look = z2_enemy_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+hospital_z2_actor_se} walker@se
+on_info2 = {+hospital_z2_actor_nw} walker@nw
+on_info3 = {+hospital_z2_actor_sw} walker@sw
+group = 2
+
+[danger_condition]
+ignore_distance_corpse = 0
+
+[danger_condition@2]
+ignore_distance = 0
+
+[combat_ignore]

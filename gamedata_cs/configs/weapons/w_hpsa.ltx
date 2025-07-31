@@ -1,0 +1,251 @@
+[wpn_hpsa]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+discovery_dependency 		=
+$spawn                  	= "weapons\hpsa"		; option for Level Editor
+$npc			 					= on							; option for Level Editor
+$prefetch 						= 8
+scheduled         			= off              		; option for ALife Simulator
+cform             			= skeleton
+class                   	= WP_HPSA
+min_radius              	= 0
+max_radius              	= 30
+description					= st_wpn_hpsa_descr
+
+ef_weapon_type				= 5
+
+;---DOF-------------------------------------------------------------------------
+zoom_dof					= -1000, 1.0, 1000 
+reload_dof				= 0.0, 0.5, 5, 1.7
+
+;-----------------------------------------------------------------------------
+upgrades                = up_gr_ab_hpsa, up_gr_cd_hpsa, up_gr_e_hpsa, up_gr_f_hpsa, up_gr_g_hpsa, up_gr_h_hpsa
+installed_upgrades      =
+upgrade_scheme          = upgrade_scheme_u10a
+
+;--- scope weapons -------------------------------------------------------------
+holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0              ; во сколько раз увеличивается eye_fov
+;-------------------------------------------------------------------------------
+
+cost					= 600
+
+ammo_limit		 		= 120
+ammo_current		 	= 0
+ammo_elapsed		 	= 0
+
+ammo_mag_size		 	= 13
+ammo_class		 		= ammo_9x19_fmj, ammo_9x19_pbp
+
+hand_dependence		 	= 1
+single_handed			= 1
+
+slot 			 		= 1
+animation_slot			= 1									; type of the animation that will be used
+default_to_ruck			= false
+sprint_allowed			= true
+control_inertion_factor	= 1
+
+inv_name				= st_wpn_hpsa
+inv_name_short			= st_wpn_hpsa
+inv_weight				= 0.88
+
+inv_grid_width			= 2
+inv_grid_height			= 1
+inv_grid_x				= 16
+inv_grid_y				= 7
+
+kill_msg_x				= 126
+kill_msg_y				= 154
+kill_msg_width			= 35
+kill_msg_height			= 23
+
+;-------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base	= 0.8 			;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         = 8				;скорость возврата в исходное положение
+cam_relax_speed_ai      = 360
+cam_dispersion          = 0.6				;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.6				;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion_frac		= 1.0				;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
+cam_max_angle			= 5.0			;максимальный угол отдачи
+cam_max_angle_horz		= 5.0			;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 1.0				;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5		;увеличение дисперсии в процентах при максимальном износе
+misfire_probability 	= 0.005	    	;вероятность осечки при максимальном износе
+condition_shot_dec 		= 0.001		;увеличение износа при каждом выстреле
+
+;-------------------------------------------------------------------------------
+; ttc
+hit_power           		= 0.5, 0.5, 0.5, 0.5
+hit_impulse	 		 		= 75
+hit_type 					= fire_wound
+
+hit_probability_gd_novice	= 0.80
+hit_probability_gd_stalker	= 0.80
+hit_probability_gd_veteran	= 0.80
+hit_probability_gd_master	= 0.80
+
+PDM_disp_base 				= 1.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_disp_crouch	 				= 1.0
+PDM_disp_crouch_no_acc 			= 1.0
+
+use_aim_bullet				= true		;Поддерживается ли первая суппер пуля
+time_to_aim					= 1.0
+
+fire_distance           	= 50
+bullet_speed		 		= 200
+rpm                     	= 250
+rpm_empty_click 	 		= 250
+; end ttc
+
+silencer_hit_power      	= 0.7
+silencer_hit_impulse	 	= 60
+silencer_fire_distance  	= 100
+silencer_bullet_speed		= 230
+
+;-------------------------------------------------------------------------------
+hud                     	= wpn_hpsa_hud
+visual                  	= dynamics\weapons\wpn_hpsa\wpn_hpsa.ogf
+
+position                	= -0.021, -0.085, 0.0
+orientation             	= 0, 0, 0
+
+fire_point              	= 0.0, 0.133, 0.179
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+;strap_position         	= -0.1,-0.45,0.2			; position (offset) and orientation of the weapon when it is strapped
+;strap_orientation      	= 1.57,0,0						; (3rd person view)
+;strap_bone0					= bip01_spine2
+;strap_bone1					= bip01_spine1
+
+flame_particles		   	= weapons\generic_weapon03
+smoke_particles		   	= weapons\generic_shoot_00
+
+shell_point		 				= 0.0, 0.133, 0.047
+shell_dir		 				= 0.0, 0.0, 0.4
+shell_particles	 			= weapons\generic_shells
+
+;-------------------------------------------------------------------------------
+;startup_ammo           	= 90
+
+light_color		 				= 0.6,0.5,0.3
+light_range		 				= 2.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 				= 0.2
+
+ph_mass			 				= 1
+;cost			 					= 350
+
+;addons
+scope_status					= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled					= true
+zoom_rotate_time				= 0.25
+scope_zoom_factor	    		= 55
+
+;звуки
+snd_draw							= weapons\pm_draw
+snd_holster						= weapons\generic_holster
+snd_shoot						= weapons\n_hpsa_shot
+snd_empty						= weapons\pistol_empty
+snd_reload						= weapons\pistol_reload, 0.8
+snd_close						= weapons\generic_close
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; silencer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+silencer_name  				= wpn_addon_silencer		; section name for the attachable silencer
+silencer_x 						= 69						; offset in inventory icon
+silencer_y 						= -17
+
+;params when silencer is attached
+;similar to corresponding params without prefix silencer_
+
+;silencer_flame_particles 	= weapons\generic_weapon01
+silencer_smoke_particles 	= weapons\generic_shoot_00
+snd_silncer_shot				= weapons\n_pb_shot
+silencer_light_color			= 0.6,0.5,0.3
+silencer_light_range			= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 			= 0.2
+
+[wpn_hpsa_hud]:hud_base
+zoom_hide_crosshair			= false
+
+
+hands_position				= -0.021000,-0.160000,0.002500
+hands_orientation			= -0.500000,1.000000,1.149999
+hands_position_16x9				= 0.033000,-0.189500,0.039000
+hands_orientation_16x9			= 2.349998,2.749999,2.849998
+
+
+;hands_position				= -0.031000,-0.149000,0.002500
+;hands_orientation			= -0.500000,1.000000,1.299999
+;hands_position_16x9				= -0.014500,-0.176500,0.039000
+;hands_orientation_16x9			= -2.000000,1.949999,2.2999983
+
+item_position					= 0.000746,-0.000321,0.003479
+item_orientation				= 1.239378,-0.134046,-2.052052
+
+item_visual             	= dynamics\weapons\wpn_hpsa\wpn_hpsa_hud.ogf
+attach_place_idx				= 0
+
+shell_point						= 0.012,0.038,0.473
+shell_bone              	= wpn_body
+
+fire_point			= 0,0.038,0.177
+fire_bone               	= wpn_body
+
+;-delme begin
+anm_empty             	= walter99_idle, walter99_opened
+anm_close				= walter99_holster
+;-delme end
+anm_show					= hpsa_draw
+anm_show_empty				= hpsa_draw, hpsa_opened
+
+anm_hide             		= hpsa_holster
+anm_hide_empty         		= hpsa_holster, hpsa_opened
+
+anm_idle             		= hpsa_idle
+anm_idle_empty             	= hpsa_idle, hpsa_opened
+
+anm_shots					= hpsa_shoot
+anm_shot_l					= hpsa_shoot, hpsa_open
+
+anm_idle_aim				= hpsa_idle_aim
+anm_idle_aim_empty			= hpsa_idle_aim, hpsa_opened
+
+anm_reload					= hpsa_reload
+anm_reload_empty			= hpsa_reload, hpsa_close
+
+anm_idle_moving 			= hpsa_idle_moving
+anm_idle_moving_empty 		= hpsa_idle_moving, hpsa_opened
+
+anm_idle_sprint				= hpsa_idle_sprint
+anm_idle_sprint_empty		= hpsa_idle_sprint, hpsa_opened
+
+anm_bore					= hpsa_idle_bore
+anm_bore_empty				= hpsa_idle_bore, hpsa_opened
+
+
+aim_hud_offset_pos				= -0.041000,0.040500,0.003000
+aim_hud_offset_rot				= 0.007500,-0.012500,-0.037500
+
+gl_hud_offset_pos				= 0,0,0
+gl_hud_offset_rot				= 0,0,0
+
+lean_hud_offset_pos			= 0,0,0
+lean_hud_offset_rot			= 0,0,0
+
+aim_hud_offset_pos_16x9				= -0.100000,0.073000,0.000000
+aim_hud_offset_rot_16x9				= 0.037500,0.040000,-0.010000

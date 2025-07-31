@@ -1,0 +1,67 @@
+[logic]
+active = sr_idle@actor_on_level
+
+[sr_idle@actor_on_level]
+on_info = {=actor_on_level(escape) !black_screen +mar_story_go_to_escape_done} sr_idle@give_reach_trader_task_pre
+
+[sr_idle@give_reach_trader_task_pre]
+on_game_timer = 20 | %=play_sound(esc_trader_start_pda:stalker:escape_trader_name)% sr_idle@give_reach_trader_task_pre_2
+
+[sr_idle@give_reach_trader_task_pre_2]
+on_signal = sound_end | sr_idle@give_reach_trader_task
+
+[sr_idle@give_reach_trader_task]
+on_info = sr_idle@give_reach_stalkerbase_task %+esc_actor_inside%
+
+[sr_idle@give_reach_stalkerbase_task]
+on_info = {+esc_reach_trader_complete} sr_idle@give_reach_leader_task_pre %=set_level_faction_community(stalker:escape:neutral) =give_inited_task(storyline:esc_reach_stalker_base:stalker) =remove_squad(esc_smart_terrain_6_8_stalker_patrol)%
+
+[sr_idle@give_reach_leader_task_pre]
+on_info = sr_idle@give_reach_leader_task %=create_squad(esc_smart_terrain_5_9_military_2_squad:esc_smart_terrain_5_9) =create_squad(esc_smart_terrain_6_8_stalker_patrol_2:esc_smart_terrain_5_10)%
+
+[sr_idle@give_reach_leader_task]
+on_info = {+esc_reach_stalker_base_complete} sr_idle@talk_2_comm_task %=give_inited_task(storyline:esc_talk2_leader:stalker)%
+
+[sr_idle@talk_2_comm_task]
+on_info = {+esc_stalker_leader_meet} sr_idle@wait_stalkerbase_task %=give_inited_task(storyline:esc_talk2_comm:stalker)%
+
+[sr_idle@wait_stalkerbase_task]
+on_info = {+esc_military_comm_talked} sr_idle@take_task_from_leader %=give_inited_task(storyline:esc_talk2_leader_2:stalker)%
+
+[sr_idle@take_task_from_leader]
+on_info = {+esc_actor_mission_stalker_leader} sr_idle@take_task_from_leader_spawn_squad %=give_treasure(esc_treasure_weapon_box) +esc_treasure_1_complete%
+
+[sr_idle@take_task_from_leader_spawn_squad]
+on_info = {=squad_exist(esc_smart_terrain_5_9_military_2_squad)} sr_idle@take_task_from_leader_init_task %=remove_squad(esc_smart_terrain_5_9_military_2_squad)%, sr_idle@take_task_from_leader_init_task
+
+[sr_idle@take_task_from_leader_init_task_clear]
+on_info = sr_idle@take_task_from_leader_init_task %=clear_smart_terrain(esc_smart_terrain_5_9)%
+
+[sr_idle@take_task_from_leader_init_task]
+on_timer = 2000 | sr_idle@take_task_from_leader_2_clear %=create_squad(esc_smart_terrain_5_9_military_2_squad_2:esc_smart_terrain_5_9) =give_inited_task(eliminate_smart:esc_smart_terrain_5_9:stalker) +esc_actor_mission_stalker_leader_done%
+
+
+[sr_idle@take_task_from_leader_2_clear]
+on_info = {+esc_mission_stalker_leader_complete} sr_idle@take_task_from_leader_2 %=clear_smart_terrain(esc_smart_terrain_7_11)%
+
+[sr_idle@take_task_from_leader_2]
+on_timer = 2000 | sr_idle@go_2_leader2 %=create_squad(esc_smart_terrain_7_11_military_2_squad_3:esc_smart_terrain_7_11) =create_squad(esc_smart_terrain_7_11_military_2_squad_2:esc_smart_terrain_7_11) =give_inited_task(eliminate_smart:esc_smart_terrain_7_11:stalker) =play_sound(esc_mill_complete_reply:stalker:esc_leader_stalkerbase_name)%
+
+[sr_idle@dopros_task_skip_7_11]
+on_info = sr_idle@take_task_habar %=give_inited_task(storyline:esc_dopros:stalker) =play_sound(esc_dead_military_pda_request:stalker:esc_smart_terrain_5_7)%
+
+[sr_idle@go_2_leader2]
+on_info = {+esc_mission_2_stalker_leader_complete} sr_idle@take_task_habar %=give_inited_task(storyline:esc_dopros:stalker) =play_sound(esc_dead_military_pda_request:stalker:esc_leader_stalkerbase_name)%
+
+[sr_idle@take_task_habar]
+on_info = {+esc_habar_mill_spawn} sr_idle@give_bring_habar_task %=give_inited_task(storyline:esc_take_habar_1:csky) +esc_join_stalker_on +esc_first_join_stalker%
+on_info2 = {+esc_habar_tonnel_spawn} sr_idle@give_bring_habar_task %=give_inited_task(storyline:esc_take_habar_2:csky) +esc_join_stalker_on +esc_first_join_stalker%
+on_info3 = {+esc_habar_podval_spawn} sr_idle@give_bring_habar_task %=give_inited_task(storyline:esc_take_habar_3:csky) +esc_join_stalker_on +esc_first_join_stalker%
+
+[sr_idle@give_bring_habar_task]
+on_info = {+esc_take_habar_complete} sr_idle@go_garbage_task %=give_inited_task(storyline:esc_bring_habar:csky) =play_sound(esc_trader_habar_request:stalker:escape_trader_name) =update_faction_brain(stalker)%
+
+[sr_idle@go_garbage_task]
+on_info = {+esc_bring_habar_complete -gar_story_find_diggers_started} sr_idle@esc_gar %=give_inited_task(storyline:gar_story_find_diggers:csky) +gar_story_find_diggers_started%
+
+[sr_idle@esc_gar]

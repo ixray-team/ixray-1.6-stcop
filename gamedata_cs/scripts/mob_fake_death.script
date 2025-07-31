@@ -1,0 +1,61 @@
+----------------------------------------------------------------------------------------------------
+-- Mob Fake Death
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Jim
+----------------------------------------------------------------------------------------------------
+
+class "mob_fake_death"
+
+----------------------------------------------------------------------------------------------------
+-- CONSTRUCTION SCHEME
+----------------------------------------------------------------------------------------------------
+function mob_fake_death:__init(obj, storage)
+	self.object = obj
+	self.st		= storage
+end
+
+----------------------------------------------------------------------------------------------------
+-- RESET SCHEME
+----------------------------------------------------------------------------------------------------
+function mob_fake_death:reset_scheme()
+	self.st.result = self.object:fake_death_fall_down()
+end
+
+----------------------------------------------------------------------------------------------------
+-- UPDATE
+----------------------------------------------------------------------------------------------------
+function mob_fake_death:update(delta)
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end
+	
+	-- if it could not falldown try again
+	if (not self.st.result) then
+		self.st.result = self.object:fake_death_fall_down()
+	end
+end
+
+function mob_fake_death:deactivate()
+		self.object:fake_death_stand_up()
+end
+
+----------------------------------------------------------------------------------------------------
+-- ADD_TO_BINDER
+----------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	printf("DEBUG: add_to_binder: npc:name()='%s', scheme='%s', section='%s'", npc:name(), scheme, section)
+
+	local new_action = mob_fake_death(npc, storage)
+
+	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+
+----------------------------------------------------------------------------------------------------
+-- SET_SCHEME
+----------------------------------------------------------------------------------------------------
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local storage		= xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	storage.logic		= xr_logic.cfg_get_switch_conditions(ini, section, npc)
+end
+

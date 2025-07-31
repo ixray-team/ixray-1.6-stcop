@@ -1,0 +1,337 @@
+--Начало симуляционного геймплея
+function main ()
+
+-- Give infoportions
+	
+local infos_table = {
+"mar_lvl_sim",
+"mar_intro_scene_1_talked_1",
+"mar_intro_scene_1_talked_2",
+"mar_intro_scene_1_talked_3",
+"mar_intro_scene_1_end",
+"mar_intro_scene_2_woke",
+"mar_intro_scene_2_end",	
+"mar_intro_talk_with_barman_radio_timer",
+"mar_intro_talk_with_barman_done",
+"mar_intro_talk_with_commander_1_started",
+"mar_intro_talk_with_commander_1_radio_timer",
+"mar_intro_talk_with_commander_1_radio_played",
+"mar_intro_talk_with_commander_1_tutorial",
+"mar_intro_talk_with_commander_1_done",
+"mar_intro_talk_with_trader_started",
+"mar_intro_talk_with_trader_radio_timer",
+"mar_intro_talk_with_trader_radio_played",
+"mar_intro_talk_with_trader_done",
+"mar_intro_talk_with_guide_started",
+"mar_intro_talk_with_guide_done",
+"mar_intro_talk_with_guide_end",
+"mar_tutorial_tower_top_shout",
+"mar_tutorial_tower_top_started",
+"mar_tutorial_tower_top_done",
+"mar_tutorial_kill_boars_done",
+"mar_tutorial_kill_boars_started",
+"mar_tutorial_help_done",
+"mar_tutorial_kill_boars_reversed",
+"mar_tutorial_help_reversed",
+"mar_tutorial_tower_top_reversed",
+"mar_tutorial_surge_warned",
+"mar_tutorial_return_to_base_reversed",
+"mar_tutorial_returned_to_base",
+"mar_tutorial_returned_got_on_feet",
+"mar_intro_talk_with_commander_2_started",
+"mar_intro_talk_with_commander_2_done",
+"mar_intro_talk_with_commander_3_done",
+"mar_intro_talk_with_commander_3_control",
+"mar_intro_talk_with_tactic_done",
+"mar_story_go_to_marsh_done"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+-- Give items
+
+local spawn_items = {} 
+
+for i = 1,1 do
+	table.insert(spawn_items, "wpn_knife")
+end
+for i = 1,5 do
+	table.insert(spawn_items, "bandage")
+end
+for i = 1,2 do
+	table.insert(spawn_items, "medkit")
+end
+for i = 1,1 do
+	table.insert(spawn_items, "antirad")
+end
+
+if level.name()== "marsh" then
+	table.insert(spawn_items, "wpn_bm16")
+	table.insert(spawn_items, "wpn_pm")
+	table.insert(spawn_items, "detector_simple")
+	for i = 1,2 do
+		table.insert(spawn_items, "ammo_9x18_fmj")
+	end
+	for i = 1,5 do
+		table.insert(spawn_items, "ammo_12x70_buck")
+	end
+elseif level.name()== "escape" then
+	db.actor:give_money(5000)
+	table.insert(spawn_items, "wpn_toz34")
+	table.insert(spawn_items, "wpn_mp5")
+	table.insert(spawn_items, "wpn_pm")
+	table.insert(spawn_items, "cs_light_outfit")
+	table.insert(spawn_items, "detector_simple")
+	table.insert(spawn_items, "af_medusa")
+	for i = 1,3 do
+		table.insert(spawn_items, "grenade_rgd5")
+	end
+	for i = 1,5 do
+		table.insert(spawn_items, "ammo_12x70_buck")
+	end
+	for i = 1,2 do
+		table.insert(spawn_items, "ammo_9x18_fmj")
+	end		
+	for i = 1,4 do
+		table.insert(spawn_items, "ammo_9x19_fmj")
+	end		
+	for i = 1,2 do
+		table.insert(spawn_items, "medkit")
+	end
+	for i = 1,2 do
+		table.insert(spawn_items, "bandage")
+	end
+elseif level.name()== "garbage" then
+	db.actor:give_money(10000)
+		table.insert(spawn_items, "wpn_wincheaster1300")
+		table.insert(spawn_items, "wpn_ak74u")
+		table.insert(spawn_items, "wpn_fort")
+		table.insert(spawn_items, "stalker_outfit")
+		table.insert(spawn_items, "detector_simple")
+		for i = 1,3 do
+			table.insert(spawn_items, "grenade_rgd5")
+		end
+		for i = 1,5 do
+			table.insert(spawn_items, "ammo_12x70_buck")
+		end
+		for i = 1,2 do
+			table.insert(spawn_items, "ammo_9x18_fmj")
+		end		
+		for i = 1,3 do
+			table.insert(spawn_items, "ammo_5.45x39_fmj")
+		end		
+		for i = 1,3 do
+			table.insert(spawn_items, "medkit")
+		end
+		for i = 1,3 do
+			table.insert(spawn_items, "bandage")
+		end
+elseif level.name()== "darkvalley" then
+		db.actor:give_money(15000)
+				table.insert(spawn_items, "wpn_wincheaster1300")
+				table.insert(spawn_items, "wpn_ak74_up")
+				table.insert(spawn_items, "wpn_colt1911")
+				table.insert(spawn_items, "stalker_outfit")
+				table.insert(spawn_items, "detector_simple")
+				for i = 1,5 do
+					table.insert(spawn_items, "grenade_rgd5")
+				end
+				for i = 1,5 do
+					table.insert(spawn_items, "ammo_12x70_buck")
+				end
+				for i = 1,2 do
+					table.insert(spawn_items, "ammo_11.43x23_fmj")
+				end		
+				for i = 1,4 do
+					table.insert(spawn_items, "ammo_5.45x39_fmj")
+				end		
+				for i = 1,3 do
+					table.insert(spawn_items, "medkit")
+				end
+				for i = 1,3 do
+					table.insert(spawn_items, "bandage")
+				end
+elseif level.name()== "agroprom" then
+				table.insert(spawn_items, "wpn_wincheaster1300")
+				table.insert(spawn_items, "wpn_lr300_up2")
+				table.insert(spawn_items, "wpn_colt1911")
+				table.insert(spawn_items, "stalker_outfit")
+				table.insert(spawn_items, "detector_simple")
+				for i = 1,5 do
+					table.insert(spawn_items, "grenade_rgd5")
+				end
+				for i = 1,5 do
+					table.insert(spawn_items, "ammo_12x70_buck")
+				end
+				for i = 1,2 do
+					table.insert(spawn_items, "ammo_11.43x23_fmj")
+				end		
+				for i = 1,4 do
+					table.insert(spawn_items, "ammo_5.45x39_fmj")
+				end		
+				for i = 1,3 do
+					table.insert(spawn_items, "medkit")
+				end
+				for i = 1,3 do
+					table.insert(spawn_items, "bandage")
+				end
+elseif level.name()== "yantar" then
+				table.insert(spawn_items, "wpn_wincheaster1300")
+				table.insert(spawn_items, "wpn_abakan_up2")
+				table.insert(spawn_items, "wpn_colt1911_up2")
+				table.insert(spawn_items, "scientific_outfit")
+				table.insert(spawn_items, "detector_simple")
+				for i = 1,5 do
+					table.insert(spawn_items, "grenade_rgd5")
+				end
+				for i = 1,5 do
+					table.insert(spawn_items, "ammo_12x70_buck")
+				end
+				for i = 1,2 do
+					table.insert(spawn_items, "ammo_11.43x23_fmj")
+					end		
+				for i = 1,4 do
+					table.insert(spawn_items, "ammo_5.45x39_fmj")
+				end		
+				for i = 1,5 do
+					table.insert(spawn_items, "medkit")
+				end
+				for i = 1,3 do
+					table.insert(spawn_items, "bandage")
+				end																		
+elseif level.name()== "red_forest" then
+		table.insert(spawn_items, "wpn_groza")
+		table.insert(spawn_items, "wpn_vintorez_up")
+		table.insert(spawn_items, "wpn_addon_scope")
+		table.insert(spawn_items, "wpn_colt1911_up2")
+		table.insert(spawn_items, "military_outfit")
+		table.insert(spawn_items, "detector_elite")
+		for i = 1,5 do
+			table.insert(spawn_items, "grenade_f1")
+		end
+		for i = 1,7 do
+			table.insert(spawn_items, "ammo_9x39_ap")
+		end
+		for i = 1,2 do
+			table.insert(spawn_items, "ammo_11.43x23_hydro")
+		end
+		for i = 1,10 do
+			table.insert(spawn_items, "ammo_vog-25")
+		end					
+		for i = 1,2 do
+			table.insert(spawn_items, "medkit_scientic")
+		end		
+		for i = 1,10 do
+			table.insert(spawn_items, "medkit")
+		end
+		for i = 1,10 do
+			table.insert(spawn_items, "bandage")
+		end				
+elseif level.name()== "military" then
+		table.insert(spawn_items, "wpn_groza")
+		table.insert(spawn_items, "wpn_vintorez_up")
+		table.insert(spawn_items, "wpn_addon_scope")
+		table.insert(spawn_items, "wpn_colt1911_up2")
+		table.insert(spawn_items, "military_outfit")
+		table.insert(spawn_items, "detector_elite")
+		for i = 1,5 do
+			table.insert(spawn_items, "grenade_f1")
+		end
+		for i = 1,7 do
+			table.insert(spawn_items, "ammo_9x39_ap")
+		end
+		for i = 1,2 do
+			table.insert(spawn_items, "ammo_11.43x23_hydro")
+		end
+		for i = 1,10 do
+			table.insert(spawn_items, "ammo_vog-25")
+		end					
+		for i = 1,2 do
+			table.insert(spawn_items, "medkit_scientic")
+		end		
+		for i = 1,10 do
+			table.insert(spawn_items, "medkit")
+		end
+		for i = 1,10 do
+			table.insert(spawn_items, "bandage")
+		end	
+elseif level.name()== "limansk" then
+		table.insert(spawn_items, "wpn_ak74_up2")
+		table.insert(spawn_items, "wpn_addon_scope")
+		table.insert(spawn_items, "wpn_addon_grenade_launcher")
+		table.insert(spawn_items, "wpn_desert_eagle_up")
+		table.insert(spawn_items, "military_outfit")
+		table.insert(spawn_items, "detector_elite")
+		for i = 1,5 do
+			table.insert(spawn_items, "grenade_f1")
+		end
+		for i = 1,7 do
+			table.insert(spawn_items, "ammo_5.45x39_ap")
+		end
+		for i = 1,2 do
+			table.insert(spawn_items, "ammo_11.43x23_fmj")
+		end		
+		for i = 1,2 do
+			table.insert(spawn_items, "medkit_scientic")
+		end		
+		for i = 1,10 do
+			table.insert(spawn_items, "medkit")
+		end
+		for i = 1,10 do
+			table.insert(spawn_items, "bandage")
+		end	
+elseif level.name()== "hospital" then
+		table.insert(spawn_items, "wpn_groza")
+		table.insert(spawn_items, "wpn_vintorez_up")
+		table.insert(spawn_items, "wpn_addon_scope")
+		table.insert(spawn_items, "wpn_colt1911_up2")
+		table.insert(spawn_items, "exo_outfit")
+		table.insert(spawn_items, "detector_elite")
+		table.insert(spawn_items, "wpn_addon_silencer")
+		for i = 1,5 do
+			table.insert(spawn_items, "grenade_f1")
+		end
+		for i = 1,7 do
+			table.insert(spawn_items, "ammo_9x39_ap")
+		end
+		for i = 1,2 do
+			table.insert(spawn_items, "ammo_11.43x23_fmj")
+		end		
+		for i = 1,5 do
+			table.insert(spawn_items, "medkit_scientic")
+		end
+		for i = 1,5 do
+			table.insert(spawn_items, "ammo_vog-25")
+		end					
+		for i = 1,10 do
+			table.insert(spawn_items, "medkit")
+		end
+		for i = 1,10 do
+			table.insert(spawn_items, "bandage")
+		end	
+end
+
+for k,v in pairs(spawn_items) do
+	alife():create(v,	
+		actor:position(),
+		actor:level_vertex_id(),	
+		actor:game_vertex_id(), 
+		actor:id())
+end
+
+-- Activate main weapon
+
+db.actor:activate_slot(2)
+
+-- Start simulation
+
+sim_board.get_sim_board():start_sim()
+
+-- Join Clear Sky
+
+sim_board.get_sim_board():set_actor_community("csky")
+
+end 

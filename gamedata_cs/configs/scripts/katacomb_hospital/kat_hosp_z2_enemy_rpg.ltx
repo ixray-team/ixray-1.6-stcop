@@ -1,0 +1,70 @@
+[spawn]
+wpn_rpg7
+ammo_og-7b
+
+[dont_spawn_character_supplies]
+
+[logic]
+active = walker
+combat_ignore = combat_ignore
+on_death = death
+on_hit = hit
+
+[death]
+on_info = %-hospital_z2_rpg_fire%
+
+[hit]
+on_info = %=hit_npc(z2_rpg_hit_way:bip01_spine:500:150)%
+
+[walker]
+combat_ignore_cond = always
+danger = danger_condition
+path_walk = z2_rpg_walk
+path_look = z2_enemy_rpg_look
+def_state_moving1 = assault
+def_state_moving1 = assault
+def_state_moving1 = assault
+invulnerable = true
+on_signal = action | camper@2 %+hospital_z2_rpg_fire -hospital_z2_rpg_run =play_sound(clear_sky_suicide)%
+
+[remark@fire]
+combat_ignore_cond = always
+danger = danger_condition
+anim = threat
+target = 209
+on_game_timer = 50 | remark@fire1
+
+[remark@fire1]
+combat_ignore_cond = always
+danger = danger_condition
+anim = threat_fire
+;target = z2_heli_wait, 0
+target = 209
+on_game_timer = 30 | remark@fire %+hospital_z2_heli_fire%
+
+
+[camper@2]
+;combat_ignore_cond = always
+;danger = danger_condition@heli_hunter
+path_walk = z2_rpg_walk
+def_state_moving1 = assault
+def_state_moving1 = assault
+def_state_moving1 = assault
+;on_game_timer = 100 | remark@fire1
+heli_hunter = true
+
+
+[danger_condition]
+ignore_distance = 0
+ignore_distance_grenade = 0
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_sound = 0
+
+[danger_condition@heli_hunter]
+ignore_distance_grenade = 0
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_sound = 0
+
+[combat_ignore]

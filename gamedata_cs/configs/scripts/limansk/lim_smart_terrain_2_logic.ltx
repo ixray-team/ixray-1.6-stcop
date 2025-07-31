@@ -1,0 +1,310 @@
+;*****************************
+;********* ally 1 ***********
+
+[logic@csky_attack_work1]
+active = camper@wait_work1
+suitable = {=is_gulag_attacking_target(lim_smart_terrain_3) =check_npc_name(lim_csky_commander) -lim_smart_3_captured} true
+prior = 70
+
+[camper@wait_work1]
+invulnerable = true
+in_restr = lim_bandit_house_zone_1
+combat_ignore_cond = true
+path_walk = csky_1_walk
+path_look = csky_1_walk
+radius = 0
+on_info = {+lim_bandit_house_go} walker@fire_work1 %=request_current_squad_stage(prepare)%
+
+[walker@fire_work1]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_2_attack)}
+out_restr = lim_smart_terrain_2_defence
+in_restr = lim_bandit_house_zone_1
+path_walk = csky_attack_1_walk
+path_look = csky_attack_1_walk
+on_info = {+lim_bandit_house_attackers} walker@wait_work1
+
+[walker@wait_work1]
+invulnerable = true
+combat_ignore_cond = true ;{!enemy_in_zone(lim_smart_terrain_3_defence)}
+path_walk = spec_wait_1_walk
+path_look = spec_wait_1_look
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+on_signal = action | remark@actor_see_work1 
+on_info = {+lim_ambush2} walker@retreat_work1 %=request_current_squad_stage(prepare)%
+on_info2 = %=play_sound(lim_cs_storm_troop_leader_to_actor1)% 
+on_actor_dist_le = 5 | remark@talk2_work1 %=play_sound(lim_cs_storm_troop_leader_to_actor2)%
+
+[remark@actor_see_work1]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_3_defence)}
+target = actor
+meet = no_meet
+anim = hello_wpn
+on_info = {+lim_ambush2} walker@retreat_work1 %+lim_csky_go_to_smart_3%
+on_actor_dist_le = 5 | remark@talk2_work1 %=play_sound(lim_cs_storm_troop_leader_to_actor2)%
+
+[remark@talk_work1]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_3_defence)}
+target = actor
+meet = no_meet
+anim = talk_default
+on_signal = sound_end | patrol@attack_work1
+
+[remark@talk2_work1]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_3_defence)}
+target = actor
+meet = no_meet
+anim = talk_default
+on_info = {+lim_ambush2} walker@retreat_work1 %=request_current_squad_stage(prepare)%
+on_signal = sound_end | patrol@attack_work1 %+lim_csky_go_to_smart_3% 
+
+[patrol@attack_work1]
+invulnerable = true
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = to_lim_smart_terrain_3_patrol_1_walk
+commander = true
+move_type = raid
+def_state_moving = rush
+meet = no_meet
+on_signal = arrive_to_wait | %=request_current_squad_stage(prepare)%
+on_info = {+lim_ambush2} walker@retreat_work1 %=request_current_squad_stage(prepare)%
+
+[walker@retreat_work1]
+invulnerable = true
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = spec_retreat_1_walk
+path_look = spec_retreat_1_look
+;on_info = %=restore_health%
+
+;***********************************
+
+[logic@csky_attack_work2]
+active = camper@wait_work2
+suitable = {=is_gulag_attacking_target(lim_smart_terrain_3) =check_npc_name(lim_csky_soldier) -lim_smart_3_captured} true
+prior = 70
+
+[camper@wait_work2]
+invulnerable = true
+in_restr = lim_bandit_house_zone_1
+combat_ignore_cond = true
+path_walk = csky_2_walk
+path_look = csky_2_walk
+radius = 0
+on_info = {+lim_bandit_house_go} walker@fire_work2 %=request_current_squad_stage(prepare)%
+
+[walker@fire_work2]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_2_attack)}
+out_restr = lim_smart_terrain_2_defence
+in_restr = lim_bandit_house_zone_1
+path_walk = csky_attack_2_walk
+path_look = csky_attack_2_walk
+on_info = {+lim_bandit_house_attackers} walker@wait_work2
+
+[walker@wait_work2]
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true ;{!enemy_in_zone(lim_smart_terrain_3_defence)}
+path_walk = spec_wait_2_walk
+path_look = spec_wait_2_look
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+on_info = {+lim_csky_go_to_smart_3} patrol@attack_work2
+on_info2 = {+lim_ambush2} walker@retreat_work2
+
+[patrol@attack_work2]
+invulnerable = true
+meet = no_meet
+;combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_3_defence)}
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = to_lim_smart_terrain_3_patrol_1_walk
+move_type = raid
+on_signal = arrive_to_wait | %=request_current_squad_stage(prepare)%
+on_info = {+lim_ambush2} walker@retreat_work2
+;on_info2 = %=restore_health%
+
+[walker@retreat_work2]
+meet = no_meet
+invulnerable = true
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = spec_retreat_2_walk
+path_look = spec_retreat_1_look
+;on_info = %=restore_health%
+
+;***********************************
+
+[logic@csky_attack_work3]
+active = camper@wait_work3
+suitable = {=is_gulag_attacking_target(lim_smart_terrain_3) =check_npc_name(lim_csky_soldier) -lim_smart_3_captured} true
+prior = 70
+
+[camper@wait_work3]
+invulnerable = true
+in_restr = lim_bandit_house_zone_1
+combat_ignore_cond = true
+path_walk = csky_3_walk
+path_look = csky_3_walk
+radius = 0
+on_info = {+lim_bandit_house_go} walker@fire_work3 %=request_current_squad_stage(prepare)%
+
+[walker@fire_work3]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_2_attack)}
+out_restr = lim_smart_terrain_2_defence
+in_restr = lim_bandit_house_zone_1
+path_walk = csky_attack_3_walk
+path_look = csky_attack_3_walk
+on_info = {+lim_bandit_house_attackers} walker@wait_work3
+
+[walker@wait_work3]
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true ;{!enemy_in_zone(lim_smart_terrain_3_defence)}
+out_restr = lim_smart_terrain_2_defence
+path_walk = spec_wait_3_walk
+path_look = spec_wait_3_look
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+on_info = {+lim_csky_go_to_smart_3} patrol@attack_work3
+on_info2 = {+lim_ambush2} walker@retreat_work3 %=request_current_squad_stage(prepare)%
+
+[patrol@attack_work3]
+invulnerable = true
+meet = no_meet
+;combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_3_defence)}
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = to_lim_smart_terrain_3_patrol_2_walk
+move_type = raid
+on_info = {+lim_ambush2} walker@retreat_work3 %=request_current_squad_stage(prepare)%
+;on_info2 = %=restore_health%
+on_signal = arrive_to_wait | %=request_current_squad_stage(prepare)%
+
+[walker@retreat_work3]
+meet = no_meet
+invulnerable = true
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = spec_retreat_3_walk
+path_look = spec_retreat_1_look
+;on_info = %=restore_health%
+
+;***********************************
+
+[logic@csky_attack_work4]
+active = camper@wait_work4
+suitable = {=is_gulag_attacking_target(lim_smart_terrain_3) =check_npc_name(lim_csky_soldier) -lim_smart_3_captured} true
+prior = 70
+
+[camper@wait_work4]
+invulnerable = true
+in_restr = lim_bandit_house_zone_1
+combat_ignore_cond = true
+path_walk = csky_4_walk
+path_look = csky_4_walk
+radius = 0
+on_info = {+lim_bandit_house_go} walker@fire_work4 %=request_current_squad_stage(prepare)%
+
+[walker@fire_work4]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_2_attack)}
+out_restr = lim_smart_terrain_2_defence
+in_restr = lim_bandit_house_zone_1
+path_walk = csky_attack_4_walk
+path_look = csky_attack_4_walk
+on_info = {+lim_bandit_house_attackers} walker@wait_work4
+
+[walker@wait_work4]
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true ;{!enemy_in_zone(lim_smart_terrain_3_defence)}
+out_restr = lim_smart_terrain_2_defence
+path_walk = spec_wait_4_walk
+path_look = spec_wait_4_look
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+on_info = {+lim_csky_go_to_smart_3} patrol@attack_work4
+on_info2 = {+lim_ambush2} walker@retreat_work4 %=request_current_squad_stage(prepare)%
+
+[patrol@attack_work4]
+invulnerable = true
+meet = no_meet
+;combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_3_defence)}
+combat_ignore_cond = {!is_enemy_actor}
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = to_lim_smart_terrain_3_patrol_2_walk
+move_type = raid
+on_info = {+lim_ambush2} walker@retreat_work4 %=request_current_squad_stage(prepare)%
+;on_info2 = %=restore_health%
+on_signal = arrive_to_wait | %=request_current_squad_stage(prepare)%
+
+[walker@retreat_work4]
+meet = no_meet
+invulnerable = true
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = spec_retreat_4_walk
+path_look = spec_retreat_1_look
+;on_info = %=restore_health%
+
+;***********************************
+
+[logic@csky_attack_work5]
+active = camper@wait_work5
+suitable = {=is_gulag_attacking_target(lim_smart_terrain_3) =check_npc_name(lim_csky_soldier) -lim_smart_3_captured} true
+prior = 70
+
+[camper@wait_work5]
+invulnerable = true
+in_restr = lim_bandit_house_zone_1
+combat_ignore_cond = true
+path_walk = csky_5_walk
+path_look = csky_5_walk
+radius = 0
+on_info = {+lim_bandit_house_go} walker@fire_work5 %=request_current_squad_stage(prepare)%
+
+[walker@fire_work5]
+invulnerable = true
+combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_2_attack)}
+out_restr = lim_smart_terrain_2_defence
+in_restr = lim_bandit_house_zone_1
+path_walk = csky_attack_5_walk
+path_look = csky_attack_5_walk
+on_info = {+lim_bandit_house_attackers} walker@wait_work5
+
+[walker@wait_work5]
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true ;{!enemy_in_zone(lim_smart_terrain_3_defence)}
+out_restr = lim_smart_terrain_2_defence
+path_walk = spec_wait_5_walk
+path_look = spec_wait_5_look
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+on_info = {+lim_csky_go_to_smart_3} patrol@attack_work5
+on_info2 = {+lim_ambush2} walker@retreat_work5 %=request_current_squad_stage(prepare)%
+
+[patrol@attack_work5]
+invulnerable = true
+meet = no_meet
+;combat_ignore_cond = {!enemy_in_zone(lim_smart_terrain_3_defence)}
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = to_lim_smart_terrain_3_patrol_2_walk
+move_type = raid
+on_info = {+lim_ambush2} walker@retreat_work5 %=request_current_squad_stage(prepare)%
+;on_info2 = %=restore_health%
+on_signal = arrive_to_wait | %=request_current_squad_stage(prepare)%
+
+[walker@retreat_work5]
+meet = no_meet
+invulnerable = true
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = spec_retreat_5_walk
+path_look = spec_retreat_1_look
+;on_info = %=restore_health%

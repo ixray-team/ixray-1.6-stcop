@@ -1,0 +1,93 @@
+[logic]
+active = sr_idle@wait_1
+
+[sr_idle@wait_1]
+on_info = sr_idle@start %=disable_ui =dof_change =run_tutorial(first_battle_tutorial) =spawn_object(arena_first_battle_stalker_1:arena_first_battle_stalker_1_spawn) =spawn_object(arena_first_battle_stalker_1:arena_first_battle_stalker_2_spawn) =spawn_object(arena_first_battle_ally_stalker_1:arena_ally_stalker_1_spawn)%
+
+[sr_idle@start]
+on_info =  sr_cutscene@first_battle 
+
+
+[sr_cutscene@first_battle]
+cam_effector = arena_battle_cam_1
+point = arena_walk
+look = arena_look
+on_signal = cameff_end | sr_idle@first_battle_begin %+arena_first_battle_begin -arena_camera_begin%
+on_timer = 5000 | %=play_sound(arena_introduce)%
+
+[sr_idle@first_battle_begin]
+on_info = {=counter_equal(arena_stalker_killed:2)} sr_idle@first_battle_after_wait_1 %=run_tutorial(after_fight_tutorial)%
+
+[sr_idle@first_battle_after_wait_1]
+on_info = {-arena_first_battle_begin} sr_idle@first_battle_after_wait
+
+[sr_idle@first_battle_after_wait]
+on_timer = 3000 | sr_idle@wait_2 %=purge_arena_items(arena) =set_counter(arena_stalker_killed:0) =spawn_object(arena_second_battle_stalker_1:arena_first_battle_stalker_1_spawn) =spawn_object(arena_second_battle_stalker_1_boss:arena_first_battle_stalker_2_spawn) =spawn_object(arena_second_battle_stalker_1:arena_first_battle_stalker_3_spawn) =spawn_object(arena_second_battle_stalker_1:arena_first_battle_stalker_4_spawn) %
+
+[sr_idle@wait_2]
+on_info = sr_cutscene@second_battle 
+
+[sr_cutscene@second_battle]
+cam_effector = arena_battle_cam_1
+point = arena_walk
+look = arena_look
+on_signal = cameff_end | sr_idle@second_battle_begin %+arena_first_battle_begin -arena_camera_begin =release_actor_inventory2%
+on_timer = 3000 | %=play_sound(arena_introduce)%
+
+[sr_idle@second_battle_begin]
+on_info = {=counter_equal(arena_stalker_killed:4)} sr_idle@second_battle_after_wait_1 %=run_tutorial(after_fight_tutorial)%
+
+[sr_idle@second_battle_after_wait_1]
+on_info = {-arena_first_battle_begin} sr_idle@second_battle_after_wait
+
+[sr_idle@second_battle_after_wait]
+on_timer = 3000 | sr_idle@wait_3 %=purge_arena_items(arena)  =set_counter(arena_stalker_killed:0) =spawn_object(arena_third_battle_stalker_1:arena_first_battle_stalker_1_spawn) =spawn_object(arena_third_battle_stalker_1_boss:arena_first_battle_stalker_2_spawn) =spawn_object(arena_third_battle_stalker_1:arena_first_battle_stalker_3_spawn) =spawn_object(arena_third_battle_stalker_1:arena_first_battle_stalker_4_spawn)%
+
+[sr_idle@wait_3]
+on_info = sr_cutscene@third_battle 
+
+[sr_cutscene@third_battle]
+cam_effector = arena_battle_cam_1
+point = arena_walk
+look = arena_look
+on_signal = cameff_end | sr_idle@third_battle_begin %+arena_first_battle_begin =release_actor_inventory3%
+on_timer = 3000 | %=play_sound(arena_introduce)%
+
+[sr_idle@third_battle_begin]
+on_info = {=counter_equal(arena_stalker_killed:4)} sr_idle@third_battle_after_wait_1 %=run_tutorial(after_fight_tutorial)%
+
+[sr_idle@third_battle_after_wait_1]
+on_info = {-arena_first_battle_begin} sr_idle@third_battle_after_wait
+
+[sr_idle@third_battle_after_wait]
+on_timer = 3000 | sr_idle@wait_4 %=purge_arena_items(arena) =set_counter(arena_stalker_killed:0) =spawn_object(arena_fourth_battle_stalker_1:arena_smart_guard_1_walk) =spawn_object(arena_fourth_battle_stalker_2:arena_smart_guard_2_walk) =spawn_object(arena_fourth_battle_stalker_3:arena_smart_guard_3_walk) =spawn_object(arena_fourth_battle_stalker_4:arena_smart_guard_4_walk) =spawn_object(arena_fourth_battle_stalker_5:arena_smart_guard_5_walk)%
+
+[sr_idle@wait_4]
+on_info =  sr_cutscene@fourth_battle
+
+[sr_cutscene@fourth_battle]
+cam_effector = arena_battle_cam_2
+point = arena_walk_4
+look = arena_look_4
+on_signal = cameff_end | sr_idle@fourth_battle_begin %+arena_first_battle_begin =release_actor_inventory4 +arena_fourth_battle%
+on_timer = 3000 | %=play_sound(arena_introduce)%
+
+[sr_idle@fourth_battle_begin]
+on_info = {=counter_equal(arena_stalker_killed:5)} sr_idle@fourth_battle_after_wait_1 %+arena_first_battle_begin =run_tutorial(after_fight_tutorial)%
+
+[sr_idle@fourth_battle_after_wait_1]
+on_info = {-arena_first_battle_begin} sr_idle@fourth_battle_after_wait 
+
+[sr_idle@fourth_battle_after_wait]
+on_timer = 3000 | sr_cutscene@final_battle %=purge_arena_items(arena) +arena_final_battle -arena_fourth_battle%
+
+
+[sr_cutscene@final_battle]
+cam_effector = arena_battle_cam_3
+point = final_walk
+look = final_look
+on_signal = cameff_end | sr_idle@final_battle_begin %+arena_first_battle_begin =release_actor_inventory5%
+on_timer = 3000 | %=play_sound(arena_introduce)%
+
+[sr_idle@final_battle_begin]
+on_info = nil %+arena_final_battle%

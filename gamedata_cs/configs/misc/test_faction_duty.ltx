@@ -1,0 +1,29 @@
+[settings]
+science_0 = sim_default_duty_0, 80, sim_default_duty_1, 20
+science_1 = sim_default_duty_1, 70, sim_default_duty_2, 30
+science_2 = sim_default_duty_2, 60, sim_default_duty_3, 40
+science_3 = sim_default_duty_3, 50, sim_default_duty_4, 50
+
+wealth_0 = 2
+wealth_1 = 4
+wealth_2 = 6
+wealth_3 = 8
+wealth_4 = 10
+wealth_5 = 12
+
+
+[expansion_0]
+base_squad_number = 3
+sim_prior = prior_0
+
+
+
+; Приоритеты это:
+; Тип_смарта = X, Y.
+; Тип смарта - это либо base либо science либо artefact либо имя смарта
+; X - сумма которая искусственно добавляется к оценке важности данного смарта
+; Y - Коэфициент влияния sim_value на оценку смарта. Формула: оценка = X * (1 + Y*(sim_value-1))
+[prior_0]
+base = 100, 0 
+smart3 = 100, 0
+smart5 = 100, 0

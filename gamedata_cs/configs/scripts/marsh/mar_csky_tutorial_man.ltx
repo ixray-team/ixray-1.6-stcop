@@ -1,0 +1,55 @@
+[logic]
+active = walker@wait
+
+[walker@wait]
+path_walk = mar_tutorial_man_walk
+path_look = mar_tutorial_man_shoot
+out_restr = mar_space_restrictor_tut_tower
+combat_ignore_cond = true
+invulnerable = true
+on_actor_dist_le_nvis = 50 | camper@wait
+meet = no_meet
+
+[camper@wait]
+path_walk = mar_tutorial_man_walk
+path_look = mar_tutorial_man_look
+out_restr = mar_space_restrictor_tut_tower
+combat_ignore_cond = true
+invulnerable = true
+on_info = {+mar_tutorial_tower_top_started} camper@good, {+mar_tutorial_tower_top_shout} %=play_sound(mar_csky_hide_in_tower:csky)%
+on_signal = sound_end | camper@good %+mar_tutorial_tower_top_started%
+meet = no_meet
+radius = 0
+def_state_moving = sneak
+def_state_moving_fire = sneak_fire
+def_state_campering = hide
+def_state_campering_fire = hide_fire
+
+[camper@good]
+path_walk = mar_tutorial_man_walk
+path_look = mar_tutorial_man_look
+out_restr = mar_space_restrictor_tut_tower
+combat_ignore_cond = true
+invulnerable = true
+on_info = {+mar_tutorial_kill_boars_started} camper@main, {+mar_tutorial_surge_warned} camper@main, {+mar_tutorial_tower_top_done -mar_tutorial_kill_boars_done} %=play_sound(mar_csky_player_in_tower:csky)%
+on_signal = sound_end | camper@main %+mar_tutorial_kill_boars_started%
+meet = no_meet
+radius = 0
+def_state_moving = sneak
+def_state_moving_fire = sneak_fire
+def_state_campering = hide
+def_state_campering_fire = hide_fire
+
+[camper@main]
+path_walk = mar_tutorial_man_walk
+path_look = mar_tutorial_man_look
+out_restr = mar_space_restrictor_tut_tower
+combat_ignore_cond = true
+invulnerable = true
+on_info = {+mar_tutorial_surge_warned} nil %=kill_npc%
+meet = no_meet
+radius = 0
+def_state_moving = sneak
+def_state_moving_fire = sneak_fire
+def_state_campering = hide
+def_state_campering_fire = hide_fire

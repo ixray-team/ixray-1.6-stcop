@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle@line_0
+
+[sr_idle@line_0]
+on_info = {+agr_secret_trader_pda_quest_2 =actor_in_zone(agr_secret_trader_pda_quest_zone)} sr_idle@line_1 %=spawn_object(agr_bloodsucker_home:agr_secret_trader_pda_quest_spawn:0)%
+
+[sr_idle@line_1]

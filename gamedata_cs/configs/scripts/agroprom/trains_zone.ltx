@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle@line_0
+
+[sr_idle@line_0]
+on_actor_in_zone = agr_smart_terrain_4_4_trains | sr_idle@line_1
+
+[sr_idle@line_1]
+on_info = %+agr_snork_simulation_attack_on_trains%
+

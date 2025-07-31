@@ -1,0 +1,24 @@
+function main ()
+
+lvl_garbage_start.main()
+
+local infos_table = {
+"gar_story_reached_dead_diggers_camp",
+"gar_story_searched_digger_body",
+"gar_story_digger_pda_played",
+"gar_story_spawn_messenger_dogs",
+"gar_story_spawned_messenger_dogs",
+"gar_story_messenger_dogs_dead",
+"gar_story_got_info_from_digger"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+if level.name() == "darkvalley" and not task_manager.get_task_manager().inited_tasks["csky_general_gar_story_go_to_freedom"] then
+	xr_effects.give_inited_task(nil, nil, {"storyline", "gar_story_go_to_freedom", "csky"})
+end
+
+end

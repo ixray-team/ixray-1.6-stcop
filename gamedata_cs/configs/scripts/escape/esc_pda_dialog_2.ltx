@@ -1,0 +1,25 @@
+[logic]
+active = sr_idle@3
+
+[sr_idle@3]
+on_info = {=actor_in_zone(esc_stalkers_dialog_zone_2)} %=play_sound(esc_stalker_assemble_2_1:stalker:esc_leader_stalkerbase_name)% sr_idle@4s
+
+[sr_idle@4s]
+on_signal = sound_end | sr_idle@4
+
+[sr_idle@4]
+on_game_timer = 10 | %=play_sound(esc_stalker_assemble_2_2:stalker)% sr_idle@5s
+
+[sr_idle@5s]
+on_signal = sound_end | sr_idle@5
+
+[sr_idle@5]
+on_game_timer = 10 | %=play_sound(esc_stalker_assemble_2_3:stalker:esc_leader_stalkerbase_name)% sr_idle@6s
+
+[sr_idle@6s]
+on_signal = sound_end | sr_idle@6
+
+[sr_idle@6]
+on_game_timer = 10 | %=play_sound(esc_stalker_assemble_2_4:stalker)% sr_idle@7
+
+[sr_idle@7]

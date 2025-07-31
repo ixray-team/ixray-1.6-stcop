@@ -1,0 +1,143 @@
+[logic]
+active = nil
+; sr_idle@start
+
+[sr_idle@start]
+on_info = {!black_screen()} sr_idle@cutscene_02
+
+[sr_idle@cutscene_02]
+;-- Спауним вторую группу на втором пути для первого-второго пролётов
+;-- и четвёртого учёного на отдельном пути
+on_game_timer = 0 | sr_idle@cutscene_04 %+gen_cutscene_02 =spawn_object(gen_uno_scientist_2_1:gen_st_allies_cutscene_02:2) =spawn_object(gen_uno_scientist_2_3:gen_st_allies_cutscene_02:3) =spawn_object(gen_uno_scientist_2_4_leader:gen_st_allies_cutscene_02_leader:0) =spawn_object(gen_uno_scientist_2_2:gen_st_allies_cutscene_02:4) =spawn_object(gen_uno_scientist_2_5:gen_st_allies_cutscene_02:5) =spawn_object(gen_dummy_actor_2:gen_st_allies_cutscene_02:0)%
+;sr_idle@cutscene_04
+;sr_idle@temp_snorks
+
+[sr_idle@cutscene_04]
+;Спауним первую группу на четвёртом пути для четвёртого-пятого-шестого-седьмого пролётов
+on_game_timer = 295 | sr_idle@cutscene_04_time %+gen_cutscene_04 =spawn_object(gen_uno_scientist_1_5:gen_st_allies_cutscene_04:4) =spawn_object(gen_uno_scientist_1_2:gen_st_allies_cutscene_04:1) =spawn_object(gen_uno_scientist_1_3:gen_st_allies_cutscene_04:2) =spawn_object(gen_uno_scientist_1_1:gen_st_allies_cutscene_04:0) =spawn_object(gen_uno_scientist_1_4_leader:gen_st_allies_cutscene_04:3) =spawn_object(gen_dummy_actor_1:gen_st_allies_cutscene_04:5)%
+
+[sr_idle@cutscene_04_time]
+;-- Уничтожаем вторую группу
+on_game_timer = 90 | sr_idle@cutscene_08 %=destroy_object(logic@work8:gen_st_allies) =destroy_object(logic@work11:gen_st_allies) =destroy_object(logic@work7:gen_st_allies) =destroy_object(logic@work9:gen_st_allies) =destroy_object(logic@work10:gen_st_allies) =destroy_object(logic@work12:gen_st_allies)%
+
+[sr_idle@cutscene_08]
+;-- Спауним вторую группу на восьмом пути для восьмого-девятого пролётов
+on_game_timer = 190 | sr_idle@1_wave_back_0 %+gen_cutscene_08 =spawn_object(gen_uno_scientist_2_5:gen_st_allies_cutscene_08:4) =spawn_object(gen_uno_scientist_2_2:gen_st_allies_cutscene_08:1) =spawn_object(gen_uno_scientist_2_3:gen_st_allies_cutscene_08:2) =spawn_object(gen_uno_scientist_2_1:gen_st_allies_cutscene_08:0) =spawn_object(gen_uno_scientist_2_4_leader:gen_st_allies_cutscene_08:3) =spawn_object(gen_dummy_actor_2:gen_st_allies_cutscene_08:5)%
+
+
+;------------------------------------------------------------------------------------------------
+;-- первая волна зомби с тыла
+
+[sr_idle@1_wave_back_0]
+on_game_timer = 0 | sr_idle@1_wave_back_1 %=spawn_object(gen_zombie_back:zombie_back:0)%
+
+[sr_idle@1_wave_back_1]
+on_game_timer = 7 | sr_idle@1_wave_back_2 %=spawn_object(gen_zombie_back:zombie_back:1)%
+
+[sr_idle@1_wave_back_2]
+on_game_timer = 10 | sr_idle@1_wave_back_3 %=spawn_object(gen_zombie_back:zombie_back:2)%
+
+[sr_idle@1_wave_back_3]
+on_game_timer = 3 | sr_idle@1_wave_back_4 %=spawn_object(gen_zombie_back:zombie_back:3)%
+
+[sr_idle@1_wave_back_4]
+on_game_timer = 8 | sr_idle@1_wave_back_5 %=spawn_object(gen_zombie_back:zombie_back:4)%
+
+[sr_idle@1_wave_back_5]
+on_game_timer = 12 | sr_idle@cutscene_08_time %=spawn_object(gen_zombie_back:zombie_back:5)%
+;------------------------------------------------------------------------------------------------
+
+
+[sr_idle@cutscene_08_time]
+;-- Уничтожаем первую группу
+on_game_timer = 50 | sr_idle@cutscene_08_time_2 %=destroy_object(logic@work1:gen_st_allies) =destroy_object(logic@work2:gen_st_allies) =destroy_object(logic@work3:gen_st_allies) =destroy_object(logic@work4:gen_st_allies) =destroy_object(logic@work5:gen_st_allies) =destroy_object(logic@work6:gen_st_allies)%
+
+[sr_idle@cutscene_08_time_2]
+;-- Спауним снорка
+on_game_timer = 0 | sr_idle@1_wave_front_0 %=spawn_object(gen_snork_anim_right_4:gen_snork_anim_right_4:0)%
+
+;------------------------------------------------------------------------------------------------
+;-- первая волна зомби с фронта
+
+[sr_idle@1_wave_front_0]
+on_game_timer = 0 | sr_idle@1_wave_front_1 %=spawn_object(gen_zombie_front:zombie_front:0)%
+
+[sr_idle@1_wave_front_1]
+on_game_timer = 8 | sr_idle@1_wave_front_2 %=spawn_object(gen_zombie_front:zombie_front:1)%
+
+[sr_idle@1_wave_front_2]
+on_game_timer = 13 | sr_idle@1_wave_front_3 %=spawn_object(gen_zombie_front:zombie_front:2)%
+
+[sr_idle@1_wave_front_3]
+on_game_timer = 10 | sr_idle@cutscene_08_time_3 %=spawn_object(gen_zombie_front:zombie_front:3)%
+;------------------------------------------------------------------------------------------------
+
+[sr_idle@cutscene_08_time_3]
+;-- Начинаем стрелять по снорку
+on_game_timer = 100 | sr_idle@cutscene_08_time_4 %+gen_snork_anim_right_4_danger%
+
+[sr_idle@cutscene_08_time_4]
+;-- Уничтожаем вторую группу
+on_game_timer = 80 | sr_idle@2_wave_back_5 %=destroy_object(logic@work7:gen_st_allies) =destroy_object(logic@work8:gen_st_allies) =destroy_object(logic@work9:gen_st_allies) =destroy_object(logic@work10:gen_st_allies) =destroy_object(logic@work11:gen_st_allies) =destroy_object(logic@work12:gen_st_allies)%
+
+
+;------------------------------------------------------------------------------------------------
+;-- вторая волна зомби с тыла
+
+[sr_idle@2_wave_back_5]
+on_game_timer = 12 | sr_idle@2_wave_back_4 %=spawn_object(gen_zombie_back:zombie_back:5)%
+
+[sr_idle@2_wave_back_4]
+on_game_timer = 8 | sr_idle@2_wave_back_3 %=spawn_object(gen_zombie_back:zombie_back:4)%
+
+[sr_idle@2_wave_back_3]
+on_game_timer = 3 | sr_idle@2_wave_back_2 %=spawn_object(gen_zombie_back:zombie_back:3)%
+
+[sr_idle@2_wave_back_2]
+on_game_timer = 10 | sr_idle@2_wave_back_1 %=spawn_object(gen_zombie_back:zombie_back:2)%
+
+[sr_idle@2_wave_back_1]
+on_game_timer = 7 | sr_idle@2_wave_back_0 %=spawn_object(gen_zombie_back:zombie_back:1)%
+
+[sr_idle@2_wave_back_0]
+on_game_timer = 0 | sr_idle@cuttofight %=spawn_object(gen_zombie_back:zombie_back:0)%
+;------------------------------------------------------------------------------------------------
+
+
+[sr_idle@cuttofight]
+;-- Спауним кемперов, даём игроку оружие
+on_game_timer = 0 | sr_idle@2_wave_front_3 %=give_actor(wpn_sig_with_scope) =spawn_object(gen_ally_camper_1:camp_1:0) =spawn_object(gen_ally_camper_2:camp_2:0) =spawn_object(gen_ally_camper_3:camp_3:0) =spawn_object(gen_ally_camper_4:camp_4:0) =spawn_object(gen_ally_camper_5:camp_5:0)%
+
+
+;------------------------------------------------------------------------------------------------
+
+;-- вторая волна зомби с фронта
+
+[sr_idle@2_wave_front_3]
+on_game_timer = 100 | sr_idle@2_wave_front_2 %=spawn_object(gen_zombie_front:zombie_front:3)%
+
+[sr_idle@2_wave_front_2]
+on_game_timer = 13 | sr_idle@2_wave_front_1 %=spawn_object(gen_zombie_front:zombie_front:2)%
+
+[sr_idle@2_wave_front_1]
+on_game_timer = 8 | sr_idle@2_wave_front_0 %=spawn_object(gen_zombie_front:zombie_front:1)%
+
+[sr_idle@2_wave_front_0]
+on_game_timer = 0 | sr_idle@fight %=spawn_object(gen_zombie_front:zombie_front:0)%
+
+;-- спаун зомбей окончен
+
+
+;-- старт боя
+
+[sr_idle@fight]
+on_game_timer = 140 | sr_idle@surge %+gen_start_fighting%
+
+
+;-- Выброс
+
+[sr_idle@surge]
+on_game_timer = 420 | nil %=run_weather_pp(surge_day)%
+
+
+;%=spawn_object(gen_snork_anim_left_0:gen_snork_anim_left_0:0) =spawn_object(gen_snork_anim_left_1:gen_snork_anim_left_1:0) =spawn_object(gen_snork_anim_left_2:gen_snork_anim_left_2:0) =spawn_object(gen_snork_anim_left_3:gen_snork_anim_left_3:0) =spawn_object(gen_snork_anim_right_0:gen_snork_anim_right_0:0) =spawn_object(gen_snork_anim_right_1:gen_snork_anim_right_1:0) =spawn_object(gen_snork_anim_right_2:gen_snork_anim_right_2:0) =spawn_object(gen_snork_anim_right_3:gen_snork_anim_right_3:0) =spawn_object(gen_snork_anim_right_4:gen_snork_anim_right_4:0)%

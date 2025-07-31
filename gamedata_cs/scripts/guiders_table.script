@@ -1,0 +1,223 @@
+--------------------------------------------------------------------------------
+-- Guiders' teleportation tables -----------------------------------------------
+-- Made by Peacemaker ----------------------------------------------------------
+-- 09.06.08 --------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--mar_actor_teleport_at_marsh_walk
+--mar_actor_teleport_at_marsh_look
+teleport_points = {
+---------------------------------- MARSH ---------------------------------------
+					mar_smart_terrain_4_5 = {
+	                                            level = "marsh",
+	                                            condlist = "true",
+	                                            point = "mar_smart_terrain_4_5_teleport_walk",
+	                                            look = "mar_smart_terrain_4_5_teleport_look",
+											},
+					mar_smart_terrain_5_12 = {
+	                                            level = "marsh",
+	                                            condlist = "true",
+	                                            point = "mar_smart_terrain_5_12_teleport_walk",
+	                                            look = "mar_smart_terrain_5_12_teleport_look",
+											 },
+					mar_smart_terrain_8_8 = {
+	                                            level = "marsh",
+	                                            condlist = "true",
+	                                            point = "mar_smart_terrain_8_8_teleport_walk",
+	                                            look = "mar_smart_terrain_8_8_teleport_look",
+											},
+					mar_smart_terrain_11_11 = {
+	                                            level = "marsh",
+	                                            condlist = "true",
+	                                            point = "mar_smart_terrain_11_11_teleport_walk",
+	                                            look = "mar_smart_terrain_11_11_teleport_look",
+											  },
+					mar_smart_terrain_csky_base = {
+	                                                level = "marsh",
+	                                                condlist = "true",
+	                                                point = "mar_smart_terrain_csky_base_teleport_walk",
+	                                                look = "mar_smart_terrain_csky_base_teleport_look",
+												  },
+---------------------------------- ESCAPE --------------------------------------
+					esc_smart_terrain_2_12 = {
+	                                            level = "escape",
+	                                            condlist = "{+mar_story_go_to_escape_done} true",
+	                                            point = "esc_smart_terrain_2_12_teleport_walk",
+	                                            look = "esc_smart_terrain_2_12_teleport_look",
+											 },
+					esc_smart_terrain_5_7 = {
+	                                            level = "escape",
+	                                            condlist = "{+esc_actor_inside_stalkerbase} true",
+	                                            point = "esc_smart_terrain_5_7_teleport_walk",
+	                                            look = "esc_smart_terrain_5_7_teleport_look",
+											},
+					esc_smart_terrain_7_11 = {
+	                                            level = "escape",
+	                                            condlist = "{+mar_story_go_to_escape_done} true",
+	                                            point = "esc_smart_terrain_7_11_teleport_walk",
+	                                            look = "esc_smart_terrain_7_11_teleport_look",
+											 },
+---------------------------------- GARBAGE -------------------------------------
+					gar_smart_terrain_3_5 = {
+	                                            level = "garbage",
+	                                            condlist = "{+gar_visited_level} true",
+	                                            point = "gar_smart_terrain_3_5_teleport_walk",
+	                                            look = "gar_smart_terrain_3_5_teleport_look",
+											},
+					gar_smart_terrain_6_3 = {
+	                                            level = "garbage",
+	                                            condlist = "{+gar_visited_level} true",
+	                                            point = "gar_smart_terrain_6_3_teleport_walk",
+	                                            look = "gar_smart_terrain_6_3_teleport_look",
+											},
+					gar_smart_terrain_5_8 = {
+	                                            level = "garbage",
+	                                            condlist = "{+gar_visited_level} true",
+	                                            point = "gar_smart_terrain_5_8_teleport_walk",
+	                                            look = "gar_smart_terrain_5_8_teleport_look",
+											},
+---------------------------------- DARKVALLEY ----------------------------------
+					val_smart_terrain_7_4 = {
+	                                            level = "darkvalley",
+	                                            condlist = "{+val_temp_start_quest_complete} true",
+	                                            point = "val_smart_terrain_7_4_teleport_walk",
+	                                            look = "val_smart_terrain_7_4_teleport_look",
+											},
+					val_smart_terrain_4_0 = {
+	                                            level = "darkvalley",
+	                                            condlist = "{+val_temp_start_quest_complete} true",
+	                                            point = "val_smart_terrain_4_0_teleport_walk",
+	                                            look = "val_smart_terrain_4_0_teleport_look",
+											},
+---------------------------------- AGROPROM ------------------------------------
+					agr_smart_terrain_4_4 = {
+	                                            level = "agroprom",
+	                                            condlist = "{+agr_actor_on_agroprom} true",
+	                                            point = "agr_smart_terrain_4_4_teleport_walk",
+	                                            look = "agr_smart_terrain_4_4_teleport_look",
+											},
+					agr_smart_terrain_1_6 = {
+	                                            level = "agroprom",
+	                                            condlist = "{+agr_actor_on_agroprom} true",
+	                                            point = "agr_smart_terrain_1_6_teleport_walk",
+	                                            look = "agr_smart_terrain_1_6_teleport_look",
+											},
+---------------------------------- YANTAR --------------------------------------
+					yan_smart_terrain_6_4 = {
+	                                            level = "yantar",
+	                                            condlist = "{+yan_ready_actor_cut2} true",
+	                                            point = "yan_smart_terrain_6_4_teleport_walk",
+	                                            look = "yan_smart_terrain_6_4_teleport_look",
+											},
+---------------------------------- RED FOREST ----------------------------------
+					red_smart_terrain_4_2 = {
+	                                            level = "red_forest",
+	                                            condlist = "{+red_pursuit_scene_begin} true",
+	                                            point = "red_smart_terrain_4_2_teleport_walk",
+	                                            look = "red_smart_terrain_4_2_teleport_look",
+											},
+					red_smart_terrain_6_6 = {
+	                                            level = "red_forest",
+	                                            condlist = "{+red_pursuit_scene_begin} true",
+	                                            point = "red_smart_terrain_6_6_teleport_walk",
+	                                            look = "red_smart_terrain_6_6_teleport_look",
+											},
+					red_smart_terrain_bridge = {
+	                                            level = "red_forest",
+	                                            condlist = "{+red_pursuit_scene_begin} true",
+	                                            point = "red_smart_terrain_bridge_teleport_walk",
+	                                            look = "red_smart_terrain_bridge_teleport_look",
+											   },
+---------------------------------- MILITARY ------------------------------------
+					mil_smart_terrain_7_4 = {
+	                                            level = "military",
+	                                            condlist = "{+mil_start_after_red_forest_completed} true",
+	                                            point = "mil_smart_terrain_7_4_teleport_walk",
+	                                            look = "mil_smart_terrain_7_4_teleport_look",
+											},
+					mil_smart_terrain_3_8 = {
+	                                            level = "military",
+	                                            condlist = "{+mil_start_after_red_forest_completed} true",
+	                                            point = "mil_smart_terrain_3_8_teleport_walk",
+	                                            look = "mil_smart_terrain_3_8_teleport_look",
+											},
+					mil_smart_terrain_2_2 = {
+	                                            level = "military",
+	                                            condlist = "{+mil_start_after_red_forest_completed} true",
+	                                            point = "mil_smart_terrain_2_2_teleport_walk",
+	                                            look = "mil_smart_terrain_2_2_teleport_look",
+											},
+				  }
+cross_level_teleport = {
+						marsh = {
+									escape = "mar_teleport_to_esc_walk",
+									garbage = "mar_teleport_to_gar_walk",
+									darkvalley = "mar_teleport_to_val_walk",
+									agroprom = "mar_teleport_to_agr_walk",
+									yantar = "mar_teleport_to_yan_walk",
+									red_forest = "mar_teleport_to_red_walk",
+									military = "mar_teleport_to_mil_walk",
+								},
+						escape = {
+									marsh = "esc_teleport_to_mar_walk",
+									garbage = "esc_teleport_to_gar_walk",
+									darkvalley = "esc_teleport_to_val_walk",
+									agroprom = "esc_teleport_to_agr_walk",
+									yantar = "esc_teleport_to_yan_walk",
+									red_forest = "esc_teleport_to_red_walk",
+									military = "esc_teleport_to_mil_walk",
+								 },
+						garbage = {
+									marsh = "gar_teleport_to_mar_walk",
+									escape = "gar_teleport_to_esc_walk",
+									darkvalley = "gar_teleport_to_val_walk",
+									agroprom = "gar_teleport_to_agr_walk",
+									yantar = "gar_teleport_to_yan_walk",
+									red_forest = "gar_teleport_to_red_walk",
+									military = "gar_teleport_to_mil_walk",
+								  },
+						darkvalley = {
+									marsh = "val_teleport_to_mar_walk",
+									escape = "val_teleport_to_esc_walk",
+									garbage = "val_teleport_to_gar_walk",
+									agroprom = "val_teleport_to_agr_walk",
+									yantar = "val_teleport_to_yan_walk",
+									red_forest = "val_teleport_to_red_walk",
+									military = "val_teleport_to_mil_walk",
+								  },
+						agroprom = {
+									marsh = "agr_teleport_to_mar_walk",
+									escape = "agr_teleport_to_esc_walk",
+									garbage = "agr_teleport_to_gar_walk",
+									darkvalley = "agr_teleport_to_val_walk",
+									yantar = "agr_teleport_to_yan_walk",
+									red_forest = "agr_teleport_to_red_walk",
+									military = "agr_teleport_to_mil_walk",
+								  },
+						yantar = {
+									marsh = "yan_teleport_to_mar_walk",
+									escape = "yan_teleport_to_esc_walk",
+									garbage = "yan_teleport_to_gar_walk",
+									darkvalley = "yan_teleport_to_val_walk",
+									agroprom = "yan_teleport_to_agr_walk",
+									red_forest = "yan_teleport_to_red_walk",
+									military = "yan_teleport_to_mil_walk",
+								  },
+						red_forest = {
+									marsh = "red_teleport_to_mar_walk",
+									escape = "red_teleport_to_esc_walk",
+									garbage = "red_teleport_to_gar_walk",
+									darkvalley = "red_teleport_to_val_walk",
+									agroprom = "red_teleport_to_agr_walk",
+									yantar = "red_teleport_to_yan_walk",
+									military = "red_teleport_to_mil_walk",
+								  },
+						military = {
+									marsh = "mil_teleport_to_mar_walk",
+									escape = "mil_teleport_to_esc_walk",
+									garbage = "mil_teleport_to_gar_walk",
+									darkvalley = "mil_teleport_to_val_walk",
+									agroprom = "mil_teleport_to_agr_walk",
+									yantar = "mil_teleport_to_yan_walk",
+									red_forest = "mil_teleport_to_red_walk",
+								  },
+					   }

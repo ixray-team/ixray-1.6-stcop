@@ -1,0 +1,213 @@
+--------------------------------------------------------------------------------
+-- Minigame CrowKiller ---------------------------------------------------------
+-- Made by Peacemaker ----------------------------------------------------------
+-- 27.12.07 --------------------------------------------------------------------
+--------------------------------------------------------------------------------
+class "CMGCrowKiller"
+-- Class constructor
+function CMGCrowKiller:__init()
+    self.sr = nil               -- space restrictor which calls update
+    self.time_out = 10
+    self.high_score = 0         -- local param, stores high_score parameter
+    self.timer = 0              -- local param, stores timer count
+    self.killed_counter = 0     -- counter for killed crows
+    self.prev_sec = 0           -- previous second number
+    self.cur_sec = 0            -- current second number
+    self.win = false            -- local param, shows is the game winned
+    self.hud_timer = nil        -- hud custom static (background)
+    self.hud_timer_text = nil   -- hud custom static (text under)
+end
+-- Reinitializing parameters on start new game
+function CMGCrowKiller:reinit(params)
+    self.sr = nil
+    self.time_out = 10
+    if(params.selected==nil) then
+        self.high_score = 0
+    else
+        self.high_score = params.selected
+    end
+    if(params.timer==nil) or (params.timer<0) then
+        self.timer = 90
+    else
+        self.timer = params.timer
+    end
+    self.killed_counter = 0
+    self.prev_sec = 0
+    self.cur_sec = 0
+    self.win = false
+
+	local hud = get_hud()
+    hud:RemoveCustomStatic("crow_timer")
+    hud:RemoveCustomStatic("crow_timer_text")
+    hud:AddCustomStatic("crow_timer", true)
+    hud:AddCustomStatic("crow_timer_text", true)
+    self.hud_timer = hud:GetCustomStatic("crow_timer")
+    self.hud_timer_text = hud:GetCustomStatic("crow_timer_text")
+end
+-- CrowKiller update
+function CMGCrowKiller:update(name, sr_called)
+-- get minigames manager and current state of our game
+    if(self.sr==nil) then
+		self.sr = sr_called
+	end
+    local hud = get_hud()
+    self.hud_timer = hud:GetCustomStatic("crow_timer")
+    self.hud_timer_text = hud:GetCustomStatic("crow_timer_text")
+    local MG_manager = minigames_manager.get_minigames_manager()
+    local MG_state = MG_manager:get_minigame_state(name)
+    if(MG_state=="started") then
+-- store space restrictor and run the game
+        if(self.time_out>0) then
+-- some seconds to prepare to game
+            self.cur_sec = round(time_global() / 1000)
+            if(self.cur_sec>self.prev_sec) then
+                self.prev_sec = self.cur_sec
+                self.time_out = self.time_out - 1
+            end
+            local minutes = math.floor(self.time_out / 60)
+            local tens = math.floor((self.time_out - minutes * 60) / 10)
+            local seconds = math.mod(self.time_out - minutes * 60, 10)
+            local time = string.format("%d:%d%d", minutes, tens, seconds)
+	        if not self.hud_timer or not self.hud_timer_text then
+	            hud:RemoveCustomStatic("crow_timer")
+	            hud:AddCustomStatic("crow_timer", true)
+	            hud:RemoveCustomStatic("crow_timer_text")
+	            hud:AddCustomStatic("crow_timer_text", true)
+	            return
+	        end
+            self.hud_timer_text:wnd():SetTextST(game.translate_string("crowkiller_game_get_ready"))
+            self.hud_timer:wnd():SetTextST(time)
+        elseif(self.time_out==0) then
+-- now ready to start a game
+	        MG_manager:set_minigame_state(name, "running")
+        end
+    elseif(MG_state=="running") then
+-- if actor inside space restrictor - continue game until time will be out
+        if(self.sr:inside(db.actor:position())) then
+            if(self.timer>0) then
+                self.cur_sec = round(time_global() / 1000)
+                if(self.cur_sec>self.prev_sec) then
+                    self.prev_sec = self.cur_sec
+                    self.timer = self.timer - 1
+                    local minutes = math.floor(self.timer / 60)
+                    local tens = math.floor((self.timer - minutes * 60) / 10)
+                    local seconds = math.mod(self.timer - minutes * 60, 10)
+                    local time = string.format("%d:%d%d", minutes, tens, seconds)
+	                if not self.hud_timer or not self.hud_timer_text then
+	                    hud:RemoveCustomStatic("crow_timer")
+	                    hud:AddCustomStatic("crow_timer", true)
+	                    hud:RemoveCustomStatic("crow_timer_text")
+	                    hud:AddCustomStatic("crow_timer_text", true)
+	                    return
+	                end
+                    self.hud_timer:wnd():SetTextST(time)
+                    self.hud_timer_text:wnd():SetTextST(game.translate_string("crowkiller_game_crows_killed").." "..tostring(self.killed_counter))
+                end
+            elseif(self.timer==0) then
+	            if not self.hud_timer or not self.hud_timer_text then
+	                hud:RemoveCustomStatic("crow_timer")
+	                hud:AddCustomStatic("crow_timer", true)
+	                hud:RemoveCustomStatic("crow_timer_text")
+	                hud:AddCustomStatic("crow_timer_text", true)
+	                return
+	            end
+                self.hud_timer_text:wnd():SetTextST(game.translate_string("crowkiller_game_time_is_out"))
+                MG_manager:set_minigame_state(name, "finished")
+            end
+        else
+-- else break our game
+            MG_manager:set_minigame_state(name, "breaked")
+        end
+    elseif(MG_state=="breaked") then
+-- show massage that we have breaked the game
+        if(self.time_out>-75) then
+	        if not self.hud_timer or not self.hud_timer_text then
+	            hud:RemoveCustomStatic("crow_timer")
+	            hud:AddCustomStatic("crow_timer", true)
+	            hud:RemoveCustomStatic("crow_timer_text")
+	            hud:AddCustomStatic("crow_timer_text", true)
+	            return
+	        end
+        	self.hud_timer_text:wnd():SetTextST(game.translate_string("crowkiller_game_runned_out"))
+        	self.time_out = self.time_out - 1
+        else
+		    get_hud():RemoveCustomStatic("crow_timer")
+		    get_hud():RemoveCustomStatic("crow_timer_text")
+        end
+    elseif(MG_state=="finished") then
+-- if we succesfully compete the game store new minigame parameters
+        if(self.killed_counter>=self.high_score) then
+            self.high_score = self.killed_counter
+	        if(MG_manager:get_minigame_param(name, "highscore")<self.high_score) then
+	            MG_manager:set_minigame_param(name, "highscore", self.high_score)
+	        end
+            self.win = true
+        end
+        MG_manager:set_minigame_param(name, "win", self.win)
+        if(self.time_out>-75) then
+        	self.time_out = self.time_out - 1
+        else
+		    get_hud():RemoveCustomStatic("crow_timer")
+		    get_hud():RemoveCustomStatic("crow_timer_text")
+        end
+    end
+end
+-- Get class name
+function CMGCrowKiller:get_profile_name()
+    return "CMGCrowKiller"
+end
+-- Save class object
+function CMGCrowKiller:save(thread, params_list)
+	set_save_marker(thread, "save", false, "CMGCrowKiller")
+	thread:w_u8(params_list.highscore)
+	thread:w_u16(params_list.timer)
+	thread:w_bool(params_list.win)
+	local n = #params_list.crows_to_kill
+	thread:w_u8(n)
+	for i = 1,n do
+		thread:w_u8(params_list.crows_to_kill[i])
+	end
+	thread:w_u16(params_list.money_multiplier)
+	thread:w_u16(params_list.champion_multiplier)
+	thread:w_u8(params_list.selected)
+	thread:w_stringZ(params_list.game_type)
+
+    thread:w_u8(self.high_score)
+    thread:w_u16(self.timer)
+    thread:w_u16(self.time_out)
+    thread:w_u8(self.killed_counter)
+    thread:w_bool(self.win)
+	set_save_marker(thread, "save", true, "CMGCrowKiller")
+end
+-- Load class object
+function CMGCrowKiller:load(thread, params_list)
+	set_save_marker(thread, "load", false, "CMGCrowKiller")
+	params_list.highscore = thread:r_u8()
+	params_list.timer = thread:r_u16()
+	params_list.win = thread:r_bool()
+	local n = thread:r_u8()
+	params_list.crows_to_kill = {}
+	for i = 1,n do
+		params_list.crows_to_kill[i] = thread:r_u8()
+	end
+	params_list.money_multiplier = thread:r_u16()
+	params_list.champion_multiplier = thread:r_u16()
+	params_list.selected = thread:r_u8()
+	params_list.game_type = thread:r_stringZ()
+
+    self.sr = nil
+    self.prev_sec = 0
+    self.cur_sec = 0
+
+    self.high_score = thread:r_u8()
+    self.timer = thread:r_u16()
+    self.time_out = thread:r_u16()
+    self.killed_counter = thread:r_u8()
+    self.win = thread:r_bool()
+
+	set_save_marker(thread, "load", true, "CMGCrowKiller")
+end
+-- Increase counter for killed crows
+function CMGCrowKiller:inc_killed_counter()
+    self.killed_counter = self.killed_counter + 1
+end

@@ -1,0 +1,299 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+  <specific_character id="mar_csky_commander" team_default = "1">
+    <name>mar_csky_commander_name</name>
+    <icon>ui_npc_u_nebo_2_face_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_csky_commander</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_2_face_1</visual>
+		<snd_config>characters_voice\human_02\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+      hand_radio \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>mar_csky_leader_hello_dialog</start_dialog>
+    <actor_dialog>mar_csky_leader_choose_dialog</actor_dialog>
+  </specific_character>
+
+  <specific_character id="mar_csky_tech" team_default = "1">
+    <name>mar_csky_tech_name</name>
+    <icon>ui_npc_u_nebo_2_face_3</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_csky_tech</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_2_face_3</visual>
+		<snd_config>characters_voice\human_01\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+	<mechanic_mode>1</mechanic_mode>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>mar_csky_tehnik_hello_dialog</start_dialog>
+    <actor_dialog>mar_csky_tehnik_about_dialog</actor_dialog>
+    <actor_dialog>tm_upgr_task</actor_dialog>
+    <actor_dialog>find_upgrade_task</actor_dialog>
+
+
+
+  </specific_character>
+
+  <specific_character id="mar_csky_scientist" team_default = "1">
+    <name>mar_csky_scientist_name</name>
+    <icon>ui_npc_u_nebo_2_face_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_csky_scientist</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_2_face_2</visual>
+		<snd_config>characters_voice\human_01\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>mar_csky_doctor_hello_dialog</start_dialog>
+    <actor_dialog>mar_csky_doctor_about_me</actor_dialog>
+    <actor_dialog>mar_csky_doctor_about_people</actor_dialog>
+    <actor_dialog>mar_csky_doctor_about_zone</actor_dialog>
+  </specific_character>
+
+  <specific_character id="mar_csky_trader" team_default = "1">
+    <name>mar_csky_trader_name</name>
+    <icon>ui_npc_u_nebo_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_csky_trader</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+	<money min="1000000" max="1000000" infinitive="1"/>
+
+    <visual>actors\stalker_nebo\stalker_nebo_1</visual>
+		<snd_config>characters_voice\human_01\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+      hand_radio \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>mar_csky_trader_hello_dialog</start_dialog>
+    <actor_dialog>tm_reward_task</actor_dialog>
+  </specific_character>
+
+  <specific_character id="mar_csky_barman" team_default = "1">
+    <name>mar_csky_barman_name</name>
+    <icon>ui_npc_u_nebo_2_face_4</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_csky_barman</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+	<money min="1000" max="2750" infinitive="1"/>
+
+    <visual>actors\stalker_nebo\stalker_nebo_2_face_4</visual>
+		<snd_config>characters_voice\human_02\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>mar_csky_barman_hello_dialog</start_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+  </specific_character>
+
+  <specific_character id="mar_intro_lebedev" team_default = "1">
+    <name>mar_csky_commander_name</name>
+    <icon>ui_npc_u_nebo_2_face_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_intro_lebedev</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_2_face_1</visual>
+		<snd_config>characters_voice\human_02\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>mar_csky_leader_intro_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="mar_intro_kalancha" team_default = "1">
+    <name>mar_csky_scientist_name</name>
+    <icon>ui_npc_u_nebo_2_face_2</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_intro_kalancha</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_2_face_2</visual>
+		<snd_config>characters_voice\human_01\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="mar_intro_actor" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_actor</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_intro_actor</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_hero\stalker_hero_1</visual>
+		<snd_config>characters_voice\human_01\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>hello_dialog</start_dialog>
+  </specific_character>
+
+  <specific_character id="mar_intro_guide" team_default = "1">
+    <name>mar_csky_guide_name</name>
+    <icon>ui_npc_u_nebo_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_intro_guide</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_1</visual>
+		<snd_config>characters_voice\human_01\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+      wpn_ak74u \n
+      ammo_5.45x39_fmj \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <actor_dialog>guiders_dialog</actor_dialog>
+  </specific_character>
+
+  <specific_character id="mar_tutorial_man" team_default = "1">
+    <name>GENERATE_NAME_stalker</name>
+    <icon>ui_npc_u_nebo_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+    <class>mar_tutorial_man</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <snd_config>characters_voice\human_01\csky\</snd_config>
+
+    <rank>150</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_1</visual>
+    <supplies>
+      [spawn] \n
+      device_torch \n
+      wpn_pm \n
+      ammo_9x18_fmj = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+  <specific_character id="mar_csky_tactic" team_default = "1">
+    <name>mar_csky_tactic_name</name>
+    <icon>ui_npc_u_nebo_1</icon>
+    <map_icon x="1" y="0"></map_icon>
+    <bio></bio>
+
+    <class>mar_csky_tactic</class>
+    <community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+    <rank>400</rank>
+    <reputation>0</reputation>
+
+    <visual>actors\stalker_nebo\stalker_nebo_1</visual>
+		<snd_config>characters_voice\human_02\csky\</snd_config>
+    <supplies>
+      [spawn] \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+
+#include "gameplay\character_criticals_1.xml"
+    <start_dialog>mar_csky_tactic_hello_dialog</start_dialog>
+    <actor_dialog>mar_csky_tactic_situation_dialog</actor_dialog>
+    <actor_dialog>mar_csky_tactic_task_dialog</actor_dialog>
+    <actor_dialog>mar_csky_tactic_about_me_dialog</actor_dialog>
+    <actor_dialog>mar_csky_tactic_tutorial_dialog</actor_dialog>
+    <actor_dialog>treasure_dialog</actor_dialog>
+  </specific_character>
+</xml>

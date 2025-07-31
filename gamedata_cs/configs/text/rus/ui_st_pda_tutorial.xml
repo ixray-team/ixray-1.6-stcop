@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="pda_end_tutorial">
+		<text>Вот, собственно, и всё...</text>
+	</string>
+	<string id="pda_start_tutorial">
+		<text>Пошаговый вводный учебный курс</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_1">
+		<text>Лады. Как ты понимаешь, наша основная задача - контроль над Болотами, а значит, война с агрессором.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_10">
+		<text>Наконец, в этом поле ты сможешь увидеть текущую стратегическую цель, а также тактические задачи, которые нужно выполнить для достижения этой цели.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_11">
+		<text>Внизу будут показаны уже выполненные стратегические задачи.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_2">
+		<text>В этом разделе ты в любой момент найдёшь полную тактическую информацию о ходе военных действий.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_3">
+		<text>Слева отображается информация о твоей текущей группировке. В данный момент это «Чистое небо», то есть мы.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_4">
+		<text>Справа - информация об основном противнике.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_5">
+		<text>Вот это - примерный уровень нашего военного потенциала.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_6">
+		<text>Тут показано количество наших бойцов.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_7">
+		<text>А здесь - уровень нашего материального обеспечения.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_8">
+		<text>В самом низу находятся символы, демонстрирующие особенности нашего военного снаряжения.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_9">
+		<text>Аналогичные индикаторы отображаются и для нашего врага.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_1">
+		<text>На последней закладке ты сможешь узнать о своих текущих отношениях со всеми группировками, а также военный потенциал каждой из них.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_2">
+		<text>Кроме того, здесь же указана твоя личная статистика.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_1">
+		<text>Смотри. Вот твой главный проводник: раздел «Задачи».</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_10">
+		<text>Кроме заданий на твоей карте будут отображены координаты дружественных отрядов, а также координаты замеченных противников.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_2">
+		<text>Здесь отображается твоё основное задание...</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_3">
+		<text>а также выбранное дополнительное задание.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_4">
+		<text>Дополнительных заданий может быть несколько. Осуществлять навигацию по списку ты можешь, прокручивая его при помощи этих кнопок.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_5">
+		<text>Большинство заданий также будут отображены на карте - за исключением редких случаев, когда цель задания невозможно локализовать.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_6">
+		<text>Нам нужна будет твоя помощь не только в уничтожении врага, но и в захвате ключевых позиций.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_7">
+		<text>В таких ситуациях наши бойцы оценят, если ты прикроешь их, пока они занимают точку.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_8">
+		<text>Кстати, не игнорируй призывы о помощи: от этого может зависеть жизнь ребят.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_9">
+		<text>При наведении на отметку на карте ты можешь получить дополнительную информацию о ней.</text>
+	</string>
+</string_table>

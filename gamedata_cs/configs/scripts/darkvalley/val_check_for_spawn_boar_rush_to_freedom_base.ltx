@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle@rush
+
+[sr_idle@rush]
+;on_info = {+val_come_to_freedom_base_complete} sr_idle@spawn %=clear_smart_terrain(val_smart_terrain_9_2)%
+
+[sr_idle@spawn]
+on_game_timer = 10 | sr_idle@idle %=create_squad(val_boar_lair_9_2:val_smart_terrain_9_2)%
+
+[sr_idle@idle]

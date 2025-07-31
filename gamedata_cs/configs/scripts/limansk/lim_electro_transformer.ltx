@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = sr_idle@2 %=play_sound_looped(lim_electro_fience_transformer)%
+
+[sr_idle@2]
+on_info = {+lim_electro_fence_off} nil %=stop_sound_looped(lim_electro_fience_transformer)%

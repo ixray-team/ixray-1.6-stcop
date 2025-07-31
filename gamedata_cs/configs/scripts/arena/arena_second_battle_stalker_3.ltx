@@ -1,0 +1,14 @@
+[logic]
+active = remark
+smart_terrain = nil
+
+[remark]  
+anim = guard
+target = actor
+on_info = remark@2 %=hit_npc_from_actor%
+
+
+[remark@2]  
+anim = guard
+target = actor
+out_restr = battle_restr

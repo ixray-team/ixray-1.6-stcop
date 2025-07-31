@@ -1,0 +1,19 @@
+[logic]
+active = camper
+
+[camper]
+path_walk = stc_scene_6_enemy_1_walk
+path_look = stc_scene_6_enemy_look
+def_state_moving = assault
+radius = 5
+no_retreat = true
+danger = danger_ignore
+on_info = {+stc_strelok_can_run_7} walker
+
+[walker]
+path_walk = stc_scene_6_enemy_2_walk
+path_look = stc_scene_6_enemy_look
+out_restr = stc_strelok_enemy_checker_6_out_restr
+
+[danger_ignore]
+ignore_distance = 0

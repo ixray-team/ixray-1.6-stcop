@@ -1,0 +1,44 @@
+[logic]
+active = sr_idle
+
+;-- усиленная атака по входу игрока в рестриктор
+[sr_idle]
+;on_actor_inside = sr_idle@wait1 %+hospital_z3_fierce_attack +hospital_z3_spawn_1_on +hospital_z3_spawn_3_on +hospital_z3_spawn_4_on +hospital_z3_spawn_5_on +hospital_z3_spawn_7_on%
+on_actor_inside = %+hospital_z3_minigun_on%
+on_info = {+hospital_z3_fierce_attack} sr_idle@wait1 %+hospital_z3_spawn_1_on +hospital_z3_spawn_3_on +hospital_z3_spawn_6_on%
+
+
+[sr_idle@wait1]
+on_game_timer = 200 | sr_idle@wait2 %=play_sound(clear_sky_hold_on:csky:st_ui_pda_legend_squad) +katacomb_task_3 +hospital_z3_spawn_10_on%
+
+[sr_idle@wait2]
+on_game_timer = 50 | sr_timer@1 %+hospital_z3_spawn_2_on +hospital_z3_spawn_4_on +hospital_z3_spawn_7_on%
+
+[sr_timer@1]
+type = dec
+start_value = 60000
+on_value = 30000 | %+hospital_z3_sniper_fire% | 0 | sr_idle@cs_enterence %-hospital_z3_spawn_5_on -hospital_z3_spawn_6_on =play_sound(clear_sky_arrived:csky:st_ui_pda_legend_squad)%
+
+[sr_idle@cs_enterence]
+on_game_timer = 50 | sr_idle@2 %=play_sound(hosp_expl_door) +hospital_cs_entrance%
+
+[sr_idle@2]
+on_info = {+hospital_z3_minigun_off} sr_idle@3
+
+[sr_idle@3]
+on_info = {!counter_greater(hospital_z3_cout:0)} sr_idle@p %+hospital_cs_victory =play_sound(clear_sky_victory:csky:st_ui_pda_legend_squad)%
+on_info2 = {+hospital_cs_victory} sr_idle@p %=play_sound(clear_sky_victory:csky:st_ui_pda_legend_squad)%
+
+[sr_idle@p]
+on_signal = sound_end | sr_idle@p1 %=play_sound(clear_sky_victory_reply:csky:mar_csky_commander_name)%
+
+[sr_idle@p1]
+on_signal = sound_end | sr_idle@p2 %=play_sound(hospital_z3_csky_com_apply:csky:st_ui_pda_legend_squad) +hosp_z3_csky_hide_radio%
+
+[sr_idle@p2]
+on_signal = sound_end | sr_idle@p3 %+hospital_z3_enemy_last_wave%
+
+[sr_idle@p3]
+on_game_timer = 20 | sr_idle@nil %=play_sound(hospital_z3_csky_com_order:csky:st_ui_pda_legend_squad)%
+
+[sr_idle@nil]

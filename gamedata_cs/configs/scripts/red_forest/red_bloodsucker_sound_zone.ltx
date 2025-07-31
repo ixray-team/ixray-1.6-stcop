@@ -1,0 +1,35 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+red_bloodsucker_spawn} sr_idle@wait
+on_game_timer = 150 | sr_idle@2
+on_actor_dist_le_nvis = 20 | {-red_bloodsucker_spawn -red_bloodsucker_off} sr_idle@play_sound
+
+[sr_idle@2]
+on_info = {+red_bloodsucker_spawn} sr_idle@wait
+on_game_timer = 150 | sr_idle@3
+on_actor_dist_le_nvis = 20 | {-red_bloodsucker_spawn -red_bloodsucker_off} sr_idle@play_sound2
+
+[sr_idle@3]
+on_info = {+red_bloodsucker_spawn} sr_idle@wait
+on_game_timer = 150 | sr_idle
+on_actor_dist_le_nvis = 20 | {-red_bloodsucker_spawn -red_bloodsucker_off} sr_idle@play_sound3
+
+[sr_idle@play_sound]
+on_info = {+red_bloodsucker_spawn} sr_idle@wait
+on_game_timer = 20 | {-red_bloodsucker_spawn} %=play_sound(red_bloodsucker_hidden)% sr_idle@pause
+
+[sr_idle@play_sound2]
+on_info = {+red_bloodsucker_spawn} sr_idle@wait
+on_game_timer = 30 | {-red_bloodsucker_spawn} %=play_sound(red_bloodsucker_hidden)% sr_idle@pause
+
+[sr_idle@play_sound3]
+on_info = {+red_bloodsucker_spawn} sr_idle@wait
+on_game_timer = 50 | {-red_bloodsucker_spawn} %=play_sound(red_bloodsucker_hidden)% sr_idle@pause
+
+[sr_idle@pause]
+on_game_timer = 50 | sr_idle  ;@puase2
+
+[sr_idle@wait]
+on_info = {-red_bloodsucker_spawn} sr_idle

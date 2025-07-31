@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+val_killer_base_boom} sr_idle@bandits_sound_ambush_end %=play_sound(val_freedom_ambush_end)%
+
+[sr_idle@bandits_sound_ambush_end]
+on_signal = sound_end | sr_idle@end %=barrel_explode(1120)%
+
+[sr_idle@end]

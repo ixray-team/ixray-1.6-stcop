@@ -1,0 +1,67 @@
+[logic]
+active = walker@wait_help
+on_death = death
+on_hit = hit
+relation = neutral
+meet = no_meet
+
+[hit]
+on_info = %+lim_bandit_away%
+
+[death]
+on_info = %+lim_bandit_wonded_1_out +lim_bandit_away%
+
+[walker@go_point]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = lim_bandit_wonded_1_walk
+path_look = lim_bandit_wonded_1_look
+def_state_moving1 = run
+def_state_moving2 = run
+def_state_moving3 = run
+def_state_standing = wait
+on_signal = action | remark@wait_help
+
+[walker@wait_help]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = lim_bandit_wonded_1_walk
+path_look = lim_bandit_wonded_1_look
+wounded = wounded
+;meet = no_meet
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+def_state_standing = wait
+on_info = {+lim_bandit_health_restore} walker@wait2 %=restore_health%
+on_info2 = {=hit_by_actor} %+lim_bandit_away%
+on_info3 = {!health_le(0.3)} walker@wait2 %+lim_bandit_health_restore%
+
+[walker@wait2]
+combat_ignore_cond = true
+path_walk = lim_bandit_sanks_1_walk
+path_look = lim_bandit_sanks_1_look
+;meet = no_meet
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+def_state_standing = wait
+on_info = {+lim_bandit_wounded_go} patrol@go
+on_info2 = {=hit_by_actor} %+lim_bandit_away%
+
+;*** уходят из Лиманска
+[patrol@go]
+;meet = no_meet
+combat_ignore_cond = true
+path_walk = lim_bandit_go_walk
+move_type = walk
+def_state_moving = walk
+on_signal = action | %=destroy_object%
+on_info = {=hit_by_actor} %+lim_bandit_away%
+
+
+[wounded]
+hp_state 		= 20|wounded_heavy_2@nil
+hp_state_see	= 20|wounded_heavy_2@nil
+autoheal = false
+enable_talk = false

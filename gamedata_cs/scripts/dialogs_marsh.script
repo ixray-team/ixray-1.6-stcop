@@ -1,0 +1,41 @@
+function tutorial_give_equipment(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_12x70_buck", 5)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_9x18_fmj", 2)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_bm16")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_pm")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_knife")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "detector_simple")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "bandage", 5)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "medkit", 2)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "antirad", 1)
+end
+
+function disable_input()
+	level.disable_input()
+	--printf("marsh_dialogs <disable_input>")
+end
+
+function enable_input()
+	level.enable_input()
+	--printf("marsh_dialogs <enable_input>")
+end
+
+function disable_ui()
+    get_console():execute("hud_crosshair 0")
+    get_console():execute("hud_weapon 0")	
+	level.disable_input()
+	level.hide_indicators_safe()
+	--printf("marsh_dialogs <disable_ui>")
+end
+
+function enable_ui()
+	get_console():execute("hud_crosshair 1")
+	get_console():execute("hud_weapon 1")	
+	level.show_indicators()
+	level.enable_input()
+	--printf("marsh_dialogs <enable_ui>")
+end
+
+function run_tutorial()
+	game.start_tutorial("part_1_pda")
+end

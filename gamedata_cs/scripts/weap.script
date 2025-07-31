@@ -1,0 +1,21 @@
+function main ()
+local items_table = {
+						"wpn_pm",				-- 1
+						"wpn_bm16",				-- 2
+						"wpn_ak74",				-- 3
+						"wpn_fn2000",			-- 4
+	                    "wpn_addon_scope",
+	                    "wpn_addon_scope_susat",
+	                    "wpn_addon_silencer",
+	                    "wpn_addon_grenade_launcher",
+	                    "wpn_addon_grenade_launcher_m203",
+	                    "flesh_up_aceg_scientific_outfit"
+					}
+local actor = db.actor
+local actor_id = actor:id()
+local actor_position = actor:position()
+	for i = 1, #items_table do
+		alife():create(items_table[i], actor_position, 0, 0, actor_id)
+	end
+	db.actor:give_money(10000)
+end

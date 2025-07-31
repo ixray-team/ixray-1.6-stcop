@@ -1,0 +1,31 @@
+;*****************************
+;********* stalker tasker ***********
+[logic@tasker1]
+active = walker@go_to_gate
+suitable = {!is_smart_defending(red_smart_terrain_4_2) =actor_in_zone(red_smart_terrain_4_2_attack) -red_forest_open}
+prior = 100
+
+[walker@go_to_gate]
+out_restr = red_smart_terrain_4_2_defence
+path_walk = task_comander_walk
+path_look = task_comander_look
+;on_signal = action | walker@talk
+
+[walker@talk]
+out_restr = red_smart_terrain_4_2_defence
+path_walk = task_comander_walk
+path_look = task_comander_look
+meet = meet@about_gate
+on_info = {+red_forest_gate_keepers_dialog_end} walker@talk2
+
+[walker@talk2]
+out_restr = red_smart_terrain_4_2_defence
+path_walk = task_comander_walk
+path_look = task_comander_look
+meet = meet@about_gate2
+
+[meet@about_gate]
+;allow_break = false
+trade_enable = false
+;use = 5 | self
+;use_wpn = 5 | self
