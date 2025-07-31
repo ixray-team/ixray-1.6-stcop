@@ -383,10 +383,9 @@ void CCustomZone::net_Destroy()
 	if(m_actor_effector)			
 		m_actor_effector->Stop		(); 
 
-	OBJECT_INFO_VEC_IT i = m_ObjectInfoMap.begin();
-	OBJECT_INFO_VEC_IT e = m_ObjectInfoMap.end();
-	for(;e!=i;++i)
-		exit_Zone(*i);
+	for(SZoneObjectInfo& info : m_ObjectInfoMap)
+		exit_Zone(info);
+
 	m_ObjectInfoMap.clear();	
 }
 
@@ -522,13 +521,11 @@ void CCustomZone::shedule_Update(u32 dt)
 
 		//пройтись по всем объектам в зоне
 		//и проверить их состояние
-		for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); 
-			m_ObjectInfoMap.end() != it; ++it) 
+		for (SZoneObjectInfo& info : m_ObjectInfoMap)
 		{
-			CGameObject* pObject		= (*it).object;
+			CGameObject* pObject		= info.object;
 			if (!pObject)				continue;
-			CEntityAlive* pEntityAlive	= smart_cast<CEntityAlive*>(pObject);
-			SZoneObjectInfo& info		= (*it);
+			CEntityAlive* pEntityAlive	= pObject->cast_entity_alive();
 
 			info.dw_time_in_zone += dt;
 
@@ -585,14 +582,12 @@ void CCustomZone::CheckForAwaking()
 
 void CCustomZone::feel_touch_new	(CObject* O) 
 {
-//	if(smart_cast<CActor*>(O) && O == Level().CurrentEntity())
-//					m_pLocalActor	= smart_cast<CActor*>(O);
+	if (!O || O->getDestroy()) return;
+	CGameObject*	pGameObject		= O->cast_game_object();
+	if (!pGameObject) return;
+	CEntityAlive*	pEntityAlive	= pGameObject->cast_entity_alive();
 
-	CGameObject*	pGameObject		= smart_cast<CGameObject*>(O);
-	CEntityAlive*	pEntityAlive	= smart_cast<CEntityAlive*>(pGameObject);
-	CArtefact*		pArtefact		= smart_cast<CArtefact*>(pGameObject);
-	
-	SZoneObjectInfo object_info		;
+	SZoneObjectInfo& object_info = m_ObjectInfoMap.emplace_back();
 	object_info.object = pGameObject;
 
 	if(pEntityAlive && pEntityAlive->g_Alive())
@@ -607,12 +602,11 @@ void CCustomZone::feel_touch_new	(CObject* O)
 
 	if((object_info.small_object && m_zone_flags.test(eIgnoreSmall)) ||
 		(object_info.nonalive_object && m_zone_flags.test(eIgnoreNonAlive)) || 
-		(pArtefact && m_zone_flags.test(eIgnoreArtefact)))
+		(pGameObject->cast_artefact() && m_zone_flags.test(eIgnoreArtefact)))
 		object_info.zone_ignore = true;
 	else
 		object_info.zone_ignore = false;
 	enter_Zone(object_info);
-	m_ObjectInfoMap.push_back(object_info);
 	
 	if (IsEnabled())
 	{
@@ -623,37 +617,33 @@ void CCustomZone::feel_touch_new	(CObject* O)
 
 void CCustomZone::feel_touch_delete(CObject* O) 
 {
-	CGameObject* pGameObject =smart_cast<CGameObject*>(O);
-	if(!pGameObject->getDestroy())
-	{
-		StopObjectIdleParticles(pGameObject);
-	}
+	if (!O || O->getDestroy()) return;
+	CGameObject* pGameObject = O->cast_game_object();
 
-	OBJECT_INFO_VEC_IT it = std::find(m_ObjectInfoMap.begin(),m_ObjectInfoMap.end(),pGameObject);
-	if(it!=m_ObjectInfoMap.end())
-	{	
-		exit_Zone(*it);
-		m_ObjectInfoMap.erase(it);
-	}
+	StopObjectIdleParticles(pGameObject);
+
+	SZoneObjectInfo::remove(this, pGameObject);
 }
 
 BOOL CCustomZone::feel_touch_contact(CObject* O) 
 {
-	if (smart_cast<CCustomZone*>(O))				return FALSE;
-	if (smart_cast<CBreakableObject*>(O))			return FALSE;
-	if (0==smart_cast<IKinematics*>(O->Visual()))	return FALSE;
+	if (!O || O->getDestroy()) return FALSE;
+	CGameObject* pGameObject = O->cast_game_object();
+	if (!pGameObject)							return FALSE;
+	if (pGameObject->cast_custom_zone())		return FALSE;
+	if (pGameObject->cast_breakable_object())	return FALSE;
+	if (0==PKinematics(O->Visual()))			return FALSE;
 
 	if (O->ID() == ID())
 		return		(FALSE);
 
-	CGameObject *object = smart_cast<CGameObject*>(O);
-    if (!object || !object->IsVisibleForZones())
+    if (!pGameObject->IsVisibleForZones())
 		return		(FALSE);
 
 	if (!((CCF_Shape*)CFORM())->Contact(O))
 		return		(FALSE);
 
-	return			(object->feel_touch_on_contact(this));
+	return			(pGameObject->feel_touch_on_contact(this));
 }
 
 
@@ -758,6 +748,7 @@ void CCustomZone::PlayBlowoutParticles()
 
 void CCustomZone::PlayHitParticles(CGameObject* pObject)
 {
+	if (!pObject || pObject->getDestroy()) return;
 	m_hit_sound.play_at_pos(0, pObject->Position());
 
 	shared_str particle_str = nullptr;
@@ -775,8 +766,9 @@ void CCustomZone::PlayHitParticles(CGameObject* pObject)
 
 	if( particle_str.size() )
 	{
-		CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
-		if (PP){
+		CParticlesPlayer* PP = pObject->cast_particles_player();
+		if (PP)
+		{
 			u16 play_bone = PP->GetRandomBone(); 
 			if (play_bone!=BI_NONE)
 				PP->StartParticles	(particle_str,play_bone,Fvector().set(0,1,0), ID());
@@ -786,6 +778,7 @@ void CCustomZone::PlayHitParticles(CGameObject* pObject)
 #include "Bolt.h"
 void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 {
+	if (!pObject || pObject->getDestroy()) return;
 	m_entrance_sound.play_at_pos		(0, pObject->Position());
 
 	LPCSTR particle_str				= nullptr;
@@ -806,14 +799,14 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 	}
 
 	Fvector							vel;
-	CPhysicsShellHolder* shell_holder=smart_cast<CPhysicsShellHolder*>(pObject);
+	CPhysicsShellHolder* shell_holder= pObject->cast_physics_shell_holder();
 	if(shell_holder)
 		shell_holder->PHGetLinearVell(vel);
 	else 
 		vel.set						(0,0,0);
 	
 	//выбрать случайную косточку на объекте
-	CParticlesPlayer* PP			= smart_cast<CParticlesPlayer*>(pObject);
+	CParticlesPlayer* PP			= pObject->cast_particles_player();
 	if (PP)
 	{
 		u16 play_bone				= PP->GetRandomBone(); 
@@ -836,7 +829,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 			pParticles->Play		(false);
 		}
 	}
-	if(m_zone_flags.test(eBoltEntranceParticles) && smart_cast<CBolt*>(pObject))
+	if(m_zone_flags.test(eBoltEntranceParticles) && pObject->cast_missile() && smart_cast<CBolt*>(pObject->cast_missile()))
 		PlayBoltEntranceParticles();
 }
 
@@ -919,7 +912,8 @@ void CCustomZone::PlayBulletParticles(Fvector& pos)
 
 void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 {
-	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
+	if (!pObject || pObject->getDestroy()) return;
+	CParticlesPlayer* PP = pObject->cast_particles_player();
 	if(!PP) return;
 
 	shared_str particle_str = nullptr;
@@ -948,16 +942,14 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 
 void CCustomZone::StopObjectIdleParticles(CGameObject* pObject)
 {
+	if (!pObject || pObject->getDestroy()) return;
 	if (m_zone_flags.test(eIdleObjectParticlesDontStop) && !pObject->cast_actor())
 		return;
 
-	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
+	CParticlesPlayer* PP = pObject->cast_particles_player();
 	if(!PP) return;
 
-
-	OBJECT_INFO_VEC_IT it	= std::find(m_ObjectInfoMap.begin(),m_ObjectInfoMap.end(),pObject);
-	if(m_ObjectInfoMap.end() == it) return;
-	
+	if(!SZoneObjectInfo::get(this, pObject)) return;
 	
 	shared_str particle_str = nullptr;
 	//разные партиклы для объектов разного размера
@@ -1043,11 +1035,10 @@ void CCustomZone::AffectObjects()
 		return;
 
 
-	OBJECT_INFO_VEC_IT it;
-	for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
+	for (SZoneObjectInfo& info : m_ObjectInfoMap)
 	{
-		if( !(*it).object->getDestroy() )
-			Affect( &(*it) );
+		if( !info.object->getDestroy() )
+			Affect(&info);
 	}
 }
 
@@ -1164,10 +1155,9 @@ bool CCustomZone::Enable()
 
 	o_switch_2_fast();
 
-	for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); 
-		m_ObjectInfoMap.end() != it; ++it) 
+	for (SZoneObjectInfo& info : m_ObjectInfoMap)
 	{
-		CGameObject* pObject = (*it).object;
+		CGameObject* pObject = info.object;
 		if (!pObject) continue;
 		PlayEntranceParticles(pObject);
 		PlayObjectIdleParticles(pObject);
@@ -1181,9 +1171,9 @@ bool CCustomZone::Disable()
 	if (!IsEnabled()) return false;
 	o_switch_2_slow();
 
-	for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end()!=it; ++it) 
+	for (SZoneObjectInfo& info : m_ObjectInfoMap)
 	{
-		CGameObject* pObject = (*it).object;
+		CGameObject* pObject = info.object;
 		if (!pObject) 
 			continue;
 
@@ -1287,16 +1277,12 @@ void CCustomZone::CreateHit	(	u16 id_to,
 
 void CCustomZone::net_Relcase(CObject* O)
 {
-	CGameObject* GO				= smart_cast<CGameObject*>(O);
-	OBJECT_INFO_VEC_IT it		= std::find(m_ObjectInfoMap.begin(),m_ObjectInfoMap.end(), GO);
-	if(it!=m_ObjectInfoMap.end())
-	{
-		exit_Zone				(*it);
-		m_ObjectInfoMap.erase	(it);
-	}
-	if(GO->ID()==m_owner_id)	m_owner_id = u32(-1);
+	if(O && O->cast_game_object())
+		SZoneObjectInfo::remove(this, O->cast_game_object());
 
-	if(m_actor_effector && m_actor_effector->m_pActor && m_actor_effector->m_pActor->ID() == GO->ID())
+	if(O->ID()==m_owner_id)	m_owner_id = u32(-1);
+
+	if(m_actor_effector && m_actor_effector->m_pActor && m_actor_effector->m_pActor->ID() == O->ID())
 		m_actor_effector->Stop();
 
 	inherited::net_Relcase(O);
@@ -1387,11 +1373,8 @@ void CCustomZone::GoDisabledState()
 	P.w_u8			(u8(eZoneStateDisabled));
 	u_EventSend		(P);
 
-	OBJECT_INFO_VEC_IT it		= m_ObjectInfoMap.begin();
-	OBJECT_INFO_VEC_IT it_e		= m_ObjectInfoMap.end();
-
-	for(;it!=it_e;++it)
-		exit_Zone(*it);
+	for (SZoneObjectInfo& info : m_ObjectInfoMap)
+		exit_Zone(info);
 	
 	m_ObjectInfoMap.clear		();
 	feel_touch.clear			();

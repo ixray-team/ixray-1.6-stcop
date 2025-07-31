@@ -11,9 +11,9 @@ BOOL CAfList::feel_touch_contact(CObject* O)
 	bool res = (it != m_TypesMap.end());
 	if (res)
 	{
-		CArtefact* pAf = smart_cast<CArtefact*>(O);
+		CArtefact* pAf = O&&O->cast_game_object() ? O->cast_game_object()->cast_artefact() : NULL;
 
-		if (pAf->GetAfRank() > m_af_rank)
+		if (pAf && pAf->GetAfRank() > m_af_rank)
 			res = false;
 	}
 	return						res;
@@ -27,7 +27,7 @@ BOOL CZoneList::feel_touch_contact(CObject* O)
 	TypesMapIt it = m_TypesMap.find(O->cNameSect());
 	bool res = (it != m_TypesMap.end());
 
-	CCustomZone* pZone = smart_cast<CCustomZone*>(O);
+	CCustomZone* pZone = O&&O->cast_game_object() ? O->cast_game_object()->cast_custom_zone() : NULL;
 	if (pZone && !pZone->IsEnabled())
 	{
 		res = false;

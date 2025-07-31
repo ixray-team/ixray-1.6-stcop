@@ -23,6 +23,7 @@ public:
 	virtual DLL_Pure	*_construct	();
 public:
 	virtual CExplosive					*cast_explosive			()						{return this;}
+	virtual CExplosiveRocket			*cast_explosive_rocket	()						{return this;}
 	virtual CInventoryItem				*cast_inventory_item	()						{return this;}
 	virtual CAttachableItem				*cast_attachable_item	()						{return this;}
 	virtual CWeapon						*cast_weapon			()						{return NULL;}

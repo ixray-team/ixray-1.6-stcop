@@ -69,6 +69,7 @@ protected:
 public:
 
 	virtual BOOL			UsedAI_Locations					();
+	virtual CGrenade		*cast_grenade						()	{return this;}
 	virtual CExplosive		*cast_explosive						()	{return this;}
 	virtual CMissile		*cast_missile						()	{return this;}
 	virtual CHudItem		*cast_hud_item						()	{return this;}

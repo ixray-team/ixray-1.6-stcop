@@ -246,7 +246,7 @@ void CLevel::ClientSave()
 		if (!O || O->getDestroy())
 			continue;
 
-		CGameObject* GO = smart_cast<CGameObject*>(O);
+		CGameObject* GO = O->cast_game_object();
 		if (!GO || !GO->net_SaveRelevant())
 			continue;
 

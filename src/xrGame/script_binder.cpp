@@ -199,7 +199,7 @@ BOOL CScriptBinder::net_SaveRelevant()
 void CScriptBinder::net_Relcase		(CObject *object)
 {
 	PROF_EVENT("CScriptBinder::net_Relcase")
-	CGameObject						*game_object = smart_cast<CGameObject*>(object);
+	CGameObject						*game_object = object->cast_game_object();
 	if (m_object && game_object) {
 		try {
 			m_object->net_Relcase	(game_object->lua_game_object());

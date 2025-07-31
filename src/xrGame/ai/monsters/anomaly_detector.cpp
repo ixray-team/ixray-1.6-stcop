@@ -76,8 +76,10 @@ void CAnomalyDetector::update_schedule()
 void CAnomalyDetector::on_contact(CObject *obj)
 {
 	if (!m_active) return;
-	
-	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(obj);
+	if(!obj || obj->getDestroy()) return;
+	CGameObject* game_object = obj->cast_game_object();
+	if (!game_object) return;
+	CCustomZone	*custom_zone = game_object->cast_custom_zone();
 	if (!custom_zone) return;
 	
 	// if its NOT A restrictor - skip

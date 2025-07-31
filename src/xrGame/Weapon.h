@@ -271,8 +271,8 @@ public:
 	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;};
 	CUIWindow*				ZoomTexture			();	
 
-	bool ZoomHideCrosshair() {
-		CActor* pA = smart_cast<CActor*>(H_Parent());
+	IC bool ZoomHideCrosshair() {
+		CActor* pA = H_Parent() ? H_Parent()->cast_actor() : NULL;
 		if (pA && pA->active_cam() == eacLookAt && !ZoomTexture())
 			return false;
 		return m_zoom_params.m_bHideCrosshairInZoom || ZoomTexture();

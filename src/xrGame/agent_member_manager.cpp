@@ -61,7 +61,7 @@ void CAgentMemberManager::add					(CEntity *member)
 
 void CAgentMemberManager::remove				(CEntity *member)
 {
-	CAI_Stalker					*stalker = smart_cast<CAI_Stalker*>(member);
+	CAI_Stalker					*stalker = member ? member->cast_stalker() : NULL;
 	if (!stalker)
 		return;
 
@@ -87,15 +87,20 @@ void CAgentMemberManager::remove_links			(CObject *object)
 	MEMBER_STORAGE::iterator	I = m_members.begin();
 	MEMBER_STORAGE::iterator	E = m_members.end();
 	for ( ; I != E; ++I) {
-		if ((*I)->grenade_reaction().m_grenade) {
-			const CGameObject	*explosive  =smart_cast<const CGameObject*>((*I)->grenade_reaction().m_grenade);
-			VERIFY				(explosive);
-			if (explosive->ID() == object->ID())
+		if ((*I)->grenade_reaction().m_grenade)
+		{
+			CGameObject	*explosiveGO  =const_cast<CExplosive*>((*I)->grenade_reaction().m_grenade)->cast_game_object();
+			VERIFY				(explosiveGO);
+			if (explosiveGO->ID() == object->ID())
 				(*I)->grenade_reaction().clear();
-			else {
-				CGrenade const*	grenade = smart_cast<CGrenade const*>(explosive);
-				if (grenade && grenade->CurrentParentID() == object->ID())
-					(*I)->grenade_reaction().clear();
+			else
+			{
+				if(CMissile* missile = explosiveGO->cast_missile())
+				{
+					CGrenade* grenade = smart_cast<CGrenade*>(missile);
+					if (grenade && grenade->CurrentParentID() == object->ID())
+						(*I)->grenade_reaction().clear();
+				}
 			}
 		}
 

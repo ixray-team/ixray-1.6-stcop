@@ -52,6 +52,8 @@ public:
 	virtual void	net_Export			(NET_Packet& P);
 	virtual void	net_Import			(NET_Packet& P);
 	virtual BOOL	UsedAI_Locations	();
+
+	virtual CBreakableObject* cast_breakable_object() { return this; }
 private:
 	void			Init				();
 	void			CreateUnbroken		();

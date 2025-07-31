@@ -450,7 +450,7 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
 	// Visual
 	const shared_str& visual_name = pSettings->r_string(sect_name, "item_visual");
-	m_model						 = smart_cast<IKinematics*>(::Render->model_Create(visual_name.c_str()));
+	m_model						 = PKinematics(::Render->model_Create(visual_name.c_str()));
 
 	m_attach_place_idx = READ_IF_EXISTS(pSettings, r_u16, sect_name, "attach_place_idx", 0);
 	m_measures.load				(sect_name, m_model);

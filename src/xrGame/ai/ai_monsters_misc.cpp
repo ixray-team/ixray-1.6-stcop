@@ -31,8 +31,9 @@ bool bfGetActionSuccessProbability(GroupHierarchyHolder::MEMBER_REGISTRY &Member
 {
 	int i = 0, j = 0, I = (int)Members.size(), J = (int)VisibleEnemies.size();
 	xr_vector<const CEntityAlive*>::const_iterator	II = VisibleEnemies.begin();
-	for ( ; (i < I) && (j < J); ) {
-		ai().ef_storage().non_alife().member() = smart_cast<CEntityAlive *>(Members[i]);
+	for ( ; (i < I) && (j < J); )
+	{
+		ai().ef_storage().non_alife().member() = Members[i] ? Members[i]->cast_entity_alive() : NULL;
 		if (!(ai().ef_storage().non_alife().member()) || !(ai().ef_storage().non_alife().member()->g_Alive())) {
 			++i;
 			continue;
@@ -65,7 +66,7 @@ bool bfGetActionSuccessProbability(GroupHierarchyHolder::MEMBER_REGISTRY &Member
 		else {
 			fCurrentProbability = 1.0f - fProbability;
 			for (++i; (i < I) && (j < J); ++i) {
-				ai().ef_storage().non_alife().member() = smart_cast<CEntityAlive *>(Members[i]);
+				ai().ef_storage().non_alife().member() = Members[i] ? Members[i]->cast_entity_alive() : NULL;
 				if (!(ai().ef_storage().non_alife().member()) || !(ai().ef_storage().non_alife().member()->g_Alive())) {
 					++i;
 					continue;
@@ -87,11 +88,12 @@ bool bfGetActionSuccessProbability(GroupHierarchyHolder::MEMBER_REGISTRY &Member
 u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinProbability1, float fMinProbability2, float fMinProbability3, u32 dwTeam, u32 dwSquad, u32 dwGroup, u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, CEntity *tpEntity, float fGroupDistance)
 {
 	if ( fis_zero(fMinProbability0) )
-		return								( 0 );
+		return ( 0 );
 
-	CGroupHierarchyHolder					&Group = Level().seniority_holder().team(dwTeam).squad(dwSquad).group(dwGroup);
+	CGroupHierarchyHolder &Group = Level().seniority_holder().team(dwTeam).squad(dwSquad).group(dwGroup);
 	
-	if (Device.dwTimeGlobal - Group.m_dwLastActionTime < dwActionRefreshRate) {
+	if (Device.dwTimeGlobal - Group.m_dwLastActionTime < dwActionRefreshRate)
+	{
 		switch (Group.m_dwLastAction) {
 			case 0: return(a0);
 			case 1: return(a1);
@@ -102,40 +104,53 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
 		}
 	}
 
-	const CCustomMonster					*monster = smart_cast<const CCustomMonster*>(tpEntity);
+	const CCustomMonster					*monster = tpEntity ? tpEntity->cast_custom_monster() : NULL;
 	VERIFY									(monster);
-	const CAI_Stalker						*stalker = smart_cast<const CAI_Stalker*>(monster);
+	const CAI_Stalker						*stalker = tpEntity ? tpEntity->cast_stalker() : NULL;
 	const xr_vector<const CEntityAlive*>	&VisibleEnemies = monster->memory().enemy().objects();
 
-	GroupHierarchyHolder::MEMBER_REGISTRY	Members;
+	GroupHierarchyHolder::MEMBER_REGISTRY Members;
 	if (!tpEntity)
-		for (int k=0; k<(int)Group.members().size(); ++k) {
-			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
-				Members.push_back(Group.members()[k]);
+	{
+		for (CEntity* entity : Group.members())
+		{
+			if (entity && entity->g_Alive() && ((entity->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
+				Members.push_back(entity);
 		}
+	}
 	else
-		for (int k=0; k<(int)Group.members().size(); ++k) {
-			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
-				if (tpEntity->Position().distance_to(Group.members()[k]->Position()) < fGroupDistance) {
+	{
+		for (CEntity* entity : Group.members())
+		{
+			if (entity && entity->g_Alive() && ((entity->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
+			{
+				if (tpEntity->Position().distance_to(entity->Position()) < fGroupDistance)
+				{
 
-					if (!stalker) {
-						Members.push_back	(Group.members()[k]);
+					if (!stalker)
+					{
+						Members.push_back(entity);
 						continue;
 					}
 
-					const CAI_Stalker		*member = smart_cast<CAI_Stalker*>(Group.members()[k]);
-					if (!member) {
-						Members.push_back	(Group.members()[k]);
+					const CAI_Stalker* member = entity->cast_stalker();
+					if (!member)
+					{
+						Members.push_back(entity);
 						continue;
 					}
 
 					if (Group.agent_manager().member().registered_in_combat(member))
-						Members.push_back	(Group.members()[k]);
+						Members.push_back(entity);
 					else
+					{
 						if (member->ID() == tpEntity->ID())
-							Members.push_back	(Group.members()[k]);
+							Members.push_back(entity);
+					}
 				}
+			}
 		}
+	}
 
 	ai().ef_storage().non_alife().member_item() = 0;
 	ai().ef_storage().non_alife().enemy_item() = 0;

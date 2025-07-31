@@ -61,6 +61,7 @@ void load_attack_goodwill()
 
 void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationAction action)
 {
+	if (!from || !to) return;
 	static CHARACTER_GOODWILL friend_kill_goodwill				= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_kill_goodwill");
 	static CHARACTER_GOODWILL neutral_kill_goodwill				= pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_kill_goodwill");
 	static CHARACTER_GOODWILL enemy_kill_goodwill				= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_kill_goodwill");
@@ -82,11 +83,10 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 	static CHARACTER_REPUTATION_VALUE neutral_fight_help_reputation = pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_fight_help_reputation");
 	static CHARACTER_REPUTATION_VALUE enemy_fight_help_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_fight_help_reputation");
 
-
-	CActor*				actor			= smart_cast<CActor*>				(from);
-	CInventoryOwner*	inv_owner_from	= smart_cast<CInventoryOwner*>		(from);
-	CAI_Stalker*		stalker_from	= smart_cast<CAI_Stalker*>			(from);
-	CAI_Stalker*		stalker			= smart_cast<CAI_Stalker*>			(to);
+	CActor*				actor			= from->cast_actor();
+	CInventoryOwner*	inv_owner_from	= from->cast_inventory_owner();
+	CAI_Stalker*		stalker_from	= from->cast_stalker();
+	CAI_Stalker*		stalker			= to->cast_stalker();
 
 	//вычисление изменения репутации и рейтинга пока ведется 
 	//только для актера
@@ -96,7 +96,7 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 	if(stalker)
 	{
 		stalker->m_actor_relation_flags.set(action, TRUE);
-		relation = GetRelationType(smart_cast<CInventoryOwner*>(stalker), inv_owner_from);
+		relation = GetRelationType(stalker->cast_inventory_owner(), inv_owner_from);
 	}
 
 	switch(action)
@@ -118,10 +118,18 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 				FIGHT_DATA* fight_data = FindFight (to->ID(),true);
 				if(fight_data)
 				{
-					CAI_Stalker* defending_stalker = smart_cast<CAI_Stalker*>(Level().Objects.net_Find(fight_data->defender));
+					CObject* OD = Level().Objects.net_Find(fight_data->defender);
+					if (!OD) break;
+					CGameObject* GOD = OD->cast_game_object();
+					if (!GOD) break;
+					CAI_Stalker* defending_stalker = GOD->cast_stalker();
 					if(defending_stalker)	
 					{
-						CAI_Stalker*	attacking_stalker = smart_cast<CAI_Stalker*>(Level().Objects.net_Find(fight_data->attacker));
+						CObject* OA = Level().Objects.net_Find(fight_data->defender);
+						if (!OA) break;
+						CGameObject* GOA = OA->cast_game_object();
+						if (!GOA) break;
+						CAI_Stalker*	attacking_stalker = GOA->cast_stalker();
 						Action(actor, defending_stalker, attacking_stalker?FIGHT_HELP_HUMAN:FIGHT_HELP_MONSTER);
 					}
 				}
@@ -130,13 +138,13 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 			if(stalker)
 			{
 				bool bDangerScheme = false;
-				const CEntityAlive* stalker_enemy = stalker->memory().enemy().selected();
+				CEntityAlive* stalker_enemy = const_cast<CEntityAlive*>(stalker->memory().enemy().selected());
 				if(actor && stalker_enemy)
 				{
-					const CInventoryOwner* const_inv_owner_from				= inv_owner_from;
+					CInventoryOwner* const_inv_owner_from				= inv_owner_from;
 					if(stalker_enemy->human_being())
 					{
-						const CInventoryOwner* const_inv_owner_stalker_enemy	= smart_cast<const CInventoryOwner*>(stalker_enemy);
+						CInventoryOwner* const_inv_owner_stalker_enemy	= stalker_enemy->cast_inventory_owner();
 						ALife::ERelationType relation_to_actor = GetRelationType(const_inv_owner_stalker_enemy, const_inv_owner_from);
 
 						if(relation_to_actor == ALife::eRelationTypeEnemy)

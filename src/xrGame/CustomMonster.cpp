@@ -327,20 +327,10 @@ void CCustomMonster::shedule_Update	( u32 DT )
 
 	float dt			= float(DT)/1000.f;
 	// *** general stuff
-	if (g_Alive()) {
-		if (g_mt_config.test(mtAiVision) )
-#ifndef DEBUG
-			Device.seqParallel.push_back	(xr_make_delegate(this,&CCustomMonster::Exec_Visibility));
-#else // DEBUG
-		{
-			if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-				Device.seqParallel.push_back(xr_make_delegate(this,&CCustomMonster::Exec_Visibility));
-			else
-				Exec_Visibility				();
-		}
-#endif // DEBUG
-		else
-			Exec_Visibility					();
+	CScriptEntity::process_sound_callbacks();
+	if (g_Alive())
+	{
+		Exec_Visibility();
 		memory().update						(dt);
 	}
 	inherited::shedule_Update	(DT);
@@ -442,8 +432,6 @@ void CCustomMonster::UpdateCL	()
 	if( animation_movement() )
 				animation_movement()->DBG_verify_position_not_chaged();
 #endif
-
-	CScriptEntity::process_sound_callbacks();
 
 	/*	//. hack just to skip 'CalculateBones'
 	if (sound().need_bone_data()) {
@@ -571,8 +559,9 @@ void CCustomMonster::UpdatePositionAnimation()
 
 BOOL CCustomMonster::feel_visible_isRelevant (CObject* O)
 {
-	CEntityAlive* E = smart_cast<CEntityAlive*>		(O);
-	if (0==E)								return FALSE;
+	if (!O)									return FALSE;
+	CEntityAlive* E = O->cast_entity_alive();
+	if (!E)									return FALSE;
 	if (E->g_Team() == g_Team())			return FALSE;
 	return TRUE;
 }
@@ -580,7 +569,7 @@ BOOL CCustomMonster::feel_visible_isRelevant (CObject* O)
 void CCustomMonster::eye_pp_s0			( )
 {
 	// Eye matrix
-	IKinematics* V							= smart_cast<IKinematics*>(Visual());
+	IKinematics* V							= PKinematics(Visual());
 	//V->CalculateBones						();
 	Fmatrix&	mEye						= V->LL_GetTransform(u16(eye_bone));
 	Fmatrix		X;							X.mul_43	(XFORM(),mEye);
@@ -749,7 +738,7 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	}
 
 	// Eyes
-	eye_bone					= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(cNameSect(),"bone_head"));
+	eye_bone					= PKinematics(Visual())->LL_BoneID(pSettings->r_string(cNameSect(),"bone_head"));
 
 	// weapons
 	if (Local()) {
@@ -862,7 +851,12 @@ void CCustomMonster::PitchCorrection()
 
 BOOL CCustomMonster::feel_touch_on_contact	(CObject *O)
 {
-	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(O);
+	if(!O)
+		return		(FALSE);
+	CGameObject* GO = O->cast_game_object();
+	if (!GO)
+		return		(FALSE);
+	CCustomZone	*custom_zone = GO->cast_custom_zone();
 	if (!custom_zone)
 		return	(TRUE);
 
@@ -877,7 +871,12 @@ BOOL CCustomMonster::feel_touch_on_contact	(CObject *O)
 
 BOOL CCustomMonster::feel_touch_contact		(CObject *O)
 {
-	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(O);
+	if (!O)
+		return		(FALSE);
+	CGameObject* GO = O->cast_game_object();
+	if (!GO)
+		return		(FALSE);
+	CCustomZone* custom_zone = GO->cast_custom_zone();
 	if (!custom_zone)
 		return	(TRUE);
 
@@ -1191,7 +1190,7 @@ void CCustomMonster::OnRender()
 			character_physics_support()->movement()->dbg_Draw();
 	
 	if (bDebug)
-		smart_cast<IKinematics*>(Visual())->DebugRender(XFORM());
+		PKinematics(Visual())->DebugRender(XFORM());
 
 
 #if 0

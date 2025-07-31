@@ -21,26 +21,35 @@
 
 void CActor::feel_touch_new				(CObject* O)
 {
-	CPhysicsShellHolder* sh=smart_cast<CPhysicsShellHolder*>(O);
+	if (!O || O->getDestroy()) return;
+	CGameObject* GO = O->cast_game_object(); if (!GO) return;
+	CPhysicsShellHolder* sh = GO->cast_physics_shell_holder();
+
 	if(sh&&sh->character_physics_support()) m_feel_touch_characters++;
 
 }
 
 void CActor::feel_touch_delete	(CObject* O)
 {
-	CPhysicsShellHolder* sh=smart_cast<CPhysicsShellHolder*>(O);
+	if (!O || O->getDestroy()) return;
+	CGameObject* GO = O->cast_game_object(); if (!GO) return;
+	CPhysicsShellHolder* sh = GO->cast_physics_shell_holder();
+
 	if(sh&&sh->character_physics_support()) m_feel_touch_characters--;
 }
 
 BOOL CActor::feel_touch_contact		(CObject *O)
 {
-	CInventoryItem	*item = smart_cast<CInventoryItem*>(O);
-	CInventoryOwner	*inventory_owner = smart_cast<CInventoryOwner*>(O);
+	if (!O || O->getDestroy()) return (FALSE);
+	CGameObject* GO = O->cast_game_object(); if (!GO) return (FALSE);
+
+	CInventoryItem	*item = GO->cast_inventory_item();
+	CInventoryOwner	*inventory_owner = GO->cast_inventory_owner();
 
 	if (item && item->Useful() && !item->object().H_Parent()) 
 		return TRUE;
 
-	if(inventory_owner && inventory_owner != smart_cast<CInventoryOwner*>(this))
+	if(inventory_owner && inventory_owner != cast_inventory_owner())
 	{
 		//CPhysicsShellHolder* sh=smart_cast<CPhysicsShellHolder*>(O);
 		//if(sh&&sh->character_physics_support()) m_feel_touch_characters++;
@@ -52,7 +61,10 @@ BOOL CActor::feel_touch_contact		(CObject *O)
 
 BOOL CActor::feel_touch_on_contact	(CObject *O)
 {
-	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(O);
+	if (!O || O->getDestroy()) return (FALSE);
+	CGameObject* GO = O->cast_game_object(); if (!GO) return (FALSE);
+
+	CCustomZone	*custom_zone = GO->cast_custom_zone();
 	if (!custom_zone)
 		return	(TRUE);
 
@@ -116,17 +128,14 @@ void	CActor::PickupModeUpdate_COD	()
 	float maxlen					= 1000.0f;
 	CInventoryItem* pNearestItem	= nullptr;
 
-	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
+	for (ISpatialShared& spatial : ISpatialResult)
 	{
-		ISpatial*		spatial_	= ISpatialResult[o_it].get();
-		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial_->dcast_CObject        ());
+		ISpatial* spatial_ = spatial.get();
+		CObject* O = spatial_->dcast_CObject(); if (!O || O->getDestroy() || O->H_Parent()) continue;
+		CGameObject* GO = O->cast_game_object(); if (!GO || GO->cast_explosive_rocket()) continue;
+		CInventoryItem*	pIItem = GO->cast_inventory_item(); if (!pIItem || !pIItem->CanTake()) continue;
 
-		if (0 == pIItem)											continue;
-		if (pIItem->object().H_Parent() != nullptr)					continue;
-		if (!pIItem->CanTake())										continue;
-		if ( smart_cast<CExplosiveRocket*>( &pIItem->object() ) )	continue;
-
-		CMissile* pMissile = smart_cast<CMissile*> (spatial_->dcast_CObject());
+		CMissile* pMissile = GO->cast_missile();
 		if (pMissile && !pMissile->Useful())
 			continue;
 
@@ -176,7 +185,7 @@ void	CActor::PickupModeUpdate_COD	()
 
 	if (pNearestItem && pPickup->GetPickupMode())
 	{
-		CUsableScriptObject* pUsableObject = smart_cast<CUsableScriptObject*>(pNearestItem);
+		CUsableScriptObject* pUsableObject = pNearestItem->object().cast_usable_script_object();
 		if(pUsableObject && (!m_pUsableObject))
 			pUsableObject->use(this);
 
@@ -202,18 +211,16 @@ void	CActor::Check_for_AutoPickUp()
 	g_SpatialSpace->q_box   (ISpatialResult_, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
 
 	// Determine visibility for dynamic part of scene
-	for (u32 o_it=0; o_it<ISpatialResult_.size(); o_it++)
+	for (ISpatialShared& spatial : ISpatialResult)
 	{
-		ISpatial*		spatial_	= ISpatialResult_[o_it].get();
-		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial_->dcast_CObject());
+		ISpatial* spatial_ = spatial.get();
+		CObject* O = spatial_->dcast_CObject(); if (!O || O->getDestroy() || O->H_Parent() || Level().m_feel_deny.is_object_denied(O)) continue;
+		CGameObject* GO = O->cast_game_object(); if (!GO || GO->cast_explosive_rocket()) continue;
+		CInventoryItem* pIItem = GO->cast_inventory_item(); if (!pIItem || !pIItem->CanTake()) continue;
 
-		if (0 == pIItem)														continue;
-		if (!pIItem->CanTake())													continue;
-		if (Level().m_feel_deny.is_object_denied(spatial_->dcast_CObject()) )	continue;
-
-
-		CGrenade*	pGrenade	= smart_cast<CGrenade*> (pIItem);
-		if (pGrenade) continue;
+		CMissile* pMissile = GO->cast_missile();
+		if (pMissile && !pMissile->Useful())
+			continue;
 
 		if (APU_Box.Pick(pIItem->object().Position(), pIItem->object().Position()))
 		{
@@ -250,15 +257,13 @@ void CActor::Feel_Grenade_Update( float rad )
 	q_nearest.resize(0);
 	g_pGameLevel->ObjectSpace.GetNearest( q_nearest, pos_actor, rad, nullptr );
 
-	xr_vector<CObject*>::iterator	it_b = q_nearest.begin();
-	xr_vector<CObject*>::iterator	it_e = q_nearest.end();
-
 	// select only grenade
-	for ( ; it_b != it_e; ++it_b )
+	for (CObject* O : q_nearest)
 	{
-		if ( (*it_b)->getDestroy() ) continue;					// Don't touch candidates for destroy
+		if (!O || O->getDestroy()) continue;					// Don't touch candidates for destroy
+		CGameObject* GO = O->cast_game_object(); if (!GO) continue;
 
-		CGrenade* grn = smart_cast<CGrenade*>( *it_b );
+		CGrenade* grn = GO->cast_grenade();
 		if( !grn || grn->Initiator() == ID() || grn->Useful() )
 		{
 			continue;

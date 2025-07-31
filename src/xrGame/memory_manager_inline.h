@@ -9,23 +9,26 @@
 #pragma once
 
 #include "enemy_manager.h"
-
+#include "memory_space.h"
 template <typename T, typename _predicate>
 IC	void CMemoryManager::fill_enemies	(const xr_vector<T>* objects, const _predicate &predicate) const
 {
 	if (objects == nullptr)
-	{
 		return;
-	}
-
-	typename xr_vector<T>::const_iterator	I = objects->begin();
-	typename xr_vector<T>::const_iterator	E = objects->end();
 	
-	for ( ; I != E; ++I) {
-		if (!(*I).m_enabled)
+	for (auto& member : *objects)
+	{
+		if (!member.m_enabled)
 			continue;
 
-		const CEntityAlive	*_enemy = smart_cast<const CEntityAlive*>((*I).m_object);
+		if (!member.m_object)
+			continue;
+
+		CEntityAlive* _enemy = NULL;
+		if constexpr (std::is_same_v<T, CVisibleObject> || std::is_same_v<T, CSoundObject>)
+			_enemy = const_cast<CGameObject*>(member.m_object)->cast_entity_alive();
+		else
+			_enemy = const_cast<CEntityAlive*>(member.m_object);
 
 		if (_enemy && enemy().useful(_enemy))
 			predicate		(_enemy);

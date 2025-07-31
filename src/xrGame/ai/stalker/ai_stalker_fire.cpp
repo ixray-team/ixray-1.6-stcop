@@ -114,44 +114,48 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
 		return;
 	}
 
-	CWeapon				*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
-	if (!weapon) {
-		CMissile		*missile = smart_cast<CMissile*>(inventory().ActiveItem());
-		if (missile) {
-			update_throw_params	();
-			P			= m_throw_position;
-			D			= Fvector().set(m_throw_velocity).normalize();
-			VERIFY		(!fis_zero(D.square_magnitude()));
+	if(inventory().ActiveItem())
+	{
+		CWeapon* weapon = inventory().ActiveItem()->cast_weapon();
+		if (!weapon) {
+			CMissile* missile = inventory().ActiveItem()->cast_missile();
+			if (missile) {
+				update_throw_params();
+				P = m_throw_position;
+				D = Fvector().set(m_throw_velocity).normalize();
+				VERIFY(!fis_zero(D.square_magnitude()));
+				return;
+			}
+
+			P = eye_matrix.c;
+			D = eye_matrix.k;
+
+			if (weapon_shot_effector().IsActive())
+				D = weapon_shot_effector_direction(D);
+
+			VERIFY(!fis_zero(D.square_magnitude()));
 			return;
 		}
-		
-		P				= eye_matrix.c;
-		D				= eye_matrix.k;
-		
-		if (weapon_shot_effector().IsActive())
-			D			= weapon_shot_effector_direction(D);
 
-		VERIFY			(!fis_zero(D.square_magnitude()));
-		return;
-	}
 
-	if (!g_Alive()) {
-		P				= weapon->get_LastFP();
-		D				= weapon->get_LastFD();
-		VERIFY			(!fis_zero(D.square_magnitude()));
-		return;
-	}
+		if (!g_Alive()) {
+			P				= weapon->get_LastFP();
+			D				= weapon->get_LastFD();
+			VERIFY			(!fis_zero(D.square_magnitude()));
+			return;
+		}
 
-	if (!animation().script_animations().empty() || animation().global_selector()) {
-		P				= weapon->get_LastFP();
-		
-		if (sniper_fire_mode())
-			D.setHP		(-movement().m_head.target.yaw, -movement().m_head.target.pitch);
-		else
-			D			= weapon->get_LastFD();
-		VERIFY			(!fis_zero(D.square_magnitude()));
+		if (!animation().script_animations().empty() || animation().global_selector()) {
+			P				= weapon->get_LastFP();
+			
+			if (sniper_fire_mode())
+				D.setHP		(-movement().m_head.target.yaw, -movement().m_head.target.pitch);
+			else
+				D			= weapon->get_LastFD();
+			VERIFY			(!fis_zero(D.square_magnitude()));
 
-		return;
+			return;
+		}
 	}
 
 	switch (movement().body_state()) {
@@ -195,8 +199,14 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
 	}
 
 #ifdef DEBUG
-	P					= weapon->get_LastFP();
-	D					= weapon->get_LastFD();
+	if (inventory().ActiveItem())
+	{
+		if(CWeapon* weapon = inventory().ActiveItem()->cast_weapon())
+		{
+			P = weapon->get_LastFP();
+			D = weapon->get_LastFD();
+		}
+	}
 	VERIFY				(!fis_zero(D.square_magnitude()));
 #endif
 }
@@ -254,14 +264,14 @@ void CAI_Stalker::Hit(SHit* pHDS)
 	{
 
 		{
-			const CEntityAlive *entity_alive = smart_cast<const CEntityAlive*>(pHDS->initiator());
+			CEntityAlive* entity_alive = HDS.who ? HDS.who->cast_entity_alive() : NULL;
 			if(entity_alive && entity_alive->g_Alive() && tfGetRelationType(entity_alive) == ALife::eRelationTypeEnemy)
 			{
 				movement().set_mental_state(eMentalStateDanger);
 				if (!memory().visual().visible_now(entity_alive))
 				{
 					CNotYetVisibleObject		new_object;
-					new_object.m_object			= smart_cast<const CGameObject*>(pHDS->initiator());
+					new_object.m_object			= pHDS->who->cast_game_object();
 					new_object.m_value			= 1.0f;
 					new_object.m_prev_time		= Device.dwTimeGlobal-1;
 					new_object.m_update_time	= Device.dwTimeGlobal;
@@ -283,7 +293,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
 			}
 		}
 
-		const CEntityAlive	*entity_alive = smart_cast<const CEntityAlive*>(HDS.initiator());
+		CEntityAlive	*entity_alive = pHDS->who ? pHDS->who->cast_entity_alive() : NULL;
 		if (entity_alive && !wounded()) {
 			if (is_relation_enemy(entity_alive))
 				sound().play		(eStalkerSoundInjuring);
@@ -315,7 +325,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
 				clamp					(power_factor,0.f,1.f);
 
 				//IKinematicsAnimated		*tpKinematics = smart_cast<IKinematicsAnimated*>(Visual());
-				IKinematics *tpKinematics = smart_cast<IKinematics*>(Visual());
+				IKinematics *tpKinematics = PKinematics(Visual());
 	#ifdef DEBUG
 				tpKinematics->LL_GetBoneInstance	(HDS.bone());
 				if (HDS.bone() >= tpKinematics->LL_BoneCount()) {
@@ -329,8 +339,8 @@ void CAI_Stalker::Hit(SHit* pHDS)
 			}
 			else {
 				if (!already_critically_wounded && became_critically_wounded) {
-					if (HDS.who) {
-						CAI_Stalker		*stalker = smart_cast<CAI_Stalker*>(HDS.who);
+					if (HDS.who && HDS.who->cast_game_object()) {
+						CAI_Stalker		*stalker = HDS.who->cast_game_object()->cast_stalker();
 						if ( stalker && stalker->g_Alive() )
 							stalker->on_critical_wound_initiator	(this);
 					}
@@ -572,7 +582,7 @@ bool CAI_Stalker::ready_to_detour		()
 	if (!ready_to_kill())
 		return			(false);
 
-	CWeapon				*weapon = smart_cast<CWeapon*>(m_best_item_to_kill);
+	CWeapon				*weapon = m_best_item_to_kill ? m_best_item_to_kill->cast_weapon() : NULL;
 	if (!weapon)
 		return			(false);
 
@@ -615,7 +625,7 @@ IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
 		return							(false);
 	}
 
-	CEntityAlive						*entity_alive = smart_cast<CEntityAlive*>(result.O);
+	CEntityAlive						*entity_alive = result.O ? result.O->cast_entity_alive() : NULL;
 	if (!entity_alive) {
 		if (param->m_power > param->m_power_threshold)
 			return						(true);
@@ -731,7 +741,7 @@ bool CAI_Stalker::inside_anomaly		()
 	xr_vector<CObject*>::const_iterator	I = feel_touch.begin();
 	xr_vector<CObject*>::const_iterator	E = feel_touch.end();
 	for ( ; I != E; ++I) {
-		CCustomZone			*zone = smart_cast<CCustomZone*>(*I);
+		CCustomZone			*zone = (*I)&&(*I)->cast_game_object() ? (*I)->cast_game_object()->cast_custom_zone() : NULL;
 		if ( zone && (zone->restrictor_type() != RestrictionSpace::eRestrictorTypeNone) ) {
 			if (smart_cast<CRadioactiveZone*>(zone))
 				continue;
@@ -1141,7 +1151,7 @@ bool CAI_Stalker::critical_wound_external_conditions_suitable()
 	if (animation().non_script_need_update())
 		return						(false);
 
-	CWeapon							*active_weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon							*active_weapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : NULL;
 	if (!active_weapon)
 		return						(false);
 
