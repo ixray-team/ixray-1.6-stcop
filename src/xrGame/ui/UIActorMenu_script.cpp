@@ -79,12 +79,13 @@ void ActorMenuSetActor_script(CUIActorMenu* menu, CScriptGameObject* GO)
 CScriptGameObject* ActorMenuGetPartner_script(CUIActorMenu* menu)
 {
 	CInventoryOwner* io = menu->GetPartner();
-	if (io)
+	if (io != nullptr)
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(io);
+		CGameObject* GO = io->cast_game_object();
 		return GO->lua_game_object();
 	}
-	return (0);
+
+	return 0;
 }
 
 CScriptGameObject* ActorMenuGetInvbox_script(CUIActorMenu* menu)
@@ -100,11 +101,13 @@ CScriptGameObject* ActorMenuGetInvbox_script(CUIActorMenu* menu)
 
 CScriptGameObject* CUIActorMenu::GetCurrentItemAsGameObject()
 {
-	CGameObject* GO = smart_cast<CGameObject*>(CurrentIItem());
-	if (GO)
+	CGameObject* GO = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
+	if (GO != nullptr)
+	{
 		return GO->lua_game_object();
+	}
 
-	return (0);
+	return 0;
 }
 
 void CUIActorMenu::HighlightForEachInSlot(const luabind::functor<bool>& functor, u8 type, u16 slot_id)
@@ -193,7 +196,7 @@ void CUIActorMenu::TryRepairItem(CUIWindow* w, void* d)
 
 	LPCSTR item_name = item->m_section_id.c_str();
 
-	CEatableItem* EItm = smart_cast<CEatableItem*>(item);
+	CEatableItem* EItm = item->cast_eatable_item();
 	if (EItm)
 	{
 		bool allow_repair = !!READ_IF_EXISTS(pSettings, r_bool, item_name, "allow_repair", false);
