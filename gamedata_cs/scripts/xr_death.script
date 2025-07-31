@@ -47,6 +47,9 @@ function reset_death(npc, scheme, st, section)
 	local death_section = utils.cfg_get_string(st.ini, st.section_logic, "on_death", npc, false, "")
 --	printf("reset death for [%s]", npc:name())
 	if death_section then
+		if not st.ini:section_exist(death_section) then
+			abort("There is no section [%s] for npc [%s]", death_section, npc:name())
+		end
 --		printf("reset death, section present")
 		local tmp = utils.cfg_get_string(st.ini, death_section, "on_info", npc, false, "")
 --		printf("tmp [%s]", tostring(tmp))
