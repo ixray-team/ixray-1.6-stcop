@@ -43,9 +43,8 @@ void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected
 		Fvector			P;	P.mad(v1,vdir,time);
 		VERIFY(inlc_global_data());
 		VERIFY(inlc_global_data()->RCAST_Model());
+		LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
 
-		LightPoint		(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_nosun()?LP_dont_sun:0)|LP_DEFAULT, skip); //.
-		
 		C.mul		(.5f);
 		lm.surface	[_y*lm.width+_x]._set	(C);
 		lm.marker	[_y*lm.width+_x]		= 255;
@@ -97,32 +96,42 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 					Fvector		wP,wN,B;
 					for (UVtri** it=&*space.begin(); it!=&*space.end(); it++)
 					{
-						if ((*it)->isInside(P,B)) {
+						if ((*it)->isInside(P,B)) 
+						{
 							// We found triangle and have barycentric coords
 							Face	*F	= (*it)->owner;
 							Vertex	*V1 = F->v[0];
 							Vertex	*V2 = F->v[1];
 							Vertex	*V3 = F->v[2];
-							wP.from_bary(V1->P,V2->P,V3->P,B);
-//. не нужно использовать	if (F->Shader().flags.bLIGHT_Sharp)	{ wN.set(F->N); }
-//							else								
+							wP.from_bary(V1->P,V2->P,V3->P,B);							
+							
 							{ 
-								wN.from_bary(V1->N,V2->N,V3->N,B);	exact_normalize	(wN); 
-								wN.add		(F->N);					exact_normalize	(wN);
+								wN.from_bary(V1->N,V2->N,V3->N,B);
+								exact_normalize	(wN); 
+								wN.add		(F->N);				
+								exact_normalize	(wN);
 							}
-							try {
+
+							try 
+							{
 								VERIFY(inlc_global_data());
 								VERIFY(inlc_global_data()->RCAST_Model());
-								LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, (inlc_global_data()->b_nosun()?LP_dont_sun:0)|LP_UseFaceDisable, F); //.
+								u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable;
+								LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F); 
+
 								Fcount		+= 1;
-							} catch (...) {
+							} 
+							catch (...)
+							{
 								clMsg("* ERROR (CDB). Recovered. ");
 							}
 							break;
 						}
 					}
 				} 
-			} catch (...) {
+			}
+			catch (...)
+			{
 				clMsg("* ERROR (Light). Recovered. ");
 			}
 			
