@@ -67,12 +67,11 @@ public:
 	void				Init_StrInfoItem		(CUIXml& xml_doc, LPCSTR item_str, UIItemType type);
 	void				Init_IconInfoItem		(CUIXml& xml_doc, LPCSTR item_str, UIItemType type);
 
-	void				InitCharacter			(u16 id);
+	//void				InitCharacter			(u16 id);
 	void				ClearInfo				();
 
-	void				InitCharacterMP			(CInventoryOwner* invOwner);
-
-	void				InitCharacterMP			(LPCSTR player_name, LPCSTR player_icon );
+	void				InitCharacter			(CInventoryOwner* invOwner);
+	void				InitCharacter			(LPCSTR player_name, LPCSTR player_icon );
 
 	virtual void		Update					();
 
