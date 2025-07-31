@@ -1176,6 +1176,78 @@ bool IsTacticalHud()
 	return false;
 }
 
+CScriptGameObject* get_object_by_client(u32 clientID)
+{
+	xrClientData* xrCData = Level().Server->ID_to_client(clientID);
+	if (!xrCData || !xrCData->owner) return NULL;
+
+	CGameObject* pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(xrCData->owner->ID));
+	if (!pGameObject)
+		return NULL;
+
+	return pGameObject->lua_game_object();
+}
+
+int get_local_player_id()
+{
+	return Game().local_player->GameID;
+}
+
+int get_g_actor_id()
+{
+	if (!Actor())
+		return -1;
+
+	return Actor()->ID();
+}
+
+void send_script_event_to_client(u32 cleintId, NET_Packet& P)
+{
+	R_ASSERT2(OnServer(), "Avaliable only on server");
+	Level().Server->SendTo(ClientID(cleintId), P, net_flags(TRUE, TRUE));
+}
+
+void send_script_event_broadcast(NET_Packet& P)
+{
+	R_ASSERT2(OnServer(), "Avaliable only on server");
+	Level().Server->SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+}
+
+ScriptEvent* get_last_server_event()
+{
+	return Level().Server->GetLastServerScriptEvent();
+}
+
+void pop_last_server_event()
+{
+	Level().Server->PopLastServerScriptEvent();
+}
+
+u32 get_size_server_events()
+{
+	return Level().Server->GetSizeServerScriptEvent();
+}
+
+void send_script_event_to_server(NET_Packet& P)
+{
+	Level().Send(P, net_flags(TRUE, TRUE));
+}
+
+NET_Packet* get_last_client_event()
+{
+	return Level().GetLastClientScriptEvent();
+}
+
+void pop_last_client_event()
+{
+	Level().PopLastClientScriptEvent();
+}
+
+u32 get_size_client_events()
+{
+	return Level().GetSizeClientScriptEvent();
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1331,7 +1403,12 @@ void CLevel::script_register(lua_State *L)
 		def("electronics_apply", &IsElectronicsApply),
 		def("get_parameter_upgraded_int", &GetParameterUpgradedInt),
 		def("valid_saved_game_int", &ValidSavedGameInt),
-		def("is_tactical_hud", &IsTacticalHud)
+		def("is_tactical_hud", &IsTacticalHud),
+
+		// new for fmp
+		def("get_object_by_client", &get_object_by_client),
+		def("get_local_player_id", &get_local_player_id),
+		def("get_g_actor_id", &get_g_actor_id)
 	],
 	
 	module(L,"nearest")
@@ -1411,6 +1488,21 @@ void CLevel::script_register(lua_State *L)
 		def("community_relation",				&g_get_community_relation),
 		def("set_community_relation",			&g_set_community_relation),
 		def("get_general_goodwill_between",		&g_get_general_goodwill_between)
+	];
+	
+	module(L, "script_events")
+	[
+		def("send_to_server", &send_script_event_to_server),
+		def("send_to_client", &send_script_event_to_client),
+		def("send_broadcast", &send_script_event_broadcast),
+
+		def("get_last_client_event", &get_last_client_event),
+		def("pop_last_client_event", &pop_last_client_event),
+		def("get_size_client_events", &get_size_client_events),
+
+		def("get_last_server_event", &get_last_server_event),
+		def("pop_last_server_event", &pop_last_server_event),
+		def("get_size_server_events", &get_size_server_events)
 	];
 
 	module(L,"game")

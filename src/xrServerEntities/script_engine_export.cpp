@@ -17,6 +17,7 @@
 #ifdef XRSE_FACTORY_EXPORTS
 
 #else
+#	include "FreeMP/ScriptEvents.h"
 #	include "PHSimpleCalls.h"
 #	include "eatable_item.h"
 #	include "RadioactiveZone.h"
@@ -262,5 +263,6 @@ void export_classes	(lua_State *L)
 	CALifeHumanBrain::script_register(L);
 	CGameGraph::script_register(L);
 	CUIActorMenu::script_register(L);
+	ScriptEvent::script_register(L);
 #endif
 }

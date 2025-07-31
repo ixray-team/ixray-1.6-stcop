@@ -469,6 +469,15 @@ void CLevel::ClientReceive()
 			{
 				OnSecureMessage			(*P);
 			}break;
+		case M_SCRIPT_EVENT:
+		{
+			if (OnClient())
+			{
+				script_client_events.push_back(NET_Packet());
+				NET_Packet* NewPacket = &(script_client_events.back());
+				CopyMemory(NewPacket, &(*P), sizeof(NET_Packet));
+			}
+		}break;
 		}
 
 		net_msg_Release();
@@ -478,7 +487,24 @@ void CLevel::ClientReceive()
 	if (g_bDebugEvents) ProcessGameSpawns();
 }
 
-void				CLevel::OnMessage				(void* data, u32 size)
+void CLevel::OnMessage(void* data, u32 size)
 {	
 	IPureClient::OnMessage(data, size);	
-};
+}
+
+
+NET_Packet* CLevel::GetLastClientScriptEvent()
+{
+	R_ASSERT2(script_client_events.size() > 0, "empty script client events");
+	return &(script_client_events.back());
+}
+
+void CLevel::PopLastClientScriptEvent()
+{
+	script_client_events.pop_back();
+}
+
+u32 CLevel::GetSizeClientScriptEvent()
+{
+	return script_client_events.size();
+}
