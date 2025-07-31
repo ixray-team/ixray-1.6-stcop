@@ -364,4 +364,13 @@
 	<string id="st_creating_new_game">
 		<text>Creating new game</text>
 	</string>
+	<string id="ui_mm_lang">
+		<text>Language</text>
+	</string>
+    <string id="rus">
+		<text>Russian</text>
+	</string>
+	<string id="eng">
+		<text>English</text>
+	</string>
 </string_table>
