@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-using namespace DirectX;
-
 #include "../xrCore/Collision/Frustum.h"
 
 #pragma warning(disable:4995)

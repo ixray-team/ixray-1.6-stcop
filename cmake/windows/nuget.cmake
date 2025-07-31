@@ -49,9 +49,6 @@ set(SND_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
 # FreeType
 set(ENGINE_FREETYPE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeType.2.13.2/)
 
-# DxMath
-set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2024.2.15.1/)
-
 # Steam Sockets
 set(STEAM_SOCKETS_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.GameNetworkingSockets.Vcpkg.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.1.4.1)
 
@@ -82,12 +79,6 @@ set(SPEEXDSP ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.SpeexDsp.Runtimes.wi
 
 # OPUS
 set(OPUS ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Opus.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2024.5.22-open)
-
-# Mimalloc
-set(MIMALLOC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Mimalloc.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.1.7.3)
-if("${NUGET_PACKAGE_PLATFORM}" MATCHES "(x86)")
-    set(MIMALLOC_POSTFIX "32")
-endif()
 
 # LZO
 set(LZO ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Lzo.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.10.0)
