@@ -72,12 +72,12 @@ void  CScriptGameObject::AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCST
 
 void _AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
 {
-	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(!pGameSP) return;
+	 
+	if(!CurrentGameUI()) return;
 
-	if(pGameSP->TalkMenu->IsShown())
+	if(CurrentGameUI()->TalkMenu->IsShown())
 	{
-		pGameSP->TalkMenu->AddIconedMessage( caption, text, texture_name, templ_name ? templ_name : "iconed_answer_item" );
+		CurrentGameUI()->TalkMenu->AddIconedMessage( caption, text, texture_name, templ_name ? templ_name : "iconed_answer_item" );
 	}
 }
 
@@ -753,27 +753,26 @@ void  CScriptGameObject::SwitchToTrade		()
 	CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
 
 	//только если находимся в режиме single
-	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(!pGameSP) return;
+ 	if(!CurrentGameUI()) return;
 
-	if(pGameSP->TalkMenu->IsShown())
+	if(CurrentGameUI()->TalkMenu->IsShown())
 	{
-		pGameSP->TalkMenu->SwitchToTrade();
+		CurrentGameUI()->TalkMenu->SwitchToTrade();
 	}
 }
 
 void  CScriptGameObject::SwitchToUpgrade		()
 {
-	CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
+	CActor* pActor = smart_cast<CActor*>(&object());	
+	if(!pActor)
+		return; 
 
 	//только если находимся в режиме single
-	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(!pGameSP) return;
+ 	if(!CurrentGameUI()) 
+		return;
 
-	if(pGameSP->TalkMenu->IsShown())
-	{
-		pGameSP->TalkMenu->SwitchToUpgrade();
-	}
+	if(CurrentGameUI()->TalkMenu->IsShown())
+ 		CurrentGameUI()->TalkMenu->SwitchToUpgrade();
 }
 
 void  CScriptGameObject::SwitchToTalk		()
