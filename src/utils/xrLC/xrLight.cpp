@@ -9,11 +9,7 @@
 #include "../../xrCore/xrSyncronize.h"
 
 #include "../xrLC_Light/mu_model_light.h"
-xrCriticalSection	task_CS
-#ifdef PROFILE_CRITICAL_SECTIONS
-	(MUTEX_PROFILE_ID(task_C_S))
-#endif // PROFILE_CRITICAL_SECTIONS
-;
+xrCriticalSection task_CS;
 
 #include <random>
 
