@@ -13,6 +13,8 @@ public:
 	void					SetSystemDepends	(ESystemDepends val) {m_dep = val;}
 
 	static CUIOptionsManager* GetOptionsManager	() {return &m_optionsManager;}
+	IC		LPCSTR			GetEntry			() const { return m_entry.c_str(); }
+			xr_token*		GetOptToken			();
 
 	virtual	void			OnMessage			(LPCSTR message);
 
@@ -41,7 +43,6 @@ protected:
 			void			SaveOptBoolValue	(bool val);
 			// token
 			LPCSTR			GetOptTokenValue	();
-			xr_token*		GetOptToken			();
 
 	shared_str				m_entry;
 	ESystemDepends			m_dep;
