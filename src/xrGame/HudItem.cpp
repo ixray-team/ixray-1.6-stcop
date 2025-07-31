@@ -500,11 +500,7 @@ bool CHudItem::HudAnimationExist(const shared_str& anim_name)
 	auto HID = HudItemData();
 	if (HID)
 	{
-		string256 anim_name_r;
-		bool is_16x9 = UI().is_widescreen();
-		u16 attach_place_idx = HID->m_attach_place_idx;
-		xr_sprintf(anim_name_r, "%s%s", *anim_name, ((attach_place_idx == 1) && is_16x9) ? "_16x9" : "");
-		return HID->m_hand_motions.has_motion(anim_name_r);
+		return HID->m_hand_motions.has_motion(anim_name);
 	}
 	else
 	{
