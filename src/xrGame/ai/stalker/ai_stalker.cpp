@@ -123,7 +123,9 @@ void CAI_Stalker::reinit			()
 //	movement().reinit				();
 
 	//загрузка спецевической звуковой схемы для сталкера согласно m_SpecificCharacter
-	sound().sound_prefix			(SpecificCharacter().sound_voice_prefix());
+	sound().sound_prefix			( //SpecificCharacter().sound_voice_prefix());
+		READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), "voice_prefix", SpecificCharacter().sound_voice_prefix())
+	);
 
 	LoadSounds						(*cNameSect());
 
