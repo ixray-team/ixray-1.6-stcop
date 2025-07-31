@@ -88,14 +88,11 @@ set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
 
 include("${CMAKE_MODULE_PATH}/FindSDL3.cmake")
 
-# Configure dependencies
-set(RENDERDOC_API "${CMAKE_CURRENT_SOURCE_DIR}/src/3rd Party/renderdoc")
-
 # CMake targets
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # 3rd libraries
-add_subdirectory("src/3rd party")
+add_subdirectory("src/3rd-party")
 
 # Engine libraries
 add_subdirectory("src")

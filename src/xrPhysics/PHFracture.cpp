@@ -11,7 +11,7 @@
 
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
-#include "../3rd party/ode/ode/src/joint.h"
+#include "../3rd-party/ode/ode/src/joint.h"
 #pragma warning(default:4995)
 #pragma warning(default:4267)
 
@@ -380,7 +380,7 @@ bool CPHFracture::Update(CPHElement* element)
 			shoulder.sub(body_to_first, point);
 			first_force.add(force);
 			torque.crossproduct(shoulder, force);
-			second_torque.add(torque); // Возможно тут ошибка, torque может идти в first_torque?
+			second_torque.add(torque); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, torque пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ first_torque?
 		}
 	}
 
