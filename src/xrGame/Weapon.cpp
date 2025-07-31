@@ -2532,8 +2532,17 @@ bool CWeapon::unlimited_ammo()
 			return false;
 	}
 
-	return ((GameID() == eGameIDDeathmatch) && 
-			m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited)); 
+	if (EngineExternal().CallOfPripyatMode())
+	{
+		return ((GameID() == eGameIDDeathmatch) &&
+			m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited));
+	}
+	else
+	{
+		return ((GameID() != eGameIDArtefactHunt) &&
+			(GameID() != eGameIDCaptureTheArtefact) &&
+			m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited));
+	}
 			
 }
 bool CWeapon::infinite_fire()
