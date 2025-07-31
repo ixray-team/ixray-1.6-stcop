@@ -102,8 +102,8 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		Frect r							= rect_parent->GetWndRect();
 
         auto tempScroll = new CUIFixedScrollBar();
-        if (EngineExternal().CallOfPripyatMode()) // screw this. i'll just do check for CoP/CS mode
-            m_UIMainScrollH = tempScroll;
+		if (tempScroll->InitScrollBar(Fvector2().set(r.left + dx, r.bottom - sy), true))
+			m_UIMainScrollH = tempScroll;
         else
         {
             Msg("! Failed to init m_UIMainScrollH as FixedScrollBar, trying to initialize it as ScrollBar");
@@ -120,7 +120,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		AddCallback						(m_UIMainScrollH, SCROLLBAR_HSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollH));
 
 		tempScroll = new CUIFixedScrollBar();
-		if (EngineExternal().CallOfPripyatMode())
+		if (tempScroll->InitScrollBar(Fvector2().set(r.right - sx, r.top + dy), false))
 			m_UIMainScrollV = tempScroll;
 		else
 		{
