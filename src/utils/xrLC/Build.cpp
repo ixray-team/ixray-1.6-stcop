@@ -7,12 +7,13 @@
 #include "Build.h"
 
 #include "../xrLC_Light/xrMU_Model.h"
-
-
-
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrFace.h"
 #include "../xrLC_Light/mu_model_light.h"
+
+
+#include <../xrForms/CompilersUI.h>
+extern CompilersMode gCompilerMode;
 
 //#include "../xrLC_Light/lcnet_task_manager.h"
 void	calc_ogf		( xrMU_Model &	mu_model );
@@ -270,7 +271,10 @@ void CBuild::Run	(LPCSTR P)
 	FPU::m64r					();
 	Phase						("Building collision database (CFORM)...");
 	mem_Compact					();
-	BuildCForm					();
+
+
+ 	if (!gCompilerMode.LC_BackingDisabled)
+		BuildCForm					();
 	BuildPortals				(*fs);
 
 
@@ -295,8 +299,6 @@ void	CBuild::StartMu	()
   run_mu_light(  );
 }
 
-#include <../xrForms/CompilersUI.h>
-extern CompilersMode gCompilerMode;
 
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
