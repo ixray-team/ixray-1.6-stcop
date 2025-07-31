@@ -157,7 +157,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 						IReader* THM	= FS.r_open("$game_textures$",N_);
 
 						if (!THM) {
-							clMsg("cannot find thm: %s", N);
+							clMsg("cannot find thm: %s", N_);
 							is_thm_missing = true;
 							continue;
 						}
