@@ -1090,7 +1090,7 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
     UI->RedrawScene();
 }
 
-extern xr_string _item_to_select_after_edit;
+extern ECORE_API xr_string _item_to_select_after_edit;
 
 void CParticleTool::RealUpdateProperties()
 {
