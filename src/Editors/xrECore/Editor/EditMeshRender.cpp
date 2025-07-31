@@ -76,91 +76,77 @@ void CEditableMesh::UnloadRenderBuffers()
 	}
 }
 //----------------------------------------------------
-
 void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, LPBYTE& src_data)
 {
-	LPBYTE data 		= src_data;
-	u32 dwFVF 			= surf->_FVF();
-	u32 dwTexCnt 		= ((dwFVF&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
-	for (int fl_i=start_face; fl_i<start_face+num_face; fl_i++){
-		u32 f_index 	= face_lst[fl_i];
-		VERIFY			(f_index<m_FaceCount);
-		st_Face& face 	= m_Faces[f_index];
-		for (int k=0; k<3; k++){
-			st_FaceVert& fv = face.pv[k];
-			u32 norm_id = f_index*3+k;//fv.pindex;
-			VERIFY2(norm_id<m_FaceCount*3,"Normal index out of range.");
-			VERIFY2(fv.pindex<(int)m_VertCount,"Point index out of range.");
-			Fvector& PN = m_VertexNormals == nullptr ? m_Normals[norm_id] : m_VertexNormals[norm_id];
-			Fvector& V 	= m_Vertices[fv.pindex];
-			int sz;
-			if (dwFVF&D3DFVF_XYZ){
-				sz=sizeof(Fvector);
-				VERIFY2(fv.pindex<int(m_VertCount),"- Face index out of range.");
-				CopyMemory(data,&V,sz);
-				data+=sz;
-			}
-			if (dwFVF&D3DFVF_NORMAL){
-				sz=sizeof(Fvector);
-				CopyMemory(data,&PN,sz);
-				data+=sz;
-			}
-			sz			= sizeof(Fvector2);
-			int offs 	= 0;
-			for (int t=0; t<(int)dwTexCnt; t++){
-				VERIFY2((t+offs)<(int)m_VMRefs[fv.vmref].count,"- VMap layer index out of range");
-				st_VMapPt& vm_pt 	= m_VMRefs[fv.vmref].pts[t+offs];
-				if (m_VMaps[vm_pt.vmap_index]->type!=vmtUV){
-					offs++;
-					t--;
-					continue;
-				}
-				VERIFY2	(vm_pt.vmap_index<int(m_VMaps.size()),"- VMap index out of range");
-				st_VMap* vmap		= m_VMaps[vm_pt.vmap_index];
-				VERIFY2	(vm_pt.index<vmap->size(),"- VMap point index out of range");
-				CopyMemory(data,&vmap->getUV(vm_pt.index),sz); data+=sz;
-                //Msg("%3.2f, %3.2f",vmap->getUV(vm_pt.index).x,vmap->getUV(vm_pt.index).y);
-			}
-		}
-		if (surf->m_Flags.is(CSurface::sf2Sided)){
-			for (int k=2; k>=0; k--){
-				st_FaceVert& fv = face.pv[k];
-				size_t Idx = f_index * 3 + k;
-				Fvector& PN = m_VertexNormals == nullptr ? m_Normals[Idx] : m_VertexNormals[Idx];
-				int sz;
-				if (dwFVF&D3DFVF_XYZ){
-					sz=sizeof(Fvector);
-					VERIFY2(fv.pindex<int(m_VertCount),"- Face index out of range.");
-					CopyMemory(data,&m_Vertices[fv.pindex],sz);
-					data+=sz;
-				}
-				if (dwFVF&D3DFVF_NORMAL){
-					sz=sizeof(Fvector);
-					Fvector N; N.invert(PN);
-					CopyMemory(data,&N,sz);
-					data+=sz;
-				}
-				sz=sizeof(Fvector2);
-				int offs = 0;
-				for (int t=0; t<(int)dwTexCnt; t++){
-					VERIFY2((t+offs)<(int)m_VMRefs[fv.vmref].count,"- VMap layer index out of range");
-					st_VMapPt& vm_pt 	= m_VMRefs[fv.vmref].pts[t];
-					if (m_VMaps[vm_pt.vmap_index]->type!=vmtUV){
-						offs++;
-						t--;
-						continue;
-					}
-					VERIFY2(vm_pt.vmap_index<int(m_VMaps.size()),"- VMap index out of range");
-					st_VMap* vmap		= m_VMaps[vm_pt.vmap_index];
-					VERIFY2(vm_pt.index<vmap->size(),"- VMap point index out of range");
-					CopyMemory(data,&vmap->getUV(vm_pt.index),sz); data+=sz;
+	LPBYTE data = src_data;
+	u32 dwFVF = surf->_FVF();
+	u32 dwTexCnt = ((dwFVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
 
-//	                Msg("%3.2f, %3.2f",vmap->getUV(vm_pt.index).x,vmap->getUV(vm_pt.index).y);
-				}
+	auto ProcessVertex = [&](st_FaceVert& fv, u32 norm_id, bool invert_normal = false)
+	{
+		// Position
+		if (dwFVF & D3DFVF_XYZ)
+		{
+			VERIFY2(fv.pindex < (int)m_VertCount, "- Face index out of range.");
+			CopyMemory(data, &m_Vertices[fv.pindex], sizeof(Fvector));
+			data += sizeof(Fvector);
+		}
+
+		// Normal
+		if (dwFVF & D3DFVF_NORMAL)
+		{
+			Fvector PN = (m_VertexNormals == nullptr) ? m_Normals[norm_id] : m_VertexNormals[norm_id];
+			if (invert_normal) PN.invert();
+			CopyMemory(data, &PN, sizeof(Fvector));
+			data += sizeof(Fvector);
+		}
+
+		// UVs
+		int offs = 0;
+		for (int t = 0; t < (int)dwTexCnt; t++)
+		{
+			VERIFY2((t + offs) < (int)m_VMRefs[fv.vmref].count, "- VMap layer index out of range");
+			st_VMapPt& vm_pt = m_VMRefs[fv.vmref].pts[t + offs];
+
+			if (m_VMaps[vm_pt.vmap_index]->type != vmtUV)
+			{
+				offs++;
+				t--;
+				continue;
+			}
+
+			VERIFY2(vm_pt.vmap_index < (int)m_VMaps.size(), "- VMap index out of range");
+			st_VMap* vmap = m_VMaps[vm_pt.vmap_index];
+			VERIFY2(vm_pt.index < vmap->size(), "- VMap point index out of range");
+
+			CopyMemory(data, &vmap->getUV(vm_pt.index), sizeof(Fvector2));
+			data += sizeof(Fvector2);
+		}
+	};
+
+	for (int fl_i = start_face; fl_i < start_face + num_face; fl_i++)
+	{
+		u32 f_index = face_lst[fl_i];
+		VERIFY(f_index < m_FaceCount);
+		st_Face& face = m_Faces[f_index];
+
+		// Front side
+		for (int k = 0; k < 3; k++)
+		{
+			ProcessVertex(face.pv[k], f_index * 3 + k);
+		}
+
+		// Back side (if 2-sided)
+		if (surf->m_Flags.is(CSurface::sf2Sided))
+		{
+			for (int k = 2; k >= 0; k--) 
+			{
+				ProcessVertex(face.pv[k], f_index * 3 + k, true);
 			}
 		}
 	}
 }
+
 //----------------------------------------------------
 void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
 {
