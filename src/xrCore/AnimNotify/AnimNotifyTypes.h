@@ -6,7 +6,9 @@ enum class EAnimNotifyType
 {
     give_info,
     disable_info,
-    lua_functor
+    lua_functor,
+    play_sound,
+    play_particle
 };
 
 class IAnimNotify

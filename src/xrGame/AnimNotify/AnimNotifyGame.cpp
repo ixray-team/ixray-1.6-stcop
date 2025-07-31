@@ -13,6 +13,8 @@
 #include "AnimNotifyDisableInfo.h"
 #include "AnimNotifyGiveInfo.h"
 #include "AnimNotifyLuaFunctor.h"
+#include "AnimNotifyPlayParticle.h"
+#include "AnimNotifyPlaySound.h"
 #include "Level.h"
 #include "../xrCore/AnimNotify/AnimNotifyRegistry.h"
 
@@ -24,48 +26,21 @@ void CAnimNotifyHandler::TriggerNotify(IAnimNotifyMessage* notify)
 
 void CAnimNotifyHandler::Update()
 {
+    xrCriticalSectionGuard guard(NotifyQueue.Lock);
+    while (!NotifyQueue.Queue.empty())
     {
-        xrCriticalSectionGuard guard(GiveInfoQueue.Lock);
-        while (!GiveInfoQueue.Queue.empty())
-        {
-            shared_str Info = GiveInfoQueue.Queue.front();
-            GiveInfoQueue.Queue.pop();
-            GiveInfo(Info);
-        }
-    }
-    {
-        xrCriticalSectionGuard guard(DisableInfoQueue.Lock);
-        while (!DisableInfoQueue.Queue.empty())
-        {
-            shared_str Info = DisableInfoQueue.Queue.front();
-            DisableInfoQueue.Queue.pop();
-            DisableInfo(Info);
-        }
-    }
-    {
-        xrCriticalSectionGuard guard(FunctorQueue.Lock);
-        while (!FunctorQueue.Queue.empty())
-        {
-            shared_str Func = FunctorQueue.Queue.front();
-            FunctorQueue.Queue.pop();
-            ProcessFunctor(Func);
-        }
-    }
-    {
-        xrCriticalSectionGuard guard(NotifyQueue.Lock);
-        while (!NotifyQueue.Queue.empty())
-        {
-            auto Name = NotifyQueue.Queue.front();
-            NotifyQueue.Queue.pop();
-            ProcessNotify(Name);
-            xr_delete(Name);
-        }
+        auto Name = NotifyQueue.Queue.front();
+        NotifyQueue.Queue.pop();
+        ProcessNotify(Name);
+        xr_delete(Name);
     }
 }
 
 void CAnimNotifyHandler::ProcessNotify(IAnimNotifyMessage* Message)
 {
-    CAnimNotifyRegistry::GetInstance().get(Message->notify)->Execute(Message->render_visual, Message->bone_id);
+    auto Notify = CAnimNotifyRegistry::GetInstance().get(Message->notify);
+    R_ASSERT3(Notify, "Invalid notify", Message->notify.c_str());
+    Notify->Execute(Message->render_visual, Message->bone_id);
 }
 
 IAnimNotify* CAnimNotifyHandler::ConstructNotify(const EAnimNotifyType type)
@@ -84,6 +59,15 @@ IAnimNotify* CAnimNotifyHandler::ConstructNotify(const EAnimNotifyType type)
         {
             return new CAnimNotifyLuaFunctor();
         }
+    case EAnimNotifyType::play_sound:
+        {
+            return new CAnimNotifyPlaySound();
+        }
+    case EAnimNotifyType::play_particle:
+        {
+            return new CAnimNotifyPlayParticle();
+        }
     }
+    VERIFY2(false, "Unknown anim notify type");
     return nullptr;
 }
