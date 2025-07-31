@@ -1146,3 +1146,15 @@ void CWeaponMagazinedWGrenade::ForceUpdateHUD()
 	int ammo_elapsed = m_bGrenadeMode ? iAmmoElapsed : iAmmoElapsed2;
 	UpdateAmmoBones(m_ammo_bones_gl, ammo_elapsed, GetAmmoType(true));
 }
+
+const xr_vector<shared_str>& CWeaponMagazinedWGrenade::getAmmoTypes(bool for_grenade_mode) const
+{
+	if (for_grenade_mode)
+	{
+		return m_bGrenadeMode ? m_ammoTypes : m_ammoTypes2;
+	}
+	else
+	{
+		return m_bGrenadeMode ? m_ammoTypes2 : m_ammoTypes;
+	}
+}
