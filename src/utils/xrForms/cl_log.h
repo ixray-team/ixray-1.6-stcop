@@ -15,7 +15,7 @@ enum IterationStatus
 	Skip = 0,
 	InProgress,
 	Pending,
-	Complited,
+	Complete,
 };
 
 struct IterationPhase 
