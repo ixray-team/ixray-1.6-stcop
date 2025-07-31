@@ -62,7 +62,12 @@
 
 
   <question_item x="0" y="0" width="439" height="20" min_height="13">
-    <content_text x="0" y="2" width="425" height="20">
+
+    <num_text x="0" y="3" width="8" height="20">
+      <text font="letterica18" color="ui_2"/>
+    </num_text>
+
+    <content_text x="15" y="2" width="410" height="20">
       <text font="letterica18" color="ui_2"  align="l" complex_mode="1"/>
       <text_color>
         <t r="231" g="168" b="12"/>

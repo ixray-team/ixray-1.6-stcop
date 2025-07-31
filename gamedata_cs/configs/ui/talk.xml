@@ -61,13 +61,16 @@
   <questions_list x="44" y="45" width="544" height="139" always_show_scroll="0"/>
 
 
-  <question_item x="0" y="0" width="527" height="20" min_height="13">
-		<content_text x="0" y="3" width="510" height="20">
+    <question_item width="527" height="20" min_height="13">
+        <num_text x="0" y="3" width="10" height="20">
+            <text font="letterica18" color="ui_2"/>
+        </num_text>
+	<content_text x="20" y="3" width="490" height="20">
 		<text font="letterica18" color="ui_2"  align="l" complex_mode="1"/>
 		<text_color>
 			<t r="231" g="168" b="12"/> <e color="ui_2"/> <h color="ui_1"/>
-    </text_color>
-		</content_text>
+        </text_color>
+	</content_text>
 	</question_item>
 	
 	<other_answer_item x="0" y="0" width="527" height="0" min_height="13" bottom_footer="5">
