@@ -231,8 +231,8 @@ void player_hud::tune(Ivector _values)
 		if(idx)
 			_curr_dr	/= 20.0f;
 
-		Fvector& pos_ = (idx != 0) ? m_attached_items[hud_adj_item_idx]->m_measures.m_hands_attach[0] : m_attached_items[hud_adj_item_idx]->hands_attach_pos();
-		Fvector& rot_ = (idx != 0) ? m_attached_items[hud_adj_item_idx]->m_measures.m_hands_attach[1] : m_attached_items[hud_adj_item_idx]->hands_attach_rot();
+		Fvector& pos_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets[0][idx];
+		Fvector& rot_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets[1][idx];
 
 		if(hud_adj_mode==1)
 		{
