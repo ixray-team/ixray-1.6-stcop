@@ -323,18 +323,22 @@ void CActor::DisableInfoPortion(const char* infoPortion) {
 	this->TransferInfo(infoPortion, false);
 }
 
-void CActor::SetActorPosition(Fvector pos) {
-	CCar* car = smart_cast<CCar*>(this->Holder());
-	if (car)
+void CActor::SetActorPosition(Fvector pos)
+{
+	CHolderCustom* holder = Holder();
+	if (CCar* car = holder != nullptr ? holder->cast_car() : nullptr)
+	{
 		car->DoExit();
+	}
 
-	Fmatrix F = this->XFORM();
+	Fmatrix F = XFORM();
 	F.c = pos;
-	this->ForceTransform(F);
+	ForceTransform(F);
 }
 
-void CActor::SetActorDirection(float dir) {
-	this->cam_Active()->Set(dir, 0, 0);
+void CActor::SetActorDirection(float dir)
+{
+	this->cam_Active()->Set(dir, 0.0f, 0.0f);
 }
 
 void CActor::Load	(LPCSTR section )
@@ -2051,7 +2055,8 @@ void CActor::shedule_Update	(u32 DT)
 			}
 			else
 			{
-				if (m_pPersonWeLookingAt && pEntityAlive->g_Alive() && m_pPersonWeLookingAt->IsTalkEnabled() && !pEntityAlive->cast_actor()) {
+				if (m_pPersonWeLookingAt && pEntityAlive != nullptr && pEntityAlive->g_Alive() && m_pPersonWeLookingAt->IsTalkEnabled() && !pEntityAlive->cast_actor())
+				{
 					m_sDefaultObjAction = m_sCharacterUseAction;
 				}
 				else if ( pEntityAlive && !pEntityAlive->g_Alive() )
@@ -2091,7 +2096,7 @@ void CActor::shedule_Update	(u32 DT)
 				{
 					m_sDefaultObjAction = m_pVehicleWeLookingAt->m_sUseAction == 0 ? m_sCarCharacterUseAction : m_pVehicleWeLookingAt->m_sUseAction;
 
-					if (CCar* pCar = smart_cast<CCar*>(m_pVehicleWeLookingAt))
+					if (CCar* pCar = m_pVehicleWeLookingAt->cast_car())
 					{
 						if (pCar->TryTrunk())
 						{
@@ -2103,9 +2108,7 @@ void CActor::shedule_Update	(u32 DT)
 						}
 					}
 				}
-				else if (	m_pObjectWeLookingAt && 
-							m_pObjectWeLookingAt->cast_inventory_item() && 
-							m_pObjectWeLookingAt->cast_inventory_item()->CanTake() )
+				else if (m_pObjectWeLookingAt && m_pObjectWeLookingAt->cast_inventory_item() && m_pObjectWeLookingAt->cast_inventory_item()->CanTake())
 				{
 					m_sDefaultObjAction = m_sInventoryItemUseAction;
 				}

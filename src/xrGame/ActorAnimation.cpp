@@ -276,27 +276,37 @@ void SVehicleAnimCollection::Create(IKinematicsAnimated* V,u16 num)
 
 void CActor::steer_Vehicle(float angle)	
 {
-	if(!m_holder)		return;
+	CHolderCustom* holder = m_holder;
+	if (holder == nullptr)
+	{
+		return;
+	}
 
-	CCar* car = smart_cast<CCar*>(m_holder);
+	CCar* car = holder->cast_car();
 	u16 anim_type = car->DriverAnimationType();
-	IKinematicsAnimated* ka = smart_cast<IKinematicsAnimated*>(Visual());
+	IKinematicsAnimated* ka = Visual()->dcast_PKinematicsAnimated();
 	SVehicleAnimCollection& anims = m_vehicle_anims->m_vehicles_type_collections[anim_type];
-	if(angle==0.f)
+
+	if (angle == 0.0f)
 	{
 		ka->PlayCycle(anims.idles[0]);
 		ka->PlayCycle(anims.idles[1]);
 	}
-	else if(angle>0.f)
+	else if (angle > 0.0f)
+	{
 		ka->PlayCycle(anims.steer_right);
+	}
 	else
+	{
 		ka->PlayCycle(anims.steer_left);
+	}
 }
 
-void legs_play_callback		(CBlend *blend)
+void legs_play_callback(CBlend* blend)
 {
-	CActor					*object = (CActor*)blend->CallbackParam;
-	VERIFY					(object);
+	CActor* object = (CActor*)blend->CallbackParam;
+	VERIFY(object);
+
 	object->m_current_legs.invalidate();
 }
 
