@@ -324,6 +324,10 @@ void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
 	{
 		DragFunctor(Data.FileName, 0);
 	}
+	else if (Data.FileName.ends_with(".r16"))
+	{
+		DragFunctor(Data.FileName, 17);
+	}
 	else {
 		DragFunctor(Data.FileName, 6);
 	}
