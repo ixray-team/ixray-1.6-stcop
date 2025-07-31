@@ -130,10 +130,10 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
 	object->SetLoadedState();
 }
 
-bool EScene::RemoveObject( CCustomObject* object, bool bUndo, bool bDeleting )
+bool EScene::RemoveObject(CCustomObject* object, bool bUndo, bool bDeleting)
 {
-	VERIFY				(object);
-	VERIFY				(m_Valid);
+	VERIFY(object);
+	VERIFY(m_Valid);
 
 	switch (object->FClassID)
 	{
@@ -152,27 +152,31 @@ bool EScene::RemoveObject( CCustomObject* object, bool bUndo, bool bDeleting )
 		break;
 	}
 
-	ESceneCustomOTool* mt 	= GetOTool(object->FClassID);
-	if (mt&&mt->IsEditable())
+	ESceneCustomOTool* mt = GetOTool(object->FClassID);
+	if (mt && mt->IsEditable())
 	{
+		xrSRWLockGuard lock(PickUpLock);
 		mt->_RemoveObject(object);
 		// signal everyone "I'm deleting"
 //        if (object->ClassID==OBJCLASS_SCENEOBJECT)
 		{
-			m_ESO_SnapObjects.remove			(object);
+			m_ESO_SnapObjects.remove(object);
 
 			SceneToolsMapPairIt _I = m_SceneTools.begin();
 			SceneToolsMapPairIt _E = m_SceneTools.end();
-			for (; _I!=_E; _I++){
+			for (; _I != _E; _I++) {
 				ESceneToolBase* mt = _I->second;
 				if (mt)
 					mt->OnObjectRemove(object, bDeleting);
 			}
-			UpdateSnapList						();
+			UpdateSnapList();
 		}
-		UI->UpdateScene	();
+		UI->UpdateScene();
 	}
-	if (bUndo)		   	UndoSave();
+
+	if (bUndo)
+		UndoSave();
+
 	return true;
 }
 
@@ -294,11 +298,15 @@ void EScene::Clear(BOOL bEditableToolsOnly)
 	SceneToolsMapPairIt t_it = m_SceneTools.begin();
 	SceneToolsMapPairIt t_end = m_SceneTools.end();
 	for (; t_it != t_end; t_it++)
-		if (t_it->second && t_it->first != OBJCLASS_DUMMY) {
-			if (!bEditableToolsOnly || (bEditableToolsOnly && t_it->second->IsEditable())) {
+	{
+		if (t_it->second && t_it->first != OBJCLASS_DUMMY)
+		{
+			if (!bEditableToolsOnly || (bEditableToolsOnly && t_it->second->IsEditable()))
+			{
 				t_it->second->Clear();
 			}
 		}
+	}
 
 	Tools->ClearDebugDraw();
 
