@@ -1,9 +1,7 @@
-#include	"stdafx.h"
+#include "stdafx.h"
 #include	"r__pixel_calculator.h"
 #define		rt_dimensions 1024
 #include "FBasicVisual.h"
-
-using namespace DirectX;
 
 #ifndef USE_DX11
 void	r_pixel_calculator::begin	()
