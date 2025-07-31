@@ -12,7 +12,7 @@ using namespace PAPI;
 #define PARTICLE_ACTION_VERSION_MIN 0x0000
 #define PARTICLE_ACTION_VERSION_MAX 0x0001
 //---------------------------------------------------------------------------
-xr_token2					actions_token		[ ]={
+xr_token2 actions_token_impl [] = {
 	{ "Avoid",				"Steer particles away from a domain of space.", 			                PAAvoidID				},        
 	{ "Bounce",				"Bounce particles off a domain of space.",					                PABounceID				},        
 	{ "Copy VertexB",		"Set the secondary position from current position.",		                PACopyVertexBID			},        
@@ -1316,14 +1316,3 @@ void EPATurbulence::Render(const Fmatrix& parent)
 	for (StpVecIt it=pts.begin(); it!=pts.end(); it++)
 		DU_impl.DrawCross	(it->p, csz,csz,csz, csz,csz,csz, it->c.get(), false);
 }
-
-void PS::CPEDef::Render(const Fmatrix& parent)
-{
-	Fmatrix trans; trans.translate(parent.c);
-	for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); it++)
-		if ((*it)->flags.is(EParticleAction::flDraw|EParticleAction::flEnabled)){
-			PBool* ar = (*it)->_bool_safe("Allow Rotate");
-			(*it)->Render((ar&&ar->val)?parent:trans);
-		}
-}
-

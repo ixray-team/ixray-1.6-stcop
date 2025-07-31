@@ -349,7 +349,7 @@ public:
     virtual void 	Render		(const Fmatrix& parent);
 };
 
-extern xr_token2	actions_token[];
+extern ECORE_API xr_token2* actions_token;
 
 typedef EParticleAction* (*_CreateEAction)(PAPI::PActionEnum type);
 extern ECORE_API _CreateEAction 	pCreateEAction;
