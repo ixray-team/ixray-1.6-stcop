@@ -176,6 +176,19 @@ public:
 	Flags32 m_eDevicesFlags;
 	Flags32 m_eAnimationsFlags;
 
+	bool bDisablePrepareAnimation = false;
+
+	virtual bool WpnCanShoot() const { return false; }
+
+	struct jitter_params
+	{
+		float pos_amplitude = 0.0f;
+		float rot_amplitude = 0.0f;
+		float stop_time = 0.0f;
+	} m_jitter_params;
+
+	jitter_params& GetCurJitterParams() { return m_jitter_params; }
+
 protected:
 
 	IC		void				SetPending			(BOOL H)			{ m_huditem_flags.set(fl_pending, H);}
@@ -196,11 +209,6 @@ protected:
 	float						m_nearwall_target_hud_fov;
 	float						m_nearwall_speed_mod;
 	float						m_fHudFov;
-
-	float m_fLR_CameraFactor; // Фактор бокового наклона худа при ходьбе [-1; +1]
-	float m_fLR_MovingFactor; // Фактор бокового наклона худа при движении камеры [-1; +1]
-	float m_fLR_InertiaFactor; // Фактор горизонтальной инерции худа при движении камеры [-1; +1]
-	float m_fUD_InertiaFactor; // Фактор вертикальной инерции худа при движении камеры [-1; +1]
 
 	bool						m_bDisableBore;
 	bool						m_bSwitchSprint = false;
