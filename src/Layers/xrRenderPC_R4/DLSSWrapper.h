@@ -1,14 +1,14 @@
 #pragma once
 
-#include <nvsdk_ngx.h>
-#include <nvsdk_ngx_helpers.h>
+#include <ngx/nvsdk_ngx.h>
+#include <ngx/nvsdk_ngx_helpers.h>
 
 class DLSSWrapper
 {
 public:
     struct ContextParameters
     {
-        uint32_t flags = 0;
+        u32 flags = 0;
         Ivector2 renderSize = { 0, 0 };
         Ivector2 displaySize = { 0, 0 };
         ID3D11Device* device = nullptr;
