@@ -34,6 +34,6 @@ float4 main(v2p I) : SV_Target
     result.w *= I.fog;
     result.xyz *= I.fog;
 
-    return result;
+    return PushGamma(result);
 }
 
