@@ -111,7 +111,7 @@ protected:
     HANDLE			hMailSlot;
 
 public:
-    void ShowHint(const xr_string& s);
+    void ShowHint();
     bool ShowHint(const AStringVec& SS);
     void HideHint();
     void Invalidate();
