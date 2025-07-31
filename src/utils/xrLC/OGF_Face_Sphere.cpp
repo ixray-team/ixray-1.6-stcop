@@ -22,47 +22,60 @@ BOOL				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
 	return TRUE;
 }
 
+Fsphere CalculateSphere(xr_vector<Fvector>& V)
+{
+	Fsphere S2; Fbox bbox;
+	xr_vector<Fvector>::iterator	I;
+	bbox.invalidate();
+	for (auto I : V)
+		bbox.modify(I);
+	bbox.grow(EPS_L);
+	bbox.getsphere(S2.P, S2.R);
+
+	S2.R = -1;
+	for (auto I : V)
+	{
+		float d = S2.P.distance_to_sqr(I);
+		if (d > S2.R)
+			S2.R = d;
+	}
+	S2.R = _sqrt(_abs(S2.R));
+	return S2;
+}
+
+Fsphere CalculateMagic(xr_vector<Fvector>& V)
+{
+	Mgc::Sphere _S3 = Mgc::MinSphere( (u32) V.size(), (const Mgc::Vector3*)&*V.begin());
+
+	Fsphere	S3;
+	S3.P.set(_S3.Center().x, _S3.Center().y, _S3.Center().z);
+	S3.R = _S3.Radius();
+	return S3;
+}
+
 void				OGF_Base::CalcBounds	() 
 {
 	// get geometry
 	xr_vector<Fvector>		V;
-	xr_vector<Fvector>::iterator	I;
 	V.clear						();
 	V.reserve					(4096);
-	GetGeometry					(V);
-	FPU::m64					();
-
+	
+ 	GetGeometry					(V);
+	 
 	//se7kills (Merging Problems Need fix this)
 	if (V.size() < 3)
 		return; 
-
-	R_ASSERT					(V.size()>=3);
-
+	 
 	// 1: calc first variation
-	Fsphere	S1;
-	Fsphere_compute				(S1,&*V.begin(),(u32)V.size());
-	BOOL B1						= SphereValid(V,S1);
-
+	Fsphere	S1; Fsphere_compute				(S1,&*V.begin(),(u32)V.size());
 	// 2: calc ordinary algorithm (2nd)
-	Fsphere	S2;
-	bbox.invalidate				();
-	for (I=V.begin(); I!=V.end(); I++)	bbox.modify(*I);
-	bbox.grow					(EPS_L);
-	bbox.getsphere				(S2.P,S2.R);
-	S2.R = -1;
-	for (I=V.begin(); I!=V.end(); I++)	{
-		float d = S2.P.distance_to_sqr(*I);
-		if (d>S2.R) S2.R=d;
-	}
-	S2.R = _sqrt (_abs(S2.R));
-	BOOL B2						= SphereValid(V,S2);
-
+	Fsphere	S2 = CalculateSphere(V);
 	// 3: calc magic-fm
-	Mgc::Sphere _S3				= Mgc::MinSphere((u32)V.size(), (const Mgc::Vector3*) &*V.begin());
-	Fsphere	S3;
-	S3.P.set					(_S3.Center().x,_S3.Center().y,_S3.Center().z);
-	S3.R						= _S3.Radius();
-	BOOL B3						= SphereValid(V,S3);
+	Fsphere S3 = CalculateMagic(V);
+	 
+	BOOL B1 = SphereValid(V, S1);
+	BOOL B2 = SphereValid(V, S2);
+	BOOL B3 = SphereValid(V, S3);
 
 	// select best one
 	if (B1 && (S1.R<S2.R))

@@ -109,20 +109,7 @@ void	CBuild::LMaps					()
  
 void CBuild::Light()
 {
-//	g_params().m_lm_jitter_samples = 1;
- 
-//	g_params().m_lm_pixels_per_meter = 10;
-//	g_params().m_lm_rms = 4;
-//	g_params().m_lm_rms_zero = 4; 
-
-	//****************************************** Wait for MU
-	FPU::m64r();
-	/// Phase("LIGHT: Waiting for MU-thread...");
-	//mem_Compact();
-	//wait_mu_base();
-
-
-	//****************************************** Implicit
+ 	//****************************************** Implicit
 	{
 		FPU::m64r		();
 		Phase			("LIGHT: Implicit...");
@@ -149,6 +136,16 @@ void CBuild::Light()
 
 		xrPhase_MergeLM	();
 	}
+
+
+
+	//****************************************** Starting MU
+	FPU::m64r();
+	Phase("LIGHT: Starting MU...");
+	mem_Compact();
+	Light_prepare();
+	StartMu();
+
 }
 
 void CBuild::LightVertex	()
