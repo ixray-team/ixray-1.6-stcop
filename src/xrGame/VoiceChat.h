@@ -47,7 +47,7 @@ private:
 	void CheckAndClearPlayers(SOUND_PLAYERS& players);
 
 private:
-	byte m_buffer[1024];
+	u8 m_buffer[1024];
 
 	ISoundVoiceChat* m_pSoundVoiceChat = nullptr;
 	ISoundRecorder* m_pRecorder = nullptr;
