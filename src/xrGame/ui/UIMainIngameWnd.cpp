@@ -1166,17 +1166,19 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 	flags |= LA_ONLYALPHA;
 	flags |= LA_TEXTURECOLOR;
 
-	xr_map<EBoostParams, SBooster>::const_iterator b = influences.begin(), e = influences.end();
-	for(; b!=e; b++)
+	for (auto& booster : influences)
 	{
-		switch(b->second.m_type)
+		switch(booster.second.m_type)
 		{
 			case eBoostHpRestore: 
 				{
 				if (m_ind_boost_health)
 				{
 					m_ind_boost_health->Show(true);
-					if (b->second.fBoostTime <= 3.0f)
+					string16 buf = {};
+					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
+					m_ind_boost_health->TextItemControl()->SetText(buf);
+					if (booster.second.fBoostTime <= 3.0f)
 						m_ind_boost_health->SetColorAnimation(str_flag, flags);
 					else
 						m_ind_boost_health->ResetColorAnimation();
@@ -1188,7 +1190,10 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_power)
 				{
 					m_ind_boost_power->Show(true);
-					if (b->second.fBoostTime <= 3.0f)
+					string16 buf = {};
+					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
+					m_ind_boost_power->TextItemControl()->SetText(buf);
+					if (booster.second.fBoostTime <= 3.0f)
 						m_ind_boost_power->SetColorAnimation(str_flag, flags);
 					else
 						m_ind_boost_power->ResetColorAnimation();
@@ -1200,7 +1205,10 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_rad)
 				{
 					m_ind_boost_rad->Show(true);
-					if (b->second.fBoostTime <= 3.0f)
+					string16 buf = {};
+					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
+					m_ind_boost_rad->TextItemControl()->SetText(buf);
+					if (booster.second.fBoostTime <= 3.0f)
 						m_ind_boost_rad->SetColorAnimation(str_flag, flags);
 					else
 						m_ind_boost_rad->ResetColorAnimation();
@@ -1212,7 +1220,10 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_wound)
 				{
 					m_ind_boost_wound->Show(true);
-					if (b->second.fBoostTime <= 3.0f)
+					string16 buf = {};
+					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
+					m_ind_boost_wound->TextItemControl()->SetText(buf);
+					if (booster.second.fBoostTime <= 3.0f)
 						m_ind_boost_wound->SetColorAnimation(str_flag, flags);
 					else
 						m_ind_boost_wound->ResetColorAnimation();
@@ -1224,7 +1235,10 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_weight)
 				{
 					m_ind_boost_weight->Show(true);
-					if (b->second.fBoostTime <= 3.0f)
+					string16 buf = {};
+					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
+					m_ind_boost_weight->TextItemControl()->SetText(buf);
+					if (booster.second.fBoostTime <= 3.0f)
 						m_ind_boost_weight->SetColorAnimation(str_flag, flags);
 					else
 						m_ind_boost_weight->ResetColorAnimation();
@@ -1237,7 +1251,10 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_radia)
 				{
 					m_ind_boost_radia->Show(true);
-					if (b->second.fBoostTime <= 3.0f)
+					string16 buf = {};
+					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
+					m_ind_boost_radia->TextItemControl()->SetText(buf);
+					if (booster.second.fBoostTime <= 3.0f)
 						m_ind_boost_radia->SetColorAnimation(str_flag, flags);
 					else
 						m_ind_boost_radia->ResetColorAnimation();
@@ -1250,7 +1267,10 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_psy)
 				{
 					m_ind_boost_psy->Show(true);
-					if (b->second.fBoostTime <= 3.0f)
+					string16 buf = {};
+					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
+					m_ind_boost_psy->TextItemControl()->SetText(buf);
+					if (booster.second.fBoostTime <= 3.0f)
 						m_ind_boost_psy->SetColorAnimation(str_flag, flags);
 					else
 						m_ind_boost_psy->ResetColorAnimation();
@@ -1263,7 +1283,10 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_chem)
 				{
 					m_ind_boost_chem->Show(true);
-					if (b->second.fBoostTime <= 3.0f)
+					string16 buf = {};
+					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
+					m_ind_boost_chem->TextItemControl()->SetText(buf);
+					if (booster.second.fBoostTime <= 3.0f)
 						m_ind_boost_chem->SetColorAnimation(str_flag, flags);
 					else
 						m_ind_boost_chem->ResetColorAnimation();
