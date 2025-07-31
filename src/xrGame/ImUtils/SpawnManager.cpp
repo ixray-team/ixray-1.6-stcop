@@ -769,7 +769,7 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 
 					if (current_section_index < size_of_sections)
 					{
-						ImGui::TableSetColumnIndex(column);
+						ImGui::TableSetColumnIndex((int)column);
 
 						const auto& pair = sections[current_section_index];
 
