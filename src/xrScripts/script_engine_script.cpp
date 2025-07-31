@@ -54,6 +54,27 @@ CRenderDevice *get_device()
 {
 	return		(&Device);
 }
+
+void trigger_assert(const char* pStringFromLua)
+{
+	#ifdef DEBUG
+	R_ASSERT(false && "catch the thing!");
+	#else
+	MessageBoxA(nullptr,
+		"Report to wh1t3lord, because xr_parser failed and is different to "
+	    "xr_logic behaviour!",
+		"Report to wh1t3lord", 0);
+	#endif
+}
+
+void trigger_vs_log(const char* pStringFromLua)
+{
+	#ifdef WIN32
+	OutputDebugStringA(pStringFromLua);
+	#else
+	#endif
+}
+
 #endif
 
 LPCSTR user_name()
@@ -232,7 +253,9 @@ void CScriptEngine::script_register(lua_State *L)
 		def("try_load_file",					&TryLoadFile)
 #ifdef XRGAME_EXPORTS
 		,def("device",							&get_device),
-		def("TinyLog",							&MyLog)
+		def("TinyLog",							&MyLog),
+		def("trigger_assert",					&trigger_assert),
+		def("trigger_vs_log",					&trigger_vs_log)
 #endif // #ifdef XRGAME_EXPORTS
 	];
 
