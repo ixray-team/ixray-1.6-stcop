@@ -9,10 +9,20 @@ local intercepts =
 }
 
 function RegisterScriptCallback(name, func_or_userdata)
-	if (func_or_userdata == nil) then 
+	if (func_or_userdata == nil) then
+		SemiLog("! func_or_userdata == nil")
 		callstack()
 	end
-	
+
+	if (name == nil) then
+		SemiLog("! name == nil")
+		callstack()
+	end
+	if (intercepts == nil) then
+		SemiLog("! intercepts == nil")
+		callstack()
+	end
+
 	if (intercepts[name]) then
 		intercepts[name][func_or_userdata] = true
 	end
