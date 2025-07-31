@@ -32,14 +32,13 @@ using namespace ALife;
 
 class CLevelGameGraph;
 
-typedef struct tagSConnectionVertex {
+typedef struct tagSConnectionVertex 
+{
 	LPSTR		caConnectName;
 	GameGraph::_GRAPH_ID	tGraphID;
 	GameGraph::_GRAPH_ID	tOldGraphID;
 	u32			dwLevelID;
 } SConnectionVertex;
-
-extern  HWND logWindow;
 
 CGameGraph::CHeader				tGraphHeader;
 
