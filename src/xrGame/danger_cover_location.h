@@ -17,7 +17,7 @@ private:
 	const CCoverPoint		*m_cover;
 	
 public:
-	IC						CDangerCoverLocation	(const CCoverPoint *cover, u32 level_time, u32 interval, float radius, const squad_mask_type &mask = squad_mask_type(-1));
+	IC						CDangerCoverLocation	(const CCoverPoint *cover, u32 level_time, u32 interval, float radius, const u64 &mask = u64(-1));
 	virtual const Fvector	&position				() const;
 };
 
