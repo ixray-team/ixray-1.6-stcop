@@ -16,7 +16,7 @@
 // INTIALIZE GEOMETRY, SCENE QUALITY TYPE
 // Инициализация Основных Фишек Embree
 
-#define USE_TRANSPARENT_GEOM
+// #define USE_TRANSPARENT_GEOM
  
 // INTEL DATA STRUCTURE
 int LastGeometryID = RTC_INVALID_GEOMETRY_ID;
@@ -148,7 +148,7 @@ float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, voi
 	/// Непрозрачные чекаем
 
 	RTCRay ray;
-	Embree::SetRay1(ray, P, N, 0.f, range);
+	Embree::SetRay1(ray, P, N, 0.001f, range);
 
 	RTCOccludedArguments args;
 	rtcInitOccludedArguments(&args);
