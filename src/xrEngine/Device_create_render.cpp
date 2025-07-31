@@ -25,7 +25,6 @@ void* SwapChainRTV = nullptr;
 extern ENGINE_API BOOL g_appLoaded;
 void DrawMainViewport()
 {
-#ifndef _EDITOR
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -51,19 +50,16 @@ void DrawMainViewport()
 	ImGui::PopStyleVar();
 	ImGui::PopStyleVar();
 	ImGui::PopStyleVar();
-#endif
 }
 
 void free_vid_mode_list()
 {
-#ifndef _EDITOR
 	for (int i = 0; vid_mode_token[i].name; i++) {
 		xr_free(vid_mode_token[i].name);
 	}
 
 	xr_free(vid_mode_token);
 	vid_mode_token = nullptr;
-#endif
 }
 
 struct _uniq_mode
@@ -93,7 +89,6 @@ bool sort_vid_mode(DXGI_MODE_DESC& left, DXGI_MODE_DESC& right) {
 
 void fill_vid_mode_list()
 {
-#ifndef _EDITOR
 	if (vid_mode_token != nullptr)		return;
 	xr_vector<LPCSTR>	_tmp;
 	xr_vector<DXGI_MODE_DESC>	modes;
@@ -158,7 +153,6 @@ void fill_vid_mode_list()
 		Msg("[%s]", _tmp[i]);
 #endif // DEBUG
 	}
-#endif
 }
 
 bool CreateD3D9();
@@ -166,12 +160,10 @@ bool UpdateBuffersD3D9();
 void ResizeBuffersD3D9(u16 Width, u16 Height);
 void DestroyD3D9();
 
-#ifndef _EDITOR
 bool CreateD3D11();
 bool UpdateBuffersD3D11();
 void ResizeBuffersD3D11(u16 Width, u16 Height);
 void DestroyD3D11();
-#endif
 
 bool CRenderDevice::InitRenderDeviceEditor()
 {
@@ -192,7 +184,7 @@ bool CRenderDevice::InitRenderDeviceEditor()
 bool CRenderDevice::InitRenderDevice(APILevel API)
 {
 	fill_vid_mode_list();
-#ifndef _EDITOR
+
 	CImGuiManager& ImManager = CImGuiManager::Instance();
 
 	ImManager.PlatformNewFrameCallback = ImGui_ImplSDL3_NewFrame;
@@ -301,7 +293,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 	});
-#endif
+
 	switch (API) {
 
 	case APILevel::DX9:
@@ -334,24 +326,13 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 
 void CRenderDevice::DestroyRenderDevice()
 {
-#ifndef _EDITOR
 	CImGuiManager::Instance().Destroy();
-#endif
+
 	switch (CurrentAPILevel) 
 	{
-
-	case APILevel::DX9:
-		DestroyD3D9();
-		break;
-
-#ifndef _EDITOR
-	case APILevel::DX11:
-		DestroyD3D11();
-		break;
-#endif
-
-	default:
-		break;
+	case APILevel::DX9:  DestroyD3D9(); break;
+	case APILevel::DX11: DestroyD3D11(); break;
+	default: break;
 	}
 
 	free_vid_mode_list();
@@ -425,18 +406,11 @@ u32 CRenderDevice::GetTimeDeltaSafe(u32 starttime, u32 endtime)
 
 void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 {
-	switch (CurrentAPILevel) {
-
-	case APILevel::DX9:
-		ResizeBuffersD3D9(Width, Height);
-		break;
-#ifndef _EDITOR
-	case APILevel::DX11:
-		ResizeBuffersD3D11(Width, Height);
-		break;
-#endif
-	default:
-		break;
+	switch (CurrentAPILevel)
+	{
+	case APILevel::DX9:  ResizeBuffersD3D9(Width, Height); break;
+	case APILevel::DX11: ResizeBuffersD3D11(Width, Height); break;
+	default: break;
 	}
 
 	Device.TargetWidth = Width;
@@ -445,14 +419,16 @@ void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 
 void CRenderDevice::ResizeWindow(u32 width, u32 height)
 {
-	if (psDeviceFlags.is(rsFullscreen)) {
+	if (psDeviceFlags.is(rsFullscreen)) 
+	{
 		SDL_DisplayMode displayMode;
 		displayMode.w = psCurrentVidMode[0];
 		displayMode.h = psCurrentVidMode[1];
 		SDL_SetWindowFullscreenMode(g_AppInfo.Window, &displayMode);
 		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
 	}
-	else {
+	else 
+	{
 		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
 		SDL_SetWindowSize(g_AppInfo.Window, width, height);
 
@@ -478,10 +454,9 @@ RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
 void CRenderDevice::BeginRender()
 {
 	PROF_EVENT("CRenderDevice::BeginRender");
-#ifndef _EDITOR
+
 	CImGuiManager::Instance().NewPlatformFrame();
 	CImGuiManager::Instance().UpdateCapture();
-#endif
 }
 
 void CRenderDevice::EndRender()

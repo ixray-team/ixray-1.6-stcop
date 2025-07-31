@@ -21,10 +21,9 @@ using namespace DirectX;
 
 #include "../xrCore/FS_impl.h"
 #include "IGame_Persistent.h"
+
 ENGINE_API CRenderDevice* DevicePtr = nullptr;
-#ifndef _EDITOR
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
-#endif
 ENGINE_API CTimer loading_save_timer;
 ENGINE_API bool loading_save_timer_started = false;
 ENGINE_API xr_atomic_bool g_bRendering = false;
@@ -157,7 +156,6 @@ void CRenderDevice::callback(const u32& cb_time, const std::function<void()> &fu
 
 void CRenderDevice::on_idle		()
 {
-#ifndef _EDITOR
 	if (!b_is_Ready) {
 		Sleep(100);
 		return;
@@ -305,35 +303,33 @@ void CRenderDevice::on_idle		()
 	{
 		Sleep(1);
 	}
-#endif
 }
 
 bool quiting = false;
 
 void CRenderDevice::message_loop()
 {
-#ifndef _EDITOR
-	while (!quiting) {
+	while (!quiting)
+	{
 		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			if (!on_event(event)) {
+		while (SDL_PollEvent(&event))
+		{
+			if (!on_event(event))
+			{
 				quiting = true;
 				break;
 			}
 		}
 
-		if (quiting) {
-			break;
-		}
-
+		if (!quiting)
+		{
 		on_idle();
 	}
-#endif
+	}
 }
 
 void CRenderDevice::Run()
 {
-#ifndef _EDITOR
 	//	DUMP_PHASE;
 	g_bLoaded = FALSE;
 	Log("Starting engine...");
@@ -363,7 +359,6 @@ void CRenderDevice::Run()
 	secondary_tasks.wait();
 	details_task.wait();
 	ParticleWorkerCallback = nullptr;
-#endif
 }
 
 u32 app_inactive_time		= 0;
@@ -372,7 +367,6 @@ u32 app_inactive_time_start = 0;
 void ProcessLoading();
 void CRenderDevice::FrameMove()
 {
-#ifndef _EDITOR
 	PROF_EVENT("Render: Frame Move");
 	dwFrame			++;
 	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
@@ -405,7 +399,6 @@ void CRenderDevice::FrameMove()
 	Statistic->EngineTOTAL.Begin();
 	ProcessLoading();
 	Statistic->EngineTOTAL.End();
-#endif
 }
 
 void ProcessLoading()
@@ -419,68 +412,50 @@ ENGINE_API BOOL bShowPauseString = TRUE;
 CRenderDevice::CRenderDevice() :
 	m_pRender(0)
 {
-#ifndef _EDITOR
 	b_is_Active = true;
 	b_is_Ready = FALSE;
 	Timer.Start();
 	m_bNearer = FALSE;
-#endif
 };
 
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {
-#ifndef _EDITOR
 	static int snd_emitters_ = -1;
 
-	if (g_dedicated_server) {
+	if (g_dedicated_server)
 		return;
+
+	if (bOn)
+	{
+		if (!Paused())
+			bShowPauseString = TRUE;
+
+		if (bTimer && (!g_pGamePersistent || g_pGamePersistent->CanBePaused()))
+		{
+			g_pauseMngr.Pause(TRUE);
 	}
 
-	if(bOn)
+		if (bSound && ::Sound)
 	{
-		if(!Paused())						
-			bShowPauseString				= 
-#ifdef DEBUG
-				!xr_strcmp(reason, "li_pause_key_no_clip")?	FALSE:
-#endif // DEBUG
-				TRUE;
-
-		if( bTimer && (!g_pGamePersistent || g_pGamePersistent->CanBePaused()) )
-		{
-			g_pauseMngr.Pause				(TRUE);
-#ifdef DEBUG
-			if(!xr_strcmp(reason, "li_pause_key_no_clip"))
-				TimerGlobal.Pause				(FALSE);
-#endif // DEBUG
-		}
-
-		if (bSound && ::Sound) {
 			snd_emitters_ =					::Sound->pause_emitters(true);
-#ifdef DEBUG
-//			Log("snd_emitters_[true]",snd_emitters_);
-#endif // DEBUG
 		}
-	}else
+	}
+	else
 	{
 		if (bTimer && g_pauseMngr.Paused())
 		{
 			fTimeDelta						= EPS_S + EPS_S;
-			g_pauseMngr.Pause				(FALSE);
+			g_pauseMngr.Pause(FALSE);
 		}
 		
-		if(bSound)
+		if (bSound)
 		{
-			if(snd_emitters_>0) //avoid crash
+			if (snd_emitters_ > 0)
 			{
 				snd_emitters_ =				::Sound->pause_emitters(false);
-			} else {
-#ifdef DEBUG
-				Log("Sound->pause_emitters underflow");
-#endif // DEBUG
 			}
 		}
 	}
-#endif
 }
 
 BOOL CRenderDevice::Paused()
@@ -490,7 +465,6 @@ BOOL CRenderDevice::Paused()
 
 void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 {
-#ifndef _EDITOR
 	BOOL NewState = (active && (!minimized)) ? TRUE : FALSE;
 	bool OldState = Device.b_is_Active;
 
@@ -523,7 +497,6 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 			SDL_ShowCursor();
 		}
 	}
-#endif
 }
 
 void CRenderDevice::AddSeqFrame(pureFrame* f, bool mt)
@@ -535,13 +508,12 @@ void CRenderDevice::AddSeqFrame(pureFrame* f, bool mt)
 
 }
 
-void	CRenderDevice::RemoveSeqFrame	( pureFrame* f )
+void CRenderDevice::RemoveSeqFrame(pureFrame* f)
 {
-	seqFrameMT.Remove	( f );
-	seqFrame.Remove		( f );
+	seqFrameMT.Remove(f);
+	seqFrame.Remove(f);
 }
 
-#ifndef _EDITOR
 CLoadScreenRenderer::CLoadScreenRenderer()
 :b_registered(false)
 {}
@@ -566,4 +538,3 @@ void CLoadScreenRenderer::OnRender()
 {
 	pApp->load_draw_internal();
 }
-#endif 

@@ -208,11 +208,7 @@ BOOL CTheoraStream::Load(const char* fname)
 {
 	VERIFY				(0==source);
 	// open source
-#ifdef _EDITOR
-	source				= FS.r_open(0,fname);
-#else
 	source				= FS.rs_open(0,fname);
-#endif
 	VERIFY				(source);
 
 	// parse headers
