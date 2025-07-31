@@ -2,7 +2,7 @@
 active = sr_idle@actor_on_level
 
 [sr_idle@actor_on_level]
-on_info = {=actor_on_level(escape) !black_screen +mar_story_go_to_escape_done} sr_idle@give_reach_trader_task_pre
+on_info = {=actor_on_level(escape) !black_screen +mar_story_go_to_escape_done} sr_idle@give_reach_trader_task_pre %=disable_level_changer(447)%
 
 [sr_idle@give_reach_trader_task_pre]
 on_game_timer = 20 | %=play_sound(esc_trader_start_pda:stalker:escape_trader_name)% sr_idle@give_reach_trader_task_pre_2
@@ -65,6 +65,13 @@ on_info = {+esc_take_habar_complete} sr_idle@go_garbage_task %=give_inited_task(
 on_info = {+esc_bring_habar_complete -gar_story_find_diggers_started} sr_idle@esc_gar %=give_inited_task(storyline:gar_story_find_diggers:csky) +gar_story_find_diggers_started%
 
 [sr_idle@esc_gar]
+on_timer = 5000 | {+esc_join_need_sound !is_faction_enemy_to_actor(stalker) !actor_in_stalker -gar_story_got_info_from_digger} sr_idle@esc_gar3 %=play_sound(esc_can_join_stalker:stalker:esc_leader_stalkerbase_name)%
+on_info = {+gar_story_got_info_from_digger} sr_idle@esc_gar2 %=enable_level_changer(447)%
+
+[sr_idle@esc_gar2]
 on_timer = 5000 | {+esc_join_need_sound !is_faction_enemy_to_actor(stalker) !actor_in_stalker} sr_idle@end %=play_sound(esc_can_join_stalker:stalker:esc_leader_stalkerbase_name)%
+
+[sr_idle@esc_gar3]
+on_info = {+gar_story_got_info_from_digger} sr_idle@end %=enable_level_changer(447)%
 
 [sr_idle@end]
