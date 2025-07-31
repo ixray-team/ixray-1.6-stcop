@@ -121,15 +121,50 @@ void dxFontRender::OnRender(CGameFont& owner)
 				float v1 = float(glyphInfo->TextureCoord.top) / fHeight;
 				float v2 = float(glyphInfo->TextureCoord.bottom) / fHeight;
 
-				vertexes->set(X, GlyphY2, clr2, u1, v2);
-				++vertexes;
-				vertexes->set(X, GlyphY, clr, u1, v1);
-				++vertexes;
-				vertexes->set(X2, GlyphY2, clr2, u2, v2);
-				++vertexes;
-				vertexes->set(X2, GlyphY, clr, u2, v1);
-				++vertexes;
-
+				if (str.gradientMode == CGameFont::gm_horz)
+				{ 
+					vertexes->set(X, GlyphY2, clr, u1, v2);
+					++vertexes;
+					vertexes->set(X, GlyphY, clr, u1, v1);
+					++vertexes;
+					vertexes->set(X2, GlyphY2, clr2, u2, v2);
+					++vertexes;
+					vertexes->set(X2, GlyphY, clr2, u2, v1);
+					++vertexes;
+				}
+				else if (str.gradientMode == CGameFont::gm_back)
+				{
+					vertexes->set(X, GlyphY2, clr2, u1, v2);
+					++vertexes;
+					vertexes->set(X, GlyphY, clr2, u1, v1);
+					++vertexes;
+					vertexes->set(X2, GlyphY2, clr, u2, v2);
+					++vertexes;
+					vertexes->set(X2, GlyphY, clr, u2, v1);
+					++vertexes;
+				}
+				else if (str.gradientMode == CGameFont::gm_down)
+				{
+					vertexes->set(X, GlyphY2, clr, u1, v2);
+					++vertexes;
+					vertexes->set(X, GlyphY, clr2, u1, v1);
+					++vertexes;
+					vertexes->set(X2, GlyphY2, clr, u2, v2);
+					++vertexes;
+					vertexes->set(X2, GlyphY, clr2, u2, v1);
+					++vertexes;
+				}
+				else
+				{
+					vertexes->set(X, GlyphY2, clr2, u1, v2);
+					++vertexes;
+					vertexes->set(X, GlyphY, clr, u1, v1);
+					++vertexes;
+					vertexes->set(X2, GlyphY2, clr2, u2, v2);
+					++vertexes;
+					vertexes->set(X2, GlyphY, clr, u2, v1);
+					++vertexes;
+				}
 				X = X2 + glyphInfo->Abc.abcC + owner.GetLetterSpacing();
 			}
 
