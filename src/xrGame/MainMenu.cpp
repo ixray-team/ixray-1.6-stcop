@@ -769,22 +769,7 @@ LPCSTR DelHyphens( LPCSTR c )
 
 bool CMainMenu::IsCDKeyIsValid()
 {
-	if (!m_pGameSpyFull || !m_pGameSpyFull->GetGameSpyHTTP()) return false;
-	string64 CDKey = "";
-	GetCDKey_FromRegistry(CDKey);
-
-#ifndef DEMO_BUILD
-	if (!xr_strlen(CDKey)) return true;
-#endif
-
-	int GameID = 0;
-	for (int i=0; i<4; i++)
-	{
-		m_pGameSpyFull->GetGameSpyHTTP()->xrGS_GetGameID(&GameID, i);
-		if (VerifyClientCheck(CDKey, unsigned short (GameID)) == 1)
-			return true;
-	};	
-	return false;
+	return true;
 }
 
 bool		CMainMenu::ValidateCDKey					()
