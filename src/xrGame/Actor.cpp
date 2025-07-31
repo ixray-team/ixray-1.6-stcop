@@ -481,7 +481,7 @@ if(!g_dedicated_server)
 }
 
 void CActor::legs_shift_callback(CBoneInstance* B) {
-	if(cam_active == eacFirstEye) {
+	if(Level().CurrentViewEntity() == this && cam_active == eacFirstEye) {
 		if(g_player_hud && g_player_hud->m_legs_model) {
 			B->mTransform.c.mad(B->mTransform.k, m_fLegs_shift);
 		}
