@@ -12,6 +12,8 @@ struct CompilersMode
 {
 	bool Silent = false;
 	bool Embree = true;
+
+	bool Embree_SplitBVH = false;
 	bool EmbreeBVHCompact = false;
 	bool EmbreeBVHRobust = false;
  	bool ClearTemp = false;
@@ -37,6 +39,8 @@ struct CompilersMode
 	bool IsOverloadedSettings = false;
 	int LC_JSampleMU = 6;
 	int LC_JSample = 9;
+	int ThreadsPerWork = 14;
+	
 	float LC_Pixels  = 10;
 
 	float WeldDistance = 0.005f;
@@ -60,6 +64,7 @@ struct CompilersMode
 	xr_vector<LevelFileData> Files;
 	ImFont* CompilerIconsFont;
 };
+
 void RenderMainUI();
 void RenderCompilerUI(int X, int Y);
 void InitializeUIData();
