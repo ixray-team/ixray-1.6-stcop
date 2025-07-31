@@ -235,7 +235,8 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	}
 	else
 	{
-		UIMainPdaFrame->AttachChild(m_pActiveDialog);
+		if (!UIMainPdaFrame->IsChild(m_pActiveDialog))
+			UIMainPdaFrame->AttachChild(m_pActiveDialog);
 		m_pActiveDialog->Show(true);
 
 		if (UITabControl->GetActiveId() != section)
