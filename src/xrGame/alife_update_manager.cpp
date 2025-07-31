@@ -69,6 +69,8 @@ CALifeUpdateManager::CALifeUpdateManager	(xrServer *server, LPCSTR section) :
 	m_objects_per_update	= pSettings->r_u32	(section,"objects_per_update");
 	m_changing_level		= false;
 	m_first_time			= true;
+
+	LoadCallbackGlobals(m_isOnBeforeChangeLevel, m_onBeforeChangeLevelName, "OnBeforeChangeLevel");
 }
 
 CALifeUpdateManager::~CALifeUpdateManager	()
@@ -180,11 +182,14 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	if (m_changing_level)
 		return						(false);
 
+	if (m_isOnBeforeChangeLevel)
+	{
 	luabind::functor<void>	funct;
-	if (ai().script_engine().functor("_G.CALifeUpdateManager__on_before_change_level", funct))
+		R_ASSERT2(ai().script_engine().functor(m_onBeforeChangeLevelName, funct), "failed to get OnBeforeChangeLevel callback");
 		funct(&net_packet);
+	}
 
-//	prepare_objects_for_save		();
+	//	prepare_objects_for_save		();
 	// we couldn't use prepare_objects_for_save since we need 
 	// get updates from client 
 	// then change actor server entity 

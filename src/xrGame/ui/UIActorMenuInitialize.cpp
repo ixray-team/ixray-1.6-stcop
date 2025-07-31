@@ -28,6 +28,16 @@ CUIActorMenu::CUIActorMenu()
 {
 	m_currMenuMode					= mmUndefined;
 	m_trade_partner_inventory_state = 0;
+
+	LoadCallbackGlobals(m_isItemDropped, m_onItemDropped, "OnItemDropped");
+	LoadCallbackGlobals(m_isCanMoveToPartner, m_onCanMoveToPartner, "OnCanMoveToPartner");
+	LoadCallbackGlobals(m_isItemFocusReceive, m_onItemFocusReceive, "OnItemFocusReceive");
+	LoadCallbackGlobals(m_isItemFocusLost, m_onItemFocusLost, "OnItemFocusLost");
+	LoadCallbackGlobals(m_isCanTake, m_onCanTake, "OnCanTake");
+	LoadCallbackGlobals(m_isCanDisassembleItem, m_onCanDisassembleItem, "OnCanDisassembleItem");
+	LoadCallbackGlobals(m_isQuestionDisassembleItem, m_onQuestionDisassembleItem, "OnQuestionDisassembleItem");
+	LoadCallbackGlobals(m_isEffectDisassemble, m_onEffectDisassemble, "OnEffectDisassemble");
+
 	Construct						();
 }
 

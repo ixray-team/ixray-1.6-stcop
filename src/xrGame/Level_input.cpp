@@ -177,9 +177,12 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			return;
 		}break;
 	case kALIFE_CMD: {
+		if (m_isStartAttack)
+		{
 		luabind::functor<void>	functor;
-		R_ASSERT2(ai().script_engine().functor("sim_combat.start_attack", functor), "failed to get sim_combat.start_attack functor");
+			R_ASSERT2(ai().script_engine().functor(m_onStartAttack, functor), "failed to get OnStartAttack functor");
 		functor();
+		}
 	}break;
 	};
 
@@ -195,11 +198,14 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	if ( game && game->OnKeyboardPress(get_binded_action(key)) )	return;
 
-	luabind::functor<bool>	funct;
-	if (ai().script_engine().functor("level_input.on_key_press", funct))
+	if (m_isKeyPress)
 	{
+		luabind::functor<bool>	funct;
+		R_ASSERT2(ai().script_engine().functor(m_onKeyPress, funct), "failed to get OnKeyPress functor");
+
 		if (funct(key, _curr))
 			return;
+		
 	}
 
 	if(_curr == kQUICK_SAVE && IsGameTypeSingle())
