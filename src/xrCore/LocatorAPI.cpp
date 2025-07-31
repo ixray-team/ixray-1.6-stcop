@@ -517,6 +517,13 @@ bool CLocatorAPI::Recurse(const char* path)
         xr_strcpy(sFile.name, Platform::RestorePath(ValidFileName.c_str()));
 		sFile.attrib = 0;
 
+		auto StatusFile = std::filesystem::symlink_status(CurrentFile);
+		if (StatusFile.type() == std::filesystem::file_type::not_found || !std::filesystem::exists(CurrentFile))
+		{
+			Msg("! Dead symlink: %s", ValidFileName.c_str());
+			continue;
+		}
+
 		if (CurrentFile.is_directory())
 			sFile.attrib |= _A_SUBDIR;
 		else 
