@@ -52,6 +52,14 @@ void CUICursor::InitInternal()
 	CUIXml xml_doc;
 	xml_doc.Load(CONFIG_PATH, UI_PATH, "cursor.xml");
 	m_static = UIHelper::CreateStatic(xml_doc, "cursor", nullptr);
+
+	bool native_scale = xml_doc.ReadAttribBool("cursor", 0, "native_scale", false);
+	if (native_scale)
+	{
+		m_static->SetWidth(m_static->GetWidth() * UI().get_current_kx());
+		m_static->SetHeight(m_static->GetHeight() * UI().get_current_kx());
+	}
+
 	m_static->SetWidth(m_static->GetWidth() * UI().get_current_kx());
 }
 
