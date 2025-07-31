@@ -194,93 +194,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="gar_bandit_leader_join_main">
-        <precondition>dialogs.actor_not_in_bandit</precondition>
-        <has_info>gar_bandit_join_talked_first</has_info>
-        <has_info>gar_quest_kill_smuggler_prepare</has_info>
-        <phrase_list>
-            <phrase id="5">
-                <text>gar_bandit_leader_join_main_5</text>
-                <precondition>dialogs.actor_not_in_dolg</precondition>
-                <precondition>dialogs.actor_not_in_freedom</precondition>
-                <has_info>gar_quest_destroy_flea_market_done</has_info>
-                <has_info>agru_open_story_door</has_info>
-                <next>51</next>
-                <next>52</next>
-            </phrase>
-            <phrase id="52">
-                <text>gar_bandit_leader_join_main_52</text>
-            </phrase>
-            <phrase id="3">
-                <text>gar_bandit_leader_join_main_3</text>
-                <precondition>dialogs.actor_in_freedom</precondition>
-                <has_info>gar_quest_destroy_flea_market_done</has_info>
-                <has_info>agru_open_story_door</has_info>
-                <next>51</next>
-                <next>52</next>
-            </phrase>
-            <phrase id="2">
-                <text>gar_bandit_leader_join_main_2</text>
-                <dont_has_info>agru_open_story_door</dont_has_info>
-                <give_info>gar_bandit_join_enemy_wait</give_info>
-                <has_info>gar_quest_destroy_flea_market_done</has_info>
-            </phrase>
-            <phrase id="511211">
-                <text>gar_bandit_leader_join_main_511211</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="511111">
-                <text>gar_bandit_leader_join_main_511111</text>
-                <next>51121</next>
-            </phrase>
-            <phrase id="51111">
-                <text>gar_bandit_leader_join_main_51111</text>
-                <next>511111</next>
-            </phrase>
-            <phrase id="5111">
-                <text>gar_bandit_leader_join_main_5111</text>
-                <next>51111</next>
-            </phrase>
-            <phrase id="4">
-                <text>gar_bandit_leader_join_main_4</text>
-                <precondition>dialogs.actor_in_dolg</precondition>
-                <has_info>gar_quest_destroy_flea_market_done</has_info>
-                <has_info>agru_open_story_door</has_info>
-                <next>51</next>
-                <next>52</next>
-            </phrase>
-            <phrase id="51">
-                <text>gar_bandit_leader_join_main_51</text>
-                <next>511</next>
-            </phrase>
-            <phrase id="511">
-                <text>gar_bandit_leader_join_main_511</text>
-                <next>5111</next>
-                <next>5112</next>
-            </phrase>
-            <phrase id="5112">
-                <text>gar_bandit_leader_join_main_5112</text>
-                <next>51121</next>
-            </phrase>
-            <phrase id="51121">
-                <text>gar_bandit_leader_join_main_51121</text>
-                <action>dialogs.actor_set_bandit</action>
-                <next>511211</next>
-            </phrase>
-            <phrase id="0">
-                <text>gar_bandit_leader_join_main_0</text>
-                <next>1</next>
-                <next>2</next>
-                <next>3</next>
-                <next>4</next>
-                <next>5</next>
-            </phrase>
-            <phrase id="1">
-                <text>gar_bandit_leader_join_main_1</text>
-                <dont_has_info>gar_quest_destroy_flea_market_done</dont_has_info>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="gar_bandit_leader_kill_digger_traitor_told">
         <has_info>gar_quest_kill_digger_traitor_told</has_info>
         <dont_has_info>gar_quest_kill_digger_traitor_started</dont_has_info>
@@ -840,136 +753,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="gar_bandit_robbery">
-        <phrase_list>
-            <phrase id="0">
-                <text />
-                <next>1</next>
-            </phrase>
-            <phrase id="1">
-                <text />
-                <next>11</next>
-            </phrase>
-            <phrase id="111">
-                <text>gar_bandit_robbery_111</text>
-                <action>sr_robbery.actor_give_money</action>
-                <next>1111</next>
-            </phrase>
-            <phrase id="11111">
-                <text>gar_bandit_robbery_11111</text>
-                <action>sr_robbery.robbery_end</action>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="1111">
-                <text>gar_bandit_robbery_1111</text>
-                <next>11111</next>
-            </phrase>
-            <phrase id="11">
-                <text>gar_bandit_robbery_11</text>
-                <next>111</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="gar_bandit_bookmaker_hello">
-        <phrase_list>
-            <phrase id="41">
-                <text>gar_bandit_bookmaker_hello_41</text>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="511">
-                <text>gar_bandit_bookmaker_hello_511</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="51">
-                <text>gar_bandit_bookmaker_hello_51</text>
-                <next>511</next>
-            </phrase>
-            <phrase id="11">
-                <text>gar_bandit_bookmaker_hello_11</text>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="1">
-                <text />
-                <precondition>minigame_dialogs.crowkiller_is_valiable</precondition>
-                <next>11</next>
-            </phrase>
-            <phrase id="4">
-                <text />
-                <precondition>minigame_dialogs.crowkiller_is_breaked</precondition>
-                <next>41</next>
-            </phrase>
-            <phrase id="5">
-                <text />
-                <precondition>minigame_dialogs.crowkiller_is_running</precondition>
-                <next>51</next>
-            </phrase>
-            <phrase id="6">
-                <text />
-                <precondition>minigame_dialogs.crowkiller_is_winned</precondition>
-                <precondition>minigame_dialogs.crowkiller_is_finished</precondition>
-                <precondition>minigame_dialogs.crowkiller_game_type_training</precondition>
-                <next>61</next>
-            </phrase>
-            <phrase id="2">
-                <text />
-                <precondition>minigame_dialogs.crowkiller_is_winned</precondition>
-                <precondition>minigame_dialogs.crowkiller_is_finished</precondition>
-                <precondition>minigame_dialogs.crowkiller_game_type_not_training</precondition>
-                <next>21</next>
-            </phrase>
-            <phrase id="3">
-                <text />
-                <precondition>minigame_dialogs.crowkiller_is_not_winned</precondition>
-                <precondition>minigame_dialogs.crowkiller_is_finished</precondition>
-                <next>31</next>
-            </phrase>
-            <phrase id="21">
-                <text>gar_bandit_bookmaker_hello_21</text>
-                <action>minigame_dialogs.transfer_winned_money</action>
-                <action>minigame_dialogs.set_crowkiller_valiable</action>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="61">
-                <text>gar_bandit_bookmaker_hello_61</text>
-                <action>minigame_dialogs.set_crowkiller_valiable</action>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="31">
-                <text>gar_bandit_bookmaker_hello_31</text>
-                <action>minigame_dialogs.set_crowkiller_valiable</action>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="1121">
-                <text>gar_bandit_bookmaker_hello_1121</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="112">
-                <text>gar_bandit_bookmaker_hello_112</text>
-                <next>1121</next>
-            </phrase>
-            <phrase id="111">
-                <text>gar_bandit_bookmaker_hello_111</text>
-                <next>1111</next>
-            </phrase>
-            <phrase id="1111">
-                <text>gar_bandit_bookmaker_hello_1111</text>
-            </phrase>
-            <phrase id="0">
-                <text />
-                <next>1</next>
-                <next>2</next>
-                <next>3</next>
-                <next>4</next>
-                <next>5</next>
-                <next>6</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="gar_bandit_bookmaker_quit">
         <phrase_list>
             <phrase id="1">
@@ -978,20 +761,6 @@
             </phrase>
             <phrase id="0">
                 <text>gar_bandit_bookmaker_quit_0</text>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="gar_bandit_leader_join_first">
-        <precondition>dialogs.actor_not_in_bandit</precondition>
-        <dont_has_info>gar_bandit_join_talked_first</dont_has_info>
-        <phrase_list>
-            <phrase id="1">
-                <text>gar_bandit_leader_join_first_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>gar_bandit_leader_join_first_0</text>
-                <give_info>gar_bandit_join_talked_first</give_info>
                 <next>1</next>
             </phrase>
         </phrase_list>
@@ -1787,21 +1556,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="gar_bandit_barman_bandit_secret">
-        <has_info>gar_quest_bandit_secret_started</has_info>
-        <dont_has_info>gar_quest_bandit_secret_done</dont_has_info>
-        <dont_has_info>gar_quest_bandit_secret_barman</dont_has_info>
-        <phrase_list>
-            <phrase id="1">
-                <text>gar_bandit_barman_bandit_secret_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>gar_bandit_barman_bandit_secret_0</text>
-                <give_info>gar_quest_bandit_secret_barman</give_info>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="gar_digger_leader_bring_money">
         <has_info>gar_quest_bring_money_told</has_info>
         <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
@@ -1927,8 +1681,276 @@
             </phrase>
             <phrase id="111">
                 <text>gar_digger_leader_bring_money_111</text>
+                <action>dialogs_garbage.reward_for_money</action>
                 <give_info>gar_quest_bring_money_done</give_info>
                 <next>1111</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="gar_bandit_robbery">
+        <phrase_list>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+            <phrase id="11111">
+                <text>gar_bandit_robbery_11111</text>
+                <action>sr_robbery.robbery_end</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="12111">
+                <text>gar_bandit_robbery_12111</text>
+                <action>sr_robbery.robbery_end</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="1111">
+                <text>gar_bandit_robbery_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="1211">
+                <text>gar_bandit_robbery_1211</text>
+                <next>12111</next>
+            </phrase>
+            <phrase id="111">
+                <text>gar_bandit_robbery_111</text>
+                <action>sr_robbery.actor_give_money</action>
+                <next>1111</next>
+            </phrase>
+            <phrase id="121">
+                <text>gar_bandit_robbery_121</text>
+                <action>sr_robbery.actor_give_money</action>
+                <next>1211</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <next>11</next>
+                <next>12</next>
+            </phrase>
+            <phrase id="11">
+                <text>gar_bandit_robbery_11</text>
+                <precondition>dialogs_garbage.always_false</precondition>
+                <next>111</next>
+            </phrase>
+            <phrase id="12">
+                <text>gar_bandit_robbery_12</text>
+                <next>121</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="gar_bandit_bookmaker_hello">
+        <phrase_list>
+            <phrase id="41">
+                <text>gar_bandit_bookmaker_hello_41</text>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="511">
+                <text>gar_bandit_bookmaker_hello_511</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="51">
+                <text>gar_bandit_bookmaker_hello_51</text>
+                <next>511</next>
+            </phrase>
+            <phrase id="11">
+                <text>gar_bandit_bookmaker_hello_11</text>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <precondition>minigame_dialogs.crowkiller_is_valiable</precondition>
+                <next>11</next>
+            </phrase>
+            <phrase id="4">
+                <text />
+                <precondition>minigame_dialogs.crowkiller_is_breaked</precondition>
+                <next>41</next>
+            </phrase>
+            <phrase id="5">
+                <text />
+                <precondition>minigame_dialogs.crowkiller_is_running</precondition>
+                <next>51</next>
+            </phrase>
+            <phrase id="6">
+                <text />
+                <precondition>minigame_dialogs.crowkiller_is_winned</precondition>
+                <precondition>minigame_dialogs.crowkiller_is_finished</precondition>
+                <precondition>minigame_dialogs.crowkiller_game_type_training</precondition>
+                <next>61</next>
+            </phrase>
+            <phrase id="2">
+                <text />
+                <precondition>minigame_dialogs.crowkiller_is_winned</precondition>
+                <precondition>minigame_dialogs.crowkiller_is_finished</precondition>
+                <precondition>minigame_dialogs.crowkiller_game_type_not_training</precondition>
+                <next>21</next>
+            </phrase>
+            <phrase id="3">
+                <text />
+                <precondition>minigame_dialogs.crowkiller_is_not_winned</precondition>
+                <precondition>minigame_dialogs.crowkiller_is_finished</precondition>
+                <next>31</next>
+            </phrase>
+            <phrase id="21">
+                <text>gar_bandit_bookmaker_hello_21</text>
+                <action>minigame_dialogs.transfer_winned_money</action>
+                <action>minigame_dialogs.set_crowkiller_valiable</action>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="61">
+                <text>gar_bandit_bookmaker_hello_61</text>
+                <action>minigame_dialogs.set_crowkiller_valiable</action>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="31">
+                <text>gar_bandit_bookmaker_hello_31</text>
+                <action>minigame_dialogs.set_crowkiller_valiable</action>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="1121">
+                <text>gar_bandit_bookmaker_hello_1121</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="112">
+                <text>gar_bandit_bookmaker_hello_112</text>
+                <next>1121</next>
+            </phrase>
+            <phrase id="111">
+                <text>gar_bandit_bookmaker_hello_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>gar_bandit_bookmaker_hello_1111</text>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+                <next>6</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="gar_bandit_leader_join_first">
+        <precondition>dialogs.actor_not_in_bandit</precondition>
+        <dont_has_info>gar_bandit_join_talked_first</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>gar_bandit_leader_join_first_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>gar_bandit_leader_join_first_0</text>
+                <give_info>gar_bandit_join_talked_first</give_info>
+                <give_info>gar_bandit_join_enemy_wait</give_info>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="gar_bandit_barman_bandit_secret">
+        <has_info>gar_quest_bandit_secret_started</has_info>
+        <dont_has_info>gar_quest_bandit_secret_done</dont_has_info>
+        <dont_has_info>gar_quest_bandit_secret_barman</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>gar_bandit_barman_bandit_secret_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>gar_bandit_barman_bandit_secret_0</text>
+                <give_info>gar_quest_bandit_secret_barman</give_info>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="gar_bandit_leader_join_main">
+        <precondition>dialogs.actor_not_in_bandit</precondition>
+        <has_info>gar_bandit_join_talked_first</has_info>
+        <has_info>gar_quest_kill_smuggler_prepare</has_info>
+        <phrase_list>
+            <phrase id="52">
+                <text>gar_bandit_leader_join_main_52</text>
+            </phrase>
+            <phrase id="511211">
+                <text>gar_bandit_leader_join_main_511211</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="51111">
+                <text>gar_bandit_leader_join_main_51111</text>
+                <next>511111</next>
+            </phrase>
+            <phrase id="5111">
+                <text>gar_bandit_leader_join_main_5111</text>
+                <next>51111</next>
+            </phrase>
+            <phrase id="4">
+                <text>gar_bandit_leader_join_main_4</text>
+                <precondition>dialogs.actor_in_dolg</precondition>
+                <has_info>gar_quest_destroy_flea_market_done</has_info>
+                <has_info>agru_open_story_door</has_info>
+                <next>51</next>
+                <next>52</next>
+            </phrase>
+            <phrase id="51">
+                <text>gar_bandit_leader_join_main_51</text>
+                <next>511</next>
+            </phrase>
+            <phrase id="511">
+                <text>gar_bandit_leader_join_main_511</text>
+                <next>5111</next>
+                <next>5112</next>
+            </phrase>
+            <phrase id="5112">
+                <text>gar_bandit_leader_join_main_5112</text>
+                <next>51121</next>
+            </phrase>
+            <phrase id="1">
+                <text>gar_bandit_leader_join_main_1</text>
+                <dont_has_info>gar_quest_destroy_flea_market_done</dont_has_info>
+            </phrase>
+            <phrase id="3">
+                <text>gar_bandit_leader_join_main_3</text>
+                <precondition>dialogs.actor_in_freedom</precondition>
+                <has_info>gar_quest_destroy_flea_market_done</has_info>
+                <has_info>agru_open_story_door</has_info>
+                <next>51</next>
+                <next>52</next>
+            </phrase>
+            <phrase id="2">
+                <text>gar_bandit_leader_join_main_2</text>
+                <dont_has_info>agru_open_story_door</dont_has_info>
+                <has_info>gar_quest_destroy_flea_market_done</has_info>
+            </phrase>
+            <phrase id="5">
+                <text>gar_bandit_leader_join_main_5</text>
+                <precondition>dialogs.actor_not_in_dolg</precondition>
+                <precondition>dialogs.actor_not_in_freedom</precondition>
+                <has_info>gar_quest_destroy_flea_market_done</has_info>
+                <has_info>agru_open_story_door</has_info>
+                <next>51</next>
+                <next>52</next>
+            </phrase>
+            <phrase id="0">
+                <text>gar_bandit_leader_join_main_0</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+            </phrase>
+            <phrase id="511111">
+                <text>gar_bandit_leader_join_main_511111</text>
+                <next>51121</next>
+            </phrase>
+            <phrase id="51121">
+                <text>gar_bandit_leader_join_main_51121</text>
+                <action>dialogs.actor_set_bandit</action>
+                <action>dialogs_garbage.bandit_join_reward</action>
+                <next>511211</next>
             </phrase>
         </phrase_list>
     </dialog>

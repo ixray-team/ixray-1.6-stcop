@@ -9,6 +9,7 @@ gar_story_chase_pda_signal_cellar
 gar_story_get_pda
 
 ;gar_quest_killer_pseudodogs
+gar_quest_redemption
 
 gar_quest_get_old_pda
 gar_quest_get_old_pda_box
@@ -28,6 +29,12 @@ gar_quest_destroy_flea_market
 gar_quest_bandit_reward
 gar_quest_more_reward
 gar_quest_bandit_secret
+
+gar_recover_item_1
+gar_recover_item_2
+gar_recover_item_3
+gar_recover_item_4
+gar_recover_item_5
 
 ;-----------------------------------------------------
 ;------------------ Storyline Quests -----------------
@@ -79,7 +86,7 @@ type = defend_smart_delay
 task_type = storyline
 icon = ui_mt_image_attack_tower
 target_cond = {-gar_story_messenger_dogs_dead -gar_story_got_info_from_digger =target_smart_name(gar_smart_terrain_8_5)} true
-prior = 4
+prior = 15
 name = gar_story_kill_dogs_name
 text = gar_story_kill_dogs_text
 on_complete = %+gar_story_messenger_dogs_dead%
@@ -87,6 +94,7 @@ condlist_0 = {+gar_story_digger_killed_or_hostile} reversed
 play_regard = nil
 wait_time = 0
 auto_name = false
+community_relation_delta_complete = 50
 
 ; Догнать Клыка в Тёмной Долине
 [gar_story_go_to_freedom]
@@ -159,12 +167,24 @@ auto_name = false
 ;condlist_1 = {+gar_flea_market_stop_quest_line} fail
 ;target_story_ids = 708
 
+[gar_quest_redemption]
+type = storyline
+task_type = additional
+prior = 12
+icon = ui_mt_image_attack_tower
+;spot = mar_defend_tower_location
+target_cond = true
+name = gar_quest_redemption_name
+text = gar_quest_redemption_text
+condlist_0 = {+gar_quest_redemption_done} complete
+target_story_ids = 727
+auto_name = false
 
 ; Взять старый ПДА
 [gar_quest_get_old_pda]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -180,7 +200,7 @@ auto_faction = true
 [gar_quest_get_old_pda_box]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -196,7 +216,7 @@ auto_faction = true
 [gar_quest_bring_old_pda]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -207,12 +227,13 @@ condlist_1 = {+gar_flea_market_stop_quest_line} reversed
 target_story_ids = logic@work5, gar_smart_terrain_6_3
 auto_name = false
 auto_faction = true
+community_relation_delta_complete = 50
 
 ; Принести Напру деньги на медкомплект
 [gar_quest_bring_money]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -223,12 +244,13 @@ condlist_1 = {+gar_flea_market_stop_quest_line} reversed
 target_story_ids = logic@work5, gar_smart_terrain_6_3
 auto_name = false
 auto_faction = true
+community_relation_delta_complete = 50
 
 ; Отнести деньги Авоське
 [gar_quest_get_weapons]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -244,7 +266,7 @@ auto_faction = true
 [gar_quest_destroy_ambush]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -255,12 +277,13 @@ condlist_1 = {+gar_flea_market_stop_quest_line} reversed
 target_story_ids = 709
 auto_name = false
 auto_faction = true
+community_relation_delta_complete = 100
 
 ; Взглянуть на ПДА предателя
 [gar_quest_get_traitor_pda]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -276,7 +299,7 @@ auto_faction = true
 [gar_quest_speak_with_quester]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -292,7 +315,7 @@ auto_faction = true
 [gar_quest_meet_with_digger_fighters]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -308,7 +331,7 @@ auto_faction = true
 [gar_quest_liberate_conc_camp]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -319,11 +342,12 @@ condlist_1 = {+gar_flea_market_stop_quest_line} reversed
 target_story_ids = 711
 auto_name = false
 auto_faction = true
+community_relation_delta_complete = 150
 
 [gar_quest_captive_reward]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 ;spot = mar_defend_tower_location
 target_cond = true
@@ -340,7 +364,7 @@ auto_faction = true
 [gar_quest_kill_digger_traitor]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 target_cond = true
 name = gar_quest_kill_digger_traitor_name
@@ -350,6 +374,7 @@ target_story_ids = logic@work1, gar_smart_terrain_4_5
 auto_name = false
 reward_money = 1000
 auto_faction = true
+community_relation_delta_complete = 50
 
 ;type = eliminate_squad
 ;task_type = additional
@@ -366,7 +391,7 @@ auto_faction = true
 [gar_quest_kill_smuggler]
 type = eliminate_smart
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 target_cond = {+gar_quest_kill_smuggler_told -gar_quest_kill_smuggler_done =target_smart_name(gar_smart_terrain_4_2)} true
 name = gar_quest_kill_smuggler_name
@@ -378,11 +403,12 @@ auto_name = false
 play_regard = nil
 reward_money = 2000
 auto_faction = true
+community_relation_delta_complete = 100
 
 [gar_quest_destroy_flea_market]
 type = capture_smart
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 target_cond = {+gar_quest_destroy_flea_market_told -gar_quest_destroy_flea_market_done =target_smart_name(gar_smart_terrain_6_3)} true
 name = gar_quest_destroy_flea_market_name
@@ -393,11 +419,12 @@ auto_name = false
 play_regard = nil
 counter_attack = false
 auto_faction = true
+community_relation_delta_complete = 150
 
 [gar_quest_bandit_reward]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 target_cond = true
 name = gar_quest_bandit_reward_name
@@ -410,7 +437,7 @@ auto_faction = true
 [gar_quest_more_reward]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 target_cond = true
 name = gar_quest_more_reward_name
@@ -423,7 +450,7 @@ auto_faction = true
 [gar_quest_bandit_secret]
 type = storyline
 task_type = additional
-prior = 5
+prior = 10
 icon = ui_mt_image_attack_tower
 target_cond = true
 name = gar_quest_bandit_secret_name
@@ -431,4 +458,87 @@ text = gar_quest_bandit_secret_text
 condlist_0 = {+gar_quest_bandit_secret_done} complete
 target_story_ids = 717
 auto_name = false
+auto_faction = true
+
+
+;Recover Items
+
+[gar_recover_item_1]   ;Вернуть  «Чейзер-13»
+type = recover_item
+task_type = additional
+name = gar_recover_item_1_name
+text = gar_recover_item_1_text
+target_npc_or_box_name = gar_recover_item_1_corpse
+distanse = 100
+prior = 2
+faction = bandit
+target_cond = {=actor_on_level(garbage) -gar_recover_item_1_done} true, false
+on_init = %+gar_recover_item_1_done%
+requested_items = gar_quest_wpn_wincheaster1300
+community_relation_delta_complete = 100
+reward_money = 500
+auto_faction = true
+
+[gar_recover_item_2]   ;Найти модифицированное оружие
+type = recover_item
+task_type = additional
+name = gar_recover_item_2_name
+text = gar_recover_item_2_text
+target_npc_or_box_name = gar_recover_item_2_corpse
+distanse = 100
+prior = 2
+faction = bandit
+target_cond = {=actor_on_level(garbage) -gar_recover_item_2_done} true, false
+on_init = %+gar_recover_item_2_done%
+requested_items = gar_quest_wpn_desert_eagle
+community_relation_delta_complete = 100
+reward_money = 1500
+auto_faction = true
+
+[gar_recover_item_3]   ;Принести бутылку водки «Казаки 2»
+type = recover_item
+task_type = additional
+name = gar_recover_item_3_name
+text = gar_recover_item_3_text
+target_npc_or_box_name = gar_treasure_4
+distanse = 100
+prior = 2
+faction = bandit
+target_cond = {=actor_on_level(garbage) -gar_recover_item_3_done} true, false
+on_init = %+gar_recover_item_3_done%
+requested_items = gar_quest_vodka_2
+community_relation_delta_complete = 100
+reward_money = 200
+auto_faction = true
+
+[gar_recover_item_4]   ;Вернуть  куртку новичка
+type = recover_item
+task_type = additional
+name = gar_recover_item_4_name
+text = gar_recover_item_4_text
+target_npc_or_box_name = gar_recover_item_4_corpse
+distanse = 100
+prior = 2
+faction = stalker
+target_cond = {=actor_on_level(garbage) -gar_recover_item_4_done} true, false
+on_init = %+gar_recover_item_4_done%
+requested_items = gar_quest_novice_outfit
+community_relation_delta_complete = 100
+reward_money = 750
+auto_faction = true
+
+[gar_recover_item_5]   ;Принести именной пистолет
+type = recover_item
+task_type = additional
+name = gar_recover_item_5_name
+text = gar_recover_item_5_text
+target_npc_or_box_name = gar_recover_item_5_corpse
+distanse = 100
+prior = 2
+faction = stalker
+target_cond = {=actor_on_level(garbage) -gar_recover_item_5_done} true, false
+on_init = %+gar_recover_item_5_done%
+requested_items = gar_quest_wpn_pm
+community_relation_delta_complete = 100
+reward_money = 750
 auto_faction = true

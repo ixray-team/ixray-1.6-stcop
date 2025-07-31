@@ -46,6 +46,8 @@
                 <rank>600</rank>
                 <reputation>80</reputation>
 
+				<money min="1000000" max="1000000" infinitive="1"/>
+
                 <visual>actors\stalker_dolg\stalker_dolg_2_face_2</visual>
                 <snd_config>characters_voice\human_02\dolg\</snd_config>
 
@@ -96,7 +98,6 @@
     <actor_dialog>agr_leader_about_dolg</actor_dialog>
     <actor_dialog>agr_leader_about_zone</actor_dialog>
     <actor_dialog>treasure_dialog</actor_dialog>
-    <actor_dialog>tm_reward_task</actor_dialog>
         </specific_character>
 
         <specific_character id="agr_secret_trader" team_default = "1">
@@ -120,7 +121,6 @@
                         wpn_lr300_up2 = 1 \n
                         wpn_ak74_up = 2 \n
                         wpn_ak74_up2 = 1 \n
-                        wpn_rg-6 = 1 \n
                         ammo_9x39_ap = 1 \n
                         wpn_rpg7 = 1 \n
                         medkit_scientic = 11 \n
@@ -182,7 +182,7 @@
 
                 <class>agr_stalker_base_trader</class>
                 <community>stalker</community>
-		<money min="25000" max="70000" infinitive="0"/>
+				<money min="1000000" max="1000000" infinitive="1"/>
                 <rank>300</rank>
                 <reputation>80</reputation>
 
@@ -316,7 +316,7 @@
     <actor_dialog>agr_duty_mechanic_about_upgrade</actor_dialog>
     <actor_dialog>agr_duty_mechanic_like_parametrs</actor_dialog>
     <actor_dialog>agr_duty_mechanic_about_many_word</actor_dialog>
-    <actor_dialog>treasure_dialog</actor_dialog>
+    <!-- <actor_dialog>treasure_dialog</actor_dialog>  -->
   </specific_character>
 
   <specific_character id="agr_duty_base_trader" team_default = "1">
@@ -327,7 +327,7 @@
 
     <class>agr_duty_base_trader</class>
     <community>dolg</community>
-    <money min="40000" max="100000" infinitive="0"/>
+    <money min="1000000" max="1000000" infinitive="1"/>
     <rank>600</rank>
     <reputation>80</reputation>
 
@@ -348,6 +348,7 @@
     <actor_dialog>agr_duty_trader_about_original_weapons</actor_dialog>
     <actor_dialog>agr_duty_trader_about_fight</actor_dialog>
     <actor_dialog>treasure_dialog</actor_dialog>
+    <actor_dialog>tm_reward_task</actor_dialog>
   </specific_character>
 
   <specific_character id="agr_hourman" team_default = "1">
@@ -696,7 +697,6 @@
 
                 <supplies>
                         [spawn] \n
-		agr_mechanic_pda \n
                 </supplies>
 
 #include "gameplay\character_criticals_1.xml"

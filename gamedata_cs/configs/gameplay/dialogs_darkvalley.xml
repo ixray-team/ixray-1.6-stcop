@@ -93,26 +93,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="val_arena_master_money_back">
-        <phrase_list>
-            <phrase id="0">
-                <text>val_arena_master_money_back_0</text>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="val_fixer_about_power">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="0">
-                <text>val_fixer_about_power_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-            <phrase id="1">
-                <text>val_fixer_about_power_1</text>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="val_barmen_about_barmen">
         <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
@@ -123,45 +103,6 @@
             </phrase>
             <phrase id="1">
                 <text>val_barmen_about_barmen_1</text>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="val_barmen_about_zone">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="0">
-                <text>val_barmen_about_zone_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-            <phrase id="1">
-                <text>val_barmen_about_zone_1</text>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="val_comendant_about_news">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="0">
-                <text>val_comendant_about_news_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-            <phrase id="1">
-                <text>val_comendant_about_news_1</text>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="val_comendant_about_freedom">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="0">
-                <text>val_comendant_about_freedom_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-            <phrase id="1">
-                <text>val_comendant_about_freedom_1</text>
             </phrase>
         </phrase_list>
     </dialog>
@@ -247,116 +188,6 @@
             <phrase id="1111">
                 <text>val_freedom_blockpost_robbery_dialog_1111</text>
                 <next>11111</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="val_freedom_comendant_hello_dialog">
-        <phrase_list>
-            <phrase id="6">
-                <text />
-                <dont_has_info>val_go_to_trader_done</dont_has_info>
-                <has_info>val_go_to_trader</has_info>
-                <next>61</next>
-            </phrase>
-            <phrase id="7">
-                <text />
-                <has_info>val_go_to_trader_done</has_info>
-                <next>71</next>
-            </phrase>
-            <phrase id="5">
-                <text />
-                <dont_has_info>val_go_to_trader</dont_has_info>
-                <has_info>val_talked_to_comendat_1</has_info>
-                <has_info>val_kill_flesh</has_info>
-                <next>51</next>
-            </phrase>
-            <phrase id="512">
-                <text>val_freedom_comendant_hello_dialog_512</text>
-                <action>dialogs.break_dialog</action>
-                <dont_has_info>val_kill_flesh_done</dont_has_info>
-            </phrase>
-            <phrase id="5111">
-                <text>val_freedom_comendant_hello_dialog_5111</text>
-                <give_info>val_go_to_trader</give_info>
-                <give_info>val_come_back_comendant_to_revard</give_info>
-                <next>51111</next>
-            </phrase>
-            <phrase id="51111">
-                <text>val_freedom_comendant_hello_dialog_51111</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="61">
-                <text>val_freedom_comendant_hello_dialog_61</text>
-                <next>611</next>
-            </phrase>
-            <phrase id="611">
-                <text>val_freedom_comendant_hello_dialog_611</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="71">
-                <text>val_freedom_comendant_hello_dialog_71</text>
-                <next>711</next>
-            </phrase>
-            <phrase id="711">
-                <text>val_freedom_comendant_hello_dialog_711</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="511">
-                <text>val_freedom_comendant_hello_dialog_511</text>
-                <has_info>val_kill_flesh_done</has_info>
-                <next>5111</next>
-            </phrase>
-            <phrase id="11">
-                <text>val_freedom_comendant_hello_dialog_11</text>
-                <next>111</next>
-            </phrase>
-            <phrase id="111">
-                <text>val_freedom_comendant_hello_dialog_111</text>
-                <next>1111</next>
-            </phrase>
-            <phrase id="11111111">
-                <text>val_freedom_comendant_hello_dialog_11111111</text>
-                <give_info>val_kill_flesh</give_info>
-                <give_info>val_talked_to_comendat_1</give_info>
-                <next>111111111</next>
-            </phrase>
-            <phrase id="111111111">
-                <text>val_freedom_comendant_hello_dialog_111111111</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="1111">
-                <text>val_freedom_comendant_hello_dialog_1111</text>
-                <next>11111</next>
-            </phrase>
-            <phrase id="1111111">
-                <text>val_freedom_comendant_hello_dialog_1111111</text>
-                <next>11111111</next>
-            </phrase>
-            <phrase id="11111">
-                <text>val_freedom_comendant_hello_dialog_11111</text>
-                <give_info>val_come_to_comendant_complete</give_info>
-                <next>111111</next>
-            </phrase>
-            <phrase id="111111">
-                <text>val_freedom_comendant_hello_dialog_111111</text>
-                <next>1111111</next>
-            </phrase>
-            <phrase id="1">
-                <text />
-                <dont_has_info>val_talked_to_comendat_1</dont_has_info>
-                <next>11</next>
-            </phrase>
-            <phrase id="0">
-                <text />
-                <next>1</next>
-                <next>5</next>
-                <next>6</next>
-                <next>7</next>
-            </phrase>
-            <phrase id="51">
-                <text>val_freedom_comendant_hello_dialog_51</text>
-                <next>511</next>
-                <next>512</next>
             </phrase>
         </phrase_list>
     </dialog>
@@ -708,6 +539,183 @@
             </phrase>
         </phrase_list>
     </dialog>
+    <dialog id="val_freedom_comendant_hello_dialog">
+        <phrase_list>
+            <phrase id="6">
+                <text />
+                <dont_has_info>val_go_to_trader_done</dont_has_info>
+                <has_info>val_go_to_trader</has_info>
+                <next>61</next>
+            </phrase>
+            <phrase id="7">
+                <text />
+                <has_info>val_go_to_trader_done</has_info>
+                <next>71</next>
+            </phrase>
+            <phrase id="5">
+                <text />
+                <dont_has_info>val_go_to_trader</dont_has_info>
+                <has_info>val_talked_to_comendat_1</has_info>
+                <has_info>val_kill_flesh</has_info>
+                <next>51</next>
+            </phrase>
+            <phrase id="512">
+                <text>val_freedom_comendant_hello_dialog_512</text>
+                <action>dialogs.break_dialog</action>
+                <dont_has_info>val_kill_flesh_done</dont_has_info>
+            </phrase>
+            <phrase id="5111">
+                <text>val_freedom_comendant_hello_dialog_5111</text>
+                <give_info>val_go_to_trader</give_info>
+                <give_info>val_come_back_comendant_to_revard</give_info>
+                <next>51111</next>
+            </phrase>
+            <phrase id="51111">
+                <text>val_freedom_comendant_hello_dialog_51111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="61">
+                <text>val_freedom_comendant_hello_dialog_61</text>
+                <next>611</next>
+            </phrase>
+            <phrase id="611">
+                <text>val_freedom_comendant_hello_dialog_611</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="71">
+                <text>val_freedom_comendant_hello_dialog_71</text>
+                <next>711</next>
+            </phrase>
+            <phrase id="711">
+                <text>val_freedom_comendant_hello_dialog_711</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="511">
+                <text>val_freedom_comendant_hello_dialog_511</text>
+                <has_info>val_kill_flesh_done</has_info>
+                <next>5111</next>
+            </phrase>
+            <phrase id="1111111">
+                <text>val_freedom_comendant_hello_dialog_1111111</text>
+                <next>11111111</next>
+            </phrase>
+            <phrase id="111111">
+                <text>val_freedom_comendant_hello_dialog_111111</text>
+                <next>1111111</next>
+            </phrase>
+            <phrase id="51">
+                <text>val_freedom_comendant_hello_dialog_51</text>
+                <next>511</next>
+                <next>512</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+                <next>5</next>
+                <next>6</next>
+                <next>7</next>
+            </phrase>
+            <phrase id="11111111">
+                <text>val_freedom_comendant_hello_dialog_11111111</text>
+                <next>111111111</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <dont_has_info>val_talked_to_comendat_1</dont_has_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>val_freedom_comendant_hello_dialog_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>val_freedom_comendant_hello_dialog_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>val_freedom_comendant_hello_dialog_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="11111">
+                <text>val_freedom_comendant_hello_dialog_11111</text>
+                <next>111111</next>
+            </phrase>
+            <phrase id="111111111">
+                <text>val_freedom_comendant_hello_dialog_111111111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>val_kill_flesh</give_info>
+                <give_info>val_talked_to_comendat_1</give_info>
+                <give_info>val_come_to_comendant_complete</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="val_fixer_about_power">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>val_fixer_about_power_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>val_fixer_about_power_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="val_comendant_about_freedom">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="0">
+                <text>val_comendant_about_freedom_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>val_comendant_about_freedom_1</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="val_fixer_about_benefit">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>val_fixer_about_benefit_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>val_fixer_about_benefit_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="val_barmen_about_zone">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>val_barmen_about_zone_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>val_barmen_about_zone_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="val_freedom_leader_join_first">
+        <precondition>dialogs.actor_not_in_freedom</precondition>
+        <dont_has_info>val_freedom_join_talked_first</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>val_freedom_leader_join_first_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>val_freedom_leader_join_first_0</text>
+                <give_info>val_freedom_join_talked_first</give_info>
+                <give_info>val_freedom_join_need_sound</give_info>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
     <dialog id="val_freedom_trader_hello_dialog">
         <phrase_list>
             <phrase id="11111">
@@ -754,12 +762,6 @@
                 <text>val_freedom_trader_hello_dialog_12</text>
                 <action>dialogs.break_dialog</action>
             </phrase>
-            <phrase id="0">
-                <text />
-                <next>1</next>
-                <next>3</next>
-                <next>2</next>
-            </phrase>
             <phrase id="3">
                 <text />
                 <dont_has_info>val_deliver_ammo_done</dont_has_info>
@@ -776,128 +778,18 @@
                 <next>111</next>
                 <next>12</next>
             </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="val_arena_master_about_rule">
-        <phrase_list>
-            <phrase id="1">
-                <text>val_arena_master_about_rule_1</text>
-            </phrase>
             <phrase id="0">
-                <text>val_arena_master_about_rule_0</text>
+                <text />
                 <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="val_fixer_about_benefit">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="1">
-                <text>val_fixer_about_benefit_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>val_fixer_about_benefit_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="val_freedom_leader_join_first">
-        <precondition>dialogs.actor_not_in_freedom</precondition>
-        <dont_has_info>val_freedom_join_talked_first</dont_has_info>
-        <phrase_list>
-            <phrase id="1">
-                <text>val_freedom_leader_join_first_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>val_freedom_leader_join_first_0</text>
-                <give_info>val_freedom_join_talked_first</give_info>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="val_freedom_leader_join_main">
-        <precondition>dialogs.actor_not_in_freedom</precondition>
-        <has_info>val_freedom_join_talked_first</has_info>
-        <phrase_list>
-            <phrase id="511">
-                <text>val_freedom_leader_join_main_511</text>
-                <next>5111</next>
-                <next>5112</next>
-            </phrase>
-            <phrase id="5111">
-                <text>val_freedom_leader_join_main_5111</text>
-                <next>51111</next>
-            </phrase>
-            <phrase id="51111">
-                <text>val_freedom_leader_join_main_51111</text>
-                <next>511111</next>
-            </phrase>
-            <phrase id="511111">
-                <text>val_freedom_leader_join_main_511111</text>
-                <next>51121</next>
-            </phrase>
-            <phrase id="5112">
-                <text>val_freedom_leader_join_main_5112</text>
-                <next>51121</next>
-            </phrase>
-            <phrase id="51">
-                <text>val_freedom_leader_join_main_51</text>
-                <next>511</next>
-            </phrase>
-            <phrase id="4">
-                <text>val_freedom_leader_join_main_4</text>
-                <precondition>dialogs.actor_in_bandit</precondition>
-                <has_info>val_reward_for_destroy_killer_base</has_info>
-                <has_info>agru_open_story_door</has_info>
-                <next>51</next>
-                <next>52</next>
-            </phrase>
-            <phrase id="5">
-                <text>val_freedom_leader_join_main_5</text>
-                <precondition>dialogs.actor_not_in_stalker</precondition>
-                <precondition>dialogs.actor_not_in_bandit</precondition>
-                <has_info>val_reward_for_destroy_killer_base</has_info>
-                <has_info>agru_open_story_door</has_info>
-                <next>51</next>
-                <next>52</next>
-            </phrase>
-            <phrase id="52">
-                <text>val_freedom_leader_join_main_52</text>
-            </phrase>
-            <phrase id="51121">
-                <text>val_freedom_leader_join_main_51121</text>
-                <next>511211</next>
-            </phrase>
-            <phrase id="511211">
-                <text>val_freedom_leader_join_main_511211</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="0">
-                <text>val_freedom_leader_join_main_0</text>
-                <next>1</next>
-                <next>2</next>
                 <next>3</next>
-                <next>4</next>
-                <next>5</next>
+                <next>2</next>
             </phrase>
-            <phrase id="3">
-                <text>val_freedom_leader_join_main_3</text>
-                <precondition>dialogs.actor_in_stalker</precondition>
-                <has_info>val_reward_for_destroy_killer_base</has_info>
-                <has_info>agru_open_story_door</has_info>
-                <next>51</next>
-                <next>52</next>
-            </phrase>
-            <phrase id="2">
-                <text>val_freedom_leader_join_main_2</text>
-                <dont_has_info>agru_open_story_door</dont_has_info>
-                <give_info>val_freedom_join_enemy_wait</give_info>
-                <has_info>val_reward_for_destroy_killer_base</has_info>
-            </phrase>
-            <phrase id="1">
-                <text>val_freedom_leader_join_main_1</text>
-                <dont_has_info>val_reward_for_destroy_killer_base</dont_has_info>
+        </phrase_list>
+    </dialog>
+    <dialog id="val_arena_master_money_back">
+        <phrase_list>
+            <phrase id="0">
+                <text>val_arena_master_money_back_0</text>
             </phrase>
         </phrase_list>
     </dialog>
@@ -907,23 +799,6 @@
                 <text>val_freedom_leader_hello_dialog_31111</text>
                 <give_info>val_deliver_pda_complete</give_info>
                 <next>41</next>
-            </phrase>
-            <phrase id="4111111">
-                <text>val_freedom_leader_hello_dialog_4111111</text>
-                <next>41111111</next>
-            </phrase>
-            <phrase id="41111">
-                <text>val_freedom_leader_hello_dialog_41111</text>
-                <next>411111</next>
-            </phrase>
-            <phrase id="411111">
-                <text>val_freedom_leader_hello_dialog_411111</text>
-                <next>4111111</next>
-            </phrase>
-            <phrase id="41111111">
-                <text>val_freedom_leader_hello_dialog_41111111</text>
-                <give_info>val_strike_antenna</give_info>
-                <next>411111111</next>
             </phrase>
             <phrase id="11111">
                 <text>val_freedom_leader_hello_dialog_11111</text>
@@ -950,14 +825,6 @@
                 <give_info>val_talked_to_freedom_leader</give_info>
                 <next>121</next>
             </phrase>
-            <phrase id="4111">
-                <text>val_freedom_leader_hello_dialog_4111</text>
-                <next>41111</next>
-            </phrase>
-            <phrase id="1111">
-                <text>val_freedom_leader_hello_dialog_1111</text>
-                <next>11111</next>
-            </phrase>
             <phrase id="111">
                 <text>val_freedom_leader_hello_dialog_111</text>
                 <next>1111</next>
@@ -976,18 +843,6 @@
             <phrase id="1211">
                 <text>val_freedom_leader_hello_dialog_1211</text>
             </phrase>
-            <phrase id="411">
-                <text>val_freedom_leader_hello_dialog_411</text>
-                <next>4111</next>
-            </phrase>
-            <phrase id="411111111">
-                <text>val_freedom_leader_hello_dialog_411111111</text>
-            </phrase>
-            <phrase id="41">
-                <text>val_freedom_leader_hello_dialog_41</text>
-                <next>411</next>
-                <next>412</next>
-            </phrase>
             <phrase id="311">
                 <text>val_freedom_leader_hello_dialog_311</text>
                 <next>3111</next>
@@ -996,56 +851,84 @@
                 <text>val_freedom_leader_hello_dialog_3111</text>
                 <next>31111</next>
             </phrase>
+            <phrase id="1">
+                <text />
+                <dont_has_info>val_talked_to_freedom_leader</dont_has_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="1111">
+                <text>val_freedom_leader_hello_dialog_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="2">
+                <text />
+                <dont_has_info>val_take_pda_done</dont_has_info>
+                <has_info>val_talked_to_freedom_leader</has_info>
+                <next>21</next>
+            </phrase>
+            <phrase id="41111111">
+                <text>val_freedom_leader_hello_dialog_41111111</text>
+                <give_info>val_strike_antenna</give_info>
+                <next>411111111</next>
+            </phrase>
+            <phrase id="3">
+                <text />
+                <dont_has_info>val_deliver_pda_done</dont_has_info>
+                <has_info>val_take_pda_done</has_info>
+                <next>31</next>
+            </phrase>
+            <phrase id="711">
+                <text>val_freedom_leader_hello_dialog_711</text>
+            </phrase>
+            <phrase id="511">
+                <text>val_freedom_leader_hello_dialog_511</text>
+            </phrase>
+            <phrase id="412">
+                <text>val_freedom_leader_hello_dialog_412</text>
+            </phrase>
+            <phrase id="4">
+                <text />
+                <dont_has_info>val_strike_antenna</dont_has_info>
+                <has_info>val_talked_to_freedom_leader</has_info>
+                <has_info>val_deliver_pda_done</has_info>
+                <next>41</next>
+            </phrase>
+            <phrase id="4111">
+                <text>val_freedom_leader_hello_dialog_4111</text>
+                <next>41111</next>
+            </phrase>
+            <phrase id="41111">
+                <text>val_freedom_leader_hello_dialog_41111</text>
+                <next>411111</next>
+            </phrase>
             <phrase id="31">
                 <text>val_freedom_leader_hello_dialog_31</text>
                 <action>dialogs_darkvalley.return_komendant_pda</action>
                 <next>311</next>
+            </phrase>
+            <phrase id="21">
+                <text>val_freedom_leader_hello_dialog_21</text>
             </phrase>
             <phrase id="11">
                 <text>val_freedom_leader_hello_dialog_11</text>
                 <action>dialogs_darkvalley.return_freedom_pda</action>
                 <next>111</next>
             </phrase>
-            <phrase id="21">
-                <text>val_freedom_leader_hello_dialog_21</text>
-            </phrase>
-            <phrase id="412">
-                <text>val_freedom_leader_hello_dialog_412</text>
-            </phrase>
             <phrase id="71">
                 <text>val_freedom_leader_hello_dialog_71</text>
                 <next>711</next>
             </phrase>
-            <phrase id="711">
-                <text>val_freedom_leader_hello_dialog_711</text>
-            </phrase>
-            <phrase id="4">
-                <text></text>
-                <dont_has_info>val_strike_antenna</dont_has_info>
-                <has_info>val_talked_to_freedom_leader</has_info>
-                <has_info>val_deliver_pda_done</has_info>
-                <next>41</next>
-            </phrase>
-            <phrase id="3">
-                <text></text>
-                <dont_has_info>val_deliver_pda_done</dont_has_info>
-                <has_info>val_take_pda_done</has_info>
-                <next>31</next>
-            </phrase>
-            <phrase id="2">
-                <text></text>
-                <dont_has_info>val_take_pda_done</dont_has_info>
-                <has_info>val_talked_to_freedom_leader</has_info>
-                <next>21</next>
-            </phrase>
             <phrase id="7">
-                <text></text>
+                <text />
                 <dont_has_info>val_strike_antenna_done</dont_has_info>
                 <has_info>val_strike_antenna</has_info>
                 <next>71</next>
             </phrase>
+            <phrase id="61">
+                <text>val_freedom_leader_hello_dialog_61</text>
+            </phrase>
             <phrase id="0">
-                <text></text>
+                <text />
                 <next>1</next>
                 <next>2</next>
                 <next>3</next>
@@ -1054,33 +937,153 @@
                 <next>6</next>
                 <next>7</next>
             </phrase>
-            <phrase id="1">
-                <text></text>
-                <dont_has_info>val_talked_to_freedom_leader</dont_has_info>
-                <next>11</next>
-            </phrase>
-            <phrase id="511">
-                <text>val_freedom_leader_hello_dialog_511</text>
-            </phrase>
-            <phrase id="61">
-                <text>val_freedom_leader_hello_dialog_61</text>
+            <phrase id="5">
+                <text />
+                <dont_has_info>val_killer_base_is_no_more</dont_has_info>
+                <has_info>val_strike_antenna_done</has_info>
+                <next>51</next>
             </phrase>
             <phrase id="6">
-                <text></text>
-                <has_info>val_strike_antenna_done</has_info>
+                <text />
+                <has_info>val_killer_base_is_no_more</has_info>
                 <next>61</next>
+            </phrase>
+            <phrase id="411">
+                <text>val_freedom_leader_hello_dialog_411</text>
+                <next>4111</next>
+            </phrase>
+            <phrase id="41">
+                <text>val_freedom_leader_hello_dialog_41</text>
+                <next>411</next>
+                <next>412</next>
+            </phrase>
+            <phrase id="411111">
+                <text>val_freedom_leader_hello_dialog_411111</text>
+                <next>4111111</next>
+            </phrase>
+            <phrase id="4111111">
+                <text>val_freedom_leader_hello_dialog_4111111</text>
+                <next>41111111</next>
+            </phrase>
+            <phrase id="411111111">
+                <text>val_freedom_leader_hello_dialog_411111111</text>
             </phrase>
             <phrase id="51">
                 <text>val_freedom_leader_hello_dialog_51</text>
                 <action>dialogs_darkvalley.give_reward_for_destroy_killer_base</action>
                 <give_info>val_reward_for_destroy_killer_base</give_info>
-                <next>511</next>
+                <give_info>val_killer_base_is_no_more</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="val_arena_master_about_rule">
+        <phrase_list>
+            <phrase id="1">
+                <text>val_arena_master_about_rule_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>val_arena_master_about_rule_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="val_comendant_about_news">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="1">
+                <text>val_comendant_about_news_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>val_comendant_about_news_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="val_freedom_leader_join_main">
+        <precondition>dialogs.actor_not_in_freedom</precondition>
+        <has_info>val_freedom_join_talked_first</has_info>
+        <phrase_list>
+            <phrase id="52">
+                <text>val_freedom_leader_join_main_52</text>
+            </phrase>
+            <phrase id="5112">
+                <text>val_freedom_leader_join_main_5112</text>
+                <next>51121</next>
+            </phrase>
+            <phrase id="511211">
+                <text>val_freedom_leader_join_main_511211</text>
+                <action>dialogs.break_dialog</action>
             </phrase>
             <phrase id="5">
-                <text></text>
-                <dont_has_info>val_reward_for_destroy_killer_base</dont_has_info>
-                <has_info>val_strike_antenna_done</has_info>
+                <text>val_freedom_leader_join_main_5</text>
+                <precondition>dialogs.actor_not_in_stalker</precondition>
+                <precondition>dialogs.actor_not_in_bandit</precondition>
+                <has_info>val_reward_for_destroy_killer_base</has_info>
+                <has_info>agru_open_story_door</has_info>
                 <next>51</next>
+                <next>52</next>
+            </phrase>
+            <phrase id="4">
+                <text>val_freedom_leader_join_main_4</text>
+                <precondition>dialogs.actor_in_bandit</precondition>
+                <has_info>val_reward_for_destroy_killer_base</has_info>
+                <has_info>agru_open_story_door</has_info>
+                <next>51</next>
+                <next>52</next>
+            </phrase>
+            <phrase id="3">
+                <text>val_freedom_leader_join_main_3</text>
+                <precondition>dialogs.actor_in_stalker</precondition>
+                <has_info>val_reward_for_destroy_killer_base</has_info>
+                <has_info>agru_open_story_door</has_info>
+                <next>51</next>
+                <next>52</next>
+            </phrase>
+            <phrase id="2">
+                <text>val_freedom_leader_join_main_2</text>
+                <dont_has_info>agru_open_story_door</dont_has_info>
+                <give_info>val_freedom_join_enemy_wait</give_info>
+                <has_info>val_reward_for_destroy_killer_base</has_info>
+            </phrase>
+            <phrase id="1">
+                <text>val_freedom_leader_join_main_1</text>
+                <dont_has_info>val_reward_for_destroy_killer_base</dont_has_info>
+            </phrase>
+            <phrase id="0">
+                <text>val_freedom_leader_join_main_0</text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+            </phrase>
+            <phrase id="51">
+                <text>val_freedom_leader_join_main_51</text>
+                <next>511</next>
+            </phrase>
+            <phrase id="511">
+                <text>val_freedom_leader_join_main_511</text>
+                <next>5111</next>
+                <next>5112</next>
+            </phrase>
+            <phrase id="5111">
+                <text>val_freedom_leader_join_main_5111</text>
+                <next>51111</next>
+            </phrase>
+            <phrase id="51111">
+                <text>val_freedom_leader_join_main_51111</text>
+                <next>511111</next>
+            </phrase>
+            <phrase id="511111">
+                <text>val_freedom_leader_join_main_511111</text>
+                <next>51121</next>
+            </phrase>
+            <phrase id="51121">
+                <text>val_freedom_leader_join_main_51121</text>
+                <action>dialogs.actor_set_freedom</action>
+                <action>dialogs_darkvalley.freedom_join_reward</action>
+                <next>511211</next>
             </phrase>
         </phrase_list>
     </dialog>

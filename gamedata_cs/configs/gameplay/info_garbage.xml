@@ -44,7 +44,9 @@
 
     <info_portion id="gar_flea_market_stop_quest_line"/>
     <info_portion id="gar_bandit_block_quest_line"/>
-
+    
+    <info_portion id="gar_quest_redemption_started"/>
+    <info_portion id="gar_quest_redemption_done"/>
 
     <info_portion id="gar_quest_killer_pseudodogs_told"/>
     <info_portion id="gar_quest_killer_pseudodogs_started"/>
@@ -136,4 +138,9 @@
     <info_portion id="gar_conc_camp_arbaiten_2"/>
     <info_portion id="gar_conc_camp_arbaiten_3"/>
     
+    <info_portion id="gar_recover_item_1_done"/>
+    <info_portion id="gar_recover_item_2_done"/>
+    <info_portion id="gar_recover_item_3_done"/>
+    <info_portion id="gar_recover_item_4_done"/>
+    <info_portion id="gar_recover_item_5_done"/>
 </game_information_portions>

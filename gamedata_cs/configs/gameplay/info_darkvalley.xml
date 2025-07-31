@@ -1,7 +1,17 @@
 <?xml version='1.0' encoding="windows-1251"?>
 
 <game_information_portions>
+	<info_portion id="val_killer_roof_sniper_3_dead"></info_portion>
+	<info_portion id="val_killer_roof_sniper_4_dead"></info_portion>
+	<info_portion id="val_killer_roof_sniper_5_dead"></info_portion>
+	<info_portion id="val_killer_roof_sniper_6_dead"></info_portion>
+	<info_portion id="val_killer_1_4_dead"></info_portion>
+	<info_portion id="val_killer_1_5_dead"></info_portion>
+
+	<info_portion id="val_killer_base_is_no_more"></info_portion>
+
 	<info_portion id="val_freedom_join_talked_first"></info_portion>
+	<info_portion id="val_freedom_join_need_sound"></info_portion>
 	<info_portion id="val_freedom_join_enemy_wait"></info_portion>
 
     <info_portion id="val_test"></info_portion>
@@ -175,4 +185,7 @@
     <info_portion id="val_test_spawn_1_npc"></info_portion>
     <info_portion id="val_test_spawn_2_npc"></info_portion>
 
+    <info_portion id="val_recover_item_1_done"></info_portion>
+    <info_portion id="val_recover_item_2_done"></info_portion>
+    <info_portion id="val_recover_item_3_done"></info_portion>
 </game_information_portions>

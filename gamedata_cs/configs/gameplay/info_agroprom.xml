@@ -118,4 +118,8 @@
      <info_portion id="agr_actor_on_agroprom"></info_portion>
      <info_portion id="agr_duty_leader_raciya_end"></info_portion>
      <info_portion id="agr_monsters_big_attack"></info_portion>
+     <info_portion id="agr_recover_item_1_done"></info_portion>
+     <info_portion id="agr_recover_item_2_done"></info_portion>
+     <info_portion id="agr_recover_item_3_done"></info_portion>
+     <info_portion id="agr_recover_item_4_done"></info_portion>
 </game_information_portions>

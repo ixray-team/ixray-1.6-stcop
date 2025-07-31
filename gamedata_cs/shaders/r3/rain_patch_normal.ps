@@ -50,16 +50,27 @@ float3	GetWaterNMap( Texture3D s_texture, float2 tc, float time)
 }
 
 
+#ifndef ISAMPLE
+#define ISAMPLE 0
+#endif
 
+
+#ifdef GBUFFER_OPTIMIZATION
+float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4	Color	: COLOR, float4 pos2d : SV_Position ) : SV_Target
+#else
 float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
+#endif
 {
-	float4 _P = s_position.Sample( smp_nofilter, tc );
-	float3 _N = s_normal.Sample( smp_nofilter, tc );
-	half3	D = s_diffuse.Sample( smp_nofilter, tc);		// rgb	//.gloss
+#ifdef GBUFFER_OPTIMIZATION
+	gbuffer_data gbd = gbuffer_load_data( tc, pos2d, ISAMPLE );
+#else
+	gbuffer_data gbd = gbuffer_load_data( tc, ISAMPLE );
+#endif
+	float4 _P = float4( gbd.P, 1.0 );
+	float3 _N = gbd.N;
+	float3	D = gbd.C;		// rgb	//.gloss
 
 	_N.xyz = normalize(_N.xyz);
-
-	_P.w = 1.f;
 
 	float4 PS = mul( m_shadow,  _P );
 
@@ -77,23 +88,23 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 	//deltaX *= 0.05;
 	//deltaY *= 0.05;
 
-	//half s	= shadow_rain( PS, WorldP.xz*2 + float2(deltaX, deltaY) );
-	half s	= shadow_rain( PS, WorldP.xz*2 );
+	//float s	= shadow_rain( PS, WorldP.xz*2 + float2(deltaX, deltaY) );
+	float s	= shadow_rain( PS, WorldP.xz*2 );
 
 	//	Apply distance falloff
-	//half	fAtten = 1 - smoothstep( 10, 30, length( _P.xyz ));
-	half	fAtten = 1 - smoothstep( RainFallof.x, RainFallof.y, length( _P.xyz ));
+	//float	fAtten = 1 - smoothstep( 10, 30, length( _P.xyz ));
+	float	fAtten = 1 - smoothstep( RainFallof.x, RainFallof.y, length( _P.xyz ));
 	s	*= fAtten*fAtten;
 
 	//	Apply rain density
 	s	*= RainDensity.x;
 
-	half fIsUp = -dot( Ldynamic_dir.xyz, _N.xyz );
+	float fIsUp = -dot( Ldynamic_dir.xyz, _N.xyz );
 	s *= saturate(fIsUp*10+(10*0.5)+0.5);
 	fIsUp = max(0, fIsUp);
 
-	half fIsX = WorldN.x;
-	half fIsZ = WorldN.z;
+	float fIsX = WorldN.x;
+	float fIsZ = WorldN.z;
 
 	float3 waterSplash = GetNVNMap( s_water, WorldP.xz, timers.x*3.0 );
 //	float3 waterFallX = GetWaterNMap( s_waterFall, float2(WorldP.x, WorldP.y-timers.x), 0.5 );
@@ -133,6 +144,8 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 	//	Translate NM to view space
 	water.xyz = mul( m_V, water.xyz );
 	
+	//return float4(water.xyz,1); // holger
+
 	_N += water.xyz;
 
 	_N = normalize(_N);

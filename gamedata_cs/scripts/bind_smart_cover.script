@@ -9,19 +9,18 @@ end
 
 class "smart_cover_binder" (object_binder)
 function smart_cover_binder:__init(obj) super(obj)
-	self.obj = obj
 end
 function smart_cover_binder:net_spawn(server_object)
 	if not object_binder.net_spawn(self, server_object) then
 		return false
 	end 
-	registered_smartcovers[self.obj:name()] = true 
-	printf("smart_cover_binder.net_spawn() smart_cover [%s] is registered", self.obj:name())
+	registered_smartcovers[self.object:name()] = self.object 
+	printf("smart_cover_binder.net_spawn() smart_cover [%s] is registered", self.object:name())
 	return true
 end
 function smart_cover_binder:net_destroy()
-	registered_smartcovers[self.obj:name()] = nil
-	printf("smart_cover_binder.net_destroy() smart_cover [%s] is unregistered", self.obj:name())
+	registered_smartcovers[self.object:name()] = nil
+	printf("smart_cover_binder.net_destroy() smart_cover [%s] is unregistered", self.object:name())
 	object_binder.net_destroy(self)
 end
 

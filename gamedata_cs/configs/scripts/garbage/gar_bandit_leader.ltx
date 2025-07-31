@@ -92,7 +92,7 @@ path_walk = gar_smart_terrain_3_5_bandit_leader_walk
 path_look = gar_smart_terrain_3_5_bandit_leader_look
 ;2nd iteration
 on_info = {+gar_quest_bandit_reward_started} walker@join_leader
-on_info2 = {+gar_quest_destroy_flea_market_done} walker@destroy_flea_market_wait_leader
+on_info2 = {+gar_quest_destroy_flea_market_done} walker@destroy_flea_market_wait_leader %+gar_bandit_join_talked_first%
 meet = meet@a
 
 [walker@destroy_flea_market_wait_leader]
@@ -112,7 +112,7 @@ path_walk = gar_smart_terrain_3_5_bandit_leader_walk
 path_look = gar_smart_terrain_3_5_bandit_leader_look
 ;2nd iteration
 on_info = {+gar_bandit_join_invited} walker@main_leader
-on_info2 = {+gar_bandit_join_enemy_wait +agru_open_story_door +gar_quest_destroy_flea_market_done} walker@main_leader %=play_sound(gar_bandit_leader_join_message:bandit:gar_bandit_leader_name) +gar_bandit_join_invited%
+on_info2 = {+gar_bandit_join_enemy_wait +agru_open_story_door +gar_quest_destroy_flea_market_done !is_faction_enemy_to_actor(bandit)} walker@main_leader %=play_sound(gar_bandit_leader_join_message:bandit:gar_bandit_leader_name) +gar_bandit_join_invited%
 meet = meet@a
 
 [walker@main_leader]
