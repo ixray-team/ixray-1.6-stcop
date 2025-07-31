@@ -192,6 +192,17 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path,
 
 	pWnd->SetColorAnimation		(str_flag, flags);
 
+	int flag_highlight_txt = xml_doc.ReadAttribInt(path, index, "highlight_text", 0);
+	if (flag_highlight_txt) {
+		pWnd->HighlightText(true);
+
+		u32 hA = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hA", 255));
+		u32 hR = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hR", 255));
+		u32 hG = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hG", 255));
+		u32 hB = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hB", 255));
+		pWnd->SetHighlightColor(color_argb(hA, hR, hG, hB));
+
+	}
 
 	str_flag					= xml_doc.ReadAttrib(path, index, "xform_anim",				"");
 	flag_cyclic					= xml_doc.ReadAttribInt(path, index, "xform_anim_cyclic",	1);
@@ -228,6 +239,18 @@ bool CUIXmlInit::InitTextWnd(CUIXml& xml_doc, LPCSTR path, int index, CUITextWnd
 	if(flag_cyclic)			flags |= LA_CYCLIC;
 	if(flag_alpha)			flags |= LA_ONLYALPHA;
 	pWnd->SetColorAnimation	(str_flag, flags);	
+
+	int flag_highlight_txt = xml_doc.ReadAttribInt(path, index, "highlight_text", 0);
+	if (flag_highlight_txt) {
+		pWnd->HighlightText(true);
+
+		u32 hA = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hA", 255));
+		u32 hR = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hR", 255));
+		u32 hG = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hG", 255));
+		u32 hB = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hB", 255));
+		pWnd->SetHighlightColor(color_argb(hA, hR, hG, hB));
+
+	}
 
 
 	bool bComplexMode = xml_doc.ReadAttribInt(path, index, "complex_mode",0)?true:false;
@@ -418,6 +441,11 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButt
 	LPCSTR text_hint		= xml_doc.ReadAttrib	(path, index, "hint", nullptr);
 	if(text_hint)
 		pWnd->m_hint_text	= g_pStringTable->translate(text_hint);
+
+	float shadowOffsetX = xml_doc.ReadAttribFlt(path, index, "shadow_offset_x", 0);
+	float shadowOffsetY = xml_doc.ReadAttribFlt(path, index, "shadow_offset_y", 0);
+
+	pWnd->SetShadowOffset(shadowOffsetX, shadowOffsetY);
 
 	return true;
 }

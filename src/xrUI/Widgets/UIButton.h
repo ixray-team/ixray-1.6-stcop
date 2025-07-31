@@ -16,6 +16,7 @@ public:
 	//прорисовка окна
 	virtual void	DrawTexture				();
 	virtual void	DrawText				();
+	virtual void	DrawHighlightedText		();
 
 	virtual void	Update					();
 	virtual void	Enable					(bool status);
@@ -46,11 +47,18 @@ public:
 	const int			GetAccelerator			(int idx) const;
 	bool				IsAccelerator			(int iAccel) const;
 
+	// Смещение подсветки текста относительно самого текста. Может для при дания эффекта тени
+	void				SetShadowOffset			(float offsetX, float offsetY) { m_iShadowOffsetX = offsetX; m_iShadowOffsetY = offsetY; }
 	shared_str			m_hint_text;
 protected:
 	
 	E_BUTTON_STATE		m_eButtonState;
 	s16					m_uAccelerator[4];
+
+	// Смещение подсветки текста
+	float				m_iShadowOffsetX;
+	float				m_iShadowOffsetY;
+
 	bool				m_bIsSwitch;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
