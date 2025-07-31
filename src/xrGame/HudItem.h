@@ -79,6 +79,7 @@ protected:
 	};
 public:
 	virtual void				Load				(LPCSTR section);
+	virtual void				LoadSounds			(LPCSTR section);
 	virtual	BOOL				net_Spawn			(CSE_Abstract* DC)				{return TRUE;};
 	virtual void				net_Destroy			()								{};
 	virtual void				OnEvent				(NET_Packet& P, u16 type);
@@ -160,8 +161,6 @@ public:
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore; }
 
-	void PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allowOverlap = false);
-
 	enum EDevicesFlags
 	{
 		df_torch = (1 << 0),
@@ -185,12 +184,45 @@ public:
 		af_firemode = (1 << 14),
 	};
 
+	enum ESoundsFlags
+	{
+		sf_headlamp = (1 << 0),
+		sf_nv = (1 << 1),
+		sf_prepare_detector = (1 << 2),
+		sf_finish_detector = (1 << 3),
+		sf_changefiremode = (1 << 4),
+		sf_aim_start = (1 << 5),
+		sf_aim_end = (1 << 6),
+		sf_reload_empty = (1 << 7),
+		sf_reload_jam = (1 << 8),
+		sf_reload_empty_det = (1 << 9),
+		sf_reload_jam_det = (1 << 10),
+		sf_reload_jam_last = (1 << 11),
+		sf_reload_jam_last_det = (1 << 12),
+		sf_shoot_actor = (1 << 13),
+		sf_shoot_actor_last = (1 << 14),
+		sf_shoot_last = (1 << 15),
+		sf_shoot_actor_sil = (1 << 16),
+		sf_shoot_last_sil = (1 << 17),
+		sf_shoot_actor_last_sil = (1 << 18),
+		sf_draw = (1 << 19),
+		sf_holster = (1 << 20),
+		sf_throw_begin = (1 << 21),
+		sf_throw = (1 << 22),
+		sf_kick = (1 << 23),
+		sf_grenade_change = (1 << 24),
+		sf_shoot_grenade_actor = (1 << 25),
+		sf_switch_g = (1 << 26),
+	};
+
 	Flags32 m_eDevicesFlags;
 	Flags32 m_eAnimationsFlags;
+	Flags32 m_eSoundsFlags;
 
 	bool bDisablePrepareAnimation = false;
 
 	virtual bool WpnCanShoot() const { return false; }
+	bool SoundExist(LPCSTR section, LPCSTR sound_name);
 
 	struct jitter_params
 	{
@@ -213,7 +245,7 @@ protected:
 
 	u32							m_animation_slot;
 
-	HUD_SOUND_COLLECTION		m_sounds;
+	HUD_SOUND_COLLECTION_LAYERED m_sounds;
 	InertionData				m_current_inertion;
 	float						m_nearwall_dist_max;
 	float						m_nearwall_dist_min;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Weapon.h"
-#include "HudSound.h"
 #include "../xrSound/ai_sounds.h"
 
 class ENGINE_API CMotionDef;
@@ -35,7 +34,6 @@ protected:
 	// General
 	//кадр момента пересчета UpdateSounds
 	u32				dwUpdateSounds_Frame;
-	bool			last_sound_exist[2];
 protected:
 
 	virtual void	switch2_Idle	();
@@ -47,7 +45,8 @@ protected:
 	virtual void	switch2_Showing	();
 	virtual void	switch2_FireMode();
 	
-	virtual void	OnShot			();	
+	virtual void	OnShot			();
+			void	SelectShotSound ();
 	
 	virtual void	OnEmptyClick	();
 
@@ -72,7 +71,8 @@ public:
 					CWeaponMagazined	(ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
 	virtual			~CWeaponMagazined	();
 
-	virtual void	Load			(LPCSTR section);
+	virtual void	Load(LPCSTR section);
+	virtual void	LoadSounds(LPCSTR section);
 			void	LoadSilencerKoeffs();
 	virtual CWeaponMagazined*cast_weapon_magazined	()		 {return this;}
 
@@ -179,7 +179,6 @@ protected:
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();
-	virtual bool	WeaponSoundExist		(LPCSTR section, LPCSTR sound_name);
 
 	virtual void	FireBullet			(const Fvector& pos, 
         								 const Fvector& dir, 
@@ -188,9 +187,5 @@ protected:
 										 u16 parent_ids,
 										 u16 weapon_id,
 										 bool send_hit);
-
-	//Alundaio: LAYERED_SND_SHOOT
-	HUD_SOUND_COLLECTION_LAYERED m_layered_sounds;
-	//-Alundaio
 
 };
