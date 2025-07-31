@@ -209,7 +209,7 @@ void CGrenade::DiscardState()
 
 bool CGrenade::SendDeactivateItem()
 {
-	CActor* pActor = smart_cast<CActor*>(m_pInventory->GetOwner());
+	CActor* pActor = m_pInventory->GetOwner() ? m_pInventory->GetOwner()->cast_actor() : nullptr;
 	if (pActor && (GetState() == eReady || GetState() == eThrow))
 		return false;
 
@@ -273,45 +273,57 @@ void CGrenade::OnEvent(NET_Packet& P, u16 type)
 
 void CGrenade::PutNextToSlot()
 {
-	if (OnClient()) return;
+	if (OnClient())
+	{
+		return;
+	}
 
-	VERIFY									(!getDestroy());
+	VERIFY(!getDestroy());
 	//выкинуть гранату из инвентаря
-	NET_Packet						P;
+	NET_Packet P;
 	if (m_pInventory)
 	{
-		m_pInventory->Ruck					(this);
+		m_pInventory->Ruck(this);
 
-		this->u_EventGen				(P, GEG_PLAYER_ITEM2RUCK, this->H_Parent()->ID());
-		P.w_u16							(this->ID());
-		this->u_EventSend				(P);
+		this->u_EventGen(P, GEG_PLAYER_ITEM2RUCK, this->H_Parent()->ID());
+		P.w_u16(this->ID());
+		this->u_EventSend(P);
 	}
 	else
-		Msg ("! PutNextToSlot : m_pInventory = nullptr [%d][%d]", ID(), Device.dwFrame);	
-
-	if (smart_cast<CInventoryOwner*>(H_Parent()) && m_pInventory)
 	{
-		CGrenade *pNext						= smart_cast<CGrenade*>(	m_pInventory->Same(this,true)		);
-		if(!pNext) pNext					= smart_cast<CGrenade*>(	m_pInventory->SameSlot(GRENADE_SLOT, this, true)	);
+		Msg("! PutNextToSlot : m_pInventory = nullptr [%d][%d]", ID(), Device.dwFrame);
+	}
 
-		VERIFY								(pNext != this);
+	if (H_Parent() && H_Parent()->cast_inventory_owner() && m_pInventory)
+	{
+		PIItem finded_item = m_pInventory->Same(this, true);
 
-		if(pNext && m_pInventory->Slot(pNext->BaseSlot(),pNext) )
+		CGrenade* pNext = finded_item ? finded_item->cast_grenade() : nullptr;
+		if (!pNext)
 		{
-			pNext->u_EventGen				(P, GEG_PLAYER_ITEM2SLOT, pNext->H_Parent()->ID());
-			P.w_u16							(pNext->ID());
-			P.w_u16							(pNext->BaseSlot());
-			pNext->u_EventSend				(P);
-			m_pInventory->SetActiveSlot		(pNext->BaseSlot());
-		}else
-		{
-			CActor* pActor = smart_cast<CActor*>( m_pInventory->GetOwner());
-			
-			if(pActor)
-				pActor->OnPrevWeaponSlot();
+			finded_item = m_pInventory->SameSlot(GRENADE_SLOT, this, true);
+			pNext = finded_item ? finded_item->cast_grenade() : nullptr;
 		}
 
-		m_thrown				= false;
+		VERIFY(pNext != this);
+
+		if (pNext && m_pInventory->Slot(pNext->BaseSlot(), pNext))
+		{
+			pNext->u_EventGen(P, GEG_PLAYER_ITEM2SLOT, pNext->H_Parent()->ID());
+			P.w_u16(pNext->ID());
+			P.w_u16(pNext->BaseSlot());
+			pNext->u_EventSend(P);
+			m_pInventory->SetActiveSlot(pNext->BaseSlot());
+		}
+		else
+		{
+			if (CActor* pActor = m_pInventory->GetOwner() ? m_pInventory->GetOwner()->cast_actor() : nullptr)
+			{
+				pActor->OnPrevWeaponSlot();
+			}
+		}
+
+		m_thrown = false;
 	}
 }
 
@@ -344,15 +356,13 @@ bool CGrenade::Action(u16 cmd, u32 flags)
 	//переключение типа гранаты
 	case kWPN_NEXT:
 		{
-            if(flags&CMD_START) 
+            if (flags & CMD_START) 
 			{
-				if(m_pInventory)
+				if (m_pInventory)
 				{
-					TIItemContainer::iterator it = m_pInventory->m_ruck.begin();
-					TIItemContainer::iterator it_e = m_pInventory->m_ruck.end();
-					for(;it!=it_e;++it) 
+					for (PIItem item : m_pInventory->m_ruck)
 					{
-						CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
+						CGrenade* pGrenade = item->cast_grenade();
 						if (pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect())) 
 						{
 							m_pInventory->PutGrenade(pGrenade);
@@ -403,26 +413,25 @@ void CGrenade::DeactivateItem()
 {
 	//Drop grenade if primed
 	StopCurrentAnimWithoutCallback();
-	if ( !GetTmpPreDestroy() && Local() && ( GetState()==eThrowStart || GetState()==eReady || GetState()==eThrow ) )
+	if (!GetTmpPreDestroy() && Local() && (GetState() == eThrowStart || GetState() == eReady || GetState() == eThrow))
 	{
 		if (m_fake_missile)
 		{
-			CGrenade*		pGrenade	= smart_cast<CGrenade*>( m_fake_missile );
-			if ( pGrenade )
+			CGrenade* pGrenade	= m_fake_missile->cast_grenade();
+			if (pGrenade)
 			{
-				if ( m_pInventory->GetOwner() )
+				if (m_pInventory->GetOwner())
 				{
-					CActor* pActor = smart_cast<CActor*>( m_pInventory->GetOwner() );
-					if (pActor)
+					if (CActor* pActor = m_pInventory->GetOwner()->cast_actor())
 					{
-						if ( !pActor->g_Alive() )
+						if (!pActor->g_Alive())
 						{
-							m_constpower			= false;
-							m_fThrowForce			= 0;
+							m_constpower = false;
+							m_fThrowForce = 0;
 						}
 					}
 				}				
-				Throw	();
+				Throw();
 			};
 		};
 	};

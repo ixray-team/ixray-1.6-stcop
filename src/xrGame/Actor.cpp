@@ -977,7 +977,7 @@ void CActor::Die	(CObject* who)
 			}
 			else
 			{
-				CCustomOutfit *pOutfit = smart_cast<CCustomOutfit *> (item_in_slot);
+				CCustomOutfit *pOutfit = item_in_slot ? item_in_slot->cast_outfit() : nullptr;
 				if (pOutfit) continue;
 			};
 			if(item_in_slot) 
@@ -993,22 +993,21 @@ void CActor::Die	(CObject* who)
 		if (!IsGameTypeSingle())
 		{
 			//if we are on server and actor has PDA - destroy PDA
-			TIItemContainer &l_rlist	= inventory().m_ruck;
-			for(TIItemContainer::iterator l_it = l_rlist.begin(); l_rlist.end() != l_it; ++l_it)
+			for (PIItem item : inventory().m_ruck)
 			{
-				if (GameID() == eGameIDArtefactHunt)
+				if (GameID() & eGameIDArtefactHunt)
 				{
-					CArtefact* pArtefact = smart_cast<CArtefact*> (*l_it);
+					CArtefact* pArtefact = item->cast_artefact();
 					if (pArtefact)
 					{
-						(*l_it)->SetDropManual(TRUE);
+						item->SetDropManual(TRUE);
 						continue;
 					};
 				};
 
-				if ((*l_it)->object().CLS_ID == CLSID_OBJECT_PLAYERS_BAG)
+				if (item->object().CLS_ID == CLSID_OBJECT_PLAYERS_BAG)
 				{
-					(*l_it)->SetDropManual(TRUE);
+					item->SetDropManual(TRUE);
 					continue;
 				};
 			};
@@ -1159,6 +1158,7 @@ float CActor::currentFOV()
 	{
 		return g_fov + SprintFov;
 	}
+	
 	CWeapon* pWeapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
 
 	if (eacFreeLook != cam_active && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
@@ -1324,7 +1324,7 @@ void CActor::UpdateCL()
 
 	if (!g_player_hud->m_need_reload && !HudAnimator()->IsActive())
 	{
-		CHudItemObject* item = smart_cast<CHudItemObject*>(inventory().ActiveItem());
+		CHudItem* item = inventory().ActiveItem() ? inventory().ActiveItem()->cast_hud_item() : nullptr;
 
 		if (item != nullptr || det != nullptr)
 		{
@@ -1425,7 +1425,7 @@ void CActor::UpdateCL()
 	PickupModeUpdate_COD();
 
 	SetZoomAimingMode		(false);
-	CWeapon* pWeapon		= smart_cast<CWeapon*>(inventory().ActiveItem());	
+	CWeapon* pWeapon		= inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
 
 	cam_Update(float(Device.dwTimeDelta)/1000.0f, currentFOV());
 
@@ -1643,7 +1643,7 @@ void CActor::UpdatePlayerView()
 	{
 		Fvector cent;
 		Center(cent);
-		CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+		CWeapon* pWeapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
 		CCameraLook* pCam = smart_cast<CCameraLook*>(cam_Active());
 		has_visible = pCam && pCam->GetDist() >= 0.43f && (!pWeapon || !pWeapon->render_item_ui_query());
 		has_shadow_only = psGameFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
@@ -1786,7 +1786,7 @@ void CActor::UpdateConditionArtefacts()
 
 	for (PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = smart_cast<CArtefact*>(item);
+		CArtefact* artefact = item->cast_artefact();
 		if (artefact && artefact->DegradationRate())
 		{
 			float cond_loss = 0.0f;
@@ -1880,7 +1880,7 @@ void CActor::HitArtefactsCondition(SHit& hit)
 
 	for (PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = smart_cast<CArtefact*>(item);
+		CArtefact* artefact = item->cast_artefact();
 		if (artefact && artefact->DegradationRate())
 		{
 			shared_str hit_absorbation_sect = READ_IF_EXISTS(pSettings, r_string, artefact->m_section_id.c_str(), "hit_absorbation_sect", "");
@@ -2021,16 +2021,16 @@ void CActor::shedule_Update	(u32 DT)
 
 	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 6.0f)
 	{
-		m_pObjectWeLookingAt = smart_cast<CGameObject*>(RQ.O);
+		m_pObjectWeLookingAt = RQ.O->cast_game_object();
 
-		CGameObject* game_object = smart_cast<CGameObject*>(RQ.O);
-		m_pUsableObject = smart_cast<CUsableScriptObject*>(game_object);
-		m_pInvBoxWeLookingAt = smart_cast<CInventoryBox*>(game_object);
-		m_pPersonWeLookingAt = smart_cast<CInventoryOwner*>(game_object);
+		CGameObject* game_object = RQ.O->cast_game_object();
+		m_pUsableObject = game_object ? game_object->cast_usable_script_object() : nullptr;
+		m_pInvBoxWeLookingAt = game_object ? game_object->cast_inventory_box() : nullptr;
+		m_pPersonWeLookingAt = game_object ? game_object->cast_inventory_owner() : nullptr;
 		m_pVehicleWeLookingAt = smart_cast<CHolderCustom*>(game_object);
-		CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(game_object);
+		CEntityAlive* pEntityAlive = game_object ? game_object->cast_entity_alive() : nullptr;
 
-		CActor* IsPlayerPtr = smart_cast<CActor*>(pEntityAlive);
+		CActor* IsPlayerPtr = pEntityAlive ? pEntityAlive->cast_actor() : nullptr;
 		
 		if (m_pVehicleWeLookingAt != nullptr)
 		{
@@ -2360,7 +2360,7 @@ void CActor::ForceTransform(const Fmatrix& m)
 float CActor::Radius()const
 { 
 	float R		= inherited::Radius();
-	CWeapon* W	= smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon* W	= inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
 	if (W) R	+= W->Radius();
 	//	if (HUDview()) R *= 1.f/psHUD_FOV;
 	return R;
@@ -2411,7 +2411,7 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 {
 	CInventoryOwner::OnItemDrop(inventory_item, just_before_destroy);
 
-	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(inventory_item);
+	CCustomOutfit* outfit = inventory_item->cast_outfit();
 	if (outfit && inventory_item->m_ItemCurrPlace.type == eItemPlaceSlot)
 	{
 		outfit->ApplySkinModel(this, false, false);
@@ -2422,7 +2422,7 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 		}
 	}
 
-	CHelmet* helmet = smart_cast<CHelmet*>(inventory_item);
+	CHelmet* helmet = inventory_item->cast_helmet();
 	if (helmet && inventory_item->m_ItemCurrPlace.type == eItemPlaceSlot)
 	{
 		if (GetNightVisionEffector() && GetNightVisionEffector()->GetStatus())
@@ -2431,7 +2431,7 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 		}
 	}
 
-	CWeapon* weapon	= smart_cast<CWeapon*>(inventory_item);
+	CWeapon* weapon	= inventory_item->cast_weapon();
 	if(weapon && inventory_item->m_ItemCurrPlace.type==eItemPlaceSlot)
 	{
 		weapon->bReloadKeyPressed = false;
@@ -2497,9 +2497,9 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 		update_time		= 0.0f;
 	}
 
-	for (TIItemContainer::iterator it = inventory().m_belt.begin(); inventory().m_belt.end() != it; ++it)
+	for (PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		CArtefact* artefact = item->cast_artefact();
 		if (artefact)
 		{
 			float art_cond = artefact->GetCondition();
@@ -2534,12 +2534,9 @@ float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 {
 	float sum = 0.0f;
 
-	auto it = inventory().m_belt.begin();
-	auto ite = inventory().m_belt.end();
-
-	for (; it != ite; ++it)
+	for (PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		CArtefact* artefact = item->cast_artefact();
 		if (artefact)
 		{
 			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
@@ -2568,12 +2565,10 @@ float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
 {
 	float sum = 0.0f;
-	auto it = inventory().m_belt.begin();
-	auto ite = inventory().m_belt.end();
 
-	for (; it != ite; ++it)
+	for (PIItem item : inventory().m_belt)
 	{
-		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		CArtefact* artefact = item->cast_artefact();
 		if (artefact)
 		{
 			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
@@ -2736,11 +2731,10 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 		res = conditions().change_v().m_fV_HealthRestore;
 		res += conditions().V_SatietyHealth() * ( (conditions().GetSatiety() > 0.0f) ? 1.0f : -1.0f );
 
-		TIItemContainer::iterator itb = inventory().m_belt.begin();
-		TIItemContainer::iterator ite = inventory().m_belt.end();
-		for( ; itb != ite; ++itb ) 
+		for (PIItem item : inventory().m_belt)
 		{
-			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
+			CArtefact* artefact = item->cast_artefact();
+			if (artefact)
 			if ( artefact )
 			{
 				res += (artefact->m_fHealthRestoreSpeed * artefact->GetCondition());
@@ -2755,11 +2749,10 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 	}
 	case ALife::eRadiationRestoreSpeed:
 	{	
-		TIItemContainer::iterator itb = inventory().m_belt.begin();
-		TIItemContainer::iterator ite = inventory().m_belt.end();
-		for( ; itb != ite; ++itb ) 
+		for (PIItem item : inventory().m_belt)
 		{
-			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
+			CArtefact* artefact = item->cast_artefact();
+			if (artefact)
 			if ( artefact )
 			{
 				res += (artefact->m_fRadiationRestoreSpeed * artefact->GetCondition());
@@ -2776,12 +2769,10 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 	{
 		res = conditions().V_Satiety();
 
-		TIItemContainer::iterator itb = inventory().m_belt.begin();
-		TIItemContainer::iterator ite = inventory().m_belt.end();
-		for( ; itb != ite; ++itb ) 
+		for (PIItem item : inventory().m_belt)
 		{
-			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
-			if ( artefact )
+			CArtefact* artefact = item->cast_artefact();
+			if (artefact)
 			{
 				res += (artefact->m_fSatietyRestoreSpeed * artefact->GetCondition());
 			}
@@ -2797,12 +2788,10 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 	{
 		res = conditions().GetSatietyPower();
 
-		TIItemContainer::iterator itb = inventory().m_belt.begin();
-		TIItemContainer::iterator ite = inventory().m_belt.end();
-		for( ; itb != ite; ++itb ) 
+		for (PIItem item : inventory().m_belt)
 		{
-			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
-			if ( artefact )
+			CArtefact* artefact = item->cast_artefact();
+			if (artefact)
 			{
 				res += (artefact->m_fPowerRestoreSpeed * artefact->GetCondition());
 			}
@@ -2822,12 +2811,10 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 	{
 		res = conditions().change_v().m_fV_WoundIncarnation;
 	
-		TIItemContainer::iterator itb = inventory().m_belt.begin();
-		TIItemContainer::iterator ite = inventory().m_belt.end();
-		for( ; itb != ite; ++itb ) 
+		for (PIItem item : inventory().m_belt) 
 		{
-			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
-			if ( artefact )
+			CArtefact* artefact = item->cast_artefact();
+			if (artefact)
 			{
 				res += (artefact->m_fBleedingRestoreSpeed * artefact->GetCondition());
 			}
@@ -2865,13 +2852,13 @@ bool CActor::unlimited_ammo()
 CCustomDetector* CActor::GetDetector(bool in_slot)
 {
 	if (in_slot)
-		return smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT));
+		return inventory().ItemFromSlot(DETECTOR_SLOT) ? inventory().ItemFromSlot(DETECTOR_SLOT)->cast_custom_detector() : nullptr;
 	else
 	{
 		if (g_player_hud != nullptr && g_player_hud->attached_item(1) != nullptr)
 		{
 			attachable_hud_item* i1 = g_player_hud->attached_item(1);
-			return smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
+			return i1->m_parent_hud_item ? i1->m_parent_hud_item->cast_custom_detector() : nullptr;
 		}
 	}
 

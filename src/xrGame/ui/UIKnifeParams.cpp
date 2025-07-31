@@ -122,7 +122,7 @@ void CUIKnifeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 	m_progressDamage.SetTwoPos(cur_damage, slot_damage);
 	m_progressHandling.SetTwoPos(cur_hand, slot_hand);
 
-	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(&cur_wpn);
+	CWeaponKnife* knife = cur_wpn.cast_weapon_knife();
 	float dist1 = knife->GetHit1Dist();
 	float dist2 = knife->GetHit2Dist();
 	float dist1_sl = dist1;
@@ -130,7 +130,7 @@ void CUIKnifeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 	
 	if (slot_wpn)
 	{
-		CWeaponKnife* slot_knife = smart_cast<CWeaponKnife*>(slot_wpn);
+		CWeaponKnife* slot_knife = slot_wpn->cast_weapon_knife();
 		if (slot_knife)
 		{
 			dist1_sl = slot_knife->GetHit1Dist();
@@ -167,6 +167,6 @@ void CUIKnifeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 bool CUIKnifeParams::Check(CInventoryItem& cur_wpn)
 {
-	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(&cur_wpn);
+	CWeaponKnife* knife = cur_wpn.cast_weapon_knife();
 	return knife && knife->m_bShowKnifeStats;
 }

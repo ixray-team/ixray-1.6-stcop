@@ -187,8 +187,8 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 	if (m_Prop_line)
 		AttachChild( m_Prop_line );
 
-	CActor* actor = smart_cast<CActor*>( Level().CurrentViewEntity() );
-	if ( !actor )
+	CActor* actor = Level().CurrentViewEntity()->cast_actor();
+	if (!actor)
 	{
 		return;
 	}

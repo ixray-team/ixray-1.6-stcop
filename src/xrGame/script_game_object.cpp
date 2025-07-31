@@ -717,21 +717,22 @@ void CScriptGameObject::PhantomSetEnemy(CScriptGameObject* enemy)
 bool CScriptGameObject::Use(CScriptGameObject* obj)
 {
 	bool ret = object().use(&obj->object());
-					  
-						   
- 
 
-	CActor* actor = smart_cast<CActor*>(&obj->object());
+	CActor* actor = obj->object().cast_actor();
 	if (!actor)
+	{
 		return ret;
+	}
 
-	CInventoryOwner* pActorInv = smart_cast<CInventoryOwner*>(actor);
+	CInventoryOwner* pActorInv = actor->cast_inventory_owner();
 	if (!pActorInv)
+	{
 		return ret;
+	}
 
 	CUIActorMenu& ActorMenu = CurrentGameUI()->ActorMenu();
 
-	CInventoryBox* pBox = smart_cast<CInventoryBox*>(&object());
+	CInventoryBox* pBox = object().cast_inventory_box();
 	if (pBox)
 	{
 		ActorMenu.SetActor(pActorInv);
@@ -741,8 +742,10 @@ bool CScriptGameObject::Use(CScriptGameObject* obj)
 		ActorMenu.ShowDialog(true);
 
 		return true;
-	} else {
-		CInventoryOwner* pOtherOwner = smart_cast<CInventoryOwner*>(&object());
+	}
+	else
+	{
+		CInventoryOwner* pOtherOwner = object().cast_inventory_owner();
 		if (!pOtherOwner)
 			return ret;
 

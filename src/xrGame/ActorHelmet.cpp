@@ -67,7 +67,7 @@ void CHelmet::ReloadBonesProtection()
 {
 	CObject* parent = H_Parent();
 	if(IsGameTypeSingle())
-		parent = smart_cast<CObject*>(Level().CurrentViewEntity());
+		parent = Level().CurrentViewEntity();
 
 	if(parent && parent->Visual() && m_BonesProtectionSect.size())
 		m_boneProtection->reload( m_BonesProtectionSect, smart_cast<IKinematics*>(parent->Visual()));
@@ -112,7 +112,7 @@ void CHelmet::OnMoveToRuck(const SInvItemPlace& previous_place)
 	inherited::OnMoveToRuck		(previous_place);
 	if (m_pInventory && (previous_place.type==eItemPlaceSlot))
 	{
-		CActor* pActor = smart_cast<CActor*>(H_Parent());
+		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
 		if (pActor && pActor->GetNightVisionEffector())
 		{
 			pActor->GetNightVisionEffector()->SwitchNightVision(false);
@@ -198,7 +198,7 @@ void CHelmet::AddBonesProtection(LPCSTR bones_section)
 {
 	CObject* parent = H_Parent();
 	if(IsGameTypeSingle())
-		parent = smart_cast<CObject*>(Level().CurrentViewEntity());
+		parent = Level().CurrentViewEntity();
 
 	if ( parent && parent->Visual() && m_BonesProtectionSect.size() )
 		m_boneProtection->add(bones_section, smart_cast<IKinematics*>( parent->Visual() ) );

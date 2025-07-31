@@ -887,11 +887,13 @@ void CActorCondition::UpdateTutorialThresholds()
 		xr_strcpy(cb_name,"_G.on_actor_cant_walk_weight");
 	}
 
-	if(b && !m_condition_flags.test(eWeaponJammedReached)&&m_object->inventory().GetActiveSlot()!=NO_ACTIVE_SLOT){
-		PIItem item							= m_object->inventory().ItemFromSlot(m_object->inventory().GetActiveSlot());
-		CWeapon* pWeapon					= smart_cast<CWeapon*>(item); 
-		if(pWeapon&&pWeapon->GetCondition()<_cWpnCondition){
-			m_condition_flags.set			(eWeaponJammedReached, TRUE);b=false;
+	if (b && !m_condition_flags.test(eWeaponJammedReached)&&m_object->inventory().GetActiveSlot()!=NO_ACTIVE_SLOT){
+		PIItem item = m_object->inventory().ActiveItem();
+		CWeapon* pWeapon = item ? item->cast_weapon() : nullptr;
+		if (pWeapon && pWeapon->GetCondition() < _cWpnCondition)
+		{
+			m_condition_flags.set(eWeaponJammedReached, TRUE);
+			b = false;
 			xr_strcpy(cb_name,"_G.on_actor_weapon_jammed");
 		}
 	}
