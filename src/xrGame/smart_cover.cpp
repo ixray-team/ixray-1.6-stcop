@@ -40,24 +40,34 @@ cover::cover					(
 {
 	m_is_smart_cover			= 1;
 
-	m_loopholes.reserve(m_description->loopholes().size());
+	if (loopholes_availability)
+	{
+		m_loopholes.reserve(m_description->loopholes().size());
 
-	for (const auto& it : m_description->loopholes()) {
-		luabind::object::iterator	i = loopholes_availability.begin();
-		luabind::object::iterator	e = loopholes_availability.end();
-		for (; i != e; ++i) {
-			const char* const loophole_id = luabind::object_cast<const char*>(i.key());
-			if (xr_strcmp(loophole_id, it->id())) {
-				continue;
-			}
+		for (const auto& it : m_description->loopholes()) {
+			luabind::object::iterator	i = loopholes_availability.begin();
+			luabind::object::iterator	e = loopholes_availability.end();
+			for (; i != e; ++i) {
+				const char* const loophole_id = luabind::object_cast<const char*>(i.key());
+				if (xr_strcmp(loophole_id, it->id())) {
+					continue;
+				}
 
-			if (!luabind::object_cast<bool>(*i)) {
+				if (!luabind::object_cast<bool>(*i)) {
+					break;
+				}
+
+				m_loopholes.push_back(it);
 				break;
 			}
-
-			m_loopholes.push_back(it);
-			break;
 		}
+	}
+	else
+	{
+		m_loopholes.reserve(m_description->loopholes().size());
+
+		for (const auto& it : m_description->loopholes())
+			m_loopholes.push_back(it);
 	}
 
 	ILevelGraph const			&graph = ai().level_graph();
