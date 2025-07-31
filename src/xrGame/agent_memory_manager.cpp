@@ -42,18 +42,18 @@ void CAgentMemoryManager::reset_memory_masks						()
 }
 
 template <typename T>
-IC	void CAgentMemoryManager::update_memory_masks	(const squad_mask_type &mask, T &objects)
+IC	void CAgentMemoryManager::update_memory_masks	(const u64 &mask, T &objects)
 {
 	typename T::iterator	I = objects.begin();
 	typename T::iterator	E = objects.end();
 	for ( ; I != E; ++I) {
-		squad_mask_type		m = (*I).m_squad_mask.get();
+		u64		m = (*I).m_squad_mask.get();
 		update_memory_mask	(mask,m);
 		(*I).m_squad_mask.assign(m);
 	}
 }
 
-void CAgentMemoryManager::update_memory_masks		(const squad_mask_type &mask)
+void CAgentMemoryManager::update_memory_masks		(const u64 &mask)
 {
 	update_memory_masks		(mask,visibles());
 	update_memory_masks		(mask,sounds());
@@ -62,7 +62,7 @@ void CAgentMemoryManager::update_memory_masks		(const squad_mask_type &mask)
 	VISIBLES::iterator		I = visibles().begin();
 	VISIBLES::iterator		E = visibles().end();
 	for ( ; I != E; ++I) {
-		squad_mask_type		m = (*I).m_visible.get();
+		u64		m = (*I).m_visible.get();
 		update_memory_mask	(mask,m);
 		(*I).m_visible.assign(m);
 	}
@@ -71,7 +71,7 @@ void CAgentMemoryManager::update_memory_masks		(const squad_mask_type &mask)
 void CAgentMemoryManager::object_information		(const CObject *object, u32 &level_time, Fvector &position)
 {
 	{
-		VISIBLES::const_iterator	I = std::find(visibles().begin(),visibles().end(),object_id(object));
+		VISIBLES::const_iterator	I = std::find(visibles().begin(),visibles().end(), CMemoryObject::object_id(object));
 		if (visibles().end() != I) {
 			level_time		= (*I).m_last_level_time;
 			position		= (*I).m_object_params.m_position;
@@ -79,7 +79,7 @@ void CAgentMemoryManager::object_information		(const CObject *object, u32 &level
 	}
 
 	{
-		SOUNDS::const_iterator		I = std::find(sounds().begin(),sounds().end(),object_id(object));
+		SOUNDS::const_iterator		I = std::find(sounds().begin(),sounds().end(), CMemoryObject::object_id(object));
 		if ((sounds().end() != I) && (level_time < (*I).m_last_level_time)) {
 			level_time		= (*I).m_last_level_time;
 			position		= (*I).m_object_params.m_position;
@@ -87,7 +87,7 @@ void CAgentMemoryManager::object_information		(const CObject *object, u32 &level
 	}
 	
 	{
-		HITS::const_iterator		I = std::find(hits().begin(),hits().end(),object_id(object));
+		HITS::const_iterator		I = std::find(hits().begin(),hits().end(), CMemoryObject::object_id(object));
 		if ((hits().end() != I) && (level_time < (*I).m_last_level_time)) {
 			level_time		= (*I).m_last_level_time;
 			position		= (*I).m_object_params.m_position;

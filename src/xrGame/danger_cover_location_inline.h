@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC	CDangerCoverLocation::CDangerCoverLocation	(const CCoverPoint *cover, u32 level_time, u32 interval, float radius, const squad_mask_type &mask)
+IC	CDangerCoverLocation::CDangerCoverLocation	(const CCoverPoint *cover, u32 level_time, u32 interval, float radius, const u64 &mask)
 {
 	VERIFY			(cover);
 	m_cover			= cover;

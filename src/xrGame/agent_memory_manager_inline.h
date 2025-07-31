@@ -53,9 +53,9 @@ IC	CAgentMemoryManager::HITS &CAgentMemoryManager::hits			() const
 	return						(*m_hit_objects);
 }
 
-IC	void CAgentMemoryManager::update_memory_mask	(const squad_mask_type &mask, squad_mask_type &current)
+IC	void CAgentMemoryManager::update_memory_mask	(const u64 &mask, u64 &current)
 {
 	// this function removes specified bit and shifts all the others
-	current					= (((mask ^ squad_mask_type(-1) ^ (mask - 1)) & current) >> 1) | (current & (mask - 1));
+	current					= (((mask ^ u64(-1) ^ (mask - 1)) & current) >> 1) | (current & (mask - 1));
 }
 
