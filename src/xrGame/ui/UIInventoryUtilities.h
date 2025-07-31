@@ -24,6 +24,11 @@ class CUITextWnd;
 
 #define TRADE_ICONS_SCALE		(4.f/5.f)
 
+constexpr const char* BUY_MENU_TEXTURE = "ui\\ui_mp_buy_menu";
+constexpr const char* CHAR_ICONS = "ui\\ui_icons_npc";
+constexpr const char* MAP_ICONS = "ui\\ui_icons_map";
+constexpr const char* MP_CHAR_ICONS = "ui\\ui_models_multiplayer";
+
 namespace InventoryUtilities
 {
 
