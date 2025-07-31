@@ -24,6 +24,31 @@ class CInventoryOwner;
 class CMissile;
 class CPhysicsShellHolder;
 class CWeapon;
+class CWeaponBM16;
+class CWeaponRPG7;
+class CWeaponRG6;
+class CWeaponMagazined;
+class CWeaponMagazinedWGrenade;
+class CWeaponKnife;
+class CWeaponBinoculars;
+class CHudItem;
+class CWeaponAmmo;
+class CTorch;
+class CCustomDetector;
+class CArtefact;
+class CCustomOutfit;
+class CHelmet;
+class CAI_Stalker;
+class CBolt;
+class CPda;
+class CInventoryBox;
+class CCustomZone;
+class CSpaceRestrictor;
+class CSpectator;
+class CSilencer;
+class CScope;
+class CGrenadeLauncher;
+
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
 #define CROW_RADIUS2	(60.f)
@@ -155,7 +180,30 @@ public:
 	virtual CMissile*					cast_missile		()					{return nullptr;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder()				{return nullptr;}
 	virtual CWeapon*					cast_weapon			()					{return nullptr;}
-
+	virtual CHudItem*					cast_hud_item		()					{return nullptr;}
+	virtual CWeaponRPG7* cast_weapon_rpg7() { return nullptr; }
+	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
+	virtual CTorch* cast_torch() { return nullptr; }
+	virtual CCustomDetector* cast_custom_detector() { return nullptr; }
+	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }
+	virtual CWeaponKnife* cast_weapon_knife() { return nullptr; }
+	virtual CWeaponMagazined* cast_weapon_magazined() { return nullptr; }
+	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() { return nullptr; }
+	virtual CWeaponBM16* cast_weapon_bm16() { return nullptr; }
+	virtual CArtefact* cast_artefact() { return nullptr; }
+	virtual CCustomOutfit* cast_outfit() { return nullptr; }
+	virtual CHelmet* cast_helmet() { return nullptr; }
+	virtual CWeaponAmmo* cast_weapon_ammo() { return nullptr; }
+	virtual CAI_Stalker* cast_stalker() { return nullptr; }
+	virtual CBolt* cast_bolt() { return nullptr; }
+	virtual CPda* cast_pda() { return nullptr; }
+	virtual CInventoryBox* cast_inventory_box() { return nullptr; }
+	virtual CCustomZone* cast_custom_zone() { return nullptr; }
+	virtual CSpaceRestrictor* cast_restrictor() { return nullptr; }
+	virtual CSpectator* cast_spectator() {return nullptr;}
+	virtual CSilencer* cast_addon_silencer() {return nullptr;}
+	virtual CScope* cast_addon_scope() {return nullptr;}
+	virtual CGrenadeLauncher* cast_addon_grenade_launcher() {return nullptr;}
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }

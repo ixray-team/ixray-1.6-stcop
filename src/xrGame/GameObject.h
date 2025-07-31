@@ -46,6 +46,26 @@ class CExplosiveRocket;
 class CGrenade;
 class CUsableScriptObject;
 class CBreakableObject;
+class CHudItem;
+class CCustomOutfit;
+class CHelmet;
+class CCustomDetector;
+class CWeaponAmmo;
+class CWeaponBinoculars;
+class CWeaponKnife;
+class CWeaponMagazined;
+class CWeaponMagazinedWGrenade;
+class CWeaponBM16;
+class CWeaponRPG7;
+class CWeaponRG6;
+class CTorch;
+class CBolt;
+class CPda;
+class CInventoryBox;
+class CSpectator;
+class CSilencer;
+class CScope;
+class CGrenadeLauncher;
 
 class IKinematics;
 class CAI_Trader;
@@ -98,8 +118,29 @@ public:
 	virtual CMissile					*cast_missile				()						{return nullptr;}
 	virtual CExplosiveRocket			*cast_explosive_rocket		()						{return nullptr;}
 	virtual CGrenade					*cast_grenade				()						{return nullptr;}
-	virtual CUsableScriptObject			*cast_usable_script_object	()						{return nullptr;}
+	virtual CUsableScriptObject			*cast_usable_script_object	()						{return this;}
 	virtual CBreakableObject			*cast_breakable_object		()						{return nullptr;}
+	virtual CHudItem					*cast_hud_item				()						{return nullptr;}
+	virtual CCustomOutfit				*cast_outfit				()						{return nullptr;}
+	virtual CHelmet						*cast_helmet				()						{return nullptr;}
+	virtual CCustomDetector				*cast_custom_detector		()						{return nullptr;}
+	virtual CWeaponAmmo					*cast_weapon_ammo			()						{return nullptr;}
+	virtual CWeaponBinoculars			*cast_weapon_binoculars		()						{return nullptr;}
+	virtual CWeaponKnife				*cast_weapon_knife			()						{return nullptr;}
+	virtual CWeaponMagazined			*cast_weapon_magazined		()						{return nullptr;}
+	virtual CWeaponMagazinedWGrenade	*cast_weapon_magazined_w_grenade()					{return nullptr;}
+	virtual CWeaponBM16					*cast_weapon_bm16			()						{return nullptr;}
+	virtual CWeaponRPG7					*cast_weapon_rpg7			()						{return nullptr;}
+	virtual CWeaponRG6					*cast_weapon_rg6			()						{return nullptr;}
+	virtual CTorch						*cast_torch					()						{return nullptr;}
+	virtual CBolt* cast_bolt() { return nullptr; }
+	virtual CPda* cast_pda() { return nullptr; }
+	virtual CInventoryBox* cast_inventory_box() { return nullptr; }
+	virtual CSpectator* cast_spectator() {return nullptr;}
+	virtual CSilencer* cast_addon_silencer() {return nullptr;}
+	virtual CScope* cast_addon_scope() {return nullptr;}
+	virtual CGrenadeLauncher* cast_addon_grenade_launcher() {return nullptr;}
+
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}
 	virtual bool						use						(CGameObject* who_use)		{return CUsableScriptObject::use(who_use);};
