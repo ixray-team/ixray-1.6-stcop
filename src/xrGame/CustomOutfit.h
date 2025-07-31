@@ -35,6 +35,7 @@ protected:
 
 	shared_str				m_ActorVisual;
 	shared_str				m_full_icon_name;
+	shared_str				m_character_portrait;
 	SBoneProtections*		m_boneProtection;	
 protected:
 	u32						m_ef_equipment_type;
@@ -71,6 +72,8 @@ public:
 			void			ApplySkinModel			(CActor* pActor, bool bDress, bool bHUDOnly);
 			void			ReloadBonesProtection	();
 			void			AddBonesProtection		(LPCSTR bones_section);
+
+	shared_str GetPortrait() const { return m_character_portrait; }
 
 protected:
 	virtual bool			install_upgrade_impl( LPCSTR section, bool test );
