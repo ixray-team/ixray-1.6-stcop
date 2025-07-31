@@ -1,9 +1,9 @@
 #pragma once
 #ifdef DEBUG
-class XRayObjectSpaceRender:public IObjectSpaceRender
+class CDS0_ObjectSpaceRender:public IObjectSpaceRender
 {
 public:
-	XRayObjectSpaceRender();
+	CDS0_ObjectSpaceRender();
 	virtual void Copy(IObjectSpaceRender &_in);;
 
 	virtual void dbgRender();;

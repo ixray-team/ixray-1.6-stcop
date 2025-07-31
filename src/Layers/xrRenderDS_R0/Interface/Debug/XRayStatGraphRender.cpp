@@ -1,21 +1,21 @@
 #include "stdafx.h"
 
-XRayStatGraphRender::XRayStatGraphRender()
+CDS0_StatGraphRender::CDS0_StatGraphRender()
 {
 }
 
-void XRayStatGraphRender::Copy(IStatGraphRender & _in)
+void CDS0_StatGraphRender::Copy(IStatGraphRender & _in)
 {
 }
 
-void XRayStatGraphRender::OnDeviceCreate()
+void CDS0_StatGraphRender::OnDeviceCreate()
 {
 }
 
-void XRayStatGraphRender::OnDeviceDestroy()
+void CDS0_StatGraphRender::OnDeviceDestroy()
 {
 }
 
-void XRayStatGraphRender::OnRender(CStatGraph & owner)
+void CDS0_StatGraphRender::OnRender(CStatGraph & owner)
 {
 }

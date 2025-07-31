@@ -1,9 +1,10 @@
 #pragma once
 #include "XRayFHierrarhyVisual.h"
-class XRaySkeletonX;
 
-class XRayKinematics : 
-	public XRayFHierrarhyVisual,
+class CDS0_SkeletonX;
+
+class CDS0_Kinematics : 
+	public CDS0_FHierrarhyVisual,
 	public IKinematics
 {
 public:
@@ -14,7 +15,7 @@ public:
 	virtual CBoneData* CreateBoneData(u16 ID) { return new CBoneData(ID); }
 	virtual void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
 	void BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi, u8 channel_mask, bool ignore_callbacks);
-	XRaySkeletonX* LL_GetChild(u32 idx);
+	CDS0_SkeletonX* LL_GetChild(u32 idx);
 	virtual void				OnCalculateBones() {}
 	void LL_Validate();
 	CBoneData* LL_GetBoneData(u16 bone_id)
@@ -37,8 +38,8 @@ public:
 	virtual void				IBoneInstances_Destroy();
 public:
 	virtual shared_str				getDebugName();
-	virtual ~XRayKinematics();
-	XRayKinematics();
+	virtual ~CDS0_Kinematics();
+	CDS0_Kinematics();
 	virtual void Bone_Calculate(CBoneData* bd, Fmatrix* parent);
 
 	virtual void Bone_GetAnimPos(Fmatrix& pos, u16 id, u8 channel_mask, bool ignore_callbacks);
@@ -149,18 +150,18 @@ public:
 	UpdateCallback Update_Callback;
 	void* Update_Callback_Param;
 	virtual void Load(const char* N, IReader* data, u32 dwFlags);
-	virtual void Copy(XRayRenderVisual* from);
+	virtual void Copy(CDS0_RenderVisual* from);
 	virtual void Spawn();
 	virtual void				Depart();
 public:
-	XRayRenderVisual *m_lod;
+	CDS0_RenderVisual *m_lod;
 
 	CBoneInstance* bone_instances; // bone instances
 protected:
 	//SkeletonWMVec				wallmarks;
 	u32 wm_frame;
 
-	xr_vector<XRayRenderVisual *> children_invisible;
+	xr_vector<CDS0_RenderVisual *> children_invisible;
 
 	// Globals
 	CInifile *pUserData;

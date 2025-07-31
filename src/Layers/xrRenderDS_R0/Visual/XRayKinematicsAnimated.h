@@ -1,9 +1,10 @@
 #pragma once
 #include "animation.h"
 #include "XRayKinematics.h"
+
 //*** Bone Instance *******************************************************************************
 #pragma pack(push,8)
-class 		CBlendInstance	// Bone Instance Blend List (per-bone data)
+class CBlendInstance	// Bone Instance Blend List (per-bone data)
 {
 public:
 	typedef svector<CBlend*, MAX_BLENDED>	BlendSVec;
@@ -30,9 +31,11 @@ public:
 };
 #pragma pack(pop)
 
-class XRayKinematicsAnimated:public  XRayKinematics,public IKinematicsAnimated
+class CDS0_KinematicsAnimated:
+	public CDS0_Kinematics,
+	public IKinematicsAnimated
 {
-	typedef XRayKinematics							inherited;
+	typedef CDS0_Kinematics						inherited;
 	friend class								CBoneData;
 	friend class								CMotionDef;
 	friend class								CSkeletonX;
@@ -160,7 +163,7 @@ public:
 	const CPartition& partitions() const { return *m_Partition; };
 
 	// General "Visual" stuff
-	virtual void				Copy(XRayRenderVisual* pFrom);
+	virtual void				Copy(CDS0_RenderVisual* pFrom);
 	virtual void				Load(const char* N, IReader* data, u32 dwFlags);
 	virtual void				Spawn();
 	virtual	IKinematicsAnimated* dcast_PKinematicsAnimated() { return this; }
@@ -172,8 +175,8 @@ public:
 
 	void append_motion_from_path(const char* nameOgf, const char* pathOmf) override;
 
-	virtual						~XRayKinematicsAnimated();
-	XRayKinematicsAnimated();
+	virtual						~CDS0_KinematicsAnimated();
+	CDS0_KinematicsAnimated();
 
 	//virtual u32					mem_usage(bool bInstance) override
 	//{

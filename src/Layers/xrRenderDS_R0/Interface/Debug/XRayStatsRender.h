@@ -1,9 +1,9 @@
 #pragma once
 
-class XRayStatsRender:public IStatsRender
+class CDS0_StatsRender:public IStatsRender
 {
 public:
-	XRayStatsRender();
+	CDS0_StatsRender();
 	virtual void Copy(IStatsRender &_in) ;
 	virtual void OutData1(CGameFont &F) ;
 	virtual void OutData2(CGameFont &F) ;

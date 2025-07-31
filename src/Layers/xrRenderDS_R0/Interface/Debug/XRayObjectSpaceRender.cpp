@@ -1,22 +1,22 @@
 #include "stdafx.h"
 #ifdef DEBUG
-XRayObjectSpaceRender::XRayObjectSpaceRender()
+CDS0_ObjectSpaceRender::CDS0_ObjectSpaceRender()
 {
 }
 
-void XRayObjectSpaceRender::Copy(IObjectSpaceRender & _in)
+void CDS0_ObjectSpaceRender::Copy(IObjectSpaceRender & _in)
 {
 }
 
-void XRayObjectSpaceRender::dbgRender()
+void CDS0_ObjectSpaceRender::dbgRender()
 {
 }
 
-void XRayObjectSpaceRender::dbgAddSphere(const Fsphere & sphere, u32 colour)
+void CDS0_ObjectSpaceRender::dbgAddSphere(const Fsphere & sphere, u32 colour)
 {
 }
 
-void XRayObjectSpaceRender::SetShader()
+void CDS0_ObjectSpaceRender::SetShader()
 {
 }
 #endif

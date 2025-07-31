@@ -1,6 +1,6 @@
-#include "XRaySkeletonX.h"
-
 #include "stdafx.h"
+
+#include "XRaySkeletonX.h"
 #include "../../xrCDB/xrCDB.h"
 #include "XRayKinematics.h"
 #include "../xrRender/cl_intersect.h"
@@ -14,7 +14,7 @@ struct vertRender// T&B are not skinned, because in R2 skinning occurs always in
 };
 #pragma pack(pop)
 
-void XRaySkeletonX::_Copy(XRaySkeletonX* B)
+void CDS0_SkeletonX::_Copy(CDS0_SkeletonX* B)
 {
 	Parent = NULL;
 	ChildIDX = B->ChildIDX;
@@ -33,12 +33,12 @@ void XRaySkeletonX::_Copy(XRaySkeletonX* B)
 
 	m_Indices = B->m_Indices;
 }
-void XRaySkeletonX::AfterLoad(XRayKinematics* parent, u16 child_idx)
+void CDS0_SkeletonX::AfterLoad(CDS0_Kinematics* parent, u16 child_idx)
 {
 	SetParent(parent);
 	ChildIDX = child_idx;
 }
-void XRaySkeletonX::_Load(const char* N, IReader* data, size_t& dwVertCount)
+void CDS0_SkeletonX::_Load(const char* N, IReader* data, size_t& dwVertCount)
 {
 	xr_vector<u16>			bids;
 
@@ -220,13 +220,13 @@ void XRaySkeletonX::_Load(const char* N, IReader* data, size_t& dwVertCount)
 
 
 
-inline void 	get_pos_bones(const vertBoned1W& v, Fvector& p, XRayKinematics* Parent)
+inline void 	get_pos_bones(const vertBoned1W& v, Fvector& p, CDS0_Kinematics* Parent)
 {
 	const Fmatrix& xform = Parent->LL_GetBoneInstance((u16)v.matrix).mRenderTransform;
 	xform.transform_tiny(p, v.P);
 }
 
-inline void 	get_pos_bones(const vertBoned2W& vert, Fvector& p, XRayKinematics* Parent)
+inline void 	get_pos_bones(const vertBoned2W& vert, Fvector& p, CDS0_Kinematics* Parent)
 {
 	Fvector		P0, P1;
 
@@ -237,7 +237,7 @@ inline void 	get_pos_bones(const vertBoned2W& vert, Fvector& p, XRayKinematics* 
 	p.lerp(P0, P1, vert.w);
 }
 
-inline void 	get_pos_bones(const vertBoned3W& vert, Fvector& p, XRayKinematics* Parent)
+inline void 	get_pos_bones(const vertBoned3W& vert, Fvector& p, CDS0_Kinematics* Parent)
 {
 	Fmatrix& M0 = Parent->LL_GetBoneInstance(vert.m[0]).mRenderTransform;
 	Fmatrix& M1 = Parent->LL_GetBoneInstance(vert.m[1]).mRenderTransform;
@@ -252,7 +252,7 @@ inline void 	get_pos_bones(const vertBoned3W& vert, Fvector& p, XRayKinematics* 
 	p.add(P1);
 	p.add(P2);
 }
-inline void 	get_pos_bones(const vertBoned4W& vert, Fvector& p, XRayKinematics* Parent)
+inline void 	get_pos_bones(const vertBoned4W& vert, Fvector& p, CDS0_Kinematics* Parent)
 {
 	Fmatrix& M0 = Parent->LL_GetBoneInstance(vert.m[0]).mRenderTransform;
 	Fmatrix& M1 = Parent->LL_GetBoneInstance(vert.m[1]).mRenderTransform;
@@ -271,7 +271,7 @@ inline void 	get_pos_bones(const vertBoned4W& vert, Fvector& p, XRayKinematics* 
 	p.add(P3);
 }
 template<typename T_vertex, typename T_buffer >
-inline BOOL pick_bone(T_buffer vertices, XRayKinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+inline BOOL pick_bone(T_buffer vertices, CDS0_Kinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 
 
@@ -291,28 +291,28 @@ inline BOOL pick_bone(T_buffer vertices, XRayKinematics* Parent, IKinematics::pi
 	}
 	return FALSE;
 }
-BOOL XRaySkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+BOOL CDS0_SkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertBoned1W>(Vertices1W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL XRaySkeletonX::_PickBoneSoft2W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+BOOL CDS0_SkeletonX::_PickBoneSoft2W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertBoned2W>(Vertices2W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL XRaySkeletonX::_PickBoneSoft3W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+BOOL CDS0_SkeletonX::_PickBoneSoft3W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertBoned3W>(Vertices3W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL XRaySkeletonX::_PickBoneSoft4W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+BOOL CDS0_SkeletonX::_PickBoneSoft4W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertBoned4W>(Vertices4W, Parent, r, dist, S, D, indices, faces);
 }
 
 
-BOOL XRaySkeletonX::has_visible_bones()
+BOOL CDS0_SkeletonX::has_visible_bones()
 {
 	if (RM_SINGLE == RenderMode)
 	{
@@ -329,7 +329,7 @@ BOOL XRaySkeletonX::has_visible_bones()
 
 
 
-void XRaySkeletonX::_DuplicateIndices(const char* N, IReader* data)
+void CDS0_SkeletonX::_DuplicateIndices(const char* N, IReader* data)
 {
 	VERIFY(!data->find_chunk(OGF_ICONTAINER));
 	//	Index buffer replica since we can't read from index buffer in DX10

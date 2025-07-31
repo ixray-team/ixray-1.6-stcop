@@ -1,18 +1,20 @@
 #pragma once
 #include "XRayRenderVisual.h"
-class XRayFHierrarhyVisual:public XRayRenderVisual
+
+class CDS0_FHierrarhyVisual :
+	public CDS0_RenderVisual
 {
 public:
-	xr_vector<XRayRenderVisual*>		children;
+	xr_vector<CDS0_RenderVisual*> children;
+
 public:
-	virtual void				Load(const char* N, IReader* data, u32 dwFlags);
-	virtual void				Copy(XRayRenderVisual* from);
-	virtual void	Release();
-public:
-	XRayFHierrarhyVisual();
-	virtual ~XRayFHierrarhyVisual();
+	virtual void Load(const char* N, IReader* data, u32 dwFlags);
+	virtual void Copy(CDS0_RenderVisual* from);
+	virtual void Release();
+
+	CDS0_FHierrarhyVisual();
+	virtual ~CDS0_FHierrarhyVisual();
 
 private:
-	BOOL							m_DontDelete;
-
+	bool m_DontDelete = false;
 };

@@ -1,21 +1,21 @@
 #include "stdafx.h"
 
-XRayFlareRender::XRayFlareRender()
+CDS0_FlareRender::CDS0_FlareRender()
 {
 }
 
-XRayFlareRender::~XRayFlareRender()
+CDS0_FlareRender::~CDS0_FlareRender()
 {
 }
 
-void XRayFlareRender::Copy(IFlareRender & _in)
+void CDS0_FlareRender::Copy(IFlareRender & _in)
 {
 }
 
-void XRayFlareRender::CreateShader(LPCSTR sh_name, LPCSTR tex_name)
+void CDS0_FlareRender::CreateShader(LPCSTR sh_name, LPCSTR tex_name)
 {
 }
 
-void XRayFlareRender::DestroyShader()
+void CDS0_FlareRender::DestroyShader()
 {
 }

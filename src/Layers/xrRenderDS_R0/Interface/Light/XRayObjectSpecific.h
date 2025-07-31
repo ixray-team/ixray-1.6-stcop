@@ -1,11 +1,11 @@
 #pragma once
 
-class XRayRenderObjectSpecific :
+class CDS0_RenderObjectSpecific :
     public IRender_ObjectSpecific
 {
 public:
-    XRayRenderObjectSpecific() {}
-    ~XRayRenderObjectSpecific() override {}
+    CDS0_RenderObjectSpecific() {}
+    ~CDS0_RenderObjectSpecific() override {}
     void force_mode(u32 mode) override
     {
     }

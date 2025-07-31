@@ -1,18 +1,18 @@
 #include "stdafx.h"
 
-XRayRainRender::XRayRainRender()
+CDS0_RainRender::CDS0_RainRender()
 {
 }
 
-void XRayRainRender::Copy(IRainRender & _in)
+void CDS0_RainRender::Copy(IRainRender & _in)
 {
 }
 
-void XRayRainRender::Render(CEffect_Rain& owner)
+void CDS0_RainRender::Render(CEffect_Rain& owner)
 {
 }
 Fsphere*null=0;
-const Fsphere & XRayRainRender::GetDropBounds() const
+const Fsphere & CDS0_RainRender::GetDropBounds() const
 {
 	return *null;
 }

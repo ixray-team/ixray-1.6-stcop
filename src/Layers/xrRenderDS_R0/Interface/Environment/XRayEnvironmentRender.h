@@ -1,8 +1,9 @@
 #pragma once
-class XRayEnvDescriptorMixerRender :public  IEnvDescriptorMixerRender
+class CDS0_EnvDescriptorMixerRender :
+	public IEnvDescriptorMixerRender
 {
 public:
-	XRayEnvDescriptorMixerRender();
+	CDS0_EnvDescriptorMixerRender();
 	virtual void Copy(IEnvDescriptorMixerRender& _in);
 
 	virtual void Destroy();
@@ -13,10 +14,11 @@ public:
 };
 
 
-class XRayEnvDescriptorRender :public IEnvDescriptorRender
+class CDS0_EnvDescriptorRender :
+	public IEnvDescriptorRender
 {
 public:
-	XRayEnvDescriptorRender();
+	CDS0_EnvDescriptorRender();
 	virtual void Copy(IEnvDescriptorRender& _in);
 
 	virtual void OnDeviceCreate(CEnvDescriptor& owner);
@@ -24,11 +26,12 @@ public:
 };
 
 
-class XRayEnvironmentRender :public IEnvironmentRender
+class CDS0_EnvironmentRender :
+	public IEnvironmentRender
 {
 public:
-	XRayEnvironmentRender();
-	virtual ~XRayEnvironmentRender();
+	CDS0_EnvironmentRender();
+	virtual ~CDS0_EnvironmentRender();
 	virtual void	Copy(IEnvironmentRender& _in) ;
 	virtual void	OnFrame(CEnvironment& env) ;
 	virtual void	OnLoad() ;

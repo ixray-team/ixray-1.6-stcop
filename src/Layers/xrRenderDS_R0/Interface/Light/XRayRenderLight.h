@@ -1,5 +1,5 @@
 
-class XRayRenderLight :
+class CDS0_RenderLight :
 	public IRender_Light
 {
 	vis_data visimask;

@@ -1,7 +1,7 @@
 #pragma once
 #include "XRayRenderVisual.h"
 
-class	XRayTreeVisual : public XRayRenderVisual
+class	CDS0_TreeVisual : public CDS0_RenderVisual
 {
 private:
 	struct	_5color
@@ -20,8 +20,7 @@ public:
 	size_t CountVertex;
 	size_t OffsetVertex;
 	u32 FVF;
-//	BearFactoryPointer<BearRHI::BearRHIIndexBuffer> IndexBuffer;
-//	BearFactoryPointer<BearRHI::BearRHIVertexBuffer> VertexBuffer;
+
 	struct SUniformBuffer
 	{
 		Fmatrix	xform;
@@ -30,38 +29,34 @@ public:
 		Fvector4 consts;
 		Fvector4 c_sun;
 	};
-//	BearFactoryPointer<BearRHI::BearRHIUniformBuffer> UniformBuffer;
-public:
 
-	//virtual void UpdateUniform(XRayUniformAllocator::EUniformType Type, void* ptr);
+public:
 	virtual void Load(LPCSTR N, IReader* data, u32 dwFlags);
-	virtual void Copy(XRayRenderVisual* pFrom);
+	virtual void Copy(CDS0_RenderVisual* pFrom);
 
-	XRayTreeVisual(void);
-	virtual ~XRayTreeVisual(void);
+	CDS0_TreeVisual(void);
+	virtual ~CDS0_TreeVisual(void);
 };
 
-class XRayTreeVisual_ST : public XRayTreeVisual
+class CDS0_TreeVisual_ST : public CDS0_TreeVisual
 {
-	typedef XRayTreeVisual inherited;
+	typedef CDS0_TreeVisual inherited;
 public:
-	XRayTreeVisual_ST(void);
-	virtual			~XRayTreeVisual_ST(void);
-//	virtual bool Render(float LOD, EShaderElement SEType, XRayObjectRender& Item);
+	CDS0_TreeVisual_ST(void);
+	virtual			~CDS0_TreeVisual_ST(void);
 	virtual void	Load(LPCSTR N, IReader* data, u32 dwFlags);
-	virtual void	Copy(XRayRenderVisual* pFrom);
+	virtual void	Copy(CDS0_RenderVisual* pFrom);
 };
 
-class XRayTreeVisual_PM : public XRayTreeVisual
+class CDS0_TreeVisual_PM : public CDS0_TreeVisual
 {
-	typedef XRayTreeVisual inherited;
+	typedef CDS0_TreeVisual inherited;
 private:
 	FSlideWindowItem* pSWI;
 	u32					last_lod;
 public:
-	XRayTreeVisual_PM(void);
-	virtual			~XRayTreeVisual_PM(void);
-	//virtual bool Render(float LOD, EShaderElement SEType, XRayObjectRender& Item);
+	CDS0_TreeVisual_PM(void);
+	virtual			~CDS0_TreeVisual_PM(void);
 	virtual void	Load(LPCSTR N, IReader* data, u32 dwFlags);
-	virtual void	Copy(XRayRenderVisual* pFrom);
+	virtual void	Copy(CDS0_RenderVisual* pFrom);
 };
