@@ -44,6 +44,9 @@ public:
 
 	void					ReloadBonesProtection	();
 	void					AddBonesProtection		(LPCSTR bones_section);
+
+	virtual CHelmet* cast_helmet() { return this; }
+
 protected:
 	HitImmunity::HitTypeSVec	m_HitTypeProtection;
 	SBoneProtections*		m_boneProtection;	
