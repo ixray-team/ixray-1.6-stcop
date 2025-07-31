@@ -25,6 +25,7 @@
 #include "CustomDetector.h"
 #include "script_game_object.h"
 #include <WeaponBinoculars.h>
+#include "../xrScripts/script_callback_ex.h"
 
 #include <algorithm>
 
