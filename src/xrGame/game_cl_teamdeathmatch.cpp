@@ -730,7 +730,7 @@ void				game_cl_TeamDeathmatch::OnTeamChanged			()
 {
 	xr_delete				(pCurBuyMenu);
 	SetCurrentBuyMenu		();
-	if (pCurBuyMenu)
+	if (pCurBuyMenu && EngineExternal().CallOfPripyatMode())
 	{
 		ReInitRewardGenerator(local_player);
 	}
