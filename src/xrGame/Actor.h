@@ -201,7 +201,7 @@ public:
 	virtual bool						NeedToDestroyObject()  const;
 	virtual ALife::_TIME_ID				TimePassedAfterDeath() const;
 
-
+	CPickUpManager* GetPickupManager() { return pPickup; }
 public:
 
 	//свойства артефактов
