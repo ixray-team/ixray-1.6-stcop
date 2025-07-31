@@ -6,7 +6,7 @@ xr_vector<CSector*>	g_sectors;
 
 void CBuild::BuildSectors()
 {
-	Status("Determining sectors...");
+ 	Status("Determining sectors...");
 	Progress(0);
 	u32 SectorMax=0;
 	for (u32 I=0; I<g_tree.size(); I++)
@@ -33,7 +33,8 @@ void CBuild::BuildSectors()
 		Progress(float(I)/float(g_sectors.size()));
 	}
 
-	Status("Assigning portals, occluders, glows, lights...");
+	// Status("Assigning portals, occluders, glows, lights...");
+	clMsg("[xrSectors] PORTAL, OCC process");
 	// portals
 	for (u32 I=0; I<portals.size(); I++)
 	{
@@ -43,6 +44,8 @@ void CBuild::BuildSectors()
 		g_sectors[u32(P.sector_front)]->add_portal	(u16(I));
 		g_sectors[u32(P.sector_back)]->add_portal		(u16(I));
 	}
+
+	clMsg("[xrSectors] Glowing process");
 	// glows
 	for (u32 I=0; I<glows.size(); I++)
 	{
@@ -51,6 +54,7 @@ void CBuild::BuildSectors()
 		R_ASSERT(M.sector<g_sectors.size());
 		g_sectors[M.sector]->add_glow			(u16(I));
 	}
+	clMsg("[xrSectors] Lights process");
 	// lights
 	for (u32 I=0; I<L_dynamic.size(); I++)
 	{
@@ -81,7 +85,7 @@ void CBuild::BuildSectors()
 void CBuild::SaveSectors(IWriter& fs)
 {
 	CMemoryWriter MFS;
-	Status("Processing...");
+	Status("Sectors(Save) Processing...");
 
 	// validate & save
 	for (u32 I=0; I<g_sectors.size(); I++)
@@ -94,4 +98,6 @@ void CBuild::SaveSectors(IWriter& fs)
 	}
 
 	fs.w_chunk(fsL_SECTORS,MFS.pointer(),MFS.size());
+
+	Status("Sectors(Save) Saved...");
 }

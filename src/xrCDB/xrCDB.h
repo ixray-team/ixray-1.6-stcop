@@ -238,8 +238,13 @@ namespace CDB
 
 #pragma warning(push)
 #pragma warning(disable:4275)
-	const u32 clpMX = 24, clpMY=16, clpMZ=24;
 
+	struct VertexData
+	{
+		u32 PrimID;
+		Fvector vertex;
+	};
+ 
 	class XRCDB_API CollectorPacked :
 		public non_copyable
 	{
@@ -247,13 +252,18 @@ namespace CDB
 		typedef DWORDList::iterator	DWORDIt;
 	
 	private:
-		xr_vector<Fvector>			verts;
+		xr_vector<Fvector>	verts;
 		xr_vector<TRI>		faces;
 		xr_vector<u32>		flags;
-		Fvector				VMmin, VMscale;
-		DWORDList			VM		[clpMX+1][clpMY+1][clpMZ+1];
-		Fvector				VMeps;
 
+		float HDIM_X = 512;
+		float HDIM_Y = 512;
+		float HDIM_Z = 512;
+
+		Fvector				VMmin, VMscale;
+		Fvector				scale;
+		std::unordered_map<size_t, xr_vector<VertexData> > hashTable;
+ 
 		u32					VPack		( const Fvector& V);
 	public:
 		CollectorPacked	(const Fbox &bb, int apx_vertices=5000, int apx_faces=5000);

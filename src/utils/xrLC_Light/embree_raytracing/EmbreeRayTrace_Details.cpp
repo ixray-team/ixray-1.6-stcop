@@ -115,7 +115,7 @@ float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 	data_hits.energy = 1.0f;
 
 	RTCRayHit rayhit;
-	Embree::SetRay1(rayhit, P, N, 0.f, range);
+	SetRay1(rayhit, P, N, 0.f, range);
 
 	RTCRayQueryContext context;
 	rtcInitRayQueryContext(&context);
@@ -147,8 +147,8 @@ void InitializeGeometryAttach(Fvector* CDB_verts, CDB::TRI* CDB_tris, u32 TS_Siz
 		Opacue.push_back(&CDB_tris[i]);
 	}
 
-	Embree::VertexEmbree* verticesNormal = (Embree::VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(Embree::VertexEmbree), Opacue.size() * 3);
-	Embree::TriEmbree* trianglesNormal = (Embree::TriEmbree*)rtcSetNewGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(Embree::TriEmbree), Opacue.size());
+	VertexEmbree* verticesNormal = (VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), Opacue.size() * 3);
+	TriEmbree* trianglesNormal = (TriEmbree*)rtcSetNewGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), Opacue.size());
 
 	size_t VertexIndexer = 0;
 
@@ -181,13 +181,21 @@ void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI)
 		config = "threads=16,isa=sse2";
 
 	DeviceDetails = rtcNewDevice(config);
-	rtcSetDeviceErrorFunction(DeviceDetails, Embree::errorFunction, NULL);
-
+ 
 
 	string128 phase;
 	sprintf(phase, "Intilized Intel Embree (Details Raytracer) %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
 	Status(phase);
-	Embree::IntelEmbreeSettings(DeviceDetails, avx_test, sse);
+
+	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED", DeviceDetails, RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED);
+	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED", DeviceDetails, RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED);
+	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY4_SUPPORTED", DeviceDetails, RTC_DEVICE_PROPERTY_NATIVE_RAY4_SUPPORTED);
+
+	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED", DeviceDetails, RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED);
+	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED", DeviceDetails, RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED);
+	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_IGNORE_INVALID_RAYS_ENABLED", DeviceDetails, RTC_DEVICE_PROPERTY_IGNORE_INVALID_RAYS_ENABLED);
+
+	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_TASKING_SYSTEM", DeviceDetails, RTC_DEVICE_PROPERTY_TASKING_SYSTEM);
 
 	// �������� ����� � ���������� ���������
 	// Scene

@@ -59,8 +59,10 @@ public:
 
 
 	void	mem_Compact				();
-	void	mem_CompactSubdivs		();
+ 
 public:
+//	void	GetMemoryUsedStorage();
+
 	void	Load					(const b_params& P, const IReader&  fs);
 	void	Run						(LPCSTR path);
 	void	StartMu					();
@@ -90,7 +92,7 @@ public:
 	void	xrPhase_Subdivide		();
 	void	ImplicitLighting		();
 
-
+	void	BuildAdaptiveHT(); 
 	void	Light_prepare			();
 	void	Light					();
 	void	LMapsLocal				();
@@ -98,9 +100,14 @@ public:
 	//void	Light_R2				();
 	void	LightVertex				();
 	void	xrPhase_MergeLM			();
+	void	xrPhase_SaveLmaps		();
+
 	void	xrPhase_MergeGeometry	();
 
 	void	Flex2OGF				();
+	void	SaveOGF();
+	size_t	GetTreeSize();
+
 	void	BuildSectors			();
 
 	void	SaveLights				(IWriter &fs);

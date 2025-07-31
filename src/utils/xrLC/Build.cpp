@@ -24,6 +24,9 @@ using namespace			std;
 struct OGF_Base;
 xr_vector<OGF_Base *>	g_tree;
 
+//BOOL					b_noise		= FALSE;
+//BOOL					b_radiosity	= FALSE;
+//BOOL					b_net_light	= FALSE;
 SBuildOptions			g_build_options;
 vec2Face				g_XSplit;
 
@@ -49,10 +52,10 @@ void	CBuild::TempSave( u32 stage )
 
 
 //////////////////////////////////////////////////////////////////////
-
+#include "../xrLC_Light/embree_raytracing/EmbreeRayTrace.h"
 CBuild::CBuild()
 {
-	
+	// Se7kills Initialize Device Embree
 
 }
 
@@ -107,10 +110,120 @@ void CBuild::Light_prepare()
 	for (u32 m=0; m<mu_models().size(); m++)	mu_models()[m]->calc_faceopacity();
 }
 
+#include "../xrLC_Light/xrDeflector.h"
+#include "../xrLC_Light/Lightmap.h"
+#include "../xrLC_Light/xrDeflectorDefs.h"
+
+
+#include <windows.h>
+#include <psapi.h>
+
+size_t GetHeapMemory()
+{
+	PROCESS_MEMORY_COUNTERS_EX pmc{};
+	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
+	{
+		return pmc.PrivateUsage;
+	}
+
+	return 0;
+}
+
+size_t GetMemoryUsed()
+{
+	return GetHeapMemory();
+}
+
+void GetMemoryUsedStorage()
+{
+	if (!lc_global_data())
+		return;
+
+	u32 tree = pBuild->GetTreeSize() / 1024 / 1024;
+	size_t defl = 0; size_t lightmaps = 0;
+	for (auto& D : lc_global_data()->g_deflectors())
+	{
+		defl += D->size_deflector();
+	}
+	defl /= (1024 * 1024);
+ 	for (auto&  LM  : lc_global_data()->lightmaps())
+	{
+		lightmaps += LM->lm.memory_lmap();
+ 	}
+	lightmaps /= (1024 * 1024);
+  	 
+	size_t sV = 0;
+	for (auto& V : lc_global_data()->g_vertices())
+	{
+		sizeof(Vertex);
+		sV += V->used_memory(); 
+	}
+	
+	sV /= (1024 * 1024);
+
+	size_t sF = 0;// lc_global_data()->g_faces().size() * sizeof(Face);
+	for (auto& F : lc_global_data()->g_faces())
+	{						
+		sF += sizeof(*F) + sizeof(void*); //void* vector size
+	}
+	
+	sF /= (1024 * 1024);
+	
+	size_t TAlloc = 0;
+	for (auto& T : lc_global_data()->textures())
+	{
+		TAlloc += (T.dwHeight* T.dwHeight * 4);
+	}
+	lc_global_data()->textures();
+	size_t sTex = lc_global_data()->textures().size() * sizeof(b_BuildTexture);
+	sTex += TAlloc;
+	sTex /= (1024 * 1024);
+
+	size_t SplitsMemory = 0;
+	for (auto X : g_XSplit)
+	{
+		SplitsMemory += X->capacity() * sizeof(void*);
+	}
+	SplitsMemory += g_XSplit.capacity() * sizeof(void*);
+
+	u32 MB = 1024 * 1024;
+	Msg("!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	Msg("- xSplits:		%u count, %u capacity, %u mb", g_XSplit.size(), g_XSplit.capacity(), SplitsMemory / 1024 / 1024);
+	
+	Msg("- GeomTree:	%u mb, cap:%u",		tree, g_tree.capacity());
+	Msg("- Deflectors:	%u mb, cap:%u",		defl, lc_global_data()->g_deflectors().capacity());
+	Msg("- Lightmaps:	%u mb, cap:%u",		lightmaps, lc_global_data()->lightmaps().capacity());
+ 	Msg("- vertexes:	%u mb, store: %u, cap:%u",		sV, lc_global_data()->g_vertices().size(),  lc_global_data()->g_vertices().capacity());	// Не учитываю алокацию adjucement при создании и жрет в разы больше
+	Msg("- faces:		%u mb, store: %u, cap:%u",		sF, lc_global_data()->g_faces().size(), lc_global_data()->g_faces().capacity());	// Не учитываю алокацию adjucement при создании и жрет в разы больше
+	Msg("- Textures:	%u mb, cap:%u",		sTex, lc_global_data()->textures().capacity());
+	Msg("- Embree BVH: %umb, Static: %umb, MU: %umb", EmbreeMain.BVH_size / MB, EmbreeMain.Static_size / MB, EmbreeMain.MU_size / MB);
+
+	u32 memdata = tree + defl + lightmaps;
+	
+	u32 EmbreeMem = (EmbreeMain.BVH_size / MB) + (EmbreeMain.Static_size / MB) + (EmbreeMain.MU_size / MB);
+ 
+	if (g_XSplit.capacity() != g_XSplit.size())
+		g_XSplit.shrink_to_fit();
+
+	if (lc_global_data()->g_deflectors().capacity() != lc_global_data()->g_deflectors().size())
+		lc_global_data()->g_deflectors().shrink_to_fit();
+
+	if (lc_global_data()->lightmaps().capacity() != lc_global_data()->lightmaps().size())
+		lc_global_data()->lightmaps().shrink_to_fit();
+
+	Msg("- Total Memory (AFTER SHIRK):	%u / (Check) %u + %u + %u mb", GetHeapMemory() / (1024 * 1024), EmbreeMem, sV + sF + sTex, memdata);
+
+
+	Msg("!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+}
+
 void CBuild::Run	(LPCSTR P)
 {
 	lc_global_data()->initialize();
- 
+#ifdef LOAD_GL_DATA
+	net_light ();
+	return;
+#endif
 	//****************************************** Open Level
 	xr_strconcat(path,P,"\\")	;
 	string_path					lfn				;
@@ -134,35 +247,40 @@ void CBuild::Run	(LPCSTR P)
 		fs->w_chunk			(2,&*L_static().sun.begin(),L_static().sun.size()*sizeof(R_Light));
 		FS.w_close			(fs);
 	}
-
+	 
 	//****************************************** Optimizing + checking for T-junctions
-	FPU::m64r					();
-	Phase						("Optimizing...");
-	mem_Compact					();
-	PreOptimize					();
-	CorrectTJunctions			();
+	mem_Compact();
 
-	//****************************************** HEMI-Tesselate
-	FPU::m64r					();
-	Phase						("Adaptive HT...");
-	mem_Compact					();
-	xrPhase_AdaptiveHT			();
+
+	Phase("Optimizing...");
+ 	PreOptimize();
+	CorrectTJunctions();
+	mem_Compact();
+
+	// AdaptiveHT
+  	BuildAdaptiveHT();
 
 	//****************************************** Building normals
-	FPU::m64r					();
-	Phase						("Building normals...");
-	mem_Compact					();
-	CalcNormals					();
- 
+	Phase("Building normals...");
+	mem_Compact();
+	CalcNormals();
+
 	//****************************************** Collision DB
 	//should be after normals, so that double-sided faces gets separated
 	FPU::m64r					();
-	Phase						("Building collision database...");
+	Phase						("Building collision database (CFORM)...");
 	mem_Compact					();
 	BuildCForm					();
-
 	BuildPortals				(*fs);
 
+	//****************************************** T-Basis
+	{
+		FPU::m64r					();
+		Phase						("Building tangent-basis...");
+		xrPhase_TangentBasis		();
+		mem_Compact					();
+	}
+ 
 	//****************************************** GLOBAL-ILLUMINATION
 	if (g_build_options.b_radiosity)			
 	{
@@ -172,31 +290,24 @@ void CBuild::Run	(LPCSTR P)
 		Light_prepare				();
 		xrPhase_Radiosity			();
 	}
-
-
 	//****************************************** All lighting + lmaps building and saving
 	 
 
 	Light						();
 	RunAfterLight				( fs );
 }
-
 void	CBuild::StartMu	()
 {
-   run_mu_light(  );
+  //mu_base.start				(new CMUThread (0));
+  run_mu_light(  );
 }
+
+#include <../xrForms/CompilersUI.h>
+extern CompilersMode gCompilerMode;
 
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
-	//****************************************** T-Basis
-	{
-		FPU::m64r();
-		Phase("Building tangent-basis...");
-		xrPhase_TangentBasis();
-		mem_Compact();
-	}
-
-	//****************************************** Convert to OGF
+  	//****************************************** Convert to OGF
 	FPU::m64r					();
 	Phase						("Converting to OGFs...");
 	mem_Compact					();
@@ -206,19 +317,32 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	FPU::m64r					();
 	Phase						("Converting MU-models to OGFs...");
 	mem_Compact					();
-	
-  	Status			("MU : Models...");
-	for (u32 mID=0; mID <mu_models().size(); mID++)
 	{
-		calc_ogf			(*mu_models()[mID]);
-		export_geometry		(*mu_models()[mID]);
-	}
+		u32 m;
+		Status			("MU : Models...");
+		for (m=0; m<mu_models().size(); m++)	{
+			calc_ogf			(*mu_models()[m]);
+			export_geometry		(*mu_models()[m]);
+		}
+
+		Status			("MU : References...");
+		for (m=0; m<mu_refs().size(); m++)
+			export_ogf(*mu_refs()[m]);
+  	}
 
 	Status			("MU : References...");
-	for (u32 mRID=0; mRID <mu_refs().size(); mRID++)
-		export_ogf(*mu_refs()[mRID]);
- 
+	xr_atomic_u32 index = 0; 
 
+	for (auto mRID = 0; mRID < (mu_refs().size()); mRID++)
+ 	{
+		Progress(mRID / mu_refs().size());
+		export_ogf(*mu_refs()[mRID]);
+ 		if (index.load() % 1024 == 0)
+			clMsg("[MT] Export MUOgf: %u/%u", mRID, mu_refs().size());
+		index.fetch_add(1);
+	}
+
+ 
 	//****************************************** Build sectors
 	FPU::m64r		();
 	Phase			("Building sectors...");
@@ -251,6 +375,10 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	SaveSectors		(*fs);
 
 	err_save		();
+
+	clMsg("File is Saved");
+
+	clMsg("Compilation is Ended");
 
 	// Закрываем запись (а то бывает косяк что процесс закончился но файл не закрыло) 
 	FS.w_close(fs);
@@ -288,8 +416,8 @@ void CBuild::err_save	()
 
 void CBuild::MU_ModelsCalculateNormals()
 {
-		for		(u32 m=0; m<mu_models().size(); m++)
-			calc_normals( *mu_models()[m] );
+	for		(u32 m=0; m<mu_models().size(); m++)
+		calc_normals( *mu_models()[m] );
 }
 
 xr_vector<xrMU_Model*>&CBuild::mu_models()

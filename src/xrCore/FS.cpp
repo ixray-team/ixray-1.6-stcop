@@ -186,17 +186,20 @@ void	IWriter::open_chunk	(u32 type)
 void	IWriter::close_chunk	()
 {
 	VERIFY(!chunk_pos.empty());
-
-	int pos			= tell();
-	seek			(chunk_pos.top());
-	w_u32			(pos-chunk_pos.top()-4);
+	// se7kills FIXED Memory Leaking (int) convert to (u32) 
+ 	u32 pos			 = tell();
+	u32 SavePosition = pos - chunk_pos.top() - 4;
+ 	seek			(chunk_pos.top());
+	w_u32			(SavePosition);
 	seek			(pos);
-	chunk_pos.pop	();
+	chunk_pos.pop	(); 
 }
+
 u32	IWriter::chunk_size	()					// returns size of currently opened chunk, 0 otherwise
 {
-	if (chunk_pos.empty())	return 0;
-	return tell() - chunk_pos.top()-4;
+	if (chunk_pos.empty())	
+		return 0;
+	return tell() - chunk_pos.top() - 4;
 }
 
 void	IWriter::w_compressed(void* ptr, u32 count)

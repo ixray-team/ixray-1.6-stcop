@@ -57,19 +57,21 @@ public:
 	// kernel
 	virtual void	w			(const void* _ptr, u32 count) 
     { 
-		if ((0!=hf) && (0!=count)){
-			const u32 mb_sz = 0x1000000;
+		if ((0!=hf) && (0!=count))
+		{
+			//x64 size_t Везде важно (se7kills Fix)
+			const size_t mb_sz = 0x1000000;
 			u8* ptr 		= (u8*)_ptr;
-			int req_size;
+			size_t req_size;
             string1024 error;
-
+	 		
 			for (req_size = count; req_size>mb_sz; req_size-=mb_sz, ptr+=mb_sz)
             {
 				size_t W = fwrite(ptr,mb_sz,1,hf);
                 xr_strerror(errno, error, sizeof(error));
 				R_ASSERT3(W==1,"Can't write mem block to file. Disk maybe full.", error);
 			}
-
+			
 			if (req_size)
             {
 				size_t W = fwrite(ptr,req_size,1,hf);
@@ -78,10 +80,12 @@ public:
 			}
 		}
     };
-	virtual void	seek		(u32 pos)	{	if (0!=hf) fseek(hf,pos,SEEK_SET);		};
-	virtual u32		tell		()			{	return (0!=hf)?ftell(hf):0;				};
-	virtual bool	valid		()			{	return (0!=hf);}
-	virtual	void	flush		()			{	if (hf)	fflush(hf);						};
+	// virtual void	seek		(u32 pos)	{	if (0!=hf) fseek(hf,pos,SEEK_SET);		};
+	// virtual u32		tell		()			{	return (0!=hf)?ftell(hf):0;				};
+	virtual void	seek(size_t pos) { if (0 != hf) xr_fseek(hf, pos, SEEK_SET); };
+	virtual size_t	tell() { return (0 != hf) ? xr_ftell(hf) : 0; };
+	virtual bool	valid() { return (0 != hf); }
+	virtual	void	flush() { if (hf)	fflush(hf); };
 };
 
 // It automatically frees memory after destruction

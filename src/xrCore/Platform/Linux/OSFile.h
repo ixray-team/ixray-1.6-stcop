@@ -30,6 +30,9 @@ using errno_t = int;
 #define SH_DENYWR 0
 #define _SH_DENYNO 0
 
+#define xr_fseek fseeko
+#define xr_ftell ftello
+
 using __int64 = int64_t;
 using __time64_t = __int64;
 using __time32_t = long;
