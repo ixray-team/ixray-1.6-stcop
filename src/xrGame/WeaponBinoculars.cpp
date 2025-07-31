@@ -127,21 +127,28 @@ void	CWeaponBinoculars::UpdateCL()
 			}
 		}
 	}
+
 	//manage visible entities here...
-	if(H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision)
+	if (H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision)
+	{
 		m_binoc_vision->Update();
+	}
 }
 
 bool CWeaponBinoculars::render_item_ui_query()
 {
-	bool b_is_active_item = m_pInventory && m_pInventory->ActiveItem()==this;
-	return b_is_active_item && H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision;
+	bool b_is_active_item = m_pInventory && m_pInventory->ActiveItem() == this;
+	return b_is_active_item && H_Parent() && IsZoomed() && !IsRotatingToZoom();
 }
 
 void CWeaponBinoculars::render_item_ui()
 {
-	m_binoc_vision->Draw();
-	inherited::render_item_ui	();
+	if (m_binoc_vision != nullptr)
+	{
+		m_binoc_vision->Draw();
+	}
+
+	inherited::render_item_ui();
 }
 
 void CWeaponBinoculars::ZoomInc()
