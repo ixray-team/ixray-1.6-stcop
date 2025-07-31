@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "XRayKinematics.h"
 #include "XRaySkeletonX.h"
+#include "XRayModelPool.h"
 
 bool	pred_sort_N(const std::pair<shared_str, u32>& A, const std::pair<shared_str, u32>& B) {
 	return xr_strcmp(A.first, B.first) < 0;
@@ -156,7 +157,7 @@ void CDS0_Kinematics::Load(const char* N, IReader* data, u32 dwFlags)
 		L_parents.push_back(buf);
 
 		data->r(&pBone->obb, sizeof(Fobb));
-		visimask.set(ID, TRUE);
+		visimask.set(ID, true);
 	}
 	std::sort(bone_map_N->begin(), bone_map_N->end(), pred_sort_N);
 	std::sort(bone_map_P->begin(), bone_map_P->end(), pred_sort_P);
@@ -282,12 +283,10 @@ void CDS0_Kinematics::Depart()
 	visimask.zero();
 	if (bones)
 	{
-		size_t count = bones->size();
-#ifdef DEBUG
-		if (count > 64)
-			Msg("ahtung !!! %d", count);
-#endif // #ifdef DEBUG
-		for (size_t b = 0; b < count; b++) visimask.set(b, TRUE);
+		u16 count = bones->size();
+
+		for (u16 b = 0; b < count; b++) 
+			visimask.set(b, true);
 	}
 	// visibility
 	children.insert(children.end(), children_invisible.begin(), children_invisible.end());
@@ -355,30 +354,41 @@ CDS0_SkeletonX* CDS0_Kinematics::LL_GetChild(u32 idx)
 {
 	IRenderVisual* V = children[idx];
 	CDS0_SkeletonX* B = dynamic_cast<CDS0_SkeletonX*>(V);
-	return			B;
+	return B;
+}
+
+void CDS0_Kinematics::OnCalculateBones()
+{
 }
 
 void CDS0_Kinematics::Visibility_Update()
-{Update_Visibility	= FALSE		;
+{
+	Update_Visibility = FALSE;
 	// check visible
-	for (u32 c_it=0; c_it<children.size(); c_it++)				{
-		CDS0_SkeletonX*		_c	=	dynamic_cast<CDS0_SkeletonX*>	(children[c_it]); VERIFY (_c)	;
-		if				(!_c->has_visible_bones())	{
+	for (u32 c_it = 0; c_it < children.size(); c_it++) 
+	{
+		CDS0_SkeletonX* _c = dynamic_cast<CDS0_SkeletonX*>	(children[c_it]); VERIFY(_c);
+		if (!_c->has_visible_bones()) 
+		{
 			// move into invisible list
-			children_invisible.push_back	(children[c_it]);	
-			swap(children[c_it],children.back());
-			children.pop_back				();
+			children_invisible.push_back(children[c_it]);
+			swap(children[c_it], children.back());
+			children.pop_back();
+			Update_Visibility = TRUE;
 		}
 	}
 
 	// check invisible
-	for (u32 _it=0; _it<children_invisible.size(); _it++)	{
-		CDS0_SkeletonX*		_c	=	dynamic_cast<CDS0_SkeletonX*>	(children_invisible[_it]); VERIFY (_c)	;
-		if				(_c->has_visible_bones())	{
+	for (u32 _it = 0; _it < children_invisible.size(); _it++)
+	{
+		CDS0_SkeletonX* _c = dynamic_cast<CDS0_SkeletonX*>(children_invisible[_it]); VERIFY(_c);
+		if (_c->has_visible_bones())
+		{
 			// move into visible list
-			children.push_back				(children_invisible[_it]);	
-			swap(children_invisible[_it],children_invisible.back());
-			children_invisible.pop_back		();
+			children.push_back(children_invisible[_it]);
+			swap(children_invisible[_it], children_invisible.back());
+			children_invisible.pop_back();
+			Update_Visibility = TRUE;
 		}
 	}
 }
@@ -441,11 +451,13 @@ void CDS0_Kinematics::Bone_GetAnimPos(Fmatrix& pos, u16 id, u8 channel_mask, boo
 {
 	R_ASSERT(id < LL_BoneCount());
 	CBoneInstance bi = LL_GetBoneInstance(id);
+	Fvector last_c = bi.mTransform.c;
 	BoneChain_Calculate(&LL_GetData(id), bi, channel_mask, ignore_callbacks);
 #ifndef MASTER_GOLD
 	R_ASSERT(_valid(bi.mTransform));
 #endif
 	pos.set(bi.mTransform);
+	pos.c.set(last_c);
 }
 
 bool CDS0_Kinematics::PickBone(const Fmatrix& parent_xform, pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
@@ -536,7 +548,7 @@ int CDS0_Kinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups)
 void CDS0_Kinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 {
 	//VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
-	visimask.set(bone_id, val);
+	visimask.set(bone_id, !!val);
 
 	if (!visimask.is(bone_id)) {
 		bone_instances[bone_id].mTransform.scale(0.f, 0.f, 0.f);
@@ -574,17 +586,20 @@ void CDS0_Kinematics::LL_SetBonesVisible(VisMask mask)
 	Visibility_Invalidate();
 }
 
-static xrCriticalSection CalculateBonesMutex;
 void CDS0_Kinematics::CalculateBones(BOOL bForceExact)
 {
 	// early out.
 	// check if the info is still relevant
 	// skip all the computations - assume nothing changes in a small period of time :)
-	if (Device.dwTimeGlobal == UCalc_Time)										return;	// early out for "fast" update
-	xrCriticalSectionGuard Lock(CalculateBonesMutex);
+	if (Device.dwTimeGlobal == UCalc_Time)
+		return;	// early out for "fast" update
+
 	OnCalculateBones();
-	if (!bForceExact && (Device.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	return;	// early out for "slow" update
-	if (Update_Visibility)									Visibility_Update();
+	if (!bForceExact && (Device.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))
+		return;	// early out for "slow" update
+
+	if (Update_Visibility)
+		Visibility_Update();
 
 	// here we have either:
 	//	1:	timeout elapsed
@@ -593,10 +608,6 @@ void CDS0_Kinematics::CalculateBones(BOOL bForceExact)
 
 	// exact computation
 	// Calculate bones
-#ifdef DEBUG
-	Device.Statistic->Animation.Begin();
-#endif
-
 	Bone_Calculate(bones->at(iRoot), &Fidentity);
 
 	// Calculate BOXes/Spheres if needed
@@ -606,18 +617,26 @@ void CDS0_Kinematics::CalculateBones(BOOL bForceExact)
 		// mark
 		UCalc_Visibox = -(::Random.randI(psSkeletonUpdate - 1));
 
+		R_ASSERT(LL_VisibleBoneCount());
+
 		// the update itself
-		Fbox	Box; Box.invalidate();
+		Fbox Box; 
+		Box.invalidate();
+
 		for (u32 b = 0; b < bones->size(); b++)
 		{
-			if (!LL_GetBoneVisible(u16(b)))		continue;
+			if (!LL_GetBoneVisible(u16(b)))
+				continue;
+
 			Fobb& obb = (*bones)[b]->obb;
 			Fmatrix& Mbone = bone_instances[b].mTransform;
-			Fmatrix		Mbox;	obb.xform_get(Mbox);
-			Fmatrix		X;		X.mul_43(Mbone, Mbox);
+			Fmatrix Mbox;
+			obb.xform_get(Mbox);
+			Fmatrix X;
+			X.mul_43(Mbone, Mbox);
 			Fvector& S = obb.m_halfsize;
 
-			Fvector			P, A;
+			Fvector P, A;
 			A.set(-S.x, -S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
 			A.set(-S.x, -S.y, S.z); X.transform_tiny(P, A); Box.modify(P);
 			A.set(S.x, -S.y, S.z); X.transform_tiny(P, A); Box.modify(P);
@@ -627,13 +646,29 @@ void CDS0_Kinematics::CalculateBones(BOOL bForceExact)
 			A.set(S.x, S.y, S.z); X.transform_tiny(P, A); Box.modify(P);
 			A.set(S.x, S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
 		}
-		if (bones->size())
+
+		if (!bones->empty())
 		{
 			// previous frame we have updated box - update sphere
 			Vis.box.min = (Box.min);
 			Vis.box.max = (Box.max);
 			Vis.box.getsphere(Vis.sphere.P, Vis.sphere.R);
 		}
+#ifdef DEBUG
+		// Validate
+		VERIFY3(_valid(Vis.box.min) && _valid(Vis.box.max), "Invalid bones-xform in model", getDebugName().c_str());
+		if (Vis.sphere.R > 1000.f)
+		{
+			for (u16 ii = 0; ii < LL_BoneCount(); ++ii) {
+				Fmatrix tr;
+				tr = LL_GetTransform(ii);
+				Msg("bone %s", LL_BoneName_dbg(ii));
+				Log("bone_matrix", tr);
+			}
+			Log("end-------");
+		}
+		VERIFY3(Vis.sphere.R < 1000.f, "Invalid bones-xform in model", getDebugName().c_str());
+#endif
 	}
 
 	//

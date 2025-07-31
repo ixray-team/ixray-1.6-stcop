@@ -3,7 +3,7 @@
 
 class CDS0_SkeletonX;
 
-class CDS0_Kinematics : 
+class CDS0_Kinematics :
 	public CDS0_FHierrarhyVisual,
 	public IKinematics
 {
@@ -16,7 +16,7 @@ public:
 	virtual void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
 	void BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi, u8 channel_mask, bool ignore_callbacks);
 	CDS0_SkeletonX* LL_GetChild(u32 idx);
-	virtual void				OnCalculateBones() {}
+	virtual void OnCalculateBones();
 	void LL_Validate();
 	CBoneData* LL_GetBoneData(u16 bone_id)
 	{
@@ -31,13 +31,13 @@ public:
 		return bd;
 	}
 
-	VisMask						visimask;
-	IC void						Visibility_Invalidate() { Update_Visibility = TRUE; };
-	void						Visibility_Update();
-	virtual void				IBoneInstances_Create();
-	virtual void				IBoneInstances_Destroy();
+	VisMask visimask;
+	IC void Visibility_Invalidate() { Update_Visibility = TRUE; };
+	void Visibility_Update();
+	virtual void IBoneInstances_Create();
+	virtual void IBoneInstances_Destroy();
 public:
-	virtual shared_str				getDebugName();
+	virtual shared_str getDebugName();
 	virtual ~CDS0_Kinematics();
 	CDS0_Kinematics();
 	virtual void Bone_Calculate(CBoneData* bd, Fmatrix* parent);
@@ -62,7 +62,7 @@ public:
 		return bone_instances[bone_id];
 	}
 
-	virtual CBoneData& LL_GetData(u16 bone_id)
+	virtual CBoneData& LL_GetData(u16 bone_id) override
 	{
 		VERIFY(bone_id < LL_BoneCount());
 		VERIFY(bones);
@@ -70,7 +70,7 @@ public:
 		return bd;
 	}
 
-	virtual const IBoneData& GetBoneData(u16 bone_id) const
+	virtual const IBoneData& GetBoneData(u16 bone_id) const override
 	{
 		VERIFY(bone_id < LL_BoneCount());
 		VERIFY(bones);
@@ -78,23 +78,9 @@ public:
 		return bd;
 	}
 
-	virtual u16 LL_BoneCount() const { return u16(bones->size()); }
+	virtual u16 LL_BoneCount() const override { return u16(bones->size()); }
 
 	virtual void LL_SetBonesVisibleAll() override { visimask.set_all(); };
-private:
-	static IC u32 btwCount1(u32 v)
-	{
-		const u32 g31 = 0x49249249ul; // = 0100_1001_0010_0100_1001_0010_0100_1001
-		const u32 g32 = 0x381c0e07ul; // = 0011_1000_0001_1100_0000_1110_0000_0111
-		v = (v & g31) + ((v >> 1)& g31) + ((v >> 2)& g31);
-		v = ((v + (v >> 3))& g32) + ((v >> 6)& g32);
-		return (v + (v >> 9) + (v >> 18) + (v >> 27)) & 0x3f;
-	}
-
-	static IC u64 btwCount1(u64 v)
-	{
-		return btwCount1(u32(v & u32(-1))) + btwCount1(u32(v >> u64(32)));
-	}
 
 public:
 	u16     LL_VisibleBoneCount() { return visimask.count(); }
@@ -121,10 +107,10 @@ public:
 		iRoot = bone_id;
 	}
 
-	BOOL					_BCL	LL_GetBoneVisible(u16 bone_id) { VERIFY(bone_id < LL_BoneCount()); return visimask.is(bone_id); }
+	BOOL LL_GetBoneVisible(u16 bone_id) { VERIFY(bone_id < LL_BoneCount()); return visimask.is(bone_id); }
 	virtual void LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive);
-	VisMask					_BCL	LL_GetBonesVisible() { return visimask; }
-	void							LL_SetBonesVisible(VisMask mask);
+	VisMask LL_GetBonesVisible() { return visimask; }
+	void LL_SetBonesVisible(VisMask mask);
 
 	virtual void				Release();
 	// Main functionality
@@ -144,7 +130,7 @@ public:
 	virtual IRenderVisual* dcast_RenderVisual() { return this; }
 	virtual IKinematics* dcast_PKinematics() { return this; }
 #ifdef DEBUG_DRAW
-	virtual void						DebugRender(Fmatrix& XFORM);
+	virtual void DebugRender(Fmatrix& XFORM);
 #endif
 public:
 	UpdateCallback Update_Callback;
@@ -152,25 +138,25 @@ public:
 	virtual void Load(const char* N, IReader* data, u32 dwFlags);
 	virtual void Copy(CDS0_RenderVisual* from);
 	virtual void Spawn();
-	virtual void				Depart();
+	virtual void Depart();
 public:
-	CDS0_RenderVisual *m_lod;
+	CDS0_RenderVisual* m_lod;
 
 	CBoneInstance* bone_instances; // bone instances
 protected:
 	//SkeletonWMVec				wallmarks;
 	u32 wm_frame;
 
-	xr_vector<CDS0_RenderVisual *> children_invisible;
+	xr_vector<CDS0_RenderVisual*> children_invisible;
 
 	// Globals
-	CInifile *pUserData;
-	vecBones *bones;			   // all bones	(shared)
+	CInifile* pUserData;
+	vecBones* bones;			   // all bones	(shared)
 	u16 iRoot;					   // Root bone index
 
 	// Fast search
-	accel *bone_map_N; // bones  associations	(shared)	- sorted by name
-	accel *bone_map_P; // bones  associations	(shared)	- sorted by name-pointer
+	accel* bone_map_N; // bones  associations	(shared)	- sorted by name
+	accel* bone_map_P; // bones  associations	(shared)	- sorted by name-pointer
 
 	BOOL Update_Visibility;
 	u32 UCalc_Time;

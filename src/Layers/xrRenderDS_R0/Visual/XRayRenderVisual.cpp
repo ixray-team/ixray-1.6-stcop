@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "XRayRenderVisual.h"
 
+CDS0_RenderVisual::CDS0_RenderVisual()
+{
+	Vis.clear();
+}
+
 CDS0_RenderVisual::~CDS0_RenderVisual()
 {
 }

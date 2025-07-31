@@ -4,6 +4,8 @@ class CDS0_RenderInterface :
 	public pureFrame
 {
 	IRender_Target Target;
+	xr_vector<IKinematics*> KinematicPool;
+
 public:
 	CDS0_RenderInterface();
 

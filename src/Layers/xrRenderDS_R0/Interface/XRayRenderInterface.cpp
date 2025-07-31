@@ -106,6 +106,11 @@ void CDS0_RenderInterface::add_Occluder(Fbox2& bb_screenspace)
 
 void CDS0_RenderInterface::add_Visual(IRenderVisual* V)
 {
+	if (IKinematics* IK = V->dcast_PKinematics())
+	{
+		IK->CalculateBones();
+		KinematicPool.push_back(IK);
+	}
 }
 
 void CDS0_RenderInterface::add_Geometry(IRenderVisual* V)
@@ -157,7 +162,8 @@ IRenderVisual* CDS0_RenderInterface::model_CreateParticles(LPCSTR name)
 }
 IRenderVisual* CDS0_RenderInterface::model_Create(LPCSTR name, IReader* data)
 {
-	return GModelPool->Create(name, data);
+	CDS0_RenderVisual* VisualPtr = GModelPool->Create(name, data);
+	return VisualPtr;
 }
 
 IRenderVisual* CDS0_RenderInterface::model_CreateChild(LPCSTR name, IReader* data)
@@ -172,9 +178,13 @@ IRenderVisual* CDS0_RenderInterface::model_Duplicate(IRenderVisual* V)
 
 void CDS0_RenderInterface::model_Delete(IRenderVisual*& V, BOOL bDiscard)
 {
+	if (V == nullptr)
+		return;
+
 	CDS0_RenderVisual* pVisual = (CDS0_RenderVisual*)V;
+
 	GModelPool->Delete(pVisual, bDiscard);
-	V = 0;
+	V = nullptr;
 }
 
 void CDS0_RenderInterface::model_Logging(BOOL bEnable)
@@ -263,7 +273,14 @@ void CDS0_RenderInterface::Render()
 
 void CDS0_RenderInterface::OnFrame()
 {
-	Render();
+	GModelPool->DeleteQueue();
+
+	for (IKinematics* IK : KinematicPool)
+	{
+		//IK->CalculateBones_Invalidate();
+		IK->CalculateBones();
+	}
+	KinematicPool.clear();
 }
 
 void CDS0_RenderInterface::Calculate()

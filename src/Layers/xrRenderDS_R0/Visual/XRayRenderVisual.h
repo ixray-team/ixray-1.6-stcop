@@ -5,6 +5,7 @@ class CDS0_RenderVisual :
 	public IRenderVisual
 {
 public:
+	CDS0_RenderVisual();
 	virtual ~CDS0_RenderVisual();
 	virtual void				Load(const char* N, IReader* data, u32 dwFlags);
 	virtual void				Copy(CDS0_RenderVisual* from);
@@ -16,7 +17,7 @@ public:
 	virtual shared_str		getDebugName() ;
 
 public:
-	vis_data					Vis;
+	vis_data Vis;
 	u32 Type;
 	shared_str DebugName;
 };
