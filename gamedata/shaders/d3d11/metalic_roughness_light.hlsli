@@ -61,10 +61,10 @@ float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, fl
     float3 G = GeometrySmithD(NdotL, NdotV, Roughness);
     float3 F = FresnelSchlick(lerp(F0, Color, Metalness), HdotV);
 
-    float3 Specular = D * F * G;
-    float3 Diffuse = Color * (1.0f - Metalness) * (1.0f - F);
+    float3 Specular = D * G;
+    float3 Diffuse = Color * (1.0f - Metalness);
 
-    float3 BRDF = Specular + Diffuse;
+    float3 BRDF = lerp(Diffuse, Specular, F);
     return PushGamma(Radiance.xyz) * NdotL * BRDF;
 #else
     float2 Material = s_material.SampleLevel(smp_material, float3(NdotL, NdotH, Metalness), 0).xy;
