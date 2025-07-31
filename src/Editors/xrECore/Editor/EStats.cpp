@@ -15,6 +15,9 @@ CEStats::CEStats()
     fTPS = 0;
     dwLevelSelFaceCount = 0;
     dwLevelSelVertexCount = 0;
+    hours = 0.f;
+    minutes = 0.f;
+    seconds = 0.f;
 
     pFont = g_FontManager->GetFont("sdk_font_statistic", CGameFont::fsDeviceIndependent);// new CGameFont("stat_font", CGameFont::fsDeviceIndependent);
 }
@@ -73,12 +76,11 @@ void CEStats::Show()
         lastDPS_polys = DPS.polys;
         lastDPS_calls = DPS.calls;
 
-#if 0
+        auto& env = g_pGamePersistent->Environment();
+        float time = g_pGameLevel ? g_pGameLevel->GetEnvironmentGameDayTimeSec() : env.GetGameTime();
+        env.SplitTime(time, hours, minutes, seconds);
 
-        //auto& env = g_pGamePersistent->Environment();
-        //float time = g_pGameLevel ? g_pGameLevel->GetEnvironmentGameDayTimeSec() : env.GetGameTime();
-        //u32   hours, minutes, seconds;
-        //env.SplitTime(time, hours, minutes, seconds);
+#if 0
 
         CGameFont& F = *pFont;
 
@@ -120,6 +122,8 @@ void CEStats::Show()
         F.OutNext("TEST 3:       %2.2fms, %d", TEST3.result, TEST3.count);
         F.OutSkip(2.f);
 
+        F.SetColor(0xFFC8DCAF);
+        F.OutNext("GAME TIME:    %02d :%02d :%02d", hours, minutes, seconds);
         F.OutSkip(1.5f);
         // F.OutNext("Level summary:");
         // F.OutNext(" Sel Faces: %d", dwLevelSelFaceCount);

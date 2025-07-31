@@ -343,31 +343,34 @@ public:
 	//gets the time from the game simulation
 	
 	//возвращает время в милисекундах относительно начала игры
-	ALife::_TIME_ID		GetStartGameTime		();
-	virtual ALife::_TIME_ID		GetGameTime				() override;
+	ALife::_TIME_ID GetStartGameTime();
+	virtual ALife::_TIME_ID GetGameTime();
 	//возвращает время для энвайронмента в милисекундах относительно начала игры
-	ALife::_TIME_ID		GetEnvironmentGameTime	();
+    ALife::_TIME_ID GetEnvironmentGameTime() const override;
+    static_assert(std::is_same_v<ALife::_TIME_ID, u64>, "Please, change return type of GetEnvironmentGameTime in IGame_Level and CGameLevel accordingly");
+
 	//игровое время в отформатированном виде
 	void				GetGameDateTime			(u32& year, u32& month, u32& day, u32& hours, u32& mins, u32& secs, u32& milisecs);
 
 	float				GetGameTimeFactor		();
 	void				SetGameTimeFactor		(const float fTimeFactor);
 	void				SetGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
-	virtual void		SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor);
+
 
 	// gets current daytime [0..23]
 	u8					GetDayTime				();
 	u32					GetGameDayTimeMS		();
 	float				GetGameDayTimeSec		();
-	float				GetEnvironmentGameDayTimeSec();
+    float               GetEnvironmentGameDayTimeSec() const override;
 
-	virtual float		GetEnvironmentTimeFactor() const override;
-	virtual void		SetEnvironmentTimeFactor(const float fTimeFactor) override;
-	virtual u64			GetEnvironmentGameTime() const override;
+    virtual float       GetEnvironmentTimeFactor() const override;
+    virtual void        SetEnvironmentTimeFactor(const float fTimeFactor) override;
+    virtual void        SetEnvironmentGameTimeFactor(u64 const &GameTime, float const &fTimeFactor) override;
+    //virtual u64         GetEnvironmentGameTime() const override;
 
-protected:
-//	CFogOfWarMngr*		m_pFogOfWarMngr;
-protected:	
+  protected:
+    //	CFogOfWarMngr*		m_pFogOfWarMngr;
+  protected:	
 	CMapManager *			m_map_manager;
 	CGameTaskManager*		m_game_task_manager;
 
