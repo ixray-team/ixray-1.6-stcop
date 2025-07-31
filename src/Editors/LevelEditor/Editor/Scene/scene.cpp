@@ -2,6 +2,8 @@
 #include "LEPhysics.h"
 #include "../xrEngine/xr_input.h"
 #include "../xrEngine/xr_object.h"
+#include "../xrEngine/IGame_Actor.h"
+#include "../xrEngine/CameraBase.h"
 #include "../xrServerEntities/clsid_game.h"
 
 EScene* Scene;
@@ -720,6 +722,7 @@ void EScene::Play()
 	if (MainForm->GetTopBarForm()->UseCameraPosForActor)
 	{
 		ActorNewPos = UI->CurrentView().m_Camera.GetPosition();
+		ActorNewDir = UI->CurrentView().m_Camera.GetHPB();
 	}
 
 	if (!BuildSpawn())
@@ -910,7 +913,7 @@ void EScene::OnFrame()
 		if (MainForm->GetTopBarForm()->UseCameraPosForActor)
 		{
 			CLASS_ID CLS = TEXT2CLSID("S_ACTOR");
-			CObject* GameActor = g_pGameLevel->Objects.FindObjectByCLS_ID(CLS);
+			IGame_Actor* GameActor = (IGame_Actor*)g_pGameLevel->Objects.FindObjectByCLS_ID(CLS);
 
 			if (GameActor == nullptr)
 				return;
@@ -918,6 +921,7 @@ void EScene::OnFrame()
 			string128 Command = {};
 			xr_sprintf(Command, "set_actor_position %.3f, %.3f, %.3f", ActorNewPos.x, ActorNewPos.y, ActorNewPos.z);
 			Console->Execute(Command);
+			g_pIGameActor->cam_Active()->Set(-ActorNewDir.x, 0, 0);
 
 			IsAppliedPos = true;
 		}
