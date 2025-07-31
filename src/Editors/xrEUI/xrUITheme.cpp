@@ -115,6 +115,15 @@ void CUIThemeManager::Draw()
 		ImGui::PopItemWidth();
 		ImGui::Separator();
 
+		ImGui::SeparatorText("Paddings");
+		ImGui::PushItemWidth(150);
+
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImGui::SliderFloat("Cell Padding X", &style.CellPadding.x, 0.f, 10.f, "%.1f");
+		ImGui::SliderFloat("Cell Padding Y", &style.CellPadding.y, 0.f, 10.f, "%.1f");
+
+		ImGui::Separator();
+
 		if (ImGui::Button("Default"))
 		{
 			InitDefault(true);
@@ -292,7 +301,8 @@ void CUIThemeManager::Save()
 		return;
 
 	json JSONData = {};
-	ImVec4* colors = ImGui::GetStyle().Colors;
+	ImGuiStyle& style = ImGui::GetStyle();
+	ImVec4* colors = style.Colors;
 
 	FastJSonWriteImColor(ImGuiCol_WindowBg);
 	FastJSonWriteImColor(ImGuiCol_MenuBarBg);
@@ -331,6 +341,7 @@ void CUIThemeManager::Save()
 	JSONData["Theme"]["InactiveAlpha"] = TransparentDefault;
 	JSONData["Theme"]["ActiveAlpha"] = TransparentUnfocused;
 	JSONData["Theme"]["Font"] = ImCurrentFont;
+	JSONData["Theme"]["CellPadding"] = { style.CellPadding.x, style.CellPadding.y };
 
 	string_path jfn;
 	FS.update_path(jfn, "$app_data_root$", EFS.ChangeFileExt("editor_theme", ".json").c_str());
@@ -349,7 +360,8 @@ void CUIThemeManager::SaveTo()
 	if (EFS.GetSaveName("$themes$", jfn, 0, 6, "*.json"))
 	{
 		json JSONData = {};
-		ImVec4* colors = ImGui::GetStyle().Colors;
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImVec4* colors = style.Colors;
 
 		FastJSonWriteImColor(ImGuiCol_WindowBg);
 		FastJSonWriteImColor(ImGuiCol_MenuBarBg);
@@ -388,6 +400,7 @@ void CUIThemeManager::SaveTo()
 		JSONData["Theme"]["InactiveAlpha"] = TransparentDefault;
 		JSONData["Theme"]["ActiveAlpha"] = TransparentUnfocused;
 		JSONData["Theme"]["Font"] = ImCurrentFont;
+		JSONData["Theme"]["CellPadding"] = { style.CellPadding.x, style.CellPadding.y };
 
 
 		std::ofstream o(jfn.c_str());
@@ -410,7 +423,8 @@ void CUIThemeManager::LoadFrom()
 			return;
 		}
 
-		ImVec4* colors = ImGui::GetStyle().Colors;
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImVec4* colors = style.Colors;
 
 		FastJSonReadImColor(ImGuiCol_WindowBg);
 		FastJSonReadImColor(ImGuiCol_MenuBarBg);
@@ -461,6 +475,12 @@ void CUIThemeManager::LoadFrom()
 		{
 			ImCurrentFont = JSONData["Theme"]["Font"];
 		}
+		
+		if (JSONData["Theme"].contains("CellPadding"))
+		{
+			style.CellPadding.x = JSONData["Theme"]["CellPadding"][0];
+			style.CellPadding.y = JSONData["Theme"]["CellPadding"][1];
+		}
 
 		IsLoaded = true;
 	}
@@ -483,7 +503,8 @@ void CUIThemeManager::Load()
 		return;
 	}
 
-	ImVec4* colors = ImGui::GetStyle().Colors;
+	ImGuiStyle& style = ImGui::GetStyle();
+	ImVec4* colors = style.Colors;
 
 	FastJSonReadImColor(ImGuiCol_WindowBg);
 	FastJSonReadImColor(ImGuiCol_MenuBarBg);
@@ -532,6 +553,12 @@ void CUIThemeManager::Load()
 	if (JSONData["Theme"].contains("Font"))
 	{
 		ImCurrentFont = JSONData["Theme"]["Font"];
+	}
+
+	if (JSONData["Theme"].contains("CellPadding"))
+	{
+		style.CellPadding.x = JSONData["Theme"]["CellPadding"][0];
+		style.CellPadding.y = JSONData["Theme"]["CellPadding"][1];
 	}
 
 	IsLoaded = true;
