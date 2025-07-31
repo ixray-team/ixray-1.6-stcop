@@ -24,7 +24,7 @@ class CWeaponMagazined;
 class CParticlesObject;
 class CUIWindow;
 class CBinocularsVision;
-class CNightVisionEffector;
+class CWeaponNightVision;
 
 class CWeapon : public CHudItemObject,
 				public CShootingObject
@@ -246,7 +246,7 @@ protected:
 		shared_str		m_sUseZoomPostprocess;
 		shared_str		m_sUseBinocularVision;
 		CBinocularsVision*		m_pVision;
-		CNightVisionEffector*	m_pNight_vision;
+		CWeaponNightVision*		m_pNight_vision;
 
 	} m_zoom_params;
 	
@@ -279,6 +279,8 @@ public:
 	virtual void			OnZoomOut			();
 	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;};
 	CUIWindow*				ZoomTexture			();	
+
+	CWeaponNightVision*		GetNightVision()	{ return m_zoom_params.m_pNight_vision; }
 
 	IC bool ZoomHideCrosshair() {
 		CActor* pA = H_Parent() ? H_Parent()->cast_actor() : NULL;
@@ -612,11 +614,8 @@ private:
 	bool					m_activation_speed_is_overriden;
 	virtual bool			ActivationSpeedOverriden	(Fvector& dest, bool clear_override);
 
-	bool					m_bRememberActorNVisnStatus;
 public:
 	virtual void			SetActivationSpeedOverride	(Fvector const& speed);
-			bool			GetRememberActorNVisnStatus	() {return m_bRememberActorNVisnStatus;};
-	virtual void			EnableActorNVisnAfterZoom	();
 	
 	virtual void				DumpActiveParams			(shared_str const & section_name, CInifile & dst_ini) const;
 	virtual shared_str const	GetAnticheatSectionName		() const { return cNameSect(); };

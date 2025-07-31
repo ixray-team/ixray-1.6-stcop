@@ -984,22 +984,27 @@ void CScriptGameObject::night_vision_allowed(bool value)
 
 void CScriptGameObject::enable_night_vision	(bool value)
 {
-	CTorch									*torch = smart_cast<CTorch*>(&object());
-	if (!torch) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CTorch : cannot access class member enable_night_vision!");
+	CActor* actor = smart_cast<CActor*>(&object());
+	if (!actor) {
+		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CActor : cannot access class member enable_night_vision!");
 		return;
 	}
-	torch->SwitchNightVision					(value);
+
+	if (actor->GetNightVisionEffector())
+	{
+		actor->GetNightVisionEffector()->SwitchNightVision(value);
+	}
 }
 
 bool CScriptGameObject::night_vision_enabled	() const
 {
-	CTorch									*torch = smart_cast<CTorch*>(&object());
-	if (!torch) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CTorch : cannot access class member enable_night_vision!");
+	CActor* actor = smart_cast<CActor*>(&object());
+	if (!actor) {
+		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CActor : cannot access class member enable_night_vision!");
 		return								(false);
 	}
-	return									(torch->GetNightVisionStatus());
+
+	return actor->GetNightVisionEffector() && actor->GetNightVisionEffector()->GetStatus();
 }
 
 void CScriptGameObject::enable_torch	(bool value)

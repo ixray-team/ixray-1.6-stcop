@@ -19,6 +19,7 @@
 #include "step_manager.h"
 #include "../xrScripts/script_export_space.h"
 #include "CustomDetector.h"
+#include "EffectorNightVision.h"
 
 using namespace ACTOR_DEFS;
 
@@ -63,6 +64,8 @@ class CActorStatisticMgr;
 class CLocationManager;
 class CPickUpManager;
 class CCustomDetector;
+
+class CNightVisionEffector;
 
 class CActor: 
 	public IGame_Actor, 
@@ -675,6 +678,8 @@ public:
 private:
 	CActorCondition				*m_entity_condition;
 
+	CNightVisionEffector*		m_night_vision;
+
 protected:
 	virtual	CEntityConditionSimple	*create_entity_condition	(CEntityConditionSimple* ec);
 
@@ -708,6 +713,7 @@ public:
 	virtual void				OnPrevWeaponSlot				();
 			void				SwitchNightVision				();
 			void				SwitchTorch						();
+	CNightVisionEffector*		GetNightVisionEffector			() { return m_night_vision;}
 
 	CCustomDetector*			GetDetector						(bool in_slot = false);
 
