@@ -563,6 +563,22 @@ static class cl_m_timearrow2 : public R_constant_setup
 	}
 } binder_m_timearrow2;
 
+static class cl_digiclock : public R_constant_setup
+{
+	virtual void setup(R_constant* C)
+	{
+		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
+		split_time(g_pGameLevel->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+
+		float hh = (hours / 10) / 10.0f;
+		float hl = (hours % 10) / 10.0f;
+		float mh = (month / 10) / 10.0f;
+		float ml = (month % 10) / 10.0f;
+
+		RCache.set_c(C, hh, hl, mh, ml);
+	}
+} binder_digiclock;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
 {
@@ -647,13 +663,13 @@ void	CBlender_Compile::SetMapping()
 	// Rain
 	r_Constant				("rain_params",		&binder_rain_params);
 
+	//LVutner: Gunslinger...
 	r_Constant("m_hud_params", &binder_m_hud_params);
 	r_Constant("m_affects", &binder_affects);
 	r_Constant("m_actor_params", &binder_actor_states);
-
-	//LVutner: Gunslinger...
 	r_Constant("m_timearrow", &binder_m_timearrow);
 	r_Constant("m_timearrow2", &binder_m_timearrow2);
+	r_Constant("m_digiclock", &binder_digiclock);
 
 	// detail
 	//if (bDetail	&& detail_scaler)
