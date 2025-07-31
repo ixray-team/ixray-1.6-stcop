@@ -26,7 +26,7 @@ void  ELogCallback(LPCSTR txt)
 		return;
 
 	TMsgDlgType mt = TMsgDlgType::mtCustom;
-	if (strncmp(txt, "! ", 2) == 0)
+	if (strncmp(txt, "! ", 2) == 0 || strncmp(txt, "ERROR: ", 8) == 0)
 	{
 		mt = mtError;
 		UILogForm::SetActive();
