@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hospital_task_general_text">
+		<text>Najdi vstup do katakomb</text>
+	</string>
+	<string id="hospital_task_general_title">
+		<text>Najdi vstup do katakomb</text>
+	</string>
+	<string id="katacomb_task_3_objective_1">
+		<text>Drћ se, dokud nedorazн druћstvo Jasnй oblohy.</text>
+	</string>
+	<string id="katacomb_task_3_objective_2">
+		<text>Pomoz druћstvu Jasnй oblohy</text>
+	</string>
+	<string id="katacomb_task_3_text">
+		<text>Probojuj se ke vstupu do katakomb</text>
+	</string>
+	<string id="katacomb_task_3_title">
+		<text>Probojuj se ke vstupu do katakomb</text>
+	</string>
+	<string id="katacomb_task_helicopter_text">
+		<text>Sestшel vrtulnнk</text>
+	</string>
+	<string id="katacomb_task_helicopter_title">
+		<text>Sestшel vrtulnнk</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_text">
+		<text>Zabij odstшelovaиe</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_title">
+		<text>Zabij odstшelovaиe</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_1">
+		<text>Pшebмhni ke schodщm do pшнzemн</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_2">
+		<text>Probмhni pшнzemнm</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_3">
+		<text>Dostaт se k mostu</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_4">
+		<text>Pшebмhni most</text>
+	</string>
+	<string id="katacomb_task_sniper_back_text">
+		<text>Pomoz druћstvu Jasnй oblohy uniknout pшed palbou nepшбtel.</text>
+	</string>
+	<string id="katacomb_task_sniper_back_title">
+		<text>Pшipliћ se za odstшelovaиe.</text>
+	</string>
+	<string id="katacomb_task_z2_exit_text">
+		<text>Pшebмhni do tшetн haly</text>
+	</string>
+	<string id="katacomb_task_z2_exit_title">
+		<text>Pшebмhni do tшetн haly</text>
+	</string>
+</string_table>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_defend_bandit_base_name">
+		<text>Vйdd meg a fosztogatу bбzist!</text>
+	</string>
+	<string id="gar_defend_bandit_base_text">
+		<text>Vйdd meg a fosztogatу bбzist az ellensйg tбmadбsбtуl!</text>
+	</string>
+	<string id="gar_quest_bring_money_name">
+		<text>Vigyйl Naprnak kйtezret kйszpйnzben, sцtйtedйs utбn!</text>
+	</string>
+	<string id="gar_quest_bring_money_text">
+		<text>Vegyйl 2,000 rubelйrt egy elsхsegйlycsomagot Dьhцdt Naprtуl a bolhapiacon! Az ehhez hasonlу nagyobb ьzleteket csak este bonyolнtjбk le a bolhapiacon.</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_name">
+		<text>Vidd el Dьhцdt Naprnak a rйgi PDA-t!</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_text">
+		<text>Vidd el a bolhapiacra Dьhцdt Naprnak a rйgi PDA-t, amit Ъjfiъ megtбmadott tбborбban, a szerszбmoslбda kettхs feneke alatt talбltбl!</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_name">
+		<text>Цld meg az бrulуt!</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_text">
+		<text>Цld meg Sztingovot, amiйrt egy rajtaьtйsbe csalt!</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_name">
+		<text>Foglald el a fosztogatуkkal a bolhapiacot!</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_text">
+		<text>Mйszбrold le az бsatуkat a bolhapiacon, hogy pйldбt statuбlj a tцbbiek elхtt, йs gondoskodj rуla, hogy az egyik fosztogatу hбtramaradjon хrkцdni!</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_name">
+		<text>Szerezd meg a rйgi PDA-t a szerszбmoslбdбbуl!</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_text">
+		<text>Szerezd meg Ъjfiъ tбborбbуl a rйgi PDA-t, hogy elvihesd Dьhцdt Naprnak! A PDA-nak a szerszбmoslбda kettхs feneke alatt kell lennie.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_name">
+		<text>Szerezd meg a PDA-t Ъjfiъ tбborбbуl!</text>
+	</string>
+	<string id="gar_quest_get_old_pda_text">
+		<text>Szerezd meg Ъjfiъtуl a rйgi PDA-jбt, hogy elvihesd Dьhцdt Naprnak! Ha Ъjfiъ nem lenne ott, keresd meg a PDA-t a szerszбmoslбda kettхs feneke alatt!</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_name">
+		<text>Vegyйl fel mindent Sztringovtуl!</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_text">
+		<text>Kutasd бt Sztringov holttestйt, йs vegyйl el minden йrtйkeset!</text>
+	</string>
+	<string id="gar_quest_get_weapons_name">
+		<text>Vigyйl kйtezret Sztringovnak!</text>
+	</string>
+	<string id="gar_quest_get_weapons_text">
+		<text>Vigyйl kйszpйnzben kйtezret Sztringovnak, hogy megvedd a csempйszett fegyvereket!</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_name">
+		<text>Цlj meg egy Sztringov nevы fickуt!</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_text">
+		<text>Цlj meg egy Sztringov nevы fickуt Jуga parancsбra!</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_name">
+		<text>Intйzd el a csempйszt йs az бsatуkat!</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_text">
+		<text>Цld meg a csempйszt йs az бsatуkat, akik fegyvert akartak venni tхle!</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_name">
+		<text>Semmisнtsd meg az Йjjeli Vadбszokat!</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_text">
+		<text>Keresd meg, йs цld meg a lйnyeket, amik az бsatуkra vadбsznak! Prуbбld meg ott kezdeni a keresйst, ahol megtбmadtбk a tъlйlхk csoportjбt. Valуszнnыleg csak este mutatkoznak.</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_name">
+		<text>Intйzd el a fosztogatу munkatбbor хreit!</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_text">
+		<text>Szabadнtsбtok ki az бsatу osztaggal a rabokat, miutбn megцltйtek a fosztogatу munkatбbor хreit!</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_name">
+		<text>Talбlkozz az бsatу osztaggal!</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_text">
+		<text>Talбlkozz az бsatу osztaggal, йs vezesd a fosztogatу munkatбbor elleni tбmadбst!</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_name">
+		<text>Beszйlj Dьhцdt Naprral!</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_text">
+		<text>Derнtsd ki, hogy milyen fontos ьgyben akar beszйlni veled Dьhцdt Napr a bolhapiacon!</text>
+	</string>
+	<string id="gar_story_chase_digger_name">
+		<text>Szerezd meg az informбciуt az бsatу hнrnцktхl!</text>
+	</string>
+	<string id="gar_story_chase_digger_text">
+		<text>Beszйlj az бsatу hнrnцkkel, hogy megtudd, hova ment Agyar!</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_name">
+		<text>Keresd meg Agyart!</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_text">
+		<text>Keresd meg Agyart az alagsorban a PDA jelzйsйt kцvetve!</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_name">
+		<text>Йrd utol Agyart!</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_text">
+		<text>Йrd utol Agyart a PDA jelzйsйt kцvetve!</text>
+	</string>
+	<string id="gar_story_find_cache_name">
+		<text>Talбld meg a kйszletet!</text>
+	</string>
+	<string id="gar_story_find_cache_text">
+		<text>Talбld meg Agyar csapatбnak kйszletйt!</text>
+	</string>
+	<string id="gar_story_find_diggers_name">
+		<text>Szerezz informбciуkat az бsatуktуl Agyarrуl!</text>
+	</string>
+	<string id="gar_story_find_diggers_text">
+		<text>Prуbбld meg kiderнteni Agyar hollйtйt az бsatуktуl, akiket meglбtogatott a kereskedх szerint!</text>
+	</string>
+	<string id="gar_story_get_pda_name">
+		<text>Vedd fel Agyar PDA-jбt!</text>
+	</string>
+	<string id="gar_story_get_pda_text">
+		<text>Vedd fel a PDA-t, amit Agyar elejtett!</text>
+	</string>
+	<string id="gar_story_go_to_freedom_name">
+		<text>Kцvesd Agyart Sцtйtvцlgybe!</text>
+	</string>
+	<string id="gar_story_go_to_freedom_text">
+		<text>Kцvesd Agyart Sцtйtvцlgybe!</text>
+	</string>
+	<string id="gar_story_kill_dogs_name">
+		<text>Цld meg a vak kutyбkat!</text>
+	</string>
+	<string id="gar_story_kill_dogs_text">
+		<text>Цld meg a vak kutyбkat, akik beszorнtottбk az бsatу hнrnцkцt a vцlgyben!</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_name">
+		<text>Kutasd бt az бsatу testйt!</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_text">
+		<text>Keress informбciуkat Agyarrуl az бsatу holttestйnйl!</text>
+	</string>
+	<string id="gar_quest_bandit_reward_name">
+		<text>Vedd fel a jutalmadat Protkуnбl!</text>
+	</string>
+	<string id="gar_quest_bandit_reward_text">
+		<text>Menj el Protkуhoz, a kereskedхhцz, йs vedd fel a jutalmadat a bolhapiac megtisztнtбsбйrt!</text>
+	</string>
+	<string id="gar_quest_bandit_secret_name">
+		<text>Hozd el az anomбliбban levх rejtekhelyrхl a fegyvert!</text>
+	</string>
+	<string id="gar_quest_bandit_secret_text">
+		<text>Hozd el az anomбliбban levх rejtekhelyrхl a fegyvert, amirхl Jуga beszйlt!</text>
+	</string>
+	<string id="gar_quest_captive_reward_name">
+		<text>Hozd el a zsбkmбnyt a rejtekhelyrхl!</text>
+	</string>
+	<string id="gar_quest_captive_reward_text">
+		<text>Hozd el a zsбkmбnyt a rйgi rejtekhelyrхl, amit a munkatбborbуl kiszabadнtott бsatуk hasznбltak!</text>
+	</string>
+	<string id="gar_quest_more_reward_name">
+		<text>Kйrj jutalmat Jуgбtуl!</text>
+	</string>
+	<string id="gar_quest_more_reward_text">
+		<text>Kйrj nagyobb jutalmat Jуgбtуl, amiйrt megtisztнtottad a bolhapiacot!</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_name">
+		<text>Keress informбciуkat a megerхsнtett pбncйlzatrуl!</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_text">
+		<text>Vigyйl Бtlбtszуnak egy ьveg piбt, йs informбciуkat valami megerхsнtett pбncйlzatrуl! Cserйbe talбn felszerel majd valami hasonlуt az цltцzйkedre.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_name">
+		<text>Keress informбciуkat az цltцzйk бrnyйkolбsrуl!</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_text">
+		<text>Бtlбtszу mйg soha nem hallott pszichikus kisugбrzбsokrуl, de ha ellбtod minden szьksйges informбciуval, megйpнti йs telepнti azt az цltцzйkrendszert, ami megvйdi viselхjйt az emlнtett hatбsok ellen.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_name">
+		<text>Keress informбciуkat a zбrt ciklusъ lйgzхmodulrуl!</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_text">
+		<text>Бtlбtszу, a fosztogatу technikus, mindenfйle mуdosнtбshoz йrt, de ahhoz, hogy egy zбrt ciklusъ lйgzхmodult telepнtsen egy цltцzйkre, tцbb informбciуra van szьksйge!</text>
+	</string>
+	<string id="gar_quest_redemption_name">
+		<text>Szerezd vissza a holmidat!</text>
+	</string>
+	<string id="gar_quest_redemption_text">
+		<text>Szerezd vissza a holmidat, amit a fosztogatуk elloptak a bolhapiac kцzelйben!</text>
+	</string>
+	<string id="gar_recover_item_1_name">
+		<text>Szerezd vissza a Chaser 13-ast!</text>
+	</string>
+	<string id="gar_recover_item_1_text">
+		<text>Hadd mesйljek el neked egy tцrtйnetet! Az egyik emberьnk elkapott valami balfйk бsatуt, йs elvitte хt egy sйtбra az anomбliбk kцzй. Mindkettхt elnyelte egy Gravi, ami normбlis esetben nem is йrdekelne, de a fickу kцlcsцnkйrte a Chaseremet a munkбhoz, az pedig mйg mindig ott van. Ha visszaszereznйd, meghбlбlnбm!</text>
+	</string>
+	<string id="gar_recover_item_2_name">
+		<text>Talбld meg a mуdosнtott fegyvert!</text>
+	</string>
+	<string id="gar_recover_item_2_text">
+		<text>Hй, tesу, megtehetnйl nekem valamit! Йppen Бtlбtszуnбl ьldцgйltьnk, amikor egy fickуnak kйszнtett egy remek stukkert, mуdosнtбsokkal meg minden szarsбggal. Nos, a fickу йs a fхnцkьnk цsszebalhйzott, ezйrt Jуga szуlt, hogy szabaduljunk meg tхle. Szйpen be is kergettьk az anomбliбkba, de нgy a stukker is ott maradt. Hozd el nekem azt a fegyvert, йs gondoskodom rуla, hogy Protkу kellх jutalomban rйszesнtsen!</text>
+	</string>
+	<string id="gar_recover_item_3_name">
+		<text>Hozz egy ьveg Kozбk vodkбt!</text>
+	</string>
+	<string id="gar_recover_item_3_text">
+		<text>Cimbora, mondd csak, megtennйd, hogy hozol nekem egy kis piбt? Csak nehogy azt a szart hozd, amit mindenki vedel! Nйhбny ьveggel elrejtettem egy biztos helyre, de most nem tudok elszabadulni innen. Menj el йrtьk, de vigyбzz, nehogy йszrevegyen valaki, rendben?</text>
+	</string>
+	<string id="gar_recover_item_4_name">
+		<text>Hozd vissza az ъjonc kabбtjбt!</text>
+	</string>
+	<string id="gar_recover_item_4_text">
+		<text>A minap idejцtt egy fickу a Kordonbуl, zцldfьlы volt, mйghozzб az idegesнtх fajtбbуl. Mindenkinek a mбgikus kabбtjбrуl zagyvбlt, amirхl azt бllнtotta, hogy ellenбll minden anomбliбnak. Ъgy hallottam, hogy mйg akkor sem hagyta abba, amikor elkaptбk a fosztogatуk. Vйgьl bekergettйk egy Graviba. Nos, a szerencsйtlen flуtбs igazat mondott, a kabбt egy karcolбs nйlkьl megъszta az anomбliбt. Hasznomra lehetne az a kabбt, ha elhoznбd nekem!</text>
+	</string>
+	<string id="gar_recover_item_5_name">
+		<text>Vidd vissza a bevйsйses pisztolyt!</text>
+	</string>
+	<string id="gar_recover_item_5_text">
+		<text>Igen, segнthetnйl valamiben. Volt egy pisztolyom, semmi kьlцnleges, de mйg a nagyapбmtуl kaptam. Elveszнtettem egy zыrzavarban... Berъgtunk йs ъgy dцntцttьk, rбijesztьnk egy kicsit a fosztogatуkra. Amikor besцtйtedett, elkъsztunk a tбborig, amit aznap kinйztьnk, йs elkezdtьk utбnozni a mutбnsok hangjбt. Kiderьlt, hogy nincsenek is ott fosztogatуk, ehelyett rбnk tбmadt kйt vйrszнvу. Йppen csak sikerьlt йlve kijutnom onnan, йs kцzben mйg a fegyveremet is eldobtam!</text>
+	</string>
+</string_table>

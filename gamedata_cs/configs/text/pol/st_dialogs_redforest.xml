@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_forester_hello_dialog_0">
+		<text>Czemu zawdziкczam tк przyjemnoњж?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1">
+		<text>Najemnicy dostarczyli ci interesuj№cych informacji. Wygl№da na to, їe miaіem racjк. Wielka Emisja, ktуra wstrz№snкіa Zon№ byіa tak potкїna, їe zmieniіa sam№ przestrzeс, zwijaj№c j№ w pкtlк.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111">
+		<text>Bez naukowych wywodуw, profesorze - zapкtliіa siк. Gdziekolwiek pуjdziesz, wrуcisz, sk№d wyszedіeњ. W zwi№zku z tym po emisji stalkerzy utknкli w b№blach przestrzennych wokуі Limaсska. Wiemy juї co nieco - mamy wspуіrzкdne najemnikуw, czкstotliwoњж PDA, a ja lepiej rozumiem naturк tych b№bli.</text>
+	</string>
+	<string id="red_forester_has_compas_1">
+		<text>Straciіem juї nadziejк, їe jeszcze kiedyњ zobaczк kompas! Dziкkujк! Daj mi trochк czasu, a znajdк sposуb na wyjњcie z b№bla. W tym czasie znajdџ sposуb na przekazanie informacji najemnikom. Musisz uїyж potкїnego nadajnika. Podobno jest taki w wojskowych magazynach - za jego pomoc№ komunikuj№ siк ze њwiatem zewnкtrznym. Jego moc powinna wystarczyж do skontaktowania siк z najemnikami.</text>
+	</string>
+	<string id="red_forester_has_compas_111">
+		<text>Przeњlк ci potrzebne wspуіrzкdne, kiedy znajdziesz nadajnik. Jeњli zrobi№ wszystko jak naleїy, wydostan№ siк z b№bla i znajd№ siк niedaleko mostu do Limaсska. Moїe nawet zіoї№ wizytк bandytom przy moњcie.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11111">
+		<text>Sam utkn№іem w b№blu kilka dni temu. Wtedy nie wiedziaіem, їe to nowa anomalia, wiкc myњlaіem, їe tracк rozum. Polana wydawaіa mi siк znajoma, ale w їadn№ stronк nie mogіem z niej wyjњж! A pуџniej Zona sama daіa mi artefakt, ktуry wyprowadziі mnie z b№bla. Nazwaіem go kompasem. W drodze do domu napadli mnie bandyci... Zostawili mnie, staruszka, przy їyciu, ale zabrali kompas. Odzyskaj dla mnie ten artefakt, a wymyњlк sposуb na wydostanie najemnikуw z b№bla.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111111">
+		<text>Dranie zaіoїyli obуz na skraju Czerwonego Lasu. Przesіaіem ci wspуіrzкdne na PDA.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_1">
+		<text>Limaсsk byі stracony przez dіugie lata i byіo ku temu wiele dobrych powodуw. Byіoby najlepiej, gdyby pozostaі stracony. Czego szukasz w Limaсsku?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_3">
+		<text>Nie jesteњ zwykіym czіowiekiem. Zona odcisnкіa na tobie ciekawe piкtno, sam nie wiem, czy to bіogosіawieсstwo, czy kl№twa. Zakіуcony zostaі normalny ci№g wydarzeс. Zona staje siк coraz mniej stabilna, a ty jesteњ czкњci№ tego procesu. Pomogк ci... choж nie wiem, czy powinienem.
+Nie bкdzie іatwo dostaж siк do Limaсska. Najkrуtsza droga do miasta prowadzi przez most, ale ten zostaі podniesiony. Nie jest to jednak jedyna droga, o czym siк ze zdziwieniem przekonaіem. "Wolnoњж" i "Powinnoњж" podniosіy most po wielkiej emisji, ale parк dni temu na drugim brzegu pojawili siк bandyci i zajкli most. To znaczy, їe musi byж jeszcze co najmniej jedno przejњcie.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_5">
+		<text>Wielka emisja bardzo zmieniіa Zonк. Bezpieczne i znajome њcieїki pokryіy siк zabуjczymi anomaliami, za to pojawiіy siк nowe, niedostкpne przez lata. W№tpiк, їe wszystkie udaіo siк juї znaleџж... Moїesz wierzyж lub nie, ale czasami odbieram na PDA fragmenty transmisji z jakiegoњ miejsca niedaleko Limaсska. To moїe oznaczaж tylko jedno: stalkerzy znaleџli nowe њcieїki do Limaсska i potrzebuj№ pomocy.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_7">
+		<text>Niestety, sygnaі jest za sіaby, by daіo siк wiele usіyszeж. Rozumiem, їe stalkerzy utknкli w zapкtlonej przestrzeni - gdziekolwiek pуjd№, wracaj№ do punktu wyjњcia. Jeњli ich wyci№gniemy, dowiemy siк, jak dotrzeж do Limaсska.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_9">
+		<text>Idџ do wojskowych magazynуw. Sygnaі powinien byж mocniejszy na wzgуrzach. Jak siк czegoњ dowiesz, dasz mi znaж?</text>
+	</string>
+	<string id="red_artefact_hunters_11">
+		<text>Jak leci, najemniku? Mamy szczкњcie, їe Zona ciк do nas przywiodіa!</text>
+	</string>
+	<string id="red_artefact_hunters_111">
+		<text>Czeњж.</text>
+	</string>
+	<string id="red_artefact_hunters_1111">
+		<text>Mamy dla ciebie robotк. Wiesz, nie przyszliњmy do tego lasu na grzyby. Jest tu niedaleko strefa anomalii z caіymi gуrami artefaktуw. Wiem, jak tam dojњж, ale droga wiedzie przez las - na pewno sіyszaіeњ co nieco o tym lesie. To њmiertelna puіapka, psiakrew. Doprowadzisz nas tam, trochк popilnujesz, їeby nic nam siк nie staіo i dostaniesz od nas іadniutki artefakt za fatygк. Co ty na to?</text>
+	</string>
+	<string id="red_artefact_hunters_11111">
+		<text>W porz№dku. Chodџmy.</text>
+	</string>
+	<string id="red_artefact_hunters_11112">
+		<text>Mnie teї nie podoba siк ten las. Muszк lecieж.</text>
+	</string>
+	<string id="red_artefact_hunters_111121">
+		<text>Jak chcesz. Wrуж, jeњli zmienisz zdanie.</text>
+	</string>
+	<string id="red_artefact_hunters_21">
+		<text>Tak?</text>
+	</string>
+	<string id="red_artefact_hunters_211">
+		<text>Co mуwiіeњ o tym miejscu z caіymi gуrami artefaktуw?</text>
+	</string>
+	<string id="red_artefact_hunters_22">
+		<text>Na razie.</text>
+	</string>
+	<string id="red_artefact_hunters_31">
+		<text>Pogadamy innym razem.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11">
+		<text>Nie strzelaj!</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_111">
+		<text>Coњcie za jedni?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1111">
+		<text>Proњci stalkerzy. Strielok nas wynaj№і.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11111">
+		<text>Czemu mnie zaatakowaliњcie?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_111111">
+		<text>Strielok powiedziaі, їe ktoњ za nim іazi, wiкc potrzebna mu ochrona. Myњleliњmy, їe jesteњ zabуjc№.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1111111">
+		<text>Kapujк.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_112">
+		<text>Dok№d poszedі Strielok?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1121">
+		<text>Nie wiemy, nie powiedziaі, gdzie idzie.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11211">
+		<text>Nic nie powiedziaі? Moїe przewietrzyж wam we іbach kulk№?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_112111">
+		<text>Nie, proszк! Naprawdк nie powiedziaі, gdzie idzie. Wiem tylko, gdzie chowaі swoje rzeczy. Tu s№ wspуіrzкdne.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1121111">
+		<text>Dobra...</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11212">
+		<text>W porz№dku...</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_113">
+		<text>Wiecie, gdzie znajdк Leњnika?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1131">
+		<text>Tak. Szukaj go niedaleko starej kopalni, po drugiej stronie lasu. Sprzedaі Strielokowi mapк z zaznaczonym przejњciem przez las. Bez niej las jest jak labirynt bez wyjњcia.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_11311">
+		<text>Moїesz mnie tam zaprowadziж?</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_113111">
+		<text>Tak, zapamiкtaіem drogк. Ale to niebezpieczne, w lesie peіno mutantуw.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_1131111">
+		<text>Poradzк sobie z nimi. Chodџmy.</text>
+	</string>
+	<string id="red_bounty_hunter_dialog_114">
+		<text>Idк. Nie ruszajcie siк st№d.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_0">
+		<text>Tylko nie strzelaj!</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_1">
+		<text>Coњcie za jedni?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_11">
+		<text>Proњci stalkerzy. Strielok nas wynaj№і.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_111">
+		<text>Czemu mnie zaatakowaliњcie?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_1111">
+		<text>Strielok powiedziaі, їe ktoњ za nim іazi, wiкc potrzebna mu ochrona. Myњleliњmy, їe jesteњ zabуjc№.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_11111">
+		<text>Kapujк.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_3">
+		<text>Dok№d poszedі Strielok?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_31">
+		<text>Nie wiemy, nie powiedziaі, gdzie idzie.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_311">
+		<text>Nic nie powiedziaі? Moїe przewietrzyж wam we іbach kulk№?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_3111">
+		<text>Nie, proszк! Naprawdк nie powiedziaі, gdzie idzie. Wiem tylko, gdzie chowaі swoje rzeczy. Tu s№ wspуіrzкdne.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_31111">
+		<text>Dobra...</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_312">
+		<text>W porz№dku...</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_4">
+		<text>Wiecie, gdzie znajdк Leњnika?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_41">
+		<text>Tak. Szukaj go niedaleko starej kopalni, po drugiej stronie lasu. Sprzedaі Strielokowi mapк z zaznaczonym przejњciem przez las. Bez niej las jest jak labirynt bez wyjњcia.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_411">
+		<text>Moїesz mnie tam zaprowadziж?</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_4111">
+		<text>Tak, zapamiкtaіem drogк. Ale to niebezpieczne, w lesie peіno mutantуw.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_41111">
+		<text>Poradzк sobie z nimi. Chodџmy.</text>
+	</string>
+	<string id="red_bounty_hunter_surrender_5">
+		<text>Idк. Nie ruszajcie siк st№d.</text>
+	</string>
+	<string id="red_bounty_hunter_way_11">
+		<text>Przyspieszmy kroku, tu jest bardzo niebezpiecznie.</text>
+	</string>
+	<string id="red_bounty_hunter_way_111">
+		<text>Co nam grozi?</text>
+	</string>
+	<string id="red_bounty_hunter_way_1111">
+		<text>To Czerwony Las! Stalkerzy znikaj№ tu dziesi№tkami, a nas jest tylko dwуch. Pospieszmy siк, zanim przyjdzie nam poїaіowaж.</text>
+	</string>
+	<string id="red_bounty_hunter_way_12">
+		<text>Jesteњmy prawie na miejscu. Niedaleko jest obуz stalkerуw.</text>
+	</string>
+	<string id="red_bounty_hunter_way_13">
+		<text>Jesteњmy na miejscu. Leњnik mieszka w tamtej chacie.</text>
+	</string>
+	<string id="red_bounty_hunter_way_14">
+		<text>Chodџmy szybciej.</text>
+	</string>
+	<string id="red_bounty_hunter_way_15">
+		<text>Czeњж!</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11">
+		<text>Nie podchodџ do bramy! Jest zaminowana.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_111">
+		<text>Co jest, do cholery! Muszк wejњж!</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_1111">
+		<text>Najemniku, dopуki tu jesteњmy, nie otworzymy tej bramy. W kaїdej chwili z lasu mog№ wyskoczyж potwory i nas poїreж. Ale otworzymy bramк, jeњli nam pomoїesz. Chcemy siк dostaж do starej kopalni. Mуwi№, їe znajduje siк w niej duїo artefaktуw. Jest tam teї bezpiecznie - moїna siк schowaж przed emisj№. Ale nie utrzymamy jej sami. Podrуїowaіo z nami wiкcej stalkerуw - niektуrzy poszli przez Wysypisko, inni przez Jantar. Jeњli udaіo im siк przejњж, poprowadzisz ich do kopalni. Wtedy otworzymy ci bramк.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11111">
+		<text>Zgoda. Sprowadzк pomoc, a wy otworzycie bramк.</text>
+	</string>
+	<string id="red_forest_gate_keepesr_dialog_11112">
+		<text>Nie ma mowy.</text>
+	</string>
+	<string id="red_forest_stalkers_task_11">
+		<text>Czeњж, najemniku!</text>
+	</string>
+	<string id="red_forest_stalkers_task_111">
+		<text>Czeњж!</text>
+	</string>
+	<string id="red_forest_stalkers_task_1111">
+		<text>Mamy dla ciebie robotк.</text>
+	</string>
+	<string id="red_forest_stalkers_task_11111">
+		<text>Mуw.</text>
+	</string>
+	<string id="red_forest_stalkers_task_111111">
+		<text>Zdob№dџ dla nas mapк Czerwonego Lasu.</text>
+	</string>
+	<string id="red_forest_stalkers_task_11111111">
+		<text>Dobra.</text>
+	</string>
+	<string id="red_forest_stalkers_task_2">
+		<text>Macie tu mapк.</text>
+	</string>
+	<string id="red_forest_stalkers_task_21">
+		<text>Dziкki za pomoc.</text>
+	</string>
+	<string id="red_forester_about_forest_0">
+		<text>Opowiedz mi o Czerwonym Lesie.</text>
+	</string>
+	<string id="red_forester_about_forest_1">
+		<text>Kiedyњ byі to rezerwat, a ja byіem w nim leњnikiem. Chroniіem las i zwierzynк przed kіusownikami. Teraz Zona strzeїe tego miejsca i idzie jej tak dobrze, їe ludzie wol№ doіoїyж kilkanaњcie kilometrуw, їeby je omin№ж. Jeњli jakiњ obcy postawi nogк w lesie, jest juї wіaњciwie martwy. Moїe i jestem Leњnikiem, ale nawet ja nie wiem, co siк tam dzieje. Wchodzi czіowiek we mgік i gdzieњ go wsysa. Moїesz iњж zaraz za nim, a i tak nie zobaczysz, co mu siк staіo. Tak to jest, synku.</text>
+	</string>
+	<string id="red_forester_about_limansk_0">
+		<text>Muszк siк dostaж do Limaсska.</text>
+	</string>
+	<string id="red_forester_about_limansk_1">
+		<text>Limaсsk byі stracony przez dіugie lata i byіo ku temu wiele dobrych powodуw. Byіoby najlepiej, gdyby pozostaі stracony. Czego szukasz w Limaсsku?</text>
+	</string>
+	<string id="red_forester_about_limansk_11">
+		<text>Moїe to zabrzmi banalnie, ale to kwestia їycia i њmierci.</text>
+	</string>
+	<string id="red_forester_about_limansk_111">
+		<text>Nie jesteњ zwykіym czіowiekiem. Zona odcisnкіa na tobie ciekawe piкtno, sam nie wiem, czy to bіogosіawieсstwo, czy kl№twa. Zakіуcony zostaі normalny ci№g wydarzeс. Zona staje siк coraz mniej stabilna, a ty jesteњ czкњci№ tego procesu. Pomogк ci... choж nie wiem, czy sіusznie.</text>
+	</string>
+	<string id="red_forester_about_zone_0">
+		<text>Co moїesz mi powiedzieж o Zonie?</text>
+	</string>
+	<string id="red_forester_about_zone_1">
+		<text>O Zonie... Zona їyje wіasnym їyciem, a my wchodzimy jej w drog№ - niektуrzy bardziej, niektуrzy mniej. Zona stara siк usuwaж wszystko, co zagraїa jej istnieniu, podobnie jak ludzkie ciaіo walczy z chorob№. My dostajemy gor№czki, a Zona teї miewa swoje dreszcze. Prуbuje nas "wyrzygaж" za pomoc№ emisji. Im bardziej j№ draїnimy, tym silniejsze bкd№ emisje.</text>
+	</string>
+	<string id="red_forester_about_zone_11">
+		<text>Jak udaіo ci siк przeїyж tyle lat - samemu wњrуd wszystkich tych niebezpieczeсstw?</text>
+	</string>
+	<string id="red_forester_about_zone_111">
+		<text>Jeden bezmyњlny krok moїe zniszczyж Zonк... і№cznie ze wszystkim, co do niej naleїy. Nie tylko mutanty i anomalie, ale rуwnieї artefakty i was, stalkerуw... Mnie teї. Czujк, їe Zona jest bardzo zdenerwowana - coњ j№ niepokoi, zakіуca jej rуwnowagк. Idzie na burzк... i nie wiem, czy uda siк zachowaж status quo.</text>
+	</string>
+	<string id="red_forester_cheet_0">
+		<text>tekst domyњlny</text>
+	</string>
+	<string id="red_forester_cheet_1">
+		<text>Przynieњ mi wyj№tkowy artefakt "kompas". W PDA masz miejsca, gdzie moїe byж.</text>
+	</string>
+	<string id="red_forester_has_compas_0">
+		<text>Mam artefakt.</text>
+	</string>
+	<string id="red_forester_has_compas_11">
+		<text>Co siк stanie, jak go znajdк?</text>
+	</string>
+	<string id="red_forester_hello_dialog_1">
+		<text>Czego taki їуіtodziуb szuka na posiadіoњci Leњnika?</text>
+	</string>
+	<string id="red_forester_hello_dialog_2">
+		<text>Czyїby przypadek ciк do mnie sprowadzaі?</text>
+	</string>
+	<string id="red_forester_hello_dialog_3">
+		<text>Powodzenia, synu!</text>
+	</string>
+	<string id="red_forester_hello_dialog_4">
+		<text>Nie zapomnij o mnie!</text>
+	</string>
+	<string id="red_forester_hello_dialog_5">
+		<text>Zapamiкtaj mnie dobrze!</text>
+	</string>
+	<string id="red_forester_limansk_0">
+		<text>Opowiedz mi o Limaсsku.</text>
+	</string>
+	<string id="red_forester_limansk_1">
+		<text>Doњж dіugo nie byіo sіychaж o tym mieњcie. Wielu ludzi uwaїaіo, їe Limaсsk w ogуle nie istniaі. Ale nie mieli racji - widziaіem go na wіasne oczy przed pierwsz№ katastrof№. Byі tam zamkniкty instytut, bardzo wielki, z domami wybudowanymi dla naukowcуw i ich sіuїby. Ten instytut miaі jak№њ wymyњln№ nazwк... coњ jak "Radiofala". Postawili tam teї ogromn№ antenк, wielkoњci piкciopiкtrowego budynku! Prawdziwi z nich byli intelektualiњci. Ale w Limaсsku nigdy nie byіo spokoju. Mieszkaсcy zawsze byli podejrzliwi, nie ufali obcym. Zawsze mruczeli coњ pod nosem i wychwalali radziecki reїim, nawet gdy byіy braki w zaopatrzeniu. My, ludzie ze wsi, omijaliњmy Limaсsk - mieszkaсcy nie byli zbyt serdeczni, a od pobytu w mieњcie czіowieka zawsze bolaіa gіowa... to chyba przez tк antenк. Pуџniej miaіa miejsce awaria w Czarnobylu, ale Limaсska nawet nie ewakuowano. Moїe pomieszali coњ w dokumentach, a moїe to ze wzglкdu na caі№ tк tajemnicк, nie wiem wіaњciwie. Ale wiкcej nie sіyszaіem o Limaсsku. Nie mam tam czego szukaж...</text>
+	</string>
+	<string id="red_forester_limansk_11">
+		<text>Ale widziaіem drogк do Limaсska i most przez rzekк.</text>
+	</string>
+	<string id="red_forester_limansk_111">
+		<text>Kiedyњ byіo tam peіno anomalii, ale po Emisji zrobiіo siк prawie bezpiecznie. Stalkerzy szybko siк zorientowali, їe przez Limaсsk moїna dotrzeж do centrum Zony, omijaj№c Mуzgozwкglacz. "Powinnoњж" i "Wolnoњж" rozpoczкіy prawdziw№ wojnк, gdy tylko dotarіy do miasta. Mog№ siк przez to wykoсczyж nawzajem, ale zaіoїк siк, їe caіa reszta Zony niespecjalnie siк zmartwi, gdyby do tego doszіo.</text>
+	</string>
+	<string id="red_forester_limansk_12">
+		<text>Kiedyњ byіo tam peіno anomalii, ale po Emisji zrobiіo siк prawie bezpiecznie. Stalkerzy szybko siк zorientowali, їe przez Limaсsk moїna dotrzeж do centrum Zony, omijaj№c Mуzgozwкglacz. "Powinnoњж" i "Wolnoњж" rozpoczкіy prawdziw№ wojnк, gdy tylko dotarіy do miasta. Mog№ siк przez to wykoсczyж nawzajem, ale zaіoїк siк, їe caіa reszta Zony niespecjalnie siк zmartwi, gdyby do tego doszіo.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_0">
+		<text>Otrzymaіem wiadomoњж od najemnikуw w wojskowych magazynach. Wygl№da na to, їe po tej duїej emisji zostali uwiкzieni w jakiejњ dziwnej anomalii. Mуwi№, їe nie mog№ siк wydostaж - zawsze wracaj№ w miejsce, z ktуrego ruszyli. Podali swoje wspуіrzкdne.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11">
+		<text>Jak na wstкdze Moebiusa?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111">
+		<text>Jak wydostaж najemnikуw z b№bla?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111111">
+		<text>Wiesz, gdzie bandyci siк okopali?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111112">
+		<text>Mam twуj rzadki artefakt.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_1111121">
+		<text>Straciіem juї nadziejк, їe jeszcze kiedyњ zobaczк kompas! Dziкkujк! Daj mi trochк czasu, a znajdк sposуb na wyjњcie z b№bla. W tym czasie znajdџ sposуb na przekazanie informacji najemnikom. Musisz uїyж potкїnego nadajnika. Podobno jest taki w wojskowych magazynach.</text>
+	</string>
+	<string id="red_forester_lost_stalkers_11111211">
+		<text>Co siк stanie, gdy znajdк nadajnik?</text>
+	</string>
+	<string id="red_forester_lost_stalkers_111112111">
+		<text>Gdy znajdziesz nadajnik, dam ci wspуіrzкdne potrzebne najemnikom.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_0">
+		<text>Muszк siк dostaж do Limaсska.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_2">
+		<text>Moїe to zabrzmi banalnie, ale to kwestia їycia i њmierci.</text>
+	</string>
+	<string id="red_forester_need_to_limansk_4">
+		<text>Wiesz, w jaki sposуb bandyci przeszli na drug№ stronк?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_6">
+		<text>Co siк staіo ze stalkerami?</text>
+	</string>
+	<string id="red_forester_need_to_limansk_8">
+		<text>Co muszк zrobiж?</text>
+	</string>
+	<string id="red_forester_who_are_you_0">
+		<text>Kim jesteњ?</text>
+	</string>
+	<string id="red_forester_who_are_you_1">
+		<text>Co mogк ci o sobie powiedzieж? Nazywaj№ mnie Leњnikiem. Jestem tu od dawna, caіe їycie mieszkam przy tym lesie. Jestem stary. W moim wieku czіowiek przywi№zuje siк do miejsca zamieszkania, niewaїne gdzie. Odmуwiіem wziкcia udziaіu w ewakuacji po wypadku w elektrowni, przeїyіem teї pojawienie siк Zony. Pamiкtam bіysk na horyzoncie... Wielu ludzi zginкіo tego dnia, ale mnie Zona oszczкdziіa, rozumiesz? Maіo, їe mnie oszczкdziіa, ofiarowaіa mi dar! Dawniej potrafiіem poruszaж siк po lesie, ale teraz wyczuwam bezpieczne њcieїki pomiкdzy zabуjczymi anomaliami. Stalkerzy mi zazdroszcz№, ale nie jestem caіkowicie szczкњliwy z tego daru. Sam rozumiesz, wszystko ma swoj№ cenк. Kiedyњ przyjdzie mi zapіaciж Zonie za mуj dar. Tego siк bojк, przyjacielu.</text>
+	</string>
+	<string id="red_forester_who_are_you_111">
+		<text>Nie, to byі zwykіy las sosnowy. Byі tu teї rezerwat, ale poza tym nie byіo w nim wtedy nic wyj№tkowego. Staі siк czerwony po wypadku w Czarnobylskiej Elektrowni J№drowej w 1986 roku. Jak kіadіem siк spaж, byі zielony, a jak wstaіem, byі juї taki jak teraz. Pojawiіa siк Zona i z lasu uciekіy zwierzкta i ptaki. Pozostaіem jedyn№ їyw№ istot№. Tylko ja, czerwony las i ta gкsta mgіa, ktуra nigdy siк nie rozwiewa.</text>
+	</string>
+	<string id="red_forester_who_are_you_11111">
+		<text>Tak, wielu stalkerуw zakoсczyіo tu їywot. Sіyszaіem nawet, їe w Czerwonym Lesie mieszka zіy duch. Moim zdaniem las jest jak wszystko w Zonie. Jeњli dobrze go traktujesz, nie zrobi ci krzywdy. Kіopot w tym, їe stalkerzy niczego dobrze nie traktuj№. Chcecie sobie zawіaszczyж czкњci Zony, a w zamian dostajecie... co wam siк naleїy.</text>
+	</string>
+	<string id="red_leshiy_reward_11">
+		<text>Wszystkich moich їoіnierzy szlag trafiі. Ledwo wyszliњmy z b№bla, a zaraz dopadli nas cholerni bandyci.</text>
+	</string>
+	<string id="red_leshiy_reward_12">
+		<text>Dziкki, najemniku. Nie poradzilibyњmy sobie bez ciebie. Weџ to, przyda ci siк.</text>
+	</string>
+	<string id="red_leshiy_reward_13">
+		<text>Dziкki, najemniku. Nie poradzilibyњmy sobie bez ciebie. Weџ to, przyda ci siк.</text>
+	</string>
+	<string id="red_leshiy_reward_14">
+		<text>Dziкki, najemniku. Bardzo nas pomogіeњ - bez ciebie za cholerк nie opuњcilibyњmy tego mostu ani nie wydostali siк z b№bla. Weџ to, przyda ci siк.</text>
+	</string>
+	<string id="red_leshiy_reward_15">
+		<text>Dziкki, najemniku. Bardzo nas pomogіeњ - bez ciebie za cholerк nie opuњcilibyњmy tego mostu ani nie wydostali siк z b№bla. Weџ to, przyda ci siк.</text>
+	</string>
+	<string id="red_leshiy_reward_16">
+		<text>Czeњж, Szrama.</text>
+	</string>
+	<string id="red_leshiy_story_1_0">
+		<text>Opowiedz mi o b№blach przestrzennych.</text>
+	</string>
+	<string id="red_leshiy_story_1_1">
+		<text>B№bel przestrzenny, mуj bracie, to najwiкksze gуwno, jakie pojawiіo siк w Zonie. To nowe zjawisko. Jeњli wpadniesz do b№bla, masz przer№bane. Niewaїne, ktуrкdy pуjdziesz, jak№ drogк wybierzesz, zawsze dojdziesz w miejsce, z ktуrego ruszyіeњ. W ogуle o nich nie sіyszaіem, dopуki sam w jeden nie wpadіem. Dopadіa nas emisja i caіa grupa znalazіa siк w b№blu przestrzennym. Caіymi dniami chodziliњmy w kуіko! Niektуrzy chcieli strzeliж sobie w іeb. Mуwili, їe nigdy siк nie wydostaniemy, wiкc rуwnie dobrze moїemy ze sob№ skoсczyж. Kopniakami i przekleсstwami zmuszaіem ich do dalszego marszu. Ledwo juї to pamiкtam... Czіowieku, ci№gle nie mogк uwierzyж, їe siк wydostaliњmy. Wielkie dziкki za pomoc.</text>
+	</string>
+	<string id="red_leshiy_story_2_0">
+		<text>Jak№ mieliњcie misjк?</text>
+	</string>
+	<string id="red_leshiy_story_2_1">
+		<text>Hola, brachu! Co to za pytanie? Tajemnica misji jest jak tajemnica spowiedzi, tylko surowsza. Za cholerк ci nie powiem. A z drugiej strony... co mi tam, przecieї uratowaіeњ nam їycie. Sіuchaj. Zgodziliњmy siк odnaleџж rzadki i bardzo cenny artefakt dla pewnej korporacji. Nie powiem ci dla ktуrej ze wzglкdu na klauzulк poufnoњci. Znaleџliњmy to, czego szukaliњmy. Jak nam siк udaіo to inna historia, ale za їadne pieni№dze nie wezmк juї takiej roboty. Їycie ceniк sobie wyїej od tych њwistkуw ze znakiem wodnym. Od samego pocz№tku miaіem okropne przeczucia co do tego zadania, ale wynagrodzenie byіo zbyt wysokie, їeby odrzuciж to zlecenie. Jak siк obawiaіem, caіy wypad obrуciі siк w jeden wielki koszmar. Jak tylko ruszyliњmy do domu ze zdobycz№, bach! Emisja prawie nas wykoсczyіa, do tego jeszcze ten gіupi b№bel. Nie, wiкcej takich zleceс nie biorк.</text>
+	</string>
+	<string id="red_artefact_hunters_reward_dialog_11">
+		<text>Dziкki za pomoc, masz tu nagrodк.</text>
+	</string>
+</string_table>

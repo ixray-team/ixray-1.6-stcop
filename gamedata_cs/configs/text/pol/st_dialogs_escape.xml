@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_comm_talk_11">
+		<text>Na co siк gapisz, dupku?</text>
+	</string>
+	<string id="esc_comm_talk_1111">
+		<text>Њmiej siк na zdrowie! Jeњli chcesz siк dowiedzieж, gdzie ukryіem walizkк z іupem, rozczarujesz siк. Wracaj do swojej ukochanej Zony! Moi chіopcy juї niedіugo roznios№ twoj№ їaіosn№ brygadк. Jeњli chodzi o waszego przywуdcк, powiesimy go na moњcie, їeby kaїdy widziaі, czym koсczy siк zadzieranie z wojskiem!</text>
+	</string>
+	<string id="esc_comm_talk_111111">
+		<text>Doprawdy? Hm... Ile bierzesz za swoje usіugi? A gdybym tak poprosiі ciк o zaіatwienie snajperуw na nasypie kolejowym, by pomуc moim chіopakom?</text>
+	</string>
+	<string id="esc_leader_what_happens_1">
+		<text>Jak ci to powiedzieж... Stalkerzy dawniej wspуіpracowali z armi№. Oni dawali nam broс, my im pieni№dze i wszyscy byli zadowoleni. Czasem mуwili nam o pojawieniu siк nowego skupiska anomalii. Ale ktуregoњ razu ich dowуdca chciaі byж za chytry. Zgadaі siк z bandytami i zacz№і sprzedawaж im informacje na temat naszych ruchуw. Najpierw myњleliњmy, їe bandyci maj№ zwykіego farta, ale w koсcu poіapaliњmy siк w ich interesach z armi№. Wtedy zebraliњmy siк w kupк i postanowiliњmy str№ciж kilka іbуw.</text>
+	</string>
+	<string id="esc_leader_talk_11">
+		<text>Jak leci, najemniku? Rzadko ciк widujemy w Kordonie... Co ciк tu sprowadza?</text>
+	</string>
+	<string id="esc_leader_talk_22">
+		<text>Dowiedziaіeњ siк czegoњ przydatnego?</text>
+	</string>
+	<string id="esc_leader_talk_33">
+		<text>No, w koсcu ta historia doczekaіa siк dobrego zakoсczenia! Teraz armia nie bкdzie wyіaziж poza placуwkк.</text>
+	</string>
+	<string id="esc_leader_talk_44">
+		<text>Najemniku, musisz rozprawiж siк z kumplami dowуdcy.</text>
+	</string>
+	<string id="esc_leader_talk_55">
+		<text>Co mamy zrobiж z tym cholernym dowуdc№?...</text>
+	</string>
+	<string id="esc_leader_talk_1111">
+		<text>Od Sidorowicza, mуwisz... To i o dowуdcy teї sіyszaіeњ? Dobra, bкdк szczery. Wspуіpracowaliњmy dawniej z armi№. Oni przepuszczali nasze towary przez placуwkк i dawali nam dobre informacje, a my im nieџle pіaciliњmy za ich usіugi. Pуџniej dowiedzieliњmy siк, їe ten fiut dowуdca robiі na dwie strony - nadawaі bandytom nasze ruchy! Potem jeszcze sprzedaі dwуch z nas jako niewolnikуw na Wysypisku! Tego juї byіo za wiele.</text>
+	</string>
+	<string id="esc_leader_talk_111111">
+		<text>Tak, trochк nas poniosіo... Pojкcia nie mam, co teraz robiж. Wziкliњmy dowуdcк na zakіadnika, їeby nam armia nie zrobiіa z tyіkуw jesieni њredniowiecza tymi ich њmigіowcami. Nie moїemy go zabiж, ale puњciж teї nie moїemy... Cwany skurczybyk wie, їe potrzebny jest nam їywy, i nie pкka ani trochк. Kіopot w tym, їe tylko on wie, gdzie jest schowany іup. Jeњli nie dostarczymy іupu Sidorowiczowi, nie bкdzie z nami robiі interesуw. Gdybyњmy mogli zmusiж tego trepa do gry na naszych zasadach, sprawa wygl№daіaby zupeіnie inaczej, moїesz mi wierzyж.</text>
+	</string>
+	<string id="esc_leader_talk_2222">
+		<text>Pewnie, їe go uratuj№ - kanalia wisi im kupк szmalu! Sam prowadziі ich interesy i skitraі gdzieњ kasк. Sіuchaj, mam pomysі. Dowуdca ma tylko dwуch ludzi, na ktуrych moїe polegaж - sіuїyli razem w placуwce i odpalaі im dziaіkк, wiкc zrobi№ wszystko, їeby go wyci№gn№ж. Jak siк ich pozbкdziemy, sukinsyn zrozumie, їe nikt nie przyjdzie mu na pomoc. Zіamie siк i wtedy wyciњniemy z niego miejsce ukrycia іupu. Podzielimy siк kas№, a Sidorowicz dostanie walizkк. Co ty na to?</text>
+	</string>
+	<string id="esc_leader_talk_222222">
+		<text>Mam przeczucie, їe nie bкdziemy musieli ich szukaж. Kumple Chaleckiego krкc№ siк tu gdzieњ, їeby nas dorwaж. Widziano maіy oddziaі przy windzie. Pomуї nam ich rozwaliж.</text>
+	</string>
+	<string id="esc_trader_meet_11">
+		<text>Witaj, najemniku. Co ciк tu sprowadza?</text>
+	</string>
+	<string id="esc_trader_meet_22">
+		<text>Dziкki za dostarczenie walizki, najemniku. Teraz mogк rozliczyж siк z klientem. Przeїyіem w Zonie tak dіugo dziкki temu, їe zawsze dotrzymujк sіowa. Tutaj wystarczy raz przekrкciж klienta, їeby niedіugo obudziж siк z kos№ w plecach. Ale starczy tego gadania o mnie... Ten twуj stalker tu byі. Nazywa siк Kieі, szukaі wzmacniaczy lampowych i innego elektronicznego szmelcu... Nie znam siк na tym. Sprzedaіem mu wzmacniacz, ale nie miaіem nic innego z rzeczy, ktуrych szukaі, wiкc doradziіem mu, їeby poszedі pogadaж z kopaczami na Wysypisku. Niedawno stalkerzy wykopali na Wysypisku stary sprzкt po Czarnobylskiej Elektrowni J№drowej i teraz peіno jest tam takich rupieci. Tam go szukaj. Pamiкtaj, jeњli interesuje ciк handel, zgіoњ siк do mnie.</text>
+	</string>
+	<string id="esc_trader_meet_44">
+		<text>Hej, najemniku, wci№ї czekam na tк walizkк. Nie zapomnij o tym.</text>
+	</string>
+	<string id="esc_trader_meet_55">
+		<text>Czego szukasz?</text>
+	</string>
+	<string id="esc_trader_meet_2222">
+		<text>Jeњli czegoњ jeszcze potrzebujesz, zapraszam. Masz u mnie doїywotni№ zniїkк za pomoc z wojskowymi.</text>
+	</string>
+	<string id="esc_trader_meet_1111">
+		<text>Hm... Tylu stalkerуw siк tu zіazi, їe nie da siк wszystkich spamiкtaж. Masz coњ na wspomoїenie mojej pamiкci?</text>
+	</string>
+	<string id="esc_trader_meet_111111">
+		<text>No, w porz№dku, to mi siк podoba. Sіuchaj: jestem tu juї jakiњ czas, mуj biznes siк rozkrкciі, dostajк rуїne zamуwienia i ludzie mi ufaj№. Mam problem z ostatnim zamуwieniem i kіopot w tym, їe to bardzo waїny klient, a interesuj№cy go towar jest jedyny w swoim rodzaju! Wszystko szіo jak z pіatka - stalkerzy mieli wynieњж towar z Zony, a wojskowi mieli mu zapewniж bezpieczne przejњcie przez Kordon. Jedni z drugimi poprztykali siк o coњ i teraz zrobiі siк jeden wielki bajzel! Koniec koсcуw, stalkerzy tіuk№ siк z wojskowymi i nikt nie ma pojкcia, gdzie jest towar. A to mi wcale nie pasuje, bo zamуwienie trzeba wykonaж. Pomoїesz mi zdobyж walizkк z towarem, to ja opowiem ci o tym twoim stalkerze i jego czкњciach. Umowa stoi?</text>
+	</string>
+	<string id="esc_trader_meet_11111111">
+		<text>Zajrzyj do stalkerуw przy nasypie. Zaіoїyli tam bazк i wіaњnie tam trzymaj№ zіapanego dowуdcк wojskowych, Chaleckiego. Nie obchodzi mnie, co bкdziesz robiі w tej bazie i czy tamci pajace dalej bкd№ siк bawiж w Robin Hooda i jego wesoі№ kompaniк - interesuje mnie tylko walizka i jej zawartoњж. Na pocz№tek sprуbuj porozmawiaж z Walerianem, przywуdc№ stalkerуw. Dam im znaж, їe przychodzisz w moim imieniu.</text>
+	</string>
+	<string id="esc_comm_about_life_in_zone_1">
+		<text>Jestem twoim dіuїnikiem. Powiem ci coњ - wiem, їe stalkerzy prуbuj№ dotrzeж do centrum Zony. Widziaіem stare wojskowe mapy, z ktуrych wynika, їe centrum Zony jest w miejscu, gdzie byіa elektrownia j№drowa w Czarnobylu. Moїe to zbieg okolicznoњci, ale lepiej o tym nie zapominaж. Problem w tym, їe nawet wojskowe satelity nie obejmuj№ tego terenu їadnym pasmem. Nie przelatuj№ tam nawet, bo zakіуcenia s№ tak silne, їe spowodowaіyby samozapіon. Wszystko to jest, oczywiњcie, њciњle tajne, ale mуj kumpel w wojskach rakietowych opowiedziaі mi o tym przy wуdce. Dam ci radк - trzymaj siк z dala od centrum Zony.</text>
+	</string>
+	<string id="esc_comm_about_prisoner_1">
+		<text>Myњlisz, їe to zabawne? W innych okolicznoњciach pogadaіbym z tob№ inaczej... Mam doњж tego gуwna, kolego... Ludzie, z ktуrymi zaczynaіem w wojsku podostawali gwiazdki i porz№dne jednostki w miejscach lepszych niї to... Myњlisz, їe nie mam nic lepszego do roboty niї ganianie takich jak ty po Zonie? Mam tego doњж, tej dziury, cholernej Zony, pieprzonych stalkerуw i tego zіamasa Sidorowicza... nie zapomnijmy teї o mutantach... Poњwiкcamy їycia, їeby je powstrzymaж, ale ich nie ubywa. Wszyscy na zewn№trz nie przestaj№ gadaж, їe "musimy chroniж њwiat przed okropieсstwami Zony" i "nie dopuњcimy do tego"... Generaіowie, ci idioci w telewizji... od ich pieprzenia іeb urywa! A ilu z wierchuszki byіo tu na wypadzie, ilu czoіgaіo siк pomiкdzy anomaliami? Ilu z tych leniwych sukinsynуw oczyszczaіo sektor albo ganiaіo caіymi dniami stalkerуw po Bagnach? Ci gnoje zawsze wykorzystuj№ armiк do robienia porz№dku w najwiкkszym syfie!</text>
+	</string>
+	<string id="esc_comm_about_prisoner_111">
+		<text>Co z tego, їe dla kasy przepuszczam towar przez Kordon? Їyjк i pozwalam їyж innym, rozumiesz? Wiesz chociaї, jaki jest mуj oficjalny їoіd, dupku? No wіaњnie, sprуbowaіbyњ z tego przeїyж! Gуwno mi pіac№ i oczekuj№, їe bкdк dumny ze swojej roboty i z paсstwa... Szefowie kosz№ grub№ kasк na Zonie, tak jak wszyscy. To dlaczego nie ja? Mam wykonywaж rozkazy i przeїyж, wiкc radzк sobie, jak mogк, їeby przeїyж. Pieprzyж to caіe miejsce i wszystkich tych dupkуw... Nie wiem, czy ich zastrzeliж, czy paln№ж sobie w іeb.</text>
+	</string>
+	<string id="esc_comm_about_prisoner_11111">
+		<text>Nieuczciwe? Co z tego? Gуwno mnie obchodzisz ty i twoi kumple. W ogуle nie powinno ciк tu byж. Powinieneњ zostaж zastrzelony, gdy tylko wszedіeњ do Zony. Bez kitu, takie mam rozkazy. Problem w tym, їe na trupie nie zarobiк, a naleїy mi siк lepsze wynagrodzenie za sіuїbк tutaj. Armia nie zapіaci, wiкc muszк sam o siebie zadbaж. A jeњli chodzi o konflikty pomiкdzy frakcjami - wcale mnie nie ruszaj№, moїecie siк swobodnie pozabijaж, narzekaі nie bкdк.</text>
+	</string>
+	<string id="esc_comm_talk_33">
+		<text>Stalkerze, moїe i straciіem towar, a moi kumple nie їyj№, ale z nie takich opresji wychodziіem! Chcesz wiedzieж, gdzie jest mуj schowek?</text>
+	</string>
+	<string id="esc_comm_talk_3333">
+		<text>Pomуї mi siк st№d wydostaж, stalkerze. Daj mi tylko pistolet, jak nikt nie bкdzie patrzyі, a resztк zaіatwiк sam.</text>
+	</string>
+	<string id="esc_comm_talk_333333">
+		<text>Bкdк z tob№ szczery. Schowek jest w rurze, niedaleko strefy anomalii.</text>
+	</string>
+	<string id="esc_comm_talk_44">
+		<text>Dziкki za broс.</text>
+	</string>
+	<string id="esc_comm_talk_5555">
+		<text>Czego jeszcze chcesz?</text>
+	</string>
+	<string id="esc_leader_about_home_1">
+		<text>Nie najgorzej? Powiedziaіbym, їe naprawdк nieџle! Ale sporo mnie to kosztowaіo, bo ci gnoje z armii ci№gle nas naciskaj№, urz№dzaj№ wypady i zabijaj№ naszych braci z helikopterуw. \nKontrolowali caіy handel, a jak zіapali kogoњ ze zdobycz№, zwyczajnie konfiskowali towar. Praca dla nich teї sіabo siк opіacaіa - pіacili kiepsko, jeњli w ogуle pіacili. Ale sprawiedliwoњж nie jest frajerk№, nawet tutaj w Zonie! Jak Chaleckij nas sprzedaі bandytom, miarka siк przebraіa i wziкliњmy go na zakіadnika. Reszta palantуw z armii nasraіa w gacie - dali nam spokуj od tego czasu, bo wiedz№, їe mamy ich dowуdcк. \nW zasadzie wyrwaliњmy dla siebie miіy zak№tek w Zonie i nic tego juї nie zmieni! Musisz doceniж wagк tych wydarzeс: zaіoїyliњmy bazк stalkerуw i Kordon jest teraz w dobrych rкkach. Bкdzie juї tylko lepiej, moїesz byж tego pewien!</text>
+	</string>
+	<string id="esc_leader_about_home_111">
+		<text>No, przyjacielu, mamy tu wiкcej planуw, niї Wszechmocny Bуg pierwszego dnia stworzenia! Musimy dokoсczyж budowк bazy - to nasz priorytet. Pуџniej musimy zwerbowaж wiкcej ludzi... Ale sami do nas przyjd№, zobaczysz! Ludzie wiedz№, їe walczymy w dobrej sprawie! Jak juї stworzymy porz№dn№ armiк, pokaїemy bandytom, їe nie warto z nami zadzieraж. Od dawna mamy z nimi problemy, nie ma dla nich miejsca w Zonie! A potem.. Wierzк, їe nadejdzie dzieс, kiedy wejdziemy gікbiej w Zonк. Moїe nawet dotrzemy do centrum - to marzenie kaїdego stalkera tutaj! Czeka nas њwietlana przyszіoњж, mуwiк ci!</text>
+	</string>
+	<string id="esc_leader_about_home_11111">
+		<text>Jak widzisz, mamy tu duїo do zrobienia... Ale uwaїam, їe jeњli lubisz to, co masz, bкdziesz miaі o wiele wiкcej! Udaіo nam siк tutaj coњ zdziaіaж i to jest najwaїniejsze! Mamy juї technika i handlarza. Dobre z nich chіopy - wpadaj do nich, kiedy chcesz, na pewno ci pomog№. Kiedy bкdzie nas wiкcej, dopiero siк rozkrкcimy! Wiem, їe pod moim przywуdztwem moїemy wiele osi№gn№ж! Pamiкtaj, to dopiero pocz№tek!</text>
+	</string>
+	<string id="esc_leader_about_prisoner_1">
+		<text>Uciekі! Skurwiel zabiі dwуch straїnikуw i zwiaі do lasu! Nie moїemy go znaleџж! Nie mam pojкcia, sk№d wzi№і broс.</text>
+	</string>
+	<string id="esc_trader_about_other_1">
+		<text>Wyjaњniк ci to. Przynieњ mi towar, o ktуry walcz№ stalkerzy z wojskiem, a odpowiem na twoje pytania.</text>
+	</string>
+	<string id="esc_comm_about_info_0">
+		<text>Co mogк dla ciebie zrobiж?</text>
+	</string>
+	<string id="esc_comm_about_info_1">
+		<text>Kupujк informacje, ktуre uwaїam za wartoњciowe. Co wiesz?</text>
+	</string>
+	<string id="esc_comm_about_info_11">
+		<text>Nic.</text>
+	</string>
+	<string id="esc_comm_about_info_2">
+		<text>Zabiіem dowуdcк wojskowego i zabraіem mu PDA. Wymieniк go na towar.</text>
+	</string>
+	<string id="esc_comm_about_info_22">
+		<text>Nie mam w tej chwili їadnych wartoњciowych informacji.</text>
+	</string>
+	<string id="esc_comm_about_info_3">
+		<text>Ten PDA ma dla mnie wartoњж, kupiк go od ciebie.</text>
+	</string>
+	<string id="esc_comm_about_info_4">
+		<text>Sprzedany.</text>
+	</string>
+	<string id="esc_comm_about_info_5">
+		<text>Zmieniіem zdanie.</text>
+	</string>
+	<string id="esc_comm_about_life_in_zone_0">
+		<text>Sіyszaіeњ ostatnio jakieњ ciekawe plotki?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_0">
+		<text>Jak trafiіeњ do stalkerskiego pierdla?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_11">
+		<text>Skoro macie nas doњж, czemu nie powstrzymacie przemytu?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_1111">
+		<text>Jeњli masz takie zasady, to czemu sprzedawaіeњ bandytom informacje o stalkerach? To chyba nieuczciwe?</text>
+	</string>
+	<string id="esc_comm_talk_111">
+		<text>Zabawnie zobaczyж dowуdcк wojskowego za kratkami.</text>
+	</string>
+	<string id="esc_comm_talk_11111">
+		<text>Nie jest moim szefem, jestem najemnikiem.</text>
+	</string>
+	<string id="esc_comm_talk_1111111">
+		<text>Takiej kanalii jak ty na mnie nie staж.</text>
+	</string>
+	<string id="esc_comm_talk_11111122">
+		<text>Cholera, jaja daіbym sobie uci№ж, їe to Sidorowicz! Wiedziaіem, їe w koсcu sprуbuje robiж interesy na boku. Њwietny sobie wybraі moment, їeby wbiж mi nуї w plecy!... Trudno, їycie nigdy nie byіo sprawiedliwe i nigdy nie bкdzie. Sіuchaj, dwa oddziaіy armii s№ gotowe do ataku, jeden w magazynie, a drugi w mіynie. Dowodzi nimi Sokoіow z magazynu. Idџ do niego i powiedz, їe nic mi nie jest, bo stalkerzy nie maj№ jaj, їeby mnie zabiж. Powiedz mu, їeby rozpocz№і atak.</text>
+	</string>
+	<string id="esc_comm_talk_111121">
+		<text>Cholera, jaja daіbym sobie uci№ж, їe to Sidorowicz! Wiedziaіem, їe w koсcu sprуbuje robiж interesy na boku. Њwietny sobie wybraі moment, їeby wbiж mi nуї w plecy!... Trudno, їycie nigdy nie byіo sprawiedliwe i nigdy nie bкdzie. Sіuchaj, dwa oddziaіy armii s№ gotowe do ataku, jeden w magazynie, a drugi w mіynie. Dowodzi nimi Sokoіow z magazynu. Idџ do niego i powiedz, їe nic mi nie jest, bo stalkerzy nie maj№ jaj, їeby mnie zabiж. Powiedz mu, їeby rozpocz№і atak.</text>
+	</string>
+	<string id="esc_comm_talk_21">
+		<text>Oczywiњcie, moi ludzie uwielbiaj№ swojego dowуdcк! Umr№ za mnie bez chwili zastanowienia!</text>
+	</string>
+	<string id="esc_comm_talk_333">
+		<text>Chcк, a ty co chcesz w zamian?</text>
+	</string>
+	<string id="esc_comm_talk_33333">
+		<text>Masz tu pistolet, ale jak ciк zіapi№ przy prуbie ucieczki - nie ode mnie go dostaіeњ.</text>
+	</string>
+	<string id="esc_comm_talk_3333333">
+		<text>Mam nadziejк, їe mnie nie oszukaіeњ.</text>
+	</string>
+	<string id="esc_comm_talk_33334">
+		<text>Z byka spadіeњ? Nie dam ci mojej spluwy.</text>
+	</string>
+	<string id="esc_comm_talk_334">
+		<text>Nie potrzebujк twoich zasranych schowkуw. Jesteњ parszyw№ kanali№ i nie zamierzam ci pomуc.</text>
+	</string>
+	<string id="esc_comm_talk_444">
+		<text>Nie ma sprawy.</text>
+	</string>
+	<string id="esc_comm_talk_55">
+		<text>Czego teraz potrzebujesz?</text>
+	</string>
+	<string id="esc_comm_talk_555">
+		<text>Cуї...</text>
+	</string>
+	<string id="esc_comm_talk_6666">
+		<text>Czego chcesz?</text>
+	</string>
+	<string id="esc_driver_about_you_0">
+		<text>Jak znalazіeњ siк w Zonie?</text>
+	</string>
+	<string id="esc_driver_about_you_1">
+		<text>Jak siк tu znalazіem? Jak wszкdzie, przydzielili mnie tu. Myњlaіem, їe wyњl№ mnie do jednostki niedaleko mojego miasta, a wysіali mnie do Zony. Tutaj moїna zapomnieж o pisaniu listуw albo wyjeџdzie na urlop. W ci№gu dnia sіuїba jest jak wszкdzie: rozkazy, maszerowanie, salutowanie... ale w nocy lepiej siк modliж, bo robi siк przeraїaj№co. Powiedzmy, їe wysyіaj№ ciк patrolowaж granice bazy w nocy i sіyszysz ci№gle wycie... coraz bliїej ciebie. Czasem nawet moїesz zobaczyж tк bestiк. Osiwiaіem, psiakrew, od tego... A inni їoіnierze to straszne zіamasy, budz№ ciк w nocy i kaї№ sobie przynieњж wуdkк. Mog№ mnie zabiж, ale nie wyњciubiк nosa za bazк w nocy po tym wypadku... Witka, jeden z kolesi, ktуrych przysіali tu razem ze mn№, zrobiі, co mu kazali, i nastкpnego dnia znaleџli go rano caіego sinego z oczami wielkoњci kуі transportera... Tak siк wystraszyі, їe serce mu pкkіo i wykitowaі na miejscu...</text>
+	</string>
+	<string id="esc_driver_fear_0">
+		<text>Bіagam, nie zabijaj mnie!</text>
+	</string>
+	<string id="esc_driver_fear_11">
+		<text>Nic siк nie dzieje bez powodu. Patrolowaіem z dowуdc№ granice bazy, kiedy nas zaatakowali. Zabili straїnikуw, a dowуdcк wziкli na zakіadnika. Ledwo przeїyіem...</text>
+	</string>
+	<string id="esc_driver_fear_111">
+		<text>Czemu nie wrуciіeњ do swojej jednostki, їoіnierzu?</text>
+	</string>
+	<string id="esc_driver_fear_1111">
+		<text>Jak mam teraz wrуciж? Zaraz postawi№ mnie przed trybunaіem za opuszczenie dowуdcy!</text>
+	</string>
+	<string id="esc_driver_quest_0">
+		<text>Jak mogк ci pomуc?</text>
+	</string>
+	<string id="esc_driver_quest_1">
+		<text>Jeden z moich najlepszych kumpli uciekaі przed stalkerami i postanowiі schowaж siк w tunelu. Dostaі siк do њrodka, ale nie mуgі wyjњж i zgin№і z pragnienia. Prуbowaіem zanieњж mu wodк, ale bez skutku. To byіo naprawdк por№bane - widziaіem go przed sob№, ale nie mogіem do niego dojњж. Moїesz sprуbowaж przynieњж mi jego rzeczy? Chcк mieж coњ po nim na pami№tkк. Ale powiem ci od razu, nie wiem, jak siк tam dostaж, wiкc przydaіoby siк zapytaж stalkerуw - znaj№ Zonк duїo lepiej niї my, їoіnierze.</text>
+	</string>
+	<string id="esc_driver_quest_11">
+		<text>Chyba ci siк nie uda.</text>
+	</string>
+	<string id="esc_driver_quest_2">
+		<text>Dobra, sprуbujк.</text>
+	</string>
+	<string id="esc_driver_quest_22">
+		<text>Nie mam na to czasu.</text>
+	</string>
+	<string id="esc_driver_quest_complete_0">
+		<text>Jestem tu w sprawie pracy.</text>
+	</string>
+	<string id="esc_driver_quest_complete_1">
+		<text>Jak poszіo?</text>
+	</string>
+	<string id="esc_driver_quest_complete_2">
+		<text>Przyniosіem ci jego PDA. Tylko to zostaіo przy jego ciele.</text>
+	</string>
+	<string id="esc_driver_quest_complete_22">
+		<text>Na razie nic.</text>
+	</string>
+	<string id="esc_driver_quest_complete_222">
+		<text>Szkoda. Pamiкtaj, liczк na ciebie.</text>
+	</string>
+	<string id="esc_driver_quest_complete_3">
+		<text>Dziкki, najemniku! Oto dowуd wdziкcznoњci.</text>
+	</string>
+	<string id="esc_driver_who_are_you_0">
+		<text>Coњ ty za jeden?</text>
+	</string>
+	<string id="esc_driver_who_are_you_1">
+		<text>Siemion... szeregowy... Trusia... Byіem kierowc№ naszego dowуdcy Chaleckija. Chciaі, їebym zawiуzі go do stalkerуw. Dotarliњmy do nasypu, ale jak tylko poszedі porozmawiaж ze stalkerami, zwi№zali go, a ja zwiaіem.</text>
+	</string>
+	<string id="esc_driver_who_are_you_2">
+		<text>Co zamierzasz zrobiж?</text>
+	</string>
+	<string id="esc_driver_who_are_you_3">
+		<text>Jak mam teraz wrуciж? Zaraz postawi№ mnie przed trybunaіem za opuszczenie dowуdcy!</text>
+	</string>
+	<string id="esc_driver_who_are_you_4">
+		<text>Chodџ ze mn№. Zaіatwimy stalkerуw, uratujemy Chaleckija i podzielimy siк zdobycz№!</text>
+	</string>
+	<string id="esc_driver_who_are_you_44">
+		<text>Rozumiem.</text>
+	</string>
+	<string id="esc_driver_who_are_you_5">
+		<text>Dobry pomysі, stary, ale nie mam broni. Daj mi pistolet, to pуjdк z tob№.</text>
+	</string>
+	<string id="esc_driver_who_are_you_6">
+		<text>Masz. Nie przydasz mi siк bez broni.</text>
+	</string>
+	<string id="esc_driver_who_are_you_66">
+		<text>Nie ma mowy. Nie chcк, їeby mnie znaleџli z kul№ w plecach.</text>
+	</string>
+	<string id="esc_leader_about_home_0">
+		<text>Widzк, їe urz№dziliњcie siк tu nie najgorzej.</text>
+	</string>
+	<string id="esc_leader_about_home_11">
+		<text>Cieszк siк - sam nie jestem miіoњnikiem armii. Jakie macie plany na przyszіoњж?</text>
+	</string>
+	<string id="esc_leader_about_home_1111">
+		<text>Opowiedz mi o waszej bazie.</text>
+	</string>
+	<string id="esc_leader_about_prisoner_0">
+		<text>Gdzie trzymacie majora Chaleckija?</text>
+	</string>
+	<string id="esc_leader_about_you_0">
+		<text>Jak dіugo jesteњ stalkerem?</text>
+	</string>
+	<string id="esc_leader_about_you_1">
+		<text>Jestem tu juї kawaіek czasu. Byliњmy tu z chіopakami w dwutysiкcznym, zbieraliњmy zіom do przerobienia. Potem pojawiіa siк Zona. Z pocz№tku mieliњmy pietra, ale i tak postanowiliњmy poszukaж wartoњciowych rzeczy. Wci№ї zbieraliњmy zіom, dopуki nie trafiliњmy na pierwszy artefakt. I bum, okazaіo siк, їe jest wart swej wagi w zіocie. Tylko sobie wyobraџ, nawet teraz artefaktуw nie jest duїo, a wtedy prawie nikt nie wiedziaі, їe istniej№. Ile kasy wtedy zarobiliњmy... na sam№ myњl cieknie mi њlinka! Teraz juї tak nie jest...</text>
+	</string>
+	<string id="esc_leader_about_you_11">
+		<text>Co robisz w Kordonie?</text>
+	</string>
+	<string id="esc_leader_about_you_111">
+		<text>Co to za pytanie? Kordon jest faktycznie przednim wejњciem do Zony. My, stalkerzy, czкsto tu bywamy. Moїna siк tu zrelaksowaж, zaopatrzyж w amunicjк i zgarn№ж trochк szmalu za іup od Sidorowicza. A jeњli potrzebujesz partnera, w Kordonie znajdzie siк niejeden їуіtodziуb, ktуry dla weterana wejdzie w ogieс. Dla nich jesteњmy їywymi legendami. </text>
+	</string>
+	<string id="esc_leader_about_zone_0">
+		<text>Opowiedz mi o Zonie.</text>
+	</string>
+	<string id="esc_leader_about_zone_1">
+		<text>Mnie o to pytasz? Zapytaj jajogіowego - to oni ogl№daj№ j№ przez mikroskopy i rentgeny. Ja nie wiem zbyt wiele o Zonie... Dla mnie to tylko miejsce zarobku. Chcк tylko zarobiж tyle, їebym za parк lat mуgі wylegiwaж siк we wіasnej willi nad morzem.</text>
+	</string>
+	<string id="esc_leader_first_join_0">
+		<text>Jak mogк wst№piж do twojej frakcji?</text>
+	</string>
+	<string id="esc_leader_first_join_1">
+		<text>Uіatwiк ci to! Pokaї mi, їe dobry i godny zaufania z ciebie chіop, a przyjmк ciк do naszej braci. Ale wiesz, co mуwi№ - їe przyjaciуі poznaje siк w biedzie? Siedzimy teraz w syfie po uszy, wiкc jeњli nam pomoїesz, uznamy, їe zdaіeњ test z wyrуїnieniem.</text>
+	</string>
+	<string id="esc_leader_first_join_11">
+		<text>Rozumiem.</text>
+	</string>
+	<string id="esc_leader_good_job_0">
+		<text>Jak inaczej mogк pomуc stalkerom?</text>
+	</string>
+	<string id="esc_leader_good_job_1">
+		<text>Oddziaі wojska w magazynie jest dowodzony przez jednego z zastкpcуw dowуdcy Kordonu. Ma PDA z cennymi informacjami.</text>
+	</string>
+	<string id="esc_leader_good_job_11">
+		<text>Dobra.</text>
+	</string>
+	<string id="esc_leader_good_job_12">
+		<text>Na razie nic.</text>
+	</string>
+	<string id="esc_leader_good_job_2">
+		<text>Zabiіem dowуdcк wojskowego i zabraіem mu PDA. Moїe siк przyda?</text>
+	</string>
+	<string id="esc_leader_good_job_3">
+		<text>Њwietnie, stalkerze. Ten PDA zawiera wiele przydatnych informacji, dziкkujк. Oto nagroda.</text>
+	</string>
+	<string id="esc_leader_good_job_4">
+		<text>Dziкki!</text>
+	</string>
+	<string id="esc_leader_join_stalker_0">
+		<text>Mogк doі№czyж do twojej frakcji? Dostatecznie siк zasіuїyіem, by zostaж jednym z was?</text>
+	</string>
+	<string id="esc_leader_join_stalker_1">
+		<text>Bez w№tpienia bardzo pomogіeњ, ale... Jesteњmy stalkerami, a ty nie wygl№dasz mi na kogoњ doњwiadczonego w naszym fachu. Powinieneњ wejњж gікbiej do Zony i bliїej j№ poznaж... Gdy bкdziesz siк tym zajmowaі, rozstrzygnк tк awanturк z armi№ i dam ci znaж!</text>
+	</string>
+	<string id="esc_leader_join_stalker_2">
+		<text>Kolego, mamy po uszy nie rozwi№zanych problemуw... Za wczeњnie o tym myњleж. Moїe najpierw siк nimi zajmiemy, a potem zobaczymy co i jak?</text>
+	</string>
+	<string id="esc_leader_join_stalker_3">
+		<text>Jesteњ w "Powinnoњci", nie? Musisz zrozumieж, їe nasza braж i twoi dowуdcy maj№... nieco odmienne pogl№dy na temat Zony. Jeњli naprawdк chcesz do nas doі№czyж, musisz zapomnieж o "Powinnoњci". Zgoda?</text>
+	</string>
+	<string id="esc_leader_join_stalker_33">
+		<text>Oczywiњcie. Nie ma nic lepszego niї bycie wolnym stalkerem, nie?</text>
+	</string>
+	<string id="esc_leader_join_stalker_333">
+		<text>Tak? A zimne piwko i ciepіy piasek na plaїy nad oceanem? Ech, niewaїne... Znasz juї kodeks stalkerуw?</text>
+	</string>
+	<string id="esc_leader_join_stalker_3333">
+		<text>Najlepiej mi go przypomnij.</text>
+	</string>
+	<string id="esc_leader_join_stalker_33333">
+		<text>To caіkiem proste. Bycie stalkerem to bycie czіowiekiem. Pomagaj przyjacioіom w kіopotach, nie zdradzaj ich, nie wbijaj im noїa w plecy, dziel siк z nimi apteczkami i jedzeniem, osіaniaj ich podczas walki i sypiaj z nimi pod jednym dachem albo przy jednym ognisku. Naszym gіуwnym wrogiem s№ teraz bandyci - pasoїyty na naszym wspуlnym ciele. Naszym celem jest oczyszczenie Zony na dobre z tych szumowin. Rуb to, a wszyscy bкdziemy szczкњliwi!</text>
+	</string>
+	<string id="esc_leader_join_stalker_333333">
+		<text>Rozumiem.</text>
+	</string>
+	<string id="esc_leader_join_stalker_3333333">
+		<text>Z mojej strony to juї wszystko. Gratulujк nam obu nowego czіonka naszej przyjaznej spoіecznoњci! Obyњ omijaі mutanty i anomalie na swej drodze, stalkerze! Przesіaіem ci do PDA kodek umoїliwiaj№cy odbieranie wiadomoњci od innych stalkerуw w klanie, a takїe monitorowanie na ekranie taktycznym naszych postкpуw w walce z bandytami. Jeszcze raz gratulujк!</text>
+	</string>
+	<string id="esc_leader_join_stalker_33333333">
+		<text>Rozumiem. Pozwolк sobie teraz wrуciж do moich stalkerskich zajкж...</text>
+	</string>
+	<string id="esc_leader_join_stalker_33334">
+		<text>Pewnie. Jestem w Zonie od dawna.</text>
+	</string>
+	<string id="esc_leader_join_stalker_3334">
+		<text>Zastanowiк siк.</text>
+	</string>
+	<string id="esc_leader_join_stalker_4">
+		<text>Proszк, proszк. Masz za maіo wolnoњci w "Wolnoњci"? Chcesz skosztowaж prawdziwej swobody stalkerskiego їycia? W porz№dku, ale pamiкtaj, їe chociaї wszyscy mamy przyjaciуі w "Wolnoњci", my bawimy siк w naszej piaskownicy, a oni w swojej. Jeњli chcesz do nas doі№czyж, musisz siк z nimi rozstaж. Zgoda?</text>
+	</string>
+	<string id="esc_leader_join_stalker_5">
+		<text>Oczywiњcie! Od pocz№tku ciк lubiіem, ale sam rozumiesz, їe najpierw musimy ciк sprawdziж! Chкtnie ciк przyjmк po tym, co dla nas zrobiіeњ. Co ty na to?</text>
+	</string>
+	<string id="esc_leader_talk_111">
+		<text>Przychodzк od Sidorowicza.</text>
+	</string>
+	<string id="esc_leader_talk_11111">
+		<text>I zaatakowaliњcie wojsko?</text>
+	</string>
+	<string id="esc_leader_talk_1111111">
+		<text>Muszк iњж pogadaж z dowуdc№. Moїe siк zіamie i powie mi, gdzie jest walizka z towarem.</text>
+	</string>
+	<string id="esc_leader_talk_222">
+		<text>Uparty z niego sukinsyn - nie chce nic powiedzieж na temat walizki. Gada tylko ci№gle o swoich kumplach, їe nie opuszcz№ go i na pewno po niego przyjd№.</text>
+	</string>
+	<string id="esc_leader_talk_22222">
+		<text>To jest jakieњ wyjњcie. Orientujesz siк, gdzie mogк znaleџж kumpli Chaleckija?</text>
+	</string>
+	<string id="esc_leader_talk_2222222">
+		<text>Zrobiк, co siк da.</text>
+	</string>
+	<string id="esc_leader_talk_66">
+		<text>W takim razie pogadaj z dowуdc№...</text>
+	</string>
+	<string id="esc_leader_what_happens_0">
+		<text>Co tu siк staіo?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_0">
+		<text>Czego chcesz?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_1">
+		<text>Gdzie jest major Chaleckij, wasz zakіadnik? Chyba znikn№і...</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_11">
+		<text>Uciekі.</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_111">
+		<text>Јadnie. Jak to siк staіo?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_1111">
+		<text>Pilnowaіem go i pilnowaіem, aї w koсcu mnie zmorzyіo i przymkn№іem oczy na dwie minuty. Otwieram je, a jego juї nie ma.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_0">
+		<text>Daj mi spokуj, jestem na sіuїbie.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_1">
+		<text>Jedno pytanko: czego tu pilnujecie?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_11">
+		<text>Strzeїemy nowego terytorium stalkerуw.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_111">
+		<text>Nowego? Jak to?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_1111">
+		<text>Idџ do bazy i tam zapytaj. Jestem zajкty.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_2">
+		<text>Niech ci bкdzie.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_3">
+		<text>Co to za "czarna dziura" w moњcie?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_33">
+		<text>Sami nie mamy pojкcia, ale wszystkie wrzucone tam rzeczy znikaj№. Zwykle wrzucamy do niej њmiecie, wiesz, їeby chroniж њrodowisko. Ale pewnego razu znaleџliњmy kupк naszych њmieci w anomalii w jednym z tuneli. W Zonie dziej№ siк por№bane rzeczy. To nienormalne!</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_0">
+		<text>Opowiedz mi o sobie.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_1">
+		<text>Cenie sobie niezaleїnoњж, dlatego zawsze pracowaіem samodzielnie i dla siebie. Ale kiedy usіyszaіem, їe stalkerzy wziкli siк za wojsko i zaіoїyli wіasn№ bazк, bez wahania tu przyszedіem. Wiesz, w Zonie spotykam najrуїniejszych ludzi i ze wszystkich najbardziej lubiк stalkerуw. S№ w porz№dku. Nie maj№ gіupich kodeksуw, zasad, przepisуw i podobnego gуwna jak inne frakcje. Moim zdaniem w ogуle do Zony powinni wpuszczaж tylko stalkerow. Gdyby tak byіo, handlarzom byіoby іatwiej zarabiaж, a sytuacja teї by siк uspokoiіa. W kaїdym razie dlatego pomagam tym chіopakom.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_11">
+		<text>Technik to rzadki widok w Zonie. Powiedz, co potrafisz.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_111">
+		<text>Nie oczekuj, їe zaopatrzк ciк w bajeranckie gadїety albo skomplikowane urz№dzenia. Ale mam gіowк na karku i jestem dobry w tym, co robiк. Nie b№dџ zaskoczony, jeњli pewnego dnia moje zdolnoњci uratuj№ ci їycie. Wiкkszoњж czasu spкdzam przy naprawianiu broni i pancerzy, ale maj№c odpowiednie czкњci, mogк teї ulepszyж ci broс i wyposaїenie. Jeњli chcesz wiedzieж, co dokіadnie mogк ulepszyж, rzuж okiem na ulepszenia - powinieneњ siк zorientowaж.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_1111">
+		<text>Rozumiem, їe widziaіeњ spory kawaіek Zony. Widziaіeњ coњ niezwykіego?</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_11111">
+		<text>Niezwykіego? Po tej wielkiej emisji widziaіem coњ bardzo dziwnego w drodze tutaj z Agropromu. Normalny dot№d kawaіek terenu zmieniі siк - staі siк odksztaіcony, wykrzywiony. Mуj detektor promieniowania zacz№і wariowaж zanim jeszcze tam podszedіem. Pуџniej chіopaki powiedzieli mi, їe to jedna z najpotкїniejszych anomalii. Energia wypіywaj№ca stamt№d mogіaby caіymi tygodniami zasilaж kwartaі ulic w mieњcie! Cholernie tam niebezpiecznie, ale da siк znaleџж bardzo rzadkie artefakty. Jeњli kiedyњ napotkasz takie miejsce, b№dџ ostroїny.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_0">
+		<text>Sіuchaj, wіaњnie widzieliњmy, jak wojsko dostarcza skrzynkк broni i amunicji do magazynu. Nam siк nie przyda, ale moїe tobie...</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_1">
+		<text>Pewnie roi siк tam od їoіnierzy. Czy ta amunicja jest tego warta?</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_2">
+		<text>Zastanуw siк. Miejscowi handlarze zwykle nie maj№ amunicji 5.45 - to znakomita okazja, poza tym broс jest nowa. Wiem, їe to nie robota dla jednej osoby, ale moїemy ci z chіopakami pomуc za drobn№ opіat№, powiedzmy 500 rubli? Zapіacisz nam i zatrzymasz sobie wszystko, co znajdziesz w magazynie, zgoda?</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_3">
+		<text>W porz№dku, ale wiesz - zwykle to mnie pіac№ za wykonanie roboty.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_33">
+		<text>Nie, poradzк sobie sam. Dziкki za informacjк.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_4">
+		<text>Nie przejmuj siк, sam byіem kiedyњ najemnikiem. Przyzwyczajenie.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_0">
+		<text>Opowiedz mi o sobie.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_1">
+		<text>Jestem handlarzem, choж od niedawna. Jak widzisz, dopiero co tu siк tu pojawiliњmy. Ojciec Walerian powiedziaі, їe moїna byж, kim siк chce, wiкc postanowiіem zostaж handlarzem. Czemu nie? Mam umiejкtnoњci i znam Sidorowicza na tyle, by robiж to rуwnie dobrze jak on. Jeszcze w szkole wypoїyczaіem kolegom komiksy za kasк. To byіy dobre czasy. W kaїdym razie urodzony ze mnie biznesmen, wiesz? No i teraz prуbujк siк rozeznaж w nowym zawodzie. Na razie kupujк towar od Sidorowicza, wiкc ceny nie s№ najlepsze, ale mam kilka interesuj№cych rzeczy - zdobycz przyniesion№ przez chіopakуw z wypadуw.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_111">
+		<text>Bracie, teraz bкdziemy їyж na poziomie. Dupki z armii zostawi№ nas w spokoju i stalkerzy zaczn№ czerpaж prawdziwe zyski. Po dіugim wypadzie bкdziemy mogli zrelaksowaж siк w Kordonie, a jakoњж wyposaїenia bardzo siк podniesie. Poza tym bкdziemy dostawaж duїo kasy za zdobyty towar, bo wojsko nie bкdzie nam zabieraж wiкkszoњci zarobku. Poczekaj chwilк - jeszcze siк zabawimy z tymi szujami. Moїesz im podesіaж parк kulek, їeby siк nie mogli rozluџniж - to moїe byж dobra zabawa, nie uwaїasz? W kaїdym razie odt№d bкdzie inaczej, jestem pewien.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_2">
+		<text>Myњlisz, їe їycie w Kordonie siк zmieni?</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_3">
+		<text>Bracie, teraz bкdziemy їyж na poziomie. Dupki z armii zostawi№ nas w spokoju i stalkerzy zaczn№ czerpaж prawdziwe zyski. Po dіugim wypadzie bкdziemy mogli zrelaksowaж siк w Kordonie, a jakoњж wyposaїenia bardzo siк podniesie. Poza tym bкdziemy dostawaж duїo kasy za zdobyty towar, bo wojsko nie bкdzie nam zabieraж wiкkszoњci zarobku. Poczekaj chwilк - jeszcze siк zabawimy z tymi szujami. Moїesz im podesіaж parк kulek, їeby siк nie mogli rozluџniж - to moїe byж dobra zabawa, nie uwaїasz? W kaїdym razie odt№d bкdzie inaczej, jestem pewien.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_0">
+		<text>Mogк ci jakoњ pomуc?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_1">
+		<text>Pomуc? Moїe i tak. Widzisz, dopiero co zaіoїyliњmy bazк, nie mieliњmy jeszcze czasu zabezpieczyж terenu i bandyci zlatuj№ siк tu jak muchy do gуwna - okradaj№ stalkerуw przynosz№cych do mnie zdobycz. Jak siк to nie zmieni, pуjdк z torbami. Jeden z oddziaіуw bandytуw pojawiі siк zaraz obok naszej bazy. Dasz im nauczkк ode mnie?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_11">
+		<text>W tej chwili nie moїesz nic dla mnie zrobiж.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_2">
+		<text>Nie ma sprawy! Dam im nauczkк, ktуr№ dіugo popamiкtaj№.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_22">
+		<text>Moїe innym razem.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_0">
+		<text>Jestem tu w sprawie bandytуw.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_1">
+		<text>Jak poszіo?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_2">
+		<text>Zaіatwiіem ich.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_22">
+		<text>Jeszcze nie poszіo.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_222">
+		<text>Im szybciej, tym lepiej, najemniku.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_3">
+		<text>Dziкki! Oto nagroda.</text>
+	</string>
+	<string id="esc_trader_about_other_0">
+		<text>Moїesz mi opowiedzieж coњ ciekawego?</text>
+	</string>
+	<string id="esc_trader_about_questions_0">
+		<text>Odpowiesz na moje pytania?</text>
+	</string>
+	<string id="esc_trader_about_questions_1">
+		<text>Wygl№dasz na powaїnego czіowieka, a ja nie mam nic przeciwko odpowiadaniu na pytania powaїnych ludzi. Wal...</text>
+	</string>
+	<string id="esc_trader_about_questions_11">
+		<text>Dіugo tu jesteњ?</text>
+	</string>
+	<string id="esc_trader_about_questions_111">
+		<text>Bardzo dіugo. Byіem jednym z pionierуw w Zonie. Wtedy jeszcze nie mieliњmy detektorуw promieniowania ani kombinezonуw, wiкc њrednia dіugoњж їycia w Zonie byіa bardzo maіa. Dlatego teї nigdy nie wybieram siк poza Wysypisko. To nie dla mnie. Ja mam gіowк do innych spraw: jestem jak smar maszynowy, beze mnie silnik siк zatrze - ludzie zaczn№ walczyж. Jak ja jestem w okolicy, wszyscy s№ zadowoleni. Chociaї peіno w Zonie cudуw, popyt na te cuda jest jeszcze wiкkszy - ze strony rz№du, sіuїb specjalnych, prywatnych agencji czy bogatych kolekcjonerуw. Jestem ich kontaktem z tym miejscem - uіatwiam handel pomiкdzy Zon№ i њwiatem zewnкtrznym. Znam odpowiednich ludzi i potrafiк rozwi№zaж kaїdy problem bez wychodzenia z tego pokoju. Tyle pokrуtce o mnie.</text>
+	</string>
+	<string id="esc_trader_about_questions_22">
+		<text>Ale czemu wybraіeњ to miejsce na swуj dom?</text>
+	</string>
+	<string id="esc_trader_about_questions_222">
+		<text>Czemu tu jestem? Pogoda jest niezіa, a sceneria wprost oszaіamia. Ha, ha! Prawdк mуwi№c, jestem za stary na іaїenie po Zonie jako stalker. Poza tym, w starciu z kontrolerem nie miaіbym szans. Tutaj jest spokojnie, to gіуwny powуd. Ludzie potrzebuj№cy mojej pomocy znajd№ mnie tak czy inaczej. Jeњli ktoњ ma duїe zamуwienie lub potrzebuje towaru wysokiej jakoњci, przychodzi do mnie i nigdzie indziej. Czasem nawet czekaj№ w kolejce. Czemu? Bo jeњli ja nie przejdк z towarem przez kordon, to nikt inny teї nie.</text>
+	</string>
+	<string id="esc_trader_about_questions_33">
+		<text>Opowiedz mi o Zonie.</text>
+	</string>
+	<string id="esc_trader_about_questions_333">
+		<text>Teraz w Zonie jest niespokojnie. Kilka dni temu caі№ zon№ wstrz№snкіa wielka emisja. Tak potкїn№ emisjк widziaіem dot№d tylko raz - gdy powstaіa Zona. Wtedy armia zebraіa duїe siіy i weszіa do centrum Zony, by wysadziж wszystko atomуwk№ w cholerк. Jak tylko zbliїyli siк do centrum, dostali tak№ emisj№, їe czoіgi lataіy w powietrzu jak latawce. Wiкkszoњж їoіnierzy zginкіa w wybuchu, a ocalali byli zdani na іaskк losu w centrum Zony. Bez przerwy wzywali pomoc przez radio... Ale generaіowie nie mieli jaj, by wysіaж kolejn№ grupк. Ocalaіe resztki wkrуtce zginкіy pozbawione їadnej ochrony wњrуd anomalii. \nNie mam pojкcia, czemu nast№piіa kolejna taka emisja. Moїe Zona siк na kogoњ wkurzyіa? Chyba nie na armiк, bo po poprzednim razie w ogуle nie wychodz№ z Kordonu. Po terenie szwendaj№ siк tylko stalkerzy, a nimi Zona nigdy siк specjalnie nie przejmowaіa... A teraz proszк, emisja za emisj№, a kaїda silniejsza niї poprzednia. Mam zіe przeczucie co do tego wszystkiego...</text>
+	</string>
+	<string id="esc_trader_about_questions_44">
+		<text>Sіyszaіeњ jakieњ ciekawe plotki z gікbi Zony?</text>
+	</string>
+	<string id="esc_trader_about_questions_444">
+		<text>Zawsze da siк usіyszeж coњ ciekawego. Mam wielu dіuїnikуw wњrуd stalkerуw, dostarczaj№ mi informacji na zamkniкtych czкstotliwoњciach. Najwaїniejsz№ nowin№ jest to, їe otworzyіy siк przejњcia do nowych czкњci Zony. Przez lata nikt nawet nie sіyszaі o tych miejscach, nie mуwi№c wchodzeniu tam. Drogi byіy zablokowane zabуjczymi anomaliami, ktуrych jest teraz mniej. Wci№ї trudno siк przedostaж, ale jest to moїliwe! Wyobraїasz sobie, co to dla mnie oznacza? Nowe tereny to nowe, byж moїe niespotykane dot№d artefakty. A kto zgarnie to wszystko swoimi pomarszczonymi іapami? Oczywiњcie ja!</text>
+	</string>
+	<string id="esc_trader_about_situation_0">
+		<text>Co tu siк dzieje?</text>
+	</string>
+	<string id="esc_trader_about_situation_1">
+		<text>Jednym sіowem - chaos. Stalkerzy walcz№ z armi№. Dawniej byіy jakieњ zasady. Wojsko kontrolowaіo teren, braіo swoj№ dziaіkк i pozwalaіo ludziom przemycaж towar w obie strony. Od czasu do czasu przykrкcaіo њrubк stalkerom dla zachowania pozorуw, ale bez przesady. Teraz moїna o tym zapomnieж. Stalkerzy uwaїaj№, їe s№ gуr№, bo narobili trochк szumu i zajкli Kordon. Frajerzy nie widz№ dalej niї czubek wіasnego nosa. A to jeszcze nie koniec. Pewnie, armijni s№ za bardzo spietrani, їeby donieњж o wydarzeniach do sztabu, bo wyszіyby na jaw ich lewe interesy, ale wczeњniej czy pуџniej odbкdzie siк inspekcja placуwki i wszystko wyjdzie na jaw. A wtedy... wszyscy wiemy, co bкdzie wtedy - specjalna operacja wojskowa. Wierz mi, jedna wizyta plutonu Specnazu i nie bкdzie tu їywej duszy. Przy okazji wymieni№ caіy skіad placуwki. To znaczy, їe stracк wszystkie kontakty, a jak mam siк wtedy zajmowaж handlem i przemytem? Stalkerzy nie wiedz№, na co siк porwali.</text>
+	</string>
+	<string id="esc_trader_about_you_0">
+		<text>Opowiedz mi o sobie.</text>
+	</string>
+	<string id="esc_trader_about_you_1">
+		<text>Co tu opowiadaж? Jestem schorowanym staruszkiem, wiкc siedzк tu sobie cicho i zarabiam trochк na handlu apteczkami, їarciem dla chіopakуw... Niewiele z tego mam, ale lepsze to niї paсstwowa emerytura.</text>
+	</string>
+	<string id="esc_trader_about_you_11">
+		<text>Chyba jesteњ zbyt skromny. Co innego o tobie mуwi№.</text>
+	</string>
+	<string id="esc_trader_about_you_111">
+		<text>Rуїne rzeczy mуwi№, wiкkszoњж to nieprawda. Ale ja ciк wіaњciwie nie znam. Umуwmy siк - udowodnij sw№ wartoњж czynami, nie sіowami, to moїe rozwi№їe mi siк jкzyk. Co ty na to?</text>
+	</string>
+	<string id="esc_trader_about_zone_1">
+		<text>Chcesz posіuchaж opowieњci o przygodach stalkerуw? Pytaj њmiaіo.</text>
+	</string>
+	<string id="esc_trader_about_zone_111">
+		<text>W mordк, aleї to byіa emisja... Nie pamiкtam tak silnej, bez dwуch zdaс. Dupnкіo tak mocno, їe szkіo pкkaіo w moim bunkrze, a to jest na samych obrzeїach Zony! Nie wiem, czemu do niej doszіo, ale na pewno coњ siк przez ni№ zmieniіo. Podobno znalazіa siк droga prowadz№ca do dawnego miasta - Limaсska. Tylko sobie wyobraџ! Stalkerzy caіymi latami szwendali siк po lesie, szukaj№c przejњcia przez њcianк anomalii, a tu nagle њcieїka pojawia siк znik№d. Przy drodze nie ma nawet promieniowania! Tak samo jest na Bagnach - dawniej moїna byіo siк tam dostaж tylko њmigіowcem, a teraz da siк tam normalnie wejњж, jeњli nie boisz siк zamoczyж butуw.</text>
+	</string>
+	<string id="esc_trader_about_zone_121">
+		<text>Wojna? Wojna jest wszкdzie taka sama, Zona nie jest wyj№tkiem. Pewnie, ludzie zawsze znajd№ jakiњ powуd do walki, czy o towar, czy o pogl№dy, ale zawsze byі porz№dek i kaїdy znaі swoje miejsce. Teraz jest inaczej po tej emisji... Gdy "Powinnoњж" i "Wolnoњж" walczyіy o Limaсsk jak dwa wygіodniaіe psy o koњж, bandyci strasznie siк rozbestwili i zaczкli siк mocno naprzykrzaж stalkerom...</text>
+	</string>
+	<string id="esc_trader_about_zone_131">
+		<text>Centrum Zony? Ha! Wielu ludzi prуbowaіo dostaж siк do centrum, ale nikt nigdy nie wrуciі. Jedyna droga prowadzi przez Mуzgozwкglacz, a w caіej Zonie nikt nie wie, jak przez niego przejњж! Nawet jeњli ktoњ siк dowie, na pewno nie piњnie ani sіowa! Wyobraџ sobie, їe odkrywasz sezam peіen skarbуw - rozpowiadaіbyњ na lewo i prawo, gdzie jest? Ja i moi kumple handlarze od dawna szukamy sposobu na ominiкcie Zwкglacza, ale nie posunкliњmy siк ani o krok!</text>
+	</string>
+	<string id="esc_trader_about_zone_13111">
+		<text>Bуg wie, co to jest... Stalkerzy nazywaj№ tak las na pуіnoc od magazynуw wojskowych. Mуwi№, їe kaїdemu w czaszce siк tam gotuje... dosіownie. Nawet zdrowy kawaі chіopa nie wytrzyma tam dziesiкciu minut. Proponowaliњmy stalkerom kupк forsy za dokіadniejsze informacje na temat Zwкglacza, ale nikt na razie niczego siк nie dowiedziaі. Od czasu do czasu ktoњ tam znika i w koсcu znajduj№ go martwego. Albo zamienionego w zombi...</text>
+	</string>
+	<string id="esc_trader_community_0">
+		<text>Moje ukіady ze stalkerami szlag trafiі, nie bкdк mуgі znaleџж towaru i przynieњж ci go!</text>
+	</string>
+	<string id="esc_trader_community_1">
+		<text>Jak mogіeњ do tego dopuњciж?! Pomogк ci pogodziж siк z nimi za drobn№ opіat№.</text>
+	</string>
+	<string id="esc_trader_community_2">
+		<text>Zgadzam siк. Masz tu pieni№dze.</text>
+	</string>
+	<string id="esc_trader_community_22">
+		<text>Nie, sam to zaіatwiк.</text>
+	</string>
+	<string id="esc_trader_community_222">
+		<text>Nie mam teraz takiej sumy.</text>
+	</string>
+	<string id="esc_trader_community_3">
+		<text>Stalkerzy ci teraz wybacz№. Niech to siк nie powtуrzy.</text>
+	</string>
+	<string id="esc_trader_community_33">
+		<text>To kaplica, kolego.</text>
+	</string>
+	<string id="esc_trader_community_333">
+		<text>Wrуж, jak bкdziesz miaі.</text>
+	</string>
+	<string id="esc_trader_meet_111">
+		<text>Podobno niedawno byі tu stalker, szukaі rzadkich czкњci. Pamiкtasz go?</text>
+	</string>
+	<string id="esc_trader_meet_11111">
+		<text>Co odњwieїyіoby ci pamiкж?</text>
+	</string>
+	<string id="esc_trader_meet_1111111">
+		<text>Tak, co dokіadnie trzeba zrobiж?</text>
+	</string>
+	<string id="esc_trader_meet_111111111">
+		<text>W porz№dku.</text>
+	</string>
+	<string id="esc_trader_meet_222">
+		<text>Dziкki za informacje.</text>
+	</string>
+	<string id="esc_wolf_about_around_0">
+		<text>Coњ ciekawego siк tu dzieje?</text>
+	</string>
+	<string id="esc_wolf_about_around_1">
+		<text>To wioska nowicjuszy. Na skraju osady jest sklep Sidorowicza. Jeszcze dalej jest placуwka wojskowa, ale musisz o tym wiedzieж, bo stamt№d przyszedіeњ. Droga po drugiej stronie placуwki prowadzi w gі№b Zony.</text>
+	</string>
+	<string id="esc_wolf_about_around_11">
+		<text>Opowiedz mi o wiosce nowicjuszy.</text>
+	</string>
+	<string id="esc_wolf_about_around_111">
+		<text>Co tu moїna powiedzieж o wiosce nowicjuszy? M№drzejsi chіopcy robi№ u Sidorowicza zapasy, ktуre starcz№ im na jakiњ czas, i ruszaj№ na Wysypisko. Tam moїna znaleџж lepsze artefakty i nie zawsze jest tak niebezpiecznie. Siedz№ tam, їeby zdobyж trochк doњwiadczenia. A ci, ktуrzy zostaj№ tutaj... to zupeіni idioci, delikatnie mуwi№c. Czego tu nie moїna zobaczyж... Cholerni hipisi w tych swoich bamboszach, z tymi swoimi siatkami, szukaj№cy "przygody", albo pieprzone kujony, ktуre w tych swoich babskich r№czkach nigdy nie trzymaіy nic oprуcz mikroskopu. Tacy pozerzy dіugo tu nie wytrzymaj№. Czasami doњwiadczony stalker zajrzy tu opchn№ж towar Sidorowiczowi i odpocz№ж parк dni.</text>
+	</string>
+	<string id="esc_wolf_about_around_1111">
+		<text>Nieџle siк tu ustawiliњcie. Wojsko wam nie przeszkadza?</text>
+	</string>
+	<string id="esc_wolf_about_around_11111">
+		<text>Wojsko zbytnio nas nie nкka - maj№ waїniejsze sprawy na gіowie. Sіyszaіem, jak mуwili: "Po co marnowaж amunicjк na stalkerуw? I tak zdechn№ w anomaliach". Sami teї nie szukamy kіopotуw - jak kogoњ њcigaj№, nie wtr№camy siк. W razie jakiegoњ wypadu albo inspekcji w placуwce chowamy siк w piwnicach i siedzimy jak myszy pod miotі№. Nie lubimy konfliktуw.</text>
+	</string>
+	<string id="esc_wolf_about_around_22">
+		<text>Moїesz mi opowiedzieж o Sidorowiczu?</text>
+	</string>
+	<string id="esc_wolf_about_around_222">
+		<text>Dziwne pytania zadajesz. Nie od dziњ jesteњ w Zonie, a pytasz o Sidorowicza? Kurka, wszyscy znaj№ Sidorowicza! Jest najbardziej powaїanym handlarzem w caіej Zonie! Jak on czegoњ nie ma, to nigdzie tego nie kupisz.</text>
+	</string>
+	<string id="esc_wolf_about_you_0">
+		<text>Opowiedz mi o sobie.</text>
+	</string>
+	<string id="esc_wolf_about_you_1">
+		<text>Jestem tu szefem. Uczк tych kotуw i kujonуw, jak nie daж siк poїreж mutantom na pierwszej wyprawie do Zony. To nie jest іatwe, wiesz? Spкdziіem spory kawaі їycia w Zonie i od jakiegoњ czasu prуbujк siк st№d wydostaж... Bуg wie, ile czasu spкdziіem w Kordonie... ale mam wraїenie, їe to miejsce nie chce mnie puњciж. A to wojskowy wypad, a to kolejna emisja albo dobrze pіatna robota... za kaїdym razem myњlк sobie: "Dobra, jeszcze tylko ten jeden raz i spadam st№d", ale wci№ї tu jestem.</text>
+	</string>
+	<string id="esc_wolf_about_zone_0">
+		<text>Opowiedz mi o tym miejscu.</text>
+	</string>
+	<string id="esc_wolf_about_zone_1">
+		<text>Jesteњmy w Kordonie. Њwiat zewnкtrzny jest zaraz za placуwk№ wojskow№, a wszystko z drugiej strony to Zona, chociaї tutaj trudno to zauwaїyж - anomalie i artefakty pojawiaj№ siк rzadko, nawet potworуw za bardzo nie widaж. To spokojne miejsce, a przynajmniej spokojniejsze niї reszta Zony, bo wojskowi prуbuj№ utrzymaж wszystko pod kontrol№.</text>
+	</string>
+	<string id="esc_wolf_about_zone_111">
+		<text>To wioska nowicjuszy. Na skraju osady jest sklep Sidorowicza. Jeszcze dalej jest placуwka wojskowa, ale musisz o tym wiedzieж, bo stamt№d przyszedіeњ. Droga po drugiej stronie placуwki prowadzi w gі№b Zony.</text>
+	</string>
+	<string id="esc_wolf_brother_0">
+		<text>Wilk mnie do ciebie przysіaі. Jesteњ jego bratem, tak?</text>
+	</string>
+	<string id="esc_wolf_brother_1">
+		<text>Tak, jestem jego bratem. Czujк, їe muszк siк st№d wyrwaж jak najszybciej. Rzecz w tym, їe nie mam broni... Dasz mi coњ?</text>
+	</string>
+	<string id="esc_wolf_brother_2">
+		<text>Weџ ten pistolet.</text>
+	</string>
+	<string id="esc_wolf_brother_22">
+		<text>Weџ tк strzelbк.</text>
+	</string>
+	<string id="esc_wolf_brother_222">
+		<text>Weџ ten karabin szturmowy.</text>
+	</string>
+	<string id="esc_wolf_brother_2222">
+		<text>Nie mam nic.</text>
+	</string>
+	<string id="esc_wolf_brother_55">
+		<text>tekst domyњlny</text>
+	</string>
+	<string id="esc_wolf_brother_complete_0">
+		<text>Wyci№gn№іem twojego brata!</text>
+	</string>
+	<string id="esc_wolf_brother_complete_1">
+		<text>Њwietnie! Oto nagroda.</text>
+	</string>
+	<string id="esc_wolf_novice_complete_0">
+		<text>Poszedіem za tym stalkerem, tak jak prosiіeњ.</text>
+	</string>
+	<string id="esc_wolf_novice_complete_1">
+		<text>Dobra robota, stalkerze. Mam nadziejк, їe nauczyіeњ go pokory.</text>
+	</string>
+	<string id="esc_wolf_novice_fail_0">
+		<text>Niestety, nie udaіo mi siк go ochroniж. Nie їyje.</text>
+	</string>
+	<string id="esc_wolf_novice_fail_1">
+		<text>Psiakrew! Powinienem byі sam iњж! Moїe by siк wkurzyі, ale przynajmniej by їyі. A niech to, straciliњmy naprawdк obiecuj№cego stalkera.</text>
+	</string>
+	<string id="esc_wolf_novice_thank_you_0">
+		<text>Dziкki za uratowanie mojego їaіosnego tyіka, stalkerze. Myњlaіem, їe zdechnк w tym lesie rozszarpany na strzкpy przez psy. Juї nigdy nie wejdк sam do lasu.</text>
+	</string>
+	<string id="esc_wolf_other_works_0">
+		<text>Masz dla mnie robotк?</text>
+	</string>
+	<string id="esc_wolf_other_works_1">
+		<text>Tak. Bandyci porwali mojego brata i ї№daj№ duїego okupu. Nie mamy takiej kupy forsy, a z tymi kotami za cholerк nie zarobimy tyle tak szybko. Nawet gdyby nam siк udaіo, sk№d mam wiedzieж, їe nie zabij№ mojego brata, jak przekaїemy im kasк?</text>
+	</string>
+	<string id="esc_wolf_other_works_11">
+		<text>Jeszcze nie.</text>
+	</string>
+	<string id="esc_wolf_other_works_111">
+		<text>Jednemu z moich chіopakуw nie podoba siк, їe inni uwaїaj№ go za їуіtodzioba, wiкc postanowiі rozwaliж sforк psуw, by zyskaж szacunek. Bystry z niego chіopak i њwietnie strzela, ale nie ma doњwiadczenia. Martwiк siк o niego. Myњlisz, їe mуgіbyњ mu pomуc?</text>
+	</string>
+	<string id="esc_wolf_other_works_1111">
+		<text>Na razie sobie radzimy. Wpadnij pуџniej, moїe nam siк przydaж pomoc.</text>
+	</string>
+	<string id="esc_wolf_other_works_11111">
+		<text>Nie.</text>
+	</string>
+	<string id="esc_wolf_other_works_1112">
+		<text>Nie ma problemu, gdzie go znajdк?</text>
+	</string>
+	<string id="esc_wolf_other_works_11121">
+		<text>Oto wspуіrzкdne.</text>
+	</string>
+	<string id="esc_wolf_other_works_1113">
+		<text>Niestety, nie tym razem.</text>
+	</string>
+	<string id="esc_wolf_other_works_11131">
+		<text>Wy najemnicy jesteњcie wszyscy tacy sami - macie w dupie kaїdego!</text>
+	</string>
+	<string id="esc_wolf_other_works_2">
+		<text>Spoko, sprуbujк wyci№gn№ж twojego brata w jednym kawaіku.</text>
+	</string>
+	<string id="esc_wolf_other_works_22">
+		<text>Dziкki, najemniku. Oto wspуіrzкdne ich obozu. Uwaїaj na siebie i powodzenia!</text>
+	</string>
+	<string id="esc_wolf_other_works_3">
+		<text>Niestety, nie mogк ci pomуc.</text>
+	</string>
+	<string id="esc_wolf_other_works_4">
+		<text>To nie mуj problem.</text>
+	</string>
+	<string id="esc_wolf_other_works_44">
+		<text>To spieprzaj.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_0">
+		<text>I jak, narwaсcu, znudziіo ci siк bohaterstwo?</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_11">
+		<text>Zjeїdїaj! Sam sobie poradzк z bestiami! Teraz zobacz№, juї nigdy nie nazw№ mnie kotem!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_1112">
+		<text>Bojк siк!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_112">
+		<text>Weџ ten pistolet.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_1122">
+		<text>Weџ tк strzelbк.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_11222">
+		<text>Weџ ten karabin szturmowy.</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_112222">
+		<text>Zajmк siк nimi.</text>
+	</string>
+	<string id="esc_wolf_talk_0">
+		<text>To wioska nowicjuszy, a nie obуz najemnikуw, koleњ.</text>
+	</string>
+	<string id="esc_wolf_talk_1">
+		<text>Przyszedіem do Sidorowicza.</text>
+	</string>
+	<string id="esc_wolf_talk_11">
+		<text>Jest w bunkrze, zaraz za wiosk№.</text>
+	</string>
+	<string id="esc_wolf_talk_111">
+		<text>Dziкki, pуjdк od razu do niego.</text>
+	</string>
+	<string id="esc_wolf_talk_2">
+		<text>Sidorowicz daі mi robotк - muszк zajrzeж do bazy stalkerуw.</text>
+	</string>
+	<string id="esc_wolf_talk_22">
+		<text>To zaraz po drugiej stronie nasypu kolejowego. Stalkerzy maj№ tam istny raj.</text>
+	</string>
+	<string id="esc_wolf_talk_222">
+		<text>Dziкki.</text>
+	</string>
+</string_table>

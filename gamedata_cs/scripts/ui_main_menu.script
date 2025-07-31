@@ -98,8 +98,13 @@ function main_menu:LoadLastSave()
 end
 
 function main_menu:OnButton_last_save()
-	if ( (alife() == nil) or (db.actor~=nil and db.actor:alive()==false) ) then
-		self:LoadLastSave	();
+	if ( alife() == nil) then
+		self:LoadLastSave	()
+		return
+	end
+
+	if ( (db.actor ~= nil) and (db.actor:alive() == false) ) then
+		self:LoadLastSave	()
 		return
 	end
 	

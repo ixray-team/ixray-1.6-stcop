@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_upg_zatvor_rpm">
+		<text>Modyfikacja mechanizmu zamka</text>
+	</string>
+	<string id="st_upg_zatvor_rpm_descr">
+		<text>Techniczna modyfikacja mechanizmu zamka zapewniaj№ca wiкksz№ szybkostrzelnoњж.</text>
+	</string>
+	<string id="st_upg_zatvor_recoil">
+		<text>Modyfikacja mechanizmu zamka</text>
+	</string>
+	<string id="st_upg_zatvor_recoil_descr">
+		<text>Dokіadne ustawienie mechanizmu zamka zwiкksza celnoњж broni.</text>
+	</string>
+	<string id="st_upg_porsh_rpm">
+		<text>Modyfikacja suwadіa</text>
+	</string>
+	<string id="st_upg_porsh_rpm_descr">
+		<text>Zmniejszenie wagi suwadіa і№czy siк ze zmniejszeniem odrzutu za cenк zmniejszenia szybkostrzelnoњci broni.</text>
+	</string>
+	<string id="st_upg_porsh_recoil">
+		<text>Modyfikacja suwadіa</text>
+	</string>
+	<string id="st_upg_porsh_recoil_descr">
+		<text>Zamontowanie w suwadle osіabiacza odrzutu umoїliwia zmniejszenie odrzutu.</text>
+	</string>
+	<string id="st_upg_barrel_weight">
+		<text>Modyfikacja lufy</text>
+	</string>
+	<string id="st_upg_barrel_weight_descr">
+		<text>Standardowa lufa zostaje zast№piona lїejsz№ wersj№.</text>
+	</string>
+	<string id="st_upg_barrel_curved">
+		<text>Modyfikacja lufy</text>
+	</string>
+	<string id="st_upg_barrel_curved_descr">
+		<text>Nasadka do wydіuїania lufy zwiкkszaj№ca prкdkoњж wylotow№ pocisku.</text>
+	</string>
+	<string id="st_upg_barrel_recoil">
+		<text>Modyfikacja lufy</text>
+	</string>
+	<string id="st_upg_barrel_recoil_descr">
+		<text>Zamontowanie hamulca wylotowego umoїliwia znaczne zmniejszenie odrzutu.</text>
+	</string>
+	<string id="st_upg_barrel_rifled">
+		<text>Modyfikacja lufy</text>
+	</string>
+	<string id="st_upg_barrel_rifled_descr">
+		<text>Nagwintowanie lufy zwiкksza zasiкg skuteczny broni przy strzelaniu nabojami zwykіymi i strzaіkowymi. Strzelanie њrutem staje siк niemoїliwe.</text>
+	</string>
+	<string id="st_upg_butt_recoil">
+		<text>Podkіadka pod policzek</text>
+	</string>
+	<string id="st_upg_butt_recoil_descr">
+		<text>Standardowa gumowa podkіadka pod policzek umoїliwia dostosowanie dіugoњci kolby do wzrostu strzelca.</text>
+	</string>
+	<string id="st_upg_butt_recoil2">
+		<text>Polimerowa kolba</text>
+	</string>
+	<string id="st_upg_butt_recoil2_descr">
+		<text>Zast№pienie standardowej kolby polimerow№ wersj№ zmniejsza wagк broni.</text>
+	</string>
+	<string id="st_upg_butt_recoil3_descr">
+		<text>Zastкpuje standardow№ kolbк lїejsz№ wersj№.</text>
+	</string>
+	<string id="st_upg_butt_recoil4_descr">
+		<text>Specjalna konstrukcja kolby umoїliwia znaczne zmniejszenie odrzutu.</text>
+	</string>
+	<string id="st_upg_auto_rpm">
+		<text>Ulepszone wywaїenie mechanizmu</text>
+	</string>
+	<string id="st_upg_auto_rpm_descr">
+		<text>Lepsze wywaїenie mechanizmu spustowego umoїiwia zwiкkszenie szybkostrzelnoњci broni.</text>
+	</string>
+	<string id="st_upg_auto_rpm2">
+		<text>Wymiana mechanizmu spustowego</text>
+	</string>
+	<string id="st_upg_auto_rpm2_descr">
+		<text>Wymiana pуіautomatycznego mechanizmu na automatyczny znacznie zwiкksza szybkostrzelnoњж broni.</text>
+	</string>
+	<string id="st_upg_poly_weight">
+		<text>Elementy polimerowe</text>
+	</string>
+	<string id="st_upg_poly_weight_descr">
+		<text>Uїycie elementуw polimerowych znacznie zmniejsza wagк broni.</text>
+	</string>
+	<string id="st_upg_barrel_rpm">
+		<text>Chіodzenie lufy</text>
+	</string>
+	<string id="st_upg_barrel_rpm_descr">
+		<text>System chіodzenia lufy umoїliwia zwiкkszenie szybkostrzelnoњci bez ryzyka uszkodzenia lufy.</text>
+	</string>
+	<string id="st_upg_trigger_accur">
+		<text>Lekki spust</text>
+	</string>
+	<string id="st_upg_trigger_accur_descr">
+		<text>Lїej dziaіaj№cy spust umoїliwia zwiкkszenie celnoњci.</text>
+	</string>
+	<string id="st_upg_charger_assault">
+		<text>Magazynek szturmowy</text>
+	</string>
+	<string id="st_upg_charger_assault_descr">
+		<text>Znacznie wiкkszy magazynek przeznaczony do operacji szturmowych.</text>
+	</string>
+	<string id="st_upg_charger_big">
+		<text>Zwiкkszony magazynek</text>
+	</string>
+	<string id="st_upg_charger_big_descr">
+		<text>Improwizowana modyfikacja zwiкkszaj№ca magazynek.</text>
+	</string>
+	<string id="st_upg_charger_small">
+		<text>Lekki magazynek</text>
+	</string>
+	<string id="st_upg_charger_small_descr">
+		<text>Zmniejsza wagк broni dziкki zmniejszeniu magazynku. Uіatwia precyzyjne celowanie.</text>
+	</string>
+	<string id="st_upg_gas_rpm">
+		<text>Modyfikacja ukіadu odprowadzania gazуw</text>
+	</string>
+	<string id="st_upg_gas_rpm_descr">
+		<text>Nowoczeњniejszy ukіad odprowadzania gazуw zwiкksza szybkostrzelnoњж.</text>
+	</string>
+	<string id="st_upg_gravi_accur">
+		<text>Stabilizator grawitacyjny</text>
+	</string>
+	<string id="st_upg_gravi_accur_descr">
+		<text>Zwiкksza celnoњж przez stabilizacjк pocisku za pomoc№ artefaktуw grawitacyjnych.</text>
+	</string>
+	<string id="st_upg_electro_accur">
+		<text>Stabilizator elektroniczny</text>
+	</string>
+	<string id="st_upg_electro_accur_descr">
+		<text>Automatycznie dostosowuje pкd pocisku, znacznie zwiкkszaj№c celnoњж strzaіu.</text>
+	</string>
+	<string id="st_upg_bind_grenade">
+		<text>Podlufowy punkt montaїowy</text>
+	</string>
+	<string id="st_upg_bind_grenade_descr">
+		<text>Umoїliwia zamontowanie podlufowego granatnika.</text>
+	</string>
+	<string id="st_upg_bind_optic">
+		<text>Szyna do zamontowania celownika</text>
+	</string>
+	<string id="st_upg_bind_optic_descr">
+		<text>Umoїliwia montowanie celownikуw optycznych na broni.</text>
+	</string>
+	<string id="st_upg_bind_silencer">
+		<text>Punkt montaїowy tіumika</text>
+	</string>
+	<string id="st_upg_bind_silencer_descr">
+		<text>Umoїliwia zamontowanie tіumika.</text>
+	</string>
+	<string id="st_upg_handle_accur">
+		<text>Specjalne uchwyty</text>
+	</string>
+	<string id="st_upg_handle_accur_descr">
+		<text>Gumowe uchwyty wysokiej jakoњci zwiкkszaj№ ergonomiк broni.</text>
+	</string>
+	<string id="st_upg_handle_accur2">
+		<text>Uchwyt anatomiczny</text>
+	</string>
+	<string id="st_upg_handle_accur2_descr">
+		<text>Ergonomiczny uchwyt specjalnie dostosowany do uїytkownika.</text>
+	</string>
+	<string id="st_upg_accel_curved">
+		<text>Wspomagacz pneumatyczny</text>
+	</string>
+	<string id="st_upg_accel_curved_descr">
+		<text>Zamontowanie wewnкtrznego wspomagacza pneumatycznego zwiкksza prкdkoњж wylotow№ pocisku.</text>
+	</string>
+	<string id="st_upg_accel_curved2">
+		<text>Wspomagacz magnetyczny</text>
+	</string>
+	<string id="st_upg_accel_curved2_descr">
+		<text>Zwiкksza prкdkoњж wylotow№ pocisku za pomoc№ zmiennego pola magnetycznego.</text>
+	</string>
+	<string id="st_upg_barrel_curved2">
+		<text>Lita lufa</text>
+	</string>
+	<string id="st_upg_barrel_curved2_descr">
+		<text>Modyfikacja broni ze zintegrowanym tіumikiem. Zastкpuje poі№czenie lufy z tіumikiem lit№ luf№.</text>
+	</string>
+	<string id="st_upg_pomp_rpm">
+		<text>Ulepszony mechanizm pneumatyczny</text>
+	</string>
+	<string id="st_upg_pomp_rpm_descr">
+		<text>Dostrojenie i rкczna modyfikacja mechanizmu przeіadowania.</text>
+	</string>
+	<string id="st_upg_head_misfire">
+		<text>Wymiana iglicy</text>
+	</string>
+	<string id="st_upg_head_misfire_descr">
+		<text>Zwiкksza niezawodnoњж broni i zmniejsza ryzyko niewypaіu.</text>
+	</string>
+	<string id="st_upg_mat_wear">
+		<text>Trwalsze materiaіy</text>
+	</string>
+	<string id="st_upg_mat_wear_descr">
+		<text>Zastкpuje materiaі chroni№cy broс przed uszkodzeniami fizycznymi trwalsz№ wersj№.</text>
+	</string>
+	<string id="st_upg_surf_wear">
+		<text>Powіoka ochronna</text>
+	</string>
+	<string id="st_upg_surf_wear_descr">
+		<text>Diamentowa powіoka chroni№ca czкњci mechaniczne przed zuїyciem.</text>
+	</string>
+	<string id="st_upg_group_kuchn">
+		<text>Zwiкkszona celnoњж</text>
+	</string>
+	<string id="st_upg_group_kuchn_descr">
+		<text>Nakіadka na wylot lufy zwiкkszaj№ca celnoњж strzaіуw њrutem.</text>
+	</string>
+	<string id="st_upg_staple_rpm">
+		<text>Usuniкcie osіony spustu</text>
+	</string>
+	<string id="st_upg_staple_rpm_descr">
+		<text>Popularne i proste ulepszenie sіuї№ce do zwiкkszenia szybkostrzelnoњci dubeltуwki.</text>
+	</string>
+	<string id="st_prop_ammo_size">
+		<text>wielkoњж magazynka</text>
+	</string>
+	<string id="st_prop_armor">
+		<text>pancerz</text>
+	</string>
+	<string id="st_prop_artefact">
+		<text>pojemnik na artefakty</text>
+	</string>
+	<string id="st_prop_bullet_speed">
+		<text>stabilnoњж toru lotu</text>
+	</string>
+	<string id="st_prop_calibre">
+		<text>kaliber</text>
+	</string>
+	<string id="st_prop_damage">
+		<text>bezpieczeсstwo</text>
+	</string>
+	<string id="st_prop_dispersion">
+		<text>celnoњж</text>
+	</string>
+	<string id="st_prop_durability">
+		<text>wytrzymaіoњж</text>
+	</string>
+	<string id="st_prop_grenade_launcher">
+		<text>podlufowy granatnik</text>
+	</string>
+	<string id="st_prop_inertion">
+		<text>obsіuga</text>
+	</string>
+	<string id="st_prop_night_vision">
+		<text>noktowizja</text>
+	</string>
+	<string id="st_prop_power">
+		<text>regeneracja siіy</text>
+	</string>
+	<string id="st_prop_psy">
+		<text>ochrona psioniczna</text>
+	</string>
+	<string id="st_prop_radio_chem">
+		<text>ochrona radiochemiczna</text>
+	</string>
+	<string id="st_prop_recoil">
+		<text>odrzut</text>
+	</string>
+	<string id="st_prop_reliability">
+		<text>niezawodnoњж</text>
+	</string>
+	<string id="st_prop_restore_bleeding">
+		<text>leczenie ran</text>
+	</string>
+	<string id="st_prop_restore_health">
+		<text>regeneracja zdrowia</text>
+	</string>
+	<string id="st_prop_rpm">
+		<text>szybkostrzelnoњж</text>
+	</string>
+	<string id="st_prop_scope_1.6x">
+		<text>celownik optyczny</text>
+	</string>
+	<string id="st_prop_scope_4x">
+		<text>wbudowany celownik</text>
+	</string>
+	<string id="st_prop_silencer">
+		<text>tіumik</text>
+	</string>
+	<string id="st_prop_thermo_electro">
+		<text>ochrona termiczno-elektryczna</text>
+	</string>
+	<string id="st_prop_underbarrel_slot">
+		<text>podlufowy punkt montaїowy</text>
+	</string>
+	<string id="st_prop_weight">
+		<text>waga</text>
+	</string>
+	<string id="st_tonnage">
+		<text>waga maksymalna</text>
+	</string>
+	<string id="st_upg_active_filter_stalk">
+		<text>Aktywne filtry</text>
+	</string>
+	<string id="st_upg_active_filter_stalk_descr">
+		<text>Uїyj wydajniejszego systemu filtrowania.</text>
+	</string>
+	<string id="st_upg_ammo_sysytem_rpm">
+		<text>Podajnik amunicji</text>
+	</string>
+	<string id="st_upg_ammo_sysytem_rpm_descr">
+		<text>Przyspiesza wprowadzanie amunicji do komory, zwiкkszaj№c szybkostrzelnoњж.</text>
+	</string>
+	<string id="st_upg_anti_gas_stalk">
+		<text>Maska przeciwgazowa</text>
+	</string>
+	<string id="st_upg_anti_gas_stalk_descr">
+		<text>Ta maska przeciwgazowa jest podstawowym elementem ochrony przed radioaktywnym pyіem i szkodliwymi chemikaliami.</text>
+	</string>
+	<string id="st_upg_antistatic_coating_stalk">
+		<text>Powіoka antystatyczna</text>
+	</string>
+	<string id="st_upg_antistatic_coating_stalk_descr">
+		<text>Ten aerozol zapobiega przyleganiu radioaktywnego pyіu i chemikaliуw do kombinezonu.</text>
+	</string>
+	<string id="st_upg_artefact_slot">
+		<text>Pojemnik na artefakty</text>
+	</string>
+	<string id="st_upg_artefact_slot_descr">
+		<text>Pojemnik umoїliwiaj№cy noszenie dodatkowych artefaktуw.</text>
+	</string>
+	<string id="st_upg_brigandine_suit_stalk">
+		<text>Brezentowy kombinezon</text>
+	</string>
+	<string id="st_upg_brigandine_suit_stalk_descr">
+		<text>Zapewnia przyzwoit№ ochronк od ognia i elektrycznoњci.</text>
+	</string>
+	<string id="st_upg_butt_recoil3">
+		<text>Lekka kolba.</text>
+	</string>
+	<string id="st_upg_butt_recoil4">
+		<text>Wypeіniona powietrzem kolba.</text>
+	</string>
+	<string id="st_upg_calibre_5_45">
+		<text>Kaliber 5.45x39</text>
+	</string>
+	<string id="st_upg_calibre_5_45_descr">
+		<text>Wymiana lufy i dostosowanie mechanizmu broni do nowego kalibru. Wymiany moїna dokonaж tylko raz.</text>
+	</string>
+	<string id="st_upg_calibre_5_56">
+		<text>Kaliber 5.56x45</text>
+	</string>
+	<string id="st_upg_calibre_5_56_descr">
+		<text>Wymiana lufy i dostosowanie mechanizmu broni do nowego kalibru. Wymiany moїna dokonaж tylko raz.</text>
+	</string>
+	<string id="st_upg_calibre_9_18">
+		<text>Kaliber 9x18</text>
+	</string>
+	<string id="st_upg_calibre_9_18_descr">
+		<text>Wymiana lufy i dostosowanie mechanizmu broni do nowego kalibru. Wymiany moїna dokonaж tylko raz.</text>
+	</string>
+	<string id="st_upg_calibre_9_19">
+		<text>Kaliber 9x19</text>
+	</string>
+	<string id="st_upg_calibre_9_19_descr">
+		<text>Wymiana lufy i dostosowanie mechanizmu broni do nowego kalibru. Wymiany moїna dokonaж tylko raz.</text>
+	</string>
+	<string id="st_upg_cevlar_body_armor_battle">
+		<text>Kamizelka kuloodporna z kevlaru</text>
+	</string>
+	<string id="st_upg_cevlar_body_armor_battle_descr">
+		<text>Wielowarstwowa kamizelka kuloodporna z kevlaru.</text>
+	</string>
+	<string id="st_upg_cevlars_armor_battle">
+		<text>Pіyty z kevlaru</text>
+	</string>
+	<string id="st_upg_cevlars_armor_battle_descr">
+		<text>Pіyty z kevlaru s№ umieszczane w kamizelce kuloodpornej dla dodatkowej ochrony.</text>
+	</string>
+	<string id="st_upg_composite_armor_battle">
+		<text>Pіyty kompozytowe</text>
+	</string>
+	<string id="st_upg_composite_armor_battle_descr">
+		<text>Pіyty kompozytowe zapewniaj№ maksymaln№ ochronк przed ogniem z broni krуtkiej.</text>
+	</string>
+	<string id="st_upg_double_layer_body_armor_battle">
+		<text>Dwuwarstwowa kamizelka kuloodporna</text>
+	</string>
+	<string id="st_upg_double_layer_body_armor_battle_descr">
+		<text>Nawet po uszkodzeniu jednej warstwy druga bкdzie zapewniaж wystarczaj№c№ ochronк.</text>
+	</string>
+	<string id="st_upg_electro_stimulant_battle">
+		<text>Elektrostymulanty</text>
+	</string>
+	<string id="st_upg_electro_stimulant_battle_descr">
+		<text>Stymulanty wytwarzaj№ mikroimpulsy wspomagaj№ce czynnoњci fizjologiczne.</text>
+	</string>
+	<string id="st_upg_exsternal_filtering_sys_stalk">
+		<text>Zewnкtrzny system filtrowania</text>
+	</string>
+	<string id="st_upg_exsternal_filtering_sys_stalk_descr">
+		<text>Po oddzieleniu filtrуw od maski przeciwgazowej moїna uїyж wiкkszej ich liczby.</text>
+	</string>
+	<string id="st_upg_germetic_layer_stalk">
+		<text>Powіoka izolacyjna</text>
+	</string>
+	<string id="st_upg_germetic_layer_stalk_descr">
+		<text>Ta specjalna powіoka moїe izolowaж kombinezon od ognia i elektrycznoњci.</text>
+	</string>
+	<string id="st_upg_hard_barrel_curved">
+		<text>Wymiana lufy</text>
+	</string>
+	<string id="st_upg_hard_barrel_curved_descr">
+		<text>Ta wytrzymaіa stalowa lufa jest odporna na odksztaіcenia i zwiкksza przyspieszenie pociskуw.</text>
+	</string>
+	<string id="st_upg_hard_elements_battle">
+		<text>Twarde elementy</text>
+	</string>
+	<string id="st_upg_hard_elements_battle_descr">
+		<text>Ta rama z lekkich stopуw pochіania wiкkszoњж energii pocisku.</text>
+	</string>
+	<string id="st_upg_health_sustaining_sys_battle">
+		<text>System podtrzymywania їycia</text>
+	</string>
+	<string id="st_upg_health_sustaining_sys_battle_descr">
+		<text>Ten noszony na przegubie dіoni aparat w przypadku zranienia uїytkownika automatycznie wstrzykuje њrodki przeciwwstrz№sowe i stymulanty.</text>
+	</string>
+	<string id="st_upg_night_vision_battle">
+		<text>Noktowizor</text>
+	</string>
+	<string id="st_upg_night_vision_battle_descr">
+		<text>Urz№dzenie noktowizyjne pierwszej generacji</text>
+	</string>
+	<string id="st_upg_outfit_a_stalk">
+		<text>Kamizelka odci№їaj№ca</text>
+	</string>
+	<string id="st_upg_outfit_a_stalk_descr">
+		<text>Kamizelka odci№їaj№ca uіatwia noszenie ekwipunku, odpowiednio rozkіadaj№c obci№їenie.</text>
+	</string>
+	<string id="st_upg_outfit_b_stalk">
+		<text>Plecak odci№їaj№cy</text>
+	</string>
+	<string id="st_upg_outfit_b_stalk_descr">
+		<text>Specjalne paski umoїliwiaj№ przenoszenie tym plecakiem wiкkszych ciкїarуw.</text>
+	</string>
+	<string id="st_upg_plastic_components_battle">
+		<text>Plastikowe elementy</text>
+	</string>
+	<string id="st_upg_plastic_components_battle_descr">
+		<text>Plastikowe elementy kombinezonu zwiкkszaj№ jego wytrzymaіoњж.</text>
+	</string>
+	<string id="st_upg_polymer_coating_stalk">
+		<text>Polimerowa powіoka</text>
+	</string>
+	<string id="st_upg_polymer_coating_stalk_descr">
+		<text>Pokrycie materiaіu tym roztworem polimerуw zwiкksza jego odpornoњж na ogieс i elektrycznoњж.</text>
+	</string>
+	<string id="st_upg_polymer_pillow_battle">
+		<text>Polimerowy wypeіniacz</text>
+	</string>
+	<string id="st_upg_polymer_pillow_battle_descr">
+		<text>Ten pogrubiony materiaі skutecznie pochіania energiк pocisku.</text>
+	</string>
+	<string id="st_upg_polymer_suit_stalk">
+		<text>Polimerowy kombinezon</text>
+	</string>
+	<string id="st_upg_polymer_suit_stalk_descr">
+		<text>Materiaіy polimerowe zapewniaj№ dobr№ ochronк przed ogniem i elektrycznoњci№.</text>
+	</string>
+	<string id="st_upg_powered_carcass_battle">
+		<text>Wzmocniona rama</text>
+	</string>
+	<string id="st_upg_powered_carcass_battle_descr">
+		<text>Dodatkowe elementy ramy zwiкkszaj№ wytrzymaіoњж egzoszkieletu.</text>
+	</string>
+	<string id="st_upg_powered_servo_motor_battle">
+		<text>Wzmocnienie serwomotorуw</text>
+	</string>
+	<string id="st_upg_powered_servo_motor_battle_descr">
+		<text>Dostarczenie wiкkszego napiкcia serwomotorom zwiкksza ich moc.</text>
+	</string>
+	<string id="st_upg_psy_shielding_stalk">
+		<text>Ekranowanie kombinezonu</text>
+	</string>
+	<string id="st_upg_psy_shielding_stalk_descr">
+		<text>Zіoїony ukіad kabli ekranuj№ych daje niewielk№ ochronк psioniczn№.</text>
+	</string>
+	<string id="st_upg_recycle_breathing_sys_stalk">
+		<text>Aparat tlenowy o obiegu zamkniкtym</text>
+	</string>
+	<string id="st_upg_recycle_breathing_sys_stalk_descr">
+		<text>System recyrkulacji zaіatwia sprawк oczyszczania skaїonego powietrza.</text>
+	</string>
+	<string id="st_upg_relax_suit_stalk">
+		<text>Kombinezon rozkіadaj№cy obci№їenie</text>
+	</string>
+	<string id="st_upg_relax_suit_stalk_descr">
+		<text>Elastyczny materiaі kombinezonu umoїliwia nosz№cemu dіuїsze wytrzymywanie obci№їeс fizycznych.</text>
+	</string>
+	<string id="st_upg_scope_1_6x_opt">
+		<text>Wbudowany celownik 1,6x</text>
+	</string>
+	<string id="st_upg_scope_1_6x_opt_descr">
+		<text>Celownik 1,6x minimalnie ogranicza pole widzenia strzelca. Idealnie nadaje siк do operacji szturmowych.</text>
+	</string>
+	<string id="st_upg_scope_4x_opt">
+		<text>Wbudowany celownik 4x</text>
+	</string>
+	<string id="st_upg_scope_4x_opt_descr">
+		<text>Dziкki celownikowi 4x kaїda broс moїe byж uїywana w celach snajperskich.</text>
+	</string>
+	<string id="st_upg_sintetic_pillow_battle">
+		<text>Syntetyczny wypeіniacz</text>
+	</string>
+	<string id="st_upg_sintetic_pillow_battle_descr">
+		<text>Ten materiaі wypeіniaj№cy umieszczany pod kamizelk№ kuloodporn№ zmniejsza obraїenia.</text>
+	</string>
+	<string id="st_upg_slice_leather_battle">
+		<text>Wkіadki z twardej skуry</text>
+	</string>
+	<string id="st_upg_slice_leather_battle_descr">
+		<text>Nieco zmniejszaj№ siік uderzenia pocisku.</text>
+	</string>
+	<string id="st_upg_spec_coating_stalk">
+		<text>Specjalna powіoka</text>
+	</string>
+	<string id="st_upg_spec_coating_stalk_descr">
+		<text>Ta powіoka stworzona z materiaіуw znalezionych z Zonie chroni przed ogniem i anomaliami elektrycznymi.</text>
+	</string>
+	<string id="st_upg_spectra_body_armor_battle">
+		<text>Kamizelka kuloodporna Spectra</text>
+	</string>
+	<string id="st_upg_spectra_body_armor_battle_descr">
+		<text>Ta wzmocniona wojskowa kamizelka kuloodporna zapewnia ochronк przed ostrzaіem z karabinуw.</text>
+	</string>
+	<string id="st_upg_upgrade_night_vision_battle">
+		<text>Noktowizor drugiej generacji</text>
+	</string>
+	<string id="st_upg_upgrade_night_vision_battle_descr">
+		<text>To urz№dzenie noktowizyjne drugiej generacji daje wyraџniejszy obraz przy mniejszych zakіуceniach.</text>
+	</string>
+	<string id="st_upgr_ammunition">
+		<text>amunicja</text>
+	</string>
+	<string id="st_upgr_condlist">
+		<text>brak danych ulepszenia</text>
+	</string>
+	<string id="st_upgr_cost">
+		<text>Cena</text>
+	</string>
+	<string id="st_upgr_disable">
+		<text>Montaї niemoїliwy</text>
+	</string>
+	<string id="st_upgr_enough_money">
+		<text>brak pieniкdzy:</text>
+	</string>
+	<string id="st_upgr_group">
+		<text>Ta czкњж zostaіa juї ulepszona</text>
+	</string>
+	<string id="st_upgr_installed">
+		<text>Zamontowano</text>
+	</string>
+	<string id="st_upgr_parents">
+		<text>Inne ulepszenia wymagane s№ do zamontowania tego</text>
+	</string>
+	<string id="st_upgr_rpm_lowered">
+		<text>Szybkostrzelnoњж obniїona</text>
+	</string>
+	<string id="st_upgrade_install">
+		<text>Czy na pewno chcesz zamontowaж ulepszenie:</text>
+	</string>
+</string_table>

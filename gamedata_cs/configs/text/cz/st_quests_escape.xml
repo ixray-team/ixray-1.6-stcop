@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_additional_quest_1_name">
+		<text>Dokumenty na vojenskй zбkladnм.</text>
+	</string>
+	<string id="esc_additional_quest_1_text">
+		<text>Dokumenty na vojenskй zбkladnм.</text>
+	</string>
+	<string id="esc_additional_quest_2_name">
+		<text>Jнdlo.</text>
+	</string>
+	<string id="esc_additional_quest_2_text">
+		<text>Jнdlo.</text>
+	</string>
+	<string id="esc_bring_habar">
+		<text>Vraќ lup kupci</text>
+	</string>
+	<string id="esc_bring_habar_text">
+		<text>Vraќ kufшнk s koшistн zpмt kupci.</text>
+	</string>
+	<string id="esc_defend_stalkers_base_name">
+		<text>Braт zбkladnu stalkerщ</text>
+	</string>
+	<string id="esc_defend_stalkers_base_text">
+		<text>Ubraт zбkladnu stalkerщ pшed ъtokem.</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_name">
+		<text>Braт hlнdku</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_text">
+		<text>Braт hlнdku stalkerщ poblнћ autobusovй zastбvky</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_name">
+		<text>Pomoz odrazit ъtok</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_text">
+		<text>Pomoz odrazit ъtok</text>
+	</string>
+	<string id="esc_dopros">
+		<text>Vyslechni armбdnнho velitele</text>
+	</string>
+	<string id="esc_dopros_text">
+		<text>Vyslechni Chaletskйho a dostaт z nмj, kam ukryl kufшнk s koшistн, kterou kupec tak potшebuje.</text>
+	</string>
+	<string id="esc_driver_friend_1_name">
+		<text>Najdi PDA</text>
+	</string>
+	<string id="esc_driver_friend_1_text">
+		<text>Najdi PDA s cennэmi informacemi o vojбkovi, kterэ zemшel v anomбliнch.</text>
+	</string>
+	<string id="esc_driver_friend_2_name">
+		<text>Vraќ PDA</text>
+	</string>
+	<string id="esc_driver_friend_2_text">
+		<text>Vraќ PDA иetaшi Lambeemu</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9">
+		<text>Zlikviduj vojбky u vэtahu</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9_text">
+		<text>Zlikviduj vojenskou jednotku, jiћ zvмdovй spatшili u vэtahu.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_name">
+		<text>Zlikviduj bandity</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_name">
+		<text>Vraќ se pro odmмnu</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_text">
+		<text>Vraќ se ke kupci pro odmмnu. Banditi uћ to majн za sebou a cesta k zбkladnм je volnб.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_text">
+		<text>Zniи bandity u opuљtмnйho statku. Jedinм tak pшestanou olupovat stalkery, kteшн pшenбљejн koшist ze Zуny zpмt na zбkladnu.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11">
+		<text>Zlikviduj vojбky u stanice</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11_text">
+		<text>Zlikviduj vojenskou jednotku, jiћ zvмdovй spatшili u stanice. Tato jednotka je hlavnн silou vyslanou na zбchranu Chaletskйho.</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8">
+		<text>Zlikviduj odstшelovaиe</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8_text">
+		<text>Zlikviduj odstшelovaиe</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7">
+		<text>Dobuп zбkladnu stalkerщ</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7_text">
+		<text>Dobuп zбkladnu stalkerщ</text>
+	</string>
+	<string id="esc_find_upgrade_1_name">
+		<text>Najdi modifikaci.</text>
+	</string>
+	<string id="esc_find_upgrade_1_text">
+		<text>Jeden mщj kamarбd, taky technik, za mnou poslal nмjakэho tэpka, co mi mмl na flashdisku pшinэst cennэ informace o modifikacнch AK. Jenomћe ten posel cestou narazil na pelech pseudopsщ a zaшval. Uћ nмkolika lidem jsem шнkal, aќ mi pro ten disk dojdou, ale vљichni jsou posranэ. Neљel bys do toho? Slibuju, ћe odmмna bude stбt za to.</text>
+	</string>
+	<string id="esc_find_upgrade_2_name">
+		<text>Najdi modifikaci.</text>
+	</string>
+	<string id="esc_find_upgrade_2_text">
+		<text>Jeden mщj kamarбd, taky technik, za mnou poslal nмjakэho tэpka, co mi mмl na flashdisku pшinэst cennэ informace o modifikacнch AK. Jenomћe ten posel cestou narazil na pelech pseudopsщ a zaшval. Uћ nмkolika lidem jsem шнkal, aќ mi pro ten disk dojdou, ale vљichni jsou posranэ. Neљel bys do toho? Slibuju, ћe odmмna bude stбt za to.</text>
+	</string>
+	<string id="esc_novice_stalker_1_name">
+		<text>Pomoz stalkerovi</text>
+	</string>
+	<string id="esc_novice_stalker_1_text">
+		<text>Pomoz stalkerovi odehnat smeиku slepэch psщ.</text>
+	</string>
+	<string id="esc_novice_stalker_2_name">
+		<text>Doprovoп stalkera</text>
+	</string>
+	<string id="esc_novice_stalker_2_text">
+		<text>Doprovoп stalkera k vesnici zelenбищ.</text>
+	</string>
+	<string id="esc_novice_stalker_3_name">
+		<text>Vyzvedni si odmмnu</text>
+	</string>
+	<string id="esc_novice_stalker_3_text">
+		<text>Vyzvedni si u Vlka odmмnu za to, ћe jsi zachrбnil stalkera pшed smeиkou slepэch psщ.</text>
+	</string>
+	<string id="esc_prapor">
+		<text>Setkej se s podporuинkem</text>
+	</string>
+	<string id="esc_prapor_text">
+		<text>Setkej se s podporuинkem</text>
+	</string>
+	<string id="esc_reach_garbage">
+		<text>Setkej se na Smetiљti s kopбиem</text>
+	</string>
+	<string id="esc_reach_garbage_text">
+		<text>Setkej se na Smetiљti s kopбиem</text>
+	</string>
+	<string id="esc_reach_stalker_base">
+		<text>Setkej se za nбsepem se stalkery</text>
+	</string>
+	<string id="esc_reach_stalker_base_text">
+		<text>Promluv si s vщdcem stalkerщ Valerianem. Mohl by nмco vмdмt o tй koшisti, po nнћ touћн Sidoroviи.</text>
+	</string>
+	<string id="esc_reach_trader">
+		<text>Promluv si s kupcem</text>
+	</string>
+	<string id="esc_reach_trader_text">
+		<text>Promluv si s kupcem</text>
+	</string>
+	<string id="esc_rescue_patrol">
+		<text>Pomoz stalkerщm</text>
+	</string>
+	<string id="esc_rescue_patrol_text">
+		<text>Pomoz stalkerщm</text>
+	</string>
+	<string id="esc_stalker_enemy_name">
+		<text>Zнskej zpмt dщvмru stalkerщ</text>
+	</string>
+	<string id="esc_stalker_enemy_text">
+		<text>Pokazil sis vztahy se stalkery. Chceљ-li zase zнskat jejich dщvмru, musнљ pomoci Sidoroviиovi.</text>
+	</string>
+	<string id="esc_take_habar">
+		<text>Seber koшist</text>
+	</string>
+	<string id="esc_take_habar_text">
+		<text>Seber koшist</text>
+	</string>
+	<string id="esc_take_prisoner_secret">
+		<text>Najdi Chaletskйho skrэљ</text>
+	</string>
+	<string id="esc_take_prisoner_secret_text">
+		<text>Najdi Chaletskйho skrэљ</text>
+	</string>
+	<string id="esc_take_weapon_name">
+		<text>Posbнrej zbranм</text>
+	</string>
+	<string id="esc_take_weapon_text">
+		<text>Posbнrej zbranм</text>
+	</string>
+	<string id="esc_talk2_comm">
+		<text>Promluv si s Chaletskэm</text>
+	</string>
+	<string id="esc_talk2_comm_text">
+		<text>Promluv si s Chaletskэm</text>
+	</string>
+	<string id="esc_talk2_leader">
+		<text>Setkej se s vщdcem stalkerщ</text>
+	</string>
+	<string id="esc_talk2_leader_2">
+		<text>Promluv si s vщdcem stalkerщ</text>
+	</string>
+	<string id="esc_talk2_leader_2_text">
+		<text>Promluv si s vщdcem stalkerщ</text>
+	</string>
+	<string id="esc_talk2_leader_text">
+		<text>Setkej se s vщdcem stalkerщ</text>
+	</string>
+	<string id="esc_talk2_trader">
+		<text>Promluv si s kupcem</text>
+	</string>
+	<string id="esc_wolf_brother_1_name">
+		<text>Zachraт Vlkova bratra ze zajetн</text>
+	</string>
+	<string id="esc_wolf_brother_1_text">
+		<text>Zachraт Vlkova bratra ze zajetн</text>
+	</string>
+	<string id="esc_wolf_brother_2_name">
+		<text>Doprovoп Vlkova bratra do vesnice zelenбищ</text>
+	</string>
+	<string id="esc_wolf_brother_2_text">
+		<text>Doprovoп Vlkova bratra do vesnice zelenбищ</text>
+	</string>
+	<string id="esc_wolf_brother_3_name">
+		<text>Vyzvedni si odmмnu</text>
+	</string>
+	<string id="esc_wolf_brother_3_text">
+		<text>Vyzvedni si u Vlka odmмnu</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_name">
+		<text>Najdi informace o vyvaћovбnн automatickэch souибstek</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_text">
+		<text>Najdi informace o vyvaћovбnн automatickэch souибstek a dones je Vanovi, stalkerskйmu technikovi ћijнcнmu v Kordonu.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_name">
+		<text>Najdi informace o pumpovacнch mechanismech pro brokovnice</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_text">
+		<text>S informacemi o pumpovacнch mechanismech dokбћe stalkerskэ technik znatelnм zvэљit kadenci brokovnic.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_name">
+		<text>Najdi informace o elektronickй stabilizaci</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_text">
+		<text>Stalkerskэ technik dokбћe sestavit zaшнzenн, kterй by zvэљilo pшesnost pumpovacн brokovnice, chybн mu ovљem jeљtм nмjakй informace.</text>
+	</string>
+	<string id="esc_recover_item_1_name">
+		<text>Dodej "magickou" vodku</text>
+	</string>
+	<string id="esc_recover_item_1_text">
+		<text>Bejval tady v Zуnм jeden chemik. Nebyl teda pravej chemik, ale dмlal magickou vodku. To byl fakt materiбl… pбr panбkщ a zapomnмls na vљechno: na Zуnu, na mutanty, anomбlie, na vљechno! Pшestal ses bбt a sral jsi na to, co by se ti mohlo stбt. I za tu cenu, za kterou to prodбval, se to vyplatilo. No ale jednou toho chemika nмkdo otrбvil, moћnб ze ћбrlivosti, nebo jen tak pro legraci, kdo vн? Prostм ho otrбvili a magickб vodka doљla... ale ten chemik prej mмl v Zуnм pбr skladiљќ a jб vнm, kde je jedno z nich. Kdyћ mi doneseљ flaљku tэ magickэ vodky, tak ti dobшe zaplatнm!</text>
+	</string>
+	<string id="esc_recover_item_2_name">
+		<text>Pшines trofejnн AKM-47/2</text>
+	</string>
+	<string id="esc_recover_item_2_text">
+		<text>Sbнrбm vzбcnэ zbranм, kбmo. Uћ jich mбm tolik, ћe bych si mohl zaloћit muzeum, ale poшбd mi jeden kousek chybн, trofejnн AKM-47/2. Nejen, ћe je to poшбdnб bouchaиka, ale je to fakt vzбcnej kousek na zabнjenн muќбkщ, takovou jsi jeљtм nevidмl. Jejн majitel prej byl vэbornej stшelec a v Zуnм ъplnб legenda, dokбzal se dostat z kaћdэho prщseru, uniknout kaћdэ anomбlii... uћ jsem o nмm ale nмjakou dobu nic neslyљel, ale o bouchaиce se mi podaшilo zjistit, ћe by mмla bejt schovanб na jednom mнstм, kam je dost tмћkэ se dostat. Pшines mi tu bouchaиku, ћoldбku.</text>
+	</string>
+	<string id="esc_recover_item_3_name">
+		<text>Pшines "љќastnэ" detektor</text>
+	</string>
+	<string id="esc_recover_item_3_text">
+		<text>Pomoz mi, ћoldбku. Nedбvno jsem si koupil novej, silnмjљн detektor a starej jsem zahodil do anomбlie, abych to oslavil. Ale ten novej detektor mi moc љtмstн nepшinesl, uћ s nнm chodнm tшi tejdny a furt ћбdnej artefakt. No asi je jinak v pohodм, ale prostм chci zpбtky svщj starej. Dones mi ho a jб se postarбm, aby se ti to vyplatilo.</text>
+	</string>
+	<string id="esc_recover_item_4_name">
+		<text>Dodej speciбlnн medikit</text>
+	</string>
+	<string id="esc_recover_item_4_text">
+		<text>Hele, jeden mщj starej kбmoљ nedбvno utekl banditщm na Smetiљti. Zahnali ho jen tak pro prdel mezi anomбlie a zamoшenэ oblasti, kterэ jsou skoro smrtelnэ. Teп se skoro nemщћe hejbat a normбlnн protiradiaиnн lйky nepomбhaj, potшebuje nмco silnмjљнho. Armбda mб prej speciбlnн lйkбrniиky, jedna by staиila, takћe pokud ji doneseљ, byl bych ti fakt vdмиnej.</text>
+	</string>
+</string_table>

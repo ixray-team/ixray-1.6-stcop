@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding="windows-1251"?>
 
 <game_information_portions>
+	 <info_portion id="agr_joined_duty"></info_portion>
      <info_portion id="agr_duty_first_join"></info_portion>
      <info_portion id="agr_duty_megafon_start"></info_portion>
      <info_portion id="agr_duty_megafon_hit"></info_portion>

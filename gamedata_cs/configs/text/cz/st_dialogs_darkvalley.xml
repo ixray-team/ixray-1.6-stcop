@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_freedom_blockpost_robbery_dialog_0">
+		<text>Fajn, stalkere, zщstaт na mнstм. Kdo seљ a co tady dмlбљ?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11">
+		<text>Uћ je nejspнљ mrtvej a tobм bych radil, aќ se tady moc dlouho nemotбљ, pokud se k nмmu nechceљ pшidat.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1111">
+		<text>Nмkdo na nбs poшбd ъtoин. A jsou to fakt profнci - nemбme љanci. Ovlбdбme vљechny cesty vedoucн do Temnэho ъdolн, ale to ty ъtoky nijak neovlivтuje. Jedinэ mнsto, kde je trochu klid, je zбkladna. Pokud se chceљ poptat na Tesбka, zбkladna Svobody je tvoje nejlepљн љance nмco zjistit.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51">
+		<text>Tak co, prohnal tм ten pes?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11">
+		<text>Hej, kбmo. Co potшebujeљ dneska?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_21">
+		<text>Hej, kбmo! Hledбљ dobrej kљeft, co?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11">
+		<text>Ale ale, tak se koneиnм potkбvбme na ћivo. Jmenuju se Иechov a jsem tady љйf. Zбznamy v tom PDA, kterэ jsi naљel, nбm pбr vмcн vysvмtlily. Vљechny vэchody z ъdolн jsou uzavшenэ, ale na naљe hlнdky a opevnмnн furt nмkdo ъtoин! Nмkolikrбt se hlнdka sotva dostala na dohled od zбkladny a nмkdo je zmasakroval. Chlapi zaиali pшemэљlet, jestli jsme Zуnu nбhodou nмjak neurazili a jestli tohle nenн trest. Dokonce jsme zkouљeli dбt dohromady nмjakэ ochrannэ amulety proti duchщm a tak - ale nebylo na tom nic tak zбhadnэho - komandant prostм prozradil vљechny naљe pozice a plбny, prбskaи jeden zkurvenej!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111">
+		<text>To jsem od nмj fakt neиekal! Znбm ho uћ celou vмиnost! Spolu jsme lovili prvnн artefakty, udмlali jsme ze Svobody to, co je dneska! Svмшil jsem mu operaиnн plбnovбnн a on nбs prostм prodal...</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111">
+		<text>Jakmile byl ten rozhovor vyslanэ na naљн frekvenci, komandant zmizel. Vмdмl, ћe je v hajzlu. My ho teп musнme najнt. Vн toho aћ moc, pokud ne vљechno. Vэchody z ъdolн jsou zabezpeиenэ, takћe se nemohl dostat daleko. Sledujeme jeho PDA - je poblнћ cesty do Kordonu. Pбr naљich druћstev uћ tam mншн.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111 ">
+		<text>Jo, bejval takovej stalker. Mмl fakt zбjem o vzбcnэ souибstky a podobnэ vмci. Musel vмdмt, ћe mбme nejlepљн techniky v celэ Zуnм! Prodal jsem mu souибstky, kterэ chtмl, proи taky ne? Zaplatil dobшe a ani nesmlouval. Ale nevнm, na co to chtмl - byly to souибstky ze starэch armбdnнch kryptografщ. Hned pak odeљel ze zбkladny a uћ ho nikdo nikde nevidмl.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31">
+		<text>Dнky za pomoc! Po tэ pшestшelce u farmy jsme vмdмli, ћe za ъtokama na Svobodu stojej ћoldбci. Informace z PDA komandanta to taky potvrzuje. Ale zщstбvб tady jedna otбzka: proи to sakra dмlali? Ћoldбci byli vћdycky neutrбlnн a spolupracovali se vљema frakcema Zуny. Zajнmalo by mм, kdo byl jejich klient na tuhle fuљku. Moћnб Povinnost... nebo armбda. Takћe teп mбm vнc otбzek neћ odpovмdн, ale dostanu se tomu na kloub, na to si vsaп.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_3111">
+		<text>Dodrћel jsi svou ибst dohody a jб ti teп шeknu nмco o Tesбkovi. Hledal tady zvlбљtnн souибstky a jб byl fakt zvмdavej, na co ty pradбvnэ krбmy chtмl. Kdyћ jsem se ho zeptal pшнmo, шekl mi, ћe mi po tom nic nenн. Ale mмl smщlu, jб se nerad vzdбvбm! Poћбdal jsem jednoho naљeho technika, aќ se nabourб na frekvenci Tesбkova PDA a pak jsme ho pбr dnн monitorovali. Vypadalo to, ћe љel na Smetiљtм - na tvэm mнstм bych ho hledal tam. Mimochodem, poznamenal jsem si jeho frekvenci a nahrбl ti ji. Teп jeho lokaci uvidнљ na svэm PDA. </text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41">
+		<text>Seљ pшipravenej zase jednou pomoct Svobodм?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111">
+		<text>Vнme toho teп vнc, ale ћoldбci na nбs furt ъtoиej a my uћ pomalu meleme z poslednнho. Furt nevнm, jak se dostбvajн do ъdolн - vљechny cesty hlнdбme. Nejspнљ je tam nмkde tunel, o kterэm nevнme. Tak se musej ћoldбci dostбvat do Temnэho ъdolн. Musнme tu dнru najнt a vyhodit ji do luftu!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_71">
+		<text>Ћoldбku, potшebujem ovlбdnout ty antйny.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_51">
+		<text>Dнk za pomoc! Fakt jsem to neиekal, protoћe vмtљina lidн v Zуnм se starб akorбt o sebe. Шekl bych, ћe jsme ћoldбkщm docela ukбzali. Tunel, kterэm lezli do ъdolн, je teп vyшazenej, ale chlapi to radљi vyhodмj do luftu, aby se do ъdolн uћ nedokбzala dostat ani myљ! Ale furt jeљtм musнme vyшeљit, kdo nбs dal ћoldбkщm jako zakбzku, ale podle mм toho klienta brzo najdeme. A tebe nejspнљ hlavnм zajнmб tvoje odmмna!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_61">
+		<text>Hej! Co tм sem pшivбdн?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111 ">
+		<text>Jo, pomщћu ti... pokud teda ty pomщћeљ mм. Neber si to osobnм, ale mбme tady celkem dost tмћkэ иasy, a pokud se to rychle nezmмnн, nebude mнt Svoboda dost chlapщ na obranu zбkladny pшed ъtoky banditщ... Pomoz mi zjistit, kdo na nбs ъtoин, a jб ti dбm informace o Tesбkovi.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_121">
+		<text>Najdi komandanta a pшiveп mi ho ћivэho... nebo mrtvэho. Udмlej to a jб ti шeknu, kde najdeљ Tesбka. Nahrбl jsem ti do PDA komandantovy souшadnice. </text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111 ">
+		<text>V ъdolн je starej triangulбtor. Jeљtм za Sovмtщ ho tam postavili geodeti. Triangulбtor tvoшej tшi antйny. Jakmile budou vљechny aktivovanэ, je moћnэ monitorovat oblast celэho ъdolн. Pokud to bude fungoval, mohli bychom zjistit, jak se ћoldбci dostбvajн do ъdolн.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111 ">
+		<text>Jedna z antйn je tady v zбkladnм, ale dalљн dvм obsadili ћoldбci. Pomoz nбm zнskat ty antйny zpбtky!</text>
+	</string>
+	<string id="val_arena_master_about_rule_0">
+		<text>Jakб jsou pravidla v arйnм?</text>
+	</string>
+	<string id="val_arena_master_about_rule_1">
+		<text>Pravidla? Stшнlej hned, jak se шнkб, o tom to celй je. Musнљ vyhrбt v kaћdйm kole, a zбvisн to иistм na tom, jestli budeљ mнt љtмstн. Chci tнm шнct, ћe budeљ potшebovat vљechno љtмstн, kterй dokбћeљ sehnat, pokud tм s rezavou brokбrnou a ve starэm svetru poљlou proti chlapovi v plnй zbroji s puљkou na mamuty. A nмkdy to nenн jen jeden chlap, ale tшeba i dva nebo tшi. Pokud se na nмco takovйho upнљeљ, mщћe to skonиit jen dvмma zpщsoby. Buп z toho vyjdeљ jako vнtмz, nebo jako hnijнcн mrtvola, tak je to jednoduchэ. Kdyћ vyhrajeљ vљechny kola, vyplatнm ti odmмnu, ale pokud se ti to nepodaшн - zщstaneљ mi dluћen. Tak co, chceљ si zahrбt?</text>
+	</string>
+	<string id="val_arena_master_comeback_0">
+		<text>Vraќ se, aћ se na to budeљ cнtit.</text>
+	</string>
+	<string id="val_arena_master_darkvalley_0">
+		<text>Kdepak jsi byl, kromм Temnйho ъdolн?</text>
+	</string>
+	<string id="val_arena_master_darkvalley_1">
+		<text>Jo, kamarбde, jб uћ jsem v Zуnм vidмl kaћdэ kout, to ti povнdбm. A nмco z tмch sraиek, co jsem vidмl - љkoda mluvit. Chodit po Zуnм nenн vћdycky jednoduchэ, vlastnм spнљ skoro nikdy, to je pravda. Ale zase tм tady nмkdo jen tak snadno nenajde, pokud mu sбm Prщvodce nepomщћe. Slyљel jsi o nмm? Ne? Иlovмиe, vћdyќ to byl prvnн stalker! Ze vљech! Prvnн chlap, co kdy vstoupil do Zуny, proto mu taky шнkajн Prщvodce. Znб tuhle pekelnou dнru jako svй boty, a i kdyћ se Zуna po emisi zmмnн, Prщvodce tм poшбd dokбћe bez problйmщ vzнt tam, kam potшebujeљ. Ten chlap mб vбћnм talent, je to, jako by mмl љestэ smysl, nebo tak nмco. Problйm je, ћe je ho pomмrnм tмћkй najнt, a navнc nepomбhб kaћdйmu, a jen Иernэ stalker vн, proи jednмm pomщћe a jinй odmнtne. Jednou vмcн si ale mщћeљ bэt jistэ: kdyћ slнbн, ћe tм nмkam zavede, budeљ mнt fakt dobrou cestu - vsadнm se, ћe vн, co je za radarem, a urиitм uћ tam nмkdy byl, o tom nepochybuju.</text>
+	</string>
+	<string id="val_arena_master_good_fight_0">
+		<text>Dobrej boj. Tady jsou prachy. Nedбљ si dalљн malou pшestшelku?</text>
+	</string>
+	<string id="val_arena_master_good_luck_0">
+		<text>Pшбlo ti љtмstн.</text>
+	</string>
+	<string id="val_arena_master_loozer_0">
+		<text>Smщla, kбmo. Neboj, pшнљtм to bude lepљн.</text>
+	</string>
+	<string id="val_arena_master_money_back_0">
+		<text>Vraќ se, aћ si zas nahrabeљ nмjakэ prachy.</text>
+	</string>
+	<string id="val_barmen_about_barmen_0">
+		<text>Jak ses vlastnм stal barmanem?</text>
+	</string>
+	<string id="val_barmen_about_barmen_1">
+		<text>To nenн ta sprбvnб otбzka, brбcho. Mмl by se spнљ zeptat, jak se stalo, ћe Gandћa barman, Gandћa s vodnн dэmkou, Gandћa, kterэ mб vљude po svмtм pшбtele vљeho druhu, skonиil tady v Zуnм. Ale to ti taky neprozradнm, brбcho. Nenн to moc veselej pшнbмh a jб zrovna teп nechci kazit dobrou nбladu. Potkal jsem tady sбm sebe. Tak, pшiљlo na lбmбnн chleba. Byl jsem tu sбm a cнtil jsem kosmickou samotu, brбcho. Jo, иlovмиe, bylo to fakt zlэ. Ale pak jsem zachytil pozitivnн vibrace... pшichбzely od Svobody. Vмdмl jsem, ћe to jsou ti pravн lidi pro mм. Mмl jsem poшбd na vybranou, ale uћ jsem nemмl ћбdnэ pochybnosti. Naљel jsem svobodu - ћiju si teп lнp neћ vмtљina lidн v tom љнlenйm svмtм venku mimo Zуnu. Mбm tady dost pitн, dost kuшiva, mбm Zуnu a lidi, co si se mnou o nн vymмтujou pшнbмhy... Sakra pes, ten mнstnн plevel je hroznб slabибrna!</text>
+	</string>
+	<string id="val_barmen_about_zone_0">
+		<text>Pokraиuj, podмl se se mnou o nмjakй pшнbмhy o Zуnм.</text>
+	</string>
+	<string id="val_barmen_about_zone_1">
+		<text>Brбљko, podмlil bych se s tebou o vљechno: o chleba, trбvu, vodu, vodku i o nebe. A o informace taky. Dobшe poslouchej. Hluboko v Zуnм jsou tajnй laboratoшe - a poшбd fungujн, podle toho, co jsem slyљel. Divnэ, co? Jak mohli lidi pшeћнt emise a poшбd pracovat bez jнdla a elektriky? Zajнmalo by mм, jestli v tмch labinбch jeљtм fakt makajн lidi. Иlovмиe, co kdyћ jsou to emzбci s tнm jejich chladnэm, nelнtostnэm intelektem? Jeden brбcha mi kdysi vyklбdal, ћe kdyћ byl u Jantaru, zachytil nмjakou radiovou komunikaci tэkajнcн se tмch laborek. Prэ to bylo tak podivnй a dмsivй vysнlбnн, ћe to radљi zas rychle vypnul. Jinэ chlбpek mi zas jednou vyklбdal, ћe narazil na poloprщhlednou potvoru v ochrannйm obleku, mnohem dokonalejљнm neћ vљechno, co nosн stalkeшi. A ta poloprщhlednб vмc mu шekla: "Odejdi. Pracujeme. Ruљнљ nбs pшi prбci." Ale na druhou stranu, ъdajnм se to stalo hned u radaru. Nesmнљ taky hned vмшit vљemu, co slyљнљ, brбcho. I kdyћ, kdo vн? Moћnб Zуna ty lidi opravdu pшetavila v иistou energii...</text>
+	</string>
+	<string id="val_comendant_about_freedom_0">
+		<text>Mщћu se pшidat ke Svobodм?</text>
+	</string>
+	<string id="val_comendant_about_freedom_1">
+		<text>Uћ jsem ti шнkal: jak mбm vмdмt, co jsi doopravdy zaи? Co kdyћ tм sem poslal nмkdo jinэ? V dneљnн dobм nemщћeme nikomu dщvмшovat, takћe se k nбm jen tak nedostaneљ... Musнme si tм vyzkouљet, opravdu dobшe vyzkouљet, ovмшit si, jestli nemбљ v tй svй hlavм nмjakй љkaredй temnй myљlenиiиky. Sloћ zkouљku, udмlej pro klan nмjakou tu prбci a Иechov rozhodne, jestli tм Svoboda potшebuje, nebo ne.</text>
+	</string>
+	<string id="val_comendant_about_news_0">
+		<text>Co je novйho?</text>
+	</string>
+	<string id="val_comendant_about_news_1">
+		<text>Dneska rбno prљelo, pшipadб ti to jako dost dobrб novinka? Poslyљ, nemбm иas tu s tebou vykecбvat, nenн na to dostateиnм pшнznivб situace. Nмjacн debilovй mi pobнjejн chlapy nalevo napravo, a navнc uћ jich nenн tolik, jako dшнv! Takћe probнrat drby a mlet hubou nemбm v souиasnй dobм na seznamu priorit. A jak mбm vщbec vмdмt, jestli nebudeљ jeden z tмch parchantщ, co mordujн naљe kluky? Jestli sis mi pшiљel vylнt hercnu, seљ na љpatnэm mнstм, kбmo.</text>
+	</string>
+	<string id="val_fixer_about_benefit_0">
+		<text>Nemбљ nмjakй uћiteиnй informace pro stalkera?</text>
+	</string>
+	<string id="val_fixer_about_benefit_1">
+		<text>Uћiteиnй? Za uћiteиnй se v naљн branћi povaћuje vљechno, co tм udrћн pшi ћivotм. Buп, a nebo nмco, co nadмlб mrtvoly z tvэch nepшбtel. Povнm ti nмco o artefaktech. Co je to artefakt? Shluk anomбlnн energie, nмco jako rezervnн kostka cukru. Existujн dokonce i artefakty, kterй mщћou... jak jen to debilnн slovo bylo... to, generбtorovat anomбlie! Tak nмjak to myslнm шнkal Иechov. Jedinэ problйm spoинvб v tom, ћe kdyћ takovэ artefakt vygeneruje anomбlku, je uћ potom k niиemu. Samotnб anomбlie taky nebэvб nijak zvlбљќ silnб a nevydrћн dlouho, ale dokбћe nмkoho zdrћet nebo ho ъplnм setшбst ze stopy.</text>
+	</string>
+	<string id="val_fixer_about_power_0">
+		<text>Инm se vlastnм pшesnм zabэvбљ?</text>
+	</string>
+	<string id="val_fixer_about_power_1">
+		<text>No, tak tшeba... za prachy i starou tchэni honнm s noћem po kuchyni!? Che! Ne, kecбm, kбmo. Jsem љpiиkovej odstшelovaи. Sбm stшнlнm jako пas a uинm to i ostatnн. Mohl bych ti hezky vymazlit ъtoиnou puљku - aћ s nн skonинm, bude stшнlet jako specnazбckй SVDиko. A aћ si seћeneљ poшбdnou odstшelovaиku, pane jo - nepшбtelй tм zaиnou obchбzet hodnм velkou oklikou, aby se ti vyhnuli, to ti mщћu slнbit. Taky bych ti mohl zaplбtovat zbroj, kdybys mмl zбjem.</text>
+	</string>
+	<string id="val_fixer_about_weapons_0">
+		<text>Podмl se se mnou o zkuљenosti. Jak se dajн nejlнp vylepљit zbranм a zbroj?</text>
+	</string>
+	<string id="val_fixer_about_weapons_1">
+		<text>Jo tak zkuљenostн mбm fakt celkem na rozdбvбnн. Nмco ti povнm: nesnaћ se vylepљovat vљechno najednou. Pokud chceљ mнt co nejsilnмjљн bouchaиku, kterб bude zбroveт hodnм pшesnб, nech si zdбt. Шeknмme, ћe si jednou vylepљнљ zastavovacн sнlu - tak to udмlej i podruhй! Nмkterб vylepљenн totiћ nejdou vrбtit. Pokud se rozhodneљ udмlat odstшelovaиku ze zbranм, kterou jsi pшedtнm posнlil, uћ na to bude pozdм, takћe pшemэљlej pшedem a mysli u toho hlavou.</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_11">
+		<text>Co je?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_0">
+		<text>Nemбљ nмjakou prбci?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_1">
+		<text>Uћ nмkolik nocн po sobм jsem vidмl, jak opuљtмnй budovy u иerpacн stanice vyhбzн divnй svмtlo. Mohl to bэt i kouш ze svмtlic. Co kdyby ses tam mrknul? Jestli to jsou nмjakй zrщdy, tak se s tнm klidnм smншнme, ale pokud to jsou ty parchanti te Smetiљtм, tak s tнm budeme muset nмco udмlat. </text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_11">
+		<text>Dobшe, zkontroluju to.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_12">
+		<text>Nemбm o to zбjem.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_2">
+		<text>Tak co bylo u tй pшeиerpбvaиky?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_21">
+		<text>Banditi. Myslнm, ћe vбs pozorovali. Nejdшнv nebyli moc pшбtelљtн, ale podaшilo se mi je trochu uklidnit.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_212">
+		<text>Hmm, to je divnэ. Ale stejnм, tady mбљ odmмnu. Jeљtм jednou dнky!</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_213">
+		<text>Dej mi vмdмt, kdybys vidмl jeљtм nмjakй duchy.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_214">
+		<text>Mмli s sebou nмco zajнmavйho, tady, podнvej.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_215">
+		<text>Moc zajнmavй. Ukaћ to PDA Lingovovi. Jestli banditi sbнrajн informace, urиitм ho to bude zajнmat. \n</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_22">
+		<text>Je to tak radioaktivnн, ћe ze mм za chvнli bude malэ zelenэ muћниek.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_3">
+		<text>Ne.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1">
+		<text>Jsem ћoldбk. Hledбm stalkera, kterйmu шнkajн Tesбk.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_111">
+		<text>Jak mrtvej? Co se to tu dмje?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11111">
+		<text>Dмkuju za informace.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_21">
+		<text>Jdi mi z oин a vщbec z dohledu.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11">
+		<text>Vybral sis blbй mнsto na prochбzku, kбmo. To nevнљ, ћe na nбs ve dne v noci ъtoин? Poflakovat se kolem naљн zбkladny je uћ tak dost o hubu, ale mнt na sobм pшitom svoboпбckou vestu, to uћ z tebe dмlб regulйrnн terи...</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111">
+		<text>Hledбm stalkera, kterйmu шнkajн Tesбk. Neslyљel jsi o nмm?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111">
+		<text>Osobnм ho neznбm. Ale nмjakэ manнk sem pшed pбr dny dorazil. Probнrali s naљнm nбиelnнkem ty svй љpinavй kљeftнky - samozшejmм beze svмdkщ. Mohl by to bэt ten tvщj chlбpek, ale urиitм to nevнm.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111">
+		<text>Jak se dostanu k veliteli Svobody?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111">
+		<text>Ha! Tys teda moc trpмlivosti nepobral, kбmo!... Poslouchej, dokud jsme v karantйnм, mщћeљ na setkбnн s nбиelnнkem zapomenout. Vнљ jak, seљ pшece jenom ћoldбk. Takћe... kdybys mi prokбzal urиitou laskavost, moћnб bych za tebe u љйfa ztratil slovo. Co na to шнkбљ?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111111">
+		<text>Dobшe, jakб prбce by to mмla bэt?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111111">
+		<text>Poblнћ zбkladny se usadil pseudo-pes a teп nбm dмlб ze ћivota peklo. Jakmile ucнtн, ћe se v Baru nмco vaшн, tak se mщћe zblбznit. Chlapi jsou z toho magora celн nervуznн. Postarej se o nмj a aћ se vrбtнљ, pшejdeme k poшбdnэm kљeftщm.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111111">
+		<text>Jako by se stalo.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_511">
+		<text>Na tom nesejde. Podstatnй je, ћe je to zvншe kaput.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_5111">
+		<text>Dobшe. Dalљн ъkol bude trochu tмћљн. Poslouchej: potшebujeme donйst nмjakй nбboje naљim klukщm na vzdбlenй zбkladnм. Zajdi pшнmo za Aљotem - шekne ti, co pшesnм mбљ odnйst a kam.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51111">
+		<text>Rozumнm.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_512">
+		<text>Teп ne.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_61">
+		<text>Шekl jsem ti, ћe mбљ zajнt za Aљotem!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_611">
+		<text>Na vidмnou.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_71">
+		<text>Ty jsi tu jeљtм? Neшнkal jsem ti, ћe zбleћн na kaћdй vteшinм?! Mazej na zбkladnu! Hned!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_711">
+		<text>Na vidмnou.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_11">
+		<text>Odpal. Pokud se chceљ na nмco zeptat, jdi otravovat velitele.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_111">
+		<text>Na vidмnou.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_11">
+		<text>Co tady dмlбљ? Kaћdou chvнli oиekбvбme ъtok. Padej na zбkladnu a vyшiп veliteli, ћe nбm dochбzн stшelivo. Povмz mu, aby nбm poslal dalљн.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_111">
+		<text>Na vidмnou.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11">
+		<text>Zdarec. Nechceљ si vydмlat nмjakй prachy?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_111">
+		<text>Jб? Vћdycky.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1111">
+		<text>Jde o tohle: kбmoљ mi slнbil donйst nмjakй nбkresy, ale furt jeљtм nedorazil na zбkladnu. Uћ ho pohшeљujeme, ale jб ty nбkresy fakt potшebuju - mмly bэt odevzdanй do zбpadu slunce. Иas jsou penнze, znбљ to. Takћe, nechceљ mi pomoct?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11111">
+		<text>Jasnм.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11112">
+		<text>Ani nбhodou.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1112">
+		<text>Mмl bych tu jednu prбci, kterou je nutnм potшeba udмlat, ale musн se to provйst pмknм potichouиku - beze svмdkщ, jasnй? Pшijп za mnou po setmмnн, tak kolem jedenбctй.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11121">
+		<text>Dobшe.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_112">
+		<text>Ne, dнky.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_12">
+		<text>Tak co, nemбљ zбjem zbohatnout?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21">
+		<text>Co ta souибstka?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_211">
+		<text>Tady to je, ale na kamarбda mщћeљ zapomenout - ty potvory krveћнznivй si ho daly k snнdani.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2111">
+		<text>Chudбk, i kdyћ to byl parchant. No co uћ, tady mбљ odmмnu.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21111">
+		<text>Kdybys mмl nмjakй zbyteиnй penнze - dej mi vмdмt.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_212">
+		<text>Pшibrzdi, jeљtм to nemбm.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2121">
+		<text>Poиkбm do rбna, ale pospмљ si.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21211">
+		<text>Dobшe.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_31">
+		<text>Zdarec.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_311">
+		<text>Иau.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_41">
+		<text>Шнkal jsem ti, ћe se mбљ vrбtit po setmмnн.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_51">
+		<text>Jdeљ pozdм. Teп uћ nбm zбkaznнk nezaplatн.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_511">
+		<text>Do prdele!</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_0">
+		<text>Co vlastnм tvщj klan dмlб?</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_1">
+		<text>Nбљ klan ћije v Zуnм a studuje ji, v praktickйm slova smyslu. Podle mм nabнzн Zуna celйmu lidstvu nepшedstavitelnou vмdeckou pшнleћitost. Uћ nмkolik let nбm Zуna dбvб artefakty, coћ je fantastickэ vэzkumnэ materiбl, a je jich kaћdэ den vнc a vнc. Co je tэиe anomбliн, ty experimentбlnн podmнnky, kterй vytvбшejн, bys v ћбdnй laborce umмle nenavodil! Vщbec nepochybuju o tom, ћe za pбr let uvidнme, ћe vмda i dalљн oblasti lidskэch znalostн udмlaly dнky naљim vэzkumщm v Zуnм velkэ skok kupшedu. Pocнtнme to vљichni... dokonce i lidй, pro kterй je vrcholem vмdeckotechnickйho pokroku mobilnн telefon!</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_0">
+		<text>Proи tak nesnбљнљ Povinnost?</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_1">
+		<text>Jб ћe je nesnбљнm? To je hodnм slabй slovo. Nemбme nic spoleиnйho a podle mм инm vнc se budou snaћit zasбhnout proti Zуnм, tнm vнc jim bude Zуna odolбvat. Chceљ dщkazy? Vљude, kde se Povinnost pustн do svй svatй vбlky proti Zуnм, pшibude muќбkщ a anomбlek. Mнsto aby Zуnu studovali a snaћili se zjistit, jak s nн mщћeme koexistovat, Povinnost jenom pшilйvб oleje do ohnм. Инm vнc na Zуnu ъtoин, tнm vнc nбm to Zуna oplбcн. Pokud v tom budou pokraиovat, zpщsobн katastrofu, kterб postihne nбs vљechny. Jednoduљe шeиeno, Povinnost je frakce vygumovanэch zelenэch mozkщ, kteшн nevidн, neslyљн a umн leda tak maиkat spouљќ. Od tй doby, co jsem se dostal sem, jsem se taky nмco nabojoval, a dшнve иi pozdмji tady zщstane jenom jedna frakce.</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_0">
+		<text>Vнљ nмco zajнmavйho o Zуnм?</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_1">
+		<text>Kdybych ti mмl шнct vљechno, co vнm, bylo by to na dlouhй povнdбnн. Jednou z oblastн naљeho vэzkumu jsou napшнklad stalkeшi se schopnostн intuitivnнho cнtмnн v Zуnм. Nikdy si nenosн elektronickб udмlбtka ani kovovй zbranм. Dokonce tvrdн, ћe zbranм a elektronika Zуnu rozиilujн - a ta pak posнlб nestvщry, aby ъtoиily na lidi, kteшн si je nosн, a stavн jim do cesty anomбlie. Majн za to, ћe aby se иlovмk v Zуnм cнtil dobшe, nepotшebuje k tomu nic neћ svoje schopnosti. Zdб se, ћe je Zуna vљechny nмjak pochroumala, ale pшeћili to a dokonce zнskali rщznй podivnй schopnosti! Nмkteшн z nich intuitivnм cнtн, kudy vede cesta pшes smrtнcн anomбlie, jinн dokбћou projнt tнm nejhustљнm lesem a slyљel jsem o nмkolika takovэch, kterй nechбvajн na pokoji i potvory. Povнdб se, ћe se jeden takovэ chlбpek usadil u Agropromu.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111">
+		<text>To je dost nepшнjemnб situace.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111">
+		<text>A kde je velitel teп?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111">
+		<text>Slyљel jsem, ћe prэ tu byl stalker jmйnem Tesбk.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111">
+		<text>Jo, bejval takovej stalker. Hodnм se zajнmal o souибstky a tak podobnм. Nejspнљ vмdмl, ћe mбme nejlepљн tэm technikщ v celй Zуnм! Tak jsem mu prodal tu souибstku, co chtмl, proи taky ne? Zaplatil na dшevo - dokonce ani nesmlouval. Jenom nechбpu, co s tнm chtмl dмlat. Tyhle nбhradnн dнly se pouћнvaly do starэch armбdnнch љifrovacнch strojщ... Ze zбkladny vyљumмl hned, jak jsem mu to prodal, a od tй doby se tu neukбzal.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111111">
+		<text>Nevнљ, kam mohl Tesбk jнt?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111">
+		<text>Jo, pomщћu ti, pokud pomщћeљ ty mnм. Neber si to osobnм! Jsme tady v dost nepшнjemnй situaci - jestli to tak pщjde dбl, nezbude nбm nikdo, kdo by brбnil zбkladnu pшed bandity... Pomoz mi zjistit, kdo na nбs ъtoин, a jб ti povнm, kde najdeљ Tesбka.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_12">
+		<text>Domluveno. Co mбm udмlat?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1211">
+		<text>Souhlasнm.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_21">
+		<text>Poslyљ, jб ti prostм neprozradнm, kde najdeљ Tesбka, dokud nezjistнљ, kdo na nбs ъtoин a hlavnм odkud to dмlб.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_311">
+		<text>Takћe, co s tнm Tesбkem?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31111">
+		<text>Dнky za informace.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411">
+		<text>Jsem pшipravenэ.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111">
+		<text>Jak chceљ zjistit, kudy se sem ћoldбci dostбvajн? Ъdolн je obrovskй! Bude to jako hledat jehlu v kupce sena.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111">
+		<text>V ъdolн je starej triangulбtor. Jeљtм za Sovмtщ ho tam postavili geodeti. Triangulбtor tvoшej tшi antйny. Jakmile budou vљechny aktivovanэ, je moћnэ monitorovat oblast celэho ъdolн. Pokud to bude fungoval, mohli bychom zjistit, jak se ћoldбci dostбvajн do ъdolн.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111111">
+		<text>Co mбm udмlat?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111">
+		<text>Jedna z tмch antйn je pшнmo tady na zбkladnм, ale zbэvajнcн dvм majн pod palcem ћoldбci. Pomoz nбm je zabezpeиit.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111111">
+		<text>Domluveno.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_412">
+		<text>Nмkdy jindy.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4121">
+		<text>Tak... hodnм љtмstн, stalkere.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_511">
+		<text>Na vidмnou.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_711">
+		<text>Dobшe.</text>
+	</string>
+	<string id="val_freedom_leader_join_first_0">
+		<text>Chtмl bych se k vбm pшidat.</text>
+	</string>
+	<string id="val_freedom_leader_join_first_1">
+		<text>Vнљ, abychom tм mohli vzнt mezi sebe, museli bychom se posadit, popovнdat si a zнskat urиitou pшedstavu o tom, co jsi zaи... a jб teп na to иas nemбm, a nemyslнm si, ћe bych mмl nмjakou volnou chvilku, dokud se nevyшeљн ty ъtoky na moje lidi. Pomoz mi s tнm a promluvнme si potom.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_0">
+		<text>Chtмl bych se pшidat ke Svobodм. Udмlal jsem uћ dost, abyste mм vzali?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_1">
+		<text>Moћnб jo, moћnб ne... Stejnм tм nemщћu vzнt mezi nбs, dokud se nevyшeљн ty ъtoky na naљe kluky. Pomoz nбm a promluvнme si o tom.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_2">
+		<text>Urиitм. Kdo vн, kolik naљich klukщ by bylo jeљtм natбhlo brka, nebэt tebe? Ale teп se k nбm jeљtм pшidat nemщћeљ. Neptej se mм proи... Mщћeљ si myslet, ћe jsem povмrиivэ. Ale pшijde иas, kdy tм budeme pшipraveni vzнt mezi sebe s otevшenou nбruин! Dбm ti vмdмt. Doufбm, ћe do tй doby nezmмnнљ nбzor a poшбd se k nбm budeљ chtнt pшidat.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_3">
+		<text>Zdб se, ћe jsi stalker na volnй noze. No, vмtљina mэch klukщ jsou taky bэvalн stalkeшi. Naљe frakce je celkem podobnб... Ale pбr rozdнlщ tu mбme. Mмl bys vмdмt, ћe kdyћ se pшidбљ ke Svobodм, pшijdeљ o vљechno, иeho jsi dosбhl jako stalker. Chceљ se k nбm pшesto pшidat?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_4">
+		<text>Oprav mм, jestli se mэlнm, ale ty patшнљ k tмm Jogovэm zbojnнkщm, ne? To je legraиnн... Nestбvб se иasto, aby chtмl bandita bojovat za Svobodu. Ale na druhou stranu, pokud to opravdu chceљ a pokud jsi pшipravenэ respektovat svobodu ostatnнch a pшinбљet dary Zуny zbytku lidstva... rбdi tм vezmeme mezi sebe. Samozшejmм, pokud to udмlбme - budeљ muset slнbit, ћe uћ nebudeљ kљeftovat s Jogou. Souhlasнљ?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5">
+		<text>To je blbб otбzka, kбmo. Budu rбd, ћe mбm v tэmu poшбdnйho chlapa, jako jsi ty, takћe pokud chceљ, nenн co шeљit.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51">
+		<text>Jo, chci. Teп mщћu koneиnм dэchat sladkэ vzduch Svobody!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511">
+		<text>Uћнvej si to, brбcho, ale pamatuj si: my u nбs svobodu ctнme jako nutnost. Znбљ vщbec naљe pшesvмdиenн?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5111">
+		<text>Moћnб mi to radљi vљechno vysvмtli, pro pшнpad, ћe by mi nмco uniklo.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51111">
+		<text>Respektujeme svobodu naљich bojovnнkщ i jinэch stalkerщ, a vмшнme, ћe by Zуna mмla bэt otevшena celйmu lidstvu jako velkэ dar. Je pro nбs pшнleћitostн k velkйmu kroku vpшed, pшнleћitost pro nбs pro vљechny! Povinnost chce Zуnu zniиit a jejн tajemstvн sdмlit jen pшнsluљnэm orgбnщm. Musнme je zastavit. Naљнm hlavnнm ъkolem je boj proti Povinnosti.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511111">
+		<text>Je mi to jasnй.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5112">
+		<text>Ano, samozшejmм!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51121">
+		<text>Dobшe, tak teda, odteп jsi jeden z nбs! Zбkladna Svobody je tvщj domov. Nahraju ti do PDAиka kodek, abys mohl poslouchat vysнlбnн ostatnнch jednotek a bojovnнkщ Svobody. V taktickй sekci taky uvidнљ, jak si prбvм vedeme v boji proti Povinnosti.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511211">
+		<text>Dny Povinnosti jsou seиteny... teп pшinesu vљem svobodu.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_52">
+		<text>Rozmyslнm si to.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_0">
+		<text>Barman шнkal, ћe ti mбm ukбzat tady to PDA.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_1">
+		<text>No vida. Uћ dlouho jsem mмl podezшenн, ћe majн banditi spadeno na naљi zбkladnu. Dobrб prбce, brбcho. Na, tady mбљ odmмnu.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_11">
+		<text>Na vidмnou.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111">
+		<text>Posнlб mм velitel, pшiљel jsem pro munici.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111">
+		<text>Aha, takћe nakonec nмjakйho hrdinu pшece jen naљel?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11111">
+		<text>Proи "hrdinu"?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111111">
+		<text>Protoћe nikdo nemб odvahu vystrиit odtud nos. Za poslednн dva dny na nбs tшikrбt zaъtoиili a pozabнjeli nбm patnбct chlapщ, a nikdo netuљн, kdo to mohl udмlat. Aќ uћ to byl kdokoliv... Vћdycky pшed nбmi majн o kousek nбskok. Vћdycky vмdн, kde bude naљe druћstvo pшнљtм, a plбny jim vychбzн do poslednнho pнsmenka. Nemщћu si pomoct, ale zdб se mi, ћe jim nмkdo od nбs musн dodбvat informace... No dobшe. Tady mбљ zбsilku pro naљe kluky. Souшadnice jsem ti nahrбl do PDAиka. Zlom vaz!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111111">
+		<text>Na vidмnou.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_12">
+		<text>Ale nic.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_31">
+		<text>Hej, иlovмиe! Mazej na zбkladnu, љupem! Naљi kluci bez tмch nбbojщ dlouho nevydrћн!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_311">
+		<text>Na vidмnou.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_0">
+		<text>Nemмl bys pro mм nмjakou prбci?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_1">
+		<text>Na zбkladnu poшбd ъtoин mutanti. Majн doupм nedaleko odtud - kdyћ jim je zniинљ, moћnб se trochu uklidnн.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_11">
+		<text>Dobшe.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_12">
+		<text>No, o takovou prбci zrovna moc nestojнm.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_2">
+		<text>Poшeљil jsi ty muќбky?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_21">
+		<text>Pozabнjel jsem je, ъplnм do mrtva.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_211">
+		<text>Tady mбљ odmмnu.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_22">
+		<text>Ne.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_221">
+		<text>No, to nenн dobrэ. Vraќ se, aћ ta prasata usmaћнљ.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_3">
+		<text>Ne.</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_1">
+		<text>Teda, brбcho! Vнљ, Svoboda je o tom, no, ћe nemбљ ћбdnэ zбvazky. Kaћdэ si mщћe dмlat, co se mu zlнbн. Chceљ sbнrat artefakty? Jen do toho! Bavн tм obchod? To je taky dobrэ. Mщћeљ si tшeba zaloћit љachovej klub, kdyћ ti to udмlб radost! Naљe zбkladnн pravidlo je: ћбdnб omezenн... teda, dokud neohrozнљ prбva jinэch иlenщ Svobody. Nejsme jen tak nмjakб frakce, brбcho - jsme komunita svobodnejch stalkerщ! Mбme bojovnнky, ale mбme mezi sebou i umмlce. A naљi inћenэшi jsou nejlepљн v Zуnм, to ti povнdбm!</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_111">
+		<text>Takovej uћ je ћivot, brбcho. Ti z nбs, kteшн si cenн osobnн svobody a nepшejн si, aby nбm vlбdla banda kravaќбkщ, musн drћet pohromadм, abychom pшeћili. Funguje to takhle: to pшнpadnй љйfstvo - zvenku - nechce strиit do Zуny ani palec u nohy. Coћ nбm tu poskytuje prostor, abychom si tu mohli dмlat, co jsme vћdycky chtмli!... Najdeљ tu lidi, jakй bys v tom svмtм tam venku nikdy nenaљel.</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_1">
+		<text>Brбcho, Zуna je dar shщry! Od samйho zaибtku lidstvo suћovaly nemoci. A teп - podнvej se na ty moћnosti! Vљechny ty lйиivй artefakty, napшнklad - z toho bude hotovб revoluce v medicнnм! A co anomбlie, kterй popнrajн gravitaci a teorii magnetickэch polн? Postavit zaшнzenн na jeden malэ experiment dшнv trvalo roky, ne? Ale teп... Zуna je jako nмjakб na klни pшipravenб vмdeckб laboratoш pod љirэm nebem, o jakй se vэzkumбиnнkщm ani nesnilo!</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_111">
+		<text>Jasnм, ћe je nebezpeиnб. To je oheт taky, a stejnм ho pouћнvбme, ne?... Myslнm, ћe pokud se nauинme sprбvnм vyuћнvat bohatstvн Zуny, mщћeme zmмnit bмh lidskй historie sprбvnэm smмrem! Proto taky bojujeme za otevшenэ pшнstup do Zуny. Je to veшejnэ majetek, a nemщћeme dovolit, aby slouћil jen zбjmщm malй skupiny lidн.</text>
+	</string>
+	<string id="val_pressman_nickname_0">
+		<text>Proи ti vlastnм шнkajн "Novinбш"?</text>
+	</string>
+	<string id="val_pressman_nickname_1">
+		<text>Pozщstatek z minulosti. Bэval jsem novinбшem, a byl jsem dobrej. Do Zуny mм poslal љйfredaktor: mмl jsem psбt o tмћkostech, se kterэmi se potэkб mнstnн vojenskб posбdka. Armбda mм pшivнtala celonoиnн chlastaиkou, po kterй nбsledovalo nмco na zpщsob noиnн safari. Moc se na tu vэpravu nepamatuju - pшece jenom jsem si pбr kouskщ taky dal a bylo to znбt, jen jsem si tu a tam udмlal fotku. Po nмjakй dobм jsem prostм odpadl, a kdyћ jsem se rбno probral, leћel jsem na zemi a pшнmo pшede mnou konиily stopy pneumatik... prostм jen tak, auto si v pohodм jelo a najednou "bum" - a prd. O bбgl a papнry jsem tнm pбdem taky pшiљel... ale Zуna mм asi mмla rбda, a tak mм nechala dobloudit zpбtky k lidem. Aћ na to, ћe jsem tentokrбt narazil na jinou grupu - љoupli mм do sklepa, prohlбsili, ћe jsem do Zуny vstoupil ilegбlnм a ћe mщћu bэt kontaminovanэ, takћe mбm dшepмt na zadku a иekat, dokud se to nevyшeљн. Nebo ћe mм pustн na svobodu za pбr zelenejch papнrkщ. Trиel jsem v tom sklepм docela dlouho, dokud nepшiљel Aљot a nevykoupil mм na svobodu. Teп jsem u Svobody a Aљotovi budu vdмиnэ do konce svэch dnщ. Nмco uћ jsme spolu zaћili, a vidмli jsme takovэ vмci... a doufбm, ћe dб bщh a Zуna a jeљtм jich spoustu uvidнme, neћ nбm svниka dohoшн.</text>
+	</string>
+	<string id="val_pressman_story_0">
+		<text>Mщћeљ mi шнct nмco zajнmavйho?</text>
+	</string>
+	<string id="val_pressman_story_1">
+		<text>Nevнm, jestli jsi o tom slyљel, ale v Zуnм se zaиali objevovat novн muќбci. Vнљ o tom? No, jsou tu mнsta, kde se objevil novэ druh anomбlie. Kaћdэ ћivэ tvor, kterэ do nмjakй takovй vleze, se zmмnн - transformuje ho to. Zajнmavй je, ћe na tu transformaci zatнm nikdo neumшel. Moћnб, ћe v zбkladu vщbec nejsou smrtнcн. Pokud se do takovй anomбlky dostane иlovмk, zdб se, jako si by stvoшenн, kterй se z nмj stane, zachovalo vмdomн sebe sama. Pшedstav si, jdeљ, a najednou pшed tebou vyskoин z kшovн nмco neskuteиnм ohavnйho. Jak mбљ poznat, jestli to nebэvala lidskб bytost a jestli nepotшebuje pomoc? Proto taky tihle novн mutanti vмtљinou moc dlouho nepoћijн... obvykle se o to postarб prvnн stalker, na kterйho vybafnou.</text>
+	</string>
+	<string id="val_questman_about_zone_0">
+		<text>Vнљ nмco zajнmavйho o Zуnм?</text>
+	</string>
+	<string id="val_questman_about_zone_1">
+		<text>Lidi vyprбvмjн spoustu vмcн. Nмkteшн dokonce tvrdн, ћe vљechno, co se v Zуnм dмje, i Zуna jako takovб, je dнlem mimozemљќanщ. Podle jejich teorie tu nechali nмkde uprostшed Zуny pшistбvacн modul, иernэ monolit, kterэ zmмnil vљechno kolem sebe. Jakэsi celoplanetбrnн pokus na lidech. Je to pro nм nмco jako zkouљka zbranн, chбpeљ? Stalkeшi sbнrajн artefakty a prodбvajн je dбl, coћ znamenб, ћe uћ jich teп pбr majн v kaћdйm vмtљнm vэzkumбku. A tak љншн иernэ monolit svщj vliv po svмtм. Nikdo nemб ani zdбnн, jakй to bude mнt nбsledky. Moћnб jsou artefakty jenom takovй cetky, ale taky je moћnй, ћe lidi nмjak ovlivтujн. Moћnб je celб tahle teorie postavenб na hlavu, ale nikdo nemщћe popшнt, ћe Zуna tшeba љншн kolem sebe artefakty z nмjakйho dщvodu. Kdybychom tak mмli nмjakй odpovмdi od tмch lidн, kteшн se dostali za ten zatracenэ radar. Mohli by nбm шнct, jestli v centru Zуny skuteиnм je monolit, nebo jestli tam nic nenн - hodnм vмcн by se tнm vysvмtlilo.</text>
+	</string>
+	<string id="val_questman_dissatisfied_0">
+		<text>Z иeho jsi tak neљќastnэ?</text>
+	</string>
+	<string id="val_questman_dissatisfied_1">
+		<text>A z иeho jsi ty tak љќastnэ, co? Rбd bych vidмl, jak љќastnэ bys byl ty, kdybys sedмl jako snadnэ cнl na zбkladnм, kterб nemб skoro ћбdnou obranu. Vнљ ty vщbec, kolik tady poшбd mбme prбce? Novй opevnмnн, dalљн budovy... a hlavouni na to samozшejmм иas nemajн, ti ani nevмdн, kterб bije. Sakra, zajнmalo by mм, jestli to vщbec vн aspoт nмkdo z lidн tady okolo! Kromм toho jsme stejnм na pмknм blbэm fleku, daleko od vљech dщleћitмjљнch mнst. Vнљ co, chlape, jб bych to tu dal do rychtiku celkem rychle, ale oni mм skoro nenechajн.</text>
+	</string>
+	<string id="val_trader_about_freedom_0">
+		<text>Jakэ je ћivot u Svobody?</text>
+	</string>
+	<string id="val_trader_about_freedom_1">
+		<text>Ћivot je tu dobrэ, fakt dobrэ. Lepљн bych si ani nemohl pшбt, иlovмиe. Vнљ, nikdy jsem nemмl ћбdnй sourozence, ale tady kolem jsou pro mм skoro vљichni jako brбchovй, a ostatnн jsou dщvмryhodnн kamarбdi, na kterй se mщћu spolehnout. Oni pomбhajн mм, jб pomбhбm jim. Vнљ jak, jsem obchodnнk, tak se ke mnм dostane spousta informacн o Zуnм a vнm иasto vнc, neћ vмtљina veterбnщ. A ty informace uћ vнc neћ jednou zachrбnily spoustм naљich klukщ kejhбk.</text>
+	</string>
+	<string id="val_trader_about_said_0">
+		<text>Neslyљel jsi v poslednн dobм nмco zajнmavйho?</text>
+	</string>
+	<string id="val_trader_about_said_1">
+		<text>Nмco zajнmavйho? Tak jo, mмl bych tu jednu pohбdku na dobrou noc, a dokonce je to o snech. Zkouљel jsi nмkdy pшespat hluboko v Zуnм? No, radнm ti, abys to ani nezkouљel, protoћe by se ti zdбly takovй hrщzy, ћe si to ani nedokбћeљ pшedstavit. Slyљel jsem o tom nмkolik historek: jednomu klukovi dokonce ve spбnku selhalo srdce... pмknм hnusnб smrt. Dalљн to sice pшeћil, ale po probuzenн mu zшejmм hrбblo - teп se v jednom kuse schovбvб pшed nмjakэm иernэm stalkerem a taky o niиem jinйm nemluvн. Aspoт se to tak povнdб... Pokud uћ opravdu potшebujeљ v Zуnм nмkde sloћit hlavu, potшebujeљ na to speciбlnн helmu vyloћenou jemnэm drбtмnэm pletivem. Шнkб se, ћe armбdnн stalkeшi prэ je majн vљichni a ћe spн jako miminka, ъplnм bez problйmщ.</text>
+	</string>
+	<string id="val_trader_where_manufactured_0">
+		<text>Kde bereљ zboћн?</text>
+	</string>
+	<string id="val_trader_where_manufactured_1">
+		<text>No, mбm svoje dodavatele, ale o takovй informace se s nikэm dмlit nebudu. Uћ tak mбm dost problйmщ: jsem moc velkej dobrбk a jednou na to doplatнm. Jsem na lidi hodnэ, na zбkaznнky zdvoшilэ a v obchodм mбm lepљн vэbмr neћ leckterб samoobsluha. Kromм toho mбm pomмrnм nнzkй ceny, skoro jako v kvмtnu pшi doprodeji zimnнho zboћн, a tak jsem v Zуnм dost oblнbenэ obchodnнk. Ale zdaleka ne u vљech. Asuberovic brбchovй z иernйho trhu si mм zapsali na иernou listinu, protoћe jsem pro nм konkurence. Vнљ, jak velkou odmмnu na mou hlavu vypsali? Za tolik penмz by ses mohl rok flбkat na dovolenй a k tomu na kaћdou noc jinou holku! Pбr manнkщm tady z okolн se asuberбckб nabнdka zalнbila... taky uћ si na nich pochutnali supi. Zdejљн kluci se starajн o moje bezpeин a jб taky nejsem ћбdnб mбиka.</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_0">
+		<text>Co je, kбmo?</text>
+	</string>
+	<string id="val_freedom_barmen_name">
+		<text>Gandћa</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_0">
+		<text>Byl jsem na benzнnм. Zahnнzdili se tam banditi – zdб se, ћe tм sledovali.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_1">
+		<text>Jйje a jб myslel, ћe uћ mбme starostн aћ po krk – a teп si na nбs brousej zuby i banditi. Aќ uћ je to, jak chce, tady mбљ odmмnu a dнky za tu dobrou prбci.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_11">
+		<text>Kdybys potшeboval jeљtм nмco zaшнdit, dej mi vмdмt.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_12">
+		<text>Mмli u sebe tuhle srandiиku. Moћnб by tм to mohlo zajнmat.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_121">
+		<text>Moc pмknэ. Banditi do toho PDA nahrбli dobrou sbнrku informacн. Ukaћ to Иechovovi, toho to urиitм bude zajнmat.</text>
+	</string>
+</string_table>

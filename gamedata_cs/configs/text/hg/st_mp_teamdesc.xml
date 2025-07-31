@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="team_1_desc">
+		<text>A Zуna anarchistбi. A Zуnбt a szabadsбg szent helyйnek tartjбk, йs ъgy hiszik, hogy a kinti vilбg minden tцrvйnye, szabбlya йs egyezmйnye itt semmissй vбlik. A jelmondatuk, hogy "Csinбlj, amit akarsz, йs tцrхdj a sajбt dolgoddal!" A Szabadsбg kьzdelmet folytat a kormбny azon tцrekvйsei ellen, amelyek a Zуna felьgyeletйre irбnyulnak, emellett pedig hбborъban бll a Zsoldosokkal. Tagjainak tцbbnyire szovjet йs orosz lхfegyverei vannak.</text>
+	</string>
+	<string id="team_1_name">
+		<text>Szabadsбg frakciу (Szabad Stalkerek)</text>
+	</string>
+	<string id="team_2_desc">
+		<text>A vilбg kьlцnbцzх szegleteirхl йrkezett kalandkeresх gyilkosok, akik mйg a legerkцlcstelenebb munkбkra is gondolkodбs nйlkьl rбbуlintanak. Jelmondatuk, hogy "A pйnznek nincs szaga," habбr erre a relikviбk azon nyomban rб is cбfolnak... A zsoldosoknak tцbbnyire nyugati lхfegyvereik vannak.</text>
+	</string>
+	<string id="team_2_name">
+		<text>Zsoldos frakciу (A Gyilkosok)</text>
+	</string>
+</string_table>

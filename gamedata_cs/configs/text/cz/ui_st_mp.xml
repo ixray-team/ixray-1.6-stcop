@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="af_neutral">
+		<text>Artefakt</text>
+	</string>
+	<string id="friend">
+		<text>Spojenec</text>
+	</string>
+	<string id="mp_art_destroyed">
+		<text>Artefakt byl zniиen</text>
+	</string>
+	<string id="mp_art_spowned">
+		<text>Objevil se artefakt. Pшineseљ-li jej na zбkladnu, dostaneљ bod.</text>
+	</string>
+	<string id="mp_artefacts">
+		<text>artefakty</text>
+	</string>
+	<string id="mp_artefacts_upcase">
+		<text>Artefakty</text>
+	</string>
+	<string id="mp_auto_select">
+		<text>Automaticky</text>
+	</string>
+	<string id="mp_back">
+		<text>Zpмt</text>
+	</string>
+	<string id="mp_ban">
+		<text>Zakбzat pшнstup</text>
+	</string>
+	<string id="mp_by_anomaly">
+		<text>anomбliн</text>
+	</string>
+	<string id="mp_cancel">
+		<text>Zruљit</text>
+	</string>
+	<string id="mp_change_map">
+		<text>Zmмnit mapu</text>
+	</string>
+	<string id="mp_change_weather">
+		<text>Zmмnit poиasн</text>
+	</string>
+	<string id="mp_chat">
+		<text>Chat</text>
+	</string>
+	<string id="mp_connected">
+		<text>pшipojen</text>
+	</string>
+	<string id="mp_deaths">
+		<text>ъmrtн</text>
+	</string>
+	<string id="mp_description">
+		<text>Popis</text>
+	</string>
+	<string id="mp_disconnected">
+		<text>odpojen</text>
+	</string>
+	<string id="mp_enter_text">
+		<text>Zadej text hlasovбnн</text>
+	</string>
+	<string id="mp_entered_game">
+		<text>vstoupil do hry</text>
+	</string>
+	<string id="mp_first_eye">
+		<text>(pohled z prvnн osoby)</text>
+	</string>
+	<string id="mp_frags">
+		<text>fragy</text>
+	</string>
+	<string id="mp_frags_upcase">
+		<text>Fragy</text>
+	</string>
+	<string id="mp_free_fly">
+		<text>(volnб kamera)</text>
+	</string>
+	<string id="mp_free_look">
+		<text>(pohled ze tшetн osoby)</text>
+	</string>
+	<string id="mp_from">
+		<text>s</text>
+	</string>
+	<string id="mp_go">
+		<text>BМЋ!</text>
+	</string>
+	<string id="mp_has_drop_art">
+		<text>upustil%s artefakt</text>
+	</string>
+	<string id="mp_has_tak_art">
+		<text>sebral%s artefakt</text>
+	</string>
+	<string id="mp_headhuntrs">
+		<text>Ћoldбci</text>
+	</string>
+	<string id="mp_is_now">
+		<text>je nynн</text>
+	</string>
+	<string id="mp_joined">
+		<text>se pшidal</text>
+	</string>
+	<string id="mp_kick">
+		<text>Zahodit</text>
+	</string>
+	<string id="mp_look_at">
+		<text>(volnб ukotvenб kamera)</text>
+	</string>
+	<string id="mp_map_desc">
+		<text>Popis mapy</text>
+	</string>
+	<string id="mp_match_started">
+		<text>Zбpas byl zahбjen!</text>
+	</string>
+	<string id="mp_modes">
+		<text>Reћimy</text>
+	</string>
+	<string id="mp_name">
+		<text>jmйno</text>
+	</string>
+	<string id="mp_next">
+		<text>Dalљн</text>
+	</string>
+	<string id="mp_no_voted">
+		<text>Nehlasoval</text>
+	</string>
+	<string id="mp_ping">
+		<text>ping</text>
+	</string>
+	<string id="mp_player_wins">
+		<text>%s vyhrбl zбpas!</text>
+	</string>
+	<string id="mp_players">
+		<text>Hrбиi</text>
+	</string>
+	<string id="mp_press_fire2spectator">
+		<text>Stiskem stшelby se pшepneљ do reћimu pozorovatele.</text>
+	</string>
+	<string id="mp_press_jump2pay_spaw">
+		<text>Stiskem skoku si koupнљ okamћitй obnovenн.</text>
+	</string>
+	<string id="mp_press_jump2select_skin">
+		<text>Stiskem skoku si zvolнљ vzhled.</text>
+	</string>
+	<string id="mp_press_jump2select_team">
+		<text>Stiskem skoku si zvolнљ tэm.</text>
+	</string>
+	<string id="mp_press_jump2spawn">
+		<text>Stiskem skoku se obnovнљ.</text>
+	</string>
+	<string id="mp_press_jump2start">
+		<text>Stiskem skoku zaиneљ hru.</text>
+	</string>
+	<string id="mp_press_to_buy">
+		<text>Stiskem ($$ACTION_BUY_MENU$$) vyvolбљ nabнdku nбkupщ.</text>
+	</string>
+	<string id="mp_press_yes2pay">
+		<text>Mбљ %d $. Mщћeљ se obnovit za %d $. Pro zaplacenн stiskni Ano.</text>
+	</string>
+	<string id="mp_ready">
+		<text>Pшipraven...</text>
+	</string>
+	<string id="mp_restart">
+		<text>Restartovat</text>
+	</string>
+	<string id="mp_restart_fast">
+		<text>Rychlй restartovбnн</text>
+	</string>
+	<string id="mp_scores">
+		<text>zнskal bod</text>
+	</string>
+	<string id="mp_select_ban">
+		<text>Zvol hrбиe, jemuћ mб bэt hlasovбnнm zakбzбn pшнstup.</text>
+	</string>
+	<string id="mp_select_category">
+		<text>Zvol kategorii hlasovбnн.</text>
+	</string>
+	<string id="mp_select_kick">
+		<text>Zvol hrбиe, jenћ mб bэt z hlasovбnн vykбzбn.</text>
+	</string>
+	<string id="mp_select_kick_player">
+		<text>Zvol hrбиe, jenћ mб bэt z hlasovбnн vykбzбn.</text>
+	</string>
+	<string id="mp_select_map">
+		<text>Zvol mapu, o nнћ se mб hlasovat.</text>
+	</string>
+	<string id="mp_si_afbearer_cant_sprint">
+		<text>S artefaktem nelze sprintovat</text>
+	</string>
+	<string id="mp_si_afcount">
+		<text>- Poиet</text>
+	</string>
+	<string id="mp_si_afrespawntime">
+		<text>- Doba neиinnosti</text>
+	</string>
+	<string id="mp_si_afstaytime">
+		<text>- Doba obnovenн</text>
+	</string>
+	<string id="mp_si_anomalies">
+		<text>Anomбlie</text>
+	</string>
+	<string id="mp_si_anomalies_period">
+		<text>Interval anomбliн</text>
+	</string>
+	<string id="mp_si_any_time">
+		<text>Kdykoliv</text>
+	</string>
+	<string id="mp_si_artefact_captured">
+		<text>Artefakt ukoшistмn</text>
+	</string>
+	<string id="mp_si_artefacts">
+		<text>Artefakty:</text>
+	</string>
+	<string id="mp_si_autoteam_balance">
+		<text>Automatickй vyvбћenн tэmщ</text>
+	</string>
+	<string id="mp_si_autoteam_swap">
+		<text>Automatickй prohazovбnн tэmщ</text>
+	</string>
+	<string id="mp_si_disabled">
+		<text>Vypnuto</text>
+	</string>
+	<string id="mp_si_enabled">
+		<text>Zapnuto</text>
+	</string>
+	<string id="mp_si_first_eye">
+		<text>- Z prvnн osoby</text>
+	</string>
+	<string id="mp_si_forcerespawn">
+		<text>Vynucenй obnovovбnн</text>
+	</string>
+	<string id="mp_si_fraglimit">
+		<text>Limit fragщ</text>
+	</string>
+	<string id="mp_si_free_fly">
+		<text>- Volnб ukotvenб kamera</text>
+	</string>
+	<string id="mp_si_free_look">
+		<text>- Volnб kamera</text>
+	</string>
+	<string id="mp_si_friendly_fire">
+		<text>Zraтovбnн spojencщ</text>
+	</string>
+	<string id="mp_si_friendly_indicators">
+		<text>Ukazatele spojencщ</text>
+	</string>
+	<string id="mp_si_friendly_names">
+		<text>Jmйna spojencщ</text>
+	</string>
+	<string id="mp_si_infinite">
+		<text>Nekoneиno</text>
+	</string>
+	<string id="mp_si_invinsibility">
+		<text>Neviditelnost:</text>
+	</string>
+	<string id="mp_si_invinsibility_indicators">
+		<text>- Ukazatele</text>
+	</string>
+	<string id="mp_si_invinsibility_time">
+		<text>- Иas</text>
+	</string>
+	<string id="mp_si_look_at">
+		<text>- Ze tшetн osoby</text>
+	</string>
+	<string id="mp_si_maprotation">
+		<text>Otбиenн mapy</text>
+	</string>
+	<string id="mp_si_min">
+		<text>minut</text>
+	</string>
+	<string id="mp_si_no">
+		<text>Ne</text>
+	</string>
+	<string id="mp_si_players_respawn">
+		<text>Obnovovбnн</text>
+	</string>
+	<string id="mp_si_return_players">
+		<text>Hrбиi vrбcenн do zбkladny</text>
+	</string>
+	<string id="mp_si_sec">
+		<text>vteшin</text>
+	</string>
+	<string id="mp_si_servername">
+		<text>Nбzev serveru:</text>
+	</string>
+	<string id="mp_si_shielded_bases">
+		<text>Zaљtнtмnй zбkladny</text>
+	</string>
+	<string id="mp_si_spectatormodes">
+		<text>Reћimy pozorovatele:</text>
+	</string>
+	<string id="mp_si_team_only">
+		<text>- Pouze v tэmu</text>
+	</string>
+	<string id="mp_si_time_limit">
+		<text>Иasovэ limit</text>
+	</string>
+	<string id="mp_si_version">
+		<text>Verze:</text>
+	</string>
+	<string id="mp_si_voting">
+		<text>Hlasovбnн</text>
+	</string>
+	<string id="mp_si_warmuptime">
+		<text>Zahшнvacн doba</text>
+	</string>
+	<string id="mp_si_yes">
+		<text>Ano</text>
+	</string>
+	<string id="mp_skin_selection">
+		<text>Volba vzhledu</text>
+	</string>
+	<string id="mp_spectator">
+		<text>Pozorovatel</text>
+	</string>
+	<string id="mp_spectators">
+		<text>POZOROVATELЙ</text>
+	</string>
+	<string id="mp_status">
+		<text>stav</text>
+	</string>
+	<string id="mp_switched_to">
+		<text>pшeљel k</text>
+	</string>
+	<string id="mp_team_free_stalkers">
+		<text>Svoboda</text>
+	</string>
+	<string id="mp_team_selection">
+		<text>Volba tэmu</text>
+	</string>
+	<string id="mp_team_wins">
+		<text>Vyhrбvб tэm %s!</text>
+	</string>
+	<string id="mp_text">
+		<text>Text</text>
+	</string>
+	<string id="mp_time2respawn">
+		<text>Иas do obnovenн</text>
+	</string>
+	<string id="mp_time2start">
+		<text>Иas do zahбjenн:</text>
+	</string>
+	<string id="mp_timeleft">
+		<text>Zbэvajнcн иas: %d:%d; Schvбleno: %.2f</text>
+	</string>
+	<string id="mp_vote_hint">
+		<text>Hlasovat PRO-[$$ACTION_VOTE_YES$$]\nHlasovat PROTI-[$$ACTION_VOTE_NO$$]\nVэsledky-[$$ACTION_VOTE$$]</text>
+	</string>
+	<string id="mp_vote_no">
+		<text>Ne</text>
+	</string>
+	<string id="mp_vote_yes">
+		<text>Ano</text>
+	</string>
+	<string id="mp_voted">
+		<text>hlasoval</text>
+	</string>
+	<string id="mp_voted_no">
+		<text>proti</text>
+	</string>
+	<string id="mp_voted_yes">
+		<text>pro</text>
+	</string>
+	<string id="mp_voting_broken">
+		<text>Hlasovбnн zruљeno serverem!</text>
+	</string>
+	<string id="mp_voting_started">
+		<text>Hlasovбnн '%s' zahбjeno hrбиem %s.</text>
+	</string>
+	<string id="mp_voting_started_msg">
+		<text>Hlasovбnн bylo zahбjeno!</text>
+	</string>
+	<string id="mp_weather_clear">
+		<text>Jasno</text>
+	</string>
+	<string id="mp_weather_cloudy">
+		<text>Pod mrakem</text>
+	</string>
+	<string id="mp_weather_night">
+		<text>Noc</text>
+	</string>
+	<string id="mp_weather_rain">
+		<text>Deљtivo</text>
+	</string>
+	<string id="mp_with_backstab">
+		<text>Rбna do zad!</text>
+	</string>
+	<string id="mp_with_headshot">
+		<text>Zбsah do hlavy!</text>
+	</string>
+	<string id="mp_your_rank">
+		<text>Tvб hodnost je nynн</text>
+	</string>
+	<string id="self">
+		<text>Jsi to ty</text>
+	</string>
+	<string id="st_mp_disabled_voting">
+		<text>Tento server neumoћтuje hlasovбnн</text>
+	</string>
+	<string id="st_mp_no_current_voting">
+		<text>Ћбdnб aktivnн hlasovбnн.</text>
+	</string>
+	<string id="st_mp_ready">
+		<text>pшipraven</text>
+	</string>
+	<string id="st_mp_say_to_all">
+		<text>Vљem</text>
+	</string>
+	<string id="st_mp_say_to_team">
+		<text>Tэmu</text>
+	</string>
+	<string id="st_mp_voting_failed">
+		<text>Hlasovбnн neproљlo!</text>
+	</string>
+	<string id="st_mp_voting_succeed">
+		<text>Hlasovбnн uspмlo!</text>
+	</string>
+	<string id="team_base_1">
+		<text>Zбkladna Svobody</text>
+	</string>
+	<string id="team_base_2">
+		<text>Zбkladna ћoldбkщ</text>
+	</string>
+	<string id="ui_st_description">
+		<text>Popis</text>
+	</string>
+	<string id="ui_st_team1_name">
+		<text>Svoboda</text>
+	</string>
+	<string id="ui_st_team2_name">
+		<text>Ћoldбci</text>
+	</string>
+	<string id="mp_returned_artefact">
+		<text>zнskal artefakt zpмt</text>
+	</string>
+	<string id="mp_captured_artefact">
+		<text>zнskal artefakt</text>
+	</string>
+	<string id="mp_you_captured_artefact">
+		<text>Zнskal jsi artefakt nepшбtel, teп jej dones k vaљemu artefaktu!</text>
+	</string>
+	<string id="mp_has_dropped_artefact">
+		<text>pшiљel o artefakt</text>
+	</string>
+	<string id="mp_artefact_dropped">
+		<text>Artefakt ztracen</text>
+	</string>
+	<string id="mp_artefact_on_base">
+		<text>Artefakt na naљн zбkladnм</text>
+	</string>
+	<string id="mp_artefact_on_enemy_base">
+		<text>Artefakt na nepшнtelovм zбkladnм</text>
+	</string>
+	<string id="ui_st_map_not_found">
+		<text>Mapa nenalezena.</text>
+	</string>
+	<string id="ui_st_map_data_corrupted">
+		<text>Neplatnб иi poљkozenб mapa.</text>
+	</string>
+	<string id="ui_st_btn_copy_url">
+		<text>Zkopнrovat odkaz</text>
+	</string>
+	<string id="ui_st_btn_download_map">
+		<text>Stбhnout mapu</text>
+	</string>
+	<string id="mp_you_captured_own_artefact">
+		<text>Sebral jsi artefakt. Aktivovбnнm jej vrбtнљ na zбkladnu.</text>
+	</string>
+	<string id="mp_sport_center">
+		<text>Sportovnн stшedisko</text>
+	</string>
+	<string id="mp_training_camp">
+		<text>Vэcvikovэ tбbor</text>
+	</string>
+	<string id="mp_rembasa">
+		<text>Opravna</text>
+	</string>
+	<string id="mp_military_2">
+		<text>Starб vesnice</text>
+	</string>
+	<string id="mp_firestation">
+		<text>Poћбrnн stanice</text>
+	</string>
+	<string id="mp_garbage">
+		<text>Sklбdka</text>
+	</string>
+	<string id="mp_limansk">
+		<text>Limansk</text>
+	</string>
+	<string id="mm_mp_max_ping">
+		<text>Max ping</text>
+	</string>
+	<string id="modes">
+		<text>Mуdy</text>
+	</string>
+	<string id="st_mp_only_one_voting">
+		<text>Je povoleno jen jedno aktivnн hlasovбnн</text>
+	</string>
+	<string id="mp_si_battleye">
+		<text>Battleye</text>
+	</string>
+	<string id="mp_si_max_ping">
+		<text>Max ping</text>
+	</string>
+	<string id="st_kicked_by_server ">
+		<text>Vyhozen serverem</text>
+	</string>
+	<string id="ui_st_team">
+		<text>Tэm</text>
+	</string>
+</string_table>

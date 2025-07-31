@@ -210,8 +210,8 @@ function se_smart_terrain:read_params()
 
 	self.respawn     	= utils.cfg_get_string(ini, "smart_terrain", "respawn", self, false, "", nil)
 
-    self.surge_hide_avaliable = utils.cfg_get_bool(ini, "smart_terrain", "surge_hide_avaliable", self, false, false)
-    local hides = utils.cfg_get_string(ini, "smart_terrain", "actor_hides", self, false, "")
+		self.surge_hide_avaliable = utils.cfg_get_bool(ini, "smart_terrain", "surge_hide_avaliable", self, false, false)
+		local hides = utils.cfg_get_string(ini, "smart_terrain", "actor_hides", self, false, "")
 	if(hides~=nil) then
 		self.actor_hides = utils.parse_names(hides)
 	end
@@ -667,7 +667,7 @@ function se_smart_terrain:switch_to_desired_job(npc)
 
 		--print_table(self.npc_by_job_section)
 		--abort("ERROR during channging NPC")
-		return	
+		return
 	end
 
 	local desired_job = self.npc_info[changing_npc_id].job_id
@@ -824,19 +824,23 @@ function se_smart_terrain:init_npc_after_load()
 	local sim = alife()
 	--printf("[%s] init_npc_after_load", self:name())
 	for k,v in pairs(self.npc_info) do
-		local npc_info = self:fill_npc_info(sim:object(k))
+		if sim:object(k) ~= nil then
+			local npc_info = self:fill_npc_info(sim:object(k))
 
-		npc_info.job_prior = v.job_prior
-		npc_info.job_id = v.job_id
-		npc_info.begin_job = v.begin_job
-		npc_info.need_job = v.need_job
+			npc_info.job_prior = v.job_prior
+			npc_info.job_id = v.job_id
+			npc_info.begin_job = v.begin_job
+			npc_info.need_job = v.need_job
 
-		--Теперь надо найти данную работу и выставить ссылку на нее.
-		find_job(self.jobs, npc_info)
+			--Теперь надо найти данную работу и выставить ссылку на нее.
+			find_job(self.jobs, npc_info)
 
-		self.npc_info[k] = npc_info
-		if npc_info.job_link ~= nil then
-			self.npc_by_job_section[self.job_data[npc_info.job_link.job_id].section] = k
+			self.npc_info[k] = npc_info
+			if npc_info.job_link ~= nil then
+				self.npc_by_job_section[self.job_data[npc_info.job_link.job_id].section] = k
+			end
+		else
+			self.npc_info[k] = nil
 		end
 	end
 end
@@ -864,21 +868,21 @@ function se_smart_terrain:get_smart_props()
 	local props = smart_names.get_smart_terrain_name(self)
 	if(props==nil) or (_G.dev_debug) then
 		props = self:name().."  ["..self.id.."]\\n"..
-				  "player = "..self.player_name.."\\n"..
-				  self.sim_type.." : "..tostring(self.sim_value).."\\n"..
-				  "squad_id = "..tostring(self.squad_id).."\\n"..
-				  "capacity = "..tostring(self.squad_capacity).." ("..
-				  sim_board.get_sim_board():get_smart_population(self)..")\\n"
+					"player = "..self.player_name.."\\n"..
+					self.sim_type.." : "..tostring(self.sim_value).."\\n"..
+					"squad_id = "..tostring(self.squad_id).."\\n"..
+					"capacity = "..tostring(self.squad_capacity).." ("..
+					sim_board.get_sim_board():get_smart_population(self)..")\\n"
 
-	    if self.respawn_sector ~= nil then
-    	    props = props.."\\nrespawn_sector: "..tostring(self.respawn_sector).."\\n"
-    	end
+			if self.respawn_sector ~= nil then
+					props = props.."\\nrespawn_sector: "..tostring(self.respawn_sector).."\\n"
+			end
 
-	    --' Добавляем информацию о находящихся в смарте отрядах
-	    for k,v in pairs(sim_board.get_sim_board().smarts[self.id].squads) do
-	        power = tostring(v.squad_power)
-	        props = props .. tostring(v.squad_id) .. " : " .. power .. "\\n"
-	    end
+			--' Добавляем информацию о находящихся в смарте отрядах
+			for k,v in pairs(sim_board.get_sim_board().smarts[self.id].squads) do
+					power = tostring(v.squad_power)
+					props = props .. tostring(v.squad_id) .. " : " .. power .. "\\n"
+			end
 	end
 	return props
 end
@@ -887,7 +891,7 @@ end
 
 --' Отрисовка смарта на игровом поле
 function se_smart_terrain:show()
-    local time = time_global()
+		local time = time_global()
 	if(self.showtime~=nil) and (self.showtime+200>=time) then
 		return
 	end
@@ -897,63 +901,63 @@ function se_smart_terrain:show()
 	local spot = "none"
 	if(player~="none") then
 		local relation = 0
-	    if(db.actor) then
-	        relation = db.actor:community_goodwill(player)+game_relations.get_factions_community(player, alife():actor():community())
-	    else
-	        relation = game_relations.get_factions_community(player, alife():actor():community())
-	    end
+			if(db.actor) then
+					relation = db.actor:community_goodwill(player)+game_relations.get_factions_community(player, alife():actor():community())
+			else
+					relation = game_relations.get_factions_community(player, alife():actor():community())
+			end
 		if(relation==self.relation) then
 			return
 		else
-	        if(relation>=1000) then
-	            spot = "friend"
-	        elseif(relation<=-1000) then
-	            spot = "enemy"
-	        else
-	            spot = "neutral"
-	        end
+					if(relation>=1000) then
+							spot = "friend"
+					elseif(relation<=-1000) then
+							spot = "enemy"
+					else
+							spot = "neutral"
+					end
 		end
 		self.relation = relation
 	end
 
-    if(self.smrt_showed_spot==spot) then
+		if(self.smrt_showed_spot==spot) then
 		level.map_change_spot_hint(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot, self:get_smart_props())
 		return
-    end
-    if(_G.dev_debug) then
-    	if(self.smrt_showed_spot~=nil) then
-	        level.map_remove_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)
 		end
-        level.map_add_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..spot, self:get_smart_props())
-        self.smrt_showed_spot = spot
+		if(_G.dev_debug) then
+			if(self.smrt_showed_spot~=nil) then
+					level.map_remove_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)
+		end
+				level.map_add_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..spot, self:get_smart_props())
+				self.smrt_showed_spot = spot
 	else
 --[[
 		if(self.sim_type=="base") then
-	        if(self.smrt_showed_spot~=nil) then
-	            level.map_remove_object_spot(self.id, "alife_presentation_smart_base_"..self.smrt_showed_spot)
-	        end
-	        level.map_add_object_spot(self.id, "alife_presentation_smart_base_"..spot, self:get_smart_props())
-	        self.smrt_showed_spot = spot
+					if(self.smrt_showed_spot~=nil) then
+							level.map_remove_object_spot(self.id, "alife_presentation_smart_base_"..self.smrt_showed_spot)
+					end
+					level.map_add_object_spot(self.id, "alife_presentation_smart_base_"..spot, self:get_smart_props())
+					self.smrt_showed_spot = spot
 		else
 ]]
-	        if(self.smrt_showed_spot~=nil) and
-			  (level.map_has_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)~=0)
+					if(self.smrt_showed_spot~=nil) and
+				(level.map_has_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)~=0)
 			then
-	            level.map_remove_object_spot(self.id, "alife_presentation_smart_base_"..self.smrt_showed_spot)
-	        end
+							level.map_remove_object_spot(self.id, "alife_presentation_smart_base_"..self.smrt_showed_spot)
+					end
 --		end
 	end
 end
 --' Обновление информации о смарте на игровом поле
 function se_smart_terrain:refresh()
-    self:show()
+		self:show()
 end
 --' Убирание отрисовки смарта на игровом поле
 function se_smart_terrain:hide()
 	if self.smrt_showed_spot == nil then
 		return
 	end
-    level.map_remove_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)
+		level.map_remove_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)
 end
 
 -- Обновление.
@@ -994,13 +998,14 @@ end
 -- вызывается из net_spawn() объектов
 function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
 	local sim = alife()
-	if sim then
+	local sobject = alife():object(obj:id())
+	if sim ~= nil then
 		local strn_id = sobject.m_smart_terrain_id
 		printf( "setup_gulag_and_logic_on_spawn obj=%s, strn_id=%s, loaded=%s", obj:name(), tostring(strn_id), tostring(loaded))
 
 		if strn_id ~= nil and strn_id ~= 65535 then
 			local strn                   = sim:object(strn_id)
-			local need_setup_logic       = strn.npc_info[obj:id()].begin_job == true and not loaded
+			local need_setup_logic       = (not loaded) and (strn.npc_info[obj:id()].begin_job == true)
 
 			if need_setup_logic then
 				strn:setup_logic(obj)
