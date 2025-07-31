@@ -178,7 +178,7 @@ void CPHDestroyable::Load(CInifile* ini,LPCSTR section)
 			if (I->first.size())
 				m_destroyed_obj_visual_names.push_back(I->first);
 
-			u8 cnt = *I->second ? u8(atoi(I->second.c_str())) : 1;
+			u8 cnt = *I->second ? u8(atoi(I->second.c_str())) : 0;
 
 			for (u8 i = 0; i < cnt; ++i)
 				m_destroyed_obj_visual_names.push_back(I->first);
