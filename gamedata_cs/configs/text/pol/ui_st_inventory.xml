@@ -60,6 +60,12 @@
 	<string id="st_move_to_slot">
 		<text>przenieœ do okienka</text>
 	</string>
+	<string id="st_no_trade_tip_1">
+		<text>Handlarza nie interesuj¹ takie przedmioty.</text>
+	</string>
+	<string id="st_no_trade_tip_2">
+		<text>Nie mo¿na handlowaæ tak uszkodzonym przedmiotem.</text>
+	</string>
 	<string id="st_sell_item">
 		<text>sprzedaj przedmiot</text>
 	</string>
