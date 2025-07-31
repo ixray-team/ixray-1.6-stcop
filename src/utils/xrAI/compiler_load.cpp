@@ -114,16 +114,11 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			{
 				Surface_Init();
 				F = fs->open_chunk(EB_Textures);
-#ifdef _M_X64
 				u32 tex_count = F->length() / sizeof(b_texture64);
-#else
-				u32 tex_count = F->length() / sizeof(b_texture);
-#endif
 				for (u32 t = 0; t < tex_count; t++)
 				{
 					Progress(float(t) / float(tex_count));
 
-#ifdef _M_X64
 					b_texture64	TEX;
 					F->r(&TEX, sizeof(TEX));
 					b_BuildTexture	BT;
@@ -131,30 +126,26 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					// ptr should be copied separately
 					CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
 					BT.pSurface = (u32*)TEX.pSurface;
-#else
-					b_texture TEX;
-					F->r(&TEX, sizeof(TEX));
-
-					b_BuildTexture BT;
-					CopyMemory(&BT, &TEX, sizeof(TEX));
-#endif
 
 					// load thumbnail
 					string128& N_ = BT.name;
-					LPSTR			extension = strext(N_);
+					LPSTR extension = strext(N_);
+
 					if (extension)
 						*extension = 0;
 
 					xr_strlwr(N_);
 
-					if (0 == xr_strcmp(N_, "level_lods")) {
+					if (0 == xr_strcmp(N_, "level_lods"))
+					{
 						// HACK for merged lod textures
 						BT.dwWidth = 1024;
 						BT.dwHeight = 1024;
 						BT.bHasAlpha = TRUE;
 						BT.pSurface = 0;
 					}
-					else {
+					else
+					{
 						xr_strcat(N_, ".thm");
 						IReader* THM = FS.r_open("$game_textures$", N_);
 
@@ -259,8 +250,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				}
 
 				// type
-				if (L.type == D3DLIGHT_DIRECTIONAL)	RL.type = LT_DIRECT;
-				else											RL.type = LT_POINT;
+				RL.type = (L.type == D3DLIGHT_DIRECTIONAL) ? LT_DIRECT : LT_POINT;
 
 				// generic properties
 				RL.position.set(L.position);
@@ -326,7 +316,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				for (int j = 0; j < 4; ++j)
 				{
 					F->r(&id, 3);
-					id = id & 0x00ffffff;
+					id = id & InvalidNode_v1;
 					if (id == InvalidNode_v1)
 						id = InvalidNode;
 					g_nodes[i].n[j] = id;
