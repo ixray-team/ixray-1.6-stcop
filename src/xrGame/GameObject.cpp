@@ -937,6 +937,34 @@ bool CGameObject::shedule_Needed( )
 	return						(!getDestroy());
 }
 
+float CGameObject::shedule_Scale_Base()
+{
+	if (g_dedicated_server)
+	{
+		if (Device.dwTimeGlobal > u_optimize_time) 
+		{
+			u_optimize_time = Device.dwTimeGlobal + Random.randI(5000, 10000);
+			auto game = &Game(); // smart_cast<game_cl_mp*>(&Game());
+			if (game)
+			{
+				float min_distance = 40100;
+				for (auto& I : game->players)
+				{
+					CObject* pA = Level().Objects.net_Find(I.second->GameID);
+					if (!pA) continue;
+					float distance = Position().distance_to_sqr(pA->Position());
+					if (distance < min_distance)
+					{
+						min_distance = distance;
+					}
+				}
+				return _max(_sqrt(min_distance) - Radius(), 0.0f);
+			}
+		}
+	}
+	return inherited::shedule_Scale_Base();
+}
+
 void CGameObject::create_anim_mov_ctrl	( CBlend *b, Fmatrix *start_pose, bool local_animation )
 {
 	if( animation_movement_controlled( ) )
