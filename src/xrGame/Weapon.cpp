@@ -629,6 +629,8 @@ void CWeapon::Load		(LPCSTR section)
 	
 	m_bRestGlSil = READ_IF_EXISTS(pSettings, r_bool, section, "restricted_gl_and_sil", false);
 	
+	m_bAddCartridgeInOpen = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "add_cartridge_in_open", false);
+
 	m_bBlockUpdateAmmoBonesShooting = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_toggle_shooting", false);
 	m_bUseLastAmmoType = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_last_cartridge_type", false);
 	m_bUseChamberInUpdateBones = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_chamber", false);
@@ -953,6 +955,7 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_ChamberAmmoType,				output_packet);
 	save_data		(m_zoom_params.m_bIsZoomModeNow,output_packet);
 	save_data		(m_bTacticalTorchStatus,		output_packet);
+	save_data		(m_bJustAfterReload,			output_packet);
 	save_data		(m_LastShotAmmoType,			output_packet);
 }
 
@@ -967,6 +970,7 @@ void CWeapon::load(IReader &input_packet)
 	load_data		(m_ChamberAmmoType,				input_packet);
 	load_data		(m_zoom_params.m_bIsZoomModeNow,input_packet);
 	load_data		(m_bTacticalTorchStatus,		input_packet);
+	load_data		(m_bJustAfterReload,			input_packet);
 	load_data		(m_LastShotAmmoType,			input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
@@ -1509,7 +1513,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	{
 		case kWPN_FIRE:
 			{
-				if (IsTriStateReload() && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin) && flags & CMD_START)
+				if (IsTriStateReload() && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_bAddCartridgeInOpen && m_sub_state == eSubstateReloadBegin) && flags & CMD_START)
 				{
 					bStopReloadSignal = true;
 					return true;
