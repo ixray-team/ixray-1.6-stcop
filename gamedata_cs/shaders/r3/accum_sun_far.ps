@@ -66,7 +66,7 @@ float4 main ( v2p_TL2uv I ) : SV_Target
 	float 	s 	= sunmask(P4);
 	#if SUN_QUALITY==1
 		s 	*= shadow		(PS);
-	#elif SUN_QUALITY==2
+	#elif SUN_QUALITY>=2
 		s 	*= shadowtest_sun 	(PS,I.Tex1);
 	#endif
 #endif	//	SUN_QUALITY

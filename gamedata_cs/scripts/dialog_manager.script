@@ -260,6 +260,7 @@ function init_start_dialogs(dialog, str)
 	for k,v in pairs(phrase_table[str]) do
 		ph = true
         phrase = dialog:AddPhrase(v.name, tostring(v.id), tostring(1), -10000)
+		log("--->"..tostring(v.name))
         if(phrase) then
             script = phrase:GetPhraseScript()
             script:AddPrecondition(string.format("dialog_manager.precondition_%s_dialogs", str))
@@ -267,6 +268,7 @@ function init_start_dialogs(dialog, str)
             script:AddAction(string.format("dialog_manager.action_%s_dialogs", str))
 		    script:AddAction("dialog_manager.action_sim_action_dialog")
 			if(v.wounded=="true") then
+				log("--->"..tostring(v.wounded))
 	            script:AddPrecondition("dialogs.is_wounded")
 --				local bandage_id = get_id()
 				local medkit_id = get_id()
@@ -280,13 +282,22 @@ function init_start_dialogs(dialog, str)
 --		        phrase = dialog:AddPhrase("dm_wounded_thanks", tostring(thanks_id), tostring(bandage_id), -10000)
 
 		        phrase = dialog:AddPhrase("dm_wounded_medkit", tostring(medkit_id), tostring(v.id), -10000)
+        if(phrase) then
+			log("ok1")
+		end
 	            script = phrase:GetPhraseScript()
 	            script:AddPrecondition("dialogs.actor_have_medkit")
 	            script:AddAction("dialogs.transfer_medkit")
 	            script:AddAction("dialogs.break_dialog")
 		        phrase = dialog:AddPhrase("dm_wounded_thanks", tostring(thanks_id), tostring(medkit_id), -10000)
+        if(phrase) then
+			log("ok2")
+		end
 
 		        phrase = dialog:AddPhrase("dm_wounded_sorry", tostring(sorry_id), tostring(v.id), -10000)
+        if(phrase) then
+			log("ok3")
+		end
 	            script = phrase:GetPhraseScript()
 	            script:AddAction("dialogs.break_dialog")
 			else
@@ -361,6 +372,7 @@ function fill_priority_table(npc, PT_subtable, PRT_subtable)
     for num, phrase in pairs(PT_subtable) do
 -- calculate priority for each phrase
 		local pr = calculate_priority(PRT_subtable, phrase, npc, phrase.id)
+		log("--->phrase ["..phrase.name.."] priority ["..pr.."]")
 	end
 end
 -- Calculate precondition for default phrase in information dialog
@@ -388,7 +400,7 @@ function calculate_priority(PRT_subtable, PTID_subtable, npc, phrase_id)
     local npc_id = npc:id()
 	if(PTID_subtable.npc_community=="not_set") then
     	priority = priority + 0
-	elseif(PTID_subtable.npc_community=="all") then
+	elseif(PTID_subtable.npc_community[1]=="all") then
     	priority = priority + 1
 	else
 		for i=1,#PTID_subtable.npc_community do
@@ -402,7 +414,7 @@ function calculate_priority(PRT_subtable, PTID_subtable, npc, phrase_id)
 	end
 	if(PTID_subtable.level=="not_set") then
     	priority = priority + 0
-	elseif(PTID_subtable.level=="all") then
+	elseif(PTID_subtable.level[1]=="all") then
     	priority = priority + 1
 	else
 		for i=1,#PTID_subtable.level do

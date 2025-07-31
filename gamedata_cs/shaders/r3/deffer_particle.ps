@@ -1,4 +1,4 @@
-#if ( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if ( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1) ) 
 #define EXTEND_F_DEFFER
 #endif
 
@@ -11,14 +11,18 @@ struct 	p_particle
 	p_flat	base;	
 };
 
+#ifdef	MSAA_ALPHATEST_DX10_1_ATOC
+f_deffer 	main	( p_particle II, float4 pos2d : SV_Position )
+#else	//	MSAA_ALPHATEST_DX10_1_ATOC
 f_deffer 	main	( p_particle II )
+#endif	//	MSAA_ALPHATEST_DX10_1_ATOC
 {
   f_deffer	O;
   p_flat	I;	I=II.base;
 
   // 1. Base texture + kill pixels with low alpha
 //  float4 	D 	= 	tex2D		(s_base, I.tcdh);
-#if ( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if defined(MSAA_ALPHATEST_DX10_1)
   uint mask = 0x0;
   float2 ddx_base = ddx( I.tcdh );
   float2 ddy_base = ddy( I.tcdh );
@@ -46,12 +50,19 @@ f_deffer 	main	( p_particle II )
 #else
   float4 	D 	= 	s_base.Sample( smp_base, I.tcdh);
 			D	*=	II.color;
-			clip	(D.w-def_aref);
+
+#ifdef 	MSAA_ALPHATEST_DX10_1_ATOC
+	float alpha = (D.w-def_aref*0.5f)/(1-def_aref*0.5f);
+	uint mask = alpha_to_coverage ( alpha, pos2d );
+#else	//	MSAA_ALPHATEST_DX10_1_ATOC
+	clip	(D.w-def_aref);
+#endif	//	MSAA_ALPHATEST_DX10_1_ATOC
+			
 #endif
 
   // 2. Standart output
   float4		Ne  = float4	(normalize((float3)I.N.xyz)					, I.position.w	);
-#if !( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#ifndef EXTEND_F_DEFFER
   O				= pack_gbuffer( 
 								Ne,
 								float4 	(I.position.xyz + Ne.xyz*def_virtualh/2.h	, xmaterial		),
