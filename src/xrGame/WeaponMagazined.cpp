@@ -228,6 +228,20 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 		m_eSoundsFlags.set(ESoundsFlags::sf_changefiremode, TRUE);
 		m_sounds.LoadSound(section, "snd_changefiremode", "sndChangeFiremode", true, m_eSoundEmptyClick);
 	}
+
+	if (SoundExist(section, "snd_laser_on"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_laser, TRUE);
+		m_sounds.LoadSound(section, "snd_laser_on", "sndLaserOn", true, m_eSoundEmptyClick);
+		m_sounds.LoadSound(section, "snd_laser_off", "sndLaserOff", true, m_eSoundEmptyClick);
+	}
+
+	if (SoundExist(section, "snd_torch_on"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_tacticaltorch, TRUE);
+		m_sounds.LoadSound(section, "snd_torch_on", "sndTorchOn", true, m_eSoundEmptyClick);
+		m_sounds.LoadSound(section, "snd_torch_off", "sndTorchOff", true, m_eSoundEmptyClick);
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -613,6 +627,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	case eEmptyClick:
 	{
 		switch2_Empty();
+		break;
+	}
+	case eDevice:
+	{
+		switch2_Device();
 		break;
 	}
 	}
@@ -1074,6 +1093,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eFire2:
 		case eShowing:
 		case eSwitchMode:
+		case eDevice:
 			SwitchState(eIdle);
 		break;
 	}
@@ -1210,6 +1230,17 @@ void CWeaponMagazined::switch2_Empty()
 				Reload();
 			}
 		}
+	}
+}
+
+void CWeaponMagazined::switch2_Device()
+{
+	SetPending(true);
+
+	if (m_eDevicesFlags.test(EDevicesFlags::df_tacticaltorch))
+	{
+		PlaySound(m_bTacticalTorchStatus ? "sndTorchOff" : "sndTorchOn", get_LastFP());
+		PlayHUDMotion(SetCurrentStateAnimation("anm_torch_on"), true, eDevice);
 	}
 }
 
@@ -1364,13 +1395,23 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		return true;
 	case kWPN_FIREMODE_PREV:
 	case kWPN_FIREMODE_NEXT:
+	{
+		if (flags & CMD_START) 
 		{
-			if (flags & CMD_START) 
-			{
-				ChangeFireMode(cmd);
-				return true;
-			};
-		}break;
+			ChangeFireMode(cmd);
+			return true;
+		};
+	}break;
+	case kTACTICALTORCH:
+	{
+		if (flags & CMD_START && m_HudLight.GetTorchInstalled() && !IsZoomed() && GetState() == eIdle)
+		{
+			m_eDevicesFlags.set(EDevicesFlags::df_tacticaltorch, true);
+			SwitchState(eDevice);
+			return true;
+		}
+		break;
+	}
 	}
 	return false;
 }
@@ -2303,5 +2344,15 @@ void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& mark)
 			ReloadMagazine();
 			GiveAmmoFromMagToChamber();
 		}
+	}
+
+	if (state == eDevice && mark.name == "Left")
+	{
+		if (m_eDevicesFlags.test(EDevicesFlags::df_tacticaltorch))
+		{
+			m_bTacticalTorchStatus = !m_bTacticalTorchStatus;
+		}
+
+		m_eDevicesFlags.zero();
 	}
 }
