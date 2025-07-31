@@ -106,17 +106,33 @@ int EScene::SetSnapList()
 	ClearSnapList(true);
     ObjectList* snap_objects = GetSnapList(true);
 	int count = 0;
-    if (snap_objects){
+    if (snap_objects)
+    {
         ObjectList& lst = ListObj(OBJCLASS_SCENEOBJECT);
-        for(ObjectIt _F = lst.begin();_F!=lst.end();_F++)
-            if((*_F)->Visible()&&(*_F)->Selected()){
-                snap_objects->push_back(*_F);
+        for (CCustomObject* Object : lst)
+        {
+            if (Object->Visible() && Object->Selected())
+            {
+                snap_objects->push_back(Object);
                 count++;
             }
+        }
+
+        ObjectList& ListTerrain = ListObj(OBJCLASS_TERRAIN);
+        for (CCustomObject* Object : ListTerrain)
+        {
+            if (Object->Selected())
+            {
+                snap_objects->push_back(Object);
+                count++;
+            }
+        }
+
         UI->RedrawScene();
         UpdateSnapList();
-		UndoSave();
+        UndoSave();
     }
+
 	return count;
 }
 
