@@ -48,11 +48,11 @@ SDL_Surface* LoadPNGSurfaceFromResource(unsigned char* imageData, LPCTSTR lpName
 	}
 
 	SDL_Surface* surface = SDL_CreateSurfaceFrom(
-		imageData,
 		width,
 		height,
-		width * 4,
-		SDL_PIXELFORMAT_RGBA32
+		SDL_PIXELFORMAT_RGBA32,
+		imageData,
+		width * 4
 	);
 
 	if (!surface) {
@@ -81,11 +81,11 @@ SDL_Surface* LoadSplashSurface(unsigned char* imageData, LPCTSTR lpName, LPCTSTR
 		LoadPNGSurfaceFromResource(imageData, lpName, lpType)
 		:
 		SDL_CreateSurfaceFrom(
-			imageData,
 			width,
 			height,
-			width * 4,
-			SDL_PIXELFORMAT_RGBA32
+			SDL_PIXELFORMAT_RGBA32,
+			imageData,
+			width * 4
 		);
 }
 
@@ -133,7 +133,7 @@ namespace splash
 			return;
 		}
 
-		splashRenderer = SDL_CreateRenderer((SDL_Window*)window, 0, SDL_RENDERER_SOFTWARE);
+		splashRenderer = SDL_CreateRenderer((SDL_Window*)window, 0);
 		if (!splashRenderer) {
 			Destroy();
 			ErrorMsg("SDL_CreateRenderer Error: %s", SDL_GetError());
@@ -151,7 +151,7 @@ namespace splash
 		}
 
 		{
-			SDL_QueryTexture(texture, nullptr, nullptr, &WinW, &WinH);
+			//SDL_QueryTexture(texture, nullptr, nullptr, &WinW, &WinH);
 
 			SDL_FRect dstRect = { 0, 0, (float)WinW, (float)WinH };
 			SDL_RenderTexture(splashRenderer, texture, nullptr, &dstRect);
