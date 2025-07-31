@@ -287,11 +287,3 @@ void ImplicitLightingExec()
 	cl_globs.Deallocate();
 	calculator.clear();
 }
-
-void ImplicitLighting()
-{
-	if (g_params().m_quality == ebqDraft)
-		return;
-
-	ImplicitLightingExec();
-}
