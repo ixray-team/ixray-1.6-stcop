@@ -185,11 +185,8 @@ void RenderMainUI()
 		}
 
 		ImGui::SameLine();
-
-		size_t  w_free, w_reserved, w_committed;
-		vminfo(&w_free, &w_reserved, &w_committed);
-
-		ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", w_committed / 1024 / 1024);
+		 
+		ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
 
 		ImGui::SameLine();
 
