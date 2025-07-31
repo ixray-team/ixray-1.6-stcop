@@ -116,6 +116,31 @@ struct attachable_hud_item
 
 };
 
+struct animator_item
+{
+	player_hud* m_parent = nullptr;
+	IKinematics* m_item = nullptr;
+
+	Fmatrix m_attach_offset;
+	Fmatrix m_item_transform;
+	Fvector m_item_attach[2];
+	Fvector m_hands_attach[2];
+	u32	m_upd_firedeps_frame = u32(-1);
+	bool IsPlaying = false;
+
+	player_hud_motion_container	m_hand_motions;
+
+	shared_str m_section;
+
+	animator_item(player_hud* pParent, const shared_str& section);
+	~animator_item();
+	void update(bool bForce);
+	void render();
+
+	void anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed);
+	u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md);
+};
+
 class player_hud
 {
 public: 
@@ -153,12 +178,18 @@ public:
 	void			RestoreHandBlends(LPCSTR ignored_part);
 
 	void			ResetBlockedPartID(){m_blocked_part_idx=u16(-1); };
+	void			SetBlockedPartID(u16 val){m_blocked_part_idx = val; }
 	void			SetHandsVisible(bool val){m_bhands_visible=val;};
 	bool			GetHandsVisible(){return m_bhands_visible;};
 
 	IKinematics*	m_legs_model;
 	bool			m_show_legs = true;
 	bool			m_need_reload = true;
+
+	IKinematicsAnimated* GetModel() { return m_model; }
+	animator_item* create_animator_item(const shared_str& section);
+	void			delete_animator_item();
+	animator_item* GetAnimator() { return m_animator_item; }
 
 private:
 	void			update_inertion		(Fmatrix& trans);
@@ -177,6 +208,7 @@ private:
 	IKinematicsAnimated*				m_model;
 	xr_vector<u16>						m_ancors;
 	attachable_hud_item*				m_attached_items[2];
+	animator_item*						m_animator_item = nullptr;
 	xr_vector<attachable_hud_item*>		m_pool;
 
 	u16									m_blocked_part_idx;
