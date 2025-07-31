@@ -68,7 +68,7 @@ private:
 
 	// Sounds
 	ref_sound						snd_Ambient;
-
+	xrCriticalSection				rainCS;
 	// Utilities
 	void							p_create		();
 	void							p_destroy		();
@@ -80,7 +80,7 @@ private:
 	void							p_free			(Particle* P);
 
 	// Some methods
-	void							Born			(Item& dest, float radius, shared_str rainType);
+	void							Born			(Item& dest, float radius, shared_str& rainType);
 	void							Hit				(Fvector& pos);
 	BOOL							RayPick			(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt);
 	void							RenewItem		(Item& dest, float height, BOOL bHit);
@@ -90,6 +90,7 @@ public:
 
 	void							Render			();
 	void							OnFrame			();
+	void							UpdateItems		();
 	void InvalidateState() { state = stIdle; }
 };
 
