@@ -981,7 +981,7 @@
             </phrase>
             <phrase id="31">
                 <text>val_freedom_fixer_hello_dialog_31</text>
-                <next>311</next>
+             <!--       <next>311</next> -->
             </phrase>
             <phrase id="311">
                 <text>val_freedom_fixer_hello_dialog_311</text>
