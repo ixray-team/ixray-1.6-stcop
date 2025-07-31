@@ -26,7 +26,9 @@
 #define		r2_RT_generic0		"$user$generic0"		// ---
 #define		r2_RT_generic1		"$user$generic1"		// ---
 #define		r2_RT_generic2		"$user$generic2"		// ---	//	Igor: for volumetric lights
+#define		r2_RT_gamma_lut		"$user$gamma_lut"
 
+#define		r2_RT_backbuffer_lut "$user$backbufferlut"
 #define		r2_RT_generic0_prev "$user$generic0_prev"
 
 #define		r2_RT_env			"$user$sky"
@@ -43,6 +45,7 @@
 #if USE_DX11
 #define		r2_RT_generic		"$user$generic"		// ---
 #define		r2_RT_backbuffer_final "$user$backbuffer"
+#define		r2_RT_backbuffer_lut "$user$backbufferlut"
 #define		r2_RT_backbuffer_AA "$user$backbuffer_aa"
 #endif //USE_DX11
 

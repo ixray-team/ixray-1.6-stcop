@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType) {
+void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType)
+{
     u32 Offset = 0;
     float d_Z = EPS_S;
     float d_W = 1.0f;
