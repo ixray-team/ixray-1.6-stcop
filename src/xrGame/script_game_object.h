@@ -971,6 +971,8 @@ public:
 	bool IsAnimatorActive();
 	u8 GetActorAnimatorRestoredSlot();
 	float GetActorPowerBoostTime();
+	bool GetAnimatorForceHideItems();
+	void SetAnimatorForceHideItems(bool status);
 
 	void IterateFeelTouch(const luabind::functor<bool>& functor);
 			bool IsActorLadder() const;

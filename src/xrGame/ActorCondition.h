@@ -104,8 +104,8 @@ public:
 	bool	DisableSprint							(SHit* pHDS);
 	bool	PlayHitSound							(SHit* pHDS);
 	float	HitSlowmo								(SHit* pHDS);
-	virtual bool			ApplyInfluence			(const SMedicineInfluenceValues& V, const shared_str& sect);
-	virtual bool			ApplyBooster			(const SBooster& B, const shared_str& sect);
+	virtual bool			ApplyInfluence			(const SMedicineInfluenceValues& V, const shared_str& sect, bool use_sound = true);
+	virtual bool			ApplyBooster			(const SBooster& B, const shared_str& sect, bool use_sound = true);
 	float	GetMaxPowerRestoreSpeed					() {return m_max_power_restore_speed;};
 	float	GetMaxWoundProtection					() {return m_max_wound_protection;};
 	float	GetMaxFireWoundProtection				() {return m_max_fire_wound_protection;};
