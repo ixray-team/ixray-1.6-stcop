@@ -42,19 +42,13 @@ public:
 	using map_RT = xr_map<const char*, CRT*, str_pred>;
 	using map_RTIt = map_RT::iterator;
 
-	// DX10 cut
-	//using map_RTC = xr_map<const char*, CRTC*, str_pred>;
-	//using map_RTCIt = map_RTC::iterator;
-
 	using map_VS = xr_map<const char*, SVS*, str_pred>;
 	using map_VSIt = map_VS::iterator;
 
 #ifdef USE_DX11
 	using map_GS = xr_map<const char*, SGS*, str_pred>;
 	using map_GSIt = map_GS::iterator;
-#endif
 
-#ifdef USE_DX11
 	using map_HS = xr_map<const char*, SHS*, str_pred>;
 	using map_HSIt = map_HS::iterator;
 
@@ -63,6 +57,9 @@ public:
 
 	using map_CS = xr_map<const char*, SCS*, str_pred>;
 	using map_CSIt = map_CS::iterator;
+
+	using map_RTC = xr_map<const char*, CRTC*, str_pred>;
+	using map_RTCIt = map_RTC::iterator;
 #endif
 
 	using map_PS = xr_map<const char*, SPS*, str_pred>;
@@ -80,10 +77,12 @@ private:
 	map_RT												m_rtargets;
 
 	xr_vector<CRT*>										m_rt_sorter;
-	//	DX10 cut map_RTC												m_rtargets_c;
+
 	map_VS												m_vs;
 	map_PS												m_ps;
+
 #ifdef USE_DX11
+	map_RTC												m_rtargets_c;
 	map_GS												m_gs;
 #endif //USE_DX11
 	map_TD												m_td;
@@ -164,16 +163,16 @@ public:
 
 #ifdef USE_DX11
 	CRT*							_CreateRT			(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)NULL);
+	CRTC*							_CreateRTC			(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)NULL);
 #else
 	CRT*							_CreateRT			(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount = 1 );
 #endif
 	void							_DeleteRT			(const CRT*	RT	);
 
-	//	DX10 cut CRTC*							_CreateRTC			(LPCSTR Name, u32 size,	D3DFORMAT f);
-	//	DX10 cut void							_DeleteRTC			(const CRTC*	RT	);
 #ifdef USE_DX11
 	SGS*							_CreateGS			(LPCSTR Name);
-	void							_DeleteGS			(const SGS*	GS	);
+	void							_DeleteGS			(const SGS*	GS);
+	void							_DeleteRTC			(const CRTC* RT);
 #endif //USE_DX11
 
 #ifdef USE_DX11

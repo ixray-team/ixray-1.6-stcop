@@ -20,8 +20,13 @@ void	CResourceManager::reset_begin			()
 	// destroy RTs
 	for (map_RTIt rt_it=m_rtargets.begin(); rt_it!=m_rtargets.end(); rt_it++)
 		rt_it->second->reset_begin();
-//	DX10 cut 	for (map_RTCIt rtc_it=m_rtargets_c.begin(); rtc_it!=m_rtargets_c.end(); rtc_it++)
-//	DX10 cut 		rtc_it->second->reset_begin();
+
+#ifdef USE_DX11
+	for (map_RTCIt rtc_it=m_rtargets_c.begin(); rtc_it!=m_rtargets_c.end(); rtc_it++)
+	{
+		rtc_it->second->reset_begin();
+	}
+#endif
 
 	// destroy DStreams
  	RCache.old_QuadIB					= RCache.QuadIB;
@@ -31,8 +36,15 @@ void	CResourceManager::reset_begin			()
 	RCache.Vertex.reset_begin	();
 }
 
-bool	cmp_rt	(const CRT* A,const CRT* B)		{ return A->_order < B->_order; }
-//	DX10 cut bool	cmp_rtc	(const CRTC* A,const CRTC* B)	{ return A->_order < B->_order; }
+#ifdef USE_DX11
+bool cmp_rtc(const CRTC* A, const CRTC* B) {
+	return A->_order < B->_order;
+}
+#endif
+
+bool cmp_rt(const CRT* A, const CRT* B) {
+	return A->_order < B->_order;
+}
 
 void	CResourceManager::reset_end				()
 {
@@ -114,7 +126,9 @@ void CResourceManager::Dump(bool bBrief)
 {
 	Msg		("* RM_Dump: textures  : %d",		m_textures.size());		if(!bBrief) mdump(m_textures);
 	Msg		("* RM_Dump: rtargets  : %d",		m_rtargets.size());		if(!bBrief) mdump(m_rtargets);
-//	DX10 cut 	Msg		("* RM_Dump: rtargetsc : %d",		m_rtargets_c.size());	if(!bBrief) mdump(m_rtargets_c);
+#ifdef USE_DX11
+	Msg		("* RM_Dump: rtargetsc : %d",		m_rtargets_c.size());	if(!bBrief) mdump(m_rtargets_c);
+#endif
 	Msg		("* RM_Dump: vs        : %d",		m_vs.size());			if(!bBrief) mdump(m_vs);
 	Msg		("* RM_Dump: ps        : %d",		m_ps.size());			if(!bBrief) mdump(m_ps);
 	Msg		("* RM_Dump: dcl       : %d",		v_declarations.size());
