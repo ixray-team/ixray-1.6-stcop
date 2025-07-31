@@ -542,6 +542,8 @@ void CSE_ALifeItemWeapon::UPDATE_Read(NET_Packet	&tNetPacket)
 		tNetPacket.r_u8(misfire);
 		tNetPacket.r_float(rt_zoom_factor);
 		tNetPacket.r_u8(cur_scope);
+		tNetPacket.r_u8(chamber_ammo_type);
+		tNetPacket.r_u16(a_chamber_elapsed);
 	}
 }
 
@@ -564,6 +566,8 @@ void CSE_ALifeItemWeapon::UPDATE_Write(NET_Packet	&tNetPacket)
 	tNetPacket.w_u8				(misfire);
 	tNetPacket.w_float			(rt_zoom_factor);
 	tNetPacket.w_u8				(cur_scope);
+	tNetPacket.w_u8				(chamber_ammo_type);
+	tNetPacket.w_u16			(a_chamber_elapsed);
 }
 
 void CSE_ALifeItemWeapon::STATE_Read(NET_Packet	&tNetPacket, u16 size)
