@@ -172,20 +172,34 @@ void UIPropertiesItem::DrawProp()
 	break;
 	case PROP_BOOLEAN:
 	{
-		BOOLValue* V = dynamic_cast<BOOLValue*>(PItem->GetFrontValue()); VERIFY(V);
-		BOOL new_val_as_BOOL = V->GetValue();
-		PItem->BeforeEdit<BOOLValue, BOOL>(new_val_as_BOOL);
-		bool new_val = new_val_as_BOOL;
-		if (ImGui::Checkbox("##value", &new_val))
+		auto TryDrawBool = [&]<typename RangeCast, typename TypeID>()->bool
 		{
-			new_val_as_BOOL = new_val;
-			if (PItem->AfterEdit<BOOLValue, BOOL>(new_val_as_BOOL))
-				if (PItem->ApplyValue<BOOLValue, BOOL>(new_val_as_BOOL))
+			if (RangeCast* V = dynamic_cast<RangeCast*>(PItem->GetFrontValue()))
+			{
+				TypeID new_val_as_BOOL = V->GetValue();
+				PItem->BeforeEdit<RangeCast, TypeID>(new_val_as_BOOL);
+				bool new_val = new_val_as_BOOL;
+				if (ImGui::Checkbox("##value", &new_val))
 				{
-					PropertiesFrom->Modified();
+					new_val_as_BOOL = new_val;
+					if (PItem->AfterEdit<RangeCast, TypeID>(new_val_as_BOOL))
+					{
+						if (PItem->ApplyValue<RangeCast, TypeID>(new_val_as_BOOL))
+						{
+							PropertiesFrom->Modified();
+						}
+					}
 				}
-		}
+				return true;
+			}
 
+			return false;
+		};
+		
+		if (!TryDrawBool.operator()<BOOLValue, BOOL>())
+		{
+			TryDrawBool.operator()<BoolValue, bool>();
+		}
 	}
 	break;
 	case PROP_FLAG:

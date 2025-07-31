@@ -9,6 +9,7 @@ class CTerrain :
 private:
 	XRay::Editor::HeightmapUtils::SHeightMap HMap;
 	CEditableObject TerrainObject;
+	bool IsPreview = false;
 
 public:
 	CTerrain(LPVOID data, LPCSTR name);
@@ -25,6 +26,12 @@ public:
 
 	virtual void Move(Fvector& amount);
 	virtual void Scale(Fvector& amount);
+
+	virtual void FillProp(LPCSTR pref, PropItemVec& items) override;
+
+	void OnChangeShader(PropValue* sender);
+
+	void OnChangeSurface(PropValue* sender);
 
 	virtual void OnUpdateTransform() override;
 };
