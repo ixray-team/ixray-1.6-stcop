@@ -2065,3 +2065,21 @@ u8 CScriptGameObject::GetActorAnimatorRestoredSlot()
 	else
 		return 0;
 }
+
+float CScriptGameObject::GetActorPowerBoostTime()
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (!pActor)
+	{
+		ai().script_engine().script_log(
+			ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetActorPowerBoostTime!");
+		return (false);
+	}
+
+	for (auto& booster : pActor->conditions().GetCurBoosterInfluences())
+	{
+		if (booster.second.m_type == EBoostParams::eBoostPowerRestore)
+			return booster.second.fBoostTime;
+	}
+	return 0.f;
+}
