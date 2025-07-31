@@ -59,14 +59,10 @@ CEnvironment::CEnvironment	() :
     eff_LensFlare 			= 0;
     eff_Thunderbolt			= 0;
 	OnDeviceCreate			();
-#ifdef _EDITOR
 	ed_from_time			= 0.f;
 	ed_to_time				= DAY_LENGTH;
-#endif
 
-#ifndef _EDITOR
 	m_paused				= false;
-#endif
 
 	fGameTime				= 0.f;
     fTimeFactor				= 12.f;
@@ -93,98 +89,28 @@ CEnvironment::CEnvironment	() :
 	PerlinNoise1D->SetOctaves(2);
 	PerlinNoise1D->SetAmplitude(0.66666f);
 
-//	tsky0					= Device.Resources->_CreateTexture("$user$sky0");
-//	tsky1					= Device.Resources->_CreateTexture("$user$sky1");
+   // tsky0 = Device.Resources->_CreateTexture("$user$sky0");
+   // tsky1 = Device.Resources->_CreateTexture("$user$sky1");
 
-	string_path				file_name;
-	m_ambients_config		=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\ambients.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_sound_channels_config	=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\sound_channels.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_effects_config		=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\effects.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_suns_config			=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\suns.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_thunderbolt_collections_config	=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\thunderbolt_collections.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_thunderbolts_config	=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\thunderbolts.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
+    string_path file_name;
+    m_ambients_config                = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\ambients.ltx"), TRUE, TRUE, FALSE);
+    m_sound_channels_config          = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\sound_channels.ltx"), TRUE, TRUE, FALSE);
+    m_effects_config                 = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\effects.ltx"), TRUE, TRUE, FALSE);
+    m_suns_config                    = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\suns.ltx"), TRUE, TRUE, FALSE);
+    m_thunderbolt_collections_config = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\thunderbolt_collections.ltx"), TRUE, TRUE, FALSE);
+    m_thunderbolts_config            = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\thunderbolts.ltx"), TRUE, TRUE, FALSE);
 
-	CInifile*		config =
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\environment.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
+    CInifile *config                 = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\environment.ltx"), TRUE, TRUE, FALSE);
     // params
-	p_var_alt		= deg2rad(config->r_float					( "environment","altitude" ));  
-	p_var_long		= deg2rad	(config->r_float				( "environment","delta_longitude" ));
-	p_min_dist		= _min		(.95f,config->r_float			( "environment","min_dist_factor" ));
-	p_tilt			= deg2rad	(config->r_float				( "environment","tilt" ));
-	p_second_prop	= config->r_float							( "environment","second_propability" );
-	clamp			(p_second_prop,0.f,1.f);
-	p_sky_color		= config->r_float							( "environment","sky_color" );
-	p_sun_color		= config->r_float							( "environment","sun_color" );
-	p_fog_color		= config->r_float							( "environment","fog_color" );
+    p_var_alt                        = deg2rad(config->r_float("environment", "altitude"));
+    p_var_long                       = deg2rad(config->r_float("environment", "delta_longitude"));
+    p_min_dist                       = _min(.95f, config->r_float("environment", "min_dist_factor"));
+    p_tilt                           = deg2rad(config->r_float("environment", "tilt"));
+    p_second_prop                    = config->r_float("environment", "second_propability");
+    clamp(p_second_prop, 0.f, 1.f);
+    p_sky_color                      = config->r_float("environment", "sky_color");
+    p_sun_color                      = config->r_float("environment", "sun_color");
+    p_fog_color                      = config->r_float( "environment","fog_color" );
 
 	max_desired_items = READ_IF_EXISTS(config, r_u32, "rain", "max_desired_items", 2500);
 	source_offset = READ_IF_EXISTS(config, r_float, "rain", "source_offset", 40.0f);
@@ -240,12 +166,13 @@ CEnvironment::~CEnvironment	()
 
 void CEnvironment::Invalidate()
 {
-	bWFX					= false;
-	Current[0]				= 0;
-	Current[1]				= 0;
-	if (eff_Rain)
-		eff_Rain->InvalidateState();
-	if (eff_LensFlare)		eff_LensFlare->Invalidate();
+    bWFX = false;
+    Current[0] = 0;
+    Current[1] = 0;
+    if (eff_LensFlare)
+        eff_LensFlare->Invalidate();
+    if (eff_Rain)
+        eff_Rain->InvalidateState();
 }
 
 float CEnvironment::TimeDiff(float prev, float cur)
@@ -276,17 +203,29 @@ void CEnvironment::ChangeGameTime(float game_time)
 
 void CEnvironment::SetGameTime(float game_time, float time_factor)
 {
-	if (m_paused)
-	{
-		g_pGameLevel->SetEnvironmentGameTimeFactor(iFloor(fGameTime * 1000.f), fTimeFactor);
-		return;
-	}
+    if (m_paused)
+    {
+        g_pGameLevel->SetEnvironmentGameTimeFactor(iFloor(fGameTime * 1000.f), fTimeFactor);
+        return;
+    }
 
 	if (bWFX)
 		wfx_time -= TimeDiff(fGameTime, game_time);
 
 	fGameTime = game_time;
 	fTimeFactor = time_factor;
+}
+
+void CEnvironment::SplitTime(float time, u32& hours, u32& minutes, u32& seconds) const
+{
+    u32 current_time_u32 = iFloor(time);
+    current_time_u32 = current_time_u32 % (24 * 60 * 60);
+
+    hours = current_time_u32 / (60 * 60);
+    current_time_u32 %= (60 * 60);
+
+    minutes = current_time_u32 / 60;
+    seconds = current_time_u32 % 60;
 }
 
 float CEnvironment::NormalizeTime(float tm)
@@ -298,31 +237,39 @@ float CEnvironment::NormalizeTime(float tm)
 
 void CEnvironment::SetWeather(shared_str name, bool forced)
 {
-//.	static BOOL bAlready = FALSE;
-//.	if(bAlready)	return;
-	if (name.size())	{
-//.		bAlready = TRUE;
-        EnvsMapIt it		= WeatherCycles.find(name);
-		if (it == WeatherCycles.end())
-		{
-			Msg("! Invalid weather name: %s", name.c_str());
-			return;
-		}
-        R_ASSERT3			(it!=WeatherCycles.end(),"Invalid weather name.",*name);
-		CurrentCycleName	= it->first;
-		if (forced)			{Invalidate();			}
-		if (!bWFX){
-			CurrentWeather		= &it->second;
-			CurrentWeatherName	= it->first;
-		}
-		if (forced)			{SelectEnvs(fGameTime);	}
+    // static BOOL bAlready = FALSE;
+    // if (bAlready) return;
+    if (name.size())
+    {
+        // bAlready = TRUE;
+        EnvsMapIt it = WeatherCycles.find(name);
+        if (it == WeatherCycles.end())
+        {
+            Msg("! Invalid weather name: %s", name.c_str());
+            return;
+        }
+        R_ASSERT3(it != WeatherCycles.end(), "Invalid weather name.", *name);
+        CurrentCycleName = it->first;
+        if (forced)
+        {
+            Invalidate();
+        }
+        if (!bWFX)
+        {
+            CurrentWeather = &it->second;
+            CurrentWeatherName = it->first;
+        }
+        if (forced)
+        {
+            SelectEnvs(fGameTime);
+        }
 #ifdef WEATHER_LOGGING
-		Msg					("Starting Cycle: %s [%s]",*name,forced?"forced":"deferred");
+        Msg("Starting Cycle: %s [%s]", *name, forced ? "forced" : "deferred");
 #endif
-    }else{
-#ifndef _EDITOR
-		FATAL				("! Empty weather name");
-#endif
+    }
+    else
+    {
+        FATAL("! Empty weather name");
     }
 }
 
@@ -371,16 +318,16 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		Current[0]			= C0;
 		Current[1]			= C1;
 #ifdef WEATHER_LOGGING
-		Msg					("Starting WFX: '%s' - %3.2f sec",*name,wfx_time);
-//		for (EnvIt l_it=CurrentWeather->begin(); l_it!=CurrentWeather->end(); l_it++)
-//			Msg				(". Env: '%s' Tm: %3.2f",*(*l_it)->m_identifier.c_str(),(*l_it)->exec_time);
+        Msg("Starting WFX: '%s' - %3.2f sec", *name, wfx_time);
+        // for (EnvIt l_it=CurrentWeather->begin(); l_it!=CurrentWeather->end(); l_it++)
+        // Msg(". Env: '%s' Tm: %3.2f",*(*l_it)->m_identifier.c_str(),(*l_it)->exec_time);
 #endif
-	}else{
-#ifndef _EDITOR
-		FATAL				("! Empty weather effect name");
-#endif
-	}
-	return true;
+    }
+    else
+    {
+        FATAL("! Empty weather effect name");
+    }
+    return true;
 }
 
 bool CEnvironment::StartWeatherFXFromTime(shared_str name, float time) {
@@ -528,39 +475,37 @@ void CEnvironment::OnFrame()
 	if (g_pGameLevel == nullptr && Device.IsEditorMode())
 	{
 		SetGameTime(fGameTime + Device.fTimeDelta * fTimeFactor, fTimeFactor);
+		if (fsimilar(ed_to_time, DAY_LENGTH) && fsimilar(ed_from_time, 0.f))
+        {
+            if (fGameTime > DAY_LENGTH)
+                fGameTime -= DAY_LENGTH;
+        }
+        else
+        {
+            if (fGameTime > ed_to_time || fGameTime < ed_from_time)
+            {
+                fGameTime = ed_from_time;
+                Current[0] = Current[1] = 0;
+            }
+        }
+    }
 
-		if (fsimilar(ed_to_time, DAY_LENGTH) && fsimilar(ed_from_time, 0.f)) 
-		{
-			if (fGameTime > DAY_LENGTH)	fGameTime -= DAY_LENGTH;
-		}
-		else 
-		{
-			if (fGameTime > ed_to_time) 
-			{
-				fGameTime = fGameTime - ed_to_time + ed_from_time;
-				Current[0] = Current[1] = 0;
-			}
-
-			if (fGameTime < ed_from_time) 
-			{
-				fGameTime = ed_from_time;
-				Current[0] = Current[1] = 0;
-			}
-		}
-	}
-
-	if (!CurrentEnv)
-		return;
+    if (!CurrentEnv)
+        return;
 
 //	if (pInput->iGetAsyncKeyState(DIK_O))		SetWeatherFX("surge_day"); 
 	float					current_weight;
 	lerp					(current_weight);
 
-	// Igor. Dynamic sun position. 
-	const static bool isReadSunConfig = EngineExternal()[EEngineExternalEnvironment::ReadSunConfig];
-	if (!isReadSunConfig && !::Render->is_sun_static()) {
-		calculate_dynamic_sun_dir();
-	}
+    // Igor. Dynamic sun position.
+#ifdef _EDITOR
+    if (!::Render->is_sun_static())
+        calculate_dynamic_sun_dir();
+#else
+    const static bool isReadSunConfig = EngineExternal()[EEngineExternalEnvironment::ReadSunConfig];
+    if (!isReadSunConfig && !::Render->is_sun_static())
+        calculate_dynamic_sun_dir();
+#endif
 
 #ifndef MASTER_GOLD
 	if(CurrentEnv->sun_dir.y>0)

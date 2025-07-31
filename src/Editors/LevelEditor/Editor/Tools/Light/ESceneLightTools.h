@@ -16,11 +16,18 @@ class ESceneLightTool: public ESceneCustomOTool
 	typedef ESceneCustomOTool inherited;
     friend class 		SceneBuilder;
     friend class 		CLight;
+
+    void OnLightSunChanged(PropValue* sender);
+
 protected:
-	enum{
-    	flShowSun			= (1<<31),
-        flShowControlName	= (1<<30),
+    enum
+    {
+        flShowSun         = (1 << 31),
+        flShowControlName = (1 << 30),
+        flWthrSunDir      = (1 << 29),
+        flWthrHemi        = (1 << 28)
     };
+
     Flags32				m_Flags;
 	// hemisphere
     u32					m_HemiControl;

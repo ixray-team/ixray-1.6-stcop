@@ -500,9 +500,12 @@ void  CLevelTool::Render()
 
 	case esEditLightAnim:
 	case esEditScene:
-		Scene->Render(UI->CurrentView().m_Camera.GetTransform()); 
-		if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
-			g_pGamePersistent->Environment().RenderLast();
+		Scene->Render(UI->CurrentView().m_Camera.GetTransform());
+        if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
+        {
+            g_pGamePersistent->Environment().RenderFlares();
+            g_pGamePersistent->Environment().RenderLast();
+        }
 	break;
 	case esBuildLevel: Builder.OnRender(); break;
 	}
@@ -512,12 +515,10 @@ void  CLevelTool::Render()
     inherited::Render();
 }
 
-
 void CLevelTool::ShowObjectList()
 {
  //if (pObjectListForm) pObjectListForm->ShowObjectList();
 }
-
 
 void CLevelTool::RealUpdateObjectList()
 {
@@ -525,12 +526,10 @@ void CLevelTool::RealUpdateObjectList()
 	m_Flags.set(flUpdateObjectList,FALSE);
 }
 
-
 bool CLevelTool::IsModified()
 {
 	return Scene->IsUnsaved();
 }
-
 
 #include "../XrECore/Editor/EditMesh.h"
 bool CLevelTool::RayPick(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n)

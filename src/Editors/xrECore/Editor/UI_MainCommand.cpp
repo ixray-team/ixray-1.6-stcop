@@ -10,6 +10,7 @@
 #include "UIEditLightAnim.h"
 #include "UIImageEditorForm.h"
 #include "UIMinimapEditorForm.h"
+#include "UIWeatherPropForm.h"
 #include "UISoundEditorForm.h"
 #include "D3DUtils.h"
 #include "UIMoveToCamera.h"
@@ -21,7 +22,7 @@
 #include "ImageManager.h"
 #include "SoundManager.h"
 #include "../Layers/xrRender/ResourceManager.h"
-#include "engine\XrGamePersistentEditors.h"
+#include "engine/XrGamePersistentEditors.h"
 #include "../../../xrEngine/string_table.h"
 
 
@@ -282,44 +283,52 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 		SndLib->OnCreate();
 		LALib.OnCreate	();
 		Lib.OnCreate	();
-		BOOL bWeather = psDeviceFlags.is(rsEnvironment);
-		psDeviceFlags.set(rsEnvironment, FALSE);
-		g_pGamePersistent= new XrGamePersistentEditors();
-		if (Tools)
-		{
-			if (Tools->OnCreate())
-			{
-				if(EPrefs)
-					EPrefs->LoadConfig();
+        BOOL bWeather = psDeviceFlags.is(rsEnvironment);
+        psDeviceFlags.set(rsEnvironment, false);
+        g_pGamePersistent = new XrGamePersistentEditors();
+        if (Tools)
+        {
+            if (Tools->OnCreate())
+            {
 
+                if (EPrefs)
+                {
+                    EPrefs->LoadConfig();
+                    if (bWeather && EPrefs->sWeather.size())
+                    {
+                            psDeviceFlags.set(rsEnvironment, true);
+                            g_pGamePersistent->Environment().SetWeather(EPrefs->sWeather, true);
+                    }
+                    g_pGamePersistent->Environment().ed_from_time = EPrefs->env_from_time;
+                    g_pGamePersistent->Environment().ed_to_time = EPrefs->env_to_time;
+                    g_pGamePersistent->Environment().fTimeFactor = EPrefs->env_speed;
+                }
 				EDevice->seqAppStart.Process(rp_AppStart);
 				ExecCommand(COMMAND_RESTORE_UI_BAR);
 				ExecCommand(COMMAND_REFRESH_UI_BAR);
 				ExecCommand(COMMAND_CLEAR);
 				ExecCommand(COMMAND_RENDER_FOCUS);
 				ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
-				ExecCommand(COMMAND_RENDER_RESIZE);
-				/*
-							if(bWeather && EPrefs->sWeather.size() )
-							{
-								psDeviceFlags.set(rsEnvironment, TRUE);
-								g_pGamePersistent->Environment().SetWeather(EPrefs->sWeather, true);
-
-							}
-				*/
-			}
-			else {
-				res = FALSE;
-			}
-		}
-	}else{
-		res 			= FALSE;
-	}
-	return res;
+                ExecCommand(COMMAND_RENDER_RESIZE);
+            }
+            else
+            {
+                res = false;
+            }
+        }
+    }
+    else
+    {
+        res = false;
+    }
+    return res;
 }             
 
 CCommandVar CommandDestroy(CCommandVar p1, CCommandVar p2)
 {
+    EPrefs->env_from_time = g_pGamePersistent->Environment().ed_from_time;
+    EPrefs->env_to_time = g_pGamePersistent->Environment().ed_to_time;
+    EPrefs->env_speed = g_pGamePersistent->Environment().fTimeFactor;
 	ExecCommand(COMMAND_SAVE_UI_BAR);
 	EPrefs->OnDestroy();
 	ExecCommand(COMMAND_CLEAR);
@@ -427,11 +436,13 @@ CCommandVar 	CommandImageEditor(CCommandVar p1, CCommandVar p2)
 	UIImageEditorForm::Show(false);
 	return				TRUE;
 }
+
 CCommandVar 	CommandImageEditorSelect(CCommandVar p1, CCommandVar p2)
 {
 	UIImageEditorForm::FindInEditor((xr_string)p1, !!p2);
 	return TRUE;
 }
+
 CCommandVar 	CommandLightAnimEditor(CCommandVar p1, CCommandVar p2)
 {
 	UIEditLightAnim::Show();
@@ -443,6 +454,12 @@ CCommandVar 	CommandMinimapEditor(CCommandVar p1, CCommandVar p2)
 	UIMinimapEditorForm::Show();
 	//TTMinimapEditor::Show   ();
 	return				    TRUE;
+}
+
+CCommandVar CommandWeatherProperties(CCommandVar p1, CCommandVar p2)
+{
+    UIWeatherPropForm::Show();
+    return TRUE;
 }
 
 CCommandVar 	CommandCheckTextures(CCommandVar p1, CCommandVar p2)
@@ -713,6 +730,8 @@ void TUI::RegisterCommands()
 	REGISTER_CMD_SE		(COMMAND_EXIT,               	"Exit",					CommandExit,		true);
 	REGISTER_CMD_S		(COMMAND_QUIT,           		CommandQuit);
 	REGISTER_CMD_SE		(COMMAND_EDITOR_PREF,    		"Editor Preference",	CommandEditorPrefs, false);
+
+    REGISTER_CMD_SE(COMMAND_WEATHER_PROPERTIES, "Weather Properties", CommandWeatherProperties, true);
 
 
 	REGISTER_CMD_SE	(COMMAND_SIMULATE,  			"Simulate",      		CommandSimulate, true);

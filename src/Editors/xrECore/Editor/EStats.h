@@ -23,6 +23,9 @@ public:
 	u32		lastDPS_verts;
 	u32		lastDPS_polys;
 	u32		lastDPS_calls;
+    u32     hours;
+    u32     minutes;
+    u32     seconds;
 
 	CStatTimer	RenderDUMP_RT;
 	CStatTimer	RenderTOTAL;		//

@@ -7,6 +7,8 @@
 
 #include "ui_main.h"
 #include "UI_ToolsCustom.h"
+#include "../xrEngine/Environment.h"
+#include "../xrEngine/IGame_Persistent.h"
 //---------------------------------------------------------------------------
 CCustomPreferences* EPrefs=0;
 //---------------------------------------------------------------------------
@@ -48,6 +50,11 @@ CCustomPreferences::CCustomPreferences()
 	scene_clear_color	= DEFAULT_CLEARCOLOR;
 	// objects
 	object_flags.zero	();
+    // Weather
+    env_speed           = 12.f;
+    env_from_time       = 0.f;
+    env_to_time         = 24.f * 60.f * 60.f;
+    // sWeather         = "";
 
 	//other
 	custom_icons.clear();
@@ -199,6 +206,12 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat	(props,"Viewport\\FOV",		  				    &view_fov,			0.1f,	170.f);
 	PHelper().CreateColor	(props,"Viewport\\Clear Color",		           	&scene_clear_color	);
 
+    /*/ Weather
+    PHelper().CreateFloat(props, "Weather\\Weather from Time", &env_from_time, 0.f, 86400.f);
+    PHelper().CreateFloat(props, "Weather\\Weather to Time", &env_to_time, 0.f, 24.f * 60.f * 60.f);
+    PHelper().CreateFloat(props, "Weather\\Weather time factor", &env_speed, 0.f, 10000.f);
+    PHelper().CreateRText(props, "Weather\\Weather Cycle", &sWeather);*/
+
 	PHelper().CreateSText	(props, "Compilers Path\\xrLC",					&Compiler_xrLC);
 	PHelper().CreateSText	(props,	"Compilers Path\\xrAI",		           	&Compiler_xrAI);
 	PHelper().CreateSText	(props, "Compilers Path\\xrDO",					&Compiler_xrDO);
@@ -320,7 +333,11 @@ void CCustomPreferences::Load()
 				scene_recent_list.push_back(fn.c_str());
 		}
 	}
-	sWeather = ((std::string)(JSONData["editor_prefs"]["weather"])).c_str();
+    // Weather
+    env_from_time = JSONData["editor_prefs"]["env_from_time"];
+    env_to_time = JSONData["editor_prefs"]["env_to_time"];
+    env_speed = JSONData["editor_prefs"]["env_speed"];
+    sWeather = ((std::string)(JSONData["editor_prefs"]["weather"])).c_str();
 
 	if (JSONData["ContentBrowser"].contains("file_custom_icon"))
 	{
@@ -388,7 +405,12 @@ void CCustomPreferences::Save()
 
 	auto WndFlags = SDL_GetWindowFlags(g_AppInfo.Window);
 
-	JSONData["editor_prefs"]["weather"] = sWeather.c_str() ? sWeather.c_str() : "";
+    // Weather
+    JSONData["editor_prefs"]["env_from_time"] = env_from_time;
+    JSONData["editor_prefs"]["env_to_time"] = env_to_time;
+    JSONData["editor_prefs"]["env_speed"] = env_speed;
+    JSONData["editor_prefs"]["weather"] = sWeather.c_str() ? sWeather.c_str() : "";
+
 	JSONData["render"]["maximized"] = WndFlags & SDL_WINDOW_MAXIMIZED;
 
 	JSONData["render"]["w"] = EDevice->dwRealWidth;
