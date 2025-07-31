@@ -5,7 +5,9 @@
 #include "light_point.h"
 #include "xrFace.h"
 
-void CDeflector::LightGPU(HASH& H)
+extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
+
+void CDeflector::LightGPU( HASH& H )
 {
 	// Geometrical bounds
 	Fbox bb;	
@@ -56,11 +58,10 @@ void CDeflector::LightGPU(HASH& H)
 
 }
 
-extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
-
-void CDeflector::L_DirectGPU(HASH& H)
+// Запрашивает лучи у ГПУ
+void CDeflector::L_DirectGPU(   HASH& H)
 {
-	auto FromBarry = [&](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
+	auto FromBarry = [](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
 		{
 			Vertex* V1 = F->v[0];
 			Vertex* V2 = F->v[1];
@@ -84,6 +85,8 @@ void CDeflector::L_DirectGPU(HASH& H)
 	Jitter_Select(Jitter, Jcount);
 	u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable;
  
+	ApplyLmap = true;
+
 	for (u32 V = 0; V < lm.height; V++)
 	{
  		for (u32 U = 0; U < lm.width; U++)
@@ -105,26 +108,28 @@ void CDeflector::L_DirectGPU(HASH& H)
 					{
 						Face* F = (*it)->owner;
 						FromBarry(F, wP, wN, B);
+						
  						GPUTaskinSystem.LightPointPackedDeflector(this, U, V, wP, wN, flags, F);
+						ColorsRecvested++;
+
   						Fcount += 1;
  						break;
 					}
 				}
 			}
-
-			// FacesCount[{U, V}] = Fcount;
-			FacesCount[GPUTaskinSystem.MakeKey(U, V)] = Fcount;
+ 			 
+ 			def_FacesCount[GPUTaskinSystem.MakeKey(U, V)] = Fcount;
 		}
 	}
-
-
-
-	NeedGarbageRays = true;
+ 
+	GPUTaskinSystem.DeflectorsRecvested.fetch_add(1);
 }
 
-void CDeflector::ApplyGPU(HASH& H)
+void CDeflector::EdgesLighting(HASH& H)
 {
-	auto EdgeProcessing = [](Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip, CDeflector* Deflector)
+	auto& lm = layer;
+
+	auto EdgeProcessing = [](CDeflector* Deflector, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 	{
 		Fvector vdir;
 		vdir.sub(v2, v1);
@@ -158,29 +163,57 @@ void CDeflector::ApplyGPU(HASH& H)
  			
 			Fvector			P;	
 			P.mad(v1, vdir, time);
-			// LightPoint(nullptr, nullptr, C, P, N, lc_global_data()->L_static(), (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
 			
 			u32 flags = 0;
 			GPUTaskinSystem.LightPointPackedDeflector(Deflector, _x, _y, P, N, flags, skip);
-
-			// C.mul(.5f);
-			// lm.surface[_y * lm.width + _x]._set(C);
-			// lm.marker[_y * lm.width + _x] = 255;
 		}
 	};
  
-	if (NeedGarbageRays)
+ 	Fbox2			bounds;
+	Bounds_Summary(bounds);
+	H.initialize(bounds, (u32)UVpolys.size());
+	for (u32 fid = 0; fid < UVpolys.size(); fid++)
 	{
-		NeedGarbageRays = false;
+		UVtri* T = &(UVpolys[fid]);
+		Bounds(fid, bounds);
+		H.add(bounds, T);
+	}
 
-		lm_layer& lm = layer;
-		for (auto& [key, count] : FacesCount)
+	ApplyEdge = true;
+
+	// *** Render Edges (Embree Process)
+	float texel_size = (1.f / float(_max(lm.width, lm.height))) / 8.f;
+	for (u32 t = 0; t < UVpolys.size(); t++)
+	{
+		UVtri& T = UVpolys[t];
+		Face* F = T.owner;
+		EdgeProcessing(this, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size, F);
+		EdgeProcessing(this, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F);
+		EdgeProcessing(this, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);
+	}
+}
+
+/// Залетают лучи после расчета в ГПУ
+
+void CDeflector::ApplyColors()
+{
+ 	lm_layer& lm = layer;
+
+	// Faces Только будет при простом проходе
+	GPUTaskinSystem.DeflectorsReady.fetch_add(1);
+
+	if (def_FacesCount.size() && ApplyLmap)
+	{
+		ApplyLmap = false;
+
+  		lm_layer& lm = layer;
+		for (auto& [key, count] : def_FacesCount)
 		{
 			u32 U = GPUTaskinSystem.GetU(key);
 			u32 V = GPUTaskinSystem.GetV(key);
- 			if (count)
+			if (count)
 			{
-				base_color_c& C = color_map[key];
+				base_color_c& C = def_color_map[key];
 				C.scale(count);
 				C.mul(.5f);
 				lm.surface[V * lm.width + U]._set(C);
@@ -194,68 +227,51 @@ void CDeflector::ApplyGPU(HASH& H)
 			}
 		}
 
- 		FacesCount.clear();
-		color_map.clear();
-  
-		Fbox2			bounds;
-		Bounds_Summary(bounds);
-		H.initialize(bounds, (u32)UVpolys.size());
-		for (u32 fid = 0; fid < UVpolys.size(); fid++)
-		{
-			UVtri* T = &(UVpolys[fid]);
-			Bounds(fid, bounds);
-			H.add(bounds, T);
-		}
+ 		def_FacesCount.clear();
+		def_color_map.clear();
+  	}	
 
-		NeedApplyEdges = true;
-		// *** Render Edges (Embree Process)
-		float texel_size = (1.f / float(_max(lm.width, lm.height))) / 8.f;
-		for (u32 t = 0; t < UVpolys.size(); t++)
-		{
-			UVtri& T = UVpolys[t];
-			Face* F = T.owner;
-			EdgeProcessing(T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size, F, this);
-			EdgeProcessing(T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F, this);
-			EdgeProcessing(T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F, this);
-		}
-	}	
-}
-
-void CDeflector::ApplyGPU_Edges(bool isFirst)
-{
-	if (NeedApplyEdges)
+	if (def_color_map.size() && ApplyEdge)
 	{
-		NeedApplyEdges = false;
-
-		lm_layer& lm = layer;
-		for (auto& [key, C] : color_map)
+		for (auto& F : def_color_map)
 		{
-			u32 _x = GPUTaskinSystem.GetU(key);
-			u32 _y = GPUTaskinSystem.GetV(key);
-			
- 			C.mul(.5f);
+			u32 _x = GPUTaskinSystem.GetU(F.first);
+			u32 _y = GPUTaskinSystem.GetV(F.first);
+			auto& C = F.second;
+
+			C.mul(.5f);
 			lm.surface[_y * lm.width + _x]._set(C);
 			lm.marker[_y * lm.width + _x] = 255;
 		}
-
- 		color_map.clear();
 	}
 
-	if (isFirst)
-	{
-		for (u32 ref = 254; ref > 0; ref--)
-			if (!ApplyBorders(layer, ref))
-				break;
-	}
+}
+
+void CDeflector::ApplyColor(size_t key, base_color_c& C)
+{
+	lm_layer& lm = layer;
+ 	u32 U = GPUTaskinSystem.GetU(key);
+	u32 V = GPUTaskinSystem.GetV(key);
+ 	def_color_map[key].add(C); 	 
+ 
+	if (ColorsRecvested != 0 && ColorsRecvested == ColorsApply)
+		ApplyColors();
 }
 
 // Перерасчет в более сжатый формат
-BOOL compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
-BOOL compress_Zero(lm_layer& lm, u32 rms);
+
+BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
+BOOL	compress_Zero(lm_layer& lm, u32 rms);
 
 void CDeflector::LowerResolutionGPU(HASH& H)
 {
-	ApplyResolution = false;
+	ApplyColors();
+ 
+ 	for (u32 ref = 254; ref > 0; ref--)
+	if (!ApplyBorders(layer, ref))
+		break;
+
+ 	ApplyResolution = false;
 
 	try
 	{
@@ -288,9 +304,12 @@ void CDeflector::LowerResolutionGPU(HASH& H)
 	}
 }
  
+// xr_atomic_u32 Index = 0;
 void CDeflector::ApplyExpadBordersGPU()
 {
 	if (ApplyResolution) return;
+	
+ 	// clMsg("Deflector expand border [%u] ", Index.load());
 
 	// Expand with borders
 	try
@@ -305,8 +324,7 @@ void CDeflector::ApplyExpadBordersGPU()
 			for (u32 y = 0; y < T.height; y++)
 			{
 				int			py = int(y) - BORDER;
-				clamp(py, 0, int(layer.height - 1));
-				base_color	C = layer.surface[py];
+				clamp(py, 0, int(layer.height - 1));				base_color	C = layer.surface[py];
 				T.surface[y * 2 + 0] = C;
 				T.marker[y * 2 + 0] = 255;
 				T.surface[y * 2 + 1] = C;
