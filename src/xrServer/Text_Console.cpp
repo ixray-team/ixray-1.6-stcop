@@ -30,7 +30,7 @@ LRESULT CALLBACK TextConsole_WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 void	CTextConsole::CreateConsoleWnd()
 {
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
-	auto Window = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+	HWND Window = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
 
 	//----------------------------------
 	RECT cRc;

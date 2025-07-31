@@ -26,6 +26,9 @@ int APIENTRY WinMain
 	char* lpCmdLine,
 	int nCmdShow
 ) {
+	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS)) {
+		return -1;
+	}
 	Debug._initialize(false);
 
 	g_dedicated_server = true;
