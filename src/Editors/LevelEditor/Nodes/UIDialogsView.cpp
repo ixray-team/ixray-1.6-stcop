@@ -97,8 +97,14 @@ void CUIDialogView::Draw()
 					SaveDialog();
 				}
 				ImGui::SameLine();
-				ImGui::Checkbox("Auto Hide", &IsAutoHide);
+				if (ImGui::Button("+"))
+				{
+					InputBoxMode = DialogInputBoxMode::DialogName;
+					detail::show_modal_input_box = true;
+				}
+				ImGui::SameLine();
 
+				ImGui::Checkbox("Auto Hide", &IsAutoHide);
 				ImGui::SameLine();
 
 				ImGui::SetCursorPosX(282);
@@ -127,6 +133,7 @@ void CUIDialogView::Draw()
 		{
 			if (ImGui::MenuItem("Create Node"))
 			{
+				InputBoxMode = DialogInputBoxMode::NodeName;
 				detail::show_modal_input_box = true;
 				std::memset(detail::input_buffer, 0, sizeof(detail::input_buffer));
 
@@ -136,6 +143,24 @@ void CUIDialogView::Draw()
 					std::memcpy(detail::input_buffer, xr_string::ToString(NodeID).c_str(), sizeof(detail::input_buffer));
 				}
 			}
+
+			if (HoveredNodeID != -1 && ImGui::MenuItem("Delete Node"))
+			{
+				auto SelectedNode = std::find_if(Nodes.begin(), Nodes.end(), [HoveredNodeID](INodeUnknown* TestingNode)
+				{
+					return TestingNode->NodeID == HoveredNodeID;
+				});
+
+				if (SelectedNode != Nodes.end())
+				{
+					CDialogNode* DialogNode = (CDialogNode*)*SelectedNode;
+					DialogNode->ParentNode->Parent()->DeleteChild(DialogNode->ParentNode);
+					Nodes.erase(SelectedNode);
+					DialogNode->DestroyContacts();
+					xr_delete(DialogNode);
+				}
+			}
+
 			ImGui::EndPopup();
 		}
 
@@ -149,21 +174,42 @@ void CUIDialogView::Draw()
 			detail::HasResult = false;
 
 			auto Iter = std::find_if(Dialogs.begin(), Dialogs.end(), [this](auto& Pair)
-				{
-					return LastOpenDialog == Pair.first;
-				});
-
-			if (Iter != Dialogs.end())
 			{
-				if (XML_NODE* RootNode = File.NavigateToNode(Iter->second, "phrase_list"))
-				{
-					XML_NODE* NewNode = RootNode->ToElement()->InsertNewChildElement("phrase");
-					NewNode->ToElement()->SetAttribute("id", detail::input_buffer);
+				return LastOpenDialog == Pair.first;
+			});
 
-					CDialogNode* MacroNode = (CDialogNode*)Nodes.emplace_back(new CDialogNode(detail::input_buffer));
-					MacroNode->ParentNode = NewNode;
-					const ImVec2 click_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
-					MacroNode->SetStartPos(click_pos.x, click_pos.y);
+			if (InputBoxMode == DialogInputBoxMode::NodeName)
+			{
+				if (Iter != Dialogs.end())
+				{
+					if (XML_NODE* RootNode = File.NavigateToNode(Iter->second, "phrase_list"))
+					{
+						XML_NODE* NewNode = RootNode->ToElement()->InsertNewChildElement("phrase");
+						NewNode->ToElement()->SetAttribute("id", detail::input_buffer);
+
+						CDialogNode* MacroNode = (CDialogNode*)Nodes.emplace_back(new CDialogNode(detail::input_buffer));
+						MacroNode->ParentNode = NewNode;
+						const ImVec2 click_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
+						MacroNode->SetStartPos(click_pos.x, click_pos.y);
+					}
+				}
+			}
+			else
+			{
+				XML_NODE* RootNode = nullptr;
+				
+				if (Iter != Dialogs.end())
+				{
+					RootNode = Iter->second->Parent();
+				}
+				else if (!Dialogs.empty())
+				{
+					RootNode = Dialogs.front().second->Parent();
+				}
+
+				if (RootNode != nullptr)
+				{
+					NewDialog(RootNode);
 				}
 			}
 		}
@@ -178,6 +224,16 @@ void CUIDialogView::Draw()
 void CUIDialogView::Show(bool State)
 {
 	bOpen = State;
+}
+
+void CUIDialogView::NewDialog(XML_NODE* RootDialogNode)
+{
+	XML_NODE* NewDialog = RootDialogNode->ToElement()->InsertNewChildElement("dialog");
+	NewDialog->ToElement()->SetAttribute("id", detail::input_buffer);
+	NewDialog->ToElement()->InsertNewChildElement("phrase_list");
+
+	Dialogs.emplace_back(detail::input_buffer, NewDialog);
+	OpenDialog(detail::input_buffer, NewDialog);
 }
 
 void CUIDialogView::SaveDialog()
@@ -206,16 +262,16 @@ void CUIDialogView::OpenDialog(const shared_str& Str, XML_NODE* Node)
 	xr_map<CDialogNode*, xr_vector<shared_str>> NodeGraph;
 
 	auto MakeListStringFromNode = [](shared_str& Value, shared_str Text)
+	{
+		if (Value.size() > 0)
 		{
-			if (Value.size() > 0)
-			{
-				Value = make_string<shared_str>("%s, %s", *Value, *Text);
-			}
-			else
-			{
-				Value = Text;
-			}
-		};
+			Value = make_string<shared_str>("%s, %s", *Value, *Text);
+		}
+		else
+		{
+			Value = Text;
+		}
+	};
 
 	while (PhraseNode != nullptr)
 	{
@@ -348,6 +404,9 @@ void CUIDialogView::OpenDialog(const shared_str& Str, XML_NODE* Node)
 
 					int NextID = TryNode->GetContactLink();
 					Node->CreateContactLink(ContackID, NextID);
+					Node->MakeOutNode(TryNode, true);
+					TryNode->MakeInNode(Node);
+
 					NodeOffsetYIterator += 230;
 				}
 			}
@@ -450,7 +509,10 @@ void CUIDialogView::OpenFile(const xr_path& Path)
 
 		shared_str NodeID = ChildNode->ToElement()->Attribute("id");
 		if (NodeID.size() == 0)
+		{
+			ChildNode = ChildNode->NextSibling();
 			continue;
+		}
 
 		Viewer.Dialogs.emplace_back(NodeID, ChildNode);
 		ChildNode = ChildNode->NextSibling();
