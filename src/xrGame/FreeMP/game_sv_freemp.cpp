@@ -372,7 +372,21 @@ void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 				}
 			}
 			actor->inventory().Clear();
-			DBService::UserDBProperty g = { cur_user_id, actor->conditions().GetHealth(), actor->conditions().GetPower(), actor->conditions().GetRadiation(), actor->conditions().GetPsy(), actor->conditions().GetSleepiness(), actor->conditions().GetSatiety(), actor->conditions().GetThirst(), actor->conditions().BleedingSpeed(), actor->get_money(), actor->Community()};
+			DBService::UserDBProperty g = 
+			{
+				cur_user_id,
+				actor->conditions().GetHealth(),
+				actor->conditions().GetPower(),
+				actor->conditions().GetRadiation(),
+				actor->conditions().GetPsy(),
+				actor->conditions().GetSleepiness(),
+				actor->conditions().GetSatiety(),
+				actor->conditions().GetThirst(), 
+				actor->conditions().BleedingSpeed(), 
+				(int)actor->get_money(),
+				actor->Community()
+			};
+
 			GSQLConnector.UpdateInsertProperty(g);
 		}
 		else
