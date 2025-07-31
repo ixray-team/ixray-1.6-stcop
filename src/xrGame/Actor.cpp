@@ -112,6 +112,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	cameras[eacFixedLookAt]	= new CCameraFixedLook				(this);
 	cameras[eacFixedLookAt]->Load("actor_look_cam");
 
+	m_night_vision = new CNightVisionEffector(this);
+
 	cam_active				= eacFirstEye;
 	fPrevCamPos				= 0.0f;
 	vPrevCamDir.set			(0.f,0.f,1.f);
@@ -225,6 +227,7 @@ CActor::~CActor()
 	xr_delete				(m_anims);
 	xr_delete				(pPickup);
 	xr_delete				(m_vehicle_anims);
+	xr_delete				(m_night_vision);
 }
 
 void CActor::reinit	()
@@ -2113,18 +2116,24 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 {
 	CInventoryOwner::OnItemDrop(inventory_item, just_before_destroy);
 
-	CCustomOutfit* outfit		= smart_cast<CCustomOutfit*>(inventory_item);
-	if(outfit && inventory_item->m_ItemCurrPlace.type==eItemPlaceSlot)
+	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(inventory_item);
+	if (outfit && inventory_item->m_ItemCurrPlace.type == eItemPlaceSlot)
 	{
-		outfit->ApplySkinModel	(this, false, false);
+		outfit->ApplySkinModel(this, false, false);
+
+		if (GetNightVisionEffector() && GetNightVisionEffector()->GetStatus() && !outfit->bIsHelmetAvaliable)
+		{
+			GetNightVisionEffector()->SwitchNightVision(false);
+		}
 	}
 
 	CHelmet* helmet = smart_cast<CHelmet*>(inventory_item);
 	if (helmet && inventory_item->m_ItemCurrPlace.type == eItemPlaceSlot)
 	{
-		CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
-		if (torch && torch->GetNightVisionStatus())
-			torch->SwitchNightVision(false);
+		if (GetNightVisionEffector() && GetNightVisionEffector()->GetStatus())
+		{
+			GetNightVisionEffector()->SwitchNightVision(false);
+		}
 	}
 
 	CWeapon* weapon	= smart_cast<CWeapon*>(inventory_item);
@@ -2133,8 +2142,6 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 		weapon->bReloadKeyPressed = false;
 		weapon->bAmmotypeKeyPressed = false;
 		weapon->OnZoomOut();
-		if(weapon->GetRememberActorNVisnStatus())
-			weapon->EnableActorNVisnAfterZoom();
 	}
 
 	// Pavel: при продаже в МП граната удаляется у игрока
@@ -2218,25 +2225,13 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 	}
 
 	CCustomOutfit* outfit = GetOutfit();
-	if ( outfit )
+	if (outfit)
 	{
 		conditions().ChangeBleeding		(outfit->m_fBleedingRestoreSpeed  * f_update_time);
 		conditions().ChangeHealth		(outfit->m_fHealthRestoreSpeed    * f_update_time);
 		conditions().ChangePower		(outfit->m_fPowerRestoreSpeed     * f_update_time);
 		conditions().ChangeSatiety		(outfit->m_fSatietyRestoreSpeed   * f_update_time);
 		conditions().ChangeRadiation	(outfit->m_fRadiationRestoreSpeed * f_update_time);
-	}
-	else
-	{
-		CHelmet* pHelmet				= smart_cast<CHelmet*>(inventory().ItemFromSlot(HELMET_SLOT));
-		if(!pHelmet)
-		{
-			CTorch* pTorch = smart_cast<CTorch*>( inventory().ItemFromSlot(TORCH_SLOT) );
-			if ( pTorch && pTorch->GetNightVisionStatus() )
-			{
-				pTorch->SwitchNightVision(false);
-			}
-		}
 	}
 }
 
