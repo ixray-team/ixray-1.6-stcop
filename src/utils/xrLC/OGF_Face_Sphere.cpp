@@ -9,36 +9,38 @@ BOOL	f_valid		(float f)
 	return _finite(f) && !_isnan(f);
 }
 
-BOOL				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
+BOOL SphereValid(xr_vector<Fvector>& geom, Fsphere& test)
 {
-	if (!f_valid(test.P.x) || !f_valid(test.R))	{
-		clMsg	("*** Attention ***: invalid sphere: %f,%f,%f - %f",test.P.x,test.P.y,test.P.z,test.R);
+	if (!f_valid(test.P.x) || !f_valid(test.R)) {
+		clMsg("*** Attention ***: invalid sphere: %f,%f,%f - %f", test.P.x, test.P.y, test.P.z, test.R);
 	}
 
-	Fsphere	S	=	test;
-	S.R			+=	EPS_L;
-	for (xr_vector<Fvector>::iterator	I = geom.begin(); I!=geom.end(); I++)
+	Fsphere	S = test;
+	S.R += EPS_L;
+	for (xr_vector<Fvector>::iterator I = geom.begin(); I != geom.end(); I++)
 		if (!S.contains(*I))	return FALSE;
 	return TRUE;
 }
 
-Fsphere CalculateSphere(xr_vector<Fvector>& V)
+Fsphere CalculateSphere(xr_vector<Fvector>& V, Fbox &bbox)
 {
-	Fsphere S2; Fbox bbox;
-	xr_vector<Fvector>::iterator	I;
+	Fsphere S2;
+
 	bbox.invalidate();
-	for (auto I : V)
+	for (auto& I : V)
 		bbox.modify(I);
+
 	bbox.grow(EPS_L);
 	bbox.getsphere(S2.P, S2.R);
 
 	S2.R = -1;
-	for (auto I : V)
+	for (auto& I : V)
 	{
 		float d = S2.P.distance_to_sqr(I);
 		if (d > S2.R)
 			S2.R = d;
 	}
+
 	S2.R = _sqrt(_abs(S2.R));
 	return S2;
 }
@@ -53,23 +55,23 @@ Fsphere CalculateMagic(xr_vector<Fvector>& V)
 	return S3;
 }
 
-void				OGF_Base::CalcBounds	() 
+void OGF_Base::CalcBounds() 
 {
 	// get geometry
-	xr_vector<Fvector>		V;
-	V.clear						();
-	V.reserve					(4096);
-	
- 	GetGeometry					(V);
+	xr_vector<Fvector> V;
+	V.clear();
+	V.reserve(4096);
+
+	GetGeometry(V);
 	 
 	//se7kills (Merging Problems Need fix this)
 	if (V.size() < 3)
 		return; 
 	 
 	// 1: calc first variation
-	Fsphere	S1; Fsphere_compute				(S1,&*V.begin(),(u32)V.size());
+	Fsphere	S1; Fsphere_compute(S1,&*V.begin(),(u32)V.size());
 	// 2: calc ordinary algorithm (2nd)
-	Fsphere	S2 = CalculateSphere(V);
+	Fsphere	S2 = CalculateSphere(V, bbox);
 	// 3: calc magic-fm
 	Fsphere S3 = CalculateMagic(V);
 	 
