@@ -38,6 +38,8 @@ public:
 	CUIScrollView*				UIListWnd;
 	CUIScrollView*				UIDetailsWnd;
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	CUIFrameWindow*				m_background;
 	CUIFrameWindow*				UIFrameContacts;
@@ -56,4 +58,7 @@ public:
 	virtual						~CUIPdaContactItem		();
 	virtual void				SetSelected				(bool b);
 	virtual bool				OnMouseDown				(int mouse_btn);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUISelectable* ui_cast_selectable() { return this; }
 };

@@ -33,4 +33,6 @@ public:
     void SetStageTitle(const char* title) const override;
     void SetStageTip(const char* header, const char* tipNumber, const char* tip) const override;
     virtual void Draw();
+
+    virtual CUIWindow* ui_cast_window() { return this; }
 };

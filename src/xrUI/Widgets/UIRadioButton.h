@@ -11,4 +11,5 @@ public:
 	virtual void InitButton(Fvector2 pos, Fvector2 size);
 	virtual bool InitTexture(LPCSTR tex_name, bool fatal = true);
 	virtual void SetTextX(float x)	{/*do nothing*/}
+	virtual CUIWindow* ui_cast_window() { return this; }
 };

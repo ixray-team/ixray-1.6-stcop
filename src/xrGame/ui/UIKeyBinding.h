@@ -17,6 +17,9 @@ public:
 	void			CheckStructure			(CUIXml& xml_doc);
 	bool			IsActionExist			(LPCSTR action, CUIXml& xml_doc);
 #endif
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	void			FillUpList				(CUIXml& xml_doc, LPCSTR path);
 

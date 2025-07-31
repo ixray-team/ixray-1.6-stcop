@@ -29,6 +29,8 @@ public:
 			void	InitFromXML			(CUIXml& xml, LPCSTR path);
 			void	SetVelocity			(float v);
 	virtual void	Update				();
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
 class CUIArtefactDetectorSimple :public CUIArtefactDetectorBase
@@ -79,6 +81,8 @@ public:
 	void		construct			(CEliteDetector* p);
 	void		Clear				();
 	void		RegisterItemToDraw	(const Fvector& p, const shared_str& palette_idx);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
 

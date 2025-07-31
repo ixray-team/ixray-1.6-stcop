@@ -30,6 +30,8 @@ public:
 	virtual void	Show				( bool status );
 	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData );
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 private: // m_
 	CUIFrameWindow*		m_background;
 	CUIScrollView*		m_list;
@@ -52,6 +54,8 @@ public:
 
 			void	init_from_xml		( CUIXml& xml, int index );
 //	virtual void	Update				();
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 
 private: // m_
 	CUIStatic*		m_image[4];

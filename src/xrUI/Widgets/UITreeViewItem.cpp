@@ -127,23 +127,30 @@ void CUITreeViewItem::OnOpenClose()
 void CUITreeViewItem::Open()
 {
 	// Если не рут или уже открыты, то ничего не делаем
-	if (!isRoot || isOpened) return;
+	if (!isRoot || isOpened)
+	{
+		return;
+	}
+
 	isOpened = true;
 
 	// Изменяем состояние
 	OnOpenClose();
-	
+
 	// Аттачим все подэлементы к родтельскому листбоксу
-	CUIListWnd *pList = smart_cast<CUIListWnd*>(GetParent());
-	
+	CUIListWnd* pList = GetParent()->ui_cast_list();
+
 	R_ASSERT(pList);
-	if (!pList) return;
+	if (pList == nullptr)
+	{
+		return;
+	}
 
 	int pos = pList->GetItemPos(this);
 
-	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for (CUITreeViewItem* item : vSubItems)
 	{
-		pList->AddItem(*it, ++pos);
+		pList->AddItem(item, ++pos);
 	}
 }
 
@@ -152,30 +159,37 @@ void CUITreeViewItem::Open()
 void CUITreeViewItem::Close()
 {
 	// Если не рут или уже открыты, то ничего не делаем
-	if (!isRoot || !isOpened) return;
+	if (!isRoot || !isOpened)
+	{
+		return;
+	}
+
 	isOpened = false;
 
 	// Изменяем состояние
 	OnOpenClose();
 
 	// Детачим все подэлементы
-	CUIListWnd *pList = smart_cast<CUIListWnd*>(GetParent());
+	CUIListWnd* pList = GetParent()->ui_cast_list();
 
 	R_ASSERT(pList);
-	if (!pList) return;
+	if (pList == nullptr)
+	{
+		return;
+	}
 
-	int pos;
+	int pos = 0;
 
 	// Сначала все закрыть
-	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for (CUITreeViewItem* item : vSubItems)
 	{
-		(*it)->Close();
+		item->Close();
 	}
 
 	// Затем все датачим
-	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for (CUITreeViewItem* item : vSubItems)
 	{
-		pos = pList->GetItemPos(*it);
+		pos = pList->GetItemPos(item);
 		pList->RemoveItem(pos);
 	}
 }
@@ -434,25 +448,25 @@ void CUITreeViewItem::CheckParentMark(CUITreeViewItem *pOwner)
 // Standalone function for tree hierarchy creation
 //////////////////////////////////////////////////////////////////////////
 
-void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pListToAdd, int leafProperty,
-					  CGameFont *pRootFont, u32 rootColor, CGameFont *pLeafFont, u32 leafColor, bool markRead)
+void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pListToAdd, int leafProperty, CGameFont* pRootFont, u32 rootColor, CGameFont* pLeafFont, u32 leafColor, bool markRead)
 {
 	// Nested function emulation
 	class AddTreeTail_
 	{
 	private:
-		CGameFont	*pRootFnt;
+		CGameFont* pRootFnt;
 		u32			rootItemColor;
 	public:
-		AddTreeTail_(CGameFont *f, u32 cl)
-			:	pRootFnt		(f),
-				rootItemColor	(cl)
-		{}
+		AddTreeTail_(CGameFont* f, u32 cl)
+			: pRootFnt(f),
+			rootItemColor(cl)
+		{
+		}
 
-		CUITreeViewItem * operator () (GroupTree_it it, GroupTree &cont, CUITreeViewItem *pItemToIns)
+		CUITreeViewItem* operator () (GroupTree_it it, GroupTree& cont, CUITreeViewItem* pItemToIns)
 		{
 			// Вставляем иерархию разделов в энциклопедию
-			CUITreeViewItem *pNewItem = NULL;
+			CUITreeViewItem* pNewItem = NULL;
 
 			for (GroupTree_it it2 = it; it2 != cont.end(); ++it2)
 			{
@@ -504,18 +518,18 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 	}
 
 	// Теперь ищем нет ли затребованных групп уже в наличии
-	CUITreeViewItem *pTVItem = NULL, *pTVItemChilds = NULL;
+	CUITreeViewItem* pTVItem = nullptr, *pTVItemChilds = nullptr;
 	bool status = false;
 
 	// Для всех рутовых элементов
 	for (int i = 0; i < pListToAdd->GetItemsCount(); ++i)
 	{
-		pTVItem = smart_cast<CUITreeViewItem*>(pListToAdd->GetItem(i));
+		pTVItem = pListToAdd->GetItem(i)->ui_cast_tree_view_item();
 		R_ASSERT(pTVItem);
 
 		pTVItem->Close();
 
-		xr_string	caption = pTVItem->GetText();
+		xr_string caption = pTVItem->GetText();
 		// Remove "+" sign
 		caption.erase(0, 1);
 
@@ -562,7 +576,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 	// Cначала проверяем нет ли записи с таким названием, и добавляем если нет
 	//	if (!pTVItemChilds->Find(*name))
 	//	{
-	pTVItem		= new CUITreeViewItem();
+	pTVItem = new CUITreeViewItem();
 	pTVItem->SetFont(pLeafFont);
 	pTVItem->SetReadedColor(leafColor);
 	pTVItem->SetText(*g_pStringTable->translate(*leafName));

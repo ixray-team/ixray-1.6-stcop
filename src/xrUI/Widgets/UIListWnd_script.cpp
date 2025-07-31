@@ -13,10 +13,14 @@ bool CUIListWnd::AddItem_script(CUIListItem* item)
 
 struct CUIListItemWrapper : public CUIListItem, public luabind::wrap_base
 {
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIListItem* ui_cast_list_item() { return this; }
 };
 
 struct CUIListItemExWrapper : public CUIListItemEx, public luabind::wrap_base
 {
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIListItem* ui_cast_list_item() { return this; }
 };
 
 // clang-format off

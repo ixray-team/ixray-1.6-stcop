@@ -16,6 +16,10 @@ public:
 				bool			IsHelperOrHasHelperChild	();
 				void			Update						();
 				CInventoryItem* object						() {return (CInventoryItem*)m_pData;}
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUICellItem* ui_cast_cell_item() { return this; }
 };
 
 class CUIAmmoCellItem :public CUIInventoryCellItem
@@ -30,6 +34,10 @@ public:
 	virtual		bool			 EqualTo						(CUICellItem* itm);
 	virtual		CUIDragItem*	 CreateDragItem				();
 				CWeaponAmmo*	 object						() {return (CWeaponAmmo*)m_pData;}
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUICellItem* ui_cast_cell_item() { return this; }
 };
 
 class CUIWeaponCellItem :public CUIInventoryCellItem
@@ -61,6 +69,10 @@ public:
 	virtual		CUIDragItem*	CreateDragItem				();
 	virtual		bool			EqualTo						(CUICellItem* itm);
 	CUIStatic*					get_addon_static			(u32 idx)				{return m_addons[idx];}
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUICellItem* ui_cast_cell_item() { return this; }
 };
 
 class CBuyItemCustomDrawCell :public ICustomDrawCellItem
