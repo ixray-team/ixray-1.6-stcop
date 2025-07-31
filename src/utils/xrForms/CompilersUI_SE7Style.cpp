@@ -355,13 +355,24 @@ void DrawCompilerConfig()
 	{
 		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
 		ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
-		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
+		ImGui::Separator();
+
+		ImGui::TextColored(ImVec4(RGBAColor(204, 102, 102, 255)), "(Warning Disable MU in raycast)");
+
+		ImGui::Checkbox("Embree Optimized", &gCompilerMode.Embree_SplitBVH);
+
+		ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
+ 		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
 		ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
+
+		ImGui::Separator();
 
   		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
 		ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
 		ImGui::Checkbox("ShowMain", &ShowMainUI);
+
+		ImGui::InputInt("Threads Max", &gCompilerMode.ThreadsPerWork);
 
 		//ImGui::EndChild();
 	}

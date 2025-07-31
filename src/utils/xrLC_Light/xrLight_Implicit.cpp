@@ -42,24 +42,27 @@ void	ImplicitThread::Execute()
 }
 
 // 2 : Mainthread + UI thread
-#define	NUM_THREADS	 CPU::ID.n_threads
 ImplicitCalcGlobs cl_globs;
 int ThreadTaskID_Implication = 0;
+CTimer tImplicit;
 
+#include "../xrForms/CompilersUI.h"
+extern CompilersMode gCompilerMode;;
 
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
 	// Start threads
 	ThreadTaskID_Implication = 0;
 
+	tImplicit.Start();
+
 	CThreadManager			tmanager;
- 	for (u32 thID = 0; thID < NUM_THREADS; thID++)
+ 	for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
 		tmanager.start(new ImplicitThread(thID, &defl));
 	tmanager.wait();
 }
 
 xrCriticalSection csLockImplicit;
-
 
 void	ImplicitExecute::	Execute	( )
 {
@@ -93,8 +96,7 @@ void	ImplicitExecute::	Execute	( )
 			ThreadTaskID_Implication++;
 
 			Progress( float(V) / float(defl.Height()) );
-
-			csLockImplicit.Leave();
+ 			csLockImplicit.Leave();
 
 
 			for (u32 U=0; U<defl.Width(); U++)
@@ -150,9 +152,11 @@ void	ImplicitExecute::	Execute	( )
 				}
 			}
 
-			if (V % 64 == 0)
-				Status("CurrentV: %d", V);
+			// if (V % 64 == 0)
+			// 	Status("CurrentV: %d", V);
 			
+			if (V % 8 == 0)
+				AditionalData("CurrentV: %u | time: %.0f", V, tImplicit.GetElapsed_sec());
 		}
 }
 

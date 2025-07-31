@@ -9,14 +9,10 @@
 #include "../xrForms/xrThread.h"
 #include "../../xrCore/xrSyncronize.h"
 
-
-
-CThreadManager			mu_base;
-
 CThreadManager			mu_materials;
 CThreadManager			mu_secondary;
  
-xrCriticalSection csMUMAPS_LOCKS;
+xrCriticalSection		csMUMAPS_LOCKS;
 
 int ThreadTaskID = 0;
 
@@ -90,55 +86,29 @@ public:
  
 			
 			inlc_global_data()->mu_models()[ID]->calc_lighting();
-
-
-
-			
 		}
 	}
 };
-
-
-	//void LC_WaitRefModelsNet();
-class CMUThread : public CThread
-{
-public:
-	CMUThread	(u32 ID) : CThread(ID)
-	{
-		thMessages	= FALSE;
-	}
-	virtual void	Execute()
-	{
-		// Priority
-		SetThreadPriority	(Platform::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
-		Sleep				(0);
-	
-		u16 MaxThreads = CPU::ID.n_threads;
-
-		ThreadTaskID = 0;
-		for (u32 thID = 0; thID < MaxThreads; thID++)
-			mu_materials.start(new CMULightCalculation(thID));
-
-		mu_materials.wait(100);
-	}
-};
-
-
+ 
+#include "../xrForms/CompilersUI.h"
+extern CompilersMode gCompilerMode;
+ 
 void	run_mu_base( )
 {
- 	mu_base.start				(new CMUThread (0));
-	mu_base.wait(500);
+	// Priority
+	SetThreadPriority(Platform::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+	Sleep(0);
 
-	u16 MaxThreads = CPU::ID.n_threads;
+ 
+	ThreadTaskID = 0;
+	for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
+		mu_materials.start(new CMULightCalculation(thID));
+ 	mu_materials.wait(100); 
 
 	// Light references
 	ThreadTaskID = 0;
-	for (u32 thID = 0; thID < MaxThreads; thID++)
+	for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
 		mu_secondary.start(new CMULight(thID));
  	mu_secondary.wait(100);
 }
-
-void	wait_mu_base_thread		()
-{
-	
-} 
+ 
