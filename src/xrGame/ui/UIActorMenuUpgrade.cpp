@@ -14,7 +14,7 @@
 #include "../InventoryOwner.h"
 #include "../Inventory.h"
 #include "../Actor.h"
-#include "../UIGameSP.h"
+#include "UIGameSP.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 
 #include "inventory_upgrade.h"
