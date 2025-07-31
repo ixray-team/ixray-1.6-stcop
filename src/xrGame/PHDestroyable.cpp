@@ -151,7 +151,7 @@ void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,LPCSTR section/*="ph_skel
 	}
 	xr_vector<shared_str>::iterator i=m_destroyed_obj_visual_names.begin(),e=m_destroyed_obj_visual_names.end();
 
-	if (IsGameTypeSingle())
+	if (IsGameTypeSingleCompatible())
 	{
 		for(;e!=i;i++)
 			GenSpawnReplace(source_id,section,*i);
@@ -352,6 +352,13 @@ void CPHDestroyable::NotificateDestroy(CPHDestroyableNotificate *dn)
 {
 	VERIFY(m_depended_objects);
 	VERIFY(!physics_world()->Processing());
+
+	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+	{
+		CPhysicsShellHolder* obj = PPhysicsShellHolder();
+		obj->setVisible(FALSE);
+	}
+
 	m_depended_objects--;
 	PhysicallyRemovePart(dn);
 	m_notificate_objects.push_back(dn);

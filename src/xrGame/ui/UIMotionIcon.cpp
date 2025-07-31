@@ -182,7 +182,7 @@ void CUIMotionIcon::SetPower(float newPos)
 
 void CUIMotionIcon::SetNoise(float newPos)
 {
-	if(!IsGameTypeSingle())
+	if(!IsGameTypeSingleCompatible())
 		return;
 
     if (m_noise_progress_shape)
@@ -201,7 +201,7 @@ void CUIMotionIcon::SetNoise(float newPos)
 
 void CUIMotionIcon::SetLuminosity(float newPos)
 {
-	if(!IsGameTypeSingle())
+	if(!IsGameTypeSingleCompatible())
 		return;
 
 	if (m_luminosity_progress_shape)
@@ -222,7 +222,7 @@ void CUIMotionIcon::Draw()
 
 void CUIMotionIcon::Update()
 {
-    if (!IsGameTypeSingle())
+    if (!IsGameTypeSingleCompatible())
     {
         inherited::Update();
         return;
@@ -282,7 +282,7 @@ void CUIMotionIcon::Update()
 
 void SetActorVisibility		(u16 who_id, float value)
 {
-	if(!IsGameTypeSingle())
+	if(!IsGameTypeSingleCompatible())
 		return;
 
 	if(g_pMotionIcon)
