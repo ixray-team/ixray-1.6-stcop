@@ -154,17 +154,17 @@ void RenderHUDAdjustManager()
 							if (p_item)
 							{
 								char name[16] = "";
-								sprintf_s(name, "attached_item#%d", index);
+								sprintf_s(name, sizeof(name), "attached_item#%d", index);
 								ImGui::SeparatorText(name);
 
 							//	ImGui::Text("Hands hud: %s", p_item->m_parent->section_name().c_str());
 							//	ImGui::Text("Item hud: %s", p_item->m_sect_name.c_str());
 								R_ASSERT2(p_item->m_parent, "must be valid!");
 
-								char hud_header_name[32] = "";
 								char item_header_name[32] = "";
+								char hud_header_name[64] = "";
+								snprintf(hud_header_name, sizeof(hud_header_name), "Hud = %s##hh%d", p_item->m_parent->section_name().c_str(), index);
 
-								std::sprintf(hud_header_name, "Hud = %s##hh%d", p_item->m_parent->section_name().c_str(),index);
 								std::sprintf(item_header_name, "Item = %s##hh%d", p_item->m_sect_name.c_str(), index);
 
 								if (ImGui::CollapsingHeader(hud_header_name))
