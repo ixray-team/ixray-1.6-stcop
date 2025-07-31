@@ -310,7 +310,9 @@ bool CUIXmlInit::InitSpin(CUIXml& xml_doc, LPCSTR path, int index, CUICustomSpin
 {
 	InitWindow(xml_doc, path, index, pWnd);
 	InitOptionsItem(xml_doc, path, index, pWnd);
-	pWnd->InitSpin(pWnd->GetWndPos(), pWnd->GetWndSize());
+
+	bool horizontal = xml_doc.ReadAttribBool(path, 0, "horz", false);
+	pWnd->InitSpin(pWnd->GetWndPos(), pWnd->GetWndSize(), horizontal);
 
 	string256				foo;
 	u32						color;

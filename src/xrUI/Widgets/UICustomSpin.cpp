@@ -24,6 +24,7 @@ CUICustomSpin::CUICustomSpin()
     m_pFrameLine->SetAutoDelete	(true);
 	m_pBtnUp->SetAutoDelete		(true);
 	m_pBtnDown->SetAutoDelete	(true);
+	bHorizontal					= false;
 
 	AttachChild					(m_pFrameLine);
 	AttachChild					(m_pBtnUp);
@@ -46,10 +47,16 @@ CUICustomSpin::~CUICustomSpin()
 	xr_delete					(m_pLines);
 }
 
-void CUICustomSpin::InitSpin(Fvector2 pos, Fvector2 size)
+void CUICustomSpin::InitSpin(Fvector2 pos, Fvector2 size, bool horizontal)
 {
+	bHorizontal = horizontal;
+
+	LPCSTR file_name = "custom_spin.xml";
+	if (bHorizontal)
+		file_name = "custom_spin_horz.xml";
+
 	CUIXml xml_doc;
-	xml_doc.Load(CONFIG_PATH, UI_PATH, "custom_spin.xml");
+	xml_doc.Load(CONFIG_PATH, UI_PATH, file_name);
 	LPCSTR frameLine = xml_doc.Read("frameline", 0, "ui_inGame2_spin_box");
 	LPCSTR buttonUp = xml_doc.Read("button_up", 0, "ui_inGame2_spin_box_button_top");
 	LPCSTR buttonDown = xml_doc.Read("button_down", 0, "ui_inGame2_spin_box_button_bottom");
@@ -68,11 +75,20 @@ void CUICustomSpin::InitSpin(Fvector2 pos, Fvector2 size)
 	m_pBtnUp->InitButton		(Fvector2().set(size.x- (buttonSizeX - buttonOffset) * UI().get_current_kx(), (-1.f + buttonOffset)), Fvector2().set(buttonSizeX * UI().get_current_kx(), buttonSizeY));
 	m_pBtnUp->InitTexture		(buttonUp);
 
-	m_pBtnDown->InitButton		(Fvector2().set(size.x- (buttonSizeX - buttonOffset) * UI().get_current_kx(), buttonSizeY + buttonOffset), Fvector2().set(buttonSizeX * UI().get_current_kx(), buttonSizeY));
+	if (bHorizontal)
+		m_pBtnDown->InitButton	(Fvector2().set(buttonOffset * UI().get_current_kx(), (-1.f + buttonOffset)), Fvector2().set(buttonSizeX * UI().get_current_kx(), buttonSizeY));
+	else
+		m_pBtnDown->InitButton	(Fvector2().set(size.x- (buttonSizeX - buttonOffset) * UI().get_current_kx(), buttonSizeY + buttonOffset), Fvector2().set(buttonSizeX * UI().get_current_kx(), buttonSizeY));
 	m_pBtnDown->InitTexture		(buttonDown);
 
 	m_pLines->m_wndPos.set		(Fvector2().set(0,0));
 	m_pLines->m_wndSize.set		(Fvector2().set(size.x- (buttonSizeX -10.0f) * UI().get_current_kx(), spinHeight));
+	if (bHorizontal)
+	{
+		m_pLines->m_wndPos.set(Fvector2().set(0.f, 0.f));
+		m_pLines->m_wndSize.set(Fvector2().set(size.x, spinHeight));
+		m_pLines->SetTextAlignment(ETextAlignment::alCenter);
+	}
 }
 
 void CUICustomSpin::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
