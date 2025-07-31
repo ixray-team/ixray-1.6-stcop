@@ -182,7 +182,7 @@ void CParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone
 	CObject* object					= m_self_object;
 	VERIFY(object);
 
-	SBoneInfo* pBoneInfo			=  get_nearest_bone_info(smart_cast<IKinematics*>(object->Visual()),bone_num);
+	SBoneInfo* pBoneInfo			=  get_nearest_bone_info(PKinematics(object->Visual()),bone_num);
 	if(!pBoneInfo) return;
 
 	SParticlesInfo &particles_info	=*pBoneInfo->AppendParticles(object,particles_name);
@@ -326,7 +326,7 @@ void CParticlesPlayer::UpdateParticles()
 void CParticlesPlayer::GetBonePos	(CObject* pObject, u16 bone_id, const Fvector& offset, Fvector& result)
 {
 	VERIFY(pObject);
-	IKinematics* pKinematics = smart_cast<IKinematics*>(pObject->Visual()); VERIFY(pKinematics);
+	IKinematics* pKinematics = PKinematics(pObject->Visual()); VERIFY(pKinematics);
 	CBoneInstance&		l_tBoneInstance = pKinematics->LL_GetBoneInstance(bone_id);
 
 	result = offset;

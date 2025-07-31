@@ -472,7 +472,7 @@ void CAI_Stalker::Die				(CObject* who)
 	m_hammer_is_clutched			= m_clutched_hammer_enabled && m_planner->bStrapped && !::Random.randI(0,2);
 #endif
 	inherited::Die					(who);
-	
+
 	//запретить использование слотов в инвенторе
 	inventory().SetSlotsUseful		(false);
 
@@ -483,7 +483,7 @@ void CAI_Stalker::Die				(CObject* who)
 	if (!active_item)
 		return;
 
-	CWeapon							*weapon = smart_cast<CWeapon*>(active_item);
+	CWeapon							*weapon = active_item->cast_weapon();
 	if (!weapon)
 		return;
 
@@ -547,7 +547,7 @@ void CAI_Stalker::LookAtActor(CBoneInstance* headBone) {
 
 	if (memory().visual().visible_right_now(Actor())) {
 		Fmatrix actorHead;
-		smart_cast<IKinematics*>(Actor()->Visual())->Bone_GetAnimPos(actorHead, u16(Actor()->m_head), u8(-1), false);
+		PKinematics(Actor()->Visual())->Bone_GetAnimPos(actorHead, u16(Actor()->m_head), u8(-1), false);
 		actorHead.mulA_43(Actor()->XFORM());
 
 		Fmatrix myHead = headBone->mTransform;
@@ -703,8 +703,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	const static bool isNPCLookAtActor = EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor];
 	if (isNPCLookAtActor)
 	{
-		CBoneInstance* bone_head = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(
-			smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
+		CBoneInstance* bone_head = &PKinematics(Visual())->LL_GetBoneInstance(PKinematics(Visual())->LL_BoneID("bip01_head"));
 		bone_head->set_callback(bctCustom, BoneCallback, this);
 	}
 
@@ -1025,7 +1024,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 	VERIFY				(_valid(Position()));
 	// *** general stuff
 	float dt			= float(DT)/1000.f;
-
+	CScriptEntity::process_sound_callbacks();
 	if (g_Alive()) {
 		animation().play_delayed_callbacks	();
 
@@ -1033,13 +1032,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 		agent_manager().update			();
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
-		if (g_mt_config.test(mtAiVision) )
-			Device.seqParallel.push_back(xr_make_delegate(this,&CCustomMonster::Exec_Visibility));
-		else {
-			START_PROFILE("vision")
-			Exec_Visibility				();
-			STOP_PROFILE
-		}
+		Exec_Visibility();
 
 		START_PROFILE("memory")
 
@@ -1130,7 +1123,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 float CAI_Stalker::Radius() const
 { 
 	float R		= inherited::Radius();
-	CWeapon* W	= smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon* W	= inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : NULL;
 	if (W) R	+= W->Radius();
 	return R;
 }
@@ -1327,7 +1320,7 @@ void CAI_Stalker::fill_bones_body_parts	(LPCSTR bone_id, const ECriticalWoundTyp
 	LPCSTR					body_part_section_id = pSettings->r_string(body_parts_section_id,bone_id);
 	VERIFY					(body_part_section_id);
 
-	IKinematics				*kinematics	= smart_cast<IKinematics*>(Visual());
+	IKinematics				*kinematics	= PKinematics(Visual());
 	VERIFY					(kinematics);
 
 	CInifile::Sect			&body_part_section = pSettings->r_section(body_part_section_id);
@@ -1377,7 +1370,7 @@ shared_str const &CAI_Stalker::aim_bone_id		() const
 
 void aim_target							(shared_str const& aim_bone_id, Fvector &result, const CGameObject *object)
 {
-	IKinematics				*kinematics = smart_cast<IKinematics*>(object->Visual());
+	IKinematics				*kinematics = PKinematics(object->Visual());
 	VERIFY					(kinematics);
 
 	u16						bone_id = kinematics->LL_BoneID(aim_bone_id);
@@ -1427,8 +1420,10 @@ bool CAI_Stalker::can_fire_right_now							( )
 		return				(false);
 
 	VERIFY					(best_weapon());
-	CWeapon&				best_weapon = smart_cast<CWeapon&>(*this->best_weapon());
-	return					best_weapon.GetAmmoElapsed() > 0;
+	if(CWeapon* weapon = best_weapon() ? best_weapon()->cast_weapon() : NULL)
+		return weapon->GetAmmoElapsed() > 0;
+
+	return false;
 }
 
 bool CAI_Stalker::unlimited_ammo()

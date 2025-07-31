@@ -226,7 +226,7 @@ void CWeapon::UpdateFireDependencies_internal()
 			// 3rd person or no parent
 			Fmatrix& parent			= XFORM();
 
-			if(smart_cast<CActor*>(H_Parent()) && render_item_ui_query())
+			if(H_Parent() && H_Parent()->cast_actor() && render_item_ui_query())
 			{
 				Level().Cameras().camera_Matrix(parent);
 				parent.j.invert();
@@ -256,9 +256,9 @@ void CWeapon::ForceUpdateFireParticles()
 	{//update particlesXFORM real bullet direction
 
 		if (!H_Parent())		return;
-
+		if (!H_Parent()->cast_entity())		return;
 		Fvector					p, d; 
-		smart_cast<CEntity*>(H_Parent())->g_fireParams	(this, p,d);
+		H_Parent()->cast_entity()->g_fireParams	(this, p,d);
 
 		Fmatrix						_pxf;
 		_pxf.k						= d;
@@ -998,7 +998,7 @@ void CWeapon::UpdateCL		()
 	{
 		if (GetNextState() == GetState() && IsGameTypeSingle() && H_Parent() == Level().CurrentEntity())
 		{
-			CActor* pActor	= smart_cast<CActor*>(H_Parent());
+			CActor* pActor	= H_Parent() ? H_Parent()->cast_actor() : NULL;
 			if(pActor && !pActor->AnyMove() && this==pActor->inventory().ActiveItem())
 			{
 				if (hud_adj_mode == 0 && GetState() == eIdle && (Device.dwTimeGlobal - m_dw_curr_substate_time > 20000) && !IsZoomed() && g_player_hud->attached_item(1) == nullptr)
@@ -1014,7 +1014,7 @@ void CWeapon::UpdateCL		()
 	{
 		if(!m_zoom_params.m_pNight_vision->IsActive())
 		{
-			CActor *pA = smart_cast<CActor *>(H_Parent());
+			CActor* pA = H_Parent() ? H_Parent()->cast_actor() : NULL;
 			R_ASSERT(pA);
 			CTorch* pTorch = smart_cast<CTorch*>( pA->inventory().ItemFromSlot(TORCH_SLOT) );
 			if ( pTorch && pTorch->GetNightVisionStatus() )
@@ -1037,7 +1037,7 @@ void CWeapon::UpdateCL		()
 	}
 	else
 	{
-		auto pActor = smart_cast<const CActor*>(H_Parent());
+		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : NULL;
 		if ((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) ||
 			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f))
 		{
@@ -1186,7 +1186,7 @@ void CWeapon::HideOneUpgradeLevel(const char* section)
 
 void CWeapon::EnableActorNVisnAfterZoom()
 {
-	CActor *pA = smart_cast<CActor *>(H_Parent());
+	CActor *pA = H_Parent() ? H_Parent()->cast_actor() : NULL;
 	if(IsGameTypeSingle() && !pA)
 		pA = g_actor;
 
@@ -1892,7 +1892,7 @@ void CWeapon::OnZoomIn()
 
 	if(m_zoom_params.m_sUseZoomPostprocess.size() && IsScopeAttached()) 
 	{
-		CActor* actor = smart_cast<CActor*>(H_Parent());
+		CActor* actor = H_Parent() ? H_Parent()->cast_actor() : NULL;
 
 		if (actor && nullptr == m_zoom_params.m_pNight_vision)
 			m_zoom_params.m_pNight_vision = new CNightVisionEffector(m_zoom_params.m_sUseZoomPostprocess);
@@ -2193,7 +2193,7 @@ u8 CWeapon::GetCurrentHudOffsetIdx() const {
 
 void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 {
-	auto pActor = smart_cast<const CActor*>(H_Parent());
+	CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : NULL;
 	if(!pActor)		return;
 
 	u8 idx = GetCurrentHudOffsetIdx();
@@ -2632,22 +2632,12 @@ float CWeapon::GetConditionToShow	() const
 
 BOOL CWeapon::ParentMayHaveAimBullet	()
 {
-	CObject* O=H_Parent();
-	CEntityAlive* EA=smart_cast<CEntityAlive*>(O);
-	return EA->cast_actor()!=0;
+	return H_Parent() && H_Parent()->cast_actor();
 }
 
 BOOL CWeapon::ParentIsActor	()
 {
-	CObject* O			= H_Parent();
-	if (!O)
-		return FALSE;
-
-	CEntityAlive* EA	= smart_cast<CEntityAlive*>(O);
-	if (!EA)
-		return FALSE;
-
-	return EA->cast_actor()!=0;
+	return H_Parent() && H_Parent()->cast_actor();
 }
 
 void CWeapon::debug_draw_firedeps()
@@ -2686,7 +2676,7 @@ void CWeapon::OnStateSwitch	(u32 S)
 	{
 		if(H_Parent()==Level().CurrentEntity() && !fsimilar(m_zoom_params.m_ReloadDof.w,-1.0f))
 		{
-			CActor* current_actor	= smart_cast<CActor*>(H_Parent());
+			CActor* current_actor	= H_Parent() ? H_Parent()->cast_actor() : NULL;
 			if (current_actor)
 				current_actor->Cameras().AddCamEffector(new CEffectorDOF(m_zoom_params.m_ReloadDof));
 		}
@@ -2717,7 +2707,7 @@ bool CWeapon::NeedBlockSprint() const
 
 u8 CWeapon::GetCurrentHudOffsetIdx()
 {
-	CActor* pActor	= smart_cast<CActor*>(H_Parent());
+	CActor* pActor	= H_Parent() ? H_Parent()->cast_actor() : NULL;
 	if(!pActor)		return 0;
 	
 	bool b_aiming		= 	((IsZoomed() && m_zoom_params.m_fZoomRotationFactor<=1.f) ||
