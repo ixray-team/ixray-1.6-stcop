@@ -30,7 +30,7 @@ void InitializeUIData()
 
 static bool autoScroll = true;
 static bool hideLogSection = true;
-static bool ResizeMaximal = true;
+static bool ResizeMaximal = false;
 
 
 void DrawCompilerConfig();
@@ -126,6 +126,8 @@ void RenderMainUI()
 
 	if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
 	{
+		GetIterationData().clear();
+
 		bool isReady = false;
 		if (gCompilerMode.LC || gCompilerMode.DO)
 		{
@@ -450,7 +452,7 @@ void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, cha
 	}
 }
 
-const ImVec4 getLogColor_new(char* text)
+const ImVec4 getLogColor(char* text)
 {
 	if (text == nullptr || xr_strlen(text) == 0)
 		return ImVec4(RGBAColor(230, 230, 230, 255));
@@ -485,27 +487,6 @@ const ImVec4 getLogColor_new(char* text)
 	}
 
 	return ImVec4(RGBAColor(230, 230, 230, 255));
-}
-
-const ImVec4 getLogColor(const char& c)
-{
-	switch (c)
-	{
-	case '~': return ImVec4(RGBAColor(248, 248,  49, 255));
-	case '!': return ImVec4(RGBAColor(204, 102, 102, 255));
-	case '@': return ImVec4(RGBAColor(125, 125, 241, 255));
-	case '#': return ImVec4(RGBAColor(  0, 222, 205, 155));
-	case '$': return ImVec4(RGBAColor(172, 172, 255, 255));
-	case '%': return ImVec4(RGBAColor(202,  85, 219, 155));
-	case '^': return ImVec4(RGBAColor(100, 246, 121, 255));
-	case '&': return ImVec4(RGBAColor(255, 255,   0, 255));
-	case '*': return ImVec4(RGBAColor(187, 187, 187, 255));
-	case '-': return ImVec4(RGBAColor(  0, 255,   0, 255));
-	case '+': return ImVec4(RGBAColor( 84, 255, 255, 255));
-	case '=': return ImVec4(RGBAColor(205, 205, 105, 255));
-	case '/': return ImVec4(RGBAColor(146, 146, 252, 255));
-	default: return ImVec4(RGBAColor(230, 230, 230, 255));
-	}
 }
 
 void RenderCompilerUI(int X, int Y)
@@ -556,7 +537,7 @@ void RenderCompilerUI(int X, int Y)
 		MAX_TRABS = 10;
 
 	// Table
-	if (ImGui::BeginTable("IterationsTable", MAX_TRABS, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) 
+	if (ImGui::BeginTable("IterationsTable", MAX_TRABS, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedSame))
 	{
  		if (ResizeMaximal)
 		{
@@ -584,12 +565,11 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
 			ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
 		}
-		
 
 		ImGui::TableHeadersRow();
 
-
-		for (auto& row : GetIterationData()) {
+		for (auto& row : GetIterationData())
+		{
 
 			xr_string rowStatus;
 			ImVec4 rowStatusColor;
@@ -649,7 +629,8 @@ void RenderCompilerUI(int X, int Y)
 				//PHASE %
 				auto pers = phase.PhasePersent;
 
-				if (phase.status != Complete) {
+				if (phase.status != Complete)
+				{
 					u32 dwCurrentTime = timeGetTime();
 					u32 dwTimeDiff = dwCurrentTime - GetPhaseStartTime();
 					u32 secElapsed = dwTimeDiff / 1000;
@@ -729,7 +710,7 @@ void RenderCompilerUI(int X, int Y)
 			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
 			{
 				auto& line = GetLogVector()[i];
-				ImGui::TextColored(getLogColor_new((char*)line.c_str()), "%s", line.c_str());
+				ImGui::TextColored(getLogColor((char*)line.c_str()), "%s", line.c_str());
 			}
 		}
 
@@ -762,7 +743,6 @@ void RenderCompilerUI(int X, int Y)
 	ImGui::TextColored( ImVec4{ 0, 0.9, 0, 1 }, "Memory usage: %u mb", w_committed / 1024 / 1024);
 
 	ImGui::SameLine();
-
 	ImGui::Checkbox("Show Main", &ShowMainUI);
 
 	ImGui::End();
