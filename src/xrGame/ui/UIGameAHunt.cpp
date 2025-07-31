@@ -38,16 +38,16 @@ void CUIGameAHunt::Init	(int stage)
 		CUIXmlInit::InitWindow			(uiXml, "global", 0,		m_window);
 		CUIXmlInit::InitStatic			(uiXml, "fraglimit",0,		m_pFragLimitIndicator);
 
-		if (EngineExternal().CallOfPripyatMode())
+		if (uiXml.NavigateToNode("reinforcement:front"))
+		{
+			m_pReinforcementInidcator_old = new CUIProgressShape();
+			CUIXmlInit::InitProgressShape(uiXml, "reinforcement", 0, m_pReinforcementInidcator_old);
+		}
+		else
 		{
 			m_pReinforcementInidcator = new CUITextWnd();
 			m_pReinforcementInidcator->SetAutoDelete(true);
 			CUIXmlInit::InitTextWnd(uiXml, "reinforcement", 0, m_pReinforcementInidcator);
-		}
-		else
-		{
-			m_pReinforcementInidcator_old = new CUIProgressShape();
-			CUIXmlInit::InitProgressShape(uiXml, "reinforcement", 0, m_pReinforcementInidcator_old);
 		}
 		CUIXmlInit::InitStatic			(uiXml, "team1_icon", 0,	m_team1_icon);
 		CUIXmlInit::InitStatic			(uiXml, "team2_icon", 0,	m_team2_icon);
