@@ -53,7 +53,7 @@ protected:
 	// temp
 	ALife::SCHEDULE_P_VECTOR					m_tpaCombatGroups[2];
 
-protected:
+public:
 	IC		CALifeSimulatorHeader				&header						();
 	IC		CALifeTimeManager					&time						();
 	IC		CALifeSpawnRegistry					&spawns						();
@@ -64,7 +64,7 @@ protected:
 	IC		void								can_register_objects		(const bool &value);
 	IC		const bool							&can_register_objects		() const;
 
-public:
+
 	IC		CALifeGraphRegistry					&graph						();
 	IC		CALifeScheduleRegistry				&scheduled					();
 	IC		CALifeTimeManager					&time_manager				();
