@@ -155,10 +155,20 @@ void CSoundManager::MakeGameSound(ESoundThumbnail* THM, LPCSTR src_name, LPCSTR 
     F.w_u32			(THM->m_uGameType);
     F.w_float		(THM->m_fMaxAIDist);
 
+    xr_path TestPath = game_name;
+    if (!std::filesystem::exists(TestPath.parent_path()))
+    {
+        std::filesystem::create_directories(TestPath.parent_path());
+    }
+
 	if (!ETOOLS::ogg_enc(src_name, game_name, THM->m_fQuality, F.pointer(), F.size()))
     {
     	FS.file_delete(game_name);
     	ELog.DlgMsg(mtError,"Can't make game sound '%s'.",game_name);
+    }
+    else
+    {
+        FS.TryLoad(game_name);
     }
 }
 
