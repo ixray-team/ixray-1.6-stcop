@@ -252,7 +252,7 @@ public:
 	bool m_bTacticalTorchStatus = false;
 	bool m_bBlockUpdateAmmoBonesShooting = false;
 	bool m_bUseLastAmmoType = false;
-	
+	bool m_bBlockReload;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
