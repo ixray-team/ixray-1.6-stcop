@@ -53,6 +53,7 @@ private:
 public:
 	CContentView();
 	virtual void Draw() override;
+
 	void DrawHeader();
 	void FindFile();
 	void DrawISEDir(size_t& HorBtnIter, const size_t IterCount);
@@ -120,17 +121,16 @@ private:
 	xr_string CurrentDir;
 	xr_string RootDir;
 	xr_string LogsDir;
-	ImVec2 BtnSize{};
+	ImVec2 BtnSize = {};
 
 	xr_hash_map<xr_string, IconData> Icons;
 
 	bool IsDelWatcher = false;
 	bool IsSpawnElement = false;
 	bool IsFindResult = false;
-
 	bool IsThmMode = false;
-
 	bool IsWndDestroyed = false;
+
 	xr_string ISEPath;
 	string32 FindStr = {};
 
@@ -139,6 +139,8 @@ private:
 	float TextHeight = 0.f;
 
 	CUIThmProperties ThmPropWnd;
+
+	xr_vector<xr_string> GameDialogs;
 };
 
 extern CContentView* GContentView;

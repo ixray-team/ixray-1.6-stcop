@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "ContentView.h"
 
-#include "../../utils/xrDXT/xrDXT.h"
+#include "../../Nodes/UIDialogsView.h"
+#include "../../../../utils/xrDXT/xrDXT.h"
 
 CContentView* GContentView = nullptr;
 
@@ -492,6 +493,17 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 		{
 			if (DrawItem(FilePath, HorBtnIter, IterCount))
 			{
+				if (FilePath.File.extension() == ".xml")
+				{
+					xr_string FileName = FilePath.File.xfilename();
+					FileName = FileName.substr(0, FileName.size() - 4);
+
+					auto Iter = std::find(GameDialogs.begin(), GameDialogs.end(), FileName);
+					if (Iter != GameDialogs.end())
+					{
+						CUIDialogView::OpenFile(FilePath.File.xfilename());
+					}
+				}
 				if (FilePath.File.extension() == ".thm")
 				{
 					ThmPropWnd.Load(FilePath.File);
@@ -625,12 +637,17 @@ void CContentView::Init()
 	Icons["dll"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\dll"),		true};
 	Icons["backup"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\backup"),	true};
 	Icons["env_mod"]= {EDevice->Resources->_CreateTexture("ed\\content_browser\\env_mod"),	true};
+	Icons["dialogs"]= {EDevice->Resources->_CreateTexture("ed\\content_browser\\dialogs"),	true};
 
 	Icons["search"]= {EDevice->Resources->_CreateTexture("ed\\content_browser\\search"),	false};
 
 	MenuIcon = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
 
 	LoadCustomIcons();
+
+	xr_string Files = pSettings->r_string("dialogs", "files");
+	Files.RemoveWhitespaces();
+	GameDialogs = Files.Split(',');
 }
 
 bool CContentView::DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount)
@@ -1273,6 +1290,18 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	
 	if (IconPath.ends_with(".wav"))
 		return Icons["wav"];
+	
+	if (IconPath.ends_with(".xml"))
+	{
+		xr_string FileName = xr_path(IconPath).xfilename();
+		FileName = FileName.substr(0, FileName.size() - 4);
+
+		auto Iter = std::find(GameDialogs.begin(), GameDialogs.end(), FileName);
+		if (Iter != GameDialogs.end())
+		{
+			return Icons["dialogs"];
+		}
+	}
 
 	if (IconPath.ends_with(".seq"))
 		return Icons["seq"];
