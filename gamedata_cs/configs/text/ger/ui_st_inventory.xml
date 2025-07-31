@@ -60,6 +60,12 @@
 	<string id="st_move_to_slot">
 		<text>in Slot stecken</text>
 	</string>
+	<string id="st_no_trade_tip_1">
+		<text>Der Händler hat kein Interesse an Gegenständen dieser Art.</text>
+	</string>
+	<string id="st_no_trade_tip_2">
+		<text>Dieser Gegenstand ist zu stark beschädigt, um damit zu handeln.</text>
+	</string>
 	<string id="st_sell_item">
 		<text>Gegenstand verkaufen</text>
 	</string>
