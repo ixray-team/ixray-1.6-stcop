@@ -59,3 +59,13 @@ if(IXRAY_MP)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libssl-3${LIBSSL_POSTFIX}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     )
 endif()
+
+# MySQL Connector
+target_include_directories(xrNetServer PUBLIC "${MYSQLCONNECTOR}include/")
+target_link_libraries(xrNetServer PUBLIC "${MYSQLCONNECTOR}lib/mysqlcppconn.lib")
+add_custom_command(TARGET ${PROJECT_NAME} 
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/mysqlcppconn-9-vs14.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/libcrypto-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/libssl-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)
