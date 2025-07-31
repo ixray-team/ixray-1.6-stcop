@@ -222,4 +222,7 @@
 	<string id="kb_quick_use_4">
 		<text>Quick Access Slot 4</text>
 	</string>
+	<string id="kb_clear_gasmask">
+		<text>Wipe mask</text>
+	</string>
 </string_table>

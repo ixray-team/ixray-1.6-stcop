@@ -520,6 +520,15 @@ if(!g_dedicated_server)
 			m_sHeadlampAnimator = headlamp_animator;
 		}
 	}
+
+	if (pGameGlobals->line_exist("glass_mask", "clearmask_animator"))
+	{
+		LPCSTR clearmask_animator = pGameGlobals->r_string("glass_mask", "clearmask_animator");
+		if (pSettings->section_exist(clearmask_animator))
+		{
+			m_sClearMaskAnimator = clearmask_animator;
+		}
+	}
 }
 
 void CActor::legs_shift_callback(CBoneInstance* B) {
