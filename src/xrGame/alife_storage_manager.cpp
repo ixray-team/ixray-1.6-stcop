@@ -21,6 +21,7 @@
 #include "saved_game_wrapper.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "autosave_manager.h"
+#include "../xrEngine/string_table.h"
 
 XRCORE_API string_path g_bug_report_file;
 
@@ -171,6 +172,9 @@ bool CALifeStorageManager::load	(LPCSTR save_name_no_check)
 
 	CHECK_OR_EXIT				(CSavedGameWrapper::valid_saved_game(*stream), make_string<const char*>("%s\nSaved game version mismatch or saved game is corrupted",file_name));
 
+	string512					temp;
+	xr_strconcat(temp, g_pStringTable->translate("st_loading_saved_game").c_str(), " \"", save_name, SAVE_EXTENSION, "\"");
+	g_pGamePersistent->SetLoadStageTitle(temp);
 	g_pGamePersistent->LoadTitle();
 
 	unload						();

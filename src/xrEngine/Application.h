@@ -43,6 +43,7 @@ public:
 	virtual void					LoadSwitch();
 	virtual void					LoadDraw();
 	virtual void					LoadForceFinish();
+	virtual void					SetLoadStageTitle(pcstr _ls_title);
 
 	virtual	void			OnEvent(EVENT E, u64 P1, u64 P2);
 
