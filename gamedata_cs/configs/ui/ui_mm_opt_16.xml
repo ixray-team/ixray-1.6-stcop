@@ -169,12 +169,6 @@
 		<check_vsync x="162" y="10" width="27" height="21" stretch="1">
 			<options_item entry="rs_v_sync" group="mm_opt_video" depend="vid"/>	
 		</check_vsync>
-		<cap_fps_limit x="17" y="10" width="119" height="21">
-			<text font="letterica16" color="ui_6">ui_mm_fps_limit</text>
-		</cap_fps_limit>
-		<track_fps_limit x="162" y="10" width="218" height="21" step="1" show_value="1" is_integer="1">
-			<options_item entry="rs_fps_limit" group="mm_opt_video" depend="runtime"/>	
-		</track_fps_limit>
 
 		<cap_rs_device_active x="17" y="10" width="119" height="21">
 			<text font="letterica16" color="ui_6">ui_rs_device_active</text>
