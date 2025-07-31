@@ -36,6 +36,8 @@
 #include <windows.h>
 #include <lmcons.h>
 #include <dbghelp.h>
+#include <new.h>	// for _set_new_mode
+#include <signal.h>	// for signals
 
 #ifdef IXR_ARM64
 #	include <arm64_neon.h>
@@ -60,6 +62,9 @@
 #include <commdlg.h>
 #include <cderr.h>
 #pragma warning(pop)
+
+#include <stacktrace>
+#define USE_CXX_STACKTRACE 1
 
 #define ALIGN(a) __declspec(align(a))
 #define MODULE_NAME "xrCore.dll"
