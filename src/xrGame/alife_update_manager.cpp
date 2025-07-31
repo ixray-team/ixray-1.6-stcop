@@ -24,6 +24,7 @@
 #include "../xrEngine/string_table.h"
 
 using namespace ALife;
+using namespace luabind; //Alundaio
 
 extern string_path g_last_saved_game;
 
@@ -178,6 +179,10 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 {
 	if (m_changing_level)
 		return						(false);
+
+	luabind::functor<void>	funct;
+	if (ai().script_engine().functor("_G.CALifeUpdateManager__on_before_change_level", funct))
+		funct(&net_packet);
 
 //	prepare_objects_for_save		();
 	// we couldn't use prepare_objects_for_save since we need 
