@@ -719,3 +719,42 @@ float CHudItem::GetHudFov()
 
 	return m_nearwall_last_hud_fov;
 }
+
+void CHudItem::SetModelBoneStatus(const char* bone, BOOL show)
+{
+	if (HudItemData())
+	{
+		HudItemData()->set_bone_visible(bone, show, TRUE);
+	}
+
+	if (IKinematics* pWeaponVisual = object().Visual()->dcast_PKinematics())
+	{
+		if (auto BoneID = pWeaponVisual->LL_BoneID(bone); BoneID != BI_NONE)
+		{
+			pWeaponVisual->LL_SetBoneVisible(BoneID, show, FALSE);
+		}
+	}
+}
+
+void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, BOOL show)
+{
+	if (!pSettings->section_exist(section))
+	{
+		return;
+	}
+
+	if (!!pSettings->line_exist(section, line))
+	{
+		LPCSTR	S = pSettings->r_string(section, line);
+		if (S && S[0])
+		{
+			string128 _Item = {};
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, _Item);
+				SetModelBoneStatus(_Item, show);
+			}
+		}
+	}
+}

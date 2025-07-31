@@ -1088,6 +1088,8 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 		};
 
 		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
+		ProcessScope();
 		InitAddons();
 
 		return true;
@@ -1125,6 +1127,8 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		
 		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
+		ProcessScope();
 		InitAddons();
 
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
@@ -1140,6 +1144,8 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
 
 		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
+		ProcessScope();
 		InitAddons();
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
@@ -1154,6 +1160,8 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
 		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
+		ProcessScope();
 		InitAddons();
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
