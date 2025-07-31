@@ -1252,7 +1252,10 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, item->BaseSlot() );		break;
 	case INVENTORY_TO_BELT_ACTION:	ToBelt( cell_item, false );		break;
 	case INVENTORY_TO_BAG_ACTION:	ToBag ( cell_item, false );		break;
-	case INVENTORY_EAT_ACTION:		TryUseItem( cell_item ); 		break;
+	case INVENTORY_EAT_ACTION:
+		CurrentGameUI()->ActorMenu().SetCurrentConsumable( cell_item );
+		TryUseItem( cell_item );
+		break;	
 	case INVENTORY_DROP_ACTION:
 		{
 			void* d_ = m_UIPropertiesBox->GetClickedItem()->GetData();
@@ -1480,4 +1483,29 @@ void CUIActorMenu::MoveArtefactsToBag()
 		ToBag( ci, false );
 	}//for i
 	m_pInventoryBeltList->ClearAll( true );
+}
+
+void CUIActorMenu::RefreshCurrentItemCell()
+{
+	CUICellItem* ci = CurrentItem();
+	if (!ci)
+		return;
+
+	if (ci->ChildsCount() > 0)
+	{
+		CUIDragDropListEx* invlist = GetListByType(iActorBag);
+
+		if (invlist->IsOwner(ci))
+		{
+			CUICellItem* parent = invlist->RemoveItem(ci, true);
+
+			while (parent->ChildsCount())
+			{
+				CUICellItem* child = parent->PopChild(NULL);
+				invlist->SetItem(child);
+			}
+
+			invlist->SetItem(parent, GetUICursor().GetCursorPosition());
+		}
+	}
 }
