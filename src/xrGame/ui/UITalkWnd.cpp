@@ -169,22 +169,30 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void UpdateCameraDirection(CGameObject* pTo)
+void UpdateCameraDirection(CGameObject* pTo, bool isFocus)
 {
 	if (!pTo) return;
 	CCameraBase* cam = Actor()->cam_Active();
 	Fvector des_dir;
 	Fvector des_pt;
 
-	auto pk = PKinematics(pTo->Visual());
+	if (isFocus)
+	{	
+		auto pk = PKinematics(pTo->Visual());
 
-	if (pk != nullptr)
+		if (pk != nullptr)
+		{
+			auto bone = pk->LL_BoneID("bip01_head");
+
+			Fmatrix headPos = pk->LL_GetTransform(bone);
+			headPos.mulA_43(pTo->XFORM());
+			des_pt = headPos.c;
+		}
+	}
+	else
 	{
-		auto bone = pk->LL_BoneID("bip01_head");
-
-		Fmatrix headPos = pk->LL_GetTransform(bone);
-		headPos.mulA_43(pTo->XFORM());
-		des_pt = headPos.c;
+		pTo->Center(des_pt);
+		des_pt.y += pTo->Radius() * 0.5f;
 	}
 
 	des_dir.sub(des_pt,cam->vPosition);
@@ -192,9 +200,19 @@ void UpdateCameraDirection(CGameObject* pTo)
 	float p,h;
 	des_dir.getHP(h,p);
 
-	cam->yaw		= angle_inertion_var(cam->yaw,		-h,	0.3f,	0.35f,	PI_DIV_6,	Device.fTimeDelta);
-	cam->pitch		= angle_inertion_var(cam->pitch,	-p,	0.3f,	0.35f,	PI_DIV_6,	Device.fTimeDelta);
+	if (isFocus)
+	{
+		cam->yaw = angle_inertion_var(cam->yaw, -h, 0.3f, 0.35f, PI_DIV_6, Device.fTimeDelta);
+		cam->pitch = angle_inertion_var(cam->pitch, -p, 0.3f, 0.35f, PI_DIV_6, Device.fTimeDelta);
+	}
+	else
+	{
+		if (angle_difference(cam->yaw, -h) > 0.2)
+			cam->yaw = angle_inertion_var(cam->yaw, -h, 0.15f, 0.2f, PI_DIV_6, Device.fTimeDelta);
 
+		if (angle_difference(cam->pitch, -p) > 0.2)
+			cam->pitch = angle_inertion_var(cam->pitch, -p, 0.15f, 0.2f, PI_DIV_6, Device.fTimeDelta);
+	}
 }
 
 void CUITalkWnd::Update()
@@ -216,7 +234,7 @@ void CUITalkWnd::Update()
 		UpdateQuestions			();
 	}
 	inherited::Update			();
-	UpdateCameraDirection		(smart_cast<CGameObject*>(m_pOthersInvOwner));
+	UpdateCameraDirection		(smart_cast<CGameObject*>(m_pOthersInvOwner), m_pOthersInvOwner->GetFocusingOnNpc());
 
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
 
@@ -240,10 +258,20 @@ void CUITalkWnd::Show(bool status)
 	if(status)
 	{
 		InitTalkDialog				();
-	}else
+
+		if (m_pOthersInvOwner->GetFocusingOnNpc())
+		{
+			g_fov = g_fov * 0.75f;
+		}
+	}
+	else
 	{
 		StopSnd						();
 		UITalkDialogWnd->Hide		();
+		if (m_pOthersInvOwner->GetFocusingOnNpc())
+		{
+			g_fov = g_fov / 0.75f;
+		}
 
 		if(m_pActor)
 		{

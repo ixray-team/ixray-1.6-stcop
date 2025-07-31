@@ -44,6 +44,7 @@ CInventoryOwner::CInventoryOwner			()
 
 	m_known_info_registry		= new CInfoPortionWrapper();
 	m_tmp_active_slot_num		= NO_ACTIVE_SLOT;
+	m_isFocusingOnNpc			= true;
 	m_need_osoznanie_mode		= FALSE;
 
 	m_deadbody_can_take				= true;
@@ -71,17 +72,13 @@ CInventoryOwner::~CInventoryOwner			()
 
 void CInventoryOwner::Load					(LPCSTR section)
 {
-	if(pSettings->line_exist(section, "inv_max_weight"))
-		m_inventory->SetMaxWeight( pSettings->r_float(section,"inv_max_weight") );
+	if (pSettings->line_exist(section, "inv_max_weight"))
+	{
+		m_inventory->SetMaxWeight(pSettings->r_float(section, "inv_max_weight"));
+	}
 
-	if(pSettings->line_exist(section, "need_osoznanie_mode"))
-	{
-		m_need_osoznanie_mode=pSettings->r_bool(section,"need_osoznanie_mode");
-	}
-	else
-	{
-		m_need_osoznanie_mode=FALSE;
-	}
+	m_isFocusingOnNpc = READ_IF_EXISTS(pSettings, r_bool, section, "focus_on_npc", true);
+	m_need_osoznanie_mode = READ_IF_EXISTS(pSettings, r_bool, section, "need_osoznanie_mode", FALSE);
 }
 
 void CInventoryOwner::reload				(LPCSTR section)
