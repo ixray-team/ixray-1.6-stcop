@@ -203,6 +203,7 @@ public:
 	const Fbox*			Boxes						( )			{return boxes;}
 	float				FootRadius					( )			;
 	void				CollisionEnable 			(BOOL enable);
+	void				CollisionDynamicEnable(BOOL enable);
 	void				SetBox						(DWORD id, const Fbox &BB)	{ boxes[id].set(BB); aabb.set(BB); }
 	void				SetMass						(float M);	
 
