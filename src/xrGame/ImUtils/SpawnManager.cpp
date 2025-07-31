@@ -864,7 +864,7 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 		news_data.news_caption = g_pStringTable->translate("general_in_item");
 		news_data.news_text = text_news;
 		news_data.show_time = 3000;
-		news_data.texture_name = "ui_inGame2_Predmet_poluchen";
+		news_data.texture_name = "ui_ixray_spawn_icon";
 		Actor()->AddGameNews(news_data);
 	}
 

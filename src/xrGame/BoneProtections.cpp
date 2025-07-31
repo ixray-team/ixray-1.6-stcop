@@ -37,11 +37,10 @@ void SBoneProtections::reload(const shared_str& bone_sect, IKinematics* kinemati
 	m_bones_koeff.clear			();
 
     float defaultHitFraction = 0.1f;
-    if (EngineExternal().ClearSkyMode())
-    {
-        defaultHitFraction = READ_IF_EXISTS(pSettings, r_float, bone_sect, "hit_fraction", defaultHitFraction);
-    }
-    m_fHitFracNpc = READ_IF_EXISTS(pSettings, r_float, bone_sect, "hit_fraction_npc", defaultHitFraction);
+	if (pSettings->line_exist(bone_sect, "hit_fraction_npc"))
+		m_fHitFracNpc = READ_IF_EXISTS(pSettings, r_float, bone_sect, "hit_fraction_npc", defaultHitFraction);
+	else
+		m_fHitFracNpc = READ_IF_EXISTS(pSettings, r_float, bone_sect, "hit_fraction", defaultHitFraction);
 
 	m_default.koeff				= 1.0f;
 	m_default.armor				= 0.0f;
