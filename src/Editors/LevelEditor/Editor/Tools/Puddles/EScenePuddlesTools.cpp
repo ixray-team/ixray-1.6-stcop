@@ -22,6 +22,7 @@ void EScenePuddlesTool::Clear(bool bSpecific)
 
 void EScenePuddlesTool::BeforeRender()
 {
+	
 }
 
 void EScenePuddlesTool::AfterRender()
