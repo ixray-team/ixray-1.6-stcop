@@ -439,11 +439,12 @@ constexpr u32 CFORM_CURRENT_VERSION = 4;
 #ifdef IXRAY_AI_OLD_FORMAT
 const u32 MAX_NODE_BIT_COUNT = 23;
 constexpr u32 MAX_AI_NODES = (1 << MAX_NODE_BIT_COUNT) - 1;
+constexpr u32 XRAI_CURRENT_VERSION = 10;
 #else
 constexpr u32 MAX_AI_NODES = NodeCompressed::LINK_MASK_0;
 constexpr u32 MAX_NODE_XZ = NodePosition::MAX_XZ;
+constexpr u32 XRAI_CURRENT_VERSION = 11;
 #endif
 
 constexpr u32 XRAI_MINIMAL_VERSION = 10;
-constexpr u32 XRAI_CURRENT_VERSION = 11;
 #pragma warning(pop)
