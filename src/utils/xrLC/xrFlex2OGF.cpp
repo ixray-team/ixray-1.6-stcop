@@ -40,14 +40,15 @@ void Face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3] )
 	}
 }
 
-void OGF_AddFace( OGF &ogf, const Face& FF, bool _tc_ )
+void OGF_AddFace(OGF& ogf, const Face& FF, bool _tc_)
 {
-	OGF_Vertex	V[3];
+	OGF_Vertex* V = new OGF_Vertex[3];
 	// Geometry
-	Face2OGF_Vertices( FF, V );
+	Face2OGF_Vertices(FF, V);
 	// build face
-	TRY				(ogf._BuildFace(V[0],V[1],V[2],_tc_));
-	V[0].UV.clear();V[1].UV.clear();V[2].UV.clear();
+	TRY(ogf._BuildFace(V[0], V[1], V[2], _tc_));
+	V[0].UV.clear(); V[1].UV.clear(); V[2].UV.clear();
+	xr_delete(V);
 }
 
 void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
@@ -70,32 +71,29 @@ void CBuild::Flex2OGF()
 
 	g_tree.clear	();
 	g_tree.reserve	(4096);
-	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
+
+	int MODEL_ID = 0;
+	for (auto& faces : g_XSplit)
 	{
-		R_ASSERT			( ! (*it)->empty() );
-		
-		u32 MODEL_ID		= u32(it-g_XSplit.begin());
-		
 		OGF*		pOGF	= new OGF ();
-		Face*		F		= *((*it)->begin());			// first face
+		Face*		F		= *(faces->begin());			// first face
 		b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
 		R_ASSERT	(F && M);
 		
-		try {
+		try 
+		{
 			// Common data
 			pOGF->Sector		= M->sector;
 			pOGF->material		= F->dwMaterial;
 			
 			// Collect textures
-			OGF_Texture			T;
-			//pOGF->shader		= M->shader;
-			//pOGF->shader_xrlc	= &F->Shader();
-			
+			OGF_Texture			T;			
 			TRY(T.name			= textures()[M->surfidx].name);
 			TRY(T.pBuildSurface	= &(textures()[M->surfidx]));
 			TRY(pOGF->textures.push_back(T));
 			
-			try {
+			try
+			{
 				if (F->hasImplicitLighting())
 				{
 					// specific lmap
@@ -121,36 +119,57 @@ void CBuild::Flex2OGF()
 						pOGF->textures.push_back(T);
 					}
 				}
-			} catch (...) {  clMsg("* ERROR: Flex2OGF, model# %d, *textures*",MODEL_ID); }
+			} 
+			catch (...)
+			{ 
+				clMsg("* ERROR: Flex2OGF, model# %d, *textures*",MODEL_ID);
+			}
 			
 			// Collect faces & vertices
 			F->CacheOpacity	();
 			bool	_tc_	= !(F->flags.bOpaque);
-			try {
-				BuildOGFGeom( *pOGF, *(*it), _tc_ );
-			} catch (...) {  clMsg("* ERROR: Flex2OGF, model# %d, *faces*",MODEL_ID); }
+			try 
+			{
+				BuildOGFGeom( *pOGF, *faces, _tc_ );
+			} 
+			catch (...)
+			{  
+				clMsg("* ERROR: Flex2OGF, model# %d, *faces*",MODEL_ID);
+			}
 
-		} catch (...)
+		} 
+		catch (...)
 		{
 			clMsg("* ERROR: Flex2OGF, 1st part, model# %d",MODEL_ID);
 		}
 		
-		try {
-			clMsg		("%3d: opt : v(%d)-f(%d)",	MODEL_ID,pOGF->data.vertices.size(),pOGF->data.faces.size());
+		try
+		{
+			clMsg		("%3d: opt : v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
 			pOGF->Optimize						();
-			clMsg		("%3d: cb  : v(%d)-f(%d)",	MODEL_ID,pOGF->data.vertices.size(),pOGF->data.faces.size());
+			clMsg		("%3d: cb  : v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
 			pOGF->CalcBounds					();
-			clMsg		("%3d: prog: v(%d)-f(%d)",	MODEL_ID,pOGF->data.vertices.size(),pOGF->data.faces.size());
-			if (!g_build_options.b_noise) pOGF->MakeProgressive	(c_PM_MetricLimit_static);
-			clMsg		("%3d: strp: v(%d)-f(%d)",	MODEL_ID,pOGF->data.vertices.size(),pOGF->data.faces.size());
-			pOGF->Stripify						();
-		} catch (...)	{
+			
+			// clMsg		("%3d: prog: v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
+			// if (!g_build_options.b_noise) pOGF->MakeProgressive	(c_PM_MetricLimit_static);
+			// clMsg		("%3d: strp: v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
+			// pOGF->Stripify						();
+		}
+		catch (...)
+		{
 			clMsg("* ERROR: Flex2OGF, 2nd part, model# %d",MODEL_ID);
 		}
 		
 		g_tree.push_back	(pOGF);
-		xr_delete			(*it);
+		// xr_delete			(*it);
+		MODEL_ID++;
 		Progress			(p_total+=p_cost);
+	}
+
+	for (auto it : g_XSplit)
+	{
+		if (it != nullptr)
+			xr_delete(it);
 	}
 	g_XSplit.clear	();
 }
