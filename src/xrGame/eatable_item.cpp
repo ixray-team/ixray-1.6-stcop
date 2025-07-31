@@ -152,12 +152,15 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 	else
 		m_iPortionsMarker = 0;
 
-	if (bUseHUDAnim)
+	if (!g_dedicated_server)
 	{
-		CHUDAnimItem::PlayHudAnim(m_section_id.c_str(), "anm_use", true);
-	}
+		if (bUseHUDAnim)
+		{
+			CHUDAnimItem::PlayHudAnim(m_section_id.c_str(), "anm_use", true);
+		}
 
-	CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
+		CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
+	}
 
 	return true;
 }
