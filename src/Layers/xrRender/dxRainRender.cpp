@@ -63,7 +63,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		while (owner.items.size()<desired_items)	{
 			CEffect_Rain::Item				one;
 			owner.Born				(one, g_pGamePersistent->Environment().source_rain_radius_render + 
-				g_pGamePersistent->Environment().add_const_dist_coefficient_render);
+				g_pGamePersistent->Environment().add_const_dist_coefficient_render, g_pGamePersistent->Environment().CurrentEnv->rain_type);
 
 			owner.items.push_back		(one);
 		}
@@ -87,7 +87,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		if (one.dwTime_Hit<Device.dwTimeGlobal)		owner.Hit (one.Phit);
 
 		if (one.dwTime_Life<Device.dwTimeGlobal)	owner.Born(one, g_pGamePersistent->Environment().source_rain_radius_render + 
-			g_pGamePersistent->Environment().add_const_dist_coefficient_render);
+			g_pGamePersistent->Environment().add_const_dist_coefficient_render, g_pGamePersistent->Environment().CurrentEnv->rain_type);
 
 		// последняя дельта ??
 		//.		float xdt		= float(one.dwTime_Hit-Device.dwTimeGlobal)/1000.f;
