@@ -3,6 +3,7 @@
 #include "Build.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrFace.h"
+#include "execution"
 
 const int	 HDIM_X = 56;
 const int	 HDIM_Y = 24;
@@ -80,18 +81,24 @@ void CBuild::PreOptimize()
 		vecVertex &H	= *(HASH[ix][iy][iz]);
 
 		// Search similar vertices in hash table
-		for (vecVertexIt T=H.begin(); T!=H.end(); T++)
+ 		if (!lc_global_data()->GetSkipWeld())
 		{
-			Vertex *pBase = *T;
-			if (pBase->similar(*pTest,g_params().m_weld_distance)) 
+			auto parsed = std::find_if(std::execution::par, H.begin(), H.end(), [&](Vertex* v)
+				{
+					if (v->similar(*pTest, g_params().m_weld_distance))
+						return true;
+					else
+						return false;
+				});
+
+			if (parsed != H.end())
 			{
-				while(pTest->m_adjacents.size())	
-					pTest->m_adjacents.front()->VReplace(pTest, pBase);
+				while (pTest->m_adjacents.size())
+					pTest->m_adjacents.front()->VReplace(pTest, *parsed);
 
 				lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[it]);
-				Vremoved			+= 1;
-				pTest				= NULL;
-				break;
+				Vremoved += 1;
+				pTest = NULL;
 			}
 		}
 		

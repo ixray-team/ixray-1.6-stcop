@@ -15,6 +15,11 @@ static const char* h_str =
 "-nosubd	== don`t use subdivide geometry\n"
 "-tex_rgba	== don`t compress lightmap textures\n"
 "-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n"
+"-skip_weld == don't use welding vertexis \n"
+"-lmaps_alt == Используем альтернативный метод ligtmaps building texture \n"
+"-lmaps_size == Менять размер тексуры LMAP\n"
+"-use_intel == Используем альтернативный метод Raytracing Intel Embree \n"
+
 "\n"
 "NOTE: The last key is required for any functionality\n";
 
@@ -42,7 +47,12 @@ void StartupLC(LPSTR lpCmdLine)
 	lc_global_data()->SetSkipTesselate(strstr(cmd, "-notess") != nullptr);
 	lc_global_data()->SetLmapRGBA(strstr(cmd, "-tex_rgba") != nullptr);
 	lc_global_data()->SetSkipSubdivide(strstr(cmd, "-nosubd") != nullptr);
-
+	
+	// Se7kills
+	lc_global_data()->SetIsIntelUse(strstr(cmd, "-use_intel") != nullptr);
+	lc_global_data()->SetSkipWeld(strstr(cmd, "-skip_weld") != nullptr);
+	lc_global_data()->SetLMapsAlt(strstr(cmd, "-lmaps_alt") != nullptr);
+ 
 	// Faster FPU 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 
