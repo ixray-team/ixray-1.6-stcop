@@ -18,6 +18,9 @@ void RenderTimeManagerWindow()
 	if (!g_pGameLevel)
 		return;
 
+	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_TimeManager)])
+		return;
+
 	if (Level().Server == nullptr)
 		return;
 
@@ -27,9 +30,6 @@ void RenderTimeManagerWindow()
 	game_sv_Single* pGame = dynamic_cast<game_sv_Single*>(Level().Server->game);
 
 	if (!pGame)
-		return;
-
-	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_TimeManager)])
 		return;
 
 	if (!ImGui::Begin("Time Manager##InGame", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_TimeManager)]))
