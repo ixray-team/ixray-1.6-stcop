@@ -18,4 +18,8 @@
 #	define IXR_LINUX
 #   define IXR_X64
 #	include "Linux/PlatformInit.h"
+#elif defined(__FreeBSD__)
+#	define IXR_BSD
+#   define IXR_X64
+#	include "BSD/PlatformInit.h"
 #endif

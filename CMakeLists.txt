@@ -93,7 +93,7 @@ endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # 3rd libraries
-add_subdirectory("src/3rd party")
+add_subdirectory("src/3rd-party")
 
 # Engine libraries
 add_subdirectory("src")
