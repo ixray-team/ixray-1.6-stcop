@@ -128,6 +128,179 @@ ID3DTexture2D* TW_LoadTextureFromTexture(ID3DTexture2D* t_from, int levels_2_ski
     return t_dest;
 }
 
+
+#include <string>
+#include <unordered_map>
+#include <ddraw.h>
+
+const char* D3DFormatToString(D3DFORMAT format) {
+    static const xr_map<D3DFORMAT, const char*> formatMap = {
+        {D3DFMT_UNKNOWN,             "D3DFMT_UNKNOWN"},
+        {D3DFMT_R8G8B8,              "D3DFMT_R8G8B8"},
+        {D3DFMT_A8R8G8B8,            "D3DFMT_A8R8G8B8"},
+        {D3DFMT_X8R8G8B8,            "D3DFMT_X8R8G8B8"},
+        {D3DFMT_R5G6B5,              "D3DFMT_R5G6B5"},
+        {D3DFMT_X1R5G5B5,            "D3DFMT_X1R5G5B5"},
+        {D3DFMT_A1R5G5B5,            "D3DFMT_A1R5G5B5"},
+        {D3DFMT_A4R4G4B4,            "D3DFMT_A4R4G4B4"},
+        {D3DFMT_R3G3B2,              "D3DFMT_R3G3B2"},
+        {D3DFMT_A8,                  "D3DFMT_A8"},
+        {D3DFMT_A8R3G3B2,            "D3DFMT_A8R3G3B2"},
+        {D3DFMT_X4R4G4B4,            "D3DFMT_X4R4G4B4"},
+        {D3DFMT_A2B10G10R10,         "D3DFMT_A2B10G10R10"},
+        {D3DFMT_A8B8G8R8,            "D3DFMT_A8B8G8R8"},
+        {D3DFMT_X8B8G8R8,            "D3DFMT_X8B8G8R8"},
+        {D3DFMT_G16R16,              "D3DFMT_G16R16"},
+        {D3DFMT_A2R10G10B10,         "D3DFMT_A2R10G10B10"},
+        {D3DFMT_A16B16G16R16,        "D3DFMT_A16B16G16R16"},
+        {D3DFMT_A8P8,                "D3DFMT_A8P8"},
+        {D3DFMT_P8,                  "D3DFMT_P8"},
+        {D3DFMT_L8,                  "D3DFMT_L8"},
+        {D3DFMT_A8L8,                "D3DFMT_A8L8"},
+        {D3DFMT_A4L4,                "D3DFMT_A4L4"},
+        {D3DFMT_V8U8,                "D3DFMT_V8U8"},
+        {D3DFMT_L6V5U5,              "D3DFMT_L6V5U5"},
+        {D3DFMT_X8L8V8U8,            "D3DFMT_X8L8V8U8"},
+        {D3DFMT_Q8W8V8U8,            "D3DFMT_Q8W8V8U8"},
+        {D3DFMT_V16U16,              "D3DFMT_V16U16"},
+        {D3DFMT_A2W10V10U10,         "D3DFMT_A2W10V10U10"},
+        {D3DFMT_UYVY,                "D3DFMT_UYVY"},
+        {D3DFMT_R8G8_B8G8,           "D3DFMT_R8G8_B8G8"},
+        {D3DFMT_YUY2,                "D3DFMT_YUY2"},
+        {D3DFMT_G8R8_G8B8,           "D3DFMT_G8R8_G8B8"},
+        {D3DFMT_DXT1,                "D3DFMT_DXT1"},
+        {D3DFMT_DXT2,                "D3DFMT_DXT2"},
+        {D3DFMT_DXT3,                "D3DFMT_DXT3"},
+        {D3DFMT_DXT4,                "D3DFMT_DXT4"},
+        {D3DFMT_DXT5,                "D3DFMT_DXT5"},
+        {D3DFMT_D16_LOCKABLE,        "D3DFMT_D16_LOCKABLE"},
+        {D3DFMT_D32,                 "D3DFMT_D32"},
+        {D3DFMT_D15S1,               "D3DFMT_D15S1"},
+        {D3DFMT_D24S8,               "D3DFMT_D24S8"},
+        {D3DFMT_D24X8,               "D3DFMT_D24X8"},
+        {D3DFMT_D24X4S4,             "D3DFMT_D24X4S4"},
+        {D3DFMT_D16,                 "D3DFMT_D16"},
+        {D3DFMT_D32F_LOCKABLE,       "D3DFMT_D32F_LOCKABLE"},
+        {D3DFMT_D24FS8,              "D3DFMT_D24FS8"},
+        {D3DFMT_L16,                 "D3DFMT_L16"},
+        {D3DFMT_VERTEXDATA,          "D3DFMT_VERTEXDATA"},
+        {D3DFMT_INDEX16,             "D3DFMT_INDEX16"},
+        {D3DFMT_INDEX32,             "D3DFMT_INDEX32"},
+        {D3DFMT_Q16W16V16U16,        "D3DFMT_Q16W16V16U16"},
+        {D3DFMT_MULTI2_ARGB8,        "D3DFMT_MULTI2_ARGB8"},
+        {D3DFMT_R16F,                "D3DFMT_R16F"},
+        {D3DFMT_G16R16F,             "D3DFMT_G16R16F"},
+        {D3DFMT_A16B16G16R16F,       "D3DFMT_A16B16G16R16F"},
+        {D3DFMT_R32F,                "D3DFMT_R32F"},
+        {D3DFMT_G32R32F,             "D3DFMT_G32R32F"},
+        {D3DFMT_A32B32G32R32F,       "D3DFMT_A32B32G32R32F"},
+        {D3DFMT_CxV8U8,              "D3DFMT_CxV8U8"},
+        {D3DFMT_A1,                  "D3DFMT_A1"},
+        {D3DFMT_A2B10G10R10_XR_BIAS, "D3DFMT_A2B10G10R10_XR_BIAS"},
+        {D3DFMT_BINARYBUFFER,        "D3DFMT_BINARYBUFFER"},
+        {D3DFMT_FORCE_DWORD,         "D3DFMT_FORCE_DWORD"}
+    };
+
+    auto it = formatMap.find(format);
+    return it != formatMap.end() ? it->second : "D3DFMT_UNKNOWN";
+}
+
+void PrintTextureError(HRESULT hr, const char* fname, const void* ddsData, size_t ddsSize, IDirect3DBaseTexture9* pTexture = nullptr)
+{
+    // Получаем возможности устройства
+    D3DCAPS9 caps;
+    RDevice->GetDeviceCaps(&caps);
+
+    string1024 msg;
+
+    xr_sprintf(msg, "=== D3D TEXTURE LOAD ERROR ===");
+    Msg(msg);
+
+    xr_sprintf(msg, "File: %s", fname);
+    Msg(msg);
+
+    xr_sprintf(msg, "Error: 0x%08X (%s)", hr, Debug.dxerror2string(hr));
+    Msg(msg);
+
+    // Анализируем DDS заголовок
+    if (ddsData && ddsSize >= sizeof(DWORD) + sizeof(DDS_HEADER))
+    {
+        const DWORD* magic = reinterpret_cast<const DWORD*>(ddsData);
+        const DDS_HEADER* header = reinterpret_cast<const DDS_HEADER*>(magic + 1);
+
+        // Дамп заголовка
+        Msg("--- DDS Header Info ---");
+        Msg("  Magic: 0x%08X ('%c%c%c%c')",
+            *magic,
+            ((const char*)magic)[0],
+            ((const char*)magic)[1],
+            ((const char*)magic)[2],
+            ((const char*)magic)[3]);
+
+        Msg("  Width: %u", header->width);
+        Msg("  Height: %u", header->height);
+        Msg("  Mips: %u", header->mipMapCount);
+        Msg("  FourCC: 0x%08X ('%c%c%c%c')",
+            header->ddspf.fourCC,
+            ((const char*)&header->ddspf.fourCC)[0],
+            ((const char*)&header->ddspf.fourCC)[1],
+            ((const char*)&header->ddspf.fourCC)[2],
+            ((const char*)&header->ddspf.fourCC)[3]);
+        Msg("  Flags: 0x%08X", header->flags);
+        Msg("  Caps: 0x%08X", header->caps);
+
+        // Определяем формат
+        D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;
+        if (header->ddspf.flags & DDPF_FOURCC) {
+            switch (header->ddspf.fourCC) {
+            case MAKEFOURCC('D', 'X', 'T', '1'): d3dFormat = D3DFMT_DXT1; break;
+            case MAKEFOURCC('D', 'X', 'T', '3'): d3dFormat = D3DFMT_DXT3; break;
+            case MAKEFOURCC('D', 'X', 'T', '5'): d3dFormat = D3DFMT_DXT5; break;
+            default: break;
+            }
+        }
+
+        bool sizeValid = (header->width <= caps.MaxTextureWidth) &&
+            (header->height <= caps.MaxTextureHeight);
+
+        auto IsPOT = [](UINT x) { return x && !(x & (x - 1)); };
+        bool isPOT = IsPOT(header->width) && IsPOT(header->height);
+
+        Msg("--- Validation ---");
+        Msg("  Format supported: %s", (d3dFormat != D3DFMT_UNKNOWN) ? "YES" : "NO");
+        Msg("  Size valid: %s", sizeValid ? "YES" : "NO");
+        Msg("  Power-of-two: %s", isPOT ? "YES" : "NO");
+    }
+    else
+    {
+        Msg("! Invalid DDS data (size: %zu)", ddsSize);
+    }
+
+    // Информация о созданной текстуре
+    if (pTexture)
+    {
+        D3DRESOURCETYPE resType = pTexture->GetType();
+        Msg("--- Created Texture Info ---");
+        Msg("  Type: %s",
+            resType == D3DRTYPE_TEXTURE ? "2D" :
+            resType == D3DRTYPE_CUBETEXTURE ? "CUBE" :
+            resType == D3DRTYPE_VOLUMETEXTURE ? "VOLUME" : "UNKNOWN");
+
+        D3DSURFACE_DESC desc;
+        if (resType == D3DRTYPE_TEXTURE && SUCCEEDED(((IDirect3DTexture9*)pTexture)->GetLevelDesc(0, &desc)))
+        {
+            Msg("  Actual Format: %s", D3DFormatToString(desc.Format));
+            Msg("  Actual Size: %dx%d", desc.Width, desc.Height);
+        }
+    }
+
+    Msg("--- Possible Solutions ---");
+    Msg("1. Verify texture format is supported by GPU");
+    Msg("2. Check texture dimensions (max %dx%d)", caps.MaxTextureWidth, caps.MaxTextureHeight);
+    Msg("3. Try converting to DXT1/DXT5 format");
+    Msg("4. Check mipmap chain consistency");
+}
+
 ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 {
     ID3DBaseTexture* pTexture3D = nullptr;
@@ -188,15 +361,47 @@ _DDS:
         size_t bitSize = 0;
 
         HRESULT const result = LoadTextureDataFromMemory((uint8_t*)S->pointer(), S->length(), &header, &bitData, &bitSize);
-        if (FAILED(result)) {
+
+        D3DCAPS9 d3dCaps;
+        if (FAILED(RDevice->GetDeviceCaps(&d3dCaps)))
+        {
+            string512 errMsg;
+            xr_sprintf(errMsg, "Failed to get device capabilities for texture size check.");
+            R_ASSERT3(false, errMsg, fname);
+        }
+
+        const u32 maxTextureDimension = _max(d3dCaps.MaxTextureWidth, d3dCaps.MaxTextureHeight);
+
+        if (header->width > maxTextureDimension || header->height > maxTextureDimension)
+        {
+            string512 errMsg;
+            xr_sprintf(errMsg, "Texture dimensions exceed hardware limits: %dx%d (Max: %d)",
+                header->width, header->height,
+                maxTextureDimension);
+            R_ASSERT3(false, errMsg, fname);
+        }
+
+        if (FAILED(result))
+        {
             Msg("! Unsupported texture [%s]", fn);
+            string1024 errorMsg;
+            xr_sprintf(errorMsg, "Failed to get DDS metadata for '%s'\n"
+                "File size: %u bytes\n"
+                "Error: %s (0x%08X)\n"
+                "Possible causes:\n"
+                "- Corrupted DDS header\n"
+                "- Unsupported DDS variant",
+                fname, S->length(),
+                Debug.dxerror2string(result), result);
+
+            VERIFY2(false, errorMsg);
+            Msg("! DDS METADATA ERROR: %s", errorMsg);
             FS.r_close(S);
 
-            string_path temp = "";
+            string_path temp;
             R_ASSERT(FS.exist(temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
             R_ASSERT(xr_strcmp(temp, fn));
             xr_strcpy(fn, temp);
-
             goto _DDS;
         }
 
@@ -216,8 +421,10 @@ _DDS:
 
             FS.r_close(S);
 
-            if (FAILED(result)) {
-                Msg("! Can't load texture '%s'", fn);
+            if (FAILED(result))
+            {
+                PrintTextureError(result, fname, &bitData, bitSize, pTexture3D);
+
                 string_path temp;
                 R_ASSERT(FS.exist(temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
                 R_ASSERT(xr_strcmp(temp, fn));
@@ -226,6 +433,7 @@ _DDS:
             }
 
             mip_cnt = pTexture3D->GetLevelCount();
+
             ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
             return pTexture3D;
         }
@@ -239,19 +447,20 @@ _DDS:
 
             FS.r_close(S);
 
-            if (FAILED(result)) {
-                Msg("! Can't load texture '%s'", fn);
-                string_path temp = "";
+            img_loaded_lod = get_texture_load_lod(fn);
+            pTexture2D = TW_LoadTextureFromTexture(T_sysmem, img_loaded_lod);
+            mip_cnt = pTexture2D->GetLevelCount();
+
+            if (FAILED(result))
+            {
+                PrintTextureError(result, fname, bitData, bitSize, pTexture2D);
+
+                string_path temp;
                 R_ASSERT(FS.exist(temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
-                strlwr(temp);
                 R_ASSERT(xr_strcmp(temp, fn));
                 xr_strcpy(fn, temp);
                 goto _DDS;
             }
-
-            img_loaded_lod = get_texture_load_lod(fn);
-            pTexture2D = TW_LoadTextureFromTexture(T_sysmem, img_loaded_lod);
-            mip_cnt = pTexture2D->GetLevelCount();
             _RELEASE(T_sysmem);
 
             ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
@@ -260,8 +469,7 @@ _DDS:
     }
 _BUMP_from_base:
     {
-        Msg("! auto-generated bump map: %s", fname);
-#if 1 //ndef _EDITOR
+        //Msg("! Fallback to default bump map: %s", fname);
         if (strstr(fname, "_bump#"))
         {
             R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
@@ -270,17 +478,16 @@ _BUMP_from_base:
             img_size = S->length();
             goto _DDS;
         }
+
+        Msg("! Fallback to default bump map: %s", fname);
         if (strstr(fname, "_bump"))
         {
             R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
             S = FS.r_open(fn);
-
             R_ASSERT2(S, fn);
-
             img_size = S->length();
             goto _DDS;
         }
-#endif
         if (S)
             FS.r_close(S);
 

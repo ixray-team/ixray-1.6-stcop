@@ -206,7 +206,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 				return nullptr;
 			}
 
-				{
+			{
 				UINT flags = 0;
 				UINT test_flags = D3D11_FORMAT_SUPPORT_SHADER_LOAD | D3D11_FORMAT_SUPPORT_SHADER_SAMPLE;
 				RDevice->CheckFormatSupport(imageInfo.format, &flags);
@@ -229,7 +229,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 					textureFlag = DDS_FLAGS::DDS_FLAGS_NO_16BPP;
 					//R_ASSERT3(false, errorMsg, fname);
 				}
-				}
+			}
 
 		}
 
