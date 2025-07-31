@@ -190,6 +190,11 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				break;
 			}
 
+			if (!CurrentGameUI()->ActorMenu().m_pQuickSlot)
+			{
+				break;
+			}
+			
 			const shared_str& item_name		= g_quick_use_slots[cmd-kQUICK_USE_1];
 			if(item_name.size())
 			{
