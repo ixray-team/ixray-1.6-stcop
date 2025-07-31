@@ -256,6 +256,9 @@ void UIKeyForm::DrawNotify()
 {
 	std::memset(m_TempForPlotHistogram.data(), 0, sizeof(float) * m_TempForPlotHistogram.size());
 
+	if (!m_currentEditMotion)
+		return;
+
 	float a, b, c;
 	ATools->GetStatTime(a, b, c);
 	float motion_length = b - a;
