@@ -39,4 +39,7 @@
 	<string id="ui_ammo_types">
 		<text>Боеприпасы</text>
 	</string>
+	<string id="st_save_zat_a1_game_start">
+		<text>начало игры</text>
+	</string>
 </string_table>
