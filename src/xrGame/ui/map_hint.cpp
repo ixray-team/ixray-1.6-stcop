@@ -88,7 +88,7 @@ void CUIMapLocationHint::SetInfoMSpot(CMapSpot* spot)
 {
 	CMapLocation* ml		= spot->MapLocation();
 
-	CGameTask* gt			= Level().GameTaskManager().HasGameTask(ml, true);
+	CGameTask* gt			= Level().GameTaskManager()->HasGameTask(ml, true);
 	if(gt)
 		SetInfoTask			(gt);
 	else
