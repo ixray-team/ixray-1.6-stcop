@@ -1,5 +1,7 @@
 #pragma once
-class CDS0_RenderInterface :public IRender_interface,public pureFrame
+class CDS0_RenderInterface :
+	public IRender_interface,
+	public pureFrame
 {
 	IRender_Target Target;
 public:
