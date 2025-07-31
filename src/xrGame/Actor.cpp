@@ -1208,8 +1208,10 @@ void CActor::UpdateCL	()
 
 			psHUD_Flags.set( HUD_CROSSHAIR_RT2, B );
 			psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );
+			Device.hudViewportData.renderZoomFactor = pWeapon->GetZoomFactor();
+			Device.hudViewportData.renderZoomRotateFactor = pWeapon->GetAimFactor();
+			Device.hudViewportData.isRenderActive = pWeapon->IsScopeAttached() && (pWeapon->GetAimFactor() > 0.0f) && (pWeapon->GetZoomFactor() > 0.0f);
 		}
-
 	}
 	else
 	{
@@ -1218,6 +1220,10 @@ void CActor::UpdateCL	()
 			bBlockSprint = false;
 			HUD().SetCrosshairDisp(0.f);
 			HUD().ShowCrosshair(false);
+
+			Device.hudViewportData.renderZoomFactor = 1.0f;
+			Device.hudViewportData.renderZoomRotateFactor = 0.0f;
+			Device.hudViewportData.isRenderActive = false;
 
 			// Switch back to third-person if was forced
 			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
