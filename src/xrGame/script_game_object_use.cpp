@@ -83,7 +83,8 @@ CScriptGameObject::~CScriptGameObject()
 
 CScriptGameObject *CScriptGameObject::Parent() const
 {
-	if (CGameObject* l_tpGameObject = object().H_Parent()->cast_game_object())
+	CObject* parent = object().H_Parent();
+	if (CGameObject* l_tpGameObject = parent != nullptr ? parent->cast_game_object() : nullptr)
 	{
 		return l_tpGameObject->lua_game_object();
 	}
@@ -122,7 +123,7 @@ void CScriptGameObject::Kill(CScriptGameObject* who, bool bypass_actor_check /*A
 	{
 		if (!l_tpEntity->AlreadyDie())
 		{
-			l_tpEntity->KillEntity(who ? who->object().ID() : object().ID(), bypass_actor_check);
+			l_tpEntity->KillEntity(who != nullptr ? who->object().ID() : object().ID(), bypass_actor_check);
 		}
 		else
 		{
