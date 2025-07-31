@@ -78,8 +78,14 @@ bool UpdateBuffersD3D11()
 	R = ((ID3D11Device*)HWRenderDevice)->CreateShaderResourceView((ID3D11Resource*)RenderTexture, nullptr, (ID3D11ShaderResourceView**)&RenderSRV);
 	R_CHK(R);
 
-	descDepth.Width = UINT(sd.BufferDesc.Width * Device.RenderScale);			// TODO: render scale
-	descDepth.Height = UINT(sd.BufferDesc.Height * Device.RenderScale);		// TODO: render scale
+	descDepth.Width = UINT(sd.BufferDesc.Width * Device.RenderScale);
+	descDepth.Height = UINT(sd.BufferDesc.Height * Device.RenderScale);
+
+	descDepth.Width += descDepth.Width % 2;
+	descDepth.Height += descDepth.Height % 2;
+
+	Device.HalfTargetWidth = descDepth.Width;
+	Device.HalfTargetHeight = descDepth.Height;
 
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;

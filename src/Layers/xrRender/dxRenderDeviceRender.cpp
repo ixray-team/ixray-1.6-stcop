@@ -109,8 +109,10 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();
-	fWidth_2 = float(dwWidth / 2);
-	fHeight_2 = float(dwHeight / 2);
+
+	fWidth_2 = Device.HalfTargetWidth;
+	fHeight_2 = Device.HalfTargetHeight;
+
 	Resources->reset_end();
 #endif
 }
@@ -198,8 +200,10 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();
-	fWidth_2 = float(dwWidth / 2);
-	fHeight_2 = float(dwHeight / 2);
+
+	fWidth_2 = Device.HalfTargetWidth;
+	fHeight_2 = Device.HalfTargetHeight;
+
 	Resources = new CResourceManager();
 
 #ifdef DEBUG_DRAW
