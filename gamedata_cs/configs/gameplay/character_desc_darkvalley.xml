@@ -85,7 +85,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="10000" max="27500" infinitive="1"/>
+	<money min="100000" max="100000" infinitive="1"/>
     <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <snd_config>characters_voice\human_01\freedom\</snd_config>
     <supplies>
@@ -159,7 +159,7 @@
 
     <rank>450</rank>
     <reputation>0</reputation>
-	<money min="2000" max="7500" infinitive="0"/>
+	<money min="100000" max="100000" infinitive="1"/>
     <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <snd_config>characters_voice\human_01\freedom\</snd_config>
     <supplies>
