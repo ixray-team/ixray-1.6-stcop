@@ -74,6 +74,9 @@ static void  torso_animation_end_callback(CBlend* B)
 
 void CControlAnimation::play() 
 {
+	if (OnClient())
+		return;
+
 	if (!m_data.global.actual) {
 		play_part					(m_data.global,	global_animation_end_callback);
 		if (m_data.global.blend)	m_saved_global_speed	= m_data.global.blend->speed;
