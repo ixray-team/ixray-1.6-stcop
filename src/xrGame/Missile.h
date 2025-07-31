@@ -70,6 +70,8 @@ protected:
 	u32						m_dwDestroyTime;
 	u32						m_dwDestroyTimeMax;
 
+	u32						dwUpdateSounds_Frame;
+
 	Fvector					m_throw_direction;
 	Fmatrix					m_throw_matrix;
 
