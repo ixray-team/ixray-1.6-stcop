@@ -1512,13 +1512,13 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 
 void CUIActorMenu::UpdateOutfit()
 {
-	for ( u8 i = 0; i < e_af_count ; ++i )
+	for ( u8 i = 0; i < m_ArtefactSlotsCount; ++i )
 	{
 		m_belt_list_over[i]->SetVisible( true );
 	}
 
 	u32 af_count = m_pActorInvOwner->inventory().BeltWidth();
-	VERIFY( 0 <= af_count && af_count <= 5 );
+	//VERIFY( 0 <= af_count && af_count <= 5 );
 
 	VERIFY( m_pInventoryBeltList );
 	CCustomOutfit* outfit    = m_pActorInvOwner->GetOutfit();
@@ -1539,7 +1539,7 @@ void CUIActorMenu::UpdateOutfit()
 
 	m_pInventoryBeltList->SetCellsCapacity( afc );
 
-	for ( u8 i = 0; i < af_count ; ++i )
+	for ( u8 i = 0; i < af_count; ++i )
 	{
 		m_belt_list_over[i]->SetVisible( false );
 	}
