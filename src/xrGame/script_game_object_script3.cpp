@@ -345,6 +345,10 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_level_changer_invitation",&CScriptGameObject::set_level_changer_invitation)
 		.def("start_particles",				&CScriptGameObject::start_particles)
 		.def("stop_particles",				&CScriptGameObject::stop_particles)
+					//For Car
+		.def("attach_vehicle",				&CScriptGameObject::AttachVehicle)
+		.def("detach_vehicle",				&CScriptGameObject::DetachVehicle)
+		.def("get_attached_vehicle",		&CScriptGameObject::GetAttachedVehicle)
 		.def("ray",							&CScriptGameObject::RayPick)
 		.def("is_jump",						&CScriptGameObject::ActorIsJump)
 
