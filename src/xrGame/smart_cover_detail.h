@@ -23,11 +23,14 @@ namespace smart_cover {
 					float const &min_threshold = flt_min,
 					float const &max_threshold = flt_max
 				);
+		bool parse_float(float& output, luabind::object const &table, LPCSTR identifier,
+			float const& min_threshold = flt_min, float const& max_threshold = flt_max);
 		LPCSTR	parse_string	(luabind::object const &table, LPCSTR identifier);
 		void	parse_table		(luabind::object const &table, LPCSTR identifier, luabind::object &result);
 		bool	parse_bool		(luabind::object const &table, LPCSTR identifier);
 		int		parse_int		(luabind::object const &table, LPCSTR identifier);
 		Fvector	parse_fvector	(luabind::object const &table, LPCSTR identifier);
+		bool	parse_fvector	(luabind::object const &table, LPCSTR identifier, Fvector& output);
 
 	}; //namespace detail
 
