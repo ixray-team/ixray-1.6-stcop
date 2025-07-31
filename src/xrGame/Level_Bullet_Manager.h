@@ -139,10 +139,9 @@ protected:
 	RStringVec				m_ExplodeParticles	;
 
 	//список пуль находящихся в данный момент на уровне
-//.	xrCriticalSection		m_Lock				;
+	xrCriticalSection		m_Lock				;
 
 	BulletVec				m_Bullets			;	// working set, locked
-	BulletVec				m_BulletsRendered	;	// copy for rendering
 	xr_vector<_event>		m_Events			;
 
 #ifdef DEBUG
@@ -240,7 +239,6 @@ public:
 												bool SendHit,bool AimBullet=false);
 
 	void					CommitEvents		();	// @ the start of frame
-	void					CommitRenderSet		();	// @ the end of frame
 	void 					Render				();
 };
 
