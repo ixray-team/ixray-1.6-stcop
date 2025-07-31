@@ -1478,6 +1478,16 @@ BOOL CSE_ALifeCreatureActor::Net_Relevant()
 #endif
 }
 
+void CSE_ALifeCreatureActor::SyncRead(NET_Packet& Packet)
+{
+	IsWaunded = Packet.r_u8();
+}
+
+void CSE_ALifeCreatureActor::SyncWrite(NET_Packet& Packet)
+{
+	Packet.w_u8(IsWaunded);
+}
+
 void CSE_ALifeCreatureActor::UPDATE_Read	(NET_Packet	&tNetPacket)
 {
 	inherited1::UPDATE_Read		(tNetPacket);
@@ -1488,10 +1498,6 @@ void CSE_ALifeCreatureActor::UPDATE_Read	(NET_Packet	&tNetPacket)
 	tNetPacket.r_float			(fRadiation	);
 	tNetPacket.r_u8				(weapon		);
 
-	if (m_wVersion > 128)
-	{
-		IsWaunded = tNetPacket.r_u8();
-	}
 	////////////////////////////////////////////////////
 	tNetPacket.r_u16			(m_u16NumItems);
 
@@ -1533,7 +1539,6 @@ void CSE_ALifeCreatureActor::UPDATE_Write	(NET_Packet	&tNetPacket)
 	tNetPacket.w_sdir			(velocity	);
 	tNetPacket.w_float			(fRadiation	);
 	tNetPacket.w_u8				(weapon		);
-	tNetPacket.w_u8				(IsWaunded);
 	////////////////////////////////////////////////////
 	tNetPacket.w_u16			(m_u16NumItems);
 	if (!m_u16NumItems)
@@ -2235,39 +2240,31 @@ void CSE_ALifeHumanStalker::STATE_Read		(NET_Packet &tNetPacket, u16 size)
 
 void CSE_ALifeHumanStalker::UPDATE_Write(NET_Packet& tNetPacket)
 {
-#ifdef XRGAME_EXPORTS
-	if (g_pGamePersistent->GameType() == eGameIDSingle)
-#endif
-	{
-		inherited1::UPDATE_Write(tNetPacket);
-		inherited2::UPDATE_Write(tNetPacket);
-		tNetPacket.w_stringZ(m_start_dialog);
-	}
-#ifdef XRGAME_EXPORTS
-	else
-	{
-		m_state_mngr.FillStateCSE(this);
-		m_state_mngr.CSE_StateWrite(tNetPacket);
-	}
-#endif
+	inherited1::UPDATE_Write(tNetPacket);
+	inherited2::UPDATE_Write(tNetPacket);
+	tNetPacket.w_stringZ(m_start_dialog);
 }
 
 void CSE_ALifeHumanStalker::UPDATE_Read(NET_Packet& tNetPacket)
 {
+	inherited1::UPDATE_Read(tNetPacket);
+	inherited2::UPDATE_Read(tNetPacket);
+	tNetPacket.r_stringZ(m_start_dialog);
+}
+
+void CSE_ALifeHumanStalker::SyncRead(NET_Packet& Packet)
+{
 #ifdef XRGAME_EXPORTS
-	if (g_pGamePersistent->GameType() == eGameIDSingle)
+	m_state_mngr.CSE_StateRead(Packet);
+	m_state_mngr.GetStateCSE(this);
 #endif
-	{
-		inherited1::UPDATE_Read(tNetPacket);
-		inherited2::UPDATE_Read(tNetPacket);
-		tNetPacket.r_stringZ(m_start_dialog);
-	}
+}
+
+void CSE_ALifeHumanStalker::SyncWrite(NET_Packet& Packet)
+{
 #ifdef XRGAME_EXPORTS
-	else
-	{
-		m_state_mngr.CSE_StateRead(tNetPacket);
-		m_state_mngr.GetStateCSE(this);
-	}
+	m_state_mngr.FillStateCSE(this);
+	m_state_mngr.CSE_StateWrite(Packet);
 #endif
 }
 
