@@ -710,7 +710,7 @@ CRenderTarget::CRenderTarget()
 	}
 
 	s_ssao.create(b_ssao, "r2\\ssao");
-	rt_ssao_temp.create(r2_RT_ssao_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16_FLOAT, 1);
+	rt_ssao_temp.create(r2_RT_ssao_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8_UNORM, 1);
 
 	// COMBINE
 	{
