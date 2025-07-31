@@ -71,6 +71,8 @@ class CLevelChanger;
 class CPhysicItem;
 class CEatableItem;
 class CScriptZone;
+class CHelicopter;
+class CHangingLamp;
 
 class IKinematics;
 class CAI_Trader;
@@ -150,6 +152,8 @@ public:
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
 	virtual CEatableItem* cast_eatable_item() { return nullptr; }
 	virtual CScriptZone* cast_script_zone() { return nullptr; }
+	virtual CHelicopter* cast_helicopter() { return nullptr; }
+	virtual CHangingLamp* cast_hanging_lamp() { return nullptr; }
 
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}
