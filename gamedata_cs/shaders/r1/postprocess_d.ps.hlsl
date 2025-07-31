@@ -1,0 +1,39 @@
+#include "common.hlsli"
+
+struct v2p
+{
+    float4 color : COLOR0; // multiplier, color.w = noise_amount
+    float4 gray : COLOR1; // (.3,.3,.3.,amount)
+    float2 tc0 : TEXCOORD0; // base1 (duality)
+    float2 tc1 : TEXCOORD1; // base2 (duality)
+    float2 tc2 : TEXCOORD2; // base  (noise)
+};
+
+uniform sampler2D s_base0;
+uniform sampler2D s_base1;
+uniform sampler2D s_noise;
+uniform sampler2D s_distort;
+uniform sampler2D s_intensity;
+uniform sampler2D s_grad0;
+uniform float4 c_brightness;
+
+// Pixel
+float4 main(v2p I) : COLOR
+{
+    float4 distort = tex2D(s_distort, I.tc0);
+    float2 offset = (distort.xy - (127.0f / 255.0f)) * def_distort;
+    float3 t_0 = tex2D(s_base0, I.tc0 + offset);
+    float3 t_1 = tex2D(s_base1, I.tc1 + offset);
+    float3 image = (t_0 + t_1) * 0.5f; // add_d2
+
+    float gray = dot(image, I.gray); // dp3
+    image = lerp(gray, image, I.gray.w); // mul/mad
+
+    float4 t_noise = tex2D(s_noise, I.tc2);
+    float3 noised = image * t_noise * 2.0f; // mul_2x
+    image = lerp(noised, image, I.color.w); // lrp ?
+    image = (image * I.color + c_brightness) * 2.0f; // mad
+    //			image	= (image + c_brightness) * I.color;		// mad ?
+
+    return float4(image, 1.0f); // +mov
+}
