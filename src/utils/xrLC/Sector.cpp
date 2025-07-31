@@ -80,9 +80,10 @@ void CSector::BuildHierrarhy	()
 				float	best_volume	= flt_max;
 
 
-				std::atomic<bool> isFinded;
- 				concurrency::parallel_for(size_t(0), size_t(iSize),
-
+				xr_atomic_bool isFinded;
+ 				xr_parallel_for
+				(
+					size_t(0), size_t(iSize),
 					[&](size_t J)
 					{
 						if (isFinded.load())
