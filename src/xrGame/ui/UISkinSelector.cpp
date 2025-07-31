@@ -22,8 +22,8 @@ CUISkinSelectorWnd::CUISkinSelectorWnd(const char* strSectionName, s16 team)
 
 	m_pFrames		= new CUIStatic();	AttachChild(m_pFrames);
 
-	int end_count = EngineExternal().ClearSkyMode() ? 4 : 6;
-	for (int i = 0; i<end_count; i++)
+	m_SkinCount = EngineExternal().ClearSkyMode() ? 4 : 6;
+	for (int i = 0; i < m_SkinCount; i++)
 	{
 		m_pImage[i] = new CUIStatix();
 		AttachChild(m_pImage[i]);
@@ -90,8 +90,7 @@ void CUISkinSelectorWnd::InitSkins(){
 
 void CUISkinSelectorWnd::UpdateSkins()
 {
-	int end_count = EngineExternal().ClearSkyMode() ? 4 : 6;
-	for (int i = 0; i<end_count; i++)
+	for (int i = 0; i < m_SkinCount; i++)
 	{
 		if (!!m_shader)
             m_pImage[i]->InitTextureEx(m_skins[i + m_firstSkin].c_str(), m_shader.c_str());
@@ -156,8 +155,7 @@ void CUISkinSelectorWnd::Init(const char* strSectionName)
 
 	InitSkins();
 	string64 buff;
-	int end_count = EngineExternal().ClearSkyMode() ? 4 : 6;
-	for (int i = 0; i < end_count; i++)
+	for (int i = 0; i < m_SkinCount; i++)
 	{
 		xr_sprintf(buff,"skin_selector:image_%d",i);
 		CUIXmlInit::InitStatic(xml_doc,buff,0,m_pImage[i]);
@@ -195,8 +193,7 @@ void CUISkinSelectorWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			}
 			else
 			{
-				int end_count = EngineExternal().ClearSkyMode() ? 4 : 6;
-				for (int i = 0; i < end_count; i++)
+				for (int i = 0; i < m_SkinCount; i++)
 					if (pWnd == m_pImage[i])
 					{
 						m_iActiveIndex = m_firstSkin + i;
@@ -330,8 +327,7 @@ void CUISkinSelectorWnd::OnKeyLeft()
 
 void CUISkinSelectorWnd::OnKeyRight()
 {
-	int end_count = EngineExternal().ClearSkyMode() ? 4 : 6;
-	if (m_firstSkin + end_count < (int)m_skins.size())
+	if (m_firstSkin + m_SkinCount < (int)m_skins.size())
 	{
 		m_firstSkin++;
 		UpdateSkins();
@@ -358,14 +354,12 @@ void CUISkinSelectorWnd::SetVisibleForBtn(ESKINMENU_BTN btn, bool state){
 
 void CUISkinSelectorWnd::SetCurSkin(int skin){
 	R_ASSERT2(skin>= -1 && skin <= (int)m_skins.size(), "invalid skin index");
-	int end_count = EngineExternal().ClearSkyMode() ? 4 : 6;
-
 	m_iActiveIndex = skin;
 
-	if (m_iActiveIndex != -1 && (m_iActiveIndex< m_firstSkin || m_iActiveIndex > m_firstSkin + (end_count-1)))
+	if (m_iActiveIndex != -1 && (m_iActiveIndex< m_firstSkin || m_iActiveIndex > m_firstSkin + (m_SkinCount - 1)))
 	{
-		if (m_iActiveIndex > (int)m_skins.size() - end_count)
-			m_firstSkin = (int)m_skins.size() - end_count;
+		if (m_iActiveIndex > (int)m_skins.size() - m_SkinCount)
+			m_firstSkin = (int)m_skins.size() - m_SkinCount;
 		else
             m_firstSkin = m_iActiveIndex;
 	}
