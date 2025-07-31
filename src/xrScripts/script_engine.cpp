@@ -251,7 +251,7 @@ void CScriptEngine::load_common_scripts()
 	xr_delete			(l_tpIniFile);
 }
 
-LPCSTR ParseFolder(LPCSTR file_name, FS_FileSet& SET)
+shared_str ParseFolder(LPCSTR file_name, FS_FileSet& SET)
 {
 	bool Finded = false;
 
@@ -319,7 +319,7 @@ void CScriptEngine::process_file_if_exists	(LPCSTR file_name, bool warn_if_not_e
 		FS_FileSet SET;
 		FS.file_list(SET, "$game_scripts$", FS_ListFolders);
 		bool Finded = false;
-		LPCSTR path_to_file = ParseFolder(file_name, SET);
+		LPCSTR path_to_file = *ParseFolder(file_name, SET);
 		if (!path_to_file)
 		{
 			xr_sprintf(S1, "%s.script", file_name);
