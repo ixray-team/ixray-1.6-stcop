@@ -1594,3 +1594,23 @@ void CScriptGameObject::SetRestrictionType(u8 typ)
 			Level().space_restriction_manager().register_restrictor(restr, RestrictionSpace::ERestrictorTypes(typ));
 	}
 }
+
+void CScriptGameObject::setMechanic(bool cond)
+{
+	CInventoryOwner* invOwn = smart_cast<CInventoryOwner*>(&this->object());
+
+	if (!invOwn)
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member is_weapon_going_to_be_strapped!");
+
+	invOwn->SpecificCharacter().updateMechanic(cond);
+}
+
+const bool CScriptGameObject::getMechanic() const
+{
+	CInventoryOwner const* invOwn = smart_cast<CInventoryOwner const*>(&this->object());
+
+	if (!invOwn)
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member is_weapon_going_to_be_strapped!");
+
+	return invOwn->SpecificCharacter().upgrade_mechanic();
+}

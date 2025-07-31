@@ -816,6 +816,8 @@ public:
 			void				unlock_door_for_npc						();
 			bool				is_door_blocked_by_npc					() const;
 			bool				is_weapon_going_to_be_strapped			( CScriptGameObject const* object ) const;
+			const bool			getMechanic								() const;
+			void				setMechanic								(bool cond);
 
 			_DECLARE_FUNCTION14(cast_GameObject, CScriptGameObject);
 			_DECLARE_FUNCTION14(cast_Car, CCar);
