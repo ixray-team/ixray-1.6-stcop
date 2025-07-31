@@ -197,7 +197,10 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 			SetCondition(0);
 	}
 
-	CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
+	if (CurrentGameUI())
+	{
+		CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
+	}
 
 	return true;
 }
