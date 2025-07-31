@@ -90,7 +90,6 @@ CWeapon::CWeapon()
 	m_crosshair_inertion	= 0.f;
 	m_activation_speed_is_overriden	=	false;
 	m_cur_scope				= 0;
-	m_bRememberActorNVisnStatus = false;
 	bReloadKeyPressed		= false;
 	bAmmotypeKeyPressed		= false;
 	m_HudFovZoom = 0.0f;
@@ -796,7 +795,6 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_ammoType,					output_packet);
 	save_data		(m_ChamberAmmoType,				output_packet);
 	save_data		(m_zoom_params.m_bIsZoomModeNow,output_packet);
-	save_data		(m_bRememberActorNVisnStatus,	output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -814,8 +812,6 @@ void CWeapon::load(IReader &input_packet)
 			OnZoomIn();
 		else			
 			OnZoomOut();
-
-	load_data		(m_bRememberActorNVisnStatus,	input_packet);
 
 	UpdateAddonsVisibility();
 	UpdateHUDAddonsVisibility();
@@ -1018,6 +1014,11 @@ void CWeapon::UpdateCL		()
 
 	if (ParentIsActor())
 	{
+		if (GetNightVision() && !GetNightVision()->IsActive() && !need_renderable())
+		{
+			GetNightVision()->SwitchNightVision(true);
+		}
+
 		if (Actor()->GetDetector() && (Actor()->GetDetector()->GetState() == CCustomDetector::eIdle || !Actor()->GetDetector()->NeedActivation()))
 		{
 			if (bAmmotypeKeyPressed || bReloadKeyPressed)
@@ -1050,28 +1051,6 @@ void CWeapon::UpdateCL		()
 				}
 			}
 		}
-	}
-
-	if(m_zoom_params.m_pNight_vision && !need_renderable())
-	{
-		if(!m_zoom_params.m_pNight_vision->IsActive())
-		{
-			CActor* pA = H_Parent() ? H_Parent()->cast_actor() : NULL;
-			R_ASSERT(pA);
-			CTorch* pTorch = smart_cast<CTorch*>( pA->inventory().ItemFromSlot(TORCH_SLOT) );
-			if ( pTorch && pTorch->GetNightVisionStatus() )
-			{
-				m_bRememberActorNVisnStatus = pTorch->GetNightVisionStatus();
-				pTorch->SwitchNightVision(false, false);
-			}
-			m_zoom_params.m_pNight_vision->Start(m_zoom_params.m_sUseZoomPostprocess, pA, false);
-		}
-
-	}
-	else if(m_bRememberActorNVisnStatus)
-	{
-		m_bRememberActorNVisnStatus = false;
-		EnableActorNVisnAfterZoom();
 	}
 
 	if (!!GetHUDmode()) {
@@ -1221,23 +1200,6 @@ void CWeapon::HideOneUpgradeLevel(const char* section)
 				LPCSTR up_sect = pSettings->r_string(_Item, "section");
 				LoadUpgradeBonesToHide(up_sect, "show_bones");
 			}
-		}
-	}
-}
-
-void CWeapon::EnableActorNVisnAfterZoom()
-{
-	CActor *pA = H_Parent() ? H_Parent()->cast_actor() : NULL;
-	if(IsGameTypeSingle() && !pA)
-		pA = g_actor;
-
-	if(pA)
-	{
-		CTorch* pTorch = smart_cast<CTorch*>( pA->inventory().ItemFromSlot(TORCH_SLOT) );
-		if ( pTorch )
-		{
-			pTorch->SwitchNightVision(true, false);
-			pTorch->GetNightVision()->PlaySounds(CNightVisionEffector::eIdleSound);
 		}
 	}
 }
@@ -1926,12 +1888,12 @@ void CWeapon::OnZoomIn()
 	if (m_zoom_params.m_sUseBinocularVision.size() && IsScopeAttached() && nullptr == m_zoom_params.m_pVision)
 		m_zoom_params.m_pVision = new CBinocularsVision(m_zoom_params.m_sUseBinocularVision);
 
-	if(m_zoom_params.m_sUseZoomPostprocess.size() && IsScopeAttached()) 
+	if (m_zoom_params.m_sUseZoomPostprocess.size() && IsScopeAttached()) 
 	{
-		CActor* actor = H_Parent() ? H_Parent()->cast_actor() : NULL;
+		CActor* actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
 
-		if (actor && nullptr == m_zoom_params.m_pNight_vision)
-			m_zoom_params.m_pNight_vision = new CNightVisionEffector(m_zoom_params.m_sUseZoomPostprocess);
+		if (actor && !GetNightVision())
+			m_zoom_params.m_pNight_vision = new CWeaponNightVision(m_zoom_params.m_sUseZoomPostprocess, actor);
 	}
 }
 
@@ -1945,10 +1907,11 @@ void CWeapon::OnZoomOut()
 
 	ResetSubStateTime					();
 
-	xr_delete							(m_zoom_params.m_pVision);
-	if(m_zoom_params.m_pNight_vision)
+	xr_delete(m_zoom_params.m_pVision);
+
+	if (GetNightVision())
 	{
-		m_zoom_params.m_pNight_vision->Stop(100000.0f, false);
+		GetNightVision()->SwitchNightVision(false);
 		xr_delete(m_zoom_params.m_pNight_vision);
 	}
 }
