@@ -132,6 +132,7 @@ public:
 		u32	bDistort	:	1;
 		u32	bWmark		:	1;
 		u32 bLandscape	:	1;
+		u32 bScopeMask	:	1;
 	};
 public:
 	Sflags								flags;
