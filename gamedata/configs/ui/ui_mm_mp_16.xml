@@ -20,9 +20,10 @@
 			<texture>ui_inGame2_GameSpy_logo</texture>
 		</auto_static>
 	</background>
-	<edit_player_name x="0" y="1000" width="235" height="24" max_symb_count="18">
+	<edit_player_name x="530" y="283" width="184" height="25" max_symb_count="21">
 		<options_item entry="mm_net_player_name" group="mm_mp_client"/>
-		<text x="3" font="letterica18" r="235" g="219" b="185"/>
+	    <text x="3" font="letterica16" complex_mode="0" vert_align="c"/>
+	   	<texture>ui_inGame2_edit_box_1</texture>
 	</edit_player_name>
 	<cap_cd_key x="490" y="283" width="40" height="29">
 		<text font="letterica16" complex_mode="0" vert_align="c">mm_mp_cd_key</text>
@@ -52,10 +53,6 @@
 	    <button x="293" y="0" width="86" height="24" id="demo" stretch="1">
 	        <texture>ui_inGame2_button</texture>
 	        <text font="letterica16" align="c" complex_mode="0">mm_mp_demo</text>
-	    </button>
-	    <button x="390" y="0" width="86" height="24" id="profile" stretch="1">
-	        <texture>ui_inGame2_button</texture>
-	        <text font="letterica16" align="c" complex_mode="0" a="170">mm_mp_profile</text>
 	    </button>
 	</tab>
 #include "ui\ui_mm_mp_tabclient_16.xml"
