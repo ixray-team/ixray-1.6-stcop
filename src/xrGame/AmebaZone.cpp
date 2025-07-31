@@ -32,8 +32,8 @@ bool CAmebaZone::BlowoutState()
 	if(!result) 
 		UpdateBlowout	();
 
-	for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
-		Affect			(&(*it));
+	for (SZoneObjectInfo& info : m_ObjectInfoMap)
+		Affect(&info);
 
 	return result;
 }
@@ -71,17 +71,18 @@ void  CAmebaZone::Affect(SZoneObjectInfo* O)
 
 void CAmebaZone::PhTune(float step)
 {
-	OBJECT_INFO_VEC_IT it;
-	for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
+	for (SZoneObjectInfo& info : m_ObjectInfoMap)
 	{
-		CEntityAlive* EA			= smart_cast<CEntityAlive*>((*it).object);
-		if(EA)
+		if (info.object && !info.object->getDestroy())
 		{
-			CPHMovementControl* mc	= EA->character_physics_support()->movement();
-			if(mc)
+			if (CEntityAlive* EA = info.object->cast_entity_alive())
 			{
-				if (distance_to_center(EA)<effective_radius(m_fEffectiveRadius))
+				CPHMovementControl* mc = EA->character_physics_support()->movement();
+				if (mc)
+				{
+					if (distance_to_center(EA) < effective_radius(m_fEffectiveRadius))
 						mc->SetVelocityLimit(m_fVelocityLimit);
+				}
 			}
 		}
 	}
