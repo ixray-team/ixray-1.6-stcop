@@ -24,6 +24,7 @@
 #include "Torch.h"
 #include "CustomDetector.h"
 #include "script_game_object.h"
+#include <WeaponBinoculars.h>
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -2628,7 +2629,7 @@ bool CWeapon::show_crosshair()
 
 bool CWeapon::show_indicators()
 {
-	return ! ( IsZoomed() && ZoomTexture() );
+	return !(IsZoomed() && ZoomTexture() && IsUIForceHiding() && !IsUIForceUnhiding());
 }
 
 float CWeapon::GetConditionToShow	() const
@@ -2805,4 +2806,62 @@ const CameraRecoil& CWeapon::getCameraZoomRecoil(void) const
 {
 	return zoom_cam_recoil;
 }
- 
+
+bool CWeapon::IsUIForceHiding() const
+{
+	auto bino = smart_cast<CWeaponBinoculars*>(this);
+
+	if (bino && IsZoomed())
+	{
+		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
+	}
+	else if (get_ScopeStatus() == 1 && IsZoomed())
+	{
+		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
+	}
+	else if (get_ScopeStatus() == 2 && IsScopeAttached() && IsZoomed())
+	{
+		return READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "zoom_hide_ui", true);
+	}
+
+	return false;
+}
+
+bool CWeapon::IsCollimatorInstalled() const
+{
+	if (!IsScopeAttached() || get_ScopeStatus() != 2)
+	{
+		return false;
+	}
+
+	shared_str scope = GetCurrentScopeSection();
+	scope = pSettings->r_string(scope, "scope_name");
+
+	return READ_IF_EXISTS(pSettings, r_bool, scope, "collimator", false);
+}
+
+bool CWeapon::IsHudModelForceUnhide() const
+{
+	return IsCollimatorInstalled() /* || IsLensedScopeInstalled(wpn) && IsLensEnabled() || IsAlterZoomMode()*/;
+}
+
+bool CWeapon::IsUIForceUnhiding() const
+{
+	bool result = IsHudModelForceUnhide();
+
+	if (result)
+	{
+		/*if (buf.IsAlterZoomMode())
+			result = true;
+		else */if (get_ScopeStatus() == 1)
+		{
+			result = !READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", false);
+		}
+		else if (get_ScopeStatus() == 2 && IsScopeAttached())
+		{
+			result = !READ_IF_EXISTS(pSettings, r_bool, pSettings->r_string(GetCurrentScopeSection(), "scope_name"), "zoom_hide_ui", false);
+		}
+	}
+
+	return result;
+}
