@@ -6,4 +6,16 @@
         <texture id="ui_car_panel_engine" x="0" y="180" width="22" height="22" />
         <texture id="ui_car_panel_light" x="30" y="180" width="22" height="22" />
    </file>
+   <file name="ui\ui_flag_usa">
+    	<texture id="ui_flag_usa_e" x="0" y="0" width="256" height="256" />
+	    <texture id="ui_flag_usa_h" x="0" y="0" width="256" height="256" />
+	    <texture id="ui_flag_usa_t" x="0" y="0" width="256" height="256" />
+	    <texture id="ui_flag_usa_d" x="0" y="0" width="256" height="256" />
+   </file>
+   <file name="ui\ui_flag_russia">
+    	<texture id="ui_flag_russia_e" x="0" y="0" width="256" height="256" />
+	    <texture id="ui_flag_russia_h" x="0" y="0" width="256" height="256" />
+	    <texture id="ui_flag_russia_t" x="0" y="0" width="256" height="256" />
+	    <texture id="ui_flag_russia_d" x="0" y="0" width="256" height="256" />
+   </file>
 </w>
