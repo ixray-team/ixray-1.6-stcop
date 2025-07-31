@@ -7,6 +7,7 @@
 #include	"AnimationKeyCalculate.h"
 #include	"SkeletonX.h"
 #include "../../xrEngine/Fmesh.h"
+#include "../../xrCore/AnimNotify/AnimNotify.h"
 #ifdef DEBUG
 #include "../../xrCore/dump_string.h"
 #endif
@@ -355,6 +356,12 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bM
 		Bone_Motion_Start_IM((*bones)[P.bones[i]], B);
 	}
 
+	{
+		auto& Notify = m_Motions[motion_ID.slot].motions.motion_notify(motion_ID.idx);
+		B->notifyKeys.resize(Notify.order.size());
+		std::ranges::copy(Notify.order.begin(), Notify.order.end(), B->notifyKeys.begin());
+	}
+
 	constexpr size_t MAX_CYCLES_IN_PART = MAX_BLENDED * MAX_CHANNELS;
 	if (MAX_CYCLES_IN_PART > blend_cycles[part].size())
 	{
@@ -516,6 +523,38 @@ void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_bl
 				DestroyCycle( B );
 				blend_cycles[part].erase( I );
 				E = blend_cycles[part].end(); I--; 
+			}
+
+			if (B.trigger_notify)
+			{
+				auto& Notifies = m_Motions[B.motionID.slot].motions.motion_notify(B.motionID.idx);
+				while (B.current_notify_index < B.notifyKeys.size() && B.timeCurrent > B.notifyKeys[B.current_notify_index])
+				{
+					VERIFY(B.current_notify_index < B.notifyKeys.size());
+					VERIFY(Notifies.data.contains(B.notifyKeys[B.current_notify_index]));
+					auto& CurrentNotify = Notifies.data[B.notifyKeys[B.current_notify_index]];
+					if (CurrentNotify.GiveInfo.size())
+					{
+						Msg("AnimNotify: give info %s", CurrentNotify.GiveInfo.c_str());
+						IAnimNotifyHandler::Get().TriggerGiveInfo(CurrentNotify.GiveInfo);
+					}
+					if (CurrentNotify.DisableInfo.size())
+					{
+						Msg("AnimNotify: disable info %s", CurrentNotify.DisableInfo.c_str());
+						IAnimNotifyHandler::Get().TriggerDisableInfo(CurrentNotify.DisableInfo);
+					}
+					if (CurrentNotify.Functor.size())
+					{
+						Msg("AnimNotify: functor %s", CurrentNotify.Functor.c_str());
+						IAnimNotifyHandler::Get().TriggerFunctor(CurrentNotify.Functor);
+					}
+					if (CurrentNotify.ExternalRef.size())
+					{
+						Msg("AnimNotify: external ref %s", CurrentNotify.ExternalRef.c_str());
+						IAnimNotifyHandler::Get().TriggerNotify(CurrentNotify.ExternalRef);
+					}
+					++B.current_notify_index;
+				}
 			}
 		}
 	}

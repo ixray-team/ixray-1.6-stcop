@@ -145,6 +145,7 @@ public:
 
 	xr_vector<motion_marks>			marks;
 	xr_hash_map<float, anim_notify> notify;
+	xr_stack<float> notifies_to_remove = {};
 
     void			Clear			();
 public:
