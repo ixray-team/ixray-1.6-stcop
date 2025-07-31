@@ -1,4 +1,5 @@
 saved_game_extension	= ".scop"
+saved_game_extension_ex	= ".scop_marshal"
 
 class "load_item" (CUIListBoxItem)
 
@@ -129,9 +130,9 @@ function delete_save_game(filename)
     f:file_delete("$game_saves$", save_file)
     
     -- START IX-Ray
-    if save_manager then
-        save_manager.deleteObsoleteData(filename)
-    end
+	if (file_exist(filename..saved_game_extension_ex)) then
+		f:file_delete("$game_saves$",filename..saved_game_extension_ex)
+	end
 	-- END IX-Ray
 	
 	if file_exist(dds_file) then
