@@ -35,6 +35,12 @@ int CNodeViewport::GetHoveredMode() const
 		}
 	}
 
+	if (HoveredNodeID == -1 && NodeSelectCallback)
+	{
+		NodeSelectCallback(nullptr);
+		LastSelectedNodeID = -1;
+	}
+
 	return HoveredNodeID;
 }
 
@@ -114,7 +120,7 @@ void CNodeViewport::Draw()
 
 			if (Left != nullptr && Right != nullptr)
 			{
-				Right->OutNodes.push_back(Left);
+				Right->MakeOutNode(Left);
 			}
 
 			Links.emplace_back(start_attr, end_attr);
