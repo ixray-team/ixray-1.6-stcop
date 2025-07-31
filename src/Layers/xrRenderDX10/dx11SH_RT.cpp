@@ -206,93 +206,95 @@ void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleC
 	_set(DEV->_CreateRT(Name, w, h, f, SampleCount, CreationFlags));
 }
 
-//////////////////////////////////////////////////////////////////////////
-/*	DX10 cut
-CRTC::CRTC			()
+CRTC::CRTC()
 {
-	if (pSurface)	return;
+	if(pSurface) return;
 
-	pSurface									= nullptr;
-	pRT[0]=pRT[1]=pRT[2]=pRT[3]=pRT[4]=pRT[5]	= nullptr;
-	dwSize										= 0;
-	fmt											= D3DFMT_UNKNOWN;
-}
-CRTC::~CRTC			()
-{
-	destroy			();
+	fmt = DxgiFormat::DXGI_FORMAT_UNKNOWN;
+	dwSize = 0;
 
-	// release external reference
-	DEV->_DeleteRTC	(this);
+	ZeroMemory(pRT, sizeof(pRT));
+	pSurface = nullptr;
 }
 
-void CRTC::create	(LPCSTR Name, u32 size,	D3DFORMAT f)
+CRTC::~CRTC()
 {
-	R_ASSERT	(RDevice && Name && Name[0] && size && btwIsPow2(size));
-	_order		= CPU::GetCLK();	//Device.GetTimerGlobal()->GetElapsed_clk();
+	destroy();
+	DEV->_DeleteRTC(this);
+}
 
-	HRESULT		_hr;
+void CRTC::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags)
+{
+	R_ASSERT(RDevice && Name && Name[0] && size && btwIsPow2(size));
+	_order = CPU::GetCLK();
 
-	dwSize		= size;
-	fmt			= f;
-
-	// Get caps
-	//D3DCAPS9	caps;
-	//R_CHK		(RDevice->GetDeviceCaps(&caps));
-
-	//	DirectX 10 supports non-power of two textures
-	// Pow2
-	//if (!btwIsPow2(size))
-	//{
-	//	if (!HW.Caps.raster.bNonPow2)	return;
-	//}
+	dwSize = size;
+	fmt = f;
 
 	// Check width-and-height of render target surface
-	if (size>D3Dxx_REQ_TEXTURECUBE_DIMENSION)		return;
+	if(size > D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
 
-	//	TODO: DX10: Validate cube texture format
-	// Validate render-target usage
-	//_hr = HW.pD3D->CheckDeviceFormat(
-	//	HW.DevAdapter,
-	//	HW.m_DriverType,
-	//	HW.Caps.fTarget,
-	//	D3DUSAGE_RENDERTARGET,
-	//	D3DRTYPE_CUBETEXTURE,
-	//	f
-	//	);
-	//if (FAILED(_hr))					return;
+	// Create the render target texture
+	D3D_TEXTURE2D_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
 
-	// Try to create texture/surface
-	DEV->Evict					();
-	_hr = RDevice->CreateCubeTexture	(size, 1, D3DUSAGE_RENDERTARGET, f, D3DPOOL_DEFAULT, &pSurface,nullptr);
-	if (FAILED(_hr) || (0==pSurface))	return;
+	desc.Width = dwSize;
+	desc.Height = dwSize;
 
-	// OK
-	Msg			("* created RTc(%s), 6(%d)",Name,size);
-	for (u32 face=0; face<6; face++)
-		R_CHK	(pSurface->GetCubeMapSurface	((D3DCUBEMAP_FACES)face, 0, pRT+face));
-	pTexture	= DEV->_CreateTexture	(Name);
-	pTexture->surface_set						(pSurface);
+	desc.ArraySize = 6;
+
+	desc.Format = (DXGI_FORMAT)fmt;
+	desc.SampleDesc.Count = 1;
+
+	desc.Usage = D3D_USAGE_DEFAULT;
+	desc.BindFlags = D3D_BIND_SHADER_RESOURCE | D3D_BIND_RENDER_TARGET;
+	desc.MiscFlags = D3D_RESOURCE_MISC_TEXTURECUBE;
+
+	if(CreationFlags & CRT::CRTCreationFlags::MIPPED_RT_FLAG) {
+		desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
+		desc.MipLevels = log2(dwSize) + 1;
+	}
+
+	CHK_DX(RDevice->CreateTexture2D(&desc, nullptr, &pSurface));
+
+	D3D_RENDER_TARGET_VIEW_DESC descRTV{};
+	ZeroMemory(&descRTV, sizeof(descRTV));
+
+	descRTV.Format = desc.Format;
+	descRTV.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+	descRTV.Texture2D.MipSlice = 0;
+	descRTV.Texture2DArray.ArraySize = 1;
+
+	for(UINT i = 0; i < 6; i++)
+	{
+		descRTV.Texture2DArray.FirstArraySlice = i;
+		CHK_DX(RDevice->CreateRenderTargetView(pSurface, &descRTV, &pRT[i]));
+	}
+
+	pTexture = DEV->_CreateTexture(Name);
+	pTexture->surface_set(pSurface);
 }
 
-void CRTC::destroy		()
+void CRTC::destroy()
 {
-	pTexture->surface_set	(0);
-	pTexture				= nullptr;
-	for (u32 face=0; face<6; face++)
-		_RELEASE	(pRT[face]	);
-	_RELEASE	(pSurface	);
-}
-void CRTC::reset_begin	()
-{
-	destroy		();
-}
-void CRTC::reset_end	()
-{
-	create		(*cName,dwSize,fmt);
+	pTexture->surface_set(0);
+	pTexture = nullptr;
+
+	for(UINT i = 0; i < 6; ++i) {
+		_RELEASE(pRT[i]);
+	}
+
+	_RELEASE(pSurface);
 }
 
-void resptrcode_crtc::create(LPCSTR Name, u32 size, D3DFORMAT f)
-{
-	_set		(DEV->_CreateRTC(Name,size,f));
+void CRTC::reset_begin() {
+	destroy();
 }
-*/
+
+void CRTC::reset_end() {
+	create(*cName, dwSize, fmt);
+}
+
+void resptrcode_crtc::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags) {
+	_set(DEV->_CreateRTC(Name, size, f, CreationFlags));
+}

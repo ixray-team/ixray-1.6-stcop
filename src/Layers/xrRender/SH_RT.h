@@ -57,3 +57,36 @@ struct resptrcode_crt : public resptr_base<CRT> {
 	}
 };
 typedef	resptr_core<CRT, resptrcode_crt> ref_rt;
+
+#ifdef USE_DX11
+//////////////////////////////////////////////////////////////////////////
+class		CRTC	:	public xr_resource_named	{
+public:
+	ID3DTexture2D*			pSurface;
+	ID3DRenderTargetView*	pRT[6];
+	ref_texture				pTexture;
+
+	u32						dwSize;
+
+	DxgiFormat				fmt;
+
+	u64						_order;
+
+	CRTC					();
+	~CRTC					();
+
+	void				create(LPCSTR name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)NULL);
+	void				destroy			();
+	void				reset_begin		();
+	void				reset_end		();
+	IC BOOL				valid			()	{ return !pTexture; }
+};
+
+struct 		resptrcode_crtc	: public resptr_base<CRTC>
+{
+	void				create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)NULL);
+	void				destroy			()	{ _set(NULL);		}
+};
+
+typedef	resptr_core<CRTC,resptrcode_crtc> ref_rtc;
+#endif
