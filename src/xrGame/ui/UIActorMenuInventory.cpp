@@ -624,10 +624,11 @@ bool CUIActorMenu::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 		if ( m_pActorInvOwner->inventory().SlotIsPersistent(slot_id) && slot_id != DETECTOR_SLOT  )
 			return false;
 
-		if ( slot_id == INV_SLOT_2 && m_pActorInvOwner->inventory().CanPutInSlot(iitem, INV_SLOT_3))
+		const static bool pistolsOnly = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot];
+		if ( slot_id == INV_SLOT_2 && m_pActorInvOwner->inventory().CanPutInSlot(iitem, INV_SLOT_3) && !pistolsOnly)
 			return ToSlot(itm, force_place, INV_SLOT_3);
 
-		if ( slot_id == INV_SLOT_3 && m_pActorInvOwner->inventory().CanPutInSlot(iitem, INV_SLOT_2))
+		if ( slot_id == INV_SLOT_3 && m_pActorInvOwner->inventory().CanPutInSlot(iitem, INV_SLOT_2) && !pistolsOnly)
 			return ToSlot(itm, force_place, INV_SLOT_2);
 
 		PIItem	_iitem						= m_pActorInvOwner->inventory().ItemFromSlot(slot_id);
@@ -1099,7 +1100,7 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 		}
 		if ( item_in_slot_3 && item_in_slot_3->CanAttach(pScope) )
 		{
-			shared_str str = g_pStringTable->translate("st_attach_scope_to_pistol");
+			shared_str str = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot] ? g_pStringTable->translate("st_attach_scope_to_rifle") : g_pStringTable->translate("st_attach_scope_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
 			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
 //			m_UIPropertiesBox->AddItem( "st_attach_scope_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
@@ -1115,15 +1116,13 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 			shared_str str = g_pStringTable->translate("st_attach_silencer_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
 			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_silencer_to_pistol",  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
 			b_show			= true;
 		}
 		if ( item_in_slot_3 && item_in_slot_3->CanAttach(pSilencer) )
 		{
-			shared_str str = g_pStringTable->translate("st_attach_silencer_to_pistol");
+			shared_str str = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot] ? g_pStringTable->translate("st_attach_silencer_to_rifle") : g_pStringTable->translate("st_attach_silencer_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
 			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_silencer_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
 			b_show			= true;
 		}
 		return;
