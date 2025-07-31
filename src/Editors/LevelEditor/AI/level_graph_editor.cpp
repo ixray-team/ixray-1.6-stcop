@@ -12,7 +12,7 @@ static SAIParams g_params;
 
 
 
-IC void CNodePositionCompressor(NodePosition& Pdest, Fvector& Psrc, hdrNODES& H)
+IC void CNodePositionCompressor(LevelGraph::CPosition& Pdest, Fvector& Psrc, hdrNODES& H)
 {
 	float sp = 1 / g_params.fPatchSize;
 	int row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
@@ -22,9 +22,8 @@ IC void CNodePositionCompressor(NodePosition& Pdest, Fvector& Psrc, hdrNODES& H)
 	Pdest.xz(pxz);
 	clamp(py, 0, 65535);	Pdest.y(u16(py));
 }
-IC void	compress_node(NodeCompressed& Dest, SAINode* Src)
+IC void	compress_node(LevelGraph::CVertex& Dest, SAINode* Src)
 {
-	Dest.light(15);//compress(Src.LightLevel,15));
 	for (u8 L = 0; L < 4; ++L)
 		Dest.link(L, Src->n[L] ? Src->n[L]->idx : InvalidNode);
 }
@@ -34,46 +33,25 @@ IC BYTE	compress(float c, int max_value)
 	clamp(cover, 0, max_value);
 	return BYTE(cover);
 }
-void	Compress(NodeCompressed& Dest, SAINode* Src, hdrNODES& H)
+
+void Compress(LevelGraph::CVertex& Dest, SAINode* Src, hdrNODES& H)
 {
 	// Compress plane (normal)
-	Dest.plane = pvCompress(Src->Plane.n);
+	Dest.UncompressedNode.plane = pvCompress(Src->Plane.n);
 
 	// Compress position
-	CNodePositionCompressor(Dest.p, Src->Pos, H);
-	//	CompressPos	(Dest.p1,Src.P1,H);
+	CNodePositionCompressor(Dest.UncompressedNode.p, Src->Pos, H);
 
-		// Sector
-		// R_ASSERT(Src.sector<=255);
-		// Dest.sector = BYTE(Src.sector);
-
-		// Light & Cover
 	compress_node(Dest, Src);
-	//	Dest.cover[0]	= CompressCover(Src.cover[0]);
-	//	Dest.cover[1]	= CompressCover(Src.cover[1]);
-	//	Dest.cover[2]	= CompressCover(Src.cover[2]);
-	//	Dest.cover[3]	= CompressCover(Src.cover[3]);
-	Dest.high.cover0 = compress(high_cover_height, 15);
-	Dest.high.cover1 = compress(high_cover_height, 15);
-	Dest.high.cover2 = compress(high_cover_height, 15);
-	Dest.high.cover3 = compress(high_cover_height, 15);
-	Dest.low.cover0 = compress(low_cover_height, 15);
-	Dest.low.cover1 = compress(low_cover_height, 15);
-	Dest.low.cover2 = compress(low_cover_height, 15);
-	Dest.low.cover3 = compress(low_cover_height, 15);
-	//	Msg				("[%.3f -> %d][%.3f -> %d][%.3f -> %d][%.3f -> %d]",
-	//		Src.cover[0],Dest.cover0,
-	//		Src.cover[1],Dest.cover1,
-	//		Src.cover[2],Dest.cover2,
-	//		Src.cover[3],Dest.cover3
-	//		);
-
-		// Compress links
-	//	R_ASSERT	(Src.neighbours.size()<64);
-	//	Dest.links	= BYTE(Src.neighbours.size());
+	Dest.UncompressedNode.high.cover0 = compress(high_cover_height, 15);
+	Dest.UncompressedNode.high.cover1 = compress(high_cover_height, 15);
+	Dest.UncompressedNode.high.cover2 = compress(high_cover_height, 15);
+	Dest.UncompressedNode.high.cover3 = compress(high_cover_height, 15);
+	Dest.UncompressedNode.low.cover0 = compress(low_cover_height, 15);
+	Dest.UncompressedNode.low.cover1 = compress(low_cover_height, 15);
+	Dest.UncompressedNode.low.cover2 = compress(low_cover_height, 15);
+	Dest.UncompressedNode.low.cover3 = compress(low_cover_height, 15);
 }
-
-
 
 class CNodeRenumberer
 {
@@ -94,9 +72,9 @@ public:
 			sorted[i] = i;
 
 		std::stable_sort(sorted.begin(), sorted.end(), [&nodes](u32 vertex_id0, u32 vertex_id1)
-			{
-				return		(nodes[vertex_id0].p.xz() < nodes[vertex_id1].p.xz());
-			});
+		{
+			return (nodes[vertex_id0].UncompressedNode.p.xz() < nodes[vertex_id1].UncompressedNode.p.xz());
+		});
 
 		for (u32 i = 0; i < N; ++i)
 			renumbering[sorted[i]] = i;
@@ -110,9 +88,9 @@ public:
 			}
 		}
 
-		std::stable_sort(nodes.begin(), nodes.end(), [](const NodeCompressed& vertex0, const NodeCompressed& vertex1)
+		std::stable_sort(nodes.begin(), nodes.end(), [](const LevelGraph::CVertex& vertex0, const LevelGraph::CVertex& vertex1)
 			{
-				return		(vertex0.p.xz() < vertex1.p.xz());
+				return		(vertex0.UncompressedNode.p.xz() < vertex1.UncompressedNode.p.xz());
 			});
 	}
 };
