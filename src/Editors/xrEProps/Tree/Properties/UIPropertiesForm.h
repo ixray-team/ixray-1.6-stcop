@@ -2,7 +2,7 @@
 class XREPROPS_API UIPropertiesForm :public IEditorWnd
 {
 	friend class UIPropertiesItem;
-	std::atomic_bool bAsyncUpdated = true;
+	xr_atomic_bool bAsyncUpdated = true;
 
 public:
 	UIPropertiesForm();
