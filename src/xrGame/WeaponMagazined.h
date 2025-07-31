@@ -39,6 +39,7 @@ protected:
 	virtual void	switch2_Idle	();
 	virtual void	switch2_Fire	();
 	virtual void	switch2_Empty	();
+	virtual void	switch2_Device	();
 	virtual void	switch2_Reload	();
 	virtual void	switch2_Hiding	();
 	virtual void	switch2_Hidden	();

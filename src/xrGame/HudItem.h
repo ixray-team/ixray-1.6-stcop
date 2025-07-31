@@ -170,6 +170,8 @@ public:
 		df_torch = (1 << 0),
 		df_nvg = (1 << 1),
 		df_clear_mask = (1 << 2),
+		df_tacticaltorch = (1 << 3),
+		df_laser = (1 << 4),
 	};
 
 	enum EAnimationsFlags
@@ -219,6 +221,8 @@ public:
 		sf_shoot_grenade_actor = (1 << 25),
 		sf_switch_g = (1 << 26),
 		sf_reload_change = (1 << 27),
+		sf_tacticaltorch = (1 << 28),
+		sf_laser = (1 << 29),
 	};
 
 	Flags32 m_eDevicesFlags;
