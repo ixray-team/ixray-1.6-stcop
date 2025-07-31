@@ -137,6 +137,13 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 		return;
 
 	m_inv_item = static_cast<PIItem>(cellItem ? cellItem->m_pData : nullptr);
+
+	const char* upgrIconsTexture = {};
+	if (m_inv_item != nullptr)
+	{
+		upgrIconsTexture = READ_IF_EXISTS(pSettings, r_string, m_inv_item->m_section_id, "upgr_icons_texture", nullptr);
+	}
+
 	// Загружаем картинку
 	if (m_item && m_inv_item)
 	{
@@ -144,14 +151,14 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 		if (smart_cast<CWeapon*>(m_inv_item))
 	{
 		is_shader = true;
-		m_item->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader());
-		if (smart_cast<CWeaponRPG7*>(m_inv_item))
-			m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader());
+		m_item->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
+		if(smart_cast<CWeaponRPG7*>(m_inv_item))
+			m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
 	}
 	else if (smart_cast<CCustomOutfit*>(m_inv_item) || smart_cast<CHelmet*>(m_inv_item))
 	{
 		is_shader = true;
-		m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader());
+		m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
 	}
 
 	if (m_item && is_shader)
