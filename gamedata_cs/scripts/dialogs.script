@@ -1,3 +1,31 @@
+local pistol_tbl = {
+	["wpn_beretta"] = true,
+	["wpn_colt1911"] = true,
+	["wpn_desert_eagle"] = true,
+	["wpn_fort"] = true,
+	["wpn_hpsa"] = true,
+	["wpn_pb"] = true,
+	["wpn_pm"] = true,
+	["wpn_usp"] = true,
+	["wpn_walther"] = true
+}
+
+local gun_tbl = {
+	["wpn_abakan"] = true,
+	["wpn_ak74"] = true,
+	["wpn_ak74u"] = true,
+	["wpn_groza"] = true,
+	["wpn_sig550"] = true,
+	["wpn_vintorez"] = true
+}
+
+local shootgun_tbl = {
+	["wpn_bm16"] = true,
+	["wpn_toz34"] = true,
+	["wpn_wincheaster1300"] = true,
+	["wpn_spas12"] = true
+}
+
 function allow_break_dialog(first_speaker, second_speaker, id)
 	printf("check for allow_break_dialog for object [%s] with clsid [%s]", second_speaker:name(), second_speaker:clsid())
 	local npc = who_is_npc(first_speaker, second_speaker)
@@ -422,104 +450,56 @@ function who_is_npc(first_speaker, second_speaker)
 	return npc
 end
 
+function find_object_by_table(tbl)
+	for i = 0, db.actor:object_count() - 1 do
+		local obj = db.actor:object(i)
+		if obj and tbl[obj:section()] then
+			return obj
+		end
+	end
+	return nil
+end
+
 --------------------------------------------------------------------------------
 function transfer_any_pistol_from_actor(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-		db.actor:iterate_inventory(is_pistol, npc)
-	if(db.actor.pistol~=nil) then
-			db.actor:transfer_item(db.actor:object(db.actor.pistol), npc)
-		news_manager.relocate_item(db.actor, "out", db.actor.pistol)
-		db.actor.pistol = nil
-	end
-end
-
-function is_pistol(npc, item)
-	local section = item:section()
-	if(section=="wpn_beretta")
-	or(section=="wpn_colt1911")
-	or(section=="wpn_desert_eagle")
-	or(section=="wpn_fort")
-	or(section=="wpn_hpsa")
-	or(section=="wpn_pb")
-	or(section=="wpn_pm")
-	or(section=="wpn_usp")
-	or(section=="wpn_walther") then
-		db.actor.pistol = section
+	local pistol = find_object_by_table(pistol_tbl)
+	if pistol then
+		db.actor:transfer_item(pistol, npc)
+		news_manager.relocate_item(db.actor, "out", pistol:section())
 	end
 end
 
 function have_actor_any_pistol(first_speaker, second_speaker)
-	local npc = who_is_npc(first_speaker, second_speaker)
-		db.actor:iterate_inventory(is_pistol, npc)
-	if(db.actor.pistol~=nil) then
-		return true
-	else
-		return false
-	end
+	return find_object_by_table(pistol_tbl) ~= nil
 end
 
 --------------------------------------------------------------------------------
 function transfer_any_gun_from_actor(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-		db.actor:iterate_inventory(is_gun, npc)
-	if(db.actor.gun~=nil) then
-			db.actor:transfer_item(db.actor:object(db.actor.gun), npc)
-		news_manager.relocate_item(db.actor, "out", db.actor.gun)
-		db.actor.gun = nil
-	end
-end
-
-function is_gun(npc, item)
-	local section = item:section()
-	if(section=="wpn_abakan")
-	or(section=="wpn_ak74")
-	or(section=="wpn_ak74u")
-	or(section=="wpn_groza")
-	or(section=="wpn_sig550")
-	or(section=="wpn_vintorez") then
-		db.actor.gun = section
+	local gun = find_object_by_table(gun_tbl)
+	if gun then
+		db.actor:transfer_item(gun, npc)
+		news_manager.relocate_item(db.actor, "out", gun:section())
 	end
 end
 
 function have_actor_any_gun(first_speaker, second_speaker)
-	local npc = who_is_npc(first_speaker, second_speaker)
-		db.actor:iterate_inventory(is_gun, npc)
-	if(db.actor.gun~=nil) then
-		return true
-	else
-		return false
-	end
+	return find_object_by_table(gun_tbl) ~= nil
 end
 
 --------------------------------------------------------------------------------
 function transfer_any_shootgun_from_actor(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-		db.actor:iterate_inventory(is_shootgun, npc)
-	if(db.actor.shootgun~=nil) then
-			db.actor:transfer_item(db.actor:object(db.actor.shootgun), npc)
-		news_manager.relocate_item(db.actor, "out", db.actor.shootgun)
-		db.actor.shootgun = nil
-	end
-end
-
-function is_shootgun(npc, item)
-	local section = item:section()
-	if(section=="wpn_bm16")
-	or(section=="wpn_toz34")
-	or(section=="wpn_wincheaster1300")
-	or(section=="wpn_spas12") then
-		db.actor.shootgun = section
+	local shootgun = find_object_by_table(shootgun_tbl)
+	if shootgun then
+		db.actor:transfer_item(shootgun, npc)
+		news_manager.relocate_item(db.actor, "out", shootgun:section())
 	end
 end
 
 function have_actor_any_shootgun(first_speaker, second_speaker)
-	local npc = who_is_npc(first_speaker, second_speaker)
-		db.actor:iterate_inventory(is_shootgun, npc)
-	if(db.actor.shootgun~=nil) then
-		return true
-	else
-		return false
-	end
+	return find_object_by_table(shootgun_tbl) ~= nil
 end
 --------------------------------------------------------------------------------
 --			ALIFE SUPPORT
