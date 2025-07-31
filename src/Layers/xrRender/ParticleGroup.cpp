@@ -3,10 +3,6 @@
 
 #include "../../xrParticles/psystem.h"
 
-#ifndef _EDITOR
-#include "../../xrServerEntities/smart_cast.h"
-#endif
-
 #include "ParticleGroup.h"
 #include "PSLibrary.h"
 #include "ParticleEffect.h"
