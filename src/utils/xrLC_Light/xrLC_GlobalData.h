@@ -36,25 +36,25 @@ extern XRLC_LIGHT_API void		setLMSIZE(int size);
 
 class	XRLC_LIGHT_API xrLC_GlobalData
 {
-	
-		compilers_global_data			_cl_globs;
 
-		CMemoryWriter					_err_invalid;
-		CMemoryWriter					_err_multiedge;
-		CMemoryWriter					_err_tjunction;
-		xr_vector<CLightmap*>			_g_lightmaps;
-		xr_vector<xrMU_Model*>			_mu_models;
-		xr_vector<xrMU_Reference*>		_mu_refs;
-		vecVertex						_g_vertices;
-		vecFace							_g_faces;
-		vecDefl							_g_deflectors;
+	compilers_global_data			_cl_globs;
+
+	CMemoryWriter					_err_invalid;
+	CMemoryWriter					_err_multiedge;
+	CMemoryWriter					_err_tjunction;
+	xr_vector<CLightmap*>			_g_lightmaps;
+	xr_vector<xrMU_Model*>			_mu_models;
+	xr_vector<xrMU_Reference*>		_mu_refs;
+	vecVertex						_g_vertices;
+	vecFace							_g_faces;
+	vecDefl							_g_deflectors;
 
 
-		bool							_b_nosun;
-		bool							_gl_linear;
-		bool							_b_use_intel;
-		bool							_b_skipWeld;
-		bool							_b_use_lmaps_build_alt;
+	bool							_b_nosun;
+	bool							_gl_linear;
+	bool							_b_use_intel;
+	bool							_b_skipWeld;
+	bool							_b_use_lmaps_build_alt;
 
 private:
 	bool _skipInvalid;
@@ -65,46 +65,53 @@ private:
 	bool _OverrideSettings;
 
 private:
-		bool							b_vert_not_register;
+	bool							b_vert_not_register;
 public:
 
 public:
-									xrLC_GlobalData	();//:_RCAST_Model (0), _b_nosun(false),_gl_linear(false){}
-									~xrLC_GlobalData();
-		IC xr_vector<b_BuildTexture>& textures		()		{	return _cl_globs._textures; }
-		IC xr_vector<CLightmap*>	& lightmaps		()		{	return _g_lightmaps; }
-		IC xr_vector<b_material>	& materials		()		{	return _cl_globs._materials; }
-		IC Shader_xrLC_LIB			& shaders		()		{	return _cl_globs._shaders; }
-		IC CMemoryWriter			&err_invalid	()		{	return _err_invalid; }
-		IC CMemoryWriter			&err_multiedge	()		{ return _err_multiedge;  };
-		IC CMemoryWriter			&err_tjunction	()		{ return _err_tjunction;  };
-		IC b_params					&g_params		()		{	return _cl_globs._g_params; }
-			
-		Face						*create_face	()		;
-		void						destroy_face	(Face* &f );
+	xrLC_GlobalData();//:_RCAST_Model (0), _b_nosun(false),_gl_linear(false){}
+	~xrLC_GlobalData();
+	IC xr_vector<b_BuildTexture>& textures() { return _cl_globs._textures; }
+	IC xr_vector<CLightmap*>& lightmaps() { return _g_lightmaps; }
+	IC xr_vector<b_material>& materials() { return _cl_globs._materials; }
+	IC Shader_xrLC_LIB& shaders() { return _cl_globs._shaders; }
+	IC CMemoryWriter& err_invalid() { return _err_invalid; }
+	IC CMemoryWriter& err_multiedge() { return _err_multiedge; };
+	IC CMemoryWriter& err_tjunction() { return _err_tjunction; };
+	IC b_params& g_params() { return _cl_globs._g_params; }
 
-		Vertex						*create_vertex	()		;
-		void						destroy_vertex	(Vertex* &f );
+	Face* create_face();
+	void						destroy_face(Face*& f);
 
-		void						vertices_isolate_and_pool_reload();
+	Vertex* create_vertex();
+	void						destroy_vertex(Vertex*& f);
 
-		vecVertex					&g_vertices		()		{	return	_g_vertices; }
-		vecFace						&g_faces		()		{	return	_g_faces; }
-		vecDefl						&g_deflectors	()		{	return	_g_deflectors; }
-		bool						b_r_vertices	()		;
-		bool						vert_construct_register(){return !b_r_vertices() && !b_vert_not_register; }
+	void						vertexes_allocated(size_t& mem, size_t& VertexCount);
+	void						faces_allocated(size_t& mem, size_t& FacesCount);
 
- 
-		base_lighting				&L_static		()		{	return _cl_globs._L_static; }
-		CDB::MODEL*					RCAST_Model		()		{	return _cl_globs._RCAST_Model; }
-		xr_vector<xrMU_Model*>		&mu_models		()		{	return _mu_models; }
-		xr_vector<xrMU_Reference*>	&mu_refs		()		{	return _mu_refs; }
+	void						vertices_isolate_and_pool_reload();
+
+	vecVertex& g_vertices() { return	_g_vertices; }
+	vecFace& g_faces() { return	_g_faces; }
+	vecDefl& g_deflectors() { return	_g_deflectors; }
+	bool						b_r_vertices();
+	bool						vert_construct_register() { return !b_r_vertices() && !b_vert_not_register; }
 
 
-		shared_str					level_name;
+	base_lighting& L_static() { return _cl_globs._L_static; }
+	CDB::MODEL* RCAST_Model() { return _cl_globs._RCAST_Model; }
+	xr_vector<xrMU_Model*>& mu_models() { return _mu_models; }
+	xr_vector<xrMU_Reference*>& mu_refs() { return _mu_refs; }
 
-		void						SetLevelName(LPCSTR name) { level_name = name; }
-		LPCSTR						GetLavelName() { return level_name.c_str(); }
+
+	shared_str					level_name;
+
+	void						SetLevelName(LPCSTR name) { level_name = name; }
+	LPCSTR						GetLavelName() { return level_name.c_str(); }
+
+	bool SkipThm = false;
+	bool GetSkipTHM() { return SkipThm; };
+	void SetSkipTHM(bool v) { SkipThm = v; };
 
 		bool						b_nosun			()		{	return _b_nosun; }
 		bool						gl_linear		()		{	return _gl_linear; }
