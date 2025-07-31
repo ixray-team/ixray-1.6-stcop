@@ -6,13 +6,6 @@
 // INTEL DATA STRUCTURE
 int LastGeometryDetailsID = RTC_INVALID_GEOMETRY_ID;
 
-
-// �������� ����� ���������� REFIT ����� �� ����� ������ ����� ����� ���������� 
-
-// ������ �������� �� �� ����� ������ �������� ������ 0.01f ����������� 
-// ������ �� ������� �� ������ (���� ������ � 0 ����� ���������)
-// ����� � 0.10f ���� ������ ���
-
 RTCDevice DeviceDetails;
 RTCScene IntelSceneDetails;
 RTCGeometry IntelGeometryDetails = 0;
@@ -38,8 +31,7 @@ bool CalculateEnergy(int GeomID, int PrimID, Fvector& B, float& energy, float u,
 	}
 
 	auto& F = gl_data.g_rc_faces[PrimID];
-	// ���������� ������ ���� ������� ������ �����������
-	b_material& M = gl_data.g_materials[F.dwMaterial];
+ 	b_material& M = gl_data.g_materials[F.dwMaterial];
 	b_texture& T = gl_data.g_textures[M.surfidx];
 
 	if (!T.bHasAlpha)
@@ -96,20 +88,17 @@ ICF void FilterRaytraceDetails(const struct RTCFilterFunctionNArguments* args)
 
 	if (!CalculateEnergy(hit->geomID, hit->primID, ctxt->B, ctxt->energy, hit->u, hit->v))
 	{
-		// ��� ���������� ������ ���� ����� ��� ������ � ������������ Face.
-		ray->tfar = -std::numeric_limits<float>::infinity();
+ 		ray->tfar = -std::numeric_limits<float>::infinity();
 		ctxt->energy = 0;
 		return;
 	}
 
-	args->valid[0] = 0; // ������ ����� ��������� �����
+	args->valid[0] = 0;  
 }
 
 float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 {
-	// Msg("RayTrace");
-	// ��������� ��� RayTracing
-	RayQueryContext data_hits;
+  	RayQueryContext data_hits;
 	data_hits.Light = &L;
 	data_hits.skip = 0;
 	data_hits.energy = 1.0f;
@@ -135,7 +124,7 @@ void InitializeGeometryAttach(Fvector* CDB_verts, CDB::TRI* CDB_tris, u32 TS_Siz
 {
 	// NORMAL GEOM
 	IntelGeometryDetails = rtcNewGeometry(DeviceDetails, RTC_GEOMETRY_TYPE_TRIANGLE);
-	rtcSetGeometryBuildQuality(IntelGeometryDetails, RTCBuildQuality::RTC_BUILD_QUALITY_REFIT);
+	rtcSetGeometryBuildQuality(IntelGeometryDetails, RTCBuildQuality::RTC_BUILD_QUALITY_LOW);
 
 	rtcSetGeometryOccludedFilterFunction(IntelGeometryDetails, &FilterRaytraceDetails);
 	rtcSetGeometryIntersectFilterFunction(IntelGeometryDetails, &FilterRaytraceDetails);
@@ -182,8 +171,7 @@ void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI)
 
 	DeviceDetails = rtcNewDevice(config);
  
-
-	string128 phase;
+ 	string128 phase;
 	sprintf(phase, "Intilized Intel Embree (Details Raytracer) %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
 	Status(phase);
 
@@ -197,10 +185,9 @@ void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI)
 
 	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_TASKING_SYSTEM", DeviceDetails, RTC_DEVICE_PROPERTY_TASKING_SYSTEM);
 
-	// �������� ����� � ���������� ���������
-	// Scene
+ 	// Scene
 	IntelSceneDetails = rtcNewScene(DeviceDetails);
-	rtcSetSceneFlags(IntelSceneDetails, RTCSceneFlags::RTC_SCENE_FLAG_ROBUST);
+	rtcSetSceneFlags(IntelSceneDetails, RTCSceneFlags::RTC_SCENE_FLAG_NONE);
 
 	InitializeGeometryAttach(Vertexes, tris, sizeTRI);
 }
