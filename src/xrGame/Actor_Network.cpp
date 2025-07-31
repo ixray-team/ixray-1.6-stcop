@@ -533,7 +533,8 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 			{
 				E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 				E->s_flags.set(M_SPAWN_OBJECT_ASPLAYER, FALSE);
-				Msg("single_actor_spawn");
+				
+				Msg("[Actor.cpp] single_actor_spawn");
 				g_actor = this;
 				g_actor_single = this;
 				g_pIGameActor = this;
@@ -548,7 +549,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 				{
 					if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_ASPLAYER))
 					{
-						Msg("mp_actor_spawn");
+						Msg("[Actor.cpp] mp_actor_spawn");
 						g_actor = this;
 						g_pIGameActor = this;
 					}
