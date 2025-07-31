@@ -1,12 +1,20 @@
 #include "common.h"
 
 //#define USE_SUPER_SPECULAR
+//#define USE_ORIGINAL_SSAO
+//#define HBAO_WORLD_JITTER
 
 #include "lmodel.h"
 #include "hmodel.h"
 
+uniform	Texture2D					s_half_depth;
+
+//#include "ssao_blur.ps"
+
 #include "ssao.ps"
-#include "ssao_blur.ps"
+#ifdef	USE_HBAO
+#include "ssao_hbao.ps"
+#endif	//	USE_HBAO
 
 struct	_input
 {
@@ -82,12 +90,15 @@ _out main ( _input I, uint iSample : SV_SAMPLEINDEX )
 #	endif
 #endif
 	
-#ifdef USE_SSAO_BLUR	
+/*#ifdef USE_SSAO_BLUR	
 #	ifndef USE_MSAA
 	float	occ = ssao_blur_ps(I.tc0);
 #	else
 	float   occ = ssao_blur_ps( texCoord, ISAMPLE );
-#	endif
+#	endif*/
+
+#ifdef USE_HBAO
+	float occ = calc_hbao( P.z, N, I.tc0, I.pos2d );
 #else
 	float occ = calc_ssao( CS_P(P, N, I.tc0, I.tcJ, I.pos2d, ISAMPLE) );
 #endif
@@ -165,7 +176,7 @@ _out main ( _input I, uint iSample : SV_SAMPLEINDEX )
 //float3 color = (0.5 * (sign( gbd.N - gbd.N_org ) + 1.0 ) );
 //color = float3( abs( gbd.hemi - gbd.hemi_org), 0, abs( gbd.mtl - gbd.mtl_org) );
 //color = abs( gbd.N - gbd.N_org );
-//		color.z = 0;
+//		color = occ;
         _out        	o;
         tonemap        	(o.low, o.high, color, tm_scale )	;
                         o.low.a         = skyblend	;
