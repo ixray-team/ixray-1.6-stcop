@@ -21,19 +21,25 @@ game_sv_freemp::game_sv_freemp()
 	:pure_relcase(&game_sv_freemp::net_Relcase)
 {
 	m_type = eGameIDFreeMP;
-	GSQLConnector.Connect();
-	GSQLConnector.Test();
-	map_items.clear();
-	map_items = GSQLConnector.LoadGame("game_items");
-	map_quest.clear();
-	map_quest = GSQLConnector.LoadGame("game_quests");
 
+#ifdef IXR_MP_SQL
+	GSQLConnector = new DBService;
+	GSQLConnector->Connect();
+	GSQLConnector->Test();
+
+	map_items.clear();
+	map_items = GSQLConnector->LoadGame("game_items");
+	map_quest.clear();
+	map_quest = GSQLConnector->LoadGame("game_quests");
+#endif
 }
 
 game_sv_freemp::~game_sv_freemp()
 {
+#ifdef IXR_MP_SQL
+	xr_delete(GSQLConnector);
+#endif
 }
-
 
 void game_sv_freemp::SpawnItemToActor(u16 actorId, LPCSTR name)
 {
@@ -323,16 +329,16 @@ void game_sv_freemp::OnDetach(u16 eid_who, u16 eid_what)
 // player disconnect
 void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 {
+#ifdef IXR_MP_SQL
 	CActorMP* actor = smart_cast<CActorMP*>(Level().Objects.net_Find(GameID));
 	if (!actor) return;
 
 	if (actor)
 	{
-
-		int cur_user_id = GSQLConnector.GetUserIdByName(actor->Name());
+		int cur_user_id = GSQLConnector->GetUserIdByName(actor->Name());
 		if (cur_user_id > 0)
 		{
-			GSQLConnector.DeleteInventory(cur_user_id);
+			GSQLConnector->DeleteInventory(cur_user_id);
 			for (PIItem _item : actor->inventory().m_all)
 			{
 				auto item = _item->cast_game_object();
@@ -368,7 +374,7 @@ void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 						state = dbState.dummy;
 					}
 
-					GSQLConnector.SaveInventory(cur_user_id, map_items[item->cNameSect().c_str()], state);
+					GSQLConnector->SaveInventory(cur_user_id, map_items[item->cNameSect().c_str()], state);
 				}
 			}
 			actor->inventory().Clear();
@@ -388,13 +394,15 @@ void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 				actor->Position()
 			};
 
-			GSQLConnector.UpdateInsertProperty(g);
+			GSQLConnector->UpdateInsertProperty(g);
 		}
 		else
 		{
 			Msg("! SOSI DJOPU - %s", actor->Name());
 		}
 	}
+#endif
+
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
 }
 
@@ -459,6 +467,7 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 	}
 	case GAME_EVENT_MP_ACTOR_SPAWN:
 	{
+#ifdef IXR_MP_SQL
 		game_PlayerState* ps = nullptr;
 		if (xrClientData* xrCData = (xrClientData*)m_server->ID_to_client(sender))
 		{
@@ -470,18 +479,18 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 		CActorMP* actor = smart_cast<CActorMP*>(Level().Objects.net_Find(ps->GameID));
 		if (!actor) return;
 
-		GSQLConnector.PushTask
+		GSQLConnector->PushTask
 		(
 			[actor, ps, this]()
 			{
-				int cur_user_id = GSQLConnector.GetUserIdByName(ps->getName());
+				int cur_user_id = GSQLConnector->GetUserIdByName(ps->getName());
 
 				if (cur_user_id <= 0)
 				{
 					return;
 				}
 
-				DBService::UserDBProperty res_data = GSQLConnector.SelectProperty(cur_user_id);
+				DBService::UserDBProperty res_data = GSQLConnector->SelectProperty(cur_user_id);
 				if (res_data.health > 0)
 				{
 					actor->conditions().ChangeHealth(res_data.health);
@@ -495,7 +504,7 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 					ps->money_for_round = res_data.money;
 					ps->team = res_data.community;
 
-					xr_vector<int> items = GSQLConnector.LoadInventory(cur_user_id);
+					xr_vector<int> items = GSQLConnector->LoadInventory(cur_user_id);
 					for (int itm : items)
 					{
 						auto it = std::find_if(map_items.begin(), map_items.end(), [itm](const auto& pair)
@@ -511,6 +520,7 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 				}
 			}
 		);
+#endif
 		break;
 	}
 	default: inherited::OnEvent(P, type, time, sender);
