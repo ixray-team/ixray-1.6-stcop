@@ -63,19 +63,16 @@ void StartupAI()
   		char* output = (pstr) LEVEL_GRAPH_NAME;
 
 		xrCompiler(prjName, gCompilerMode.AI_Draft, gCompilerMode.AI_PureCovers, output);
-
-		
 	}
 	 
 	if (gCompilerMode.AI_Verify)
 	{
 		R_ASSERT3(can_use_name, "Too big level name", name);
 		verify_level_graph(prjName, gCompilerMode.AI_Verbose);
+		return;
 	}
-
-
-
-	if (gCompilerMode.AI_Spawn && !gCompilerMode.AI_BuildLevel)
+	 
+	if (gCompilerMode.AI_BuildSpawn)
 	{
 		if (xr_strlen(name))
 			name[xr_strlen(name) - 1] = 0;
