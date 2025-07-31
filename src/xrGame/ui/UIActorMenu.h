@@ -6,6 +6,7 @@
 #include "../../xrUI/Widgets/UIHint.h"
 
 #include "../script_game_object.h" //Alundaio
+#include <WeaponMagazined.h>
 
 class CUICharacterInfo;
 class CUIDragDropListEx;
@@ -321,6 +322,10 @@ protected:
 
 	void						AttachAddon					(PIItem item_to_upgrade);
 	void						DetachAddon					(LPCSTR addon_name, PIItem itm = NULL);
+
+	void						UnloadWeapon				(CWeaponMagazined* pWnp);
+
+	//void						UnloadWeapon				(CWeaponMagazined* pWnp);
 
 	void						SendEvent_Item2Slot			(PIItem	pItem, u16 parent, u16 slot_id);
 	void						SendEvent_Item2Belt			(PIItem	pItem, u16 parent);

@@ -202,40 +202,77 @@ bool CInventoryItem::install_upgrade_impl( LPCSTR section, bool test )
 
 void CInventoryItem::pre_install_upgrade()
 {
-	CWeaponMagazined* wm = smart_cast<CWeaponMagazined*>( this );
-	if ( wm )
+	if (IsGameTypeSingleCompatible())
 	{
-		wm->UnloadMagazine();
-		wm->UnloadChamber();
-
-		CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>( this );
-		if ( wg )
+		CWeaponMagazined* wm = smart_cast<CWeaponMagazined*>(this);
+		if (wm)
 		{
-			if ( wg->IsGrenadeLauncherAttached() ) 
+			wm->UnloadMagazine();
+			wm->UnloadChamber();
+			CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(this);
+			if (wg)
 			{
-				wg->PerformSwitchGL();
-				wg->UnloadMagazine();
-				wg->PerformSwitchGL(); // restore state
+				if (wg->IsGrenadeLauncherAttached())
+				{
+					wg->PerformSwitchGL();
+					wg->UnloadMagazine();
+					wg->PerformSwitchGL(); // restore state
+				}
+			}
+		}
+
+		CWeapon* weapon = smart_cast<CWeapon*>(this);
+		if (weapon)
+		{
+			if (weapon->ScopeAttachable() && weapon->IsScopeAttached())
+			{
+				weapon->Detach(weapon->GetScopeName().c_str(), true);
+			}
+			if (weapon->SilencerAttachable() && weapon->IsSilencerAttached())
+			{
+				weapon->Detach(weapon->GetSilencerName().c_str(), true);
+			}
+			if (weapon->GrenadeLauncherAttachable() && weapon->IsGrenadeLauncherAttached())
+			{
+				weapon->Detach(weapon->GetGrenadeLauncherName().c_str(), true);
 			}
 		}
 	}
-
-	CWeapon* weapon = smart_cast<CWeapon*>( this );
-	if ( weapon )
+	else
 	{
-		if ( weapon->ScopeAttachable() && weapon->IsScopeAttached() )
+		if (OnClient())
 		{
-			weapon->Detach( weapon->GetScopeName().c_str(), true );
+			return;
 		}
-		if ( weapon->SilencerAttachable() && weapon->IsSilencerAttached() )
+
+		NET_Packet P;
+
+		CWeapon* weapon = smart_cast<CWeapon*>(this);
+		if (weapon)
 		{
-			weapon->Detach( weapon->GetSilencerName().c_str(), true );
-		}
-		if ( weapon->GrenadeLauncherAttachable() && weapon->IsGrenadeLauncherAttached() )
-		{
-			weapon->Detach( weapon->GetGrenadeLauncherName().c_str(), true );
+			// Send unload event
+			CGameObject::u_EventGen(P, GE_WPN_UNLOAD_AMMO, weapon->ID());
+			P.w_u8(1); // full unload
+			CGameObject::u_EventSend(P);
+
+			if (weapon->ScopeAttachable() && weapon->IsScopeAttached())
+			{
+				CGameObject::u_EventGen(P, GE_ADDON_DETACH, weapon->ID());
+				P.w_stringZ(weapon->GetScopeName().c_str());
+				CGameObject::u_EventSend(P);
+			}
+			if (weapon->SilencerAttachable() && weapon->IsSilencerAttached())
+			{
+				CGameObject::u_EventGen(P, GE_ADDON_DETACH, weapon->ID());
+				P.w_stringZ(weapon->GetSilencerName().c_str());
+				CGameObject::u_EventSend(P);
+			}
+			if (weapon->GrenadeLauncherAttachable() && weapon->IsGrenadeLauncherAttached())
+			{
+				CGameObject::u_EventGen(P, GE_ADDON_DETACH, weapon->ID());
+				P.w_stringZ(weapon->GetGrenadeLauncherName().c_str());
+				CGameObject::u_EventSend(P);
+			}
 		}
 	}
-
-
 }
