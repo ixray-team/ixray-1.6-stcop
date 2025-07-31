@@ -22,9 +22,21 @@ float CWeapon::GetConditionDispersionFactor() const
 
 float CWeapon::GetFireDispersion	(bool with_cartridge, bool for_crosshair) 
 {
-	if (!with_cartridge) return GetFireDispersion(1.0f, for_crosshair);
-	if (!m_magazine.empty()) m_fCurrentCartirdgeDisp = m_magazine.back().param_s.kDisp;
-	return GetFireDispersion	(m_fCurrentCartirdgeDisp, for_crosshair);
+	if (!with_cartridge)
+		return GetFireDispersion(1.0f, for_crosshair);
+
+	if (m_bAmmoInChamber)
+	{
+		if (!m_chamber.empty())
+			m_fCurrentCartirdgeDisp = m_chamber.back().param_s.kDisp;
+	}
+	else
+	{
+		if (!m_magazine.empty())
+			m_fCurrentCartirdgeDisp = m_magazine.back().param_s.kDisp;
+	}
+
+	return GetFireDispersion(m_fCurrentCartirdgeDisp, for_crosshair);
 }
 
 float CWeapon::getFireDispersionConditionFactor(void) const
