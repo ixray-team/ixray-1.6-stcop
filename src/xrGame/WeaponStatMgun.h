@@ -26,7 +26,7 @@ private:
 	void					SetBoneCallbacks	();
 	void					ResetBoneCallbacks	();
 
-	HUD_SOUND_COLLECTION	m_sounds;
+	HUD_SOUND_COLLECTION_LAYERED m_sounds_layered;
 
 //casts
 public:
