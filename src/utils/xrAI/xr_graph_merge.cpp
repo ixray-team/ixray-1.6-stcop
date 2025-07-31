@@ -509,7 +509,7 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 			CLevelGraph::CHeader	header;
 			reader->r				(&header,sizeof(header));
 			FS.r_close				(reader);
-			if (header.version() != XRAI_CURRENT_VERSION) {
+			if (header.version() < XRAI_MINIMAL_VERSION || header.version() > XRAI_CURRENT_VERSION) {
 				Msg					("! AI-map for the level %s is incompatible (version mismatch)! (level is not included into the game graph)",S);
 				continue;
 			}
