@@ -242,6 +242,16 @@ public:
 						LPSTR							S_;
 						S_								= xr_strdup(tpGraphPoint->name_replace());
 						T.caConnectName					= xr_strdup(*tpGraphPoint->m_caConnectionPointName);
+
+						if (tpGraphPoint->m_caConnectionPointName.size())
+						{
+							R_ASSERT3(tpGraphPoint->m_caConnectionLevelName.size(), "Empty connection name in graph: ", tpGraphPoint->name_replace());
+							if (!tpGraphPoint->m_caConnectionLevelName.size())
+							{
+								continue;
+							}
+						}
+
 						T.dwLevelID						= dwfGetIDByLevelName(Ini,*tpGraphPoint->m_caConnectionLevelName);
 //						T.tGraphID						= (GameGraph::_GRAPH_ID)i;
 //						T.tOldGraphID					= tGraphID;
