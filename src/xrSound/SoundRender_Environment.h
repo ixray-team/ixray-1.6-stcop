@@ -143,26 +143,26 @@ public:
 	u32				version;
 	shared_str			name;
 
-    u32				Environment;				// source environment
-    float           Room;                       // room effect level at low frequencies
-    float           RoomHF;                     // room effect high-frequency level re. low frequency level
+    u32 Environment;				// source environment
+    float Room;                       // room effect level at low frequencies
+    float RoomHF;                     // room effect high-frequency level re. low frequency level
     float RoomLF; // room effect high-frequency level re. low frequency level
-    float           RoomRolloffFactor;          // like DS3D flRolloffFactor but for room effect
-    float           DecayTime;                  // reverberation decay time at low frequencies
-    float           DecayHFRatio;               // high-frequency to low-frequency decay time ratio
+    float RoomRolloffFactor;          // like DS3D flRolloffFactor but for room effect
+    float DecayTime;                  // reverberation decay time at low frequencies
+    float DecayHFRatio;               // high-frequency to low-frequency decay time ratio
     float DecayLFRatio; // low-frequency to high-frequency decay time ratio
-    int DecayHFLimit; // high- frequency decay time limit set by air absorbtion gain
-    float           Reflections;                // early reflections level relative to room effect
-    float           ReflectionsDelay;           // initial reflection delay time
+    int   DecayHFLimit; // high- frequency decay time limit set by air absorbtion gain
+    float Reflections;                // early reflections level relative to room effect
+    float ReflectionsDelay;           // initial reflection delay time
     float ReflectionsPan[3]; // reflections panning xyz
     float EchoTime; // delay between the original sound and echo instance
     float EchoDepth; // controls the amount of echo feedback signal in the loop
     float ReverbPan[3]; // reverb pan xyz
-    float           Reverb;                     // late reverberation level relative to room effect
-    float           ReverbDelay;                // late reverberation delay time relative to initial reflection
-    float           EnvironmentSize;            // environment size in meters
-    float           EnvironmentDiffusion;       // controls the echo density in the reverberation decay
-    float           AirAbsorptionHF;            // change in level per meter at 5 kHz
+    float Reverb;                     // late reverberation level relative to room effect
+    float ReverbDelay;                // late reverberation delay time relative to initial reflection
+    float EnvironmentSize;            // environment size in meters
+    float EnvironmentDiffusion;       // controls the echo density in the reverberation decay
+    float AirAbsorptionHF;            // change in level per meter at 5 kHz
     float ModulationTime; // modulation time for sound blending
     float ModulationDepth; // modulation depth for sound blending
     float Density; // controls the coloration of the late reverb
