@@ -11,10 +11,10 @@
 #pragma pack(push,4)
 
 enum EFC_Visible {
-	fcvNone = 0,
-	fcvPartial,
-	fcvFully,
-	fcv_forcedword = u32(-1)
+	fcvNone = 0,       // Полностью за пределами фрустума — не рисуем
+	fcvPartial = 1,       // Частично в фрустуме — можно рисовать
+	fcvFully = 2,       // Полностью в фрустуме — можно точно рисовать
+	fcv_forcedword = u32(-1) // Зарезервировано, обычно не используется
 };
 
 
