@@ -21,5 +21,8 @@ public:
 	virtual void	OnFrame				() override;
 	virtual void 	Render(int priority, bool strictB2F);
 
+	virtual void 	Move(Fvector& amount);
+	virtual void 	Scale(Fvector& amount);
+
 	virtual void 	OnUpdateTransform() override;
 };
