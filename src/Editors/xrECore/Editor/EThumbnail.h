@@ -138,7 +138,9 @@ public:
 };
 //------------------------------------------------------------------------------
 
-class ECORE_API ESoundThumbnail: public ECustomThumbnail{
+class ECORE_API ESoundThumbnail:
+	public ECustomThumbnail
+{
 	friend class CSoundManager;
 	typedef ECustomThumbnail inherited;
 private:
@@ -148,10 +150,12 @@ private:
     float			m_fMaxAIDist;
     float			m_fBaseVolume;
     u32				m_uGameType;
+	bool IsFullPath = false;
+
 	bool 			OnMaxAIDistAfterEdit(PropValue* sender, float& edit_val);
 	void 			OnMaxDistChange		(PropValue* sender);
 public:
-					ESoundThumbnail	(LPCSTR src_name, bool bLoad=true);
+					ESoundThumbnail	(LPCSTR src_name, bool bLoad=true, bool bFullPath = false);
 	virtual			~ESoundThumbnail();
 
     // thumbnail public routines
