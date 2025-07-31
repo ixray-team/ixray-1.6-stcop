@@ -415,6 +415,8 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 		if(l_it->second && !unlimited_ammo()) SpawnAmmo(l_it->second, l_it->first);
 	}
 
+	m_bJustAfterReload = false;
+
 	if (GetState() == eIdle)
 		SwitchState(eIdle);
 
@@ -1065,6 +1067,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			{
 				bMisfire = false;
 				bMisfireReload = false;
+				m_bJustAfterReload = true;
 			}
 			else
 			{
@@ -1072,6 +1075,11 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 				{
 					m_bIsReloaded = true;
 					ReloadMagazine();
+
+					if (!IsGrenadeMode())
+					{
+						m_bJustAfterReload = true;
+					}
 				}
 				GiveAmmoFromMagToChamber();
 			}
@@ -1774,6 +1782,10 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 		{
 			AddSuffixName(anim, "_empty");
 		}
+		else if (m_bJustAfterReload)
+		{
+			AddSuffixName(anim, "_first");
+		}
 
 		if (IsChangeAmmoType())
 		{
@@ -1819,6 +1831,10 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 		else if (empty)
 		{
 			AddSuffixName(anim, "_empty");
+		}
+		else if (m_bJustAfterReload)
+		{
+			AddSuffixName(anim, "_first");
 		}
 
 		if (ScopeAttachable() && !IsScopeAttached())
@@ -1981,6 +1997,11 @@ shared_str CWeaponMagazined::SetCurrentShootAnimation()
 		{
 			AddSuffixName(anim, "_last");
 			AddSuffixName(anim, "_l");
+		}
+
+		if (m_bJustAfterReload)
+		{
+			AddSuffixName(anim, "_first");
 		}
 	}
 
@@ -2341,10 +2362,11 @@ void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
 
-	if (state == eReload && mark.name == "Right" && !m_bIsReloaded)
+	if (!m_bTriStateReload && state == eReload && mark.name == "Right" && !m_bIsReloaded)
 	{
 		m_bIsReloaded = true;
-		if (bMisfireReload && !IsGrenadeMode())
+		bool grenade_mode = IsGrenadeMode();
+		if (bMisfireReload && !grenade_mode)
 		{
 			bMisfire = false;
 			bMisfireReload = false;
@@ -2353,6 +2375,11 @@ void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& mark)
 		{
 			ReloadMagazine();
 			GiveAmmoFromMagToChamber();
+		}
+
+		if (!grenade_mode)
+		{
+			m_bJustAfterReload = true;
 		}
 	}
 

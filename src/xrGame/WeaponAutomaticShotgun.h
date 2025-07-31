@@ -22,11 +22,16 @@ public:
 	void			switch2_AddCartgidge	();
 	void			switch2_EndReload		();
 
+	shared_str		SelectOpenWeaponAnimation();
+	shared_str		SelectAddCartridgeWeaponAnimation();
+	shared_str		SelectCloseWeaponAnimation();
+
 	virtual void	PlayAnimOpenWeapon		();
 	virtual void	PlayAnimAddOneCartridgeWeapon();
 	void			PlayAnimCloseWeapon		();
 
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };
+	virtual void	OnMotionMark(u32 state, const motion_marks&);
 
 
 protected:
