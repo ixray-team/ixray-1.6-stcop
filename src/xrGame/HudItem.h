@@ -12,8 +12,12 @@ class CMotionDef;
 #include "InertionData.h"
 #include "../xrScripts/script_export_space.h"
 
+#include "HudTorchLight.h"
+
 struct attachable_hud_item;
 class motion_marks;
+
+//class HudLightTorch;
 
 class CHUDState
 {
@@ -249,6 +253,7 @@ protected:
 
 	HUD_SOUND_COLLECTION_LAYERED m_sounds;
 	InertionData				m_current_inertion;
+	HudLightTorch				m_HudLight;
 	float						m_nearwall_dist_max;
 	float						m_nearwall_dist_min;
 	float						m_nearwall_last_hud_fov;
