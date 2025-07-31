@@ -7,6 +7,8 @@ struct PSInput
     float2 texcoord : TEXCOORD0;
 };
 
+Texture3D s_blue_noise;
+
 // TODO: Это можно упростить потом
 float3 TangentToWorld(in float3 N, in float3 H)
 {
@@ -67,7 +69,7 @@ float4 main(PSInput I) : SV_Target
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
 	float3 ViewVec = O.View;
 	
-	float2 Jitter = Hash32(frac(ReflectPoint * timers.x) * 1234.56f);
+	float2 Jitter = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xy;
 	Jitter.y *= 0.3f; // Bias like screen space stochastic reflections 2015
 	
 	// O.Roughness = saturate(O.Roughness * 1.1f - 0.1f);
