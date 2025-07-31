@@ -16,7 +16,6 @@ public:
 	virtual void	Load					(LPCSTR section) override;
 	virtual void	OnEvent					(NET_Packet& P, u16 type) override;
 protected:
-	virtual void	FireStart				() override;
 	virtual u8		AddCartridge			(u8 cnt) override;
 	virtual void	UnloadMagazine			(bool spawn_ammo = true) override;
 	virtual void	ReloadMagazine			() override;
