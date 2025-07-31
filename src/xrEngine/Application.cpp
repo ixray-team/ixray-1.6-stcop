@@ -22,8 +22,6 @@ struct _SoundProcessor : public pureFrame
 	}
 }	SoundProcessor;
 
-ENGINE_API int ps_rs_loading_stages = 0;
-
 CApplication::CApplication()
 {
 	ll_dwReference = 0;
@@ -230,6 +228,15 @@ void CApplication::LoadDraw()
 void CApplication::LoadForceFinish() {
 	if (loadingScreen)
 		loadingScreen->ForceFinish();
+}
+
+void CApplication::SetLoadStageTitle(pcstr _ls_title)
+{
+	const static bool isLoadingStagesEnabled = EngineExternal()[EEngineExternalUI::ShowLoadingStages];
+	if (loadingScreen && isLoadingStagesEnabled)
+		loadingScreen->SetStageTitle(_ls_title);
+	Log(_ls_title);
+	// для корректной работы лоадскрина в ЧН и ТЧ
 }
 
 void CApplication::LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3)
