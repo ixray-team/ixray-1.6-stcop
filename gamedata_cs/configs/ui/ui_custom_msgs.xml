@@ -72,6 +72,10 @@
     <text font="graffiti32"  r="240" g="217" b="182" a="255" align="l"/>
   </cs_arena_kills>
 
+	<hud_message x="310" y="50" width="400" height="60" on_top="1" light_anim="" la_cyclic="0" la_texture="1" la_alpha="1" stretch="1">
+		<text font="graffiti22" r="240" g="217" b="182" a="255" color="ui_7" align="c"/>
+	</hud_message>
+
   <game_saved  x="100" y="730" width="800" height="30">
                 <text font="graffiti22"  r="240" g="217" b="182" a="255" align="c"/>
         </game_saved>
