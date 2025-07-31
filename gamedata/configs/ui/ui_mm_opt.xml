@@ -157,6 +157,18 @@
             <options_item entry="rs_device_active" group="mm_opt_video"/>
         </check_rs_device_active>
 
+        <cap_screenshot_format x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_screenshot_format</text>
+        </cap_screenshot_format>
+        <list_screenshot_format x="190" y="0.5" width="235" height="20" list_length="3"  always_show_scroll="0">
+            <options_item entry="r__screenshot_format" group="mm_opt_video" depend="runtime"/>
+            <list_font r="170" g="170" b="170" font="letterica16"/>
+		    <text_color>
+	            <e r="170" g="170" b="170"/>
+	            <d r="70" g="70" b="70"/>
+		    </text_color>
+        </list_screenshot_format>
+
         <btn_advanced x="338" y="322" width="108" height="24">
             <text align="c" font="letterica16">ui_mm_advanced</text>
             <texture>ui_inGame2_button</texture>
