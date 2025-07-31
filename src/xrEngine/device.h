@@ -262,7 +262,6 @@ public:
 	void overdrawEnd						();
 
 	// Mode control
-	void DumpFlags							();
 	IC	 CTimer_paused* GetTimerGlobal		()	{ return &TimerGlobal;								}
 	u32	 TimerAsync							()	{ return TimerGlobal.GetElapsed_ms();				}
 	u32	 TimerAsync_MMT						()	{ return TimerMM.GetElapsed_ms() +	Timer_MM_Delta; }
