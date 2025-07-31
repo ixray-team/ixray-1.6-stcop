@@ -1,8 +1,9 @@
 #pragma once
-class XRayRainRender:public IRainRender
+class CDS0_RainRender:
+	public IRainRender
 {
 public:
-	XRayRainRender();
+	CDS0_RainRender();
 	virtual void Copy(IRainRender &_in) ;
 
 	virtual void Render(CEffect_Rain&owner) ;

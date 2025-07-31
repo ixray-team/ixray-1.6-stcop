@@ -1,10 +1,10 @@
+#include "stdafx.h"
 #include "XRayRenderVisual.h"
 
-#include "stdafx.h"
-XRayRenderVisual::~XRayRenderVisual()
+CDS0_RenderVisual::~CDS0_RenderVisual()
 {
 }
-void XRayRenderVisual::Load(const char* N, IReader* data, u32 dwFlags)
+void CDS0_RenderVisual::Load(const char* N, IReader* data, u32 dwFlags)
 {
 #ifdef DEBUG
 	DebugName = N;
@@ -35,7 +35,7 @@ void XRayRenderVisual::Load(const char* N, IReader* data, u32 dwFlags)
 	}
 }
 #define PCOPY(a)	a = pFrom->a
-void XRayRenderVisual::Copy(XRayRenderVisual* pFrom)
+void CDS0_RenderVisual::Copy(CDS0_RenderVisual* pFrom)
 {
 	PCOPY(Type);
 	PCOPY(Vis);
@@ -43,17 +43,17 @@ void XRayRenderVisual::Copy(XRayRenderVisual* pFrom)
 	PCOPY(DebugName);
 #endif
 }
-u32 XRayRenderVisual::getType()
+u32 CDS0_RenderVisual::getType()
 {
 	return Type;
 }
 
-vis_data&  XRayRenderVisual::getVisData()
+vis_data&  CDS0_RenderVisual::getVisData()
 {
 	return Vis;
 }
 
-shared_str XRayRenderVisual::getDebugName()
+shared_str CDS0_RenderVisual::getDebugName()
 {
 	return DebugName;
 }

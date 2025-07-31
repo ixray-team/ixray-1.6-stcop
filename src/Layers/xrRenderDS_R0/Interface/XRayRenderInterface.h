@@ -1,9 +1,9 @@
 #pragma once
-class XRayRenderInterface :public IRender_interface,public pureFrame
+class CDS0_RenderInterface :public IRender_interface,public pureFrame
 {
 	IRender_Target Target;
 public:
-	XRayRenderInterface();
+	CDS0_RenderInterface();
 
 	virtual bool is_sun_static();
 	virtual DWORD get_dx_level();
@@ -76,10 +76,10 @@ public:
 	virtual void rmNormal();
 	virtual u32 memory_usage();
 
-	virtual void                    BeforeWorldRender() ; // Перед рендерингом мира
-	virtual void                    AfterWorldRender() ; // После рендеринга мира (до UI)
+	virtual void                    BeforeWorldRender() ; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	virtual void                    AfterWorldRender() ; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (пїЅпїЅ UI)
 
-	virtual void					ChangeMark(LPCSTR mark) ; // Каждый кадр проверяем не поменялась ли текстура
+	virtual void					ChangeMark(LPCSTR mark) ; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	virtual u32                     active_phase();
 
 	virtual void Render();
@@ -91,4 +91,4 @@ public:
 
 	
 };
- extern XRayRenderInterface GRenderInterface;
+ extern CDS0_RenderInterface GRenderInterface;

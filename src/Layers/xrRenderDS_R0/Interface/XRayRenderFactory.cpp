@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #undef RENDER_FACTORY_INTERFACE
 #define RENDER_FACTORY_INTERFACE(Class)\
-I ## Class* XRayRenderFactory::Create ## Class()\
+I ## Class* CDS0_RenderFactory::Create ## Class()\
 {\
-	return static_cast<I ## Class*>(new XRay ## Class());\
+	return static_cast<I ## Class*>(new CDS0_ ## Class());\
 }\
-void XRayRenderFactory::Destroy##Class(I ## Class *pObject)\
+void CDS0_RenderFactory::Destroy##Class(I ## Class *pObject)\
 {\
-	xr_delete( static_cast< XRay ## Class*>(pObject));\
+	xr_delete( static_cast< CDS0_ ## Class*>(pObject));\
 }
 
 #ifndef _EDITOR

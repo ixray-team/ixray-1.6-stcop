@@ -1,18 +1,18 @@
 #pragma once
-class XRayUIShader :public IUIShader
+class CDS0_UIShader :public IUIShader
 {
 public:
-	XRayUIShader();
+	CDS0_UIShader();
 	virtual void Copy(IUIShader& _in);
 	virtual void create(LPCSTR sh, LPCSTR tex = 0);
 	virtual bool inited();
 	virtual void destroy();
 };
-class XRayUIRender:public IUIRender
+class CDS0_UIRender:public IUIRender
 {
 public:
-	XRayUIRender();
-	~XRayUIRender();
+	CDS0_UIRender();
+	~CDS0_UIRender();
 	virtual void CreateUIGeom();
 	virtual void DestroyUIGeom();
 
@@ -46,4 +46,4 @@ public:
 private:
 };
 
-extern XRayUIRender GUIRender;
+extern CDS0_UIRender GUIRender;

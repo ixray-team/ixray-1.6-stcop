@@ -1,97 +1,97 @@
 #include "stdafx.h"
-XRayUIShader::XRayUIShader()
+CDS0_UIShader::CDS0_UIShader()
 {
 }
 
-void XRayUIShader::Copy(IUIShader& _in)
+void CDS0_UIShader::Copy(IUIShader& _in)
 {
 
 }
 
-void XRayUIShader::create(LPCSTR sh, LPCSTR tex)
+void CDS0_UIShader::create(LPCSTR sh, LPCSTR tex)
 {
 }
 
-bool XRayUIShader::inited()
+bool CDS0_UIShader::inited()
 {
 	return false;
 }
 
-void XRayUIShader::destroy()
+void CDS0_UIShader::destroy()
 {
 }
 
-XRayUIRender::XRayUIRender()
+CDS0_UIRender::CDS0_UIRender()
 {
 }
 
-XRayUIRender::~XRayUIRender()
+CDS0_UIRender::~CDS0_UIRender()
 {
 }
 
-void XRayUIRender::CreateUIGeom()
+void CDS0_UIRender::CreateUIGeom()
 {
 }
 
-void XRayUIRender::DestroyUIGeom()
+void CDS0_UIRender::DestroyUIGeom()
 {
 	
 
 }
 
-void XRayUIRender::SetShader(IUIShader& shader)
+void CDS0_UIRender::SetShader(IUIShader& shader)
 {
 }
 
-void XRayUIRender::SetAlphaRef(int aref)
+void CDS0_UIRender::SetAlphaRef(int aref)
 {
 }
 
-void XRayUIRender::SetScissor(Irect* rect)
+void CDS0_UIRender::SetScissor(Irect* rect)
 {
-
-	
-}
-
-void XRayUIRender::GetActiveTextureResolution(Fvector2& res)
-{
-	
-}
-
-void XRayUIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
-{
-	
-}
-
-void XRayUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType)
-{
-
-	
-	
-}
-void XRayUIRender::FlushPrimitive()
-{
-	
 
 	
 }
 
-void XRayUIRender::Flush()
+void CDS0_UIRender::GetActiveTextureResolution(Fvector2& res)
+{
+	
+}
+
+void CDS0_UIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
+{
+	
+}
+
+void CDS0_UIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType)
+{
+
+	
+	
+}
+void CDS0_UIRender::FlushPrimitive()
+{
+	
+
+	
+}
+
+void CDS0_UIRender::Flush()
 {
 }
 
-LPCSTR XRayUIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
+LPCSTR CDS0_UIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
 {
 	string_path buff;
 
 	return  FS.exist(buff, "$game_textures$", tex_name, ".ogm") ? "hud\\movie" : sh_name;
 }
 
-void XRayUIRender::CacheSetXformWorld(const Fmatrix& M)
+void CDS0_UIRender::CacheSetXformWorld(const Fmatrix& M)
 {
 }
 
-void XRayUIRender::CacheSetCullMode(CullMode)
+void CDS0_UIRender::CacheSetCullMode(CullMode)
 {
 }
-XRayUIRender GUIRender;
+CDS0_UIRender GUIRender;
