@@ -120,7 +120,8 @@ function check_light(stalker)
 		--' Фонарики должны быть выключены у костра
 		local scheme = db.storage[stalker:id()].active_scheme
 		if scheme == "kamp" or
-		   scheme == "camper" 
+		   scheme == "camper" or
+		   scheme == "sleeper"
 		then
 			light = false
 			forced = true
@@ -128,12 +129,12 @@ function check_light(stalker)
 	end
 
 --'	printf("[check_light %s] scheme_passed: light=%s, forced=%s", stalker:name(), tostring(light), tostring(forced))	
---	if not forced and light == true then
---		--' Фонарики должны быть выключены в бою. Но если в бою идет поиск врага - то включены.
---		if stalker:best_enemy() ~= nil then
---			light = false
---		end				
---	end
+	if not forced and light == true then
+		--' Фонарики должны быть выключены в бою. Но если в бою идет поиск врага - то включены.
+		if stalker:best_enemy() ~= nil and indoor_levels[level.name()] ~= true then
+			light = false
+		end				
+	end
 	
 	if light ~= nil then
 		torch:enable_attachable_item(light)
