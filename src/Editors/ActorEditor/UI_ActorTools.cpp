@@ -1062,6 +1062,7 @@ void CActorTools::RealGenerateLOD(bool hq)
 bool CActorTools::BatchConvert(LPCSTR fn)
 {
 	bool bRes = true;
+	FS.TryLoad(fn);
 	CInifile* ini = CInifile::Create(fn); VERIFY(ini);
 	if (ini->section_exist("ogf"))
 	{
