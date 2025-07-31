@@ -19,7 +19,7 @@
 
 #include "inventory_item.h"
 #include "Inventory.h"
-
+#include "../../xrUI/UIXmlInit.h"
 #include <ai/monsters/poltergeist/poltergeist.h>
 #include "../../xrUI/UIFontDefines.h"
 #include "Actor.h"
@@ -27,7 +27,7 @@
 u32 C_ON_ENEMY = color_rgba(0xff,0,0,0x80);
 u32 C_ON_NEUTRAL = color_rgba(0xff,0xff,0x80,0x80);
 u32 C_ON_FRIEND = color_rgba(0,0xff,0,0x80);
-constexpr u32 C_DEFAULT = color_rgba(0xff, 0xff, 0xff, 0x80);
+u32 C_DEFAULT = color_rgba(0xff, 0xff, 0xff, 0x80);
 
 #define C_SIZE		0.025f
 #define NEAR_LIM	0.5f
@@ -51,9 +51,10 @@ IC	float	recon_maxspeed	()		{
 
 CHUDTarget::CHUDTarget	()
 {    
+	targetFont			= nullptr;
+	bInitialized		= false;
 	fuzzyShowInfo		= 0.f;
 	PP.RQ.range			= 0.f;
-	hShader->create		("hud\\cursor","ui\\cursor");
 
 	PP.RQ.set				(nullptr, 0.f, -1);
 
@@ -68,7 +69,27 @@ CHUDTarget::~CHUDTarget	()
 
 void CHUDTarget::Load		()
 {
+	if (bInitialized)
+		return;
+
+	CUIXml xml;
+	u32 color;
+	xml.Load(CONFIG_PATH, UI_PATH, "hud_target.xml");
+
+	LPCSTR texture = xml.Read("texture", 0, "ui\\cursor");
+	LPCSTR shader = xml.Read("shader", 0, "hud\\cursor");
+
+	colorEnemy = CUIXmlInit::GetColor(xml, "enemy_color", 0, color_rgba(0xff, 0, 0, 0x80));
+	colorFriend = CUIXmlInit::GetColor(xml, "friend_color", 0, color_rgba(0, 0xff, 0, 0x80));
+	colorNeutral = CUIXmlInit::GetColor(xml, "neutral_color", 0, color_rgba(0xff, 0xff, 0x80, 0x80));
+	colorDefault = CUIXmlInit::GetColor(xml, "default_color", 0, color_rgba(0xff, 0xff, 0xff, 0x80));
+
+	CUIXmlInit::InitFont(xml, "target_font", 0, color, targetFont);
+
+	hShader->create		(shader,texture);
+
 	HUDCrosshair.Load();
+	bInitialized = true;
 }
 
 void CHUDTarget::ShowCrosshair(bool b)
@@ -134,6 +155,11 @@ void CHUDTarget::CursorOnFrame ()
 extern ENGINE_API xr_atomic_bool g_bRendering; 
 void CHUDTarget::Render()
 {
+	if (!bInitialized)
+	{
+		Load();
+		return;
+	}
 	BOOL  b_do_rendering = ( psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) );
 	
 	if(!b_do_rendering)
@@ -162,7 +188,7 @@ void CHUDTarget::Render()
 	Fvector dir			= Device.vCameraDirection;
 	
 	// Render cursor
-	u32 C				= C_DEFAULT;
+	u32 C				= colorDefault;
 	
 	Fvector				p2;
 	p2.mad				(p1,dir,PP.RQ.range);
@@ -171,12 +197,11 @@ void CHUDTarget::Render()
 	pt.y = -pt.y;
 	float				di_size = C_SIZE/powf(pt.w,.2f);
 
-	CGameFont* F		= UI().Font().GetFont(GRAFFITI19_FONT_NAME);
-	F->SetAligment		(CGameFont::alCenter);
-	F->OutSetI			(0.f,0.05f);
+	targetFont->SetAligment		(CGameFont::alCenter);
+	targetFont->OutSetI			(0.f,0.05f);
 
 	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
-		F->OutSkip		();
+		targetFont->OutSkip		();
 
 	if (psHUD_Flags.test(HUD_INFO))
 	{ 
@@ -194,7 +219,7 @@ void CHUDTarget::Render()
 			{
 				if (E_->cast_base_monster())
 				{
-					C = C_ON_ENEMY;
+					C = colorEnemy;
 				}
 				else if (!pActor || (pActor && IsGameTypeSingleCompatible()))
 				{
@@ -205,18 +230,18 @@ void CHUDTarget::Render()
 						switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
 						{
 						case ALife::eRelationTypeEnemy:
-							C = C_ON_ENEMY; break;
+							C = colorEnemy; break;
 						case ALife::eRelationTypeNeutral:
-							C = C_ON_NEUTRAL; break;
+							C = colorNeutral; break;
 						case ALife::eRelationTypeFriend:
-							C = C_ON_FRIEND; break;
+							C = colorFriend; break;
 						}
 
 						if (fuzzyShowInfo > 0.5f)
 						{
-							F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-							F->OutNext("%s", *g_pStringTable->translate(others_inv_owner->Name()));
-							F->OutNext("%s", *g_pStringTable->translate(others_inv_owner->CharacterInfo().Community().id()));
+							targetFont->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
+							targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->Name()));
+							targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->CharacterInfo().Community().id()));
 						}
 					}
 				}
@@ -226,8 +251,8 @@ void CHUDTarget::Render()
 			{
 				if (fuzzyShowInfo > 0.5f && l_pI->NameItem())
 				{
-					F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-					F->OutNext("%s", l_pI->NameItem());
+					targetFont->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
+					targetFont->OutNext("%s", l_pI->NameItem());
 				}
 				fuzzyShowInfo += SHOW_INFO_SPEED * Device.fTimeDelta;
 			}
@@ -241,12 +266,12 @@ void CHUDTarget::Render()
 
 	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
 	{
-		F->OutSetI		(0.f,0.05f);
-		F->SetColor		(C);
+		targetFont->OutSetI		(0.f,0.05f);
+		targetFont->SetColor		(C);
 #ifdef DEBUG
-		F->OutNext		("%4.1f - %4.2f - %d", PP.RQ.range, PP.power, PP.pass);
+		targetFont->OutNext		("%4.1f - %4.2f - %d", PP.RQ.range, PP.power, PP.pass);
 #else
-		F->OutNext		("%4.1f", PP.RQ.range);
+		targetFont->OutNext		("%4.1f", PP.RQ.range);
 #endif
 	}
 
