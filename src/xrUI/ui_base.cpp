@@ -249,7 +249,15 @@ void ui_core::RenderFont()
 
 bool ui_core::is_widescreen()
 {
+	if (is_ultrawide()) // St4lker0k765: if playing on ultrawide monitor, skip widescreen check 
+		return true;
+
 	return (Device.TargetWidth)/float(Device.TargetHeight) > (UI_BASE_WIDTH/UI_BASE_HEIGHT +0.01f);
+}
+
+bool ui_core::is_ultrawide()
+{
+	return (Device.TargetWidth) / float(Device.TargetHeight) > (1366.0f / UI_BASE_HEIGHT + 0.01f);
 }
 
 float ui_core::get_current_kx()
@@ -264,10 +272,46 @@ float ui_core::get_current_kx()
 shared_str	ui_core::get_xml_name(LPCSTR fn)
 {
 	string_path				str;
-	if(!is_widescreen()){
+	if(!is_widescreen())
+	{
 		xr_sprintf(str, "%s", fn);
 		if ( nullptr==strext(fn) ) xr_strcat(str, ".xml");
-	}else{
+	}
+	else if (is_ultrawide())
+	{
+		string_path			str_;
+		if (strext(fn))
+		{
+			xr_strcpy(str, fn);
+			*strext(str) = 0;
+			xr_strcat(str, "_21.xml");
+		}
+		else
+			xr_sprintf(str, "%s_21", fn);
+
+		if (nullptr == FS.exist(str_, "$game_config$", "ui\\", str))
+		{
+			if (strext(fn))
+			{
+				xr_strcpy(str, fn);
+				*strext(str) = 0;
+				xr_strcat(str, "_16.xml");
+			}
+			else
+				xr_sprintf(str, "%s_16", fn);
+
+			if (nullptr == FS.exist(str_, "$game_config$", "ui\\", str))
+			{
+				xr_sprintf(str, "%s", fn);
+				if (nullptr == strext(fn)) xr_strcat(str, ".xml");
+			}
+		}
+#ifdef _DEBUG
+		Msg("[21-9] get_xml_name for[%s] returns [%s]", fn, str);
+#endif // #ifdef DEBUG
+	}
+	else
+	{
 
 		string_path			str_;
 		if ( strext(fn) )
@@ -275,7 +319,8 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 			xr_strcpy	(str, fn);
 			*strext(str)	= 0;
 			xr_strcat	(str, "_16.xml");
-		}else
+		}
+		else
 			xr_sprintf				(str, "%s_16", fn);
 
 		if(nullptr==FS.exist(str_, "$game_config$", "ui\\" , str) )
