@@ -671,6 +671,7 @@ void CContentView::LoadExtDest()
 	ExtDesc[".png"] = "Image";
 	ExtDesc[".object"] = "Object Asset";
 	ExtDesc[".group"] = "Group object Asset";
+	ExtDesc[".r16"] = "HeightMap Asset";
 	ExtDesc[".ogf"] = "Object";
 	ExtDesc[".wav"] = "Raw Sound";
 	ExtDesc[".ogg"] = "Sound Asset";
@@ -748,7 +749,7 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	if (FilePath.has_extension()) //File DnD
 	{
 		xr_string Extension = FilePath.extension().string().c_str();
-		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".ise" || Extension == ".dti" || Extension == ".rai";
+		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".r16" || Extension == ".ise" || Extension == ".dti" || Extension == ".rai";
 
 		if (!ImGui::BeginDragDropSource())
 		{

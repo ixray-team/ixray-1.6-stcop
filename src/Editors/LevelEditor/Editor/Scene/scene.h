@@ -1,10 +1,6 @@
 #pragma once
 #include "Engine/communicate.h"
 
-//refs
-
-#if 1
-//extern doug_lea_allocator	g_render_lua_allocator;
 extern doug_lea_area_allocator	g_render_lua_allocator_area;
 
 template <class T>
@@ -54,7 +50,6 @@ struct doug_lea_allocator_wrapper {
 
 #	define render_alloc				doug_lea_alloc
 typedef doug_lea_allocator_wrapper	render_allocator;
-#endif
 
 struct FSChunkDef;
 class PropValue;
