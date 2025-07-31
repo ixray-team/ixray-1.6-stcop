@@ -202,7 +202,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 	ImManager.InitPlatform();
 
 	ImManager.ApplyMainViewport(DrawMainViewport);
-	ImManager.Subscribe("Dockspace", CImGuiManager::ERenderPriority::eHight,[]() 
+	ImManager.Subscribe("Dockspace", CImGuiManager::ERenderPriority::eHight, []()
 	{
 		auto& States = Engine.External.EditorStates;
 
@@ -241,6 +241,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::MenuItem("Search Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SearchManager)]);
 				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
 				ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
+					ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_HudAdjustManager)]);
 
 				ImGui::EndMenu();
 			}
@@ -429,7 +430,8 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 		displayMode.h = psCurrentVidMode[1];
 		SDL_SetWindowFullscreenMode(g_AppInfo.Window, &displayMode);
 		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
-	} else {
+	}
+	else {
 		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
 		SDL_SetWindowSize(g_AppInfo.Window, width, height);
 
