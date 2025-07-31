@@ -23,9 +23,9 @@ using pcstr = const char*;
 
 // windoze stuff
 #ifndef _WINDOWS_
-	typedef	int				BOOL;
-	#define TRUE			true
-	#define FALSE			false
+typedef	int				BOOL;
+#define TRUE			true
+#define FALSE			false
 #endif
 
 // Type limits
@@ -53,17 +53,17 @@ using pcstr = const char*;
 #define dbl_zero		type_zero(double)
 #define dbl_eps			type_epsilon(double)
 
-typedef	char	string16	[16];
-typedef	char	string32	[32];
-typedef	char	string64	[64];
-typedef	char	string128	[128];
-typedef	char	string256	[256];
-typedef	char	string512	[512];
-typedef	char	string1024	[1024];
-typedef	char	string2048	[2048];
-typedef	char	string4096	[4096];
+typedef	char	string16[16];
+typedef	char	string32[32];
+typedef	char	string64[64];
+typedef	char	string128[128];
+typedef	char	string256[256];
+typedef	char	string512[512];
+typedef	char	string1024[1024];
+typedef	char	string2048[2048];
+typedef	char	string4096[4096];
 
-typedef	char	string_path	[2*_MAX_PATH];
+typedef	char	string_path[2 * _MAX_PATH];
 
 typedef wchar_t	wstring_path[sizeof(string_path)];
 typedef wchar_t wstring4096[sizeof(string4096)];
