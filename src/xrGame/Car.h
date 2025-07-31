@@ -562,6 +562,8 @@ private:
 	virtual CScriptEntity		*cast_script_entity			()	{return this;}
 	virtual IDamageSource		*cast_IDamageSource			()	{return this;}
 	virtual CHolderCustom		*cast_holder_custom			()	{return this;}
+	virtual CCar*				cast_car					()	{return this;}
+	virtual CInventoryOwner*	cast_inventory_owner		()	{return this;}
 
 private:
 	car_memory	*m_memory;
@@ -569,7 +571,6 @@ private:
 public:
 	virtual bool unlimited_ammo() { return false; };
 	virtual bool infinite_fire() { return false; }
-	virtual CCar* cast_car() override { return this; }
 	// Inventory for the car	
 	CInventory* GetInventory() { return &CInventoryOwner::inventory(); }
 
