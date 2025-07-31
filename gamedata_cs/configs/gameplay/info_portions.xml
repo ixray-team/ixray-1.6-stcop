@@ -86,6 +86,13 @@
 		<disable>ui_car_body</disable>
     </info_portion>
     
+   <info_portion id="ui_talk_show">
+        <disable>ui_talk_show_hide</disable>
+    </info_portion>
+    <info_portion id="ui_talk_show_hide">
+        <disable>ui_talk_show</disable>
+    </info_portion>
+
     <info_portion id="test_info_1"></info_portion>
     <info_portion id="test_info_2"></info_portion>
     <info_portion id="test_info_3"></info_portion>
