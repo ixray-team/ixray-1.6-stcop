@@ -34,13 +34,12 @@ function cam_effector_set:stop_effect()
     self.playing = false
     self.state = "release"
     self.cur_effect = 0
---    local eff = self:select_effect()
---    if(eff) then
---        self:start_effect(eff)
---    end
 end
 
 function cam_effector_set:update()
+	if(device().precache_frame > 0) then
+		return
+	end
 	if(self.playing) then
 		local eff = self.set[self.state][self.cur_effect]
 		if(eff) and (eff.looped~=false) then
