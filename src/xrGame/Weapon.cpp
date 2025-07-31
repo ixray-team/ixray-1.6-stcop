@@ -96,6 +96,7 @@ CWeapon::CWeapon()
 	bAmmotypeKeyPressed		= false;
 	m_HudFovZoom = 0.0f;
 	_last_update_time = Device.dwTimeGlobal;
+	useLegacyMisfire = false;
 
 	for (auto& it : m_ammo_bones_mag)
 	{
@@ -448,17 +449,31 @@ void CWeapon::Load		(LPCSTR section)
 	m_first_bullet_controller.load	(section);
 	fireDispersionConditionFactor = pSettings->r_float(section,"fire_dispersion_condition_factor");
 
-// modified by Peacemaker [17.10.08]
-//	misfireProbability			  = pSettings->r_float(section,"misfire_probability"); 
-//	misfireConditionK			  = READ_IF_EXISTS(pSettings, r_float, section, "misfire_condition_k",	1.0f);
-	misfireStartCondition			= pSettings->r_float(section, "misfire_start_condition");
-	misfireEndCondition				= READ_IF_EXISTS(pSettings, r_float, section, "misfire_end_condition", 0.f);
-	misfireStartProbability			= READ_IF_EXISTS(pSettings, r_float, section, "misfire_start_prob", 0.f);
-	misfireEndProbability			= pSettings->r_float(section, "misfire_end_prob");
-	conditionDecreasePerShot		= pSettings->r_float(section,"condition_shot_dec"); 
-	conditionDecreasePerQueueShot	= READ_IF_EXISTS(pSettings, r_float, section, "condition_queue_shot_dec", conditionDecreasePerShot); 
+    if (pSettings->line_exist(section, "misfire_start_condition") ||
+        pSettings->line_exist(section, "misfire_end_condition") ||
+        pSettings->line_exist(section, "misfire_start_prob") ||
+        pSettings->line_exist(section, "misfire_end_prob"))
+    {
+        misfireStartCondition   = pSettings->r_float(section, "misfire_start_condition");
+        misfireEndCondition     = pSettings->r_float(section, "misfire_end_condition");
+        misfireStartProbability = pSettings->r_float(section, "misfire_start_prob");
+        misfireEndProbability   = pSettings->r_float(section, "misfire_end_prob");
+    }
+    else
+    {
+		useLegacyMisfire = true;
 
+        misfireProbability      = pSettings->r_float(section, "misfire_probability");
+        misfireConditionK       = READ_IF_EXISTS(pSettings, r_float, section, "misfire_condition_k", 1.0f);
 
+        // For UI indicators to work correctly
+        misfireStartCondition   = 0.95f;
+        misfireEndCondition     = 0.0f;
+        misfireStartProbability = misfireProbability;
+        misfireEndProbability   = (misfireProbability + misfireConditionK) * 0.25f;
+    }
+	conditionDecreasePerShot = pSettings->r_float(section, "condition_shot_dec");
+	conditionDecreasePerQueueShot = READ_IF_EXISTS(pSettings, r_float, section, "condition_queue_shot_dec", conditionDecreasePerShot);
 
 
 	vLoadedFirePoint	= pSettings->r_fvector3		(section,"fire_point"		);
@@ -1686,22 +1701,28 @@ int CWeapon::GetAmmoCount_forType( shared_str const& ammo_type ) const
 
 float CWeapon::GetConditionMisfireProbability() const
 {
-// modified by Peacemaker [17.10.08]
-//	if(GetCondition() > 0.95f) 
-//		return 0.0f;
-	if(GetCondition() > misfireStartCondition) 
-		return 0.0f;
-	if(GetCondition() < misfireEndCondition) 
-		return misfireEndProbability;
-//	float mis = misfireProbability+powf(1.f-GetCondition(), 3.f)*misfireConditionK;
-	float mis = misfireStartProbability + (
-		(misfireStartCondition - GetCondition()) *				// condition goes from 1.f to 0.f
-		(misfireEndProbability - misfireStartProbability) /		// probability goes from 0.f to 1.f
-		((misfireStartCondition == misfireEndCondition) ?		// !!!say "No" to devision by zero
-			misfireStartCondition : 
-			(misfireStartCondition - misfireEndCondition))
-										  );
-	clamp(mis,0.0f,0.99f);
+	// modified by Peacemaker [17.10.08]
+	float mis;
+	if (useLegacyMisfire)
+	{
+		if (GetCondition() > 0.95f)
+			return 0.0f;
+		mis = misfireProbability + powf(1.f - GetCondition(), 3.f) * misfireConditionK;
+	}
+	else {
+		if (GetCondition() > misfireStartCondition)
+			return 0.0f;
+		if (GetCondition() < misfireEndCondition)
+			return misfireEndProbability;
+		mis = misfireStartProbability + (
+			(misfireStartCondition - GetCondition()) *				// condition goes from 1.f to 0.f
+			(misfireEndProbability - misfireStartProbability) /		// probability goes from 0.f to 1.f
+			((misfireStartCondition == misfireEndCondition) ?		// !!!say "No" to devision by zero
+				misfireStartCondition :
+				(misfireStartCondition - misfireEndCondition))
+			);
+	}
+	clamp(mis, 0.0f, 0.99f);
 	return mis;
 }
 
