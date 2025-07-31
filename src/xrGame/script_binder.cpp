@@ -149,12 +149,12 @@ void CScriptBinder::shedule_Update	(u32 time_delta)
 {
 	PROF_EVENT("CScriptBinder::shedule_Update")
 	if (m_object) {
-		try {
+//		try {
 			m_object->shedule_Update	(time_delta);
-		}
-		catch(...) {
-			clear			();
-		}
+//		}
+//		catch(...) {
+//			clear			();
+//		}
 	}
 }
 
