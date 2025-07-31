@@ -558,7 +558,7 @@ void CActor::ActorUse()
 
 			VERIFY(pEntityAliveWeLookingAt);
 
-			if (IsGameTypeSingle())
+			if (IsGameTypeSingleCompatible())
 			{			
 				CBaseMonster* pMonster = smart_cast<CBaseMonster*>(pEntityAliveWeLookingAt);
 				const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
@@ -572,7 +572,7 @@ void CActor::ActorUse()
 				else
 				{
 					//только если находимся в режиме single
-					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+					CUIGameCustom* pGameSP = CurrentGameUI();
 					if (pGameSP && TestMonster)
 					{
 						if (!m_pPersonWeLookingAt->deadbody_closed_status())

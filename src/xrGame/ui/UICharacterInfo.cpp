@@ -141,28 +141,28 @@ void CUICharacterInfo::InitCharacterInfo(CUIXml* xml_doc, LPCSTR node_str)
 	xml_doc->SetLocalRoot		(stored_root);
 }
 
-void CUICharacterInfo::InitCharacter(u16 id)
+void CUICharacterInfo::InitCharacter(CInventoryOwner* invOwner)
 {
-	m_ownerID					= id;
+	m_ownerID = invOwner->object_id();
+	CCharacterInfo& chInfo = invOwner->CharacterInfo();
 
-	CSE_ALifeTraderAbstract*	T = ch_info_get_from_id(m_ownerID);
-
-	CCharacterInfo				chInfo;
-	chInfo.Init					(T);
-
-	if(m_icons[eName]) {
-		m_icons[eName]->TextItemControl()->SetTextST(T->m_character_name.c_str());
+	if (m_icons[eName])
+	{
+		m_icons[eName]->TextItemControl()->SetTextST(invOwner->Name());
 	}
 
-	if(m_icons[eRank]) {
+	if (m_icons[eRank])
+	{
 		m_icons[eRank]->TextItemControl()->SetTextST(GetRankAsText(chInfo.Rank().value()));
 	}
 
-	if(m_icons[eCommunity]) {
+	if (m_icons[eCommunity])
+	{
 		m_icons[eCommunity]->TextItemControl()->SetTextST(chInfo.Community().id().c_str());
 	}
 
-	if(m_icons[eReputation]) {
+	if (m_icons[eReputation])
+	{
 		m_icons[eReputation]->TextItemControl()->SetTextST(GetReputationAsText(chInfo.Reputation().value()));
 	}
 
@@ -172,118 +172,54 @@ void CUICharacterInfo::InitCharacter(u16 id)
 		pUIBio->Clear();
 		if (chInfo.Bio().size())
 		{
-			CUITextWnd* pItem				= new CUITextWnd();
-			pItem->SetWidth					(pUIBio->GetDesiredChildWidth());
-			pItem->SetText					(chInfo.Bio().c_str());
-			pItem->AdjustHeightToText		();
-			pUIBio->AddWindow				(pItem, true);
+			CUITextWnd* pItem = new CUITextWnd();
+			pItem->SetWidth(pUIBio->GetDesiredChildWidth());
+			pItem->SetText(chInfo.Bio().c_str());
+			pItem->AdjustHeightToText();
+			pUIBio->AddWindow(pItem, true);
 		}
 	}
 
 	shared_str const& comm_id = chInfo.Community().id();
 	LPCSTR   community0 = comm_id.c_str();
 	string64 community1;
-	xr_strcpy( community1, sizeof(community1), community0 );
-	xr_strcat( community1, sizeof(community1), "_icon" );
+	xr_strcpy(community1, sizeof(community1), community0);
+	xr_strcat(community1, sizeof(community1), "_icon");
 
 	string64 community2;
-	xr_strcpy( community2, sizeof(community2), community0 );
-	xr_strcat( community2, sizeof(community2), "_wide" );
+	xr_strcpy(community2, sizeof(community2), community0);
+	xr_strcat(community2, sizeof(community2), "_wide");
 
-	m_bForceUpdate	= true;
-	for ( int i = eIcon; i < eMaxCaption; ++i )
+	m_bForceUpdate = true;
+	for (int i = eIcon; i < eMaxCaption; ++i)
 	{
-		if ( m_icons[i] )
+		if (m_icons[i])
 		{
-			m_icons[i]->Show( true );
+			m_icons[i]->Show(true);
 		}
 	}
 
-	m_texture_name				= chInfo.IconName();
-	if ( m_icons[eIcon            ] ) { m_icons[eIcon            ]->InitTexture( m_texture_name.c_str()     ); }
-//	if ( m_icons[eRankIcon        ] ) { m_icons[eRankIcon        ]->InitTexture( chInfo.Rank().id().c_str() ); }
-	
-/*
-	if ( Actor()->ID() != m_ownerID && !ignore_community( comm_id ) )
-	{
-		if ( m_icons[eCommunityIcon   ] ) { m_icons[eCommunityIcon   ]->InitTexture( community1 ); }
-		if ( m_icons[eCommunityBigIcon] ) { m_icons[eCommunityBigIcon]->InitTexture( community2 ); }
-		return;
-	}
-
-	shared_str our_comm, enemy;
-	if ( CUICharacterInfo::get_actor_community( &our_comm, &enemy ) )
-	{
-		if ( xr_strcmp( our_comm, "actor" ) ) // !=
-		{
-			xr_strcpy( community1, sizeof(community1), our_comm.c_str() );
-			xr_strcat( community1, sizeof(community1), "_icon" );
-
-			xr_strcpy( community2, sizeof(community2), our_comm.c_str() );
-			xr_strcat( community2, sizeof(community2), "_wide" );
-
-			if ( m_icons[eCommunityIcon   ] ) { m_icons[eCommunityIcon   ]->InitTexture( community1 ); }
-			if ( m_icons[eCommunityBigIcon] ) { m_icons[eCommunityBigIcon]->InitTexture( community2 ); }
-			return;
-		}
-	}
-
-	if ( m_icons[eCommunityIcon   ]     ) { m_icons[eCommunityIcon]->Show( false ); }
-	if ( m_icons[eCommunityBigIcon]     ) { m_icons[eCommunityBigIcon]->Show( false ); }
-	if ( m_icons[eCommunityIconOver   ] ) { m_icons[eCommunityIconOver]->Show( false ); }
-	if ( m_icons[eCommunityBigIconOver] ) { m_icons[eCommunityBigIconOver]->Show( false ); }
-*/
+	m_texture_name = chInfo.IconName();
+	if (m_icons[eIcon]) { m_icons[eIcon]->InitTexture(m_texture_name.c_str()); }
 }
 
-void CUICharacterInfo::InitCharacterMP(CInventoryOwner* invOwner)
+void CUICharacterInfo::InitCharacter(LPCSTR player_name, LPCSTR player_icon)
 {
 	ClearInfo();
 
 	if (m_icons[eName])
 	{
-		m_icons[eName]->TextItemControl()->SetText(invOwner->Name());
-		m_icons[eName]->Show(true);
-	}
-
-	m_texture_name = invOwner->IconName();
-	if (m_icons[eIcon])
-	{
-		m_icons[eIcon]->InitTexture(m_texture_name.c_str());
-		m_icons[eIcon]->Show(true);
-	}
-	if (m_icons[eIconOver])
-	{
-		m_icons[eIconOver]->Show(true);
-	}
-	if (m_icons[eCommunity])
-	{
-		m_icons[eCommunity]->TextItemControl()->SetTextST(invOwner->CharacterInfo().Community().id().c_str());
-		m_icons[eCommunity]->Show(true);
-	}
-	if (m_icons[eReputation])
-	{
-		m_icons[eReputation]->TextItemControl()->SetTextST(GetReputationAsText(invOwner->CharacterInfo().Reputation().value()));
-		m_icons[eReputation]->Show(true);
-	}
-}
-
-void CUICharacterInfo::InitCharacterMP(LPCSTR player_name, LPCSTR player_icon)
-{
-	ClearInfo();
-
-	if(m_icons[eName])
-	{
 		m_icons[eName]->TextItemControl()->SetTextST(player_name);
 		m_icons[eName]->Show(player_name && player_name[0]);
 	}
 
-	if(m_icons[eIcon])
+	if (m_icons[eIcon])
 	{
 		m_icons[eIcon]->InitTexture(player_icon);
 		m_icons[eIcon]->Show(true);
 	}
 
-	if(m_icons[eIconOver])
+	if (m_icons[eIconOver])
 	{
 		m_icons[eIconOver]->Show(true);
 	}
