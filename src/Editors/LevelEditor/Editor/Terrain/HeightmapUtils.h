@@ -43,6 +43,9 @@ namespace XRay::Editor::HeightmapUtils
 		float* Data;        // Массив высот [width * height]
 		float MinH, MaxH;   // Минимальная и максимальная высота
 
+		Fvector Pos;
+		Fvector Size = { 1, 1, 1 };
+
 		SHeightMapRenderData RenderData;
 
 		SHeightMap() : Width(0), Height(0), Data(nullptr), MinH(0), MaxH(0) {}
