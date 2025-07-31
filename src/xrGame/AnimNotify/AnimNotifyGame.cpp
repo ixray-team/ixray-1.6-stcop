@@ -7,8 +7,6 @@
 #include "alife_registry_container.h" // without this not compiles
 
 #include "ai_space.h"
-#include "alife_registry_container_composition.h"
-#include "alife_registry_container_space.h"
 #include "alife_simulator.h"
 #include "AnimNotifyDisableInfo.h"
 #include "AnimNotifyGiveInfo.h"
