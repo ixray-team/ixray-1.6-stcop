@@ -24,8 +24,17 @@ public:
 		alRight,
 		alCenter
 	};
+	enum EGradientMode
+	{
+		gm_vert = 0,
+		gm_horz = 1,
+		gm_back = 2,
+		gm_down = 3,
+		gm_count
+	};
 
 private:
+
 	struct String
 	{
 		string1024 string;
@@ -35,6 +44,7 @@ private:
 		u32 c;
 		EAligment align;
 		bool gradient;
+		EGradientMode gradientMode;
 	};
 
 	struct BaseData
@@ -52,6 +62,7 @@ protected:
 	float fCurrentX = 0.0f;
 	float fCurrentY = 0.0f;
 	bool fGradientEnabled = false;
+	EGradientMode fGradientMode = gm_vert;
 
 	u32 uFlags;
 	u32 dwCurrentColor;
@@ -104,6 +115,7 @@ public:
 	u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 
 	void SetGradient(bool val) { fGradientEnabled = val; }
+	void SetGradientMode(EGradientMode mode) { fGradientMode = mode; }
 	void OutI(float _x, float _y, const char* fmt, ...);
 	void Out(float _x, float _y, const char* fmt, ...);
 	void OutNext(const char* fmt, ...);

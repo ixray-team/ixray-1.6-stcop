@@ -30,6 +30,7 @@ CUILines::CUILines()
 	uFlags.set(flColoringMode,		TRUE);
 	uFlags.set(flCutWordsMode,		FALSE);
 	uFlags.set(flRecognizeNewLine,	TRUE);
+	m_eTextGradientMode				= CGameFont::gm_vert;
 
 	m_wndSize = {0, 0};
 	m_wndPos  = {0, 0};
@@ -414,10 +415,12 @@ void CUILines::Draw(float x, float y)
 				passText[i] = '*';
 			passText[sz] = 0;
 			m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
+			m_pFont->SetGradientMode(m_eTextGradientMode);
 			m_pFont->Out(text_pos.x, text_pos.y, "%s", passText);
 		}
 		else{
 			m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
+			m_pFont->SetGradientMode(m_eTextGradientMode);
 			if(uFlags.test(flEllipsis) )
 			{
 				u32 buff_len	= sizeof(char)*xr_strlen(m_text.c_str()) + 1;
@@ -443,6 +446,7 @@ void CUILines::Draw(float x, float y)
 		u32 size		= (u32)m_lines.size();
 
 		m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
+		m_pFont->SetGradientMode(m_eTextGradientMode);
 		for (int i=0; i<(int)size; i++)
 		{
 			pos.x			= x + GetIndentByAlign();
