@@ -1,6 +1,7 @@
 #pragma once
 #include "hud_item_object.h"
 #include "HudSound.h"
+#include "../xrphysics/ExtendedGeom.h"
 
 struct dContact;
 struct SGameMtl;
@@ -106,6 +107,9 @@ protected:
 public:
 	virtual u32				ef_weapon_type			() const;
 	IC		u32				destroy_time			() const { return m_dwDestroyTime; }
+	IC		u32				destroy_time_max		() const { return m_dwDestroyTimeMax; }
 	IC		int				time_from_begin_throw	() const { return (Device.dwTimeGlobal + m_dwDestroyTimeMax - m_dwDestroyTime); }
+	IC		void			set_destroy_time_now	(u32 time) { m_dwDestroyTime = time; }
 	static	void			ExitContactCallback		(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
+	static	void			ExitContactCallback_Patch(dGeomID dxGeom);
 };
