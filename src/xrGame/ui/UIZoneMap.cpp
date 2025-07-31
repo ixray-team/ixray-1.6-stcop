@@ -56,11 +56,7 @@ void CUIZoneMap::Init()
 
 	m_activeMap->EnableHeading		(true);  
 
-	// Clear Sky and Shadow of Chernobyl compatibility
-	// Check for m_pointerDistanceText reduces flexibility
-	// But it's all we can, probably.
-	if(IsGameTypeSingle())
-		m_activeMap->SetRounded(!m_pointerDistanceText);
+	m_activeMap->SetRounded(m_background.WndSizeIsProbablyRelative());
 
 	xml_init.InitStatic				(uiXml, "minimap:compass", 0, &m_compass);
 	m_background.AttachChild		(&m_compass);
