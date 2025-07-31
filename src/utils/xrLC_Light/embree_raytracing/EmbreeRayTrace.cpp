@@ -178,15 +178,22 @@ void EmbreeData::InitializeGeometry(size_t& geom_static_mem, size_t& geom_murefs
 {
  	// Конструктор модели
  	EmbreeData::GetGlobalData(geom_static_mem, geom_murefs_mem);
+	CTimer t; t.Start();
    	LoadGeomBuffer(IntelGeometryNormal, scene_quality, false, static_geom);
 	LoadGeomBuffer(IntelGeometryMuModels, scene_quality, false, murefs_geom);
   	LoadGeomBuffer(IntelGeometryTransp, scene_quality, true, static_geom_transp);
 	LoadGeomBuffer(IntelGeometryMuModelsTransp, scene_quality, true, murefs_geom_transp);
+	Status("[Embree] Loading Buffers: [%u ms]", t.GetElapsed_ms());
+
+//	Msg("Static MODELS Transp : %u, Opacue: %u", static_geom_transp.faces_v.size(), static_geom.faces_v.size());
+//	Msg("MU MODELS Transp : %u, Opacue: %u", murefs_geom_transp.faces_v.size(), murefs_geom.faces_v.size());
 }
 
 size_t EmbreeData::AttachGeometrys(bool addMU)
 {
 	RemoveGeometry(false);
+	CTimer t;
+	t.Start();
 
 	IntelScene = rtcNewScene(device);
 	rtcSetSceneFlags(IntelScene, scene_flags);
@@ -196,18 +203,15 @@ size_t EmbreeData::AttachGeometrys(bool addMU)
 	rtcAttachGeometryByID(IntelScene, IntelGeometryTransp, 2); 
 	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModels, 1);
 	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModelsTransp, 3);
- 
-	Msg("Static MODELS Transp : %u, Opacue: %u", static_geom_transp.faces_v.size(), static_geom.faces_v.size());
-	Msg("MU MODELS Transp : %u, Opacue: %u", murefs_geom_transp.faces_v.size(), murefs_geom.faces_v.size());
+
 	size_t start = GetMemory();
 	rtcCommitScene(IntelScene);
 	BVH_size = GetMemory() - start;
-
-	// static_geom.CleanumpMemory();
-	// static_geom_transp.CleanumpMemory();
-	// murefs_geom.CleanumpMemory();
-	// murefs_geom_transp.CleanumpMemory();
+	 
+	AditionalData("ST: %umb | MU: %umb | BVH: %u mb", Static_size / 1024 / 1024, MU_size / 1024 / 1024, BVH_size / 1024 / 1024);
  
+	Status("[Embree] Attach Geoms : [%u ms]",t.GetElapsed_ms());
+
 	return (GetMemory() - start);
 }
 
@@ -291,11 +295,13 @@ void EmbreeData::IntelEmbereLOAD()
 	rtcSetSceneFlags(IntelScene, scene_flags);
 
 	// LOADING NORMAL GEOM
-	size_t geom_memory, refs_memory;
- 	InitializeGeometry(geom_memory, refs_memory);
+	// size_t geom_memory, refs_memory;
+ 	InitializeGeometry(Static_size, MU_size);
  	
-	size_t BVH = AttachGeometrys(true);
- 	AditionalData("ST: %umb | MU: %umb | BVH: %u mb", geom_memory / 1024 / 1024, refs_memory / 1024 / 1024, BVH / 1024 / 1024);
+	
+
+	//size_t BVH = AttachGeometrys(true);
+ 	//AditionalData("ST: %umb | MU: %umb | BVH: %u mb", geom_memory / 1024 / 1024, refs_memory / 1024 / 1024, BVH / 1024 / 1024);
 }
 
 void EmbreeData::IntelEmbereUNLOAD()
