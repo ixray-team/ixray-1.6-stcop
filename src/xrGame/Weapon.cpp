@@ -3218,3 +3218,11 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 	if (GetState() == eIdle)
 		SwitchState(eIdle);
 }
+
+bool CWeapon::GetScopeBack()
+{
+	if (bUseAltScope && m_eScopeStatus != ALife::eAddonPermanent && IsScopeAttached())
+		return !!READ_IF_EXISTS(pSettings, r_bool, GetNameWithAttachmentScope(), "scope_back", false);
+
+	return !!READ_IF_EXISTS(pSettings, r_bool, GetCurrentScopeSection(), "scope_back", false);
+}
