@@ -1971,8 +1971,8 @@ struct ImVector
     inline int          size_in_bytes() const               { return Size * (int)sizeof(T); }
     inline int          max_size() const                    { return 0x7FFFFFFF / (int)sizeof(T); }
     inline int          capacity() const                    { return Capacity; }
-    inline T&           operator[](int i)                   { /*IM_ASSERT(i >= 0 && i < Size); */ return Data[i]; }
-    inline const T&     operator[](int i) const             { /*IM_ASSERT(i >= 0 && i < Size); */ return Data[i]; }
+    inline T&           operator[](int i)                   { IM_ASSERT(i >= 0 && i < Size); return Data[i]; }
+    inline const T&     operator[](int i) const             { IM_ASSERT(i >= 0 && i < Size); return Data[i]; }
 
     inline T*           begin()                             { return Data; }
     inline const T*     begin() const                       { return Data; }
@@ -3397,10 +3397,11 @@ struct ImGuiPlatformMonitor
 // (Optional) Support for IME (Input Method Editor) via the io.SetPlatformImeDataFn() function.
 struct ImGuiPlatformImeData
 {
-    bool    WantVisible;        // A widget wants the IME to be visible
-    ImVec2  InputPos;           // Position of the input cursor
-    float   InputLineHeight;    // Line height
-
+    bool    WantVisible;            // A widget wants the IME to be visible.
+    bool    WantTextInput;          // A widget wants text input, not necessarily IME to be visible. This is automatically set to the upcoming value of io.WantTextInput.
+    ImVec2  InputPos;               // Position of input cursor (for IME).
+    float   InputLineHeight;        // Line height (for IME).
+    ImGuiID ViewportId;             // ID of platform window/viewport.
     ImGuiPlatformImeData() { memset(this, 0, sizeof(*this)); }
 };
 
@@ -3543,10 +3544,8 @@ enum ImGuiModFlags_ { ImGuiModFlags_None = 0, ImGuiModFlags_Ctrl = ImGuiMod_Ctrl
 #pragma warning (pop)
 #endif
 
-#if 1
 // Include imgui_user.h at the end of imgui.h
 // May be convenient for some users to only explicitly include vanilla imgui.h and have extra stuff included.
 #include "imgui_user.h"
-#endif
 
 #endif // #ifndef IMGUI_DISABLE
