@@ -2,7 +2,7 @@
 
 struct CompilersMode
 {
-	char level_name[128];
+	char level_name[256];
 	
 
 	bool Silent = false;
@@ -32,13 +32,13 @@ struct CompilersMode
 	bool DO_NoSun = false;
 
 	// SPAWN COMPILER
-	bool AI_Spawn = false;
-	char AI_spawn_name[128];
-	char AI_StartActor[128];
+	bool AI_BuildSpawn = false;
+	char AI_spawn_name[256];
+	char AI_StartActor[256];
 	bool AI_NoSeparatorCheck = true;
 
 
-	bool AI_BuildLevel = true;
+	bool AI_BuildLevel = false;
 	bool AI_PureCovers = false;
 	bool AI_Draft = false;
 	bool AI_Verify = false; 
