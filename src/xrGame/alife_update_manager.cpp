@@ -348,23 +348,26 @@ void CALifeUpdateManager::load_from_editor()
 
 void CALifeUpdateManager::set_switch_online		(ALife::_OBJECT_ID id, bool value)
 {
-	CSE_ALifeDynamicObject			*object = objects().object(id);
-	VERIFY							(object);
-	object->can_switch_online		(value);
+	if (CSE_ALifeDynamicObject* object = objects().object(id))
+	{
+		object->can_switch_online(value);
+	}
 }
 
 void CALifeUpdateManager::set_switch_offline	(ALife::_OBJECT_ID id, bool value)
 {
-	CSE_ALifeDynamicObject			*object = objects().object(id);
-	VERIFY							(object);
-	object->can_switch_offline		(value);
+	if (CSE_ALifeDynamicObject* object = objects().object(id))
+	{
+		object->can_switch_offline(value);
+	}
 }
 
 void CALifeUpdateManager::set_interactive		(ALife::_OBJECT_ID id, bool value)
 {
-	CSE_ALifeDynamicObject			*object = objects().object(id);
-	VERIFY							(object);
-	object->interactive				(value);
+	if (CSE_ALifeDynamicObject* object = objects().object(id))
+	{
+		object->interactive(value);
+	}
 }
 
 void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
