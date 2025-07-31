@@ -10,6 +10,7 @@ class CWeaponBM16 :public CWeaponShotgun
 public:
 	virtual			~CWeaponBM16					();
 	virtual void	Load							(LPCSTR section);
+	virtual void	LoadSounds						(LPCSTR section);
 
 	virtual bool	HudAnimationExist				(const shared_str& anim_name);
 
