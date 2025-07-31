@@ -470,6 +470,11 @@ void remove_dialog_to_render(CUIDialogWnd* pDialog)
 	CurrentGameUI()->RemoveDialogToRender(pDialog);
 }
 
+CUIDialogWnd* main_input_receiver()
+{
+	return CurrentGameUI()->TopInputReceiver();
+}
+
 void hide_indicators()
 {
 	if(CurrentGameUI())
@@ -1410,6 +1415,7 @@ void CLevel::script_register(lua_State *L)
 		def("start_stop_menu", start_stop_menu),
 		def("add_dialog_to_render",				add_dialog_to_render),
 		def("remove_dialog_to_render",			remove_dialog_to_render),
+		def("main_input_receiver",				main_input_receiver), // for compatibility
 		def("hide_indicators",					hide_indicators),
 		def("hide_indicators_safe",				hide_indicators_safe),
 
