@@ -203,7 +203,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 #define FT_CEIL(X)  (((X + 63) & -64) / 64)
 
-	float FontSizeInPixels = (float)FT_CEIL(OurFont->size->metrics.height);
+	float FontSizeInPixels = (float)(OurFont->size->metrics.ascender - OurFont->size->metrics.descender) / 64.0f;
 
 	auto CopyGlyphImageToAtlas = [this, &TargetX, &TargetX2, &TargetY, &TargetY2, FontSizeInPixels](FT_Bitmap& GlyphBitmap)
 		{
@@ -291,11 +291,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			{
 				TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
 			}
-			// Иначе оставляем как есть (Unicode)
-			else
-			{
-				TrueGlyph = glyphID;
-			}
 		}
 
 		FT_UInt FreetypeCharacter = FT_Get_Char_Index(OurFont, TrueGlyph);
@@ -305,7 +300,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			return;
 		}
 
-		FTError = FT_Load_Glyph(OurFont, FreetypeCharacter, FT_LOAD_RENDER);
+		FTError = FT_Load_Glyph(OurFont, FreetypeCharacter, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
 		R_ASSERT3(FTError == 0, "FT_Load_Glyph return error", FullPath);
 		FT_GlyphSlot Glyph = OurFont->glyph;
 		FT_Glyph_Metrics& GlyphMetrics = Glyph->metrics;
@@ -331,7 +326,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		GlyphData[glyphID] = { region, widths, yOffset };
 
 		TargetX = TargetX2;
-		TargetX += 4 + u32(GetLetterSpacing());
+		TargetX += 4;
 	};
 
 	auto glyphID = FT_Get_First_Char(OurFont, &index);
@@ -377,9 +372,11 @@ void CGameFont::OnRender()
 {
 	PROF_EVENT("Render Font");
 
-	pFontRender->OnRender(*this);
 	if (!strings.empty())
+	{
+		pFontRender->OnRender(*this);
 		strings.resize(0);
+	}
 }
 
 u16 CGameFont::GetCutLengthPos(float fTargetWidth, const char* pszText)
