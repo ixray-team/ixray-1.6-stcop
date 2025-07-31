@@ -173,23 +173,27 @@ void UpdateCameraDirection(CGameObject* pTo)
 {
 	if (!pTo) return;
 	CCameraBase* cam = Actor()->cam_Active();
-
-	Fvector des_dir; 
+	Fvector des_dir;
 	Fvector des_pt;
-	pTo->Center(des_pt);
-	des_pt.y+=pTo->Radius()*0.5f;
+
+	auto pk = PKinematics(pTo->Visual());
+
+	if (pk != nullptr)
+	{
+		auto bone = pk->LL_BoneID("bip01_head");
+
+		Fmatrix headPos = pk->LL_GetTransform(bone);
+		headPos.mulA_43(pTo->XFORM());
+		des_pt = headPos.c;
+	}
 
 	des_dir.sub(des_pt,cam->vPosition);
 
 	float p,h;
 	des_dir.getHP(h,p);
 
-
-	if(angle_difference(cam->yaw,-h)>0.2)
-		cam->yaw		= angle_inertion_var(cam->yaw,		-h,	0.15f,	0.2f,	PI_DIV_6,	Device.fTimeDelta);
-
-	if(angle_difference(cam->pitch,-p)>0.2)
-		cam->pitch		= angle_inertion_var(cam->pitch,	-p,	0.15f,	0.2f,	PI_DIV_6,	Device.fTimeDelta);
+	cam->yaw		= angle_inertion_var(cam->yaw,		-h,	0.3f,	0.35f,	PI_DIV_6,	Device.fTimeDelta);
+	cam->pitch		= angle_inertion_var(cam->pitch,	-p,	0.3f,	0.35f,	PI_DIV_6,	Device.fTimeDelta);
 
 }
 
