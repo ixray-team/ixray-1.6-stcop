@@ -2,10 +2,11 @@
 #pragma hdrstop
 
 #include "SoundManager.h"
-#include "../../utils/ETools/ETools.h"
 #include "../../../xrSound/SoundRender_Environment.h"
 #include "EThumbnail.h"
 #include "ui_main.h"
+
+#include "../Importer/AudioWav.h"
 
 CSoundManager* SndLib=0;
 //------------------------------------------------------------------------------
@@ -161,7 +162,7 @@ void CSoundManager::MakeGameSound(ESoundThumbnail* THM, LPCSTR src_name, LPCSTR 
         std::filesystem::create_directories(TestPath.parent_path());
     }
 
-	if (!ETOOLS::ogg_enc(src_name, game_name, THM->m_fQuality, F.pointer(), F.size()))
+	if (!XRay::Importer::Audio::ImportWav(src_name, game_name, THM->m_fQuality, F.pointer(), F.size()))
     {
     	FS.file_delete(game_name);
     	ELog.DlgMsg(mtError,"Can't make game sound '%s'.",game_name);
@@ -235,20 +236,25 @@ void CSoundManager::SynchronizeSounds(bool sync_thm, bool sync_game, bool bForce
   		FS_FileSetIt gm 		= M_GAME.find(base_name);
     	bool bGame				= bThm || ((gm==M_GAME.end()) || ((gm!=M_GAME.end())&&(gm->time_write!=it->time_write)));
 
-		ESoundThumbnail* THM	= 0;
+        ESoundThumbnail* THM = nullptr;
 
         // backup base sound
     	// check thumbnail
-    	if (sync_thm&&bThm){
-        	THM 				= new ESoundThumbnail(it->name.c_str());
-            THM->Save			(m_age);
-            bUpdated 			= TRUE;
+        if (sync_thm && bThm)
+        {
+        	THM = new ESoundThumbnail(it->name.c_str(), true, true);
+            THM->Save(m_age);
+            bUpdated= TRUE;
         }
         // check game sounds
     	if (bForceGame||(sync_game&&bGame))
         {
-        	if (!THM) THM 			= new ESoundThumbnail(it->name.c_str());
-            R_ASSERT(THM);
+            if (!THM)
+            {
+                THM = new ESoundThumbnail(it->name.c_str(), true, true);
+                R_ASSERT(THM);
+            }
+
             string_path 			src_name;
             xr_strconcat			(src_name, base_name.c_str(), ".wav");
 
