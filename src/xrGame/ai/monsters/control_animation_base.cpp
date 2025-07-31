@@ -367,7 +367,13 @@ void CControlAnimationBase::FX_Play(EHitSide side, float amount)
 		case eSideRight:	p_str = &anim_it->fxs.right;	break;
 	}
 
-	if (p_str && p_str->size()) smart_cast<IKinematicsAnimated*>(m_object->Visual())->PlayFX(*(*p_str), amount);
+	if (p_str && p_str->size()) 
+	{
+		if (anim_it->fxs.may_not_exist[side])
+			smart_cast<IKinematicsAnimated*>(m_object->Visual())->PlayFX_Safe(*(*p_str), amount);
+		else
+			smart_cast<IKinematicsAnimated*>(m_object->Visual())->PlayFX(*(*p_str), amount);
+	}
 
 	fx_time_last_play = m_object->m_dwCurrentTime;
 }
@@ -496,6 +502,7 @@ void CControlAnimationBase::ValidateAnimation()
 void CControlAnimationBase::UpdateAnimCount()
 {
 	IKinematicsAnimated *skel = smart_cast<IKinematicsAnimated*>(m_object->Visual());
+	xr_vector<u32> subjectsToDelete;
 
 	for (ANIM_ITEM_VECTOR_IT it = m_anim_storage.begin(); it != m_anim_storage.end(); it++)	{
 		if (!(*it)) continue;
@@ -518,11 +525,32 @@ void CControlAnimationBase::UpdateAnimCount()
 			else break;
 		}
 
-		if (count != 0) (*it)->count = count;
+		if (count != 0)
+		{
+			(*it)->count = count;
+		}
+		else if ((*it)->target_may_not_exist)
+		{
+			subjectsToDelete.push_back(std::distance(m_anim_storage.begin(), it));
+		}
 		else {
 			xr_sprintf(s, "Error! No animation: %s for monster %s", *((*it)->target_name), *m_object->cName());
 			R_ASSERT2(count != 0, s);
 		} 
+	}
+	for (u32 idx : subjectsToDelete)
+	{
+		xr_delete(m_anim_storage[idx]);
+		while (true)
+		{
+			auto it = std::find_if(m_tReplacedAnims.begin(), m_tReplacedAnims.end(), [idx](const SReplacedAnim& ranim)
+				{
+					return ranim.cur_anim == idx || ranim.new_anim == idx;
+				});
+			if (it == m_tReplacedAnims.end())
+				break;
+			m_tReplacedAnims.erase(it);
+		}
 	}
 }
 
