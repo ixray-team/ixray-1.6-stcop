@@ -15,7 +15,6 @@ Comments:
 #ifndef  __NVIMAGELIB_NVI_IMAGE_H
 #define  __NVIMAGELIB_NVI_IMAGE_H
 
-#include <windows.h>
 #include <assert.h>
 // Debug test switch
 // Define to turn on debug _ASSERT()s

@@ -10,20 +10,6 @@
 
 #include <stdio.h>
 
-#ifdef IXR_WINDOWS
-#   define _WIN32_ENVIRONMENT_
-#endif
-
-#if defined(_WIN32_ENVIRONMENT_)
-#include <windows.h>
-#else
-typedef int   BOOL;
-typedef char  BYTE;
-typedef unsigned short WORD;
-// typedef unsigned long  DWORD;
-typedef unsigned int   UINT;
-#endif
-
 const DWORD PPMdSignature=0x84ACAF8F, Variant='I';
 const int MAX_O=16;                         /* maximum allowed model order  */
 
