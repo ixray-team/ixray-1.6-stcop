@@ -157,8 +157,12 @@ u32 get_level_id(CALifeSimulator *self_)
 
 CSE_ALifeDynamicObject *CALifeSimulator__create	(CALifeSimulator *self_, ALife::_SPAWN_ID spawn_id)
 {
-	const CALifeSpawnRegistry::SPAWN_GRAPH::CVertex	*vertex = ai().alife().spawns().spawns().vertex(spawn_id);
-	THROW2								(vertex,"Invalid spawn id!");
+	const CALifeSpawnRegistry::SPAWN_GRAPH::CVertex* vertex = ai().alife().spawns().spawns().vertex(spawn_id);
+	if (!vertex)
+	{
+		Msg("! Spawn id[%i] not found in spawns list!", spawn_id);
+		g_pScriptEngine->print_stack();
+	}
 
 	CSE_ALifeDynamicObject				*spawn = smart_cast<CSE_ALifeDynamicObject*>(&vertex->data()->object());
 	THROW								(spawn);
@@ -172,11 +176,23 @@ CSE_ALifeDynamicObject *CALifeSimulator__create	(CALifeSimulator *self_, ALife::
 CSE_Abstract *CALifeSimulator__spawn_item		(CALifeSimulator *self_, LPCSTR section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id)
 {
 	THROW								(self_);
+	if (!pSettings->section_exist(section))
+	{
+		Msg("! Section [%s] not found in game configs!", section);
+		g_pScriptEngine->print_stack();
+	}
+
 	return								(self_->spawn_item(section,position,level_vertex_id,game_vertex_id,ALife::_OBJECT_ID(-1)));
 }
 
 CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, LPCSTR section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent)
 {
+	if (!pSettings->section_exist(section))
+	{
+		Msg("! Section [%s] not found in game configs!", section);
+		g_pScriptEngine->print_stack();
+	}
+
 	if (id_parent == ALife::_OBJECT_ID(-1))
 		return							(self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent));
 

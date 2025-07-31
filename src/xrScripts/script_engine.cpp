@@ -47,6 +47,7 @@ void CScriptEngine::unload				()
 
 int CScriptEngine::lua_panic			(lua_State *L)
 {
+	g_pScriptEngine->print_stack();
 	print_output	(L,"PANIC",LUA_ERRRUN);
 	return			(0);
 }
@@ -59,6 +60,7 @@ void CScriptEngine::lua_error			(lua_State *L)
 
 #if !XRAY_EXCEPTIONS
 	Debug.fatal				(DEBUG_INFO,"LUA error: %s",lua_tostring(L,-1));
+	g_pScriptEngine->print_stack();
 #else
 	throw					lua_tostring(L,-1);
 #endif
@@ -66,6 +68,7 @@ void CScriptEngine::lua_error			(lua_State *L)
 
 int CScriptEngine::lua_pcall_failed(lua_State* L)
 {
+	g_pScriptEngine->print_stack();
 	print_output(L, "", LUA_ERRRUN);
 	g_pScriptEngine->on_error(L);
 
