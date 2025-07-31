@@ -126,8 +126,11 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 	UpdateGrenadeVisibility(!!iAmmoElapsed);
 	SetPending(FALSE);
 
-	iAmmoElapsed2 = weapon->a_elapsed_grenades.grenades_count;
-	m_ammoType2 = weapon->a_elapsed_grenades.grenades_type;
+	if (!IsGameTypeSingle())
+	{
+		iAmmoElapsed2 = weapon->a_elapsed_grenades.grenades_count;
+		m_ammoType2 = weapon->a_elapsed_grenades.grenades_type;
+	}
 
 	m_DefaultCartridge2.Load(m_ammoTypes2[m_ammoType2].c_str(), m_ammoType2);
 
@@ -775,25 +778,31 @@ void CWeaponMagazinedWGrenade::save(NET_Packet& output_packet)
 	inherited::save(output_packet);
 	save_data(m_bGrenadeMode, output_packet);
 	save_data((u32)m_magazine2.size(), output_packet);
+	save_data(m_ammoType2, output_packet);
 
 }
 
 void CWeaponMagazinedWGrenade::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
-	bool b;
+	bool b = false;
 	load_data(b, input_packet);
 	if (b != m_bGrenadeMode)
+	{
 		PerformSwitchGL();
+	}
 
-	u32 sz;
+	u32 sz = 0;
 	load_data(sz, input_packet);
+	load_data(m_ammoType2, input_packet);
 
-	CCartridge					l_cartridge;
+	CCartridge l_cartridge;
 	l_cartridge.Load(m_ammoTypes2[m_ammoType2].c_str(), m_ammoType2);
 
 	while (sz > (u32)m_magazine2.size())
+	{
 		m_magazine2.push_back(l_cartridge);
+	}
 }
 
 void CWeaponMagazinedWGrenade::net_Export(NET_Packet& P)
