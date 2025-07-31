@@ -85,9 +85,9 @@ bool CTerrain::RayPick(float& dist, const Fvector& S, const Fvector& D, SRayPick
 
 void CTerrain::Render(int priority, bool strictB2F)
 {
-	if (LTools->GetTarget() == OBJCLASS_TERRAIN)
+	if (LTools->GetTarget() == OBJCLASS_TERRAIN && !IsPreview)
 	{
-		if (priority == 1)
+		if (priority == 1 && !strictB2F)
 		{
 			HMap.Draw(100, 1.f, 0xffffff);
 		}
@@ -110,4 +110,36 @@ void CTerrain::Scale(Fvector& amount)
 	inherited::Scale(amount);
 	HMap.MarkDirty();
 	HMap.Size = FScale;
+}
+
+void CTerrain::FillProp(LPCSTR pref, PropItemVec& items)
+{
+	inherited::FillProp(pref, items);
+
+	SurfaceVec& s_lst = TerrainObject.m_Surfaces;
+	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
+
+	PHelper().CreateBool(items, "Preview", &IsPreview);
+
+	for (SurfaceIt s_it = s_lst.begin(); s_it != s_lst.end(); s_it++)
+	{
+		shared_str Pref2 = PrepareKey(Pref1.c_str(), (*s_it)->_Name()).c_str();
+		{
+				PropValue* V;
+				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
+				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
+				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
+				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
+		}
+	}
+}
+
+void CTerrain::OnChangeShader(PropValue* sender)
+{
+	OnChangeSurface(sender);
+	for (CSurface* i : TerrainObject.m_Surfaces) { i->OnDeviceDestroy(); }
+}
+void CTerrain::OnChangeSurface(PropValue* sender)
+{
+	//m_Flags.set(flUseSurface, 1);
 }
