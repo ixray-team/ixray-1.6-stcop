@@ -10,6 +10,6 @@ struct v2p
 float4 main(v2p I) : SV_Target
 {
     float4 t_base = s_base.Sample(smp_base, I.tc0);
-    return float4(t_base.xyz, t_base.w * I.c0.w);
+    return PushGamma(float4(t_base.xyz, t_base.w * I.c0.w));
 }
 

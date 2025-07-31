@@ -9,10 +9,8 @@ struct v2p
 // Pixel
 float4 main(v2p I) : SV_Target
 {
-    // alpha = 0 	-> color=1
-    // alpha = 1	-> color=c
-    //	float4	c 	= I.c*tex2D	(s_base,I.tc0);
     float4 c = I.c * s_base.Sample(smp_base, I.tc0);
     float3 r = lerp(float3(1, 1, 1), c.xyz, c.w);
-    return float4(r, 1);
+    return float4(PushGamma(r), 1);
 }
+

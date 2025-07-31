@@ -33,7 +33,13 @@ void main(p_bumped_new I, out f_forward O)
 #endif
 
     M.Sun = saturate(M.Sun * 2.0f);
-    M.Color.xyz = saturate(M.Color.xyz);
+    M.Color.xyz = PushGamma(saturate(M.Color.xyz));
+
+#ifndef USE_PBR
+	float3 F0 = 0.0f;
+#else
+	float3 F0 = 0.04f;
+#endif
 
 #ifdef USE_LEGACY_LIGHT
     #ifndef USE_PBR
@@ -42,7 +48,7 @@ void main(p_bumped_new I, out f_forward O)
 		M.Color.xyz *= M.AO;
 		M.AO = 1.0f;
 		float Specular = M.Metalness * dot(M.Color.xyz, LUMINANCE_VECTOR);
-		M.Color.xyz = lerp(M.Color.xyz, F0, M.Metalness);
+		M.Color.xyz = lerp(M.Color.xyz, 0.04f, M.Metalness);
 		M.Metalness = 0.5f - M.Roughness * M.Roughness * 0.5f;
 		M.Roughness = Specular;
     #endif
@@ -53,14 +59,14 @@ void main(p_bumped_new I, out f_forward O)
 	float ViewLength = length(M.Point);
 	float3 View = M.Point.xyz * rcp(ViewLength);
 	
-    float3 Light = M.Sun * DirectLight(LightColor, L_sun_dir_e.xyz, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness);
-    float3 Ambient = AmbientLighting(View, M.Normal, M.Color.xyz, M.Metalness, M.Roughness, M.Hemi);
+    float3 Light = M.Sun * DirectLight(LightColor, L_sun_dir_e.xyz, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
+    float3 Ambient = PushGamma(M.AO) * AmbientLighting(View, M.Normal, M.Color.xyz, M.Metalness, M.Roughness, M.Hemi, F0);
 	
     O.Color.xyz = Ambient + Light.xyz;
     O.Color.w = M.Color.w;
 
-    float fog = saturate(ViewLength * fog_params.w + fog_params.x);
-    O.Color = lerp(O.Color, fog_color, fog);
+    float fog = PushGamma(saturate(ViewLength * fog_params.w + fog_params.x));
+    O.Color = lerp(O.Color, PushGamma(fog_color), fog);
 
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
     O.Reactive = O.Color.w * 0.9f;

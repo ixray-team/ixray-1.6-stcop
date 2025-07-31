@@ -23,18 +23,17 @@ void	CRenderTarget::phase_scene_prepare	()
 }
 
 // begin
-void	CRenderTarget::phase_scene_begin	()
-{
+void	CRenderTarget::phase_scene_begin() {
 	// Enable ANISO
 	SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 
-   u_setrt(rt_Normal, rt_Color, rt_Surface, rt_Velocity, RDepth);
+	u_setrt(rt_Color, rt_Normal, rt_Surface, rt_Velocity, RDepth);
 
 	// Stencil - write 0x1 at pixel pos
-   RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+	RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
-   RCache.set_CullMode(CULL_CCW);
-   RCache.set_ColorWriteEnable();
+	RCache.set_CullMode(CULL_CCW);
+	RCache.set_ColorWriteEnable();
 }
 
 void	CRenderTarget::disable_aniso		()

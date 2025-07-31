@@ -7,11 +7,15 @@ float4 main(v2p_TL Input) : SV_Target
     float2 offset = distort.xy - (127.0f / 255.0f);
 
     float2 center = Input.Tex0 + offset * def_distort;
-
-    float depth = s_position.SampleLevel(smp_nofilter, Input.Tex0, 0).x;
     float depth_x = s_position.SampleLevel(smp_nofilter, center, 0).x;
 
+#ifdef SIMPLE_DISTORTION_FIX
+    float depth = s_position.SampleLevel(smp_nofilter, Input.Tex0, 0).x;
+#else
+	#define depth 0.02f
+#endif
     center = depth_x < depth ? Input.Tex0 : center;
+	
     return s_image.SampleLevel(smp_nofilter, center, 0);
 }
 

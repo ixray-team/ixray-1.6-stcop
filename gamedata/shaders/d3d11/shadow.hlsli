@@ -645,7 +645,7 @@ float3x4 m_sunmask;
 float sunmask(float4 P)
 {
     float2 tc = mul(m_sunmask, P).xy;
-    return lerp(0.25f, 1.0f, s_lmap.SampleLevel(smp_linear, tc, 0).w);
+    return PushGamma(lerp(0.25f, 1.0f, s_lmap.SampleLevel(smp_linear, tc, 0).w));
 }
 #else
 float sunmask(float4 P)

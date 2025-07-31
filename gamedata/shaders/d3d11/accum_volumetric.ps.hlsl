@@ -63,6 +63,6 @@ float4 main(v2p I) : SV_Target
     result *= lightmap.xyz;
     result *= Ldynamic_color.xyz * t_noise.xyz;
 
-    return float4(result, 0);
+    return float4(PushGamma(result), 0);
 }
 
