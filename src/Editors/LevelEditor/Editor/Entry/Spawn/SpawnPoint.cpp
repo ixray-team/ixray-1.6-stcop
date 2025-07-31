@@ -429,11 +429,15 @@ void CSpawnPoint::SSpawnData::PreExportSpawn(CSpawnPoint* owner)
 		ELog.DlgMsg(mtError, "Spawn Point: '%s' must contain attached shape.", owner->GetName());
 		;
 	}
-	if (cform) {
-		CEditShape* shape = smart_cast<CEditShape*>(owner->m_AttachedObject); R_ASSERT(shape);
-		shape->ApplyScale();
-		owner->SetScale(shape->GetScale());
-		cform->assign_shapes(&*shape->GetShapes().begin(), shape->GetShapes().size());
+	if (cform)
+	{
+		R_ASSERT2(owner->m_AttachedObject, "Not found shape!");
+		if (CEditShape* shape = smart_cast<CEditShape*>(owner->m_AttachedObject))
+		{
+			shape->ApplyScale();
+			owner->SetScale(shape->GetScale());
+			cform->assign_shapes(&*shape->GetShapes().begin(), shape->GetShapes().size());
+		}
 	}
 	// end
 }
