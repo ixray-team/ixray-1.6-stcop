@@ -161,7 +161,7 @@ public:
 				return;
 			}
 
-			RESULT& R	= dest->r_add();
+			RESULT& R	= dest->r_add();				// По порядку создает RESULT
 			R.id		= prim;
 			R.range		= r;
 			R.u			= u;
