@@ -419,6 +419,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("install_upgrade",				&CScriptGameObject::InstallUpgrade)
 		.def("has_upgrade",					&CScriptGameObject::HasUpgrade)
 		.def("iterate_installed_upgrades",	&CScriptGameObject::IterateInstalledUpgrades)
+        .def("set_health_ex",				&CScriptGameObject::SetHealthEx)
 
 	;
 }
