@@ -67,6 +67,9 @@ void UpdateBuffersD3D9()
 	R_CHK(((IDirect3DTexture9*)RenderTexture)->GetSurfaceLevel(0, (IDirect3DSurface9**)&RenderRTV));
 	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->GetRenderTarget(0, (IDirect3DSurface9**)&SwapChainRTV));
 	R_CHK(((IDirect3DDevice9*)HWRenderDevice)->GetDepthStencilSurface((IDirect3DSurface9**)&RenderDSV));
+
+	Device.HalfTargetWidth = Device.TargetWidth;
+	Device.HalfTargetHeight = Device.TargetHeight;
 }
 
 D3DPRESENT_PARAMETERS GetPresentParameter(int Width = psCurrentVidMode[0], int Height = psCurrentVidMode[1])
