@@ -73,6 +73,24 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 	}
 
 	iMagazineSize2 = iMagazineSize;
+
+	if (pSettings->line_exist(hud_sect, "gl_ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "gl_ammo_params_section")))
+	{
+		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
+		bone_params->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"), 2);
+		m_ammo_bones_gl.push_back(bone_params);
+	}
+	else for (int i = 0; i < m_ammoTypes2.size(); i++)
+	{
+		static shared_str params_section;
+		params_section.printf("gl_ammo_params_section_%d", i);
+		if (pSettings->line_exist(hud_sect, *params_section))
+		{
+			SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
+			bone_params->Load(pSettings->r_string(hud_sect, *params_section), 2);
+			m_ammo_bones_gl.push_back(bone_params);
+		}
+	}
 }
 
 void CWeaponMagazinedWGrenade::net_Destroy()
@@ -188,6 +206,7 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 	if (IsGrenadeLauncherAttached() && m_bGrenadeMode)
 	{
 		m_bIsReloaded = false;
+		UpdateAmmoBones(m_ammo_bones_gl, iAmmoElapsed, GetAmmoType(true));
 		PlaySound("sndReloadG", get_LastFP2());
 		PlayHUDMotion(SetCurrentReloadAnimation(), true, eReload);
 	}
@@ -869,6 +888,34 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
 	if (result2 && !test) { m_sounds.LoadSound(section, "snd_switch", "sndSwitch", true, m_eSoundReload); }
 	result |= result2;
 
+	RStringVec& gl_types = m_bGrenadeMode ? m_ammoTypes : m_ammoTypes2;
+
+	if (pSettings->line_exist(hud_sect, "gl_ammo_params_section"))
+	{
+		for (auto& bone_param : m_ammo_bones_gl)
+		{
+			if (bone_param->AmmoType == undefined_ammo_type)
+			{
+				bone_param->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"), 2);
+			}
+		}
+	}
+	else for (int i = 0; i < gl_types.size(); i++)
+	{
+		static shared_str params_section;
+		params_section.printf("gl_ammo_params_section_%d", i);
+		if (pSettings->line_exist(hud_sect, *params_section))
+		{
+			for (auto& bone_param : m_ammo_bones_gl)
+			{
+				if (bone_param->AmmoType == i)
+				{
+					bone_param->Load(pSettings->r_string(hud_sect, *params_section), 2);
+				}
+			}
+		}
+	}
+
 	return result;
 }
 
@@ -1015,3 +1062,9 @@ u8 CWeaponMagazinedWGrenade::GetAmmoType(bool for_grenade_mode) const
 	}
 }
 
+void CWeaponMagazinedWGrenade::ForceUpdateHUD()
+{
+	inherited::ForceUpdateHUD();
+	int ammo_elapsed = m_bGrenadeMode ? iAmmoElapsed : iAmmoElapsed2;
+	UpdateAmmoBones(m_ammo_bones_gl, ammo_elapsed, GetAmmoType(true));
+}

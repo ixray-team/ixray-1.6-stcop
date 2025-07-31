@@ -358,6 +358,11 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 
 	if (GetState() == eIdle)
 		SwitchState(eIdle);
+
+	if (!IsGrenadeMode())
+	{
+		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+	}
 }
 
 void CWeaponMagazined::ReloadMagazine() 
@@ -445,6 +450,11 @@ void CWeaponMagazined::ReloadMagazine()
 		m_bLockType = true; 
 		ReloadMagazine(); 
 		m_bLockType = false; 
+	}
+
+	if (!IsGrenadeMode())
+	{
+		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
@@ -709,6 +719,12 @@ void CWeaponMagazined::state_Fire(float dt)
 			if (!infinite_fire() || m_bIAmWeaponRPG7)
 				++m_iShotNum;
 			
+			if (m_bUseLastAmmoType)
+			{
+				u8 type_to_update = m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+				UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
+			}
+
 			OnShot					();
 
 			if (m_iShotNum>m_iBaseDispersionedBulletsCount)
@@ -1668,6 +1684,7 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
+
 	PlayHUDMotion(SetCurrentReloadAnimation(), TRUE, GetState());
 	if (ParentIsActor())
 	{
@@ -1811,6 +1828,16 @@ shared_str CWeaponMagazined::SetCurrentShootAnimation()
 void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState()==eFire);
+
+	if (m_bAmmoInChamber && !m_chamber.empty())
+	{
+		UpdateShellBones(iAmmoElapsed, m_chamber.back().m_LocalAmmoType);
+	}
+	else if (!m_magazine.empty())
+	{
+		UpdateShellBones(iAmmoElapsed, m_magazine.back().m_LocalAmmoType);
+	}
+
 	PlayHUDMotion(SetCurrentShootAnimation(), FALSE, GetState());
 }
 
