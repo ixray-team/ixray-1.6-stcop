@@ -61,6 +61,15 @@ void CUIActorMenu::SetActor(CInventoryOwner* io)
 	}
 }
 
+void CUIActorMenu::ReloadActorInfo()
+{
+	if (m_pActorInvOwner != nullptr)
+	{
+		m_ActorCharacterInfo->ClearInfo();
+		m_ActorCharacterInfo->InitCharacter(m_pActorInvOwner);
+	}
+}
+
 void CUIActorMenu::SetPartner(CInventoryOwner* io)
 {
 	R_ASSERT(!IsShown());
