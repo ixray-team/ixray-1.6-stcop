@@ -223,8 +223,12 @@ void ESceneCustomOTool::ShowObjects(bool flag, bool bAllowSelectionFlag, bool bS
 BOOL ESceneCustomOTool::RayPick(CCustomObject*& object, float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf)
 {
     object = 0;
-    if (Scene->IsPlayInEditor())
+
+    if (!Scene->GetPlayInEditorRayPickCall())
+    {
         return false;
+    }
+
     for (CCustomObject* _F : m_Objects)
     {
         if (_F->Visible() && _F->RayPick(distance, start, direction, pinf))
