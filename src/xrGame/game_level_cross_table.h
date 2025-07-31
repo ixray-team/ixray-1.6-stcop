@@ -9,9 +9,7 @@ public:
 
 public:
 	CGameLevelCrossTable(const void* buffer, const u32& buffer_size);
-#ifdef AI_COMPILER
 	CGameLevelCrossTable(LPCSTR fName);
-#endif
 
 	virtual ~CGameLevelCrossTable();
 };
