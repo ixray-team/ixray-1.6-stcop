@@ -36,6 +36,7 @@ private:
 	CUITextWnd*			m_ui_grenade;
 	II_BriefInfo		m_item_info;
 	
+	CUITextWnd*			m_ui_weapon_sign_ammo;
 	CUIStatic*			m_ui_weapon_icon;
 	Frect				m_ui_weapon_icon_rect;
 
