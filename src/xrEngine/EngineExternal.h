@@ -85,6 +85,7 @@ public:
 	Fvector4 GetTalkDof() const;
 	float GetTalkFovScale() const;
 	u32 GetFontAltasSize() const;
+	float GetSprintFovFactor() const;
 
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;
