@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include "../Tools/Terrain/ESceneTerrainTools.h"
 
 bool SceneBuilder::PreparePath()
 {
@@ -20,36 +20,55 @@ bool SceneBuilder::PrepareFolders()
 bool SceneBuilder::EvictResource()
 {
 	ExecCommand(COMMAND_EVICT_OBJECTS);
-    ExecCommand(COMMAND_EVICT_TEXTURES);
+	ExecCommand(COMMAND_EVICT_TEXTURES);
 
 	int objcount = Scene->ObjCount(OBJCLASS_SCENEOBJECT);
-	if( objcount <= 0 ) return true;
+	objcount += Scene->ObjCount(OBJCLASS_TERRAIN);
+	if (objcount <= 0) return true;
 
 	SPBItem* pb = UI->ProgressStart(objcount, "Evict objects...");
-    // unload cform, point normals
-    ObjectIt _F = Scene->FirstObj(OBJCLASS_SCENEOBJECT);
-    ObjectIt _E = Scene->LastObj(OBJCLASS_SCENEOBJECT);
-    for(;_F!=_E;_F++){
-    	CSceneObject* O = (CSceneObject*)(*_F);
-        if (UI->NeedAbort()) break; // break building
-        O->EvictObject();
-        pb->Inc();
+	// unload cform, point normals
+	ObjectIt _F = Scene->FirstObj(OBJCLASS_SCENEOBJECT);
+	ObjectIt _E = Scene->LastObj(OBJCLASS_SCENEOBJECT);
+	for (; _F != _E; _F++)
+	{
+		CSceneObject* O = (CSceneObject*)(*_F);
+		if (UI->NeedAbort())
+			break; // break building
+
+		O->EvictObject();
+		pb->Inc();
 	}
+
+
+	_F = Scene->FirstObj(OBJCLASS_TERRAIN);
+	_E = Scene->LastObj(OBJCLASS_TERRAIN);
+	for (; _F != _E; _F++)
+	{
+		CTerrain* O = (CTerrain*)(*_F);
+		if (UI->NeedAbort())
+			break; // break building
+
+		O->GetReference()->EvictObject();
+		pb->Inc();
+	}
+
 	UI->ProgressEnd(pb);
 
-    return true;
+	return true;
 }
-
 
 bool SceneBuilder::GetBounding()
 {
 	Fbox b0;
-    bool r0 = Scene->GetBox(m_LevelBox,OBJCLASS_SCENEOBJECT);
-    bool r1 = Scene->GetBox(b0,OBJCLASS_GROUP);
-    if (r1) m_LevelBox.merge(b0);
-	return (r0||r1);
+	Fbox b1;
+	bool r0 = Scene->GetBox(m_LevelBox, OBJCLASS_SCENEOBJECT);
+	bool r1 = Scene->GetBox(b0, OBJCLASS_GROUP);
+	bool r2 = Scene->GetBox(b1, OBJCLASS_TERRAIN);
+	if (r1) m_LevelBox.merge(b0);
+	if (r2) m_LevelBox.merge(b1);
+	return (r0 || r1 || r2);
 }
-
 
 bool SceneBuilder::RenumerateSectors()
 {
@@ -58,13 +77,13 @@ bool SceneBuilder::RenumerateSectors()
 	SPBItem* pb = UI->ProgressStart(Scene->ObjCount(OBJCLASS_SECTOR), "Renumerate sectors...");
 
 	int sector_num = 0;
-    ObjectIt _F = Scene->FirstObj(OBJCLASS_SECTOR);
-    ObjectIt _E = Scene->LastObj(OBJCLASS_SECTOR);
-    for(;_F!=_E;_F++,sector_num++){
-    	CSector* _S=(CSector*)(*_F);
-        _S->m_sector_num = sector_num;
-        if (_S->IsDefault()) m_iDefaultSectorNum=sector_num;
-        pb->Inc();
+	ObjectIt _F = Scene->FirstObj(OBJCLASS_SECTOR);
+	ObjectIt _E = Scene->LastObj(OBJCLASS_SECTOR);
+	for (; _F != _E; _F++, sector_num++) {
+		CSector* _S = (CSector*)(*_F);
+		_S->m_sector_num = sector_num;
+		if (_S->IsDefault()) m_iDefaultSectorNum = sector_num;
+		pb->Inc();
 	}
 
 	UI->ProgressEnd(pb);
