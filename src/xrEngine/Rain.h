@@ -69,6 +69,8 @@ private:
 	// Sounds
 	ref_sound						snd_Ambient;
 	xrCriticalSection				rainCS;
+	float m_rainVolume;
+
 	// Utilities
 	void							p_create		();
 	void							p_destroy		();
@@ -91,7 +93,8 @@ public:
 	void							Render			();
 	void							OnFrame			();
 	void							UpdateItems		();
-	void InvalidateState() { state = stIdle; }
+	void InvalidateState();
+	float GetRainVolume() const { return m_rainVolume; }
 };
 
 #endif //RainH
