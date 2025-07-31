@@ -230,3 +230,5 @@
 #define CLSID_GAME_UI_FREEMP				MK_CLSID('U','I','_','F','M','P',' ',' ')
 
 #define CLSID_ONLINE_OFFLINE_GROUP		MK_CLSID('O','N','_','O','F','F','_','G')
+
+#define CLSID_EQUIPMENT_BACKPACK MK_CLSID('E', 'Q', '_', 'B', 'A', 'K', 'P', 'K')
