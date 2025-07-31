@@ -93,10 +93,10 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 //	R_ASSERT3				(pUserData,"Empty HangingLamp user data!",lamp->get_visual());
 	xr_delete(collidable.model);
 	if (Visual()){
-		IKinematics* K		= smart_cast<IKinematics*>(Visual());
-		R_ASSERT			(Visual()&&smart_cast<IKinematics*>(Visual()));
-		light_bone			= K->LL_BoneID	(*lamp->light_main_bone);	VERIFY(light_bone!=BI_NONE);
-		ambient_bone		= K->LL_BoneID	(*lamp->light_ambient_bone);VERIFY(ambient_bone!=BI_NONE);
+		IKinematics* K		= PKinematics(Visual());
+		R_ASSERT			(Visual()&& PKinematics(Visual()));
+		light_bone			= K->LL_BoneID	(*lamp->light_main_bone);	VERIFY2(light_bone!=BI_NONE, lamp->get_visual());
+		ambient_bone		= K->LL_BoneID	(*lamp->light_ambient_bone);VERIFY2(ambient_bone!=BI_NONE, lamp->get_visual());
 		collidable.model	= new CCF_Skeleton				(this);
 	}
 	fBrightness				= lamp->brightness;
