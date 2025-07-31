@@ -201,6 +201,9 @@ void ESceneAIMapTool::OnActivate()
 
 void ESceneAIMapTool::OnFrame()
 {
+    if (!IsLoaded)
+        return;
+
 	if (m_Flags.is(flUpdateHL)){
     	m_Flags.set(flUpdateHL,FALSE);
         for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
