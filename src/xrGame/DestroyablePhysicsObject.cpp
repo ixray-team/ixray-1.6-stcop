@@ -68,6 +68,16 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 		CPHCollisionDamageReceiver::Init();
 		if(ini->section_exist("sound"))				m_destroy_sound.create(ini->r_string("sound","break_sound"),st_Effect,sg_SourceType);
 		if(ini->section_exist("particles"))			m_destroy_particles=ini->r_string("particles","destroy_particles");
+
+		if (ini->section_exist("hit_from"))
+		{
+			CInifile::Sect& data = ini->r_section("hit_from");
+			if (data.Data.size() > 0)
+			{
+				for (auto I = data.Data.cbegin(); I != data.Data.cend(); ++I)
+					hit_object_name.insert(I->first);
+			}
+		}
 	}
 	CParticlesPlayer::LoadParticles(K);
 	RunStartupAnim(DC);
@@ -84,7 +94,11 @@ void	CDestroyablePhysicsObject::Hit					(SHit* pHDS)
 		HDS.dir,
 		smart_cast<const CGameObject*>(HDS.who)->lua_game_object(),
 		HDS.bone()
-		);
+	);
+
+	if (!hit_object_name.empty() && !hit_object_name.contains(HDS.who->cName()))
+		return;
+
 	HDS.power=CHitImmunity::AffectHit(HDS.power,HDS.hit_type);
 	float hit_scale=1.f,wound_scale=1.f;
 	CDamageManager::HitScale(HDS.bone(),hit_scale,wound_scale);
