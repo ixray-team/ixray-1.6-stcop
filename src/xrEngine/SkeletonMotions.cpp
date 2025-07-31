@@ -278,27 +278,27 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 		IReader* notify_data = MS->open_chunk(dwCNT+2+m_idx);
 		if (notify_data)
 		{
-			u32 num = notify_data->r_u32();
-			m_notifies[m_idx].order.reserve(num);
-			for (u32 i = 0; i < num; i++)
+			auto bones_size = notify_data->r_u32();
+			for (u32 i = 0; i < bones_size; ++i)
 			{
-				float key = notify_data->r_float();
-				m_notifies[m_idx].data[key] = {};
-				auto& data = m_notifies[m_idx].data[key];
-				data.IsExternalTrigger = notify_data->r_u8();
-				if (data.IsExternalTrigger)
+				u16 Key = notify_data->r_u16(); // bone id
+				m_notifies[m_idx][Key] = {};
+				auto& bones_notifies = m_notifies[m_idx][Key];
+				u32 amount = notify_data->r_u32();
+				for (u32 j = 0; j < amount; j++)
 				{
-					notify_data->r_stringZ(data.ExternalRef);
+					auto time = notify_data->r_float();
+					bones_notifies.data[time] = {};
+					auto notifies_at_time = notify_data->r_u32();
+					for (u32 k = 0; k < notifies_at_time; k++)
+					{
+						bones_notifies.data[time].push_back(new anim_notify());
+						notify_data->r_stringZ(bones_notifies.data[time].back()->ExternalRef);
+					}
+					bones_notifies.order.push_back(time);
 				}
-				else
-				{
-					notify_data->r_stringZ(data.GiveInfo);
-					notify_data->r_stringZ(data.DisableInfo);
-					notify_data->r_stringZ(data.Functor);
-				}
-				m_notifies[m_idx].order.push_back(key);
+				std::ranges::sort(bones_notifies.order);
 			}
-			std::ranges::sort(m_notifies[m_idx].order);
 		}
 	}
 	//	Msg("Motions %d/%d %4d/%4d/%d, %s",p_cnt,m_cnt, m_load,m_total,m_r,N);

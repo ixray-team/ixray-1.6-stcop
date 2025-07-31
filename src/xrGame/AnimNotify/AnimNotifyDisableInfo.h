@@ -5,6 +5,6 @@ class CAnimNotifyDisableInfo : public IAnimNotify
 {
     shared_str Info;
 public:
-    void Construct(CInifile ini, LPCSTR sect) override;
+    void Construct(const CInifile& ini, LPCSTR sect) override;
     void Execute(IRenderVisual* visual, u16 bone_id) override;
 };
