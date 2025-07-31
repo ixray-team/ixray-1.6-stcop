@@ -125,6 +125,9 @@
   <belt_list_over x="358" y="94" width="58" height="58" dy="65" stretch="0">
 	<texture a="200">ui_closed_af_slot</texture>
   </belt_list_over>
+
+  <dragdrop_trash x="0" y="0" width="322" height="768"
+    	cell_width="322" cell_height="768" rows_num="1" cols_num="1" a="0"/>
 	
   <dragdrop_bag x="705" y="140" width="308" height="590"
           cell_width="41" cell_height="41" rows_num="14" cols_num="7"
