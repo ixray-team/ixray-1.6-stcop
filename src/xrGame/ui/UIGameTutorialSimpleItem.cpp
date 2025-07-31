@@ -124,8 +124,12 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 
 		_si->m_wnd->TextItemControl()->SetTextComplexMode(true);
 		_si->m_wnd->Show			(false);
-		_si->m_wnd->SetWidth		(_si->m_wnd->GetWidth()*UI().get_current_kx());
-		
+		if (EngineExternal().CallOfPripyatMode())
+			_si->m_wnd->SetWidth		(_si->m_wnd->GetWidth()*UI().get_current_kx());
+		else if (UI().is_widescreen())
+			_si->m_wnd->SetWidth		(_si->m_wnd->GetWidth() / 1.2f);
+
+
 		if(UI().is_widescreen())
 		{
 			XML_NODE* autostatic_node	= xml->NavigateToNode("auto_static", i);
