@@ -96,6 +96,7 @@ void CUIWindow::ResetPPMode()
 
 CUIWindow::CUIWindow()
 :m_pParentWnd(nullptr),
+m_pFont(nullptr),
 m_pMouseCapturer(nullptr),
 m_pMessageTarget(nullptr),
 m_pKeyboardCapturer(nullptr),
