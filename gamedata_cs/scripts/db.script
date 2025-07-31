@@ -22,8 +22,8 @@ heli_enemies        = {}
 heli_enemy_count    = 0
 anim_obj_by_name	= {}
 goodwill 			= {sympathy = {}, relations = {}}
-
 signal_light		= {}
+no_weap_zones 		= {}
 
 function add_enemy( obj )
     heli_enemies[heli_enemy_count] = obj
