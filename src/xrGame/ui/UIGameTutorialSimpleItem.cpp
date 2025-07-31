@@ -246,10 +246,10 @@ void CUISequenceSimpleItem::Start()
 	if (g_pGameLevel)
 	{
 		bool bShowPda			= false;
- 
-		if (     !_stricmp( m_pda_section, "pda_tasks"       ) ) { CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptTasks");		bShowPda = true;	}
-		else if( !_stricmp( m_pda_section, "pda_ranking"     ) ) { CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptRanking");		bShowPda = true;	}
-		else if( !_stricmp( m_pda_section, "pda_logs"        ) ) { CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptLogs");		bShowPda = true;	}
+		if (     !_stricmp( m_pda_section, "pda_tasks"       ) ) {CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptTasks");		bShowPda = true;	}
+		else if( !_stricmp( m_pda_section, "pda_fraction_war") ) {CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptFractionWar");bShowPda = true;	}
+		else if( !_stricmp( m_pda_section, "pda_ranking"     ) ) {CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptRanking");	bShowPda = true;	}
+		else if( !_stricmp( m_pda_section, "pda_logs"        ) ) {CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptLogs");		bShowPda = true;	}
 		else if( !_stricmp( m_pda_section, "pda_show_second_task_wnd" ) )
 		{
 			CurrentGameUI()->PdaMenu().Show_SecondTaskWnd(true);	bShowPda = true;
@@ -259,7 +259,7 @@ void CUISequenceSimpleItem::Start()
 		{
 			if ( ( !CurrentGameUI()->PdaMenu().IsShown() &&  bShowPda ) || (CurrentGameUI()->PdaMenu().IsShown() && !bShowPda ) )
 			{
-				CurrentGameUI()->PdaMenu().HideDialog();
+				CurrentGameUI()->PdaMenu().ShowOrHideDialog(true);
 			}
 		}
 	}

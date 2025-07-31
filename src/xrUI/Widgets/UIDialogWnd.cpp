@@ -56,6 +56,13 @@ UI_API CDialogHolder* CurrentDialogHolder()
 	return g_pGameCustom->GetDialogHolder();
 }
 
+void CUIDialogWnd::ShowOrHideDialog(bool bDoHideIndicators)
+{
+	if (IsShown())
+		GetHolder()->StopDialog(this);
+	else
+		CurrentDialogHolder()->StartDialog(this, bDoHideIndicators);
+}
 
 void CUIDialogWnd::ShowDialog(bool bDoHideIndicators)
 {
