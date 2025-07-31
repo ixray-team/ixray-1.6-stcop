@@ -147,8 +147,10 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	u8								wpn_flags;
 	u8								wpn_state;
 	u8								ammo_type;
+	u8								chamber_ammo_type = 0;
 	u16								a_current;
 	u16								a_elapsed;
+	u16								a_chamber_elapsed = 0;
 	u8								misfire;
 	float							rt_zoom_factor;
 	u8								cur_scope;

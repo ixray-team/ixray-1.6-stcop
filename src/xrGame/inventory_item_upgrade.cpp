@@ -206,6 +206,7 @@ void CInventoryItem::pre_install_upgrade()
 	if ( wm )
 	{
 		wm->UnloadMagazine();
+		wm->UnloadChamber();
 
 		CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>( this );
 		if ( wg )

@@ -133,6 +133,81 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 }
 
+void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
+{
+	VERIFY(m_chamber.size());
+
+	CCartridge& l_cartridge = m_chamber.back();
+	VERIFY(u16(-1) != l_cartridge.bullet_material_idx);
+	//-------------------------------------------------------------	
+	bool is_tracer = m_bHasTracers && !!l_cartridge.m_flags.test(CCartridge::cfTracer);
+	if (is_tracer && !IsGameTypeSingle())
+		is_tracer = is_tracer && !IsSilencerAttached();
+
+	l_cartridge.m_flags.set(CCartridge::cfTracer, is_tracer);
+	if (m_u8TracerColorID != u8(-1))
+		l_cartridge.param_s.u8ColorID = m_u8TracerColorID;
+	//-------------------------------------------------------------
+
+	if (!psActorFlags.test(AF_INFINITEDURABILITY))
+	{
+		ChangeCondition(-GetWeaponDeterioration() * l_cartridge.param_s.impair);
+	}
+
+	float fire_disp = 0.f;
+	CActor* tmp_actor = nullptr;
+	if (!IsGameTypeSingle())
+	{
+		tmp_actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+		if (tmp_actor)
+		{
+			CEntity::SEntityState state;
+			tmp_actor->g_State(state);
+			if (m_first_bullet_controller.is_bullet_first(state.fVelocity))
+			{
+				fire_disp = m_first_bullet_controller.get_fire_dispertion();
+				m_first_bullet_controller.make_shot();
+			}
+		}
+		game_cl_mp* tmp_mp_game = smart_cast<game_cl_mp*>(&Game());
+		VERIFY(tmp_mp_game);
+		if (tmp_mp_game->get_reward_generator())
+			tmp_mp_game->get_reward_generator()->OnWeapon_Fire(H_Parent()->ID(), ID());
+	}
+	if (fsimilar(fire_disp, 0.f))
+	{
+		if (H_Parent() && (H_Parent() == tmp_actor))
+		{
+			fire_disp = tmp_actor->GetFireDispertion();
+		}
+		else
+		{
+			fire_disp = GetFireDispersion(true);
+		}
+	}
+
+
+	bool SendHit = SendHitAllowed(H_Parent());
+
+	for (int i = 0; i < l_cartridge.param_s.buckShot; ++i)
+	{
+		FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
+	}
+
+	StartShotParticles();
+
+	if (m_bLightShotEnabled)
+		Light_Start();
+
+	if (!infinite_fire() || m_bIAmWeaponRPG7)
+	{
+		DeleteAmmoInChamber();
+		GiveAmmoFromMagToChamber();
+	}
+
+	VERIFY((u32)iAmmoChamberElapsed == m_chamber.size());
+}
+
 void CWeapon::StopShooting()
 {
 //	SetPending			(TRUE);
