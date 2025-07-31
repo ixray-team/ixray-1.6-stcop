@@ -481,10 +481,21 @@ void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
 
 void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 {
-	inherited::OnEvent(P, type);
 	u16 id;
 	switch (type)
 	{
+	case GE_WPN_UNLOAD_AMMO:
+	{
+		UnloadMagazine();
+
+		u8 full_unload = P.r_u8();
+		if (full_unload && IsGrenadeLauncherAttached())
+		{
+			PerformSwitchGL();
+			UnloadMagazine();
+			PerformSwitchGL();
+		}
+	}break;
 	case GE_OWNERSHIP_TAKE:
 	{
 		P.r_u16(id);
@@ -515,6 +526,9 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 		}
 		break;
 	}
+	default:
+	inherited::OnEvent(P, type);
+	break;
 	}
 }
 
