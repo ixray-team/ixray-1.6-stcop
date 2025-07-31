@@ -30,7 +30,7 @@
 
 ENGINE_API bool	g_dedicated_server;
 
-CUIXml*				pWpnScopeXml = nullptr;
+CUIXml* pWpnScopeXml = nullptr;
 
 extern void createWpnScopeXML();
 
@@ -148,20 +148,20 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 void CWeaponMagazined::FireStart()
 {
-	if(!IsMisfire())
+	if (!IsMisfire())
 	{
-		if(IsValid()) 
+		u32 CurrentState = GetState();
+
+		if (IsValid())
 		{
-			if(!IsWorking() || AllowFireWhileWorking())
+			if (!IsWorking() || AllowFireWhileWorking())
 			{
-				if(GetState()==eReload) return;
-				if(GetState()==eShowing) return;
-				if(GetState()==eHiding) return;
-				if(GetState()==eMisfire) return;
+				if (CurrentState == eReload || CurrentState == eShowing || CurrentState == eHiding || CurrentState == eMisfire)
+					return;
 
 				inherited::FireStart();
-				
-				if (iAmmoElapsed == 0) 
+
+				if (iAmmoElapsed == 0)
 					switch2_Empty();
 				else
 				{
@@ -170,20 +170,19 @@ void CWeaponMagazined::FireStart()
 				}
 			}
 		}
-		else 
+		else if (CurrentState == eIdle)
 		{
-			if (GetState() == eIdle) 
-				switch2_Empty();
+			switch2_Empty();
 		}
 	}
 	else
 	{
-		//misfire
-		if(H_Parent())
+		if (H_Parent())
 		{
-			CGameObject* object = H_Parent()->cast_game_object();
-			if (object)
+			if (CGameObject* object = H_Parent()->cast_game_object())
+			{
 				object->callback(GameObject::eOnWeaponJammed)(object->lua_game_object(), this->lua_game_object());
+			}
 
 			if (H_Parent()->cast_actor() && (Level().CurrentViewEntity() == H_Parent()))
 				CurrentGameUI()->AddCustomStatic("gun_jammed", true);
@@ -373,8 +372,6 @@ void CWeaponMagazined::ReloadMagazine()
 		}
 	}
 
-
-
 	//нет патронов для перезарядки
 	if(!m_pCurrentAmmo && !unlimited_ammo() ) return;
 
@@ -388,6 +385,7 @@ void CWeaponMagazined::ReloadMagazine()
 
 	if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
 		m_DefaultCartridge.Load( m_ammoTypes[m_ammoType].c_str(), m_ammoType );
+
 	CCartridge l_cartridge = m_DefaultCartridge;
 	while(iAmmoElapsed < iMagazineSize)
 	{
@@ -517,14 +515,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	}
 }
 
-
 void CWeaponMagazined::UpdateCL			()
 {
 	PROF_EVENT("CWeaponMagazined::UpdateCL")
 	inherited::UpdateCL	();
 	float dt = Device.fTimeDelta;
-
-	
 
 	//когда происходит апдейт состояния оружия
 	//ничего другого не делать
@@ -672,17 +667,6 @@ void CWeaponMagazined::state_Fire(float dt)
 
 	if(fShotTimeCounter<0)
 	{
-/*
-		if(bDebug && H_Parent() && (H_Parent()->ID() != Actor()->ID()))
-		{
-			Msg("stop shooting w=[%s] magsize=[%d] sshot=[%s] qsize=[%d] shotnum=[%d]",
-					IsWorking()?"true":"false", 
-					m_magazine.size(),
-					m_bFireSingleShot?"true":"false",
-					m_iQueueSize,
-					m_iShotNum);
-		}
-*/
 		if(iAmmoElapsed == 0)
 			OnMagazineEmpty();
 
@@ -736,9 +720,10 @@ void CWeaponMagazined::OnShot()
 
 	if(H_Parent())
 	{
-		CGameObject* object = H_Parent()->cast_game_object();
-		if (object)
+		if (CGameObject* object = H_Parent()->cast_game_object())
+		{
 			object->callback(GameObject::eOnWeaponFired)(object->lua_game_object(), this->lua_game_object(), iAmmoElapsed, m_ammoType);
+		}
 	}
 }
 
@@ -1140,57 +1125,57 @@ bool CWeaponMagazined::DetachScope(const char* item_section_name, bool b_spawn_i
 
 bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 {
-	if(		m_eScopeStatus == ALife::eAddonAttachable &&
-			DetachScope(item_section_name, b_spawn_item))
+	auto UpdateHudInfo = [this]()
+	{
+		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
+		ProcessScope();
+		InitAddons();
+	};
+
+	if (m_eScopeStatus == ALife::eAddonAttachable && DetachScope(item_section_name, b_spawn_item))
 	{
 		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) == 0)
 		{
 			Msg("ERROR: scope addon already detached.");
 			return true;
 		}
+
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		UpdateAltScope();
-		UpdateAddonsVisibility();
-		UpdateHUDAddonsVisibility();
-		ProcessScope();
-		InitAddons();
+		UpdateHudInfo();
 
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
-	else if(m_eSilencerStatus == ALife::eAddonAttachable &&
-			(m_sSilencerName == item_section_name))
+	else if (m_eSilencerStatus == ALife::eAddonAttachable && (m_sSilencerName == item_section_name))
 	{
 		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0)
 		{
 			Msg("ERROR: silencer addon already detached.");
 			return true;
 		}
-		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
 
-		UpdateAddonsVisibility();
-		UpdateHUDAddonsVisibility();
-		ProcessScope();
-		InitAddons();
+		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
+		UpdateHudInfo();
+
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
-	else if(m_eGrenadeLauncherStatus == ALife::eAddonAttachable &&
-			(m_sGrenadeLauncherName == item_section_name))
+	else if (m_eGrenadeLauncherStatus == ALife::eAddonAttachable && (m_sGrenadeLauncherName == item_section_name))
 	{
 		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0)
 		{
 			Msg("ERROR: grenade launcher addon already detached.");
 			return true;
 		}
+
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
-		UpdateAddonsVisibility();
-		UpdateHUDAddonsVisibility();
-		ProcessScope();
-		InitAddons();
+		UpdateHudInfo();
+
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
-	else
-		return inherited::Detach(item_section_name, b_spawn_item);;
+
+	return inherited::Detach(item_section_name, b_spawn_item);;
 }
 /*
 void CWeaponMagazined::LoadAddons()
@@ -1329,10 +1314,7 @@ void CWeaponMagazined::PlaySoundAim(bool in)
 	if (!m_sounds_enabled)
 		return;
 
-	if (in && m_sounds.FindSoundItem("sndAim", false))
-		PlaySound("sndAim", get_LastFP());
-	else if (m_sounds.FindSoundItem("sndAimOut", false))
-		PlaySound("sndAimOut", get_LastFP());
+	PlaySoundIfExist(in ? "sndAim" : "sndAimOut", get_LastFP());
 }
 
 void CWeaponMagazined::PlayAnimIdle()
@@ -1365,15 +1347,14 @@ void CWeaponMagazined::OnZoomIn			()
 		if (object)
 			object->callback(GameObject::eOnWeaponZoomIn)(object->lua_game_object(), this->lua_game_object());
 
-		CActor* actor = H_Parent()->cast_actor();
-		if (actor)
+		if (CActor* actor = H_Parent()->cast_actor())
 		{
 			CEffectorZoomInertion* effectorZoomInertion = smart_cast<CEffectorZoomInertion*>(actor->Cameras().GetCamEffector(eCEZoom));
 			if (!effectorZoomInertion)
 			{
 				effectorZoomInertion = (CEffectorZoomInertion*)actor->Cameras().AddCamEffector(new CEffectorZoomInertion());
 				effectorZoomInertion->Init(this);
-			};
+			}
 
 			effectorZoomInertion->SetRndSeed(actor->GetZoomRndSeed());
 			R_ASSERT(effectorZoomInertion);
