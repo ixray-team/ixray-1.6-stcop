@@ -17,6 +17,7 @@ public:
 	XrUIManager();
 	void PushBegin(IEditorWnd*ui,bool need_deleted =true);
 	void Push(IEditorWnd*ui,bool need_deleted =true);
+	void Remove(IEditorWnd*ui);
 	void Draw();
 		
 	virtual ~XrUIManager();
