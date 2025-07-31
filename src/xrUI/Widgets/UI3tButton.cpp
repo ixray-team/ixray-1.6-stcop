@@ -111,7 +111,7 @@ void CUI3tButton::SetHeight(float height)
 	else if ( m_back_frameline )	{	m_back_frameline->SetHeight	(height);	}
 }
 
-void CUI3tButton::InitTexture(LPCSTR tex_name)
+bool CUI3tButton::InitTexture(LPCSTR tex_name, bool /*fatal = true*/)
 {
 	string_path 		tex_enabled;
 	string_path 		tex_disabled;
@@ -134,7 +134,8 @@ void CUI3tButton::InitTexture(LPCSTR tex_name)
 	xr_strcpy				(tex_highlighted, tex_name);
 	xr_strcat				(tex_highlighted, "_h");
 
-	this->InitTexture	(tex_enabled, tex_disabled, tex_touched, tex_highlighted);		
+	this->InitTexture	(tex_enabled, tex_disabled, tex_touched, tex_highlighted);	
+	return true;
 }
 
 void CUI3tButton::InitTexture(LPCSTR tex_enabled, 
