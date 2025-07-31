@@ -211,7 +211,7 @@ void export_classes	(lua_State *L)
 	CSpaceRestrictor::script_register(L);
 	CStalkerOutfit::script_register(L);
 	CTorch::script_register(L);
-	//FactionState::script_register(L);
+	FactionState::script_register(L);
 	FractionState::script_register(L);
 	CWeaponAK74::script_register(L);
 	CWeaponBinoculars::script_register(L);
