@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "AnimNotifyRegistry.h"
 
+#include "AnimNotify.h"
+#include "magic_enum/magic_enum.hpp"
+
 CAnimNotifyRegistry::CAnimNotifyRegistry()
 {
     xr_set<xr_string> files;
@@ -16,21 +19,13 @@ CAnimNotifyRegistry::CAnimNotifyRegistry()
         CInifile ini = CInifile(str.c_str());
         for (auto& section : ini.sections())
         {
+            VERIFY(IAnimNotifyHandler::IsValid());
+            auto type = magic_enum::enum_cast<EAnimNotifyType>(ini.r_string(section->Name, "type"));
+            R_ASSERT4(type.has_value(), "Invalid notify type", section->Name.c_str(), ini.r_string(section->Name, "type"));
+            auto NewNotify = IAnimNotifyHandler::Get().ConstructNotify(type.value());
+            NewNotify->Construct(ini, section->Name.c_str());
             R_ASSERT3(!map.contains(section->Name), "Find duplicated anim notify section", section->Name.c_str());
-            map[section->Name] = {};
-            auto& info = map[section->Name];
-            if (section->line_exist("GiveInfo"))
-            {
-                info.GiveInfo = ini.r_string(section->Name, "GiveInfo");
-            }
-            if (section->line_exist("DisableInfo"))
-            {
-                info.GiveInfo = ini.r_string(section->Name, "DisableInfo");
-            }
-            if (section->line_exist("Functor"))
-            {
-                info.GiveInfo = ini.r_string(section->Name, "Functor");
-            }
+            map[section->Name] = NewNotify;
         }
     }
 }
@@ -46,7 +41,7 @@ bool CAnimNotifyRegistry::contains(const shared_str& name)
     return map.contains(name);
 }
 
-const CAnimNotifyRegistry::SAnimNotifyInfo& CAnimNotifyRegistry::get(const shared_str& name)
+IAnimNotify* CAnimNotifyRegistry::get(const shared_str& name)
 {
     return map[name];
 }
