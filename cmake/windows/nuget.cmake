@@ -55,9 +55,6 @@ set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2024.2.15.1/)
 # Steam Sockets
 set(STEAM_SOCKETS_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.GameNetworkingSockets.Vcpkg.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.1.4.1)
 
-# RedImage
-set(REDIMAGE_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.RedImageTool.Runtimes.win-x64.0.1.0)
-
 # LuaJIT 
 set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.LuaJIT.Binaries.win10.0.19041.0-${NUGET_PACKAGE_PLATFORM}.1626960173.0.0-open/)
 
@@ -109,6 +106,11 @@ set(YAML_INCL ${YAML_CORE}/build/native/include)
 set(YAML_LIB  ${YAML_CORE}/runtimes/win-x64/native/Release/yaml-cpp.lib)
 set(YAML_BIN  ${YAML_CORE}/runtimes/win-x64/native/Release/yaml-cpp.dll)
 set(YAML_LIB_NAME yaml-cpp.dll)
+
+# RedImage
+set(REDIMAGE_INCL ${CMAKE_BINARY_DIR}/packages/IXRay.RedImage.0.1.1/include/)
+set(REDIMAGE_LIB  ${CMAKE_BINARY_DIR}/packages/IXRay.RedImage.0.1.1/lib/RedImageTool.lib)
+set(REDIMAGE_BIN  ${CMAKE_BINARY_DIR}/packages/IXRay.RedImage.0.1.1/bin/RedImageTool.dll)
 
 # DLSS
 set(NVIDIA_DLSS ${CMAKE_BINARY_DIR}/packages/IXRay.DLSS.310.4.0/)
