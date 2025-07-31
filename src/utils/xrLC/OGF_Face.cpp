@@ -264,7 +264,6 @@ void OGF::Optimize()
 }
 
 // Make Progressive
-xrCriticalSection progressive_cs;
 void OGF::MakeProgressive	(float metric_limit)
 {
 	// test
@@ -276,7 +275,8 @@ void OGF::MakeProgressive	(float metric_limit)
  	if (g_params().m_quality==ebqDraft)			return;
 	if (g_build_options.b_noise)				return;
 
-	progressive_cs.Enter	();
+ 
+	thread_local VIMP_Processor make_progressive_vimp;
 
 	//////////////////////////////////////////////////////////////////////////
 	// NORMAL
@@ -285,19 +285,19 @@ void OGF::MakeProgressive	(float metric_limit)
 
 	{
 		// prepare progressive geom
-		VIPM_Init				();
+		make_progressive_vimp.VIPM_Init				();
 		//clMsg("--- append v start .");
 		for (u32 v_idx=0;  v_idx<data.vertices.size(); v_idx++)	
-			VIPM_AppendVertex	(data.vertices[v_idx].P,	data.vertices[v_idx].UV[0]					);
+			make_progressive_vimp.VIPM_AppendVertex	(data.vertices[v_idx].P,	data.vertices[v_idx].UV[0]					);
 		//clMsg("--- append f start .");
 		for (u32 f_idx=0;  f_idx<data.faces.size();    f_idx++)	
-			VIPM_AppendFace		(data.faces[f_idx].v[0],	data.faces[f_idx].v[1],	data.faces[f_idx].v[2]	);
+			make_progressive_vimp.VIPM_AppendFace		(data.faces[f_idx].v[0],	data.faces[f_idx].v[1],	data.faces[f_idx].v[2]	);
 		//clMsg("--- append end.");
 
 		// Convert
 		VIPM_Result*	VR		= 0;
 		try						{
-						VR		= VIPM_Convert			(u32(25),1.f,1);
+						VR		= make_progressive_vimp.VIPM_Convert			(u32(25),1.f,1);
 		} catch (...)			{
 			progressive_clear	()		;
 			clMsg				("* mesh simplification failed: access violation");
@@ -306,7 +306,9 @@ void OGF::MakeProgressive	(float metric_limit)
 			progressive_clear	()		;
 			clMsg				("* mesh simplification failed");
 		}
-		while (VR && VR->swr_records.size()>0)	{
+		
+		while (VR && VR->swr_records.size()>0)
+		{
 			// test metric
 			u32		_full	= (u32)data.vertices.size	()		;
 			u32		_remove	=	VR->swr_records.size()	;
@@ -346,7 +348,7 @@ void OGF::MakeProgressive	(float metric_limit)
 			break	;
 		}
 		// cleanup
-		VIPM_Destroy			();
+		make_progressive_vimp.VIPM_Destroy			();
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -354,14 +356,17 @@ void OGF::MakeProgressive	(float metric_limit)
 	if (progressive_test() && fast_path_data.vertices.size() && fast_path_data.faces.size())
 	{
 		// prepare progressive geom
-		VIPM_Init				();
+		make_progressive_vimp.VIPM_Init				();
 		Fvector2				zero; zero.set		(0,0);
-		for (u32 v_idx=0;  v_idx<fast_path_data.vertices.size(); v_idx++)	VIPM_AppendVertex	(fast_path_data.vertices[v_idx].P,	zero						);
-		for (u32 f_idx=0;  f_idx<fast_path_data.faces.size();    f_idx++)	VIPM_AppendFace		(fast_path_data.faces[f_idx].v[0],	fast_path_data.faces[f_idx].v[1],	fast_path_data.faces[f_idx].v[2]	);
+		for (u32 v_idx=0;  v_idx<fast_path_data.vertices.size(); v_idx++)	
+			make_progressive_vimp.VIPM_AppendVertex	(fast_path_data.vertices[v_idx].P,	zero);
+
+		for (u32 f_idx=0;  f_idx<fast_path_data.faces.size();    f_idx++)	
+			make_progressive_vimp.VIPM_AppendFace		( fast_path_data.faces[f_idx].v[0],	fast_path_data.faces[f_idx].v[1], fast_path_data.faces[f_idx].v[2]);
 
 		VIPM_Result*	VR		= 0;
 		try						{
-			VR		= VIPM_Convert			(u32(25),1.f,1);
+			VR		= make_progressive_vimp.VIPM_Convert			(u32(25),1.f,1);
 		} catch (...)			{
 			data.faces				= _saved_faces		;
 			data.vertices			= _saved_vertices	;
@@ -412,10 +417,8 @@ void OGF::MakeProgressive	(float metric_limit)
 		}
 
 		// cleanup
-		VIPM_Destroy			();
+		make_progressive_vimp.VIPM_Destroy			();
 	}
-
-	progressive_cs.Leave	();
 }
 
 void OGF_Base::Save	(IWriter &fs)
